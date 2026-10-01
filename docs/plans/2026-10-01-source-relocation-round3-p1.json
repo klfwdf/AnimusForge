@@ -1,0 +1,765 @@
+{
+  "schemaVersion": 1,
+  "round": 3,
+  "owner": "P1",
+  "status": "proposal-only-awaiting-central-approval",
+  "workspace": "E:\\AnimusForge-refactor-continuation-20260831",
+  "branch": "codex/af-main-refactor-continuation-20260831",
+  "head": "24424b67cd89337a0cde8639fb0bbcdb8e2b2db2",
+  "scope": "18 R2 excluded_diplomacy root sources; raw-byte physical relocation only",
+  "moves": [
+    {
+      "old": "DiplomacyPeaceTermsService.cs",
+      "new": "src/modules/AF.Module.Diplomacy/Direct/DiplomacyPeaceTermsService.cs",
+      "sha256": "5967464f864fd21703f5c6437726535b7e8f69b16b8fe198766e8885b003fc5e",
+      "byteLength": 3011,
+      "responsibility": "谈判贡金/期限解析与真实MakePeaceAction落地；共享Direct外交约束",
+      "evidence": {
+        "revision": "24424b67cd89337a0cde8639fb0bbcdb8e2b2db2",
+        "symbols": [
+          "ResolveTributeAmount",
+          "TryApplyPeace"
+        ],
+        "lineRanges": [
+          [
+            9,
+            27
+          ],
+          [
+            52,
+            88
+          ]
+        ]
+      },
+      "targetExists": false,
+      "sameBasenameTrackedPaths": [
+        "DiplomacyPeaceTermsService.cs"
+      ],
+      "currentPathConsumers": {
+        "auditOwner": "P3",
+        "status": "targeted audit pending; source filenames already supplied",
+        "requiredChange": "only current checkout reads/Compile links; shared helper owned by P4"
+      },
+      "historicalPaths": "retain old git show paths/review JSON keys/immutable digests; no blanket replace",
+      "futureReplacement": "未来外交由获准实现写者在本new路径按精确文件整合；本轮不覆盖/删除/保留root副本，新文件或同类型冲突必须停止并交P4"
+    },
+    {
+      "old": "DiplomacyRecentPeaceGuard.cs",
+      "new": "src/modules/AF.Module.Diplomacy/Guards/DiplomacyRecentPeaceGuard.cs",
+      "sha256": "52d398789ee37e9525ebc11d5720fc7db322bca3a6c1084aba8622d0acfb0f56",
+      "byteLength": 3350,
+      "responsibility": "和平后的45秒派系对敌意抑制及过期清理，不改变运行策略",
+      "evidence": {
+        "revision": "24424b67cd89337a0cde8639fb0bbcdb8e2b2db2",
+        "symbols": [
+          "ProtectionSeconds",
+          "ShouldBlockHostility"
+        ],
+        "lineRanges": [
+          [
+            9,
+            23
+          ],
+          [
+            40,
+            59
+          ]
+        ]
+      },
+      "targetExists": false,
+      "sameBasenameTrackedPaths": [
+        "DiplomacyRecentPeaceGuard.cs"
+      ],
+      "currentPathConsumers": {
+        "auditOwner": "P3",
+        "status": "targeted audit pending; source filenames already supplied",
+        "requiredChange": "only current checkout reads/Compile links; shared helper owned by P4"
+      },
+      "historicalPaths": "retain old git show paths/review JSON keys/immutable digests; no blanket replace",
+      "futureReplacement": "未来外交由获准实现写者在本new路径按精确文件整合；本轮不覆盖/删除/保留root副本，新文件或同类型冲突必须停止并交P4"
+    },
+    {
+      "old": "KingdomAnnexationBehavior.cs",
+      "new": "src/modules/AF.Module.Diplomacy/Annexation/KingdomAnnexationBehavior.cs",
+      "sha256": "53769747a3977c4ecd206fcc86b9b34002df0a6f08f1b8ca9f84469ac09973db",
+      "byteLength": 23425,
+      "responsibility": "吞并执行：家族转国/领地/和平/臣属协议清理及外部Prompt资格",
+      "evidence": {
+        "revision": "24424b67cd89337a0cde8639fb0bbcdb8e2b2db2",
+        "symbols": [
+          "TryApplyKingdomAnnexation",
+          "TryAnnexKingdom"
+        ],
+        "lineRanges": [
+          [
+            12,
+            44
+          ],
+          [
+            157,
+            237
+          ]
+        ]
+      },
+      "targetExists": false,
+      "sameBasenameTrackedPaths": [
+        "KingdomAnnexationBehavior.cs"
+      ],
+      "currentPathConsumers": {
+        "auditOwner": "P3",
+        "status": "targeted audit pending; source filenames already supplied",
+        "requiredChange": "only current checkout reads/Compile links; shared helper owned by P4"
+      },
+      "historicalPaths": "retain old git show paths/review JSON keys/immutable digests; no blanket replace",
+      "futureReplacement": "未来外交由获准实现写者在本new路径按精确文件整合；本轮不覆盖/删除/保留root副本，新文件或同类型冲突必须停止并交P4"
+    },
+    {
+      "old": "KingdomAnnexationDiagnosticLog.cs",
+      "new": "src/modules/AF.Module.Diplomacy/Annexation/KingdomAnnexationDiagnosticLog.cs",
+      "sha256": "d13bea2eeb40653ecf66a779a49a8d79119ef0dd2c8fcec8e66755754006b956",
+      "byteLength": 23387,
+      "responsibility": "吞并阶段诊断JSONL与游戏对象快照；不是通用日志基础设施",
+      "evidence": {
+        "revision": "24424b67cd89337a0cde8639fb0bbcdb8e2b2db2",
+        "symbols": [
+          "Event",
+          "BuildPostTransferSnapshot"
+        ],
+        "lineRanges": [
+          [
+            14,
+            46
+          ],
+          [
+            225,
+            245
+          ]
+        ]
+      },
+      "targetExists": false,
+      "sameBasenameTrackedPaths": [
+        "KingdomAnnexationDiagnosticLog.cs"
+      ],
+      "currentPathConsumers": {
+        "auditOwner": "P3",
+        "status": "targeted audit pending; source filenames already supplied",
+        "requiredChange": "only current checkout reads/Compile links; shared helper owned by P4"
+      },
+      "historicalPaths": "retain old git show paths/review JSON keys/immutable digests; no blanket replace",
+      "futureReplacement": "未来外交由获准实现写者在本new路径按精确文件整合；本轮不覆盖/删除/保留root副本，新文件或同类型冲突必须停止并交P4"
+    },
+    {
+      "old": "KingdomStrategicProfileBehavior.cs",
+      "new": "src/modules/AF.Module.Diplomacy/Profiles/KingdomStrategicProfileBehavior.cs",
+      "sha256": "998f2134cc10c5dd706052ba871ebdcc60eb009805b110cf99d33cc0783c2fec",
+      "byteLength": 80797,
+      "responsibility": "国家性格/战略卡Campaign保存、导入导出、建国异步生成；保留混合宿主",
+      "evidence": {
+        "revision": "24424b67cd89337a0cde8639fb0bbcdb8e2b2db2",
+        "symbols": [
+          "RegisterEvents",
+          "SyncData",
+          "TryGetEffectiveProfile"
+        ],
+        "lineRanges": [
+          [
+            21,
+            27
+          ],
+          [
+            58,
+            100
+          ],
+          [
+            112,
+            126
+          ]
+        ]
+      },
+      "targetExists": false,
+      "sameBasenameTrackedPaths": [
+        "KingdomStrategicProfileBehavior.cs"
+      ],
+      "currentPathConsumers": {
+        "auditOwner": "P3",
+        "status": "targeted audit pending; source filenames already supplied",
+        "requiredChange": "only current checkout reads/Compile links; shared helper owned by P4"
+      },
+      "historicalPaths": "retain old git show paths/review JSON keys/immutable digests; no blanket replace",
+      "futureReplacement": "未来外交由获准实现写者在本new路径按精确文件整合；本轮不覆盖/删除/保留root副本，新文件或同类型冲突必须停止并交P4"
+    },
+    {
+      "old": "KingdomStrategicProfileBehavior.DevUi.cs",
+      "new": "src/modules/AF.Module.Diplomacy/Profiles/KingdomStrategicProfileBehavior.DevUi.cs",
+      "sha256": "9bd216fc3e762f3f08acbaeedf2c0f37e0c3df42101ab95b59329a2f0bcb2d75",
+      "byteLength": 27592,
+      "responsibility": "同一partial的国家卡开发菜单/编辑/导入导出；随宿主整体归位",
+      "evidence": {
+        "revision": "24424b67cd89337a0cde8639fb0bbcdb8e2b2db2",
+        "symbols": [
+          "OpenDevMenu",
+          "OnDevMenuSelected"
+        ],
+        "lineRanges": [
+          [
+            14,
+            67
+          ]
+        ]
+      },
+      "targetExists": false,
+      "sameBasenameTrackedPaths": [
+        "KingdomStrategicProfileBehavior.DevUi.cs"
+      ],
+      "currentPathConsumers": {
+        "auditOwner": "P3",
+        "status": "targeted audit pending; source filenames already supplied",
+        "requiredChange": "only current checkout reads/Compile links; shared helper owned by P4"
+      },
+      "historicalPaths": "retain old git show paths/review JSON keys/immutable digests; no blanket replace",
+      "futureReplacement": "未来外交由获准实现写者在本new路径按精确文件整合；本轮不覆盖/删除/保留root副本，新文件或同类型冲突必须停止并交P4"
+    },
+    {
+      "old": "NpcTributeVassalageBehavior.cs",
+      "new": "src/modules/AF.Module.Diplomacy/Vassalage/NpcTributeVassalageBehavior.cs",
+      "sha256": "0794f7ae914d36333c9b0deb200f3b04015f00def389b54e74e2d667d173d39e",
+      "byteLength": 38461,
+      "responsibility": "和平应用后的NPC朝贡臣属建立/战争处理；文件内snapshot/patch/诊断整保留",
+      "evidence": {
+        "revision": "24424b67cd89337a0cde8639fb0bbcdb8e2b2db2",
+        "symbols": [
+          "CapturePeaceSnapshot",
+          "TryCreateNpcTributaryVassalage"
+        ],
+        "lineRanges": [
+          [
+            60,
+            97
+          ],
+          [
+            207,
+            223
+          ],
+          [
+            828,
+            865
+          ]
+        ]
+      },
+      "targetExists": false,
+      "sameBasenameTrackedPaths": [
+        "NpcTributeVassalageBehavior.cs"
+      ],
+      "currentPathConsumers": {
+        "auditOwner": "P3",
+        "status": "targeted audit pending; source filenames already supplied",
+        "requiredChange": "only current checkout reads/Compile links; shared helper owned by P4"
+      },
+      "historicalPaths": "retain old git show paths/review JSON keys/immutable digests; no blanket replace",
+      "futureReplacement": "未来外交由获准实现写者在本new路径按精确文件整合；本轮不覆盖/删除/保留root副本，新文件或同类型冲突必须停止并交P4"
+    },
+    {
+      "old": "Patch_Diplomacy_GuardFactionManagerDeclareWar.cs",
+      "new": "src/modules/AF.Module.Diplomacy/Guards/Patch_Diplomacy_GuardFactionManagerDeclareWar.cs",
+      "sha256": "af13408cbe6717bb800f432481ab660521f7c78cb622108b1a916836444bcfaa",
+      "byteLength": 412,
+      "responsibility": "FactionManager宣战Harmony前置调用和平保护owner",
+      "evidence": {
+        "revision": "24424b67cd89337a0cde8639fb0bbcdb8e2b2db2",
+        "symbols": [
+          "Prefix"
+        ],
+        "lineRanges": [
+          [
+            6,
+            13
+          ]
+        ]
+      },
+      "targetExists": false,
+      "sameBasenameTrackedPaths": [
+        "Patch_Diplomacy_GuardFactionManagerDeclareWar.cs"
+      ],
+      "currentPathConsumers": {
+        "auditOwner": "P3",
+        "status": "targeted audit pending; source filenames already supplied",
+        "requiredChange": "only current checkout reads/Compile links; shared helper owned by P4"
+      },
+      "historicalPaths": "retain old git show paths/review JSON keys/immutable digests; no blanket replace",
+      "futureReplacement": "未来外交由获准实现写者在本new路径按精确文件整合；本轮不覆盖/删除/保留root副本，新文件或同类型冲突必须停止并交P4"
+    },
+    {
+      "old": "Patch_Diplomacy_RegisterMakePeaceAction.cs",
+      "new": "src/modules/AF.Module.Diplomacy/Guards/Patch_Diplomacy_RegisterMakePeaceAction.cs",
+      "sha256": "ed9a8c406813fa6bd5680c2fc2dfecbca8911dc7de04d41764d6e97810ecd019",
+      "byteLength": 522,
+      "responsibility": "MakePeaceAction Harmony后置登记和平保护owner",
+      "evidence": {
+        "revision": "24424b67cd89337a0cde8639fb0bbcdb8e2b2db2",
+        "symbols": [
+          "Postfix"
+        ],
+        "lineRanges": [
+          [
+            7,
+            14
+          ]
+        ]
+      },
+      "targetExists": false,
+      "sameBasenameTrackedPaths": [
+        "Patch_Diplomacy_RegisterMakePeaceAction.cs"
+      ],
+      "currentPathConsumers": {
+        "auditOwner": "P3",
+        "status": "targeted audit pending; source filenames already supplied",
+        "requiredChange": "only current checkout reads/Compile links; shared helper owned by P4"
+      },
+      "historicalPaths": "retain old git show paths/review JSON keys/immutable digests; no blanket replace",
+      "futureReplacement": "未来外交由获准实现写者在本new路径按精确文件整合；本轮不覆盖/删除/保留root副本，新文件或同类型冲突必须停止并交P4"
+    },
+    {
+      "old": "PermanentAllianceGuard.cs",
+      "new": "src/modules/AF.Module.Diplomacy/Guards/PermanentAllianceGuard.cs",
+      "sha256": "9c71dae10af62042b273fcdb60d14bae8b44cc720a496d9148064b59ca5e72aa",
+      "byteLength": 14006,
+      "responsibility": "永久盟约及显式解除授权scope/宣战保护；包含patch整体不拆",
+      "evidence": {
+        "revision": "24424b67cd89337a0cde8639fb0bbcdb8e2b2db2",
+        "symbols": [
+          "RegisterHarmonyPatches",
+          "ShouldAllowDeclareWar"
+        ],
+        "lineRanges": [
+          [
+            73,
+            83
+          ],
+          [
+            116,
+            139
+          ],
+          [
+            140,
+            155
+          ]
+        ]
+      },
+      "targetExists": false,
+      "sameBasenameTrackedPaths": [
+        "PermanentAllianceGuard.cs"
+      ],
+      "currentPathConsumers": {
+        "auditOwner": "P3",
+        "status": "targeted audit pending; source filenames already supplied",
+        "requiredChange": "only current checkout reads/Compile links; shared helper owned by P4"
+      },
+      "historicalPaths": "retain old git show paths/review JSON keys/immutable digests; no blanket replace",
+      "futureReplacement": "未来外交由获准实现写者在本new路径按精确文件整合；本轮不覆盖/删除/保留root副本，新文件或同类型冲突必须停止并交P4"
+    },
+    {
+      "old": "TerminalVassalageTributeHistoryPopupVM.cs",
+      "new": "src/modules/AF.Module.Diplomacy/Vassalage/UI/TerminalVassalageTributeHistoryPopupVM.cs",
+      "sha256": "3d3625dda0377cc87b51e4013dac9dafff7fd72b3656dbb279cbcf8cf22fa8cb",
+      "byteLength": 5301,
+      "responsibility": "臣属贡赋历史弹窗/条目VM，消费Vassalage声明的历史DTO，不移GUI资源",
+      "evidence": {
+        "revision": "24424b67cd89337a0cde8639fb0bbcdb8e2b2db2",
+        "symbols": [
+          "TerminalVassalageTributeHistoryPopupVM",
+          "TerminalVassalageTributeHistoryRecordItemVM"
+        ],
+        "lineRanges": [
+          [
+            6,
+            13
+          ],
+          [
+            122,
+            148
+          ],
+          [
+            233,
+            240
+          ]
+        ]
+      },
+      "targetExists": false,
+      "sameBasenameTrackedPaths": [
+        "TerminalVassalageTributeHistoryPopupVM.cs"
+      ],
+      "currentPathConsumers": {
+        "auditOwner": "P3",
+        "status": "targeted audit pending; source filenames already supplied",
+        "requiredChange": "only current checkout reads/Compile links; shared helper owned by P4"
+      },
+      "historicalPaths": "retain old git show paths/review JSON keys/immutable digests; no blanket replace",
+      "futureReplacement": "未来外交由获准实现写者在本new路径按精确文件整合；本轮不覆盖/删除/保留root副本，新文件或同类型冲突必须停止并交P4"
+    },
+    {
+      "old": "VassalageBehavior.cs",
+      "new": "src/modules/AF.Module.Diplomacy/Vassalage/VassalageBehavior.cs",
+      "sha256": "8ba4f3f46584e2419a976f1d9838f888ea55383d0064c4e712fed35958b2e692",
+      "byteLength": 363114,
+      "responsibility": "臣属协议/独立度/保护/朝贡结算保存权威及内嵌通知UI与typed policy接缝；整文件混合宿主保留",
+      "evidence": {
+        "revision": "24424b67cd89337a0cde8639fb0bbcdb8e2b2db2",
+        "symbols": [
+          "RegisterEvents",
+          "SyncData",
+          "TryApplyDirectVassalPolicyIndependenceForExternal"
+        ],
+        "lineRanges": [
+          [
+            874,
+            899
+          ],
+          [
+            929,
+            960
+          ],
+          [
+            980,
+            1016
+          ],
+          [
+            1029,
+            1040
+          ]
+        ]
+      },
+      "targetExists": false,
+      "sameBasenameTrackedPaths": [
+        "VassalageBehavior.cs"
+      ],
+      "currentPathConsumers": {
+        "auditOwner": "P3",
+        "status": "targeted audit pending; source filenames already supplied",
+        "requiredChange": "only current checkout reads/Compile links; shared helper owned by P4"
+      },
+      "historicalPaths": "retain old git show paths/review JSON keys/immutable digests; no blanket replace",
+      "futureReplacement": "未来外交由获准实现写者在本new路径按精确文件整合；本轮不覆盖/删除/保留root副本，新文件或同类型冲突必须停止并交P4"
+    },
+    {
+      "old": "VassalageDiagnosticLog.cs",
+      "new": "src/modules/AF.Module.Diplomacy/Vassalage/VassalageDiagnosticLog.cs",
+      "sha256": "a63c2cea5ae7057e7c18cc981a373af9ad7ea8c3d202a519e7155b761ce84af9",
+      "byteLength": 9695,
+      "responsibility": "臣属业务阶段JSONL/对象诊断；保留实际运行日志路径",
+      "evidence": {
+        "revision": "24424b67cd89337a0cde8639fb0bbcdb8e2b2db2",
+        "symbols": [
+          "Event",
+          "GetDiagnosticLogPath"
+        ],
+        "lineRanges": [
+          [
+            14,
+            30
+          ],
+          [
+            165,
+            170
+          ]
+        ]
+      },
+      "targetExists": false,
+      "sameBasenameTrackedPaths": [
+        "VassalageDiagnosticLog.cs"
+      ],
+      "currentPathConsumers": {
+        "auditOwner": "P3",
+        "status": "targeted audit pending; source filenames already supplied",
+        "requiredChange": "only current checkout reads/Compile links; shared helper owned by P4"
+      },
+      "historicalPaths": "retain old git show paths/review JSON keys/immutable digests; no blanket replace",
+      "futureReplacement": "未来外交由获准实现写者在本new路径按精确文件整合；本轮不覆盖/删除/保留root副本，新文件或同类型冲突必须停止并交P4"
+    },
+    {
+      "old": "VoteDealBehavior.cs",
+      "new": "src/modules/AF.Module.Diplomacy/Agenda/VoteDealBehavior.cs",
+      "sha256": "e462020173b460275fbf3d0df834e22d5bca19e70aa725e8dca144257eea3032",
+      "byteLength": 186842,
+      "responsibility": "议程投票交易/双边外交记录Campaign与保存宿主；内嵌UI/Mixin/patch随整文件",
+      "evidence": {
+        "revision": "24424b67cd89337a0cde8639fb0bbcdb8e2b2db2",
+        "symbols": [
+          "RegisterEvents",
+          "SyncData"
+        ],
+        "lineRanges": [
+          [
+            37,
+            58
+          ],
+          [
+            421,
+            433
+          ],
+          [
+            498,
+            507
+          ],
+          [
+            4590,
+            4616
+          ]
+        ]
+      },
+      "targetExists": false,
+      "sameBasenameTrackedPaths": [
+        "VoteDealBehavior.cs"
+      ],
+      "currentPathConsumers": {
+        "auditOwner": "P3",
+        "status": "targeted audit pending; source filenames already supplied",
+        "requiredChange": "only current checkout reads/Compile links; shared helper owned by P4"
+      },
+      "historicalPaths": "retain old git show paths/review JSON keys/immutable digests; no blanket replace",
+      "futureReplacement": "未来外交由获准实现写者在本new路径按精确文件整合；本轮不覆盖/删除/保留root副本，新文件或同类型冲突必须停止并交P4"
+    },
+    {
+      "old": "VoteDealBehavior.Agenda.cs",
+      "new": "src/modules/AF.Module.Diplomacy/Agenda/VoteDealBehavior.Agenda.cs",
+      "sha256": "2585e8d0338c1f2cd5f856ab3c15c3dfd251ba87a86f483ea5ec962ba230655e",
+      "byteLength": 29532,
+      "responsibility": "同partial统一议程快照/Prompt/AGENDA action dispatch",
+      "evidence": {
+        "revision": "24424b67cd89337a0cde8639fb0bbcdb8e2b2db2",
+        "symbols": [
+          "BuildUnifiedAgendaPromptContextForExternal",
+          "ProcessAgendaTagsDispatch"
+        ],
+        "lineRanges": [
+          [
+            16,
+            54
+          ],
+          [
+            56,
+            115
+          ],
+          [
+            533,
+            581
+          ]
+        ]
+      },
+      "targetExists": false,
+      "sameBasenameTrackedPaths": [
+        "VoteDealBehavior.Agenda.cs"
+      ],
+      "currentPathConsumers": {
+        "auditOwner": "P3",
+        "status": "targeted audit pending; source filenames already supplied",
+        "requiredChange": "only current checkout reads/Compile links; shared helper owned by P4"
+      },
+      "historicalPaths": "retain old git show paths/review JSON keys/immutable digests; no blanket replace",
+      "futureReplacement": "未来外交由获准实现写者在本new路径按精确文件整合；本轮不覆盖/删除/保留root副本，新文件或同类型冲突必须停止并交P4"
+    },
+    {
+      "old": "VoteDealBehavior.MapNotification.cs",
+      "new": "src/modules/AF.Module.Diplomacy/Agenda/VoteDealBehavior.MapNotification.cs",
+      "sha256": "e74cc30170e3d222025190fb7755565d417bd3e98929d4601423a8eb40ec7261",
+      "byteLength": 11245,
+      "responsibility": "同partial的议程地图通知队列/注册与VM，保留原类型及资源ID",
+      "evidence": {
+        "revision": "24424b67cd89337a0cde8639fb0bbcdb8e2b2db2",
+        "symbols": [
+          "OnAgendaMapNotificationTick",
+          "TryEnsureAgendaMapNotificationRegistered"
+        ],
+        "lineRanges": [
+          [
+            18,
+            38
+          ],
+          [
+            125,
+            165
+          ],
+          [
+            240,
+            265
+          ]
+        ]
+      },
+      "targetExists": false,
+      "sameBasenameTrackedPaths": [
+        "VoteDealBehavior.MapNotification.cs"
+      ],
+      "currentPathConsumers": {
+        "auditOwner": "P3",
+        "status": "targeted audit pending; source filenames already supplied",
+        "requiredChange": "only current checkout reads/Compile links; shared helper owned by P4"
+      },
+      "historicalPaths": "retain old git show paths/review JSON keys/immutable digests; no blanket replace",
+      "futureReplacement": "未来外交由获准实现写者在本new路径按精确文件整合；本轮不覆盖/删除/保留root副本，新文件或同类型冲突必须停止并交P4"
+    },
+    {
+      "old": "VoteDealBehavior.Propose.cs",
+      "new": "src/modules/AF.Module.Diplomacy/Agenda/VoteDealBehavior.Propose.cs",
+      "sha256": "69b91f3be2ca6dce8c5786da69c666e3fe6bbb7dda12166a3353afda6aa344c0",
+      "byteLength": 8886,
+      "responsibility": "同partial政策/宣战/和平/盟约等议程提议解析和KingdomDecision创建",
+      "evidence": {
+        "revision": "24424b67cd89337a0cde8639fb0bbcdb8e2b2db2",
+        "symbols": [
+          "ExecutePropose"
+        ],
+        "lineRanges": [
+          [
+            9,
+            41
+          ],
+          [
+            163,
+            231
+          ]
+        ]
+      },
+      "targetExists": false,
+      "sameBasenameTrackedPaths": [
+        "VoteDealBehavior.Propose.cs"
+      ],
+      "currentPathConsumers": {
+        "auditOwner": "P3",
+        "status": "targeted audit pending; source filenames already supplied",
+        "requiredChange": "only current checkout reads/Compile links; shared helper owned by P4"
+      },
+      "historicalPaths": "retain old git show paths/review JSON keys/immutable digests; no blanket replace",
+      "futureReplacement": "未来外交由获准实现写者在本new路径按精确文件整合；本轮不覆盖/删除/保留root副本，新文件或同类型冲突必须停止并交P4"
+    },
+    {
+      "old": "WorldDiplomacyLlmClient.cs",
+      "new": "src/modules/AF.Module.Diplomacy/World/WorldDiplomacyLlmClient.cs",
+      "sha256": "69cae16c4a36a8716e5b783c2074f52473e73e00fd09351e26a6ece035ad8f0b",
+      "byteLength": 22501,
+      "responsibility": "世界外交领域请求重试/配置/协议解析/迟到接受；一次transport委派既有LLM owner",
+      "evidence": {
+        "revision": "24424b67cd89337a0cde8639fb0bbcdb8e2b2db2",
+        "symbols": [
+          "CallMessagesWithRetriesAsync",
+          "SendAndReadAsync"
+        ],
+        "lineRanges": [
+          [
+            39,
+            63
+          ],
+          [
+            198,
+            220
+          ]
+        ]
+      },
+      "targetExists": false,
+      "sameBasenameTrackedPaths": [
+        "WorldDiplomacyLlmClient.cs"
+      ],
+      "currentPathConsumers": {
+        "auditOwner": "P3",
+        "status": "targeted audit pending; source filenames already supplied",
+        "requiredChange": "only current checkout reads/Compile links; shared helper owned by P4"
+      },
+      "historicalPaths": "retain old git show paths/review JSON keys/immutable digests; no blanket replace",
+      "futureReplacement": "未来外交由获准实现写者在本new路径按精确文件整合；本轮不覆盖/删除/保留root副本，新文件或同类型冲突必须停止并交P4"
+    }
+  ],
+  "partialFamilies": [
+    {
+      "type": "KingdomStrategicProfileBehavior",
+      "members": [
+        "KingdomStrategicProfileBehavior.DevUi.cs",
+        "KingdomStrategicProfileBehavior.cs"
+      ],
+      "allMembersProposed": true,
+      "targetDirectory": "src/modules/AF.Module.Diplomacy/Profiles",
+      "atomic": true,
+      "existingSrcMembers": [],
+      "rule": "all root partials move together; no algorithm extraction/compatibility duplicate"
+    },
+    {
+      "type": "VoteDealBehavior",
+      "members": [
+        "VoteDealBehavior.Agenda.cs",
+        "VoteDealBehavior.MapNotification.cs",
+        "VoteDealBehavior.Propose.cs",
+        "VoteDealBehavior.cs"
+      ],
+      "allMembersProposed": true,
+      "targetDirectory": "src/modules/AF.Module.Diplomacy/Agenda",
+      "atomic": true,
+      "existingSrcMembers": [],
+      "rule": "all root partials move together; no algorithm extraction/compatibility duplicate"
+    }
+  ],
+  "existingDiplomacyPreserved": [
+    "src/modules/AF.Module.Diplomacy/Direct/DiplomacyBehavior.Actions.cs",
+    "src/modules/AF.Module.Diplomacy/Direct/DiplomacyBehavior.cs",
+    "src/modules/AF.Module.Diplomacy/Direct/DiplomacyCrossDomainActionOwner.cs",
+    "src/modules/AF.Module.Diplomacy/Direct/DirectDiplomacyWarGuard.cs",
+    "src/modules/AF.Module.Diplomacy/Rules/WorldDiplomacyOfferCooldownRules.cs",
+    "src/modules/AF.Module.Diplomacy/Rules/WorldDiplomacyPolicyHistoryRules.cs",
+    "src/modules/AF.Module.Diplomacy/Rules/WorldDiplomacyResultSettlementRules.cs",
+    "src/modules/AF.Module.Diplomacy/Rules/WorldDiplomacyThreatStateRules.cs",
+    "src/modules/AF.Module.Diplomacy/World/LegacyWorldDiplomacyLlmGateway.cs",
+    "src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.JobRuntime.cs",
+    "src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.cs",
+    "src/modules/AF.Module.Diplomacy/World/WorldDiplomacyJobRuntimeCoordinator.cs",
+    "src/modules/AF.Module.Diplomacy/World/WorldDiplomacyRequestLeaseCoordinator.cs"
+  ],
+  "conflictAssessment": {
+    "targetsAbsent": true,
+    "trackedSameBasenameDuplicates": false,
+    "trackedDirtyAtRead": [
+      "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.SessionTransport.cs"
+    ],
+    "worktreesVisible": [
+      {
+        "path": "E:/AnimusForge-klfwdf",
+        "head": "96a1c60f1877813a9fb3440ddad068d6e92afa1e",
+        "branch": "main"
+      },
+      {
+        "path": "E:\\AnimusForge-refactor-continuation-20260831",
+        "head": "24424b67cd89337a0cde8639fb0bbcdb8e2b2db2",
+        "branch": "codex/af-main-refactor-continuation-20260831"
+      }
+    ],
+    "threadInventory": "list_threads(limit=12): only current directory task active among returned AF tasks; recent two J17 threads idle, older notLoaded. No newly named diplomacy writer identified in returned inventory. This is not proof of no external writer. No messages sent to other conversations.",
+    "futureDiplomacyWriter": "identity/branch/content/target delivery unknown; P4 must reconcile actual future package and recheck source SHA/target absence before execution",
+    "stopConditions": [
+      "source SHA drift",
+      "target appears",
+      "untracked same-type/new diplomacy incoming file",
+      "shared Compile collision"
+    ]
+  },
+  "preserved": [
+    "all existing 289 relocated production sources",
+    "original dirty SessionTransport",
+    "tests/fixtures/metadata semantics",
+    "Policy/GCCZ/Gathering/Vengeance/third-party resources/dependencies/artifacts/old tools/NuGet",
+    "namespace/type/assembly/save keys/public API/default entries"
+  ],
+  "validation": {
+    "executed": "read-only Git state, tracked candidate membership, actual selected responsibility code, raw SHA256/bytes, target absence, exact 2/4 partial membership, plan JSON structural assertions; no tests/build",
+    "afterApprovalOwner": "P4 central integration",
+    "proposedChecks": [
+      "recheck all 18 rawSHA+targets before byte-preserving moves",
+      "compare before/after raw SHA and complete partial family",
+      "dualAPI actual Compile mapping one-to-one/resources LogicalName unchanged using approved new UUID output",
+      "P3 precise current consumers tests after runner side-effect review; preserve old baseline keys/hashes",
+      "P4 existing isolated Debug/Release dualAPI+Bootstrap offline flow without Stage only if centrally authorized"
+    ],
+    "sideEffects": "Plan generation writes this JSON only. Future build/test writes must be restricted to new UUID workspace output; no default generated, real player data/network/game/Stage. Live diplomacy/new replacement not tested."
+  },
+  "futureCoverageContract": {
+    "canonicalRoot": "src/modules/AF.Module.Diplomacy/",
+    "noRootCompatibilityCopies": true,
+    "noImplicitReplacement": true,
+    "meaning": "仅定义未来外交实现的当前源码落点；不认可尚未给出的新外交业务，更不授权冲突覆盖或删旧业务。既有World/Direct/Rules和本轮Agenda/Vassalage/Annexation/Profiles/Guards全保持原CLR与同DLL身份。"
+  },
+  "sharedEdits": "P4 alone: output_isolation mapping, csproj/sln/helpers/maps/docs/index/commits; P3 audits consumers; P1 no such edits"
+}

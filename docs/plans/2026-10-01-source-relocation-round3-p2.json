@@ -1,0 +1,1761 @@
+{
+  "schema_version": 1,
+  "owner": "P2 R3 actual team business hosts20",
+  "phase": "READ_ONLY_PLAN_WAITING_EXACT_BATCH_APPROVAL",
+  "workspace": "E:/AnimusForge-refactor-continuation-20260831",
+  "branch": "codex/af-main-refactor-continuation-20260831",
+  "baseline_head": "24424b67cd89337a0cde8639fb0bbcdb8e2b2db2",
+  "latest_request_boundary": "R3 permits remaining team business source physical relocation; not domain refactor, external source replacement or future diplomacy integration. Earlier team-business root retention superseded only for approved relocation.",
+  "proposed_moves": [
+    {
+      "action": "proposed_move",
+      "old": "CastleAftermathArmamentRuntimeBridge.cs",
+      "new": "src/AF.GameAdapter.Bannerlord/Composition/SiegeAftermath/CastleAftermathArmamentRuntimeBridge.cs",
+      "sha256_bytes": "96aa0219c877ed00263ccb601d29e047481bb2975a0e5e69c9d97839eae836a4",
+      "byte_count": 5085,
+      "responsibility": "Castle armament inventory/gold settlement effects, troop equipment selection; same-file CastleAftermathArmamentResult",
+      "business_owner": "SiegeAftermath team game-bound host/runtime, not AF.Foundation and not thin src/bridges forwarding",
+      "placement_rationale": "Existing AF.GameAdapter.Bannerlord/Composition mixed-host parent; necessary SiegeAftermath team subfolder groups actual same-DLL game-dependent business hosts. No new project, namespace, pure-core ownership or DLL.",
+      "evidence": [
+        {
+          "line": 17,
+          "text": "internal static class CastleAftermathArmamentRuntimeBridge"
+        },
+        {
+          "line": 19,
+          "text": "internal static CastleAftermathArmamentResult ReceiveRegularArmaments(TroopRoster selected, string source)"
+        },
+        {
+          "line": 79,
+          "text": "internal static CastleAftermathArmamentResult ReceiveLordArmaments(Hero lord, string source)"
+        },
+        {
+          "line": 120,
+          "text": "private static bool CanTransfer(EquipmentElement element)"
+        },
+        {
+          "line": 131,
+          "text": "internal sealed class CastleAftermathArmamentResult"
+        }
+      ],
+      "save_identity_evidence": [],
+      "runtime_resource_reflection_clues_for_P3": [],
+      "partial_family": {
+        "type": "unchanged same-file types/nested types",
+        "members": [
+          "CastleAftermathArmamentRuntimeBridge.cs"
+        ],
+        "atomicity": "whole file including same-file DTO/MissionLogic/patch types; no symbol split"
+      },
+      "target_status": "absent",
+      "consumer_audit_owner": "P3 single centralized cross-package current/historical/loader/save review; P2 did not repeat reference scanning",
+      "compile_consumer": {
+        "path": "AnimusForge.csproj",
+        "owner": "P4",
+        "evidence_lines": [
+          20,
+          116,
+          117,
+          118
+        ],
+        "effect": "SDK default recursive compile includes chosen Composition/ subfolders; no duplicate include needed. P4 verifies dual API exact source mapping and same resource names"
+      },
+      "runtime_change": "none: old CLR full names, namespace, assemblies, save keys, registration/mission/UI behaviors and algorithms unchanged",
+      "source_hash_verify": "raw bytes, not newline normalization; no source is reformatted"
+    },
+    {
+      "action": "proposed_move",
+      "old": "CastleAftermathDispositionSessionBridge.cs",
+      "new": "src/AF.GameAdapter.Bannerlord/Composition/SiegeAftermath/CastleAftermathDispositionSessionBridge.cs",
+      "sha256_bytes": "632324918cee24a8fe9d04f8a74e955eeb4703476958d356b4648b158287692d",
+      "byte_count": 14806,
+      "responsibility": "Mission disposition ledger and deferred prisoner allocation state, terminal action ownership/rollback and finalized outcome records; not thin forwarding",
+      "business_owner": "SiegeAftermath team game-bound host/runtime, not AF.Foundation and not thin src/bridges forwarding",
+      "placement_rationale": "Existing AF.GameAdapter.Bannerlord/Composition mixed-host parent; necessary SiegeAftermath team subfolder groups actual same-DLL game-dependent business hosts. No new project, namespace, pure-core ownership or DLL.",
+      "evidence": [
+        {
+          "line": 15,
+          "text": "internal static class CastleAftermathDispositionSessionBridge"
+        },
+        {
+          "line": 33,
+          "text": "internal static void Reset(string source)"
+        },
+        {
+          "line": 49,
+          "text": "internal static void EnsureInitialRegularPrisonerCount(TroopRoster selectedRoster)"
+        },
+        {
+          "line": 57,
+          "text": "internal static void RecordLordOutcome(string summary)"
+        },
+        {
+          "line": 66,
+          "text": "internal static string GetLordOutcomeSummary() => string.Join(\"；\", LordOutcomeSummaries);"
+        },
+        {
+          "line": 68,
+          "text": "internal static IReadOnlyCollection<SiegeCastleActionKind> GetAppliedActions("
+        },
+        {
+          "line": 94,
+          "text": "internal static SiegeCastleActionKind GetTerminalAction("
+        },
+        {
+          "line": 112,
+          "text": "internal static bool TryMarkApplied("
+        },
+        {
+          "line": 161,
+          "text": "internal static TroopRoster GetUnassignedRegularRoster(TroopRoster selectedRoster)"
+        },
+        {
+          "line": 173,
+          "text": "internal static void ResetRegularPlan(string source)"
+        }
+      ],
+      "save_identity_evidence": [],
+      "runtime_resource_reflection_clues_for_P3": [],
+      "partial_family": {
+        "type": "unchanged same-file types/nested types",
+        "members": [
+          "CastleAftermathDispositionSessionBridge.cs"
+        ],
+        "atomicity": "whole file including same-file DTO/MissionLogic/patch types; no symbol split"
+      },
+      "target_status": "absent",
+      "consumer_audit_owner": "P3 single centralized cross-package current/historical/loader/save review; P2 did not repeat reference scanning",
+      "compile_consumer": {
+        "path": "AnimusForge.csproj",
+        "owner": "P4",
+        "evidence_lines": [
+          20,
+          116,
+          117,
+          118
+        ],
+        "effect": "SDK default recursive compile includes chosen Composition/ subfolders; no duplicate include needed. P4 verifies dual API exact source mapping and same resource names"
+      },
+      "runtime_change": "none: old CLR full names, namespace, assemblies, save keys, registration/mission/UI behaviors and algorithms unchanged",
+      "source_hash_verify": "raw bytes, not newline normalization; no source is reformatted"
+    },
+    {
+      "action": "proposed_move",
+      "old": "CastleAftermathLordDuelRuntimeBridge.cs",
+      "new": "src/AF.GameAdapter.Bannerlord/Composition/SiegeAftermath/CastleAftermathLordDuelRuntimeBridge.cs",
+      "sha256_bytes": "a4bd9864efdc6d32a8833cb0415292c205a9316b28ac7b554d06512204e56202",
+      "byte_count": 58740,
+      "responsibility": "Castle captive-lord duel mission owner and same-file MissionLogic: loadout selection, snapshots, audience isolation, teams, combat transitions and restore",
+      "business_owner": "SiegeAftermath team game-bound host/runtime, not AF.Foundation and not thin src/bridges forwarding",
+      "placement_rationale": "Existing AF.GameAdapter.Bannerlord/Composition mixed-host parent; necessary SiegeAftermath team subfolder groups actual same-DLL game-dependent business hosts. No new project, namespace, pure-core ownership or DLL.",
+      "evidence": [
+        {
+          "line": 20,
+          "text": "internal static class CastleAftermathLordDuelRuntimeBridge"
+        },
+        {
+          "line": 24,
+          "text": "internal static void AttachMissionBehavior(Mission mission)"
+        },
+        {
+          "line": 39,
+          "text": "internal static bool TryBegin(Hero hero, Agent agent, out string reasonCode)"
+        },
+        {
+          "line": 51,
+          "text": "internal static bool ControlsAgent(Agent agent)"
+        },
+        {
+          "line": 63,
+          "text": "internal static bool IsCombatControlActive(Mission mission)"
+        },
+        {
+          "line": 75,
+          "text": "internal static void ProtectCapturedLord(Agent agent)"
+        },
+        {
+          "line": 95,
+          "text": "internal static bool IsPlayerMounted()"
+        },
+        {
+          "line": 107,
+          "text": "internal static bool PlayerCarriesRangedWeapon()"
+        },
+        {
+          "line": 112,
+          "text": "internal static bool PlayerWieldsRangedWeapon()"
+        },
+        {
+          "line": 117,
+          "text": "internal static void CancelForMission(Mission mission, string source)"
+        }
+      ],
+      "save_identity_evidence": [],
+      "runtime_resource_reflection_clues_for_P3": [],
+      "partial_family": {
+        "type": "unchanged same-file types/nested types",
+        "members": [
+          "CastleAftermathLordDuelRuntimeBridge.cs"
+        ],
+        "atomicity": "whole file including same-file DTO/MissionLogic/patch types; no symbol split"
+      },
+      "target_status": "absent",
+      "consumer_audit_owner": "P3 single centralized cross-package current/historical/loader/save review; P2 did not repeat reference scanning",
+      "compile_consumer": {
+        "path": "AnimusForge.csproj",
+        "owner": "P4",
+        "evidence_lines": [
+          20,
+          116,
+          117,
+          118
+        ],
+        "effect": "SDK default recursive compile includes chosen Composition/ subfolders; no duplicate include needed. P4 verifies dual API exact source mapping and same resource names"
+      },
+      "runtime_change": "none: old CLR full names, namespace, assemblies, save keys, registration/mission/UI behaviors and algorithms unchanged",
+      "source_hash_verify": "raw bytes, not newline normalization; no source is reformatted"
+    },
+    {
+      "action": "proposed_move",
+      "old": "CastleAftermathLordExecutionRuntimeBridge.cs",
+      "new": "src/AF.GameAdapter.Bannerlord/Composition/SiegeAftermath/CastleAftermathLordExecutionRuntimeBridge.cs",
+      "sha256_bytes": "a9cbb69c82f6ec442403a43ac54780a140c11540f8fb587715036ffe7d054db7",
+      "byte_count": 22471,
+      "responsibility": "Queued castle captive-lord execution staged state machine: native notification, delayed campaign death, mission cancellation and effects",
+      "business_owner": "SiegeAftermath team game-bound host/runtime, not AF.Foundation and not thin src/bridges forwarding",
+      "placement_rationale": "Existing AF.GameAdapter.Bannerlord/Composition mixed-host parent; necessary SiegeAftermath team subfolder groups actual same-DLL game-dependent business hosts. No new project, namespace, pure-core ownership or DLL.",
+      "evidence": [
+        {
+          "line": 17,
+          "text": "internal static class CastleAftermathLordExecutionRuntimeBridge"
+        },
+        {
+          "line": 26,
+          "text": "private sealed class PendingExecution"
+        },
+        {
+          "line": 43,
+          "text": "internal static bool TryQueue(Hero hero, Agent agent, out string reasonCode)"
+        },
+        {
+          "line": 85,
+          "text": "internal static void Tick(Mission mission, float dt)"
+        },
+        {
+          "line": 158,
+          "text": "internal static bool TryPrepareForMissionExit(Mission mission)"
+        },
+        {
+          "line": 176,
+          "text": "internal static string BuildMissionExitBlockedMessage()"
+        },
+        {
+          "line": 186,
+          "text": "internal static void CancelForMission(Mission mission, string source)"
+        },
+        {
+          "line": 210,
+          "text": "internal static void Reset(string source)"
+        },
+        {
+          "line": 237,
+          "text": "private static void OpenOriginalNotification(PendingExecution pending)"
+        },
+        {
+          "line": 285,
+          "text": "private static void MarkAffirmative(int token)"
+        }
+      ],
+      "save_identity_evidence": [],
+      "runtime_resource_reflection_clues_for_P3": [],
+      "partial_family": {
+        "type": "unchanged same-file types/nested types",
+        "members": [
+          "CastleAftermathLordExecutionRuntimeBridge.cs"
+        ],
+        "atomicity": "whole file including same-file DTO/MissionLogic/patch types; no symbol split"
+      },
+      "target_status": "absent",
+      "consumer_audit_owner": "P3 single centralized cross-package current/historical/loader/save review; P2 did not repeat reference scanning",
+      "compile_consumer": {
+        "path": "AnimusForge.csproj",
+        "owner": "P4",
+        "evidence_lines": [
+          20,
+          116,
+          117,
+          118
+        ],
+        "effect": "SDK default recursive compile includes chosen Composition/ subfolders; no duplicate include needed. P4 verifies dual API exact source mapping and same resource names"
+      },
+      "runtime_change": "none: old CLR full names, namespace, assemblies, save keys, registration/mission/UI behaviors and algorithms unchanged",
+      "source_hash_verify": "raw bytes, not newline normalization; no source is reformatted"
+    },
+    {
+      "action": "proposed_move",
+      "old": "CastleAftermathLordRecruitmentRuntimeBridge.cs",
+      "new": "src/AF.GameAdapter.Bannerlord/Composition/SiegeAftermath/CastleAftermathLordRecruitmentRuntimeBridge.cs",
+      "sha256_bytes": "ff005d103dcc5df5bfa21fda4ecd9ec2b7fa91400bb2e16d4d1fd95102e9b256",
+      "byte_count": 17151,
+      "responsibility": "Lord recruitment branches/live clan mutations plus introduction-letter due-day/recipient/body/castle saved dictionaries and delivery ownership",
+      "business_owner": "SiegeAftermath team game-bound host/runtime, not AF.Foundation and not thin src/bridges forwarding",
+      "placement_rationale": "Existing AF.GameAdapter.Bannerlord/Composition mixed-host parent; necessary SiegeAftermath team subfolder groups actual same-DLL game-dependent business hosts. No new project, namespace, pure-core ownership or DLL.",
+      "evidence": [
+        {
+          "line": 51,
+          "text": "internal static class CastleAftermathLordRecruitmentRuntimeBridge"
+        },
+        {
+          "line": 59,
+          "text": "internal static void SyncData(IDataStore dataStore)"
+        },
+        {
+          "line": 71,
+          "text": "internal static void ClearForNewGame()"
+        },
+        {
+          "line": 79,
+          "text": "internal static CastleAftermathLordPoliticalFacts GetPoliticalFacts(Hero speaker)"
+        },
+        {
+          "line": 91,
+          "text": "internal static CastleAftermathLordRecruitmentApplyResult Apply("
+        },
+        {
+          "line": 140,
+          "text": "internal static void ProcessDueLetters()"
+        },
+        {
+          "line": 221,
+          "text": "private static CastleAftermathLordRecruitmentApplyResult JoinClanToPlayerKingdom(Hero capturedLord, Settlement castle)"
+        },
+        {
+          "line": 238,
+          "text": "private static CastleAftermathLordRecruitmentApplyResult JoinPlayerAsCompanion(Hero capturedLord, Settlement castle)"
+        },
+        {
+          "line": 264,
+          "text": "private static CastleAftermathLordRecruitmentApplyResult RecordDeferredPoliticalIntent("
+        },
+        {
+          "line": 274,
+          "text": "private static CastleAftermathLordRecruitmentApplyResult QueueClanLeaderIntroduction("
+        }
+      ],
+      "save_identity_evidence": [
+        {
+          "line": 61,
+          "text": "dataStore?.SyncData(\"_gcczCastleLordIntroLetterDueDayBySender_v1\", ref _letterDueDayBySender);"
+        },
+        {
+          "line": 62,
+          "text": "dataStore?.SyncData(\"_gcczCastleLordIntroLetterRecipientBySender_v1\", ref _letterRecipientBySender);"
+        },
+        {
+          "line": 63,
+          "text": "dataStore?.SyncData(\"_gcczCastleLordIntroLetterBodyBySender_v1\", ref _letterBodyBySender);"
+        },
+        {
+          "line": 64,
+          "text": "dataStore?.SyncData(\"_gcczCastleLordIntroLetterCastleBySender_v1\", ref _letterCastleBySender);"
+        }
+      ],
+      "runtime_resource_reflection_clues_for_P3": [],
+      "partial_family": {
+        "type": "unchanged same-file types/nested types",
+        "members": [
+          "CastleAftermathLordRecruitmentRuntimeBridge.cs"
+        ],
+        "atomicity": "whole file including same-file DTO/MissionLogic/patch types; no symbol split"
+      },
+      "target_status": "absent",
+      "consumer_audit_owner": "P3 single centralized cross-package current/historical/loader/save review; P2 did not repeat reference scanning",
+      "compile_consumer": {
+        "path": "AnimusForge.csproj",
+        "owner": "P4",
+        "evidence_lines": [
+          20,
+          116,
+          117,
+          118
+        ],
+        "effect": "SDK default recursive compile includes chosen Composition/ subfolders; no duplicate include needed. P4 verifies dual API exact source mapping and same resource names"
+      },
+      "runtime_change": "none: old CLR full names, namespace, assemblies, save keys, registration/mission/UI behaviors and algorithms unchanged",
+      "source_hash_verify": "raw bytes, not newline normalization; no source is reformatted"
+    },
+    {
+      "action": "proposed_move",
+      "old": "CastleAftermathPrisonerTrustRuntimeBridge.cs",
+      "new": "src/AF.GameAdapter.Bannerlord/Composition/SiegeAftermath/CastleAftermathPrisonerTrustRuntimeBridge.cs",
+      "sha256_bytes": "bd3ffba7cbf59e72a7f87e5bc0c4dc53ff62a0fe9d19cb7c417f748711c43d23",
+      "byte_count": 3592,
+      "responsibility": "Regular-prisoner trust saved map, cumulative mutation and consequence selection; not stateless AF bridge",
+      "business_owner": "SiegeAftermath team game-bound host/runtime, not AF.Foundation and not thin src/bridges forwarding",
+      "placement_rationale": "Existing AF.GameAdapter.Bannerlord/Composition mixed-host parent; necessary SiegeAftermath team subfolder groups actual same-DLL game-dependent business hosts. No new project, namespace, pure-core ownership or DLL.",
+      "evidence": [
+        {
+          "line": 14,
+          "text": "internal static class CastleAftermathPrisonerTrustRuntimeBridge"
+        },
+        {
+          "line": 18,
+          "text": "internal static void SyncData(IDataStore dataStore)"
+        },
+        {
+          "line": 24,
+          "text": "internal static void ClearForNewGame()"
+        },
+        {
+          "line": 29,
+          "text": "internal static int GetSpeakerTrust("
+        },
+        {
+          "line": 51,
+          "text": "internal static int GetRegularTrust(CharacterObject character)"
+        },
+        {
+          "line": 59,
+          "text": "internal static int AdjustSelectedRegularTrust(int delta, string reason)"
+        },
+        {
+          "line": 69,
+          "text": "internal static int AdjustRegularTrustForRoster(TroopRoster roster, int delta, string reason)"
+        },
+        {
+          "line": 93,
+          "text": "internal static bool AdjustLordTrust(Hero hero, int delta, string reason)"
+        }
+      ],
+      "save_identity_evidence": [
+        {
+          "line": 20,
+          "text": "dataStore?.SyncData(\"_gcczCastleRegularPrisonerTrustByTroopId_v1\", ref _regularTrustByTroopId);"
+        }
+      ],
+      "runtime_resource_reflection_clues_for_P3": [],
+      "partial_family": {
+        "type": "unchanged same-file types/nested types",
+        "members": [
+          "CastleAftermathPrisonerTrustRuntimeBridge.cs"
+        ],
+        "atomicity": "whole file including same-file DTO/MissionLogic/patch types; no symbol split"
+      },
+      "target_status": "absent",
+      "consumer_audit_owner": "P3 single centralized cross-package current/historical/loader/save review; P2 did not repeat reference scanning",
+      "compile_consumer": {
+        "path": "AnimusForge.csproj",
+        "owner": "P4",
+        "evidence_lines": [
+          20,
+          116,
+          117,
+          118
+        ],
+        "effect": "SDK default recursive compile includes chosen Composition/ subfolders; no duplicate include needed. P4 verifies dual API exact source mapping and same resource names"
+      },
+      "runtime_change": "none: old CLR full names, namespace, assemblies, save keys, registration/mission/UI behaviors and algorithms unchanged",
+      "source_hash_verify": "raw bytes, not newline normalization; no source is reformatted"
+    },
+    {
+      "action": "proposed_move",
+      "old": "CastleAftermathSettlementRuntimeBridge.cs",
+      "new": "src/AF.GameAdapter.Bannerlord/Composition/SiegeAftermath/CastleAftermathSettlementRuntimeBridge.cs",
+      "sha256_bytes": "3d9abaa3d90ccd06d6f473c73473143a264bd20b3938ce6bb9b96f3a7b9f0250",
+      "byte_count": 19544,
+      "responsibility": "Saved annual castle aftermath economic/recruitment/construction effects and daily application with prosperity observation",
+      "business_owner": "SiegeAftermath team game-bound host/runtime, not AF.Foundation and not thin src/bridges forwarding",
+      "placement_rationale": "Existing AF.GameAdapter.Bannerlord/Composition mixed-host parent; necessary SiegeAftermath team subfolder groups actual same-DLL game-dependent business hosts. No new project, namespace, pure-core ownership or DLL.",
+      "evidence": [
+        {
+          "line": 17,
+          "text": "internal static class CastleAftermathSettlementRuntimeBridge"
+        },
+        {
+          "line": 41,
+          "text": "internal static void SyncData(IDataStore dataStore)"
+        },
+        {
+          "line": 57,
+          "text": "internal static void ClearForNewGame()"
+        },
+        {
+          "line": 68,
+          "text": "internal static void ResetSession(string source)"
+        },
+        {
+          "line": 74,
+          "text": "private static void ResetPending(string source)"
+        },
+        {
+          "line": 92,
+          "text": "internal static void QueueAction("
+        },
+        {
+          "line": 143,
+          "text": "internal static CastleAftermathSettlementApplyResult GetLastAppliedResult() => _lastAppliedResult;"
+        },
+        {
+          "line": 145,
+          "text": "internal static void ApplyAfterNativeMercy("
+        },
+        {
+          "line": 213,
+          "text": "internal static void OnDailyTickTown(Town town)"
+        },
+        {
+          "line": 231,
+          "text": "private static void BeginAnnualEffects(Settlement settlement)"
+        }
+      ],
+      "save_identity_evidence": [
+        {
+          "line": 43,
+          "text": "dataStore?.SyncData(\"_gcczCastleAnnualEffectUntilDay_v1\", ref _annualEffectUntilDay);"
+        },
+        {
+          "line": 44,
+          "text": "dataStore?.SyncData(\"_gcczCastleProsperityGrowthMultiplier_v1\", ref _prosperityGrowthMultiplier);"
+        },
+        {
+          "line": 45,
+          "text": "dataStore?.SyncData(\"_gcczCastleLastObservedProsperity_v1\", ref _lastObservedProsperity);"
+        },
+        {
+          "line": 46,
+          "text": "dataStore?.SyncData(\"_gcczCastleRecruitmentSpeedMultiplier_v1\", ref _recruitmentSpeedMultiplier);"
+        },
+        {
+          "line": 47,
+          "text": "dataStore?.SyncData(\"_gcczCastleRecruitQualityMultiplier_v1\", ref _recruitQualityMultiplier);"
+        },
+        {
+          "line": 48,
+          "text": "dataStore?.SyncData(\"_gcczCastleConstructionSpeedMultiplier_v1\", ref _constructionSpeedMultiplier);"
+        }
+      ],
+      "runtime_resource_reflection_clues_for_P3": [],
+      "partial_family": {
+        "type": "unchanged same-file types/nested types",
+        "members": [
+          "CastleAftermathSettlementRuntimeBridge.cs"
+        ],
+        "atomicity": "whole file including same-file DTO/MissionLogic/patch types; no symbol split"
+      },
+      "target_status": "absent",
+      "consumer_audit_owner": "P3 single centralized cross-package current/historical/loader/save review; P2 did not repeat reference scanning",
+      "compile_consumer": {
+        "path": "AnimusForge.csproj",
+        "owner": "P4",
+        "evidence_lines": [
+          20,
+          116,
+          117,
+          118
+        ],
+        "effect": "SDK default recursive compile includes chosen Composition/ subfolders; no duplicate include needed. P4 verifies dual API exact source mapping and same resource names"
+      },
+      "runtime_change": "none: old CLR full names, namespace, assemblies, save keys, registration/mission/UI behaviors and algorithms unchanged",
+      "source_hash_verify": "raw bytes, not newline normalization; no source is reformatted"
+    },
+    {
+      "action": "proposed_move",
+      "old": "GcczSettlementCulturePersistenceBehavior.cs",
+      "new": "src/AF.GameAdapter.Bannerlord/Composition/SiegeAftermath/GcczSettlementCulturePersistenceBehavior.cs",
+      "sha256_bytes": "e84b6a505a89eba14e50d1934da9970cf458e721af41a737556988fde26ffb86",
+      "byte_count": 10764,
+      "responsibility": "Campaign culture override persistence ledger, load/session/daily restore and live Settlement.Culture mutation/recovery",
+      "business_owner": "SiegeAftermath team game-bound host/runtime, not AF.Foundation and not thin src/bridges forwarding",
+      "placement_rationale": "Existing AF.GameAdapter.Bannerlord/Composition mixed-host parent; necessary SiegeAftermath team subfolder groups actual same-DLL game-dependent business hosts. No new project, namespace, pure-core ownership or DLL.",
+      "evidence": [
+        {
+          "line": 15,
+          "text": "public sealed class GcczSettlementCulturePersistenceBehavior : CampaignBehaviorBase"
+        },
+        {
+          "line": 56,
+          "text": "internal static bool ApplyAndRemember(Settlement settlement, CultureObject culture, string source)"
+        },
+        {
+          "line": 77,
+          "text": "internal static int ImportCommittedColonizationSnapshot(TownColonizationSnapshot snapshot, string source)"
+        },
+        {
+          "line": 118,
+          "text": "private void OnNewGameCreated(CampaignGameStarter starter)"
+        },
+        {
+          "line": 125,
+          "text": "private void OnGameLoaded(CampaignGameStarter starter)"
+        },
+        {
+          "line": 131,
+          "text": "private void OnGameLoadFinished()"
+        },
+        {
+          "line": 137,
+          "text": "private void OnDailyTickSettlement(Settlement settlement)"
+        },
+        {
+          "line": 142,
+          "text": "private void RepairLegacySettlementState(string source)"
+        },
+        {
+          "line": 164,
+          "text": "private int CleanupDeadNotableReferences(Settlement settlement, string source, out int unresolved)"
+        },
+        {
+          "line": 211,
+          "text": "private bool TryRecoverLegacyCultureSplit(Settlement settlement, int cleanedDeadNotableCount, string source)"
+        }
+      ],
+      "save_identity_evidence": [
+        {
+          "line": 17,
+          "text": "private const string StorageKey = \"_gcczSettlementCultureOverrides_v1\";"
+        }
+      ],
+      "runtime_resource_reflection_clues_for_P3": [
+        {
+          "line": 199,
+          "text": "LogUnresolvedDeadNotableOnce(settlement, notable, source, \"native_leave_failed:\" + ex.GetType().Name);"
+        }
+      ],
+      "partial_family": {
+        "type": "unchanged same-file types/nested types",
+        "members": [
+          "GcczSettlementCulturePersistenceBehavior.cs"
+        ],
+        "atomicity": "whole file including same-file DTO/MissionLogic/patch types; no symbol split"
+      },
+      "target_status": "absent",
+      "consumer_audit_owner": "P3 single centralized cross-package current/historical/loader/save review; P2 did not repeat reference scanning",
+      "compile_consumer": {
+        "path": "AnimusForge.csproj",
+        "owner": "P4",
+        "evidence_lines": [
+          20,
+          116,
+          117,
+          118
+        ],
+        "effect": "SDK default recursive compile includes chosen Composition/ subfolders; no duplicate include needed. P4 verifies dual API exact source mapping and same resource names"
+      },
+      "runtime_change": "none: old CLR full names, namespace, assemblies, save keys, registration/mission/UI behaviors and algorithms unchanged",
+      "source_hash_verify": "raw bytes, not newline normalization; no source is reformatted"
+    },
+    {
+      "action": "proposed_move",
+      "old": "GcczTownRuleMemoryRuntimeBridge.cs",
+      "new": "src/AF.GameAdapter.Bannerlord/Composition/SiegeAftermath/GcczTownRuleMemoryRuntimeBridge.cs",
+      "sha256_bytes": "dcce6826af31bb6e114e5ddf2282042ce799361dfbe7b56b7bad497213745e13",
+      "byte_count": 10806,
+      "responsibility": "Town rule-memory authoritative store, generation-change queue and primitive save codec/current governance capture; actual state/save host",
+      "business_owner": "SiegeAftermath team game-bound host/runtime, not AF.Foundation and not thin src/bridges forwarding",
+      "placement_rationale": "Existing AF.GameAdapter.Bannerlord/Composition mixed-host parent; necessary SiegeAftermath team subfolder groups actual same-DLL game-dependent business hosts. No new project, namespace, pure-core ownership or DLL.",
+      "evidence": [
+        {
+          "line": 14,
+          "text": "internal static class GcczTownRuleMemoryRuntimeBridge"
+        },
+        {
+          "line": 25,
+          "text": "internal static void SyncData(IDataStore dataStore)"
+        },
+        {
+          "line": 80,
+          "text": "internal static void ClearForNewGame()"
+        },
+        {
+          "line": 85,
+          "text": "internal static string BuildPromptContext(Settlement settlement, Clan previousOwner, bool activeTownStage)"
+        },
+        {
+          "line": 118,
+          "text": "internal static string BuildLocalDialoguePromptContext("
+        },
+        {
+          "line": 156,
+          "text": "internal static string BuildEncyclopediaText(Settlement settlement, out bool generationPending)"
+        },
+        {
+          "line": 192,
+          "text": "internal static SettlementRuleMemoryRecord GetOrCreateCurrentTownRecord(Settlement settlement)"
+        },
+        {
+          "line": 204,
+          "text": "internal static bool TrySetManualNarrative(Settlement settlement, string rulerId, int ruleStartDay, string narrative)"
+        },
+        {
+          "line": 222,
+          "text": "internal static bool RequestCurrentNarrativeRegeneration(Settlement settlement)"
+        },
+        {
+          "line": 245,
+          "text": "internal static bool TryDequeueChangedSettlementId(out string settlementId)"
+        }
+      ],
+      "save_identity_evidence": [
+        {
+          "line": 16,
+          "text": "private const string StorageInitializedKey = \"_gcczTownRuleMemoryStorageInitialized_v1\";"
+        },
+        {
+          "line": 17,
+          "text": "private const string RecordsBySettlementKey = \"_gcczTownRuleMemoryRecordsBySettlement_v1\";"
+        }
+      ],
+      "runtime_resource_reflection_clues_for_P3": [],
+      "partial_family": {
+        "type": "unchanged same-file types/nested types",
+        "members": [
+          "GcczTownRuleMemoryRuntimeBridge.cs"
+        ],
+        "atomicity": "whole file including same-file DTO/MissionLogic/patch types; no symbol split"
+      },
+      "target_status": "absent",
+      "consumer_audit_owner": "P3 single centralized cross-package current/historical/loader/save review; P2 did not repeat reference scanning",
+      "compile_consumer": {
+        "path": "AnimusForge.csproj",
+        "owner": "P4",
+        "evidence_lines": [
+          20,
+          116,
+          117,
+          118
+        ],
+        "effect": "SDK default recursive compile includes chosen Composition/ subfolders; no duplicate include needed. P4 verifies dual API exact source mapping and same resource names"
+      },
+      "runtime_change": "none: old CLR full names, namespace, assemblies, save keys, registration/mission/UI behaviors and algorithms unchanged",
+      "source_hash_verify": "raw bytes, not newline normalization; no source is reformatted"
+    },
+    {
+      "action": "proposed_move",
+      "old": "InterventionNativeTownCivilianPopulationMissionBehavior.cs",
+      "new": "src/AF.GameAdapter.Bannerlord/Composition/SiegeAftermath/InterventionNativeTownCivilianPopulationMissionBehavior.cs",
+      "sha256_bytes": "e6f394c2d5eeb73e4d6b3f7badb6ded74a2225a279946afe143fa28c4270ffa3",
+      "byte_count": 22403,
+      "responsibility": "GCCZ-only live civilian population mission logic: prosperity target, native LocationCharacter creators and spawn tags/reflection caches",
+      "business_owner": "SiegeAftermath team game-bound host/runtime, not AF.Foundation and not thin src/bridges forwarding",
+      "placement_rationale": "Existing AF.GameAdapter.Bannerlord/Composition mixed-host parent; necessary SiegeAftermath team subfolder groups actual same-DLL game-dependent business hosts. No new project, namespace, pure-core ownership or DLL.",
+      "evidence": [
+        {
+          "line": 24,
+          "text": "internal sealed class InterventionNativeTownCivilianPopulationMissionBehavior : MissionLogic"
+        },
+        {
+          "line": 99,
+          "text": "private void TryEnsureNativeTownCivilianMaximum(string source)"
+        },
+        {
+          "line": 163,
+          "text": "private static bool IsPrivatePopulationLocation(Location location)"
+        },
+        {
+          "line": 169,
+          "text": "private void CompleteIfRetryWindowExpired(Mission mission, string reason, string source)"
+        },
+        {
+          "line": 182,
+          "text": "private int GetTargetCivilianCount(Mission mission, Settlement settlement, int currentCivilianCount)"
+        },
+        {
+          "line": 237,
+          "text": "private static int GetBaselineFloor(Settlement settlement)"
+        },
+        {
+          "line": 242,
+          "text": "private static float GetSettlementActivity(Settlement settlement)"
+        },
+        {
+          "line": 261,
+          "text": "private static float GetSettlementActivityRatio(Settlement settlement)"
+        },
+        {
+          "line": 268,
+          "text": "private int GetOrCreateProsperityWeightedTarget(Settlement settlement)"
+        },
+        {
+          "line": 294,
+          "text": "private static float GetTownProsperity(Settlement settlement)"
+        }
+      ],
+      "save_identity_evidence": [],
+      "runtime_resource_reflection_clues_for_P3": [
+        {
+          "line": 26,
+          "text": "private static readonly Type TownsfolkBehaviorType = typeof(SandBox.CampaignBehaviors.CommonTownsfolkCampaignBehavior);"
+        }
+      ],
+      "partial_family": {
+        "type": "unchanged same-file types/nested types",
+        "members": [
+          "InterventionNativeTownCivilianPopulationMissionBehavior.cs"
+        ],
+        "atomicity": "whole file including same-file DTO/MissionLogic/patch types; no symbol split"
+      },
+      "target_status": "absent",
+      "consumer_audit_owner": "P3 single centralized cross-package current/historical/loader/save review; P2 did not repeat reference scanning",
+      "compile_consumer": {
+        "path": "AnimusForge.csproj",
+        "owner": "P4",
+        "evidence_lines": [
+          20,
+          116,
+          117,
+          118
+        ],
+        "effect": "SDK default recursive compile includes chosen Composition/ subfolders; no duplicate include needed. P4 verifies dual API exact source mapping and same resource names"
+      },
+      "runtime_change": "none: old CLR full names, namespace, assemblies, save keys, registration/mission/UI behaviors and algorithms unchanged",
+      "source_hash_verify": "raw bytes, not newline normalization; no source is reformatted"
+    },
+    {
+      "action": "proposed_move",
+      "old": "NobleGatheringBehavior.cs",
+      "new": "src/AF.GameAdapter.Bannerlord/Composition/Gathering/NobleGatheringBehavior.cs",
+      "sha256_bytes": "e9789204df06e12ac2033e1fb14d1a3f94a36477c57f42f9b217513da5d6f5c7",
+      "byte_count": 199695,
+      "responsibility": "Full feast/gathering business Campaign host, same-file invitee/record/selector DTOs, saved invitations/cooldowns, temporary parties, hall scene/music and patches",
+      "business_owner": "Gathering team game-bound host/runtime, not AF.Foundation and not thin src/bridges forwarding",
+      "placement_rationale": "Existing AF.GameAdapter.Bannerlord/Composition mixed-host parent; necessary Gathering team subfolder groups actual same-DLL game-dependent business hosts. No new project, namespace, pure-core ownership or DLL.",
+      "evidence": [
+        {
+          "line": 34,
+          "text": "internal sealed class NobleGatheringInviteeRecord"
+        },
+        {
+          "line": 59,
+          "text": "internal sealed class NobleGatheringRecord"
+        },
+        {
+          "line": 116,
+          "text": "internal sealed class NobleGatheringInvitationSelector"
+        },
+        {
+          "line": 135,
+          "text": "internal sealed class NobleGatheringBehavior : CampaignBehaviorBase"
+        },
+        {
+          "line": 229,
+          "text": "private sealed class FeastMusicianInstrumentChoice"
+        },
+        {
+          "line": 290,
+          "text": "public static NobleGatheringOptions Capture()"
+        },
+        {
+          "line": 302,
+          "text": "private static int Clamp(int value, int minimum, int maximum)"
+        },
+        {
+          "line": 308,
+          "text": "private sealed class PendingTemporaryPartyDestroyRecord"
+        },
+        {
+          "line": 326,
+          "text": "public static void RegisterHarmonyPatches(Harmony harmony)"
+        },
+        {
+          "line": 335,
+          "text": "internal static void NoteFeastHallVisitTargetForExternal(Location nextLocation, CharacterObject talkToChar)"
+        }
+      ],
+      "save_identity_evidence": [],
+      "runtime_resource_reflection_clues_for_P3": [
+        {
+          "line": 186,
+          "text": "private static readonly FieldInfo AgentNameField = typeof(Agent).GetField(\"_name\", BindingFlags.Instance | BindingFlags.NonPublic);"
+        },
+        {
+          "line": 332,
+          "text": "harmony.CreateClassProcessor(typeof(FeastHallVisitTargetPatch)).Patch();"
+        },
+        {
+          "line": 352,
+          "text": "MethodInfo town = AccessTools.Method(typeof(TownEncounter), \"CreateAndOpenMissionController\");"
+        },
+        {
+          "line": 357,
+          "text": "MethodInfo castle = AccessTools.Method(typeof(CastleEncounter), \"CreateAndOpenMissionController\");"
+        },
+        {
+          "line": 5773,
+          "text": "AddClassDefinition(typeof(NobleGatheringTemporaryPartyComponent), 1);"
+        }
+      ],
+      "partial_family": {
+        "type": "unchanged same-file types/nested types",
+        "members": [
+          "NobleGatheringBehavior.cs"
+        ],
+        "atomicity": "whole file including same-file DTO/MissionLogic/patch types; no symbol split"
+      },
+      "target_status": "absent",
+      "consumer_audit_owner": "P3 single centralized cross-package current/historical/loader/save review; P2 did not repeat reference scanning",
+      "compile_consumer": {
+        "path": "AnimusForge.csproj",
+        "owner": "P4",
+        "evidence_lines": [
+          20,
+          116,
+          117,
+          118
+        ],
+        "effect": "SDK default recursive compile includes chosen Composition/ subfolders; no duplicate include needed. P4 verifies dual API exact source mapping and same resource names"
+      },
+      "runtime_change": "none: old CLR full names, namespace, assemblies, save keys, registration/mission/UI behaviors and algorithms unchanged",
+      "source_hash_verify": "raw bytes, not newline normalization; no source is reformatted"
+    },
+    {
+      "action": "proposed_move",
+      "old": "NoblePrisonerExecutionOrderBehavior.cs",
+      "new": "src/AF.GameAdapter.Bannerlord/Composition/SiegeAftermath/NoblePrisonerExecutionOrderBehavior.cs",
+      "sha256_bytes": "afd17caa261d59994a3e9fb1de6eba4041e0077f8389442017e40a30968fe890",
+      "byte_count": 13750,
+      "responsibility": "Consented noble execution order Campaign host: persistent scheduled task records, hourly processing and authority decisions",
+      "business_owner": "SiegeAftermath team game-bound host/runtime, not AF.Foundation and not thin src/bridges forwarding",
+      "placement_rationale": "Existing AF.GameAdapter.Bannerlord/Composition mixed-host parent; necessary SiegeAftermath team subfolder groups actual same-DLL game-dependent business hosts. No new project, namespace, pure-core ownership or DLL.",
+      "evidence": [
+        {
+          "line": 19,
+          "text": "public sealed class NoblePrisonerExecutionOrderBehavior : CampaignBehaviorBase"
+        },
+        {
+          "line": 61,
+          "text": "internal static List<PostprocessRuleEntry> BuildRuntimePostprocessRules("
+        },
+        {
+          "line": 104,
+          "text": "internal static string NormalizePostprocessTags("
+        },
+        {
+          "line": 118,
+          "text": "internal static bool TryProcessAcceptedTag("
+        },
+        {
+          "line": 196,
+          "text": "internal static bool TryEvaluateActor(Hero actor, out NobleExecutionActorDecision decision)"
+        },
+        {
+          "line": 221,
+          "text": "private static void AddEscortRules("
+        },
+        {
+          "line": 256,
+          "text": "private static string BuildConsentRule(Hero actor, Hero prisoner, string acceptedEffect)"
+        },
+        {
+          "line": 266,
+          "text": "private bool TryQueueMapExecution(Hero actor, Hero prisoner, out string reason)"
+        },
+        {
+          "line": 290,
+          "text": "private void OnHourlyTick()"
+        },
+        {
+          "line": 339,
+          "text": "private static bool IsExecutionAccepted(Hero hero)"
+        }
+      ],
+      "save_identity_evidence": [
+        {
+          "line": 21,
+          "text": "private const string StorageKey = \"_afNoblePrisonerExecutionOrders_v1\";"
+        }
+      ],
+      "runtime_resource_reflection_clues_for_P3": [],
+      "partial_family": {
+        "type": "unchanged same-file types/nested types",
+        "members": [
+          "NoblePrisonerExecutionOrderBehavior.cs"
+        ],
+        "atomicity": "whole file including same-file DTO/MissionLogic/patch types; no symbol split"
+      },
+      "target_status": "absent",
+      "consumer_audit_owner": "P3 single centralized cross-package current/historical/loader/save review; P2 did not repeat reference scanning",
+      "compile_consumer": {
+        "path": "AnimusForge.csproj",
+        "owner": "P4",
+        "evidence_lines": [
+          20,
+          116,
+          117,
+          118
+        ],
+        "effect": "SDK default recursive compile includes chosen Composition/ subfolders; no duplicate include needed. P4 verifies dual API exact source mapping and same resource names"
+      },
+      "runtime_change": "none: old CLR full names, namespace, assemblies, save keys, registration/mission/UI behaviors and algorithms unchanged",
+      "source_hash_verify": "raw bytes, not newline normalization; no source is reformatted"
+    },
+    {
+      "action": "proposed_move",
+      "old": "NoblePrisonerExecutionRuntime.cs",
+      "new": "src/AF.GameAdapter.Bannerlord/Composition/SiegeAftermath/NoblePrisonerExecutionRuntime.cs",
+      "sha256_bytes": "648405f4f745a6e27fc68a50c6a4712b51323ec303dfb64e7f41d7ac0eeacd90",
+      "byte_count": 30964,
+      "responsibility": "Noble execution mission state machine: queued confirmation, notification, conversation exit, actor/prisoner snapshots, attack, team/control restore and death effects",
+      "business_owner": "SiegeAftermath team game-bound host/runtime, not AF.Foundation and not thin src/bridges forwarding",
+      "placement_rationale": "Existing AF.GameAdapter.Bannerlord/Composition mixed-host parent; necessary SiegeAftermath team subfolder groups actual same-DLL game-dependent business hosts. No new project, namespace, pure-core ownership or DLL.",
+      "evidence": [
+        {
+          "line": 16,
+          "text": "internal static class NoblePrisonerExecutionRuntime"
+        },
+        {
+          "line": 33,
+          "text": "private sealed class AgentSnapshot"
+        },
+        {
+          "line": 43,
+          "text": "private sealed class PendingExecution"
+        },
+        {
+          "line": 78,
+          "text": "internal static bool ControlsAgent(Agent agent)"
+        },
+        {
+          "line": 85,
+          "text": "internal static bool TryQueue(Hero prisonerHero, Agent prisonerAgent, out string reason)"
+        },
+        {
+          "line": 124,
+          "text": "internal static bool TryQueueActorExecution("
+        },
+        {
+          "line": 163,
+          "text": "internal static void Tick(Mission mission, float dt)"
+        },
+        {
+          "line": 196,
+          "text": "internal static void OnAgentHit(Agent affectedAgent, Agent affectorAgent)"
+        },
+        {
+          "line": 208,
+          "text": "internal static void OnAgentRemoved(Agent affectedAgent, Agent affectorAgent, AgentState state)"
+        },
+        {
+          "line": 227,
+          "text": "internal static void CancelForMission(Mission mission, string source)"
+        }
+      ],
+      "save_identity_evidence": [],
+      "runtime_resource_reflection_clues_for_P3": [],
+      "partial_family": {
+        "type": "unchanged same-file types/nested types",
+        "members": [
+          "NoblePrisonerExecutionRuntime.cs"
+        ],
+        "atomicity": "whole file including same-file DTO/MissionLogic/patch types; no symbol split"
+      },
+      "target_status": "absent",
+      "consumer_audit_owner": "P3 single centralized cross-package current/historical/loader/save review; P2 did not repeat reference scanning",
+      "compile_consumer": {
+        "path": "AnimusForge.csproj",
+        "owner": "P4",
+        "evidence_lines": [
+          20,
+          116,
+          117,
+          118
+        ],
+        "effect": "SDK default recursive compile includes chosen Composition/ subfolders; no duplicate include needed. P4 verifies dual API exact source mapping and same resource names"
+      },
+      "runtime_change": "none: old CLR full names, namespace, assemblies, save keys, registration/mission/UI behaviors and algorithms unchanged",
+      "source_hash_verify": "raw bytes, not newline normalization; no source is reformatted"
+    },
+    {
+      "action": "proposed_move",
+      "old": "SiegeAiInterventionBehavior.cs",
+      "new": "src/AF.GameAdapter.Bannerlord/Composition/SiegeAftermath/SiegeAiInterventionBehavior.cs",
+      "sha256_bytes": "5a8cec16813868e3c1846cd55658dfc5549e83c4cc0d43d9ce8fbba795c8912a",
+      "byte_count": 648564,
+      "responsibility": "Mixed GCCZ Campaign/save/mission host: siege outcome/colonization runtime, castle disposition coordination, events/menus, effects and nested mission agent state logic",
+      "business_owner": "SiegeAftermath team game-bound host/runtime, not AF.Foundation and not thin src/bridges forwarding",
+      "placement_rationale": "Existing AF.GameAdapter.Bannerlord/Composition mixed-host parent; necessary SiegeAftermath team subfolder groups actual same-DLL game-dependent business hosts. No new project, namespace, pure-core ownership or DLL.",
+      "evidence": [
+        {
+          "line": 51,
+          "text": "public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase"
+        },
+        {
+          "line": 63,
+          "text": "private sealed class MarketLootCandidate"
+        },
+        {
+          "line": 70,
+          "text": "private sealed class PlunderInteraction"
+        },
+        {
+          "line": 81,
+          "text": "private sealed class BannerBearerTroopStack"
+        },
+        {
+          "line": 90,
+          "text": "private sealed class AmbientReactionRequest"
+        },
+        {
+          "line": 109,
+          "text": "private sealed class CivilianGatherInteraction"
+        },
+        {
+          "line": 122,
+          "text": "private sealed class InterventionMissionBehavior : MissionLogic, IAgentStateDecider, IMissionBehavior"
+        },
+        {
+          "line": 160,
+          "text": "public AgentState GetAgentState(Agent effectedAgent, float deathProbability, out bool usedSurgery)"
+        },
+        {
+          "line": 475,
+          "text": "private static void SyncTownColonizationState(IDataStore dataStore)"
+        },
+        {
+          "line": 512,
+          "text": "private static void SyncRecruitmentSlowdownData(IDataStore dataStore)"
+        }
+      ],
+      "save_identity_evidence": [
+        {
+          "line": 455,
+          "text": "dataStore.SyncData(\"_gcczRepopulationProsperityDebuffUntilDayBySettlement_v1\", ref _repopulationProsperityDebuffUntilDayBySettlement);"
+        },
+        {
+          "line": 456,
+          "text": "dataStore.SyncData(\"_gcczRepopulationProsperityLastObservedBySettlement_v1\", ref _repopulationProsperityLastObservedBySettlement);"
+        },
+        {
+          "line": 457,
+          "text": "dataStore.SyncData(\"_gcczCivicProsperityBuffUntilDayBySettlement_v1\", ref _civicProsperityBuffUntilDayBySettlement);"
+        },
+        {
+          "line": 458,
+          "text": "dataStore.SyncData(\"_gcczCivicProsperityLastObservedBySettlement_v1\", ref _civicProsperityLastObservedBySettlement);"
+        },
+        {
+          "line": 459,
+          "text": "dataStore.SyncData(\"_gcczCivicProsperityGrowthMultiplierBySettlement_v1\", ref _civicProsperityGrowthMultiplierBySettlement);"
+        },
+        {
+          "line": 460,
+          "text": "dataStore.SyncData(\"_gcczRallyOathLoyaltyLockUntilDayBySettlement_v1\", ref _rallyOathLoyaltyLockUntilDayBySettlement);"
+        },
+        {
+          "line": 461,
+          "text": "dataStore.SyncData(\"_gcczRallyOathLoyaltyLockValueBySettlement_v1\", ref _rallyOathLoyaltyLockValueBySettlement);"
+        },
+        {
+          "line": 462,
+          "text": "dataStore.SyncData(\"_gcczRallyOathRecruitmentBuffUntilDayBySettlement_v1\", ref _rallyOathRecruitmentBuffUntilDayBySettlement);"
+        }
+      ],
+      "runtime_resource_reflection_clues_for_P3": [
+        {
+          "line": 419,
+          "text": "private static readonly FieldInfo OrderTroopPlacerOrderControllerField = AccessTools.Field(typeof(OrderTroopPlacer), \"_orderController\");"
+        },
+        {
+          "line": 420,
+          "text": "private static readonly FieldInfo SingleVisualOrderOrderTypeField = AccessTools.Field(typeof(SingleVisualOrder), \"_orderType\");"
+        },
+        {
+          "line": 421,
+          "text": "private static readonly FieldInfo FollowAgentBehaviorIdleDistanceField = typeof(FollowAgentBehavior).GetField(\"_idleDistance\", BindingFlags.Instance | BindingFlags.NonPublic);"
+        },
+        {
+          "line": 1175,
+          "text": "Type type = typeof(SiegeAftermathCampaignBehavior);"
+        },
+        {
+          "line": 1539,
+          "text": "MethodInfo[] methods = menuContext.GetType()"
+        },
+        {
+          "line": 1593,
+          "text": "if (typeof(TroopRoster).IsAssignableFrom(parameterType))"
+        },
+        {
+          "line": 1598,
+          "text": "else if (parameterType == typeof(Func<CharacterObject, bool>))"
+        },
+        {
+          "line": 1603,
+          "text": "else if (parameterType == typeof(Action<TroopRoster>))"
+        },
+        {
+          "line": 1608,
+          "text": "else if (parameterType == typeof(int))"
+        },
+        {
+          "line": 1613,
+          "text": "else if (parameterType == typeof(bool))"
+        }
+      ],
+      "partial_family": {
+        "type": "AnimusForge.SiegeAiInterventionBehavior",
+        "members": [
+          "SiegeAiInterventionBehavior.cs",
+          "SiegeAiInterventionBehavior.DirectAftermathAdapter.cs",
+          "SiegeAiInterventionBehavior.TownColonizationLoadRecovery.cs",
+          "SiegeAiInterventionBehavior.TownCompletionEffectAdapter.cs",
+          "SiegeAiInterventionBehavior.TownEconomyEffectAdapter.cs",
+          "SiegeAiInterventionBehavior.TownSettlementEffectAdapter.cs"
+        ],
+        "atomicity": "all six proposed source moves as one verified family, destination hash conflict stops family before moving"
+      },
+      "target_status": "absent",
+      "consumer_audit_owner": "P3 single centralized cross-package current/historical/loader/save review; P2 did not repeat reference scanning",
+      "compile_consumer": {
+        "path": "AnimusForge.csproj",
+        "owner": "P4",
+        "evidence_lines": [
+          20,
+          116,
+          117,
+          118
+        ],
+        "effect": "SDK default recursive compile includes chosen Composition/ subfolders; no duplicate include needed. P4 verifies dual API exact source mapping and same resource names"
+      },
+      "runtime_change": "none: old CLR full names, namespace, assemblies, save keys, registration/mission/UI behaviors and algorithms unchanged",
+      "source_hash_verify": "raw bytes, not newline normalization; no source is reformatted"
+    },
+    {
+      "action": "proposed_move",
+      "old": "SiegeAiInterventionBehavior.DirectAftermathAdapter.cs",
+      "new": "src/AF.GameAdapter.Bannerlord/Composition/SiegeAftermath/SiegeAiInterventionBehavior.DirectAftermathAdapter.cs",
+      "sha256_bytes": "0e4cd492019afe87beabb63e4cf4a6d53cab1ed33e61f7517ed79a45ec127e54",
+      "byte_count": 15219,
+      "responsibility": "Same SiegeAiInterventionBehavior partial direct massacre/plunder aftermath scripted menu/loot staging and finalization",
+      "business_owner": "SiegeAftermath team game-bound host/runtime, not AF.Foundation and not thin src/bridges forwarding",
+      "placement_rationale": "Existing AF.GameAdapter.Bannerlord/Composition mixed-host parent; necessary SiegeAftermath team subfolder groups actual same-DLL game-dependent business hosts. No new project, namespace, pure-core ownership or DLL.",
+      "evidence": [
+        {
+          "line": 18,
+          "text": "public partial class SiegeAiInterventionBehavior"
+        },
+        {
+          "line": 20,
+          "text": "private static void QueueDirectMassacreAftermathScript(string reason)"
+        },
+        {
+          "line": 25,
+          "text": "private static void QueueDirectPlunderAftermathScript(string reason)"
+        },
+        {
+          "line": 30,
+          "text": "private static void QueueDirectAftermathScript(TownDirectAftermathKind kind, string reason)"
+        },
+        {
+          "line": 58,
+          "text": "private static bool TryRunDirectMassacreAftermathScript("
+        },
+        {
+          "line": 64,
+          "text": "private static bool TryRunDirectPlunderAftermathScript("
+        },
+        {
+          "line": 70,
+          "text": "private static bool TryRunDirectAftermathScript(TownDirectAftermathKind kind, string source)"
+        },
+        {
+          "line": 131,
+          "text": "private static bool TryCompleteDirectAftermathScript(TownDirectAftermathKind kind, bool afterLoot)"
+        },
+        {
+          "line": 153,
+          "text": "internal static bool TryHandleDirectMassacreAftermathMenuForExternal(string menuId, string source)"
+        },
+        {
+          "line": 158,
+          "text": "internal static bool TryHandleDirectPlunderAftermathMenuForExternal(string menuId, string source)"
+        }
+      ],
+      "save_identity_evidence": [],
+      "runtime_resource_reflection_clues_for_P3": [
+        {
+          "line": 326,
+          "text": "string stateName = activeState.GetType().FullName ?? activeState.GetType().Name;"
+        }
+      ],
+      "partial_family": {
+        "type": "AnimusForge.SiegeAiInterventionBehavior",
+        "members": [
+          "SiegeAiInterventionBehavior.cs",
+          "SiegeAiInterventionBehavior.DirectAftermathAdapter.cs",
+          "SiegeAiInterventionBehavior.TownColonizationLoadRecovery.cs",
+          "SiegeAiInterventionBehavior.TownCompletionEffectAdapter.cs",
+          "SiegeAiInterventionBehavior.TownEconomyEffectAdapter.cs",
+          "SiegeAiInterventionBehavior.TownSettlementEffectAdapter.cs"
+        ],
+        "atomicity": "all six proposed source moves as one verified family, destination hash conflict stops family before moving"
+      },
+      "target_status": "absent",
+      "consumer_audit_owner": "P3 single centralized cross-package current/historical/loader/save review; P2 did not repeat reference scanning",
+      "compile_consumer": {
+        "path": "AnimusForge.csproj",
+        "owner": "P4",
+        "evidence_lines": [
+          20,
+          116,
+          117,
+          118
+        ],
+        "effect": "SDK default recursive compile includes chosen Composition/ subfolders; no duplicate include needed. P4 verifies dual API exact source mapping and same resource names"
+      },
+      "runtime_change": "none: old CLR full names, namespace, assemblies, save keys, registration/mission/UI behaviors and algorithms unchanged",
+      "source_hash_verify": "raw bytes, not newline normalization; no source is reformatted"
+    },
+    {
+      "action": "proposed_move",
+      "old": "SiegeAiInterventionBehavior.TownColonizationLoadRecovery.cs",
+      "new": "src/AF.GameAdapter.Bannerlord/Composition/SiegeAftermath/SiegeAiInterventionBehavior.TownColonizationLoadRecovery.cs",
+      "sha256_bytes": "51aeb5ee80165ba878ff63f1bef4bc8b7a70e6f1a96714d5fd723c607f48a12e",
+      "byte_count": 6830,
+      "responsibility": "Same host persisted colonization load recovery and context validation/culture commit; no new persistence owner",
+      "business_owner": "SiegeAftermath team game-bound host/runtime, not AF.Foundation and not thin src/bridges forwarding",
+      "placement_rationale": "Existing AF.GameAdapter.Bannerlord/Composition mixed-host parent; necessary SiegeAftermath team subfolder groups actual same-DLL game-dependent business hosts. No new project, namespace, pure-core ownership or DLL.",
+      "evidence": [
+        {
+          "line": 13,
+          "text": "public partial class SiegeAiInterventionBehavior"
+        },
+        {
+          "line": 18,
+          "text": "private static bool TryRecoverLoadedTownColonizationState()"
+        },
+        {
+          "line": 80,
+          "text": "private static bool PrepareLoadedTownColonizationRuntime("
+        },
+        {
+          "line": 110,
+          "text": "private static bool FinalizeRecoveredTownColonizationCultureCommit(Settlement settlement)"
+        },
+        {
+          "line": 129,
+          "text": "private static bool TryCaptureNativeSiegeContextForLoadRecovery(Settlement settlement)"
+        }
+      ],
+      "save_identity_evidence": [],
+      "runtime_resource_reflection_clues_for_P3": [
+        {
+          "line": 139,
+          "text": "Type type = typeof(SiegeAftermathCampaignBehavior);"
+        }
+      ],
+      "partial_family": {
+        "type": "AnimusForge.SiegeAiInterventionBehavior",
+        "members": [
+          "SiegeAiInterventionBehavior.cs",
+          "SiegeAiInterventionBehavior.DirectAftermathAdapter.cs",
+          "SiegeAiInterventionBehavior.TownColonizationLoadRecovery.cs",
+          "SiegeAiInterventionBehavior.TownCompletionEffectAdapter.cs",
+          "SiegeAiInterventionBehavior.TownEconomyEffectAdapter.cs",
+          "SiegeAiInterventionBehavior.TownSettlementEffectAdapter.cs"
+        ],
+        "atomicity": "all six proposed source moves as one verified family, destination hash conflict stops family before moving"
+      },
+      "target_status": "absent",
+      "consumer_audit_owner": "P3 single centralized cross-package current/historical/loader/save review; P2 did not repeat reference scanning",
+      "compile_consumer": {
+        "path": "AnimusForge.csproj",
+        "owner": "P4",
+        "evidence_lines": [
+          20,
+          116,
+          117,
+          118
+        ],
+        "effect": "SDK default recursive compile includes chosen Composition/ subfolders; no duplicate include needed. P4 verifies dual API exact source mapping and same resource names"
+      },
+      "runtime_change": "none: old CLR full names, namespace, assemblies, save keys, registration/mission/UI behaviors and algorithms unchanged",
+      "source_hash_verify": "raw bytes, not newline normalization; no source is reformatted"
+    },
+    {
+      "action": "proposed_move",
+      "old": "SiegeAiInterventionBehavior.TownCompletionEffectAdapter.cs",
+      "new": "src/AF.GameAdapter.Bannerlord/Composition/SiegeAftermath/SiegeAiInterventionBehavior.TownCompletionEffectAdapter.cs",
+      "sha256_bytes": "5c876e6f2abb6f038f1d6f8b14d6ba9d7829ac204505994634d9ff189b28b805",
+      "byte_count": 2312,
+      "responsibility": "Same host live ownership/native aftermath/culture/notable creation/removal side effects",
+      "business_owner": "SiegeAftermath team game-bound host/runtime, not AF.Foundation and not thin src/bridges forwarding",
+      "placement_rationale": "Existing AF.GameAdapter.Bannerlord/Composition mixed-host parent; necessary SiegeAftermath team subfolder groups actual same-DLL game-dependent business hosts. No new project, namespace, pure-core ownership or DLL.",
+      "evidence": [
+        {
+          "line": 9,
+          "text": "public partial class SiegeAiInterventionBehavior"
+        },
+        {
+          "line": 11,
+          "text": "private static void ApplySettlementOwnershipBySiege(Hero capturer, Settlement settlement)"
+        },
+        {
+          "line": 16,
+          "text": "private static void ApplySettlementOwnershipByDefault(Hero owner, Settlement settlement)"
+        },
+        {
+          "line": 21,
+          "text": "private static void ConfirmSettlementOwnershipAssignment(Settlement settlement)"
+        },
+        {
+          "line": 26,
+          "text": "private static void ApplyNativeSettlementAftermath("
+        },
+        {
+          "line": 36,
+          "text": "private static bool ApplySettlementCulture(Settlement settlement, CultureObject culture, string source)"
+        },
+        {
+          "line": 41,
+          "text": "private static void ApplyHeroCulture(Hero hero, CultureObject culture)"
+        },
+        {
+          "line": 46,
+          "text": "private static void ClearNotablePowerForReplacement(Hero notable, float power)"
+        },
+        {
+          "line": 51,
+          "text": "private static Hero CreateReplacementNotable(Occupation occupation, Settlement settlement)"
+        },
+        {
+          "line": 56,
+          "text": "private static void PlaceReplacementNotable(Hero notable, Settlement settlement)"
+        }
+      ],
+      "save_identity_evidence": [],
+      "runtime_resource_reflection_clues_for_P3": [],
+      "partial_family": {
+        "type": "AnimusForge.SiegeAiInterventionBehavior",
+        "members": [
+          "SiegeAiInterventionBehavior.cs",
+          "SiegeAiInterventionBehavior.DirectAftermathAdapter.cs",
+          "SiegeAiInterventionBehavior.TownColonizationLoadRecovery.cs",
+          "SiegeAiInterventionBehavior.TownCompletionEffectAdapter.cs",
+          "SiegeAiInterventionBehavior.TownEconomyEffectAdapter.cs",
+          "SiegeAiInterventionBehavior.TownSettlementEffectAdapter.cs"
+        ],
+        "atomicity": "all six proposed source moves as one verified family, destination hash conflict stops family before moving"
+      },
+      "target_status": "absent",
+      "consumer_audit_owner": "P3 single centralized cross-package current/historical/loader/save review; P2 did not repeat reference scanning",
+      "compile_consumer": {
+        "path": "AnimusForge.csproj",
+        "owner": "P4",
+        "evidence_lines": [
+          20,
+          116,
+          117,
+          118
+        ],
+        "effect": "SDK default recursive compile includes chosen Composition/ subfolders; no duplicate include needed. P4 verifies dual API exact source mapping and same resource names"
+      },
+      "runtime_change": "none: old CLR full names, namespace, assemblies, save keys, registration/mission/UI behaviors and algorithms unchanged",
+      "source_hash_verify": "raw bytes, not newline normalization; no source is reformatted"
+    },
+    {
+      "action": "proposed_move",
+      "old": "SiegeAiInterventionBehavior.TownEconomyEffectAdapter.cs",
+      "new": "src/AF.GameAdapter.Bannerlord/Composition/SiegeAftermath/SiegeAiInterventionBehavior.TownEconomyEffectAdapter.cs",
+      "sha256_bytes": "07ae6b23710af05ab6ffefafe3f10fcf692864d9ce75d1b8be811220ffbaad9d",
+      "byte_count": 1515,
+      "responsibility": "Same host gold and item/loot mutations with existing fallback behavior",
+      "business_owner": "SiegeAftermath team game-bound host/runtime, not AF.Foundation and not thin src/bridges forwarding",
+      "placement_rationale": "Existing AF.GameAdapter.Bannerlord/Composition mixed-host parent; necessary SiegeAftermath team subfolder groups actual same-DLL game-dependent business hosts. No new project, namespace, pure-core ownership or DLL.",
+      "evidence": [
+        {
+          "line": 9,
+          "text": "public partial class SiegeAiInterventionBehavior"
+        },
+        {
+          "line": 11,
+          "text": "private static void AwardGoldToPlayer(int amount, string source)"
+        },
+        {
+          "line": 39,
+          "text": "private static void TransferHeroGoldToPlayer(Hero source, int amount)"
+        },
+        {
+          "line": 44,
+          "text": "private static void RestoreItemStackToPlayerParty(ItemRoster playerRoster, ItemObject item, int amount)"
+        },
+        {
+          "line": 49,
+          "text": "private static void MoveItemStackToPendingLoot("
+        }
+      ],
+      "save_identity_evidence": [],
+      "runtime_resource_reflection_clues_for_P3": [],
+      "partial_family": {
+        "type": "AnimusForge.SiegeAiInterventionBehavior",
+        "members": [
+          "SiegeAiInterventionBehavior.cs",
+          "SiegeAiInterventionBehavior.DirectAftermathAdapter.cs",
+          "SiegeAiInterventionBehavior.TownColonizationLoadRecovery.cs",
+          "SiegeAiInterventionBehavior.TownCompletionEffectAdapter.cs",
+          "SiegeAiInterventionBehavior.TownEconomyEffectAdapter.cs",
+          "SiegeAiInterventionBehavior.TownSettlementEffectAdapter.cs"
+        ],
+        "atomicity": "all six proposed source moves as one verified family, destination hash conflict stops family before moving"
+      },
+      "target_status": "absent",
+      "consumer_audit_owner": "P3 single centralized cross-package current/historical/loader/save review; P2 did not repeat reference scanning",
+      "compile_consumer": {
+        "path": "AnimusForge.csproj",
+        "owner": "P4",
+        "evidence_lines": [
+          20,
+          116,
+          117,
+          118
+        ],
+        "effect": "SDK default recursive compile includes chosen Composition/ subfolders; no duplicate include needed. P4 verifies dual API exact source mapping and same resource names"
+      },
+      "runtime_change": "none: old CLR full names, namespace, assemblies, save keys, registration/mission/UI behaviors and algorithms unchanged",
+      "source_hash_verify": "raw bytes, not newline normalization; no source is reformatted"
+    },
+    {
+      "action": "proposed_move",
+      "old": "SiegeAiInterventionBehavior.TownSettlementEffectAdapter.cs",
+      "new": "src/AF.GameAdapter.Bannerlord/Composition/SiegeAftermath/SiegeAiInterventionBehavior.TownSettlementEffectAdapter.cs",
+      "sha256_bytes": "be034398e342326ba16014685de6cf41c3eb717415f25c9f6cd99f206ded2494",
+      "byte_count": 29376,
+      "responsibility": "Same host live settlement/notable trust/relations, prosperity/recruitment annual debuffs and civic loyalty/recruit production buffs",
+      "business_owner": "SiegeAftermath team game-bound host/runtime, not AF.Foundation and not thin src/bridges forwarding",
+      "placement_rationale": "Existing AF.GameAdapter.Bannerlord/Composition mixed-host parent; necessary SiegeAftermath team subfolder groups actual same-DLL game-dependent business hosts. No new project, namespace, pure-core ownership or DLL.",
+      "evidence": [
+        {
+          "line": 13,
+          "text": "public partial class SiegeAiInterventionBehavior"
+        },
+        {
+          "line": 15,
+          "text": "private sealed class TownSettlementEffectApplicationResult"
+        },
+        {
+          "line": 24,
+          "text": "private static TownSettlementEffectApplicationResult ApplyTownSettlementEffectPlan("
+        },
+        {
+          "line": 99,
+          "text": "private static void ApplySettlementPublicTrust(Settlement settlement, int delta, string reason)"
+        },
+        {
+          "line": 114,
+          "text": "private static int ApplyBoundVillagePublicTrust(Settlement settlement, int delta, string reason)"
+        },
+        {
+          "line": 148,
+          "text": "private static int ApplyNotableRelations("
+        },
+        {
+          "line": 189,
+          "text": "private static void ApplyOwnerRelationDelta(Hero owner, int delta)"
+        },
+        {
+          "line": 194,
+          "text": "private static int ApplyNotableTrust("
+        },
+        {
+          "line": 238,
+          "text": "private static IEnumerable<Hero> EnumerateEffectNotables(Settlement settlement, TownNotableEffectScope scope)"
+        },
+        {
+          "line": 268,
+          "text": "private static void ApplyCivicChoiceSettlementEffects("
+        }
+      ],
+      "save_identity_evidence": [],
+      "runtime_resource_reflection_clues_for_P3": [],
+      "partial_family": {
+        "type": "AnimusForge.SiegeAiInterventionBehavior",
+        "members": [
+          "SiegeAiInterventionBehavior.cs",
+          "SiegeAiInterventionBehavior.DirectAftermathAdapter.cs",
+          "SiegeAiInterventionBehavior.TownColonizationLoadRecovery.cs",
+          "SiegeAiInterventionBehavior.TownCompletionEffectAdapter.cs",
+          "SiegeAiInterventionBehavior.TownEconomyEffectAdapter.cs",
+          "SiegeAiInterventionBehavior.TownSettlementEffectAdapter.cs"
+        ],
+        "atomicity": "all six proposed source moves as one verified family, destination hash conflict stops family before moving"
+      },
+      "target_status": "absent",
+      "consumer_audit_owner": "P3 single centralized cross-package current/historical/loader/save review; P2 did not repeat reference scanning",
+      "compile_consumer": {
+        "path": "AnimusForge.csproj",
+        "owner": "P4",
+        "evidence_lines": [
+          20,
+          116,
+          117,
+          118
+        ],
+        "effect": "SDK default recursive compile includes chosen Composition/ subfolders; no duplicate include needed. P4 verifies dual API exact source mapping and same resource names"
+      },
+      "runtime_change": "none: old CLR full names, namespace, assemblies, save keys, registration/mission/UI behaviors and algorithms unchanged",
+      "source_hash_verify": "raw bytes, not newline normalization; no source is reformatted"
+    },
+    {
+      "action": "proposed_move",
+      "old": "VillageAftermathBehavior.cs",
+      "new": "src/AF.GameAdapter.Bannerlord/Composition/SiegeAftermath/VillageAftermathBehavior.cs",
+      "sha256_bytes": "66851803946cebda2d0efd3bf8a61d4b3a594897f4208710ee75afc7f2882de4",
+      "byte_count": 30190,
+      "responsibility": "GCCZ village administration Campaign+mission host: stock/militia/gold/relations/culture/notable effects and saved gradual-culture schedules",
+      "business_owner": "SiegeAftermath team game-bound host/runtime, not AF.Foundation and not thin src/bridges forwarding",
+      "placement_rationale": "Existing AF.GameAdapter.Bannerlord/Composition mixed-host parent; necessary SiegeAftermath team subfolder groups actual same-DLL game-dependent business hosts. No new project, namespace, pure-core ownership or DLL.",
+      "evidence": [
+        {
+          "line": 20,
+          "text": "public sealed class VillageAftermathBehavior : CampaignBehaviorBase"
+        },
+        {
+          "line": 52,
+          "text": "private void OnNewGameCreated(CampaignGameStarter starter)"
+        },
+        {
+          "line": 61,
+          "text": "private void OnGameLoaded(CampaignGameStarter starter)"
+        },
+        {
+          "line": 68,
+          "text": "internal static bool QueueIncidentDispositionMission(Settlement villageSettlement, string source)"
+        },
+        {
+          "line": 81,
+          "text": "internal static bool TryConsumeQueuedIncidentDisposition(Settlement villageSettlement, string source)"
+        },
+        {
+          "line": 98,
+          "text": "internal static void CancelQueuedIncidentDisposition(string source)"
+        },
+        {
+          "line": 109,
+          "text": "internal static bool TryActivateForSetsVillage(Settlement villageSettlement, Mission mission, string source)"
+        },
+        {
+          "line": 161,
+          "text": "internal static bool IsActive()"
+        },
+        {
+          "line": 168,
+          "text": "internal static bool IsActiveForMission(Mission mission)"
+        },
+        {
+          "line": 173,
+          "text": "internal static void TickForSetsMission(Mission mission)"
+        }
+      ],
+      "save_identity_evidence": [
+        {
+          "line": 46,
+          "text": "dataStore.SyncData(\"_gcczVillageGradualCultureTargets_v1\", ref _gradualCultureTargetByVillageId);"
+        },
+        {
+          "line": 47,
+          "text": "dataStore.SyncData(\"_gcczVillageGradualCultureFinishDays_v1\", ref _gradualCultureFinishDayByVillageId);"
+        }
+      ],
+      "runtime_resource_reflection_clues_for_P3": [],
+      "partial_family": {
+        "type": "unchanged same-file types/nested types",
+        "members": [
+          "VillageAftermathBehavior.cs"
+        ],
+        "atomicity": "whole file including same-file DTO/MissionLogic/patch types; no symbol split"
+      },
+      "target_status": "absent",
+      "consumer_audit_owner": "P3 single centralized cross-package current/historical/loader/save review; P2 did not repeat reference scanning",
+      "compile_consumer": {
+        "path": "AnimusForge.csproj",
+        "owner": "P4",
+        "evidence_lines": [
+          20,
+          116,
+          117,
+          118
+        ],
+        "effect": "SDK default recursive compile includes chosen Composition/ subfolders; no duplicate include needed. P4 verifies dual API exact source mapping and same resource names"
+      },
+      "runtime_change": "none: old CLR full names, namespace, assemblies, save keys, registration/mission/UI behaviors and algorithms unchanged",
+      "source_hash_verify": "raw bytes, not newline normalization; no source is reformatted"
+    }
+  ],
+  "necessary_directories": [
+    "src/AF.GameAdapter.Bannerlord/Composition/SiegeAftermath",
+    "src/AF.GameAdapter.Bannerlord/Composition/Gathering"
+  ],
+  "directory_evidence": [
+    {
+      "path": "src/AF.GameAdapter.Bannerlord/Composition",
+      "evidence": "Existing mixed engine/Campaign composition hosts include MyBehavior22, SubModule, IntegratedModuleHost, CampaignComposition and AfCampaignRuntimeLifecycle; proposal adds team subgroups, not project boundaries"
+    },
+    {
+      "path": "AnimusForge.SiegeAftermathIntervention/AnimusForge.SiegeAftermathIntervention.csproj",
+      "lines": [
+        1,
+        3,
+        8
+      ],
+      "evidence": "Dependency-free core standalone net8 SDK project recursively includes its tree by default; keep these TaleWorlds/AF game-bound business files outside it"
+    },
+    {
+      "path": "AnimusForge.SiegeAftermathIntervention/README.md",
+      "lines": [
+        3,
+        11
+      ],
+      "evidence": "Existing standalone GCCZ source area and dependency-free independent-build contract remains intact"
+    },
+    {
+      "path": "src/bridges/Siege",
+      "evidence": "Earlier admitted thin AF-side sources retained; R3 actual state/save/gameplay hosts not mislabeled as those thin bridges"
+    }
+  ],
+  "partial_verification": "Targeted declaration search found no existing src/core partial SiegeAiInterventionBehavior; all six root files were read and share AnimusForge partial type. Exactly20 total: Siege family6 and fourteen whole files. No existing partial duplicate moved or invented.",
+  "conflicts": [],
+  "shared_ownership": {
+    "P3": "single centralized path/source/loader/save/reflective consumer audit including future diplomat overwrite shape; no repeat P2 consumer scans",
+    "P4": "shared project/solution/helper/maps/main ledger/HANDOFF/directory guide, integration, index/checkpoint/commits and build validation",
+    "P2": "this plan and future exactly approved20 raw-byte physical source moves only, no G mirror"
+  },
+  "preserved": [
+    "289 earlier source relocations",
+    "18 root diplomacy source owned P1",
+    "AnimusForge.SiegeAftermathIntervention pure core/reference tests/resources",
+    "PolicySystem/Vengeance/WarStats/WorldEvents/third-party/raw resources",
+    "original SessionTransport dirty, tools/NuGet and artifacts",
+    "G:/AFMOD/GCCZ and G:/AFMOD/YM0.8.7 (no writes or mirror trigger)"
+  ],
+  "validation_plan": [
+    {
+      "check": "manifest JSON/20 raw source hashes/20 target absence/whole Siege6 family",
+      "outputs": "only this necessary plan JSON",
+      "ran": true
+    },
+    {
+      "check": "P4 normalized dual-API Compile mapping and unchanged resources before/after approved batch",
+      "outputs": "fresh repository-local UUID artifacts via established evaluator; no deployment or fixed-root cleanup",
+      "ran": false
+    },
+    {
+      "check": "P4 isolated Debug/Release both BannerlordApi1.3/1.4 + Bootstrap builds",
+      "outputs": "fresh isolated local UUID build/cache/log roots, minimal environment; no downloads/G mirror/Stage",
+      "ran": false
+    },
+    {
+      "check": "Existing targeted team contract runners selected by P3/P4 after exact path-only repair",
+      "outputs": "new UUID repository-local outputs and minimal environment; historical git-show paths/review evidence hash unchanged; no default full-env/fixed-output cleanup runner",
+      "ran": false
+    },
+    {
+      "check": "recorded/working-tree code map after P4 current-location update",
+      "outputs": "read-only locator check, not gameplay validation",
+      "ran": false
+    }
+  ],
+  "limits": [
+    "No source/test/helper changes, move/build/commit/cleanup this phase",
+    "Future new diplomacy overwrites are explicitly not executed by this plan",
+    "Physical relocation does not prove full team gameplay, live-game/old-save/network/audio/performance acceptance"
+  ]
+}
