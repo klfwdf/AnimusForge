@@ -18,9 +18,9 @@ internal sealed class MemorySummaryPlanningOwner
     private readonly MemorySummaryPlanningPort _port;
     internal MemorySummaryPlanningOwner(MemoryBusinessStateOwner state, MemorySummaryPlanningPort port)
     { _state = state; _port = port; }
-    
 
-    
+
+
 
     internal MemorySummaryPlanEntry DescribeMemorySummaryJob(object job, int ordinal)
     {
