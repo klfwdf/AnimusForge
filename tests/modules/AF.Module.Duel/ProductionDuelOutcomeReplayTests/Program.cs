@@ -776,7 +776,7 @@ internal static class Program
             Path.Combine(projectRoot, "src", "modules", "AF.Module.Duel", "DuelBehavior.DispatchOwner.cs"),
             Path.Combine(projectRoot, "src", "modules", "AF.Module.Duel", "DuelSettlementEffectOwner.cs"),
             Path.Combine(projectRoot, "src/modules/AF.Module.Duel/Host/FourberieDuelCompatibility.cs"),
-            Path.Combine(projectRoot, "MyBehavior.cs"),
+            Path.Combine(projectRoot, "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.cs"),
             Path.Combine(projectRoot, "src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.cs"),
             Path.Combine(projectRoot, "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.cs"),
             Path.Combine(projectRoot, "src", "modules", "AF.Module.Conversation", "Channels", "Courier", "CourierDeliveryBehavior.DomainCommit.cs"),

@@ -15,8 +15,8 @@ internal static class J13E3DomainOwnerContractReplay
         string campaign = Read("src/AF.GameAdapter.Bannerlord/Composition/CampaignComposition.cs");
         string ticks = Read("src/AF.GameAdapter.Bannerlord/Composition/ApplicationTickComposition.cs");
         string patches = Read("src/AF.GameAdapter.Bannerlord/Composition/StartupPatchComposition.cs");
-        string host = Read("LordEncounterBehavior.cs");
-        string resolver = Read("EncounterConversationTargetResolver.cs");
+        string host = Read("src/AF.GameAdapter.Bannerlord/Encounter/LordEncounterBehavior.cs");
+        string resolver = Read("src/AF.GameAdapter.Bannerlord/Encounter/EncounterConversationTargetResolver.cs");
         string target = Read("src/modules/AF.Module.Encounter/EncounterTargetOwner.cs");
         string conversation = Read("src/modules/AF.Module.Encounter/EncounterConversationTargetOwner.cs");
         string release = Read("src/modules/AF.Module.Encounter/EncounterReleaseOwner.cs");

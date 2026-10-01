@@ -32,7 +32,7 @@ assert pre.count('() => CaptureNativeConversationPreparation(admission,')==1
 assert capture.index('IsNativeConversationAdmissionCurrent(admission, out ') < capture.index('BuildNativeConversationNpcData(')
 assert 'TryResolveNativeConversationTarget(' not in body and 'NpcInitiatedOpeningRouter.TryConsumePendingNativeOpening' not in body
 assert 'npcOpeningConsumed = true;' in body and 'admission.OpeningExtraFact' in body
-my=(ROOT/'MyBehavior.cs').read_text(encoding='utf-8-sig');ended=ex.declaration(my,'private void OnMemoryConversationEnded(')
+my=(ROOT/'src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.cs').read_text(encoding='utf-8-sig');ended=ex.declaration(my,'private void OnMemoryConversationEnded(')
 assert ended.split('{',1)[1].lstrip().startswith('ShoutBehavior.InvalidateNativeConversationAdmissionOnConversationEnd();')
 overlay=(ROOT / 'src/AF.GameAdapter.Bannerlord/UI/Conversation/AnimusForgeNativeConversationOverlay.cs').read_text(encoding='utf-8-sig')
 assert overlay.count('catch (ShoutBehavior.NativeConversationAdmissionException ex)')==2

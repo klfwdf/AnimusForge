@@ -63,7 +63,7 @@ string heroSource = File.ReadAllText(Path.Combine(projectRoot, "src/modules/AF.M
 string partySource = File.ReadAllText(Path.Combine(projectRoot, "src/modules/AF.Module.Economy/Execution/Party/RewardSystemBehavior.EconomyPartyReplay.cs"));
 string merchantSource = File.ReadAllText(Path.Combine(projectRoot, "src/modules/AF.Module.Economy/Execution/Merchant/RewardSystemBehavior.EconomyMerchantReplay.cs"));
 string coordinatorSource = File.ReadAllText(Path.Combine(projectRoot, "src/modules/AF.Module.Economy/Execution/EconomyReplayBatchCoordinator.cs"));
-string ownerSource = File.ReadAllText(Path.Combine(projectRoot, "RewardSystemBehavior.cs"));
+string ownerSource = File.ReadAllText(Path.Combine(projectRoot, "src/modules/AF.Module.Economy/Host/RewardSystemBehavior.cs"));
 string authorizationSource = File.ReadAllText(Path.Combine(projectRoot, "src/modules/AF.Module.Economy/Authorization/RewardSystemBehavior.EconomyAssetAuthorization.cs"));
 
 AssertOwnerReplayUncertaintyContract(

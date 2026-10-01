@@ -7,13 +7,13 @@
   <ItemGroup>
     <Compile Include="Program.cs" />
     <Compile Include="../../../../src/modules/AF.Module.Prompt/Configuration/AIConfigModel.cs" />
-    <Compile Include="../../../../DuelConfig.cs" />
-    <Compile Include="../../../../RewardConfig.cs" />
-    <Compile Include="../../../../LoanConfig.cs" />
-    <Compile Include="../../../../SurroundingsConfig.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Prompt/Configuration/Models/DuelConfig.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Prompt/Configuration/Models/RewardConfig.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Prompt/Configuration/Models/LoanConfig.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Prompt/Configuration/Models/SurroundingsConfig.cs" />
     <Compile Include="../../../../src/modules/AF.Module.Prompt/Configuration/GuardrailConfigModel.cs" />
     <Compile Include="../../../../src/modules/AF.Module.Prompt/Configuration/GuardrailRulePromptConfig.cs" />
-    <Compile Include="../../../../DuelStakeConfig.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Prompt/Configuration/Models/DuelStakeConfig.cs" />
     <Compile Include="../../../../src/modules/AF.Module.Knowledge/Configuration/KnowledgeRetrievalConfig.cs" />
     <Compile Include="../../../../src/modules/AF.Module.Prompt/Configuration/ActionPostprocessConfigModel.cs" />
     <Compile Include="../../../../src/modules/AF.Module.Prompt/Configuration/PostprocessRuleEntry.cs" />

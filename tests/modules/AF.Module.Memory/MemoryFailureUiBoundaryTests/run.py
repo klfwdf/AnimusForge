@@ -3,10 +3,10 @@ from pathlib import Path
 ROOT=Path(__file__).resolve().parents[4];HERE=Path(__file__).parent
 import sys
 sys.path.insert(0,str(ROOT/'tests'))
-from output_isolation import new_run_root,resolve_dotnet,minimal_test_environment
+from output_isolation import new_run_root,resolve_dotnet,minimal_test_environment, current_source_path
 p=argparse.ArgumentParser();p.add_argument('--run-root',type=Path);p.add_argument('--original',action='store_true');p.add_argument('--mutate');a=p.parse_args()
 spec=importlib.util.spec_from_file_location('ex',ROOT/'tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py');ex=importlib.util.module_from_spec(spec);spec.loader.exec_module(ex)
-def read(n):return subprocess.check_output(['git','show','38488ed2:'+n],cwd=ROOT).decode('utf-8-sig') if a.original else (ROOT/n).read_text(encoding='utf-8-sig')
+def read(n):return subprocess.check_output(['git','show','38488ed2:'+n],cwd=ROOT).decode('utf-8-sig') if a.original else (current_source_path(ROOT, n)).read_text(encoding='utf-8-sig')
 s=read('MyBehavior.cs')
 calls=[line.strip() for line in s.splitlines() if line.strip().startswith('ShowCompressedMemoryBlockingPopup(')]
 assert len(calls)==9, 'Failure publication consumer count changed'

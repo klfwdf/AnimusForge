@@ -98,7 +98,7 @@ def main():
     out = new_run_root(ROOT, "integrated-host-tick", args.run_root)
     util = load("tick_dotnet", "tests/AF.Contracts/ModuleFrameworkApiTests/run.py")
     extract = load("tick_extract", "tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py").declaration
-    paths = ["IntegratedModuleHost.cs"]
+    paths = ["src/AF.GameAdapter.Bannerlord/Composition/IntegratedModuleHost.cs"]
     wrappers = STUBS
     for name in ("DialogueUI", "Illustrator", "Coup"):
         path = f"extensions/AnimusForge.{name}/src/SubModule.cs"

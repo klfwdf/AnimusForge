@@ -43,7 +43,7 @@ if not out.is_relative_to((ROOT / "artifacts").resolve()):
     parser.error("--run-root must be under workspace artifacts")
 out.mkdir(parents=True, exist_ok=True)
 program = (HERE / "DeliveredMemoryHarness.cs.txt").read_text(encoding="utf-8-sig")
-memory_source = (ROOT / "MyBehavior.MemoryRecovery.cs").read_text(encoding="utf-8-sig")
+memory_source = (ROOT / "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.MemoryRecovery.cs").read_text(encoding="utf-8-sig")
 seed_builder = extract.declaration(memory_source, "private InteractionMemoryRecoverySeed BuildInteractionMemoryRecoverySeed(")
 assert "string originDate = ResolveInteractionMemoryOriginGameDate(originDay, currentDay);" in seed_builder
 memory_date = extract.declaration(memory_source, "private static string ResolveInteractionMemoryOriginGameDate(")

@@ -26,7 +26,7 @@ def load_declaration():
 
 def verify_live_wiring() -> None:
     declaration = load_declaration()
-    reward = (ROOT / "RewardSystemBehavior.cs").read_text(encoding="utf-8-sig")
+    reward = (ROOT / "src/modules/AF.Module.Economy/Host/RewardSystemBehavior.cs").read_text(encoding="utf-8-sig")
     debt_ledger = DEBT_LEDGER.read_text(encoding="utf-8-sig")
     trust_state = TRUST_STATE.read_text(encoding="utf-8-sig")
     production = reward + "\n" + debt_ledger + "\n" + trust_state

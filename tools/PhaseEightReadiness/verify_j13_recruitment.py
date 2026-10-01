@@ -7,8 +7,11 @@ import argparse
 import re
 import subprocess
 from pathlib import Path
+import sys
 
 ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(ROOT / 'tests'))
+from output_isolation import current_source_path
 BASELINE = 'a49642bf331741a395fd2b4225e683a8566950b0'
 parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument('--revision')
@@ -16,7 +19,7 @@ parser.add_argument('--mutate', choices=['recruitment-null-guard', 'retained-fam
 args = parser.parse_args()
 
 def source(path, revision=None):
-    raw = subprocess.check_output(['git', 'show', revision + ':' + path], cwd=ROOT) if revision else (ROOT / path).read_bytes()
+    raw = subprocess.check_output(['git', 'show', revision + ':' + path], cwd=ROOT) if revision else current_source_path(ROOT, path).read_bytes()
     return raw.decode('utf-8-sig').replace('\r\n', '\n')
 
 def declaration(text, signature):

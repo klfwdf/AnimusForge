@@ -9,7 +9,7 @@ from xml.sax.saxutils import escape
 ROOT=Path(__file__).resolve().parents[4]
 HERE=Path(__file__).resolve().parent
 sys.path.insert(0,str(ROOT/'tests'))
-from output_isolation import new_run_root, resolve_dotnet, minimal_test_environment
+from output_isolation import new_run_root, resolve_dotnet, minimal_test_environment, current_source_path
 MUTATIONS=['ignore-main-thread','fake-commit-success','ignore-daily-readback','ignore-recent-readback','swap-daily-order','omit-recent-save','ignore-editor-lifetime','ignore-editor-reference','ignore-editor-fingerprint','bypass-import-scope']
 
 def main():
@@ -27,7 +27,7 @@ def main():
             manifest=json.loads((base/'manifest.json').read_text(encoding='utf-8'))
             if manifest.get('mutation') is not None:return None
             for entry in manifest['extraction']:
-                if 'signature' not in entry and sha((ROOT/entry['file']).read_text(encoding='utf-8-sig'))!=entry['sha256']:return None
+                if 'signature' not in entry and sha((current_source_path(ROOT, entry['file'])).read_text(encoding='utf-8-sig'))!=entry['sha256']:return None
             for name,digest in manifest['generated_sha256'].items():
                 if hashlib.sha256((base/name).read_bytes()).hexdigest()!=digest:return None
             result=re.search(r'^TERMINAL_RESULT scenarios=(\d+) failures=0\b',(base/'run.log').read_text(encoding='utf-8'),re.M)
@@ -44,7 +44,7 @@ def main():
     files={name:(base/name).read_text(encoding='utf-8-sig') for name in manifest['generated_sha256'] if name.endswith('.cs')}
     inventory=[]
     def read(name):
-        data=(ROOT/name).read_text(encoding='utf-8-sig');inventory.append(dict(file=name,sha256=sha(data)));return data
+        data=(current_source_path(ROOT, name)).read_text(encoding='utf-8-sig');inventory.append(dict(file=name,sha256=sha(data)));return data
     spec=importlib.util.spec_from_file_location('commit_extractor',ROOT/'tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py');ex=importlib.util.module_from_spec(spec);spec.loader.exec_module(ex)
     def replace(data,old,new,count=1):
         if data.count(old)!=count:raise ValueError('Commit anchor drift '+old)

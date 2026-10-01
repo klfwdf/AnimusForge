@@ -146,7 +146,7 @@ def owner_parity(baseline):
     spec = importlib.util.spec_from_file_location("port_courier_commit", ROOT / "tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py")
     extractor = importlib.util.module_from_spec(spec); spec.loader.exec_module(extractor)
     courier_core = extractor.declaration(domain, "private bool CommitGeneratedReplyActionsAtRecipientCore(")
-    current_paths = [ROOT / "MyBehavior.cs"]
+    current_paths = [current_source_path(ROOT, "MyBehavior.cs")]
     current_paths += sorted((ROOT / "src/modules/AF.Module.Conversation/Channels/Scene").glob("*.cs"))
     current_paths += sorted((ROOT / "src/modules/AF.Module.Conversation/Internal/Postprocess").glob("*.cs"))
     current_paths += sorted((ROOT / "src/modules/AF.Module.Conversation/Channels/Courier").glob("*.cs"))

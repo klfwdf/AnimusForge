@@ -8,6 +8,9 @@ import json
 import re
 import subprocess
 from pathlib import Path
+import sys as _relocation_sys
+_relocation_sys.path.insert(0, str(Path(__file__).resolve().parents[4] / "tests"))
+from output_isolation import current_source_path
 
 ROOT = Path(__file__).resolve().parents[4]
 BASE = "8ae0f831"
@@ -60,7 +63,7 @@ def sha(value):
 
 def main(path):
     old = subprocess.check_output(["git", "show", f"{BASE}:MyBehavior.cs"], cwd=ROOT).decode("utf-8-sig").replace("\r\n", "\n")
-    current = (ROOT / "MyBehavior.cs").read_text(encoding="utf-8-sig").replace("\r\n", "\n")
+    current = (current_source_path(ROOT, "MyBehavior.cs")).read_text(encoding="utf-8-sig").replace("\r\n", "\n")
     models = {}
     for name in NAMES:
         block = declaration(old, "private sealed class " + name)

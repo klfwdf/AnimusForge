@@ -29,7 +29,10 @@ def load(name, path):
 extract = load('campaign_decl', 'tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py').declaration
 util = load('campaign_dotnet', 'tests/AF.Contracts/ModuleFrameworkApiTests/run.py')
 
-def read(path): return (ROOT / path).read_text(encoding='utf-8-sig')
+sys.path.insert(0, str(ROOT / "tests"))
+from output_isolation import current_source_path
+
+def read(path): return current_source_path(ROOT, path).read_text(encoding='utf-8-sig')
 def old(path): return subprocess.check_output(['git', 'show', f'{BASELINE}:{path}'], cwd=ROOT).decode('utf-8-sig').replace('\r\n','\n')
 def compact(s): return re.sub(r'\s+', '', s)
 

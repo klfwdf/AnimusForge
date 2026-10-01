@@ -12,7 +12,7 @@ spec=importlib.util.spec_from_file_location('ex',ROOT/'tests/modules/AF.Module.C
 def read(n):return subprocess.check_output(['git','show','659bb998:'+n],cwd=ROOT).decode('utf-8-sig') if a.original else (current_source_path(ROOT, n)).read_text(encoding='utf-8-sig')
 s=read('MyBehavior.cs');models=(['private sealed class DailyMemoryLine','private sealed class DailyMemoryDraft','private sealed class CompressedMemoryBlock','private sealed class WeeklyMemoryMaterialTrigger'] if a.original else [])+['private sealed class MemoryRecallCandidate']
 methods=['private static string NormalizeMemoryHeroId(','private static string GetMemoryHeroId(','private static bool IsNonHeroMemoryId(','private static string FormatMemoryHourRange(','private static string FormatCompressedMemoryAgeSuffix(','private static string FormatPastAfefLineForPrompt(','private static string StripMemoryTitleDateTime(','private static string BuildMemoryRecallQueryText(','private static void AssignMemoryCandidateDisplayIds(','private bool TryBuildMemoryRecallCandidates(','private bool TrySelectMemoryIdsWithPreprocess(','private string BuildCompressedMemoryContextById(','private string BuildHistoryContextById(']
-recovery=(ROOT/'MyBehavior.MemoryRecovery.cs').read_text(encoding='utf-8-sig') if not a.original else ''
+recovery=(ROOT/'src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.MemoryRecovery.cs').read_text(encoding='utf-8-sig') if not a.original else ''
 marker_helpers=[]
 for signature in (['internal static bool IsValidMemoryCommitMarker(', 'internal static bool IsMemoryRecoveryHexDigest('] if not a.original else []):
  helper=ex.declaration(recovery,signature)

@@ -1,4 +1,7 @@
 from pathlib import Path
+import sys as _relocation_sys
+_relocation_sys.path.insert(0, str(Path(__file__).resolve().parents[4] / "tests"))
+from output_isolation import current_source_path
 import os
 import argparse,importlib.util,subprocess
 ROOT=Path(__file__).resolve().parents[4];HERE=Path(__file__).parent
@@ -11,7 +14,7 @@ if a.original:
  code=code.replace('@@GENERATOR@@','\n'.join(ex.declaration(s,sig) for sig in ['private async Task<string> GenerateNpcPersonaAsync(','private async Task EnsureNpcPersonaGeneratedAsync(','public static async Task EnsureNpcPersonaGeneratedForExternalAsync('])).replace('@@RESET@@','_npcPersonaAutoGenInFlight.Clear();_npcPersonaAutoGenRetryAfterUtcTicks.Clear()').replace('@@ACTIVE@@','return _npcPersonaAutoGenInFlight.Contains(id);').replace('@@COOLING@@','return _npcPersonaAutoGenRetryAfterUtcTicks.ContainsKey(id);')
 else:
  code=code.replace('@@GENERATOR@@','').replace('@@RESET@@','_npcPersonaGeneration.Reset()').replace('@@ACTIVE@@','_npcPersonaGeneration.GetState(id,out bool active,out _);return active;').replace('@@COOLING@@','_npcPersonaGeneration.GetState(id,out _,out bool cooling);return cooling;')
-ui_source=s if a.original else (ROOT/'MyBehavior.cs').read_text(encoding='utf-8-sig')
+ui_source=s if a.original else (current_source_path(ROOT, 'MyBehavior.cs')).read_text(encoding='utf-8-sig')
 code=code.replace('@@REROLL_UI@@',ex.declaration(ui_source,'private async Task RunHeroPersonaRerollAsync('))
 code=code.replace('@@PROMOTED_RESPONSE@@', 'return response.Task;' if a.original else 'SkillCalls++;return skillResponse.Task;')
 code=code.replace('@@PROMOTED_HELPERS@@', '' if a.original else (HERE/'PromotedHelpers.cs.txt').read_text(encoding='utf-8')).replace('@@PROMOTED_TESTS@@', '' if a.original else (HERE/'PromotedTests.cs.txt').read_text(encoding='utf-8')).replace('@@RUN_PROMOTED@@', '' if a.original else 'PromotedCases();')
@@ -20,7 +23,7 @@ out=util.new_run_root(ROOT,'HeroPersonaGenerationTests',a.run_root)
 (out/'Program.cs').write_text(code,encoding='utf-8');(out/'NuGet.Config').write_text('<configuration><packageSources><clear/></packageSources></configuration>')
 files=[out/'Program.cs',ROOT/'src/modules/AF.Module.Memory/Summary/MemorySummaryDispatcher.cs',ROOT/'src/modules/AF.Module.Memory/Summary/IMemorySummaryDispatchHost.cs']
 if not a.original:
- helper=(ROOT/'MyBehavior.PersonaGeneration.cs').read_text(encoding='utf-8-sig');owner=(ROOT/'src/modules/AF.Module.Persona/Generation/NpcPersonaGenerationOwner.cs').read_text(encoding='utf-8-sig')
+ helper=(current_source_path(ROOT, 'MyBehavior.PersonaGeneration.cs')).read_text(encoding='utf-8-sig');owner=(ROOT/'src/modules/AF.Module.Persona/Generation/NpcPersonaGenerationOwner.cs').read_text(encoding='utf-8-sig')
  if a.mutate in ('worker_capture','worker_commit'):
   part='bool captured' if a.mutate=='worker_capture' else 'bool accepted'
   begin=helper.index(part);helper=helper[:begin]+helper[begin:].replace('RunMemorySummaryCompletionAsync(generation, () =>','UnsafeDirect(() =>',1)
@@ -31,7 +34,7 @@ if not a.original:
  if a.mutate=='false_queued_success':helper=helper.replace('return overwriteExisting ? "请求已失效，未保存新的人设。" : "";', 'return "";',1).replace('return accepted ? failure ?? "" : overwriteExisting ? "请求已失效，未保存新的人设。" : "";', 'return accepted ? failure ?? "" : "";',1)
  if a.mutate=='drop_voice':helper=helper.replace('VoiceId = (current.VoiceId ?? "").Trim()','VoiceId = ""',1)
  (out/'Persona.cs').write_text(helper,encoding='utf-8');(out/'Owner.cs').write_text(owner,encoding='utf-8');files += [out/'Persona.cs',out/'Owner.cs']
- promoted=(ROOT/'MyBehavior.PromotedPersonaGeneration.cs').read_text(encoding='utf-8-sig')
+ promoted=(current_source_path(ROOT, 'MyBehavior.PromotedPersonaGeneration.cs')).read_text(encoding='utf-8-sig')
  if a.mutate=='promoted_worker_commit':
   begin=promoted.index('bool committed');promoted=promoted[:begin]+promoted[begin:].replace('RunMemorySummaryCompletionAsync(runtimeGeneration, () =>','UnsafeDirect(() =>',1)
  (out/'Promoted.cs').write_text(promoted,encoding='utf-8');files.append(out/'Promoted.cs')

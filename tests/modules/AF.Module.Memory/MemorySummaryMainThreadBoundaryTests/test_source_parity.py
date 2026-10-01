@@ -1,5 +1,8 @@
 """Read-only guards for the scoped B1 inverse; never edit production to test rejection."""
 from pathlib import Path
+import sys as _relocation_sys
+_relocation_sys.path.insert(0, str(Path(__file__).resolve().parents[4] / "tests"))
+from output_isolation import current_source_path
 import importlib.util
 import json
 import subprocess
@@ -11,7 +14,7 @@ ROOT = HERE.parents[3]
 spec = importlib.util.spec_from_file_location("b1_inverse_under_test", HERE / "source_parity.py")
 inverse = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(inverse)
-SOURCE = (ROOT / "MyBehavior.cs").read_text(encoding="utf-8-sig")
+SOURCE = (current_source_path(ROOT, "MyBehavior.cs")).read_text(encoding="utf-8-sig")
 REVIEW = json.loads((HERE / "source-review-b1.json").read_text(encoding="utf-8"))
 BASELINE = subprocess.check_output(
     ["git", "show", REVIEW["baseline"] + ":MyBehavior.cs"], cwd=ROOT
@@ -42,7 +45,7 @@ class InverseGuards(unittest.TestCase):
 
     def test_raw_input_four_declaration_inverse(self):
         review = REVIEW["rawSourceFingerprintReview"]
-        text = (ROOT / review["inputPath"]).read_text(encoding="utf-8-sig")
+        text = (current_source_path(ROOT, review["inputPath"])).read_text(encoding="utf-8-sig")
         baseline = subprocess.check_output(["git", "show", review["baseline"] + ":" + review["inputPath"]], cwd=ROOT).decode("utf-8-sig").replace("\r\n", "\n")
         spec = importlib.util.spec_from_file_location("raw_input_extractor", ROOT / "tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py")
         extractor = importlib.util.module_from_spec(spec)
@@ -81,11 +84,11 @@ class InverseGuards(unittest.TestCase):
         for edit in review["exactEdits"]:
             self.assertEqual(baseline.count(edit["before"]), 1)
             baseline = baseline.replace(edit["before"], edit["after"], 1)
-        self.assertEqual(baseline, (ROOT / review["path"]).read_text(encoding="utf-8-sig"))
+        self.assertEqual(baseline, (current_source_path(ROOT, review["path"])).read_text(encoding="utf-8-sig"))
 
     def test_dispatcher_dependency_direction_and_host_shape(self):
         runtime = (ROOT / "src/modules/AF.Module.Memory/Summary/MemorySummaryDispatcher.cs").read_text(encoding="utf-8-sig")
-        host = (ROOT / "MyBehavior.MemorySummaryMainThread.cs").read_text(encoding="utf-8-sig")
+        host = (current_source_path(ROOT, "MyBehavior.MemorySummaryMainThread.cs")).read_text(encoding="utf-8-sig")
         self.assertNotIn("TaleWorlds", runtime)
         self.assertNotIn("MyBehavior", runtime)
         self.assertNotIn("ConcurrentQueue", host)
@@ -98,7 +101,7 @@ class InverseGuards(unittest.TestCase):
         old = subprocess.check_output(["git", "show", "9617f96a:MyBehavior.MemorySummaryPlanning.cs"], cwd=ROOT).decode("utf-8-sig").replace("\r\n", "\n")
         self.assertEqual(old.count("_memorySummaryMainThreadElapsedTicks"), 2)
         self.assertEqual(old.replace("_memorySummaryMainThreadElapsedTicks", "MemorySummaryDispatchElapsedTicks"),
-                         (ROOT / "MyBehavior.MemorySummaryPlanning.cs").read_text(encoding="utf-8-sig"))
+                         (current_source_path(ROOT, "MyBehavior.MemorySummaryPlanning.cs")).read_text(encoding="utf-8-sig"))
 
     def test_changed_accepted_body(self):
         self.reject(SOURCE.replace("_eventSourceMaterialIndexBinding.Build(source);",
@@ -142,7 +145,7 @@ class InverseGuards(unittest.TestCase):
         ]
         for target in targets:
             with self.subTest(path=target):
-                path = ROOT / target
+                path = current_source_path(ROOT, target)
                 def changed(file, *args, **kwargs):
                     text = original(file, *args, **kwargs)
                     return text + "\n// unreviewed dependency\n" if file == path else text
@@ -185,7 +188,7 @@ class CurrentScopeGuards(InverseGuards):
 
     def test_raw_input_four_declaration_inverse(self):
         review=REVIEW['rawSourceFingerprintReview']
-        current=(ROOT/review['inputPath']).read_text(encoding='utf-8-sig')
+        current=(current_source_path(ROOT, review['inputPath'])).read_text(encoding='utf-8-sig')
         accepted=inverse.current_scope_baseline(review['inputPath'])
         old=subprocess.check_output(['git','show',review['baseline']+':'+review['inputPath']],cwd=ROOT).decode('utf-8-sig').replace('\r\n','\n')
         for item in review['inputDeclarations']:
@@ -219,7 +222,7 @@ class CurrentScopeGuards(InverseGuards):
 
     def test_inner_structure_fix_has_narrow_inverse(self):
         path=REVIEW['innerStructureReview']['path']
-        live=(ROOT/path).read_text(encoding='utf-8-sig')
+        live=(current_source_path(ROOT, path)).read_text(encoding='utf-8-sig')
         self.assertEqual(live,inverse.current_scope_baseline(path))
         self.assertIn('_lineStructureProbe.MoveNext();',live)
         self.assertIn('_triggerStructureProbe.MoveNext();',live)
@@ -227,7 +230,7 @@ class CurrentScopeGuards(InverseGuards):
 
     def test_planner_only_changes_elapsed_owner_read(self):
         path='MyBehavior.MemorySummaryPlanning.cs'
-        live=(ROOT/path).read_text(encoding='utf-8-sig')
+        live=(current_source_path(ROOT, path)).read_text(encoding='utf-8-sig')
         self.assertEqual(live,inverse.current_scope_baseline(path))
         self.assertEqual(live.count('MemorySummaryDispatchElapsedTicks * 1000.0 / Stopwatch.Frequency'),2)
         self.assertNotIn('_memorySummaryMainThreadElapsedTicks',live)
@@ -249,7 +252,7 @@ class CurrentScopeGuards(InverseGuards):
         targets=inverse.current_scope_dependencies(REVIEW)+[REVIEW['evidence']['materials']['runner']]
         for target in targets:
             with self.subTest(path=target):
-                path=ROOT/target
+                path=current_source_path(ROOT, target)
                 def changed(file,*args,**kwargs):
                     text=read(file,*args,**kwargs)
                     return text+'\n// unreviewed dependency\n' if file==path else text

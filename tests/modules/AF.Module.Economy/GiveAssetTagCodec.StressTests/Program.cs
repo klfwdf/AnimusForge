@@ -163,7 +163,7 @@ Test.Equal("正文".Length * 25000, stripped.Length, "pressure stripping result"
 Test.True(stopwatch.Elapsed < TimeSpan.FromSeconds(10), "postprocess-sized parser pressure run exceeded 10 seconds: " + stopwatch.Elapsed);
 
 string repoRoot = Directory.GetCurrentDirectory();
-while (!File.Exists(Path.Combine(repoRoot, "MyBehavior.cs")))
+while (!File.Exists(Path.Combine(repoRoot, "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.cs")))
 {
     string? parent = Directory.GetParent(repoRoot)?.FullName;
     if (string.IsNullOrWhiteSpace(parent))
@@ -173,9 +173,9 @@ while (!File.Exists(Path.Combine(repoRoot, "MyBehavior.cs")))
     repoRoot = parent;
 }
 
-string myBehavior = File.ReadAllText(Path.Combine(repoRoot, "MyBehavior.cs"));
+string myBehavior = File.ReadAllText(Path.Combine(repoRoot, "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.cs"));
 string shoutBehavior = File.ReadAllText(Path.Combine(repoRoot, "src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.cs"));
-string rewardSystem = File.ReadAllText(Path.Combine(repoRoot, "RewardSystemBehavior.cs"))
+string rewardSystem = File.ReadAllText(Path.Combine(repoRoot, "src/modules/AF.Module.Economy/Host/RewardSystemBehavior.cs"))
     + File.ReadAllText(Path.Combine(repoRoot, "src", "modules", "AF.Module.Economy", "Authorization", "RewardSystemBehavior.EconomyAssetAuthorization.cs"))
     + File.ReadAllText(Path.Combine(repoRoot, "src", "modules", "AF.Module.Economy", "Execution", "Hero", "RewardSystemBehavior.EconomyReplay.cs"))
     + File.ReadAllText(Path.Combine(repoRoot, "src", "modules", "AF.Module.Economy", "Execution", "Party", "RewardSystemBehavior.EconomyPartyReplay.cs"))
@@ -269,7 +269,7 @@ string playerRpCrafting = File.ReadAllText(Path.Combine(repoRoot, "src/modules/A
 string playerRpModels = File.ReadAllText(Path.Combine(repoRoot, "src/modules/AF.Module.Economy/Host/PlayerRpCraftModels.cs"));
 string playerRpComponents = File.ReadAllText(Path.Combine(repoRoot, "src/modules/AF.Module.Economy/Host/PlayerRpCraftItemComponentService.cs"));
 string preprocessPrompts = File.ReadAllText(Path.Combine(repoRoot, "content", "modules", "AF.Module.Prompt", "ModuleData", "PreprocessPrompts.json"));
-string terminalBehavior = File.ReadAllText(Path.Combine(repoRoot, "AnimusForgeTerminalBehavior.cs"));
+string terminalBehavior = File.ReadAllText(Path.Combine(repoRoot, "src/AF.GameAdapter.Bannerlord/UI/Terminal/AnimusForgeTerminalBehavior.cs"));
 string playerRpPopup = File.ReadAllText(Path.Combine(repoRoot, "src/AF.GameAdapter.Bannerlord/UI/Economy/PlayerRpForgePopup.cs"));
 Test.True(playerRpCrafting.Contains("PlayerRpTemplateCandidateLimit = 50", StringComparison.Ordinal)
     && playerRpCrafting.Contains("TryBuildPlayerRpCraftTemplateSelectionForExternal(", StringComparison.Ordinal)

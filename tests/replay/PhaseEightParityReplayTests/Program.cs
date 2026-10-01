@@ -40,13 +40,13 @@ using (JsonDocument build = JsonDocument.Parse(File.ReadAllText(marker)))
         "WarStats/AfWarStatsBehavior.cs", "src/modules/AF.Module.WarStats/WarStatsLedgerOwner.cs",
         "src/modules/AF.Module.Duel/Host/DuelBehavior.cs", "src/modules/AF.Module.Duel/Host/DuelBehavior.Outcomes.cs", "src/modules/AF.Module.Duel/DuelBehavior.DispatchOwner.cs",
         "src/modules/AF.Module.Duel/DuelSettlementEffectOwner.cs",
-        "SceneTauntBehavior.cs", "src/modules/AF.Module.Taunt/ScenePeaceConflictContextOwner.cs",
-        "LordEncounterBehavior.cs", "EncounterConversationTargetResolver.cs",
-        "SettlementEntryTroopSelectionBehavior.cs",
+        "src/modules/AF.Module.Taunt/Host/SceneTauntBehavior.cs", "src/modules/AF.Module.Taunt/ScenePeaceConflictContextOwner.cs",
+        "src/AF.GameAdapter.Bannerlord/Encounter/LordEncounterBehavior.cs", "src/AF.GameAdapter.Bannerlord/Encounter/EncounterConversationTargetResolver.cs",
+        "src/AF.GameAdapter.Bannerlord/SettlementEntry/SettlementEntryTroopSelectionBehavior.cs",
         "src/modules/AF.Module.Settlement/SettlementMissionEntryOwner.cs",
         "src/modules/AF.Module.Settlement/SettlementFollowerMissionOwner.cs",
-        "TroopInspectionBehavior.cs", "src/modules/AF.Module.Settlement/TroopInspectionSessionOwner.cs",
-        "MilitaryExerciseBehavior.cs", "src/modules/AF.Module.Exercise/ExerciseMapEventIdentityOwner.cs",
+        "src/AF.GameAdapter.Bannerlord/TroopInspection/TroopInspectionBehavior.cs", "src/modules/AF.Module.Settlement/TroopInspectionSessionOwner.cs",
+        "src/modules/AF.Module.Exercise/Host/MilitaryExerciseBehavior.cs", "src/modules/AF.Module.Exercise/ExerciseMapEventIdentityOwner.cs",
         "src/modules/AF.Module.Exercise/MilitaryExerciseSessionOwner.cs",
         "src/modules/AF.Module.Exercise/ExerciseSettlementOwner.cs",
         "src/modules/AF.Module.Encounter/EncounterTargetOwner.cs",
@@ -55,7 +55,7 @@ using (JsonDocument build = JsonDocument.Parse(File.ReadAllText(marker)))
         "src/modules/AF.Module.Encounter/EncounterPendingReturnOwner.cs",
         "src/modules/AF.Module.Taunt/SceneTauntPenaltyLedgerOwner.cs",
         "src/modules/AF.Module.Taunt/SceneTauntConflictLifecycleOwner.cs",
-        "RewardSystemBehavior.cs", "src/modules/AF.Module.Social/Recruitment/RecruitmentOwner.cs",
+        "src/modules/AF.Module.Economy/Host/RewardSystemBehavior.cs", "src/modules/AF.Module.Social/Recruitment/RecruitmentOwner.cs",
         "src/modules/AF.Module.Conversation/Proactive/ProactiveNpcRequestBehavior.cs", "src/modules/AF.Module.Social/Proactive/ProactiveOpeningOwner.cs",
         "src/modules/AF.Module.Social/Proactive/ProactiveRequestCooldownOwner.cs",
         "src/modules/AF.Module.Social/Proactive/ProactiveCandidateScanOwner.cs",
@@ -67,10 +67,10 @@ using (JsonDocument build = JsonDocument.Parse(File.ReadAllText(marker)))
         "src/modules/AF.Module.Issue/Runtime/IssueRuntimePromptOwner.cs",
         "src/modules/AF.Module.Issue/Actions/IssueActionOwner.cs",
         "src/modules/AF.Module.Issue/Actions/IssueTurnInDecisionOwner.cs",
-        "MyBehavior.PromotedPersonaGeneration.cs",
+        "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.PromotedPersonaGeneration.cs",
         "src/modules/AF.Module.Social/Host/RomanceSystemBehavior.cs", "src/modules/AF.Module.Social/Romance/RomanceRelationshipOwner.cs",
         "src/modules/AF.Module.Social/Host/PlayerNotorietyBehavior.cs", "src/modules/AF.Module.Social/Notoriety/NotorietyObservationOwner.cs",
-        "MyBehavior.PersonaGeneration.cs", "MyBehavior.PersonaReadiness.cs",
+        "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.PersonaGeneration.cs", "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.PersonaReadiness.cs",
         "src/AF.GameAdapter.Bannerlord/UI/Weekly/DevWeeklyReportPopup.cs", "src/modules/AF.Module.UI/WeeklyReportPopupSessionOwner.cs",
         "src/modules/AF.Module.Onboarding/Host/ModOnboardingBehavior.cs", "src/modules/AF.Module.Onboarding/OnboardingSessionOwner.cs",
         "src/modules/AF.Module.Onboarding/OnboardingDismissalOwner.cs",
@@ -84,7 +84,7 @@ using (JsonDocument build = JsonDocument.Parse(File.ReadAllText(marker)))
         "src/modules/AF.Module.Kingdom/Scheduling/KingdomMaintenanceOwner.cs",
         "src/modules/AF.Module.Kingdom/Scheduling/AutomaticKingdomRebellionOwner.cs" })
         Check(created >= File.GetLastWriteTimeUtc(Path.Combine(repo, source)), "candidate predates " + source);
-    Check(created >= File.GetLastWriteTimeUtc(Path.Combine(repo, "MyBehavior.cs"))
+    Check(created >= File.GetLastWriteTimeUtc(Path.Combine(repo, "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.cs"))
         && created >= File.GetLastWriteTimeUtc(Path.Combine(repo, "src/modules/AF.Module.Weekly/Generation/WeeklyFullReportCompletionOwner.cs"))
         && created >= File.GetLastWriteTimeUtc(Path.Combine(repo, "src/modules/AF.Module.Weekly/Scheduling/WeeklyAutoScheduleOwner.cs"))
         && created >= File.GetLastWriteTimeUtc(Path.Combine(repo, "src/modules/AF.Module.Weekly/Materials/WeeklyMaterialBatchPlanner.cs"))

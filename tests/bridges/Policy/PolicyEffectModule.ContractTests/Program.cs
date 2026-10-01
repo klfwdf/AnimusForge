@@ -1528,7 +1528,7 @@ internal static class Program
 		string behaviorSource = File.ReadAllText(
 			Path.Combine(repositoryRoot, "PolicySystem", "Core", "CustomPolicyBehavior.Effects.cs"),
 			Encoding.UTF8);
-		string gcczSource = File.ReadAllText(Path.Combine(repositoryRoot, "GcczVolunteerRecruitmentRatePatch.cs"), Encoding.UTF8);
+		string gcczSource = File.ReadAllText(Path.Combine(repositoryRoot, "src/bridges/Siege/Host/GcczVolunteerRecruitmentRatePatch.cs"), Encoding.UTF8);
 		Check(behaviorSource.Contains("new Harmony(\"com.AnimusForge.custompolicy.settlementmodels\")")
 			&& behaviorSource.Contains("Campaign.Current.Models.VolunteerModel, \"GetDailyVolunteerProductionProbability\""),
 			"Volunteer policy must reuse the established policy settlement-model Harmony owner.");
@@ -15193,7 +15193,7 @@ internal static class Program
 			"src", "modules", "AF.Module.Diplomacy", "World", "WorldDiplomacyBehavior.cs"), Encoding.UTF8);
 		string policyGenerationSource = File.ReadAllText(Path.Combine(repositoryRoot, "PolicySystem", "Npc", "NpcRulerPolicyBehavior.Generation.cs"), Encoding.UTF8);
 		string policyManagementSource = File.ReadAllText(Path.Combine(repositoryRoot, "PolicySystem", "Core", "CustomPolicyBehavior.Management.cs"), Encoding.UTF8);
-		string terminalSource = File.ReadAllText(Path.Combine(repositoryRoot, "AnimusForgeTerminalBehavior.cs"), Encoding.UTF8);
+		string terminalSource = File.ReadAllText(Path.Combine(repositoryRoot, "src/AF.GameAdapter.Bannerlord/UI/Terminal/AnimusForgeTerminalBehavior.cs"), Encoding.UTF8);
 		string worldInboxPrefab = File.ReadAllText(Path.Combine(repositoryRoot, "content", "modules", "AF.Module.WorldEvents", "GUI", "Prefabs", "AnimusForgeWorldEventInboxPopup.xml"), Encoding.UTF8);
 		Check(terminalSource.Contains("WorldDiplomacyBehavior.ShowRoyalAnnouncementArchive(OpenCustomPolicyManagementView)")
 			&& worldInboxPrefab.Contains("Command.Click=\"ExecuteReReview\"")
@@ -15454,7 +15454,7 @@ internal static class Program
 			"NPC policy scheduling must remain hard-limited to one kingdom per generation cycle.");
 		string npcBehaviorSource = File.ReadAllText(Path.Combine(
 			repositoryRoot, "PolicySystem", "Npc", "NpcRulerPolicyBehavior.cs"), Encoding.UTF8);
-		string duelSettingsSource = File.ReadAllText(Path.Combine(repositoryRoot, "DuelSettings.cs"), Encoding.UTF8);
+		string duelSettingsSource = File.ReadAllText(Path.Combine(repositoryRoot, "src/AF.GameAdapter.Bannerlord/Configuration/Mcm/DuelSettings.cs"), Encoding.UTF8);
 		int fixedBatchGetterIndex = duelSettingsSource.IndexOf(
 			"public static int GetNpcRulerPolicyMaxKingdomsPerRequestForExternal()", StringComparison.Ordinal);
 		string fixedBatchGetterSource = fixedBatchGetterIndex < 0

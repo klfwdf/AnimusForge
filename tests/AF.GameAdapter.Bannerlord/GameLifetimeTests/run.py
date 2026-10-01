@@ -1,11 +1,14 @@
 """Execute actual lifecycle registry, coordinator, adapter and SubModule callbacks; no game deployment."""
 from pathlib import Path
+import sys as _relocation_sys
+_relocation_sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "tests"))
+from output_isolation import current_source_path
 import argparse, importlib.util, os, subprocess
 ROOT = Path(__file__).resolve().parents[3]
 HERE = Path(__file__).parent
 
 def load(name, path):
-    spec = importlib.util.spec_from_file_location(name, ROOT / path)
+    spec = importlib.util.spec_from_file_location(name, current_source_path(ROOT, path))
     module = importlib.util.module_from_spec(spec); spec.loader.exec_module(module)
     return module
 
@@ -17,7 +20,7 @@ p.add_argument('--skip-mutations', action='store_true')
 p.add_argument('--dotnet', default=os.environ.get('DOTNET_EXE', r'G:\AFMOD\.dotnet-sdk\dotnet.exe'))
 args = p.parse_args()
 
-def read(path): return (ROOT/path).read_text(encoding='utf-8-sig')
+def read(path): return (current_source_path(ROOT, path)).read_text(encoding='utf-8-sig')
 
 sources = ['src/AF.Foundation.Runtime/Scheduling/PendingOperationRegistry.cs', 'src/AF.Foundation.Runtime/Lifecycle/GameLifetimeCoordinator.cs', 'src/AF.GameAdapter.Bannerlord/Composition/AfCampaignRuntimeLifecycle.cs']
 submodule = (subprocess.check_output(['git','show','807bc5b9:SubModule.cs'], cwd=ROOT).decode('utf-8-sig')

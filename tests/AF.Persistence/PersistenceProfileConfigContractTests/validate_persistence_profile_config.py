@@ -11,6 +11,8 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[3]
+sys.path.insert(0, str(ROOT / "tests"))
+from output_isolation import current_source_path
 FIXTURE_DIR = ROOT / "docs" / "fixtures" / "phase4-persistence-profile-config"
 KEY_PATTERN = re.compile(r'SyncData\("([^"\r\n]+)"')
 SYMBOLIC_PATTERN = re.compile(r'SyncData\((?!")')
@@ -201,7 +203,7 @@ def validate_typed_bindings(binding_catalog: dict, persistence_catalog: dict) ->
                 "key": entry["key"],
                 "ref": binding["ref"],
                 "type": binding["type"],
-                "source": binding["source"].replace("\\", "/"),
+                "source": current_source_path(ROOT, binding["source"].replace("\\", "/")).relative_to(ROOT).as_posix(),
                 "line": binding["line"],
             })
     actual_rows = discover_typed_bindings()
@@ -223,7 +225,7 @@ def validate_persistence(catalog: dict) -> dict:
 
     discovered: set[str] = set()
     for relative in catalog["sourceFiles"]:
-        source = ROOT / relative
+        source = current_source_path(ROOT, relative)
         assert_true(source.is_file(), f"missing production owner source: {relative}")
         discovered.update(KEY_PATTERN.findall(source.read_text(encoding="utf-8")))
 
@@ -238,7 +240,7 @@ def validate_persistence(catalog: dict) -> dict:
             continue
         if SYMBOLIC_PATTERN.search(source.read_text(encoding="utf-8")):
             symbolic_sources.append(source.relative_to(ROOT).as_posix())
-    assert_true(symbolic_sources == catalog["symbolicSyncDataSources"], "symbolic SyncData source inventory drifted")
+    assert_true(sorted(symbolic_sources) == sorted(current_source_path(ROOT, source).relative_to(ROOT).as_posix() for source in catalog["symbolicSyncDataSources"]), "symbolic SyncData source inventory drifted")
     assert_true(any(item["path"] == "PlayerExports" and item["classification"] == "user-writable-merge-without-deletion" for item in catalog["contentRoots"]), "PlayerExports deletion boundary missing")
     chunk_result = validate_chunk_contract(catalog)
     return {"literalKeys": len(keys), "sourceFiles": len(catalog["sourceFiles"]), "symbolicSources": len(symbolic_sources), "symbolicFamilies": len(catalog["symbolicKeyFamilies"]), **chunk_result}

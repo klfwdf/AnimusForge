@@ -12,7 +12,7 @@ HERE = Path(__file__).resolve().parent
 spec = importlib.util.spec_from_file_location("extract", ROOT / "tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py")
 extract = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(extract)
-source = (ROOT / "MyBehavior.cs").read_text(encoding="utf-8-sig")
+source = (ROOT / "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.cs").read_text(encoding="utf-8-sig")
 parser = argparse.ArgumentParser()
 parser.add_argument("--mutate", choices=["no-exclusion-copy", "no-eligibility", "no-result-publish"])
 args = parser.parse_args()
