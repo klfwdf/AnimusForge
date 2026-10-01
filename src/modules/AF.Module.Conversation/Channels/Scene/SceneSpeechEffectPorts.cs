@@ -1,0 +1,47 @@
+using System;
+using System.Collections.Generic;
+using System.Threading;
+using TaleWorlds.CampaignSystem;
+using TaleWorlds.MountAndBlade;
+using static AnimusForge.ShoutBehavior;
+namespace AnimusForge;
+internal sealed class SceneSpeechEffectPorts
+{
+    internal delegate void AddAgentToStareListCapability(Agent agent, bool interruptCurrentUse = false);
+    internal AddAgentToStareListCapability AddAgentToStareList;
+    internal delegate void HoldSceneConversationParticipantsCapability(List<NpcDataPacket> participants);
+    internal HoldSceneConversationParticipantsCapability HoldSceneConversationParticipants;
+    internal delegate void InterruptAgentSpeechForCombatCapability(int agentIndex, string reason);
+    internal InterruptAgentSpeechForCombatCapability InterruptAgentSpeechForCombat;
+    internal delegate bool IsSceneConversationEpochCurrentCapability(int epoch);
+    internal IsSceneConversationEpochCurrentCapability IsSceneConversationEpochCurrent;
+    internal delegate bool PersistNpcSpeechToNamedHeroesCapability(int speakerAgentIndex, string speakerName, string response, List<NpcDataPacket> nearbyData, bool requireMemoryReceipt = false);
+    internal PersistNpcSpeechToNamedHeroesCapability PersistNpcSpeechToNamedHeroes;
+    internal delegate bool RecordResponseForAllNearbySafeCapability(List<NpcDataPacket> nearbyData, int speakerAgentIndex, string speakerName, string response, bool requireMemoryReceipt = false);
+    internal RecordResponseForAllNearbySafeCapability RecordResponseForAllNearbySafe;
+    internal delegate void RecordSystemFactForNearbySafeCapability(List<NpcDataPacket> nearbyData, string factText);
+    internal RecordSystemFactForNearbySafeCapability RecordSystemFactForNearbySafe;
+    internal delegate void RefreshActiveInteractionTimeoutCapability(NpcDataPacket primaryTarget, int participantCount, float timeoutSeconds);
+    internal RefreshActiveInteractionTimeoutCapability RefreshActiveInteractionTimeout;
+    internal delegate void ReleaseSceneConversationConstraintsCapability(List<NpcDataPacket> participants, int fallbackAgentIndex = -1, bool stopAutoGroupSession = true, bool clearQueuedSpeech = true, bool forceFullAutonomyRelease = false);
+    internal ReleaseSceneConversationConstraintsCapability ReleaseSceneConversationConstraints;
+    internal delegate Hero ResolveHeroFromAgentIndexCapability(int agentIndex);
+    internal ResolveHeroFromAgentIndexCapability ResolveHeroFromAgentIndex;
+    internal delegate void ScheduleLordsHallMissionEntryAfterSpeechCapability(int agentIndex, SceneSpeechPlaybackInfo playbackInfo, string reason, bool waitForConversationEnd = false);
+    internal ScheduleLordsHallMissionEntryAfterSpeechCapability ScheduleLordsHallMissionEntryAfterSpeech;
+    internal delegate void ScheduleMeetingReleaseAfterSpeechCapability(int agentIndex, Hero targetHero, SceneSpeechPlaybackInfo playbackInfo);
+    internal ScheduleMeetingReleaseAfterSpeechCapability ScheduleMeetingReleaseAfterSpeech;
+    internal delegate void ScheduleSceneAutonomyRestoreAfterSpeechCapability(int agentIndex, SceneSpeechPlaybackInfo playbackInfo);
+    internal ScheduleSceneAutonomyRestoreAfterSpeechCapability ScheduleSceneAutonomyRestoreAfterSpeech;
+    internal delegate void ScheduleWorldMapMissionExitAfterSpeechCapability(int agentIndex, SceneSpeechPlaybackInfo playbackInfo);
+    internal ScheduleWorldMapMissionExitAfterSpeechCapability ScheduleWorldMapMissionExitAfterSpeech;
+    internal delegate SceneSpeechPlaybackInfo ShowNpcSpeechOutputCapability(NpcDataPacket npc, Agent liveAgent, string content, bool allowTts = true, bool attachTtsToSceneAgent = true, bool suppressInteractionTimeoutArm = false);
+    internal ShowNpcSpeechOutputCapability ShowNpcSpeechOutput;
+    internal delegate void ShowOpenLordsHallResponseAndScheduleEntryCapability(NpcDataPacket npc, Agent agent, List<NpcDataPacket> allNpcData, string content, bool commitHistory, string afterSpeechInfoMessage);
+    internal ShowOpenLordsHallResponseAndScheduleEntryCapability ShowOpenLordsHallResponseAndScheduleEntry;
+    internal delegate bool TryConsumeSceneNpcSurrenderTagCapability(NpcDataPacket speaker, ref string content, out Hero targetHero, out CharacterObject targetCharacter, out int targetAgentIndex);
+    internal TryConsumeSceneNpcSurrenderTagCapability TryConsumeSceneNpcSurrenderTag;
+    internal delegate bool TryTriggerOpenLordsHallActionCapability(NpcDataPacket npc, Agent agent, ref string content);
+    internal TryTriggerOpenLordsHallActionCapability TryTriggerOpenLordsHallAction;
+    internal Func<bool> GetDuelLiteralHit;
+}

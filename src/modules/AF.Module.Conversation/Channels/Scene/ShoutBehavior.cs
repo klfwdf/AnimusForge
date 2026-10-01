@@ -7522,7 +7522,7 @@ private static void SplitSceneNpcRoleIntroSections(string fullIntro, bool isHero
 		return ConversationSpeechTextRules.StripStageDirectionsForPassiveShout(text, new ConversationSpeechTextOptions(IsDetailedSceneSpeechPromptEnabled(), ShouldPreserveSceneAsteriskActions()));
 	}
 
-	private static string StripActionTagsForSceneSpeech(string text)
+	internal static string StripActionTagsForSceneSpeech(string text)
 	{
 		return ConversationActionPostprocessOwner.StripActionTagsForSceneSpeech(text);
 	}
@@ -18786,7 +18786,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		return text2.Trim();
 	}
 
-	private static bool ContainsOpenLordsHallActionTag(string text)
+	internal static bool ContainsOpenLordsHallActionTag(string text)
 	{
 		return !string.IsNullOrWhiteSpace(text) && Regex.IsMatch(text, "\\[ACTION:OPEN_LORDS_HALL\\]", RegexOptions.IgnoreCase);
 	}
@@ -22555,7 +22555,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		}
 	}
 
-	private static bool ShouldSuppressSceneConversationControlForMeeting()
+	internal static bool ShouldSuppressSceneConversationControlForMeeting()
 	{
 		try
 		{
@@ -22651,7 +22651,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		return IsSceneConversationCombatContext();
 	}
 
-	private static void StripMeetingTauntTagsForSceneConversation(ref string content)
+	internal static void StripMeetingTauntTagsForSceneConversation(ref string content)
 	{
 		if (string.IsNullOrWhiteSpace(content))
 		{
@@ -22734,7 +22734,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		_stopStaringTime = 0f;
 	}
 
-	private static bool IsMeetingSceneConversationReleaseSensitive()
+	internal static bool IsMeetingSceneConversationReleaseSensitive()
 	{
 		try
 		{

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -1240,7 +1240,7 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 		});
 	}
 
-	private static bool CanPublishImmediateSceneReaction(Func<bool> canStillPublish)
+	internal static bool CanPublishImmediateSceneReaction(Func<bool> canStillPublish)
 	{
 		if (canStillPublish == null)
 		{

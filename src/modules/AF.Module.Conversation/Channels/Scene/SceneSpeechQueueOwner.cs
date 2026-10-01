@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Threading;
 using System;
 
@@ -6,7 +6,7 @@ namespace AnimusForge;
 
 /// <summary>
 /// Owns queue and worker-lease state for the Scene speech pipeline. Payload execution,
-/// Bannerlord access, timing, audio, history, and action side effects remain with the host.
+/// Bannerlord effects, audio completion, and history are delegated to specialized pipeline owners.
 /// </summary>
 internal sealed class SceneSpeechQueueOwner<T> where T : class
 {

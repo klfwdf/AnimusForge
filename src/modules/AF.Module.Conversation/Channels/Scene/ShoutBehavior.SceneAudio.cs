@@ -113,13 +113,8 @@ public partial class ShoutBehavior
 			finally { RetireTtsPlaybackRequest(request); }
 		});
 	}
-	private void HandleSceneTtsPlaybackFinishedOnMainThread(int agentIndex)
+	private void PrepareInteractionCompletion(int agentIndex)
 	{
-		if (agentIndex < 0)
-		{
-			return;
-		}
-		FreezeWatchdog.Mark("SceneTts.playback_finished.main_begin", "agent=" + agentIndex + " thread=" + Thread.CurrentThread.ManagedThreadId, immediate: true);
 		long interactionToken = 0L;
 		bool hasInteractionToken = false;
 		bool hostileFinishedSpeech = false;
@@ -153,46 +148,9 @@ public partial class ShoutBehavior
 				ArmActiveInteractionTimeoutNow(agentIndex, interactionToken);
 			});
 		}
-		RunSceneTtsPlaybackFinishedStep("dialogue_feed", agentIndex, delegate
-		{
-			FlushPendingSceneDialogueFeedAfterSpeech(agentIndex);
-		});
-		RunSceneTtsPlaybackFinishedStep("follow_command", agentIndex, delegate
-		{
-			_sceneMovement.FlushSceneFollowCommandAfterSpeech(agentIndex);
-		});
-		RunSceneTtsPlaybackFinishedStep("meeting_release", agentIndex, delegate
-		{
-			if (FlushLordsHallMissionEntryAfterSpeech(agentIndex))
-			{
-				return;
-			}
-			FlushMeetingReleaseAfterSpeech(agentIndex);
-			FlushWorldMapMissionExitAfterSpeech(agentIndex);
-		});
-		RunSceneTtsPlaybackFinishedStep("summon_return", agentIndex, delegate
-		{
-			_sceneMovement.FlushSceneSummonReturnAfterSpeech(agentIndex);
-		});
-		RunSceneTtsPlaybackFinishedStep("guide_return", agentIndex, delegate
-		{
-			_sceneMovement.FlushSceneGuideReturnAfterSpeech(agentIndex);
-		});
-		RunSceneTtsPlaybackFinishedStep("autonomy_restore", agentIndex, delegate
-		{
-			FlushSceneAutonomyRestoreAfterSpeech(agentIndex);
-		});
-		RunSceneTtsPlaybackFinishedStep("pending_launches", agentIndex, delegate
-		{
-			_sceneMovement.FlushPendingSceneSummonLaunches(agentIndex);
-			_sceneMovement.FlushPendingSceneGuideLaunches(agentIndex);
-		});
-		RunSceneTtsPlaybackFinishedStep("lipsync_cleanup", agentIndex, delegate
-		{
-			CleanupSceneLipSyncAfterPlaybackFinished(agentIndex);
-		});
-		FreezeWatchdog.Mark("SceneTts.playback_finished.main_end", "agent=" + agentIndex + " remaining=" + _mainThreadActions.Count, immediate: true);
 	}
+
+	private void HandleSceneTtsPlaybackFinishedOnMainThread(int agentIndex) => _sceneSpeechCompletion.Complete(agentIndex);
 	private void RunSceneTtsPlaybackFinishedStep(string step, int agentIndex, Action action)
 	{
 		if (action == null)
