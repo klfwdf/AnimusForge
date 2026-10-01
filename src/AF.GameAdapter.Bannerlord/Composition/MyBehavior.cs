@@ -4119,174 +4119,9 @@ public partial class MyBehavior : CampaignBehaviorBase
 		return true;
 	}
 
-	private async Task ProcessMemorySummaryQueueAsync(bool forceOverviewCandidateScan = false)
-	{
-		long runtimeGeneration = SaveRuntimeGuard.CaptureGeneration();
-		var run = _memorySummaryRunOwner.TryBegin(runtimeGeneration);
-		if (run == null) return;
-		try
-		{
-			var plan = await BuildMemorySummaryPlanAsync(runtimeGeneration, run: run);
-			if (plan == null) return;
-			List<object> queueItems = plan.Items;
-			int burstSize = 1;
-			var attemptedOverviewIds = plan.OverviewIds;
-			bool accepted = await RunMemorySummaryRunPhaseAsync(run, runtimeGeneration, delegate
-			{
-				if (queueItems.Count == 0)
-				{
-					if (ShouldScanMemoryOverviewCandidates(forceOverviewCandidateScan))
-					{
-						if (forceOverviewCandidateScan) QueueAllMemoryOverviewCandidatesForDeferredScan();
-						else QueueDirtyMemoryOverviewCandidatesForDeferredScan();
-					}
-				}
-				else QueueDirtyMemoryOverviewCandidatesForDeferredScan();
-				burstSize = GetMemorySummaryRequestsPerMinuteFromSettings();
-				if (queueItems.Count > 0)
-					InformationManager.DisplayMessage(new InformationMessage("AnimusForge 开始日结压缩任务，共 " + queueItems.Count + " 个；对话记忆 " + plan.DailyCount + " 个，重大履历 " + plan.MajorCount + " 个，记忆总览 " + plan.OverviewCount + " 个；每分钟上限 " + burstSize + "。"));
-				return true;
-			});
-			if (!accepted || queueItems.Count == 0) return;
-			var results = new List<MemorySummaryExecutionResult>();
-			var majorResults = new List<MajorActionSummaryExecutionResult>();
-			var overviewResults = new List<MemoryOverviewExecutionResult>();
-			await RunDailySummaryQueueItemsAsync(queueItems, burstSize, results, majorResults, overviewResults, run);
-			if (!run.IsCurrent || SaveRuntimeGuard.IsStale(runtimeGeneration, "memory_summary_queue_results")) return;
-			var failures = new List<string>();
-			int appliedDaily = 0, appliedMajor = 0, appliedOverview = 0;
-			// One accepted business result per dispatched operation; no whole-result foreach inside a callback.
-			foreach (var result in results)
-			{
-				accepted = await RunMemorySummaryRunPhaseAsync(run, runtimeGeneration, delegate
-				{
-					if (MemorySummaryAttemptRunner.Accept(result?.Job != null, result?.IsObsolete ?? true,
-						() => IsMemorySummaryInputCurrent(result.Source), result?.Success ?? false,
-						() => ApplyMemorySummarySuccess(result.Job, result.Block), () =>
-						{
-							MarkMemorySummaryFailure(result.Job, result.Error);
-							failures.Add((result.Job.HeroName ?? result.Job.HeroId) + " 第" + result.Job.GameDayIndex + "日：" + (result.Error ?? "未知错误"));
-						})) appliedDaily++;
-					return true;
-				});
-				if (!accepted) return;
-			}
-			foreach (var result in majorResults)
-			{
-				accepted = await RunMemorySummaryRunPhaseAsync(run, runtimeGeneration, delegate
-				{
-					if (MemorySummaryAttemptRunner.Accept(result?.Job != null, result?.IsObsolete ?? true,
-						() => IsMemorySummaryInputCurrent(result.Source), result?.Success ?? false,
-						() => ApplyMajorActionSummarySuccess(result.Job, result.State), () =>
-						{
-							MarkMajorActionSummaryFailure(result.Job, result.Error);
-							failures.Add((result.Job.HeroName ?? result.Job.HeroId) + " 重大履历：" + (result.Error ?? "未知错误"));
-						})) appliedMajor++;
-					return true;
-				});
-				if (!accepted) return;
-			}
-			// Initial and extra overview waves share the same acceptance loop. Obsolete work is not re-requested in this run.
-			for (int wave = 0; wave < 2; wave++)
-			{
-				foreach (var result in overviewResults)
-				{
-					accepted = await RunMemorySummaryRunPhaseAsync(run, runtimeGeneration, delegate
-					{
-						if (MemorySummaryAttemptRunner.Accept(result?.Job != null, result?.IsObsolete ?? true,
-							() => IsMemorySummaryInputCurrent(result.Source), result?.Success ?? false,
-							() => ApplyMemoryOverviewSuccess(result.Job, result.State), () =>
-							{
-								MarkMemoryOverviewFailure(result.Job, result.Error);
-								failures.Add((result.Job.HeroName ?? result.Job.HeroId) + " 记忆总览：" + (result.Error ?? "未知错误"));
-							})) appliedOverview++;
-						return true;
-					});
-					if (!accepted) return;
-				}
-				if (wave == 1) break;
-				accepted = await RunMemorySummaryRunPhaseAsync(run, runtimeGeneration, delegate
-				{
-					QueueDirtyMemoryOverviewCandidatesForDeferredScan();
-					return true;
-				});
-				if (!accepted) return;
-				var extraPlan = await BuildMemorySummaryPlanAsync(runtimeGeneration, overviewOnly: true, excludedOverviewIds: attemptedOverviewIds, run: run);
-				if (extraPlan == null) return;
-				List<object> extra = extraPlan.Items;
-				if (extra.Count == 0) break;
-				await Task.Delay(60000);
-				if (!run.IsCurrent || SaveRuntimeGuard.IsStale(runtimeGeneration, "memory_summary_queue_extra_delay")) return;
-				overviewResults = new List<MemoryOverviewExecutionResult>();
-				await RunDailySummaryQueueItemsAsync(extra, burstSize, new List<MemorySummaryExecutionResult>(), new List<MajorActionSummaryExecutionResult>(), overviewResults, run);
-				if (!run.IsCurrent || SaveRuntimeGuard.IsStale(runtimeGeneration, "memory_summary_queue_extra_results")) return;
-			}
-			if (await BuildMemorySummaryPlanAsync(runtimeGeneration, cleanupOnly: true, run: run) == null) return;
-			// Failure text is detached queue-local data; joining a large backlog does
-			// not need to occupy the main-thread notification/acceptance operation.
-			string failureMessage = failures.Count == 0 ? null : await Task.Run(() =>
-				"以下日结压缩任务重试 3 次后仍失败：\n\n" + string.Join("\n", failures) + "\n\n请修复 API 或调低记忆总结 RPM 后重试。");
-			await RunMemorySummaryRunPhaseAsync(run, runtimeGeneration, delegate
-			{
-				if (failureMessage != null)
-					ShowCompressedMemoryBlockingPopup("日结压缩总结失败", failureMessage, runtimeGeneration);
-				else if (appliedDaily + appliedMajor + appliedOverview > 0)
-					InformationManager.DisplayMessage(new InformationMessage("AnimusForge 日结压缩完成：对话记忆 " + appliedDaily + " 个，重大履历 " + appliedMajor + " 个，记忆总览 " + appliedOverview + " 个。"));
-				return true;
-			});
-		}
-		catch (Exception ex)
-		{
-			Logger.Log("CompressedMemory", "[ERROR] ProcessMemorySummaryQueueAsync failed: " + ex);
-			if (run.IsCurrent && SaveRuntimeGuard.IsCurrentGeneration(runtimeGeneration))
-				await RunMemorySummaryRunPhaseAsync(run, runtimeGeneration, () =>
-				{
-					ShowCompressedMemoryBlockingPopup("压缩记忆总结异常", "任务可能已有部分写入，本轮已停止；请查看日志后再重试。\n\n" + ex.Message, runtimeGeneration);
-					return true;
-				});
-		}
-		finally
-		{
-			run.Dispose(); // An old completion cannot release a replacement run.
-		}
-	}
+	private Task ProcessMemorySummaryQueueAsync(bool forceOverviewCandidateScan = false) => CreateMemorySummaryQueueRunRuntime().RunAsync(forceOverviewCandidateScan);
 
-	private async Task RunDailySummaryQueueItemsAsync(List<object> queueItems, int burstSize, List<MemorySummaryExecutionResult> results, List<MajorActionSummaryExecutionResult> majorResults, List<MemoryOverviewExecutionResult> overviewResults, MemorySummaryRunOwner.Lease run = null)
-	{
-		long runtimeGeneration = run?.Generation ?? SaveRuntimeGuard.CaptureGeneration();
-		int clampedBurstSize = Math.Max(1, burstSize);
-		for (int i = 0; i < (queueItems?.Count ?? 0); i += clampedBurstSize)
-		{
-			// A spacing delay must not rebind old work to a new save generation.
-			if ((run != null && !run.IsCurrent) || !ReferenceEquals(Instance, this) || SaveRuntimeGuard.IsStale(runtimeGeneration, "memory_summary_queue_wave")) return;
-			List<object> wave = queueItems.Skip(i).Take(clampedBurstSize).ToList();
-			List<Task<DailySummaryQueueResult>> tasks = wave.Select(item => ExecuteDailySummaryQueueItemAsync(item, run)).ToList();
-			DailySummaryQueueResult[] completed = await Task.WhenAll(tasks);
-			foreach (DailySummaryQueueResult completedResult in completed)
-			{
-				if (completedResult == null)
-				{
-					continue;
-				}
-				if (completedResult.MemoryResult != null)
-				{
-					results?.Add(completedResult.MemoryResult);
-				}
-				if (completedResult.MajorActionResult != null)
-				{
-					majorResults?.Add(completedResult.MajorActionResult);
-				}
-				if (completedResult.MemoryOverviewResult != null)
-				{
-					overviewResults?.Add(completedResult.MemoryOverviewResult);
-				}
-			}
-			if (i + clampedBurstSize < (queueItems?.Count ?? 0))
-			{
-				await Task.Delay(60000);
-			}
-		}
-	}
+	private Task RunDailySummaryQueueItemsAsync(List<object> queueItems, int burstSize, List<MemorySummaryExecutionResult> results, List<MajorActionSummaryExecutionResult> majorResults, List<MemoryOverviewExecutionResult> overviewResults, MemorySummaryRunOwner.Lease run = null) => CreateMemorySummaryQueueRunRuntime().RunQueueItemsAsync(queueItems, burstSize, results, majorResults, overviewResults, run);
 
 	private async Task<DailySummaryQueueResult> ExecuteDailySummaryQueueItemAsync(object item, MemorySummaryRunOwner.Lease run = null)
 	{
@@ -12042,7 +11877,6 @@ TeamModuleServices.CivilWar.AdvanceWeek(devEditableKingdom, weekIndex, GetKingdo
 			}
 		}
 
-
 	private static bool IsPlayerWeeklySourceMaterial(string materialKind, string actorHeroId, string stableKey)
 	{
 		string kind = (materialKind ?? "").Trim();
@@ -15891,48 +15725,9 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 		return stringBuilder.ToString().Trim();
 	}
 
-	private static string GetClanTierReputationLabel(int tier)
-	{
-		int num = Math.Max(0, tier);
-		if (num <= 0)
-		{
-			return "身份低微";
-		}
-		return num switch
-		{
-			1 => "小有名气", 
-			2 => "崭露新贵", 
-			3 => "声名清贵", 
-			4 => "门第高华", 
-			5 => "威权显赫", 
-			_ => "贵不可言", 
-		};
-	}
+	private static string GetClanTierReputationLabel(int tier) => PersonaIntroTextRules.GetClanTierReputationLabel(tier);
 
-	private static string BuildAgeBracketLabel(float age)
-	{
-		if (age >= 60f)
-		{
-			return "老年";
-		}
-		if (age >= 46f)
-		{
-			return "中年";
-		}
-		if (age >= 30f)
-		{
-			return "壮年";
-		}
-		if (age >= 18f)
-		{
-			return "青年";
-		}
-		if (age > 0f)
-		{
-			return "少年";
-		}
-		return "未知";
-	}
+	private static string BuildAgeBracketLabel(float age) => PersonaIntroTextRules.BuildAgeBracketLabel(age);
 
 	private static bool ContainsIgnoreCase(string text, string token)
 	{
@@ -16558,99 +16353,7 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 		}
 	}
 
-	private static string BuildHeroIdentityTitleForPrompt(Hero hero)
-	{
-		if (hero == null)
-		{
-			return "未知身份";
-		}
-		try
-		{
-			if (hero.Occupation == Occupation.Wanderer)
-			{
-				return "流浪者";
-			}
-		}
-		catch
-		{
-		}
-		try
-		{
-			Clan clan = hero.Clan;
-			Kingdom kingdom = clan?.Kingdom;
-			if (clan != null && clan.IsUnderMercenaryService && kingdom != null)
-			{
-				string text = (kingdom.Name?.ToString() ?? "").Trim();
-				if (!string.IsNullOrWhiteSpace(text))
-				{
-					return text + "的雇佣兵";
-				}
-			}
-		}
-		catch
-		{
-		}
-		try
-		{
-			if (TryResolveActiveKingdomRuledByHeroForPrompt(hero, out Kingdom ruledKingdom))
-			{
-				string kingdomName = (ruledKingdom.Name?.ToString() ?? "").Trim();
-				if (!string.IsNullOrWhiteSpace(kingdomName))
-				{
-					return kingdomName + "的统治者";
-				}
-				return "统治者";
-			}
-			Clan clan = hero.Clan;
-			if (clan != null && clan.Leader == hero)
-			{
-				string clanName = (clan.Name?.ToString() ?? "").Trim();
-				if (string.IsNullOrWhiteSpace(clanName))
-				{
-					return "家族族长";
-				}
-				return clanName.EndsWith("家族", StringComparison.Ordinal)
-					? clanName + "的族长"
-					: clanName + "家族的族长";
-			}
-			string text2 = (hero.MapFaction?.Name?.ToString() ?? "").Trim();
-			if (hero.IsLord)
-			{
-				if (!string.IsNullOrWhiteSpace(text2))
-				{
-					return text2 + "的封臣";
-				}
-				return "领主";
-			}
-			if (hero.IsWanderer)
-			{
-				return "流浪者";
-			}
-			if (hero.IsNotable)
-			{
-				return "地方要人";
-			}
-			switch (hero.Occupation)
-			{
-			case Occupation.Merchant:
-				return "商人";
-			case Occupation.Artisan:
-				return "工匠";
-			case Occupation.GangLeader:
-				return "帮派首领";
-			case Occupation.Headman:
-				return "村长";
-			case Occupation.Preacher:
-				return "教士";
-			case Occupation.RuralNotable:
-				return "乡绅";
-			}
-		}
-		catch
-		{
-		}
-		return "普通角色";
-	}
+	private static string BuildHeroIdentityTitleForPrompt(Hero hero) => PersonaEquipmentPromptCaptureAdapter.CaptureHeroIdentityTitle(hero, CreateHeroIdentityPromptLivePort());
 
 	private static void GetHeroFactionAndLiegeForPrompt(Hero hero, out string factionName, out string liegeName)
 	{
@@ -17094,10 +16797,7 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 		}
 	}
 
-	private static string GetEquipmentContextLabelForPrompt(bool useCivilianEquipment)
-	{
-		return useCivilianEquipment ? "常服" : "战斗装";
-	}
+	private static string GetEquipmentContextLabelForPrompt(bool useCivilianEquipment) => PersonaIntroTextRules.GetEquipmentContextLabelForPrompt(useCivilianEquipment);
 
 	private static bool TryResolveEquipmentContextForPrompt(Hero hero, out bool useCivilianEquipment)
 	{
@@ -17182,112 +16882,13 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 		}
 	}
 
-	private static bool IsWeaponEquipmentIndexForPrompt(EquipmentIndex index)
-	{
-		return index == EquipmentIndex.WeaponItemBeginSlot || index == EquipmentIndex.Weapon1 || index == EquipmentIndex.Weapon2 || index == EquipmentIndex.Weapon3;
-	}
+	private static bool IsWeaponEquipmentIndexForPrompt(EquipmentIndex index) => EquipmentPromptCaptureAdapter.IsWeaponEquipmentIndexForPrompt(index);
 
-	private static void AddEquipmentSummaryItemForPrompt(Dictionary<string, int> counts, Dictionary<string, string> names, EquipmentIndex index, ItemObject item)
-	{
-		if (counts == null || names == null || item == null)
-		{
-			return;
-		}
-		string text = (item.StringId ?? "").Trim();
-		if (string.IsNullOrWhiteSpace(text))
-		{
-			text = index.ToString();
-		}
-		string value = (item.Name?.ToString() ?? "").Trim();
-		if (string.IsNullOrWhiteSpace(value))
-		{
-			value = text;
-		}
-		if (!counts.ContainsKey(text))
-		{
-			counts[text] = 0;
-			names[text] = value;
-		}
-		counts[text]++;
-	}
+	private static void AddEquipmentSummaryItemForPrompt(Dictionary<string, int> counts, Dictionary<string, string> names, EquipmentIndex index, ItemObject item) => EquipmentPromptCaptureAdapter.AddEquipmentSummaryItemForPrompt(counts, names, index, item);
 
-	private static List<string> BuildEquipmentSummaryItemLinesForPrompt(Dictionary<string, int> counts, Dictionary<string, string> names, int maxEntries)
-	{
-		if (counts == null || counts.Count == 0)
-		{
-			return new List<string>();
-		}
-		return (from x in (from x in counts.Select(delegate(KeyValuePair<string, int> kv)
-				{
-					string value;
-					string name = (names != null && names.TryGetValue(kv.Key, out value)) ? value : kv.Key;
-					return new
-					{
-						Name = name,
-						Count = kv.Value
-					};
-				})
-				orderby x.Count descending
-				select x).ThenBy(x => x.Name, StringComparer.Ordinal).Take(Math.Max(1, maxEntries))
-			select x.Name + "x" + x.Count).ToList();
-	}
+	private static List<string> BuildEquipmentSummaryItemLinesForPrompt(Dictionary<string, int> counts, Dictionary<string, string> names, int maxEntries) => PersonaIntroTextRules.BuildEquipmentSummaryItemLinesForPrompt(counts, names, maxEntries);
 
-	private static string BuildHeroEquipmentSummaryForPrompt(Hero hero, int maxEntries = 8)
-	{
-		if (hero == null)
-		{
-			return "未知";
-		}
-		bool useCivilianEquipment = false;
-		TryResolveEquipmentContextForPrompt(hero, out useCivilianEquipment);
-		string text = GetEquipmentContextLabelForPrompt(useCivilianEquipment);
-		try
-		{
-			Dictionary<string, int> wornCounts = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
-			Dictionary<string, string> wornNames = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-			Dictionary<string, int> weaponCounts = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
-			Dictionary<string, string> weaponNames = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-			EquipmentIndex[] array = new EquipmentIndex[9]
-			{
-				EquipmentIndex.NumAllWeaponSlots,
-				EquipmentIndex.Body,
-				EquipmentIndex.Leg,
-				EquipmentIndex.Gloves,
-				EquipmentIndex.Cape,
-				EquipmentIndex.WeaponItemBeginSlot,
-				EquipmentIndex.Weapon1,
-				EquipmentIndex.Weapon2,
-				EquipmentIndex.Weapon3
-			};
-			EquipmentIndex[] array2 = array;
-			for (int i = 0; i < array2.Length; i++)
-			{
-				EquipmentIndex index = array2[i];
-				ItemObject item = TryGetHeroEquipmentItemForPrompt(hero, index, useCivilianEquipment);
-				if (item != null)
-				{
-					AddEquipmentSummaryItemForPrompt(IsWeaponEquipmentIndexForPrompt(index) ? weaponCounts : wornCounts, IsWeaponEquipmentIndexForPrompt(index) ? weaponNames : wornNames, index, item);
-				}
-			}
-			List<string> wornItems = BuildEquipmentSummaryItemLinesForPrompt(wornCounts, wornNames, maxEntries);
-			List<string> weaponItems = BuildEquipmentSummaryItemLinesForPrompt(weaponCounts, weaponNames, maxEntries);
-			if (wornItems.Count == 0 && weaponItems.Count == 0)
-			{
-				return text + "：赤身裸体";
-			}
-			StringBuilder stringBuilder = new StringBuilder();
-			stringBuilder.Append(text).Append("：").Append(wornItems.Count > 0 ? string.Join("、", wornItems) : "赤身裸体");
-			if (weaponItems.Count > 0)
-			{
-				stringBuilder.Append("，携带的武器：").Append(string.Join("、", weaponItems));
-			}
-			return stringBuilder.ToString();
-		}
-		catch
-		{
-			return text + "：赤身裸体";
-		}
-	}
+	private static string BuildHeroEquipmentSummaryForPrompt(Hero hero, int maxEntries = 8) => EquipmentPromptCaptureAdapter.BuildHeroEquipmentSummaryForPrompt(hero, CreateHeroEquipmentPromptLivePort(), maxEntries);
 
 	private string BuildPlayerIdentityInfoForPrompt(Hero playerHero, bool includeRuleGatedFields, bool includeTradePricing, bool includeGuidePriceDetails, bool includeMarriageCandidates = false, Hero targetHero = null)
 	{
@@ -17662,120 +17263,7 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 		return BuildNobleEtiquettePromptForHero(npcHero);
 	}
 
-	private string BuildNpcSystemTopPromptIntro(Hero npcHero, bool includeTradePricing)
-	{
-		if (npcHero == null)
-		{
-			return "";
-		}
-		string clanName = "无家族";
-		int clanTier = 0;
-		try
-		{
-			clanTier = npcHero.Clan?.Tier ?? 0;
-			string rawClanName = (npcHero.Clan?.Name?.ToString() ?? "").Trim();
-			if (!string.IsNullOrWhiteSpace(rawClanName))
-			{
-				clanName = rawClanName;
-			}
-		}
-		catch
-		{
-		}
-		GetHeroFactionAndLiegeForPrompt(npcHero, out var factionName, out var liegeName);
-		string factionDisplay = (factionName ?? "").Trim();
-		if (string.IsNullOrWhiteSpace(factionDisplay))
-		{
-			factionDisplay = "无（独立）";
-		}
-		string liegeDisplay = (liegeName ?? "").Trim();
-		if (!string.IsNullOrWhiteSpace(liegeDisplay) && liegeDisplay != "无" && !liegeDisplay.EndsWith("（本人）", StringComparison.Ordinal))
-		{
-			factionDisplay = factionDisplay + "（效忠：" + liegeDisplay + "）";
-		}
-		string heroName = (npcHero.Name?.ToString() ?? "").Trim();
-		if (string.IsNullOrWhiteSpace(heroName))
-		{
-			heroName = "未知人物";
-		}
-		string identityTitle = BuildHeroIdentityTitleForPrompt(npcHero);
-		string reputationText = GetClanTierReputationLabel(clanTier) + $"（{Math.Max(0, clanTier)} level）";
-		string equipmentText = BuildHeroEquipmentSummaryForPrompt(npcHero);
-		string ageText = BuildAgeBracketLabel(npcHero.Age);
-		string cultureText = GetHeroCultureNameForPrompt(npcHero);
-		if (!string.IsNullOrWhiteSpace(cultureText) && !cultureText.EndsWith("人", StringComparison.Ordinal))
-		{
-			cultureText += "人";
-		}
-		GetNpcPersonaStrings(npcHero, out var personality, out var background);
-		string personalityText = string.IsNullOrWhiteSpace(personality) ? "暂无记录" : personality.Trim();
-		string backgroundText = string.IsNullOrWhiteSpace(background) ? "暂无记录" : background.Trim();
-		string nobleEtiquettePrompt = BuildNobleEtiquettePromptForHero(npcHero);
-		string clanRole = npcHero.IsFemale ? "女性成员" : "男性成员";
-		try
-		{
-			Hero leader = npcHero.Clan?.Leader;
-			if (leader != null && leader == npcHero)
-			{
-				clanRole = "族长";
-			}
-		}
-		catch
-		{
-		}
-		string inventorySummary = "";
-		if (includeTradePricing && RewardSystemBehavior.Instance != null)
-		{
-			try
-			{
-				MentionedWorldEntities mentions = AIConfigHandler.GetLatestAuxiliaryMentionedEntitiesForExternal();
-				int promptListMax = PromptListRetrievalService.GetMaxCandidateCount();
-				inventorySummary = RewardSystemBehavior.Instance.BuildFilteredInventorySummaryForAI(npcHero, mentions, promptListMax, includePrivateBattleEquipment: includeTradePricing);
-			}
-			catch
-			{
-				inventorySummary = "";
-			}
-		}
-		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.Append("你是")
-			.Append(factionDisplay)
-			.Append("的")
-			.Append(clanName)
-			.Append("的")
-			.Append(heroName)
-			.Append("，你是家族中的")
-			.Append(clanRole)
-			.Append("，你的身份是")
-			.Append(identityTitle)
-			.Append("，你")
-			.Append(reputationText)
-			.Append("，你身上穿着")
-			.Append(equipmentText)
-			.Append("，你的个性为：")
-			.Append(personalityText)
-			.Append("，你的背景是：")
-			.Append(backgroundText);
-		string npcPlayerRelationshipLine = BuildNpcPlayerKinshipPromptLine(npcHero, includeSameClanFallback: true);
-		if (!string.IsNullOrWhiteSpace(npcPlayerRelationshipLine))
-		{
-			stringBuilder.Append("。").Append(npcPlayerRelationshipLine);
-		}
-		if (!string.IsNullOrWhiteSpace(nobleEtiquettePrompt))
-		{
-			stringBuilder.Append("。").Append(nobleEtiquettePrompt).Append("你的年纪是");
-		}
-		else
-		{
-			stringBuilder.Append("，你的年纪是");
-		}
-		stringBuilder
-			.Append(ageText)
-			.Append("，你是")
-			.Append(cultureText)
-			.Append("。");
-		return stringBuilder.ToString().Trim();
-	}
+	private string BuildNpcSystemTopPromptIntro(Hero npcHero, bool includeTradePricing) => CreatePersonaEquipmentPromptCaptureAdapter().BuildNpcSystemIntro(npcHero, includeTradePricing);
 
 	private static int GetDaysInSeasonSafeForPrompt()
 	{
@@ -18281,102 +17769,6 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 			return null;
 		}
 	}
-
-
-
-
-
-
-
-
-
-
-
-
-
-	// Used at preprocess, prompt, and action boundaries. Do not cache this authorization:
-	// it checks only the current Agent and one live party, so revalidation stays bounded and
-	// prevents a changed encounter or roster from reusing stale transfer authority.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-	/// <summary>
-	/// Checks only the stable fixed-asset ID grammar used by GIVE_ASSET. This deliberately
-	/// does not treat display names or arbitrary item labels as fixed assets, so ordinary
-	/// RP item literals keep their existing fallback behavior.
-	/// </summary>
-
-	/// <summary>
-	/// Resolves a real fixed asset from its canonical runtime ID without consulting the
-	/// current prompt snapshot. Settlement IDs are checked by exact runtime ID so custom
-	/// module settlement IDs work too; there is no name matching or item-object scan here.
-	/// </summary>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 	private HeroShownRecord GetShownRecord(Hero hero)
 	{
@@ -29309,26 +28701,7 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 
 
 
-#if false
-	private void ConfirmGenerateDevWeeklyReports()
-	{
-		List<WeeklyEventMaterialPreviewGroup> list = OrderWeeklyReportGenerationGroups(BuildWeeklyEventMaterialPreviewGroups());
-		int currentGameDayIndexSafe = GetCurrentGameDayIndexSafe();
-		int num = Math.Max(0, currentGameDayIndexSafe - currentGameDayIndexSafe % 7);
-		int num2 = Math.Max(1, currentGameDayIndexSafe / 7 + 1);
-		int num3 = BuildWeeklyReportBatchRequests(list, num2, num, currentGameDayIndexSafe).Count;
-		List<string> list2 = GetKingdomIdsByPlayerProximity(list.Where((WeeklyEventMaterialPreviewGroup x) => string.Equals((x.GroupKind ?? "").Trim(), "kingdom", StringComparison.OrdinalIgnoreCase)).Select((WeeklyEventMaterialPreviewGroup x) => x.KingdomId));
-		string text = ((list2.Count > 0) ? string.Join(" -> ", list2.Select(ResolveKingdomDisplay).Where((string x) => !string.IsNullOrWhiteSpace(x))) : "无");
-		InformationManager.ShowInquiry(new InquiryData("生成本周周报草案", "即将按当前周素材生成开发态周报草案。\n\n- 生成对象：世界周报 + 各王国周报\n- 生成结果：写入事件编辑中的事件记录\n- NPC 会常驻读取近期三个王国短周报；命中特定规则时读取完整周报\n- 生成优先级：最近王国 > 世界事件 > 其他王国按距离依次生成\n\n本次预计请求数：" + num + "\n篇幅档位：" + GetWeeklyReportPromptProfile().Label + "\n每分钟生成上限：" + GetWeeklyReportRequestsPerMinute() + "\n按距离排序的王国：" + text + "\nMaxTokens：" + GetEventAndRebellionApiMaxTokens() + "\n\n是否开始？", isAffirmativeOptionShown: true, isNegativeOptionShown: true, "开始生成", "取消", delegate
-		{
-			_ = GenerateDevWeeklyReportsAsync();
-		}, delegate
-		{
-			OpenDevEventEditorMenu();
-		}));
-	}
 
-#endif
 
 
 	private async Task GenerateDevWeeklyReportsAsync()

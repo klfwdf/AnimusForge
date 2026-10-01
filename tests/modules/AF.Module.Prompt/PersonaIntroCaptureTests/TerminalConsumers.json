@@ -1,0 +1,97 @@
+[
+  {
+    "symbol": "BuildNpcSystemTopPromptIntro",
+    "host": "my",
+    "exact": "private string BuildNpcSystemTopPromptIntro(Hero npcHero, bool includeTradePricing) => CreatePersonaEquipmentPromptCaptureAdapter().BuildNpcSystemIntro(npcHero, includeTradePricing);"
+  },
+  {
+    "symbol": "BuildSceneNpcRoleIntroForPrompt",
+    "host": "scene",
+    "exact": "private static string BuildSceneNpcRoleIntroForPrompt(NpcDataPacket npc, Hero hero, IEnumerable<NpcDataPacket> presentNpcs = null, bool includeInventorySummary = false, bool includeTradePricing = false, bool partyTransferTopicSelected = false, MentionedWorldEntities promptMentions = null) => CreateScenePersonaEquipmentPromptCaptureAdapter().BuildSceneNpcRoleIntroForPrompt(npc, hero, presentNpcs, includeInventorySummary, includeTradePricing, partyTransferTopicSelected, promptMentions);"
+  },
+  {
+    "symbol": "BuildScenePlayerIntroForPrompt",
+    "host": "scene",
+    "exact": "private static string BuildScenePlayerIntroForPrompt(bool includeTradePricing = false, bool includePlayerPartyRoster = false) => BuildScenePlayerIntroForPrompt(null, null, includeTradePricing, includePlayerPartyRoster);"
+  },
+  {
+    "symbol": "BuildScenePlayerIntroForPrompt",
+    "host": "scene",
+    "exact": "private static string BuildScenePlayerIntroForPrompt(Hero observerHero, bool includeTradePricing = false, bool includePlayerPartyRoster = false) => BuildScenePlayerIntroForPrompt(observerHero, null, includeTradePricing, includePlayerPartyRoster);"
+  },
+  {
+    "symbol": "BuildScenePlayerIntroForPrompt",
+    "host": "scene",
+    "exact": "private static string BuildScenePlayerIntroForPrompt(Hero observerHero, NpcDataPacket observerNpc, bool includeTradePricing = false, bool includePlayerPartyRoster = false, bool useCompactPlayerPartyRoster = false) => CreateScenePersonaEquipmentPromptCaptureAdapter().BuildScenePlayerIntroForPrompt(observerHero, observerNpc, includeTradePricing, includePlayerPartyRoster, useCompactPlayerPartyRoster);"
+  },
+  {
+    "symbol": "BuildAgeBracketLabel",
+    "host": "my",
+    "exact": "private static string BuildAgeBracketLabel(float age) => PersonaIntroTextRules.BuildAgeBracketLabel(age);"
+  },
+  {
+    "symbol": "GetClanTierReputationLabel",
+    "host": "my",
+    "exact": "private static string GetClanTierReputationLabel(int tier) => PersonaIntroTextRules.GetClanTierReputationLabel(tier);"
+  },
+  {
+    "symbol": "GetEquipmentContextLabelForPrompt",
+    "host": "my",
+    "exact": "private static string GetEquipmentContextLabelForPrompt(bool useCivilianEquipment) => PersonaIntroTextRules.GetEquipmentContextLabelForPrompt(useCivilianEquipment);"
+  },
+  {
+    "symbol": "BuildEquipmentSummaryItemLinesForPrompt",
+    "host": "my",
+    "exact": "private static List<string> BuildEquipmentSummaryItemLinesForPrompt(Dictionary<string, int> counts, Dictionary<string, string> names, int maxEntries) => PersonaIntroTextRules.BuildEquipmentSummaryItemLinesForPrompt(counts, names, maxEntries);"
+  },
+  {
+    "symbol": "SceneInventoryHeaderName",
+    "host": "scene",
+    "exact": "private static string BuildNpcInventorySummaryHeader(string npcName, bool isHeroNpcLord = false) => PersonaIntroTextRules.BuildNpcInventorySummaryHeader(npcName, isHeroNpcLord);"
+  },
+  {
+    "symbol": "HeroEquipmentCapture",
+    "host": "my",
+    "exact": "private static string BuildHeroEquipmentSummaryForPrompt(Hero hero, int maxEntries = 8) => EquipmentPromptCaptureAdapter.BuildHeroEquipmentSummaryForPrompt(hero, CreateHeroEquipmentPromptLivePort(), maxEntries);"
+  },
+  {
+    "symbol": "NonHeroEquipmentCapture",
+    "host": "scene",
+    "exact": "private static string BuildNonHeroEquipmentSummaryForPrompt(NpcDataPacket npc, int maxEntries = 8) => EquipmentPromptCaptureAdapter.BuildNonHeroEquipmentSummaryForPrompt(npc, maxEntries);"
+  },
+  {
+    "symbol": "AddEquipmentSummaryItemForPrompt",
+    "host": "my",
+    "exact": "private static void AddEquipmentSummaryItemForPrompt(Dictionary<string, int> counts, Dictionary<string, string> names, EquipmentIndex index, ItemObject item) => EquipmentPromptCaptureAdapter.AddEquipmentSummaryItemForPrompt(counts, names, index, item);"
+  },
+  {
+    "symbol": "AddEquipmentSummaryItemForPrompt",
+    "host": "scene",
+    "exact": "private static void AddSceneEquipmentSummaryItem(Dictionary<string, int> counts, Dictionary<string, string> names, EquipmentIndex index, ItemObject item) => EquipmentPromptCaptureAdapter.AddEquipmentSummaryItemForPrompt(counts, names, index, item);"
+  },
+  {
+    "symbol": "IsWeaponEquipmentIndexForPrompt",
+    "host": "my",
+    "exact": "private static bool IsWeaponEquipmentIndexForPrompt(EquipmentIndex index) => EquipmentPromptCaptureAdapter.IsWeaponEquipmentIndexForPrompt(index);"
+  },
+  {
+    "symbol": "IsWeaponEquipmentIndexForPrompt",
+    "host": "scene",
+    "exact": "private static bool IsWeaponEquipmentIndexForScenePrompt(EquipmentIndex index) => EquipmentPromptCaptureAdapter.IsWeaponEquipmentIndexForPrompt(index);"
+  },
+  {
+    "symbol": "SceneEquipmentLines",
+    "host": "scene",
+    "exact": "private static List<string> BuildSceneEquipmentSummaryItemLines(Dictionary<string, int> counts, Dictionary<string, string> names, int maxEntries) => PersonaIntroTextRules.BuildEquipmentSummaryItemLinesForPrompt(counts, names, maxEntries);"
+  },
+  {
+    "symbol": "BuildHeroIdentityTitleForPrompt",
+    "host": "my",
+    "exact": "private static string BuildHeroIdentityTitleForPrompt(Hero hero) => PersonaEquipmentPromptCaptureAdapter.CaptureHeroIdentityTitle(hero, CreateHeroIdentityPromptLivePort());"
+  },
+  {
+    "symbol": "ShouldHideSceneReputationForPrompt",
+    "host": "scene",
+    "exact": "private static bool ShouldHideSceneReputationForPrompt(NpcDataPacket npc, Hero hero) => PersonaEquipmentPromptCaptureAdapter.CaptureSceneReputationVisibility(npc, hero);"
+  }
+]

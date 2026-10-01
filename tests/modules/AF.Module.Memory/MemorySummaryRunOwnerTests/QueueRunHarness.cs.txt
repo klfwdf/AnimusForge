@@ -1,0 +1,54 @@
+using System;using System.Collections.Generic;using System.Linq;using System.Threading.Tasks;using AnimusForge.Refactor.Runtime;
+using MemorySummaryExecutionResult=AnimusForge.ProbeResult;
+using MajorActionSummaryExecutionResult=AnimusForge.ProbeResult;
+using MemoryOverviewExecutionResult=AnimusForge.ProbeResult;
+namespace AnimusForge;
+internal sealed class ProbeJob {internal string HeroId="hero",HeroName="Ada",Kind;internal int GameDayIndex=5;internal bool Current=true,Success=true,Obsolete;}
+internal sealed class ProbeResult {internal ProbeJob Job,Source;internal object Block,State;internal string Error="bad";internal bool IsObsolete;internal bool Success=>Block!=null||State!=null;}
+internal sealed class DailySummaryQueueResult {internal ProbeResult MemoryResult,MajorActionResult,MemoryOverviewResult;}
+@@PLAN@@
+internal sealed class InformationMessage {internal string Text;internal InformationMessage(string text){Text=text;}}
+internal static class InformationManager {internal static void DisplayMessage(InformationMessage m)=>FixtureBase.Active.Events.Add("notice:"+m.Text);}
+internal static class Logger {internal static void Log(string a,string b)=>FixtureBase.Active.Events.Add("log:"+a+":"+System.Text.RegularExpressions.Regex.Replace(b.Split('\n')[0].TrimEnd('\r'),@"\b(generation|captured|current)=\d+","$1=<run-generation>"));}
+internal class FixtureBase {
+ internal static FixtureBase Active;protected object Instance=>Active;
+ protected readonly MemorySummaryRunOwner _memorySummaryRunOwner=new();
+ internal List<string> Events=new();internal List<object> Jobs=new();internal List<object> Extra=new();internal int Burst=2,Phases,Applied;internal bool ThrowApply;internal Action OnExecute,OnDelay,OnPhase;
+ internal async Task<MemorySummaryPlan> BuildMemorySummaryPlanAsync(long generation,bool overviewOnly=false,HashSet<string> excludedOverviewIds=null,bool cleanupOnly=false,MemorySummaryRunOwner.Lease run=null){await Task.Yield();if(!SaveRuntimeGuard.IsCurrentGeneration(generation)||!run.IsCurrent)return null;Events.Add(cleanupOnly?"cleanup":overviewOnly?"extra-plan":"plan");var list=cleanupOnly?new List<object>():overviewOnly?Extra:Jobs;return new(){Items=list,DailyCount=list.Count(x=>((ProbeJob)x).Kind=="daily"),MajorCount=list.Count(x=>((ProbeJob)x).Kind=="major"),OverviewCount=list.Count(x=>((ProbeJob)x).Kind=="overview"),OverviewIds=new(){"attempted"}};}
+ protected async Task<bool> RunMemorySummaryRunPhaseAsync(MemorySummaryRunOwner.Lease run,long generation,Func<bool> op){await Task.Yield();OnPhase?.Invoke();if(!run.IsCurrent||!SaveRuntimeGuard.IsCurrentGeneration(generation))return false;Phases++;return op();}
+ protected bool ShouldScanMemoryOverviewCandidates(bool force)=>force;
+ protected void QueueAllMemoryOverviewCandidatesForDeferredScan()=>Events.Add("all");
+ protected void QueueDirtyMemoryOverviewCandidatesForDeferredScan()=>Events.Add("dirty");
+ protected int GetMemorySummaryRequestsPerMinuteFromSettings()=>Burst;
+ protected bool IsMemorySummaryInputCurrent(ProbeJob source){Events.Add("source:"+source.Kind);return source.Current;}
+ private bool Apply(ProbeJob job){Events.Add("apply:"+job.Kind);Applied++;if(ThrowApply)throw new Exception("partial writer failure");return true;}
+ protected bool ApplyMemorySummarySuccess(ProbeJob j,object b)=>Apply(j);protected bool ApplyMajorActionSummarySuccess(ProbeJob j,object s)=>Apply(j);protected bool ApplyMemoryOverviewSuccess(ProbeJob j,object s)=>Apply(j);
+ protected void MarkMemorySummaryFailure(ProbeJob j,string e)=>Events.Add("failed:daily");protected void MarkMajorActionSummaryFailure(ProbeJob j,string e)=>Events.Add("failed:major");protected void MarkMemoryOverviewFailure(ProbeJob j,string e)=>Events.Add("failed:overview");
+ protected void ShowCompressedMemoryBlockingPopup(string title,string text,long generation)=>Events.Add("popup:"+title+":"+text);
+ protected async Task<DailySummaryQueueResult> ExecuteDailySummaryQueueItemAsync(object item,MemorySummaryRunOwner.Lease run){var job=(ProbeJob)item;Events.Add("execute:"+job.Kind);await Task.Yield();OnExecute?.Invoke();var r=new ProbeResult{Job=job,Source=job,IsObsolete=job.Obsolete,Block=job.Success&&job.Kind=="daily"?new object():null,State=job.Success&&job.Kind!="daily"?new object():null};return new(){MemoryResult=job.Kind=="daily"?r:null,MajorActionResult=job.Kind=="major"?r:null,MemoryOverviewResult=job.Kind=="overview"?r:null};}
+ protected async Task DelayAsync(int milliseconds){Events.Add("delay:"+milliseconds);await Task.Yield();OnDelay?.Invoke();}
+ internal MemorySummaryRunOwner.Lease Replace(){_memorySummaryRunOwner.Reset();return _memorySummaryRunOwner.TryBegin(SaveRuntimeGuard.CaptureGeneration());}
+ internal bool Running=>_memorySummaryRunOwner.IsRunning;
+}
+internal partial class MyBehavior : FixtureBase { @@FACTORY@@ @@FORWARD@@ internal Task Start()=>ProcessMemorySummaryQueueAsync(); }
+internal sealed class LegacyQueueRun : FixtureBase { @@LEGACY@@ internal Task Start()=>ProcessMemorySummaryQueueAsync(); }
+internal static class Program {
+ static int checks;static void C(bool b,string label){checks++;if(!b)throw new Exception(label);}
+ static FixtureBase Fixture(int mode,bool old){FixtureBase f=old?new LegacyQueueRun():new MyBehavior();FixtureBase.Active=f;f.Jobs=new(){new ProbeJob{Kind="daily"},new ProbeJob{Kind="major"},new ProbeJob{Kind="overview"}};f.Extra=new(){new ProbeJob{Kind="overview"}};
+ if(mode==1)((ProbeJob)f.Jobs[0]).Success=false;
+ if(mode==2)((ProbeJob)f.Jobs[0]).Current=false;
+ if(mode==3)((ProbeJob)f.Jobs[0]).Obsolete=true;
+ if(mode==4)f.OnDelay=()=>SaveRuntimeGuard.AdvanceGeneration("held wave");
+ if(mode==5)f.ThrowApply=true;
+ if(mode==6)f.Jobs.Clear();
+ return f;}
+ static async Task Execute(FixtureBase f){FixtureBase.Active=f;if(f is MyBehavior n)await n.Start();else await ((LegacyQueueRun)f).Start();}
+ static async Task Main(){try{await Tests();}catch(Exception e){Console.Error.WriteLine(e);Environment.ExitCode=1;}}
+ static async Task Tests(){for(int mode=0;mode<7;mode++){var old=Fixture(mode,true);await Execute(old);var current=Fixture(mode,false);await Execute(current);C(old.Events.SequenceEqual(current.Events),"whole original131+45 same-input oracle mode="+mode+"\nOLD "+string.Join("|",old.Events)+"\nNEW "+string.Join("|",current.Events));C(old.Applied==current.Applied&&old.Phases==current.Phases&&!current.Running,"same applied count/atomic dispatch count/lease disposal mode="+mode);}
+ var ok=Fixture(0,false);await Execute(ok);C(ok.Events.Count(x=>x=="delay:60000")==2,"original burst spacing and additional overview60s preserved");C(ok.Applied==4&&ok.Events.Count(x=>x=="extra-plan")==1,"only two overview waves; unique attempted exclusions");
+ var stale=Fixture(0,false);stale.OnExecute=()=>SaveRuntimeGuard.AdvanceGeneration("yielded HTTP completion");await Execute(stale);C(stale.Applied==0&&!stale.Events.Any(x=>x.StartsWith("source:")||x.StartsWith("popup:")||x.StartsWith("notice:AnimusForge 日结压缩完成")),"strong yielded retired completion cannot validate/apply/notify");
+ var source=Fixture(0,false);source.OnExecute=()=>((ProbeJob)source.Jobs[0]).Current=false;await Execute(source);C(source.Applied==3&&!source.Events.Contains("failed:daily"),"yielded source mutation is obsolete not failure");
+ var replacement=Fixture(0,false);MemorySummaryRunOwner.Lease newLease=null;replacement.OnExecute=()=>newLease??=replacement.Replace();await Execute(replacement);C(newLease!=null&&newLease.IsCurrent&&replacement.Applied==0,"old run finally cannot release same-generation replacement");newLease.Dispose();
+ var late=Fixture(0,false);late.OnPhase=()=>{if(late.Phases==1)SaveRuntimeGuard.AdvanceGeneration("held acceptance");};await Execute(late);C(late.Applied==0,"queued acceptance late generation rejected");
+ Console.WriteLine("PASS queue full run+wave oracle/strong-yield checks="+checks+" live=NOT_RUN");}
+}

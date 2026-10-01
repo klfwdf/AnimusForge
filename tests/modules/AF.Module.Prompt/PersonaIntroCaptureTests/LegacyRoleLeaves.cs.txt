@@ -1,0 +1,125 @@
+private static string BuildHeroIdentityTitleForPrompt(Hero hero)
+	{
+		if (hero == null)
+		{
+			return "未知身份";
+		}
+		try
+		{
+			if (hero.Occupation == Occupation.Wanderer)
+			{
+				return "流浪者";
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			Clan clan = hero.Clan;
+			Kingdom kingdom = clan?.Kingdom;
+			if (clan != null && clan.IsUnderMercenaryService && kingdom != null)
+			{
+				string text = (kingdom.Name?.ToString() ?? "").Trim();
+				if (!string.IsNullOrWhiteSpace(text))
+				{
+					return text + "的雇佣兵";
+				}
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			if (TryResolveActiveKingdomRuledByHeroForPrompt(hero, out Kingdom ruledKingdom))
+			{
+				string kingdomName = (ruledKingdom.Name?.ToString() ?? "").Trim();
+				if (!string.IsNullOrWhiteSpace(kingdomName))
+				{
+					return kingdomName + "的统治者";
+				}
+				return "统治者";
+			}
+			Clan clan = hero.Clan;
+			if (clan != null && clan.Leader == hero)
+			{
+				string clanName = (clan.Name?.ToString() ?? "").Trim();
+				if (string.IsNullOrWhiteSpace(clanName))
+				{
+					return "家族族长";
+				}
+				return clanName.EndsWith("家族", StringComparison.Ordinal)
+					? clanName + "的族长"
+					: clanName + "家族的族长";
+			}
+			string text2 = (hero.MapFaction?.Name?.ToString() ?? "").Trim();
+			if (hero.IsLord)
+			{
+				if (!string.IsNullOrWhiteSpace(text2))
+				{
+					return text2 + "的封臣";
+				}
+				return "领主";
+			}
+			if (hero.IsWanderer)
+			{
+				return "流浪者";
+			}
+			if (hero.IsNotable)
+			{
+				return "地方要人";
+			}
+			switch (hero.Occupation)
+			{
+			case Occupation.Merchant:
+				return "商人";
+			case Occupation.Artisan:
+				return "工匠";
+			case Occupation.GangLeader:
+				return "帮派首领";
+			case Occupation.Headman:
+				return "村长";
+			case Occupation.Preacher:
+				return "教士";
+			case Occupation.RuralNotable:
+				return "乡绅";
+			}
+		}
+		catch
+		{
+		}
+		return "普通角色";
+	}
+private static bool ShouldHideSceneReputationForPrompt(NpcDataPacket npc, Hero hero)
+	{
+		try
+		{
+			if (hero != null)
+			{
+				if (hero.IsWanderer)
+				{
+					return true;
+				}
+				if (hero.Occupation == Occupation.Headman)
+				{
+					return true;
+				}
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			string role = (npc?.RoleDesc ?? "").Trim();
+			if (string.Equals(role, "士兵", StringComparison.Ordinal))
+			{
+				return true;
+			}
+		}
+		catch
+		{
+		}
+		return false;
+	}

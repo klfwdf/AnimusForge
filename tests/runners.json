@@ -601,6 +601,22 @@
     "{ROOT}/artifacts/af2-host-terminal-closeout/runner/{RUN}/SceneRequestLifetime"
    ],
    "note": "Retained fixed original UI oracle plus mandatory complete current-owner inverse; actual owner behavior covered by terminal lifecycle runners."
+  },
+  "tests/modules/AF.Module.Memory/MemorySummaryRunOwnerTests/verify_queue_run.py": {
+   "expect": "PASS",
+   "args": [
+    "--run-root",
+    "{ROOT}/artifacts/af2-host-terminal-closeout/final/{RUN}/memory-run"
+   ],
+   "note": "Actual current production owners and typed factories; fixed pre-move golden is an independent same-input oracle, not a replacement product source."
+  },
+  "tests/modules/AF.Module.Prompt/PersonaIntroCaptureTests/run.py": {
+   "expect": "PASS",
+   "args": [
+    "--run-root",
+    "{ROOT}/artifacts/af2-host-terminal-closeout/final/{RUN}/persona-intro"
+   ],
+   "note": "Actual current production owners and typed factories; fixed pre-move golden is an independent same-input oracle, not a replacement product source."
   }
  }
 }

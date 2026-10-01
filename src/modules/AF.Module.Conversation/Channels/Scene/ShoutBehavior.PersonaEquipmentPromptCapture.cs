@@ -1,0 +1,41 @@
+using System;using System.Collections.Generic;using System.Linq;using System.Text;using TaleWorlds.CampaignSystem;using TaleWorlds.CampaignSystem.Party;using TaleWorlds.Core;using TaleWorlds.MountAndBlade;
+namespace AnimusForge;
+public partial class ShoutBehavior {
+ private static PersonaEquipmentPromptCaptureAdapter CreateScenePersonaEquipmentPromptCaptureAdapter() => new(null, new ScenePersonaIntroLivePort {
+            BuildCeremonyRoleFactForPrompt = BuildCeremonyRoleFactForPrompt,
+            BuildHeroPartyPrisonersLineForPrompt = BuildHeroPartyPrisonersLineForPrompt,
+            BuildHeroPartyTroopsLineForPrompt = BuildHeroPartyTroopsLineForPrompt,
+            BuildHeroPregnancySelfKnowledgeForPrompt = BuildHeroPregnancySelfKnowledgeForPrompt,
+            BuildNearbyPresentNpcLineForPrompt = BuildNearbyPresentNpcLineForPrompt,
+            BuildNonHeroEquipmentSummaryForPrompt = BuildNonHeroEquipmentSummaryForPrompt,
+            BuildNpcCurrentMountLineForPrompt = BuildNpcCurrentMountLineForPrompt,
+            BuildNpcInventorySummaryHeaderName = BuildNpcInventorySummaryHeader,
+            BuildNpcInventorySummaryHeaderHero = BuildNpcInventorySummaryHeader,
+            BuildPartyPrisonersLineForPrompt = BuildPartyPrisonersLineForPrompt,
+            BuildPartyTroopsLineForPrompt = BuildPartyTroopsLineForPrompt,
+            BuildPlayerCommandRelationshipLineForPrompt = BuildPlayerCommandRelationshipLineForPrompt,
+            BuildPlayerCompanionPartyRoleLabelForPrompt = BuildPlayerCompanionPartyRoleLabelForPrompt,
+            BuildPlayerCurrentMountLineForPrompt = BuildPlayerCurrentMountLineForPrompt,
+            BuildPlayerFactionWarLineForPrompt = BuildPlayerFactionWarLineForPrompt,
+            BuildPlayerSceneIdentitySentenceForPrompt = BuildPlayerSceneIdentitySentenceForPrompt,
+            BuildPlayerTownPartyStayHintForPrompt = BuildPlayerTownPartyStayHintForPrompt,
+            BuildPlayerVassalageRelationLineForPrompt = BuildPlayerVassalageRelationLineForPrompt,
+            BuildPrisonerContextLineForPrompt = BuildPrisonerContextLineForPrompt,
+            BuildSceneLocationAndSettlementLineForPrompt = BuildSceneLocationAndSettlementLineForPrompt,
+            BuildSceneObserverInlineStateForPrompt = BuildSceneObserverInlineStateForPrompt,
+            BuildSettlementFlavorLineForPrompt = BuildSettlementFlavorLineForPrompt,
+            BuildSettlementRulerPresenceLineForPrompt = BuildSettlementRulerPresenceLineForPrompt,
+            BuildWildernessNonHeroPartyRepresentativePrompt = BuildWildernessNonHeroPartyRepresentativePrompt,
+            DoesSceneObserverKnowPlayerIdentityForPrompt = DoesSceneObserverKnowPlayerIdentityForPrompt,
+            GetSceneNpcGivenNameForPrompt = GetSceneNpcGivenNameForPrompt,
+            GetSceneNpcHistoryNameForPrompt = GetSceneNpcHistoryNameForPrompt,
+            GetSceneNpcIdentityNameForPrompt = GetSceneNpcIdentityNameForPrompt,
+            IsHeroInPlayerMainPartyForPrompt = IsHeroInPlayerMainPartyForPrompt,
+            ResolveNpcPerspectiveFactionForPlayerCrimePrompt = ResolveNpcPerspectiveFactionForPlayerCrimePrompt,
+            ResolveWildernessNonHeroPartyBaseForPrompt = ResolveWildernessNonHeroPartyBaseForPrompt,
+            ShouldForceDetailedPlayerIntroForObserver = ShouldForceDetailedPlayerIntroForObserver,
+            ShouldHideSceneReputationForPrompt = ShouldHideSceneReputationForPrompt,
+            ShouldIncludePlayerPartyRosterForScenePrompt = ShouldIncludePlayerPartyRosterForScenePrompt,
+            ShouldUseCompactPlayerPartyRosterForScenePrompt = ShouldUseCompactPlayerPartyRosterForScenePrompt
+ });
+}

@@ -1,0 +1,310 @@
+private static string BuildAgeBracketLabel(float age)
+	{
+		if (age >= 60f)
+		{
+			return "老年";
+		}
+		if (age >= 46f)
+		{
+			return "中年";
+		}
+		if (age >= 30f)
+		{
+			return "壮年";
+		}
+		if (age >= 18f)
+		{
+			return "青年";
+		}
+		if (age > 0f)
+		{
+			return "少年";
+		}
+		return "未知";
+	}
+private static string GetClanTierReputationLabel(int tier)
+	{
+		int num = Math.Max(0, tier);
+		if (num <= 0)
+		{
+			return "身份低微";
+		}
+		return num switch
+		{
+			1 => "小有名气", 
+			2 => "崭露新贵", 
+			3 => "声名清贵", 
+			4 => "门第高华", 
+			5 => "威权显赫", 
+			_ => "贵不可言", 
+		};
+	}
+private static string GetEquipmentContextLabelForPrompt(bool useCivilianEquipment)
+	{
+		return useCivilianEquipment ? "常服" : "战斗装";
+	}
+private static List<string> BuildEquipmentSummaryItemLinesForPrompt(Dictionary<string, int> counts, Dictionary<string, string> names, int maxEntries)
+	{
+		if (counts == null || counts.Count == 0)
+		{
+			return new List<string>();
+		}
+		return (from x in (from x in counts.Select(delegate(KeyValuePair<string, int> kv)
+				{
+					string value;
+					string name = (names != null && names.TryGetValue(kv.Key, out value)) ? value : kv.Key;
+					return new
+					{
+						Name = name,
+						Count = kv.Value
+					};
+				})
+				orderby x.Count descending
+				select x).ThenBy(x => x.Name, StringComparer.Ordinal).Take(Math.Max(1, maxEntries))
+			select x.Name + "x" + x.Count).ToList();
+	}
+private static string BuildNpcInventorySummaryHeader(string npcName, bool isHeroNpcLord = false)
+	{
+		string text = (npcName ?? "").Replace("\r", "").Replace("\n", "").Trim();
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			text = "NPC";
+		}
+		string title = isHeroNpcLord ? text + "携带的所有物资和财富" : text + "的商铺可用财富与物品";
+		return "【" + title + "】(注意：你不可以转移超出数量的物品，钱，如果你没有那么多，请实话实说)";
+	}
+private static string BuildHeroEquipmentSummaryForPrompt(Hero hero, int maxEntries = 8)
+	{
+		if (hero == null)
+		{
+			return "未知";
+		}
+		bool useCivilianEquipment = false;
+		TryResolveEquipmentContextForPrompt(hero, out useCivilianEquipment);
+		string text = GetEquipmentContextLabelForPrompt(useCivilianEquipment);
+		try
+		{
+			Dictionary<string, int> wornCounts = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+			Dictionary<string, string> wornNames = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+			Dictionary<string, int> weaponCounts = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+			Dictionary<string, string> weaponNames = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+			EquipmentIndex[] array = new EquipmentIndex[9]
+			{
+				EquipmentIndex.NumAllWeaponSlots,
+				EquipmentIndex.Body,
+				EquipmentIndex.Leg,
+				EquipmentIndex.Gloves,
+				EquipmentIndex.Cape,
+				EquipmentIndex.WeaponItemBeginSlot,
+				EquipmentIndex.Weapon1,
+				EquipmentIndex.Weapon2,
+				EquipmentIndex.Weapon3
+			};
+			EquipmentIndex[] array2 = array;
+			for (int i = 0; i < array2.Length; i++)
+			{
+				EquipmentIndex index = array2[i];
+				ItemObject item = TryGetHeroEquipmentItemForPrompt(hero, index, useCivilianEquipment);
+				if (item != null)
+				{
+					AddEquipmentSummaryItemForPrompt(IsWeaponEquipmentIndexForPrompt(index) ? weaponCounts : wornCounts, IsWeaponEquipmentIndexForPrompt(index) ? weaponNames : wornNames, index, item);
+				}
+			}
+			List<string> wornItems = BuildEquipmentSummaryItemLinesForPrompt(wornCounts, wornNames, maxEntries);
+			List<string> weaponItems = BuildEquipmentSummaryItemLinesForPrompt(weaponCounts, weaponNames, maxEntries);
+			if (wornItems.Count == 0 && weaponItems.Count == 0)
+			{
+				return text + "：赤身裸体";
+			}
+			StringBuilder stringBuilder = new StringBuilder();
+			stringBuilder.Append(text).Append("：").Append(wornItems.Count > 0 ? string.Join("、", wornItems) : "赤身裸体");
+			if (weaponItems.Count > 0)
+			{
+				stringBuilder.Append("，携带的武器：").Append(string.Join("、", weaponItems));
+			}
+			return stringBuilder.ToString();
+		}
+		catch
+		{
+			return text + "：赤身裸体";
+		}
+	}
+private static string BuildNonHeroEquipmentSummaryForPrompt(NpcDataPacket npc, int maxEntries = 8)
+	{
+		if (npc == null)
+		{
+			return "未知";
+		}
+		Agent agent = null;
+		try
+		{
+			agent = Mission.Current?.Agents?.FirstOrDefault((Agent a) => a != null && a.Index == npc.AgentIndex);
+		}
+		catch
+		{
+			agent = null;
+		}
+		if (agent == null || !agent.IsActive())
+		{
+			return "未知";
+		}
+		bool useCivilianEquipment = false;
+		try
+		{
+			Mission current = Mission.Current;
+			if (current != null)
+			{
+				useCivilianEquipment = current.DoesMissionRequireCivilianEquipment;
+			}
+			else
+			{
+				Settlement settlement = Settlement.CurrentSettlement ?? MobileParty.MainParty?.CurrentSettlement;
+				useCivilianEquipment = settlement != null && !settlement.IsVillage;
+			}
+		}
+		catch
+		{
+			useCivilianEquipment = false;
+		}
+		string contextLabel = useCivilianEquipment ? "常服" : "战斗装";
+		try
+		{
+			Dictionary<string, int> wornCounts = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+			Dictionary<string, string> wornNames = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+			Dictionary<string, int> weaponCounts = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+			Dictionary<string, string> weaponNames = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+			EquipmentIndex[] array = new EquipmentIndex[9]
+			{
+				EquipmentIndex.NumAllWeaponSlots,
+				EquipmentIndex.Body,
+				EquipmentIndex.Leg,
+				EquipmentIndex.Gloves,
+				EquipmentIndex.Cape,
+				EquipmentIndex.WeaponItemBeginSlot,
+				EquipmentIndex.Weapon1,
+				EquipmentIndex.Weapon2,
+				EquipmentIndex.Weapon3
+			};
+			EquipmentIndex[] array2 = array;
+			for (int i = 0; i < array2.Length; i++)
+			{
+				EquipmentIndex equipmentIndex = array2[i];
+				ItemObject itemObject = null;
+				try
+				{
+					itemObject = agent.SpawnEquipment[equipmentIndex].Item;
+				}
+				catch
+				{
+					itemObject = null;
+				}
+				if (itemObject == null)
+				{
+					try
+					{
+						itemObject = agent.Equipment[equipmentIndex].Item;
+					}
+					catch
+					{
+						itemObject = null;
+					}
+				}
+				if (itemObject == null)
+				{
+					continue;
+				}
+				AddSceneEquipmentSummaryItem(IsWeaponEquipmentIndexForScenePrompt(equipmentIndex) ? weaponCounts : wornCounts, IsWeaponEquipmentIndexForScenePrompt(equipmentIndex) ? weaponNames : wornNames, equipmentIndex, itemObject);
+			}
+			List<string> wornItems = BuildSceneEquipmentSummaryItemLines(wornCounts, wornNames, maxEntries);
+			List<string> weaponItems = BuildSceneEquipmentSummaryItemLines(weaponCounts, weaponNames, maxEntries);
+			if (wornItems.Count == 0 && weaponItems.Count == 0)
+			{
+				return contextLabel + "：赤身裸体";
+			}
+			StringBuilder stringBuilder = new StringBuilder();
+			stringBuilder.Append(contextLabel).Append("：").Append(wornItems.Count > 0 ? string.Join("、", wornItems) : "赤身裸体");
+			if (weaponItems.Count > 0)
+			{
+				stringBuilder.Append("，携带的武器：").Append(string.Join("、", weaponItems));
+			}
+			return stringBuilder.ToString();
+		}
+		catch
+		{
+			return contextLabel + "：赤身裸体";
+		}
+	}
+private static void AddEquipmentSummaryItemForPrompt(Dictionary<string, int> counts, Dictionary<string, string> names, EquipmentIndex index, ItemObject item)
+	{
+		if (counts == null || names == null || item == null)
+		{
+			return;
+		}
+		string text = (item.StringId ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			text = index.ToString();
+		}
+		string value = (item.Name?.ToString() ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(value))
+		{
+			value = text;
+		}
+		if (!counts.ContainsKey(text))
+		{
+			counts[text] = 0;
+			names[text] = value;
+		}
+		counts[text]++;
+	}
+private static void AddSceneEquipmentSummaryItem(Dictionary<string, int> counts, Dictionary<string, string> names, EquipmentIndex index, ItemObject item)
+	{
+		if (counts == null || names == null || item == null)
+		{
+			return;
+		}
+		string text = (item.StringId ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			text = index.ToString();
+		}
+		string text2 = (item.Name?.ToString() ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(text2))
+		{
+			text2 = text;
+		}
+		if (!counts.ContainsKey(text))
+		{
+			counts[text] = 0;
+			names[text] = text2;
+		}
+		counts[text]++;
+	}
+private static bool IsWeaponEquipmentIndexForPrompt(EquipmentIndex index)
+	{
+		return index == EquipmentIndex.WeaponItemBeginSlot || index == EquipmentIndex.Weapon1 || index == EquipmentIndex.Weapon2 || index == EquipmentIndex.Weapon3;
+	}
+private static bool IsWeaponEquipmentIndexForScenePrompt(EquipmentIndex index)
+	{
+		return index == EquipmentIndex.WeaponItemBeginSlot || index == EquipmentIndex.Weapon1 || index == EquipmentIndex.Weapon2 || index == EquipmentIndex.Weapon3;
+	}
+private static List<string> BuildSceneEquipmentSummaryItemLines(Dictionary<string, int> counts, Dictionary<string, string> names, int maxEntries)
+	{
+		if (counts == null || counts.Count == 0)
+		{
+			return new List<string>();
+		}
+		return (from x in (from x in counts.Select(delegate(KeyValuePair<string, int> kv)
+				{
+					string value;
+					string name = (names != null && names.TryGetValue(kv.Key, out value)) ? value : kv.Key;
+					return new
+					{
+						Name = name,
+						Count = kv.Value
+					};
+				})
+				orderby x.Count descending
+				select x).ThenBy(x => x.Name, StringComparer.Ordinal).Take(Math.Max(1, maxEntries))
+			select x.Name + "x" + x.Count).ToList();
+	}
