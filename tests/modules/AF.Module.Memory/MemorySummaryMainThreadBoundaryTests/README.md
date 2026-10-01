@@ -247,3 +247,25 @@ python -X utf8 -B tests/modules/AF.Module.Memory/MemorySummaryMainThreadBoundary
 ## 2026-10-01 历史入口维护
 
 `run_materials.py` 现在链接真实 `NpcActionLedger.NormalizeStableKey` 与 `WeeklyReportMaterialRevisionOwner`，支持 `--run-root` 新仓内输出。23 场景通过；`omit-append-bind` 编译成功后命中重复全量重建负控。旧 B1 全主类逆向测试仍未闭合，不把已修 sealing 重挂为产品未完成。`run_captured.py`/`run_sealing.py` 的当前缺失 Weekly helper 含外交标签分支，本轮按外交排除边界延期。
+
+### 显式非外交断言门禁
+
+`source_parity.py --finite` 与 `test_source_parity.py --finite` 运行当前 Memory-only 范围，后者 15 tests / 0 failures。原 `InverseGuards` 全部断言保留，无参数仍执行旧历史类，不以 skip 制造原全套通过。断言对应如下：
+
+- `test_exact_whole_baseline`：Current Memory owner/14 component files and actual maintenance/index consumers; historical whole-root inverse NOT_RUN。
+- `test_queue_normalization_body_is_exact_old_semantics`：Real MemoryRecordRules normalization bodies precisely undo access/name/order seam to old bodies; host typed facade consumers asserted。
+- `test_raw_input_four_declaration_inverse`：Four actual current Input declarations against approved candidate; original historical declaration hashes retained; Budget current/baseline 65808x2/13digest runtime parity。
+- `test_single_draft_line_and_bind_are_exact_previous_bodies`：Ordered original line operations preserved; one MyBehavior qualification normalized; typed binder/entry current consumers and copy ownership asserted。
+- `test_inner_structure_fix_has_narrow_inverse`：Actual current MemorySealing source bound; line/trigger structure MoveNext required; captured/sealing runtime DEFERRED (diplomacy coupled)。
+- `test_dispatcher_dependency_direction_and_host_shape`：Original assertion retained directly on actual current runtime/host。
+- `test_planner_only_changes_elapsed_owner_read`：Current planner bound; two cumulative elapsed charges and explicit lease verified; obsolete elapsed field forbidden。
+- `test_changed_accepted_body`：Actual RebuildEventSourceMaterialIndex Build(null) mutation rejected; material runtime omit-append-bind negative retained。
+- `test_added_composition_span_drift`：Current index day-selector mutation rejected。
+- `test_duplicate_composition_span`：Actual current index composition duplicate rejected。
+- `test_unlisted_surrounding_change`：Extra supplied owner source rejected (not an all-owner migration equality claim)。
+- `test_deleted_original_cannot_return`：Old HasPastDailyMemoryDrafts reintroduction rejected。
+- `test_added_campaign_scope_cannot_drift`：Actual RunCampaignMemoryMaintenanceCycle flag mutation rejected。
+- `test_whole_components_and_test_inputs_are_locked`：14 actual Memory component and current material runner modifications rejected; original Captured/Sealing fixture locking portions DEFERRED and not marked passed。
+- `test_obsolete_partial_cannot_reenter`：Actual obsolete EventSourceMaterialIndex partial existence rejected。
+
+其中 captured/sealing runtime 以及原 fixture 锁部分明确延期，不被有限门禁算作通过。原 source-review/hashes 不刷新；typed owner source、实际消费者和有效负控构成当前证据。
