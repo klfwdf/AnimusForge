@@ -44,6 +44,22 @@ namespace AnimusForge.Illustrator.Core
             return copy;
         }
 
+        // Map the existing presets to exact 16:9 sizes with both edges divisible by 16.
+        // The smallest tier is 1280x720: 1024x576 falls below GPT Image 2's pixel minimum.
+        internal IllustrationOptions WithSceneImageSize()
+        {
+            switch (ImageSize)
+            {
+                case "2048x2048":
+                    return WithImageSize("2048x1152");
+                case "1344x768":
+                case "1024x1536":
+                    return WithImageSize("1536x864");
+                default:
+                    return WithImageSize("1280x720");
+            }
+        }
+
         internal IllustrationOptions(IllustratorSettings settings, string directorUrl, string directorKey, string directorModel)
         {
             EnableImageGeneration = settings.EnableImageGeneration;
