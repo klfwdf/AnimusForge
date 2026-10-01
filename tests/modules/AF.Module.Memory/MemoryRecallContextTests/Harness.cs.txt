@@ -1,0 +1,95 @@
+using System;
+using System.Linq;
+using System.Collections.Generic;
+using Newtonsoft.Json.Linq;
+using AnimusForge.Refactor.Runtime;
+namespace TaleWorlds.Library { internal static class MBMath { internal static int ClampInt(int value,int min,int max)=>Math.Max(min,Math.Min(max,value)); } internal static class TWParallel { internal static bool IsMainThread()=>false; } }
+namespace AnimusForge { internal static class SaveRuntimeGuard { internal static long Current=1; internal static long CaptureGeneration()=>Current; internal static bool IsCurrentGeneration(long g)=>g==Current; } }
+namespace AnimusForge
+{
+    internal static class MemoryRecoveryStateOwner { @@INITIAL_GUARD@@ }
+    internal static class MyBehavior
+    {
+        internal static bool IsMemoryRecoveryHexDigest(string value) => value != null && value.Length == 64 && value.All(c => (c >= '0' && c <= '9') || (c >= 'A' && c <= 'F'));
+        internal static bool IsValidMemoryCommitMarker(string id,string part,string hash) => IsMemoryRecoveryHexDigest(id) && IsMemoryRecoveryHexDigest(hash) && (part == "user" || part == "fact" || part == "assistant");
+    }
+    internal static class Logger { internal static void Log(string category,string text) {} }
+    internal sealed class OnnxEmbeddingEngine
+    {
+        internal static OnnxEmbeddingEngine Instance = new(); internal bool IsAvailable=true;
+        internal Func<string,float[]> Compute = text => new float[] { 1, 0 }; internal int Calls;
+        internal bool TryGetEmbedding(string text,out float[] vector) { Calls++; vector=Compute(text); return vector!=null; }
+    }
+    internal sealed class OnnxCrossEncoderReranker
+    {
+        internal static OnnxCrossEncoderReranker Instance = new(); internal bool IsAvailable=false;
+        internal bool TryScoreBatch(string query,List<string> texts,out List<float> scores) { scores=texts.Select(x=>0.8f).ToList(); return true; }
+    }
+    internal static class AIConfigHandler
+    {
+        internal static string Response="{\"rule_codes\":[],\"memory_ids\":[]}";
+        internal static string StrictPreprocessJsonSystemPrompt=>"system";
+        internal static string BuildMemoryPreprocessFallbackGameDateForExternal(int day)=>"day "+day;
+        internal static string BuildMemoryPreprocessCandidateLineForExternal(int id,string date,string age,string hours,string title)=>id+" "+date+age+hours+title;
+        internal static string BuildMemoryPreprocessUserPromptForExternal(int mode,int count,string current,string secondary,string scene,string candidates)=>current+secondary+scene+candidates;
+        internal static bool TryCallAuxiliarySimpleDialogue(object[] messages,int tokens,float temperature,out string content,out string error) { content=Response; error=""; return true; }
+        internal static bool TryValidateStrictPreprocessJsonEnvelope(string content,bool requireMemoryIds,bool requireMentionedEntities,out JObject obj,out string error)
+        { try { obj=JObject.Parse(content); error=""; return obj["rule_codes"] is JArray && obj["memory_ids"] is JArray; } catch { obj=null;error="invalid_json";return false; } }
+    }
+    internal static class Program
+    {
+        static void Check(bool pass,string name) { if(!pass)throw new Exception("FAIL "+name);Console.WriteLine("PASS "+name); }
+        static CompressedMemoryBlock Block(string id,int day,string title="title")=>new(){Id=id,HeroId="ada",GameDayIndex=day,StartHour=3,EndHour=4,RichTitle=title,Summary="summary "+id,AfefLines=new(){"[AFEF NPC行为补充] fact "+id}};
+        static MemoryRecallRequest Request(List<CompressedMemoryBlock> blocks)=>new(){Generation=1,GameDay=10,Blocks=blocks,FinalCount=2,CandidateLimit=3,PreprocessMode=1,Scene="square",RecallQuery="query",FormatFailureDetail=(reason,reply)=>reason+reply};
+        static void Main()
+        {
+            var blocks=new List<CompressedMemoryBlock>{Block("old",1),Block("new",3),Block("middle",2)};
+            var request=Request(blocks); var engine=OnnxEmbeddingEngine.Instance;
+            Check(MemoryRecallContextOwner.TryBuildMemoryRecallCandidates(blocks.Take(2).ToList(),"query","",null,3,out var small,out _,1,request)&&small.Select(x=>x.Block.Id).SequenceEqual(new[]{"old","new"})&&engine.Calls==0,"below cap date order no embedding");
+            Check(MemoryRecallContextOwner.TryBuildMemoryRecallCandidates(blocks,"query","",null,3,out var equal,out _,1,request)&&equal.Select(x=>x.DisplayId).SequenceEqual(new[]{1,2,3})&&engine.Calls==0,"equal cap IDs no embedding");
+            Check(MemoryRecallContextOwner.TryBuildMemoryRecallCandidates(blocks,"query","",null,2,out var over,out _,1,request)&&over.Select(x=>x.Block.Id).SequenceEqual(new[]{"middle","new"})&&engine.Calls==4,"over cap embedding tie newest selection chronological render");
+            var missing=new List<CompressedMemoryBlock>{Block("missing",1,""),Block("good",2),Block("latest",3)};
+            Check(MemoryRecallContextOwner.TryBuildMemoryRecallCandidates(missing,"query","",null,1,out var nonempty,out _,1,request)&&nonempty[0].Block.Id=="latest","missing rich title skipped not summary embedding fallback");
+            engine.IsAvailable=false;
+            Check(!MemoryRecallContextOwner.TryBuildMemoryRecallCandidates(blocks,"query","",null,1,out _,out _,1,request)&&request.BlockingMessage.Contains("不会静默"),"unavailable embedding blocks above cap");
+            engine.IsAvailable=true;engine.Compute=text=>text=="query"?new float[]{1,0}:null;
+            Check(!MemoryRecallContextOwner.TryBuildMemoryRecallCandidates(blocks,"query","",null,1,out _,out _,1,request)&&request.BlockingMessage.Contains("修复"),"all title embedding failures block");
+            engine.Compute=text=>new float[]{1,0}; request.BlockingTitle=null;
+            var candidates=blocks.Select((b,i)=>new MemoryRecallCandidate{Block=b,DisplayId=i+1,Score=i}).ToList();
+            AIConfigHandler.Response="{\"rule_codes\":[],\"memory_ids\":[999,\"#2\",2]}";
+            Check(MemoryRecallContextOwner.TrySelectMemoryIdsWithPreprocess(candidates,2,"query","",out var ids,out _,1,request)&&ids.SequenceEqual(new[]{2,3}),"invalid preselected ID ignored dedup fill score order");
+            string context=MemoryRecallContextOwner.BuildCompressedMemoryContextById("ada","query","",request);
+            Check(context.Contains("summary new")&&context.Contains("[AFEF NPC行为补充] fact new")&&context.Contains("时")&&context.Contains("天前"),"full context latest summary AFEF age hour preserved");
+            Check(context.Contains("summary middle")&&!context.Contains("summary old"),"preprocess limit plus mandatory latest block");
+            var queries=HistoryArchiveRecallOwner.BuildHistoryRecallQueryInputs(null,"trade horses; debt payment","duel stake");
+            Check(queries.Count>1&&queries.Count<=4&&queries.All(x=>x.Weight==1&&x.Terms.Count>0),"multi intent query both speakers bounded");
+            var older=Enumerable.Range(0,300).Select(i=>new HistoryLineEntry{Index=i,Line="trade debt "+i}).ToList();
+            var hits=HistoryArchiveRecallOwner.FindRelevantArchiveHits(older,queries,4,out var used,out var mode,out var rerank,out var recall);
+            Check(hits.Select(x=>x.Entry.Index).SequenceEqual(new[]{299,297})&&mode=="semantic_multi"&&rerank==4&&recall==10,"archive per-intent rerank four then adjacent suppression yields two");
+            Check(hits.Select(x=>x.Entry.Index).Zip(hits.Select(x=>x.Entry.Index).Skip(1),(a,b)=>Math.Abs(a-b)>1).All(x=>x),"archive adjacent suppression");
+            SaveRuntimeGuard.Current=2;
+            int before=engine.Calls;
+            Check(!MemoryRecallContextOwner.TryBuildMemoryRecallCandidates(blocks,"query","",null,1,out _,out var stale,1,request)&&stale=="memory_recall_stale_generation"&&engine.Calls==before,"cancel stale generation before embedding");
+            Check(MemoryRecallContextOwner.BuildCompressedMemoryContextById("ada","query","",request)=="","late result generation discarded");
+            var seed = new InteractionMemoryRecoverySeed { SubjectId="ada", Components=new[] {
+                new InteractionMemoryRecoveryComponentSeed { Part="user",DailyText="question",IsLlmDialogue=true },
+                new InteractionMemoryRecoveryComponentSeed { Part="USER",DailyText="duplicate",IsLlmDialogue=true },
+                new InteractionMemoryRecoveryComponentSeed { Part="fact",DailyText="delivered",IsAfef=true },
+                new InteractionMemoryRecoveryComponentSeed { Part="assistant",DailyText="answer",IsLlmDialogue=true } } };
+            var receipts = new HashSet<string>(); int notices=0;
+            MemoryAuxiliaryReceiptOutcome Notify(InteractionMemoryRecoverySeed s,string id,string hash,string part)
+            { notices++;return receipts.Add(part)?MemoryAuxiliaryReceiptOutcome.Accepted:MemoryAuxiliaryReceiptOutcome.Duplicate; }
+            var first = InteractionMemoryAuxiliaryCompletionCoordinator.CompleteInitial(seed,"id","hash",(s,id,h,p)=>true,Notify);
+            Check(first.Accepted==2&&notices==2,"auxiliary only distinct published dialogue components not facts");
+            var repeated = InteractionMemoryAuxiliaryCompletionCoordinator.CompleteInitial(seed,"id","hash",(s,id,h,p)=>true,Notify);
+            Check(repeated.Accepted==0&&repeated.Duplicate==2,"independent Social duplicate receipt not H marker success");
+            var missingReceipt = InteractionMemoryAuxiliaryCompletionCoordinator.CompleteInitial(seed,"id","hash",(s,id,h,p)=>false,Notify);
+            Check(!missingReceipt.HasAttempt&&notices==4,"unpublished Daily component never notifies Social");
+            var unavailable = InteractionMemoryAuxiliaryCompletionCoordinator.CompleteInitial(seed,"id","hash",(s,id,h,p)=>true,(s,id,h,p)=>MemoryAuxiliaryReceiptOutcome.Unavailable);
+            Check(unavailable.Accepted==0&&unavailable.Unavailable==2,"unavailable Social is not promoted into success");
+            Check(MemoryRecoveryStateOwner.ShouldCompleteInitialInteractionMemoryNotoriety(InteractionMemoryRecoveryBeginStatus.Began,true,"id","id")
+                && !MemoryRecoveryStateOwner.ShouldCompleteInitialInteractionMemoryNotoriety(InteractionMemoryRecoveryBeginStatus.ExistingPending,true,"id","id")
+                && !MemoryRecoveryStateOwner.ShouldCompleteInitialInteractionMemoryNotoriety(InteractionMemoryRecoveryBeginStatus.DuplicateCompleted,true,"id","id"),"initial guard excludes recovered or completed duplicate notification");
+        }
+    }
+}

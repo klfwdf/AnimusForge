@@ -6,6 +6,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using Newtonsoft.Json.Linq;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.Library;
 namespace TaleWorlds.Library { public static class TWParallel {public static bool IsMainThread()=>Thread.CurrentThread.ManagedThreadId==AnimusForge.Host.MainId;} public static class MBMath {public static int ClampInt(int n,int a,int b)=>Math.Clamp(n,a,b);} }
@@ -17,6 +18,7 @@ namespace TaleWorlds.CampaignSystem
 }
 namespace AnimusForge
 {
+    public static class LlmRetryPrompt { public static string BuildFailureDetail(string reason,string response)=>reason+response; }
     public static class Host
     {
         public static int MainId,OffThread,Reads,Day=50,Final=2,Limit=3,Mode=1,ApiCalls,EmbedCalls;
@@ -34,6 +36,11 @@ namespace AnimusForge
     }
     public static class AIConfigHandler
     {
+        public static bool TryValidateStrictPreprocessJsonEnvelope(string content,bool requireMemoryIds,bool requireMentionedEntities,out JObject result,out string error)
+        {
+            result=new JObject { ["rule_codes"]=new JArray(), ["memory_ids"]=new JArray((content??"").Split(',').Where(x=>int.TryParse(x,out _)).Select(int.Parse)) };
+            error="bad format";return content!="invalid";
+        }
         public static string StrictPreprocessJsonSystemPrompt=>"system";
         public static string BuildMemoryPreprocessFallbackGameDateForExternal(int d)=>"day"+d;
         public static string BuildMemoryPreprocessCandidateLineForExternal(int id,string date,string age,string hour,string title)=>$"{id}|{date}|{age}|{hour}|{title}";
