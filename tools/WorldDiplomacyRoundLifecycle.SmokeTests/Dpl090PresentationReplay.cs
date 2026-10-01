@@ -141,6 +141,7 @@ internal static class Dpl090PresentationReplay
         owner.Poll(storage, now, sink);
         Equal("doc1,doc2,doc3", string.Join(",", sink.Notices), "formal notices use chronological capped batch");
         Test.True(storage.Documents.Single(d => d.DocumentId == "doc1").FormalNoticeShown, "successful delivery writes formal flag");
+        int viewBuilds = owner.RebuildCount;
         int probes = sink.Probes;
         long before = GC.GetAllocatedBytesForCurrentThread();
         for (int i = 0; i < 100000; i++) owner.Poll(storage, now, sink);
@@ -148,6 +149,7 @@ internal static class Dpl090PresentationReplay
         Equal(probes, sink.Probes, "throttled ticks do not probe game state");
         owner.Poll(storage, now.AddSeconds(1), sink);
         Equal(5, sink.Notices.Count, "next second drains remainder");
+        Equal(viewBuilds, owner.RebuildCount, "bounded notification batches reuse the document view");
         owner.ResetView();
         owner.Poll(storage, now.AddSeconds(2), sink);
         Equal(5, sink.Notices.Count, "view replacement does not repeat persisted notices");
@@ -189,6 +191,33 @@ internal static class Dpl090PresentationReplay
         deferred.HasReachedPlayerCourt = true;
         owner.Poll(storage, now.AddSeconds(8), sink);
         Test.True(deferred.FormalNoticeShown, "later formal receipt still shows notice after rumor");
+
+        var changingStorage = new WorldDiplomacyStorage();
+        var changing = Document("changing", 1);
+        changing.IsReadyForPublication = false;
+        changingStorage.Documents.Add(changing);
+        var changingOwner = new WorldDiplomacyNotificationApplication();
+        var changingSink = new Sink { Ready = false };
+        changingOwner.Poll(changingStorage, now, changingSink);
+        int initialBuilds = changingOwner.RebuildCount;
+        changing.IsReadyForPublication = true;
+        changingOwner.Poll(changingStorage, now.AddSeconds(1), changingSink);
+        Equal(initialBuilds + 1, changingOwner.RebuildCount, "publication mutation rebuilds notification view");
+        changing.IsRead = true;
+        changingSink.Ready = true;
+        changingOwner.Poll(changingStorage, now.AddSeconds(2), changingSink);
+        Test.True(!changing.FormalNoticeShown, "read mutation excludes formal notice before delivery");
+        changingSink.MapNotificationsEnabled = false;
+        changingOwner.Poll(changingStorage, now.AddSeconds(3), changingSink);
+        Test.True(changing.FormalNoticeShown, "disabled map notices still consume read formal receipt");
+        int settledBuilds = changingOwner.RebuildCount;
+        for (int i = 4; i < 1004; i++) changingOwner.Poll(changingStorage, now.AddSeconds(i), changingSink);
+        Equal(settledBuilds, changingOwner.RebuildCount, "idle one-second notification deadlines do not rescan documents");
+        string saved = Newtonsoft.Json.JsonConvert.SerializeObject(changingStorage);
+        Test.True(!saved.Contains("NotificationSelectionChanged", StringComparison.Ordinal)
+            && (saved.Contains("\"formalNoticeShown\":true", StringComparison.Ordinal)
+                || saved.Contains("\"FormalNoticeShown\":true", StringComparison.Ordinal)),
+            "runtime notification invalidation does not change persisted document names");
     }
 
     private sealed class PlayerWorld : IWorldDiplomacyPlayerWorld

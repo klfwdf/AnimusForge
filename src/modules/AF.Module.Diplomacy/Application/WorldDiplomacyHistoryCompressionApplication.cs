@@ -117,14 +117,14 @@ public static void TryScheduleTokenCompression(
     ensureInitialized();
     syncSources();
     long threshold = compressionTriggerTokens;
+    WorldDiplomacyJobSelectionView jobs = WorldDiplomacyJobSelectionView.For(storage);
     storage.DiplomacyCompressionPending = storage.CanonicalHistory.EstimatedTokens >= threshold
-        || storage.Jobs.Any(x => x != null && x.AwaitingHistoryCompression);
+        || jobs.HasAwaiting(storage);
     if (!storage.DiplomacyCompressionPending || currentHour() < storage.CompressionRetryAfterHour) return;
-    if (storage.Jobs.Any(x => WorldDiplomacyRoundLifecycleRules.IsJobOfKind(x, "compress"))) return;
+    if (jobs.HasCompression(storage)) return;
     long throughSequence = Math.Max(storage.CanonicalHistory.Snapshot.CoveredThroughSequence, storage.CanonicalHistory.NextSequence - 1L);
-    int targetTokens = storage.Jobs.Where(x => x != null && x.AwaitingHistoryCompression && x.InputBudgetHistoryTargetTokens > 0)
-        .Select(x => x.InputBudgetHistoryTargetTokens).DefaultIfEmpty(compressionTargetTokens).Min();
-    enqueueCompressionJob(throughSequence, storage.CanonicalHistory.EstimatedTokens, Math.Min(targetTokens, compressionTargetTokens));
+    int targetTokens = jobs.MinimumAwaitingTarget(storage, compressionTargetTokens);
+    enqueueCompressionJob(throughSequence, storage.CanonicalHistory.EstimatedTokens, targetTokens);
 }
 
 public static void EnqueueCompressionJob(

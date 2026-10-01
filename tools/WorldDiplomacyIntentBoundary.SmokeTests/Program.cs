@@ -790,11 +790,11 @@ internal static class Program
 			&& orchestrationHost.Contains("NotificationSink", StringComparison.Ordinal),
 			"host binds notification owner");
         string notifications = ExtractMethod(source, "internal void Poll(");
-		Test.True(notifications.Contains("WorldDiplomacyPropagationApplication.SelectPendingRumors(storage, 3)", StringComparison.Ordinal)
+        Test.True(notifications.Contains("EnsureView(storage)", StringComparison.Ordinal)
 			&& notifications.Contains("WorldDiplomacyPropagationApplication.MarkRumorNotified(rumor)", StringComparison.Ordinal)
 			&& propagationOwner.Contains("document.RumorNotified", StringComparison.Ordinal)
-			&& notifications.Contains("x.HasReachedPlayerCourt", StringComparison.Ordinal)
-			&& notifications.Contains("!x.FormalNoticeShown", StringComparison.Ordinal),
+			&& source.Contains("!document.HasReachedPlayerCourt || document.FormalNoticeShown", StringComparison.Ordinal)
+			&& notifications.Contains("document.FormalNoticeShown = true", StringComparison.Ordinal),
 			"rumor and formal court delivery must remain separate notification stages");
 		Test.True(notifications.Contains("_nextNotificationPollUtc", StringComparison.Ordinal),
 			"per-frame diplomacy notification work must remain throttled");
@@ -819,7 +819,7 @@ internal static class Program
 		Test.True(archive.Contains("x.IsPlayerAuthored || x.IsReadyForPublication", StringComparison.Ordinal)
 			&& !archive.Contains("x.IsReadyForPublication && x.HasReachedPlayerCourt", StringComparison.Ordinal),
 			"the U-key archive must expose every published declaration immediately, even before the player joins a kingdom");
-		Test.True(notifications.Contains("x.HasReachedPlayerCourt", StringComparison.Ordinal),
+		Test.True(source.Contains("!document.HasReachedPlayerCourt || document.FormalNoticeShown", StringComparison.Ordinal),
 			"the right-side formal notice must still wait for delivery to the player's affiliated court");
 		Test.True(archive.Contains("IndexTitleText: WorldDiplomacyTextRules.BuildArchiveIndexDocumentTitle(document)", StringComparison.Ordinal)
 			&& archive.Contains("IndexMetaText: \"外交宣言：\" + typeLabel", StringComparison.Ordinal),

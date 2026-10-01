@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Newtonsoft.Json;
 
@@ -24,6 +25,16 @@ public sealed class WorldDiplomacyDocumentAction
 
 public sealed class WorldDiplomacyDocument
 {
+	[JsonIgnore] internal Action NotificationSelectionChanged;
+	private bool _hasReachedPlayerCourt;
+	private string _documentId = "";
+	private int _day;
+	private long _createdUtcTicks;
+	private bool _isPlayerAuthored;
+	private bool _isRead;
+	private bool _rumorNotified;
+	private bool _formalNoticeShown;
+	private bool _isReadyForPublication;
 	[JsonProperty("actions", NullValueHandling = NullValueHandling.Ignore)]
 	public List<WorldDiplomacyDocumentAction> Actions { get; set; }
 
@@ -55,10 +66,10 @@ public sealed class WorldDiplomacyDocument
 	public bool PropagationCompleted { get; set; }
 
 	[JsonProperty("hasReachedPlayerCourt")]
-	public bool HasReachedPlayerCourt { get; set; }
+	public bool HasReachedPlayerCourt { get => _hasReachedPlayerCourt; set { if (_hasReachedPlayerCourt == value) return; _hasReachedPlayerCourt = value; NotificationSelectionChanged?.Invoke(); } }
 
 	[JsonProperty("documentId")]
-	public string DocumentId { get; set; } = "";
+	public string DocumentId { get => _documentId; set { if (string.Equals(_documentId, value, StringComparison.Ordinal)) return; _documentId = value; NotificationSelectionChanged?.Invoke(); } }
 
 	[JsonProperty("exchangeId")]
 	public string ExchangeId { get; set; } = "";
@@ -145,16 +156,16 @@ public sealed class WorldDiplomacyDocument
 	public WorldDiplomacyPeaceTerms PeaceTerms { get; set; }
 
 	[JsonProperty("day")]
-	public int Day { get; set; }
+	public int Day { get => _day; set { if (_day == value) return; _day = value; NotificationSelectionChanged?.Invoke(); } }
 
 	[JsonProperty("gameDate")]
 	public string GameDate { get; set; } = "";
 
 	[JsonProperty("createdUtcTicks")]
-	public long CreatedUtcTicks { get; set; }
+	public long CreatedUtcTicks { get => _createdUtcTicks; set { if (_createdUtcTicks == value) return; _createdUtcTicks = value; NotificationSelectionChanged?.Invoke(); } }
 
 	[JsonProperty("isPlayerAuthored")]
-	public bool IsPlayerAuthored { get; set; }
+	public bool IsPlayerAuthored { get => _isPlayerAuthored; set { if (_isPlayerAuthored == value) return; _isPlayerAuthored = value; NotificationSelectionChanged?.Invoke(); } }
 
 	[JsonProperty("isResponse")]
 	public bool IsResponse { get; set; }
@@ -175,22 +186,22 @@ public sealed class WorldDiplomacyDocument
 	public int AutomaticReplyDepth { get; set; }
 
 	[JsonProperty("isRead")]
-	public bool IsRead { get; set; }
+	public bool IsRead { get => _isRead; set { if (_isRead == value) return; _isRead = value; NotificationSelectionChanged?.Invoke(); } }
 
 	[JsonProperty("isNotified")]
 	public bool IsNotified { get; set; }
 
 	[JsonProperty("rumorNotified")]
-	public bool RumorNotified { get; set; }
+	public bool RumorNotified { get => _rumorNotified; set { if (_rumorNotified == value) return; _rumorNotified = value; NotificationSelectionChanged?.Invoke(); } }
 
 	[JsonProperty("formalNoticeShown")]
-	public bool FormalNoticeShown { get; set; }
+	public bool FormalNoticeShown { get => _formalNoticeShown; set { if (_formalNoticeShown == value) return; _formalNoticeShown = value; NotificationSelectionChanged?.Invoke(); } }
 
 	[JsonProperty("isCompressed")]
 	public bool IsCompressed { get; set; }
 
 	[JsonProperty("isReadyForPublication")]
-	public bool IsReadyForPublication { get; set; }
+	public bool IsReadyForPublication { get => _isReadyForPublication; set { if (_isReadyForPublication == value) return; _isReadyForPublication = value; NotificationSelectionChanged?.Invoke(); } }
 
 	[JsonProperty("roundParticipation")]
 	public string RoundParticipation { get; set; } = "continue";
