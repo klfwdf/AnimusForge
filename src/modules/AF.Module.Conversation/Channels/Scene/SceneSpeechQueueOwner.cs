@@ -1,5 +1,6 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading;
+using System;
 
 namespace AnimusForge;
 
@@ -15,11 +16,18 @@ internal sealed class SceneSpeechQueueOwner<T> where T : class
 
 	private bool _workerRunning;
 
+	private long _generation;
+
+	private readonly HashSet<Action> _pendingDispatches = new HashSet<Action>();
+
 	/// <summary>
 	/// Enqueues one item and returns true only to the caller that must start the worker.
 	/// </summary>
-	internal bool EnqueueAndTryStartWorker(T item)
+	internal bool EnqueueAndTryStartWorker(T item) => EnqueueAndTryStartWorker(item, out _);
+
+	internal bool EnqueueAndTryStartWorker(T item, out long generation)
 	{
+		generation = 0;
 		if (item == null)
 		{
 			return false;
@@ -27,6 +35,7 @@ internal sealed class SceneSpeechQueueOwner<T> where T : class
 
 		lock (_gate)
 		{
+			generation = _generation;
 			_queue.Enqueue(item);
 			if (_workerRunning)
 			{
@@ -43,8 +52,18 @@ internal sealed class SceneSpeechQueueOwner<T> where T : class
 	/// </summary>
 	internal bool TryDequeueOrStopWorker(out T item)
 	{
+		lock (_gate) return TryDequeueOrStopWorker(_generation, out item);
+	}
+
+	internal bool TryDequeueOrStopWorker(long generation, out T item)
+	{
 		lock (_gate)
 		{
+			if (generation != _generation)
+			{
+				item = default;
+				return false;
+			}
 			if (_queue.Count == 0)
 			{
 				_workerRunning = false;
@@ -59,10 +78,36 @@ internal sealed class SceneSpeechQueueOwner<T> where T : class
 
 	internal void StopWorker()
 	{
+		lock (_gate) StopWorker(_generation);
+	}
+
+	internal void StopWorker(long generation)
+	{
 		lock (_gate)
 		{
-			_workerRunning = false;
+			if (generation == _generation) _workerRunning = false;
 		}
+	}
+
+	internal bool IsCurrentGeneration(long generation)
+	{
+		lock (_gate) return generation == _generation;
+	}
+
+	internal bool TryRegisterDispatch(long generation, Action retire)
+	{
+		lock (_gate)
+		{
+			if (generation != _generation) return false;
+			_pendingDispatches.Add(retire);
+			return true;
+		}
+	}
+
+	internal bool TryClaimDispatch(long generation, Action retire)
+	{
+		lock (_gate)
+			return generation == _generation && _pendingDispatches.Remove(retire);
 	}
 
 	/// <summary>
@@ -81,13 +126,21 @@ internal sealed class SceneSpeechQueueOwner<T> where T : class
 
 	internal T[] Reset()
 	{
+		T[] dropped;
+		Action[] retired;
 		lock (_gate)
 		{
-			T[] dropped = _queue.ToArray();
+			_generation++;
+			dropped = _queue.ToArray();
 			_queue.Clear();
 			_workerRunning = false;
-			return dropped;
+			retired = new Action[_pendingDispatches.Count];
+			_pendingDispatches.CopyTo(retired);
+			_pendingDispatches.Clear();
 		}
+		// Completion callbacks never run while holding the admission/queue gate.
+		foreach (Action retire in retired) retire();
+		return dropped;
 	}
 
 	internal bool HasQueuedOrWorker()
