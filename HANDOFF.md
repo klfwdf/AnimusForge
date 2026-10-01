@@ -1,5 +1,9 @@
 # 当前交接：J17 收尾与远端 CivilWar 合并（2026-10-01）
 
+- **快报事件配图与宽版UI已离线完成（2026-10-01）**：`a3183aaa`，收集期到期且≥2组真实其他消息后，选定事件即并行生图/写稿；冻结事实和多人物参考，标题润色不重画，作废取消。报纸加宽、16:9沿用预设映射、去黑色遮罩，并增强冲突动作提示。29任务+46政策+10人物检查、Release双API/Bootstrap、两DLL存档/生命周期/等比fit通过；未部署/推送，实机/GPU/真实API未验。[源码、证据、回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#bulletin-event-art-20261001)。
+
+- **城镇记忆间隔改为7游戏日（2026-10-01，未部署）**：按用户要求替代下方3日默认值，其他成本限制和手工保护不变；60项检查及Release双API+Bootstrap通过，实机/玩家旧档未验。[本次验证与回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#town-memory-seven-days-20261001)。
+
 - **城镇记忆确认事件与限频更新已离线完成（2026-10-01，未部署）**：`eb39f14b`，接入易主/继任、战后实际结果、文化和地方政策生命周期；按需累计、3游戏日/1分钟限频、2并发、384输出tokens，手工正文保护、失败保留、主线程版本校验；原键v1/v2读入与v3分块保存。59定向检查、token/HTTP回放、Release双API+Bootstrap通过；实机/真实API/玩家旧档未验，GCCZ外仓路径不存在未同步，无推送。[源码坐标、性能、存档及回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#town-memory-refresh-20261001)。
 
 - **政变旧王支持者反抗与处置菜单已离线修复（2026-10-01，未部署）**：`86991dc3`，按用户选择，原王族/更支持旧王的合格有地家族可反抗，不再要求与新王关系≤−5；旧请求/普通周叛乱保持。夺位结算后通过原入口打开胜利处置菜单，跳过重复转城、失败可手动重试、成功收据防重开；修正政变场景冒用SETS的TAB提示。128契约、223实际DLL/夹具、Release双API+Bootstrap通过；真实建国/命名/GCCZ菜单及旧档未验，无部署/推送；旧已完成政变不追溯重算。[故障日志、源码、验证与回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#coup-loyalists-and-aftermath-20261001)。

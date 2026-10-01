@@ -1,3 +1,42 @@
+<a id="bulletin-event-art-20261001"></a>
+## 2026-10-01 快报事件配图、多人物参考与宽版 UI（OFFLINE_VERIFIED / 实机 VERIFY）
+
+- 产品提交：`a3183aaa`；开工检查点：`79d81e1`。用户本轮要求一并实现：关键人物各自提供立绘、选定事件即生图、冲突画面增强动作张力、至少两条真实其他消息、去背景黑色遮罩、纸面横向加宽且配图16:9。替代此前 `5f096d08` 的“正文发布后预生成”和快报3:2设计；此前场景16:9预设与现有归档按钮/首字绕排保持。
+- 生效流程：原24游戏小时收集期到期后，真实选择结果须有至少2组小消息才开始文案和配图；不足时每游戏小时继续收集，不调用两条API、不编造填充。原72游戏小时刊后冷却保留。达到条件后先冻结头条主事件及同组事实，再并行启动配图与写稿。标题、修辞改写不换图；事件身份/事实/参与者角色进入缓存键，事实改变产生不同键。整期无关头条、小消息不混入新配图计划。
+- 人物：事件采集保存HeroId、名字与当时角色；政变明确传玩家和原国王两个ID，保留旧6参方法，新8参入口不同名。每次生成最多4名，主线程一次解析并冻结各自外貌，后台串行复用原离屏舞台获取每人全身/头肩参考，按名字标识，家族纹章去重。诊断增加`weekly_participant_references`，分别记录全身与头肩是否提取成功。无ID旧快报按主文多人物回退，排除“其他消息”；无法解析的ID保持未知，不借用另一人的脸。
+- 配图任务仍归战役scope，关闭面板只清理显示scope；重复打开/重复通知合并任务，无自动付费重试。未发布选择作废时取消任务并拒绝晚回调；已完成任务也取消其可用状态。已发期数的事实计划保存在原存档键下的可选`Layouts[].IllustrationPlan`，回看使用同一计划键，不因模型文案不同重画。已完成但后来作废的付费请求无法撤销，画廊磁盘记录不会主动删除。
+- 张力与UI：导演和本地降级提示均要求冲突事件有施加行动、身体回应、控制关系及可读表情，移除固定远景主体占比；不新增伤亡/反抗/刑罚，和平事件不强制战斗。纸面882→1026（高814保持），图片框400×239、内部368×207；快报复用场景16:9预设映射（2048×2048→2048×1152等），真实返回图等比fit。去掉全屏黑色Sprite/Color，输入阻挡仍保留。
+
+### 代码证据（修订 a3183aaa，路径:一基行区间 / 符号）
+
+| 责任 | 代码 / 实际消费者 | 覆盖与边界 |
+| --- | --- | --- |
+| 事实计划及消息门槛 | `src/modules/AF.Module.Weekly/Bulletin/WorldBulletinPolicy.cs:10-29,139-158,191-194` / `WorldBulletinIllustrationPlan`, `BuildIllustrationPlan`, `HasEnoughMinorNews` | 同组事实快照、最多4人、至少2条；不改评分与冷却 |
+| 事件采集与并行启动 | `MyBehavior.WorldBulletin.cs:164-247,799-819,909-990` / `BulletinParticipants`, `TryRecordCoupOutcomeWithParticipantsForBulletin`, `AdvanceWorldBulletinScope`, `CompleteWorldBulletin`, `PublishWorldBulletin` | 事实先启动图片，正文完成关联计划；作废取消 |
+| 政变人物桥 | `extensions/AnimusForge.Coup/src/Integration/CoupRebellionBridge.cs:47-50,93-93,126-126,489-489,557-560` / `Outcome.ActorHeroId`, `AfAccess.Bulletin`, `TryRecordCoupOutcome` | 只提交本任务5处更改；同时存在的内战任务修改未纳入 |
+| 人物快照 | `extensions/AnimusForge.Illustrator/src/Context/WeeklyReportContextExtractor.cs:46-52,151-222` / `WeeklyReportCharacterReference`, `ExtractFromPlan`, `Extract`, `AddCharacter` | 主线程每次选择/打开一遍英雄解析；最多4人，不在Tick扫描 |
+| 任务与缓存 | `extensions/AnimusForge.Illustrator/src/Core/BulletinIllustrationPreloader.cs:28-72,83-159` / `KeyFor`, `PrepareSelection`, `CancelSelection`, `Ensure`, `Finish` | 标题不入键，事实/角色入键；晚回调不可恢复作废图 |
+| 实际生成消费者 | `extensions/AnimusForge.Illustrator/src/UI/Patches/WeeklyReportPopupIllustrationPatch.cs:476-565` / `StartGeneration` | 16:9请求、逐人双参考及诊断，沿用原导演/网络/缓存链 |
+| 存档到面板 | `MyBehavior.WorldBulletinPanel.cs:9-20,125-130`, `DevWeeklyReportPopup.cs:80-83`, `src/modules/AF.Module.Weekly/Panel/WorldBulletinPanelVM.cs:54-65,94-114` | 计划传入现有插画槽，真实图等比fit |
+| 版式 | `content/modules/AF.Module.Weekly/GUI/Prefabs/WorldBulletinPanel.xml:4-25,155-197` | 去遮罩、横向加宽、16:9框；实际字体/缩放需游戏验证 |
+
+### 验证与交付边界
+
+- 最终Release：原`build_single_module.ps1`经既有本地helper仅在当前进程隔离输出/obj，1.3（`v1.3.15.110062`）、1.4（`v1.4.6.115628`）和Bootstrap全部0错误，退出0；未改官方入口，未Stage/Deploy/打包/推送。产物：`artifacts/bulletin-event-art-20261001/build-425b284bd1da4172ab8ca70a07d90836/`，含命令、完整build.log、引用与hash；构建时工作树还有其他作者内战变更，因此这是集成编译证据，不是独立可部署发布包。
+- 真实源文件测试：`BulletinPreloadTests` 29项PASS（选定即请求、标题不失效、事实/人物变更失效、取消/晚完成/已完成作废、回看/重绘/重试/战役切换）；`WorldBulletinPolicy.SmokeTests` 46项PASS；`WeeklyParticipantTests` 10项PASS（双方ID和独立外貌、旧档主文回退、缺失ID、日期/角色/结果、4人上限）。游戏对象/原生外貌提取服务为桩，不代表GPU或HTTP已验。
+- 发现并修正测试样例：原样例只有一组合格小消息，35分外地俘获低于世界收录门槛；新增真实合格本国俘获样例验证第二组，并保留拒绝单组/低分凑数断言。没有为测试放宽业务门槛。
+- 两实际DLL的`verify-dll.ps1`均PASS：关闭UI不取消战役图片scope、选定/取消桥及Coup新旧签名存在、2048×1152 fit368×207、方图fit207×207、旧JSON默认兼容及新计划往返持久化。XML解析/框尺寸/无遮罩/无ESC字样，以及门槛在两API入口之前的源码核对PASS。日志与脚本在`artifacts/bulletin-event-art-20261001/`。
+- NOT-RUN：真实游戏Gauntlet加载/鼠标/不同分辨率布局、旧存档完整加载、双人物GPU立绘、真实导演/服务商16:9输出及视觉张力。服务商若忽略size，显示会等比留边；不能凭离线检查宣称返回像素或画作质量已验。用户截图对应既有旧图不批量重绘。
+- 回滚：对产品提交`a3183aaa`做定向逆提交；新增存档字段为可选，旧字段/键不变。勿硬重置、勿覆盖其他作者WIP。后续部署需新的明确授权并用最终集成源重建核对，不能直接覆盖这个混有并行WIP的验证目录。
+
+<a id="town-memory-seven-days-20261001"></a>
+
+### 城镇记忆自动刷新最短间隔调整为7游戏日（2026-10-01，OFFLINE_VERIFIED / 未部署）
+
+用户明确要求“间隔7个游戏日”。本条只替代下方 `town-memory-refresh-20261001` 的3日默认间隔，其他累计条件、按需触发、手工正文保护、1分钟请求间隔、2并发与384输出tokens不变。产品仅 `AnimusForge.SiegeAftermathIntervention/SettlementRuleMemoryEvolution.cs:12` 的 `MinimumRefreshDays` 由3改7；同步已有边界测试和功能说明。第6日仍拒绝、第7日允许，3次变化不能绕过7日门槛；60项既有/边界检查PASS。原脚本Release双API+Bootstrap全部exit0、0错误（原有warning保留），15产品源hash一致；实际引用1.3.15/1.4.6，产物hash见本任务verification.json。
+
+独立证据与候选位于 `artifacts/town-memory-seven-days-20261001/`（`tests.log`、`build.log`、`build-manifest.json`）。沿用上一片已验证基线加15文件overlay隔离其他作者未提交改动；未调用Stage/Deploy。真实游戏、真实provider、玩家旧档仍NOT-RUN。回滚只逆向本次间隔/测试/说明提交，不回滚前片城镇记忆功能；无存档结构变化。
+
 <a id="town-memory-refresh-20261001"></a>
 
 ### 城镇记忆接入确认事件、按需限频刷新（2026-10-01，OFFLINE_VERIFIED / 未部署）

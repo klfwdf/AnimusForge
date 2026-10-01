@@ -8,7 +8,7 @@ namespace AnimusForge.SiegeAftermathIntervention;
 public sealed class SettlementRuleMemoryEvolution
 {
     public const int MaximumEvents = 12;
-    public const int MinimumRefreshDays = 3;
+    public const int MinimumRefreshDays = 7;
     public const int AccumulationDays = 1;
     public const int AccumulatedChanges = 3;
     private readonly IReadOnlyList<SettlementRuleMemoryFact> _facts;

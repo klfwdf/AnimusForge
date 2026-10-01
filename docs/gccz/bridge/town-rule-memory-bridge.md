@@ -31,7 +31,7 @@ Reading a town's encyclopedia or an already-eligible dialogue context may reques
 Events only record bounded facts; they do not issue network requests or scan all towns.
 
 - Empty automatic prose: request immediately, subject to network backpressure.
-- Existing automatic prose: require dirty source revision, at least **3 campaign days** since
+- Existing automatic prose: require dirty source revision, at least **7 campaign days** since
   the last successful generation, and either **3 accumulated source changes** or **1 campaign
   day** since the first pending change. Time alone does not generate more prose.
 - Per-town network attempts are at least **1 wall-clock minute** apart. Failed/rejected attempts
