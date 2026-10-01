@@ -69,10 +69,16 @@ internal static class Program
 		Check(detail.Contains("甲被玩家处决") && detail.Contains("乙被玩家处决") && detail.Contains("村三遭劫掠"), "detail block lists every fact of a story");
 		// Scene prompts end the rule section only on the legacy "完整周报" headers.
 		Check(detail.StartsWith("【NPC所属王国完整周报】\n标题：瓦兰迪亚"), "detail block keeps the legacy header the scene splitter recognises");
-		string world = WorldBulletinPolicy.BuildNpcWorldBlock(events, 5, "血染刑场", "玩家连斩两人");
+		string world = WorldBulletinPolicy.BuildNpcWorldBlock(events, 5, "血染刑场", "玩家连斩两人", 4);
 		Check(world.StartsWith("【世界完整周报】") && world.Contains("南帝国向北帝国宣战") && !world.Contains("远方村") && world.Contains("最新快报《血染刑场》"), "world block: legacy header, headlines only + latest bulletin");
-		string worldForSouth = WorldBulletinPolicy.BuildNpcWorldBlock(events, 5, "", "", "empire_s");
+		string worldForSouth = WorldBulletinPolicy.BuildNpcWorldBlock(events, 5, "", "", -1, "empire_s");
 		Check(!worldForSouth.Contains("南帝国向北帝国宣战"), "world block skips facts already in the NPC kingdom block");
+		Check(WorldBulletinPolicy.BuildNpcWorldBlock(null, 100, "旧停战", "甲乙停战", 10) == "", "90-day-old bulletin excluded");
+		Check(WorldBulletinPolicy.BuildNpcWorldBlock(null, 12, "边界", "消息", 5).Contains("边界"), "seven-day boundary included");
+		Check(WorldBulletinPolicy.BuildNpcWorldBlock(null, 13, "边界", "消息", 5) == "", "eight-day-old bulletin excluded");
+		Check(WorldBulletinPolicy.BuildNpcWorldBlock(null, 5, "未知", "消息", -1) == "", "unknown publication day excluded");
+		Check(WorldBulletinPolicy.BuildNpcWorldBlock(null, 5, "未来", "消息", 6) == "", "future publication day excluded");
+		Check(WorldBulletinPolicy.BuildNpcWorldBlock(events, 5, "旧停战", "甲乙停战", -1).Contains("南帝国向北帝国宣战"), "old bulletin filtering preserves recent raw facts");
 
 		// A non-headline that outranks the real trigger by bonus (player raid 25+30+20=75 vs far war 70)
 		// must not sink the window: the lead is the strongest trigger.

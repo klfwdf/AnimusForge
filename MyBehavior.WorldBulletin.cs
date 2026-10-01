@@ -34,7 +34,7 @@ public partial class MyBehavior
 	// Rank captured in BeforeHeroKilledEvent; consumed by the matching HeroKilledEvent in the same call stack.
 	private readonly Dictionary<string, WorldBulletinDeathSnapshot> _worldBulletinDeathSnapshots = new Dictionary<string, WorldBulletinDeathSnapshot>(StringComparer.Ordinal);
 
-	// Raw save string that failed to load; written back unchanged until a valid state replaces it.
+	// Unreadable raw JSON is carried verbatim, then retained inside any newly initialized state.
 	private string _worldBulletinCorruptRaw;
 
 	// Id of the newest published bulletin, for the per-prompt NPC lookup (MyBehavior.WorldBulletinNpc.cs).
@@ -86,7 +86,8 @@ public partial class MyBehavior
 			_worldBulletinState = new WorldBulletinSaveState
 			{
 				TrackingStartDay = day,
-				LastKingdomWeek = day / 7
+				LastKingdomWeek = day / 7,
+				PreservedUnreadableState = _worldBulletinCorruptRaw
 			};
 		}
 		_worldBulletinState.Events ??= new List<WorldBulletinEvent>();
@@ -992,8 +993,12 @@ public partial class MyBehavior
 		{
 			if (dataStore.IsSaving)
 			{
-				// A state that failed to load is carried forward verbatim until bulletins write a valid one,
-				// so a parse failure never silently overwrites the player's bulletin history.
+				// Preserve unreadable input even after an hourly tick or a new fact initializes state.
+				// New facts remain saveable; the recovery payload survives subsequent successful loads.
+				if (_worldBulletinState != null && _worldBulletinCorruptRaw != null)
+				{
+					_worldBulletinState.PreservedUnreadableState = _worldBulletinCorruptRaw;
+				}
 				string json = _worldBulletinState != null ? JsonConvert.SerializeObject(_worldBulletinState) : (_worldBulletinCorruptRaw ?? "");
 				CampaignSaveChunkHelper.SaveChunkedString(dataStore, WorldBulletinStorageKey, json, "WorldBulletin");
 				return;
@@ -1033,6 +1038,9 @@ public partial class MyBehavior
 		_worldBulletinFocusOwnKingdomId = "";
 		_worldBulletinDeathSnapshots.Clear();
 		_worldBulletinLatestEventId = "";
+		_worldBulletinCachedRecords = null;
+		_worldBulletinCachedRecordCount = -1;
+		_worldBulletinCachedRecordIndex = -1;
 		while (_worldBulletinMainThreadActions.TryDequeue(out _))
 		{
 		}

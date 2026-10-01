@@ -1,3 +1,20 @@
+<a id="world-bulletin-review-fixes-20261001"></a>
+
+### 即时快报审查三项修复（2026-10-01，OFFLINE_VERIFIED）
+
+用户在只读审查后要求修复：读档选择最旧快报、损坏存档原文被 Tick 初始化覆盖、过期快报混入近7日消息。工作区 `F:/AnimusForge-main`，分支 `codex/af-main-refactor-continuation-20260831`；审查产品基线 `3c00ae2e`，本轮修改前本地意图检查点 `a6532bc2`。本条只替代上述三个发现，不提升 J17/C/D 或其他任务状态。同期 Coup/CivilWar 在同工作树独立修改/提交，保留其改动；本任务只提交快报相关路径，不推送/部署。
+
+- `MyBehavior.WorldBulletinNpc.cs:16–18,33–35,53–108`：`FindLatestWorldBulletinRecord` 按 CreatedDay、数值期号找最新世界快报，不依赖存取档降序与发布追加顺序；缓存列表身份/数量/索引/事件 ID。每次 NPC 快照读取正常 O(1)，加载、列表替换、追加/删除、缓存索引被排序移动后才 O(N) 重选；无新增 Tick 扫描。调用共享 `BuildNpcWorldBlock` 传入真实发布日期，三渠道继续共用快照。
+- `src/modules/AF.Module.Weekly/Bulletin/WorldBulletinPolicy.cs:64–67,427–437`：摘要日期必须在当前日与前7日之间，未知/未来日期不注入，保留近期原始事实、原有标题契约。`PreservedUnreadableState` 为原 JSON 中新增的可选恢复字段，不作当前事实或提示词输入。
+- `MyBehavior.WorldBulletin.cs:80–94,990–1004,1032–1059`：`EnsureWorldBulletinState` / `SyncWorldBulletinData` 将损坏原文保留在恢复字段中；尚未初始化时仍原样回存。初始化后新事件、期号和原文共同存储，成功重载后恢复字段继续保存。原 `_af_worldBulletin_v1` 键与类型身份不改；新游戏清理旧缓存和恢复状态。
+
+验证（针对上述源码；非真实游戏验收）：
+
+1. `dotnet run --project tests/modules/AF.Module.Weekly/WorldBulletinPolicy.SmokeTests/WorldBulletinPolicy.SmokeTests.csproj`：**38 PASS**，含新增90日过期、7/8日边界、未知/未来日期与原始事实保留。
+2. `python tests/modules/AF.Module.Weekly/WorldBulletinPolicy.SmokeTests/run_host_regression.py`：**16 PASS**。原样提取真实宿主方法，链接生产 policy 与 `_deps_auto/Newtonsoft.Json.dll`；覆盖排序、数值期号、缓存追加/删除/替换/重排、坏原文精确保留、初始化、带新事实的保存/加载、后续再保存、有效旧格式和新游戏。IDataStore/分块存储及游戏对象为桩，不代表真实 SaveSystem 或小时事件派发。首次 net8 harness 因旧 Newtonsoft 缺 `System.Security.Permissions` 失败；最终改为产品相同的 net472 后通过，未安装依赖。生成材料在 `artifacts/world-bulletin-review/host-u6h2tbbz/`。
+3. 原 `scripts/build/build_single_module.ps1 -ProjectRoot F:/AnimusForge-main -BannerlordRoot "F:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord" -Configuration Release`，不传 Stage/Deploy：双 API + Bootstrap **exit 0**。引用 `_deps_auto` **1.3.15.110062**、`.tmp/build_check/1.4` **1.4.6.115628**；实现各338 warning/0 error，Bootstrap 0/0。构建含当时共享工作树的其他任务改动，不把此结果声称为其后续源码验证。完整日志 `artifacts/world-bulletin-review/build-release.log`。实现 SHA256：1.3 `59BE695007F60A2FA3016A879EC4841F7FF81C84EE8FA9325677C943F3DD7191`；1.4 `00402FCD3D236DE128E1428B937EC090D255AE2C7878B0B5401FFB90F0B8FDCA`；Bootstrap `4F10884F4C6A55967A3ECB82BC57CD690074FD2DAD2E83820B3E59BD27B1118D`。
+4. 本次路径 `git diff --check` 通过。未运行 Debug、全仓 C、真实三渠道/provider、旧档或 UI 实机；未 Stage、覆盖、打包或推送。回滚使用本次修复提交的定向 inverse commit，不 reset 共享分支。旧程序不认识新增恢复字段，因此有坏档恢复材料时，回退前须保留当前存档副本。
+
 <a id="coup-entry-repair-20261001"></a>
 
 ### 宣权篡位入口修复（2026-10-01，ACTIVE）

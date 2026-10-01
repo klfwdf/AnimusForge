@@ -13,6 +13,10 @@ namespace AnimusForge;
 // Cost: one pass over <= MaxEvents facts per kingdom block, main thread, a handful of kingdoms.
 public partial class MyBehavior
 {
+	private List<EventRecordEntry> _worldBulletinCachedRecords;
+	private int _worldBulletinCachedRecordCount = -1;
+	private int _worldBulletinCachedRecordIndex = -1;
+
 	private WeeklyPromptSnapshot CaptureWorldBulletinNpcSnapshot(Hero targetHero, CharacterObject targetCharacter, string kingdomIdOverride)
 	{
 		List<WorldBulletinEvent> events = _worldBulletinState?.Events ?? new List<WorldBulletinEvent>();
@@ -28,7 +32,7 @@ public partial class MyBehavior
 		string surroundingsDetail = string.IsNullOrWhiteSpace(surroundingsKingdomId) ? "" : WorldBulletinPolicy.BuildNpcDetailBlock(WorldBulletinPolicy.NpcSurroundingsHeader, ResolveKingdomDisplay(surroundingsKingdomId), surroundingsKingdomId, events, day);
 		EventRecordEntry latest = FindLatestWorldBulletinRecord();
 		// World headlines are emitted next to the NPC-kingdom block (npc_major_actions), so its facts are skipped there.
-		string world = WorldBulletinPolicy.BuildNpcWorldBlock(events, day, latest?.Title, latest?.ShortSummary, npcKingdomId);
+		string world = WorldBulletinPolicy.BuildNpcWorldBlock(events, day, latest?.Title, latest?.ShortSummary, latest?.CreatedDay ?? -1, npcKingdomId);
 		return new WeeklyPromptSnapshot(
 			WorldBulletinPolicy.BuildNpcBriefBlock(ToKingdomDisplayPairs(including), events, day),
 			WorldBulletinPolicy.BuildNpcBriefBlock(ToKingdomDisplayPairs(excluding), events, day),
@@ -47,8 +51,8 @@ public partial class MyBehavior
 			.ToList();
 	}
 
-	// Newest published bulletin. Runs on every NPC prompt, so it never walks the record list when nothing
-	// was published, and otherwise stops at the first (newest) hit; the cached id short-circuits the common case.
+	// Saves sort records newest-first; publishing appends. Compare dates and numeric issue numbers,
+	// then cache the index. Normal prompts are O(1); load/list replacement/append/reorder trigger a scan.
 	private EventRecordEntry FindLatestWorldBulletinRecord()
 	{
 		if ((_worldBulletinState?.World?.Sequence ?? 0) <= 0)
@@ -56,25 +60,49 @@ public partial class MyBehavior
 			return null;
 		}
 		List<EventRecordEntry> entries = _eventRecordEntries;
-		if (!string.IsNullOrEmpty(_worldBulletinLatestEventId) && entries != null)
+		if (entries == null)
 		{
-			for (int i = entries.Count - 1; i >= 0 && i >= entries.Count - 64; i--)
+			return null;
+		}
+		if (ReferenceEquals(entries, _worldBulletinCachedRecords) && entries.Count == _worldBulletinCachedRecordCount)
+		{
+			if (_worldBulletinCachedRecordIndex < 0)
 			{
-				if (entries[i] != null && string.Equals(entries[i].EventId, _worldBulletinLatestEventId, StringComparison.OrdinalIgnoreCase))
-				{
-					return entries[i];
-				}
+				return null;
+			}
+			EventRecordEntry cached = entries[_worldBulletinCachedRecordIndex];
+			if (cached != null && string.Equals(cached.EventId, _worldBulletinLatestEventId, StringComparison.OrdinalIgnoreCase))
+			{
+				return cached;
 			}
 		}
-		for (int i = (entries?.Count ?? 0) - 1; i >= 0; i--)
+		EventRecordEntry latest = null;
+		int latestIndex = -1;
+		int latestSequence = -1;
+		for (int i = 0; i < entries.Count; i++)
 		{
 			EventRecordEntry entry = entries[i];
 			if (entry != null && IsWorldBulletinEventId(entry.EventId) && string.Equals((entry.EventKind ?? "").Trim(), "world", StringComparison.OrdinalIgnoreCase))
 			{
-				_worldBulletinLatestEventId = entry.EventId;
-				return entry;
+				int sequence = GetWorldBulletinRecordSequence(entry.EventId);
+				if (latest == null || entry.CreatedDay > latest.CreatedDay || (entry.CreatedDay == latest.CreatedDay && sequence > latestSequence))
+				{
+					latest = entry;
+					latestIndex = i;
+					latestSequence = sequence;
+				}
 			}
 		}
-		return null;
+		_worldBulletinCachedRecords = entries;
+		_worldBulletinCachedRecordCount = entries.Count;
+		_worldBulletinCachedRecordIndex = latestIndex;
+		_worldBulletinLatestEventId = latest?.EventId ?? "";
+		return latest;
+	}
+
+	private static int GetWorldBulletinRecordSequence(string eventId)
+	{
+		string[] parts = (eventId ?? "").Split(':');
+		return parts.Length >= 5 && int.TryParse(parts[parts.Length - 2], out int sequence) ? sequence : -1;
 	}
 }
