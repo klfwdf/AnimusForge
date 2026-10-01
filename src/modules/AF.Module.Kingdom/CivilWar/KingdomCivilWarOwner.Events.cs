@@ -157,6 +157,11 @@ internal sealed partial class KingdomCivilWarOwner
 			if (PoliticalClan(clan, k))
 			{
 				var record = GetOrCreateClan(s, clan, week);
+				if (clan == k.RulingClan)
+				{
+					record.Side = KingdomCivilWarSide.Crown; record.FactionId = "";
+					if (clan == Clan.PlayerClan) s.PlayerSide = "crown";
+				}
 				EvaluatePoliticalMembership(k, s, clan, record, day, tuning);
 				if (clan != k.RulingClan && clan != Clan.PlayerClan && record.Side == KingdomCivilWarSide.Middle && TotalGrievance(record) > formationGrievance)
 				{ formationLeader = clan; formationGrievance = TotalGrievance(record); }
