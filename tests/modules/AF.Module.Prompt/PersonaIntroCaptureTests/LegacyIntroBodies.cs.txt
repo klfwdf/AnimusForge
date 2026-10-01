@@ -1,0 +1,685 @@
+	private string BuildNpcSystemTopPromptIntro(Hero npcHero, bool includeTradePricing)
+	{
+		if (npcHero == null)
+		{
+			return "";
+		}
+		string clanName = "无家族";
+		int clanTier = 0;
+		try
+		{
+			clanTier = npcHero.Clan?.Tier ?? 0;
+			string rawClanName = (npcHero.Clan?.Name?.ToString() ?? "").Trim();
+			if (!string.IsNullOrWhiteSpace(rawClanName))
+			{
+				clanName = rawClanName;
+			}
+		}
+		catch
+		{
+		}
+		GetHeroFactionAndLiegeForPrompt(npcHero, out var factionName, out var liegeName);
+		string factionDisplay = (factionName ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(factionDisplay))
+		{
+			factionDisplay = "无（独立）";
+		}
+		string liegeDisplay = (liegeName ?? "").Trim();
+		if (!string.IsNullOrWhiteSpace(liegeDisplay) && liegeDisplay != "无" && !liegeDisplay.EndsWith("（本人）", StringComparison.Ordinal))
+		{
+			factionDisplay = factionDisplay + "（效忠：" + liegeDisplay + "）";
+		}
+		string heroName = (npcHero.Name?.ToString() ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(heroName))
+		{
+			heroName = "未知人物";
+		}
+		string identityTitle = BuildHeroIdentityTitleForPrompt(npcHero);
+		string reputationText = GetClanTierReputationLabel(clanTier) + $"（{Math.Max(0, clanTier)} level）";
+		string equipmentText = BuildHeroEquipmentSummaryForPrompt(npcHero);
+		string ageText = BuildAgeBracketLabel(npcHero.Age);
+		string cultureText = GetHeroCultureNameForPrompt(npcHero);
+		if (!string.IsNullOrWhiteSpace(cultureText) && !cultureText.EndsWith("人", StringComparison.Ordinal))
+		{
+			cultureText += "人";
+		}
+		GetNpcPersonaStrings(npcHero, out var personality, out var background);
+		string personalityText = string.IsNullOrWhiteSpace(personality) ? "暂无记录" : personality.Trim();
+		string backgroundText = string.IsNullOrWhiteSpace(background) ? "暂无记录" : background.Trim();
+		string nobleEtiquettePrompt = BuildNobleEtiquettePromptForHero(npcHero);
+		string clanRole = npcHero.IsFemale ? "女性成员" : "男性成员";
+		try
+		{
+			Hero leader = npcHero.Clan?.Leader;
+			if (leader != null && leader == npcHero)
+			{
+				clanRole = "族长";
+			}
+		}
+		catch
+		{
+		}
+		string inventorySummary = "";
+		if (includeTradePricing && RewardSystemBehavior.Instance != null)
+		{
+			try
+			{
+				MentionedWorldEntities mentions = AIConfigHandler.GetLatestAuxiliaryMentionedEntitiesForExternal();
+				int promptListMax = PromptListRetrievalService.GetMaxCandidateCount();
+				inventorySummary = RewardSystemBehavior.Instance.BuildFilteredInventorySummaryForAI(npcHero, mentions, promptListMax, includePrivateBattleEquipment: includeTradePricing);
+			}
+			catch
+			{
+				inventorySummary = "";
+			}
+		}
+		StringBuilder stringBuilder = new StringBuilder();
+		stringBuilder.Append("你是")
+			.Append(factionDisplay)
+			.Append("的")
+			.Append(clanName)
+			.Append("的")
+			.Append(heroName)
+			.Append("，你是家族中的")
+			.Append(clanRole)
+			.Append("，你的身份是")
+			.Append(identityTitle)
+			.Append("，你")
+			.Append(reputationText)
+			.Append("，你身上穿着")
+			.Append(equipmentText)
+			.Append("，你的个性为：")
+			.Append(personalityText)
+			.Append("，你的背景是：")
+			.Append(backgroundText);
+		string npcPlayerRelationshipLine = BuildNpcPlayerKinshipPromptLine(npcHero, includeSameClanFallback: true);
+		if (!string.IsNullOrWhiteSpace(npcPlayerRelationshipLine))
+		{
+			stringBuilder.Append("。").Append(npcPlayerRelationshipLine);
+		}
+		if (!string.IsNullOrWhiteSpace(nobleEtiquettePrompt))
+		{
+			stringBuilder.Append("。").Append(nobleEtiquettePrompt).Append("你的年纪是");
+		}
+		else
+		{
+			stringBuilder.Append("，你的年纪是");
+		}
+		stringBuilder
+			.Append(ageText)
+			.Append("，你是")
+			.Append(cultureText)
+			.Append("。");
+		return stringBuilder.ToString().Trim();
+	}
+
+	private string BuildSceneNpcRoleIntroForPrompt(NpcDataPacket npc, Hero hero, IEnumerable<NpcDataPacket> presentNpcs = null, bool includeInventorySummary = false, bool includeTradePricing = false, bool partyTransferTopicSelected = false, MentionedWorldEntities promptMentions = null)
+	{
+		if (npc == null)
+		{
+			return "";
+		}
+		// This value belongs to the current prompt request. Do not read the
+		// AsyncLocal fallback here: main-prompt assembly may resume on another thread.
+		MentionedWorldEntities inventoryMentions = promptMentions;
+		string name = GetSceneNpcIdentityNameForPrompt(npc);
+		string givenName = hero == null ? GetSceneNpcGivenNameForPrompt(npc) : "";
+		string identity = (npc.RoleDesc ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(identity))
+		{
+			identity = "未知身份";
+		}
+		string personality = string.IsNullOrWhiteSpace(npc.PersonalityDesc) ? "暂无记录" : npc.PersonalityDesc.Trim();
+		string background = string.IsNullOrWhiteSpace(npc.BackgroundDesc) ? "暂无记录" : npc.BackgroundDesc.Trim();
+		string faction = "无（独立）";
+		string clan = "无家族";
+		string clanRole = "成员";
+		string reputation = MyBehavior.GetClanTierReputationLabelForExternal(0) + "（0 level）";
+		string culture = (npc.CultureId ?? "").Trim();
+		string age = MyBehavior.BuildAgeBracketLabelForExternal(npc.Age);
+		string equipment = "未知";
+		string inventorySummary = "";
+		string currentDateText = "";
+		if (hero != null)
+		{
+			try
+			{
+				string clanName = (hero.Clan?.Name?.ToString() ?? "").Trim();
+				if (!string.IsNullOrWhiteSpace(clanName))
+				{
+					clan = clanName;
+				}
+				if (!string.IsNullOrWhiteSpace(clan) && !clan.EndsWith("家族", StringComparison.Ordinal))
+				{
+					clan += "家族";
+				}
+				int tier = hero.Clan?.Tier ?? 0;
+				reputation = MyBehavior.GetClanTierReputationLabelForExternal(tier) + $"（{Math.Max(0, tier)} level）";
+				string heroIdentity = MyBehavior.BuildHeroIdentityTitleForExternal(hero);
+				if (!string.IsNullOrWhiteSpace(heroIdentity))
+				{
+					identity = heroIdentity.Trim();
+				}
+				string factionName = (hero.Clan?.Kingdom?.Name?.ToString() ?? "").Trim();
+				if (string.IsNullOrWhiteSpace(factionName))
+				{
+					factionName = (hero.MapFaction?.Name?.ToString() ?? "").Trim();
+				}
+				if (string.IsNullOrWhiteSpace(factionName))
+				{
+					factionName = clan;
+				}
+				if (!string.IsNullOrWhiteSpace(factionName))
+				{
+					faction = factionName;
+				}
+				if (hero.Clan?.Leader == hero)
+				{
+					clanRole = "族长";
+				}
+				string cultureName = (hero.Culture?.Name?.ToString() ?? "").Trim();
+				if (!string.IsNullOrWhiteSpace(cultureName))
+				{
+					culture = cultureName;
+				}
+				age = MyBehavior.BuildAgeBracketLabelForExternal(hero.Age);
+				equipment = MyBehavior.BuildHeroEquipmentSummaryForExternal(hero);
+				if (includeInventorySummary && RewardSystemBehavior.Instance != null)
+				{
+					int promptListMax = PromptListRetrievalService.GetMaxCandidateCount();
+					inventorySummary = (RewardSystemBehavior.Instance.BuildFilteredInventorySummaryForAI(hero, inventoryMentions, promptListMax, includePrivateBattleEquipment: includeTradePricing) ?? "").Trim();
+				}
+			}
+			catch
+			{
+			}
+		}
+		else
+		{
+			string unnamedRank = (npc.UnnamedRank ?? "").Trim();
+			if (!string.IsNullOrWhiteSpace(unnamedRank))
+			{
+				clan = unnamedRank;
+			}
+			if (!string.IsNullOrWhiteSpace(clan) && clan != "无家族" && !clan.EndsWith("家族", StringComparison.Ordinal))
+			{
+				clan += "家族";
+			}
+			if (!string.IsNullOrWhiteSpace(culture))
+			{
+				faction = culture;
+			}
+			equipment = BuildNonHeroEquipmentSummaryForPrompt(npc);
+			try
+			{
+				Agent agent = Mission.Current?.Agents?.FirstOrDefault((Agent a) => a != null && a.Index == npc.AgentIndex);
+				CharacterObject characterObject = agent?.Character as CharacterObject;
+				if (includeInventorySummary && RewardSystemBehavior.Instance != null && characterObject != null && RewardSystemBehavior.Instance.TryGetSettlementMerchantKind(characterObject, out var _))
+				{
+					int promptListMax = PromptListRetrievalService.GetMaxCandidateCount();
+					string text = RewardSystemBehavior.Instance.BuildFilteredSettlementMerchantInventorySummaryForAI(characterObject, inventoryMentions, promptListMax);
+					if (!string.IsNullOrWhiteSpace(text))
+					{
+						inventorySummary = text.Trim();
+					}
+				}
+			}
+			catch
+			{
+			}
+		}
+		if (string.IsNullOrWhiteSpace(culture))
+		{
+			culture = "未知文化";
+		}
+		if (!culture.EndsWith("人", StringComparison.Ordinal))
+		{
+			culture += "人";
+		}
+		if (string.IsNullOrWhiteSpace(age))
+		{
+			age = "未知";
+		}
+		if (string.IsNullOrWhiteSpace(equipment))
+		{
+			equipment = "未知";
+		}
+		try
+		{
+			currentDateText = (MyBehavior.BuildCurrentDateFactForExternal() ?? "").Replace("\r", "").Trim();
+			if (currentDateText.StartsWith("当前游戏日期：", StringComparison.Ordinal))
+			{
+				currentDateText = currentDateText.Substring("当前游戏日期：".Length).Trim();
+			}
+			int parenIndex = currentDateText.IndexOf('（');
+			if (parenIndex >= 0)
+			{
+				currentDateText = currentDateText.Substring(0, parenIndex).Trim();
+			}
+		}
+		catch
+		{
+			currentDateText = "";
+		}
+		bool hideReputation = ShouldHideSceneReputationForPrompt(npc, hero);
+		StringBuilder stringBuilder = new StringBuilder();
+		if (hero != null)
+		{
+			string pregnancySelfKnowledge = BuildHeroPregnancySelfKnowledgeForPrompt(hero);
+			string clanRoleText = (clanRole == "族长") ? "族长" : (hero.IsFemale ? "女性成员" : "男性成员");
+			stringBuilder.Append("你名叫")
+				.Append(name)
+				.Append("，是")
+				.Append(faction)
+				.Append("的")
+				.Append(clan)
+				.Append("的")
+				.Append(clanRoleText)
+				.Append("，你的身份是")
+				.Append(identity);
+			if (!hideReputation && !string.IsNullOrWhiteSpace(reputation))
+			{
+				stringBuilder.Append("，你").Append(reputation);
+			}
+			string heroJoinPartyRuntimeFact = AIConfigHandler.BuildRuntimeHeroJoinPartyInstructionForExternal(hero);
+			if (!string.IsNullOrWhiteSpace(heroJoinPartyRuntimeFact))
+			{
+				stringBuilder.Append("。").Append(heroJoinPartyRuntimeFact.Trim().TrimEnd('。'));
+			}
+			if (!string.IsNullOrWhiteSpace(pregnancySelfKnowledge))
+			{
+				stringBuilder.Append("。").Append(pregnancySelfKnowledge);
+			}
+			stringBuilder.Append("。");
+		}
+		else
+		{
+			stringBuilder.Append("你是一个")
+				.Append(name);
+			if (!string.IsNullOrWhiteSpace(givenName) && !string.Equals(givenName, name, StringComparison.Ordinal))
+			{
+				stringBuilder.Append("，名叫").Append(givenName);
+			}
+			stringBuilder.Append("，你的身份是")
+				.Append(identity);
+			if (!hideReputation && !string.IsNullOrWhiteSpace(reputation))
+			{
+				stringBuilder.Append("，你").Append(reputation);
+			}
+			stringBuilder.Append("。");
+			string partyRepresentativePrompt = BuildWildernessNonHeroPartyRepresentativePrompt(npc.AgentIndex);
+			if (!string.IsNullOrWhiteSpace(partyRepresentativePrompt))
+			{
+stringBuilder.Append(partyRepresentativePrompt);
+				}
+			}
+			string ceremonyRole = BuildCeremonyRoleFactForPrompt(npc.AgentIndex);
+			if (!string.IsNullOrWhiteSpace(ceremonyRole))
+			{
+				stringBuilder.Append(ceremonyRole);
+			}
+			stringBuilder.AppendLine()
+				.Append("你身上穿着")
+			.Append(equipment)
+			.Append("。");
+		string npcCurrentMountLine = BuildNpcCurrentMountLineForPrompt(npc);
+		if (!string.IsNullOrWhiteSpace(npcCurrentMountLine))
+		{
+			stringBuilder.AppendLine();
+			stringBuilder.Append(npcCurrentMountLine);
+		}
+		if (hero != null)
+		{
+			try
+			{
+				if (!IsHeroInPlayerMainPartyForPrompt(hero))
+				{
+					bool hasPartyRestrictionContext = false;
+					string npcTroopsLine = BuildHeroPartyTroopsLineForPrompt(hero, secondPerson: true);
+					string npcPrisonersLine = BuildHeroPartyPrisonersLineForPrompt(hero, secondPerson: true);
+					if (!string.IsNullOrWhiteSpace(npcTroopsLine))
+					{
+						stringBuilder.Append(npcTroopsLine).Append("。");
+						hasPartyRestrictionContext = true;
+					}
+					if (!string.IsNullOrWhiteSpace(npcPrisonersLine))
+					{
+						stringBuilder.Append(npcPrisonersLine).Append("。");
+						hasPartyRestrictionContext = true;
+					}
+					if (hasPartyRestrictionContext && !partyTransferTopicSelected)
+					{
+						stringBuilder.Append("备注：你暂时不可以转移你的俘虏和士兵。");
+					}
+				}
+			}
+			catch
+			{
+			}
+		}
+		else
+		{
+			try
+			{
+				PartyBase nonHeroParty = ResolveWildernessNonHeroPartyBaseForPrompt(npc.AgentIndex);
+				if (nonHeroParty != null)
+				{
+					string npcTroopsLine = BuildPartyTroopsLineForPrompt(nonHeroParty, "你所属队伍共有", "你所属队伍无可战兵力", includeDetails: true);
+					if (!string.IsNullOrWhiteSpace(npcTroopsLine))
+					{
+						stringBuilder.Append(npcTroopsLine).Append("。");
+					}
+					string npcPrisonersLine = BuildPartyPrisonersLineForPrompt(nonHeroParty, "你所属队伍", "你所属队伍无俘虏", includeDetails: true);
+					if (!string.IsNullOrWhiteSpace(npcPrisonersLine) && !string.Equals(npcPrisonersLine, "你所属队伍无俘虏", StringComparison.Ordinal))
+					{
+						stringBuilder.Append(npcPrisonersLine).Append("。");
+					}
+				}
+			}
+			catch
+			{
+			}
+		}
+		if (hero != null)
+		{
+			string nobleEtiquettePrompt = MyBehavior.BuildNobleEtiquettePromptForExternal(hero);
+			stringBuilder.AppendLine()
+				.Append("你的个性为：")
+				.Append(personality)
+				.Append("。")
+				.AppendLine()
+				.Append("你的背景是：")
+				.Append(background);
+			if (!string.IsNullOrWhiteSpace(nobleEtiquettePrompt))
+			{
+				stringBuilder.Append("。").Append(nobleEtiquettePrompt);
+			}
+			else
+			{
+				stringBuilder.Append("。");
+			}
+		}
+		stringBuilder.AppendLine()
+			.Append("你的年纪是")
+			.Append(age)
+			.Append("，你是")
+			.Append(culture)
+			.Append("。");
+		if (!string.IsNullOrWhiteSpace(currentDateText))
+		{
+			stringBuilder.AppendLine();
+			stringBuilder.Append("现在的时间是").Append(currentDateText).Append("。");
+		}
+		string sceneLocationLine = BuildSceneLocationAndSettlementLineForPrompt(hero);
+		if (!string.IsNullOrWhiteSpace(sceneLocationLine))
+		{
+			stringBuilder.AppendLine();
+			stringBuilder.Append(sceneLocationLine);
+		}
+		string settlementHeroNpcLine = (ShoutUtils.BuildCurrentSettlementHeroNpcLineForPrompt() ?? "").Replace("\r", "").Replace("\n", " ").Trim();
+		if (!string.IsNullOrWhiteSpace(settlementHeroNpcLine))
+		{
+			const string prefix = "当前定居点HeroNPC：";
+			if (settlementHeroNpcLine.StartsWith(prefix, StringComparison.Ordinal))
+			{
+				settlementHeroNpcLine = settlementHeroNpcLine.Substring(prefix.Length).Trim();
+			}
+			if (!string.IsNullOrWhiteSpace(settlementHeroNpcLine))
+			{
+				stringBuilder.AppendLine();
+				stringBuilder.Append("这个定居点有这些人物：").Append(settlementHeroNpcLine);
+			}
+		}
+		string settlementFlavorLine = BuildSettlementFlavorLineForPrompt(hero);
+		if (!string.IsNullOrWhiteSpace(settlementFlavorLine))
+		{
+			stringBuilder.AppendLine();
+			stringBuilder.Append(settlementFlavorLine);
+		}
+		string settlementRulerPresenceLine = BuildSettlementRulerPresenceLineForPrompt();
+		if (!string.IsNullOrWhiteSpace(settlementRulerPresenceLine))
+		{
+			stringBuilder.AppendLine();
+			stringBuilder.Append(settlementRulerPresenceLine);
+		}
+		bool includePlayerPartyRoster = ShouldIncludePlayerPartyRosterForScenePrompt(hero, partyTransferTopicSelected);
+		bool useCompactPlayerPartyRoster = includePlayerPartyRoster && ShouldUseCompactPlayerPartyRosterForScenePrompt(partyTransferTopicSelected);
+		string playerIntroLine = BuildScenePlayerIntroForPrompt(hero, npc, includeTradePricing, includePlayerPartyRoster, useCompactPlayerPartyRoster);
+		if (!string.IsNullOrWhiteSpace(playerIntroLine))
+		{
+			stringBuilder.AppendLine();
+			stringBuilder.Append(playerIntroLine);
+		}
+		string prisonerContextLine = BuildPrisonerContextLineForPrompt(npc, hero);
+		if (!string.IsNullOrWhiteSpace(prisonerContextLine))
+		{
+			stringBuilder.AppendLine();
+			stringBuilder.Append(prisonerContextLine);
+		}
+		string playerCommandRelationshipLine = BuildPlayerCommandRelationshipLineForPrompt(npc, hero);
+		if (!string.IsNullOrWhiteSpace(playerCommandRelationshipLine))
+		{
+			stringBuilder.AppendLine();
+			stringBuilder.Append(playerCommandRelationshipLine);
+		}
+		string nearbyPresentNpcLine = BuildNearbyPresentNpcLineForPrompt(npc, presentNpcs);
+		if (!string.IsNullOrWhiteSpace(nearbyPresentNpcLine))
+		{
+			stringBuilder.AppendLine();
+			stringBuilder.Append(nearbyPresentNpcLine);
+		}
+		if (includeInventorySummary && !string.IsNullOrWhiteSpace(inventorySummary))
+		{
+			stringBuilder.AppendLine();
+			stringBuilder.Append(hero != null ? BuildNpcInventorySummaryHeader(hero) : BuildNpcInventorySummaryHeader(GetSceneNpcHistoryNameForPrompt(npc)));
+			stringBuilder.AppendLine();
+			stringBuilder.Append(inventorySummary);
+		}
+		return stringBuilder.ToString().Trim();
+	}
+
+	private string BuildScenePlayerIntroForPrompt(bool includeTradePricing = false, bool includePlayerPartyRoster = false)
+	{
+		return BuildScenePlayerIntroForPrompt(null, includeTradePricing, includePlayerPartyRoster);
+	}
+
+	private string BuildScenePlayerIntroForPrompt(Hero observerHero, bool includeTradePricing = false, bool includePlayerPartyRoster = false)
+	{
+		return BuildScenePlayerIntroForPrompt(observerHero, null, includeTradePricing, includePlayerPartyRoster);
+	}
+
+	private string BuildScenePlayerIntroForPrompt(Hero observerHero, NpcDataPacket observerNpc, bool includeTradePricing = false, bool includePlayerPartyRoster = false, bool useCompactPlayerPartyRoster = false)
+	{
+		Hero playerHero = Hero.MainHero;
+		if (playerHero == null)
+		{
+			return "";
+		}
+		string culture = "未知文化";
+		string age = "未知";
+		string genderText = playerHero.IsFemale ? "女性" : "男性";
+		string equipment = "未知";
+		string equipmentValueInline = "";
+		string identitySentence = BuildPlayerSceneIdentitySentenceForPrompt(playerHero);
+		int clanTier = 0;
+		string clanName = "无家族";
+		bool isClanLeader = false;
+		try
+		{
+			string cultureName = (playerHero.Culture?.Name?.ToString() ?? "").Trim();
+			if (!string.IsNullOrWhiteSpace(cultureName))
+			{
+				culture = cultureName;
+			}
+		}
+		catch
+		{
+		}
+		if (!culture.EndsWith("人", StringComparison.Ordinal))
+		{
+			culture += "人";
+		}
+		try
+		{
+			age = MyBehavior.BuildAgeBracketLabelForExternal(playerHero.Age);
+		}
+		catch
+		{
+			age = "未知";
+		}
+		try
+		{
+			equipment = MyBehavior.BuildHeroEquipmentSummaryForExternal(playerHero);
+		}
+		catch
+		{
+			equipment = "未知";
+		}
+		if (includeTradePricing)
+		{
+			try
+			{
+				if (RewardSystemBehavior.Instance != null)
+				{
+					equipmentValueInline = (RewardSystemBehavior.Instance.BuildVisibleEquipmentGuidePriceSummaryForAI(playerHero) ?? "").Trim();
+				}
+			}
+			catch
+			{
+			}
+		}
+		try
+		{
+			clanTier = playerHero.Clan?.Tier ?? 0;
+			string rawClanName = (playerHero.Clan?.Name?.ToString() ?? "").Trim();
+			if (!string.IsNullOrWhiteSpace(rawClanName))
+			{
+				clanName = rawClanName;
+			}
+			if (!string.IsNullOrWhiteSpace(clanName) && clanName != "无家族" && !clanName.EndsWith("家族", StringComparison.Ordinal))
+			{
+				clanName += "家族";
+			}
+			isClanLeader = playerHero.Clan?.Leader == playerHero;
+		}
+		catch
+		{
+		}
+		StringBuilder stringBuilder = new StringBuilder();
+		bool forceDetailed = ShouldForceDetailedPlayerIntroForObserver(observerHero);
+		bool knowsPlayerIdentity = forceDetailed || DoesSceneObserverKnowPlayerIdentityForPrompt(observerHero, observerNpc);
+		if (knowsPlayerIdentity)
+		{
+			string playerPublicName = (playerHero.Name?.ToString() ?? "").Trim();
+			string reputation = MyBehavior.GetClanTierReputationLabelForExternal(clanTier) + $"（{Math.Max(0, clanTier)} level）";
+			stringBuilder.Append("你面前站着一个")
+				.Append(culture)
+				.Append("，你知道他叫")
+				.Append(string.IsNullOrWhiteSpace(playerPublicName) ? "这人" : playerPublicName)
+				.Append("，他")
+				.Append(reputation)
+				.Append("，是")
+				.Append(clanName)
+				.Append("的")
+				.Append(isClanLeader ? "族长" : "成员")
+				.Append("。从面貌上来看，是一个")
+				.Append(genderText)
+				.Append(age)
+				.Append("，穿着")
+				.Append(equipment)
+				.Append("。");
+		}
+		else if (clanTier >= 2)
+		{
+			stringBuilder.Append("你面前站着一个")
+				.Append(culture)
+				.Append("，你不知道他的名字。从面貌上来看，是一个")
+				.Append(genderText)
+				.Append(age)
+				.Append("，穿着")
+				.Append(equipment)
+				.Append("。");
+		}
+		else
+		{
+			stringBuilder.Append("你面前站着一个")
+				.Append(culture)
+				.Append("，他看起来是个普通人，总之不是贵族，从他的面貌上来看，是一个")
+				.Append(genderText)
+				.Append(age)
+				.Append("，穿着")
+				.Append(equipment)
+				.Append("。");
+		}
+		string playerCurrentMountLine = BuildPlayerCurrentMountLineForPrompt();
+		if (!string.IsNullOrWhiteSpace(playerCurrentMountLine))
+		{
+			stringBuilder.AppendLine();
+			stringBuilder.Append(playerCurrentMountLine);
+		}
+		if (observerHero != null && observerHero.IsPlayerCompanion)
+		{
+			stringBuilder.Append("你知道他是你的上司，而你是他的")
+				.Append(BuildPlayerCompanionPartyRoleLabelForPrompt(observerHero))
+				.Append("，你要服从他的命令,并且你无法和他进行任何物品交换，因为你们的库存是共享的。");
+		}
+		if (!string.IsNullOrWhiteSpace(equipmentValueInline))
+		{
+			stringBuilder.Append(equipmentValueInline).Append("。");
+		}
+		if (knowsPlayerIdentity && !string.IsNullOrWhiteSpace(identitySentence))
+		{
+			stringBuilder.Append(identitySentence);
+		}
+		string vassalageRelationLine = BuildPlayerVassalageRelationLineForPrompt(observerHero, observerNpc);
+		if (!string.IsNullOrWhiteSpace(vassalageRelationLine))
+		{
+			stringBuilder.AppendLine();
+			stringBuilder.AppendLine(vassalageRelationLine);
+		}
+		string inlineState = BuildSceneObserverInlineStateForPrompt(observerHero, observerNpc);
+		if (!string.IsNullOrWhiteSpace(inlineState))
+		{
+			stringBuilder.Append(inlineState);
+		}
+		string factionWarLine = BuildPlayerFactionWarLineForPrompt(observerHero, observerNpc);
+		if (!string.IsNullOrWhiteSpace(factionWarLine))
+		{
+			stringBuilder.Append(factionWarLine);
+		}
+		string crimeRatingLine = MyBehavior.BuildPlayerCrimeRatingPromptLineForExternal(ResolveNpcPerspectiveFactionForPlayerCrimePrompt(observerHero, observerNpc));
+		if (!string.IsNullOrWhiteSpace(crimeRatingLine))
+		{
+			stringBuilder.Append(crimeRatingLine);
+		}
+		if (includePlayerPartyRoster)
+		{
+			try
+			{
+				string playerTroopsLine = useCompactPlayerPartyRoster
+					? BuildPlayerTownPartyStayHintForPrompt(playerHero)
+					: BuildHeroPartyTroopsLineForPrompt(playerHero, secondPerson: false, includeDetails: true);
+				string playerPrisonersLine = BuildHeroPartyPrisonersLineForPrompt(playerHero, secondPerson: false, includeDetails: !useCompactPlayerPartyRoster);
+				if (!string.IsNullOrWhiteSpace(playerTroopsLine))
+				{
+					stringBuilder.Append(playerTroopsLine).Append("。");
+				}
+				if (!string.IsNullOrWhiteSpace(playerPrisonersLine))
+				{
+					stringBuilder.Append(playerPrisonersLine).Append("。");
+				}
+			}
+			catch
+			{
+			}
+		}
+		else
+		{
+			string townPartyStayHint = BuildPlayerTownPartyStayHintForPrompt(playerHero);
+			if (!string.IsNullOrWhiteSpace(townPartyStayHint))
+			{
+				stringBuilder.Append(townPartyStayHint).Append("。");
+			}
+		}
+		return stringBuilder.ToString().Trim();
+	}

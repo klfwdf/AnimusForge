@@ -1,0 +1,94 @@
+using System;using System.Collections.Generic;using System.Linq;using System.Text;using TaleWorlds.CampaignSystem;using TaleWorlds.CampaignSystem.Party;using TaleWorlds.CampaignSystem.Settlements;using TaleWorlds.Core;using TaleWorlds.MountAndBlade;
+namespace TaleWorlds.CampaignSystem {
+ public interface IFaction {object Name {get;}string StringId{get;}}
+ public sealed class Faction:IFaction {public object Name{get;set;}public string StringId{get;set;}}
+ public sealed class CultureObject {public object Name;public string StringId;}
+ public sealed class Kingdom {public object Name;}
+ public sealed class Clan {public object Name;public int Tier;public Hero Leader;public Kingdom Kingdom;public bool IsUnderMercenaryService;}
+ public enum Occupation {None,Wanderer,Merchant,Artisan,GangLeader,Headman,Preacher,RuralNotable}
+ public sealed class Hero {public static Hero MainHero;public object Name;public float Age;public bool IsFemale,IsLord,IsPlayerCompanion,IsWanderer,IsNotable;public Occupation Occupation;public Kingdom RuledKingdom;public Clan Clan;public CultureObject Culture;public IFaction MapFaction;public string StringId;public Dictionary<EquipmentIndex,ItemObject> Items=new();}
+ public sealed class CharacterObject {}
+}
+namespace TaleWorlds.CampaignSystem.Party {public sealed class PartyBase {}public sealed class MobileParty {public static MobileParty MainParty;public TaleWorlds.CampaignSystem.Settlements.Settlement CurrentSettlement;}}
+namespace TaleWorlds.CampaignSystem.Settlements {public sealed class Settlement {public static Settlement CurrentSettlement;public bool IsVillage;}}
+namespace TaleWorlds.Core {
+ public enum EquipmentIndex {NumAllWeaponSlots=4,Body=5,Leg=6,Gloves=7,Cape=8,WeaponItemBeginSlot=0,Weapon1=1,Weapon2=2,Weapon3=3}
+ public sealed class ItemObject {public string StringId;public object Name;}
+ public readonly struct EquipmentElement {public readonly ItemObject Item;public EquipmentElement(ItemObject item){Item=item;}}
+ public sealed class Equipment {public Dictionary<EquipmentIndex,ItemObject> Items=new();public bool Fail;public EquipmentElement this[EquipmentIndex i]=>Fail?throw new Exception("equipment unavailable"):new(Items.GetValueOrDefault(i));}
+}
+namespace TaleWorlds.MountAndBlade {
+ public sealed class Agent {public int Index;public object Character;public bool Active=true;public Equipment SpawnEquipment=new(),Equipment=new();public bool IsActive()=>Active;}
+ public sealed class Mission {public static Mission Current;public List<Agent> Agents=new();public bool DoesMissionRequireCivilianEquipment;}
+}
+namespace AnimusForge {
+internal sealed class NpcDataPacket {internal string RoleDesc,PersonalityDesc,BackgroundDesc,CultureId,UnnamedRank;internal int AgentIndex;internal float Age;}
+internal sealed class MentionedWorldEntities {internal string Token;}
+internal static class Leaf {
+ internal static List<string> Events=new();internal static Dictionary<string,string> Text=new();internal static HashSet<string> True=new();internal static string ThrowName;internal static Action OnQuery;
+ internal static string Query(string name){Events.Add(name);OnQuery?.Invoke();if(name==ThrowName)throw new Exception("leaf failed:"+name);return Text.GetValueOrDefault(name,"<"+name+">");}
+ internal static bool Flag(string name){Query(name);return True.Contains(name);}
+ internal static void Reset(){Events.Clear();Text.Clear();True.Clear();ThrowName=null;OnQuery=null;}
+ internal static bool EquipmentContext(Hero hero,out bool civilian){civilian=FalseCivilian;return true;}internal static bool FalseCivilian;
+ internal static ItemObject Item(Hero hero,EquipmentIndex index,bool civilian)=>hero.Items.GetValueOrDefault(index);
+}
+internal static class Logger {internal static void Log(string name,string text){}}
+internal static class PromptListRetrievalService {internal static int GetMaxCandidateCount()=>3;}
+internal static class AIConfigHandler {
+ internal static MentionedWorldEntities GetLatestAuxiliaryMentionedEntitiesForExternal()=>new(){Token="aux"};
+ internal static string BuildRuntimeHeroJoinPartyInstructionForExternal(Hero hero)=>Leaf.Query("join-party");
+}
+internal static class ShoutUtils {internal static string BuildCurrentSettlementHeroNpcLineForPrompt()=>Leaf.Query("settlement-npcs");}
+internal sealed class RewardSystemBehavior {
+ internal static RewardSystemBehavior Instance=new();internal static MentionedWorldEntities LastMentions;internal static bool LastPrivateEquipment;
+ internal string BuildFilteredInventorySummaryForAI(Hero hero,MentionedWorldEntities mentions,int max,bool includePrivateBattleEquipment){LastMentions=mentions;LastPrivateEquipment=includePrivateBattleEquipment;return Leaf.Query("hero-inventory");}
+ internal string BuildVisibleEquipmentGuidePriceSummaryForAI(Hero hero)=>Leaf.Query("guide-price");
+ internal bool TryGetSettlementMerchantKind(CharacterObject character,out string kind){kind="merchant";return true;}
+ internal string BuildFilteredSettlementMerchantInventorySummaryForAI(CharacterObject character,MentionedWorldEntities mentions,int max){LastMentions=mentions;return Leaf.Query("merchant-inventory");}
+}
+public partial class MyBehavior {
+ @@MY_LEAVES@@
+ private static bool TryResolveEquipmentContextForPrompt(Hero hero,out bool civilian)=>Leaf.EquipmentContext(hero,out civilian);
+ private static ItemObject TryGetHeroEquipmentItemForPrompt(Hero hero,EquipmentIndex index,bool civilian)=>Leaf.Item(hero,index,civilian);
+ private static bool TryResolveActiveKingdomRuledByHeroForPrompt(Hero hero,out Kingdom kingdom){Leaf.Query("ruled-kingdom");kingdom=hero.RuledKingdom;return kingdom!=null;}
+ internal static string GetClanTierReputationLabelForExternal(int tier)=>GetClanTierReputationLabel(tier);
+ internal static string BuildAgeBracketLabelForExternal(float age)=>BuildAgeBracketLabel(age);
+ internal static string BuildHeroIdentityTitleForExternal(Hero hero)=>BuildHeroIdentityTitleForPrompt(hero);
+ internal static string BuildHeroEquipmentSummaryForExternal(Hero hero)=>BuildHeroEquipmentSummaryForPrompt(hero);
+ internal static string BuildNobleEtiquettePromptForExternal(Hero hero)=>Leaf.Query("noble-etiquette");
+ internal static string BuildCurrentDateFactForExternal()=>Leaf.Query("date");
+ internal static string BuildPlayerCrimeRatingPromptLineForExternal(IFaction faction)=>Leaf.Query("crime");
+ internal PersonaEquipmentPromptCaptureAdapter Adapter()=>CreatePersonaEquipmentPromptCaptureAdapter();
+ @@MY_FORWARDINGS@@
+ internal string SystemIntro(Hero hero,bool trade)=>BuildNpcSystemTopPromptIntro(hero,trade);
+}
+public partial class ShoutBehavior {
+ @@SCENE_LEAVES@@
+ @@SCENE_FORWARDINGS@@
+ internal static PersonaEquipmentPromptCaptureAdapter Adapter()=>CreateScenePersonaEquipmentPromptCaptureAdapter();
+ internal static string NpcIntro(NpcDataPacket npc,Hero hero,bool inventory,bool trade,bool transfer)=>BuildSceneNpcRoleIntroForPrompt(npc,hero,new[]{npc},inventory,trade,transfer,new(){Token="request"});
+ internal static string PlayerIntro(Hero hero,NpcDataPacket npc,bool trade,bool roster,bool compact)=>BuildScenePlayerIntroForPrompt(hero,npc,trade,roster,compact);
+}
+internal sealed class LegacyIntro {
+ private readonly MyPersonaIntroLivePort _my;private readonly ScenePersonaIntroLivePort _scene;
+ internal LegacyIntro(MyPersonaIntroLivePort my,ScenePersonaIntroLivePort scene){_my=my;_scene=scene;}
+ @@QUERY_WRAPPERS@@
+ @@LEGACY_INTROS@@
+ internal string System(Hero hero,bool trade)=>BuildNpcSystemTopPromptIntro(hero,trade);
+ internal string Npc(NpcDataPacket npc,Hero hero,bool inventory,bool trade,bool transfer)=>BuildSceneNpcRoleIntroForPrompt(npc,hero,new[]{npc},inventory,trade,transfer,new(){Token="request"});
+ internal string Player(Hero hero,NpcDataPacket npc,bool trade,bool roster,bool compact)=>BuildScenePlayerIntroForPrompt(hero,npc,trade,roster,compact);
+}
+internal static class LegacyEquipment {
+ private static bool TryResolveEquipmentContextForPrompt(Hero hero,out bool civilian)=>Leaf.EquipmentContext(hero,out civilian);
+ private static ItemObject TryGetHeroEquipmentItemForPrompt(Hero hero,EquipmentIndex index,bool civilian)=>Leaf.Item(hero,index,civilian);
+ @@LEGACY_EQUIPMENT@@
+ internal static string Hero(Hero hero,int cap)=>BuildHeroEquipmentSummaryForPrompt(hero,cap);
+ internal static string Npc(NpcDataPacket npc,int cap)=>BuildNonHeroEquipmentSummaryForPrompt(npc,cap);
+}
+internal static class LegacyRoles {
+ private static bool TryResolveActiveKingdomRuledByHeroForPrompt(Hero hero,out Kingdom kingdom){Leaf.Query("ruled-kingdom");kingdom=hero.RuledKingdom;return kingdom!=null;}
+ @@LEGACY_ROLES@@
+ internal static string Title(Hero hero)=>BuildHeroIdentityTitleForPrompt(hero);
+ internal static bool Hide(NpcDataPacket npc,Hero hero)=>ShouldHideSceneReputationForPrompt(npc,hero);
+}
+}

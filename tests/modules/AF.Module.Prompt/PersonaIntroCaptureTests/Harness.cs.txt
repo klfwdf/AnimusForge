@@ -1,0 +1,67 @@
+using System;using System.Collections.Generic;using System.Linq;using System.Reflection;using System.Threading.Tasks;using TaleWorlds.CampaignSystem;using TaleWorlds.Core;using TaleWorlds.MountAndBlade;
+namespace AnimusForge;
+internal static class Program {
+ static int checks;static void C(bool ok,string why){checks++;if(!ok)throw new Exception(why);}
+ static Hero Actor(string name="Ada",bool female=false){var h=new Hero{Name=name,StringId=name,Age=35,IsFemale=female,IsLord=true,Culture=new(){Name="Empire"},MapFaction=new Faction{Name="Empire"},Clan=new(){Name="House",Tier=3,Kingdom=new(){Name="Realm"}}};h.Clan.Leader=h;h.Items[EquipmentIndex.Body]=new(){StringId="coat",Name="Coat"};h.Items[EquipmentIndex.Weapon1]=new(){StringId="sword",Name="Sword"};return h;}
+ static NpcDataPacket Npc()=>new(){AgentIndex=7,RoleDesc="商人",PersonalityDesc=" calm ",BackgroundDesc=" old story ",CultureId="empire",UnnamedRank="town",Age=35};
+ static void Reset(){Leaf.Reset();Leaf.True.Add("party");Leaf.Text["date"]="当前游戏日期：测试日（春）";Leaf.Text["settlement-npcs"]="当前定居点HeroNPC：Ada、Player";Hero.MainHero=Actor("Player");Mission.Current=new(){Agents=new(){new(){Index=7,Character=new CharacterObject()}}};RewardSystemBehavior.Instance=new();Leaf.FalseCivilian=false;}
+ static LegacyIntro Legacy(PersonaEquipmentPromptCaptureAdapter my,PersonaEquipmentPromptCaptureAdapter scene)=>new((MyPersonaIntroLivePort)typeof(PersonaEquipmentPromptCaptureAdapter).GetField("_my",BindingFlags.Instance|BindingFlags.NonPublic).GetValue(my),(ScenePersonaIntroLivePort)typeof(PersonaEquipmentPromptCaptureAdapter).GetField("_scene",BindingFlags.Instance|BindingFlags.NonPublic).GetValue(scene));
+ static string[] Events()=>Leaf.Events.ToArray();
+ static void Mode(int mode){
+ if(mode==1){Leaf.True.Add("DoesSceneObserverKnowPlayerIdentityForPrompt");Leaf.True.Add("ShouldIncludePlayerPartyRosterForScenePrompt");}
+ if(mode==2){Leaf.True.Add("ShouldForceDetailedPlayerIntroForObserver");Leaf.True.Add("ShouldUseCompactPlayerPartyRosterForScenePrompt");Leaf.True.Add("ShouldIncludePlayerPartyRosterForScenePrompt");Leaf.True.Add("ShouldHideSceneReputationForPrompt");}
+ if(mode==3)Leaf.ThrowName="BuildHeroPartyPrisonersLineForPrompt";
+ if(mode==4)Leaf.ThrowName="BuildPartyPrisonersLineForPrompt";
+ if(mode==5)Leaf.ThrowName="hero-inventory";
+ }
+ static async Task Main(){try{await Tests();}catch(Exception error){Console.Error.WriteLine(error);Environment.ExitCode=1;}}
+ static async Task Tests(){
+ var host=new MyBehavior();var my=host.Adapter();var scene=ShoutBehavior.Adapter();var old=Legacy(my,scene);
+ for(int mode=0;mode<6;mode++){
+  Reset();Mode(mode);var h=Actor(female:mode%2==1);var npc=Npc();if(mode==1)h.Clan.Leader=null;
+  string expected=old.System(h,true);var events=Events();Leaf.Events.Clear();string actual=host.SystemIntro(h,true);C(expected==actual,"whole system NPC sameinput oracle mode="+mode);C(events.SequenceEqual(Events()),"system NPC exact leaf ordering mode="+mode);
+  foreach(bool hero in new[]{true,false}){Leaf.Events.Clear();expected=old.Npc(npc,hero?h:null,true,true,mode%2==1);events=Events();Leaf.Events.Clear();actual=ShoutBehavior.NpcIntro(npc,hero?h:null,true,true,mode%2==1);C(expected==actual,"whole scene NPC sameinput/partialcatch oracle mode="+mode+" hero="+hero+"\nOLD:"+expected+"\nNEW:"+actual);C(events.SequenceEqual(Events()),"scene NPC exact leaf ordering mode="+mode+" hero="+hero);}
+  Leaf.Events.Clear();expected=old.Player(h,npc,true,true,mode%2==1);events=Events();Leaf.Events.Clear();actual=ShoutBehavior.PlayerIntro(h,npc,true,true,mode%2==1);C(expected==actual,"whole player appearance/role oracle mode="+mode);C(events.SequenceEqual(Events()),"player exact leaf ordering mode="+mode);
+ }
+ Reset();C(host.SystemIntro(null,true)==""&&ShoutBehavior.NpcIntro(null,null,true,true,true)=="","null actor guards");Hero.MainHero=null;C(ShoutBehavior.PlayerIntro(null,null,true,true,true)=="","no live player empty capture");
+ Reset();var missing=Npc();missing.CultureId="";missing.RoleDesc="";missing.PersonalityDesc=null;missing.BackgroundDesc=null;missing.Age=0;var unnamed=Actor("");unnamed.Culture.Name="";unnamed.Clan.Name="";unnamed.Age=0;Leaf.Text["BuildHeroIdentityTitleForPrompt"]="";
+ C(old.Npc(missing,unnamed,false,false,false)==ShoutBehavior.NpcIntro(missing,unnamed,false,false,false),"sameinput missing identity/title/culture/age/persona defaults");C(old.System(unnamed,false)==host.SystemIntro(unnamed,false),"sameinput empty hero-name fallback and trade disabled");
+ Reset();ShoutBehavior.NpcIntro(Npc(),Actor(),true,true,false);C(RewardSystemBehavior.LastMentions?.Token=="request"&&RewardSystemBehavior.LastPrivateEquipment,"scene inventory keeps explicit request mentions/private-equipment flag");
+ Leaf.Events.Clear();ShoutBehavior.NpcIntro(Npc(),Actor(),false,false,false);C(!Leaf.Events.Contains("hero-inventory"),"disabled inventory avoids domain inventory scan");
+ Hero.MainHero.Clan.Tier=0;C(old.Player(null,Npc(),false,false,false)==ShoutBehavior.PlayerIntro(null,Npc(),false,false,false),"unknown low-tier player role branch exact");
+ Reset();foreach(int cap in new[]{-1,1,3,8,99}){
+  var h=Actor();h.Items[EquipmentIndex.Leg]=new(){StringId="COAT",Name="different later alias"};h.Items[EquipmentIndex.Gloves]=new(){StringId="glove",Name="Glove"};h.Items[EquipmentIndex.Cape]=new(){StringId="",Name=""};h.Items[EquipmentIndex.Weapon2]=new(){StringId="sword",Name="Sword"};
+  var port=new HeroEquipmentPromptLivePort{ResolveContext=Leaf.EquipmentContext,GetItem=Leaf.Item};C(LegacyEquipment.Hero(h,cap)==EquipmentPromptCaptureAdapter.BuildHeroEquipmentSummaryForPrompt(h,port,cap),"whole hero9slot/cap/count/tie/firstalias oracle cap="+cap);
+  var agent=Mission.Current.Agents[0];agent.SpawnEquipment.Items=h.Items;agent.Equipment.Items=new();C(LegacyEquipment.Npc(Npc(),cap)==EquipmentPromptCaptureAdapter.BuildNonHeroEquipmentSummaryForPrompt(Npc(),cap),"whole nonhero9slot oracle cap="+cap);
+ }
+ var packet=Npc();Mission.Current.Agents[0].SpawnEquipment.Fail=true;Mission.Current.Agents[0].Equipment.Items=new(){[EquipmentIndex.Body]=new(){StringId="backup",Name="Backup"}};
+ C(LegacyEquipment.Npc(packet,8)==EquipmentPromptCaptureAdapter.BuildNonHeroEquipmentSummaryForPrompt(packet,8),"spawn read failure falls back to live equipment per slot");Mission.Current.Agents[0].Active=false;C(EquipmentPromptCaptureAdapter.BuildNonHeroEquipmentSummaryForPrompt(packet)=="未知","inactive scene agent no equipment exposure");
+ Reset();var observed=Actor();packet=Npc();var snapshot=scene.CaptureSceneNpcIntro(packet,observed,new[]{packet},true,true,false,new(){Token="explicit"});string before=PersonaIntroMessageComposer.ComposeSceneNpc(snapshot);await Task.Yield();packet.RoleDesc="changed";packet.BackgroundDesc="changed";observed.Name="Changed actor";observed.Items.Clear();Leaf.Text["BuildNearbyPresentNpcLineForPrompt"]="changed nearby";
+ C(before==PersonaIntroMessageComposer.ComposeSceneNpc(snapshot),"strong yield detached scalar NPC/persona/equipment source mutation cannot change snapshot");C(before==PersonaEquipmentPromptCaptureAdapter.ComposeSceneNpcIfCurrent(snapshot),"same-generation capture may compose unchanged snapshot");C(before==PersonaIntroMessageComposer.ComposeSceneNpc(snapshot),"retry pure composer does not consume snapshot");
+ SaveRuntimeGuard.AdvanceGeneration("held prompt intro");C(PersonaEquipmentPromptCaptureAdapter.ComposeSceneNpcIfCurrent(snapshot)=="","actual guarded completion rejects yielded old generation");
+ Reset();Leaf.OnQuery=()=>{Leaf.OnQuery=null;SaveRuntimeGuard.AdvanceGeneration("query crossed load");};C(host.SystemIntro(Actor(),true)=="","actual system capture generation drift cannot publish partial old actor intro");
+ Reset();Hero.MainHero=Actor("Player");var player=scene.CaptureScenePlayerIntro(null,null,true,true,false);string rendered=PersonaIntroMessageComposer.ComposeScenePlayer(player);Hero.MainHero.Name="changed";C(rendered==PersonaIntroMessageComposer.ComposeScenePlayer(player),"player snapshot contains no live Hero reference");SaveRuntimeGuard.AdvanceGeneration("player late");C(PersonaEquipmentPromptCaptureAdapter.ComposeScenePlayerIfCurrent(player)=="","actual player completion late generation rejected");
+ Reset();Leaf.True.Add("DoesSceneObserverKnowPlayerIdentityForPrompt");Hero.MainHero.IsFemale=true;observed=Actor();observed.IsPlayerCompanion=true;rendered=ShoutBehavior.PlayerIntro(observed,Npc(),true,true,false);C(rendered.Contains("女性")&&rendered.Contains("共享"),"known companion role/gender fixed text retained");
+ C(typeof(SceneNpcIntroSnapshot).GetFields(BindingFlags.Instance|BindingFlags.NonPublic).All(f=>f.FieldType==typeof(string)||f.FieldType==typeof(bool)||f.FieldType==typeof(int)||f.FieldType==typeof(long)),"snapshot schema only scalar values, no Hero/Agent/Equipment/Behavior/collections");
+ var identityPort=new HeroIdentityPromptLivePort{ResolveRuledKingdom=(Hero h,out Kingdom k)=>{Leaf.Query("ruled-kingdom");k=h.RuledKingdom;return k!=null;}};
+ foreach(Occupation occupation in Enum.GetValues<Occupation>()){
+  var h=Actor();h.IsLord=false;h.Clan.Leader=null;h.Occupation=occupation;Leaf.Events.Clear();string expected=LegacyRoles.Title(h);var trace=Events();Leaf.Events.Clear();string actual=PersonaEquipmentPromptCaptureAdapter.CaptureHeroIdentityTitle(h,identityPort);
+  C(expected==actual,"fixed full identity oracle occupation="+occupation);C(trace.SequenceEqual(Events()),"identity query priority occupation="+occupation);
+ }
+ foreach(int kind in Enumerable.Range(0,7)){
+  var h=Actor();h.Clan.Leader=null;
+  if(kind==0){h.IsWanderer=true;h.IsLord=false;}if(kind==1)h.IsNotable=true;
+  if(kind==2){h.Clan.IsUnderMercenaryService=true;h.RuledKingdom=new(){Name="ruled"};}
+  if(kind==3)h.RuledKingdom=new(){Name=""};if(kind==4){h.Clan.Leader=h;h.Clan.Name="";}
+  if(kind==5){h.Clan.Leader=h;h.Clan.Name="House家族";}if(kind==6)h.MapFaction=null;
+  C(LegacyRoles.Title(h)==PersonaEquipmentPromptCaptureAdapter.CaptureHeroIdentityTitle(h,identityPort),"fixed identity default/name/mercenary-ruler priority kind="+kind);
+ }
+ C(LegacyRoles.Title(null)==PersonaEquipmentPromptCaptureAdapter.CaptureHeroIdentityTitle(null,identityPort),"null identity title unknown default");
+ foreach(string role in new[]{null,"士兵"," 士兵 ","村长","商人"})foreach(bool wanderer in new[]{false,true}){
+  var h=Actor();h.IsWanderer=wanderer;var npc=Npc();npc.RoleDesc=role;
+  C(LegacyRoles.Hide(npc,h)==PersonaEquipmentPromptCaptureAdapter.CaptureSceneReputationVisibility(npc,h),"fixed full hide-reputation soldier/wanderer priority");
+ }
+ var headman=Actor();headman.Occupation=Occupation.Headman;C(LegacyRoles.Hide(Npc(),headman)==PersonaEquipmentPromptCaptureAdapter.CaptureSceneReputationVisibility(Npc(),headman),"headman live qualification retained");
+ Console.WriteLine("PASS complete persona/equipment capture+pure composer+actual factories/consumer checks="+checks+" live=NOT_RUN");
+ }
+}
