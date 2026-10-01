@@ -1,3 +1,26 @@
+<a id="civilwar-review-repair-20261001"></a>
+
+### 内战派系审查五项修复（2026-10-01，DEPLOYED / OFFLINE_VERIFIED）
+
+用户在只读审查后要求修复五项发现，修复期间又明确要求“部署”。工作区 `F:/AnimusForge-main`，分支 `codex/af-main-refactor-continuation-20260831`；审查基线 `3c00ae2e`，本地意图检查点 `83b4edd`，产品与回归提交 `76503341`。范围：CivilWar 标签接线、玩家国王通牒规则、失败结算状态保留、政策撤销误判和玩家拒绝参战后的忠诚度；不改一键构建、存档键、三渠道默认路由。同期 Coup/WorldBulletin 改动及提交完整保留；部署候选包含同工作树已经提交的这些改动，无远端推送。
+
+- 完成条件：五项行为有真实源码回归；故障后的结算与存读档不丢记录、不重复付款；双 API + Bootstrap 编译；记录实机未验范围。运行频率保持事件回调/每国每周推进，最多现有 4 派；可重试结算每周一次，无新 Tick 扫描、反射或轮询；忠诚度查询仍 O(1)，站队修复只遍历玩家领地。
+- **回归 PASS**：`dotnet run --project tests/modules/AF.Module.Kingdom/CivilWarLifecycle.ContractTests/CivilWarLifecycle.ContractTests.csproj --configuration Release -p:PythonExecutable=E:/PYTHON/python.exe`，最终 **56 项**；另有 CivilWarRules smoke、既有 InteractionPipeline（含三渠道 commit boundary）全部通过。生命周期测试链接真实 owner/effects/world/adapter/parser，提取真实提示词、正则、政策事件方法体，TaleWorlds 动作与 AF 宿主使用桩；不代表游戏、Harmony 或实际存档验收。首次测试入口因 MSBuild 找不到 Python、缺一个桩字段而失败，补可配置 `PythonExecutable` 和桩字段后通过；既有交互测试首次 `--no-restore` 缺 assets，正常还原后通过。最终日志 `artifacts/civilwar-review-20261001/lifecycle-tests.log`。
+- **最终 Release 双 API + Bootstrap PASS**：`artifacts/civilwar-review-20261001/build-80ab1f2326cf4c11aaeaa96ac6c909ab/`，exit 0；实际引用 `v1.3.15.110062` / `v1.4.6.115628`。DLL SHA256 前缀分别 `C3B8A73B2BAF` / `025F1451D90C` / Bootstrap `1C969212D209`，完整哈希在各 `*.build.json`。构建时 HEAD 为 `1ad2fc4f` 加本轮工作树，随后原样提交为 `76503341`；首轮 Debug 与中间 Release 不替代最终候选。复用现有离线 helper，仅在仓内 artifacts 副本适配本机依赖和独立输出，未改正式入口。
+- **部署 PASS**：按后续授权，把已验证的 9 个 DLL/PDB/marker 文件校验后提升到正式 Release artifacts，使用原 `scripts/build/deploy_module.ps1` 覆盖 `F:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord/Modules/AnimusForge`。脚本报告更新 **9 文件**，部署后 Stage 全部 **238 文件**逐一 SHA256 匹配，XML 唯一 DLL 入口为 Bootstrap。只有启动器进程，未启动游戏验收。旧 Stage 含未知 `AssetSources`，原校验器拒绝清理；检查仓内绝对路径及无 reparse 后，整体保存在 `artifacts/civilwar-review-20261001/stage-before-deploy-38f614450931406890f45f952613eaef`，再由正式脚本重建，未绕过 Stage 清单验证。安装目录未知文件保留。
+- **部署回滚**：`C:/Users/29310/AppData/Local/AnimusForge/Recovery/deploy/deploy-7398db95ab0149369238f2fce97e3fd7`，有 `complete`、`manifest.json` 和旧文件备份。部署日志与复核结果为 `artifacts/civilwar-review-20261001/deployment.log`、`deployment-verification.json`。源码需要回滚时只对 `76503341` 做定向 inverse/revert，不 hard reset，不撤销同期其他提交。
+
+本包代码坐标（源码修订 `76503341`；符号与以下范围已核对）：
+
+| 文件与一基范围 | 真实职责 / 消费者 |
+| --- | --- |
+| `AIConfigHandler.cs:6655–6679`、`ShoutBehavior.cs:25117–25168`、`src/modules/AF.Module.Actions/Tags/LegacyActionTagCatalog.cs:68–75` | 玩家家族资格保留；CivilWar 规则在国王提前返回前合并；统一后处理保留已提供的内战标签，共享动作解析器允许该有限协议族。消费者为 Native/Scene/Courier 共享后处理与提交入口，模块执行器仍验证具体动作。 |
+| `src/modules/AF.Module.Kingdom/CivilWar/KingdomCivilWarOwner.cs:437–444,586–619`、`CivilWarEffects.cs:95–173`、`KingdomCivilWarState.cs:74–79` | 战争结局固定、失败保留状态、可核对的议和/归国/清理按周重试；归国阶段完成点持久化。不能确认副作用的异常标为需检查，保留战争记录，不自动重复付款/奖惩。 |
+| `src/modules/AF.Module.Kingdom/CivilWar/KingdomCivilWarOwner.cs:533–564,883–889,1198–1207` | 参战确认后才索引玩家领地；拒绝时修复旧缓存；面板展示重试或需检查状态。忠诚度模型仍读取常数时间缓存。 |
+| `src/modules/AF.Module.Kingdom/CivilWar/CivilWarCampaignBehavior.cs:158–164`、`KingdomCivilWarOwner.cs:1050–1056` | 以政策最终仍生效区分通过新政策与通过废除政策；不再形成针对已废除政策的诉求。已对照两版本原版 ApplyChosenOutcome → OnKingdomDecisionConcluded 顺序。 |
+
+**未验证 / 保留项**：实机、真实旧档、实际 UI 与原生动作/Harmony 仍 NOT-RUN；本机安装游戏为 1.4.8，实际编译引用为上述 1.4.6，不能写成 1.4.8 实机通过。新增结算字段沿用原 `_af_kingdom_civil_war_v2` 键与 v3 payload，旧数据默认值兼容只到离线层。无法确认副作用的结算故障需人工核对日志和存档，当前不提供盲目重试按钮。全局地图 recorded-revision 795 锚点 PASS（记录修订 `4e4aad06`）；working-tree 在既有 `SubModule.cs` 内容漂移处 FAIL，该文件从本包检查点到现态无改动，不刷新全局地图掩盖历史差异。本包不提升 J17/C/D 整体验收状态。
+
 <a id="world-bulletin-review-fixes-20261001"></a>
 
 ### 即时快报审查三项修复（2026-10-01，OFFLINE_VERIFIED）
