@@ -174,6 +174,9 @@ public sealed partial class CustomPolicyBehavior
 
 		public float EgalitarianWeight { get; set; }
 
+		[JsonProperty("votePersonality", NullValueHandling = NullValueHandling.Ignore)]
+		public PolicyVotePersonalityProfile VotePersonality { get; set; }
+
 		public string Status { get; set; }
 
 		public bool NaturalExpiryAgendaRejected { get; set; }
@@ -484,6 +487,9 @@ public sealed partial class CustomPolicyBehavior
 
 		[JsonProperty("egalitarianWeight")]
 		public float? EgalitarianWeight { get; set; }
+
+		[JsonProperty("votePersonality", NullValueHandling = NullValueHandling.Ignore)]
+		public PolicyVotePersonalityProfile VotePersonality { get; set; }
 
 		[JsonProperty("durationDays")]
 		public int? DurationDays { get; set; }

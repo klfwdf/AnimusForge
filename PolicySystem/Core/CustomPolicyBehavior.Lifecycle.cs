@@ -4118,6 +4118,7 @@ public sealed partial class CustomPolicyBehavior
 			AuthoritarianWeight = generationResult?.MainAssessment?.AuthoritarianWeight,
 			OligarchicWeight = generationResult?.MainAssessment?.OligarchicWeight,
 			EgalitarianWeight = generationResult?.MainAssessment?.EgalitarianWeight,
+			VotePersonality = PolicyVotePersonality.CloneValidated(generationResult?.MainAssessment?.VotePersonality),
 			Day = Math.Max(0, request.SubmittedDay),
 			GameDate = request.DateText ?? "",
 			CreatedUtcTicks = createdUtcTicks,

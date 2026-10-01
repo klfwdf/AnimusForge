@@ -23,7 +23,7 @@ using Newtonsoft.Json.Linq;
 
 namespace PolicyEffectModule.ContractTests;
 
-internal static class Program
+internal static partial class Program
 {
 	private const BindingFlags All = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static;
 	private static object _policyApiProbeHero;
@@ -115,6 +115,14 @@ internal static class Program
 			ConfigureOnnxRuntimeSearchPath();
 			LoadAssemblies(args);
 			ConfigureOnnxModuleRootOverride(args);
+			if (args.Any(value => value == "--policy-personality-only"))
+			{
+				TestPolicyVotePersonalityContracts();
+				TestPlayerPolicySemanticRepairContracts();
+				TestNpcSingleKingdomTwoStageContracts();
+				Console.WriteLine("PASS policyPersonalityAssertions=" + _assertionCount);
+				return 0;
+			}
 			if ((args ?? Array.Empty<string>()).Any(value => string.Equals(value, "--onnx-cold-main-only", StringComparison.OrdinalIgnoreCase)))
 			{
 				if (!(args ?? Array.Empty<string>()).Any(value => string.Equals(value, OnnxModuleRootOption, StringComparison.OrdinalIgnoreCase)))
@@ -6253,6 +6261,7 @@ internal static class Program
 			["numericIntent"] = "王国稳定提高一点。",
 			["policyContentDigest"] = "三十天稳定修复。",
 			["feedbackDigest"] = "民众总体支持。",
+			["votePersonality"] = PersonalityJson(),
 			["authoritarianWeight"] = 0.2,
 			["oligarchicWeight"] = 0.1,
 			["egalitarianWeight"] = 0.3,
@@ -15597,6 +15606,7 @@ internal static class Program
 				["feedbackDigest"] = "The reserve plan draws support.",
 				["impactSummary"] = "Food reserves should improve.",
 				["numericIntent"] = "Increase food reserves moderately each day.",
+				["votePersonality"] = PersonalityJson(),
 				["authoritarianWeight"] = 0.2,
 				["oligarchicWeight"] = 0.1,
 				["egalitarianWeight"] = 0.4,
@@ -15607,6 +15617,7 @@ internal static class Program
 		Check((bool)InvokeStatic(behavior, "TryParseNpcPolicyDraftResponse", parseDraft, 4)
 			&& parseDraft[2] != null && string.IsNullOrWhiteSpace((string)parseDraft[3]),
 			"NPC stage one must parse exactly one identity-locked policy draft: " + parseDraft[3]);
+		TestNpcVotePersonalityDraft(context, draftJson);
 		Type directoryType = SutType("AnimusForge.PolicyTargets.PolicyTargetHandleDirectory");
 		JObject directoryJson = new JObject
 		{
@@ -16763,6 +16774,7 @@ internal static class Program
 				["eventPremise"] = "deliveries change", ["feedbackTitle"] = "debate",
 				["publicFeedback"] = "support", ["feedbackDigest"] = "support grows",
 				["impactSummary"] = "food improves", ["numericIntent"] = "raise food reserves",
+				["votePersonality"] = PersonalityJson(),
 				["authoritarianWeight"] = 0.2, ["oligarchicWeight"] = 0.1, ["egalitarianWeight"] = 0.4,
 				["durationDays"] = 30
 			}
