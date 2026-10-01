@@ -6,6 +6,7 @@ touch Reward/Duel/Team/Entity services. Not a runtime test; pair with the Compos
 """
 from __future__ import annotations
 import argparse, importlib.util, re
+import subprocess
 import sys as _legacy_sys
 from pathlib import Path as _LegacyPath
 _legacy_sys.path.insert(0, str(_LegacyPath(__file__).resolve().parents[4] / "tests"))
@@ -166,7 +167,17 @@ assert game_services.search(capture_sections), "section capture is the game-read
 for name, body in (("CapturePromptBuildRequest", capture_request), ("CapturePromptSections", capture_sections), ("ApplyPromptRuntimeAppendices", appendices)):
     assert "GetGuardrailSemanticRuleHitsForPreprocess" not in body and "IsGuardrailSemanticHit(" not in body, name + " must not run rule retrieval"
 
-composition = "".join(p.read_text(encoding="utf-8-sig") for p in sorted((ROOT / "src/modules/AF.Module.Prompt/Composition").glob("*.cs")))
+# Read and retain every CURRENT Composition source; new orchestration owners are not pure stages.
+current_composition_source_inventory = {p: p.read_text(encoding="utf-8-sig")
+    for p in sorted((ROOT / "src/modules/AF.Module.Prompt/Composition").glob("*.cs"))}
+legacy_composition_names = set(subprocess.check_output(
+    ["git", "ls-tree", "-r", "--name-only", "16a6ce67", "--", "src/modules/AF.Module.Prompt/Composition"], cwd=ROOT).decode("utf-8").splitlines())
+composition = "".join(historical_source(p) for p in current_composition_source_inventory
+    if p.relative_to(ROOT).as_posix() in legacy_composition_names)
+AF2_FIXTURE_METADATA["compositionPureGuardScope"] = "fixed-16a-pure-stage-oracle-only"
+AF2_FIXTURE_METADATA["currentNewCompositionSourcesRead"] = [p.relative_to(ROOT).as_posix()
+    for p in current_composition_source_inventory if p.relative_to(ROOT).as_posix() not in legacy_composition_names]
+AF2_FIXTURE_METADATA["currentRoutingAcceptance"] = "SharedRoutingRuntimeTests/run.py:12 checks + 3 mutants; not this old pure-directory oracle"
 assert "PromptAssemblyStage" in composition and "PromptTopicRoutingStage" in composition, "expected Composition owners present"
 if args.mutate == "assembly-reads-game":
     composition += "\nusing TaleWorlds.CampaignSystem;\n"

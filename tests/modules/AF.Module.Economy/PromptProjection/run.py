@@ -4,12 +4,15 @@ from __future__ import annotations
 import argparse
 import importlib.util
 import os
+import sys
 from pathlib import Path
 import subprocess
 
 
 ROOT = Path(__file__).resolve().parents[4]
 HERE = Path(__file__).resolve().parent
+sys.path.insert(0, str(ROOT / "tests"))
+from output_isolation import minimal_test_environment, new_run_root, resolve_dotnet
 PROJECTION = ROOT / "src/modules/AF.Module.Economy/Projection/EconomyPromptProjection.cs"
 TRUST_POLICY = ROOT / "src/modules/AF.Module.Economy/Trust/EconomyTrustPolicy.cs"
 TRUST_STATE = ROOT / "src/modules/AF.Module.Economy/Trust/RewardSystemBehavior.TrustState.cs"
@@ -57,26 +60,35 @@ def verify_live_wiring() -> None:
 
 
 def run(dotnet: str, project: Path, output: Path) -> tuple[int, str]:
-    env = dict(os.environ)
-    env["DOTNET_CLI_HOME"] = str(ROOT / ".dotnet-cli-home")
-    env["DOTNET_CLI_TELEMETRY_OPTOUT"] = "1"
-    env["DOTNET_NOLOGO"] = "1"
-    command = [dotnet, "run", "--project", str(project), "-c", "Release",
-               "-p:NuGetAudit=false", "-p:RestoreConfigFile=" + str(output / "NuGet.Config")]
+    build_root = output / ("build-" + project.parent.name + "-" + project.stem)
+    build_root.mkdir(exist_ok=False)
+    env = minimal_test_environment(Path(dotnet), build_root)
+    command = [dotnet, "build", str(project), "-c", "Release",
+               "-p:NuGetAudit=false", "-p:RestoreConfigFile=" + str(output / "NuGet.Config"),
+               "-p:BaseOutputPath=" + str(build_root / "bin") + "/",
+               "-p:BaseIntermediateOutputPath=" + str(build_root / "obj") + "/"]
     result = subprocess.run(command, cwd=ROOT, env=env, capture_output=True, text=True,
                             encoding="utf-8", errors="replace")
-    return result.returncode, result.stdout + result.stderr
+    log = result.stdout + result.stderr
+    if result.returncode != 0:
+        return result.returncode, log
+    executable = build_root / "bin/Release/net8.0" / (project.stem + ".dll")
+    assert executable.is_file(), "Fresh build did not produce runtime DLL: " + str(executable)
+    result = subprocess.run([dotnet, str(executable)], cwd=ROOT, env=env,
+                            capture_output=True, text=True, encoding="utf-8", errors="replace")
+    return result.returncode, log + result.stdout + result.stderr
 
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--dotnet", default=os.environ.get("DOTNET_EXE", r"G:\AFMOD\.dotnet-sdk\dotnet.exe"))
+    parser.add_argument("--dotnet")
+    parser.add_argument("--run-root", type=Path)
     parser.add_argument("--skip-mutation", action="store_true")
     args = parser.parse_args()
+    args.dotnet = str(resolve_dotnet(ROOT, args.dotnet))
     verify_live_wiring()
 
-    output = HERE / ".generated"
-    output.mkdir(parents=True, exist_ok=True)
+    output = new_run_root(ROOT, "economy-prompt-projection", args.run_root)
     (output / "NuGet.Config").write_text(
         "<configuration><packageSources><clear /></packageSources></configuration>", encoding="utf-8")
     code, log = run(args.dotnet, HERE / "PromptProjectionTests.csproj", output)

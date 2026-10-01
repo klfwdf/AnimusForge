@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Concurrent;
 using System.Diagnostics;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Threading;
@@ -599,8 +600,26 @@ internal static class WeeklyReportCommitQueueReplay
         groupType.GetField("GroupKind", Members).SetValue(freshKingdom, "kingdom");
         groupType.GetField("KingdomId", Members).SetValue(freshKingdom, "k1");
         fresh.Add(freshWorld); fresh.Add(freshKingdom); failed.Add(group);
-        var selectFresh = behavior.GetMethod("SelectFreshWeeklyReportRetryGroups", Members);
-        IList Selected() => (IList)selectFresh.Invoke(null, new object[] { fresh, failed });
+        Type uiType = af.GetType("AnimusForge.WeeklyReportEditorController", true);
+        Type uiPortType = af.GetType("AnimusForge.WeeklyEditorPort", true);
+        object uiPort = Activator.CreateInstance(uiPortType, true);
+        FieldInfo reportIdPort = uiPortType.GetField("BuildWeeklyReportGroupReportId", Members);
+        reportIdPort.SetValue(uiPort, Delegate.CreateDelegate(reportIdPort.FieldType,
+            behavior.GetMethod("BuildWeeklyReportGroupReportId", Members)));
+        FieldInfo mapPort = uiPortType.GetField("BuildGroupMap", Members);
+        var groupsParameter = Expression.Parameter(listType, "groups");
+        mapPort.SetValue(uiPort, Expression.Lambda(mapPort.FieldType,
+            Expression.Call(behavior.GetMethod("BuildWeeklyReportGroupMap", Members), groupsParameter), groupsParameter).Compile());
+        object selectionOwner = Activator.CreateInstance(uiType, Members, null, new[] { uiPort }, null);
+        var selectFresh = uiType.GetMethod("SelectFreshWeeklyReportRetryGroups", Members);
+        var hostSelection = behavior.GetMethod("SelectFreshWeeklyReportRetryGroups", Members);
+        byte[] selectionIl = hostSelection.GetMethodBody().GetILAsByteArray();
+        byte[] selectionToken = BitConverter.GetBytes(selectFresh.MetadataToken);
+        Check(Enumerable.Range(1, Math.Max(0, selectionIl.Length - selectionToken.Length))
+            .Any(offset => (selectionIl[offset - 1] == 0x28 || selectionIl[offset - 1] == 0x6f)
+                && selectionIl.Skip(offset).Take(selectionToken.Length).SequenceEqual(selectionToken)),
+            "host fresh-selection facade must call the actual unique Weekly UI controller");
+        IList Selected() => (IList)selectFresh.Invoke(selectionOwner, new object[] { fresh, failed });
         Check(Selected().Count == 1 && ReferenceEquals(Selected()[0], freshWorld),
             "fresh retry targets only failed identity, not previously completed groups");
         object missing = Activator.CreateInstance(groupType, true);

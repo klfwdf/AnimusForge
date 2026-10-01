@@ -127,7 +127,16 @@ internal static class MemoryRecoveryProductionReplay
             "exact auxiliary failure is no longer isolated from the completed core receipt");
         Require(!CallsMethod(initialAuxiliary, notorietyNote),
             "initial auxiliary boundary downgraded to the legacy void notoriety owner");
-        Require(CallsMethod(initialAuxiliary, exactNotorietyNote),
+        Type auxiliaryCoordinator = RequireType(ownerType.Assembly,
+            "AnimusForge.InteractionMemoryAuxiliaryCompletionCoordinator");
+        MethodInfo coordinateInitial = auxiliaryCoordinator.GetMethod("CompleteInitial", AnyStatic)
+            ?? throw new InvalidOperationException("missing initial auxiliary coordinator");
+        MethodInfo notifyInitial = ownerType.GetMethod("NotifyInitialMemoryNotorietyComponent", AnyStatic)
+            ?? throw new InvalidOperationException("missing typed exact notoriety capability");
+        Require(CallsMethod(initialAuxiliary, coordinateInitial)
+                && CallsMethod(initialAuxiliary, notifyInitial)
+                && CallsMethod(notifyInitial, exactNotorietyNote)
+                && !CallsMethod(notifyInitial, notorietyNote),
             "initial auxiliary boundary no longer uses the exact notoriety owner");
         Require(CallsMethod(initialAuxiliary, auxiliaryMarkerReadback),
             "initial auxiliary boundary no longer requires exact Daily marker readback");

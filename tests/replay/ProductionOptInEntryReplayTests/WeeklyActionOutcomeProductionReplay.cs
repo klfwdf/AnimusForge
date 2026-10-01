@@ -129,12 +129,12 @@ internal static class WeeklyActionOutcomeProductionReplay
             "ProcessOneWeeklyActionOutcomeOnTick");
         AssertCall(owner, "ProcessOneWeeklyActionOutcomeOnTick",
             "TryPublishWeeklyActionOutcome");
-        AssertCall(owner, "TryPublishWeeklyActionOutcome",
-            "HasExactWeeklyActionOutcomeTrigger");
-        AssertCall(owner, "TryPublishWeeklyActionOutcome",
-            "AddWeeklyMemoryMaterialTriggerToDraft");
-        AssertCall(owner, "TryPublishWeeklyActionOutcome",
-            "SaveDailyMemoryDraftsById");
+        Type memoryState = RequireType(assembly, "AnimusForge.MemoryBusinessStateOwner");
+        AssertCallAcross(owner, "TryPublishWeeklyActionOutcome", publication, "Publish");
+        AssertPublicationDraftBinding(owner, memoryState);
+        AssertCall(memoryState, "AttachConfirmedWeeklyOutcome", "HasExactWeeklyActionOutcomeTrigger");
+        AssertCall(memoryState, "AttachConfirmedWeeklyOutcome", "AddWeeklyTrigger");
+        AssertCall(memoryState, "AttachConfirmedWeeklyOutcome", "SaveDrafts");
 
         string[] forbidden =
         {
@@ -266,6 +266,33 @@ internal static class WeeklyActionOutcomeProductionReplay
         FieldInfo field = owner.GetField(name, AnyInstance);
         Require(field != null, "compiled weekly trigger field is missing: " + name);
         return (T)field.GetValue(target);
+    }
+
+    private static void AssertCallAcross(Type callerOwner, string callerName, Type calleeOwner, string calleeName)
+    {
+        const BindingFlags declared = BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly;
+        Require(CallsMethod(callerOwner.GetMethod(callerName, declared), calleeOwner.GetMethod(calleeName, declared)),
+            callerName + " does not call actual " + calleeOwner.Name + "." + calleeName);
+    }
+
+    private static void AssertPublicationDraftBinding(Type owner, Type memoryState)
+    {
+        const BindingFlags declared = BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly;
+        MethodInfo caller = owner.GetMethod("TryPublishWeeklyActionOutcome", declared);
+        MethodInfo attach = memoryState.GetMethod("AttachConfirmedWeeklyOutcome", declared);
+        byte[] il = caller.GetMethodBody().GetILAsByteArray();
+        bool bound = owner.GetNestedTypes(BindingFlags.Public | BindingFlags.NonPublic)
+            .SelectMany(type => type.GetMethods(declared))
+            .Where(method => method.Name.StartsWith("<TryPublishWeeklyActionOutcome>", StringComparison.Ordinal))
+            .Any(method => {
+                if (!CallsMethod(method, attach)) return false;
+                byte[] token = BitConverter.GetBytes(method.MetadataToken);
+                for (int offset = 2; offset + token.Length <= il.Length; offset++)
+                    if (il[offset - 2] == 0xfe && il[offset - 1] == 0x06
+                        && il.Skip(offset).Take(token.Length).SequenceEqual(token)) return true;
+                return false;
+            });
+        Require(bound, "weekly publication must bind the actual unique memory state's attachment capability");
     }
 
     private static void AssertCall(Type owner, string callerName, string calleeName)

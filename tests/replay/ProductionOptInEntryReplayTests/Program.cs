@@ -3,6 +3,8 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 
+try
+{
 static void AssertTrue(bool condition, string message)
 {
     if (!condition)
@@ -125,3 +127,11 @@ CourierEconomyReservationReplay.Run(animusForge);
 CourierInboundCompletionReplay.Run(animusForge);
 WeeklyActionOutcomeProductionReplay.Run(animusForge);
 Console.WriteLine("PASS productionOptInEntryReplay native=1 scene=1 courier=1 identity=1 failClosed=1 ports=1 notorietyOutcomeStructural=1 weeklyOutcomeStructural=1 noDefaultCutover=1");
+
+}
+catch (Exception error)
+{
+    Console.Error.WriteLine(error);
+    return 1;
+}
+return 0;

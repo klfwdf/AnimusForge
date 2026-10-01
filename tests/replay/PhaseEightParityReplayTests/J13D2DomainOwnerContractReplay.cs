@@ -10,6 +10,16 @@ internal static class J13D2DomainOwnerContractReplay
         {
             if (!condition) throw new InvalidOperationException("J13D2 owner contract: " + label);
         }
+        string Method(string source, string declaration)
+        {
+            int start = source.IndexOf(declaration, StringComparison.Ordinal);
+            Require(start >= 0, "actual consumer declaration missing: " + declaration);
+            int brace = source.IndexOf('{', start);
+            var boundary = System.Text.RegularExpressions.Regex.Match(source.Substring(brace), @"(?m)^(?:\t| {4})\}");
+            Require(boundary.Success, "actual full consumer body missing: " + declaration);
+            int end = brace + boundary.Index + boundary.Length;
+            return source.Substring(start, end - start);
+        }
         string proactive = Read("src/modules/AF.Module.Conversation/Proactive/ProactiveNpcRequestBehavior.cs");
         string qualification = Read("src/modules/AF.Module.Social/Proactive/ProactiveCandidateQualification.cs");
         Require(proactive.Contains("_cooldownOwner.TryBeginScan(", StringComparison.Ordinal)
@@ -47,7 +57,24 @@ internal static class J13D2DomainOwnerContractReplay
         Require(questExecuted >= 0 && turnInFact > questExecuted, "turn-in fact after original execution");
 
         Require(Read("src/modules/AF.Module.Prompt/Configuration/AIConfigHandler.cs").Contains("VanillaIssueOfferBridge.BuildRuntimePromptBlockForExternal(", StringComparison.Ordinal)
-            && Read("src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.cs").Contains("VanillaIssueOfferBridge.ApplyIssueOfferTags(", StringComparison.Ordinal)
+            && Method(Read("src/modules/AF.Module.Conversation/Channels/Scene/SceneSpeechEffectController.cs"), "internal void Publish(")
+                .Contains("VanillaIssueOfferBridge.ApplyIssueOfferTags(", StringComparison.Ordinal)
+            && Method(Read("src/modules/AF.Module.Conversation/Channels/Scene/SceneSystemNpcShoutRuntime.cs"), "private Task<bool> CaptureAndQueue(")
+                .Contains("VanillaIssueOfferBridge.ApplyIssueOfferTags(", StringComparison.Ordinal)
+            && Method(Read("src/modules/AF.Module.Conversation/Channels/Native/NativeConversationGameEffectsRuntime.cs"), "internal WorldMapPartyCommandBehavior.WorldMapOrderApplyResult ApplyNativeConversationActionTags(")
+                .Contains("VanillaIssueOfferBridge.ApplyIssueOfferTags(", StringComparison.Ordinal)
+            && Method(Read("src/modules/AF.Module.Conversation/Channels/Scene/SceneSpeechEffectController.cs"), "internal void Publish(")
+                .Contains("TeamModuleServices.Gathering.TryApplyNobleGatheringTagsForExternal(", StringComparison.Ordinal)
+            && Method(Read("src/modules/AF.Module.Conversation/Channels/Scene/SceneSystemNpcShoutRuntime.cs"), "private Task<bool> CaptureAndQueue(")
+                .Contains("TeamModuleServices.Gathering.TryApplyNobleGatheringTagsForExternal(", StringComparison.Ordinal)
+            && Method(Read("src/modules/AF.Module.Conversation/Channels/Native/NativeConversationGameEffectsRuntime.cs"), "internal WorldMapPartyCommandBehavior.WorldMapOrderApplyResult ApplyNativeConversationActionTags(")
+                .Contains("TeamModuleServices.Siege.TryProcessActionTags(", StringComparison.Ordinal)
+            && Read("src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.SpeechExecution.cs")
+                .Contains("_sceneSpeechEffects.Publish", StringComparison.Ordinal)
+            && Read("src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.cs")
+                .Contains("=> _ = _systemNpcShout.Enqueue(speakerAgent, content)", StringComparison.Ordinal)
+            && Read("src/modules/AF.Module.Conversation/Channels/Native/ShoutBehavior.NativeTurn.cs")
+                .Contains("ApplyNativeConversationGameActionsOnMainThreadAsync = _nativeGameEffects.ApplyNativeConversationGameActionsOnMainThreadAsync", StringComparison.Ordinal)
             // J17-B7 (aa3539ca) moved the shared Scene/Native unified postprocess out of Channels/Scene/ShoutBehavior.ScenePostprocess.cs.
             && Read("src/modules/AF.Module.Conversation/Internal/Postprocess/ConversationActionPostprocessOwner.cs")
                 .Contains("VanillaIssueOfferBridge.BuildRuntimePostprocessRulesForExternal(", StringComparison.Ordinal)
