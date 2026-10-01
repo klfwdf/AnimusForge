@@ -15065,28 +15065,7 @@ TeamModuleServices.CivilWar.AdvanceWeek(devEditableKingdom, weekIndex, GetKingdo
 dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKingdomRebellionWeek);
 					_civilWarJsonStorage = TeamModuleServices.CivilWar.Save();
 					dataStore.SyncData("_af_kingdom_civil_war_v2", ref _civilWarJsonStorage);
-					try
-					{
-						_voiceMappingJsonStorage = VoiceMapper.ExportMappingJson(pretty: false) ?? "";
-				}
-				catch (Exception ex7)
-				{
-					_voiceMappingJsonStorage = "";
-					Logger.Log("VoiceMapper", "[ERROR] Serialize voice mapping for save failed: " + ex7.Message);
-				}
-				CampaignSaveChunkHelper.SaveChunkedString(dataStore, "_voiceMapping_v1", _voiceMappingJsonStorage, "VoiceMapper");
-				_voiceMappingExportFolderStorage = VoiceMapper.GetPreferredExportFolder() ?? "";
-				dataStore.SyncData("_voiceMapping_export_folder_v1", ref _voiceMappingExportFolderStorage);
-				try
-				{
-					_unnamedPersonaJsonStorage = ShoutUtils.ExportUnnamedPersonaStateJson(pretty: false) ?? "";
-				}
-				catch (Exception ex8)
-				{
-					_unnamedPersonaJsonStorage = "";
-					Logger.Log("UnnamedPersona", "[ERROR] Serialize unnamed persona for save failed: " + ex8.Message);
-				}
-				CampaignSaveChunkHelper.SaveChunkedString(dataStore, "_unnamed_persona_v1", _unnamedPersonaJsonStorage, "UnnamedPersona");
+				CampaignVoicePersonaPersistenceAdapter.Save(dataStore, ref _voiceMappingJsonStorage, ref _voiceMappingExportFolderStorage, ref _unnamedPersonaJsonStorage, () => VoiceMapper.ExportMappingJson(pretty: false), VoiceMapper.GetPreferredExportFolder, () => ShoutUtils.ExportUnnamedPersonaStateJson(pretty: false));
 				SyncTailPersistenceData(dataStore);
 				return;
 			}
@@ -15130,33 +15109,7 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 				_civilWarJsonStorage = "";
 				dataStore.SyncData("_af_kingdom_civil_war_v2", ref _civilWarJsonStorage);
 				TeamModuleServices.CivilWar.Load(_civilWarJsonStorage);
-				_voiceMappingExportFolderStorage = "";
-			dataStore.SyncData("_voiceMapping_export_folder_v1", ref _voiceMappingExportFolderStorage);
-			VoiceMapper.SetPreferredExportFolder(_voiceMappingExportFolderStorage);
-			_voiceMappingJsonStorage = CampaignSaveChunkHelper.LoadChunkedString(dataStore, "_voiceMapping_v1", "VoiceMapper");
-			if (!string.IsNullOrWhiteSpace(_voiceMappingJsonStorage))
-			{
-				try
-				{
-					if (!VoiceMapper.ImportMappingJson(_voiceMappingJsonStorage))
-					{
-						Logger.Log("VoiceMapper", "[WARN] Save-loaded voice mapping was invalid; kept current file-backed mapping.");
-					}
-				}
-				catch (Exception ex8)
-				{
-					Logger.Log("VoiceMapper", "[ERROR] Restore voice mapping from save failed: " + ex8.Message);
-				}
-			}
-			_unnamedPersonaJsonStorage = CampaignSaveChunkHelper.LoadChunkedString(dataStore, "_unnamed_persona_v1", "UnnamedPersona");
-			try
-			{
-				ShoutUtils.ImportUnnamedPersonaStateJson(_unnamedPersonaJsonStorage, overwriteExisting: true);
-			}
-			catch (Exception ex9)
-			{
-				Logger.Log("UnnamedPersona", "[ERROR] Restore unnamed persona from save failed: " + ex9.Message);
-			}
+			CampaignVoicePersonaPersistenceAdapter.Load(dataStore, ref _voiceMappingJsonStorage, ref _voiceMappingExportFolderStorage, ref _unnamedPersonaJsonStorage, VoiceMapper.SetPreferredExportFolder, json => VoiceMapper.ImportMappingJson(json), json => ShoutUtils.ImportUnnamedPersonaStateJson(json, overwriteExisting: true));
 			SyncTailPersistenceData(dataStore);
 		}
 		catch (Exception ex10)
