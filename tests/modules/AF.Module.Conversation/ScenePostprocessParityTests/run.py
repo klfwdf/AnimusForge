@@ -3,6 +3,9 @@ from __future__ import annotations
 import argparse, hashlib, importlib.util, os, re, subprocess, sys
 from pathlib import Path
 ROOT = Path(__file__).resolve().parents[4]
+import sys
+sys.path.insert(0, str(ROOT / "tests"))
+from output_isolation import current_source_path
 HERE = Path(__file__).resolve().parent
 spec = importlib.util.spec_from_file_location('cutover_extraction', ROOT/'tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py')
 extractor = importlib.util.module_from_spec(spec)
@@ -24,7 +27,7 @@ def team_module_project_items():
     # Compile production thin adapters unchanged; old and new paths share the same domain stubs.
     from xml.sax.saxutils import escape
     return '<ItemGroup>' + ''.join(
-        '<Compile Include="' + escape(str(ROOT / path)) + '" Link="' + Path(path).name + '" />'
+        '<Compile Include="' + escape(str(current_source_path(ROOT, path))) + '" Link="' + Path(path).name + '" />'
         for path in TEAM_MODULE_FILES) + '<Compile Include="' + escape(str(ROOT / 'src/modules/AF.Module.Prompt/Composition/PromptRuntimeTargetBinding.cs')) + '" Link="PromptRuntimeTargetBinding.cs" />' + '</ItemGroup>'
 
 
@@ -98,7 +101,7 @@ def extract_candidate(ref):
             shared=shared_proc.stdout.decode('utf-8-sig').replace('\r\n','\n') if shared_proc.returncode==0 else phase
         else: phase=extractor.source('src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.ScenePostprocess.cs',ref)
         if not ref:
-            shared=extractor.source(shared_path,None) if (ROOT/shared_path).is_file() else phase
+            shared=extractor.source(shared_path,None) if (current_source_path(ROOT, shared_path)).is_file() else phase
     except (FileNotFoundError, subprocess.CalledProcessError): phase=''
     wrapper=extractor.declaration(scene,SIGNATURE,optional=True) or extractor.declaration(shared,SIGNATURE)
     if not phase and not shared: return wrapper, False

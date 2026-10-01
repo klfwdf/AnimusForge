@@ -161,7 +161,7 @@ env = minimal_test_environment(dotnet,output)
 env.update({k:v for k,v in os.environ.items() if k.startswith("AF_J06_")})
 outputs = {}
 for name in ("old", "current"):
-    source = subprocess.check_output(["git", "show", "77a3d234:WorldEntityRetrievalService.cs"], cwd=ROOT).decode("utf-8-sig") if name == "old" else (ROOT / "WorldEntityRetrievalService.cs").read_text(encoding="utf-8-sig")
+    source = subprocess.check_output(["git", "show", "77a3d234:WorldEntityRetrievalService.cs"], cwd=ROOT).decode("utf-8-sig") if name == "old" else (ROOT / "src/modules/AF.Module.Knowledge/Entities/WorldEntityRetrievalService.cs").read_text(encoding="utf-8-sig")
     out = output / name
     out.mkdir(parents=True, exist_ok=True)
     entity = extract.declaration(source, "private sealed class EntityMatch<T>" if name == "old" else "internal sealed class EntityMatch<T>")

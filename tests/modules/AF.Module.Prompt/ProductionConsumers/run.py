@@ -10,6 +10,9 @@ import importlib.util
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[4]
+import sys
+sys.path.insert(0, str(ROOT / "tests"))
+from output_isolation import current_source_path
 spec = importlib.util.spec_from_file_location("extract", ROOT / "tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py")
 extract = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(extract)
@@ -19,7 +22,7 @@ parser.add_argument("--mutate", choices=["remove-private-filter", "remove-agent-
 args = parser.parse_args()
 
 def method(path: str, marker: str) -> str:
-    return extract.declaration((ROOT / path).read_text(encoding="utf-8-sig"), marker)
+    return extract.declaration((current_source_path(ROOT, path)).read_text(encoding="utf-8-sig"), marker)
 
 def ordered(body: str, *fragments: str) -> None:
     positions = [body.find(fragment) for fragment in fragments]

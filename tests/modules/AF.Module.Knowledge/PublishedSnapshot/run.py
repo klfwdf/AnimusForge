@@ -11,7 +11,7 @@ HERE = Path(__file__).resolve().parent
 spec = importlib.util.spec_from_file_location("extract", ROOT / "tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py")
 extract = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(extract)
-source = (ROOT / "KnowledgeLibraryBehavior.cs").read_text(encoding="utf-8-sig")
+source = (ROOT / "src/modules/AF.Module.Knowledge/Host/KnowledgeLibraryBehavior.cs").read_text(encoding="utf-8-sig")
 parser = argparse.ArgumentParser()
 parser.add_argument("--mutate", choices=["no-deep-copy", "no-version-invalidation"])
 args = parser.parse_args()

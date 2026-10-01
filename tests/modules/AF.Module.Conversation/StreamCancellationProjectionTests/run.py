@@ -15,7 +15,7 @@ spec.loader.exec_module(extract)
 parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument("--mutate", choices=["cancel-partial", "late-exception"])
 args = parser.parse_args()
-source = (ROOT / "ShoutNetwork.cs").read_text(encoding="utf-8-sig")
+source = (ROOT / "src/modules/AF.Module.Llm/ShoutNetwork.cs").read_text(encoding="utf-8-sig")
 method = extract.declaration(source, "public static async Task CallApiWithMessagesStream(")
 guard_pattern = re.compile(
     r'if \((!cancellationToken\.IsCancellationRequested && !SaveRuntimeGuard\.IsStale\(runtimeGeneration, "([^"]+)"\))\)')

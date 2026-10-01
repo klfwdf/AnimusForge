@@ -14,7 +14,7 @@ spec.loader.exec_module(extract)
 parser = argparse.ArgumentParser()
 parser.add_argument("--mutate", choices=["skip-lexical", "lose-sticky-target"])
 args = parser.parse_args()
-source = (ROOT / "AIConfigHandler.cs").read_text(encoding="utf-8-sig")
+source = (ROOT / "src/modules/AF.Module.Prompt/Configuration/AIConfigHandler.cs").read_text(encoding="utf-8-sig")
 method = extract.declaration(source, "internal static List<GuardrailRuleHit> GetMatchedExtraRuleHitsForWorker(")
 if args.mutate == "skip-lexical":
     method = method.replace("if (hits == null || hits.Count == 0)", "if (false)", 1)

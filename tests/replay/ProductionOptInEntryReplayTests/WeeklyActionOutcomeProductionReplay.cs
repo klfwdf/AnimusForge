@@ -335,8 +335,8 @@ internal static class WeeklyActionOutcomeProductionReplay
         {
             "MyBehavior.cs",
             "MyBehavior.MemoryRecovery.cs",
-            "PlayerNotorietyBehavior.cs",
-            "PlayerNotorietyBehavior.ConversationOutcomes.cs",
+            "src/modules/AF.Module.Social/Host/PlayerNotorietyBehavior.cs",
+            "src/modules/AF.Module.Social/Host/PlayerNotorietyBehavior.ConversationOutcomes.cs",
             "MyBehavior.WeeklyActionOutcomeReceipts.cs",
             "src/AF.GameAdapter.Bannerlord/Composition/LegacyInteractionSnapshotAdapters.cs",
             "src/modules/AF.Module.Actions/Execute/LegacyNativeActionPlanExecutor.cs",

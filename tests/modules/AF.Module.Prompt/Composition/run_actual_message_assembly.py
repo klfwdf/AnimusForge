@@ -25,7 +25,7 @@ assert marker['Sha256'] == digest and marker['Role'] == 'Implementation'
 assert marker['BannerlordApi'] in ('1.3', '1.4')
 assert marker['BuildFlavor'] == 'ANIMUSFORGE_BANNERLORD_API_' + marker['BannerlordApi'].replace('.', '_')
 created = datetime.fromisoformat(marker['CreatedUtc'].replace('Z', '+00:00')).timestamp()
-inputs = [ROOT / 'ShoutBehavior.cs', ROOT / 'ConversationMessage.cs']
+inputs = [ROOT / 'src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.cs', ROOT / 'src/modules/AF.Module.Conversation/Internal/History/ConversationMessage.cs']
 inputs += list((ROOT / 'src/modules/AF.Module.Prompt/Composition').glob('*.cs'))
 inputs += list((ROOT / 'src/modules/AF.Module.Conversation/Channels/Courier').glob('*Prompt*.cs'))
 assert all(created >= path.stat().st_mtime for path in inputs), 'candidate predates a message assembly source'

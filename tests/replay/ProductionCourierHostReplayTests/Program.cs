@@ -34,7 +34,7 @@ using (JsonDocument marker = JsonDocument.Parse(File.ReadAllText(markerPath)))
         && build.GetProperty("BuildFlavor").GetString() == "ANIMUSFORGE_BANNERLORD_API_1_4", "Courier build identity mismatch");
     DateTime created = build.GetProperty("CreatedUtc").GetDateTime().ToUniversalTime();
     foreach (string source in Directory.GetFiles(Path.Combine(projectRoot, "src/modules/AF.Module.Conversation/Channels/Courier"), "*.cs")
-        .Concat(new[] { "CourierDeliveryBehavior.cs", "src/modules/AF.Module.Conversation/Internal/CoreDialogueContracts.cs", "src/modules/AF.Module.Conversation/Internal/CoreDialogueOperation.cs",
+        .Concat(new[] { "src/modules/AF.Module.Conversation/Internal/CoreDialogueContracts.cs", "src/modules/AF.Module.Conversation/Internal/CoreDialogueOperation.cs",
             "src/modules/AF.Module.Conversation/Internal/CoreDialogueClient.cs", "src/modules/AF.Module.Conversation/Internal/CoreDialogueServices.cs" }.Select(path => Path.Combine(projectRoot, path))))
         AssertTrue(created >= File.GetLastWriteTimeUtc(source), "Courier candidate predates " + source);
 }

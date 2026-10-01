@@ -1,11 +1,14 @@
 import argparse,importlib.util,subprocess,os,sys
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[4];HERE=Path(__file__).parent
+import sys
+sys.path.insert(0, str(ROOT / "tests"))
+from output_isolation import current_source_path
 sys.path.insert(0,str(ROOT/'tests'))
 from output_isolation import new_run_root, resolve_dotnet, minimal_test_environment
 p=argparse.ArgumentParser();p.add_argument('--run-root',type=Path);p.add_argument('--original',action='store_true');p.add_argument('--mutate');a=p.parse_args()
 spec=importlib.util.spec_from_file_location('ex',ROOT/'tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py');ex=importlib.util.module_from_spec(spec);spec.loader.exec_module(ex)
-def read(path):return subprocess.check_output(['git','show','50f84818:'+path],cwd=ROOT).decode('utf-8-sig') if a.original else (ROOT/path).read_text(encoding='utf-8-sig')
+def read(path):return subprocess.check_output(['git','show','50f84818:'+path],cwd=ROOT).decode('utf-8-sig') if a.original else (current_source_path(ROOT, path)).read_text(encoding='utf-8-sig')
 s=read('ShoutBehavior.cs')
 if not a.original:
  turn_spec=importlib.util.spec_from_file_location('preparation_turn',ROOT/'tests/modules/AF.Module.Conversation/NativeConversationAdmissionTests/turn_extraction.py');turn=importlib.util.module_from_spec(turn_spec);turn_spec.loader.exec_module(turn)

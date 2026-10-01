@@ -18,6 +18,8 @@ import readiness
 
 HERE = Path(__file__).resolve().parent
 PROJECT = HERE.parents[1]
+sys.path.insert(0, str(PROJECT / "tests"))
+from output_isolation import current_source_path
 # This runner only creates/cleans its unique fixture children, never old artifacts.
 FIXTURE_PARENT = Path(os.environ.get("AF_PHASE8_TEST_OUTPUT_ROOT", PROJECT / "artifacts/phase8-readiness")).resolve()
 if not FIXTURE_PARENT.is_relative_to((PROJECT / "artifacts").resolve()):
@@ -39,7 +41,7 @@ class ReadinessTests(unittest.TestCase):
         for relative in readiness.POLICY_FILES:
             target = self.root / relative
             target.parent.mkdir(parents=True, exist_ok=True)
-            shutil.copyfile(PROJECT / relative, target)
+            shutil.copyfile(current_source_path(PROJECT, relative), target)
         domain_catalog = json.loads((self.root / readiness.DOMAIN_CATALOG).read_text(encoding="utf-8"))
         cleanup_catalog = json.loads((self.root / readiness.CLEANUP_CATALOG).read_text(encoding="utf-8"))
         cleanup_catalog["baselineCommit"] = "b" * 40
@@ -55,9 +57,9 @@ class ReadinessTests(unittest.TestCase):
             target = self.root / relative
             target.parent.mkdir(parents=True, exist_ok=True)
             try:
-                target.hardlink_to(PROJECT / relative)
+                target.hardlink_to(current_source_path(PROJECT, relative))
             except OSError:
-                shutil.copyfile(PROJECT / relative, target)
+                shutil.copyfile(current_source_path(PROJECT, relative), target)
         (self.modules, self.bridges, self.composition_cases, self.domains,
          self.full_bridges, self.cleanup_inventory) = readiness.load_policy(readiness.EvidenceFiles(self.root, None))
         self.write("fixture.log", b"FIXTURE ONLY: not a game observation.\n")

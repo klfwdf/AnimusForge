@@ -6,7 +6,7 @@ sys.path.insert(0,str(ROOT/'tests'))
 from output_isolation import new_run_root,resolve_dotnet,minimal_test_environment
 spec=importlib.util.spec_from_file_location('extractor',ROOT/'tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py');ex=importlib.util.module_from_spec(spec);spec.loader.exec_module(ex)
 p=argparse.ArgumentParser();p.add_argument('--mutate',choices=['drop-busy','release-new-slot','skip-timeout-cas','skip-queued-action-guard','skip-generation','old-overlay-finalizer','skip-queued-epoch']);p.add_argument('--run-root',type=Path);args=p.parse_args()
-s=(ROOT/'ShoutBehavior.cs').read_text(encoding='utf-8-sig');partial=(ROOT/'ShoutBehavior.NativeAdmission.cs').read_text(encoding='utf-8-sig')
+s=(ROOT / 'src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.cs').read_text(encoding='utf-8-sig');partial=(ROOT / 'src/modules/AF.Module.Conversation/Channels/Native/ShoutBehavior.NativeAdmission.cs').read_text(encoding='utf-8-sig')
 selectors={'ENTRY':'public static Task<string> SubmitNativeConversationTextForExternalAsync(string playerText, Action<string> onStreamText, string currentDialogTextOverride, Action<string> onPostprocessStarted, Action<string, Hero, CharacterObject> onMainReplyReady)','OPENING_ENTRY':'public static Task<string> SubmitNativeConversationNpcInitiatedOpeningForExternalAsync(Action<string> onStreamText, string currentDialogTextOverride, Action<string> onPostprocessStarted, Action<string, Hero, CharacterObject> onMainReplyReady)','ACTION_RESULT':'private sealed class NativeConversationGameActionResult','ACTION_QUEUE':'private Task<NativeConversationGameActionResult> ApplyNativeConversationGameActionsOnMainThreadAsync('}
 # The unchanged boundary is source-projected from verified current phases; NativeTurn executes the new schedule.
 import sys
@@ -20,8 +20,8 @@ values['PREFIX']=body.split('\t\tLogger.Log("Logic", "[NativePerf] submit_start'
 baseline=subprocess.check_output(['git','show','14dec2d7:ShoutBehavior.cs'],cwd=ROOT).decode('utf-8-sig')
 assert ex.declaration(s,'public static bool CanSubmitNativeConversationForExternal()')==ex.declaration(baseline,'public static bool CanSubmitNativeConversationForExternal()')
 pre=body.split('\t\tStopwatch nativeActionSw =')[0]
-capture=ex.declaration((ROOT/'ShoutBehavior.NativePreparation.cs').read_text(encoding='utf-8-sig'),'private NativeConversationPreparationSnapshot CaptureNativeConversationPreparation(')
-reply_host=(ROOT/'ShoutBehavior.NativeMainReply.cs').read_text(encoding='utf-8-sig')
+capture=ex.declaration((ROOT / 'src/modules/AF.Module.Conversation/Channels/Native/ShoutBehavior.NativePreparation.cs').read_text(encoding='utf-8-sig'),'private NativeConversationPreparationSnapshot CaptureNativeConversationPreparation(')
+reply_host=(ROOT / 'src/modules/AF.Module.Conversation/Channels/Native/ShoutBehavior.NativeMainReply.cs').read_text(encoding='utf-8-sig')
 assert pre.count('IsNativeConversationAdmissionCurrent(admission, out ')==7
 assert reply_host.count('IsNativeConversationAdmissionCurrent(_admission, out ')==1
 assert 'NativeConversationMainReplyStage.RunAsync(' in pre
@@ -34,7 +34,7 @@ assert 'TryResolveNativeConversationTarget(' not in body and 'NpcInitiatedOpenin
 assert 'npcOpeningConsumed = true;' in body and 'admission.OpeningExtraFact' in body
 my=(ROOT/'MyBehavior.cs').read_text(encoding='utf-8-sig');ended=ex.declaration(my,'private void OnMemoryConversationEnded(')
 assert ended.split('{',1)[1].lstrip().startswith('ShoutBehavior.InvalidateNativeConversationAdmissionOnConversationEnd();')
-overlay=(ROOT/'AnimusForgeNativeConversationOverlay.cs').read_text(encoding='utf-8-sig')
+overlay=(ROOT / 'src/AF.GameAdapter.Bannerlord/UI/Conversation/AnimusForgeNativeConversationOverlay.cs').read_text(encoding='utf-8-sig')
 assert overlay.count('catch (ShoutBehavior.NativeConversationAdmissionException ex)')==2
 assert 'ShoutBehavior.IsNativeConversationBackendBusy()' in ex.declaration(overlay,'private void HandleSubmitRequested(')
 opening=ex.declaration(overlay,'private void TryStartPendingNpcOpening(');assert opening.index('IsNativeConversationBackendBusy')<opening.index('_npcOpeningAutoStarted = true')
@@ -54,14 +54,14 @@ for signature,name in [('private async Task SubmitAsync(string text)', 'Complete
         prefix=final.split('_dataSource.SetBusy(false);')[0]
         assert 'ConversationHelper.EndStreaming();' in prefix and '_isSubmitting = false;' in prefix
     finalizers.append('private void '+name+'(int generation) { try { } '+prefix+'\n} }); } }')
-values['OVERLAY_COMPLETION_HELPER']=ex.declaration((ROOT/'AnimusForgeNativeConversationOverlay.Presentation.cs').read_text(encoding='utf-8-sig'),'private bool CompleteNativeSubmissionPresentation(')
+values['OVERLAY_COMPLETION_HELPER']=ex.declaration((ROOT / 'src/AF.GameAdapter.Bannerlord/UI/Conversation/AnimusForgeNativeConversationOverlay.Presentation.cs').read_text(encoding='utf-8-sig'),'private bool CompleteNativeSubmissionPresentation(')
 values['OVERLAY_FINALIZERS']='\n'.join(finalizers)+'\ninternal void Complete(int generation, bool opening) { if (opening) CompleteOpening(generation); else CompletePlayer(generation); }'
 code=(HERE/'Harness.cs.txt').read_text(encoding='utf-8-sig')
 for key,value in values.items():code=code.replace('@@'+key+'@@',value)
 assert '@@' not in code
 out=new_run_root(ROOT,'NativeConversationAdmissionTests',args.run_root)
 (out/'Program.cs').write_text(code,encoding='utf-8');(out/'Admission.cs').write_text(partial,encoding='utf-8')
-dispatch=(ROOT/'ShoutBehavior.NativeActionDispatch.cs').read_text(encoding='utf-8-sig')
+dispatch=(ROOT / 'src/modules/AF.Module.Conversation/Channels/Native/ShoutBehavior.NativeActionDispatch.cs').read_text(encoding='utf-8-sig')
 if args.mutate=='skip-queued-action-guard':dispatch=dispatch.replace('if (!IsNativeConversationAdmissionCurrent(admission, out _))','if (false)',1)
 (out/'ActionDispatch.cs').write_text(dispatch,encoding='utf-8')
 (out/'Effect.cs').write_text('namespace AnimusForge.Refactor.Contracts;\n'+ex.declaration((ROOT/'src/AF.Contracts/Internal/InteractionContracts.cs').read_text(encoding='utf-8-sig'),'public enum ActionExecutionEffectState'),encoding='utf-8')

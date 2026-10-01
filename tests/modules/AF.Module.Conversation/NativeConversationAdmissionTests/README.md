@@ -2,7 +2,7 @@
 
 ## 验证范围
 
-本工具执行 `G:\AFMOD\AF-REFACTOR\ShoutBehavior.NativeAdmission.cs` 的真实源码，并从当前 `ShoutBehavior.cs` 抽取两个实际公开入口、完整 Native 方法的初始捕获段、真实动作调度队列。UI 部分抽取两条实际提交方法 finally 中的流式/busy 所有权片段。游戏实体与后续 LLM/业务执行使用明确标注的 stub，**不冒充整条实际游戏对话测试**。
+本工具执行 `G:\AFMOD\AF-REFACTOR\ShoutBehavior.NativeAdmission.cs` 的真实源码，并从当前 `src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.cs` 抽取两个实际公开入口、完整 Native 方法的初始捕获段、真实动作调度队列。UI 部分抽取两条实际提交方法 finally 中的流式/busy 所有权片段。游戏实体与后续 LLM/业务执行使用明确标注的 stub，**不冒充整条实际游戏对话测试**。
 
 ```powershell
 Set-Location -LiteralPath 'G:\AFMOD\AF-REFACTOR'
@@ -53,6 +53,6 @@ python -B tests/modules/AF.Module.Conversation/NativeConversationAdmissionTests/
 - 原 44 项准入及 7 个反例全部保留。旧 finally 所有权证明现在提取真实 `CompleteNativeSubmissionPresentation`，其 fixture 假定游戏 scope 有效，只测试本地关闭/generation；真实 scope 失效由上述新套件负责，不用假 scope 代替新边界验收。
 - 生成的 UI 片段含一些未被该片段使用的原局部变量，展示 fixture 仅屏蔽 CS0169/CS0414/CS0219 未使用提示；生产构建不屏蔽这些警告。
 
-动作派发失败续作将同步/队列执行统一到真实 `ShoutBehavior.NativeActionDispatch.cs`。本套件现 Link 该文件与既有 effect enum；原队列 guard 变异改为破坏同一个共享 guard，原断言未删除。展示接线现在有 16 个受保护消费点（新增两个动作失败报告）；原 46 项展示检查不变，动作失败分支由 NativeActionDispatchOutcomeTests 单独执行验证。
+动作派发失败续作将同步/队列执行统一到真实 `src/modules/AF.Module.Conversation/Channels/Native/ShoutBehavior.NativeActionDispatch.cs`。本套件现 Link 该文件与既有 effect enum；原队列 guard 变异改为破坏同一个共享 guard，原断言未删除。展示接线现在有 16 个受保护消费点（新增两个动作失败报告）；原 46 项展示检查不变，动作失败分支由 NativeActionDispatchOutcomeTests 单独执行验证。
 
 动作后收尾迁移后，本套件继续按原覆盖面验证准入/展示；生成项目链接 NativeCompletionBoundaryTests/NoCompletionStubs.cs.txt，若不带 completion payload 的旧 fixture 意外进入新收尾即失败。完整真实 Native tail、物理主线程历史与关窗由新 NativeCompletionBoundaryTests 另行验证。

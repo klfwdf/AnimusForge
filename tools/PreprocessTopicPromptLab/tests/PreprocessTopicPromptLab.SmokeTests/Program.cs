@@ -237,7 +237,7 @@ if (!parsedAgendaTopics.Contains("kingdom_agenda", StringComparer.OrdinalIgnoreC
 }
 
 var parsedAgendaDiplomacyTopics = service.ParseTopics("{\"rule_codes\":[\"KINGDOM_AGENDA\",\"DIPLOMACY\",\"NPC_RECENT\",\"NOBLE_PRESSURE\"],\"mentioned_entities\":{\"entities\":[]}}", catalog.Rules);
-var aiConfigHandlerSource = File.ReadAllText(Path.Combine(repoRoot, "AIConfigHandler.cs"));
+var aiConfigHandlerSource = File.ReadAllText(Path.Combine(repoRoot, "src/modules/AF.Module.Prompt/Configuration/AIConfigHandler.cs"));
 if (!parsedAgendaDiplomacyTopics.Contains("kingdom_agenda", StringComparer.OrdinalIgnoreCase) ||
     !parsedAgendaDiplomacyTopics.Contains("diplomacy", StringComparer.OrdinalIgnoreCase) ||
     aiConfigHandlerSource.Contains("PreferDirectDiplomacyTopicOverAgenda(", StringComparison.Ordinal))

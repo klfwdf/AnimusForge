@@ -12,7 +12,7 @@
     <Compile Include="../../../src/AF.Persistence/AnimusForgeModelStore.cs" Link="AnimusForgeModelStore.cs" />
     <Compile Include="../../../src/AF.Persistence/PlayerExportsStore.cs" Link="PlayerExportsStore.cs" />
     <Compile Include="../../../src/AF.Persistence/PlayerExportsPackageExport.cs" Link="PlayerExportsPackageExport.cs" />
-    <Compile Include="../../../AnimusForgeTerminalSettings.cs" Link="AnimusForgeTerminalSettings.cs" />
+    <Compile Include="../../../src/modules/AF.Module.UI/Settings/AnimusForgeTerminalSettings.cs" Link="AnimusForgeTerminalSettings.cs" />
     <Reference Include="Newtonsoft.Json"><HintPath>$(MSBuildSDKsPath)/../Newtonsoft.Json.dll</HintPath></Reference>
   </ItemGroup>
 </Project>

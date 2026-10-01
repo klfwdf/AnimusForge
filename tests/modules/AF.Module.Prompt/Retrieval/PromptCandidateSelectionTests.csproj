@@ -7,8 +7,8 @@
   <ItemGroup>
     <Compile Include="Program.cs" />
     <Compile Include="FacadeStubs.cs" />
-    <Compile Include="../../../../PromptListRetrievalService.cs" Link="PromptListRetrievalService.cs" />
-    <Compile Include="../../../../RagWarmupCoordinator.cs" Link="RagWarmupCoordinator.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Prompt/Retrieval/PromptListRetrievalService.cs" Link="PromptListRetrievalService.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Knowledge/Semantic/RagWarmupCoordinator.cs" Link="RagWarmupCoordinator.cs" />
     <Compile Include="../../../../src/modules/AF.Module.Prompt/Retrieval/PromptCandidateSelection.cs" Link="PromptCandidateSelection.cs" />
     <Compile Include="../../../../src/modules/AF.Module.Prompt/Retrieval/IntentQueryOptimizer.cs" Link="IntentQueryOptimizer.cs" />
     <Compile Include="../../../../src/modules/AF.Module.Prompt/Retrieval/PromptCandidateSnapshotIndex.cs" Link="PromptCandidateSnapshotIndex.cs" />
@@ -34,6 +34,6 @@
     <Compile Include="../../../../src/modules/AF.Module.Prompt/Retrieval/PromptRuleRetrievalPipeline.cs" Link="PromptRuleRetrievalPipeline.cs" />
     <Compile Include="../../../../src/modules/AF.Module.Prompt/Retrieval/PromptRuleAggregation.cs" Link="PromptRuleAggregation.cs" />
     <Compile Include="../../../../src/modules/AF.Module.Prompt/Retrieval/PromptRuleFinalRanking.cs" Link="PromptRuleFinalRanking.cs" />
-    <Compile Include="../../../../GuardrailRuleHit.cs" Link="GuardrailRuleHit.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Prompt/Retrieval/GuardrailRuleHit.cs" Link="GuardrailRuleHit.cs" />
   </ItemGroup>
 </Project>

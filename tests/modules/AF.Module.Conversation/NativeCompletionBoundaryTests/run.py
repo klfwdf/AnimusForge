@@ -3,11 +3,11 @@ from pathlib import Path
 import sys
 ROOT=Path(__file__).resolve().parents[4];HERE=Path(__file__).parent
 sys.path.insert(0,str(ROOT/'tests'))
-from output_isolation import new_run_root,resolve_dotnet,minimal_test_environment
+from output_isolation import new_run_root,resolve_dotnet,minimal_test_environment,current_source_path
 p=argparse.ArgumentParser();p.add_argument('--original',action='store_true');p.add_argument('--memory-baseline',action='store_true');p.add_argument('--mutate');p.add_argument('--run-root',type=Path);a=p.parse_args()
 spec=importlib.util.spec_from_file_location('ex',ROOT/'tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py');ex=importlib.util.module_from_spec(spec);spec.loader.exec_module(ex)
 baseline='d9288faa' if a.original else '29ca75c9' if a.memory_baseline else None
-def read(name):return subprocess.check_output(['git','show',baseline+':'+name],cwd=ROOT).decode('utf-8-sig') if baseline else (ROOT/name).read_text(encoding='utf-8-sig')
+def read(name):return subprocess.check_output(['git','show',baseline+':'+name],cwd=ROOT).decode('utf-8-sig') if baseline else current_source_path(ROOT,name).read_text(encoding='utf-8-sig')
 s=read('ShoutBehavior.cs');ad=read('ShoutBehavior.NativeAdmission.cs');
 # The unchanged boundary is source-projected from verified current phases; NativeTurn executes the new schedule.
 import sys
@@ -30,7 +30,7 @@ if not baseline:
  # The accepted-reply gate lives in the CURRENT dispatch lambda (the projection returns the
  # pre-extraction file). Use the live declaration, and require it to differ from the projected
  # one only by that gate so no other dispatch drift slips in unreviewed.
- live=(ROOT/'ShoutBehavior.cs').read_text(encoding='utf-8-sig').replace('\r\n','\n')
+ live=(ROOT / 'src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.cs').read_text(encoding='utf-8-sig').replace('\r\n','\n')
  dispatch=ex.declaration(live,'private Task<NativeConversationGameActionResult> ApplyNativeConversationGameActionsOnMainThreadAsync(')
  gate_old='\t\t\t\tif (completionScope != null && result != null && !result.ResponseDiscarded)\n\t\t\t\t\tresult.FinalVisible = CompleteNativeConversationReplyOnMainThread(completionScope, result);\n'
  gate_new='\t\t\t\tif (completionScope != null && result != null && !result.ResponseDiscarded)\n\t\t\t\t{\n\t\t\t\t\tRunNativeAcceptedReplySideEffects(completion);\n\t\t\t\t\tresult.FinalVisible = CompleteNativeConversationReplyOnMainThread(completionScope, result);\n\t\t\t\t}\n'

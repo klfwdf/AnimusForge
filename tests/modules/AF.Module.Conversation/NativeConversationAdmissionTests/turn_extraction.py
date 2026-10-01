@@ -8,6 +8,9 @@ from pathlib import Path
 import hashlib, importlib.util, json, re, subprocess
 
 ROOT = Path(__file__).resolve().parents[4]
+import sys
+sys.path.insert(0, str(ROOT / "tests"))
+from output_isolation import current_source_path
 spec = importlib.util.spec_from_file_location('turn_decl', ROOT/'tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py')
 ex = importlib.util.module_from_spec(spec); spec.loader.exec_module(ex)
 REVIEW = json.loads((ROOT/'tests/modules/AF.Module.Conversation/NativeTurn/source-review.json').read_text())
@@ -39,7 +42,7 @@ def restore_ceremony_owner(file, text):
     return text
 
 def reviewed_turn_source(file):
-    return restore_ceremony_owner(file, (ROOT/file).read_text(encoding='utf-8-sig'))
+    return restore_ceremony_owner(file, (current_source_path(ROOT, file)).read_text(encoding='utf-8-sig'))
 
 def projected_source(source):
     original = subprocess.check_output(['git','show',REVIEW['baseline']+':ShoutBehavior.cs'],cwd=ROOT).decode('utf-8-sig').replace('\r\n','\n')
@@ -70,7 +73,7 @@ def projected_source(source):
     parts = {}
     for file in REVIEW['addedFiles']:
         if not file.startswith('ShoutBehavior.NativeTurn'): continue
-        text = (ROOT/file).read_text(encoding='utf-8-sig')
+        text = (current_source_path(ROOT, file)).read_text(encoding='utf-8-sig')
         for name in re.findall(r'(?:public async Task<NativeConversationTurnStep>|private void) (\w+)\(\)',text):
             signature = ('public async Task<NativeConversationTurnStep> ' if name.endswith('Async') else 'private void ')+name+'()'
             body = ex.declaration(text,signature).split('{',1)[1].rsplit('}',1)[0]
@@ -118,7 +121,7 @@ def projected_source(source):
     fields = {}
     for file in REVIEW['addedFiles']:
         if file.startswith('ShoutBehavior.NativeTurn'):
-            text=(ROOT/file).read_text(encoding='utf-8-sig')
+            text=(current_source_path(ROOT, file)).read_text(encoding='utf-8-sig')
             fields.update({name:typ for typ,name in re.findall(r'^        private ([\w.]+(?:<[^;=\n]+>)?(?:\[\])?) (\w+);$',text,re.M)})
     for name,typ in fields.items():
         expected = re.sub(r'(?m)^(\s*)'+re.escape(typ)+r' '+name+r' = ',r'\1'+name+' = ',expected)
@@ -127,5 +130,5 @@ def projected_source(source):
     return original
 
 if __name__ == '__main__':
-    projected_source((ROOT/'ShoutBehavior.cs').read_text(encoding='utf-8-sig'))
+    projected_source((ROOT/'src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.cs').read_text(encoding='utf-8-sig'))
     print('PASS current phase algorithms reconstruct the pre-extraction turn; new scheduling tested separately')

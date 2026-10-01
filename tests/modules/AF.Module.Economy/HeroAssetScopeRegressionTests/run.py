@@ -45,7 +45,7 @@ def extract(ref=None):
     declarations += [extractor.declaration(extractor.source('src/modules/AF.Module.Economy/Execution/LegacyEconomyRewardDebtMainThreadPort.cs', ref), 'public sealed class LegacyEconomyRewardDebtMainThreadPort')]
     declarations += [extractor.declaration(interaction, marker) for marker in [
         'public sealed class FactRecord', 'internal static class ContractGuard']]
-    declarations += [extractor.declaration(extractor.source('TransferQuantitySpec.cs', ref), 'internal readonly struct TransferQuantitySpec')]
+    declarations += [extractor.declaration(extractor.source('TransferQuantitySpec.cs' if ref else 'src/modules/AF.Module.Economy/Host/TransferQuantitySpec.cs', ref), 'internal readonly struct TransferQuantitySpec')]
     coordinator = extractor.source('src/modules/AF.Module.Economy/Execution/EconomyReplayBatchCoordinator.cs', ref)
     declarations += [extractor.declaration(coordinator, marker) for marker in [
         'internal enum EconomyReplayStepState', 'internal sealed class EconomyReplayStepOutcome',

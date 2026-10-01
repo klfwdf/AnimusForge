@@ -4,11 +4,14 @@ All network is a deterministic HttpMessageHandler; no game/provider/log writes.
 from pathlib import Path
 import argparse,importlib.util,os,subprocess,json,hashlib,sys
 ROOT=Path(__file__).resolve().parents[4];HERE=Path(__file__).resolve().parent
+import sys
+sys.path.insert(0, str(ROOT / "tests"))
+from output_isolation import current_source_path
 sys.path.insert(0,str(ROOT/"tests"))
 from output_isolation import new_run_root, resolve_dotnet, minimal_test_environment
 p=argparse.ArgumentParser();p.add_argument('--mutate',choices=['leak-response','skip-accept','drop-caller-token','thinking-still-enabled','lose-retry-after']);p.add_argument("--run-root",type=Path);a=p.parse_args()
 spec=importlib.util.spec_from_file_location('ex',ROOT/'tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py');ex=importlib.util.module_from_spec(spec);spec.loader.exec_module(ex)
-def read(f):return (ROOT/f).read_text(encoding='utf-8-sig')
+def read(f):return (current_source_path(ROOT, f)).read_text(encoding='utf-8-sig')
 for consumer in ['PolicySystem/Npc/PolicyLlmClient.cs','WorldDiplomacyLlmClient.cs']:
  domain=read(consumer)
  assert domain.count('LlmNonStreamingTransport.SendAsync(')==1, consumer+' must use the one-attempt shared owner exactly once'

@@ -3,6 +3,9 @@ from pathlib import Path
 import argparse, importlib.util, os, shutil, subprocess, sys
 from xml.sax.saxutils import escape
 ROOT=Path(__file__).resolve().parents[4]; HERE=Path(__file__).parent
+import sys
+sys.path.insert(0, str(ROOT / "tests"))
+from output_isolation import current_source_path
 sys.path.insert(0,str(ROOT/'tests'))
 from output_isolation import new_run_root, minimal_test_environment
 sys.stdout.reconfigure(encoding='utf-8')
@@ -13,7 +16,7 @@ if not dotnet.is_file():p.error('dotnet executable not found: '+a.dotnet)
 dotnet=dotnet.resolve()
 spec=importlib.util.spec_from_file_location('extract',ROOT/'tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py');ex=importlib.util.module_from_spec(spec);spec.loader.exec_module(ex)
 out=new_run_root(ROOT,'native-module-submission',a.run_root)
-s=(ROOT/'ShoutBehavior.cs').read_text(encoding='utf-8-sig')
+s=(ROOT/'src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.cs').read_text(encoding='utf-8-sig')
 sigs=['private Task<T> RunNativeConversationMainThreadFuncAsync<T>(', 'private static async Task<T> AwaitNativeConversationMainThreadFuncAsync<T>(', 'private sealed class NativeConversationGameActionResult','private Task<NativeConversationGameActionResult> ApplyNativeConversationGameActionsOnMainThreadAsync(']
 host=(HERE/'Host.cs.txt').read_text(encoding='utf-8').replace('@@REAL_DECLARATIONS@@','\n'.join(ex.declaration(s,sig) for sig in sigs))
 scene=(ROOT/'src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.ModuleSceneSubmission.cs').read_text(encoding='utf-8-sig')
@@ -43,7 +46,7 @@ mutations={
 spec_lifetime=importlib.util.spec_from_file_location('native_lifetime_fixture',HERE/'fixture_support.py');lifetime_fixture=importlib.util.module_from_spec(spec_lifetime);spec_lifetime.loader.exec_module(lifetime_fixture);lifetime_fixture.include_request_lifetime(out)
 sources=[out/'ConversationRequestLifetime.cs',out/'InteractionRequestLease.cs',out/'CancellationScope.cs',out/'Host.cs',out/'Contracts.cs',ROOT/'tests/AF.Contracts/ModuleFrameworkApiTests/HostStubs.cs']
 for path in paths:
- text=(ROOT/path).read_text(encoding='utf-8-sig')
+ text=(current_source_path(ROOT, path)).read_text(encoding='utf-8-sig')
  if a.reorder_core_enums and path=='src/modules/AF.Module.Conversation/Internal/CoreDialogueContracts.cs':
   text=text.replace('Queued, Running, Completed, Rejected, Cancelled, Failed','Queued=100, Running=20, Completed=50, Rejected=1, Cancelled=30, Failed=6').replace('NoConfirmedEffect, UnknownAfterStart, CompletedByOwner','NoConfirmedEffect=4, UnknownAfterStart=8, CompletedByOwner=2').replace('CancelledBeforeStart, AlreadyTerminal, TooLate','CancelledBeforeStart=7, AlreadyTerminal=2, TooLate=4')
  if a.mutate and path==mutations[a.mutate][0]:

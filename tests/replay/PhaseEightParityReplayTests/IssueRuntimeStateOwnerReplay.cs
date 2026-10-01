@@ -12,7 +12,7 @@ internal static class IssueRuntimeStateOwnerReplay
         string ownerPath = Path.Combine(repo, "src/modules/AF.Module.Issue/Runtime/IssueRuntimeStateOwner.cs");
         string promptPath = Path.Combine(repo, "src/modules/AF.Module.Issue/Runtime/IssueRuntimePromptOwner.cs");
         string actionPath = Path.Combine(repo, "src/modules/AF.Module.Issue/Actions/IssueActionOwner.cs");
-        string hostPath = Path.Combine(repo, "VanillaIssueOfferBridge.cs");
+        string hostPath = Path.Combine(repo, "src/modules/AF.Module.Issue/Host/VanillaIssueOfferBridge.cs");
         if (!File.Exists(ownerPath)) throw new InvalidOperationException("Issue runtime state: owner source missing");
         if (!File.Exists(promptPath)) throw new InvalidOperationException("Issue runtime state: prompt owner source missing");
         string ownerSource = File.ReadAllText(ownerPath);

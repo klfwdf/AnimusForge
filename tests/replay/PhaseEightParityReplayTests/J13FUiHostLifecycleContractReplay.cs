@@ -18,11 +18,11 @@ internal static class J13FUiHostLifecycleContractReplay
             return source.Substring(first, last - first);
         }
 
-        string weekly = Read("DevWeeklyReportPopup.cs");
-        string onboarding = Read("AnimusForgeApiOnboardingPopup.cs");
-        string overlay = Read("AnimusForgeNativeConversationOverlay.cs");
-        string vm = Read("AnimusForgeApiOnboardingVM.cs");
-        string onboardingHost = Read("ModOnboardingBehavior.cs");
+        string weekly = Read("src/AF.GameAdapter.Bannerlord/UI/Weekly/DevWeeklyReportPopup.cs");
+        string onboarding = Read("src/AF.GameAdapter.Bannerlord/UI/Onboarding/AnimusForgeApiOnboardingPopup.cs");
+        string overlay = Read("src/AF.GameAdapter.Bannerlord/UI/Conversation/AnimusForgeNativeConversationOverlay.cs");
+        string vm = Read("src/AF.GameAdapter.Bannerlord/UI/Onboarding/AnimusForgeApiOnboardingVM.cs");
+        string onboardingHost = Read("src/modules/AF.Module.Onboarding/Host/ModOnboardingBehavior.cs");
         string weeklyShow = Slice(weekly, "public static bool Show(", "public static void ProcessDeferredCloseIfNeeded()");
         string onboardingShow = Slice(onboarding, "public static bool Show(", "public static void CloseActive(");
         string overlayShow = Slice(overlay, "private static bool Show(ScreenBase screen)", "private void Open()");

@@ -9,7 +9,7 @@ internal static class IssueCompletionReceiptOwnerReplay
     internal static void Run(Assembly assembly, string repo)
     {
         string ownerPath = Path.Combine(repo, "src/modules/AF.Module.Issue/Completion/IssueCompletionReceiptOwner.cs");
-        string hostPath = Path.Combine(repo, "VanillaIssuePromptBehavior.cs");
+        string hostPath = Path.Combine(repo, "src/modules/AF.Module.Issue/Host/VanillaIssuePromptBehavior.cs");
         if (!File.Exists(ownerPath)) throw new InvalidOperationException("Issue completion receipt: owner source missing");
         string ownerSource = File.ReadAllText(ownerPath);
         string hostSource = File.ReadAllText(hostPath);

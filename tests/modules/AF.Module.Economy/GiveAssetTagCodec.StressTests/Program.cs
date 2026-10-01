@@ -174,7 +174,7 @@ while (!File.Exists(Path.Combine(repoRoot, "MyBehavior.cs")))
 }
 
 string myBehavior = File.ReadAllText(Path.Combine(repoRoot, "MyBehavior.cs"));
-string shoutBehavior = File.ReadAllText(Path.Combine(repoRoot, "ShoutBehavior.cs"));
+string shoutBehavior = File.ReadAllText(Path.Combine(repoRoot, "src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.cs"));
 string rewardSystem = File.ReadAllText(Path.Combine(repoRoot, "RewardSystemBehavior.cs"))
     + File.ReadAllText(Path.Combine(repoRoot, "src", "modules", "AF.Module.Economy", "Authorization", "RewardSystemBehavior.EconomyAssetAuthorization.cs"))
     + File.ReadAllText(Path.Combine(repoRoot, "src", "modules", "AF.Module.Economy", "Execution", "Hero", "RewardSystemBehavior.EconomyReplay.cs"))
@@ -185,10 +185,10 @@ string rewardSystem = File.ReadAllText(Path.Combine(repoRoot, "RewardSystemBehav
 string scenePostprocess = File.ReadAllText(Path.Combine(repoRoot, "src", "modules", "AF.Module.Conversation", "Channels", "Scene", "ShoutBehavior.ScenePostprocess.cs"))
     + File.ReadAllText(Path.Combine(repoRoot, "src", "modules", "AF.Module.Conversation", "Internal", "Postprocess", "ShoutBehavior.UnifiedActionPostprocess.cs"));
 string sceneChains = File.ReadAllText(Path.Combine(repoRoot, "src", "modules", "AF.Module.Conversation", "Channels", "Scene", "ShoutBehavior.SceneConversationChains.cs"));
-string courier = File.ReadAllText(Path.Combine(repoRoot, "CourierDeliveryBehavior.cs"))
+string courier = File.ReadAllText(Path.Combine(repoRoot, "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.cs"))
     + File.ReadAllText(Path.Combine(repoRoot, "src", "modules", "AF.Module.Conversation", "Channels", "Courier", "CourierDeliveryBehavior.GenerationLifecycle.cs"))
     + File.ReadAllText(Path.Combine(repoRoot, "src", "modules", "AF.Module.Conversation", "Channels", "Courier", "CourierDeliveryBehavior.DomainCommit.cs"));
-string nativeOverlay = File.ReadAllText(Path.Combine(repoRoot, "AnimusForgeNativeConversationOverlay.cs"));
+string nativeOverlay = File.ReadAllText(Path.Combine(repoRoot, "src/AF.GameAdapter.Bannerlord/UI/Conversation/AnimusForgeNativeConversationOverlay.cs"));
 Test.True(myBehavior.Contains("GiveAssetTagCodec.TryParseWhole", StringComparison.Ordinal), "free-conversation input codec missing");
 Test.True(HasSharedRewardCodec(shoutBehavior, scenePostprocess), "shared Native/Scene/Courier reward codec chain missing");
 Test.True(nativeOverlay.Contains("ShoutBehavior.SubmitNativeConversationForOverlayAsync(", StringComparison.Ordinal)
@@ -265,12 +265,12 @@ Match whipSwordIsolation = Regex.Match(rewardSystem,
     @"bool isExplicitWhip = IsGeneratedRpWhipWeaponTemplateItem\(item\);.*?if \(isExplicitWhip\).*?GeneratedRpEquipmentKind\.Whip.*?return;.*?switch \(item\.Type\)",
     RegexOptions.Singleline);
 Test.True(whipSwordIsolation.Success, "explicit whip templates must not enter the borrowed sword weapon-class pool");
-string playerRpCrafting = File.ReadAllText(Path.Combine(repoRoot, "RewardSystemBehavior.PlayerRpCrafting.cs"));
-string playerRpModels = File.ReadAllText(Path.Combine(repoRoot, "PlayerRpCraftModels.cs"));
-string playerRpComponents = File.ReadAllText(Path.Combine(repoRoot, "PlayerRpCraftItemComponentService.cs"));
+string playerRpCrafting = File.ReadAllText(Path.Combine(repoRoot, "src/modules/AF.Module.Economy/Host/RewardSystemBehavior.PlayerRpCrafting.cs"));
+string playerRpModels = File.ReadAllText(Path.Combine(repoRoot, "src/modules/AF.Module.Economy/Host/PlayerRpCraftModels.cs"));
+string playerRpComponents = File.ReadAllText(Path.Combine(repoRoot, "src/modules/AF.Module.Economy/Host/PlayerRpCraftItemComponentService.cs"));
 string preprocessPrompts = File.ReadAllText(Path.Combine(repoRoot, "content", "modules", "AF.Module.Prompt", "ModuleData", "PreprocessPrompts.json"));
 string terminalBehavior = File.ReadAllText(Path.Combine(repoRoot, "AnimusForgeTerminalBehavior.cs"));
-string playerRpPopup = File.ReadAllText(Path.Combine(repoRoot, "PlayerRpForgePopup.cs"));
+string playerRpPopup = File.ReadAllText(Path.Combine(repoRoot, "src/AF.GameAdapter.Bannerlord/UI/Economy/PlayerRpForgePopup.cs"));
 Test.True(playerRpCrafting.Contains("PlayerRpTemplateCandidateLimit = 50", StringComparison.Ordinal)
     && playerRpCrafting.Contains("TryBuildPlayerRpCraftTemplateSelectionForExternal(", StringComparison.Ordinal)
     && playerRpCrafting.Contains("Candidates = candidates", StringComparison.Ordinal)

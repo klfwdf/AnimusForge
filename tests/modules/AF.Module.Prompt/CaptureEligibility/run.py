@@ -12,12 +12,15 @@ import subprocess
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[4]
+import sys
+sys.path.insert(0, str(ROOT / "tests"))
+from output_isolation import current_source_path
 HERE = Path(__file__).resolve().parent
 spec = importlib.util.spec_from_file_location("extract", ROOT / "tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py")
 extract = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(extract)
 
-source = (ROOT / "AIConfigHandler.cs").read_text(encoding="utf-8-sig")
+source = (ROOT / "src/modules/AF.Module.Prompt/Configuration/AIConfigHandler.cs").read_text(encoding="utf-8-sig")
 capture = extract.declaration(source, "internal static PromptRuleEligibility CapturePromptRuleEligibility(")
 parser = argparse.ArgumentParser()
 parser.add_argument("--mutate", choices=("shared-catch", "open-exclusion"))
@@ -36,7 +39,7 @@ output.mkdir(parents=True, exist_ok=True)
 (output / "Proof.csproj").write_text(
     '<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><EnableDefaultCompileItems>false</EnableDefaultCompileItems><UseAppHost>false</UseAppHost><NuGetAudit>false</NuGetAudit></PropertyGroup><ItemGroup>'
     '<Compile Include="Program.cs" />'
-    + "".join('<Compile Include="' + str(ROOT / path).replace("\\", "/") + '" />' for path in (
+    + "".join('<Compile Include="' + str(current_source_path(ROOT, path)).replace("\\", "/") + '" />' for path in (
         "src/modules/AF.Module.Prompt/Composition/PromptRuleEligibility.cs",
         "src/modules/AF.Module.Prompt/Composition/PromptRuntimeTargetBinding.cs",
         "src/modules/AF.Module.Prompt/Retrieval/PromptRetrievalContextOwner.cs"))

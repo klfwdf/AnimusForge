@@ -51,12 +51,12 @@ for name in ("old", "current"):
         hit_model = subprocess.check_output(["git", "show", "77a3d234:GuardrailRuleHit.cs"], cwd=ROOT).decode("utf-8-sig")
         config_model = subprocess.check_output(["git", "show", "77a3d234:GuardrailRulePromptConfig.cs"], cwd=ROOT).decode("utf-8-sig")
     else:
-        source = (ROOT / "AIConfigHandler.cs").read_text(encoding="utf-8-sig")
+        source = (ROOT / "src/modules/AF.Module.Prompt/Configuration/AIConfigHandler.cs").read_text(encoding="utf-8-sig")
         ranking = (ROOT / "src/modules/AF.Module.Prompt/Retrieval/PromptRuleRanking.cs").read_text(encoding="utf-8-sig")
         sticky = (ROOT / "src/modules/AF.Module.Prompt/Retrieval/PromptStickyRuleStore.cs").read_text(encoding="utf-8-sig")
         eval_models = (ROOT / "src/modules/AF.Module.Prompt/Retrieval/PromptRuleEvaluationModels.cs").read_text(encoding="utf-8-sig")
-        hit_model = (ROOT / "GuardrailRuleHit.cs").read_text(encoding="utf-8-sig")
-        config_model = (ROOT / "GuardrailRulePromptConfig.cs").read_text(encoding="utf-8-sig")
+        hit_model = (ROOT / "src/modules/AF.Module.Prompt/Retrieval/GuardrailRuleHit.cs").read_text(encoding="utf-8-sig")
+        config_model = (ROOT / "src/modules/AF.Module.Prompt/Configuration/GuardrailRulePromptConfig.cs").read_text(encoding="utf-8-sig")
     lexical_marker = "private static List<GuardrailRuleHit> GetGuardrailLexicalRuleHits(string input, string secondaryInput, int maxCount = 0, bool includeBuiltInRules = false, IEnumerable<string> excludedRuleIds = null" 
     markers = shared_markers + (lexical_marker,)
     if name == "current":

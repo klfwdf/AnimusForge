@@ -43,7 +43,7 @@ def main() -> int:
         output = HERE / ".generated" / name
         output.mkdir(parents=True, exist_ok=True)
         (output / "ScenePendingAfefFactsOwner.cs").write_text(source.replace(old, new), encoding="utf-8")
-        (output / "ConversationMessage.cs").write_text((ROOT / "ConversationMessage.cs").read_text(encoding="utf-8-sig"), encoding="utf-8")
+        (output / "ConversationMessage.cs").write_text((ROOT / "src/modules/AF.Module.Conversation/Internal/History/ConversationMessage.cs").read_text(encoding="utf-8-sig"), encoding="utf-8")
         (output / "Program.cs").write_text((HERE / "Program.cs").read_text(encoding="utf-8-sig"), encoding="utf-8")
         (output / "Tests.csproj").write_text(
             "<Project Sdk=\"Microsoft.NET.Sdk\"><PropertyGroup>"

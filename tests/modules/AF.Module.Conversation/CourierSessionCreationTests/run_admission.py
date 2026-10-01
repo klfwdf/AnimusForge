@@ -6,6 +6,9 @@ import os
 import subprocess
 
 ROOT = Path(__file__).resolve().parents[4]
+import sys
+sys.path.insert(0, str(ROOT / "tests"))
+from output_isolation import current_source_path
 HERE = Path(__file__).resolve().parent
 
 
@@ -28,7 +31,7 @@ def main():
     def read(path):
         if args.ref:
             return subprocess.check_output(['git', 'show', args.ref + ':' + path], cwd=ROOT).decode('utf-8-sig')
-        return (ROOT / path).read_text(encoding='utf-8-sig')
+        return (current_source_path(ROOT, path)).read_text(encoding='utf-8-sig')
 
     creation = read('src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.SessionCreation.cs')
     host = read('CourierDeliveryBehavior.cs')
@@ -128,7 +131,7 @@ def main():
     from xml.sax.saxutils import escape
     includes = ''
     for path in sources:
-        target = ROOT / path
+        target = current_source_path(ROOT, path)
         if args.mutate == 'ignore-cancel' and path.endswith('/CoreDialogueOperation.cs'):
             text = target.read_text(encoding='utf-8-sig')
             before = 'if (_snapshot.State != CoreDialogueState.Queued) return false;'
@@ -167,7 +170,7 @@ def run_public_consumer(args, output, extract, defines):
     paths += ['src/AF.Foundation.Runtime/Scheduling/PendingOperationRegistry.cs']
     sources = [output / 'Program.cs', output / 'DirectoryStubs.cs', HERE / 'PublicControl.cs.txt']
     for path in paths:
-        target = ROOT / path
+        target = current_source_path(ROOT, path)
         if args.reorder_core_enums and path == 'src/modules/AF.Module.Conversation/Internal/CoreDialogueContracts.cs':
             text = target.read_text(encoding='utf-8-sig')
             changes = {

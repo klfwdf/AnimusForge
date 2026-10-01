@@ -1,6 +1,6 @@
 # 三渠道人设消费与信使准入
 
-运行仓库实际 `MyBehavior.PersonaReadiness.cs`、`ShoutBehavior.PersonaPreparation.cs`、`src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.PreparationAdmission.cs`、值快照与 `PersonaGenerationWaiter`。游戏/生成/渠道dispatcher接缝为替身；主线程是独立可观测执行路径，不把本测试当实机。
+运行仓库实际 `MyBehavior.PersonaReadiness.cs`、`src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.PersonaPreparation.cs`、`src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.PreparationAdmission.cs`、值快照与 `PersonaGenerationWaiter`。游戏/生成/渠道dispatcher接缝为替身；主线程是独立可观测执行路径，不把本测试当实机。
 
 ```powershell
 G:/Python310/python.exe -X utf8 -B tests/modules/AF.Module.Conversation/ChannelPersonaPreparationTests/run.py

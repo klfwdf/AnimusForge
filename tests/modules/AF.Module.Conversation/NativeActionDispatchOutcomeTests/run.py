@@ -4,7 +4,7 @@ ROOT=Path(__file__).resolve().parents[4];HERE=Path(__file__).parent
 p=argparse.ArgumentParser();p.add_argument('--original',action='store_true');p.add_argument('--timeout-baseline',action='store_true');p.add_argument('--retirement-baseline',action='store_true');p.add_argument('--mutate',choices=['lose-start-boundary','return-null','swallow-owner-failure','allow-diagnostic-failure','drop-queue-claim','keep-failed-queue-live','skip-dispatch-timeout','leave-expired-callback-live','expire-started-dispatch']);args=p.parse_args();assert not (args.original and args.timeout_baseline)
 spec=importlib.util.spec_from_file_location('extractor',ROOT/'tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py');ex=importlib.util.module_from_spec(spec);spec.loader.exec_module(ex)
 baseline='646dd987' if args.original else '8da4fbd7' if args.timeout_baseline else '807bc5b9' if args.retirement_baseline else None
-s=subprocess.check_output(['git','show',baseline+':ShoutBehavior.cs'],cwd=ROOT).decode('utf-8-sig') if baseline else (ROOT/'ShoutBehavior.cs').read_text(encoding='utf-8-sig')
+s=subprocess.check_output(['git','show',baseline+':ShoutBehavior.cs'],cwd=ROOT).decode('utf-8-sig') if baseline else (ROOT / 'src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.cs').read_text(encoding='utf-8-sig')
 assert 'private const int NativeConversationMainThreadPreprocessTimeoutMs = 30000;' in s
 code=(HERE/'Harness.cs.txt').read_text(encoding='utf-8-sig').replace('@@RESULT@@',ex.declaration(s,'private sealed class NativeConversationGameActionResult')).replace('@@QUEUE@@',ex.declaration(s,'private Task<NativeConversationGameActionResult> ApplyNativeConversationGameActionsOnMainThreadAsync('))
 # The unchanged boundary is source-projected from verified current phases; NativeTurn executes the new schedule.
@@ -17,7 +17,7 @@ consumer_end='\t\tnativeActionSw.Stop();' if '\t\tnativeActionSw.Stop();' in bod
 consumer=body[body.index('\t\tif (nativeActionResult?.ResponseDiscarded == true)'):body.index(consumer_end)]
 code=code.replace('@@CONSUMER_GATE@@',consumer)
 if not args.original:
- overlay=(ROOT/'AnimusForgeNativeConversationOverlay.cs').read_text(encoding='utf-8-sig');reports=[]
+ overlay=(ROOT / 'src/AF.GameAdapter.Bannerlord/UI/Conversation/AnimusForgeNativeConversationOverlay.cs').read_text(encoding='utf-8-sig');reports=[]
  for signature,name in [('private async Task SubmitAsync(string text)','Normal'),('private async Task SubmitNpcInitiatedOpeningAsync(','Opening')]:
   method=ex.declaration(overlay,signature);handler=ex.declaration(method,'catch (ShoutBehavior.NativeConversationActionDispatchException ex)')
   assert 'suppressReadyNotice = true' in handler and 'RunNativePresentationCallback(generation,' in handler and 'PromptRetry' not in handler
@@ -32,7 +32,7 @@ if args.mutate=='expire-started-dispatch':code=code.replace('winner != tcs.Task 
 out=HERE/'.generated'/('original' if args.original else 'timeout-baseline' if args.timeout_baseline else 'retirement-baseline' if args.retirement_baseline else args.mutate or 'current');out.mkdir(parents=True,exist_ok=True)
 (out/'Program.cs').write_text(code,encoding='utf-8');enum=ex.declaration((ROOT/'src/AF.Contracts/Internal/InteractionContracts.cs').read_text(encoding='utf-8-sig'),'public enum ActionExecutionEffectState');(out/'Effect.cs').write_text('namespace AnimusForge.Refactor.Contracts;\n'+enum,encoding='utf-8')
 if not args.original:
- boundary=subprocess.check_output(['git','show',baseline+':ShoutBehavior.NativeActionDispatch.cs'],cwd=ROOT).decode('utf-8-sig') if args.timeout_baseline else (ROOT/'ShoutBehavior.NativeActionDispatch.cs').read_text(encoding='utf-8-sig')
+ boundary=subprocess.check_output(['git','show',baseline+':ShoutBehavior.NativeActionDispatch.cs'],cwd=ROOT).decode('utf-8-sig') if args.timeout_baseline else (ROOT / 'src/modules/AF.Module.Conversation/Channels/Native/ShoutBehavior.NativeActionDispatch.cs').read_text(encoding='utf-8-sig')
  if args.mutate=='lose-start-boundary':boundary=boundary.replace('ownerStarted = true;','ownerStarted = false;',1)
  if args.mutate=='return-null':boundary=boundary.replace('throw new InvalidOperationException("native.action_result_missing");','return null;',1)
  if args.mutate=='swallow-owner-failure':boundary=boundary.replace('throw new NativeConversationActionDispatchException(ownerStarted, ex);','return new NativeConversationGameActionResult { Content = "fallback" };',1)

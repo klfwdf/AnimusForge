@@ -12,7 +12,7 @@ ap.add_argument('--output-name',default='current')
 args=ap.parse_args()
 if not args.output_name.replace('-','').replace('_','').isalnum(): ap.error('invalid output name')
 sys.stdout.reconfigure(encoding='utf-8')
-current=(ROOT/'ShoutBehavior.cs').read_text(encoding='utf-8')
+current=(ROOT/'src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.cs').read_text(encoding='utf-8')
 schedule=ex.declaration(ex.source('ShoutBehavior.cs',args.schedule_source_ref),'private static void ScheduleNativeConversationTypewriterPlaybackFallback(')
 if args.mutate:
     before,after={
@@ -28,7 +28,7 @@ methods=[schedule]+[ex.declaration(current,marker) for marker in [
     'private bool IsTtsPlaybackRequestCurrent(',
     'private static long RegisterNativeConversationTtsPlaybackWait(',
     'private static bool IsNativeConversationTtsPlaybackWaitToken(']]
-request=ex.declaration((ROOT/'TtsEngine.cs').read_text(encoding='utf-8'),'internal sealed class PlaybackRequest')
+request=ex.declaration((ROOT/'src/modules/AF.Module.Llm/Tts/TtsEngine.cs').read_text(encoding='utf-8'),'internal sealed class PlaybackRequest')
 code=(HERE/'Harness.cs.txt').read_text(encoding='utf-8').replace('@@METHODS@@','\n\n'.join(methods)).replace('@@REQUEST@@',request)
 out=HERE/'.generated'/args.output_name;out.mkdir(parents=True,exist_ok=True)
 (out/'Program.cs').write_text(code,encoding='utf-8')

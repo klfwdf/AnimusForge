@@ -2,6 +2,9 @@
 from pathlib import Path
 import importlib.util,subprocess,json,hashlib
 ROOT=Path(__file__).resolve().parents[4]
+import sys
+sys.path.insert(0, str(ROOT / "tests"))
+from output_isolation import current_source_path
 BASELINE='73774a94fc1d2fcbebc69ea221e9a906a4e70b8e'
 spec=importlib.util.spec_from_file_location('decl',ROOT/'tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py');m=importlib.util.module_from_spec(spec);spec.loader.exec_module(m)
 def old():return subprocess.check_output(['git','show',BASELINE+':CourierDeliveryBehavior.cs'],cwd=ROOT).decode('utf-8-sig').replace('\r\n','\n')
@@ -9,10 +12,10 @@ def restore(source):
     # Root-only equality rejected legitimate Prompt/Persona/lifecycle extraction.
     # Keep the exact historical identity, then bind this proof to the real history
     # owner and both generation consumers (run.py executes capture/resolve/accept).
-    assert source==(ROOT/'CourierDeliveryBehavior.cs').read_text(encoding='utf-8-sig'), 'Unreviewed Courier source input'
+    assert source==(ROOT/'src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.cs').read_text(encoding='utf-8-sig'), 'Unreviewed Courier source input'
     review=json.loads((Path(__file__).parent/'source-review.json').read_text(encoding='utf-8'))
     for path in ['src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.HistoryPreparation.cs', 'tests/modules/AF.Module.Conversation/CourierHistoryPreparationTests/Harness.cs.txt']:
-        text=(ROOT/path).read_text(encoding='utf-8-sig')
+        text=(current_source_path(ROOT, path)).read_text(encoding='utf-8-sig')
         assert hashlib.sha256(text.encode()).hexdigest()==review['files'][path], 'Unreviewed Courier history dependency: '+path
     live=m.courier_source(None)
     for inbound,subject in [(False,'recipient'),(True,'sender')]:
@@ -32,7 +35,7 @@ def restore(source):
     return before
 
 def verify():
-    restore((ROOT/'CourierDeliveryBehavior.cs').read_text(encoding='utf-8-sig'))
+    restore((ROOT/'src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.cs').read_text(encoding='utf-8-sig'))
     # The existing renderer ignores maxLines; reusing the captured path's zero preserves that behavior.
     current=(ROOT/'MyBehavior.cs').read_text(encoding='utf-8-sig')
     body=m.declaration(current,'private string BuildHistoryContextById(')

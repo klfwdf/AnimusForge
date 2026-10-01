@@ -12,7 +12,7 @@ SPEC.loader.exec_module(INVERSE)
 
 class SourceInverseTests(unittest.TestCase):
     def setUp(self):
-        self.source = (ROOT / "ShoutBehavior.cs").read_text(encoding="utf-8-sig")
+        self.source = (ROOT / "src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.cs").read_text(encoding="utf-8-sig")
 
     def test_current_source_restores_exact_baseline(self):
         self.assertEqual(INVERSE.restore("ShoutBehavior.cs", self.source), INVERSE.old("ShoutBehavior.cs"))

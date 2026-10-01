@@ -15,7 +15,7 @@ spec.loader.exec_module(extract)
 parser = argparse.ArgumentParser()
 parser.add_argument("--mutate", choices=["skip-metadata", "skip-budget-check"])
 args = parser.parse_args()
-source = (ROOT / "WorldEntityRetrievalService.cs").read_text(encoding="utf-8-sig")
+source = (ROOT / "src/modules/AF.Module.Knowledge/Entities/WorldEntityRetrievalService.cs").read_text(encoding="utf-8-sig")
 parts = [extract.declaration(source, marker) for marker in (
     "internal sealed class DetachedEntityCandidate\n",
     "private static void CaptureCandidates<T>(",

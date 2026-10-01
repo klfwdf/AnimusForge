@@ -57,12 +57,12 @@ class BridgeBindingManifestTests(unittest.TestCase):
     def test_mandatory_safety_cannot_claim_optional_wiring(self) -> None:
         def mutate(document: dict) -> None:
             binding = next(item for item in document["bindings"] if item["id"] == "runtime-game-adapter")
-            binding["runtimeBinding"].update(state="wired", entryPath="InteractionComponentSafePatch.cs",
+            binding["runtimeBinding"].update(state="wired", entryPath="src/AF.GameAdapter.Bannerlord/Patches/Safety/InteractionComponentSafePatch.cs",
                                              symbol="EnsurePatched", frequency="startup")
         self.assert_manifest_rejected(mutate)
 
     def test_mandatory_safety_cannot_be_disabled_by_bridge(self) -> None:
-        patch = (ROOT / "InteractionComponentSafePatch.cs").read_text(encoding="utf-8")
+        patch = (ROOT / "src/AF.GameAdapter.Bannerlord/Patches/Safety/InteractionComponentSafePatch.cs").read_text(encoding="utf-8")
         install = (ROOT / "Patch_TriggerMassiveHook.cs").read_text(encoding="utf-8")
         altered = patch.replace("if (_patched)", "if (!FeatureBridgeRuntime.IsEnabled(FeatureBridgeIds.RuntimeGameAdapter)) return;\n        if (_patched)")
         with self.assertRaises(validator.BridgeBindingFailure):

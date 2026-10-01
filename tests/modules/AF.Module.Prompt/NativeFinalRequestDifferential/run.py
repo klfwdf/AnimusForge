@@ -45,7 +45,7 @@ for revision in ("old", "current"):
     if revision == "old":
         source = subprocess.check_output(["git", "show", "77a3d234:ShoutBehavior.cs"], cwd=ROOT).decode("utf-8-sig")
     else:
-        source = (ROOT / "ShoutBehavior.cs").read_text(encoding="utf-8-sig")
+        source = (ROOT / "src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.cs").read_text(encoding="utf-8-sig")
     methods = "\n".join(extract.declaration(source, marker) for marker in markers)
     out = output / revision
     out.mkdir(parents=True, exist_ok=True)

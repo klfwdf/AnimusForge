@@ -7,6 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="..\..\..\..\GiveAssetTagCodec.cs" Link="GiveAssetTagCodec.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Economy/Host/GiveAssetTagCodec.cs" Link="GiveAssetTagCodec.cs" />
   </ItemGroup>
 </Project>

@@ -12,9 +12,9 @@ HERE = Path(__file__).resolve().parent
 spec = importlib.util.spec_from_file_location("extract", ROOT / "tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py")
 extract = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(extract)
-source = (ROOT / "AIConfigHandler.cs").read_text(encoding="utf-8-sig")
+source = (ROOT / "src/modules/AF.Module.Prompt/Configuration/AIConfigHandler.cs").read_text(encoding="utf-8-sig")
 session_source = (ROOT / "MyBehavior.cs").read_text(encoding="utf-8-sig")
-mission_source = (ROOT / "ShoutBehavior.cs").read_text(encoding="utf-8-sig")
+mission_source = (ROOT / "src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.cs").read_text(encoding="utf-8-sig")
 assert session_source.count('AIConfigHandler.TryStartBackgroundSemanticWarmup("session_launch")') == 1
 mission_seed = 'PromptSemanticWarmupSeedBatch semanticWarmupSeeds = AIConfigHandler.CaptureGuardrailSemanticWarmupSeeds();'
 mission_rag = 'RagWarmupCoordinator.TryStartBackgroundWarmup("mission_start", semanticWarmupSeeds);'
@@ -41,7 +41,7 @@ for item in tree.iter("Compile"):
         continue
     path = (ROOT / "tests/modules/AF.Module.Prompt/Retrieval" / relative).resolve()
     links.append(f'<Compile Include="{path}" Link="{path.name}" />')
-rag = ROOT / "RagWarmupCoordinator.cs"
+rag = ROOT / "src/modules/AF.Module.Knowledge/Semantic/RagWarmupCoordinator.cs"
 links.append(f'<Compile Include="{rag}" Link="{rag.name}" />')
 project = '<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><EnableDefaultCompileItems>false</EnableDefaultCompileItems></PropertyGroup><ItemGroup><Compile Include="Program.cs" />' + ''.join(links) + '</ItemGroup></Project>'
 (output / "Proof.csproj").write_text(project, encoding="utf-8")

@@ -18,6 +18,9 @@ HERE = Path(__file__).resolve().parent
 ROOT = next((parent for parent in HERE.parents if (parent / "AnimusForge.csproj").is_file() and (parent / ".git").exists()), None)
 if ROOT is None:
     raise RuntimeError("AnimusForge Git root not found")
+import sys
+sys.path.insert(0, str(ROOT / "tests"))
+from output_isolation import current_source_path
 BASE_REVISION = "99360142b9b4fa5ca309cadf2cf62b627b1cdda8"
 OUTPUT_ROOT = ROOT / "artifacts/tests/llm-protocol"
 spec = importlib.util.spec_from_file_location("boundary_extractor", ROOT / "tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py")
@@ -214,7 +217,7 @@ def mutate(sources: dict[str, str], mutation: str) -> None:
 def check_output_path(name: str) -> Path:
     if not re.fullmatch(r"[A-Za-z0-9_-]+", name) or ".." in name:
         raise ValueError("Unsafe output name")
-    output = OUTPUT_ROOT / name
+    output = OUTPUT_current_source_path(ROOT, name)
     root = ROOT.resolve(strict=True)
     chain = (ROOT, ROOT / "artifacts", ROOT / "artifacts/tests", OUTPUT_ROOT, output)
     for path in chain:
@@ -284,7 +287,7 @@ def main() -> int:
             if generated:
                 (output / name).write_text(content, encoding="utf-8")
         (output / "Program.cs").write_text(program, encoding="utf-8")
-        include_paths = {name: output / name if generated else ROOT / path for name, path in zip(sources, (*current_paths, "src/modules/AF.Module.Llm/Protocol/PrimaryChatMessagePolicy.cs"))}
+        include_paths = {name: output / name if generated else current_source_path(ROOT, path) for name, path in zip(sources, (*current_paths, "src/modules/AF.Module.Llm/Protocol/PrimaryChatMessagePolicy.cs"))}
         refs = '<Reference Include="Newtonsoft.Json"><HintPath>' + escape(str(Path(args.newtonsoft).resolve())) + '</HintPath></Reference>'
         refs += ''.join('<Compile Include="' + escape(str(path)) + '" Link="' + name + '"/>' for name, path in include_paths.items())
         project = '<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><ImplicitUsings>enable</ImplicitUsings><Nullable>disable</Nullable><EnableDefaultCompileItems>false</EnableDefaultCompileItems></PropertyGroup><ItemGroup>' + refs + '<Compile Include="Program.cs"/></ItemGroup></Project>'

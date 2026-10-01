@@ -18,7 +18,7 @@ spec.loader.exec_module(extractor)
 parser = argparse.ArgumentParser()
 parser.add_argument("--mutate-unpin", action="store_true")
 args = parser.parse_args()
-source = (ROOT / "AIConfigHandler.cs").read_text(encoding="utf-8-sig")
+source = (ROOT / "src/modules/AF.Module.Prompt/Configuration/AIConfigHandler.cs").read_text(encoding="utf-8-sig")
 registry = extractor.declaration(source, "private static Dictionary<string, GuardrailRulePromptConfig> BuildRulePromptRegistry()")
 hits = extractor.declaration(source, "private static List<GuardrailRuleHit> GetGuardrailSemanticRuleHits(string input, string secondaryInput, int maxCount, bool includeBuiltInRules, IEnumerable<string> excludedRuleIds, bool applyRuntimeAutoExclusions, out MentionedWorldEntities mentionedEntities)")
 if args.mutate_unpin:
@@ -36,7 +36,7 @@ output.mkdir(parents=True, exist_ok=True)
 <Compile Include="../../../../src/modules/AF.Module.Prompt/Configuration/RevisionedPromptConfigurationStore.cs" Link="RevisionedPromptConfigurationStore.cs" />
 <Compile Include="../../../../src/modules/AF.Module.Prompt/Configuration/PromptRevisionedDerivedCache.cs" Link="PromptRevisionedDerivedCache.cs" />
 <Compile Include="../../../../src/modules/AF.Module.Prompt/Configuration/PromptRuleRegistry.cs" Link="PromptRuleRegistry.cs" />
-<Compile Include="../../../../GuardrailRuleHit.cs" Link="GuardrailRuleHit.cs" />
+<Compile Include="../../../../src/modules/AF.Module.Prompt/Retrieval/GuardrailRuleHit.cs" Link="GuardrailRuleHit.cs" />
 <Reference Include="Newtonsoft.Json"><HintPath>../../../../local/dotnet/8.0.425/sdk/8.0.425/Newtonsoft.Json.dll</HintPath></Reference>
 </ItemGroup></Project>""", encoding="utf-8")
 (output / "NuGet.Config").write_text("<configuration><packageSources><clear /></packageSources></configuration>", encoding="utf-8")

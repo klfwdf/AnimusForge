@@ -4,11 +4,14 @@ Game/provider ports are deterministic substitutes, not real Host or audio accept
 import argparse,importlib.util,os,subprocess,re,sys
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[4];HERE=Path(__file__).resolve().parent
+import sys
+sys.path.insert(0, str(ROOT / "tests"))
+from output_isolation import current_source_path
 sys.path.insert(0,str(ROOT/'tests'))
 from output_isolation import new_run_root, resolve_dotnet, minimal_test_environment
 p=argparse.ArgumentParser();p.add_argument('--mutate',choices=['skip-stage-stop','duplicate-commit','skip-capture-guard','capture-on-worker','normalize-on-worker','swallow-capture-failure']);p.add_argument('--run-root',type=Path);a=p.parse_args()
 spec=importlib.util.spec_from_file_location('ex',ROOT/'tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py');ex=importlib.util.module_from_spec(spec);spec.loader.exec_module(ex)
-def read(f):return (ROOT/f).read_text(encoding='utf-8-sig')
+def read(f):return (current_source_path(ROOT, f)).read_text(encoding='utf-8-sig')
 owner=read('ShoutBehavior.NativeTurn.cs');capture=ex.declaration(owner,'private async Task<bool> CaptureOnGameThreadAsync(')
 commit=read('ShoutBehavior.NativeTurnCommit.cs')
 start=commit.index('                SceneActionPostprocessWorkItem workItem = null;')
