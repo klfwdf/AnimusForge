@@ -15,7 +15,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[4]
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(ROOT / "tests"))
-from output_isolation import new_run_root
+from output_isolation import new_run_root, minimal_test_environment
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--mutate", choices=["window-off-by-one", "expiry-keeps-old"], help="apply a source mutation that must fail")
@@ -55,8 +55,7 @@ if args.mutate:
 (output / "NuGet.Config").write_text("<configuration><packageSources><clear /></packageSources></configuration>", encoding="utf-8")
 (output / "home").mkdir()
 (output / "appdata").mkdir()
-env = {key: os.environ[key] for key in ("SystemRoot", "WINDIR", "ProgramData", "HOMEDRIVE", "HOMEPATH", "OS", "USERNAME", "USERDOMAIN", "ProgramFiles", "ProgramFiles(x86)", "CommonProgramFiles", "CommonProgramFiles(x86)", "PROCESSOR_ARCHITECTURE") if key in os.environ}
-env.update(PATH=str(dotnet.parent), DOTNET_ROOT=str(dotnet.parent), DOTNET_CLI_HOME=str(output / "home"), USERPROFILE=str(output / "home"), HOME=str(output / "home"), LOCALAPPDATA=str(output / "appdata"), APPDATA=str(output / "appdata"), NUGET_PACKAGES=str(ROOT / ".tmp/nuget-packages"), TEMP="E:/tmp/af-j17-20260930", TMP="E:/tmp/af-j17-20260930", DOTNET_CLI_TELEMETRY_OPTOUT="1", DOTNET_NOLOGO="1", DOTNET_MULTILEVEL_LOOKUP="0")
+env = minimal_test_environment(dotnet, output)
 build = subprocess.run([str(dotnet), "build", str(output / "MemoryRecordsTests.csproj"), "-c", "Release", "--nologo", "-p:RestoreConfigFile=" + str(output / "NuGet.Config")], cwd=output, env=env, capture_output=True, text=True, encoding="utf-8", errors="replace")
 (output / "build.log").write_text(build.stdout + build.stderr, encoding="utf-8")
 if build.returncode != 0:
