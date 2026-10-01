@@ -39,6 +39,9 @@ def restore_relocation_runner(path, source):
   source=source.replace(after,before,1)
  return source
 
+from af2_terminal_migration_review import terminal_review
+
+@terminal_review
 def restore(path,source):
  if path not in ('ShoutBehavior.cs','CourierDeliveryBehavior.cs'):return source
  live=(current_source_path(ROOT, path)).read_text(encoding='utf-8-sig')

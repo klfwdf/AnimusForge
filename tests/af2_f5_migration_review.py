@@ -11,6 +11,7 @@ import importlib.util
 import re
 import subprocess
 from output_isolation import current_source_path
+from af2_terminal_migration_review import terminal_review
 
 ROOT = Path(__file__).resolve().parents[1]
 BEFORE = '320c1aad10df86b6078c1731c0ff8966ebd7c3f5'
@@ -52,6 +53,7 @@ def verify_owners():
         assert actual == committed(PRODUCT, path), 'Unreviewed F5 dependency: ' + path
 
 
+@terminal_review
 def exact_inverse(path, source, verify=True):
     """Reverse only the approved freeze's complete, uniquely matched source spans."""
     if verify:

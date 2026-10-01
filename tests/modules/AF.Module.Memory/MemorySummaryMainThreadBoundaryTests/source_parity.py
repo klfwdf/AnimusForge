@@ -215,7 +215,8 @@ def _verify_current_memory_source(source):
 
 def verify_current_memory_source(source):
     from f3_migration_projection import projection_reads,restore
-    with projection_reads():return _verify_current_memory_source(restore('MyBehavior.cs',source))
+    from af2_terminal_migration_review import restore as terminal_restore
+    with projection_reads():return _verify_current_memory_source(restore('MyBehavior.cs',terminal_restore('MyBehavior.cs',source)))
 
 if __name__=='__main__':
     import argparse
@@ -234,6 +235,9 @@ if __name__=='__main__':
     print('B1_CURRENT_SCOPE_PASS checks='+str(result.testsRun)+' diplomacy_coupled_replays=DEFERRED whole_host_inverse=NOT_RUN')
 
 # Fixed separately tested migration; no old review hashes are refreshed.
+from af2_terminal_migration_review import terminal_review
+
+@terminal_review
 def restore_memory_summary_source(path,source):
     from f3_migration_projection import projection_reads,restore
     with projection_reads():return _restore_memory_summary_source(path,restore(path,source))
