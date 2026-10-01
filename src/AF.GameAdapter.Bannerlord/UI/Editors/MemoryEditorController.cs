@@ -71,10 +71,8 @@ internal sealed class MemoryEditorPort
  internal ShowDevLargeSelectionOrInquiryCapability ShowDevLargeSelectionOrInquiry;
  internal delegate void ShowDevLargeConfirmOrInquiryCapability(string title, string subtitle, string body, string confirmText, string cancelText, Action onConfirm, Action onCancel);
  internal ShowDevLargeConfirmOrInquiryCapability ShowDevLargeConfirmOrInquiry;
- internal delegate void ApplyDevCompressedMemoryBlockMutationCapability(Hero npc, string blockId, int returnPage, string returnQuery, Action<CompressedMemoryBlock> mutate, string successMessage);
- internal ApplyDevCompressedMemoryBlockMutationCapability ApplyDevCompressedMemoryBlockMutation;
- internal delegate void DeleteDevCompressedMemoryBlockCapability(Hero npc, string blockId, int returnPage, string returnQuery);
- internal DeleteDevCompressedMemoryBlockCapability DeleteDevCompressedMemoryBlock;
+ internal Func<Hero,string,Action<CompressedMemoryBlock>,long,bool> TryApplyDevCompressedMemoryBlockDataMutation;
+ internal Func<Hero,string,long,bool> DeleteDevCompressedMemoryBlockData;
  internal delegate bool EditLegacyHistoryCapability(Hero npc, int day, int lineIndex, string input, long generation);
  internal EditLegacyHistoryCapability TryApplyDevDialogueHistoryLineDataMutation;
  internal delegate string FormatMemoryHourRangeCapability(int startHour, int endHour);
@@ -1140,10 +1138,10 @@ internal sealed class MemoryEditorController
 			if (!_port.IsMemorySourceEditorCurrent(editorGeneration)
 				|| !ReferenceEquals(block, FindDevCompressedMemoryBlock(_port.LoadCompressedMemoryBlocks(npc), blockId))
 				|| !string.Equals(editorFingerprint, _port.ComputeMemorySummaryFingerprint(block), StringComparison.Ordinal)) return;
-			_port.ApplyDevCompressedMemoryBlockMutation(npc, blockId, returnPage, returnQuery, delegate(CompressedMemoryBlock target)
+			ApplyDevCompressedMemoryBlockMutation(npc, blockId, returnPage, returnQuery, delegate(CompressedMemoryBlock target)
 			{
 				target.RichTitle = (input ?? "").Trim();
-			}, "记忆块标题已更新。");
+			}, "记忆块标题已更新。", editorGeneration);
 		}, delegate
 		{
 			if (!_port.IsMemorySourceEditorCurrent(editorGeneration)) return;
@@ -1168,10 +1166,10 @@ internal sealed class MemoryEditorController
 			if (!_port.IsMemorySourceEditorCurrent(editorGeneration)
 				|| !ReferenceEquals(block, FindDevCompressedMemoryBlock(_port.LoadCompressedMemoryBlocks(npc), blockId))
 				|| !string.Equals(editorFingerprint, _port.ComputeMemorySummaryFingerprint(block), StringComparison.Ordinal)) return;
-			_port.ApplyDevCompressedMemoryBlockMutation(npc, blockId, returnPage, returnQuery, delegate(CompressedMemoryBlock target)
+			ApplyDevCompressedMemoryBlockMutation(npc, blockId, returnPage, returnQuery, delegate(CompressedMemoryBlock target)
 			{
 				target.Summary = NormalizeDevCompressedMemoryMultilineInput(input);
-			}, "记忆块正文已更新。");
+			}, "记忆块正文已更新。", editorGeneration);
 		}, delegate
 		{
 			if (!_port.IsMemorySourceEditorCurrent(editorGeneration)) return;
@@ -1197,10 +1195,10 @@ internal sealed class MemoryEditorController
 			if (!_port.IsMemorySourceEditorCurrent(editorGeneration)
 				|| !ReferenceEquals(block, FindDevCompressedMemoryBlock(_port.LoadCompressedMemoryBlocks(npc), blockId))
 				|| !string.Equals(editorFingerprint, _port.ComputeMemorySummaryFingerprint(block), StringComparison.Ordinal)) return;
-			_port.ApplyDevCompressedMemoryBlockMutation(npc, blockId, returnPage, returnQuery, delegate(CompressedMemoryBlock target)
+			ApplyDevCompressedMemoryBlockMutation(npc, blockId, returnPage, returnQuery, delegate(CompressedMemoryBlock target)
 			{
 				target.Scenes = ParseDevCompressedMemoryLineList(input, 16, ignoreCase: true);
-			}, "记忆块场景列表已更新。");
+			}, "记忆块场景列表已更新。", editorGeneration);
 		}, delegate
 		{
 			if (!_port.IsMemorySourceEditorCurrent(editorGeneration)) return;
@@ -1226,10 +1224,10 @@ internal sealed class MemoryEditorController
 			if (!_port.IsMemorySourceEditorCurrent(editorGeneration)
 				|| !ReferenceEquals(block, FindDevCompressedMemoryBlock(_port.LoadCompressedMemoryBlocks(npc), blockId))
 				|| !string.Equals(editorFingerprint, _port.ComputeMemorySummaryFingerprint(block), StringComparison.Ordinal)) return;
-			_port.ApplyDevCompressedMemoryBlockMutation(npc, blockId, returnPage, returnQuery, delegate(CompressedMemoryBlock target)
+			ApplyDevCompressedMemoryBlockMutation(npc, blockId, returnPage, returnQuery, delegate(CompressedMemoryBlock target)
 			{
 				target.AfefLines = ParseDevCompressedMemoryLineList(input, 80, ignoreCase: false);
-			}, "记忆块 AFEF 行已更新。");
+			}, "记忆块 AFEF 行已更新。", editorGeneration);
 		}, delegate
 		{
 			if (!_port.IsMemorySourceEditorCurrent(editorGeneration)) return;
@@ -1250,15 +1248,18 @@ internal sealed class MemoryEditorController
 		string editorFingerprint = _port.ComputeMemorySummaryFingerprint(block);
 		string name = npc?.Name?.ToString() ?? "NPC";
 		string message = BuildDevCompressedMemoryBlockSubtitle(block) + "\n\n将从 " + name + " 的压缩记忆中删除该块，并使记忆大总结重新整理。\n此操作不可撤销，是否继续？";
+		bool completed = false;
 		InformationManager.ShowInquiry(new InquiryData("确认删除压缩记忆块", message, isAffirmativeOptionShown: true, isNegativeOptionShown: true, "确认删除", "取消", delegate
 		{
-			if (!_port.IsMemorySourceEditorCurrent(editorGeneration)
+			if (completed || !_port.IsMemorySourceEditorCurrent(editorGeneration)
 				|| !ReferenceEquals(block, FindDevCompressedMemoryBlock(_port.LoadCompressedMemoryBlocks(npc), blockId))
 				|| !string.Equals(editorFingerprint, _port.ComputeMemorySummaryFingerprint(block), StringComparison.Ordinal)) return;
-			_port.DeleteDevCompressedMemoryBlock(npc, blockId, returnPage, returnQuery);
+			completed = true;
+			DeleteDevCompressedMemoryBlock(npc, blockId, returnPage, returnQuery, editorGeneration);
 		}, delegate
 		{
-			if (!_port.IsMemorySourceEditorCurrent(editorGeneration)) return;
+			if (completed || !_port.IsMemorySourceEditorCurrent(editorGeneration)) return;
+			completed = true;
 			OpenDevCompressedMemoryBlockEditor(npc, blockId, returnPage, returnQuery);
 		}), pauseGameActiveState: true);
 	}
@@ -1812,4 +1813,46 @@ internal sealed class MemoryEditorController
   InformationManager.DisplayMessage(new InformationMessage("对话行已更新."));
   OpenDevHistoryLineSelection(npc, dayIndex);
  }
+	internal void DeleteDevCompressedMemoryBlock(Hero npc, string blockId, int returnPage, string returnQuery, long generation)
+	{
+		if (npc == null || !_port.IsMemorySourceEditorCurrent(generation))
+		{
+			return;
+		}
+		bool removed = _port.DeleteDevCompressedMemoryBlockData(npc, blockId, generation);
+		if (removed)
+		{
+			InformationManager.DisplayMessage(new InformationMessage("已删除压缩记忆块。"));
+		}
+		else
+		{
+			InformationManager.DisplayMessage(new InformationMessage("未找到要删除的压缩记忆块。"));
+		}
+		OpenDevCompressedMemoryBlockList(npc, returnPage, returnQuery);
+	}
+
+	internal void ApplyDevCompressedMemoryBlockMutation(Hero npc, string blockId, int returnPage, string returnQuery, Action<CompressedMemoryBlock> mutate, string successMessage, long generation)
+	{
+		if (npc == null || !_port.IsMemorySourceEditorCurrent(generation))
+		{
+			return;
+		}
+		bool updated = _port.TryApplyDevCompressedMemoryBlockDataMutation(npc, blockId, mutate, generation);
+		if (!updated)
+		{
+			InformationManager.DisplayMessage(new InformationMessage("找不到要编辑的压缩记忆块。"));
+			OpenDevCompressedMemoryBlockList(npc, returnPage, returnQuery);
+			return;
+		}
+		InformationManager.DisplayMessage(new InformationMessage(successMessage ?? "压缩记忆块已更新。"));
+		if (FindDevCompressedMemoryBlock(_port.LoadCompressedMemoryBlocks(npc), blockId) == null)
+		{
+			OpenDevCompressedMemoryBlockList(npc, returnPage, returnQuery);
+		}
+		else
+		{
+			OpenDevCompressedMemoryBlockEditor(npc, blockId, returnPage, returnQuery);
+		}
+	}
+
 }
