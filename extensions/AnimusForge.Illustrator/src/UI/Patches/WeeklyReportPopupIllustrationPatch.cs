@@ -203,6 +203,8 @@ namespace AnimusForge.Illustrator.UI.Patches
                 }
 
                 global::AnimusForge.WorldBulletinPanelIllustrationBridge.AttachSlot = AttachWorldBulletinSlot;
+                global::AnimusForge.WorldBulletinPanelIllustrationBridge.PrepareIssue = BulletinIllustrationPreloader.Prepare;
+                BulletinIllustrationPreloader.Updated = RefreshPreparedBulletin;
 
                 MethodInfo closeMethod = AccessTools.Method(targetType, "Close");
                 if (closeMethod != null)
@@ -299,7 +301,7 @@ namespace AnimusForge.Illustrator.UI.Patches
                 _scope = ownerScope;
                 _currentContext = WeeklyReportContextExtractor.ExtractFromWeeklyReport(title, subtitleText, bodyText);
                 // Bulletin ids are unique per issue, so the cache key survives reopening from the chronicle.
-                _currentEventKey = "weekly_report:" + DiskImageCacheManager.ComputeHash(string.IsNullOrWhiteSpace(eventId) ? title + ":" + subtitleText : eventId);
+                _currentEventKey = BulletinIllustrationPreloader.KeyFor(eventId, title, subtitleText, bodyText);
                 _redrawCount = 0;
                 _bulletinSlot = slot;
                 _sink = slot;
@@ -311,9 +313,8 @@ namespace AnimusForge.Illustrator.UI.Patches
                 slot.IsAvailable = true;
                 slot.NotifyHandlersChanged();
                 Debug.Print($"[Illustrator] World bulletin panel slot attached: '{title}' context={(_currentContext != null)}");
-                // Every bulletin opening requests fresh artwork, including archived issues.
-                // Keep earlier works in the gallery, but never load them into this slot.
-                TriggerRegenerate();
+                BulletinIllustrationPreloader.Ensure(_currentEventKey, _currentContext);
+                RefreshPreparedBulletin(_currentEventKey, null);
                 return true;
             }
             catch (Exception ex)
@@ -350,6 +351,40 @@ namespace AnimusForge.Illustrator.UI.Patches
             _bulletinSlot.PromptText = string.Empty;
             _bulletinSlot.HasIllustration = false;
             _bulletinSlot.StatusText = "插画已移入回收区，点击【重绘】重新绘制。";
+            BulletinIllustrationPreloader.MarkDeleted(_currentEventKey);
+        }
+
+        private static void RefreshPreparedBulletin(string key, GenerationResult result)
+        {
+            if (_bulletinSlot == null || _scope?.IsCurrent != true || key != _currentEventKey) return;
+            var job = BulletinIllustrationPreloader.Find(key);
+            if (job == null) return;
+            _sink.IsLoading = job.Pending;
+            _sink.StatusText = job.Status;
+            if (job.Pending) { _sink.HasIllustration = false; return; }
+            if (!job.Ready) return;
+            if (result != null)
+            {
+                if (!Publish(result.Saved, result.Prompt, result.Result.ImageBytes)) _sink.StatusText = "本期配图加载失败，可点击重绘。";
+                return;
+            }
+            if (_sink.HasIllustration) return;
+            var viewScope = _scope;
+            int load = ++_redrawCount;
+            _sink.IsLoading = true;
+            if (!IllustratorRuntime.Start(() => Task.Run(() => DiskImageCacheManager.LoadImage(key, viewScope.CampaignKey, "weekly_report")),
+                (cached, error) =>
+                {
+                    if (!ReferenceEquals(viewScope, _scope) || !viewScope.IsCurrent || _bulletinSlot == null || key != _currentEventKey || load != _redrawCount) return;
+                    _sink.IsLoading = false;
+                    if (error != null || cached == null || !Publish(cached, cached.Prompt))
+                        _sink.StatusText = "本期配图读取失败，可点击重绘。";
+                    else _sink.StatusText = cached.DisplayStatusText;
+                }))
+            {
+                _sink.IsLoading = false;
+                _sink.StatusText = "配图读取繁忙，请稍后重开本期快报。";
+            }
         }
 
         private static void BeginCachedLoad(string idleStatus)
@@ -401,45 +436,64 @@ namespace AnimusForge.Illustrator.UI.Patches
             }
         }
 
+        internal sealed class GenerationResult
+        {
+            internal ImageGenerationResult Result;
+            internal CachedIllustrationItem Saved;
+            internal string Prompt;
+        }
+
         private static void TriggerRegenerateCore()
         {
-            if (_sink == null || _currentContext == null || _scope == null)
+            if (_sink == null || _currentContext == null || _scope == null) return;
+            if (_bulletinSlot != null)
             {
-                Debug.Print($"[Illustrator] Weekly regenerate skipped: vm={(_sink != null)} ctx={(_currentContext != null)} scope={(_scope != null)}");
+                _sink.HasIllustration = false;
+                BulletinIllustrationPreloader.Ensure(_currentEventKey, _currentContext, true);
+                RefreshPreparedBulletin(_currentEventKey, null);
                 return;
             }
-
             _sink.IsLoading = true;
             _sink.HasIllustration = false;
-            _sink.StatusText = "正在从本周要闻中选择事件与关键瞬间，构思纪事画卷...";
+            _sink.StatusText = "正在构思本周纪事插画...";
+            var owner = _scope;
+            StartGeneration(owner, _currentContext, _currentEventKey, false, ++_redrawCount,
+                result =>
+                {
+                    if (!ReferenceEquals(owner, _scope) || _sink == null) return;
+                    if (result.Result?.Success == true && Publish(result.Saved, result.Prompt, result.Result.ImageBytes))
+                        _sink.StatusText = result.Saved?.DisplayStatusText ?? "本周纪事已绘制完成";
+                    else { _sink.IsLoading = false; _sink.StatusText = "绘制未成功：" + result.Result?.ErrorMessage; }
+                }, error => { if (ReferenceEquals(owner, _scope) && _sink != null) { _sink.IsLoading = false; _sink.StatusText = error; } },
+                status => { if (ReferenceEquals(owner, _scope) && _sink != null) _sink.StatusText = status; });
+        }
 
-            string eventKey = _currentEventKey;
-            var context = _currentContext;
-            // 周报重绘围绕事件叙事变化，不复用百科肖像的动作与镜头变体。
-            _redrawCount++;
+        // One shared generation pipeline for the weekly popup and campaign-owned bulletin jobs.
+        internal static bool StartGeneration(IllustrationScope generationScope, WeeklyReportVisualContext context,
+            string eventKey, bool bulletin, int redrawCount, Action<GenerationResult> complete, Action<string> fail, Action<string> status)
+        {
             string artDirection = context.BuildArtDirection();
             string variation = GenerateWeeklyVariation();
             if (!string.IsNullOrWhiteSpace(variation)) artDirection += "\n" + variation;
-            if (_redrawCount > 1) artDirection += "\n" + BuildWeeklyRedrawDirective(_redrawCount);
+            if (redrawCount > 1) artDirection += "\n" + BuildWeeklyRedrawDirective(redrawCount);
             string hardFacts = context.BuildHardFacts();
             string directorFacts = context.BuildDirectorOnlyFacts();
             var options = IllustratorRuntime.CaptureOptions();
-            if (_bulletinSlot != null)
+            if (bulletin)
             {
                 options = options?.WithImageSize("1536x1024");
                 const string composition = "【快报版式】画幅为横向3:2，围绕本期事件重新创作完整插画；不要照搬旧作品，不要将方图或竖图拉伸为横图。";
                 artDirection += "\n" + composition;
                 hardFacts += "\n" + composition;
             }
-            string campaignKey = _scope.CampaignKey;
-            var generationScope = _scope;
+            string campaignKey = generationScope.CampaignKey;
 
             var protagonist = context.ProtagonistHero;
             var appearance = context.ProtagonistProfile?.Appearance;
             string protagonistName = protagonist?.Name?.ToString() ?? "当事人";
             string bannerCode = (protagonist?.Clan?.Banner ?? protagonist?.Clan?.Kingdom?.Banner)?.BannerCode;
 
-            bool started = _scope.Run(async token =>
+            return generationScope.Run(async token =>
             {
                 Debug.Print("[Illustrator] Weekly generation task started.");
                 GenerationDiagnostics.Current?.SetSubject(eventKey);
@@ -478,7 +532,7 @@ namespace AnimusForge.Illustrator.UI.Patches
 
                 var direction = await VisualDirectorEngine.CreateDirectionAsync(promptPlan, refs, options, token).ConfigureAwait(false);
                 string prompt = direction.Prompt;
-                IllustratorRuntime.Post(() => { if (ReferenceEquals(_scope, generationScope) && !token.IsCancellationRequested && _sink != null) _sink.StatusText = direction.StatusText + "，正在绘制纪事画卷..."; });
+                IllustratorRuntime.Post(() => { if (generationScope.IsCurrent && !token.IsCancellationRequested) status?.Invoke(direction.StatusText + "，正在绘制纪事画卷..."); });
                 var genRefs = options?.EnableReferenceImageForGeneration == false ? null : (System.Collections.Generic.IReadOnlyList<IllustrationReferenceImage>)refs;
                 var result = await UniversalOpenAiImageClient.GenerateImageAsync(prompt, genRefs, options, token).ConfigureAwait(false);
                 string effectivePrompt = string.IsNullOrWhiteSpace(result.ResolvedPrompt) ? prompt : result.ResolvedPrompt;
@@ -489,29 +543,8 @@ namespace AnimusForge.Illustrator.UI.Patches
                     saved = DiskImageCacheManager.SaveImage(eventKey, result.ImageBytes, effectivePrompt, string.IsNullOrWhiteSpace(direction.Title) ? context.Title : direction.Title, "weekly_report", campaignKey, options?.MaxCacheCount ?? 200, makeDefault: false, allowImplicitDefault: false, theme: direction.Theme, actionSummary: direction.ActionSummary, diagnosticId: result.DiagnosticId, directorStatus: direction.DirectionStatus, directorStatusText: direction.StatusText, directorFallbackReason: direction.FallbackReason, styleFingerprint: options?.StyleFingerprint);
                     if (saved != null) DiskImageCacheManager.PromoteDefaultIfNewest(saved, campaignKey);
                 }
-                return new { Result = result, Saved = saved, Prompt = effectivePrompt };
-            }, completion =>
-            {
-                if (completion.Saved != null) DiskImageCacheManager.PromoteDefaultIfNewest(completion.Saved, campaignKey);
-                _sink.PromptText = completion.Prompt;
-                if (completion.Result != null && completion.Result.Success && completion.Result.ImageBytes != null && Publish(completion.Saved, completion.Prompt, completion.Result.ImageBytes))
-                {
-                    _sink.StatusText = completion.Saved?.DisplayStatusText ?? "【本周纪事油画已绘制完成】";
-                }
-                else
-                {
-                    _sink.IsLoading = false;
-                    _sink.StatusText = "绘制未成功: " + (completion.Result?.ErrorMessage ?? "未能保存图像");
-                }
-            }, error =>
-            {
-                _sink.IsLoading = false;
-                _sink.StatusText = "异常: " + error;
-            });
-            if (!started && _sink != null)
-            {
-                _sink.IsLoading = false;
-            }
+                return new GenerationResult { Result = result, Saved = saved, Prompt = effectivePrompt };
+            }, complete, fail);
         }
 
         /// <summary>周报纪事画的随机构图变体——同一事件每次生成应有不同取景。</summary>

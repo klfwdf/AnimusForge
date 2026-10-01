@@ -51,6 +51,9 @@ internal static class WorldBulletinPanelIllustrationBridge
 {
 	// (slot, eventId, title, subtitle, body) -> true when the slot was attached.
 	public static Func<WorldBulletinIllustrationVM, string, string, string, string, bool> AttachSlot;
+
+	// Fired once after an issue's final text has been published, before its map notice.
+	public static Action<string, string, string, string> PrepareIssue;
 }
 
 public sealed class WorldBulletinMinorItemVM : ViewModel

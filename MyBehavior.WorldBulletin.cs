@@ -933,6 +933,17 @@ public partial class MyBehavior
 		UpsertWorldBulletinRecord(eventId, "world", "", title, shortText, body, day);
 		_worldBulletinLatestEventId = eventId;
 		RecordWorldBulletinLayout(eventId, selection);
+		try
+		{
+			var prepare = WorldBulletinPanelIllustrationBridge.PrepareIssue;
+			if (prepare != null)
+			{
+				EventRecordEntry published = FindWeeklyReportRecordById(eventId);
+				if (published != null)
+					prepare(eventId, BuildWeeklyReportNoticeTitle(published), BuildWeeklyReportPopupSubtitle(published), BuildWeeklyReportPopupBodyText(published));
+			}
+		}
+		catch (Exception ex) { Logger.Log("WorldBulletin", "[Illustration] preparation failed: " + ex.Message); }
 		QueueWeeklyReportMapNotice(eventId);
 		Logger.Log("WorldBulletin", "[Publish] id=" + eventId + " llm=" + (generated != null) + " major=" + selection.Major.Key + " majorFacts=" + selection.MajorFacts.Count + " minors=" + polishedMinors + "/" + selection.Minors.Count + " majorChars=" + (text.Major ?? "").Length);
 	}
