@@ -75,6 +75,24 @@ internal static class DocumentExecutionReplay
     private static (Port p, Orch orch) Fixture(Action<Port> init = null) { var p = new Port(); init?.Invoke(p); return (p, new Orch(p)); }
     internal static void Run()
     {
+        var frozenDocument = Document("b");
+        frozenDocument.RoundId = "round-1";
+        frozenDocument.SourceDocumentId = "source-1";
+        frozenDocument.Actions[0].RespondingToOfferActionId = "offer-v1";
+        frozenDocument.Actions[0].PeaceTerms = new WorldDiplomacyPeaceTerms { DailyTribute = 12, CessionSettlementId = "castle-1" };
+        var frozen = new WorldDiplomacyDocumentExecutionCommand(frozenDocument, frozenDocument.Actions);
+        frozenDocument.RoundId = "round-2";
+        frozenDocument.SourceDocumentId = "source-2";
+        frozenDocument.Actions[0].TargetKingdomId = "changed";
+        frozenDocument.Actions[0].RespondingToOfferActionId = "offer-v2";
+        frozenDocument.Actions[0].PeaceTerms.DailyTribute = 99;
+        Test.True(frozen.DocumentId == "d" && frozen.RoundId == "round-1"
+            && frozen.SourceDocumentId == "source-1" && frozen.AuthorKingdomId == "a"
+            && frozen.ActionCount == 1 && frozen.ActionAt(0).TargetKingdomId == "b"
+            && frozen.ActionAt(0).RespondingToOfferActionId == "offer-v1"
+            && frozen.ActionAt(0).HasPeaceTerms && frozen.ActionAt(0).DailyTribute == 12
+            && frozen.ActionAt(0).CessionSettlementId == "castle-1",
+            "document command freezes IDs, offer version and peace terms before effect admission");
         var (slotPort, slotOrch) = Fixture();
         var slotStorage = new WorldDiplomacyStorage();
         var slotRound = new WorldDiplomacyRound { RoundId = "r", ResultSettlementPending = true, RelayPlanned = true,
