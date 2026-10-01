@@ -2,8 +2,10 @@
 
 - 本轮授权实施F0–F6/S1–S6；五组完整职责差集冻结并进入实施，不继承历史push/Stage/部署/仓外写入许可。用户已明确批准F5d Persona Prompt/fallback/解析规则收口，五组+F5d最终范围冻结；实际技能效果/保存不改，完整门禁未完成不能宣称全闭。
 - 起始 `320c1aad`，空意图 `3d59d616`；两API求值各1172唯一Compile/8资源，51宿主partial与旧A成员证据复用并按变更/保留/迁移具名分类。原SessionTransport raw dirty与旧tools/NuGet保持不提交、不清理。
-- F1/F2/F3/F4/F5范围、旁支、接口、必要门禁及新增预算见[唯一主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#af2-final-responsibility-closeout-20261001)。产品迁移/最终六构建/全量分类/S6尚未验收；F7 LIVE/SAVE/真实网络/帧性能NOT-RUN。
-- 全量runner仅获精确新根 `E:/AF2-SyntheticTemp-20261001-7dd0991fd822` 合成夹具创建/必要覆写删除许可，不批量清根、不触其他外部数据；最终同源全量未运行。Conversation早期越界写入一个精确TEMP源码引用文件，覆盖旧文件与否UNKNOWN，已停止且不清理；详情如实记主台账。旧凭据轮换未确认，不读取/复述秘密。
+- 产品冻结 `2287069b`，F3/F4测试 `1018a8b0`、F5测试 `d0363c1a`，最后必要fixture `fa555f7c`；最终1199 Compile/8资源，Debug/Release双API+Bootstrap同manifest六构建PASS，838地图双模式PASS，S6五项维护影响具名落点见[当前范围图](docs/architecture/af-framework-code-scope.md#af2-final-responsibility-closeout-20261001)。完整303首轮及受影响完整入口复验已分类：首轮254PASS/37FAIL，受影响最终30PASS/7残留；最新逐入口284PASS/7FAIL及其余12分类，不是首轮全PASS或第二次303执行；本轮有限职责退出门已交付，不宣称全仓历史/实机全闭；唯一失败/证据/未验见[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#af2-final-responsibility-closeout-20261001)。F7 LIVE/SAVE/真实网络/帧性能NOT-RUN。
+- 全量runner在精确新根 `E:/AF2-SyntheticTemp-20261001-7dd0991fd822` 获准子树串行执行合成夹具，不批量清根、不触其他外部数据。Conversation早期越界写入一个精确TEMP源码引用文件，覆盖旧文件与否UNKNOWN，已停止且不清理；详情如实记主台账。旧凭据轮换未确认，不读取/复述秘密；本轮无push/Stage/部署/一键语义变化。
+
+- 最后收尾2026-10-02：同源Debug Primary回放PASS，Release缺DEBUG seam仍记失败；6个旧fixture缺口有exact320实际复现。原Memory历史15同baseline28failure记录，未刷审批期望；两个Sealing盲区保留NOT_PROVEN。准确分类、artifact及S6保留责任只见上述唯一主台账，不把本地提交当推送/游戏部署。
 
 # 历史交接：合并 main 参战邀请修复并交付 main（2026-10-01）
 

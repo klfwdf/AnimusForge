@@ -1,7 +1,7 @@
 <a id="af2-final-responsibility-closeout-20261001"></a>
-## AF 2.0 主体最终职责收官：F0 已核定，五组实施中（2026-10-01）
+## AF 2.0 主体最终职责收官：有限责任包交付，完整门禁已分类（不等于全 PASS）（2026-10-01）
 
-**当前授权**：用户本轮授权实施独立 [F0–F6/S1–S6 计划](plans/af2-final-responsibility-closeout-20261001.md)，取代该文件历史“仅规划/默认串行”停点；不授权推送、Stage、部署、泛化仓外写入、清理、自动化或新 chat；仅新增下述精确合成 TEMP 许可。此前 main 发布记录整体保留为历史，不发出本轮操作指令。现态 `ACTIVE / FIVE_PACKAGE_SCOPE_FROZEN / PRODUCT_MIGRATION_NOT_YET_VERIFIED`；用户已显式增补 F5d Persona 规则收口；五组与 F5d 最终范围冻结，实施未完成不能宣称原 J 差集全部闭合。
+**当前授权**：用户本轮授权实施独立 [F0–F6/S1–S6 计划](plans/af2-final-responsibility-closeout-20261001.md)，取代该文件历史“仅规划/默认串行”停点；不授权推送、Stage、部署、泛化仓外写入、清理、自动化或新 chat；仅新增下述精确合成 TEMP 许可。此前 main 发布记录整体保留为历史，不发出本轮操作指令。现态 `F0_F6_FINITE_DELIVERED / SIX_BUILD_PASS / FULL_RUN_CLASSIFIED_WITH_RESIDUALS / F7_NOT_RUN`；用户已显式增补 F5d Persona 规则收口；五组与 F5d 的本轮有限职责包已按实际 owner/消费者/兼容退出门交付；不宣称全部历史 J 审批守卫、全仓业务或实机差集闭合。
 
 ### 基线与保护
 
@@ -23,7 +23,37 @@
 
 **F5d 显式授权增补**：用户选择“纳入 Persona 规则收口”，覆盖 native/promoted/skills detached Prompt、source normalize、strict/loose persona 解析及既有文本回退；约1–2工程日等效。Conversation 作者独占模块规则与定向测试，集成者仅接宿主薄门面。通用 JSON 七 helper 与截断算法收口到 `Llm/Protocol/JsonResponseTextCodec` 唯一纯实现，原宿主签名保持；技能 TW setter、部分应用失败语义、lease/cooldown/ProfilePolicy/readiness与保存不变。当前已接线，完整门禁待验。不把独立领域/制作组业务按文件强拆；旧具体错误/性能/隐私风险不能冒充已修复。
 
-### 验证准备、失败与未验
+### 当前冻结结果与最终门禁（取代下方切片早期状态）
+
+- 本地切片：F0 `336718c6`、F1/F2 `c2f81ac7`、F5/F5d `cc9822ed`、F3/F4 `7c342da8`、Native角色/纯文本余项 `2287069b`；三个纯blank切片/受影响测试由后续本地提交保留，不改历史。F3/F4旧fixture接合 `1018a8b0`、F5最终25测试接合 `d0363c1a`。产品最终冻结1199 Compile/8资源，两API集合一致；原1172是F0基线。
+- 同冻结源码manifest SHA256 `206593348a232a25fe1070fa12bf6149023d5181ae4624a63da38c24f4d501e8`：Debug `integration/builds/debug-6436f9f20a40`、Release `integration/builds/frozen-release-5344356c7ec9` 两API+Bootstrap共六构建exit0；Release在全新根逐字节复制同manifest输入，不拼历史候选、不重置失败产物。六DLL及build marker逐SHA相等，见 `integration/six-build-marker-audit.json`。实际引用1.3=`v1.3.15.110062`，1.4=`v1.4.7.117484`；保留既有编译warning，不声称零warning。
+- Release最小父环境缺COMSPEC/PATHEXT导致PowerShell未执行native命令且LASTEXITCODE为空，独立probe复现；只修ignored验证wrapper的退出码传播及允许的系统环境，未改正式构建脚本。失败输出保留，最终重跑六构建不借先前假成功。所有构建输出仅本仓artifacts，无Stage/Deploy/目录清理。
+- F3/F4有限READY：58/32，旧business36、terminal85、planning24、captured116、sealing88、Records42完整案例PASS。有效负例有实际runtime拒绝；两个Sealing孤立survivor（owner-normalize-key、trigger-structure）仍NOT_PROVEN，不声称全部mutant kill。F5/F5d有限READY：Native485、Detached25、Turn112、history27、Persona285/Readiness169、Scene71+43queue+6gate、Courier44；历史审批guard绑定2287069b与8真实owner依赖，旧ec74/algorithm hash/expected不刷新。Native source6、Persona source7与6新Native runtime mutants实际拒绝，无CS错误冒充负证据。
+- S6五项维护影响及必要宿主适配在[当前范围图](architecture/af-framework-code-scope.md#af2-final-responsibility-closeout-20261001)。地图保留813旧ID，14迁移/变化具名接通并新增25owner，共838；绑定fa555f7c（产品仍2287069b，后续仅测试接线），recorded/working-tree均PASS。不是全文件/实机验收。Native 700 stored（500ordinary+200fact）250次snapshot+projection合成观测0.11307ms/140120B每job，不含游戏距离capture，不等同全管线或帧保证。
+- 当前同源真实DLL有限证明 `integration/final-dll-checks-6252e36b7b67`：两Release API各45原message/history检查PASS；两API实际Patience nested identity/四字段Newtonsoft JSON往返/owner load-save-reset/唯一表，以及Native ordinary预算保fact、user/assistant/system角色、target/distance/metadata、limit和日清理反射执行PASS。四Debug/Release实现DLL共1504 metadata断言PASS，公开V1/legacy Memory签名保持，内部ports/lifecycle不泄露；源码V1与构建部署目录对320基线无diff。不是IDataStore/真实旧档/外部sub-MOD加载/Bootstrap实际游戏顺序验收。
+- 全量首先暴露的必要接合已以 `d0c4a0db` 修复6测试路径及保存2line坐标：Cutover138+原15提取guard、TeamAdapters307+原6mutation、GameLifetime21+原5source guard与新增2runtime reset/unsubscribe反例均PASS。旧source-review/hash/expected/有效断言完整保留，历史源通过固定批准inverse而非放宽检查。205 typed Counter的key/ref/type/source与原catalog完全相同，只改Shout两处保存坐标10824/10827→10554/10557；保存validator178 keys/205 bindings/46flattened等全PASS。
+- 最终全量 `integration/final-gate-201381566f06` 串行jobs1运行，同上述Release1.4候选；精准授权TEMP祖先无reparse、每entry独立子树，父环境只转发必要系统/toolchain变量，不传凭据。已完成303入口首轮与受影响完整入口复验、逐失败分类；不是第二次303全执行，也不凭退出码或历史标签写全PASS；目录外违规文件不清理、不追认。
+
+### 最终分类与本地交付（2026-10-02；任务授权/计划仍为2026-10-01）
+
+- **首轮事实**：`integration/final-gate-201381566f06/all/results.json`，303入口 = **254 PASS / 37 FAIL / 3 PREEXISTING_FAIL / 3 SUPERSEDED_BY_RUNNER / 1 ENV_STATE / 5 NEEDS_INPUT**。未改原结果。首轮与实际各次失败日志完整保留。
+- **完整入口复验**：37个首轮FAIL在 `final-gate-06cfabb0c1d6` 重跑28 PASS/9 FAIL；随后OptIn在 `final-gate-b5bb736f501d` 完整PASS，Phase的原断言继续暴露并修复实际fixture初始化缺口，最终 `final-gate-02026eb775a9` 完整PASS。37个受影响入口最终 **30 PASS / 7 FAIL**。原Memory历史15守卫另由中央 `final-gate-4ed887f87c26` 复验，28失败记录/0错误，与精确320基线相同；有限current owner守卫15 PASS。
+- **最新逐入口分类**：`integration/final-classification.json` 汇总为 **284 PASS / 7 FAIL / 3 PREEXISTING_FAIL / 3 SUPERSEDED_BY_RUNNER / 1 ENV_STATE / 5 NEEDS_INPUT**。这是首轮加受影响完整入口复验后的分类，**不是第二次303全执行或首轮全PASS**。未变化的入口使用首轮证据；同一产品manifest与六构建候选保持不变。
+
+| 最终残留入口 | 真实归因与必要证据（不是PASS/豁免） |
+| --- | --- |
+| `tests/content/J15ContentContractTests/run.py`、`tools/package_policy_system_source_overlay.py` | 原320 exact `build_file_set`在第一个缺失宿主根路径`SubModule.cs`失败；`integration/baseline-package-6d6548532053/results.json`。没有为了测试改变制作组源码包装/交付语义。 |
+| `tools/PhaseEightReadiness/entry_inventory.py`、`test_entry_inventory.py` | exact320 resolver及175实际匹配Git源码复现旧root glob缺`settlement-siege-gccz-sets`；`integration/baseline-inventory-9a05b1c842df/results.json`。当前单测57 errors仍具名保留，未刷新旧目录审批期望。 |
+| `Prompt/CaptureEligibility/run.py`、`Prompt/ProductionEntry/run.py` | `artifacts/af2-prompt-baseline-320c-20261001-01/evidence.json`绑定原Git blob/Harness/方法/Compile依赖，实际320编译同样分别CS0103缺`PublicExecutionOrderRuntime`/`ExecutionPromptConfiguration`。不以fake runtime/空资源填补业务证明。 |
+| `PrimaryLlmGatewayReplayTests.csproj` | Release故意没有`#if DEBUG`合成HTTP transport seam；源码对320未变。**同manifest Debug完整入口PASS**于`final-gate-5709c4004305`，不是Release PASS，不启真实provider。 |
+
+- 其余3个runner预标失败中，Memory历史15已如上实际baseline复现；Team旧`run.py`与外交IntentBoundary的原标签保持，但本轮没有重新全baseline证明，不借标签声称“已证明无关”。3个superseded为有独立runner的项目入口；1个ENV_STATE是LIVE readiness而非游戏验收；5个NEEDS_INPUT为需要具体manifest/业务输入或另行授权的工具，未擅自执行。
+- 本地必要测试提交：`258a441f`（Gallery调用方合成文件+批准保存基线+CivilWar真owner链接）、`9567cff3`（有限真实owner依赖/固定inverse）、`cfa67fdd`（Recovery真实IL与canonical encounter）、`2660ce9d`/`fa555f7c`（Weekly原复合断言读取sole notice owner、GetUninitializedObject显式构造真实state）。产品冻结后没有产品修改；没有删断言、刷新旧审批hash或用编译失败当mutation拒绝。OptIn/Phase完整实际DLL入口最终PASS，Weekly fresh retry确因未初始化fixture getter异常被原catch捕获而失败，两真实state构造后原规则通过，不是以改产品掩盖行为FAIL。
+- 最终1199 Compile/8资源、同源六DLL marker、四DLL1504 metadata、双API各45 message/history及真实JSON/Native状态有限证据保留。保存178 literal keys/42 behaviors、205 typed bindings/46flattened PASS；838地图recorded/working-tree PASS，更新的4个旧test-anchor仅反映已审真实owner/路径接线。原SessionTransport raw SHA及正式build/deploy/PublicV1源码保持，索引只按明确路径提交。
+- **未验/限制**：F7 LIVE/SAVE、真实IDataStore旧档、真实网络/Bootstrap游戏加载/外部subMOD、真实帧及game-distance成本均NOT-RUN；两个Sealing孤立mutant survivor仍NOT_PROVEN。原凭据轮换状态未知和一次越界TEMP记录保留，不清理、不推送/Stage/部署、不安装/恢复自动化。不能宣称零BUG或全仓所有历史职责已收口。
+- 回滚按本轮责任依赖做新的聚焦inverse提交；保护原dirty/他人数据，不hard reset、改写历史或批量删除。后续若处理上述历史夹具或实机旧档，按真实scope与授权另做验证，不把本地交付记成发布。
+
+### 验证准备、失败与未验（切片历史）
 
 - F5 原F0角色投影余项追加闭合：Native owner承接user/assistant/system及元数据/目标投影、fact格式/limit规则；13纯speech规则进入 `ConversationSpeechTextRules`，宿主只两个设置bool、snapshot与去重后的live距离捕获，无normalizer回宿主业务delegate。`debug-782f0847cb95` 1199 Compile/8资源双API Debug+Bootstrap exit0；owner484（原12状态+16角色/metadata+456四配置对固定原13函数差分）、NativeTurn112/Persona285/Detached25有限PASS。旧history/source guard等待绑定最终freeze精确inverse，不改旧hash；仅一新增blank trim经逐行rstrip相等验证，不当算法变更。
 
@@ -33,9 +63,9 @@
 
 - F1/F2 已完成独立有限切片验证：从 `336718c6` 原源码逐包重放，仅本包新增5 Compile（1177/8资源），隔离 Debug 两API+Bootstrap exit0（`integration/builds/f1-f2-debug-5bc329564e4e`）；两个正式net8 owner聚合项目 PASS、实际NativeTurn112 PASS。178保存键/42Behavior与产品基线无差集。两API实际DLL反射验证原 nested identity、Newtonsoft四字段JSON往返、owner load/save/reset及无第二活表 PASS（`integration/actual-patience/actual-{1.3,1.4}-3.log`）。首次harness缺Security.Permissions及误把float当int/错期望5.0的诊断日志保留，修正测试宿主/期望5.5后复验；不是IDataStore或真实旧档验收。共享主文件索引仅纳此切片，其他包工作树保持。
 
-- 本轮没有完成产品门禁。F1现有DomainOwner原Program+真实module隔离基线PASS；首次原项目旧obj被glob纳入 `CS0579`，转为artifacts显式Compile诊断，不改原项目/清obj。F3 captured/sealing基线真实编译缺 `WeeklyAggregateEventLineOwner`（fixture缺实际源）；F5 SceneParity缺 `PublicExecutionOrderPolicy/Runtime`（fixture缺实际源）。失败原记录保留；不得改hash/expected掩盖。
-- 最终同源Debug/Release × API1.3/1.4 + Bootstrap、全量分类、地图双模式、保存/ABI/动态消费者及S6五项影响分析均待实施；实际DLL、fixture、LIVE/SAVE不同层。F7实机/旧档/真实网络/帧性能 **NOT-RUN**。
-- 全量 `tests/run_all.py` 明确要求仓外合成TEMP：用户已明确授权唯一全新根 `E:/AF2-SyntheticTemp-20261001-7dd0991fd822` 下创建合成文件及测试必要覆写/删除自身夹具。运行前确认 resolved 根及父链无 reparse，删除目标严格位于该子树；不手动批量清根、不触其他外部数据。该许可不追认下述越界文件；已审入口不等于全部传递副作用审完，最终同源全量尚未运行。
+- F0准备时尚未完成产品门禁（此早期状态由上方最终结果取代）。F1现有DomainOwner原Program+真实module隔离基线PASS；首次原项目旧obj被glob纳入 `CS0579`，转为artifacts显式Compile诊断，不改原项目/清obj。F3 captured/sealing基线真实编译缺 `WeeklyAggregateEventLineOwner`（fixture缺实际源）；F5 SceneParity缺 `PublicExecutionOrderPolicy/Runtime`（fixture缺实际源）。失败原记录保留；不得改hash/expected掩盖。
+- 切片初期上述六构建、分类、地图、保存/ABI及S6仍待实施；现已按上方最终证据完成有限门禁，保留历史失败不抹除；实际DLL、fixture、LIVE/SAVE不同层。F7实机/旧档/真实网络/帧性能 **NOT-RUN**。
+- 全量 `tests/run_all.py` 明确要求仓外合成TEMP：用户已明确授权唯一全新根 `E:/AF2-SyntheticTemp-20261001-7dd0991fd822` 下创建合成文件及测试必要覆写/删除自身夹具。运行前确认 resolved 根及父链无 reparse，删除目标严格位于该子树；不手动批量清根、不触其他外部数据。该许可不追认下述越界文件；最终串行全量已执行，合成子树与传递写入边界按本轮精确许可运行；不授权批量清理，也不据此保证未来未读 runner 的副作用。
 - 范围违规如实记录：Conversation早期未经授权把源码引用搜索输出写入精确仓外 `C:/Users/PC/AppData/Local/Temp/af-f5-refs.txt`，当前26354字节，写前未查存在，是否覆盖旧同名文件 **UNKNOWN**；已停仓外写入、不删除，内容类别是源码符号路径/行号/引用。不得用本台账追认授权。
 - 旧凭据暴露轮换状态未确认，不读取/复述秘密；本轮不上载历史、不部署/推送、不修一键构建语义。
 
