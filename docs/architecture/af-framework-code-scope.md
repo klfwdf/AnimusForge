@@ -1,3 +1,13 @@
+<a id="source-relocation-round2-20261001"></a>
+
+## 当前源码物理布局：第二轮有限交付（2026-10-01）
+
+本轮111原样归位，root149→38（累计327→149→38）；81 AF主体/混合宿主、30具证AF-side薄桥。第二轮明确替代下方首轮混合AF-host保留与测试路径hold，不重开旧业务审计或冒称职责抽取完成。唯一完整结果读[主台账第二轮](../animusforge-refactoring-and-repository-reorganization-plan.md#source-relocation-round2-20261001)，目录与38保留名单读[简明指南](af-source-directory-guide.md)，逐文件hash/证据读[精确111总表](../plans/2026-10-01-source-relocation-round2-manifest.json)。
+
+现态证据坐标绑定 `23ac43dc2ab57601922793e260459c8e76149640`，源码字节、符号/行号与R2基线3d6641不变：`src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.cs:58,1982` MyBehavior整22partial Campaign/save宿主；`Composition/SubModule.cs:18,35` MBSubModuleBase入口；`Composition/IntegratedModuleHost.cs:9,19`现有混合模块host；`Configuration/Mcm/DuelSettings.cs:29,669`同类型MCM/settings；`src/modules/AF.Module.Economy/Host/RewardSystemBehavior.cs:42,824,1091`奖励Campaign/Register/Sync宿主；`src/AF.GameAdapter.Bannerlord/UI/Courier/CourierLetterReplyPopup.cs:10,56`UI；`src/bridges/Siege/UI/GcczTownManualMcmBridge.cs:9-16`同DuelSettings纯UI桥；`src/bridges/Vengeance/Host/VengeanceRuntimeBridge.cs:17-18`纯AF-side宿主边界。八项详细证据 `artifacts/source-relocation-round2/formal-source-evidence.json`，所有111在冻结package逐项列责。
+
+813地图174物理路径更新，生产hash/符号/范围不变；7个纯路径C#测试先严格逆映射正文等于原版再更新导航hash，两map模式PASS。双API1150 Compile/7资源、六构建、非外交43PASS和两API真实message各45PASS限于离线门禁；完整TeamModuleServices旧入口CS0246、Campaign完整业务/外交/实机/旧档/网络/性能仍未验。外交产品18和实质制作组业务20仍原位，原SessionTransport dirty/旧产物保护，不push/Stage/部署。
+
 <a id="source-relocation-20261001"></a>
 ### 源码目录归位当前定位（2026-10-01）
 

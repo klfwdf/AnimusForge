@@ -1,3 +1,10 @@
+# 当前交接：第二轮源码物理归位有限交付（2026-10-01）
+
+- 第二轮批准111项已全部raw-byte原样归位；根级tracked C# **149→38**，两轮累计327→149→38、289归位。MyBehavior22及其他混合AF宿主整家族/整文件归宿主；30具证纯AF-side桥单独归src/bridges。根级38明确为18外交产品+20制作组实质规则/状态机/业务存档，不擅自迁排除业务。
+- 两API实际1150 Compile一一映射无漏重/7资源LogicalName保持；Debug/Release双API+Bootstrap六构建exit0；严格非外交C43 **43PASS/0FAIL/0BLOCKED_ENV**；两API真实DLL各45message/history检查；813地图recorded/working-tree PASS。原runner hash/路径失败均保留，精确inverse后复验；完整TeamModuleServices缺CivilWar接口仍未验，不用stub绕过。
+- 本地05e35849意图、2f6a4ce4小片、2f833b28其余110、32097613消费者、23ac43dc额外Native path inverse；正式收尾commit以Git为准。[唯一台账第二轮](docs/animusforge-refactoring-and-repository-reorganization-plan.md#source-relocation-round2-20261001)集中实证/未验；[目录说明](docs/architecture/af-source-directory-guide.md)/[现态范围图](docs/architecture/af-framework-code-scope.md#source-relocation-round2-20261001)导航。本条替代下方第一轮混合宿主保留/测试hold状态，旧记录只作历史。
+- 原SessionTransport dirty/旧tools/NuGet/产物保留，无push/Stage/部署/清理/下载安装/G镜像/一键行为变化。实机/旧档/真实网络/音频/性能、完整外交业务、TPAC HOLD、旧凭据轮换未验。外交测试仅必要current path，不变外交产品/fixture/metadata语义。
+
 # 当前交接：AF 源码物理归位有限离线交付（2026-10-01）
 
 - 批准179候选实际**178原样归位 + 1外交消费者hold**，根级tracked C# **327→149**；RewardSystemBehavior.cs原样留根，外交J12测试不改。不是职责抽取或整个领域重写；MyBehavior22/DuelSettings/SubModule/IntegratedModuleHost等混合宿主保留。
