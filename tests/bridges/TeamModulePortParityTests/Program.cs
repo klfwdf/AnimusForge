@@ -68,7 +68,13 @@ internal static class Program
         Recorder.Rules = nullInputs ? null : new List<PostprocessRuleEntry> { new PostprocessRuleEntry() };
         Recorder.Facts = nullInputs ? null : new List<string> { "fact" };
         Recorder.Notifications = nullInputs ? null : new List<string> { "notification" };
+#if ADAPTER_ONLY
+        IPolicyModulePort p = new PolicyModuleAdapter();
+        IGatheringModulePort g = new GatheringModuleAdapter();
+        ISiegeModulePort s = new SiegeModuleAdapter();
+#else
         var p = TeamModuleServices.Policy; var g = TeamModuleServices.Gathering; var s = TeamModuleServices.Siege;
+#endif
         string failure = null; string content = raw; List<string> facts = null, notifications = null; bool handled = false;
         Invocation("Policy.Eligible", () => p.IsEligibleTargetForExternal(hero, out failure), Recorder.BoolResult,
             new object[] { hero }, () => Check(failure == Recorder.FailureResult, "eligibility out reason"));
@@ -106,9 +112,11 @@ internal static class Program
 
     private static void Run()
     {
+#if !ADAPTER_ONLY
         Check(ReferenceEquals(TeamModuleServices.Policy, TeamModuleServices.Policy)
             && ReferenceEquals(TeamModuleServices.Gathering, TeamModuleServices.Gathering)
             && ReferenceEquals(TeamModuleServices.Siege, TeamModuleServices.Siege), "single cached adapter per port");
+#endif
         foreach (Type adapter in new[] { typeof(PolicyModuleAdapter), typeof(GatheringModuleAdapter), typeof(SiegeModuleAdapter) })
             Check(adapter.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic).Length == 0, "adapter holds no game/session state");
         Signatures(typeof(IPolicyModulePort), typeof(PolicyModuleAdapter), method =>
@@ -117,7 +125,12 @@ internal static class Program
         Signatures(typeof(ISiegeModulePort), typeof(SiegeModuleAdapter), _ => typeof(AfGcczShoutBridge));
         Exercise(false); Exercise(true);
         string content = "default input";
+#if ADAPTER_ONLY
+        new SiegeModuleAdapter().TryProcessActionTags(null, null, -1, ref content, out _);
+        Console.WriteLine("NOT TESTED: TeamModuleServices whole composition (CivilWar/WorldDiplomacy excluded); no service substitute compiled.");
+#else
         TeamModuleServices.Siege.TryProcessActionTags(null, null, -1, ref content, out _);
+#endif
         Check(Recorder.LastArguments.Skip(4).SequenceEqual(new object[] { false, null, null }), "omitted siege defaults preserved");
         Console.WriteLine($"PASS {checks} source-linked port assertions; 13 methods, populated/null inputs, return/ref/out and original exceptions.");
         Console.WriteLine("NOT TESTED: gameplay implementations, module policy outcomes, real game thread ownership, live-save acceptance.");

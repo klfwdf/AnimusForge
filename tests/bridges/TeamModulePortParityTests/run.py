@@ -10,6 +10,8 @@ import subprocess
 import sys
 
 ROOT = Path(__file__).resolve().parents[3]
+sys.path.insert(0, str(ROOT / "tests"))
+from output_isolation import new_run_root, resolve_dotnet
 HERE = Path(__file__).resolve().parent
 PORT_SOURCES = [
     "src/AF.Contracts/Internal/TeamModules/IPolicyModulePort.cs",
@@ -135,8 +137,15 @@ def owner_parity(baseline):
                 raise AssertionError("Unterminated owner call: " + qualified_name)
 
     normalize = lambda value: re.sub(r"\s+", "", value)
+    # The historical fallback retirement applies only inside the authoritative
+    # recipient-delivery commit, not any same-spelled call elsewhere.
+    domain = read("src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.DomainCommit.cs")
+    spec = importlib.util.spec_from_file_location("port_courier_commit", ROOT / "tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py")
+    extractor = importlib.util.module_from_spec(spec); spec.loader.exec_module(extractor)
+    courier_core = extractor.declaration(domain, "private bool CommitGeneratedReplyActionsAtRecipientCore(")
     current_paths = [ROOT / "MyBehavior.cs", ROOT / "ShoutBehavior.cs"]
     current_paths += sorted((ROOT / "src/modules/AF.Module.Conversation/Channels/Scene").glob("*.cs"))
+    current_paths += sorted((ROOT / "src/modules/AF.Module.Conversation/Internal/Postprocess").glob("*.cs"))
     current_paths += [ROOT / "CourierDeliveryBehavior.cs"]
     current_paths += sorted((ROOT / "src/modules/AF.Module.Conversation/Channels/Courier").glob("*.cs"))
     current = "\n".join(path.read_text(encoding="utf-8-sig") for path in current_paths)
@@ -169,8 +178,30 @@ def owner_parity(baseline):
                 alias_seen += 1
             current_calls.append(restored)
         prior_calls = [normalize(call) for call in extract_calls(prior, old)]
+        if new == "TeamModuleServices.Gathering.TryApplyNobleGatheringTagsForExternal":
+            courier = normalize(old + '(recipient, ref text, out var nobleFacts, out var nobleNotifications)')
+            if prior_calls.count(courier) != 2 or current_calls.count(courier) != 1:
+                raise AssertionError("Reviewed Courier gathering single-commit call drifted")
+            if len(extract_calls(courier_core, new)) != 1 or courier_core.index("session.PostprocessConsumed = true") > courier_core.index(new):
+                raise AssertionError("Courier gathering call left the one-shot domain owner")
+            prior_calls.remove(courier)
+        if new == "TeamModuleServices.Policy.TryProcessAcceptedAgendaTag":
+            # cd0d942d removed the duplicated fallback executor; f6c95ac3 moved
+            # the single recipient-delivery commit into its authoritative owner.
+            # Do not accept arbitrary call-count changes: only the identical
+            # historical Courier expression may collapse from two to one.
+            courier = normalize(old + '(recipient, "courier", session.LetterText, session.ReplyText ?? text, ref text, out string proposalFailure)')
+            if prior_calls.count(courier) != 2 or current_calls.count(courier) != 1:
+                raise AssertionError("Reviewed Courier single-commit call drifted")
+            prior_calls.remove(courier)
+            core = courier_core
+            markers = ["session.PostprocessConsumed", "!session.DeliveryApplied", "session.PostprocessConsumed = true", new]
+            indices = [core.index(marker) for marker in markers]
+            if indices != sorted(indices) or len(extract_calls(core, new)) != 1:
+                raise AssertionError("Courier authority lost delivery/one-shot guards")
+            print("PASS reviewed Courier duplicate fallback retirement; recipient delivery and one-shot guards retained")
         if sorted(current_calls) != sorted(prior_calls):
-            raise AssertionError("Owner call parity failed: " + new)
+            raise AssertionError("Owner call parity failed: " + new + "\ncurrent=" + repr(current_calls) + "\nbaseline=" + repr(prior_calls))
         if extract_calls(current, old):
             raise AssertionError("Direct gameplay owner call bypasses typed port: " + old)
         seen[new] = len(current_calls)
@@ -231,15 +262,17 @@ def owner_signatures():
 def main():
     sys.stdout.reconfigure(encoding="utf-8")
     p = argparse.ArgumentParser(description=__doc__)
-    p.add_argument("--dotnet", default=r"G:\AFMOD\.dotnet-sdk\dotnet.exe")
+    p.add_argument("--dotnet")
+    p.add_argument("--run-root", type=Path)
     p.add_argument("--baseline", default="df6ab928")
     p.add_argument("--skip-mutations", action="store_true")
     args = p.parse_args()
+    args.dotnet = str(resolve_dotnet(ROOT, args.dotnet))
     seen = owner_parity(args.baseline)
     signatures = owner_signatures()
     spec = importlib.util.spec_from_file_location("framework_test_util", ROOT / "tests/AF.Contracts/ModuleFrameworkApiTests/run.py")
     util = importlib.util.module_from_spec(spec); spec.loader.exec_module(util)
-    out = HERE / ".generated/current"; out.mkdir(parents=True, exist_ok=True)
+    out = new_run_root(ROOT, "team-module-port-parity", args.run_root)
     (out / "owner-signatures.json").write_text(json.dumps(signatures, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     (out / "NuGet.Config").write_text('<configuration><packageSources><clear /></packageSources></configuration>', encoding="utf-8")
     target = util.project(out / "Base", "TeamModulePortParity", [ROOT/p for p in SOURCES] + [HERE / "OwnerStubs.cs", HERE / "Program.cs"], executable=True)
