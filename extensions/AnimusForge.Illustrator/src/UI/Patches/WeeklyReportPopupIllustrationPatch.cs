@@ -304,14 +304,16 @@ namespace AnimusForge.Illustrator.UI.Patches
                 _bulletinSlot = slot;
                 _sink = slot;
                 slot.TitleText = title ?? "";
-                slot.StatusText = "正在翻检快报插画...";
+                slot.StatusText = "正在为本期快报绘制新插画...";
                 slot.OnRegenerate = TriggerRegenerate;
                 slot.OnOpenGallery = () => IllustratorGalleryPopup.Show();
                 slot.OnDelete = DeleteCurrentBulletinIllustration;
                 slot.IsAvailable = true;
                 slot.NotifyHandlersChanged();
                 Debug.Print($"[Illustrator] World bulletin panel slot attached: '{title}' context={(_currentContext != null)}");
-                BeginCachedLoad("点击【重绘】绘制本期快报插画");
+                // Every bulletin opening requests fresh artwork, including archived issues.
+                // Keep earlier works in the gallery, but never load them into this slot.
+                TriggerRegenerate();
                 return true;
             }
             catch (Exception ex)
@@ -422,6 +424,13 @@ namespace AnimusForge.Illustrator.UI.Patches
             string hardFacts = context.BuildHardFacts();
             string directorFacts = context.BuildDirectorOnlyFacts();
             var options = IllustratorRuntime.CaptureOptions();
+            if (_bulletinSlot != null)
+            {
+                options = options?.WithImageSize("1536x1024");
+                const string composition = "【快报版式】画幅为横向3:2，围绕本期事件重新创作完整插画；不要照搬旧作品，不要将方图或竖图拉伸为横图。";
+                artDirection += "\n" + composition;
+                hardFacts += "\n" + composition;
+            }
             string campaignKey = _scope.CampaignKey;
             var generationScope = _scope;
 
@@ -533,6 +542,8 @@ namespace AnimusForge.Illustrator.UI.Patches
             if (sprite == null) return false;
             _activeSpriteName = spriteName;
             _activeItem = item;
+            // Providers may ignore requested dimensions. Fit their actual output without stretching.
+            _bulletinSlot?.FitImage(sprite.Width, sprite.Height);
             if (!string.IsNullOrWhiteSpace(item?.Title)) _sink.TitleText = item.Title;
             _sink.SpriteName = spriteName;
             _sink.PromptText = prompt;
