@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -15,6 +15,8 @@ using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Settlements;
 using TaleWorlds.Core;
 using TaleWorlds.MountAndBlade;
+
+using static AnimusForge.SceneMovementController;
 
 namespace AnimusForge;
 
@@ -55,8 +57,8 @@ public partial class ShoutBehavior
 		NpcDataPacket speakerSnapshot = CloneNpcDataPacket(currentSpeaker);
 		List<NpcDataPacket> contextSnapshot = CloneNpcDataSnapshot(allNpcData);
 		List<NpcDataPacket> relayCandidateSnapshot = CloneNpcDataSnapshot(relayCandidates);
-		List<SceneSummonPromptTarget> summonSnapshot = CloneSceneSummonPromptTargets(sceneSummonTargets);
-		List<SceneGuidePromptTarget> guideSnapshot = CloneSceneGuidePromptTargets(sceneGuideTargets);
+		List<SceneSummonPromptTarget> summonSnapshot = SceneMovementController.CloneSceneSummonPromptTargets(sceneSummonTargets);
+		List<SceneGuidePromptTarget> guideSnapshot = SceneMovementController.CloneSceneGuidePromptTargets(sceneGuideTargets);
 		List<PostprocessRuleEntry> sceneMechanismRuleSnapshot = (sceneMechanismRules ?? new List<PostprocessRuleEntry>()).Where((PostprocessRuleEntry x) => x != null && !string.IsNullOrWhiteSpace(x.Tag)).Select((PostprocessRuleEntry x) => new PostprocessRuleEntry
 		{
 			Tag = x.Tag,
@@ -573,7 +575,7 @@ public partial class ShoutBehavior
 				}
 				if (HasNonMoodDeferredSceneActionTag(remaining))
 				{
-					if (TryExecuteDeferredSceneFollowTagsDirectly(speakerSnapshot, remaining))
+					if (_sceneMovement.TryExecuteDeferredSceneFollowTagsDirectly(speakerSnapshot, remaining))
 					{
 						consumed = true;
 					}

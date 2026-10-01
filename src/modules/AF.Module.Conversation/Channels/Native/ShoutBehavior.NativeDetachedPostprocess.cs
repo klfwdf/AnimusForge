@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -166,10 +166,10 @@ public partial class ShoutBehavior
         var targets = new List<NpcDataPacket> { npc };
         var heroes = new Dictionary<int, Hero>();
         if (source.AgentIndex >= 0 && source.Hero != null) heroes[source.AgentIndex] = source.Hero;
-        var summon = source.AgentIndex >= 0 ? source.Behavior.BuildSceneSummonPromptTargets(targets, heroes) : null;
+        var summon = source.AgentIndex >= 0 ? source.Behavior._sceneMovement.BuildSceneSummonPromptTargets(targets, heroes) : null;
         int guideStart = (summon != null && summon.Count > 0 ? summon.Max(item => item?.PromptId ?? 0) : 0) + 1;
         Agent agent = source.AgentIndex >= 0 ? Mission.Current?.Agents?.FirstOrDefault(item => item != null && item.Index == source.AgentIndex) : null;
-        var guide = source.AgentIndex >= 0 ? source.Behavior.BuildSceneGuidePromptTargets(agent, guideStart) : null;
+        var guide = source.AgentIndex >= 0 ? source.Behavior._sceneMovement.BuildSceneGuidePromptTargets(agent, guideStart) : null;
         bool mechanism = Hit("scene_mechanism_actions") && CanUseSceneMechanismPostprocessForSpeaker(source.AgentIndex);
         var mechanismRules = mechanism ? source.Behavior.BuildRuntimeSceneMechanismPostprocessRulesForScene(npc, summon, guide) : null;
         var stakes = Hit("duel") && source.Hero != null ? RewardSystemBehavior.Instance?.BuildDuelStakeOptionsForAI(source.Hero) : null;
