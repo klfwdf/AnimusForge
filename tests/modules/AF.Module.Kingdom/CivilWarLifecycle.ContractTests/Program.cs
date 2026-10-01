@@ -219,6 +219,81 @@ new CivilWarCampaignBehavior().OnDailyTick();
 var dailyStorage = JsonConvert.DeserializeObject<KingdomCivilWarStorage>(TeamModuleServices.CivilWar.Save());
 Check(dailyStorage.Kingdoms[f.Home.StringId].LastGrievanceDecayDay == 708 && dailyStorage.Kingdoms[f.Home.StringId].Clans[f.Follower.StringId].Grievance["lands_raided"] < 36, "production daily event reaches stored grievances");
 
+// Crown supporters withdraw on the event crossing the grievance threshold, without a weekly tick.
+f = new Fixture();
+ChangeKingdomAction.Move(f.Follower, f.Home);
+var supporter = f.State.Clans[f.Follower.StringId];
+supporter.Side = KingdomCivilWarSide.Crown; supporter.FactionId = "";
+f.State.Factions.Clear(); // No active opposition is required to lose faith in the king.
+f.Owner.AddGrievance(f.Home, "royal_execution", new[] { f.Follower }, 25, 100, "execution");
+Check(supporter.Side == KingdomCivilWarSide.Crown, "one grievance below threshold does not force withdrawal");
+f.Owner.AddGrievance(f.Home, "policy_imposed", new[] { f.Follower }, 8, 100, "policy");
+Check(supporter.Side == KingdomCivilWarSide.Crown, "mixed grievances remain loyal below threshold");
+f.Owner.AddGrievance(f.Home, "peace_imposed", new[] { f.Follower }, 7, 100, "peace");
+Check(supporter.Side == KingdomCivilWarSide.Middle && supporter.FactionId == "" && supporter.SideSinceWeek == 100, "event immediately withdraws support to neutral");
+Check(f.State.Factions.Count == 0 && f.State.LastAdvancedWeek == 0, "withdrawal neither needs a weekly tick nor invents a faction");
+Check(f.State.History.Any(h => h.Text.Contains("撤回对王室的支持")) && CivilWarCampaignBehavior.MaterialWrites == 1, "withdrawal is recorded as an actual political event");
+f.Owner.AddGrievance(f.Home, "war_imposed", new[] { f.Follower }, 8, 100, "war");
+Check(CivilWarCampaignBehavior.MaterialWrites == 1, "already neutral clan does not publish duplicate withdrawal");
+f.Reload();
+Check(f.State.Clans[f.Follower.StringId].Side == KingdomCivilWarSide.Middle, "withdrawal survives save/load");
+
+foreach (var source in CivilWarCatalog.Sources)
+{
+    f = new Fixture(); ChangeKingdomAction.Move(f.Follower, f.Home);
+    f.State.Clans[f.Follower.StringId].Side = KingdomCivilWarSide.Crown;
+    f.Owner.AddGrievance(f.Home, source.Id, new[] { f.Follower }, 35, 100, source.Name);
+    Check(f.State.Clans[f.Follower.StringId].Side == KingdomCivilWarSide.Middle, "exact threshold works for source " + source.Id);
+}
+
+f = new Fixture(); ChangeKingdomAction.Move(f.Follower, f.Home);
+supporter = f.State.Clans[f.Follower.StringId]; supporter.Side = KingdomCivilWarSide.Crown;
+DuelSettings.DiscontentThreshold = 45;
+f.Owner.AddGrievance(f.Home, "royal_execution", new[] { f.Follower }, 40, 100, "execution");
+Check(supporter.Side == KingdomCivilWarSide.Crown, "withdrawal respects configured threshold");
+f.Owner.AddGrievance(f.Home, "policy_imposed", new[] { f.Follower }, 5, 100, "policy");
+Check(supporter.Side == KingdomCivilWarSide.Middle, "configured threshold reached");
+
+f = new Fixture(); ChangeKingdomAction.Move(f.Follower, f.Home);
+supporter = f.State.Clans[f.Follower.StringId]; supporter.Side = KingdomCivilWarSide.Crown;
+f.State.LastGrievanceDecayDay = 693;
+supporter.Grievance["lands_raided"] = 40;
+f.Owner.AddGrievance(f.Home, "war_imposed", new[] { f.Follower }, 2, 100, "war");
+Check(supporter.Side == KingdomCivilWarSide.Crown && Math.Abs(supporter.Grievance["lands_raided"] - 32) < 0.001, "daily smoothing is applied before withdrawal threshold");
+
+f = new Fixture();
+Clan ruler = f.Home.RulingClan;
+f.State.Clans[ruler.StringId] = new() { ClanId = ruler.StringId, Side = KingdomCivilWarSide.Crown };
+f.State.Clans[Clan.PlayerClan.StringId].Side = KingdomCivilWarSide.Crown;
+f.Owner.AddGrievance(f.Home, "lands_raided", new[] { ruler, Clan.PlayerClan }, 100, 100, "raids");
+Check(f.State.Clans[ruler.StringId].Side == KingdomCivilWarSide.Crown, "ruler does not abandon their own crown");
+Check(f.State.Clans[Clan.PlayerClan.StringId].Side == KingdomCivilWarSide.Crown, "player allegiance remains player controlled");
+f.State.Clans[f.Follower.StringId].Side = KingdomCivilWarSide.Crown;
+f.Owner.AddGrievance(f.Home, "royal_execution", new[] { f.Follower }, 100, 100, "foreign clan");
+Check(f.State.Clans[f.Follower.StringId].Side == KingdomCivilWarSide.Crown, "foreign clan is not changed");
+ChangeKingdomAction.Move(f.Follower, f.Home);
+DuelSettings.Enabled = false;
+f.Owner.AddGrievance(f.Home, "royal_execution", new[] { f.Follower }, 100, 100, "disabled");
+Check(f.State.Clans[f.Follower.StringId].Side == KingdomCivilWarSide.Crown, "disabled feature does not withdraw support");
+DuelSettings.Enabled = true;
+f.Owner.AddGrievance(f.Home, "unknown_source", new[] { f.Follower }, 100, 100, "invalid");
+f.Owner.AddGrievance(f.Home, "royal_execution", new[] { f.Follower }, 0, 100, "zero");
+Check(f.State.Clans[f.Follower.StringId].Side == KingdomCivilWarSide.Crown, "invalid or zero-point events do not withdraw support");
+f.State.Clans[f.Follower.StringId].Side = KingdomCivilWarSide.Opposition;
+f.Owner.AddGrievance(f.Home, "royal_execution", new[] { f.Follower }, 100, 100, "opposition");
+Check(f.State.Clans[f.Follower.StringId].Side == KingdomCivilWarSide.Opposition, "existing opposition is not reset by crown withdrawal");
+
+// Production policy event, through its adapter, reaches the new behavior.
+f = new Fixture(); ChangeKingdomAction.Move(f.Follower, f.Home);
+f.State.Clans[f.Follower.StringId].Side = KingdomCivilWarSide.Crown;
+f.State.Clans[f.Follower.StringId].Grievance["war_imposed"] = 30;
+f.Home.ActivePolicies.Add(policy);
+TeamModuleServices.CivilWar = new CivilWarModuleAdapter();
+TeamModuleServices.CivilWar.Load(JsonConvert.SerializeObject(f.Owner.Storage));
+new CivilWarCampaignBehavior().OnKingdomDecisionConcluded(new KingdomPolicyDecision { Kingdom = f.Home, Policy = policy }, approved, false);
+var withdrawnState = JsonConvert.DeserializeObject<KingdomCivilWarStorage>(TeamModuleServices.CivilWar.Save());
+Check(withdrawnState.Kingdoms[f.Home.StringId].Clans[f.Follower.StringId].Side == KingdomCivilWarSide.Middle, "real policy event withdraws the dissatisfied crown supporter");
+
 // Synthetic CPU probe only: no game-loop/render/IO cost is represented here.
 f = new Fixture(); f.State.Factions.Clear(); f.State.Clans.Clear(); f.State.LastGrievanceDecayDay = 700;
 for (int i = 0; i < 100; i++)
@@ -245,6 +320,7 @@ sealed class Fixture
     public Fixture()
     {
         CampaignTime.Day = 700;
+        DuelSettings.DiscontentThreshold = 35; CivilWarCampaignBehavior.MaterialWrites = 0;
         Clan.All.Clear(); Kingdom.All.Clear(); MakePeaceAction.Fail = false; ChangeKingdomAction.FailClan = null; ChangeKingdomAction.Moves = 0;
         GiveGoldAction.Calls = 0; GiveGoldAction.ThrowAfterApply = false; ChangeRelationAction.Calls = 0;
         MyBehavior.StabilityChanges = 0; MyBehavior.CleanupAllowed = true; DuelSettings.Enabled = true;
