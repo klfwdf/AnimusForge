@@ -1,3 +1,22 @@
+<a id="bulletin-image-controls-20261001"></a>
+
+### 快报新生横图与封存控件（2026-10-01，OFFLINE_VERIFIED）
+
+用户截图反馈快报生图比例不符、不得复用旧图及封存入口需要控件。实际工作区 `F:/AnimusForge-main`、分支 `codex/af-main-refactor-continuation-20260831`；本地意图检查点 `fc80afe`，产品提交 `5d0969b8`。仅修改以下五个产品文件，保留并发 Coup/SETS 改动；不改一键流程、不部署、不推送、不删除图库。
+
+源码责任与消费者（坐标对应 `5d0969b8`）：
+
+- `extensions/AnimusForge.Illustrator/src/UI/Patches/WeeklyReportPopupIllustrationPatch.cs:283–320,426–434,543–550`：快报 AttachSlot 每次打开（含历史期刊重开）直接请求新图，绕过 BeginCachedLoad 和周报自动生成开关；总生图启用开关仍有效。每请求设置 1536×1024 与横向3:2构图；失败/取消不回退旧图，旧作品继续保留在画廊。普通周报仍沿原缓存及开关逻辑。发布时用实际 sprite 尺寸通知快报 VM。
+- `extensions/AnimusForge.Illustrator/src/Core/IllustratorRuntime.cs:23,39–45`：WithImageSize 返回请求快照副本，不改 MCM 全局尺寸或其他渠道。
+- `src/modules/AF.Module.Weekly/Panel/WorldBulletinPanelVM.cs:79–98`：FitImage 将实际图片等比放入288×192区域；服务端忽略尺寸返回方图/竖图时居中留边，不拉伸、不裁掉主体。每次发布 O(1)，不增加 Tick、扫描、反射或重采样。
+- `content/modules/AF.Module.Weekly/GUI/Prefabs/WorldBulletinPanel.xml:20–27,150–155`、`content/foundation/AF.Foundation.UI/GUI/Brushes/AFCourierLetterBrushes.xml:2–14`：3:2内框和动态尺寸绑定；封存改144×46金边深红按钮，四状态反馈、文字不抢事件，继续绑定 ExecuteClose 与既有 ESC/阅读停留逻辑。
+
+验证：复用现有隔离构建 helper，仅复制到本任务 artifacts 后调整输出根，官方脚本及既有产物不改。Release 1.3（引用v1.3.15.110062）、1.4（引用v1.4.6.115628）与 Bootstrap 全部 exit 0；产物、build.json 哈希与日志在 `artifacts/bulletin-image-controls-20261001/build-69112d2217284c7d97b3119df7cffe60/`。构建包括当时工作树的其他作者改动，不能把整个 DLL 称为本提交独有产物。本任务产品源码从构建至提交无变化。
+
+两个实际 DLL 的定向检查均 PASS：4种比例 FitImage、请求尺寸副本不改变原值、XML尺寸/关闭绑定与四状态、快报新生图入口源码检查。临时验证入口 `artifacts/bulletin-image-controls-20261001/verify.ps1`；初次 XML 读取因 Windows PowerShell 默认编码失败，改明确 UTF8 后双版通过，产品 XML 无编码错误。官方 Get-AnimusForgeContentLayout 确认预制体与画刷分别映射到 GUI/Prefabs 和 GUI/Brushes，git diff --check PASS。
+
+未验：真实生图请求及服务端遵循比例、游戏内视觉/鼠标/ESC、切页取消、旧档及 GPU；未覆盖游戏或打包发布。本包不提升 J17/C/D 状态。源码回滚仅定向 revert `5d0969b8`，不 hard reset、不回滚 Coup/SETS 等并发提交。
+
 <a id="coup-scene-repair-20261001"></a>
 
 ### 政变专用进场与受击崩溃修复（2026-10-01，ACTIVE）
