@@ -1,3 +1,34 @@
+<a id="coup-restoration-victory-20261001"></a>
+## 2026-10-01 政变后内战与旧王朝复位（OFFLINE_VERIFIED / 实机 VERIFY）
+
+- 产品及测试提交：`f1760f76`；修改前检查点：`2df0fb9a`。本项承接 `86991dc3` 的旧王支持者筛选与胜利处置，扩展内战结果，不重写普通每周叛乱或攻城处置。用户确认：释放旧王若内战结束前死亡，由原王族现任族长继承。
+- 扣押分支：旧王家族不参与本次政变反抗；其他符合旧王支持关系及真实起兵资格的家族仍可起兵，胜利沿普通夺位结果，不为被扣押旧王复位。释放分支：原王族可在无封地时跟随有地支持者，实际转入叛军；并非凭空制造领主、封地或兵力。原王族、族长和旧王自由状态在执行时复核。
+- 登记：原建国流程产生真实叛军王国后，内部端口将其接入既有 CivilWar owner 的 OpenWar 状态、日级事件队列和战争结算。新增可选复位身份、原国名/简称、明确胜利确认收据；不增加公开子模组API，不改变原存档键。原国名在发动时快照；旧未完成会话缺失名字只能以接入时现名回退，无法凭空恢复历史改名。旧请求缺少跟踪字段沿旧行为，已完成事件不追补。
+- 结局：仅 `rebels_usurp` 明确胜利可应用 `restore_coup_dynasty`；外部议和、谈判和妥协不能复位或改名。胜利授权在归国动作引起停战之前保存，部分归国失败/读档继续同一结果。旧王存活则必须仍是原王族族长、成年自由；旧王死亡改用原王族现任合格族长。族灭、人物被俘、原王族离开交战双方等异常保留待处理，不擅自释放或替换王族。原王国已经消亡时沿既有终止规则，不从已毁王国自动重建国家。
+- 设置与性能：保留叛乱总开关、内战开关及起兵资格中的玩家免疫；普通“玩家为国王时也形成派系”默认关闭，因此新增仅推进已登记政变战争的受限分支，避免改变普通派系形成规则。候选筛选/参与方快照在发动与建国时进行；沿既有日级事件合并、32记录/约1ms预算的分批队列，无新全世界扫描、逐帧反射或自动失败轮询。建国后登记失败保留 `WarCreated` 和王国ID，城镇菜单手动重试只登记、不重复建国。
+
+### 代码证据（修订 f1760f76；路径:一基行区间 / 符号）
+
+| 责任 | 源码 | 覆盖与边界 |
+| --- | --- | --- |
+| 原名快照及重试入口 | `extensions/AnimusForge.Coup/src/CoupSystem/CoupSession.cs:120-121`；`CoupCampaignBehavior.cs:102-111,232-241` | 既有会话JSON可选字段；城镇显式重试 |
+| 处置分流、真实家族加入与登记 | `extensions/AnimusForge.Coup/src/Integration/CoupRebellionBridge.cs:22-49,174-188,280-344,378-447,465-526` | 扣押排除、释放无地王族加入、存档与故障留存、命名背景 |
+| 同DLL内部接缝 | `MyBehavior.CivilWarPolitics.cs:7-18`；`src/AF.Contracts/Internal/TeamModules/ICivilWarModulePort.cs:10-21,109-110` | 9参数注册桥，缓存反射校验；公开API不变 |
+| 战争接管/幂等 | `src/modules/AF.Module.Kingdom/CivilWar/KingdomCivilWarOwner.Coup.cs:10-66` | 实际交战双方校验、派系状态、归档收据防重复、政治事实发布 |
+| 原王族与胜利收据 | `src/modules/AF.Module.Kingdom/CivilWar/KingdomCivilWarState.cs:112-118` | 旧字段缺失无复位；存档键 `_af_kingdom_civil_war_v2` 与v4兼容 |
+| 胜利/和平隔离与真实动作 | `src/modules/AF.Module.Kingdom/CivilWar/KingdomCivilWarOwner.cs:635-675`；`RestoreCoupDynastyEffect.cs:9-48` | 明确胜利授权、归国/换统治家族/全名简称恢复与后置校验；事实按实际生死分支描述 |
+| 默认玩家派系关闭时收尾 | `src/modules/AF.Module.Kingdom/CivilWar/KingdomCivilWarOwner.Events.cs:148-173` | 仅推进保存的政变OpenWar，不生成普通派系，沿原队列和版本通知 |
+
+### 验证与交付
+
+- 证据目录：`artifacts/coup-restoration-20261001/`；最终源码基线 `2df0fb9a`，叠加已提交集成HEAD `930f3ec6` 的差异和本任务源码，56文件清单及SHA在 `final-source-manifest.json`。所有覆盖的C#与提交前工作区一致。最初隔离时排除了并行快报5处接口更改；该作者提交 `a3183aaa` 后，最终快照已包括其完整依赖，不再使用旧6参数临时隔离桥。
+- 使用未修改的 `scripts/build/build_single_module.ps1`，Release、1.3引用 `_deps_auto`（1.3.15.110062）、1.4引用本机游戏（1.4.6.115628），双实现+Bootstrap全部成功，日志 `build-final.log`。最终DLL SHA256：1.3 `aa0d3edb3e0e1c012570271f55e1c27ee72d9ebee8de7442bd00881b6a26a9dc`；1.4 `caa2e064863457a6bb0ce89e0410a456358738f4ec7af1bd5df5477fdad81965`；Bootstrap `cbe5cdb67d6a780594334da2775f246eba901882470f55759e9317422760d567`。未部署、打包或推送。
+- `CivilWarLifecycle.ContractTests`：205 PASS（原180+本次25）；真实owner/effect与假游戏动作，覆盖原王复位、已故族长继承、原全名/简称、外部和平/预选结果不复位、谈判不复位、胜利自身停战后部分失败与JSON续结算、被俘人选、普通结果隔离、登记幂等/已结算重放、关闭普通玩家派系下政变结算及普通分支不变。`CivilWarRules.SmokeTests` PASS。记录 `civilwar-snapshot-final.log` / `civilwar-smoke-final.log`。
+- 政变生产源码契约128 PASS（`coup-contract-final.log`）。最终真实1.4 DLL探针228断言PASS，四个可用标志True、45个Harmony目标、输入DLL未变化（`probe-final/registration.log`）；重跑原选兵、入口、F门转场、快报、MCM、门槛、胜利处置。新增5项检查扣押王族排除、无地加入、被俘拒绝、已建国JSON/重试；世界上下文和原生动作仍为夹具，无LLM/原生游戏启动。探针只重定向既有GetLogsDirectory，AF Logger部分诊断仍可能写当前日志，不宣称用户日志完全未写。
+- 已纠正验证问题并保留日志：MSBuild初次找不到 `python`（9009），改命令传 `-p:PythonExecutable=E:/PYTHON/python.exe`，不改构建入口；初次快报8参数依赖不完整，最终完整集成重建；真实MBObject注册改变fixture字典对象标识，调整测试注册前后保存/重建映射，不改产品资格。`git diff --check` PASS。code-map历史修订795锚点PASS；`--working-tree` 仍报既有 `Stale source content: SubModule.cs`，不以历史锚点通过冒充当前全仓映射通过。
+- NOT-RUN：真实游戏内建国/转家族、实际战争胜利与外交议和、原生王族继承和国名显示、存档完整加载、UI手动重试与其他MOD组合。离线通过不代表这些验收已完成；旧已完成政变不会自动追补新战争。
+- 回滚：对产品提交 `f1760f76` 做定向逆提交，保留其他作者和既有存档；不要硬重置至检查点。新战争的复位元数据旧代码不解释，游戏回退建议使用发动前存档。本轮无游戏覆盖，无需撤销安装文件。
+
 <a id="bulletin-event-art-20261001"></a>
 ## 2026-10-01 快报事件配图、多人物参考与宽版 UI（OFFLINE_VERIFIED / 实机 VERIFY）
 
