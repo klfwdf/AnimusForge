@@ -204,6 +204,9 @@ internal static class PoliticalActionsTests
         f.Owner.Execute(Request(f, CivilWarAction.Negotiate), crown);
         f.Owner.Execute(Request(f, CivilWarAction.Leave), Clan.PlayerClan); Drain(f.Owner);
         Check(f.Faction.PendingResponse == null && crown.Leader.Gold == 10000, "succession cancels unanswered offer without charging old terms");
+        f = Prewar(); f.Home.RulingClan = f.Follower;
+        f.Owner.NotifyPoliticalChange(f.Home, "ruler_changed"); Drain(f.Owner);
+        Check(f.State.Clans[f.Follower.StringId].Side == KingdomCivilWarSide.Crown && f.State.Clans[f.Follower.StringId].FactionId == "", "new ruler cannot remain an opposition member");
         return count;
     }
 }
