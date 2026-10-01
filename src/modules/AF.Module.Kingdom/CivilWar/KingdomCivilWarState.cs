@@ -1,24 +1,27 @@
 using System;
 using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace AnimusForge;
 
-// Save model v2 (`_af_kingdom_civil_war_v2`). Only ids and numbers are stored; catalog content is
-// looked up by id so removing a catalog entry dissolves affected factions on load instead of failing.
+// Save model v3 (`_af_kingdom_civil_war_v3`). A kingdom holds several concurrent factions, each with its own
+// demand, grievance, ultimatum and war. Only ids and numbers are stored; catalog content is looked up by id so
+// removing a catalog entry dissolves affected factions on load instead of failing. v2 saves (single `Faction`)
+// are migrated into `Factions` by the owner's Sanitize.
 internal enum KingdomCivilWarStage
 {
 	None = 0,
-	Discontent = 1,     // grievance accumulating, no faction yet
+	Discontent = 1,     // kingdom: grievance accumulating, no faction
 	FactionFormed = 2,  // faction recruiting, ultimatum scheduled
-	Ultimatum = 3,      // waiting for a player king's answer
-	OpenWar = 4,        // rebel kingdom requested or at war
-	Cooldown = 5        // resolved, no new faction until CooldownUntilWeek
+	Ultimatum = 3,      // faction waiting for a player king's answer
+	OpenWar = 4,        // faction's rebel kingdom requested or at war
+	Cooldown = 5        // v2 only: kingdom-wide cooldown (v3 keeps CooldownUntilWeek for new factions)
 }
 
 internal enum KingdomCivilWarSide
 {
 	Crown = 0,
-	Opposition = 1,
+	Opposition = 1,     // member of the faction in FactionId
 	Middle = 2
 }
 
@@ -26,6 +29,7 @@ internal sealed class KingdomCivilWarClanState
 {
 	public string ClanId = "";
 	public KingdomCivilWarSide Side = KingdomCivilWarSide.Middle;
+	public string FactionId = "";
 	public int SideSinceWeek;
 	public int LastRecruitWeek;
 	// grievance source id -> points (decays weekly by the source's DecayPerWeek)
@@ -35,6 +39,8 @@ internal sealed class KingdomCivilWarClanState
 internal sealed class KingdomCivilWarFactionState
 {
 	public string Id = "";
+	public KingdomCivilWarStage Stage = KingdomCivilWarStage.FactionFormed;
+	public int StageWeek;
 	public string DemandId = "";
 	public string LeaderClanId = "";
 	public string TargetId = "";
@@ -42,6 +48,9 @@ internal sealed class KingdomCivilWarFactionState
 	public int CreatedWeek;
 	public int UltimatumWeek;
 	public int Refusals;
+	public int Defers;
+	// Mean total grievance of the member clans (0..100), refreshed weekly. Independent per faction.
+	public float Grievance;
 	public bool PlayerAnswerPending;
 	public bool PlayerPrompted;
 	public int PlayerAnswerDeadlineWeek;
@@ -50,6 +59,8 @@ internal sealed class KingdomCivilWarFactionState
 	public bool PlayerFollowAccepted;
 	public float LastEscalateChance;
 	public string LastRuling = "";
+	// Single-war mode: escalation passed while another faction of the kingdom was at war.
+	public bool WaitingForOtherWar;
 	// Open war
 	public int WarRequestWeek;
 	public string RebelKingdomId = "";
@@ -72,10 +83,15 @@ internal sealed class KingdomCivilWarHistoryEntry
 internal sealed class KingdomCivilWarKingdomState
 {
 	public string KingdomId = "";
+	// Kingdom-level summary: Discontent when no faction exists; otherwise the most advanced faction stage.
 	public KingdomCivilWarStage Stage = KingdomCivilWarStage.Discontent;
 	public int StageWeek;
 	public int LastAdvancedWeek;
+	// No new faction forms before this week (set when a faction finishes). Existing factions keep running.
 	public int CooldownUntilWeek;
+	// Mood of the remaining factions after the last civil war (CivilWarAftermath), valid through AftermathUntilWeek.
+	public int Aftermath;
+	public int AftermathUntilWeek;
 	public int FactionSerial;
 	public string PlayerSide = "";
 	public string LastImposedPolicyId = "";
@@ -85,12 +101,15 @@ internal sealed class KingdomCivilWarKingdomState
 	public int NoPeaceUntilWeek;
 	public List<string> NoPeaceClanIds = new List<string>();
 	public Dictionary<string, KingdomCivilWarClanState> Clans = new Dictionary<string, KingdomCivilWarClanState>(StringComparer.OrdinalIgnoreCase);
-	public KingdomCivilWarFactionState Faction;
+	public List<KingdomCivilWarFactionState> Factions = new List<KingdomCivilWarFactionState>();
+	// v2 single faction; read for migration only, never written.
+	[JsonProperty("Faction", NullValueHandling = NullValueHandling.Ignore)]
+	public KingdomCivilWarFactionState LegacyFaction;
 	public List<KingdomCivilWarHistoryEntry> History = new List<KingdomCivilWarHistoryEntry>();
 }
 
 internal sealed class KingdomCivilWarStorage
 {
-	public int Version = 2;
+	public int Version = 3;
 	public Dictionary<string, KingdomCivilWarKingdomState> Kingdoms = new Dictionary<string, KingdomCivilWarKingdomState>(StringComparer.OrdinalIgnoreCase);
 }

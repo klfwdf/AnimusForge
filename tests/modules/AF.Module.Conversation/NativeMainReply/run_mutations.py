@@ -20,4 +20,4 @@ for mutation,assertion in expected.items():
  assert r.returncode!=0 and 'FAIL '+assertion in log and 'error CS' not in log and 'Build FAILED' not in log,(mutation,log)
  results.append({'mutation':mutation,'exitCode':r.returncode,'expectedAssertion':assertion})
  print('PASS behavioral mutation rejected: '+mutation+' / '+assertion,flush=True)
-(HERE/'.generated/mutations.json').write_text(json.dumps(results,indent=2)+'\n')
+(HERE/'.generated').mkdir(parents=True,exist_ok=True);(HERE/'.generated/mutations.json').write_text(json.dumps(results,indent=2)+'\n')

@@ -14,14 +14,15 @@ spec = importlib.util.spec_from_file_location(
     "extract", ROOT / "tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py")
 extract = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(extract)
-courier = (ROOT / "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.PromptMessages.cs").read_text(encoding="utf-8-sig")
+# cb045840 moved these Courier projections unchanged (private -> internal) into the Prompt owner.
+courier = (ROOT / "src/modules/AF.Module.Prompt/Composition/MainPromptMessageAssemblyOwner.cs").read_text(encoding="utf-8-sig")
 scene = (ROOT / "ShoutBehavior.cs").read_text(encoding="utf-8-sig")
 courier_methods = "\n".join(extract.declaration(courier, signature) for signature in (
-    "private static object CreateCourierChatMessage(",
-    "private static bool TryConvertCourierMemoryMessageToChatMessage(",
-    "private static string BuildCourierMemoryMetadataPrefix(",
-    "private static string StripCourierPromptScopeLabel(",
-    "private static string StripCourierSpeakerPrefix("))
+    "internal static object CreateCourierChatMessage(",
+    "internal static bool TryConvertCourierMemoryMessageToChatMessage(",
+    "internal static string BuildCourierMemoryMetadataPrefix(",
+    "internal static string StripCourierPromptScopeLabel(",
+    "internal static string StripCourierSpeakerPrefix("))
 scene_methods = "\n".join(extract.declaration(scene, signature) for signature in (
     "private static bool TryConvertSceneMessageToStrictChatMessage(ConversationMessage msg, int npcAgentIndex, out object chatMessage, HashSet",
     "private static string BuildConversationMessageMetadataPrefix(",

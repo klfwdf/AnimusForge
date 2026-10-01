@@ -127,7 +127,7 @@ internal static class Program
     {
         string behaviorPath = Path.Combine(projectRoot, "DuelBehavior.cs");
         string hostPath = Path.Combine(projectRoot, "DuelBehavior.Outcomes.cs");
-        string contractPath = Path.Combine(projectRoot, "Refactor", "Runtime", "DuelOutcomeReceipt.cs");
+        string contractPath = Path.Combine(projectRoot, "src", "modules", "AF.Module.Duel", "DuelOutcomeReceipt.cs");
         string fourberiePath = Path.Combine(projectRoot, "FourberieDuelCompatibility.cs");
         foreach (string path in new[] { behaviorPath, hostPath, contractPath, fourberiePath })
         {
@@ -320,7 +320,9 @@ internal static class Program
         string shoutBehavior = File.ReadAllText(Path.Combine(projectRoot, "ShoutBehavior.cs"));
         string nativeCoordinator = File.ReadAllText(Path.Combine(projectRoot, "src", "modules", "AF.Module.Conversation", "Channels", "Native", "NativeConversationTurnCoordinator.cs"));
         string nativeCommit = File.ReadAllText(Path.Combine(projectRoot, "ShoutBehavior.NativeTurnCommit.cs"));
-        string scenePostprocess = File.ReadAllText(Path.Combine(projectRoot, "src", "modules", "AF.Module.Conversation", "Channels", "Scene", "ShoutBehavior.ScenePostprocess.cs"));
+        // J17-B7 (aa3539ca) moved the unified Scene/Native postprocess wrapper and work item into Internal/Postprocess.
+        string scenePostprocess = File.ReadAllText(Path.Combine(projectRoot, "src", "modules", "AF.Module.Conversation", "Channels", "Scene", "ShoutBehavior.ScenePostprocess.cs"))
+            + File.ReadAllText(Path.Combine(projectRoot, "src", "modules", "AF.Module.Conversation", "Internal", "Postprocess", "ShoutBehavior.UnifiedActionPostprocess.cs"));
 
         foreach (string classMarker in new[]
         {
@@ -452,7 +454,7 @@ internal static class Program
     private static void VerifyExactDispatchSourceGuard(string projectRoot)
     {
         string contracts = File.ReadAllText(Path.Combine(
-            projectRoot, "Refactor", "Contracts", "InteractionContracts.cs"));
+            projectRoot, "src", "AF.Contracts", "Internal", "InteractionContracts.cs"));
         string committer = File.ReadAllText(Path.Combine(
             projectRoot, "src", "modules", "AF.Module.Actions", "Receipts", "InteractionResultCommitter.cs"));
         string actionCommitter = File.ReadAllText(Path.Combine(
@@ -468,9 +470,9 @@ internal static class Program
         string courier = File.ReadAllText(Path.Combine(projectRoot, "CourierDeliveryBehavior.cs"))
             + File.ReadAllText(Path.Combine(projectRoot, "src", "modules", "AF.Module.Conversation", "Channels", "Courier", "CourierDeliveryBehavior.DomainCommit.cs"));
         string receipt = File.ReadAllText(Path.Combine(
-            projectRoot, "Refactor", "Runtime", "DuelOutcomeReceipt.cs"));
+            projectRoot, "src", "modules", "AF.Module.Duel", "DuelOutcomeReceipt.cs"));
         string snapshots = File.ReadAllText(Path.Combine(
-            projectRoot, "Refactor", "Adapters", "LegacyInteractionSnapshotAdapters.cs"));
+            projectRoot, "src", "AF.GameAdapter.Bannerlord", "Composition", "LegacyInteractionSnapshotAdapters.cs"));
         string normalizedHost = host.Replace("\r\n", "\n", StringComparison.Ordinal);
         string normalizedBehavior = behavior.Replace("\r\n", "\n", StringComparison.Ordinal);
 
@@ -780,8 +782,8 @@ internal static class Program
             Path.Combine(projectRoot, "src", "modules", "AF.Module.Conversation", "Channels", "Courier", "CourierDeliveryBehavior.DomainCommit.cs"),
             Path.Combine(projectRoot, "src", "modules", "AF.Module.Conversation", "Channels", "Courier", "CourierDeliveryBehavior.ReplyWait.cs"),
             Path.Combine(projectRoot, "src", "modules", "AF.Module.Conversation", "Channels", "Courier", "CourierDeliveryBehavior.PromptMessages.cs"),
-            Path.Combine(projectRoot, "Refactor", "Contracts", "InteractionContracts.cs"),
-            Path.Combine(projectRoot, "Refactor", "Runtime", "DuelOutcomeReceipt.cs"),
+            Path.Combine(projectRoot, "src", "AF.Contracts", "Internal", "InteractionContracts.cs"),
+            Path.Combine(projectRoot, "src", "modules", "AF.Module.Duel", "DuelOutcomeReceipt.cs"),
             Path.Combine(projectRoot, "src", "modules", "AF.Module.Actions", "Receipts", "InteractionResultCommitter.cs"),
             Path.Combine(projectRoot, "src", "modules", "AF.Module.Actions", "Receipts", "ActionExecutionCommitter.cs"),
             Path.Combine(projectRoot, "src", "modules", "AF.Module.Actions", "Execute", "LegacyChannelActionCommitter.cs"),

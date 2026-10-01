@@ -21,7 +21,6 @@ internal static class ApplicationTickComposition
 			{
 				RunWatchedApplicationTickPhases(host, dt);
 			}
-			host.TickWarStatsMapButton(dt);
 		}
 		catch (Exception ex)
 		{

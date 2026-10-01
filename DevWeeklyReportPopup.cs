@@ -16,7 +16,11 @@ public sealed class DevWeeklyReportPopup
 
 	private readonly GauntletLayer _layer;
 
-	private readonly DevWeeklyReportPopupVM _dataSource;
+	private readonly ViewModel _dataSource;
+
+	private readonly string _movieName = "DevWeeklyReportPopup";
+
+	private WorldBulletinPanelVM _bulletinPanel;
 
 	private readonly Action _onClose;
 
@@ -35,6 +39,56 @@ public sealed class DevWeeklyReportPopup
 		int bodyFontSize = DuelSettings.GetSettings()?.WeeklyReportPopupBodyFontSize ?? 18;
 		_dataSource = new DevWeeklyReportPopupVM(titleText, subtitleText, bodyText, bodyFontSize, HandleCloseRequested, HandleOpenEncyclopediaLink, closeText, useChronicleColumns, useShortReportLayout, showCloseButton);
 		_layer = new GauntletLayer("DevWeeklyReportPopup", 4000, false);
+	}
+
+	private DevWeeklyReportPopup(ScreenBase screen, WorldBulletinPanelData bulletin, double minimumDwellSeconds, Action onMinimumDwellMet)
+	{
+		_screen = screen;
+		_onMinimumDwellMet = onMinimumDwellMet;
+		_session = new WeeklyReportPopupSessionOwner(DateTime.UtcNow, minimumDwellSeconds);
+		int bodyFontSize = DuelSettings.GetSettings()?.WeeklyReportPopupBodyFontSize ?? 18;
+		_bulletinPanel = new WorldBulletinPanelVM(bulletin, bodyFontSize, HandleCloseRequested, HandleOpenEncyclopediaLink);
+		_dataSource = _bulletinPanel;
+		_movieName = "WorldBulletinPanel";
+		_layer = new GauntletLayer("DevWeeklyReportPopup", 4000, false);
+	}
+
+	// Separate name from Show so name-based Harmony hooks on Show keep resolving to the weekly-report overload only.
+	internal static bool ShowWorldBulletin(WorldBulletinPanelData bulletin, double minimumDwellSeconds = 0.0, Action onMinimumDwellMet = null)
+	{
+		ScreenBase topScreen = ScreenManager.TopScreen;
+		if (topScreen == null || bulletin == null)
+		{
+			return false;
+		}
+		DevWeeklyReportPopup popup = null;
+		try
+		{
+			_activePopup?.Close(silent: true);
+			popup = new DevWeeklyReportPopup(topScreen, bulletin, minimumDwellSeconds, onMinimumDwellMet);
+			popup.Open();
+			_activePopup = popup;
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("DevWeeklyReportPopup", "[ERROR] Failed to open world bulletin panel: " + ex);
+			popup?.Close(silent: true);
+			return false;
+		}
+		try
+		{
+			Func<WorldBulletinIllustrationVM, string, string, string, string, bool> attach = WorldBulletinPanelIllustrationBridge.AttachSlot;
+			if (attach != null)
+			{
+				attach(popup._bulletinPanel.Illustration, bulletin.EventId ?? "", bulletin.HeadlineText ?? "", bulletin.IllustrationSubtitle ?? "", bulletin.IllustrationBody ?? "");
+			}
+		}
+		catch (Exception ex)
+		{
+			// Illustration is decorative; the panel stays open with the column collapsed.
+			Logger.Log("DevWeeklyReportPopup", "[WARN] World bulletin illustration attach failed: " + ex.Message);
+		}
+		return true;
 	}
 
 	public static bool Show(string titleText, string subtitleText, string bodyText, Action onClose = null, string closeText = null, bool useChronicleColumns = false, bool useShortReportLayout = false, bool showCloseButton = true, double minimumDwellSeconds = 0.0, Action onMinimumDwellMet = null)
@@ -82,12 +136,16 @@ public sealed class DevWeeklyReportPopup
 		{
 			AnimusForgeCourierUiSprites.EnsureInstalled();
 			AnimusForgeWeeklyReportUiSprites.EnsureInstalledForPopupUi();
+			if (_bulletinPanel != null)
+			{
+				AnimusForgeWeeklyReportUiSprites.EnsureInstalledForWorldBulletinUi();
+			}
 		}
 		catch (Exception ex)
 		{
 			Logger.Log("DevWeeklyReportPopup", "[WARN] Failed to install popup sprites: " + ex.Message);
 		}
-		_layer.LoadMovie("DevWeeklyReportPopup", _dataSource);
+		_layer.LoadMovie(_movieName, _dataSource);
 		_layer.InputRestrictions.SetInputRestrictions(true, InputUsageMask.All);
 		try
 		{

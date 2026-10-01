@@ -11,6 +11,8 @@ namespace AnimusForge;
 internal interface ICivilWarHost
 {
 	void AdjustStability(Kingdom kingdom, int delta, string reason);
+	// Player clan defects from its kingdom to the civil-war rebel kingdom (follow prompt). True when it moved.
+	bool MovePlayerToRebels(Clan player, Kingdom home, Kingdom rebel);
 	int GetStability(Kingdom kingdom);
 	bool DiscontinueLandlessKingdom(Kingdom kingdom, string reason);
 	void QueueRebellion(Kingdom kingdom, Clan leader, List<Clan> followers, string factionId, bool startNow);
@@ -36,7 +38,7 @@ internal sealed class CivilWarEffectContext
 		if (State?.Clans == null) yield break;
 		foreach (KingdomCivilWarClanState clan in State.Clans.Values)
 		{
-			if (clan?.Side != KingdomCivilWarSide.Opposition) continue;
+			if (clan?.Side != KingdomCivilWarSide.Opposition || Faction == null || !string.Equals(clan.FactionId, Faction.Id, StringComparison.OrdinalIgnoreCase)) continue;
 			Clan found = CivilWarWorld.FindClan(clan.ClanId);
 			if (found != null && !found.IsEliminated) yield return found;
 		}

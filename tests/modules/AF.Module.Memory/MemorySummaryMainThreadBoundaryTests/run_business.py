@@ -224,7 +224,7 @@ def main():
     sys.stdout.reconfigure(encoding="utf-8")
     product, boundary, manifest = build_sources(args.original, args.mutate, args.run_owner_baseline)
     out = new_run_root(ROOT, 'memory-b1a-business', args.run_root)
-    dependency = ROOT / ".tmp/nuget-packages/newtonsoft.json/13.0.3/lib/net6.0/Newtonsoft.Json.dll"
+    dependency = Path(os.environ.get("AF_NEWTONSOFT") or os.environ.get("NEWTONSOFT_JSON_PATH") or str(ROOT / ".tmp/nuget-packages/newtonsoft.json/13.0.3/lib/net6.0/Newtonsoft.Json.dll"))
     if not dependency.is_file():
         raise ValueError("Existing Newtonsoft DLL missing; no dependency download attempted")
     files = {"Business.cs": product, "Boundary.cs": boundary,
@@ -278,7 +278,7 @@ def main():
     env = {key: os.environ[key] for key in ("SystemRoot", "WINDIR", "ProgramData", "HOMEDRIVE", "HOMEPATH", "OS", "USERNAME", "USERDOMAIN", "ProgramFiles", "ProgramFiles(x86)", "CommonProgramFiles", "CommonProgramFiles(x86)", "PROCESSOR_ARCHITECTURE") if key in os.environ}
     env.update(PATH=str(dotnet.parent), DOTNET_ROOT=str(dotnet.parent), DOTNET_CLI_HOME=str(out/'home'),
                USERPROFILE=str(out/'home'), HOME=str(out/'home'), LOCALAPPDATA=str(out/'appdata'),
-               NUGET_PACKAGES=str(ROOT / ".tmp/nuget-packages"), APPDATA=str(out/'appdata'), TEMP='E:/tmp/af-j17-20260930', TMP='E:/tmp/af-j17-20260930',
+               NUGET_PACKAGES=str(ROOT / ".tmp/nuget-packages"), APPDATA=str(out/'appdata'), TEMP=os.environ.get('TEMP') or 'E:/tmp/af-j17-20260930', TMP=os.environ.get('TEMP') or 'E:/tmp/af-j17-20260930',
                DOTNET_CLI_TELEMETRY_OPTOUT="1", DOTNET_SKIP_FIRST_TIME_EXPERIENCE="1",
                DOTNET_GENERATE_ASPNET_CERTIFICATE="false", DOTNET_CLI_UI_LANGUAGE="en")
     # Separate build from execution: compiler/extractor failure is NOT an expected red test.

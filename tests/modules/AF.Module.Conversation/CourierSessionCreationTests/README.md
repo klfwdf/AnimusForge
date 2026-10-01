@@ -18,7 +18,10 @@ the existing Courier main-thread phase dispatcher/retirement registry and the
 internal module admission. Cases cover concurrent retries, cross-channel ID
 conflicts/capacity, queued cancellation (including during validation), Dispose,
 UI-first submission, partial failure, 128 outstanding operations per owner,
-retirement without a future tick and release of transient associations. Cancelled
+retirement without a future tick and release of transient associations. Since cb045840 the
+actual `BeginCourierRequestLifetime`/`RetireCourierRequestLifetime` members and
+`ConversationRequestLifetime` are linked too; completed and missing transport must
+retire the session request lifetime. Cancelled
 but physically undrained callbacks still occupy a bounded slot until dequeue or
 owner reset, preventing cancel/recreate loops from flooding the existing queue. Successful
 dispatch must remain **Running**, not Completed: b2 transport receipts are a separate

@@ -57,7 +57,7 @@ program = program.replace("@@MEMORYDATE@@", memory_date)
 assert program.count("@@DELIVERY@@") == 1
 assert program.count("@@STORAGE@@") == 1
 (out / "Program.cs").write_text(program.replace("@@DELIVERY@@", delivery).replace("@@STORAGE@@", storage), encoding="utf-8")
-newtonsoft = ROOT / ".tmp/nuget-packages/newtonsoft.json/13.0.3/lib/net6.0/Newtonsoft.Json.dll"
+newtonsoft = Path(os.environ.get("AF_NEWTONSOFT") or os.environ.get("NEWTONSOFT_JSON_PATH") or str(ROOT / ".tmp/nuget-packages/newtonsoft.json/13.0.3/lib/net6.0/Newtonsoft.Json.dll"))
 if not newtonsoft.is_file():
     parser.error("local Newtonsoft.Json.dll is required for actual save JSON compatibility")
 (out / "Tests.csproj").write_text(

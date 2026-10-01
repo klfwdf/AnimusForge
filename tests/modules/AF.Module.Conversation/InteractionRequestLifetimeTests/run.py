@@ -9,10 +9,15 @@ p=argparse.ArgumentParser();p.add_argument('--main',action='store_true');p.add_a
 if args.main and args.mutate:p.error("--main and --mutate are mutually exclusive")
 out=util.new_run_root(ROOT,'interaction-request-lifetime',args.run_root)
 (out/'NuGet.Config').write_text('<configuration><packageSources><clear /></packageSources></configuration>')
+# Pinned main predates B7 (aa3539ca), which git-mv'd these sources out of Refactor/ with unchanged text.
+MAIN_PATHS={'src/modules/AF.Module.Conversation/Internal/InteractionRequestCoordinator.cs':'Refactor/Runtime/InteractionRequestCoordinator.cs',
+ 'src/AF.Contracts/Internal/InteractionContracts.cs':'Refactor/Contracts/InteractionContracts.cs',
+ 'src/AF.Contracts/Internal/LlmContracts.cs':'Refactor/Contracts/LlmContracts.cs',
+ 'src/AF.Contracts/Internal/ProfileConfigContracts.cs':'Refactor/Contracts/ProfileConfigContracts.cs'}
 sources=[]
 for path in SOURCES:
  if args.main:
-  file=out/Path(path).name;file.write_bytes(subprocess.check_output(['git','show',MAIN+':'+('Refactor/Runtime/InteractionRequestCoordinator.cs' if path=='src/modules/AF.Module.Conversation/Internal/InteractionRequestCoordinator.cs' else path)],cwd=ROOT));sources.append(file)
+  file=out/Path(path).name;file.write_bytes(subprocess.check_output(['git','show',MAIN+':'+MAIN_PATHS.get(path,path)],cwd=ROOT));sources.append(file)
  else:sources.append(ROOT/path)
 lease=ROOT/'src/modules/AF.Module.Conversation/Internal/InteractionRequestLease.cs'
 if not args.main and lease.exists():

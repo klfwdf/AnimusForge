@@ -1,20 +1,22 @@
 from pathlib import Path
 import os
-import importlib.util,subprocess,shutil,hashlib
+import importlib.util,subprocess,shutil,hashlib,sys
 from xml.sax.saxutils import escape
 ROOT=Path(__file__).resolve().parents[4];HERE=Path(__file__).parent
 spec=importlib.util.spec_from_file_location('build',ROOT/'tests/AF.Contracts/ModuleFrameworkApiTests/run.py');util=importlib.util.module_from_spec(spec);spec.loader.exec_module(util)
-base=[r'G:\Python310\python.exe','-X','utf8','-B',str(HERE/'run.py')]
+base=[sys.executable,'-X','utf8','-B',str(HERE/'run.py')]
 surfaces=[]
-for flag in [['--main'],[]]:
- r=subprocess.run(base+flag+['--case','surface'],cwd=ROOT,capture_output=True,text=True,encoding='utf-8',timeout=90)
+# run.py now allocates a fresh output per run; pin both builds to fresh folders and read their DLLs from there.
+import uuid;_run='run-'+uuid.uuid4().hex[:12];_roots={'main':HERE/'.generated'/_run/'main','current':HERE/'.generated'/_run/'current'}
+for flag,key in [(['--main'],'main'),([],'current')]:
+ r=subprocess.run(base+flag+['--case','surface','--run-root',str(_roots[key])],cwd=ROOT,capture_output=True,text=True,encoding='utf-8',timeout=180)
  assert r.returncode==0,r.stdout+r.stderr;surfaces.append(r.stdout)
 assert surfaces[0]==surfaces[1],'Public constructor/method signatures differ from main'
 print('PASS coordinator public signatures equal pinned main')
-out=HERE/'.generated/compat';out.mkdir(parents=True,exist_ok=True)
+out=HERE/'.generated'/_run/'compat';out.mkdir(parents=True,exist_ok=False)
 (out/'NuGet.Config').write_text('<configuration><packageSources><clear /></packageSources></configuration>')
-original=HERE/'.generated/main/bin/Release/net8.0/InteractionRequestLifetimeChecks.dll'
-replacement=HERE/'.generated/current/bin/Release/net8.0/InteractionRequestLifetimeChecks.dll'
+original=_roots['main']/'bin/Release/net8.0/InteractionRequestLifetimeChecks.dll'
+replacement=_roots['current']/'bin/Release/net8.0/InteractionRequestLifetimeChecks.dll'
 project=out/'LegacyClient.csproj'
 project.write_text(f'''<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><TargetFramework>net8.0</TargetFramework><OutputType>Exe</OutputType><EnableDefaultCompileItems>false</EnableDefaultCompileItems><NuGetAudit>false</NuGetAudit></PropertyGroup><ItemGroup><Compile Include="{escape(str(HERE/'LegacyClient.cs'))}"/><Reference Include="InteractionRequestLifetimeChecks"><HintPath>{escape(str(original))}</HintPath></Reference></ItemGroup></Project>''',encoding='utf-8')
 code,log=util.run_dotnet((os.environ.get("DOTNET_EXE") or os.environ.get("AF_DOTNET") or str(Path(__file__).resolve().parents[4] / "local/dotnet/8.0.425/dotnet.exe")),['build',str(project),'-c','Release'],out)

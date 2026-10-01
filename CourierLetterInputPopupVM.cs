@@ -13,6 +13,9 @@ public sealed class CourierLetterInputPopupVM : ViewModel
 	private string _inputText;
 
 	[DataSourceProperty]
+	public CourierLetterThemeVM Theme { get; } = new CourierLetterThemeVM(CourierLetterThemes.Current);
+
+	[DataSourceProperty]
 	public string TitleText
 	{
 		get => _titleText;

@@ -26,7 +26,7 @@ def load_declaration():
     return module.declaration
 
 
-def prepare_generated() -> Path:
+def prepare_generated(generated: Path | None = None) -> Path:
     declaration = load_declaration()
     reward = REWARD.read_text(encoding="utf-8-sig")
     ledger = LEDGER.read_text(encoding="utf-8-sig")
@@ -110,7 +110,7 @@ def prepare_generated() -> Path:
         "Quest drain tick wiring drifted"
     assert ledger.count("CompleteDebtPromiseQuest(") == 2, "Debt resolution quest completion drifted"
 
-    generated = HERE / ".generated"
+    generated = generated or HERE / ".generated"
     generated.mkdir(parents=True, exist_ok=True)
     (generated / "NuGet.Config").write_text(
         "<configuration><packageSources><clear /></packageSources></configuration>", encoding="utf-8")
@@ -146,8 +146,15 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--dotnet", default=os.environ.get("DOTNET_EXE", r"G:\AFMOD\.dotnet-sdk\dotnet.exe"))
     parser.add_argument("--skip-mutation", action="store_true")
+    # Used by DebtNormalizationTests.csproj so the csproj entry is self-sufficient: it extracts the
+    # production DebtRecord (with the same drift assertions) into its own obj dir, then exits.
+    parser.add_argument("--prepare-only", action="store_true")
+    parser.add_argument("--generated-dir")
     args = parser.parse_args()
 
+    if args.prepare_only:
+        prepare_generated(Path(args.generated_dir) if args.generated_dir else None)
+        return 0
     generated = prepare_generated()
     code, log = run(args.dotnet, HERE / "DebtNormalizationTests.csproj", generated)
     (generated / "current.log").write_text(log, encoding="utf-8")

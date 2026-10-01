@@ -63,7 +63,7 @@ python tests\modules\AF.Module.Conversation\ScenePostprocessParityTests\run_queu
 
 这两项不替代、也不修改上面的 71 组差分断言。`QueueHarness.cs.txt` 另行原样提取当前 `QueueDeferredScenePostprocessActions`、WorkItem、Complete 和 Request，Prepare 返回固定工作项（它的完整规则/候选编排已经由前述差分测试覆盖）。
 
-37 个实际执行场景包括：
+43 个实际执行场景包括：
 
 - 上游 main 请求传入已经过期的 expected generation / session 时，入队不能重新捕获当前值放行。
 - generation / scene session / conversation epoch 分别在 prepare 前、network 后、dispatch 前失效，动作和 relay 不落地。
@@ -74,10 +74,11 @@ python tests\modules\AF.Module.Conversation\ScenePostprocessParityTests\run_queu
 - 人为阻塞 network，验证 request deadline 能先完成 Task 为 `-1`；随后放行网络，仍无 normalize / action / relay。
 - 真实 `Task.Run` 工作线程，专用物理主线程和 BlockingCollection 派发。game-property getter / runtime eligibility / prepare / normalize / dispatch 必须在该主线程，网络必须不在主线程。后台游戏读取即使被生产 `catch` 吞掉也累计为失败。
 - 请求的 AsyncLocal mentions 与 6 个 runtime target 在阶段执行时正确恢复，退出后主线程原有上下文不受污染；异常退出同样检查。
+- cb045840 起 Queue 捕获 `_sceneRequestLifetime`，并经 `LlmNonStreamingTransport.PushOwnerCancellation` 绑定网络取消：runner 原样 Link `ConversationRequestLifetime` / `InteractionRequestLease` / `LlmNonStreamingTransport`（`LlmApiCompat` 为抛错 stub，Queue 不发 HTTP）；新增 3 个场景在 prepare 前、network 后、dispatch 前 Retire 请求生命周期，必须 Stale 且无动作。
 
 生产 Queue 控制流不改写。仅测试宿主的独立 timeout 常量缩短为 100 ms（speech）和 700 ms（整体请求），不改生产常量/配置，不模拟完整游戏主循环。实际 Speech worker、战斗动作执行器、AFEF/存档写入、UI 忙状态等仍由 stub 代替；本测试不能证明实际游戏派发器或实体动作正确。
 
-7 个 Queue 反例只作用于生成副本：忽略 generation、移除 dispatch 检查、丢 ExecutionContext、speech 不设发布 guard、网络阶段读 Mission、忽略上游 expected generation、忽略上游 expected session。必须在运行期行为断言失败，编译失败不计入成功。
+9 个 Queue 反例只作用于生成副本：忽略 generation、移除 dispatch 检查、丢 ExecutionContext、speech 不设发布 guard、网络阶段读 Mission、忽略上游 expected generation、忽略上游 expected session、directive 先于 guard 提交、忽略请求生命周期取消（`ignore-request-lifetime`）。必须在运行期行为断言失败，编译失败不计入成功。
 
 日志在 `.generated/queue-current/` 及 `.generated/queue-mutant-*/`；附每个原样提取声明的 SHA-256。
 

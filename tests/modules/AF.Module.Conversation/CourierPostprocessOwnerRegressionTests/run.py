@@ -29,6 +29,10 @@ SIGNATURES = [
     'private CourierPromptRun BeginCourierPromptRun(',
     'private bool IsCourierPromptRunCurrent(',
 ]
+LIFETIME_SIGNATURES = [
+    'private ConversationRequestLifetime BeginCourierRequestLifetime(',
+    'private void RetireCourierRequestLifetime(',
+]
 LINKS = [
     'src/modules/AF.Module.Conversation/Internal/CoreDialogueContracts.cs',
     'src/modules/AF.Module.Duel/DuelOutcomeReceipt.cs',
@@ -38,6 +42,8 @@ LINKS = [
     'src/AF.Contracts/Internal/ProfileConfigContracts.cs', 'src/modules/AF.Module.Conversation/Internal/Pipeline/InteractionPipeline.cs',
     'src/modules/AF.Module.Conversation/Internal/Pipeline/FullInteractionPipeline.cs', 'src/modules/AF.Module.Conversation/Internal/InteractionRequestCoordinator.cs',
     'src/modules/AF.Module.Conversation/Internal/InteractionRequestLease.cs',
+    # cb045840: CourierPromptRun owns a ConversationRequestLifetime (backed by InteractionRequestLease).
+    'src/modules/AF.Module.Conversation/Internal/ConversationRequestLifetime.cs',
     'src/modules/AF.Module.Conversation/Internal/Pipeline/LegacyInteractionPipelineComposition.cs', 'src/modules/AF.Module.Actions/Tags/LegacyActionTagParser.cs',
     'src/modules/AF.Module.Prompt/Composition/LegacyDetachedPromptComposer.cs', 'src/modules/AF.Module.Prompt/Composition/LegacyPromptPackageAdapter.cs',
     'src/modules/AF.Module.Prompt/Composition/PromptRuntimeTargetBinding.cs',
@@ -48,10 +54,16 @@ def extract():
     for part in ('CommitDispatch', 'PromptPreparation'):
         courier += '\n' + ex.source('src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.' + part + '.cs', None)
     shout = ex.source('ShoutBehavior.cs', None)
+    # cb045840: BeginCourierPromptRun reserves a per-session ConversationRequestLifetime via these real owner members.
+    campaign = ex.source('src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.CampaignLifetime.cs', None)
+    field_start = campaign.index('private readonly Dictionary<CourierSession, ConversationRequestLifetime> _courierRequestLifetimes')
+    lifetime = [campaign[field_start:campaign.index(';', field_start) + 1]]
+    lifetime += [ex.declaration(campaign, signature) for signature in LIFETIME_SIGNATURES]
     return {
         'METHODS': '\n\n'.join(ex.declaration(courier, signature) for signature in SIGNATURES),
         'PARTIAL': ex.source('src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.DetachedPostprocess.cs', None),
         'WORK_ITEM': ex.declaration(shout, 'internal sealed class CourierActionPostprocessWorkItem'),
+        'LIFETIME': '\n\n'.join(lifetime),
     }
 
 MUTATIONS = {
@@ -82,7 +94,7 @@ EXPECTED_FAILURES = {
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--dotnet', default=(os.environ.get("DOTNET_EXE") or os.environ.get("AF_DOTNET") or str(Path(__file__).resolve().parents[4] / "local/dotnet/8.0.425/dotnet.exe")))
-    parser.add_argument('--newtonsoft', default=str(ROOT / '.tmp/nuget-packages/newtonsoft.json/13.0.3/lib/net6.0/Newtonsoft.Json.dll'))
+    parser.add_argument('--newtonsoft', default=os.environ.get('AF_NEWTONSOFT') or os.environ.get('NEWTONSOFT_JSON_PATH') or str(ROOT / '.tmp/nuget-packages/newtonsoft.json/13.0.3/lib/net6.0/Newtonsoft.Json.dll'))
     parser.add_argument('--output-name', default='current')
     parser.add_argument('--mutation', choices=sorted(MUTATIONS))
     args = parser.parse_args()
@@ -100,7 +112,7 @@ def main():
             if blocks[name].count(old) != 1: raise ValueError('Mutation anchor is not unique: ' + args.mutation + '/' + name)
             blocks[name] = blocks[name].replace(old, new)
     harness = (HERE / 'Harness.cs.txt').read_text(encoding='utf-8-sig')
-    for name in ('METHODS', 'WORK_ITEM'):
+    for name in ('METHODS', 'WORK_ITEM', 'LIFETIME'):
         assert harness.count('@@' + name + '@@') == 1
         harness = harness.replace('@@' + name + '@@', blocks[name])
     (output / 'Program.cs').write_text(harness, encoding='utf-8')

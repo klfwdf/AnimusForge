@@ -76,6 +76,8 @@ internal static class AfWarStatsTexts
 
     public static string OpenFailed => Get("AFWST_OpenFailed", "Failed to open War Statistics. Details were written to rgl_log.");
 
+    public static TextObject TerminalNavigationTooltip => Create("AFWST_TerminalNavTooltip", "AnimusForge Terminal");
+
     public static string NotInitializedMessage => Get("AFWST_NotInitializedMessage", "War Statistics is not initialized.");
 
     public static string ClearTitle => Get("AFWST_ClearTitle", "Clear All War Statistics");

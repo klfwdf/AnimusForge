@@ -1,0 +1,168 @@
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Net;
+using System.Net.Http;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+using Newtonsoft.Json.Linq;
+namespace AnimusForge;
+// Stubs are limited to settings, logging, UI retry and the non-stream fallback sender.
+// The production stream method, streaming transport, owner cancellation, message policy
+// and SaveRuntimeGuard are the real sources copied by the runner.
+static class FreezeWatchdog { internal static void Mark(string a, string b, bool immediate = false) { } }
+static class Logger {
+    internal static void Log(string a, string b) { }
+    internal static void Obs(string a, string b, Dictionary<string, object> c) { }
+    internal static void Metric(string a, bool ok, double ms) { }
+    internal static int EstimateTokens(string s) => (s ?? "").Length;
+    internal static int EstimateTokensFromMessages(List<object> m) => m?.Count ?? 0;
+    internal static void RecordTokenStats(int i, int o, List<object> m, string c, string k, string b = "") { }
+}
+static class LlmRetryPrompt {
+    internal static int Prompts;
+    public static void CaptureMainThreadContext() { }
+    public static bool IsRetryableLlmError(string e) => (e ?? "").StartsWith("（");
+    public static string BuildFailureDetail(string reason, string reply, string raw = null) => reason ?? "";
+    public static Task<bool> PromptRetryAsync(string stage, string error) { Prompts++; return Task.FromResult(false); }
+}
+sealed class DuelSettings {
+    public string ApiKey = "fixture";
+    public string ApiUrl = "https://fixture.invalid/v1/chat/completions";
+    internal static DuelSettings GetSettings() => new DuelSettings();
+    public static string GetEffectiveApiUrl(string raw) => raw;
+    public static void RemoveThinkingControls(JObject p) { }
+}
+public static class ShoutNetwork {
+    private const int DefaultPrimaryMaxTokens = 64;
+    internal static Func<HttpRequestMessage, CancellationToken, Task<HttpResponseMessage>> StreamSend;
+    internal static Func<List<object>, CancellationToken, Task<string>> NonStream;
+    internal static readonly List<(string kind, CancellationToken token)> NonStreamCalls = new();
+    private static Task<HttpResponseMessage> SendPrimaryStreamingRequestAsync(HttpRequestMessage r, CancellationToken t) => StreamSend(r, t);
+    private static string BuildTokenStatsOutputContent(string finalContent, string reasoningContent = null) => finalContent ?? "";
+    private static void LogPrimaryRawResponse(string phase, string body) { }
+    private static void LogNormalizedMessageTail(string mode, string originalLastRole, List<object> messages) { }
+    private static bool TryResolvePrimaryModelByDropdownState(DuelSettings s, out string model, out string option, out bool manual) { model = "fixture-model"; option = ""; manual = false; return true; }
+    private static int ResolvePrimaryMaxTokens(DuelSettings s) => 64;
+    private static JObject BuildPrimaryChatPayload(List<object> m, DuelSettings s, string url, string model, int max, bool stream, out string thinkingMode, bool forceDisableThinking = false) { thinkingMode = "plain"; return new JObject { ["model"] = model, ["stream"] = stream }; }
+    private static List<object> ApplyPlayerDisplayNameToOutgoingMessages(List<object> m) => m;
+    private static string ApplyPlayerDynamicNameToMainText(string t) => t ?? "";
+    private sealed class PlayerReferenceStreamFilter { public string Push(string s) => s; public string Flush() => ""; }
+    public static Task<string> CallApiWithMessages(List<object> messages, int maxTokens, bool recordTokenStats = true, int? overrideMaxTokens = null, bool forceDisableThinking = false, bool promptRetryOnError = false, CancellationToken cancellationToken = default(CancellationToken), float? overrideTemperature = null)
+    {
+        NonStreamCalls.Add((forceDisableThinking ? "empty-retry" : "fallback", cancellationToken));
+        return NonStream(messages, cancellationToken);
+    }
+    @@STREAM@@
+}
+static class Program {
+    static int checks;
+    static void Check(bool value, string name) { checks++; if (!value) throw new Exception("ASSERT " + name); }
+    static List<object> Messages() => new List<object> { new Dictionary<string, object> { ["role"] = "user", ["content"] = "hello" } };
+    static HttpResponseMessage Sse(string body) => new HttpResponseMessage(HttpStatusCode.OK) { Content = new StringContent(body, Encoding.UTF8, "text/event-stream") };
+    static async Task<(int completes, List<string> completed, int errors)> Run(CancellationTokenSource caller)
+    {
+        var completed = new List<string>(); int errors = 0;
+        Task call = ShoutNetwork.CallApiWithMessagesStream(Messages(), 64, _ => { }, t => completed.Add(t), _ => errors++, caller.Token, promptRetryOnError: false);
+        try { await call.WaitAsync(TimeSpan.FromSeconds(5)); } catch (OperationCanceledException) { }
+        return (completed.Count, completed, errors);
+    }
+    static async Task LateSuccess(string kind, Func<HttpRequestMessage, CancellationToken, Task<HttpResponseMessage>> stream, string name)
+    {
+        ShoutNetwork.StreamSend = stream;
+        var entered = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+        var release = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+        ShoutNetwork.NonStream = async (_, _) => { entered.TrySetResult(true); await release.Task; return "late " + kind + " text"; };
+        ShoutNetwork.NonStreamCalls.Clear();
+        using var caller = new CancellationTokenSource();
+        var completed = new List<string>(); int errors = 0;
+        Task call = ShoutNetwork.CallApiWithMessagesStream(Messages(), 64, _ => { }, t => completed.Add(t), _ => errors++, caller.Token, promptRetryOnError: false);
+        Task first = await Task.WhenAny(entered.Task, Task.Delay(3000));
+        Check(first == entered.Task && ShoutNetwork.NonStreamCalls.Count == 1 && ShoutNetwork.NonStreamCalls[0].kind == kind, name + "-entered");
+        caller.Cancel(); release.SetResult(true);
+        try { await call.WaitAsync(TimeSpan.FromSeconds(3)); } catch (OperationCanceledException) { }
+        Check(completed.Count == 0, name);
+    }
+    static async Task Main()
+    {
+        // 1. Stream fails twice with no content: the non-stream fallback must run under the caller's token.
+        ShoutNetwork.StreamSend = (_, _) => throw new HttpRequestException("fixture stream failure");
+        ShoutNetwork.NonStream = (_, _) => Task.FromResult("fallback text");
+        ShoutNetwork.NonStreamCalls.Clear();
+        using (var caller = new CancellationTokenSource())
+        {
+            var r = await Run(caller);
+            Check(ShoutNetwork.NonStreamCalls.Count == 1 && ShoutNetwork.NonStreamCalls[0].kind == "fallback", "fallback-runs-once-after-empty-stream-failure");
+            Check(ShoutNetwork.NonStreamCalls[0].token.CanBeCanceled, "fallback-inherits-cancelable-caller-token");
+            caller.Cancel();
+            Check(ShoutNetwork.NonStreamCalls[0].token.IsCancellationRequested, "fallback-token-tracks-caller-cancel");
+            Check(r.completes == 1 && r.completed[0] == "fallback text", "fallback-success-publishes-once");
+        }
+        // 2. Caller cancels while the fallback is pending: fallback observes cancel, nothing is published.
+        var fallbackEntered = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+        ShoutNetwork.NonStream = async (_, token) => { fallbackEntered.TrySetResult(true); await Task.Delay(Timeout.Infinite, token); return "late fallback"; };
+        ShoutNetwork.NonStreamCalls.Clear();
+        using (var caller = new CancellationTokenSource())
+        {
+            var completed = new List<string>(); int errors = 0;
+            Task call = ShoutNetwork.CallApiWithMessagesStream(Messages(), 64, _ => { }, t => completed.Add(t), _ => errors++, caller.Token, promptRetryOnError: false);
+            Task first = await Task.WhenAny(fallbackEntered.Task, Task.Delay(3000));
+            Check(first == fallbackEntered.Task, "fallback-entered-before-cancel");
+            caller.Cancel();
+            Task done = await Task.WhenAny(call, Task.Delay(3000));
+            Check(done == call, "fallback-cancel-releases-stream-call");
+            Check(completed.Count == 0 && errors == 0, "cancelled-fallback-no-commit");
+        }
+        // 2b. Fallback ignores the token and returns success after the caller cancelled: the publish guard must drop it.
+        await LateSuccess("fallback", (_, _) => throw new HttpRequestException("fixture stream failure"), "late-fallback-success-not-published");
+        // 3. Owner (AsyncLocal) cancellation with a non-cancelable caller token also reaches the fallback.
+        fallbackEntered = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+        ShoutNetwork.StreamSend = (_, _) => throw new HttpRequestException("fixture stream failure");
+        ShoutNetwork.NonStream = async (_, token) => { fallbackEntered.TrySetResult(true); await Task.Delay(Timeout.Infinite, token); return "late fallback"; };
+        ShoutNetwork.NonStreamCalls.Clear();
+        using (var owner = new CancellationTokenSource())
+        {
+            var completed = new List<string>();
+            Task call;
+            using (LlmNonStreamingTransport.PushOwnerCancellation(owner.Token))
+                call = ShoutNetwork.CallApiWithMessagesStream(Messages(), 64, _ => { }, t => completed.Add(t), _ => { }, CancellationToken.None, promptRetryOnError: false);
+            Task first = await Task.WhenAny(fallbackEntered.Task, Task.Delay(3000));
+            Check(first == fallbackEntered.Task, "owner-scope-fallback-entered");
+            owner.Cancel();
+            Check(ShoutNetwork.NonStreamCalls.Count == 1 && ShoutNetwork.NonStreamCalls[0].token.IsCancellationRequested, "fallback-inherits-owner-cancel");
+            try { await call.WaitAsync(TimeSpan.FromSeconds(3)); } catch (OperationCanceledException) { }
+            Check(completed.Count == 0, "owner-cancelled-fallback-no-commit");
+        }
+        // 4. Stream succeeds but is empty: the one empty-reply retry runs under the caller token; cancel -> no commit.
+        ShoutNetwork.StreamSend = (_, _) => Task.FromResult(Sse("data: [DONE]\n\n"));
+        var retryEntered = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+        ShoutNetwork.NonStream = async (_, token) => { retryEntered.TrySetResult(true); await Task.Delay(Timeout.Infinite, token); return "late retry"; };
+        ShoutNetwork.NonStreamCalls.Clear();
+        using (var caller = new CancellationTokenSource())
+        {
+            var completed = new List<string>(); int errors = 0;
+            Task call = ShoutNetwork.CallApiWithMessagesStream(Messages(), 64, _ => { }, t => completed.Add(t), _ => errors++, caller.Token, promptRetryOnError: false);
+            Task first = await Task.WhenAny(retryEntered.Task, Task.Delay(3000));
+            Check(first == retryEntered.Task && ShoutNetwork.NonStreamCalls.Count == 1 && ShoutNetwork.NonStreamCalls[0].kind == "empty-retry", "empty-stream-retry-runs-once");
+            caller.Cancel();
+            Check(ShoutNetwork.NonStreamCalls[0].token.IsCancellationRequested, "empty-retry-inherits-caller-cancel");
+            try { await call.WaitAsync(TimeSpan.FromSeconds(3)); } catch (OperationCanceledException) { }
+            Check(completed.Count == 0 && errors == 0, "cancelled-empty-retry-no-commit");
+        }
+        // 4b. Empty-reply retry returns success after the caller cancelled: the publish guard must drop it.
+        await LateSuccess("empty-retry", (_, _) => Task.FromResult(Sse("data: [DONE]\n\n")), "late-empty-retry-success-not-published");
+        // 5. Pre-cancelled caller never reaches either sender.
+        ShoutNetwork.NonStreamCalls.Clear(); int streamSends = 0;
+        ShoutNetwork.StreamSend = (_, _) => { streamSends++; throw new HttpRequestException("unused"); };
+        using (var caller = new CancellationTokenSource())
+        {
+            caller.Cancel(); bool threw = false;
+            try { await ShoutNetwork.CallApiWithMessagesStream(Messages(), 64, _ => { }, _ => { }, _ => { }, caller.Token, promptRetryOnError: false); }
+            catch (OperationCanceledException) { threw = true; }
+            Check(threw && streamSends == 0 && ShoutNetwork.NonStreamCalls.Count == 0, "pre-cancelled-never-sends-or-falls-back");
+        }
+        Check(LlmRetryPrompt.Prompts == 0, "no-retry-prompt-for-cancelled-paths");
+        Console.WriteLine("PASS StreamFallbackLifetime checks=" + checks + " actualStreamMethod=true actualTransport=true nonStreamSender=RECORDING_STUB provider=NOT-RUN game=NOT-RUN");
+    }
+}

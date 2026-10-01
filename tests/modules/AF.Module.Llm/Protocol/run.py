@@ -100,6 +100,41 @@ def before_policy(shout: str) -> tuple[str, dict[str, str]]:
     return header + "\n\n".join(parts) + "\n}\n", blocks
 
 
+# J17 request-lifetime deltas layered on the reviewed J08 consumers. Each is removed by an
+# exact-count inverse so the reviewed method hashes stay authoritative (no hash refresh):
+# - cb045840 (P2): owner cancellation scope at entry of both consumers, plus caller token
+#   and pre-send ThrowIfCancellationRequested on the stream fallback/empty-retry calls;
+# - aa3539ca (B6 conversation safety): no stream publication after caller cancellation.
+OWNER_CANCELLATION_SCOPE = (
+    "\n\t\tusing CancellationTokenSource ownerCancellation = LlmNonStreamingTransport.LinkOwnerCancellation(cancellationToken);"
+    "\n\t\tif (ownerCancellation != null) cancellationToken = ownerCancellation.Token;"
+    "\n\t\tcancellationToken.ThrowIfCancellationRequested();"
+)
+STREAM_CANCELLATION_INVERSE = (
+    ("!cancellationToken.IsCancellationRequested && !SaveRuntimeGuard.IsStale(", "!SaveRuntimeGuard.IsStale(", 8),
+    ('\n\t\t\tif (!SaveRuntimeGuard.IsStale(runtimeGeneration, "primary_chat_stream_cancelled_complete"))\n\t\t\t\t', "\n\t\t\t", 1),
+    ('\n\t\t\t\tif (!SaveRuntimeGuard.IsStale(runtimeGeneration, "primary_chat_stream_exception_partial_complete"))\n\t\t\t\t\t', "\n\t\t\t\t", 1),
+    ("\n\t\t\t\tcancellationToken.ThrowIfCancellationRequested();\n", "\n", 1),
+    ("\n\t\t\t\t\tcancellationToken.ThrowIfCancellationRequested();\n", "\n", 1),
+    (", promptRetryOnError: false, cancellationToken: cancellationToken);", ", promptRetryOnError: false);", 2),
+)
+
+
+def without_owner_scope(method: str, kind: str) -> str:
+    if method.count(OWNER_CANCELLATION_SCOPE) != 1:
+        raise ValueError(f"Owner cancellation scope changed in {kind} consumer; review required")
+    return method.replace(OWNER_CANCELLATION_SCOPE, "", 1)
+
+
+def without_stream_cancellation(method: str) -> str:
+    method = without_owner_scope(method, "streaming")
+    for delta, original, count in STREAM_CANCELLATION_INVERSE:
+        if method.count(delta) != count:
+            raise ValueError(f"Stream cancellation delta changed; review required: {delta.strip()}")
+        method = method.replace(delta, original)
+    return method
+
+
 def inverse_check(actual_shout: str, actual_policy: str) -> dict[str, str]:
     # J08 transport changes have their own executable old/current HTTP differential.
     # Keep this J01 check scoped to unchanged protocol extraction, not new HTTP I/O.
@@ -108,7 +143,7 @@ def inverse_check(actual_shout: str, actual_policy: str) -> dict[str, str]:
     current = one_declaration(actual_shout, primary_signature)
     prior = one_declaration(source("ShoutNetwork.cs", transport_review["baseline"]), primary_signature)
     if current != prior:
-        if hashlib.sha256(current.encode()).hexdigest() != transport_review["currentMethodSha256"]:
+        if hashlib.sha256(without_owner_scope(current, "non-stream").encode()).hexdigest() != transport_review["currentMethodSha256"]:
             raise ValueError("Unreviewed J08 non-stream consumer change")
         actual_shout = actual_shout.replace(current, prior, 1)
     stream_review = json.loads((ROOT / "tests/modules/AF.Module.Llm/StreamingTransport/primary-source-review.json").read_text(encoding="utf-8-sig"))
@@ -116,7 +151,7 @@ def inverse_check(actual_shout: str, actual_policy: str) -> dict[str, str]:
     current_stream = one_declaration(actual_shout, stream_signature)
     prior_stream = one_declaration(source("ShoutNetwork.cs", stream_review["baseline"]), stream_signature)
     if current_stream != prior_stream:
-        if hashlib.sha256(current_stream.encode()).hexdigest() != stream_review["currentMethodSha256"]:
+        if hashlib.sha256(without_stream_cancellation(current_stream).encode()).hexdigest() != stream_review["currentMethodSha256"]:
             raise ValueError("Unreviewed J08 streaming consumer change")
         actual_shout = actual_shout.replace(current_stream, prior_stream, 1)
     baseline = source("ShoutNetwork.cs", BASE_REVISION)

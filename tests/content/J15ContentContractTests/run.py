@@ -111,7 +111,6 @@ add_j15b_group("AF.Module.Conversation", "content/modules/AF.Module.Conversation
 add_j15b_group("AF.Module.WarStats", "content/modules/AF.Module.WarStats", [
     "ModuleData/Languages/afwarstats_strings.xml",
     "ModuleData/Languages/CNs/afwarstats_strings-zh-CN.xml",
-    "GUI/Prefabs/AFWarStatsMapButton.xml",
 ])
 add_j15b_group(
     "AnimusForge.SiegeAftermathIntervention",
@@ -526,7 +525,48 @@ INTEGRATION_EXPECTED = {
     "ModuleData/Languages/vengeance_strings-en.xml": {"owner": "RichExecutions", "source": "AnimusForge/ModuleData/Languages/vengeance_strings-en.xml", "sha256": "21E0D9CBBBF81B3260942FF751491429D3CB6BF4222E005698C551F011092501"},
     "ModuleData/Languages/CNs/vengeance_strings-zh-CN.xml": {"owner": "RichExecutions", "source": "AnimusForge/ModuleData/Languages/CNs/vengeance_strings-zh-CN.xml", "sha256": "FBE0D80B6114D5DECD239F4CA42AE83FD42187385CB3BCD9C7ABECE5F94F3386"},
 }
-EXPECTED = {**J15A_EXPECTED, **J15B_EXPECTED, **J15C_EXPECTED, **F4A_EXPECTED, **INTEGRATION_EXPECTED}
+# User-approved instant world bulletin (即时快报) content owned by AF.Module.Weekly. These sources
+# post-date the J15b baseline, so they are pinned by reviewed SHA-256 of the checked-out bytes.
+# Consumers: DevWeeklyReportPopup.cs loads the movie; AnimusForgeWeeklyReportMapNotification.cs
+# registers the af_world_bulletin sprite category.
+WORLD_BULLETIN_EXPECTED = {
+    "GUI/Prefabs/WorldBulletinPanel.xml": {"owner": "AF.Module.Weekly", "source": "content/modules/AF.Module.Weekly/GUI/Prefabs/WorldBulletinPanel.xml", "sha256": "E29638ACEE4B442273D4F4112FF3664F801BA6C0C13FD60DE63FEFA1BD5A2EEA"},
+    "GUI/SpriteParts/af_world_bulletin/af_world_bulletin_parchment.png": {"owner": "AF.Module.Weekly", "source": "content/modules/AF.Module.Weekly/GUI/SpriteParts/af_world_bulletin/af_world_bulletin_parchment.png", "sha256": "EDEA0C8F25950F509118FCA13682404B0FC9372F3AAFDC53DFAE9EA18A9C1EDF"},
+    "GUI/SpriteParts/af_world_bulletin/af_world_bulletin_seal.png": {"owner": "AF.Module.Weekly", "source": "content/modules/AF.Module.Weekly/GUI/SpriteParts/af_world_bulletin/af_world_bulletin_seal.png", "sha256": "9EC2745C0EC13BFF5A830E63A50083D13E0A52A89E14BFBC52F3F9BAAB82A067"},
+    "GUI/SpriteParts/af_world_bulletin/af_world_bulletin_rule_l.png": {"owner": "AF.Module.Weekly", "source": "content/modules/AF.Module.Weekly/GUI/SpriteParts/af_world_bulletin/af_world_bulletin_rule_l.png", "sha256": "F82E84F61B924BBFE0F550401D318BD9E7F9F35D3DC47A941EA24765ABD726E3"},
+    "GUI/SpriteParts/af_world_bulletin/af_world_bulletin_rule_r.png": {"owner": "AF.Module.Weekly", "source": "content/modules/AF.Module.Weekly/GUI/SpriteParts/af_world_bulletin/af_world_bulletin_rule_r.png", "sha256": "3DBCD9AC0C13AED014FA1F672261DC2FF5CCCD0EE76B6B57C78C9C3F97F24E3D"},
+}
+# Native map-bar terminal entry brushes (layers resolved by ItemId in AfWarStatsMapNavigationEntry.cs).
+TERMINAL_MAPBAR_EXPECTED = {
+    "GUI/Brushes/AFTerminalMapBarBrushes.xml": {"owner": "AF.Module.WarStats", "source": "content/modules/AF.Module.WarStats/GUI/Brushes/AFTerminalMapBarBrushes.xml", "sha256": "3655AD1396F4D69D88257493E97BB48424511517B0FD97C35490B7C69B144AFC"},
+    "GUI/SpriteParts/af_terminal/af_terminal_icon.png": {"owner": "AF.Module.WarStats", "source": "content/modules/AF.Module.WarStats/GUI/SpriteParts/af_terminal/af_terminal_icon.png", "sha256": "9E3CA854E1E88B66D270910A7D8CB0479B8FF0BEA6B4FC8C8F187997BAEAE42F"},
+}
+# Courier stationery presets (MCM 信纸样式): new sprite layers loaded on demand by AnimusForgeCourierUiSprites.cs.
+COURIER_THEME_EXPECTED = {
+    "GUI/SpriteParts/af_courier/af_courier_scroll_base.png": {"owner": "AF.Module.Conversation", "source": "content/modules/AF.Module.Conversation/GUI/SpriteParts/af_courier/af_courier_scroll_base.png", "sha256": "985537894FD584D6D96547321C50CA67273D37D1DC3372BD390B193E19332B38"},
+    "GUI/SpriteParts/af_courier/af_courier_pattern_left_1.png": {"owner": "AF.Module.Conversation", "source": "content/modules/AF.Module.Conversation/GUI/SpriteParts/af_courier/af_courier_pattern_left_1.png", "sha256": "C0A3E7118280B228FB9A33273180B5663A962151842FB5D6676D1DCF700C794D"},
+    "GUI/SpriteParts/af_courier/af_courier_pattern_left_2.png": {"owner": "AF.Module.Conversation", "source": "content/modules/AF.Module.Conversation/GUI/SpriteParts/af_courier/af_courier_pattern_left_2.png", "sha256": "2B40FB6EBA480F0BBCE7A8217B34908E1ED7533BD8F80DA5B0C69472ABC48AF9"},
+    "GUI/SpriteParts/af_courier/af_courier_pattern_left_3.png": {"owner": "AF.Module.Conversation", "source": "content/modules/AF.Module.Conversation/GUI/SpriteParts/af_courier/af_courier_pattern_left_3.png", "sha256": "50E582D551C9B0DD9F965A97AA2AA2A01833B1A6AAA86C2B1F93DC3AF6EAABF5"},
+    "GUI/SpriteParts/af_courier/af_courier_pattern_left_4.png": {"owner": "AF.Module.Conversation", "source": "content/modules/AF.Module.Conversation/GUI/SpriteParts/af_courier/af_courier_pattern_left_4.png", "sha256": "B280F3082B2241985816DC7ABD45FEFF82BBEB513EF376A788966319D74AEB53"},
+    "GUI/SpriteParts/af_courier/af_courier_pattern_left_5.png": {"owner": "AF.Module.Conversation", "source": "content/modules/AF.Module.Conversation/GUI/SpriteParts/af_courier/af_courier_pattern_left_5.png", "sha256": "2A8EAE98F61E2C3BE3809599437253B34D27F50135D72749EF5F56068BEB39C2"},
+    "GUI/SpriteParts/af_courier/af_courier_pattern_right_1.png": {"owner": "AF.Module.Conversation", "source": "content/modules/AF.Module.Conversation/GUI/SpriteParts/af_courier/af_courier_pattern_right_1.png", "sha256": "28F588B6848FDE861A9F9BDDFF67190382229A6B8E93006837602B274A68FF17"},
+    "GUI/SpriteParts/af_courier/af_courier_pattern_right_2.png": {"owner": "AF.Module.Conversation", "source": "content/modules/AF.Module.Conversation/GUI/SpriteParts/af_courier/af_courier_pattern_right_2.png", "sha256": "94099EF5F97107CCDC6F7004D71B5025F40A3821E75C3D760C015C2067CB8878"},
+    "GUI/SpriteParts/af_courier/af_courier_pattern_right_3.png": {"owner": "AF.Module.Conversation", "source": "content/modules/AF.Module.Conversation/GUI/SpriteParts/af_courier/af_courier_pattern_right_3.png", "sha256": "AE5BDB465B1399E6F8BD8EB0D75EAE27B68CCDB0702BB9226AD5CB9BA361C567"},
+    "GUI/SpriteParts/af_courier/af_courier_pattern_right_4.png": {"owner": "AF.Module.Conversation", "source": "content/modules/AF.Module.Conversation/GUI/SpriteParts/af_courier/af_courier_pattern_right_4.png", "sha256": "C2EF71AF48FDAEFEED4BCC82D46A41CF842627C7AB69484D65B0EA3213EFB543"},
+    "GUI/SpriteParts/af_courier/af_courier_pattern_right_5.png": {"owner": "AF.Module.Conversation", "source": "content/modules/AF.Module.Conversation/GUI/SpriteParts/af_courier/af_courier_pattern_right_5.png", "sha256": "E54999B515BF27BAC1AA9352B849508A75DAE4A9B4AFCED2D5394DAB4074DD6D"},
+    "GUI/SpriteParts/af_courier/af_courier_seal_vlandia.png": {"owner": "AF.Module.Conversation", "source": "content/modules/AF.Module.Conversation/GUI/SpriteParts/af_courier/af_courier_seal_vlandia.png", "sha256": "4157A76BBD8146CA27192B8C0062FEF42993386811E3F976125A21732733456F"},
+    "GUI/SpriteParts/af_courier/af_courier_seal_north_empire.png": {"owner": "AF.Module.Conversation", "source": "content/modules/AF.Module.Conversation/GUI/SpriteParts/af_courier/af_courier_seal_north_empire.png", "sha256": "B3EB217C0CF3E56F64FDC5D93EAE30853C1191CAE74D35544C63BF7CD782A31F"},
+    "GUI/SpriteParts/af_courier/af_courier_seal_west_empire.png": {"owner": "AF.Module.Conversation", "source": "content/modules/AF.Module.Conversation/GUI/SpriteParts/af_courier/af_courier_seal_west_empire.png", "sha256": "E43F8902744437B06B72025470ACFCE86E7CE294CB8583B5FD8183349A0F2DDE"},
+    "GUI/SpriteParts/af_courier/af_courier_seal_south_empire.png": {"owner": "AF.Module.Conversation", "source": "content/modules/AF.Module.Conversation/GUI/SpriteParts/af_courier/af_courier_seal_south_empire.png", "sha256": "D65F1B6700805B558F517148B25E334E4722BC5BA6353917400F8E5B36452570"},
+    "GUI/SpriteParts/af_courier/af_courier_seal_sturgia.png": {"owner": "AF.Module.Conversation", "source": "content/modules/AF.Module.Conversation/GUI/SpriteParts/af_courier/af_courier_seal_sturgia.png", "sha256": "05F86BC3A7725A7D2142743542BAD61D95743EDD09811D9FDECDF654D783887A"},
+    "GUI/SpriteParts/af_courier/af_courier_seal_battania.png": {"owner": "AF.Module.Conversation", "source": "content/modules/AF.Module.Conversation/GUI/SpriteParts/af_courier/af_courier_seal_battania.png", "sha256": "E96D59CF7F0D5D2D40B4A9341D3FA20263D5CE2B2EF6BB6F225E7D4B94658D80"},
+    "GUI/SpriteParts/af_courier/af_courier_seal_khuzait.png": {"owner": "AF.Module.Conversation", "source": "content/modules/AF.Module.Conversation/GUI/SpriteParts/af_courier/af_courier_seal_khuzait.png", "sha256": "24E0C958B403B8B4A6228FF0B6E0467CE3BC8C450D2CA16E2B536D6E536891C6"},
+    "GUI/SpriteParts/af_courier/af_courier_seal_aserai.png": {"owner": "AF.Module.Conversation", "source": "content/modules/AF.Module.Conversation/GUI/SpriteParts/af_courier/af_courier_seal_aserai.png", "sha256": "83D3D9E4EEDFA5717426A763486B9650D4580F788B653DECA9528FA597CFEEC5"},
+    "GUI/SpriteParts/af_courier/af_courier_seal_nord.png": {"owner": "AF.Module.Conversation", "source": "content/modules/AF.Module.Conversation/GUI/SpriteParts/af_courier/af_courier_seal_nord.png", "sha256": "0DA54FC85B49C404F07A39EC6687F126CC5FA41AE4AB3261AD106F55B2FEA7B2"},
+    "GUI/SpriteParts/af_courier/af_courier_button_band.png": {"owner": "AF.Module.Conversation", "source": "content/modules/AF.Module.Conversation/GUI/SpriteParts/af_courier/af_courier_button_band.png", "sha256": "C1368261A84CAB434DCEEDA27421B34019CB51CDE361078E3AA2E171BBC965A9"},
+}
+EXPECTED = {**J15A_EXPECTED, **J15B_EXPECTED, **J15C_EXPECTED, **F4A_EXPECTED, **INTEGRATION_EXPECTED,
+            **WORLD_BULLETIN_EXPECTED, **TERMINAL_MAPBAR_EXPECTED, **COURIER_THEME_EXPECTED}
 # ada9894a edited these J15b-migrated sources (SceneActions postprocess rule, Vengeance language
 # index entries, DialogueUI history/terminal prefabs, Xihai action sets). They must equal the J15b
 # baseline at the integration parent and the reviewed SHA-256 of the checked-out bytes now.
@@ -539,13 +579,46 @@ J15B_REVIEWED_EDITS = {
     "ModuleData/action_types.xml": "75DBD6F57B01D544EAABC5AA0165403A3AC8080985E340B00FB18A22FBCE91AD",
     "ModuleData/Languages/language_data.xml": "C552D3CC00DB957E729AECA07034C0D297733D71D4F7501D4B4AB0737D1AED6F",
     "ModuleData/Languages/CNs/language_data.xml": "B8DBB6C8F0A6CF6EF66B70ADF79F6CC8F6B57E1887151111DFB6DFD4A0CE5C65",
-    "GUI/Prefabs/AnimusForgeTerminalPopup.xml": "96BE1920D43ED6F0A3B822F46B582D75E2187F7B3F01370ED77A764FB1D43EED",
+    # cb045840 blob is 96BE1920...; the uncommitted CivilWar UI relocation (faction tab moved to the
+    # kingdom screen via KingdomFactionTab.cs) removes the terminal Faction tab button and panel (-64 lines).
+    "GUI/Prefabs/AnimusForgeTerminalPopup.xml": "2ADD0334115222197AF191C03CED890A58384FFEF0384E807E8A61C02E39778B",
+    # Uncommitted: +AFWST_TerminalNavTooltip for the native map-bar terminal entry (AfWarStatsTexts.cs).
+    "ModuleData/Languages/afwarstats_strings.xml": "9291A45C7419EA55A414E1C80FD494C70C67E85AB3FBF9EC3F6610A6A930B27A",
+    "ModuleData/Languages/CNs/afwarstats_strings-zh-CN.xml": "A06CDB6A0D3B4D19EC4224A4C02BC437E82DD8B55DD75D08E8D0C7991D2DDE05",
+    # Courier stationery presets: themed layers bound from CourierLetterThemeVM (DataSource="{Theme}"),
+    # plus stacked translucent band buttons (AFCourierLetter.Band.Button) replacing the native popup buttons.
+    "GUI/Prefabs/CourierLetterInputPopup.xml": "E453B37E1184C9425A5711250FD6ADD04C300686D781DD5F2CAD9B49BA7675AC",
+    "GUI/Prefabs/CourierLetterReplyPopup.xml": "EEECF1C2DC8262836469C091F564642EC38C32199E8C5F5821047EF25D14EB56",
+    # +AFCourierLetter.Band.Button / .Text; the band sprite is pushed in at runtime by AnimusForgeCourierUiSprites.cs.
+    "GUI/Brushes/AFCourierLetterBrushes.xml": "01A6E6C173C7F912C2182A6F07E99B8BCF141A11E044929D2C556A03C86FAA55",
+}
+# Uncommitted worktree edits on top of cb045840 INTEGRATION sources (CRLF-normalized SHA-256).
+# AFDialogueNativeOverlay.xml: toolbar gains PositionYOffset="@ToolbarOffsetY" (NativeOverlayVM.cs:58).
+# vengeance_strings-*.xml: +REX_Speech_Log_Line consumed by ExecutionSpeechDirector.cs:278 EchoToMessageLog.
+INTEGRATION_WORKTREE_EDITS = {
+    "GUI/Prefabs/AFDialogueNativeOverlay.xml": "CE9CD971A4402753A210ECDE4552062671F7DD4D5E6BC4CA559F6AD79E76A2DF",
+    "ModuleData/Languages/vengeance_strings-en.xml": "F1D609E4DE90C3CAE583E3DFC5A7EEFD0E66F30B686EE88B793E9E4DC39E0896",
+    "ModuleData/Languages/CNs/vengeance_strings-zh-CN.xml": "575D4CBFB1011F72EC35EDF76420F4F51048D2F491FCAAE278FEF18137FC10DF",
 }
 
 
 def check(condition: bool, message: str) -> None:
     if not condition:
         raise AssertionError(message)
+
+
+TEXT_SUFFIXES = {".xml", ".json", ".txt", ".mbproj"}
+
+
+def source_digests(source: Path) -> set[str]:
+    """Raw SHA-256, plus CRLF- and LF-normalized forms for text, so autocrlf and LF checkouts compare equal."""
+    data = source.read_bytes()
+    digests = {hashlib.sha256(data).hexdigest().upper()}
+    if source.suffix.lower() in TEXT_SUFFIXES:
+        lf = data.replace(b"\r\n", b"\n")
+        digests.add(hashlib.sha256(lf).hexdigest().upper())
+        digests.add(hashlib.sha256(lf.replace(b"\n", b"\r\n")).hexdigest().upper())
+    return digests
 
 
 def load_module(path: Path, name: str):
@@ -597,7 +670,7 @@ def verify_map_and_resources() -> None:
             # Unchanged up to the pre-integration commit, then exactly the reviewed edit.
             check(git_worktree_blob(J15B_REVIEWED_EDIT_PARENT, expected["source"]) == baseline,
                   f"source bytes drifted from J15b baseline before reviewed edit: {target}")
-            check(hashlib.sha256(source.read_bytes()).hexdigest().upper() == J15B_REVIEWED_EDITS[target],
+            check(J15B_REVIEWED_EDITS[target] in source_digests(source),
                   f"source hash drift after reviewed edit: {target}")
         else:
             check(source.read_bytes() == baseline, f"source bytes drifted from J15b baseline: {target}")
@@ -636,8 +709,47 @@ def verify_map_and_resources() -> None:
         check(not entry.get("logicalName"), f"non-embedded content must not invent a LogicalName: {target}")
         source = ROOT / expected["source"]
         check(source.is_file(), f"missing integration source: {source}")
-        check(hashlib.sha256(source.read_bytes()).hexdigest().upper() == expected["sha256"],
+        check(INTEGRATION_WORKTREE_EDITS.get(target, expected["sha256"]) in source_digests(source),
               f"source hash drift: {target}")
+
+    for target, expected in WORLD_BULLETIN_EXPECTED.items():
+        entry = by_target[target]
+        for field in ("owner", "source"):
+            check(entry.get(field) == expected[field], f"{target} {field}")
+        check(not entry.get("logicalName"), f"non-embedded content must not invent a LogicalName: {target}")
+        check(expected["source"] == f"content/modules/AF.Module.Weekly/{target}", f"world bulletin source layout: {target}")
+        source = ROOT / expected["source"]
+        check(source.is_file(), f"missing world bulletin source: {source}")
+        check(expected["sha256"] in source_digests(source), f"source hash drift: {target}")
+        check(not (ROOT / "AnimusForge" / target).exists(), f"world bulletin duplicated in legacy root: {target}")
+
+    for target, expected in COURIER_THEME_EXPECTED.items():
+        entry = by_target[target]
+        for field in ("owner", "source"):
+            check(entry.get(field) == expected[field], f"{target} {field}")
+        check(not entry.get("logicalName"), f"non-embedded content must not invent a LogicalName: {target}")
+        source = ROOT / expected["source"]
+        check(source.is_file(), f"missing courier theme source: {source}")
+        check(expected["sha256"] in source_digests(source), f"source hash drift: {target}")
+        check(not (ROOT / "AnimusForge" / target).exists(), f"courier theme duplicated in legacy root: {target}")
+
+    for target, expected in TERMINAL_MAPBAR_EXPECTED.items():
+        entry = by_target[target]
+        for field in ("owner", "source"):
+            check(entry.get(field) == expected[field], f"{target} {field}")
+        check(not entry.get("logicalName"), f"non-embedded content must not invent a LogicalName: {target}")
+        source = ROOT / expected["source"]
+        check(source.is_file(), f"missing terminal map bar source: {source}")
+        check(expected["sha256"] in source_digests(source), f"source hash drift: {target}")
+        if source.suffix.lower() == ".png":
+            icon_loader = (ROOT / "WarStats/AfTerminalMapBarIconSprite.cs").read_text(encoding="utf-8-sig")
+            check(source.name in icon_loader and 'Category = "af_terminal"' in icon_loader, "terminal map bar icon consumer drift")
+            continue
+        ET.parse(source)
+        text = source.read_text(encoding="utf-8-sig")
+        check('OverrideBrush="MapBar.Left.Icons"' in text and 'OverrideBrush="MapBar.Left.Button.Backgrounds"' in text, "terminal map bar brush overrides")
+        consumer = (ROOT / "WarStats/AfWarStatsMapNavigationEntry.cs").read_text(encoding="utf-8-sig")
+        check('ItemId = "af_terminal"' in consumer and text.count('BrushLayer Name="af_terminal"') == 2, "terminal map bar layer/ItemId drift")
 
     design_root = ROOT / "content" / "modules" / "AF.Module.Economy" / "AssetSources"
     check({path.name for path in design_root.iterdir()} == set(F4A_DESIGN_EXPECTED),
@@ -724,7 +836,7 @@ def verify_script_wiring() -> None:
 
 
 def verify_formats_and_references() -> None:
-    for target, expected in {**J15B_EXPECTED, **J15C_EXPECTED}.items():
+    for target, expected in {**J15B_EXPECTED, **J15C_EXPECTED, **WORLD_BULLETIN_EXPECTED}.items():
         source = ROOT / expected["source"]
         suffix = source.suffix.lower()
         if suffix == ".json":
@@ -763,7 +875,6 @@ def verify_formats_and_references() -> None:
     check(xml_targets <= set(J15B_EXPECTED) | set(INTEGRATION_EXPECTED), "SubModule XML targets must be mapped")
 
     movie_consumers = {
-        "GUI/Prefabs/AFWarStatsMapButton.xml": "WarStats/AfWarStatsMapButtonLayer.cs",
         "GUI/Prefabs/AnimusForgeApiOnboardingPopup.xml": "AnimusForgeApiOnboardingPopup.cs",
         "GUI/Prefabs/AnimusForgeConversationHistoryLog.xml": "AnimusForgeConversationHistoryLogPopup.cs",
         "GUI/Prefabs/AnimusForgeNativeConversationOverlay.xml": "AnimusForgeNativeConversationOverlay.cs",
@@ -790,7 +901,9 @@ def verify_formats_and_references() -> None:
     for target, consumer in movie_consumers.items():
         movie = Path(target).stem
         text = (ROOT / consumer).read_text(encoding="utf-8-sig")
-        check(f'LoadMovie("{movie}"' in text, f"movie consumer drift: {movie}")
+        # DevWeeklyReportPopup now selects its movie via a _movieName field (default = the weekly movie).
+        via_field = "LoadMovie(_movieName," in text and f'_movieName = "{movie}";' in text
+        check(f'LoadMovie("{movie}"' in text or via_field, f"movie consumer drift: {movie}")
 
     sprite_consumers = {
         "GUI/SpriteParts/af_courier/": "AnimusForgeCourierUiSprites.cs",
@@ -806,6 +919,23 @@ def verify_formats_and_references() -> None:
         text = (ROOT / matches[0]).read_text(encoding="utf-8-sig")
         check(Path(target).name in text, f"sprite consumer drift: {target}")
 
+    bulletin_movie = (ROOT / "DevWeeklyReportPopup.cs").read_text(encoding="utf-8-sig")
+    check('_movieName = "WorldBulletinPanel";' in bulletin_movie, "movie consumer drift: WorldBulletinPanel")
+    bulletin_sprites = (ROOT / "AnimusForgeWeeklyReportMapNotification.cs").read_text(encoding="utf-8-sig")
+    check('BulletinCategory = "af_world_bulletin"' in bulletin_sprites, "sprite category drift: af_world_bulletin")
+    catalog = (ROOT / "CourierLetterThemes.cs").read_text(encoding="utf-8-sig")
+    sprites = (ROOT / "AnimusForgeCourierUiSprites.cs").read_text(encoding="utf-8-sig")
+    for target in COURIER_THEME_EXPECTED:
+        stem = Path(target).stem
+        if stem in ("af_courier_scroll_base", "af_courier_button_band"):
+            check(f'"{stem}.png"' in sprites, f"sprite consumer drift: {target}")
+        elif stem.startswith("af_courier_seal_"):
+            check('"' + stem.removeprefix("af_courier_seal_") + '")' in catalog, f"seal not in theme catalog: {target}")
+        else:
+            check('["' + stem.removeprefix("af_courier_pattern_") + '"]' in catalog, f"pattern not in theme catalog: {target}")
+    for target in (item for item in WORLD_BULLETIN_EXPECTED if item.endswith(".png")):
+        check(f'("{Path(target).stem}",' in bulletin_sprites, f"sprite consumer drift: {target}")
+
     policy_tests = (ROOT / "tests/bridges/Policy/PolicyEffectModule.ContractTests/Program.cs").read_text(encoding="utf-8-sig")
     for file_name in ('CustomPolicyComposePopup.xml', 'LocalPolicyComposePopup.xml', 'PolicyEffectModuleManagerPopup.xml', 'CustomPolicyHistoryPopup.xml', 'LocalPolicyHistoryPopup.xml', 'AnimusForgeWorldEventInboxPopup.xml'):
         parts = J15B_EXPECTED["GUI/Prefabs/" + file_name]["source"].split("/")
@@ -815,6 +945,14 @@ def verify_formats_and_references() -> None:
     brush = (ROOT / J15B_EXPECTED["GUI/Brushes/AFCourierLetterBrushes.xml"]["source"]).read_text(encoding="utf-8-sig")
     courier_prefab = (ROOT / J15B_EXPECTED["GUI/Prefabs/CourierLetterInputPopup.xml"]["source"]).read_text(encoding="utf-8-sig")
     check("AFCourierLetter." in brush and "AFCourierLetter." in courier_prefab, "courier brush linkage")
+    band_owner = (ROOT / "AnimusForgeCourierUiSprites.cs").read_text(encoding="utf-8-sig")
+    for name in ("AFCourierLetter.Band.Button", "AFCourierLetter.Band.Button.Text"):
+        check(f'Name="{name}"' in brush, f"courier band brush missing: {name}")
+    check('ButtonBrushName = "AFCourierLetter.Band.Button"' in band_owner, "courier band brush runtime owner drift")
+    for prefab_name in ("CourierLetterInputPopup.xml", "CourierLetterReplyPopup.xml"):
+        prefab = (ROOT / J15B_EXPECTED["GUI/Prefabs/" + prefab_name]["source"]).read_text(encoding="utf-8-sig")
+        check(prefab.count('Brush="AFCourierLetter.Band.Button"') == 2, f"courier band buttons: {prefab_name}")
+        check("Popup.Done.Button" not in prefab and "Popup.Cancel.Button" not in prefab, f"native popup buttons remain: {prefab_name}")
 
     generator = (ROOT / "_DeveloperPatch" / "generate_town_ambient_dialogue.ps1").read_text(encoding="utf-8-sig")
     check(J15B_EXPECTED["ModuleData/TownAmbientDialogue.json"]["source"].replace("/", "\\") in generator,
@@ -824,7 +962,7 @@ def verify_formats_and_references() -> None:
 def verify_inventory_and_overlay() -> None:
     inventory = load_module(ROOT / "tools" / "repository_source_inventory.py", "j15_inventory")
     check(inventory.classify_path("content/content-map.json") == "content", "map inventory class")
-    for expected in {**J15A_EXPECTED, **J15B_EXPECTED, **J15C_EXPECTED}.values():
+    for expected in {**J15A_EXPECTED, **J15B_EXPECTED, **J15C_EXPECTED, **WORLD_BULLETIN_EXPECTED}.values():
         check(inventory.classify_path(expected["source"]) == "content",
               f"migrated content inventory class: {expected['source']}")
     check(inventory.classify_path(F4A_EXPECTED["AssetPackages/pack0.tpac"]["source"]) == "HOLD:asset-package-provenance",

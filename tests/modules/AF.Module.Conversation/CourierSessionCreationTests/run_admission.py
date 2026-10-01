@@ -81,6 +81,14 @@ def main():
                             ('private void CompleteAndDestroyCourier(', 'private void HandleCourierMissing('))
         declarations.append(extract.declaration(read('src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.SessionRegistry.cs'),
                                                'private CourierSession GetSessionById('))
+        # cb045840: terminal transport retires the per-session request lifetime. Link the real
+        # owner members only; the file's registry/retirement members stay harness fixtures.
+        campaign = read('src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.CampaignLifetime.cs')
+        field_start = campaign.index('private readonly Dictionary<CourierSession, ConversationRequestLifetime> _courierRequestLifetimes')
+        declarations.append(campaign[field_start:campaign.index(';', field_start) + 1])
+        declarations.extend(extract.declaration(campaign, signature) for signature in (
+            'private ConversationRequestLifetime BeginCourierRequestLifetime(', 'private void RetireCourierRequestLifetime(',
+            'private void RetireCourierRequestLifetimes('))
     if args.lifecycle:
         assert not args.ref, 'Lifecycle requires current receipt owners.'
         sources_by_file = {
@@ -114,6 +122,9 @@ def main():
     defines = '' if args.ref else '<DefineConstants>COURIER_DRAFT_TICKETS' + (';COURIER_LIFECYCLE' if args.lifecycle else '') + '</DefineConstants>'
     sources = ['src/modules/AF.Module.Conversation/Internal/CoreDialogueContracts.cs', 'src/modules/AF.Module.Conversation/Internal/CoreDialogueOperation.cs', 'src/modules/AF.Module.Conversation/Internal/CoreDialogueClient.cs',
                'src/AF.Foundation.Runtime/Scheduling/PendingOperationRegistry.cs']
+    if not args.ref:
+        sources += ['src/modules/AF.Module.Conversation/Internal/InteractionRequestLease.cs',
+                    'src/modules/AF.Module.Conversation/Internal/ConversationRequestLifetime.cs']
     from xml.sax.saxutils import escape
     includes = ''
     for path in sources:

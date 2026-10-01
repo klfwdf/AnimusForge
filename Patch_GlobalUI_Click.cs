@@ -48,6 +48,8 @@ internal static class KingdomCustomTabIsolation
 {
 	private const string AgendaTabButtonId = "AgendaTabButton";
 	private const string AgendaPanelRootId = "AgendaPanelRoot";
+	private const string FactionTabButtonId = "CivilWarFactionTabButton";
+	private const string FactionPanelRootId = "CivilWarFactionPanelRoot";
 	private const string KingdomTabControlListPanelTypeName = "KingdomTabControlListPanel";
 	private const int MaxAncestorDepth = 16;
 
@@ -79,13 +81,21 @@ internal static class KingdomCustomTabIsolation
 		_lastKnownTabStrip = new WeakReference(tabStrip);
 		if (string.Equals(button.Id, AgendaTabButtonId, StringComparison.Ordinal))
 		{
-			HideForeignContentPanels(tabStrip);
+			KingdomFactionTabState.Clear();
+			HideForeignContentPanels(tabStrip, AgendaPanelRootId);
+			return;
+		}
+
+		if (string.Equals(button.Id, FactionTabButtonId, StringComparison.Ordinal))
+		{
+			HideForeignContentPanels(tabStrip, FactionPanelRootId);
 			return;
 		}
 
 		// A button inside the real kingdom tab strip is either vanilla or another
-		// mod's tab. In both cases the agenda must stop owning the content area.
+		// mod's tab. In both cases AnimusForge tabs must stop owning the content area.
 		KingdomAgendaTabState.ClearForCustomTabClick();
+		KingdomFactionTabState.Clear();
 	}
 
 	/// <summary>
@@ -96,7 +106,7 @@ internal static class KingdomCustomTabIsolation
 	{
 		if (_lastKnownTabStrip?.Target is Widget tabStrip)
 		{
-			HideForeignContentPanels(tabStrip);
+			HideForeignContentPanels(tabStrip, AgendaPanelRootId);
 		}
 	}
 
@@ -151,11 +161,11 @@ internal static class KingdomCustomTabIsolation
 		return false;
 	}
 
-	private static void HideForeignContentPanels(Widget tabStrip)
+	private static void HideForeignContentPanels(Widget tabStrip, string ownPanelId)
 	{
-		Widget agendaPanel = FindAgendaPanel(tabStrip);
-		Widget contentParent = agendaPanel?.ParentWidget;
-		if (agendaPanel == null || contentParent == null)
+		Widget ownPanel = FindPanel(tabStrip, ownPanelId);
+		Widget contentParent = ownPanel?.ParentWidget;
+		if (ownPanel == null || contentParent == null)
 		{
 			return;
 		}
@@ -164,7 +174,7 @@ internal static class KingdomCustomTabIsolation
 		for (int index = 0; index < contentParent.ChildCount; index++)
 		{
 			Widget candidate = contentParent.GetChild(index);
-			if (ReferenceEquals(candidate, agendaPanel) || !IsContentPanel(candidate))
+			if (ReferenceEquals(candidate, ownPanel) || !IsContentPanel(candidate))
 			{
 				continue;
 			}
@@ -175,19 +185,19 @@ internal static class KingdomCustomTabIsolation
 
 		if (hiddenCount > 0 && TraceHelper.IsEnabled)
 		{
-			Logger.LogTrace("KingdomTabIsolation", "Agenda selected; hid " + hiddenCount + " stale kingdom content panel(s).");
+			Logger.LogTrace("KingdomTabIsolation", ownPanelId + " selected; hid " + hiddenCount + " stale kingdom content panel(s).");
 		}
 	}
 
-	private static Widget FindAgendaPanel(Widget tabStrip)
+	private static Widget FindPanel(Widget tabStrip, string panelId)
 	{
 		Widget current = tabStrip;
 		for (int depth = 0; current != null && depth < MaxAncestorDepth; depth++, current = current.ParentWidget)
 		{
-			Widget agendaPanel = current.FindChild(AgendaPanelRootId, includeAllChildren: true);
-			if (agendaPanel != null)
+			Widget panel = current.FindChild(panelId, includeAllChildren: true);
+			if (panel != null)
 			{
-				return agendaPanel;
+				return panel;
 			}
 		}
 

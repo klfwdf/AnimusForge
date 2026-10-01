@@ -12,6 +12,7 @@ static void AssertTrue(bool condition, string message)
 }
 
 string implementationPath = ReplayCandidateInput.Read(args);
+string projectRoot = ReplayCandidateInput.RepositoryRoot();
 
 AppDomain.CurrentDomain.AssemblyResolve += (_, arguments) =>
 {

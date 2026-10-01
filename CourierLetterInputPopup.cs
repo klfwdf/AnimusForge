@@ -79,7 +79,7 @@ public sealed class CourierLetterInputPopup
 
 	private void Open()
 	{
-		AnimusForgeCourierUiSprites.EnsureInstalled();
+		AnimusForgeCourierUiSprites.EnsureThemeInstalled(_dataSource.Theme.Source);
 		_layer.LoadMovie("CourierLetterInputPopup", _dataSource);
 		_layer.InputRestrictions.SetInputRestrictions(true, InputUsageMask.All);
 		try

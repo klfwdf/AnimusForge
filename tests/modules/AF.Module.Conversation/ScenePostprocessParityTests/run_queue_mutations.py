@@ -13,12 +13,13 @@ def main():
     parser.add_argument('--dotnet',default=(os.environ.get("DOTNET_EXE") or os.environ.get("AF_DOTNET") or str(Path(__file__).resolve().parents[4] / "local/dotnet/8.0.425/dotnet.exe")))
     parser.add_argument('--output-prefix',default='',help='Prefix generated negative-control artifact directories.')
     args=parser.parse_args()
-    for mutation in ['ignore-generation','skip-dispatch-guard','lose-execution-context','unguarded-speech','off-thread-game-read','recapture-generation','recapture-session','submit-directive-before-guard']:
+    for mutation in ['ignore-generation','skip-dispatch-guard','lose-execution-context','unguarded-speech','off-thread-game-read','recapture-generation','recapture-session','submit-directive-before-guard','ignore-request-lifetime']:
         result=subprocess.run([sys.executable,str(HERE/'run_queue.py'),'--dotnet',args.dotnet,'--mutate',mutation,'--output-name',args.output_prefix+'queue-mutant-'+mutation],capture_output=True,text=True,encoding='utf-8',errors='replace')
         output=result.stdout+result.stderr
         if result.returncode!=1 or 'System.Exception:' not in output or 'The build failed' in output:
             print(output);print('FAIL queue mutation not behaviorally rejected: '+mutation);return 1
-        print('PASS queue mutation rejected: '+mutation)
+        reason=next((line.strip() for line in output.splitlines() if 'System.Exception:' in line),'')
+        print('PASS queue mutation rejected: '+mutation+' by '+reason)
     return 0
 
 if __name__=='__main__':raise SystemExit(main())

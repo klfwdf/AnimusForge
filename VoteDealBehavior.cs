@@ -4665,6 +4665,7 @@ namespace AnimusForge
 				ViewModel.Policy.Show = false;
 				ViewModel.Army.Show = false;
 				ViewModel.Diplomacy.Show = false;
+				KingdomFactionTabState.Clear();
 
 				Agenda.RefreshKingdomList();
 				Agenda.SetDefaultKingdom();
@@ -4760,6 +4761,7 @@ namespace AnimusForge
 			private static void ClearPostfix(KingdomManagementVM __instance)
 			{
 				KingdomAgendaTabState.Clear(__instance);
+				KingdomFactionTabState.Clear();
 			}
 
 			private static void OnRefreshPostfix(KingdomManagementVM __instance)

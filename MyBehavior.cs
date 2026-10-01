@@ -2031,6 +2031,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		CampaignEvents.KingdomDestroyedEvent.AddNonSerializedListener(this, OnKingdomDestroyed);
 		CampaignEvents.OnClanDestroyedEvent.AddNonSerializedListener(this, OnClanDestroyed);
 		CampaignEvents.TournamentFinished.AddNonSerializedListener(this, OnTournamentFinished);
+		RegisterWorldBulletinEvents();
 		MBInformationManager.OnRemoveMapNotice -= OnMapNoticeRemoved;
 		MBInformationManager.OnRemoveMapNotice += OnMapNoticeRemoved;
 	}
@@ -2095,6 +2096,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 			_pendingMemoryOverviewCandidateScanIds.Clear();
 			_pendingMemoryOverviewCandidateScanIdSet.Clear();
 			_npcPersonaGeneration.Reset();
+			ResetWorldBulletinForRuntime(reason);
 			Logger.Log("SaveRuntimeGuard", "local_transient_cleared reason=" + (reason ?? ""));
 		}
 		catch (Exception ex)
@@ -3763,17 +3765,21 @@ public partial class MyBehavior : CampaignBehaviorBase
 				return;
 			}
 			string text = "hero_killed:" + GetHeroId(victim) + ":" + detail;
+			VengeanceExecutionFacts executionFacts = ResolvePublicExecutionFacts(victim, detail);
 			if (ShouldTrackNpcActionHero(killer))
 			{
 				NpcActionFacts npcActionFacts = CreateNpcActionFacts("hero_killed", killer);
 				ApplyTargetFacts(npcActionFacts, victim);
-				RecordNpcMajorAction(killer, "你" + GetHeroKilledVerb(detail) + GetHeroDisplayName(victim) + "。", text + ":killer", npcActionFacts);
-				RecordNpcRecentAction(killer, "你" + GetHeroKilledVerb(detail) + GetHeroDisplayName(victim) + "。", text + ":killer", facts: npcActionFacts);
+				string killerText = executionFacts != null
+					? BuildPublicExecutionKillerActionText(victim, executionFacts)
+					: "你" + GetHeroKilledVerb(detail) + GetHeroDisplayName(victim) + "。";
+				RecordNpcMajorAction(killer, killerText, text + ":killer", npcActionFacts);
+				RecordNpcRecentAction(killer, killerText, text + ":killer", facts: npcActionFacts);
 			}
 			if (IsExecutionKillDetail(detail))
 			{
-				RecordExecutedVictimAction(victim, killer, detail, text);
-				RecordPlayerExecutionWeeklyMaterial(victim, killer, detail, text);
+				RecordExecutedVictimAction(victim, killer, detail, text, executionFacts);
+				RecordPlayerExecutionWeeklyMaterial(victim, killer, detail, text, executionFacts);
 			}
 			Hero leader = victim.Clan?.Leader;
 			if (ShouldTrackNpcActionHero(leader) && !string.Equals(GetHeroId(leader), GetHeroId(victim), StringComparison.OrdinalIgnoreCase))
@@ -3787,6 +3793,10 @@ public partial class MyBehavior : CampaignBehaviorBase
 					AddUniqueId(npcActionFacts2.RelatedKingdomIds, GetKingdomId(killer.MapFaction));
 				}
 				string text2 = "你所在的" + GetClanDisplayName(victim.Clan) + "家族失去了" + GetHeroDisplayName(victim) + "。";
+				if (executionFacts != null)
+				{
+					text2 += BuildPublicExecutionClanSuffix(killer, executionFacts);
+				}
 				RecordNpcMajorAction(leader, text2, text + ":clan", npcActionFacts2);
 				RecordNpcRecentAction(leader, text2, text + ":clan", facts: npcActionFacts2);
 			}
@@ -3800,7 +3810,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private void RecordExecutedVictimAction(Hero victim, Hero killer, KillCharacterAction.KillCharacterActionDetail detail, string stablePrefix)
+	private void RecordExecutedVictimAction(Hero victim, Hero killer, KillCharacterAction.KillCharacterActionDetail detail, string stablePrefix, VengeanceExecutionFacts executionFacts = null)
 	{
 		if (victim == null || !ShouldTrackNpcActionHero(victim, allowNonLordHero: true))
 		{
@@ -3808,7 +3818,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		}
 		NpcActionFacts facts = CreateNpcActionFacts("hero_executed_victim", victim);
 		ApplyTargetFacts(facts, killer);
-		Settlement settlement = ResolveHeroExecutionSettlement(victim, killer);
+		Settlement settlement = executionFacts?.Venue ?? ResolveHeroExecutionSettlement(victim, killer);
 		string locationText = ResolveHeroExecutionLocationText(settlement, victim, killer);
 		if (settlement != null)
 		{
@@ -3820,13 +3830,15 @@ public partial class MyBehavior : CampaignBehaviorBase
 			facts.LocationText = locationText;
 		}
 		facts.Won = false;
-		string text = BuildExecutedVictimActionText(killer, detail);
+		string text = executionFacts != null
+			? BuildPublicExecutionVictimActionText(killer, executionFacts)
+			: BuildExecutedVictimActionText(killer, detail);
 		string key = (string.IsNullOrWhiteSpace(stablePrefix) ? ("hero_killed:" + GetHeroId(victim) + ":" + detail) : stablePrefix.Trim()) + ":victim";
 		RecordNpcMajorAction(victim, text, key, facts, allowNonLordHero: true);
 		RecordNpcRecentAction(victim, text, key, dedupeAcrossWindow: true, facts, allowNonLordHero: true);
 	}
 
-	private void RecordPlayerExecutionWeeklyMaterial(Hero victim, Hero killer, KillCharacterAction.KillCharacterActionDetail detail, string stablePrefix)
+	private void RecordPlayerExecutionWeeklyMaterial(Hero victim, Hero killer, KillCharacterAction.KillCharacterActionDetail detail, string stablePrefix, VengeanceExecutionFacts executionFacts = null)
 	{
 		Hero player = Hero.MainHero;
 		if (player == null || (victim != player && killer != player))
@@ -3835,7 +3847,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		}
 		int day = GetCurrentGameDayIndexSafe();
 		string gameDate = GetCurrentGameDateTextSafe();
-		Settlement settlement = ResolveHeroExecutionSettlement(victim, killer);
+		Settlement settlement = executionFacts?.Venue ?? ResolveHeroExecutionSettlement(victim, killer);
 		string settlementId = GetSettlementId(settlement);
 		string locationText = ResolveHeroExecutionLocationText(settlement, victim, killer);
 		Kingdom victimKingdom = ResolveHeroKingdomForWeeklyMaterial(victim);
@@ -3848,7 +3860,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 			Logger.Log("EventWeeklyReport", "[PlayerExecution][SKIP] kingdom_missing victim=" + GetHeroId(victim) + " killer=" + GetHeroId(killer));
 			return;
 		}
-		string snapshot = BuildPlayerExecutionWeeklySnapshot(victim, killer, detail, victimKingdom, killerKingdom, locationText, gameDate);
+		string snapshot = BuildPlayerExecutionWeeklySnapshot(victim, killer, detail, victimKingdom, killerKingdom, locationText, gameDate, executionFacts);
 		if (string.IsNullOrWhiteSpace(snapshot))
 		{
 			return;
@@ -5260,7 +5272,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		DuelSettings settings = DuelSettings.GetSettings();
 		int missingWeek = _weeklyAutoSchedule.SelectWeek(_lastAutoGeneratedWeeklyReportWeek,
 			currentGameDayIndexSafe, weekIndex, _weeklyReportGenerationInProgress,
-			settings != null && settings.AutoGenerateWeeklyReports, AutomaticKingdomRebellions.FlowActive);
+			settings != null && settings.IsLegacyWeeklyAutoGenerationActive(), AutomaticKingdomRebellions.FlowActive);
 		if (missingWeek <= 0)
 		{
 			return;
@@ -5291,7 +5303,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		DuelSettings settings = DuelSettings.GetSettings();
 		int missingWeek = _weeklyAutoSchedule.SelectWeek(_lastAutoGeneratedWeeklyReportWeek,
 			currentGameDayIndexSafe, weekIndex, _weeklyReportGenerationInProgress,
-			settings != null && settings.AutoGenerateWeeklyReports, AutomaticKingdomRebellions.FlowActive);
+			settings != null && settings.IsLegacyWeeklyAutoGenerationActive(), AutomaticKingdomRebellions.FlowActive);
 		if (missingWeek <= 0)
 		{
 			return;
@@ -5497,7 +5509,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 			return;
 		}
 		DuelSettings settings = DuelSettings.GetSettings();
-		if (settings == null || !settings.AutoGenerateWeeklyReports)
+		if (settings == null || !settings.IsLegacyWeeklyAutoGenerationActive())
 		{
 			return;
 		}
@@ -5759,7 +5771,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 	private void StartAutoWeeklyReportsForWeek(int weekIndex, int currentGameDayIndexSafe)
 	{
-		if (weekIndex <= 0 || _lastAutoGeneratedWeeklyReportWeek >= weekIndex || _weeklyReportGenerationInProgress)
+		if (weekIndex <= 0 || _lastAutoGeneratedWeeklyReportWeek >= weekIndex || _weeklyReportGenerationInProgress || IsWorldBulletinEnabled())
 		{
 			return;
 		}
@@ -5784,14 +5796,14 @@ public partial class MyBehavior : CampaignBehaviorBase
 			return;
 		}
 		DuelSettings settings = DuelSettings.GetSettings();
-		if (settings == null || !settings.AutoGenerateWeeklyReports)
+		if (settings == null || !settings.IsLegacyWeeklyAutoGenerationActive())
 		{
 			return;
 		}
 		int currentGameDayIndexSafe = GetCurrentGameDayIndexSafe();
 		int missingWeek = _weeklyAutoSchedule.ResolvePendingWeek(_lastAutoGeneratedWeeklyReportWeek,
 			currentGameDayIndexSafe, _weeklyReportGenerationInProgress,
-			settings != null && settings.AutoGenerateWeeklyReports, AutomaticKingdomRebellions.FlowActive);
+			settings != null && settings.IsLegacyWeeklyAutoGenerationActive(), AutomaticKingdomRebellions.FlowActive);
 		if (missingWeek <= 0)
 		{
 			return;
@@ -6314,7 +6326,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		{
 			return;
 		}
-		if (GetCurrentGameDayIndexSafe() < 7)
+		if (GetCurrentGameDayIndexSafe() < 7 || IsWorldBulletinEnabled())
 		{
 			return;
 		}
@@ -9930,6 +9942,58 @@ public partial class MyBehavior : CampaignBehaviorBase
 		return "你被" + killerName + "处决。";
 	}
 
+	// Vengeance public executions park method/charge facts just before the vanilla death.
+	internal static VengeanceExecutionFacts ResolvePublicExecutionFacts(Hero victim, KillCharacterAction.KillCharacterActionDetail detail)
+	{
+		if (!IsExecutionKillDetail(detail))
+		{
+			return null;
+		}
+		try
+		{
+			return VengeanceRuntimeBridge.TryGetPendingExecutionFacts(victim);
+		}
+		catch
+		{
+			return null;
+		}
+	}
+
+	private static string BuildPublicExecutionVenueText(VengeanceExecutionFacts facts)
+	{
+		string venue = GetSettlementDisplayName(facts?.Venue);
+		return string.IsNullOrWhiteSpace(venue) || string.Equals(venue, "某处定居点", StringComparison.Ordinal) ? "" : "在" + venue.Trim();
+	}
+
+	private static string BuildPublicExecutionMethodText(VengeanceExecutionFacts facts)
+	{
+		return string.IsNullOrWhiteSpace(facts?.MethodLabel) ? "公开处决" : "以" + facts.MethodLabel + "公开处决";
+	}
+
+	private static string BuildPublicExecutionChargeText(VengeanceExecutionFacts facts)
+	{
+		return string.IsNullOrWhiteSpace(facts?.ChargeLabel) ? "" : "，罪名为" + facts.ChargeLabel;
+	}
+
+	private static string BuildPublicExecutionKillerActionText(Hero victim, VengeanceExecutionFacts facts)
+	{
+		string victimName = GetHeroDisplayName(victim);
+		string how = facts.PlayerStruck ? "亲手" + BuildPublicExecutionMethodText(facts) : "下令" + BuildPublicExecutionMethodText(facts);
+		return "你" + BuildPublicExecutionVenueText(facts) + how + "了" + victimName + BuildPublicExecutionChargeText(facts) + "。";
+	}
+
+	private static string BuildPublicExecutionVictimActionText(Hero killer, VengeanceExecutionFacts facts)
+	{
+		string killerText = killer != null ? "被" + GetHeroDisplayName(killer) : "被";
+		return "你" + BuildPublicExecutionVenueText(facts) + killerText + BuildPublicExecutionMethodText(facts) + BuildPublicExecutionChargeText(facts) + "。";
+	}
+
+	private static string BuildPublicExecutionClanSuffix(Hero killer, VengeanceExecutionFacts facts)
+	{
+		string by = killer != null ? "由" + GetHeroDisplayName(killer) : "";
+		return "其" + BuildPublicExecutionVenueText(facts) + by + BuildPublicExecutionMethodText(facts) + BuildPublicExecutionChargeText(facts) + "。";
+	}
+
 	private static Settlement ResolveHeroExecutionSettlement(Hero victim, Hero killer)
 	{
 		try
@@ -9976,7 +10040,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private static string BuildPlayerExecutionWeeklySnapshot(Hero victim, Hero killer, KillCharacterAction.KillCharacterActionDetail detail, Kingdom victimKingdom, Kingdom killerKingdom, string locationText, string gameDate)
+	private static string BuildPlayerExecutionWeeklySnapshot(Hero victim, Hero killer, KillCharacterAction.KillCharacterActionDetail detail, Kingdom victimKingdom, Kingdom killerKingdom, string locationText, string gameDate, VengeanceExecutionFacts executionFacts = null)
 	{
 		Hero player = Hero.MainHero;
 		string victimName = victim == player ? "玩家" : GetHeroDisplayName(victim);
@@ -10013,9 +10077,26 @@ public partial class MyBehavior : CampaignBehaviorBase
 		{
 			sb.Append("被处决者所属王国：").Append(victimKingdomName).Append("。");
 		}
-		sb.Append("处决类型：").Append(detail == KillCharacterAction.KillCharacterActionDetail.ExecutionAfterMapEvent ? "战后处决" : "处决").Append("。");
-		sb.Append("事实约束：这是处决事件，不得写成战场击杀、谋杀、自然死亡或普通俘虏释放。");
-		return LimitCustomPolicyWeeklyMaterialText(sb.ToString(), 360);
+		if (executionFacts == null)
+		{
+			sb.Append("处决类型：").Append(detail == KillCharacterAction.KillCharacterActionDetail.ExecutionAfterMapEvent ? "战后处决" : "处决").Append("。");
+			sb.Append("事实约束：这是处决事件，不得写成战场击杀、谋杀、自然死亡或普通俘虏释放。");
+			return LimitCustomPolicyWeeklyMaterialText(sb.ToString(), 360);
+		}
+		sb.Append("处决类型：城镇公开处刑。");
+		if (!string.IsNullOrWhiteSpace(executionFacts.MethodLabel))
+		{
+			sb.Append("刑罚：").Append(executionFacts.MethodLabel).Append("。");
+		}
+		if (!string.IsNullOrWhiteSpace(executionFacts.ChargeLabel))
+		{
+			sb.Append("罪名：").Append(executionFacts.ChargeLabel).Append("。");
+		}
+		sb.Append("审判方式：").Append(executionFacts.ToneLabel).Append("。");
+		sb.Append("合法性：").Append(executionFacts.LegitimacyLabel).Append("。");
+		sb.Append("行刑者：").Append(executionFacts.PlayerStruck ? killerName + "亲自行刑" : "本镇刽子手奉" + killerName + "之命行刑").Append("。");
+		sb.Append("事实约束：这是公开处刑，刑罚与罪名以上述记录为准，不得改写成其他刑罚，也不得写成战场击杀、谋杀或自然死亡。");
+		return LimitCustomPolicyWeeklyMaterialText(sb.ToString(), 520);
 	}
 
 	private static string BuildPrisonerTakenStableKey(Hero capturerHero, Hero prisoner)
@@ -12457,14 +12538,21 @@ TeamModuleServices.CivilWar.AdvanceWeek(devEditableKingdom, weekIndex, GetKingdo
 		Kingdom kingdom = FindKingdomById(pendingAutomaticKingdomRebellionContext.KingdomId);
 		Clan clan = FindClanById(pendingAutomaticKingdomRebellionContext.ClanId);
 		List<Clan> list = (pendingAutomaticKingdomRebellionContext.FollowerClanIds ?? new List<string>()).Select(FindClanById).Where((Clan x) => x != null && x != clan).ToList();
+		if (IsStaleCivilWarRebellion(pendingAutomaticKingdomRebellionContext))
+		{
+			ContinueAutomaticKingdomRebellionFlow();
+			return;
+		}
 		if (kingdom == null || clan == null)
 		{
+			NotifyCivilWarRebellionFailed(pendingAutomaticKingdomRebellionContext, "目标王国或家族状态已变化");
 			ShowAutomaticKingdomRebellionCompletionPopup(pendingAutomaticKingdomRebellionContext, kingdom, clan, list, success: false, "本周自动叛乱已命中，但目标王国或家族状态已变化，无法继续执行。");
 			return;
 		}
 		if (PlayerKingdomRebellionImmunity.ShouldProtectKingdom(kingdom))
 		{
 			Logger.Log("KingdomRebellion", "[SKIP] player kingdom stability rebellion immunity blocked queued automatic rebellion before naming. kingdom=" + GetKingdomId(kingdom) + " clan=" + GetClanId(clan));
+			NotifyCivilWarRebellionFailed(pendingAutomaticKingdomRebellionContext, "玩家王国稳定度叛乱免疫");
 			ContinueAutomaticKingdomRebellionFlow();
 			return;
 		}
@@ -12513,6 +12601,13 @@ TeamModuleServices.CivilWar.AdvanceWeek(devEditableKingdom, weekIndex, GetKingdo
 		List<Clan> list = (pendingAutomaticKingdomRebellionContext.FollowerClanIds ?? new List<string>()).Select(FindClanById).Where((Clan x) => x != null && x != clan).ToList();
 		string executionMessage;
 		bool success;
+		// The civil-war faction may have timed out or dissolved while the name was being generated.
+		if (IsStaleCivilWarRebellion(pendingAutomaticKingdomRebellionContext))
+		{
+			InformationManager.HideInquiry();
+			ContinueAutomaticKingdomRebellionFlow();
+			return;
+		}
 		if (kingdom == null || clan == null)
 		{
 			success = false;
@@ -12536,7 +12631,22 @@ TeamModuleServices.CivilWar.AdvanceWeek(devEditableKingdom, weekIndex, GetKingdo
 				TeamModuleServices.CivilWar.NotifyRebelKingdomCreated(pendingAutomaticKingdomRebellionContext.CivilWarFactionId, clan?.Kingdom, pendingAutomaticKingdomRebellionContext.WeekIndex);
 			}
 		}
+		if (!success) NotifyCivilWarRebellionFailed(pendingAutomaticKingdomRebellionContext, executionMessage);
 		ShowAutomaticKingdomRebellionCompletionPopup(pendingAutomaticKingdomRebellionContext, kingdom, clan, list, success, executionMessage);
+	}
+
+	// Civil-war requests: the owner may have dissolved the faction while this entry waited in the queue.
+	private static bool IsStaleCivilWarRebellion(PendingAutomaticKingdomRebellionContext context)
+	{
+		string factionId = context?.CivilWarFactionId;
+		if (string.IsNullOrWhiteSpace(factionId) || TeamModuleServices.CivilWar.IsRebellionRequestActive(factionId)) return false;
+		Logger.Log("KingdomCivilWar", "[SKIP] stale civil war rebellion request faction=" + factionId);
+		return true;
+	}
+
+	private static void NotifyCivilWarRebellionFailed(PendingAutomaticKingdomRebellionContext context, string reason)
+	{
+		if (!string.IsNullOrWhiteSpace(context?.CivilWarFactionId)) TeamModuleServices.CivilWar.NotifyRebellionFailed(context.CivilWarFactionId, reason);
 	}
 
 	private void ShowAutomaticKingdomRebellionCompletionPopup(PendingAutomaticKingdomRebellionContext context, Kingdom kingdom, Clan clan, List<Clan> followerClans, bool success, string executionMessage)
@@ -12626,6 +12736,7 @@ TeamModuleServices.CivilWar.AdvanceWeek(devEditableKingdom, weekIndex, GetKingdo
 				_blockedAutomaticKingdomRebellionContext = null;
 			}
 			_kingdomRebellionReopenAfterApiConfig = false;
+			NotifyCivilWarRebellionFailed(context, "跳过了叛乱建国命名");
 			ContinueAutomaticKingdomRebellionFlow();
 		}), pauseGameActiveState: true);
 	}
@@ -12652,13 +12763,21 @@ TeamModuleServices.CivilWar.AdvanceWeek(devEditableKingdom, weekIndex, GetKingdo
 		Kingdom kingdom = FindKingdomById(context.KingdomId);
 		Clan clan = FindClanById(context.ClanId);
 		List<Clan> list = (context.FollowerClanIds ?? new List<string>()).Select(FindClanById).Where((Clan x) => x != null && x != clan).ToList();
+		// The player may have spent weeks in the API repair flow; the civil-war faction may be gone by now.
+		if (IsStaleCivilWarRebellion(context))
+		{
+			ContinueAutomaticKingdomRebellionFlow();
+			return;
+		}
 		if (kingdom == null || clan == null)
 		{
+			NotifyCivilWarRebellionFailed(context, "目标王国或家族状态已变化");
 			ShowAutomaticKingdomRebellionCompletionPopup(context, kingdom, clan, list, success: false, "叛乱命名重试前目标王国或家族状态已变化，无法继续执行。");
 			return;
 		}
 		if (PlayerKingdomRebellionImmunity.ShouldProtectKingdom(kingdom))
 		{
+			NotifyCivilWarRebellionFailed(context, "玩家王国稳定度叛乱免疫");
 			ShowAutomaticKingdomRebellionCompletionPopup(context, kingdom, clan, list, success: false, GetKingdomDisplayName(kingdom, "该王国") + " 当前由玩家作为国王统治，且 MCM 已开启玩家王国稳定度叛乱免疫，本次自动稳定度叛乱已跳过。");
 			return;
 		}
@@ -18722,6 +18841,7 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 			TryPublishUnreadWeeklyReportMapNotifications();
 			ProcessWeekZeroShortSummaryMainThreadActions();
 			ProcessWeeklyFullReportCompletions();
+			ProcessWorldBulletinMainThreadActions();
 			ProcessKingdomRebellionApiRepairResume();
 			ProcessKingdomRebellionNamingMainThreadActions();
 			ProcessPendingDevForcedKingdomRebellionResult();
@@ -29168,6 +29288,11 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 		string value8 = allowRulePreprocess ? BuildTriggeredRuleInstructions(input, targetHero, flag2, isQualified, request.PlayerClanTier, flag7, flag8, flag5, hasAnyHero, targetCharacter, kingdomIdOverride, targetAgentIndex, npcLastUtterance, includeDuelStakeContext, playerWonLastDuelForRule, worldMapPartyCommandHit, request.ExcludedRuleIds, auxiliaryRuleHitIds, PromptRuleIdPolicy.IsExcluded(request.ExplicitExcludedRuleIds, "meeting_taunt"), retrieval?.FallbackExtraRuleHits) : "";
 		LogShoutPromptContextStage("triggered_rules_done", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex, "ruleLen=" + ((value8 ?? "").Length));
 		LogShoutPromptContextStage("weekly_short_start", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex, "", immediate: false);
+		// Bulletin mode: build the fact snapshot once here so the short, exclusion and full layers share it.
+		if (weeklyPromptSnapshot == null && IsWorldBulletinPublishingEnabled() && TWParallel.IsMainThread())
+		{
+			weeklyPromptSnapshot = CaptureWorldBulletinNpcSnapshot(targetHero, targetCharacter, kingdomIdOverride);
+		}
 		bool excludeNpcShortReport2 = ShouldExcludeNpcShortReportFromWeeklyShortLayer(value8, targetHero, targetCharacter, kingdomIdOverride, weeklyPromptSnapshot);
 		FreezeWatchdog.Mark("ShoutPromptContext.weekly_short_exclusion_done", "excludeNpcKingdom=" + excludeNpcShortReport2 + " thread=" + Thread.CurrentThread.ManagedThreadId);
 		extrasSections.WeeklyShortReports = BuildWeeklyShortReportsPromptBlock(targetHero, targetCharacter, kingdomIdOverride, excludeNpcShortReport2, weeklyPromptSnapshot);
@@ -36562,6 +36687,15 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 	{
 		using FreezeWatchdog.ScopeToken scopeToken = FreezeWatchdog.Scope("WeeklyPrompt.Capture.mainthread");
 		Stopwatch stopwatch = Stopwatch.StartNew();
+		// Bulletin facts replace weekly reports only when bulletins actually publish; with auto reports off,
+		// NPCs keep reading whatever legacy reports the player generated by hand.
+		if (IsWorldBulletinPublishingEnabled())
+		{
+			WeeklyPromptSnapshot bulletinSnapshot = CaptureWorldBulletinNpcSnapshot(targetHero, targetCharacter, kingdomIdOverride);
+			stopwatch.Stop();
+			FreezeWatchdog.Mark("WeeklyPrompt.Capture.done", "mode=bulletin ms=" + Math.Round(stopwatch.Elapsed.TotalMilliseconds, 2) + " facts=" + (_worldBulletinState?.Events?.Count ?? 0), immediate: true);
+			return bulletinSnapshot;
+		}
 		EnsureWeekZeroOpeningSummaryEvents();
 		string text = ResolveWeeklyReportNpcKingdomId(targetHero, targetCharacter, kingdomIdOverride);
 		string text2 = ResolveWeeklyReportSurroundingsKingdomId(targetHero, targetCharacter, kingdomIdOverride);
@@ -37440,6 +37574,10 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 
 	private string BuildWeeklyShortReportsPromptBlock(Hero targetHero, CharacterObject targetCharacter, string kingdomIdOverride, bool excludeNpcKingdom, WeeklyPromptSnapshot weeklyPromptSnapshot = null)
 	{
+		if (weeklyPromptSnapshot == null && IsWorldBulletinPublishingEnabled() && TWParallel.IsMainThread())
+		{
+			weeklyPromptSnapshot = CaptureWorldBulletinNpcSnapshot(targetHero, targetCharacter, kingdomIdOverride);
+		}
 		if (weeklyPromptSnapshot != null)
 		{
 			FreezeWatchdog.Mark("WeeklyPrompt.Short.snapshot", "excludeNpc=" + excludeNpcKingdom + " thread=" + Thread.CurrentThread.ManagedThreadId);
@@ -37520,6 +37658,10 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 
 	private string BuildTriggeredWeeklyFullReportsPromptBlock(string triggeredRuleInstructions, Hero targetHero, CharacterObject targetCharacter, string kingdomIdOverride = null, WeeklyPromptSnapshot weeklyPromptSnapshot = null)
 	{
+		if (weeklyPromptSnapshot == null && IsWorldBulletinPublishingEnabled() && TWParallel.IsMainThread())
+		{
+			weeklyPromptSnapshot = CaptureWorldBulletinNpcSnapshot(targetHero, targetCharacter, kingdomIdOverride);
+		}
 		if (weeklyPromptSnapshot != null)
 		{
 			FreezeWatchdog.Mark("WeeklyPrompt.Full.snapshot", "thread=" + Thread.CurrentThread.ManagedThreadId);
@@ -41293,9 +41435,19 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 		{
 			List<string> unreadEventIds = SanitizeUnreadWeeklyReportNoticeEventIds(_unreadWeeklyReportNoticeEventIds);
 			Dictionary<int, List<EventRecordEntry>> kingdomReportsByWeek = new Dictionary<int, List<EventRecordEntry>>();
+			HashSet<string> retainedBulletinIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 			foreach (string eventId in unreadEventIds)
 			{
 				EventRecordEntry entry = FindWeeklyReportRecordById(eventId);
+				if (entry != null && IsWorldBulletinEventId(entry.EventId))
+				{
+					// One bulletin now; kingdom-scope bulletins from earlier builds no longer pop.
+					if (string.Equals((entry.EventKind ?? "").Trim(), "world", StringComparison.OrdinalIgnoreCase))
+					{
+						retainedBulletinIds.Add(entry.EventId ?? "");
+					}
+					continue;
+				}
 				if (entry == null || !string.Equals((entry.EventKind ?? "").Trim(), "kingdom", StringComparison.OrdinalIgnoreCase))
 				{
 					continue;
@@ -41307,7 +41459,7 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 				}
 				entries.Add(entry);
 			}
-			HashSet<string> retainedEventIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+			HashSet<string> retainedEventIds = new HashSet<string>(retainedBulletinIds, StringComparer.OrdinalIgnoreCase);
 			foreach (List<EventRecordEntry> entries in kingdomReportsByWeek.Values)
 			{
 				string nearestKingdomId = ResolveNearestWeeklyReportKingdomId(entries.Select((EventRecordEntry x) => x?.ScopeKingdomId));
@@ -41376,8 +41528,15 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 			return true;
 		}
 		bool hasFullReport = !string.IsNullOrWhiteSpace(eventRecordEntry.Summary);
+		// Bulletins have no three-section chronicle body; they render as a single column.
+		bool isBulletin = IsWorldBulletinEventId(text);
+		if (isBulletin && hasFullReport && TryShowWorldBulletinPanel(eventRecordEntry, text))
+		{
+			MarkWeeklyReportNoticeRead(text);
+			return true;
+		}
 		string bodyText = BuildWeeklyReportPopupBodyText(eventRecordEntry);
-		bool flag = DevWeeklyReportPopup.Show(BuildWeeklyReportNoticeTitle(eventRecordEntry), BuildWeeklyReportPopupSubtitle(eventRecordEntry), bodyText, null, "", useChronicleColumns: hasFullReport, useShortReportLayout: !hasFullReport, showCloseButton: false, minimumDwellSeconds: 10.0, onMinimumDwellMet: delegate
+		bool flag = DevWeeklyReportPopup.Show(BuildWeeklyReportNoticeTitle(eventRecordEntry), BuildWeeklyReportPopupSubtitle(eventRecordEntry), bodyText, null, "", useChronicleColumns: hasFullReport && !isBulletin, useShortReportLayout: !hasFullReport, showCloseButton: false, minimumDwellSeconds: 10.0, onMinimumDwellMet: delegate
 		{
 			TryAwardWeeklyReportReadingXp(text);
 		});
@@ -41447,6 +41606,12 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 		else
 		{
 			int sharedXp = CalculateWeeklyReportReadingXp(WeeklyReportTextHelper.CountMeaningfulUnits(split.NormalizedBodyText), xpPerHundred, skillCap);
+			// Bulletins have no chronicle sections and publish every few days: one body's worth of XP is split
+			// across the three skills instead of being granted to each, so their total matches a sectioned report.
+			if (IsWorldBulletinEventId(text))
+			{
+				sharedXp = (sharedXp + 2) / 3;
+			}
 			leadershipXp = sharedXp;
 			charmXp = sharedXp;
 			stewardXp = sharedXp;
@@ -41596,6 +41761,11 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 		if (entry == null)
 		{
 			return "";
+		}
+		if (IsWorldBulletinEventId(entry.EventId))
+		{
+			string date = (entry.CreatedDate ?? "").Trim();
+			return date.Length > 0 ? "时事快报 · " + date : "时事快报";
 		}
 		string text = string.Equals((entry.EventKind ?? "").Trim(), "world", StringComparison.OrdinalIgnoreCase) ? "世界周报" : ResolveKingdomDisplay(entry.ScopeKingdomId);
 		if (string.IsNullOrWhiteSpace(text))

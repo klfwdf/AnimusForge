@@ -100,33 +100,6 @@ public sealed class AnimusForgeTerminalPopup
 		_activePopup?.Close(silent);
 	}
 
-	public static bool ShowWarStats()
-	{
-		// The map entry remains usable when the terminal behavior is unavailable.
-		// It uses the same view model/movie instead of a second, divergent war popup.
-		try
-		{
-			var roots = new List<AnimusForgeTerminalNode>
-			{
-				new AnimusForgeTerminalNode { Id = "war_stats", Title = "战争统计", Category = "战争" }
-			};
-			if (!Show(roots, id =>
-			{
-				if (id != "war_stats") return false;
-				_activePopup?.ViewModel.ShowWarStats();
-				return true;
-			})) return false;
-			_activePopup.ViewModel.ShowWarStats();
-			return true;
-		}
-		catch (Exception ex)
-		{
-			CloseActive();
-			Logger.Log("Terminal", "[ERROR] failed to open war-only terminal: " + ex);
-			return false;
-		}
-	}
-
 	public AnimusForgeTerminalPopupVM ViewModel => _dataSource;
 
 	private void Open()
@@ -973,6 +946,7 @@ public sealed class AnimusForgeTerminalPopupVM : ViewModel
 			AnimusForgeTerminalSettings.IsMapIconEnabled = true;
 			InformationManager.DisplayMessage(new InformationMessage("已开启大地图终端图标入口。", Colors.Green));
 		}
+		AFWarStatsTerminal.UI.AfWarStatsMapNavigationEntry.SyncVisibility();
 		OnPropertyChanged(nameof(IsMapIconEnabled));
 	}
 

@@ -285,6 +285,7 @@
     <string id="REX_Speech_Speaker_Crowd" text="A voice in the crowd" />
     <string id="REX_Speech_Speaker_Executioner" text="Executioner" />
     <string id="REX_Speech_Victim_Unknown" text="the condemned" />
+    <string id="REX_Speech_Log_Line" text="{SPEAKER}: {TEXT}" />
     <string id="REX_Tier_Disputed" text="disputed" />
     <string id="REX_Tier_Illegal" text="illegal" />
     <string id="REX_Tier_Legal" text="legal" />

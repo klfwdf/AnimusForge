@@ -11,13 +11,18 @@ import subprocess
 import run
 
 HERE=Path(__file__).resolve().parent
+# cb045840 moved Scene cancellation onto the real request lifetime and transport owner scope.
+QUEUE_LIFETIME_FILES=('src/modules/AF.Module.Conversation/Internal/InteractionRequestLease.cs',
+    'src/modules/AF.Module.Conversation/Internal/ConversationRequestLifetime.cs',
+    'src/modules/AF.Module.Llm/Transport/LlmNonStreamingTransport.cs')
+QUEUE_LIFETIME_ITEMS='<ItemGroup>'+''.join('<Compile Include="'+str(Path(__file__).resolve().parents[4]/p)+'" Link="'+Path(p).name+'" />' for p in QUEUE_LIFETIME_FILES)+'</ItemGroup>'
 
 
 def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--dotnet',default=(os.environ.get("DOTNET_EXE") or os.environ.get("AF_DOTNET") or str(Path(__file__).resolve().parents[4] / "local/dotnet/8.0.425/dotnet.exe")))
     parser.add_argument('--source-ref')
-    parser.add_argument('--mutate', choices=['ignore-generation','skip-dispatch-guard','lose-execution-context','unguarded-speech','off-thread-game-read','recapture-generation','recapture-session','submit-directive-before-guard'])
+    parser.add_argument('--mutate', choices=['ignore-generation','skip-dispatch-guard','lose-execution-context','unguarded-speech','off-thread-game-read','recapture-generation','recapture-session','submit-directive-before-guard','ignore-request-lifetime'])
     parser.add_argument('--output-name',default='queue-current')
     parser.add_argument("--run-root", type=Path)
     args=parser.parse_args()
@@ -44,6 +49,7 @@ def main():
         changes={
           'recapture-generation':('QUEUE','expectedRuntimeGeneration > 0L ? expectedRuntimeGeneration : SaveRuntimeGuard.CaptureGeneration()','SaveRuntimeGuard.CaptureGeneration()'),
           'recapture-session':('QUEUE','expectedSceneSessionId >= 0 ? expectedSceneSessionId : Volatile.Read(ref _sceneHistorySessionId)','Volatile.Read(ref _sceneHistorySessionId)'),
+          'ignore-request-lifetime':('QUEUE','return !networkCancellation.IsCancellationRequested && Volatile.Read(ref requestRetired) == 0','return Volatile.Read(ref requestRetired) == 0'),
           'ignore-generation':('QUEUE','&& SaveRuntimeGuard.IsCurrentGeneration(queuedRuntimeGeneration)','&& true'),
           'skip-dispatch-guard':('QUEUE','if (!ValidateCurrentTarget("before_dispatch"))','if (false)'),
           'submit-directive-before-guard':('QUEUE','string sceneActionDirective = ExtractSceneActionDirective(ref text, runtimeTargetAgentIndex);','string sceneActionDirective = ExtractSceneActionDirective(ref text, runtimeTargetAgentIndex); SubmitSceneActionDirective(sceneActionDirective, runtimeTargetAgentIndex, replySnapshot); sceneActionDirective = null;'),
@@ -64,7 +70,7 @@ def main():
     if '@@' in template: raise ValueError('Unexpanded queue placeholder')
     output=new_run_root(Path(__file__).resolve().parents[4], "ScenePostprocessParityTests", args.run_root) if args.run_root else HERE/'.generated'/args.output_name;output.mkdir(parents=True,exist_ok=True)
     (output/'Program.cs').write_text(template,encoding='utf-8')
-    (output/'Queue.csproj').write_text('<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><ImplicitUsings>enable</ImplicitUsings><Nullable>disable</Nullable></PropertyGroup>'+run.team_module_project_items()+'</Project>')
+    (output/'Queue.csproj').write_text('<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><ImplicitUsings>enable</ImplicitUsings><Nullable>disable</Nullable></PropertyGroup>'+run.team_module_project_items()+QUEUE_LIFETIME_ITEMS+'</Project>')
     (output/'NuGet.Config').write_text('<configuration><packageSources><clear/></packageSources></configuration>')
     env=os.environ.copy();env['DOTNET_ROOT']=str(Path(args.dotnet).parent);env['DOTNET_CLI_HOME']=str(run.ROOT/'.tmp/dotnet-cli');env['DOTNET_GENERATE_ASPNET_CERTIFICATE']='false';env['DOTNET_CLI_TELEMETRY_OPTOUT']='1';env['DOTNET_NOLOGO']='1';env['DOTNET_CLI_UI_LANGUAGE']='en'
     meta='source='+(args.source_ref or 'working-tree')+' mutation='+(args.mutate or 'none')+'\n'+'\n'.join(key+' sha256='+hashlib.sha256(value.encode()).hexdigest() for key,value in snippets.items())

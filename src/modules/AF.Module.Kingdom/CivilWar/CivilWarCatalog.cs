@@ -396,7 +396,8 @@ internal struct CivilWarUltimatumResult
 
 internal static class CivilWarDecisions
 {
-	internal static CivilWarUltimatumResult RuleOnUltimatum(CivilWarDemandDef demand, IReadOnlyDictionary<string, float> features, int refusals, CivilWarTuning tuning, Func<float> random)
+	// escalationBoost scales the escalation roll on top of the demand's EscalationScale (e.g. >1 after rebels won a civil war).
+	internal static CivilWarUltimatumResult RuleOnUltimatum(CivilWarDemandDef demand, IReadOnlyDictionary<string, float> features, int refusals, CivilWarTuning tuning, Func<float> random, float escalationBoost = 1f)
 	{
 		CivilWarUltimatumResult result = new CivilWarUltimatumResult();
 		result.AcceptRoll = CivilWarRules.Roll("accept:" + demand?.Id, demand?.Accept, features, 1f, tuning, random);
@@ -413,17 +414,17 @@ internal static class CivilWarDecisions
 			result.Log = result.AcceptRoll + " | " + defer;
 			return result;
 		}
-		CivilWarUltimatumResult refusal = RollRefusal(demand, features, refusals, tuning, random);
+		CivilWarUltimatumResult refusal = RollRefusal(demand, features, refusals, tuning, random, escalationBoost);
 		refusal.AcceptRoll = result.AcceptRoll;
 		refusal.Log = result.AcceptRoll + " | " + defer + " | " + refusal.Log;
 		return refusal;
 	}
 
 	// Consequences of an outright refusal (NPC king, or a player king answering / ignoring the ultimatum).
-	internal static CivilWarUltimatumResult RollRefusal(CivilWarDemandDef demand, IReadOnlyDictionary<string, float> features, int refusals, CivilWarTuning tuning, Func<float> random)
+	internal static CivilWarUltimatumResult RollRefusal(CivilWarDemandDef demand, IReadOnlyDictionary<string, float> features, int refusals, CivilWarTuning tuning, Func<float> random, float escalationBoost = 1f)
 	{
 		CivilWarUltimatumResult result = new CivilWarUltimatumResult { Ruling = CivilWarRuling.Refuse };
-		float scale = demand?.EscalationScale ?? 1f;
+		float scale = (demand?.EscalationScale ?? 1f) * Math.Max(0f, escalationBoost);
 		result.EscalateRoll = CivilWarRules.Roll("escalate:" + demand?.Id, demand?.Escalate, features, scale, tuning, random);
 		result.Escalate = result.EscalateRoll.Passed;
 		string log = result.EscalateRoll.ToString();

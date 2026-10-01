@@ -17,7 +17,7 @@ using AnimusForge.Illustrator.UI.Overlays;
 
 namespace AnimusForge.Illustrator.UI.Patches
 {
-    public sealed class WeeklyReportIllustrationOverlayVM : ViewModel
+    public sealed class WeeklyReportIllustrationOverlayVM : ViewModel, global::AnimusForge.IWeeklyIllustrationSink
     {
         private string _spriteName = string.Empty;
         private bool _hasIllustration;
@@ -173,6 +173,10 @@ namespace AnimusForge.Illustrator.UI.Patches
         internal static Widget VisualRoot => _overlayLayer?.UIContext?.Root;
         private static MovableGauntletLayer _overlayLayer;
         private static WeeklyReportIllustrationOverlayVM _overlayVm;
+        // Whichever surface is live: the floating weekly overlay or the inline world-bulletin slot.
+        private static global::AnimusForge.IWeeklyIllustrationSink _sink;
+        private static global::AnimusForge.WorldBulletinIllustrationVM _bulletinSlot;
+        private static CachedIllustrationItem _activeItem;
         private static string _currentEventKey;
         private static WeeklyReportVisualContext _currentContext;
         private static IllustrationScope _scope;
@@ -197,6 +201,8 @@ namespace AnimusForge.Illustrator.UI.Patches
                 {
                     harmony.Patch(showMethod, postfix: new HarmonyMethod(typeof(WeeklyReportPopupIllustrationPatch), nameof(DevWeeklyReportPopup_Show_Postfix)));
                 }
+
+                global::AnimusForge.WorldBulletinPanelIllustrationBridge.AttachSlot = AttachWorldBulletinSlot;
 
                 MethodInfo closeMethod = AccessTools.Method(targetType, "Close");
                 if (closeMethod != null)
@@ -262,6 +268,7 @@ namespace AnimusForge.Illustrator.UI.Patches
             Debug.Print($"[Illustrator] Weekly report popup opened: '{title}' context={(_currentContext != null)}");
 
             _overlayVm = new WeeklyReportIllustrationOverlayVM(title, TriggerRegenerate);
+            _sink = _overlayVm;
             var layer = new MovableGauntletLayer("WeeklyReportIllustrationOverlay", 4010, false);
             _overlayLayer = layer;
             var movieIdentifier = layer.LoadMovie("WeeklyReportIllustrationOverlay", _overlayVm);
@@ -270,23 +277,98 @@ namespace AnimusForge.Illustrator.UI.Patches
             _overlayLayer = layer;
             topScreen.AddLayer(_overlayLayer);
 
+            BeginCachedLoad("点击【生成纪事插画】绘制本周大事件");
+        }
+
+        private static bool AttachWorldBulletinSlot(global::AnimusForge.WorldBulletinIllustrationVM slot, string eventId, string title, string subtitleText, string bodyText)
+        {
+            if (slot == null) return false;
+            bool enabled;
+            // IsEnabled asserts the main thread and may throw before the runtime's first tick; treat that as disabled.
+            try { enabled = IllustratorRuntime.IsEnabled(); } catch { enabled = false; }
+            if (!enabled) return false;
+            ScreenBase topScreen = ScreenManager.TopScreen;
+            if (topScreen == null) return false;
+            try
+            {
+                CloseOverlay();
+                _closing = false;
+                _ownerScreen = topScreen;
+                IllustrationScope ownerScope = null;
+                ownerScope = new IllustrationScope(topScreen, "weekly_report", () => CloseOverlayForScope(ownerScope));
+                _scope = ownerScope;
+                _currentContext = WeeklyReportContextExtractor.ExtractFromWeeklyReport(title, subtitleText, bodyText);
+                // Bulletin ids are unique per issue, so the cache key survives reopening from the chronicle.
+                _currentEventKey = "weekly_report:" + DiskImageCacheManager.ComputeHash(string.IsNullOrWhiteSpace(eventId) ? title + ":" + subtitleText : eventId);
+                _redrawCount = 0;
+                _bulletinSlot = slot;
+                _sink = slot;
+                slot.TitleText = title ?? "";
+                slot.StatusText = "正在翻检快报插画...";
+                slot.OnRegenerate = TriggerRegenerate;
+                slot.OnOpenGallery = () => IllustratorGalleryPopup.Show();
+                slot.OnDelete = DeleteCurrentBulletinIllustration;
+                slot.IsAvailable = true;
+                slot.NotifyHandlersChanged();
+                Debug.Print($"[Illustrator] World bulletin panel slot attached: '{title}' context={(_currentContext != null)}");
+                BeginCachedLoad("点击【重绘】绘制本期快报插画");
+                return true;
+            }
+            catch (Exception ex)
+            {
+                CloseOverlay();
+                slot.IsAvailable = false;
+                Debug.Print($"[Illustrator] Error attaching world bulletin slot: {ex.Message}");
+                return false;
+            }
+        }
+
+        private static void DeleteCurrentBulletinIllustration()
+        {
+            if (_bulletinSlot == null || _scope == null) return;
+            CachedIllustrationItem item = _activeItem;
+            if (item == null)
+            {
+                _bulletinSlot.StatusText = "这张插画尚未存档，无法删除。";
+                return;
+            }
+            if (!DiskImageCacheManager.DeleteItem(item, _scope.CampaignKey))
+            {
+                _bulletinSlot.StatusText = "删除失败，请到画廊中处理。";
+                return;
+            }
+            if (!string.IsNullOrEmpty(_activeSpriteName))
+            {
+                GauntletTextureLoader.ReleaseSprite(_activeSpriteName);
+                _activeSpriteName = null;
+            }
+            _activeItem = null;
+            _bulletinSlot.ShowPrompt = false;
+            _bulletinSlot.SpriteName = string.Empty;
+            _bulletinSlot.PromptText = string.Empty;
+            _bulletinSlot.HasIllustration = false;
+            _bulletinSlot.StatusText = "插画已移入回收区，点击【重绘】重新绘制。";
+        }
+
+        private static void BeginCachedLoad(string idleStatus)
+        {
             string campaignKey = _scope.CampaignKey;
             string cachedEventKey = _currentEventKey;
             IllustrationScope openedScope = _scope;
             bool autoGenerate = IllustratorSettings.Instance.AutoGenerateWeeklyReportIllustration;
-            _overlayVm.IsLoading = true;
+            _sink.IsLoading = true;
             bool cacheLoadStarted = IllustratorRuntime.Start(
                 () => Task.Run(() => DiskImageCacheManager.LoadImage(cachedEventKey, campaignKey, "weekly_report")),
                 (cached, error) =>
                 {
-                    if (!ReferenceEquals(_scope, openedScope) || !openedScope.IsCurrent || _overlayVm == null || _redrawCount != 0) return;
+                    if (!ReferenceEquals(_scope, openedScope) || !openedScope.IsCurrent || _sink == null || _redrawCount != 0) return;
                     if (error != null) Debug.Print("[Illustrator] Weekly cache read failed: " + error.Message);
                     var cacheOptions = IllustratorRuntime.CaptureOptions();
                     if (error == null && cached != null && Publish(cached, cached.Prompt))
                     {
                         Debug.Print("[Illustrator] Weekly overlay attached: cached=true");
-                        _overlayVm.StatusText = DiskImageCacheManager.CachedDisplayStatus(cached, cacheOptions?.StyleFingerprint);
-                        _overlayVm.IsLoading = false;
+                        _sink.StatusText = DiskImageCacheManager.CachedDisplayStatus(cached, cacheOptions?.StyleFingerprint);
+                        _sink.IsLoading = false;
                     }
                     else if (autoGenerate)
                     {
@@ -296,14 +378,14 @@ namespace AnimusForge.Illustrator.UI.Patches
                     else
                     {
                         Debug.Print("[Illustrator] Weekly overlay attached: cached=false, autoGen=false");
-                        _overlayVm.StatusText = "点击【生成纪事插画】绘制本周大事件";
-                        _overlayVm.IsLoading = false;
+                        _sink.StatusText = idleStatus;
+                        _sink.IsLoading = false;
                     }
                 });
             if (!cacheLoadStarted)
             {
-                _overlayVm.StatusText = autoGenerate ? "正在准备最新纪事画卷..." : "点击【生成纪事插画】绘制本周大事件";
-                _overlayVm.IsLoading = false;
+                _sink.StatusText = autoGenerate ? "正在准备最新纪事画卷..." : idleStatus;
+                _sink.IsLoading = false;
                 if (autoGenerate) TriggerRegenerate();
             }
         }
@@ -313,21 +395,21 @@ namespace AnimusForge.Illustrator.UI.Patches
             try { TriggerRegenerateCore(); }
             catch (Exception ex)
             {
-                if (_overlayVm != null) { _overlayVm.IsLoading = false; _overlayVm.StatusText = "生成准备失败：" + ex.Message; }
+                if (_sink != null) { _sink.IsLoading = false; _sink.StatusText = "生成准备失败：" + ex.Message; }
             }
         }
 
         private static void TriggerRegenerateCore()
         {
-            if (_overlayVm == null || _currentContext == null || _scope == null)
+            if (_sink == null || _currentContext == null || _scope == null)
             {
-                Debug.Print($"[Illustrator] Weekly regenerate skipped: vm={(_overlayVm != null)} ctx={(_currentContext != null)} scope={(_scope != null)}");
+                Debug.Print($"[Illustrator] Weekly regenerate skipped: vm={(_sink != null)} ctx={(_currentContext != null)} scope={(_scope != null)}");
                 return;
             }
 
-            _overlayVm.IsLoading = true;
-            _overlayVm.HasIllustration = false;
-            _overlayVm.StatusText = "正在从本周要闻中选择事件与关键瞬间，构思纪事画卷...";
+            _sink.IsLoading = true;
+            _sink.HasIllustration = false;
+            _sink.StatusText = "正在从本周要闻中选择事件与关键瞬间，构思纪事画卷...";
 
             string eventKey = _currentEventKey;
             var context = _currentContext;
@@ -387,7 +469,7 @@ namespace AnimusForge.Illustrator.UI.Patches
 
                 var direction = await VisualDirectorEngine.CreateDirectionAsync(promptPlan, refs, options, token).ConfigureAwait(false);
                 string prompt = direction.Prompt;
-                IllustratorRuntime.Post(() => { if (ReferenceEquals(_scope, generationScope) && !token.IsCancellationRequested && _overlayVm != null) _overlayVm.StatusText = direction.StatusText + "，正在绘制纪事画卷..."; });
+                IllustratorRuntime.Post(() => { if (ReferenceEquals(_scope, generationScope) && !token.IsCancellationRequested && _sink != null) _sink.StatusText = direction.StatusText + "，正在绘制纪事画卷..."; });
                 var genRefs = options?.EnableReferenceImageForGeneration == false ? null : (System.Collections.Generic.IReadOnlyList<IllustrationReferenceImage>)refs;
                 var result = await UniversalOpenAiImageClient.GenerateImageAsync(prompt, genRefs, options, token).ConfigureAwait(false);
                 string effectivePrompt = string.IsNullOrWhiteSpace(result.ResolvedPrompt) ? prompt : result.ResolvedPrompt;
@@ -402,24 +484,24 @@ namespace AnimusForge.Illustrator.UI.Patches
             }, completion =>
             {
                 if (completion.Saved != null) DiskImageCacheManager.PromoteDefaultIfNewest(completion.Saved, campaignKey);
-                _overlayVm.PromptText = completion.Prompt;
+                _sink.PromptText = completion.Prompt;
                 if (completion.Result != null && completion.Result.Success && completion.Result.ImageBytes != null && Publish(completion.Saved, completion.Prompt, completion.Result.ImageBytes))
                 {
-                    _overlayVm.StatusText = completion.Saved?.DisplayStatusText ?? "【本周纪事油画已绘制完成】";
+                    _sink.StatusText = completion.Saved?.DisplayStatusText ?? "【本周纪事油画已绘制完成】";
                 }
                 else
                 {
-                    _overlayVm.IsLoading = false;
-                    _overlayVm.StatusText = "绘制未成功: " + (completion.Result?.ErrorMessage ?? "未能保存图像");
+                    _sink.IsLoading = false;
+                    _sink.StatusText = "绘制未成功: " + (completion.Result?.ErrorMessage ?? "未能保存图像");
                 }
             }, error =>
             {
-                _overlayVm.IsLoading = false;
-                _overlayVm.StatusText = "异常: " + error;
+                _sink.IsLoading = false;
+                _sink.StatusText = "异常: " + error;
             });
-            if (!started && _overlayVm != null)
+            if (!started && _sink != null)
             {
-                _overlayVm.IsLoading = false;
+                _sink.IsLoading = false;
             }
         }
 
@@ -450,11 +532,12 @@ namespace AnimusForge.Illustrator.UI.Patches
             var sprite = GauntletTextureLoader.LoadOrRegisterPngBytes(spriteName, bytes);
             if (sprite == null) return false;
             _activeSpriteName = spriteName;
-            if (!string.IsNullOrWhiteSpace(item?.Title)) _overlayVm.TitleText = item.Title;
-            _overlayVm.SpriteName = spriteName;
-            _overlayVm.PromptText = prompt;
-            _overlayVm.HasIllustration = true;
-            _overlayVm.IsLoading = false;
+            _activeItem = item;
+            if (!string.IsNullOrWhiteSpace(item?.Title)) _sink.TitleText = item.Title;
+            _sink.SpriteName = spriteName;
+            _sink.PromptText = prompt;
+            _sink.HasIllustration = true;
+            _sink.IsLoading = false;
             return true;
         }
 
@@ -487,6 +570,9 @@ namespace AnimusForge.Illustrator.UI.Patches
             {
                 _overlayLayer = null;
                 _overlayVm = null;
+                _sink = null;
+                _bulletinSlot = null;
+                _activeItem = null;
                 _currentContext = null;
                 _currentEventKey = null;
                 _scope = null;

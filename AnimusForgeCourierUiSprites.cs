@@ -18,6 +18,12 @@ internal static class AnimusForgeCourierUiSprites
 	public const string ScrollSpriteName = Category + "\\af_courier_scroll";
 	public const string ReplyNoticeIdentifier = "af_courier_reply_notice";
 	public const string ReplyNoticeSpriteName = Category + "\\" + ReplyNoticeIdentifier;
+	public const string ScrollBaseSpriteName = Category + "\\af_courier_scroll_base";
+	private const string ScrollBaseFileName = "af_courier_scroll_base.png";
+	public const string ButtonBandSpriteName = Category + "\\af_courier_button_band";
+	private const string ButtonBandFileName = "af_courier_button_band.png";
+	// Declared in AFCourierLetterBrushes.xml with a placeholder sprite; the runtime band PNG replaces it before the movie loads.
+	private const string ButtonBrushName = "AFCourierLetter.Band.Button";
 	private const string Source = "CourierUiSprites";
 	private const string Prefix = "[AF-COURIER-UI]";
 	private const string Category = "af_courier";
@@ -34,6 +40,90 @@ internal static class AnimusForgeCourierUiSprites
 	public static void EnsureInstalled()
 	{
 		TryInstallRuntimeSprites();
+	}
+
+	// File names: af_courier_pattern_left_1.png / af_courier_pattern_right_3.png / af_courier_seal_vlandia.png
+	public static string PatternSpriteName(string side, int index)
+	{
+		return Category + "\\af_courier_pattern_" + side + "_" + index;
+	}
+
+	public static string SealSpriteName(string sealKey)
+	{
+		return Category + "\\af_courier_seal_" + sealKey;
+	}
+
+	// Themed layers are loaded only for the preset actually shown, so unused presets never occupy texture memory.
+	public static void EnsureThemeInstalled(CourierLetterTheme theme)
+	{
+		EnsureInstalled();
+		if (theme == null || UIResourceManager.SpriteData == null)
+		{
+			return;
+		}
+		try
+		{
+			TryInstallRuntimeSprite(ScrollBaseSpriteName, ScrollBaseFileName);
+			TryInstallRuntimeSprite(theme.LeftSpriteName, FileNameOf(theme.LeftSpriteName));
+			TryInstallRuntimeSprite(theme.RightSpriteName, FileNameOf(theme.RightSpriteName));
+			TryInstallRuntimeSprite(theme.SealSpriteName, FileNameOf(theme.SealSpriteName));
+		}
+		catch (Exception ex)
+		{
+			LogOnce("theme-" + theme.Id, "Theme sprite install failed for " + theme.Id + ": " + ex.Message);
+		}
+		TryApplyButtonBandSprite();
+	}
+
+	// Brush layers keep the Sprite object they were parsed with, so the band must be pushed into the brush itself.
+	// Widgets clone their brush on load, which is why this runs before LoadMovie and again after every brush refresh.
+	private static void TryApplyButtonBandSprite()
+	{
+		try
+		{
+			if (UIResourceManager.SpriteData == null || !TryInstallRuntimeSprite(ButtonBandSpriteName, ButtonBandFileName))
+			{
+				return;
+			}
+			Brush brush = UIResourceManager.BrushFactory?.GetBrush(ButtonBrushName);
+			if (brush == null || !RuntimeSpritesByName.TryGetValue(ButtonBandSpriteName, out BannerlordUiSprite sprite))
+			{
+				LogOnce("band-brush-missing", "Brush " + ButtonBrushName + " not found; courier buttons keep the placeholder sprite.");
+				return;
+			}
+			foreach (BrushLayer layer in brush.Layers)
+			{
+				if (layer != null)
+				{
+					layer.Sprite = sprite;
+					// The placeholder tint would darken the band texture; the PNG already carries its own color and alpha.
+					layer.Color = Color.White;
+				}
+			}
+			foreach (Style style in brush.Styles)
+			{
+				if (style == null)
+				{
+					continue;
+				}
+				foreach (StyleLayer styleLayer in style.GetLayers())
+				{
+					if (styleLayer != null)
+					{
+						styleLayer.Sprite = sprite;
+					}
+				}
+			}
+		}
+		catch (Exception ex)
+		{
+			LogOnce("band-brush-exception", "Failed to apply courier button band sprite: " + ex.Message);
+		}
+	}
+
+	private static string FileNameOf(string spriteName)
+	{
+		return spriteName.Substring(Category.Length + 1) + ".png";
 	}
 
 	public static void EnsurePatched(Harmony harmony)
@@ -64,6 +154,7 @@ internal static class AnimusForgeCourierUiSprites
 	{
 		TryInstallRuntimeSprites();
 		TryApplyBrushLayerSprite();
+		TryApplyButtonBandSprite();
 	}
 
 	private static void TryPatch(Harmony harmony, string targetName, string postfixName)

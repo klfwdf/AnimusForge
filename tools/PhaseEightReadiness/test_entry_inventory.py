@@ -63,6 +63,9 @@ EXPANDED_ENTRIES = {
         "src/modules/AF.Module.Weekly/Materials/WeeklyReportTextHelper.cs",
         "src/modules/AF.Module.Weekly/Materials/WeeklyMaterialBatchPlanner.cs",
         "TerminalWeeklyReportBrowserPopupVM.cs",
+        # User-approved instant world bulletin owners; presence stays REPRESENTATIVE.
+        "src/modules/AF.Module.Weekly/Bulletin/WorldBulletinPolicy.cs",
+        "src/modules/AF.Module.Weekly/Panel/WorldBulletinPanelVM.cs",
     ),
     "ui-tts-external-integration": (
         "AnimusForgeTerminalBehavior.cs",
@@ -71,12 +74,11 @@ EXPANDED_ENTRIES = {
         "TerminalWeeklyReportBrowserPopupVM.cs",
         "TerminalVassalageTributeHistoryPopupVM.cs",
         "DevWeeklyReportPopup.cs",
-        "WarStats/AfWarStatsMapButtonLayer.cs",
-        "WarStats/AfWarStatsMapButtonVM.cs",
+        "WarStats/AfWarStatsMapNavigationEntry.cs",
         "WarStats/AfWarStatsPopupVM.cs",
         "WarStats/AfWarStatsEncyclopedia.cs",
         "content/modules/AF.Module.UI/GUI/Prefabs/AnimusForgeTerminalPopup.xml",
-        "content/modules/AF.Module.WarStats/GUI/Prefabs/AFWarStatsMapButton.xml",
+        "content/modules/AF.Module.WarStats/GUI/Brushes/AFTerminalMapBarBrushes.xml",
         "content/modules/AF.Module.Weekly/GUI/Prefabs/DevWeeklyReportPopup.xml",
     ),
 }

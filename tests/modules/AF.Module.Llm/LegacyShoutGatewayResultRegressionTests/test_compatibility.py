@@ -1,10 +1,12 @@
 from pathlib import Path
 import importlib.util,unittest
 ROOT=Path(__file__).resolve().parents[4];GATEWAY='src/modules/AF.Module.Llm/Transport/LegacyShoutNetworkGateway.cs'
+# Baseline 5ce8767a predates the byte-identical aa3539ca relocation (0-line rename), so read it at its historical path.
+BASELINE_REF,BASELINE_GATEWAY='5ce8767a','Refactor/Contracts/LegacyShoutNetworkGateway.cs'
 spec=importlib.util.spec_from_file_location('ex',ROOT/'tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py');ex=importlib.util.module_from_spec(spec);spec.loader.exec_module(ex)
 class Compatibility(unittest.TestCase):
  def test_legacy_transports_and_stream_generation_are_unchanged(self):
-  current=ex.source(GATEWAY,None);baseline=ex.source(GATEWAY,'5ce8767a')
+  current=ex.source(GATEWAY,None);baseline=ex.source(BASELINE_GATEWAY,BASELINE_REF)
   for signature in ['public static Task<string> SendLegacyMessagesAsync(','public static Task SendLegacyMessagesStreamAsync(','public async Task<LlmGenerateResult> GenerateStreamAsync(']:
    self.assertEqual(ex.declaration(current,signature),ex.declaration(baseline,signature),signature)
  def test_error_prefixes_are_emitted_by_real_shout_network(self):

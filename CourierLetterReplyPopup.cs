@@ -98,7 +98,7 @@ public sealed class CourierLetterReplyPopup
 
 	private void Open()
 	{
-		AnimusForgeCourierUiSprites.EnsureInstalled();
+		AnimusForgeCourierUiSprites.EnsureThemeInstalled(_dataSource.Theme.Source);
 		_layer.LoadMovie("CourierLetterReplyPopup", _dataSource);
 		_layer.InputRestrictions.SetInputRestrictions(true, InputUsageMask.All);
 		try

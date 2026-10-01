@@ -74,6 +74,18 @@ internal static class AnimusForgeWeeklyReportUiSprites
 	private static bool _installLogged;
 	private static bool _chronicleInstallLogged;
 	private static bool _brushLogged;
+	private const string BulletinCategory = "af_world_bulletin";
+	// (file stem, fallback width, fallback height) for the instant-bulletin panel sheet.
+	private static readonly (string Stem, int Width, int Height)[] BulletinSprites =
+	{
+		("af_world_bulletin_parchment", 1192, 1100),
+		("af_world_bulletin_seal", 126, 132),
+		("af_world_bulletin_rule_l", 300, 18),
+		("af_world_bulletin_rule_r", 300, 18)
+	};
+	// Set on first panel open; the parchment is large, so it is never loaded for players who never open a bulletin.
+	private static bool _bulletinRequested;
+	private static bool _bulletinInstallLogged;
 
 	public static void EnsurePatched(Harmony harmony)
 	{
@@ -101,10 +113,56 @@ internal static class AnimusForgeWeeklyReportUiSprites
 		TryInstallChronicleRuntimeSprite();
 	}
 
+	public static void EnsureInstalledForWorldBulletinUi()
+	{
+		_bulletinRequested = true;
+		TryInstallBulletinRuntimeSprites();
+	}
+
 	public static void RefreshSpriteDataPostfix()
 	{
 		TryInstallRuntimeSprite();
 		TryInstallChronicleRuntimeSprite();
+		if (_bulletinRequested)
+		{
+			TryInstallBulletinRuntimeSprites();
+		}
+	}
+
+	private static void TryInstallBulletinRuntimeSprites()
+	{
+		try
+		{
+			if (UIResourceManager.SpriteData == null)
+			{
+				return;
+			}
+			int installed = 0;
+			foreach ((string stem, int width, int height) in BulletinSprites)
+			{
+				string spriteName = BulletinCategory + "\\" + stem;
+				if (UIResourceManager.SpriteData.Sprites.TryGetValue(spriteName, out BannerlordUiSprite existing) && existing is RuntimeTextureSprite)
+				{
+					continue;
+				}
+				if (!TryCreateSprite(spriteName, BulletinCategory, stem + ".png", width, height, out BannerlordUiSprite sprite, out string failureReason))
+				{
+					LogOnce("create-" + spriteName, "Failed to load " + stem + ".png: " + failureReason);
+					continue;
+				}
+				UIResourceManager.SpriteData.Sprites[spriteName] = sprite;
+				installed++;
+			}
+			if (installed > 0 && !_bulletinInstallLogged)
+			{
+				_bulletinInstallLogged = true;
+				Log("Runtime PNG sprites installed for world bulletin panel: " + installed + ".");
+			}
+		}
+		catch (Exception ex)
+		{
+			LogOnce("bulletin-install-exception", "Runtime PNG bulletin sprite install failed: " + ex.Message);
+		}
 	}
 
 	public static void RefreshBrushFactoryPostfix()

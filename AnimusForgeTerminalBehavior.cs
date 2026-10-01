@@ -78,6 +78,8 @@ public class AnimusForgeTerminalBehavior : CampaignBehaviorBase
 	{
 		Instance?.RetirePlayerRpForgeUi();
 		Instance = this;
+		// Idempotent; runs before the campaign map screen builds its navigation bar.
+		AFWarStatsTerminal.UI.AfWarStatsMapNavigationEntry.EnsurePatched();
 	}
 
 	public override void RegisterEvents()
@@ -261,7 +263,7 @@ public class AnimusForgeTerminalBehavior : CampaignBehaviorBase
 			}
 			else if (AnimusForgeTerminalSettings.IsMapIconEnabled)
 			{
-				InformationManager.DisplayMessage(new InformationMessage("可点击大地图右上角图标打开AnimusForge终端。"));
+				InformationManager.DisplayMessage(new InformationMessage("可点击大地图左下角导航栏中的终端图标打开AnimusForge终端。"));
 			}
 		}
 		catch (Exception ex)

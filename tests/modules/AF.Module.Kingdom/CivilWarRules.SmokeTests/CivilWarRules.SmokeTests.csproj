@@ -8,5 +8,10 @@
   <ItemGroup>
     <Compile Include="..\..\..\..\src\modules\AF.Module.Kingdom\CivilWar\CivilWarRules.cs" Link="CivilWarRules.cs" />
     <Compile Include="..\..\..\..\src\modules\AF.Module.Kingdom\CivilWar\CivilWarCatalog.cs" Link="CivilWarCatalog.cs" />
+    <Compile Include="..\..\..\..\src\modules\AF.Module.Kingdom\CivilWar\KingdomCivilWarState.cs" Link="KingdomCivilWarState.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <!-- Save-shape checks only; the game's net472 Newtonsoft cannot load on net6. -->
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
   </ItemGroup>
 </Project>

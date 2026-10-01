@@ -137,7 +137,10 @@ internal static class Program
         }
 
         string executable = Environment.ProcessPath ?? throw new InvalidOperationException("process path unavailable");
-        string childExecutable = Path.Combine(moduleRoot, Path.GetFileName(executable));
+        // With UseAppHost=false (the aggregate runner) the process is the shared dotnet host, not an apphost;
+        // launch the copied assembly through that host so it is still loaded from the module boundary.
+        bool sharedHost = string.Equals(Path.GetFileNameWithoutExtension(executable), "dotnet", StringComparison.OrdinalIgnoreCase);
+        string childExecutable = sharedHost ? executable : Path.Combine(moduleRoot, Path.GetFileName(executable));
         ProcessStartInfo start = new ProcessStartInfo(childExecutable)
         {
             WorkingDirectory = cwd,
@@ -145,6 +148,7 @@ internal static class Program
             RedirectStandardOutput = true,
             RedirectStandardError = true,
         };
+        if (sharedHost) start.ArgumentList.Add(Path.Combine(moduleRoot, Path.GetFileName(typeof(Program).Assembly.Location)));
         start.ArgumentList.Add("child");
         start.Environment["AF_BRIDGE_SCENARIO"] = name;
         // The child assembly is loaded from the module boundary.  Its

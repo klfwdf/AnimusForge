@@ -103,6 +103,107 @@ internal sealed class CivilWarTuning
 	internal int PlayerAnswerWeeks = 2;
 	internal int SideLockWeeks = 2;
 	internal int WarRequestTimeoutWeeks = 3;
+	// Concurrent factions per kingdom (MCM 1..4).
+	internal int MaxFactions = 3;
+	// false = only one faction may be at open war, the others wait; true = each faction may rebel on its own.
+	internal bool AllowConcurrentWars;
+}
+
+// Pure multi-faction rules (no TaleWorlds types) so the smoke tests can cover them.
+internal static class CivilWarFactionRules
+{
+	// A new faction may form while below the cap and outside the cooldown.
+	internal static bool CanFormFaction(int activeFactions, int week, int cooldownUntilWeek, CivilWarTuning tuning)
+	{
+		int cap = Math.Max(1, Math.Min(4, tuning?.MaxFactions ?? 3));
+		return activeFactions < cap && week >= cooldownUntilWeek;
+	}
+
+	// Single-war mode lets a faction open war only while no other faction of the kingdom is at war.
+	internal static bool CanOpenWar(bool otherFactionAtWar, CivilWarTuning tuning)
+	{
+		return !otherFactionAtWar || (tuning?.AllowConcurrentWars ?? false);
+	}
+
+	// Two factions never share a demand; the second one would just duplicate the first.
+	internal static bool IsDemandTaken(IEnumerable<string> activeDemandIds, string demandId)
+	{
+		if (activeDemandIds == null || string.IsNullOrWhiteSpace(demandId)) return false;
+		foreach (string id in activeDemandIds)
+		{
+			if (string.Equals(id, demandId, StringComparison.Ordinal)) return true;
+		}
+		return false;
+	}
+
+	// Faction grievance = mean of its member clans' totals, 0..100.
+	internal static float FactionGrievance(IEnumerable<float> memberTotals)
+	{
+		float sum = 0f;
+		int count = 0;
+		foreach (float value in memberTotals ?? Array.Empty<float>())
+		{
+			sum += Clamp01x100(value);
+			count++;
+		}
+		return count == 0 ? 0f : sum / count;
+	}
+
+	// A middle clan joining the opposition picks the faction whose demand matches its own grievance best.
+	// scores[i] = affinity of the clan's grievance to faction i. Returns -1 when there is no faction.
+	internal static int PickFactionForClan(IReadOnlyList<float> scores, CivilWarTuning tuning, Func<float> random)
+	{
+		if (scores == null || scores.Count == 0) return -1;
+		List<float> weights = new List<float>(scores.Count);
+		foreach (float score in scores) weights.Add(Math.Max(0.05f, score));
+		return CivilWarRules.PickWeighted(weights, tuning, random);
+	}
+
+	private static float Clamp01x100(float value) => CivilWarRules.Clamp(value, 0f, 100f);
+}
+
+// How the other factions of a kingdom react when one civil war ends.
+internal enum CivilWarAftermath
+{
+	None = 0,
+	Suppressed = 1,  // crown won: remaining factions are cowed
+	Emboldened = 2,  // rebels won: remaining factions push harder
+	Settled = 3      // negotiated / accepted: only the truce applies
+}
+
+internal static class CivilWarAftermathRules
+{
+	// Weeks every remaining faction waits before its next ultimatum after a war ends.
+	internal static int TruceWeeks(CivilWarTuning tuning)
+	{
+		return Math.Max(2, (tuning?.CooldownWeeks ?? 8) / 2);
+	}
+
+	// Remaining factions' grievance multiplier (applied once to every source of their members).
+	internal static float GrievanceFactor(CivilWarAftermath aftermath)
+	{
+		return aftermath == CivilWarAftermath.Suppressed ? 0.6f : aftermath == CivilWarAftermath.Emboldened ? 1.1f : 1f;
+	}
+
+	// Multiplier on the chance that a member leaves its faction, while the aftermath lasts.
+	internal static float LeaveFactor(CivilWarAftermath aftermath)
+	{
+		return aftermath == CivilWarAftermath.Suppressed ? 2.5f : aftermath == CivilWarAftermath.Emboldened ? 0.5f : 1f;
+	}
+
+	// Multiplier on the escalation roll of a refused demand, while the aftermath lasts.
+	internal static float EscalationFactor(CivilWarAftermath aftermath)
+	{
+		return aftermath == CivilWarAftermath.Suppressed ? 0.5f : aftermath == CivilWarAftermath.Emboldened ? 1.5f : 1f;
+	}
+
+	// The mood lasts twice as long as the truce, so it still shapes the first ultimatum after it.
+	internal static int MoodWeeks(CivilWarTuning tuning) => TruceWeeks(tuning) * 2;
+
+	internal static CivilWarAftermath Current(CivilWarAftermath aftermath, int week, int untilWeek)
+	{
+		return week <= untilWeek ? aftermath : CivilWarAftermath.None;
+	}
 }
 
 internal struct CivilWarRoll
