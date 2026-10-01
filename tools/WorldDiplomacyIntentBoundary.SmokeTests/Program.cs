@@ -2237,7 +2237,7 @@ internal static class Program
             "SuppressInvalidDocumentBeforePropagation(document, \"final_live_state_guard:\" + liveStateReason);",
             StringComparison.Ordinal);
         int playerSpecificGuard = publication.IndexOf(
-            "if (legacy && document.IsPlayerAuthored",
+            "if (legacy && command.IsPlayerAuthored",
             liveGuardSuppression,
             StringComparison.Ordinal);
         int publishReady = publication.IndexOf(
@@ -3073,15 +3073,15 @@ internal static class Program
 			source,
 			"private void ProcessAnalyzedDocument(",
 			"private bool TryGetPlayerWorldStateIntentViolation(");
-		Test.True(analyzedPublication.Contains("document.IsRoundResponseNoActionDeclaration", StringComparison.Ordinal)
+		Test.True(analyzedPublication.Contains("command.IsRoundResponseNoActionDeclaration", StringComparison.Ordinal)
 			&& analyzedPublication.Contains("IsNonRootAiRelayNoActionAllowed(", StringComparison.Ordinal)
-			&& analyzedPublication.Contains("document.ResultSettlementSlotId", StringComparison.Ordinal)
-			&& analyzedPublication.Contains("document.IsRelayTurn", StringComparison.Ordinal)
+			&& analyzedPublication.Contains("command.ResultSettlementSlotId", StringComparison.Ordinal)
+			&& analyzedPublication.Contains("command.IsRelayTurn", StringComparison.Ordinal)
 			&& analyzedPublication.Contains("stale_round_response_no_action_declaration", StringComparison.Ordinal)
 			&& !analyzedPublication.Contains("document.IsAutonomousNoActionDeclaration", StringComparison.Ordinal),
 			"publication must revalidate only the new non-root AI relay statement stamp");
-		Test.True(analyzedPublication.Contains("document.IsExternalResponseOnly", StringComparison.Ordinal)
-			&& analyzedPublication.Contains("ResolveDocument(document.SourceDocumentId)", StringComparison.Ordinal),
+		Test.True(analyzedPublication.Contains("command.IsExternalResponseOnly", StringComparison.Ordinal)
+			&& analyzedPublication.Contains("ResolveDocument(command.SourceDocumentId)", StringComparison.Ordinal),
 			"final publication must revalidate the same external source-bound statement authorization");
 		int mechanicsGuard = analyzedPublication.IndexOf("&& !allowedNoAction)", StringComparison.Ordinal);
         int historyPublication = analyzedPublication.LastIndexOf("FinalizePublishedDocumentAfterAnalysis(port, orchestration, document", StringComparison.Ordinal);
@@ -3217,7 +3217,7 @@ internal static class Program
 			source,
 			"private void ProcessAnalyzedDocument(",
 			"private bool TryGetPlayerWorldStateIntentViolation(");
-		Test.True(analyzedPublication.Contains("document.IsRoundResponseNoActionDeclaration", StringComparison.Ordinal)
+		Test.True(analyzedPublication.Contains("command.IsRoundResponseNoActionDeclaration", StringComparison.Ordinal)
 			&& !analyzedPublication.Contains("document.IsAutonomousNoActionDeclaration", StringComparison.Ordinal),
 			"publication authorization must use the general non-root relay stamp rather than the war audit flag");
 		int noActionMechanicsGuard = analyzedPublication.IndexOf("&& !allowedNoAction)", StringComparison.Ordinal);
@@ -3238,7 +3238,7 @@ internal static class Program
 				"war-response statement must bypass this mechanism while remaining publishable: " + forbiddenMechanism);
 		}
 		int targetDecision = analyzedPublication.IndexOf(
-			"RecordDiplomaticThreatTargetDecisions(document, author, target, action.Intent)",
+			"RecordDiplomaticThreatTargetDecisions(document, author, target, input.Intent)",
 			noActionMechanicsGuard,
 			StringComparison.Ordinal);
 		Test.True(targetDecision > noActionMechanicsGuard && targetDecision < historyPublication,
@@ -3489,11 +3489,11 @@ internal static class Program
 			"registering a second proposal from the same document must not delete its sibling action's offer");
 
 		string multiActionProcessing = ExtractMethod(source, "private void ProcessAnalyzedMultiActionDocument(");
-		Test.True(multiActionProcessing.Contains("actions.Count < 1", StringComparison.Ordinal)
-            && multiActionProcessing.Contains("actions.Count > port.MaxDiplomaticActionsPerDocument", StringComparison.Ordinal),
+		Test.True(multiActionProcessing.Contains("command.ActionCount < 1", StringComparison.Ordinal)
+            && multiActionProcessing.Contains("command.ActionCount > port.MaxDiplomaticActionsPerDocument", StringComparison.Ordinal),
 			"the publication boundary must re-enforce the one-to-four action cap after generation and save/load");
 		int actionLoop = multiActionProcessing.IndexOf(
-			"for (int index = 0; index < actions.Count; index++)",
+			"for (int index = 0; index < command.ActionCount; index++)",
 			StringComparison.Ordinal);
 		int setActionContext = multiActionProcessing.IndexOf(
             "WorldDiplomacyDocumentApplication.BeginAction(document, action, target)",
@@ -3527,7 +3527,7 @@ internal static class Program
 			&& CountOccurrences(multiActionProcessing, "HandleRoundDocumentProcessed(document)") == 1
 			&& CountOccurrences(multiActionProcessing, "SettleInternationalReputationForDocument(document)") == 1,
 			"one multi-action document must settle reputation, publish history, propagate, and consume its round turn exactly once");
-        Test.True(multiActionProcessing.Contains("new List<string>(actions.Count)", StringComparison.Ordinal)
+        Test.True(multiActionProcessing.Contains("new List<string>(command.ActionCount)", StringComparison.Ordinal)
 			&& multiActionProcessing.Contains("new HashSet<string>(StringComparer.OrdinalIgnoreCase)", StringComparison.Ordinal)
 			&& !multiActionProcessing.Contains("Kingdom.All", StringComparison.Ordinal),
 			"the bounded four-action publication path must preallocate small collections and avoid a full-world scan per document");
@@ -4427,7 +4427,7 @@ internal static class Program
             string text = File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyDocumentExecutionApplication.cs"));
             if (name == "ProcessAnalyzedDocument")
                 Test.True(source.Contains("WorldDiplomacyDocumentExecutionApplication.ProcessAnalyzedDocument(_host.DocumentExecution(), this,", StringComparison.Ordinal)
-                    || text.Contains("ExecuteItems(port, orchestration, document, actions, legacy)", StringComparison.Ordinal),
+                    || text.Contains("ExecuteItems(port, orchestration, document, actions, command, legacy)", StringComparison.Ordinal),
                     "legacy entry must call the real document Application owner: " + name);
             else if (name == "TryIncludeResultSettlementTarget")
                 Test.True(source.Contains("WorldDiplomacyDocumentExecutionApplication.TryIncludeResultSettlementTarget(_host.DocumentExecution(),", StringComparison.Ordinal),

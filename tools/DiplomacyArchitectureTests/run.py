@@ -238,6 +238,10 @@ def main():
  assert 'DiplomacyConversationBridge.BuildDiplomacyMemory' in current
  executor=read(APPDIR+'WorldDiplomacyDocumentExecutionApplication.cs')
  assert 'ProcessAnalyzedMultiActionDocument(' not in executor
+ assert 'new WorldDiplomacyDocumentExecutionCommand(document, actions)' in executor
+ assert 'port.ResolveKingdomId(input.TargetKingdomId)' in executor
+ assert 'WorldDiplomacyIntentVocabulary.NormalizeIntent(input.Intent)' in executor
+ assert 'WorldDiplomacyOfferContractRules.CommitmentMatchesIntent(intent, input.Commitment)' in executor
  assert executor.count('orchestration.ExecuteImmediateIntent(')==1
  history=read('Refactor/Domain/WorldDiplomacyCanonicalHistoryRules.cs')
  for forbidden in ['TryScheduleTokenCompression(', 'CommitCompression(', 'EnqueueCompressionJob(', 'AppendCanonicalDocumentEvents(', 'SyncPublishedPolicyArtifacts(']:

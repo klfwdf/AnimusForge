@@ -926,7 +926,7 @@ internal static class Program
 			&& firstSettlementTargetMutation > settlementCapacityPreflight,
 			"all distinct new action targets must pass one capacity preflight before any settlement route mutation");
 		int actionLoop = analyzedPublication.LastIndexOf(
-			"for (int index = 0; index < actions.Count; index++)",
+			"for (int index = 0; index < command.ActionCount; index++)",
 			StringComparison.Ordinal);
 		int setActionContext = analyzedPublication.IndexOf(
             "WorldDiplomacyDocumentApplication.BeginAction(document, action, target)",
@@ -1250,7 +1250,7 @@ internal static class Program
 			source,
 			"private void ProcessAnalyzedDocument(");
 		int singleFinalGuard = singlePublication.IndexOf(
-			"WorldDiplomacyRoundLifecycleRules.IsImmediateWarResponsePeaceSuppressed(round, document.ResultSettlementSlotId",
+			"WorldDiplomacyRoundLifecycleRules.IsImmediateWarResponsePeaceSuppressed(round, command.ResultSettlementSlotId",
 			StringComparison.Ordinal);
 		int singlePublish = singlePublication.IndexOf("document.IsReadyForPublication = true", singleFinalGuard, StringComparison.Ordinal);
 		Test.True(singlePublication.Contains("intent == \"propose_peace\"", StringComparison.Ordinal)
@@ -1262,7 +1262,7 @@ internal static class Program
 			source,
 			"private void ProcessAnalyzedMultiActionDocument(");
 		int multiFinalGuard = multiPublication.IndexOf(
-			"WorldDiplomacyRoundLifecycleRules.IsImmediateWarResponsePeaceSuppressed(round, document.ResultSettlementSlotId",
+			"WorldDiplomacyRoundLifecycleRules.IsImmediateWarResponsePeaceSuppressed(round, command.ResultSettlementSlotId",
 			StringComparison.Ordinal);
 		int multiPublish = multiPublication.IndexOf("document.IsReadyForPublication = true", multiFinalGuard, StringComparison.Ordinal);
 		Test.True(multiPublication.Contains("intent == \"propose_peace\"", StringComparison.Ordinal)
@@ -1510,7 +1510,7 @@ internal static class Program
 			StringComparison.Ordinal);
 		int singlePublish = singlePublication.IndexOf("document.IsReadyForPublication = true", singleFinalLegalSet, StringComparison.Ordinal);
 		Test.True(singleFinalLegalSet >= 0 && singlePublish > singleFinalLegalSet
-			&& singlePublication.Contains("document.ResultSettlementSlotId", StringComparison.Ordinal)
+			&& singlePublication.Contains("command.ResultSettlementSlotId", StringComparison.Ordinal)
 			&& singlePublication.Contains("intent", StringComparison.Ordinal),
 			"single-action publication must recheck the shared live legal set before publishing an obsolete counter-proposal");
 
@@ -1520,7 +1520,7 @@ internal static class Program
 			StringComparison.Ordinal);
 		int multiPublish = multiPublication.IndexOf("document.IsReadyForPublication = true", multiFinalLegalSet, StringComparison.Ordinal);
 		Test.True(multiFinalLegalSet >= 0 && multiPublish > multiFinalLegalSet
-			&& multiPublication.Contains("document.ResultSettlementSlotId", StringComparison.Ordinal)
+			&& multiPublication.Contains("command.ResultSettlementSlotId", StringComparison.Ordinal)
 			&& multiPublication.Contains("intent", StringComparison.Ordinal),
 			"every multi-target action must recheck the shared live legal set before the batch becomes publishable");
 	}
@@ -1598,7 +1598,7 @@ internal static class Program
                 "WorldDiplomacyRoundOffer requiredPeaceOffer = port.FindRequiredPeaceOfferResponse(",
 				StringComparison.Ordinal);
 			int playerFallback = method.IndexOf(
-				"requireAnyOpenPeaceOffer: document.IsRelayTurn || document.IsPlayerAuthored",
+				"requireAnyOpenPeaceOffer: command.IsRelayTurn || command.IsPlayerAuthored",
 				requiredOffer,
 				StringComparison.Ordinal);
 			int finalCoverage = method.IndexOf(
@@ -1969,7 +1969,7 @@ internal static class Program
 
 		string singlePublication = ExtractMethod(source, "private void ProcessAnalyzedDocument(");
         Test.True(singlePublication.Contains("document.Actions == null || document.Actions.Count == 0")
-            && singlePublication.Contains("ExecuteItems(port, orchestration, document, actions, legacy)")
+            && singlePublication.Contains("ExecuteItems(port, orchestration, document, actions, command, legacy)")
             && singlePublication.Contains("multiple_peace_acceptances_have_cross_terms"),
             "both persisted representations enter one guarded executor; flat records remain transient execution items");
 	}
@@ -2186,7 +2186,7 @@ internal static class Program
             string text = File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyDocumentExecutionApplication.cs"));
             if (name == "ProcessAnalyzedDocument")
                 Test.True(source.Contains("WorldDiplomacyDocumentExecutionApplication.ProcessAnalyzedDocument(_host.DocumentExecution(), this,", StringComparison.Ordinal)
-                    || text.Contains("ExecuteItems(port, orchestration, document, actions, legacy)", StringComparison.Ordinal),
+                    || text.Contains("ExecuteItems(port, orchestration, document, actions, command, legacy)", StringComparison.Ordinal),
                     "legacy entry must call the real document Application owner: " + name);
             else if (name == "TryIncludeResultSettlementTarget")
                 Test.True(source.Contains("WorldDiplomacyDocumentExecutionApplication.TryIncludeResultSettlementTarget(", StringComparison.Ordinal)
