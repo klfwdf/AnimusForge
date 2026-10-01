@@ -1,0 +1,111 @@
+{
+  "schemaVersion": 1,
+  "phase": "approval-required-new-remote-root-source-relocation",
+  "workspace": "E:/AnimusForge-refactor-continuation-20260831",
+  "localHead": "4bde450ba2f3e982b9c0f2a21f71442c1ac1cc35",
+  "remoteHead": "982a58612bfaf780a5f08645eb5d82d7b88033ea",
+  "mergeBase": "8f3903e257b2a454763efc9468af47ee0bd37ee1",
+  "count": 9,
+  "moves": [
+    {
+      "old": "ExecutionAddressContextPolicy.cs",
+      "new": "src/bridges/Vengeance/Host/ExecutionAddressContextPolicy.cs",
+      "owner": "P1",
+      "responsibilityEvidence": "Compose:5-11现场执行上下文截断",
+      "remoteBlobSha1": "1d7a46051f621c4d3fdb4a14275a97ee294f784c",
+      "remoteBlobSha256": "4f6c740e954bb8fdf88940e965239f63f7dc3ffd359319b4e2780516d8d1bd4b",
+      "byteCount": 572,
+      "targetAbsent": true
+    },
+    {
+      "old": "ExecutionPromptConfiguration.cs",
+      "new": "src/modules/AF.Module.Prompt/Configuration/ExecutionPromptConfiguration.cs",
+      "owner": "P1",
+      "responsibilityEvidence": "9-20 embedded execution default/CreateOrderRule",
+      "remoteBlobSha1": "e90d520d2142b0b413850043cbd3360b6fce52c6",
+      "remoteBlobSha256": "a82ce6a9bd046891da01fb6d7471a412f611489ac06ce2a07c0de4f7d8761d19",
+      "byteCount": 957,
+      "targetAbsent": true
+    },
+    {
+      "old": "ExecutionTranscriptStore.cs",
+      "new": "src/modules/AF.Module.Memory/Records/ExecutionTranscriptStore.cs",
+      "owner": "P1",
+      "responsibilityEvidence": "44-90有界执行台词记录/opaque损坏数据往返",
+      "remoteBlobSha1": "7db0607752919837f210224d6152036babcafadf",
+      "remoteBlobSha256": "84566e4929fa709e9457dc39f176eeeba17daed50aa708d686e82306765f6aee",
+      "byteCount": 4241,
+      "targetAbsent": true
+    },
+    {
+      "old": "PublicExecutionOrderPolicy.cs",
+      "new": "src/bridges/Vengeance/Host/PublicExecutionOrderPolicy.cs",
+      "owner": "P1",
+      "responsibilityEvidence": "6-18执行命令否定/询问防误触",
+      "remoteBlobSha1": "acbabe8a43ed0f614dd8de631d96565f1fa426a5",
+      "remoteBlobSha256": "7b070074879c368f3a7561fd2c964d1b1b510527b8449a6fba4ffb634a2f7f65",
+      "byteCount": 1294,
+      "targetAbsent": true
+    },
+    {
+      "old": "PublicExecutionOrderRuntime.cs",
+      "new": "src/bridges/Vengeance/Host/PublicExecutionOrderRuntime.cs",
+      "owner": "P1",
+      "responsibilityEvidence": "13-118现场Agent/generation permit与会话清理",
+      "remoteBlobSha1": "f513a9165d8e9b502c5fe74abed20a4845e64114",
+      "remoteBlobSha256": "d4205fe628b7b802a8a66207aecb215869d823e92392200f67d1e824495d3db6",
+      "byteCount": 6122,
+      "targetAbsent": true
+    },
+    {
+      "old": "MyBehavior.ExecutionMemory.cs",
+      "new": "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.ExecutionMemory.cs",
+      "owner": "P1",
+      "responsibilityEvidence": "13-140 MyBehavior partial;20-30保存_af_executionTranscripts_v1",
+      "remoteBlobSha1": "6bf221d99bca49913a8ca78270c5109208187ba0",
+      "remoteBlobSha256": "b9f7e15176c7c52055aa04c511618a210b8875f2e85fc9fee7bf9f6241564c58",
+      "byteCount": 7753,
+      "targetAbsent": true
+    },
+    {
+      "old": "KingdomFactionTab.Actions.cs",
+      "new": "src/AF.GameAdapter.Bannerlord/UI/Kingdom/KingdomFactionTab.Actions.cs",
+      "owner": "P2",
+      "responsibilityEvidence": "11-86 KingdomFactionPanelVM partial/port询问/版本门",
+      "remoteBlobSha1": "36644df2fb97d7d3a2cf9004f2a74b00a930a429",
+      "remoteBlobSha256": "83bb2848ae82d6480c822a84c9047f5bcc1d7cba1f9dc870dbf85a32a23bb43e",
+      "byteCount": 5679,
+      "targetAbsent": true
+    },
+    {
+      "old": "MyBehavior.CivilWarPolitics.cs",
+      "new": "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.CivilWarPolitics.cs",
+      "owner": "P2",
+      "responsibilityEvidence": "5-32 MyBehavior partial/Coup port/AFEF/report",
+      "remoteBlobSha1": "2dc15ddf7c09eb65ac25d5e0291b3b9eb276b26e",
+      "remoteBlobSha256": "ad6714891de4c0a0262486c3a95224b1519907baf92d02ed6a89362541dd6204",
+      "byteCount": 1888,
+      "targetAbsent": true
+    },
+    {
+      "old": "SiegeAiInterventionBehavior.TownRuleMemoryEvents.cs",
+      "new": "src/AF.GameAdapter.Bannerlord/Composition/SiegeAftermath/SiegeAiInterventionBehavior.TownRuleMemoryEvents.cs",
+      "owner": "P2",
+      "responsibilityEvidence": "11-49 Siege partial/原版event与完成事实",
+      "remoteBlobSha1": "99a3cfd0ca1198ef04c4f33f778eb19fcc43f002",
+      "remoteBlobSha256": "0f08796537990a32ff62a775ecbb33b087c2c0e3d9d7d57d85e6c624b54ac6c5",
+      "byteCount": 2776,
+      "targetAbsent": true
+    }
+  ],
+  "policy": "Only physical relocation after exact approval. Merge remote features unchanged; preserve namespace/types/assembly/API/save keys/default entries. No future diplomacy replacement; no outside mirror/cleanup/deployment. Current path consumers adapt; historical keys/hashes require precise review, not blind refresh.",
+  "verification": "Actual dual API Compile mapped plus new sources; 8 resources including ExecutionRulePrompts; pure core includes actual remote two new core files, not freeze184; six isolated builds/C43/affected remote tests.",
+  "notExecuted": [
+    "merge",
+    "moves",
+    "product edits",
+    "build",
+    "commit",
+    "push"
+  ]
+}
