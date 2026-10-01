@@ -293,7 +293,7 @@
       "entryPaths": [
         "src/modules/AF.Module.Llm/Transport/LegacyConfiguredChatGateway.cs",
         "src/modules/AF.Module.Llm/Transport/LegacyShoutNetworkGateway.cs",
-        "AnimusForge/ModuleData/RuleBehaviorPrompts.json"
+        "content/modules/AF.Module.Prompt/ModuleData/RuleBehaviorPrompts.json"
       ],
       "promptAction": {
         "prompt": "APPLICABLE",
@@ -1065,7 +1065,7 @@
         "TtsEngine.cs",
         "WarStats/AfWarStatsDeathItemVM.cs",
         "WarStats/AfWarStatsEncyclopedia.cs",
-        "WarStats/AfWarStatsFactionKingdomVM.cs",
+        "KingdomFactionTab.cs",
         "WarStats/AfWarStatsHistoryItemVM.cs",
         "WarStats/AfTerminalMapBarIconSprite.cs",
         "WarStats/AfWarStatsMapNavigationEntry.cs",
@@ -1130,7 +1130,7 @@
       ],
       "entryPaths": [
         "tools/PhaseEightReadiness/readiness.py",
-        "AnimusForge/ModuleData/RuleBehaviorPrompts.json",
+        "content/modules/AF.Module.Prompt/ModuleData/RuleBehaviorPrompts.json",
         "AnimusForge.csproj"
       ],
       "promptAction": {
@@ -1603,7 +1603,7 @@
       "implementationState": "DESIGN_ONLY",
       "entryPaths": [
         "tools/PhaseEightReadiness/readiness.py",
-        "AnimusForge/ModuleData/RuleBehaviorPrompts.json"
+        "content/modules/AF.Module.Prompt/ModuleData/RuleBehaviorPrompts.json"
       ],
       "requiredCases": [
         "EACH_OWNER_ALONE",
