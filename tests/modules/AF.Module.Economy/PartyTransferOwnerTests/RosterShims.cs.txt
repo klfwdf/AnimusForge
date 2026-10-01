@@ -1,0 +1,15 @@
+namespace AnimusForge {
+public struct TroopRosterElement { public int Number,WoundedNumber,Xp; }
+public class TroopRoster {
+ public Dictionary<CharacterObject,TroopRosterElement> Values=new(); public bool FailPositiveWrite;
+ public int FindIndexOfTroop(CharacterObject c)=>Values.ContainsKey(c)?0:-1;
+ public TroopRosterElement GetElementCopyAtIndex(int index)=>Values.Values.Single();
+ public void AddToCounts(CharacterObject c,int n,bool insertAtFront,int wounded,int xp,bool remove,int index) {
+  if(n>0&&FailPositiveWrite)throw new Exception("target write fails");
+  Values.TryGetValue(c,out var e);e.Number+=n;e.WoundedNumber+=wounded;e.Xp+=xp;Values[c]=e;
+ }
+ public void AddXpToTroop(CharacterObject c,int xp){var e=Values[c];e.Xp+=xp;Values[c]=e;}
+}
+public class CampaignEventDispatcher {public static CampaignEventDispatcher Instance=new();public void OnUnitRecruited(CharacterObject c,int n){} }
+public static class TransferPrisonerAction {public static void Apply(CharacterObject c,PartyBase source,PartyBase target){source.PrisonRoster.AddToCounts(c,-1,false,0,0,false,-1);target.AddPrisoner(c,1);c.HeroObject.PartyBelongedToAsPrisoner=target;} }
+}
