@@ -21,4 +21,13 @@ internal static class DebtImportMergePolicy
         }
         return result;
     }
+
+    internal static Dictionary<string,Entry> ApplySingleImportedDebtEntry(Dictionary<string,Entry> existing,
+        string heroId, Entry entry)
+    {
+        var result = existing ?? new Dictionary<string,Entry>();
+        if (entry == null) result.Remove(heroId);
+        else result[heroId] = entry;
+        return result;
+    }
 }
