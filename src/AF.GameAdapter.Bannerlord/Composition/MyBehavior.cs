@@ -604,7 +604,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 	// A snapshot is held only during one confirmation click and restores already-mutated subsystems if an unexpected later step fails.
 
-	private sealed class WeeklyReportPromptProfile
+	internal sealed class WeeklyReportPromptProfile
 	{
 		public int Preset;
 
@@ -621,7 +621,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 
 
-	private sealed class WeeklyReportBatchExecutionResult
+	internal sealed class WeeklyReportBatchExecutionResult
 	{
 		public int BatchIndex;
 
@@ -657,7 +657,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		public int AttemptsUsed;
 	}
 
-	private sealed class WeeklyReportGenerationResult
+	internal sealed class WeeklyReportGenerationResult
 	{
 		public int SuccessCount;
 
@@ -672,14 +672,14 @@ public partial class MyBehavior : CampaignBehaviorBase
 		public WeeklyReportRetryContext RetryContext;
 	}
 
-	private enum WeeklyPromptPreparationResult
+	internal enum WeeklyPromptPreparationResult
 	{
 		Canceled,
 		Prepared,
 		Failed
 	}
 
-	private sealed class PendingWeeklyPromptPreparationContext
+	internal sealed class PendingWeeklyPromptPreparationContext
 	{
 		public long RuntimeGeneration;
 
@@ -724,7 +724,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		public TaskCompletionSource<Task<ApiCallResult>> CompletionSource;
 	}
 
-	private sealed class PendingWeeklyReportCommitContext
+	internal sealed class PendingWeeklyReportCommitContext
 	{
 		public long RuntimeGeneration;
 
@@ -789,7 +789,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		public TaskCompletionSource<WeeklyReportGenerationResult> CompletionSource;
 	}
 
-	private sealed class PendingWeeklyReportBlockCommit
+	internal sealed class PendingWeeklyReportBlockCommit
 	{
 		public WeeklyEventMaterialPreviewGroup Group;
 
@@ -876,7 +876,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		public List<EventSourceMaterialEntry> EventSourceMaterialSnapshot = new List<EventSourceMaterialEntry>();
 	}
 
-	private sealed class WeeklyReportRetryContext
+	internal sealed class WeeklyReportRetryContext
 	{
 		public WeeklyReportMaterialRevisionOwner.Snapshot SourceSnapshot;
 
@@ -4819,15 +4819,6 @@ public partial class MyBehavior : CampaignBehaviorBase
 		return kind + ":" + dayIndex + ":" + weekIndex + ":" + startDay + ":" + endDay;
 	}
 
-	private static bool IsDailyMaintenanceBudgetExceeded(long startTimestamp, double budgetMs)
-	{
-		if (startTimestamp <= 0L || budgetMs <= 0.0 || double.IsInfinity(budgetMs) || double.IsNaN(budgetMs))
-		{
-			return false;
-		}
-		double elapsedMs = (Stopwatch.GetTimestamp() - startTimestamp) * 1000.0 / Stopwatch.Frequency;
-		return elapsedMs >= budgetMs;
-	}
 
 	private bool HasPendingDeferredDailyMaintenanceWork()
 	{
@@ -26222,23 +26213,6 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 		return IsKingdomEligibleForWeeklyReport(FindKingdomById(text));
 	}
 
-	private static bool IsWeeklyReportGroupEligible(WeeklyEventMaterialPreviewGroup group)
-	{
-		if (group == null)
-		{
-			return false;
-		}
-		string text = (group.GroupKind ?? "").Trim();
-		if (string.Equals(text, "world", StringComparison.OrdinalIgnoreCase))
-		{
-			return true;
-		}
-		if (!string.Equals(text, "kingdom", StringComparison.OrdinalIgnoreCase))
-		{
-			return false;
-		}
-		return IsKingdomEligibleForWeeklyReport(group.KingdomId);
-	}
 
 
 
@@ -26677,48 +26651,7 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 		return eventMaterialReference;
 	}
 
-	internal static EventMaterialReference CloneEventMaterialReference(EventMaterialReference material)
-	{
-		if (material == null)
-		{
-			return null;
-		}
-		return new EventMaterialReference
-		{
-			MaterialType = (material.MaterialType ?? "").Trim(),
-			Label = (material.Label ?? "").Trim(),
-			SnapshotText = (material.SnapshotText ?? "").Trim(),
-			HeroId = (material.HeroId ?? "").Trim(),
-			KingdomId = (material.KingdomId ?? "").Trim(),
-			SettlementId = (material.SettlementId ?? "").Trim(),
-			RecentOnly = material.RecentOnly,
-			ActionKind = (material.ActionKind ?? "").Trim(),
-			ActorHeroId = (material.ActorHeroId ?? "").Trim(),
-			ActorClanId = (material.ActorClanId ?? "").Trim(),
-			ActorKingdomId = (material.ActorKingdomId ?? "").Trim(),
-			TargetHeroId = (material.TargetHeroId ?? "").Trim(),
-			TargetClanId = (material.TargetClanId ?? "").Trim(),
-			TargetKingdomId = (material.TargetKingdomId ?? "").Trim(),
-			SettlementOwnerHeroId = (material.SettlementOwnerHeroId ?? "").Trim(),
-			SettlementOwnerClanId = (material.SettlementOwnerClanId ?? "").Trim(),
-			SettlementOwnerKingdomId = (material.SettlementOwnerKingdomId ?? "").Trim(),
-			PreviousSettlementOwnerHeroId = (material.PreviousSettlementOwnerHeroId ?? "").Trim(),
-			PreviousSettlementOwnerClanId = (material.PreviousSettlementOwnerClanId ?? "").Trim(),
-			PreviousSettlementOwnerKingdomId = (material.PreviousSettlementOwnerKingdomId ?? "").Trim(),
-			LocationText = (material.LocationText ?? "").Trim(),
-			Won = material.Won,
-			RelatedHeroIds = new List<string>((material.RelatedHeroIds ?? new List<string>()).Where((string x) => !string.IsNullOrWhiteSpace(x)).Select((string x) => x.Trim())),
-			RelatedClanIds = new List<string>((material.RelatedClanIds ?? new List<string>()).Where((string x) => !string.IsNullOrWhiteSpace(x)).Select((string x) => x.Trim())),
-			RelatedKingdomIds = new List<string>((material.RelatedKingdomIds ?? new List<string>()).Where((string x) => !string.IsNullOrWhiteSpace(x)).Select((string x) => x.Trim())),
-			SourceStableKeys = new List<string>((material.SourceStableKeys ?? new List<string>()).Where((string x) => !string.IsNullOrWhiteSpace(x)).Select((string x) => x.Trim())),
-			SourceActionKinds = new List<string>((material.SourceActionKinds ?? new List<string>()).Where((string x) => !string.IsNullOrWhiteSpace(x)).Select((string x) => x.Trim())),
-			SourceMaterialCount = Math.Max(0, material.SourceMaterialCount),
-			ActionStableKey = (material.ActionStableKey ?? "").Trim(),
-			ActionDay = material.ActionDay,
-			ActionOrder = material.ActionOrder,
-			ActionSequence = material.ActionSequence
-		};
-	}
+	internal static EventMaterialReference CloneEventMaterialReference(EventMaterialReference material) => WeeklyPromptMaterialOwner.CloneEventMaterialReference(material);
 
 	internal static bool IsWeeklyPromptAggregatableMaterial(EventMaterialReference material)
 	{
@@ -26843,68 +26776,7 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 		return WeeklyMaterialAggregationOwner.GetWeeklyPromptAggregateCategoryLabel(category);
 	}
 
-	private static WeeklyReportPromptProfile GetWeeklyReportPromptProfile()
-	{
-		int num = 2;
-		try
-		{
-			num = ClampInt((DuelSettings.GetSettings()?.WeeklyReportLengthPreset).GetValueOrDefault(2), 1, 4);
-		}
-		catch
-		{
-			num = 2;
-		}
-		return num switch
-		{
-			1 => new WeeklyReportPromptProfile
-			{
-				Preset = 1,
-				MinWords = 200,
-				MaxWords = 400,
-				Label = "第一档（200-400字）"
-			},
-			2 => new WeeklyReportPromptProfile
-			{
-				Preset = 2,
-				MinWords = 200,
-				MaxWords = 800,
-				Label = "第二档（200-800字）"
-			},
-			3 => new WeeklyReportPromptProfile
-			{
-				Preset = 3,
-				MinWords = 200,
-				MaxWords = 1200,
-				Label = "第三档（200-1200字）"
-			},
-			4 => new WeeklyReportPromptProfile
-			{
-				Preset = 4,
-				MinWords = 200,
-				MaxWords = 1500,
-				Label = "第四档（200-1500字）"
-			},
-			_ => new WeeklyReportPromptProfile
-			{
-				Preset = 2,
-				MinWords = 200,
-				MaxWords = 800,
-				Label = "第二档（200-800字）"
-			},
-		};
-	}
 
-	private static int GetWeeklyReportRequestsPerMinute()
-	{
-		try
-		{
-			return ClampInt((DuelSettings.GetSettings()?.WeeklyReportRequestsPerMinute).GetValueOrDefault(5), 1, 20);
-		}
-		catch
-		{
-			return 5;
-		}
-	}
 
 	private static int GetEventAndRebellionApiMaxTokens()
 	{
@@ -26930,32 +26802,13 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 		return 3;
 	}
 
-	private static string BuildWeeklyReportGroupDisplayLabel(WeeklyEventMaterialPreviewGroup group)
-	{
-		if (group == null)
-		{
-			return "未命名分组";
-		}
-		string text = (group.Title ?? "").Trim();
-		if (!string.IsNullOrWhiteSpace(text))
-		{
-			return text;
-		}
-		return string.Equals((group.GroupKind ?? "").Trim(), "world", StringComparison.OrdinalIgnoreCase) ? "世界周报" : "王国周报";
-	}
+
 
 	private static readonly WeeklyGenerationRules _weeklyGenerationRules = new WeeklyGenerationRules(PlayerNotorietyBehavior.RenderPlayerNamedReferenceForExternal);
-	private static string BuildWeeklyReportGroupReportId(WeeklyEventMaterialPreviewGroup group) => WeeklyGenerationRules.BuildWeeklyReportGroupReportId(group);
 
-	private static Dictionary<string, WeeklyEventMaterialPreviewGroup> BuildWeeklyReportGroupMap(IEnumerable<WeeklyEventMaterialPreviewGroup> groups) => WeeklyGenerationRules.BuildWeeklyReportGroupMap(groups);
 
 	private static List<string> BuildWeeklyBatchExpectedReportIds(WeeklyReportBatchRequest batch) => WeeklyGenerationRules.BuildWeeklyBatchExpectedReportIds(batch);
 
-	private static List<WeeklyReportBatchRequest> BuildWeeklyReportBatchRequests(List<WeeklyEventMaterialPreviewGroup> groups, int weekIndex, int startDay, int endDay)
-	{
-		List<WeeklyEventMaterialPreviewGroup> list2 = (groups ?? new List<WeeklyEventMaterialPreviewGroup>()).Where((WeeklyEventMaterialPreviewGroup x) => x != null && IsWeeklyReportGroupEligible(x)).ToList();
-		return WeeklyMaterialBatchPlanner.BuildBatches(list2, weekIndex, startDay, endDay, GetWeeklyReportBatchSize());
-	}
 
 #if false
 	private static string BuildWeeklyReportBatchDisplayLabel(WeeklyReportBatchRequest batch)
@@ -26966,17 +26819,6 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 
 #endif
 
-	private static string BuildWeeklyReportBatchDisplayLabel(WeeklyReportBatchRequest batch)
-	{
-		string preparedLabel = (batch?.DisplayLabel ?? "").Trim();
-		if (!string.IsNullOrWhiteSpace(preparedLabel))
-		{
-			return preparedLabel;
-		}
-		List<string> list = (batch?.Groups ?? new List<WeeklyEventMaterialPreviewGroup>()).Select(BuildWeeklyReportGroupDisplayLabel).Where((string x) => !string.IsNullOrWhiteSpace(x)).ToList();
-		string text = ((batch?.OutputMode ?? WeeklyReportOutputMode.FullReport) == WeeklyReportOutputMode.TitleShortTagsOnly) ? "短" : "全";
-		return (list.Count == 0) ? ("未命名周报批次[" + text + "]") : ("批次[" + text + "]：" + string.Join(" | ", list));
-	}
 
 	private static bool IsWeeklyReportBatchPromptPrepared(WeeklyReportBatchRequest batch) => WeeklyGenerationRules.IsWeeklyReportBatchPromptPrepared(batch);
 
@@ -27027,49 +26869,8 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 		return list;
 	}
 
-	private static string BuildWeeklyReportBatchPreviewKey(WeeklyReportBatchRequest batch)
-	{
-		List<string> list = BuildWeeklyBatchExpectedReportIds(batch);
-		return ((batch != null) ? batch.WeekIndex : 0) + "|" + string.Join("|", list);
-	}
 
-	private void CaptureWeeklyReportBatchDevPreview(WeeklyReportBatchRequest batch, WeeklyReportBatchRequestResult result)
-	{
-		if (batch == null || result == null)
-		{
-			return;
-		}
-		if (_latestWeeklyReportBatchDevPreviews == null)
-		{
-			_latestWeeklyReportBatchDevPreviews = new List<DevWeeklyReportBatchPreviewEntry>();
-		}
-		string text = BuildWeeklyReportBatchPreviewKey(batch);
-		if (string.IsNullOrWhiteSpace(text))
-		{
-			return;
-		}
-		DevWeeklyReportBatchPreviewEntry devWeeklyReportBatchPreviewEntry = _latestWeeklyReportBatchDevPreviews.FirstOrDefault((DevWeeklyReportBatchPreviewEntry x) => x != null && string.Equals(x.PreviewKey, text, StringComparison.OrdinalIgnoreCase));
-		if (devWeeklyReportBatchPreviewEntry == null)
-		{
-			devWeeklyReportBatchPreviewEntry = new DevWeeklyReportBatchPreviewEntry();
-			_latestWeeklyReportBatchDevPreviews.Add(devWeeklyReportBatchPreviewEntry);
-		}
-		devWeeklyReportBatchPreviewEntry.PreviewKey = text;
-		devWeeklyReportBatchPreviewEntry.BatchLabel = BuildWeeklyReportBatchDisplayLabel(batch);
-		devWeeklyReportBatchPreviewEntry.WeekIndex = batch.WeekIndex;
-		devWeeklyReportBatchPreviewEntry.StartDay = batch.StartDay;
-		devWeeklyReportBatchPreviewEntry.EndDay = batch.EndDay;
-		devWeeklyReportBatchPreviewEntry.ReportIds = BuildWeeklyBatchExpectedReportIds(batch);
-		devWeeklyReportBatchPreviewEntry.PromptPreview = result.PromptPreview ?? "";
-		devWeeklyReportBatchPreviewEntry.ResponsePreview = result.RawResponse ?? "";
-		devWeeklyReportBatchPreviewEntry.Success = result.Success;
-		devWeeklyReportBatchPreviewEntry.FailureReason = result.FailureReason ?? "";
-		devWeeklyReportBatchPreviewEntry.AttemptsUsed = result.AttemptsUsed;
-		while (_latestWeeklyReportBatchDevPreviews.Count > 24)
-		{
-			_latestWeeklyReportBatchDevPreviews.RemoveAt(0);
-		}
-	}
+
 
 	private DevWeeklyReportBatchPreviewEntry FindLatestWeeklyReportBatchDevPreview(WeeklyReportBatchRequest batch)
 	{
@@ -27649,15 +27450,7 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 
 
 
-	private EventRecordEntry FindWeeklyReportRecordById(string eventId)
-	{
-		string text = (eventId ?? "").Trim();
-		if (string.IsNullOrWhiteSpace(text))
-		{
-			return null;
-		}
-		return (_eventRecordEntries ?? new List<EventRecordEntry>()).FirstOrDefault((EventRecordEntry x) => x != null && string.Equals((x.EventId ?? "").Trim(), text, StringComparison.OrdinalIgnoreCase));
-	}
+
 
 	private static List<EventMaterialReference> CloneWeeklyReportMaterials(List<EventMaterialReference> materials)
 	{
@@ -27780,65 +27573,13 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 		});
 	}
 
-	private Dictionary<string, string> CaptureWeeklyReportCommitRecordStates(Dictionary<string, WeeklyEventMaterialPreviewGroup> groups, int weekIndex)
-	{
-		Dictionary<string, string> states = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-		Dictionary<string, string> reportIdsByEventId = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-		foreach (KeyValuePair<string, WeeklyEventMaterialPreviewGroup> pair in groups)
-		{
-			WeeklyEventMaterialPreviewGroup group = pair.Value;
-			string eventId = BuildWeeklyReportEventId(group.GroupKind, weekIndex, group.KingdomId);
-			reportIdsByEventId[eventId] = pair.Key;
-			states[pair.Key] = null;
-		}
-		foreach (EventRecordEntry entry in _eventRecordEntries ?? new List<EventRecordEntry>())
-		{
-			if (entry != null && reportIdsByEventId.TryGetValue((entry.EventId ?? "").Trim(), out string reportId) && states[reportId] == null)
-			{
-				states[reportId] = BuildWeeklyReportCommitRecordState(entry);
-			}
-		}
-		return states;
-	}
 
-	private static string BuildWeeklyReportCommitRecordState(EventRecordEntry entry)
-	{
-		return entry == null ? null : JsonConvert.SerializeObject(entry);
-	}
 
-	private bool IsWeeklyReportCommitRecordUnchanged(PendingWeeklyReportCommitContext context, string reportId, WeeklyEventMaterialPreviewGroup group)
-	{
-		if (context.CapturedRecordStates == null || !context.CapturedRecordStates.TryGetValue(reportId, out string captured))
-		{
-			return false;
-		}
-		string eventId = BuildWeeklyReportEventId(group.GroupKind, context.WeekIndex, group.KingdomId);
-		return string.Equals(captured, BuildWeeklyReportCommitRecordState(FindWeeklyReportRecordById(eventId)), StringComparison.Ordinal);
-	}
 
-	private bool HasWeeklyReportCommitWinner(PendingWeeklyReportCommitContext context, WeeklyEventMaterialPreviewGroup group)
-	{
-		string eventId = BuildWeeklyReportEventId(group.GroupKind, context.WeekIndex, group.KingdomId);
-		return IsWeeklyReportCommitWinner(FindWeeklyReportRecordById(eventId), group, context.WeekIndex);
-	}
 
-	private static bool IsWeeklyReportCommitWinner(EventRecordEntry entry, WeeklyEventMaterialPreviewGroup group, int weekIndex)
-	{
-		if (entry == null || group == null || entry.WeekIndex != weekIndex
-			|| !string.Equals((entry.EventKind ?? "").Trim(), (group.GroupKind ?? "").Trim(), StringComparison.OrdinalIgnoreCase)
-			|| !string.Equals((entry.ScopeKingdomId ?? "").Trim(), (group.KingdomId ?? "").Trim(), StringComparison.OrdinalIgnoreCase))
-		{
-			return false;
-		}
-		return group.OutputMode == WeeklyReportOutputMode.TitleShortTagsOnly
-			? !string.IsNullOrWhiteSpace(entry.ShortSummary)
-			: !string.IsNullOrWhiteSpace(entry.Summary);
-	}
 
-	private static bool AreWeeklyReportCommitRecordStatesCurrent(Dictionary<string, WeeklyEventMaterialPreviewGroup> groups, Dictionary<string, string> captured, Dictionary<string, string> current)
-	{
-		return groups != null && captured != null && current != null && groups.Keys.All((string id) => captured.TryGetValue(id, out string original) && current.TryGetValue(id, out string now) && string.Equals(original, now, StringComparison.Ordinal));
-	}
+
+
 
 	private Task<bool> QueueWeeklyFullReportCompletionAsync(long runtimeGeneration, Func<bool> apply)
 	{
@@ -28291,43 +28032,6 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 		};
 	}
 
-	private static WeeklyReportRetryContext CreateWeeklyReportRetryContext(List<WeeklyEventMaterialPreviewGroup> groups, int weekIndex, int startDay, int endDay, string displayLabel, bool openViewerWhenDone, bool isAutoGeneration, WeeklyEventMaterialPreviewGroup failedGroup, WeeklyReportRequestResult requestResult, IEnumerable<string> popupCandidateKingdomIds = null, Dictionary<string, string> capturedRecordStates = null, WeeklyReportMaterialRevisionOwner.Snapshot sourceSnapshot = null)
-	{
-		WeeklyReportRetryContext weeklyReportRetryContext = new WeeklyReportRetryContext
-		{
-			WeekIndex = weekIndex,
-			StartDay = startDay,
-			EndDay = endDay,
-			DisplayLabel = (displayLabel ?? "").Trim(),
-			OpenViewerWhenDone = openViewerWhenDone,
-			IsAutoGeneration = isAutoGeneration,
-			CapturedRecordStates = capturedRecordStates,
-			SourceSnapshot = sourceSnapshot,
-			FailedGroupTitle = BuildWeeklyReportGroupDisplayLabel(failedGroup),
-			FailedReason = (requestResult?.FailureReason ?? "").Trim(),
-			AttemptsUsed = requestResult?.AttemptsUsed ?? 0,
-			IsRateLimit = requestResult?.IsRateLimit ?? false,
-			IsRequestsPerMinuteLimit = requestResult?.IsRequestsPerMinuteLimit ?? false,
-			IsQuotaLimit = requestResult?.IsQuotaLimit ?? false,
-			RetryAfterSeconds = requestResult?.RetryAfterSeconds
-		};
-		foreach (WeeklyEventMaterialPreviewGroup item in groups ?? new List<WeeklyEventMaterialPreviewGroup>())
-		{
-			if (item != null)
-			{
-				weeklyReportRetryContext.Groups.Add(item);
-			}
-		}
-		foreach (string item2 in popupCandidateKingdomIds ?? Enumerable.Empty<string>())
-		{
-			string text = (item2 ?? "").Trim();
-			if (!string.IsNullOrWhiteSpace(text) && !weeklyReportRetryContext.PopupCandidateKingdomIds.Contains(text, StringComparer.OrdinalIgnoreCase))
-			{
-				weeklyReportRetryContext.PopupCandidateKingdomIds.Add(text);
-			}
-		}
-		return weeklyReportRetryContext;
-	}
 
 	private void QueueWeeklyReportFailurePopup(WeeklyReportRetryContext context, bool showImmediate = false)
 		=> WeeklyEditor.QueueWeeklyReportFailurePopup(context, showImmediate);
@@ -28517,108 +28221,10 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 		return WeeklyMaterialBatchPlanner.OrderGroups(list, kingdomIdsByPlayerProximity);
 	}
 
-	private static void AppendWeeklyReportWritingRequirements(StringBuilder stringBuilder)
-	{
-		if (stringBuilder == null)
-		{
-			return;
-		}
-		string text = "";
-		try
-		{
-			text = (DuelSettings.GetSettings()?.WeeklyReportWritingRequirements ?? "").Replace("\r", "").Trim();
-		}
-		catch
-		{
-			text = "";
-		}
-		if (string.IsNullOrWhiteSpace(text))
-		{
-			return;
-		}
-		stringBuilder.AppendLine(" ");
-		stringBuilder.AppendLine("写作要求：");
-		stringBuilder.AppendLine(text);
-	}
 
-	private static void AppendWeeklyReportPoliticalReasonWritingRule(StringBuilder stringBuilder, bool fullReport)
-	{
-		if (stringBuilder == null)
-		{
-			return;
-		}
-		stringBuilder.AppendLine(fullReport ? "若素材含“触发原因”，正文要自然交代至少一个关键因由（距离、实力、关系、财政、投票或封地），不要照抄字段名。" : "若素材含“触发原因”，SHORT可简写关键因由，不要照抄字段名。");
-	}
 
-	private static void AppendWeeklyReportSettlementReasonWritingRule(StringBuilder stringBuilder)
-	{
-		if (stringBuilder == null)
-		{
-			return;
-		}
-		stringBuilder.AppendLine("若定居点状态材料含“变化原因”，【领地内事件】只写治理趋势和模型原因；禁止复述数字、箭头、加减号、几处、上升多少或下降多少；没有原因材料时不要推测。");
-	}
 
-	private static void AppendWeeklyReportVillageRaidWritingRule(StringBuilder stringBuilder)
-	{
-		if (stringBuilder == null)
-		{
-			return;
-		}
-		stringBuilder.AppendLine("村庄掠夺仅“掠夺成功”算成功；进行中或结果未确认不得写成功，被击退或中止必须写未成功。");
-	}
 
-	private static string BuildWeeklyReportSystemPrompt(WeeklyEventMaterialPreviewGroup group)
-	{
-		WeeklyReportPromptProfile weeklyReportPromptProfile = GetWeeklyReportPromptProfile();
-		bool flag = string.Equals((group?.GroupKind ?? "").Trim(), "world", StringComparison.OrdinalIgnoreCase);
-		bool flag2 = (group?.OutputMode ?? WeeklyReportOutputMode.FullReport) == WeeklyReportOutputMode.TitleShortTagsOnly;
-		string text = flag ? "世界周报" : "王国周报";
-		string text2 = flag ? "你的任务是根据本周素材，写出一篇宏观的大陆周报，总结这一周整个剧本世界发生了什么。" : "你的任务是根据本周素材，写出一篇聚焦单个王国的周报，总结这一周这个王国发生了什么。";
-		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.AppendLine("你是一名负责整理当前剧本世界时局的史官。");
-		stringBuilder.AppendLine("你不是在自由编造故事，而是在根据给定素材生成一篇流利、可信、克制的周报。");
-		stringBuilder.AppendLine(text2);
-		AppendWeeklyReportWritingRequirements(stringBuilder);
-		AppendWeeklyReportVillageRaidWritingRule(stringBuilder);
-		AppendWeeklyReportPoliticalReasonWritingRule(stringBuilder, !flag2);
-		if (!flag2)
-		{
-			AppendWeeklyReportSettlementReasonWritingRule(stringBuilder);
-		}
-		stringBuilder.AppendLine(" ");
-		stringBuilder.AppendLine("篇幅要求：");
-		stringBuilder.AppendLine($"- 当前档位：{weeklyReportPromptProfile.Label}");
-		if (!flag2)
-		{
-			stringBuilder.AppendLine($"- 正文必须控制在 {weeklyReportPromptProfile.MinWords} 到 {weeklyReportPromptProfile.MaxWords} 字之间。");
-		}
-		stringBuilder.AppendLine("- SHORT 短摘要必须控制在 20 到 140 字之间，且尽量写成一段紧凑事实摘要。");
-		stringBuilder.AppendLine("- 素材少时靠近下限，素材多时靠近上限。");
-		stringBuilder.AppendLine(" ");
-		stringBuilder.AppendLine("输出格式：");
-		stringBuilder.AppendLine("[TITLE]周报标题");
-		stringBuilder.AppendLine("[SHORT]20-140字短摘要");
-		if (!flag2)
-		{
-			stringBuilder.AppendLine("[REPORT]周报正文");
-		}
-		stringBuilder.AppendLine("[TAGS]");
-		stringBuilder.AppendLine("STAB_FLAT");
-		stringBuilder.AppendLine(" ");
-		if (flag2)
-		{
-			stringBuilder.AppendLine("TAGS 里必须且只能有一个稳定度评级标签，格式必须是 STAB_DOWN_4、STAB_DOWN_3、STAB_DOWN_2、STAB_DOWN_1、STAB_FLAT、STAB_UP_1、STAB_UP_2、STAB_UP_3、STAB_UP_4 中的一个。");
-			stringBuilder.AppendLine("不要输出任何额外标签、解释、前缀或后缀。");
-		}
-		else
-		{
-			stringBuilder.AppendLine("对于王国周报，你必须在 [TAGS] 中输出且只能输出一个稳定度评级标签：STAB_DOWN_4、STAB_DOWN_3、STAB_DOWN_2、STAB_DOWN_1、STAB_FLAT、STAB_UP_1、STAB_UP_2、STAB_UP_3、STAB_UP_4。");
-			stringBuilder.AppendLine("不要在标题、短摘要或正文中解释这个标签，也不要输出其他标签。");
-		}
-		stringBuilder.AppendLine(flag2 ? "不要输出除 [TITLE]、[SHORT]、[TAGS] 之外的其他字段。" : "不要输出除 [TITLE]、[SHORT]、[REPORT]、[TAGS] 之外的其他字段。");
-		return stringBuilder.ToString().TrimEnd();
-	}
 
 	private static string BuildWeeklyReportFullOnDemandSystemPrompt(WeeklyEventMaterialPreviewGroup group)
 	{
@@ -29095,51 +28701,6 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 		UpsertWeeklyReportEventRecord(group, weekIndex, title, shortSummary, report, tagText, promptText, materials, sanitizeAfter);
 	}
 
-	private void UpsertWeeklyReportEventRecord(WeeklyEventMaterialPreviewGroup group, int weekIndex, string title, string shortSummary, string report, string tagText, string promptText, List<EventMaterialReference> materials, bool sanitizeAfter)
-	{
-		if (_eventRecordEntries == null)
-		{
-			_eventRecordEntries = new List<EventRecordEntry>();
-		}
-		string text = (group?.GroupKind ?? "").Trim().ToLowerInvariant();
-		string text2 = (group?.KingdomId ?? "").Trim();
-		string text3 = BuildWeeklyReportEventId(text, weekIndex, text2);
-		EventRecordEntry eventRecordEntry = _eventRecordEntries.FirstOrDefault((EventRecordEntry x) => x != null && string.Equals((x.EventId ?? "").Trim(), text3, StringComparison.OrdinalIgnoreCase));
-		if (eventRecordEntry == null)
-		{
-			eventRecordEntry = new EventRecordEntry
-			{
-				EventId = text3
-			};
-			_eventRecordEntries.Add(eventRecordEntry);
-		}
-		string previousPublishedProductState = BuildPublishedWorldWeeklyProductState(eventRecordEntry);
-		eventRecordEntry.EventKind = text;
-		eventRecordEntry.ScopeKingdomId = text2;
-		eventRecordEntry.WeekIndex = weekIndex;
-		eventRecordEntry.Title = NeutralizeWeeklyReportScenarioName(title);
-		eventRecordEntry.ShortSummary = BuildFallbackWeeklyReportShortSummary(shortSummary);
-		eventRecordEntry.Summary = NeutralizeWeeklyReportScenarioName(report);
-		if (string.IsNullOrWhiteSpace(eventRecordEntry.ShortSummary))
-		{
-			eventRecordEntry.ShortSummary = BuildFallbackWeeklyReportShortSummary(eventRecordEntry.Summary);
-		}
-		eventRecordEntry.TagText = NormalizeWeeklyReportTagText(tagText);
-		eventRecordEntry.PromptText = NeutralizeWeeklyReportScenarioName(promptText);
-		eventRecordEntry.CreatedDay = GetCurrentGameDayIndexSafe();
-		eventRecordEntry.CreatedDate = GetCurrentGameDateTextSafe();
-		eventRecordEntry.Materials = materials ?? new List<EventMaterialReference>();
-		ApplyWeeklyReportStabilityDelta(group, eventRecordEntry.EventId, eventRecordEntry.TagText);
-		EventRecordEntry publishedProductEntry = eventRecordEntry;
-		if (sanitizeAfter)
-		{
-			_eventRecordEntries = SanitizeEventRecordEntries(_eventRecordEntries);
-			publishedProductEntry = FindWeeklyReportRecordById(text3) ?? eventRecordEntry;
-		}
-		NotifyPublishedWorldWeeklyProductChanged(previousPublishedProductState, publishedProductEntry);
-		// A completed weekly upsert can append a new short report, so wake only the active timeline projection.
-		NotifyWorldMessageWeeklyTimelineChanged();
-	}
 
 	private List<EventSourceMaterialEntry> GetWeeklyEventSourceMaterialsForBuild()
 	{
@@ -29720,10 +29281,7 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 
 
 
-	internal static IEnumerable<EventMaterialReference> OrderWeeklyPreviewMaterials(List<EventMaterialReference> materials)
-	{
-		return (materials ?? new List<EventMaterialReference>()).OrderBy((EventMaterialReference x) => GetWeeklyPreviewMaterialSortBucket(x)).ThenBy((EventMaterialReference x) => x?.ActionDay ?? int.MinValue).ThenBy((EventMaterialReference x) => x?.ActionSequence ?? int.MaxValue).ThenBy((EventMaterialReference x) => x?.ActionOrder ?? int.MinValue).ThenBy((EventMaterialReference x) => x?.Label ?? "", StringComparer.OrdinalIgnoreCase);
-	}
+	internal static IEnumerable<EventMaterialReference> OrderWeeklyPreviewMaterials(List<EventMaterialReference> materials) => WeeklyPromptMaterialOwner.OrderWeeklyPreviewMaterials(materials);
 
 	private static void NormalizeNpcActionSequences(Dictionary<string, List<NpcActionEntry>> storage)
 	{
@@ -29788,19 +29346,7 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 		return num;
 	}
 
-	private static int GetWeeklyPreviewMaterialSortBucket(EventMaterialReference material)
-	{
-		string text = (material?.MaterialType ?? "").Trim().ToLowerInvariant();
-		if (text == "world_opening_summary" || text == "kingdom_opening_summary")
-		{
-			return 0;
-		}
-		if (text == "kingdom_current_ruler")
-		{
-			return 1;
-		}
-		return 2;
-	}
+	private static int GetWeeklyPreviewMaterialSortBucket(EventMaterialReference material) => WeeklyPromptMaterialOwner.GetWeeklyPreviewMaterialSortBucket(material);
 
 
 
@@ -29843,203 +29389,7 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 		await GenerateWeeklyReportsBatchedAsyncInternal(list, num2, num, currentGameDayIndexSafe, "本周周报草案", openViewerWhenDone: false, queueBlockingPopupOnFatalFailure: true, isAutoGeneration: false, sourceSnapshotOverride: sourceSnapshot);
 	}
 
-	private async Task<WeeklyReportGenerationResult> GenerateWeeklyReportsMinuteBurstAsyncInternal(List<WeeklyEventMaterialPreviewGroup> list, int weekIndex, int startDay, int endDay, string displayLabel, bool openViewerWhenDone, bool queueBlockingPopupOnFatalFailure, bool isAutoGeneration, IEnumerable<string> popupCandidateKingdomIdsOverride = null, List<WeeklyReportBatchRequest> preparedBatches = null, long runtimeGeneration = 0L, Dictionary<string, string> capturedRecordStatesOverride = null, WeeklyReportMaterialRevisionOwner.Snapshot sourceSnapshotOverride = null)
-	{
-		WeeklyReportGenerationResult generationResult = new WeeklyReportGenerationResult();
-		if (!TWParallel.IsMainThread() || !ReferenceEquals(Instance, this))
-		{
-			Logger.Log("EventWeeklyReport", "[BATCH] rejected non-current main-thread owner before capture");
-			return generationResult;
-		}
-		if (runtimeGeneration <= 0L)
-		{
-			runtimeGeneration = SaveRuntimeGuard.CaptureGeneration();
-		}
-		if (SaveRuntimeGuard.IsStale(runtimeGeneration, "weekly_report_before_prepare"))
-		{
-			return generationResult;
-		}
-		list = (list ?? new List<WeeklyEventMaterialPreviewGroup>()).Where((WeeklyEventMaterialPreviewGroup x) => x != null && IsWeeklyReportGroupEligible(x)).ToList();
-		if (list.Count == 0)
-		{
-			InformationManager.DisplayMessage(new InformationMessage("当前没有可生成周报的分组。"));
-			if (openViewerWhenDone)
-			{
-				OpenDevEventEditorMenu();
-			}
-			generationResult.Completed = true;
-			return generationResult;
-		}
-		List<string> failureMessages = new List<string>();
-		List<string> list2 = (popupCandidateKingdomIdsOverride ?? Enumerable.Empty<string>()).Where((string x) => !string.IsNullOrWhiteSpace(x)).Select((string x) => x.Trim()).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
-		if (list2.Count == 0)
-		{
-			list2 = list.Where((WeeklyEventMaterialPreviewGroup x) => x != null && string.Equals((x.GroupKind ?? "").Trim(), "kingdom", StringComparison.OrdinalIgnoreCase) && x.OutputMode != WeeklyReportOutputMode.TitleShortTagsOnly).Select((WeeklyEventMaterialPreviewGroup x) => (x.KingdomId ?? "").Trim()).Where((string x) => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
-		}
-		Dictionary<string, WeeklyEventMaterialPreviewGroup> groupMap = BuildWeeklyReportGroupMap(list);
-		WeeklyReportMaterialRevisionOwner.Snapshot sourceSnapshot = sourceSnapshotOverride ?? _weeklyReportMaterialRevisions.Capture(startDay, endDay);
-		Dictionary<string, string> currentRecordStates = CaptureWeeklyReportCommitRecordStates(groupMap, weekIndex);
-		if (!_weeklyReportMaterialRevisions.IsCurrent(sourceSnapshot))
-		{
-			generationResult.FailureCount = groupMap.Count;
-			generationResult.BlockedByFatalFailure = true;
-			generationResult.BlockedByChangedRecord = true;
-			generationResult.RetryContext = CreateWeeklyReportRetryContext(list, weekIndex, startDay, endDay, displayLabel, openViewerWhenDone, isAutoGeneration, list[0], new WeeklyReportRequestResult { Success = false, FailureReason = "Weekly source materials changed before dispatch." }, list2, currentRecordStates, sourceSnapshot);
-			generationResult.RetryContext.RequiresFreshMaterials = true;
-			if (queueBlockingPopupOnFatalFailure)
-			{
-				QueueWeeklyReportFailurePopup(generationResult.RetryContext, showImmediate: true);
-			}
-			return generationResult;
-		}
-		if (capturedRecordStatesOverride != null && !AreWeeklyReportCommitRecordStatesCurrent(groupMap, capturedRecordStatesOverride, currentRecordStates))
-		{
-			generationResult.BlockedByFatalFailure = true;
-			generationResult.BlockedByChangedRecord = true;
-			generationResult.FailureCount = groupMap.Count;
-			InformationManager.DisplayMessage(new InformationMessage("周报目标在失败后已变更，旧素材重试已取消；请重新生成本周周报。"));
-			return generationResult;
-		}
-		Dictionary<string, string> capturedRecordStates = capturedRecordStatesOverride ?? currentRecordStates;
-		List<WeeklyReportBatchRequest> batches = (preparedBatches ?? new List<WeeklyReportBatchRequest>()).Where((WeeklyReportBatchRequest x) => x != null && x.Groups != null && x.Groups.Count > 0).ToList();
-		if (batches.Count == 0)
-		{
-			batches = BuildWeeklyReportBatchRequests(list, weekIndex, startDay, endDay);
-		}
-		WeeklyPromptPreparationResult promptPreparation = await EnqueueWeeklyPromptPreparationAsync(batches, runtimeGeneration);
-		if (promptPreparation == WeeklyPromptPreparationResult.Canceled || SaveRuntimeGuard.IsStale(runtimeGeneration, "weekly_report_after_prompt_prepare"))
-		{
-			return generationResult;
-		}
-		if (promptPreparation != WeeklyPromptPreparationResult.Prepared)
-		{
-			generationResult.FailureCount = list.Count;
-			generationResult.BlockedByFatalFailure = true;
-			generationResult.RetryContext = CreateWeeklyReportRetryContext(list, weekIndex, startDay, endDay, displayLabel, openViewerWhenDone, isAutoGeneration, list[0], new WeeklyReportRequestResult { Success = false, FailureReason = "Weekly batch prompt preparation failed before dispatch." }, list2, capturedRecordStates, sourceSnapshot);
-			if (queueBlockingPopupOnFatalFailure)
-			{
-				QueueWeeklyReportFailurePopup(generationResult.RetryContext, showImmediate: true);
-			}
-			return generationResult;
-		}
-		int burstSize = Math.Max(1, GetWeeklyReportRequestsPerMinute());
-		WeeklyReportBatchExecutionResult[] completed = await CoordinateWeeklyReportWavesAsync(batches, burstSize, list.Count, displayLabel, runtimeGeneration, sourceSnapshot);
-		if (completed == null)
-		{
-			return generationResult;
-		}
-		return await EnqueueWeeklyReportCommitAsync(list, weekIndex, startDay, endDay, displayLabel, openViewerWhenDone, queueBlockingPopupOnFatalFailure, isAutoGeneration, list2, groupMap, capturedRecordStates, sourceSnapshot, completed, runtimeGeneration);
-#if false
-		int successCount = 0;
-		int failureCount = 0;
-		List<WeeklyEventMaterialPreviewGroup> failedGroups = new List<WeeklyEventMaterialPreviewGroup>();
-		foreach (WeeklyReportBatchExecutionResult execution in completed.OrderBy((WeeklyReportBatchExecutionResult x) => x.BatchIndex))
-		{
-			WeeklyReportBatchRequest batch = execution?.Batch;
-			WeeklyReportBatchRequestResult batchResult = execution?.Result ?? new WeeklyReportBatchRequestResult
-			{
-				Success = false,
-				FailureReason = "Batch execution returned no result.",
-				Blocks = new List<WeeklyReportBatchBlockResult>(),
-				MissingReportIds = new List<string>()
-			};
-			CaptureWeeklyReportBatchDevPreview(batch, batchResult);
-			HashSet<string> parsedReportIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-			foreach (WeeklyReportBatchBlockResult block in batchResult.Blocks ?? new List<WeeklyReportBatchBlockResult>())
-			{
-				if (block == null || !block.Parsed || string.IsNullOrWhiteSpace(block.ReportId) || !parsedReportIds.Add(block.ReportId))
-				{
-					continue;
-				}
-				if (!groupMap.TryGetValue(block.ReportId, out var group) || group == null)
-				{
-					continue;
-				}
-				UpsertWeeklyReportEventRecord(group, weekIndex, block.Title, block.ShortSummary, block.Report, block.TagText, batchResult.PromptPreview);
-				TryNotifyNearestKingdomWeeklyReportGenerated(group, weekIndex, list2, block.Title, block.Report, ref nearestKingdomWeeklyReportNotified);
-				successCount++;
-			}
-			List<WeeklyEventMaterialPreviewGroup> missingGroups = new List<WeeklyEventMaterialPreviewGroup>();
-			foreach (string reportId in batchResult.MissingReportIds ?? new List<string>())
-			{
-				if (!parsedReportIds.Contains(reportId) && groupMap.TryGetValue(reportId, out var missingGroup) && missingGroup != null)
-				{
-					missingGroups.Add(missingGroup);
-				}
-			}
-			if (!batchResult.Success && missingGroups.Count == 0)
-			{
-				foreach (WeeklyEventMaterialPreviewGroup group2 in batch?.Groups ?? new List<WeeklyEventMaterialPreviewGroup>())
-				{
-					string reportId2 = BuildWeeklyReportGroupReportId(group2);
-					if (!string.IsNullOrWhiteSpace(reportId2) && !parsedReportIds.Contains(reportId2))
-					{
-						missingGroups.Add(group2);
-					}
-				}
-			}
-			if (missingGroups.Count > 0)
-			{
-				failureCount += missingGroups.Count;
-				failedGroups.AddRange(missingGroups.Where((WeeklyEventMaterialPreviewGroup x) => x != null));
-				failureMessages.Add(BuildWeeklyReportBatchDisplayLabel(batch) + "：批量请求失败，未回退到单个王国请求 - " + (batchResult.FailureReason ?? "未知错误"));
-			}
-		}
-		failedGroups = failedGroups.Where((WeeklyEventMaterialPreviewGroup x) => x != null).Distinct().ToList();
-		if (failureMessages.Count > 0)
-		{
-			Logger.Log("EventWeeklyReport", string.Join("\n", failureMessages));
-		}
-		if (failedGroups.Count > 0)
-		{
-			WeeklyEventMaterialPreviewGroup firstFailedGroup = failedGroups.FirstOrDefault();
-			WeeklyReportRequestResult failedRequest = new WeeklyReportRequestResult
-			{
-				Success = false,
-				FailureReason = failureMessages.FirstOrDefault() ?? "批量请求失败。",
-				AttemptsUsed = 3
-			};
-			generationResult.SuccessCount = successCount;
-			generationResult.FailureCount = failureCount;
-			generationResult.BlockedByFatalFailure = true;
-			generationResult.RetryContext = CreateWeeklyReportRetryContext(failedGroups, weekIndex, startDay, endDay, displayLabel, openViewerWhenDone, isAutoGeneration, firstFailedGroup, failedRequest, list2);
-			InformationManager.DisplayMessage(new InformationMessage(displayLabel + " 生成中止：有 " + failureCount + " 条周报目标批量失败，未回退到单个王国请求。"));
-			if (queueBlockingPopupOnFatalFailure)
-			{
-				QueueWeeklyReportFailurePopup(generationResult.RetryContext, showImmediate: true);
-			}
-			return generationResult;
-		}
-		InformationManager.DisplayMessage(new InformationMessage(displayLabel + " 生成完成：成功 " + successCount + " 条，失败 " + failureCount + " 条。"));
-		if (openViewerWhenDone)
-		{
-			OpenDevEventViewerMenu(0);
-		}
-		generationResult.SuccessCount = successCount;
-		generationResult.FailureCount = failureCount;
-		generationResult.Completed = true;
-		return generationResult;
-#endif
-	}
 
-	private Task<WeeklyReportBatchExecutionResult[]> CoordinateWeeklyReportWavesAsync(List<WeeklyReportBatchRequest> batches, int burstSize, int totalTargets, string displayLabel, long runtimeGeneration, WeeklyReportMaterialRevisionOwner.Snapshot sourceSnapshot, Func<int, Task> delay = null)
-	{
-		return WeeklyReportWaveCoordinator.RunAsync<WeeklyReportBatchRequest, WeeklyReportBatchExecutionResult>(
-			batches, burstSize,
-			batch => batch != null && batch.Groups != null && batch.Groups.Count > 0,
-			phase => !SaveRuntimeGuard.IsStale(runtimeGeneration, phase) && ReferenceEquals(Instance, this),
-			(wave, first, index, total) => EnqueueWeeklyWaveLaunchAsync(wave, first, index, total, totalTargets, batches.Count, burstSize, displayLabel, runtimeGeneration, sourceSnapshot),
-			(batch, index) => new WeeklyReportBatchExecutionResult
-			{
-				BatchIndex = index,
-				Batch = batch,
-				Result = new WeeklyReportBatchRequestResult
-				{
-					FailureReason = "Weekly batch wave was not launched.",
-					MissingReportIds = BuildWeeklyBatchExpectedReportIds(batch)
-				}
-			}, delay);
-	}
 
 	private Task<List<Task<WeeklyReportBatchExecutionResult>>> EnqueueWeeklyWaveLaunchAsync(List<WeeklyReportBatchRequest> wave, int firstBatchIndex, int waveIndex, int totalWaves, int totalTargets, int totalBatches, int burstSize, string displayLabel, long runtimeGeneration, WeeklyReportMaterialRevisionOwner.Snapshot sourceSnapshot)
 	{
@@ -30140,17 +29490,6 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 		return true;
 	}
 
-	private Task<WeeklyPromptPreparationResult> EnqueueWeeklyPromptPreparationAsync(List<WeeklyReportBatchRequest> batches, long runtimeGeneration)
-	{
-		TaskCompletionSource<WeeklyPromptPreparationResult> completionSource = new TaskCompletionSource<WeeklyPromptPreparationResult>();
-		_weeklyPromptPreparationQueue.EnqueueIfCurrent(new PendingWeeklyPromptPreparationContext
-		{
-			RuntimeGeneration = runtimeGeneration,
-			Cursor = new WeeklyMaterialStageCursor<WeeklyReportBatchRequest>(batches),
-			CompletionSource = completionSource
-		}, () => ReferenceEquals(Instance, this) && SaveRuntimeGuard.IsCurrentGeneration(runtimeGeneration));
-		return completionSource.Task;
-	}
 
 	private static void CompletePendingWeeklyPromptPreparation(PendingWeeklyPromptPreparationContext context, WeeklyPromptPreparationResult result)
 	{
@@ -30205,30 +29544,6 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 		return true;
 	}
 
-	private Task<WeeklyReportGenerationResult> EnqueueWeeklyReportCommitAsync(List<WeeklyEventMaterialPreviewGroup> groups, int weekIndex, int startDay, int endDay, string displayLabel, bool openViewerWhenDone, bool queueBlockingPopupOnFatalFailure, bool isAutoGeneration, List<string> popupCandidateKingdomIds, Dictionary<string, WeeklyEventMaterialPreviewGroup> groupMap, Dictionary<string, string> capturedRecordStates, WeeklyReportMaterialRevisionOwner.Snapshot sourceSnapshot, IEnumerable<WeeklyReportBatchExecutionResult> executions, long runtimeGeneration)
-	{
-		TaskCompletionSource<WeeklyReportGenerationResult> completionSource = new TaskCompletionSource<WeeklyReportGenerationResult>();
-		PendingWeeklyReportCommitContext context = new PendingWeeklyReportCommitContext
-		{
-			RuntimeGeneration = runtimeGeneration,
-			SourceSnapshot = sourceSnapshot,
-			WeekIndex = weekIndex,
-			StartDay = startDay,
-			EndDay = endDay,
-			DisplayLabel = (displayLabel ?? "").Trim(),
-			OpenViewerWhenDone = openViewerWhenDone,
-			QueueBlockingPopupOnFatalFailure = queueBlockingPopupOnFatalFailure,
-			IsAutoGeneration = isAutoGeneration,
-			PopupCandidateKingdomIds = (popupCandidateKingdomIds ?? new List<string>()).Where((string x) => !string.IsNullOrWhiteSpace(x)).Select((string x) => x.Trim()).Distinct(StringComparer.OrdinalIgnoreCase).ToList(),
-			Groups = (groups ?? new List<WeeklyEventMaterialPreviewGroup>()).Where((WeeklyEventMaterialPreviewGroup x) => x != null).ToList(),
-			GroupMap = groupMap ?? BuildWeeklyReportGroupMap(groups),
-			CapturedRecordStates = capturedRecordStates,
-			Executions = (executions ?? Enumerable.Empty<WeeklyReportBatchExecutionResult>()).Where((WeeklyReportBatchExecutionResult x) => x != null).OrderBy((WeeklyReportBatchExecutionResult x) => x.BatchIndex).ToList(),
-			CompletionSource = completionSource
-		};
-		_weeklyReportCommitQueue.EnqueueIfCurrent(context, () => ReferenceEquals(Instance, this) && SaveRuntimeGuard.IsCurrentGeneration(runtimeGeneration));
-		return completionSource.Task;
-	}
 
 	private bool ProcessPendingWeeklyReportCommits()
 	{
@@ -30267,401 +29582,13 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 		}
 	}
 
-	private bool ProcessPendingWeeklyReportCommitContext(PendingWeeklyReportCommitContext context, long startTimestamp, double budgetMs)
-	{
-		if (context == null)
-		{
-			return true;
-		}
-		try
-		{
-			if (!TWParallel.IsMainThread() || !ReferenceEquals(Instance, this) || (context.RuntimeGeneration > 0L && SaveRuntimeGuard.IsStale(context.RuntimeGeneration, "weekly_report_commit")))
-			{
-				_weeklyReportCommitQueue.Complete(context, new WeeklyReportGenerationResult());
-				return true;
-			}
-			if (!_weeklyReportMaterialRevisions.IsCurrent(context.SourceSnapshot))
-			{
-				context.RequiresFreshMaterials = true;
-			}
-			if (context.GroupMap == null)
-			{
-				using (PerfProbe.Scope("MyBehavior.WeeklyReportCommit.BuildGroupMap"))
-				{
-					context.GroupMap = BuildWeeklyReportGroupMap(context.Groups);
-				}
-			}
-			List<WeeklyReportBatchExecutionResult> executions = context.Executions ?? new List<WeeklyReportBatchExecutionResult>();
-			while (context.ExecutionIndex < executions.Count && !IsDailyMaintenanceBudgetExceeded(startTimestamp, budgetMs))
-			{
-				WeeklyReportBatchExecutionResult execution = executions[context.ExecutionIndex];
-				WeeklyReportBatchRequest batch = execution?.Batch;
-				WeeklyReportBatchRequestResult batchResult = execution?.Result ?? new WeeklyReportBatchRequestResult
-				{
-					Success = false,
-					FailureReason = "Batch execution returned no result.",
-					Blocks = new List<WeeklyReportBatchBlockResult>(),
-					MissingReportIds = new List<string>()
-				};
-				if (!context.CurrentPreviewCaptured)
-				{
-					using (PerfProbe.Scope("MyBehavior.WeeklyReportCommit.CapturePreview"))
-					{
-						CaptureWeeklyReportBatchDevPreview(batch, batchResult);
-					}
-					context.CurrentPreviewCaptured = true;
-					if (IsDailyMaintenanceBudgetExceeded(startTimestamp, budgetMs))
-					{
-						return false;
-					}
-				}
-				if (context.CurrentParsedReportIds == null)
-				{
-					context.CurrentParsedReportIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-				}
-				List<WeeklyReportBatchBlockResult> blocks = batchResult.Blocks ?? new List<WeeklyReportBatchBlockResult>();
-				while (context.BlockIndex < blocks.Count && !IsDailyMaintenanceBudgetExceeded(startTimestamp, budgetMs))
-				{
-					WeeklyReportBatchBlockResult block = blocks[context.BlockIndex];
-					if (block != null && block.Parsed && !string.IsNullOrWhiteSpace(block.ReportId) && !context.CurrentParsedReportIds.Contains(block.ReportId) && !context.Targets.IsSettled(block.ReportId) && context.GroupMap.TryGetValue(block.ReportId, out var group) && group != null)
-					{
-						if (!IsWeeklyReportCommitRecordUnchanged(context, block.ReportId, group) || !_weeklyReportMaterialRevisions.IsCurrent(context.SourceSnapshot))
-						{
-							context.CurrentParsedReportIds.Add(block.ReportId);
-							context.Targets.Settle(block.ReportId);
-							if (HasWeeklyReportCommitWinner(context, group))
-							{
-								context.SuccessCount++;
-							}
-							else
-							{
-								context.RequiresFreshMaterials = true;
-								context.FailureCount++;
-								context.FailedGroups.Add(group);
-								context.FailureMessages.Add("周报目标或同周源素材在请求期间已变更，旧回包未覆盖：" + block.ReportId);
-							}
-							context.BlockIndex++;
-							if (IsDailyMaintenanceBudgetExceeded(startTimestamp, budgetMs))
-							{
-								return false;
-							}
-							continue;
-						}
-						if (context.CurrentBlockCommit == null)
-						{
-							using (PerfProbe.Scope("MyBehavior.WeeklyReportCommit.PrepareRecordMaterials"))
-							{
-								context.CurrentBlockCommit = CreatePendingWeeklyReportBlockCommit(group, block, batchResult.PromptPreview);
-							}
-						}
-						if (!ProcessPendingWeeklyReportBlockCommit(context, startTimestamp, budgetMs))
-						{
-							return false;
-						}
-						context.CurrentParsedReportIds.Add(block.ReportId);
-						context.Targets.Settle(block.ReportId);
-						if (context.CurrentBlockRejected)
-						{
-							context.CurrentBlockRejected = false;
-							if (HasWeeklyReportCommitWinner(context, group))
-							{
-								context.SuccessCount++;
-							}
-							else
-							{
-								context.RequiresFreshMaterials = true;
-								context.FailureCount++;
-								context.FailedGroups.Add(group);
-								context.FailureMessages.Add("周报目标或同周源素材在提交期间已变更，旧回包未覆盖：" + block.ReportId);
-							}
-						}
-						else
-						{
-							TryQueueWeeklyReportMapNoticeForGeneratedReport(group, context.WeekIndex, ResolveWeeklyReportNoticeNearestKingdomId(context), context.WeeklyReportNoticeEventIdsQueued);
-							context.SuccessCount++;
-						}
-					}
-					context.BlockIndex++;
-					if (IsDailyMaintenanceBudgetExceeded(startTimestamp, budgetMs))
-					{
-						return false;
-					}
-				}
-				if (IsDailyMaintenanceBudgetExceeded(startTimestamp, budgetMs))
-				{
-					return false;
-				}
-				using (PerfProbe.Scope("MyBehavior.WeeklyReportCommit.FinalizeBatch"))
-				{
-					FinalizePendingWeeklyReportCommitBatch(context, batch, batchResult);
-				}
-				context.ExecutionIndex++;
-				context.BlockIndex = 0;
-				context.CurrentPreviewCaptured = false;
-				context.CurrentParsedReportIds = null;
-				context.CurrentBlockCommit = null;
-			}
-			if (context.ExecutionIndex < executions.Count)
-			{
-				return false;
-			}
-			using (PerfProbe.Scope("MyBehavior.WeeklyReportCommit.FinalizeContext"))
-			{
-				FinalizePendingWeeklyReportCommitContext(context);
-			}
-			return true;
-		}
-		catch (Exception ex)
-		{
-			Logger.Log("EventWeeklyReport", "[ERROR] deferred weekly report commit failed: " + ex);
-			WeeklyReportGenerationResult failure = new WeeklyReportGenerationResult
-			{
-				FailureCount = Math.Max(1, context.FailureCount),
-				BlockedByFatalFailure = true
-			};
-			try
-			{
-				failure = BuildWeeklyReportCommitExceptionResult(context);
-				if (context.QueueBlockingPopupOnFatalFailure && failure.RetryContext != null)
-				{
-					QueueWeeklyReportFailurePopup(failure.RetryContext, showImmediate: true);
-				}
-			}
-			catch (Exception recoveryException)
-			{
-				Logger.Log("EventWeeklyReport", "[ERROR] weekly report commit recovery failed: " + recoveryException);
-			}
-			_weeklyReportCommitQueue.Complete(context, failure);
-			return true;
-		}
-	}
 
-	private WeeklyReportGenerationResult BuildWeeklyReportCommitExceptionResult(PendingWeeklyReportCommitContext context)
-	{
-		List<WeeklyEventMaterialPreviewGroup> unfinished = new List<WeeklyEventMaterialPreviewGroup>();
-		HashSet<string> seenReportIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-		int completed = 0;
-		foreach (WeeklyEventMaterialPreviewGroup group in context.Groups ?? new List<WeeklyEventMaterialPreviewGroup>())
-		{
-			string reportId = BuildWeeklyReportGroupReportId(group);
-			if (string.IsNullOrWhiteSpace(reportId) || !seenReportIds.Add(reportId))
-			{
-				continue;
-			}
-			bool hasWinner = false;
-			try
-			{
-				hasWinner = HasWeeklyReportCommitWinner(context, group);
-			}
-			catch (Exception ex)
-			{
-				Logger.Log("EventWeeklyReport", "[WARN] weekly report winner check failed during commit recovery: " + ex.Message);
-			}
-			if (hasWinner)
-			{
-				completed++;
-				if (context.AttemptedWriteReportIds?.Contains(reportId) == true)
-				{
-					try
-					{
-						TryQueueWeeklyReportMapNoticeForGeneratedReport(group, context.WeekIndex, ResolveWeeklyReportNoticeNearestKingdomId(context), context.WeeklyReportNoticeEventIdsQueued);
-					}
-					catch (Exception ex)
-					{
-						Logger.Log("EventWeeklyReport", "[WARN] weekly report notice recovery failed: " + ex.Message);
-					}
-				}
-			}
-			else
-			{
-				unfinished.Add(group);
-			}
-		}
-		if (seenReportIds.Count == 0)
-		{
-			return new WeeklyReportGenerationResult { BlockedByFatalFailure = true, FailureCount = Math.Max(1, context.FailureCount) };
-		}
-		WeeklyReportGenerationResult result = new WeeklyReportGenerationResult
-		{
-			SuccessCount = completed,
-			FailureCount = unfinished.Count,
-			BlockedByFatalFailure = unfinished.Count > 0,
-			Completed = unfinished.Count == 0
-		};
-		if (unfinished.Count > 0)
-		{
-			WeeklyReportRequestResult failure = new WeeklyReportRequestResult { Success = false, FailureReason = "Weekly commit failed; current materials must be collected again." };
-			result.RetryContext = CreateWeeklyReportRetryContext(unfinished, context.WeekIndex, context.StartDay, context.EndDay, context.DisplayLabel, context.OpenViewerWhenDone, context.IsAutoGeneration, unfinished[0], failure, context.PopupCandidateKingdomIds, context.CapturedRecordStates, context.SourceSnapshot);
-			result.RetryContext.RequiresFreshMaterials = true;
-		}
-		return result;
-	}
 
-	private static PendingWeeklyReportBlockCommit CreatePendingWeeklyReportBlockCommit(WeeklyEventMaterialPreviewGroup group, WeeklyReportBatchBlockResult block, string promptText)
-	{
-		return new PendingWeeklyReportBlockCommit
-		{
-			Group = group,
-			ReportId = (block?.ReportId ?? "").Trim(),
-			Title = block?.Title ?? "",
-			ShortSummary = block?.ShortSummary ?? "",
-			Report = block?.Report ?? "",
-			TagText = block?.TagText ?? "",
-			PromptText = promptText ?? "",
-			MaterialCursor = new WeeklyReportBlockMaterialCursor<EventMaterialReference>(
-				OrderWeeklyPreviewMaterials(group?.Materials).Where((EventMaterialReference x) => x != null).ToList())
-		};
-	}
 
-	private bool ProcessPendingWeeklyReportBlockCommit(PendingWeeklyReportCommitContext context, long startTimestamp, double budgetMs)
-	{
-		PendingWeeklyReportBlockCommit pending = context?.CurrentBlockCommit;
-		if (pending == null)
-		{
-			return true;
-		}
-		while (!pending.MaterialCursor.Complete && !IsDailyMaintenanceBudgetExceeded(startTimestamp, budgetMs))
-		{
-			using (PerfProbe.Scope("MyBehavior.WeeklyReportCommit.CloneMaterial"))
-			{
-				pending.MaterialCursor.Advance(CloneEventMaterialReference);
-			}
-		}
-		if (!pending.MaterialCursor.Complete)
-		{
-			return false;
-		}
-		if (IsDailyMaintenanceBudgetExceeded(startTimestamp, budgetMs))
-		{
-			return false;
-		}
-		if (!IsWeeklyReportCommitRecordUnchanged(context, pending.ReportId, pending.Group) || !_weeklyReportMaterialRevisions.IsCurrent(context.SourceSnapshot))
-		{
-			context.CurrentBlockRejected = true;
-			context.CurrentBlockCommit = null;
-			return true;
-		}
-		using (PerfProbe.Scope("MyBehavior.WeeklyReportCommit.WriteRecord"))
-		{
-			context.AttemptedWriteReportIds.Add(pending.ReportId);
-			UpsertWeeklyReportEventRecord(pending.Group, context.WeekIndex, pending.Title, pending.ShortSummary, pending.Report, pending.TagText, pending.PromptText, pending.MaterialCursor.Cloned, sanitizeAfter: false);
-		}
-		context.CurrentBlockCommit = null;
-		return true;
-	}
 
-	private void FinalizePendingWeeklyReportCommitBatch(PendingWeeklyReportCommitContext context, WeeklyReportBatchRequest batch, WeeklyReportBatchRequestResult batchResult)
-	{
-		if (context == null)
-		{
-			return;
-		}
-		HashSet<string> parsedReportIds = context.CurrentParsedReportIds ?? new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-		Dictionary<string, WeeklyEventMaterialPreviewGroup> groupMap = context.GroupMap ?? BuildWeeklyReportGroupMap(context.Groups);
-		string reason = null;
-		bool hasReportedMissing = false;
-		foreach (string reportId in batchResult?.MissingReportIds ?? new List<string>())
-		{
-			if (!string.IsNullOrWhiteSpace(reportId) && !parsedReportIds.Contains(reportId) && !context.Targets.IsSettled(reportId) && groupMap.TryGetValue(reportId, out var missingGroup) && missingGroup != null)
-			{
-				hasReportedMissing = true;
-				reason ??= BuildWeeklyReportBatchDisplayLabel(batch) + "：批量请求未恢复出可用周报区块 - " + (batchResult?.FailureReason ?? "未知错误");
-				context.Targets.RecordMissing(reportId, missingGroup, reason);
-			}
-		}
-		if (batchResult != null && !batchResult.Success && !hasReportedMissing)
-		{
-			foreach (WeeklyEventMaterialPreviewGroup group in batch?.Groups ?? new List<WeeklyEventMaterialPreviewGroup>())
-			{
-				string reportId = BuildWeeklyReportGroupReportId(group);
-				if (!string.IsNullOrWhiteSpace(reportId) && !parsedReportIds.Contains(reportId) && !context.Targets.IsSettled(reportId))
-				{
-					reason ??= BuildWeeklyReportBatchDisplayLabel(batch) + "：批量请求未恢复出可用周报区块 - " + (batchResult?.FailureReason ?? "未知错误");
-					context.Targets.RecordMissing(reportId, group, reason);
-				}
-			}
-		}
-	}
 
-	private void FinalizePendingWeeklyReportCommitContext(PendingWeeklyReportCommitContext context)
-	{
-		if (context == null)
-		{
-			return;
-		}
-		foreach (WeeklyReportCommitTargetOwner<WeeklyEventMaterialPreviewGroup>.PendingMissing missing in context.Targets.PendingMissingTargets)
-		{
-			context.FailureCount++;
-			context.FailedGroups.Add(missing.Group);
-			context.FailureMessages.Add(missing.Reason + " [" + missing.ReportId + "]");
-		}
-		List<WeeklyEventMaterialPreviewGroup> failedGroups = (context.FailedGroups ?? new List<WeeklyEventMaterialPreviewGroup>()).Where((WeeklyEventMaterialPreviewGroup x) => x != null).Distinct().ToList();
-		if (context.FailureMessages != null && context.FailureMessages.Count > 0)
-		{
-			Logger.Log("EventWeeklyReport", string.Join("\n", context.FailureMessages));
-		}
-		WeeklyReportGenerationResult result = new WeeklyReportGenerationResult
-		{
-			SuccessCount = context.SuccessCount,
-			FailureCount = context.FailureCount
-		};
-		if (failedGroups.Count > 0)
-		{
-			WeeklyEventMaterialPreviewGroup firstFailedGroup = failedGroups.FirstOrDefault();
-			WeeklyReportRequestResult failedRequest = BuildWeeklyReportFailedRequest(context, firstFailedGroup);
-			result.BlockedByFatalFailure = true;
-			result.RetryContext = CreateWeeklyReportRetryContext(failedGroups, context.WeekIndex, context.StartDay, context.EndDay, context.DisplayLabel, context.OpenViewerWhenDone, context.IsAutoGeneration, firstFailedGroup, failedRequest, context.PopupCandidateKingdomIds, context.CapturedRecordStates, context.SourceSnapshot);
-			result.RetryContext.RequiresFreshMaterials = context.RequiresFreshMaterials;
-			InformationManager.DisplayMessage(new InformationMessage(context.DisplayLabel + " generation paused: " + context.FailureCount + " weekly report target(s) failed."));
-			if (context.QueueBlockingPopupOnFatalFailure)
-			{
-				QueueWeeklyReportFailurePopup(result.RetryContext, showImmediate: true);
-			}
-			_weeklyReportCommitQueue.Complete(context, result);
-			return;
-		}
-		InformationManager.DisplayMessage(new InformationMessage(context.DisplayLabel + " generation completed: success " + context.SuccessCount + ", failed " + context.FailureCount + "."));
-		if (context.OpenViewerWhenDone)
-		{
-			OpenDevEventViewerMenu(0);
-		}
-		result.Completed = true;
-		_weeklyReportCommitQueue.Complete(context, result);
-	}
 
-	private static WeeklyReportRequestResult BuildWeeklyReportFailedRequest(PendingWeeklyReportCommitContext context, WeeklyEventMaterialPreviewGroup failedGroup)
-	{
-		string reportId = BuildWeeklyReportGroupReportId(failedGroup);
-		WeeklyReportBatchRequestResult failedBatch = null;
-		WeeklyReportBatchRequestResult fallback = null;
-		foreach (WeeklyReportBatchExecutionResult execution in context?.Executions ?? new List<WeeklyReportBatchExecutionResult>())
-		{
-			WeeklyReportBatchRequestResult candidate = execution?.Result;
-			if (candidate == null || candidate.Success)
-			{
-				continue;
-			}
-			if (candidate.MissingReportIds?.Contains(reportId, StringComparer.OrdinalIgnoreCase) == true)
-			{
-				failedBatch = candidate;
-			}
-			else if (execution.Batch?.Groups?.Any((WeeklyEventMaterialPreviewGroup group) => string.Equals(BuildWeeklyReportGroupReportId(group), reportId, StringComparison.OrdinalIgnoreCase)) == true)
-			{
-				fallback = candidate;
-			}
-		}
-		failedBatch ??= fallback;
-		return new WeeklyReportRequestResult
-		{
-			Success = false,
-			FailureReason = context?.FailureMessages?.FirstOrDefault() ?? "Batch request failed.",
-			AttemptsUsed = failedBatch?.AttemptsUsed ?? 0,
-			IsRateLimit = failedBatch?.IsRateLimit ?? false,
-			IsRequestsPerMinuteLimit = failedBatch?.IsRequestsPerMinuteLimit ?? false,
-			IsQuotaLimit = failedBatch?.IsQuotaLimit ?? false,
-			RetryAfterSeconds = failedBatch?.RetryAfterSeconds
-		};
-	}
+
 
 	private static string ResolveNearestWeeklyReportKingdomId(IEnumerable<string> kingdomIds)
 	{
@@ -30679,19 +29606,6 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 		return (list[0] ?? "").Trim();
 	}
 
-	private static string ResolveWeeklyReportNoticeNearestKingdomId(PendingWeeklyReportCommitContext context)
-	{
-		if (context == null)
-		{
-			return "";
-		}
-		if (!context.WeeklyReportNoticeNearestKingdomResolved)
-		{
-			context.WeeklyReportNoticeNearestKingdomId = ResolveNearestWeeklyReportKingdomId(context.PopupCandidateKingdomIds);
-			context.WeeklyReportNoticeNearestKingdomResolved = true;
-		}
-		return context.WeeklyReportNoticeNearestKingdomId ?? "";
-	}
 
 	private static bool CanPublishWeeklyReportMapNotification()
 	{
@@ -31010,10 +29924,7 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 		return string.IsNullOrWhiteSpace(text) ? "点击查看当前周报。" : ("点击查看：" + text);
 	}
 
-	private static string BuildWeeklyReportEventId(string eventKind, int weekIndex, string scopeKingdomId)
-	{
-		return "weekly_report:" + (eventKind ?? "").Trim().ToLowerInvariant() + ":" + Math.Max(0, weekIndex) + ":" + ((scopeKingdomId ?? "").Trim());
-	}
+
 
 	private static List<string> SanitizeUnreadWeeklyReportNoticeEventIds(IEnumerable<string> source) => WeeklyNoticeStateOwner.SanitizeUnreadWeeklyReportNoticeEventIds(source);
 
@@ -31024,28 +29935,6 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 
 	private static List<string> SanitizeWeeklyReportEventIds(IEnumerable<string> source) => WeeklyNoticeStateOwner.SanitizeWeeklyReportEventIds(source);
 
-	private void TryQueueWeeklyReportMapNoticeForGeneratedReport(WeeklyEventMaterialPreviewGroup group, int weekIndex, string nearestKingdomId, HashSet<string> queuedEventIds)
-	{
-		if (group == null || weekIndex <= 0)
-		{
-			return;
-		}
-		if (!string.Equals((group.GroupKind ?? "").Trim(), "kingdom", StringComparison.OrdinalIgnoreCase) || group.OutputMode == WeeklyReportOutputMode.TitleShortTagsOnly)
-		{
-			return;
-		}
-		string kingdomId = (group.KingdomId ?? "").Trim();
-		if (string.IsNullOrWhiteSpace(kingdomId) || string.IsNullOrWhiteSpace(nearestKingdomId) || !string.Equals(kingdomId, nearestKingdomId, StringComparison.OrdinalIgnoreCase))
-		{
-			return;
-		}
-		string eventId = BuildWeeklyReportEventId("kingdom", weekIndex, kingdomId);
-		if (queuedEventIds != null && !queuedEventIds.Add(eventId))
-		{
-			return;
-		}
-		QueueWeeklyReportMapNotice(eventId);
-	}
 
 	private async Task<WeeklyReportGenerationResult> GenerateWeeklyReportsBatchedAsyncInternal(List<WeeklyEventMaterialPreviewGroup> list, int weekIndex, int startDay, int endDay, string displayLabel, bool openViewerWhenDone, bool queueBlockingPopupOnFatalFailure, bool isAutoGeneration, IEnumerable<string> popupCandidateKingdomIdsOverride = null, List<WeeklyReportBatchRequest> preparedBatches = null, long runtimeGeneration = 0L, Dictionary<string, string> capturedRecordStatesOverride = null, WeeklyReportMaterialRevisionOwner.Snapshot sourceSnapshotOverride = null)
 	{

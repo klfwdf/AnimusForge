@@ -1,0 +1,28 @@
+
+ private static MyBehavior Instance;
+ private readonly WeeklyReportMaterialRevisionOwner _weeklyReportMaterialRevisions=new();
+ private readonly WeeklyReportCommitQueueOwner<PendingWeeklyReportCommitContext,WeeklyReportGenerationResult> _weeklyReportCommitQueue=new((c,r)=>c.CompletionSource.TrySetResult(r),()=>new());
+ private readonly WeeklyReportCommitQueueOwner<PendingWeeklyPromptPreparationContext,WeeklyPromptPreparationResult> _weeklyPromptPreparationQueue=new((c,r)=>c.CompletionSource.TrySetResult(r),()=>WeeklyPromptPreparationResult.Canceled);
+ private List<EventRecordEntry> _eventRecordEntries=new();private List<DevWeeklyReportBatchPreviewEntry> _latestWeeklyReportBatchDevPreviews=new();
+ private static bool IsKingdomEligibleForWeeklyReport(string id)=>true;
+ private static int GetWeeklyReportBatchSize()=>3;
+ private static int GetCurrentGameDayIndexSafe()=>6;private static string GetCurrentGameDateTextSafe()=>"date6";
+ private void OpenDevEventEditorMenu(){}private void OpenDevEventViewerMenu(int page){}
+ private void NotifyWorldMessageWeeklyTimelineChanged(){}
+ private string BuildPublishedWorldWeeklyProductState(EventRecordEntry entry)=>entry.Title;
+ private void ApplyWeeklyReportStabilityDelta(WeeklyEventMaterialPreviewGroup group,string id,string tags){}
+ private void NotifyPublishedWorldWeeklyProductChanged(string previous,EventRecordEntry entry){}
+ private static List<EventRecordEntry> SanitizeEventRecordEntries(List<EventRecordEntry> records)=>records;
+ private static string ResolveNearestWeeklyReportKingdomId(IEnumerable<string> ids)=>ids.FirstOrDefault()??"";
+ private void QueueWeeklyReportMapNotice(string id){}
+ private void QueueWeeklyReportFailurePopup(WeeklyReportRetryContext retry,bool showImmediate=false){}
+ private Task<List<Task<WeeklyReportBatchExecutionResult>>> EnqueueWeeklyWaveLaunchAsync(List<WeeklyReportBatchRequest> wave,int first,int index,int total,int targets,int batchCount,int burst,string label,long generation,WeeklyReportMaterialRevisionOwner.Snapshot snapshot)
+  =>Task.FromResult(wave.Select((b,i)=>Task.FromResult(new WeeklyReportBatchExecutionResult{BatchIndex=first+i,Batch=b,Result=new(){Success=true,MissingReportIds=new(),Blocks=b.Groups.Select(g=>new WeeklyReportBatchBlockResult{Parsed=true,ReportId=BuildWeeklyReportGroupReportId(g),Title="composition",ShortSummary="short",Report="report",TagText="STAB_FLAT"}).ToList()}})).ToList());
+ internal static async Task VerifyActualRuntimeComposition(WeeklyEventMaterialPreviewGroup group){
+  var h=new MyBehavior();Instance=h;var task=h.GenerateWeeklyReportsMinuteBurstAsyncInternal(new(){group},1,0,6,"composition",false,false,false);
+  var prompt=h._weeklyPromptPreparationQueue.Peek();if(prompt==null)throw new Exception("actual composition did not bind same prompt queue");
+  h._weeklyPromptPreparationQueue.Complete(prompt,WeeklyPromptPreparationResult.Prepared);h._weeklyPromptPreparationQueue.CompleteProcessed(prompt);
+  var commit=h._weeklyReportCommitQueue.Peek();if(commit==null)throw new Exception("actual composition did not bind same commit queue");
+  h.ProcessPendingWeeklyReportCommitContext(commit,0,0);h._weeklyReportCommitQueue.CompleteProcessed(commit);
+  if(!(await task).Completed||h._eventRecordEntries.Count!=1||h._eventRecordEntries[0].Title!="composition"||h._latestWeeklyReportBatchDevPreviews.Count!=1)throw new Exception("actual composition incorrect authority/container forwarding");
+ }
