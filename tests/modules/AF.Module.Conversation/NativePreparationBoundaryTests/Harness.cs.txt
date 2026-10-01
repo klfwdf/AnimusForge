@@ -34,6 +34,16 @@ public static class Logger { public static void Log(string a,string b) { } }
 public static class FreezeWatchdog { public static void Mark(string a,string b,bool immediate=false) { } }
 public sealed class ShoutBehavior
 {
+    private readonly MovementFixture _sceneMovement;
+    public ShoutBehavior() { _sceneMovement=new MovementFixture(BuildSceneSummonPromptTargets,BuildSceneGuidePromptTargets); }
+    private sealed class MovementFixture
+    {
+        private readonly Func<IEnumerable<NpcDataPacket>,Dictionary<int,Hero>,List<SceneSummonPromptTarget>> _summon;
+        private readonly Func<Agent,int,List<SceneGuidePromptTarget>> _guide;
+        internal MovementFixture(Func<IEnumerable<NpcDataPacket>,Dictionary<int,Hero>,List<SceneSummonPromptTarget>> summon,Func<Agent,int,List<SceneGuidePromptTarget>> guide) { _summon=summon;_guide=guide; }
+        internal List<SceneSummonPromptTarget> BuildSceneSummonPromptTargets(IEnumerable<NpcDataPacket> candidates,Dictionary<int,Hero> heroes)=>_summon(candidates,heroes);
+        internal List<SceneGuidePromptTarget> BuildSceneGuidePromptTargets(Agent target,int first)=>_guide(target,first);
+    }
     private sealed class NativeConversationAdmission { public int AgentIndex; }
     private const int NativeConversationMainThreadPreprocessTimeoutMs=120;
     public readonly ConcurrentQueue<Action> _mainThreadActions=new();

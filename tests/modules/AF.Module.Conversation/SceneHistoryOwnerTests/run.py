@@ -7,7 +7,11 @@ s=importlib.util.spec_from_file_location('ex',R/'tests/modules/AF.Module.Convers
 p=argparse.ArgumentParser();p.add_argument('--run-root',type=Path,required=True);args=p.parse_args();out=args.run_root.resolve();out.relative_to(R);out.mkdir(parents=True,exist_ok=True)
 host=(R/'src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.cs').read_text(encoding='utf-8-sig')
 for item in json.loads((H/'TerminalConsumers.json').read_text(encoding='utf-8')):
-    if 'exact' in item:assert host.count(item['exact'])==1,item['symbol']
+    if 'exact' in item:
+        consumer=(R/item['source']).read_text(encoding='utf-8-sig') if 'source' in item else host
+        assert consumer.count(item['exact'])==1,item['symbol']
+        if 'binding_source' in item:
+            assert (R/item['binding_source']).read_text(encoding='utf-8-sig').count(item['binding_exact'])==1,item['symbol']+' binding'
     elif 'absent' in item:assert item['absent'] not in host,item['symbol']
     else:
         import re

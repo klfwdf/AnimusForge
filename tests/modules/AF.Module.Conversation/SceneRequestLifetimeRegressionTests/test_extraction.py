@@ -3,11 +3,12 @@ import unittest
 import run
 
 
-from af2_terminal_migration_review import historical_test_case
+from af2_terminal_migration_review import historical_test_case, historical_fixture
 
 @historical_test_case
 class ExtractionTests(unittest.TestCase):
     @classmethod
+    @historical_fixture
     def setUpClass(cls):
         cls.scene = run.ex.source("ShoutBehavior.cs", None)
         cls.owner = run.ex.source("src/modules/AF.Module.Conversation/Channels/Scene/ScenePlayerShoutRequestOwner.cs", None)

@@ -31,9 +31,13 @@ else:
  old=prior_body[pa:pb]
  expected=old[:old.index('\t\tstring nativeInitialTargetUnavailableReason')]+old[old.index('\t\tList<NpcDataPacket> presentNpcs'):].replace('\t\t// Do not feed vanilla conversation UI text into AF prompt history.\n\t\tstring currentNativeDialogText = "";\n','').replace('\t\tstring extraFact = npcOpeningPersistentFactText;\n','')
  capture=ex.declaration(snapshot,'private NativeConversationPreparationSnapshot CaptureNativeConversationPreparation(')
+ # Only the two named Movement leaf receiver changes are reviewed here; retain all original order/arguments.
+ for leaf in ['BuildSceneSummonPromptTargets', 'BuildSceneGuidePromptTargets']:
+  assert expected.count(leaf+'(')==1
+  expected=expected.replace(leaf+'(', '_sceneMovement.'+leaf+'(',1)
  assert expected in capture, 'Preparation builder order/arguments differ from original'
  assert 'Task.Run' not in capture and 'await ' not in capture
- code=code.replace('@@SNAPSHOT@@',ex.declaration(snapshot,'private sealed class NativeConversationPreparationSnapshot')).replace('@@CAPTURE@@',ex.declaration(snapshot,'private NativeConversationPreparationSnapshot CaptureNativeConversationPreparation('))
+ code=code.replace('@@SNAPSHOT@@',ex.declaration(snapshot,'internal sealed class NativeConversationPreparationSnapshot')).replace('@@CAPTURE@@',ex.declaration(snapshot,'private NativeConversationPreparationSnapshot CaptureNativeConversationPreparation('))
  mutations={
   'drop-guard':('if (!IsNativeConversationAdmissionCurrent(admission, out reason)) return null;','reason = "";'),
   'move-capture-background':('() => CaptureNativeConversationPreparation(admission, targetHero, targetCharacter, npcName, routingInput, out nativeInitialTargetUnavailableReason)','() => Task.Run(() => CaptureNativeConversationPreparation(admission, targetHero, targetCharacter, npcName, routingInput, out nativeInitialTargetUnavailableReason)).GetAwaiter().GetResult()'),
