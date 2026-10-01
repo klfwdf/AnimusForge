@@ -13,5 +13,15 @@
     "private void GetNpcPersonaGenerationRuntimeState(": "be2c42b970e903ac01cb96cd2c4123db32e4e07109e60a1d9680ad3368a140e8",
     "private async Task RunHeroPersonaRerollAsync(": "a8116a342e1b69d8c2cf8ecb55f212cdb6986cec1a122d9c1d2714fee42bc02a"
   },
-  "j13Evidence": "Hero 128 and Channel 169 checks; ignore_edit mutant rejected; j13_source_parity.py exact inverse to 89b38557. Historical whole-owner inverse remains separate."
+  "j13Evidence": "Hero 128 and Channel 169 checks; ignore_edit mutant rejected; j13_source_parity.py exact inverse to 89b38557. Historical whole-owner inverse remains separate.",
+  "runnerSafetyChanges": [
+    {
+      "before": "p=argparse.ArgumentParser();",
+      "after": "p=argparse.ArgumentParser();p.add_argument('--run-root',type=Path);"
+    },
+    {
+      "before": "out=HERE/'.generated'/('original' if a.original else a.mutate or 'current');out.mkdir(parents=True,exist_ok=True)",
+      "after": "out=util.new_run_root(ROOT,'HeroPersonaGenerationTests',a.run_root)"
+    }
+  ]
 }

@@ -242,3 +242,8 @@ python -X utf8 -B tests/modules/AF.Module.Memory/MemorySummaryMainThreadBoundary
 - 新owner排序复用`CooperativeMemoryQueueSort`的day-only+constant-name路径。测试分别记`owner-sort-unit`和`queue-sort-unit`，防止旧队列排序用例误停在新owner排序。原queue fault已限定到QueueTail类；曾因同名guard数量增加而拒绝提取，修正selector后才计入有效红例，不扩大到两个类掩盖失败。
 - 一条含1024行的draft仍在一次record操作里净化；metadata key/empty绑定也仍原子。75/0不代表深line、初捕获、raw、Apply预算或真实游戏完成。
 - 当前captured116、旧8bc112/4及主线程/后台clone两个相关故障再验；另外raw摘要控制保留40b固定版本证据，Input/编码器源码未变，不冒充本轮重新运行全部35个。其余相邻/最终构建结果见当前HANDOFF。
+
+
+## 2026-10-01 历史入口维护
+
+`run_materials.py` 现在链接真实 `NpcActionLedger.NormalizeStableKey` 与 `WeeklyReportMaterialRevisionOwner`，支持 `--run-root` 新仓内输出。23 场景通过；`omit-append-bind` 编译成功后命中重复全量重建负控。旧 B1 全主类逆向测试仍未闭合，不把已修 sealing 重挂为产品未完成。`run_captured.py`/`run_sealing.py` 的当前缺失 Weekly helper 含外交标签分支，本轮按外交排除边界延期。

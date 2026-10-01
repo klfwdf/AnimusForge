@@ -25,8 +25,19 @@ def restore(path,source):
     review=json.loads((HERE/'source-review.json').read_text(encoding='utf-8'))
     if path not in review['paths']: return source
     for file,h in review.get('dependencies',{}).items():
-        assert hashlib.sha256((ROOT/file).read_text(encoding='utf-8-sig').encode()).hexdigest()==h,'Unreviewed memory-run dependency: '+file
-    old=subprocess.check_output(['git','show',review['baseline']+':'+path],cwd=ROOT).decode('utf-8-sig').replace('\r\n','\n');lines=old.splitlines(keepends=True)
+        dependency=(ROOT/file).read_text(encoding='utf-8-sig')
+        if file.endswith('/run.py'):
+            for delta in reversed(review['runnerSafetyChanges']):
+                assert dependency.count(delta['after'])==1,'Unreviewed memory-run runner safety'
+                dependency=dependency.replace(delta['after'],delta['before'],1)
+        if file.endswith(('/fixture_support.py','/run.py')):
+            # J16a moved these two runners exactly two directory levels deeper.
+            assert dependency.count('ROOT=Path(__file__).resolve().parents[4]')==1
+            dependency=dependency.replace('ROOT=Path(__file__).resolve().parents[4]', 'ROOT=Path(__file__).resolve().parents[2]',1)
+            dependency=dependency.replace('src/modules/AF.Module.Memory/Summary/MemorySummaryRunOwner.cs','Refactor/Runtime/MemorySummaryRunOwner.cs')
+            dependency=dependency.replace('tests/AF.Contracts/ModuleFrameworkApiTests/run.py','tools/ModuleFrameworkApiTests/run.py')
+        assert hashlib.sha256(dependency.encode()).hexdigest()==h,'Unreviewed memory-run dependency: '+file
+    old=subprocess.check_output(['git','show',review['baseline']+':'+('tools/'+path.split('/')[-2]+'/'+path.split('/')[-1] if path.startswith('tests/modules/') else path)],cwd=ROOT).decode('utf-8-sig').replace('\r\n','\n');lines=old.splitlines(keepends=True)
     for delta in reversed(review['paths'][path]):
         a,b=delta['start'],delta['end'];assert ''.join(lines[a:b])==delta['before'];lines[a:b]=[delta['after']]
     expected=''.join(lines)
@@ -35,6 +46,21 @@ def restore(path,source):
     source=_restore_j02_guard_path(path,source)
     assert source in (expected,old),'Unreviewed memory-run source changes: '+path
     return old
-if __name__=='__main__':
-    for path in json.loads((HERE/'source-review.json').read_text(encoding='utf-8'))['paths']:
-        restore(path,(ROOT/path).read_text(encoding='utf-8-sig'));print('PASS exact memory-run inverse '+path)
+def verify_current():
+    """J17 consumer scope; old whole-owner inverse remains a historical proof."""
+    import importlib.util
+    spec=importlib.util.spec_from_file_location('run_scope_extract',ROOT/'tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py')
+    ex=importlib.util.module_from_spec(spec);spec.loader.exec_module(ex)
+    review=json.loads((HERE/'source-review.json').read_text(encoding='utf-8'))
+    for file,h in review['dependencies'].items():
+        if file.startswith('tests/'):continue
+        assert hashlib.sha256((ROOT/file).read_text(encoding='utf-8-sig').encode()).hexdigest()==h,'Unreviewed memory-run dependency: '+file
+    live=(ROOT/'MyBehavior.cs').read_text(encoding='utf-8-sig')
+    accepted=subprocess.check_output(['git','show','f6e2ead7:MyBehavior.cs'],cwd=ROOT).decode('utf-8-sig').replace('\r\n','\n')
+    signature='private async Task ProcessMemorySummaryQueueAsync('
+    assert ex.declaration(live,signature)==ex.declaration(accepted,signature),'Unreviewed memory-run consumer'
+    assert 'run.Dispose();' in ex.declaration(live,signature)
+    assert '_memorySummaryProcessing' not in live,'Retired memory run flag returned'
+    print('PASS scoped current run owner/adapter and actual Process consumer; historical inverse retained')
+
+if __name__=='__main__':verify_current()

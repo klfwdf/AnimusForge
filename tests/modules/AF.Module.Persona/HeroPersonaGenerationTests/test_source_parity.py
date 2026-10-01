@@ -5,7 +5,7 @@ HERE=Path(__file__).resolve().parent;ROOT=HERE.parents[3]
 spec=importlib.util.spec_from_file_location('inverse',HERE/'source_parity.py');inverse=importlib.util.module_from_spec(spec);spec.loader.exec_module(inverse)
 SOURCE=(ROOT/'MyBehavior.cs').read_text(encoding='utf-8-sig')
 class Guards(unittest.TestCase):
- def test_exact_whole_inverse(self):self.assertEqual(inverse.restore(SOURCE),inverse.prior())
+ def test_current_scope_and_historical_snapshot(self):self.assertEqual(inverse.restore(SOURCE),inverse.prior())
  def test_original_prompt(self):inverse.verify()
  def test_extra_source_rejected(self):
   with self.assertRaisesRegex(AssertionError,'surrounding'):inverse.restore(SOURCE+'\n// extra\n')

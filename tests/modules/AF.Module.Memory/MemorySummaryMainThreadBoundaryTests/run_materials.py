@@ -5,11 +5,13 @@ from __future__ import annotations
 import argparse, hashlib, importlib.util, json, os, re, subprocess, sys
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[4];HERE=Path(__file__).resolve().parent
+sys.path.insert(0,str(ROOT/'tests'))
+from output_isolation import new_run_root, resolve_dotnet, minimal_test_environment
 SIGNATURES=['private sealed class EventSourceMaterialEntry','private void RecordEventSourceMaterial(','private static bool IsPlayerWeeklySourceMaterial(','private static string NormalizeNpcActionStableKey(','private static string BuildEventSourceMaterialIndexKey(','private void RebuildEventSourceMaterialIndex(','private static List<EventSourceMaterialEntry> SanitizeEventSourceMaterials(']
 MUTATIONS=['ignore-structure','ignore-map-binding','ignore-source-binding','publish-partial','blank-last-wins','omit-append-bind','restore-fallback']
 
 def main():
-    ap=argparse.ArgumentParser(description=__doc__);ap.add_argument('--source-baseline',choices=['62abfdb3','c21523f8']);ap.add_argument('--mutate',choices=MUTATIONS);a=ap.parse_args();sys.stdout.reconfigure(encoding='utf-8')
+    ap=argparse.ArgumentParser(description=__doc__);ap.add_argument('--source-baseline',choices=['62abfdb3','c21523f8']);ap.add_argument('--mutate',choices=MUTATIONS);ap.add_argument('--run-root',type=Path);a=ap.parse_args();sys.stdout.reconfigure(encoding='utf-8')
     if a.source_baseline and a.mutate:raise ValueError('Use either historical real source or one current mutation')
     spec=importlib.util.spec_from_file_location('material_ex',ROOT/'tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py');ex=importlib.util.module_from_spec(spec);spec.loader.exec_module(ex)
     def read(name):return (ROOT/name).read_text(encoding='utf-8-sig')
@@ -23,6 +25,7 @@ def main():
     if a.source_baseline:source=subprocess.run(['git','show',a.source_baseline+':MyBehavior.cs'],cwd=ROOT,capture_output=True,text=True,encoding='utf-8',check=True).stdout
     manifest=[];snippets=[]
     for signature in SIGNATURES:
+        if not a.source_baseline and signature=='private static string NormalizeNpcActionStableKey(':continue
         body=ex.declaration(source,signature)
         manifest.append(dict(file='MyBehavior.cs',signature=signature,line=source[:source.index(body)].count('\n')+1,sha256=digest(body),source_revision=a.source_baseline or 'working-tree'))
         if signature=='private void RebuildEventSourceMaterialIndex(':
@@ -48,6 +51,17 @@ def main():
         snippets.append(field.group())
     prefix='using System; using System.Linq; using System.Collections.Generic; using TaleWorlds.CampaignSystem; namespace AnimusForge { public partial class MyBehavior {\n'
     files={'Product.cs':prefix+'\n\n'.join(snippets)+'\n}}','Fixture.cs':read('tests/modules/AF.Module.Memory/MemorySummaryMainThreadBoundaryTests/MaterialsHarness.cs.txt')}
+    if not a.source_baseline:
+        # Link only the real normalized-key algorithm; the material consumer calls this owner.
+        path='src/modules/AF.Module.Memory/Records/NpcActionLedger.cs'
+        owner=read(path);body=ex.declaration(owner,'internal static string NormalizeStableKey(')
+        files['NpcActionLedger.cs']='namespace AnimusForge { internal static class NpcActionLedger { '+body+' } }'
+        manifest.append(dict(file=path,signature='internal static string NormalizeStableKey(',sha256=digest(body),source_revision='working-tree'))
+    if not a.source_baseline:
+        path='src/modules/AF.Module.Weekly/Generation/WeeklyReportMaterialRevisionOwner.cs'
+        files['WeeklyReportMaterialRevisionOwner.cs']=read(path)
+        files['Product.cs']=files['Product.cs'].replace('public partial class MyBehavior {','public partial class MyBehavior { private readonly WeeklyReportMaterialRevisionOwner _weeklyReportMaterialRevisions=new WeeklyReportMaterialRevisionOwner();',1)
+        manifest.append(dict(file=path,sha256=digest(files['WeeklyReportMaterialRevisionOwner.cs']),source_revision='working-tree'))
     partial=ROOT/'MyBehavior.EventSourceMaterialIndex.cs'
     if uses_component:
         runtime=component_path.read_text(encoding='utf-8-sig')
@@ -73,11 +87,11 @@ def main():
     compile_items=''.join('<Compile Include="'+name+'" />' for name in files if name.endswith('.cs'))
     files['Proof.csproj']='<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><LangVersion>latest</LangVersion><NoWarn>CS0649</NoWarn><EnableDefaultCompileItems>false</EnableDefaultCompileItems></PropertyGroup><ItemGroup>'+compile_items+'</ItemGroup></Project>'
     files['NuGet.Config']='<configuration><packageSources><clear/></packageSources></configuration>'
-    variant=('source-baseline-'+a.source_baseline) if a.source_baseline else (a.mutate or 'current');out=HERE/'.generated/materials'/variant;out.mkdir(parents=True,exist_ok=True)
+    variant=('source-baseline-'+a.source_baseline) if a.source_baseline else (a.mutate or 'current');out=new_run_root(ROOT,'memory-materials',a.run_root)
     for name,data in files.items():(out/name).write_bytes(data.encode())
     metadata=dict(source_baseline=a.source_baseline,mutation=a.mutate,declarations=manifest,generated_sha256={n:digest(v) for n,v in files.items()},seams=['NameRenderer, calendar, Hero identity are explicit deterministic boundaries; real classification/normalization/storage/index/sanitizer execute','Counters wrap actual Rebuild and actual BuildIndexKey calls; a controlled second-key exception tests failed rebuild publication','An explicit after-Add/before-index hook tests failed insertion without undoing the real appended source','Legacy fallback counter executes inside the real original predicate, never replaces its decision'],limits=['Memory-only production method extraction, not Bannerlord/SyncData/UI or real persistence acceptance','No event business algorithm, public notoriety side effect, or entire weekly-report lifecycle exercised','Runtime structural index work is observed; not a live frame-time or arbitrary deep-record budget claim'])
     (out/'manifest.json').write_bytes(json.dumps(metadata,ensure_ascii=False,indent=2).encode())
-    dotnet=Path(os.environ.get('DOTNET_EXE',str(ROOT.parent/'.dotnet-sdk/dotnet.exe')));env=dict(os.environ,DOTNET_ROOT=str(dotnet.parent),DOTNET_CLI_HOME=str(ROOT/'.tmp/dotnet-cli'),NUGET_PACKAGES=str(ROOT/'.tmp/nuget-packages'),APPDATA=str(ROOT/'.tmp/appdata'),DOTNET_GENERATE_ASPNET_CERTIFICATE='false',DOTNET_SKIP_FIRST_TIME_EXPERIENCE='1',DOTNET_CLI_TELEMETRY_OPTOUT='1')
+    dotnet=resolve_dotnet(ROOT);env=minimal_test_environment(dotnet,out)
     build=subprocess.run([str(dotnet),'build',str(out/'Proof.csproj'),'-c','Release','--nologo','-p:RestoreConfigFile='+str(out/'NuGet.Config')],cwd=ROOT,env=env,capture_output=True,text=True,encoding='utf-8',errors='replace',timeout=120)
     (out/'build.log').write_bytes((build.stdout+build.stderr).encode())
     if build.returncode:print(build.stdout+build.stderr);return 2

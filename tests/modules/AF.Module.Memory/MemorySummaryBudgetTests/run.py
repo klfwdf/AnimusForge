@@ -7,7 +7,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[4]
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(ROOT / 'tests'))
-from output_isolation import new_run_root
+from output_isolation import new_run_root, resolve_dotnet, minimal_test_environment
 MODELS = []
 RECORDS = 'src/modules/AF.Module.Memory/Records/MemoryPersistenceModels.cs'
 WRITER = 'src/modules/AF.Module.Memory/Summary/MemorySourceFingerprintWriter.cs'
@@ -74,11 +74,8 @@ def main():
                   'Capture cost row combines real source digest + copy + second binding digest only; excludes prompt, sanitize, context and lookups.',
                   'The rejected chunk-scan examples are TEST-ONLY counterexamples, not production implementations.']}
     (out/'manifest.json').write_text(json.dumps(manifest,ensure_ascii=False,indent=2),encoding='utf-8')
-    dotnet=Path(os.environ.get('DOTNET_EXE',str(ROOT/'local/dotnet/8.0.425/dotnet.exe')))
-    (out/'cli').mkdir();(out/'appdata').mkdir()
-    env={key:os.environ[key] for key in ('SystemRoot','WINDIR','ProgramData','HOMEDRIVE','HOMEPATH','OS','USERNAME','USERDOMAIN','ProgramFiles','ProgramFiles(x86)','CommonProgramFiles','CommonProgramFiles(x86)','PROCESSOR_ARCHITECTURE') if key in os.environ}
-    env.update(PATH=str(dotnet.parent),DOTNET_ROOT=str(dotnet.parent),DOTNET_CLI_HOME=str(out/'cli'),USERPROFILE=str(out/'cli'),HOME=str(out/'cli'),LOCALAPPDATA=str(out/'appdata'),APPDATA=str(out/'appdata'),NUGET_PACKAGES=str(ROOT/'.tmp/nuget-packages'),TEMP='E:/tmp/af-j17-20260930',TMP='E:/tmp/af-j17-20260930',
-        DOTNET_GENERATE_ASPNET_CERTIFICATE='false',DOTNET_SKIP_FIRST_TIME_EXPERIENCE='1',DOTNET_CLI_TELEMETRY_OPTOUT='1')
+    dotnet=resolve_dotnet(ROOT)
+    env=minimal_test_environment(dotnet,out)
     build=subprocess.run([str(dotnet),'build',str(out/'Proof.csproj'),'-c','Release','--nologo','-p:RestoreConfigFile='+str(out/'NuGet.Config')],cwd=ROOT,env=env,capture_output=True,text=True,encoding='utf-8',timeout=120)
     (out/'build.log').write_text(build.stdout+build.stderr,encoding='utf-8')
     if build.returncode: print(build.stdout+build.stderr); return 2
