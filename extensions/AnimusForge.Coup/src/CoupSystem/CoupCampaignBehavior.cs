@@ -102,6 +102,8 @@ internal sealed class CoupCampaignBehavior : CampaignBehaviorBase
     private void OnSessionLaunched(CampaignGameStarter starter)
     {
         starter.AddGameMenuOption("town", "af_armed_coup", "宣权篡位", MenuCondition, _ => Begin(), false, -1);
+        starter.AddGameMenuOption("town", "af_coup_enter_street", "率领政变突击队攻入城镇", args => SceneEntryCondition(args, CoupPhase.Street), _ => EnterSelectedScene(), false, -1);
+        starter.AddGameMenuOption("town", "af_coup_enter_hall", "率领政变突击队攻入领主大厅", args => SceneEntryCondition(args, CoupPhase.Hall), _ => EnterSelectedScene(), false, -1);
         starter.AddGameMenuOption("town", "af_coup_resume", "重试政变结算", args =>
         {
             args.optionLeaveType = GameMenuOption.LeaveType.Continue;
@@ -117,6 +119,7 @@ internal sealed class CoupCampaignBehavior : CampaignBehaviorBase
 
     private bool MenuCondition(MenuCallbackArgs args)
     {
+        if (_session != null && !_session.IsSettled) return false;
         if (!CoupSettings.IsEnabled) return false;
         Settlement town = Settlement.CurrentSettlement ?? MobileParty.MainParty?.CurrentSettlement;
         Kingdom kingdom = Clan.PlayerClan?.Kingdom;
@@ -126,6 +129,55 @@ internal sealed class CoupCampaignBehavior : CampaignBehaviorBase
         args.Tooltip = new TextObject(args.IsEnabled
             ? "带领最多60名士兵突入城镇，攻取大厅并夺取王位；失败将带地叛离并开战。" : reason);
         return true;
+    }
+
+    private bool SceneEntryCondition(MenuCallbackArgs args, CoupPhase phase)
+    {
+        if (_session?.Phase != phase || _selectionOpen || _mission != null || Mission.Current != null) return false;
+        Settlement town = Settlement.CurrentSettlement ?? MobileParty.MainParty?.CurrentSettlement;
+        if (town?.StringId != _session.SettlementId) return false;
+        args.optionLeaveType = GameMenuOption.LeaveType.HostileAction;
+        args.IsEnabled = CanEnterSelectedScene(out string reason);
+        args.Tooltip = new TextObject(args.IsEnabled ? "按本次已选名单进场；倒地或撤退将判定政变失败。" : reason);
+        return true;
+    }
+
+    private bool CanEnterSelectedScene(out string reason)
+    {
+        reason = "当前没有等待进场的政变突击队。";
+        if (!_saveValid || _session?.IsCombatPhase != true || _selectionOpen || _mission != null || Mission.Current != null) return false;
+        if (!ValidatePreparedContext(out reason)) return false;
+        reason = "政变场景接口未就绪，请检查日志。";
+        if (!CoupGuards.MissionProtectionAvailable || !SettlementEntryTroopSelectionBehavior.IsAvailable || !CoupRebellionBridge.IsAvailable) return false;
+        Settlement town = Settlement.Find(_session.SettlementId);
+        reason = "当前城镇遭遇已改变，无法进入政变场景。";
+        if (PlayerEncounter.LocationEncounter?.Settlement != town || Campaign.Current?.IsMainHeroDisguised == true) return false;
+        reason = "当前还有城镇冲突或战后处置待完成。";
+        if (CoupGuards.HasBlockingHostFlow()) return false;
+        return CoupSceneBridge.TryValidateScene(town, out reason);
+    }
+
+    private void EnterSelectedScene()
+    {
+        if (!CanEnterSelectedScene(out string reason)) { Show(reason); return; }
+        try
+        {
+            Settlement town = Settlement.Find(_session.SettlementId);
+            var location = town.LocationComplex.GetLocationWithId(_session.SceneLocationId);
+            if (location == null) throw new InvalidOperationException("政变目标场景不存在。");
+            // Rebuild from the authoritative session immediately before the native SETS entry.
+            QueueCurrentScene();
+            if (!_session.IsCombatPhase) return;
+            _requeuePending = false;
+            Log("enter_scene_requested location=" + location.StringId);
+            if (PlayerEncounter.LocationEncounter.CreateAndOpenMissionController(location, null, null, null) == null)
+                throw new InvalidOperationException("政变场景未能打开。");
+        }
+        catch (Exception ex)
+        {
+            Logger.Log("Coup", "Dedicated scene entry failed: " + ex);
+            NotifyTechnicalFailure(_mission, ex.Message);
+        }
     }
 
     private bool CanBegin(Settlement town, out string reason)
@@ -201,7 +253,8 @@ internal sealed class CoupCampaignBehavior : CampaignBehaviorBase
             _session.Phase = CoupPhase.Street;
             _session.Started = true;
             QueueCurrentScene();
-            Show("突击队已登记。从城镇菜单进入城镇中心，SETS 会带他们进场。");
+            Log("street_selection_complete");
+            Show("突击队已登记。点击城镇菜单的“率领政变突击队攻入城镇”进场。");
         }, () => { if (IsCurrentUi(id, token, CoupPhase.Preparing)) { _selectionOpen = false; _session = null; } });
     }
 
@@ -214,9 +267,10 @@ internal sealed class CoupCampaignBehavior : CampaignBehaviorBase
         if (!_session.Started && !CoupSettings.IsEnabled) return false;
         Settlement town = Settlement.Find(_session.SettlementId);
         Kingdom kingdom = Clan.PlayerClan?.Kingdom;
-        Hero king = Hero.FindFirst(h => h.StringId == _session.KingId);
+        // Also used by menu condition refresh: use the kingdom's current leader, no global hero scan.
+        Hero king = kingdom?.Leader;
         return town?.IsTown == true && !town.IsUnderSiege && kingdom?.StringId == _session.KingdomId
-            && kingdom.RulingClan?.StringId == _session.OriginalRulingClanId && kingdom.Leader == king
+            && kingdom.RulingClan?.StringId == _session.OriginalRulingClanId && king?.StringId == _session.KingId
             && king?.IsAlive == true && !king.IsPrisoner && king.CurrentSettlement == town
             && town.MapFaction == kingdom && MobileParty.MainParty?.CurrentSettlement == town
             && !PlayerEncounterCompat.HasEncounterBattleContext() && MobileParty.MainParty.MapEvent == null;
@@ -272,6 +326,11 @@ internal sealed class CoupCampaignBehavior : CampaignBehaviorBase
         }
         if (allies.TotalManCount < 1) { SetFailure("突击队已无可参战士兵，撤出政变。"); return; }
         SettlementEntryTroopSelectionBehavior.QueueArmedCoup(_session.SettlementId, _session.SceneLocationId, allies, _session.PendingDefenders(hall));
+    }
+
+    internal static void NotifySetsMissionReady(IMission mission)
+    {
+        Instance?.OnMissionStarted(mission);
     }
 
     private void OnMissionStarted(IMission mission)
@@ -428,7 +487,11 @@ internal sealed class CoupCampaignBehavior : CampaignBehaviorBase
             // Unselected survivors stay outside the hall; they are not casualties and keep Removed=false.
             _session.Phase = CoupPhase.Hall;
             QueueCurrentScene();
-            if (_session.Phase == CoupPhase.Hall) Show("已选定突入大厅的士兵。从城镇菜单进入领主大厅。");
+            if (_session.Phase == CoupPhase.Hall)
+            {
+                Log("hall_selection_complete");
+                Show("已选定突入大厅的士兵。点击城镇菜单的“率领政变突击队攻入领主大厅”进场。");
+            }
         }, () =>
         {
             if (!IsCurrentUi(id, token, CoupPhase.HallSelection)) return;
