@@ -60,9 +60,9 @@ internal static class Dpl090PresentationReplay
         Equal("作者国 · 统治者 · 日期2 · 外交公告", detail.Subtitle, "detail subtitle and localized type preserved");
         Equal(42L, detail.Generation, "detail carries lifecycle value only");
         Test.True(detail.CanReply && !second.IsRead, "query does not mark read");
-        Test.True(WorldDiplomacyPresentationQueries.MarkRead(second) && second.IsRead, "read command marks canonical record");
-        Test.True(WorldDiplomacyPresentationQueries.MarkRead(second), "read command is idempotent");
-        Test.True(!WorldDiplomacyPresentationQueries.MarkRead(null!), "missing read target fails");
+        Test.True(WorldDiplomacyTimelineApplication.MarkRead(storage, second.DocumentId) && second.IsRead, "read command marks canonical record");
+        Test.True(WorldDiplomacyTimelineApplication.MarkRead(storage, second.DocumentId), "read command is idempotent");
+        Test.True(!WorldDiplomacyTimelineApplication.MarkRead(storage, "missing"), "missing read target fails");
         first.IsRead = false;
         var source = new TimelineStateSource { State = storage };
         Equal(WorldDiplomacyTimelineDocumentsStatus.Unavailable,
