@@ -1,5 +1,7 @@
 # 政变子 MOD 实际注册探针
 
+发动门槛回归（`--scene-fixture`）读取真实MCM三项默认/范围/免重启属性，调用新事件默认资格检查、已存门槛复核及真实街道选兵回调；验证61名健康普通兵、英雄/伤兵排除、实际59/60人、选兵期间影响力或名册变化、登记后不追检和不扣影响力。世界资格上下文、PartyScreen、守军采集为明确桩；MCM真实渲染及UI修改后的全局设置提供者未执行。原选兵数据工厂增加minimum参数与大厅默认1人的检查，不代表实机按钮已验。
+
 此工具在独立 .NET Framework 4.7.2 x64 进程中，加载已安装 AF、真实游戏 managed DLL 与指定的 `AnimusForge.Coup.dll`，调用生产实现的：
 
 - `SettlementEntryTroopSelectionBehavior.Register(Harmony)`

@@ -127,7 +127,7 @@ internal sealed class CoupCampaignBehavior : CampaignBehaviorBase
         args.optionLeaveType = GameMenuOption.LeaveType.HostileAction;
         args.IsEnabled = CanBegin(town, out string reason);
         args.Tooltip = new TextObject(args.IsEnabled
-            ? "带领最多60名士兵突入城镇，攻取大厅并夺取王位；失败将带地叛离并开战。" : reason);
+            ? "按篡位 MCM 的人数要求挑选突击队，攻取大厅并夺取王位；另留1名健康士兵接应。失败将带地叛离并开战。" : reason);
         return true;
     }
 
@@ -204,7 +204,7 @@ internal sealed class CoupCampaignBehavior : CampaignBehaviorBase
         else if (SettlementEntryTroopSelectionBehavior.HasPendingFlowForCoup() || CoupGuards.HasBlockingHostFlow())
             reason = "当前还有城镇冲突或战后处置待完成。";
         else if (MobileParty.MainParty?.Army != null) reason = "请先离开军团，再带自己的部队发动政变。";
-        else if (HealthyRegulars(MobileParty.MainParty?.MemberRoster) < 2) reason = "至少需要两名健康普通士兵，其中一名留守接应。";
+        else if (!CoupSettings.CheckNewCoupRequirements(clan.Tier, clan.Influence, HealthyRegulars(MobileParty.MainParty?.MemberRoster), out reason)) return false;
         else if (!CoupSceneBridge.TryValidateScene(town, out reason)) return false;
         return string.IsNullOrEmpty(reason);
     }
@@ -217,6 +217,7 @@ internal sealed class CoupCampaignBehavior : CampaignBehaviorBase
         _session = new CoupSession
         {
             BattleOptions = CoupSettings.CaptureForNewCoup(),
+            EntryRequirements = CoupSettings.CaptureAdmissionForNewCoup(),
             SettlementId = town.StringId, KingdomId = kingdom.StringId, KingId = kingdom.Leader.StringId,
             OriginalRulingClanId = kingdom.RulingClan.StringId, OriginalOwnerClanId = town.OwnerClan.StringId,
             PlayerHealth = Hero.MainHero.HitPoints, KingHealth = Math.Max(1, kingdom.Leader.HitPoints), Phase = CoupPhase.Preparing
@@ -224,6 +225,8 @@ internal sealed class CoupCampaignBehavior : CampaignBehaviorBase
         string id = _session.Id;
         long token = _runtimeToken;
         InformationManager.ShowInquiry(new InquiryData("宣权篡位", "目标：" + kingdom.Leader.Name + "\n地点：" + town.Name
+            + "\n发动条件：家族等级至少" + _session.EntryRequirements.MinimumClanTier + "级，影响力至少" + _session.EntryRequirements.MinimumInfluence + "（只检查、不扣除；0表示不限制）。"
+            + "\n必须实际选中至少" + _session.EntryRequirements.MinimumTroops + "名健康普通士兵，并另留1人接应。"
             + "\n突击队：街道最多" + _session.BattleOptions.StreetAllyLimit + "人，大厅最多" + _session.BattleOptions.HallAllyLimit + "人（不含玩家）。至少留一名士兵接应。"
             + "\n守卫：门口最多" + _session.BattleOptions.GateGuardLimit + "人，大厅最多" + _session.BattleOptions.HallGuardLimit + "人（不含国王），以实际兵源为准。"
             + "\n增援：每波最多" + _session.BattleOptions.DefenderWaveSize + "人，间隔" + _session.BattleOptions.DefenderWaveIntervalSeconds + "秒，同时最多" + _session.BattleOptions.MaxActiveDefenderWaves + "波存活。"
@@ -235,9 +238,11 @@ internal sealed class CoupCampaignBehavior : CampaignBehaviorBase
     private void OpenStreetSelection(string id)
     {
         if (_session?.Id != id || _session.Phase != CoupPhase.Preparing) return;
+        if (!ValidatePreparedContext(out string preparationReason)) { _session = null; Show(preparationReason); return; }
         var available = SettlementEntryTroopSelectionBehavior.BuildCoupSelectableRoster(MobileParty.MainParty.MemberRoster);
         int limit = Math.Min(_session.BattleOptions.StreetAllyLimit, available.TotalManCount - 1);
-        if (limit < 1) { _session = null; Show("没有足够的健康士兵。政变已取消。"); return; }
+        int minimum = _session.EntryRequirements.MinimumTroops;
+        if (limit < minimum) { _session = null; Show("没有足够的健康士兵满足突击队与接应要求。政变已取消。"); return; }
         _selectionOpen = true;
         long token = _runtimeToken;
         CoupTroopSelection.Open(available, limit, "政变突击队", selected =>
@@ -245,11 +250,11 @@ internal sealed class CoupCampaignBehavior : CampaignBehaviorBase
             if (!IsCurrentUi(id, token, CoupPhase.Preparing)) return;
             _selectionOpen = false;
             if (!ValidatePreparedContext(out string reason)) { _session = null; Show(reason); return; }
-            if (selected.TotalManCount < 1 || selected.TotalManCount > limit || selected.TotalManCount >= HealthyRegulars(MobileParty.MainParty.MemberRoster))
-            { _session = null; Show("选兵已失效，必须保留一名健康士兵接应。"); return; }
+            if (selected.TotalManCount < minimum || selected.TotalManCount > limit || selected.TotalManCount >= HealthyRegulars(MobileParty.MainParty.MemberRoster))
+            { _session = null; Show("选兵已失效，必须实际选中至少" + minimum + "名健康普通士兵，并保留一名健康士兵接应。"); return; }
             foreach (TroopRosterElement entry in selected.GetTroopRoster())
             {
-                if (entry.Character.IsHero || entry.Number > HealthyCount(MobileParty.MainParty.MemberRoster, entry.Character))
+                if (entry.Character.IsHero || entry.WoundedNumber != 0 || entry.Number > HealthyCount(MobileParty.MainParty.MemberRoster, entry.Character))
                 { _session = null; Show("部队名册已变化，请重新选择。"); return; }
                 for (int i = 0; i < entry.Number; i++) AddTroop(entry.Character, MobileParty.MainParty, CoupTroopRole.Ally);
             }
@@ -259,7 +264,7 @@ internal sealed class CoupCampaignBehavior : CampaignBehaviorBase
             QueueCurrentScene();
             Log("street_selection_complete");
             Show("突击队已登记。点击城镇菜单的“率领政变突击队攻入城镇”进场。");
-        }, () => { if (IsCurrentUi(id, token, CoupPhase.Preparing)) { _selectionOpen = false; _session = null; } });
+        }, () => { if (IsCurrentUi(id, token, CoupPhase.Preparing)) { _selectionOpen = false; _session = null; } }, minimum);
     }
 
     private bool ValidatePreparedContext(out string reason)
@@ -269,6 +274,8 @@ internal sealed class CoupCampaignBehavior : CampaignBehaviorBase
             || Clan.PlayerClan?.Leader != Hero.MainHero || Clan.PlayerClan.IsUnderMercenaryService
             || Clan.PlayerClan.IsClanTypeMercenary || MobileParty.MainParty?.Army != null) return false;
         if (!_session.Started && !CoupSettings.IsEnabled) return false;
+        if (!CheckSessionAdmission(out string admissionReason))
+        { reason = admissionReason; return false; }
         Settlement town = Settlement.Find(_session.SettlementId);
         Kingdom kingdom = Clan.PlayerClan?.Kingdom;
         // Also used by menu condition refresh: use the kingdom's current leader, no global hero scan.
@@ -278,6 +285,18 @@ internal sealed class CoupCampaignBehavior : CampaignBehaviorBase
             && king?.IsAlive == true && !king.IsPrisoner && king.CurrentSettlement == town
             && town.MapFaction == kingdom && MobileParty.MainParty?.CurrentSettlement == town
             && !PlayerEncounterCompat.HasEncounterBattleContext() && MobileParty.MainParty.MapEvent == null;
+    }
+
+    // Admission is frozen at the confirmation window and stops applying after registration.
+    private bool CheckSessionAdmission(out string reason)
+    {
+        reason = "政变发动条件记录不可用。";
+        if (_session == null) return false;
+        if (_session.Started) { reason = ""; return true; }
+        Clan clan = Clan.PlayerClan;
+        if (clan == null || _session.EntryRequirements == null || !_session.EntryRequirements.IsValid() || _session.BattleOptions == null) return false;
+        return _session.EntryRequirements.Check(clan.Tier, clan.Influence,
+            HealthyRegulars(MobileParty.MainParty?.MemberRoster), _session.BattleOptions.StreetAllyLimit, out reason);
     }
 
     private void BuildDefenders(Settlement town)
@@ -650,7 +669,15 @@ internal sealed class CoupCampaignBehavior : CampaignBehaviorBase
         int index = roster.FindIndexOfTroop(character);
         return index < 0 ? 0 : Math.Max(0, roster.GetElementNumber(index) - roster.GetElementWoundedNumber(index));
     }
-    private static int HealthyRegulars(TroopRoster roster) => roster?.GetTroopRoster().Where(e => !e.Character.IsHero).Sum(e => Math.Max(0, e.Number - e.WoundedNumber)) ?? 0;
+    private static int HealthyRegulars(TroopRoster roster)
+    {
+        if (roster == null) return 0;
+        int total = 0;
+        for (int i = 0; i < roster.Count; i++)
+            if (!roster.GetCharacterAtIndex(i).IsHero)
+                total += Math.Max(0, roster.GetElementNumber(i) - roster.GetElementWoundedNumber(i));
+        return total;
+    }
     private static void Show(string message) { if (!string.IsNullOrEmpty(message)) InformationManager.DisplayMessage(new InformationMessage("【宣权篡位】" + message)); }
     private void Log(string message) => Logger.Log("Coup", "event=" + _session?.Id + " phase=" + _session?.Phase + " town=" + _session?.SettlementId + " " + message);
 }

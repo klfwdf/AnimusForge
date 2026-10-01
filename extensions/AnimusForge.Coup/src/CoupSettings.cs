@@ -15,6 +15,18 @@ public sealed class CoupSettings : AttributeGlobalSettings<CoupSettings>
     [SettingPropertyGroup("武装政变")]
     public bool Enabled { get; set; } = true;
 
+    [SettingPropertyInteger("最低家族等级", 0, 6, "0 级", Order = 0, RequireRestart = false, HintText = "默认4级，0表示不限制。仅限制新政变，确认选兵时复核；正式发动后不再追检。")]
+    [SettingPropertyGroup("发动条件")]
+    public int MinimumClanTier { get; set; } = 4;
+
+    [SettingPropertyInteger("最低影响力", 0, 5000, "0", Order = 1, RequireRestart = false, HintText = "默认300，0表示不限制。只检查、不扣除。打开确认窗时固定门槛，确认选兵时复核；正式发动后不再追检。")]
+    [SettingPropertyGroup("发动条件")]
+    public int MinimumInfluence { get; set; } = 300;
+
+    [SettingPropertyInteger("最低突击队人数", 1, 120, "0 人", Order = 2, RequireRestart = false, HintText = "默认60名健康普通士兵，必须实际选中，并另留1人接应；玩家、英雄及伤兵不计入。不得超过街道上限。大厅从幸存者中至少选1人，不受本门槛限制。")]
+    [SettingPropertyGroup("发动条件")]
+    public int MinimumTroops { get; set; } = 60;
+
     [SettingPropertyInteger("街道突击队人数上限", 1, 120, "0 人", Order = 0, RequireRestart = false, HintText = "默认60人，不含玩家。仅限实际健康普通士兵，至少留一人接应。仅影响下一次政变；人数较多会增加场景负担。")]
     [SettingPropertyGroup("突击队")]
     public int StreetAllyLimit { get; set; } = 60;
@@ -49,4 +61,16 @@ public sealed class CoupSettings : AttributeGlobalSettings<CoupSettings>
 
     internal static bool IsEnabled => Instance?.Enabled ?? true;
     internal static CoupBattleOptions CaptureForNewCoup() => Instance?.CaptureBattleOptions() ?? CoupBattleOptions.LegacyDefaults();
+    internal CoupEntryRequirements CaptureEntryRequirements() => CoupEntryRequirements.Normalize(MinimumClanTier, MinimumInfluence, MinimumTroops);
+    internal static CoupEntryRequirements CaptureAdmissionForNewCoup() => Instance?.CaptureEntryRequirements() ?? CoupEntryRequirements.Normalize(4, 300, 60);
+
+    internal static bool CheckNewCoupRequirements(int tier, float influence, int healthyRegulars, out string reason)
+    {
+        var settings = Instance;
+        return CoupEntryRequirements.Evaluate(
+            CoupEntryRequirements.Clamp(settings?.MinimumClanTier ?? 4, 0, 6),
+            CoupEntryRequirements.Clamp(settings?.MinimumInfluence ?? 300, 0, 5000),
+            CoupEntryRequirements.Clamp(settings?.MinimumTroops ?? 60, 1, 120),
+            tier, influence, healthyRegulars, CoupEntryRequirements.Clamp(settings?.StreetAllyLimit ?? 60, 1, 120), out reason);
+    }
 }

@@ -12,10 +12,10 @@ namespace AnimusForge.CoupSystem;
 internal static class CoupTroopSelection
 {
     // Dummy rosters: selecting an assault group must never transfer real party members.
-    internal static void Open(TroopRoster available, int limit, string title, Action<TroopRoster> completed, Action cancelled)
+    internal static void Open(TroopRoster available, int limit, string title, Action<TroopRoster> completed, Action cancelled, int minimum = 1)
     {
         PartyBase mainParty = MobileParty.MainParty?.Party;
-        var data = CreateInitializationData(mainParty, available, limit, title, completed, cancelled);
+        var data = CreateInitializationData(mainParty, available, limit, title, completed, cancelled, minimum);
         var logic = new PartyScreenLogic();
         logic.Initialize(data);
         // Native cancel/reset restores this inventory. Selection must not clear and
@@ -28,12 +28,13 @@ internal static class CoupTroopSelection
     }
 
     internal static PartyScreenLogicInitializationData CreateInitializationData(PartyBase mainParty, TroopRoster available,
-        int limit, string title, Action<TroopRoster> completed, Action cancelled)
+        int limit, string title, Action<TroopRoster> completed, Action cancelled, int minimum = 1)
     {
         if (mainParty == null || mainParty.ItemRoster == null) throw new ArgumentException("选兵需要有效的玩家部队。", nameof(mainParty));
         if (available == null || ReferenceEquals(available, mainParty.MemberRoster) || ReferenceEquals(available, mainParty.PrisonRoster))
             throw new ArgumentException("选兵必须使用独立临时名册。", nameof(available));
         if (limit < 1) throw new ArgumentOutOfRangeException(nameof(limit));
+        if (minimum < 1 || minimum > limit) throw new ArgumentOutOfRangeException(nameof(minimum));
         if (completed == null) throw new ArgumentNullException(nameof(completed));
         if (cancelled == null) throw new ArgumentNullException(nameof(cancelled));
         var selected = TroopRoster.CreateDummyTroopRoster();
@@ -54,13 +55,13 @@ internal static class CoupTroopSelection
             LeftPartyPrisonersSizeLimit = 0,
             RightPartyPrisonersSizeLimit = 0,
             LeftPartyName = new TextObject("可选士兵"),
-            RightPartyName = new TextObject(title + "（最多 " + limit + " 人）"),
+            RightPartyName = new TextObject(title + "（" + minimum + " 至 " + limit + " 人）"),
             Header = new TextObject(title),
             TroopTransferableDelegate = (character, type, side, owner) => character != null && !character.IsHero,
             PartyPresentationDoneButtonDelegate = (left, lp, right, rp, taken, released, forced, leftParty, rightParty) => true,
             PartyPresentationDoneButtonConditionDelegate = (left, lp, right, rp, ll, rl) =>
-                Tuple.Create(right.TotalManCount > 0 && right.TotalManCount <= limit,
-                    new TextObject("请选择 1 至 " + limit + " 名士兵。")),
+                Tuple.Create(right.TotalManCount >= minimum && right.TotalManCount <= limit,
+                    new TextObject("请选择 " + minimum + " 至 " + limit + " 名士兵。")),
             PartyScreenClosedDelegate = (leftParty, left, lp, rightParty, right, rp, fromCancel) =>
             {
                 if (fromCancel) cancelled();

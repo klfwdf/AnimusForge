@@ -25,6 +25,7 @@ internal static class Program
     private static void Main()
     {
         BattleOptionsRegression();
+        EntryRequirementsRegression();
         var session = NewSession();
         session.Troops.Add(Troop("1"));
         Assert(session.IsValid(), "valid mission snapshot");
@@ -117,6 +118,51 @@ internal static class Program
         Assert(!session.IsSettled, "technical stop waits for casualty commit");
         CheckBulletinReport();
         Console.WriteLine("Coup contracts: " + _assertions + " PASS");
+    }
+
+    private static void EntryRequirementsRegression()
+    {
+        var requirements = CoupEntryRequirements.Normalize(4, 300, 60);
+        Assert(requirements.IsValid(), "default admission snapshot valid");
+        Assert(!requirements.Check(3, 300, 61, 60, out var reason) && reason.Contains("3／4"), "clan tier 3 rejected with deficit");
+        Assert(!requirements.Check(4, 299, 61, 60, out reason) && reason.Contains("299／300"), "influence 299 rejected with deficit");
+        Assert(!requirements.Check(4, 300, 60, 60, out reason) && reason.Contains("61") && reason.Contains("当前60"), "60 regulars cannot supply 60 assault plus rear guard");
+        Assert(requirements.Check(4, 300, 61, 60, out reason) && reason == "", "tier4 influence300 healthy61 accepted");
+        Assert(!requirements.Check(4, 300, 121, 59, out reason) && reason.Contains("配置冲突"), "minimum above street cap reports configuration conflict");
+        Assert(!requirements.Check(4, float.NaN, 61, 60, out reason), "invalid influence does not satisfy positive requirement");
+        var disabled = CoupEntryRequirements.Normalize(0, 0, 1);
+        Assert(disabled.Check(0, -10, 2, 1, out reason), "zero tier and influence disable political gates");
+        Assert(!disabled.Check(0, 0, 1, 1, out reason), "legacy mode still retains rear guard");
+        var min = CoupEntryRequirements.Normalize(int.MinValue, int.MinValue, int.MinValue);
+        var max = CoupEntryRequirements.Normalize(int.MaxValue, int.MaxValue, int.MaxValue);
+        Assert(min.MinimumClanTier == 0 && min.MinimumInfluence == 0 && min.MinimumTroops == 1, "low settings clamp");
+        Assert(max.MinimumClanTier == 6 && max.MinimumInfluence == 5000 && max.MinimumTroops == 120, "high settings clamp");
+        foreach (var field in typeof(CoupEntryRequirements).GetFields())
+        {
+            var invalid = new CoupEntryRequirements();
+            field.SetValue(invalid, -1);
+            Assert(!invalid.IsValid(), "negative saved requirement rejected: " + field.Name);
+            field.SetValue(invalid, int.MaxValue);
+            Assert(!invalid.IsValid(), "excess saved requirement rejected: " + field.Name);
+        }
+        var session = NewSession();
+        session.EntryRequirements = requirements;
+        session.Troops.Add(Troop("survivor"));
+        session.Phase = CoupPhase.Hall;
+        Assert(session.IsValid(), "already started hall with one survivor remains valid under minimum60");
+        string json = Newtonsoft.Json.JsonConvert.SerializeObject(session);
+        var restored = Newtonsoft.Json.JsonConvert.DeserializeObject<CoupSession>(json);
+        Assert(restored.IsValid() && restored.EntryRequirements.MinimumClanTier == 4
+            && restored.EntryRequirements.MinimumInfluence == 300 && restored.EntryRequirements.MinimumTroops == 60, "actual saved requirements roundtrip");
+        var legacyJson = Newtonsoft.Json.Linq.JObject.Parse(json);
+        legacyJson.Remove("EntryRequirements");
+        restored = Newtonsoft.Json.JsonConvert.DeserializeObject<CoupSession>(legacyJson.ToString());
+        Assert(restored.IsValid() && restored.EntryRequirements.MinimumClanTier == 0
+            && restored.EntryRequirements.MinimumInfluence == 0 && restored.EntryRequirements.MinimumTroops == 1, "legacy active coup receives no new gates");
+        legacyJson["EntryRequirements"] = null;
+        Assert(!Newtonsoft.Json.JsonConvert.DeserializeObject<CoupSession>(legacyJson.ToString()).IsValid(), "explicit null admission snapshot rejected");
+        var newer = CoupEntryRequirements.Normalize(0, 0, 1);
+        Assert(session.EntryRequirements.MinimumTroops == 60 && newer.MinimumTroops == 1, "new settings cannot mutate captured admission");
     }
 
     private static void BattleOptionsRegression()
