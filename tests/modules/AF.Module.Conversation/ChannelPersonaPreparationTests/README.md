@@ -17,3 +17,8 @@ G:/Python310/python.exe -X utf8 -B tests/modules/AF.Module.Conversation/ChannelP
 真实Native主线程函数另由132项测试验证，Native原准备589项；Courier原owner phase另由独立执行回执测试和后处理回放验证。本套替身生成不代替HeroPersonaGenerationTests的125项实际生成owner验证。
 
 范围不包括整个preprocess/lore/角色与库存消息准备、升格同伴技能、人设生产模型质量、完整GameEnd/预算、外部三渠道SDK或真实游戏/存档。180秒是协作式等待截止，主线程排队延迟不受本轮硬抢占；不等于HTTP取消。
+
+
+## 2026-10-01 历史入口维护
+
+当前 source proof 绑定批准候选 `f6e2ead7` 的具名 owner 消费者及现有生产依赖审查 hash；不再以整个旧 MyBehavior/Shout/Courier 根文本阻塞迁移。历史逆向/快照只保留为历史材料，本轮未重验旧整类逆向。当前真实生产方法的运行/有效负控仍独立执行。`--run-root` 只创建新仓内输出，runner 安全改动以 `runnerSafetyChanges` 精确 before/after 记录，不刷新原生产 hash。

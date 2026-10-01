@@ -26,3 +26,8 @@ python tests/modules/AF.Module.Memory/MemorySummaryRunOwnerTests/source_parity.p
 - `source-review.json` contains precise reviewed hunks against `155f1b7a`. Its inverse validates the live source and preserves previous proof hashes instead of blindly refreshing their baselines. Windows separators are normalized before lookup.
 
 The business fixture scripts provider completion; terminal/captured tests execute actual request/source/parser/writer methods with controlled game/provider/clock seams. These are not Bannerlord LIVE/SAVE or hard memory/time budget acceptance. Character copying, raw fingerprint and final atomic validation remain separately tracked performance work.
+
+
+## 2026-10-01 历史入口维护
+
+当前 source proof 绑定批准候选 `f6e2ead7` 的具名 owner 消费者及现有生产依赖审查 hash；不再以整个旧 MyBehavior/Shout/Courier 根文本阻塞迁移。历史逆向/快照只保留为历史材料，本轮未重验旧整类逆向。当前真实生产方法的运行/有效负控仍独立执行。`--run-root` 只创建新仓内输出，runner 安全改动以 `runnerSafetyChanges` 精确 before/after 记录，不刷新原生产 hash。

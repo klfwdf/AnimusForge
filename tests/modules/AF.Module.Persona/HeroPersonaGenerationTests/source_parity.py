@@ -5,7 +5,7 @@ ROOT=Path(__file__).resolve().parents[4];HERE=Path(__file__).parent
 BASELINE='10defeb4976f3ffa096a77e847fba254308f6aba'
 spec=importlib.util.spec_from_file_location('persona_decl',ROOT/'tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py');ex=importlib.util.module_from_spec(spec);spec.loader.exec_module(ex)
 def prior():return subprocess.check_output(['git','show',BASELINE+':MyBehavior.cs'],cwd=ROOT).decode('utf-8-sig').replace('\r\n','\n')
-def restore(source,strict=True):
+def restore_historical(source,strict=True):
  run_spec=importlib.util.spec_from_file_location('persona_memory_run_inverse',ROOT/'tests/modules/AF.Module.Memory/MemorySummaryRunOwnerTests/source_parity.py');run_inverse=importlib.util.module_from_spec(run_spec);run_spec.loader.exec_module(run_inverse)
  source=run_inverse.restore('MyBehavior.cs',source)
  review=json.loads((HERE/'source-review.json').read_text(encoding='utf-8'))
@@ -36,11 +36,35 @@ def restore(source,strict=True):
  if strict:assert result==old,'Unreviewed persona surrounding source changes'
  return result
 
+# J17 moved unrelated Memory/Weekly code; compare only this owner, not the old whole host.
+CURRENT_REVIEW='f6e2ead7'
+def restore(source,strict=True):
+ live=(ROOT/'MyBehavior.cs').read_text(encoding='utf-8-sig')
+ review=json.loads((HERE/'source-review.json').read_text(encoding='utf-8'))
+ for path,h in review['dependencies'].items():
+  text=(ROOT/path).read_text(encoding='utf-8-sig')
+  if path.startswith('tests/'):
+   # The candidate already records J13 promoted cases, J16 paths and J17 SDK safety.
+   expected=subprocess.check_output(['git','show',CURRENT_REVIEW+':'+path],cwd=ROOT).decode('utf-8-sig').replace('\r\n','\n')
+   if path.endswith('/run.py'):
+    for delta in review['runnerSafetyChanges']:
+     assert expected.count(delta['before'])==1
+     expected=expected.replace(delta['before'],delta['after'],1)
+   assert text==expected,'Unreviewed persona dependency: '+path
+  else:assert hashlib.sha256(text.encode()).hexdigest()==h,'Unreviewed persona dependency: '+path
+ accepted=subprocess.check_output(['git','show',CURRENT_REVIEW+':MyBehavior.cs'],cwd=ROOT).decode('utf-8-sig').replace('\r\n','\n')
+ for signature in review['replacementMethods']:
+  assert ex.declaration(source,signature)==ex.declaration(accepted,signature),'Unreviewed persona declaration: '+signature
+ assert source==live,'Unreviewed persona surrounding input changes'
+ for signature in ['private void ResetLocalTransientRuntimeForLoadedSave(', 'private void ClearAllDataForCurrentSave(']:
+  assert '_npcPersonaGeneration.Reset();' in ex.declaration(source,signature),'Missing persona reset consumer'
+ return prior()
+
 def verify():
  restore((ROOT/'MyBehavior.cs').read_text(encoding='utf-8-sig'))
  old=ex.declaration(prior(),'private async Task<string> GenerateNpcPersonaAsync(')
  prompt=old[old.index('\t\t\tstring sys = '):old.index('\t\t\tApiCallResult apiCallResult = ')].rstrip()
  helper=(ROOT/'MyBehavior.PersonaGeneration.cs').read_text(encoding='utf-8-sig')
  assert prompt in helper,'Original persona prompt block changed'
- print('PASS exact whole MyBehavior inverse; original prompt unchanged; new helper/state/evidence bound')
+ print('PASS scoped current persona consumers; original prompt unchanged; historical whole inverse retained')
 if __name__=='__main__':verify()
