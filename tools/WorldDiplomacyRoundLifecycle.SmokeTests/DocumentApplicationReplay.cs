@@ -73,14 +73,23 @@ internal static class DocumentApplicationReplay
             "first action exposes only its own target to mechanical execution");
         multi.ChangedDiplomaticState = true;
         multi.MechanicalResult = "applied";
-        WorldDiplomacyDocumentApplication.CaptureActionResult(multi, multi.Actions[0]);
+        var partialReceipt = new WorldDiplomacyDocumentActionReceipt("one", "a", true, false, true, "applied");
+        WorldDiplomacyDocumentApplication.CaptureActionResult(multi, multi.Actions[0], partialReceipt);
+        Test.True(partialReceipt.EffectAttempted && !partialReceipt.OutcomeKnown && partialReceipt.Applied
+            && multi.Actions[0].ChangedDiplomaticState && multi.Actions[0].MechanicalResult == "applied",
+            "partially applied effect remains recorded even when the full action outcome is unknown");
         WorldDiplomacyDocumentApplication.BeginAction(multi, multi.Actions[1], "b");
         Test.True(!multi.ChangedDiplomaticState && multi.MechanicalResult == ""
             && multi.Actions[0].ChangedDiplomaticState && multi.Actions[0].MechanicalResult == "applied",
             "each action starts with fresh mechanism state while the previous result remains durable");
-        WorldDiplomacyDocumentApplication.CaptureActionResult(multi, multi.Actions[1]);
+        var noActionReceipt = new WorldDiplomacyDocumentActionReceipt("two", "b", false, true, false, "");
+        WorldDiplomacyDocumentApplication.CaptureActionResult(multi, multi.Actions[1], noActionReceipt);
+        Test.True(!noActionReceipt.EffectAttempted && noActionReceipt.OutcomeKnown
+            && !multi.Actions[1].ChangedDiplomaticState && multi.Actions[1].MechanicalResult == "",
+            "non-mechanical statement produces a distinct known no-effect receipt");
         WorldDiplomacyDocumentApplication.SealActions(multi,
-            new System.Collections.Generic.List<string> { "a", "b" }, "original");
+            new System.Collections.Generic.List<string> { "a", "b" }, "original",
+            new[] { partialReceipt, noActionReceipt });
         Test.True(multi.ProcessingActionId == "" && multi.AddressedKingdomIds.Count == 2
             && multi.SourceDocumentId == "warning" && multi.ChangedDiplomaticState
             && multi.RequiresResponse,

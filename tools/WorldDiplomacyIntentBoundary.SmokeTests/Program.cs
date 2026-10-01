@@ -3460,9 +3460,9 @@ internal static class Program
 		string documentApplication = File.ReadAllText(FindRepositoryFile(Path.Combine(
 			"src", "modules", "AF.Module.Diplomacy", "Application", "WorldDiplomacyDocumentApplication.cs")), Encoding.UTF8);
 		Test.True(analyzedPublication.Contains("document.Actions", StringComparison.Ordinal)
-            && ExtractMethod(source, "private void ProcessAnalyzedMultiActionDocument(").Contains("WorldDiplomacyDocumentApplication.CaptureActionResult(document, action)", StringComparison.Ordinal)
-			&& documentApplication.Contains("action.ChangedDiplomaticState = document.ChangedDiplomaticState", StringComparison.Ordinal)
-			&& documentApplication.Contains("action.MechanicalResult = document.MechanicalResult", StringComparison.Ordinal)
+            && ExtractMethod(source, "private void ProcessAnalyzedMultiActionDocument(").Contains("WorldDiplomacyDocumentApplication.CaptureActionResult(document, action, receipt)", StringComparison.Ordinal)
+			&& documentApplication.Contains("action.ChangedDiplomaticState = receipt.Applied", StringComparison.Ordinal)
+			&& documentApplication.Contains("action.MechanicalResult = receipt.Message", StringComparison.Ordinal)
 			&& analyzedPublication.Contains("catch (Exception", StringComparison.Ordinal),
 			"mechanical execution must isolate each action result so one failure cannot discard the document or later actions");
 
@@ -3512,7 +3512,7 @@ internal static class Program
 			setActionContext,
 			StringComparison.Ordinal);
 		int saveActionResult = multiActionProcessing.IndexOf(
-			"WorldDiplomacyDocumentApplication.CaptureActionResult(document, action)",
+			"WorldDiplomacyDocumentApplication.CaptureActionResult(document, action, receipt)",
 			executeOffer,
 			StringComparison.Ordinal);
 		Test.True(actionLoop >= 0 && setActionContext > actionLoop
