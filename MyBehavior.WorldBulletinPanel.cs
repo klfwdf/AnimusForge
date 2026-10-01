@@ -208,6 +208,8 @@ public partial class MyBehavior
 		case "kingdom_created":
 		case "kingdom_rebellion":
 		case "civil_war":
+		case "civil_war_resolution":
+		case "civil_war_politics":
 			return "国 事";
 		default:
 			return "时 事";

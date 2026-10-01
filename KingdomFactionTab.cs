@@ -5,8 +5,10 @@ using System.Xml;
 using Bannerlord.UIExtenderEx.Attributes;
 using Bannerlord.UIExtenderEx.Prefabs2;
 using Bannerlord.UIExtenderEx.ViewModels;
+using HarmonyLib;
 using TaleWorlds.CampaignSystem.ViewModelCollection.KingdomManagement;
 using TaleWorlds.Library;
+using TaleWorlds.Core;
 using AnimusForge.Refactor.Modules;
 
 namespace AnimusForge;
@@ -62,7 +64,7 @@ internal sealed class KingdomFactionPanelPatch : PrefabExtensionInsertPatch
 			      <Children>
 			        <Widget WidthSizePolicy='StretchToParent' HeightSizePolicy='StretchToParent' Sprite='BlankWhiteSquare_9' Color='#120E0AFF' DoNotAcceptEvents='true' />
 			        <RichTextWidget IsHidden='@IsAvailable' WidthSizePolicy='StretchToParent' HeightSizePolicy='CoverChildren' VerticalAlignment='Center' Brush='Kingdom.PoliciesCollapserTitle.Text' Brush.TextHorizontalAlignment='Center' Brush.FontSize='26' Text='@EmptyText' DoNotAcceptEvents='true' />
-			        <ListPanel IsVisible='@IsAvailable' WidthSizePolicy='StretchToParent' HeightSizePolicy='StretchToParent' MarginLeft='14' MarginRight='14' MarginTop='12' MarginBottom='12' StackLayout.LayoutMethod='VerticalBottomToTop'>
+			        <ListPanel IsVisible='@IsAvailable' WidthSizePolicy='StretchToParent' HeightSizePolicy='StretchToParent' MarginLeft='14' MarginRight='14' MarginTop='12' MarginBottom='86' StackLayout.LayoutMethod='VerticalBottomToTop'>
 			          <Children>
 			            " + SummaryBar + @"
 			            <ListPanel WidthSizePolicy='StretchToParent' HeightSizePolicy='StretchToParent' MarginTop='12' StackLayout.LayoutMethod='HorizontalLeftToRight'>
@@ -70,6 +72,14 @@ internal sealed class KingdomFactionPanelPatch : PrefabExtensionInsertPatch
 			                " + FactionColumns + @"
 			                " + SideColumn + @"
 			              </Children>
+			            </ListPanel>
+			          </Children>
+			        </ListPanel>
+			        <ListPanel IsVisible='@IsAvailable' WidthSizePolicy='StretchToParent' HeightSizePolicy='Fixed' SuggestedHeight='78' VerticalAlignment='Bottom' StackLayout.LayoutMethod='VerticalBottomToTop'>
+			          <Children>
+			            <TextWidget WidthSizePolicy='StretchToParent' HeightSizePolicy='Fixed' SuggestedHeight='28' Brush='Popup.Description.Text' Text='@IdentityText' DoNotAcceptEvents='true' />
+			            <ListPanel WidthSizePolicy='StretchToParent' HeightSizePolicy='Fixed' SuggestedHeight='44' StackLayout.LayoutMethod='HorizontalLeftToRight'>
+			              <Children>" + ActionButton("ExecuteJoinCrown", "加入王室") + ActionButton("ExecuteJoinFaction", "加入所选派系") + ActionButton("ExecuteLeave", "退出阵营") + ActionButton("ExecuteFound", "建立派系") + ActionButton("ExecuteDetonate", "起兵") + ActionButton("ExecuteGovern", "国王治理") + ActionButton("ExecuteRespond", "回应事项") + @"</Children>
 			            </ListPanel>
 			          </Children>
 			        </ListPanel>
@@ -92,6 +102,7 @@ internal sealed class KingdomFactionPanelPatch : PrefabExtensionInsertPatch
 	}
 
 	// Top bar: kingdom name + stage, kingdom stability meter, faction/side counts.
+	private static string ActionButton(string command, string label) => "<ButtonWidget WidthSizePolicy='Fixed' SuggestedWidth='174' HeightSizePolicy='Fixed' SuggestedHeight='40' MarginRight='8' Brush='Standard.Button' Command.Click='" + command + "' DoNotPassEventsToChildren='true'><Children><TextWidget WidthSizePolicy='StretchToParent' HeightSizePolicy='StretchToParent' Brush='Popup.Description.Text' Brush.TextHorizontalAlignment='Center' Text='" + label + "' DoNotAcceptEvents='true' /></Children></ButtonWidget>";
 	private static readonly string SummaryBar = @"
 		<Widget WidthSizePolicy='StretchToParent' HeightSizePolicy='Fixed' SuggestedHeight='104'>
 		  <Children>
@@ -151,6 +162,7 @@ internal sealed class KingdomFactionPanelPatch : PrefabExtensionInsertPatch
 		        <Widget WidthSizePolicy='StretchToParent' HeightSizePolicy='Fixed' SuggestedHeight='5' Sprite='BlankWhiteSquare_9' Color='@Color' DoNotAcceptEvents='true' />
 		        <ListPanel WidthSizePolicy='StretchToParent' HeightSizePolicy='StretchToParent' MarginLeft='18' MarginRight='18' MarginTop='16' MarginBottom='12' StackLayout.LayoutMethod='VerticalBottomToTop'>
 		          <Children>
+			            <ButtonWidget WidthSizePolicy='StretchToParent' HeightSizePolicy='Fixed' SuggestedHeight='30' Brush='Standard.Button' Command.Click='ExecuteSelect' DoNotPassEventsToChildren='true'><Children><TextWidget WidthSizePolicy='StretchToParent' HeightSizePolicy='StretchToParent' Brush='Popup.Description.Text' Text='@SelectionText' DoNotAcceptEvents='true' /></Children></ButtonWidget>
 		            <ListPanel WidthSizePolicy='StretchToParent' HeightSizePolicy='Fixed' SuggestedHeight='28' StackLayout.LayoutMethod='HorizontalLeftToRight'>
 		              <Children>
 		                <Widget WidthSizePolicy='CoverChildren' HeightSizePolicy='StretchToParent'>
@@ -283,12 +295,18 @@ public sealed class KingdomFactionClanVM : ViewModel
 
 public sealed class KingdomFactionColumnVM : ViewModel
 {
+	private Action<string> _select;
+	private bool _selected;
+	[DataSourceProperty] public string SelectionText => _selected ? "已选择此派系" : "选择此派系";
+	[DataSourceMethod] public void ExecuteSelect() => _select?.Invoke(_faction.Id);
+	internal void SetSelection(bool selected) { _selected = selected; OnPropertyChanged(nameof(SelectionText)); }
 	private readonly CivilWarPanelFaction _faction;
 	private readonly int _columnWidth;
 	private readonly MBBindingList<KingdomFactionClanVM> _members = new MBBindingList<KingdomFactionClanVM>();
 
-	internal KingdomFactionColumnVM(CivilWarPanelFaction faction, int columnWidth)
+	internal KingdomFactionColumnVM(CivilWarPanelFaction faction, int columnWidth, Action<string> select)
 	{
+		_select = select;
 		_faction = faction ?? new CivilWarPanelFaction();
 		_columnWidth = columnWidth;
 		foreach (CivilWarPanelClan clan in _faction.Members ?? new List<CivilWarPanelClan>()) _members.Add(new KingdomFactionClanVM(clan, _faction.Color, true));
@@ -329,7 +347,7 @@ public sealed class KingdomFactionColumnVM : ViewModel
 	}
 }
 
-public sealed class KingdomFactionPanelVM : ViewModel
+public sealed partial class KingdomFactionPanelVM : ViewModel
 {
 	// Content width left for faction columns: kingdom screen width minus side column, margins and gaps.
 	private const int ColumnsAreaWidth = 1480;
@@ -375,11 +393,13 @@ public sealed class KingdomFactionPanelVM : ViewModel
 		_middle.Clear();
 		int count = Math.Max(1, _panel.Factions.Count);
 		int width = Math.Min(MaxColumnWidth, (ColumnsAreaWidth - 12 * count) / count);
-		foreach (CivilWarPanelFaction faction in _panel.Factions) _factions.Add(new KingdomFactionColumnVM(faction, width));
+		if (!_panel.Factions.Any(x => x.Id == _selectedFaction)) _selectedFaction = _panel.Factions.FirstOrDefault()?.Id ?? "";
+		foreach (CivilWarPanelFaction faction in _panel.Factions) { var column = new KingdomFactionColumnVM(faction, width, SelectFaction); column.SetSelection(faction.Id == _selectedFaction); _factions.Add(column); }
 		foreach (CivilWarPanelClan clan in _panel.Crown) _crown.Add(new KingdomFactionClanVM(clan, null, false));
 		foreach (CivilWarPanelClan clan in _panel.Middle) _middle.Add(new KingdomFactionClanVM(clan, null, false));
 		foreach (string name in new[] { nameof(IsAvailable), nameof(EmptyText), nameof(KingdomName), nameof(StageText), nameof(StabilityText), nameof(StabilityBarWidth), nameof(StabilityColor), nameof(FactionCount), nameof(OppositionCount), nameof(CrownCount), nameof(MiddleCount), nameof(HasFactions), nameof(NoFactionText), nameof(CrownTitle), nameof(MiddleTitle) })
 			OnPropertyChanged(name);
+		OnPropertyChanged(nameof(IdentityText));
 	}
 }
 
@@ -418,6 +438,7 @@ internal sealed class KingdomFactionVMMixin : BaseViewModelMixin<KingdomManageme
 		KingdomAgendaTabState.ClearForCustomTabClick();
 
 		CivilWarFactions.Refresh();
+		CivilWarFactions.Open();
 		IsCivilWarFactionSelected = true;
 		ViewModel.OnPropertyChangedWithValue(true, nameof(IsCivilWarFactionSelected));
 	}
@@ -426,6 +447,7 @@ internal sealed class KingdomFactionVMMixin : BaseViewModelMixin<KingdomManageme
 	{
 		if (!IsCivilWarFactionSelected) return;
 		IsCivilWarFactionSelected = false;
+		CivilWarFactions.Close();
 		ViewModel.OnPropertyChangedWithValue(false, nameof(IsCivilWarFactionSelected));
 	}
 }
@@ -445,4 +467,10 @@ internal static class KingdomFactionTabState
 	{
 		if (_current != null && _current.TryGetTarget(out KingdomFactionVMMixin mixin)) mixin.ClearSelection();
 	}
+}
+
+[HarmonyPatch(typeof(KingdomManagementVM), nameof(KingdomManagementVM.OnFinalize))]
+internal static class KingdomFactionFinalizePatch
+{
+	private static void Prefix() => KingdomFactionTabState.Clear();
 }

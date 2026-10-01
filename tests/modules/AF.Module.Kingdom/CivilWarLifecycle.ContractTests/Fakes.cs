@@ -31,6 +31,7 @@ namespace TaleWorlds.CampaignSystem
         public Hero Leader;
         public bool IsEliminated, IsBanditFaction, IsMinorFaction, IsUnderMercenaryService, IsClanTypeMercenary;
         public int Tier = 3;
+        public float Influence = 500;
         public float CurrentTotalStrength = 50;
         public List<Settlement> Settlements = new();
     }
@@ -101,7 +102,7 @@ namespace TaleWorlds.CampaignSystem.Actions
         public static void ApplyByLeaveKingdom(Clan clan, bool showNotification) => Move(clan, null);
     }
     public static class ChangeRelationAction { public static int Calls; public static void ApplyRelationChangeBetweenHeroes(Hero a, Hero b, int delta, bool show) { Calls++; } }
-    public static class ChangeClanInfluenceAction { public static void Apply(Clan clan, float delta) { } }
+    public static class ChangeClanInfluenceAction { public static void Apply(Clan clan, float delta) { clan.Influence += delta; } }
     public static class ChangeRulingClanAction { public static void Apply(Kingdom kingdom, Clan clan) { kingdom.RulingClan = clan; } }
     public static class GiveGoldAction
     {
@@ -141,7 +142,7 @@ namespace AnimusForge
         internal static bool IsCivilWarPlayerKingdomFactionsAllowed() => true;
         internal static CivilWarTuning BuildCivilWarTuning() => new() { DiscontentThreshold = DiscontentThreshold };
     }
-    internal static class PlayerKingdomRebellionImmunity { internal static bool ShouldProtectKingdom(Kingdom k) => false; }
+    internal static class PlayerKingdomRebellionImmunity { internal static bool Protected; internal static bool ShouldProtectKingdom(Kingdom k) => Protected; }
     internal static class WorldDiplomacyBehavior { internal static void ApplyExternalPrestigeDelta(string id, int delta, string reason) { } }
     internal partial class CivilWarCampaignBehavior
     {
@@ -152,6 +153,9 @@ namespace AnimusForge
     }
     internal class MyBehavior
     {
+		internal static List<string> FactKeys = new();
+		internal static Dictionary<string, string> PoliticalResults = new();
+		internal static List<string> MemoryFacts = new();
         internal static MyBehavior Instance = new();
         internal static int StabilityChanges;
         internal static bool CleanupAllowed = true;
@@ -163,7 +167,10 @@ namespace AnimusForge
             k.IsEliminated = true; return true;
         }
         internal static void QueueCivilWarRebellionForExternal(Kingdom k, Clan leader, List<Clan> followers, string id, bool now) { }
-        internal static void RecordNpcActionForExternal(params object[] args) { }
+        internal static void RecordNpcActionForExternal(params object[] args) { FactKeys.Add((string)args[2]); }
+		internal static void RecordPlayerActionForExternal(params object[] args) { FactKeys.Add((string)args[1]); }
+		internal static void RecordCivilWarMemoryFact(Hero hero, string text) { if (hero != null) MemoryFacts.Add(text); }
+		internal static void RecordCivilWarPoliticalResult(Kingdom k, string key, string text, bool bulletin) { PoliticalResults[key] = text; CivilWarCampaignBehavior.MaterialWrites++; }
         internal void CaptureWorldBulletinCivilWar(string id, string key) { }
     }
     internal static partial class AIConfigHandler

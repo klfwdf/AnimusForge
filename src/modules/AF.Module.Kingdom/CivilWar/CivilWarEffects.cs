@@ -208,6 +208,7 @@ internal sealed class PledgeWarOnTargetEffect : ICivilWarEffect
 	{
 		ctx.State.NoPeaceTargetId = ctx.Faction.TargetId;
 		ctx.State.NoPeaceUntilWeek = ctx.Week + PledgeWeeks;
+		ctx.State.NoPeaceUntilDay = CivilWarWorld.CurrentDay() + PledgeWeeks * 7;
 		ctx.State.NoPeaceClanIds = ctx.FactionClans().Select(x => x.StringId).ToList();
 		ctx.Notes.Add("国王承诺 " + PledgeWeeks + " 周内不与" + ctx.Faction.TargetName + "议和");
 	}

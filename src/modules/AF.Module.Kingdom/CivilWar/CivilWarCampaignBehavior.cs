@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Security.Cryptography;
+using System.Text;
 using HarmonyLib;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Actions;
@@ -30,9 +32,19 @@ internal sealed class CivilWarCampaignBehavior : CampaignBehaviorBase
 		CampaignEvents.VillageLooted.AddNonSerializedListener(this, OnVillageLooted);
 		CampaignEvents.OnSettlementOwnerChangedEvent.AddNonSerializedListener(this, OnSettlementOwnerChanged);
 		CampaignEvents.OnClanChangedKingdomEvent.AddNonSerializedListener(this, OnClanChangedKingdom);
+		CampaignEvents.OnClanLeaderChangedEvent.AddNonSerializedListener(this, OnPoliticalLeaderChanged);
+		CampaignEvents.KingdomDestroyedEvent.AddNonSerializedListener(this, OnPoliticalKingdomDestroyed);
 		CampaignEvents.KingdomDecisionConcluded.AddNonSerializedListener(this, OnKingdomDecisionConcluded);
 		CampaignEvents.HourlyTickEvent.AddNonSerializedListener(this, OnHourlyTick);
 		CampaignEvents.DailyTickEvent.AddNonSerializedListener(this, OnDailyTick);
+		CampaignEvents.TickEvent.AddNonSerializedListener(this, OnPoliticalTick);
+	}
+	private void OnPoliticalTick(float dt) => TeamModuleServices.CivilWar.ProcessPending();
+	private void OnPoliticalKingdomDestroyed(Kingdom kingdom) => TeamModuleServices.CivilWar.NotifyPoliticalChange(kingdom, "kingdom_destroyed");
+	private void OnPoliticalLeaderChanged(Hero oldLeader, Hero newLeader)
+	{
+		TeamModuleServices.CivilWar.NotifyPoliticalChange(oldLeader?.Clan?.Kingdom, "leader_changed");
+		TeamModuleServices.CivilWar.NotifyPoliticalChange(newLeader?.Clan?.Kingdom, "leader_changed");
 	}
 
 	private void OnDailyTick()
@@ -44,6 +56,11 @@ internal sealed class CivilWarCampaignBehavior : CampaignBehaviorBase
 	private void OnHourlyTick()
 	{
 		if (InformationManager.IsAnyInquiryActive()) return;
+		if (TeamModuleServices.CivilWar.TryTakePoliticalResponse(out CivilWarActionRequest response, out string responseText))
+		{
+			InformationManager.ShowInquiry(new InquiryData("王室交涉", responseText, true, true, "接受／服从", "拒绝／抗命", () => AnswerPolitical(response, true), () => AnswerPolitical(response, false)), true);
+			return;
+		}
 		if (TeamModuleServices.CivilWar.HasPendingFollowPrompt && TeamModuleServices.CivilWar.TryTakeFollowPrompt(out string followId, out string followText))
 		{
 			InformationManager.ShowInquiry(new InquiryData("追随叛军", followText, true, true, "追随叛军", "留在王国", () => AnswerFollow(followId, true), () => AnswerFollow(followId, false)), true);
@@ -58,6 +75,12 @@ internal sealed class CivilWarCampaignBehavior : CampaignBehaviorBase
 	{
 		TeamModuleServices.CivilWar.AnswerFollow(factionId, follow, out string message);
 		if (!string.IsNullOrWhiteSpace(message)) InformationManager.DisplayMessage(new InformationMessage(message));
+	}
+	private static void AnswerPolitical(CivilWarActionRequest request, bool accept)
+	{
+		request.Accept = accept;
+		var result = TeamModuleServices.CivilWar.Execute(request);
+		InformationManager.DisplayMessage(new InformationMessage(result.Message));
 	}
 
 	private static void Answer(string factionId, bool accept)
@@ -92,6 +115,7 @@ internal sealed class CivilWarCampaignBehavior : CampaignBehaviorBase
 	private void OnHeroKilled(Hero victim, Hero killer, KillCharacterAction.KillCharacterActionDetail detail, bool showNotification)
 	{
 		Kingdom kingdom = victim?.Clan?.Kingdom;
+		TeamModuleServices.CivilWar.NotifyPoliticalChange(kingdom, "leader_death");
 		if (kingdom == null || victim.Clan == kingdom.RulingClan || (detail != KillCharacterAction.KillCharacterActionDetail.Executed && detail != KillCharacterAction.KillCharacterActionDetail.ExecutionAfterMapEvent)) return;
 		// Only the crown's own executions are a royal grievance; enemies executing a vassal are not.
 		if (killer == null || killer.Clan != kingdom.RulingClan) return;
@@ -107,6 +131,8 @@ internal sealed class CivilWarCampaignBehavior : CampaignBehaviorBase
 
 	private void OnMakePeace(IFaction first, IFaction second, MakePeaceAction.MakePeaceDetail detail)
 	{
+		TeamModuleServices.CivilWar.NotifyPoliticalChange(first as Kingdom, "peace");
+		TeamModuleServices.CivilWar.NotifyPoliticalChange(second as Kingdom, "peace");
 		if (first is Kingdom k1 && second is Kingdom k2 && !IsCivilWarPair(k1, k2))
 		{
 			Add(k1, "peace_imposed", Vassals(k1), 7f, "王国被迫议和");
@@ -148,6 +174,8 @@ internal sealed class CivilWarCampaignBehavior : CampaignBehaviorBase
 	// Vanilla removes the clan from its kingdom before OnClanDestroyed, so the old kingdom only exists here.
 	private void OnClanChangedKingdom(Clan clan, Kingdom oldKingdom, Kingdom newKingdom, ChangeKingdomAction.ChangeKingdomActionDetail detail, bool showNotification)
 	{
+		TeamModuleServices.CivilWar.NotifyPoliticalChange(oldKingdom, "membership");
+		TeamModuleServices.CivilWar.NotifyPoliticalChange(newKingdom, "membership");
 		if (detail != ChangeKingdomAction.ChangeKingdomActionDetail.LeaveByClanDestruction || oldKingdom == null || clan == oldKingdom.RulingClan) return;
 		Add(oldKingdom, "fief_lost", Vassals(oldKingdom), 10f, CivilWarWorld.ClanName(clan) + "被消灭");
 	}
@@ -155,6 +183,7 @@ internal sealed class CivilWarCampaignBehavior : CampaignBehaviorBase
 	private void OnKingdomDecisionConcluded(KingdomDecision decision, DecisionOutcome outcome, bool isPlayerInvolved)
 	{
 		Kingdom kingdom = decision?.Kingdom;
+		TeamModuleServices.CivilWar.NotifyPoliticalChange(kingdom, "policy_target");
 		if (kingdom == null) return;
 		if (decision is SettlementClaimantDecision claimant)
 		{
@@ -194,6 +223,8 @@ internal sealed class CivilWarCampaignBehavior : CampaignBehaviorBase
 	internal static void RecordMaterial(Kingdom kingdom, int weekIndex, string text)
 	{
 		if (kingdom == null || string.IsNullOrWhiteSpace(text)) return;
-		MyBehavior.RecordEventSourceMaterialForExternal("civil_war", "内战 - " + (kingdom.Name?.ToString() ?? "王国"), text, "civil_war:" + (kingdom.StringId ?? "") + ":" + Math.Max(0, weekIndex), kingdom.StringId ?? "", true, true);
+		string hash;
+		using (var sha = SHA256.Create()) hash = BitConverter.ToString(sha.ComputeHash(Encoding.UTF8.GetBytes(text))).Replace("-", "");
+		MyBehavior.RecordEventSourceMaterialForExternal("civil_war", "内战 - " + (kingdom.Name?.ToString() ?? "王国"), text, "civil_war:" + (kingdom.StringId ?? "") + ":" + Math.Max(0, weekIndex) + ":" + hash, kingdom.StringId ?? "", true, true);
 	}
 }
