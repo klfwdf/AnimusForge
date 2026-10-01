@@ -18,9 +18,23 @@ XML解析/子控件引用、首字无背景、Tail无左缩进、封存绑定/�
 
 <a id="coup-passage-transition-20261001"></a>
 
-### 政变大厅门原版 F 转场抢占修复（2026-10-01，ACTIVE）
+### 政变大厅门原版 F 转场抢占修复（2026-10-01，DEPLOYED / OFFLINE_VERIFIED）
 
 用户实测 F 直接进普通大厅，无选兵/援军，挥拳触发 SceneTaunt。现场 `18b58fa0`，已有三处周报UI未提交改动保留。日志 12:19:02 正常 Coup mission_started；12:20:54 原版门结束街道，Coup 被判 Failed/撤退；12:20:55 原版 town_keep 开始；12:21:03 SceneTaunt 犯罪与武装冲突，12:21:07 failure_committed。两版 PassageUsePoint.OnUse 都直接写 NextLocation 并 EndMission，现有 Coup 只轮询裸 F 键，没有接管门回调。范围：仅所属 Coup Mission 的 PassageUsePoint.OnUse 门禁与大厅转场，通过实际门事件完成 Street→HallSelection；未清守卫不放行，不允许原版把 active Coup 转进普通 location；普通任务通道仍原样放行。不放宽既有战斗/伤害保护，不逆改已经写入存档的失败结果。出口：真实 OnUse Harmony 路径的正/负/重复回归、大厅阶段接续、双API+Bootstrap；实机未验单列。沿用本会话部署授权，但覆盖前须确认游戏退出。
+
+修复提交 `5623ac25`，检查点 `db0ecae3`。删除裸 F 轮询，注册实际 `PassageUsePoint.OnUse(Agent,sbyte)` 最高优先级前缀，纳入 MissionProtectionAvailable 注册门禁。只在当前/收尾 Coup Mission 内接管；NPC不能通过原版门移出，玩家用大厅门时复核守卫记录与SETS剩余角色，未清除提示阻挡，完成则 Street→HallSelection，再清 NextLocation/PreviousLocation 并结束街道。已有地图tick打开幸存者选择，确认后登记 Hall、lordshall 与选定援军；重复使用不重复结束。真正场景出口仍判撤退，其他场景原版门原样放行。没有新增每帧轮询/反射；通道使用时查询一次任务行为，守卫扫描仅交互触发，保留原1秒目标检查。
+
+| 源码（`5623ac25`，一基） | 已接线责任 |
+| --- | --- |
+| `extensions/AnimusForge.Coup/src/CoupSystem/CoupGuards.cs:71–72,195–203` | 注册真实门 OnUse，按精确 Mission 授权，阻止原版写 NextLocation/直接结束场景。 |
+| `extensions/AnimusForge.Coup/src/CoupSystem/CoupMissionBehavior.cs:79–114,260–265` | HandlePassageUse 拥有门目标/角色/守卫/阶段校验与转场；EndScene 清除两个原版地点字段，不再裸键轮询。 |
+| `tools/Coup.RuntimeProbe/PassageTransitionRegression.cs:1–165` / `SceneLifecycleRegression.cs:142` | 实际 Harmony OnUse→真实 Coup目标/阶段/EndScene→真实结束回调→幸存者选兵回调→大厅武装队列，另验普通任务放行。 |
+
+验证根 `artifacts/coup-passage-repair-20261001/`：`failure-sequence.log` 保存脱敏短序列；`build.log` 为原统一脚本进程内隔离输出的 Release 双API+Bootstrap exit0，磁盘流程未改，引用1.3=`v1.3.15.110062` / 1.4=`v1.4.6.115628`。1.3 DLL SHA256 `7E2233DD062B4E41A9878D64DCE35A43310E65E38294812A904D9944DBC0AB90`；1.4 `CC56454661FA454358F9024DD49C4723D46CA7B2CE9A4029C533FCE2ABC9074F`。`passage-probe-v2/registration.log`：新增14门回归+原26场景/36状态/29选兵=105 PASS，四标志True，45目标（41prefix/2postfix/2transpiler），exit0。首次fixture因原生脚本元数据尚未初始化失败；仅在fixture补空 Managed._moduleTypes 字典并还原，第二次通过，未修改产品以绕过测试。已安装DLL `installed-probe/registration.log` 再验注册和65默认回归PASS，明确看到 PassageUsePoint.OnUse 补丁且输入DLL哈希未变。
+
+fixture边界：模拟Campaign/MenuManager/Mission/Agent/Passage状态，只把原生EndMission、健康采样、PartyScreen和显示作为桩，实际生产EndScene清字段与两个结束回调、选兵回调均执行；最低优先级哨兵确认Coup内不会落入原版，普通任务会放行。未模拟真实键盘/引擎渲染/场景加载/战斗/旧档，不能写成实机验收。全局地图检查仍报未改的SubModule.cs历史内容过期，不刷新无关证据；本任务diff通过。
+
+部署：沿用用户此前授权，12:34确认游戏进程退出，原 `scripts/build/deploy_module.ps1` 更新11文件，Stage全部238文件与安装目录逐个哈希一致，XML唯一Bootstrap，两DLL与上述候选一致。旧Stage和正式产物先保存到本任务deployment目录，安装未知文件保留；日志 `deployment/deploy.log` / `verification.json`。游戏回滚备份 `C:/Users/29310/AppData/Local/AnimusForge/Recovery/deploy/deploy-2c278d48487943d4b627fe56a313adad`，complete与旧文件哈希已验。其它同期UI改动保留，不纳入本修复提交；候选构建针对当时完整工作树，不冒称整DLL只有本差异。未推送、未操作存档。旧试验已failure_committed，重测应读发动前存档；本补丁不反写撤销历史失败。源码回滚只 `git revert 5623ac25`，保留之前入口/Origin修复。
 
 <a id="civilwar-crown-withdrawal-20261001"></a>
 

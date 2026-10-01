@@ -1,5 +1,7 @@
 # 当前交接：J17 收尾与远端 CivilWar 合并（2026-10-01）
 
+- **政变大厅 F 门转场抢占已修复并部署（2026-10-01 12:34）**：`5623ac25` 接管所属Coup任务的原版PassageUsePoint.OnUse，取消裸F轮询，守卫清除后先HallSelection选兵再登记大厅援军，避免原版直跳导致撤退/普通大厅。双API+Bootstrap、14新增+91既有离线回归、安装DLL门补丁注册PASS；11文件覆盖、238文件哈希一致，旧文件已备份。真实F/大厅交战/旧档未验，失败旧局需读发动前存档重测。[实机故障序列、精确坐标、部署证据与回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#coup-passage-transition-20261001)。
+
 - **快报首字绕排与封存按钮已离线修复（2026-10-01）**：`5f5bb1bc`，首字去蓝金底图，实际测量仅前三行缩进、后文全宽并保留链接；封存改浅纸色细描边，去ESC字样。Release双API+Bootstrap及两DLL各152排版/字符检查PASS，游戏字体/控件加载/滚动点击未验，未部署/推送。[精确坐标、证据与回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#bulletin-dropcap-flow-20261001)。
 
 - **王室阵营会因事件撤回支持（2026-10-01）**：`f77c4f51`，负面事件命中的王室阵营NPC累计不满达到现有MCM门槛（默认35）立即退为中立，玩家/王族不自动退出；记录历史和周报素材，不直接换国或起兵。复用现有事件，无新增轮询；102项生命周期检查和Release双API+Bootstrap通过。未部署、未实机；[源码坐标、边界、证据与回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#civilwar-crown-withdrawal-20261001)。此前“王室阵营无自动退出”的说明由此替代，AI自动加入王室阵营仍未实现。
