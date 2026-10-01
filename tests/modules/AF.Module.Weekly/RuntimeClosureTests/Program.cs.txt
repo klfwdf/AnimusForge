@@ -1,0 +1,87 @@
+using AnimusForge;
+using static AnimusForge.MyBehavior;
+using System.Diagnostics;
+using Newtonsoft.Json;
+static void Check(bool x,string m){if(!x)throw new Exception(m);}
+static WeeklyEventMaterialPreviewGroup Group(string id="A",bool shortOnly=false)=>new(){GroupKind="kingdom",KingdomId=id,Title=id,OutputMode=shortOnly?WeeklyReportOutputMode.TitleShortTagsOnly:WeeklyReportOutputMode.FullReport,Materials=new(){new(){MaterialType="npc_action",Label=" raw ",SnapshotText=" fact ",ActionDay=1}}};
+static WeeklyReportBatchBlockResult Block(string id="A",string text="report")=>new(){Parsed=true,ReportId="kingdom:"+id,Title="title",ShortSummary="short",Report=text,TagText="STAB_FLAT"};
+static WeeklyReportBatchExecutionResult Execution(WeeklyEventMaterialPreviewGroup group,params WeeklyReportBatchBlockResult[] blocks)=>new(){BatchIndex=0,Batch=new(){WeekIndex=1,Groups=new(){group}},Result=new(){Success=true,Blocks=blocks.ToList(),MissingReportIds=new(),PromptPreview="prompt"}};
+var h=new RuntimeFixture();var group=Group();var context=h.Context(new(){group},new(){Execution(group,Block(),Block())});
+Check(h.Owner.ProcessPendingWeeklyReportCommitContext(context,0,0)&&context.SuccessCount==1&&context.FailureCount==0&&context.CompletionSource.Task.Result.Completed,"commit exact once duplicate ReportId");
+Check(h.Records.Count==1&&h.Records[0].Materials.Count==1&&!ReferenceEquals(h.Records[0].Materials[0],group.Materials[0])&&h.Records[0].Materials[0].Label=="raw","same true records authority/detached material cloning");
+Check(h.Order.SequenceEqual(new[]{"state","stability","product","timeline","notice","message"})&&h.Notices.Count==1,"upsert -> stability -> product -> timeline -> once notice -> completion UI original order");
+var budget=new RuntimeFixture();budget.SleepPreview=true;context=budget.Context(new(){group},new(){Execution(group,Block())});
+Check(!budget.Owner.ProcessPendingWeeklyReportCommitContext(context,Stopwatch.GetTimestamp(),5)&&context.CurrentPreviewCaptured&&context.BlockIndex==0&&budget.Records.Count==0,"preview captured before exhausted budget; context resumed rather than new state");
+budget.SleepPreview=false;Check(budget.Owner.ProcessPendingWeeklyReportCommitContext(context,0,0)&&budget.Previews.Count==1&&context.SuccessCount==1,"resume original cursor and no duplicate preview");
+var stale=new RuntimeFixture();context=stale.Context(new(){group},new(){Execution(group,Block())});stale.CurrentGeneration=8;
+Check(stale.Owner.ProcessPendingWeeklyReportCommitContext(context,0,0)&&context.CompletionSource.Task.IsCompleted&&stale.Records.Count==0&&!context.CompletionSource.Task.Result.Completed,"retired generation settles cancellation before writes");
+var changed=new RuntimeFixture();context=changed.Context(new(){group},new(){Execution(group,Block())});changed.Revisions.MarkAll();
+Check(changed.Owner.ProcessPendingWeeklyReportCommitContext(context,0,0)&&context.FailureCount==1&&context.RequiresFreshMaterials&&changed.Records.Count==0&&context.CompletionSource.Task.Result.RetryContext.RequiresFreshMaterials,"material source changed blocks writes/fresh retry");
+var winner=new RuntimeFixture();context=winner.Context(new(){group},new(){Execution(group,Block())});winner.Records.Add(new(){EventId="weekly_report:kingdom:1:A",EventKind="kingdom",ScopeKingdomId="A",WeekIndex=1,Title="other winner",Summary="winner"});
+Check(winner.Owner.ProcessPendingWeeklyReportCommitContext(context,0,0)&&context.SuccessCount==1&&winner.Records[0].Title=="other winner"&&winner.Order.All(x=>x!="stability"),"changed existing record winner counted without overwrite or stability reapply");
+var edited=new RuntimeFixture();context=edited.Context(new(){group},new(){Execution(group,Block())});edited.Records.Add(new(){EventId="weekly_report:kingdom:1:A",Title="editor",Summary=""});
+Check(edited.Owner.ProcessPendingWeeklyReportCommitContext(context,0,0)&&context.FailureCount==1&&context.RequiresFreshMaterials&&edited.Records[0].Title=="editor","edited nonwinner preserved with fresh retry");
+var partial=new RuntimeFixture();partial.ThrowStability=true;context=partial.Context(new(){group},new(){Execution(group,Block())});
+Check(partial.Owner.ProcessPendingWeeklyReportCommitContext(context,0,0)&&partial.Records.Count==1&&context.AttemptedWriteReportIds.Count==1&&context.CompletionSource.Task.Result.SuccessCount==1&&context.CompletionSource.Task.Result.Completed&&partial.Notices.Count==1,"nontransactional write survived stability throw; actual record winner recovery counts and notice no replay");
+var misses=new RuntimeFixture();var g2=Group("B");context=misses.Context(new(){group,g2},new(){Execution(group,Block())});context.Executions.Add(new(){BatchIndex=1,Batch=new(){Groups=new(){g2}},Result=new(){Success=false,Blocks=new(),MissingReportIds=new(){"kingdom:B","kingdom:B"},IsRateLimit=true,AttemptsUsed=3,RetryAfterSeconds=9,FailureReason="rate"}});
+Check(misses.Owner.ProcessPendingWeeklyReportCommitContext(context,0,0)&&context.SuccessCount==1&&context.FailureCount==1&&!context.CompletionSource.Task.Result.Completed&&context.CompletionSource.Task.Result.RetryContext.IsRateLimit&&context.CompletionSource.Task.Result.RetryContext.RetryAfterSeconds==9,"partial batch missing dedupe, rate-limit metadata exact failed request");
+var shortFixture=new RuntimeFixture();var shortGroup=Group("A",true);context=shortFixture.Context(new(){shortGroup},new(){Execution(shortGroup,Block(text:""))});
+Check(shortFixture.Owner.ProcessPendingWeeklyReportCommitContext(context,0,0)&&context.SuccessCount==1&&shortFixture.Notices.Count==0&&shortFixture.Records[0].Summary=="","short report no full-report map notice");
+var failureBefore=new RuntimeFixture();failureBefore.CurrentOwner=false;
+Check(!(await failureBefore.Owner.GenerateWeeklyReportsMinuteBurstAsyncInternal(new(){group},1,0,6,"test",false,true,false)).Completed&&failureBefore.Launches==0,"noncurrent owner generation rejected before capture");
+var empty=new RuntimeFixture();var emptyResult=await empty.Owner.GenerateWeeklyReportsMinuteBurstAsyncInternal(new(),1,0,6,"test",true,true,false);
+Check(emptyResult.Completed&&empty.Order.SequenceEqual(new[]{"message","editor"}),"no eligible groups completes with original viewer navigation");
+var beforeChanged=new RuntimeFixture();var oldSnapshot=beforeChanged.Revisions.Capture(0,6);beforeChanged.Revisions.MarkAll();
+var beforeResult=await beforeChanged.Owner.GenerateWeeklyReportsMinuteBurstAsyncInternal(new(){group},1,0,6,"test",false,true,false,sourceSnapshotOverride:oldSnapshot);
+Check(beforeResult.BlockedByChangedRecord&&beforeResult.RetryContext.RequiresFreshMaterials&&beforeChanged.Launches==0&&beforeChanged.FailurePopups==1,"before dispatch source invalidation blocks network and requests fresh");
+var full=new RuntimeFixture();var fullTask=full.Owner.GenerateWeeklyReportsMinuteBurstAsyncInternal(new(){group},1,0,6,"test",false,true,false);
+var prompt=full.Prompts.Peek();Check(prompt!=null&&!fullTask.IsCompleted,"generation uses exact existing prompt queue");
+while(prompt.Cursor.TryTake(out var batch)){batch.SystemPrompt="system";batch.UserPrompt="user";}
+full.Prompts.Complete(prompt,WeeklyPromptPreparationResult.Prepared);full.Prompts.CompleteProcessed(prompt);
+var commit=full.Commits.Peek();Check(commit!=null&&!fullTask.IsCompleted&&full.Launches==1,"one network launch then exact existing commit queue");
+full.Owner.ProcessPendingWeeklyReportCommitContext(commit,0,0);full.Commits.CompleteProcessed(commit);
+Check((await fullTask).Completed&&full.Records.Count==1&&!full.Commits.HasPending&&!full.Prompts.HasPending,"actual generation prompt-wave-commit full owner path");
+var late=new RuntimeFixture();var lateTask=late.Owner.GenerateWeeklyReportsMinuteBurstAsyncInternal(new(){group},1,0,6,"test",false,true,false);var latePrompt=late.Prompts.Peek();late.CurrentGeneration++;
+late.Prompts.Complete(latePrompt,WeeklyPromptPreparationResult.Prepared);late.Prompts.CompleteProcessed(latePrompt);
+Check(!(await lateTask).Completed&&late.Launches==0&&!late.Commits.HasPending,"late prompt completion cannot dispatch retired generation");
+var overridden=new RuntimeFixture();var overrideResult=await overridden.Owner.GenerateWeeklyReportsMinuteBurstAsyncInternal(new(){group},1,0,6,"test",false,true,false,capturedRecordStatesOverride:new(){{"kingdom:A","changed-capture"}});
+Check(overrideResult.BlockedByChangedRecord&&overridden.Launches==0&&!overridden.Prompts.HasPending,"changed captured record override blocks before prompt/network dispatch");
+var cancelledCommit=new RuntimeFixture();var cancelledTask=cancelledCommit.Owner.GenerateWeeklyReportsMinuteBurstAsyncInternal(new(){group},1,0,6,"test",false,true,false);var cancelledPrompt=cancelledCommit.Prompts.Peek();cancelledCommit.Prompts.Complete(cancelledPrompt,WeeklyPromptPreparationResult.Prepared);cancelledCommit.Prompts.CompleteProcessed(cancelledPrompt);
+Check(cancelledCommit.Commits.HasPending,"existing commit queue admitted once");cancelledCommit.Commits.CancelAll();
+Check(!(await cancelledTask).Completed&&cancelledCommit.Records.Count==0&&!cancelledCommit.Commits.HasPending,"original existing queue cancel settles generation task without late writes");
+var failedPreparation=new RuntimeFixture();var failedTask=failedPreparation.Owner.GenerateWeeklyReportsMinuteBurstAsyncInternal(new(){group},1,0,6,"test",false,true,false);var failPrompt=failedPreparation.Prompts.Peek();failedPreparation.Prompts.Complete(failPrompt,WeeklyPromptPreparationResult.Failed);failedPreparation.Prompts.CompleteProcessed(failPrompt);
+Check((await failedTask).BlockedByFatalFailure&&failedPreparation.Launches==0&&failedPreparation.FailurePopups==1,"prompt failure stays fatal with retry context/no single-target fallback");
+var waves=new RuntimeFixture();var batches=new List<WeeklyReportBatchRequest>{new(){Groups=new(){group}},new(){Groups=new(){g2}}};int delays=0;
+var executions=await waves.Owner.CoordinateWeeklyReportWavesAsync(batches,1,2,"test",7,waves.Revisions.Capture(0,6),ms=>{delays++;return Task.CompletedTask;});
+Check(executions.Length==2&&executions[0].BatchIndex==0&&executions[1].BatchIndex==1&&waves.Launches==2&&delays==1,"actual ordered waves/minute throttle with explicit synthetic delay");
+Check(WeeklyReportRuntimeOwner.ClampRequestsPerMinute(0)==1&&WeeklyReportRuntimeOwner.ClampRequestsPerMinute(99)==20,"RPM original clamp");
+for(int preset=0;preset<=5;preset++){
+ var profile=WeeklyPromptMaterialOwner.GetWeeklyReportPromptProfile(preset);
+ foreach(var mode in new[]{WeeklyReportOutputMode.FullReport,WeeklyReportOutputMode.TitleShortTagsOnly}){
+  var promptGroup=Group();promptGroup.OutputMode=mode;var text=WeeklyPromptMaterialOwner.BuildWeeklyReportSystemPrompt(promptGroup,profile," req\r\n ");
+  Check(text.Contains(profile.Label)&&text.Contains("req")&&text.Contains("STAB_DOWN_4")&&(mode==WeeklyReportOutputMode.TitleShortTagsOnly?!text.Contains("[REPORT]"):text.Contains("[REPORT]")),"prompt exact mode/profile/requirement constraints");
+ }
+}
+for(int preset=0;preset<=5;preset++)foreach(bool world in new[]{false,true})foreach(var mode in new[]{WeeklyReportOutputMode.FullReport,WeeklyReportOutputMode.TitleShortTagsOnly})
+{
+ DuelSettings.Current.WeeklyReportLengthPreset=preset;DuelSettings.Current.WeeklyReportWritingRequirements=" req\r\n detail ";
+ var promptGroup=Group();promptGroup.GroupKind=world?"world":"kingdom";promptGroup.OutputMode=mode;
+ var text=WeeklyPromptMaterialOwner.BuildWeeklyReportSystemPrompt(promptGroup,WeeklyPromptMaterialOwner.GetWeeklyReportPromptProfile(preset),DuelSettings.Current.WeeklyReportWritingRequirements);
+ Check(text==OriginalPromptOracle.BuildWeeklyReportSystemPrompt(promptGroup),"exact original prompt text and preset boundary parity; no hash update");
+}
+await MyBehavior.VerifyActualRuntimeComposition(group);
+Console.WriteLine("PASS actual Weekly runtime/commit/prompt: unique queues/cursor-budget/duplicate-block/record-winner/source-stale/retired/partial-write/recovery/notice/stability-order/prompt-prepare/waves/RPM/full-v-short LIVE=NOT_RUN API=NOT_RUN SAVE=NOT_RUN");
+sealed class RuntimeFixture
+{
+ internal List<EventRecordEntry> Records=new();internal List<DevWeeklyReportBatchPreviewEntry> Previews=new();internal List<string> Order=new(),Notices=new();
+ internal WeeklyReportMaterialRevisionOwner Revisions=new();internal WeeklyReportCommitQueueOwner<PendingWeeklyReportCommitContext,WeeklyReportGenerationResult> Commits;
+ internal WeeklyReportCommitQueueOwner<PendingWeeklyPromptPreparationContext,WeeklyPromptPreparationResult> Prompts;
+ internal WeeklyReportRuntimeOwner Owner;internal long CurrentGeneration=7;internal bool CurrentOwner=true,SleepPreview,ThrowStability;internal int Launches,FailurePopups;
+ internal RuntimeFixture(){
+  Commits=new((c,r)=>c.CompletionSource.TrySetResult(r),()=>new());Prompts=new((c,r)=>c.CompletionSource.TrySetResult(r),()=>WeeklyPromptPreparationResult.Canceled);
+  Owner=new(new(){IsMainThread=()=>true,IsCurrentOwner=()=>CurrentOwner,CaptureGeneration=()=>CurrentGeneration,IsCurrentGeneration=g=>g==CurrentGeneration,IsStale=(g,p)=>g!=CurrentGeneration,IsKingdomEligible=id=>id!="retired",BatchSize=()=>3,RequestsPerMinute=()=>1,CurrentDay=()=>6,CurrentDate=()=>"date6",GetRecords=()=>Records,SetRecords=x=>Records=x,GetPreviews=()=>{if(SleepPreview)Thread.Sleep(30);return Previews;},SetPreviews=x=>Previews=x,ProductState=e=>{Order.Add("state");return e.Title;},ApplyStability=(g,id,t)=>{Order.Add("stability");if(ThrowStability)throw new Exception("synthetic stability failure after source write");},NotifyProduct=(s,e)=>Order.Add("product"),NotifyTimeline=()=>Order.Add("timeline"),SanitizeRecords=x=>x,ResolveNearestKingdom=ids=>ids.FirstOrDefault()??"",QueueNotice=id=>{Order.Add("notice");Notices.Add(id);},DisplayMessage=s=>Order.Add("message"),OpenEditor=()=>Order.Add("editor"),OpenViewer=()=>Order.Add("viewer"),QueueFailurePopup=(c,immediate)=>FailurePopups++,LaunchWave=(wave,first,index,total,targets,batchCount,burst,label,generation,snapshot)=>{
+   Launches++;return Task.FromResult(wave.Select((b,i)=>Task.FromResult(new WeeklyReportBatchExecutionResult{BatchIndex=first+i,Batch=b,Result=new(){Success=true,Blocks=b.Groups.Select(g=>new WeeklyReportBatchBlockResult{Parsed=true,ReportId=WeeklyGenerationRules.BuildWeeklyReportGroupReportId(g),Title="title",ShortSummary="short",Report="report",TagText="STAB_FLAT"}).ToList(),MissingReportIds=new()}})).ToList());
+  }},Revisions,Commits,Prompts);
+ }
+ internal PendingWeeklyReportCommitContext Context(List<WeeklyEventMaterialPreviewGroup> groups,List<WeeklyReportBatchExecutionResult> executions)=>new(){RuntimeGeneration=CurrentGeneration,SourceSnapshot=Revisions.Capture(0,6),WeekIndex=1,StartDay=0,EndDay=6,Groups=groups,Executions=executions,GroupMap=WeeklyGenerationRules.BuildWeeklyReportGroupMap(groups),CapturedRecordStates=Owner.CaptureWeeklyReportCommitRecordStates(WeeklyGenerationRules.BuildWeeklyReportGroupMap(groups),1),PopupCandidateKingdomIds=new(){"A"},CompletionSource=new()};
+}

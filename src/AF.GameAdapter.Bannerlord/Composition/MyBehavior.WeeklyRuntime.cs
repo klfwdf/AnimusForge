@@ -1,0 +1,62 @@
+using System;using System.Collections.Generic;using System.Text;using System.Threading.Tasks;using TaleWorlds.Library;
+namespace AnimusForge;
+public partial class MyBehavior
+{
+ private WeeklyReportRuntimeOwner _weeklyRuntime;
+ private WeeklyReportRuntimeOwner WeeklyRuntime => _weeklyRuntime ??= new WeeklyReportRuntimeOwner(new WeeklyReportRuntimePort {
+  IsMainThread = TWParallel.IsMainThread, IsCurrentOwner = () => ReferenceEquals(Instance,this),
+  CaptureGeneration = SaveRuntimeGuard.CaptureGeneration, IsCurrentGeneration = SaveRuntimeGuard.IsCurrentGeneration,
+  IsStale = (generation,phase) => SaveRuntimeGuard.IsStale(generation,phase), IsKingdomEligible = IsKingdomEligibleForWeeklyReport,
+  BatchSize = GetWeeklyReportBatchSize, RequestsPerMinute = GetWeeklyReportRequestsPerMinute,
+  CurrentDay = GetCurrentGameDayIndexSafe, CurrentDate = GetCurrentGameDateTextSafe,
+  DisplayMessage = text => InformationManager.DisplayMessage(new InformationMessage(text)),
+  OpenEditor = OpenDevEventEditorMenu, OpenViewer = () => OpenDevEventViewerMenu(0), NotifyTimeline = NotifyWorldMessageWeeklyTimelineChanged,
+  GetRecords = () => _eventRecordEntries, SetRecords = records => _eventRecordEntries = records,
+  GetPreviews = () => _latestWeeklyReportBatchDevPreviews, SetPreviews = previews => _latestWeeklyReportBatchDevPreviews = previews,
+  ProductState = BuildPublishedWorldWeeklyProductState, ApplyStability = ApplyWeeklyReportStabilityDelta,
+  NotifyProduct = NotifyPublishedWorldWeeklyProductChanged, SanitizeRecords = SanitizeEventRecordEntries,
+  ResolveNearestKingdom = ResolveNearestWeeklyReportKingdomId, QueueNotice = QueueWeeklyReportMapNotice,
+  QueueFailurePopup = QueueWeeklyReportFailurePopup, LaunchWave = EnqueueWeeklyWaveLaunchAsync
+ },_weeklyReportMaterialRevisions,_weeklyReportCommitQueue,_weeklyPromptPreparationQueue);
+ private static int CaptureWeeklyReportLengthPreset() { try { return DuelSettings.GetSettings()?.WeeklyReportLengthPreset ?? 2; } catch { return 2; } }
+ private static string CaptureWeeklyReportWritingRequirements() { try { return DuelSettings.GetSettings()?.WeeklyReportWritingRequirements ?? ""; } catch { return ""; } }
+private static bool IsDailyMaintenanceBudgetExceeded(long startTimestamp, double budgetMs) => WeeklyReportRuntimeOwner.IsDailyMaintenanceBudgetExceeded(startTimestamp, budgetMs);
+private static bool IsWeeklyReportGroupEligible(WeeklyEventMaterialPreviewGroup group) => WeeklyReportRuntimeOwner.IsWeeklyReportGroupEligible(group, IsKingdomEligibleForWeeklyReport);
+private static WeeklyReportPromptProfile GetWeeklyReportPromptProfile() => WeeklyPromptMaterialOwner.GetWeeklyReportPromptProfile(CaptureWeeklyReportLengthPreset());
+private static int GetWeeklyReportRequestsPerMinute() { try { return WeeklyReportRuntimeOwner.ClampRequestsPerMinute(DuelSettings.GetSettings()?.WeeklyReportRequestsPerMinute ?? 5); } catch { return 5; } }
+private static string BuildWeeklyReportGroupReportId(WeeklyEventMaterialPreviewGroup group) => WeeklyReportRuntimeOwner.BuildWeeklyReportGroupReportId(group);
+private static Dictionary<string, WeeklyEventMaterialPreviewGroup> BuildWeeklyReportGroupMap(IEnumerable<WeeklyEventMaterialPreviewGroup> groups) => WeeklyReportRuntimeOwner.BuildWeeklyReportGroupMap(groups);
+private static List<WeeklyReportBatchRequest> BuildWeeklyReportBatchRequests(List<WeeklyEventMaterialPreviewGroup> groups, int weekIndex, int startDay, int endDay) => WeeklyReportRuntimeOwner.BuildWeeklyReportBatchRequests(groups, weekIndex, startDay, endDay, IsKingdomEligibleForWeeklyReport, GetWeeklyReportBatchSize());
+private static string BuildWeeklyReportBatchDisplayLabel(WeeklyReportBatchRequest batch) => WeeklyReportRuntimeOwner.BuildWeeklyReportBatchDisplayLabel(batch);
+private void CaptureWeeklyReportBatchDevPreview(WeeklyReportBatchRequest batch, WeeklyReportBatchRequestResult result) => WeeklyRuntime.CaptureWeeklyReportBatchDevPreview(batch, result);
+private Dictionary<string, string> CaptureWeeklyReportCommitRecordStates(Dictionary<string, WeeklyEventMaterialPreviewGroup> groups, int weekIndex) => WeeklyRuntime.CaptureWeeklyReportCommitRecordStates(groups, weekIndex);
+private bool IsWeeklyReportCommitRecordUnchanged(PendingWeeklyReportCommitContext context, string reportId, WeeklyEventMaterialPreviewGroup group) => WeeklyRuntime.IsWeeklyReportCommitRecordUnchanged(context, reportId, group);
+private bool HasWeeklyReportCommitWinner(PendingWeeklyReportCommitContext context, WeeklyEventMaterialPreviewGroup group) => WeeklyRuntime.HasWeeklyReportCommitWinner(context, group);
+private static bool AreWeeklyReportCommitRecordStatesCurrent(Dictionary<string, WeeklyEventMaterialPreviewGroup> groups, Dictionary<string, string> captured, Dictionary<string, string> current) => WeeklyReportRuntimeOwner.AreWeeklyReportCommitRecordStatesCurrent(groups, captured, current);
+private static WeeklyReportRetryContext CreateWeeklyReportRetryContext(List<WeeklyEventMaterialPreviewGroup> groups, int weekIndex, int startDay, int endDay, string displayLabel, bool openViewerWhenDone, bool isAutoGeneration, WeeklyEventMaterialPreviewGroup failedGroup, WeeklyReportRequestResult requestResult, IEnumerable<string> popupCandidateKingdomIds = null, Dictionary<string, string> capturedRecordStates = null, WeeklyReportMaterialRevisionOwner.Snapshot sourceSnapshot = null) => WeeklyReportRuntimeOwner.CreateWeeklyReportRetryContext(groups, weekIndex, startDay, endDay, displayLabel, openViewerWhenDone, isAutoGeneration, failedGroup, requestResult, popupCandidateKingdomIds, capturedRecordStates, sourceSnapshot);
+private static void AppendWeeklyReportWritingRequirements(StringBuilder stringBuilder) { if (stringBuilder == null) return; WeeklyPromptMaterialOwner.AppendWeeklyReportWritingRequirements(stringBuilder, CaptureWeeklyReportWritingRequirements()); }
+private static void AppendWeeklyReportPoliticalReasonWritingRule(StringBuilder stringBuilder, bool fullReport) => WeeklyPromptMaterialOwner.AppendWeeklyReportPoliticalReasonWritingRule(stringBuilder, fullReport);
+private static void AppendWeeklyReportSettlementReasonWritingRule(StringBuilder stringBuilder) => WeeklyPromptMaterialOwner.AppendWeeklyReportSettlementReasonWritingRule(stringBuilder);
+private static void AppendWeeklyReportVillageRaidWritingRule(StringBuilder stringBuilder) => WeeklyPromptMaterialOwner.AppendWeeklyReportVillageRaidWritingRule(stringBuilder);
+private static string BuildWeeklyReportSystemPrompt(WeeklyEventMaterialPreviewGroup group) => WeeklyPromptMaterialOwner.BuildWeeklyReportSystemPrompt(group, GetWeeklyReportPromptProfile(), CaptureWeeklyReportWritingRequirements());
+private void UpsertWeeklyReportEventRecord(WeeklyEventMaterialPreviewGroup group, int weekIndex, string title, string shortSummary, string report, string tagText, string promptText, List<EventMaterialReference> materials, bool sanitizeAfter) => WeeklyRuntime.UpsertWeeklyReportEventRecord(group, weekIndex, title, shortSummary, report, tagText, promptText, materials, sanitizeAfter);
+private Task<WeeklyReportGenerationResult> GenerateWeeklyReportsMinuteBurstAsyncInternal(List<WeeklyEventMaterialPreviewGroup> list, int weekIndex, int startDay, int endDay, string displayLabel, bool openViewerWhenDone, bool queueBlockingPopupOnFatalFailure, bool isAutoGeneration, IEnumerable<string> popupCandidateKingdomIdsOverride = null, List<WeeklyReportBatchRequest> preparedBatches = null, long runtimeGeneration = 0L, Dictionary<string, string> capturedRecordStatesOverride = null, WeeklyReportMaterialRevisionOwner.Snapshot sourceSnapshotOverride = null) => WeeklyRuntime.GenerateWeeklyReportsMinuteBurstAsyncInternal(list, weekIndex, startDay, endDay, displayLabel, openViewerWhenDone, queueBlockingPopupOnFatalFailure, isAutoGeneration, popupCandidateKingdomIdsOverride, preparedBatches, runtimeGeneration, capturedRecordStatesOverride, sourceSnapshotOverride);
+private Task<WeeklyReportBatchExecutionResult[]> CoordinateWeeklyReportWavesAsync(List<WeeklyReportBatchRequest> batches, int burstSize, int totalTargets, string displayLabel, long runtimeGeneration, WeeklyReportMaterialRevisionOwner.Snapshot sourceSnapshot, Func<int, Task> delay = null) => WeeklyRuntime.CoordinateWeeklyReportWavesAsync(batches, burstSize, totalTargets, displayLabel, runtimeGeneration, sourceSnapshot, delay);
+private Task<WeeklyPromptPreparationResult> EnqueueWeeklyPromptPreparationAsync(List<WeeklyReportBatchRequest> batches, long runtimeGeneration) => WeeklyRuntime.EnqueueWeeklyPromptPreparationAsync(batches, runtimeGeneration);
+private Task<WeeklyReportGenerationResult> EnqueueWeeklyReportCommitAsync(List<WeeklyEventMaterialPreviewGroup> groups, int weekIndex, int startDay, int endDay, string displayLabel, bool openViewerWhenDone, bool queueBlockingPopupOnFatalFailure, bool isAutoGeneration, List<string> popupCandidateKingdomIds, Dictionary<string, WeeklyEventMaterialPreviewGroup> groupMap, Dictionary<string, string> capturedRecordStates, WeeklyReportMaterialRevisionOwner.Snapshot sourceSnapshot, IEnumerable<WeeklyReportBatchExecutionResult> executions, long runtimeGeneration) => WeeklyRuntime.EnqueueWeeklyReportCommitAsync(groups, weekIndex, startDay, endDay, displayLabel, openViewerWhenDone, queueBlockingPopupOnFatalFailure, isAutoGeneration, popupCandidateKingdomIds, groupMap, capturedRecordStates, sourceSnapshot, executions, runtimeGeneration);
+private bool ProcessPendingWeeklyReportCommitContext(PendingWeeklyReportCommitContext context, long startTimestamp, double budgetMs) => WeeklyRuntime.ProcessPendingWeeklyReportCommitContext(context, startTimestamp, budgetMs);
+private WeeklyReportGenerationResult BuildWeeklyReportCommitExceptionResult(PendingWeeklyReportCommitContext context) => WeeklyRuntime.BuildWeeklyReportCommitExceptionResult(context);
+private static PendingWeeklyReportBlockCommit CreatePendingWeeklyReportBlockCommit(WeeklyEventMaterialPreviewGroup group, WeeklyReportBatchBlockResult block, string promptText) => WeeklyReportRuntimeOwner.CreatePendingWeeklyReportBlockCommit(group, block, promptText);
+private bool ProcessPendingWeeklyReportBlockCommit(PendingWeeklyReportCommitContext context, long startTimestamp, double budgetMs) => WeeklyRuntime.ProcessPendingWeeklyReportBlockCommit(context, startTimestamp, budgetMs);
+private void FinalizePendingWeeklyReportCommitBatch(PendingWeeklyReportCommitContext context, WeeklyReportBatchRequest batch, WeeklyReportBatchRequestResult batchResult) => WeeklyRuntime.FinalizePendingWeeklyReportCommitBatch(context, batch, batchResult);
+private void FinalizePendingWeeklyReportCommitContext(PendingWeeklyReportCommitContext context) => WeeklyRuntime.FinalizePendingWeeklyReportCommitContext(context);
+private static string ResolveWeeklyReportNoticeNearestKingdomId(PendingWeeklyReportCommitContext context) => WeeklyReportRuntimeOwner.ResolveWeeklyReportNoticeNearestKingdomId(context, ResolveNearestWeeklyReportKingdomId);
+private void TryQueueWeeklyReportMapNoticeForGeneratedReport(WeeklyEventMaterialPreviewGroup group, int weekIndex, string nearestKingdomId, HashSet<string> queuedEventIds) => WeeklyRuntime.TryQueueWeeklyReportMapNoticeForGeneratedReport(group, weekIndex, nearestKingdomId, queuedEventIds);
+private static string BuildWeeklyReportCommitRecordState(EventRecordEntry entry) => WeeklyReportRuntimeOwner.BuildWeeklyReportCommitRecordState(entry);
+private static bool IsWeeklyReportCommitWinner(EventRecordEntry entry, WeeklyEventMaterialPreviewGroup group, int weekIndex) => WeeklyReportRuntimeOwner.IsWeeklyReportCommitWinner(entry, group, weekIndex);
+private static WeeklyReportRequestResult BuildWeeklyReportFailedRequest(PendingWeeklyReportCommitContext context, WeeklyEventMaterialPreviewGroup failedGroup) => WeeklyReportRuntimeOwner.BuildWeeklyReportFailedRequest(context, failedGroup);
+private static string BuildWeeklyReportBatchPreviewKey(WeeklyReportBatchRequest batch) => WeeklyReportRuntimeOwner.BuildWeeklyReportBatchPreviewKey(batch);
+private static string BuildWeeklyReportGroupDisplayLabel(WeeklyEventMaterialPreviewGroup group) => WeeklyReportRuntimeOwner.BuildWeeklyReportGroupDisplayLabel(group);
+private static string BuildWeeklyReportEventId(string eventKind, int weekIndex, string scopeKingdomId) => WeeklyReportRuntimeOwner.BuildWeeklyReportEventId(eventKind, weekIndex, scopeKingdomId);
+private EventRecordEntry FindWeeklyReportRecordById(string eventId) => WeeklyRuntime.FindWeeklyReportRecordById(eventId);
+}

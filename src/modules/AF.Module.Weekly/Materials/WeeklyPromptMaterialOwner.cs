@@ -8,7 +8,7 @@ using static AnimusForge.MyBehavior;
 
 namespace AnimusForge;
 
-internal static class WeeklyPromptMaterialOwner
+internal static partial class WeeklyPromptMaterialOwner
 {
 	internal static void Prepare(WeeklyEventMaterialPreviewGroup group, bool shortOnly)
 	{
@@ -1370,4 +1370,5 @@ internal static class WeeklyPromptMaterialOwner
 	{
 		return (text ?? "").Replace("\r", " ").Replace("\n", " ").Trim();
 	}
+
 }
