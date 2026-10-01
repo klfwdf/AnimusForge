@@ -22,8 +22,10 @@ class ExtractionTests(unittest.TestCase):
                 self.assertIn(run.ex.declaration(self.courier, signature), self.blocks["METHODS"])
 
     def test_real_work_item_and_parser(self):
-        shout = run.ex.source("ShoutBehavior.cs", None)
-        self.assertIn(self.blocks["WORK_ITEM"], shout)
+        owner = run.ex.source("src/modules/AF.Module.Conversation/Internal/Postprocess/ConversationActionPostprocessOwner.cs", None)
+        dto = run.ex.declaration(owner, "internal sealed class PostprocessNetworkRequest")
+        work = run.ex.declaration(owner, "internal sealed class ConversationCourierPostprocessWorkItem")
+        self.assertEqual(self.blocks["WORK_ITEM"], dto + "\n" + work)
         self.assertIn("src/modules/AF.Module.Actions/Tags/LegacyActionTagParser.cs", run.LINKS)
         self.assertIn("src/modules/AF.Module.Llm/Protocol/LlmVisibleReplyNormalizer.cs", run.LINKS)
         self.assertIn("CourierVisibleLetterSanitizer.cs", run.LINKS)

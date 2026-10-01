@@ -3,8 +3,12 @@ from pathlib import Path
 import argparse
 import importlib.util
 import os
+import re
 import subprocess
 from xml.sax.saxutils import escape
+import sys
+sys.path.insert(0,str(Path(__file__).resolve().parents[4]/"tests"))
+from output_isolation import new_run_root
 
 ROOT = Path(__file__).resolve().parents[4]
 HERE = Path(__file__).resolve().parent
@@ -37,15 +41,11 @@ assert delivery.index(memory_call) < delivery.index("AddCourierLetterToPlayerInv
 if args.mutate == "skip-history":
     delivery = delivery.replace(memory_call, "// mutation: memory-only commit removed", 1)
 
-out = (args.run_root or (ROOT / "artifacts/j17b/session-20260930/p5-channels" /
-        ("courier-delivered-" + str(os.getpid())))).resolve()
-if not out.is_relative_to((ROOT / "artifacts").resolve()):
-    parser.error("--run-root must be under workspace artifacts")
-out.mkdir(parents=True, exist_ok=True)
+out = new_run_root(ROOT, "courier-inbound-delivery-failure", args.run_root)
 program = (HERE / "DeliveredMemoryHarness.cs.txt").read_text(encoding="utf-8-sig")
 memory_source = (ROOT / "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.MemoryRecovery.cs").read_text(encoding="utf-8-sig")
 seed_builder = extract.declaration(memory_source, "private InteractionMemoryRecoverySeed BuildInteractionMemoryRecoverySeed(")
-assert "string originDate = ResolveInteractionMemoryOriginGameDate(originDay, currentDay);" in seed_builder
+assert re.search(r"string\s+originDate\s*=\s*ResolveInteractionMemoryOriginGameDate\(originDay,\s*currentDay\);", seed_builder)
 memory_date = extract.declaration(memory_source, "private static string ResolveInteractionMemoryOriginGameDate(")
 if args.mutate == "current-date":
     assert memory_date.count("CampaignTime.Days(Math.Max(0, originDay))") == 1

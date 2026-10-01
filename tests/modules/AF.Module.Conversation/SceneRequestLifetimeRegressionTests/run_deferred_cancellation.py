@@ -25,6 +25,7 @@ deadline = extract.declaration(source, 'async Task EnforceRequestDeadlineAsync('
 current = extract.declaration(source, 'bool IsRequestCurrent()')
 request = extract.declaration((ROOT / request_path).read_text(encoding='utf-8-sig'),
                               'private static bool TryRequestSceneUnifiedActionPostprocess(')
+request_owner = extract.declaration((ROOT/'src/modules/AF.Module.Conversation/Internal/Postprocess/ConversationActionPostprocessOwner.cs').read_text(encoding='utf-8-sig'), 'internal static bool TryRequestSceneUnifiedActionPostprocess(')
 start = source.index('\t\t\tfinally\n\t\t\t{', source.index('Task deadlineTask'))
 cleanup = source[start:source.index('\n\t\t});', start)]
 if args.mutate == 'deadline-does-not-cancel':
@@ -91,6 +92,8 @@ static class Program{
  }
 }
 '''
+code += '\ninternal static class ConversationActionPostprocessOwner { '+request_owner+' }'
+
 for key, value in [('REQUEST', request), ('CURRENT', current), ('DEADLINE', deadline), ('CLEANUP', cleanup), ('SCOPE', scope)]:
     code = code.replace('@@' + key + '@@', value)
 (out / 'Program.cs').write_text(code, encoding='utf-8')

@@ -14,7 +14,8 @@ ROOT = HERE.parents[3]
 spec = importlib.util.spec_from_file_location("b1_inverse_under_test", HERE / "source_parity.py")
 inverse = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(inverse)
-SOURCE = (current_source_path(ROOT, "MyBehavior.cs")).read_text(encoding="utf-8-sig")
+from f3_migration_projection import read_current
+SOURCE = read_current("MyBehavior.cs")
 REVIEW = json.loads((HERE / "source-review-b1.json").read_text(encoding="utf-8"))
 BASELINE = subprocess.check_output(
     ["git", "show", REVIEW["baseline"] + ":MyBehavior.cs"], cwd=ROOT
@@ -45,7 +46,7 @@ class InverseGuards(unittest.TestCase):
 
     def test_raw_input_four_declaration_inverse(self):
         review = REVIEW["rawSourceFingerprintReview"]
-        text = (current_source_path(ROOT, review["inputPath"])).read_text(encoding="utf-8-sig")
+        text = read_current(review["inputPath"])
         baseline = subprocess.check_output(["git", "show", review["baseline"] + ":" + review["inputPath"]], cwd=ROOT).decode("utf-8-sig").replace("\r\n", "\n")
         spec = importlib.util.spec_from_file_location("raw_input_extractor", ROOT / "tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py")
         extractor = importlib.util.module_from_spec(spec)
@@ -84,7 +85,7 @@ class InverseGuards(unittest.TestCase):
         for edit in review["exactEdits"]:
             self.assertEqual(baseline.count(edit["before"]), 1)
             baseline = baseline.replace(edit["before"], edit["after"], 1)
-        self.assertEqual(baseline, (current_source_path(ROOT, review["path"])).read_text(encoding="utf-8-sig"))
+        self.assertEqual(baseline, read_current(review["path"]))
 
     def test_dispatcher_dependency_direction_and_host_shape(self):
         runtime = (ROOT / "src/modules/AF.Module.Memory/Summary/MemorySummaryDispatcher.cs").read_text(encoding="utf-8-sig")
@@ -101,7 +102,7 @@ class InverseGuards(unittest.TestCase):
         old = subprocess.check_output(["git", "show", "9617f96a:MyBehavior.MemorySummaryPlanning.cs"], cwd=ROOT).decode("utf-8-sig").replace("\r\n", "\n")
         self.assertEqual(old.count("_memorySummaryMainThreadElapsedTicks"), 2)
         self.assertEqual(old.replace("_memorySummaryMainThreadElapsedTicks", "MemorySummaryDispatchElapsedTicks"),
-                         (current_source_path(ROOT, "MyBehavior.MemorySummaryPlanning.cs")).read_text(encoding="utf-8-sig"))
+                         read_current("MyBehavior.MemorySummaryPlanning.cs"))
 
     def test_changed_accepted_body(self):
         self.reject(SOURCE.replace("_eventSourceMaterialIndexBinding.Build(source);",
@@ -188,7 +189,7 @@ class CurrentScopeGuards(InverseGuards):
 
     def test_raw_input_four_declaration_inverse(self):
         review=REVIEW['rawSourceFingerprintReview']
-        current=(current_source_path(ROOT, review['inputPath'])).read_text(encoding='utf-8-sig')
+        current=read_current(review['inputPath'])
         accepted=inverse.current_scope_baseline(review['inputPath'])
         old=subprocess.check_output(['git','show',review['baseline']+':'+review['inputPath']],cwd=ROOT).decode('utf-8-sig').replace('\r\n','\n')
         for item in review['inputDeclarations']:
@@ -222,7 +223,7 @@ class CurrentScopeGuards(InverseGuards):
 
     def test_inner_structure_fix_has_narrow_inverse(self):
         path=REVIEW['innerStructureReview']['path']
-        live=(current_source_path(ROOT, path)).read_text(encoding='utf-8-sig')
+        live=read_current(path)
         self.assertEqual(live,inverse.current_scope_baseline(path))
         self.assertIn('_lineStructureProbe.MoveNext();',live)
         self.assertIn('_triggerStructureProbe.MoveNext();',live)
@@ -230,7 +231,7 @@ class CurrentScopeGuards(InverseGuards):
 
     def test_planner_only_changes_elapsed_owner_read(self):
         path='MyBehavior.MemorySummaryPlanning.cs'
-        live=(current_source_path(ROOT, path)).read_text(encoding='utf-8-sig')
+        live=read_current(path)
         self.assertEqual(live,inverse.current_scope_baseline(path))
         self.assertEqual(live.count('MemorySummaryDispatchElapsedTicks * 1000.0 / Stopwatch.Frequency'),2)
         self.assertNotIn('_memorySummaryMainThreadElapsedTicks',live)

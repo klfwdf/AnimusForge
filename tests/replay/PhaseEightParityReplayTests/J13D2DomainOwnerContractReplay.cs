@@ -49,7 +49,7 @@ internal static class J13D2DomainOwnerContractReplay
         Require(Read("src/modules/AF.Module.Prompt/Configuration/AIConfigHandler.cs").Contains("VanillaIssueOfferBridge.BuildRuntimePromptBlockForExternal(", StringComparison.Ordinal)
             && Read("src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.cs").Contains("VanillaIssueOfferBridge.ApplyIssueOfferTags(", StringComparison.Ordinal)
             // J17-B7 (aa3539ca) moved the shared Scene/Native unified postprocess out of Channels/Scene/ShoutBehavior.ScenePostprocess.cs.
-            && Read("src/modules/AF.Module.Conversation/Internal/Postprocess/ShoutBehavior.UnifiedActionPostprocess.cs")
+            && Read("src/modules/AF.Module.Conversation/Internal/Postprocess/ConversationActionPostprocessOwner.cs")
                 .Contains("VanillaIssueOfferBridge.BuildRuntimePostprocessRulesForExternal(", StringComparison.Ordinal)
             && Read("src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.DomainCommit.cs")
                 .Contains("VanillaIssueOfferBridge.ApplyIssueOfferTags(", StringComparison.Ordinal), "Native/Scene/Courier shared Issue entries");

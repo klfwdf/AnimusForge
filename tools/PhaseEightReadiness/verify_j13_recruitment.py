@@ -12,6 +12,7 @@ import sys
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / 'tests'))
 from output_isolation import current_source_path
+from af2_f5_migration_review import exact_inverse
 BASELINE = 'a49642bf331741a395fd2b4225e683a8566950b0'
 parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument('--revision')
@@ -84,7 +85,9 @@ recruitment_callees = retained_callees(old, host, owner, ('TryApplyHeroJoinPlaye
 
 old = source('MyBehavior.cs', BASELINE)
 host = source('MyBehavior.cs', args.revision)
+if 'JsonResponseTextCodec.TrimToMaxChars' in host: host = exact_inverse('MyBehavior.cs', host)
 new = source('MyBehavior.PromotedPersonaGeneration.cs', args.revision)
+if 'NpcPersonaTextRules.BuildPromoted' in new: new = exact_inverse('MyBehavior.PromotedPersonaGeneration.cs', new)
 if args.mutate == 'promotion-lease-guard':
     assert '_npcPersonaGeneration.IsCurrent(' in new
     new = new.replace('_npcPersonaGeneration.IsCurrent(', '_npcPersonaGeneration.HasEntry(')

@@ -25,6 +25,7 @@ internal static class MemoryOwnerReadbackReplay
         const int day = 42;
 
         object owner = RuntimeHelpers.GetUninitializedObject(ownerType);
+        Set(owner, "_memoryBusinessState", New(RequireType(production, "AnimusForge.MemoryBusinessStateOwner")));
         object draft = New(draftType);
         object line = New(lineType);
         Set(draft, "HeroId", ownerId);
@@ -74,6 +75,7 @@ internal static class MemoryOwnerReadbackReplay
         IList differentRecords = NewList(dayType, copyDay);
         Require(!InvokeBool(recentPublished, owner, ownerId, differentRecords), "different recent list identity was accepted");
         object emptyOwner = RuntimeHelpers.GetUninitializedObject(ownerType);
+        Set(emptyOwner, "_memoryBusinessState", New(RequireType(production, "AnimusForge.MemoryBusinessStateOwner")));
         Require(!InvokeBool(recentPublished, emptyOwner, ownerId, records), "missing recent owner was accepted");
 
         Console.WriteLine("PASS memoryOwnerReadback fixtureOnly=1 liveCampaign=0 assertions=" + _assertions);

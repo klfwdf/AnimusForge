@@ -32,14 +32,23 @@ internal static class Program
 {
 private static bool HasSharedRewardCodec(string shout, string completion)
 {
-    static string Section(string source, string start, string end)
+    static string Section(string source, string start)
     {
         int first = source.IndexOf(start, StringComparison.Ordinal);
-        int last = first < 0 ? -1 : source.IndexOf(end, first + start.Length, StringComparison.Ordinal);
-        return first >= 0 && last > first ? source.Substring(first, last - first) : string.Empty;
+        if (first < 0) return string.Empty;
+        int opening = source.IndexOf('{', first), depth = 0; char quote = '\0'; bool escape = false;
+        for (int i = opening; i >= 0 && i < source.Length; i++)
+        {
+            char c = source[i];
+            if (quote != '\0') { if (escape) escape = false; else if (c == '\\') escape = true; else if (c == quote) quote = '\0'; continue; }
+            if (c == '"' || c == '\'') { quote = c; continue; }
+            if (c == '{') depth++;
+            else if (c == '}' && --depth == 0) return source.Substring(first, i + 1 - first);
+        }
+        return string.Empty;
     }
-    string translator = Section(shout, "private static string TranslateRewardItemIndexesForScene(", "private static string NormalizeRewardPostprocessTagsForScene(");
-    string normalizer = Section(shout, "private static string NormalizeRewardPostprocessTagsForScene(", "private static int ResolvePartyTransferRecruitMaxTierForScene(");
+    string translator = Section(shout, "internal static string TranslateRewardItemIndexesForScene(");
+    string normalizer = Section(shout, "internal static string NormalizeRewardPostprocessTagsForScene(");
     return translator.Contains("GiveAssetTagCodec.ReplaceTags(text,", StringComparison.Ordinal)
         && normalizer.Contains("GiveAssetTagCodec.TryParseWhole(text2,", StringComparison.Ordinal)
         && normalizer.Contains("TranslateRewardItemIndexesForScene(text3, options)", StringComparison.Ordinal)
@@ -182,8 +191,11 @@ string rewardSystem = File.ReadAllText(Path.Combine(repoRoot, "src/modules/AF.Mo
     + File.ReadAllText(Path.Combine(repoRoot, "src", "modules", "AF.Module.Economy", "Execution", "Merchant", "RewardSystemBehavior.EconomyMerchantReplay.cs"));
 // J17-B7 (aa3539ca) moved the shared unified-action postprocess wrapper/completion out of
 // ShoutBehavior.ScenePostprocess.cs into Internal/Postprocess/ShoutBehavior.UnifiedActionPostprocess.cs.
+string sharedPostprocessOwner = File.ReadAllText(Path.Combine(repoRoot, "src", "modules", "AF.Module.Conversation", "Internal", "Postprocess", "ConversationActionPostprocessOwner.cs"));
+shoutBehavior += "\n" + sharedPostprocessOwner;
 string scenePostprocess = File.ReadAllText(Path.Combine(repoRoot, "src", "modules", "AF.Module.Conversation", "Channels", "Scene", "ShoutBehavior.ScenePostprocess.cs"))
     + File.ReadAllText(Path.Combine(repoRoot, "src", "modules", "AF.Module.Conversation", "Internal", "Postprocess", "ShoutBehavior.UnifiedActionPostprocess.cs"));
+scenePostprocess += "\n" + sharedPostprocessOwner;
 string sceneChains = File.ReadAllText(Path.Combine(repoRoot, "src", "modules", "AF.Module.Conversation", "Channels", "Scene", "ShoutBehavior.SceneConversationChains.cs"));
 string courier = File.ReadAllText(Path.Combine(repoRoot, "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.cs"))
     + File.ReadAllText(Path.Combine(repoRoot, "src", "modules", "AF.Module.Conversation", "Channels", "Courier", "CourierDeliveryBehavior.GenerationLifecycle.cs"))
@@ -194,7 +206,8 @@ Test.True(HasSharedRewardCodec(shoutBehavior, scenePostprocess), "shared Native/
 Test.True(nativeOverlay.Contains("ShoutBehavior.SubmitNativeConversationForOverlayAsync(", StringComparison.Ordinal)
     && scenePostprocess.Contains("private static string TryRunSceneUnifiedActionPostprocess(", StringComparison.Ordinal)
     && sceneChains.Contains("TryRunSceneUnifiedActionPostprocess(", StringComparison.Ordinal)
-    && courier.Contains("ShoutBehavior.TryPrepareCourierActionPostprocessForExternal(", StringComparison.Ordinal),
+    && courier.Contains("ConversationActionPostprocessOwner.TryPrepareCourierActionPostprocessForExternal(", StringComparison.Ordinal)
+    && shoutBehavior.Contains("ConversationActionPostprocessOwner.NormalizeRewardPostprocessTagsForScene(", StringComparison.Ordinal),
     "real Native overlay and Courier owner must reach the shared Shout postprocessor");
 Test.True(!HasSharedRewardCodec(shoutBehavior.Replace("GiveAssetTagCodec.ReplaceTags(text,", "RemovedCodec(text,"), scenePostprocess),
     "mutation must catch a translator that bypasses the real codec");

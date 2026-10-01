@@ -23,6 +23,9 @@ def main():
         raise ValueError('Baseline and mutation are exclusive')
     spec = importlib.util.spec_from_file_location('extract', ROOT/'tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py')
     ex = importlib.util.module_from_spec(spec); spec.loader.exec_module(ex)
+    sys.path.insert(0,str(ROOT/'tests/modules/AF.Module.Memory/MemorySummaryMainThreadBoundaryTests'))
+    from business_owner_fixture_support import enable_expression_declarations
+    enable_expression_declarations(ex)
     read = lambda path: (current_source_path(ROOT, path)).read_text(encoding='utf-8-sig')
     root = read('MyBehavior.cs'); capture = read('MyBehavior.MemorySummaryInput.cs')
     declarations = []
@@ -33,7 +36,7 @@ def main():
             'sha256':hashlib.sha256(code.encode()).hexdigest()})
         return code
     snippets = [extract(root, 'MyBehavior.cs', 'private class '+name) for name in MODELS]
-    snippets.append(extract(capture, 'MyBehavior.MemorySummaryInput.cs', 'private sealed class MemorySummarySourceView'))
+    snippets.append(extract(capture, 'MyBehavior.MemorySummaryInput.cs', 'internal sealed class MemorySummarySourceView'))
     snippets.append(extract(capture, 'MyBehavior.MemorySummaryInput.cs', 'private static T CloneMemorySummarySource<T>('))
     recovery = read('MyBehavior.MemoryRecovery.cs')
     for signature in ['internal static bool IsValidMemoryCommitMarker(', 'internal static bool IsMemoryRecoveryHexDigest(']:
@@ -64,6 +67,10 @@ def main():
         'Writer.cs':writer,'Program.cs':read('tests/modules/AF.Module.Memory/MemorySummaryBudgetTests/Harness.cs.txt'),
         'Proof.csproj':'<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><LangVersion>latest</LangVersion><NoWarn>CS0649</NoWarn></PropertyGroup></Project>',
         'NuGet.Config':'<configuration><packageSources><clear/></packageSources></configuration>'}
+    rules=read('src/modules/AF.Module.Memory/Summary/MemorySourceFingerprintRules.cs')
+    files['MemorySourceFingerprintRules.cs']=rules
+    recovery_owner=read('src/modules/AF.Module.Memory/Summary/MemoryRecoveryStateOwner.cs')
+    files['MemoryRecoveryMarkerRules.cs']='using System;using System.Linq;namespace AnimusForge {internal sealed class MemoryRecoveryStateOwner {'+'\n'.join(ex.declaration(recovery_owner,signature) for signature in ['internal static bool IsValidMemoryCommitMarker(','internal static bool IsMemoryRecoveryHexDigest('])+'}}'
     for name,value in files.items(): (out/name).write_text(value,encoding='utf-8',newline='\n')
     manifest={'head':subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip(),
         'writer_baseline':args.writer_baseline,'mutation':args.mutate,'declarations':declarations,

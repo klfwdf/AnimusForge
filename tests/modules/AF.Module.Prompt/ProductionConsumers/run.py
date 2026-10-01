@@ -46,7 +46,9 @@ ordered(reward_inventory, "NpcRewardItemsAllSnapshotScope", "!x.IsPrivateEquipme
 reward_merchant = method("src/modules/AF.Module.Economy/Projection/RewardSystemBehavior.InventoryPromptCapture.cs", "public string BuildFilteredSettlementMerchantInventorySummaryForAI(")
 ordered(reward_merchant, "SettlementMerchantItemsAllSnapshotScope", "FilterRewardItems(allOptions, mentions, maxItems)", "SettlementMerchantItemsSnapshotScope")
 
-scene_post = method("ShoutBehavior.cs", "internal static bool TryPrepareCourierActionPostprocessForExternal(")
+scene_post_facade = method("ShoutBehavior.cs", "internal static bool TryPrepareCourierActionPostprocessForExternal(")
+assert "ConversationActionPostprocessOwner.TryPrepareCourierActionPostprocessForExternal(" in scene_post_facade
+scene_post = method("src/modules/AF.Module.Conversation/Internal/Postprocess/ConversationActionPostprocessOwner.cs", "internal static bool TryPrepareCourierActionPostprocessForExternal(")
 ordered(scene_post, "BeginGuardrailRuntimeScope()", "GetLatestAuxiliaryMentionedEntitiesForExternal()", "NpcRewardItemsAllSnapshotScope", "FilterNpcRewardItemsForAssetTransfer(rewardAllOptions, promptListMentions, promptListMax)")
 for fragment in ("PartyTransferAllTroopsSnapshotScope", "PartyTransferTroopsSnapshotScope", "SettlementTransferAllNpcAssetsSnapshotScope", "SettlementTransferNpcAssetsSnapshotScope"):
     assert fragment in scene_post, fragment

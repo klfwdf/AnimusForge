@@ -323,6 +323,7 @@ internal static class Program
         // J17-B7 (aa3539ca) moved the unified Scene/Native postprocess wrapper and work item into Internal/Postprocess.
         string scenePostprocess = File.ReadAllText(Path.Combine(projectRoot, "src", "modules", "AF.Module.Conversation", "Channels", "Scene", "ShoutBehavior.ScenePostprocess.cs"))
             + File.ReadAllText(Path.Combine(projectRoot, "src", "modules", "AF.Module.Conversation", "Internal", "Postprocess", "ShoutBehavior.UnifiedActionPostprocess.cs"));
+        string sharedPostprocessOwner = File.ReadAllText(Path.Combine(projectRoot, "src", "modules", "AF.Module.Conversation", "Internal", "Postprocess", "ConversationActionPostprocessOwner.cs"));
 
         foreach (string classMarker in new[]
         {
@@ -418,15 +419,19 @@ internal static class Program
                 && ExtractMethod(nativeCommit, "public async Task<NativeConversationTurnStep> PostprocessAndCommitAsync(")
                     .Contains("CompleteSceneUnifiedActionPostprocess(", StringComparison.Ordinal)
                 && ExtractMethod(scenePostprocess, "private static string TryRunSceneUnifiedActionPostprocess(")
+                    .Contains("ConversationActionPostprocessOwner.TryRunSceneUnifiedActionPostprocess(", StringComparison.Ordinal)
+                && ExtractMethod(sharedPostprocessOwner, "internal static string TryRunSceneUnifiedActionPostprocess(")
                     .Contains("PrepareSceneUnifiedActionPostprocess(", StringComparison.Ordinal)
-                && ExtractMethod(scenePostprocess, "private static string TryRunSceneUnifiedActionPostprocess(")
+                && ExtractMethod(sharedPostprocessOwner, "internal static string TryRunSceneUnifiedActionPostprocess(")
                     .Contains("CompleteSceneUnifiedActionPostprocess(", StringComparison.Ordinal)
-                && ExtractMethod(scenePostprocess, "private static SceneActionPostprocessWorkItem PrepareSceneUnifiedActionPostprocess(")
-                    .Contains("NormalizeDuelPostprocessTagsForScene(", StringComparison.Ordinal),
+                && ExtractMethod(sharedPostprocessOwner, "internal static SceneActionPostprocessWorkItem PrepareSceneUnifiedActionPostprocess(")
+                    .Contains("NormalizeDuelPostprocessTagsForScene(", StringComparison.Ordinal)
+                && ExtractMethod(shoutBehavior, "private static string NormalizeDuelPostprocessTagsForScene(")
+                    .Contains("ConversationActionPostprocessOwner.NormalizeDuelPostprocessTagsForScene(", StringComparison.Ordinal),
             "Native and Scene no longer reach the shared Duel action normalizer.");
         AssertDebtNormalizerClearsBeforeCache(
-            ExtractMethod(shoutBehavior, "private static string NormalizeDuelPostprocessTagsForScene("),
-            "ShoutBehavior.NormalizeDuelPostprocessTagsForScene");
+            ExtractMethod(sharedPostprocessOwner, "internal static string NormalizeDuelPostprocessTagsForScene("),
+            "ConversationActionPostprocessOwner.NormalizeDuelPostprocessTagsForScene");
     }
 
     private static void AssertOutcomeBoundConsume(
@@ -1364,7 +1369,7 @@ internal static class Program
 
         foreach ((string typeName, string methodName) in new[]
         {
-            ("AnimusForge.ShoutBehavior", "NormalizeDuelPostprocessTagsForScene")
+            ("AnimusForge.ConversationActionPostprocessOwner", "NormalizeDuelPostprocessTagsForScene")
         })
         {
             MetadataAssembly.MethodView normalizer = assembly.RequireUniqueMethod(typeName, methodName);
@@ -1377,8 +1382,11 @@ internal static class Program
                 typeName + "::" + methodName + " does not clear stale debt before caching this Duel reply.");
         }
         RequireCall(assembly,
+            assembly.RequireUniqueMethod("AnimusForge.ShoutBehavior", "NormalizeDuelPostprocessTagsForScene"),
+            "AnimusForge.ConversationActionPostprocessOwner", "NormalizeDuelPostprocessTagsForScene");
+        RequireCall(assembly,
             assembly.RequireUniqueMethod("AnimusForge.ShoutBehavior", "TryRunSceneUnifiedActionPostprocess"),
-            "AnimusForge.ShoutBehavior", "NormalizeDuelPostprocessTagsForScene");
+            "AnimusForge.ConversationActionPostprocessOwner", "NormalizeDuelPostprocessTagsForScene");
     }
 
     private static void VerifyExactDispatchProvenance(MetadataAssembly assembly)
