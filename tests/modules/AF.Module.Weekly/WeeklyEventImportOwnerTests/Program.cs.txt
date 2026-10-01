@@ -82,3 +82,15 @@ Check(ReferenceEquals(keptOpening,opening)&&ReferenceEquals(keptRecords,openingR
 WeeklyEventDataImportOwner.ResetContainers(ref opening,ref openingStorage,ref openingWorld,ref openingRecords,ref openingJson);
 Check(!ReferenceEquals(keptOpening,opening)&&!ReferenceEquals(keptRecords,openingRecords)&&openingJson=="[]"&&openingWorld==""&&opening.Comparer.Equals(EqualityComparer<string>.Default),"reset exact default comparer/new references/json");
 Console.WriteLine("PASS actual Weekly developer edit intents: retired guard/stored-fallback/defaulttitle/sanitize/product-timeline-order/kingdom-summary/reset/ensure LIVE=NOT_RUN CLEAR=NOT_RUN");
+
+var singleDebts=new Dictionary<string,Debt>(StringComparer.OrdinalIgnoreCase){{"Hero",oldDebt},{"other",newDebt}};
+var singleOriginal=new Dictionary<string,Debt>(singleDebts,StringComparer.OrdinalIgnoreCase);singleOriginal["hero"]=newDebt;
+var singleResult=DebtImportMergePolicy.ApplySingleImportedDebtEntry(singleDebts,"hero",newDebt);
+Check(ReferenceEquals(singleResult,singleDebts)&&singleResult.Comparer.Equals(StringComparer.OrdinalIgnoreCase)&&singleResult.Keys.SequenceEqual(singleOriginal.Keys)&&ReferenceEquals(singleResult["Hero"],newDebt),"single debt directly assign existing snapshot retaining identity/comparer/key order and casing");
+Check(ReferenceEquals(DebtImportMergePolicy.ApplySingleImportedDebtEntry(singleDebts,"HERO",null),singleDebts)&&!singleDebts.ContainsKey("Hero")&&singleDebts.ContainsKey("other"),"single missing/null entry removes only matching original comparer key");
+DebtImportMergePolicy.ApplySingleImportedDebtEntry(singleDebts," raw ",oldDebt);
+Check(singleDebts.ContainsKey(" raw ")&&!singleDebts.ContainsKey("raw"),"single key not normalized");
+DebtImportMergePolicy.ApplySingleImportedDebtEntry(singleDebts,"",oldDebt);Check(singleDebts.ContainsKey(""),"single empty key follows original dictionary semantics");
+try{DebtImportMergePolicy.ApplySingleImportedDebtEntry(singleDebts,null,newDebt);throw new Exception("expected null-key throw");}catch(ArgumentNullException){}
+var singleNull=DebtImportMergePolicy.ApplySingleImportedDebtEntry(null,"missing",null);Check(singleNull.Count==0&&singleNull.Comparer.Equals(EqualityComparer<string>.Default),"single null exported snapshot original fallback dictionary");
+Console.WriteLine("PASS actual single debt import snapshot policy: direct assign/null removal/identity/comparer/key semantics/no domain commit LIVE=NOT_RUN");
