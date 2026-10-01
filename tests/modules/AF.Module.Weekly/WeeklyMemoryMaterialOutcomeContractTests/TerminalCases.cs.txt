@@ -156,12 +156,50 @@ outcomeCandidate=Candidate(actions:new[]{OutcomeAction(EconomyRewardDebtActionKi
 Require(!WeeklyMemoryMaterialValuePolicy.TryBuildFrozenOutcome(outcomeCandidate,outcomeContext,outcomeValues,out outcomePayload,out outcomeError)&&outcomeError=="weekly_material_not_eligible", "strict NumberStyles.None preserved for owner-confirmed values");
 Console.WriteLine("PASS actual Weekly owner-confirmed candidate/intent/frozen payload: four kinds/failed valuation skip/ordered atoms/threshold/overflow/origin/reason LIVE=NOT_RUN SAVE=NOT_RUN");
 
-var prepareGateOwner=new MyBehavior();TaleWorlds.CampaignSystem.Campaign.Current.Owner=prepareGateOwner;
+var prepareGateOwner=new MyBehavior();prepareGateOwner.InitializeOutcomeFixture();TaleWorlds.CampaignSystem.Campaign.Current.Owner=prepareGateOwner;
 var prepareGateCandidate=Candidate(runtimeGeneration:SaveRuntimeGuard.CurrentGeneration,actions:new[]{Asset()});
 Require(MyBehavior.PrepareWeeklyActionOutcomeForExternal(prepareGateCandidate,false,"NPC")==WeeklyMemoryMaterialOutcomeOperationStatus.Accepted && prepareGateOwner.FixtureBuildCalls==1, "actual host prepare first valuation once");
 prepareGateOwner.FixtureSubjectUnavailable=true;
 Require(MyBehavior.PrepareWeeklyActionOutcomeForExternal(prepareGateCandidate,false,"NPC")==WeeklyMemoryMaterialOutcomeOperationStatus.Duplicate && prepareGateOwner.FixtureBuildCalls==1, "actual host duplicate identity probe before unavailable subject or valuation");
 Console.WriteLine("PASS actual owner-confirmed Prepare gate: receipt identity probe precedes live capture/value rebuild");
+
+long actualClearGeneration=SaveRuntimeGuard.AdvanceGeneration("synthetic_developer_clear");
+prepareGateOwner.DeveloperClearFixture(actualClearGeneration);
+Require(prepareGateOwner.OutcomePublicationFixture.IsActive(actualClearGeneration)&&prepareGateOwner.OutcomeStorageFixture.Count==1,"actual clear adapter explicit generation and same-storage export");
+var actualClearReload=new WeeklyActionOutcomePublicationOwner();Require(actualClearReload.Import(prepareGateOwner.OutcomeStorageFixture,actualClearGeneration,out _)&&!actualClearReload.HasWork,"actual exported cleared receipt reload remains terminal");
+prepareGateOwner.FixtureSubjectUnavailable=false;
+Require(MyBehavior.PrepareWeeklyActionOutcomeForExternal(Candidate(requestId:"actual-clear:new",runtimeGeneration:actualClearGeneration,actions:new[]{Asset()}),false,"NPC")==WeeklyMemoryMaterialOutcomeOperationStatus.Accepted,"actual Prepare gate works after explicit developer clear transition");
+var clearPublication=new WeeklyActionOutcomePublicationOwner();clearPublication.Import(null,7,out _);
+var clearPrepared=Candidate(requestId:"clear:prepared");var clearConfirmed=Candidate(requestId:"clear:confirmed");var clearApplied=Candidate(requestId:"clear:applied");
+foreach(var candidate in new[]{clearPrepared,clearConfirmed,clearApplied})Require(clearPublication.Ledger.Prepare(candidate,Payload(),100,out _)==WeeklyMemoryMaterialOutcomeOperationStatus.Accepted,"clear setup prepare");
+foreach(var candidate in new[]{clearConfirmed,clearApplied})clearPublication.Ledger.Complete(candidate.ReceiptId,candidate.CandidateHash,WeeklyMemoryMaterialOutcomeState.Confirmed,"",110,out _);
+clearPublication.Ledger.MarkApplied(clearApplied.ReceiptId,clearApplied.CandidateHash,120,out _);clearPublication.ScheduleRetry(200);
+Require(clearPublication.OnDeveloperClear(8,300)==2 && clearPublication.IsActive(8)&&!clearPublication.IsActive(7)&&!clearPublication.HasWork&&clearPublication.NextAttemptUtcTicks==0,"explicit devclear activates new generation cancels pending/retry");
+Require(clearPublication.Ledger.GetEntries().Count(x=>x.State==WeeklyMemoryMaterialOutcomeState.Unknown&&x.DiagnosticCode=="weekly_material_developer_clear")==2 &&clearPublication.Ledger.GetEntries().Single(x=>x.ReceiptId==clearApplied.ReceiptId).State==WeeklyMemoryMaterialOutcomeState.Applied,"devclear retains Applied and unknown pending identity");
+foreach(var candidate in new[]{clearPrepared,clearConfirmed,clearApplied})Require(clearPublication.Ledger.ProbeExistingCandidate(candidate,out _)==WeeklyMemoryMaterialOutcomeOperationStatus.Duplicate,"clear retained dedup probe");
+Require(clearPublication.GetDue(8,1000)==null,"cleared pending not published");
+int clearAttachments=0;var clearNew=Candidate(requestId:"clear:new",runtimeGeneration:8);
+Require(clearPublication.Ledger.Prepare(clearNew,Payload(),400,out _)==WeeklyMemoryMaterialOutcomeOperationStatus.Accepted,"new generation prepare after explicit clear");
+clearPublication.Ledger.Complete(clearNew.ReceiptId,clearNew.CandidateHash,WeeklyMemoryMaterialOutcomeState.Confirmed,"",410,out _);clearPublication.RefreshWork();
+Require(clearPublication.Publish(clearNew.ReceiptId,clearNew.CandidateHash,42,420,_=>true,_=>{clearAttachments++;return true;},out _)==WeeklyMemoryMaterialOutcomeOperationStatus.Accepted&&clearAttachments==1,"new generation confirm and publish");
+var clearReload=new WeeklyActionOutcomePublicationOwner();Require(clearReload.Import(clearPublication.Ledger.Export(),9,out _)&&!clearReload.HasWork&&clearReload.GetDue(9,1000)==null,"clear terminal journal reload no old material resurrection");
+var clearInactive=new WeeklyActionOutcomePublicationOwner();clearInactive.ImportFailed();clearInactive.OnDeveloperClear(8,300);Require(!clearInactive.IsActive(8),"devclear cannot bless failed import");
+Require(clearPublication.OnDeveloperClear(9,500)==0&&clearPublication.IsActive(9),"repeated explicit clear idempotent");
+Console.WriteLine("PASS explicit Weekly developer-clear: pending Unknown/Applied and dedup retained/new-generation prepare-confirm-publish/save-load no resurrection/failed-import stays inactive CLEAR=NOT_RUN");
+
+var clearCapacity=new WeeklyActionOutcomePublicationOwner();clearCapacity.Import(null,7,out _);WeeklyMemoryMaterialOutcomeCandidate oldestClearApplied=null;
+for(int index=0;index<WeeklyMemoryMaterialOutcomeLedger.MaximumTerminalEntries;index++)
+{
+ var candidate=Candidate(requestId:"clear:capacity:applied:"+index);oldestClearApplied??=candidate;
+ Require(clearCapacity.Ledger.Prepare(candidate,Payload(),100+index,out _)==WeeklyMemoryMaterialOutcomeOperationStatus.Accepted,"capacity setup applied prepare");
+ clearCapacity.Ledger.Complete(candidate.ReceiptId,candidate.CandidateHash,WeeklyMemoryMaterialOutcomeState.Confirmed,"",1000+index,out _);
+ clearCapacity.Ledger.MarkApplied(candidate.ReceiptId,candidate.CandidateHash,2000+index,out _);
+}
+for(int index=0;index<WeeklyMemoryMaterialOutcomeLedger.MaximumPendingEntries;index++)
+ Require(clearCapacity.Ledger.Prepare(Candidate(requestId:"clear:capacity:pending:"+index),Payload(),3000+index,out _)==WeeklyMemoryMaterialOutcomeOperationStatus.Accepted,"capacity setup pending");
+Require(clearCapacity.OnDeveloperClear(8,5000)==64&&clearCapacity.Ledger.PendingCount==0&&clearCapacity.Ledger.TerminalCount==512,"devclear obeys existing bounded terminal retention");
+Require(clearCapacity.Ledger.ProbeExistingCandidate(oldestClearApplied,out _)==WeeklyMemoryMaterialOutcomeOperationStatus.NotFound,"diagnostic existing 512 terminal retention drops oldest Applied at 512+64 clear boundary");
+Console.WriteLine("KNOWN_BOUNDARY Weekly developer-clear retains original 512-terminal policy: 512 Applied +64 pending ->448 Applied +64 Unknown; oldest64 Applied dedup expires under existing policy, not unbounded retention");
 
 new MyBehavior().VerifyActualRecordContainerAdapter();
 RecordResetTerminalCases.Run();

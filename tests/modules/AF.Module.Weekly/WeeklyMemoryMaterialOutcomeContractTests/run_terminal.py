@@ -55,6 +55,12 @@ shim += "namespace AnimusForge { public static class Logger { public static void
 shim += "namespace TaleWorlds.Library { public static class TWParallel { public static bool IsMainThread()=>true; } public static class MBMath { public static int ClampInt(int x,int min,int max)=>Math.Clamp(x,min,max); } }\n"
 receipt_host = (ROOT / "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.WeeklyActionOutcomeReceipts.cs").read_text(encoding="utf-8-sig")
 prepare = extract.declaration(receipt_host,"internal static WeeklyMemoryMaterialOutcomeOperationStatus PrepareWeeklyActionOutcomeForExternal")
+for signature in ["private WeeklyActionOutcomePublicationOwner EnsureWeeklyActionOutcomePublication", "private WeeklyMemoryMaterialOutcomeLedger EnsureWeeklyActionOutcomeLedger", "private void RefreshWeeklyActionOutcomeWorkFlag", "private void OnDeveloperClearWeeklyActionOutcomes"]:
+ prepare += extract.declaration(receipt_host,signature)
+active=re.search(r"private bool IsWeeklyActionOutcomeOwnerActive\([^;]+;",receipt_host)
+assert active and "=>" in active.group()
+prepare += active.group()
+
 shim = "using AnimusForge.Refactor.Runtime;using AnimusForge.Refactor.Contracts;using TaleWorlds.CampaignSystem;using TaleWorlds.Library;" + shim
 shim += "namespace AnimusForge { public partial class MyBehavior {" + prepare + (HERE / "OutcomePrepareGate.cs.txt").read_text(encoding="utf-8") + "}}"
 # Compile the actual record adapter against real authority fields and original non-ref aliases.

@@ -83,6 +83,25 @@ internal sealed class WeeklyActionOutcomePublicationOwner
         return true;
     }
 
+    internal int OnDeveloperClear(long generation, long utcTicks)
+    {
+        int cancelled = 0;
+        // Keep the existing journal and its bounded deduplication retention policy.
+        // Developer clear cancels material publication, not already observed world effects.
+        foreach (var receipt in Ledger.GetEntries())
+        {
+            if (receipt.State != WeeklyMemoryMaterialOutcomeState.Prepared
+                && receipt.State != WeeklyMemoryMaterialOutcomeState.Confirmed) continue;
+            if (Ledger.Complete(receipt.ReceiptId, receipt.CandidateHash, WeeklyMemoryMaterialOutcomeState.Unknown,
+                "weekly_material_developer_clear", Math.Max(1L, utcTicks), out _) == WeeklyMemoryMaterialOutcomeOperationStatus.Accepted)
+                cancelled++;
+        }
+        Volatile.Write(ref _hasWork, 0);
+        Interlocked.Exchange(ref _nextAttemptUtcTicks, 0L);
+        if (ImportConfirmed) Interlocked.Exchange(ref _loadedGeneration, generation);
+        return cancelled;
+    }
+
     internal void Deactivate()
     {
         Volatile.Write(ref _importConfirmed, 0);

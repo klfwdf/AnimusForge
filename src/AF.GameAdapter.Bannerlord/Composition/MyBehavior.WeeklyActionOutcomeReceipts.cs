@@ -222,6 +222,13 @@ public partial class MyBehavior
             _weeklyActionOutcomeStorage = new Dictionary<string, string>(StringComparer.Ordinal);
     }
 
+    private void OnDeveloperClearWeeklyActionOutcomes(long generation)
+    {
+        var publication = EnsureWeeklyActionOutcomePublication();
+        publication.OnDeveloperClear(generation, DateTime.UtcNow.Ticks);
+        _weeklyActionOutcomeStorage = publication.Ledger.Export();
+    }
+
     private void ActivateWeeklyActionOutcomeAfterLoad()
     {
         try

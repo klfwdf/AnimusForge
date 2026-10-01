@@ -1,10 +1,12 @@
 
- internal WeeklyMemoryMaterialOutcomeLedger FixtureLedger=new();
+ internal WeeklyActionOutcomePublicationOwner _weeklyActionOutcomePublication=new();
+ private Dictionary<string,string> _weeklyActionOutcomeStorage=new();
+ internal void InitializeOutcomeFixture()=>_weeklyActionOutcomePublication.Import(null,SaveRuntimeGuard.CurrentGeneration,out _);
+ internal void DeveloperClearFixture(long generation)=>OnDeveloperClearWeeklyActionOutcomes(generation);
+ internal Dictionary<string,string> OutcomeStorageFixture=>_weeklyActionOutcomeStorage;
+ internal WeeklyActionOutcomePublicationOwner OutcomePublicationFixture=>_weeklyActionOutcomePublication;
  internal int FixtureBuildCalls;
  internal bool FixtureSubjectUnavailable;
- private bool IsWeeklyActionOutcomeOwnerActive()=>true;
- private WeeklyMemoryMaterialOutcomeLedger EnsureWeeklyActionOutcomeLedger()=>FixtureLedger;
- private void RefreshWeeklyActionOutcomeWorkFlag(){}
  private bool TryBuildWeeklyActionOutcomePayload(WeeklyMemoryMaterialOutcomeCandidate candidate,bool nonhero,string name,out WeeklyMemoryMaterialFrozenPayload payload,out string error) {
   FixtureBuildCalls++;payload=null;
   if(FixtureSubjectUnavailable){error="weekly_material_subject_unavailable";return false;}
