@@ -617,6 +617,14 @@
     "{ROOT}/artifacts/af2-host-terminal-closeout/final/{RUN}/persona-intro"
    ],
    "note": "Actual current production owners and typed factories; fixed pre-move golden is an independent same-input oracle, not a replacement product source."
+  },
+  "tests/modules/AF.Module.Prompt/ExternalScenePromptCaptureTests/run.py": {
+   "expect": "PASS",
+   "args": [
+    "--run-root",
+    "{ROOT}/artifacts/af2-host-terminal-closeout/final/{RUN}/external-scene-prompt"
+   ],
+   "note": "Actual current typed GameAdapter capture, real Prompt section assembly and public facade; fixed full 135-line same-input oracle is separate."
   }
  }
 }
