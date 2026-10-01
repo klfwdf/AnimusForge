@@ -27,8 +27,8 @@ public partial class MyBehavior
 	{
 		if (kingdom == null || string.IsNullOrWhiteSpace(text)) return;
 		RecordEventSourceMaterialForExternal("civil_war", "内战政治 - " + kingdom.Name, text, key, kingdom.StringId, true, true);
-		string kind = key.Contains(":war:outbreak") ? "civil_war" : key.Contains(":war:resolved") ? "civil_war_resolution" : "civil_war_politics";
-		if (bulletin) Instance?.CaptureWorldBulletinEvent(kind, key, 80, kingdom.Name + "：" + text,
+		string kind = CivilWarPoliticalRules.PoliticalResultKind(key);
+		if (bulletin) Instance?.CaptureWorldBulletinEvent(kind, key, CivilWarPoliticalRules.PoliticalResultPriority, kingdom.Name + "：" + text,
 			Clan.PlayerClan?.Kingdom == kingdom, "realm:" + kingdom.StringId, text, kingdom.StringId);
 	}
 }

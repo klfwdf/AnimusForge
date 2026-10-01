@@ -1,9 +1,9 @@
 # 当前交接：AF 2.0 最终职责收官实施（2026-10-01）
 
-- 本轮授权实施F0–F6/S1–S6；五组完整职责差集冻结并进入实施，不继承历史push/Stage/部署/仓外写入许可。Persona宿主Prompt/fallback规则是五组外具名OPEN，待用户裁定，不能宣称原J差集全闭。
+- 本轮授权实施F0–F6/S1–S6；五组完整职责差集冻结并进入实施，不继承历史push/Stage/部署/仓外写入许可。用户已明确批准F5d Persona Prompt/fallback/解析规则收口，五组+F5d最终范围冻结；实际技能效果/保存不改，完整门禁未完成不能宣称全闭。
 - 起始 `320c1aad`，空意图 `3d59d616`；两API求值各1172唯一Compile/8资源，51宿主partial与旧A成员证据复用并按变更/保留/迁移具名分类。原SessionTransport raw dirty与旧tools/NuGet保持不提交、不清理。
 - F1/F2/F3/F4/F5范围、旁支、接口、必要门禁及新增预算见[唯一主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#af2-final-responsibility-closeout-20261001)。产品迁移/最终六构建/全量分类/S6尚未验收；F7 LIVE/SAVE/真实网络/帧性能NOT-RUN。
-- 全量runner仓外TEMP仍待精确许可。Conversation早期越界写入一个精确TEMP源码引用文件，覆盖旧文件与否UNKNOWN，已停止且不清理；详情如实记主台账。旧凭据轮换未确认，不读取/复述秘密。
+- 全量runner仅获精确新根 `E:/AF2-SyntheticTemp-20261001-7dd0991fd822` 合成夹具创建/必要覆写删除许可，不批量清根、不触其他外部数据；最终同源全量未运行。Conversation早期越界写入一个精确TEMP源码引用文件，覆盖旧文件与否UNKNOWN，已停止且不清理；详情如实记主台账。旧凭据轮换未确认，不读取/复述秘密。
 
 # 历史交接：合并 main 参战邀请修复并交付 main（2026-10-01）
 

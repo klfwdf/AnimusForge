@@ -1,7 +1,7 @@
 <a id="af2-final-responsibility-closeout-20261001"></a>
 ## AF 2.0 主体最终职责收官：F0 已核定，五组实施中（2026-10-01）
 
-**当前授权**：用户本轮授权实施独立 [F0–F6/S1–S6 计划](plans/af2-final-responsibility-closeout-20261001.md)，取代该文件历史“仅规划/默认串行”停点；不授权推送、Stage、部署、仓外写入、清理、自动化或新 chat。此前 main 发布记录整体保留为历史，不发出本轮操作指令。现态 `ACTIVE / FIVE_PACKAGE_SCOPE_FROZEN / PRODUCT_MIGRATION_NOT_YET_VERIFIED`；Persona 新发现具名 OPEN，等待用户范围裁定，不能宣称原 J 差集全部闭合。
+**当前授权**：用户本轮授权实施独立 [F0–F6/S1–S6 计划](plans/af2-final-responsibility-closeout-20261001.md)，取代该文件历史“仅规划/默认串行”停点；不授权推送、Stage、部署、泛化仓外写入、清理、自动化或新 chat；仅新增下述精确合成 TEMP 许可。此前 main 发布记录整体保留为历史，不发出本轮操作指令。现态 `ACTIVE / FIVE_PACKAGE_SCOPE_FROZEN / PRODUCT_MIGRATION_NOT_YET_VERIFIED`；用户已显式增补 F5d Persona 规则收口；五组与 F5d 最终范围冻结，实施未完成不能宣称原 J 差集全部闭合。
 
 ### 基线与保护
 
@@ -21,13 +21,15 @@
 
 新增预算是在原完整包内承接遗漏：F4 WorldBulletin约1–2、F3完整partial约2–3工程日等效；F1旁支约3个聚合规则实现与定向用例，不另造模块/DLL/框架。预算不是实时交付保证。共享接口无匿名决定：F3经原 `ClearNativeConversationSessionHistoryForExternal(key, day)` 窄门面进入F5；F2既有External门面不变；cross-domain effects保原提交顺序/失败语义；公共Scene候选从宿主nested live捕获映射detached值，不动反射/保存类型身份。
 
-五组外具名 **Persona OPEN**：`MyBehavior.PersonaGeneration.cs:50–81` 完整system/user规则，`MyBehavior.PromotedPersonaGeneration.cs:118–129,168–178` fallback/技能Prompt，`MyBehavior.cs:18143,20955` Normalize/自定义要求仍在宿主；现有 `NpcPersonaGenerationOwner`只lease/cooldown，不能当完整业务owner。建议独立窄Persona收口（约1–2工程日等效）已交用户裁定；未授权不迁移。不把独立内聚领域Behavior/制作组内部业务按文件大强拆；旧具体错误/性能/隐私风险维持原OPEN，不能冒充已修复。
+**F5d 显式授权增补**：用户选择“纳入 Persona 规则收口”，覆盖 native/promoted/skills detached Prompt、source normalize、strict/loose persona 解析及既有文本回退；约1–2工程日等效。Conversation 作者独占模块规则与定向测试，集成者仅接宿主薄门面。通用 JSON 七 helper 与截断算法收口到 `Llm/Protocol/JsonResponseTextCodec` 唯一纯实现，原宿主签名保持；技能 TW setter、部分应用失败语义、lease/cooldown/ProfilePolicy/readiness与保存不变。当前已接线，完整门禁待验。不把独立领域/制作组业务按文件强拆；旧具体错误/性能/隐私风险不能冒充已修复。
 
 ### 验证准备、失败与未验
 
+- F1/F2 已完成独立有限切片验证：从 `336718c6` 原源码逐包重放，仅本包新增5 Compile（1177/8资源），隔离 Debug 两API+Bootstrap exit0（`integration/builds/f1-f2-debug-5bc329564e4e`）；两个正式net8 owner聚合项目 PASS、实际NativeTurn112 PASS。178保存键/42Behavior与产品基线无差集。两API实际DLL反射验证原 nested identity、Newtonsoft四字段JSON往返、owner load/save/reset及无第二活表 PASS（`integration/actual-patience/actual-{1.3,1.4}-3.log`）。首次harness缺Security.Permissions及误把float当int/错期望5.0的诊断日志保留，修正测试宿主/期望5.5后复验；不是IDataStore或真实旧档验收。共享主文件索引仅纳此切片，其他包工作树保持。
+
 - 本轮没有完成产品门禁。F1现有DomainOwner原Program+真实module隔离基线PASS；首次原项目旧obj被glob纳入 `CS0579`，转为artifacts显式Compile诊断，不改原项目/清obj。F3 captured/sealing基线真实编译缺 `WeeklyAggregateEventLineOwner`（fixture缺实际源）；F5 SceneParity缺 `PublicExecutionOrderPolicy/Runtime`（fixture缺实际源）。失败原记录保留；不得改hash/expected掩盖。
 - 最终同源Debug/Release × API1.3/1.4 + Bootstrap、全量分类、地图双模式、保存/ABI/动态消费者及S6五项影响分析均待实施；实际DLL、fixture、LIVE/SAVE不同层。F7实机/旧档/真实网络/帧性能 **NOT-RUN**。
-- 全量 `tests/run_all.py` 明确要求仓外合成TEMP：本轮没有该精确根写入授权，未绕过guard，待明确许可；已审入口还不等于全部传递副作用审完。
+- 全量 `tests/run_all.py` 明确要求仓外合成TEMP：用户已明确授权唯一全新根 `E:/AF2-SyntheticTemp-20261001-7dd0991fd822` 下创建合成文件及测试必要覆写/删除自身夹具。运行前确认 resolved 根及父链无 reparse，删除目标严格位于该子树；不手动批量清根、不触其他外部数据。该许可不追认下述越界文件；已审入口不等于全部传递副作用审完，最终同源全量尚未运行。
 - 范围违规如实记录：Conversation早期未经授权把源码引用搜索输出写入精确仓外 `C:/Users/PC/AppData/Local/Temp/af-f5-refs.txt`，当前26354字节，写前未查存在，是否覆盖旧同名文件 **UNKNOWN**；已停仓外写入、不删除，内容类别是源码符号路径/行号/引用。不得用本台账追认授权。
 - 旧凭据暴露轮换状态未确认，不读取/复述秘密；本轮不上载历史、不部署/推送、不修一键构建语义。
 
