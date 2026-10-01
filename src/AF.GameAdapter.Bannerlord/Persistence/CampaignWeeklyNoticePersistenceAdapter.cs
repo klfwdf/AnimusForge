@@ -21,10 +21,10 @@ internal static class CampaignWeeklyNoticePersistenceAdapter
 				int weeklyReportReadingXpPendingCharm = owner.ReadingXpPendingCharm;
 				int weeklyReportReadingXpPendingLeadership = owner.ReadingXpPendingLeadership;
 				int weeklyReportReadingXpPendingSteward = owner.ReadingXpPendingSteward;
-				dataStore.SyncData("_afowner.ReadingXpPendingCount_v1", ref weeklyReportReadingXpPendingCount);
-				dataStore.SyncData("_afowner.ReadingXpPendingCharm_v1", ref weeklyReportReadingXpPendingCharm);
-				dataStore.SyncData("_afowner.ReadingXpPendingLeadership_v1", ref weeklyReportReadingXpPendingLeadership);
-				dataStore.SyncData("_afowner.ReadingXpPendingSteward_v1", ref weeklyReportReadingXpPendingSteward);
+				dataStore.SyncData("_af_weeklyReportReadingXpPendingCount_v1", ref weeklyReportReadingXpPendingCount);
+				dataStore.SyncData("_af_weeklyReportReadingXpPendingCharm_v1", ref weeklyReportReadingXpPendingCharm);
+				dataStore.SyncData("_af_weeklyReportReadingXpPendingLeadership_v1", ref weeklyReportReadingXpPendingLeadership);
+				dataStore.SyncData("_af_weeklyReportReadingXpPendingSteward_v1", ref weeklyReportReadingXpPendingSteward);
 				owner.ReadingXpPendingCount = weeklyReportReadingXpPendingCount;
 				owner.ReadingXpPendingCharm = weeklyReportReadingXpPendingCharm;
 				owner.ReadingXpPendingLeadership = weeklyReportReadingXpPendingLeadership;
@@ -40,10 +40,10 @@ internal static class CampaignWeeklyNoticePersistenceAdapter
 			List<string> weeklyReportReadingXpClaimedEventIdsLoad = new List<string>();
 			dataStore.SyncData("_af_weeklyReportReadingXpClaimed_v1", ref weeklyReportReadingXpClaimedEventIdsLoad);
 			owner.ReadingXpClaimedEventIds = WeeklyNoticeStateOwner.SanitizeWeeklyReportEventIds(weeklyReportReadingXpClaimedEventIdsLoad).Where((string x) => recordExists(x)).ToList();
-			dataStore.SyncData("_afowner.ReadingXpPendingCount_v1", ref owner.ReadingXpPendingCount);
-			dataStore.SyncData("_afowner.ReadingXpPendingCharm_v1", ref owner.ReadingXpPendingCharm);
-			dataStore.SyncData("_afowner.ReadingXpPendingLeadership_v1", ref owner.ReadingXpPendingLeadership);
-			dataStore.SyncData("_afowner.ReadingXpPendingSteward_v1", ref owner.ReadingXpPendingSteward);
+			dataStore.SyncData("_af_weeklyReportReadingXpPendingCount_v1", ref owner.ReadingXpPendingCount);
+			dataStore.SyncData("_af_weeklyReportReadingXpPendingCharm_v1", ref owner.ReadingXpPendingCharm);
+			dataStore.SyncData("_af_weeklyReportReadingXpPendingLeadership_v1", ref owner.ReadingXpPendingLeadership);
+			dataStore.SyncData("_af_weeklyReportReadingXpPendingSteward_v1", ref owner.ReadingXpPendingSteward);
 			owner.NormalizeReadingXpPendingBatch();
     }
 
