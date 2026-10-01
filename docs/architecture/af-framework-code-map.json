@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "sourceRevision": "23ac43dc2ab57601922793e260459c8e76149640",
+  "sourceRevision": "2401bbfdb0930bfec8bbf45baf800a77e8f7e077",
   "remoteBaseline": "10defeb4976f3ffa096a77e847fba254308f6aba",
   "meaning": "Navigation only, not whole-file completion or a permanent feature allowlist. Refresh the current map when symbols change.",
   "anchors": [
@@ -3669,7 +3669,7 @@
     },
     {
       "id": "llm.world.nonstream",
-      "path": "WorldDiplomacyLlmClient.cs",
+      "path": "src/modules/AF.Module.Diplomacy/World/WorldDiplomacyLlmClient.cs",
       "start": 198,
       "end": 198,
       "symbol": "private static async Task<WorldDiplomacyHttpExchange> SendAndReadAsync(",
@@ -7526,7 +7526,7 @@
       "match": "exact",
       "status": "replay-j13e4-offline-verified",
       "note": "Source wiring only; owner DLL replay separate",
-      "fileSha256": "cbe2d8ca760e80c7e27e2495568a015157c4af3911cb7d4d9bb692882f99d6d4"
+      "fileSha256": "27f90da2bb6cae9cac74f1ef3baac6edf38c6cd2a37835f253de0b3230c3ea51"
     },
     {
       "id": "exercise.death.patch",
