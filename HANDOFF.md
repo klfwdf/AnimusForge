@@ -1,5 +1,7 @@
 # 当前交接：J17 收尾与远端 CivilWar 合并（2026-10-01）
 
+- **本轮最新：J17 B6有限离线出口与完整C已验（2026-10-01）**：六包必要定向/编译后行为变异及当前1.4 DLL回读完成；Debug/Release × 双API+Bootstrap全部exit0，最终同候选C **287项：243 PASS、0 FAIL/0 BLOCKED_ENV；33既有失败、6需输入、4替代、1环境状态保留，exit0**，不是全部测试通过。产品相对远端WIP无新增语义修改，测试冻结`af6006c4`，813地图已绑定/双模式验。f/g retained、i OPEN；D实机/真实旧档/真实网络/性能NOT-RUN，1.3实际message runtime缺SaveSystem未验，旧凭据轮换未确认。未push/Stage/部署/清理，原SessionTransport dirty和旧tools/NuGet保留。[唯一详细当前结果](docs/animusforge-refactoring-and-repository-reorganization-plan.md#j17-b6-c-resume-20261001)；下方ACTIVE/暂停与历史上传授权均不再发当前指令。
+
 - **本轮当前：六包恢复 J17 B6/C（2026-10-01）**：用户已明确恢复施工，不延续推送/Stage/部署授权。WIP 基线 `3c00ae2e`，空意图检查点 `38efd7eb`；六包各自实现/定向验证，P6 唯一共享接线/Git/串行构建和最终同候选 C。A/Memory/Weekly/B7 不重做，保留 SessionTransport 初始 dirty 及旧 tools/NuGet/产物；当前 ACTIVE，尚未验收。最新范围和证据集中于[主台账当前入口](docs/animusforge-refactoring-and-repository-reorganization-plan.md#j17-b6-c-resume-20261001)，下方暂停和历史授权不是当前指令。D NOT-RUN，旧凭据轮换未确认。
 
 - **本轮最新：远端 WIP 接续交付（2026-10-01）**：用户要求本轮全部上传并说明进度；P1/P2 全部必要产品、新 owner、测试及共享接线纳入本次 WIP 提交（以实际 Git HEAD 为准），不是验收 PASS。A 已完成，P3/P4/P5 已提交；最新源码最终双配置双 API+Bootstrap/C 未跑，P2 最近 fixture/三变异与 fallback retry 证据待补，地图未更新，D NOT-RUN。下方“未提交/明天本地继续”是历史停点，不是当前状态。远端可用精确清单、离线构建/C helper、已核实依赖与接手顺序见[唯一现态与接续说明](docs/animusforge-refactoring-and-repository-reorganization-plan.md#j17-b6-c-resume-20261001)；本地 artifacts 未上传，不能当远端证据。旧 tools/NuGet/原日志与二进制不上传、不清理，无部署/Stage。

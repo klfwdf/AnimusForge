@@ -2,7 +2,7 @@
 
 ### J17 B6 有限边界当前回读（2026-10-01，包5）
 
-以下是当前源码逐符号边界，不重做 A/Memory/Weekly/B7，也不将整文件或历史 E 表标成新验收。最终源码修订/地图与同候选门禁由集成记录绑定。
+以下是当前源码逐符号边界，不重做 A/Memory/Weekly/B7，也不将整文件或历史 E 表标成新验收。当前813锚点地图绑定 `23627405`（recorded/working-tree均PASS），最终构建产品输入 `08b95aa7` 至测试冻结 `af6006c4` 无产品源差分；完整C与未验边界见[主台账本轮结果](../animusforge-refactoring-and-repository-reorganization-plan.md#j17-b6-c-resume-20261001)。地图仅为定位，不是实机。
 
 - **R05-f retained**：`LegacyActionTagParser.Parse` 持 detached ActionPlan；`GiveAssetTagCodec` 持 GIVE_ASSET codec。Scene/Courier/Memory/Reward 的 strip/count/mood 筛选仍归各渠道/领域，不假称“所有剥离/计数已改单一 parser”。`AnimusForgeTagCatalog.BracketTagRegex` 是工具目录扫描/目录展示（15 秒缓存），不是生产动作解析权威。Xihai 扩展 binding 保留自己的协议约束；不扩大迁移。
 - **R05-g retained**：`ShoutBehavior` 的 `_nativeConversationSessionHistory` 和 `_pendingCurrentNativeAfefFactsByKey` 是会话/待注入投影；`PrepareNativeConversationPendingHistoryAsync` 在主线程一次捕获 key、tentative 玩家事件与 AFEF，再交请求自有数据；拒绝时按 key/event/owner 撤回，不清真实事实。`BuildNativeConversation*HistoryLinesForPrompt` 仍调用 `TryRenderSceneHistoryLine`；“渲染不同”不成立。Memory 的 daily/persistent commit 权威不迁入这个会话 owner。每请求复制/筛选会话列表，非每帧扫描；真实帧耗时 NOT-RUN。
@@ -55,7 +55,7 @@
 
 ## 当前核实证据（一基行号；后续按符号与修订重定位）
 
-### E134 / J17-B 当前候选责任接线（产品 `aa3539ca`；2026-10-01）
+### E134 / J17-B 前次候选责任接线（历史产品 `aa3539ca`；2026-10-01）
 
 | 责任 / 实码入口与消费者 | 保留边界与未覆盖 |
 | --- | --- |
