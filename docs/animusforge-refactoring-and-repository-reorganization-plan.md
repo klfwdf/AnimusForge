@@ -1,3 +1,17 @@
+<a id="merged-deployment-verified-20261001"></a>
+
+### 融合版本部署及中断后复核完成（2026-10-01，DEPLOYED / LIVE_NOT_RUN）
+
+用户先明确要求“部署”，部署成功后中断，随后要求“提交并推送”。实际安装源码为融合提交 `6c32576c497ffe5ed039cbd70b0829bb6c981514`；部署前后tracked clean、HEAD一致。复用同一不可变候选中已通过双API+Bootstrap及361项定向检查的Release产物，确认候选与当前源码仅测试/文档不同，三个DLL hash与原验证记录一致；没有重新编入未验证工作树，也没有改一键脚本。
+
+执行原 `scripts/build/deploy_module.ps1`，ProjectRoot指向 `artifacts/remote-integration-20261001/candidate`、显式提供已验1.3/1.4/Bootstrap产物，先Stage后部署至 `F:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord/Modules/AnimusForge`。238个Stage文件中更新28个（9个DLL/PDB/marker及界面/配置资源）；保留未列入Stage的安装文件和ONNX。部署脚本exit0，未启动游戏。
+
+中断前脚本已完成自动备份/逐文件替换；本轮补齐独立复核：**238个安装文件SHA256全部等于预先记录的Stage清单**；唯一匹配的28文件Recovery manifest、新旧hash、备份原文件hash及complete标记均通过；SubModule.xml唯一声明 `AnimusForge.Bootstrap.dll`。城镇记忆7日间隔与384输出token限制包含于本次安装。真实游戏、真实provider、玩家旧档仍NOT-RUN。
+
+完整本地证据：`artifacts/merged-deployment-20261001/` 的 `stage.log`、`stage-inventory.json`、`deployment-plan.json`、`deploy.log`、`deployment-verification.json`。安装回滚目录：`C:/Users/29310/AppData/Local/AnimusForge/Recovery/deploy/deploy-8f657b5a517744a29d8fff15fd3b9ef9`；仅按manifest恢复本次替换项，不镜像删除模块或改玩家数据。旧DLL不支持新的城镇记忆v3，回退时应使用升级前存档。
+
+本轮用户已授权提交并推送当前 `codex/af-main-refactor-continuation-20260831`。获取远端后仍为 `8f3903e2`，没有新增分叉；待推历史检查未包含 `.gitignore` 明确排除的本地专用交接。只提交本轮验收文档，原本地功能/融合历史随当前分支普通快进推送；未跟踪文件、产物与Recovery不提交。实际推送结果以完成后的远端ref核对为准。
+
 <a id="remote-integration-20261001-town-memory"></a>
 
 ### 本地功能与远端8f3903e2融合（2026-10-01，OFFLINE_VERIFIED / 未推送部署）
