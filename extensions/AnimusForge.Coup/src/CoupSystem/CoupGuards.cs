@@ -2,6 +2,7 @@ using System;
 using System.Reflection;
 using HarmonyLib;
 using SandBox.Missions.MissionLogics;
+using SandBox.Objects;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.Core;
 using TaleWorlds.Library;
@@ -67,7 +68,8 @@ internal static class CoupGuards
         bool customFight = PatchPrefix(harmony, AccessTools.Method(typeof(MissionFightHandler), "StartCustomFight"), nameof(UnrelatedSceneFlowPrefix));
         bool fistFight = PatchPrefix(harmony, AccessTools.Method(typeof(MissionFightHandler), "StartFistFight"), nameof(UnrelatedSceneFlowPrefix));
         bool lifecycle = RegisterLifecycleGuards(harmony);
-        MissionProtectionAvailable = death && conversation && alleyConversation && alleyBattle && afIsolation && customFight && fistFight && lifecycle;
+        bool passage = PatchPrefix(harmony, AccessTools.Method(typeof(PassageUsePoint), "OnUse", new[] { typeof(Agent), typeof(sbyte) }), nameof(NativePassageUsePrefix));
+        MissionProtectionAvailable = death && conversation && alleyConversation && alleyBattle && afIsolation && customFight && fistFight && lifecycle && passage;
         CoupCaptivityBehavior.RegisterPatches(harmony);
         Logger.Log("Coup", "Guards registered. mission=" + MissionProtectionAvailable + ", captivity=" + CaptivityProtectionAvailable);
     }
@@ -188,6 +190,16 @@ internal static class CoupGuards
     private static bool NativeConversationPrefix(Agent agent)
     {
         return !CoupCampaignBehavior.IsMissionActive(agent?.Mission ?? Mission.Current);
+    }
+
+    private static bool NativePassageUsePrefix(PassageUsePoint __instance, Agent userAgent)
+    {
+        Mission mission = userAgent?.Mission ?? Mission.Current;
+        if (!CoupCampaignBehavior.IsMissionActive(mission)) return true;
+        // The native callback writes NextLocation and closes the scene immediately.
+        // Own this event before that write; raw key polling cannot arbitrate the two paths.
+        mission.GetMissionBehavior<CoupMissionBehavior>()?.HandlePassageUse(__instance, userAgent);
+        return false;
     }
 
     private static bool UnrelatedSceneFlowPrefix()

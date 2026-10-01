@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Helpers;
 using SandBox;
 using SandBox.Missions.MissionLogics;
+using SandBox.Objects;
 using SandBox.Objects.Usables;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.AgentOrigins;
@@ -11,7 +12,6 @@ using TaleWorlds.CampaignSystem.Party;
 using TaleWorlds.CampaignSystem.Settlements;
 using TaleWorlds.Core;
 using TaleWorlds.Engine;
-using TaleWorlds.InputSystem;
 using TaleWorlds.Library;
 using TaleWorlds.MountAndBlade;
 
@@ -65,16 +65,6 @@ internal sealed class CoupMissionBehavior : MissionLogic
                 InitializeObjective();
                 return;
             }
-            // Key presses last one frame: poll input every tick, throttle only the objective scan.
-            if (!_hall && _doorReady && _player.IsActive() && Input.IsKeyPressed(InputKey.F)
-                && _player.Position.DistanceSquared(_gateFrame.origin) <= 36f)
-            {
-                SaveHealth();
-                _exiting = true;
-                CoupCampaignBehavior.NotifyStreetComplete(Mission);
-                EndScene();
-                return;
-            }
             if (Mission.CurrentTime < _nextObjectiveCheck) return;
             _nextObjectiveCheck = Mission.CurrentTime + 1f;
             CheckObjectives();
@@ -83,6 +73,39 @@ internal sealed class CoupMissionBehavior : MissionLogic
         {
             Logger.Log("Coup", "Mission tick failed: " + ex);
             ExitTechnical("政变场景处理失败：" + ex.Message);
+        }
+    }
+
+    // Invoked only from the owned mission's native door-use prefix, never from a global F key.
+    internal void HandlePassageUse(PassageUsePoint passage, Agent userAgent)
+    {
+        if (_exiting || !_initialized || passage == null || userAgent == null || userAgent != _player
+            || !CoupCampaignBehavior.IsMissionActive(Mission)) return;
+        try
+        {
+            if (!_player.IsActive()) return;
+            if (passage.IsMissionExit) { ExitDefeat("从场景出口撤出了政变战斗。"); return; }
+            if (_hall || _session.Phase != CoupPhase.Street || passage.ToLocation?.StringId != "lordshall")
+            {
+                InformationManager.DisplayMessage(new InformationMessage("【宣权篡位】战斗期间不能通过此门转往其他场景；撤退请使用退出战斗。"));
+                return;
+            }
+            // Recheck on use, so neither a stale prompt nor a still-unspawned guard can bypass the objective.
+            if (!_session.IsGateCleared || SettlementEntryTroopSelectionBehavior.CountCoupRole(Mission, "GateGuard") != 0)
+            {
+                InformationManager.DisplayMessage(new InformationMessage("【宣权篡位】大厅门口守卫尚未清除，暂时无法突入大厅。"));
+                return;
+            }
+            SaveHealth();
+            CoupCampaignBehavior.NotifyStreetComplete(Mission);
+            if (_session.Phase != CoupPhase.HallSelection) return;
+            _exiting = true;
+            EndScene();
+        }
+        catch (Exception ex)
+        {
+            Logger.Log("Coup", "Hall passage transition failed: " + ex);
+            ExitTechnical("大厅转场失败：" + ex.Message);
         }
     }
 
@@ -237,6 +260,7 @@ internal sealed class CoupMissionBehavior : MissionLogic
     private void EndScene()
     {
         Campaign.Current.GameMenuManager.NextLocation = null;
+        Campaign.Current.GameMenuManager.PreviousLocation = null;
         Mission.EndMission();
     }
 
