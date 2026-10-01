@@ -1,5 +1,7 @@
 # 当前交接：J17 收尾与远端 CivilWar 合并（2026-10-01）
 
+- **宣权篡位灰色入口已离线修复（2026-10-01）**：`f1c27b5b` 将 Coup 的旧私有字段反射改为当前主体状态查询，保持冲突阻挡与失败关闭。Release 双 API+Bootstrap、真实 1.4 注册四标志、36 状态/拘押生命周期与 29 选兵回归通过；拘押加载期 False 已证为实例生命周期条件，未改拘押产品代码。未部署/推送/游戏旧档验收，其他内战/周报并行改动保留。独立产物、精确坐标、全局地图历史失败及回滚见[本任务台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#coup-entry-repair-20261001)，不提升 J17 总体状态。
+
 - **即时快报审查修复（2026-10-01）**：修复读档后最新快报选错、坏存档原文被自动初始化覆盖、过期摘要混入近期消息；38规则检查 + 16真实方法/桩存储回放 PASS，Release双API+Bootstrap通过，实机/真实旧档未验。新增恢复字段随原存档键保存，查询缓存避免每次对话全量扫描。仅本地提交，无部署/推送；详细源码坐标、构建哈希、其他任务并发边界与回滚见[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#world-bulletin-review-fixes-20261001)。
 
 - **本轮最新：远端 WIP 接续交付（2026-10-01）**：用户要求本轮全部上传并说明进度；P1/P2 全部必要产品、新 owner、测试及共享接线纳入本次 WIP 提交（以实际 Git HEAD 为准），不是验收 PASS。A 已完成，P3/P4/P5 已提交；最新源码最终双配置双 API+Bootstrap/C 未跑，P2 最近 fixture/三变异与 fallback retry 证据待补，地图未更新，D NOT-RUN。下方“未提交/明天本地继续”是历史停点，不是当前状态。远端可用精确清单、离线构建/C helper、已核实依赖与接手顺序见[唯一现态与接续说明](docs/animusforge-refactoring-and-repository-reorganization-plan.md#j17-b6-c-resume-20261001)；本地 artifacts 未上传，不能当远端证据。旧 tools/NuGet/原日志与二进制不上传、不清理，无部署/Stage。
