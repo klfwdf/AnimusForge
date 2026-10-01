@@ -1,5 +1,7 @@
 # 当前交接：J17 收尾与远端 CivilWar 合并（2026-10-01）
 
+- **篡位MCM七项战斗参数已离线实现（2026-10-01，未部署）**：`0aff8322`，街道/大厅突击队、门卫/大厅护卫、守军每波/间隔/存活波数均可调；默认保持现状，发动时快照并保存，下次政变生效。接通SETS真实人数/波次，旧接口及普通场景保持默认。修复Newtonsoft复用对象掩盖部分损坏快照；91契约、170真实DLL/夹具检查、Release双API+Bootstrap通过。并行WIP排除在隔离构建外；MCM实显、大规模导航性能和真实旧档未验，无部署/推送。[源码、完整证据与回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#coup-mcm-battle-options-20261001)。
+
 - **处决遗言/喊话行刑已离线接通，轮刑选择已隐藏（2026-10-01）**：`68dd6cd5`，三阶段台词结合相关记忆，实际气泡显示后才记原文；不等遗言播完，未显示后半段不补记。死亡成功后才供公共消息转述，新增实录存档保留最近100场。必须单选本场刽子手，通过统一后处理启动；否定/条件/错目标/迟到/重复不执行，Native 仍等对话关闭。普通及自定义方法列表隐藏轮刑，旧 ID/预设保留。98项定向断言、原parser、Release双API+Bootstrap及独立复仇编译通过；真实模型/游戏/旧档未验，本轮未部署推送。[唯一台账、源码坐标、候选哈希与逆向回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#execution-last-words-20261001)。
 
 - **政变完整结果快报已接入并部署（2026-10-01 13:06）**：`a4723aef`，成功/失败最终事实包含城镇/王国/双方、实际街道/大厅过程、处置与伤亡；进入现有快报Prompt/模板及NPC知识，原记忆/周报保持。63政变契约、38快报规则、真实DLL117检查及双API+Bootstrap通过。排除并行内战WIP，用已提交基线+本任务overlay快照构建部署；27文件更新、238哈希一致，备份已验。沿用收集窗口/冷却，关闭快报不阻塞结算，旧完成事件不补发；真实文案/NPC转述/旧档未验。[精确源码、构建失败与隔离证据、回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#coup-bulletin-outcome-20261001)。
