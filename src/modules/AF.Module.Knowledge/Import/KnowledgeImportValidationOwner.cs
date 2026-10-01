@@ -240,4 +240,106 @@ internal static class KnowledgeImportValidationOwner
 			return false;
 		}
 	}
+
+	internal static bool TryAddDatabaseReloadKnowledgeRule(KnowledgeLibraryBehavior.LoreRule rule, string sourceLabel, HashSet<string> knownRuleIds, Dictionary<string, string> keywordOwnerOriginalRuleIds, List<KnowledgeLibraryBehavior.LoreRule> rules, ref int disambiguatedRuleIdCount, ref int deduplicatedKeywordCount, out string error)
+	{
+		error = "";
+		if (rule == null)
+		{
+			error = "资料包包含空知识条目。";
+			return false;
+		}
+		string originalRuleId = (rule.Id ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(originalRuleId))
+		{
+			error = "知识条目 “" + (sourceLabel ?? "") + "” 的 RuleId 为空。";
+			return false;
+		}
+		// Never turn a second package player-profile entry into ordinary lore by renaming it.
+		if (KnowledgeLibraryBehavior.IsPlayerPersonaRuleId(originalRuleId))
+		{
+			return true;
+		}
+		string effectiveRuleId = originalRuleId;
+		bool disambiguatedRuleId = false;
+		if (!knownRuleIds.Add(effectiveRuleId))
+		{
+			effectiveRuleId = BuildDatabaseReloadDisambiguatedRuleId(originalRuleId, sourceLabel, knownRuleIds);
+			if (string.IsNullOrWhiteSpace(effectiveRuleId) || !knownRuleIds.Add(effectiveRuleId))
+			{
+				error = "无法为重复知识 RuleId 生成稳定 ID：" + originalRuleId;
+				return false;
+			}
+			rule.Id = effectiveRuleId;
+			disambiguatedRuleId = true;
+			disambiguatedRuleIdCount++;
+			Logger.Log("DatabaseReload", "[WARN] Disambiguated duplicate knowledge RuleId source=" + (sourceLabel ?? "") + " old=" + originalRuleId + " new=" + effectiveRuleId);
+		}
+		else
+		{
+			rule.Id = effectiveRuleId;
+		}
+		if (disambiguatedRuleId)
+		{
+			// Exact-keyword lookup returns one rule only, so a split duplicate keeps each shared trigger on the original rule and retains its unique triggers here.
+			deduplicatedKeywordCount += RemoveDuplicateKeywordsFromDisambiguatedDatabaseRule(rule, sourceLabel, originalRuleId, keywordOwnerOriginalRuleIds);
+		}
+		foreach (string keyword in rule.Keywords ?? new List<string>())
+		{
+			string normalizedKeyword = KnowledgeImportValidationOwner.NormalizeKeywordForCompare(keyword);
+			if (!string.IsNullOrWhiteSpace(normalizedKeyword) && !keywordOwnerOriginalRuleIds.ContainsKey(normalizedKeyword))
+			{
+				keywordOwnerOriginalRuleIds[normalizedKeyword] = originalRuleId;
+			}
+		}
+		rules.Add(rule);
+		return true;
+	}
+	internal static string BuildDatabaseReloadDisambiguatedRuleId(string originalRuleId, string sourceLabel, HashSet<string> knownRuleIds)
+	{
+		string fileStem = Path.GetFileNameWithoutExtension(sourceLabel ?? "") ?? "";
+		int separatorIndex = fileStem.IndexOf("__", StringComparison.Ordinal);
+		string suffix = (separatorIndex >= 0 && separatorIndex + 2 < fileStem.Length) ? fileStem.Substring(separatorIndex + 2).Trim() : fileStem.Trim();
+		if (string.IsNullOrWhiteSpace(suffix))
+		{
+			suffix = "duplicate";
+		}
+		string baseId = (originalRuleId ?? "").Trim() + "__" + suffix;
+		string candidate = baseId;
+		int suffixIndex = 2;
+		while (knownRuleIds != null && knownRuleIds.Contains(candidate))
+		{
+			candidate = baseId + "_" + suffixIndex++;
+		}
+		return candidate;
+	}
+
+	internal static int RemoveDuplicateKeywordsFromDisambiguatedDatabaseRule(KnowledgeLibraryBehavior.LoreRule rule, string sourceLabel, string originalRuleId, Dictionary<string, string> keywordOwnerOriginalRuleIds)
+	{
+		if (rule?.Keywords == null || rule.Keywords.Count <= 0 || keywordOwnerOriginalRuleIds == null)
+		{
+			return 0;
+		}
+		int removedCount = 0;
+		List<string> retainedKeywords = new List<string>(rule.Keywords.Count);
+		foreach (string keyword in rule.Keywords)
+		{
+			string normalizedKeyword = NormalizeKeywordForCompare(keyword);
+			if (!string.IsNullOrWhiteSpace(normalizedKeyword)
+				&& keywordOwnerOriginalRuleIds.TryGetValue(normalizedKeyword, out string ownerOriginalRuleId)
+				&& string.Equals(ownerOriginalRuleId, originalRuleId, StringComparison.OrdinalIgnoreCase))
+			{
+				removedCount++;
+				Logger.Log("DatabaseReload", "[WARN] Kept duplicate source keyword on original rule source=" + (sourceLabel ?? "") + " ruleId=" + originalRuleId + " keyword=" + normalizedKeyword);
+				continue;
+			}
+			retainedKeywords.Add(keyword);
+		}
+		if (removedCount > 0)
+		{
+			rule.Keywords = retainedKeywords;
+		}
+		return removedCount;
+	}
+
 }
