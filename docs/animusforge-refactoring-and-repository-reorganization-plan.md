@@ -1,3 +1,27 @@
+<a id="coup-bulletin-outcome-20261001"></a>
+
+### 政变地点／过程／最终结果接入快报（2026-10-01，DEPLOYED / OFFLINE_VERIFIED）
+
+用户要求快报包含“在哪里政变、过程、最终结果”。工作区 `F:/AnimusForge-main`，分支 `codex/af-main-refactor-continuation-20260831`；意图checkpoint `b1952b4`，产品与测试 `a4723aef`。开始时已有政策/内战及台账的其它作者改动，全部保留，不纳入本提交。只在已确认的成功/失败结算后登记专用 `coup_success` / `coup_failure`；不在选兵/技术中断时宣布胜负，不追溯补发旧已完成政变。
+
+事实含原王国与城镇、玩家与目标国王、突击队规模、已观察到的街道进入/突破门口/大厅进入/制服国王、实际记录伤亡、夺位/接城/扣押或不扣押、失败带地叛离及已生效的战争。`GateBreached` / `HallEntered` 为现有 `_afCoupSession_v1` JSON 的可选字段，旧档缺失时不虚构进度；已制服国王足以证明大厅到达。结果收据在 `_afCoupOutcomeBridge_v1` 新增冻结正文/原王国/玩家王国/处理标志，重试不因改名改变原文。原记忆/玩家与NPC行动/周报素材写入保持；快报完整Sentence进入原写稿Prompt、模板fallback与三渠道复用的NPC快报知识入口，不另写一套对话记忆。
+
+| 源码坐标（`a4723aef`，一基） | 真实职责及消费者 |
+| --- | --- |
+| `extensions/AnimusForge.Coup/src/CoupSystem/CoupSession.cs:68–71`；`CoupCampaignBehavior.cs:346,397,563,606`（同目录） | 持久进度由真实场景进入/门突破设置，成功失败均传实际会话给结果owner。 |
+| `extensions/AnimusForge.Coup/src/CoupSystem/CoupOutcomeReport.cs:1–62` | `CanReport` 拒绝未完成伤亡/王权/城镇/拘押或叛离/撤回的最终报告；Build 一次遍历会话兵员生成确认事实。 |
+| `extensions/AnimusForge.Coup/src/Integration/CoupRebellionBridge.cs:61–64,89,122,422–513` | 冻结报告，注册并调用主体快报接缝；快报未接受时保留已完成回执供重试。关闭快报属于按设置跳过，不能阻塞政变结算。 |
+| `MyBehavior.WorldBulletin.cs:213–224` | `TryRecordCoupOutcomeForBulletin`→原Capture入口，稳定键 `coup:<id>:bulletin` / 独立同案group；成功95、失败80，保留原收集窗口/冷却/发布开关，不额外发LLM请求。 |
+| `src/modules/AF.Module.Weekly/Bulletin/WorldBulletinPolicy.cs:714–717` | 专用fallback标题“政变夺位／政变失败”；原选择、Prompt、NPC知识消费者不改路由。 |
+
+性能：每次最终收据只汇总一次O(本次兵员数)并冻结正文；重试只查现有最多300条快报事实，解决一般64条尾部去重的跨窗口遗漏，无每帧/每日新扫描或额外模型调用。模式关闭跳过收录；正常收录沿用24游戏小时收集窗口、72小时冷却及现有大事件竞争规则，并非保证即时弹窗或每次独占头条。
+
+验证根 `artifacts/coup-bulletin-20261001/`：政变契约 **63 PASS**（新报告、正负结果、进度缺失/JSON往返、模板/写稿/NPC全文）；既有快报规则 **38 PASS**；真实1.4 DLL注册与fixture **117 PASS**（原105 + 新12个快报宿主分类、区域、64条以后去重、JSON往返、模式关闭检查），四标志True、45个Harmony目标、输入DLL哈希未变。实际入口代码执行，但fixture的MyBehavior未构造且设置开关替换，未执行真实政治结算/存档/模型请求。日志 `coup-contract-final.log`、`bulletin-policy.log`、`snapshot-probe/registration.log`。
+
+首次全工作树构建被其它作者正在编辑的内战缺失 `MigratePoliticalDays` / `PlayerPoliticalKingdom` 两方法阻断；后续探针因该失败无产物而失败，原日志保留。为不改动/等待他人WIP，以已提交 `baf324f6` git archive 加本任务10文件精确overlay建独立快照，完整列表/哈希 `snapshot.json`；在 `source/` 内调用原统一脚本，显式引用原 `_deps_auto`，Release 1.3/1.4+Bootstrap exit0，`snapshot-build.log`。最终引用 `v1.3.15.110062` / `v1.4.6.115628`；1.3 SHA256 `A41167E3309247859A0AB0CE75020A4A934F497EA574B86DEEA5EDBEE19D605F`，1.4 `9C9A6D4377426833F03D77DB37BE840196C258C7BB076E76F1FAC12BB08D2031`。不把独立候选成功写成其它未完成内战源码已通过；全局地图仍因未改SubModule.cs旧锚点失败，本任务diff通过。
+
+部署沿用同一政变任务此前授权，13:06确认游戏退出后从已验快照调用未改的正式覆盖脚本，更新27文件，Stage全部238文件与安装目录SHA256一致；只加载Bootstrap，未知安装文件保留，未推送。`deployment.log` / `deployment-verification.json` 记录完整校验；备份 `C:/Users/29310/AppData/Local/AnimusForge/Recovery/deploy/deploy-8363c3c06fc94e24a2686c0dbd492027` 的complete和旧文件哈希已验。源回滚仅 `git revert a4723aef`，不能撤回此前场景修复或其它作者改动。未实测最终报道文案、游戏NPC转述、成功/失败完整战役及真实旧档；需从新结算政变开始验证，旧已完成事件不补发。
+
 <a id="settlement-stay-sortie-20261001"></a>
 
 ### 驻守城镇遇敌自行出城修复（2026-10-01，OFFLINE_VERIFIED）
