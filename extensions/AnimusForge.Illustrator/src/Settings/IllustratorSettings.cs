@@ -218,7 +218,7 @@ namespace AnimusForge.Illustrator
             return -1;
         }
 
-        [SettingPropertyDropdown("生图分辨率 (Size)", Order = 7, RequireRestart = false, HintText = "从预设中选择发送给生图服务的分辨率。仅提供已验证的尺寸；多模态模型会按对应画幅比例处理。")]
+        [SettingPropertyDropdown("生图分辨率 (Size)", Order = 7, RequireRestart = false, HintText = "场景插画按预设转为16:9：1024方形及1280/720档→1280×720；1344/1536档→1536×864；2048方形→2048×1152。百科使用所选尺寸，快报固定1536×1024。需生图服务支持对应尺寸。")]
         [SettingPropertyGroup("2. 生图 API 配置 (OpenAI 兼容)", GroupOrder = 2)]
         public Dropdown<string> SizePresetDropdown
         {
