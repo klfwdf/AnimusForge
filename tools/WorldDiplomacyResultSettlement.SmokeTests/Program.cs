@@ -1780,7 +1780,7 @@ internal static class Program
 			StringComparison.Ordinal);
         int executePeace = settleOffer.IndexOf("port.ExecutePeace(proposerId, targetId, response.PeaceTerms)", cloneExactTerms, StringComparison.Ordinal);
 		Test.True(acceptExecutability >= 0
-            && settleOffer.Contains("if (!orchestration.AreOfferedPeaceTermsCurrentlyExecutable(offer, source)) return false;", StringComparison.Ordinal)
+            && settleOffer.Contains("if (!orchestration.AreOfferedPeaceTermsCurrentlyExecutable(offer, source)) return WorldDiplomacyOfferOutcome.Invalidated;", StringComparison.Ordinal)
 			&& cloneExactTerms > acceptExecutability
 			&& executePeace > cloneExactTerms
 			&& File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOfferApplication.cs"))

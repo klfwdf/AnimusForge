@@ -588,9 +588,9 @@ internal static class Program
             "public static void EnqueueCompressionJob(");
         Test.True(scheduler.Contains("compressionTriggerTokens", StringComparison.Ordinal),
             "scheduler must compare history size with the independent trigger");
-        Test.True(scheduler.Contains("x.AwaitingHistoryCompression", StringComparison.Ordinal),
+        Test.True(scheduler.Contains("jobs.HasAwaiting(storage)", StringComparison.Ordinal),
             "total-input pressure must schedule compression even when history alone is below the trigger");
-        Test.True(scheduler.Contains("WorldDiplomacyRoundLifecycleRules.IsJobOfKind(x, \"compress\")", StringComparison.Ordinal),
+        Test.True(scheduler.Contains("jobs.HasCompression(storage)", StringComparison.Ordinal),
             "the only queued-job guard must detect an existing compression job");
         Test.True(!scheduler.Contains("_llmRequestRunning", StringComparison.Ordinal),
             "an active ordinary request must not starve the high-priority compression queue");
