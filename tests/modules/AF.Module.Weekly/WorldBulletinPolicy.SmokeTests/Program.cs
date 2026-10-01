@@ -50,6 +50,22 @@ internal static class Program
 		Check(s.Minors.Any(m => m.Events.Count == 3 && m.Sentence.Contains("另有1起同类事件")), "home raids collapse into one minor");
 		Check(!s.Minors.SelectMany(m => m.Events).Any(e => e.Key == "fief"), "score-20 fief grant dropped");
 		Check(!s.Minors.SelectMany(m => m.Events).Any(e => e.Key == "raid:far"), "far-away raid below world bar dropped");
+		var enoughNews = WorldBulletinPolicy.Select(events.Concat(new[] { Ev("cap:home", "lord_captured", 109, 35, "本国领主被俘。", "clash:4:vlandia|aserai", false, "vlandia", "aserai") }).ToList(), new WorldBulletinScopeState { WindowEndHour = 130 }, focus, 130);
+		Check(WorldBulletinPolicy.HasEnoughMinorNews(enoughNews), "two distinct minor groups allow generation");
+		Check(!WorldBulletinPolicy.HasEnoughMinorNews(s), "below-threshold foreign capture does not pad minor count");
+		Check(!WorldBulletinPolicy.HasEnoughMinorNews(new WorldBulletinSelection { Major = s.Major, Minors = new() { s.Minors[0] } }), "three raids in one group still count as one minor");
+		Check(!WorldBulletinPolicy.HasEnoughMinorNews(new WorldBulletinSelection { Major = s.Major }), "zero minors wait without generating");
+		s.Major.Participants.Add(new WorldBulletinParticipant { HeroId = "a", Name = "甲", Role = "死者" });
+		s.Major.Participants.Add(new WorldBulletinParticipant { HeroId = "player", Name = "玩家", Role = "行刑方" });
+		events[1].Participants.Add(new WorldBulletinParticipant { HeroId = "b", Name = "乙", Role = "死者" });
+		events[6].Participants.Add(new WorldBulletinParticipant { HeroId = "unrelated", Name = "外部君主", Role = "另一战事君主" });
+		var art = WorldBulletinPolicy.BuildIllustrationPlan(s, "selection:1", "1084年夏季8日");
+		Check(art.Participants.Select(p => p.HeroId).SequenceEqual(new[] { "a", "player", "b" }), "art preserves all core participants but excludes unrelated headline");
+		Check(art.Facts.Contains("甲被玩家处决") && art.Facts.Contains("乙被玩家处决") && !art.Facts.Contains("宣战") && !art.Facts.Contains("村一"), "art freezes only same-story facts");
+		s.Major.Participants[0].Role = "已改写";
+		Check(art.Participants[0].Role == "死者", "plan clones event-time role independently of source mutations");
+		var filledMinors = WorldBulletinPolicy.MergeMinors(new List<string>(), enoughNews.Minors, out int filledCount);
+		Check(filledMinors.Count >= 2 && filledMinors.All(m => !string.IsNullOrWhiteSpace(m)) && filledCount == 0, "missing generated minors filled with real selected facts");
 
 		// Bonuses alone never make a headline: a home fief grant (20+20) must not trigger.
 		Check(!WorldBulletinPolicy.IsTrigger(events[5], focus), "home fief grant is not a trigger");

@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Linq;
+using System.Text;
 using AnimusForge.Illustrator.Context;
 using AnimusForge.Illustrator.Engine;
 using AnimusForge.Illustrator.UI.Patches;
@@ -26,7 +28,47 @@ namespace AnimusForge.Illustrator.Core
         internal static string KeyFor(string eventId, string title, string subtitle, string body)
         {
             // A new namespace excludes old weekly/gallery images; content guards reused issue IDs.
-            return "bulletin_prepared_v1:" + DiskImageCacheManager.ComputeHash(string.Join("\n", eventId, title, subtitle, body));
+            return "bulletin_prepared_v2_16x9:" + DiskImageCacheManager.ComputeHash(string.Join("\n", eventId, title, subtitle, body));
+        }
+
+        internal static string KeyFor(global::AnimusForge.WorldBulletinIllustrationPlan plan)
+        {
+            var identity = new StringBuilder();
+            AppendKeyPart(identity, plan.Identity);
+            AppendKeyPart(identity, plan.Facts);
+            foreach (var p in (plan.Participants ?? new List<global::AnimusForge.WorldBulletinParticipant>()).Where(p => p != null))
+            {
+                AppendKeyPart(identity, p.HeroId);
+                AppendKeyPart(identity, p.Role);
+            }
+            return "bulletin_selected_v2_16x9:" + DiskImageCacheManager.ComputeHash(identity.ToString());
+        }
+
+        private static void AppendKeyPart(StringBuilder output, string value)
+        {
+            value = value ?? "";
+            output.Append(value.Length).Append(':').Append(value);
+        }
+
+        internal static void PrepareSelection(global::AnimusForge.WorldBulletinIllustrationPlan plan)
+        {
+            if (plan == null || !IllustratorRuntime.IsEnabled("weekly_report")) return;
+            string key = KeyFor(plan);
+            if (Find(key) != null) return;
+            var context = WeeklyReportContextExtractor.ExtractFromPlan(plan);
+            if (context != null) Ensure(key, context, published: true);
+        }
+
+        internal static void CancelSelection(global::AnimusForge.WorldBulletinIllustrationPlan plan)
+        {
+            if (plan == null) return;
+            var job = Find(KeyFor(plan));
+            if (job == null) return;
+            job.Pending = false;
+            job.Ready = false;
+            job.Status = "本期事件已作废。";
+            job.Scope?.Close();
+            Updated?.Invoke(job.Key, null);
         }
 
         internal static Job Find(string key) => key != null && Jobs.TryGetValue(key, out var job) ? job : null;
@@ -86,7 +128,7 @@ namespace AnimusForge.Illustrator.Core
                     if (result.Saved != null) result.Saved.ImageData = null;
                 }, error => Finish(job, error + "；可点击重绘。", null), status =>
                 {
-                    if (Find(job.Key) != job) return;
+                    if (Find(job.Key) != job || !job.Pending) return;
                     job.Status = status;
                     Updated?.Invoke(job.Key, null);
                 });
@@ -94,7 +136,7 @@ namespace AnimusForge.Illustrator.Core
 
         private static void Finish(Job job, string status, WeeklyReportPopupIllustrationPatch.GenerationResult result)
         {
-            if (Find(job.Key) != job) return;
+            if (Find(job.Key) != job || !job.Pending) return;
             job.Pending = false;
             job.Ready = result != null;
             job.Status = status;

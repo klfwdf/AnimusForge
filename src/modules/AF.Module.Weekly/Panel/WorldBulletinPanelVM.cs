@@ -28,6 +28,8 @@ internal sealed class WorldBulletinPanelData
 	public string IllustrationSubtitle = "";
 
 	public string IllustrationBody = "";
+
+	public WorldBulletinIllustrationPlan IllustrationPlan;
 }
 
 // Shared by the floating weekly-report overlay and the inline bulletin slot so one generation pipeline feeds both.
@@ -50,10 +52,12 @@ public interface IWeeklyIllustrationSink
 internal static class WorldBulletinPanelIllustrationBridge
 {
 	// (slot, eventId, title, subtitle, body) -> true when the slot was attached.
-	public static Func<WorldBulletinIllustrationVM, string, string, string, string, bool> AttachSlot;
+	public static Func<WorldBulletinIllustrationVM, string, string, string, string, WorldBulletinIllustrationPlan, bool> AttachSlot;
 
 	// Fired once after an issue's final text has been published, before its map notice.
 	public static Action<string, string, string, string> PrepareIssue;
+	public static Action<WorldBulletinIllustrationPlan> PrepareSelection;
+	public static Action<WorldBulletinIllustrationPlan> CancelSelection;
 }
 
 public sealed class WorldBulletinMinorItemVM : ViewModel
@@ -81,8 +85,8 @@ public sealed class WorldBulletinMinorItemVM : ViewModel
 
 public sealed class WorldBulletinIllustrationVM : ViewModel, IWeeklyIllustrationSink
 {
-	private float _imageWidth = 288f;
-	private float _imageHeight = 192f;
+	private float _imageWidth = 368f;
+	private float _imageHeight = 207f;
 
 	[DataSourceProperty]
 	public float ImageWidth => _imageWidth;
@@ -93,7 +97,7 @@ public sealed class WorldBulletinIllustrationVM : ViewModel, IWeeklyIllustration
 	// One constant-time update per publication; no Tick, texture copy or image resampling.
 	public void FitImage(int width, int height)
 	{
-		float scale = Math.Min(288f / Math.Max(1, width), 192f / Math.Max(1, height));
+		float scale = Math.Min(368f / Math.Max(1, width), 207f / Math.Max(1, height));
 		_imageWidth = Math.Max(1, width) * scale;
 		_imageHeight = Math.Max(1, height) * scale;
 		OnPropertyChangedWithValue(_imageWidth, nameof(ImageWidth));
