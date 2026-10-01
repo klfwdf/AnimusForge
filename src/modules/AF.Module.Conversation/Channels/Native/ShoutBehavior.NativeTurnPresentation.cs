@@ -26,7 +26,7 @@ namespace AnimusForge;
         public async Task<NativeConversationTurnStep> ReceiveAndPresentAsync()
         {
             NativeConversationMainReplyResult nativeMainReply = await NativeConversationMainReplyStage.RunAsync(
-                _ports.CreateMainReplyHost(admission, nativeTargetLog,
+                new NativeConversationMainReplyRuntime(_ports, admission, nativeTargetLog,
                     nativePendingAfefKey, nativePendingPlayerHistoryEventSequence),
                 messages, onStreamText, npcName, nativeTargetLog, nativeTargetAgentIndex, nativeTurnSw).ConfigureAwait(false);
             if (!nativeMainReply.CanContinue) return NativeConversationTurnStep.Stop(nativeMainReply.StopText);

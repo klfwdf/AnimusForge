@@ -1,25 +1,25 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
+using static AnimusForge.ShoutBehavior;
+
 namespace AnimusForge;
 
-public partial class ShoutBehavior
-{
     // Request-captured game identity stays in the adapter. The stage receives only detached
     // text and validation results; it cannot inspect the current Campaign or backend slot.
-    private sealed class NativeConversationMainReplyHost : INativeConversationMainReplyHost
+    internal sealed class NativeConversationMainReplyRuntime : INativeConversationMainReplyHost
     {
-        private readonly ShoutBehavior _owner;
+        private readonly NativeConversationTurnPorts _ports;
         private readonly NativeConversationAdmission _admission;
         private readonly string _targetLog;
         private readonly string _pendingHistoryKey;
         private readonly long _pendingHistorySequence;
 
-        internal NativeConversationMainReplyHost(ShoutBehavior owner, NativeConversationAdmission admission,
+        internal NativeConversationMainReplyRuntime(NativeConversationTurnPorts ports, NativeConversationAdmission admission,
             string targetLog, string pendingHistoryKey, long pendingHistorySequence)
         {
-            _owner = owner;
+            _ports = ports ?? throw new ArgumentNullException(nameof(ports));
             _admission = admission;
             _targetLog = targetLog;
             _pendingHistoryKey = pendingHistoryKey;
@@ -35,15 +35,15 @@ public partial class ShoutBehavior
         public async Task<NativeConversationReplyTargetValidation> ValidateTargetAsync()
         {
             string reason = "";
-            bool isCurrent = await _owner.RunNativeConversationMainThreadFuncAsync(
+            bool isCurrent = await _ports.RunNativeConversationMainThreadFuncAsync(
                 "main_reply_target_validation", _targetLog, _admission.AgentIndex,
-                () => _owner.IsNativeConversationAdmissionCurrent(_admission, out reason),
+                () => _ports.IsNativeConversationAdmissionCurrent(_admission, out reason),
                 false).ConfigureAwait(false);
             return new NativeConversationReplyTargetValidation(isCurrent, reason);
         }
 
         public Task RollbackPendingPlayerHistoryAsync(string reason)
-            => _owner.RollbackNativeConversationPendingPlayerHistoryAsync(_admission,
+            => _ports.RollbackNativeConversationPendingPlayerHistoryAsync(_admission,
                 _pendingHistoryKey, _pendingHistorySequence, reason);
 
         public string PreparePostprocessReply(string output)
@@ -55,4 +55,3 @@ public partial class ShoutBehavior
         public void ReportProviderFailure(string output)
             => LlmRetryPrompt.ShowFailurePopup("自由对话正文生成失败", output);
     }
-}

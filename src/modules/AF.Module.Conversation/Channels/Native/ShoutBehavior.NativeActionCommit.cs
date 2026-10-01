@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
 using AnimusForge.Refactor.Adapters;
@@ -7,9 +7,11 @@ using AnimusForge.Refactor.Runtime;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Conversation;
 
+using static AnimusForge.ShoutBehavior;
+
 namespace AnimusForge;
 
-public partial class ShoutBehavior
+internal sealed partial class NativeConversationGameEffectsRuntime
 {
     /// <summary>
     /// Default Native compatibility boundary. It shares the canonical parser,

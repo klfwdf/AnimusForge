@@ -1,0 +1,151 @@
+using System;
+using System.Collections.Generic;
+using System.Collections.Concurrent;
+using System.Diagnostics;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using AnimusForge.Refactor.Runtime;
+using TaleWorlds.CampaignSystem;
+using static AnimusForge.ShoutBehavior;
+
+namespace TaleWorlds.CampaignSystem
+{
+    sealed class Hero { internal string StringId="hero"; }
+    sealed class CharacterObject { internal string StringId="troop"; }
+    sealed class ConversationManager { }
+    sealed class Campaign { internal static Campaign Current = new(); internal ConversationManager ConversationManager = new(); }
+}
+namespace AnimusForge
+{
+    enum ActionExecutionEffectState { UnknownAfterStart, NoConfirmedEffect }
+    sealed class MemoryCommitResult { internal bool HistoryWritten; internal string ErrorCode; }
+    sealed class ModuleOperation { internal int Recorded; internal void RecordOwnerCompletion(string reply) { Recorded++; } }
+    static class SaveRuntimeGuard { internal static long Generation=1; internal static bool IsCurrentGeneration(long value)=>value==Generation; }
+    static class Logger { internal static void Log(string category,string text) { } }
+    static class FreezeWatchdog { internal static void Mark(string stage,string detail,bool immediate) { } }
+    static class WorldMapPartyCommandBehavior { internal sealed class WorldMapOrderApplyResult { internal bool NeedsChannelExit; } }
+    static class MyBehavior
+    {
+        internal static MemoryCommitResult CommitDialogueHistoryWithScene(string id, bool nonHero, string name, string player, string reply, string fact, int session)
+        { Probe.Game(); Probe.Trace.Add("memory"); Probe.Writes++; Probe.WrittenSession=session; Probe.WrittenId=id; return new MemoryCommitResult { HistoryWritten=Probe.MemoryAccepted, ErrorCode="synthetic_unconfirmed" }; }
+    }
+    public partial class ShoutBehavior
+    {
+        internal const int NativeConversationMainThreadPreprocessTimeoutMs = 80; // accelerated clock; product remains 30000
+        internal sealed class NpcDataPacket { internal int AgentIndex=7; internal string Name="npc"; }
+        internal sealed class SceneSummonPromptTarget { }
+        internal sealed class SceneGuidePromptTarget { }
+        internal sealed class NativeConversationAdmission
+        {
+            internal Hero Hero=new(); internal CharacterObject Character=new(); internal int AgentIndex=7;
+            internal long Generation=1, PresentationRevision=1; internal ConversationManager ConversationManager=Campaign.Current.ConversationManager;
+            internal ModuleOperation ModuleOperation=new();
+        }
+        internal sealed class NativeConversationGameActionResult
+        {
+            internal string Content="reply"; internal WorldMapPartyCommandBehavior.WorldMapOrderApplyResult WorldMapResult=new(); internal bool ResponseDiscarded; internal string FinalVisible;
+        }
+@@REQUEST@@
+@@EXCEPTION@@
+        internal static bool IsBannerlordMainThreadForNativeActions()=>Thread.CurrentThread.ManagedThreadId==Probe.MainThread;
+        internal static int TryGetCurrentSceneHistorySessionIdForHistoryPersistence() { Probe.Game(); Probe.Trace.Add("capture"); return Probe.SceneSession; }
+        internal static bool TryResolveWildernessNonHeroMemory(NpcDataPacket npc, Hero hero, CharacterObject character, int index, out string id,out string name)
+        { Probe.Game();id=Probe.NonHeroId;name="nonhero";return true; }
+        internal static string SanitizeSceneSpeechText(string text)=>text.Replace("[TAG]", "").Trim();
+        internal static bool IsNativeConversationNoSpeechPlaceholder(string text)=>text=="placeholder";
+        internal static string PrepareSceneHistorySpeechText(string text)=>SanitizeSceneSpeechText(text);
+        internal static string GetSceneNpcHistoryNameForPrompt(NpcDataPacket npc)=>npc.Name;
+        internal static void RecordNativeConversationNpcLineForExternal(Hero hero, CharacterObject character,string name,string reply,int index,NpcDataPacket npc) { Probe.Game();Probe.Trace.Add("echo");Probe.Echo++; }
+        internal static void MarkNativeConversationCurrentDialogRecorded(Hero hero, CharacterObject character,string name,string reply,int index,NpcDataPacket npc) { Probe.Game();Probe.Trace.Add("marker");Probe.Mark++; }
+        internal static void CloseNativeConversationForSceneMechanism(string reason) { Probe.Game();Probe.Trace.Add("exit");Probe.Exits++; }
+    }
+    internal sealed partial class NativeConversationGameEffectsRuntime
+    {
+        readonly NativeConversationGameEffectPorts _ports;
+        readonly PendingOperationRegistry _pendingMainThreadFunctions;
+        internal Func<NativeConversationGameActionResult> Core;
+        internal int Effects;
+        internal NativeConversationGameEffectsRuntime(NativeConversationGameEffectPorts ports,PendingOperationRegistry registry) { _ports=ports;_pendingMainThreadFunctions=registry; }
+        private NativeConversationGameActionResult ApplyNativeConversationGameActionsCore(Hero hero,CharacterObject character,NpcDataPacket npc,List<NpcDataPacket> context,List<SceneSummonPromptTarget> summon,List<SceneGuidePromptTarget> guide,string text,string player,ConversationManager manager,int token)
+        { Probe.Game();Probe.Trace.Add("effect");Effects++;return Core?.Invoke() ?? new NativeConversationGameActionResult(); }
+@@BODY@@
+    }
+    static class Probe
+    {
+        internal static int MainThread, WrongThread, SceneSession, Writes, WrittenSession, Echo, Mark, Tts, Exits, Rollbacks, Accepted;
+        internal static string NonHeroId, WrittenId;
+        internal static bool MemoryAccepted, Current, ContextCurrent, ThrowValidation;
+        internal static readonly List<string> Trace=new();
+        internal static readonly ConcurrentQueue<Action> Queue=new();
+        internal static void Game() { if(Thread.CurrentThread.ManagedThreadId!=MainThread) WrongThread++; }
+        static void Reset()
+        { MainThread=Thread.CurrentThread.ManagedThreadId;WrongThread=Writes=WrittenSession=Echo=Mark=Tts=Exits=Rollbacks=Accepted=0;SceneSession=3;NonHeroId="captured-nonhero";WrittenId=null;MemoryAccepted=Current=ContextCurrent=true;ThrowValidation=false;Trace.Clear();while(Queue.TryDequeue(out _)){} Campaign.Current=new();SaveRuntimeGuard.Generation=1; }
+        static NativeConversationGameEffectsRuntime Create(out PendingOperationRegistry registry, bool duplicate=false)
+        {
+            registry=new();
+            return new NativeConversationGameEffectsRuntime(new NativeConversationGameEffectPorts
+            {
+                IsNativeConversationAdmissionCurrent=(NativeConversationAdmission admission,out string reason)=> { Game();Trace.Add("validate");reason="unavailable";if(ThrowValidation)throw new Exception("synthetic_validation");return Current; },
+                IsNativeConversationContextCurrent=(NativeConversationAdmission admission,out string reason)=> { Game();reason="context";return ContextCurrent; },
+                IsPresentationCurrent=revision=> { Game();return ContextCurrent; },
+                PostMainThread=action=> { Queue.Enqueue(action);if(duplicate)Queue.Enqueue(action); },
+                RollbackPendingPlayerHistory=(admission,key,sequence,reason)=> { Game();Trace.Add("rollback");Rollbacks++; },
+                TrySpeakNativeConversationReplyWithTts=(hero,character,npc,index,text)=> { Game();Trace.Add("tts");Tts++; },
+            },registry);
+        }
+        static Task<NativeConversationGameActionResult> Dispatch(NativeConversationGameEffectsRuntime runtime, NativeConversationAdmission admission, bool worker=true, bool withCompletion=true)
+        {
+            var request=new NativeConversationCompletionRequest { PlayerText="player", PendingPlayerHistoryKey="pending", PendingPlayerHistorySequence=9, AcceptedReplySideEffects=()=>{Game();Trace.Add("accepted");Accepted++;} };
+            Task<NativeConversationGameActionResult> Start()=>runtime.ApplyNativeConversationGameActionsOnMainThreadAsync(admission.Hero,admission.Character,new NpcDataPacket(),new(),null,null,"reply","npc",7,"player",admission.ConversationManager,3,admission,withCompletion?request:null);
+            return worker?Task.Run(Start):Start();
+        }
+        static void Pump(Task task)
+        {
+            Stopwatch watch=Stopwatch.StartNew();while(!task.IsCompleted || !Queue.IsEmpty)
+            { while(Queue.TryDequeue(out var action))action();if(watch.ElapsedMilliseconds>3000)throw new Exception("fixture_timeout");Thread.Sleep(1); }
+        }
+        static void WaitQueued() { Stopwatch watch=Stopwatch.StartNew();while(Queue.IsEmpty){if(watch.ElapsedMilliseconds>2000)throw new Exception("fixture_queue_timeout");Thread.Sleep(1);} }
+        static void Require(bool value,string name) { if(!value)throw new Exception("ASSERT "+name); }
+        static NativeConversationActionDispatchException Failure(Task<NativeConversationGameActionResult> task)
+        { try{task.GetAwaiter().GetResult();throw new Exception("ASSERT expected-dispatch-failure");}catch(NativeConversationActionDispatchException e){return e;} }
+        internal static void Run()
+        {
+            int passed=0;void Case(string name,Action test){Reset();test();Require(WrongThread==0,"no-game-access-on-worker");passed++;Console.WriteLine("PASS "+name);}
+            Case("accepted-effect-history-tts-exit-order-and-duplicate-callback-once",()=>{
+                var runtime=Create(out var registry,true);runtime.Core=()=>new NativeConversationGameActionResult { WorldMapResult=new(){NeedsChannelExit=true} };var admission=new NativeConversationAdmission();var task=Dispatch(runtime,admission);Pump(task);
+                Require(task.GetAwaiter().GetResult().FinalVisible=="reply" && runtime.Effects==1 && Accepted==1 && Writes==1 && Echo==1 && Mark==1 && Tts==1 && Exits==1 && registry.Count==0,"accepted-once-and-lease-release");
+                Require(Trace.SequenceEqual(new[]{"validate","capture","effect","accepted","memory","echo","marker","tts","exit"}),"exact-original-order");
+            });
+            Case("retirement-settles-unclaimed-dispatch-and-late-callback-inert",()=>{
+                var runtime=Create(out var registry);var task=Dispatch(runtime,new());WaitQueued();registry.Reset();Pump(task);Require(task.Result.ResponseDiscarded && runtime.Effects==0 && Accepted==0 && Writes==0 && registry.Count==0,"retired-no-effects");
+            });
+            Case("queued-stale-target-rolls-back-once-before-capture",()=>{
+                var runtime=Create(out _);var task=Dispatch(runtime,new());WaitQueued();Current=false;Pump(task);Require(task.Result.ResponseDiscarded && runtime.Effects==0 && Rollbacks==1 && Writes==0,"stale-discard-before-owner");
+            });
+            Case("partial-action-failure-no-retry-unknown-after-start",()=>{
+                var runtime=Create(out _);runtime.Core=()=>throw new Exception("synthetic_partial");var task=Dispatch(runtime,new());Pump(task);var failure=Failure(task);Require(runtime.Effects==1 && Accepted==0 && Writes==0 && failure.EffectState==ActionExecutionEffectState.UnknownAfterStart && !failure.CanRetryAutomatically,"partial-effect-no-retry");
+            });
+            Case("history-unconfirmed-keeps-action-and-required-late-exit",()=>{
+                var runtime=Create(out _);runtime.Core=()=>new NativeConversationGameActionResult { WorldMapResult=new(){NeedsChannelExit=true} };MemoryAccepted=false;var task=Dispatch(runtime,new());Pump(task);var failure=Failure(task);Require(runtime.Effects==1 && Accepted==1 && Writes==1 && Echo==0 && Tts==0 && Exits==1 && failure.ErrorCode=="native.memory.commit_unconfirmed","unconfirmed-history-exit-and-partial-classification");
+            });
+            Case("captured-nonhero-id-and-scene-before-effects",()=>{
+                var runtime=Create(out _);runtime.Core=()=>{SceneSession=99;NonHeroId="changed-nonhero";return new();};var task=Dispatch(runtime,new(){Hero=null});Pump(task);Require(WrittenSession==3 && WrittenId=="captured-nonhero" && Writes==1,"captured-memory-identity-not-live-after-effect");
+            });
+            Case("late-exit-cannot-close-new-conversation",()=>{
+                var runtime=Create(out _);runtime.Core=()=>new NativeConversationGameActionResult { WorldMapResult=new(){NeedsChannelExit=true} };var task=Dispatch(runtime,new(),worker:false);Require(task.IsCompleted && !Queue.IsEmpty,"exit-delayed-after-result");ContextCurrent=false;Pump(task);Require(Exits==0 && Writes==1,"late-exit-context-revalidated");
+            });
+            Case("started-effect-outlives-deadline-and-settles-real-result",()=>{
+                var runtime=Create(out _);runtime.Core=()=>{Thread.Sleep(150);return new();};var task=Dispatch(runtime,new());Pump(task);Require(task.Result.FinalVisible=="reply" && runtime.Effects==1 && Writes==1,"started-dispatch-not-expired");
+            });
+            Case("unclaimed-timeout-retires-before-late-effect",()=>{
+                var runtime=Create(out _);var task=Dispatch(runtime,new());WaitQueued();Thread.Sleep(130);Pump(task);var failure=Failure(task);Require(runtime.Effects==0 && Writes==0 && failure.ErrorCode=="native.actions.dispatch_timeout" && !failure.CanRetryAutomatically,"queued-timeout-no-late-effects");
+            });
+            Case("validation-failure-known-no-effect",()=>{
+                var runtime=Create(out _);ThrowValidation=true;var task=Dispatch(runtime,new());Pump(task);var failure=Failure(task);Require(runtime.Effects==0 && Writes==0 && failure.EffectState==ActionExecutionEffectState.NoConfirmedEffect,"validation-before-owner-known-no-effect");
+            });
+            Console.WriteLine("NativeEffectsRuntime PASS="+passed+" FAIL=0");
+        }
+    }
+    static class Program { static int Main() { try { Probe.Run(); return 0; } catch (Exception ex) { Console.Error.WriteLine("ASSERTION FAILURE: " + ex); return 1; } } }
+}
