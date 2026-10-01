@@ -81,8 +81,8 @@ public partial class MyBehavior
   ShowDevLargeTextOrInquiry = ShowDevLargeTextOrInquiry,
   ShowDevLargeSelectionOrInquiry = ShowDevLargeSelectionOrInquiry,
   ShowDevLargeConfirmOrInquiry = ShowDevLargeConfirmOrInquiry,
-  ApplyDevCompressedMemoryBlockMutation = ApplyDevCompressedMemoryBlockMutation,
-  DeleteDevCompressedMemoryBlock = DeleteDevCompressedMemoryBlock,
+  TryApplyDevCompressedMemoryBlockDataMutation = TryApplyDevCompressedMemoryBlockDataMutation,
+  DeleteDevCompressedMemoryBlockData = DeleteDevCompressedMemoryBlockData,
   TryApplyDevDialogueHistoryLineDataMutation = TryApplyDevDialogueHistoryLineDataMutation,
   FormatMemoryHourRange = FormatMemoryHourRange,
   BuildDailyMemoryLineForPrompt = BuildDailyMemoryLineForPrompt,
@@ -326,4 +326,8 @@ public partial class MyBehavior
  }
  private void ApplyDevEditLineInput(Hero npc, int dayIndex, int lineIndex, string input)
   => MemoryEditor.ApplyDevEditLineInput(npc, dayIndex, lineIndex, input, SaveRuntimeGuard.CaptureGeneration());
+ private void DeleteDevCompressedMemoryBlock(Hero npc, string blockId, int returnPage, string returnQuery)
+  => MemoryEditor.DeleteDevCompressedMemoryBlock(npc, blockId, returnPage, returnQuery, SaveRuntimeGuard.CaptureGeneration());
+ private void ApplyDevCompressedMemoryBlockMutation(Hero npc, string blockId, int returnPage, string returnQuery, Action<CompressedMemoryBlock> mutate, string successMessage)
+  => MemoryEditor.ApplyDevCompressedMemoryBlockMutation(npc, blockId, returnPage, returnQuery, mutate, successMessage, SaveRuntimeGuard.CaptureGeneration());
 }

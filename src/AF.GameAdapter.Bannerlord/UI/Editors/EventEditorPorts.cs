@@ -1,0 +1,103 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using AnimusForge.Refactor.Runtime;
+using TaleWorlds.CampaignSystem;
+using TaleWorlds.Core;
+using TaleWorlds.Library;
+using static AnimusForge.MyBehavior;
+namespace AnimusForge;
+internal class EventEditorDisplayPort
+{
+ internal delegate string GetKingdomDisplayNameCapability(Kingdom kingdom, string fallback = "某个王国");
+ internal GetKingdomDisplayNameCapability GetKingdomDisplayName;
+ internal delegate string GetClanDisplayNameCapability(Clan clan);
+ internal GetClanDisplayNameCapability GetClanDisplayName;
+ internal delegate string FormatKingdomRebellionChanceCapability(float chance);
+ internal FormatKingdomRebellionChanceCapability FormatKingdomRebellionChance;
+ internal delegate string TranslateEventKindForDevCapability(string eventKind);
+ internal TranslateEventKindForDevCapability TranslateEventKindForDev;
+ internal delegate string ResolveKingdomDisplayCapability(string kingdomId);
+ internal ResolveKingdomDisplayCapability ResolveKingdomDisplay;
+ internal delegate string TranslateEventMaterialTypeForDevCapability(string materialType);
+ internal TranslateEventMaterialTypeForDevCapability TranslateEventMaterialTypeForDev;
+}
+internal sealed class EventEditorPort : EventEditorDisplayPort
+{
+ internal Func<long> CaptureGeneration; internal Func<long,bool> IsCurrent;
+ internal Func<string> WorldOpeningSummary, PromptProfileLabel;
+ internal Func<int> CountConfiguredOpeningSummaries; internal int StabilityDefault;
+ internal Func<List<EventRecordEntry>> EventRecords;
+ internal Func<string,long,bool> SetDeveloperWorldOpeningSummary;
+ internal Func<long,bool> ClearDeveloperOpeningSummaries;
+ internal Func<EventRecordEntry,string,long,EventRecordEntry> ApplyDeveloperEventTitle, ApplyDeveloperEventReport;
+ internal delegate void EnsureWeekZeroOpeningSummaryEventsCapability(bool sanitizeAfter = true);
+ internal EnsureWeekZeroOpeningSummaryEventsCapability EnsureWeekZeroOpeningSummaryEvents;
+ internal delegate void OpenDevWeeklyEventMaterialPreviewMenuCapability();
+ internal OpenDevWeeklyEventMaterialPreviewMenuCapability OpenDevWeeklyEventMaterialPreviewMenu;
+ internal delegate void OpenDevWeeklyReportPromptPreviewMenuCapability();
+ internal OpenDevWeeklyReportPromptPreviewMenuCapability OpenDevWeeklyReportPromptPreviewMenu;
+ internal delegate void ConfirmGenerateDevWeeklyReportsCapability();
+ internal ConfirmGenerateDevWeeklyReportsCapability ConfirmGenerateDevWeeklyReports;
+ internal delegate void OpenDevKingdomStabilityLabMenuCapability();
+ internal OpenDevKingdomStabilityLabMenuCapability OpenDevKingdomStabilityLabMenu;
+ internal delegate void OpenExportFolderPickerCapability(string title, ExportImportScope scope, Action onReturn);
+ internal OpenExportFolderPickerCapability OpenExportFolderPicker;
+ internal delegate void OpenImportFolderPickerCapability(string title, ExportImportScope scope, Action onReturn);
+ internal OpenImportFolderPickerCapability OpenImportFolderPicker;
+ internal delegate Kingdom FindKingdomByIdCapability(string kingdomId);
+ internal FindKingdomByIdCapability FindKingdomById;
+ internal delegate string GetKingdomOpeningSummaryCapability(Kingdom kingdom);
+ internal GetKingdomOpeningSummaryCapability GetKingdomOpeningSummary;
+ internal delegate void SaveKingdomOpeningSummaryCapability(Kingdom kingdom, string summary);
+ internal SaveKingdomOpeningSummaryCapability SaveKingdomOpeningSummary;
+ internal delegate int GetKingdomStabilityValueCapability(Kingdom kingdom);
+ internal GetKingdomStabilityValueCapability GetKingdomStabilityValue;
+ internal delegate List<EventRecordEntry> SanitizeEventRecordEntriesCapability(List<EventRecordEntry> source);
+ internal SanitizeEventRecordEntriesCapability SanitizeEventRecordEntries;
+ internal delegate void AppendDevNpcActionFieldCapability(StringBuilder stringBuilder, string label, string value);
+ internal AppendDevNpcActionFieldCapability AppendDevNpcActionField;
+ internal delegate void ShowDevLargeTextOrInquiryCapability(string title, string subtitle, string body, Action onClose, string closeText = "返回");
+ internal ShowDevLargeTextOrInquiryCapability ShowDevLargeTextOrInquiry;
+ internal delegate string BuildDevEventMaterialDetailTextCapability(EventMaterialReference material);
+ internal BuildDevEventMaterialDetailTextCapability BuildDevEventMaterialDetailText;
+}
+internal sealed class KingdomStabilityLabPort : EventEditorDisplayPort
+{
+ internal Func<long> CaptureGeneration; internal Func<long,bool> IsCurrent;
+ internal delegate int GetKingdomStabilityValueCapability(Kingdom kingdom);
+ internal GetKingdomStabilityValueCapability GetKingdomStabilityValue;
+ internal delegate string GetKingdomStabilityTierTextCapability(int value);
+ internal GetKingdomStabilityTierTextCapability GetKingdomStabilityTierText;
+ internal delegate float GetKingdomRebellionWeeklyChanceCapability(int stabilityValue);
+ internal GetKingdomRebellionWeeklyChanceCapability GetKingdomRebellionWeeklyChance;
+ internal delegate int GetKingdomStabilityRelationTargetOffsetCapability(int stabilityValue);
+ internal GetKingdomStabilityRelationTargetOffsetCapability GetKingdomStabilityRelationTargetOffset;
+ internal delegate int GetKingdomStabilityWeeklyBalancingDeltaCapability(int stabilityValue);
+ internal GetKingdomStabilityWeeklyBalancingDeltaCapability GetKingdomStabilityWeeklyBalancingDelta;
+ internal delegate int CountActiveKingdomClansForLowClanCountRuleCapability(Kingdom kingdom);
+ internal CountActiveKingdomClansForLowClanCountRuleCapability CountActiveKingdomClansForLowClanCountRule;
+ internal delegate int GetLowClanCountRoyalDomainLoyaltyAdjustmentCapability(int stabilityValue, int activeClanCount);
+ internal GetLowClanCountRoyalDomainLoyaltyAdjustmentCapability GetLowClanCountRoyalDomainLoyaltyAdjustment;
+ internal delegate List<KingdomRebellionCandidateInfo> EvaluateKingdomRebellionCandidatesCapability(Kingdom kingdom, bool forceTrigger);
+ internal EvaluateKingdomRebellionCandidatesCapability EvaluateKingdomRebellionCandidates;
+ internal delegate string GetHeroDisplayNameCapability(Hero hero);
+ internal GetHeroDisplayNameCapability GetHeroDisplayName;
+ internal delegate string FormatKingdomStabilityRelationOffsetTextCapability(int offset);
+ internal FormatKingdomStabilityRelationOffsetTextCapability FormatKingdomStabilityRelationOffsetText;
+ internal delegate int ClampKingdomStabilityValueCapability(int value);
+ internal ClampKingdomStabilityValueCapability ClampKingdomStabilityValue;
+ internal delegate void SetKingdomStabilityValueCapability(Kingdom kingdom, int value);
+ internal SetKingdomStabilityValueCapability SetKingdomStabilityValue;
+ internal delegate KingdomRebellionResolutionResult ResolveKingdomRebellionCapability(Kingdom kingdom, int weekIndex, bool executeAction, bool forceTrigger);
+ internal ResolveKingdomRebellionCapability ResolveKingdomRebellion;
+ internal delegate void StartDevForcedKingdomRebellionAsyncCapability(Kingdom kingdom, Clan clan, int weekIndex, int relationToKing, int townCount, int castleCount, List<Clan> followerClans);
+ internal StartDevForcedKingdomRebellionAsyncCapability StartDevForcedKingdomRebellionAsync;
+ internal delegate Kingdom FindKingdomByIdCapability(string kingdomId);
+ internal FindKingdomByIdCapability FindKingdomById;
+ internal delegate int GetCurrentGameDayIndexSafeCapability();
+ internal GetCurrentGameDayIndexSafeCapability GetCurrentGameDayIndexSafe;
+ internal delegate void OpenDevEventEditorMenuCapability();
+ internal OpenDevEventEditorMenuCapability OpenDevEventEditorMenu;
+}
