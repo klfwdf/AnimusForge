@@ -10480,6 +10480,47 @@
           }
         ]
       }
+    },
+    {
+      "evidence": "final bounded current-consumer packets and tracked direct-owner fixtures; see main ledger",
+      "responsibility": [
+        {
+          "old": "ProcessMemorySummaryQueueAsync / RunDailySummaryQueueItemsAsync",
+          "owner": "MemorySummaryQueueRunRuntime",
+          "consumer": "MyBehavior.MemorySummaryQueueRun typed factory and two thin main facades",
+          "uniqueState": "Original RunOwner/AttemptRunner/state and accepted source/job references; no new run authority"
+        },
+        {
+          "old": "BuildNpcSystemTopPromptIntro / BuildSceneNpcRoleIntro / BuildScenePlayerIntro / GetHeroEquipmentText / GetNonHeroEquipmentText / BuildHeroIdentityTitleForPrompt / ShouldHideSceneReputationForPrompt",
+          "owner": "PersonaEquipmentPromptCaptureAdapter / EquipmentPromptCaptureAdapter / PersonaIntroMessageComposer / PersonaIntroTextRules",
+          "consumer": "MyBehavior.PersonaIntroPrompt + ShoutBehavior.PersonaIntroPrompt factories and 19 main facades",
+          "uniqueState": "Detached scalar snapshots only; original Persona/domain live authority"
+        },
+        {
+          "old": "GetNpcConversationHistorySnapshot / BuildVisibleSceneHistorySectionForExternal / native history key/entry + 8 scene write endpoints + public display reads",
+          "owner": "SceneConversationHistoryOwner / HistorySectionProjectionOwner / NativeHistoryIdentityProjectionOwner",
+          "consumer": "ShoutBehavior.HistoryCapture / SceneHistoryCapture and ScenePresentationRuntime scalar ports",
+          "uniqueState": "Same injected history gate; private sole stores, original native-session authority; read copies only"
+        },
+        {
+          "old": "BuildSceneShoutDetachedPromptSectionsForExternal",
+          "owner": "SceneExternalPromptCaptureAdapter -> MainPromptMessageAssemblyOwner",
+          "consumer": "Existing public ABI facade -> cached typed factory -> complete actual capture adapter",
+          "uniqueState": "None; current Scene movement/history/intro authority reused"
+        },
+        {
+          "old": "EnqueueSystemNpcShout",
+          "owner": "SceneSystemNpcShoutRuntime",
+          "consumer": "TrySystemNpcShout -> void thin discard facade -> same-registry forceQueue task",
+          "uniqueState": "Same PendingOperationRegistry/TCS/lease; detached request captures mission/generation/epoch/session/Agent ref"
+        },
+        {
+          "old": "ShowNpcSpeechOutput",
+          "owner": "ScenePresentationController.ShowNpcSpeechOutput",
+          "consumer": "Private nested-return compatible facade -> cached SceneSpeechOutputPort",
+          "uniqueState": "SceneAudioLipSyncController sole playback requestidentity/resource/subscription state; two atomic host interaction leaf capabilities"
+        }
+      ]
     }
   ],
   "verificationLayers": {
@@ -12071,6 +12112,148 @@
       "memberSpanLines": 114,
       "declarationStart": 10,
       "declarationEnd": 138
+    }
+  ],
+  "retainedHostDeclarations": [
+    {
+      "path": "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.cs",
+      "symbol": "RecordExternalPlayerHighValueRpCraft",
+      "start": 2499,
+      "end": 2622,
+      "purpose": "Public existing crafting hook and live effect observation; RP crafting gameplay is outside P1-P8 closure."
+    },
+    {
+      "path": "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.cs",
+      "symbol": "SyncData",
+      "start": 14615,
+      "end": 14824,
+      "purpose": "Engine persistence composition: typed owner adapters preserve serialized keys/order and original storage authority."
+    },
+    {
+      "path": "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.cs",
+      "symbol": "BuildHeroFactsForPersonaGeneration",
+      "start": 15414,
+      "end": 15649,
+      "purpose": "Existing persona-generation live fact capture, not the migrated intro composer; generation gameplay untouched."
+    },
+    {
+      "path": "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.cs",
+      "symbol": "BuildNpcIdentityInfoForPrompt",
+      "start": 17120,
+      "end": 17223,
+      "purpose": "Existing domain identity live query; complete intro formatting is on PersonaIntroMessageComposer."
+    },
+    {
+      "path": "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.cs",
+      "symbol": "BuildPlayerArmyRuntimeFactForPrompt",
+      "start": 21200,
+      "end": 21301,
+      "purpose": "Existing live campaign army fact capture; army/gameplay rules not rewritten."
+    },
+    {
+      "path": "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.cs",
+      "symbol": "RecordAnimusForgeSiegeInterventionForExternal",
+      "start": 21900,
+      "end": 22010,
+      "purpose": "Public existing siege integration observation; reusable siege rules remain original module."
+    },
+    {
+      "path": "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.cs",
+      "symbol": "CallUniversalApiDetailed",
+      "start": 24112,
+      "end": 24281,
+      "purpose": "Existing provider IO compatibility boundary; runtime clients preserve cancellation and visible result protocol."
+    },
+    {
+      "path": "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.cs",
+      "symbol": "ClearAllDataForCurrentSave",
+      "start": 29282,
+      "end": 29389,
+      "purpose": "Explicit synthetic-tested developer-clear composition; retire then weekly/recovery transition, segmented state/IO reset, final derived rebuild. Never executed on real player data."
+    },
+    {
+      "path": "src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.cs",
+      "symbol": "TrySpeakNativeConversationReplyWithTts",
+      "start": 2949,
+      "end": 3076,
+      "purpose": "Native conversation engine/wait adapter; audio request/resource identity is single SceneAudio owner."
+    },
+    {
+      "path": "src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.cs",
+      "symbol": "BuildSceneNpcListLineWithRuntimeFactsForPrompt",
+      "start": 3559,
+      "end": 3678,
+      "purpose": "Named current Agent/location/game fact capture for existing mechanism eligibility."
+    },
+    {
+      "path": "src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.cs",
+      "symbol": "AggregateRosterForPrompt",
+      "start": 5455,
+      "end": 5598,
+      "purpose": "Existing live troop/prisoner roster projection leaf; economy execution/ALL/index rules moved to actual Economy owners."
+    },
+    {
+      "path": "src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.cs",
+      "symbol": "BuildSceneLocationAndSettlementLineForPrompt",
+      "start": 6236,
+      "end": 6344,
+      "purpose": "Named current scene/settlement live facts, not complete external/system intro composer."
+    },
+    {
+      "path": "src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.cs",
+      "symbol": "SyncData",
+      "start": 7444,
+      "end": 7493,
+      "purpose": "Engine persistence composition: typed owner adapters preserve serialized keys/order and original storage authority."
+    },
+    {
+      "path": "src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.cs",
+      "symbol": "CreateNativeConversationActionPlanExecutorForExternal",
+      "start": 11282,
+      "end": 11418,
+      "purpose": "Compatibility factory for existing Actions family execution; no new family semantics."
+    },
+    {
+      "path": "src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.cs",
+      "symbol": "TriggerShout",
+      "start": 13509,
+      "end": 13619,
+      "purpose": "Existing concrete game input/selection entry; full accepted session/chain/effects execution is on actual Scene runtime."
+    },
+    {
+      "path": "src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.cs",
+      "symbol": "BuildShoutTradeOptions",
+      "start": 14134,
+      "end": 14245,
+      "purpose": "Existing in-scene trade UI options/engine adapter; PartyTransfer policy/execution are actual Economy owners."
+    },
+    {
+      "path": "src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.cs",
+      "symbol": "ApplyShoutGiveTransfer",
+      "start": 14593,
+      "end": 14774,
+      "purpose": "Existing live trade dispatch/receipt compatibility adapter; rich partial-effect result consumed without replay/rollback."
+    },
+    {
+      "path": "src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.cs",
+      "symbol": "BuildShoutTradeFactText",
+      "start": 15215,
+      "end": 15325,
+      "purpose": "Existing trade-family fact compatibility formatting; new partial source-only facts preserved through current AFEF consumers."
+    },
+    {
+      "path": "src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.cs",
+      "symbol": "BuildRuntimeSceneMechanismPostprocessRulesForScene",
+      "start": 16379,
+      "end": 16516,
+      "purpose": "Existing concrete mechanism live eligibility leaf, outside the three final original composer closures; no gameplay-rule rewrite."
+    },
+    {
+      "path": "src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.cs",
+      "symbol": "UpdateActiveInteractionTimeouts",
+      "start": 20061,
+      "end": 20184,
+      "purpose": "Existing concrete mission timeout/interaction cleanup entry; cancellation/late effects governed by current registry/audio/session owners."
     }
   ]
 }
