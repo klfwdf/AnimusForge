@@ -8,7 +8,7 @@ from xml.sax.saxutils import escape
 ROOT=Path(__file__).resolve().parents[4]
 HERE=Path(__file__).resolve().parent
 sys.path.insert(0, str(ROOT / 'tests'))
-from output_isolation import new_run_root, current_source_path
+from output_isolation import new_run_root, current_source_path, minimal_test_environment
 B1A_MODELS={'DailyMemoryLine','DailyMemoryDraft','CompressedMemoryBlock','WeeklyMemoryMaterialTrigger','MemorySummaryJob','MemoryOverviewState','MemoryOverviewJob','MajorActionSummaryState','MajorActionSummaryJob'}
 MODELS=['DailyMemoryLine','DailyMemoryDraft','CompressedMemoryBlock','WeeklyMemoryMaterialTrigger','MemorySummaryJob','MemorySummaryExecutionResult','MemoryOverviewState','MemoryOverviewJob','MemoryOverviewExecutionResult','MajorActionSummaryState','MajorActionSummaryJob','MajorActionSummaryExecutionResult','DailySummaryQueueResult']
 NAMES='''RunDailySummaryQueueItemsAsync ExecuteDailySummaryQueueItemAsync ExecuteMemorySummaryJobAsync ExecuteMajorActionSummaryJobAsync ExecuteMemoryOverviewJobAsync FindMemoryDraft HasMemorySummaryJobStillPending HasMajorActionSummaryJobStillPending HasMemoryOverviewJobStillPending HasMajorActionsNeedingSummary HasMemoryOverviewPendingBlocks GetMemoryOverviewState GetMajorActionSummaryState SanitizeMemoryOverviewState SanitizeMajorActionSummaryState GetMajorActionMaxCursor IsNpcActionAfterSummaryCursor IsMemoryBlockIncludedInOverview BuildCompressedMemoryBlockId NormalizeMemoryHeroId IsNonHeroMemoryId CountDailyMemorySummarySourceChars BuildMemorySummarySystemPrompt BuildMemorySummaryUserPrompt BuildMajorActionSummarySystemPrompt BuildMajorActionSummaryUserPrompt GetMajorActionSummaryTargetChars BuildMajorActionSummarySourceLine BuildMemoryOverviewSummarySystemPrompt BuildMemoryOverviewSummaryUserPrompt BuildMemoryOverviewBlockSourceText BuildCompressionWritingRequirementsPromptSection TryParseMemorySummaryResponse TryParseMajorActionSummaryResponse TryParseMemoryOverviewResponse TryParseBestSummaryJsonObject TryParseTaggedSummaryObject AddTaggedSummaryProperty TryExtractTaggedBlock TryParseLooseSummaryJsonObject AddLooseJsonStringProperties TryExtractLooseJsonStringProperty SkipJsonWhitespace TryReadLooseJsonStringValue BuildRequiredJsonFieldDescription BuildRequiredJsonFieldGroupDescription HasAnyNonWhiteSpaceJsonProperty IsEmptySummaryMarker GetJsonStringIgnoreCase GetJsonPropertyIgnoreCase BuildSummaryJsonParseFailureMessage StripJsonResponseEnvelope ExtractJsonObjectPayloads StripMemoryTitleDateTime FormatMemoryHourRange BuildDailyMemoryLineForPrompt ResolveMemoryLineSceneForPrompt SanitizeDailyMemoryDrafts SanitizeCompressedMemoryBlocks SanitizeNpcActionEntries SanitizeWeeklyMemoryMaterialTriggers NormalizeWeeklyMemoryMaterialTags ExtractWeeklyMemoryMaterialTags NormalizeWeeklyMemoryMaterialTagText BuildWeeklyMemoryMaterialTriggerStableKey ComputeWeeklyMemoryMaterialHash CopyFactIds AddUniqueId'''.split()
@@ -19,12 +19,14 @@ def main():
     ap=argparse.ArgumentParser(description=__doc__);ap.add_argument('--mutate',choices=MUTATIONS);ap.add_argument('--source-baseline',choices=['8bcde78b']);ap.add_argument('--observe-rebuilds',action='store_true');ap.add_argument('--run-root',type=Path);a=ap.parse_args()
     sys.stdout.reconfigure(encoding='utf-8')
     spec=importlib.util.spec_from_file_location('capture_ex',ROOT/'tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py');ex=importlib.util.module_from_spec(spec);spec.loader.exec_module(ex)
+    support_spec=importlib.util.spec_from_file_location('capture_state_support',HERE/'business_owner_fixture_support.py');support=importlib.util.module_from_spec(support_spec);support_spec.loader.exec_module(support);support.enable_expression_declarations(ex)
     def read(path):return subprocess.check_output(['git','show',a.source_baseline+':'+path],cwd=ROOT).decode('utf-8-sig').replace('\r\n','\n') if a.source_baseline else (current_source_path(ROOT, path)).read_text(encoding='utf-8-sig')
     if a.source_baseline and a.mutate:raise ValueError('Baseline and mutation are exclusive')
     source=read('MyBehavior.cs');snippets=[];manifest=[]
     def add(sig):
         body=ex.declaration(source,sig);line=source[:source.index(body)].count('\n')+1
         manifest.append(dict(signature=sig,line=line,sha256=hashlib.sha256(body.encode()).hexdigest()))
+        body=support.statement_body(body)
         if 'RunDailySummaryQueueItemsAsync(' in sig:
             assert body.count('await Task.Delay(60000);')==1
             body=body.replace('await Task.Delay(60000);','await FixtureDelayAsync(60000);')
@@ -47,7 +49,7 @@ def main():
         if not match:raise ValueError('Missing declaration '+name)
         add(match.group().strip())
     planning=(current_source_path(ROOT, 'MyBehavior.MemorySummaryPlanning.cs')).read_text(encoding='utf-8-sig')
-    for sig in ['private sealed class MemorySummaryPlanEntry','private MemorySummaryPlanEntry DescribeMemorySummaryJob(']:
+    for sig in (['private MemorySummaryPlanEntry DescribeMemorySummaryJob(','private MemorySummaryPlanningOwner CreateMemorySummaryPlanningOwner('] if 'CreateMemorySummaryPlanningOwner' in planning else ['private sealed class MemorySummaryPlanEntry','private MemorySummaryPlanEntry DescribeMemorySummaryJob(']):
         body=ex.declaration(planning,sig);snippets.append(body)
         manifest.append(dict(file='MyBehavior.MemorySummaryPlanning.cs',signature=sig,line=planning[:planning.index(body)].count('\n')+1,sha256=hashlib.sha256(body.encode()).hexdigest()))
     recovery=(current_source_path(ROOT, 'MyBehavior.MemoryRecovery.cs')).read_text(encoding='utf-8-sig')
@@ -138,8 +140,9 @@ def main():
             files[Path(name).name]=read(name)
             manifest.append(dict(file=name,sha256=hashlib.sha256(read(name).encode()).hexdigest(),whole_component=True))
     if 'MyBehavior.MemorySourceFingerprint.cs' in files:
-        mapper=files['MyBehavior.MemorySourceFingerprint.cs'];runtime=files['MemorySourceFingerprintWriter.cs']
-        body=ex.declaration(mapper,'private static string ComputeMemorySummarySourceFingerprint(')
+        mapperkey='MemorySourceFingerprintRules.cs' if 'MemorySourceFingerprintRules.Compute' in files['MyBehavior.MemorySourceFingerprint.cs'] else 'MyBehavior.MemorySourceFingerprint.cs'
+        mapper=read('src/modules/AF.Module.Memory/Summary/MemorySourceFingerprintRules.cs') if mapperkey=='MemorySourceFingerprintRules.cs' else files[mapperkey];runtime=files['MemorySourceFingerprintWriter.cs']
+        body=ex.declaration(mapper,'internal static string Compute(' if mapperkey=='MemorySourceFingerprintRules.cs' else 'private static string ComputeMemorySummarySourceFingerprint(')
         pos=body.index('{')+1;mapper=mutation(mapper,body,body[:pos]+'\n Probe.Call("RawFingerprint");'+body[pos:])
         if a.mutate=='omit-state-presence':
             assert mapper.count('writer.Write(source.StatePresent);')==2
@@ -153,7 +156,7 @@ def main():
             runtime=mutation(runtime,'WriteByte((byte)(character >> 8));','')
             runtime=mutation(runtime,'_buffer[destination++] = (byte)(character >> 8);','')
         if a.mutate=='ignore-full-raw-buffer':runtime=mutation(runtime,'_hash.TransformBlock(_buffer, 0, _count, _buffer, 0);','')
-        files['MyBehavior.MemorySourceFingerprint.cs']=mapper;files['MemorySourceFingerprintWriter.cs']=runtime
+        files[mapperkey]=mapper;files['MemorySourceFingerprintWriter.cs']=runtime
     if 'MemorySummaryDispatcher' in files.get('Boundary.cs', ''):
         for relative in ['src/modules/AF.Module.Memory/Summary/IMemorySummaryDispatchHost.cs','src/modules/AF.Module.Memory/Summary/MemorySummaryDispatcher.cs']:
             files[Path(relative).name]=(current_source_path(ROOT, relative)).read_text(encoding='utf-8-sig')
@@ -163,14 +166,19 @@ def main():
         ledger='src/modules/AF.Module.Memory/Records/NpcActionLedger.cs'
         files[Path(ledger).name]=read(ledger)
         manifest.append(dict(file=ledger,sha256=hashlib.sha256(files[Path(ledger).name].encode()).hexdigest(),whole_component=True))
+    weekly_path='src/modules/AF.Module.Weekly/Materials/WeeklyAggregateEventLineOwner.cs'
+    weekly_source=(ROOT/weekly_path).read_text(encoding='utf-8-sig')
+    weekly_span=ex.declaration(weekly_source,'internal static string TranslateNpcActionKindForPrompt(')
+    files['WeeklyProductionTranslation.cs']='namespace AnimusForge { internal sealed class WeeklyAggregateEventLineOwner { '+weekly_span+' } }'
+    manifest.append(dict(file=weekly_path,signature='TranslateNpcActionKindForPrompt',sha256=hashlib.sha256(weekly_span.encode()).hexdigest(),source_derived_span=True))
+    if not a.source_baseline:support.include(ROOT,files,manifest,ex)
     files['Proof.csproj']=files['Proof.csproj'].replace('<OutputType>','<EnableDefaultCompileItems>false</EnableDefaultCompileItems><OutputType>',1).replace('</Project>','<ItemGroup>'+''.join('<Compile Include="'+name+'" />' for name in files if name.endswith('.cs'))+'</ItemGroup></Project>')
     for name,data in files.items():(out/name).write_bytes(data.encode())
     metadata=dict(source_baseline=a.source_baseline,mutation=a.mutate,observe_rebuilds=a.observe_rebuilds,declarations=manifest,generated_sha256={n:hashlib.sha256(v.encode()).hexdigest() for n,v in files.items()},production_hash_normalization="utf8-no-bom-lf",production_sha256={n:hashlib.sha256(read(n).encode()).hexdigest() for n in ['MyBehavior.cs','MyBehavior.MemorySummaryInput.cs','MyBehavior.MemorySummaryMainThread.cs','MyBehavior.MemorySummaryPlanning.cs']},seams=['Capture/check/clone/hash and six Build entry call counters without changed business conditions','Queue dispatcher entry count probe without changed conditions','Gateway HTTP boundary scripted TCS','Task.Delay -> controlled clock','TaleWorlds/game rendering/settings lookups are instrumented fixtures','legacy action repair/suppression and public material normalization are fixtures'],limits=['No live provider/game/save or hard frame-time/record budget proof','Does not execute Apply/Mark/final queue Process (separate business suite)'])
     (out/'manifest.json').write_bytes(json.dumps(metadata,ensure_ascii=False,indent=2).encode())
     dotnet=Path(os.environ.get('DOTNET_EXE',str(ROOT/'local/dotnet/8.0.425/dotnet.exe')))
     (out/'home').mkdir();(out/'appdata').mkdir()
-    env={key:os.environ[key] for key in ('SystemRoot','WINDIR','ProgramData','HOMEDRIVE','HOMEPATH','OS','USERNAME','USERDOMAIN','ProgramFiles','ProgramFiles(x86)','CommonProgramFiles','CommonProgramFiles(x86)','PROCESSOR_ARCHITECTURE') if key in os.environ}
-    env.update(PATH=str(dotnet.parent),DOTNET_ROOT=str(dotnet.parent),DOTNET_CLI_HOME=str(out/'home'),USERPROFILE=str(out/'home'),HOME=str(out/'home'),LOCALAPPDATA=str(out/'appdata'),NUGET_PACKAGES=str(ROOT/'.tmp/nuget-packages'),APPDATA=str(out/'appdata'),TEMP='E:/tmp/af-j17-20260930',TMP='E:/tmp/af-j17-20260930',DOTNET_GENERATE_ASPNET_CERTIFICATE='false',DOTNET_SKIP_FIRST_TIME_EXPERIENCE='1',DOTNET_CLI_TELEMETRY_OPTOUT='1')
+    env = minimal_test_environment(dotnet, out)
     build=subprocess.run([str(dotnet),'build',str(out/'Proof.csproj'),'-c','Release','--nologo','-p:RestoreConfigFile='+str(out/'NuGet.Config')],cwd=ROOT,env=env,capture_output=True,text=True,encoding='utf-8',errors='replace',timeout=120)
     (out/'build.log').write_bytes((build.stdout+build.stderr).encode())
     if build.returncode:print(build.stdout+build.stderr);return 2

@@ -6,14 +6,18 @@ import argparse,hashlib,importlib.util,json,os,re,subprocess,sys
 from xml.sax.saxutils import escape
 ROOT=Path(__file__).resolve().parents[4];HERE=Path(__file__).resolve().parent
 sys.path.insert(0,str(ROOT/'tests'))
-from output_isolation import new_run_root, current_source_path
+from output_isolation import new_run_root, current_source_path, minimal_test_environment
 BASELINE='62abfdb3'
 MUTATIONS=[
  'abandon-incomplete-same-day','ignore-empty-probe','ignore-stale-queued-job','ignore-owner-binding',
  'ignore-cleanup-identity','unbounded-metadata','unbounded-expensive','ignore-deadline','renew-seal-budget','renew-deferred-deadline','omit-window-restore','drop-deferred-start','ignore-pending-generation','ignore-campaign-scope','unbudgeted-sort','unstable-sort','ordinal-sort','ignore-sort-source','ignore-sort-culture','ignore-sort-final-binding','unbudgeted-owner-normalize','ignore-owner-normalize-key','ignore-owner-normalize-empty','ignore-owner-normalize-kept-empty','skip-owner-normalize-reseal','ignore-owner-normalize-source','unbudgeted-line-normalize','ignore-line-source','ignore-line-structure','ignore-trigger-structure']
 def module(name,path):
  sp=importlib.util.spec_from_file_location(name,path);m=importlib.util.module_from_spec(sp);sp.loader.exec_module(m);return m
+OWNER_MIGRATED=False
 def exact(s,old,new,count=1):
+ if OWNER_MIGRATED and old not in s:
+  support=module('sealing_anchor_support',HERE/'business_owner_fixture_support.py')
+  old=support.owner_anchor(old);new=support.owner_anchor(new)
  assert s.count(old)==count,(old,s.count(old),count);return s.replace(old,new)
 
 def apply_product_mutation(product, mutation):
@@ -74,7 +78,7 @@ def apply_seal_mutation(seal, mutation):
  return seal
 def main():
  ap=argparse.ArgumentParser(description=__doc__);g=ap.add_mutually_exclusive_group();g.add_argument('--original',action='store_true');g.add_argument('--source-baseline',choices=['73a6977c','9158132c','40b92e67','4d6994bc','8ae0f831']);g.add_argument('--mutate',choices=MUTATIONS);ap.add_argument('--run-root',type=Path);a=ap.parse_args();baseline=a.source_baseline or (BASELINE if a.original else None);sys.stdout.reconfigure(encoding='utf-8')
- ex=module('seal_ex',ROOT/'tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py');cap=module('seal_capture',HERE/'run_captured.py')
+ ex=module('seal_ex',ROOT/'tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py');module('sealing_ex_support',HERE/'business_owner_fixture_support.py').enable_expression_declarations(ex);cap=module('seal_capture',HERE/'run_captured.py')
  def read(path):return subprocess.check_output(['git','show',baseline+':'+path],cwd=ROOT).decode('utf-8-sig').replace('\r\n','\n') if baseline and not path.startswith('tools/') else (current_source_path(ROOT, path)).read_text(encoding='utf-8-sig')
  source=read('MyBehavior.cs');manifest=[];snippets=[];sealing_path=current_source_path(ROOT, 'MyBehavior.MemorySealing.cs');new_sealing=not a.original and sealing_path.exists()
  if a.mutate and a.mutate not in ('abandon-incomplete-same-day',) and not new_sealing: raise ValueError('Sealing mutation requires MyBehavior.MemorySealing.cs')
@@ -84,6 +88,8 @@ def main():
   manifest.append(dict(file=path,signature=sig,line=data[:data.index(body)].count('\n')+1,sha256=hashlib.sha256(body.encode()).hexdigest()))
   if name=='RunDailySummaryQueueItemsAsync':body=exact(body,'await Task.Delay(60000);','await FixtureDelayAsync(60000);')
   if name in ['TrySealPastDailyMemoryDrafts','HasPastDailyMemoryDrafts','TryRunCampaignMemoryMaintenance','SanitizeDailyMemoryDrafts','HasMemorySummaryJobStillPending','HasMajorActionSummaryJobStillPending']:
+   if '{' not in body and '=>' in body:
+    head,expr=body.rsplit('=>',1);body=head+'{ return '+expr.strip()+' }'
    pos=body.index('{')+1;body=body[:pos]+'\n SealProbe.Hit("'+name+'");'+body[pos:]
   if name=='TrySealPastDailyMemoryDrafts' and '_dailyMemoryDrafts.Keys.ToList()' in body:
    body=exact(body,'_dailyMemoryDrafts.Keys.ToList()','SealProbe.Visit(_dailyMemoryDrafts.Keys,"owner-index").ToList()')
@@ -133,10 +139,11 @@ def main():
   body=owner_tick[begin:end]
   snippets.append('private void RunCampaignMemoryMaintenanceCycle(bool processedWeeklyReportCommits) {\n'+body+'\n}')
   manifest.append(dict(file='MyBehavior.cs',signature='OnCampaignTick maintenance callsite',sha256=hashlib.sha256(body.encode()).hexdigest(),derived_wrapper=True))
- for field in re.finditer(r'^\s*private [^\n;]+ _dailyMemoryDraftSeal\w+[^\n;]*;',source,re.M):snippets.append(field.group().strip())
+ for field in re.finditer(r'^\s*private [^\n]+ _dailyMemoryDraftSeal\w+[^\n]*',source,re.M):snippets.append(field.group().strip())
  match=re.search(r'private const int DailyMaintenanceMaxJobsPerTick = [^;]+;',source);assert match;snippets.append(match.group())
  planning=read('MyBehavior.MemorySummaryPlanning.cs')
- for sig in ['private sealed class MemorySummaryPlanEntry','private MemorySummaryPlanEntry DescribeMemorySummaryJob(']:add(sig,'MyBehavior.MemorySummaryPlanning.cs',planning)
+ for sig in (['private MemorySummaryPlanEntry DescribeMemorySummaryJob('] if 'CreateMemorySummaryPlanningOwner' in planning else ['private sealed class MemorySummaryPlanEntry','private MemorySummaryPlanEntry DescribeMemorySummaryJob(']):add(sig,'MyBehavior.MemorySummaryPlanning.cs',planning)
+ if 'CreateMemorySummaryPlanningOwner' in planning:add('private MemorySummaryPlanningOwner CreateMemorySummaryPlanningOwner(', 'MyBehavior.MemorySummaryPlanning.cs', planning)
  recovery=read('MyBehavior.MemoryRecovery.cs')
  for name in ['IsValidMemoryCommitMarker','IsMemoryRecoveryHexDigest']:
   match=re.search(r'(?:private|internal) static bool '+name+r'\([^;]+;',recovery);assert match and '=>' in match.group();snippets.append(match.group())
@@ -172,7 +179,14 @@ def main():
   files['NpcActionLedger.cs']=read('src/modules/AF.Module.Memory/Records/NpcActionLedger.cs')
   files['AutomaticKingdomRebellions.cs']='namespace AnimusForge { internal static class AutomaticKingdomRebellions { internal static bool FlowActive => false; } }'
  if new_sealing:
-  seal=read('MyBehavior.MemorySealing.cs');manifest.append(dict(file='MyBehavior.MemorySealing.cs',sha256=hashlib.sha256(seal.encode()).hexdigest(),whole_partial=True))
+  seal=read('MyBehavior.MemorySealing.cs')
+  migrated='_memoryBusinessState.Sealing' in seal
+  if migrated:
+   global OWNER_MIGRATED
+   OWNER_MIGRATED=True
+   files['SealingFacade.cs']=seal
+   seal=read('src/modules/AF.Module.Memory/Summary/MemorySealingOwner.cs')
+  manifest.append(dict(file='MyBehavior.MemorySealing.cs',sha256=hashlib.sha256(seal.encode()).hexdigest(),whole_partial=True))
   seal=exact(seal,'T job = current[index.Cursor++];','T job = current[index.Cursor++]; SealProbe.Hit(typeof(T)==typeof(MemorySummaryJob)?"daily-index":"major-index");')
   seal=exact(seal,'int index = Cursor++;','int index = Cursor++; SealProbe.Hit(typeof(T)==typeof(MemorySummaryJob)?"daily-final-filter":"major-final-filter");')
   shared_budget='MemoryMaintenanceWorkBudget' in seal
@@ -190,6 +204,8 @@ def main():
   seal=exact(seal,'_dailyMemoryDraftSealOwnerKeys.Add(state.OwnerEnumerator.Current.Key);','_dailyMemoryDraftSealOwnerKeys.Add(state.OwnerEnumerator.Current.Key); SealProbe.Hit("owner-index");')
   seal=exact(seal,'foreach (var owner in state.CompletedOwners)\n        {','foreach (var owner in state.CompletedOwners)\n        { SealProbe.Hit("completed-owner-check");')
   files['MemorySealing.cs']=apply_seal_mutation(seal, None if shared_budget and a.mutate in ('unbounded-metadata','unbounded-expensive','ignore-deadline') else a.mutate)
+ if not baseline and '_memoryBusinessState.Sealing' in read('MyBehavior.MemorySealing.cs'):
+  support=module('sealing_state_support',HERE/'business_owner_fixture_support.py');support.include(ROOT,files,manifest,ex)
  if 'CooperativeMemoryQueueSort' in files.get('MemorySealing.cs',''):
   path='src/modules/AF.Module.Memory/Summary/CooperativeMemoryQueueSort.cs';sort=read(path)
   manifest.append(dict(file=path,sha256=hashlib.sha256(sort.encode()).hexdigest(),whole_component=True))
@@ -198,6 +214,7 @@ def main():
   if a.mutate=='unstable-sort':sort=exact(sort,'Compare(_input[_left], _input[_right]) <= 0','Compare(_input[_left], _input[_right]) < 0')
   if a.mutate=='ordinal-sort':sort=exact(sort,'_compareInfo.Compare(a.Name, b.Name, CompareOptions.None)','string.CompareOrdinal(a.Name, b.Name)')
   if a.mutate=='ignore-sort-culture':sort=exact(sort,'_compareInfo.Equals(CultureInfo.CurrentCulture.CompareInfo)','true')
+  files.pop('CooperativeMemoryQueueSort.cs',None)
   files['QueueSort.cs']=sort
  if 'ComputeMemorySummarySourceFingerprint(source)' in input_code:
   for name in ['MyBehavior.MemorySourceFingerprint.cs','src/modules/AF.Module.Memory/Summary/MemorySourceFingerprintWriter.cs']:
@@ -208,11 +225,16 @@ def main():
          files[Path(relative).name]=(current_source_path(ROOT, relative)).read_text(encoding='utf-8-sig')
  run_scope_spec=importlib.util.spec_from_file_location('memory_run_fixture',ROOT/'tests/modules/AF.Module.Memory/MemorySummaryRunOwnerTests/fixture_support.py');run_scope=importlib.util.module_from_spec(run_scope_spec);run_scope_spec.loader.exec_module(run_scope)
  run_scope.include(files, original=False)
+ weekly_path='src/modules/AF.Module.Weekly/Materials/WeeklyAggregateEventLineOwner.cs'
+ weekly_source=(ROOT/weekly_path).read_text(encoding='utf-8-sig')
+ weekly_span=ex.declaration(weekly_source,'internal static string TranslateNpcActionKindForPrompt(')
+ files['WeeklyProductionTranslation.cs']='namespace AnimusForge { internal sealed class WeeklyAggregateEventLineOwner { '+weekly_span+' } }'
+ manifest.append(dict(file=weekly_path,signature='TranslateNpcActionKindForPrompt',sha256=hashlib.sha256(weekly_span.encode()).hexdigest(),source_derived_span=True))
  files['Proof.csproj']=files['Proof.csproj'].replace('<OutputType>','<EnableDefaultCompileItems>false</EnableDefaultCompileItems><OutputType>',1).replace('</Project>','<ItemGroup>'+''.join('<Compile Include="'+name+'" />' for name in files if name.endswith('.cs'))+'</ItemGroup></Project>')
  for path,text in files.items():(out/path).write_bytes(text.encode())
  meta=dict(source_revision=baseline or 'worktree',mutation=a.mutate,source_sha256=hashlib.sha256(source.encode()).hexdigest(),declarations=manifest,generated_sha256={p:hashlib.sha256(t.encode()).hexdigest() for p,t in files.items()},seams=['Actual Seal/Reset/HasPast/TryRun/sanitizers/pending/major enqueue/cancel execute; game owner identity and summary-start are fixtures','Entry/iteration counters only; controlled entry delay exercises actual Stopwatch budget'],limits=['Owner sanitizer is per-draft; lines/trigger binds use metadata grants, trigger list sanitize stays atomic','No real game/save/provider or overall frame-time acceptance'])
  (out/'manifest.json').write_bytes(json.dumps(meta,ensure_ascii=False,indent=2).encode())
- dotnet=Path(os.environ.get('DOTNET_EXE',str(ROOT/'local/dotnet/8.0.425/dotnet.exe')));(out/'home').mkdir();(out/'appdata').mkdir();env={key: os.environ[key] for key in ('SystemRoot','WINDIR','ProgramData','HOMEDRIVE','HOMEPATH','OS','USERNAME','USERDOMAIN','ProgramFiles','ProgramFiles(x86)','CommonProgramFiles','CommonProgramFiles(x86)','PROCESSOR_ARCHITECTURE') if key in os.environ};env.update(PATH=str(dotnet.parent),DOTNET_ROOT=str(dotnet.parent),DOTNET_CLI_HOME=str(out/'home'),USERPROFILE=str(out/'home'),HOME=str(out/'home'),LOCALAPPDATA=str(out/'appdata'),NUGET_PACKAGES=str(ROOT/'.tmp/nuget-packages'),APPDATA=str(out/'appdata'),TEMP='E:/tmp/af-j17-20260930',TMP='E:/tmp/af-j17-20260930',DOTNET_SKIP_FIRST_TIME_EXPERIENCE='1',DOTNET_CLI_TELEMETRY_OPTOUT='1')
+ dotnet=Path(os.environ.get('DOTNET_EXE',str(ROOT/'local/dotnet/8.0.425/dotnet.exe')));(out/'home').mkdir();(out/'appdata').mkdir();env = minimal_test_environment(dotnet, out)
  build=subprocess.run([str(dotnet),'build',str(out/'Proof.csproj'),'-c','Release','--nologo','-p:RestoreConfigFile='+str(out/'NuGet.Config')],cwd=ROOT,env=env,capture_output=True,text=True,encoding='utf-8',errors='replace',timeout=120);(out/'build.log').write_bytes((build.stdout+build.stderr).encode())
  if build.returncode:print(build.stdout+build.stderr);return 2
  run=subprocess.run([str(dotnet),str(out/'bin/Release/net8.0/Proof.dll')],cwd=ROOT,env=env,capture_output=True,text=True,encoding='utf-8',errors='replace',timeout=120);log=run.stdout+run.stderr;(out/'run.log').write_bytes(log.encode());print('BUILD_PASS sealing='+variant);print(log,end='');return run.returncode if 'SEALING_RESULT' in log else 2

@@ -8,7 +8,7 @@ from xml.sax.saxutils import escape
 ROOT = Path(__file__).resolve().parents[4]
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0,str(ROOT/'tests'))
-from output_isolation import new_run_root, current_source_path
+from output_isolation import new_run_root, current_source_path, minimal_test_environment
 MUTATIONS = ['ignore-parse-source','ignore-final-source','omit-daily-save','omit-line-add','omit-pending-consume','drop-afef','reuse-recovery-source','drop-recovery-marker','drop-recent-marker','omit-recent-save','weekly-false-success','weekly-drop-provenance','swallow-completion-failure','omit-major-entry','omit-block-publish']
 ADMISSION_MUTATIONS = ['old-predicate','skip-title-pass','trim-seen-id','seen-after-content','require-same-owner']
 
@@ -21,6 +21,7 @@ def main():
     if a.admission_mutate and not a.admission_only:raise ValueError('Admission mutations require --admission-only')
     if a.admission_only and (a.mutate or a.source_baseline):raise ValueError('Admission observation is independent of source-check mutations and baselines')
     capture=module('terminal_capture_inventory',HERE/'run_captured.py');business=module('terminal_business_inventory',HERE/'run_business.py');ex=module('terminal_extractor',ROOT/'tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py')
+    support=__import__('business_owner_fixture_support');support.enable_expression_declarations(ex)
     manifest=[]
     def read(name):
         data=(current_source_path(ROOT, name)).read_text(encoding='utf-8-sig');manifest.append(dict(file=name,sha256=hashlib.sha256(data.encode()).hexdigest()));return data
@@ -34,6 +35,7 @@ def main():
         return data.replace(old,new)
     def add(sig,name=''):
         body=ex.declaration(source,sig);manifest.append(dict(file='MyBehavior.cs',signature=sig,line=source[:source.index(body)].count('\n')+1,sha256=hashlib.sha256(body.encode()).hexdigest()))
+        body=support.statement_body(body)
         if a.admission_only and name=='SanitizeCompressedMemoryBlocks':
             pos=body.index('{')+1;body=body[:pos]+'\n AdmissionProbe.Sanitizers++;'+body[pos:]
             body=replace(body,'CompressedMemoryBlock block = TWParallel.IsMainThread()', 'AdmissionProbe.SanitizedRecords++;\n CompressedMemoryBlock block = TWParallel.IsMainThread()')
@@ -63,7 +65,7 @@ def main():
         if name=='ProcessMemorySummaryQueueAsync' and a.mutate=='swallow-completion-failure':body=replace(body,'RunMemorySummaryRunPhaseAsync(run, runtimeGeneration, delegate','RunMemorySummaryRunCaptureAsync(run, runtimeGeneration, delegate',6)
         if name=='RecordNpcActionInternal' and a.mutate=='omit-major-entry':body=replace(body,'NpcActionLedger.Append(value, npcActionEntry, maxEntries, CompareNpcActionTimeline);','/* fault: lost major entry */')
         if name=='SaveCompressedMemoryBlocksById' and a.mutate=='omit-block-publish':body=replace(body,'_compressedMemoryBlocks[text] = list;','/* fault: lost block publication */')
-        if name=='ProcessMemorySummaryQueueAsync' and a.mutate=='ignore-final-source':body=replace(body,' || !IsMemorySummaryInputCurrent(result.Source)','',3)
+        if name=='ProcessMemorySummaryQueueAsync' and a.mutate=='ignore-final-source':body=replace(body,'() => IsMemorySummaryInputCurrent(result.Source)','() => true',3)
         if name=='AppendDailyMemoryLineById':
             if a.mutate=='omit-line-add':body=replace(body,'dailyMemoryDraft.Lines.Add(dailyMemoryLine);','/* fault: missing actual line */')
             if a.mutate=='drop-afef':body=replace(body,'IsAfef = isAfef,','IsAfef = false,')
@@ -72,7 +74,7 @@ def main():
         snippets.append(body)
     for name in capture.MODELS:
         if name not in capture.B1A_MODELS:add('private sealed class '+name)
-    add('private class DialogueDay');add('private sealed class NpcActionFacts')
+    add('internal class DialogueDay');add('private sealed class NpcActionFacts')
     for name in names:
         match=re.search(r'^\s*private [^\n]*?\b'+name+r'\(',source,re.M)
         if not match:raise ValueError('Missing '+name)
@@ -180,6 +182,13 @@ def main():
         files['MemorySummaryRunOwner.cs']=replace(files['MemorySummaryRunOwner.cs'],'Interlocked.CompareExchange(ref _owner._current, null, this)','Interlocked.Exchange(ref _owner._current, null)')
     elif a.run_mutate=='ignore-run-authority':
         files['MemorySummaryRunOwner.cs']=replace(files['MemorySummaryRunOwner.cs'],'ReferenceEquals(Volatile.Read(ref _owner._current), this)','true')
+    support.include(ROOT,files,manifest,ex)
+    files['Terminal.cs']=replace(files['Terminal.cs'],'InteractionMemoryRecoveryLedger _interactionMemoryRecoveryLedger=new();','InteractionMemoryRecoveryLedger _interactionMemoryRecoveryLedger => MemoryRecoveryState.Ledger;')
+    files['MemoryBusinessStateOwner.cs']=replace(files['MemoryBusinessStateOwner.cs'],'string id = MemoryRecordRules.NormalizeMemoryHeroId(memoryId);\n        if (string.IsNullOrWhiteSpace(id)) return;\n        Drafts ??=', 'MyBehavior.TestBeforeTerminalSave(memoryId); string id = MemoryRecordRules.NormalizeMemoryHeroId(memoryId);\n        if (string.IsNullOrWhiteSpace(id)) return;\n        Drafts ??=')
+    files['Product.cs']=files['Product.cs'].replace(' BeforeTerminalSave(memoryId);','')
+    files['MemoryRecoveryStateOwner.cs']=files['MemoryRecoveryStateOwner.cs'].replace('internal void ScheduleInteractionMemoryRecoveryRetry()\n    {','internal void ScheduleInteractionMemoryRecoveryRetry()\n    { MyBehavior.TestRecoveryRetry();')
+    files['TerminalFaultHooks.cs']='namespace AnimusForge {public partial class MyBehavior {internal static void TestBeforeTerminalSave(string id)=>BeforeTerminalSave(id);internal static void TestRecoveryRetry()=>TerminalEvent("recovery-retry-boundary");}}'
+    files['RecoveryOwnerHost.cs']='using System;using System.Collections.Generic;namespace AnimusForge {public partial class MyBehavior {private MemoryRecoveryStateOwner _testRecovery;private MemoryRecoveryStateOwner MemoryRecoveryState {get { _testRecovery ??= new(_memoryBusinessState);_testRecovery.Bind(new(){IsEntityEligible=IsMemoryEntityEligibleForCompressedMemory,CurrentDay=GetCurrentGameDayIndexSafe,CurrentDate=GetCurrentGameDateTextSafe,History=()=>_dialogueHistory,LoadHistory=LoadDialogueHistoryById,SaveHistory=SaveDialogueHistoryById,RemoveExpiredFacts=RemoveExpiredSingleUseNpcFactLines,Log=Logger.Log,TickScope=()=>new TestRecoveryScope()});return _testRecovery;}} private sealed class TestRecoveryScope:IDisposable{public void Dispose(){}} }}'
     files['Proof.csproj']=files['Proof.csproj'].replace('<OutputType>','<EnableDefaultCompileItems>false</EnableDefaultCompileItems><OutputType>',1).replace('</Project>','<ItemGroup>'+''.join('<Compile Include="'+name+'" />' for name in files if name.endswith('.cs'))+'</ItemGroup></Project>')
     files['NuGet.Config']='<configuration><packageSources><clear/></packageSources></configuration>'
     variant=('admission-'+(a.admission_mutate or 'current')) if a.admission_only else (('source-baseline-'+a.source_baseline) if a.source_baseline else ('run-'+a.run_mutate if a.run_mutate else 'scope-cases' if a.run_scope_cases else a.mutate or 'current'))
@@ -194,8 +203,7 @@ def main():
     (out/'manifest.json').write_bytes(json.dumps(metadata,ensure_ascii=False,indent=2).encode())
     dotnet=Path(os.environ.get('DOTNET_EXE',str(ROOT/'local/dotnet/8.0.425/dotnet.exe')))
     (out/'home').mkdir();(out/'appdata').mkdir()
-    env={key:os.environ[key] for key in ('SystemRoot','WINDIR','ProgramData','HOMEDRIVE','HOMEPATH','OS','USERNAME','USERDOMAIN','ProgramFiles','ProgramFiles(x86)','CommonProgramFiles','CommonProgramFiles(x86)','PROCESSOR_ARCHITECTURE') if key in os.environ}
-    env.update(PATH=str(dotnet.parent),DOTNET_ROOT=str(dotnet.parent),DOTNET_CLI_HOME=str(out/'home'),USERPROFILE=str(out/'home'),HOME=str(out/'home'),LOCALAPPDATA=str(out/'appdata'),NUGET_PACKAGES=str(ROOT/'.tmp/nuget-packages'),APPDATA=str(out/'appdata'),TEMP='E:/tmp/af-j17-20260930',TMP='E:/tmp/af-j17-20260930',DOTNET_GENERATE_ASPNET_CERTIFICATE='false',DOTNET_SKIP_FIRST_TIME_EXPERIENCE='1',DOTNET_CLI_TELEMETRY_OPTOUT='1')
+    env = minimal_test_environment(dotnet, out)
     build=subprocess.run([str(dotnet),'build',str(out/'Proof.csproj'),'-c','Release','--nologo','-p:RestoreConfigFile='+str(out/'NuGet.Config')],cwd=ROOT,env=env,capture_output=True,text=True,encoding='utf-8',errors='replace',timeout=120)
     (out/'build.log').write_bytes((build.stdout+build.stderr).encode())
     if build.returncode:print(build.stdout+build.stderr);return 2

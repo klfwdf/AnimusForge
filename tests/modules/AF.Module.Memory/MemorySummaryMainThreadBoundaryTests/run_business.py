@@ -19,7 +19,7 @@ from xml.sax.saxutils import escape
 ROOT = Path(__file__).resolve().parents[4]
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(ROOT / 'tests'))
-from output_isolation import new_run_root, current_source_path
+from output_isolation import new_run_root, current_source_path, minimal_test_environment
 B1A_MODELS = {'DailyMemoryLine','DailyMemoryDraft','CompressedMemoryBlock','WeeklyMemoryMaterialTrigger','MemorySummaryJob','MemoryOverviewState','MemoryOverviewJob','MajorActionSummaryState','MajorActionSummaryJob'}
 BASELINE = "e40c92d7"
 MODELS = ["DailyMemoryLine", "DailyMemoryDraft", "CompressedMemoryBlock",
@@ -77,6 +77,7 @@ def build_sources(original, mutation, run_owner_baseline=False):
     spec = importlib.util.spec_from_file_location("channel_extractor", ROOT / "tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py")
     extractor = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(extractor)
+    support=__import__('business_owner_fixture_support');support.enable_expression_declarations(extractor)
     source = extractor.source("MyBehavior.cs", "155f1b7a" if run_owner_baseline else BASELINE if original else None)
     signatures = [f"private sealed class {name}" for name in MODELS if original or run_owner_baseline or name not in B1A_MODELS] + (["private class NpcActionEntry"] if original or run_owner_baseline else []) + METHODS
     constant = re.search(r'private const string NonHeroMemoryIdPrefix = [^;]+;', source)
@@ -96,16 +97,18 @@ def build_sources(original, mutation, run_owner_baseline=False):
         begin = source.index(block)
         positions.append(dict(file="MyBehavior.cs", signature=signature, line=source[:begin].count("\n") + 1,
                               lines=block.count("\n") + 1, sha256=hashlib.sha256(block.encode()).hexdigest()))
+        original_block=block
+        block=support.statement_body(block)
         # Test-only entry probes do not replace any Apply/Mark operation or condition.
         if signature.startswith(("private void Apply", "private bool Apply", "private void Mark")):
             name = re.search(r"(\w+)\($", signature)[1]
             opening = block.index("{") + 1
             block = block[:opening] + f'\n Witness.Touch("{name}");' + block[opening:]
-        if signature == "private void MarkMemorySummaryFailure(":
+        if signature == "private void MarkMemorySummaryFailure(" and (original or run_owner_baseline):
             # Fault injection after the real queue retry mutation, not a replacement Mark method.
             block = replace_exact(block, "DailyMemoryDraft draft = FindMemoryDraft(job);",
                 'if (throwAfterRetryMark) throw new InvalidOperationException("scripted failure after retry mark");\nDailyMemoryDraft draft = FindMemoryDraft(job);')
-        if signature == "private DailyMemoryDraft FindMemoryDraft(" and mutation == "ignore-draft-owner":
+        if signature == "private DailyMemoryDraft FindMemoryDraft(" and mutation == "ignore-draft-owner" and (original or run_owner_baseline):
             block = replace_exact(block,
                 " && string.Equals(NormalizeMemoryHeroId(x.HeroId), text, StringComparison.OrdinalIgnoreCase)", "")
         if signature == "private void TryStartMemorySummaryQueue(":
@@ -241,12 +244,12 @@ def main():
     if not args.original:
         planning = subprocess.check_output(["git","show","155f1b7a:MyBehavior.MemorySummaryPlanning.cs"],cwd=ROOT).decode("utf-8-sig").replace("\r\n","\n") if args.run_owner_baseline else (current_source_path(ROOT, "MyBehavior.MemorySummaryPlanning.cs")).read_text(encoding="utf-8-sig")
         manifest["planning_sha256"] = hashlib.sha256(planning.encode()).hexdigest()
-        if args.mutate == "keep-invalid-queue":
+        if args.run_owner_baseline and args.mutate == "keep-invalid-queue":
             planning = replace_exact(planning, "source[index] = null;", "source[index] = job;")
-        elif args.mutate == "dedupe-before-filter":
+        elif args.run_owner_baseline and args.mutate == "dedupe-before-filter":
             planning = replace_exact(planning, "bool deferred = false, hasHoles = false;", "bool deferred = false, hasHoles = false; var prematureSeen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);")
             planning = replace_exact(planning, "bool pending = isPending(job);", "if (!prematureSeen.Add(DescribeMemorySummaryJob(job, index).Key)) { source[index] = null; hasHoles = true; continue; }\n bool pending = isPending(job);")
-        elif args.mutate == "worker-extra-plan":
+        elif args.run_owner_baseline and args.mutate == "worker-extra-plan":
             # The extra plan no longer scans inside the coordinator callback. Corrupt
             # the actual shared scanner's dispatch, not the now-empty old callback.
             planning = replace_exact(planning, "await RunMemorySummaryRunPhaseAsync(run, generation, delegate", "await Task.Run(delegate", count=4)
@@ -268,6 +271,24 @@ def main():
         assert anchor in files['Program.cs'];files['Program.cs']=files['Program.cs'].replace(anchor,extra+'\n'+anchor,1)
         anchor='("load-during-extra-delay", LoadDuringExtraDelay)'
         assert anchor in files['Program.cs'];files['Program.cs']=files['Program.cs'].replace(anchor,'("same-generation-run-replaced-success",()=>RunOwnerReplacement(false,false)),("same-generation-run-replaced-failure",()=>RunOwnerReplacement(true,false)),("same-generation-queued-acceptance-retired",()=>RunOwnerReplacement(false,true)),'+anchor,1)
+    if not args.original and not args.run_owner_baseline:
+        support=__import__('business_owner_fixture_support')
+        spec=importlib.util.spec_from_file_location('business_owner_ex',ROOT/'tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py');ex=importlib.util.module_from_spec(spec);spec.loader.exec_module(ex);support.enable_expression_declarations(ex)
+        support.include(ROOT,files,manifest['declarations'],ex)
+        files['Program.cs']=files['Program.cs'].replace('return _dailyMemoryDrafts[id].ToList();','return _memoryBusinessState.LoadDrafts(id);')
+        files['Program.cs']=files['Program.cs'].replace('b._dailyMemoryDrafts["daily"].Count','b.LoadDailyMemoryDraftsById("daily").Count').replace('b._dailyMemoryDrafts["first"].Count','b.LoadDailyMemoryDraftsById("first").Count')
+        files['StateProjections.cs']=files['StateProjections.cs'].replace('CurrentDay = GetCurrentGameDayIndexSafe','CurrentDay = () => (int)CampaignTime.Now.ToDays')
+        files.pop('MemorySourceFingerprintRules.cs',None);files.pop('MemorySourceFingerprintWriter.cs',None)
+        files['MemoryBusinessStateOwner.cs']=replace_exact(files['MemoryBusinessStateOwner.cs'],'var draft = Drafts != null','MyBehavior.TestFaultAfterRetryMark(); var draft = Drafts != null')
+        files['MemoryBusinessStateOwner.cs']=replace_exact(files['MemoryBusinessStateOwner.cs'],'if (normalized.Count > 0) Blocks[id] = normalized;','if (normalized.Count > 0) { Blocks[id] = normalized; MyBehavior.TestFaultAfterBlockPublish(); }')
+        if args.mutate=='ignore-draft-owner':
+            files['MemoryBusinessStateOwner.Queues.cs']=replace_exact(files['MemoryBusinessStateOwner.Queues.cs'],'x.GameDayIndex == job.GameDayIndex && string.Equals(MemoryRecordRules.NormalizeMemoryHeroId(x.HeroId), text, StringComparison.OrdinalIgnoreCase)','x.GameDayIndex == job.GameDayIndex')
+        if args.mutate=='keep-invalid-queue':files['MemorySummaryPlanningOwner.cs']=replace_exact(files['MemorySummaryPlanningOwner.cs'],'source[index] = null;','source[index] = job;')
+        elif args.mutate=='dedupe-before-filter':
+            files['MemorySummaryPlanningOwner.cs']=replace_exact(files['MemorySummaryPlanningOwner.cs'],'bool deferred = false, hasHoles = false;','bool deferred = false, hasHoles = false; var prematureSeen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);')
+            files['MemorySummaryPlanningOwner.cs']=replace_exact(files['MemorySummaryPlanningOwner.cs'],'bool pending = isPending(job);','if (!prematureSeen.Add(DescribeMemorySummaryJob(job, index).Key)) { source[index] = null; hasHoles = true; continue; } bool pending = isPending(job);')
+        elif args.mutate=='worker-extra-plan':files['MemorySummaryPlanningOwner.cs']=replace_exact(files['MemorySummaryPlanningOwner.cs'],'await _port.RunPhaseAsync(run, generation, delegate','await Task.Run(delegate',count=4)
+        files['TestFaultHooks.cs']='using System;namespace AnimusForge { public partial class MyBehavior {internal static void TestFaultAfterRetryMark(){if(Instance.throwAfterRetryMark)throw new InvalidOperationException("scripted failure after retry mark");} internal static void TestFaultAfterBlockPublish(){Witness.Touch("save-blocks");if(Instance.throwAfterBlockPublish)throw new InvalidOperationException("scripted failure after block publish");} private void MarkMemoryOverviewDirty(string id){} }}'
     files["Proof.csproj"] = files["Proof.csproj"].replace("<OutputType>", "<EnableDefaultCompileItems>false</EnableDefaultCompileItems><OutputType>", 1).replace("</Project>", "<ItemGroup>" + "".join('<Compile Include="' + name + '" />' for name in files if name.endswith(".cs")) + "</ItemGroup></Project>")
     manifest["generated_sha256"] = {name: hashlib.sha256(data.encode()).hexdigest() for name, data in files.items()}
     for name, data in files.items():
@@ -275,13 +296,7 @@ def main():
     (out / "manifest.json").write_bytes(json.dumps(manifest, ensure_ascii=False, indent=2).encode("utf-8"))
     dotnet = Path(os.environ.get("DOTNET_EXE", str(ROOT/'local/dotnet/8.0.425/dotnet.exe')))
     (out/'home').mkdir();(out/'appdata').mkdir()
-    env = {key: os.environ[key] for key in ("SystemRoot", "WINDIR", "ProgramData", "HOMEDRIVE", "HOMEPATH", "OS", "USERNAME", "USERDOMAIN", "ProgramFiles", "ProgramFiles(x86)", "CommonProgramFiles", "CommonProgramFiles(x86)", "PROCESSOR_ARCHITECTURE") if key in os.environ}
-    env.update(PATH=str(dotnet.parent), DOTNET_ROOT=str(dotnet.parent), DOTNET_CLI_HOME=str(out/'home'),
-               USERPROFILE=str(out/'home'), HOME=str(out/'home'), LOCALAPPDATA=str(out/'appdata'),
-               NUGET_PACKAGES=str(ROOT / ".tmp/nuget-packages"), APPDATA=str(out/'appdata'), TEMP=os.environ.get('TEMP') or 'E:/tmp/af-j17-20260930', TMP=os.environ.get('TEMP') or 'E:/tmp/af-j17-20260930',
-               DOTNET_CLI_TELEMETRY_OPTOUT="1", DOTNET_SKIP_FIRST_TIME_EXPERIENCE="1",
-               DOTNET_GENERATE_ASPNET_CERTIFICATE="false", DOTNET_CLI_UI_LANGUAGE="en")
-    # Separate build from execution: compiler/extractor failure is NOT an expected red test.
+    env = minimal_test_environment(dotnet, out)
     build = subprocess.run([str(dotnet), "build", str(out / "Proof.csproj"), "-c", "Release", "--nologo",
                             "-p:RestoreConfigFile=" + str(out / "NuGet.Config")], cwd=ROOT, env=env,
                            capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=120)
