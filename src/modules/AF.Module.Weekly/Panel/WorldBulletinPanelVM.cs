@@ -78,6 +78,25 @@ public sealed class WorldBulletinMinorItemVM : ViewModel
 
 public sealed class WorldBulletinIllustrationVM : ViewModel, IWeeklyIllustrationSink
 {
+	private float _imageWidth = 288f;
+	private float _imageHeight = 192f;
+
+	[DataSourceProperty]
+	public float ImageWidth => _imageWidth;
+
+	[DataSourceProperty]
+	public float ImageHeight => _imageHeight;
+
+	// One constant-time update per publication; no Tick, texture copy or image resampling.
+	public void FitImage(int width, int height)
+	{
+		float scale = Math.Min(288f / Math.Max(1, width), 192f / Math.Max(1, height));
+		_imageWidth = Math.Max(1, width) * scale;
+		_imageHeight = Math.Max(1, height) * scale;
+		OnPropertyChangedWithValue(_imageWidth, nameof(ImageWidth));
+		OnPropertyChangedWithValue(_imageHeight, nameof(ImageHeight));
+	}
+
 	private bool _isAvailable;
 
 	private string _spriteName = "";

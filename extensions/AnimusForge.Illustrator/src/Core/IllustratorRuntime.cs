@@ -20,7 +20,7 @@ namespace AnimusForge.Illustrator.Core
         public string ApiBaseUrl { get; }
         public string ApiKey { get; }
         public string ModelName { get; }
-        public string ImageSize { get; }
+        public string ImageSize { get; private set; }
         public string SelectedQuality { get; }
         public string SelectedStyle { get; }
         public string CustomStylePrompt { get; }
@@ -35,6 +35,14 @@ namespace AnimusForge.Illustrator.Core
         public string DirectorApiKey { get; }
         public string DirectorModelName { get; }
         public int DirectorApproximateTokens { get; }
+
+        // Per-request sizing must never overwrite the player's shared MCM setting.
+        internal IllustrationOptions WithImageSize(string imageSize)
+        {
+            var copy = (IllustrationOptions)MemberwiseClone();
+            copy.ImageSize = imageSize;
+            return copy;
+        }
 
         internal IllustrationOptions(IllustratorSettings settings, string directorUrl, string directorKey, string directorModel)
         {
