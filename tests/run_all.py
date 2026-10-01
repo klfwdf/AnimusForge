@@ -141,6 +141,8 @@ def command(path: str, spec: dict, run_name: str, build_root: Path | None = None
     text = p.read_text(encoding="utf-8", errors="replace")
     sdk = DOTNET10 if "net10.0" in text else DOTNET8
     cmd = [str(sdk), "run", "--project", str(p), "-c", "Release"]
+    if "DebtPythonExe" in text:
+        cmd += ["-p:DebtPythonExe=" + sys.executable]
     if build_root is not None:
         # SDK-native per-project bin/obj layout also isolates ProjectReference builds.
         cmd += ["-p:UseArtifactsOutput=true", "-p:UseAppHost=false", f"-p:ArtifactsPath={build_root}",
