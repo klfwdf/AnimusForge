@@ -24,6 +24,32 @@
 
 未验证：游戏实际进出城/围城战、军团与其他 MOD 的联合行为、真实旧档加载及三渠道端到端。已被旧代码转成 AttackParty 的存档命令缺少原始驻守来源，不能安全反推；安装后需取消旧攻击并重新下达驻守，避免撤销玩家明确攻击意图。恢复原版“主动出击”逻辑用聚焦逆向提交 `git revert a9539dc0`，不重置历史，不覆盖游戏文件；本条不提升全仓 J17 的验收状态。
 
+<a id="policy-personality-vote-20261001"></a>
+
+### 政策投票接入五项人物性格（2026-10-01，OFFLINE_VERIFIED）
+
+用户要求在既有政治立场、利益与关系评分之外加入政策手段和人物性格的匹配。工作区 `F:/AnimusForge-main`，分支 `codex/af-main-refactor-continuation-20260831`；修改前检查点 `8c7df9d`（基线 `6aa6850`）。保留其他任务的改动，不推送、不部署、不修改构建入口。
+
+- 范围：玩家/NPC 原有第一次评议输出五轴 `votePersonality`，保存到现有 JSON 记录并接入 `DetermineSupport` postfix；MCM 独立性格倍率，实际利益扣分不变。
+- 兼容/性能：旧数据缺字段视为无性格修正；新评议严格验证数值和字段。沿用政策/日缓存，仅原投票调用读取五项特质，不新增 LLM 请求、世界扫描、Tick 或锁。
+- 退出门：新/旧数据、五轴方向、损益独立、废除反向、承诺优先的定向回归，以及官方双 API + Bootstrap 编译。真实 LLM 语义评分、MCM 操作、投票画面及真实旧档需实机验收。
+
+产品与测试提交 `d54ac0eb`。已完成的职责及源码证据（该修订）：
+
+- `PolicySystem/Core/PolicyVotePersonality.cs:10–97`：五轴可选存档 DTO、新评议严格数值/字段合同、复制与常数评分。正向 trait +2、轴 +1 贡献 +1；五项合计限制 [-2,2]。仅评估政策手段，不按稳定度/忠诚度负值或关键词推断“残忍”。
+- `PolicySystem/Core/CustomPolicyBehavior.Generation.cs:1956,2835,3545,4664,4756–4759` 和 `Models.cs:177–178,491–492`：玩家首次评议、严格解析、pending assessment 深复制及动态议程保存；`Lifecycle.cs:4121` 保留到历史记录。
+- `PolicySystem/Npc/NpcRulerPolicyBehavior.Generation.cs:3497–3499,3626,3650–3652,4604,4740`、`NpcPolicyContracts.cs:160–161,303–304`、`CustomPolicyBehavior.cs:783`：NPC 同一语义合同，草案→raw→规范记录→动态议程完整传递；不由统治者个人性格代替政策手段。
+- `PolicySystem/Core/CustomPolicyBehavior.VoteInterest.cs:192–273,298–308,362–369,418,862–897`：真实 `DetermineSupport` postfix 消费 P，沿用利益/关系总开关、提案家族豁免及 `__runOriginal` 拉票保护。采用案 `delta=U+R+P`，废除案 `delta=-U+R-P`；效果为空仍缓存性格。日志增加 P；五次 trait 读取只在已有按需投票计算发生，不新增网络请求/全表扫描。
+- `DuelSettings.cs:2146–2160`：保留原开关字段身份，更新标签；新增“投票性格权重”0–3、默认 1、0 关闭。旧政策缺少画像时保持原评分，可重新评议。
+- `tests/bridges/Policy/PolicyEffectModule.ContractTests/PolicyVotePersonalityTests.cs:12–151`：真实 DLL 反射验证五轴/边界/非有限值/缺字段/旧记录/存档往返/深复制/无效果缓存/废除方向/负面损益独立；复用 Program 的玩家语义修复与 NPC 单国两阶段回归。csproj 新增可选 `PolicyTestAssemblyPath`，只用于独立验证已构建候选，不改官方构建流程。
+
+验证与产物：
+
+- 官方 `scripts/build/build_single_module.ps1 -ProjectRoot F:/AnimusForge-main -BannerlordRoot "F:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord" -Configuration Release`，未传 Stage/Deploy：1.3 `v1.3.15.110062`、1.4 `v1.4.6.115628`、Bootstrap 均成功；两实现各338条既有警告/0错误，Bootstrap 0/0。构建前核实两个清理目标在仓内且无 reparse；保留旧产物。
+- 隔离 runner 用 `PolicyTestAssemblyPath` 指向本次对应实现，运行 `--policy-personality-only`：两候选各 **1475 assertions PASS**（包含反射辅助与既有回归断言，非1475个独立场景）。1.3 首次因依赖缺失无法启动，补通用依赖后定位缺 `TaleWorlds.SaveSystem`，再补本机 bin 缺件后通过。**1.3 核心引用来自 `_deps_auto`，但离线 runner 的缺失通用依赖来自本机 1.4.8 / 已有1.4依赖，不能视作纯1.3运行时或游戏加载验收**；失败与后续日志全部保留。
+- 证据目录 `artifacts/policy-personality-20261001/`：`build.log`、`test-build-1.3.log`、`test-build-1.4.log`、`tests-1.3-final.log`、`tests-1.4.log`、`source-hashes.json`；`candidate/` 保留已验产物，`previous-build/` 保留本轮之前的构建输出。1.3 DLL SHA256 `74A12F737F307BD7C37BE4703B1E43A77E67537181651638747F0CF8E294248C`；1.4 `689BDDFDA6A2BEE3AA2C55F70D1F1A20F9A15EC73A27DBD0EDFA4D34E4CB51E3`；Bootstrap `8EEF2901B78818AD926223E54BD2A8AF8A375E091C94D4D08B932D2F2BFC98D8`。共享工作树其他任务源码仅作为当时构建输入，本结果不验收其后续变动。
+- 未验：真实 LLM 语义判断、真实旧存档、MCM 点击、Harmony 实机命中与两游戏版本实际投票；离线反射检查不替代上述验收。未部署、推送或写外仓。回滚用针对 `d54ac0eb` 的反向提交；不 hard reset，也不覆盖其他任务。
+
 <a id="bulletin-dropcap-flow-20261001"></a>
 
 ### 快报首字绕排与封存按钮重设计（2026-10-01，OFFLINE_VERIFIED）
