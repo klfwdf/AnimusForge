@@ -28,3 +28,8 @@ The suite also covers epoch/session/save generation/player identity, consumed re
 - This proves the reviewed control-flow bug and its request identity fix, **not real game acceptance, parser behavior, movement, morale or audio effects**. The full extension and host still require the normal dual-version build and gameplay regression.
 - `--source-ref` switches only the trigger source so the old control-flow defect remains independently observable with the same current checker. It does not claim the entire old host was built.
 - No HTTP, LLM, real game APIs or save access. Generated fixtures/logs stay in `.generated/`.
+
+
+## Historical runner repair (2026-10-01)
+
+run.py now resolves the SDK from an explicit override/environment/repository, extracts the real ScenePlayerShoutContext dependency and supports --run-root with a minimal credential-free compilation environment. Completion/final-check mutations retain the original runtime assertions.

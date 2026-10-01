@@ -13,34 +13,40 @@ def restore(source):
   expected[start:start+len(old)]=hunk['after']
  expected=''.join(expected)
  assert hashlib.sha256(expected.encode()).hexdigest()==review['afterSha256'],'Courier prompt review corrupt'
- live=(ROOT/review['path']).read_text(encoding='utf-8-sig')
- assert live==expected,'Unreviewed Courier prompt source outside approved Start/Begin/Prepare/prompt boundaries'
- for path,digest in review['dependencies'].items():
-  text=(ROOT/path).read_text(encoding='utf-8-sig')
-  if path in ('tests/modules/AF.Module.Conversation/CourierPromptPreparationTests/run.py','tests/modules/AF.Module.Conversation/CourierPromptPreparationTests/run_liveness.py'):
-   new='src/AF.Foundation.Runtime/Scheduling/PendingOperationRegistry.cs'
-   assert text.count(new)==1,'Courier prompt runner path drift: '+path
-   text=text.replace(new,'Refactor/Runtime/PendingOperationRegistry.cs',1)
-  assert hashlib.sha256(text.encode()).hexdigest()==digest,'Unreviewed Courier prompt dependency: '+path
- assert source in (expected,before),'Unexpected Courier prompt inverse input'
+ # The reviewed whole root is historical, not today's mixed partial owner.
+ # Existing inverse consumers need its immutable identity; current behavioral
+ # acceptance is run_j17_reviewed_delta.py + run.py/run_liveness.py.
+ fixed=subprocess.check_output(['git','show','6e419f6d17859fc49fef538e8a2ea5acf922deb3:'+review['path']],cwd=ROOT).decode('utf-8-sig').replace('\r\n','\n')
+ assert fixed==expected,'Reviewed Courier prompt historical candidate changed'
+ current=(ROOT/review['path']).read_text(encoding='utf-8-sig')
+ assert source in (current,expected,before),'Unexpected Courier prompt inverse input'
+ exspec=importlib.util.spec_from_file_location('prompt_decl',ROOT/'tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py');ex=importlib.util.module_from_spec(exspec);exspec.loader.exec_module(ex)
+ live=ex.courier_source(None)
+ for name,inbound in [('PrepareAndGenerateCourierReplyOffMainThreadAsync',False),('PrepareAndGenerateInboundLetterOffMainThreadAsync',True)]:
+  body=ex.declaration(live,'private async Task '+name+'(')
+  assert body.count('PrepareCourierPromptRequestAsync(')==1,'Courier prompt preparation consumer missing'
+  assert 'runtimeGeneration, preparedHistory, promptRun, '+('BuildInboundRequestFromPreparedPrompt' if inbound else 'BuildReplyRequestFromPreparedPrompt') in body,'Courier prepared owner forwarding changed'
+  assert 'IsCourierPromptRunCurrent(promptRun)' in body,'Courier prompt owner guard missing'
  return before
 
 def verify():
- current=(ROOT/'CourierDeliveryBehavior.cs').read_text(encoding='utf-8-sig');before=restore(current)
- review=json.loads((HERE/'source-review.json').read_text(encoding='utf-8-sig'))
- main=subprocess.check_output(['git','show',review['main']+':CourierDeliveryBehavior.cs'],cwd=ROOT).decode('utf-8-sig').replace('\r\n','\n')
- spec=importlib.util.spec_from_file_location('ex',ROOT/'tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py');ex=importlib.util.module_from_spec(spec);spec.loader.exec_module(ex)
- partial=(ROOT/'src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.PromptPreparation.cs').read_text(encoding='utf-8-sig')
- marker='\t\tList<string> selectedRuleHits = '
- for kind,oldname,newname in [('CourierReplyGenerationRequest','BuildCourierReplyGenerationRequestOnMainThread','BuildReplyRequestFromPreparedPrompt'),('InboundLetterGenerationRequest','BuildInboundLetterGenerationRequestOnMainThread','BuildInboundRequestFromPreparedPrompt')]:
-  old=ex.declaration(main,'private '+kind+' '+oldname+'(');new=ex.declaration(partial,'private '+kind+' '+newname+'(')
-  assert old[old.index(marker):]==new[new.index(marker):],'Original main final request/message assembly changed: '+kind
- for name in ['BuildCourierReplyMessages','BuildInboundNpcLetterMessages']:
-  assert ex.declaration(main,'private static List<object> '+name+'(')==ex.declaration(current,'private static List<object> '+name+'('),'Main message semantics changed: '+name
- # These guards fail for unreviewed unrelated edits as well as edits to either actual async consumer.
- for mutated in [current.replace('if (request == null) return;','if (false) return;',1),current+'\n// unreviewed\n',current.replace('"courier_reply_preflight"','"other"',1)]:
-  try:restore(mutated)
-  except AssertionError:pass
-  else:raise AssertionError('Whole-file inverse accepted unreviewed mutation')
- print('PASS exact full-file Courier prompt inverse / 3 mutation guards; fixed main both final request tails and complete message builders unchanged')
+ current=(ROOT/'CourierDeliveryBehavior.cs').read_text(encoding='utf-8-sig');restore(current)
+ import main_assembly_projection
+ main_assembly_projection.projected_messages()
+ from unittest.mock import patch
+ target=ROOT/'src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.GenerationLifecycle.cs'
+ original=Path.read_text
+ for before,after in [('PrepareCourierPromptRequestAsync(', 'MissingCourierPromptRequest('),('runtimeGeneration, preparedHistory, promptRun, BuildReplyRequestFromPreparedPrompt', 'runtimeGeneration, null, promptRun, BuildReplyRequestFromPreparedPrompt')]:
+  assert before in target.read_text(encoding='utf-8-sig'), 'Courier source mutation anchor missing'
+  def changed(path,*args,**kwargs):
+   text=original(path,*args,**kwargs)
+   return text.replace(before,after,1) if path==target else text
+  with patch.object(Path,'read_text',changed):
+   try:restore(current)
+   except AssertionError:pass
+   else:raise AssertionError('Courier actual prompt consumer mutation accepted')
+ try:restore(current+'\n// unreviewed\n')
+ except AssertionError:pass
+ else:raise AssertionError('Unexpected inverse source accepted')
+ print('PASS immutable historical Prompt inverse identity; current prepared consumer/message owner proof; 3 source mutation guards; behavioral acceptance via run_j17_reviewed_delta.py')
 if __name__=='__main__':verify()

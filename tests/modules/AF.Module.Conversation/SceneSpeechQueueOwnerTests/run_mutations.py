@@ -23,24 +23,30 @@ MUTATIONS = {
         "empty-dequeue-retires-worker",
     ),
     "reset-keeps-queue": (
-        "internal void Reset()\n\t{\n\t\tlock (_gate)\n\t\t{\n\t\t\t_queue.Clear();",
-        "internal void Reset()\n\t{\n\t\tlock (_gate)\n\t\t{",
+        "internal T[] Reset()\n\t{\n\t\tlock (_gate)\n\t\t{\n\t\t\tT[] dropped = _queue.ToArray();\n\t\t\t_queue.Clear();",
+        "internal T[] Reset()\n\t{\n\t\tlock (_gate)\n\t\t{\n\t\t\tT[] dropped = _queue.ToArray();",
         "reset-clears-queue-and-worker",
     ),
 }
 
 
+sys.path.insert(0, str(ROOT / 'tests'))
+from output_isolation import new_run_root, resolve_dotnet, minimal_test_environment
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--dotnet", default=r"G:\AFMOD\.dotnet-sdk\dotnet.exe")
+    parser.add_argument("--dotnet", default=None)
+    parser.add_argument("--run-root", type=Path)
     args = parser.parse_args()
+    args.dotnet = str(resolve_dotnet(ROOT, args.dotnet))
+    run_root = new_run_root(ROOT, "scene-queue-mutations", args.run_root)
     source = SOURCE.read_text(encoding="utf-8-sig")
     failed = 0
 
     for name, (old, new, expected_case) in MUTATIONS.items():
         if source.count(old) != 1:
             raise RuntimeError(f"mutation anchor count for {name}: {source.count(old)}")
-        output = HERE / ".generated" / name
+        output = run_root / name
         output.mkdir(parents=True, exist_ok=True)
         (output / "SceneSpeechQueueOwner.cs").write_text(source.replace(old, new), encoding="utf-8")
         (output / "Program.cs").write_text((HERE / "Program.cs").read_text(encoding="utf-8-sig"), encoding="utf-8")
@@ -54,11 +60,7 @@ def main() -> int:
         (output / "NuGet.Config").write_text(
             "<configuration><packageSources><clear/></packageSources></configuration>", encoding="utf-8"
         )
-        environment = os.environ.copy()
-        environment["DOTNET_ROOT"] = str(Path(args.dotnet).parent)
-        environment["DOTNET_CLI_HOME"] = str(output / "cli")
-        environment["DOTNET_CLI_TELEMETRY_OPTOUT"] = "1"
-        environment["DOTNET_NOLOGO"] = "1"
+        environment = minimal_test_environment(Path(args.dotnet), output)
         result = subprocess.run(
             [args.dotnet, "run", "--project", str(output / "Tests.csproj"), "-c", "Release"],
             cwd=output,

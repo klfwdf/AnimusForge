@@ -32,11 +32,12 @@ ordered(normalize,
         "CourierVisibleLetterSanitizer.Clean(StripCourierActionTags(letterBody))",
         "record.LetterBody = letterBody;")
 
-add = extract.declaration(source, "private static void AddCourierLetterToPlayerInventory(")
+add = extract.declaration(source, "private static bool AddCourierLetterToPlayerInventory(")
 ordered(add,
         "CourierVisibleLetterSanitizer.Clean(AnimusForgeTextInputSanitizer.SanitizeMultiline(StripCourierActionTags(letterText ?? \"\")",
         "RewardSystemBehavior.GenerateNamedInventoryItemToRosterForExternal(",
-        "Instance?.RememberCourierLetterInventoryRecord(")
+        "bool remembered = Instance?.RememberCourierLetterInventoryRecord(",
+        "return remembered;")
 
 schedule = extract.declaration(source, "private void ScheduleCourierLetterInventoryRestoreRetries(")
 ordered(schedule,
