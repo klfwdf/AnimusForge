@@ -1,3 +1,18 @@
+## AF2 host terminal closeout implementation 20261002
+
+<a id="af2-host-terminal-closeout-implementation-20261002"></a>
+
+状态：ACTIVE / IMPLEMENTATION_AUTHORIZED。用户本轮直接授权按 [P1–P8 终态计划](plans/af2-host-terminal-closeout-20261002.md) 全部实施并持续到出口；该授权明确替代计划中的 PLAN_READY / IMPLEMENTATION_NOT_STARTED、仅规划/不启动文字，不修改其原验收标准。历史 J/F 和 7 残留修复保留，非新施工任务。
+
+- 实际根 `E:/AnimusForge-refactor-continuation-20260831`，分支 `codex/af-main-refactor-continuation-20260831`，起始 HEAD `4791b00092e4135ad1f108d1820f9ef9f48d2a15`。不切换分支、不新建工作树。
+- 目标：P1–P8 的完整规则/状态/生命周期迁到真实 owner，实际生产消费者接通；两个宿主只留具名兼容/引擎/组合/保存边界。过渡 partial 仅施工隔离，不算完成。
+- 四线唯一写者 A=P1/P3、B=P2/P4、C=P5/P6、D=P7 后 P8 独立 UI；集成人独占两个主文件、公共契约、共享保存/组合根、项目/清单、主台账/代码图/HANDOFF、Git 索引/提交及固定构建/门禁。已有职责 partial 按正式任务卡交给各线。
+- 非目标/权限：不改玩法/保存/程序集/单模块身份、一键流程、公开 API 承诺；无 push、Stage、部署/覆盖游戏、仓外写入、真实玩家/音频清理、批量移动删除、全局安装/配置。历史 TEMP 权限不继承，合成验证写入限制仓内独立 artifacts。
+- 保护：原 CourierDeliveryBehavior.SessionTransport.cs raw dirty、原 tools/NuGet untracked、用户计划及其他作者修改；不使用 git add -A，不清理、不逆掉已有改动。计划原文只纳入意图记录，验收保持。
+- 接缝：A/B 复用 MemoryBusinessStateOwner 的 drafts/pending authoritative containers 与窄 trigger 操作；A/C 复用真实 Actions 转移结果和已执行 AFEF receipt；B/C/D 使用脱离游戏对象的消息输入、主线程效果与完成/呈现回执，禁止传整个 MyBehavior/ShoutBehavior 回调旧业务。仅定义立即消费的契约。
+- 退出门：每包 old symbol→owner→production consumer→unique state/lifecycle；完整宿主/真正 partial/owner 规模与保留理由；每包代表性维护影响；同候选受影响完整入口、双 API Debug/Release + Bootstrap、代码图两模式及保存/程序集身份核验。实机/旧档/真实网络/音频/帧性能独立 NOT_RUN，源码责任未闭不得宣布架构完成。
+- 复用输入：7 残留收据 `artifacts/af2-seven-fail-closeout-ec9c844af31a/final-receipt.json`（9cff3ee8/4791b000），原 7+2 完整入口离线 PASS 不等于当前全量门禁；改变源码/候选后重验受影响证据。
+
 <a id="af2-seven-residual-fail-closeout-20261002"></a>
 ## AF 2.0 七个残留测试/工具 FAIL：独立离线闭环（2026-10-02）
 
