@@ -1,0 +1,25 @@
+from pathlib import Path
+import argparse, importlib.util, subprocess, sys
+ROOT=Path(__file__).resolve().parents[4]
+HERE=Path(__file__).parent
+sys.path.insert(0,str(ROOT / "tests"))
+from output_isolation import new_run_root, resolve_dotnet, minimal_test_environment
+parser=argparse.ArgumentParser();parser.add_argument("--out",type=Path,required=True);args=parser.parse_args()
+out=new_run_root(ROOT,"party-transfer",args.out);dotnet=resolve_dotnet(ROOT);env=minimal_test_environment(dotnet,out)
+spec=importlib.util.spec_from_file_location("extract",ROOT / "tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py")
+extract=importlib.util.module_from_spec(spec);spec.loader.exec_module(extract)
+s=(ROOT / "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.cs").read_text(encoding="utf-8-sig")
+shim="using System.Collections.Generic; namespace AnimusForge { public partial class MyBehavior {"+extract.declaration(s,"public enum PartyTransferEntrySection")+extract.declaration(s,"public sealed class PartyTransferPromptEntry")+extract.declaration(s,"public enum SettlementTransferEntrySection")+extract.declaration(s,"public enum SettlementTransferAssetKind")+extract.declaration(s,"public sealed class SettlementTransferPromptEntry")+"} public class Workshop {} public class MobileParty { public bool IsGarrison; public PartyBase Party; } public class Clan {} public class CharacterObject { public bool IsHero; public Hero HeroObject; public static CharacterObject PlayerCharacter=new(); } public class PartyBase { public TroopRoster MemberRoster=new(); public TroopRoster PrisonRoster=new(); public void AddPrisoner(CharacterObject c,int n)=>PrisonRoster.AddToCounts(c,n,false,0,0,false,-1); } public class Settlement { public Clan OwnerClan; public bool IsFortification; public PartyBase Party; public List<MobileParty> Parties=new(); } public class Hero { public CharacterObject[] VolunteerTypes; public bool IsPrisoner; public PartyBase PartyBelongedToAsPrisoner; } public static class Logger { public static void Log(string a,string b){} }}"
+adapter=(ROOT/"src/AF.GameAdapter.Bannerlord/Composition/PartyAssetTransferBannerlordAdapter.cs").read_text(encoding="utf-8-sig")
+methods=[extract.declaration(adapter,name) for name in ["internal static int TransferPartyMemberEntry", "internal static int TransferPartyVolunteerEntry", "internal static int TransferPartyPrisonerEntry", "internal static bool IsPartyTransferVolunteerEntry", "internal static bool IsPartyTransferDungeonSourceValid", "private static int ReadTransferRosterCount", "private static int ReadTransferSourceCount", "private static PartyTransferEffectResult ObserveTransfer"]]
+shim="using System; using System.Linq; using PartyTransferPromptEntry=AnimusForge.MyBehavior.PartyTransferPromptEntry; using PartyTransferEntrySection=AnimusForge.MyBehavior.PartyTransferEntrySection;"+shim+"namespace AnimusForge { internal static class ActualAdapterFixture {"+"\n".join(methods)+" internal static int GetMaximumRecruitableVolunteerIndex(Hero h)=>2; internal static PartyTransferEffectResult Observe(PartyTransferPromptEntry e,PartyBase target,bool prisoner,Func<int> transfer)=>ObserveTransfer(e,target,prisoner,transfer); }}"+(HERE/"RosterShims.cs.txt").read_text(encoding="utf-8")
+(out/"Shims.cs").write_text(shim,encoding="utf-8")
+(out/"Program.cs").write_text((HERE/"Program.cs.txt").read_text(encoding="utf-8"),encoding="utf-8")
+paths=["src/modules/AF.Module.Economy/Authorization/PartyTransferAuthorizationOwner.cs","src/modules/AF.Module.Economy/Projection/SettlementTransferPromptOwner.cs","src/modules/AF.Module.Economy/Projection/PartyTransferPromptOwner.cs","src/modules/AF.Module.Economy/Execution/Party/PartyTransferExecutionContext.cs","src/modules/AF.Module.Economy/Execution/Party/PartyTransferExecutionOwner.cs","src/modules/AF.Module.Economy/Execution/Party/PartyTransferEffectObserver.cs","src/modules/AF.Module.Economy/Projection/PartyTransferProjectionOwner.cs","src/modules/AF.Module.Economy/Host/TransferQuantitySpec.cs"]
+links="".join('<Compile Include="'+str(ROOT/path)+'"/>' for path in paths)
+(out/"Proof.csproj").write_text('<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><EnableDefaultCompileItems>false</EnableDefaultCompileItems><ImplicitUsings>enable</ImplicitUsings><NoWarn>CS0649</NoWarn></PropertyGroup><ItemGroup>'+links+'<Compile Include="Shims.cs"/><Compile Include="Program.cs"/></ItemGroup></Project>',encoding="utf-8")
+(out/"NuGet.Config").write_text('<configuration><packageSources><clear/></packageSources></configuration>',encoding="utf-8")
+for command,log in [([str(dotnet),"build",str(out/"Proof.csproj"),"--nologo","-p:RestoreConfigFile="+str(out/"NuGet.Config")],"build.log"),([str(dotnet),str(out/"bin/Debug/net8.0/Proof.dll")],"run.log")]:
+ result=subprocess.run(command,cwd=out,env=env,capture_output=True,text=True,encoding="utf-8",errors="replace");(out/log).write_text(result.stdout+result.stderr,encoding="utf-8");print(result.stdout+result.stderr)
+ if result.returncode:raise SystemExit(result.returncode)
+print("OUTPUT",out)

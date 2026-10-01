@@ -94,6 +94,9 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 
 		public MyBehavior.PartyTransferPromptEntry PartyEntry;
 
+		// Discarded with the existing trade state; not a second outcome ledger.
+		public string PartyTransferPartialFact;
+
 		public MyBehavior.SettlementTransferPromptEntry SettlementEntry;
 	}
 
@@ -18673,8 +18676,10 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			}
 			else if (shoutPendingTradeItem.PartyEntry != null)
 			{
-				int num = MyBehavior.TransferPlayerPartyEntryToCounterpartyForExternal(hero, characterObject, GetShoutTradeTargetAgentIndex(), shoutPendingTradeItem.PartyEntry, shoutPendingTradeItem.Amount);
-				shoutPendingTradeItem.Amount = num;
+                var partyEffect = MyBehavior.TransferPlayerPartyEntryWithObservedEffects(hero, characterObject, GetShoutTradeTargetAgentIndex(), shoutPendingTradeItem.PartyEntry, shoutPendingTradeItem.Amount);
+                int num = partyEffect.Delivered;
+                shoutPendingTradeItem.Amount = num;
+                shoutPendingTradeItem.PartyTransferPartialFact = PartyTransferExecutionOwner.BuildPartialEffectFact(shoutPendingTradeItem.PartyEntry, partyEffect);
 				if (num > 0)
 				{
 					string information = (shoutPendingTradeItem.PartyEntry.Section == MyBehavior.PartyTransferEntrySection.PlayerTroops) ? ("已将 " + num + " 名" + shoutPendingTradeItem.ItemName + "转入" + GetShoutTradeTargetDisplayName() + "的麾下") : (shoutPendingTradeItem.PartyEntry.IsHero ? ("已将俘虏" + shoutPendingTradeItem.ItemName + "交给" + GetShoutTradeTargetDisplayName()) : ("已将 " + num + " 名" + shoutPendingTradeItem.ItemName + "俘虏交给" + GetShoutTradeTargetDisplayName()));
@@ -19369,6 +19374,8 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		for (int i = 0; i < _shoutPendingTradeItems.Count; i++)
 		{
 			ShoutPendingTradeItem shoutPendingTradeItem = _shoutPendingTradeItems[i];
+            if (!string.IsNullOrWhiteSpace(shoutPendingTradeItem?.PartyTransferPartialFact))
+                facts.Add(shoutPendingTradeItem.PartyTransferPartialFact);
 			if (shoutPendingTradeItem?.PartyEntry == null || shoutPendingTradeItem.Amount <= 0)
 			{
 				continue;
