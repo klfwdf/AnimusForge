@@ -1,10 +1,104 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using Newtonsoft.Json.Linq;
 using AnimusForge.Refactor.Domain;
 
 namespace AnimusForge;
+
+// Built on a queue mutation or hour/affinity change, never on each campaign tick.
+// The callbacks are runtime-only; persisted job shape and ordering stay unchanged.
+internal sealed class WorldDiplomacyJobSelectionView
+{
+    private static readonly ConditionalWeakTable<WorldDiplomacyStorage, WorldDiplomacyJobSelectionView> Views =
+        new ConditionalWeakTable<WorldDiplomacyStorage, WorldDiplomacyJobSelectionView>();
+    internal static WorldDiplomacyJobSelectionView For(WorldDiplomacyStorage storage) =>
+        Views.GetValue(storage, _ => new WorldDiplomacyJobSelectionView());
+
+    private List<WorldDiplomacyJob> _jobs;
+    private int _jobCount = -1;
+    private bool _dirty = true;
+    private bool _hasAwaiting;
+    private bool _hasCompression;
+    private int _minimumAwaitingTarget;
+    private bool _selectionValid;
+    private int _selectedHour;
+    private int _selectedRetryHour;
+    private string _selectedAffinity;
+    private WorldDiplomacyJob _selected;
+
+    internal int RebuildCount { get; private set; }
+    internal void Invalidate() => _dirty = true;
+
+    private void EnsureSummary(WorldDiplomacyStorage storage)
+    {
+        List<WorldDiplomacyJob> jobs = storage.Jobs;
+        int count = jobs?.Count ?? 0;
+        if (!_dirty && ReferenceEquals(_jobs, jobs) && _jobCount == count) return;
+        _jobs = jobs;
+        _jobCount = count;
+        _dirty = false;
+        _selectionValid = false;
+        _hasAwaiting = false;
+        _hasCompression = false;
+        _minimumAwaitingTarget = 0;
+        RebuildCount++;
+        if (jobs == null) return;
+        foreach (WorldDiplomacyJob job in jobs)
+        {
+            if (job == null) continue;
+            job.SelectionChanged = Invalidate;
+            if (WorldDiplomacyRoundLifecycleRules.IsJobOfKind(job, "compress")) _hasCompression = true;
+            if (!job.AwaitingHistoryCompression) continue;
+            _hasAwaiting = true;
+            if (job.InputBudgetHistoryTargetTokens > 0
+                && (_minimumAwaitingTarget == 0 || job.InputBudgetHistoryTargetTokens < _minimumAwaitingTarget))
+                _minimumAwaitingTarget = job.InputBudgetHistoryTargetTokens;
+        }
+    }
+
+    internal bool HasAwaiting(WorldDiplomacyStorage storage) { EnsureSummary(storage); return _hasAwaiting; }
+    internal bool HasCompression(WorldDiplomacyStorage storage) { EnsureSummary(storage); return _hasCompression; }
+    internal int MinimumAwaitingTarget(WorldDiplomacyStorage storage, int fallback)
+    { EnsureSummary(storage); return _minimumAwaitingTarget > 0 ? Math.Min(_minimumAwaitingTarget, fallback) : fallback; }
+
+    internal WorldDiplomacyJob Select(WorldDiplomacyStorage storage, int currentHour, string lastCacheAffinityKey)
+    {
+        EnsureSummary(storage);
+        if (storage.ServiceCooldownUntilHour > currentHour) return null;
+        string affinity = (lastCacheAffinityKey ?? "").Trim();
+        if (_selectionValid && _selectedHour == currentHour
+            && _selectedRetryHour == storage.CompressionRetryAfterHour
+            && string.Equals(_selectedAffinity, affinity, StringComparison.OrdinalIgnoreCase)) return _selected;
+        _selectionValid = true;
+        _selectedHour = currentHour;
+        _selectedRetryHour = storage.CompressionRetryAfterHour;
+        _selectedAffinity = affinity;
+        _selected = null;
+        bool selectedAffinityMatch = false;
+        if (_jobs == null) return null;
+        foreach (WorldDiplomacyJob candidate in _jobs)
+        {
+            if (candidate == null || string.IsNullOrWhiteSpace(candidate.JobId) || candidate.IsRunning
+                || (candidate.AwaitingHistoryCompression && currentHour < storage.CompressionRetryAfterHour)) continue;
+            bool affinityMatch = string.Equals(
+                (WorldDiplomacyPromptContractRules.ResolveCacheAffinityKey(candidate) ?? "").Trim(),
+                affinity, StringComparison.OrdinalIgnoreCase);
+            if (_selected == null || candidate.Priority > _selected.Priority
+                || (candidate.Priority == _selected.Priority && affinityMatch && !selectedAffinityMatch)
+                || (candidate.Priority == _selected.Priority && affinityMatch == selectedAffinityMatch
+                    && (candidate.CreatedDay < _selected.CreatedDay
+                        || (candidate.CreatedDay == _selected.CreatedDay
+                            && StringComparer.OrdinalIgnoreCase.Compare(candidate.JobId, _selected.JobId) < 0))))
+            {
+                _selected = candidate;
+                selectedAffinityMatch = affinityMatch;
+            }
+        }
+        return _selected;
+    }
+}
 
 internal interface IWorldDiplomacyLlmDispatchSource
 {
@@ -139,20 +233,8 @@ internal static class WorldDiplomacyLlmDispatchApplication
     {
         preparedMessages = null;
         if (storage == null || (storage.Jobs?.Count ?? 0) == 0) return null;
-        if (storage.ServiceCooldownUntilHour > currentHour) return null;
-        List<WorldDiplomacyJob> runnable = (storage.Jobs ?? new List<WorldDiplomacyJob>())
-            .Where(x => x != null && !string.IsNullOrWhiteSpace(x.JobId) && !x.IsRunning
-                && (!x.AwaitingHistoryCompression || currentHour >= storage.CompressionRetryAfterHour))
-            .ToList();
-        int highestPriority = runnable.Count == 0 ? int.MinValue : runnable.Max(x => x.Priority);
-        WorldDiplomacyJob job = runnable
-            .Where(x => x.Priority == highestPriority)
-            .OrderByDescending(x => string.Equals(
-                (WorldDiplomacyPromptContractRules.ResolveCacheAffinityKey(x) ?? "").Trim(),
-                (lastCacheAffinityKey ?? "").Trim(), StringComparison.OrdinalIgnoreCase))
-            .ThenBy(x => x.CreatedDay)
-            .ThenBy(x => x.JobId, StringComparer.OrdinalIgnoreCase)
-            .FirstOrDefault();
+        WorldDiplomacyJob job = WorldDiplomacyJobSelectionView.For(storage)
+            .Select(storage, currentHour, lastCacheAffinityKey);
         if (job == null) return null;
         if (WorldDiplomacyRoundLifecycleRules.HasStaleThreatPresentation(job, storage?.DiplomaticThreats))
         {

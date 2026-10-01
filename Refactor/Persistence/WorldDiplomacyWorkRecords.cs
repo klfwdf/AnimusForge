@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Newtonsoft.Json;
 
@@ -65,11 +66,22 @@ public sealed class WorldDiplomacyExchange
 
 public sealed class WorldDiplomacyJob
 {
+	// Runtime-only invalidation for the bounded queue view. The persisted property
+	// names and values below remain unchanged.
+	[JsonIgnore] internal Action SelectionChanged;
+	private bool _awaitingHistoryCompression;
+	private int _inputBudgetHistoryTargetTokens;
+	private string _jobId = "";
+	private string _kind = "";
+	private int _priority;
+	private int _createdDay;
+	private bool _isRunning;
+	private string _cacheAffinityKey = "";
 	[JsonProperty("awaitingHistoryCompression")]
-	public bool AwaitingHistoryCompression { get; set; }
+	public bool AwaitingHistoryCompression { get => _awaitingHistoryCompression; set { if (_awaitingHistoryCompression == value) return; _awaitingHistoryCompression = value; SelectionChanged?.Invoke(); } }
 
 	[JsonProperty("inputBudgetHistoryTargetTokens")]
-	public int InputBudgetHistoryTargetTokens { get; set; }
+	public int InputBudgetHistoryTargetTokens { get => _inputBudgetHistoryTargetTokens; set { if (_inputBudgetHistoryTargetTokens == value) return; _inputBudgetHistoryTargetTokens = value; SelectionChanged?.Invoke(); } }
 
 	[JsonProperty("historyThroughSequence")]
 	public long HistoryThroughSequence { get; set; }
@@ -114,16 +126,16 @@ public sealed class WorldDiplomacyJob
 	public bool AllowAutonomousNoAction { get; set; }
 
 	[JsonProperty("jobId")]
-	public string JobId { get; set; } = "";
+	public string JobId { get => _jobId; set { if (string.Equals(_jobId, value, StringComparison.Ordinal)) return; _jobId = value; SelectionChanged?.Invoke(); } }
 
 	[JsonProperty("kind")]
-	public string Kind { get; set; } = "";
+	public string Kind { get => _kind; set { if (string.Equals(_kind, value, StringComparison.Ordinal)) return; _kind = value; SelectionChanged?.Invoke(); } }
 
 	[JsonProperty("priority")]
-	public int Priority { get; set; }
+	public int Priority { get => _priority; set { if (_priority == value) return; _priority = value; SelectionChanged?.Invoke(); } }
 
 	[JsonProperty("createdDay")]
-	public int CreatedDay { get; set; }
+	public int CreatedDay { get => _createdDay; set { if (_createdDay == value) return; _createdDay = value; SelectionChanged?.Invoke(); } }
 
 	[JsonProperty("exchangeId")]
 	public string ExchangeId { get; set; } = "";
@@ -168,7 +180,7 @@ public sealed class WorldDiplomacyJob
 	public int SemanticRepairAttempts { get; set; }
 
 	[JsonProperty("isRunning")]
-	public bool IsRunning { get; set; }
+	public bool IsRunning { get => _isRunning; set { if (_isRunning == value) return; _isRunning = value; SelectionChanged?.Invoke(); } }
 
 	[JsonProperty("systemPrompt")]
 	public string SystemPrompt { get; set; } = "";
@@ -186,7 +198,7 @@ public sealed class WorldDiplomacyJob
 	public string StrategicProfileKingdomId { get; set; } = "";
 
 	[JsonProperty("cacheAffinityKey")]
-	public string CacheAffinityKey { get; set; } = "";
+	public string CacheAffinityKey { get => _cacheAffinityKey; set { if (string.Equals(_cacheAffinityKey, value, StringComparison.Ordinal)) return; _cacheAffinityKey = value; SelectionChanged?.Invoke(); } }
 
 	[JsonProperty("maxTokens")]
 	public int MaxTokens { get; set; }

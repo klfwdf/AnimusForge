@@ -77,6 +77,41 @@ internal static class LlmDispatchApplicationReplay
     private static void Run(State state) { var source = new Source(state); var orch = new Orch(state); WorldDiplomacyLlmDispatchApplication.Run(ref source, orch); }
     internal static void Run()
     {
+        var viewStorage = new WorldDiplomacyStorage();
+        var first = new WorldDiplomacyJob { JobId = "first", Priority = 1, CreatedDay = 2 };
+        var second = new WorldDiplomacyJob { JobId = "second", Priority = 2, CreatedDay = 1 };
+        viewStorage.Jobs.Add(first);
+        viewStorage.Jobs.Add(second);
+        var view = WorldDiplomacyJobSelectionView.For(viewStorage);
+        Test.True(ReferenceEquals(view.Select(viewStorage, 100, ""), second), "queue view selects current highest priority");
+        int rebuilds = view.RebuildCount;
+        bool stableSelection = true;
+        for (int i = 0; i < 100000; i++)
+            stableSelection &= ReferenceEquals(view.Select(viewStorage, 100, ""), second);
+        Test.True(stableSelection, "unchanged ticks reuse selected job");
+        Test.True(view.RebuildCount == rebuilds, "unchanged ticks do not scan the job queue");
+        first.Priority = 3;
+        Test.True(ReferenceEquals(view.Select(viewStorage, 100, ""), first), "priority mutation invalidates queue view");
+        first.AwaitingHistoryCompression = true;
+        viewStorage.CompressionRetryAfterHour = 101;
+        Test.True(ReferenceEquals(view.Select(viewStorage, 100, ""), second), "compression wait excludes candidate until retry hour");
+        Test.True(ReferenceEquals(view.Select(viewStorage, 101, ""), first), "retry hour admits waiting candidate");
+        first.IsRunning = true;
+        Test.True(ReferenceEquals(view.Select(viewStorage, 101, ""), second), "running mutation invalidates queue view");
+        Test.True(view.HasAwaiting(viewStorage), "compression summary tracks waiting jobs");
+        Test.True(view.MinimumAwaitingTarget(viewStorage, 200) == 200, "missing target uses configured fallback");
+        first.InputBudgetHistoryTargetTokens = 120;
+        Test.True(view.MinimumAwaitingTarget(viewStorage, 200) == 120, "target mutation invalidates compression summary");
+        viewStorage.Jobs.Clear();
+        Test.True(view.Select(viewStorage, 101, "") == null, "list removal invalidates queue view");
+        string savedJob = Newtonsoft.Json.JsonConvert.SerializeObject(first);
+        Test.True(!savedJob.Contains("SelectionChanged", StringComparison.Ordinal)
+            && (savedJob.Contains("\"priority\":3", StringComparison.Ordinal)
+                || savedJob.Contains("\"Priority\":3", StringComparison.Ordinal))
+            && (savedJob.Contains("\"awaitingHistoryCompression\":true", StringComparison.Ordinal)
+                || savedJob.Contains("\"AwaitingHistoryCompression\":true", StringComparison.Ordinal)),
+            "queue invalidation callback does not alter persisted job fields");
+
         foreach (string kind in new[] { "analyze", "compress" })
         {
             var s = New(kind); Run(s);

@@ -16715,11 +16715,22 @@ RunRepairCorrectionAndJobDecisionTests();
             && behaviorSource.Contains("Task.Run(", StringComparison.Ordinal),
             "transport launch remains a narrow main-thread adapter");
         Test.True(dispatchSource.Contains("ServiceCooldownUntilHour > currentHour", StringComparison.Ordinal)
-            && dispatchSource.Contains("ResolveCacheAffinityKey(x)", StringComparison.Ordinal)
-            && dispatchSource.Contains("ThenBy(x => x.CreatedDay)", StringComparison.Ordinal)
+            && dispatchSource.Contains("WorldDiplomacyJobSelectionView.For(storage)", StringComparison.Ordinal)
+            && dispatchSource.Contains("candidate.Priority > _selected.Priority", StringComparison.Ordinal)
+            && dispatchSource.Contains("candidate.CreatedDay < _selected.CreatedDay", StringComparison.Ordinal)
+            && dispatchSource.Contains("StringComparer.OrdinalIgnoreCase.Compare(candidate.JobId, _selected.JobId)", StringComparison.Ordinal)
             && dispatchSource.Contains("IsValidSemanticRepairMessageChain(job)", StringComparison.Ordinal)
             && dispatchSource.Contains("if (!EnsureCurrentCanonicalPromptContractBeforeSend(", StringComparison.Ordinal),
             "job selection and preflight checks remain unchanged");
+        string notificationSource = File.ReadAllText(FindRepositoryFile(
+            "src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyNotificationApplication.cs"));
+        Test.True(historyCompressionSource.Contains("jobs.HasAwaiting(storage)", StringComparison.Ordinal)
+            && historyCompressionSource.Contains("jobs.HasCompression(storage)", StringComparison.Ordinal)
+            && !dispatchSource.Contains("List<WorldDiplomacyJob> runnable =", StringComparison.Ordinal)
+            && notificationSource.Contains("EnsureView(storage)", StringComparison.Ordinal)
+            && !notificationSource.Contains("storage.Documents.Where(", StringComparison.Ordinal)
+            && !notificationSource.Contains("SelectPendingRumors(storage, 3)", StringComparison.Ordinal),
+            "per-tick job selection and notification deadlines cannot rescan the full collections");
         Test.True(completionSource.Contains("completed generation used a stale diplomatic threat stage", StringComparison.Ordinal)
             && completionSource.Contains("truncated generated draft handling failed", StringComparison.Ordinal)
             && completionSource.Contains("ServiceCooldownUntilHour = currentHour + failedServiceCooldownHours", StringComparison.Ordinal)
