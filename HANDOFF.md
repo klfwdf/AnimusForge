@@ -1,5 +1,7 @@
 # 当前交接：J17 收尾与远端 CivilWar 合并（2026-10-01）
 
+- **处决遗言/喊话行刑已离线接通，轮刑选择已隐藏（2026-10-01）**：`68dd6cd5`，三阶段台词结合相关记忆，实际气泡显示后才记原文；不等遗言播完，未显示后半段不补记。死亡成功后才供公共消息转述，新增实录存档保留最近100场。必须单选本场刽子手，通过统一后处理启动；否定/条件/错目标/迟到/重复不执行，Native 仍等对话关闭。普通及自定义方法列表隐藏轮刑，旧 ID/预设保留。98项定向断言、原parser、Release双API+Bootstrap及独立复仇编译通过；真实模型/游戏/旧档未验，本轮未部署推送。[唯一台账、源码坐标、候选哈希与逆向回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#execution-last-words-20261001)。
+
 - **政变完整结果快报已接入并部署（2026-10-01 13:06）**：`a4723aef`，成功/失败最终事实包含城镇/王国/双方、实际街道/大厅过程、处置与伤亡；进入现有快报Prompt/模板及NPC知识，原记忆/周报保持。63政变契约、38快报规则、真实DLL117检查及双API+Bootstrap通过。排除并行内战WIP，用已提交基线+本任务overlay快照构建部署；27文件更新、238哈希一致，备份已验。沿用收集窗口/冷却，关闭快报不阻塞结算，旧完成事件不补发；真实文案/NPC转述/旧档未验。[精确源码、构建失败与隔离证据、回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#coup-bulletin-outcome-20261001)。
 
 - **政策投票五项性格已离线接通（2026-10-01）**：`d54ac0eb`，玩家/NPC 首次评议保存政策手段的仁慈/荣誉/慷慨/勇气/审慎画像，原投票计算加入独立 P，保留实际损失扣分、拉票承诺与提案者保护；MCM 性格倍率默认1。旧政策无画像保持原评分，重新评议可生成。Release 双API+Bootstrap通过，两候选定向回归各1475断言通过；1.3离线runner补用了本机通用依赖，不代表纯1.3运行时验收。未部署/推送，真实模型、旧档和游戏投票未验。[源码证据、产物与回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#policy-personality-vote-20261001)。

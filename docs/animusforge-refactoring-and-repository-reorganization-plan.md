@@ -5093,3 +5093,34 @@ R2计划交付门槛：已给固定技术路线、真实来源与目标、写入
 - **接线与性能**：`CivilWarCampaignBehavior` 监听处决、战争/议和、劫掠、失地、家族消灭和王国决议，只在事件回调写入对应家族字典；周推进仅处理当前王国一次，派系成员/力量和战争结局按需计算，无每周历史全量扫描、热路径反射或空转轮询。`HasTrackedKingdom` 只在成派/最后通牒/内战阶段阻止原版同周稳定度叛乱，冷却和空记录不再阻止原版逻辑；关闭 MCM 时忠诚、面板、标签和战争门禁均返回中性值，保存数据保留。
 - **离线验证**：纯 C# `CivilWarRules.SmokeTests` 通过（net6.0 仅有 EOL 提示）；官方 `一键编译覆盖推送/build_single_module.ps1` 不带 `-Stage/-Deploy` 的 Debug 1.3、Debug 1.4、Bootstrap 均 **0 错误**，最终日志为 `F:/AnimusForge-main/.tmp/civilwar-v2-final-build.log`。真实 Campaign 事件时序、Gauntlet/MCM 点击、临时叛军战斗副作用、旧档 round-trip 和帧性能仍 **NOT-RUN**；未 push、部署或覆盖游戏。
 - **回滚/交接**：v2 owner 代码回滚点为 `20aca83b`，宿主接线为 `c3eb128c`；详细源码在 `src/modules/AF.Module.Kingdom/CivilWar/`，宿主桥接在 `MyBehavior.cs`、`src/AF.Contracts/Internal/TeamModules/ICivilWarModulePort.cs`。工作树仍有其他会话的既有脏文件，未回滚、未纳入上述提交。
+
+
+<a id="execution-last-words-20261001"></a>
+## 处决台词、遗言记忆、喊话行刑与隐藏轮刑（2026-10-01）
+
+状态：**离线实现与验证完成，实机/真实模型/旧档 NOT-RUN**。代码提交 `68dd6cd535fb4faaaa70b8ed5ee9a0b7b20622eb`，开工空检查点 `94a3b9f`。用户确认完整戏剧场面、相关记忆、专设最后陈述、现场记录及公共消息，并明确沿用当前行刑节奏、必须选中本场刽子手；追加要求隐藏轮刑。
+
+**已实现行为**：每场一次生成开场/行刑中/结束后三阶段，最后陈述优先靠前；规则迁入 `RuleBehaviorPrompts.json`，旧配置缺字段读取程序集内置默认而不覆写用户磁盘配置。主线程捕获案件/人设/近期对话/重大经历和既有召回快照，后台调用既有召回及模型入口，资料合计不超过 6000 字符；缺失记忆不阻塞行刑。显示成功后才提交现场发言，整条气泡为记录单位，提前行刑不补入排队未显示的后半段；死亡阶段禁犯人续言，本地兜底同样标识最后陈述。
+
+**保存/传播**：AF 单一实录 owner 使用新增 `_af_executionTranscripts_v1` 字典键及既有 chunk helper；保留最近 100 场已识别记录，每场最多 24 行、每行 240 字符。原始记录包含场次、受刑者/监刑者、地点、刑罚、罪名、阶段、角色、实际原文及结局；未知/损坏记录保留原始串，旧档无字段为空且不补造遗言。现场有效存活 Hero、已有非 Hero 记忆身份走共用 recoverable memory 接口；不为临时群众创建人物履历，不把玩家当 NPC 记忆 owner。名单每场捕获一次，逐句只检查已捕获参与者的存活与 30 米可听范围。正式死亡成功提交后才作为遗言加入周报素材及同组快报事实；公共消息最多引用前三条实际最后陈述，保留原文和转述/未经证实边界。快报遗言细节不走普通 220 字截断，以免引号和事实边界被截掉。实录不依赖死者继续压缩记忆。记忆失败不重执行游戏动作。
+
+**命令**：话题 `public_execution_start`（默认 34）及模型标签 `[ACTION:PUBLIC_EXECUTION_START]` 接通资格捕获、话题选择、后处理规则、规范化和既有 Scene/Native 执行路径。内部规范化生成不提供给模型的场次绑定 receipt，消费时重验 Mission、控制器、场次、Agent 对象、存档代际、待行刑状态并单次消费。场景要求单选本场刽子手及直接玩家回复；信使排除。否定、询问、引述、条件/等待命令及明确拒绝回复不授权；移除旧 Native 裸关键词触发。场景提交后启动现有控制器，Native 保留对话关闭后启动；离场/换档/宿主退役清除未消费请求。开始事实不冒充死亡事实。
+
+**轮刑**：普通审判和自定义刑场方法列表隐藏 `breaking_wheel`，默认临时请求也避开它；保留注册 ID、规则、策略和旧预设读取，未删除历史数据或改动刑罚结算。
+
+| 源码证据（提交 68dd6cd5 的一基坐标） | 符号、消费者与覆盖边界 |
+| --- | --- |
+| `ExecutionAddressLlm.cs:29–70,537–577`；`ExecutionAddressContextPolicy.cs:1–12`；`ExecutionPromptConfiguration.cs:1–21` | `Capture/BuildUserPrompt/RunAsync` 消费既有 detached recall、配置和 LLM transport；没有第二套 HTTP 客户端或全帧扫描。真实 provider 未验。 |
+| `Vengeance/Source/Scene/ExecutionSpeechDirector.cs:262–289`；`Speech/ExecutionSpeechLineParser.cs:1–176` | `TryStart` 在气泡成功后通知；parser 持跨分片阶段/最后陈述状态，拒绝阶段倒退后的死者台词。共享复仇源码仅通知内部 host，不引用 AF 记忆类型。 |
+| `MyBehavior.ExecutionMemory.cs:20–140`；`ExecutionTranscriptStore.cs:1–91` | SyncData、显示事件、完成/取消事件到实录/共同记忆/公共消息；原文和压缩摘要分离。原 `_rex_*` 身份保留，新键为本次有意增量。 |
+| `PublicExecutionOrderRuntime.cs:32–119`；`PublicExecutionOrderPolicy.cs:1–19`；`Internal/Postprocess/ShoutBehavior.UnifiedActionPostprocess.cs:100–105,637–649`（位于 `src/modules/AF.Module.Conversation/`） | 捕获资格/后处理标签到一次性执行许可；旧 Native raw keyword 分支已删除，Scene 与 Native 统一入口而保持触发时机差异。 |
+| `Vengeance/Source/Core/ExecutionMethodRules.cs:58–60`；`UI/ExecutionJudgementVM.cs:97–101`；`Customization/ExecutionSiteBuilderController.Panels.cs:142–164` | `IsVisibleInSelection` 实际供两个选择界面消费；旧轮刑数据仍可按 ID 解析。 |
+
+**验证实跑**：
+- `dotnet run --project tests/Vengeance/ExecutionMemoryContractTests/ExecutionMemoryContractTests.csproj -c Release`：**98 断言 PASS**，直接链接生产 parser、playback、planner、实录 owner、实际 AF 记忆桥和命令 runtime；Campaign/Mission/存储宿主为桩，Newtonsoft 为项目真实依赖。覆盖分片、兜底、无群众、未显示/显示失败、提前中断、死亡后禁言、去重、旧/坏存档、原文存读、100 场与 24 行边界、现场知情范围、取消/死亡新闻边界、初次记忆失败保留实录、选错/未选、否定/疑问/条件/引述、拒绝、重复/迟到/换档请求、控制器拒绝、Native 关闭/退役、默认配置、话题资格及轮刑隐藏。
+- 既有 `tests/Vengeance/ExecutionSpeechLineParserTests`：PASS。
+- 原 `scripts/build/build_single_module.ps1` 不带 Stage/Deploy，Release **1.3 + 1.4 + Bootstrap 全部 0 错误**，保留既有 nullable 等编译警告。实际引用标记为 `v1.3.15.110062` / `v1.4.6.115628`。
+- 独立 `RichExecutions.csproj` 编译 **0 错误、15 警告**；沿用该工程默认 `BannerlordApi=1.4.8` 设置及当前本机安装引用，不将这个配置名当成真实 1.4.8 引擎验收。Intermediate/Output 全部重定向到本任务仓内 `.tmp/execution-memory/standalone-*`，未覆写独立模块输出或游戏文件。
+- 日志/独立候选/源哈希：`.tmp/execution-memory/`，AF DLL 快照 `verified/1.3/`、`verified/1.4/`；`verified-manifest.json` 记录构建时源哈希。1.3 SHA256 `1c04cd703e4fa08070afa0da4083664b14459ce76331cc761c1dbead34042cfb`；1.4 `284901fa7f38bcdc96f91bab9c522a47d15f1533efd4d4a5bcd1160dfe7d459a`。候选来自当时完整工作树，包含未纳入本提交的其他会话并行源码；不能把它声称为本提交干净检出的二进制复现。只读/本地验证未访问真实玩家记忆资料。
+
+**未验证/回滚**：真实模型措辞与引用准确性、游戏中选中刽子手的喊话/Native 关闭时序、七种刑罚实际阶段切换、气泡/TTS、真实旧存档和三渠道实机读取仍 NOT-RUN；离线桩不替代这些验收。本轮未推送、未部署、未改一键流程。回滚产品仅对 `68dd6cd5` 作逆向提交；不 hard reset，不回滚并行内战/政变/快报改动。`MyBehavior.cs` 只提交本功能的 reset/SyncData 两处，其他作者的建国检查保持未暂存。
