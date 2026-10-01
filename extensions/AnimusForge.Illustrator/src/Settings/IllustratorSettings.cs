@@ -562,7 +562,6 @@ namespace AnimusForge.Illustrator
             IllustratorRuntime.Post(() =>
             {
                 EncyclopediaHeroIllustrationPatch.RefreshInjectedButtons();
-                ConversationIllustrationPatch.RefreshInjectedButtons();
             });
         }
 

@@ -107,6 +107,11 @@
             <!-- 底部按钮区 -->
             <ListPanel WidthSizePolicy="CoverChildren" HeightSizePolicy="Fixed" SuggestedHeight="50" HorizontalAlignment="Center" VerticalAlignment="Bottom" MarginBottom="18" LayoutImp.LayoutMethod="HorizontalLeftToRight">
               <Children>
+                <ButtonWidget IsVisible="@HasSelection" IsEnabled="@CanConvertToRpItem" DoNotPassEventsToChildren="true" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="160" SuggestedHeight="46" MarginRight="12" Brush="Popup.Done.Button" Command.Click="ExecuteConvertToRpItem" UpdateChildrenStates="true">
+                  <Children>
+                    <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="22" VerticalAlignment="Center" Brush="Popup.Button.Text" Brush.FontSize="18" Text="转为 RP 物品" DoNotAcceptEvents="true" />
+                  </Children>
+                </ButtonWidget>
                 <ButtonWidget IsVisible="@HasSelection" DoNotPassEventsToChildren="true" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="140" SuggestedHeight="46" MarginRight="12" Brush="Popup.Done.Button" Command.Click="ExecuteCopyPrompt" UpdateChildrenStates="true">
                   <Children>
                     <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="22" VerticalAlignment="Center" Brush="Popup.Button.Text" Brush.FontSize="18" Text="复制提示词" DoNotAcceptEvents="true" />
