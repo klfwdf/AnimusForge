@@ -8,6 +8,15 @@ namespace AnimusForge;
 // This operation mutates only the supplied authoritative dictionary; it retains no state.
 internal static class PersonaImportOwner
 {
+ internal static void StampProfileMetadata(string heroId, MyBehavior.NpcPersonaProfile profile, Func<string,string> resolveHeroName)
+ {
+  if (profile == null) return;
+  string id = (heroId ?? "").Trim();
+  profile.HeroId = id;
+  try { profile.HeroName = resolveHeroName(id) ?? ""; }
+  catch { profile.HeroName = ""; }
+ }
+
  internal static void RestoreProfileSnapshot<TProfile>(ref Dictionary<string,TProfile> authority, Dictionary<string,TProfile> restored) where TProfile : class
  { authority = restored; }
  internal static void ApplySingleProfile<TProfile>(ref Dictionary<string, TProfile> authority, string heroId, TProfile imported) where TProfile : class

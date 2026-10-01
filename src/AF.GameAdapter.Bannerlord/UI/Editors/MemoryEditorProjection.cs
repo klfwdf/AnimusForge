@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -20,6 +20,39 @@ internal sealed class MemoryEditorDisplayPort
 
 internal static class MemoryEditorProjection
 {
+	internal static string BuildDevHistoryPreview(string line, int maxLen = 56)
+	{
+		if (string.IsNullOrWhiteSpace(line))
+		{
+			return "（空）";
+		}
+		StringBuilder stringBuilder = new StringBuilder(line.Length);
+		bool flag = false;
+		foreach (char c in line)
+		{
+			if (char.IsWhiteSpace(c))
+			{
+				if (!flag)
+				{
+					stringBuilder.Append(' ');
+					flag = true;
+				}
+			}
+			else
+			{
+				stringBuilder.Append(c);
+				flag = false;
+			}
+		}
+		string text = stringBuilder.ToString().Trim();
+		if (text.Length <= maxLen)
+		{
+			return text;
+		}
+		return text.Substring(0, Math.Max(1, maxLen)) + "...";
+	}
+
+
 	internal static bool IsDevDailyMemoryDraftMatch(MemoryEditorDisplayPort port, DailyMemoryDraft draft, string[] terms)
 	{
 		if (draft == null)
