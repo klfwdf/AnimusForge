@@ -171,6 +171,7 @@ namespace AnimusForge.Illustrator.Core
         public static void Reset()
         {
             AssertMainThread();
+            BulletinIllustrationPreloader.Reset();
             foreach (var scope in Scopes.ToArray()) scope.Close();
             TickScopes();
             BannerEmblemComposer.Reset();
@@ -273,16 +274,18 @@ namespace AnimusForge.Illustrator.Core
         private readonly ScreenBase _screen;
         private readonly string _category;
         private readonly Action _onClose;
+        private readonly bool _campaignOwned;
         private CancellationTokenSource _request;
         private bool _closed;
         private bool _disposed;
         private long _revision;
         public string CampaignKey { get; }
 
-        public IllustrationScope(ScreenBase screen, string category, Action onClose)
+        public IllustrationScope(ScreenBase screen, string category, Action onClose, bool campaignOwned = false)
         {
             IllustratorRuntime.AssertMainThread();
             _screen = screen;
+            _campaignOwned = campaignOwned;
             _campaign = Campaign.Current;
             _category = category;
             _onClose = onClose;
@@ -292,7 +295,7 @@ namespace AnimusForge.Illustrator.Core
 
         public bool IsCurrent => !_closed && _campaign != null && ReferenceEquals(_campaign, Campaign.Current) &&
             !string.IsNullOrEmpty(CampaignKey) && CampaignKey == IllustratorRuntime.CampaignKey &&
-            ReferenceEquals(_screen, ScreenManager.TopScreen) && !_screen.IsFinalized && IllustratorRuntime.IsEnabled(_category);
+            (_campaignOwned || (ReferenceEquals(_screen, ScreenManager.TopScreen) && _screen != null && !_screen.IsFinalized)) && IllustratorRuntime.IsEnabled(_category);
 
         public bool Run<T>(Func<CancellationToken, Task<T>> work, Action<T> complete, Action<string> fail)
         {
