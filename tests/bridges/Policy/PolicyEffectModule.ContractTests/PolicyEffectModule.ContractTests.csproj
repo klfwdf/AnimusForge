@@ -9,7 +9,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\AnimusForge.csproj" />
+    <ProjectReference Include="..\..\..\..\AnimusForge.csproj" Condition="'$(PolicyTestAssemblyPath)' == ''" />
+    <Reference Include="AnimusForge" Condition="'$(PolicyTestAssemblyPath)' != ''">
+      <HintPath>$(PolicyTestAssemblyPath)</HintPath>
+      <Private>true</Private>
+    </Reference>
     <Reference Include="Newtonsoft.Json">
       <HintPath Condition="'$(VersionedDepsDir)' != '' and Exists('$(VersionedDepsDir)\Newtonsoft.Json.dll')">$(VersionedDepsDir)\Newtonsoft.Json.dll</HintPath>
       <HintPath Condition="'$(VersionedDepsDir)' == '' or !Exists('$(VersionedDepsDir)\Newtonsoft.Json.dll')">$(BannerlordRoot)\bin\Win64_Shipping_Client\Newtonsoft.Json.dll</HintPath>

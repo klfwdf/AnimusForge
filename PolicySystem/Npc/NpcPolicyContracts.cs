@@ -157,6 +157,9 @@ public sealed class NpcRulerPolicyRecord
 	[JsonProperty("egalitarianWeight")]
 	public float? EgalitarianWeight { get; set; }
 
+	[JsonProperty("votePersonality", NullValueHandling = NullValueHandling.Ignore)]
+	internal PolicyVotePersonalityProfile VotePersonality { get; set; }
+
 	public int Day { get; set; }
 
 	public string GameDate { get; set; }
@@ -296,6 +299,9 @@ internal sealed class NpcRulerPolicyDraftWireRecord
 
 	[JsonProperty("egalitarianWeight", Required = Required.Always)]
 	internal float? EgalitarianWeight { get; set; }
+
+	[JsonProperty("votePersonality", Required = Required.Always)]
+	internal PolicyVotePersonalityProfile VotePersonality { get; set; }
 
 	[JsonProperty("durationDays", Required = Required.Always)]
 	internal int DurationDays { get; set; }

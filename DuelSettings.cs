@@ -2143,7 +2143,7 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 	[SettingPropertyGroup("16. 政策系统/1. 玩家政策", GroupOrder = 160)]
 	public int PlayerPolicyEffectModuleDetailCount { get; set; } = DefaultPlayerPolicyEffectModuleDetailCount;
 
-	[SettingPropertyBool("领主投票考虑自身利益与关系", Order = 8, RequireRestart = false, HintText = "开启后，王国议程中的自定义政策（玩家与 NPC 统治者提出的均适用）投票时，领主除原版政治立场外，还会考虑政策效果对自己封地、家族的实际利弊，以及与提案人的关系。已谈妥的拉票承诺优先兑现，不受影响。")]
+	[SettingPropertyBool("领主投票考虑利益、关系与性格", Order = 8, RequireRestart = false, HintText = "开启后，王国议程中的自定义政策（玩家与 NPC 统治者提出的均适用）投票时，领主除原版政治立场外，还会考虑政策效果对自己封地、家族的实际利弊，以及与提案人的关系和政策手段与自身性格的匹配。已谈妥的拉票承诺优先兑现，不受影响。")]
 	[SettingPropertyGroup("16. 政策系统/1. 玩家政策", GroupOrder = 160)]
 	public bool PolicyVoteInterestEnabled { get; set; } = true;
 
@@ -2154,6 +2154,10 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 	[SettingPropertyFloatingInteger("投票关系权重", 0f, 3f, "0.00", Order = 10, RequireRestart = false, HintText = "领主与提案人关系对投票方向的影响倍率。1.00 时，关系 +100 相当于一项中等收益，关系 -100 相当于一项中等损失；0 表示关系只按原版影响投票力度。默认 1.00。")]
 	[SettingPropertyGroup("16. 政策系统/1. 玩家政策", GroupOrder = 160)]
 	public float PolicyVoteRelationWeight { get; set; } = 1f;
+
+	[SettingPropertyFloatingInteger("投票性格权重", 0f, 3f, "0.00", Order = 11, RequireRestart = false, HintText = "仁慈、荣誉、慷慨、勇气、审慎与政策手段的匹配倍率。默认 1；0 关闭性格评分。实际利益损失仍计入，坏特质不保证赞成。旧政策没有性格评议数据时保持原评分，可重新评议生成。")]
+	[SettingPropertyGroup("16. 政策系统/1. 玩家政策", GroupOrder = 160)]
+	public float PolicyVotePersonalityWeight { get; set; } = 1f;
 
 	[SettingPropertyBool("启用NPC统治者政策", Order = 0, RequireRestart = false, HintText = "开启后，各 NPC 王国会按设定间隔制定并发布政策。关闭后不再生成新政策，已经生效的政策及其记录不受影响。")]
 	[SettingPropertyGroup("16. 政策系统/2. NPC统治者政策", GroupOrder = 160)]
