@@ -13,5 +13,5 @@ for name, assertion in [('cancelled-arrival','cancelled-arrival-has-no-effect'),
     (out/(name+'.log')).write_text(result.stdout+result.stderr,encoding='utf-8')
     assert (child/'run.log').is_file(), 'mutation did not generate/compile '+name
     log = (child/'run.log').read_text(encoding='utf-8')
-    assert result.returncode != 0 and 'error CS' not in log and 'Unhandled exception. System.Exception: ASSERT '+assertion in log, 'mutation survived or failed before assertion '+name
+    assert result.returncode != 0 and 'error CS' not in log and 'System.Exception: ASSERT '+assertion in log, 'mutation survived or failed before assertion '+name
     print('PASS compiled mutation rejected '+name+' '+assertion)

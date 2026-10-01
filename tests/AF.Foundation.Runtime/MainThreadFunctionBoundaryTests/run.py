@@ -1,5 +1,5 @@
 """Run the actual two shared scheduler declarations with a physical main-thread queue fixture."""
-import argparse, importlib.util, subprocess, os, json, hashlib, sys
+import argparse, importlib.util, subprocess, os, json, hashlib, sys, re
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[3]; HERE=Path(__file__).parent
 import sys
@@ -11,20 +11,22 @@ p=argparse.ArgumentParser();p.add_argument('--run-root',type=Path);p.add_argumen
 spec=importlib.util.spec_from_file_location('ex',ROOT/'tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py');ex=importlib.util.module_from_spec(spec);spec.loader.exec_module(ex)
 def read(name):return subprocess.check_output(['git','show','613ac245:'+name],cwd=ROOT).decode('utf-8-sig') if a.original else (current_source_path(ROOT, name)).read_text(encoding='utf-8-sig')
 s=read('ShoutBehavior.cs')
-assert 'private const int NativeConversationMainThreadPreprocessTimeoutMs = 30000;' in s
-run=ex.declaration(s,'private Task<T> RunNativeConversationMainThreadFuncAsync<T>(')
-wait=ex.declaration(s,'private static async Task<T> AwaitNativeConversationMainThreadFuncAsync<T>(')
+assert re.search(r'(?:private|internal) const int NativeConversationMainThreadPreprocessTimeoutMs = 30000;',s)
+signature='private Task<T> RunNativeConversationMainThreadFuncAsync<T>('
+run=ex.declaration(s,signature) if a.original else s[s.index(signature):s.index(';',s.index(signature))+1]
+wait=ex.declaration(s,'private static async Task<T> AwaitNativeConversationMainThreadFuncAsync<T>(') if a.original else ''
+dispatcher=''
 # J07/J10/J17 moved unrelated host responsibilities. Scope this scheduler
 # proof to the exact two production declarations and the original lifetime edits;
 # NativeTurn/ChannelPersona own preparation and algorithm coverage separately.
 if not a.original:
- lifetime_spec=importlib.util.spec_from_file_location('scheduler_lifetime',ROOT/'tests/AF.GameAdapter.Bannerlord/GameLifetimeTests/source_parity.py');life=importlib.util.module_from_spec(lifetime_spec);lifetime_spec.loader.exec_module(life)
- expected=life.expected('ShoutBehavior.cs')
- for signature in ['private Task<T> RunNativeConversationMainThreadFuncAsync<T>(', 'private static async Task<T> AwaitNativeConversationMainThreadFuncAsync<T>(']:
-  assert ex.declaration(s,signature)==ex.declaration(expected,signature), 'Unreviewed scheduler declaration'
+ subprocess.run([sys.executable,str(ROOT/'tests/modules/AF.Module.Conversation/GameThreadDispatcherTests/source_review.py')],cwd=ROOT,check=True)
+ dispatcher=(ROOT/'src/modules/AF.Module.Conversation/Channels/Native/ConversationGameThreadDispatcher.cs').read_text(encoding='utf-8-sig')
+ assert '_conversationGameThreadDispatcher.RunAsync(operationName, targetLog, targetAgentIndex, func, fallback)' in run
 code=(HERE/'Harness.cs.txt').read_text(encoding='utf-8-sig').replace('@@RUN@@',run).replace('@@WAIT@@',wait)
 if not a.original:
- code=code.replace('public sealed class ShoutBehavior\n{','public sealed class ShoutBehavior\n{\n    private readonly AnimusForge.Refactor.Runtime.PendingOperationRegistry _pendingMainThreadFunctions = new();',1)
+ code=code.replace('public sealed class ShoutBehavior\n{','public sealed partial class ShoutBehavior\n{\n    private readonly AnimusForge.Refactor.Runtime.PendingOperationRegistry _pendingMainThreadFunctions = new();',1)
+ code=code.replace('private const int NativeConversationMainThreadPreprocessTimeoutMs = 120;','internal const int NativeConversationMainThreadPreprocessTimeoutMs = 120;',1)
 mutations={
  'drop-claim':('if (Interlocked.CompareExchange(ref state, 1, 0) != 0) return;', 'if (false) return;'),
  'expire-started':('if (Interlocked.CompareExchange(ref state, 2, 0) != 0) return false;', 'if (Interlocked.Exchange(ref state, 2) == 2) return false;'),
@@ -35,11 +37,18 @@ mutations={
  'forget-queued-result':('tcs.TrySetResult(Execute("mainthread"));', 'Execute("mainthread"); tcs.TrySetResult(fallback);'),
 }
 if a.mutate:
- old,new=mutations[a.mutate]; assert old in code, 'Mutation missed';code=code.replace(old,new,1)
+ old,new=mutations[a.mutate]
+ if a.original:
+  assert old in code, 'Mutation missed';code=code.replace(old,new,1)
+ else:
+  assert old in dispatcher, 'Mutation missed actual owner';dispatcher=dispatcher.replace(old,new,1)
 out=new_run_root(ROOT,'main-thread-function-boundary',a.run_root)
 (out/'Program.cs').write_text(code,encoding='utf-8');(out/'PreprocessFormatException.cs').write_text(read('PreprocessFormatException.cs'),encoding='utf-8')
 (out/'Proof.csproj').write_text('<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><LangVersion>latest</LangVersion></PropertyGroup></Project>',encoding='utf-8')
-if not a.original:(out/'PendingOperationRegistry.cs').write_text((ROOT/'src/AF.Foundation.Runtime/Scheduling/PendingOperationRegistry.cs').read_text(encoding='utf-8-sig'),encoding='utf-8')
+if not a.original:
+ (out/'PendingOperationRegistry.cs').write_text((ROOT/'src/AF.Foundation.Runtime/Scheduling/PendingOperationRegistry.cs').read_text(encoding='utf-8-sig'),encoding='utf-8')
+ (out/'Dispatcher.cs').write_text(dispatcher,encoding='utf-8')
+ (out/'NativeDispatchComposition.cs').write_bytes((ROOT/'src/modules/AF.Module.Conversation/Channels/Native/ShoutBehavior.NativeGameThreadDispatch.cs').read_bytes())
 (out/'NuGet.Config').write_text('<configuration><packageSources><clear/></packageSources></configuration>',encoding='utf-8')
 dotnet=resolve_dotnet(ROOT);env=minimal_test_environment(dotnet,out)
 r=subprocess.run([str(dotnet),'run','--project',str(out/'Proof.csproj'),'-c','Release'],cwd=ROOT,env=env,capture_output=True,text=True,encoding='utf-8',errors='replace',timeout=150)

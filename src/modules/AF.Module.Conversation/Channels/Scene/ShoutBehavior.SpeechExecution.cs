@@ -147,6 +147,10 @@ public partial class ShoutBehavior
 		_sceneSpeechExecution ??= new SceneSpeechExecutionRuntime<SceneSpeechQueueItem>(
 			() => _isProcessingShout, action => _mainThreadActions.Enqueue(action), _sceneSpeechEffects.Publish,
 			item => item.CompletionSource?.TrySetResult(false));
+    private SceneSystemNpcShoutRuntime _systemNpcShoutRuntime;
+    private SceneSystemNpcShoutRuntime _systemNpcShout => _systemNpcShoutRuntime ??= new SceneSystemNpcShoutRuntime(
+        _sceneSpeechEffects.Ports, _conversationGameThreadDispatcher, () => _sceneConversationEpoch,
+        () => System.Threading.Volatile.Read(ref _sceneHistorySessionId), () => ReferenceEquals(CurrentInstance, this));
     private SceneSpeechEffectController _sceneSpeechEffectController;
     private SceneSpeechEffectController _sceneSpeechEffects => _sceneSpeechEffectController ??= new SceneSpeechEffectController(new SceneSpeechEffectPorts
     {

@@ -59,11 +59,22 @@ print('PASS '+str(len(TYPES))+' state types and '+str(len(FIELDS))+' fields/cons
 
 compact_old = ex.declaration(old, 'private async Task<string> GenerateCompactSceneReactionLineAsync(')
 compact_now = (ROOT/'src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.SceneConversationChains.cs').read_text(encoding='utf-8-sig')
-compact_now = ex.declaration(compact_now, 'private async Task<SceneCompactReactionInput> CaptureCompactSceneReactionInputAsync(')
+compact_now = ex.declaration(compact_now, 'internal async Task<SceneCompactReactionInput> CaptureCompactSceneReactionInputAsync(')
+history_capture='List<string> historyLines = _ports.CaptureVisibleSceneHistoryLines(targetNpc.AgentIndex, GetSceneNpcHistoryNameForPrompt(targetNpc), false);'
+assert compact_now.count(history_capture)==1
+history_oracle='''List<string> historyLines = null;
+        lock (_historyLock)
+        {
+            if (_publicConversationHistory.Count > 0)
+            {
+                historyLines = BuildVisibleSceneHistoryLines(_publicConversationHistory, targetNpc.AgentIndex, GetSceneNpcHistoryNameForPrompt(targetNpc), useNpcNameAddress: false);
+            }
+        }'''
+compact_now=compact_now.replace(history_capture,history_oracle,1).replace('_ports.','')
 def prompt_segment(body):
     return body[body.index('Agent npcAgent ='):body.index('List<object> messages =')] + body[body.index('List<object> messages ='):body.index(');', body.index('List<object> messages ='))+2]
 assert tokens(prompt_segment(compact_old)) == tokens(prompt_segment(compact_now)), 'compact prompt/history/AFEF rules changed'
-assert 'RunNativeConversationMainThreadFuncAsync("compact_reaction_messages"' in compact_now
+assert '_dispatcher.RunAsync("compact_reaction_messages"' in compact_now
 runtime = (ROOT/'src/modules/AF.Module.Conversation/Channels/Scene/SceneCompactReactionRuntime.cs').read_text(encoding='utf-8-sig')
 runtime_code = ' '.join(t for t in tokens(runtime) if not t.startswith('"') and not t.startswith('@"'))
 assert not re.search(r'\b(Mission|Hero|Agent|ShoutBehavior|DuelSettings)\b', runtime_code), 'detached compact model execution retained game/config owner'

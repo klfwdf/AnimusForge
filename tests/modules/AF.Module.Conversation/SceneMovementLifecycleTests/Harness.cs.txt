@@ -199,4 +199,4 @@ sealed class LifecycleProbe
         return passed;
     }
 }
-static class Program { static void Main() { Console.WriteLine("SceneMovementLifecycle PASS=" + (Probe.Run() + LifecycleProbe.Run() + AnimusForge.CompactProbe.Run()) + " FAIL=0"); } }
+static class Program { static int Main() { try { Console.WriteLine("SceneMovementLifecycle PASS=" + (Probe.Run() + LifecycleProbe.Run() + AnimusForge.CompactProbe.Run()) + " FAIL=0"); return 0; } catch(Exception ex) { Console.Error.WriteLine(ex); return 1; } } }

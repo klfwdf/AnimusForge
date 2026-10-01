@@ -12,7 +12,7 @@ internal sealed class ConversationGameThreadDispatcher
     private readonly Func<bool> _isMainThread;
     internal ConversationGameThreadDispatcher(PendingOperationRegistry pendingOperations, Action<Action> postMainThread, Func<bool> isMainThread)
     { _pendingOperations = pendingOperations ?? throw new ArgumentNullException(nameof(pendingOperations)); _postMainThread = postMainThread ?? throw new ArgumentNullException(nameof(postMainThread)); _isMainThread = isMainThread ?? throw new ArgumentNullException(nameof(isMainThread)); }
-internal Task<T> RunAsync<T>(string operationName, string targetLog, int targetAgentIndex, Func<T> func, T fallback)
+internal Task<T> RunAsync<T>(string operationName, string targetLog, int targetAgentIndex, Func<T> func, T fallback, bool forceQueue = false)
     {
         long retirementVersion = _pendingOperations.Version;
         if (func == null || !_pendingOperations.Accepting) return Task.FromResult(fallback);
@@ -58,7 +58,7 @@ internal Task<T> RunAsync<T>(string operationName, string targetLog, int targetA
             }
         }
 
-        if (_isMainThread())
+        if (_isMainThread() && !forceQueue)
         {
             try { return Task.FromResult(Execute("direct")); }
             catch (Exception ex) { return Task.FromException<T>(ex); }

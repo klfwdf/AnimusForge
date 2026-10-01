@@ -625,6 +625,22 @@
     "{ROOT}/artifacts/af2-host-terminal-closeout/final/{RUN}/external-scene-prompt"
    ],
    "note": "Actual current typed GameAdapter capture, real Prompt section assembly and public facade; fixed full 135-line same-input oracle is separate."
+  },
+  "tests/modules/AF.Module.Conversation/SystemNpcShoutRuntimeTests/run.py": {
+   "expect": "PASS",
+   "args": [
+    "--run-root",
+    "{ROOT}/artifacts/af2-host-terminal-closeout/final/{RUN}/system-shout-run"
+   ],
+   "note": "Actual current system speech owner, same registry and dispatcher; headless lifecycle and compiled assertion mutations, not live-game acceptance."
+  },
+  "tests/modules/AF.Module.Conversation/SystemNpcShoutRuntimeTests/run_mutations.py": {
+   "expect": "PASS",
+   "args": [
+    "--run-root",
+    "{ROOT}/artifacts/af2-host-terminal-closeout/final/{RUN}/system-shout-run_mutations"
+   ],
+   "note": "Actual current system speech owner, same registry and dispatcher; headless lifecycle and compiled assertion mutations, not live-game acceptance."
   }
  }
 }
