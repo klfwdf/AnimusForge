@@ -1,3 +1,33 @@
+<a id="town-memory-refresh-20261001"></a>
+
+### 城镇记忆接入确认事件、按需限频刷新（2026-10-01，OFFLINE_VERIFIED / 未部署）
+
+用户先要求分析“城镇记忆不会变化”，随后明确授权接入确认事件、累计按需限频更新、记录实际易主时间、保护手工正文，并追问 token/性能。源码/定向回归已提交 `eb39f14ba1b9a4f162e73b1b74c5abb3e565bff9`；意图检查点 `7336fd8`。保留其他任务的 Coup/Weekly/Illustrator/CivilWar 改动。没有部署、推送、修改一键流程或运行真实 API。
+
+**交付行为**：复用原易主与族长继任事件，即时记录战役日（授地传参为家族成员时按实际 OwnerClan.Leader 归属）；保留最近三任。接入原生战后处置、GCCZ 成功终结的实际掠取/死亡/救济计数、成功文化变更、地方政策发布/续期/废除/到期。命令、对话和政策预测不当成结果；GCCZ 内部原生 mercy 不重复冒充最终结果。地方政策 `target_lost` 参数是剩余目标，故不误写“这些城失去政策”。未新增全国/NPC政策或无关机制事件，也不补造安装前未知历史。
+
+已有自动正文按 dirty revision 累积：距成功生成至少3游戏日，且3次有效变化或首变更等待1游戏日，下次百科/合资格对话读取时才请求；空正文可立即请求。每城网络尝试间隔至少1分钟，失败/拒收后再冷却1分钟；无自动重试循环。全局最多2个物理请求，读档前的未结束请求仍占额度；主线程每帧最多处理2个完成结果，无新增全城/Tick扫描。事件最多12条/每条480字符/每任，旧正文当上下文；未变化观察复用 snapshot。手工正文保持，只有用户显式开发者重生成/清空才释放保护；刷新失败保留原文。新增事件/文化/性格/手工编辑/同日反复易主/读档均有 revision/generation 拒收保护。
+
+**Token/线程**：真实辅助接口原先用 MCM 总额度覆盖调用参数；本次新增 internal 限额入口复用相同 gateway，城镇请求上限384输出 tokens、保留更低用户额度、thinking=false，关闭本次兼容性自动重发；其他调用原额度/兼容回退不变。输入事件为有界字符资料，不冒称精确 tokenizer 上限。worker 只发送快照并排队 DTO，主线程重新读取 ruler/culture/personality 后接受结果。
+
+**存档**：原字典与初始化键身份不变，值升级 v3；读取 v1/v2 时保留旧正文及 manual 标记，新增元数据默认初始化。三任×12条长中文事件可超过 TaleWorlds 单字符串限制，因此接入现有 `CampaignSaveChunkHelper.FlattenStringDictionary/RestoreStringDictionary`，每块≤12000 UTF-8字节，旧未分块值兼容。没有写入玩家存档。
+
+| 核实源码坐标（基于上述产品提交，一基行号） | 实际责任/消费者 |
+| --- | --- |
+| `AnimusForge.SiegeAftermathIntervention/SettlementRuleMemoryEvolution.cs:1–71`；`SettlementRuleMemoryStore.cs:21–173,265–308` | 有界事件、累计/限频规则、源版本、手工保护、唯一结果提交 |
+| `AnimusForge.SiegeAftermathIntervention/SettlementRuleMemoryCodec.cs:20–213`；`GcczTownRuleMemoryRuntimeBridge.cs:25–79` | v1/v2读取、v3字段、原存档键分块往返 |
+| `GcczTownRuleMemoryRuntimeBridge.cs:222–243,306–360`；`GcczTownRuleMemoryGenerationBridge.cs:34–112` | 显式重生成、确认事实、实际领主观察、并发/重试间隔与主线程接收 |
+| `SiegeAiInterventionBehavior.TownRuleMemoryEvents.cs:13–50`；`SiegeAiInterventionBehavior.cs:430–433,15378–15384` | 生命周期订阅、族长 fiefs 范围、成功终结事实，非新玩法执行器 |
+| `PolicySystem/Core/CustomPolicyBehavior.Management.cs:4533–4548` | 读取指定政策记录及明确目标；复用既有 post-commit hook，不改效果数值/AFEF |
+| `AnimusForge.SiegeAftermathIntervention/TownPromptComposer.cs:287–325`；`TownPromptTextCatalog.cs`/`GcczTownPrompt.zh-CN.json` | 已确认事实与旧正文进入同一生成输入，角色/事件归属约束 |
+| `AIConfigHandler.cs:2757–2799,2914–2955`；`EncyclopediaTownRuleMemoryPatch.cs:66–69` | 既有辅助 gateway 额外调用方 token 上限、仅本调用禁回退、真实主线程 tick |
+
+**验证**：`tests/modules/AnimusForge.SiegeAftermathIntervention/TownRuleMemory.Tests` 链接真实 core、Generation/Runtime/Ruler bridge、事件 listener、存档分块器，受控传输与值型 Bannerlord 桩，共 **59 PASS**。覆盖 v1/v2/v3、同日ABA、手工/新事实晚结果、失败保留、主线程写回、易主实际日、族长/原生与 GCCZ 结算、读档仍受物理并发限制、长中文三任分块往返。`verify_auxiliary_budget.ps1` 提取实际辅助方法验证16000→384/保留128/最小16/旧调用不变；`ConfiguredChatGatewayReplayTests` 原回归加HTTP端384/thinking=false/错误仅一次请求 PASS。核心合成微基准：50000次未变化观察均值0.586µs，10000次有界事件插入均值6.375µs，不是游戏帧性能。代码 diff 按仓库现有CRLF设置检查通过。
+
+**双版本构建**：使用已提交基线 `79d81e17e05a0568a267123b038ca39a93ad0e6a` + 本任务15个产品文件 overlay 的本地独立快照，沿原 `scripts/build/build_single_module.ps1 -Configuration Release` 构建1.3/1.4/Bootstrap全部exit0、0错误，保留既有warning。实际引用1.3=`v1.3.15.110062`、1.4=`v1.4.6.115628`。最终15源文件hash与快照一致。证据目录 `artifacts/town-memory-refresh-20261001/`：`build-manifest.json`、`contract-tests.log`、`token-budget.log`、`gateway-replay.log`、`dual-build.log`、`verification.json`；后者保存产物SHA256。首轮 Windows tar 中文路径解包失败后用Python tarfile安全解包；核心初编缺少LINQ引用已修复。最终验收不复用失败候选。
+
+**未验/边界**：真实游戏UI/事件顺序、真实provider、玩家旧档、完整帧耗时 NOT-RUN。`G:/AFMOD/GCCZ` 不存在，故未外仓同步；可复用实现已在仓内 GCCZ core，未创建未知外仓。原合资格对话范围不扩大、NPC个人/AFEF/场景短期记忆独立。源回滚用聚焦 `git revert eb39f14b`；旧DLL不能读取新v3数据，若部署后回退须使用升级前存档或另做显式v3→v2导出，不能删玩家数据。
+
 <a id="coup-loyalists-and-aftermath-20261001"></a>
 
 ### 政变后旧王支持者反抗与胜利处置接线（2026-10-01，OFFLINE_VERIFIED / 未部署）
