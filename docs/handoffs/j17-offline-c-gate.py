@@ -10,6 +10,7 @@ import uuid
 
 root = Path(__file__).resolve().parents[2]
 ap = argparse.ArgumentParser()
+ap.add_argument('--output-parent',type=Path)
 ap.add_argument('--candidate', type=Path, required=True)
 ap.add_argument('--ids', type=Path)
 args = ap.parse_args()
@@ -22,7 +23,9 @@ actual_hash = hashlib.sha256(candidate.read_bytes()).hexdigest().upper()
 assert metadata['Sha256'] == actual_hash and metadata['BannerlordApi'] == '1.4'
 approved = Path('E:/tmp/af-j17-20260930')
 assert approved.is_dir() and not approved.is_symlink()
-out = root / 'artifacts/j17b/session-20261001/p6-integration' / ('c-' + uuid.uuid4().hex[:12])
+parent=args.output_parent or root / 'artifacts/j17b/session-20261001/p6-integration'
+parent=parent.resolve();parent.relative_to(root/'artifacts')
+out = parent / ('c-' + uuid.uuid4().hex[:12])
 home = out.parent / ('c-home-' + uuid.uuid4().hex[:12])
 home.mkdir(parents=True, exist_ok=False)
 sdk = root / 'local/dotnet/8.0.425'

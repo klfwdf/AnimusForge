@@ -1,32 +1,24 @@
 """Run the actual two shared scheduler declarations with a physical main-thread queue fixture."""
-import argparse, importlib.util, subprocess, os, json, hashlib
+import argparse, importlib.util, subprocess, os, json, hashlib, sys
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[3]; HERE=Path(__file__).parent
-p=argparse.ArgumentParser();p.add_argument('--original',action='store_true');p.add_argument('--mutate');a=p.parse_args()
+sys.path.insert(0,str(ROOT/'tests'))
+from output_isolation import new_run_root, resolve_dotnet, minimal_test_environment
+p=argparse.ArgumentParser();p.add_argument('--run-root',type=Path);p.add_argument('--original',action='store_true');p.add_argument('--mutate');a=p.parse_args()
 spec=importlib.util.spec_from_file_location('ex',ROOT/'tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py');ex=importlib.util.module_from_spec(spec);spec.loader.exec_module(ex)
 def read(name):return subprocess.check_output(['git','show','613ac245:'+name],cwd=ROOT).decode('utf-8-sig') if a.original else (ROOT/name).read_text(encoding='utf-8-sig')
 s=read('ShoutBehavior.cs')
 assert 'private const int NativeConversationMainThreadPreprocessTimeoutMs = 30000;' in s
 run=ex.declaration(s,'private Task<T> RunNativeConversationMainThreadFuncAsync<T>(')
 wait=ex.declaration(s,'private static async Task<T> AwaitNativeConversationMainThreadFuncAsync<T>(')
-# Keep every caller and all unrelated host behavior byte-equivalent to the reviewed baseline.
+# J07/J10/J17 moved unrelated host responsibilities. Scope this scheduler
+# proof to the exact two production declarations and the original lifetime edits;
+# NativeTurn/ChannelPersona own preparation and algorithm coverage separately.
 if not a.original:
- prior=subprocess.check_output(['git','show','613ac245:ShoutBehavior.cs'],cwd=ROOT).decode('utf-8-sig').replace('\r\n','\n')
- restored=s
- snapshot_spec=importlib.util.spec_from_file_location('snapshot_parity',ROOT/'tests/modules/AF.Module.Conversation/NativeHistorySnapshotTests/source_parity.py');snapshot_parity=importlib.util.module_from_spec(snapshot_spec);snapshot_spec.loader.exec_module(snapshot_parity)
- restored=snapshot_parity.restore_snapshot_source('ShoutBehavior.cs',restored)
- # Separately proven preparation capture: permit only the exact shared reviewed declaration SHA.
- signature='private async Task<string> SubmitNativeConversationTextInternalAsync('
- current=ex.declaration(restored,signature)
- review=json.loads((ROOT/'tests/bridges/TeamModulePortParityTests/reviewed-native-admission-deltas.json').read_text(encoding='utf-8'))
- expected=next(x['sha256'] for x in review['methods'] if x['path']=='ShoutBehavior.cs' and x['signature']==signature)
- persona_spec=importlib.util.spec_from_file_location('channel_persona_inverse',ROOT/'tests/modules/AF.Module.Conversation/ChannelPersonaPreparationTests/source_parity.py');persona=importlib.util.module_from_spec(persona_spec);persona_spec.loader.exec_module(persona)
- live_submit=ex.declaration(persona.restore('ShoutBehavior.cs',s),signature)
- assert hashlib.sha256(live_submit.encode()).hexdigest()==expected and 'TeamModuleServices.' not in live_submit
- restored=restored.replace(current,ex.declaration(prior,signature),1)
+ lifetime_spec=importlib.util.spec_from_file_location('scheduler_lifetime',ROOT/'tests/AF.GameAdapter.Bannerlord/GameLifetimeTests/source_parity.py');life=importlib.util.module_from_spec(lifetime_spec);lifetime_spec.loader.exec_module(life)
+ expected=life.expected('ShoutBehavior.cs')
  for signature in ['private Task<T> RunNativeConversationMainThreadFuncAsync<T>(', 'private static async Task<T> AwaitNativeConversationMainThreadFuncAsync<T>(']:
-  restored=restored.replace(ex.declaration(restored,signature),ex.declaration(prior,signature),1)
- assert restored==prior, 'Changes outside scheduler and separately reviewed preparation declarations'
+  assert ex.declaration(s,signature)==ex.declaration(expected,signature), 'Unreviewed scheduler declaration'
 code=(HERE/'Harness.cs.txt').read_text(encoding='utf-8-sig').replace('@@RUN@@',run).replace('@@WAIT@@',wait)
 if not a.original:
  code=code.replace('public sealed class ShoutBehavior\n{','public sealed class ShoutBehavior\n{\n    private readonly AnimusForge.Refactor.Runtime.PendingOperationRegistry _pendingMainThreadFunctions = new();',1)
@@ -41,11 +33,11 @@ mutations={
 }
 if a.mutate:
  old,new=mutations[a.mutate]; assert old in code, 'Mutation missed';code=code.replace(old,new,1)
-out=HERE/'.generated'/('original' if a.original else a.mutate or 'current');out.mkdir(parents=True,exist_ok=True)
+out=new_run_root(ROOT,'main-thread-function-boundary',a.run_root)
 (out/'Program.cs').write_text(code,encoding='utf-8');(out/'PreprocessFormatException.cs').write_text(read('PreprocessFormatException.cs'),encoding='utf-8')
 (out/'Proof.csproj').write_text('<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><LangVersion>latest</LangVersion></PropertyGroup></Project>',encoding='utf-8')
 if not a.original:(out/'PendingOperationRegistry.cs').write_text((ROOT/'src/AF.Foundation.Runtime/Scheduling/PendingOperationRegistry.cs').read_text(encoding='utf-8-sig'),encoding='utf-8')
 (out/'NuGet.Config').write_text('<configuration><packageSources><clear/></packageSources></configuration>',encoding='utf-8')
-env=os.environ.copy();env.update(DOTNET_ROOT=r'G:\AFMOD\.dotnet-sdk',DOTNET_CLI_HOME=str(ROOT/'.tmp/dotnet-cli'),NUGET_PACKAGES=str(ROOT/'.tmp/nuget-packages'),DOTNET_GENERATE_ASPNET_CERTIFICATE='false',DOTNET_SKIP_FIRST_TIME_EXPERIENCE='1',DOTNET_CLI_TELEMETRY_OPTOUT='1')
-r=subprocess.run([r'G:\AFMOD\.dotnet-sdk\dotnet.exe','run','--project',str(out/'Proof.csproj'),'-c','Release'],cwd=ROOT,env=env,capture_output=True,text=True,encoding='utf-8',errors='replace',timeout=150)
+dotnet=resolve_dotnet(ROOT);env=minimal_test_environment(dotnet,out)
+r=subprocess.run([str(dotnet),'run','--project',str(out/'Proof.csproj'),'-c','Release'],cwd=ROOT,env=env,capture_output=True,text=True,encoding='utf-8',errors='replace',timeout=150)
 log=r.stdout+r.stderr;(out/'run.log').write_text(log,encoding='utf-8');print(log);raise SystemExit(r.returncode)
