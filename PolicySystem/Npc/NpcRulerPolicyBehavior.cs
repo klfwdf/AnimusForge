@@ -284,6 +284,39 @@ public sealed partial class NpcRulerPolicyBehavior : CampaignBehaviorBase
 		}
 	}
 
+	// Read-only view of an NPC policy's module effects for vote-interest scoring. Cold path: the
+	// caller caches the derived result per policy per campaign day.
+	internal static bool TryGetPolicyModuleEffectsForExternal(string policyId, out List<PolicyEffectInstanceSaveData> moduleEffects)
+	{
+		moduleEffects = new List<PolicyEffectInstanceSaveData>();
+		try
+		{
+			NpcRulerPolicyBehavior behavior = Instance ?? Campaign.Current?.GetCampaignBehavior<NpcRulerPolicyBehavior>();
+			string id = (policyId ?? string.Empty).Trim();
+			if (behavior == null || id.Length == 0 || !behavior._policyRecords.TryGetValue(id, out string raw))
+			{
+				return false;
+			}
+			NpcRulerPolicyRecord record = DeserializeRecord(raw);
+			if (record?.Effects == null)
+			{
+				return false;
+			}
+			moduleEffects = record.Effects
+				.Where(effect => effect?.ModuleEffects != null)
+				.SelectMany(effect => effect.ModuleEffects)
+				.Where(instance => instance != null)
+				.ToList();
+			return moduleEffects.Count > 0;
+		}
+		catch (Exception ex)
+		{
+			moduleEffects = new List<PolicyEffectInstanceSaveData>();
+			Log("policy-module-effects-read-failed policy=" + (policyId ?? string.Empty) + " error=" + ex.Message);
+			return false;
+		}
+	}
+
 	public static bool MarkPlayerPolicyReReviewCommittedForExternal(string policyId)
 	{
 		try

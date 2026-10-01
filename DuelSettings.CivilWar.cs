@@ -36,6 +36,14 @@ public partial class DuelSettings
 	[SettingPropertyGroup(CivilWarGroup, GroupOrder = 125)]
 	public int CivilWarCooldownWeeks { get; set; } = 8;
 
+	[SettingPropertyInteger("同时存在的派系上限", 1, 4, "0", Order = 7, RequireRestart = false, HintText = "一个王国内可同时存在的派系数量。每个派系有各自的诉求、不满、最后通牒与内战。默认 3。")]
+	[SettingPropertyGroup(CivilWarGroup, GroupOrder = 125)]
+	public int CivilWarMaxFactions { get; set; } = 3;
+
+	[SettingPropertyBool("允许多个派系同时内战", Order = 8, RequireRestart = false, HintText = "关闭（默认）：同一时间只允许一个派系起兵，其余派系暂停，等内战结束后再继续。开启：每个派系可各自建立叛军王国，与王室同时开战。")]
+	[SettingPropertyGroup(CivilWarGroup, GroupOrder = 125)]
+	public bool CivilWarAllowConcurrentWars { get; set; } = false;
+
 	public static bool IsCivilWarFactionsEnabled()
 	{
 		try { return IsKingdomStabilityAndRebellionEnabled() && (GetSettings()?.EnableCivilWarFactions ?? true); }
@@ -56,6 +64,8 @@ public partial class DuelSettings
 		{
 			DuelSettings settings = GetSettings();
 			if (settings == null) return tuning;
+			tuning.MaxFactions = System.Math.Max(1, System.Math.Min(4, settings.CivilWarMaxFactions));
+			tuning.AllowConcurrentWars = settings.CivilWarAllowConcurrentWars;
 			tuning.Randomness = CivilWarRules.Clamp(settings.CivilWarRandomness, 0f, 1f);
 			tuning.DiscontentThreshold = System.Math.Max(10, settings.CivilWarDiscontentThreshold);
 			tuning.UltimatumDelayWeeks = System.Math.Max(1, settings.CivilWarUltimatumDelayWeeks);

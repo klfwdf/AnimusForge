@@ -19,6 +19,9 @@ public sealed class CourierLetterReplyPopupVM : ViewModel
 	private bool _hasImpact;
 
 	[DataSourceProperty]
+	public CourierLetterThemeVM Theme { get; }
+
+	[DataSourceProperty]
 	public string TitleText
 	{
 		get => _titleText;
@@ -149,6 +152,7 @@ public sealed class CourierLetterReplyPopupVM : ViewModel
 		_onClose = onClose;
 		_onReply = onReply;
 		_onOpenEncyclopediaLink = onOpenEncyclopediaLink;
+		Theme = new CourierLetterThemeVM(CourierLetterThemes.Current);
 		TitleText = EncyclopediaEntityLinkFormatter.SanitizeUntrustedRichText(string.IsNullOrWhiteSpace(titleText) ? "信使带回了回信" : titleText);
 		SubtitleText = EncyclopediaEntityLinkFormatter.SanitizeUntrustedRichText(subtitleText ?? "");
 		// Letters stay plain in storage; this one popup-only copy gets safe native entity markup.

@@ -37,6 +37,7 @@
     <string id="AFWST_UnknownHero" text="未知领主" />
     <string id="AFWST_UnknownCause" text="死因不明" />
     <string id="AFWST_OpenFailed" text="战争统计界面打开失败，详情已写入 rgl_log。" />
+    <string id="AFWST_TerminalNavTooltip" text="AnimusForge 终端" />
     <string id="AFWST_NotInitializedMessage" text="战争统计尚未初始化。" />
     <string id="AFWST_ClearTitle" text="清除所有战争统计" />
     <string id="AFWST_ClearBody" text="确认清除全部历史战争和领主死亡档案，并将当前战争的击杀、伤亡和胜负累计归零？此操作无法撤销。" />

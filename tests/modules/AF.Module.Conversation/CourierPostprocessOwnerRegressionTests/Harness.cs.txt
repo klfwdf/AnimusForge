@@ -91,6 +91,7 @@ namespace AnimusForge
             }, recipient, prompt);
         }
         @@METHODS@@
+        @@LIFETIME@@
     }
     public static class LegacyInteractionSnapshotAdapters
     {

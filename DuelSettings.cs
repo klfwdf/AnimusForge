@@ -2143,6 +2143,18 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 	[SettingPropertyGroup("16. 政策系统/1. 玩家政策", GroupOrder = 160)]
 	public int PlayerPolicyEffectModuleDetailCount { get; set; } = DefaultPlayerPolicyEffectModuleDetailCount;
 
+	[SettingPropertyBool("领主投票考虑自身利益与关系", Order = 8, RequireRestart = false, HintText = "开启后，王国议程中的自定义政策（玩家与 NPC 统治者提出的均适用）投票时，领主除原版政治立场外，还会考虑政策效果对自己封地、家族的实际利弊，以及与提案人的关系。已谈妥的拉票承诺优先兑现，不受影响。")]
+	[SettingPropertyGroup("16. 政策系统/1. 玩家政策", GroupOrder = 160)]
+	public bool PolicyVoteInterestEnabled { get; set; } = true;
+
+	[SettingPropertyFloatingInteger("投票利益权重", 0f, 3f, "0.00", Order = 9, RequireRestart = false, HintText = "政策效果对领主自身利益的影响倍率。1.00 时，明显惠及其封地的政策约可抵消普通贵族对王权类政策的反感；0 表示不考虑利益。默认 1.00。")]
+	[SettingPropertyGroup("16. 政策系统/1. 玩家政策", GroupOrder = 160)]
+	public float PolicyVoteInterestWeight { get; set; } = 1f;
+
+	[SettingPropertyFloatingInteger("投票关系权重", 0f, 3f, "0.00", Order = 10, RequireRestart = false, HintText = "领主与提案人关系对投票方向的影响倍率。1.00 时，关系 +100 相当于一项中等收益，关系 -100 相当于一项中等损失；0 表示关系只按原版影响投票力度。默认 1.00。")]
+	[SettingPropertyGroup("16. 政策系统/1. 玩家政策", GroupOrder = 160)]
+	public float PolicyVoteRelationWeight { get; set; } = 1f;
+
 	[SettingPropertyBool("启用NPC统治者政策", Order = 0, RequireRestart = false, HintText = "开启后，各 NPC 王国会按设定间隔制定并发布政策。关闭后不再生成新政策，已经生效的政策及其记录不受影响。")]
 	[SettingPropertyGroup("16. 政策系统/2. NPC统治者政策", GroupOrder = 160)]
 	public bool EnableNpcRulerPolicy { get; set; } = true;
@@ -2352,6 +2364,16 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 	[SettingPropertyBool("玩家为国王时免疫稳定度叛乱", Order = 9, RequireRestart = false, HintText = "开启后，当玩家家族是某个王国的执政家族或玩家本人是该王国领袖时，本模组的王国稳定度不会继续给该王国施加关系修正、国王直辖地忠诚修正或王国叛乱判定。原版城镇低忠诚叛乱仍按原版规则运行。")]
 	[SettingPropertyGroup("12. 事件系统（开发）")]
 	public bool EnablePlayerKingdomRebellionImmunity { get; set; } = false;
+
+	[SettingPropertyBool("周报模式：即时快报（关闭则用旧周报）", Order = 10, RequireRestart = false, HintText = "开启：用即时快报取代每周长周报。大事件发生后收集 1 天，把期间几件大事合写成一篇、附几条小消息，每期只调用 1 次 LLM，发出后冷却 3 天；只弹这一份，内容偏向玩家本人、本国与邻国；开启插画扩展时自动配图。NPC 从本地事件记录得知本国与附近王国的近况，被问到战功或天下大事时再调取详情，不额外消耗 token。王国稳定度改由事件本地计算（每国每周上限 ±15）。关闭：回到旧周报流程（每周生成世界与王国周报）。默认开启。")]
+	[SettingPropertyGroup("12. 事件系统（开发）")]
+	public bool UseWorldBulletin { get; set; } = true;
+
+	// Legacy weekly batches only run when the bulletin mode is off.
+	internal bool IsLegacyWeeklyAutoGenerationActive()
+	{
+		return AutoGenerateWeeklyReports && !UseWorldBulletin;
+	}
 
 	[SettingPropertyBool("{=gccz_npc_response_unlimited_name}NPC Response Unlimited", Order = 0, RequireRestart = false, HintText = "{=gccz_npc_response_unlimited_hint}Removes the configured numeric cap in active GCCZ town scenes while retaining event deduplication and queue safety.")]
 	[SettingPropertyGroup(SiegeNpcResponseLimitProfile.McmGroupName)]

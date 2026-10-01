@@ -24,6 +24,8 @@ python -X utf8 -B tests/modules/AF.Module.Conversation/NativeActionDispatchOutco
 python -X utf8 -B tests/modules/AF.Module.Conversation/NativeCompletionBoundaryTests/run.py
 ```
 
+`run_bindings.py` 自 cb045840 起另 Link `ConversationRequestLifetime` / `InteractionRequestLease` / `NativeConversationAdmissionOwner`，并检查 Native reset/end 退役 Scene 与 admission 请求生命周期、Courier re-begin/reset/end 退役会话请求生命周期；`NativeConversationTurnHost.ClearCeremonyExecutionOrder` 为计数 fixture（aa3539ca 引入的调用）。`source-review.json` 中 `Bindings.cs.txt` / `run_bindings.py` / 两个 CampaignLifetime 依赖哈希未刷新：`source_parity.py` 为 runners.json 已登记的 PREEXISTING_FAIL，需其 owner 另行评审。
+
 `run.py` 默认还运行 12 个生产行为故障变体，必须是编译成功后断言失败，不能把编译错误计作反例。
 `run_commit.py --mutate drop_claim|expire_claimed|skip_retirement` 以及 Native 原测试的故障选项返回非零是预期。
 

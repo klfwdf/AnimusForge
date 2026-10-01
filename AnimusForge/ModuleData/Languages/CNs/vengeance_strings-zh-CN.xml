@@ -148,6 +148,7 @@
     <string id="REX_Speech_Victim_Unknown" text="这名犯人" />
     <string id="REX_Speech_Speaker_Crowd" text="人群中有人" />
     <string id="REX_Speech_Speaker_Executioner" text="行刑官" />
+    <string id="REX_Speech_Log_Line" text="{SPEAKER}：{TEXT}" />
     <string id="REX_Action_Talk_Executioner" text="与刽子手交谈" />
     <string id="REX_Action_Behead" text="亲自执行斩首" />
     <string id="REX_Action_Use_Gallows" text="释放绞架机关" />

@@ -30,6 +30,11 @@ public static class LegacyConfiguredChatGateway
     @@BUILD_PROMPT@@
 }
 public interface ILlmGateway { }
+// Only the production anonymous message factory is inserted; the rest of the owner is not under test here.
+internal static class MainPromptMessageAssemblyOwner
+{
+    @@MESSAGE_OWNER_CREATE@@
+}
 public sealed class RuntimeConfigSnapshot
 {
     public Dictionary<string, object> Providers = new() { ["fixture"] = new object() };
@@ -141,6 +146,9 @@ public sealed class CourierPromptRun
 {
     public CourierSession Session;
     public long Generation = 1;
+    // Request cancellation owner is a port here; ConversationRequestLifetime runs in its own suites.
+    public readonly CancellationTokenSource Cancellation = new();
+    public CancellationToken Token => Cancellation.Token;
 }
 public sealed class Scenario
 {
@@ -167,7 +175,7 @@ public sealed class Scenario
     public InteractionStatus Status = InteractionStatus.Succeeded;
     public string VisibleReply = "detached-reply", LegacyReply = "legacy-reply";
     public int LegacyCalls, HostCalls, FinalizeCalls, FailureCalls, UnconsumedFailureCalls, LegacyCompletionCalls, Notifications;
-    public int ModuleFailures, ModulePrepared;
+    public int ModuleFailures, ModulePrepared, RetiredRequestLifetimes;
     public int EarlyCommitCalls, PostprocessCompositions, DirectCaptures, RecomputedCaptures;
     public bool SceneCleanup, ScenePostBlock, SceneCommitted;
     public string SceneReply;
@@ -230,6 +238,8 @@ public sealed class ProductionBlockHost
         && !SaveRuntimeGuard.IsStale(run.Generation, "fixture-run");
     private void FailModuleCourierSession(CourierSession session, string reason) => Scenario.Current.ModuleFailures++;
     private void RecordModuleCourierStep(CourierSession session, CoreCourierAcceptedSteps step) => Scenario.Current.ModulePrepared++;
+    private void RetireCourierRequestLifetime(CourierSession session)
+    { if (ReferenceEquals(session, Scenario.Current.Session)) Scenario.Current.RetiredRequestLifetimes++; }
     @@COURIER_REQUEST_GUARDS@@
     @@COURIER_CLEAN@@
     private static void QueueSceneInfoMessage(string message, Color color, int epoch) { Scenario.Current.Notifications++; }
@@ -439,6 +449,7 @@ public sealed class ProductionBlockHost
         CourierSession session = Scenario.Current.Session;
         var request = new CourierReplyGenerationRequest { SourceRun = new CourierPromptRun { Session = session },
             LetterText = session.LetterText, DeliveryAppliedAtCapture = session.DeliveryApplied };
+        CourierPromptRun promptRun = request.SourceRun;
         @@COURIER_BLOCK@@
     }
 
@@ -595,6 +606,7 @@ public static class Program
         Require(s.Session.ReplyPostprocessedText == "" && s.Session.ReplyText == "", "Terminal failure must clear pending action and reply text");
         Require(s.FailureCalls == 1 && s.UnconsumedFailureCalls == 0, "Consumed and clear state must precede ProcessSessionById");
         Require(s.Session.ReplyGenerated && !s.Session.ReplyGenerationStarted, "Failure must release reply-generation wait state");
+        Require(s.RetiredRequestLifetimes == 1, "Terminal failure must retire the Courier request lifetime once");
     }
     public static async Task<int> Main()
     {
@@ -635,6 +647,7 @@ public static class Program
                         if (courier)
                         {
                             Require(s.FinalizeCalls == 1, "Success must finalize once");
+                            Require(s.RetiredRequestLifetimes == 1, "Finalized reply must retire the Courier request lifetime once");
                             Require(s.ModuleFailures == (reply.Length == 0 ? 1 : 0) && s.ModulePrepared == (reply.Length == 0 ? 0 : 1),
                                 "Empty preparation must not fabricate an accepted API reply");
                         }

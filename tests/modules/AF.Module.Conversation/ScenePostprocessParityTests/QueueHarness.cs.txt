@@ -1,3 +1,4 @@
+using AnimusForge;
 using AnimusForge.Refactor.Modules;
 using System;
 using System.Collections.Concurrent;
@@ -12,6 +13,8 @@ using System.Threading.Tasks;
 public sealed class QueueHost
 {
     public int _sceneHistorySessionId=7, _sceneConversationEpoch=9;
+    // Real channel request lifetime (cb045840); production retires it on epoch/reset/campaign end.
+    internal AnimusForge.Refactor.Runtime.ConversationRequestLifetime _sceneRequestLifetime=new();
     private const int DeferredPostprocessTargetUnavailableResult=-2;
     // Test-only scheduler budget. Production source and its constant remain unchanged.
     private const int NativeConversationMainThreadPreprocessTimeoutMs=100;
@@ -149,7 +152,7 @@ public sealed class QueueFixture
     public long ExpectedGeneration;
     public string ExpectedStatus => NullSpeaker || EmptyReply || DropMainPhase!=null || NetworkThrows || PrepareThrows || NormalizeThrows || !NetworkSuccess || !SpeechSuccess
         ? "Failed" : SpeechTimeout || BlockNetwork ? "TimedOut" : Change=="target" ? "TargetUnavailable"
-        : ExpectedGeneration>0 || ExpectedSession>0 || Change=="generation" || Change=="session" || Change=="epoch" ? "Stale"
+        : ExpectedGeneration>0 || ExpectedSession>0 || Change=="generation" || Change=="session" || Change=="epoch" || Change=="lifetime" ? "Stale"
         : NoSelected ? "NoAction" : "Completed";
     public QueueFixture(string name){Name=name;}
 }
@@ -200,6 +203,7 @@ public static class Q
             case "session":Interlocked.Increment(ref Host._sceneHistorySessionId);break;
             case "epoch":Interlocked.Increment(ref Host._sceneConversationEpoch);break;
             case "target":TargetAvailable=false;break;
+            case "lifetime":Host._sceneRequestLifetime.Retire();break;
         }
     }
     public static async Task Barrier()
@@ -244,6 +248,8 @@ public class PostprocessRuleEntry {public string Tag,Description;}
 public class DetachedPromptSections {}
 public class RewardSystemBehavior {public class DuelStakeOption {public string Id;}}
 public static class Logger {public static void Log(string category,string text){}}
+// Real LlmNonStreamingTransport is linked only for the owner-cancellation scope; Queue never sends through it.
+public static class LlmApiCompat {public static void ApplyAuthenticationHeaders(System.Net.Http.HttpRequestMessage r,string url,string key)=>throw new InvalidOperationException("Unexpected HTTP send in Queue fixture");}
 public static class VassalageDiagnosticLog
 {
     public static void Event(string name,Dictionary<string,object> values){}
@@ -309,6 +315,7 @@ public static class Program
         foreach(string change in new[]{"generation","target"})yield return new("scene-act-directive-before-dispatch-"+change){CompletedText="[ACTION:SCENE_ACT:wave]\n[ACTION:SPEECH]\n[RELAY:22]",At="before-dispatch",Change=change,Expected=change=="target"?-2:-1,ExpectedActions=0};
         foreach(string stage in new[]{"before-prepare","after-network","before-dispatch"})
         foreach(string change in new[]{"generation","session","epoch"})yield return new(stage+"-"+change){At=stage,Change=change,Expected=-1,ExpectedActions=0};
+        foreach(string stage in new[]{"before-prepare","after-network","before-dispatch"})yield return new(stage+"-lifetime-retired"){At=stage,Change="lifetime",Expected=-1,ExpectedActions=0};
         foreach(string stage in new[]{"before-prepare","after-network","before-dispatch"})yield return new(stage+"-target"){At=stage,Change="target",Expected=-2,ExpectedActions=0};
         foreach(string change in new[]{"generation","session","epoch"})yield return new("relay-only-"+change){CompletedText="[RELAY:22]",At="before-dispatch",Change=change,Expected=-1,ExpectedActions=0};
         foreach(string change in new[]{"generation","session","epoch","target"})yield return new("speech-stale-"+change){At="speech-main",Change=change,Expected=change=="target"?-2:-1,ExpectedActions=0};

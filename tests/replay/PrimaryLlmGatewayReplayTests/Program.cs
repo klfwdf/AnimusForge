@@ -236,6 +236,7 @@ using (IDisposable streamCancelScope = (IDisposable)pushStreamMethod.Invoke(null
     using CancellationTokenSource cancellation = new CancellationTokenSource(100);
     string completed = null;
     string failure = null;
+    System.Diagnostics.Stopwatch cancelWatch = System.Diagnostics.Stopwatch.StartNew();
     Task task = (Task)streamMethod.Invoke(null, new object[]
     {
         new List<object> { new Dictionary<string, object> { ["role"] = "user", ["content"] = "cancel stream" } },
@@ -243,8 +244,18 @@ using (IDisposable streamCancelScope = (IDisposable)pushStreamMethod.Invoke(null
         new Action<string>(text => failure = text), cancellation.Token, false
     });
     await task.ConfigureAwait(false);
-    AssertTrue(completed == string.Empty && failure == null,
-        "primary stream cancellation changed its existing empty partial completion contract");
+    cancelWatch.Stop();
+    // J17 B6 request-lifetime contract (aa3539ca, kept by cb045840 P2): a caller-cancelled stream
+    // publishes nothing; the old onComplete("") is now guarded by
+    // !cancellationToken.IsCancellationRequested on "primary_chat_stream_cancelled_complete".
+    // Evidence: StreamCancellationProjectionTests/run.py (canceled -> 0 commits, `cancel-partial`
+    // mutation must fail) and InteractionRequestLifetimeTests/run_stream_fallback.py
+    // (cancelled-*-no-commit). Production stream callers release state after the await/finally,
+    // not in the callbacks, so the call itself must still return promptly.
+    AssertTrue(completed == null && failure == null,
+        "primary stream cancellation published after caller cancel completed=" + completed + " failure=" + failure);
+    AssertTrue(cancelWatch.ElapsedMilliseconds < 4000,
+        "primary stream cancellation did not release the call promptly elapsedMs=" + cancelWatch.ElapsedMilliseconds);
 }
 
 Console.WriteLine("PASS primaryLlmGatewayReplay nonStream=1 stream=1 thinkingFallbacks=2 Unicode=1 partialNoReplay=1 credentialBoundary=1 cancellations=2");

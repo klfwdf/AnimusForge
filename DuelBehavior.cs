@@ -2129,6 +2129,12 @@ public partial class DuelBehavior : CampaignBehaviorBase
 
 	private static int _queuedDuelConversationCloseAttempts = 0;
 
+	// Town/settlement missions finalize their MissionState (GPU cleanup, LocationEncounter menu refresh) right
+	// before Mission.Current becomes null; opening the arena in that same window crashes natively on 1.4.8.
+	private static long _queuedArenaSourceExitSettleUntilUtcTicks = 0L;
+
+	private const double QueuedArenaSourceExitSettleMilliseconds = 1500.0;
+
 	private static bool _returnToMapAfterIndependentDuel = false;
 
 	private static Dictionary<string, PendingDuelStake> _pendingDuelStakes = new Dictionary<string, PendingDuelStake>();
@@ -2574,6 +2580,7 @@ public partial class DuelBehavior : CampaignBehaviorBase
 		_queuedWildernessDuel = wildernessDuel;
 		_queuedDuelWaitingForConversationExit = true;
 		_queuedDuelConversationCloseAttempts = 0;
+		_queuedArenaSourceExitSettleUntilUtcTicks = 0L;
 		_queuedDuelReadyUtcTicks = DateTime.UtcNow.AddMilliseconds(250.0).Ticks;
 		AcceptDetachedDuelDispatch(duelDispatchContext);
 		Logger.Log("DuelBehavior", "[Queue] Duel queued until campaign conversation exits. wilderness=" + wildernessDuel + ", target=" + (targetCharacter?.StringId ?? "null"));
@@ -5016,6 +5023,66 @@ public partial class DuelBehavior : CampaignBehaviorBase
 		}
 	}
 
+	private static bool IsQueuedArenaSourceExitSettled(long nowTicks)
+	{
+		bool onMap;
+		try
+		{
+			onMap = Game.Current?.GameStateManager?.ActiveState is MapState;
+		}
+		catch
+		{
+			onMap = false;
+		}
+		if (_queuedArenaSourceExitSettleUntilUtcTicks <= 0L)
+		{
+			_queuedArenaSourceExitSettleUntilUtcTicks = nowTicks + TimeSpan.FromMilliseconds(QueuedArenaSourceExitSettleMilliseconds).Ticks;
+			Logger.Log("DuelBehavior", "[Queue] Source mission exited; waiting for MapState before opening arena. activeState=" + DescribeActiveGameState());
+			return false;
+		}
+		if (nowTicks < _queuedArenaSourceExitSettleUntilUtcTicks)
+		{
+			return false;
+		}
+		if (!onMap)
+		{
+			// Keep waiting while the popped MissionState finalizes; after a long stall fall through to the old behavior.
+			if (nowTicks - _queuedArenaSourceExitSettleUntilUtcTicks < TimeSpan.FromSeconds(20.0).Ticks)
+			{
+				return false;
+			}
+			Logger.Log("DuelBehavior", "[Queue][WARN] MapState not reached 20s after source mission exit; opening arena anyway. activeState=" + DescribeActiveGameState());
+		}
+		return true;
+	}
+
+	private static string DescribeActiveGameState()
+	{
+		try
+		{
+			return Game.Current?.GameStateManager?.ActiveState?.GetType().Name ?? "null";
+		}
+		catch
+		{
+			return "unknown";
+		}
+	}
+
+	private static MissionInitializerRecord CreateArenaDuelInitializerRecord(string sceneName)
+	{
+		try
+		{
+			// Same record the vanilla arena/duel missions use; a bare record leaves atmosphere, campaign mode
+			// and the town decal atlas unset for a campaign town scene.
+			return global::SandBox.SandBoxMissions.CreateSandBoxMissionInitializerRecord(sceneName, "", doNotUseLoadingScreen: false, DecalAtlasGroup.Town);
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("DuelBehavior", "[ArenaTeleport][WARN] sandbox initializer record failed, using bare record: " + ex.Message);
+			return new MissionInitializerRecord(sceneName);
+		}
+	}
+
 	public static void GlobalDuelStarterTick()
 	{
 		if ((_queuedArenaDuelTarget == null && _queuedDuelTargetCharacter == null) || Mission.Current != null)
@@ -5105,6 +5172,11 @@ public partial class DuelBehavior : CampaignBehaviorBase
 				Logger.Log("DuelBehavior", "[Queue] Campaign conversation exited; waiting briefly before opening queued duel.");
 				return;
 			}
+			if (!_queuedWildernessDuel && !IsQueuedArenaSourceExitSettled(nowTicks))
+			{
+				return;
+			}
+			_queuedArenaSourceExitSettleUntilUtcTicks = 0L;
 			Hero queuedArenaDuelTarget = _queuedArenaDuelTarget;
 			CharacterObject queuedDuelTargetCharacter = _queuedDuelTargetCharacter ?? queuedArenaDuelTarget?.CharacterObject;
 			DetachedDuelDispatchContext queuedDuelDispatchContext = _queuedDuelDispatchContext;
@@ -7185,7 +7257,7 @@ public partial class DuelBehavior : CampaignBehaviorBase
 			string text2 = Mission.Current?.SceneName ?? "Unknown";
 			string text3 = Hero.MainHero?.CurrentSettlement?.StringId ?? "";
 			Logger.Log("DuelBehavior", "[ArenaTeleport] 尝试通过 MissionState.OpenNew 切换到竞技场。CurrentScene=" + text2 + ", TargetScene=" + text + ", SettlementId=" + text3 + ", Target=" + (target?.StringId ?? targetCharacter?.StringId));
-			MissionInitializerRecord rec = new MissionInitializerRecord(text);
+			MissionInitializerRecord rec = CreateArenaDuelInitializerRecord(text);
 			LogDuelLoadingCheckpoint("arena.OpenNew.before currentScene=" + text2 + " settlement=" + text3, diagnosticId, target, rec, immediate: true);
 			ReplaceDetachedDuelDispatch(
 				ref _openingDuelDispatchContext,
@@ -7340,6 +7412,7 @@ public partial class DuelBehavior : CampaignBehaviorBase
 				Logger.Log("ArenaDuel", "[Leave] GlobalSourceMissionLeaveTick 10秒等待结束或对话已退出，正在退出原始 Mission。");
 				MarkDetachedDuelSideEffectBoundaryCrossed(
 					_queuedDuelDispatchContext);
+				_queuedArenaSourceExitSettleUntilUtcTicks = 0L;
 				current.EndMission();
 			}
 		}

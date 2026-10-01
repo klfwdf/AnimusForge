@@ -50,8 +50,13 @@
     },
     {
       "owner": "AF.Module.WarStats",
-      "source": "content/modules/AF.Module.WarStats/GUI/Prefabs/AFWarStatsMapButton.xml",
-      "target": "GUI/Prefabs/AFWarStatsMapButton.xml"
+      "source": "content/modules/AF.Module.WarStats/GUI/Brushes/AFTerminalMapBarBrushes.xml",
+      "target": "GUI/Brushes/AFTerminalMapBarBrushes.xml"
+    },
+    {
+      "owner": "AF.Module.WarStats",
+      "source": "content/modules/AF.Module.WarStats/GUI/SpriteParts/af_terminal/af_terminal_icon.png",
+      "target": "GUI/SpriteParts/af_terminal/af_terminal_icon.png"
     },
     {
       "owner": "AF.Module.Onboarding",
@@ -174,6 +179,111 @@
       "target": "GUI/SpriteParts/af_courier/af_courier_scroll.png"
     },
     {
+      "owner": "AF.Module.Conversation",
+      "source": "content/modules/AF.Module.Conversation/GUI/SpriteParts/af_courier/af_courier_scroll_base.png",
+      "target": "GUI/SpriteParts/af_courier/af_courier_scroll_base.png"
+    },
+    {
+      "owner": "AF.Module.Conversation",
+      "source": "content/modules/AF.Module.Conversation/GUI/SpriteParts/af_courier/af_courier_button_band.png",
+      "target": "GUI/SpriteParts/af_courier/af_courier_button_band.png"
+    },
+    {
+      "owner": "AF.Module.Conversation",
+      "source": "content/modules/AF.Module.Conversation/GUI/SpriteParts/af_courier/af_courier_pattern_left_1.png",
+      "target": "GUI/SpriteParts/af_courier/af_courier_pattern_left_1.png"
+    },
+    {
+      "owner": "AF.Module.Conversation",
+      "source": "content/modules/AF.Module.Conversation/GUI/SpriteParts/af_courier/af_courier_pattern_left_2.png",
+      "target": "GUI/SpriteParts/af_courier/af_courier_pattern_left_2.png"
+    },
+    {
+      "owner": "AF.Module.Conversation",
+      "source": "content/modules/AF.Module.Conversation/GUI/SpriteParts/af_courier/af_courier_pattern_left_3.png",
+      "target": "GUI/SpriteParts/af_courier/af_courier_pattern_left_3.png"
+    },
+    {
+      "owner": "AF.Module.Conversation",
+      "source": "content/modules/AF.Module.Conversation/GUI/SpriteParts/af_courier/af_courier_pattern_left_4.png",
+      "target": "GUI/SpriteParts/af_courier/af_courier_pattern_left_4.png"
+    },
+    {
+      "owner": "AF.Module.Conversation",
+      "source": "content/modules/AF.Module.Conversation/GUI/SpriteParts/af_courier/af_courier_pattern_left_5.png",
+      "target": "GUI/SpriteParts/af_courier/af_courier_pattern_left_5.png"
+    },
+    {
+      "owner": "AF.Module.Conversation",
+      "source": "content/modules/AF.Module.Conversation/GUI/SpriteParts/af_courier/af_courier_pattern_right_1.png",
+      "target": "GUI/SpriteParts/af_courier/af_courier_pattern_right_1.png"
+    },
+    {
+      "owner": "AF.Module.Conversation",
+      "source": "content/modules/AF.Module.Conversation/GUI/SpriteParts/af_courier/af_courier_pattern_right_2.png",
+      "target": "GUI/SpriteParts/af_courier/af_courier_pattern_right_2.png"
+    },
+    {
+      "owner": "AF.Module.Conversation",
+      "source": "content/modules/AF.Module.Conversation/GUI/SpriteParts/af_courier/af_courier_pattern_right_3.png",
+      "target": "GUI/SpriteParts/af_courier/af_courier_pattern_right_3.png"
+    },
+    {
+      "owner": "AF.Module.Conversation",
+      "source": "content/modules/AF.Module.Conversation/GUI/SpriteParts/af_courier/af_courier_pattern_right_4.png",
+      "target": "GUI/SpriteParts/af_courier/af_courier_pattern_right_4.png"
+    },
+    {
+      "owner": "AF.Module.Conversation",
+      "source": "content/modules/AF.Module.Conversation/GUI/SpriteParts/af_courier/af_courier_pattern_right_5.png",
+      "target": "GUI/SpriteParts/af_courier/af_courier_pattern_right_5.png"
+    },
+    {
+      "owner": "AF.Module.Conversation",
+      "source": "content/modules/AF.Module.Conversation/GUI/SpriteParts/af_courier/af_courier_seal_vlandia.png",
+      "target": "GUI/SpriteParts/af_courier/af_courier_seal_vlandia.png"
+    },
+    {
+      "owner": "AF.Module.Conversation",
+      "source": "content/modules/AF.Module.Conversation/GUI/SpriteParts/af_courier/af_courier_seal_north_empire.png",
+      "target": "GUI/SpriteParts/af_courier/af_courier_seal_north_empire.png"
+    },
+    {
+      "owner": "AF.Module.Conversation",
+      "source": "content/modules/AF.Module.Conversation/GUI/SpriteParts/af_courier/af_courier_seal_west_empire.png",
+      "target": "GUI/SpriteParts/af_courier/af_courier_seal_west_empire.png"
+    },
+    {
+      "owner": "AF.Module.Conversation",
+      "source": "content/modules/AF.Module.Conversation/GUI/SpriteParts/af_courier/af_courier_seal_south_empire.png",
+      "target": "GUI/SpriteParts/af_courier/af_courier_seal_south_empire.png"
+    },
+    {
+      "owner": "AF.Module.Conversation",
+      "source": "content/modules/AF.Module.Conversation/GUI/SpriteParts/af_courier/af_courier_seal_sturgia.png",
+      "target": "GUI/SpriteParts/af_courier/af_courier_seal_sturgia.png"
+    },
+    {
+      "owner": "AF.Module.Conversation",
+      "source": "content/modules/AF.Module.Conversation/GUI/SpriteParts/af_courier/af_courier_seal_battania.png",
+      "target": "GUI/SpriteParts/af_courier/af_courier_seal_battania.png"
+    },
+    {
+      "owner": "AF.Module.Conversation",
+      "source": "content/modules/AF.Module.Conversation/GUI/SpriteParts/af_courier/af_courier_seal_khuzait.png",
+      "target": "GUI/SpriteParts/af_courier/af_courier_seal_khuzait.png"
+    },
+    {
+      "owner": "AF.Module.Conversation",
+      "source": "content/modules/AF.Module.Conversation/GUI/SpriteParts/af_courier/af_courier_seal_aserai.png",
+      "target": "GUI/SpriteParts/af_courier/af_courier_seal_aserai.png"
+    },
+    {
+      "owner": "AF.Module.Conversation",
+      "source": "content/modules/AF.Module.Conversation/GUI/SpriteParts/af_courier/af_courier_seal_nord.png",
+      "target": "GUI/SpriteParts/af_courier/af_courier_seal_nord.png"
+    },
+    {
       "owner": "AF.Module.Social",
       "source": "content/modules/AF.Module.Social/GUI/SpriteParts/af_player_notoriety/af_player_notoriety_background.png",
       "target": "GUI/SpriteParts/af_player_notoriety/af_player_notoriety_background.png"
@@ -247,6 +357,31 @@
       "owner": "AF.Module.Weekly",
       "source": "content/modules/AF.Module.Weekly/GUI/SpriteParts/af_weekly_chronicle/af_weekly_chronicle_clean.png",
       "target": "GUI/SpriteParts/af_weekly_chronicle/af_weekly_chronicle_clean.png"
+    },
+    {
+      "owner": "AF.Module.Weekly",
+      "source": "content/modules/AF.Module.Weekly/GUI/Prefabs/WorldBulletinPanel.xml",
+      "target": "GUI/Prefabs/WorldBulletinPanel.xml"
+    },
+    {
+      "owner": "AF.Module.Weekly",
+      "source": "content/modules/AF.Module.Weekly/GUI/SpriteParts/af_world_bulletin/af_world_bulletin_parchment.png",
+      "target": "GUI/SpriteParts/af_world_bulletin/af_world_bulletin_parchment.png"
+    },
+    {
+      "owner": "AF.Module.Weekly",
+      "source": "content/modules/AF.Module.Weekly/GUI/SpriteParts/af_world_bulletin/af_world_bulletin_seal.png",
+      "target": "GUI/SpriteParts/af_world_bulletin/af_world_bulletin_seal.png"
+    },
+    {
+      "owner": "AF.Module.Weekly",
+      "source": "content/modules/AF.Module.Weekly/GUI/SpriteParts/af_world_bulletin/af_world_bulletin_rule_l.png",
+      "target": "GUI/SpriteParts/af_world_bulletin/af_world_bulletin_rule_l.png"
+    },
+    {
+      "owner": "AF.Module.Weekly",
+      "source": "content/modules/AF.Module.Weekly/GUI/SpriteParts/af_world_bulletin/af_world_bulletin_rule_r.png",
+      "target": "GUI/SpriteParts/af_world_bulletin/af_world_bulletin_rule_r.png"
     },
     {
       "owner": "AF.Module.Weekly",

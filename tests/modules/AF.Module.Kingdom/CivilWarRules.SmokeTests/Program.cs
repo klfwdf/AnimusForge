@@ -91,5 +91,61 @@ CivilWarDemandDef picked = CivilWarDecisions.PickDemand(CivilWarCatalog.ValidDem
 Check(picked?.Id == "revoke_policy", "policy grievance favours reform faction");
 Check(CivilWarDecisions.PickDemand(new List<CivilWarDemandDef>(), executions, tuning, Fixed(0.5f)) == null, "no eligible demand -> null");
 
+// ---- multi-faction (v3)
+var cap3 = new CivilWarTuning { MaxFactions = 3 };
+Check(CivilWarFactionRules.CanFormFaction(0, 10, 0, cap3), "first faction may form");
+Check(CivilWarFactionRules.CanFormFaction(2, 10, 0, cap3), "third faction may form under cap 3");
+Check(!CivilWarFactionRules.CanFormFaction(3, 10, 0, cap3), "cap reached blocks a fourth faction");
+Check(!CivilWarFactionRules.CanFormFaction(1, 10, 12, cap3), "cooldown blocks new factions");
+Check(!CivilWarFactionRules.CanFormFaction(4, 10, 0, new CivilWarTuning { MaxFactions = 99 }), "cap is clamped to 4");
+Check(CivilWarFactionRules.CanFormFaction(0, 10, 0, new CivilWarTuning { MaxFactions = 0 }), "cap is clamped to at least 1");
+
+var singleWar = new CivilWarTuning { AllowConcurrentWars = false };
+var multiWar = new CivilWarTuning { AllowConcurrentWars = true };
+Check(CivilWarFactionRules.CanOpenWar(false, singleWar), "mode A: war allowed when no other faction fights");
+Check(!CivilWarFactionRules.CanOpenWar(true, singleWar), "mode A: second war waits");
+Check(CivilWarFactionRules.CanOpenWar(true, multiWar), "mode B: concurrent wars allowed");
+
+Check(CivilWarFactionRules.IsDemandTaken(new[] { "make_peace", "redress" }, "redress"), "held demand is taken");
+Check(!CivilWarFactionRules.IsDemandTaken(new[] { "make_peace" }, "redress"), "other demand is free");
+Check(!CivilWarFactionRules.IsDemandTaken(null, "redress"), "no factions -> free");
+
+Check(CivilWarFactionRules.FactionGrievance(new float[0]) == 0f, "empty faction grievance is 0");
+Check(Math.Abs(CivilWarFactionRules.FactionGrievance(new[] { 80f, 40f }) - 60f) < 1e-4f, "faction grievance is the member mean");
+Check(CivilWarFactionRules.FactionGrievance(new[] { 250f }) == 100f, "faction grievance clamped to 100");
+
+Check(CivilWarFactionRules.PickFactionForClan(new float[0], tuning, Fixed(0.5f)) == -1, "no faction -> -1");
+Check(CivilWarFactionRules.PickFactionForClan(new[] { 0.1f, 5f }, expectedValue, Fixed(0.1f)) == 1, "clan joins the faction its grievance fits best");
+var joinPicks = new HashSet<int>();
+for (int i = 0; i < 20; i++) joinPicks.Add(CivilWarFactionRules.PickFactionForClan(new[] { 1f, 1f }, tuning, Fixed(i / 20f)));
+Check(joinPicks.Count == 2, "equal fit splits clans between factions");
+
+// ---- aftermath: a finished civil war calms or emboldens the remaining factions
+var cooldown8 = new CivilWarTuning { CooldownWeeks = 8 };
+Check(CivilWarAftermathRules.TruceWeeks(cooldown8) == 4, "truce is half the cooldown");
+Check(CivilWarAftermathRules.TruceWeeks(new CivilWarTuning { CooldownWeeks = 0 }) == 2, "truce never below 2 weeks");
+Check(CivilWarAftermathRules.MoodWeeks(cooldown8) > CivilWarAftermathRules.TruceWeeks(cooldown8), "mood outlasts the truce");
+Check(CivilWarAftermathRules.GrievanceFactor(CivilWarAftermath.Suppressed) < 1f, "crown victory lowers other factions' grievance");
+Check(CivilWarAftermathRules.GrievanceFactor(CivilWarAftermath.Emboldened) > 1f, "rebel victory raises other factions' grievance");
+Check(CivilWarAftermathRules.GrievanceFactor(CivilWarAftermath.Settled) == 1f, "negotiated end leaves grievance");
+Check(CivilWarAftermathRules.LeaveFactor(CivilWarAftermath.Suppressed) > 1f && CivilWarAftermathRules.LeaveFactor(CivilWarAftermath.Emboldened) < 1f, "members leave after suppression, stay after rebel win");
+Check(CivilWarAftermathRules.EscalationFactor(CivilWarAftermath.Suppressed) < 1f && CivilWarAftermathRules.EscalationFactor(CivilWarAftermath.Emboldened) > 1f, "escalation scaled by aftermath");
+Check(CivilWarAftermathRules.Current(CivilWarAftermath.Suppressed, 10, 12) == CivilWarAftermath.Suppressed, "mood active before expiry");
+Check(CivilWarAftermathRules.Current(CivilWarAftermath.Suppressed, 13, 12) == CivilWarAftermath.None, "mood expires");
+CivilWarDemandDef autonomyDemand = CivilWarCatalog.FindDemand("autonomy");
+float calm = CivilWarDecisions.RollRefusal(autonomyDemand, strong, 0, tuning, Fixed(0.99f), CivilWarAftermathRules.EscalationFactor(CivilWarAftermath.Suppressed)).EscalateRoll.Chance;
+float bold = CivilWarDecisions.RollRefusal(autonomyDemand, strong, 0, tuning, Fixed(0.99f), CivilWarAftermathRules.EscalationFactor(CivilWarAftermath.Emboldened)).EscalateRoll.Chance;
+Check(calm < autonomyEsc.Chance && bold >= autonomyEsc.Chance, "suppressed factions escalate less, emboldened ones more");
+
+// ---- v2 save shape still deserializes into v3 (single "Faction" -> LegacyFaction, Factions empty)
+string v2Json = "{\"Version\":2,\"Kingdoms\":{\"empire_w\":{\"KingdomId\":\"empire_w\",\"Stage\":3,\"Faction\":{\"Id\":\"civilwar-faction-empire_w-1\",\"DemandId\":\"make_peace\",\"LeaderClanId\":\"clan_a\",\"Refusals\":1},\"Clans\":{\"clan_a\":{\"ClanId\":\"clan_a\",\"Side\":1}}}}}";
+var v2 = Newtonsoft.Json.JsonConvert.DeserializeObject<KingdomCivilWarStorage>(v2Json);
+KingdomCivilWarKingdomState v2Kingdom = v2.Kingdoms["empire_w"];
+Check(v2Kingdom.LegacyFaction != null && v2Kingdom.LegacyFaction.Refusals == 1, "v2 single faction is read into LegacyFaction");
+Check(v2Kingdom.Factions != null && v2Kingdom.Factions.Count == 0, "v2 save starts with no v3 factions (owner migrates)");
+Check(v2Kingdom.Clans["clan_a"].FactionId == "", "v2 clan has empty faction id (owner assigns legacy id)");
+string v3Json = Newtonsoft.Json.JsonConvert.SerializeObject(new KingdomCivilWarStorage());
+Check(!v3Json.Contains("\"Faction\""), "v3 save never writes the legacy Faction field");
+
 Console.WriteLine(failures == 0 ? "CivilWarRules smoke tests passed." : failures + " check(s) failed.");
 return failures == 0 ? 0 : 1;

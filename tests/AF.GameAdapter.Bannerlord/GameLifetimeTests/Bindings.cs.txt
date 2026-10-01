@@ -25,6 +25,12 @@ namespace AnimusForge {
   private static bool IsBannerlordMainThreadForNativeActions()=>TWParallel.IsMainThread();
   private void ResetInstanceTransientRuntimeForLoadedSave(string reason)=>ResetPendingMainThreadFunctions();
   private static void CloseNativeConversationInput(bool clearSessionHistory){}
+  internal int CeremonyClears;
+  private sealed class NativeConversationTurnHost {internal static void ClearCeremonyExecutionOrder(ShoutBehavior owner)=>owner.CeremonyClears++;}
+  internal sealed class NativeConversationAdmission {internal ConversationRequestLifetime Lifetime;}
+  private readonly NativeConversationAdmissionOwner<NativeConversationAdmission> _nativeAdmissionOwner=new();
+  internal ConversationRequestLifetime SceneLifetime=>_sceneRequestLifetime;
+  internal ConversationRequestLifetime ReserveNative(){var t=new NativeConversationAdmission{Lifetime=new ConversationRequestLifetime()};_nativeAdmissionOwner.ReserveCaptured(t);return t.Lifetime;}
   internal Task<int> Submit(Func<int> f)=>RunNativeConversationMainThreadFuncAsync("binding","target",1,f,-1);
   internal bool Queued=>!_mainThreadActions.IsEmpty;
   internal Action Take(){_mainThreadActions.TryDequeue(out var a);return a;}
@@ -36,6 +42,9 @@ namespace AnimusForge {
   internal static CourierDeliveryBehavior Instance;private static readonly ConcurrentQueue<Action> MainThreadActions=new();
   private static void Log(string m){}
   private void ResetTransientRuntimeForLoadedSave(string reason){}
+  private sealed class CourierSession {}
+  internal object NewSession()=>new CourierSession();
+  internal ConversationRequestLifetime BeginLifetime(object s)=>BeginCourierRequestLifetime((CourierSession)s);
   internal Task<int> Submit(Func<int> f)=>RunCourierOwnerPhaseAsync(1,"binding",f,CancellationToken.None);
   internal bool Queued=>!MainThreadActions.IsEmpty;
   internal Action Take(){MainThreadActions.TryDequeue(out var a);return a;}
@@ -48,10 +57,14 @@ internal static class Program {
  static void Check(bool b,string name){checks++;if(!b)throw new Exception("FAIL "+name);}
  static void Until(Func<bool> done){var until=DateTime.UtcNow.AddSeconds(2);while(!done()){if(DateTime.UtcNow>until)throw new Exception("FAIL retirement relied on30s deadline");Thread.Sleep(1);}}
  static void Native(){var o=new AnimusForge.ShoutBehavior();int effects=0;var t=Task.Run(()=>o.Submit(()=>++effects));Until(()=>o.Queued);var late=o.Take();o.Reset();Until(()=>t.IsCompleted);Check(t.Result==-1&&effects==0,"Native reset settles pending without tick/deadline");late();Check(effects==0,"late retired native callback inert");Check(o.Submit(()=>42).Result==42,"Native next scope remains usable");Check(o.Submit(()=>{o.Reset();return 43;}).Result==43,"claimed native work keeps result across reset");
-  t=Task.Run(()=>o.Submit(()=>++effects));Until(()=>o.Queued);late=o.Take();o.RetireCampaignRuntime("end");Until(()=>t.IsCompleted);Check(t.Result==-1,"Native end settles queued");late();Check(o.Submit(()=>++effects).Result==-1&&effects==0,"sealed native owner rejects new direct work");
+  var scene=o.SceneLifetime;var native=o.ReserveNative();o.Reset();Check(scene.Token.IsCancellationRequested&&native.Token.IsCancellationRequested&&!o.SceneLifetime.Token.IsCancellationRequested,"Native reset retires scene/admission request lifetimes and opens a fresh scene lifetime");
+  scene=o.SceneLifetime;native=o.ReserveNative();
+  t=Task.Run(()=>o.Submit(()=>++effects));Until(()=>o.Queued);late=o.Take();o.RetireCampaignRuntime("end");Until(()=>t.IsCompleted);Check(t.Result==-1,"Native end settles queued");Check(o.CeremonyClears==1,"Native end clears this owner ceremony order");Check(scene.Token.IsCancellationRequested&&native.Token.IsCancellationRequested,"Native end retires scene/admission request lifetimes");late();Check(o.Submit(()=>++effects).Result==-1&&effects==0,"sealed native owner rejects new direct work");
  }
  static void Courier(){var o=new AnimusForge.CourierDeliveryBehavior();AnimusForge.CourierDeliveryBehavior.Instance=o;int effects=0;var t=Task.Run(()=>o.Submit(()=>++effects));Until(()=>o.Queued);var late=o.Take();o.Reset();Until(()=>t.IsCompleted);Check(t.IsCanceled&&effects==0,"Courier reset settles pending without deadline");late();Check(effects==0,"late retired courier callback inert");Check(o.Submit(()=>42).Result==42,"Courier next scope usable");Check(o.Submit(()=>{o.Reset();return 43;}).Result==43,"claimed courier outcome survives reset");
-  t=Task.Run(()=>o.Submit(()=>++effects));Until(()=>o.Queued);late=o.Take();o.RetireCampaignRuntime("end");Until(()=>t.IsCompleted);Check(t.IsCanceled&&AnimusForge.CourierDeliveryBehavior.Instance==null,"Courier end clears old singleton and pending work");late();var newer=o.Submit(()=>++effects);Until(()=>newer.IsCompleted);Check(newer.IsCanceled&&effects==0,"sealed courier never starts new work");
+  var session=o.NewSession();var first=o.BeginLifetime(session);var second=o.BeginLifetime(session);Check(first.Token.IsCancellationRequested&&!second.Token.IsCancellationRequested,"Courier re-begin retires the prior session lifetime");o.Reset();Check(second.Token.IsCancellationRequested,"Courier reset retires session request lifetimes");
+  var endLife=o.BeginLifetime(o.NewSession());
+  t=Task.Run(()=>o.Submit(()=>++effects));Until(()=>o.Queued);late=o.Take();o.RetireCampaignRuntime("end");Until(()=>t.IsCompleted);Check(t.IsCanceled&&AnimusForge.CourierDeliveryBehavior.Instance==null,"Courier end clears old singleton and pending work");Check(endLife.Token.IsCancellationRequested,"Courier end retires session request lifetimes");late();var newer=o.Submit(()=>++effects);Until(()=>newer.IsCompleted);Check(newer.IsCanceled&&effects==0,"sealed courier never starts new work");
  }
  static void Memory(){var old=new AnimusForge.MyBehavior{FailLocal=true};var newer=new AnimusForge.MyBehavior();AnimusForge.MyBehavior.Instance=newer;old.Subscribe();try{old.RetireCampaignRuntime("end");}catch(Exception){}TaleWorlds.Core.MBInformationManager.Raise();Check(old.MemoryReset==1&&old.Notices==0,"My pending tasks and static subscription retired despite local failure");Check(ReferenceEquals(AnimusForge.MyBehavior.Instance,newer),"old My retirement cannot erase new singleton");newer.Subscribe();newer.RetireCampaignRuntime("end");TaleWorlds.Core.MBInformationManager.Raise();Check(AnimusForge.MyBehavior.Instance==null&&newer.Notices==0,"current My singleton/subscription released");}
  static int Main(){TWParallel.Main=Environment.CurrentManagedThreadId;try{Native();Courier();Memory();Console.WriteLine($"GameLifetimeBindings checks={checks} failures=0; actual dispatch and retirement bodies; engine/reset seams are fixtures.");return 0;}catch(Exception e){Console.WriteLine(e);return 1;}}

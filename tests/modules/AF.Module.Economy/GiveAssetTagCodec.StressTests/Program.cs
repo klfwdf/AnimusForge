@@ -180,7 +180,10 @@ string rewardSystem = File.ReadAllText(Path.Combine(repoRoot, "RewardSystemBehav
     + File.ReadAllText(Path.Combine(repoRoot, "src", "modules", "AF.Module.Economy", "Execution", "Hero", "RewardSystemBehavior.EconomyReplay.cs"))
     + File.ReadAllText(Path.Combine(repoRoot, "src", "modules", "AF.Module.Economy", "Execution", "Party", "RewardSystemBehavior.EconomyPartyReplay.cs"))
     + File.ReadAllText(Path.Combine(repoRoot, "src", "modules", "AF.Module.Economy", "Execution", "Merchant", "RewardSystemBehavior.EconomyMerchantReplay.cs"));
-string scenePostprocess = File.ReadAllText(Path.Combine(repoRoot, "src", "modules", "AF.Module.Conversation", "Channels", "Scene", "ShoutBehavior.ScenePostprocess.cs"));
+// J17-B7 (aa3539ca) moved the shared unified-action postprocess wrapper/completion out of
+// ShoutBehavior.ScenePostprocess.cs into Internal/Postprocess/ShoutBehavior.UnifiedActionPostprocess.cs.
+string scenePostprocess = File.ReadAllText(Path.Combine(repoRoot, "src", "modules", "AF.Module.Conversation", "Channels", "Scene", "ShoutBehavior.ScenePostprocess.cs"))
+    + File.ReadAllText(Path.Combine(repoRoot, "src", "modules", "AF.Module.Conversation", "Internal", "Postprocess", "ShoutBehavior.UnifiedActionPostprocess.cs"));
 string sceneChains = File.ReadAllText(Path.Combine(repoRoot, "src", "modules", "AF.Module.Conversation", "Channels", "Scene", "ShoutBehavior.SceneConversationChains.cs"));
 string courier = File.ReadAllText(Path.Combine(repoRoot, "CourierDeliveryBehavior.cs"))
     + File.ReadAllText(Path.Combine(repoRoot, "src", "modules", "AF.Module.Conversation", "Channels", "Courier", "CourierDeliveryBehavior.GenerationLifecycle.cs"))

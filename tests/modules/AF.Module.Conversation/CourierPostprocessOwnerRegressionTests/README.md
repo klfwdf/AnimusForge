@@ -21,6 +21,8 @@ The runner writes source fingerprints, generated source and logs under ignored `
 - Pending cancellation/timeout retires an unstarted callback, duplicate invocation is inert, and normalization exceptions cannot reenter. **Cancellation after an action starts cannot roll back its effects**: the fixture explicitly retains one started effect while rejecting the result.
 - Eight mutation controls must fail the intended runtime case rather than merely fail compilation. Seven extraction checks prevent replacing a production boundary with a mock implementation.
 
+Since cb045840, `BeginCourierPromptRun` reserves a per-session `ConversationRequestLifetime`. The runner links `ConversationRequestLifetime.cs` and extracts the real `_courierRequestLifetimes`, `BeginCourierRequestLifetime` and `RetireCourierRequestLifetime` members from `CourierDeliveryBehavior.CampaignLifetime.cs` (block `LIFETIME`); no fixture replaces them.
+
 ## Deliberate limits
 
 Hero/session lookup and the domain-heavy `TryPrepareCourierActionPostprocessForExternal` implementation are stubbed. Its actual caller, complete argument list, real work item, owner dispatch, visible cleaners and parser execute; domain economics/policy actions do not. The snapshot adapter is a detached copying stub. A zero builder count proves only the extracted prepared capture does not rebuild, while a separate source check covers default-entry reuse. It does **not** prove all original request-builder internals run on the main thread; that pre-existing issue is tracked separately.

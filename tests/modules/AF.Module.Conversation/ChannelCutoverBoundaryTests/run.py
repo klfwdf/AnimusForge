@@ -33,6 +33,8 @@ COURIER_LETTER_INVENTORY_PATH = "src/modules/AF.Module.Conversation/Channels/Cou
 COURIER_PROMPT_MESSAGES_PATH = "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.PromptMessages.cs"
 COURIER_DOMAIN_COMMIT_PATH = "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.DomainCommit.cs"
 COURIER_REPLY_WAIT_PATH = "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.ReplyWait.cs"
+# cb045840 moved Courier/Scene message assembly here; CreateChatMessage now delegates to it.
+MAIN_PROMPT_MESSAGE_OWNER_PATH = "src/modules/AF.Module.Prompt/Composition/MainPromptMessageAssemblyOwner.cs"
 
 
 def source(path: str, ref: str | None) -> str:
@@ -104,6 +106,14 @@ def courier_source(ref: str | None) -> str:
                 continue
         combined += "\n" + source(path, ref)
     return combined
+
+
+def optional_source(path: str, ref: str | None) -> str:
+    """Return "" for refs that predate a newly introduced owner file."""
+    if ref and subprocess.run(["git", "cat-file", "-e", f"{ref}:{path}"], cwd=ROOT,
+                              stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL).returncode != 0:
+        return ""
+    return source(path, ref)
 
 
 def declaration(text: str, signature: str, optional: bool = False) -> str:
@@ -180,6 +190,8 @@ def extract(ref: str | None) -> dict[str, str]:
         "ACTION_PARSER": declaration(source("src/modules/AF.Module.Actions/Tags/LegacyActionTagParser.cs", ref), "public sealed class LegacyActionTagParser"),
         "BUILD_PROMPT": declaration(source("src/modules/AF.Module.Llm/Transport/LegacyConfiguredChatGateway.cs", ref), "internal static PromptPackage BuildPromptPackage("),
         "CREATE_MESSAGE": declaration(scene, "private static object CreateChatMessage("),
+        "MESSAGE_OWNER_CREATE": declaration(optional_source(MAIN_PROMPT_MESSAGE_OWNER_PATH, ref),
+                                            "internal static object CreateCourierChatMessage(", optional=True),
         "PUBLIC_SCENE_FACTORY": declaration(scene, "public static LegacyInteractionPipelinePorts CreateSceneShoutDetachedPortsForExternal("),
         "PRIVATE_SCENE_FACTORY": declaration(scene, "private static LegacyInteractionPipelinePorts CreateSceneShoutDetachedPorts(", optional=True),
         "MAIN_REPLY_FACTORY": declaration(scene, "private static LegacyInteractionPipelinePorts CreateSceneShoutMainReplyPorts(", optional=True),

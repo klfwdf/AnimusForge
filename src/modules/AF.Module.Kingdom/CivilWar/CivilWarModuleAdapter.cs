@@ -64,15 +64,7 @@ internal sealed class CivilWarModuleAdapter : ICivilWarModulePort
 		WorldDiplomacyBehavior.ApplyExternalPrestigeDelta(kingdomId, delta, reason ?? "内战");
 	}
 
-	public IReadOnlyList<CivilWarPanelKingdom> GetPanelKingdoms(int pageIndex, int pageSize, out int pageCount)
-	{
-		if (!DuelSettings.IsCivilWarFactionsEnabled()) { pageCount = 1; return Array.Empty<CivilWarPanelKingdom>(); }
-		List<KingdomCivilWarKingdomState> states = _owner.ListForPanel().ToList();
-		pageSize = Math.Max(1, pageSize);
-		pageCount = Math.Max(1, (states.Count + pageSize - 1) / pageSize);
-		int page = Math.Max(0, Math.Min(pageIndex, pageCount - 1));
-		return states.Skip(page * pageSize).Take(pageSize).Select(KingdomCivilWarOwner.ToPanel).ToList();
-	}
+	public CivilWarPanelKingdom GetPlayerKingdomPanel() => _owner.BuildPlayerKingdomPanel();
 
 	public List<PostprocessRuleEntry> BuildPostprocessRules()
 	{
@@ -96,20 +88,13 @@ internal sealed class CivilWarModuleAdapter : ICivilWarModulePort
 		if (!match.Success || speaker == null) return false;
 		Kingdom kingdom = speaker.Clan?.Kingdom ?? Clan.PlayerClan?.Kingdom;
 		string action = match.Groups[1].Value ?? "";
-		if (action.StartsWith("JOIN:CROWN", StringComparison.OrdinalIgnoreCase)) return _owner.TryJoinPlayer(kingdom, KingdomCivilWarSide.Crown, out message);
-		if (action.StartsWith("JOIN:OPPOSITION", StringComparison.OrdinalIgnoreCase)) return _owner.TryJoinPlayer(kingdom, KingdomCivilWarSide.Opposition, out message);
+		if (action.StartsWith("JOIN:CROWN", StringComparison.OrdinalIgnoreCase)) return _owner.TryJoinPlayer(kingdom, speaker, KingdomCivilWarSide.Crown, out message);
+		if (action.StartsWith("JOIN:OPPOSITION", StringComparison.OrdinalIgnoreCase)) return _owner.TryJoinPlayer(kingdom, speaker, KingdomCivilWarSide.Opposition, out message);
 		if (action.Equals("RECRUIT", StringComparison.OrdinalIgnoreCase)) return _owner.TryRecruitClan(Hero.MainHero, speaker.Clan, kingdom, out message);
-		if (action.Equals("DETONATE", StringComparison.OrdinalIgnoreCase))
-		{
-			int week = Math.Max(1, (int)CampaignTime.Now.ToDays / 7);
-			return _owner.TryDetonate(kingdom, week, true, (target, delta) =>
-			{
-				MyBehavior.TryAdjustKingdomStabilityForExternal(target, delta, "civil_war", out _, out _);
-				return 0;
-			}, out message);
-		}
+		if (action.Equals("DETONATE", StringComparison.OrdinalIgnoreCase)) return _owner.TryDetonate(speaker, kingdom, out message);
+		// Ultimatums are always addressed to the player's own kingdom, whoever the player is talking to.
 		if (action.Equals("ANSWER:ACCEPT", StringComparison.OrdinalIgnoreCase) || action.Equals("ANSWER:REFUSE", StringComparison.OrdinalIgnoreCase))
-			return _owner.TryAnswerPlayerUltimatum(kingdom, action.EndsWith("ACCEPT", StringComparison.OrdinalIgnoreCase), out message);
+			return _owner.TryAnswerPlayerUltimatum(Clan.PlayerClan?.Kingdom, speaker, action.EndsWith("ACCEPT", StringComparison.OrdinalIgnoreCase), out message);
 		return false;
 	}
 
@@ -118,22 +103,38 @@ internal sealed class CivilWarModuleAdapter : ICivilWarModulePort
 		_owner.OnRebelKingdomCreated(factionId, rebelKingdom, week);
 	}
 
+	public bool IsRebellionRequestActive(string factionId) => _owner.IsRebellionRequestActive(factionId);
+
+	public void NotifyRebellionFailed(string factionId, string reason) => _owner.NotifyRebellionFailed(factionId, reason);
+
 	public void RecordPeace(Kingdom kingdom, IFaction other, int week) => _owner.RecordPeace(kingdom, other, week);
 
 	public bool IsCivilWarPair(Kingdom a, Kingdom b) => _owner.IsCivilWarPair(a, b);
 
 	public bool HasPendingPlayerUltimatumPrompt => _owner.HasUnpromptedPlayerUltimatum && DuelSettings.IsCivilWarFactionsEnabled();
 
-	public bool TryTakePlayerUltimatumPrompt(out string kingdomId, out string text)
+	public bool HasPendingFollowPrompt => _owner.HasPendingFollowPrompt && DuelSettings.IsCivilWarFactionsEnabled();
+
+	public bool TryTakeFollowPrompt(out string factionId, out string text)
 	{
-		KingdomCivilWarKingdomState state = _owner.TakeUnpromptedPlayerUltimatum();
-		kingdomId = state?.KingdomId ?? "";
-		text = KingdomCivilWarOwner.DescribeUltimatum(state);
-		return state != null;
+		KingdomCivilWarFactionState faction = _owner.TakePendingFollowPrompt();
+		factionId = faction?.Id ?? "";
+		text = KingdomCivilWarOwner.DescribeFollowPrompt(faction);
+		return faction != null;
 	}
 
-	public bool AnswerPlayerUltimatum(string kingdomId, bool accept, out string message)
+	public bool AnswerFollow(string factionId, bool follow, out string message) => _owner.AnswerFollow(factionId, follow, out message);
+
+	public bool TryTakePlayerUltimatumPrompt(out string factionId, out string text)
 	{
-		return _owner.TryAnswerPlayerUltimatum(CivilWarWorld.FindKingdom(kingdomId), accept, out message);
+		KingdomCivilWarFactionState faction = _owner.TakeUnpromptedPlayerUltimatum(out _);
+		factionId = faction?.Id ?? "";
+		text = KingdomCivilWarOwner.DescribeUltimatum(faction);
+		return faction != null;
+	}
+
+	public bool AnswerPlayerUltimatum(string factionId, bool accept, out string message)
+	{
+		return _owner.TryAnswerPlayerUltimatum(factionId, accept, out message);
 	}
 }

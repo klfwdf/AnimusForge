@@ -7,6 +7,8 @@ using RichExecutions.Diagnostics;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.CharacterDevelopment;
 using TaleWorlds.CampaignSystem.Settlements;
+using TaleWorlds.Core;
+using TaleWorlds.Library;
 using TaleWorlds.Localization;
 using TaleWorlds.MountAndBlade;
 using BannerlordCampaign = TaleWorlds.CampaignSystem.Campaign;
@@ -253,9 +255,46 @@ internal sealed class ExecutionSpeechDirector : ISpeechPlaybackSink
         if (!IsActive(speaker)) return false;
         var shown = ExecutionSpeechBubbleBridge.TryShow(speaker!, cue.Text, cue.DurationSeconds);
         if (!shown) return false;
+        EchoToMessageLog(cue);
         TryPlayReaction(cue, speaker!);
         return true;
     }
+
+    // Mirrors each line that actually reached a head bubble into the lower-left
+    // message log, once per cue, so the address can be reread after it fades.
+    private static readonly Color MessageLogColor = new(0.93f, 0.82f, 0.55f);
+
+    // A string text variable is re-parsed as a TextObject, so LLM text with
+    // braces would be read as template syntax. Only the localized frame goes
+    // through the engine; the line itself is substituted afterwards verbatim.
+    private const string MessageLogTextSlot = "REXSPEECHLINEBODY";
+
+    private void EchoToMessageLog(SpeechCue cue)
+    {
+        try
+        {
+            var text = cue.Text?.Trim();
+            if (string.IsNullOrEmpty(text)) return;
+            var frame = new TextObject("{=REX_Speech_Log_Line}{SPEAKER}: {TEXT}");
+            frame.SetTextVariable("SPEAKER", ResolveSpeakerLabel(cue.Speaker));
+            frame.SetTextVariable("TEXT", MessageLogTextSlot);
+            var line = frame.ToString().Replace(MessageLogTextSlot, text);
+            InformationManager.DisplayMessage(new InformationMessage(line, MessageLogColor));
+        }
+        catch (Exception exception)
+        {
+            RexLog.Warning("The ceremony line could not be mirrored to the message log. " + exception.Message);
+        }
+    }
+
+    private string ResolveSpeakerLabel(SpeechSpeaker role) => role switch
+    {
+        SpeechSpeaker.Executioner => new TextObject("{=REX_Speech_Speaker_Executioner}Executioner").ToString(),
+        SpeechSpeaker.Victim => string.IsNullOrWhiteSpace(_victimName)
+            ? new TextObject("{=REX_Speech_Victim_Unknown}the condemned").ToString()
+            : _victimName.Trim(),
+        _ => new TextObject("{=REX_Speech_Speaker_Crowd}A voice in the crowd").ToString()
+    };
 
     void ISpeechPlaybackSink.FinishLine()
     {

@@ -26,6 +26,42 @@
     </Styles>
   </Brush>
 
+  <!-- Translucent band button for courier letters. The placeholder is a flat dark bar; AnimusForgeCourierUiSprites swaps in
+       af_courier_button_band.png (edge-faded band with gold rules) and resets the layer color to white before each popup loads. -->
+  <Brush Name="AFCourierLetter.Band.Button">
+    <Layers>
+      <BrushLayer Name="Default" Sprite="BlankWhiteSquare_9" Color="#0B080680" />
+    </Layers>
+    <Styles>
+      <Style Name="Default">
+        <BrushLayer Name="Default" ColorFactor="1" AlphaFactor="1" />
+      </Style>
+      <Style Name="Hovered">
+        <BrushLayer Name="Default" ColorFactor="2.4" AlphaFactor="1.15" />
+      </Style>
+      <Style Name="Pressed">
+        <BrushLayer Name="Default" ColorFactor="0.6" AlphaFactor="1.3" />
+      </Style>
+      <Style Name="Disabled">
+        <BrushLayer Name="Default" ColorFactor="1" AlphaFactor="0.45" />
+      </Style>
+    </Styles>
+    <SoundProperties>
+      <EventSounds>
+        <EventSound EventName="Click" Audio="panels/next" />
+      </EventSounds>
+    </SoundProperties>
+  </Brush>
+
+  <Brush Name="AFCourierLetter.Band.Button.Text" BaseBrush="Info.Text" Font="simkai" TextHorizontalAlignment="Center" TextVerticalAlignment="Center">
+    <Styles>
+      <Style Name="Default" FontSize="22" FontColor="#F4ECDDFF" TextOutlineColor="#000000CC" TextOutlineAmount="0.12" TextGlowRadius="0" TextBlur="0" TextShadowOffset="0" />
+      <Style Name="Hovered" FontColor="#FFF7E6FF" />
+      <Style Name="Pressed" FontColor="#D9C9ABFF" />
+      <Style Name="Disabled" FontColor="#F4ECDD77" />
+    </Styles>
+  </Brush>
+
   <!-- Inherit Info.Text's native Link.Hero/Settlement/Kingdom/Clan/Unit styles while retaining the popup's original typography. -->
   <Brush Name="AnimusForge.EntityLink.PopupDescription.Text" BaseBrush="Info.Text" Font="FiraSansExtraCondensed-Regular" TextHorizontalAlignment="Left">
     <Styles>

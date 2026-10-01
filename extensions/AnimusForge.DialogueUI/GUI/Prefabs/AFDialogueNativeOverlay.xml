@@ -14,7 +14,7 @@
                 </Widget>
               </Children>
             </Widget>
-            <ListPanel Id="AFDialogueToolbar" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedHeight="28" HorizontalAlignment="Left" VerticalAlignment="Top" StackLayout.LayoutMethod="HorizontalLeftToRight" IsVisible="@IsToolbarVisible" DoNotAcceptEvents="true" DoNotPassEventsToChildren="false" SuggestedWidth="305" MarginLeft="1105" MarginTop="46" PositionXOffset="@ToolbarOffsetX">
+            <ListPanel Id="AFDialogueToolbar" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedHeight="28" HorizontalAlignment="Left" VerticalAlignment="Top" StackLayout.LayoutMethod="HorizontalLeftToRight" IsVisible="@IsToolbarVisible" DoNotAcceptEvents="true" DoNotPassEventsToChildren="false" SuggestedWidth="305" MarginLeft="1105" MarginTop="46" PositionXOffset="@ToolbarOffsetX" PositionYOffset="@ToolbarOffsetY">
               <Children>
                 <ButtonWidget Id="AFDialogueHistory" WidthSizePolicy="Fixed" SuggestedWidth="63" HeightSizePolicy="Fixed" SuggestedHeight="28" Command.Click="ShowLogView" DoNotPassEventsToChildren="true">
                   <Children>

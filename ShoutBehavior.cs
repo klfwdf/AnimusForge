@@ -20626,10 +20626,11 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			{
 				return false;
 			}
+			// ExtractNpcData appends the location SpecialTargetTag ("troop_id tag"); only the first token is the StringId.
 			if (!hasCapturedLiveAgent
 				&& !string.IsNullOrWhiteSpace(expectedTarget.TroopId)
 				&& !string.Equals(
-					expectedTarget.TroopId,
+					expectedTarget.TroopId.Trim().Split(' ')[0],
 					liveCharacter.StringId ?? "",
 					StringComparison.OrdinalIgnoreCase))
 			{

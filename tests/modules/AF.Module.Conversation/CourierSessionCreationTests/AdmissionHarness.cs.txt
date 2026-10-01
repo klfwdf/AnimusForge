@@ -32,6 +32,8 @@ static partial class Program
             transport.EndTransport(missing);
             Check(op.Completion.IsCompleted&&op.Snapshot.State==CoreDialogueState.Failed,
                 missing?"missing-transport-settles-operation":"completed-stage-without-receipts-cannot-hang-or-succeed");
+            Check(transport.LastTransportLifetime.Token.IsCancellationRequested&&transport.RequestLifetimeCount==0,
+                missing?"missing-transport-retires-request-lifetime":"completed-transport-retires-request-lifetime");
             transport.Retire();Released(transport,"terminal");
         }
         var owner=CourierDeliveryBehavior.NewOwner();owner.Open("module");
@@ -332,8 +334,10 @@ sealed partial class CourierDeliveryBehavior
     internal void Retire()=>_pendingOwnerPhases.Seal();
     internal static void Pump(){while(MainThreadActions.TryDequeue(out var action))action();}
 #if COURIER_DRAFT_TICKETS
+    internal ConversationRequestLifetime LastTransportLifetime;
+    internal int RequestLifetimeCount=>_courierRequestLifetimes.Count;
     internal void EndTransport(bool missing)
-    {var session=_sessions.Values.Single();if(missing)HandleCourierMissing(session);else CompleteAndDestroyCourier(session,new MobileParty());}
+    {var session=_sessions.Values.Single();LastTransportLifetime=BeginCourierRequestLifetime(session);if(missing)HandleCourierMissing(session);else CompleteAndDestroyCourier(session,new MobileParty());}
     internal int ModuleCount { get { lock(_moduleCourierGate)return _moduleCourierRequests.Count; } }
     internal int TicketCount=>_courierDraftTickets.Count;
     internal void MarkUnready()=>_pendingFlow.ReadyToSend=false;

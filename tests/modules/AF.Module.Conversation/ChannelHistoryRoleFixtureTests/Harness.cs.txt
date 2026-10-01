@@ -10,11 +10,14 @@ namespace TaleWorlds.CampaignSystem
 namespace AnimusForge
 {
     public static class MyBehavior { public static string ResolveCurrentMemorySceneLabelForExternal()=>"current-scene"; }
-    public sealed partial class CourierDeliveryBehavior
+    internal static class MainPromptMessageAssemblyOwner
     {
         @@COURIER@@
+    }
+    public sealed partial class CourierDeliveryBehavior
+    {
         public static object Project(ConversationMessage message) {
-            return TryConvertCourierMemoryMessageToChatMessage(message,"Ada","Player",out object result) ? result : null;
+            return MainPromptMessageAssemblyOwner.TryConvertCourierMemoryMessageToChatMessage(message,"Ada","Player",out object result) ? result : null;
         }
     }
     public partial class ShoutBehavior

@@ -81,6 +81,19 @@ public sealed partial class CustomPolicyBehavior
 				harmony.Patch(concludedLogEntryConstructor,
 					prefix: new HarmonyMethod(typeof(CustomPolicyBehavior), nameof(Patch_KingdomDecisionConcludedLogEntry_Constructor_Prefix)));
 			}
+			System.Reflection.MethodInfo policyDetermineSupport = AccessTools.Method(
+				typeof(KingdomPolicyDecision),
+				nameof(KingdomPolicyDecision.DetermineSupport),
+				new[] { typeof(Clan), typeof(DecisionOutcome) });
+			if (policyDetermineSupport != null)
+			{
+				harmony.Patch(policyDetermineSupport,
+					postfix: new HarmonyMethod(typeof(CustomPolicyBehavior), nameof(Patch_KingdomPolicyDecision_DetermineSupport_Postfix)));
+			}
+			else
+			{
+				PolicySystemLog.Write("Vote", "vote-interest-patch-missing", "KingdomPolicyDecision.DetermineSupport not found; vote interest disabled");
+			}
 			System.Reflection.MethodInfo getAiChoice = AccessTools.Method(typeof(KingdomElection), "GetAiChoice");
 			if (getAiChoice != null)
 			{
@@ -93,7 +106,7 @@ public sealed partial class CustomPolicyBehavior
 				harmony.Patch(buildShoutPromptContext,
 					postfix: new HarmonyMethod(typeof(CustomPolicyBehavior), nameof(Patch_MyBehavior_BuildShoutPromptContextForExternal_Postfix)));
 			}
-			PolicySystemLog.Write("Agenda", "patches-applied", "dynamic policy ownership, NPC proposer support/cancellation guard, policy list filters, duplicate NPC adoption chat suppression, ordered AF result popups, NPC ruler adoption, and mention-based policy knowledge retrieval applied");
+			PolicySystemLog.Write("Agenda", "patches-applied", "dynamic policy ownership, NPC proposer support/cancellation guard, vote self-interest and proposer relation, policy list filters, duplicate NPC adoption chat suppression, ordered AF result popups, NPC ruler adoption, and mention-based policy knowledge retrieval applied");
 		}
 		catch (Exception ex)
 		{

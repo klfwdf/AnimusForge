@@ -157,7 +157,7 @@ def main():
         files[Path(name).name]=read(name)
     for extra in ['MyBehavior.MemorySummaryData.cs','MyBehavior.MemorySummaryFingerprint.cs','MyBehavior.MemorySummaryPlanning.cs']:
         if (ROOT/extra).exists():files[Path(extra).name]=read(extra)
-    deps=Path(os.environ.get('NEWTONSOFT_JSON_PATH', str(ROOT/'.tmp/nuget-packages/newtonsoft.json/13.0.3/lib/net6.0/Newtonsoft.Json.dll')))
+    deps=Path(os.environ.get('AF_NEWTONSOFT') or os.environ.get('NEWTONSOFT_JSON_PATH') or str(ROOT/'.tmp/nuget-packages/newtonsoft.json/13.0.3/lib/net6.0/Newtonsoft.Json.dll'))
     if not deps.is_file():raise ValueError('Existing Newtonsoft dependency missing')
     files['Proof.csproj']='<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><LangVersion>latest</LangVersion><NoWarn>CS0649</NoWarn></PropertyGroup><ItemGroup><Reference Include="Newtonsoft.Json"><HintPath>'+escape(str(deps))+'</HintPath></Reference></ItemGroup></Project>'
     if a.admission_only:files['Proof.csproj']=files['Proof.csproj'].replace('<NoWarn>','<DefineConstants>ADMISSION_PROOF</DefineConstants><NoWarn>')

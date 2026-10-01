@@ -37,14 +37,26 @@ internal sealed class CivilWarCampaignBehavior : CampaignBehaviorBase
 	// Flag check only; the scan runs once per ultimatum and the inquiry waits until no other popup is open.
 	private void OnHourlyTick()
 	{
-		if (!TeamModuleServices.CivilWar.HasPendingPlayerUltimatumPrompt || InformationManager.IsAnyInquiryActive()) return;
-		if (!TeamModuleServices.CivilWar.TryTakePlayerUltimatumPrompt(out string kingdomId, out string text)) return;
-		InformationManager.ShowInquiry(new InquiryData("反对派最后通牒", text, true, true, "接受诉求", "拒绝", () => Answer(kingdomId, true), () => Answer(kingdomId, false)), true);
+		if (InformationManager.IsAnyInquiryActive()) return;
+		if (TeamModuleServices.CivilWar.HasPendingFollowPrompt && TeamModuleServices.CivilWar.TryTakeFollowPrompt(out string followId, out string followText))
+		{
+			InformationManager.ShowInquiry(new InquiryData("追随叛军", followText, true, true, "追随叛军", "留在王国", () => AnswerFollow(followId, true), () => AnswerFollow(followId, false)), true);
+			return;
+		}
+		if (!TeamModuleServices.CivilWar.HasPendingPlayerUltimatumPrompt) return;
+		if (!TeamModuleServices.CivilWar.TryTakePlayerUltimatumPrompt(out string factionId, out string text)) return;
+		InformationManager.ShowInquiry(new InquiryData("反对派最后通牒", text, true, true, "接受诉求", "拒绝", () => Answer(factionId, true), () => Answer(factionId, false)), true);
 	}
 
-	private static void Answer(string kingdomId, bool accept)
+	private static void AnswerFollow(string factionId, bool follow)
 	{
-		TeamModuleServices.CivilWar.AnswerPlayerUltimatum(kingdomId, accept, out string message);
+		TeamModuleServices.CivilWar.AnswerFollow(factionId, follow, out string message);
+		if (!string.IsNullOrWhiteSpace(message)) InformationManager.DisplayMessage(new InformationMessage(message));
+	}
+
+	private static void Answer(string factionId, bool accept)
+	{
+		TeamModuleServices.CivilWar.AnswerPlayerUltimatum(factionId, accept, out string message);
 		if (!string.IsNullOrWhiteSpace(message)) InformationManager.DisplayMessage(new InformationMessage(message));
 	}
 
@@ -102,7 +114,10 @@ internal sealed class CivilWarCampaignBehavior : CampaignBehaviorBase
 	{
 		Kingdom kingdom = village?.Settlement?.OwnerClan?.Kingdom;
 		Clan owner = village?.Settlement?.OwnerClan;
-		if (kingdom != null && owner != null) Add(kingdom, "lands_raided", new[] { owner }, 20f, CivilWarWorld.ClanName(owner) + "的领地遭到劫掠");
+		if (kingdom == null || owner == null) return;
+		// Damage done by the kingdom's own civil war is not blamed on the king.
+		if (IsCivilWarPair(kingdom, village.Settlement.LastAttackerParty?.MapFaction)) return;
+		Add(kingdom, "lands_raided", new[] { owner }, 20f, CivilWarWorld.ClanName(owner) + "的领地遭到劫掠");
 	}
 
 	private void OnSettlementOwnerChanged(Settlement settlement, bool openNewOwner, Hero newOwner, Hero oldOwner, Hero capturer, ChangeOwnerOfSettlementAction.ChangeOwnerOfSettlementDetail detail)
@@ -113,6 +128,8 @@ internal sealed class CivilWarCampaignBehavior : CampaignBehaviorBase
 		// Transfers inside the kingdom (grants, gifts, barter) and leaving the kingdom are not a lost fief.
 		if (newOwner?.Clan?.Kingdom == kingdom || detail == ChangeOwnerOfSettlementAction.ChangeOwnerOfSettlementDetail.ByLeaveFaction
 			|| detail == ChangeOwnerOfSettlementAction.ChangeOwnerOfSettlementDetail.ByClanDestruction) return;
+		// Fiefs lost to (or returned from) the kingdom's own rebels are part of the civil war, not a crown failure.
+		if (IsCivilWarPair(kingdom, newOwner?.Clan?.Kingdom) || IsCivilWarPair(kingdom, capturer?.MapFaction)) return;
 		Add(kingdom, "fief_lost", new[] { oldClan }, 20f, CivilWarWorld.ClanName(oldClan) + "失去封地");
 	}
 

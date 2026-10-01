@@ -37,6 +37,7 @@
     <string id="AFWST_UnknownHero" text="Unknown Hero" />
     <string id="AFWST_UnknownCause" text="Unknown cause of death" />
     <string id="AFWST_OpenFailed" text="Failed to open War Statistics. Details were written to rgl_log." />
+    <string id="AFWST_TerminalNavTooltip" text="AnimusForge Terminal" />
     <string id="AFWST_NotInitializedMessage" text="War Statistics is not initialized." />
     <string id="AFWST_ClearTitle" text="Clear All War Statistics" />
     <string id="AFWST_ClearBody" text="Clear all historical wars and lord-death records, and reset kills, casualties, wins, and losses for current wars? This action cannot be undone." />

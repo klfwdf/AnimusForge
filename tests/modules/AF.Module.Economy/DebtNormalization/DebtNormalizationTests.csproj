@@ -5,11 +5,22 @@
     <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
     <ImplicitUsings>disable</ImplicitUsings>
     <Nullable>disable</Nullable>
+    <DebtPythonExe Condition="'$(DebtPythonExe)' == ''">python</DebtPythonExe>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Program.cs" />
-    <Compile Include=".generated/ProductionDebtRecord.cs" />
     <Compile Include="../../../../src/modules/AF.Module.Economy/Debt/RewardSystemBehavior.DebtNormalizationPolicy.cs" Link="RewardSystemBehavior.DebtNormalizationPolicy.cs" />
     <Compile Include="../../../../src/modules/AF.Module.Economy/Debt/RewardSystemBehavior.DebtSchedulePolicy.cs" Link="RewardSystemBehavior.DebtSchedulePolicy.cs" />
   </ItemGroup>
+  <!-- Self-sufficient when built directly (tests/run_all.py): run.py extracts the private production
+       DebtRecord from RewardSystemBehavior.DebtLedger.cs, with its drift assertions, into this build's obj dir. -->
+  <Target Name="GenerateProductionDebtRecord" BeforeTargets="BeforeBuild">
+    <PropertyGroup>
+      <DebtGeneratedDir>$([System.IO.Path]::GetFullPath($([System.IO.Path]::Combine('$(MSBuildProjectDirectory)', '$(IntermediateOutputPath)', 'debt-generated'))))</DebtGeneratedDir>
+    </PropertyGroup>
+    <Exec Command="&quot;$(DebtPythonExe)&quot; -X utf8 -B &quot;$(MSBuildProjectDirectory)/run.py&quot; --prepare-only --generated-dir &quot;$(DebtGeneratedDir)&quot;" />
+    <ItemGroup>
+      <Compile Include="$(DebtGeneratedDir)/ProductionDebtRecord.cs" Link="ProductionDebtRecord.cs" />
+    </ItemGroup>
+  </Target>
 </Project>

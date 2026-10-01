@@ -89,7 +89,7 @@ def resolve_storage_call_keys(name: str, argument_index: int) -> set[str]:
     constant_pattern = re.compile(r"\b(?:private|internal|public|protected)?\s*(?:static\s+)?const\s+string\s+(\w+)\s*=\s*\"([^\"]+)\"")
     source_paths = []
     for source_path in ROOT.rglob("*.cs"):
-        if any(part in {"tools", "tests", "bin", "obj", ".tmp", "tmp", ".codex_tmp", "artifacts", "_deps_auto", ".dotnet", ".dotnet_cli"} for part in source_path.relative_to(ROOT).parts):
+        if any(part in {"tools", "tests", "bin", "obj", ".tmp", "tmp", ".codex_tmp", "_codex_tmp", "artifacts", "_deps_auto", ".dotnet", ".dotnet_cli"} for part in source_path.relative_to(ROOT).parts):
             continue
         if any("原版游戏本体代码" in part for part in source_path.relative_to(ROOT).parts):
             continue
@@ -120,7 +120,8 @@ def resolve_storage_call_keys(name: str, argument_index: int) -> set[str]:
 def validate_chunk_contract(catalog: dict) -> dict:
     expected_chunked = set(catalog["chunkedStringStorageKeys"])
     expected_flattened = set(catalog["flattenedDictionaryStorageKeys"])
-    assert_true(len(expected_chunked) == 13, "chunked string key catalog must contain 13 keys")
+    # +1 _af_worldBulletin_v1 (MyBehavior.WorldBulletin.cs SyncWorldBulletinData via SaveChunkedString/LoadChunkedString).
+    assert_true(len(expected_chunked) == 14, "chunked string key catalog must contain 14 keys")
     assert_true(len(expected_flattened) == 44, "flattened dictionary key catalog must contain 44 keys")
     actual_chunked = resolve_storage_call_keys("SaveChunkedString", 1) | resolve_storage_call_keys("LoadChunkedString", 1)
     actual_flattened = resolve_storage_call_keys("FlattenStringDictionary", 1)
@@ -164,7 +165,7 @@ DECLARATION_PATTERN = re.compile(
 def discover_typed_bindings() -> list[dict]:
     rows: list[dict] = []
     for source_path in sorted(ROOT.rglob("*.cs")):
-        if any(part in {"tools", "tests", "bin", "obj", ".tmp", "tmp", ".codex_tmp", "artifacts", "_deps_auto", ".dotnet", ".dotnet_cli"} for part in source_path.relative_to(ROOT).parts):
+        if any(part in {"tools", "tests", "bin", "obj", ".tmp", "tmp", ".codex_tmp", "_codex_tmp", "artifacts", "_deps_auto", ".dotnet", ".dotnet_cli"} for part in source_path.relative_to(ROOT).parts):
             continue
         if any("原版游戏本体代码" in part for part in source_path.relative_to(ROOT).parts):
             continue
@@ -231,7 +232,7 @@ def validate_persistence(catalog: dict) -> dict:
     assert_true(any(item["status"] == "inventory-required" for item in catalog["symbolicKeyFamilies"]), "symbolic key debt was hidden")
     symbolic_sources = []
     for source in sorted(ROOT.rglob("*.cs")):
-        if any(part in {"tools", "tests", "bin", "obj", ".tmp", "tmp", ".codex_tmp", "artifacts", "_deps_auto", ".dotnet", ".dotnet_cli"} for part in source.relative_to(ROOT).parts):
+        if any(part in {"tools", "tests", "bin", "obj", ".tmp", "tmp", ".codex_tmp", "_codex_tmp", "artifacts", "_deps_auto", ".dotnet", ".dotnet_cli"} for part in source.relative_to(ROOT).parts):
             continue
         if any("原版游戏本体代码" in part for part in source.relative_to(ROOT).parts):
             continue

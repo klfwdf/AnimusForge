@@ -73,7 +73,7 @@ def restore_submodule(current):
         'internal static void Run(SubModule host, float dt)', 1).replace(
         'RunFastApplicationTickPhases();', 'RunFastApplicationTickPhases(host, dt);', 1).replace(
         'RunWatchedApplicationTickPhases();', 'RunWatchedApplicationTickPhases(host, dt);', 1).replace(
-        'TickWarStatsMapButton(dt);', 'host.TickWarStatsMapButton(dt);', 1)
+        '\t\t\tTickWarStatsMapButton(dt);\n', '', 1)
     moved_fast = fast.replace('private void RunFastApplicationTickPhases()',
         'private static void RunFastApplicationTickPhases(SubModule host, float dt)', 1).replace(
         'ProcessPendingInitialApiGuideNotice();', 'host.ProcessPendingInitialApiGuideNotice();', 1)
@@ -104,14 +104,23 @@ def restore_submodule(current):
         token = '\t' + method + '\n\n'
         assert expected.count(token) == 1, 'Old Tick declaration not unique'
         expected = expected.replace(token, '', 1)
-    for signature in ('private void ProcessPendingInitialApiGuideNotice()',
-                      'private void TickWarStatsMapButton(float dt)'):
+    for signature in ('private void ProcessPendingInitialApiGuideNotice()',):
         assert expected.count(signature) == 1
         expected = expected.replace(signature, signature.replace('private', 'internal', 1), 1)
     # Later reviewed additive lifecycle hooks (not part of J02). Each must apply exactly once.
     for before, after in SUBMODULE_LIFECYCLE_EDITS:
         assert expected.count(before) == 1, 'SubModule lifecycle anchor changed: ' + before.strip()[:60]
         expected = expected.replace(before, after, 1)
+    # Floating WarStats map button replaced by the native map-bar navigation entry.
+    for removed in ('using TaleWorlds.ScreenSystem;\nusing AFWarStatsTerminal.UI;\n',
+                    '\tprivate AfWarStatsMapButtonLayer _mapButtonLayer;\n\tprivate float _mapButtonRetryDelay;\n'):
+        assert expected.count(removed) == 1, 'Map button anchor changed'
+        expected = expected.replace(removed, '', 1)
+    start = expected.index('\n\tprivate void TickWarStatsMapButton(float dt)')
+    tail = '\t\t_mapButtonLayer = null;\n\t}\n'
+    expected = expected[:start] + expected[expected.index(tail, start) + len(tail):]
+    assert expected.count('\t\tRemoveMapButtonLayer();\n') == 2
+    expected = expected.replace('\t\tRemoveMapButtonLayer();\n', '')
     assert current == expected, 'SubModule differs beyond reviewed host extraction'
     return prior
 

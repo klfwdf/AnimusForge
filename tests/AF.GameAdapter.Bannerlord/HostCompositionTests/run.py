@@ -80,7 +80,6 @@ def fixtures(source):
 }
 internal sealed class SubModule {
  internal void ProcessPendingInitialApiGuideNotice() => TickTrace.Hit("SubModule.ProcessPendingInitialApiGuideNotice");
- internal void TickWarStatsMapButton(float dt) => TickTrace.Hit("WarStats");
 }
 internal static class FreezeWatchdog {
  internal static void BeginFrame(float dt) => TickTrace.Events.Add("freeze.begin");
@@ -131,7 +130,7 @@ internal static class Program {
  static void Check(bool value, string message) { if (!value) throw new Exception("FAIL " + message); }
  static string[] Hits() => TickTrace.Events.Where(x => x.StartsWith("hit:")).Select(x => x.Substring(4)).ToArray();
  static void HitOrder(bool warStats) {
-   var want = warStats ? Expected.Concat(new[]{"WarStats"}) : Expected;
+   var want = Expected;
    Check(Hits().SequenceEqual(want), "ordered phases/WarStats");
  }
  static void FrameEnd() {
@@ -197,7 +196,6 @@ def main():
     mutations = {
         'reorder_fast': ('ShoutTextInputPopup.ProcessDeferredCloseIfNeeded();\n\t\tShoutTextInputPopup.CloseForSystemInterruptionIfNeeded();',
                          'ShoutTextInputPopup.CloseForSystemInterruptionIfNeeded();\n\t\tShoutTextInputPopup.ProcessDeferredCloseIfNeeded();'),
-        'skip_warstats': ('host.TickWarStatsMapButton(dt);', ';'),
         'skip_mark': ('FreezeWatchdog.Mark("SubModule.OnApplicationTick.exception", ex.GetType().Name + ": " + ex.Message, immediate: true);', ';'),
         'skip_perf_end': ('PerfProbe.EndFrame(perfFrame, "SubModule.OnApplicationTick.total");', ';'),
         'drop_fast_dt': ('\t\tIntegratedModuleHost.Tick(dt);', '\t\tIntegratedModuleHost.Tick(0f);'),

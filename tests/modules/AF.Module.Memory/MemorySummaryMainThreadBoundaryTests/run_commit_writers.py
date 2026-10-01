@@ -18,6 +18,8 @@ def main():
     dotnet=resolve_dotnet(ROOT)
     env=minimal_test_environment(dotnet,out)
     env['DOTNET_EXE']=str(dotnet)
+    for _k in ('AF_NEWTONSOFT','NEWTONSOFT_JSON_PATH'):
+        if os.environ.get(_k):env[_k]=os.environ[_k]  # dependency path only; forwarded to the nested run_terminal refresh
     base=out/'terminal-input'
     def sha(text):return hashlib.sha256(text.encode('utf-8')).hexdigest()
     def current_base():
@@ -120,7 +122,7 @@ def main():
     if a.mutate=='omit-recent-save':product=replace(product,'_dialogueHistory[stringId] = records;','/* fault: missing Recent publication */')
     files['Product.cs']=product
     files['CommitWritersHarness.cs']=read('tests/modules/AF.Module.Memory/MemorySummaryMainThreadBoundaryTests/CommitWritersHarness.cs.txt')
-    deps=ROOT/'.tmp/nuget-packages/newtonsoft.json/13.0.3/lib/net6.0/Newtonsoft.Json.dll'
+    deps=Path(os.environ.get('AF_NEWTONSOFT') or os.environ.get('NEWTONSOFT_JSON_PATH') or str(ROOT/'.tmp/nuget-packages/newtonsoft.json/13.0.3/lib/net6.0/Newtonsoft.Json.dll'))
     files['Proof.csproj']='<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><LangVersion>latest</LangVersion><NoWarn>CS0649</NoWarn><EnableDefaultCompileItems>false</EnableDefaultCompileItems><StartupObject>AnimusForge.CommitWritersProgram</StartupObject></PropertyGroup><ItemGroup>'+''.join('<Compile Include="'+escape(name)+'" />' for name in files if name.endswith('.cs'))+'<Reference Include="Newtonsoft.Json"><HintPath>'+escape(str(deps))+'</HintPath></Reference></ItemGroup></Project>'
     files['NuGet.Config']='<configuration><packageSources><clear/></packageSources></configuration>'
     for name,data in files.items():(out/name).write_bytes(data.encode('utf-8'))
