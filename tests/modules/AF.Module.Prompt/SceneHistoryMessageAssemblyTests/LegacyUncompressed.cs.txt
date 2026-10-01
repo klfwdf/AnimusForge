@@ -1,0 +1,315 @@
+using System;using System.Collections.Generic;using System.Linq;using System.Diagnostics;using TaleWorlds.Library;using TaleWorlds.CampaignSystem;
+namespace AnimusForge { internal sealed class LegacyUncompressed : FixtureState {
+internal List<ConversationMessage> Build(string id="hero",string name="NPC",int agent=7,bool include=false)=>BuildUncompressedMemoryRoleMessagesById(id,name,agent,include);
+	private static string ResolveMemoryLineSceneForPrompt(DailyMemoryLine line)
+	{
+		string scene = (line?.Scene ?? "").Trim();
+		if (!IsUnknownMemorySceneLabel(scene))
+		{
+			return scene;
+		}
+		try
+		{
+			if (line != null && line.GameDayIndex == GetCurrentGameDayIndexSafe())
+			{
+				string fallback = ResolveCurrentMemorySceneLabel();
+				if (!IsUnknownMemorySceneLabel(fallback))
+				{
+					return fallback.Trim();
+				}
+			}
+		}
+		catch
+		{
+		}
+		return "未知场景";
+	}
+
+	private List<ConversationMessage> BuildUncompressedMemoryRoleMessages(Hero hero, int targetAgentIndex = -1, bool includeCurrentActiveSceneSession = false)
+	{
+		if (hero == null)
+		{
+			return new List<ConversationMessage>();
+		}
+		string heroName = (hero.Name?.ToString() ?? "NPC").Trim();
+		if (string.IsNullOrWhiteSpace(heroName))
+		{
+			heroName = "NPC";
+		}
+		return BuildUncompressedMemoryRoleMessagesById(GetMemoryHeroId(hero), heroName, targetAgentIndex, includeCurrentActiveSceneSession);
+	}
+
+	private List<ConversationMessage> BuildUncompressedMemoryRoleMessagesById(string memoryId, string memoryName, int targetAgentIndex = -1, bool includeCurrentActiveSceneSession = false)
+	{
+		Stopwatch sw = Stopwatch.StartNew();
+		List<ConversationMessage> result = new List<ConversationMessage>();
+		string normalizedMemoryId = NormalizeMemoryHeroId(memoryId);
+		if (!IsMemoryEntityEligibleForCompressedMemory(normalizedMemoryId))
+		{
+			return result;
+		}
+		List<DailyMemoryDraft> drafts = LoadDailyMemoryDraftsById(normalizedMemoryId);
+		if (drafts == null || drafts.Count <= 0)
+		{
+			sw.Stop();
+			Logger.Log("Logic", "[MemoryPerf] uncompressed_memory_done hero=" + normalizedMemoryId + " drafts=0 messages=0 agent=" + targetAgentIndex + " includeCurrentSession=" + includeCurrentActiveSceneSession + " ms=" + Math.Round(sw.Elapsed.TotalMilliseconds, 2));
+			if (IsNonHeroMemoryId(normalizedMemoryId))
+			{
+				LogNonHeroMemoryTrace("stage=uncompressed_build_done memoryId=" + normalizedMemoryId + " drafts=0 draftLines=0 messages=0 agent=" + targetAgentIndex + " includeCurrentSession=" + includeCurrentActiveSceneSession + " ms=" + Math.Round(sw.Elapsed.TotalMilliseconds, 2));
+			}
+			return result;
+		}
+		int currentDay = GetCurrentGameDayIndexSafe();
+		int currentSceneSessionId = includeCurrentActiveSceneSession ? -1 : GetCurrentSceneSessionIdForDailyMemorySuppression();
+		int currentDialogueSessionId = GetCurrentNativeConversationMemorySessionIdForSuppression();
+		string currentMemorySessionKey = !includeCurrentActiveSceneSession && (currentSceneSessionId >= 0 || currentDialogueSessionId >= 0)
+			? BuildCurrentMemorySessionKey(currentSceneSessionId, currentDialogueSessionId)
+			: "";
+		string targetName = string.IsNullOrWhiteSpace(memoryName) ? "NPC" : memoryName.Trim();
+		foreach (DailyMemoryDraft draft in drafts.Where((DailyMemoryDraft x) => x != null).OrderBy((DailyMemoryDraft x) => x.GameDayIndex))
+		{
+			bool isToday = draft.GameDayIndex == currentDay;
+			bool hasAfefLines = HasDailyMemoryDraftAfefLines(draft);
+			if (!isToday && (HasCompressedMemoryBlock(normalizedMemoryId, draft.GameDayIndex) || (!draft.HasLlmDialogue && !hasAfefLines)))
+			{
+				continue;
+			}
+			foreach (DailyMemoryLine line in draft.Lines ?? new List<DailyMemoryLine>())
+			{
+				if (line == null || string.IsNullOrWhiteSpace(line.Text))
+				{
+					continue;
+				}
+				if (isToday && IsCurrentActiveMemorySessionLine(line, currentMemorySessionKey))
+				{
+					continue;
+				}
+				ConversationMessage message = BuildUncompressedMemoryConversationMessage(line, targetName, targetAgentIndex);
+				if (message != null)
+				{
+					result.Add(message);
+				}
+			}
+		}
+		int rawMessageCount = result.Count;
+		int historyLineLimit = DuelSettings.GetDailyConversationHistoryLineLimitForExternal();
+		result = KeepUncompressedFactsAndRecentConversationMessages(result, historyLineLimit);
+		sw.Stop();
+		Logger.Log("Logic", "[MemoryPerf] uncompressed_memory_done hero=" + normalizedMemoryId + " drafts=" + drafts.Count + " rawMessages=" + rawMessageCount + " messages=" + result.Count + " historyLineLimit=" + historyLineLimit + " agent=" + targetAgentIndex + " includeCurrentSession=" + includeCurrentActiveSceneSession + " ms=" + Math.Round(sw.Elapsed.TotalMilliseconds, 2));
+		if (IsNonHeroMemoryId(normalizedMemoryId))
+		{
+			LogNonHeroMemoryTrace("stage=uncompressed_build_done memoryId=" + normalizedMemoryId + " drafts=" + drafts.Count + " draftLines=" + CountDailyMemoryDraftLines(drafts) + " rawMessages=" + rawMessageCount + " messages=" + result.Count + " historyLineLimit=" + historyLineLimit + " agent=" + targetAgentIndex + " includeCurrentSession=" + includeCurrentActiveSceneSession + " currentDay=" + currentDay + " suppressedSceneSession=" + currentSceneSessionId + " suppressedDialogueSession=" + currentDialogueSessionId + " ms=" + Math.Round(sw.Elapsed.TotalMilliseconds, 2));
+		}
+		return result;
+	}
+
+	private static List<ConversationMessage> KeepUncompressedFactsAndRecentConversationMessages(List<ConversationMessage> messages, int maxConversationMessages)
+	{
+		if (messages == null || messages.Count == 0)
+		{
+			return messages ?? new List<ConversationMessage>();
+		}
+		int limit = Math.Max(DuelSettings.DailyConversationHistoryLineLimitMin, Math.Min(DuelSettings.DailyConversationHistoryLineLimitMax, maxConversationMessages));
+		int conversationCount = 0;
+		for (int i = 0; i < messages.Count; i++)
+		{
+			ConversationMessage message = messages[i];
+			if (message != null && !string.Equals((message.Role ?? "").Trim(), "system", StringComparison.OrdinalIgnoreCase))
+			{
+				conversationCount++;
+			}
+		}
+		int removeCount = conversationCount - limit;
+		if (removeCount <= 0)
+		{
+			return messages;
+		}
+		List<ConversationMessage> result = new List<ConversationMessage>(messages.Count - removeCount);
+		for (int i = 0; i < messages.Count; i++)
+		{
+			ConversationMessage message = messages[i];
+			bool isFact = message != null && string.Equals((message.Role ?? "").Trim(), "system", StringComparison.OrdinalIgnoreCase);
+			if (!isFact && removeCount > 0)
+			{
+				removeCount--;
+				continue;
+			}
+			result.Add(message);
+		}
+		return result;
+	}
+
+	private static ConversationMessage BuildUncompressedMemoryConversationMessage(DailyMemoryLine line, string memoryName, int targetAgentIndex)
+	{
+		if (line == null || string.IsNullOrWhiteSpace(line.Text))
+		{
+			return null;
+		}
+		string text = (line.Text ?? "").Replace("\r", "").Trim();
+		string speaker = string.IsNullOrWhiteSpace(line.Speaker) ? (line.IsAfef ? "AFEF" : "记录") : line.Speaker.Trim();
+		string npcName = string.IsNullOrWhiteSpace(memoryName) ? "NPC" : memoryName.Trim();
+		string role = "user";
+		int speakerAgentIndex = -1;
+		int targetIndex = line.TargetAgentIndex >= 0 ? line.TargetAgentIndex : targetAgentIndex;
+		string targetName = string.IsNullOrWhiteSpace(line.TargetName) ? npcName : line.TargetName.Trim();
+		if (line.IsAfef)
+		{
+			role = "system";
+			speaker = "AFEF";
+			speakerAgentIndex = -1;
+			targetIndex = -1;
+			targetName = "";
+		}
+		else if (TryParseDailyMemorySceneShoutLine(text, out var heardSpeaker, out var heardContent))
+		{
+			role = "assistant";
+			speaker = string.IsNullOrWhiteSpace(heardSpeaker) ? "某NPC" : heardSpeaker.Trim();
+			text = string.IsNullOrWhiteSpace(heardContent) ? text : heardContent.Trim();
+			speakerAgentIndex = -1;
+			targetIndex = -1;
+			targetName = "";
+		}
+		else if (IsDailyMemoryLineNpcSpeech(line, npcName))
+		{
+			role = "assistant";
+			speaker = npcName;
+			speakerAgentIndex = targetAgentIndex;
+			targetIndex = -1;
+			targetName = "";
+		}
+		else if (!IsDailyMemoryLinePlayerSpeech(line, npcName))
+		{
+			role = "assistant";
+			speakerAgentIndex = -1;
+			targetIndex = -1;
+			targetName = "";
+		}
+		return new ConversationMessage
+		{
+			GameDayIndex = line.GameDayIndex,
+			GameDate = line.GameDate ?? "",
+			GameHour = MBMath.ClampInt(line.GameHour, 0, 23),
+			Scene = ResolveMemoryLineSceneForPrompt(line),
+			Role = role,
+			Content = text,
+			SpeakerName = speaker,
+			SpeakerAgentIndex = speakerAgentIndex,
+			TargetAgentIndex = targetIndex,
+			TargetName = targetName,
+			PlayerDistanceMeters = -1f
+		};
+	}
+
+	private static bool IsDailyMemoryLineNpcSpeech(DailyMemoryLine line, string npcName)
+	{
+		if (line == null)
+		{
+			return false;
+		}
+		string speaker = (line.Speaker ?? "").Trim();
+		string name = (npcName ?? "").Trim();
+		if (!string.IsNullOrWhiteSpace(speaker) && !string.IsNullOrWhiteSpace(name) && string.Equals(speaker, name, StringComparison.OrdinalIgnoreCase))
+		{
+			return true;
+		}
+		string text = (line.Text ?? "").Trim();
+		return !string.IsNullOrWhiteSpace(name) && (text.StartsWith(name + ":", StringComparison.Ordinal) || text.StartsWith(name + "：", StringComparison.Ordinal));
+	}
+
+	private static bool IsDailyMemoryLinePlayerSpeech(DailyMemoryLine line, string npcName)
+	{
+		if (line == null)
+		{
+			return false;
+		}
+		string speaker = (line.Speaker ?? "").Trim();
+		if (IsLikelyPlayerHistorySpeaker(speaker))
+		{
+			return true;
+		}
+		string text = (line.Text ?? "").Trim();
+		string name = (npcName ?? "").Trim();
+		if (!string.IsNullOrWhiteSpace(name) && (text.Contains("对" + name + "说") || text.Contains("对" + name + "喊") || text.Contains("向" + name + "说") || text.Contains("向" + name + "喊")))
+		{
+			return true;
+		}
+		return text.StartsWith("玩家", StringComparison.Ordinal);
+	}
+
+	private static bool TryParseDailyMemorySceneShoutLine(string rawText, out string speaker, out string content)
+	{
+		speaker = "";
+		content = "";
+		string text = (rawText ?? "").Trim();
+		if (!text.StartsWith("[场景喊话]", StringComparison.Ordinal))
+		{
+			return false;
+		}
+		string body = text.Substring("[场景喊话]".Length).Trim();
+		if (string.IsNullOrWhiteSpace(body))
+		{
+			return true;
+		}
+		int delimiter = FindDialogueHistorySpeakerDelimiter(body);
+		if (delimiter > 0)
+		{
+			speaker = body.Substring(0, delimiter).Trim();
+			content = body.Substring(delimiter + 1).Trim();
+		}
+		else
+		{
+			content = body;
+		}
+		return true;
+	}
+
+	private static bool IsCurrentActiveMemorySessionLine(DailyMemoryLine line, string currentMemorySessionKey)
+	{
+		if (line == null)
+		{
+			return false;
+		}
+		string lineSessionKey = (line.MemorySessionKey ?? "").Trim();
+		string activeSessionKey = (currentMemorySessionKey ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(lineSessionKey) || string.IsNullOrWhiteSpace(activeSessionKey))
+		{
+			return false;
+		}
+		return string.Equals(lineSessionKey, activeSessionKey, StringComparison.OrdinalIgnoreCase);
+	}
+
+private static int FindDialogueHistorySpeakerDelimiter(string line)
+	{
+		if (string.IsNullOrWhiteSpace(line))
+		{
+			return -1;
+		}
+		int colon = line.IndexOf(':');
+		int cnColon = line.IndexOf('：');
+		if (colon < 0)
+		{
+			return cnColon;
+		}
+		if (cnColon < 0)
+		{
+			return colon;
+		}
+		return Math.Min(colon, cnColon);
+	}
+private static bool IsLikelyPlayerHistorySpeaker(string speaker)
+	{
+		string text = (speaker ?? "").Trim();
+		return text.IndexOf("玩家", StringComparison.Ordinal) >= 0 || text.IndexOf("你", StringComparison.Ordinal) >= 0 || text.IndexOf("MainHero", StringComparison.OrdinalIgnoreCase) >= 0;
+	}
+private static bool IsUnknownMemorySceneLabel(string scene)
+	{
+		string text = (scene ?? "").Replace("\r", " ").Replace("\n", " ").Trim();
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return true;
+		}
+		return string.Equals(text, "未知场景", StringComparison.Ordinal)
+			|| string.Equals(text, "大地图或未知场景", StringComparison.Ordinal)
+			|| string.Equals(text, "某个地方", StringComparison.Ordinal);
+	}
+}}
