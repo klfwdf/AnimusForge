@@ -48,6 +48,13 @@ static class Program
             if(method=="peace") Check(Recording.PeaceCaptures==(result?16:4),"peace stage short circuit");
         }
         Check(index.Lookups==20,"one indexed lookup per live target; null has no lookup");
+        var settlement=new TaleWorlds.CampaignSystem.Settlements.Settlement{StringId="s"};
+        index.Objects["s"]=settlement;
+        Check(ReferenceEquals(DiplomacyIdentityResolver.Settlement("s"),settlement),"settlement stable ID uses campaign index");
+        Check(DiplomacyIdentityResolver.Settlement("")==null,"empty settlement ID skips campaign index");
+        index.Throw=true;
+        Check(DiplomacyIdentityResolver.Settlement("s")==null,"settlement index failure is isolated");
+        index.Throw=false;
         var replacement=new Hero{StringId="h"};index.Objects["h"]=replacement;
         DiplomacyConversationBridge.CanInjectDiplomacyRuleForExternal(h);Call("eligibility",replacement);
         index.Objects.Remove("h");DiplomacyConversationBridge.CanInjectDiplomacyRuleForExternal(h);Call("eligibility",(object)null);
