@@ -119,6 +119,10 @@ class RunAllSafetyTests(unittest.TestCase):
         with patch.object(runner, "ROOT", self.repo):
             cmd = runner.command(project.name, {"args": ["--artifact-root", "fixture"]}, "synthetic")
         self.assertEqual(cmd[-3:], ["--", "--artifact-root", "fixture"])
+        with patch.object(runner, "ROOT", self.repo):
+            legacy = runner.command(project.name, {"args": ["--", "fixture"]}, "synthetic")
+        self.assertEqual(legacy[-2:], ["--", "fixture"])
+        self.assertEqual(legacy.count("--"), 1)
 
     def test_debt_fixture_gets_explicit_python_not_inherited_path(self):
         project = self.repo / "DebtTests.csproj"

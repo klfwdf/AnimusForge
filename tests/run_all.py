@@ -158,7 +158,7 @@ def command(path: str, spec: dict, run_name: str, build_root: Path | None = None
         cmd += [f"-p:ReplayCandidateDll={DLL14}", "--", str(DLL14),
                 hashlib.sha256(DLL14.read_bytes()).hexdigest().upper()]
     elif extra:
-        cmd += ["--", *extra]
+        cmd += extra if extra[0] == "--" else ["--", *extra]
     return cmd
 
 
