@@ -566,9 +566,9 @@
         "world-map-owner"
       ],
       "entryPaths": [
-        "KingdomAnnexationBehavior.cs",
-        "NpcTributeVassalageBehavior.cs",
-        "VassalageBehavior.cs",
+        "src/modules/AF.Module.Diplomacy/Annexation/KingdomAnnexationBehavior.cs",
+        "src/modules/AF.Module.Diplomacy/Vassalage/NpcTributeVassalageBehavior.cs",
+        "src/modules/AF.Module.Diplomacy/Vassalage/VassalageBehavior.cs",
         "WarStats/AfWarStatsBehavior.cs",
         "src/modules/AF.Module.Diplomacy/Direct/DiplomacyBehavior.Actions.cs",
         "src/modules/AF.Module.Diplomacy/Direct/DiplomacyBehavior.cs",
@@ -654,15 +654,15 @@
       "entryPaths": [
         "AnimusForge.SiegeAftermathIntervention/SiegeInterventionEntryProfile.cs",
         "src/bridges/Siege/Host/CastleAftermathRuntimeBridge.cs",
-        "GcczSettlementCulturePersistenceBehavior.cs",
+        "src/AF.GameAdapter.Bannerlord/Composition/SiegeAftermath/GcczSettlementCulturePersistenceBehavior.cs",
         "src/AF.GameAdapter.Bannerlord/SettlementEntry/SettlementEntryTroopSelectionBehavior.cs",
-        "SiegeAiInterventionBehavior.DirectAftermathAdapter.cs",
-        "SiegeAiInterventionBehavior.TownColonizationLoadRecovery.cs",
-        "SiegeAiInterventionBehavior.TownCompletionEffectAdapter.cs",
-        "SiegeAiInterventionBehavior.TownEconomyEffectAdapter.cs",
-        "SiegeAiInterventionBehavior.TownSettlementEffectAdapter.cs",
-        "SiegeAiInterventionBehavior.cs",
-        "VillageAftermathBehavior.cs"
+        "src/AF.GameAdapter.Bannerlord/Composition/SiegeAftermath/SiegeAiInterventionBehavior.DirectAftermathAdapter.cs",
+        "src/AF.GameAdapter.Bannerlord/Composition/SiegeAftermath/SiegeAiInterventionBehavior.TownColonizationLoadRecovery.cs",
+        "src/AF.GameAdapter.Bannerlord/Composition/SiegeAftermath/SiegeAiInterventionBehavior.TownCompletionEffectAdapter.cs",
+        "src/AF.GameAdapter.Bannerlord/Composition/SiegeAftermath/SiegeAiInterventionBehavior.TownEconomyEffectAdapter.cs",
+        "src/AF.GameAdapter.Bannerlord/Composition/SiegeAftermath/SiegeAiInterventionBehavior.TownSettlementEffectAdapter.cs",
+        "src/AF.GameAdapter.Bannerlord/Composition/SiegeAftermath/SiegeAiInterventionBehavior.cs",
+        "src/AF.GameAdapter.Bannerlord/Composition/SiegeAftermath/VillageAftermathBehavior.cs"
       ],
       "promptAction": {
         "prompt": "APPLICABLE",
@@ -716,7 +716,7 @@
         "src/AF.GameAdapter.Bannerlord/Encounter/MeetingBattleLockMissionBehavior.cs",
         "src/AF.GameAdapter.Bannerlord/TroopInspection/TroopInspectionBehavior.cs",
         "src/modules/AF.Module.Encounter/Escort/NoblePrisonerEscortBehavior.cs",
-        "NoblePrisonerExecutionOrderBehavior.cs"
+        "src/AF.GameAdapter.Bannerlord/Composition/SiegeAftermath/NoblePrisonerExecutionOrderBehavior.cs"
       ],
       "promptAction": {
         "prompt": "APPLICABLE",
@@ -903,7 +903,7 @@
         "src/AF.GameAdapter.Bannerlord/UI/Weekly/AnimusForgeWeeklyReportMapNotification.cs",
         "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.WeeklyActionOutcomeReceipts.cs",
         "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.cs",
-        "NobleGatheringBehavior.cs",
+        "src/AF.GameAdapter.Bannerlord/Composition/Gathering/NobleGatheringBehavior.cs",
         "src/modules/AF.Module.Social/Host/PlayerNotorietyBehavior.ConversationOutcomes.cs",
         "src/modules/AF.Module.Social/Host/PlayerNotorietyBehavior.cs",
         "src/modules/AF.Module.Social/Host/RomanceSystemBehavior.cs",
@@ -988,7 +988,7 @@
         "profile-owner"
       ],
       "entryPaths": [
-        "KingdomStrategicProfileBehavior.cs",
+        "src/modules/AF.Module.Diplomacy/Profiles/KingdomStrategicProfileBehavior.cs",
         "src/modules/AF.Module.Knowledge/Host/KnowledgeLibraryBehavior.cs",
         "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.PersonaGeneration.cs",
         "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.PersonaReadiness.cs",
@@ -1060,7 +1060,7 @@
         "src/AF.GameAdapter.Bannerlord/Composition/SceneActionsIntegrationBoundary.cs",
         "src/AF.GameAdapter.Bannerlord/Composition/SubModule.cs",
         "src/AF.GameAdapter.Bannerlord/UI/Terminal/TerminalSettingsRegistry.cs",
-        "TerminalVassalageTributeHistoryPopupVM.cs",
+        "src/modules/AF.Module.Diplomacy/Vassalage/UI/TerminalVassalageTributeHistoryPopupVM.cs",
         "src/AF.GameAdapter.Bannerlord/UI/Weekly/TerminalWeeklyReportBrowserPopupVM.cs",
         "src/modules/AF.Module.Llm/Tts/TtsEngine.cs",
         "WarStats/AfWarStatsDeathItemVM.cs",
@@ -1438,7 +1438,7 @@
       "implementationState": "ACTIVE_BOUNDARY",
       "entryPaths": [
         "src/bridges/Siege/Host/AfGcczShoutBridge.cs",
-        "SiegeAiInterventionBehavior.cs"
+        "src/AF.GameAdapter.Bannerlord/Composition/SiegeAftermath/SiegeAiInterventionBehavior.cs"
       ],
       "requiredCases": [
         "A_ONLY",

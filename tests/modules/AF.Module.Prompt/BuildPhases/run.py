@@ -78,7 +78,7 @@ apply_target = extract.declaration(ai, "internal static void ApplyGuardrailRunti
 assert apply_target.index("binding.Apply(") < apply_target.index("_guardrailRuntimeEligibility.Value = eligibility"), "binding must invalidate old facts before publishing its new facts"
 assert "ApplyGuardrailRuntimeTarget(binding);" in capture_eligibility and "BeginGuardrailRuntimeScope()" in capture_eligibility, "capture must bind and restore the request target before ambient lords-hall read"
 assert "CanInjectVassalageRuleForPromptCapture(hero, targetCharacter)" in capture_eligibility and "CanInjectVassalageRuleForExternal(hero, targetCharacter)" not in capture_eligibility, "eager capture must not emit per-topic vassalage diagnostics"
-vassalage = (ROOT / "VassalageBehavior.cs").read_text(encoding="utf-8-sig")
+vassalage = (ROOT / "src/modules/AF.Module.Diplomacy/Vassalage/VassalageBehavior.cs").read_text(encoding="utf-8-sig")
 silent_vassalage = extract.declaration(vassalage, "internal static bool CanInjectVassalageRuleForPromptCapture(")
 assert "TryBuildVassalageRuntimeState(" in silent_vassalage and "VassalageDiagnosticLog.Event(" not in silent_vassalage, "capture predicate must be read-only"
 assert "captured.IsRuleEligibleForRag(text)" in rag_gate and rag_gate.index("captured.IsRuleEligibleForRag(text)") < rag_gate.index("ShouldExcludeRuntimeRuleForConversationTarget(text)"), "RAG must consult captured facts before live Hero/Mission fallback"

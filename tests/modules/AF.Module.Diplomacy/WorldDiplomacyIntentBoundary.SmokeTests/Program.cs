@@ -2347,7 +2347,7 @@ internal static class Program
 
     private static void RunOutputTruncationRepairContractTests(string source)
     {
-        string clientSource = File.ReadAllText(FindRepositoryFile("WorldDiplomacyLlmClient.cs"), Encoding.UTF8);
+        string clientSource = File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/World/WorldDiplomacyLlmClient.cs"), Encoding.UTF8);
         string apiResultDto = ExtractSection(
             clientSource,
             "internal sealed class WorldDiplomacyApiCallResult",
@@ -3176,7 +3176,7 @@ internal static class Program
 	private static void RunPermanentAllianceContractTests(string worldDiplomacySource)
 	{
 		string guard = File.ReadAllText(
-			FindRepositoryFile("PermanentAllianceGuard.cs"),
+			FindRepositoryFile("src/modules/AF.Module.Diplomacy/Guards/PermanentAllianceGuard.cs"),
 			Encoding.UTF8);
 		string diplomacy = File.ReadAllText(
 			FindRepositoryFile(Path.Combine("src", "modules", "AF.Module.Diplomacy", "Direct", "DiplomacyBehavior.Actions.cs")),

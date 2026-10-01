@@ -43,7 +43,7 @@ internal static class Program
         int jobRuntimeInsertion = behavior.IndexOf("private bool EnsureRequestFitsInputBudget(", StringComparison.Ordinal);
         Test.True(jobRuntimeInsertion >= 0, "world diplomacy job runtime insertion marker must exist");
         behavior = behavior.Insert(jobRuntimeInsertion, jobRuntime + Environment.NewLine);
-        string client = ReadRepositoryFile("WorldDiplomacyLlmClient.cs");
+        string client = ReadRepositoryFile("src/modules/AF.Module.Diplomacy/World/WorldDiplomacyLlmClient.cs");
 
         VerifyDefaultsAndRanges(settings);
         VerifyDeclarationLengthSettingsAndPromptContract(settings, behavior);

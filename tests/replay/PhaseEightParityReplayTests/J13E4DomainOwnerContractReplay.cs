@@ -27,7 +27,7 @@ internal static class J13E4DomainOwnerContractReplay
         string entryOwner = Read("src/modules/AF.Module.Settlement/SettlementMissionEntryOwner.cs");
         string followerOwner = Read("src/modules/AF.Module.Settlement/SettlementFollowerMissionOwner.cs");
         string inspectionOwner = Read("src/modules/AF.Module.Settlement/TroopInspectionSessionOwner.cs");
-        string siege = Read("SiegeAiInterventionBehavior.cs");
+        string siege = Read("src/AF.GameAdapter.Bannerlord/Composition/SiegeAftermath/SiegeAiInterventionBehavior.cs");
         string castle = Read("src/bridges/Siege/Host/CastleAftermathSiegeSceneBridge.cs");
 
         Require(Count(campaign, "campaignGameStarter.AddBehavior(new SettlementEntryTroopSelectionBehavior())") == 1
