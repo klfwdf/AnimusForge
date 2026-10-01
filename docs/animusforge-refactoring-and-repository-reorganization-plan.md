@@ -13,6 +13,20 @@
 - **Release双API+Bootstrap PASS**：`artifacts/civilwar-review-20261001/build-7e45d50bb81d40cab1d587f7fea10767/` exit 0，引用1.3.15.110062 / 1.4.6.115628；构建时HEAD `be67ba6e` + 本片工作树，之后本片提交为 `05870e6f`。并发其他任务继续改动，未把此构建当最新整仓全量验收。正式构建/覆盖入口未改。
 - **未验与回滚**：实机每日事件顺序、实际卡顿、真实旧档 NOT-RUN；历史代码地图working-tree漂移继续保留，本片坐标以 `05870e6f` 为准，不刷新全局哈希。回滚仅逆向 `05870e6f`，不撤销其他任务。本轮还只读确认“王室阵营默认包含国王家族、其他家族默认中立、没有AI自动招募保皇派”，未新增保皇派功能。
 
+<a id="scene-image-presets-20261001"></a>
+
+### 场景插画分辨率预设映射（2026-10-01，OFFLINE_VERIFIED）
+
+用户要求选择2048×2048时场景插画生成2048×1152。本条取代下方固定1280×720行为；检查点 `a24baa5`，产品提交 `82269de8`。实际工作区与分支仍为 `F:/AnimusForge-main`、`codex/af-main-refactor-continuation-20260831`；并发CivilWar产品/测试改动保留，不纳入本任务提交。
+
+- `extensions/AnimusForge.Illustrator/src/Core/IllustratorRuntime.cs:47–63` 的 WithSceneImageSize 将现有六预设映射为三档：1024×1024/1280×720/720×1280→1280×720，1344×768/1024×1536→1536×864，2048×2048→2048×1152。所有输出严格16:9且两边为16倍数；最低档避免1024×576低于GPT Image 2像素下限。每次生成只做常数时间switch及请求快照复制，MCM原值不修改。
+- `extensions/AnimusForge.Illustrator/src/UI/Overlays/IllustrationCardPopup.cs:691–693` 的 ExecuteConversationGenerationCore 接入映射，导演提示使用实际映射尺寸；images仍经原请求链发送size，Chat发送对应aspect_ratio。仅新生成场景/地图会话图受影响，旧图缓存保留，快报及百科行为不变。
+- `extensions/AnimusForge.Illustrator/src/Settings/IllustratorSettings.cs:221` 更新现有Size下拉提示，说明三档映射及服务商支持前提；未增加配置字段/预设索引或迁移用户配置。
+
+验证：隔离Release双API（1.3.15引用/1.4.6引用）与Bootstrap全部exit0、0错误，既有警告保留；两个实际DLL各跑六个预设，映射、原快照不变、16:9、16倍数、像素下限、Chat比例全部PASS。脚本 `artifacts/scene-image-presets-20261001/verify.ps1`，构建日志/修订状态/哈希 `artifacts/scene-image-presets-20261001/build-ee3e060cc92a47ef98e63606b89d149b/`；整个DLL包含当时工作树并发内容，不冒称仅本提交产物。git diff --check PASS。
+
+未验：真实API（尤其第三方中转尺寸支持）、游戏UI和旧档；未Stage/部署/推送，无付费生图。源码回滚仅定向revert `82269de8`（会恢复固定1280×720实现），不回滚其他作者内容。本条不提升J17/C/D总体验收。
+
 <a id="scene-image-16x9-20261001"></a>
 
 ### 场景插画16:9请求尺寸（2026-10-01，OFFLINE_VERIFIED）
