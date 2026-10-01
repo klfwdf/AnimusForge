@@ -3,6 +3,11 @@ Existing captured fixture supplies game/provider seams; no business writers are 
 """
 from __future__ import annotations
 import argparse, hashlib, importlib.util, json, os, re, subprocess, sys
+import sys as _legacy_sys
+from pathlib import Path as _LegacyPath
+_legacy_sys.path.insert(0, str(_LegacyPath(__file__).resolve().parents[4] / "tests"))
+from af2_terminal_migration_review import historical_source
+AF2_FIXTURE_METADATA = {"sourceClass": "legacy-oracle-extraction", "currentOwnerReplayProjected": False}
 from pathlib import Path
 from xml.sax.saxutils import escape
 ROOT = Path(__file__).resolve().parents[4]
@@ -24,7 +29,7 @@ def main():
     support=__import__('business_owner_fixture_support');support.enable_expression_declarations(ex)
     manifest=[]
     def read(name):
-        data=(current_source_path(ROOT, name)).read_text(encoding='utf-8-sig');manifest.append(dict(file=name,sha256=hashlib.sha256(data.encode()).hexdigest()));return data
+        data=(historical_source(name) if name in {'MyBehavior.cs', 'MyBehavior.MemoryRecovery.cs', 'MyBehavior.WeeklyActionOutcomeReceipts.cs'} else (current_source_path(ROOT, name)).read_text(encoding='utf-8-sig'));manifest.append(dict(file=name,sha256=hashlib.sha256(data.encode()).hexdigest()));return data
     source=read('MyBehavior.cs');snippets=[]
     names=list(dict.fromkeys(capture.NAMES+[re.search(r'(\w+)\($',s).group(1) for s in business.METHODS]+'''AppendDailyMemoryLineById LoadDailyMemoryDraftsById SaveDailyMemoryDraftsById IsDailyMemoryLinePublished AttachPendingWeeklyMemoryMaterialTriggers AddWeeklyMemoryMaterialTriggerToDraft PrunePendingWeeklyMemoryMaterialTriggers LoadCompressedMemoryBlocksById SaveCompressedMemoryBlocksById MarkMemoryOverviewDirty CountDailyMemoryDraftLines HasCompressedMemoryBlock LoadDialogueHistoryById SaveDialogueHistoryById RemoveExpiredSingleUseNpcFactLines IsSingleUseNpcFactLine IsFirstMeetingNpcFactBody IsMeaningfulDirectConversationLine IsMeaningfulConversationLine IsSystemFactLine IsLoreInjectionHistoryLine CountDialogueHistoryLines RecordNpcMajorAction RecordNpcActionInternal CreateNpcActionEntry GetNpcActionHeroKey CompareNpcActionTimeline'''.split()))
     # Admission/maintenance scans have their own real business suite, not this terminal scenario.

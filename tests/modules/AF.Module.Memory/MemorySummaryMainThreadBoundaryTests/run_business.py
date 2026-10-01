@@ -6,6 +6,11 @@ All generated sources, manifests and logs stay under ignored .generated/business
 from __future__ import annotations
 
 import argparse
+import sys as _legacy_sys
+from pathlib import Path as _LegacyPath
+_legacy_sys.path.insert(0, str(_LegacyPath(__file__).resolve().parents[4] / "tests"))
+from af2_terminal_migration_review import historical_source
+AF2_FIXTURE_METADATA = {"sourceClass": "legacy-oracle-extraction", "currentOwnerReplayProjected": False}
 import hashlib
 import importlib.util
 import json
@@ -78,7 +83,7 @@ def build_sources(original, mutation, run_owner_baseline=False):
     extractor = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(extractor)
     support=__import__('business_owner_fixture_support');support.enable_expression_declarations(extractor)
-    source = extractor.source("MyBehavior.cs", "155f1b7a" if run_owner_baseline else BASELINE if original else None)
+    source = extractor.source("MyBehavior.cs", "155f1b7a" if run_owner_baseline else BASELINE) if (run_owner_baseline or original) else historical_source("MyBehavior.cs")
     signatures = [f"private sealed class {name}" for name in MODELS if original or run_owner_baseline or name not in B1A_MODELS] + (["private class NpcActionEntry"] if original or run_owner_baseline else []) + METHODS
     constant = re.search(r'private const string NonHeroMemoryIdPrefix = [^;]+;', source)
     if constant is None:

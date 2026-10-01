@@ -1,4 +1,9 @@
 import argparse
+import sys as _legacy_sys
+from pathlib import Path as _LegacyPath
+_legacy_sys.path.insert(0, str(_LegacyPath(__file__).resolve().parents[4] / "tests"))
+from af2_terminal_migration_review import historical_source
+AF2_FIXTURE_METADATA = {"sourceClass": "legacy-oracle-extraction", "currentOwnerReplayProjected": False}
 import os
 import subprocess
 from pathlib import Path
@@ -33,7 +38,7 @@ if not boundary_path.exists():
 
 boundary = (subprocess.check_output(["git", "show", args.source_baseline + ":MyBehavior.MemorySummaryMainThread.cs"], cwd=ROOT).decode("utf-8-sig").replace("\r\n", "\n") if args.source_baseline else boundary_path.read_text(encoding="utf-8-sig"))
 runtime = (ROOT / "src/modules/AF.Module.Memory/Summary/MemorySummaryDispatcher.cs").read_text(encoding="utf-8-sig") if "MemorySummaryDispatcher" in boundary else None
-process = (current_source_path(ROOT, "MyBehavior.cs")).read_text(encoding="utf-8-sig")
+process = historical_source("MyBehavior.cs") # Legacy wiring assertions, not dispatcher Compile input.
 required_process_fragments = [
     "await RunMemorySummaryRunPhaseAsync(run, runtimeGeneration",
     "ApplyMemorySummarySuccess(result.Job, result.Block)",

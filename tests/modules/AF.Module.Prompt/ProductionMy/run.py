@@ -2,6 +2,11 @@
 from __future__ import annotations
 
 import importlib.util
+import sys as _legacy_sys
+from pathlib import Path as _LegacyPath
+_legacy_sys.path.insert(0, str(_LegacyPath(__file__).resolve().parents[4] / "tests"))
+from af2_terminal_migration_review import historical_source
+AF2_FIXTURE_METADATA = {"sourceClass": "legacy-oracle-extraction", "currentOwnerReplayProjected": False}
 import os
 from pathlib import Path
 import subprocess
@@ -11,7 +16,7 @@ HERE = Path(__file__).resolve().parent
 spec = importlib.util.spec_from_file_location("extract", ROOT / "tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py")
 extract = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(extract)
-source = (ROOT / "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.cs").read_text(encoding="utf-8-sig")
+source = historical_source('src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.cs')
 method = extract.declaration(source, "public static string BuildSettlementTransferRuntimeInstructionForExternal(")
 stubs = (ROOT / "tests/modules/AF.Module.Prompt/Retrieval/FacadeStubs.cs").read_text(encoding="utf-8")
 for before, after in (

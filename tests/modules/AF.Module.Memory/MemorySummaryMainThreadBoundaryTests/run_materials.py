@@ -3,6 +3,11 @@ Historical mode extracts the real 62abfdb3 implementation, not a rewritten oracl
 """
 from __future__ import annotations
 import argparse, hashlib, importlib.util, json, os, re, subprocess, sys
+import sys as _legacy_sys
+from pathlib import Path as _LegacyPath
+_legacy_sys.path.insert(0, str(_LegacyPath(__file__).resolve().parents[4] / "tests"))
+from af2_terminal_migration_review import historical_source
+AF2_FIXTURE_METADATA = {"sourceClass": "legacy-oracle-extraction", "currentOwnerReplayProjected": False}
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[4];HERE=Path(__file__).resolve().parent
 sys.path.insert(0,str(ROOT/'tests'))
@@ -14,7 +19,7 @@ def main():
     ap=argparse.ArgumentParser(description=__doc__);ap.add_argument('--source-baseline',choices=['62abfdb3','c21523f8']);ap.add_argument('--mutate',choices=MUTATIONS);ap.add_argument('--run-root',type=Path);a=ap.parse_args();sys.stdout.reconfigure(encoding='utf-8')
     if a.source_baseline and a.mutate:raise ValueError('Use either historical real source or one current mutation')
     spec=importlib.util.spec_from_file_location('material_ex',ROOT/'tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py');ex=importlib.util.module_from_spec(spec);spec.loader.exec_module(ex)
-    def read(name):return (current_source_path(ROOT, name)).read_text(encoding='utf-8-sig')
+    def read(name):return historical_source(name) if name == 'MyBehavior.cs' else (current_source_path(ROOT, name)).read_text(encoding='utf-8-sig')
     def digest(text):return hashlib.sha256(text.encode()).hexdigest()
     def change(text,old,new,count=1):
         if text.count(old)!=count:raise ValueError('Materials mutation anchor drift: '+old)

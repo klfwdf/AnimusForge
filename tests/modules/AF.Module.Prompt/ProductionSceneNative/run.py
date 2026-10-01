@@ -2,6 +2,11 @@
 from __future__ import annotations
 
 import importlib.util
+import sys as _legacy_sys
+from pathlib import Path as _LegacyPath
+_legacy_sys.path.insert(0, str(_LegacyPath(__file__).resolve().parents[4] / "tests"))
+from af2_terminal_migration_review import historical_source
+AF2_FIXTURE_METADATA = {"sourceClass": "legacy-oracle-extraction", "currentOwnerReplayProjected": False}
 import os
 from pathlib import Path
 import subprocess
@@ -11,13 +16,13 @@ HERE = Path(__file__).resolve().parent
 spec = importlib.util.spec_from_file_location("extract", ROOT / "tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py")
 extract = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(extract)
-source = (ROOT / "src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.cs").read_text(encoding="utf-8-sig")
+source = historical_source('src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.cs')
 top = extract.declaration(source, "private static string BuildSceneSystemTopPromptIntroForSingle(")
 runtime = extract.declaration(source, "private static string BuildSceneUserRuntimeContextForSingle(")
 role = extract.declaration(source, "private static string BuildSceneNpcRoleIntroForPrompt(")
 assert "BuildFilteredInventorySummaryForAI(hero, inventoryMentions, promptListMax, includePrivateBattleEquipment: includeTradePricing)" in role
 assert "BuildFilteredSettlementMerchantInventorySummaryForAI(characterObject, inventoryMentions, promptListMax)" in role
-native = extract.declaration((ROOT / "src/modules/AF.Module.Conversation/Channels/Native/ShoutBehavior.NativeTurnPrompt.cs").read_text(encoding="utf-8-sig"), "private void CapturePromptRules()")
+native = extract.declaration(historical_source('src/modules/AF.Module.Conversation/Channels/Native/ShoutBehavior.NativeTurnPrompt.cs'), "private void CapturePromptRules()")
 assert native.count("ctx?.MentionedEntities") >= 2
 assert "BuildSceneSystemTopPromptIntroForSingle(npc, targetHero, presentNpcs, includeInventorySummary, includeTradePricing, partyTransferTopicSelected, ctx?.MentionedEntities)" in native
 assert "BuildSceneUserRuntimeContextForSingle(npc, targetHero, presentNpcs, includeInventorySummary, includeTradePricing, partyTransferTopicSelected, ctx?.MentionedEntities)" in native

@@ -3,6 +3,11 @@ No network or game deployment. Return 2 for extraction/build failure, 1 for runt
 """
 from __future__ import annotations
 import argparse, hashlib, importlib.util, json, os, re, subprocess, sys
+import sys as _legacy_sys
+from pathlib import Path as _LegacyPath
+_legacy_sys.path.insert(0, str(_LegacyPath(__file__).resolve().parents[4] / "tests"))
+from af2_terminal_migration_review import historical_source
+AF2_FIXTURE_METADATA = {"sourceClass": "legacy-oracle-extraction", "currentOwnerReplayProjected": False}
 from pathlib import Path
 from xml.sax.saxutils import escape
 ROOT=Path(__file__).resolve().parents[4]
@@ -20,7 +25,7 @@ def main():
     sys.stdout.reconfigure(encoding='utf-8')
     spec=importlib.util.spec_from_file_location('capture_ex',ROOT/'tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py');ex=importlib.util.module_from_spec(spec);spec.loader.exec_module(ex)
     support_spec=importlib.util.spec_from_file_location('capture_state_support',HERE/'business_owner_fixture_support.py');support=importlib.util.module_from_spec(support_spec);support_spec.loader.exec_module(support);support.enable_expression_declarations(ex)
-    def read(path):return subprocess.check_output(['git','show',a.source_baseline+':'+path],cwd=ROOT).decode('utf-8-sig').replace('\r\n','\n') if a.source_baseline else (current_source_path(ROOT, path)).read_text(encoding='utf-8-sig')
+    def read(path):return subprocess.check_output(['git','show',a.source_baseline+':'+path],cwd=ROOT).decode('utf-8-sig').replace('\r\n','\n') if a.source_baseline else (historical_source(path) if path in {'MyBehavior.cs', 'MyBehavior.MemoryRecovery.cs', 'MyBehavior.WeeklyActionOutcomeReceipts.cs'} else (current_source_path(ROOT, path)).read_text(encoding='utf-8-sig'))
     if a.source_baseline and a.mutate:raise ValueError('Baseline and mutation are exclusive')
     source=read('MyBehavior.cs');snippets=[];manifest=[]
     def add(sig):
