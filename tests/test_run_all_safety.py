@@ -94,6 +94,37 @@ class RunAllSafetyTests(unittest.TestCase):
         self.assertIn(f"-p:ReplayOutputRoot={build_root}", cmd)
         self.assertFalse(build_root.exists())
 
+    def test_csproj_runs_evaluated_isolated_target_not_old_bin(self):
+        build_root = self.repo / "artifacts" / "entry-builds" / "unique"
+        target = build_root / "bin" / "ExampleTests" / "release" / "ExampleTests.dll"
+        target.parent.mkdir(parents=True)
+        target.write_bytes(b"synthetic")
+        cmd = ["dotnet", "run", "--project", "ExampleTests.csproj", "-c", "Release",
+               "-p:UseArtifactsOutput=true", f"-p:ArtifactsPath={build_root}", "--", "fixture"]
+        replies = [subprocess.CompletedProcess([], 0, "build", ""),
+                   subprocess.CompletedProcess([], 0, json.dumps({"Properties": {
+                       "TargetPath": str(target), "TargetFramework": "net8.0"}}), ""),
+                   subprocess.CompletedProcess([], 0, "checks", "")]
+        with patch.object(runner.subprocess, "run", side_effect=replies) as launch:
+            done = runner.execute(cmd, {}, build_root, 30)
+        self.assertEqual(done.returncode, 0)
+        self.assertEqual(launch.call_args_list[0].args[0][1], "build")
+        self.assertNotIn("--project", launch.call_args_list[0].args[0])
+        self.assertEqual(launch.call_args_list[-1].args[0], ["dotnet", str(target), "fixture"])
+
+    def test_csproj_rejects_old_bin_target_before_runtime(self):
+        target = self.repo / "bin" / "ExampleTests.dll"
+        target.parent.mkdir(parents=True)
+        target.write_bytes(b"synthetic")
+        cmd = ["dotnet", "run", "--project", "ExampleTests.csproj", "-c", "Release"]
+        replies = [subprocess.CompletedProcess([], 0, "build", ""),
+                   subprocess.CompletedProcess([], 0, json.dumps({"Properties": {
+                       "TargetPath": str(target), "TargetFramework": "net8.0"}}), "")]
+        with patch.object(runner.subprocess, "run", side_effect=replies) as launch:
+            with self.assertRaisesRegex(ValueError, "escaped isolated"):
+                runner.execute(cmd, {}, self.repo / "artifacts/new", 30)
+        self.assertEqual(launch.call_count, 2)
+
     def test_missing_required_candidate_blocks_without_launch(self):
         with patch.object(runner, "DLL14", self.repo / "missing-candidate.dll"):
             _, launch = self.invoke({"replay.csproj": {"candidateDll": True}})

@@ -287,6 +287,13 @@
   },
   "tests/modules/AF.Module.Economy/ProductionEconomyOwnerReplayTests/ProductionEconomyOwnerReplayTests.csproj": {
    "candidateDll": true
-  }
+  },
+  "tests/modules/AF.Module.Prompt/Composition/run_actual_message_assembly.py": {
+   "args": [
+    "--candidate",
+    "{DLL14}"
+   ]
+  },
+  "tests/modules/AF.Module.Conversation/InteractionRequestLifetimeTests/run_courier_retirement.py": {}
  }
 }
