@@ -2,11 +2,11 @@
 
 ### J17 B6 有限边界当前回读（2026-10-01，包5）
 
-以下是当前源码逐符号边界，不重做 A/Memory/Weekly/B7，也不将整文件或历史 E 表标成新验收。当前813锚点地图绑定 `23627405`（recorded/working-tree均PASS），最终构建产品输入 `08b95aa7` 至测试冻结 `af6006c4` 无产品源差分；完整C与未验边界见[主台账本轮结果](../animusforge-refactoring-and-repository-reorganization-plan.md#j17-b6-c-resume-20261001)。地图仅为定位，不是实机。
+以下是当前源码逐符号边界，不重做 A/Memory/Weekly/B7，也不将整文件或历史 E 表标成新验收。当前813锚点地图绑定 `ccd6c2fd`（recorded/working-tree均PASS）；本轮源码有精确死段删除，不继承旧 candidate 全C状态。先前 B6/C 历史证据见[主台账本轮结果](../animusforge-refactoring-and-repository-reorganization-plan.md#j17-b6-c-resume-20261001)。地图仅为定位，不是实机。
 
 - **R05-f retained**：`LegacyActionTagParser.Parse` 持 detached ActionPlan；`GiveAssetTagCodec` 持 GIVE_ASSET codec。Scene/Courier/Memory/Reward 的 strip/count/mood 筛选仍归各渠道/领域，不假称“所有剥离/计数已改单一 parser”。`AnimusForgeTagCatalog.BracketTagRegex` 是工具目录扫描/目录展示（15 秒缓存），不是生产动作解析权威。Xihai 扩展 binding 保留自己的协议约束；不扩大迁移。
 - **R05-g retained**：`ShoutBehavior` 的 `_nativeConversationSessionHistory` 和 `_pendingCurrentNativeAfefFactsByKey` 是会话/待注入投影；`PrepareNativeConversationPendingHistoryAsync` 在主线程一次捕获 key、tentative 玩家事件与 AFEF，再交请求自有数据；拒绝时按 key/event/owner 撤回，不清真实事实。`BuildNativeConversation*HistoryLinesForPrompt` 仍调用 `TryRenderSceneHistoryLine`；“渲染不同”不成立。Memory 的 daily/persistent commit 权威不迁入这个会话 owner。每请求复制/筛选会话列表，非每帧扫描；真实帧耗时 NOT-RUN。
-- **R05-i OPEN**：本轮没有旧分支/opt-in facade/runner/API 删除许可。缺的是逐项精确文件/完整符号/删除区间，以及 C#、字符串反射、测试消费者迁移/兼容处理的许可；不是笼统“可删除死代码”。`HandleGroupResponse` 中 `usePerHeroIndependentRequests=true` 后 return 的旧尾段（当前 Scene chains:374–774）可列候选，不删除外层入口或活 per-hero 群聊。历史所谓“恒不可达 else”现在在 `FeatureBridgeRuntime.IsEnabled(ConversationGateway)` 的运行开关分支（1129、1227）中，不能沿旧行号认死。Courier opt-in public wrapper 仍有 core/facade/commit 内部调用链（根 Courier:465–523）；0 外部生产调用不等于所有相关 helper 都无责任。`GetPassiveNpcResponse` 明确有 Xihai 反射调用，签名保留。
+- **R05-i 精确死尾段清理已执行；兼容入口 retained**：用户“允许删除”仅授权确证无调用/兼容/保存责任的死代码。`ccd6c2fd` 删除 `HandleGroupResponse` 原 `374–760` 恒真局部开关后的旧组合流尾段及原 `362` 仅供死段使用的 token 局部；外层签名、trace、异常回执保留，直接等待同参数的活 per-hero owner。当前 wrapper `360–389`、per-hero `391+`；完整反向替换重构原文件，其他声明逐字不变，无私有 helper 删除。运行 `FeatureBridgeRuntime.IsEnabled(ConversationGateway)` 分支现在 `743/841`，不属于死代码。Xihai `AfCompatV130.cs:207` 字符串反射调用 `GetPassiveNpcResponse`，保留签名。Courier reply opt-in 由 `GenerationLifecycle.cs:242` 真实消费；inbound 和 Native public opt-in 是保留兼容面，仍接 core/facade/commit/取消链，不能以仓内零外部调用删公共 API。`RunCourierActionPostprocessForExternal` 兼容入口不在本次死段范围；任何以后移除需单独消费者/兼容闭包。新候选构建/C与限制见[本轮主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#j17-r05-i-cleanup-20261001)。
 
 | 子项 | 当前坐标/符号（一基声明坐标） | 真实保留职责/未覆盖 |
 | --- | --- | --- |
@@ -28,9 +28,9 @@
 | R05-g | `ShoutBehavior.cs:27334` `RemoveNativeConversationSessionHistoryEventFromSceneHistory` | 保留 Conversation 请求/会话投影；不接管 Memory 权威持久。 |
 | R05-g | `ShoutBehavior.cs:27393` `AppendSceneEventToNativeSharedHistory` | 保留 Conversation 请求/会话投影；不接管 Memory 权威持久。 |
 | R05-g | `ShoutBehavior.cs:27546` `ConsumePendingCurrentNativeAfefFactMessagesForPrompt` | 保留 Conversation 请求/会话投影；不接管 Memory 权威持久。 |
-| R05-i | `ShoutBehavior.cs:22212` `RunCourierActionPostprocessForExternal` | 仅逐符号记录；删除需单独精确许可及动态消费者闭包。 |
-| R05-i | `ShoutBehavior.cs:16767` `CreateNativeConversationOptInRunnerForExternal` | 仅逐符号记录；删除需单独精确许可及动态消费者闭包。 |
-| R05-i | `ShoutBehavior.cs:16990` `SubmitNativeConversationRefactorOptInForExternalAsync` | 仅逐符号记录；删除需单独精确许可及动态消费者闭包。 |
+| R05-i | `ShoutBehavior.cs:22212` `RunCourierActionPostprocessForExternal` | retained：兼容/内部链未证明无责任，不在死段删除范围。 |
+| R05-i | `ShoutBehavior.cs:16767` `CreateNativeConversationOptInRunnerForExternal` | retained：兼容/内部链未证明无责任，不在死段删除范围。 |
+| R05-i | `ShoutBehavior.cs:16990` `SubmitNativeConversationRefactorOptInForExternalAsync` | retained：兼容/内部链未证明无责任，不在死段删除范围。 |
 | R05-g | `ShoutBehavior.NativePendingHistory.cs:20` `PrepareNativeConversationPendingHistoryAsync` | 保留 Conversation 请求/会话投影；不接管 Memory 权威持久。 |
 | R05-g | `ShoutBehavior.NativePendingHistory.cs:51` `RollbackNativeConversationPendingPlayerHistoryAsync` | 保留 Conversation 请求/会话投影；不接管 Memory 权威持久。 |
 | R05-g | `ShoutBehavior.NativePendingHistory.cs:65` `RunNativePendingHistoryOnMainThreadAsync` | 保留 Conversation 请求/会话投影；不接管 Memory 权威持久。 |
@@ -40,8 +40,8 @@
 | R05-f | `MyBehavior.cs:33039` `ExtractMoodAndStripTag` | 保留渠道呈现/标签筛选；不是统一 parser 已迁完。 |
 | R05-f | `RewardSystemBehavior.cs:15521` `StripHeroTradeActionTags` | 保留渠道呈现/标签筛选；不是统一 parser 已迁完。 |
 | R05-f | `src/modules/AF.Module.Actions/Tags/LegacyActionTagParser.cs:28` `Parse` | detached ActionPlan 解析 owner；不执行游戏效果，也不替代全部渠道 strip/count。 |
-| R05-i | `src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.SceneConversationChains.cs:360` `HandleGroupResponse` | 仅逐符号记录；删除需单独精确许可及动态消费者闭包。 |
-| R05-i | `src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.SceneConversationChains.cs:777` `HandleGroupResponsePerHeroIndependent` | 实际运行的群聊/旁听/接力 owner；保留，非旧分支删除候选。 |
+| R05-i | `src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.SceneConversationChains.cs:360` `HandleGroupResponse` | retained：兼容/内部链未证明无责任，不在死段删除范围。 |
+| R05-i | `src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.SceneConversationChains.cs:391` `HandleGroupResponsePerHeroIndependent` | 实际运行的群聊/旁听/接力 owner；保留，非旧分支删除候选。 |
 | R05-i | `src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.SceneConversationChains.cs:188` `GetPassiveNpcResponse` | 活反射入口，Xihai AfCompatV130.cs:204–221 按名字/签名调用；明确禁止当死代码删除。 |
 
 包5本轮实际定向：NativePendingHistoryBoundary 111 PASS/0 FAIL（真实 prepare/reject/append/snapshot/renderer、游戏桩）；NativeTurn 112 checks PASS；ReplayCandidateInput 12 checks PASS。Phase8 entry inventory 首次发现远端 `CustomPolicyBehavior.VoteInterest.cs` 缺候选；仅补路径与负控，并将 policy entryCoverage 从 COMPLETE 降 REPRESENTATIVE，保持 owner ASSIGNED（不宣称政策业务审过），11 单测/entry check 通过。DataPaths 缺 Windows KnownFolder 的合成环境必须验证生产 fail-closed，默认 LocalAppData 可用分支保留 NOT-RUN；不能继承真实用户目录环境。上述均不是实机/旧档/真实网络/性能验收。

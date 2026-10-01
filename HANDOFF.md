@@ -1,5 +1,8 @@
 # 当前交接：J17 收尾与远端 CivilWar 合并（2026-10-01）
 
+- **最新 R05-i 精确清理（2026-10-01）**：`ccd6c2fd` 仅删除恒真分支后的旧群聊死尾段；活 per-hero/旁听、开关分支与反射/兼容入口保留。31编译行为+15源码检查、两个编译成功具名负控、Debug/Release双API+Bootstrap通过。新候选完整C唯一失败是尚未写入的文档锚点，已补齐并定向收尾；原失败不改写，D仍NOT-RUN。详见[唯一台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#j17-r05-i-cleanup-20261001)及[813代码地图](docs/architecture/af-framework-code-map.json)。无推送/部署。
+
+
 - **本轮最新：J17 B6有限离线出口与完整C已验（2026-10-01）**：六包必要定向/编译后行为变异及当前1.4 DLL回读完成；Debug/Release × 双API+Bootstrap全部exit0，最终同候选C **287项：243 PASS、0 FAIL/0 BLOCKED_ENV；33既有失败、6需输入、4替代、1环境状态保留，exit0**，不是全部测试通过。产品相对远端WIP无新增语义修改，测试冻结`af6006c4`，813地图已绑定/双模式验。f/g retained、i OPEN；D实机/真实旧档/真实网络/性能NOT-RUN，1.3实际message runtime缺SaveSystem未验，旧凭据轮换未确认。未push/Stage/部署/清理，原SessionTransport dirty和旧tools/NuGet保留。[唯一详细当前结果](docs/animusforge-refactoring-and-repository-reorganization-plan.md#j17-b6-c-resume-20261001)；下方ACTIVE/暂停与历史上传授权均不再发当前指令。
 
 - **本轮恢复意图（历史，结果见上条；2026-10-01）**：用户已明确恢复施工，不延续推送/Stage/部署授权。WIP 基线 `3c00ae2e`，空意图检查点 `38efd7eb`；六包各自实现/定向验证，P6 唯一共享接线/Git/串行构建和最终同候选 C。A/Memory/Weekly/B7 不重做，保留 SessionTransport 初始 dirty 及旧 tools/NuGet/产物；当前 ACTIVE，尚未验收。最新范围和证据集中于[主台账当前入口](docs/animusforge-refactoring-and-repository-reorganization-plan.md#j17-b6-c-resume-20261001)，下方暂停和历史授权不是当前指令。D NOT-RUN，旧凭据轮换未确认。
