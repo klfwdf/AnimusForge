@@ -1,4 +1,10 @@
-# 当前补充：远端功能合并与9新增源码归位（2026-10-01）
+# 当前补充：AF2 最终职责冻结（2026-10-01）
+
+本轮不是单纯物理归位：Kingdom/Rebellion、Social/Patience、Memory/Summary与Recovery、Weekly/Generation、Conversation/Internal与Native、Persona/Generation及Llm/Protocol分别承接本轮具名规则/状态。仍同DLL，不新增公共V1接口或默认gateway，不改存档/程序集/模块身份。最终主Compile1199、资源8（两API集合一致）；旧1172为实施前基线。
+
+当前导航与五项维护影响读[838锚点范围图](af-framework-code-scope.md#af2-final-responsibility-closeout-20261001)，唯一实施/失败/验证/未验读[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#af2-final-responsibility-closeout-20261001)。两个大宿主仍含live capture、线程/保存/UI/游戏效果与兼容门面，不能把整文件称薄壳；下方物理归位计数保留历史语境。
+
+# 历史补充：远端功能合并与9新增源码归位（2026-10-01）
 
 远端 `982a5861` 的功能通过普通双父合并承接，已有327映射保持，新9精确批准文件整体归既有目录；root tracked C#仍0，累计物理归位336。不是新外交覆盖，也不改一键/默认入口/程序集或恢复root兼容副本。
 

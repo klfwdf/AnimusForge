@@ -1,3 +1,22 @@
+<a id="af2-final-responsibility-closeout-20261001"></a>
+### AF2 最终冻结职责与维护影响（2026-10-01）
+
+本节替代下方历史 R05-g“Native 状态留 Shout”、公共后处理待分离、Persona 纯规则未闭合的现态描述；不删除当时证据。产品冻结 `2287069b`，测试接合 `d0363c1a`。当前地图保留旧813个ID，14个迁移/门面变化按实际符号接通，增加25个新owner导航，共838锚点；绑定 `d0363c1a`，recorded/working-tree均通过。地图只证明导航，不证明整个文件完成或实机。
+
+| S6 代表维护变更 | 唯一规则/状态落点 | 必要宿主适配、保存和频率 |
+| --- | --- | --- |
+| F1 候选/跟随资格与命名尝试策略 | `Kingdom/Rebellion/RebellionRules`、`RebellionNamingRules/Owner` | MyBehavior采集Clan/Settlement/关系、实时重名、Banner/实际王国动作；存档原key。请求内事实缓存，不跨回合；排序O(C log C)，既有leader-pair O(C²)保留；最多3命名attempt。 |
+| F2 耐心neutral/mood/max规则 | `Social/Patience/PatienceRules`、唯一`PatienceOwner<TState>` | External门面/live关系效果和SyncData保留；原nested identity及四JSON字段。key查询O(1)，save/load O(S)，无新增tick扫描。 |
+| F3 压缩接受/失效与恢复提交 | `MemoryBusinessStateOwner`、`MemoryRecoveryStateOwner.CommitPrepared`、`MemorySourceFingerprintRules` | live source/资格/主线程dispatcher、Native清理与Weekly窄效果、原保存边界。Planning/Sealing游标同owner；原atomic capture/hash/trigger sanitize仍不可抢占，不声称整tick硬预算。 |
+| F4 输出身份/缺块/限流与通知策略 | `WeeklyGenerationRules/AttemptOwner`、`WeeklyNoticeStateOwner`；同域World状态/布局归`WorldBulletinStateOwner`，原`WorldBulletinPolicy`复用 | 原wave/commit队列不重建；live事件/calendar/config、UI/Illustrator与SyncData保留。通知失效重建，每tick最多8 pending，idle无全表净化；World既有tail64/layout48边界保留。 |
+| F5 reward命中资格/Native历史窗口 | 共同`ConversationActionPostprocessOwner.ApplyStageQualifications`、`NativeConversationSessionOwner`与`ConversationSpeechTextRules` | default/detached/public渠道同阶段；meeting/siege/move排除输入、Hero/Character/Agent事实、效果与transport时点仍分渠道捕获。普通500cap不含AFEF事实；按回合捕获，无新增tick扫描。 |
+
+Persona F5d提示词/文本回退/解析归`NpcPersonaTextRules`，通用JSON/截断归`JsonResponseTextCodec`；技能TW setter、lease/cooldown/readiness和保存不变。公开V1与同DLL内部接缝仍分离；旧构造重载、反射兼容门面与Courier存档身份保留，不切默认gateway。
+
+保留的两个宿主家族不是整文件“薄壳”：F0复用J17-A逐成员证据并核51 partial差集，live capture、线程调度、保存/游戏/UI外部effects与跨域兼容门面逐包具名保留；各包patch receipt记录旧symbol→模块owner→adapter consumer。Memory持久提交不搬入Native临时会话；Scene群聊primary-first/旁听relay与Courier预生成/到达/来信状态继续由已有渠道owner承担。剩余显示strip/count用途不等同执行parser，不为消除正则改玩法。
+
+有限owner/fixture、实际DLL、LIVE/SAVE分层；两项Sealing孤立mutant survivor仍为NOT_PROVEN，实机/旧档/provider/实际帧性能NOT-RUN。最终全量分类及六构建证据只读[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#af2-final-responsibility-closeout-20261001)，不继承下方历史成绩。
+
 <a id="remote-feature-merge-20261001"></a>
 ### 远端功能合并当前范围（2026-10-01）
 
