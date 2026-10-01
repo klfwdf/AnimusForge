@@ -17,6 +17,40 @@
 
 未验：游戏内画廊/输入框点击、背包图标与物品显示、真实保存读档、三渠道NPC实际回复、角色切换及现场性能。未Stage/部署/推送/付费生图。回滚只定向revert `fed01fb6`；已经写入玩家存档的画卷沿用既有RP记录，不随代码回滚删除。本包不提升J17/C/D总验收。
 
+<a id="civilwar-political-panel-20261001"></a>
+
+### 派系面板、事件政治与内战消息（2026-10-01，OFFLINE_VERIFIED / 未部署）
+
+本包执行用户“派系面板操作与事件驱动政治系统”实施计划，并补查周报、快报、人物记忆链路。工作区 `F:/AnimusForge-main`，分支 `codex/af-main-refactor-continuation-20260831`；本地意图检查点 `c1c3e5e`，产品/回归提交 `3b8337d78d22528570ddb299dd3fabcf21f39870`，身份收尾修复 `79874aaa`（新统治家族转王室阵营）。保留政策、处决、政变、图库等并行作者改动；主体提交仅包含本任务20文件；身份收尾仅改2个本包文件。本包不修改一键构建/覆盖入口、不扩展公开子MOD API、不部署或推送，不增加王室阵营AI自动招募。
+
+**落地行为**：原派系页加入身份、派系卡片选择、底部操作入口；创建诉求/目标、国王治理及补偿采用原生选项菜单，显示报价与禁用理由，最终确认重验版本/角色/目标/资源。玩家正式封臣可加入、离开、建派、下令或建议起兵；跨国七天冷却、一次关系惩罚、确定性继任、建国期间锁成员、叛军玩家看到原王国内战。国王压制/谈判/妥协/强制解散使用共用入口和七天冷却；待玩家答复保存三日条款，超时拒绝/抗命。真实议和归国先于补偿；宣权/独立使用实际王权与战争效果；明确失败不删除组织，已知安全的未完议和/归国重试，未知副作用保留核查。
+
+**调度与保存**：回调登记不满并合并王国待办；家族/派系不满与实力使用可增量重建的运行缓存，每日衰减沿用九种原来源的七天比例，新王室打压为七天累计10%。工作器最多32个可让出记录步、约1ms软预算，空队列常数返回；原生政治动作/建国提交不可被软预算抢占，不能把离线数字称为实机帧耗时上限。日级期限覆盖通牒、回答、个人/治理冷却、命名超时、战争期限、余波和停战承诺；成派/成员/事件升级防刷骰，玩家自建诉求保持，已送达诉求锁定。旧周入口仅兼容排队，不重复裁决。原保存键、类/枚举身份保留，JSON payload v4可读取v2/v3，保存操作回执、回复、未完成协议和命名状态；读档不会再次扣付已确认款项。
+
+**消息与记忆**：成功动作、派系成立/诉求变化、内战爆发与结局进入事件素材、参与领袖的重大/近期事迹和共用AFEF历史/每日记忆；玩家使用玩家行动入口。待回应、拒绝补偿和失败结算不写成成功事实。素材键不再仅使用国家+周，避免同日不同事件互相覆盖；快报沿用原捕获/选择/写稿/发布与NPC读取链路，区分“内战爆发 / 内战结束 / 派系交涉”，不保证每条素材一定被选入周报或立即发布。
+
+| 源码坐标（`3b8337d7` + `79874aaa`，一基；责任） | 真实入口及覆盖 |
+| --- | --- |
+| `src/AF.Contracts/Internal/TeamModules/ICivilWarModulePort.cs:10–117` | 同DLL请求、报价、结果、建派选项、待回应与刷新契约；公开API不变。 |
+| `src/modules/AF.Module.Kingdom/CivilWar/KingdomCivilWarOwner.Actions.cs:57–364` | Quote / Execute / ExecutePoliticalAction / CompletePoliticalResponse / PublishPoliticalResult：UI、AI、对话共用资格与效果，收据、失败保留、记录。 |
+| `src/modules/AF.Module.Kingdom/CivilWar/KingdomCivilWarOwner.Events.cs:19–322` | 日期迁移、合并队列、ProcessPending、DecayPoliticalRecords、EvaluatePoliticalKingdom、AI治理、目标变化；回调不递归建国。 |
+| `src/modules/AF.Module.Kingdom/CivilWar/KingdomCivilWarOwner.cs:251–274,515–660,741–834,1196–1231` | 兼容周/日入口、建国回报、保留失败、战争结算、旧对话转接、增量缓存。旧存档身份与真实效果owner保留。 |
+| `src/modules/AF.Module.Kingdom/CivilWar/KingdomCivilWarState.cs:29–186`；`CivilWarPoliticalRules.cs:8–29`（同目录） | v4追加字段、运行缓存不入档、初始策略费用/权重；`CivilWarCatalog.cs`登记第十种来源与诉求亲和权重。 |
+| `src/modules/AF.Module.Kingdom/CivilWar/CivilWarCampaignBehavior.cs:26–99` | 每日/主线程Tick、死亡继任、王国消亡、议和/归属/政策回调及三日回应弹窗；原事件来源保持。 |
+| `KingdomFactionTab.cs:57–95,350–476`；`KingdomFactionTab.Actions.cs:11–87` | 卡片/底部入口、报价与二次确认菜单、打开/状态变化刷新、关闭世代；未宣称实机布局/点击已验。 |
+| `src/AF.GameAdapter.Bannerlord/Composition/StartupPatchComposition.cs:27–29` | 显式注册面板OnFinalize补丁，防止只有补丁类而没有消费者。 |
+| `MyBehavior.cs:12012–12042`；`MyBehavior.CivilWarPolitics.cs:7–21` | 原异步命名/建国前后守卫；薄适配周报、快报及AFEF入口，原对话/记忆owner继续负责写入。 |
+| `src/modules/AF.Module.Weekly/Bulletin/WorldBulletinPolicy.cs:712–717`；`MyBehavior.WorldBulletinPanel.cs:210–212` | 新快报兜底标题/分类，避免把谈判或战争结局标成爆发。 |
+| `tests/modules/AF.Module.Kingdom/CivilWarLifecycle.ContractTests/PoliticalActionsTests.cs`；`Program.cs`/`Fakes.cs`（同目录） | 链接真实生产owner/效果/契约，只有游戏对象和原生动作使用桩；不是真实Campaign存档验收。 |
+
+**已验证**：生命周期/政治操作180项PASS；既有CivilWarRules smoke PASS（net6 EOL/fixture未赋值告警保留）。覆盖退出/跨国冷却/继任/创建、明确同意不二次掷骰、共享费用/冷却、补偿不叠加旧诉求、三日超时、真实桩转款/议和/归国/夺位/独立、重复点击、未知扣款失败不重放、已接受议和失败存读档后安全续结、v2/v3迁移、消息去重、缓存平均与成派防刷骰。100家族×10来源100日均值约0.27–0.37ms；另100新增家族、两派、100事件合并一个待办，分批总计约0.93–1.35ms（均为合成桩环境，受JIT/机器负载影响）。
+
+原构建辅助 `E:/PYTHON/python.exe artifacts/civilwar-review-20261001/run_build.py --configuration Release` 仅在内存隔离官方脚本的产物/obj路径，没有Stage/Deploy。最终候选 `artifacts/civilwar-review-20261001/build-5913b76c5c464547aa551fbedd995b34/` 的Release 1.3（`v1.3.15.110062`）、1.4（`v1.4.6.115628`）及Bootstrap exit0。该构建基于当时并行工作树，不是排除其他任务的独立发布包；之后20个本任务源码与测试归入上述提交。`political-final-evidence.json`记录源文件SHA-256、候选及未验项。两个实际DLL均反射生成完整面板XML，8个按钮模板、派系数据源、方法与子控件点击路由通过；用Windows PowerShell/.NET Framework独立进程注册真实OnFinalize Harmony类通过。此前PS新版.NET的BinaryFormatter异常属于探针宿主限制，切回游戏同类Framework宿主后通过，未改产品规避。
+
+**未验证/交付边界**：未运行真实Campaign、真实旧档、实际命名服务；未实测面板布局、鼠标/手柄点击、原生战争/家族归属副作用、快报实际选中发布、真实模型读取记忆和帧耗时。上述离线结果不等于实机验收。全仓历史代码地图不因本功能自动重标为完成；本表只覆盖具名消费者。本轮无游戏部署/远端推送。
+
+**回滚**：依次对 `79874aaa`、`3b8337d7` 做聚焦逆向提交（先 `git revert 79874aaa`，再 `git revert 3b8337d7`，先核对之后同文件改动），禁止整树reset；`c1c3e5e`是开工标记，不是回退整个共享工作树的授权。v4新增保存字段向后读取依赖老版本对未知JSON字段的兼容；回滚前另留玩家存档，真实降版旧档未验。
+
 <a id="coup-mcm-battle-options-20261001"></a>
 
 ### 篡位 MCM 七项战斗参数（2026-10-01，OFFLINE_VERIFIED / 未部署）
