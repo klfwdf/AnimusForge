@@ -294,6 +294,11 @@
     "{DLL14}"
    ]
   },
-  "tests/modules/AF.Module.Conversation/InteractionRequestLifetimeTests/run_courier_retirement.py": {}
+  "tests/modules/AF.Module.Conversation/InteractionRequestLifetimeTests/run_courier_retirement.py": {},
+  "tools/export_vanilla_text_index.py": {
+   "execution": "manual",
+   "expect": "NEEDS_INPUT",
+   "note": "Business exporter defaults to external game/source/output roots; requires explicit inputs and separate output authorization, never a test runner."
+  }
  }
 }
