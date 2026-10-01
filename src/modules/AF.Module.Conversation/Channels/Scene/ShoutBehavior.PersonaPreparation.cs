@@ -97,7 +97,7 @@ public partial class ShoutBehavior
     {
         if (candidates == null || candidates.Count == 0) return;
         long generation = SaveRuntimeGuard.CaptureGeneration();
-        int session = Volatile.Read(ref _sceneHistorySessionId), epoch = Volatile.Read(ref _sceneConversationEpoch);
+        int session = Volatile.Read(ref _sceneHistorySessionId), epoch = _sceneConversationEpoch;
         MyBehavior expectedPersonaOwner = MyBehavior.Instance;
         ScenePersonaPreparationScope scope = await RunNativeConversationMainThreadFuncAsync("scene_persona_scope", "scene", -1, () =>
         {

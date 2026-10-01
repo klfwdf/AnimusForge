@@ -3,52 +3,51 @@ using System.Collections.Generic;
 using System.Threading;
 using TaleWorlds.MountAndBlade;
 
+using static AnimusForge.ShoutBehavior;
 namespace AnimusForge;
 
-public partial class ShoutBehavior
+internal sealed partial class SceneConversationSessionRuntime
 {
-    internal static string IssueModuleSceneTicket(string clientId)
+    internal string IssueModuleSceneTicket(string clientId)
     {
-        ShoutBehavior owner = CurrentInstance;
-        if (owner == null || !IsBannerlordMainThreadForNativeActions()) return null;
-        ScenePlayerShoutContext context = owner.CaptureModuleSceneContext();
-        return context == null ? null : owner._scenePlayerShoutRequestOwner.IssueModuleTicket(clientId, context);
+        if (!_ports.IsOwnerCurrent() || !IsBannerlordMainThreadForNativeActions()) return null;
+        ScenePlayerShoutContext context = CaptureModuleSceneContext();
+        return context == null ? null : _scenePlayerShoutRequestOwner.IssueModuleTicket(clientId, context);
     }
 
-    internal static bool TryClaimModuleSceneTicket(string clientId, string ticketId, out ScenePlayerShoutRequest request)
+    internal bool TryClaimModuleSceneTicket(string clientId, string ticketId, out ScenePlayerShoutRequest request)
     {
         request = null;
-        ShoutBehavior owner = CurrentInstance;
-        return owner != null && IsBannerlordMainThreadForNativeActions()
-            && owner._scenePlayerShoutRequestOwner.TryTakeModuleTicket(clientId, ticketId, out ScenePlayerShoutContext context)
-            && owner.TryClaimModuleSceneContext(context, out request);
+        return _ports.IsOwnerCurrent() && IsBannerlordMainThreadForNativeActions()
+            && _scenePlayerShoutRequestOwner.TryTakeModuleTicket(clientId, ticketId, out ScenePlayerShoutContext context)
+            && TryClaimModuleSceneContext(context, out request);
     }
 
-    internal static void RevokeModuleSceneTickets(string clientId)
+    internal void RevokeModuleSceneTickets(string clientId)
     {
-        CurrentInstance?._scenePlayerShoutRequestOwner.RevokeClientModuleTickets(clientId);
+        _scenePlayerShoutRequestOwner.RevokeClientModuleTickets(clientId);
     }
 
     // Main-thread only. This is a preview, not an input claim or a dialogue dispatch.
     internal ScenePlayerShoutContext CaptureModuleSceneContext()
     {
-        if (!IsBannerlordMainThreadForNativeActions() || !ReferenceEquals(CurrentInstance, this)
-            || !_isProcessingShout || _activeShoutTargetingContext == null
+        if (!IsBannerlordMainThreadForNativeActions() || !_ports.IsOwnerCurrent()
+            || !IsProcessingShout || _ports.ActiveTargetingContext() == null
             || Mission.Current == null || Agent.Main == null)
             return null;
 
-        ShoutTargetingContext source = _activeShoutTargetingContext;
+        ShoutTargetingContext source = _ports.ActiveTargetingContext();
         if (source.CandidateAgentIndices == null || source.PreviewCandidateAgents == null
             || source.CandidatePlayerDistancesMeters == null)
             return null;
-        List<Agent> framed = GetAgentsForShoutTargetingContext(source);
+        List<Agent> framed = _ports.GetAgentsForShoutTargetingContext(source);
         Agent primary = ResolvePrimaryAgentForShoutTargetingContext(source, framed);
         if (framed.Count == 0 || framed.Count != source.CandidateAgentIndices.Count || primary == null)
             return null;
 
         ShoutTargetingContext frozen = CloneModuleSceneTargetingContext(source);
         return _scenePlayerShoutRequestOwner.CaptureContext(this, Mission.Current, Agent.Main,
-            SaveRuntimeGuard.CaptureGeneration(), Volatile.Read(ref _sceneHistorySessionId),
+            SaveRuntimeGuard.CaptureGeneration(), _ports.SceneSessionId(),
             Volatile.Read(ref _sceneConversationEpoch), source, frozen);
     }
 
@@ -56,17 +55,17 @@ public partial class ShoutBehavior
     internal bool TryClaimModuleSceneContext(ScenePlayerShoutContext context, out ScenePlayerShoutRequest request)
     {
         request = null;
-        if (!IsBannerlordMainThreadForNativeActions() || !ReferenceEquals(CurrentInstance, this)
-            || !_isProcessingShout || !IsModuleSceneTargetingSourceCurrent(context))
+        if (!IsBannerlordMainThreadForNativeActions() || !_ports.IsOwnerCurrent()
+            || !IsProcessingShout || !IsModuleSceneTargetingSourceCurrent(context))
             return false;
         return _scenePlayerShoutRequestOwner.TryClaimContext(context, this, Mission.Current, Agent.Main,
             SaveRuntimeGuard.IsCurrentGeneration(context.RuntimeGeneration),
-            Volatile.Read(ref _sceneHistorySessionId), Volatile.Read(ref _sceneConversationEpoch), out request);
+            _ports.SceneSessionId(), Volatile.Read(ref _sceneConversationEpoch), out request);
     }
 
-    private bool IsModuleSceneTargetingSourceCurrent(ScenePlayerShoutContext context)
+    internal bool IsModuleSceneTargetingSourceCurrent(ScenePlayerShoutContext context)
     {
-        if (context == null || !ReferenceEquals(context.SourceTargetingContext, _activeShoutTargetingContext))
+        if (context == null || !ReferenceEquals(context.SourceTargetingContext, _ports.ActiveTargetingContext()))
             return false;
         ShoutTargetingContext source = context.SourceTargetingContext;
         ShoutTargetingContext frozen = context.TargetingContext;
@@ -87,7 +86,7 @@ public partial class ShoutBehavior
             if (!source.CandidatePlayerDistancesMeters.TryGetValue(distance.Key, out float current)
                 || current != distance.Value) return false;
 
-        List<Agent> currentFramed = GetAgentsForShoutTargetingContext(frozen);
+        List<Agent> currentFramed = _ports.GetAgentsForShoutTargetingContext(frozen);
         if (currentFramed.Count != frozen.CandidateAgentIndices.Count
             || ResolvePrimaryAgentForShoutTargetingContext(frozen, currentFramed) == null)
             return false;
@@ -104,7 +103,7 @@ public partial class ShoutBehavior
         return true;
     }
 
-    private static ShoutTargetingContext CloneModuleSceneTargetingContext(ShoutTargetingContext source)
+    internal static ShoutTargetingContext CloneModuleSceneTargetingContext(ShoutTargetingContext source)
     {
         return new ShoutTargetingContext
         {

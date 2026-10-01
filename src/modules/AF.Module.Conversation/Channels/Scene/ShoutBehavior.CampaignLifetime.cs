@@ -5,7 +5,7 @@ namespace AnimusForge;
 
 public partial class ShoutBehavior
 {
-    private AnimusForge.Refactor.Runtime.ConversationRequestLifetime _sceneRequestLifetime = new AnimusForge.Refactor.Runtime.ConversationRequestLifetime();
+
 
     private void RetireChannelRequestLifetimes()
     {

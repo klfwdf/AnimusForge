@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
@@ -88,7 +88,7 @@ namespace AnimusForge;
                 ? MyBehavior.CaptureWeeklyPromptSnapshotForExternal(targetHero, targetCharacter)
                 : MyBehavior.WeeklyPromptSnapshot.Empty,
                 MyBehavior.WeeklyPromptSnapshot.Empty).ConfigureAwait(false) ?? MyBehavior.WeeklyPromptSnapshot.Empty;
-            ctx = await _ports.BuildNativePromptContextScheduledAsync(admission, nativeTargetLog, nativeTargetAgentIndex, runtimeGeneration, targetHero, targetCharacter, routingInput, extraFact, cultureId, npc.IsHero, preprocessExcludedRuleIds, weeklyPromptSnapshot).ConfigureAwait(false);
+            ctx = await BuildNativePromptContextScheduledAsync(admission, nativeTargetLog, nativeTargetAgentIndex, runtimeGeneration, targetHero, targetCharacter, routingInput, extraFact, cultureId, npc.IsHero, preprocessExcludedRuleIds, weeklyPromptSnapshot).ConfigureAwait(false);
             nativePreprocessSw.Stop();
             if (ctx == null)
             {

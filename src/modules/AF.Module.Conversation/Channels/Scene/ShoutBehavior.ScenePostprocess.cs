@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -17,14 +17,15 @@ using TaleWorlds.Core;
 using TaleWorlds.MountAndBlade;
 
 using static AnimusForge.SceneMovementController;
+using static AnimusForge.ShoutBehavior;
 
 namespace AnimusForge;
 
-public partial class ShoutBehavior
+internal sealed partial class SceneConversationSessionRuntime
 {
-	private enum ScenePostprocessStatus { Completed, NoAction, Stale, TargetUnavailable, TimedOut, Failed }
+	internal enum ScenePostprocessStatus { Completed, NoAction, Stale, TargetUnavailable, TimedOut, Failed }
 
-	private sealed class ScenePostprocessOutcome
+	internal sealed class ScenePostprocessOutcome
 	{
 		internal ScenePostprocessOutcome(ScenePostprocessStatus status, int relayTargetAgentIndex = -1)
 		{
@@ -36,14 +37,14 @@ public partial class ShoutBehavior
 		internal bool Succeeded => Status == ScenePostprocessStatus.Completed || Status == ScenePostprocessStatus.NoAction;
 	}
 
-	private Task<ScenePostprocessOutcome> QueueDeferredScenePostprocessActions(NpcDataPacket currentSpeaker, List<NpcDataPacket> allNpcData, Hero speakingHero, CharacterObject npcCharacter, string privateRecentWindowSection, string scenePublicHistorySection, string playerText, string replyText, bool duelRuleInjected, bool rewardRuleInjected, bool loanRuleInjected, bool kingdomServiceRuleInjected, bool kingdomVassalageRuleInjected, bool kingdomAnnexationRuleInjected, bool lordsHallRuleInjected, bool meetingReleaseRuleInjected, bool vanillaIssueRuleInjected, bool heroJoinPartyRuleInjected, bool sceneMechanismRuleInjected, bool partyTransferRuleInjected, bool voteDealRuleInjected, bool diplomacyRuleInjected, bool worldMapPartyCommandRuleInjected, bool marriageRuleInjected, bool siegeInterventionRuleInjected, List<RewardSystemBehavior.DuelStakeOption> duelStakeOptions, List<PostprocessRuleEntry> kingdomServiceRules, List<PostprocessRuleEntry> sceneMechanismRules, int conversationEpoch, List<SceneSummonPromptTarget> sceneSummonTargets, List<SceneGuidePromptTarget> sceneGuideTargets, string entityPostprocessContext = null, bool replyIsDirectPlayerResponse = false, List<string> preprocessRuleHits = null, bool relayRuleInjected = false, List<NpcDataPacket> relayCandidates = null, int relayPrimaryTargetAgentIndex = -1, bool relaySingleFramedNpc = false, bool customPolicyAgendaRuleInjected = false, long expectedRuntimeGeneration = 0L, int expectedSceneSessionId = -1)
+	internal Task<ScenePostprocessOutcome> QueueDeferredScenePostprocessActions(NpcDataPacket currentSpeaker, List<NpcDataPacket> allNpcData, Hero speakingHero, CharacterObject npcCharacter, string privateRecentWindowSection, string scenePublicHistorySection, string playerText, string replyText, bool duelRuleInjected, bool rewardRuleInjected, bool loanRuleInjected, bool kingdomServiceRuleInjected, bool kingdomVassalageRuleInjected, bool kingdomAnnexationRuleInjected, bool lordsHallRuleInjected, bool meetingReleaseRuleInjected, bool vanillaIssueRuleInjected, bool heroJoinPartyRuleInjected, bool sceneMechanismRuleInjected, bool partyTransferRuleInjected, bool voteDealRuleInjected, bool diplomacyRuleInjected, bool worldMapPartyCommandRuleInjected, bool marriageRuleInjected, bool siegeInterventionRuleInjected, List<RewardSystemBehavior.DuelStakeOption> duelStakeOptions, List<PostprocessRuleEntry> kingdomServiceRules, List<PostprocessRuleEntry> sceneMechanismRules, int conversationEpoch, List<SceneSummonPromptTarget> sceneSummonTargets, List<SceneGuidePromptTarget> sceneGuideTargets, string entityPostprocessContext = null, bool replyIsDirectPlayerResponse = false, List<string> preprocessRuleHits = null, bool relayRuleInjected = false, List<NpcDataPacket> relayCandidates = null, int relayPrimaryTargetAgentIndex = -1, bool relaySingleFramedNpc = false, bool customPolicyAgendaRuleInjected = false, long expectedRuntimeGeneration = 0L, int expectedSceneSessionId = -1)
 	{
 		if (currentSpeaker == null || string.IsNullOrWhiteSpace(replyText))
 		{
 			return Task.FromResult(new ScenePostprocessOutcome(ScenePostprocessStatus.Failed));
 		}
 		long queuedRuntimeGeneration = expectedRuntimeGeneration > 0L ? expectedRuntimeGeneration : SaveRuntimeGuard.CaptureGeneration();
-		int queuedSceneSessionId = expectedSceneSessionId >= 0 ? expectedSceneSessionId : Volatile.Read(ref _sceneHistorySessionId);
+		int queuedSceneSessionId = expectedSceneSessionId >= 0 ? expectedSceneSessionId : _ports.SceneSessionId();
 		int capturedConversationEpoch = conversationEpoch > 0 ? conversationEpoch : Volatile.Read(ref _sceneConversationEpoch);
 		var requestLifetime = _sceneRequestLifetime;
 		CancellationTokenSource networkCancellation = CancellationTokenSource.CreateLinkedTokenSource(requestLifetime.Token);
@@ -86,7 +87,7 @@ public partial class ShoutBehavior
 		{
 			return !networkCancellation.IsCancellationRequested && Volatile.Read(ref requestRetired) == 0
 				&& SaveRuntimeGuard.IsCurrentGeneration(queuedRuntimeGeneration)
-				&& queuedSceneSessionId == Volatile.Read(ref _sceneHistorySessionId)
+				&& queuedSceneSessionId == _ports.SceneSessionId()
 				&& capturedConversationEpoch == Volatile.Read(ref _sceneConversationEpoch);
 		}
 
@@ -200,7 +201,7 @@ public partial class ShoutBehavior
 					return;
 				}
 				Stopwatch postprocessWatch = Stopwatch.StartNew();
-				SceneActionPostprocessWorkItem workItem = await RunNativeConversationMainThreadFuncAsync(
+				SceneActionPostprocessWorkItem workItem = await _dispatcher.RunAsync(
 					"scene_postprocess_prepare", targetLog, runtimeTargetAgentIndex, () =>
 					{
 						if (!ValidateCurrentTarget("before_prepare"))
@@ -304,7 +305,7 @@ public partial class ShoutBehavior
 
 				int relayTargetAgentIndex = -1;
 				TaskCompletionSource<bool> speechCompletion = null;
-				bool dispatched = await RunNativeConversationMainThreadFuncAsync(
+				bool dispatched = await _dispatcher.RunAsync(
 					"scene_postprocess_complete_and_dispatch", targetLog, runtimeTargetAgentIndex, () => RunInRuntimeScope(() =>
 					{
 						if (!ValidateCurrentTarget("before_complete"))
@@ -399,7 +400,7 @@ public partial class ShoutBehavior
 						return;
 					}
 					bool speechSucceeded = await speechCompletion.Task.ConfigureAwait(false);
-					bool published = await RunNativeConversationMainThreadFuncAsync(
+					bool published = await _dispatcher.RunAsync(
 						"scene_postprocess_relay_publish", targetLog, runtimeTargetAgentIndex, () =>
 						{
 							if (!ValidateCurrentTarget("after_speech"))
@@ -443,7 +444,7 @@ public partial class ShoutBehavior
 		return task;
 	}
 
-	private bool CommitDeferredSceneActionPlan(
+	internal bool CommitDeferredSceneActionPlan(
 		string rawTags,
 		NpcDataPacket speakerSnapshot,
 		List<NpcDataPacket> contextSnapshot,
@@ -533,7 +534,7 @@ public partial class ShoutBehavior
 
 				string remaining = plan.RawPostprocessId;
 				bool consumed = false;
-				if (TryApplyDeferredSceneMoodTag(speakerSnapshot, remaining))
+				if (_ports.TryApplyDeferredSceneMoodTag(speakerSnapshot, remaining))
 				{
 					consumed = true;
 					remaining = StripDeferredSceneMoodTags(remaining);
@@ -560,7 +561,7 @@ public partial class ShoutBehavior
 						remaining = ExtractDeferredSceneActionTags(remaining);
 					}
 				}
-				if (TryApplyDeferredScenePostprocessActionTagsDirectly(
+				if (_ports.TryApplyDeferredScenePostprocessActionTagsDirectly(
 					speakingHero,
 					npcCharacter,
 					targetAgentIndex,
@@ -588,7 +589,7 @@ public partial class ShoutBehavior
 						}
 						pendingSpeech = new TaskCompletionSource<bool>(
 							TaskCreationOptions.RunContinuationsAsynchronously);
-						EnqueueSpeechLineWithOptions(
+						_ports.EnqueueSpeechLineWithOptions(
 							speakerSnapshot,
 							remaining,
 							contextSnapshot,

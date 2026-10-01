@@ -5,9 +5,11 @@ using System.Threading;
 using System.Threading.Tasks;
 using TaleWorlds.CampaignSystem;
 
+using static AnimusForge.ShoutBehavior;
+using static AnimusForge.NativePromptWorkScheduler;
 namespace AnimusForge;
 
-public partial class ShoutBehavior
+internal sealed partial class NativeConversationTurnRuntime : INativeConversationTurnHost
 {
 	/// <summary>
 	/// Native runs the shared prompt build as five scheduled steps.
@@ -22,8 +24,8 @@ public partial class ShoutBehavior
 		Hero targetHero, CharacterObject targetCharacter, string routingInput, string extraFact, string cultureId, bool hasAnyHero,
 		List<string> preprocessExcludedRuleIds, MyBehavior.WeeklyPromptSnapshot weeklyPromptSnapshot)
 	{
-		MyBehavior owner = MyBehavior.Instance;
-		if (owner == null)
+		bool ownerAvailable = await _ports.PromptDispatcher.RunAsync("prompt_build_owner", targetLog, targetAgentIndex, _ports.IsPromptOwnerAvailable, false).ConfigureAwait(false);
+		if (!ownerAvailable)
 		{
 			return CreateEmptyNativeConversationPromptContext();
 		}
@@ -31,14 +33,12 @@ public partial class ShoutBehavior
 		Stopwatch sw = Stopwatch.StartNew();
 
 		// Step 1: game thread.
-		PromptBuildPhases phases = await RunNativeConversationMainThreadFuncAsync("prompt_build_begin", target, targetAgentIndex,
-			() => IsNativeConversationAdmissionCurrent(admission, out _)
-				? owner.BeginSharedPromptBuild(targetHero, routingInput, extraFact, cultureId, hasAnyHero, targetCharacter, null, targetAgentIndex,
-					suppressDynamicRuleAndLore: false, usePrefetchedLoreContext: false, prefetchedLoreContext: null,
-					excludedRuleIds: null, preprocessExcludedRuleIds: preprocessExcludedRuleIds, forcedPreprocessRuleIds: null, preprocessMentionedEntities: null)
-				: null,
-			(PromptBuildPhases)null).ConfigureAwait(false);
-		if (phases == null)
+		SharedPromptRoutingWork routingWork = await _ports.PromptDispatcher.RunAsync("prompt_build_begin", target, targetAgentIndex,
+			() => _ports.IsNativeConversationAdmissionCurrent(admission, out _)
+                ? _ports.CapturePromptRoutingWork(new NativePromptCaptureRequest(targetHero, targetCharacter, routingInput, extraFact, cultureId, hasAnyHero, targetAgentIndex, preprocessExcludedRuleIds))
+                : null,
+            (SharedPromptRoutingWork)null).ConfigureAwait(false);
+		if (routingWork == null)
 		{
 			FreezeWatchdog.Mark("NativeConversation.prompt_build_begin_aborted", "target=" + target + " agent=" + targetAgentIndex, immediate: true);
 			return null;
@@ -47,6 +47,8 @@ public partial class ShoutBehavior
 		{
 			return null;
 		}
+
+		PromptBuildPhases phases = routingWork.Phases;
 
 		// Step 2: background. The ambient retrieval target is applied on the worker thread for the
 		// duration of routing; the existing slot/timeout guard keeps a single in-flight preprocess.
@@ -59,7 +61,7 @@ public partial class ShoutBehavior
 			AIConfigHandler.ApplyGuardrailRuntimeTarget(phases.Request.Target, phases.Request.Eligibility);
 			try
 			{
-				owner.RunSharedPromptRouting(phases);
+				SharedPromptRoutingRuntime.Run(routingWork);
 				return routedMarker;
 			}
 			finally
@@ -79,12 +81,11 @@ public partial class ShoutBehavior
 		}
 
 		// Step 3: game thread. Prepare Lore and capture entity candidates after routing discovered mentions.
-		PromptKnowledgeWorkInput knowledgeInput = await RunNativeConversationMainThreadFuncAsync("prompt_build_knowledge_capture", target, targetAgentIndex,
+		PromptKnowledgeWorkInput knowledgeInput = await _ports.PromptDispatcher.RunAsync("prompt_build_knowledge_capture", target, targetAgentIndex,
 			() =>
 			{
-				if (!IsNativeConversationAdmissionCurrent(admission, out _)) return null;
-				owner.CaptureSharedKnowledgeSnapshot(phases, targetHero ?? targetCharacter?.HeroObject);
-				return MyBehavior.CreateSharedKnowledgeWorkInput(phases);
+				if (!_ports.IsNativeConversationAdmissionCurrent(admission, out _)) return null;
+				return _ports.CapturePromptKnowledge(phases, targetHero ?? targetCharacter?.HeroObject);
 			},
 			(PromptKnowledgeWorkInput)null).ConfigureAwait(false);
 		if (knowledgeInput == null || SaveRuntimeGuard.IsStale(runtimeGeneration, "native_conversation_knowledge_capture"))
@@ -107,10 +108,10 @@ public partial class ShoutBehavior
 		}
 
 		// Step 5: game thread, ownership re-validated after the hop.
-		MyBehavior.ShoutPromptContext ctx = await RunNativeConversationMainThreadFuncAsync("prompt_build_complete", target, targetAgentIndex,
+		MyBehavior.ShoutPromptContext ctx = await _ports.PromptDispatcher.RunAsync("prompt_build_complete", target, targetAgentIndex,
 			() =>
 			{
-				if (!IsNativeConversationAdmissionCurrent(admission, out _))
+				if (!_ports.IsNativeConversationAdmissionCurrent(admission, out _))
 				{
 					return null;
 				}
@@ -119,7 +120,7 @@ public partial class ShoutBehavior
 				try
 				{
 					MyBehavior.ApplySharedKnowledgeRetrieval(phases, knowledgeResult);
-					return owner.CompleteSharedPromptBuild(phases, targetHero, targetCharacter, weeklyPromptSnapshot);
+					return _ports.CompletePromptCapture(phases, targetHero, targetCharacter, weeklyPromptSnapshot);
 				}
 				finally
 				{
@@ -136,4 +137,16 @@ public partial class ShoutBehavior
 		Logger.Log("Logic", "[NativePerf] prompt_build_scheduled_done target=" + target + " agent=" + targetAgentIndex + " ms=" + Math.Round(sw.Elapsed.TotalMilliseconds, 2) + " thread=" + Thread.CurrentThread.ManagedThreadId);
 		return ctx;
 	}
+}
+
+internal sealed class NativePromptCaptureRequest
+{
+    internal readonly Hero Hero;
+    internal readonly CharacterObject Character;
+    internal readonly string Input, ExtraFact, CultureId;
+    internal readonly bool HasAnyHero;
+    internal readonly int AgentIndex;
+    internal readonly List<string> ExcludedRules;
+    internal NativePromptCaptureRequest(Hero hero, CharacterObject character, string input, string extraFact, string cultureId, bool hasAnyHero, int agentIndex, List<string> excludedRules)
+    { Hero=hero;Character=character;Input=input;ExtraFact=extraFact;CultureId=cultureId;HasAnyHero=hasAnyHero;AgentIndex=agentIndex;ExcludedRules=excludedRules; }
 }

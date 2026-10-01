@@ -1,0 +1,154 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+namespace TaleWorlds.MountAndBlade {}
+namespace AnimusForge
+{
+internal sealed class ConversationGameThreadDispatcher {}
+internal sealed class SceneMovementController {}
+internal static class SceneActionDirectiveController {internal static void Reset(){}}
+internal sealed class NpcDataPacket {internal string Name="npc";}
+internal sealed class Hero {}
+internal sealed class CharacterObject {internal Hero HeroObject;}
+internal sealed class Agent {internal static Agent Main=new();internal int Index=3;internal CharacterObject Character=new();internal bool Active=true;}
+internal sealed class Mission { internal static Mission Current;internal List<Agent> Agents=new(){new()}; }
+internal static class SaveRuntimeGuard { internal static long Generation=1; internal static bool IsCurrentGeneration(long value)=>value==Generation;internal static long CaptureGeneration()=>Generation; }
+internal static class Logger { internal static void Log(string area,string text) {} }
+internal sealed class SceneConversationSessionPorts
+{
+    internal bool Processing;
+    internal Func<bool> GetProcessing; internal Action<bool> SetProcessing;
+    internal SceneConversationSessionPorts(){GetProcessing=()=>Processing;SetProcessing=value=>Processing=value;}
+    internal long Sequence;
+    internal long ProcessingSequence()=>Sequence;
+    internal readonly System.Collections.Concurrent.ConcurrentQueue<Action> Queue=new();
+    internal Action<Action> PostMainThread=>Queue.Enqueue;
+    internal Func<int> SceneSessionId=()=>7;
+    internal bool OwnerCurrent=true;
+    internal bool IsOwnerCurrent()=>OwnerCurrent;
+    internal ShoutTargetingContext Targeting;
+    internal ShoutTargetingContext ActiveTargetingContext()=>Targeting;
+    internal List<Agent> GetAgentsForShoutTargetingContext(ShoutTargetingContext context)=>Mission.Current.Agents.Where(x=>x.Active&&context.CandidateAgentIndices.Contains(x.Index)).ToList();
+    internal bool RecordResponseForAllNearbySafe(List<NpcDataPacket> all,int index,string name,string text){ExecutionProbe.Game();ExecutionProbe.History++;return true;}
+    internal bool PersistNpcSpeechToNamedHeroes(int index,string name,string text,List<NpcDataPacket> all){ExecutionProbe.Game();ExecutionProbe.Memory++;return true;}
+    internal void EnqueueSpeechLine(NpcDataPacket npc,string text,List<NpcDataPacket> all,bool skipHistory,bool suppressStare,Func<bool> canStillPublish){ExecutionProbe.Game();ExecutionProbe.Speech++;}
+}
+internal static class ShoutBehavior
+{
+    internal const int ScenePostprocessGateWaitTimeoutMilliseconds=80;
+    internal static bool IsBannerlordMainThreadForNativeActions()=>Thread.CurrentThread.ManagedThreadId==ExecutionProbe.MainThread;
+    internal static Agent ResolvePrimaryAgentForShoutTargetingContext(ShoutTargetingContext c,List<Agent> agents)=>agents.FirstOrDefault(a=>a.Index==c.PrimaryAgentIndex);
+}
+internal sealed class Color {internal Color(float r,float g,float b){}}
+internal sealed class InformationMessage {internal InformationMessage(string text,Color color){}}
+internal static class InformationManager {internal static int Count;internal static void DisplayMessage(InformationMessage message){Count++;}}
+internal sealed class SceneSummonPromptTarget {}
+internal sealed class SceneGuidePromptTarget {}
+internal sealed class DetachedPromptSections {}
+internal sealed class PostprocessRuleEntry {}
+internal sealed class RewardSystemBehavior {internal sealed class DuelStakeOption{}}
+internal sealed class EmptyLease:IDisposable {public void Dispose(){}}
+internal static class LlmNonStreamingTransport {internal static IDisposable PushOwnerCancellation(CancellationToken token)=>new EmptyLease();}
+internal static class AIConfigHandler
+{
+    internal static bool TryCallAuxiliaryActionPostprocess(string system,string user,int tokens,float temperature,out string raw,out string error)
+    {if(Thread.CurrentThread.ManagedThreadId==ExecutionProbe.MainThread)throw new Exception("ASSERT network-on-game-thread");Interlocked.Increment(ref ExecutionProbe.Network);ExecutionProbe.Started.Set();ExecutionProbe.Release.Wait();raw="[ACTION:MOOD:happy]";error=null;return true;}
+}
+internal sealed class SceneActionPostprocessWorkItem
+{
+    internal string SystemPrompt,UserPrompt,Text;internal bool RequiresNetwork=true;
+    internal SceneActionPostprocessWorkItem(string system,string user,string text){SystemPrompt=system;UserPrompt=user;Text=text;}
+}
+internal static class TeamModuleServices {internal static SiegePort Siege=new();internal sealed class SiegePort{internal void TryProcessActionTags(Hero hero,CharacterObject character,int index,ref string text,out object facts,bool replyIsDirectPlayerResponse,string playerText){ExecutionProbe.Game();ExecutionProbe.Effects++;facts=null;}}}
+internal static class ExecutionProbe
+{
+    internal static int MainThread,Network,Effects,History,Memory,Speech;
+    internal static ManualResetEventSlim Started=new(),Release=new();
+    internal static void Game(){if(Thread.CurrentThread.ManagedThreadId!=MainThread)throw new Exception("ASSERT effect-off-main-thread");}
+    internal static void Reset(){MainThread=Thread.CurrentThread.ManagedThreadId;Network=Effects=History=Memory=Speech=0;Started.Reset();Release.Reset();}
+}
+internal sealed partial class SceneConversationSessionRuntime
+{
+    private static bool IsSceneContinuationCurrent => !(SynchronizationContext.Current is SceneMainThreadSynchronizationContext context) || !context.IsRetired;
+    private static bool CanAgentParticipateInSceneSpeech(Agent agent)=>agent!=null&&agent.Active;
+    private static bool IsNativeConversationResponseTargetAvailableForActionDispatch(int index,Hero hero,CharacterObject character,out string error){error=null;return Mission.Current.Agents.Any(x=>x.Active&&x.Index==index&&ReferenceEquals(x.Character,character));}
+    private static string StripNpcNamePrefixSafely(string text,int maximum)=>text;
+    private static string StripLeakedPromptContentForShout(string text)=>text;
+    private static string PrepareSceneHistorySpeechText(string text)=>text;
+    private static string StripStageDirectionsForPassiveShout(string text)=>text;
+    private static SceneActionPostprocessWorkItem PrepareCompactTownOrdinaryAmbientPostprocess(Hero hero,CharacterObject character,int index,string fact,string text)=>new("system","prompt",text);
+    private static string CompleteCompactTownOrdinaryAmbientPostprocess(SceneActionPostprocessWorkItem work,bool succeeded,string raw,string error)=>work.Text;
+    private static string CompleteSceneUnifiedActionPostprocess(SceneActionPostprocessWorkItem work,bool succeeded,string raw,string error)=>work.Text;
+    private static bool TryRequestSceneUnifiedActionPostprocess(string system,string user,out string raw,out string error)=>AIConfigHandler.TryCallAuxiliaryActionPostprocess(system,user,256,0f,out raw,out error);
+    private static Task<T> RunInlineAsync<T>(Func<T> run)=>Task.FromResult(run());
+    internal Task<bool> ExecuteActual(ImmediateSceneReactionRequest request,System.Collections.Concurrent.ConcurrentQueue<Action> queue)
+    {
+        if(!TryTakeImmediateSceneReactionRequest(request.RequestId,out _))return Task.FromResult(false);
+        var previous=SynchronizationContext.Current;SynchronizationContext.SetSynchronizationContext(new SceneMainThreadSynchronizationContext(queue.Enqueue,_pendingMainThreadFunctions));
+        try{return CompleteImmediateSceneReactionCoreAsync(request,true,"visible reply",null);}finally{SynchronizationContext.SetSynchronizationContext(previous);}
+    }
+    internal void RetireContinuations(Action clear)=>_pendingMainThreadFunctions.ResetAndClear(clear);
+    internal void PrepareTargeting()
+    {
+        _ports.Processing=true;
+        _ports.Targeting=new ShoutTargetingContext {PrimaryAgentIndex=3,RangeMeters=5,HalfAngleRadians=1,CandidateAgentIndices=new(){3},CandidatePlayerDistancesMeters=new(){{3,2}},PreviewCandidateAgents=new(){Mission.Current.Agents[0]}};
+    }
+    internal void ChangeDistance()=>_ports.Targeting.CandidatePlayerDistancesMeters[3]=4;
+    internal void RetireOwner()=>_ports.OwnerCurrent=false;
+    internal void GateBusy(bool value){_ports.Processing=value;}
+    internal bool GateBusy()=>_ports.Processing;
+    internal void ResumeForGate(){_ports.Processing=false;_ports.Sequence++;}
+    internal void PumpGate(){while(_ports.Queue.TryDequeue(out var action))action();}
+    internal static bool CanPublishImmediateSceneReaction(Func<bool> test)=>test==null||test();
+    internal ImmediateSceneReactionRequest Add(long id,int agent,Action<bool> completion=null,Action noSpeech=null)
+    {
+        _immediateSceneReactionActiveRequestIds[agent]=id;
+        var r=new ImmediateSceneReactionRequest {RequestId=id,TargetAgentIndex=agent,RuntimeGeneration=SaveRuntimeGuard.Generation,SceneHistorySessionId=7,SourceMission=Mission.Current,OnCompleted=completion,OnNoSpeech=noSpeech};
+        if(!RegisterImmediateSceneReactionRequest(r))throw new Exception("register");return r;
+    }
+    internal void Settle(ImmediateSceneReactionRequest r,bool generated,bool fallback)=>SettleImmediateSceneReaction(r,generated,fallback);
+    internal void Cooldown(int agent)=>_immediateSceneReactionLastStartedMissionTime[agent]=20f;
+    internal bool HasCooldown(int agent)=>_immediateSceneReactionLastStartedMissionTime.ContainsKey(agent);
+}
+internal static class Program
+{
+    static void Require(bool value,string name){if(!value)throw new Exception("ASSERT "+name);}
+    static SceneConversationSessionRuntime New(){ExecutionProbe.MainThread=Thread.CurrentThread.ManagedThreadId;Mission.Current=new();SaveRuntimeGuard.Generation=1;return new(new(),new(),new(),new());}
+    static void FinishGate(SceneConversationSessionRuntime owner,Task task){var watch=System.Diagnostics.Stopwatch.StartNew();while(!task.IsCompleted){owner.PumpGate();if(watch.ElapsedMilliseconds>2000)throw new Exception("ASSERT gate-settlement-timeout");Thread.Sleep(1);}owner.PumpGate();task.GetAwaiter().GetResult();}
+    static int Main(){try{int n=0;void Case(string name,Action test){test();n++;Console.WriteLine("PASS "+name);}
+        Case("duplicate-completion-retains-pending-until-settlement",()=>{var r=New();int c=0;var q=r.Add(1,3,_=>c++);Require(r.TryTakeImmediateSceneReactionRequest(1,out var first)&&!r.TryTakeImmediateSceneReactionRequest(1,out _),"single-start");Require(r.PendingImmediateCount==1,"reachable-during-postprocess");r.Settle(first,true,false);r.Settle(q,true,false);Require(c==1&&r.PendingImmediateCount==0&&!r.HasActiveImmediateReactions,"single-settle");});
+        Case("reset-settles-without-any-queue-tick-or-old-motion",()=>{var r=New();int c=0,f=0;var q=r.Add(1,3,ok=>{Require(!ok,"reset-false");c++;},()=>f++);r.TryTakeImmediateSceneReactionRequest(1,out _);r.ResetImmediateReactions();r.Settle(q,true,false);Require(c==1&&f==0&&r.PendingImmediateCount==0,"reset-direct-once");});
+        Case("new-player-epoch-rejects-old-target-with-same-mission",()=>{var r=New();var q=r.Add(1,3);r.AdvanceConversationEpoch();Require(!r.CanPublishImmediateSceneReactionRequest(q),"epoch-reject");});
+        Case("mission-change-rejects-old-reply",()=>{var r=New();var q=r.Add(1,3);Mission.Current=new();Require(!r.CanPublishImmediateSceneReactionRequest(q),"mission-reject");});
+        Case("generation-change-rejects-old-reply",()=>{var r=New();var q=r.Add(1,3);SaveRuntimeGuard.Generation++;Require(!r.CanPublishImmediateSceneReactionRequest(q),"generation-reject");});
+        Case("late-old-finish-cannot-remove-new-agent-command",()=>{var r=New();var a=r.Add(1,3);var b=r.Add(2,3);r.Settle(a,false,false);Require(r.HasActiveImmediateReactions&&r.PendingImmediateCount==1&&r.TryTakeImmediateSceneReactionRequest(2,out _),"new-request-survives");r.Settle(b,false,false);});
+        Case("player-round-reset-preserves-cooldown-but-mission-reset-clears",()=>{var r=New();r.Cooldown(3);r.ResetImmediateReactions(false);Require(r.HasCooldown(3),"cooldown-preserved");r.ResetImmediateReactions();Require(!r.HasCooldown(3),"cooldown-mission-cleared");});
+        Case("nontransactional-completion-error-does-not-retry",()=>{var r=New();int c=0,f=0;var q=r.Add(1,3,_=>{c++;throw new Exception("effect-observed");},()=>f++);r.Settle(q,false,true);r.Settle(q,false,true);Require(c==1&&f==1&&r.PendingImmediateCount==0,"no-effect-retry");});
+        void Actual(string name,Action<SceneConversationSessionRuntime> retire,bool success)
+        {
+            Case(name,()=>{ExecutionProbe.Reset();var r=New();int completed=0;bool result=false;var q=r.Add(1,3,ok=>{completed++;result=ok;});q.TargetNpc=new();q.AllNpcData=new(){q.TargetNpc};q.RunSiegeReactionPostprocess=true;
+                var queue=new System.Collections.Concurrent.ConcurrentQueue<Action>();var task=r.ExecuteActual(q,queue);Require(ExecutionProbe.Started.Wait(2000),"network-start");Require(!r.ExecuteActual(q,queue).Result,"duplicate-completion-start");retire?.Invoke(r);ExecutionProbe.Release.Set();
+                var watch=System.Diagnostics.Stopwatch.StartNew();while(!task.IsCompleted){while(queue.TryDequeue(out var action))action();if(watch.ElapsedMilliseconds>3000)throw new Exception("ASSERT execution-timeout");Thread.Sleep(1);}
+                while(queue.TryDequeue(out var action))action();Require(task.Result==success&&result==success&&completed==1&&ExecutionProbe.Network==1,"actual-result-once");int expected=success?1:0;Require(ExecutionProbe.Effects==expected&&ExecutionProbe.History==expected&&ExecutionProbe.Memory==expected&&ExecutionProbe.Speech==expected&&r.PendingImmediateCount==0,"actual-effects-history-speech-once");
+                r.RequestLifetime.Retire();var flags=System.Reflection.BindingFlags.Instance|System.Reflection.BindingFlags.NonPublic;Require((int)r.RequestLifetime.GetType().GetField("_workers",flags).GetValue(r.RequestLifetime)==0,"real-worker-lease-released");var lease=r.RequestLifetime.GetType().GetField("_lease",flags).GetValue(r.RequestLifetime);Require(lease.GetType().GetField("_source",flags).GetValue(lease)==null,"real-cancellation-resource-retired");});
+        }
+        Actual("actual-unified-prepare-worker-request-game-effects-history-speech",null,true);
+        Actual("actual-reset-while-network-stale-no-effects",r=>{r.RequestLifetime.Retire();r.ResetImmediateReactions();},false);
+        Actual("actual-target-disappears-before-action-no-effects",r=>Mission.Current.Agents[0].Active=false,false);
+        Actual("actual-epoch-replacement-before-action-no-effects",r=>r.AdvanceConversationEpoch(),false);
+        Case("actual-module-capture-is-side-effect-free-and-claim-once",()=>{var r=New();r.PrepareTargeting();var a=r.CaptureModuleSceneContext();var b=r.CaptureModuleSceneContext();Require(a!=null&&b!=null&&a.InputSequence==b.InputSequence&&!ReferenceEquals(a.TargetingContext.CandidateAgentIndices,a.SourceTargetingContext.CandidateAgentIndices),"capture-detached-no-sequence-advance");Require(r.TryClaimModuleSceneContext(a,out var request)&&ReferenceEquals(request.Owner,r)&&!r.TryClaimModuleSceneContext(b,out _),"same-real-owner-one-input-claim");});
+        Case("actual-module-mutated-distance-rejects-frozen-source",()=>{var r=New();r.PrepareTargeting();var c=r.CaptureModuleSceneContext();r.ChangeDistance();Require(!r.TryClaimModuleSceneContext(c,out _),"mutable-distance-reject");});
+        Case("actual-module-reused-agent-index-rejects-new-object",()=>{var r=New();r.PrepareTargeting();var c=r.CaptureModuleSceneContext();Mission.Current.Agents[0]=new Agent{Index=3};Require(!r.TryClaimModuleSceneContext(c,out _),"agent-reference-reject");});
+        Case("actual-module-mission-replacement-rejects-same-agent-list",()=>{var r=New();r.PrepareTargeting();var c=r.CaptureModuleSceneContext();Mission.Current=new Mission{Agents=Mission.Current.Agents};Require(!r.TryClaimModuleSceneContext(c,out _),"mission-identity-reject");});
+        Case("actual-module-stale-owner-and-worker-capture-rejected",()=>{var r=New();r.PrepareTargeting();Require(Task.Run(()=>r.CaptureModuleSceneContext()).Result==null,"worker-capture-refused");var c=r.CaptureModuleSceneContext();r.RetireOwner();Require(!r.TryClaimModuleSceneContext(c,out _),"owner-replacement-reject");});
+        Case("actual-module-ticket-wrong-client-and-replay-no-double-claim",()=>{var r=New();r.PrepareTargeting();string ticket=r.IssueModuleSceneTicket("client");Require(ticket!=null&&!r.TryClaimModuleSceneTicket("other",ticket,out _),"client-mismatch-reject");Require(r.TryClaimModuleSceneTicket("client",ticket,out var request)&&!r.TryClaimModuleSceneTicket("client",ticket,out _),"ticket-once-correct-client");});
+        Case("actual-gate-same-request-waiters-borrow-one-busy-flag",()=>{var r=New();r.GateBusy(true);var pending=new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);r.RegisterScenePostprocessGateTask(pending.Task);var first=r.WaitForScenePostprocessGateAsync("first");var second=r.WaitForScenePostprocessGateAsync("second");Require(!r.GateBusy()&&!first.IsCompleted&&!second.IsCompleted,"gate-waiting-borrow");pending.SetResult(true);FinishGate(r,Task.WhenAll(first,second));Require(r.GateBusy()&&!r.IsWaitingForPostprocess&&r.GetScenePostprocessGateTask().IsCompleted,"latest-waiter-restores-flag");});
+        Case("actual-gate-ui-resume-cannot-restore-stale-busy",()=>{var r=New();r.GateBusy(true);var pending=new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);r.RegisterScenePostprocessGateTask(pending.Task);var wait=r.WaitForScenePostprocessGateAsync("resume");r.ResumeForGate();pending.SetResult(true);FinishGate(r,wait);Require(!r.GateBusy()&&!r.IsWaitingForPostprocess,"ui-resume-new-sequence-kept");});
+        Case("actual-gate-old-postprocess-completion-cannot-clear-new-gate",()=>{var r=New();var old=new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);r.RegisterScenePostprocessGateTask(old.Task);r.ForceClearScenePostprocessGate("mission-end");var next=new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);r.RegisterScenePostprocessGateTask(next.Task);old.SetResult(true);Thread.Sleep(20);Require(!r.GetScenePostprocessGateTask().IsCompleted,"new-gate-survives-old-completion");next.SetResult(true);FinishGate(r,r.GetScenePostprocessGateTask());Require(r.GetScenePostprocessGateTask().IsCompleted,"new-gate-settled");});
+        Case("actual-gate-reset-releases-without-old-queue-presentation",()=>{var r=New();r.GateBusy(true);var pending=new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);r.RegisterScenePostprocessGateTask(pending.Task);var wait=r.WaitForScenePostprocessGateAsync("mission");r.AdvanceConversationEpoch();r.ForceClearScenePostprocessGate("mission-end");int before=InformationManager.Count;FinishGate(r,wait);Require(InformationManager.Count==before&&!r.IsWaitingForPostprocess&&r.GetScenePostprocessGateTask().IsCompleted,"reset-no-stale-wait-message");});
+        Console.WriteLine("SceneImmediateLifecycle PASS="+n+" FAIL=0");return 0;
+    }catch(Exception ex){Console.Error.WriteLine(ex);return 1;}}
+}
+}

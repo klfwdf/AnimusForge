@@ -1,0 +1,50 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Diagnostics;
+using System.Threading.Tasks;
+using AnimusForge;
+namespace AnimusForge {
+internal static class AIConfigHandler {
+ internal static bool UseAuxiliaryRuleApiRetrieval=true, RewardEnabled=true,LoanEnabled=true,SurroundingsEnabled=true;
+ internal static int GuardrailRuleReturnCap=5, Clears,StoreReads,LatestReads;
+ internal static string Semantic;
+ internal static MentionedWorldEntities Latest=new();
+ internal static void ClearLatestAuxiliaryMentionedEntitiesForExternal(){Clears++;Latest=new();}
+ internal static void SetGuardrailSemanticContext(string x){Semantic=x;}
+ internal static MentionedWorldEntities GetAuxiliaryMentionedEntitiesForExternal(string i,string n,string c){StoreReads++;return new(){Entities=new(){"store"}};}
+ internal static MentionedWorldEntities GetLatestAuxiliaryMentionedEntitiesForExternal(){LatestReads++;return Latest;}
+}
+internal static class Logger {internal static void Log(string c,string m){} }
+internal static class MyBehavior { internal static void LogShoutPromptContextStage(string s,Stopwatch t,Stopwatch p,PromptBuildRequest r,string detail=null,bool immediate=true){} }
+}
+internal static class Program {
+ static int count;
+ static void Check(bool c,string m){if(!c)throw new Exception("ASSERT "+m);count++;}
+ static async Task<int> Main(){try{
+ var request=new PromptBuildRequest{Input="request",StickyTargetKey="npc",GuardrailSemanticContext="context",HasAnyHero=true,ExcludedRuleIds=new(StringComparer.OrdinalIgnoreCase){"OLD"},PreprocessExcludedRuleIds=new(StringComparer.OrdinalIgnoreCase){"excluded"},ForcedPreprocessRuleIds=new List<string>{"party_transfer"}};
+ var phases=new PromptBuildPhases{Request=request,DirectPreprocessMentions=new(){Entities=new(){"caller"}}};
+ var carry=new BuiltInRuleStickyCarry(); int aux=0;
+ var ports=new PromptRoutingPorts{StickyCarry=carry,CanInjectGatedRule=(id,hero)=>hero,AuxiliaryHits=(i,n,cap,excluded,mentions)=>{aux++;mentions.Entities.Add("router");AIConfigHandler.Latest.Entities.Add("latest");return new(){new(){RuleId="reward"}};}};
+ var input=SharedPromptRoutingRuntime.CaptureInput(request);
+ request.ExcludedRuleIds.Clear();request.PreprocessExcludedRuleIds.Clear();((List<string>)request.ForcedPreprocessRuleIds).Clear();
+ Check(input.ExcludedRuleIds.Contains("old"),"detached exclusions preserve comparer");
+ Check(input.PreprocessExcludedRuleIds.Contains("excluded"),"detached preprocess exclusions");
+ Check(input.ForcedPreprocessRuleIds.SequenceEqual(new[]{"party_transfer"}),"detached forced ids");
+ var work=new SharedPromptRoutingWork(phases,input,ports);await Task.Run(()=>SharedPromptRoutingRuntime.Run(work));
+ Check(ReferenceEquals(work.Ports.StickyCarry,carry),"same sticky authority");
+ Check(aux==1 && phases.Routing.Reward.Hit,"real stage route result returned");
+ Check(phases.Routing.ForcedRuleHitIds.Contains("party_transfer"),"forced eligibility complete result");
+ Check(phases.DirectPreprocessMentions.Entities.SequenceEqual(new[]{"caller","router"}),"direct mentions same authority merged");
+ Check(phases.Retrieval.AuxiliaryMentions.Entities.SequenceEqual(new[]{"caller","router","store","latest"}),"all mention sources exact order");
+ Check(AIConfigHandler.Clears==1 && AIConfigHandler.Semantic=="context","pre-routing context sequence");
+ var suppressed=new PromptBuildPhases{Request=new(){Input="x",SuppressDynamicRuleAndLore=true},DirectPreprocessMentions=new()};
+ SharedPromptRoutingRuntime.Run(new(suppressed,SharedPromptRoutingRuntime.CaptureInput(suppressed.Request),ports));
+ Check(aux==1 && AIConfigHandler.Clears==1 && AIConfigHandler.StoreReads==1 && AIConfigHandler.LatestReads==1,"suppressed no retrieval IO");
+ Check(suppressed.Retrieval!=null && suppressed.Retrieval.AuxiliaryMentions==null,"suppressed envelope still published");
+ var bypass=new PromptBuildPhases{Request=new(){Input="x",BypassRulePreprocess=true,ForcedPreprocessRuleIds=new[]{"duel"}},DirectPreprocessMentions=new()};
+ SharedPromptRoutingRuntime.Run(new(bypass,SharedPromptRoutingRuntime.CaptureInput(bypass.Request),ports));
+ Check(aux==1 && bypass.Routing.ForcedRuleHitIds.Count==0,"bypass original rule qualification");
+ Console.WriteLine("PASS shared-routing actual stage checks="+count);return 0;
+ }catch(Exception ex){Console.Error.WriteLine(ex);return 1;}}
+}

@@ -1,0 +1,40 @@
+using System;
+using System.Collections.Concurrent;
+using System.Diagnostics;
+using System.Threading;
+using System.Threading.Tasks;
+using AnimusForge.Refactor.Runtime;
+namespace AnimusForge;
+public partial class ShoutBehavior { internal const int NativeConversationMainThreadPreprocessTimeoutMs=80; }
+internal sealed class PreprocessFormatException : Exception { }
+internal static class Logger { internal static void Log(string area,string text) { if(Probe.ThrowDiagnostic) throw new Exception("diagnostic"); } }
+internal static class FreezeWatchdog { internal static void Mark(string area,string text,bool immediate=false) { if(Probe.ThrowDiagnostic) throw new Exception("diagnostic"); } }
+internal static class Probe
+{
+    internal static bool ThrowDiagnostic;
+    static int MainThread,Calls; static ConcurrentQueue<Action> Queue=new();
+    static ConversationGameThreadDispatcher Runtime(out PendingOperationRegistry registry,bool duplicate=false,bool throwPost=false,bool inline=false)
+    {
+        registry=new();return new(registry,action=>{if(inline)action();else{Queue.Enqueue(action);if(duplicate)Queue.Enqueue(action);}if(throwPost)throw new Exception("synthetic_post");},()=>Thread.CurrentThread.ManagedThreadId==MainThread);
+    }
+    static Task<int> Start(ConversationGameThreadDispatcher runtime,Func<int> action)=>Task.Run(()=>runtime.RunAsync("test","npc",7,action,-1));
+    static void WaitQueue(){var w=Stopwatch.StartNew();while(Queue.IsEmpty){if(w.ElapsedMilliseconds>2000)throw new Exception("queue_timeout");Thread.Sleep(1);}}
+    static void Pump(Task task){var w=Stopwatch.StartNew();while(!task.IsCompleted||!Queue.IsEmpty){while(Queue.TryDequeue(out var a))a();if(w.ElapsedMilliseconds>3000)throw new Exception("pump_timeout");Thread.Sleep(1);}}
+    static void Require(bool value,string name){if(!value)throw new Exception("ASSERT "+name);}
+    static void Reset(){MainThread=Thread.CurrentThread.ManagedThreadId;Calls=0;ThrowDiagnostic=false;while(Queue.TryDequeue(out _)){} }
+    internal static void Run()
+    {
+        int pass=0;void Case(string name,Action test){Reset();test();pass++;Console.WriteLine("PASS "+name);}
+        Case("duplicate-post-sole-claim-and-lease",()=>{var r=Runtime(out var registry,true);var t=Start(r,()=>{Require(Thread.CurrentThread.ManagedThreadId==MainThread,"mainthread-action");Calls++;return 42;});Pump(t);Require(t.Result==42&&Calls==1&&registry.Count==0,"claim-once-lease-release");});
+        Case("reset-settles-before-late-callback",()=>{var r=Runtime(out var registry);var t=Start(r,()=>{Calls++;return 42;});WaitQueue();registry.Reset();Pump(t);Require(t.Result==-1&&Calls==0&&registry.Count==0,"reset-no-late-effects");});
+        Case("deadline-only-retires-unclaimed",()=>{var r=Runtime(out var registry);var t=Start(r,()=>{Calls++;return 42;});WaitQueue();Thread.Sleep(130);Pump(t);Require(t.Result==-1&&Calls==0&&registry.Count==0,"deadline-no-late-effects");});
+        Case("started-effect-outlives-deadline-real-result",()=>{var r=Runtime(out var registry);var t=Start(r,()=>{Calls++;Thread.Sleep(150);return 42;});Pump(t);Require(t.Result==42&&Calls==1&&registry.Count==0,"started-real-result");});
+        Case("published-then-post-throw-cancels-unclaimed",()=>{var r=Runtime(out var registry,throwPost:true);var t=Start(r,()=>{Calls++;return 42;});Pump(t);Require(t.Result==-1&&Calls==0&&registry.Count==0,"post-failure-no-effect");});
+        Case("claimed-before-post-throw-real-result-kept",()=>{var r=Runtime(out var registry,throwPost:true,inline:true);var t=Start(r,()=>{Calls++;return 42;});Pump(t);Require(t.Result==42&&Calls==1&&registry.Count==0,"claimed-result-not-overwritten");});
+        Case("preprocess-error-propagates-no-retry",()=>{var r=Runtime(out var registry,true);var t=Start(r,()=>{Calls++;throw new PreprocessFormatException();});Pump(t);Require(t.IsFaulted&&t.Exception.InnerException is PreprocessFormatException&&Calls==1&&registry.Count==0,"format-error-once");});
+        Case("diagnostic-failure-cannot-own-completion",()=>{ThrowDiagnostic=true;var r=Runtime(out var registry,true);var t=Start(r,()=>{Calls++;return 42;});Pump(t);Require(t.Result==42&&Calls==1&&registry.Count==0,"diagnostic-survives");});
+        Case("sealed-registry-refuses-direct-effects",()=>{var r=Runtime(out var registry);registry.Seal();var t=r.RunAsync("direct","npc",7,()=>{Calls++;return 42;},-1);Require(t.Result==-1&&Calls==0,"sealed-no-effects");});
+        Console.WriteLine("GameThreadDispatcher PASS="+pass+" FAIL=0");
+    }
+}
+internal static class Program { static int Main(){try{Probe.Run();return 0;}catch(Exception ex){Console.Error.WriteLine("ASSERTION FAILURE: "+ex);return 1;}} }

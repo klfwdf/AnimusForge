@@ -42,16 +42,21 @@ using TaleWorlds.MountAndBlade;
 using TaleWorlds.MountAndBlade.Missions;
 
 using static AnimusForge.SceneMovementController;
+using static AnimusForge.ShoutBehavior;
 
 namespace AnimusForge;
 
-public partial class ShoutBehavior : CampaignBehaviorBase
+internal sealed partial class SceneConversationSessionRuntime
 {
-	private sealed class ImmediateSceneReactionRequest
+	internal sealed class ImmediateSceneReactionRequest
 	{
 		public long RequestId;
 
 		public long RuntimeGeneration;
+
+        public int ConversationEpoch;
+        public int CompletionStarted;
+        public int CompletionClaimed;
 
 		public int SceneHistorySessionId;
 
@@ -84,8 +89,11 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 		public bool UsesCompactTownOrdinaryChain;
 	}
 
-	private async Task<string> GenerateGroupConversationTurnLineAsync(NpcDataPacket speakerNpc, List<NpcDataPacket> allNpcData, Dictionary<int, Hero> resolvedHeroes, Dictionary<int, PrecomputedShoutRagContext> precomputedContexts, string playerText, string extraFact, string commonCandidatesPrompt, List<SceneSummonPromptTarget> sceneSummonTargets, List<SceneGuidePromptTarget> sceneGuideTargets, string sceneMechanismPromptSectionBase, List<string> patienceStatusLines, bool multiNpcScene, int minTokens, int maxTokens, Func<bool> isCurrent)
+	private async Task<string> GenerateGroupConversationTurnLineCoreAsync(NpcDataPacket speakerNpc, List<NpcDataPacket> allNpcData, Dictionary<int, Hero> resolvedHeroes, Dictionary<int, PrecomputedShoutRagContext> precomputedContexts, string playerText, string extraFact, string commonCandidatesPrompt, List<SceneSummonPromptTarget> sceneSummonTargets, List<SceneGuidePromptTarget> sceneGuideTargets, string sceneMechanismPromptSectionBase, List<string> patienceStatusLines, bool multiNpcScene, int minTokens, int maxTokens, Func<bool> isCurrent)
 	{
+        long promptGeneration = SaveRuntimeGuard.CaptureGeneration();
+        int promptSession = _ports.SceneSessionId();
+        int promptEpoch = Volatile.Read(ref _sceneConversationEpoch);
 		try
 		{
 			Stopwatch turnSw = Stopwatch.StartNew();
@@ -95,8 +103,8 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 			}
 			Logger.Log("Logic", "[MemoryPerf] group_turn_fallback_start agent=" + speakerNpc.AgentIndex + " npc=" + (GetSceneNpcHistoryNameForPrompt(speakerNpc) ?? "") + " multi=" + multiNpcScene + " candidates=" + allNpcData.Count);
 			ApplySceneLocalDisambiguatedNames(allNpcData);
-			await EnsurePersonaForCandidatesAsync(new List<NpcDataPacket> { speakerNpc }, resolvedHeroes ?? new Dictionary<int, Hero>());
-			if (isCurrent != null && !isCurrent()) return "";
+			await _ports.EnsurePersonaForCandidatesAsync(new List<NpcDataPacket> { speakerNpc }, resolvedHeroes ?? new Dictionary<int, Hero>());
+			if (!IsSceneRequestSourceCurrent(promptGeneration, promptSession, promptEpoch) || (isCurrent != null && !isCurrent())) return "";
 			Agent agent = Mission.Current?.Agents?.FirstOrDefault((Agent a) => a != null && a.Index == speakerNpc.AgentIndex);
 			if (!CanAgentParticipateInSceneSpeech(agent))
 			{
@@ -117,10 +125,11 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 			{
 				fullExtra = ((fullExtra == null) ? extraFact : (fullExtra + "\n" + extraFact));
 			}
-			List<string> preprocessExcludedRuleIds = BuildPreprocessExcludedRuleIdsForCurrentInteraction(hero, characterObject, speakerNpc.AgentIndex, speakerNpc.IsHero, sceneSummonTargets, sceneGuideTargets, speakerNpc, allNpcData, playerText);
-			Task<string> persistedHeroHistoryTask = StartPrecomputedPersistedHistoryContextTask(speakerNpc.AgentIndex, playerText, resolvedHeroes, precomputedContexts, "group_turn_fallback");
+			List<string> preprocessExcludedRuleIds = _ports.BuildPreprocessExcludedRuleIdsForCurrentInteraction(hero, characterObject, speakerNpc.AgentIndex, speakerNpc.IsHero, sceneSummonTargets, sceneGuideTargets, speakerNpc, allNpcData, playerText);
+			Task<string> persistedHeroHistoryTask = _ports.StartPrecomputedPersistedHistoryContextTask(speakerNpc.AgentIndex, playerText, resolvedHeroes, precomputedContexts, "group_turn_fallback");
 			Stopwatch preprocessSw = Stopwatch.StartNew();
-			MyBehavior.ShoutPromptContext ctx = MyBehavior.BuildShoutPromptContextForExternal(hero, playerText, fullExtra, speakerNpc.CultureId ?? "neutral", hasAnyHero: speakerNpc.IsHero, targetCharacter: characterObject, kingdomIdOverride: kingdomIdOverride, targetAgentIndex: speakerNpc.AgentIndex, usePrefetchedLoreContext: hasPrecomputed && precomputed != null && precomputed.HasLoreContext, prefetchedLoreContext: precomputed?.LoreContext, preprocessExcludedRuleIds: preprocessExcludedRuleIds);
+			MyBehavior.ShoutPromptContext ctx = await BuildModuleScenePromptContextAsync(hero, characterObject, playerText, fullExtra, speakerNpc.CultureId ?? "neutral", kingdomIdOverride, speakerNpc.AgentIndex, speakerNpc.IsHero, hasPrecomputed && precomputed != null && precomputed.HasLoreContext, precomputed?.LoreContext, preprocessExcludedRuleIds, promptGeneration, promptSession, promptEpoch);
+            if (!IsSceneRequestSourceCurrent(promptGeneration, promptSession, promptEpoch) || ctx == null) return "";
 			preprocessSw.Stop();
 			Logger.Log("Logic", "[MemoryPerf] group_turn_fallback_preprocess_done agent=" + speakerNpc.AgentIndex + " hero=" + (hero?.StringId ?? "") + " ms=" + Math.Round(preprocessSw.Elapsed.TotalMilliseconds, 2) + " hits=" + (((ctx?.PreprocessRuleIds) == null || ctx.PreprocessRuleIds.Count == 0) ? "(none)" : string.Join(",", ctx.PreprocessRuleIds)) + " extrasLen=" + ((ctx?.Extras ?? "").Length));
 			StringBuilder local = new StringBuilder();
@@ -136,8 +145,8 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 			{
 				sceneMechanismPromptSection = string.IsNullOrWhiteSpace(sceneMechanismPromptSection) ? sceneMechanismPromptSectionBase.Trim() : (sceneMechanismPromptSectionBase.Trim() + "\n" + sceneMechanismPromptSection);
 			}
-			string persistedHeroHistory = await AwaitPrecomputedPersistedHistoryContextAsync(speakerNpc.AgentIndex, playerText, resolvedHeroes, precomputedContexts, persistedHeroHistoryTask, "group_turn_fallback");
-			if (isCurrent != null && !isCurrent()) return "";
+			string persistedHeroHistory = await _ports.AwaitPrecomputedPersistedHistoryContextAsync(speakerNpc.AgentIndex, playerText, resolvedHeroes, precomputedContexts, persistedHeroHistoryTask, "group_turn_fallback");
+			if (!IsSceneRequestSourceCurrent(promptGeneration, promptSession, promptEpoch) || (isCurrent != null && !isCurrent())) return "";
 			string privateRecentWindowSection = "";
 			string persistedWithoutRecentWindow = "";
 			SplitPersistedHeroHistorySections(persistedHeroHistory, out privateRecentWindowSection, out persistedWithoutRecentWindow);
@@ -163,11 +172,11 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 			List<ConversationMessage> persistentMemoryRoleMessages = BuildUncompressedMemoryRoleMessagesForPrompt(hero, speakerNpc.AgentIndex);
 			uncompressedSw.Stop();
 			Logger.Log("Logic", "[MemoryPerf] group_turn_fallback_uncompressed_done agent=" + speakerNpc.AgentIndex + " hero=" + (hero?.StringId ?? "") + " messages=" + ((persistentMemoryRoleMessages == null) ? 0 : persistentMemoryRoleMessages.Count) + " ms=" + Math.Round(uncompressedSw.Elapsed.TotalMilliseconds, 2));
-			List<object> messages = BuildStrictSceneMessagesForNpc(speakerNpc.AgentIndex, layeredPrompt, MainPromptMessageAssemblyOwner.BuildSceneSingleSpeakerPrefixSections(MainPromptMessageAssemblyOwner.SceneSingleSpeakerLayout.GroupFallback, privateRecentWindowSection, persistedWithoutRecentWindow, roleRuntimeContext, local.ToString().Trim(), currentAfefFactBlock, trustBlock, miscExtrasSection, scenePatienceInstruction, knowledgeExtrasSection, systemRuleBlock), persistentHistoryMessages: persistentMemoryRoleMessages);
+			List<object> messages = _ports.BuildStrictSceneMessagesForNpc(speakerNpc.AgentIndex, layeredPrompt, MainPromptMessageAssemblyOwner.BuildSceneSingleSpeakerPrefixSections(MainPromptMessageAssemblyOwner.SceneSingleSpeakerLayout.GroupFallback, privateRecentWindowSection, persistedWithoutRecentWindow, roleRuntimeContext, local.ToString().Trim(), currentAfefFactBlock, trustBlock, miscExtrasSection, scenePatienceInstruction, knowledgeExtrasSection, systemRuleBlock), persistentHistoryMessages: persistentMemoryRoleMessages);
 			Logger.Log("Logic", "[MemoryPerf] group_turn_fallback_prompt_ready agent=" + speakerNpc.AgentIndex + " hero=" + (hero?.StringId ?? "") + " messages=" + messages.Count + " persistedChars=" + ((persistedHeroHistory ?? "").Length) + " privateChars=" + ((privateRecentWindowSection ?? "").Length) + " oldCompressedChars=" + ((persistedWithoutRecentWindow ?? "").Length));
 			Stopwatch apiSw = Stopwatch.StartNew();
 			string text = await LegacyShoutNetworkGateway.SendLegacyMessagesAsync(messages, 5000, promptRetryOnError: true);
-			if (isCurrent != null && !isCurrent()) return "";
+			if (!IsSceneRequestSourceCurrent(promptGeneration, promptSession, promptEpoch) || (isCurrent != null && !isCurrent())) return "";
 			text = LlmVisibleReplyNormalizer.NormalizeComplete(text);
 			apiSw.Stop();
 			Logger.Log("Logic", "[MemoryPerf] group_turn_fallback_api_done agent=" + speakerNpc.AgentIndex + " hero=" + (hero?.StringId ?? "") + " outputLen=" + ((text ?? "").Length) + " apiMs=" + Math.Round(apiSw.Elapsed.TotalMilliseconds, 2) + " elapsedMs=" + Math.Round(turnSw.Elapsed.TotalMilliseconds, 2));
@@ -187,8 +196,11 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private async Task<string> GetPassiveNpcResponse(NpcDataPacket data, string sceneDesc, string inputActionText, string precalculatedLore, List<NpcDataPacket> allNpcData, Dictionary<int, Hero> resolvedHeroes)
+	private async Task<string> GetPassiveNpcResponseCoreAsync(NpcDataPacket data, string sceneDesc, string inputActionText, string precalculatedLore, List<NpcDataPacket> allNpcData, Dictionary<int, Hero> resolvedHeroes)
 	{
+        long promptGeneration = SaveRuntimeGuard.CaptureGeneration();
+        int promptSession = _ports.SceneSessionId();
+        int promptEpoch = Volatile.Read(ref _sceneConversationEpoch);
 		try
 		{
 			if (data == null)
@@ -216,13 +228,14 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 				Agent passiveAgent = Mission.Current?.Agents?.FirstOrDefault((Agent a) => a != null && a.Index == data.AgentIndex);
 				CharacterObject passiveCharacter = passiveAgent?.Character as CharacterObject;
 				string passiveKingdomIdOverride = TryGetKingdomIdOverrideFromAgent(passiveAgent);
-				List<string> preprocessExcludedRuleIds = BuildPreprocessExcludedRuleIdsForCurrentInteraction(hero, passiveCharacter, data.AgentIndex, data.IsHero, sceneSpeakerNpc: data, sceneCandidates: allNpcData, currentPlayerText: inputActionText);
-				MyBehavior.ShoutPromptContext ctx = MyBehavior.BuildShoutPromptContextForExternal(hero, inputActionText, fullExtra, cultureId, hasAnyHero: data.IsHero, targetCharacter: passiveCharacter, kingdomIdOverride: passiveKingdomIdOverride, targetAgentIndex: data.AgentIndex, usePrefetchedLoreContext: !string.IsNullOrWhiteSpace(loreContext), prefetchedLoreContext: loreContext, preprocessExcludedRuleIds: preprocessExcludedRuleIds);
+				List<string> preprocessExcludedRuleIds = _ports.BuildPreprocessExcludedRuleIdsForCurrentInteraction(hero, passiveCharacter, data.AgentIndex, data.IsHero, sceneSpeakerNpc: data, sceneCandidates: allNpcData, currentPlayerText: inputActionText);
+				MyBehavior.ShoutPromptContext ctx = await BuildModuleScenePromptContextAsync(hero, passiveCharacter, inputActionText, fullExtra, cultureId, passiveKingdomIdOverride, data.AgentIndex, data.IsHero, !string.IsNullOrWhiteSpace(loreContext), loreContext, preprocessExcludedRuleIds, promptGeneration, promptSession, promptEpoch);
+                if (!IsSceneRequestSourceCurrent(promptGeneration, promptSession, promptEpoch) || ctx == null) return "";
 				DuelSettings settings = DuelSettings.GetSettings();
 				GetSceneReplyLengthLimits(settings, out var minTokens, out var maxTokens);
 				StringBuilder sysPrompt = new StringBuilder();
 				string npcName = GetSceneNpcHistoryNameForPrompt(data);
-				string presentNpcListBlock = BuildScenePresentNpcListBlockForPrompt(allNpcData, data, resolvedHeroes, useAllegianceLabel: true);
+				string presentNpcListBlock = _ports.BuildScenePresentNpcListBlockForPrompt(allNpcData, data, resolvedHeroes, useAllegianceLabel: true);
 				if (!string.IsNullOrWhiteSpace(presentNpcListBlock))
 				{
 					sysPrompt.AppendLine(presentNpcListBlock);
@@ -294,13 +307,8 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 				});
 				Logger.Metric("prompt.compose.shout_passive", ok: true, swPrompt.Elapsed.TotalMilliseconds);
 				StringBuilder historyDump = null;
-				List<string> historyLines = null;
-				lock (_historyLock)
-				{
-					if (_publicConversationHistory.Count > 0)
-					{
-						historyLines = BuildVisibleSceneHistoryLines(_publicConversationHistory, data.AgentIndex, npcName, passiveMultiNpcScene);
-						if (historyLines != null && historyLines.Count > 0)
+				List<string> historyLines = _ports.CaptureVisibleSceneHistoryLines(data.AgentIndex, npcName, passiveMultiNpcScene);
+                if (historyLines != null && historyLines.Count > 0)
 						{
 							historyDump = new StringBuilder();
 							historyDump.AppendLine($">>> History(Public viewerAgentIndex={data.AgentIndex}) count={historyLines.Count}");
@@ -309,13 +317,12 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 								historyDump.AppendLine(historyLines[i]);
 							}
 						}
-					}
-				}
+
 				if (historyDump != null)
 				{
 					Logger.Log("ShoutBehavior(被动)", historyDump.ToString());
 				}
-				string persistedHeroHistory = BuildPersistedHeroHistoryContext(data.AgentIndex, inputActionText, resolvedHeroes);
+				string persistedHeroHistory = _ports.BuildPersistedHeroHistoryContext(data.AgentIndex, inputActionText, resolvedHeroes);
 				if (!string.IsNullOrWhiteSpace(persistedHeroHistory))
 				{
 					Logger.Log("ShoutBehavior(被动)", $"[HistoryBridge] heroAgentIndex={data.AgentIndex} chars={persistedHeroHistory.Length}");
@@ -324,9 +331,10 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 				string persistedWithoutRecentWindow = "";
 				SplitPersistedHeroHistorySections(persistedHeroHistory, out privateRecentWindowSection, out persistedWithoutRecentWindow);
 				List<ConversationMessage> persistentMemoryRoleMessages = BuildUncompressedMemoryRoleMessagesForPrompt(data.AgentIndex, resolvedHeroes);
-				List<object> messages = BuildStrictSceneMessagesForNpc(data.AgentIndex, layeredPrompt, MainPromptMessageAssemblyOwner.BuildSceneSingleSpeakerPrefixSections(MainPromptMessageAssemblyOwner.SceneSingleSpeakerLayout.Passive, privateRecentWindowSection, persistedWithoutRecentWindow, roleRuntimeContext, sysPrompt.ToString().Trim(), "", trustBlock, miscExtrasSection, scenePatienceInstruction, knowledgeExtrasSection, systemRuleBlock), new string[1] { string.IsNullOrWhiteSpace(inputActionText) ? "" : ("【当前触发】\n" + inputActionText.Trim()) }, currentInputAlreadyRecorded: true, persistentHistoryMessages: persistentMemoryRoleMessages);
+				List<object> messages = _ports.BuildStrictSceneMessagesForNpc(data.AgentIndex, layeredPrompt, MainPromptMessageAssemblyOwner.BuildSceneSingleSpeakerPrefixSections(MainPromptMessageAssemblyOwner.SceneSingleSpeakerLayout.Passive, privateRecentWindowSection, persistedWithoutRecentWindow, roleRuntimeContext, sysPrompt.ToString().Trim(), "", trustBlock, miscExtrasSection, scenePatienceInstruction, knowledgeExtrasSection, systemRuleBlock), new string[1] { string.IsNullOrWhiteSpace(inputActionText) ? "" : ("【当前触发】\n" + inputActionText.Trim()) }, currentInputAlreadyRecorded: true, persistentHistoryMessages: persistentMemoryRoleMessages);
 				Stopwatch swApi = Stopwatch.StartNew();
 				string output = await LegacyShoutNetworkGateway.SendLegacyMessagesAsync(messages, 5000, promptRetryOnError: true);
+                if (!IsSceneRequestSourceCurrent(promptGeneration, promptSession, promptEpoch)) return "";
 				output = LlmVisibleReplyNormalizer.NormalizeComplete(output);
 				swApi.Stop();
 				bool ok = !string.IsNullOrWhiteSpace(output) && !output.StartsWith("（错误") && !output.StartsWith("（程序错误") && !output.StartsWith("（API请求失败") && !output.StartsWith("（API响应格式错误");
@@ -341,7 +349,7 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 
 				if (!ok)
 				{
-					_mainThreadActions.Enqueue(delegate
+					_ports.PostMainThread(delegate
 					{
 						InformationManager.DisplayMessage(new InformationMessage("[被动回应失败] " + output, new Color(1f, 0.3f, 0.3f)));
 					});
@@ -359,7 +367,7 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private async Task HandleGroupResponse(string playerText, List<NpcDataPacket> allNpcData, string sceneDesc, NpcDataPacket primaryNpc, string extraFact, Dictionary<int, PrecomputedShoutRagContext> precomputedContexts, Dictionary<int, Hero> resolvedHeroes, int conversationEpoch, SceneShoutConversationScope conversationScope, List<NpcDataPacket> framedNpcData, SceneGroupReceipt receipt = null)
+	internal async Task HandleGroupResponse(string playerText, List<NpcDataPacket> allNpcData, string sceneDesc, NpcDataPacket primaryNpc, string extraFact, Dictionary<int, PrecomputedShoutRagContext> precomputedContexts, Dictionary<int, Hero> resolvedHeroes, int conversationEpoch, SceneShoutConversationScope conversationScope, List<NpcDataPacket> framedNpcData, SceneGroupReceipt receipt = null)
 	{
 		try
 		{
@@ -390,10 +398,10 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private async Task HandleGroupResponsePerHeroIndependent(string playerText, List<NpcDataPacket> allNpcData, string sceneDesc, NpcDataPacket primaryNpc, string extraFact, Dictionary<int, PrecomputedShoutRagContext> precomputedContexts, Dictionary<int, Hero> resolvedHeroes, int conversationEpoch, SceneShoutConversationScope conversationScope, List<NpcDataPacket> framedNpcData, SceneGroupReceipt receipt = null)
+	internal async Task HandleGroupResponsePerHeroIndependent(string playerText, List<NpcDataPacket> allNpcData, string sceneDesc, NpcDataPacket primaryNpc, string extraFact, Dictionary<int, PrecomputedShoutRagContext> precomputedContexts, Dictionary<int, Hero> resolvedHeroes, int conversationEpoch, SceneShoutConversationScope conversationScope, List<NpcDataPacket> framedNpcData, SceneGroupReceipt receipt = null)
 	{
 		long sceneReplyGeneration = SaveRuntimeGuard.CaptureGeneration();
-		int sceneReplySessionId = Volatile.Read(ref _sceneHistorySessionId);
+		int sceneReplySessionId = _ports.SceneSessionId();
 		bool IsCurrentModuleGroup() => IsModuleSceneGroupCurrent(receipt, sceneReplyGeneration, sceneReplySessionId, conversationEpoch);
 		HashSet<int> engagedAgentIndices = new HashSet<int>();
 		if (primaryNpc != null && primaryNpc.AgentIndex >= 0)
@@ -437,21 +445,21 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 			bool multiNpcScene = speakableCandidates.Count > 1;
 			bool relaySingleFramedNpc = framedNpcData != null && framedNpcData.Count == 1;
 			int primaryTargetAgentIndex = primaryNpc?.AgentIndex ?? (-1);
-			NpcDataPacket currentSpeaker = await RunNativeConversationMainThreadFuncAsync("scene_primary_first_validate", primaryNpc?.Name, primaryTargetAgentIndex, () => ResolveLiveSceneRelayTarget(conversationScope, audienceByAgentIndex, resolvedHeroes, conversationEpoch, primaryTargetAgentIndex), (NpcDataPacket)null);
+			NpcDataPacket currentSpeaker = await _dispatcher.RunAsync("scene_primary_first_validate", primaryNpc?.Name, primaryTargetAgentIndex, () => ResolveLiveSceneRelayTarget(conversationScope, audienceByAgentIndex, resolvedHeroes, conversationEpoch, primaryTargetAgentIndex), (NpcDataPacket)null);
 			if (!IsCurrentModuleGroup()) return;
 			if (currentSpeaker == null)
 			{
 				receipt?.Fail("scene.primary_unavailable");
 				List<NpcDataPacket> failedPrimaryParticipants = primaryNpc == null ? new List<NpcDataPacket>() : new List<NpcDataPacket> { primaryNpc };
-				await RunNativeConversationMainThreadFuncAsync("scene_primary_first_release", primaryNpc?.Name, primaryTargetAgentIndex, delegate
+				await _dispatcher.RunAsync("scene_primary_first_release", primaryNpc?.Name, primaryTargetAgentIndex, delegate
 				{
 					if (!SaveRuntimeGuard.IsCurrentGeneration(sceneReplyGeneration)
-						|| sceneReplySessionId != Volatile.Read(ref _sceneHistorySessionId)
+						|| sceneReplySessionId != _ports.SceneSessionId()
 						|| !IsSceneConversationEpochCurrent(conversationEpoch)) return false;
-					ReleaseSceneConversationConstraints(failedPrimaryParticipants, primaryTargetAgentIndex, stopAutoGroupSession: true, clearQueuedSpeech: true, forceFullAutonomyRelease: true);
+					_ports.ReleaseSceneConversationConstraints(failedPrimaryParticipants, primaryTargetAgentIndex, stopAutoGroupSession: true, clearQueuedSpeech: true, forceFullAutonomyRelease: true);
 					return true;
 				}, fallback: false);
-				QueueSceneInfoMessage("异色主对象当前无法回应", new Color(0.75f, 0.75f, 0.75f), conversationEpoch, AutoGroupRelayNegativeSoundEvent);
+				_ports.QueueSceneInfoMessage("异色主对象当前无法回应", new Color(0.75f, 0.75f, 0.75f), conversationEpoch, AutoGroupRelayNegativeSoundEvent);
 				return;
 			}
 			engagedAgentIndices.Add(currentSpeaker.AgentIndex);
@@ -485,7 +493,7 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 					receipt?.Fail("scene.stale_context");
 					return;
 				}
-				NpcDataPacket validatedCurrentSpeaker = await RunNativeConversationMainThreadFuncAsync("scene_relay_turn_validate", currentSpeaker.Name, currentSpeaker.AgentIndex, () => ResolveLiveSceneRelayTarget(conversationScope, audienceByAgentIndex, resolvedHeroes, conversationEpoch, currentSpeaker.AgentIndex), (NpcDataPacket)null);
+				NpcDataPacket validatedCurrentSpeaker = await _dispatcher.RunAsync("scene_relay_turn_validate", currentSpeaker.Name, currentSpeaker.AgentIndex, () => ResolveLiveSceneRelayTarget(conversationScope, audienceByAgentIndex, resolvedHeroes, conversationEpoch, currentSpeaker.AgentIndex), (NpcDataPacket)null);
 				if (!IsCurrentModuleGroup()) return;
 				if (validatedCurrentSpeaker == null)
 				{
@@ -508,7 +516,7 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 				engagedAgentIndices.Add(currentSpeaker.AgentIndex);
 				if (personaPreparedAgentIndices.Add(currentSpeaker.AgentIndex))
 				{
-					await EnsurePersonaForCandidatesAsync(new List<NpcDataPacket> { currentSpeaker }, resolvedHeroes);
+					await _ports.EnsurePersonaForCandidatesAsync(new List<NpcDataPacket> { currentSpeaker }, resolvedHeroes);
 					if (!IsCurrentModuleGroup()) return;
 				}
 				List<NpcDataPacket> engagedParticipants = speakableCandidates.Where((NpcDataPacket npc) => npc != null && engagedAgentIndices.Contains(npc.AgentIndex)).ToList();
@@ -520,17 +528,17 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 						engagedAgents.Add(engagedEntry.AgentReference);
 					}
 				}
-				await RunNativeConversationMainThreadFuncAsync("scene_relay_hold_participants", currentSpeaker.Name, currentSpeaker.AgentIndex, delegate
+				await _dispatcher.RunAsync("scene_relay_hold_participants", currentSpeaker.Name, currentSpeaker.AgentIndex, delegate
 				{
 					if (!SaveRuntimeGuard.IsCurrentGeneration(sceneReplyGeneration)
-						|| sceneReplySessionId != Volatile.Read(ref _sceneHistorySessionId)
+						|| sceneReplySessionId != _ports.SceneSessionId()
 						|| !IsSceneConversationEpochCurrent(conversationEpoch)) return false;
-					ActivateMultiSceneMovementSuppression(engagedAgentIndices);
-					HoldSceneConversationAgents(engagedAgents);
+					_ports.ActivateMultiSceneMovementSuppression(engagedAgentIndices);
+					_ports.HoldSceneConversationAgents(engagedAgents);
 					return true;
 				}, fallback: false);
 				if (!IsCurrentModuleGroup()) return;
-				SceneRelayEligibilitySnapshot turnEligibility = await RunNativeConversationMainThreadFuncAsync("scene_relay_turn_candidates", currentSpeaker.Name, currentSpeaker.AgentIndex, () => BuildSceneRelayEligibilitySnapshot(conversationScope, audienceByAgentIndex, resolvedHeroes, conversationEpoch), new SceneRelayEligibilitySnapshot());
+				SceneRelayEligibilitySnapshot turnEligibility = await _dispatcher.RunAsync("scene_relay_turn_candidates", currentSpeaker.Name, currentSpeaker.AgentIndex, () => BuildSceneRelayEligibilitySnapshot(conversationScope, audienceByAgentIndex, resolvedHeroes, conversationEpoch), new SceneRelayEligibilitySnapshot());
 				if (!IsCurrentModuleGroup()) return;
 				List<string> patienceStatusLines = turnEligibility.PatienceStatusLines;
 				string cleaned = "";
@@ -587,21 +595,19 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 					npcCharacter = npcAgent?.Character as CharacterObject;
 					speakingHero = npcCharacter?.HeroObject ?? contextHero;
 					string npcKingdomIdOverride = TryGetKingdomIdOverrideFromAgent(npcAgent);
-					List<string> preprocessExcludedRuleIds = BuildPreprocessExcludedRuleIdsForCurrentInteraction(contextHero, npcCharacter, currentSpeaker.AgentIndex, currentSpeaker.IsHero, sceneSummonTargets, sceneGuideTargets, currentSpeaker, speakableCandidates, playerText);
+					List<string> preprocessExcludedRuleIds = _ports.BuildPreprocessExcludedRuleIdsForCurrentInteraction(contextHero, npcCharacter, currentSpeaker.AgentIndex, currentSpeaker.IsHero, sceneSummonTargets, sceneGuideTargets, currentSpeaker, speakableCandidates, playerText);
 					Task<string> persistedHeroHistoryTask = receipt == null
-						? StartPrecomputedPersistedHistoryContextTask(currentSpeaker.AgentIndex, playerText, resolvedHeroes, precomputedContexts, "group_turn")
-						: Task.FromResult((BuildPersistedHeroHistoryContext(currentSpeaker.AgentIndex, playerText, resolvedHeroes) ?? "").Trim());
+						? _ports.StartPrecomputedPersistedHistoryContextTask(currentSpeaker.AgentIndex, playerText, resolvedHeroes, precomputedContexts, "group_turn")
+						: Task.FromResult((_ports.BuildPersistedHeroHistoryContext(currentSpeaker.AgentIndex, playerText, resolvedHeroes) ?? "").Trim());
 					Stopwatch preprocessSw = Stopwatch.StartNew();
-					MyBehavior.ShoutPromptContext ctx = receipt == null
-						? MyBehavior.BuildShoutPromptContextForExternal(contextHero, playerText, fullExtra, cultureId, hasAnyHero: currentSpeaker.IsHero, targetCharacter: npcCharacter, kingdomIdOverride: npcKingdomIdOverride, targetAgentIndex: currentSpeaker.AgentIndex, usePrefetchedLoreContext: hasPrecomputed && precomputed != null && precomputed.HasLoreContext, prefetchedLoreContext: precomputed?.LoreContext, preprocessExcludedRuleIds: preprocessExcludedRuleIds)
-						: await BuildModuleScenePromptContextAsync(contextHero, npcCharacter, playerText, fullExtra, cultureId,
+					MyBehavior.ShoutPromptContext ctx = await BuildModuleScenePromptContextAsync(contextHero, npcCharacter, playerText, fullExtra, cultureId,
 							npcKingdomIdOverride, currentSpeaker.AgentIndex, currentSpeaker.IsHero,
 							hasPrecomputed && precomputed != null && precomputed.HasLoreContext, precomputed?.LoreContext,
 							preprocessExcludedRuleIds, sceneReplyGeneration, sceneReplySessionId, conversationEpoch);
 					if (!IsCurrentModuleGroup()) return;
-					if (receipt != null && ctx == null)
+					if (ctx == null)
 					{
-						receipt.Fail("scene.prompt_unconfirmed");
+						receipt?.Fail("scene.prompt_unconfirmed");
 						return;
 					}
 					preprocessSw.Stop();
@@ -609,7 +615,7 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 					postprocessEntityContext = ctx?.EntityPostprocessContext ?? "";
 					Logger.Log("Logic", "[MemoryPerf] group_turn_preprocess_done agent=" + currentSpeaker.AgentIndex + " hero=" + (speakingHero?.StringId ?? turnHeroId ?? "") + " ms=" + Math.Round(preprocessSw.Elapsed.TotalMilliseconds, 2) + " hits=" + ((postprocessPreprocessHits == null || postprocessPreprocessHits.Count == 0) ? "(none)" : string.Join(",", postprocessPreprocessHits)) + " extrasLen=" + ((ctx?.Extras ?? "").Length));
 					StringBuilder local = new StringBuilder();
-					string presentNpcListBlock = BuildScenePresentNpcListBlockForPrompt(speakableCandidates, currentSpeaker, resolvedHeroes);
+					string presentNpcListBlock = _ports.BuildScenePresentNpcListBlockForPrompt(speakableCandidates, currentSpeaker, resolvedHeroes);
 					if (!string.IsNullOrWhiteSpace(presentNpcListBlock))
 					{
 						local.AppendLine(presentNpcListBlock);
@@ -620,16 +626,11 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 					SplitSceneExtraSections(baseExtrasWithoutTrust, out var miscExtrasSection, out var ruleExtrasSection, out var knowledgeExtrasSection);
 					string sceneFollowControlInstruction = _sceneMovement.BuildSceneFollowControlPromptInstruction(currentSpeaker);
 					string sceneMechanismPromptSection = BuildSceneMechanismPromptSection(sceneSummonTargets, sceneGuideTargets, sceneSummonClosureInstruction, sceneFollowControlInstruction, currentSpeaker);
-					List<string> historyLines = null;
-					lock (_historyLock)
-					{
-						if (_publicConversationHistory.Count > 0)
-						{
-							historyLines = BuildVisibleSceneHistoryLines(_publicConversationHistory, currentSpeaker.AgentIndex, GetSceneNpcHistoryNameForPrompt(currentSpeaker), multiNpcScene);
-						}
-					}
+					List<string> historyLines = _ports.CaptureVisibleSceneHistoryLines(currentSpeaker.AgentIndex, GetSceneNpcHistoryNameForPrompt(currentSpeaker), multiNpcScene);
+
+
 					scenePublicHistorySection = BuildScenePublicHistorySection(historyLines);
-					string persistedHeroHistory = await AwaitPrecomputedPersistedHistoryContextAsync(currentSpeaker.AgentIndex, playerText, resolvedHeroes, precomputedContexts, persistedHeroHistoryTask, "group_turn");
+					string persistedHeroHistory = await _ports.AwaitPrecomputedPersistedHistoryContextAsync(currentSpeaker.AgentIndex, playerText, resolvedHeroes, precomputedContexts, persistedHeroHistoryTask, "group_turn");
 					if (!IsCurrentModuleGroup()) return;
 					string privateRecentWindowSection = "";
 					string persistedWithoutRecentWindow = "";
@@ -720,7 +721,7 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 					}
 					if (sceneMechanismRuleInjected)
 					{
-						sceneMechanismPostprocessRules = BuildRuntimeSceneMechanismPostprocessRulesForScene(
+						sceneMechanismPostprocessRules = _ports.BuildRuntimeSceneMechanismPostprocessRulesForScene(
 							currentSpeaker,
 							sceneSummonTargets,
 							sceneGuideTargets,
@@ -737,7 +738,7 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 					List<ConversationMessage> persistentMemoryRoleMessages = BuildUncompressedMemoryRoleMessagesForPrompt(speakingHero, currentSpeaker.AgentIndex);
 					uncompressedSw.Stop();
 					Logger.Log("Logic", "[MemoryPerf] group_turn_uncompressed_done agent=" + currentSpeaker.AgentIndex + " hero=" + (speakingHero?.StringId ?? turnHeroId ?? "") + " messages=" + ((persistentMemoryRoleMessages == null) ? 0 : persistentMemoryRoleMessages.Count) + " ms=" + Math.Round(uncompressedSw.Elapsed.TotalMilliseconds, 2));
-					List<object> messages = BuildStrictSceneMessagesForNpc(currentSpeaker.AgentIndex, layeredPrompt, MainPromptMessageAssemblyOwner.BuildSceneSingleSpeakerPrefixSections(MainPromptMessageAssemblyOwner.SceneSingleSpeakerLayout.GroupTurn, privateRecentWindowSection, persistedWithoutRecentWindow, sceneDynamicUserBlock, "", "", "", "", "", knowledgeExtrasSection, systemRuleBlock), persistentHistoryMessages: persistentMemoryRoleMessages);
+					List<object> messages = _ports.BuildStrictSceneMessagesForNpc(currentSpeaker.AgentIndex, layeredPrompt, MainPromptMessageAssemblyOwner.BuildSceneSingleSpeakerPrefixSections(MainPromptMessageAssemblyOwner.SceneSingleSpeakerLayout.GroupTurn, privateRecentWindowSection, persistedWithoutRecentWindow, sceneDynamicUserBlock, "", "", "", "", "", knowledgeExtrasSection, systemRuleBlock), persistentHistoryMessages: persistentMemoryRoleMessages);
 					promptSw.Stop();
 					Logger.Log("Logic", "[MemoryPerf] group_turn_prompt_ready agent=" + currentSpeaker.AgentIndex + " hero=" + (speakingHero?.StringId ?? turnHeroId ?? "") + " messages=" + messages.Count + " persistedChars=" + ((persistedHeroHistory ?? "").Length) + " privateChars=" + ((privateRecentWindowSection ?? "").Length) + " oldCompressedChars=" + ((persistedWithoutRecentWindow ?? "").Length) + " sceneHistoryChars=" + ((scenePublicHistorySection ?? "").Length) + " dynamicChars=" + ((sceneDynamicUserBlock ?? "").Length) + " ruleChars=" + ((systemRuleBlock ?? "").Length) + " promptBuildMs=" + Math.Round(promptSw.Elapsed.TotalMilliseconds, 2));
 					Stopwatch apiSw = Stopwatch.StartNew();
@@ -747,7 +748,7 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 					{
 						try
 						{
-							InteractionEnvelope envelope = await RunNativeConversationMainThreadFuncAsync(
+							InteractionEnvelope envelope = await _dispatcher.RunAsync(
 								"scene_refactor_capture",
 								currentSpeaker.Name,
 								currentSpeaker.AgentIndex,
@@ -794,7 +795,7 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 									{
 										receipt?.Fail("scene.main_reply_failed");
 										Logger.Log("ShoutBehavior", "[SceneRefactor] terminal reply stopped error=" + (hostResult?.ErrorCode ?? "missing_host_result"));
-										QueueSceneInfoMessage("本轮回应已停止，本轮尚未进入动作处理。", new Color(1f, 0.3f, 0.3f), conversationEpoch);
+										_ports.QueueSceneInfoMessage("本轮回应已停止，本轮尚未进入动作处理。", new Color(1f, 0.3f, 0.3f), conversationEpoch);
 										break;
 									}
 									output = hostResult.VisibleReply ?? "";
@@ -807,7 +808,7 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 							if (sceneShoutDetachedSubmitted)
 							{
 								receipt?.Fail("scene.main_reply_failed");
-								QueueSceneInfoMessage("本轮回应发生错误，系统已停止后续动作处理。", new Color(1f, 0.3f, 0.3f), conversationEpoch);
+								_ports.QueueSceneInfoMessage("本轮回应发生错误，系统已停止后续动作处理。", new Color(1f, 0.3f, 0.3f), conversationEpoch);
 								break;
 							}
 						}
@@ -829,7 +830,7 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 					{
 						receipt?.Fail("scene.main_reply_failed");
 						Logger.Log("ShoutBehavior(主动)", "<<< API错误: " + output);
-						_mainThreadActions.Enqueue(delegate
+						_ports.PostMainThread(delegate
 						{
 							InformationManager.DisplayMessage(new InformationMessage("[场景喊话] " + output, new Color(1f, 0.3f, 0.3f)));
 						});
@@ -842,8 +843,8 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 				}
 				else
 				{
-					historyFullText = await GenerateGroupConversationTurnLineAsync(currentSpeaker, speakableCandidates, resolvedHeroes, precomputedContexts, playerText, extraFact, BuildScenePresentNpcListBlockForPrompt(speakableCandidates, currentSpeaker, resolvedHeroes), sceneSummonTargets, sceneGuideTargets, sceneMechanismPromptSectionBase, patienceStatusLines, multiNpcScene, minTokens, maxTokens, () => SaveRuntimeGuard.IsCurrentGeneration(sceneReplyGeneration)
-						&& sceneReplySessionId == Volatile.Read(ref _sceneHistorySessionId)
+					historyFullText = await GenerateGroupConversationTurnLineAsync(currentSpeaker, speakableCandidates, resolvedHeroes, precomputedContexts, playerText, extraFact, _ports.BuildScenePresentNpcListBlockForPrompt(speakableCandidates, currentSpeaker, resolvedHeroes), sceneSummonTargets, sceneGuideTargets, sceneMechanismPromptSectionBase, patienceStatusLines, multiNpcScene, minTokens, maxTokens, () => SaveRuntimeGuard.IsCurrentGeneration(sceneReplyGeneration)
+						&& sceneReplySessionId == _ports.SceneSessionId()
 						&& IsSceneConversationEpochCurrent(conversationEpoch)
 						&& IsCurrentModuleGroup());
 					if (!IsCurrentModuleGroup()) return;
@@ -932,11 +933,11 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 					}
 					if (replyIsDirectPlayerResponse && !directNoblePrisonerConversation)
 					{
-						bool directSceneCommandHandled = await RunNativeConversationMainThreadFuncAsync(
+						bool directSceneCommandHandled = await _dispatcher.RunAsync(
 							"scene_direct_command", currentSpeaker.Name, currentSpeaker.AgentIndex, () =>
 							{
 								if (SaveRuntimeGuard.IsStale(sceneReplyGeneration, "scene_direct_command")
-									|| sceneReplySessionId != Volatile.Read(ref _sceneHistorySessionId)
+									|| sceneReplySessionId != _ports.SceneSessionId()
 									|| !IsSceneConversationEpochCurrent(conversationEpoch)
 									|| !IsNativeConversationResponseTargetAvailableForActionDispatch(currentSpeaker.AgentIndex, speakingHero, npcCharacter, out _))
 								{
@@ -957,7 +958,7 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 						&& AIConfigHandler.IsRoyalAbdicationPostprocessTargetForExternal(speakingHero ?? npcCharacter?.HeroObject);
 					if (!suppressBattleSpeechFollowups && !endRequested && remainingTurns > 0)
 					{
-						SceneRelayEligibilitySnapshot nextEligibility = await RunNativeConversationMainThreadFuncAsync("scene_relay_next_candidates", currentSpeaker.Name, currentSpeaker.AgentIndex, () => BuildSceneRelayEligibilitySnapshot(conversationScope, audienceByAgentIndex, resolvedHeroes, conversationEpoch), new SceneRelayEligibilitySnapshot());
+						SceneRelayEligibilitySnapshot nextEligibility = await _dispatcher.RunAsync("scene_relay_next_candidates", currentSpeaker.Name, currentSpeaker.AgentIndex, () => BuildSceneRelayEligibilitySnapshot(conversationScope, audienceByAgentIndex, resolvedHeroes, conversationEpoch), new SceneRelayEligibilitySnapshot());
 						if (!IsCurrentModuleGroup()) return;
 						relayCandidatesForNextTurn = nextEligibility.Candidates
 							.Where(candidate => candidate != null
@@ -1010,7 +1011,7 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 							}
 							else if (relayTargetAgentIndex < 0)
 							{
-								QueueSceneInfoMessage("没有人愿意作为下一个发言者", new Color(0.75f, 0.75f, 0.75f), conversationEpoch, AutoGroupRelayNegativeSoundEvent);
+								_ports.QueueSceneInfoMessage("没有人愿意作为下一个发言者", new Color(0.75f, 0.75f, 0.75f), conversationEpoch, AutoGroupRelayNegativeSoundEvent);
 								relayRequested = false;
 							}
 							else if (relayTargetAgentIndex == currentSpeaker.AgentIndex)
@@ -1031,7 +1032,7 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 				}
 				if (!string.IsNullOrWhiteSpace(cleaned) && relayRequested)
 				{
-					nextSpeaker = await RunNativeConversationMainThreadFuncAsync("scene_relay_next_validate", currentSpeaker.Name, relayTargetAgentIndex, () => ResolveLiveSceneRelayTarget(conversationScope, audienceByAgentIndex, resolvedHeroes, conversationEpoch, relayTargetAgentIndex), (NpcDataPacket)null);
+					nextSpeaker = await _dispatcher.RunAsync("scene_relay_next_validate", currentSpeaker.Name, relayTargetAgentIndex, () => ResolveLiveSceneRelayTarget(conversationScope, audienceByAgentIndex, resolvedHeroes, conversationEpoch, relayTargetAgentIndex), (NpcDataPacket)null);
 					if (!IsCurrentModuleGroup()) return;
 					resolvedRelayTargetAgentIndex = nextSpeaker?.AgentIndex ?? (-1);
 				}
@@ -1039,7 +1040,7 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 			{
 				if (resolvedRelayTargetAgentIndex >= 0)
 				{
-					QueueSceneInfoMessage(BuildAutoGroupRelayThinkingInfoMessage(nextSpeaker), new Color(1f, 0.95f, 0.25f), conversationEpoch, AutoGroupRelayPositiveSoundEvent);
+					_ports.QueueSceneInfoMessage(BuildAutoGroupRelayThinkingInfoMessage(nextSpeaker), new Color(1f, 0.95f, 0.25f), conversationEpoch, AutoGroupRelayPositiveSoundEvent);
 				}
 			}
 				if (endRequested || resolvedRelayTargetAgentIndex < 0 || nextSpeaker == null)
@@ -1052,10 +1053,10 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 			if (!IsCurrentModuleGroup()) return;
 			if (battleSpeechClaimedRound)
 			{
-				bool followupSettled = await RunNativeConversationMainThreadFuncAsync("battle_speech_followup_suppression", primaryNpc?.Name, primaryNpc?.AgentIndex ?? (-1), delegate
+				bool followupSettled = await _dispatcher.RunAsync("battle_speech_followup_suppression", primaryNpc?.Name, primaryNpc?.AgentIndex ?? (-1), delegate
 				{
 					if (!SaveRuntimeGuard.IsCurrentGeneration(sceneReplyGeneration)
-						|| sceneReplySessionId != Volatile.Read(ref _sceneHistorySessionId)
+						|| sceneReplySessionId != _ports.SceneSessionId()
 						|| !IsSceneConversationEpochCurrent(conversationEpoch)) return false;
 					_sceneMovement.SuppressOrdinarySceneFollowupsForBattleSpeech(speakableCandidates);
 					return true;
@@ -1065,12 +1066,12 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 			else
 			{
 				List<NpcDataPacket> finalEngagedParticipants = speakableCandidates.Where((NpcDataPacket npc) => npc != null && engagedAgentIndices.Contains(npc.AgentIndex)).ToList();
-				bool followupSettled = await RunNativeConversationMainThreadFuncAsync("scene_relay_idle_timeout", primaryNpc?.Name, primaryNpc?.AgentIndex ?? (-1), delegate
+				bool followupSettled = await _dispatcher.RunAsync("scene_relay_idle_timeout", primaryNpc?.Name, primaryNpc?.AgentIndex ?? (-1), delegate
 				{
 					if (!SaveRuntimeGuard.IsCurrentGeneration(sceneReplyGeneration)
-						|| sceneReplySessionId != Volatile.Read(ref _sceneHistorySessionId)
+						|| sceneReplySessionId != _ports.SceneSessionId()
 						|| !IsSceneConversationEpochCurrent(conversationEpoch)) return false;
-					PrepareAutoGroupParticipantsForIdleTimeout(finalEngagedParticipants, lastSpeakerOutputText, playerText, roundNpcVisibleTexts, roundNpcSpeakerIndices.Count);
+					_ports.PrepareAutoGroupParticipantsForIdleTimeout(finalEngagedParticipants, lastSpeakerOutputText, playerText, roundNpcVisibleTexts, roundNpcSpeakerIndices.Count);
 					return true;
 				}, fallback: false);
 				if (!followupSettled) receipt?.Fail("scene.followup_unconfirmed");
@@ -1083,20 +1084,20 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 			if (IsCurrentModuleGroup() && IsSceneConversationEpochCurrent(conversationEpoch))
 			{
 				List<NpcDataPacket> failedEngagedParticipants = (allNpcData ?? new List<NpcDataPacket>()).Where((NpcDataPacket npc) => npc != null && engagedAgentIndices.Contains(npc.AgentIndex)).ToList();
-				await RunNativeConversationMainThreadFuncAsync("scene_relay_failure_release", primaryNpc?.Name, primaryNpc?.AgentIndex ?? (-1), delegate
+				await _dispatcher.RunAsync("scene_relay_failure_release", primaryNpc?.Name, primaryNpc?.AgentIndex ?? (-1), delegate
 				{
 					if (!IsCurrentModuleGroup()
 						|| !SaveRuntimeGuard.IsCurrentGeneration(sceneReplyGeneration)
-						|| sceneReplySessionId != Volatile.Read(ref _sceneHistorySessionId)
+						|| sceneReplySessionId != _ports.SceneSessionId()
 						|| !IsSceneConversationEpochCurrent(conversationEpoch)) return false;
-					ReleaseSceneConversationConstraints(failedEngagedParticipants, primaryNpc?.AgentIndex ?? (-1), stopAutoGroupSession: true, clearQueuedSpeech: true, forceFullAutonomyRelease: true);
+					_ports.ReleaseSceneConversationConstraints(failedEngagedParticipants, primaryNpc?.AgentIndex ?? (-1), stopAutoGroupSession: true, clearQueuedSpeech: true, forceFullAutonomyRelease: true);
 					return true;
 				}, fallback: false);
 			}
 		}
 	}
 
-	private bool TryBeginImmediateSceneReactionGeneration(int targetAgentIndex, out long requestId, out string suppressReason)
+	internal bool TryBeginImmediateSceneReactionGeneration(int targetAgentIndex, out long requestId, out string suppressReason)
 	{
 		requestId = 0L;
 		suppressReason = "";
@@ -1133,7 +1134,7 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private bool FinishImmediateSceneReactionGeneration(int targetAgentIndex, long requestId)
+	internal bool FinishImmediateSceneReactionGeneration(int targetAgentIndex, long requestId)
 	{
 		if (targetAgentIndex < 0 || requestId <= 0L)
 		{
@@ -1157,7 +1158,7 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 		return false;
 	}
 
-	private bool RegisterImmediateSceneReactionRequest(ImmediateSceneReactionRequest request)
+	internal bool RegisterImmediateSceneReactionRequest(ImmediateSceneReactionRequest request)
 	{
 		if (request == null || request.RequestId <= 0L || request.TargetAgentIndex < 0)
 		{
@@ -1167,6 +1168,7 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 		{
 			if (_immediateSceneReactionActiveRequestIds.TryGetValue(request.TargetAgentIndex, out var activeRequestId) && activeRequestId == request.RequestId)
 			{
+				request.ConversationEpoch = ConversationEpoch;
 				_pendingImmediateSceneReactionRequests[request.RequestId] = request;
 				return true;
 			}
@@ -1174,7 +1176,7 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 		return false;
 	}
 
-	private bool TryTakeImmediateSceneReactionRequest(long requestId, out ImmediateSceneReactionRequest request)
+	internal bool TryTakeImmediateSceneReactionRequest(long requestId, out ImmediateSceneReactionRequest request)
 	{
 		request = null;
 		if (requestId <= 0L)
@@ -1188,12 +1190,12 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 				request = null;
 				return false;
 			}
-			_pendingImmediateSceneReactionRequests.Remove(requestId);
-			return true;
+            // Keep the same authoritative request reachable until all asynchronous phases settle.
+            return Interlocked.CompareExchange(ref request.CompletionStarted, 1, 0) == 0;
 		}
 	}
 
-	private void InvokeImmediateSceneReactionNoSpeechFallback(Action onNoSpeech)
+	internal void InvokeImmediateSceneReactionNoSpeechFallback(Action onNoSpeech)
 	{
 		if (onNoSpeech == null)
 		{
@@ -1209,25 +1211,25 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private void QueueImmediateSceneReactionNoSpeechFallback(Action onNoSpeech)
+	internal void QueueImmediateSceneReactionNoSpeechFallback(Action onNoSpeech)
 	{
 		if (onNoSpeech == null)
 		{
 			return;
 		}
-		_mainThreadActions.Enqueue(delegate
+		_ports.PostMainThread(delegate
 		{
 			InvokeImmediateSceneReactionNoSpeechFallback(onNoSpeech);
 		});
 	}
 
-	private void QueueImmediateSceneReactionCompletion(Action<bool> onCompleted, bool generated)
+	internal void QueueImmediateSceneReactionCompletion(Action<bool> onCompleted, bool generated)
 	{
 		if (onCompleted == null)
 		{
 			return;
 		}
-		_mainThreadActions.Enqueue(delegate
+		_ports.PostMainThread(delegate
 		{
 			try
 			{
@@ -1256,11 +1258,11 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private bool TriggerImmediateSceneBehaviorReaction(string factText, int targetAgentIndex, bool persistHeroPrivateHistory, bool suppressStare, float postSpeechLeaveSeconds = -1f, bool skipSceneFactRecord = false, bool returnSceneSummonOnTimeout = false, Action onNoSpeech = null, bool runSiegeReactionPostprocess = false, Func<bool> canStillPublish = null, Action<bool> onCompleted = null)
+	internal bool TriggerImmediateSceneBehaviorReaction(string factText, int targetAgentIndex, bool persistHeroPrivateHistory, bool suppressStare, float postSpeechLeaveSeconds = -1f, bool skipSceneFactRecord = false, bool returnSceneSummonOnTimeout = false, Action onNoSpeech = null, bool runSiegeReactionPostprocess = false, Func<bool> canStillPublish = null, Action<bool> onCompleted = null)
 	{
 		if (!IsBannerlordMainThreadForNativeActions())
 		{
-			_mainThreadActions.Enqueue(delegate
+			_ports.PostMainThread(delegate
 			{
 				TriggerImmediateSceneBehaviorReaction(factText, targetAgentIndex, persistHeroPrivateHistory, suppressStare, postSpeechLeaveSeconds, skipSceneFactRecord, returnSceneSummonOnTimeout, onNoSpeech, runSiegeReactionPostprocess, canStillPublish, onCompleted);
 			});
@@ -1289,7 +1291,7 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 			}
 			if (!suppressStare)
 			{
-				ResetStaringForActiveInteraction(nearbyNPCAgents, agent);
+				_ports.ResetStaringForActiveInteraction(nearbyNPCAgents, agent);
 			}
 			List<NpcDataPacket> list = (from a in nearbyNPCAgents
 				select ShoutUtils.ExtractNpcData(a) into d
@@ -1312,13 +1314,12 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 			immediateSceneReactionGateEntered = true;
 			if (IsAgentHostileToMainAgent(agent))
 			{
-				_activeInteractionSessions.Remove(targetAgentIndex);
-				_pendingInteractionTimeoutArms.Remove(targetAgentIndex);
+				_ports.ClearImmediateInteractionTimeouts(targetAgentIndex);
 				RefreshHostileCombatAgentAutonomy(agent);
 			}
 			else
 			{
-				TrackPlayerInteraction(npcDataPacket, list?.Count ?? 0, postSpeechLeaveSeconds, returnSceneSummonOnTimeout);
+				_ports.TrackPlayerInteraction(npcDataPacket, list?.Count ?? 0, postSpeechLeaveSeconds, returnSceneSummonOnTimeout);
 			}
 			if (!list.Any(d => d != null && d.AgentIndex == targetAgentIndex))
 			{
@@ -1326,7 +1327,7 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 			}
 			if (!skipSceneFactRecord)
 			{
-				RecordExtraFactToSceneHistory(factText, list);
+				_ports.RecordExtraFactToSceneHistory(factText, list);
 			}
 			if (persistHeroPrivateHistory
 				&& agent.Character is CharacterObject characterObject
@@ -1340,7 +1341,7 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 			{
 				if (item != null && item.IsHero)
 				{
-					Hero hero = ResolveHeroFromAgentIndex(item.AgentIndex);
+					Hero hero = _ports.ResolveHeroFromAgentIndex(item.AgentIndex);
 					if (hero != null)
 					{
 						dictionary[item.AgentIndex] = hero;
@@ -1387,7 +1388,7 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private bool TryPrepareImmediateSceneReactionRequest(Mission sourceMission, long requestId, NpcDataPacket targetNpc, List<NpcDataPacket> allNpcData, Dictionary<int, Hero> resolvedHeroes, bool suppressStare, string factText, bool runSiegeReactionPostprocess, Func<bool> canStillPublish, out ImmediateSceneReactionRequest request)
+	internal bool TryPrepareImmediateSceneReactionRequest(Mission sourceMission, long requestId, NpcDataPacket targetNpc, List<NpcDataPacket> allNpcData, Dictionary<int, Hero> resolvedHeroes, bool suppressStare, string factText, bool runSiegeReactionPostprocess, Func<bool> canStillPublish, out ImmediateSceneReactionRequest request)
 	{
 		request = null;
 		if (targetNpc == null || allNpcData == null || allNpcData.Count == 0)
@@ -1446,7 +1447,7 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 		string npcKingdomIdOverride = TryGetKingdomIdOverrideFromAgent(npcAgent);
 		MyBehavior.ShoutPromptContext shoutPromptContext = MyBehavior.BuildShoutPromptContextForExternal(contextHero, "请直接根据刚刚发生的公开互动做出即时反应。", null, targetNpc.CultureId ?? "neutral", hasAnyHero: targetNpc.IsHero, targetCharacter: npcCharacter, kingdomIdOverride: npcKingdomIdOverride, targetAgentIndex: targetNpc.AgentIndex, suppressDynamicRuleAndLore: true);
 		StringBuilder stringBuilder = new StringBuilder();
-		string presentNpcListBlock = BuildScenePresentNpcListBlockForPrompt(allNpcData, targetNpc);
+		string presentNpcListBlock = _ports.BuildScenePresentNpcListBlockForPrompt(allNpcData, targetNpc);
 		if (!string.IsNullOrWhiteSpace(presentNpcListBlock))
 		{
 			stringBuilder.AppendLine(presentNpcListBlock);
@@ -1464,7 +1465,7 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 		string systemRuleBlock = gcczImmediatePromptExtras ? BuildSceneSystemRuleBlock(ruleExtrasSection, null) : "";
 		string gcczIdentityOverrideBlock = BuildGcczImmediateIdentityOverrideBlock(contextHero, npcCharacter, targetNpc.AgentIndex, baseExtras);
 		bool partyTransferTopicSelected = HasPartyTransferRuleContext(baseExtras);
-		string persistedHeroHistory = BuildPersistedHeroHistoryContext(targetNpc.AgentIndex, "", resolvedHeroes);
+		string persistedHeroHistory = _ports.BuildPersistedHeroHistoryContext(targetNpc.AgentIndex, "", resolvedHeroes);
 		string privateRecentWindowSection = "";
 		string persistedWithoutRecentWindow = "";
 		SplitPersistedHeroHistorySections(persistedHeroHistory, out privateRecentWindowSection, out persistedWithoutRecentWindow);
@@ -1473,12 +1474,12 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 		string layeredPrompt = AppendPlayerCustomPromptRuleToSystemPrompt(roleTopIntro);
 		layeredPrompt = MainPromptMessageAssemblyOwner.BuildSceneReactionSystemPrompt(gcczIdentityOverrideBlock, systemRuleBlock, layeredPrompt);
 		List<ConversationMessage> persistentMemoryRoleMessages = BuildUncompressedMemoryRoleMessagesForPrompt(contextHero, npcCharacter, targetNpc, targetNpc.AgentIndex);
-		List<object> messages = BuildStrictSceneMessagesForNpc(targetNpc.AgentIndex, layeredPrompt, MainPromptMessageAssemblyOwner.BuildSceneSingleSpeakerPrefixSections(MainPromptMessageAssemblyOwner.SceneSingleSpeakerLayout.ImmediateReaction, privateRecentWindowSection, persistedWithoutRecentWindow, roleRuntimeContext, stringBuilder.ToString().Trim(), factText, trustBlock, miscExtrasSection, "", knowledgeExtrasSection, ""), new string[1] { "请只根据你当前可见的场景消息、你自己的身份、处境和性格，回复一段发言，" + BuildSimpleDialogueReplyLengthInstruction(minTokens, maxTokens) + "，只输出你嘴里说出的话，不要描述你的行为和思考。" }, suppressReplyFormatInstruction: true, persistentHistoryMessages: persistentMemoryRoleMessages);
+		List<object> messages = _ports.BuildStrictSceneMessagesForNpc(targetNpc.AgentIndex, layeredPrompt, MainPromptMessageAssemblyOwner.BuildSceneSingleSpeakerPrefixSections(MainPromptMessageAssemblyOwner.SceneSingleSpeakerLayout.ImmediateReaction, privateRecentWindowSection, persistedWithoutRecentWindow, roleRuntimeContext, stringBuilder.ToString().Trim(), factText, trustBlock, miscExtrasSection, "", knowledgeExtrasSection, ""), new string[1] { "请只根据你当前可见的场景消息、你自己的身份、处境和性格，回复一段发言，" + BuildSimpleDialogueReplyLengthInstruction(minTokens, maxTokens) + "，只输出你嘴里说出的话，不要描述你的行为和思考。" }, suppressReplyFormatInstruction: true, persistentHistoryMessages: persistentMemoryRoleMessages);
 		request = new ImmediateSceneReactionRequest
 		{
 			RequestId = requestId,
 			RuntimeGeneration = SaveRuntimeGuard.CurrentGeneration,
-			SceneHistorySessionId = Volatile.Read(ref _sceneHistorySessionId),
+			SceneHistorySessionId = _ports.SceneSessionId(),
 			SourceMission = sourceMission,
 			TargetAgentIndex = targetNpc.AgentIndex,
 			TargetNpc = targetNpc,
@@ -1495,7 +1496,7 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 		return true;
 	}
 
-	private void StartImmediateSceneReactionBackgroundRequest(long requestId, int targetAgentIndex, List<object> messages, int maxTokens, float temperature)
+	internal void StartImmediateSceneReactionBackgroundRequest(long requestId, int targetAgentIndex, List<object> messages, int maxTokens, float temperature)
 	{
 		if (requestId <= 0L || targetAgentIndex < 0 || messages == null || messages.Count == 0)
 		{
@@ -1527,16 +1528,17 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 				}
 				try
 				{
-					_mainThreadActions.Enqueue(delegate
+					_ports.PostMainThread(delegate
 					{
-						if (requestLifetime.Token.IsCancellationRequested) return;
-						CompleteImmediateSceneReactionOnMainThread(requestId, requestSucceeded, response, error);
+						CompleteImmediateSceneReactionOnMainThread(requestId, requestSucceeded && !requestLifetime.Token.IsCancellationRequested, response, error);
 					});
 				}
 				catch (Exception ex2)
 				{
 					Logger.Log("ShoutBehavior", "[ERROR] ImmediateSceneReaction completion queue failed: " + ex2.Message);
-					FinishImmediateSceneReactionGeneration(targetAgentIndex, requestId);
+                    // No game-thread admission: retain the same pending request for the
+                    // next main-thread retirement. Never lose its completion callback or
+                    // retry a possibly observed effect from this worker.
 				}
 			});
 		}
@@ -1547,11 +1549,11 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private void CompleteImmediateSceneReactionOnMainThread(long requestId, bool requestSucceeded, string response, string error)
+	internal void CompleteImmediateSceneReactionOnMainThread(long requestId, bool requestSucceeded, string response, string error)
 	{
 		if (!IsBannerlordMainThreadForNativeActions())
 		{
-			_mainThreadActions.Enqueue(delegate
+			_ports.PostMainThread(delegate
 			{
 				CompleteImmediateSceneReactionOnMainThread(requestId, requestSucceeded, response, error);
 			});
@@ -1561,12 +1563,17 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 		{
 			return;
 		}
+        _ = RunSceneReplyOnGameThreadAsync(() => CompleteImmediateSceneReactionCoreAsync(request, requestSucceeded, response, error), "scene_immediate_complete", request.TargetAgentIndex);
+    }
+
+    private async Task<bool> CompleteImmediateSceneReactionCoreAsync(ImmediateSceneReactionRequest request, bool requestSucceeded, string response, string error)
+    {
+        long requestId = request.RequestId;
 		if (!IsImmediateSceneReactionRuntimeCurrent(request))
 		{
 			Logger.Log("ShoutBehavior", "[ImmediateSceneReaction] discarded stale completion request=" + requestId + " targetAgentIndex=" + request.TargetAgentIndex);
-			FinishImmediateSceneReactionGeneration(request.TargetAgentIndex, request.RequestId);
-			QueueImmediateSceneReactionCompletion(request.OnCompleted, generated: false);
-			return;
+            SettleImmediateSceneReaction(request, false, allowNoSpeech: false);
+			return false;
 		}
 		bool generated = false;
 		try
@@ -1577,7 +1584,7 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 			}
 			else
 			{
-				generated = TryPublishImmediateSceneReactionOnMainThread(request, response);
+				generated = await TryPublishImmediateSceneReactionAsync(request, response);
 			}
 		}
 		catch (Exception ex)
@@ -1586,18 +1593,14 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 		}
 		finally
 		{
-			FinishImmediateSceneReactionGeneration(request.TargetAgentIndex, request.RequestId);
-			if (!generated)
-			{
-				QueueImmediateSceneReactionNoSpeechFallback(request.OnNoSpeech);
-			}
-			QueueImmediateSceneReactionCompletion(request.OnCompleted, generated);
+            SettleImmediateSceneReaction(request, generated, allowNoSpeech: IsImmediateSceneReactionRuntimeCurrent(request));
 		}
+        return generated;
 	}
 
-	private bool IsImmediateSceneReactionRuntimeCurrent(ImmediateSceneReactionRequest request)
+	internal bool IsImmediateSceneReactionRuntimeCurrent(ImmediateSceneReactionRequest request)
 	{
-		if (request == null || request.SourceMission == null)
+		if (!IsSceneContinuationCurrent || request == null || request.SourceMission == null)
 		{
 			return false;
 		}
@@ -1609,17 +1612,17 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 		{
 			return false;
 		}
-		return true;
+        return request.ConversationEpoch == ConversationEpoch && Volatile.Read(ref request.CompletionClaimed) == 0;
 	}
 
-	private bool CanPublishImmediateSceneReactionRequest(ImmediateSceneReactionRequest request)
+	internal bool CanPublishImmediateSceneReactionRequest(ImmediateSceneReactionRequest request)
 	{
 		return IsImmediateSceneReactionRuntimeCurrent(request)
-			&& request.SceneHistorySessionId == Volatile.Read(ref _sceneHistorySessionId)
+			&& request.SceneHistorySessionId == _ports.SceneSessionId()
 			&& CanPublishImmediateSceneReaction(request.CanStillPublish);
 	}
 
-	private bool TryPublishImmediateSceneReactionOnMainThread(ImmediateSceneReactionRequest request, string response)
+	private async Task<bool> TryPublishImmediateSceneReactionAsync(ImmediateSceneReactionRequest request, string response)
 	{
 		if (!CanPublishImmediateSceneReactionRequest(request))
 		{
@@ -1639,14 +1642,14 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 		{
 			try
 			{
-				text = request.UsesCompactTownOrdinaryChain
-					? TryRunCompactTownOrdinaryAmbientPostprocess(
+				SceneActionPostprocessWorkItem work = request.UsesCompactTownOrdinaryChain
+					? PrepareCompactTownOrdinaryAmbientPostprocess(
 						contextHero,
 						npcCharacter,
 						request.TargetAgentIndex,
 						request.FactText ?? string.Empty,
 						text)
-					: TryRunSceneUnifiedActionPostprocess(
+					: PrepareSceneUnifiedActionPostprocess(
 					contextHero,
 					npcCharacter,
 					request.TargetAgentIndex,
@@ -1678,6 +1681,29 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 					siegeInterventionRuleInjected: true,
 					replyIsDirectPlayerResponse: false,
 					chainName: "siege_ambient_witness_reaction");
+                bool succeeded = true;
+                string content = null, requestError = null;
+                if (work.RequiresNetwork)
+                {
+                    string systemPrompt = work.SystemPrompt, userPrompt = work.UserPrompt;
+                    ConversationRequestLifetime lifetime = _sceneRequestLifetime;
+                    var network = await Task.Run(() =>
+                    {
+                        using IDisposable lease = lifetime.Enter();
+                        using IDisposable cancellation = LlmNonStreamingTransport.PushOwnerCancellation(lifetime.Token);
+                        bool ok = request.UsesCompactTownOrdinaryChain
+                            ? AIConfigHandler.TryCallAuxiliaryActionPostprocess(systemPrompt, userPrompt, 256, 0f, out string raw, out string failure)
+                            : TryRequestSceneUnifiedActionPostprocess(systemPrompt, userPrompt, out raw, out failure);
+                        return (ok, raw, failure);
+                    });
+                    succeeded = network.ok; content = network.raw; requestError = network.failure;
+                }
+                if (!CanPublishImmediateSceneReactionRequest(request)
+                    || !CanAgentParticipateInSceneSpeech(npcAgent)
+                    || !IsNativeConversationResponseTargetAvailableForActionDispatch(request.TargetAgentIndex, contextHero, npcCharacter, out _)) return false;
+                text = request.UsesCompactTownOrdinaryChain
+                    ? CompleteCompactTownOrdinaryAmbientPostprocess(work, succeeded, content, requestError)
+                    : CompleteSceneUnifiedActionPostprocess(work, succeeded, content, requestError);
 				TeamModuleServices.Siege.TryProcessActionTags(
 					contextHero,
 					npcCharacter,
@@ -1708,14 +1734,14 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 		}
 		if (!string.IsNullOrWhiteSpace(fullHistoryText))
 		{
-			RecordResponseForAllNearbySafe(request.AllNpcData, request.TargetAgentIndex, request.TargetNpc?.Name, fullHistoryText);
-			PersistNpcSpeechToNamedHeroes(request.TargetAgentIndex, request.TargetNpc?.Name, fullHistoryText, request.AllNpcData);
+			_ports.RecordResponseForAllNearbySafe(request.AllNpcData, request.TargetAgentIndex, request.TargetNpc?.Name, fullHistoryText);
+			_ports.PersistNpcSpeechToNamedHeroes(request.TargetAgentIndex, request.TargetNpc?.Name, fullHistoryText, request.AllNpcData);
 		}
-		EnqueueSpeechLine(request.TargetNpc, text, request.AllNpcData, skipHistory: true, suppressStare: request.SuppressStare, canStillPublish: request.CanStillPublish);
+		_ports.EnqueueSpeechLine(request.TargetNpc, text, request.AllNpcData, skipHistory: true, suppressStare: request.SuppressStare, canStillPublish: request.CanStillPublish);
 		return true;
 	}
 
-	private void PopulateImmediateSceneReactionPersonaOnMainThread(NpcDataPacket npc, Hero hero)
+	internal void PopulateImmediateSceneReactionPersonaOnMainThread(NpcDataPacket npc, Hero hero)
 	{
 		if (npc == null)
 		{
@@ -1760,7 +1786,7 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 			Logger.Log("ShoutBehavior", "[ImmediateSceneReaction] persona snapshot failed agent=" + npc.AgentIndex + " error=" + ex.Message);
 		}
 	}
-	private async Task<SceneCompactReactionInput> CaptureCompactSceneReactionInputAsync(NpcDataPacket targetNpc, Hero contextHero, List<NpcDataPacket> allNpcData, string extraFactLine, string singleReplyUserContent, Func<bool> isCurrent)
+	internal async Task<SceneCompactReactionInput> CaptureCompactSceneReactionInputAsync(NpcDataPacket targetNpc, Hero contextHero, List<NpcDataPacket> allNpcData, string extraFactLine, string singleReplyUserContent, Func<bool> isCurrent)
 	{
 		if (targetNpc == null || allNpcData == null || allNpcData.Count == 0)
 		{
@@ -1774,19 +1800,19 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 			return null;
 		}
         long generation = SaveRuntimeGuard.CaptureGeneration();
-        int session = Volatile.Read(ref _sceneHistorySessionId);
-        Mission sourceMission = await RunNativeConversationMainThreadFuncAsync("compact_reaction_scope", targetNpc.Name, targetNpc.AgentIndex, () => CanPublishImmediateSceneReaction(isCurrent) ? Mission.Current : null, (Mission)null).ConfigureAwait(false);
+        int session = _ports.SceneSessionId();
+        Mission sourceMission = await _dispatcher.RunAsync("compact_reaction_scope", targetNpc.Name, targetNpc.AgentIndex, () => CanPublishImmediateSceneReaction(isCurrent) ? Mission.Current : null, (Mission)null).ConfigureAwait(false);
         if (sourceMission == null) return null;
-		await EnsurePersonaForCandidatesAsync(new List<NpcDataPacket> { targetNpc }, contextHero != null ? new Dictionary<int, Hero> { [targetNpc.AgentIndex] = contextHero } : new Dictionary<int, Hero>());
-        return await RunNativeConversationMainThreadFuncAsync("compact_reaction_messages", targetNpc.Name, targetNpc.AgentIndex, () =>
+		await _ports.EnsurePersonaForCandidatesAsync(new List<NpcDataPacket> { targetNpc }, contextHero != null ? new Dictionary<int, Hero> { [targetNpc.AgentIndex] = contextHero } : new Dictionary<int, Hero>());
+        return await _dispatcher.RunAsync("compact_reaction_messages", targetNpc.Name, targetNpc.AgentIndex, () =>
         {
-            if (!CanPublishImmediateSceneReaction(isCurrent) || !SaveRuntimeGuard.IsCurrentGeneration(generation) || session != _sceneHistorySessionId || !ReferenceEquals(sourceMission, Mission.Current)) return null;
+            if (!CanPublishImmediateSceneReaction(isCurrent) || !SaveRuntimeGuard.IsCurrentGeneration(generation) || session != _ports.SceneSessionId() || !ReferenceEquals(sourceMission, Mission.Current)) return null;
 		Agent npcAgent = (targetNpc.AgentIndex >= 0) ? Mission.Current?.Agents?.FirstOrDefault((Agent a) => a != null && a.Index == targetNpc.AgentIndex) : null;
 		CharacterObject npcCharacter = (npcAgent?.Character as CharacterObject) ?? contextHero?.CharacterObject;
 		string npcKingdomIdOverride = TryGetKingdomIdOverrideFromAgent(npcAgent);
 		MyBehavior.ShoutPromptContext shoutPromptContext = MyBehavior.BuildShoutPromptContextForExternal(contextHero, "请直接根据刚刚发生的公开互动做出即时反应。", null, targetNpc.CultureId ?? "neutral", hasAnyHero: targetNpc.IsHero, targetCharacter: npcCharacter, kingdomIdOverride: npcKingdomIdOverride, targetAgentIndex: targetNpc.AgentIndex, suppressDynamicRuleAndLore: true);
 		StringBuilder stringBuilder = new StringBuilder();
-		string presentNpcListBlock = BuildScenePresentNpcListBlockForPrompt(allNpcData, targetNpc);
+		string presentNpcListBlock = _ports.BuildScenePresentNpcListBlockForPrompt(allNpcData, targetNpc);
 		if (!string.IsNullOrWhiteSpace(presentNpcListBlock))
 		{
 			stringBuilder.AppendLine(presentNpcListBlock);
@@ -1804,15 +1830,10 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 		string systemRuleBlock = gcczImmediatePromptExtras ? BuildSceneSystemRuleBlock(ruleExtrasSection, null) : "";
 		string gcczIdentityOverrideBlock = BuildGcczImmediateIdentityOverrideBlock(contextHero, npcCharacter, targetNpc.AgentIndex, baseExtras);
 		bool partyTransferTopicSelected = HasPartyTransferRuleContext(baseExtras);
-		List<string> historyLines = null;
-		lock (_historyLock)
-		{
-			if (_publicConversationHistory.Count > 0)
-			{
-				historyLines = BuildVisibleSceneHistoryLines(_publicConversationHistory, targetNpc.AgentIndex, GetSceneNpcHistoryNameForPrompt(targetNpc), useNpcNameAddress: false);
-			}
-		}
-		string persistedHeroHistory = (contextHero != null) ? MyBehavior.BuildHistoryContextForExternal(contextHero, 0, "", GetLatestSceneNpcUtterance(targetNpc.AgentIndex)) : BuildWildernessNonHeroHistoryContextForPrompt(targetNpc, null, npcCharacter, targetNpc.AgentIndex, "", GetLatestSceneNpcUtterance(targetNpc.AgentIndex));
+		List<string> historyLines = _ports.CaptureVisibleSceneHistoryLines(targetNpc.AgentIndex, GetSceneNpcHistoryNameForPrompt(targetNpc), false);
+
+
+		string persistedHeroHistory = (contextHero != null) ? MyBehavior.BuildHistoryContextForExternal(contextHero, 0, "", _ports.GetLatestSceneNpcUtterance(targetNpc.AgentIndex)) : BuildWildernessNonHeroHistoryContextForPrompt(targetNpc, null, npcCharacter, targetNpc.AgentIndex, "", _ports.GetLatestSceneNpcUtterance(targetNpc.AgentIndex));
 		string privateRecentWindowSection = "";
 		string persistedWithoutRecentWindow = "";
 		SplitPersistedHeroHistorySections(persistedHeroHistory, out privateRecentWindowSection, out persistedWithoutRecentWindow);
@@ -1822,9 +1843,14 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 		layeredPrompt = MainPromptMessageAssemblyOwner.BuildSceneReactionSystemPrompt(gcczIdentityOverrideBlock, systemRuleBlock, layeredPrompt);
 		string extraFactUserBlock = BuildCurrentAfefFactPromptBlock(extraFactLine);
 		List<ConversationMessage> persistentMemoryRoleMessages = BuildUncompressedMemoryRoleMessagesForPrompt(contextHero, npcCharacter, targetNpc, targetNpc.AgentIndex);
-		List<object> messages = BuildStrictSceneMessagesForNpc(targetNpc.AgentIndex, layeredPrompt, MainPromptMessageAssemblyOwner.BuildSceneSingleSpeakerPrefixSections(MainPromptMessageAssemblyOwner.SceneSingleSpeakerLayout.CompactArrival, privateRecentWindowSection, persistedWithoutRecentWindow, roleRuntimeContext, stringBuilder.ToString().Trim(), extraFactUserBlock, trustBlock, miscExtrasSection, "", knowledgeExtrasSection, ""), new string[1] { singleReplyUserContent }, suppressReplyFormatInstruction: true, persistentHistoryMessages: persistentMemoryRoleMessages);
+		List<object> messages = _ports.BuildStrictSceneMessagesForNpc(targetNpc.AgentIndex, layeredPrompt, MainPromptMessageAssemblyOwner.BuildSceneSingleSpeakerPrefixSections(MainPromptMessageAssemblyOwner.SceneSingleSpeakerLayout.CompactArrival, privateRecentWindowSection, persistedWithoutRecentWindow, roleRuntimeContext, stringBuilder.ToString().Trim(), extraFactUserBlock, trustBlock, miscExtrasSection, "", knowledgeExtrasSection, ""), new string[1] { singleReplyUserContent }, suppressReplyFormatInstruction: true, persistentHistoryMessages: persistentMemoryRoleMessages);
             return new SceneCompactReactionInput(messages, new ConversationSpeechTextOptions(IsDetailedSceneSpeechPromptEnabled(), ShouldPreserveSceneAsteriskActions()));
         }, (SceneCompactReactionInput)null).ConfigureAwait(false);
     }
 
+
+    internal Task<string> GenerateGroupConversationTurnLineAsync(NpcDataPacket speakerNpc, List<NpcDataPacket> allNpcData, Dictionary<int, Hero> resolvedHeroes, Dictionary<int, PrecomputedShoutRagContext> precomputedContexts, string playerText, string extraFact, string commonCandidatesPrompt, List<SceneSummonPromptTarget> sceneSummonTargets, List<SceneGuidePromptTarget> sceneGuideTargets, string sceneMechanismPromptSectionBase, List<string> patienceStatusLines, bool multiNpcScene, int minTokens, int maxTokens, Func<bool> isCurrent)
+        => RunSceneReplyOnGameThreadAsync(() => GenerateGroupConversationTurnLineCoreAsync(speakerNpc, allNpcData, resolvedHeroes, precomputedContexts, playerText, extraFact, commonCandidatesPrompt, sceneSummonTargets, sceneGuideTargets, sceneMechanismPromptSectionBase, patienceStatusLines, multiNpcScene, minTokens, maxTokens, isCurrent), "scene_fallback_capture", speakerNpc?.AgentIndex ?? -1);
+    internal Task<string> GetPassiveNpcResponse(NpcDataPacket data, string sceneDesc, string inputActionText, string precalculatedLore, List<NpcDataPacket> allNpcData, Dictionary<int, Hero> resolvedHeroes)
+        => RunSceneReplyOnGameThreadAsync(() => GetPassiveNpcResponseCoreAsync(data, sceneDesc, inputActionText, precalculatedLore, allNpcData, resolvedHeroes), "scene_passive_capture", data?.AgentIndex ?? -1);
 }

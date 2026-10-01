@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
@@ -183,7 +183,25 @@ public partial class ShoutBehavior
     private NativeConversationTurnPorts CreateNativeConversationTurnPorts() => new NativeConversationTurnPorts
     {
         ApplyNativeConversationGameActionsOnMainThreadAsync = _nativeGameEffects.ApplyNativeConversationGameActionsOnMainThreadAsync,
-        BuildNativePromptContextScheduledAsync = BuildNativePromptContextScheduledAsync,
+        PromptDispatcher = _conversationGameThreadDispatcher,
+        IsPromptOwnerAvailable = static () => MyBehavior.Instance != null,
+        CapturePromptRoutingWork = static request =>
+        {
+            MyBehavior owner = MyBehavior.Instance;
+            if (owner == null) return null;
+            PromptBuildPhases phases = owner.BeginSharedPromptBuild(request.Hero, request.Input, request.ExtraFact, request.CultureId, request.HasAnyHero, request.Character, null, request.AgentIndex,
+                suppressDynamicRuleAndLore: false, usePrefetchedLoreContext: false, prefetchedLoreContext: null,
+                excludedRuleIds: null, preprocessExcludedRuleIds: request.ExcludedRules, forcedPreprocessRuleIds: null, preprocessMentionedEntities: null);
+            return owner.CaptureSharedPromptRoutingWork(phases);
+        },
+        CapturePromptKnowledge = static (phases, hero) =>
+        {
+            MyBehavior owner = MyBehavior.Instance;
+            if (owner == null) return null;
+            owner.CaptureSharedKnowledgeSnapshot(phases, hero);
+            return MyBehavior.CreateSharedKnowledgeWorkInput(phases);
+        },
+        CompletePromptCapture = static (phases, hero, character, weekly) => MyBehavior.Instance?.CompleteSharedPromptBuild(phases, hero, character, weekly),
         BuildRuntimeSceneMechanismPostprocessRulesForScene = BuildRuntimeSceneMechanismPostprocessRulesForScene,
         BuildSceneFollowControlPromptInstruction = _sceneMovement.BuildSceneFollowControlPromptInstruction,
         BuildSceneSummonClosurePromptInstruction = _sceneMovement.BuildSceneSummonClosurePromptInstruction,

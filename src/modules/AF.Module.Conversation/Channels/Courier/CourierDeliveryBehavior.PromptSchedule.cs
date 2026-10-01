@@ -71,13 +71,15 @@ public partial class CourierDeliveryBehavior
 		}
 
 		// Step 3 (game thread): shared build request with the preprocess results as forced ids.
-		PromptBuildPhases phases = await RunCourierOwnerPhaseAsync(generation, source + "_prompt_capture", () =>
+		SharedPromptRoutingWork routingWork = await RunCourierOwnerPhaseAsync(generation, source + "_prompt_capture", () =>
 		{
 			if (!IsCourierPromptRunCurrent(promptRun) || !IsCourierPromptInputCurrent(input)) return null;
-			return owner.BeginSharedPromptBuild(input.Participant, input.RoutingInput, input.History.ExtraFact, input.CultureId, hasAnyHero: true,
+			PromptBuildPhases capturedPhases = owner.BeginSharedPromptBuild(input.Participant, input.RoutingInput, input.History.ExtraFact, input.CultureId, hasAnyHero: true,
 				input.Character, null, -1, suppressDynamicRuleAndLore: false, usePrefetchedLoreContext: false, prefetchedLoreContext: null,
 				excludedRuleIds: CourierExcludedRuleIds, preprocessExcludedRuleIds: null, forcedPreprocessRuleIds: preprocessRuleHits, preprocessMentionedEntities: preprocessMentions);
+            return capturedPhases == null ? null : owner.CaptureSharedPromptRoutingWork(capturedPhases);
 		}, CancellationToken.None).ConfigureAwait(false);
+        PromptBuildPhases phases = routingWork?.Phases;
 		if (phases == null)
 		{
 			// Empty routing input: the legacy facade returned an empty context rather than aborting.
@@ -89,7 +91,7 @@ public partial class CourierDeliveryBehavior
 		{
 			using IDisposable scope = AIConfigHandler.BeginGuardrailRuntimeScope();
 			AIConfigHandler.ApplyGuardrailRuntimeTarget(phases.Request.Target, phases.Request.Eligibility);
-			try { owner.RunSharedPromptRouting(phases); }
+			try { SharedPromptRoutingRuntime.Run(routingWork); }
 			finally { AIConfigHandler.ClearGuardrailRuntimeTarget(); }
 		}).ConfigureAwait(false);
 
