@@ -1,7 +1,9 @@
 """Real deferred deadline/identity/cleanup and actual blocking request seam; game commit is a sentinel."""
 from pathlib import Path
 import argparse
+import hashlib
 import importlib.util
+import json
 import subprocess
 import sys
 
@@ -16,19 +18,27 @@ parser.add_argument('--run-root', type=Path)
 parser.add_argument('--mutate', choices=['deadline-does-not-cancel', 'scope-does-not-bind', 'identity-ignores-cancel'])
 args = parser.parse_args()
 out = new_run_root(ROOT, 'scene-deferred-cancellation', args.run_root)
-source = (ROOT / 'src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.ScenePostprocess.cs').read_text(encoding='utf-8-sig')
+source_path = 'src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.ScenePostprocess.cs'
+request_path = 'src/modules/AF.Module.Conversation/Internal/Postprocess/ShoutBehavior.UnifiedActionPostprocess.cs'
+source = (ROOT / source_path).read_text(encoding='utf-8-sig')
 deadline = extract.declaration(source, 'async Task EnforceRequestDeadlineAsync(')
 current = extract.declaration(source, 'bool IsRequestCurrent()')
-request = extract.declaration((ROOT / 'src/modules/AF.Module.Conversation/Internal/Postprocess/ShoutBehavior.UnifiedActionPostprocess.cs').read_text(encoding='utf-8-sig'),
+request = extract.declaration((ROOT / request_path).read_text(encoding='utf-8-sig'),
                               'private static bool TryRequestSceneUnifiedActionPostprocess(')
 start = source.index('\t\t\tfinally\n\t\t\t{', source.index('Task deadlineTask'))
 cleanup = source[start:source.index('\n\t\t});', start)]
 if args.mutate == 'deadline-does-not-cancel':
+    assert deadline.count('networkCancellation.Cancel();') == 1, 'Deadline cancellation seam changed'
     deadline = deadline.replace('networkCancellation.Cancel();', '/* mutation */;')
 elif args.mutate == 'identity-ignores-cancel':
+    assert '!networkCancellation.IsCancellationRequested && ' in current and 'Volatile.Read(ref requestRetired) == 0' in current, 'Request cancellation identity seam changed'
     current = current.replace('!networkCancellation.IsCancellationRequested && ', '').replace('Volatile.Read(ref requestRetired) == 0', 'true')
-scope = 'using IDisposable cancellationScope = LlmNonStreamingTransport.PushOwnerCancellation(networkCancellation.Token);'
-if args.mutate == 'scope-does-not-bind': scope = scope.replace('networkCancellation.Token', 'CancellationToken.None')
+scope_lines = [line.strip() for line in source.splitlines() if 'using IDisposable cancellationScope =' in line]
+assert len(scope_lines) == 1, 'Deferred transport scope seam changed'
+scope = scope_lines[0]
+if args.mutate == 'scope-does-not-bind':
+    assert scope.count('networkCancellation.Token') == 1, 'Deferred transport token binding changed'
+    scope = scope.replace('networkCancellation.Token', 'CancellationToken.None')
 code = r'''
 using System;using System.Net;using System.Net.Http;using System.Threading;using System.Threading.Tasks;using AnimusForge.Refactor.Runtime;
 namespace AnimusForge;
@@ -84,9 +94,10 @@ static class Program{
 for key, value in [('REQUEST', request), ('CURRENT', current), ('DEADLINE', deadline), ('CLEANUP', cleanup), ('SCOPE', scope)]:
     code = code.replace('@@' + key + '@@', value)
 (out / 'Program.cs').write_text(code, encoding='utf-8')
-for path in ['src/modules/AF.Module.Llm/Transport/LlmNonStreamingTransport.cs',
+linked_paths = ['src/modules/AF.Module.Llm/Transport/LlmNonStreamingTransport.cs',
              'src/modules/AF.Module.Conversation/Internal/ConversationRequestLifetime.cs',
-             'src/modules/AF.Module.Conversation/Internal/InteractionRequestLease.cs']:
+             'src/modules/AF.Module.Conversation/Internal/InteractionRequestLease.cs']
+for path in linked_paths:
     (out / Path(path).name).write_text((ROOT / path).read_text(encoding='utf-8-sig'), encoding='utf-8')
 (out / 'NuGet.Config').write_text('<configuration><packageSources><clear/></packageSources></configuration>', encoding='utf-8')
 (out / 'Proof.csproj').write_text('<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><LangVersion>latest</LangVersion></PropertyGroup></Project>', encoding='utf-8')
@@ -95,5 +106,14 @@ result = subprocess.run([str(dotnet), 'run', '--project', str(out / 'Proof.cspro
     env=minimal_test_environment(dotnet, out), capture_output=True, text=True, encoding='utf-8', errors='replace', timeout=90)
 log = result.stdout + result.stderr
 (out / 'run.log').write_text(log, encoding='utf-8')
+(out / 'result.json').write_text(json.dumps({
+    'mutation': args.mutate, 'exit_code': result.returncode,
+    'compiled': (out / 'bin/Release/net8.0/Proof.dll').is_file(),
+    'source_sha256': {path: hashlib.sha256((ROOT / path).read_bytes()).hexdigest()
+                      for path in [source_path, request_path, *linked_paths]},
+    'harness_sha256': hashlib.sha256(code.encode('utf-8')).hexdigest(),
+    'downstream_game_commit': 'SENTINEL', 'game': 'NOT-RUN',
+}, indent=2), encoding='utf-8')
+print('output=' + str(out))
 print(log)
 raise SystemExit(result.returncode)
