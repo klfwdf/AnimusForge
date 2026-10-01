@@ -216,6 +216,7 @@ internal sealed class CoupCampaignBehavior : CampaignBehaviorBase
         Kingdom kingdom = Clan.PlayerClan.Kingdom;
         _session = new CoupSession
         {
+            BattleOptions = CoupSettings.CaptureForNewCoup(),
             SettlementId = town.StringId, KingdomId = kingdom.StringId, KingId = kingdom.Leader.StringId,
             OriginalRulingClanId = kingdom.RulingClan.StringId, OriginalOwnerClanId = town.OwnerClan.StringId,
             PlayerHealth = Hero.MainHero.HitPoints, KingHealth = Math.Max(1, kingdom.Leader.HitPoints), Phase = CoupPhase.Preparing
@@ -223,7 +224,10 @@ internal sealed class CoupCampaignBehavior : CampaignBehaviorBase
         string id = _session.Id;
         long token = _runtimeToken;
         InformationManager.ShowInquiry(new InquiryData("宣权篡位", "目标：" + kingdom.Leader.Name + "\n地点：" + town.Name
-            + "\n街道最多60人，大厅最多20人。至少留一名士兵接应。\n正式进场后，倒地或撤退都会导致家族带地叛离并与原王国开战。", true, true, "挑选突击队", "取消",
+            + "\n突击队：街道最多" + _session.BattleOptions.StreetAllyLimit + "人，大厅最多" + _session.BattleOptions.HallAllyLimit + "人（不含玩家）。至少留一名士兵接应。"
+            + "\n守卫：门口最多" + _session.BattleOptions.GateGuardLimit + "人，大厅最多" + _session.BattleOptions.HallGuardLimit + "人（不含国王），以实际兵源为准。"
+            + "\n增援：每波最多" + _session.BattleOptions.DefenderWaveSize + "人，间隔" + _session.BattleOptions.DefenderWaveIntervalSeconds + "秒，同时最多" + _session.BattleOptions.MaxActiveDefenderWaves + "波存活。"
+            + "\n本次参数已固定。正式进场后，倒地或撤退都会导致家族带地叛离并与原王国开战。", true, true, "挑选突击队", "取消",
             () => { if (IsCurrentUi(id, token, CoupPhase.Preparing)) OpenStreetSelection(id); },
             () => { if (IsCurrentUi(id, token, CoupPhase.Preparing)) _session = null; }), true);
     }
@@ -232,7 +236,7 @@ internal sealed class CoupCampaignBehavior : CampaignBehaviorBase
     {
         if (_session?.Id != id || _session.Phase != CoupPhase.Preparing) return;
         var available = SettlementEntryTroopSelectionBehavior.BuildCoupSelectableRoster(MobileParty.MainParty.MemberRoster);
-        int limit = Math.Min(CoupSession.StreetAllyLimit, available.TotalManCount - 1);
+        int limit = Math.Min(_session.BattleOptions.StreetAllyLimit, available.TotalManCount - 1);
         if (limit < 1) { _session = null; Show("没有足够的健康士兵。政变已取消。"); return; }
         _selectionOpen = true;
         long token = _runtimeToken;
@@ -298,8 +302,8 @@ internal sealed class CoupCampaignBehavior : CampaignBehaviorBase
                 if (entry.Character.IsHero) continue;
                 for (int i = 0; i < entry.Number - entry.WoundedNumber; i++)
                 {
-                    CoupTroopRole role = hall < CoupSession.HallGuardLimit ? CoupTroopRole.HallGuard
-                        : gate < CoupSession.GateGuardLimit ? CoupTroopRole.GateGuard : CoupTroopRole.StreetDefender;
+                    CoupTroopRole role = hall < _session.BattleOptions.HallGuardLimit ? CoupTroopRole.HallGuard
+                        : gate < _session.BattleOptions.GateGuardLimit ? CoupTroopRole.GateGuard : CoupTroopRole.StreetDefender;
                     if (role == CoupTroopRole.HallGuard) hall++;
                     if (role == CoupTroopRole.GateGuard) gate++;
                     AddTroop(entry.Character, party, role);
@@ -325,7 +329,7 @@ internal sealed class CoupCampaignBehavior : CampaignBehaviorBase
             if (character != null) allies.AddToCounts(character, 1);
         }
         if (allies.TotalManCount < 1) { SetFailure("突击队已无可参战士兵，撤出政变。"); return; }
-        SettlementEntryTroopSelectionBehavior.QueueArmedCoup(_session.SettlementId, _session.SceneLocationId, allies, _session.PendingDefenders(hall));
+        SettlementEntryTroopSelectionBehavior.QueueArmedCoup(_session.SettlementId, _session.SceneLocationId, allies, _session.PendingDefenders(hall), _session.BattleOptions);
     }
 
     internal static void NotifySetsMissionReady(IMission mission)
@@ -474,10 +478,12 @@ internal sealed class CoupCampaignBehavior : CampaignBehaviorBase
         string id = _session.Id;
         long token = _runtimeToken;
         _selectionOpen = true;
-        CoupTroopSelection.Open(roster, Math.Min(CoupSession.HallAllyLimit, survivors.Count), "攻入领主大厅", selected =>
+        int limit = Math.Min(_session.BattleOptions.HallAllyLimit, survivors.Count);
+        CoupTroopSelection.Open(roster, limit, "攻入领主大厅", selected =>
         {
             if (!IsCurrentUi(id, token, CoupPhase.HallSelection)) return;
             _selectionOpen = false;
+            if (selected.TotalManCount > limit) { NotifyTechnicalFailure(null, "大厅选兵超过本次政变人数上限。"); return; }
             foreach (var troop in survivors) troop.HallSelected = false;
             foreach (var entry in selected.GetTroopRoster())
             {

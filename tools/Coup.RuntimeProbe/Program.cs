@@ -104,6 +104,7 @@ internal static class Program
         {
             SceneLifecycleRegression.Run(af, coup, Write);
             CoupBulletinRegression.Run(af, coup, Write);
+            CoupSettingsRegression.Run(af, coup, Write);
         }
 
         bool ready = ReadFlag(sets, "IsAvailable") & ReadFlag(rebellion, "IsAvailable")

@@ -62,7 +62,7 @@ internal static class SettlementEntryTroopSelectionBehavior
                 _cancelSpeech = OptionalSpeechCallback(speech, "CancelAgentSpeechForRemovalExternal");
             }
             _hasBlockingFlow = Bind<Func<bool>>(host, "HasBlockingFlowForCoup");
-            _queueCoup = AccessTools.Method(host, "QueueArmedCoupEntry", new[] { typeof(string), typeof(string), typeof(TroopRoster), typeof(List<string[]>) }) ?? throw new MissingMethodException(host.FullName, "QueueArmedCoupEntry");
+            _queueCoup = AccessTools.Method(host, "QueueArmedCoupEntryWithOptions", new[] { typeof(string), typeof(string), typeof(TroopRoster), typeof(List<string[]>), typeof(int), typeof(int), typeof(int), typeof(int) }) ?? throw new MissingMethodException(host.FullName, "QueueArmedCoupEntryWithOptions");
             _clearCoup = AccessTools.Method(host, "ClearArmedCoupEntry") ?? throw new MissingMethodException(host.FullName, "ClearArmedCoupEntry");
             _setsLogicType = host.GetNestedType("SettlementEntryTroopSelectionMissionLogic", BindingFlags.NonPublic) ?? throw new MissingMemberException(host.FullName, "SettlementEntryTroopSelectionMissionLogic");
             // Resolved once here; the mission tick must not look methods up per call.
@@ -139,14 +139,17 @@ internal static class SettlementEntryTroopSelectionBehavior
 
     // Defenders are the coup session's own records; the host spawns exactly these and
     // reports casualties back by record id, so roles and source parties never diverge.
-    internal static void QueueArmedCoup(string settlementId, string locationId, TroopRoster roster, IEnumerable<CoupTroopRecord> defenders)
+    internal static void QueueArmedCoup(string settlementId, string locationId, TroopRoster roster, IEnumerable<CoupTroopRecord> defenders, CoupBattleOptions options)
     {
         if (!IsAvailable) throw new InvalidOperationException("AF SETS兼容桥未就绪。");
+        if (options == null || !options.IsValid()) throw new InvalidOperationException("政变战斗参数损坏。");
         var records = new List<string[]>();
         if (defenders != null)
             foreach (CoupTroopRecord record in defenders)
                 records.Add(new[] { record.Id, record.CharacterId, record.SourcePartyId, record.Role.ToString() });
-        _queueCoup.Invoke(null, new object[] { settlementId, locationId, roster, records });
+        _queueCoup.Invoke(null, new object[] { settlementId, locationId, roster, records,
+            locationId == "lordshall" ? options.HallAllyLimit : options.StreetAllyLimit,
+            options.DefenderWaveSize, options.DefenderWaveIntervalSeconds, options.MaxActiveDefenderWaves });
     }
 
     internal static void ClearArmedCoup() => _clearCoup?.Invoke(null, null);
