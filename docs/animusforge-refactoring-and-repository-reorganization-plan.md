@@ -1,14 +1,26 @@
 <a id="j17-b6-c-resume-20261001"></a>
 
-### J17 剩余 B6 / C 本轮恢复（2026-10-01，用户要求暂停，明日继续）
+### J17 剩余 B6 / C 本轮有限离线收口（2026-10-01）
 
-本轮用户授权恢复剩余 B6/C；现场 `E:/AnimusForge-refactor-continuation-20260831`、`codex/af-main-refactor-continuation-20260831`，基线 `e35d7826` tracked clean，空意图 checkpoint `d9d266c7`。保留 `4e4aad06` CivilWar 合并以及已验的 A20/20、`8c7b0fb0` Memory/Weekly、`aa3539ca` Conversation/B7，不重做未变有效证据。
+**前次恢复现场（历史，当前见下方本轮收口）**：用户授权恢复剩余 B6/C；现场 `E:/AnimusForge-refactor-continuation-20260831`、`codex/af-main-refactor-continuation-20260831`，基线 `e35d7826` tracked clean，空意图 checkpoint `d9d266c7`。保留 `4e4aad06` CivilWar 合并以及已验的 A20/20、`8c7b0fb0` Memory/Weekly、`aa3539ca` Conversation/B7，不重做未变有效证据。
 
 P1 持 Prompt/history composition；P2 持传输/渠道 request lifetime；P3 持 Courier delivered-memory/inbound recovery；P4 持验证依赖定位 helper；P5 持其余测试消费者/清单。P6 唯一持共享根宿主接线、Git 索引/精确切片提交、总 runner、同候选双配置双 API+Bootstrap、正式台账/交接/地图。各包可独立推进，共享宿主 patch 由 P6 接线，不设常驻复审。
 
 原全量 C `artifacts/j17b/session-20260930/p6-integration/full-run-aedcba06ed7844b0b90fa0c57b621a1a/results.json` 的 273 项（148 PASS/78 FAIL/34 PREEXISTING_FAIL/5 NEEDS_INPUT/4 SUPERSEDED_BY_RUNNER/1 ENV_STATE/3 BLOCKED_ENV）是历史候选结果，不能将 78 FAIL 当作 78 产品 bug，也不能刷 hash/expected 消除失败。本轮最终门禁绑定新的同一候选，产物只写 `artifacts/j17b/session-20261001/p6-integration/` 唯一新目录；保留旧产物及 22 个原未跟踪 tools 和 NuGet 目录。B6/C 尚未完成，最终分类待实际运行。D 实机/真实旧档/真实网络/帧耗时 NOT-RUN；无推送、Stage、部署、安装、默认入口或真实资料操作授权；已暴露旧凭据轮换仍未确认。
 
-#### 2026-10-01 本轮六包恢复执行（当前入口，取代下方暂停停点）
+#### 2026-10-01 六包有限离线出口与最终同候选 C（当前结果，取代下方 ACTIVE/暂停停点）
+
+现场仍为本工作区/同名分支；意图 checkpoint `38efd7eb`。六包按各自完整实现、定向验证及修复闭合，本轮**产品源码相对 WIP `3c00ae2e` 无新增语义修改**，没有重新造 owner、切默认入口、删除旧分支或改一键流程。Scene/Native fixture 与真实消费入口的缺口为测试/隔离问题；有效切片已精确本地提交，最后冻结测试候选 `af6006c4`。本节是离线有限收口，不是 J17 全部产品/实机验收 DONE。
+
+- **同候选构建**：产品输入 `08b95aa7` 的 Debug `build-eea23a981a3f4cb98275d36989822017`、Release `build-6fb7bb978885486a959d499795b76377`，各 API1.3/API1.4/Bootstrap 全部 exit 0；六 marker/hash 实际核对。来源分别为 `_deps_auto` 1.3.15.110062、`local/bannerlord-refs/1.4.7.117484`，SDK8 8.0.425；构建后至最终 C 仅测试/文档变化，产品 C# 输入 diff 空，相关证据不失效。没有 Stage/Deploy。完整记录在本机 `artifacts/j17b/session-20261001/p6-integration/final-build-evidence.json`。
+- **最终完整 C**：`af6006c4` / 当前 Debug API1.4 DLL SHA256 `B69EDA4B256B3C47A7E572E9AECA6C2D244772CB382CAE74D0EE6709E8F40B1B`；`artifacts/j17b/session-20261001/p6-integration/c-9c46dda2a09c/{results.json,candidate.json,aggregate.log}` 实际 **287 项：243 PASS、0 FAIL、0 BLOCKED_ENV、33 PREEXISTING_FAIL、6 NEEDS_INPUT、4 SUPERSEDED_BY_RUNNER、1 ENV_STATE，aggregate exit 0**。这是所需入口门禁通过，不等于“全部测试通过”，不把 33 历史失败或实机环境状态改成 PASS。本次完整运行独立完成，没有拼接不同候选成绩。
+- **失败与修复保留**：初诊 `c-82d9464268af` 为 285 项/20 FAIL（此前 78 FAIL 仍仅旧候选）；根因包括 SDK8 `dotnet run` 在隔离构建后启动旧 bin、fixture/清单坐标漂移、明确 Python host 与 pinned Newtonsoft authority 缺口。总入口现在隔离 build 后评估并严格检查 TargetPath，再显式启动当前产物；OutDir 留在每入口新 bin、应用参数只保留一个 `--`。19 项安全回归及实际新目标正控通过。`c-762f5d61214f` 暴露 legacy `--` 双分隔后中止，工件/`interrupted.json` 保留，随后完整重跑为上项最终 C；未拿中止成绩拼绿。默认写 F 盘的 `export_vanilla_text_index.py` 是业务 exporter，不是测试，按现行无仓外输出授权规则 manual/NEEDS_INPUT，不再自动启动；未降低产品断言或修改历史预期。
+- **包级当前证据**：P1 deferred 2 正控+3成功编译后具名行为红；P2 Native 5、fallback 19、Courier terminal 18及 ceremony 当前通过，12变异成功编译后行为红（caller 立即 token 断言保留，仅 caller fixture 的非 timeout 预算避开 JIT 竞态）；P3 transport14/NonStreaming240/Streaming17/Courier取消7、6编译后行为红，实际当前 Courier DLL消费者13具名项通过。P4 五 Scene layout38/GroupReceipt27/Courier552-76/完整 Native 请求差分及三渠道 role+AFEF回读，当前1.4实际DLL45检查通过；1.3实际message runtime缺SaveSystem依赖，**NOT-RUN，不混用1.4依赖凑 PASS**。P5 Debt48及2行为负控、Encounter55、SharedCompletion16及drop-lore负控、provider credential boundary与同 pinned dependency通过；DataPaths66通过是合成 profile fail-closed/显式根合同，真实用户默认KnownFolder路径仍 NOT-RUN。各原始 receipt/log 仅在本机 artifacts，不提交原日志/二进制/真实资料。
+- **正式责任与有限余项**：[代码范围图当前逐符号边界](architecture/af-framework-code-scope.md#af2-responsibility-evidence-20260928)与813锚点地图绑定 `23627405`，recorded/working-tree均已 PASS，至最终门禁相关产品源未变。R05-f 的渠道strip/count/mood边界、g 的会话/AFEF投影责任明确 **retained**；i **OPEN**，仍缺逐项文件/完整符号/删除区间及反射/消费者兼容处理许可，不能把现 Gateway运行开关或 Xihai反射调用误删。本轮有限 B6 offline exit **VERIFIED**，但不声称 f/g 已完全迁空或 i 已删除闭合。
+
+可回滚检查点/精确切片均保留：`a54bb4a7` Scene、`e60db9d4` Native/retirement、`465fe339` 当前DLL消费、`ad53c7d6`清单/数据路径、`23627405`及后续P6入口隔离修正、`08b95aa7`地图、`bf48dfd5`当前consumer修复、`af6006c4`单分隔兼容。**D 实机、真实旧档、真实供应商网络、帧耗时/性能全部 NOT-RUN**；旧凭据轮换未确认。唯一初始 SessionTransport metadata dirty 保留、规范化 diff 空；22旧 tools、NuGet与全部产物保留。本轮没有 push/产品 Stage/部署/安装/全局配置/一键入口改动/真实资料操作或广域清理。后续仅按具体实机/许可需求推进，不因还可拆 helper 或历史主类较大重开已满足有限出口。
+
+#### 2026-10-01 本轮六包恢复执行（历史执行意图，结果见上段）
 
 用户明确恢复获准 B6/C，不延续上传/推送授权。现场 Git 根与分支已核实，远端 WIP 基线 `3c00ae2ebd6fa006314241f1296412947e275008`；本轮空意图检查点 `38efd7eb`。旧代理/写进程由总控确认已停止；`SessionTransport` 初始 tracked M 但精确 diff 空，规范化 blob 与 HEAD 同为 `ee1b130b13333849d3669ff5e6a58e007f35b5f8`，保留由本轮 P3 接管，未覆盖。旧 tools/NuGet/产物不动。
 
