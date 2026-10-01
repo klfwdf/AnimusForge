@@ -172,7 +172,7 @@ class RunAllSafetyTests(unittest.TestCase):
     def test_actual_manifest_keeps_business_tools_manual_and_editor_isolated(self):
         entries = json.loads(runner.MANIFEST.read_text(encoding="utf-8"))["entries"]
         for name in ("af2_migrate.py", "generate_bannerlord_history_culture_study.py",
-                     "generate_bannerlord_research_grade_study.py"):
+                     "generate_bannerlord_research_grade_study.py", "export_vanilla_text_index.py"):
             self.assertEqual(entries["tools/" + name]["execution"], "manual")
             self.assertEqual(entries["tools/" + name]["expect"], "NEEDS_INPUT")
         editor = entries["tools/PlayerExportsEditor/tests/PlayerExportsEditor.SmokeTests/PlayerExportsEditor.SmokeTests.csproj"]
