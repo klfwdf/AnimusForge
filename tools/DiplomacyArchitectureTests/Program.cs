@@ -205,6 +205,22 @@ static class Program
         }
         if (path.EndsWith("WorldDiplomacyBehavior.ImmediateActionPort.cs") && root.ToString().Contains("HasTradeAgreement("))
             errors.Add("immediate trade receipt collapsed unreadable state into false");
+        if (path.StartsWith("src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior", StringComparison.Ordinal))
+        {
+            foreach (var assignment in root.DescendantNodes().OfType<AssignmentExpressionSyntax>())
+            {
+                if (assignment.Left is not MemberAccessExpressionSyntax member) continue;
+                string receiver = member.Expression.ToString();
+                if (!new[] { "document", "round", "job", "offer", "threat", "_storage" }.Contains(receiver)) continue;
+                bool leaseFlag = path.EndsWith("WorldDiplomacyBehavior.LlmDispatchSource.cs", StringComparison.Ordinal)
+                    && receiver == "job" && member.Name.Identifier.ValueText is "IsRunning" or "CacheAffinityKey";
+                if (!leaseFlag) errors.Add("retained host writes canonical state: " + assignment.Left);
+            }
+        }
+        if (path.EndsWith("WorldDiplomacyPresentationQueries.cs", StringComparison.Ordinal)
+            && root.DescendantNodes().OfType<AssignmentExpressionSyntax>().Any(a =>
+                a.Left is MemberAccessExpressionSyntax member && member.Expression.ToString() == "document"))
+            errors.Add("presentation query writes canonical document state");
         if (path.EndsWith("WorldDiplomacyBehavior.PublicationPort.cs") || path.EndsWith("WorldDiplomacyBehavior.OrchestrationHost.cs"))
             foreach (var method in root.DescendantNodes().OfType<MethodDeclarationSyntax>())
                 if (new[] { "CaptureDestinations", "CaptureCourtTargets", "CapturePropagationDistances" }.Contains(method.Identifier.ValueText)
@@ -326,6 +342,8 @@ static class Program
         var mutations = new[] {
             ("src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.ThreatSettlementPort.cs", "class X { void F(dynamic threat) { threat.DomesticPenaltyCompleted = true; } }"),
             ("src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.ThreatSettlementPort.cs", "class X { void F() { _owner.RetryDiplomaticThreatHistoryResults(); } }"),
+            ("src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.Presentation.cs", "class X { void F(WorldDiplomacyDocument document) { document.IsRead = true; } }"),
+            ("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyPresentationQueries.cs", "class X { void F(WorldDiplomacyDocument document) { document.IsRead = true; } }"),
             ("Refactor/Domain/WorldDiplomacyInjectedRules.cs", "class X { object F() => TaleWorlds.CampaignSystem.Hero.MainHero; }"),
             ("Refactor/Contracts/WorldDiplomacyInjected.cs", "using H = TaleWorlds.CampaignSystem.Hero; class X { H H; }"),
             ("src/modules/AF.Module.Diplomacy/Application/Injected.cs", "class X { object F() => new System.Net.Http.HttpClient(); }"),
