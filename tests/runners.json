@@ -398,6 +398,119 @@
     "--out-dir",
     "{ROOT}/artifacts/package_policy_system_source_overlay/runner-{RUN}"
    ]
+  },
+  "tests/AF.Persistence/CampaignMemoryPersistenceAdapterTests/run.py": {
+   "expect": "PASS",
+   "args": [
+    "--run-root",
+    "{ROOT}/artifacts/af2-host-terminal-closeout/total/{RUN}/CampaignMemoryPersistenceAdapterTests-run"
+   ]
+  },
+  "tests/modules/AF.Module.Conversation/SceneSpeechExecutionRuntimeTests/run.py": {
+   "expect": "PASS",
+   "args": [
+    "--run-root",
+    "{ROOT}/artifacts/af2-host-terminal-closeout/total/{RUN}/SceneSpeechExecutionRuntimeTests-run"
+   ]
+  },
+  "tests/modules/AF.Module.Conversation/SceneMovementLifecycleTests/run.py": {
+   "expect": "PASS",
+   "args": [
+    "--run-root",
+    "{ROOT}/artifacts/af2-host-terminal-closeout/total/{RUN}/SceneMovementLifecycleTests-run"
+   ]
+  },
+  "tests/modules/AF.Module.Conversation/SceneMovementLifecycleTests/run_mutations.py": {
+   "expect": "PASS",
+   "args": [
+    "--run-root",
+    "{ROOT}/artifacts/af2-host-terminal-closeout/total/{RUN}/SceneMovementLifecycleTests-run_mutations"
+   ]
+  },
+  "tests/modules/AF.Module.Memory/MemoryRecallContextTests/run.py": {
+   "expect": "PASS",
+   "args": [
+    "--run-root",
+    "{ROOT}/artifacts/af2-host-terminal-closeout/total/{RUN}/MemoryRecallContextTests-run"
+   ]
+  },
+  "tests/modules/AF.Module.Memory/MemoryDailyDeveloperEditTests/run.py": {
+   "expect": "PASS",
+   "args": [
+    "--run-root",
+    "{ROOT}/artifacts/af2-host-terminal-closeout/total/{RUN}/MemoryDailyDeveloperEditTests-run"
+   ]
+  },
+  "tests/modules/AF.Module.Prompt/SceneHistoryMessageAssemblyTests/run.py": {
+   "expect": "PASS",
+   "args": [
+    "--run-root",
+    "{ROOT}/artifacts/af2-host-terminal-closeout/total/{RUN}/SceneHistoryMessageAssemblyTests-run"
+   ]
+  },
+  "tests/modules/AF.Module.Prompt/PromptContextCaptureAdapterTests/run.py": {
+   "expect": "PASS",
+   "args": [
+    "--run-root",
+    "{ROOT}/artifacts/af2-host-terminal-closeout/total/{RUN}/PromptContextCaptureAdapterTests-run"
+   ]
+  },
+  "tests/modules/AF.Module.Economy/PartyTransferOwnerTests/run.py": {
+   "expect": "PASS",
+   "args": [
+    "--out",
+    "{ROOT}/artifacts/af2-host-terminal-closeout/total/{RUN}/PartyTransferOwnerTests-run"
+   ]
+  },
+  "tests/modules/AF.Module.Weekly/WeeklyEventImportOwnerTests/run.py": {
+   "expect": "PASS",
+   "args": [
+    "--out",
+    "{ROOT}/artifacts/af2-host-terminal-closeout/total/{RUN}/WeeklyEventImportOwnerTests-run"
+   ]
+  },
+  "tests/modules/AF.Module.Weekly/WeeklyMemoryMaterialOutcomeContractTests/run_terminal.py": {
+   "expect": "PASS",
+   "args": [
+    "--out",
+    "{ROOT}/artifacts/af2-host-terminal-closeout/total/{RUN}/WeeklyMemoryMaterialOutcomeContractTests-run_terminal"
+   ]
+  },
+  "tests/modules/AF.Module.Conversation/NativeEffectsRuntimeTests/run.py": {
+   "expect": "PASS",
+   "args": [
+    "--run-root",
+    "{ROOT}/artifacts/af2-host-terminal-closeout/total/{RUN}/NativeEffectsRuntimeTests-run"
+   ]
+  },
+  "tests/modules/AF.Module.Conversation/NativeEffectsRuntimeTests/run_mutations.py": {
+   "expect": "PASS",
+   "args": [
+    "--run-root",
+    "{ROOT}/artifacts/af2-host-terminal-closeout/total/{RUN}/NativeEffectsRuntimeTests-run_mutations"
+   ]
+  },
+  "tests/modules/AF.Module.Conversation/SceneSpeechEffectsRuntimeTests/run.py": {
+   "expect": "PASS",
+   "args": [
+    "--run-root",
+    "{ROOT}/artifacts/af2-host-terminal-closeout/total/{RUN}/SceneSpeechEffectsRuntimeTests-run"
+   ]
+  },
+  "tests/modules/AF.Module.Conversation/SceneSpeechEffectsRuntimeTests/run_mutations.py": {
+   "expect": "PASS",
+   "args": [
+    "--run-root",
+    "{ROOT}/artifacts/af2-host-terminal-closeout/total/{RUN}/SceneSpeechEffectsRuntimeTests-run_mutations"
+   ]
+  },
+  "tests/modules/AF.Module.Memory/MemoryDailyDeveloperEditTests/verify_lifecycle.py": {
+   "expect": "PASS",
+   "args": [
+    "--run-root",
+    "{ROOT}/artifacts/af2-host-terminal-closeout/runner/{RUN}/MemoryDailyDeveloperLifecycle"
+   ],
+   "note": "Actual whole MemoryBusinessStateOwner lifecycle methods and exact host consumers; isolated synthetic output."
   }
  }
 }
