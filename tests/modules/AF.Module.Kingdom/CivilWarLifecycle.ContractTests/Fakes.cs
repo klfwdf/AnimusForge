@@ -10,7 +10,11 @@ namespace TaleWorlds.CampaignSystem
     {
         public static List<Kingdom> All = new();
         public string StringId { get; set; }
-        public string Name => StringId;
+        public string DisplayName;
+        public string Name => DisplayName ?? StringId;
+        public string InformalName { get; private set; } = "short";
+        public void ChangeKingdomName(TaleWorlds.Localization.TextObject name, TaleWorlds.Localization.TextObject informalName)
+        { DisplayName = name.ToString(); InformalName = informalName.ToString(); }
         public bool IsEliminated { get; set; }
         public Clan RulingClan;
         public Hero Leader => RulingClan?.Leader;
@@ -37,10 +41,13 @@ namespace TaleWorlds.CampaignSystem
     }
     public class Hero
     {
+        public static List<Hero> All = new();
+        public Hero() { All.Add(this); }
         public static Hero MainHero;
-        public string StringId => Clan?.StringId + "_hero";
+        public string Id;
+        public string StringId => Id ?? Clan?.StringId + "_hero";
         public Clan Clan;
-        public bool IsAlive = true, IsPrisoner;
+        public bool IsAlive = true, IsPrisoner, IsChild;
         public int Gold = 10000;
         public int GetRelation(Hero other) => 0;
         public int GetTraitLevel(TraitObject trait) => 0;
@@ -74,6 +81,7 @@ namespace TaleWorlds.ObjectSystem
         public static MBObjectManager Instance = new();
         public T GetObject<T>(string id) where T : class => (typeof(T) == typeof(Clan) ? Clan.All.FirstOrDefault(c => c.StringId == id) as T
             : typeof(T) == typeof(Kingdom) ? Kingdom.All.FirstOrDefault(k => k.StringId == id) as T
+            : typeof(T) == typeof(Hero) ? Hero.All.FirstOrDefault(h => h.StringId == id) as T
             : Kingdom.All.SelectMany(k => k.ActivePolicies).FirstOrDefault(p => p.StringId == id) as T);
     }
 }
@@ -139,7 +147,8 @@ namespace AnimusForge
         internal static bool Enabled = true;
         internal static int DiscontentThreshold = 35;
         internal static bool IsCivilWarFactionsEnabled() => Enabled;
-        internal static bool IsCivilWarPlayerKingdomFactionsAllowed() => true;
+        internal static bool PlayerFactionsAllowed = true;
+        internal static bool IsCivilWarPlayerKingdomFactionsAllowed() => PlayerFactionsAllowed;
         internal static CivilWarTuning BuildCivilWarTuning() => new() { DiscontentThreshold = DiscontentThreshold };
     }
     internal static class PlayerKingdomRebellionImmunity { internal static bool Protected; internal static bool ShouldProtectKingdom(Kingdom k) => Protected; }

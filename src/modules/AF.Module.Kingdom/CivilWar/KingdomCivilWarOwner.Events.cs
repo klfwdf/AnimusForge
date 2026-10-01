@@ -145,7 +145,29 @@ internal sealed partial class KingdomCivilWarOwner
 			}
 			DropKingdom(id); Revision++; yield break;
 		}
-		if (!CivilWarWorld.IsAlive(k) || !DuelSettings.IsCivilWarFactionsEnabled() || IsActiveRebelKingdom(k) || (CivilWarWorld.IsPlayerRuled(k) && !DuelSettings.IsCivilWarPlayerKingdomFactionsAllowed())) yield break;
+		if (!CivilWarWorld.IsAlive(k) || !DuelSettings.IsCivilWarFactionsEnabled() || IsActiveRebelKingdom(k)) yield break;
+		// Coup wars are explicit consequences, not automatic player-kingdom faction formation.
+		// With formation disabled, advance only registered coup wars through the same bounded queue.
+		if (CivilWarWorld.IsPlayerRuled(k) && !DuelSettings.IsCivilWarPlayerKingdomFactionsAllowed())
+		{
+			var coupState = Find(k);
+			if (coupState != null)
+			{
+				var coupTuning = DuelSettings.BuildCivilWarTuning();
+				foreach (var coup in coupState.Factions.ToArray())
+				{
+					if (coupState.Factions.Contains(coup) && coup.Stage == KingdomCivilWarStage.OpenWar
+						&& !string.IsNullOrWhiteSpace(coup.CoupId) && !coup.ResolutionNeedsReview)
+					{
+						AdvanceOpenWar(k, coupState, coup, CivilWarWorld.CurrentWeek(), coupTuning, HostStability);
+						coup.Version++;
+					}
+					yield return true;
+				}
+				SaveSummary(coupState); Revision++;
+			}
+			yield break;
+		}
 		int day = CivilWarWorld.CurrentDay(), week = CivilWarWorld.CurrentWeek();
 		var s = GetOrCreate(k, week); var tuning = DuelSettings.BuildCivilWarTuning();
 		MigratePoliticalDays(s);

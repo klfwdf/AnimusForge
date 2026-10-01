@@ -13,6 +13,8 @@ internal sealed class CivilWarModuleAdapter : ICivilWarModulePort
 {
 	private static readonly Regex TagPattern = new Regex("^\\[A:CIVIL_FACTION:(JOIN:(CROWN|OPPOSITION)|RECRUIT|DETONATE|ANSWER:(ACCEPT|REFUSE))\\]$", RegexOptions.IgnoreCase | RegexOptions.Compiled);
 	private readonly KingdomCivilWarOwner _owner = new KingdomCivilWarOwner();
+	public bool CanTrackCoupWar(Kingdom kingdom) => KingdomCivilWarOwner.CanTrackCoupWar(kingdom);
+	public bool TryRegisterCoupWar(CoupCivilWarRegistration registration, out string message) => _owner.TryRegisterCoupWar(registration, out message);
 	public long Revision => _owner.Revision;
 	public event Action StateChanged { add { _owner.StateChanged += value; } remove { _owner.StateChanged -= value; } }
 	public List<CivilWarFoundingOption> GetFoundingOptions(string kingdomId) => _owner.GetFoundingOptions(kingdomId, Clan.PlayerClan);

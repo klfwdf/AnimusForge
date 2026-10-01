@@ -4,6 +4,19 @@ namespace AnimusForge;
 
 public partial class MyBehavior
 {
+	internal bool CanTrackCoupCivilWar(Kingdom kingdom) => AnimusForge.Refactor.Modules.TeamModuleServices.CivilWar.CanTrackCoupWar(kingdom);
+
+	internal bool TryRegisterCoupCivilWar(string coupId, Kingdom kingdom, Kingdom rebel, Clan leader, Hero formerKing,
+		bool restoreDynasty, string originalName, string originalShortName, out string message)
+	{
+		return AnimusForge.Refactor.Modules.TeamModuleServices.CivilWar.TryRegisterCoupWar(new AnimusForge.Refactor.Modules.CoupCivilWarRegistration
+		{
+			CoupId = coupId, KingdomId = kingdom?.StringId, RebelKingdomId = rebel?.StringId, LeaderClanId = leader?.StringId,
+			FormerKingId = formerKing?.StringId, FormerClanId = formerKing?.Clan?.StringId, RestoreDynasty = restoreDynasty,
+			OriginalName = originalName, OriginalShortName = originalShortName
+		}, out message);
+	}
+
 	internal static void RecordCivilWarMemoryFact(Hero hero, string text)
 	{
 		if (hero == null || hero == Hero.MainHero || string.IsNullOrWhiteSpace(text)) return;

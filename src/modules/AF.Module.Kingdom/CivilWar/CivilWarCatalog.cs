@@ -84,6 +84,7 @@ internal static class CivilWarEffectIds
 	internal const string GrantPrivileges = "grant_privileges";
 	internal const string Abdicate = "abdicate";
 	internal const string UsurpThrone = "usurp_throne";
+	internal const string RestoreDynasty = "restore_coup_dynasty";
 	internal const string Secede = "secede";
 	internal const string Concession = "concession";
 	internal const string CrownVictory = "crown_victory";
@@ -91,7 +92,7 @@ internal static class CivilWarEffectIds
 	internal static readonly HashSet<string> All = new HashSet<string>(StringComparer.Ordinal)
 	{
 		MakePeaceWithTarget, PledgeWarOnTarget, RevokeTargetPolicy, PayRedress, GrantPrivileges, Abdicate,
-		UsurpThrone, Secede, Concession, CrownVictory
+		UsurpThrone, RestoreDynasty, Secede, Concession, CrownVictory
 	};
 }
 

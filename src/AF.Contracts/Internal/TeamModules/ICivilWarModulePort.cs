@@ -7,6 +7,18 @@ namespace AnimusForge.Refactor.Modules;
 
 internal enum CivilWarAction { JoinCrown, JoinOpposition, Leave, Found, Detonate, Suppress, Negotiate, Concede, ForceDissolve, Respond }
 internal enum CivilWarActionStatus { Applied, Rejected, AwaitingPlayer, AwaitingKingdom, PartialFailure }
+internal sealed class CoupCivilWarRegistration
+{
+    public string CoupId;
+    public string KingdomId;
+    public string RebelKingdomId;
+    public string LeaderClanId;
+    public string FormerKingId;
+    public string FormerClanId;
+    public bool RestoreDynasty;
+    public string OriginalName;
+    public string OriginalShortName;
+}
 internal sealed class CivilWarActionRequest
 {
 	public string OperationId = "";
@@ -94,6 +106,8 @@ internal sealed class CivilWarPanelKingdom
 // Same-DLL owner for staged civil wars. Host code keeps only these calls.
 internal interface ICivilWarModulePort
 {
+    bool CanTrackCoupWar(Kingdom kingdom);
+    bool TryRegisterCoupWar(CoupCivilWarRegistration registration, out string message);
 	long Revision { get; }
 	event Action StateChanged;
 	List<CivilWarFoundingOption> GetFoundingOptions(string kingdomId);

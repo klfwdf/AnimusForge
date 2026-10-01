@@ -16,6 +16,8 @@ internal static class CoupLoyalistAftermathRegression
     private static bool _enabled, _protected, _menuSucceeds;
     private static int _menuCalls, _survivors;
     private static bool _transfer;
+    private static object _restorationHome;
+    private static bool _oldKingCaptured;
 
     internal static void Run(Assembly af, Assembly coup, Action<string> write)
     {
@@ -59,10 +61,12 @@ internal static class CoupLoyalistAftermathRegression
             Type bridgeType = coup.GetType("AnimusForge.CoupSystem.CoupRebellionBridge", true);
             object bridge = Bare(bridgeType), host = Bare(hostOwner);
             MethodInfo select = bridgeType.GetMethod("SelectLoyalists", All);
-            Func<IList> selectClans = () => (IList)select.Invoke(bridge, new[] { host, kingdom, "probe_old_king", "royal", null });
+            Func<IList> selectClans = () => (IList)select.Invoke(bridge, new[] { host, kingdom, "probe_old_king", "royal", (object)true, null });
             IList selected = selectClans();
             check(selected.Count == 2 && (string)Field(selected[0], "ClanId") == "royal", "real selector prioritizes old royal family and includes a supporter friendly to new king");
             check((string)Field(selected[1], "ClanId") == "supporter", "ties and new-king supporters do not rebel");
+            IList captured = (IList)select.Invoke(bridge, new[] { host, kingdom, "probe_old_king", "royal", (object)false, null });
+            check(captured.Count == 1 && (string)Field(captured[0], "ClanId") == "supporter", "captured old king's family excluded even when otherwise physically eligible");
             Eligible.Remove(royal);
             selected = selectClans();
             check(selected.Count == 1 && (string)Field(selected[0], "ClanId") == "supporter", "unavailable royal leader does not prevent eligible supporter leading");
@@ -84,6 +88,37 @@ internal static class CoupLoyalistAftermathRegression
             check((bool)Field(restored, "LoyalistSelection") && (string)Field(restored, "FormerKingId") == "probe_old_king", "loyalist policy and former king survive real JSON roundtrip");
             check(!(bool)Field(Activator.CreateInstance(requestType, true), "LoyalistSelection"), "old requests retain their original selection policy");
 
+            managerType.GetMethod("RegisterType").MakeGenericMethod(clanType).Invoke(objects, new object[] { "Clan", "Clans", (uint)2, false, false });
+            object royalLeader = Leaders[royal];
+            Leaders.Remove(royal); // Native registration changes MBObjectBase's identity hash.
+            managerType.GetMethod("RegisterObject").MakeGenericMethod(clanType).Invoke(objects, new[] { royal });
+            Leaders[royal] = royalLeader;
+            _restorationHome = kingdom; _oldKingCaptured = false;
+            _playerClan = Bare(clanType);
+            Patch(fixture, AccessTools.PropertyGetter(clanType, "PlayerClan"), nameof(PlayerClan));
+            Patch(fixture, AccessTools.PropertyGetter(clanType, "Kingdom"), nameof(RestorationHome));
+            Patch(fixture, AccessTools.PropertyGetter(heroType, "IsAlive"), nameof(Yes));
+            Patch(fixture, AccessTools.PropertyGetter(heroType, "IsChild"), nameof(No));
+            Patch(fixture, AccessTools.PropertyGetter(heroType, "IsPrisoner"), nameof(Prisoner));
+            MethodInfo canJoin = bridgeType.GetMethod("CanJoinRestoration", All);
+            object[] joinArgs = { request, kingdom, null };
+            check((bool)canJoin.Invoke(null, joinArgs) && ReferenceEquals(joinArgs[2], royal), "released royal family can join supporter-led restoration without a land requirement");
+            _oldKingCaptured = true;
+            check(!(bool)canJoin.Invoke(null, new object[] { request, kingdom, null }), "prisoner old king cannot join restoration through family transfer");
+            _oldKingCaptured = false;
+            Set(request, "Id", "restoration_probe"); Set(request, "TrackCivilWar", true); Set(request, "RestoreDynasty", true);
+            Set(request, "OriginalName", "Original realm"); Set(request, "OriginalShortName", "Original");
+            Set(request, "RebelKingdomId", "created_rebels"); Set(request, "RegistrationBlocked", true);
+            Set(request, "State", Enum.Parse(requestType.GetField("State").FieldType, "WarCreated"));
+            restored = Roundtrip(request);
+            check((bool)Field(restored, "RegistrationBlocked") && Field(restored, "State").ToString() == "WarCreated"
+                && (string)Field(restored, "OriginalName") == "Original realm", "created-war checkpoint and original name persist without recreating kingdom");
+            FieldInfo requests = bridgeType.GetField("_requests", All);
+            var pending = (IDictionary)Activator.CreateInstance(requests.FieldType); pending.Add("restoration_probe", restored); requests.SetValue(bridge, pending);
+            bridgeType.GetMethod("RetryPendingWarRegistration", All).Invoke(bridge, null);
+            check(!(bool)Field(restored, "RegistrationBlocked") && Field(restored, "State").ToString() == "WarCreated"
+                && (bool)Field(bridge, "_hasWork"), "manual registration retry resumes only created-war stage");
+
             // Real Coup owner -> cached adapter -> SETS gate. Only native menu opening
             // is replaced, so the ownership-transfer argument is checked at the boundary.
             Type townType = AccessTools.TypeByName("TaleWorlds.CampaignSystem.Settlements.Settlement");
@@ -100,7 +135,6 @@ internal static class CoupLoyalistAftermathRegression
             Patch(fixture, townType.GetMethod("Find", All, null, new[] { typeof(string) }, null), nameof(Town));
             Patch(fixture, AccessTools.PropertyGetter(townType, "IsTown"), nameof(Yes));
             Patch(fixture, AccessTools.PropertyGetter(townType, "OwnerClan"), nameof(OwnerClan));
-            Patch(fixture, AccessTools.PropertyGetter(clanType, "PlayerClan"), nameof(PlayerClan));
             Patch(fixture, AccessTools.PropertyGetter(partyType, "MainParty"), nameof(Party));
             Patch(fixture, AccessTools.PropertyGetter(partyType, "CurrentSettlement"), nameof(Town));
             Patch(fixture, AccessTools.PropertyGetter(playerEncounter, "LocationEncounter"), nameof(Encounter));
@@ -191,6 +225,8 @@ internal static class CoupLoyalistAftermathRegression
     private static bool Town(ref object __result) { __result = _town; return false; }
     private static bool OwnerClan(ref object __result) { __result = _ownerClan; return false; }
     private static bool PlayerClan(ref object __result) { __result = _playerClan; return false; }
+    private static bool RestorationHome(ref object __result) { __result = _restorationHome; return false; }
+    private static bool Prisoner(object __instance, ref bool __result) { __result = _oldKingCaptured && ReferenceEquals(__instance, _oldKing); return false; }
     private static bool Party(ref object __result) { __result = _party; return false; }
     private static bool Encounter(ref object __result) { __result = _encounter; return false; }
     private static bool Game(ref object __result) { __result = _game; return false; }

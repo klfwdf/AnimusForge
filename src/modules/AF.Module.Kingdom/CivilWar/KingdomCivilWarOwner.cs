@@ -639,14 +639,25 @@ internal sealed partial class KingdomCivilWarOwner
 		CivilWarWarGoal goal = faction.WarGoal == 0 ? CivilWarCatalog.EffectiveWarGoal(demand) : (CivilWarWarGoal)faction.WarGoal;
 		string log = "forced";
 		CivilWarOutcomeDef outcome;
-		if (!string.IsNullOrWhiteSpace(faction.ResolutionOutcomeId)) outcome = CivilWarCatalog.FindOutcome(faction.ResolutionOutcomeId);
+		bool restoration = !string.IsNullOrWhiteSpace(faction.RestorationClanId);
+		// Only an explicit war victory authorizes restoration. Our own return effect later
+		// makes peace, so retain that authorization across retries rather than rerolling it.
+		if (restoration && !faction.RestorationVictoryConfirmed && faction.RebelKingdomDestroyed)
+			outcome = CivilWarCatalog.FindOutcome(CivilWarCatalog.CrownVictoryOutcomeId);
+		else if (restoration && !faction.RestorationVictoryConfirmed && faction.EndedByPeace)
+			outcome = CivilWarCatalog.FindOutcome(CivilWarCatalog.NegotiatedOutcomeId);
+		else if (!string.IsNullOrWhiteSpace(faction.ResolutionOutcomeId)) outcome = CivilWarCatalog.FindOutcome(faction.ResolutionOutcomeId);
 		else if (faction.RebelKingdomDestroyed) outcome = CivilWarCatalog.FindOutcome(CivilWarCatalog.CrownVictoryOutcomeId);
 		else if (faction.EndedByPeace) outcome = CivilWarCatalog.FindOutcome(goal == CivilWarWarGoal.Secede ? CivilWarCatalog.SecedeOutcomeId : CivilWarCatalog.NegotiatedOutcomeId);
 		else outcome = CivilWarDecisions.PickOutcome(goal, WarFeatures(kingdom, state, faction, leader, week, tuning), tuning, RandomFloat, out log);
 		if (outcome != null) faction.ResolutionOutcomeId = outcome.Id;
+		if (restoration && outcome?.Id == "rebels_usurp" && !faction.EndedByPeace && !faction.RebelKingdomDestroyed)
+			faction.RestorationVictoryConfirmed = true;
 		CivilWarEffectContext ctx = BuildContext(kingdom, state, faction, demand, leader, week);
 		string reason = "无可用结局";
-		bool applied = outcome != null && CivilWarEffects.TryApply(outcome.EffectId, ctx, out reason);
+		string effectId = restoration && faction.RestorationVictoryConfirmed && outcome?.Id == "rebels_usurp"
+			? CivilWarEffectIds.RestoreDynasty : outcome?.EffectId;
+		bool applied = outcome != null && CivilWarEffects.TryApply(effectId, ctx, out reason);
 		string name = FactionName(faction, demand);
 		string text = applied ? name + "的内战结束（" + outcome.Name + "）：" + string.Join("；", ctx.Notes) : name + "的内战结算失败：" + (reason ?? "无可用结局");
 		AddHistory(state, week, text);

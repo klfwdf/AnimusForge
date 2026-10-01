@@ -295,6 +295,8 @@ new CivilWarCampaignBehavior().OnKingdomDecisionConcluded(new KingdomPolicyDecis
 var withdrawnState = JsonConvert.DeserializeObject<KingdomCivilWarStorage>(TeamModuleServices.CivilWar.Save());
 Check(withdrawnState.Kingdoms[f.Home.StringId].Clans[f.Follower.StringId].Side == KingdomCivilWarSide.Middle, "real policy event withdraws the dissatisfied crown supporter");
 
+CoupRestorationCases.Run(Check);
+
 // Synthetic CPU probe only: no game-loop/render/IO cost is represented here.
 f = new Fixture(); f.State.Factions.Clear(); f.State.Clans.Clear(); f.State.LastGrievanceDecayDay = 700;
 for (int i = 0; i < 100; i++)
@@ -325,9 +327,9 @@ sealed class Fixture
 		PlayerKingdomRebellionImmunity.Protected = false;
 		MyBehavior.FactKeys.Clear(); MyBehavior.PoliticalResults.Clear(); MyBehavior.MemoryFacts.Clear();
         DuelSettings.DiscontentThreshold = 35; CivilWarCampaignBehavior.MaterialWrites = 0;
-        Clan.All.Clear(); Kingdom.All.Clear(); MakePeaceAction.Fail = false; ChangeKingdomAction.FailClan = null; ChangeKingdomAction.Moves = 0;
+        Clan.All.Clear(); Kingdom.All.Clear(); Hero.All.Clear(); MakePeaceAction.Fail = false; ChangeKingdomAction.FailClan = null; ChangeKingdomAction.Moves = 0;
         GiveGoldAction.Calls = 0; GiveGoldAction.ThrowAfterApply = false; ChangeRelationAction.Calls = 0;
-        MyBehavior.StabilityChanges = 0; MyBehavior.CleanupAllowed = true; DuelSettings.Enabled = true;
+        MyBehavior.StabilityChanges = 0; MyBehavior.CleanupAllowed = true; DuelSettings.Enabled = true; DuelSettings.PlayerFactionsAllowed = true;
         Home = new() { StringId = "home" }; Rebel = new() { StringId = "rebel" }; Kingdom.All.AddRange(new[] { Home, Rebel });
         Home.RulingClan = AddClan("crown", Home); Leader = AddClan("leader", Rebel); Rebel.RulingClan = Leader;
         Follower = AddClan("follower", Rebel); Clan.PlayerClan = AddClan("player", Home); Hero.MainHero = Clan.PlayerClan.Leader;
