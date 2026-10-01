@@ -1246,6 +1246,8 @@ public partial class MyBehavior : CampaignBehaviorBase
 	private Dictionary<string, string> _dialogueHistoryStorage { get => _memoryBusinessState.HistoryStorage; set => _memoryBusinessState.HistoryStorage = value; }
 
 	private readonly MemoryBusinessStateOwner _memoryBusinessState = new MemoryBusinessStateOwner();
+	private CampaignMemoryPersistenceAdapter _memoryPersistence;
+	private CampaignMemoryPersistenceAdapter MemoryPersistence => _memoryPersistence ??= new CampaignMemoryPersistenceAdapter(_memoryBusinessState);
 
 	private Dictionary<string, List<DailyMemoryDraft>> _dailyMemoryDrafts { get => _memoryBusinessState.Drafts; set => _memoryBusinessState.Drafts = value; }
 
@@ -1259,7 +1261,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 	private List<MemorySummaryJob> _memorySummaryQueue { get => _memoryBusinessState.DailyQueue; set => _memoryBusinessState.DailyQueue = value; }
 
-	private string _memorySummaryQueueJsonStorage = "";
+	private string _memorySummaryQueueJsonStorage { get => MemoryPersistence.DailyQueueJson; set => MemoryPersistence.DailyQueueJson = value; }
 
 
 	private ref bool _memorySummaryFailurePopupActive => ref _memoryFailureNotices.Active;
@@ -1283,7 +1285,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 	private List<MemoryOverviewJob> _memoryOverviewQueue { get => _memoryBusinessState.OverviewQueue; set => _memoryBusinessState.OverviewQueue = value; }
 
-	private string _memoryOverviewQueueJsonStorage = "";
+	private string _memoryOverviewQueueJsonStorage { get => MemoryPersistence.OverviewQueueJson; set => MemoryPersistence.OverviewQueueJson = value; }
 
 	private Dictionary<string, MajorActionSummaryState> _npcMajorActionSummaries { get => _memoryBusinessState.MajorSummaries; set => _memoryBusinessState.MajorSummaries = value; }
 
@@ -1291,7 +1293,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 	private List<MajorActionSummaryJob> _npcMajorActionSummaryQueue { get => _memoryBusinessState.MajorQueue; set => _memoryBusinessState.MajorQueue = value; }
 
-	private string _npcMajorActionSummaryQueueJsonStorage = "";
+	private string _npcMajorActionSummaryQueueJsonStorage { get => MemoryPersistence.MajorQueueJson; set => MemoryPersistence.MajorQueueJson = value; }
 
 	private const double DailyMaintenanceDefaultFrameBudgetMs = 3.0;
 
@@ -15091,89 +15093,7 @@ TeamModuleServices.CivilWar.AdvanceWeek(devEditableKingdom, weekIndex, GetKingdo
 				}
 				Dictionary<string, string> dictionary = CampaignSaveChunkHelper.FlattenStringDictionary(_shownRecordStorage, "_shownRecords_v1", "TradeShown");
 				dataStore.SyncData("_shownRecords_v1", ref dictionary);
-				OwnerJsonStorageCodec.Serialize(_dialogueHistory, _dialogueHistoryStorage, skipWhitespaceKeys: false, skipEmptyLists: false, null, (key, ex) => Logger.Log("DialogueHistory", "[ERROR] Serialize history for " + key + ": " + ex.Message));
-				LogNonHeroMemoryTrace("stage=sync_save_dialogue_storage owners=" + _dialogueHistoryStorage.Keys.Count(IsNonHeroMemoryId) + " storageBytes=" + _dialogueHistoryStorage.Where((KeyValuePair<string, string> item) => IsNonHeroMemoryId(item.Key)).Sum((KeyValuePair<string, string> item) => (item.Value ?? "").Length));
-				Dictionary<string, string> dictionary2 = CampaignSaveChunkHelper.FlattenStringDictionary(_dialogueHistoryStorage, "_dialogueHistory_v2", "DialogueHistory");
-				dataStore.SyncData("_dialogueHistory_v2", ref dictionary2);
-				OwnerJsonStorageCodec.Serialize(_dailyMemoryDrafts, _dailyMemoryDraftStorage, skipWhitespaceKeys: true, skipEmptyLists: true, list => SanitizeDailyMemoryDrafts(list) ?? new List<DailyMemoryDraft>(), (key, ex) => Logger.Log("CompressedMemory", "[ERROR] Serialize daily memory drafts for " + key + ": " + ex.Message));
-				LogNonHeroMemoryTrace("stage=sync_save_daily_storage owners=" + _dailyMemoryDraftStorage.Keys.Count(IsNonHeroMemoryId) + " storageBytes=" + _dailyMemoryDraftStorage.Where((KeyValuePair<string, string> item) => IsNonHeroMemoryId(item.Key)).Sum((KeyValuePair<string, string> item) => (item.Value ?? "").Length));
-				Dictionary<string, string> dictionaryMemoryDrafts = CampaignSaveChunkHelper.FlattenStringDictionary(_dailyMemoryDraftStorage, "_af_dailyMemoryDrafts_v1", "CompressedMemory");
-				dataStore.SyncData("_af_dailyMemoryDrafts_v1", ref dictionaryMemoryDrafts);
-				OwnerJsonStorageCodec.Serialize(_compressedMemoryBlocks, _compressedMemoryBlockStorage, skipWhitespaceKeys: true, skipEmptyLists: true, list => SanitizeCompressedMemoryBlocks(list) ?? new List<CompressedMemoryBlock>(), (key, ex) => Logger.Log("CompressedMemory", "[ERROR] Serialize memory blocks for " + key + ": " + ex.Message));
-				Dictionary<string, string> dictionaryMemoryBlocks = CampaignSaveChunkHelper.FlattenStringDictionary(_compressedMemoryBlockStorage, "_af_compressedMemoryBlocks_v1", "CompressedMemory");
-				dataStore.SyncData("_af_compressedMemoryBlocks_v1", ref dictionaryMemoryBlocks);
-				try
-				{
-					_memorySummaryQueueJsonStorage = JsonConvert.SerializeObject(SanitizeMemorySummaryQueue(_memorySummaryQueue));
-				}
-				catch (Exception ex)
-				{
-					_memorySummaryQueueJsonStorage = "[]";
-					Logger.Log("CompressedMemory", "[ERROR] Serialize memory summary queue failed: " + ex.Message);
-				}
-				CampaignSaveChunkHelper.SaveChunkedString(dataStore, "_af_memorySummaryQueue_v1", _memorySummaryQueueJsonStorage ?? "[]", "CompressedMemory");
-				_memoryOverviewStateStorage.Clear();
-				foreach (KeyValuePair<string, MemoryOverviewState> overviewStateEntry in _memoryOverviewStates)
-				{
-					if (!string.IsNullOrWhiteSpace(overviewStateEntry.Key) && overviewStateEntry.Value != null && (!string.IsNullOrWhiteSpace(overviewStateEntry.Value.Summary) || !string.IsNullOrWhiteSpace(overviewStateEntry.Value.LastError)))
-					{
-						try
-						{
-							MemoryOverviewState state = SanitizeMemoryOverviewState(overviewStateEntry.Value);
-							if (state != null && !string.IsNullOrWhiteSpace(state.HeroId) && (!string.IsNullOrWhiteSpace(state.Summary) || !string.IsNullOrWhiteSpace(state.LastError)))
-							{
-								_memoryOverviewStateStorage[state.HeroId] = JsonConvert.SerializeObject(state);
-							}
-						}
-						catch (Exception ex)
-						{
-							Logger.Log("MemoryOverview", "[ERROR] Serialize memory overview for " + overviewStateEntry.Key + ": " + ex.Message);
-						}
-					}
-				}
-				Dictionary<string, string> dictionaryMemoryOverviewStates = CampaignSaveChunkHelper.FlattenStringDictionary(_memoryOverviewStateStorage, "_af_memoryOverviewStates_v1", "MemoryOverview");
-				dataStore.SyncData("_af_memoryOverviewStates_v1", ref dictionaryMemoryOverviewStates);
-				try
-				{
-					_memoryOverviewQueueJsonStorage = JsonConvert.SerializeObject(SanitizeMemoryOverviewQueue(_memoryOverviewQueue));
-				}
-				catch (Exception ex)
-				{
-					_memoryOverviewQueueJsonStorage = "[]";
-					Logger.Log("MemoryOverview", "[ERROR] Serialize memory overview queue failed: " + ex.Message);
-				}
-				CampaignSaveChunkHelper.SaveChunkedString(dataStore, "_af_memoryOverviewQueue_v1", _memoryOverviewQueueJsonStorage ?? "[]", "MemoryOverview");
-				_npcMajorActionSummaryStorage.Clear();
-				foreach (KeyValuePair<string, MajorActionSummaryState> majorSummary in _npcMajorActionSummaries)
-				{
-					if (!string.IsNullOrWhiteSpace(majorSummary.Key) && majorSummary.Value != null && (!string.IsNullOrWhiteSpace(majorSummary.Value.Summary) || !string.IsNullOrWhiteSpace(majorSummary.Value.LastError)))
-					{
-						try
-						{
-							MajorActionSummaryState state = SanitizeMajorActionSummaryState(majorSummary.Value);
-							if (state != null && !string.IsNullOrWhiteSpace(state.HeroId) && (!string.IsNullOrWhiteSpace(state.Summary) || !string.IsNullOrWhiteSpace(state.LastError)))
-							{
-								_npcMajorActionSummaryStorage[state.HeroId] = JsonConvert.SerializeObject(state);
-							}
-						}
-						catch (Exception ex)
-						{
-							Logger.Log("NpcMajorSummary", "[ERROR] Serialize major action summary for " + majorSummary.Key + ": " + ex.Message);
-						}
-					}
-				}
-				Dictionary<string, string> dictionaryMajorActionSummaries = CampaignSaveChunkHelper.FlattenStringDictionary(_npcMajorActionSummaryStorage, "_af_npcMajorActionSummaries_v1", "NpcMajorSummary");
-				dataStore.SyncData("_af_npcMajorActionSummaries_v1", ref dictionaryMajorActionSummaries);
-				try
-				{
-					_npcMajorActionSummaryQueueJsonStorage = JsonConvert.SerializeObject(SanitizeMajorActionSummaryQueue(_npcMajorActionSummaryQueue));
-				}
-				catch (Exception ex)
-				{
-					_npcMajorActionSummaryQueueJsonStorage = "[]";
-					Logger.Log("NpcMajorSummary", "[ERROR] Serialize major action summary queue failed: " + ex.Message);
-				}
-				CampaignSaveChunkHelper.SaveChunkedString(dataStore, "_af_npcMajorActionSummaryQueue_v1", _npcMajorActionSummaryQueueJsonStorage ?? "[]", "NpcMajorSummary");
+				MemoryPersistence.Save(dataStore, LogNonHeroMemoryTrace, IsNonHeroMemoryId);
 				OwnerJsonStorageCodec.Serialize(_npcMajorActions, _npcMajorActionStorage, skipWhitespaceKeys: false, skipEmptyLists: true, list => SanitizeNpcActionEntries(list, keepOnlyRecentWindow: false), (key, ex) => Logger.Log("NpcAction", "[ERROR] Serialize major actions for " + key + ": " + ex.Message));
 				Dictionary<string, string> dictionary3 = CampaignSaveChunkHelper.FlattenStringDictionary(_npcMajorActionStorage, "_npcMajorActions_v1", "NpcAction");
 				dataStore.SyncData("_npcMajorActions_v1", ref dictionary3);
@@ -15375,132 +15295,9 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 					}
 				}
 			}
-			_dialogueHistory.Clear();
-			_dialogueHistoryStorage.Clear();
-			Dictionary<string, string> dictionary8 = new Dictionary<string, string>();
-			dataStore.SyncData("_dialogueHistory_v2", ref dictionary8);
-			_dialogueHistoryStorage = CampaignSaveChunkHelper.RestoreStringDictionary(dictionary8, "DialogueHistory");
-			OwnerJsonStorageCodec.Deserialize(_dialogueHistoryStorage, _dialogueHistory, null, null, skipWhitespaceKeys: false, (key, ex) => Logger.Log("DialogueHistory", "[ERROR] Deserialize history for " + key + ": " + ex.Message));
-			LogNonHeroMemoryTrace("stage=sync_load_dialogue_restored owners=" + CountNonHeroDialogueHistoryOwners() + " lines=" + CountNonHeroDialogueHistoryLines() + " storageOwners=" + (_dialogueHistoryStorage?.Keys.Count(IsNonHeroMemoryId) ?? 0) + " sample=" + BuildNonHeroMemorySampleIds());
-			_dailyMemoryDrafts.Clear();
-			_dailyMemoryDraftStorage.Clear();
-			Dictionary<string, string> dictionaryMemoryDraftsLoad = new Dictionary<string, string>();
-			dataStore.SyncData("_af_dailyMemoryDrafts_v1", ref dictionaryMemoryDraftsLoad);
-			_dailyMemoryDraftStorage = CampaignSaveChunkHelper.RestoreStringDictionary(dictionaryMemoryDraftsLoad, "CompressedMemory");
-			OwnerJsonStorageCodec.Deserialize(_dailyMemoryDraftStorage, _dailyMemoryDrafts, NormalizeMemoryHeroId, SanitizeDailyMemoryDrafts, skipWhitespaceKeys: true, (key, ex) => Logger.Log("CompressedMemory", "[ERROR] Deserialize daily memory drafts for " + key + ": " + ex.Message));
-			LogNonHeroMemoryTrace("stage=sync_load_daily_restored owners=" + CountNonHeroDailyDraftOwners() + " lines=" + CountNonHeroDailyDraftLines() + " storageOwners=" + (_dailyMemoryDraftStorage?.Keys.Count(IsNonHeroMemoryId) ?? 0) + " sample=" + BuildNonHeroMemorySampleIds());
-			_compressedMemoryBlocks.Clear();
-			_compressedMemoryBlockStorage.Clear();
-			Dictionary<string, string> dictionaryMemoryBlocksLoad = new Dictionary<string, string>();
-			dataStore.SyncData("_af_compressedMemoryBlocks_v1", ref dictionaryMemoryBlocksLoad);
-			_compressedMemoryBlockStorage = CampaignSaveChunkHelper.RestoreStringDictionary(dictionaryMemoryBlocksLoad, "CompressedMemory");
-			if (_compressedMemoryBlockStorage != null)
-			{
-				foreach (KeyValuePair<string, string> memoryBlockEntry in _compressedMemoryBlockStorage)
-				{
-					if (string.IsNullOrWhiteSpace(memoryBlockEntry.Key) || string.IsNullOrWhiteSpace(memoryBlockEntry.Value))
-					{
-						continue;
-					}
-					try
-					{
-						List<CompressedMemoryBlock> listMemoryBlocks = JsonConvert.DeserializeObject<List<CompressedMemoryBlock>>(memoryBlockEntry.Value) ?? new List<CompressedMemoryBlock>();
-						listMemoryBlocks = SanitizeCompressedMemoryBlocks(listMemoryBlocks);
-						if (listMemoryBlocks.Count > 0)
-						{
-							_compressedMemoryBlocks[NormalizeMemoryHeroId(memoryBlockEntry.Key)] = listMemoryBlocks;
-						}
-					}
-					catch (Exception ex)
-					{
-						Logger.Log("CompressedMemory", "[ERROR] Deserialize memory blocks for " + memoryBlockEntry.Key + ": " + ex.Message);
-					}
-				}
-			}
-			_memorySummaryQueueJsonStorage = CampaignSaveChunkHelper.LoadChunkedString(dataStore, "_af_memorySummaryQueue_v1", "CompressedMemory") ?? "";
-			try
-			{
-				_memorySummaryQueue = SanitizeMemorySummaryQueue(JsonConvert.DeserializeObject<List<MemorySummaryJob>>(_memorySummaryQueueJsonStorage) ?? new List<MemorySummaryJob>());
-			}
-			catch (Exception ex)
-			{
-				Logger.Log("CompressedMemory", "[ERROR] Deserialize memory summary queue failed: " + ex.Message);
-				_memorySummaryQueue = new List<MemorySummaryJob>();
-			}
-			_memoryOverviewStates.Clear();
-			_memoryOverviewStateStorage.Clear();
-			Dictionary<string, string> dictionaryMemoryOverviewStatesLoad = new Dictionary<string, string>();
-			dataStore.SyncData("_af_memoryOverviewStates_v1", ref dictionaryMemoryOverviewStatesLoad);
-			_memoryOverviewStateStorage = CampaignSaveChunkHelper.RestoreStringDictionary(dictionaryMemoryOverviewStatesLoad, "MemoryOverview");
-			if (_memoryOverviewStateStorage != null)
-			{
-				foreach (KeyValuePair<string, string> overviewEntry in _memoryOverviewStateStorage)
-				{
-					if (string.IsNullOrWhiteSpace(overviewEntry.Key) || string.IsNullOrWhiteSpace(overviewEntry.Value))
-					{
-						continue;
-					}
-					try
-					{
-						MemoryOverviewState state = SanitizeMemoryOverviewState(JsonConvert.DeserializeObject<MemoryOverviewState>(overviewEntry.Value));
-						if (state != null && !string.IsNullOrWhiteSpace(state.HeroId) && (!string.IsNullOrWhiteSpace(state.Summary) || !string.IsNullOrWhiteSpace(state.LastError)))
-						{
-							_memoryOverviewStates[state.HeroId] = state;
-						}
-					}
-					catch (Exception ex)
-					{
-						Logger.Log("MemoryOverview", "[ERROR] Deserialize memory overview for " + overviewEntry.Key + ": " + ex.Message);
-					}
-				}
-			}
-			_memoryOverviewQueueJsonStorage = CampaignSaveChunkHelper.LoadChunkedString(dataStore, "_af_memoryOverviewQueue_v1", "MemoryOverview") ?? "";
-			try
-			{
-				_memoryOverviewQueue = SanitizeMemoryOverviewQueue(JsonConvert.DeserializeObject<List<MemoryOverviewJob>>(_memoryOverviewQueueJsonStorage) ?? new List<MemoryOverviewJob>());
-			}
-			catch (Exception ex)
-			{
-				Logger.Log("MemoryOverview", "[ERROR] Deserialize memory overview queue failed: " + ex.Message);
-				_memoryOverviewQueue = new List<MemoryOverviewJob>();
-			}
-			_npcMajorActionSummaries.Clear();
-			_npcMajorActionSummaryStorage.Clear();
-			Dictionary<string, string> dictionaryMajorActionSummariesLoad = new Dictionary<string, string>();
-			dataStore.SyncData("_af_npcMajorActionSummaries_v1", ref dictionaryMajorActionSummariesLoad);
-			_npcMajorActionSummaryStorage = CampaignSaveChunkHelper.RestoreStringDictionary(dictionaryMajorActionSummariesLoad, "NpcMajorSummary");
-			if (_npcMajorActionSummaryStorage != null)
-			{
-				foreach (KeyValuePair<string, string> summaryEntry in _npcMajorActionSummaryStorage)
-				{
-					if (string.IsNullOrWhiteSpace(summaryEntry.Key) || string.IsNullOrWhiteSpace(summaryEntry.Value))
-					{
-						continue;
-					}
-					try
-					{
-						MajorActionSummaryState state = SanitizeMajorActionSummaryState(JsonConvert.DeserializeObject<MajorActionSummaryState>(summaryEntry.Value));
-						if (state != null && !string.IsNullOrWhiteSpace(state.HeroId) && (!string.IsNullOrWhiteSpace(state.Summary) || !string.IsNullOrWhiteSpace(state.LastError)))
-						{
-							_npcMajorActionSummaries[state.HeroId] = state;
-						}
-					}
-					catch (Exception ex)
-					{
-						Logger.Log("NpcMajorSummary", "[ERROR] Deserialize major action summary for " + summaryEntry.Key + ": " + ex.Message);
-					}
-				}
-			}
-			_npcMajorActionSummaryQueueJsonStorage = CampaignSaveChunkHelper.LoadChunkedString(dataStore, "_af_npcMajorActionSummaryQueue_v1", "NpcMajorSummary") ?? "";
-			try
-			{
-				_npcMajorActionSummaryQueue = SanitizeMajorActionSummaryQueue(JsonConvert.DeserializeObject<List<MajorActionSummaryJob>>(_npcMajorActionSummaryQueueJsonStorage) ?? new List<MajorActionSummaryJob>());
-			}
-			catch (Exception ex)
-			{
-				Logger.Log("NpcMajorSummary", "[ERROR] Deserialize major action summary queue failed: " + ex.Message);
-				_npcMajorActionSummaryQueue = new List<MajorActionSummaryJob>();
-			}
+			MemoryPersistence.Load(dataStore,
+				() => LogNonHeroMemoryTrace("stage=sync_load_dialogue_restored owners=" + CountNonHeroDialogueHistoryOwners() + " lines=" + CountNonHeroDialogueHistoryLines() + " storageOwners=" + (_dialogueHistoryStorage?.Keys.Count(IsNonHeroMemoryId) ?? 0) + " sample=" + BuildNonHeroMemorySampleIds()),
+				() => LogNonHeroMemoryTrace("stage=sync_load_daily_restored owners=" + CountNonHeroDailyDraftOwners() + " lines=" + CountNonHeroDailyDraftLines() + " storageOwners=" + (_dailyMemoryDraftStorage?.Keys.Count(IsNonHeroMemoryId) ?? 0) + " sample=" + BuildNonHeroMemorySampleIds()));
 			_npcMajorActions.Clear();
 			_npcMajorActionStorage.Clear();
 			Dictionary<string, string> dictionary9 = new Dictionary<string, string>();
