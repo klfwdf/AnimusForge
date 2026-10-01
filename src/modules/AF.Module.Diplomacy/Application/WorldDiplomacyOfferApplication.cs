@@ -4,7 +4,7 @@ using AnimusForge.Refactor.Domain;
 
 namespace AnimusForge;
 
-internal enum WorldDiplomacyOfferOutcome { Invalidated, Failed, Partial, Applied, Unknown }
+internal enum WorldDiplomacyOfferOutcome { Invalidated, Failed, Partial, Applied, Unknown, None }
 
 internal static class WorldDiplomacyOfferActionApplication
 {
@@ -50,10 +50,10 @@ internal static class WorldDiplomacyOfferActionApplication
 // and revalidate game objects on the campaign thread before any mechanical effect.
 internal static class WorldDiplomacyOfferApplication
 {
-    internal static void Settle(WorldDiplomacyDocument document, IWorldDiplomacyOfferActionPort port,
+    internal static WorldDiplomacyOfferOutcome Settle(WorldDiplomacyDocument document, IWorldDiplomacyOfferActionPort port,
         IWorldDiplomacyOrchestration orchestration)
     {
-        Settle(port.ResolveRound(document?.RoundId), document, orchestration.PruneInvalidOffers,
+        return Settle(port.ResolveRound(document?.RoundId), document, orchestration.PruneInvalidOffers,
             (intent, doc) =>
             {
                 bool blocked = orchestration.TryGetDiplomaticStateViolation(
@@ -66,7 +66,7 @@ internal static class WorldDiplomacyOfferApplication
             (intent, offer) => port.HasTakenEffect(intent, offer.ProposerKingdomId, offer.TargetKingdomId), port.Log);
     }
 
-    internal static void Settle(
+    internal static WorldDiplomacyOfferOutcome Settle(
         WorldDiplomacyRound round,
         WorldDiplomacyDocument document,
         Action<WorldDiplomacyRound> pruneInvalidOffers,
@@ -77,7 +77,7 @@ internal static class WorldDiplomacyOfferApplication
         Func<string, WorldDiplomacyRoundOffer, bool> hasProposalTakenEffect,
         Action<string> log)
     {
-        if (round == null || document == null) return;
+        if (round == null || document == null) return WorldDiplomacyOfferOutcome.None;
         round.PendingOffers ??= new List<WorldDiplomacyRoundOffer>();
         pruneInvalidOffers(round);
         string intent = WorldDiplomacyIntentVocabulary.NormalizeIntent(document.Intent);
@@ -88,10 +88,10 @@ internal static class WorldDiplomacyOfferApplication
             if (blocked)
             {
                 document.MechanicalResult = "提议未登记：" + blockReason;
-                return;
+                return WorldDiplomacyOfferOutcome.Failed;
             }
             WorldDiplomacyRoundLifecycleRules.RegisterRelayProposalOffer(round, document, intent);
-            return;
+            return WorldDiplomacyOfferOutcome.None;
         }
         string proposalIntent = intent switch
         {
@@ -100,31 +100,31 @@ internal static class WorldDiplomacyOfferApplication
             "accept_trade" or "reject_trade" => "propose_trade",
             _ => ""
         };
-        if (string.IsNullOrWhiteSpace(proposalIntent)) return;
+        if (string.IsNullOrWhiteSpace(proposalIntent)) return WorldDiplomacyOfferOutcome.None;
         if (string.IsNullOrWhiteSpace(document.RespondingToOfferDocumentId))
         {
             document.MechanicalResult = "答复未执行：缺少唯一来源提议";
-            return;
+            return WorldDiplomacyOfferOutcome.Failed;
         }
         List<WorldDiplomacyRoundOffer> matchingOffers =
             WorldDiplomacyRoundLifecycleRules.SelectMatchingRelayResponseOffers(round, document, proposalIntent);
         if (matchingOffers.Count != 1)
         {
             document.MechanicalResult = "答复未执行：来源提议已关闭、失效或不唯一";
-            return;
+            return WorldDiplomacyOfferOutcome.Failed;
         }
         WorldDiplomacyRoundOffer resolvedOffer = matchingOffers[0];
         if (intent.StartsWith("reject_", StringComparison.OrdinalIgnoreCase))
         {
             resolvedOffer.Status = "rejected";
-            return;
+            return WorldDiplomacyOfferOutcome.None;
         }
         WorldDiplomacyDocument source = resolveDocument(resolvedOffer.SourceDocumentId);
         if (source == null || !resolveParties(resolvedOffer))
         {
             resolvedOffer.Status = "invalidated";
             document.MechanicalResult = "接受未执行：原提议或当事国已失效";
-            return;
+            return WorldDiplomacyOfferOutcome.Failed;
         }
         WorldDiplomacyOfferOutcome outcome;
         try
@@ -134,7 +134,7 @@ internal static class WorldDiplomacyOfferApplication
             {
                 resolvedOffer.Status = "invalidated";
                 document.MechanicalResult = "接受未执行：和平原案条款已无法原样履行";
-                return;
+                return WorldDiplomacyOfferOutcome.Invalidated;
             }
         }
         catch (Exception ex)
@@ -152,9 +152,10 @@ internal static class WorldDiplomacyOfferApplication
             }
             log("offer acceptance execution failed document=" + document.DocumentId
                 + " offer=" + resolvedOffer.SourceDocumentId + " error=" + ex.Message);
-            return;
+            return WorldDiplomacyOfferOutcome.Unknown;
         }
         resolvedOffer.Status = outcome == WorldDiplomacyOfferOutcome.Applied ? "accepted"
             : outcome == WorldDiplomacyOfferOutcome.Partial ? "partially_executed" : "execution_failed";
+        return outcome;
     }
 }

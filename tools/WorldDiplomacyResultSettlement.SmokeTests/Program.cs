@@ -929,7 +929,7 @@ internal static class Program
 			"for (int index = 0; index < command.ActionCount; index++)",
 			StringComparison.Ordinal);
 		int setActionContext = analyzedPublication.IndexOf(
-            "WorldDiplomacyDocumentApplication.BeginAction(document, action, target)",
+            "WorldDiplomacyDocumentApplication.BeginAction(document, input.Materialize(), target)",
 			actionLoop,
 			StringComparison.Ordinal);
 		int registerOffer = analyzedPublication.IndexOf(
@@ -1602,7 +1602,7 @@ internal static class Program
 				requiredOffer,
 				StringComparison.Ordinal);
 			int finalCoverage = method.IndexOf(
-				"DocumentContainsRequiredPeaceOfferResponse(document, requiredPeaceOffer)",
+				"DocumentContainsRequiredPeaceOfferResponse(validationDocument, requiredPeaceOffer)",
 				playerFallback,
 				StringComparison.Ordinal);
 			Test.True(requiredOffer >= 0 && playerFallback > requiredOffer && finalCoverage > playerFallback,
@@ -1951,7 +1951,7 @@ internal static class Program
 
 		string multiPublication = ExtractMethod(source, "private void ProcessAnalyzedMultiActionDocument(");
 		int finalGuard = multiPublication.IndexOf(
-            "DocumentHasUnsafeMultiplePeaceAcceptances(document, port.ResolveDocument)",
+            "DocumentHasUnsafeMultiplePeaceAcceptances(validationDocument, port.ResolveDocument)",
 			StringComparison.Ordinal);
 		int finalReason = multiPublication.IndexOf(
 			"orchestration.SuppressInvalidDocumentBeforePropagation(document, \"multiple_peace_acceptances_have_cross_terms\")",
@@ -1969,7 +1969,7 @@ internal static class Program
 
 		string singlePublication = ExtractMethod(source, "private void ProcessAnalyzedDocument(");
         Test.True(singlePublication.Contains("document.Actions == null || document.Actions.Count == 0")
-            && singlePublication.Contains("ExecuteItems(port, orchestration, document, actions, command, legacy)")
+            && singlePublication.Contains("ExecuteItems(port, orchestration, document, command, legacy, receipts)")
             && singlePublication.Contains("multiple_peace_acceptances_have_cross_terms"),
             "both persisted representations enter one guarded executor; flat records remain transient execution items");
 	}
@@ -2186,15 +2186,21 @@ internal static class Program
             string text = File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyDocumentExecutionApplication.cs"));
             if (name == "ProcessAnalyzedDocument")
                 Test.True(source.Contains("WorldDiplomacyDocumentExecutionApplication.ProcessAnalyzedDocument(_host.DocumentExecution(), this,", StringComparison.Ordinal)
-                    || text.Contains("ExecuteItems(port, orchestration, document, actions, command, legacy)", StringComparison.Ordinal),
+                    || text.Contains("ExecuteItems(port, orchestration, document, command, legacy, receipts)", StringComparison.Ordinal),
                     "legacy entry must call the real document Application owner: " + name);
             else if (name == "TryIncludeResultSettlementTarget")
                 Test.True(source.Contains("WorldDiplomacyDocumentExecutionApplication.TryIncludeResultSettlementTarget(", StringComparison.Ordinal)
                     && source.Contains("_host.DocumentExecution(),", StringComparison.Ordinal),
                     "legacy entry must call the real document Application owner: " + name);
             if (name == "ProcessAnalyzedDocument" || name == "ProcessAnalyzedMultiActionDocument")
-                return ExtractMethod(text, "internal static void ProcessAnalyzedDocument(")
+            {
+                const string entry = "internal static void ProcessAnalyzedDocument(";
+                int secondOverload = text.IndexOf(entry, text.IndexOf(entry, StringComparison.Ordinal) + entry.Length, StringComparison.Ordinal);
+                Test.True(secondOverload >= 0, "document Application receipt overload must remain available");
+                return ExtractMethod(text, entry)
+                    + ExtractMethod(text.Substring(secondOverload), entry)
                     + ExtractMethod(text, "private static void ExecuteItems(");
+            }
             return ExtractMethod(text, marker.Replace("private ", "internal static "));
         }
         if (marker == "public static void FinalizePublishedDocumentAfterAnalysis(")
@@ -2245,6 +2251,10 @@ internal static class Program
     {
         if (!marker.StartsWith("private ", StringComparison.Ordinal)) return null;
         string suffix = marker.Substring("private ".Length);
+        if (suffix.StartsWith("void TrySettleRelayOffer(", StringComparison.Ordinal))
+            suffix = suffix.Replace("void TrySettleRelayOffer(", "WorldDiplomacyOfferOutcome TrySettleRelayOffer(");
+        if (suffix.StartsWith("void ExecuteImmediateIntent(", StringComparison.Ordinal))
+            suffix = suffix.Replace("void ExecuteImmediateIntent(", "WorldDiplomacyImmediateActionReceipt ExecuteImmediateIntent(");
         if (suffix.Contains("Internal(", StringComparison.Ordinal)) suffix = suffix.Replace("Internal(", "(");
         if (suffix.Contains("EnqueueGenerationJob(", StringComparison.Ordinal)) suffix = suffix.Replace("GenerationJob(", "Generation(");
         foreach (string prefix in new[] { "public ", "internal static ", "public static " })

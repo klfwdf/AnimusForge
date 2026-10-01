@@ -2229,7 +2229,7 @@ internal static class Program
             source,
             "private void ProcessAnalyzedDocument(",
             "private bool TryGetPlayerWorldStateIntentViolation(");
-        int liveGuardStart = publication.IndexOf("if (action == null || target == null", StringComparison.Ordinal);
+        int liveGuardStart = publication.IndexOf("if (!input.Exists || target == null", StringComparison.Ordinal);
         int liveStateValidation = publication.IndexOf(
             "TryGetDiplomaticStateViolation(intent, author, target, out string liveStateReason)",
             StringComparison.Ordinal);
@@ -2251,7 +2251,7 @@ internal static class Program
                   && publishReady > liveGuardSuppression,
             "the executable-action path must apply the live-state guard before player-only mechanic checks; the player document itself may already be public");
         Test.True(publication.Contains(
-                "action == null || target == null || target == author || port.IsEliminated(target)",
+                "!input.Exists || target == null || target == author || port.IsEliminated(target)",
                 StringComparison.Ordinal)
                   && publication.Contains("diplomatic_action_has_no_live_target", StringComparison.Ordinal),
             "the final live-state guard must also reject a missing, self, eliminated, or controlled target");
@@ -3460,7 +3460,7 @@ internal static class Program
 		string documentApplication = File.ReadAllText(FindRepositoryFile(Path.Combine(
 			"src", "modules", "AF.Module.Diplomacy", "Application", "WorldDiplomacyDocumentApplication.cs")), Encoding.UTF8);
 		Test.True(analyzedPublication.Contains("document.Actions", StringComparison.Ordinal)
-            && ExtractMethod(source, "private void ProcessAnalyzedMultiActionDocument(").Contains("WorldDiplomacyDocumentApplication.CaptureActionResult(document, action, receipt)", StringComparison.Ordinal)
+            && ExtractMethod(source, "private void ProcessAnalyzedMultiActionDocument(").Contains("WorldDiplomacyDocumentApplication.CaptureActionResult(document, resultAction, receipt)", StringComparison.Ordinal)
 			&& documentApplication.Contains("action.ChangedDiplomaticState = receipt.Applied", StringComparison.Ordinal)
 			&& documentApplication.Contains("action.MechanicalResult = receipt.Message", StringComparison.Ordinal)
 			&& analyzedPublication.Contains("catch (Exception", StringComparison.Ordinal),
@@ -3496,7 +3496,7 @@ internal static class Program
 			"for (int index = 0; index < command.ActionCount; index++)",
 			StringComparison.Ordinal);
 		int setActionContext = multiActionProcessing.IndexOf(
-            "WorldDiplomacyDocumentApplication.BeginAction(document, action, target)",
+            "WorldDiplomacyDocumentApplication.BeginAction(document, input.Materialize(), target)",
 			actionLoop,
 			StringComparison.Ordinal);
 		int applyPressure = multiActionProcessing.IndexOf(
@@ -3512,7 +3512,7 @@ internal static class Program
 			setActionContext,
 			StringComparison.Ordinal);
 		int saveActionResult = multiActionProcessing.IndexOf(
-			"WorldDiplomacyDocumentApplication.CaptureActionResult(document, action, receipt)",
+            "WorldDiplomacyDocumentApplication.CaptureActionResult(document, resultAction, receipt)",
 			executeOffer,
 			StringComparison.Ordinal);
 		Test.True(actionLoop >= 0 && setActionContext > actionLoop
@@ -4427,14 +4427,20 @@ internal static class Program
             string text = File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyDocumentExecutionApplication.cs"));
             if (name == "ProcessAnalyzedDocument")
                 Test.True(source.Contains("WorldDiplomacyDocumentExecutionApplication.ProcessAnalyzedDocument(_host.DocumentExecution(), this,", StringComparison.Ordinal)
-                    || text.Contains("ExecuteItems(port, orchestration, document, actions, command, legacy)", StringComparison.Ordinal),
+                    || text.Contains("ExecuteItems(port, orchestration, document, command, legacy, receipts)", StringComparison.Ordinal),
                     "legacy entry must call the real document Application owner: " + name);
             else if (name == "TryIncludeResultSettlementTarget")
                 Test.True(source.Contains("WorldDiplomacyDocumentExecutionApplication.TryIncludeResultSettlementTarget(_host.DocumentExecution(),", StringComparison.Ordinal),
                     "legacy entry must call the real document Application owner: " + name);
             if (name == "ProcessAnalyzedDocument" || name == "ProcessAnalyzedMultiActionDocument")
-                return ExtractMethod(text, "internal static void ProcessAnalyzedDocument(")
+            {
+                const string entry = "internal static void ProcessAnalyzedDocument(";
+                int secondOverload = text.IndexOf(entry, text.IndexOf(entry, StringComparison.Ordinal) + entry.Length, StringComparison.Ordinal);
+                Test.True(secondOverload >= 0, "document Application receipt overload must remain available");
+                return ExtractMethod(text, entry)
+                    + ExtractMethod(text.Substring(secondOverload), entry)
                     + ExtractMethod(text, "private static void ExecuteItems(");
+            }
             return ExtractMethod(text, marker.Replace("private ", "internal static "));
         }
         if (marker == "public static void FinalizePublishedDocumentAfterAnalysis(")
@@ -4490,6 +4496,10 @@ internal static class Program
     {
         if (!marker.StartsWith("private ", StringComparison.Ordinal)) return null;
         string suffix = marker.Substring("private ".Length);
+        if (suffix.StartsWith("void TrySettleRelayOffer(", StringComparison.Ordinal))
+            suffix = suffix.Replace("void TrySettleRelayOffer(", "WorldDiplomacyOfferOutcome TrySettleRelayOffer(");
+        if (suffix.StartsWith("void ExecuteImmediateIntent(", StringComparison.Ordinal))
+            suffix = suffix.Replace("void ExecuteImmediateIntent(", "WorldDiplomacyImmediateActionReceipt ExecuteImmediateIntent(");
         if (suffix.Contains("Internal(", StringComparison.Ordinal)) suffix = suffix.Replace("Internal(", "(");
         if (suffix.Contains("EnqueueGenerationJob(", StringComparison.Ordinal)) suffix = suffix.Replace("GenerationJob(", "Generation(");
         foreach (string prefix in new[] { "public ", "internal static ", "public static " })
