@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 namespace TaleWorlds.CampaignSystem {
  public sealed class Campaign { public static Campaign Current; public ConversationManager ConversationManager = new(); }
@@ -48,5 +48,10 @@ namespace AnimusForge {
   public void Cancel(PlaybackRequest request) => OnRequestPlaybackCancelled?.Invoke(request);
   public void PausePlayback() { } public void ResumePlayback() { } public void StopPlayback() { }
   public bool InterruptCurrentPlaybackForAgent(int index,string reason) => false;
+  public bool SpeakAccepted=true, InvokeAccept=true, ThrowAfterAccept; public Action AcceptSideEffect; public PlaybackRequest LastRequest; public Action<string> Trace;
+  public bool SpeakAsync(string text,int speaker=-1,float volume=-1f,int agentIndex=-1,string voiceId="",Action<PlaybackRequest> accepted=null) {
+   Trace?.Invoke("tts:"+text+":"+agentIndex+":"+voiceId);LastRequest=new(){RequestId=101,AgentIndex=agentIndex};
+   if(InvokeAccept) accepted?.Invoke(LastRequest); AcceptSideEffect?.Invoke(); if(ThrowAfterAccept)throw new Exception("fixture speak error");return SpeakAccepted;
+  }
  }
 }
