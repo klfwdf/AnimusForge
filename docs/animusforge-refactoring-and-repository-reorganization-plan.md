@@ -7,11 +7,53 @@
 - 实际根 `E:/AnimusForge-refactor-continuation-20260831`，分支 `codex/af-main-refactor-continuation-20260831`，起始 HEAD `4791b00092e4135ad1f108d1820f9ef9f48d2a15`。不切换分支、不新建工作树。
 - 目标：P1–P8 的完整规则/状态/生命周期迁到真实 owner，实际生产消费者接通；两个宿主只留具名兼容/引擎/组合/保存边界。过渡 partial 仅施工隔离，不算完成。
 - 四线唯一写者 A=P1/P3、B=P2/P4、C=P5/P6、D=P7 后 P8 独立 UI；集成人独占两个主文件、公共契约、共享保存/组合根、项目/清单、主台账/代码图/HANDOFF、Git 索引/提交及固定构建/门禁。已有职责 partial 按正式任务卡交给各线。
+- 验证精确追加授权：用户已明确回复“授权该精确合成测试目录”，仅允许 `E:/AF2-SyntheticTemp-20261002-host-terminal-f63c729ba180` 本轮新建合成 TEMP/testfixtures/buildtemps/synthetic PlayerExports 子树。不得读取真实资料、清理旧目录、删除此目录或扩大其他仓外写入。保留 run_all/DataPaths 原护栏，执行前检查不存在/无 reparse，并按 entry/执行线唯一子树隔离。
 - 非目标/权限：不改玩法/保存/程序集/单模块身份、一键流程、公开 API 承诺；无 push、Stage、部署/覆盖游戏、仓外写入、真实玩家/音频清理、批量移动删除、全局安装/配置。历史 TEMP 权限不继承，合成验证写入限制仓内独立 artifacts。
 - 保护：原 CourierDeliveryBehavior.SessionTransport.cs raw dirty、原 tools/NuGet untracked、用户计划及其他作者修改；不使用 git add -A，不清理、不逆掉已有改动。计划原文只纳入意图记录，验收保持。
 - 接缝：A/B 复用 MemoryBusinessStateOwner 的 drafts/pending authoritative containers 与窄 trigger 操作；A/C 复用真实 Actions 转移结果和已执行 AFEF receipt；B/C/D 使用脱离游戏对象的消息输入、主线程效果与完成/呈现回执，禁止传整个 MyBehavior/ShoutBehavior 回调旧业务。仅定义立即消费的契约。
 - 退出门：每包 old symbol→owner→production consumer→unique state/lifecycle；完整宿主/真正 partial/owner 规模与保留理由；每包代表性维护影响；同候选受影响完整入口、双 API Debug/Release + Bootstrap、代码图两模式及保存/程序集身份核验。实机/旧档/真实网络/音频/帧性能独立 NOT_RUN，源码责任未闭不得宣布架构完成。
+- 执行安全信号：首次仓内 Roslyn 统计工具的新 DOTNET_CLI_HOME 漏设 `DOTNET_GENERATE_ASPNET_CERTIFICATE=false`，SDK stdout 提示安装 ASP.NET HTTPS 证书；只读 CurrentUser/My 元信息只见 2026-03-25 生效的既有 dev certificate，未见本日新证书，但无执行前 store 快照，实际写入/归因仍 UNKNOWN。未读取/导出私钥，未擅自清理或改配置；后续使用既有禁证书初始化环境模板。该信号已向用户披露。
+- 当前隔离验证：原字节逆对照不等于语法/行为；Campaign RecordEventSourceMaterial 因原声明与闭括号缩进不同，首次机械隔离曾截断，已按完整原方法内容修复并保留失败收据。首轮隔离样本两宿主全家族 Roslyn 59 声明、0 syntax error；该历史样本不是当前规模，最终须刷新并语义编译。基线真正类型：MyBehavior 24 partial/2442 own member declarations/50391 own-member span lines；ShoutBehavior 28/1644/38124（Roslyn语法声明，不伪装为语义唯一符号）。
 - 复用输入：7 残留收据 `artifacts/af2-seven-fail-closeout-ec9c844af31a/final-receipt.json`（9cff3ee8/4791b000），原 7+2 完整入口离线 PASS 不等于当前全量门禁；改变源码/候选后重验受影响证据。
+
+
+### 20261002 本轮后续集成证据（源码未终态）
+
+- `945704ed`：P4 Scene/Native history private authority、共同历史文本/identity projection、typed Presentation reads、Daily编辑遗漏消费者修复已独立提交；main48仅本线hunks，与C epoch/调度修改隔离。集成人实际重跑 `integration/history-authority-945704ed`：48消费者证明、46真实owner/projection、12真实展示、7Native append全部PASS（render/game leaf替身，LIVE NOT_RUN）。
+- 新冻结 Debug `debug-486f2d36c5ef` 1311 Compile / 8 resource 两API集合一致；**1.3、1.4、Bootstrap三个实际构建exit0**，两实现各341 warnings/0 errors，Bootstrap0/0。绑定其source-manifest当时dirty源码，不冒充最后B人物/Memory运行和C全链freeze后的最终同候选门禁；Release与全source-review/runner仍待最终冻结。
+
+
+- 最新检查点 `53879238`：A完整 Weekly generation/commit/runtime与原prompt/material copies已 `866c7863`，D package/Weekly failure/manual UI gate已 `eb4007f4`；B显式Recovery clear `881f77d7` 保原disabled/confirmed并清同visible journal，不改AFMR1/Actions；B detached uncompressed messages `3e949ebd`。这些不是最终双API/实机通过。
+- 集中 Debug `debug-092d0fc50373`：1311 Compile / 8 resource，两API item集合一致；1.3实际 **6 semantic errors**，C四private符号形成5个CS0122、B Daily developer history消费者漏旧方法形成1个CS0103；1.4/Bootstrap **NOT_RUN**。C四符号按真实消费者仅internal接缝修正；B遗漏由其真assembly owner适配闭合。此前`debug-288eca459ec5`的3 syntax errors由C局部函数被误映射为ports字段引起，已定位修复，保留失败日志。
+- 当前P5全Scene链与P4 private history authority闭包仍施工；获批最后Memory run131行编排待B history切片ACK后有限续派。当前两个主文件Roslyn syntax0仅语法证据。C/D交接两个文件确证CRCRLF（251/55处）只字节归一化，主删除造成18个tab-only空行只按新增diff定位修正，均保机械packet，不改变规则、不当行为证明。
+
+
+- 当前集成检查点 `c3c67fd0`：D 完整 Event/Lab/压缩编辑 UI、Root UI、Import/reload 真实 controller 已接线；B 七个分段 reset/ensure 真 state-owner 方法以 DeclaringType 验证及 19 断言通过；A Weekly explicit dev-clear 已 `598e814e` 接线，保原 64 pending / 512 terminal 边界，512 Applied+64 pending 取消后 448 Applied+64 Unknown 的既有淘汰明确为 KNOWN_BOUNDARY，不扩协议容量。Memory Recovery 同 visible journal 的显式清空/保 disabled/confirmed 重绑定仍在施工；未冒称 P8 出口。
+- 集中 Debug `debug-2382bd54075d`：1282 compile / 8 resource 两 API 集合一致；1.3 实际 **1 error**（Knowledge `Path` 缺 `System.IO`），1.4/Bootstrap **NOT_RUN**。该定点 using 修复随 `c3c67fd0` 纳入，新产品构建仍待候选稳定，不将定向 fixture 当双 API 通过。
+- P5 完整 Scene chains/session/postprocess 与 Native scheduled phases 仍 OPEN。Native background 九声明隔离的首次 factory 类型猜测失败，未改主文件；随后按真实 `MyBehavior.ShoutPromptContext` 声明、Roslyn 原 payload 与 C source-capture 九项 exact 对照完成最窄 internal/主删除，去掉唯一不必要过渡 partial，真实 scheduler 由 C 持有。证明绑定 `integration/c-native-background-isolation.json`，不以施工隔离算职责闭合。
+- 新 tracked Memory lifecycle runner 已配置唯一 `--run-root`；`tests/test_runner_output_isolation.py` 实际 4 tests / OK（skipped=1）。全量 source inverse、双 API Debug/Release+Bootstrap、保存/程序集核验与实机验收仍未完成。
+
+- `5b710898`：P8 三个 Weekly in-place 归一化算法真实迁 existing WeeklyEventDataImportOwner；原 list/entry/material/ID 引用、反向删除、重复ID与排序保留，actual owner/facade/original oracle `event-import-07` PASS。`a655d702`：Weekly reload restore 同三权威容器，Mark-before-list/revision规则 actual fixture `event-import-08` PASS。
+- `09d8dc4e`：22 Weekly UI/projection与WorldBulletin panel接真实controller；8文件hash与实际18断言收据绑定，主nested DTO身份不变。旧 `#if false` ConfirmGenerate死段仅精确删除，活生成方法不动。
+- `87e7a0b9`：Native完整dispatch/claim/task/accepted effects/history/TTS/exit与MainReply owner，16文件hash+主3body/28精确patch绑定；10真实lifecycle、4 compiled mutation拒绝、13method/4types inverse、Native112有效。首次cached diff-check两空白行尾失败已由C定点修复后PASS。Scene完整effects/chains/completion仍P5 OPEN。
+- 集中 Debug `debug-09f1f7251e93`：1271 compile / 8 resource 两API集合一致；1.3实际 **4 errors / 340 warnings**，1.4/Bootstrap **NOT_RUN**。Native漏consumer receiver已 `51cd2be6` 精确修复；D Knowledge preflight调用改真实domain owner；两个Memory UI missing-method是集成人移主body→D追加payload的短窗口被快照捕获，已恢复整type，后续隔离须先接完整payload再冻结快照，不将此失败日志抹除或误称产品已通过。
+- D DatabaseReload 15真实声明703行仅机械施工隔离；独立事务/preflight正在闭合，不能计终态。共享保存、全门禁/真正partial规模/代码图与最终候选冻结仍由集成人闭合。
+
+### 本轮切片与未闭责任（实施中，不是终态交付）
+
+| 包 | 本地切片 | 实际离线证据 / 未闭范围 |
+| --- | --- | --- |
+| P1 | `0ab0a4e4` / `015a8c33` | Weekly/pending/material/political及记录/索引/估值actual owner PASS；WorldBulletin完整材料flow仍在收闭。 |
+| P2/P4 | `cb15e847` | Recall19、Scene13、role8、NativeHistory852、Prompt204；两个live-date/query mutation编译成功并被断言拒绝。PromptContextCapture过渡partial尚非终态，独立具名适配正在收闭。 |
+| P3 | `d5c46ce0` | actual transfer owners/原roster shims、source-debit/target-failure真实事实PASS；public int门面兼容，内部observed result供原AFEF链消费。产品双API待重验。 |
+| P5 | `d95159ec` / `42db3ea2` | speech generation7、Native112、6 compiled mutations、4完整turn exact inverse PASS；Scene完整chains/publication/legacy completion仍未闭，不以ports数宣布退出。 |
+| P7 | `88452b6b` | 46生产presentation/audio lifecycle assertions（游戏/native/TTS stub）；资源与UI状态唯一owner，实机音频/文件/帧性能 NOT_RUN。 |
+| P8数据/UI | `caa6c18f` / `4288b2fb` / `2176d6b2` | B Daily31实际owner/adapter断言，D initial42，Weekly Event/Debt actualowner/hostwrapper PASS；Persona/Weekly完整UI与其余import adapter仍在施工，过渡partial不算终态。 |
+| P8保存 | `ad4f6f00` / `dccf908c` | Memory/Shown/Persona/NpcAction独立typed保存适配；原key/顺序明确逆映射exact PASS、19真实adapter+codec/chunk/models fixture断言PASS（IDataStore/游戏/owner字段声明替身）；真实旧档/完整产品验收未跑。 |
+
+P8数据端唯一写者补充：B负责Daily edit/history同步/History import真Memory owner；D负责UI导航/确认/有序import编排及Persona/Knowledge具名validation、stateless Persona commit，不复制live表；A负责Weekly event/debt merge原权威refs与原部分失败效果；保存组合唯一集成人。
+
+首产品Debug候选 `integration/builds/debug-72d0d6f577e6`：两API source集合1246项一致；1.3实际编译失败18 error /341 warning（全部P6 receiver/visibility迁移遗漏，已精确修补），构建按原failclosed停止，1.4与Bootstrap未运行，不能写双API通过。此前 `debug-dc33c8802e4b` 两次getItem间新增.cs导致集合不同，护栏拒绝且没有进入产品编译。历史whole-host inverse当前真实拒绝terminal迁移（MemoryRecovery marker方法/Native runtime _ports），按精确可逆适配修，不刷新旧review hash或删断言。
 
 <a id="af2-seven-residual-fail-closeout-20261002"></a>
 ## AF 2.0 七个残留测试/工具 FAIL：独立离线闭环（2026-10-02）
@@ -5873,3 +5915,14 @@ R2计划交付门槛：已给固定技术路线、真实来源与目标、写入
 最终范围校正：`ids-safe-final.txt` 精确43入口，`c-61a453a6b9db/results.json` 为最终同候选 **43 PASS/0 FAIL/0 BLOCKED_ENV，aggregate exit0**。前序C42/C44的CampaignComposition仅合成空壳注册（含外交名），其证据保留且不计入严格非外交验收；该共享历史入口保守延期。Readiness62通用fixture方法仅校验metadata（保留外交条目），不是外交业务回放。
 
 最终精确命令：`python -B docs/handoffs/j17-offline-c-gate.py --candidate artifacts/j-history-20261001/p6/build-7f525c8032ca4c4f99fa4913a5ac2c63/artifacts/versions/1.4/AnimusForge.dll --ids artifacts/j-history-20261001/p6/ids-safe-final.txt --output-parent E:/AnimusForge-refactor-continuation-20260831/artifacts/j-history-20261001/p6`。43条exit0；最近33既有失败28修复，保留5：纯外交1、shared-Service1、captured/sealing2、原完整B1 inverse1；另CampaignComposition共享外交注册入口保守延期，不计作最新33失败之一。LinkCheck421文件/0断链、原813地图recorded/working-tree通过、diff check通过，J16原基线SHA不变。
+
+
+### 2026-10-02 最后三个原闭包与同候选验证进度
+
+- 最后原职责明确收闭，不扩其它玩法：`ShowNpcSpeechOutput`151 行 → 现 ScenePresentationController（9eb43b6d）；公开 `BuildSceneShoutDetachedPromptSectionsForExternal`135 行 → SceneExternalPromptCaptureAdapter + 现 MainPromptMessageAssemblyOwner（355acce0）；`EnqueueSystemNpcShout`287 行 → SceneSystemNpcShoutRuntime + 原同-registry dispatcher forceQueue（581faa44）。原 public/void/嵌套 DTO 身份保留，主文件真实薄转调；C 返回实际 Task<bool> 用显式 discard，不建第二 TCS/gate。
+- 三线最后 evidence 分别 54 actual presentation assertions、69 external capture/oracle +111 intro 回归及3编译负控、system15+原effects11及9system/7MainThread/2Bindings编译 ASSERT 拒绝；各 receipt 原失败/警告保留。NativeDetached typed movement leaf shim25、实际NativeTransport5+3token编译负控、Courier predicate current direct PASS；这些没有投影成旧source。
+- 同当前产品源码冻结 `581faa44` 的 `debug-79b41f2958a0` 两 API Debug+Bootstrap exit0，原 frozen bytes `frozen-release-1af4885c8d79` 两 API Release+Bootstrap exit0；1324 Compile/8 resource，1337 输入逐 raw SHA 验 Debug、Release、当前源码一致。后续 c7aef2bb/cf059766 只适配测试层；无产品改变/部署。
+- `cf059766` packet 286 actual bindings/89 bounded inverse paths；保所有历史 review hash。四个 inverse/dependency/body-neighbor-extra 漂移负控实际 PASS。历史 protocol/UI oracle 明确 scoped；new current owner fixtures、产品构建和 real DLL replay 不使用 historical_source。旧 `final-gates-6f0e6394` 219 entry logs、无 results.json，状态 **CANCELLED_PARTIAL**，不拼成完整通过。
+- 新 `final-gates-c7aef2bb` 正在完整执行，尚未形成最终 receipt，不预报通过。已见准确旧review/test签名/依赖缺口会按责任修复；无放宽断言/刷新旧 hash/将整体 runtime 盲区隐去。完整 current Courier PromptSchedule 和 ModuleNativeSubmission 没有 whole-consumer direct runner，pure routing/owner生命周期/实际编译接线不是其整体执行证明。NativeTTS具体 fallback 责任另核，通用 Audio lifecycle 不替代。
+- 838 原地图 ID 刷新到当前 recorded/working-tree 两模式 PASS；真正 MyBehavior48 partial/2408 direct syntax declarations/34642 member-span lines，ShoutBehavior29/1352/22219。主文件29836/21301 physical lines；197 个受影响真实 owner class declarations、逐文件规模/责任资料见当前 JSON。数字是语法声明不是唯一语义方法或业务复杂度，不用 owner名字/过渡partial/行数阈值冒充终态。
+- LIVE、真实旧档/网络/TTS/帧性能 NOT_RUN；Weekly 512 terminal/64 pending 原淘汰边界已真实复现并保留，未扩 schema/capacity。SDK 初始证书 stdout 信号的实际全局影响归因 UNKNOWN，未读私钥、未清理/回滚；后续所有受控启动明确抑制 first-run cert。原 SessionTransport raw dirty、旧 NuGet/tools 与用户计划保留；无推送、Stage、一键语义/系统配置变化。
