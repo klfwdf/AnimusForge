@@ -1,3 +1,4 @@
+using static AnimusForge.SceneMovementController;
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -30,7 +31,7 @@ public partial class ShoutBehavior
   FailureOutput = ResolveSceneAudioFailureOutput, UnmarkPlaybackStarted = index => { lock (_ttsBubbleSyncLock) _ttsPlaybackStartedAgents.Remove(index); },
   ConvertDialogueFeed = ConvertPendingSceneDialogueFeedToTimedFlush, EstimateTypingDuration = EstimateBubbleTypingDurationSeconds,
   ShowBubble = (agent, text, duration) => TryShowNpcBubble(agent, text, duration), ScheduleInteractionTimeout = ScheduleInteractionTimeoutArm,
-  FlushFailedSpeechEffects = (index, duration) => { FlushPendingSceneSummonLaunches(index, duration); FlushPendingSceneGuideLaunches(index, duration); FlushLordsHallMissionEntryAfterSpeech(index); },
+  FlushFailedSpeechEffects = (index, duration) => { _sceneMovement.FlushPendingSceneSummonLaunches(index, duration); _sceneMovement.FlushPendingSceneGuideLaunches(index, duration); FlushLordsHallMissionEntryAfterSpeech(index); },
   Report = LogTtsReport, ClearMeetingControl = ClearMeetingSceneConversationControlState, SuppressMeetingControl = ShouldSuppressSceneConversationControlForMeeting
  });
  private SceneAudioFailureOutput ResolveSceneAudioFailureOutput(int index)
@@ -158,7 +159,7 @@ public partial class ShoutBehavior
 		});
 		RunSceneTtsPlaybackFinishedStep("follow_command", agentIndex, delegate
 		{
-			FlushSceneFollowCommandAfterSpeech(agentIndex);
+			_sceneMovement.FlushSceneFollowCommandAfterSpeech(agentIndex);
 		});
 		RunSceneTtsPlaybackFinishedStep("meeting_release", agentIndex, delegate
 		{
@@ -171,11 +172,11 @@ public partial class ShoutBehavior
 		});
 		RunSceneTtsPlaybackFinishedStep("summon_return", agentIndex, delegate
 		{
-			FlushSceneSummonReturnAfterSpeech(agentIndex);
+			_sceneMovement.FlushSceneSummonReturnAfterSpeech(agentIndex);
 		});
 		RunSceneTtsPlaybackFinishedStep("guide_return", agentIndex, delegate
 		{
-			FlushSceneGuideReturnAfterSpeech(agentIndex);
+			_sceneMovement.FlushSceneGuideReturnAfterSpeech(agentIndex);
 		});
 		RunSceneTtsPlaybackFinishedStep("autonomy_restore", agentIndex, delegate
 		{
@@ -183,8 +184,8 @@ public partial class ShoutBehavior
 		});
 		RunSceneTtsPlaybackFinishedStep("pending_launches", agentIndex, delegate
 		{
-			FlushPendingSceneSummonLaunches(agentIndex);
-			FlushPendingSceneGuideLaunches(agentIndex);
+			_sceneMovement.FlushPendingSceneSummonLaunches(agentIndex);
+			_sceneMovement.FlushPendingSceneGuideLaunches(agentIndex);
 		});
 		RunSceneTtsPlaybackFinishedStep("lipsync_cleanup", agentIndex, delegate
 		{
