@@ -1,3 +1,15 @@
+<a id="civilwar-crown-withdrawal-20261001"></a>
+
+### 王室阵营受事件影响撤回支持（2026-10-01，OFFLINE_VERIFIED）
+
+用户要求“通过事件啊，坏事干多了哪还能拥护国王”。本包接通现有负面事件对王室阵营的自动退出，不增加AI自动加入王室阵营、不代替玩家站队、不改变王国归属或直接发动内战。当前仓库/分支沿用本主台账；检查点 `10a2056a`，产品提交 `f77c4f51`；下列源码坐标均绑定此修订。回滚只逆向该提交，不撤销此前每日平滑衰减和其他任务。
+
+- `src/modules/AF.Module.Kingdom/CivilWar/KingdomCivilWarOwner.cs:146–179`，`AddGrievance`：按既有事件先结算每日衰减并追加本次点数；只对事件命中的王室阵营NPC检查累计不满。达到现有 MCM `CivilWarDiscontentThreshold`（默认35）立即转 Middle、清除 FactionId、记录退出周。国王/玩家家族、外国家族、非政治家族、非王室成员、关闭功能、未知/零点事件仍按原边界排除。允许没有反对派时撤回支持；后续加入反对派仍走原周规则。
+- 同一事件批量聚合退出家族，写入历史、周报素材与 `KingdomCivilWar` 日志；已退出家族后续事件不重复记退出事实。设置只在首个合格王室成员出现时读取一次，额外复杂度为受影响王室家族数×已记录来源数（当前9类），不增加任何Tick/日/周轮询或全世界家族扫描；仅实际退出时分配名称列表与报告文本。
+- `DuelSettings.CivilWar.cs:23–25` 补现有门槛提示，不改MCM属性名/默认值/存储身份；存档沿用已有 Side/FactionId/SideSinceWeek，无新存档键或格式迁移。
+- **回归102检查 PASS**：复用真实owner、adapter和提取的真实政策事件方法；新增26项覆盖混合来源积累、9来源精确门槛、MCM门槛、每日衰减后再判断、立即执行、无反对派退出、一次事实、存读档、王族/玩家/外国家族/关闭/未知/零点/既有反对派隔离。`artifacts/civilwar-review-20261001/crown-withdrawal-tests.log`；TaleWorlds动作与素材宿主仍为桩，不当作实机验收。
+- **Release双API+Bootstrap PASS**：`artifacts/civilwar-review-20261001/build-60eaf408adfb469ea3356ae8e67258d0/` exit 0，引用1.3.15.110062 / 1.4.6.115628，原正式入口的隔离离线执行；构建时HEAD为检查点加本片工作树，随后提交为 `f77c4f51`，脚本未修改。本片未部署/推送，保留此前其他功能的部署和其他作者改动。实际游戏事件、NPC对话记忆回读、旧档与性能尚未实机验证；不提升全局J17/C/D或历史代码地图状态。
+
 <a id="civilwar-daily-decay-20261001"></a>
 
 ### 全部派系不满按日平滑衰减（2026-10-01，OFFLINE_VERIFIED）
