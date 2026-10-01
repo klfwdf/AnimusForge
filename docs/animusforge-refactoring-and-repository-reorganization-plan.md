@@ -1,3 +1,22 @@
+<a id="gallery-rp-items-20261001"></a>
+
+### 画廊转RP物品与对话插画入口去重（2026-10-01，OFFLINE_VERIFIED）
+
+用户要求画廊作品转RP物品用于向NPC展示；随后明确移除野外右上角重复按钮，因为DialogueUI已有场景插画入口。实际工作区 `F:/AnimusForge-main`、分支 `codex/af-main-refactor-continuation-20260831`；检查点 `979be29`，产品及定向测试 `fed01fb6`。本包保留原DialogueUI按钮、生图回调、自动生图及百科入口；不改其他并发CivilWar/Coup/Weekly改动，不部署或推送。
+
+源码责任图（修订 `fed01fb6`）：
+
+- `extensions/AnimusForge.Illustrator/src/UI/Gallery/GalleryRpItemConverter.cs:15–103`：标题/主题/行动摘要生成可编辑画卷介绍，不复制原始生图prompt；作品身份按规范化CampaignKey+图片Key隔离，同名不同画不合并。TryConvert主线程检查战役、RP owner、背包、原文件和非空介绍，调用现有TryCreateGeneratedInventoryItemForExternal、TrySetGeneratedRpItemIntroductionForExternal、GenerateKnownInventoryItemToRosterForExternal。先保存介绍再入背包；同稳定物品ID已在背包时只更新介绍，避免重复添加；已送出的画卷可再制作一份。原图不删除。无新存档schema，沿用生成RP物品记录及玩家背包恢复机制。
+- `extensions/AnimusForge.Illustrator/src/UI/Gallery/IllustratorGalleryPopupVM.cs:74–87,337–375`、`extensions/AnimusForge.Illustrator/GUI/Prefabs/IllustratorGalleryPopup.xml:107–115`：选中且预览成功后可点“转为RP物品”；现有CourierLetterInputPopup填写/确认介绍，取消不交付；关闭/切存档/owner变化时拒绝迟到提交。仅转换点击时一次原文件存在检查、一次背包扫描和现有RP模板解析，不增加Tick扫描/网络请求。
+- `extensions/AnimusForge.Illustrator/src/UI/Patches/ConversationIllustrationPatch.cs:24–67`：删除GauntletMovie.Load按钮注入、原生Map/Mission fallback及按钮跟踪刷新；保留HandleConversationIllustrateClicked和主回复自动重绘patch。`IllustratorSettings.cs`移除已删除入口的刷新调用。DialogueUI原有`AFDialogueNativeOverlay.xml:29–31`的按钮及`Native/IllustratorBridge.cs:32–42`的回调解析未改。
+- 三渠道展示继续调用共享`CourierDeliveryBehavior.GetCourierLetterTransferFactDescriptionForExternal`（`src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.LetterInventory.cs:657–685`），从RP介绍进入物品事实；Scene/Native共享Shout处理、Courier共享PromptMessages。NPC读取画卷文字介绍，不是新增多模态图片上传，也不把艺术描绘写成已发生世界事实。
+
+验证：`extensions/AnimusForge.Illustrator/tests/GalleryRpConversionTests/`链接真实转换器和输入清洗，19检查PASS（游戏/RP注册/背包是桩，非实机）；覆盖成功、重复、新对象同ID、同标题不同作品、介绍失败、交付失败及重试、空描述、删除/缺图、跨战役与规范化Key。命令：`local/dotnet/8.0.425/dotnet.exe run --project extensions/AnimusForge.Illustrator/tests/GalleryRpConversionTests/GalleryRpConversionTests.csproj --configuration Release -- artifacts/gallery-rp-20261001/image-fixture.txt`。
+
+最终隔离Release双API+Bootstrap exit0、0错误，保留既有警告；记录 `artifacts/gallery-rp-20261001/build-365e512b9bae40c7919310e0947737ae/`。两个实际DLL通过DialogueUI反射回调解析、旧注入不存在、自动hook保留、真实RP记录JSON往返及共享NPC物品描述读取、XML绑定检查；fixture仅内存注入，不读写真实存档/manifest，脚本`artifacts/gallery-rp-20261001/check-dll.ps1`。首轮验证脚本因PowerShell读取无BOM中文失败，补UTF8 BOM后通过，非产品编码问题。内容映射已有画廊预制体，git diff --check PASS。构建包含当时其他作者工作树，不冒称仅本提交产物。
+
+未验：游戏内画廊/输入框点击、背包图标与物品显示、真实保存读档、三渠道NPC实际回复、角色切换及现场性能。未Stage/部署/推送/付费生图。回滚只定向revert `fed01fb6`；已经写入玩家存档的画卷沿用既有RP记录，不随代码回滚删除。本包不提升J17/C/D总验收。
+
 <a id="coup-mcm-battle-options-20261001"></a>
 
 ### 篡位 MCM 七项战斗参数（2026-10-01，OFFLINE_VERIFIED / 未部署）
