@@ -68,7 +68,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		Show
 	}
 
-	private enum WeeklyReportUiStage
+	internal enum WeeklyReportUiStage
 	{
 		None,
 		Failure,
@@ -1385,31 +1385,31 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 	private bool _weeklyReportGenerationInProgress;
 
-	private WeeklyReportUiStage _weeklyReportUiStage;
+	private WeeklyReportUiStage _weeklyReportUiStage { get => WeeklyEditor.UiStage; set => WeeklyEditor.UiStage = value; }
 
-	private WeeklyReportRetryContext _weeklyReportRetryContext;
+	private WeeklyReportRetryContext _weeklyReportRetryContext { get => WeeklyEditor.RetryContext; set => WeeklyEditor.RetryContext = value; }
 
-	private bool _weeklyReportManualRetryInProgress;
+	private bool _weeklyReportManualRetryInProgress { get => WeeklyEditor.ManualRetryInProgress; set => WeeklyEditor.ManualRetryInProgress = value; }
 
-	private int _weeklyReportManualRetryVersion;
+	private int _weeklyReportManualRetryVersion { get => WeeklyEditor.ManualRetryVersion; set => WeeklyEditor.ManualRetryVersion = value; }
 
 	private List<DevWeeklyReportBatchPreviewEntry> _latestWeeklyReportBatchDevPreviews = new List<DevWeeklyReportBatchPreviewEntry>();
 
-	private bool _pendingWeeklyReportManualRetryResult;
+	private bool _pendingWeeklyReportManualRetryResult { get => WeeklyEditor.PendingManualRetryResult; set => WeeklyEditor.PendingManualRetryResult = value; }
 
-	private bool _pendingWeeklyReportManualRetrySucceeded;
+	private bool _pendingWeeklyReportManualRetrySucceeded { get => WeeklyEditor.PendingManualRetrySucceeded; set => WeeklyEditor.PendingManualRetrySucceeded = value; }
 
-	private string _pendingWeeklyReportManualRetryMessage = "";
+	private string _pendingWeeklyReportManualRetryMessage { get => WeeklyEditor.PendingManualRetryMessage; set => WeeklyEditor.PendingManualRetryMessage = value; }
 
-	private WeeklyReportRetryContext _pendingWeeklyReportManualRetryContext;
+	private WeeklyReportRetryContext _pendingWeeklyReportManualRetryContext { get => WeeklyEditor.PendingManualRetryContext; set => WeeklyEditor.PendingManualRetryContext = value; }
 
 
 
-	private long _weeklyReportUiResumeAfterUtcTicks;
+	private long _weeklyReportUiResumeAfterUtcTicks { get => WeeklyEditor.UiResumeAfterUtcTicks; set => WeeklyEditor.UiResumeAfterUtcTicks = value; }
 
-	private bool _weeklyReportReopenAfterApiConfig;
+	private bool _weeklyReportReopenAfterApiConfig { get => WeeklyEditor.ReopenAfterApiConfig; set => WeeklyEditor.ReopenAfterApiConfig = value; }
 
-	private long _weeklyReportReopenAfterApiConfigUtcTicks;
+	private long _weeklyReportReopenAfterApiConfigUtcTicks { get => WeeklyEditor.ReopenAfterApiConfigUtcTicks; set => WeeklyEditor.ReopenAfterApiConfigUtcTicks = value; }
 
 	private bool _missingOnnxGateActive;
 
@@ -16300,79 +16300,9 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 	}
 
 	private void ProcessPendingWeeklyReportManualRetryResult()
-	{
-		if (!_pendingWeeklyReportManualRetryResult)
-		{
-			return;
-		}
-		bool pendingWeeklyReportManualRetrySucceeded = _pendingWeeklyReportManualRetrySucceeded;
-		string text = (_pendingWeeklyReportManualRetryMessage ?? "").Trim();
-		WeeklyReportRetryContext weeklyReportRetryContext = _pendingWeeklyReportManualRetryContext;
-		_pendingWeeklyReportManualRetryResult = false;
-		_pendingWeeklyReportManualRetrySucceeded = false;
-		_pendingWeeklyReportManualRetryMessage = "";
-		_pendingWeeklyReportManualRetryContext = null;
-		_weeklyReportManualRetryInProgress = false;
-		InformationManager.HideInquiry();
-		if (pendingWeeklyReportManualRetrySucceeded)
-		{
-			_weeklyReportRetryContext = null;
-			_weeklyReportUiStage = WeeklyReportUiStage.None;
-			if (!string.IsNullOrWhiteSpace(text))
-			{
-				InformationManager.DisplayMessage(new InformationMessage(text));
-			}
-			return;
-		}
-		if (weeklyReportRetryContext != null)
-		{
-			_weeklyReportRetryContext = weeklyReportRetryContext;
-		}
-		_weeklyReportUiStage = WeeklyReportUiStage.None;
-		if (!string.IsNullOrWhiteSpace(text))
-		{
-			InformationManager.DisplayMessage(new InformationMessage(text));
-		}
-		QueueWeeklyReportFailurePopup(_weeklyReportRetryContext, showImmediate: true);
-	}
-
+		=> WeeklyEditor.ProcessPendingWeeklyReportManualRetryResult();
 	private void ProcessWeeklyReportUiResume()
-	{
-		if (_weeklyReportReopenAfterApiConfig && _weeklyReportRetryContext != null && !_pendingWeeklyReportManualRetryResult)
-		{
-			if (!InformationManager.IsAnyInquiryActive() && DateTime.UtcNow.Ticks >= _weeklyReportReopenAfterApiConfigUtcTicks)
-			{
-				_weeklyReportReopenAfterApiConfig = false;
-				ShowWeeklyReportFailurePopup(ignoreDelay: true);
-			}
-		}
-		if (_weeklyReportRetryContext == null || _pendingWeeklyReportManualRetryResult)
-		{
-			return;
-		}
-		if (_weeklyReportUiStage != WeeklyReportUiStage.Failure && _weeklyReportUiStage != WeeklyReportUiStage.RetryProgress)
-		{
-			return;
-		}
-		if (InformationManager.IsAnyInquiryActive())
-		{
-			return;
-		}
-		if (DateTime.UtcNow.Ticks < _weeklyReportUiResumeAfterUtcTicks)
-		{
-			return;
-		}
-		if (_weeklyReportUiStage == WeeklyReportUiStage.RetryProgress && _weeklyReportManualRetryInProgress)
-		{
-			ShowWeeklyReportRetryProgressPopup();
-			return;
-		}
-		if (_weeklyReportUiStage == WeeklyReportUiStage.Failure)
-		{
-			ShowWeeklyReportFailurePopup(ignoreDelay: true);
-		}
-	}
-
+		=> WeeklyEditor.ProcessWeeklyReportUiResume();
 	private void OpenKingdomRebellionApiRepairFlow()
 	{
 		_kingdomRebellionReopenAfterApiConfig = true;
@@ -28400,211 +28330,21 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 	}
 
 	private void QueueWeeklyReportFailurePopup(WeeklyReportRetryContext context, bool showImmediate = false)
-	{
-		if (context == null)
-		{
-			return;
-		}
-		_weeklyReportRetryContext = context;
-		_weeklyReportUiStage = WeeklyReportUiStage.Failure;
-		_weeklyReportUiResumeAfterUtcTicks = DateTime.UtcNow.Ticks + TimeSpan.FromMilliseconds(showImmediate ? 60.0 : 180.0).Ticks;
-		if (showImmediate && !InformationManager.IsAnyInquiryActive())
-		{
-			ShowWeeklyReportFailurePopup(ignoreDelay: true);
-		}
-	}
-
+		=> WeeklyEditor.QueueWeeklyReportFailurePopup(context, showImmediate);
 	private void ShowWeeklyReportFailurePopup(bool ignoreDelay = false)
-	{
-		if (_weeklyReportRetryContext == null || _weeklyReportManualRetryInProgress)
-		{
-			return;
-		}
-		long ticks = DateTime.UtcNow.Ticks;
-		if (!ignoreDelay && ticks < _weeklyReportUiResumeAfterUtcTicks)
-		{
-			return;
-		}
-		_weeklyReportUiStage = WeeklyReportUiStage.Failure;
-		_weeklyReportUiResumeAfterUtcTicks = ticks + TimeSpan.FromMilliseconds(150.0).Ticks;
-		WeeklyReportRetryContext weeklyReportRetryContext = _weeklyReportRetryContext;
-		string text = "第" + weeklyReportRetryContext.WeekIndex + "周自动周报";
-		if (!weeklyReportRetryContext.IsAutoGeneration)
-		{
-			text = string.IsNullOrWhiteSpace(weeklyReportRetryContext.DisplayLabel) ? ("第" + weeklyReportRetryContext.WeekIndex + "周周报") : weeklyReportRetryContext.DisplayLabel;
-		}
-		if (weeklyReportRetryContext.RequiresFreshMaterials)
-		{
-			string changedMessage = text + "的目标记录或保存素材已变更，旧请求和旧素材重试均已取消。\n\n重新采集会按当前游戏状态重新构建失败分组，并可能替换这些分组尚未完成的手工编辑。其他已完成分组不会重跑。\n\n你可以明确选择重新采集并生成，或保存并退出；不会自动覆盖编辑。";
-			InformationManager.ShowInquiry(new InquiryData("周报目标已变更", changedMessage, isAffirmativeOptionShown: true, isNegativeOptionShown: true, "重新采集并生成", "保存并退出", delegate
-			{
-				BeginFreshWeeklyReportRetry(weeklyReportRetryContext);
-			}, ExitCurrentGameFromWeeklyReportGate), pauseGameActiveState: true);
-			return;
-		}
-		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.AppendLine(text + "在生成过程中遇到了无法自动恢复的 API/模型错误。");
-		stringBuilder.AppendLine();
-		stringBuilder.AppendLine("失败分组：" + (weeklyReportRetryContext.FailedGroupTitle ?? "未命名分组"));
-		stringBuilder.AppendLine("自动重试次数：" + Math.Max(weeklyReportRetryContext.AttemptsUsed, 0) + "/3");
-		stringBuilder.AppendLine("时间范围：第 " + weeklyReportRetryContext.StartDay + " 天至第 " + weeklyReportRetryContext.EndDay + " 天");
-		if (weeklyReportRetryContext.IsRequestsPerMinuteLimit)
-		{
-			int weeklyReportRequestsPerMinute = GetWeeklyReportRequestsPerMinute();
-			int num = Math.Max(1, weeklyReportRequestsPerMinute / 2);
-			stringBuilder.AppendLine();
-			stringBuilder.AppendLine("系统判断这次更像是 RPM（每分钟请求数）超限。");
-			stringBuilder.AppendLine("当前 MCM 的【每分钟最多生成周报数】=" + weeklyReportRequestsPerMinute + "。");
-			stringBuilder.AppendLine("建议先下调到 " + num + " 左右，再继续补跑。");
-			if (weeklyReportRetryContext.RetryAfterSeconds.HasValue)
-			{
-				stringBuilder.AppendLine("接口建议等待：" + weeklyReportRetryContext.RetryAfterSeconds.Value + " 秒。");
-			}
-		}
-		if (!string.IsNullOrWhiteSpace(weeklyReportRetryContext.FailedReason))
-		{
-			// 完整 API/模型响应直接进入左下角，动作窗口仅保留给重试和修复选择。
-			NonBlockingErrorReport.Show("周事件生成失败", weeklyReportRetryContext.FailedReason.Trim());
-			stringBuilder.AppendLine();
-			stringBuilder.AppendLine("详细失败原因已显示在左下角消息并写入日志。");
-		}
-		stringBuilder.AppendLine();
-		stringBuilder.AppendLine(weeklyReportRetryContext.IsRequestsPerMinuteLimit ? "游戏将暂停在这里。你可以先直接修改 RPM 限制并立即重试，或进入 API 配置流程继续排查。" : "游戏将暂停在这里。你可以手动重试本周周报生成，或者先进入 API 配置流程修正后再回来重试。");
-		string text2 = weeklyReportRetryContext.IsRequestsPerMinuteLimit ? "修改RPM并重试" : "手动重试";
-		InformationManager.ShowInquiry(new InquiryData("周事件生成失败", stringBuilder.ToString().TrimEnd(), isAffirmativeOptionShown: true, isNegativeOptionShown: true, text2, "调整API信息", delegate
-		{
-			if (weeklyReportRetryContext.IsRequestsPerMinuteLimit)
-			{
-				OpenWeeklyReportRpmLimitInput();
-			}
-			else
-			{
-				BeginRetryBlockedWeeklyReports();
-			}
-		}, delegate
-		{
-			OpenWeeklyReportApiRepairFlow();
-		}), pauseGameActiveState: true);
-	}
-
+		=> WeeklyEditor.ShowWeeklyReportFailurePopup(ignoreDelay);
 	private void OpenWeeklyReportRpmLimitInput()
-	{
-		try
-		{
-			DuelSettings settings = DuelSettings.GetSettings();
-			if (settings == null)
-			{
-				InformationManager.DisplayMessage(new InformationMessage("无法读取 MCM 设置，暂时不能修改 RPM 限制。"));
-				ShowWeeklyReportFailurePopup(ignoreDelay: true);
-				return;
-			}
-			int weeklyReportRequestsPerMinute = GetWeeklyReportRequestsPerMinute();
-			int num = Math.Max(1, weeklyReportRequestsPerMinute / 2);
-			InformationManager.ShowTextInquiry(new TextInquiryData("修改周报RPM限制", "检测到本次失败疑似触发 RPM 限流。\n\n请输入新的【每分钟最多生成周报数】（范围 1-20）。\n当前值：" + weeklyReportRequestsPerMinute + "\n建议先改为：" + num + "\n\n保存后会立即按新速率继续补跑当前周报。", isAffirmativeOptionShown: true, isNegativeOptionShown: true, "保存并重试", "返回", delegate(string input)
-			{
-				string text = (input ?? "").Trim();
-				if (!int.TryParse(text, out var result))
-				{
-					InformationManager.DisplayMessage(new InformationMessage("请输入 1-20 之间的整数 RPM。"));
-					OpenWeeklyReportRpmLimitInput();
-				}
-				else
-				{
-					result = Math.Max(1, Math.Min(20, result));
-					settings.WeeklyReportRequestsPerMinute = result;
-					TryPersistMcmSettings(settings);
-					InformationManager.DisplayMessage(new InformationMessage("已将周报 RPM 上限更新为 " + result + "，现在开始重试。"));
-					BeginRetryBlockedWeeklyReports();
-				}
-			}, delegate
-			{
-				ShowWeeklyReportFailurePopup(ignoreDelay: true);
-			}));
-		}
-		catch (Exception ex)
-		{
-			InformationManager.DisplayMessage(new InformationMessage("打开 RPM 输入框失败：" + ex.Message));
-			ShowWeeklyReportFailurePopup(ignoreDelay: true);
-		}
-	}
-
+		=> WeeklyEditor.OpenWeeklyReportRpmLimitInput();
 	private void ShowWeeklyReportRetryProgressPopup()
-	{
-		if (_weeklyReportRetryContext == null || !_weeklyReportManualRetryInProgress)
-		{
-			return;
-		}
-		_weeklyReportUiStage = WeeklyReportUiStage.RetryProgress;
-		_weeklyReportUiResumeAfterUtcTicks = DateTime.UtcNow.Ticks + TimeSpan.FromMilliseconds(150.0).Ticks;
-		string text = "正在重试生成第" + _weeklyReportRetryContext.WeekIndex + "周周报中的这个事件，请稍候……\n\n- 当前失败分组：" + (_weeklyReportRetryContext.FailedGroupTitle ?? "未命名分组") + "\n- 后台会再次按每条分组三次重试的规则执行\n- 如果你不想继续等待，可以直接退出当前存档\n- 也可以返回上一界面，稍后再决定是否继续重试";
-		InformationManager.ShowInquiry(new InquiryData("正在重试生成此事件", text, isAffirmativeOptionShown: true, isNegativeOptionShown: true, "保存并退出", "返回上一界面", ExitCurrentGameFromWeeklyReportGate, CancelWeeklyReportManualRetryAndReturn), pauseGameActiveState: true);
-	}
-
+		=> WeeklyEditor.ShowWeeklyReportRetryProgressPopup();
 	private void BeginRetryBlockedWeeklyReports()
-	{
-		if (_weeklyReportRetryContext == null || _weeklyReportManualRetryInProgress)
-		{
-			return;
-		}
-		_weeklyReportManualRetryInProgress = true;
-		int num = ++_weeklyReportManualRetryVersion;
-		_weeklyReportUiStage = WeeklyReportUiStage.RetryProgress;
-		ShowWeeklyReportRetryProgressPopup();
-		_ = RetryBlockedWeeklyReportsAsync(_weeklyReportRetryContext, num);
-	}
-
-	private static List<WeeklyEventMaterialPreviewGroup> SelectFreshWeeklyReportRetryGroups(List<WeeklyEventMaterialPreviewGroup> freshGroups, List<WeeklyEventMaterialPreviewGroup> failedGroups)
-	{
-		HashSet<string> requiredIds = new HashSet<string>((failedGroups ?? new List<WeeklyEventMaterialPreviewGroup>()).Select(BuildWeeklyReportGroupReportId).Where((string id) => !string.IsNullOrWhiteSpace(id)), StringComparer.OrdinalIgnoreCase);
-		if (requiredIds.Count == 0)
-		{
-			return null;
-		}
-		List<WeeklyEventMaterialPreviewGroup> selected = (freshGroups ?? new List<WeeklyEventMaterialPreviewGroup>()).Where((WeeklyEventMaterialPreviewGroup group) => group != null && requiredIds.Contains(BuildWeeklyReportGroupReportId(group))).ToList();
-		return BuildWeeklyReportGroupMap(selected).Count == requiredIds.Count ? selected : null;
-	}
-
+		=> WeeklyEditor.BeginRetryBlockedWeeklyReports();
+	private List<WeeklyEventMaterialPreviewGroup> SelectFreshWeeklyReportRetryGroups(List<WeeklyEventMaterialPreviewGroup> freshGroups, List<WeeklyEventMaterialPreviewGroup> failedGroups)
+		=> WeeklyEditor.SelectFreshWeeklyReportRetryGroups(freshGroups, failedGroups);
 	private void BeginFreshWeeklyReportRetry(WeeklyReportRetryContext staleContext)
-	{
-		if (!TWParallel.IsMainThread() || !ReferenceEquals(Instance, this) || !ReferenceEquals(_weeklyReportRetryContext, staleContext) || _weeklyReportManualRetryInProgress)
-		{
-			return;
-		}
-		try
-		{
-			List<WeeklyEventMaterialPreviewGroup> freshGroups = SelectFreshWeeklyReportRetryGroups(BuildWeeklyEventMaterialPreviewGroups(staleContext.StartDay, staleContext.EndDay), staleContext.Groups);
-			if (freshGroups == null || freshGroups.Count == 0)
-			{
-				InformationManager.DisplayMessage(new InformationMessage("当前已无法找到全部失败的周报分组，未发送新请求；请保存退出后检查本周素材。"));
-				QueueWeeklyReportFailurePopup(staleContext, showImmediate: true);
-				return;
-			}
-			freshGroups = OrderWeeklyReportGenerationGroups(freshGroups);
-			WeeklyReportRetryContext freshContext = CreateWeeklyReportRetryContext(freshGroups, staleContext.WeekIndex, staleContext.StartDay, staleContext.EndDay, staleContext.DisplayLabel, staleContext.OpenViewerWhenDone, staleContext.IsAutoGeneration, freshGroups[0], new WeeklyReportRequestResult { Success = false }, staleContext.PopupCandidateKingdomIds);
-			_weeklyReportRetryContext = freshContext;
-			BeginRetryBlockedWeeklyReports();
-		}
-		catch (Exception ex)
-		{
-			Logger.Log("EventWeeklyReport", "[ERROR] refresh changed weekly report materials failed: " + ex);
-			InformationManager.DisplayMessage(new InformationMessage("重新采集周报素材失败，未发送新请求。"));
-			QueueWeeklyReportFailurePopup(staleContext, showImmediate: true);
-		}
-	}
-
+		=> WeeklyEditor.BeginFreshWeeklyReportRetry(staleContext);
 	private void CancelWeeklyReportManualRetryAndReturn()
-	{
-		_weeklyReportManualRetryVersion++;
-		_weeklyReportManualRetryInProgress = false;
-		_pendingWeeklyReportManualRetryResult = false;
-		_pendingWeeklyReportManualRetrySucceeded = false;
-		_pendingWeeklyReportManualRetryMessage = "";
-		_pendingWeeklyReportManualRetryContext = null;
-		_weeklyReportUiStage = WeeklyReportUiStage.None;
-		InformationManager.HideInquiry();
-		QueueWeeklyReportFailurePopup(_weeklyReportRetryContext, showImmediate: true);
-	}
-
+		=> WeeklyEditor.CancelWeeklyReportManualRetryAndReturn();
 	private void ExitCurrentGameFromWeeklyReportGate()
 	{
 		try
@@ -28706,70 +28446,10 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 		}
 	}
 
-	private async Task RetryBlockedWeeklyReportsAsync(WeeklyReportRetryContext context, int retryVersion)
-	{
-		WeeklyReportGenerationResult weeklyReportGenerationResult = null;
-		try
-		{
-			weeklyReportGenerationResult = await GenerateWeeklyReportsBatchedAsyncInternal(context.Groups, context.WeekIndex, context.StartDay, context.EndDay, context.DisplayLabel, context.OpenViewerWhenDone, queueBlockingPopupOnFatalFailure: false, isAutoGeneration: context.IsAutoGeneration, popupCandidateKingdomIdsOverride: context.PopupCandidateKingdomIds, capturedRecordStatesOverride: context.CapturedRecordStates, sourceSnapshotOverride: context.SourceSnapshot);
-			if (retryVersion != _weeklyReportManualRetryVersion)
-			{
-				return;
-			}
-			_pendingWeeklyReportManualRetrySucceeded = weeklyReportGenerationResult != null && weeklyReportGenerationResult.Completed && !weeklyReportGenerationResult.BlockedByFatalFailure;
-			if (_pendingWeeklyReportManualRetrySucceeded)
-			{
-				if (context.IsAutoGeneration)
-				{
-					_lastAutoGeneratedWeeklyReportWeek = Math.Max(_lastAutoGeneratedWeeklyReportWeek, context.WeekIndex);
-				}
-				_pendingWeeklyReportManualRetryMessage = "周事件补跑成功，已解除暂停。";
-				_pendingWeeklyReportManualRetryContext = null;
-			}
-			else
-			{
-				if (weeklyReportGenerationResult?.BlockedByChangedRecord == true)
-				{
-					context.RequiresFreshMaterials = true;
-					context.FailedReason = "周报目标在失败后已变更，旧素材不能重试。";
-				}
-				_pendingWeeklyReportManualRetryMessage = weeklyReportGenerationResult?.BlockedByChangedRecord == true
-					? "周报目标已被编辑或由其他请求完成，旧素材不能重试；请重新收集本周素材并生成。"
-					: "周事件补跑仍未成功，请检查 API / 模型配置后再试。";
-				_pendingWeeklyReportManualRetryContext = (weeklyReportGenerationResult?.RetryContext ?? context);
-			}
-		}
-		catch (Exception ex)
-		{
-			if (retryVersion != _weeklyReportManualRetryVersion)
-			{
-				return;
-			}
-			Logger.Log("EventWeeklyReport", "[ERROR] RetryBlockedWeeklyReportsAsync failed: " + ex);
-			_pendingWeeklyReportManualRetrySucceeded = false;
-			_pendingWeeklyReportManualRetryMessage = "周事件补跑异常失败：" + ex.Message;
-			_pendingWeeklyReportManualRetryContext = context;
-		}
-		finally
-		{
-			if (retryVersion == _weeklyReportManualRetryVersion)
-			{
-				_pendingWeeklyReportManualRetryResult = true;
-			}
-		}
-	}
-
+	private Task RetryBlockedWeeklyReportsAsync(WeeklyReportRetryContext context, int retryVersion)
+		=> WeeklyEditor.RetryBlockedWeeklyReportsAsync(context, retryVersion);
 	private void OpenWeeklyReportApiRepairFlow()
-	{
-		_weeklyReportUiStage = WeeklyReportUiStage.None;
-		_weeklyReportReopenAfterApiConfig = true;
-		_weeklyReportReopenAfterApiConfigUtcTicks = DateTime.UtcNow.Ticks + TimeSpan.FromMilliseconds(300.0).Ticks;
-		if (!ModOnboardingBehavior.OpenApiRepairFlow())
-		{
-			InformationManager.DisplayMessage(new InformationMessage("未找到 API 配置引导，请先检查 MCM 中的 Base URL、API Key 与模型名。"));
-		}
-	}
-
+		=> WeeklyEditor.OpenWeeklyReportApiRepairFlow();
 	private static Vec2? GetPlayerPartyPositionVec2()
 	{
 		try
@@ -31868,37 +31548,7 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 
 
 	private static string BuildDevHistoryPreview(string line, int maxLen = 56)
-	{
-		if (string.IsNullOrWhiteSpace(line))
-		{
-			return "（空）";
-		}
-		StringBuilder stringBuilder = new StringBuilder(line.Length);
-		bool flag = false;
-		foreach (char c in line)
-		{
-			if (char.IsWhiteSpace(c))
-			{
-				if (!flag)
-				{
-					stringBuilder.Append(' ');
-					flag = true;
-				}
-			}
-			else
-			{
-				stringBuilder.Append(c);
-				flag = false;
-			}
-		}
-		string text = stringBuilder.ToString().Trim();
-		if (text.Length <= maxLen)
-		{
-			return text;
-		}
-		return text.Substring(0, Math.Max(1, maxLen)) + "...";
-	}
-
+		=> MemoryEditorProjection.BuildDevHistoryPreview(line, maxLen);
 
 
 

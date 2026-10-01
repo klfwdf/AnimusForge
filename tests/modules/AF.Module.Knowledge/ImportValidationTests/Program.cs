@@ -1,4 +1,4 @@
-using AnimusForge;
+﻿using AnimusForge;
 int n=0; void Check(bool ok,string label){if(!ok)throw new Exception(label);n++;}
 KnowledgeLibraryBehavior.LoreRule Rule(string id,params string[] keys)=>new(){Id=id,Keywords=keys.ToList()};
 var kb=new KnowledgeLibraryBehavior(); string error;
@@ -113,4 +113,22 @@ memoryPort.TryApplyDevCompressedMemoryBlockDataMutation=(h,id,mutate,g)=>false;m
 memoryUi.ConfirmDevDeleteCompressedMemoryBlock(hero,"block",0,"");var blockConfirmation=TaleWorlds.Library.InformationManager.Inquiry;Check(blockDeletes==0,"compressed delete waits for confirmation");blockConfirmation.Cancel();blockConfirmation.Confirm();Check(blockDeletes==0,"compressed cancel retires destructive callback");
 memoryUi.ConfirmDevDeleteCompressedMemoryBlock(hero,"block",0,"");blockConfirmation=TaleWorlds.Library.InformationManager.Inquiry;AnimusForge.Refactor.Runtime.SaveRuntimeGuard.Generation++;blockConfirmation.Confirm();Check(blockDeletes==0,"load rejects compressed deletion");
 memoryUi.ConfirmDevDeleteCompressedMemoryBlock(hero,"block",0,"");blockConfirmation=TaleWorlds.Library.InformationManager.Inquiry;blockConfirmation.Confirm();blockConfirmation.Confirm();Check(blockDeletes==1,"compressed duplicate confirm invokes data only once");
+
+var fallbackKb=new KnowledgeLibraryBehavior();int bulkCalls=0,singleCalls=0;fallbackKb.BulkImport=(json,overwrite)=>{bulkCalls++;return true;};fallbackKb.SingleImport=(json,overwrite)=>{singleCalls++;return true;};
+var fallbackFile=new KnowledgeLibraryBehavior.KnowledgeFile {Rules=new(){Rule("one"),null,Rule(" ")}};
+Check(KnowledgeRuleImportOwner.TryImportKnowledgeFileWithFallback(fallbackKb,fallbackFile,true,out var imported,out var failed,out var failedId,out var failedReason)&&imported==1&&failed==0&&singleCalls==0&&bulkCalls==1,"knowledge bulk success does not replay individual commits");
+fallbackFile.Rules=new(){Rule("one"),Rule("bad"),Rule("two"),null,Rule(" ")};fallbackKb.BulkImport=(json,overwrite)=>false;fallbackKb.SingleImport=(json,overwrite)=>{singleCalls++;return !json.Contains("bad");};
+Check(KnowledgeRuleImportOwner.TryImportKnowledgeFileWithFallback(fallbackKb,fallbackFile,false,out imported,out failed,out failedId,out failedReason)&&imported==2&&failed==1&&failedId=="bad"&&singleCalls==3,"knowledge fallback preserves partial success and skips empty rules");
+Check(KnowledgeRuleImportOwner.BuildKnowledgeRuleImportFailureMessage(fallbackKb,null,true)=="规则为空。","null rule diagnostic");Check(KnowledgeRuleImportOwner.BuildKnowledgeRuleImportFailureMessage(fallbackKb,Rule(" "),true)=="RuleId 为空。","empty id diagnostic");
+var longRule=Rule("long");longRule.RagShortTexts.Add(new string('x',101));Check(KnowledgeRuleImportOwner.BuildKnowledgeRuleImportFailureMessage(fallbackKb,longRule,true).Contains("100"),"RAG length diagnostic unchanged");
+KnowledgeImportSupport.DuplicateConditions=true;Check(KnowledgeRuleImportOwner.BuildKnowledgeRuleImportFailureMessage(fallbackKb,Rule("variant"),true).Contains("第 1 条与第 2 条"),"variant duplicate diagnostic from true support capability");KnowledgeImportSupport.DuplicateConditions=false;
+fallbackKb.SingleImport=(json,overwrite)=>false;Check(!KnowledgeRuleImportOwner.TryImportKnowledgeFileWithFallback(fallbackKb,fallbackFile,true,out imported,out failed,out failedId,out failedReason)&&imported==0&&failed==3&&failedId=="one","all failed rules return false with first diagnostic");
+fallbackKb.SingleImport=(json,overwrite)=>throw new InvalidOperationException("fixture");Check(!KnowledgeRuleImportOwner.TryImportKnowledgeFileWithFallback(fallbackKb,fallbackFile,true,out imported,out failed,out failedId,out failedReason)&&imported==0&&failed==0&&failedId==""&&failedReason=="","fallback exception retains original failure-counter reset contract");
+
+var stampedProfile=new MyBehavior.NpcPersonaProfile();PersonaImportOwner.StampProfileMetadata(" hero ",stampedProfile,id=>"resolved "+id);Check(stampedProfile.HeroId=="hero"&&stampedProfile.HeroName=="resolved hero","Persona metadata preserves original trim and typed name resolution");
+PersonaImportOwner.StampProfileMetadata(null,stampedProfile,id=>throw new Exception("fixture"));Check(stampedProfile.HeroId==""&&stampedProfile.HeroName=="","Persona metadata resolution failure resets name exactly as legacy");int stampReads=0;PersonaImportOwner.StampProfileMetadata("hero",null,id=>{stampReads++;return "name";});Check(stampReads==0,"null imported profile does not resolve game identity");
+Check(MemoryEditorProjection.BuildDevHistoryPreview(null)=="（空）","history empty placeholder unchanged");
+Check(MemoryEditorProjection.BuildDevHistoryPreview("  first\t second\n third  ")=="first second third","history preview whitespace collapsed and trimmed");
+Check(MemoryEditorProjection.BuildDevHistoryPreview("abcdef",3)=="abc...","history max length ellipsis unchanged");
+Check(MemoryEditorProjection.BuildDevHistoryPreview("abcdef",0)=="a...","history original minimum substring length retained");
 Console.WriteLine($"PASS: {n} production import validation / complete Memory and Persona editor lifecycle assertions (synthetic fixtures, stubbed game/domain inputs).");

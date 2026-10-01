@@ -1,4 +1,4 @@
-using System; using System.Collections.Generic;
+﻿using System; using System.Collections.Generic;
 namespace TaleWorlds.CampaignSystem { public class Kingdom { public string StringId; } public class Campaign {public static Campaign Current;public T GetCampaignBehavior<T>()=>default;} public class Hero { public static Hero FindFirst(Func<Hero,bool> match)=>null; public string Name="Hero", StringId="h"; } }
 namespace AnimusForge.Refactor.Runtime { internal static class SaveRuntimeGuard { internal static long Generation=1; internal static long CaptureGeneration()=>Generation; internal static bool IsStale(long g,string context)=>g!=Generation; } }
 namespace TaleWorlds.Library {
@@ -7,7 +7,7 @@ namespace TaleWorlds.Library {
  public class InquiryData { public Action Confirm,Cancel; public InquiryData(string title,string text,bool isAffirmativeOptionShown,bool isNegativeOptionShown,string yes,string no,Action confirm,Action cancel){Confirm=confirm;Cancel=cancel;} }
  public class TextInquiryData { public Action<string> Confirm; public Action Cancel; public TextInquiryData(string title,string text,bool isAffirmativeOptionShown,bool isNegativeOptionShown,string yes,string no,Action<string> confirm,Action cancel,bool shouldInputBeObfuscated=false,object validator=null,string initial="",string currentValue=""){Confirm=confirm;Cancel=cancel;} }
  public class MultiSelectionInquiryData { public Action<List<InquiryElement>> Confirm; public Action Cancel; public MultiSelectionInquiryData(string title,string text,List<InquiryElement> options,bool isExitShown,int min,int max,string yes,string no,Action<List<InquiryElement>> confirm,Action cancel){Confirm=confirm;Cancel=cancel;} }
- public static class InformationManager { public static InquiryData Inquiry; public static TextInquiryData Text; public static void DisplayMessage(InformationMessage m){} public static void ShowInquiry(InquiryData d,bool pauseGameActiveState=false){Inquiry=d;} public static void ShowTextInquiry(TextInquiryData d){Text=d;} public static void HideInquiry(){} }
+ public static class InformationManager { public static InquiryData Inquiry; public static TextInquiryData Text; public static void DisplayMessage(InformationMessage m){} public static void ShowInquiry(InquiryData d,bool pauseGameActiveState=false){Inquiry=d;} public static void ShowTextInquiry(TextInquiryData d){Text=d;} public static bool Active; public static bool IsAnyInquiryActive()=>Active; public static void HideInquiry(){Active=false;} }
 }
 namespace TaleWorlds.Core { public static class MBInformationManager { public static TaleWorlds.Library.MultiSelectionInquiryData Last; public static void ShowMultiSelectionInquiry(TaleWorlds.Library.MultiSelectionInquiryData data){Last=data;} } }
 namespace AnimusForge {
@@ -15,4 +15,72 @@ namespace AnimusForge {
  internal sealed class NpcActionEntry {}
  internal sealed class WorldBulletinPanelData { internal string EventId; }
  internal static class DevWeeklyReportPopup { internal static Action Reading; internal static bool Result=true; internal static bool ShowWorldBulletin(WorldBulletinPanelData data,double seconds,Action read){Reading=read;return Result;} }
+}
+
+namespace AnimusForge { public partial class MyBehavior {
+	internal enum WeeklyReportUiStage
+	{
+		None,
+		Failure,
+		RetryProgress
+	}
+
+	internal sealed class WeeklyReportRetryContext
+	{
+		public WeeklyReportMaterialRevisionOwner.Snapshot SourceSnapshot;
+
+		public List<WeeklyEventMaterialPreviewGroup> Groups = new List<WeeklyEventMaterialPreviewGroup>();
+
+		public Dictionary<string, string> CapturedRecordStates;
+
+		public List<string> PopupCandidateKingdomIds = new List<string>();
+
+		public bool RequiresFreshMaterials;
+
+		public int WeekIndex;
+
+		public int StartDay;
+
+		public int EndDay;
+
+		public string DisplayLabel;
+
+		public bool OpenViewerWhenDone;
+
+		public bool IsAutoGeneration;
+
+		public string FailedGroupTitle;
+
+		public string FailedReason;
+
+		public int AttemptsUsed;
+
+		public bool IsRateLimit;
+
+		public bool IsRequestsPerMinuteLimit;
+
+		public bool IsQuotaLimit;
+
+		public int? RetryAfterSeconds;
+	}
+
+	internal sealed class WeeklyReportGenerationResult
+	{
+		public int SuccessCount;
+
+		public int FailureCount;
+
+		public bool Completed;
+
+		public bool BlockedByFatalFailure;
+
+		public bool BlockedByChangedRecord;
+
+		public WeeklyReportRetryContext RetryContext;
+	}
+
+}
+internal class DuelSettings { internal int WeeklyReportRequestsPerMinute; }
+internal static class NonBlockingErrorReport { internal static void Show(string title,string detail){} }
+internal static class WeeklyReportMaterialRevisionOwner { internal sealed class Snapshot {} }
 }
