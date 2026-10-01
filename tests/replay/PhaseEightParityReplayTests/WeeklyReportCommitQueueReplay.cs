@@ -314,6 +314,8 @@ internal static class WeeklyReportCommitQueueReplay
         object queue = Activator.CreateInstance(queueType, Members, null, new object[] { complete, canceled }, null);
         object host = System.Runtime.CompilerServices.RuntimeHelpers.GetUninitializedObject(behavior);
         behavior.GetField("_weeklyReportCommitQueue", Members).SetValue(host, queue);
+        object notices = Activator.CreateInstance(af.GetType("AnimusForge.WeeklyNoticeStateOwner", true), true);
+        behavior.GetField("_weeklyNoticeOwner", Members).SetValue(host, notices);
         Type revisionsType = af.GetType("AnimusForge.WeeklyReportMaterialRevisionOwner", true);
         object revisions = Activator.CreateInstance(revisionsType, true);
         behavior.GetField("_weeklyReportMaterialRevisions", Members).SetValue(host, revisions);
@@ -349,7 +351,7 @@ internal static class WeeklyReportCommitQueueReplay
                 && (string)entryType.GetField("Summary", Members).GetValue(existingWorld) == "already published"
                 && (int)contextType.GetField("AttemptedWriteReportIds", Members).FieldType.GetProperty("Count", Members)
                     .GetValue(contextType.GetField("AttemptedWriteReportIds", Members).GetValue(context)) == 0
-                && behavior.GetField("_unreadWeeklyReportNoticeEventIds", Members).GetValue(host) == null,
+                && ((IList)notices.GetType().GetProperty("Unread", Members).GetValue(notices)).Count == 0,
                 "accepted winner remains untouched while only failed kingdom enters RPM recovery without duplicate notice");
 
             object brokenContext = Activator.CreateInstance(contextType, true);
