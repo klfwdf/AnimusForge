@@ -11,9 +11,16 @@ for p in (ROOT/'src/modules/AF.Module.Memory/Summary').glob('MemoryBusinessState
   if re.match(r'^\s*internal (?:Dictionary<.*>|List<.*>) \w+\s*=',line):fields.append(line)
 source=(ROOT/'src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.cs').read_text(encoding='utf-8-sig')
 a=source.index('\tinternal class DialogueDay');z=source.index('\n\t}',a)+4
-harness=(HERE/'Harness.cs.txt').read_text(encoding='utf-8').replace('@@STATE_FIELDS@@','\n'.join(fields)).replace('@@DIALOGUE_DAY@@',source[a:z])
+daydto=source[a:z]
+dto_extra={}
+for name,marker in [('HeroShownRecord','@@SHOWN_RECORD@@'),('NpcPersonaProfile','@@PERSONA_PROFILE@@')]:
+ a=source.index('\tinternal class '+name);z=source.index('\n\t}',a)+4;dto_extra[marker]=source[a:z]
+harness=(HERE/'Harness.cs.txt').read_text(encoding='utf-8').replace('@@STATE_FIELDS@@','\n'.join(fields)).replace('@@DIALOGUE_DAY@@',daydto)
+for marker,value in dto_extra.items():harness=harness.replace(marker,value)
 (out/'Program.cs').write_text(harness,encoding='utf-8')
 paths=['src/AF.GameAdapter.Bannerlord/Persistence/CampaignMemoryPersistenceAdapter.cs','src/AF.Persistence/CampaignSaveChunkHelper.cs','src/AF.Persistence/OwnerJsonStorageCodec.cs','src/modules/AF.Module.Memory/Records/MemoryPersistenceModels.cs','src/modules/AF.Module.Memory/Records/NpcActionEntry.cs']
+paths += ['src/AF.GameAdapter.Bannerlord/Persistence/'+name+'.cs' for name in ['CampaignShownRecordPersistenceAdapter','CampaignPersonaPersistenceAdapter','CampaignNpcActionPersistenceAdapter']]
+paths.append('src/modules/AF.Module.Memory/Records/NpcActionLedger.cs')
 reference=ROOT/'local/dotnet/8.0.425/sdk/8.0.425/Newtonsoft.Json.dll'
 (out/'Tests.csproj').write_text('<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><ImplicitUsings>enable</ImplicitUsings><NoWarn>CS0649</NoWarn></PropertyGroup><ItemGroup>'+''.join('<Compile Include="'+str(ROOT/p)+'"/>' for p in paths)+'<Reference Include="Newtonsoft.Json"><HintPath>'+str(reference)+'</HintPath></Reference></ItemGroup></Project>',encoding='utf-8')
 (out/'NuGet.Config').write_text('<configuration><packageSources><clear/></packageSources></configuration>')
