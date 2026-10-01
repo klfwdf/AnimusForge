@@ -25,6 +25,8 @@
 
 ### 验证准备、失败与未验
 
+- F5 原F0角色投影余项追加闭合：Native owner承接user/assistant/system及元数据/目标投影、fact格式/limit规则；13纯speech规则进入 `ConversationSpeechTextRules`，宿主只两个设置bool、snapshot与去重后的live距离捕获，无normalizer回宿主业务delegate。`debug-782f0847cb95` 1199 Compile/8资源双API Debug+Bootstrap exit0；owner484（原12状态+16角色/metadata+456四配置对固定原13函数差分）、NativeTurn112/Persona285/Detached25有限PASS。旧history/source guard等待绑定最终freeze精确inverse，不改旧hash；仅一新增blank trim经逐行rstrip相等验证，不当算法变更。
+
 - F3/F4 产品冻结切片最后已接 FailureNotice/CommitPrepared/RecoverySeed、World保存与Coup记录去重；`integration/builds/debug-b28a1bb6f20c` 1198 Compile/8资源 Debug两API+Bootstrap exit0，manifest逐bytes核本包23owned及11shared路径。实际linked F3 58、F4 32、captured116/sealing88/Records42有限正证据；business/terminal/planning旧fixture迁移仍待闭，sealing两isolated mutation survivors明确保留、其他4检出，不声称全变异杀灭或per-tick硬预算。205typed保存binding语义与旧catalog逐项相同，仅一基坐标漂移待最终证据刷新；真实旧档未验。
 
 - F5/F5d 产品独立候选（在F1/F2提交上，仅重放Persona主宿主22项及本包源/适配）1182 Compile/8资源，Debug两API+Bootstrap exit0：`integration/builds/f5-debug-61d848119ef0`。Native owner12、turn112、detached25、Scene71 oracle+43queue+6gate、Courier44及原8运行期mutation、Persona285/Readiness169为具名有限证明；默认渠道与detached均同共同stage，immediate完成一次且0后处理网络。旧Native全宿主审批投影仍需绑定本产品冻结修订补永久inverse，不刷新旧ec74/algorithm hash；此项未过不称F5全退出。Native历史700record样本snapshot约0.04425ms/50136B每request，仅合成观测且事实不占500普通上限，不称实机性能。

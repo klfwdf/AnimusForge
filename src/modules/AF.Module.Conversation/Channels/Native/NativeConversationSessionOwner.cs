@@ -15,13 +15,11 @@ internal sealed class NativeConversationSessionOwner
     private readonly Dictionary<string, string> _recordedDialog = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
     private readonly Dictionary<string, List<ConversationMessage>> _pendingFacts = new Dictionary<string, List<ConversationMessage>>(StringComparer.OrdinalIgnoreCase);
     private readonly Func<long> _nextEventSequence;
-    private readonly Func<string, string> _normalizeVisibleText;
     private readonly int _maxConversationLines;
 
-    internal NativeConversationSessionOwner(Func<long> nextEventSequence, Func<string,string> normalizeVisibleText, int maxConversationLines)
+    internal NativeConversationSessionOwner(Func<long> nextEventSequence, int maxConversationLines)
     {
         _nextEventSequence = nextEventSequence ?? throw new ArgumentNullException(nameof(nextEventSequence));
-        _normalizeVisibleText = normalizeVisibleText ?? throw new ArgumentNullException(nameof(normalizeVisibleText));
         _maxConversationLines = maxConversationLines;
     }
 
@@ -66,7 +64,7 @@ internal sealed class NativeConversationSessionOwner
             _recordedDialog[key] = line; return true;
         }
     }
-    internal string LatestNpcUtterance(string key)
+    internal string LatestNpcUtterance(string key, ConversationSpeechTextOptions options = default)
     {
         lock (_gate)
         {
@@ -75,19 +73,19 @@ internal sealed class NativeConversationSessionOwner
             {
                 var entry=entries[i];
                 if (entry == null || !string.Equals((entry.Kind ?? "").Trim(),"npc",StringComparison.OrdinalIgnoreCase)) continue;
-                string text=_normalizeVisibleText(entry.Text);
+                string text=ConversationSpeechTextRules.NormalizeNativeConversationVisibleTextKey(entry.Text, options);
                 if (!string.IsNullOrWhiteSpace(text)) return text;
             }
             return "";
         }
     }
-    internal bool IsLastNpcLine(string key, string line, Func<string, string> normalize)
+    internal bool IsLastNpcLine(string key, string line)
     {
         lock (_gate)
         {
             if (!_history.TryGetValue(key, out var entries) || entries == null) return false;
             var last = entries.LastOrDefault(x => x != null && string.Equals((x.Kind ?? "").Trim(), "npc", StringComparison.OrdinalIgnoreCase));
-            return last != null && string.Equals(normalize(last.Text), line, StringComparison.Ordinal);
+            return last != null && string.Equals(ConversationSpeechTextRules.NormalizeNativeConversationHistoryTextForPostprocess(last.Text), line, StringComparison.Ordinal);
         }
     }
     internal List<AnimusForgeDialogueHistoryEntry> GetTail(string key, int limit)
@@ -141,12 +139,12 @@ internal sealed class NativeConversationSessionOwner
         try { output.Append("nativeHistoryKeys=").Append(_history.Count).Append(" nativeHistoryEntries=").Append(_history.Values.Sum(x=>x?.Count ?? 0)).Append(" nativeDedupKeys=").Append(_recordedDialog.Count); }
         finally { Monitor.Exit(_gate); }
     }
-    internal string SyncDay(string key, int dayIndex, IEnumerable<AnimusForgeDialogueHistoryEntry> previousEntries, IEnumerable<AnimusForgeDialogueHistoryEntry> currentEntries)
+    internal string SyncDay(string key, int dayIndex, IEnumerable<AnimusForgeDialogueHistoryEntry> previousEntries, IEnumerable<AnimusForgeDialogueHistoryEntry> currentEntries, ConversationSpeechTextOptions options = default)
     {
 List<AnimusForgeDialogueHistoryEntry> oldSnapshot = CloneNativeConversationHistoryEntriesForDailyMemoryEdit(previousEntries, dayIndex);
 			List<AnimusForgeDialogueHistoryEntry> newSnapshot = CloneNativeConversationHistoryEntriesForDailyMemoryEdit(currentEntries, dayIndex);
-			List<AnimusForgeDialogueHistoryEntry> removed = BuildNativeConversationHistoryEditDelta(oldSnapshot, newSnapshot);
-			List<AnimusForgeDialogueHistoryEntry> added = BuildNativeConversationHistoryEditDelta(newSnapshot, oldSnapshot);
+			List<AnimusForgeDialogueHistoryEntry> removed = BuildNativeConversationHistoryEditDelta(oldSnapshot, newSnapshot, options);
+			List<AnimusForgeDialogueHistoryEntry> added = BuildNativeConversationHistoryEditDelta(newSnapshot, oldSnapshot, options);
 			if (removed.Count == 0 && added.Count == 0)
 			{
 				return "";
@@ -171,7 +169,7 @@ List<AnimusForgeDialogueHistoryEntry> oldSnapshot = CloneNativeConversationHisto
 				{
 					for (int i = 0; i < pairedCount; i++)
 					{
-						int index = FindNativeConversationHistoryEntryForDailyMemoryEdit(working, removed[i], dayIndex, reservedIndexes);
+						int index = FindNativeConversationHistoryEntryForDailyMemoryEdit(working, removed[i], dayIndex, reservedIndexes, options);
 						if (index < 0)
 						{
 							exactMatchFailed = true;
@@ -185,7 +183,7 @@ List<AnimusForgeDialogueHistoryEntry> oldSnapshot = CloneNativeConversationHisto
 					{
 						for (int i = pairedCount; i < removed.Count; i++)
 						{
-							int index = FindNativeConversationHistoryEntryForDailyMemoryEdit(working, removed[i], dayIndex, reservedIndexes);
+							int index = FindNativeConversationHistoryEntryForDailyMemoryEdit(working, removed[i], dayIndex, reservedIndexes, options);
 							if (index < 0)
 							{
 								exactMatchFailed = true;
@@ -270,12 +268,12 @@ private List<AnimusForgeDialogueHistoryEntry> CloneNativeConversationHistoryEntr
 			.ToList();
 	}
 
-private List<AnimusForgeDialogueHistoryEntry> BuildNativeConversationHistoryEditDelta(IEnumerable<AnimusForgeDialogueHistoryEntry> source, IEnumerable<AnimusForgeDialogueHistoryEntry> target)
+private List<AnimusForgeDialogueHistoryEntry> BuildNativeConversationHistoryEditDelta(IEnumerable<AnimusForgeDialogueHistoryEntry> source, IEnumerable<AnimusForgeDialogueHistoryEntry> target, ConversationSpeechTextOptions options)
 	{
 		Dictionary<string, int> targetCounts = new Dictionary<string, int>(StringComparer.Ordinal);
 		foreach (AnimusForgeDialogueHistoryEntry entry in target ?? Enumerable.Empty<AnimusForgeDialogueHistoryEntry>())
 		{
-			string fingerprint = BuildNativeConversationHistoryDailyMemoryEditFingerprint(entry);
+			string fingerprint = BuildNativeConversationHistoryDailyMemoryEditFingerprint(entry, options);
 			if (!targetCounts.ContainsKey(fingerprint))
 			{
 				targetCounts[fingerprint] = 0;
@@ -285,7 +283,7 @@ private List<AnimusForgeDialogueHistoryEntry> BuildNativeConversationHistoryEdit
 		List<AnimusForgeDialogueHistoryEntry> result = new List<AnimusForgeDialogueHistoryEntry>();
 		foreach (AnimusForgeDialogueHistoryEntry entry in source ?? Enumerable.Empty<AnimusForgeDialogueHistoryEntry>())
 		{
-			string fingerprint = BuildNativeConversationHistoryDailyMemoryEditFingerprint(entry);
+			string fingerprint = BuildNativeConversationHistoryDailyMemoryEditFingerprint(entry, options);
 			if (targetCounts.TryGetValue(fingerprint, out var count) && count > 0)
 			{
 				targetCounts[fingerprint] = count - 1;
@@ -296,13 +294,13 @@ private List<AnimusForgeDialogueHistoryEntry> BuildNativeConversationHistoryEdit
 		return result;
 	}
 
-private string BuildNativeConversationHistoryDailyMemoryEditFingerprint(AnimusForgeDialogueHistoryEntry entry)
+private string BuildNativeConversationHistoryDailyMemoryEditFingerprint(AnimusForgeDialogueHistoryEntry entry, ConversationSpeechTextOptions options)
 	{
 		if (entry == null)
 		{
 			return "";
 		}
-		return BuildNativeConversationHistoryDailyMemoryEditCoreKey(entry)
+		return BuildNativeConversationHistoryDailyMemoryEditCoreKey(entry, options)
 			+ "\u001f" + (entry.Speaker ?? "").Trim().ToLowerInvariant()
 			+ "\u001f" + entry.GameHour
 			+ "\u001f" + (entry.Scene ?? "").Trim().ToLowerInvariant()
@@ -310,31 +308,31 @@ private string BuildNativeConversationHistoryDailyMemoryEditFingerprint(AnimusFo
 			+ "\u001f" + (entry.TargetName ?? "").Trim().ToLowerInvariant();
 	}
 
-private string BuildNativeConversationHistoryDailyMemoryEditCoreKey(AnimusForgeDialogueHistoryEntry entry)
+private string BuildNativeConversationHistoryDailyMemoryEditCoreKey(AnimusForgeDialogueHistoryEntry entry, ConversationSpeechTextOptions options)
 	{
 		if (entry == null)
 		{
 			return "";
 		}
-		return (entry.Kind ?? "").Trim().ToLowerInvariant() + "\u001f" + _normalizeVisibleText(entry.Text);
+		return (entry.Kind ?? "").Trim().ToLowerInvariant() + "\u001f" + ConversationSpeechTextRules.NormalizeNativeConversationVisibleTextKey(entry.Text, options);
 	}
 
-private int FindNativeConversationHistoryEntryForDailyMemoryEdit(List<AnimusForgeDialogueHistoryEntry> entries, AnimusForgeDialogueHistoryEntry expected, int dayIndex, HashSet<int> reservedIndexes)
+private int FindNativeConversationHistoryEntryForDailyMemoryEdit(List<AnimusForgeDialogueHistoryEntry> entries, AnimusForgeDialogueHistoryEntry expected, int dayIndex, HashSet<int> reservedIndexes, ConversationSpeechTextOptions options)
 	{
-		string expectedFingerprint = BuildNativeConversationHistoryDailyMemoryEditFingerprint(expected);
+		string expectedFingerprint = BuildNativeConversationHistoryDailyMemoryEditFingerprint(expected, options);
 		for (int i = 0; i < (entries?.Count ?? 0); i++)
 		{
 			AnimusForgeDialogueHistoryEntry candidate = entries[i];
-			if ((reservedIndexes == null || !reservedIndexes.Contains(i)) && candidate != null && candidate.GameDayIndex == dayIndex && string.Equals(BuildNativeConversationHistoryDailyMemoryEditFingerprint(candidate), expectedFingerprint, StringComparison.Ordinal))
+			if ((reservedIndexes == null || !reservedIndexes.Contains(i)) && candidate != null && candidate.GameDayIndex == dayIndex && string.Equals(BuildNativeConversationHistoryDailyMemoryEditFingerprint(candidate, options), expectedFingerprint, StringComparison.Ordinal))
 			{
 				return i;
 			}
 		}
-		string expectedKey = BuildNativeConversationHistoryDailyMemoryEditCoreKey(expected);
+		string expectedKey = BuildNativeConversationHistoryDailyMemoryEditCoreKey(expected, options);
 		for (int i = 0; i < (entries?.Count ?? 0); i++)
 		{
 			AnimusForgeDialogueHistoryEntry candidate = entries[i];
-			if ((reservedIndexes == null || !reservedIndexes.Contains(i)) && candidate != null && candidate.GameDayIndex == dayIndex && string.Equals(BuildNativeConversationHistoryDailyMemoryEditCoreKey(candidate), expectedKey, StringComparison.Ordinal))
+			if ((reservedIndexes == null || !reservedIndexes.Contains(i)) && candidate != null && candidate.GameDayIndex == dayIndex && string.Equals(BuildNativeConversationHistoryDailyMemoryEditCoreKey(candidate, options), expectedKey, StringComparison.Ordinal))
 			{
 				return i;
 			}
@@ -408,5 +406,84 @@ private void TrimNativeConversationSessionHistory(List<AnimusForgeDialogueHistor
 		{
 			entries.RemoveRange(writeIndex, entries.Count - writeIndex);
 		}
+	}
+
+    internal static int ResolveHistoryLineLimit(int requested, int maximum, int configured) => requested > 0 ? Math.Max(1, Math.Min(maximum, requested)) : configured;
+
+internal static List<ConversationMessage> ProjectHistoryMessages(List<AnimusForgeDialogueHistoryEntry> entries, string npcName, int targetAgentIndex, IReadOnlyDictionary<int, float> distances)
+	{
+		List<ConversationMessage> list = new List<ConversationMessage>();
+		try
+		{
+
+			string targetName = (npcName ?? "").Trim();
+			string npcSpeakerName = string.IsNullOrWhiteSpace(targetName) ? "NPC" : targetName;
+			for (int i = 0; i < entries.Count; i++)
+			{
+				AnimusForgeDialogueHistoryEntry entry = entries[i];
+				string text = (entry?.Text ?? "").Replace("\r", "").Trim();
+				if (string.IsNullOrWhiteSpace(text))
+				{
+					continue;
+				}
+				string kind = (entry?.Kind ?? "").Trim().ToLowerInvariant();
+				string speaker = string.IsNullOrWhiteSpace(entry?.Speaker) ? "" : entry.Speaker.Trim();
+				if (kind == "fact")
+				{
+					string factLine = ConversationSpeechTextRules.NormalizeNativeConversationFactLineForPrompt(text, speaker);
+					if (!string.IsNullOrWhiteSpace(factLine))
+					{
+						list.Add(new ConversationMessage
+						{
+							EventSequence = entry.EventSequence,
+							GameDayIndex = entry.GameDayIndex,
+							GameDate = entry.GameDate ?? "",
+							GameHour = entry.GameHour,
+							Scene = entry.Scene ?? "",
+							Role = "system",
+							Content = factLine,
+							SpeakerName = "系统",
+							SpeakerAgentIndex = -1
+						});
+					}
+					continue;
+				}
+				if (kind == "npc")
+				{
+					list.Add(new ConversationMessage
+					{
+						EventSequence = entry.EventSequence,
+						GameDayIndex = entry.GameDayIndex,
+						GameDate = entry.GameDate ?? "",
+						GameHour = entry.GameHour,
+						Scene = entry.Scene ?? "",
+						Role = "assistant",
+						Content = text,
+						SpeakerName = string.IsNullOrWhiteSpace(speaker) ? npcSpeakerName : speaker,
+						SpeakerAgentIndex = targetAgentIndex
+					});
+					continue;
+				}
+				list.Add(new ConversationMessage
+				{
+					EventSequence = entry.EventSequence,
+					GameDayIndex = entry.GameDayIndex,
+					GameDate = entry.GameDate ?? "",
+					GameHour = entry.GameHour,
+					Scene = entry.Scene ?? "",
+					Role = "user",
+					Content = text,
+					SpeakerName = "你",
+					SpeakerAgentIndex = -1,
+					TargetAgentIndex = entry.TargetAgentIndex >= 0 ? entry.TargetAgentIndex : targetAgentIndex,
+					TargetName = string.IsNullOrWhiteSpace(entry.TargetName) ? targetName : entry.TargetName.Trim(),
+					PlayerDistanceMeters = distances != null && distances.TryGetValue(entry.TargetAgentIndex >= 0 ? entry.TargetAgentIndex : targetAgentIndex, out var distance) ? distance : -1f
+				});
+			}
+		}
+		catch
+		{
+		}
+		return list;
 	}
 }
