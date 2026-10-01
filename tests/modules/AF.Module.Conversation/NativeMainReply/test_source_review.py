@@ -19,10 +19,16 @@ class MainReplySourceTests(unittest.TestCase):
         self.assertNotIn('Task.Run',edit['after'])
     def test_changed_consumer_or_unrelated_code_rejected(self):
         live=(ROOT/'ShoutBehavior.cs').read_text(encoding='utf-8-sig')
-        live=projected_source(live)
-        for changed in [live.replace('if (!nativeMainReply.CanContinue)','if (false)',1),live+'\n// unrelated drift\n']:
-            with self.assertRaisesRegex(AssertionError,'Unreviewed J07b source drift'):
-                inverse.restore_main_reply('ShoutBehavior.cs',changed)
+        original=Path.read_text;target=ROOT/'ShoutBehavior.NativeTurnPresentation.cs'
+        self.assertIn('if (!nativeMainReply.CanContinue)',target.read_text(encoding='utf-8-sig'))
+        def changed(path,*args,**kwargs):
+            result=original(path,*args,**kwargs)
+            return result.replace('if (!nativeMainReply.CanContinue)','if (false)',1) if path==target else result
+        with patch.object(Path,'read_text',changed):
+            with self.assertRaisesRegex(AssertionError,'Unreviewed J07b source drift: turn dependency'):
+                inverse.restore_main_reply('ShoutBehavior.cs',live)
+        with self.assertRaisesRegex(AssertionError,'Unreviewed J07b source drift: (turn entry|relocated host input)'):
+            inverse.restore_main_reply('ShoutBehavior.cs',live.replace('return NativeConversationTurnCoordinator.RunAsync(', 'return MissingTurnCoordinator.RunAsync(',1))
     def test_unreviewed_stage_change_rejected(self):
         original=Path.read_text;target=ROOT/'src/modules/AF.Module.Conversation/Channels/Native/NativeConversationMainReplyStage.cs'
         def changed(path,*args,**kwargs):

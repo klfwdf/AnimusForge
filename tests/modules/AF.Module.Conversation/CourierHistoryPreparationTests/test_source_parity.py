@@ -9,7 +9,12 @@ class SourceGuards(unittest.TestCase):
     def test_extra_owner_edit_rejected(self):
         with self.assertRaisesRegex(AssertionError,'Unreviewed Courier source'):m.restore(CURRENT+'\n// unreviewed\n')
     def test_missing_expiry_guard_rejected(self):
-        with self.assertRaisesRegex(AssertionError,'Unreviewed Courier source'):m.restore(CURRENT.replace('if (preparedHistory == null) return;','',1))
+        original=Path.read_text
+        def changed(path,*a,**kw):
+            text=original(path,*a,**kw)
+            return text.replace('if (preparedHistory == null) { QueueCourierPreparationFailure(promptRun); return; }','',1) if path.name=='CourierDeliveryBehavior.GenerationLifecycle.cs' else text
+        with patch.object(Path,'read_text',changed):
+            with self.assertRaisesRegex(AssertionError,'Unreviewed Courier source history expiry'):m.restore(CURRENT)
     def test_new_helper_drift_rejected(self):
         original=Path.read_text
         def changed(path,*a,**kw):
