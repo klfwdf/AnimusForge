@@ -374,4 +374,16 @@ internal static class WeeklyEventDataImportOwner
 		return list;
 	}
 
+
+    internal static void RestoreOpeningAndRecords(string worldSummary, Dictionary<string,string> openingSummaries,
+        List<EventRecordEntry> restoredRecords, ref string currentWorldSummary,
+        ref Dictionary<string,string> currentOpeningSummaries, ref List<EventRecordEntry> currentRecords, Action markOpening)
+    {
+        currentWorldSummary = worldSummary ?? "";
+        currentOpeningSummaries = new Dictionary<string,string>(StringComparer.OrdinalIgnoreCase);
+        foreach (KeyValuePair<string,string> summary in openingSummaries ?? new Dictionary<string,string>())
+            currentOpeningSummaries[summary.Key ?? ""] = summary.Value ?? "";
+        markOpening();
+        currentRecords = restoredRecords;
+    }
 }

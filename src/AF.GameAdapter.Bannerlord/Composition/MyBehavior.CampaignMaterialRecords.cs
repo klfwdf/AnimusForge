@@ -288,4 +288,14 @@ public partial class MyBehavior
     private static List<string> NormalizeEventMaterialIdListInPlace(List<string> values)
         => WeeklyEventDataImportOwner.NormalizeEventMaterialIdListInPlace(values);
 
+
+    private void RestoreDatabaseReloadWeeklyData(string worldSummary, Dictionary<string,string> openingSummaries,
+        List<EventRecordEntry> restoredRecords, string previousWorldWeeklyProductsFingerprint)
+    {
+        WeeklyEventDataImportOwner.RestoreOpeningAndRecords(worldSummary, openingSummaries, restoredRecords,
+            ref _eventWorldOpeningSummary, ref _eventKingdomOpeningSummaries, ref _eventRecordEntries,
+            _weeklyReportMaterialRevisions.MarkOpening);
+        if (!string.Equals(previousWorldWeeklyProductsFingerprint, BuildPublishedWorldWeeklyProductsFingerprint(), StringComparison.Ordinal))
+            Interlocked.Increment(ref _publishedWorldWeeklyHistoryRevision);
+    }
 }
