@@ -41,3 +41,21 @@ Check(!Load(out payload,out error)&&payload.HasWorldSummaryFile&&error.Length>0,
 Check(world=="" && records.Count==2,"failed prepare leaves save state untouched");
 MyBehavior.VerifyImportLifecycle();
 Console.WriteLine("PASS actual Weekly event/debt import owners: preparation/JSON/overwrite/skip/invalid/material/derived-only/dynamic-preservation/identity LIVE=NOT_RUN SAVE=NOT_RUN");
+
+var ids=new List<string>{" a ",null,"", "a"," B "};
+var material=new MyBehavior.EventMaterialReference{Label=" Calradia ",SnapshotText=" Calradia ",HeroId=" h ",SourceMaterialCount=-2,RelatedHeroIds=ids,SourceStableKeys=new(){" s ",""}};
+var weekly=new Entry{EventId=" weekly_report:test ",Title=" Calradia ",WeekIndex=-1,CreatedDay=-3,Summary=" Calradia ",ShortSummary=" ",TagText=" tag ",PromptText=" Calradia ",Materials=new(){null,material}};
+var ordinary=new Entry{EventId=" normal ",Title=" Calradia ",WeekIndex=2,CreatedDay=4,Summary=" Calradia ",Materials=null};
+var sameSort=new Entry{EventId=" same ",Title=" Calradia ",WeekIndex=2,CreatedDay=4};
+var inPlace=new List<Entry>{null,new(){EventId="invalid",Title=" "},weekly,ordinary,sameSort};
+var originalCopy=JsonSerializer.Deserialize<List<Entry>>(JsonSerializer.Serialize(inPlace,json),json);
+var listRef=inPlace;var materialListRef=weekly.Materials;
+OriginalNormalizer.NormalizeEventRecordEntriesInPlace(originalCopy);
+WeeklyEventDataImportOwner.NormalizeEventRecordEntriesInPlace(inPlace,WeeklyGenerationRules.NeutralizeWeeklyReportScenarioName,WeeklyGenerationRules.BuildFallbackWeeklyReportShortSummary,WeeklyGenerationRules.NormalizeWeeklyReportTagText);
+Check(JsonSerializer.Serialize(inPlace,json)==JsonSerializer.Serialize(originalCopy,json),"in-place actual original full graph/sort parity");
+Check(ReferenceEquals(inPlace,listRef)&&ReferenceEquals(inPlace[2],weekly)&&ReferenceEquals(inPlace[0],ordinary)&&ReferenceEquals(inPlace[1],sameSort),"entry/list identity and stable equal sort");
+Check(ReferenceEquals(weekly.Materials,materialListRef)&&ReferenceEquals(weekly.Materials[0],material)&&ReferenceEquals(material.RelatedHeroIds,ids),"material and nested list identities");
+Check(ids.SequenceEqual(new[]{"a","a","B"})&&material.SourceMaterialCount==0&&material.HeroId=="h"&&ordinary.Materials.Count==0,"id normalization retains duplicates/order and clamps negative fields");
+WeeklyEventDataImportOwner.NormalizeEventRecordEntriesInPlace(null,x=>x,x=>x,x=>x);
+Check(WeeklyEventDataImportOwner.NormalizeEventMaterialReferencesInPlace(null,false,x=>x).Count==0&&WeeklyEventDataImportOwner.NormalizeEventMaterialIdListInPlace(null).Count==0,"null list behavior");
+Console.WriteLine("PASS actual Weekly in-place normalization: original parity/list-entry-material-id identity/stable sorting/null/removal/trim/clamp/no cloning LIVE=NOT_RUN SAVE=NOT_RUN");
