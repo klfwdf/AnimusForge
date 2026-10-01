@@ -108,7 +108,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		ExtremelyHigh
 	}
 
-	private class HeroShownRecord
+	internal class HeroShownRecord
 	{
 		public int ShownGold;
 
@@ -325,7 +325,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		public List<string> RelatedKingdomIds = new List<string>();
 	}
 
-	private class NpcPersonaProfile
+	internal class NpcPersonaProfile
 	{
 		public string HeroId;
 
@@ -15054,66 +15054,11 @@ TeamModuleServices.CivilWar.AdvanceWeek(devEditableKingdom, weekIndex, GetKingdo
 				SanitizeWildernessNonHeroPartyMemoryIdMap(removeInactive: false);
 				dataStore.SyncData<Dictionary<MobileParty, string>>("_af_wildernessNonHeroPartyMemoryIds_v1", ref _wildernessNonHeroPartyMemoryIds);
 				LogNonHeroMemoryTrace("stage=sync_save_begin partyGuidMap=" + (_wildernessNonHeroPartyMemoryIds?.Count ?? 0) + " dialogueOwners=" + CountNonHeroDialogueHistoryOwners() + " dialogueLines=" + CountNonHeroDialogueHistoryLines() + " dailyDraftOwners=" + CountNonHeroDailyDraftOwners() + " dailyDraftLines=" + CountNonHeroDailyDraftLines() + " sample=" + BuildNonHeroMemorySampleIds());
-				_shownRecordStorage.Clear();
-				foreach (KeyValuePair<string, HeroShownRecord> shownRecord in _shownRecords)
-				{
-					if (string.IsNullOrWhiteSpace(shownRecord.Key) || shownRecord.Value == null)
-					{
-						continue;
-					}
-					bool flag = Math.Max(0, shownRecord.Value.ShownGold) > 0;
-					if (!flag && shownRecord.Value.ShownItems != null)
-					{
-						foreach (KeyValuePair<string, int> shownItem in shownRecord.Value.ShownItems)
-						{
-							if (!string.IsNullOrWhiteSpace(shownItem.Key) && shownItem.Value > 0)
-							{
-								flag = true;
-								break;
-							}
-						}
-					}
-					if (!flag)
-					{
-						continue;
-					}
-					try
-					{
-						_shownRecordStorage[shownRecord.Key] = JsonConvert.SerializeObject(shownRecord.Value);
-					}
-					catch (Exception ex)
-					{
-						Logger.Log("TradeShown", "[ERROR] Serialize shown record for " + shownRecord.Key + ": " + ex.Message);
-					}
-				}
-				Dictionary<string, string> dictionary = CampaignSaveChunkHelper.FlattenStringDictionary(_shownRecordStorage, "_shownRecords_v1", "TradeShown");
-				dataStore.SyncData("_shownRecords_v1", ref dictionary);
+				CampaignShownRecordPersistenceAdapter.Save(dataStore, _shownRecords, _shownRecordStorage);
 				MemoryPersistence.Save(dataStore, LogNonHeroMemoryTrace, IsNonHeroMemoryId);
-				OwnerJsonStorageCodec.Serialize(_npcMajorActions, _npcMajorActionStorage, skipWhitespaceKeys: false, skipEmptyLists: true, list => SanitizeNpcActionEntries(list, keepOnlyRecentWindow: false), (key, ex) => Logger.Log("NpcAction", "[ERROR] Serialize major actions for " + key + ": " + ex.Message));
-				Dictionary<string, string> dictionary3 = CampaignSaveChunkHelper.FlattenStringDictionary(_npcMajorActionStorage, "_npcMajorActions_v1", "NpcAction");
-				dataStore.SyncData("_npcMajorActions_v1", ref dictionary3);
-				OwnerJsonStorageCodec.Serialize(_npcRecentActions, _npcRecentActionStorage, skipWhitespaceKeys: false, skipEmptyLists: true, null, (key, ex) => Logger.Log("NpcAction", "[ERROR] Serialize recent actions for " + key + ": " + ex.Message));
-				Dictionary<string, string> dictionary4 = CampaignSaveChunkHelper.FlattenStringDictionary(_npcRecentActionStorage, "_npcRecentActions_v1", "NpcAction");
-				dataStore.SyncData("_npcRecentActions_v1", ref dictionary4);
+				CampaignNpcActionPersistenceAdapter.Save(dataStore, _memoryBusinessState, SanitizeNpcActionEntries);
 				dataStore.SyncData("_npcActionGlobalOrderCounter_v1", ref _npcActionGlobalOrderCounter);
-				_npcPersonaProfileStorage.Clear();
-				foreach (KeyValuePair<string, NpcPersonaProfile> npcPersonaProfile2 in _npcPersonaProfiles)
-				{
-					if (!string.IsNullOrEmpty(npcPersonaProfile2.Key) && TryPrepareNpcPersonaProfileForWrite(npcPersonaProfile2.Key, npcPersonaProfile2.Value))
-					{
-						try
-						{
-							string value4 = JsonConvert.SerializeObject(npcPersonaProfile2.Value);
-							_npcPersonaProfileStorage[npcPersonaProfile2.Key] = value4;
-						}
-						catch (Exception ex4)
-						{
-							Logger.Log("NpcPersona", "[ERROR] Serialize profile for " + npcPersonaProfile2.Key + ": " + ex4.Message);
-						}
-					}
-				}
-				Dictionary<string, string> dictionary5 = CampaignSaveChunkHelper.FlattenStringDictionary(_npcPersonaProfileStorage, "_npcPersonaProfiles_v1", "NpcPersona");
-				dataStore.SyncData("_npcPersonaProfiles_v1", ref dictionary5);
+				CampaignPersonaPersistenceAdapter.Save(dataStore, _npcPersonaProfiles, _npcPersonaProfileStorage, TryPrepareNpcPersonaProfileForWrite);
 				_eventKingdomOpeningSummaryStorage.Clear();
 				foreach (KeyValuePair<string, string> item2 in _eventKingdomOpeningSummaries)
 				{
@@ -15251,131 +15196,12 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 			dataStore.SyncData<Dictionary<MobileParty, string>>("_af_wildernessNonHeroPartyMemoryIds_v1", ref _wildernessNonHeroPartyMemoryIds);
 			SanitizeWildernessNonHeroPartyMemoryIdMap(removeInactive: false);
 			LogNonHeroMemoryTrace("stage=sync_load_party_map partyGuidMap=" + (_wildernessNonHeroPartyMemoryIds?.Count ?? 0));
-			_shownRecords.Clear();
-			_shownRecordStorage.Clear();
-			Dictionary<string, string> dictionary7 = new Dictionary<string, string>();
-			dataStore.SyncData("_shownRecords_v1", ref dictionary7);
-			_shownRecordStorage = CampaignSaveChunkHelper.RestoreStringDictionary(dictionary7, "TradeShown");
-			if (_shownRecordStorage != null)
-			{
-				foreach (KeyValuePair<string, string> shownRecord2 in _shownRecordStorage)
-				{
-					if (string.IsNullOrWhiteSpace(shownRecord2.Key) || string.IsNullOrWhiteSpace(shownRecord2.Value))
-					{
-						continue;
-					}
-					try
-					{
-						HeroShownRecord heroShownRecord = JsonConvert.DeserializeObject<HeroShownRecord>(shownRecord2.Value);
-						if (heroShownRecord != null)
-						{
-							if (heroShownRecord.ShownGold < 0)
-							{
-								heroShownRecord.ShownGold = 0;
-							}
-							if (heroShownRecord.ShownItems == null)
-							{
-								heroShownRecord.ShownItems = new Dictionary<string, int>();
-							}
-							else
-							{
-								heroShownRecord.ShownItems = heroShownRecord.ShownItems.Where((KeyValuePair<string, int> x) => !string.IsNullOrWhiteSpace(x.Key) && x.Value > 0).ToDictionary((KeyValuePair<string, int> x) => x.Key, (KeyValuePair<string, int> x) => x.Value);
-							}
-							_shownRecords[NormalizeShownRecordKey(shownRecord2.Key)] = heroShownRecord;
-						}
-					}
-					catch (Exception ex2)
-					{
-						Logger.Log("TradeShown", "[ERROR] Deserialize shown record for " + shownRecord2.Key + ": " + ex2.Message);
-					}
-				}
-			}
+			CampaignShownRecordPersistenceAdapter.Load(dataStore, _shownRecords, ref _shownRecordStorage);
 			MemoryPersistence.Load(dataStore,
 				() => LogNonHeroMemoryTrace("stage=sync_load_dialogue_restored owners=" + CountNonHeroDialogueHistoryOwners() + " lines=" + CountNonHeroDialogueHistoryLines() + " storageOwners=" + (_dialogueHistoryStorage?.Keys.Count(IsNonHeroMemoryId) ?? 0) + " sample=" + BuildNonHeroMemorySampleIds()),
 				() => LogNonHeroMemoryTrace("stage=sync_load_daily_restored owners=" + CountNonHeroDailyDraftOwners() + " lines=" + CountNonHeroDailyDraftLines() + " storageOwners=" + (_dailyMemoryDraftStorage?.Keys.Count(IsNonHeroMemoryId) ?? 0) + " sample=" + BuildNonHeroMemorySampleIds()));
-			_npcMajorActions.Clear();
-			_npcMajorActionStorage.Clear();
-			Dictionary<string, string> dictionary9 = new Dictionary<string, string>();
-			dataStore.SyncData("_npcMajorActions_v1", ref dictionary9);
-			_npcMajorActionStorage = CampaignSaveChunkHelper.RestoreStringDictionary(dictionary9, "NpcAction");
-			if (_npcMajorActionStorage != null)
-			{
-				foreach (KeyValuePair<string, string> item3 in _npcMajorActionStorage)
-				{
-					if (string.IsNullOrEmpty(item3.Key) || string.IsNullOrEmpty(item3.Value))
-					{
-						continue;
-					}
-					try
-					{
-						List<NpcActionEntry> list2 = JsonConvert.DeserializeObject<List<NpcActionEntry>>(item3.Value) ?? new List<NpcActionEntry>();
-						list2 = SanitizeNpcActionEntries(list2, keepOnlyRecentWindow: false);
-						if (list2.Count > 0)
-						{
-							_npcMajorActions[item3.Key] = list2;
-						}
-					}
-					catch (Exception ex4)
-					{
-						Logger.Log("NpcAction", "[ERROR] Deserialize major actions for " + item3.Key + ": " + ex4.Message);
-					}
-				}
-			}
-			_npcRecentActions.Clear();
-			_npcRecentActionStorage.Clear();
-			Dictionary<string, string> dictionary10 = new Dictionary<string, string>();
-			dataStore.SyncData("_npcRecentActions_v1", ref dictionary10);
-			_npcRecentActionStorage = CampaignSaveChunkHelper.RestoreStringDictionary(dictionary10, "NpcAction");
-			if (_npcRecentActionStorage != null)
-			{
-				foreach (KeyValuePair<string, string> item4 in _npcRecentActionStorage)
-				{
-					if (string.IsNullOrEmpty(item4.Key) || string.IsNullOrEmpty(item4.Value))
-					{
-						continue;
-					}
-					try
-					{
-						List<NpcActionEntry> list3 = JsonConvert.DeserializeObject<List<NpcActionEntry>>(item4.Value) ?? new List<NpcActionEntry>();
-						list3 = SanitizeNpcActionEntries(list3, keepOnlyRecentWindow: true);
-						if (list3.Count > 0)
-						{
-							_npcRecentActions[item4.Key] = list3;
-						}
-					}
-					catch (Exception ex5)
-					{
-						Logger.Log("NpcAction", "[ERROR] Deserialize recent actions for " + item4.Key + ": " + ex5.Message);
-					}
-				}
-			}
-			_npcPersonaProfiles.Clear();
-			_npcPersonaProfileStorage.Clear();
-			Dictionary<string, string> dictionary11 = new Dictionary<string, string>();
-			dataStore.SyncData("_npcPersonaProfiles_v1", ref dictionary11);
-			_npcPersonaProfileStorage = CampaignSaveChunkHelper.RestoreStringDictionary(dictionary11, "NpcPersona");
-			if (_npcPersonaProfileStorage != null)
-			{
-				foreach (KeyValuePair<string, string> item5 in _npcPersonaProfileStorage)
-				{
-					if (string.IsNullOrEmpty(item5.Key) || string.IsNullOrEmpty(item5.Value))
-					{
-						continue;
-					}
-					try
-					{
-						NpcPersonaProfile npcPersonaProfile = JsonConvert.DeserializeObject<NpcPersonaProfile>(item5.Value);
-						if (npcPersonaProfile != null)
-						{
-							_npcPersonaProfiles[item5.Key] = npcPersonaProfile;
-						}
-					}
-					catch (Exception ex6)
-					{
-						Logger.Log("NpcPersona", "[ERROR] Deserialize profile for " + item5.Key + ": " + ex6.Message);
-					}
-				}
-			}
+			CampaignNpcActionPersistenceAdapter.Load(dataStore, _memoryBusinessState, SanitizeNpcActionEntries);
+			CampaignPersonaPersistenceAdapter.Load(dataStore, _npcPersonaProfiles, ref _npcPersonaProfileStorage);
 			RebuildNpcRecentActionStableKeyIndex();
 			dataStore.SyncData("_npcActionGlobalOrderCounter_v1", ref _npcActionGlobalOrderCounter);
 			NormalizeNpcActionSequences(_npcMajorActions);
@@ -19156,7 +18982,7 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 
 	private static string NormalizeShownRecordKey(string targetKey)
 	{
-		return (targetKey ?? "").Trim().ToLowerInvariant();
+		return CampaignShownRecordPersistenceAdapter.NormalizeKey(targetKey);
 	}
 
 	private static string NormalizeMemoryHeroId(string heroId)
