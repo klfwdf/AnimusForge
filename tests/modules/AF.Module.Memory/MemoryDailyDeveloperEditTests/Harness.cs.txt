@@ -1,0 +1,122 @@
+using System;
+using System.Linq;
+using System.Collections.Generic;
+using DialogueDay = AnimusForge.MyBehavior.DialogueDay;
+namespace TaleWorlds.Library { internal static class MBMath { internal static int ClampInt(int x,int a,int b)=>Math.Max(a,Math.Min(b,x)); } internal static class TWParallel { internal static bool IsMainThread()=>true; } }
+namespace AnimusForge
+{
+internal static class MyBehavior
+{
+    @@DAY@@
+    internal static bool IsMemoryRecoveryHexDigest(string s)=>s!=null&&s.Length==64&&s.All(c=>"0123456789ABCDEF".Contains(c));
+    internal static bool IsValidMemoryCommitMarker(string id,string part,string hash)=>IsMemoryRecoveryHexDigest(id)&&IsMemoryRecoveryHexDigest(hash)&&new[]{"user","assistant","fact"}.Contains(part);
+}
+internal sealed class MemoryBusinessStateOwner
+{
+    internal Dictionary<string,List<DailyMemoryDraft>> Drafts=new(StringComparer.OrdinalIgnoreCase);
+    internal Dictionary<string,List<MyBehavior.DialogueDay>> History=new(StringComparer.OrdinalIgnoreCase);
+    internal List<MemorySummaryJob> DailyQueue=new();
+    @@STATE_METHODS@@
+}
+internal sealed class Hero { internal string StringId = "hero"; internal object CharacterObject, Name; }
+internal static class ShoutBehavior { internal static void ClearNativeConversationSessionHistoryForExternal(Hero hero,object character,string name) { } }
+internal sealed class AdapterProbe
+{
+    internal MemoryBusinessStateOwner _memoryBusinessState;
+    internal MemoryDailyDeveloperEditContext Context;
+    internal MemoryDailyDeveloperEditEffects Effects;
+    internal long Generation = 1;
+    private bool IsMemorySourceEditorCurrent(long value) => value == Generation;
+    private MemoryDailyDeveloperEditContext CaptureDailyDeveloperEditContext(Hero _) => Context;
+    private MemoryDailyDeveloperEditEffects CaptureDailyDeveloperEditEffects(Hero _, int day, string reason) => Effects;
+    private MemoryImportExportState CaptureMemoryImportExportState() => new() { DailyDrafts = _memoryBusinessState.Drafts, SummaryQueue = _memoryBusinessState.DailyQueue };
+    @@ADAPTERS@@
+}
+internal static class Program
+{
+    static int checks;
+    static void Check(bool ok,string name){checks++;if(!ok)throw new Exception("FAIL "+name);}
+    static DailyMemoryLine Line(string text,int session=-1)=>new(){Text=text,GameDayIndex=5,GameDate="day5",GameHour=12,SceneSessionId=session,Speaker="NPC",IsLlmDialogue=true};
+    static void Main()
+    {
+        var state=new MemoryBusinessStateOwner(); var events=new List<string>();
+        var context=new MemoryDailyDeveloperEditContext{HeroId="hero",HeroName="NPC",HasHero=true};
+        var records=new List<MyBehavior.DialogueDay>{new(){GameDayIndex=5,GameDate="day5",Lines=new(){DialogueHistoryLedger.TagSceneSession("same",1),"same","keep"}}};
+        var effects=new MemoryDailyDeveloperEditEffects{
+            LoadHistory=()=>{events.Add("load-history");return records;},SaveHistory=x=>{events.Add("save-history");records=x;},
+            SyncNativeHistory=(oldLines,newLines)=>events.Add("native"),ResolveGameDate=day=>"fallback",Log=x=>events.Add(x.StartsWith("[WARN]")?"warn":"log")};
+        var old=new[]{Line("same"),Line("same"),Line("keep")};var now=new[]{Line("same"),Line("keep"),Line("added",9)};
+        MemoryDeveloperEditOwner.SyncDialogueHistoryForDailyMemoryDraftEdit(context,effects,5,old,now,"edit");
+        Check(events.Take(3).SequenceEqual(new[]{"native","load-history","save-history"}),"native effect precedes dialogue publication");
+        Check(records[0].Lines.SequenceEqual(new[]{"same","keep",DialogueHistoryLedger.TagSceneSession("added",9)}),"duplicate count removes only one and retains added session marker");
+        events.Clear(); MemoryDeveloperEditOwner.SyncDialogueHistoryForDailyMemoryDraftEdit(context,effects,5,now,now,"metadata");
+        Check(events.SequenceEqual(new[]{"native"}),"same text metadata edits notify native without dialogue writes");
+        records=new(){new(){GameDayIndex=5,Lines=new(){"gone"},MemoryCommitMarkers=new(){["marker"]="receipt"}}};
+        MemoryDeveloperEditOwner.SyncDialogueHistoryForDailyMemoryDraftEdit(context,effects,5,new[]{Line("gone")},Array.Empty<DailyMemoryLine>(),"delete");
+        Check(records.Count==1&&records[0].Lines.Count==0&&records[0].MemoryCommitMarkers["marker"]=="receipt","marker-only day is not deleted");
+        records=new(){new(){GameDayIndex=5,Lines=new(){"gone"}}};
+        MemoryDeveloperEditOwner.SyncDialogueHistoryForDailyMemoryDraftEdit(context,effects,5,new[]{Line("gone")},Array.Empty<DailyMemoryLine>(),"delete");
+        Check(records.Count==0,"empty unmarked day removed");
+        Check(MemoryDeveloperEditOwner.ResolveDailyMemorySyncGameDate(5,new[]{Line("x")},null,_=>throw new Exception())=="day5","new line date wins without live fallback");
+        Check(MemoryDeveloperEditOwner.ResolveDailyMemorySyncGameDate(5,null,new[]{Line("x")},_=>throw new Exception())=="day5","old line date fallback");
+        Check(MemoryDeveloperEditOwner.ResolveDailyMemorySyncGameDate(5,null,null,_=>"today")=="today","live date queried only when records lack date");
+        var raw=Line(" x\r\ny ");raw.GameHour=99;raw.Speaker=" ";raw.IsAfef=true;
+        var draft=new DailyMemoryDraft{HeroId="bad",HeroName="old",GameDayIndex=5,GameDate=" day5 ",Lines=new(){raw}};
+        MemoryDeveloperEditOwner.NormalizeDevDailyMemoryDraftForSave("hero","NPC",draft);
+        Check(raw.GameHour==23&&raw.Text=="x\ny"&&raw.Speaker=="AFEF"&&!raw.IsLlmDialogue&&!draft.HasLlmDialogue,"normalization and AFEF exclusion preserve prior rules");
+        Check(draft.HeroId=="hero"&&draft.HeroName=="NPC"&&draft.GameDate=="day5","captured identity normalizes live draft");
+        var clones=MemoryDeveloperEditOwner.CloneDevDailyMemoryLines(new[]{raw,null});raw.Text="changed";
+        Check(clones.Count==1&&clones[0].Text=="x\ny"&&!ReferenceEquals(raw,clones[0]),"old-line copy isolated");
+        state.Drafts["hero"]=new(){new(){HeroId="hero",HeroName="NPC",GameDayIndex=5,GameDate="day5",Lines=new(){Line("old")}}};
+        records=new(){new(){GameDayIndex=5,Lines=new(){"old"}}};events.Clear();
+        Check(!MemoryDeveloperEditOwner.MutateDailyLine(state,context,effects,5,99,(_,_)=>throw new Exception()),"invalid line index returns false without mutation");
+        Check(events.Count==0,"invalid selection publishes no effects");
+        Check(MemoryDeveloperEditOwner.MutateDailyLine(state,context,effects,5,0,(_,line)=>line.Text="new"),"actual mutation owner succeeds");
+        Check(state.LoadDrafts("hero")[0].Lines[0].Text=="new"&&records[0].Lines.SequenceEqual(new[]{"new"}),"daily and dialogue same text committed");
+        state.DailyQueue.Add(new(){HeroId="hero",GameDayIndex=5});state.DailyQueue.Add(new(){HeroId="other",GameDayIndex=5});
+        effects.SyncNativeHistory=(_,_)=>throw new Exception("native-unavailable");events.Clear();
+        MemoryDeveloperEditOwner.MutateDailyDraft(state,context,effects,5,x=>x.Lines.Clear(),"delete");
+        Check(!state.Drafts.ContainsKey("hero")&&state.DailyQueue.Count==1&&state.DailyQueue[0].HeroId=="other","daily save and queue removal survive caught native failure");
+        Check(records[0].Lines.SequenceEqual(new[]{"new"})&&events.Contains("warn")&&!events.Contains("save-history"),"native failure prevents later dialogue write without rollback");
+        var supplied=new List<MyBehavior.DialogueDay>{new(){GameDayIndex=8}};var existing=new List<MyBehavior.DialogueDay>{new(){GameDayIndex=2}};
+        state.History=new(){["Hero"]=existing};
+        MemoryImportExportOwner.ApplyDialogueHistoryImports(state,new(){["Hero"]=supplied,["hero"]=new(),[""]=supplied,["null"]=null},false);
+        Check(ReferenceEquals(state.History["Hero"],existing)&&state.History.ContainsKey("hero")&&!state.History.ContainsKey("")&&!state.History.ContainsKey("null"),"import skip preserves comparer/key spelling and invalid entries");
+        MemoryImportExportOwner.ApplyDialogueHistoryImports(state,new(){["Hero"]=supplied},true);
+        Check(ReferenceEquals(state.History["Hero"],supplied),"overwrite import preserves supplied list identity");
+        state.History=null;MemoryImportExportOwner.ApplyDialogueHistoryImports(state,new(){["X"]=supplied},false);
+        Check(state.History.ContainsKey("X")&&!state.History.ContainsKey("x"),"null history creates original ordinal dictionary");
+        var probe=new AdapterProbe{_memoryBusinessState=state,Context=context,Effects=effects};
+        Check(!probe.TryApplyDevDailyMemoryLineDataMutation(new(),5,0,(_,_)=>throw new Exception(),0),"retired generation rejects line mutation before selection");
+        Check(!probe.TryApplyDevDailyMemoryDraftDataMutation(new(),5,_=>throw new Exception(),"edit",0),"retired generation rejects draft mutation");
+        Check(!probe.ApplyImportedDialogueHistory(new(){["late"]=supplied},true,0)&&!state.History.ContainsKey("late"),"late import callback cannot publish old store");
+        Check(probe.ApplyImportedDialogueHistory(new(){["current"]=supplied},true,1)&&ReferenceEquals(state.History["current"],supplied),"current-generation adapter publishes actual import owner");
+        Check(!probe.DeleteDevDailyMemoryDraftData(new(),5,0)&&!probe.ClearDevCompressedMemoryData(new(),0)&&!probe.ClearDevDialogueHistoryData(new(),0),"retired callback rejects all three destructive data capabilities");
+        records=new(){new(){GameDayIndex=5,Lines=new(){"before"}}};events.Clear();
+        effects.SyncNativeHistory=(_,_)=>events.Add("native");effects.SaveHistory=_=>throw new Exception("save-unavailable");
+        MemoryDeveloperEditOwner.SyncDialogueHistoryForDailyMemoryDraftEdit(context,effects,5,new[]{Line("before")},new[]{Line("after")},"edit");
+        Check(records[0].Lines.SequenceEqual(new[]{"after"})&&events.Contains("warn"),"dialogue save exception preserves original in-place partial mutation");
+        effects.SaveHistory=x=>records=x;records=new(){new(){GameDayIndex=5,Lines=new(){"delete"}}};
+        state.Drafts["hero"]=new(){new(){HeroId="hero",HeroName="NPC",GameDayIndex=5,Lines=new(){Line("delete")}}};
+        state.DailyQueue.Add(new(){HeroId="hero",GameDayIndex=5});
+        MemoryDeveloperEditOwner.DeleteDailyDraft(state,context,effects,5);
+        Check(!state.Drafts.ContainsKey("hero")&&records.Count==0&&!state.DailyQueue.Any(x=>x.HeroId=="hero"),"whole draft delete synchronizes actual history and queue");
+        state.History["hero"]=new(){new(){GameDayIndex=5,MemoryCommitMarkers=new(){["only"]="marker"}}};
+        bool nativeSawDeleted=false;
+        MemoryDeveloperEditOwner.ClearDialogueHistory(state,"hero",()=>nativeSawDeleted=!state.History.ContainsKey("hero"));
+        Check(nativeSawDeleted,"explicit full history clear deletes marker-only store before native effect");
+        state.History["hero"]=supplied;bool threw=false;
+        try{MemoryDeveloperEditOwner.ClearDialogueHistory(state,"hero",()=>throw new Exception("native-clear-failed"));}catch{threw=true;}
+        Check(threw&&!state.History.ContainsKey("hero"),"full clear native failure retains earlier deletion without rollback");
+        state.Drafts["hero"]=new(){new(){HeroId="hero",HeroName="NPC",GameDayIndex=5,GameDate="day5",Lines=new(){Line("clear")}}};
+        records=new(){new(){GameDayIndex=5,Lines=new(){"clear"}}};
+        var export=new MemoryImportExportState{DailyDrafts=state.Drafts,SummaryQueue=state.DailyQueue,Blocks=new(){["hero"]=new(){new()}},Overviews=new(){["hero"]=new()},OverviewQueue=new(){new(){HeroId="hero"}}};
+        bool syncBeforeClear=false;
+        effects.SyncNativeHistory=(_,_)=>{syncBeforeClear=state.Drafts.ContainsKey("hero");throw new Exception("native-missing");};
+        MemoryDeveloperEditOwner.ClearMemoryWithHistorySync(state,context,export,_=>effects);
+        Check(syncBeforeClear&&!state.Drafts.ContainsKey("hero")&&!export.Blocks.ContainsKey("hero")&&!export.Overviews.ContainsKey("hero")&&export.OverviewQueue.Count==0,"compressed clear attempts history sync before clearing same authoritative containers");
+        Check(records[0].Lines.SequenceEqual(new[]{"clear"}),"per-draft sync failure does not replay or erase historical dialogue");
+        Console.WriteLine("PASS DailyDeveloperEdit checks="+checks+" live=NOT_RUN");
+    }
+}
+}
