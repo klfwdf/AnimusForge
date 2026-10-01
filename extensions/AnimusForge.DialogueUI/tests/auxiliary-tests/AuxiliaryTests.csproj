@@ -4,11 +4,16 @@
     <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
     <OutputPath>../../artifacts/auxiliary-tests/bin/</OutputPath>
     <NoWarn>CS0649;CS0414;CS0169</NoWarn>
+    <HarmonyPath Condition="'$(HarmonyPath)' == '' And '$(ReplayHarmonyModulePath)' != ''">$(ReplayHarmonyModulePath)/bin/Win64_Shipping_Client/0Harmony.dll</HarmonyPath>
+    <HarmonyPath Condition="'$(HarmonyPath)' == '' And '$(BannerlordRoot)' != ''">$(BannerlordRoot)/Modules/Bannerlord.Harmony/bin/Win64_Shipping_Client/0Harmony.dll</HarmonyPath>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies.net472" Version="1.0.3" PrivateAssets="all" />
-    <Reference Include="0Harmony"><HintPath>$(BannerlordRoot)/Modules/Bannerlord.Harmony/bin/Win64_Shipping_Client/0Harmony.dll</HintPath></Reference>
+    <Reference Include="0Harmony"><HintPath>$(HarmonyPath)</HintPath></Reference>
     <Compile Include="Program.cs"/><Compile Include="HostFixture.cs"/>
     <Compile Include="../../src/Native/InlineTradeBridge.cs" Link="InlineTradeBridge.cs"/>
   </ItemGroup>
+  <Target Name="ValidateHarmonyInput" BeforeTargets="PrepareForBuild">
+    <Error Condition="'$(HarmonyPath)' == '' Or !Exists('$(HarmonyPath)')" Text="AuxiliaryTests requires an existing real Harmony DLL: specify HarmonyPath, ReplayHarmonyModulePath, or BannerlordRoot." />
+  </Target>
 </Project>
