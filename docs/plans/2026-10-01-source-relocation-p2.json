@@ -1,0 +1,1272 @@
+{
+  "schema_version": 1,
+  "owner": "P2 Memory/Weekly/Persona/Knowledge",
+  "phase": "READ_ONLY_MANIFEST_AWAITING_EXACT_BATCH_APPROVAL",
+  "workspace": "E:/AnimusForge-refactor-continuation-20260831",
+  "branch": "codex/af-main-refactor-continuation-20260831",
+  "baseline_head": "8f3903e257b2a454763efc9468af47ee0bd37ee1",
+  "scope": "Physical relocation only; no algorithm/namespace/type/assembly/save/API/default-entry changes; no moves done",
+  "proposed_moves": [
+    {
+      "action": "proposed_move",
+      "old": "KnowledgeLibraryBehavior.cs",
+      "new": "src/modules/AF.Module.Knowledge/Host/KnowledgeLibraryBehavior.cs",
+      "responsibility": "Knowledge campaign host: owns lore save/publication, delegates index/retrieval, captures Hero/Character conditions",
+      "sha256_bytes": "8726b2912d9c159d5f3ddbd4e16fe0387acb13f86369e24a56c9890b6a523a07",
+      "evidence": [
+        {
+          "line": 24,
+          "text": "public class KnowledgeLibraryBehavior : CampaignBehaviorBase"
+        },
+        {
+          "line": 508,
+          "text": "\tprivate static readonly KnowledgeRuleIndex Index = new KnowledgeRuleIndex(new IndexPorts(), GetPublishedRulesForIndex);"
+        },
+        {
+          "line": 513,
+          "text": "\tprivate static IReadOnlyList<LoreRule> GetPublishedRulesForIndex()"
+        },
+        {
+          "line": 1508,
+          "text": "\tpublic override void RegisterEvents()"
+        },
+        {
+          "line": 1571,
+          "text": "\tpublic override void SyncData(IDataStore dataStore)"
+        },
+        {
+          "line": 4058,
+          "text": "\tpublic string BuildLoreContext(string inputText, Hero npcHero, string secondaryInput = null)"
+        },
+        {
+          "line": 4068,
+          "text": "\tinternal string BuildLoreContextWithCandidates(string inputText, Hero npcHero, string secondaryInput, MentionedWorldEntities mentionedEntities, LoreCandidateRules candidates)"
+        },
+        {
+          "line": 4471,
+          "text": "\tinternal string BuildLoreContextWithCandidates(string inputText, CharacterObject npcCharacter, string kingdomIdOverride, string secondaryInput, MentionedWorldEntities mentionedEntities, LoreCandidateRules preselectedCandidates)"
+        }
+      ],
+      "path_consumers": [
+        {
+          "path": "tests/modules/AF.Module.Knowledge/LoreTextDifferential/run.py",
+          "line": 47,
+          "content": "        source = subprocess.check_output([\"git\", \"show\", \"77a3d234:KnowledgeLibraryBehavior.cs\"], cwd=ROOT).decode(\"utf-8-sig\")",
+          "classification": "historical git show: preserve old path; if line also reads current, replace current path only",
+          "owner": "P4 if csproj/shared helper/metadata; otherwise pending P4 assignment (Prompt callers overlap P1)"
+        },
+        {
+          "path": "tests/modules/AF.Module.Knowledge/LoreTextDifferential/run.py",
+          "line": 52,
+          "content": "        source = (ROOT / \"KnowledgeLibraryBehavior.cs\").read_text(encoding=\"utf-8-sig\")",
+          "classification": "current path consumer: targeted update",
+          "owner": "P4 if csproj/shared helper/metadata; otherwise pending P4 assignment (Prompt callers overlap P1)"
+        },
+        {
+          "path": "tests/modules/AF.Module.Knowledge/PublishedSnapshot/run.py",
+          "line": 14,
+          "content": "source = (ROOT / \"KnowledgeLibraryBehavior.cs\").read_text(encoding=\"utf-8-sig\")",
+          "classification": "current path consumer: targeted update",
+          "owner": "P4 if csproj/shared helper/metadata; otherwise pending P4 assignment (Prompt callers overlap P1)"
+        },
+        {
+          "path": "tests/modules/AF.Module.Prompt/BuildPhases/run.py",
+          "line": 113,
+          "content": "knowledge_host = (ROOT / \"KnowledgeLibraryBehavior.cs\").read_text(encoding=\"utf-8-sig\")",
+          "classification": "current path consumer: targeted update",
+          "owner": "P4 if csproj/shared helper/metadata; otherwise pending P4 assignment (Prompt callers overlap P1)"
+        }
+      ],
+      "compile_consumer": {
+        "path": "AnimusForge.csproj",
+        "owner": "P4",
+        "evidence": "SDK default recursive Compile inclusion; exclusions lines 20, 112-124 do not exclude chosen module destinations",
+        "required_change": "No explicit include needed; P4 verify evaluated dual-API Compile sets normalize old/new and have no duplicate items"
+      },
+      "runtime_resource_change": "none; preserve namespace/type/assembly/save keys and module-relative ONNX/data paths",
+      "validation": "byte-for-byte sha256 pre/post and normalized Compile source sets; relevant named contracts after path changes, P4 owns execution"
+    },
+    {
+      "action": "proposed_move",
+      "old": "KnowledgeRetrievalConfig.cs",
+      "new": "src/modules/AF.Module.Knowledge/Configuration/KnowledgeRetrievalConfig.cs",
+      "responsibility": "Knowledge retrieval configuration DTO, enabled/semantic-first/topK/minScore",
+      "sha256_bytes": "5e0ca9661cf50d71152dd4cb7499dd67e575b43e1c5b1481c3b1691120483732",
+      "evidence": [
+        {
+          "line": 1,
+          "text": "namespace AnimusForge;"
+        },
+        {
+          "line": 3,
+          "text": "public class KnowledgeRetrievalConfig"
+        },
+        {
+          "line": 5,
+          "text": "\tpublic bool IsEnabled { get; set; } = true;"
+        },
+        {
+          "line": 7,
+          "text": "\tpublic bool SemanticFirst { get; set; } = true;"
+        },
+        {
+          "line": 9,
+          "text": "\tpublic int SemanticTopK { get; set; } = 2;"
+        },
+        {
+          "line": 11,
+          "text": "\tpublic float SemanticMinScore { get; set; } = 0.21f;"
+        }
+      ],
+      "path_consumers": [
+        {
+          "path": "tests/modules/AF.Module.Prompt/ProductionModels/PromptProductionModelsTests.csproj",
+          "line": 17,
+          "content": "    <Compile Include=\"../../../../KnowledgeRetrievalConfig.cs\" />",
+          "classification": "current path consumer: targeted update",
+          "owner": "P4 if csproj/shared helper/metadata; otherwise pending P4 assignment (Prompt callers overlap P1)"
+        }
+      ],
+      "compile_consumer": {
+        "path": "AnimusForge.csproj",
+        "owner": "P4",
+        "evidence": "SDK default recursive Compile inclusion; exclusions lines 20, 112-124 do not exclude chosen module destinations",
+        "required_change": "No explicit include needed; P4 verify evaluated dual-API Compile sets normalize old/new and have no duplicate items"
+      },
+      "runtime_resource_change": "none; preserve namespace/type/assembly/save keys and module-relative ONNX/data paths",
+      "validation": "byte-for-byte sha256 pre/post and normalized Compile source sets; relevant named contracts after path changes, P4 owns execution"
+    },
+    {
+      "action": "proposed_move",
+      "old": "WorldEntityRetrievalService.cs",
+      "new": "src/modules/AF.Module.Knowledge/Entities/WorldEntityRetrievalService.cs",
+      "responsibility": "Knowledge world-entity capture, detached matching and prompt projection; game-aware service, not pure Foundation",
+      "sha256_bytes": "fb84d05993bdbfaf2db547809f243a9c1879757af443795abfbc0df3e1030601",
+      "evidence": [
+        {
+          "line": 18,
+          "text": "public sealed class MentionedWorldEntities"
+        },
+        {
+          "line": 71,
+          "text": "{"
+        },
+        {
+          "line": 89,
+          "text": "public static class WorldEntityRetrievalService"
+        },
+        {
+          "line": 270,
+          "text": "\tinternal static EntityCapture CaptureEntityCandidates(MentionedWorldEntities mentions, string latestInput, Hero contextHero)"
+        },
+        {
+          "line": 374,
+          "text": "\tinternal static DetachedEntityMatches MatchDetachedCandidates(DetachedEntityCandidates candidates, MentionedWorldEntities mentions, string latestInput, int maxInjectedEntities)"
+        },
+        {
+          "line": 504,
+          "text": "\tpublic static WorldEntityPromptContext BuildPromptContext(MentionedWorldEntities mentions, string playerDisplayName, Hero contextHero = null, bool includeResidentKingdoms = false, IEnumerable<string> activeRuleIds = null, bool includeResidentPlayerEntities = false)"
+        },
+        {
+          "line": 514,
+          "text": "\tinternal static WorldEntityPromptContext BuildPromptContext(MentionedWorldEntities mentions, string playerDisplayName, Hero contextHero, bool includeResidentKingdoms, IEnumerable<string> activeRuleIds, string latestInput, bool includeResidentPlayerEntities, EntityCapture capture, DetachedEntityMatches detachedMatches)"
+        }
+      ],
+      "path_consumers": [
+        {
+          "path": "tests/modules/AF.Module.Knowledge/CapturePerformance/run.py",
+          "line": 18,
+          "content": "source = (ROOT / \"WorldEntityRetrievalService.cs\").read_text(encoding=\"utf-8-sig\")",
+          "classification": "current path consumer: targeted update",
+          "owner": "P4 if csproj/shared helper/metadata; otherwise pending P4 assignment (Prompt callers overlap P1)"
+        },
+        {
+          "path": "tests/modules/AF.Module.Knowledge/EntityAllocationParity/run.py",
+          "line": 17,
+          "content": "source = (ROOT / \"WorldEntityRetrievalService.cs\").read_text(encoding=\"utf-8-sig\")",
+          "classification": "current path consumer: targeted update",
+          "owner": "P4 if csproj/shared helper/metadata; otherwise pending P4 assignment (Prompt callers overlap P1)"
+        },
+        {
+          "path": "tests/modules/AF.Module.Knowledge/EntityTextDifferential/run.py",
+          "line": 164,
+          "content": "    source = subprocess.check_output([\"git\", \"show\", \"77a3d234:WorldEntityRetrievalService.cs\"], cwd=ROOT).decode(\"utf-8-sig\") if name == \"old\" else (ROOT / \"WorldEntityRetrievalService.cs\").read_text(encoding=\"utf-8-sig\")",
+          "classification": "historical git show: preserve old path; if line also reads current, replace current path only",
+          "owner": "P4 if csproj/shared helper/metadata; otherwise pending P4 assignment (Prompt callers overlap P1)"
+        },
+        {
+          "path": "tests/modules/AF.Module.Prompt/BuildPhases/run.py",
+          "line": 112,
+          "content": "entity = (ROOT / \"WorldEntityRetrievalService.cs\").read_text(encoding=\"utf-8-sig\")",
+          "classification": "current path consumer: targeted update",
+          "owner": "P4 if csproj/shared helper/metadata; otherwise pending P4 assignment (Prompt callers overlap P1)"
+        }
+      ],
+      "compile_consumer": {
+        "path": "AnimusForge.csproj",
+        "owner": "P4",
+        "evidence": "SDK default recursive Compile inclusion; exclusions lines 20, 112-124 do not exclude chosen module destinations",
+        "required_change": "No explicit include needed; P4 verify evaluated dual-API Compile sets normalize old/new and have no duplicate items"
+      },
+      "runtime_resource_change": "none; preserve namespace/type/assembly/save keys and module-relative ONNX/data paths",
+      "validation": "byte-for-byte sha256 pre/post and normalized Compile source sets; relevant named contracts after path changes, P4 owns execution"
+    },
+    {
+      "action": "proposed_move",
+      "old": "OnnxEmbeddingEngine.cs",
+      "new": "src/modules/AF.Module.Knowledge/Semantic/OnnxEmbeddingEngine.cs",
+      "responsibility": "Shared Knowledge/Prompt semantic inference: tokenizer, cached ONNX embedding session; retains runtime resource loader",
+      "sha256_bytes": "7fe23ab59475abe3487a66ef2a52f625a9c9b1d9c74b18b69097e02a4f277b0c",
+      "evidence": [
+        {
+          "line": 15,
+          "text": "public sealed class OnnxEmbeddingEngine"
+        },
+        {
+          "line": 41,
+          "text": "\t\tpublic static BertTokenizerLite Load(string tokenizerJsonPath)"
+        },
+        {
+          "line": 336,
+          "text": "\tpublic static OnnxEmbeddingEngine Instance => _lazy.Value;"
+        },
+        {
+          "line": 457,
+          "text": "\tprivate void EnsureInitialized()"
+        },
+        {
+          "line": 534,
+          "text": "\tpublic bool TryGetEmbedding(string text, out float[] vector)"
+        }
+      ],
+      "path_consumers": [],
+      "compile_consumer": {
+        "path": "AnimusForge.csproj",
+        "owner": "P4",
+        "evidence": "SDK default recursive Compile inclusion; exclusions lines 20, 112-124 do not exclude chosen module destinations",
+        "required_change": "No explicit include needed; P4 verify evaluated dual-API Compile sets normalize old/new and have no duplicate items"
+      },
+      "runtime_resource_change": "none; preserve namespace/type/assembly/save keys and module-relative ONNX/data paths",
+      "validation": "byte-for-byte sha256 pre/post and normalized Compile source sets; relevant named contracts after path changes, P4 owns execution"
+    },
+    {
+      "action": "proposed_move",
+      "old": "OnnxCrossEncoderReranker.cs",
+      "new": "src/modules/AF.Module.Knowledge/Semantic/OnnxCrossEncoderReranker.cs",
+      "responsibility": "Shared Knowledge/Prompt cross-encoder inference: tokenizer, cached ONNX session, batch scoring",
+      "sha256_bytes": "5da75e90c02657df11bf59d981d0c5d5912cf9edd0e60fc78a5b76d4276cd641",
+      "evidence": [
+        {
+          "line": 15,
+          "text": "public sealed class OnnxCrossEncoderReranker"
+        },
+        {
+          "line": 53,
+          "text": "\t\tpublic static SentencePieceUnigramTokenizerLite Load(string tokenizerJsonPath)"
+        },
+        {
+          "line": 420,
+          "text": "\tpublic static OnnxCrossEncoderReranker Instance => _lazy.Value;"
+        },
+        {
+          "line": 541,
+          "text": "\tprivate void EnsureInitialized()"
+        },
+        {
+          "line": 814,
+          "text": "\tpublic bool TryScoreBatch(string query, IReadOnlyList<string> documents, out List<float> scores)"
+        },
+        {
+          "line": 919,
+          "text": "\tpublic bool TryScore(string query, string document, out float score)"
+        }
+      ],
+      "path_consumers": [],
+      "compile_consumer": {
+        "path": "AnimusForge.csproj",
+        "owner": "P4",
+        "evidence": "SDK default recursive Compile inclusion; exclusions lines 20, 112-124 do not exclude chosen module destinations",
+        "required_change": "No explicit include needed; P4 verify evaluated dual-API Compile sets normalize old/new and have no duplicate items"
+      },
+      "runtime_resource_change": "none; preserve namespace/type/assembly/save keys and module-relative ONNX/data paths",
+      "validation": "byte-for-byte sha256 pre/post and normalized Compile source sets; relevant named contracts after path changes, P4 owns execution"
+    },
+    {
+      "action": "proposed_move",
+      "old": "RagWarmupCoordinator.cs",
+      "new": "src/modules/AF.Module.Knowledge/Semantic/RagWarmupCoordinator.cs",
+      "responsibility": "Interlocked one-shot background ONNX warmup then Prompt semantic warmup; not a persona owner",
+      "sha256_bytes": "cd48ee383294babc39dd33d6240139dbf48f462c842d710a23c28c3e0c02e034",
+      "evidence": [
+        {
+          "line": 8,
+          "text": "internal static class RagWarmupCoordinator"
+        },
+        {
+          "line": 12,
+          "text": "\tpublic static void TryStartBackgroundWarmup(string source, PromptSemanticWarmupSeedBatch semanticSeeds)"
+        },
+        {
+          "line": 14,
+          "text": "\t\tif (Interlocked.CompareExchange(ref _warmupState, 1, 0) != 0)"
+        },
+        {
+          "line": 26,
+          "text": "\tprivate static void RunWarmup(string source, PromptSemanticWarmupSeedBatch semanticSeeds)"
+        },
+        {
+          "line": 35,
+          "text": "\t\t\tembeddingOk = OnnxEmbeddingEngine.Instance.TryGetEmbedding(\"warmup\", out var _);"
+        },
+        {
+          "line": 44,
+          "text": "\t\t\trerankerOk = OnnxCrossEncoderReranker.Instance.TryScore(\"warmup\", \"warmup\", out var _);"
+        },
+        {
+          "line": 53,
+          "text": "\t\tif (embeddingOk)"
+        },
+        {
+          "line": 58,
+          "text": "\t\t\t}"
+        }
+      ],
+      "path_consumers": [
+        {
+          "path": "tests/modules/AF.Module.Prompt/ProductionEvaluation/run.py",
+          "line": 40,
+          "content": "    if relative in (\"Program.cs\", \"FacadeStubs.cs\") or relative.endswith((\"PromptListRetrievalService.cs\", \"RagWarmupCoordinator.cs\")):",
+          "classification": "current path consumer: targeted update",
+          "owner": "P4 if csproj/shared helper/metadata; otherwise pending P4 assignment (Prompt callers overlap P1)"
+        },
+        {
+          "path": "tests/modules/AF.Module.Prompt/ProductionEvaluation/run.py",
+          "line": 44,
+          "content": "rag = ROOT / \"RagWarmupCoordinator.cs\"",
+          "classification": "current path consumer: targeted update",
+          "owner": "P4 if csproj/shared helper/metadata; otherwise pending P4 assignment (Prompt callers overlap P1)"
+        },
+        {
+          "path": "tests/modules/AF.Module.Prompt/Retrieval/PromptCandidateSelectionTests.csproj",
+          "line": 11,
+          "content": "    <Compile Include=\"../../../../RagWarmupCoordinator.cs\" Link=\"RagWarmupCoordinator.cs\" />",
+          "classification": "current path consumer: targeted update",
+          "owner": "P4 if csproj/shared helper/metadata; otherwise pending P4 assignment (Prompt callers overlap P1)"
+        }
+      ],
+      "compile_consumer": {
+        "path": "AnimusForge.csproj",
+        "owner": "P4",
+        "evidence": "SDK default recursive Compile inclusion; exclusions lines 20, 112-124 do not exclude chosen module destinations",
+        "required_change": "No explicit include needed; P4 verify evaluated dual-API Compile sets normalize old/new and have no duplicate items"
+      },
+      "runtime_resource_change": "none; preserve namespace/type/assembly/save keys and module-relative ONNX/data paths",
+      "validation": "byte-for-byte sha256 pre/post and normalized Compile source sets; relevant named contracts after path changes, P4 owns execution"
+    },
+    {
+      "action": "proposed_move",
+      "old": "NpcDataPacket.cs",
+      "new": "src/modules/AF.Module.Conversation/Channels/Scene/NpcDataPacket.cs",
+      "responsibility": "Conversation scene speaker snapshot DTO consumed by Shout/FloatingText; personality fields do not make it Persona owner",
+      "sha256_bytes": "526d46f32496c8a4784a9e0998f9a9082ecbad764fcd516837ada3a4ddeec108",
+      "evidence": [
+        {
+          "line": 3,
+          "text": "public class NpcDataPacket"
+        },
+        {
+          "line": 13,
+          "text": "\tpublic int AgentIndex;"
+        },
+        {
+          "line": 29,
+          "text": "\tpublic string PromptGivenName;"
+        },
+        {
+          "line": 31,
+          "text": "\tpublic string PromptDisplayName;"
+        },
+        {
+          "line": 33,
+          "text": "\t// Position snapshot used by scene prompt rendering. Keeping it on the packet"
+        },
+        {
+          "line": 35,
+          "text": "\tpublic bool HasScenePosition;"
+        },
+        {
+          "line": 37,
+          "text": "\tpublic float ScenePositionX;"
+        },
+        {
+          "line": 39,
+          "text": "\tpublic float ScenePositionY;"
+        },
+        {
+          "line": 41,
+          "text": "\tpublic float ScenePositionZ;"
+        }
+      ],
+      "path_consumers": [],
+      "compile_consumer": {
+        "path": "AnimusForge.csproj",
+        "owner": "P4",
+        "evidence": "SDK default recursive Compile inclusion; exclusions lines 20, 112-124 do not exclude chosen module destinations",
+        "required_change": "No explicit include needed; P4 verify evaluated dual-API Compile sets normalize old/new and have no duplicate items"
+      },
+      "runtime_resource_change": "none; preserve namespace/type/assembly/save keys and module-relative ONNX/data paths",
+      "validation": "byte-for-byte sha256 pre/post and normalized Compile source sets; relevant named contracts after path changes, P4 owns execution"
+    }
+  ],
+  "retained": [
+    {
+      "action": "retain",
+      "old": "MyBehavior.CampaignLifetime.cs",
+      "new": "MyBehavior.CampaignLifetime.cs",
+      "sha256_bytes": "d33b970cf579251b3ee32b5f1bc19a0117ca539ca9f7768c8f4199bfa0fff63f",
+      "responsibility": "MyBehavior mixed campaign/save compatibility host partial family; CampaignLifetime",
+      "evidence": [
+        {
+          "line": 10,
+          "text": "internal void RetireCampaignRuntime(string reason)"
+        }
+      ],
+      "exclusion_reason": "Keep entire mixed-host partial family together for this physical-only relocation. MyBehavior.cs contains CivilWar load/save, Gathering/Policy ports and diplomacy weekly-material host (lines 2044/12389/13154/17248/29255/29303), and captured/sealing tests have explicitly excluded diplomacy coupling. Do not relabel host as pure Memory or move individual partials solely by filename. A later separately approved host-family relocation can use GameAdapter location after consumer boundary is closed.",
+      "path_consumers_change": "none; all current/history MyBehavior root paths and metadata preserved"
+    },
+    {
+      "action": "retain",
+      "old": "MyBehavior.cs",
+      "new": "MyBehavior.cs",
+      "sha256_bytes": "48aa6f9bd9dfa9a8b724203f24e1e7e300cd70630000f201aa1037959cd6b1f6",
+      "responsibility": "MyBehavior mixed campaign/save compatibility host partial family; MyBehavior",
+      "evidence": [
+        {
+          "line": 58,
+          "text": "public partial class MyBehavior : CampaignBehaviorBase"
+        },
+        {
+          "line": 1982,
+          "text": "public override void RegisterEvents()"
+        },
+        {
+          "line": 2044,
+          "text": "TeamModuleServices.CivilWar.Load(\"\");"
+        },
+        {
+          "line": 3644,
+          "text": "if (VoteDealBehavior.IsBilateralDiplomacyMemoryHandledDecision(decision))"
+        },
+        {
+          "line": 12389,
+          "text": "TeamModuleServices.CivilWar.AdvanceWeek(devEditableKingdom, weekIndex, GetKingdomStabilityValue(devEditableKingdom), (target, delta) =>"
+        },
+        {
+          "line": 13154,
+          "text": "public static void RecordWorldDiplomacyWeeklyMaterialForExternal(string stableKey, string label, string snapshotText, string kingdomId, string actorHeroId, string actorKingdomId, bool includeInWorld, int day, string gameDate)"
+        },
+        {
+          "line": 16657,
+          "text": "private void OnCampaignTick(float dt)"
+        },
+        {
+          "line": 16801,
+          "text": "public override void SyncData(IDataStore dataStore)"
+        }
+      ],
+      "exclusion_reason": "Keep entire mixed-host partial family together for this physical-only relocation. MyBehavior.cs contains CivilWar load/save, Gathering/Policy ports and diplomacy weekly-material host (lines 2044/12389/13154/17248/29255/29303), and captured/sealing tests have explicitly excluded diplomacy coupling. Do not relabel host as pure Memory or move individual partials solely by filename. A later separately approved host-family relocation can use GameAdapter location after consumer boundary is closed.",
+      "path_consumers_change": "none; all current/history MyBehavior root paths and metadata preserved"
+    },
+    {
+      "action": "retain",
+      "old": "MyBehavior.DialogueHistoryCommit.cs",
+      "new": "MyBehavior.DialogueHistoryCommit.cs",
+      "sha256_bytes": "aa64db90336585cb0bcb259d92a67613c4cee541833c14c7d2723c9792525bde",
+      "responsibility": "MyBehavior mixed campaign/save compatibility host partial family; DialogueHistoryCommit",
+      "evidence": [
+        {
+          "line": 12,
+          "text": "internal static MemoryCommitResult CommitDialogueHistoryWithScene(string memoryId, bool isNonHero, string npcName, string playerText, string aiText, string extraFact, int sceneSessionId)"
+        },
+        {
+          "line": 17,
+          "text": "internal static MemoryCommitResult CommitDialogueHistoryWithScene(string memoryId, bool isNonHero, string npcName, string playerText, string aiText, string extraFact, int sceneSessionId, int playerTargetAgentIndex, string playerTargetName)"
+        }
+      ],
+      "exclusion_reason": "Keep entire mixed-host partial family together for this physical-only relocation. MyBehavior.cs contains CivilWar load/save, Gathering/Policy ports and diplomacy weekly-material host (lines 2044/12389/13154/17248/29255/29303), and captured/sealing tests have explicitly excluded diplomacy coupling. Do not relabel host as pure Memory or move individual partials solely by filename. A later separately approved host-family relocation can use GameAdapter location after consumer boundary is closed.",
+      "path_consumers_change": "none; all current/history MyBehavior root paths and metadata preserved"
+    },
+    {
+      "action": "retain",
+      "old": "MyBehavior.DialogueHistoryDelete.cs",
+      "new": "MyBehavior.DialogueHistoryDelete.cs",
+      "sha256_bytes": "10c4107cf6b381efaf3e42c09d1dc487f56d6e744ef321861ac9ee027c464059",
+      "responsibility": "MyBehavior mixed campaign/save compatibility host partial family; DialogueHistoryDelete",
+      "evidence": [
+        {
+          "line": 17,
+          "text": "public static bool DeleteDialogueHistoryLineForExternal(string memoryId, int gameDayIndex, int lineOrdinal, string expectedText, out string status)"
+        },
+        {
+          "line": 43,
+          "text": "private bool DeleteDialogueHistoryLine(string memoryId, int gameDayIndex, int lineOrdinal, string expectedText, out string status)"
+        },
+        {
+          "line": 73,
+          "text": "private static bool DisplayTextMatches(string rawLine, string expectedText)"
+        },
+        {
+          "line": 83,
+          "text": "private bool RemoveMatchingDraftLine(string memoryId, int gameDayIndex, string syncKey)"
+        }
+      ],
+      "exclusion_reason": "Keep entire mixed-host partial family together for this physical-only relocation. MyBehavior.cs contains CivilWar load/save, Gathering/Policy ports and diplomacy weekly-material host (lines 2044/12389/13154/17248/29255/29303), and captured/sealing tests have explicitly excluded diplomacy coupling. Do not relabel host as pure Memory or move individual partials solely by filename. A later separately approved host-family relocation can use GameAdapter location after consumer boundary is closed.",
+      "path_consumers_change": "none; all current/history MyBehavior root paths and metadata preserved"
+    },
+    {
+      "action": "retain",
+      "old": "MyBehavior.HistoryPromptSnapshot.cs",
+      "new": "MyBehavior.HistoryPromptSnapshot.cs",
+      "sha256_bytes": "1aa2794bd1bf3f08230d00bd12376ba899b50a00c31c4dd074e6ef0b4284b90c",
+      "responsibility": "MyBehavior mixed campaign/save compatibility host partial family; HistoryPromptSnapshot",
+      "evidence": [
+        {
+          "line": 27,
+          "text": "internal static Func<string> CaptureHistoryContextWorkForHero(Hero hero, string currentInput,"
+        },
+        {
+          "line": 35,
+          "text": "internal static Func<string> CaptureHistoryContextWorkById(string memoryId, string memoryName,"
+        },
+        {
+          "line": 79,
+          "text": "private static CompressedMemoryBlock CopyHistoryRecallBlock(CompressedMemoryBlock block)"
+        }
+      ],
+      "exclusion_reason": "Keep entire mixed-host partial family together for this physical-only relocation. MyBehavior.cs contains CivilWar load/save, Gathering/Policy ports and diplomacy weekly-material host (lines 2044/12389/13154/17248/29255/29303), and captured/sealing tests have explicitly excluded diplomacy coupling. Do not relabel host as pure Memory or move individual partials solely by filename. A later separately approved host-family relocation can use GameAdapter location after consumer boundary is closed.",
+      "path_consumers_change": "none; all current/history MyBehavior root paths and metadata preserved"
+    },
+    {
+      "action": "retain",
+      "old": "MyBehavior.MemoryFailureNotice.cs",
+      "new": "MyBehavior.MemoryFailureNotice.cs",
+      "sha256_bytes": "483ee562c1d8c97097bc710b63f98f66a352523eb3a03eed2e651d8963493ac1",
+      "responsibility": "MyBehavior mixed campaign/save compatibility host partial family; MemoryFailureNotice",
+      "evidence": [
+        {
+          "line": 28,
+          "text": "private bool IsCurrentMemoryFailureOwner(long generation)"
+        },
+        {
+          "line": 33,
+          "text": "private bool IsCurrentMemoryFailureCampaign()"
+        },
+        {
+          "line": 39,
+          "text": "private void PublishMemoryFailureNotice(string title, string message, long generation)"
+        },
+        {
+          "line": 53,
+          "text": "private void ProcessPendingMemoryFailureNotice()"
+        },
+        {
+          "line": 75,
+          "text": "private void CompleteMemoryFailureNotice(long generation, long revision)"
+        },
+        {
+          "line": 84,
+          "text": "private void ResetMemoryFailureNotices()"
+        },
+        {
+          "line": 91,
+          "text": "private static void ObserveMemoryFailureNotice(string title, string message)"
+        }
+      ],
+      "exclusion_reason": "Keep entire mixed-host partial family together for this physical-only relocation. MyBehavior.cs contains CivilWar load/save, Gathering/Policy ports and diplomacy weekly-material host (lines 2044/12389/13154/17248/29255/29303), and captured/sealing tests have explicitly excluded diplomacy coupling. Do not relabel host as pure Memory or move individual partials solely by filename. A later separately approved host-family relocation can use GameAdapter location after consumer boundary is closed.",
+      "path_consumers_change": "none; all current/history MyBehavior root paths and metadata preserved"
+    },
+    {
+      "action": "retain",
+      "old": "MyBehavior.MemoryMaintenanceBudget.cs",
+      "new": "MyBehavior.MemoryMaintenanceBudget.cs",
+      "sha256_bytes": "3732fcee5eda8bf97bd8c8f1f48f26463c5b710398760ca127051581712b19fb",
+      "responsibility": "MyBehavior mixed campaign/save compatibility host partial family; MemoryMaintenanceBudget",
+      "evidence": [
+        {
+          "line": 16,
+          "text": "private void ResolveDailyMaintenanceBudget(out long startTimestamp, out double budgetMs)"
+        }
+      ],
+      "exclusion_reason": "Keep entire mixed-host partial family together for this physical-only relocation. MyBehavior.cs contains CivilWar load/save, Gathering/Policy ports and diplomacy weekly-material host (lines 2044/12389/13154/17248/29255/29303), and captured/sealing tests have explicitly excluded diplomacy coupling. Do not relabel host as pure Memory or move individual partials solely by filename. A later separately approved host-family relocation can use GameAdapter location after consumer boundary is closed.",
+      "path_consumers_change": "none; all current/history MyBehavior root paths and metadata preserved"
+    },
+    {
+      "action": "retain",
+      "old": "MyBehavior.MemoryRecovery.cs",
+      "new": "MyBehavior.MemoryRecovery.cs",
+      "sha256_bytes": "f8e7d62ef0f06176f8b4a2547ccc7c590d5153f7a8c05d7d9dd00e2622264b5b",
+      "responsibility": "MyBehavior mixed campaign/save compatibility host partial family; MemoryRecovery",
+      "evidence": [
+        {
+          "line": 42,
+          "text": "internal static MemoryCommitResult CommitExternalDialogueHistoryRecoverable("
+        },
+        {
+          "line": 122,
+          "text": "internal static bool TryPrepareExternalDialogueHistoryRecoveryIdentity("
+        },
+        {
+          "line": 152,
+          "text": "internal static InteractionMemoryRecoveryLookupStatus GetExternalDialogueHistoryRecoveryStatus("
+        },
+        {
+          "line": 190,
+          "text": "private static bool TryPrepareExternalDialogueHistoryRecovery("
+        },
+        {
+          "line": 273,
+          "text": "private static string ResolveInteractionMemoryOriginGameDate(int originDay, int currentDay)"
+        },
+        {
+          "line": 287,
+          "text": "private InteractionMemoryRecoverySeed BuildInteractionMemoryRecoverySeed("
+        },
+        {
+          "line": 394,
+          "text": "private string BuildInteractionMemoryRecoverySessionKey("
+        },
+        {
+          "line": 419,
+          "text": "private static string RenderInteractionMemoryFact(string factsText)"
+        }
+      ],
+      "exclusion_reason": "Keep entire mixed-host partial family together for this physical-only relocation. MyBehavior.cs contains CivilWar load/save, Gathering/Policy ports and diplomacy weekly-material host (lines 2044/12389/13154/17248/29255/29303), and captured/sealing tests have explicitly excluded diplomacy coupling. Do not relabel host as pure Memory or move individual partials solely by filename. A later separately approved host-family relocation can use GameAdapter location after consumer boundary is closed.",
+      "path_consumers_change": "none; all current/history MyBehavior root paths and metadata preserved"
+    },
+    {
+      "action": "retain",
+      "old": "MyBehavior.MemorySealing.cs",
+      "new": "MyBehavior.MemorySealing.cs",
+      "sha256_bytes": "4bce9bb4c501058786bac91d279ab1a3ff1dfffe51af4bf76cda0e97caa3f661",
+      "responsibility": "MyBehavior mixed campaign/save compatibility host partial family; MemorySealing",
+      "evidence": [
+        {
+          "line": 27,
+          "text": "internal void Bind(List<DailyMemoryDraft> source)"
+        },
+        {
+          "line": 29,
+          "text": "internal bool Current(List<DailyMemoryDraft> source)"
+        },
+        {
+          "line": 43,
+          "text": "internal void Bind(List<T> source)"
+        },
+        {
+          "line": 45,
+          "text": "internal bool Current(List<T> source)"
+        },
+        {
+          "line": 51,
+          "text": "internal void Add(string key, T job)"
+        },
+        {
+          "line": 72,
+          "text": "internal bool Step(Func<List<T>> readCurrent, Action<List<T>> publish, Func<T, bool> pending,"
+        },
+        {
+          "line": 111,
+          "text": "private bool Current(List<T> current)"
+        },
+        {
+          "line": 116,
+          "text": "private bool BindingsCurrent(Func<T, T, bool> same)"
+        }
+      ],
+      "exclusion_reason": "Keep entire mixed-host partial family together for this physical-only relocation. MyBehavior.cs contains CivilWar load/save, Gathering/Policy ports and diplomacy weekly-material host (lines 2044/12389/13154/17248/29255/29303), and captured/sealing tests have explicitly excluded diplomacy coupling. Do not relabel host as pure Memory or move individual partials solely by filename. A later separately approved host-family relocation can use GameAdapter location after consumer boundary is closed.",
+      "path_consumers_change": "none; all current/history MyBehavior root paths and metadata preserved"
+    },
+    {
+      "action": "retain",
+      "old": "MyBehavior.MemorySourceFingerprint.cs",
+      "new": "MyBehavior.MemorySourceFingerprint.cs",
+      "sha256_bytes": "7e635eeb6726e93ee582c289b8aebe71767e875df98c312672b4754996fb44ec",
+      "responsibility": "MyBehavior mixed campaign/save compatibility host partial family; MemorySourceFingerprint",
+      "evidence": [
+        {
+          "line": 12,
+          "text": "private static string ComputeMemorySummarySourceFingerprint(MemorySummarySourceView source)"
+        },
+        {
+          "line": 45,
+          "text": "private static void WriteMemorySourceString(MemorySourceFingerprintWriter writer, string value) => writer.Write(value);"
+        },
+        {
+          "line": 47,
+          "text": "private static void WriteMemorySourceJob(MemorySourceFingerprintWriter writer, MemorySummaryJob value)"
+        },
+        {
+          "line": 59,
+          "text": "private static void WriteMemorySourceDraft(MemorySourceFingerprintWriter writer, DailyMemoryDraft value)"
+        },
+        {
+          "line": 75,
+          "text": "private static void WriteMemorySourceLine(MemorySourceFingerprintWriter writer, DailyMemoryLine value)"
+        },
+        {
+          "line": 99,
+          "text": "private static void WriteMemorySourceTrigger(MemorySourceFingerprintWriter writer, WeeklyMemoryMaterialTrigger value)"
+        },
+        {
+          "line": 125,
+          "text": "private static void WriteMemorySourceMajorJob(MemorySourceFingerprintWriter writer, MajorActionSummaryJob value)"
+        },
+        {
+          "line": 137,
+          "text": "private static void WriteMemorySourceAction(MemorySourceFingerprintWriter writer, NpcActionEntry value)"
+        }
+      ],
+      "exclusion_reason": "Keep entire mixed-host partial family together for this physical-only relocation. MyBehavior.cs contains CivilWar load/save, Gathering/Policy ports and diplomacy weekly-material host (lines 2044/12389/13154/17248/29255/29303), and captured/sealing tests have explicitly excluded diplomacy coupling. Do not relabel host as pure Memory or move individual partials solely by filename. A later separately approved host-family relocation can use GameAdapter location after consumer boundary is closed.",
+      "path_consumers_change": "none; all current/history MyBehavior root paths and metadata preserved"
+    },
+    {
+      "action": "retain",
+      "old": "MyBehavior.MemorySourceWrites.cs",
+      "new": "MyBehavior.MemorySourceWrites.cs",
+      "sha256_bytes": "7ed740ad84dc6317287c7f186307530b378d53eb404ab9b4a75f4667babcbf49",
+      "responsibility": "MyBehavior mixed campaign/save compatibility host partial family; MemorySourceWrites",
+      "evidence": [
+        {
+          "line": 13,
+          "text": "private bool IsMemorySourceEditorCurrent(long generation)"
+        },
+        {
+          "line": 22,
+          "text": "private static bool DeferMemorySourceWriteIfNeeded(Action<MyBehavior> write, string source)"
+        },
+        {
+          "line": 53,
+          "text": "private static List<PartyTransferPromptEntry> CopyMemoryPartyOptions(List<PartyTransferPromptEntry> values)"
+        },
+        {
+          "line": 66,
+          "text": "private static List<SettlementTransferPromptEntry> CopyMemorySettlementOptions(List<SettlementTransferPromptEntry> values)"
+        }
+      ],
+      "exclusion_reason": "Keep entire mixed-host partial family together for this physical-only relocation. MyBehavior.cs contains CivilWar load/save, Gathering/Policy ports and diplomacy weekly-material host (lines 2044/12389/13154/17248/29255/29303), and captured/sealing tests have explicitly excluded diplomacy coupling. Do not relabel host as pure Memory or move individual partials solely by filename. A later separately approved host-family relocation can use GameAdapter location after consumer boundary is closed.",
+      "path_consumers_change": "none; all current/history MyBehavior root paths and metadata preserved"
+    },
+    {
+      "action": "retain",
+      "old": "MyBehavior.MemorySummaryInput.cs",
+      "new": "MyBehavior.MemorySummaryInput.cs",
+      "sha256_bytes": "79f7214ea99ce48f054ae90bf167a0a5928dbf23a6af3d08bc6900499ebd7e02",
+      "responsibility": "MyBehavior mixed campaign/save compatibility host partial family; MemorySummaryInput",
+      "evidence": [
+        {
+          "line": 90,
+          "text": "private static void DescribeMemorySummaryDailyContext(MemorySummaryInput input)"
+        },
+        {
+          "line": 129,
+          "text": "private MemorySummarySourceView ReadMemorySummarySource(object queueJob, long generation)"
+        },
+        {
+          "line": 165,
+          "text": "private static string[] CollectMemorySummaryLookupIds(IEnumerable<string> ids)"
+        },
+        {
+          "line": 171,
+          "text": "private static void DescribeMemorySummaryMajorContext(MemorySummaryInput input, List<NpcActionEntry> added)"
+        },
+        {
+          "line": 185,
+          "text": "private static object CaptureMemorySummaryDailySceneContext(MemorySummaryContextDependencies context)"
+        },
+        {
+          "line": 205,
+          "text": "private string CaptureMemorySummaryContextFingerprint(MemorySummaryInput input)"
+        },
+        {
+          "line": 252,
+          "text": "private MemorySummaryInput CaptureMemorySummaryInput(object queueJob, long generation, string expectedJobFingerprint = null, MemorySummaryRunOwner.Lease run = null)"
+        },
+        {
+          "line": 324,
+          "text": "private static string ComputeMemorySummaryFingerprint(object identity)"
+        }
+      ],
+      "exclusion_reason": "Keep entire mixed-host partial family together for this physical-only relocation. MyBehavior.cs contains CivilWar load/save, Gathering/Policy ports and diplomacy weekly-material host (lines 2044/12389/13154/17248/29255/29303), and captured/sealing tests have explicitly excluded diplomacy coupling. Do not relabel host as pure Memory or move individual partials solely by filename. A later separately approved host-family relocation can use GameAdapter location after consumer boundary is closed.",
+      "path_consumers_change": "none; all current/history MyBehavior root paths and metadata preserved"
+    },
+    {
+      "action": "retain",
+      "old": "MyBehavior.MemorySummaryMainThread.cs",
+      "new": "MyBehavior.MemorySummaryMainThread.cs",
+      "sha256_bytes": "e875e73432b6253293ceb208c0620be0c3a4b2c36f2f7b56b9a6124ede16cbe9",
+      "responsibility": "MyBehavior mixed campaign/save compatibility host partial family; MemorySummaryMainThread",
+      "evidence": [
+        {
+          "line": 38,
+          "text": "public bool IsOwnerGenerationCurrent(long generation) =>"
+        },
+        {
+          "line": 41,
+          "text": "public bool IsExecutionContextCurrent() =>"
+        },
+        {
+          "line": 43,
+          "text": "public double GetBudgetMilliseconds() => GetDailyMaintenanceFrameBudgetMs();"
+        },
+        {
+          "line": 44,
+          "text": "public void ReportFailure(Exception error) =>"
+        },
+        {
+          "line": 48,
+          "text": "private Task<bool> RunMemorySummaryMainThreadAsync(long generation, Func<bool> operation) =>"
+        },
+        {
+          "line": 51,
+          "text": "private Task<bool> RunMemorySummaryCompletionAsync(long generation, Func<bool> operation) =>"
+        },
+        {
+          "line": 54,
+          "text": "private void ProcessMemorySummaryMainThreadActions() =>"
+        },
+        {
+          "line": 57,
+          "text": "private void ResetMemorySummaryMainThreadActions() =>"
+        }
+      ],
+      "exclusion_reason": "Keep entire mixed-host partial family together for this physical-only relocation. MyBehavior.cs contains CivilWar load/save, Gathering/Policy ports and diplomacy weekly-material host (lines 2044/12389/13154/17248/29255/29303), and captured/sealing tests have explicitly excluded diplomacy coupling. Do not relabel host as pure Memory or move individual partials solely by filename. A later separately approved host-family relocation can use GameAdapter location after consumer boundary is closed.",
+      "path_consumers_change": "none; all current/history MyBehavior root paths and metadata preserved"
+    },
+    {
+      "action": "retain",
+      "old": "MyBehavior.MemorySummaryPlanning.cs",
+      "new": "MyBehavior.MemorySummaryPlanning.cs",
+      "sha256_bytes": "9a7786a1c18f6b089f7bb516ad3614fdfde0871e24f023f528fb709f81b86f3b",
+      "responsibility": "MyBehavior mixed campaign/save compatibility host partial family; MemorySummaryPlanning",
+      "evidence": [
+        {
+          "line": 35,
+          "text": "private MemorySummaryPlanEntry DescribeMemorySummaryJob(object job, int ordinal)"
+        },
+        {
+          "line": 160,
+          "text": "private async Task<MemorySummaryPlan> BuildMemorySummaryPlanAsync(long generation,"
+        }
+      ],
+      "exclusion_reason": "Keep entire mixed-host partial family together for this physical-only relocation. MyBehavior.cs contains CivilWar load/save, Gathering/Policy ports and diplomacy weekly-material host (lines 2044/12389/13154/17248/29255/29303), and captured/sealing tests have explicitly excluded diplomacy coupling. Do not relabel host as pure Memory or move individual partials solely by filename. A later separately approved host-family relocation can use GameAdapter location after consumer boundary is closed.",
+      "path_consumers_change": "none; all current/history MyBehavior root paths and metadata preserved"
+    },
+    {
+      "action": "retain",
+      "old": "MyBehavior.MemorySummaryRun.cs",
+      "new": "MyBehavior.MemorySummaryRun.cs",
+      "sha256_bytes": "1e0e49d75a14b9cbb2cca1aec01865e2ea0d28f3f159e61e74cae0b387760641",
+      "responsibility": "MyBehavior mixed campaign/save compatibility host partial family; MemorySummaryRun",
+      "evidence": [
+        {
+          "line": 13,
+          "text": "private Task<bool> RunMemorySummaryRunPhaseAsync(MemorySummaryRunOwner.Lease run, long generation, Func<bool> phase)"
+        },
+        {
+          "line": 19,
+          "text": "private Task<bool> RunMemorySummaryRunCaptureAsync(MemorySummaryRunOwner.Lease run, long generation, Func<bool> phase)"
+        }
+      ],
+      "exclusion_reason": "Keep entire mixed-host partial family together for this physical-only relocation. MyBehavior.cs contains CivilWar load/save, Gathering/Policy ports and diplomacy weekly-material host (lines 2044/12389/13154/17248/29255/29303), and captured/sealing tests have explicitly excluded diplomacy coupling. Do not relabel host as pure Memory or move individual partials solely by filename. A later separately approved host-family relocation can use GameAdapter location after consumer boundary is closed.",
+      "path_consumers_change": "none; all current/history MyBehavior root paths and metadata preserved"
+    },
+    {
+      "action": "retain",
+      "old": "MyBehavior.PersonaGeneration.cs",
+      "new": "MyBehavior.PersonaGeneration.cs",
+      "sha256_bytes": "282e241ddcf70f070d06817803891befa7dbe50a1effb4717c55aea8e4739dea",
+      "responsibility": "MyBehavior mixed campaign/save compatibility host partial family; PersonaGeneration",
+      "evidence": [
+        {
+          "line": 20,
+          "text": "private async Task EnsureNpcPersonaGeneratedAsync(Hero hero, bool ignoreRetryCooldown = false)"
+        },
+        {
+          "line": 32,
+          "text": "public static async Task EnsureNpcPersonaGeneratedForExternalAsync(Hero hero, bool ignoreRetryCooldown = false)"
+        },
+        {
+          "line": 50,
+          "text": "private NpcPersonaGenerationWork CaptureNpcPersonaGeneration(Hero hero, bool ignoreRetryCooldown, bool overwriteExisting)"
+        },
+        {
+          "line": 86,
+          "text": "private async Task<string> GenerateNpcPersonaAsync(Hero hero, bool ignoreRetryCooldown, bool overwriteExisting)"
+        }
+      ],
+      "exclusion_reason": "Keep entire mixed-host partial family together for this physical-only relocation. MyBehavior.cs contains CivilWar load/save, Gathering/Policy ports and diplomacy weekly-material host (lines 2044/12389/13154/17248/29255/29303), and captured/sealing tests have explicitly excluded diplomacy coupling. Do not relabel host as pure Memory or move individual partials solely by filename. A later separately approved host-family relocation can use GameAdapter location after consumer boundary is closed.",
+      "path_consumers_change": "none; all current/history MyBehavior root paths and metadata preserved"
+    },
+    {
+      "action": "retain",
+      "old": "MyBehavior.PersonaReadiness.cs",
+      "new": "MyBehavior.PersonaReadiness.cs",
+      "sha256_bytes": "61a48937d49ac371f4909a9376cd466dd4c91b9fe170000813b2c177435a95e6",
+      "responsibility": "MyBehavior mixed campaign/save compatibility host partial family; PersonaReadiness",
+      "evidence": [
+        {
+          "line": 13,
+          "text": "internal static NpcPersonaReadinessSnapshot CaptureNpcPersonaReadiness(Hero hero, MyBehavior expectedOwner)"
+        }
+      ],
+      "exclusion_reason": "Keep entire mixed-host partial family together for this physical-only relocation. MyBehavior.cs contains CivilWar load/save, Gathering/Policy ports and diplomacy weekly-material host (lines 2044/12389/13154/17248/29255/29303), and captured/sealing tests have explicitly excluded diplomacy coupling. Do not relabel host as pure Memory or move individual partials solely by filename. A later separately approved host-family relocation can use GameAdapter location after consumer boundary is closed.",
+      "path_consumers_change": "none; all current/history MyBehavior root paths and metadata preserved"
+    },
+    {
+      "action": "retain",
+      "old": "MyBehavior.PromotedPersonaGeneration.cs",
+      "new": "MyBehavior.PromotedPersonaGeneration.cs",
+      "sha256_bytes": "b99e640cda20dd8339a3df55a81acdc624d08aea4507506f9425e8d8de99d70e",
+      "responsibility": "MyBehavior mixed campaign/save compatibility host partial family; PromotedPersonaGeneration",
+      "evidence": [
+        {
+          "line": 13,
+          "text": "public static async Task GeneratePromotedNonHeroCompanionProfileForExternalAsync(Hero hero, string personalName, string originalFullName, string originalTroopName, string originalTroopId, string cultureName, string sceneLabel, string joinEventFact, string dialogueHistory, string equipmentSummary)"
+        },
+        {
+          "line": 21,
+          "text": "private async Task GeneratePromotedNonHeroCompanionProfileAsync(Hero hero, string personalName, string originalFullName, string originalTroopName, string originalTroopId, string cultureName, string sceneLabel, string joinEventFact, string dialogueHistory, string equipmentSummary)"
+        },
+        {
+          "line": 151,
+          "text": "private static async Task<ApiCallResult> AwaitPromotedCompanionResponseAsync(Task<ApiCallResult> request)"
+        },
+        {
+          "line": 157,
+          "text": "private async Task GeneratePromotedNonHeroCompanionSkillsAsync(Hero hero, string personalName, string originalTroopName, string cultureName, string equipmentSummary, NpcPersonaGenerationOwner.Lease lease, long runtimeGeneration)"
+        }
+      ],
+      "exclusion_reason": "Keep entire mixed-host partial family together for this physical-only relocation. MyBehavior.cs contains CivilWar load/save, Gathering/Policy ports and diplomacy weekly-material host (lines 2044/12389/13154/17248/29255/29303), and captured/sealing tests have explicitly excluded diplomacy coupling. Do not relabel host as pure Memory or move individual partials solely by filename. A later separately approved host-family relocation can use GameAdapter location after consumer boundary is closed.",
+      "path_consumers_change": "none; all current/history MyBehavior root paths and metadata preserved"
+    },
+    {
+      "action": "retain",
+      "old": "MyBehavior.WeeklyActionOutcomeReceipts.cs",
+      "new": "MyBehavior.WeeklyActionOutcomeReceipts.cs",
+      "sha256_bytes": "ba0fc0ee405f535f60993def3cecde5936ae1cdb56cd0ac0a069e4c6470566a6",
+      "responsibility": "MyBehavior mixed campaign/save compatibility host partial family; WeeklyActionOutcomeReceipts",
+      "evidence": [
+        {
+          "line": 22,
+          "text": "private WeeklyActionOutcomePublicationOwner EnsureWeeklyActionOutcomePublication()"
+        },
+        {
+          "line": 27,
+          "text": "internal static WeeklyMemoryMaterialOutcomeOperationStatus PrepareWeeklyActionOutcomeForExternal("
+        },
+        {
+          "line": 91,
+          "text": "internal static WeeklyMemoryMaterialOutcomeOperationStatus CompleteWeeklyActionOutcomeForExternal("
+        },
+        {
+          "line": 129,
+          "text": "internal static WeeklyMemoryMaterialOutcomeOperationStatus PublishWeeklyActionOutcomeForExternal("
+        },
+        {
+          "line": 155,
+          "text": "private bool TryBuildWeeklyActionOutcomePayload("
+        },
+        {
+          "line": 252,
+          "text": "private static bool TryFreezeWeeklyActionOutcomeValue("
+        },
+        {
+          "line": 298,
+          "text": "private static bool TryParseWeeklyActionPositiveValue(string value, out long result)"
+        },
+        {
+          "line": 302,
+          "text": "private WeeklyMemoryMaterialOutcomeOperationStatus TryPublishWeeklyActionOutcome("
+        }
+      ],
+      "exclusion_reason": "Keep entire mixed-host partial family together for this physical-only relocation. MyBehavior.cs contains CivilWar load/save, Gathering/Policy ports and diplomacy weekly-material host (lines 2044/12389/13154/17248/29255/29303), and captured/sealing tests have explicitly excluded diplomacy coupling. Do not relabel host as pure Memory or move individual partials solely by filename. A later separately approved host-family relocation can use GameAdapter location after consumer boundary is closed.",
+      "path_consumers_change": "none; all current/history MyBehavior root paths and metadata preserved"
+    },
+    {
+      "action": "retain",
+      "old": "MyBehavior.WorldBulletin.cs",
+      "new": "MyBehavior.WorldBulletin.cs",
+      "sha256_bytes": "a6b4a67aed1e64fa35ead915c6c7b7486a2ae348b2b74d80fb23851cf21921b2",
+      "responsibility": "MyBehavior mixed campaign/save compatibility host partial family; WorldBulletin",
+      "evidence": [
+        {
+          "line": 51,
+          "text": "internal static bool IsWorldBulletinEnabled()"
+        },
+        {
+          "line": 63,
+          "text": "private static bool IsWorldBulletinPublishingEnabled()"
+        },
+        {
+          "line": 76,
+          "text": "private static bool IsWorldBulletinEventId(string eventId)"
+        },
+        {
+          "line": 81,
+          "text": "private WorldBulletinSaveState EnsureWorldBulletinState()"
+        },
+        {
+          "line": 99,
+          "text": "private void RegisterWorldBulletinEvents()"
+        },
+        {
+          "line": 116,
+          "text": "private static double GetCurrentCampaignHourSafe()"
+        },
+        {
+          "line": 131,
+          "text": "private WorldBulletinFocus GetWorldBulletinFocus()"
+        },
+        {
+          "line": 157,
+          "text": "private static bool IsWorldBulletinPlayerHero(Hero hero)"
+        }
+      ],
+      "exclusion_reason": "Keep entire mixed-host partial family together for this physical-only relocation. MyBehavior.cs contains CivilWar load/save, Gathering/Policy ports and diplomacy weekly-material host (lines 2044/12389/13154/17248/29255/29303), and captured/sealing tests have explicitly excluded diplomacy coupling. Do not relabel host as pure Memory or move individual partials solely by filename. A later separately approved host-family relocation can use GameAdapter location after consumer boundary is closed.",
+      "path_consumers_change": "none; all current/history MyBehavior root paths and metadata preserved"
+    },
+    {
+      "action": "retain",
+      "old": "MyBehavior.WorldBulletinNpc.cs",
+      "new": "MyBehavior.WorldBulletinNpc.cs",
+      "sha256_bytes": "eebe02d56753b411cf765d7701a893cb35e5b2ecf7c3021b48af8879f47fb197",
+      "responsibility": "MyBehavior mixed campaign/save compatibility host partial family; WorldBulletinNpc",
+      "evidence": [
+        {
+          "line": 16,
+          "text": "private WeeklyPromptSnapshot CaptureWorldBulletinNpcSnapshot(Hero targetHero, CharacterObject targetCharacter, string kingdomIdOverride)"
+        },
+        {
+          "line": 52,
+          "text": "private EventRecordEntry FindLatestWorldBulletinRecord()"
+        }
+      ],
+      "exclusion_reason": "Keep entire mixed-host partial family together for this physical-only relocation. MyBehavior.cs contains CivilWar load/save, Gathering/Policy ports and diplomacy weekly-material host (lines 2044/12389/13154/17248/29255/29303), and captured/sealing tests have explicitly excluded diplomacy coupling. Do not relabel host as pure Memory or move individual partials solely by filename. A later separately approved host-family relocation can use GameAdapter location after consumer boundary is closed.",
+      "path_consumers_change": "none; all current/history MyBehavior root paths and metadata preserved"
+    },
+    {
+      "action": "retain",
+      "old": "MyBehavior.WorldBulletinPanel.cs",
+      "new": "MyBehavior.WorldBulletinPanel.cs",
+      "sha256_bytes": "24f6d2d45a963c86877bb7c857e02cfeddd144a2f197e46a7cd300c314678806",
+      "responsibility": "MyBehavior mixed campaign/save compatibility host partial family; WorldBulletinPanel",
+      "evidence": [
+        {
+          "line": 32,
+          "text": "private void RecordWorldBulletinLayout(string eventId, WorldBulletinSelection selection)"
+        },
+        {
+          "line": 58,
+          "text": "private WorldBulletinLayout FindWorldBulletinLayout(string eventId)"
+        },
+        {
+          "line": 75,
+          "text": "private bool TryShowWorldBulletinPanel(EventRecordEntry entry, string eventId)"
+        },
+        {
+          "line": 93,
+          "text": "private WorldBulletinPanelData BuildWorldBulletinPanelData(EventRecordEntry entry, string eventId)"
+        },
+        {
+          "line": 137,
+          "text": "private static void SplitWorldBulletinBody(string summary, out string major, out List<string> minors)"
+        },
+        {
+          "line": 163,
+          "text": "private static string ParseWorldBulletinIssueNumber(string eventId)"
+        },
+        {
+          "line": 169,
+          "text": "private static string BuildWorldBulletinMetaText(EventRecordEntry entry, WorldBulletinLayout layout, bool worldScope)"
+        },
+        {
+          "line": 185,
+          "text": "private static string WorldBulletinCategoryForKind(string kind)"
+        }
+      ],
+      "exclusion_reason": "Keep entire mixed-host partial family together for this physical-only relocation. MyBehavior.cs contains CivilWar load/save, Gathering/Policy ports and diplomacy weekly-material host (lines 2044/12389/13154/17248/29255/29303), and captured/sealing tests have explicitly excluded diplomacy coupling. Do not relabel host as pure Memory or move individual partials solely by filename. A later separately approved host-family relocation can use GameAdapter location after consumer boundary is closed.",
+      "path_consumers_change": "none; all current/history MyBehavior root paths and metadata preserved"
+    }
+  ],
+  "existing_owners_retained": [
+    "src/modules/AF.Module.Memory/**",
+    "src/modules/AF.Module.Weekly/**",
+    "src/modules/AF.Module.Persona/**",
+    "src/modules/AF.Module.Knowledge/**"
+  ],
+  "shared_ownership": {
+    "P4": [
+      "AnimusForge.csproj",
+      "solution files",
+      "shared helpers",
+      "public manifest",
+      "main ledger",
+      "HANDOFF.md",
+      "docs/architecture/af-framework-code-map.json",
+      "Git index/commits"
+    ],
+    "P1_overlap": [
+      "tests/modules/AF.Module.Prompt/BuildPhases/run.py",
+      "tests/modules/AF.Module.Prompt/ProductionEvaluation/run.py",
+      "Prompt retrieval/model csproj paths (P4-only edits)",
+      "NpcDataPacket scene destination coordinates with P1; P2 alone owns moving source"
+    ]
+  },
+  "test_file_requests": [
+    {
+      "path": "tests/modules/AF.Module.Knowledge/LoreTextDifferential/run.py",
+      "line": 47,
+      "content": "        source = subprocess.check_output([\"git\", \"show\", \"77a3d234:KnowledgeLibraryBehavior.cs\"], cwd=ROOT).decode(\"utf-8-sig\")",
+      "classification": "historical git show: preserve old path; if line also reads current, replace current path only",
+      "owner": "P4 if csproj/shared helper/metadata; otherwise pending P4 assignment (Prompt callers overlap P1)"
+    },
+    {
+      "path": "tests/modules/AF.Module.Knowledge/LoreTextDifferential/run.py",
+      "line": 52,
+      "content": "        source = (ROOT / \"KnowledgeLibraryBehavior.cs\").read_text(encoding=\"utf-8-sig\")",
+      "classification": "current path consumer: targeted update",
+      "owner": "P4 if csproj/shared helper/metadata; otherwise pending P4 assignment (Prompt callers overlap P1)"
+    },
+    {
+      "path": "tests/modules/AF.Module.Knowledge/PublishedSnapshot/run.py",
+      "line": 14,
+      "content": "source = (ROOT / \"KnowledgeLibraryBehavior.cs\").read_text(encoding=\"utf-8-sig\")",
+      "classification": "current path consumer: targeted update",
+      "owner": "P4 if csproj/shared helper/metadata; otherwise pending P4 assignment (Prompt callers overlap P1)"
+    },
+    {
+      "path": "tests/modules/AF.Module.Prompt/BuildPhases/run.py",
+      "line": 113,
+      "content": "knowledge_host = (ROOT / \"KnowledgeLibraryBehavior.cs\").read_text(encoding=\"utf-8-sig\")",
+      "classification": "current path consumer: targeted update",
+      "owner": "P4 if csproj/shared helper/metadata; otherwise pending P4 assignment (Prompt callers overlap P1)"
+    },
+    {
+      "path": "tests/modules/AF.Module.Prompt/ProductionModels/PromptProductionModelsTests.csproj",
+      "line": 17,
+      "content": "    <Compile Include=\"../../../../KnowledgeRetrievalConfig.cs\" />",
+      "classification": "current path consumer: targeted update",
+      "owner": "P4 if csproj/shared helper/metadata; otherwise pending P4 assignment (Prompt callers overlap P1)"
+    },
+    {
+      "path": "tests/modules/AF.Module.Knowledge/CapturePerformance/run.py",
+      "line": 18,
+      "content": "source = (ROOT / \"WorldEntityRetrievalService.cs\").read_text(encoding=\"utf-8-sig\")",
+      "classification": "current path consumer: targeted update",
+      "owner": "P4 if csproj/shared helper/metadata; otherwise pending P4 assignment (Prompt callers overlap P1)"
+    },
+    {
+      "path": "tests/modules/AF.Module.Knowledge/EntityAllocationParity/run.py",
+      "line": 17,
+      "content": "source = (ROOT / \"WorldEntityRetrievalService.cs\").read_text(encoding=\"utf-8-sig\")",
+      "classification": "current path consumer: targeted update",
+      "owner": "P4 if csproj/shared helper/metadata; otherwise pending P4 assignment (Prompt callers overlap P1)"
+    },
+    {
+      "path": "tests/modules/AF.Module.Knowledge/EntityTextDifferential/run.py",
+      "line": 164,
+      "content": "    source = subprocess.check_output([\"git\", \"show\", \"77a3d234:WorldEntityRetrievalService.cs\"], cwd=ROOT).decode(\"utf-8-sig\") if name == \"old\" else (ROOT / \"WorldEntityRetrievalService.cs\").read_text(encoding=\"utf-8-sig\")",
+      "classification": "historical git show: preserve old path; if line also reads current, replace current path only",
+      "owner": "P4 if csproj/shared helper/metadata; otherwise pending P4 assignment (Prompt callers overlap P1)"
+    },
+    {
+      "path": "tests/modules/AF.Module.Prompt/BuildPhases/run.py",
+      "line": 112,
+      "content": "entity = (ROOT / \"WorldEntityRetrievalService.cs\").read_text(encoding=\"utf-8-sig\")",
+      "classification": "current path consumer: targeted update",
+      "owner": "P4 if csproj/shared helper/metadata; otherwise pending P4 assignment (Prompt callers overlap P1)"
+    },
+    {
+      "path": "tests/modules/AF.Module.Prompt/ProductionEvaluation/run.py",
+      "line": 40,
+      "content": "    if relative in (\"Program.cs\", \"FacadeStubs.cs\") or relative.endswith((\"PromptListRetrievalService.cs\", \"RagWarmupCoordinator.cs\")):",
+      "classification": "current path consumer: targeted update",
+      "owner": "P4 if csproj/shared helper/metadata; otherwise pending P4 assignment (Prompt callers overlap P1)"
+    },
+    {
+      "path": "tests/modules/AF.Module.Prompt/ProductionEvaluation/run.py",
+      "line": 44,
+      "content": "rag = ROOT / \"RagWarmupCoordinator.cs\"",
+      "classification": "current path consumer: targeted update",
+      "owner": "P4 if csproj/shared helper/metadata; otherwise pending P4 assignment (Prompt callers overlap P1)"
+    },
+    {
+      "path": "tests/modules/AF.Module.Prompt/Retrieval/PromptCandidateSelectionTests.csproj",
+      "line": 11,
+      "content": "    <Compile Include=\"../../../../RagWarmupCoordinator.cs\" Link=\"RagWarmupCoordinator.cs\" />",
+      "classification": "current path consumer: targeted update",
+      "owner": "P4 if csproj/shared helper/metadata; otherwise pending P4 assignment (Prompt callers overlap P1)"
+    }
+  ],
+  "verification_plan": [
+    {
+      "command": "python -B tests/modules/AF.Module.Knowledge/PublishedSnapshot/run.py",
+      "outputs": "artifacts/tests/knowledge-j06-published-snapshot/current-safe; .tmp/dotnet-cli; dotnet bin/obj within artifact root; legacy runner forwards full os.environ: P4 invoke with sanitized environment, not credentials",
+      "ran": false
+    },
+    {
+      "command": "python -B tests/modules/AF.Module.Knowledge/EntityAllocationParity/run.py",
+      "outputs": "artifacts/tests/knowledge-j06-entity-allocation/current (generated .cs/.csproj/NuGet.Config plus bin/obj); .tmp/dotnet-cli. Legacy runner forwards full os.environ: P4 invoke with sanitized environment, not credentials.",
+      "ran": false
+    },
+    {
+      "command": "python -B tests/modules/AF.Module.Knowledge/CapturePerformance/run.py",
+      "outputs": "artifacts/tests/knowledge-j06-capture-performance/current; generated project/bin/obj plus .tmp/dotnet-cli; legacy runner forwards full os.environ: P4 sanitize",
+      "ran": false
+    },
+    {
+      "command": "python -B tests/modules/AF.Module.Knowledge/EntityTextDifferential/run.py",
+      "outputs": "new artifacts/tests/j06-entity-text-differential/run-<uuid> (old/current generated projects, bin/obj, home/appdata/nuget caches/temp via tests/output_isolation.py); historical git-show unchanged; sanitized child environment.",
+      "ran": false
+    },
+    {
+      "command": "python -B tests/modules/AF.Module.Knowledge/LoreTextDifferential/run.py",
+      "outputs": "new artifacts/tests/j06-lore-text-differential/run-<uuid> (old/current generated projects, bin/obj, home/appdata/nuget caches/temp via tests/output_isolation.py); historical git-show unchanged; sanitized child environment.",
+      "ran": false
+    },
+    {
+      "command": "python -B tests/modules/AF.Module.Prompt/ProductionEvaluation/run.py",
+      "outputs": "artifacts/tests/prompt-j03-production-evaluation/current; .tmp/dotnet-cli; legacy runner forwards full os.environ: P4 invoke with sanitized environment, not credentials",
+      "ran": false
+    },
+    {
+      "command": "python -B .agents/skills/af-core-framework/scripts/verify_code_map.py --working-tree",
+      "outputs": "read-only code location validation; P4 updates map path only, historical revisions preserve old paths",
+      "ran": false
+    },
+    {
+      "command": "P4 existing isolated Debug/Release x BannerlordApi 1.3/1.4 + Bootstrap build workflow",
+      "outputs": "P4 must inspect actual helper/output roots; no one-click deployment/Stage; P2 does not invent or run build commands",
+      "ran": false
+    }
+  ],
+  "verification_rules": [
+    "Exact source bytes unchanged: compare saved per-file sha256 against moved file; do not refresh hashes to hide code changes",
+    "Historical git show REV:oldpath remains oldpath; tests using current paths update only current branch",
+    "Current productionFileSha256 locks remain exact; path key change, if needed, requires same bytes content-equivalence evidence",
+    "No test/fixture/metadata under Diplomacy touched; if a candidate needs that edit, retain source and report blocker",
+    "No untracked tools/NuGet/resource/dependency/archive/artifact cleanup or migration",
+    "SessionTransport dirty preserved"
+  ],
+  "observed_checks": [
+    "git root/branch/HEAD match assignment",
+    "Seven move-source files present; no source moved or build run",
+    "Targeted tracked path-consumer search found no Diplomacy path consumers for seven candidates",
+    "MyBehavior mixed host actual CivilWar/Gathering/Policy/diplomacy evidence found"
+  ],
+  "limits": [
+    "Retained MyBehavior family is an explicit exclusion, not Memory/Weekly responsibility decomposition completion",
+    "Only targeted candidate path references checked; P4 evaluates integration/Compile/build and shared maps",
+    "Live game, old-save, real-network and performance acceptance not performed"
+  ]
+}
