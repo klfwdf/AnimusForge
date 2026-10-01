@@ -85,19 +85,19 @@
                     <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="19" Brush="AFCourierLetter.Meta.Text" Brush.FontSize="13" Brush.FontColor="#9B2A1EFF" Brush.TextVerticalAlignment="Center" Text="@KindText" DoNotAcceptEvents="true" />
                     <RichTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="68" MarginTop="27" Brush="AFCourierLetter.Title.Text" Brush.FontSize="28" Brush.FontColor="#2B1C10FF" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Center" Text="@HeadlineText" DoNotAcceptEvents="true" />
                     <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="17" MarginTop="103" Brush="AFCourierLetter.Meta.Text" Brush.FontSize="12" Brush.FontColor="#6B4E30FF" Brush.TextVerticalAlignment="Center" Text="@MetaText" DoNotAcceptEvents="true" />
-                    <Widget IsVisible="@HasDropCap" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="58" SuggestedHeight="58" MarginTop="134" Sprite="BlankWhiteSquare_9" Color="#C9A456FF" DoNotAcceptEvents="true">
-                      <Children>
-                        <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="3" MarginRight="3" MarginTop="3" MarginBottom="3" Sprite="BlankWhiteSquare_9" Color="#23386EFF" />
-                        <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="AFCourierLetter.Title.Text" Brush.FontSize="34" Brush.FontColor="#E8C66AFF" Text="@DropCapText" />
-                      </Children>
-                    </Widget>
-                    <ScrollablePanel WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="190" MarginTop="128" MarginLeft="@BodyMarginLeft" ClipRect="BodyClip" InnerPanel="BodyClip\BodyInner" AutoHideScrollBars="true" VerticalScrollbar="..\BodyScrollbar\Scrollbar">
+                    <ScrollablePanel WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="190" MarginTop="128" ClipRect="BodyClip" InnerPanel="BodyClip\BodyInner" AutoHideScrollBars="true" VerticalScrollbar="..\BodyScrollbar\Scrollbar">
                       <Children>
                         <Widget Id="BodyClip" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" ClipContents="true">
                           <Children>
                             <Widget Id="BodyInner" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren">
                               <Children>
-                                <RichTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MarginRight="6" MarginBottom="10" Brush="AnimusForge.EntityLink.WeeklyReport.ParchmentBody.Text" Brush.FontSize="@BodyFontSize" Brush.FontColor="#35261AFF" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Top" Text="@BodyText" CanBreakWords="true" DoNotAcceptEvents="false" Command.LinkClick="ExecuteOpenEncyclopediaLink" Command.LinkAlternateClick="ExecuteOpenEncyclopediaLink" />
+                                <WorldBulletinBodyWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="64" BodyText="@BodyText" DropCapText="@DropCapText" LeadText="Lead" TailText="Tail" DropCap="Cap" DoNotAcceptEvents="true" DoNotPassEventsToChildren="false">
+                                  <Children>
+                                    <TextWidget Id="Cap" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="54" SuggestedHeight="54" Brush="AFCourierLetter.Title.Text" Brush.FontSize="46" Brush.FontColor="#35261AFF" Brush.TextVerticalAlignment="Center" DoNotAcceptEvents="true" />
+                                    <RichTextWidget Id="Lead" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="54" MarginRight="6" Brush="AnimusForge.EntityLink.WeeklyReport.ParchmentBody.Text" Brush.FontSize="@BodyFontSize" Brush.FontColor="#35261AFF" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Top" CanBreakWords="true" DoNotAcceptEvents="false" Command.LinkClick="ExecuteOpenEncyclopediaLink" Command.LinkAlternateClick="ExecuteOpenEncyclopediaLink" />
+                                    <RichTextWidget Id="Tail" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="1" MarginRight="6" Brush="AnimusForge.EntityLink.WeeklyReport.ParchmentBody.Text" Brush.FontSize="@BodyFontSize" Brush.FontColor="#35261AFF" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Top" CanBreakWords="true" DoNotAcceptEvents="false" Command.LinkClick="ExecuteOpenEncyclopediaLink" Command.LinkAlternateClick="ExecuteOpenEncyclopediaLink" />
+                                  </Children>
+                                </WorldBulletinBodyWidget>
                               </Children>
                             </Widget>
                           </Children>
@@ -147,10 +147,11 @@
 
             <!-- Footer -->
             <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="300" SuggestedHeight="16" MarginLeft="100" MarginTop="726" Brush="AFCourierLetter.Meta.Text" Brush.FontSize="11" Brush.FontColor="#7A5A3AFF" Brush.TextVerticalAlignment="Center" Text="@FooterHintText" DoNotAcceptEvents="true" />
-            <ButtonWidget Id="ArchiveBulletinButton" IsVisible="@ShowCloseButton" DoNotPassEventsToChildren="true" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="144" SuggestedHeight="46" MarginLeft="636" MarginTop="696" Brush="AFWorldBulletin.Archive.Button" Command.Click="ExecuteClose" UpdateChildrenStates="true">
+            <ButtonWidget Id="ArchiveBulletinButton" IsVisible="@ShowCloseButton" DoNotPassEventsToChildren="true" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="154" SuggestedHeight="38" MarginLeft="626" MarginTop="700" Brush="AFWorldBulletin.Archive.Button" Command.Click="ExecuteClose" UpdateChildrenStates="true">
               <Children>
-                <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="22" MarginTop="5" Brush="AFCourierLetter.Button.Text" Brush.FontSize="16" Brush.FontColor="#F4DFACFF" Brush.TextHorizontalAlignment="Center" Text="@CloseText" DoNotAcceptEvents="true" />
-                <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="12" MarginTop="29" Brush="AFCourierLetter.Meta.Text" Brush.FontSize="10" Brush.FontColor="#DDC28CFF" Brush.TextHorizontalAlignment="Center" Text="ESC" DoNotAcceptEvents="true" />
+                <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="AFCourierLetter.Button.Text" Brush.FontSize="16" Brush.FontColor="#4A2E1CFF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" Text="@CloseText" DoNotAcceptEvents="true" />
+                <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="18" MarginLeft="4" Brush="AFCourierLetter.Meta.Text" Brush.FontSize="9" Brush.FontColor="#87633CFF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" Text="◆" DoNotAcceptEvents="true" />
+                <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="18" MarginRight="4" HorizontalAlignment="Right" Brush="AFCourierLetter.Meta.Text" Brush.FontSize="9" Brush.FontColor="#87633CFF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" Text="◆" DoNotAcceptEvents="true" />
               </Children>
             </ButtonWidget>
           </Children>

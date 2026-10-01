@@ -249,8 +249,6 @@ public sealed class WorldBulletinIllustrationVM : ViewModel, IWeeklyIllustration
 
 public sealed class WorldBulletinPanelVM : ViewModel
 {
-	private const float BodyIndentWithDropCap = 74f;
-
 	private readonly Action _onClose;
 
 	private readonly Action<string> _onOpenEncyclopediaLink;
@@ -275,9 +273,6 @@ public sealed class WorldBulletinPanelVM : ViewModel
 
 	[DataSourceProperty]
 	public string DropCapText { get; }
-
-	[DataSourceProperty]
-	public float BodyMarginLeft { get; }
 
 	[DataSourceProperty]
 	public string BodyText { get; }
@@ -332,13 +327,11 @@ public sealed class WorldBulletinPanelVM : ViewModel
 			HasDropCap = true;
 			DropCapText = first.ToString();
 			BodyText = formatted.Substring(1);
-			BodyMarginLeft = BodyIndentWithDropCap;
 		}
 		else
 		{
 			DropCapText = "";
 			BodyText = formatted;
-			BodyMarginLeft = 0f;
 		}
 		List<KeyValuePair<string, string>> minors = data.Minors ?? new List<KeyValuePair<string, string>>();
 		int leftCount = (minors.Count + 1) / 2;
