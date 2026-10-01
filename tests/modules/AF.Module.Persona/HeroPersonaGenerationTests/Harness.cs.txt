@@ -20,6 +20,7 @@ namespace AnimusForge {
  internal static class EncyclopediaHeroPersonaPatch {internal static void QueueRefreshForHero(string id){Probe.Read();InformationManager.Refreshed++;} }
 
  internal static class SaveRuntimeGuard {internal static long Generation=1;internal static long CaptureGeneration()=>Generation;internal static bool IsCurrentGeneration(long g)=>g==Generation;internal static bool IsStale(long g,string s=null)=>!IsCurrentGeneration(g);}
+ internal sealed class DuelSettings {internal string NpcPersonaGenerationRequirements="custom-requirements";internal static DuelSettings GetSettings(){Probe.Read();return new DuelSettings();}}
  internal static class Logger {internal static void Log(string c,string m){} }
  internal static class LlmRetryPrompt {internal static string BuildFailureDetail(string m,string r,string raw=null)=>m;internal static void ShowFailurePopup(string t,string d){Probe.Read();}}
  public partial class MyBehavior {
@@ -104,5 +105,6 @@ internal static class Program {
  static void Reservations(){
 @@RESERVATION_TESTS@@
  }
- static int Main(){TWParallel.MainId=Environment.CurrentManagedThreadId;try{foreach(var c in new[]{"normal","partial_p","partial_b","one_field","reroll","reroll_voice","normal_edit","reroll_edit","complete","null","parse","http","throw","owner","generation","target","reset","reroll_reset","external_success","external_failure","ui_reroll","ui_edit","ui_reset","ui_failure","ui_reset_before","ui_reset_accept"})Case(c);Reservations();@@RUN_PROMOTED@@Console.WriteLine($"Hero persona: {checks} checks, {failures} failures; engine/parser/network are fixtures; actual generator + dispatcher.");return failures==0?0:1;}catch(Exception e){Console.WriteLine("FAIL "+e);return 1;}}
+ @@TEXT_RULE_CASES@@
+ static int Main(){TWParallel.MainId=Environment.CurrentManagedThreadId;try{foreach(var c in new[]{"normal","partial_p","partial_b","one_field","reroll","reroll_voice","normal_edit","reroll_edit","complete","null","parse","http","throw","owner","generation","target","reset","reroll_reset","external_success","external_failure","ui_reroll","ui_edit","ui_reset","ui_failure","ui_reset_before","ui_reset_accept"})Case(c);Reservations();@@RUN_PROMOTED@@@@RUN_TEXT_RULES@@Console.WriteLine($"Hero persona: {checks} checks, {failures} failures; engine/parser/network are fixtures; actual generator + dispatcher.");return failures==0?0:1;}catch(Exception e){Console.WriteLine("FAIL "+e);return 1;}}
 }

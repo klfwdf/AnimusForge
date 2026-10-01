@@ -5,7 +5,7 @@ import os
 from pathlib import Path
 import sys
 sys.path.insert(0, str(Path(__file__).resolve().parents[4] / "tests"))
-from output_isolation import new_run_root
+from output_isolation import new_run_root, minimal_test_environment
 import re
 import subprocess
 import run
@@ -31,11 +31,11 @@ def main():
         if not declaration:raise ValueError('No source field: '+name)
         fields.append(declaration.group().strip())
     template=(HERE/'GateHarness.cs.txt').read_text(encoding='utf-8-sig').replace('@@METHODS@@',methods).replace('@@FIELDS@@','\n'.join(fields))
-    output=new_run_root(Path(__file__).resolve().parents[4], "ScenePostprocessParityTests", args.run_root) if args.run_root else HERE/'.generated'/args.output_name;output.mkdir(parents=True,exist_ok=True)
+    output=new_run_root(Path(__file__).resolve().parents[4], "scene-postprocess-gate-"+args.output_name, args.run_root)
     (output/'Program.cs').write_text(template,encoding='utf-8')
     (output/'Gate.csproj').write_text('<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><ImplicitUsings>enable</ImplicitUsings><Nullable>disable</Nullable></PropertyGroup></Project>')
     (output/'NuGet.Config').write_text('<configuration><packageSources><clear/></packageSources></configuration>')
-    env=os.environ.copy();env['DOTNET_ROOT']=str(Path(args.dotnet).parent);env['DOTNET_CLI_HOME']=str(output/'cli');env['DOTNET_CLI_TELEMETRY_OPTOUT']='1';env['DOTNET_NOLOGO']='1';env['DOTNET_CLI_UI_LANGUAGE']='en'
+    env=minimal_test_environment(Path(args.dotnet),output)
     meta='source='+(args.source_ref or 'working-tree')+' case='+args.case+'\nMETHODS sha256='+hashlib.sha256(methods.encode()).hexdigest()+'\nFIELDS sha256='+hashlib.sha256('\n'.join(fields).encode()).hexdigest()
     result=subprocess.run([args.dotnet,'run','--project',str(output/'Gate.csproj'),'-c','Release','--',args.case],cwd=output,env=env,capture_output=True,text=True,encoding='utf-8',errors='replace',timeout=90)
     log=meta+'\n'+result.stdout+result.stderr

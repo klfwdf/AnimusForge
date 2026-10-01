@@ -21,4 +21,9 @@ class Guards(unittest.TestCase):
   def change(p,*args,**kwargs):return orig(p,*args,**kwargs)+ ('\n// drift' if p==target else '')
   with patch.object(Path,'read_text',change):
    with self.assertRaisesRegex(AssertionError,'dependency'):inverse.restore(SOURCE)
+ def test_new_persona_rules_mutation_rejected(self):
+  orig=Path.read_text;target=ROOT/'src/modules/AF.Module.Persona/Generation/NpcPersonaTextRules.cs'
+  def change(p,*args,**kwargs):return orig(p,*args,**kwargs)+ ('\n// drift' if p==target else '')
+  with patch.object(Path,'read_text',change):
+   with self.assertRaisesRegex(AssertionError,'Unreviewed F5 dependency'):inverse.restore(SOURCE)
 if __name__=='__main__':unittest.main(verbosity=2)

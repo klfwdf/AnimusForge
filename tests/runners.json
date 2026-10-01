@@ -378,6 +378,14 @@
   "tests/modules/AF.Module.Weekly/F4GenerationOwnerTests/run.py": {
    "expect": "PASS",
    "note": "AF2 actual parser/retry/notice/bulletin aggregate; finite bounds and UI effects separate."
+  },
+  "tests/modules/AF.Module.Conversation/NativeSessionOwnerTests/run.py": {
+   "expect": "PASS",
+   "note": "AF2 F5 real owner/detached pipeline fixture; live game and save not verified."
+  },
+  "tests/modules/AF.Module.Conversation/NativeSessionOwnerTests/run_detached.py": {
+   "expect": "PASS",
+   "note": "AF2 F5 real owner/detached pipeline fixture; live game and save not verified."
   }
  }
 }

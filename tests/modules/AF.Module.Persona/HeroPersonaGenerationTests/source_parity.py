@@ -3,15 +3,24 @@ from pathlib import Path
 import sys as _relocation_sys
 _relocation_sys.path.insert(0, str(Path(__file__).resolve().parents[4] / "tests"))
 from output_isolation import current_source_path
+from af2_f5_migration_review import exact_inverse, verify_owners
 import hashlib,importlib.util,json,subprocess
 ROOT=Path(__file__).resolve().parents[4];HERE=Path(__file__).parent
 BASELINE='10defeb4976f3ffa096a77e847fba254308f6aba'
 spec=importlib.util.spec_from_file_location('persona_decl',ROOT/'tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py');ex=importlib.util.module_from_spec(spec);spec.loader.exec_module(ex)
 
 
+def _restore_f5_fixture_wiring(path, source):
+    review=json.loads((HERE/'f5-fixture-wiring.json').read_text(encoding='utf-8'))
+    for delta in reversed(review['changes'].get(str(path).replace(chr(92),'/'),())):
+        assert source.count(delta['after']) == 1, 'Unreviewed F5 persona dependency wiring: '+str(path)
+        source=source.replace(delta['after'],delta['before'],1)
+    return source
+
 def _restore_round2_current_paths(path, source):
     """Undo only reviewed current-file locator/import edits; retain original review hashes."""
     reviewed = {'tests/modules/AF.Module.Persona/HeroPersonaGenerationTests/run.py': {'before_sha256': 'e90e7941e4d7a472ff9995cdd5c6d2949ea2f12b195bcea4c080387af15122cc', 'edits': [('', 'import sys as _relocation_sys\n_relocation_sys.path.insert(0, str(Path(__file__).resolve().parents[4] / "tests"))\nfrom output_isolation import current_source_path\n'), ("ui_source=s if a.original else (ROOT/'MyBehavior.cs').read_text(encoding='utf-8-sig')\n", "ui_source=s if a.original else (current_source_path(ROOT, 'MyBehavior.cs')).read_text(encoding='utf-8-sig')\n"), (" helper=(ROOT/'MyBehavior.PersonaGeneration.cs').read_text(encoding='utf-8-sig');owner=(ROOT/'src/modules/AF.Module.Persona/Generation/NpcPersonaGenerationOwner.cs').read_text(encoding='utf-8-sig')\n", " helper=(current_source_path(ROOT, 'MyBehavior.PersonaGeneration.cs')).read_text(encoding='utf-8-sig');owner=(ROOT/'src/modules/AF.Module.Persona/Generation/NpcPersonaGenerationOwner.cs').read_text(encoding='utf-8-sig')\n"), (" promoted=(ROOT/'MyBehavior.PromotedPersonaGeneration.cs').read_text(encoding='utf-8-sig')\n", " promoted=(current_source_path(ROOT, 'MyBehavior.PromotedPersonaGeneration.cs')).read_text(encoding='utf-8-sig')\n")]}}
+    source = _restore_f5_fixture_wiring(path, source)
     packet = reviewed.get(str(path).replace(chr(92), "/"))
     if packet is None:
         return source
@@ -58,10 +67,14 @@ def restore_historical(source,strict=True):
 # J17 moved unrelated Memory/Weekly code; compare only this owner, not the old whole host.
 CURRENT_REVIEW='f6e2ead7'
 def restore(source,strict=True):
- live=(current_source_path(ROOT, 'MyBehavior.cs')).read_text(encoding='utf-8-sig')
+ verify_owners()
+ source=exact_inverse('MyBehavior.cs',source,verify=False)
+ live=exact_inverse('MyBehavior.cs',(current_source_path(ROOT, 'MyBehavior.cs')).read_text(encoding='utf-8-sig'),verify=False)
  review=json.loads((HERE/'source-review.json').read_text(encoding='utf-8'))
  for path,h in review['dependencies'].items():
-  text=_restore_round2_current_paths(path, (current_source_path(ROOT, path)).read_text(encoding='utf-8-sig'))
+  raw=(current_source_path(ROOT, path)).read_text(encoding='utf-8-sig')
+  if path in ('MyBehavior.PersonaGeneration.cs','MyBehavior.PromotedPersonaGeneration.cs'): raw=exact_inverse(path,raw,verify=False)
+  text=_restore_round2_current_paths(path, raw)
   if path.startswith('tests/'):
    # The candidate already records J13 promoted cases, J16 paths and J17 SDK safety.
    expected=subprocess.check_output(['git','show',CURRENT_REVIEW+':'+path],cwd=ROOT).decode('utf-8-sig').replace('\r\n','\n')
@@ -83,7 +96,7 @@ def verify():
  restore((current_source_path(ROOT, 'MyBehavior.cs')).read_text(encoding='utf-8-sig'))
  old=ex.declaration(prior(),'private async Task<string> GenerateNpcPersonaAsync(')
  prompt=old[old.index('\t\t\tstring sys = '):old.index('\t\t\tApiCallResult apiCallResult = ')].rstrip()
- helper=(current_source_path(ROOT, 'MyBehavior.PersonaGeneration.cs')).read_text(encoding='utf-8-sig')
+ helper=exact_inverse('MyBehavior.PersonaGeneration.cs',(current_source_path(ROOT, 'MyBehavior.PersonaGeneration.cs')).read_text(encoding='utf-8-sig'),verify=False)
  assert prompt in helper,'Original persona prompt block changed'
  print('PASS scoped current persona consumers; original prompt unchanged; historical whole inverse retained')
 if __name__=='__main__':verify()

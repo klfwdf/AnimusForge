@@ -105,7 +105,7 @@ namespace AnimusForge
                 Array.Empty<InteractionCandidate>(), Array.Empty<string>(), facts), prompt.Messages);
         }
     }
-    public partial class ShoutBehavior
+    public partial class ConversationActionPostprocessOwner
     {
         public sealed class CaptureRecord
         {
@@ -124,7 +124,7 @@ namespace AnimusForge
             string playerText, string historyText, string replyText, bool duelRuleInjected, bool rewardRuleInjected, bool loanRuleInjected,
             bool kingdomServiceRuleInjected, bool lordsHallRuleInjected, bool meetingReleaseRuleInjected, bool vanillaIssueRuleInjected,
             bool heroJoinPartyRuleInjected, bool sceneMechanismRuleInjected, bool partyTransferRuleInjected,
-            out CourierActionPostprocessWorkItem workItem, out string immediateResult,
+            out ConversationCourierPostprocessWorkItem workItem, out string immediateResult,
             bool voteDealRuleInjected = false, bool diplomacyRuleInjected = false, bool worldMapPartyCommandRuleInjected = false,
             List<string> preprocessRuleHits = null, string entityPostprocessContext = null, int targetAgentIndex = -1,
             bool latestReplyHasPlayerInput = true, bool forceLooseWeeklyMemoryMaterialSession = false,
@@ -142,7 +142,7 @@ namespace AnimusForge
                     ["diplomacy"] = diplomacyRuleInjected, ["worldmap_party_command"] = worldMapPartyCommandRuleInjected,
                     ["kingdom_vassalage"] = kingdomVassalageRuleInjected, ["kingdom_annexation"] = kingdomAnnexationRuleInjected } });
             immediateResult = "";
-            workItem = PrepareNull ? null : new CourierActionPostprocessWorkItem("system:" + targetHero.StringId,
+            workItem = PrepareNull ? null : new ConversationCourierPostprocessWorkItem("system:" + targetHero.StringId,
                 "input:" + playerText + "|history:" + historyText + "|reply:" + replyText, "fallback without actions", "kingdom", targetHero.StringId,
                 "character", "troop", "rank", -1, raw =>
                 {
@@ -155,8 +155,11 @@ namespace AnimusForge
                 });
             return workItem != null;
         }
-        @@WORK_ITEM@@
+        internal static void RequireMainThread() => Program.CheckMain();
     }
+    public class ShoutBehavior : ConversationActionPostprocessOwner { }
+    @@WORK_ITEM@@
+
 }
 
 public static class Program

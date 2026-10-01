@@ -1,0 +1,104 @@
+using System;
+using System.Collections.Generic;
+using System.Collections.Concurrent;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using AnimusForge;
+using AnimusForge.Refactor.Adapters;
+using AnimusForge.Refactor.Contracts;
+using AnimusForge.Refactor.Runtime;
+using TaleWorlds.CampaignSystem;
+using TaleWorlds.CampaignSystem.Conversation;
+
+namespace TaleWorlds.CampaignSystem {
+ public sealed class Hero { public string StringId {get {Program.MainOnly();return "hero";}} }
+ public sealed class CharacterObject { }
+ public static class Campaign { public static CurrentCampaign Current=new(); }
+ public sealed class CurrentCampaign { public ConversationManager ConversationManager=new(); }
+}
+namespace TaleWorlds.CampaignSystem.Conversation { public sealed class ConversationManager {public int ActiveToken=10;} }
+namespace TaleWorlds.MountAndBlade {
+ public sealed class Agent {public int Index;}
+ public sealed class Mission { public static Mission Current=new(); public List<Agent> Agents=new(); }
+}
+namespace AnimusForge {
+ internal static class Logger {internal static void Log(string area,string message) {}}
+ internal static class SaveRuntimeGuard {internal static long Generation=1;internal static bool IsCurrentGeneration(long value)=>value==Generation;}
+ internal static class AIConfigHandler {internal static string ActionPostprocessFallbackMoodTag="[ACTION:MOOD:NEUTRAL]";}
+ internal static class ConversationActionPostprocessOwner {internal static void RequireMainThread()=>Program.MainOnly();}
+ public sealed class NpcDataPacket {public int AgentIndex;}
+ public sealed class SceneSummonPromptTarget {public int PromptId;}
+ public sealed class SceneGuidePromptTarget {}
+ public sealed class PostprocessRuleEntry {}
+ public sealed class RewardSystemBehavior {public sealed class DuelStakeOption{} public static RewardSystemBehavior Instance=new();public List<DuelStakeOption> BuildDuelStakeOptionsForAI(Hero h){Program.MainOnly();return new();}}
+ internal static class AfGcczShoutBridge {internal static bool ShouldRunPostprocessForActiveScene(){Program.MainOnly();return false;}}
+ @@WORK@@
+ public partial class ShoutBehavior {
+  internal static ShoutBehavior CurrentInstance;
+  internal static Hero Target;
+  internal static CharacterObject Character;
+  internal static bool Available=true,Immediate;
+  internal static int Prepared,Normalized;
+  internal static List<string> PreparedHits;
+  internal static readonly ConcurrentQueue<Action> Queue=new();
+  internal static LegacyInteractionPipelinePorts Ports()=>CreateNativeConversationDetachedPortsCore(new[]{"ACTION:GIVE_GOLD","ACTION:MOOD"},12,64);
+  private static bool TryResolveNativeConversationTarget(out Hero hero,out CharacterObject character,out string name){Program.MainOnly();hero=Target;character=Character;name="NPC";return Available;}
+  private static int TryResolveNativeConversationAgentIndex(Hero h,CharacterObject c){Program.MainOnly();return -1;}
+  public static bool TryGetNativeConversationPersistentHistoryTargetForExternal(out Hero h,out string n,out string id){Program.MainOnly();h=Target;n="NPC";id="hero";return Available;}
+  private static bool IsNativeConversationResponseTargetAvailableForActionDispatch(int index,Hero h,CharacterObject c,out string reason){Program.MainOnly();reason="";return Available;}
+  private static NpcDataPacket BuildNativeConversationNpcData(Hero h,CharacterObject c){Program.MainOnly();return new();}
+  private List<SceneSummonPromptTarget> BuildSceneSummonPromptTargets(List<NpcDataPacket> n,Dictionary<int,Hero> h){Program.MainOnly();return new();}
+  private List<SceneGuidePromptTarget> BuildSceneGuidePromptTargets(TaleWorlds.MountAndBlade.Agent agent,int index){Program.MainOnly();return new();}
+  private List<PostprocessRuleEntry> BuildRuntimeSceneMechanismPostprocessRulesForScene(NpcDataPacket npc,List<SceneSummonPromptTarget> s,List<SceneGuidePromptTarget> g){Program.MainOnly();return new();}
+  private static bool CanUseSceneMechanismPostprocessForSpeaker(int index){Program.MainOnly();return true;}
+  private static string GetSceneNpcHistoryNameForPrompt(NpcDataPacket npc){Program.MainOnly();return "NPC";}
+  private static bool HasPreprocessRuleHit(List<string> hits,string id)=>hits?.Contains(id)==true;
+  public static LegacyDetachedRuleSelector CreateNativeConversationDetachedRuleSelectorForExternal(int topN)=>new((a,b,c,d,e)=>new DetachedRuleLookupResult(new[]{"reward"}));
+  private Task<T> RunNativeConversationMainThreadFuncAsync<T>(string op,string name,int index,Func<T> action,T fallback) {
+   if(Environment.CurrentManagedThreadId==Program.MainId)return Task.FromResult(action());
+   var result=new TaskCompletionSource<T>(TaskCreationOptions.RunContinuationsAsynchronously);
+   Queue.Enqueue(()=>{try{result.TrySetResult(action());}catch(Exception e){result.TrySetException(e);}});return result.Task;
+  }
+  private static void RequireMainThread()=>Program.MainOnly();
+  @@COMPLETE@@
+  @@PREPARE@@
+ }
+}
+internal static class Program {
+ internal static int MainId;
+ static int checks;
+ internal static void MainOnly(){if(Environment.CurrentManagedThreadId!=MainId)throw new InvalidOperationException("off-thread-game-access");}
+ static void Check(bool condition,string name){if(!condition)throw new Exception(name);checks++;Console.WriteLine("PASS "+name);}
+ static T Pump<T>(Task<T> task){var end=DateTime.UtcNow.AddSeconds(5);while(!task.IsCompleted&&DateTime.UtcNow<end){if(ShoutBehavior.Queue.TryDequeue(out var action))action();else Thread.Sleep(1);}if(!task.IsCompleted)throw new Exception("queue-timeout");return task.GetAwaiter().GetResult();}
+ static void Reset(){ShoutBehavior.CurrentInstance=new();ShoutBehavior.Target=new();ShoutBehavior.Character=new();ShoutBehavior.Available=true;ShoutBehavior.Immediate=false;ShoutBehavior.Prepared=ShoutBehavior.Normalized=0;Campaign.Current=new();SaveRuntimeGuard.Generation=1;}
+ static InteractionEnvelope Envelope(bool bind=true){var e=new InteractionEnvelope(new GameInteractionSnapshot(new InteractionIdentity("session",InteractionChannel.NativeConversation,"hero"),new TraceContext("trace",1,1,"test","1.4"),"input","town",1,1,Array.Empty<InteractionCandidate>(),Array.Empty<string>(),new Dictionary<string,string>{{"native_conversation_token","10"}}),new[]{new PromptMessage("user","history")});return bind?ShoutBehavior.BindNativeDetachedPostprocessSource(e):e;}
+ static (LegacyInteractionPipelinePorts p,InteractionEnvelope e,RuleSelection r,PostprocessContext c) Request(bool bind=true){var e=Envelope(bind);var p=ShoutBehavior.Ports();var r=p.SelectRules(e.Snapshot);var c=p.BuildPostprocessContext(e.Snapshot,r,p.Capabilities);return(p,e,r,c);}
+ static Task<PromptPackage> Prepare((LegacyInteractionPipelinePorts p,InteractionEnvelope e,RuleSelection r,PostprocessContext c) q,CancellationToken token=default)=>Task.Run(()=>q.p.ComposePostprocessPromptAsync(q.e,q.r,"visible","raw reply",q.c,token));
+ static Task<ActionPlan> Complete((LegacyInteractionPipelinePorts p,InteractionEnvelope e,RuleSelection r,PostprocessContext c) q)=>Task.Run(()=>q.p.ParseActionsAsync("[ACTION:GIVE_GOLD:999]",q.c,CancellationToken.None));
+ static void Replace(string kind){switch(kind){case "generation":SaveRuntimeGuard.Generation++;break;case "owner":ShoutBehavior.CurrentInstance=new();break;case "manager":Campaign.Current.ConversationManager=new();break;case "token":Campaign.Current.ConversationManager.ActiveToken++;break;case "hero":ShoutBehavior.Target=new();break;case "character":ShoutBehavior.Character=new();break;case "unavailable":ShoutBehavior.Available=false;break;}}
+ private sealed class Gateway : ILlmGateway {
+  internal int MainCalls,PostCalls;
+  public Task<LlmGenerateResult> GenerateAsync(LlmGenerateRequest r,CancellationToken token){if(r.Stage==InteractionStage.Postprocess)PostCalls++;else MainCalls++;return Task.FromResult(new LlmGenerateResult(LlmResultStatus.Succeeded,r.Stage==InteractionStage.Postprocess?"[ACTION:GIVE_GOLD:999]":"visible reply",0,0,""));}
+ }
+ static InteractionResult Generate(LegacyInteractionPipelinePorts ports,InteractionEnvelope e,Gateway gateway,CancellationToken token=default){using var coordinator=LegacyInteractionPipelineComposition.Create(ports,gateway,()=>SaveRuntimeGuard.Generation);var config=new RuntimeConfigSnapshot("test",1,new Dictionary<string,bool>{{"native",true}},new Dictionary<string,LlmProviderSnapshot>{{"p",new("p","https://fixture.invalid","test",1000,5000)}});return Pump(Task.Run(()=>coordinator.ExecuteAsync(e,config,"native","p",token)));}
+ static LegacyInteractionPipelinePorts NullPorts(Func<PostprocessContext,CancellationToken,Task<ActionPlan>> immediate=null){var caps=new CapabilitySet(new[]{"llm.generate"});return new LegacyInteractionPipelinePorts(s=>new RuleSelection(new[]{"native"},null),(e,r,c)=>new PromptPackage(new[]{new PromptMessage("user","input")},100,"test"),(s,r,c)=>new PostprocessContext(r.RuleIds,new[]{"ACTION:MOOD"},c),(raw,c)=>throw new Exception("null-prompt must not invoke raw parser"),(raw,f)=>raw,caps,(e,r,v,raw,c)=>null,null,null,immediate);}
+ static void ImmediateCases(){
+  Reset();var q=Request();ShoutBehavior.Immediate=true;var gateway=new Gateway();var result=Generate(q.p,q.e,gateway);Check(result.Status==InteractionStatus.Succeeded&&gateway.MainCalls==1&&gateway.PostCalls==0&&result.ActionPlan.Actions.Count==1&&result.ActionPlan.Actions[0].Tag=="ACTION:MOOD"&&ShoutBehavior.Prepared==1,"native immediate full pipeline once zero post network");
+  Check(Pump(Task.Run(()=>q.p.CompleteImmediate(q.c,CancellationToken.None))).Actions.Count==0,"native immediate unprepared context no authority");
+  Reset();gateway=new();result=Generate(NullPorts(),Envelope(),gateway);Check(result.Status==InteractionStatus.Succeeded&&result.ActionPlan.Actions.Count==0&&gateway.PostCalls==0,"legacy null prompt unchanged no parser");
+  Reset();using(var cancel=new CancellationTokenSource()){int completed=0;gateway=new();var ports=NullPorts((c,t)=>{completed++;cancel.Cancel();return Task.FromResult(new ActionPlan(Array.Empty<ActionRequest>(),""));});result=Generate(ports,Envelope(),gateway,cancel.Token);Check(result.Status==InteractionStatus.CancelledAsStale&&completed==1&&gateway.PostCalls==0,"immediate cancellation after callback drops result");}
+  Reset();gateway=new();result=Generate(NullPorts((c,t)=>throw new InvalidOperationException("immediate failure")),Envelope(),gateway);Check(result.Status!=InteractionStatus.Succeeded&&result.ActionPlan.Actions.Count==0&&gateway.PostCalls==0,"immediate exception cannot report successful effects");
+ }
+ static int Main(){MainId=Environment.CurrentManagedThreadId;try{
+  Reset();var q=Request();var prompt=Pump(Prepare(q));Check(prompt.MaxTokens==5000&&prompt.Messages[1].Content.Contains("input")&&prompt.Messages[1].Content.Contains("history")&&prompt.Messages[1].Content.Contains("raw reply"),"native shared preparation exact inputs");
+  var result=Pump(Complete(q));Check(result.Actions.Count==1&&result.Actions[0].TargetId=="7"&&ShoutBehavior.Normalized==1,"native normalized before real parser");Check(Pump(Complete(q)).Actions.Count==0&&ShoutBehavior.Normalized==1,"native context one-shot");
+  Check(q.p.ParseActions("[ACTION:GIVE_GOLD:999]",q.c).Actions.Count==0,"native no raw synchronous authority");
+  foreach(var kind in new[]{"generation","owner","manager","token","hero","character","unavailable"}){Reset();q=Request();Replace(kind);Check(Pump(Prepare(q))==null&&ShoutBehavior.Prepared==0,"native prepare rejects "+kind);}
+  foreach(var kind in new[]{"generation","owner","manager","token","hero","character","unavailable"}){Reset();q=Request();Pump(Prepare(q));Replace(kind);Check(Pump(Complete(q)).Actions.Count==0&&ShoutBehavior.Normalized==0,"native complete rejects "+kind);}
+  Reset();q=Request(false);Check(Pump(Prepare(q))==null,"native unbound context rejects");
+  Reset();q=Request();using(var cancel=new CancellationTokenSource()){cancel.Cancel();bool cancelled=false;try{Pump(Prepare(q,cancel.Token));}catch(OperationCanceledException){cancelled=true;}Check(cancelled&&ShoutBehavior.Prepared==0,"native cancelled before prepare no effects");}
+  ImmediateCases();
+  Console.WriteLine($"Native detached: {checks} checks, 0 failures; actual channel adapter/work-item/completion + real parser; domain preparation/scheduler fixtures; live NOT_RUN");return 0;
+ }catch(Exception e){Console.WriteLine("FAIL "+e);return 1;}}
+}

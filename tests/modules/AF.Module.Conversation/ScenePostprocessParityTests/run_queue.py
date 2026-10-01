@@ -5,7 +5,7 @@ import os
 from pathlib import Path
 import sys
 sys.path.insert(0, str(Path(__file__).resolve().parents[4] / "tests"))
-from output_isolation import new_run_root
+from output_isolation import new_run_root, minimal_test_environment
 import re
 import subprocess
 import run
@@ -36,12 +36,12 @@ def main():
         except (FileNotFoundError,subprocess.CalledProcessError): shared=source
     else: source=run.extractor.source(scene_path,None)
     if not args.source_ref:
-        shared=run.extractor.source(shared_path,None) if (run.ROOT/shared_path).is_file() else source
+        shared=run.owner_phase_source()
     snippets={
       'QUEUE':run.extractor.declaration(source,'private Task<ScenePostprocessOutcome> QueueDeferredScenePostprocessActions('),
       'OUTCOME':'\n'.join(run.extractor.declaration(source, signature) for signature in
           ['private enum ScenePostprocessStatus', 'private sealed class ScenePostprocessOutcome']),
-      'WORK':run.extractor.declaration(shared,'private sealed class SceneActionPostprocessWorkItem'),
+      'WORK':'\n'.join(run.extractor.declaration(shared,sig) for sig in ('private sealed class SceneActionPostprocessWorkItem','private sealed class PostprocessNetworkRequest')),
       'COMPLETE':run.extractor.declaration(shared,'private static string CompleteSceneUnifiedActionPostprocess('),
       'REQUEST':run.extractor.declaration(shared,'private static bool TryRequestSceneUnifiedActionPostprocess('),
     }
@@ -68,11 +68,11 @@ def main():
     template=(HERE/'QueueHarness.cs.txt').read_text(encoding='utf-8-sig')
     for key,value in snippets.items(): template=template.replace('@@'+key+'@@',value)
     if '@@' in template: raise ValueError('Unexpanded queue placeholder')
-    output=new_run_root(Path(__file__).resolve().parents[4], "ScenePostprocessParityTests", args.run_root) if args.run_root else HERE/'.generated'/args.output_name;output.mkdir(parents=True,exist_ok=True)
+    output=new_run_root(Path(__file__).resolve().parents[4], "scene-postprocess-queue-"+args.output_name, args.run_root)
     (output/'Program.cs').write_text(template,encoding='utf-8')
     (output/'Queue.csproj').write_text('<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><ImplicitUsings>enable</ImplicitUsings><Nullable>disable</Nullable></PropertyGroup>'+run.team_module_project_items()+QUEUE_LIFETIME_ITEMS+'</Project>')
     (output/'NuGet.Config').write_text('<configuration><packageSources><clear/></packageSources></configuration>')
-    env=os.environ.copy();env['DOTNET_ROOT']=str(Path(args.dotnet).parent);env['DOTNET_CLI_HOME']=str(run.ROOT/'.tmp/dotnet-cli');env['DOTNET_GENERATE_ASPNET_CERTIFICATE']='false';env['DOTNET_CLI_TELEMETRY_OPTOUT']='1';env['DOTNET_NOLOGO']='1';env['DOTNET_CLI_UI_LANGUAGE']='en'
+    env=minimal_test_environment(Path(args.dotnet),output)
     meta='source='+(args.source_ref or 'working-tree')+' mutation='+(args.mutate or 'none')+'\n'+'\n'.join(key+' sha256='+hashlib.sha256(value.encode()).hexdigest() for key,value in snippets.items())
     result=subprocess.run([args.dotnet,'run','--project',str(output/'Queue.csproj'),'-c','Release'],cwd=output,env=env,capture_output=True,text=True,encoding='utf-8',errors='replace',timeout=120)
     log=meta+'\n'+result.stdout+result.stderr

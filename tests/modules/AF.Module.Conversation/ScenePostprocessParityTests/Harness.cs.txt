@@ -1,3 +1,4 @@
+using AnimusForge;
 using AnimusForge.Refactor.Modules;
 using System;
 using System.Collections;
@@ -24,6 +25,14 @@ public class StubHost
     protected static List<PostprocessRuleEntry> BuildSceneActionDirectiveRules(IReadOnlyList<string> offeredKeys) => offeredKeys == null ? new() : throw new InvalidOperationException("unexpected scene-action offer");
     protected static string NormalizeSceneActionDirectiveTag(string raw, IReadOnlyList<string> offeredKeys) => offeredKeys == null ? "" : throw new InvalidOperationException("unexpected scene-action offer");
     protected static class NpcReplyDirectiveTagV1 { internal static bool ContainsTag(string text) => throw new InvalidOperationException("scene-action log reached without offer"); }
+    private static readonly int OwnerThread = Environment.CurrentManagedThreadId;
+    protected static void RequireMainThread() { if(Environment.CurrentManagedThreadId != OwnerThread) throw new InvalidOperationException("postprocess.requires_main_thread"); }
+    // This differential oracle covers no execution offer, not the execution mechanism.
+    // A reached execution branch fails closed rather than manufacturing a successful permit.
+    protected static class PublicExecutionOrderRuntime {
+        internal static object Capture(int agent,string chain,bool framed,bool direct,string player,string reply) => throw new InvalidOperationException("execution offer not in parity fixture");
+        internal static string Normalize(object permit,string text) => permit == null ? "" : throw new InvalidOperationException("unexpected execution permit");
+    }
     @@HELPERS@@
 }
 
