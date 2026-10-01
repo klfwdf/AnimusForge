@@ -26,6 +26,10 @@ public int SuppressedAccepted;
 public object CaptureReplay(Agent[] framed,Agent primary){var method=GetType().GetMethod("CaptureScenePlayerShoutRequestForReplay",BindingFlags.Instance|BindingFlags.NonPublic);return method?.Invoke(this,new object[]{framed,primary});}
 private void CancelShoutHotkeyCharge(string s){} private float GetShoutProcessingElapsedSeconds()=>0;private void ResumeTtsAfterShoutUi(){}
 private static bool ContainsLiteralKeywordHit(string x,string y)=>false;
+private sealed class FixtureMovementReset { internal void Reset(){} }
+private readonly FixtureMovementReset _sceneMovementController=new();
+// Audio is a game leaf here; preserve its observable retirement boundary.
+private void ResetSceneAudioRequestOwnership(){lock(_ttsBubbleSyncLock){_ttsPlaybackOwners.Clear();_activeTtsPlaybackRequests.Clear();}}
 private void DeactivateMultiSceneMovementSuppression(){}private void ClearPendingSceneConversationAttentionRelease(){}private void ResetStaringBehavior(){}private void ClearQueuedSceneSpeech(){ClearedSpeech++;}private void StopAllLipSyncPlaybackAndCleanup(){}
 private void RetireModuleSceneGroup(string reason){}
 // Presentation-session seams (ada9894a). This fixture never opens a session: no exclusions, and

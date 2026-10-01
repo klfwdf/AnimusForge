@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -21,9 +21,9 @@ public partial class ShoutBehavior
 	}
 
 	// Called by ProcessCapturedScenePlayerShoutAsync once the group task exists (any thread).
-	private void NotePresentationRoundGroup(Task groupTask) => Presentation.NoteRoundGroup(groupTask, Volatile.Read(ref _sceneConversationEpoch));
+	private void NotePresentationRoundGroup(Task groupTask) => Presentation.NoteRoundGroup(groupTask, _sceneConversationEpoch);
 
-	private bool IsPresentationRoundActive() => Presentation.IsRoundActive(GetApplicationTimeSafe(), Volatile.Read(ref _sceneConversationEpoch), GetScenePostprocessGateTask().IsCompleted, IsSpeechPipelineBusy);
+	private bool IsPresentationRoundActive() => Presentation.IsRoundActive(GetApplicationTimeSafe(), _sceneConversationEpoch, GetScenePostprocessGateTask().IsCompleted, IsSpeechPipelineBusy);
 
 	private void ClearPresentationRound() => Presentation.ClearRound();
 

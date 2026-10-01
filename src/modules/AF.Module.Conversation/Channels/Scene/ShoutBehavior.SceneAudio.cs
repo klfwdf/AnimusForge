@@ -1,4 +1,4 @@
-using static AnimusForge.SceneMovementController;
+﻿using static AnimusForge.SceneMovementController;
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -14,7 +14,7 @@ public partial class ShoutBehavior
  private SceneAudioLipSyncController _sceneAudio;
  private SceneAudioLipSyncController SceneAudio => _sceneAudio ??= new SceneAudioLipSyncController(new SceneAudioLipSyncPort
  {
-  SceneSessionId = () => Volatile.Read(ref _sceneHistorySessionId), ConversationEpoch = () => Volatile.Read(ref _sceneConversationEpoch),
+  SceneSessionId = () => Volatile.Read(ref _sceneHistorySessionId), ConversationEpoch = () => _sceneConversationEpoch,
   Dispatch = action => _mainThreadActions.Enqueue(action), Cancelled = HandleTtsPlaybackCancelled,
   Finished = HandleSceneTtsPlaybackFinishedOnMainThread,
   CompleteNativeWait = (request, reason) => CompleteNativeConversationTtsPlaybackWait(request, reason),

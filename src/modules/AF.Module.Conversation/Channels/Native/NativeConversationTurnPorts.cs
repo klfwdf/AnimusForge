@@ -13,11 +13,11 @@ internal sealed class NativeConversationTurnPorts
     internal delegate Task<NativeConversationGameActionResult> ApplyNativeConversationGameActionsOnMainThreadAsyncCapability(Hero targetHero, CharacterObject targetCharacter, NpcDataPacket npc, List<NpcDataPacket> allNpcData, List<SceneSummonPromptTarget> sceneSummonTargets, List<SceneGuidePromptTarget> sceneGuideTargets, string content, string npcName, int targetAgentIndex, string playerText, ConversationManager expectedConversationManager, int expectedConversationToken, NativeConversationAdmission admission, NativeConversationCompletionRequest completion = null);
     internal ApplyNativeConversationGameActionsOnMainThreadAsyncCapability ApplyNativeConversationGameActionsOnMainThreadAsync;
 
-    internal delegate Task<MyBehavior.ShoutPromptContext> BuildNativePromptContextScheduledAsyncCapability(
-		NativeConversationAdmission admission, string targetLog, int targetAgentIndex, long runtimeGeneration,
-		Hero targetHero, CharacterObject targetCharacter, string routingInput, string extraFact, string cultureId, bool hasAnyHero,
-		List<string> preprocessExcludedRuleIds, MyBehavior.WeeklyPromptSnapshot weeklyPromptSnapshot);
-    internal BuildNativePromptContextScheduledAsyncCapability BuildNativePromptContextScheduledAsync;
+    internal ConversationGameThreadDispatcher PromptDispatcher;
+    internal Func<bool> IsPromptOwnerAvailable;
+    internal Func<NativePromptCaptureRequest, SharedPromptRoutingWork> CapturePromptRoutingWork;
+    internal Func<PromptBuildPhases, Hero, PromptKnowledgeWorkInput> CapturePromptKnowledge;
+    internal Func<PromptBuildPhases, Hero, CharacterObject, MyBehavior.WeeklyPromptSnapshot, MyBehavior.ShoutPromptContext> CompletePromptCapture;
 
     internal delegate List<PostprocessRuleEntry> BuildRuntimeSceneMechanismPostprocessRulesForSceneCapability(NpcDataPacket speaker, List<SceneSummonPromptTarget> summonTargets, List<SceneGuidePromptTarget> guideTargets, bool includeGenericRules = true);
     internal BuildRuntimeSceneMechanismPostprocessRulesForSceneCapability BuildRuntimeSceneMechanismPostprocessRulesForScene;

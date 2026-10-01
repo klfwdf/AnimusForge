@@ -22690,7 +22690,7 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 		}
 	}
 
-	private static void LogShoutPromptContextStage(string stage, Stopwatch totalSw, Stopwatch stageSw, PromptBuildRequest request, string detail = null, bool immediate = true)
+	internal static void LogShoutPromptContextStage(string stage, Stopwatch totalSw, Stopwatch stageSw, PromptBuildRequest request, string detail = null, bool immediate = true)
 	{
 		LogShoutPromptContextStage(stage, totalSw, stageSw, request?.TargetHeroId ?? request?.TargetCharacterId, request?.TargetAgentIndex ?? -1, detail, immediate);
 	}
@@ -23008,36 +23008,7 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 	/// configuration and caches; may call the auxiliary router / ONNX. The caller must have applied
 	/// the request target to the ambient retrieval context on this thread (see ApplyGuardrailRuntimeTarget).
 	/// </summary>
-	internal void RunSharedPromptRouting(PromptBuildPhases phases)
-	{
-		PromptBuildRequest request = phases.Request;
-		if (!request.SuppressDynamicRuleAndLore)
-		{
-			AIConfigHandler.ClearLatestAuxiliaryMentionedEntitiesForExternal();
-		}
-		AIConfigHandler.SetGuardrailSemanticContext(request.GuardrailSemanticContext);
-		if (request.BypassRulePreprocess)
-		{
-			Logger.Log("Logic", "[RuleInjectionDebug] stage=single_aux_preprocess skipped=gccz_active targetHero=" + (request.TargetHeroId ?? "null") + " targetCharacter=" + (request.TargetCharacterId ?? "null"));
-		}
-		PromptRoutingInput routingInput = CreatePromptRoutingInput(request);
-		PromptRoutingResult routing = PromptTopicRoutingStage.Run(routingInput, CreatePromptRoutingPorts());
-		phases.Routing = routing;
-		phases.DirectPreprocessMentions.Merge(routing.AuxiliaryMentions);
-		LogPromptRoutingDiagnostics(request, routing, routingInput);
-		LogShoutPromptContextStage("aux_preprocess_done", phases.TotalStopwatch, phases.StageStopwatch, request, "auxHits=" + PromptTopicRoutingStage.DescribeHits(routing.AuxiliaryRuleHitIds) + " forcedHits=" + PromptTopicRoutingStage.DescribeHits(routing.ForcedRuleHitIds, "(none)"));
-		PromptRetrievalCapture retrieval = new PromptRetrievalCapture();
-		if (!request.SuppressDynamicRuleAndLore)
-		{
-			// Full mention set for this build: caller-supplied + router-discovered + mention store + latest.
-			// The capture phase uses this same detached mention set for Lore and entity candidates.
-			MentionedWorldEntities mentions = phases.DirectPreprocessMentions.Clone();
-			mentions.Merge(AIConfigHandler.GetAuxiliaryMentionedEntitiesForExternal(request.Input, request.NpcLastUtterance, request.GuardrailSemanticContext));
-			mentions.Merge(AIConfigHandler.GetLatestAuxiliaryMentionedEntitiesForExternal());
-			retrieval.AuxiliaryMentions = mentions;
-		}
-		phases.Retrieval = retrieval;
-	}
+	internal void RunSharedPromptRouting(PromptBuildPhases phases) => SharedPromptRoutingRuntime.Run(CaptureSharedPromptRoutingWork(phases));
 
 	/// <summary>Game thread: prepare the Lore index and capture entity candidates after routing supplied all mentions.</summary>
 	internal void CaptureSharedKnowledgeSnapshot(PromptBuildPhases phases, Hero targetHero)
@@ -23236,26 +23207,7 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 		};
 	}
 
-	private static PromptRoutingInput CreatePromptRoutingInput(PromptBuildRequest request)
-	{
-		return new PromptRoutingInput
-		{
-			Input = request.Input,
-			NpcLastUtterance = request.NpcLastUtterance,
-			HasAnyHero = request.HasAnyHero,
-			AllowRulePreprocess = request.AllowRulePreprocess,
-			BypassRulePreprocess = request.BypassRulePreprocess,
-			UseAuxiliaryRuleApi = AIConfigHandler.UseAuxiliaryRuleApiRetrieval,
-			AuxiliaryReturnCap = AIConfigHandler.GuardrailRuleReturnCap,
-			RewardEnabled = AIConfigHandler.RewardEnabled,
-			LoanEnabled = AIConfigHandler.LoanEnabled,
-			SurroundingsEnabled = AIConfigHandler.SurroundingsEnabled,
-			ExcludedRuleIds = request.ExcludedRuleIds,
-			PreprocessExcludedRuleIds = request.PreprocessExcludedRuleIds,
-			ForcedPreprocessRuleIds = request.ForcedPreprocessRuleIds,
-			StickyTargetKey = request.StickyTargetKey
-		};
-	}
+	private static PromptRoutingInput CreatePromptRoutingInput(PromptBuildRequest request) => SharedPromptRoutingRuntime.CaptureInput(request);
 
 	private static void LogPromptRoutingDiagnostics(PromptBuildRequest request, PromptRoutingResult routing, PromptRoutingInput routingInput)
 	{

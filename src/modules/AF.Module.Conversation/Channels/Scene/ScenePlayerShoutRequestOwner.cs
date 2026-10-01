@@ -30,7 +30,7 @@ internal sealed class ShoutTargetingContext
 /// </summary>
 internal sealed class ScenePlayerShoutRequest
 {
-	public ShoutBehavior Owner;
+	public object Owner;
 
 	public Mission Mission;
 
@@ -55,7 +55,7 @@ internal sealed class ScenePlayerShoutRequest
 /// </summary>
 internal sealed class ScenePlayerShoutContext
 {
-	public ShoutBehavior Owner;
+	public object Owner;
 	public Mission Mission;
 	public Agent Player;
 	public long RuntimeGeneration;
@@ -144,7 +144,7 @@ internal sealed class ScenePlayerShoutRequestOwner
 	}
 
 	internal ScenePlayerShoutContext CaptureContext(
-		ShoutBehavior owner,
+		object owner,
 		Mission mission,
 		Agent player,
 		long runtimeGeneration,
@@ -169,7 +169,7 @@ internal sealed class ScenePlayerShoutRequestOwner
 
 	internal bool TryClaimContext(
 		ScenePlayerShoutContext context,
-		ShoutBehavior owner,
+		object owner,
 		Mission currentMission,
 		Agent currentPlayer,
 		bool runtimeGenerationIsCurrent,
@@ -207,7 +207,7 @@ internal sealed class ScenePlayerShoutRequestOwner
 	}
 
 	internal ScenePlayerShoutRequest Capture(
-		ShoutBehavior owner,
+		object owner,
 		Mission mission,
 		Agent player,
 		long runtimeGeneration,
@@ -236,7 +236,7 @@ internal sealed class ScenePlayerShoutRequestOwner
 
 	internal bool IsCurrent(
 		ScenePlayerShoutRequest request,
-		ShoutBehavior owner,
+		object owner,
 		Mission currentMission,
 		Agent currentPlayer,
 		bool runtimeGenerationIsCurrent,

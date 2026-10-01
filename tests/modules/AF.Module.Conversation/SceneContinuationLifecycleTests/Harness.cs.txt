@@ -1,0 +1,27 @@
+using System;
+using System.Collections.Concurrent;
+using System.Diagnostics;
+using System.Threading;
+using System.Threading.Tasks;
+using AnimusForge.Refactor.Runtime;
+namespace AnimusForge;
+internal sealed partial class SceneConversationSessionRuntime
+{
+    private sealed class EmptyLease:IDisposable { public void Dispose() {} }
+    private static void Require(bool test,string name){if(!test)throw new Exception("ASSERT "+name);}
+    internal static void Proof()
+    {
+        int n=0;void Case(string name,Action test){test();n++;Console.WriteLine("PASS "+name);}
+        Case("normal-duplicate-post-sole-continuation-lease",()=>{var registry=new PendingOperationRegistry();var queue=new ConcurrentQueue<Action>();var context=new SceneMainThreadSynchronizationContext(a=>{queue.Enqueue(a);queue.Enqueue(a);},registry);int c=0;context.Post(_=>c++,null);while(queue.TryDequeue(out var a))a();Require(c==1&&registry.Count==0,"duplicate-once-release");});
+        Case("registry-reset-no-queue-tick-settles-await-and-lifetime",()=>{var registry=new PendingOperationRegistry();var queue=new ConcurrentQueue<Action>();var context=new SceneMainThreadSynchronizationContext(queue.Enqueue,registry);var network=new TaskCompletionSource<bool>();int leases=0,effects=0;
+            async Task Run(){leases++;try{await network.Task;if(!(SynchronizationContext.Current is SceneMainThreadSynchronizationContext c)||!c.IsRetired)effects++;}finally{leases--;}}
+            var previous=SynchronizationContext.Current;SynchronizationContext.SetSynchronizationContext(context);var task=Run();SynchronizationContext.SetSynchronizationContext(previous);
+            network.SetResult(true);Wait(()=>registry.Count>0);registry.ResetAndClear(()=>{while(queue.TryDequeue(out _)){} });Require(task.IsCompletedSuccessfully&&leases==0&&effects==0&&registry.Count==0,"reset-settles-no-effects");});
+        Case("sealed-after-network-resumes-terminal-not-game-effect",()=>{var registry=new PendingOperationRegistry();registry.Seal();int c=0;bool safe=false;var context=new SceneMainThreadSynchronizationContext(_=>throw new Exception("must-not-post"),registry);context.Post(_=>{c++;safe=((SceneMainThreadSynchronizationContext)SynchronizationContext.Current).IsRetired;},null);Require(c==1&&safe&&registry.Count==0,"sealed-terminal");});
+        Case("post-throws-terminal-once-and-releases-lease",()=>{var registry=new PendingOperationRegistry();Action delayed=null;int c=0;bool safe=false;var context=new SceneMainThreadSynchronizationContext(a=>{delayed=a;throw new Exception("post-error");},registry);context.Post(_=>{c++;safe=((SceneMainThreadSynchronizationContext)SynchronizationContext.Current).IsRetired;},null);delayed();Require(c==1&&safe&&registry.Count==0,"throw-once-retired");});
+        Case("reset-races-already-run-does-not-reexecute",()=>{var registry=new PendingOperationRegistry();Action delayed=null;int c=0;var context=new SceneMainThreadSynchronizationContext(a=>delayed=a,registry);context.Post(_=>c++,null);delayed();registry.Reset();delayed();Require(c==1&&registry.Count==0,"normal-reset-race");});
+        Console.WriteLine("SceneContinuationLifecycle PASS="+n+" FAIL=0");
+    }
+    static void Wait(Func<bool> test){var w=Stopwatch.StartNew();while(!test()){if(w.ElapsedMilliseconds>2000)throw new Exception("ASSERT continuation-post-timeout");Thread.Sleep(1);}}
+}
+internal static class Program {static int Main(){try{SceneConversationSessionRuntime.Proof();return 0;}catch(Exception ex){Console.Error.WriteLine(ex);return 1;}}}

@@ -5,13 +5,28 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using AnimusForge.Refactor.Modules;
+namespace AnimusForge;
 
-public partial class ShoutBehavior
+internal sealed partial class SceneConversationSessionRuntime
 {
     private const int ScenePostprocessGateWaitTimeoutMilliseconds = 80;
     @@DECLARATIONS@@
-    private sealed class PrecomputedShoutRagContext { }
-    private sealed class SceneShoutConversationScope { }
+
+    private SceneHistoryMessageContext CaptureSceneHistoryMessageContext(int index,bool labels) => new() { ViewerAgentIndex=index, PlayerName="Player", UseDistanceLabels=labels, SpeechTextOptions=new() };
+    private FixturePorts _ports => new(this);
+    private FixtureDispatcher _dispatcher => new();
+    private sealed class FixtureDispatcher { internal Task<T> RunAsync<T>(string phase,string speaker,int index,Func<T> action,T fallback)=>Task.FromResult(action()); }
+    private sealed class FixturePorts
+    {
+        private readonly SceneConversationSessionRuntime _owner;
+        internal FixturePorts(SceneConversationSessionRuntime owner){_owner=owner;}
+        internal int SceneSessionId()=>_owner._sceneHistorySessionId;
+        internal bool RecordResponseForAllNearbySafe(List<NpcDataPacket> a,int i,string n,string t,bool r)=>_owner.RecordResponseForAllNearbySafe(a,i,n,t,r);
+        internal bool PersistNpcSpeechToNamedHeroes(int i,string n,string t,List<NpcDataPacket> a,bool r)=>_owner.PersistNpcSpeechToNamedHeroes(i,n,t,a,r);
+    }
+
+    internal sealed class PrecomputedShoutRagContext { }
+    internal sealed class SceneShoutConversationScope { }
     private object[] _forwarded;
     private Task _dispatchTask = Task.CompletedTask;
     private int _dispatchCalls;
@@ -27,7 +42,7 @@ public partial class ShoutBehavior
     }
     private static async Task CheckGroupDispatch()
     {
-        var owner = new ShoutBehavior();
+        var owner = new SceneConversationSessionRuntime();
         var pending = Pending<bool>(); owner._dispatchTask = pending.Task;
         var all = new List<NpcDataPacket>(); var primary = new NpcDataPacket(7, "Alice");
         var contexts = new Dictionary<int, PrecomputedShoutRagContext>(); var heroes = new Dictionary<int, Hero>();
@@ -79,7 +94,7 @@ public partial class ShoutBehavior
 
     private static int _checks;
     private static int _requestSequence;
-    private static SceneGroupReceipt New() => new(new ShoutBehavior(),
+    private static SceneGroupReceipt New() => new(new SceneConversationSessionRuntime(),
         new CoreDialogueOperation("client", "request" + Interlocked.Increment(ref _requestSequence), "text"));
     private static void Check(bool condition, string name)
     {
@@ -96,15 +111,15 @@ public partial class ShoutBehavior
         var candidates = BuildGroupSpeakingCandidates(new List<NpcDataPacket> { bob, primary, cora, bob }, primary);
         Check(candidates.Select(x => x.AgentIndex).SequenceEqual(new[] { 7, 8, 9 }), "actual group candidate order and one speaker per agent");
 
-        var host = new ShoutBehavior();
+        var host = new SceneConversationSessionRuntime();
         host._history.Add(new ConversationMessage { Role = "user", Content = "one player input" });
         var passiveMessages = host.BuildStrictSceneMessagesForNpc(7, "system", Array.Empty<string>(),
             new[] { "current trigger" }, currentInputAlreadyRecorded: true, currentPlayerInput: "one player input");
-        Check(passiveMessages.OfType<ChatMessage>().Count(x => x.Role == "user" && x.Content == "one player input") == 1,
+        Check(passiveMessages.OfType<ChatMessage>().Count(x => x.Role == "user" && x.Content.EndsWith("one player input", StringComparison.Ordinal)) == 1,
             "passive prompt duplicated recorded player input");
         var groupMessages = host.BuildStrictSceneMessagesForNpc(8, "system", Array.Empty<string>(),
             currentPlayerInput: "one player input");
-        Check(groupMessages.OfType<ChatMessage>().Count(x => x.Role == "user" && x.Content == "one player input") == 1,
+        Check(groupMessages.OfType<ChatMessage>().Count(x => x.Role == "user" && x.Content.EndsWith("one player input", StringComparison.Ordinal)) == 1,
             "multi-NPC prompt duplicated recorded player input");
         var newInputMessages = host.BuildStrictSceneMessagesForNpc(8, "system", Array.Empty<string>(),
             currentInputAlreadyRecorded: false, currentPlayerInput: "new player input");
@@ -131,7 +146,12 @@ public partial class ShoutBehavior
             "unavailable target appended facts");
     }
 
-    public static async Task Main()
+    public static async Task<int> Main()
+    {
+        try { await RunChecks(); return 0; }
+        catch (Exception ex) { Console.Error.WriteLine(ex); return 1; }
+    }
+    private static async Task RunChecks()
     {
         await CheckGroupDispatch();
         CheckChainBoundaries();
@@ -187,7 +207,7 @@ public partial class ShoutBehavior
         var admitted = new CoreDialogueOperation("client", "retired", "text", CoreDialogueChannel.Scene);
         Check(admitted.TryBegin(), "retirement operation began");
         admitted.MarkOwnerAdmitted();
-        var retired = new SceneGroupReceipt(new ShoutBehavior(), admitted);
+        var retired = new SceneGroupReceipt(new SceneConversationSessionRuntime(), admitted);
         retired.AddTurn(9, "Cora", "already visible", Pending<bool>().Task);
         retired.Retire("scene.stale_context");
         CoreDialogueResult retiredResult = await admitted.Completion;
@@ -215,12 +235,6 @@ public sealed class NpcDataPacket
     public string Name;
     public NpcDataPacket(int index, string name) { AgentIndex = index; Name = name; }
 }
-public sealed class ConversationMessage
-{
-    public string Role, Content, SpeakerName;
-    public int SpeakerAgentIndex, TargetAgentIndex;
-    public float PlayerDistanceMeters;
-}
 public sealed record ChatMessage(string Role, string Content);
 public sealed class Hero { }
 public sealed class CharacterObject { }
@@ -238,3 +252,8 @@ public static class Logger
     public static void Metric(string category, bool ok) { }
     public static void LogVerbose(string category, string key, Func<string> message, double interval) { }
 }
+
+internal static class MainPromptMessageAssemblyOwner { internal static object CreateCourierChatMessage(string role,string content)=>new ChatMessage(role,content); }
+internal static class ShoutUtils { internal static string StripConversationMetadataPrefix(string text)=>text; internal static string StripNamePrefixedLineSafely(string text,int maximum=30)=>text; }
+internal static class LlmVisibleReplyNormalizer { internal static string NormalizeComplete(string text)=>text; }
+internal static class ConversationActionPostprocessOwner { internal static string StripActionTagsForSceneSpeech(string text)=>text; }

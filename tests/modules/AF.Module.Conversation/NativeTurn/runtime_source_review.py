@@ -22,7 +22,12 @@ def restore_runtime_move(file, source):
         assert source.count(marker) == 1
         source, factory = source.split(marker)
         bound = dict(re.findall(r'^        (\w+) = ([\w.]+),$', factory, re.M))
-        expected = {name: name for name in CAPABILITIES}
+        expected = {name: name for name in CAPABILITIES if name != 'BuildNativePromptContextScheduledAsync'}
+        expected['PromptDispatcher'] = '_conversationGameThreadDispatcher'
+        assert 'IsPromptOwnerAvailable = static () => MyBehavior.Instance != null,' in factory
+        assert 'CapturePromptRoutingWork = static request =>' in factory
+        assert 'CapturePromptKnowledge = static (phases, hero) =>' in factory
+        assert 'CompletePromptCapture = static (phases, hero, character, weekly) => MyBehavior.Instance?.CompleteSharedPromptBuild(phases, hero, character, weekly),' in factory
         for name in ['BuildSceneFollowControlPromptInstruction', 'BuildSceneSummonClosurePromptInstruction']:
             expected[name] = '_sceneMovement.' + name
         expected['ApplyNativeConversationGameActionsOnMainThreadAsync'] = '_nativeGameEffects.ApplyNativeConversationGameActionsOnMainThreadAsync'
@@ -36,6 +41,9 @@ def restore_runtime_move(file, source):
         source = source.replace('_ports = ports ?? throw new ArgumentNullException(nameof(ports));', '_owner = owner;')
     source = source.replace('new NativeConversationMainReplyRuntime(_ports, admission, nativeTargetLog,',
                             'new NativeConversationMainReplyHost(_owner, admission, nativeTargetLog,')
+    if file == 'ShoutBehavior.NativeTurnPrompt.cs':
+        assert source.count('ctx = await BuildNativePromptContextScheduledAsync(') == 1
+        source = source.replace('ctx = await BuildNativePromptContextScheduledAsync(', 'ctx = await _ports.BuildNativePromptContextScheduledAsync(')
     source = source.replace('NativeConversationGameEffectsRuntime.ObserveNativeActionDispatch(', 'ObserveNativeActionDispatch(')
     source = source.replace('_ports.', '_owner.')
     source = source.replace('using static AnimusForge.ShoutBehavior;\n\nnamespace AnimusForge;', 'namespace AnimusForge;')

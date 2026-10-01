@@ -24,7 +24,8 @@ for oldname,newname in [('PrepareInteractionCompletion','PrepareInteractionCompl
 atom=ex.declaration(audio,'private void PrepareInteractionCompletion(');atom=body(atom)[1:];atom=atom[:atom.rfind('}')]
 assert complete.count('PrepareInteractionCompletion(agentIndex);')==1
 complete=complete.replace('PrepareInteractionCompletion(agentIndex);',atom)
-oldcomplete=(ROOT/'artifacts/af2-host-terminal-closeout/line-d/speech-finished-current.txt').read_text(encoding='utf-8-sig')
+oldaudio=subprocess.check_output(['git','show','87e7a0b9:src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.SceneAudio.cs'],cwd=ROOT).decode('utf-8-sig')
+oldcomplete=ex.declaration(oldaudio,'private void HandleSceneTtsPlaybackFinishedOnMainThread(')
 assert tokens(body(oldcomplete))==tokens(body(complete)), 'completion interaction/motion/meeting/lipsync order drift'
 assert '_owner' not in new and 'ShoutBehavior _' not in new
 print('PASS full Publish inverse + full original audio completion inverse + actual producer/runtime/facade consumers')

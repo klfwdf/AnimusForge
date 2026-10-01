@@ -1,0 +1,62 @@
+
+namespace TaleWorlds.CampaignSystem { public sealed class Hero{} public sealed class CharacterObject{public Hero HeroObject;} }
+namespace AnimusForge {
+internal interface INativeConversationTurnHost{}
+internal sealed class NativeConversationAdmission{}
+public partial class ShoutBehavior {
+ internal const int NativeConversationMainThreadPreprocessTimeoutMs=2000;
+ internal static MyBehavior.ShoutPromptContext CreateEmptyNativeConversationPromptContext()=>new();
+}
+internal static partial class MyBehavior {
+ internal sealed class WeeklyPromptSnapshot{}
+ internal sealed class ShoutPromptContext {internal List<string> PreprocessRuleIds=new();internal string Extras="";}
+ internal static PromptKnowledgeWorkResult RunSharedKnowledgeRetrieval(PromptKnowledgeWorkInput i){Probe.OnWorker("retrieve");return new();}
+ internal static void ApplySharedKnowledgeRetrieval(PromptBuildPhases p,PromptKnowledgeWorkResult r){Probe.OnMain("apply");}
+}
+internal static partial class AIConfigHandler {
+ internal static bool KnowledgeRetrievalEnabled=true,KnowledgeSemanticFirst=true;
+ internal static int KnowledgeSemanticTopK=5;
+ internal static IDisposable BeginGuardrailRuntimeScope()=>new Scope();
+ internal static void ApplyGuardrailRuntimeTarget(PromptRuntimeTargetBinding t,PromptRuleEligibility e){}
+ internal static void ClearGuardrailRuntimeTarget(){}
+ internal sealed class Scope:IDisposable{public void Dispose(){}}
+}
+internal static class SaveRuntimeGuard {internal static long CurrentGeneration=1;internal static bool IsStale(long g,string reason)=>g!=CurrentGeneration;}
+internal static class FreezeWatchdog {internal static void Mark(string s,string d,bool immediate=false){}internal static IDisposable Scope(string n)=>new AIConfigHandler.Scope();}
+internal sealed class NativeConversationTurnPorts {
+ internal ConversationGameThreadDispatcher PromptDispatcher;
+ internal Func<bool> IsPromptOwnerAvailable;
+ internal Func<NativePromptCaptureRequest,SharedPromptRoutingWork> CapturePromptRoutingWork;
+ internal Func<PromptBuildPhases,TaleWorlds.CampaignSystem.Hero,PromptKnowledgeWorkInput> CapturePromptKnowledge;
+ internal Func<PromptBuildPhases,TaleWorlds.CampaignSystem.Hero,TaleWorlds.CampaignSystem.CharacterObject,MyBehavior.WeeklyPromptSnapshot,MyBehavior.ShoutPromptContext> CompletePromptCapture;
+ internal delegate bool Current(NativeConversationAdmission a,out string reason);
+ internal Current IsNativeConversationAdmissionCurrent;
+}
+internal sealed partial class NativeConversationTurnRuntime {
+ readonly NativeConversationTurnPorts _ports;
+ internal NativeConversationTurnRuntime(NativeConversationTurnPorts ports){_ports=ports;}
+ internal Task<MyBehavior.ShoutPromptContext> Build(long generation=1)=>BuildNativePromptContextScheduledAsync(new(),"npc",7,generation,new(),new(),"input","fact","culture",true,new(),null);
+}
+internal static class Probe {
+ static int MainThread;static bool Current=true; static System.Collections.Concurrent.ConcurrentQueue<Action> Queue=new();
+ static System.Collections.Concurrent.ConcurrentQueue<string> Trace=new();static int Captures;
+ internal static void Require(bool c,string m){if(!c)throw new Exception("ASSERT "+m);}
+ internal static void OnMain(string s){Require(System.Threading.Thread.CurrentThread.ManagedThreadId==MainThread,"main "+s);Trace.Enqueue(s);}
+ internal static void OnWorker(string s){Require(System.Threading.Thread.CurrentThread.ManagedThreadId!=MainThread,"worker "+s);Trace.Enqueue(s);}
+ static NativeConversationTurnRuntime Runtime(Action route=null){var registry=new AnimusForge.Refactor.Runtime.PendingOperationRegistry();return new(new(){
+ PromptDispatcher=new(registry,a=>{Queue.Enqueue(a);Queue.Enqueue(a);},()=>System.Threading.Thread.CurrentThread.ManagedThreadId==MainThread),IsPromptOwnerAvailable=()=>{OnMain("owner");return true;},
+ IsNativeConversationAdmissionCurrent=(NativeConversationAdmission a,out string r)=>{OnMain("guard");r="";return Current;},
+ CapturePromptRoutingWork=r=>{OnMain("capture");Captures++;var p=new PromptBuildPhases{Request=new(){Input=r.Input,GuardrailSemanticContext="native"},DirectPreprocessMentions=new()};return new(p,SharedPromptRoutingRuntime.CaptureInput(p.Request),new(){AuxiliaryHits=(i,n,c,e,m)=>{OnWorker("routing");route?.Invoke();return new();}});},
+ CapturePromptKnowledge=(p,h)=>{OnMain("knowledge");return new();},CompletePromptCapture=(p,h,c,w)=>{OnMain("complete");return new(){Extras="real"};}});}
+ static void Pump(Task t){var sw=Stopwatch.StartNew();while(!t.IsCompleted || !Queue.IsEmpty){while(Queue.TryDequeue(out var a))a();if(sw.ElapsedMilliseconds>5000)throw new Exception("pump timeout");System.Threading.Thread.Sleep(1);}}
+ static void Reset(){MainThread=System.Threading.Thread.CurrentThread.ManagedThreadId;Current=true;SaveRuntimeGuard.CurrentGeneration=1;Captures=0;while(Trace.TryDequeue(out _)){}while(Queue.TryDequeue(out _)){} }
+ internal static int Main(){try{int cases=0;void Case(string n,Action run){Reset();run();cases++;Console.WriteLine("PASS "+n);}
+ Case("real-five-stages-capture-before-worker",()=>{var t=Runtime().Build();Pump(t);Require(t.Result.Extras=="real" && Captures==1,"once real result");var trace=Trace.ToList();Require(trace.IndexOf("capture")<trace.IndexOf("routing")&&trace.IndexOf("routing")<trace.IndexOf("knowledge")&&trace.IndexOf("retrieve")<trace.IndexOf("complete"),"phase order");});
+ Case("admission-lost-before-capture",()=>{Current=false;var t=Runtime().Build();Pump(t);Require(t.Result==null&&Captures==0,"lost admission no capture");});
+ Case("late-routing-generation-inert",()=>{var t=Runtime(()=>SaveRuntimeGuard.CurrentGeneration++).Build();Pump(t);Require(t.Result==null&&!Trace.Contains("knowledge")&&!Trace.Contains("complete"),"stale no capture/effects");});
+ Case("format-propagates-no-phase-retry",()=>{var t=Runtime(()=>throw new PreprocessFormatException("bad")).Build();Pump(t);Require(t.IsFaulted&&t.Exception.GetBaseException() is PreprocessFormatException&&Captures==1&&!Trace.Contains("knowledge"),"format no retry");});
+ Case("one-background-slot-busy-turn-aborts",()=>{using var entered=new System.Threading.ManualResetEventSlim();using var release=new System.Threading.ManualResetEventSlim();var first=Runtime(()=>{entered.Set();release.Wait(2500);}).Build();while(!entered.IsSet){while(Queue.TryDequeue(out var a))a();System.Threading.Thread.Sleep(1);}var second=Runtime().Build();Pump(second);Require(second.Result==null,"busy no second route");release.Set();Pump(first);Require(first.Result.Extras=="real","first slot preserved");});
+ Console.WriteLine("NativePromptSchedulingRuntime PASS="+cases+" FAIL=0");return 0;
+ }catch(Exception ex){Console.Error.WriteLine(ex);return 1;}}
+}
+}

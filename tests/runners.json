@@ -165,7 +165,9 @@
   "tests/modules/AF.Module.Conversation/SceneGroupReceiptTests/run.py": {
    "args": [
     "--dotnet",
-    "{DOTNET8}"
+    "{DOTNET8}",
+    "--run-root",
+    "{ROOT}/artifacts/af2-host-terminal-closeout/runner/{RUN}/SceneGroupReceipt"
    ]
   },
   "tests/modules/AF.Module.Conversation/SceneRequestLifetimeRegressionTests/test_extraction.py": {
@@ -543,6 +545,62 @@
     "{ROOT}/artifacts/af2-host-terminal-closeout/runner/{RUN}/SceneHistoryOwner"
    ],
    "note": "Actual private Scene history authority, Native identity/append capture, history text projection and typed Presentation reads; fixed original golden and main consumer proof."
+  },
+  "tests/modules/AF.Module.Conversation/GameThreadDispatcherTests/run.py": {
+   "expect": "PASS",
+   "args": [
+    "--run-root",
+    "{ROOT}/artifacts/af2-host-terminal-closeout/runner/{RUN}/GameThreadDispatcherTests"
+   ],
+   "note": "Actual terminal production owner/source-linked lifecycle proof with unique output; headless game capabilities, not live-game acceptance."
+  },
+  "tests/modules/AF.Module.Conversation/GameThreadDispatcherTests/run_mutations.py": {
+   "expect": "PASS",
+   "args": [
+    "--run-root",
+    "{ROOT}/artifacts/af2-host-terminal-closeout/runner/{RUN}/GameThreadDispatcherTests-mutations"
+   ],
+   "note": "Actual terminal production owner/source-linked lifecycle proof with unique output; headless game capabilities, not live-game acceptance."
+  },
+  "tests/modules/AF.Module.Conversation/NativePromptSchedulingRuntimeTests/run.py": {
+   "expect": "PASS",
+   "args": [
+    "--run-root",
+    "{ROOT}/artifacts/af2-host-terminal-closeout/runner/{RUN}/NativePromptSchedulingRuntimeTests"
+   ],
+   "note": "Actual terminal production owner/source-linked lifecycle proof with unique output; headless game capabilities, not live-game acceptance."
+  },
+  "tests/modules/AF.Module.Conversation/SceneContinuationLifecycleTests/run.py": {
+   "expect": "PASS",
+   "args": [
+    "--run-root",
+    "{ROOT}/artifacts/af2-host-terminal-closeout/runner/{RUN}/SceneContinuationLifecycleTests"
+   ],
+   "note": "Actual terminal production owner/source-linked lifecycle proof with unique output; headless game capabilities, not live-game acceptance."
+  },
+  "tests/modules/AF.Module.Conversation/SceneImmediateLifecycleTests/run.py": {
+   "expect": "PASS",
+   "args": [
+    "--run-root",
+    "{ROOT}/artifacts/af2-host-terminal-closeout/runner/{RUN}/SceneImmediateLifecycleTests"
+   ],
+   "note": "Actual terminal production owner/source-linked lifecycle proof with unique output; headless game capabilities, not live-game acceptance."
+  },
+  "tests/modules/AF.Module.Prompt/SharedRoutingRuntimeTests/run.py": {
+   "expect": "PASS",
+   "args": [
+    "--run-root",
+    "{ROOT}/artifacts/af2-host-terminal-closeout/runner/{RUN}/SharedRoutingRuntimeTests"
+   ],
+   "note": "Actual terminal production owner/source-linked lifecycle proof with unique output; headless game capabilities, not live-game acceptance."
+  },
+  "tests/modules/AF.Module.Conversation/SceneRequestLifetimeRegressionTests/run.py": {
+   "expect": "PASS",
+   "args": [
+    "--run-root",
+    "{ROOT}/artifacts/af2-host-terminal-closeout/runner/{RUN}/SceneRequestLifetime"
+   ],
+   "note": "Retained fixed original UI oracle plus mandatory complete current-owner inverse; actual owner behavior covered by terminal lifecycle runners."
   }
  }
 }

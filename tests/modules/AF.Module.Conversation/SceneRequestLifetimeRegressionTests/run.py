@@ -1,10 +1,23 @@
-"""Real Scene input / frozen replay / gate methods, extracted from source; game objects stubbed."""
+"""Frozen pre-migration Scene UI/replay oracle plus current complete-owner inverse proof.
+
+The original assertions stay unchanged. The current execution/gate/context bodies are
+reviewed by the complete source inverse, and exercised separately by
+SceneImmediateLifecycleTests and SceneContinuationLifecycleTests; this UI fixture
+does not pretend its frozen game stubs execute the complete current runtime.
+"""
 from pathlib import Path
 import importlib.util,hashlib,subprocess,os,re,argparse,sys
 ROOT=Path(__file__).resolve().parents[4];HERE=Path(__file__).resolve().parent
 sys.path.insert(0,str(ROOT/"tests"))
 from output_isolation import new_run_root, resolve_dotnet, minimal_test_environment
 spec=importlib.util.spec_from_file_location('extractor',ROOT/'tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py');ex=importlib.util.module_from_spec(spec);spec.loader.exec_module(ex)
+ORACLE_REF='84f428cd'
+original_source=ex.source
+def oracle_source(path,ref):
+ if ref==ORACLE_REF:
+  path={'ShoutBehavior.cs':'src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.cs','ShoutUtils.cs':'src/modules/AF.Module.Conversation/Channels/Scene/ShoutUtils.cs'}.get(path,path)
+ return original_source(path,ref)
+ex.source=oracle_source
 def generate(source_ref=None):
  s=ex.source('ShoutBehavior.cs',source_ref);a=ex.source('extensions/AnimusForge.XihaiAction/src/Runtime/AfCompatV130.cs',source_ref);u=ex.source('ShoutUtils.cs',source_ref)
  try:o=ex.source('src/modules/AF.Module.Conversation/Channels/Scene/ScenePlayerShoutRequestOwner.cs',source_ref)
@@ -69,7 +82,12 @@ MUTATIONS = {
 def main():
  ap=argparse.ArgumentParser(description=__doc__);ap.add_argument('--source-ref');ap.add_argument('--mutation',choices=sorted(MUTATIONS));ap.add_argument('--core',action='store_true');ap.add_argument('--j14-completion','--j14-red',dest='j14_completion',action='store_true');ap.add_argument('--output-name',default='current');ap.add_argument('--dotnet',default=(os.environ.get("DOTNET_EXE") or os.environ.get("AF_DOTNET") or str(Path(__file__).resolve().parents[4] / "local/dotnet/8.0.425/dotnet.exe")));ap.add_argument("--run-root",type=Path);args=ap.parse_args();args.dotnet=str(resolve_dotnet(ROOT,args.dotnet))
  if not re.fullmatch(r'[A-Za-z0-9_-]+',args.output_name):ap.error('Invalid output name')
- out=new_run_root(ROOT,'scene-request-lifetime',args.run_root);pre=generate(args.source_ref)
+ out=new_run_root(ROOT,'scene-request-lifetime',args.run_root)
+ if args.source_ref is None:
+  review=subprocess.run([sys.executable,str(HERE.parent/'SceneImmediateLifecycleTests/source_review.py')],cwd=ROOT,capture_output=True,text=True,encoding='utf-8',errors='replace')
+  (out/'current-complete-owner-inverse.log').write_text(review.stdout+review.stderr,encoding='utf-8')
+  if review.returncode:print(review.stdout+review.stderr);return review.returncode
+ pre=generate(args.source_ref or ORACLE_REF)
  for file in ['ConversationRequestLifetime.cs','InteractionRequestLease.cs']:
   (out/file).write_text((ROOT/'src/modules/AF.Module.Conversation/Internal'/file).read_text(encoding='utf-8-sig'),encoding='utf-8')
  if args.mutation:
@@ -79,6 +97,6 @@ def main():
  (out/'Program.cs').write_text(pre,encoding='utf-8');(out/'Tests.csproj').write_text('<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><ImplicitUsings>enable</ImplicitUsings><Nullable>disable</Nullable></PropertyGroup></Project>');(out/'NuGet.Config').write_text('<configuration><packageSources><clear/></packageSources></configuration>')
  env=minimal_test_environment(Path(args.dotnet),out)
  r=subprocess.run([args.dotnet,'run','--project',str(out/'Tests.csproj'),'-c','Release','--']+(['core'] if args.core else [])+(['j14-completion'] if args.j14_completion else []),cwd=out,env=env,capture_output=True,text=True,encoding='utf-8',errors='replace',timeout=90)
- log='source='+(args.source_ref or 'working-tree')+' mutation='+(args.mutation or 'none')+'\nHarness SHA256='+hashlib.sha256(pre.encode()).hexdigest()+'\n'+r.stdout+r.stderr
+ log='source='+(args.source_ref or ORACLE_REF+' frozen UI oracle; current complete-owner inverse required')+' mutation='+(args.mutation or 'none')+'\nHarness SHA256='+hashlib.sha256(pre.encode()).hexdigest()+'\n'+r.stdout+r.stderr
  (out/'run.log').write_text(log,encoding='utf-8');print(log);return r.returncode
 if __name__=='__main__':raise SystemExit(main())
