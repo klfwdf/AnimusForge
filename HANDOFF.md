@@ -1,5 +1,7 @@
 # 当前交接：J17 收尾与远端 CivilWar 合并（2026-10-01）
 
+- **场景插画预设映射已替代固定尺寸（2026-10-01）**：`82269de8`，选2048方形→2048×1152，1344/1536档→1536×864，其余现有档→1280×720；只转换本次场景请求，设置原值保留。双API+Bootstrap和两个DLL各六预设检查PASS，未部署/推送/真实API或游戏验收。[源码坐标、验证与回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#scene-image-presets-20261001)。下方固定1280×720交付为历史。
+
 - **全部派系不满改为每日平滑衰减（2026-10-01）**：`05870e6f`，按用户明确选择保持原7天累计降幅，覆盖全部9来源。日事件处理已有记录、缓存系数和复用缓冲，存档日期防重复与旧档追扣；成派/通牒仍按周。76项生命周期回归、原smoke、Release双API+Bootstrap通过；合成100家族×9来源测得日事件均值0.1859ms，实机耗时/旧档未验。本片未部署；[具体证据、源码坐标与回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#civilwar-daily-decay-20261001)。未新增自动保皇派。
 
 - **场景插画16:9已离线修复（2026-10-01）**：`c4ac6035`，场景/地图会话生成固定请求1280×720，images的size与Chat的aspect_ratio均有真实参数接线；快报3:2及百科不变。Release双API+Bootstrap通过，真实服务端与游戏未验，未部署/推送。[源码坐标、证据与回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#scene-image-16x9-20261001)。
