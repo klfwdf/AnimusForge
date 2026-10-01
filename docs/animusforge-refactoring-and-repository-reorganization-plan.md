@@ -1,3 +1,9 @@
+<a id="coup-passage-transition-20261001"></a>
+
+### 政变大厅门原版 F 转场抢占修复（2026-10-01，ACTIVE）
+
+用户实测 F 直接进普通大厅，无选兵/援军，挥拳触发 SceneTaunt。现场 `18b58fa0`，已有三处周报UI未提交改动保留。日志 12:19:02 正常 Coup mission_started；12:20:54 原版门结束街道，Coup 被判 Failed/撤退；12:20:55 原版 town_keep 开始；12:21:03 SceneTaunt 犯罪与武装冲突，12:21:07 failure_committed。两版 PassageUsePoint.OnUse 都直接写 NextLocation 并 EndMission，现有 Coup 只轮询裸 F 键，没有接管门回调。范围：仅所属 Coup Mission 的 PassageUsePoint.OnUse 门禁与大厅转场，通过实际门事件完成 Street→HallSelection；未清守卫不放行，不允许原版把 active Coup 转进普通 location；普通任务通道仍原样放行。不放宽既有战斗/伤害保护，不逆改已经写入存档的失败结果。出口：真实 OnUse Harmony 路径的正/负/重复回归、大厅阶段接续、双API+Bootstrap；实机未验单列。沿用本会话部署授权，但覆盖前须确认游戏退出。
+
 <a id="civilwar-crown-withdrawal-20261001"></a>
 
 ### 王室阵营受事件影响撤回支持（2026-10-01，OFFLINE_VERIFIED）
