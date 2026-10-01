@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
@@ -10,12 +10,12 @@ using AnimusForge.Refactor.Runtime;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Conversation;
 
+using static AnimusForge.ShoutBehavior;
+
 namespace AnimusForge;
 
-public partial class ShoutBehavior
-{
     // Native game adapter; phase ordering belongs to NativeConversationTurnCoordinator.
-    private sealed partial class NativeConversationTurnHost : INativeConversationTurnHost
+    internal sealed partial class NativeConversationTurnRuntime : INativeConversationTurnHost
     {
         // Request-local phase output, published only after its awaited capture completes.
         private bool includeCurrentSceneSessionInPersistedHistory;
@@ -71,24 +71,24 @@ public partial class ShoutBehavior
                 Logger.Log("ShoutBehavior", "[NativeConversation] including active scene-session memory because scene dialogue snapshot is missing. target=" + nativeTargetLog + " agentIndex=" + nativeTargetAgentIndex);
             }
             Logger.Log("Logic", "[MemoryPerf] parallel_history_start reason=native_conversation target=" + nativeTargetLog + " agent=" + nativeTargetAgentIndex + " mode=task");
-            Func<string> nativeHistoryWork = await _owner.RunNativeConversationMainThreadFuncAsync(
+            Func<string> nativeHistoryWork = await _ports.RunNativeConversationMainThreadFuncAsync(
                 "persisted_history_capture", nativeTargetLog, nativeTargetAgentIndex,
-                () => _owner.IsNativeConversationAdmissionCurrent(admission, out _)
+                () => _ports.IsNativeConversationAdmissionCurrent(admission, out _)
                     ? CaptureNativeConversationPersistedHistoryWork(targetHero, targetCharacter, shouldRecordPlayerInput ? promptPlayerText : "", currentNativeDialogText, includeCurrentSceneSessionInPersistedHistory, admission.Generation)
                     : null, (Func<string>)null).ConfigureAwait(false);
             if (nativeHistoryWork == null) return NativeConversationTurnStep.Stop("");
             Task<string> persistedHeroHistoryTask = Task.Run(nativeHistoryWork);
             Stopwatch nativePreprocessSw = Stopwatch.StartNew();
             FreezeWatchdog.Mark("NativeConversation.preprocess_start", "target=" + (npcName ?? "unknown") + " agent=" + nativeTargetAgentIndex, immediate: true);
-            MyBehavior.WeeklyPromptSnapshot weeklyPromptSnapshot = await _owner.RunNativeConversationMainThreadFuncAsync(
+            MyBehavior.WeeklyPromptSnapshot weeklyPromptSnapshot = await _ports.RunNativeConversationMainThreadFuncAsync(
                 "weekly_prompt_snapshot",
                 nativeTargetLog,
                 nativeTargetAgentIndex,
-                () => _owner.IsNativeConversationAdmissionCurrent(admission, out _)
+                () => _ports.IsNativeConversationAdmissionCurrent(admission, out _)
                 ? MyBehavior.CaptureWeeklyPromptSnapshotForExternal(targetHero, targetCharacter)
                 : MyBehavior.WeeklyPromptSnapshot.Empty,
                 MyBehavior.WeeklyPromptSnapshot.Empty).ConfigureAwait(false) ?? MyBehavior.WeeklyPromptSnapshot.Empty;
-            ctx = await _owner.BuildNativePromptContextScheduledAsync(admission, nativeTargetLog, nativeTargetAgentIndex, runtimeGeneration, targetHero, targetCharacter, routingInput, extraFact, cultureId, npc.IsHero, preprocessExcludedRuleIds, weeklyPromptSnapshot).ConfigureAwait(false);
+            ctx = await _ports.BuildNativePromptContextScheduledAsync(admission, nativeTargetLog, nativeTargetAgentIndex, runtimeGeneration, targetHero, targetCharacter, routingInput, extraFact, cultureId, npc.IsHero, preprocessExcludedRuleIds, weeklyPromptSnapshot).ConfigureAwait(false);
             nativePreprocessSw.Stop();
             if (ctx == null)
             {
@@ -111,13 +111,13 @@ public partial class ShoutBehavior
             Stopwatch nativeHistoryJoinSw = Stopwatch.StartNew();
             FreezeWatchdog.Mark("NativeConversation.history_join_start", "target=" + (npcName ?? "unknown") + " agent=" + nativeTargetAgentIndex, immediate: true);
             persistedHeroHistory = ((await persistedHeroHistoryTask) ?? "").Trim();
-            if (!await _owner.RunNativeConversationMainThreadFuncAsync("persisted_history_accept", nativeTargetLog, nativeTargetAgentIndex,
-                () => _owner.IsNativeConversationAdmissionCurrent(admission, out _), false).ConfigureAwait(false)) return NativeConversationTurnStep.Stop("");
+            if (!await _ports.RunNativeConversationMainThreadFuncAsync("persisted_history_accept", nativeTargetLog, nativeTargetAgentIndex,
+                () => _ports.IsNativeConversationAdmissionCurrent(admission, out _), false).ConfigureAwait(false)) return NativeConversationTurnStep.Stop("");
             nativeHistoryJoinSw.Stop();
             Logger.Log("Logic", "[MemoryPerf] parallel_history_join reason=native_conversation target=" + nativeTargetLog + " agent=" + nativeTargetAgentIndex + " chars=" + persistedHeroHistory.Length + " hasValue=" + !string.IsNullOrWhiteSpace(persistedHeroHistory) + " waitMs=" + Math.Round(nativeHistoryJoinSw.Elapsed.TotalMilliseconds, 2));
             FreezeWatchdog.Mark("NativeConversation.history_join_done", "target=" + (npcName ?? "unknown") + " agent=" + nativeTargetAgentIndex + " chars=" + persistedHeroHistory.Length + " ms=" + Math.Round(nativeHistoryJoinSw.Elapsed.TotalMilliseconds, 2), immediate: true);
             if (!await CaptureOnGameThreadAsync("prompt_rules_capture", CapturePromptRules).ConfigureAwait(false)) return NativeConversationTurnStep.Stop("");
-            NativeConversationPendingHistory nativePendingHistory = await _owner.PrepareNativeConversationPendingHistoryAsync(
+            NativeConversationPendingHistory nativePendingHistory = await _ports.PrepareNativeConversationPendingHistoryAsync(
                 admission, npc, npcName, nativeTargetAgentIndex, promptPlayerText, shouldRecordPlayerInput).ConfigureAwait(false);
             if (nativePendingHistory == null) return NativeConversationTurnStep.Stop("");
             playerName = nativePendingHistory.PlayerName;
@@ -140,8 +140,8 @@ public partial class ShoutBehavior
             bool partyTransferTopicSelected = HasPartyTransferRuleContext(baseExtras);
             roleTopIntro = BuildSceneSystemTopPromptIntroForSingle(npc, targetHero, presentNpcs, includeInventorySummary, includeTradePricing, partyTransferTopicSelected, ctx?.MentionedEntities);
             roleRuntimeContext = BuildSceneUserRuntimeContextForSingle(npc, targetHero, presentNpcs, includeInventorySummary, includeTradePricing, partyTransferTopicSelected, ctx?.MentionedEntities);
-            string nativeSceneSummonClosureInstruction = _owner.BuildSceneSummonClosurePromptInstruction(presentNpcs);
-            string nativeSceneFollowControlInstruction = _owner.BuildSceneFollowControlPromptInstruction(npc);
+            string nativeSceneSummonClosureInstruction = _ports.BuildSceneSummonClosurePromptInstruction(presentNpcs);
+            string nativeSceneFollowControlInstruction = _ports.BuildSceneFollowControlPromptInstruction(npc);
             string nativeSceneMechanismPromptSection = BuildSceneMechanismPromptSection(nativeSceneSummonTargets, nativeSceneGuideTargets, nativeSceneSummonClosureInstruction, nativeSceneFollowControlInstruction, npc);
             systemRuleBlock = BuildSceneSystemRuleBlock(ruleExtrasSection, nativeSceneMechanismPromptSection);
             string combinedRuleInspectionBlock = BuildSceneCompositeUserBlock("", knowledgeExtrasSection, systemRuleBlock);
@@ -207,7 +207,7 @@ public partial class ShoutBehavior
             string sceneDynamicUserBlock = BuildSceneCompositeUserBlock("", roleRuntimeContext, nativeNpcListBlock, trustBlock, miscExtrasSection);
         string[] nativePromptPrefixSections = new string[4] { privateRecentWindowSection, persistedWithoutRecentWindow, sceneDynamicUserBlock, BuildSceneCompositeUserBlock("", knowledgeExtrasSection, systemRuleBlock, nativeMeetingTauntRuleBlock) };
         string[] nativePromptSuffixSections = new string[1] { npcInitiatedOpening ? npcOpeningUserText : "" };
-        messages = _owner.BuildStrictSceneMessagesForNpc(nativeTargetAgentIndex, layeredPrompt, nativePromptPrefixSections, nativePromptSuffixSections, currentInputAlreadyRecorded: true, currentPlayerInput: promptPlayerText, injectedHistoryMessages: nativeHistoryMessages, includeSceneHistory: false, persistentHistoryMessages: persistentMemoryRoleMessages, pendingCurrentAfefFactMessages: pendingNativeCurrentAfefFacts, useSceneDistanceSpeechLabels: false);
+        messages = _ports.BuildStrictSceneMessagesForNpc(nativeTargetAgentIndex, layeredPrompt, nativePromptPrefixSections, nativePromptSuffixSections, currentInputAlreadyRecorded: true, currentPlayerInput: promptPlayerText, injectedHistoryMessages: nativeHistoryMessages, includeSceneHistory: false, persistentHistoryMessages: persistentMemoryRoleMessages, pendingCurrentAfefFactMessages: pendingNativeCurrentAfefFacts, useSceneDistanceSpeechLabels: false);
         nativeDetachedMainPromptSections = null;
         if (NativeConversationDetachedPromptParityLoggingEnabled)
         {
@@ -232,4 +232,3 @@ public partial class ShoutBehavior
             Logger.Log("ShoutBehavior", "[NativeConversation] request target=" + nativeTargetLog + " agentIndex=" + nativeTargetAgentIndex + " messages=" + messages.Count + " includeSceneSessionMemory=" + includeCurrentSceneSessionInPersistedHistory + " sharedDailyMemory=" + useSharedDailyMemoryForNpcOpening + " persistentMemoryMessages=" + persistentMemoryRoleMessages.Count + " nativeHistoryMessages=" + nativeHistoryMessages.Count + " persistedChars=" + (persistedHeroHistory?.Length ?? 0) + " preprocessHits=" + ((postprocessPreprocessHits.Count == 0) ? "(none)" : string.Join(",", postprocessPreprocessHits)));
         }
     }
-}

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
@@ -12,12 +12,12 @@ using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Conversation;
 using TaleWorlds.MountAndBlade;
 
+using static AnimusForge.ShoutBehavior;
+
 namespace AnimusForge;
 
-public partial class ShoutBehavior
-{
     // Native game adapter; phase ordering belongs to NativeConversationTurnCoordinator.
-    private sealed partial class NativeConversationTurnHost : INativeConversationTurnHost
+    internal sealed partial class NativeConversationTurnRuntime : INativeConversationTurnHost
     {
         // Request-local phase output, published only after its awaited capture completes.
         private string postprocessReply;
@@ -26,7 +26,7 @@ public partial class ShoutBehavior
         public async Task<NativeConversationTurnStep> ReceiveAndPresentAsync()
         {
             NativeConversationMainReplyResult nativeMainReply = await NativeConversationMainReplyStage.RunAsync(
-                new NativeConversationMainReplyHost(_owner, admission, nativeTargetLog,
+                _ports.CreateMainReplyHost(admission, nativeTargetLog,
                     nativePendingAfefKey, nativePendingPlayerHistoryEventSequence),
                 messages, onStreamText, npcName, nativeTargetLog, nativeTargetAgentIndex, nativeTurnSw).ConfigureAwait(false);
             if (!nativeMainReply.CanContinue) return NativeConversationTurnStep.Stop(nativeMainReply.StopText);
@@ -35,13 +35,13 @@ public partial class ShoutBehavior
             string nativeMainVisibleForTts = "";
             nativeTtsDispatchedBeforePostprocess = false;
             string nativeMainReplyTargetUnavailableReason = "";
-            bool nativeMainReplyTargetAvailable = await _owner.RunNativeConversationMainThreadFuncAsync(
+            bool nativeMainReplyTargetAvailable = await _ports.RunNativeConversationMainThreadFuncAsync(
                 "main_reply_action_validation",
                 nativeTargetLog,
                 nativeTargetAgentIndex,
                 () =>
                 {
-                    if (!_owner.IsNativeConversationAdmissionCurrent(admission, out nativeMainReplyTargetUnavailableReason))
+                    if (!_ports.IsNativeConversationAdmissionCurrent(admission, out nativeMainReplyTargetUnavailableReason))
                     {
                         return false;
                     }
@@ -59,9 +59,9 @@ public partial class ShoutBehavior
                     nativeMainVisibleForTts = SanitizeSceneSpeechText(cleaned);
                     if (nativeTargetAgentIndex < 0 && !string.IsNullOrWhiteSpace(nativeMainVisibleForTts) && !IsNativeConversationNoSpeechPlaceholder(nativeMainVisibleForTts))
                     {
-                        _owner.TrySpeakNativeConversationReplyWithTts(targetHero, targetCharacter, npc, nativeTargetAgentIndex, nativeMainVisibleForTts);
+                        _ports.TrySpeakNativeConversationReplyWithTts(targetHero, targetCharacter, npc, nativeTargetAgentIndex, nativeMainVisibleForTts);
                         nativeTtsDispatchedBeforePostprocess = true;
-                        _owner.LogTtsReport("NativeConversationTts.EarlyDispatchBeforePostprocess", nativeTargetAgentIndex, $"uiLen={nativeMainVisibleForTts.Length};target={(targetHero?.StringId ?? targetCharacter?.StringId ?? npc?.Name ?? "unknown")}");
+                        _ports.LogTtsReport("NativeConversationTts.EarlyDispatchBeforePostprocess", nativeTargetAgentIndex, $"uiLen={nativeMainVisibleForTts.Length};target={(targetHero?.StringId ?? targetCharacter?.StringId ?? npc?.Name ?? "unknown")}");
                     }
                     return true;
                 },
@@ -69,23 +69,23 @@ public partial class ShoutBehavior
             if (!nativeMainReplyTargetAvailable)
             {
                 string reason = string.IsNullOrWhiteSpace(nativeMainReplyTargetUnavailableReason) ? "main_thread_validation_failed" : nativeMainReplyTargetUnavailableReason;
-                await _owner.RollbackNativeConversationPendingPlayerHistoryAsync(admission, nativePendingAfefKey, nativePendingPlayerHistoryEventSequence, reason).ConfigureAwait(false);
+                await _ports.RollbackNativeConversationPendingPlayerHistoryAsync(admission, nativePendingAfefKey, nativePendingPlayerHistoryEventSequence, reason).ConfigureAwait(false);
                 Logger.Log("ShoutBehavior", "[NativeConversation] dropped main reply before postprocess because target is unavailable target=" + nativeTargetLog + " agentIndex=" + nativeTargetAgentIndex + " reason=" + reason);
                 return NativeConversationTurnStep.Stop("");
             }
             // Keep role-play action prose for the postprocessor; display/TTS retains the
             // sanitized display/TTS variants captured in the validated phase above.
             string nativePostprocessStartTargetUnavailableReason = "";
-            bool nativePostprocessStartTargetAvailable = await _owner.RunNativeConversationMainThreadFuncAsync(
+            bool nativePostprocessStartTargetAvailable = await _ports.RunNativeConversationMainThreadFuncAsync(
                 "postprocess_start_target_validation",
                 nativeTargetLog,
                 nativeTargetAgentIndex,
-                () => _owner.IsNativeConversationAdmissionCurrent(admission, out nativePostprocessStartTargetUnavailableReason),
+                () => _ports.IsNativeConversationAdmissionCurrent(admission, out nativePostprocessStartTargetUnavailableReason),
                 false).ConfigureAwait(false);
             if (!nativePostprocessStartTargetAvailable)
             {
                 string reason = string.IsNullOrWhiteSpace(nativePostprocessStartTargetUnavailableReason) ? "main_thread_validation_failed" : nativePostprocessStartTargetUnavailableReason;
-                await _owner.RollbackNativeConversationPendingPlayerHistoryAsync(admission, nativePendingAfefKey, nativePendingPlayerHistoryEventSequence, reason).ConfigureAwait(false);
+                await _ports.RollbackNativeConversationPendingPlayerHistoryAsync(admission, nativePendingAfefKey, nativePendingPlayerHistoryEventSequence, reason).ConfigureAwait(false);
                 Logger.Log("ShoutBehavior", "[NativeConversation] skipped postprocess because target is unavailable target=" + nativeTargetLog + " agentIndex=" + nativeTargetAgentIndex + " reason=" + reason);
                 return NativeConversationTurnStep.Stop("");
             }
@@ -117,4 +117,3 @@ public partial class ShoutBehavior
         // An explicit order is therefore kept until the conversation closes, then it
         // uses the same executioner-start path as the scripted "Proceed" line.
     }
-}

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Diagnostics;
 using AnimusForge.Refactor.Contracts;
 
@@ -58,7 +58,7 @@ public partial class ShoutBehavior
         }
     }
 
-    private static void ObserveNativeActionDispatch(string stage, string targetLog, int targetAgentIndex,
+    internal static void ObserveNativeActionDispatch(string stage, string targetLog, int targetAgentIndex,
         Stopwatch watch = null, Exception error = null)
     {
         try

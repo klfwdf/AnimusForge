@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using AnimusForge.SceneActions.Core;
@@ -27,7 +27,7 @@ public partial class ShoutBehavior
 		new Dictionary<int, SceneActionReplyCapture>();
 
 	/// <summary>Records when an NPC reply was handed to presentation (game thread).</summary>
-	private static void RecordSceneActionReplyCapture(int agentIndex)
+	internal static void RecordSceneActionReplyCapture(int agentIndex)
 	{
 		Mission mission = Mission.Current;
 		if (agentIndex < 0 || mission == null)
@@ -134,7 +134,7 @@ public partial class ShoutBehavior
 	/// submitted here: the caller forwards it via <see cref="SubmitSceneActionDirective"/>
 	/// only after its stale/target/discard checks pass.  Pure string work.
 	/// </summary>
-	private static string ExtractSceneActionDirective(ref string text, int targetAgentIndex)
+	internal static string ExtractSceneActionDirective(ref string text, int targetAgentIndex)
 	{
 		string source = text ?? "";
 		if (!NpcReplyDirectiveTagV1.ContainsTag(source))
@@ -163,7 +163,7 @@ public partial class ShoutBehavior
 	/// checks.  The runtime re-checks the frozen allow-list, evidence, consent
 	/// and speaker.
 	/// </summary>
-	private static void SubmitSceneActionDirective(string value, int targetAgentIndex, string rawReply)
+	internal static void SubmitSceneActionDirective(string value, int targetAgentIndex, string rawReply)
 	{
 		if (string.IsNullOrEmpty(value))
 		{
