@@ -52,6 +52,7 @@ using static AnimusForge.ShoutBehavior;
 internal sealed class SceneSpeechEffectController
 {
     private readonly SceneSpeechEffectPorts _ports;
+    internal SceneSpeechEffectPorts Ports => _ports;
     private readonly SceneMovementController _sceneMovement;
     internal SceneSpeechEffectController(SceneSpeechEffectPorts ports, SceneMovementController movement)
     { _ports = ports ?? throw new ArgumentNullException(nameof(ports)); _sceneMovement = movement ?? throw new ArgumentNullException(nameof(movement)); }

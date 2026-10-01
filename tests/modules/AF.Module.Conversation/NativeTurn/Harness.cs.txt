@@ -77,7 +77,12 @@ sealed class SequenceHost : INativeConversationTurnHost
 }
 static class Program
 {
-    static async Task Main()
+    static async Task<int> Main()
+    {
+        try { await Run(); return 0; }
+        catch (Exception ex) { Console.Error.WriteLine(ex); return 1; }
+    }
+    static async Task Run()
     {
         Check.That(!default(NativeConversationTurnStep).CanContinue,"default-stops");
         for(int stage=-1;stage<4;stage++)
