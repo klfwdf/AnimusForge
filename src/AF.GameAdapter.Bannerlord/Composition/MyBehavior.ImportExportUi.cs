@@ -57,640 +57,81 @@ namespace AnimusForge;
 
 public partial class MyBehavior
 {
+ private DeveloperImportUiController _developerImportUi;
+ private DeveloperImportUiController DeveloperImportUi => _developerImportUi ?? (_developerImportUi = new DeveloperImportUiController(new DeveloperImportUiPort
+ {
+  TryBuildDatabaseReloadPlan = TryBuildDatabaseReloadPlan, ApplyDatabaseReloadPlan = ApplyDatabaseReloadPlan,
+  CaptureGeneration = SaveRuntimeGuard.CaptureGeneration, IsCurrent = IsMemorySourceEditorCurrent,
+  ReturnToDevRootMenu = ReturnToDevRootMenu,
+  ExportAllData = ExportAllData,
+  ExportDebtData = ExportDebtData,
+  ExportDialogueHistoryData = ExportDialogueHistoryData,
+  ExportEventData = ExportEventData,
+  ExportHeroNpcAllData = ExportHeroNpcAllData,
+  ExportKnowledgeData = ExportKnowledgeData,
+  ExportPersonaData = ExportPersonaData,
+  ExportSingleNpcDebtData = ExportSingleNpcDebtData,
+  ExportSingleNpcDialogueHistoryData = ExportSingleNpcDialogueHistoryData,
+  ExportSingleNpcPersonaData = ExportSingleNpcPersonaData,
+  ExportUnnamedPersonaData = ExportUnnamedPersonaData,
+  ExportVoiceMappingData = ExportVoiceMappingData,
+  ImportAllData = ImportAllData,
+  ImportDebtData = ImportDebtData,
+  ImportDialogueHistoryData = ImportDialogueHistoryData,
+  ImportEventData = ImportEventData,
+  ImportHeroNpcAllData = ImportHeroNpcAllData,
+  ImportKnowledgeData = ImportKnowledgeData,
+  ImportPersonaData = ImportPersonaData,
+  ImportSingleNpcDebtData = ImportSingleNpcDebtData,
+  ImportSingleNpcDialogueHistoryData = ImportSingleNpcDialogueHistoryData,
+  ImportSingleNpcPersonaData = ImportSingleNpcPersonaData,
+  ImportUnnamedPersonaData = ImportUnnamedPersonaData,
+  ImportVoiceMappingData = ImportVoiceMappingData,
+ }, DeveloperImport));
  private DeveloperImportController _developerImport;
  private DeveloperImportController DeveloperImport => _developerImport ?? (_developerImport = new DeveloperImportController(SaveRuntimeGuard.CaptureGeneration, IsMemorySourceEditorCurrent));
 
 	private void OpenExportFolderPicker(string title, ExportImportScope scope)
-	{
-		OpenFolderPicker(title, isExport: true, scope, ReturnToDevRootMenu, null);
-	}
+		=> DeveloperImportUi.OpenExportFolderPicker(title, scope);
 
 	private void OpenExportFolderPicker(string title, ExportImportScope scope, Action onReturn)
-	{
-		OpenFolderPicker(title, isExport: true, scope, onReturn, null);
-	}
+		=> DeveloperImportUi.OpenExportFolderPicker(title, scope, onReturn);
 
 	private void OpenImportFolderPicker(string title, ExportImportScope scope)
-	{
-		OpenFolderPicker(title, isExport: false, scope, ReturnToDevRootMenu, null);
-	}
+		=> DeveloperImportUi.OpenImportFolderPicker(title, scope);
 
 	private void OpenImportFolderPicker(string title, ExportImportScope scope, Action onReturn)
-	{
-		OpenFolderPicker(title, isExport: false, scope, onReturn, null);
-	}
+		=> DeveloperImportUi.OpenImportFolderPicker(title, scope, onReturn);
 
 	private void OpenFolderPicker(string title, bool isExport, ExportImportScope scope)
-	{
-		OpenFolderPicker(title, isExport, scope, ReturnToDevRootMenu, null);
-	}
+		=> DeveloperImportUi.OpenFolderPicker(title, isExport, scope);
 
 	private void OpenFolderPickerWithCallback(string title, bool isExport, Action<string> onSelectedFolder, Action onReturn)
-	{
-		if (onSelectedFolder == null)
-		{
-			onReturn?.Invoke();
-			return;
-		}
-		if (onReturn == null)
-		{
-			onReturn = ReturnToDevRootMenu;
-		}
-		string playerExportsRootPath = null;
-		try
-		{
-			playerExportsRootPath = PlayerExportsStore.GetPlayerExportsRootPath();
-			if (isExport) Directory.CreateDirectory(playerExportsRootPath);
-		}
-		catch (Exception ex)
-		{
-			InformationManager.DisplayMessage(new InformationMessage("PlayerExports 待迁移或路径不可用：" + ex.Message));
-			if (isExport) { onReturn(); return; }
-		}
-		List<InquiryElement> list = new List<InquiryElement>();
-		list.Add(new InquiryElement("__input__", isExport ? "手动输入文件夹名…" : "手动输入文件夹名/路径…", null));
-		if (!isExport && playerExportsRootPath != null)
-		{
-			list.Add(new InquiryElement("__latest__", "使用最新导出（自动）", null));
-		}
-		try
-		{
-			List<DirectoryInfo> list2 = (from d in (playerExportsRootPath == null ? Array.Empty<DirectoryInfo>() : new DirectoryInfo(playerExportsRootPath).GetDirectories())
-				where !d.Name.StartsWith(".", StringComparison.Ordinal)
-				orderby d.LastWriteTimeUtc descending
-				select d).ToList();
-			foreach (DirectoryInfo item in list2)
-			{
-				string title2 = item.Name + "  (" + item.LastWriteTime.ToString("yyyy-MM-dd HH:mm") + ")";
-				list.Add(new InquiryElement(item.Name, title2, null));
-			}
-		}
-		catch
-		{
-		}
-		string descriptionText = (isExport ? "选择目标文件夹（可覆盖已有）。" : "选择来源文件夹；迁移未完成时仍可手动输入只读绝对路径。");
-		MultiSelectionInquiryData data = new MultiSelectionInquiryData(title, descriptionText, list, isExitShown: true, 0, 1, "选择", "返回", delegate(List<InquiryElement> selected)
-		{
-			if (selected == null || selected.Count == 0)
-			{
-				onReturn();
-			}
-			else
-			{
-				string text = selected[0].Identifier as string;
-				if (text == "__input__")
-				{
-					InformationManager.ShowTextInquiry(new TextInquiryData(isExport ? "输入导出文件夹名" : "输入导入文件夹名/路径", isExport ? "留空=自动时间戳；输入已存在名称=覆盖导出。" : "留空=自动选择最新导出；也可输入完整路径（文件夹或 .json 文件）。", isAffirmativeOptionShown: true, isNegativeOptionShown: true, "确定", "取消", delegate(string input)
-					{
-						onSelectedFolder(input);
-						onReturn();
-					}, delegate
-					{
-						onReturn();
-					}));
-				}
-				else if (!isExport && text == "__latest__")
-				{
-					onSelectedFolder("");
-					onReturn();
-				}
-				else
-				{
-					onSelectedFolder(text);
-					onReturn();
-				}
-			}
-		}, delegate
-		{
-			onReturn();
-		});
-		MBInformationManager.ShowMultiSelectionInquiry(data);
-	}
+		=> DeveloperImportUi.OpenFolderPickerWithCallback(title, isExport, onSelectedFolder, onReturn);
 
 	private void OpenDatabaseReloadFolderPicker(Action onReturn)
-	{
-		Action action = onReturn ?? delegate
-		{
-		};
-		try
-		{
-			List<InquiryElement> list = new List<InquiryElement>
-			{
-				new InquiryElement("__input__", "手动输入资料包文件夹/路径…", null)
-			};
-			string playerExportsRootPath = null;
-			try { playerExportsRootPath = PlayerExportsStore.GetPlayerExportsRootPath(); }
-			catch (Exception)
-			{
-				InformationManager.DisplayMessage(new InformationMessage("PlayerExports 待迁移或路径不可用；仍可用只读绝对路径导入。"));
-			}
-			if (playerExportsRootPath != null)
-				list.Add(new InquiryElement("__latest__", "使用最新导出（自动）", null));
-			if (!string.IsNullOrWhiteSpace(playerExportsRootPath) && Directory.Exists(playerExportsRootPath))
-			{
-				foreach (DirectoryInfo item in new DirectoryInfo(playerExportsRootPath).GetDirectories().Where((DirectoryInfo x) => !x.Name.StartsWith(".", StringComparison.Ordinal)).OrderByDescending((DirectoryInfo x) => x.LastWriteTimeUtc))
-				{
-					list.Add(new InquiryElement(item.Name, item.Name + "  (" + item.LastWriteTime.ToString("yyyy-MM-dd HH:mm") + ")", null));
-				}
-			}
-			MultiSelectionInquiryData data = new MultiSelectionInquiryData("重载数据库 - 选择资料包", "选择来源资料包；系统会在确认前校验知识、王国性格/战略和声音数据。", list, isExitShown: true, 1, 1, "选择", "返回", delegate(List<InquiryElement> selected)
-			{
-				if (selected == null || selected.Count == 0)
-				{
-					action();
-					return;
-				}
-				string text = selected[0].Identifier as string;
-				if (string.Equals(text, "__input__", StringComparison.Ordinal))
-				{
-					InformationManager.ShowTextInquiry(new TextInquiryData("输入资料包文件夹/路径", playerExportsRootPath == null ? "请输入只读的完整资料包文件夹路径。" : "留空会使用最新导出；也可输入完整资料包文件夹路径。", isAffirmativeOptionShown: true, isNegativeOptionShown: true, "继续", "返回", delegate(string input)
-					{
-						BeginDatabaseReloadPreflight(input, action);
-					}, delegate
-					{
-						action();
-					}));
-					return;
-				}
-				BeginDatabaseReloadPreflight(string.Equals(text, "__latest__", StringComparison.Ordinal) ? "" : text, action);
-			}, delegate
-			{
-				action();
-			}, "", isSeachAvailable: true);
-			MBInformationManager.ShowMultiSelectionInquiry(data, pauseGameActiveState: true);
-		}
-		catch (Exception)
-		{
-			Logger.Log("DatabaseReload", "[WARN] Failed to open source picker.");
-			InformationManager.DisplayMessage(new InformationMessage("无法打开资料包选择器；请检查 PlayerExports 路径。"));
-			action();
-		}
-	}
+		=> DeveloperImportUi.OpenDatabaseReloadFolderPicker(onReturn);
 
 	private void BeginDatabaseReloadPreflight(string folderName, Action onReturn)
-	{
-		Action action = onReturn ?? delegate
-		{
-		};
-		if (!TryBuildDatabaseReloadPlan(folderName, out var plan, out var error))
-		{
-			InformationManager.ShowInquiry(new InquiryData("数据库资料包校验失败", "本次重载尚未修改存档。\n\n" + error, isAffirmativeOptionShown: true, isNegativeOptionShown: false, "重新选择", "", delegate
-			{
-				OpenDatabaseReloadFolderPicker(action);
-			}, null), pauseGameActiveState: true, prioritize: false);
-			return;
-		}
-		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.AppendLine("来源资料包：");
-		stringBuilder.AppendLine(plan.ImportDirectory);
-		stringBuilder.AppendLine();
-		stringBuilder.AppendLine("将删除并重载：");
-		stringBuilder.AppendLine("• 非主角知识 " + plan.KnowledgeRules.Count + " 条");
-		if (plan.KnowledgeRuleIdDisambiguationCount > 0)
-		{
-			stringBuilder.AppendLine("• 资料包内 " + plan.KnowledgeRuleIdDisambiguationCount + " 个同 ID 知识条目将按文件名生成稳定 ID（不修改资料包文件）");
-		}
-		if (plan.KnowledgeKeywordDeduplicationCount > 0)
-		{
-			stringBuilder.AppendLine("• 其中 " + plan.KnowledgeKeywordDeduplicationCount + " 个重复触发词只保留在原条目，避免拆分后的知识争抢同一关键词");
-		}
-		stringBuilder.AppendLine("• 世界开局知识 1 份，以及王国开局知识 " + plan.OpeningKnowledge.KingdomSummaries.Count + " 条");
-		stringBuilder.AppendLine("• 上述开局知识的第 0 日派生记录（游戏日达到 7 天后，可能按现有 API 设置请求 LLM 生成短摘要）");
-		stringBuilder.AppendLine("• 王国性格与长期战略 " + (plan.KingdomProfilePlan?.SourceProfilesByTargetId?.Count ?? 0) + " 个王国");
-		stringBuilder.AppendLine("• 声音映射 1 份，以及 NPC 声音 ID " + plan.NpcVoiceIds.Count + " 条");
-		if (plan.CurrentKingdomProfilesResetToDefaultCount > 0)
-		{
-			stringBuilder.AppendLine("• 未出现在资料包的当前王国 " + plan.CurrentKingdomProfilesResetToDefaultCount + " 个，将恢复为其当前默认资料（不会因此自动请求王国 LLM）");
-		}
-		stringBuilder.AppendLine();
-		stringBuilder.AppendLine("会保留且不会从资料包导入：");
-		stringBuilder.AppendLine("• 主角外貌、背景、主角专用知识和直接声音 ID");
-		stringBuilder.AppendLine("• NPC 个性、背景、记忆和外貌");
-		stringBuilder.AppendLine("• 动态事件记录、API 配置、LLM 提示词及其他设置");
-		stringBuilder.AppendLine();
-		stringBuilder.Append("此操作会覆盖当前存档中的上述数据库数据，是否继续？");
-		InformationManager.ShowInquiry(new InquiryData("确认重载数据库", stringBuilder.ToString().TrimEnd(), isAffirmativeOptionShown: true, isNegativeOptionShown: true, "确认重载", "取消", delegate
-		{
-			if (ApplyDatabaseReloadPlan(plan, out var detail))
-			{
-				InformationManager.DisplayMessage(new InformationMessage("数据库重载完成：" + detail));
-			}
-			else
-			{
-				InformationManager.DisplayMessage(new InformationMessage("数据库重载失败：" + detail));
-			}
-			action();
-		}, delegate
-		{
-			action();
-		}), pauseGameActiveState: true, prioritize: false);
-	}
+		=> DeveloperImportUi.BeginDatabaseReloadPreflight(folderName, onReturn);
 
 	private void ShowDuplicateImportInquiry(string title, string text, Action onOverwrite, Action onSkipDuplicates, Action onCancel)
-	{
-  Action[] callbacks = DeveloperImport.BeginConfirmation(onOverwrite, onSkipDuplicates, onCancel);
-  onOverwrite = callbacks[0]; onSkipDuplicates = callbacks[1]; onCancel = callbacks[2];
-
-		try
-		{
-			if (onOverwrite == null)
-			{
-				onOverwrite = delegate
-				{
-				};
-			}
-			if (onSkipDuplicates == null)
-			{
-				onSkipDuplicates = delegate
-				{
-				};
-			}
-			if (onCancel == null)
-			{
-				onCancel = delegate
-				{
-				};
-			}
-			List<InquiryElement> inquiryElements = new List<InquiryElement>
-			{
-				new InquiryElement("__overwrite__", "覆盖导入", null),
-				new InquiryElement("__skip__", "只导入非重复信息", null),
-				new InquiryElement("__cancel__", "取消", null)
-			};
-			MultiSelectionInquiryData data = new MultiSelectionInquiryData(title, text, inquiryElements, isExitShown: true, 0, 1, "选择", "取消", delegate(List<InquiryElement> selected)
-			{
-				string text2 = ((selected != null && selected.Count > 0) ? (selected[0].Identifier as string) : "");
-				if (text2 == "__overwrite__")
-				{
-					onOverwrite();
-				}
-				else if (text2 == "__skip__")
-				{
-					onSkipDuplicates();
-				}
-				else
-				{
-					onCancel();
-				}
-			}, delegate
-			{
-				onCancel();
-			});
-			MBInformationManager.ShowMultiSelectionInquiry(data);
-		}
-		catch
-		{
-			onCancel?.Invoke();
-		}
-	}
+		=> DeveloperImportUi.ShowDuplicateImportInquiry(title, text, onOverwrite, onSkipDuplicates, onCancel);
 
 	private static bool IsDirectoryNonEmpty(string dir)
-	{
-		try
-		{
-			if (string.IsNullOrWhiteSpace(dir))
-			{
-				return false;
-			}
-			if (!Directory.Exists(dir))
-			{
-				return false;
-			}
-			return Directory.EnumerateFileSystemEntries(dir).Any();
-		}
-		catch
-		{
-			return false;
-		}
-	}
+		=> DeveloperImportUiController.IsDirectoryNonEmpty(dir);
 
 	private void ShowOverwriteExportInquiry(string title, string text, Action onOverwrite, Action onNewFolder, Action onCancel)
-	{
-		try
-		{
-			if (onOverwrite == null)
-			{
-				onOverwrite = delegate
-				{
-				};
-			}
-			if (onNewFolder == null)
-			{
-				onNewFolder = delegate
-				{
-				};
-			}
-			if (onCancel == null)
-			{
-				onCancel = delegate
-				{
-				};
-			}
-			List<InquiryElement> inquiryElements = new List<InquiryElement>
-			{
-				new InquiryElement("__overwrite__", "覆盖导出", null),
-				new InquiryElement("__new__", "改用新文件夹（自动）", null),
-				new InquiryElement("__cancel__", "取消", null)
-			};
-			MultiSelectionInquiryData data = new MultiSelectionInquiryData(title, text, inquiryElements, isExitShown: true, 0, 1, "选择", "取消", delegate(List<InquiryElement> selected)
-			{
-				string text2 = ((selected != null && selected.Count > 0) ? (selected[0].Identifier as string) : "");
-				if (text2 == "__overwrite__")
-				{
-					onOverwrite();
-				}
-				else if (text2 == "__new__")
-				{
-					onNewFolder();
-				}
-				else
-				{
-					onCancel();
-				}
-			}, delegate
-			{
-				onCancel();
-			});
-			MBInformationManager.ShowMultiSelectionInquiry(data);
-		}
-		catch
-		{
-			onCancel?.Invoke();
-		}
-	}
+		=> DeveloperImportUi.ShowOverwriteExportInquiry(title, text, onOverwrite, onNewFolder, onCancel);
 
 	private void OpenFolderPicker(string title, bool isExport, ExportImportScope scope, Action onReturn, string heroId)
-	{
-		if (onReturn == null)
-		{
-			onReturn = ReturnToDevRootMenu;
-		}
-		string playerExportsRootPath = null;
-		try
-		{
-			playerExportsRootPath = PlayerExportsStore.GetPlayerExportsRootPath();
-			if (isExport) Directory.CreateDirectory(playerExportsRootPath);
-		}
-		catch (Exception ex)
-		{
-			InformationManager.DisplayMessage(new InformationMessage("PlayerExports 待迁移或路径不可用：" + ex.Message));
-			if (isExport) { onReturn(); return; }
-		}
-		List<InquiryElement> list = new List<InquiryElement>();
-		list.Add(new InquiryElement("__input__", "手动输入文件夹名…", null));
-		if (!isExport && playerExportsRootPath != null)
-		{
-			list.Add(new InquiryElement("__latest__", "使用最新导出（自动）", null));
-		}
-		try
-		{
-			List<DirectoryInfo> list2 = (from d in (playerExportsRootPath == null ? Array.Empty<DirectoryInfo>() : new DirectoryInfo(playerExportsRootPath).GetDirectories())
-				where !d.Name.StartsWith(".", StringComparison.Ordinal)
-				orderby d.LastWriteTimeUtc descending
-				select d).ToList();
-			foreach (DirectoryInfo item in list2)
-			{
-				string title2 = item.Name + "  (" + item.LastWriteTime.ToString("yyyy-MM-dd HH:mm") + ")";
-				list.Add(new InquiryElement(item.Name, title2, null));
-			}
-		}
-		catch
-		{
-		}
-		string descriptionText = (isExport ? "选择要导出的目标文件夹（可覆盖已有）。" : "选择来源文件夹；迁移未完成时仍可手动输入只读绝对路径。");
-		MultiSelectionInquiryData data = new MultiSelectionInquiryData(title, descriptionText, list, isExitShown: true, 0, 1, "选择", "返回", delegate(List<InquiryElement> selected)
-		{
-			if (selected == null || selected.Count == 0)
-			{
-				onReturn();
-			}
-			else
-			{
-				string text = selected[0].Identifier as string;
-				if (text == "__input__")
-				{
-					InformationManager.ShowTextInquiry(new TextInquiryData(isExport ? "输入导出文件夹名" : "输入导入文件夹名", isExport ? "留空=自动时间戳；输入已存在名称=覆盖导出。" : "留空=自动选择最新导出。", isAffirmativeOptionShown: true, isNegativeOptionShown: true, "确定", "取消", delegate(string input)
-					{
-						if (string.IsNullOrEmpty(heroId))
-						{
-							ResolveAndRunExportImport(isExport, scope, input);
-						}
-						else
-						{
-							ResolveAndRunExportImportForHero(isExport, scope, input, heroId);
-						}
-						onReturn();
-					}, delegate
-					{
-						onReturn();
-					}));
-				}
-				else if (!isExport && text == "__latest__")
-				{
-					if (string.IsNullOrEmpty(heroId))
-					{
-						ResolveAndRunExportImport(isExport: false, scope, "");
-					}
-					else
-					{
-						ResolveAndRunExportImportForHero(isExport: false, scope, "", heroId);
-					}
-					onReturn();
-				}
-				else
-				{
-					if (string.IsNullOrEmpty(heroId))
-					{
-						ResolveAndRunExportImport(isExport, scope, text);
-					}
-					else
-					{
-						ResolveAndRunExportImportForHero(isExport, scope, text, heroId);
-					}
-					onReturn();
-				}
-			}
-		}, delegate
-		{
-			onReturn();
-		});
-		MBInformationManager.ShowMultiSelectionInquiry(data);
-	}
+		=> DeveloperImportUi.OpenFolderPicker(title, isExport, scope, onReturn, heroId);
 
 	private void ResolveAndRunExportImport(bool isExport, ExportImportScope scope, string folderName)
-	{
-		if (isExport)
-		{
-			Action run = delegate
-			{
-				if (scope == ExportImportScope.All)
-				{
-					ExportAllData(folderName);
-				}
-				else if (scope == ExportImportScope.HeroNpcAll)
-				{
-					ExportHeroNpcAllData(folderName);
-				}
-				else if (scope == ExportImportScope.PersonalityBackground)
-				{
-					ExportPersonaData(folderName);
-				}
-				else if (scope == ExportImportScope.UnnamedPersona)
-				{
-					ExportUnnamedPersonaData(folderName);
-				}
-				else if (scope == ExportImportScope.DialogueHistory)
-				{
-					ExportDialogueHistoryData(folderName);
-				}
-				else if (scope == ExportImportScope.Debt)
-				{
-					ExportDebtData(folderName);
-				}
-				else if (scope == ExportImportScope.EventData)
-				{
-					ExportEventData(folderName);
-				}
-				else if (scope == ExportImportScope.Knowledge)
-				{
-					ExportKnowledgeData(folderName);
-				}
-				else if (scope == ExportImportScope.VoiceMapping)
-				{
-					ExportVoiceMappingData(folderName);
-				}
-			};
-			string value = PlayerExportsStore.SanitizeFolderName(folderName);
-			if (!string.IsNullOrEmpty(value))
-			{
-				string playerExportsRootPath;
-				try { playerExportsRootPath = PlayerExportsStore.GetPlayerExportsRootPath(); }
-				catch (Exception ex)
-				{
-					InformationManager.DisplayMessage(new InformationMessage("PlayerExports 待迁移或路径不可用：" + ex.Message));
-					return;
-				}
-				string path = PlayerExportsStore.ResolveExportFolderName(folderName);
-				string text = Path.Combine(playerExportsRootPath, path);
-				if (IsDirectoryNonEmpty(text))
-				{
-					ShowOverwriteExportInquiry("导出文件夹已存在", "目标文件夹已存在且包含内容：\n" + text + "\n是否覆盖导出？", delegate
-					{
-						run();
-					}, delegate
-					{
-						ResolveAndRunExportImport(isExport: true, scope, "");
-					}, delegate
-					{
-					});
-					return;
-				}
-			}
-			run();
-		}
-		else if (scope == ExportImportScope.All)
-		{
-			ImportAllData(folderName);
-		}
-		else if (scope == ExportImportScope.HeroNpcAll)
-		{
-			ImportHeroNpcAllData(folderName);
-		}
-		else if (scope == ExportImportScope.PersonalityBackground)
-		{
-			ImportPersonaData(folderName);
-		}
-		else if (scope == ExportImportScope.UnnamedPersona)
-		{
-			ImportUnnamedPersonaData(folderName);
-		}
-		else if (scope == ExportImportScope.DialogueHistory)
-		{
-			ImportDialogueHistoryData(folderName);
-		}
-		else if (scope == ExportImportScope.Debt)
-		{
-			ImportDebtData(folderName);
-		}
-		else if (scope == ExportImportScope.EventData)
-		{
-			ImportEventData(folderName);
-		}
-		else if (scope == ExportImportScope.Knowledge)
-		{
-			ImportKnowledgeData(folderName);
-		}
-		else if (scope == ExportImportScope.VoiceMapping)
-		{
-			ImportVoiceMappingData(folderName);
-		}
-	}
+		=> DeveloperImportUi.ResolveAndRunExportImport(isExport, scope, folderName);
 
 	private void ResolveAndRunExportImportForHero(bool isExport, ExportImportScope scope, string folderName, string heroId)
-	{
-		string id = (heroId ?? "").Trim();
-		if (string.IsNullOrEmpty(id))
-		{
-			InformationManager.DisplayMessage(new InformationMessage("该NPC缺少编号，无法导入导出。"));
-		}
-		else if (isExport)
-		{
-			Action run = delegate
-			{
-				if (scope == ExportImportScope.PersonalityBackground)
-				{
-					ExportSingleNpcPersonaData(folderName, id);
-				}
-				else if (scope == ExportImportScope.DialogueHistory)
-				{
-					ExportSingleNpcDialogueHistoryData(folderName, id);
-				}
-				else if (scope == ExportImportScope.Debt)
-				{
-					ExportSingleNpcDebtData(folderName, id);
-				}
-			};
-			string value = PlayerExportsStore.SanitizeFolderName(folderName);
-			if (!string.IsNullOrEmpty(value))
-			{
-				string playerExportsRootPath;
-				try { playerExportsRootPath = PlayerExportsStore.GetPlayerExportsRootPath(); }
-				catch (Exception ex)
-				{
-					InformationManager.DisplayMessage(new InformationMessage("PlayerExports 待迁移或路径不可用：" + ex.Message));
-					return;
-				}
-				string path = PlayerExportsStore.ResolveExportFolderName(folderName);
-				string text = Path.Combine(playerExportsRootPath, path);
-				if (IsDirectoryNonEmpty(text))
-				{
-					ShowOverwriteExportInquiry("导出文件夹已存在", "目标文件夹已存在且包含内容：\n" + text + "\n是否覆盖导出？", delegate
-					{
-						run();
-					}, delegate
-					{
-						ResolveAndRunExportImportForHero(isExport: true, scope, "", id);
-					}, delegate
-					{
-					});
-					return;
-				}
-			}
-			run();
-		}
-		else if (scope == ExportImportScope.PersonalityBackground)
-		{
-			ImportSingleNpcPersonaData(folderName, id);
-		}
-		else if (scope == ExportImportScope.DialogueHistory)
-		{
-			ImportSingleNpcDialogueHistoryData(folderName, id);
-		}
-		else if (scope == ExportImportScope.Debt)
-		{
-			ImportSingleNpcDebtData(folderName, id);
-		}
-	}
+		=> DeveloperImportUi.ResolveAndRunExportImportForHero(isExport, scope, folderName, heroId);
 
 	private void ExportSingleNpcPersonaData(string folderName, string heroId)
 	{
@@ -892,6 +333,8 @@ public partial class MyBehavior
 
 	private void ImportSingleNpcPersonaData(string folderName, string heroId)
 	{
+		long importGeneration = SaveRuntimeGuard.CaptureGeneration();
+		if (!IsMemorySourceEditorCurrent(importGeneration)) return;
 		try
 		{
 			string text = (folderName ?? "").Trim();
@@ -975,15 +418,7 @@ public partial class MyBehavior
 			}
 			Action action = delegate
 			{
-				if (prof == null)
-				{
-					_npcPersonaProfiles.Remove(heroId);
-				}
-				else
-				{
-					StampNpcPersonaProfile(heroId, prof);
-					_npcPersonaProfiles[heroId] = prof;
-				}
+				if (!ApplyImportedSinglePersonaProfile(heroId, prof, importGeneration)) return;
 				InformationManager.DisplayMessage(new InformationMessage("导入完成：" + importDir));
 			};
 			Action onSkipDuplicates = delegate
@@ -1363,18 +798,7 @@ public partial class MyBehavior
 				{
 					if (pbNew != null)
 					{
-						if (_npcPersonaProfiles == null)
-						{
-							_npcPersonaProfiles = new Dictionary<string, NpcPersonaProfile>();
-						}
-						foreach (KeyValuePair<string, NpcPersonaProfile> item in pbNew)
-						{
-							if (!string.IsNullOrEmpty(item.Key) && item.Value != null)
-							{
-								_npcPersonaProfiles.Remove(item.Key);
-								_npcPersonaProfiles[item.Key] = item.Value;
-							}
-						}
+						if (!ApplyImportedPersonaProfiles(pbNew, true, importGeneration)) return;
 					}
 					if (dhNew != null)
 					{
@@ -1388,16 +812,7 @@ public partial class MyBehavior
 					}
 					if (debtNew != null && rs != null)
 					{
-						Dictionary<string, RewardSystemBehavior.DebtExportEntry> dictionary = existDebt ?? new Dictionary<string, RewardSystemBehavior.DebtExportEntry>();
-						foreach (KeyValuePair<string, RewardSystemBehavior.DebtExportEntry> item3 in debtNew)
-						{
-							if (!string.IsNullOrEmpty(item3.Key) && item3.Value != null)
-							{
-								dictionary.Remove(item3.Key);
-								dictionary[item3.Key] = item3.Value;
-							}
-						}
-						rs.ImportDebtEntries(dictionary);
+						rs.ImportDebtEntries(DebtImportMergePolicy.ApplyImportedDebtEntries(existDebt, debtNew, true));
 					}
 					InformationManager.DisplayMessage(new InformationMessage(invalidMemoryFiles > 0 ? "部分导入完成（跳过 " + invalidMemoryFiles + " 个无效压缩记忆文件）：" + importDir : "导入完成：" + importDir));
 				}
@@ -1413,17 +828,7 @@ public partial class MyBehavior
 				{
 					if (pbNew != null)
 					{
-						if (_npcPersonaProfiles == null)
-						{
-							_npcPersonaProfiles = new Dictionary<string, NpcPersonaProfile>();
-						}
-						foreach (KeyValuePair<string, NpcPersonaProfile> item4 in pbNew)
-						{
-							if (!string.IsNullOrEmpty(item4.Key) && item4.Value != null && !_npcPersonaProfiles.ContainsKey(item4.Key))
-							{
-								_npcPersonaProfiles[item4.Key] = item4.Value;
-							}
-						}
+						if (!ApplyImportedPersonaProfiles(pbNew, false, importGeneration)) return;
 					}
 					if (dhNew != null)
 					{
@@ -1437,15 +842,7 @@ public partial class MyBehavior
 					}
 					if (debtNew != null && rs != null)
 					{
-						Dictionary<string, RewardSystemBehavior.DebtExportEntry> dictionary = existDebt ?? new Dictionary<string, RewardSystemBehavior.DebtExportEntry>();
-						foreach (KeyValuePair<string, RewardSystemBehavior.DebtExportEntry> item6 in debtNew)
-						{
-							if (!string.IsNullOrEmpty(item6.Key) && item6.Value != null && !dictionary.ContainsKey(item6.Key))
-							{
-								dictionary[item6.Key] = item6.Value;
-							}
-						}
-						rs.ImportDebtEntries(dictionary);
+						rs.ImportDebtEntries(DebtImportMergePolicy.ApplyImportedDebtEntries(existDebt, debtNew, false));
 					}
 					InformationManager.DisplayMessage(new InformationMessage(invalidMemoryFiles > 0 ? "部分导入完成（跳过 " + invalidMemoryFiles + " 个无效压缩记忆文件，已跳过重复）：" + importDir : "导入完成（已跳过重复）：" + importDir));
 				}
@@ -2491,6 +1888,8 @@ public partial class MyBehavior
 
 	private void ImportPersonaData(string folderName)
 	{
+		long importGeneration = SaveRuntimeGuard.CaptureGeneration();
+		if (!IsMemorySourceEditorCurrent(importGeneration)) return;
 		try
 		{
 			string importDir = PlayerExportsStore.ResolveImportFolderPath(folderName);
@@ -2545,33 +1944,12 @@ public partial class MyBehavior
 			}
 			Action action = delegate
 			{
-				if (_npcPersonaProfiles == null)
-				{
-					_npcPersonaProfiles = new Dictionary<string, NpcPersonaProfile>();
-				}
-				foreach (KeyValuePair<string, NpcPersonaProfile> item in dict)
-				{
-					if (!string.IsNullOrEmpty(item.Key) && item.Value != null)
-					{
-						_npcPersonaProfiles.Remove(item.Key);
-						_npcPersonaProfiles[item.Key] = item.Value;
-					}
-				}
+				if (!ApplyImportedPersonaProfiles(dict, true, importGeneration)) return;
 				InformationManager.DisplayMessage(new InformationMessage("导入完成：" + importDir));
 			};
 			Action onSkipDuplicates = delegate
 			{
-				if (_npcPersonaProfiles == null)
-				{
-					_npcPersonaProfiles = new Dictionary<string, NpcPersonaProfile>();
-				}
-				foreach (KeyValuePair<string, NpcPersonaProfile> item2 in dict)
-				{
-					if (!string.IsNullOrEmpty(item2.Key) && item2.Value != null && !_npcPersonaProfiles.ContainsKey(item2.Key))
-					{
-						_npcPersonaProfiles[item2.Key] = item2.Value;
-					}
-				}
+				if (!ApplyImportedPersonaProfiles(dict, false, importGeneration)) return;
 				InformationManager.DisplayMessage(new InformationMessage("导入完成（已跳过重复）：" + importDir));
 			};
 			if (num > 0)
@@ -2753,29 +2131,12 @@ public partial class MyBehavior
 			}
 			Action action = delegate
 			{
-				Dictionary<string, RewardSystemBehavior.DebtExportEntry> dictionary = exist ?? new Dictionary<string, RewardSystemBehavior.DebtExportEntry>();
-				foreach (KeyValuePair<string, RewardSystemBehavior.DebtExportEntry> item in dict)
-				{
-					if (!string.IsNullOrEmpty(item.Key) && item.Value != null)
-					{
-						dictionary.Remove(item.Key);
-						dictionary[item.Key] = item.Value;
-					}
-				}
-				rs.ImportDebtEntries(dictionary);
+				rs.ImportDebtEntries(DebtImportMergePolicy.ApplyImportedDebtEntries(exist, dict, true));
 				InformationManager.DisplayMessage(new InformationMessage("导入完成：" + importDir));
 			};
 			Action onSkipDuplicates = delegate
 			{
-				Dictionary<string, RewardSystemBehavior.DebtExportEntry> dictionary = exist;
-				foreach (KeyValuePair<string, RewardSystemBehavior.DebtExportEntry> item2 in dict)
-				{
-					if (!string.IsNullOrEmpty(item2.Key) && item2.Value != null && !dictionary.ContainsKey(item2.Key))
-					{
-						dictionary[item2.Key] = item2.Value;
-					}
-				}
-				rs.ImportDebtEntries(dictionary);
+				rs.ImportDebtEntries(DebtImportMergePolicy.ApplyImportedDebtEntries(exist, dict, false));
 				InformationManager.DisplayMessage(new InformationMessage("导入完成（已跳过重复）：" + importDir));
 			};
 			if (num > 0)

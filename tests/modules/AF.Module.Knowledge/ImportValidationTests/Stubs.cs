@@ -1,6 +1,6 @@
 using System; using System.Collections.Generic; using System.Linq; using Newtonsoft.Json;
 namespace AnimusForge;
-public class KnowledgeLibraryBehavior { public static KnowledgeLibraryBehavior Instance; public class RuleIndexItem { public string Id,Label; } public List<RuleIndexItem> GetRuleIndexItemsForDev(int max)=>new(); public void OpenEditorMenu(Action back){}
+public class KnowledgeLibraryBehavior { public static bool IsPlayerPersonaRuleId(string id)=>id=="player"; public static KnowledgeLibraryBehavior Instance; public class RuleIndexItem { public string Id,Label; } public List<RuleIndexItem> GetRuleIndexItemsForDev(int max)=>new(); public void OpenEditorMenu(Action back){}
  public class LoreRule { public string Id; public List<string> Keywords = new(); }
  public class KnowledgeFile { public List<LoreRule> Rules = new(); }
  public KnowledgeFile Data = new(); public string ExportRulesJson()=>JsonConvert.SerializeObject(Data);
