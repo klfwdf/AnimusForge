@@ -740,6 +740,7 @@ namespace AnimusForge
 				if (!kingdom.UnresolvedDecisions.Contains(decision)) return;
 				Logger.Log("VoteDeal", $"[AgendaAutoVote] Starting expired agenda vote: kingdom={kingdom.StringId}, decision={GetSafeDecisionTitle(decision)}");
 				new KingdomElection(decision).StartElectionWithoutPlayer();
+				TryConsumeRedirectedPlayerCallToWarProposal(kingdom, decision);
 			}
 			catch (Exception ex)
 			{
@@ -1300,12 +1301,47 @@ namespace AnimusForge
 					return false;
 				}
 				new KingdomElection(decision).StartElectionWithoutPlayer();
+				TryConsumeRedirectedPlayerCallToWarProposal(kingdom, decision);
 				return true;
 			}
 			catch (Exception ex)
 			{
 				Logger.Log("VoteDeal", $"[AgendaDelay] Failed to start delayed kingdom decision election: {ex.Message}");
 				return false;
+			}
+		}
+
+		private static void TryConsumeRedirectedPlayerCallToWarProposal(
+			Kingdom kingdom,
+			KingdomDecision decision)
+		{
+			try
+			{
+				ProposeCallToWarAgreementDecision proposal = decision as ProposeCallToWarAgreementDecision;
+				Kingdom playerKingdom = Clan.PlayerClan?.Kingdom;
+				if (proposal == null
+					|| playerKingdom == null
+					|| proposal.CalledKingdom != playerKingdom
+					|| Clan.PlayerClan?.IsUnderMercenaryService == true)
+				{
+					return;
+				}
+
+				// Vanilla OnShowDecision redirects this foreign proposal into the player's
+				// AcceptCallToWarAgreementDecision (or a one-clan map offer) and returns
+				// false. KingdomElection therefore does not apply/remove the source proposal.
+				// AnimusForge processes foreign agendas hourly, so leaving it pending would
+				// recreate the player-side decision and map notice every hour.
+				if (!IsDecisionPendingInKingdom(decision, kingdom)) return;
+
+				kingdom.RemoveDecision(decision);
+				Logger.Log(
+					"VoteDeal",
+					$"[AgendaAutoVote] Consumed redirected call-to-war proposal: calling={kingdom.StringId ?? ""}, called={playerKingdom.StringId ?? ""}, enemy={proposal.KingdomToCallToWarAgainst?.StringId ?? ""}");
+			}
+			catch (Exception ex)
+			{
+				Logger.Log("VoteDeal", $"[AgendaAutoVote] Failed to consume redirected call-to-war proposal: {ex.Message}");
 			}
 		}
 
