@@ -11,5 +11,15 @@
     "src/modules/AF.Module.Conversation/Internal/PersonaGenerationWaiter.cs": "c63bd223ddac029ca8c00de6bd7d820a4b392dd1f600eaf3ccfc1fb4321b38e0",
     "src/modules/AF.Module.Persona/Generation/NpcPersonaProfilePolicy.cs": "4a71217237f12fa7de66d4e61d97aa4f3bc59007708dec5fc675d4524432c0d1"
   },
-  "j13Evidence": "Hero 128 and Channel 169 checks; ignore_edit mutant rejected; j13_source_parity.py exact inverse to 89b38557. Historical whole-owner inverse remains separate."
+  "j13Evidence": "Hero 128 and Channel 169 checks; ignore_edit mutant rejected; j13_source_parity.py exact inverse to 89b38557. Historical whole-owner inverse remains separate.",
+  "runnerSafetyChanges": [
+    {
+      "before": "p=argparse.ArgumentParser();",
+      "after": "p=argparse.ArgumentParser();p.add_argument('--run-root',type=Path);"
+    },
+    {
+      "before": "out=HERE/'.generated'/('original' if a.original else a.mutate or 'current');out.mkdir(parents=True,exist_ok=True)",
+      "after": "out=util.new_run_root(ROOT,'ChannelPersonaPreparationTests',a.run_root)"
+    }
+  ]
 }

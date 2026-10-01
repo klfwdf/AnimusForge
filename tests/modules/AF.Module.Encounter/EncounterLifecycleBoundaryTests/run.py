@@ -4,8 +4,11 @@ import argparse
 import importlib.util
 import os
 import subprocess
+import sys
 
 ROOT = Path(__file__).resolve().parents[4]
+sys.path.insert(0, str(ROOT / "tests"))
+from output_isolation import new_run_root, minimal_test_environment
 SPEC = importlib.util.spec_from_file_location("boundary_extractor", ROOT / "tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py")
 EXTRACTOR = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(EXTRACTOR)
@@ -13,6 +16,7 @@ SPEC.loader.exec_module(EXTRACTOR)
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--dotnet", type=Path, default=os.environ.get("DOTNET_EXE") or os.environ.get("AF_DOTNET") or ROOT / "local/dotnet/8.0.425/dotnet.exe")
+    parser.add_argument("--run-root", type=Path)
     args = parser.parse_args()
     dotnet = args.dotnet.resolve()
     if not dotnet.is_file():
@@ -37,12 +41,11 @@ def main():
     focus = (ROOT / "InteractionComponentSafePatch.cs").read_text(encoding="utf-8-sig")
     template = template.replace("@@FOCUS_METHOD@@", EXTRACTOR.declaration(focus, "public static void EnsurePatched("))
     assert "@@" not in template
-    output = ROOT / ".tmp/encounter-lifecycle-boundary"
-    output.mkdir(parents=True, exist_ok=True)
+    output = new_run_root(ROOT, "encounter-lifecycle-boundary", args.run_root)
     (output / "Program.cs").write_text(template, encoding="utf-8")
-    (output / "Boundary.csproj").write_text('<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><ImplicitUsings>disable</ImplicitUsings><Nullable>disable</Nullable><NoWarn>CS0649;CS0414</NoWarn></PropertyGroup><ItemGroup><Compile Include="../../src/modules/AF.Module.Encounter/EncounterTargetOwner.cs" Link="EncounterTargetOwner.cs" /><Compile Include="../../src/modules/AF.Module.Encounter/EncounterConversationTargetOwner.cs" Link="EncounterConversationTargetOwner.cs" /><Compile Include="../../src/modules/AF.Module.Encounter/EncounterReleaseOwner.cs" Link="EncounterReleaseOwner.cs" /><Compile Include="../../src/modules/AF.Module.Encounter/EncounterPendingReturnOwner.cs" Link="EncounterPendingReturnOwner.cs" /></ItemGroup></Project>', encoding="utf-8")
+    (output / "Boundary.csproj").write_text(f'<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><ImplicitUsings>disable</ImplicitUsings><Nullable>disable</Nullable><NoWarn>CS0649;CS0414</NoWarn></PropertyGroup><ItemGroup><Compile Include="{ROOT.as_posix()}/src/modules/AF.Module.Encounter/EncounterTargetOwner.cs" Link="EncounterTargetOwner.cs" /><Compile Include="{ROOT.as_posix()}/src/modules/AF.Module.Encounter/EncounterConversationTargetOwner.cs" Link="EncounterConversationTargetOwner.cs" /><Compile Include="{ROOT.as_posix()}/src/modules/AF.Module.Encounter/EncounterReleaseOwner.cs" Link="EncounterReleaseOwner.cs" /><Compile Include="{ROOT.as_posix()}/src/modules/AF.Module.Encounter/EncounterPendingReturnOwner.cs" Link="EncounterPendingReturnOwner.cs" /></ItemGroup></Project>', encoding="utf-8")
     (output / "NuGet.Config").write_text('<configuration><packageSources><clear /></packageSources></configuration>', encoding="utf-8")
-    env = dict(os.environ, DOTNET_ROOT=str(dotnet.parent), DOTNET_CLI_HOME=str(ROOT / ".tmp/dotnet-cli"), DOTNET_CLI_TELEMETRY_OPTOUT="1", DOTNET_CLI_UI_LANGUAGE="en")
+    env = minimal_test_environment(dotnet, output)
     result = subprocess.run([str(dotnet), "run", "--project", str(output / "Boundary.csproj"), "-c", "Release"], cwd=output, env=env, capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=120)
     (output / "run.log").write_text(result.stdout + result.stderr, encoding="utf-8")
     print(result.stdout + result.stderr)

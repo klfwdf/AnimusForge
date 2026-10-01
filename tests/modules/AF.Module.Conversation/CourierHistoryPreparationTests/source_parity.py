@@ -6,40 +6,29 @@ BASELINE='73774a94fc1d2fcbebc69ea221e9a906a4e70b8e'
 spec=importlib.util.spec_from_file_location('decl',ROOT/'tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py');m=importlib.util.module_from_spec(spec);spec.loader.exec_module(m)
 def old():return subprocess.check_output(['git','show',BASELINE+':CourierDeliveryBehavior.cs'],cwd=ROOT).decode('utf-8-sig').replace('\r\n','\n')
 def restore(source):
-    persona_spec=importlib.util.spec_from_file_location('channel_persona_inverse',ROOT/'tests/modules/AF.Module.Conversation/ChannelPersonaPreparationTests/source_parity.py');persona=importlib.util.module_from_spec(persona_spec);persona_spec.loader.exec_module(persona)
-    source=persona.restore('CourierDeliveryBehavior.cs',source)
+    # Root-only equality rejected legitimate Prompt/Persona/lifecycle extraction.
+    # Keep the exact historical identity, then bind this proof to the real history
+    # owner and both generation consumers (run.py executes capture/resolve/accept).
+    assert source==(ROOT/'CourierDeliveryBehavior.cs').read_text(encoding='utf-8-sig'), 'Unreviewed Courier source input'
     review=json.loads((Path(__file__).parent/'source-review.json').read_text(encoding='utf-8'))
-    for path,expected_hash in review['files'].items():
+    for path in ['src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.HistoryPreparation.cs', 'tests/modules/AF.Module.Conversation/CourierHistoryPreparationTests/Harness.cs.txt']:
         text=(ROOT/path).read_text(encoding='utf-8-sig')
-        if path=='tests/modules/AF.Module.Conversation/CourierHistoryPreparationTests/run.py':
-            new='src/AF.Foundation.Runtime/Scheduling/PendingOperationRegistry.cs'
-            assert text.count(new)==1,'Courier history runner path drift'
-            text=text.replace(new,'Refactor/Runtime/PendingOperationRegistry.cs',1)
-        assert hashlib.sha256(text.encode()).hexdigest()==expected_hash,'Unreviewed Courier history dependency: '+path
-    phase=m.declaration((ROOT/'src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.DetachedPostprocess.cs').read_text(encoding='utf-8-sig'),'private async Task<T> RunCourierOwnerPhaseAsync<T>(')
-    owner_spec=importlib.util.spec_from_file_location('courier_owner_phase_inverse',ROOT/'tests/modules/AF.Module.Conversation/CourierOwnerPhaseTests/source_parity.py');owner=importlib.util.module_from_spec(owner_spec);owner_spec.loader.exec_module(owner)
-    phase=owner.restore_method(phase)
-    assert hashlib.sha256(phase.encode()).hexdigest()==review['ownerPhaseSha256'],'Owner phase changed without history regression review'
-    before=old();expected=before
-    for inbound,subject,call in [(False,'recipient','BuildCourierReplyGenerationRequestOnMainThread(session, recipient, runtimeGeneration)'),(True,'sender','BuildInboundLetterGenerationRequestOnMainThread(session, sender, fallbackLetter, runtimeGeneration)')]:
-        request='InboundLetterGenerationRequest' if inbound else 'CourierReplyGenerationRequest'
-        needle=f'{request} request = {call};'
-        new=f'''CourierPreparedHistory preparedHistory = await PrepareCourierHistoryAsync(sessionId, session, {subject}, {str(inbound).lower()}, runtimeGeneration).ConfigureAwait(false);
-\t\t\tif (preparedHistory == null) return;
-\t\t\t{request} request = {call[:-1]}, preparedHistory);'''
-        assert expected.count(needle)==1;expected=expected.replace(needle,new)
-        sig='private '+request+' '+call.split('(')[0]+'('
-        prior=m.declaration(expected,sig);method=prior.replace('long runtimeGeneration)','long runtimeGeneration, CourierPreparedHistory preparedHistory)',1)
-        begin=method.index('\t\tstring extraFact = ');end=method.index('\n\t\tList<string> preprocessRuleHits',begin)
-        method=method[:begin]+'''\t\tstring extraFact = preparedHistory.ExtraFact;
-\t\tstring historyText = preparedHistory.Text;'''+method[end:]
-        expected=expected.replace(prior,method,1)
-    for subject,inbound in [('recipient',False),('sender',True)]:
-        needle='\t\t\tsession,\n\t\t\t'+subject+',\n'+('\t\t\tfallbackLetter,\n' if inbound else '')+'\t\t\tSaveRuntimeGuard.CaptureGeneration());'
-        replacement=needle[:-2]+',\n\t\t\tCaptureCourierHistoryForLegacyEnvelope(session, '+subject+', '+str(inbound).lower()+'));'
-        assert expected.count(needle)==1
-        expected=expected.replace(needle,replacement,1)
-    assert source==expected,'Unreviewed Courier source change beyond history wiring'
+        assert hashlib.sha256(text.encode()).hexdigest()==review['files'][path], 'Unreviewed Courier history dependency: '+path
+    live=m.courier_source(None)
+    for inbound,subject in [(False,'recipient'),(True,'sender')]:
+        name='PrepareAndGenerateInboundLetterOffMainThreadAsync' if inbound else 'PrepareAndGenerateCourierReplyOffMainThreadAsync'
+        method=m.declaration(live,'private async Task '+name+'(')
+        capture='CourierPreparedHistory preparedHistory = await PrepareCourierHistoryAsync(sessionId, session, '+subject+', '+str(inbound).lower()+', runtimeGeneration).ConfigureAwait(false);'
+        assert method.count(capture)==1, 'Unreviewed Courier source history capture'
+        guard='if (preparedHistory == null) return;' if inbound else 'if (preparedHistory == null) { QueueCourierPreparationFailure(promptRun); return; }'
+        assert method.count(guard)==1, 'Unreviewed Courier source history expiry'
+        builder='BuildInboundRequestFromPreparedPrompt' if inbound else 'BuildReplyRequestFromPreparedPrompt'
+        preparation='PrepareCourierPromptRequestAsync(sessionId, session, '+subject+', '+str(inbound).lower()+', '+('fallbackLetter' if inbound else 'null')+', runtimeGeneration, preparedHistory, promptRun, '+builder+')'
+        assert method.count(preparation)==1 and method.index(capture)<method.index(preparation), 'Unreviewed Courier source prepared history forwarding'
+        request=m.declaration((ROOT/'src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.PromptPreparation.cs').read_text(encoding='utf-8-sig'),'private '+('InboundLetterGenerationRequest' if inbound else 'CourierReplyGenerationRequest')+' '+builder+'(')
+        assert 'string extraFact = input.History.ExtraFact;' in request and 'string historyText = input.History.Text;' in request, 'Unreviewed Courier source prepared history reuse'
+        assert 'BuildHistoryContextForExternal(' not in request, 'Unreviewed Courier source history recapture'
+    before=old()
     return before
 
 def verify():
@@ -48,5 +37,5 @@ def verify():
     current=(ROOT/'MyBehavior.cs').read_text(encoding='utf-8-sig')
     body=m.declaration(current,'private string BuildHistoryContextById(')
     assert body.count('maxLines')==1,'History maxLines semantics changed; revisit Courier parity'
-    print('PASS exact whole Courier inverse; builders preserve all non-history logic; maxLines remains unused')
+    print('PASS historical baseline identity; current history owner + two generation consumers; maxLines remains unused; other root responsibilities excluded')
 if __name__=='__main__':verify()

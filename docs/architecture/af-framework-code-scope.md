@@ -1,4 +1,73 @@
+<a id="j-history-test-proof-scope-20261001"></a>
+### J 历史非外交测试证明范围（2026-10-01）
+
+本轮只有测试/元数据/合法离线依赖改动，产品仍 `f6e2ead7`，813生产地图的`ccd6c2fd`绑定不刷新。本段是证据导航，不重开A、J17迁移或R05-i，详细38历史入口闭环与最终C43/未验见[唯一主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#j-history-nondiplomacy-closeout-20261001)。
+
+| 当前一基坐标/符号 | 修订 | 覆盖责任与明确未覆盖 |
+| --- | --- | --- |
+| `tests/AF.GameAdapter.Bannerlord/GameLifetimeTests/source_parity.py:26–40` `restore_commit` | `a89690f4` | 比较4个CURRENT scheduler/outcome声明与原精确edits；不把同partial J09权威游戏动作wrapper编译成stub。 |
+| `tests/AF.GameAdapter.Bannerlord/GameLifetimeTests/source_parity.py:42–75` `restore_lifetime_dependency` | `a89690f4` | 严格J17 request退休/ceremony与fixture适配；原product digest不变；真实网络退休不是本函数的行为证明。 |
+| `tests/AF.GameAdapter.Bannerlord/GameLifetimeTests/source_parity.py:231–238` `restore_method` | `a89690f4` | Courier owner phase原声明加精确dequeue inverse；其他postprocess职责由其真实owner套件覆盖，不再声称整个partial等价。 |
+| `tests/modules/AF.Module.Conversation/NativeConversationAdmissionTests/turn_extraction.py:44–60` `projected_source` | `a89690f4` | 校核传入迁后host再重建CURRENT phases，拒收被旧投影吞掉的host变异；不执行完整游戏。 |
+| `tests/modules/AF.Module.Conversation/CourierOwnerPhaseTests/source_parity.py:7–18` `restore_j17_dequeue` | `53fdcbc3` | 纯精确dequeue三片逆变换，16行为断言/claimed取消反例；不改owner生命周期。 |
+| `tests/modules/AF.Module.Conversation/CourierHistoryPreparationTests/source_parity.py:8–33` `restore` | `53fdcbc3` | 当前history helper/真实prepare消费者复用/expiry，122断言/30场景；domain helpers为fixture，不是真实游戏。 |
+| `tests/modules/AF.Module.Memory/MemorySummaryRunOwnerTests/source_parity.py:49–70` `verify_current` | `35842e17` | 实际MemoryRun dispatch/parse/release消费者和旧finally不得释放新owner负控；旧captured/sealing含外交的层不覆盖。 |
+| `tests/modules/AF.Module.Persona/HeroPersonaGenerationTests/source_parity.py:41–61` `restore` | `35842e17` | 当前persona owner/实际旧prompt/编辑取消/reset接线；269断言与有效edit反例；旧档/真实provider未验。 |
+| `tests/bridges/TeamModulePortParityTests/run_adapters.py` `main` | `bdc599fc` | 实际13 typed adapters307断言；不是完整TeamModuleServices/WorldDiplomacy行为。 |
+| `tests/AF.GameAdapter.Bannerlord/IntegratedModuleHostTickContractTests/run.py` `main` | `bdc599fc` | 真实Host整源+三模块Tick声明顺序与现有异常合同18断言；module下层是instrumentation，不证明完整business Tick。 |
+
+`cbdc1895` 补独立Memory-only `source_parity.py --finite` 执行15 current guards/14组件漂移负控，原完整InverseGuards仍单独延期；Budget `verify.py --generate-pair`实际跑两个原workload并保留原比较/双输入CLI，详见台账逐断言映射。
+
+Debug/Release双API+Bootstrap为当前产品六构建；新候选1.3/1.4真实message/history方法分别45检查，合法1.3 SaveSystem来源已绑定。源码/fixture/actual DLL/实机/旧档为不同层，后两层和许可/凭据未验不提升。测试不新增生产热路径/缓存/扫描；D真实性能仍NOT-RUN。
+
 <a id="af2-responsibility-evidence-20260928"></a>
+
+### J17 B6 有限边界当前回读（2026-10-01，包5）
+
+以下是当前源码逐符号边界，不重做 A/Memory/Weekly/B7，也不将整文件或历史 E 表标成新验收。当前813锚点地图绑定 `ccd6c2fd`（recorded/working-tree均PASS）；本轮源码有精确死段删除，不继承旧 candidate 全C状态。先前 B6/C 历史证据见[主台账本轮结果](../animusforge-refactoring-and-repository-reorganization-plan.md#j17-b6-c-resume-20261001)。地图仅为定位，不是实机。
+
+- **R05-f retained**：`LegacyActionTagParser.Parse` 持 detached ActionPlan；`GiveAssetTagCodec` 持 GIVE_ASSET codec。Scene/Courier/Memory/Reward 的 strip/count/mood 筛选仍归各渠道/领域，不假称“所有剥离/计数已改单一 parser”。`AnimusForgeTagCatalog.BracketTagRegex` 是工具目录扫描/目录展示（15 秒缓存），不是生产动作解析权威。Xihai 扩展 binding 保留自己的协议约束；不扩大迁移。
+- **R05-g retained**：`ShoutBehavior` 的 `_nativeConversationSessionHistory` 和 `_pendingCurrentNativeAfefFactsByKey` 是会话/待注入投影；`PrepareNativeConversationPendingHistoryAsync` 在主线程一次捕获 key、tentative 玩家事件与 AFEF，再交请求自有数据；拒绝时按 key/event/owner 撤回，不清真实事实。`BuildNativeConversation*HistoryLinesForPrompt` 仍调用 `TryRenderSceneHistoryLine`；“渲染不同”不成立。Memory 的 daily/persistent commit 权威不迁入这个会话 owner。每请求复制/筛选会话列表，非每帧扫描；真实帧耗时 NOT-RUN。
+- **R05-i 精确死尾段清理已执行；兼容入口 retained**：用户“允许删除”仅授权确证无调用/兼容/保存责任的死代码。`ccd6c2fd` 删除 `HandleGroupResponse` 原 `374–760` 恒真局部开关后的旧组合流尾段及原 `362` 仅供死段使用的 token 局部；外层签名、trace、异常回执保留，直接等待同参数的活 per-hero owner。当前 wrapper `360–389`、per-hero `391+`；完整反向替换重构原文件，其他声明逐字不变，无私有 helper 删除。运行 `FeatureBridgeRuntime.IsEnabled(ConversationGateway)` 分支现在 `743/841`，不属于死代码。Xihai `AfCompatV130.cs:207` 字符串反射调用 `GetPassiveNpcResponse`，保留签名。Courier reply opt-in 由 `GenerationLifecycle.cs:242` 真实消费；inbound 和 Native public opt-in 是保留兼容面，仍接 core/facade/commit/取消链，不能以仓内零外部调用删公共 API。`RunCourierActionPostprocessForExternal` 兼容入口不在本次死段范围；任何以后移除需单独消费者/兼容闭包。新候选构建/C与限制见[本轮主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#j17-r05-i-cleanup-20261001)。
+
+| 子项 | 当前坐标/符号（一基声明坐标） | 真实保留职责/未覆盖 |
+| --- | --- | --- |
+| R05-f | `ShoutBehavior.cs:9273` `StripActionTagsForSceneSpeech` | 保留渠道呈现/标签筛选；不是统一 parser 已迁完。 |
+| R05-f | `ShoutBehavior.cs:9279` `ExtractDeferredSceneActionTags` | 保留渠道呈现/标签筛选；不是统一 parser 已迁完。 |
+| R05-f | `ShoutBehavior.cs:9307` `HasNonMoodDeferredSceneActionTag` | 保留渠道呈现/标签筛选；不是统一 parser 已迁完。 |
+| R05-f | `ShoutBehavior.cs:9324` `StripDeferredSceneMoodTags` | 保留渠道呈现/标签筛选；不是统一 parser 已迁完。 |
+| R05-f | `ShoutBehavior.cs:9346` `HasDeferredDirectGameActionTag` | 保留渠道呈现/标签筛选；不是统一 parser 已迁完。 |
+| R05-f | `ShoutBehavior.cs:24630` `StripSceneMechanismActionTagsForScene` | 保留渠道呈现/标签筛选；不是统一 parser 已迁完。 |
+| R05-g | `ShoutBehavior.cs:15274` `BuildNativeConversationHistoryKey` | 保留 Conversation 请求/会话投影；不接管 Memory 权威持久。 |
+| R05-g | `ShoutBehavior.cs:15342` `AppendNativeConversationSessionHistory` | 保留 Conversation 请求/会话投影；不接管 Memory 权威持久。 |
+| R05-g | `ShoutBehavior.cs:15417` `RollbackNativeConversationPendingPlayerHistory` | 保留 Conversation 请求/会话投影；不接管 Memory 权威持久。 |
+| R05-g | `ShoutBehavior.cs:15438` `TrimNativeConversationSessionHistory` | 保留 Conversation 请求/会话投影；不接管 Memory 权威持久。 |
+| R05-g | `ShoutBehavior.cs:15617` `GetNativeConversationSessionHistorySnapshot` | 保留 Conversation 请求/会话投影；不接管 Memory 权威持久。 |
+| R05-g | `ShoutBehavior.cs:15686` `BuildNativeConversationSessionHistoryMessages` | 保留 Conversation 请求/会话投影；不接管 Memory 权威持久。 |
+| R05-g | `ShoutBehavior.cs:15943` `BuildNativeConversationSceneHistoryLinesForPrompt` | 保留 Conversation 请求/会话投影；不接管 Memory 权威持久。 |
+| R05-g | `ShoutBehavior.cs:15969` `BuildNativeConversationUnifiedSceneHistoryLinesForPrompt` | 保留 Conversation 请求/会话投影；不接管 Memory 权威持久。 |
+| R05-g | `ShoutBehavior.cs:27230` `AppendNativeConversationSessionLineToSceneHistory` | 保留 Conversation 请求/会话投影；不接管 Memory 权威持久。 |
+| R05-g | `ShoutBehavior.cs:27334` `RemoveNativeConversationSessionHistoryEventFromSceneHistory` | 保留 Conversation 请求/会话投影；不接管 Memory 权威持久。 |
+| R05-g | `ShoutBehavior.cs:27393` `AppendSceneEventToNativeSharedHistory` | 保留 Conversation 请求/会话投影；不接管 Memory 权威持久。 |
+| R05-g | `ShoutBehavior.cs:27546` `ConsumePendingCurrentNativeAfefFactMessagesForPrompt` | 保留 Conversation 请求/会话投影；不接管 Memory 权威持久。 |
+| R05-i | `ShoutBehavior.cs:22212` `RunCourierActionPostprocessForExternal` | retained：兼容/内部链未证明无责任，不在死段删除范围。 |
+| R05-i | `ShoutBehavior.cs:16767` `CreateNativeConversationOptInRunnerForExternal` | retained：兼容/内部链未证明无责任，不在死段删除范围。 |
+| R05-i | `ShoutBehavior.cs:16990` `SubmitNativeConversationRefactorOptInForExternalAsync` | retained：兼容/内部链未证明无责任，不在死段删除范围。 |
+| R05-g | `ShoutBehavior.NativePendingHistory.cs:20` `PrepareNativeConversationPendingHistoryAsync` | 保留 Conversation 请求/会话投影；不接管 Memory 权威持久。 |
+| R05-g | `ShoutBehavior.NativePendingHistory.cs:51` `RollbackNativeConversationPendingPlayerHistoryAsync` | 保留 Conversation 请求/会话投影；不接管 Memory 权威持久。 |
+| R05-g | `ShoutBehavior.NativePendingHistory.cs:65` `RunNativePendingHistoryOnMainThreadAsync` | 保留 Conversation 请求/会话投影；不接管 Memory 权威持久。 |
+| R05-f | `CourierDeliveryBehavior.cs:2532` `StripCourierActionTags` | 保留渠道呈现/标签筛选；不是统一 parser 已迁完。 |
+| R05-f | `MyBehavior.cs:32295` `StripActionTags` | 保留渠道呈现/标签筛选；不是统一 parser 已迁完。 |
+| R05-f | `MyBehavior.cs:23356` `StripPartyTransferTags` | 保留渠道呈现/标签筛选；不是统一 parser 已迁完。 |
+| R05-f | `MyBehavior.cs:33039` `ExtractMoodAndStripTag` | 保留渠道呈现/标签筛选；不是统一 parser 已迁完。 |
+| R05-f | `RewardSystemBehavior.cs:15521` `StripHeroTradeActionTags` | 保留渠道呈现/标签筛选；不是统一 parser 已迁完。 |
+| R05-f | `src/modules/AF.Module.Actions/Tags/LegacyActionTagParser.cs:28` `Parse` | detached ActionPlan 解析 owner；不执行游戏效果，也不替代全部渠道 strip/count。 |
+| R05-i | `src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.SceneConversationChains.cs:360` `HandleGroupResponse` | retained：兼容/内部链未证明无责任，不在死段删除范围。 |
+| R05-i | `src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.SceneConversationChains.cs:391` `HandleGroupResponsePerHeroIndependent` | 实际运行的群聊/旁听/接力 owner；保留，非旧分支删除候选。 |
+| R05-i | `src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.SceneConversationChains.cs:188` `GetPassiveNpcResponse` | 活反射入口，Xihai AfCompatV130.cs:204–221 按名字/签名调用；明确禁止当死代码删除。 |
+
+包5本轮实际定向：NativePendingHistoryBoundary 111 PASS/0 FAIL（真实 prepare/reject/append/snapshot/renderer、游戏桩）；NativeTurn 112 checks PASS；ReplayCandidateInput 12 checks PASS。Phase8 entry inventory 首次发现远端 `CustomPolicyBehavior.VoteInterest.cs` 缺候选；仅补路径与负控，并将 policy entryCoverage 从 COMPLETE 降 REPRESENTATIVE，保持 owner ASSIGNED（不宣称政策业务审过），11 单测/entry check 通过。DataPaths 缺 Windows KnownFolder 的合成环境必须验证生产 fail-closed，默认 LocalAppData 可用分支保留 NOT-RUN；不能继承真实用户目录环境。上述均不是实机/旧档/真实网络/性能验收。
+
 
 > 2026-09-30 合并说明：来自远端 `391ceb74` 的原 E72–E76 改记 `R391-E72–R391-E76`，避免与本地证据同号。保留远端原修订/行号，不表示已在合并候选上复验；本地 E119 等记录不被覆盖。最初双版本因缺 WorldBulletin 实现失败；后按用户要求撤销快报接线，双版本与 Bootstrap 已重新编译通过，见[主台账更新](../animusforge-refactoring-and-repository-reorganization-plan.md#remote-merge-no-bulletin-20260930)。历史范围图坐标不因此自动更新。
 
@@ -8,7 +77,7 @@
 
 ## 当前核实证据（一基行号；后续按符号与修订重定位）
 
-### E134 / J17-B 当前候选责任接线（产品 `aa3539ca`；2026-10-01）
+### E134 / J17-B 前次候选责任接线（历史产品 `aa3539ca`；2026-10-01）
 
 | 责任 / 实码入口与消费者 | 保留边界与未覆盖 |
 | --- | --- |

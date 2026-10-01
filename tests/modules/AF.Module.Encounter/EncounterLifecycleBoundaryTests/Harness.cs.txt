@@ -220,6 +220,7 @@ internal static class DuelAudit
     private static object _queuedArenaDuelTarget, _queuedDuelTargetCharacter;
     private static string _queuedDuelNonHeroMemoryId;
     private static long _queuedDuelReadyUtcTicks;
+    private static long _queuedArenaSourceExitSettleUntilUtcTicks;
     private static int _queuedDuelConversationCloseAttempts;
     private static bool IsDetachedDuelDispatchReadyForDelayedHost(DetachedDuelDispatchContext context) => true;
     private static bool IsCampaignConversationActive() => Campaign.Current.ConversationManager.IsConversationInProgress;
@@ -233,12 +234,14 @@ internal static class DuelAudit
             Mission.Current=new Mission { CurrentTime=1, Mode=conversation ? MissionMode.Conversation : MissionMode.Normal };
             Campaign.Current.ConversationManager=new ConversationManager { IsConversationInProgress=conversation };
             _leaveSourceMissionRequested=true; _leaveSourceMissionReadyTime=10;
+            _queuedArenaSourceExitSettleUntilUtcTicks=123;
             GlobalSourceMissionLeaveTick();
             Program.Check(Mission.Current.EndCount==0 && _leaveSourceMissionRequested, "duel waits in both conversation and free scene");
             Mission.Current.CurrentTime=10; GlobalSourceMissionLeaveTick();
             if(conversation) { Program.Check(Mission.Current.EndCount==0, "duel closes dialog before mission exit"); GlobalSourceMissionLeaveTick(); }
             Program.Check(Mission.Current.EndCount==1 && !_leaveSourceMissionRequested, "duel exits exactly at deadline");
             GlobalSourceMissionLeaveTick(); Program.Check(Mission.Current.EndCount==1, "duel duplicate tick does not exit again");
+            Program.Check(_queuedArenaSourceExitSettleUntilUtcTicks==0, "source mission exit clears arena settle deadline");
         }
     }
 }

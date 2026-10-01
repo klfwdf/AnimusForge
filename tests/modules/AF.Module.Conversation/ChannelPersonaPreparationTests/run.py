@@ -2,7 +2,7 @@ from pathlib import Path
 import os
 import argparse,importlib.util,subprocess
 ROOT=Path(__file__).resolve().parents[4];HERE=Path(__file__).parent
-p=argparse.ArgumentParser();p.add_argument('--dotnet', default=(os.environ.get("DOTNET_EXE") or os.environ.get("AF_DOTNET") or str(Path(__file__).resolve().parents[4] / "local/dotnet/8.0.425/dotnet.exe")));p.add_argument('--original',action='store_true');p.add_argument('--mutate',choices=['native_skip_admission','native_accept_failure','courier_drop_session','courier_reject_fallback','scene_generate_partial','scene_skip_scope','scene_accept_replaced','invalid_target_cleanup','waiter_ignore_deadline','waiter_ignore_scope']);a=p.parse_args()
+p=argparse.ArgumentParser();p.add_argument('--run-root',type=Path);p.add_argument('--dotnet', default=(os.environ.get("DOTNET_EXE") or os.environ.get("AF_DOTNET") or str(Path(__file__).resolve().parents[4] / "local/dotnet/8.0.425/dotnet.exe")));p.add_argument('--original',action='store_true');p.add_argument('--mutate',choices=['native_skip_admission','native_accept_failure','courier_drop_session','courier_reject_fallback','scene_generate_partial','scene_skip_scope','scene_accept_replaced','invalid_target_cleanup','waiter_ignore_deadline','waiter_ignore_scope']);a=p.parse_args()
 spec=importlib.util.spec_from_file_location('ex',ROOT/'tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py');ex=importlib.util.module_from_spec(spec);spec.loader.exec_module(ex)
 spec=importlib.util.spec_from_file_location('util',ROOT/'tests/AF.Contracts/ModuleFrameworkApiTests/run.py');util=importlib.util.module_from_spec(spec);spec.loader.exec_module(util)
 def read(p):return (ROOT/p).read_text(encoding='utf-8-sig')
@@ -18,7 +18,7 @@ else:
  code=code.replace('@@SHOUT_METHODS@@','').replace('@@COURIER_METHODS@@','').replace('@@NATIVE_CALL@@','EnsureNativeConversationPersonaReadyAsync(a,_=>Probe.Read())').replace('@@COURIER_CALL@@','EnsureCourierPersonaContextReadyAsync(hero,inbound?"inbound":"reply","session",Session,1)').replace('@@ADMIT_CALL@@','Probe.Run(()=>CaptureCourierPreparationAdmission("session",inbound,1)!=null)')
 code=code.replace('@@EXTRAS@@','' if a.original else read('tests/modules/AF.Module.Conversation/ChannelPersonaPreparationTests/Extras.cs.txt'))
 code=code.replace('Task.Delay(500)','Task.Delay(1)').replace('const int waitTimeoutMs = 180000','const int waitTimeoutMs = 40')
-out=HERE/'.generated'/('original' if a.original else a.mutate or 'current');out.mkdir(parents=True,exist_ok=True);(out/'Program.cs').write_text(code,encoding='utf-8');(out/'NuGet.Config').write_text('<configuration><packageSources><clear/></packageSources></configuration>')
+out=util.new_run_root(ROOT,'ChannelPersonaPreparationTests',a.run_root);(out/'Program.cs').write_text(code,encoding='utf-8');(out/'NuGet.Config').write_text('<configuration><packageSources><clear/></packageSources></configuration>')
 files=[out/'Program.cs',ROOT/'src/modules/AF.Module.Persona/Generation/NpcPersonaReadinessSnapshot.cs',ROOT/'src/modules/AF.Module.Persona/Generation/NpcPersonaProfilePolicy.cs']
 if not a.original:
  for path in ['MyBehavior.PersonaReadiness.cs','ShoutBehavior.PersonaPreparation.cs','src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.PreparationAdmission.cs','src/modules/AF.Module.Conversation/Internal/PersonaGenerationWaiter.cs']:

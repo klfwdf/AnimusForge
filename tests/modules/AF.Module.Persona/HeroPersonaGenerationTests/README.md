@@ -28,3 +28,8 @@ G:/Python310/python.exe -X utf8 -B tests/modules/AF.Module.Persona/HeroPersonaGe
 本包未证明：大存档事实捕获/FindHeroById主线程成本上界、完整GameEnd/所有队列释放、真实HTTP取消、消费者外围所有live读取、升格同伴技能/人设流程、实际游戏/旧档、三渠道版本化提交SDK。既有状态接口仍是同步game-facing调用，不可因异步生成入口已安全就推断其worker读取也已安全。
 
 追加排队清理回归：在capture执行前或accept执行前清理同代队列，必须不保存、不显示重生成功。初版968ca283在扩展125项中有2项失败；修复后125/0，新增false_queued_success反例编译后拒绝。该队列清理不会触发真实存档操作，测试仅重置fixture/实际dispatcher。
+
+
+## 2026-10-01 历史入口维护
+
+当前 source proof 绑定批准候选 `f6e2ead7` 的具名 owner 消费者及现有生产依赖审查 hash；不再以整个旧 MyBehavior/Shout/Courier 根文本阻塞迁移。历史逆向/快照只保留为历史材料，本轮未重验旧整类逆向。当前真实生产方法的运行/有效负控仍独立执行。`--run-root` 只创建新仓内输出，runner 安全改动以 `runnerSafetyChanges` 精确 before/after 记录，不刷新原生产 hash。

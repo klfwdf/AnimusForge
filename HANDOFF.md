@@ -1,3 +1,12 @@
+# 当前交接：本地功能与远端融合（2026-10-01）
+
+- **远端8f3903e2已融合，未推送/部署**：保留本地城镇记忆7日间隔、快报/政变/处决等功能与远端测试收尾、场景死代码清理；两份文档冲突保留双方证据。修正渠道fixture对本地公开处决规则的依赖，群聊31、渠道138、记忆60、处决98、调度19、源码15检查与Release双API+Bootstrap通过；全仓C/实机/真实旧档未验。[本次源码责任、失败修复、证据和回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#remote-integration-20261001-town-memory)。下方各任务记录保留各自验收范围。
+
+# 当前交接：J 历史非外交测试闭环（2026-10-01）
+
+- **本轮有限PASS**：空intent `ec74d44d`；六包精确本地测试/metadata提交，无产品源码/Host异常政策改动。新Debug/Release双API+Bootstrap六构建通过；最终严格具名同候选C43 **43 PASS/0 FAIL/0 BLOCKED_ENV**，不是全仓PASS；当前1.3真实message DLL45检查通过。38旧J16入口一次映射，最近33既有失败中28已复验PASS；外交1排除、shared-Service及captured/sealing外交耦合延期，旧B1 current15断言已有限闭合但原完整inverse保留延期；Budget新generate-pair实际双workload/原比较已验，Budget/finite两新入口在最终C43复验；含外交注册名的CampaignComposition共享入口保守延期（前序空壳注册记录保留）。详见[唯一主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#j-history-nondiplomacy-closeout-20261001)与[测试证明范围](docs/architecture/af-framework-code-scope.md#j-history-test-proof-scope-20261001)。
+- A/J17迁移/R05-i已闭状态不重开；原SessionTransport dirty/22旧tools/NuGet保留。D实机/旧档/真实network/性能、TPAC HOLD、凭据轮换仍未验；无push/Stage/部署/安装下载/外仓写/清理。下方旧“当前”记录为历史，不能恢复其上传/施工授权。
+
 # 当前交接：J17 收尾与远端 CivilWar 合并（2026-10-01）
 
 - **政变后旧王朝复位已离线实现（2026-10-01，未部署）**：`f1760f76`；扣押分支排除旧王族，释放分支将原王族加入实际叛军（可无地跟随）；只有明确叛军夺位胜利恢复原王朝及发动前国名，和平/妥协不复位，旧王死亡由原王族现任族长继承。建国后登记可保存并手动重试，普通玩家派系开关不拦政变战争结算。205内战契约、128政变契约、228真实DLL夹具与规则smoke、Release双API+Bootstrap通过；游戏/真实旧档/原生战争未验，无部署推送。[源码、边界、验证及回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#coup-restoration-victory-20261001)。
@@ -52,7 +61,14 @@
 
 - **即时快报审查修复（2026-10-01）**：修复读档后最新快报选错、坏存档原文被自动初始化覆盖、过期摘要混入近期消息；38规则检查 + 16真实方法/桩存储回放 PASS，Release双API+Bootstrap通过，实机/真实旧档未验。新增恢复字段随原存档键保存，查询缓存避免每次对话全量扫描。仅本地提交，无部署/推送；详细源码坐标、构建哈希、其他任务并发边界与回滚见[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#world-bulletin-review-fixes-20261001)。
 
-- **本轮最新：远端 WIP 接续交付（2026-10-01）**：用户要求本轮全部上传并说明进度；P1/P2 全部必要产品、新 owner、测试及共享接线纳入本次 WIP 提交（以实际 Git HEAD 为准），不是验收 PASS。A 已完成，P3/P4/P5 已提交；最新源码最终双配置双 API+Bootstrap/C 未跑，P2 最近 fixture/三变异与 fallback retry 证据待补，地图未更新，D NOT-RUN。下方“未提交/明天本地继续”是历史停点，不是当前状态。远端可用精确清单、离线构建/C helper、已核实依赖与接手顺序见[唯一现态与接续说明](docs/animusforge-refactoring-and-repository-reorganization-plan.md#j17-b6-c-resume-20261001)；本地 artifacts 未上传，不能当远端证据。旧 tools/NuGet/原日志与二进制不上传、不清理，无部署/Stage。
+- **最新 R05-i 精确清理（2026-10-01）**：`ccd6c2fd` 仅删除恒真分支后的旧群聊死尾段；活 per-hero/旁听、开关分支与反射/兼容入口保留。31编译行为+15源码检查、两个编译成功具名负控、Debug/Release双API+Bootstrap通过。新候选完整C唯一失败是尚未写入的文档锚点，已补齐并定向收尾；原失败不改写，D仍NOT-RUN。详见[唯一台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#j17-r05-i-cleanup-20261001)及[813代码地图](docs/architecture/af-framework-code-map.json)。无推送/部署。
+
+
+- **本轮最新：J17 B6有限离线出口与完整C已验（2026-10-01）**：六包必要定向/编译后行为变异及当前1.4 DLL回读完成；Debug/Release × 双API+Bootstrap全部exit0，最终同候选C **287项：243 PASS、0 FAIL/0 BLOCKED_ENV；33既有失败、6需输入、4替代、1环境状态保留，exit0**，不是全部测试通过。产品相对远端WIP无新增语义修改，测试冻结`af6006c4`，813地图已绑定/双模式验。f/g retained、i OPEN；D实机/真实旧档/真实网络/性能NOT-RUN，1.3实际message runtime缺SaveSystem未验，旧凭据轮换未确认。未push/Stage/部署/清理，原SessionTransport dirty和旧tools/NuGet保留。[唯一详细当前结果](docs/animusforge-refactoring-and-repository-reorganization-plan.md#j17-b6-c-resume-20261001)；下方ACTIVE/暂停与历史上传授权均不再发当前指令。
+
+- **本轮恢复意图（历史，结果见上条；2026-10-01）**：用户已明确恢复施工，不延续推送/Stage/部署授权。WIP 基线 `3c00ae2e`，空意图检查点 `38efd7eb`；六包各自实现/定向验证，P6 唯一共享接线/Git/串行构建和最终同候选 C。A/Memory/Weekly/B7 不重做，保留 SessionTransport 初始 dirty 及旧 tools/NuGet/产物；当前 ACTIVE，尚未验收。最新范围和证据集中于[主台账当前入口](docs/animusforge-refactoring-and-repository-reorganization-plan.md#j17-b6-c-resume-20261001)，下方暂停和历史授权不是当前指令。D NOT-RUN，旧凭据轮换未确认。
+
+- **前次远端 WIP 接续交付（历史；2026-10-01）**：用户要求本轮全部上传并说明进度；P1/P2 全部必要产品、新 owner、测试及共享接线纳入本次 WIP 提交（以实际 Git HEAD 为准），不是验收 PASS。A 已完成，P3/P4/P5 已提交；最新源码最终双配置双 API+Bootstrap/C 未跑，P2 最近 fixture/三变异与 fallback retry 证据待补，地图未更新，D NOT-RUN。下方“未提交/明天本地继续”是历史停点，不是当前状态。远端可用精确清单、离线构建/C helper、已核实依赖与接手顺序见[唯一现态与接续说明](docs/animusforge-refactoring-and-repository-reorganization-plan.md#j17-b6-c-resume-20261001)；本地 artifacts 未上传，不能当远端证据。旧 tools/NuGet/原日志与二进制不上传、不清理，无部署/Stage。
 
 - **2026-10-01 远端合并收尾**：按用户授权，将本地 `7154f658` 与远端 `d7970096` 无冲突合并为 `4e4aad06`，保留双方历史与 CivilWar 修复。合并候选 Debug/Release × 1.3/1.4 + Bootstrap、CivilWar smoke 通过；验证隔离旧产物引用，未改一键流程或部署。B6 未闭、C 原未通过和 D NOT-RUN 不变；未恢复扩展施工。[合并证据](docs/animusforge-refactoring-and-repository-reorganization-plan.md#j17-remote-merge-20261001)。
 

@@ -14,7 +14,7 @@ def restore_writer(path, source):
     if path != WRITER_PATH:
         return source
     review = json.loads((HERE/'writer-review.json').read_text(encoding='utf-8'))
-    old = subprocess.check_output(['git', 'show', review['baseline']+':'+path], cwd=ROOT).decode('utf-8-sig').replace('\r\n', '\n')
+    old = subprocess.check_output(['git', 'show', review['baseline']+':Refactor/Runtime/MemorySourceFingerprintWriter.cs'], cwd=ROOT).decode('utf-8-sig').replace('\r\n', '\n')
     assert hashlib.sha256(old.encode()).hexdigest() == review['beforeSha256'], 'Unreviewed writer baseline'
     lines = old.splitlines(keepends=True)
     for change in reversed(review['paths'][path]):

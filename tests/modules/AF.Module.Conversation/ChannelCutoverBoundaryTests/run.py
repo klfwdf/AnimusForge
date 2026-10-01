@@ -199,8 +199,12 @@ def extract(ref: str | None) -> dict[str, str]:
         "MAIN_FALLBACK_METHOD": declaration(scene, "private static async Task<DetachedInteractionHostResult> RunDetachedRefactorFallbackAsync("),
         "SCENE_HISTORY_METHOD": declaration(scene, "private Task<bool> RecordSceneReplyHistoryOnMainThreadAsync(", optional=True),
         "SCENE_TAIL_DECISIONS": tail_decisions,
+        "SCENE_RULE_HIT_METHOD": declaration(source("ShoutBehavior.cs", ref), "private static bool HasPreprocessRuleHit("),
+        "PUBLIC_EXECUTION_POLICY": declaration(optional_source("PublicExecutionOrderPolicy.cs", ref),
+                                               "internal static class PublicExecutionOrderPolicy", optional=True),
         # Synthetic fixture inputs only; the decision expressions above remain verbatim production.
-        "SCENE_TAIL_LOCALS": "\n".join(f'bool {name} = ruleName == "{name}";' for name in selected_names),
+        "SCENE_TAIL_LOCALS": "\n".join(f'bool {name} = ruleName == "{name}";' for name in selected_names)
+            + '\nvar postprocessPreprocessHits = new[] { ruleName };',
         "SCENE_DIRECT_REPLY_ASSIGNMENT": re.search(r"bool replyIsDirectPlayerResponse = firstTurn;", scene[end:]).group(),
         "BATTLE_QUEUE_METHOD": declaration(source("extensions/AnimusForge.XihaiAction/src/CoreProject/BattleSpeechFrameworkV2.cs", ref),
                                            "public static bool ShouldQueueOrdinaryScenePostprocess("),

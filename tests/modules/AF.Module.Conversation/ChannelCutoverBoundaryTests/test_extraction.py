@@ -147,6 +147,16 @@ class ExtractionTests(unittest.TestCase):
             self.assertIn("sceneReplySessionId != Volatile.Read(ref _sceneHistorySessionId)", block)
             self.assertIn("IsSceneConversationEpochCurrent(conversationEpoch)", block)
 
+    def test_group_wrapper_only_awaits_live_per_hero_owner(self):
+        method = declaration(scene_source(None), "private async Task HandleGroupResponse(")
+        call = "await HandleGroupResponsePerHeroIndependent(playerText, allNpcData, sceneDesc, primaryNpc, extraFact, precomputedContexts, resolvedHeroes, conversationEpoch, conversationScope, framedNpcData, receipt);"
+        self.assertEqual(1, method.count(call))
+        self.assertIn(call + "\n\t\t\t\treturn;", method)
+        self.assertIn('receipt?.Fail("scene.group_exception");', method)
+        self.assertIn('Logger.BeginTrace("shout_group"', method)
+        for removed in ("usePerHeroIndependentRequests", "SendLegacyMessagesStreamAsync", "end_IL_0086", "CurrentOwnerCancellation"):
+            self.assertNotIn(removed, method)
+
     def test_known_prompt_baseline_keeps_real_public_factory_and_no_synthetic_fix(self):
         blocks = extract("92ad625a")
         self.assertEqual("", blocks["PRIVATE_SCENE_FACTORY"])

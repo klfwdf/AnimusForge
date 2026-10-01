@@ -90,3 +90,8 @@ G:\Python310\python.exe -X utf8 -B tests/modules/AF.Module.Conversation/CourierP
 正常旧retry UI只在主正文Generate返回API错误之后开放，其prepare已结束且Started未释放，原两个Start门禁不允许再开prepare。本 reservation 仅封闭实际Start/准备范围，**不是**任意外部强制reset后遗留retry按钮、最终动作提交或完整Courier生命周期的总授权。旧retry按钮按sessionId直接使用旧request的责任仍需后续独立迁移。
 
 没有 commit / push / 部署游戏 / 存档操作 / 默认切换 / 自动化改动。
+
+
+## Historical runner repair (2026-10-01)
+
+The obsolete whole-root lock is replaced with immutable historical candidate identity (6e419f6d / bdf58283), current prepared-owner forwarding and the existing exact message-owner inverse. Source negative controls patch the real GenerationLifecycle consumer. The existing 552/76 Prompt and 59/16 liveness behavioral runners remain the acceptance evidence; no whole-root equivalence is claimed.

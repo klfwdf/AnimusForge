@@ -10,6 +10,12 @@ MOVED_DEPENDENCIES={
  'AfCampaignRuntimeLifecycle.cs':'src/AF.GameAdapter.Bannerlord/Composition/AfCampaignRuntimeLifecycle.cs',
 }
 RUNNER_PATH_EDITS={
+ 'CourierDeliveryBehavior.DetachedPostprocess.cs':'src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.DetachedPostprocess.cs',
+ 'CourierDeliveryBehavior.CampaignLifetime.cs':'src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.CampaignLifetime.cs',
+ 'CourierDeliveryBehavior.CommitDispatch.cs':'src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.CommitDispatch.cs',
+ 'tools/ModuleFrameworkApiTests/run.py':'tests/AF.Contracts/ModuleFrameworkApiTests/run.py',
+ 'tools/ChannelCutoverBoundaryTests/run.py':'tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py',
+ 'Refactor/Contracts/InteractionContracts.cs':'src/AF.Contracts/Internal/InteractionContracts.cs',
  'Refactor/Runtime/MemorySummaryDispatcher.cs':'src/modules/AF.Module.Memory/Summary/MemorySummaryDispatcher.cs',
  'Refactor/Contracts/IMemorySummaryDispatchHost.cs':'src/modules/AF.Module.Memory/Summary/IMemorySummaryDispatchHost.cs',
  'Refactor/Runtime/InteractionResultCommitter.cs':'src/modules/AF.Module.Actions/Receipts/InteractionResultCommitter.cs',
@@ -18,10 +24,60 @@ RUNNER_PATH_EDITS={
  'AfCampaignRuntimeLifecycle.cs':'src/AF.GameAdapter.Bannerlord/Composition/AfCampaignRuntimeLifecycle.cs',
 }
 def restore_commit(source):
- spec=importlib.util.spec_from_file_location('courier_outcome_inverse',ROOT/'tests/modules/AF.Module.Conversation/CourierCommitOutcomeTests/source_parity.py');module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module)
- return module.restore(source)
+ # J09 adds authoritative action wrappers to this partial, not scheduler logic.
+ # Compare every current scheduler/outcome declaration to the ORIGINAL reviewed
+ # edits; do not refresh digests or compile unrelated game adapters as stubs.
+ review=json.loads((ROOT/'tests/modules/AF.Module.Conversation/CourierCommitOutcomeTests/source-review.json').read_text(encoding='utf-8'))
+ baseline=subprocess.check_output(['git','show',review['baseline']+':'+review['baselinePath']],cwd=ROOT).decode('utf-8-sig').replace('\r\n','\n')
+ assert hashlib.sha256(baseline.encode()).hexdigest()==review['originalNormalizedSha256']
+ expected=baseline
+ for before,after in review['edits']:
+  assert expected.count(before)==1
+  expected=expected.replace(before,after,1)
+ packet=json.loads((HERE/'source-review.json').read_text(encoding='utf-8'))['courierCommitExtraction']
+ for signature in ['private static InteractionCommitResult CreateUnconfirmedCourierCommit(']+packet['signatures']:
+  assert e.declaration(source,signature)==e.declaration(expected,signature), 'Unreviewed Courier scheduler/outcome declaration: '+signature
+ return baseline
 
-def old(path):return subprocess.check_output(['git','show',BASELINE+':'+path],cwd=ROOT).decode('utf-8-sig').replace('\r\n','\n')
+def restore_lifetime_dependency(path, source):
+ if path=='tests/AF.GameAdapter.Bannerlord/GameLifetimeTests/Bindings.cs.txt':
+  reviewed=subprocess.check_output(['git','show','ec74d44d:'+path],cwd=ROOT).decode('utf-8-sig').replace('\r\n','\n')
+  assert source==reviewed, 'Unreviewed game lifetime binding fixture'
+  # J17's fixture executes the actual ConversationRequestLifetime/lease and
+  # ceremony-clear callback (not a replacement lifetime implementation).
+  return subprocess.check_output(['git','show','1dec16b6:'+path],cwd=ROOT).decode('utf-8-sig').replace('\r\n','\n')
+ # Reverse only the exact J17 cancellation/subscription additions. Current
+ # cancellation behavior is executed by run_bindings; legacy hashes stay intact.
+ if path=='tests/AF.GameAdapter.Bannerlord/GameLifetimeTests/Harness.cs.txt':
+  block=' // Integrated feature seams: registration runs inside the lifecycle try before CaptureOwners;\n // shutdown is after Stop. These no-op substitutes keep the real callbacks compilable.\n internal static class VengeanceRuntimeBridge {internal static void RegisterCampaign(IGameStarter starter){} internal static void Shutdown(){} }\n internal static class IntegratedModuleHost {internal static void RegisterCampaign(IGameStarter starter){} internal static void Shutdown(){} }\n'
+  assert source.count(block)==1, 'Unreviewed integrated lifetime harness'
+  source=source.replace(block,'',1)
+ if path=='ShoutBehavior.CampaignLifetime.cs':
+  block='    private AnimusForge.Refactor.Runtime.ConversationRequestLifetime _sceneRequestLifetime = new AnimusForge.Refactor.Runtime.ConversationRequestLifetime();\n\n    private void RetireChannelRequestLifetimes()\n    {\n        _nativeAdmissionOwner.Current?.Lifetime?.Retire();\n        _sceneRequestLifetime.Retire();\n    }\n\n'
+  assert source.count(block)==1, 'Unreviewed J17 scene lifetime owner'
+  source=source.replace(block,'',1)
+  line='        RetireChannelRequestLifetimes();\n'
+  assert source.count(line)==3, 'Unreviewed J17 retirement call count'
+  source=source.replace(line,'')
+  for line in ['        _sceneRequestLifetime = new AnimusForge.Refactor.Runtime.ConversationRequestLifetime();\n','        NativeConversationTurnHost.ClearCeremonyExecutionOrder(this);\n']:
+   assert source.count(line)==1, 'Unreviewed J17 lifetime addition'
+   source=source.replace(line,'',1)
+ if path=='src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.CampaignLifetime.cs':
+  start=source.index('    private readonly Dictionary<CourierSession, ConversationRequestLifetime>')
+  end=source.index('    private readonly PendingOperationRegistry',start)
+  original=subprocess.check_output(['git','show','cb045840:'+path],cwd=ROOT).decode('utf-8-sig').replace('\r\n','\n')
+  assert source[start:end]==original[start:original.index('    private readonly PendingOperationRegistry',start)], 'Unreviewed J17 courier lifetime owner'
+  source=source[:start]+source[end:]
+  line='        RetireCourierRequestLifetimes();\n'
+  assert source.count(line)==2, 'Unreviewed J17 courier retirement call count'
+  source=source.replace(line,'').replace('using System.Collections.Generic;\n','',1)
+ return source
+
+def restore_dequeue(source):
+ spec=importlib.util.spec_from_file_location('dequeue_inverse',ROOT/'tests/modules/AF.Module.Conversation/CourierOwnerPhaseTests/source_parity.py');module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module)
+ return module.restore_j17_dequeue(source)
+
+def old(path):return subprocess.check_output(['git','show',BASELINE+':'+('CourierDeliveryBehavior.DetachedPostprocess.cs' if path.endswith('CourierDeliveryBehavior.DetachedPostprocess.cs') else path)],cwd=ROOT).decode('utf-8-sig').replace('\r\n','\n')
 def expected(path):
  s=old(path)
  if path=='ShoutBehavior.cs':
@@ -98,9 +154,14 @@ def expected(path):
 def check_dependencies():
  data=json.loads((HERE/'source-review.json').read_text(encoding='utf-8'))
  for p,h in data['dependencies'].items():
-  source=(ROOT/MOVED_DEPENDENCIES.get(p,p)).read_text(encoding='utf-8-sig')
+  source=restore_lifetime_dependency(p,(ROOT/MOVED_DEPENDENCIES.get(p,p)).read_text(encoding='utf-8-sig'))
   if p=='src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.CommitDispatch.cs':source=restore_commit(source)
-  if p in ('tests/AF.GameAdapter.Bannerlord/GameLifetimeTests/run.py','tests/AF.GameAdapter.Bannerlord/GameLifetimeTests/run_bindings.py','tests/AF.GameAdapter.Bannerlord/GameLifetimeTests/run_commit.py','tests/AF.GameAdapter.Bannerlord/GameLifetimeTests/run_memory.py'):
+  if p in data.get('reviewedRunnerEdits',{}):
+   for before,after in reversed(data['reviewedRunnerEdits'][p]):
+    assert source.count(after)==1, 'Unreviewed lifetime runner adaptation: '+p
+    source=source.replace(after,before,1)
+  if p.startswith('tests/AF.GameAdapter.Bannerlord/GameLifetimeTests/run'):
+   source=source.replace('parents[3]','parents[2]').replace('tests/AF.GameAdapter.Bannerlord/GameLifetimeTests/','tools/GameLifetimeTests/')
    for historical,current in RUNNER_PATH_EDITS.items():
     source=source.replace(current,historical)
   assert hashlib.sha256(source.encode()).hexdigest()==h,'Unreviewed game lifetime dependency: '+p
@@ -159,11 +220,19 @@ def restore(path,source):
   spec=importlib.util.spec_from_file_location('j02_host_inverse',ROOT/'tests/AF.GameAdapter.Bannerlord/HostCompositionTests/source_inverse.py');host=importlib.util.module_from_spec(spec);spec.loader.exec_module(host)
   source=host.restore_submodule(source)
  if path not in PATHS:return source
+ if path.endswith('CourierDeliveryBehavior.DetachedPostprocess.cs'):
+  signature='private async Task<T> RunCourierOwnerPhaseAsync<T>('
+  assert restore_dequeue(e.declaration(source,signature))==e.declaration(expected(path),signature), 'Unreviewed game lifetime method'
+  check_dependencies()
+  return old(path)
  check_dependencies();assert source==expected(path),'Unreviewed game lifetime source change: '+path
  return old(path)
 
 def restore_method(path,sig,method):
- actual=(ROOT/path).read_text(encoding='utf-8-sig');restore(path,actual)
+ actual=(ROOT/path).read_text(encoding='utf-8-sig')
+ if path.endswith('CourierDeliveryBehavior.DetachedPostprocess.cs'):
+  assert restore_dequeue(e.declaration(actual,sig))==e.declaration(expected(path),sig), 'Unreviewed game lifetime method'
+ else:restore(path,actual)
  assert method==e.declaration(actual,sig),'Unreviewed game lifetime method'
  return e.declaration(old(path),sig)
 if __name__=='__main__':

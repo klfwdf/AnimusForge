@@ -34,13 +34,13 @@ my_party = method("MyBehavior.cs", "public static string BuildPartyTransferRunti
 ordered(my_party, "FilterPartyTransferEntries(list6All, mentions, promptListMax, isPrisoner: false)", "PartyTransferTroopsSnapshotScope", "PartyTransferAllTroopsSnapshotScope")
 assert "targetAgentIndex, list6" in my_party and "targetAgentIndex, authorizedAllTroops" in my_party
 
-reward_visible = method("RewardSystemBehavior.cs", "public string BuildVisibleEquipmentPostprocessListForAI(Hero hero, MentionedWorldEntities mentions")
+reward_visible = method("src/modules/AF.Module.Economy/Projection/RewardSystemBehavior.InventoryPromptCapture.cs", "public string BuildVisibleEquipmentPostprocessListForAI(Hero hero, MentionedWorldEntities mentions")
 ordered(reward_visible, "PlayerVisibleEquipmentSnapshotScope", "FilterRewardItems(orderedItems, mentions, maxItems)")
-reward_inventory = method("RewardSystemBehavior.cs", "public string BuildFilteredInventorySummaryForAI(")
+reward_inventory = method("src/modules/AF.Module.Economy/Projection/RewardSystemBehavior.InventoryPromptCapture.cs", "public string BuildFilteredInventorySummaryForAI(")
 if args.mutate == "remove-private-filter":
     reward_inventory = reward_inventory.replace("!x.IsPrivateEquipment", "true")
 ordered(reward_inventory, "NpcRewardItemsAllSnapshotScope", "!x.IsPrivateEquipment", "FilterNpcRewardItemsForAssetTransfer(displayCandidates, mentions, maxItems)", "NpcRewardItemsSnapshotScope")
-reward_merchant = method("RewardSystemBehavior.cs", "public string BuildFilteredSettlementMerchantInventorySummaryForAI(")
+reward_merchant = method("src/modules/AF.Module.Economy/Projection/RewardSystemBehavior.InventoryPromptCapture.cs", "public string BuildFilteredSettlementMerchantInventorySummaryForAI(")
 ordered(reward_merchant, "SettlementMerchantItemsAllSnapshotScope", "FilterRewardItems(allOptions, mentions, maxItems)", "SettlementMerchantItemsSnapshotScope")
 
 scene_post = method("ShoutBehavior.cs", "internal static bool TryPrepareCourierActionPostprocessForExternal(")

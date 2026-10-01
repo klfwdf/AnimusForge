@@ -92,7 +92,57 @@ class RunAllSafetyTests(unittest.TestCase):
         self.assertIn("-p:UseArtifactsOutput=true", cmd)
         self.assertIn(f"-p:ArtifactsPath={build_root}", cmd)
         self.assertIn(f"-p:ReplayOutputRoot={build_root}", cmd)
+        self.assertIn(f"-p:OutDir={build_root / 'bin' / 'runtime'}/", cmd)
         self.assertFalse(build_root.exists())
+
+    def test_csproj_runs_evaluated_isolated_target_not_old_bin(self):
+        build_root = self.repo / "artifacts" / "entry-builds" / "unique"
+        target = build_root / "bin" / "ExampleTests" / "release" / "ExampleTests.dll"
+        target.parent.mkdir(parents=True)
+        target.write_bytes(b"synthetic")
+        cmd = ["dotnet", "run", "--project", "ExampleTests.csproj", "-c", "Release",
+               "-p:UseArtifactsOutput=true", f"-p:ArtifactsPath={build_root}", "--", "fixture"]
+        replies = [subprocess.CompletedProcess([], 0, "build", ""),
+                   subprocess.CompletedProcess([], 0, json.dumps({"Properties": {
+                       "TargetPath": str(target), "TargetFramework": "net8.0"}}), ""),
+                   subprocess.CompletedProcess([], 0, "checks", "")]
+        with patch.object(runner.subprocess, "run", side_effect=replies) as launch:
+            done = runner.execute(cmd, {}, build_root, 30)
+        self.assertEqual(done.returncode, 0)
+        self.assertEqual(launch.call_args_list[0].args[0][1], "build")
+        self.assertNotIn("--project", launch.call_args_list[0].args[0])
+        self.assertEqual(launch.call_args_list[-1].args[0], ["dotnet", str(target), "fixture"])
+
+    def test_csproj_runtime_options_are_separated_from_build_options(self):
+        project = self.repo / "ExampleTests.csproj"
+        project.write_text('<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><TargetFramework>net8.0</TargetFramework></PropertyGroup></Project>')
+        with patch.object(runner, "ROOT", self.repo):
+            cmd = runner.command(project.name, {"args": ["--artifact-root", "fixture"]}, "synthetic")
+        self.assertEqual(cmd[-3:], ["--", "--artifact-root", "fixture"])
+        with patch.object(runner, "ROOT", self.repo):
+            legacy = runner.command(project.name, {"args": ["--", "fixture"]}, "synthetic")
+        self.assertEqual(legacy[-2:], ["--", "fixture"])
+        self.assertEqual(legacy.count("--"), 1)
+
+    def test_debt_fixture_gets_explicit_python_not_inherited_path(self):
+        project = self.repo / "DebtTests.csproj"
+        project.write_text('<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><TargetFramework>net8.0</TargetFramework><DebtPythonExe>python</DebtPythonExe></PropertyGroup></Project>')
+        with patch.object(runner, "ROOT", self.repo):
+            cmd = runner.command(project.name, {}, "synthetic")
+        self.assertIn("-p:DebtPythonExe=" + runner.sys.executable, cmd)
+
+    def test_csproj_rejects_old_bin_target_before_runtime(self):
+        target = self.repo / "bin" / "ExampleTests.dll"
+        target.parent.mkdir(parents=True)
+        target.write_bytes(b"synthetic")
+        cmd = ["dotnet", "run", "--project", "ExampleTests.csproj", "-c", "Release"]
+        replies = [subprocess.CompletedProcess([], 0, "build", ""),
+                   subprocess.CompletedProcess([], 0, json.dumps({"Properties": {
+                       "TargetPath": str(target), "TargetFramework": "net8.0"}}), "")]
+        with patch.object(runner.subprocess, "run", side_effect=replies) as launch:
+            with self.assertRaisesRegex(ValueError, "escaped isolated"):
+                runner.execute(cmd, {}, self.repo / "artifacts/new", 30)
+        self.assertEqual(launch.call_count, 2)
 
     def test_missing_required_candidate_blocks_without_launch(self):
         with patch.object(runner, "DLL14", self.repo / "missing-candidate.dll"):
@@ -140,7 +190,7 @@ class RunAllSafetyTests(unittest.TestCase):
     def test_actual_manifest_keeps_business_tools_manual_and_editor_isolated(self):
         entries = json.loads(runner.MANIFEST.read_text(encoding="utf-8"))["entries"]
         for name in ("af2_migrate.py", "generate_bannerlord_history_culture_study.py",
-                     "generate_bannerlord_research_grade_study.py"):
+                     "generate_bannerlord_research_grade_study.py", "export_vanilla_text_index.py"):
             self.assertEqual(entries["tools/" + name]["execution"], "manual")
             self.assertEqual(entries["tools/" + name]["expect"], "NEEDS_INPUT")
         editor = entries["tools/PlayerExportsEditor/tests/PlayerExportsEditor.SmokeTests/PlayerExportsEditor.SmokeTests.csproj"]

@@ -92,3 +92,10 @@ foreach ($fault in @('omit-string-length','lose-high-code-unit','skip-full-buffe
 ```
 
 本子任务未 commit/push、未改游戏/存档、未恢复自动化。六 Stage 和完整相邻回归由根任务基于最终合并候选统一执行；本页不能替代该验证。
+
+
+## 2026-10-01 历史入口维护
+
+`source_review.py` 从实际历史 `Refactor/Runtime/MemorySourceFingerprintWriter.cs` 取基线，保留原 4 hunks/hash；两新 run 各 65,808 检查与 13 digest 等价。`verify.py` 必须提供 `--current-run`/`--baseline-run`，无参数不是行为回归。输出环境不继承凭据，TEMP 留在独立仓内输出。
+
+显式离线成对验证：`verify.py --generate-pair --run-root <new-repository-local-directory>`。内部调用原 `run.py` 两次（current / historical writer），随后原样检查双 HEAD/input 一致、原4 hunks/hash、13 digest、65808/0 marker；旧 `--current-run`/`--baseline-run` 接口保持。Python child 和 dotnet 环境均白名单构造，不继承凭据；SDK override 解析结果精确传入。
