@@ -1,5 +1,7 @@
 # 当前交接：J17 收尾与远端 CivilWar 合并（2026-10-01）
 
+- **政变旧王支持者反抗与处置菜单已离线修复（2026-10-01，未部署）**：`86991dc3`，按用户选择，原王族/更支持旧王的合格有地家族可反抗，不再要求与新王关系≤−5；旧请求/普通周叛乱保持。夺位结算后通过原入口打开胜利处置菜单，跳过重复转城、失败可手动重试、成功收据防重开；修正政变场景冒用SETS的TAB提示。128契约、223实际DLL/夹具、Release双API+Bootstrap通过；真实建国/命名/GCCZ菜单及旧档未验，无部署/推送；旧已完成政变不追溯重算。[故障日志、源码、验证与回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#coup-loyalists-and-aftermath-20261001)。
+
 - **本会话快报/场景插画/画廊RP功能已部署（2026-10-01）**：用户“部署”授权，干净源码`454a63b3`重新Release双API+Bootstrap通过；官方单模块脚本更新9文件，安装后238个Stage文件哈希一致，Bootstrap唯一入口。实机/真实旧档/生图耗时未验，未推送。[部署与回滚证据](docs/animusforge-refactoring-and-repository-reorganization-plan.md#illustrator-deploy-20261001)。
 
 - **快报配图提前生成（2026-10-01）**：`5f096d08`，正文发布后即开始生成本期新画；打开/重开复用本期精确缓存或加入进行中任务，关闭面板不取消后台任务，失败不自动重试。此项替代旧“每次打开都重生”。22状态检查、两个实际DLL关闭/取消检查及Release双API+Bootstrap通过；真实导出/API/游戏未验，未部署/推送。[源码坐标、证据和回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#bulletin-prefetch-20261001)。
