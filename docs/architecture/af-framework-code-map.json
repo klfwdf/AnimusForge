@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "sourceRevision": "2524ddcf1802c82685796eeb949060faeed7f60a",
+  "sourceRevision": "23ac43dc2ab57601922793e260459c8e76149640",
   "remoteBaseline": "10defeb4976f3ffa096a77e847fba254308f6aba",
   "meaning": "Navigation only, not whole-file completion or a permanent feature allowlist. Refresh the current map when symbols change.",
   "anchors": [
@@ -105,7 +105,7 @@
     },
     {
       "id": "lifecycle.load",
-      "path": "SubModule.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/Composition/SubModule.cs",
       "start": 53,
       "end": 53,
       "symbol": "ModuleFrameworkRuntime.Initialize(out string moduleFrameworkReason);",
@@ -116,7 +116,7 @@
     },
     {
       "id": "lifecycle.unload",
-      "path": "SubModule.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/Composition/SubModule.cs",
       "start": 107,
       "end": 107,
       "symbol": "ModuleFrameworkRuntime.Shutdown();",
@@ -149,7 +149,7 @@
     },
     {
       "id": "native.history.capture",
-      "path": "MyBehavior.HistoryPromptSnapshot.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.HistoryPromptSnapshot.cs",
       "start": 35,
       "end": 35,
       "symbol": "internal static Func<string> CaptureHistoryContextWorkById",
@@ -204,7 +204,7 @@
     },
     {
       "id": "memory.acceptance",
-      "path": "MyBehavior.DialogueHistoryCommit.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.DialogueHistoryCommit.cs",
       "start": 12,
       "end": 12,
       "symbol": "internal static MemoryCommitResult CommitDialogueHistoryWithScene(string memoryId, bool isNonHero, string npcName, string playerText, string aiText, string extraFact, int sceneSessionId)",
@@ -215,7 +215,7 @@
     },
     {
       "id": "memory.failure.ui",
-      "path": "MyBehavior.MemoryFailureNotice.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.MemoryFailureNotice.cs",
       "start": 53,
       "end": 53,
       "symbol": "private void ProcessPendingMemoryFailureNotice()",
@@ -226,7 +226,7 @@
     },
     {
       "id": "memory.summary.dispatch",
-      "path": "MyBehavior.MemorySummaryMainThread.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.MemorySummaryMainThread.cs",
       "start": 48,
       "end": 48,
       "symbol": "private Task<bool> RunMemorySummaryMainThreadAsync(long generation, Func<bool> operation) =>",
@@ -259,7 +259,7 @@
     },
     {
       "id": "legacy.history",
-      "path": "MyBehavior.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.cs",
       "start": 25903,
       "end": 25903,
       "symbol": "public static string BuildHistoryContextForExternal(",
@@ -270,7 +270,7 @@
     },
     {
       "id": "legacy.recall",
-      "path": "MyBehavior.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.cs",
       "start": 31393,
       "end": 31393,
       "symbol": "private string BuildCompressedMemoryContextById(",
@@ -446,7 +446,7 @@
     },
     {
       "id": "memory.summary.capture",
-      "path": "MyBehavior.MemorySummaryInput.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.MemorySummaryInput.cs",
       "start": 252,
       "end": 252,
       "symbol": "private MemorySummaryInput CaptureMemorySummaryInput(",
@@ -457,7 +457,7 @@
     },
     {
       "id": "memory.summary.source-check",
-      "path": "MyBehavior.MemorySummaryInput.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.MemorySummaryInput.cs",
       "start": 339,
       "end": 339,
       "symbol": "private bool IsMemorySummaryInputCurrent(",
@@ -468,7 +468,7 @@
     },
     {
       "id": "memory.summary.execute",
-      "path": "MyBehavior.MemorySummaryInput.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.MemorySummaryInput.cs",
       "start": 358,
       "end": 358,
       "symbol": "private async Task<CapturedMemorySummaryResult> ExecuteCapturedMemorySummaryJobAsync(",
@@ -479,7 +479,7 @@
     },
     {
       "id": "memory.source.facades",
-      "path": "MyBehavior.MemorySourceWrites.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.MemorySourceWrites.cs",
       "start": 22,
       "end": 22,
       "symbol": "private static bool DeferMemorySourceWriteIfNeeded(",
@@ -501,7 +501,7 @@
     },
     {
       "id": "memory.summary.copy",
-      "path": "MyBehavior.MemorySummaryInput.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.MemorySummaryInput.cs",
       "start": 48,
       "end": 48,
       "symbol": "private static T CloneMemorySummarySource<T>(T value)",
@@ -512,7 +512,7 @@
     },
     {
       "id": "memory.summary.fingerprint",
-      "path": "MyBehavior.MemorySummaryInput.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.MemorySummaryInput.cs",
       "start": 324,
       "end": 324,
       "symbol": "private static string ComputeMemorySummaryFingerprint(object identity)",
@@ -545,7 +545,7 @@
     },
     {
       "id": "memory.summary.admission",
-      "path": "MyBehavior.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.cs",
       "start": 4430,
       "end": 4430,
       "symbol": "private void TryStartMemorySummaryQueue(bool forceOverviewCandidateScan = false)",
@@ -556,7 +556,7 @@
     },
     {
       "id": "memory.summary.planner",
-      "path": "MyBehavior.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.cs",
       "start": 4490,
       "end": 4490,
       "symbol": "private async Task ProcessMemorySummaryQueueAsync(bool forceOverviewCandidateScan = false)",
@@ -567,7 +567,7 @@
     },
     {
       "id": "memory.summary.maintenance",
-      "path": "MyBehavior.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.cs",
       "start": 16750,
       "end": 16750,
       "symbol": "private void TryRunCampaignMemoryMaintenance()",
@@ -578,7 +578,7 @@
     },
     {
       "id": "memory.plan.entry",
-      "path": "MyBehavior.MemorySummaryPlanning.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.MemorySummaryPlanning.cs",
       "start": 14,
       "end": 14,
       "symbol": "private sealed class MemorySummaryPlanEntry",
@@ -589,7 +589,7 @@
     },
     {
       "id": "memory.plan.scan",
-      "path": "MyBehavior.MemorySummaryPlanning.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.MemorySummaryPlanning.cs",
       "start": 70,
       "end": 70,
       "symbol": "private async Task<List<MemorySummaryPlanEntry>> ScanMemorySummaryQueueAsync<T>(",
@@ -600,7 +600,7 @@
     },
     {
       "id": "memory.plan.build",
-      "path": "MyBehavior.MemorySummaryPlanning.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.MemorySummaryPlanning.cs",
       "start": 160,
       "end": 160,
       "symbol": "private async Task<MemorySummaryPlan> BuildMemorySummaryPlanAsync(",
@@ -611,7 +611,7 @@
     },
     {
       "id": "memory.editor.guard",
-      "path": "MyBehavior.MemorySourceWrites.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.MemorySourceWrites.cs",
       "start": 13,
       "end": 13,
       "symbol": "private bool IsMemorySourceEditorCurrent(long generation)",
@@ -622,7 +622,7 @@
     },
     {
       "id": "memory.editor.text",
-      "path": "MyBehavior.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.cs",
       "start": 44190,
       "end": 44190,
       "symbol": "private void OpenDevDailyMemoryLineTextEditor(",
@@ -633,7 +633,7 @@
     },
     {
       "id": "memory.import.single",
-      "path": "MyBehavior.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.cs",
       "start": 48975,
       "end": 48975,
       "symbol": "private void ImportSingleNpcDialogueHistoryData(",
@@ -644,7 +644,7 @@
     },
     {
       "id": "memory.import.batch",
-      "path": "MyBehavior.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.cs",
       "start": 50891,
       "end": 50891,
       "symbol": "private void ImportDialogueHistoryData(",
@@ -655,7 +655,7 @@
     },
     {
       "id": "memory.import.hero-all",
-      "path": "MyBehavior.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.cs",
       "start": 49190,
       "end": 49190,
       "symbol": "private void ImportHeroNpcAllData(",
@@ -666,7 +666,7 @@
     },
     {
       "id": "memory.import.all",
-      "path": "MyBehavior.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.cs",
       "start": 51434,
       "end": 51434,
       "symbol": "private void ImportAllData(",
@@ -677,7 +677,7 @@
     },
     {
       "id": "memory.summary.raw-view",
-      "path": "MyBehavior.MemorySummaryInput.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.MemorySummaryInput.cs",
       "start": 129,
       "end": 129,
       "symbol": "private MemorySummarySourceView ReadMemorySummarySource(",
@@ -688,7 +688,7 @@
     },
     {
       "id": "memory.summary.scene-dependencies",
-      "path": "MyBehavior.MemorySummaryInput.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.MemorySummaryInput.cs",
       "start": 90,
       "end": 90,
       "symbol": "private static void DescribeMemorySummaryDailyContext(",
@@ -699,7 +699,7 @@
     },
     {
       "id": "memory.summary.effective-context",
-      "path": "MyBehavior.MemorySummaryInput.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.MemorySummaryInput.cs",
       "start": 205,
       "end": 205,
       "symbol": "private string CaptureMemorySummaryContextFingerprint(",
@@ -710,7 +710,7 @@
     },
     {
       "id": "memory.overview.pending-projection",
-      "path": "MyBehavior.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.cs",
       "start": 24964,
       "end": 24964,
       "symbol": "private bool HasMemoryOverviewPendingBlocks(",
@@ -743,7 +743,7 @@
     },
     {
       "id": "memory.material.record",
-      "path": "MyBehavior.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.cs",
       "symbol": "private void RecordEventSourceMaterial(",
       "match": "contains",
       "status": "source-linked-offline-verified",
@@ -754,7 +754,7 @@
     },
     {
       "id": "memory.material.rebuild",
-      "path": "MyBehavior.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.cs",
       "symbol": "private void RebuildEventSourceMaterialIndex()",
       "match": "exact",
       "status": "source-linked-offline-verified",
@@ -765,7 +765,7 @@
     },
     {
       "id": "memory.sealing.continue",
-      "path": "MyBehavior.MemorySealing.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.MemorySealing.cs",
       "symbol": "private bool ContinueDailyMemorySeal(long startTimestamp, double budgetMs, bool requirePendingProbe)",
       "match": "exact",
       "status": "source-linked-offline-verified",
@@ -787,7 +787,7 @@
     },
     {
       "id": "memory.budget.resolve",
-      "path": "MyBehavior.MemoryMaintenanceBudget.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.MemoryMaintenanceBudget.cs",
       "symbol": "private void ResolveDailyMaintenanceBudget(",
       "match": "contains",
       "status": "source-linked-offline-verified",
@@ -798,7 +798,7 @@
     },
     {
       "id": "memory.budget.cycle",
-      "path": "MyBehavior.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.cs",
       "symbol": "private void RunCampaignMemoryMaintenanceCycle(",
       "match": "contains",
       "status": "source-linked-offline-verified",
@@ -809,7 +809,7 @@
     },
     {
       "id": "memory.budget.caller",
-      "path": "MyBehavior.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.cs",
       "symbol": "private void OnCampaignTick(float dt)",
       "match": "exact",
       "status": "source-linked-offline-verified",
@@ -820,7 +820,7 @@
     },
     {
       "id": "memory.budget.deferred",
-      "path": "MyBehavior.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.cs",
       "symbol": "private void ProcessDeferredDailyMaintenance()",
       "match": "exact",
       "status": "source-linked-offline-verified",
@@ -831,7 +831,7 @@
     },
     {
       "id": "memory.sealing.queue-tail",
-      "path": "MyBehavior.MemorySealing.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.MemorySealing.cs",
       "start": 64,
       "end": 64,
       "symbol": "private sealed class DailyMemorySealQueueTail<T> where T : class",
@@ -864,7 +864,7 @@
     },
     {
       "id": "memory.sort.daily-normalize",
-      "path": "MyBehavior.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.cs",
       "start": 24928,
       "end": 24928,
       "symbol": "private static List<MemorySummaryJob> NormalizeMemorySummaryQueue(IEnumerable<MemorySummaryJob> jobs)",
@@ -875,7 +875,7 @@
     },
     {
       "id": "memory.sort.major-normalize",
-      "path": "MyBehavior.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.cs",
       "start": 25022,
       "end": 25022,
       "symbol": "private static List<MajorActionSummaryJob> NormalizeMajorActionSummaryQueue(IEnumerable<MajorActionSummaryJob> jobs)",
@@ -897,7 +897,7 @@
     },
     {
       "id": "memory.source-digest.schema",
-      "path": "MyBehavior.MemorySourceFingerprint.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.MemorySourceFingerprint.cs",
       "symbol": "private static string ComputeMemorySummarySourceFingerprint(MemorySummarySourceView source)",
       "note": "原private DTO的122字段编码边界；三类真实Capture/IsCurrent消费者，瞬时格式非存档/API",
       "start": 12,
@@ -919,7 +919,7 @@
     },
     {
       "id": "memory.owner-normalize.state",
-      "path": "MyBehavior.MemorySealing.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.MemorySealing.cs",
       "symbol": "private sealed class DailyMemoryDraftNormalization",
       "note": "逐draft身份仍一次expensive；line/trigger bind按metadata续跑，结果私有；发布前key/empty/列表guard",
       "start": 129,
@@ -930,7 +930,7 @@
     },
     {
       "id": "memory.owner-normalize.caller",
-      "path": "MyBehavior.MemorySealing.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.MemorySealing.cs",
       "symbol": "private bool RunDailyMemorySealDrafts(DailyMemorySealState state, MemoryMaintenanceWorkBudget budget)",
       "note": "真实caller，复用累计授予；失效重新封存/建索引，空owner直接移除",
       "start": 656,
@@ -941,7 +941,7 @@
     },
     {
       "id": "memory.owner-normalize.entry",
-      "path": "MyBehavior.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.cs",
       "symbol": "private static DailyMemoryDraft SanitizeDailyMemoryDraftEntry(DailyMemoryDraft sourceEntry, HashSet<string> seen)",
       "note": "同步入口组合共用bind/line helper；clone/seen/trigger列表规则保持",
       "start": 24916,
@@ -952,7 +952,7 @@
     },
     {
       "id": "memory.owner-normalize.line",
-      "path": "MyBehavior.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.cs",
       "symbol": "private static DailyMemoryLine SanitizeDailyMemoryDraftLine(DailyMemoryLine x, DailyMemoryDraft draft)",
       "note": "原Where+Select体精确提取；同步与续跑共用，不含第二套规则",
       "start": 24912,
@@ -963,7 +963,7 @@
     },
     {
       "id": "memory.owner-normalize.trigger-bind",
-      "path": "MyBehavior.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.cs",
       "symbol": "private static void BindDailyMemoryDraftWeeklyTrigger(WeeklyMemoryMaterialTrigger trigger, string memoryId, int gameDayIndex, string gameDate)",
       "note": "原draft内trigger MemoryId/day/date绑定；按条metadata计费",
       "start": 24908,
@@ -974,7 +974,7 @@
     },
     {
       "id": "memory.owner-normalize.entry-work",
-      "path": "MyBehavior.MemorySealing.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.MemorySealing.cs",
       "symbol": "private sealed class DailyMemoryDraftEntryNormalization",
       "note": "单draft可续跑：bind/line metadata，trigger列表仍一次Sanitize；列表ref/count变化失效重封",
       "start": 219,
@@ -985,7 +985,7 @@
     },
     {
       "id": "memory.inner-structure.guard",
-      "path": "MyBehavior.MemorySealing.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.MemorySealing.cs",
       "start": 343,
       "end": 343,
       "symbol": "private bool InnerCurrent()",
@@ -1018,7 +1018,7 @@
     },
     {
       "id": "memory.dispatch.host",
-      "path": "MyBehavior.MemorySummaryMainThread.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.MemorySummaryMainThread.cs",
       "symbol": "private sealed class MemorySummaryDispatchHost : IMemorySummaryDispatchHost",
       "match": "exact",
       "status": "wired-boundary",
@@ -1029,7 +1029,7 @@
     },
     {
       "id": "composition.campaign.entry",
-      "path": "SubModule.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/Composition/SubModule.cs",
       "start": 120,
       "end": 120,
       "symbol": "protected override void InitializeGameStarter(",
@@ -1249,7 +1249,7 @@
     },
     {
       "id": "persona.generation.capture",
-      "path": "MyBehavior.PersonaGeneration.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.PersonaGeneration.cs",
       "start": 50,
       "end": 50,
       "symbol": "private NpcPersonaGenerationWork CaptureNpcPersonaGeneration(",
@@ -1260,7 +1260,7 @@
     },
     {
       "id": "persona.generation.execute",
-      "path": "MyBehavior.PersonaGeneration.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.PersonaGeneration.cs",
       "start": 86,
       "end": 86,
       "symbol": "private async Task<string> GenerateNpcPersonaAsync(",
@@ -1271,7 +1271,7 @@
     },
     {
       "id": "persona.generation.external",
-      "path": "MyBehavior.PersonaGeneration.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.PersonaGeneration.cs",
       "start": 32,
       "end": 32,
       "symbol": "public static async Task EnsureNpcPersonaGeneratedForExternalAsync(",
@@ -1282,7 +1282,7 @@
     },
     {
       "id": "persona.reroll.ui",
-      "path": "MyBehavior.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.cs",
       "start": 43581,
       "end": 43581,
       "symbol": "private async Task RunHeroPersonaRerollAsync(",
@@ -1293,7 +1293,7 @@
     },
     {
       "id": "persona.readiness",
-      "path": "MyBehavior.PersonaReadiness.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.PersonaReadiness.cs",
       "start": 13,
       "end": 13,
       "symbol": "internal static NpcPersonaReadinessSnapshot CaptureNpcPersonaReadiness(",
@@ -1370,7 +1370,7 @@
     },
     {
       "id": "lifetime.engine.begin",
-      "path": "SubModule.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/Composition/SubModule.cs",
       "start": 120,
       "end": 120,
       "symbol": "protected override void InitializeGameStarter(Game game, IGameStarter starterObject)",
@@ -1381,7 +1381,7 @@
     },
     {
       "id": "lifetime.engine.end",
-      "path": "SubModule.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/Composition/SubModule.cs",
       "start": 97,
       "end": 97,
       "symbol": "public override void OnGameEnd(Game game)",
@@ -1392,7 +1392,7 @@
     },
     {
       "id": "lifetime.engine.unload",
-      "path": "SubModule.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/Composition/SubModule.cs",
       "start": 103,
       "end": 103,
       "symbol": "protected override void OnSubModuleUnloaded()",
@@ -1447,7 +1447,7 @@
     },
     {
       "id": "lifetime.my.retire",
-      "path": "MyBehavior.CampaignLifetime.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.CampaignLifetime.cs",
       "start": 10,
       "end": 10,
       "symbol": "internal void RetireCampaignRuntime(string reason)",
@@ -1458,7 +1458,7 @@
     },
     {
       "id": "lifetime.my.dispatch",
-      "path": "MyBehavior.MemorySummaryMainThread.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.MemorySummaryMainThread.cs",
       "start": 33,
       "end": 33,
       "symbol": "private sealed class MemorySummaryDispatchHost : IMemorySummaryDispatchHost",
@@ -1524,7 +1524,7 @@
     },
     {
       "id": "memory.run.phase",
-      "path": "MyBehavior.MemorySummaryRun.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.MemorySummaryRun.cs",
       "symbol": "private Task<bool> RunMemorySummaryRunPhaseAsync(",
       "match": "contains",
       "status": "wired-boundary",
@@ -1535,7 +1535,7 @@
     },
     {
       "id": "memory.run.capture",
-      "path": "MyBehavior.MemorySummaryRun.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.MemorySummaryRun.cs",
       "symbol": "private Task<bool> RunMemorySummaryRunCaptureAsync(",
       "match": "contains",
       "status": "wired-boundary",
@@ -2151,7 +2151,7 @@
     },
     {
       "id": "composition.startup.facade",
-      "path": "SubModule.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/Composition/SubModule.cs",
       "start": 113,
       "end": 113,
       "symbol": "protected override void OnBeforeInitialModuleScreenSetAsRoot()",
@@ -2162,7 +2162,7 @@
     },
     {
       "id": "composition.tick.facade",
-      "path": "SubModule.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/Composition/SubModule.cs",
       "start": 144,
       "end": 144,
       "symbol": "protected override void OnApplicationTick(float dt)",
@@ -2646,7 +2646,7 @@
     },
     {
       "id": "j04.host.builder",
-      "path": "MyBehavior.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.cs",
       "start": 28783,
       "end": 28783,
       "symbol": "private ShoutPromptContext BuildShoutPromptContextForExternalInternal(",
@@ -2657,7 +2657,7 @@
     },
     {
       "id": "j04.host.courier.preprocess",
-      "path": "MyBehavior.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.cs",
       "start": 28613,
       "end": 28613,
       "symbol": "private List<string> RunCourierRulePreprocessInternal(",
@@ -2756,7 +2756,7 @@
     },
     {
       "id": "j04.host.capture.request",
-      "path": "MyBehavior.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.cs",
       "start": 29038,
       "end": 29038,
       "symbol": "private PromptBuildRequest CapturePromptBuildRequest(",
@@ -2767,7 +2767,7 @@
     },
     {
       "id": "j04.host.capture.sections",
-      "path": "MyBehavior.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.cs",
       "start": 29132,
       "end": 29132,
       "symbol": "private void CapturePromptSections(",
@@ -2778,7 +2778,7 @@
     },
     {
       "id": "j04.host.appendices",
-      "path": "MyBehavior.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.cs",
       "start": 29347,
       "end": 29347,
       "symbol": "private void ApplyPromptRuntimeAppendices(",
@@ -2789,7 +2789,7 @@
     },
     {
       "id": "j04f.build.begin",
-      "path": "MyBehavior.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.cs",
       "start": 28826,
       "end": 28826,
       "symbol": "internal PromptBuildPhases BeginSharedPromptBuild(",
@@ -2800,7 +2800,7 @@
     },
     {
       "id": "j04f.build.routing",
-      "path": "MyBehavior.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.cs",
       "start": 28861,
       "end": 28861,
       "symbol": "internal void RunSharedPromptRouting(",
@@ -2811,7 +2811,7 @@
     },
     {
       "id": "j04f.build.complete",
-      "path": "MyBehavior.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.cs",
       "start": 29002,
       "end": 29002,
       "symbol": "internal ShoutPromptContext CompleteSharedPromptBuild(",
@@ -2844,7 +2844,7 @@
     },
     {
       "id": "j04f.courier.preprocess.begin",
-      "path": "MyBehavior.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.cs",
       "start": 28648,
       "end": 28648,
       "symbol": "internal CourierPreprocessRequest BeginCourierRulePreprocess(",
@@ -2855,7 +2855,7 @@
     },
     {
       "id": "j04f.courier.preprocess.retrieval",
-      "path": "MyBehavior.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.cs",
       "start": 28676,
       "end": 28676,
       "symbol": "internal List<string> RunCourierRulePreprocessRetrieval(",
@@ -2910,7 +2910,7 @@
     },
     {
       "id": "j04g.host.rule.capture",
-      "path": "MyBehavior.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.cs",
       "start": 27235,
       "end": 27235,
       "symbol": "private PromptRuleInstructionSections CaptureRuleInstructionSections(",
@@ -2943,7 +2943,7 @@
     },
     {
       "id": "j05.host.record.action",
-      "path": "MyBehavior.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.cs",
       "start": 14700,
       "end": 14700,
       "symbol": "private void RecordNpcActionInternal(",
@@ -2954,7 +2954,7 @@
     },
     {
       "id": "j05.host.record.history",
-      "path": "MyBehavior.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.cs",
       "start": 25742,
       "end": 25742,
       "symbol": "private bool AppendDialogueHistoryById(",
@@ -2998,7 +2998,7 @@
     },
     {
       "id": "j05.host.syncdata",
-      "path": "MyBehavior.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.cs",
       "start": 16801,
       "end": 16801,
       "symbol": "public override void SyncData(IDataStore dataStore)",
@@ -3009,7 +3009,7 @@
     },
     {
       "id": "j05.host.npcfile.name",
-      "path": "MyBehavior.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.cs",
       "start": 52244,
       "end": 52244,
       "symbol": "private static string ResolveHeroNameForNpcDataFile(",
@@ -3163,7 +3163,7 @@
     },
     {
       "id": "knowledge.import.consumer",
-      "path": "MyBehavior.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.cs",
       "start": 50212,
       "end": 50212,
       "symbol": "KnowledgeImportSupport.LoadKnowledgeRulesFromImportDir(importDir)",
@@ -3229,7 +3229,7 @@
     },
     {
       "id": "j06.prompt.capture",
-      "path": "MyBehavior.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.cs",
       "start": 28893,
       "end": 28893,
       "symbol": "internal void CaptureSharedKnowledgeSnapshot(",
@@ -3240,7 +3240,7 @@
     },
     {
       "id": "j06.prompt.worker",
-      "path": "MyBehavior.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.cs",
       "start": 28993,
       "end": 28993,
       "symbol": "internal void RunSharedKnowledgeRetrieval(",
@@ -3328,7 +3328,7 @@
     },
     {
       "id": "j06.prompt.worker_retrieval",
-      "path": "MyBehavior.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.cs",
       "start": 28946,
       "end": 28946,
       "symbol": "internal static PromptKnowledgeWorkResult RunSharedKnowledgeRetrieval(PromptKnowledgeWorkInput input)",
@@ -5033,7 +5033,7 @@
     },
     {
       "id": "weekly.commit.target.capture",
-      "path": "MyBehavior.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.cs",
       "start": 37457,
       "end": 37457,
       "symbol": "private Dictionary<string, string> CaptureWeeklyReportCommitRecordStates(Dictionary<string, WeeklyEventMaterialPreviewGroup> groups, int weekIndex)",
@@ -5044,7 +5044,7 @@
     },
     {
       "id": "weekly.commit.target.compare",
-      "path": "MyBehavior.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.cs",
       "start": 37483,
       "end": 37483,
       "symbol": "private bool IsWeeklyReportCommitRecordUnchanged(PendingWeeklyReportCommitContext context, string reportId, WeeklyEventMaterialPreviewGroup group)",
@@ -5055,7 +5055,7 @@
     },
     {
       "id": "weekly.commit.target.write",
-      "path": "MyBehavior.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.cs",
       "start": 41162,
       "end": 41162,
       "symbol": "private bool ProcessPendingWeeklyReportBlockCommit(PendingWeeklyReportCommitContext context, long startTimestamp, double budgetMs)",
@@ -5066,7 +5066,7 @@
     },
     {
       "id": "weekly.commit.retry.admission",
-      "path": "MyBehavior.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.cs",
       "start": 37512,
       "end": 37512,
       "symbol": "private static bool AreWeeklyReportCommitRecordStatesCurrent(Dictionary<string, WeeklyEventMaterialPreviewGroup> groups, Dictionary<string, string> captured, Dictionary<string, string> current)",
@@ -5077,7 +5077,7 @@
     },
     {
       "id": "weekly.commit.retry.entry",
-      "path": "MyBehavior.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.cs",
       "start": 38457,
       "end": 38457,
       "symbol": "private async Task RetryBlockedWeeklyReportsAsync(WeeklyReportRetryContext context, int retryVersion)",
@@ -5088,7 +5088,7 @@
     },
     {
       "id": "weekly.commit.winner",
-      "path": "MyBehavior.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.cs",
       "start": 37499,
       "end": 37499,
       "symbol": "private static bool IsWeeklyReportCommitWinner(EventRecordEntry entry, WeeklyEventMaterialPreviewGroup group, int weekIndex)",
@@ -5099,7 +5099,7 @@
     },
     {
       "id": "weekly.retry.fresh.selection",
-      "path": "MyBehavior.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.cs",
       "start": 38304,
       "end": 38304,
       "symbol": "private static List<WeeklyEventMaterialPreviewGroup> SelectFreshWeeklyReportRetryGroups(List<WeeklyEventMaterialPreviewGroup> freshGroups, List<WeeklyEventMaterialPreviewGroup> failedGroups)",
@@ -5110,7 +5110,7 @@
     },
     {
       "id": "weekly.retry.fresh.entry",
-      "path": "MyBehavior.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.cs",
       "start": 38315,
       "end": 38315,
       "symbol": "private void BeginFreshWeeklyReportRetry(WeeklyReportRetryContext staleContext)",
@@ -5121,7 +5121,7 @@
     },
     {
       "id": "weekly.retry.popup",
-      "path": "MyBehavior.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.cs",
       "start": 38165,
       "end": 38165,
       "symbol": "private void ShowWeeklyReportFailurePopup(bool ignoreDelay = false)",
@@ -5132,7 +5132,7 @@
     },
     {
       "id": "weekly.batch.prompt.prepare",
-      "path": "MyBehavior.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.cs",
       "start": 36416,
       "end": 36416,
       "symbol": "private void PrepareWeeklyReportBatchPrompt(WeeklyReportBatchRequest batch)",
@@ -5143,7 +5143,7 @@
     },
     {
       "id": "weekly.batch.prompt.worker",
-      "path": "MyBehavior.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.cs",
       "start": 37986,
       "end": 37986,
       "symbol": "private async Task<WeeklyReportBatchRequestResult> GenerateWeeklyReportBatchWithRetriesAsync(WeeklyReportBatchRequest batch, int maxAttempts, long runtimeGeneration = 0L)",
@@ -5154,7 +5154,7 @@
     },
     {
       "id": "weekly.batch.prompt.pump",
-      "path": "MyBehavior.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.cs",
       "start": 40806,
       "end": 40806,
       "symbol": "private bool ProcessPendingWeeklyPromptPreparations()",
@@ -5165,7 +5165,7 @@
     },
     {
       "id": "weekly.batch.retry.stale",
-      "path": "MyBehavior.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.cs",
       "start": 38002,
       "end": 38002,
       "symbol": "if (runtimeGeneration > 0L && SaveRuntimeGuard.IsStale(runtimeGeneration, \"weekly_batch_before_attempt\"))",
@@ -5176,7 +5176,7 @@
     },
     {
       "id": "weekly.wave.launch.queue",
-      "path": "MyBehavior.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.cs",
       "start": 1512,
       "end": 1512,
       "symbol": "private readonly WeeklyReportCommitQueueOwner<PendingWeeklyWaveLaunchContext, List<Task<WeeklyReportBatchExecutionResult>>> _weeklyWaveLaunchQueue =",
@@ -5187,7 +5187,7 @@
     },
     {
       "id": "weekly.wave.launch.entry",
-      "path": "MyBehavior.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.cs",
       "start": 40690,
       "end": 40690,
       "symbol": "private Task<List<Task<WeeklyReportBatchExecutionResult>>> EnqueueWeeklyWaveLaunchAsync(",
@@ -5198,7 +5198,7 @@
     },
     {
       "id": "weekly.wave.launch.pump",
-      "path": "MyBehavior.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.cs",
       "start": 40715,
       "end": 40715,
       "symbol": "private bool ProcessPendingWeeklyWaveLaunches()",
@@ -5209,7 +5209,7 @@
     },
     {
       "id": "weekly.batch.attempt.queue",
-      "path": "MyBehavior.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.cs",
       "start": 1515,
       "end": 1515,
       "symbol": "private readonly WeeklyReportCommitQueueOwner<PendingWeeklyBatchApiAttemptContext, Task<ApiCallResult>> _weeklyBatchApiAttemptQueue =",
@@ -5220,7 +5220,7 @@
     },
     {
       "id": "weekly.batch.attempt.entry",
-      "path": "MyBehavior.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.cs",
       "start": 37960,
       "end": 37960,
       "symbol": "private async Task<ApiCallResult> CallWeeklyReportBatchApiAttemptAsync(",
@@ -5231,7 +5231,7 @@
     },
     {
       "id": "weekly.batch.attempt.pump",
-      "path": "MyBehavior.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.cs",
       "start": 40762,
       "end": 40762,
       "symbol": "private bool ProcessPendingWeeklyBatchApiAttempts()",
@@ -5275,7 +5275,7 @@
     },
     {
       "id": "weekly.commit.target.host",
-      "path": "MyBehavior.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.cs",
       "start": 1017,
       "end": 1017,
       "symbol": "public WeeklyReportCommitTargetOwner<WeeklyEventMaterialPreviewGroup> Targets =",
@@ -5286,7 +5286,7 @@
     },
     {
       "id": "weekly.commit.target.finalize",
-      "path": "MyBehavior.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.cs",
       "start": 41199,
       "end": 41199,
       "symbol": "private void FinalizePendingWeeklyReportCommitBatch(PendingWeeklyReportCommitContext context, WeeklyReportBatchRequest batch, WeeklyReportBatchRequestResult batchResult)",
@@ -5330,7 +5330,7 @@
     },
     {
       "id": "weekly.source.revision.host",
-      "path": "MyBehavior.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.cs",
       "start": 1574,
       "end": 1574,
       "symbol": "private readonly WeeklyReportMaterialRevisionOwner _weeklyReportMaterialRevisions =",
@@ -5341,7 +5341,7 @@
     },
     {
       "id": "weekly.source.revision.batch",
-      "path": "MyBehavior.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.cs",
       "start": 40492,
       "end": 40492,
       "symbol": "private async Task<WeeklyReportGenerationResult> GenerateWeeklyReportsMinuteBurstAsyncInternal(",
@@ -5352,7 +5352,7 @@
     },
     {
       "id": "weekly.source.revision.wave",
-      "path": "MyBehavior.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.cs",
       "start": 40715,
       "end": 40715,
       "symbol": "private bool ProcessPendingWeeklyWaveLaunches()",
@@ -5363,7 +5363,7 @@
     },
     {
       "id": "weekly.source.revision.commit",
-      "path": "MyBehavior.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.cs",
       "start": 41162,
       "end": 41162,
       "symbol": "private bool ProcessPendingWeeklyReportBlockCommit(",
@@ -5374,7 +5374,7 @@
     },
     {
       "id": "weekly.source.kingdom.clan-move",
-      "path": "MyBehavior.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.cs",
       "start": 3521,
       "end": 3521,
       "symbol": "private void OnClanChangedKingdom(",
@@ -5385,7 +5385,7 @@
     },
     {
       "id": "weekly.source.kingdom.ruler",
-      "path": "MyBehavior.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.cs",
       "start": 3694,
       "end": 3694,
       "symbol": "private void OnRulingClanChanged(",
@@ -5396,7 +5396,7 @@
     },
     {
       "id": "weekly.source.kingdom.destroy",
-      "path": "MyBehavior.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.cs",
       "start": 6521,
       "end": 6521,
       "symbol": "private void OnKingdomDestroyed(",
@@ -5407,7 +5407,7 @@
     },
     {
       "id": "weekly.batch.failure.attempt-metadata",
-      "path": "MyBehavior.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.cs",
       "start": 38070,
       "end": 38070,
       "symbol": "private static void CaptureWeeklyReportBatchAttemptFailureMetadata(",
@@ -5418,7 +5418,7 @@
     },
     {
       "id": "weekly.batch.failure.target-metadata",
-      "path": "MyBehavior.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.cs",
       "start": 41278,
       "end": 41278,
       "symbol": "private static WeeklyReportRequestResult BuildWeeklyReportFailedRequest(",
@@ -5429,7 +5429,7 @@
     },
     {
       "id": "weekly.batch.failure.popup-consumer",
-      "path": "MyBehavior.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.cs",
       "start": 38165,
       "end": 38165,
       "symbol": "private void ShowWeeklyReportFailurePopup(bool ignoreDelay = false)",
@@ -5440,7 +5440,7 @@
     },
     {
       "id": "weekly.commit.exception.recovery",
-      "path": "MyBehavior.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.cs",
       "start": 41085,
       "end": 41085,
       "symbol": "private WeeklyReportGenerationResult BuildWeeklyReportCommitExceptionResult(PendingWeeklyReportCommitContext context)",
@@ -5451,7 +5451,7 @@
     },
     {
       "id": "weekly.commit.attempted-write",
-      "path": "MyBehavior.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.cs",
       "start": 1029,
       "end": 1029,
       "symbol": "public HashSet<string> AttemptedWriteReportIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);",
@@ -5473,7 +5473,7 @@
     },
     {
       "id": "weekly.wave.host-coordination",
-      "path": "MyBehavior.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.cs",
       "start": 40671,
       "end": 40671,
       "symbol": "private Task<WeeklyReportBatchExecutionResult[]> CoordinateWeeklyReportWavesAsync(",
@@ -5572,7 +5572,7 @@
     },
     {
       "id": "weekly.publication.host",
-      "path": "MyBehavior.WeeklyActionOutcomeReceipts.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.WeeklyActionOutcomeReceipts.cs",
       "start": 460,
       "end": 460,
       "symbol": "private void ProcessOneWeeklyActionOutcomeOnTick()",
@@ -5583,7 +5583,7 @@
     },
     {
       "id": "weekly.publication.save",
-      "path": "MyBehavior.WeeklyActionOutcomeReceipts.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.WeeklyActionOutcomeReceipts.cs",
       "start": 501,
       "end": 501,
       "symbol": "private void SyncWeeklyActionOutcomeData(IDataStore dataStore)",
@@ -5594,7 +5594,7 @@
     },
     {
       "id": "weekly.publication.write",
-      "path": "MyBehavior.WeeklyActionOutcomeReceipts.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.WeeklyActionOutcomeReceipts.cs",
       "start": 302,
       "end": 302,
       "symbol": "private WeeklyMemoryMaterialOutcomeOperationStatus TryPublishWeeklyActionOutcome(",
@@ -5649,7 +5649,7 @@
     },
     {
       "id": "kingdom.rebellion.host",
-      "path": "MyBehavior.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.cs",
       "start": 12526,
       "end": 12526,
       "symbol": "private void TryStartNextAutomaticKingdomRebellionAsync()",
@@ -5660,7 +5660,7 @@
     },
     {
       "id": "kingdom.stability.model",
-      "path": "AnimusForgeSettlementLoyaltyModel.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/Kingdom/AnimusForgeSettlementLoyaltyModel.cs",
       "start": 70,
       "end": 70,
       "symbol": "int adjustment = MyBehavior.GetKingdomStabilityRoyalDomainLoyaltyAdjustmentForTown(town);",
@@ -5770,7 +5770,7 @@
     },
     {
       "id": "persona.promoted.lifecycle",
-      "path": "MyBehavior.PromotedPersonaGeneration.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.PromotedPersonaGeneration.cs",
       "start": 21,
       "end": 21,
       "symbol": "private async Task GeneratePromotedNonHeroCompanionProfileAsync(",
@@ -6492,7 +6492,7 @@
       "match": "exact",
       "status": "replay-j13d3-offline-verified",
       "note": "Aggregate source wiring only; not game execution evidence",
-      "fileSha256": "5919ed1c5dcef6eb278f229a9c40716b2ab0e08547a90da2d864d481e0667b16"
+      "fileSha256": "af59f9a76ab5fb6771ba3cff3494af9d801d4ef1ea81782208dc1196c4f7ee10"
     },
     {
       "id": "war.ledger.owner",
@@ -6925,7 +6925,7 @@
     },
     {
       "id": "taunt.campaign.host",
-      "path": "SceneTauntBehavior.cs",
+      "path": "src/modules/AF.Module.Taunt/Host/SceneTauntBehavior.cs",
       "start": 31,
       "end": 31,
       "symbol": "public class SceneTauntBehavior : CampaignBehaviorBase",
@@ -6936,7 +6936,7 @@
     },
     {
       "id": "taunt.campaign.penalty",
-      "path": "SceneTauntBehavior.cs",
+      "path": "src/modules/AF.Module.Taunt/Host/SceneTauntBehavior.cs",
       "start": 83,
       "end": 83,
       "symbol": "private readonly SceneTauntPenaltyLedgerOwner _penaltyLedger = new SceneTauntPenaltyLedgerOwner();",
@@ -6947,7 +6947,7 @@
     },
     {
       "id": "taunt.campaign.save",
-      "path": "SceneTauntBehavior.cs",
+      "path": "src/modules/AF.Module.Taunt/Host/SceneTauntBehavior.cs",
       "start": 131,
       "end": 131,
       "symbol": "public override void SyncData(IDataStore dataStore)",
@@ -6958,7 +6958,7 @@
     },
     {
       "id": "taunt.campaign.commit",
-      "path": "SceneTauntBehavior.cs",
+      "path": "src/modules/AF.Module.Taunt/Host/SceneTauntBehavior.cs",
       "start": 792,
       "end": 792,
       "symbol": "private void TryCommitDeferredCrimeWhenBackOnWorldMap()",
@@ -6969,7 +6969,7 @@
     },
     {
       "id": "taunt.mission.host",
-      "path": "SceneTauntBehavior.cs",
+      "path": "src/modules/AF.Module.Taunt/Host/SceneTauntBehavior.cs",
       "start": 2057,
       "end": 2057,
       "symbol": "public class SceneTauntMissionBehavior : MissionBehavior",
@@ -6980,7 +6980,7 @@
     },
     {
       "id": "taunt.mission.lifecycle",
-      "path": "SceneTauntBehavior.cs",
+      "path": "src/modules/AF.Module.Taunt/Host/SceneTauntBehavior.cs",
       "start": 2357,
       "end": 2357,
       "symbol": "private readonly SceneTauntConflictLifecycleOwner _conflictLifecycle = new SceneTauntConflictLifecycleOwner();",
@@ -6991,7 +6991,7 @@
     },
     {
       "id": "taunt.mission.context",
-      "path": "SceneTauntBehavior.cs",
+      "path": "src/modules/AF.Module.Taunt/Host/SceneTauntBehavior.cs",
       "start": 3056,
       "end": 3056,
       "symbol": "private static bool CanInitializePeaceSceneConflict(Settlement settlement, bool physicalAttack = false)",
@@ -7002,7 +7002,7 @@
     },
     {
       "id": "taunt.mission.teamsrestore",
-      "path": "SceneTauntBehavior.cs",
+      "path": "src/modules/AF.Module.Taunt/Host/SceneTauntBehavior.cs",
       "start": 3947,
       "end": 3947,
       "symbol": "private void RestoreOwnedSettlementPassiveAttackTeams()",
@@ -7013,7 +7013,7 @@
     },
     {
       "id": "taunt.mission.canstart",
-      "path": "SceneTauntBehavior.cs",
+      "path": "src/modules/AF.Module.Taunt/Host/SceneTauntBehavior.cs",
       "start": 5371,
       "end": 5371,
       "symbol": "internal bool CanStartConflict(Hero targetHero, CharacterObject targetCharacter, int targetAgentIndex)",
@@ -7024,7 +7024,7 @@
     },
     {
       "id": "taunt.mission.physical",
-      "path": "SceneTauntBehavior.cs",
+      "path": "src/modules/AF.Module.Taunt/Host/SceneTauntBehavior.cs",
       "start": 5599,
       "end": 5599,
       "symbol": "private bool TryStartConflictFromPhysicalAttack(Agent targetAgent, bool playerUsedWeapon, string reason)",
@@ -7035,7 +7035,7 @@
     },
     {
       "id": "taunt.mission.escalate",
-      "path": "SceneTauntBehavior.cs",
+      "path": "src/modules/AF.Module.Taunt/Host/SceneTauntBehavior.cs",
       "start": 8162,
       "end": 8162,
       "symbol": "private void EscalateToArmedConflict(string reason, bool suppressAnnouncement = false)",
@@ -7046,7 +7046,7 @@
     },
     {
       "id": "taunt.mission.cleanup",
-      "path": "SceneTauntBehavior.cs",
+      "path": "src/modules/AF.Module.Taunt/Host/SceneTauntBehavior.cs",
       "start": 9797,
       "end": 9797,
       "symbol": "private void ClearRuntimeState(bool preserveArmedDefeatState = false)",
@@ -7130,7 +7130,7 @@
       "match": "exact",
       "status": "replay-j13e2-offline-verified",
       "note": "Aggregate source wiring only; live and behavior evidence separate",
-      "fileSha256": "ff4f9043261ae780e81332dd939cc32ba463bf4030ba28b424b5349452eebd13"
+      "fileSha256": "4e9263d6d9d22e8dad5b3dc2d23eb80f521d398311ebd783a85a23586bdbf88c"
     },
     {
       "id": "taunt.replay.context",
@@ -7141,7 +7141,7 @@
       "match": "exact",
       "status": "replay-j13e2-offline-verified",
       "note": "Current DLL peace/battle/MCM owner replay, not live Mission",
-      "fileSha256": "412e1225cd7fe730b159afce27e02309745012b7982f9357896852666bded031"
+      "fileSha256": "40cafc5c010e4415c4c80ab53cea8badb196d4c2ad518cf630c986d654256b35"
     },
     {
       "id": "taunt.replay.penalty",
@@ -7211,7 +7211,7 @@
     },
     {
       "id": "encounter.host.target",
-      "path": "LordEncounterBehavior.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/Encounter/LordEncounterBehavior.cs",
       "start": 33,
       "end": 33,
       "symbol": "private static readonly EncounterTargetOwner<Hero, PartyBase> _targetOwner = new EncounterTargetOwner<Hero, PartyBase>();",
@@ -7222,7 +7222,7 @@
     },
     {
       "id": "encounter.host.release",
-      "path": "LordEncounterBehavior.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/Encounter/LordEncounterBehavior.cs",
       "start": 83,
       "end": 83,
       "symbol": "private static readonly EncounterReleaseOwner<MeetingPlayerReleaseRequest> _releaseOwner = new EncounterReleaseOwner<MeetingPlayerReleaseRequest>();",
@@ -7233,7 +7233,7 @@
     },
     {
       "id": "encounter.host.return",
-      "path": "LordEncounterBehavior.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/Encounter/LordEncounterBehavior.cs",
       "start": 138,
       "end": 138,
       "symbol": "private static readonly EncounterPendingReturnOwner<PlayerEncounter, PartyBase> _pendingReturnOwner = new EncounterPendingReturnOwner<PlayerEncounter, PartyBase>();",
@@ -7244,7 +7244,7 @@
     },
     {
       "id": "encounter.host.army",
-      "path": "LordEncounterBehavior.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/Encounter/LordEncounterBehavior.cs",
       "start": 4920,
       "end": 4920,
       "symbol": "private static bool IsEncounterArmyMemberTarget(Hero hero, PartyBase encounterParty)",
@@ -7255,7 +7255,7 @@
     },
     {
       "id": "encounter.host.ensure",
-      "path": "LordEncounterBehavior.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/Encounter/LordEncounterBehavior.cs",
       "start": 5314,
       "end": 5314,
       "symbol": "private static Hero EnsureEncounterTargetHero(string reason)",
@@ -7266,7 +7266,7 @@
     },
     {
       "id": "encounter.host.release-tick",
-      "path": "LordEncounterBehavior.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/Encounter/LordEncounterBehavior.cs",
       "start": 7328,
       "end": 7328,
       "symbol": "private static void TryForcePendingNativeConversationMeetingReleaseIfReady()",
@@ -7277,7 +7277,7 @@
     },
     {
       "id": "encounter.host.return-tick",
-      "path": "LordEncounterBehavior.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/Encounter/LordEncounterBehavior.cs",
       "start": 3728,
       "end": 3728,
       "symbol": "private static void TryForcePendingReturnToEncounterMenuAfterUnauthorizedMeetingExitIfReady()",
@@ -7288,7 +7288,7 @@
     },
     {
       "id": "encounter.resolver",
-      "path": "EncounterConversationTargetResolver.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/Encounter/EncounterConversationTargetResolver.cs",
       "start": 34,
       "end": 34,
       "symbol": "internal static Hero TryResolveLordFromArgumentsThenEncounterLeader(object instance, object[] args)",
@@ -7339,7 +7339,7 @@
       "match": "exact",
       "status": "replay-j13e3-offline-verified",
       "note": "Source-wiring only; current DLL replay separate",
-      "fileSha256": "7a06eb7d78d753b8f3cb8d62949d0e5c4def59f500d39b75dd378bf5bfaa43d8"
+      "fileSha256": "9109965ecb127b4c51b18966ce094cf200af3a7a6ed4eb7ac50c85250bb15065"
     },
     {
       "id": "settlement.owner.entry",
@@ -7376,7 +7376,7 @@
     },
     {
       "id": "settlement.host.entry",
-      "path": "SettlementEntryTroopSelectionBehavior.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/SettlementEntry/SettlementEntryTroopSelectionBehavior.cs",
       "start": 72,
       "end": 72,
       "symbol": "private static readonly SettlementMissionEntryOwner<PendingMissionEntry> _missionEntryOwner =",
@@ -7387,7 +7387,7 @@
     },
     {
       "id": "settlement.host.followers",
-      "path": "SettlementEntryTroopSelectionBehavior.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/SettlementEntry/SettlementEntryTroopSelectionBehavior.cs",
       "start": 87,
       "end": 87,
       "symbol": "private static readonly SettlementFollowerMissionOwner<Mission, Agent> _followerOwner =",
@@ -7398,7 +7398,7 @@
     },
     {
       "id": "settlement.host.mission-start",
-      "path": "SettlementEntryTroopSelectionBehavior.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/SettlementEntry/SettlementEntryTroopSelectionBehavior.cs",
       "start": 1777,
       "end": 1777,
       "symbol": "private void OnMissionStarted(IMission mission)",
@@ -7409,7 +7409,7 @@
     },
     {
       "id": "settlement.host.followers-active",
-      "path": "SettlementEntryTroopSelectionBehavior.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/SettlementEntry/SettlementEntryTroopSelectionBehavior.cs",
       "start": 1030,
       "end": 1030,
       "symbol": "private static void SetSetsSelectedFollowerState(Mission mission, bool active, string source)",
@@ -7420,7 +7420,7 @@
     },
     {
       "id": "settlement.host.followers-register",
-      "path": "SettlementEntryTroopSelectionBehavior.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/SettlementEntry/SettlementEntryTroopSelectionBehavior.cs",
       "start": 1052,
       "end": 1052,
       "symbol": "private static void RegisterSetsSelectedFollowerAgent(Agent agent, string source)",
@@ -7431,7 +7431,7 @@
     },
     {
       "id": "settlement.host.followers-clear",
-      "path": "SettlementEntryTroopSelectionBehavior.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/SettlementEntry/SettlementEntryTroopSelectionBehavior.cs",
       "start": 1071,
       "end": 1071,
       "symbol": "private static void ClearSetsSelectedFollowerState(string source)",
@@ -7442,7 +7442,7 @@
     },
     {
       "id": "settlement.host.inspection",
-      "path": "TroopInspectionBehavior.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/TroopInspection/TroopInspectionBehavior.cs",
       "start": 31,
       "end": 31,
       "symbol": "private static readonly AnimusForge.Refactor.Modules.TroopInspectionSessionOwner<TroopInspectionRuntime, PendingSelection, Mission> _sessionOwner =",
@@ -7453,7 +7453,7 @@
     },
     {
       "id": "settlement.host.inspection-load",
-      "path": "TroopInspectionBehavior.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/TroopInspection/TroopInspectionBehavior.cs",
       "start": 214,
       "end": 214,
       "symbol": "internal static void ResetForCampaignTransition()",
@@ -7464,7 +7464,7 @@
     },
     {
       "id": "settlement.host.inspection-cleanup",
-      "path": "TroopInspectionBehavior.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/TroopInspection/TroopInspectionBehavior.cs",
       "start": 532,
       "end": 532,
       "symbol": "internal static void CleanupRuntime(string reason)",
@@ -7475,7 +7475,7 @@
     },
     {
       "id": "settlement.host.inspection-queue",
-      "path": "TroopInspectionBehavior.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/TroopInspection/TroopInspectionBehavior.cs",
       "start": 1749,
       "end": 1749,
       "symbol": "private static void QueueOpenInspectionMission()",
@@ -7526,11 +7526,11 @@
       "match": "exact",
       "status": "replay-j13e4-offline-verified",
       "note": "Source wiring only; owner DLL replay separate",
-      "fileSha256": "cdaa631cb0e5d6cc6ecf8ae050cb82b1d587245f04f44628919d5c6965964ae8"
+      "fileSha256": "cbe2d8ca760e80c7e27e2495568a015157c4af3911cb7d4d9bb692882f99d6d4"
     },
     {
       "id": "exercise.death.patch",
-      "path": "MilitaryExerciseBehavior.cs",
+      "path": "src/modules/AF.Module.Exercise/Host/MilitaryExerciseBehavior.cs",
       "start": 653,
       "end": 653,
       "symbol": "public static class MilitaryExerciseDeathRatePatch",
@@ -7541,7 +7541,7 @@
     },
     {
       "id": "exercise.result.patch",
-      "path": "MilitaryExerciseBehavior.cs",
+      "path": "src/modules/AF.Module.Exercise/Host/MilitaryExerciseBehavior.cs",
       "start": 696,
       "end": 696,
       "symbol": "public static class MilitaryExerciseMapEventXpOnlySettlementPatch",
@@ -7552,7 +7552,7 @@
     },
     {
       "id": "exercise.reward.patch",
-      "path": "MilitaryExerciseBehavior.cs",
+      "path": "src/modules/AF.Module.Exercise/Host/MilitaryExerciseBehavior.cs",
       "start": 801,
       "end": 801,
       "symbol": "public static class MilitaryExerciseBattleRewardsZeroPatch",
@@ -7563,7 +7563,7 @@
     },
     {
       "id": "exercise.session.host",
-      "path": "MilitaryExerciseBehavior.cs",
+      "path": "src/modules/AF.Module.Exercise/Host/MilitaryExerciseBehavior.cs",
       "start": 911,
       "end": 911,
       "symbol": "private static readonly MilitaryExerciseSessionOwner<PendingSelection, MilitaryExerciseRuntime> _sessionOwner =",
@@ -7574,7 +7574,7 @@
     },
     {
       "id": "exercise.terminal.open",
-      "path": "MilitaryExerciseBehavior.cs",
+      "path": "src/modules/AF.Module.Exercise/Host/MilitaryExerciseBehavior.cs",
       "start": 1012,
       "end": 1012,
       "symbol": "public static void OpenExerciseFromTerminal()",
@@ -7585,7 +7585,7 @@
     },
     {
       "id": "exercise.event.identity",
-      "path": "MilitaryExerciseBehavior.cs",
+      "path": "src/modules/AF.Module.Exercise/Host/MilitaryExerciseBehavior.cs",
       "start": 1358,
       "end": 1358,
       "symbol": "private static MilitaryExerciseRuntime GetRuntimeForMapEvent(MapEvent mapEvent)",
@@ -7596,7 +7596,7 @@
     },
     {
       "id": "exercise.orphan.identity",
-      "path": "MilitaryExerciseBehavior.cs",
+      "path": "src/modules/AF.Module.Exercise/Host/MilitaryExerciseBehavior.cs",
       "start": 1402,
       "end": 1402,
       "symbol": "private static bool MapEventSideHasMilitaryExerciseDummyParty(MapEventSide side)",
@@ -7607,7 +7607,7 @@
     },
     {
       "id": "exercise.patch.register",
-      "path": "MilitaryExerciseBehavior.cs",
+      "path": "src/modules/AF.Module.Exercise/Host/MilitaryExerciseBehavior.cs",
       "start": 1439,
       "end": 1439,
       "symbol": "public static void RegisterHarmonyPatches(Harmony harmony)",
@@ -7618,7 +7618,7 @@
     },
     {
       "id": "exercise.first.callback",
-      "path": "MilitaryExerciseBehavior.cs",
+      "path": "src/modules/AF.Module.Exercise/Host/MilitaryExerciseBehavior.cs",
       "start": 1819,
       "end": 1819,
       "symbol": "private static void OnFirstTeamScreenClosed(PendingSelection openedSelection,",
@@ -7629,7 +7629,7 @@
     },
     {
       "id": "exercise.second.callback",
-      "path": "MilitaryExerciseBehavior.cs",
+      "path": "src/modules/AF.Module.Exercise/Host/MilitaryExerciseBehavior.cs",
       "start": 1883,
       "end": 1883,
       "symbol": "private static void OnSecondTeamScreenClosed(PendingSelection openedSelection,",
@@ -7640,7 +7640,7 @@
     },
     {
       "id": "exercise.cleanup.host",
-      "path": "MilitaryExerciseBehavior.cs",
+      "path": "src/modules/AF.Module.Exercise/Host/MilitaryExerciseBehavior.cs",
       "start": 2838,
       "end": 2838,
       "symbol": "internal static void CleanupExerciseRuntime(MilitaryExerciseRuntime runtime, string reason, bool skipXpCommit)",
@@ -7651,7 +7651,7 @@
     },
     {
       "id": "exercise.routed.restore",
-      "path": "MilitaryExerciseBehavior.cs",
+      "path": "src/modules/AF.Module.Exercise/Host/MilitaryExerciseBehavior.cs",
       "start": 3096,
       "end": 3096,
       "symbol": "private static int RestoreRoutedRegularTroops(MilitaryExerciseRuntime runtime, string reason)",
@@ -7662,7 +7662,7 @@
     },
     {
       "id": "exercise.settlement.runtime",
-      "path": "MilitaryExerciseBehavior.cs",
+      "path": "src/modules/AF.Module.Exercise/Host/MilitaryExerciseBehavior.cs",
       "start": 4134,
       "end": 4134,
       "symbol": "public ExerciseSettlementOwner Settlement { get; } = new ExerciseSettlementOwner();",
@@ -7739,7 +7739,7 @@
     },
     {
       "id": "exercise.terminal.tick",
-      "path": "AnimusForgeTerminalBehavior.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/UI/Terminal/AnimusForgeTerminalBehavior.cs",
       "start": 100,
       "end": 100,
       "symbol": "if (MilitaryExerciseBehavior.NeedsEngineTick())",
@@ -7750,7 +7750,7 @@
     },
     {
       "id": "exercise.terminal.action",
-      "path": "AnimusForgeTerminalBehavior.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/UI/Terminal/AnimusForgeTerminalBehavior.cs",
       "start": 473,
       "end": 473,
       "symbol": "MilitaryExerciseBehavior.OpenExerciseFromTerminal();",
@@ -7812,11 +7812,11 @@
       "match": "contains",
       "status": "replay-j13e5-offline-verified",
       "note": "聚合源码接线及四 DLL 奖励签名；非实机",
-      "fileSha256": "5cbb3029547e81f995866c87043f6f82ebfa148ec4c36ddf6d948c4233deea69"
+      "fileSha256": "024b36ad33eeb46588e4cb022344b65cfdfcf3f17adfe5e38f69752201d83c56"
     },
     {
       "id": "exercise.orphan.receipt",
-      "path": "MilitaryExerciseBehavior.cs",
+      "path": "src/modules/AF.Module.Exercise/Host/MilitaryExerciseBehavior.cs",
       "start": 894,
       "end": 894,
       "symbol": "private static readonly ExerciseOrphanXpOwner<MapEvent> OrphanXpOwner =",
@@ -8399,7 +8399,7 @@
     },
     {
       "id": "af2.prompt.layer",
-      "path": "DuelSettings.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/Configuration/Mcm/DuelSettings.cs",
       "start": 4755,
       "end": 4755,
       "symbol": "private static bool TryReadLayeredCustomPromptTextJsonFile(",
@@ -8410,7 +8410,7 @@
     },
     {
       "id": "af2.prompt.write",
-      "path": "DuelSettings.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/Configuration/Mcm/DuelSettings.cs",
       "start": 4526,
       "end": 4526,
       "symbol": "private static void PersistCustomPromptTextFileUnlocked(string path, string text)",
@@ -8421,7 +8421,7 @@
     },
     {
       "id": "af2.prompt.path",
-      "path": "DuelSettings.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/Configuration/Mcm/DuelSettings.cs",
       "start": 5040,
       "end": 5040,
       "symbol": "private static string GetCustomPromptTextStoreDirectory()",
@@ -8432,7 +8432,7 @@
     },
     {
       "id": "af2.cache.path",
-      "path": "DuelSettings.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/Configuration/Mcm/DuelSettings.cs",
       "start": 5263,
       "end": 5263,
       "symbol": "private static string GetModelDropdownCachePath()",
@@ -8685,7 +8685,7 @@
     },
     {
       "id": "af2.model.gate",
-      "path": "MyBehavior.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.cs",
       "start": 19113,
       "end": 19113,
       "symbol": "private static bool HasCompleteRequiredOnnxFiles()",
@@ -8703,7 +8703,7 @@
       "match": "exact",
       "status": "j15-f4m-module-onnx-offline-verified",
       "note": "offline probe patches real module-root resolver and checks embedding/reranker inference plus gate positive/negative",
-      "fileSha256": "a95c413a8eaefaa046e28a18c11e7337ba0f8c550cde3eeb4312d032668feb1a"
+      "fileSha256": "e3483ef6f7035569841ac008737ab8c3b8da522b5895bab6a161f19ff5afe569"
     },
     {
       "id": "af2.model.redirect-guard",
@@ -8736,7 +8736,7 @@
       "match": "exact",
       "status": "j15-f4m-cold-gate-offline-verified",
       "note": "Real requested DLL cold-gate timing and controlled concurrent warmup/gate test; not a game lifecycle test.",
-      "fileSha256": "a95c413a8eaefaa046e28a18c11e7337ba0f8c550cde3eeb4312d032668feb1a"
+      "fileSha256": "e3483ef6f7035569841ac008737ab8c3b8da522b5895bab6a161f19ff5afe569"
     },
     {
       "id": "af2.deploy.feature-bridges-preflight",

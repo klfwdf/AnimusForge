@@ -1,3 +1,44 @@
+<a id="source-relocation-round2-20261001"></a>
+
+**2026-10-01 当前唯一入口：第二轮源码物理归位有限交付。** 此条明确替代[第一轮](#source-relocation-20261001)的混合AF宿主根级保留与Reward/回信UI测试路径hold；第一轮178移动和所有旧实证保留为历史，不重做领域业务审计。
+
+## 第二轮精确授权、实际归位与排除
+
+用户明确批准[111项精确总表](plans/2026-10-01-source-relocation-round2-manifest.json)，审批时SHA256 `0e23eeffb6b2214098947b8ee51880c0c15053453f3651ecf300adbe39327940`，以及必要纯路径消费者/交付材料、本地验证和切片提交。[可读审批表](plans/2026-10-01-source-relocation-round2-approval.md)的“待批准”保留为当时状态，本条记录后续明确批准并已执行。基线 `3d6641f26c6a5c4673d5cb42771009ddca735ee8`、分支 `codex/af-main-refactor-continuation-20260831`、工作区 `E:/AnimusForge-refactor-continuation-20260831`。
+
+实际 **111 /111字节原样归位**（P1 3、P2 22、P3 86），**根级tracked C#149→38，累计327→149→38、两轮289归位**。本轮81 AF主体/混合游戏宿主、30逐代码证明的AF-side/Bannerlord薄桥。MyBehavior22整家族统一Composition；SubModule/IntegratedModuleHost/DuelSettings等整文件原样归宿主，Reward主文件与原partial仍为同类型，Courier回信2 UI已解除旧路径hold。命名空间、CLR类型、程序集、算法、存档key、公开API与默认入口不变，不声称职责解耦或拆DLL完成。
+
+**38项继续明确排除：18外交产品 +20制作组实质规则/状态机/业务存档**，逐项代码/声明行/保留理由见精确总表；无unknown，不再以“混合职责”或测试路径作为AF宿主保留理由。集成抽读纠正CastleLordExecution/RuleMemoryRuntime/NobleExecutionOrder+Runtime/Population五项并非薄桥的状态与保存/本地公式，保留；128行SiegeAftermath Harmony菜单转发具证归桥。30纯桥只本仓字节移动，不G盘镜像、不迁制作组core/资源。第三方、原版参考、依赖、旧档/工具和产物不清理或上传。
+
+## 内容、Compile/资源和必要路径接通
+
+- `SubModule.cs`小批次实际双Compile/资源/rawSHA门禁通过再放行三包；全111 checkout raw SHA与审批基线一致，HEAD内容按LF规范化等价；38保留raw SHA与原SessionTransport dirty不变。Git blob与checkout CRLF不混称原字节相等。证据 `artifacts/source-relocation-round2/{small-gate-42eae3b08987,full-gate-edb267aa9898}/result.json`、`protection-audit.json`。
+- 两API实际无target MSBuild各 **1150唯一Compile、0漏/额外/重复**，映射一一等价；7嵌入资源路径/LogicalName原样。主 `AnimusForge.csproj` / `myaimod.sln` /原一键脚本无需改动；无需额外Include，没有改变默认构建/打包/覆盖行为。基线见[只读求值表](plans/2026-10-01-source-relocation-round2-compile-baseline.json)。
+- `32097613`的68文件与`23ac43dc`额外1文件合计69必要测试消费者/helper/当前活动定位清单接通；`tests/output_isolation.py::current_source_path`现在178+111=289静态路径，仅测试定位，不生产fallback。外交测试仅必要current文件路径/稳定根marker修正，无外交产品/fixture payload/metadata语义修改。
+- GameLifetime/Persona/Memory证据runner只做具名唯一片段的严格逆变换后继续原review hashes；baseline git show旧路径、历史review keys/原expected不刷新。两个活动清单只改当前精确source字符串，逆映射后JSON对象与基线完全相等，domain/status/owner/业务语义不变。同名原版csproj与仅类型引用不机械替换。4个Python inverse改写去混合换行噪音，production文件不规范化重写。
+- 813锚点地图绑定 `23ac43dc2ab57601922793e260459c8e76149640`；174物理坐标路径变动，生产hash/符号/行范围不变。7个C#测试锚点文件因必要source literal变更先严格逆映射正文等于HEAD原文再审更新hash，见 `code-map-test-hash-review.json`，不是盲刷新review。recorded/working-tree两模式813 PASS；只为现态定位，不全领域验收。[简明目录](architecture/af-source-directory-guide.md)与[范围摘要](architecture/af-framework-code-scope.md#source-relocation-round2-20261001)为入口。
+
+## 实际验证、原失败与有限未验
+
+| 层级 | 实际结果与证据（均本仓新UUID隔离输出） | 证明边界 |
+| --- | --- | --- |
+| Debug/Release × API1.3/API1.4+Bootstrap | 六构建exit0、六DLL/marker SHA一致；`artifacts/source-relocation-round2/build-evidence.json`；Debug `build-d8b47d03be5c43d4932a385416e2531f`，Release `build-cf2bccef2f144908b097e58dd7a50dd2` | 已审进程内原脚本隔离副本、拒覆盖/禁prune、最小env。记录buildHead分别2f6a4ce4/2f833b28；产物编译时111源均已迁且raw基线一致，没冒充构建当时消费者已全部提交 |
+| 严格具名非外交C43 | `c43/c-4dbcf6bf994b/{results.json,candidate.json,aggregate.log}` **43PASS/0FAIL/0BLOCKED_ENV，exit0**；测试冻结32097613，实际Release1.4 candidate SHA `BA4001ACBB9D6ADDAD597A99D1EC8C9573D7586E82590167C14919A872AB8B18` | 不是全仓PASS；后续独立1文件Native当前读修复23ac43dc另做原hash/源码定向，不伪称其在前次C43已跑 |
+| 两API实际DLL message/history | `actual-message-41a5bc8a6fa7/api-{1.3,1.4}` 各45 PASS | 1.3读取之前合法receipt固定SaveSystem依赖及SHA；没有下载/实现fallback，不证明完整依赖闭包或游戏运行 |
+| P1 | `p1-8b1a601083c94b6f9d07b993117c1c21/p1-report.json`：J12 3、PersonaSource6、NativeTurn5、NativeTicket5、BuildPhases/ProductionConsumers、Debt48+2负控、ChannelPersona169/0；额外 `p1-native-boundary-6bde64fc36054cfa8deef8359fb2a47e` Native source inverse3原文件+7Courier additive原hash及Campaign source-only PASS | 初测GameLifetime runnerSHA失败交P2严格inverse，后C43复验；不运行完整外交业务 |
+| P2 | `artifacts/tests/source-relocation-round2-p2/run-c019be56c0d145bd907d712b6a87b637`、`run-cb96ac01f3c24738bb8420a53699561f`：GameLifetime5路径/5负控、Persona269/0及6负控、Memory finite15、Weekly42、ImportExport55、22精确test文本逆变换/漂移负控 PASS | 最初GameLifetime/Persona/B1 runnerSHA和负控prefix失败保留并诊断修复；原metadata/生产digest不刷新；外交耦合整host延期 |
+| P3 | `p3-completion.json`：Host inverse、HostTick18+3负控、Bridge24、profile177keys/204typed/49symbolic PASS | Profile初次WindowsPath/字符串排序差，current映射列表双方排序后精确集合通过，原日志保留；Campaign旧root依赖后由P1接通并source-only通过 |
+| typed adapters vs完整TeamModuleServices | C43 `run_adapters.py`实际307 assertion/13typed method/29live call及源/行为负控 PASS；另P3 full `run.py`录得CS0246缺ICivilWarModulePort（`p3-final-check-f852f7ec14284041b4c53e66a7961861/team-port.log`） | 307只证明三port adapter，**完整service含CivilWar/WorldDiplomacy依旧NOT-VERIFIED**，不加替代stub或外交实现绕过；不是将完整编译失败当成同scope PASS |
+| 共享与保护 | helper11unittest、111 raw/HEAD LF、38 retained/dirty、双Compile/7resource、两map模式、定向recruitment源码+3负控、活动metadata逆映射等价、diff-check PASS；`p4-targeted-859e83d976cc` | recruitment主守卫实际48算法+11persona-callee；三个变异均exit1具名拒绝。初次outer错误期待全exit0已纠正证据解释，runner/断言未改 |
+
+## 本地提交、安全与未验
+
+- `05e35849` 精确批准计划意图checkpoint；`2f6a4ce4` 已验SubModule小片；`2f833b28` 其余110原样归位；`32097613`68必要消费者；`23ac43dc`额外Native current读与原hash接通；正式材料另一本地收尾提交，以Git实际日志为准。无改写历史或reset。
+- 原唯一tracked dirty `src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.SessionTransport.cs`不纳入索引，raw SHA保持 `a393a98b42c1f2d37150578d5d5ede170540be8eb4874751fbc2821eb9cfe23e`。旧tools/NuGet/其他产物不清理/误提交。旧线程idle/执行前无旧构建测试进程只是时点证据，不声称永不并发。
+- **未验**：完整外交/TeamModuleServices与Campaign业务编译入口、PDB远端源码下载、真实游戏/旧档/provider网络/音频/性能；TPAC来源/发布HOLD、旧凭据轮换仍未闭。没有push/产品Stage/部署、下载/安装、全局修改、仓外镜像/扩写或一键行为变更。最小env不转发凭据；合成TEMP仅沿此前精确许可 `E:/tmp/af-j17-20260930`，其余输出本仓新UUID。
+
+---
+
 <a id="source-relocation-20261001"></a>
 
 **2026-10-01 当前入口：** 本轮批准源码物理归位的有限离线交付；下方旧当前入口保留历史。前轮 J 历史非外交闭环、A/J17/R05-i 不重开。
