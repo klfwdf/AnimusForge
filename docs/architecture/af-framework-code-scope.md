@@ -1,3 +1,25 @@
+<a id="j-history-test-proof-scope-20261001"></a>
+### J 历史非外交测试证明范围（2026-10-01）
+
+本轮只有测试/元数据/合法离线依赖改动，产品仍 `f6e2ead7`，813生产地图的`ccd6c2fd`绑定不刷新。本段是证据导航，不重开A、J17迁移或R05-i，详细38历史入口闭环与最终C43/未验见[唯一主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#j-history-nondiplomacy-closeout-20261001)。
+
+| 当前一基坐标/符号 | 修订 | 覆盖责任与明确未覆盖 |
+| --- | --- | --- |
+| `tests/AF.GameAdapter.Bannerlord/GameLifetimeTests/source_parity.py:26–40` `restore_commit` | `a89690f4` | 比较4个CURRENT scheduler/outcome声明与原精确edits；不把同partial J09权威游戏动作wrapper编译成stub。 |
+| `tests/AF.GameAdapter.Bannerlord/GameLifetimeTests/source_parity.py:42–75` `restore_lifetime_dependency` | `a89690f4` | 严格J17 request退休/ceremony与fixture适配；原product digest不变；真实网络退休不是本函数的行为证明。 |
+| `tests/AF.GameAdapter.Bannerlord/GameLifetimeTests/source_parity.py:231–238` `restore_method` | `a89690f4` | Courier owner phase原声明加精确dequeue inverse；其他postprocess职责由其真实owner套件覆盖，不再声称整个partial等价。 |
+| `tests/modules/AF.Module.Conversation/NativeConversationAdmissionTests/turn_extraction.py:44–60` `projected_source` | `a89690f4` | 校核传入迁后host再重建CURRENT phases，拒收被旧投影吞掉的host变异；不执行完整游戏。 |
+| `tests/modules/AF.Module.Conversation/CourierOwnerPhaseTests/source_parity.py:7–18` `restore_j17_dequeue` | `53fdcbc3` | 纯精确dequeue三片逆变换，16行为断言/claimed取消反例；不改owner生命周期。 |
+| `tests/modules/AF.Module.Conversation/CourierHistoryPreparationTests/source_parity.py:8–33` `restore` | `53fdcbc3` | 当前history helper/真实prepare消费者复用/expiry，122断言/30场景；domain helpers为fixture，不是真实游戏。 |
+| `tests/modules/AF.Module.Memory/MemorySummaryRunOwnerTests/source_parity.py:49–70` `verify_current` | `35842e17` | 实际MemoryRun dispatch/parse/release消费者和旧finally不得释放新owner负控；旧captured/sealing含外交的层不覆盖。 |
+| `tests/modules/AF.Module.Persona/HeroPersonaGenerationTests/source_parity.py:41–61` `restore` | `35842e17` | 当前persona owner/实际旧prompt/编辑取消/reset接线；269断言与有效edit反例；旧档/真实provider未验。 |
+| `tests/bridges/TeamModulePortParityTests/run_adapters.py` `main` | `bdc599fc` | 实际13 typed adapters307断言；不是完整TeamModuleServices/WorldDiplomacy行为。 |
+| `tests/AF.GameAdapter.Bannerlord/IntegratedModuleHostTickContractTests/run.py` `main` | `bdc599fc` | 真实Host整源+三模块Tick声明顺序与现有异常合同18断言；module下层是instrumentation，不证明完整business Tick。 |
+
+`cbdc1895` 补独立Memory-only `source_parity.py --finite` 执行15 current guards/14组件漂移负控，原完整InverseGuards仍单独延期；Budget `verify.py --generate-pair`实际跑两个原workload并保留原比较/双输入CLI，详见台账逐断言映射。
+
+Debug/Release双API+Bootstrap为当前产品六构建；新候选1.3/1.4真实message/history方法分别45检查，合法1.3 SaveSystem来源已绑定。源码/fixture/actual DLL/实机/旧档为不同层，后两层和许可/凭据未验不提升。测试不新增生产热路径/缓存/扫描；D真实性能仍NOT-RUN。
+
 <a id="af2-responsibility-evidence-20260928"></a>
 
 ### J17 B6 有限边界当前回读（2026-10-01，包5）

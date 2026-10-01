@@ -3,12 +3,19 @@
  "meaning": "Per-entry extra arguments and expected non-PASS states for tests/run_all.py. Entries not listed must PASS. expect values: PASS, PREEXISTING_FAIL, NEEDS_INPUT, SUPERSEDED_BY_RUNNER, ENV_STATE (see docs/audits/2026-09-28-j16-baseline.json statusMeaning).",
  "entries": {
   "extensions/AnimusForge.DialogueUI/tests/auxiliary-tests/AuxiliaryTests.csproj": {
-   "expect": "NEEDS_INPUT",
-   "note": "net472 reference assemblies + BannerlordRoot HintPath for 0Harmony; fails identically on ada9894a"
+   "expect": "PASS",
+   "msbuild": [
+    "-p:ReplayHarmonyModulePath={HARMONY_MODULE}"
+   ],
+   "note": "Real Harmony source is explicit; 55 behavior checks passed. net472 reference package remains required."
   },
   "extensions/AnimusForge.DialogueUI/tests/portrait-tests/PortraitTests.csproj": {},
   "tests/AF.Foundation.Runtime/MainThreadFunctionBoundaryTests/run.py": {
-   "expect": "PREEXISTING_FAIL"
+   "expect": "PASS",
+   "args": [
+    "--run-root",
+    "{ROOT}/artifacts/j-history-20261001/p6/{RUN}/MainThreadFunctionBoundaryTests"
+   ]
   },
   "tests/AF.GameAdapter.Bannerlord/CampaignCompositionTests/run.py": {
    "expect": "PASS"
@@ -20,13 +27,17 @@
    ]
   },
   "tests/AF.GameAdapter.Bannerlord/GameLifetimeTests/run_commit.py": {
-   "expect": "PREEXISTING_FAIL"
+   "expect": "PASS",
+   "args": [
+    "--run-root",
+    "{ROOT}/artifacts/j-history-20261001/p6/{RUN}/GameLifetimeTests"
+   ]
   },
   "tests/AF.GameAdapter.Bannerlord/GameLifetimeTests/source_parity.py": {
-   "expect": "PREEXISTING_FAIL"
+   "expect": "PASS"
   },
   "tests/AF.GameAdapter.Bannerlord/GameLifetimeTests/test_source_parity.py": {
-   "expect": "PREEXISTING_FAIL"
+   "expect": "PASS"
   },
   "tests/AF.GameAdapter.Bannerlord/LiveHostReadinessAudit/live_host_readiness_audit.py": {
    "expect": "ENV_STATE",
@@ -67,7 +78,11 @@
    ]
   },
   "tests/modules/AF.Module.Conversation/BattleSpeechCapturedTriggerRegressionTests/run.py": {
-   "expect": "PREEXISTING_FAIL"
+   "expect": "PASS",
+   "args": [
+    "--run-root",
+    "{ROOT}/artifacts/j-history-20261001/p6/{RUN}/BattleSpeechCapturedTriggerRegressionTests"
+   ]
   },
   "tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py": {
    "args": [
@@ -80,19 +95,19 @@
    ]
   },
   "tests/modules/AF.Module.Conversation/ChannelPersonaPreparationTests/source_parity.py": {
-   "expect": "PREEXISTING_FAIL"
+   "expect": "PASS"
   },
   "tests/modules/AF.Module.Conversation/ChannelPersonaPreparationTests/test_source_parity.py": {
-   "expect": "PREEXISTING_FAIL"
+   "expect": "PASS"
   },
   "tests/modules/AF.Module.Conversation/CourierCommitOutcomeTests/source_parity.py": {
-   "expect": "PREEXISTING_FAIL"
+   "expect": "PASS"
   },
   "tests/modules/AF.Module.Conversation/CourierHistoryPreparationTests/source_parity.py": {
-   "expect": "PREEXISTING_FAIL"
+   "expect": "PASS"
   },
   "tests/modules/AF.Module.Conversation/CourierHistoryPreparationTests/test_source_parity.py": {
-   "expect": "PREEXISTING_FAIL"
+   "expect": "PASS"
   },
   "tests/modules/AF.Module.Conversation/CourierInboundCompletionContractTests/run_selection.py": {
    "args": [
@@ -107,20 +122,20 @@
    ]
   },
   "tests/modules/AF.Module.Conversation/CourierLetterInventoryTests/run.py": {
-   "expect": "PREEXISTING_FAIL"
+   "expect": "PASS"
   },
   "tests/modules/AF.Module.Conversation/CourierOwnerPhaseTests/source_parity.py": {
-   "expect": "PREEXISTING_FAIL"
+   "expect": "PASS"
   },
   "tests/modules/AF.Module.Conversation/CourierPostprocessOwnerRegressionTests/test_extraction.py": {
-   "expect": "PREEXISTING_FAIL"
+   "expect": "PASS"
   },
   "tests/modules/AF.Module.Conversation/CourierPromptPreparationTests/liveness_review.py": {
-   "expect": "PREEXISTING_FAIL"
+   "expect": "PASS"
   },
   "tests/modules/AF.Module.Conversation/CourierPromptPreparationTests/source_review.py": {
-   "expect": "SUPERSEDED_BY_RUNNER",
-   "note": "Historical whole-root inverse remains pinned; J17 current consumers are checked by run_j17_reviewed_delta.py."
+   "expect": "PASS",
+   "note": "Current scoped/historical proof actually passed C42; current behavior is independently covered by its named owner runner. Not whole-game acceptance."
   },
   "tests/modules/AF.Module.Conversation/CourierRouteTransportTests/run.py": {
    "expect": "PASS"
@@ -132,16 +147,20 @@
    ]
   },
   "tests/modules/AF.Module.Conversation/NativeDispatchClaim/test_source_review.py": {
-   "expect": "PREEXISTING_FAIL"
+   "expect": "PASS"
   },
   "tests/modules/AF.Module.Conversation/NativeMainReply/test_source_review.py": {
-   "expect": "PREEXISTING_FAIL"
+   "expect": "PASS"
   },
   "tests/modules/AF.Module.Conversation/NativeObservation/test_source_review.py": {
-   "expect": "PREEXISTING_FAIL"
+   "expect": "PASS"
   },
   "tests/modules/AF.Module.Conversation/NativePreparationBoundaryTests/run.py": {
-   "expect": "PREEXISTING_FAIL"
+   "expect": "PASS",
+   "args": [
+    "--run-root",
+    "{ROOT}/artifacts/j-history-20261001/p6/{RUN}/NativePreparationBoundaryTests"
+   ]
   },
   "tests/modules/AF.Module.Conversation/SceneGroupReceiptTests/run.py": {
    "args": [
@@ -150,10 +169,14 @@
    ]
   },
   "tests/modules/AF.Module.Conversation/SceneRequestLifetimeRegressionTests/test_extraction.py": {
-   "expect": "PREEXISTING_FAIL"
+   "expect": "PASS"
   },
   "tests/modules/AF.Module.Conversation/SceneSpeechQueueOwnerTests/run_mutations.py": {
-   "expect": "PREEXISTING_FAIL"
+   "expect": "PASS",
+   "args": [
+    "--run-root",
+    "{ROOT}/artifacts/j-history-20261001/p6/{RUN}/SceneSpeechQueueOwnerTests"
+   ]
   },
   "tests/modules/AF.Module.Diplomacy/WorldDiplomacyIntentBoundary.SmokeTests/WorldDiplomacyIntentBoundary.SmokeTests.csproj": {
    "expect": "PREEXISTING_FAIL"
@@ -176,37 +199,44 @@
    ]
   },
   "tests/modules/AF.Module.Memory/MemoryFailureUiBoundaryTests/run.py": {
-   "expect": "PREEXISTING_FAIL"
+   "expect": "PASS"
   },
   "tests/modules/AF.Module.Memory/MemorySummaryBudgetTests/source_review.py": {
-   "expect": "PREEXISTING_FAIL"
+   "expect": "PASS"
   },
   "tests/modules/AF.Module.Memory/MemorySummaryBudgetTests/verify.py": {
-   "expect": "PREEXISTING_FAIL"
+   "expect": "PASS",
+   "args": [
+    "--generate-pair",
+    "--run-root",
+    "{ROOT}/artifacts/j-history-20261001/p6/{RUN}/memory-budget-pair"
+   ],
+   "note": "Two actual current/historical writer workloads then unchanged four-hunk/13-digest/same-input comparison. Existing explicit input mode remains supported."
   },
   "tests/modules/AF.Module.Memory/MemorySummaryMainThreadBoundaryTests/run_captured.py": {
    "expect": "PREEXISTING_FAIL"
   },
   "tests/modules/AF.Module.Memory/MemorySummaryMainThreadBoundaryTests/run_materials.py": {
-   "expect": "PREEXISTING_FAIL"
+   "expect": "PASS"
   },
   "tests/modules/AF.Module.Memory/MemorySummaryMainThreadBoundaryTests/run_sealing.py": {
    "expect": "PREEXISTING_FAIL"
   },
   "tests/modules/AF.Module.Memory/MemorySummaryMainThreadBoundaryTests/test_source_parity.py": {
-   "expect": "PREEXISTING_FAIL"
+   "expect": "PREEXISTING_FAIL",
+   "note": "Original default historical full InverseGuards retained, not launched in finite closure; current non-diplomacy assertions run through source_parity.py --finite. Captured/sealing coupled layers deferred."
   },
   "tests/modules/AF.Module.Memory/MemorySummaryRunOwnerTests/source_parity.py": {
-   "expect": "PREEXISTING_FAIL"
+   "expect": "PASS"
   },
   "tests/modules/AF.Module.Persona/HeroPersonaGenerationTests/source_parity.py": {
-   "expect": "PREEXISTING_FAIL"
+   "expect": "PASS"
   },
   "tests/modules/AF.Module.Persona/HeroPersonaGenerationTests/test_source_parity.py": {
-   "expect": "PREEXISTING_FAIL"
+   "expect": "PASS"
   },
   "tests/modules/AF.Module.Prompt/ProductionConsumers/run.py": {
-   "expect": "PREEXISTING_FAIL"
+   "expect": "PASS"
   },
   "tests/replay/PhaseEightParityReplayTests/PhaseEightParityReplayTests.csproj": {
    "candidateDll": true
@@ -226,10 +256,10 @@
    "expect": "NEEDS_INPUT"
   },
   "tools/PhaseEightReadiness/test_readiness.py": {
-   "expect": "PREEXISTING_FAIL"
+   "expect": "PASS"
   },
   "tools/PhaseEightReadiness/verify_j13_recruitment.py": {
-   "expect": "PREEXISTING_FAIL"
+   "expect": "PASS"
   },
   "tools/PlayerExportsEditor/tests/PlayerExportsEditor.SmokeTests/PlayerExportsEditor.SmokeTests.csproj": {
    "execution": "isolated-player-exports",
@@ -299,6 +329,39 @@
    "execution": "manual",
    "expect": "NEEDS_INPUT",
    "note": "Business exporter defaults to external game/source/output roots; requires explicit inputs and separate output authorization, never a test runner."
+  },
+  "tests/bridges/TeamModulePortParityTests/run_adapters.py": {
+   "expect": "PASS",
+   "args": [
+    "--run-root",
+    "{ROOT}/artifacts/j-history-20261001/p6/{RUN}/TeamModulePortParityTests"
+   ]
+  },
+  "tests/AF.GameAdapter.Bannerlord/IntegratedModuleHostTickContractTests/run.py": {
+   "expect": "PASS",
+   "args": [
+    "--run-root",
+    "{ROOT}/artifacts/j-history-20261001/p6/{RUN}/IntegratedModuleHostTickContractTests"
+   ]
+  },
+  "tests/modules/AF.Module.Conversation/CourierHistoryPreparationTests/run.py": {
+   "args": [
+    "--run-root",
+    "{ROOT}/artifacts/j-history-20261001/p6/{RUN}/CourierHistoryPreparationTests"
+   ]
+  },
+  "tests/modules/AF.Module.Conversation/CourierOwnerPhaseTests/run.py": {
+   "args": [
+    "--run-root",
+    "{ROOT}/artifacts/j-history-20261001/p6/{RUN}/CourierOwnerPhaseTests"
+   ]
+  },
+  "tests/modules/AF.Module.Memory/MemorySummaryMainThreadBoundaryTests/source_parity.py": {
+   "expect": "PASS",
+   "args": [
+    "--finite"
+   ],
+   "note": "15 current Memory-only source and negative controls; historical full inverse/captured-sealing diplomacy-coupled layer remains deferred in its original separate entry."
   }
  }
 }
