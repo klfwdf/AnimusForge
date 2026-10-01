@@ -8,6 +8,14 @@ P1 持 Prompt/history composition；P2 持传输/渠道 request lifetime；P3 �
 
 原全量 C `artifacts/j17b/session-20260930/p6-integration/full-run-aedcba06ed7844b0b90fa0c57b621a1a/results.json` 的 273 项（148 PASS/78 FAIL/34 PREEXISTING_FAIL/5 NEEDS_INPUT/4 SUPERSEDED_BY_RUNNER/1 ENV_STATE/3 BLOCKED_ENV）是历史候选结果，不能将 78 FAIL 当作 78 产品 bug，也不能刷 hash/expected 消除失败。本轮最终门禁绑定新的同一候选，产物只写 `artifacts/j17b/session-20261001/p6-integration/` 唯一新目录；保留旧产物及 22 个原未跟踪 tools 和 NuGet 目录。B6/C 尚未完成，最终分类待实际运行。D 实机/真实旧档/真实网络/帧耗时 NOT-RUN；无推送、Stage、部署、安装、默认入口或真实资料操作授权；已暴露旧凭据轮换仍未确认。
 
+#### 2026-10-01 本轮六包恢复执行（当前入口，取代下方暂停停点）
+
+用户明确恢复获准 B6/C，不延续上传/推送授权。现场 Git 根与分支已核实，远端 WIP 基线 `3c00ae2ebd6fa006314241f1296412947e275008`；本轮空意图检查点 `38efd7eb`。旧代理/写进程由总控确认已停止；`SessionTransport` 初始 tracked M 但精确 diff 空，规范化 blob 与 HEAD 同为 `ee1b130b13333849d3669ff5e6a58e007f35b5f8`，保留由本轮 P3 接管，未覆盖。旧 tools/NuGet/产物不动。
+
+本轮 P1 Scene deferred 取消/三业务变异；P2 Native fixture/current+三变异、fallback retry/no-commit 与 GenerationLifecycle；P3 实际 transport/Courier 取消；P4 Prompt/history 当前源码与新 DLL 回读；P5 retained f/g、i OPEN、其它消费者与地图精确 patch；P6 独占共享 lifetime/宿主接线、Git 索引/精确本地提交、正式台账/地图/交接、总入口与共享构建。每包正常实现与验证自主并行，共享源仅 P6 接 patch，固定输出资源串行。执行者配置 `gpt-6.1-sol / medium`，总控不重复实现/测试。
+
+状态 **ACTIVE / 未验收**：A20/20、未变 Memory/Weekly/B7 及 WIP 已接 owner 不重做。必要定向行为/有效编译后变异通过后，集中 Debug/Release × 双 API+Bootstrap、实际当前 DLL consumers 与最终同完整候选 C；最终输入变化使受影响证据失效，历史 78 FAIL 不是当前产品故障数。B6 以有限出口收口，f/g 逐符号保留、i 许可缺口不假闭。D 实机/真实旧档/真实网络/性能 NOT-RUN。无 push/Stage/部署/安装/一键改动/全局设置/真实资料修改或广域删除；仓外仅既获准 `E:/tmp/af-j17-20260930` 合成根。最小环境隔离，旧凭据轮换未确认。
+
 #### 2026-10-01 远端 WIP 接续交付（最新指令，取代“未提交”与等待本地续跑的停点）
 
 用户随后明确要求“全部上传，配上 handoff 说明进度”，即上传本轮 P1/P2 全部必要源码、新 owner、测试与共享接线，不上传无关旧目录或敏感原始工件。本次以 `7d7f4988` 为提交前基线，作 **WIP 交接，未完成最终验证**；本节连同 Git 当前 HEAD 是接手入口，不将下面历史停点当当前指令。A20/20 已完成；P3/P4/P5 分别已在 `7fa93f14`、`c50e6641`、`928c36cd` 提交。P1/P2 本次一并提交，停止产品施工；B6/C 不因此标闭。
