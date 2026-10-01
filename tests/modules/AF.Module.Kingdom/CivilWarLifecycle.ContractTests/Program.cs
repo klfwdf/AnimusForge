@@ -155,6 +155,83 @@ MakePeaceAction.Fail = false;
 f.Tick(102);
 Check(f.State.Factions.Count == 0 && !f.Rebel.IsEliminated && !f.Home.IsAtWarWith(f.Rebel), "secession retry leaves a living independent kingdom");
 
+// Daily decay preserves each source's seven-day retention and cannot repeat on save/load or weekly maintenance.
+f = new Fixture();
+f.State.LastGrievanceDecayDay = 700;
+var grievance = f.State.Clans[f.Follower.StringId].Grievance;
+foreach (var source in CivilWarCatalog.Sources) grievance[source.Id] = 100f;
+for (int day = 701; day <= 707; day++) { CampaignTime.Day = day; f.Owner.AdvanceDay(day); }
+foreach (var source in CivilWarCatalog.Sources)
+    Check(Math.Abs(grievance[source.Id] - 100f * (1f - source.DecayPerWeek)) < 0.001f, "seven daily steps preserve weekly rate: " + source.Id);
+float before = grievance["lands_raided"];
+f.Owner.AdvanceDay(707);
+Check(grievance["lands_raided"] == before, "same day callback is idempotent");
+f.Reload();
+f.Owner.AdvanceDay(707);
+Check(f.State.Clans[f.Follower.StringId].Grievance["lands_raided"] == before, "reload does not repeat today's decay");
+// Keep this test away from any war actions or new factions.
+f.State.Factions.Clear();
+f.Tick(101);
+Check(f.State.Clans[f.Follower.StringId].Grievance["lands_raided"] == before, "weekly slice does not charge an extra weekly decay");
+
+f = new Fixture();
+f.State.LastGrievanceDecayDay = 700;
+f.State.Clans[f.Follower.StringId].Grievance["lands_raided"] = 20f;
+CampaignTime.Day = 701;
+f.Owner.AdvanceDay(701);
+Check(Math.Abs(f.State.Clans[f.Follower.StringId].Grievance["lands_raided"] - 19.3725f) < 0.001f, "burned village declines smoothly after one day");
+
+f = new Fixture();
+f.State.LastGrievanceDecayDay = -1;
+f.State.Clans[f.Follower.StringId].Grievance["lands_raided"] = 20f;
+f.Reload();
+CampaignTime.Day = 800;
+f.Owner.AdvanceDay(800);
+Check(f.State.Clans[f.Follower.StringId].Grievance["lands_raided"] == 20f, "legacy save starts today without historical catch-up");
+CampaignTime.Day = 801;
+f.Owner.AdvanceDay(801);
+Check(f.State.Clans[f.Follower.StringId].Grievance["lands_raided"] < 20f, "legacy save starts decaying the following day");
+DuelSettings.Enabled = false;
+before = f.State.Clans[f.Follower.StringId].Grievance["lands_raided"];
+CampaignTime.Day = 810;
+f.Owner.AdvanceDay(810);
+Check(f.State.Clans[f.Follower.StringId].Grievance["lands_raided"] == before, "disabled days keep grievance");
+DuelSettings.Enabled = true;
+CampaignTime.Day = 811;
+f.Owner.AdvanceDay(811);
+Check(Math.Abs(f.State.Clans[f.Follower.StringId].Grievance["lands_raided"] - before * Math.Pow(0.8, 1d / 7d)) < 0.001, "re-enable applies one day, not disabled backlog");
+
+f = new Fixture();
+f.State.LastGrievanceDecayDay = 700;
+f.State.Clans[f.Follower.StringId].Grievance["lands_raided"] = 20f;
+ChangeKingdomAction.Move(f.Follower, f.Home);
+CampaignTime.Day = 707;
+f.Owner.AddGrievance(f.Home, "lands_raided", new[] { f.Follower }, 20f, 101, "raid");
+Check(Math.Abs(f.State.Clans[f.Follower.StringId].Grievance["lands_raided"] - 36f) < 0.001, "missed days settled before adding fresh points");
+f.Owner.AdvanceDay(707);
+Check(Math.Abs(f.State.Clans[f.Follower.StringId].Grievance["lands_raided"] - 36f) < 0.001, "fresh points not retroactively decayed");
+
+// Real campaign daily handler -> adapter -> owner.
+TeamModuleServices.CivilWar = new CivilWarModuleAdapter();
+TeamModuleServices.CivilWar.Load(JsonConvert.SerializeObject(f.Owner.Storage));
+CampaignTime.Day = 708;
+new CivilWarCampaignBehavior().OnDailyTick();
+var dailyStorage = JsonConvert.DeserializeObject<KingdomCivilWarStorage>(TeamModuleServices.CivilWar.Save());
+Check(dailyStorage.Kingdoms[f.Home.StringId].LastGrievanceDecayDay == 708 && dailyStorage.Kingdoms[f.Home.StringId].Clans[f.Follower.StringId].Grievance["lands_raided"] < 36, "production daily event reaches stored grievances");
+
+// Synthetic CPU probe only: no game-loop/render/IO cost is represented here.
+f = new Fixture(); f.State.Factions.Clear(); f.State.Clans.Clear(); f.State.LastGrievanceDecayDay = 700;
+for (int i = 0; i < 100; i++)
+{
+    var record = new KingdomCivilWarClanState { ClanId = "perf" + i };
+    foreach (var source in CivilWarCatalog.Sources) record.Grievance[source.Id] = 100;
+    f.State.Clans[record.ClanId] = record;
+}
+f.Owner.AdvanceDay(701); // warm up
+var timer = System.Diagnostics.Stopwatch.StartNew();
+for (int day = 702; day < 802; day++) f.Owner.AdvanceDay(day);
+timer.Stop();
+Console.WriteLine($"Daily decay probe: 100 clans x 9 sources, 100 daily events, total {timer.Elapsed.TotalMilliseconds:F2} ms; mean {timer.Elapsed.TotalMilliseconds / 100:F4} ms/event (fake game context).");
 Console.WriteLine($"CivilWar lifecycle contracts passed: {checks} checks (fake game actions, real owner/effects and extracted entry bodies).");
 
 sealed class Fixture
@@ -167,6 +244,7 @@ sealed class Fixture
     public KingdomCivilWarFactionState Faction => State.Factions.Single();
     public Fixture()
     {
+        CampaignTime.Day = 700;
         Clan.All.Clear(); Kingdom.All.Clear(); MakePeaceAction.Fail = false; ChangeKingdomAction.FailClan = null; ChangeKingdomAction.Moves = 0;
         GiveGoldAction.Calls = 0; GiveGoldAction.ThrowAfterApply = false; ChangeRelationAction.Calls = 0;
         MyBehavior.StabilityChanges = 0; MyBehavior.CleanupAllowed = true; DuelSettings.Enabled = true;

@@ -55,6 +55,7 @@ internal interface ICivilWarModulePort
 {
 	void Load(string json);
 	string Save();
+	void AdvanceDay(int dayIndex);
 	void AdvanceWeek(Kingdom kingdom, int weekIndex, int stability, Action<Kingdom, int> adjustStability, IReadOnlyList<string> recentEvents);
 	void RecordGrievance(Kingdom kingdom, string sourceId, IEnumerable<Clan> clans, float points, int week, string text);
 	void RecordPolicyImposed(Kingdom kingdom, string policyId, int week, string text);

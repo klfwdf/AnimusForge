@@ -32,6 +32,12 @@ internal sealed class CivilWarCampaignBehavior : CampaignBehaviorBase
 		CampaignEvents.OnClanChangedKingdomEvent.AddNonSerializedListener(this, OnClanChangedKingdom);
 		CampaignEvents.KingdomDecisionConcluded.AddNonSerializedListener(this, OnKingdomDecisionConcluded);
 		CampaignEvents.HourlyTickEvent.AddNonSerializedListener(this, OnHourlyTick);
+		CampaignEvents.DailyTickEvent.AddNonSerializedListener(this, OnDailyTick);
+	}
+
+	private void OnDailyTick()
+	{
+		TeamModuleServices.CivilWar.AdvanceDay(CivilWarWorld.CurrentDay());
 	}
 
 	// Flag check only; the scan runs once per ultimatum and the inquiry waits until no other popup is open.

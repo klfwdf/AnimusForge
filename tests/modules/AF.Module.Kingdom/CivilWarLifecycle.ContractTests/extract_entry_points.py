@@ -16,6 +16,7 @@ for cls, path, signature in [
     ("static partial class ShoutBehavior", "ShoutBehavior.cs", "private static string NormalizeKingdomServicePostprocessTagsForScene("),
     ("static partial class AIConfigHandler", "AIConfigHandler.cs", "public static List<PostprocessRuleEntry> BuildRuntimeKingdomServicePostprocessRules("),
     ("partial class CivilWarCampaignBehavior", "src/modules/AF.Module.Kingdom/CivilWar/CivilWarCampaignBehavior.cs", "private void OnKingdomDecisionConcluded("),
+    ("partial class CivilWarCampaignBehavior", "src/modules/AF.Module.Kingdom/CivilWar/CivilWarCampaignBehavior.cs", "private void OnDailyTick("),
 ]:
     parts.append(cls + " {\n" + method(path, signature) + "\n}")
 target = Path(sys.argv[1])

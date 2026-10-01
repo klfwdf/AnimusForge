@@ -45,7 +45,7 @@ namespace TaleWorlds.CampaignSystem
         public int GetTraitLevel(TraitObject trait) => 0;
     }
     public class PolicyObject { public string StringId, Name; }
-    public struct CampaignTime { public static CampaignTime Now => new() { ToDays = 700 }; public double ToDays; }
+    public struct CampaignTime { public static int Day = 700; public static CampaignTime Now => new() { ToDays = Day }; public double ToDays; }
 }
 namespace TaleWorlds.CampaignSystem.Settlements
 {
