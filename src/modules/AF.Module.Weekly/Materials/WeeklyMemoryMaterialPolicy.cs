@@ -105,6 +105,29 @@ internal static class WeeklyMemoryMaterialPolicy
 		return sb.ToString().Trim();
 	}
 
+    internal static List<WeeklyDialogueMaterial> BuildDialogueMaterials(CompressedMemoryBlock block,
+        List<WeeklyMemoryMaterialTrigger> triggers, string blockId)
+    {
+        var result = new List<WeeklyDialogueMaterial>();
+        foreach (var group in triggers.GroupBy(x => (x.FootholdKingdomId ?? "").Trim(), StringComparer.OrdinalIgnoreCase))
+        {
+            string kingdomId = (group.Key ?? "").Trim();
+            if (string.IsNullOrWhiteSpace(kingdomId)) continue;
+            var items = group.ToList();
+            string hash = ComputeWeeklyMemoryMaterialHash(string.Join("|", items.Select(x => (x.StableKey ?? "").Trim()).Where(x => !string.IsNullOrWhiteSpace(x))));
+            result.Add(new WeeklyDialogueMaterial {
+                KingdomId = kingdomId,
+                StableKey = "player_dialogue_memory:" + kingdomId + ":" + blockId + ":" + hash,
+                Label = "玩家交涉记忆 - " + (string.IsNullOrWhiteSpace(block.HeroName) ? "NPC" : block.HeroName.Trim()),
+                Snapshot = BuildWeeklyMemoryMaterialSnapshotText(block, items),
+                SettlementId = items.Select(x => (x.FootholdSettlementId ?? "").Trim()).FirstOrDefault(x => !string.IsNullOrWhiteSpace(x)) ?? "",
+                TriggerCount = items.Count,
+                Value = items.Sum(x => Math.Max(0L, x.EstimatedValueDenars))
+            });
+        }
+        return result;
+    }
+
 	internal static string BuildWeeklyMemoryMaterialSnapshotText(CompressedMemoryBlock block, List<WeeklyMemoryMaterialTrigger> triggers)
 	{
 		StringBuilder sb = new StringBuilder();
@@ -438,4 +461,15 @@ internal static class WeeklyMemoryMaterialPolicy
 	{
 		return MemoryRecordRules.ComputeWeeklyMemoryMaterialHash(sourceText);
 	}
+}
+
+internal sealed class WeeklyDialogueMaterial
+{
+    internal string KingdomId;
+    internal string StableKey;
+    internal string Label;
+    internal string Snapshot;
+    internal string SettlementId;
+    internal int TriggerCount;
+    internal long Value;
 }

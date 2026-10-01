@@ -288,7 +288,7 @@ public partial class MyBehavior
                 return string.Equals(intent.DirectionToken, "P", StringComparison.OrdinalIgnoreCase)
                     && TryParseWeeklyActionPositiveValue(intent.AmountToken, out valueDenars);
             case WeeklyMemoryMaterialKind.DebtResolve:
-                return TryEstimateDebtValueByIdForWeeklyMemoryMaterial(intent.DebtId, out valueDenars)
+                return WeeklyMaterialValueBannerlordAdapter.TryEstimateDebtValueByIdForWeeklyMemoryMaterial(intent.DebtId, out valueDenars)
                     && valueDenars > 0L;
             default:
                 return false;

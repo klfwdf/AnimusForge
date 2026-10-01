@@ -20,7 +20,12 @@ paths = next(ast.literal_eval(node.value) for node in tree.body if isinstance(no
 project = ET.parse(HERE / "WeeklyMemoryMaterialOutcomeContractTests.csproj")
 paths += [str((HERE / node.attrib["Include"].replace("\\", "/")).resolve().relative_to(ROOT))
           for node in project.findall(".//Compile")]
-paths += ["src/modules/AF.Module.Memory/Summary/MemoryBusinessStateOwner.WeeklyTriggers.cs",
+paths += ["src/modules/AF.Module.Memory/Records/CampaignMaterialRecordOwner.cs",
+          "src/modules/AF.Module.Memory/Records/NpcActionRecordOwner.cs",
+          "src/modules/AF.Module.Memory/Records/EventSourceMaterialIndex.cs",
+          "src/modules/AF.Module.Weekly/Materials/WeeklyMemoryMaterialValuePolicy.cs",
+          "src/modules/AF.Module.Economy/Host/TransferQuantitySpec.cs",
+          "src/modules/AF.Module.Memory/Summary/MemoryBusinessStateOwner.WeeklyTriggers.cs",
           "src/modules/AF.Module.Weekly/Materials/WeeklyMemoryMaterialPolicy.cs",
           "src/modules/AF.Module.Weekly/Materials/WeeklyPoliticalMaterialPolicy.cs",
           "src/modules/AF.Module.Economy/Host/GiveAssetTagCodec.cs",
@@ -34,7 +39,8 @@ spec.loader.exec_module(extract)
 host = (ROOT / "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.cs").read_text(encoding="utf-8-sig")
 day = extract.declaration(host, "internal class DialogueDay")
 recovery = (ROOT / "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.MemoryRecovery.cs").read_text(encoding="utf-8-sig")
-guards = [day]
+record_host = (ROOT / "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.CampaignMaterialRecords.cs").read_text(encoding="utf-8-sig")
+guards = [day, extract.declaration(record_host, "internal sealed class EventSourceMaterialEntry")]
 for name in ["IsValidMemoryCommitMarker", "IsMemoryRecoveryHexDigest"]:
     match = re.search(r"internal static bool " + name + r"\([^;]+;", recovery)
     assert match and "=>" in match.group()
@@ -57,4 +63,3 @@ for command, log in [([str(dotnet), "build", str(out / "Proof.csproj"), "-c", "R
     if result.returncode:
         raise SystemExit(result.returncode)
 print("OUTPUT", out)
-

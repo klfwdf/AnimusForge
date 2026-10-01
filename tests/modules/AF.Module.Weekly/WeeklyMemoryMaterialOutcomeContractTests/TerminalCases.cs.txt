@@ -70,3 +70,49 @@ var political = AnimusForge.WeeklyPoliticalMaterialPolicy.SelectPoliticalReasonM
 Require(political.Count <= 6 && political[0] == "议题类型：宣战" && political[1].StartsWith("核心原因：")
     && political.Contains("原版理由：领土争执"), "political priority and bounded material preserved");
 Console.WriteLine("PASS weeklyTerminal actual-pending/session/day/expiry/confirmed-publication/partial-failure/material/political LIVE=NOT_RUN SAVE=NOT_RUN");
+
+var recordOwner = new AnimusForge.CampaignMaterialRecordOwner();
+int sequenceCounter = 0, revisionCounter = 0;
+void Record(int day, string text, bool world = false) => recordOwner.Record(new MyBehavior.EventSourceMaterialEntry {
+    Day = day, StableKey = "same", SnapshotText = text, Label = "label", MaterialKind = "war_declared",
+    KingdomId = " k ", IncludeInWorld = world, IncludeInKingdom = true
+}, () => ++sequenceCounter, _ => revisionCounter++);
+Record(42, "first"); Record(42, "updated", true); Record(43, "next-day");
+Require(recordOwner.Materials.Count == 2 && sequenceCounter == 2 && revisionCounter == 3,
+    "event index same-day update consumes no sequence and next day appends");
+Require(recordOwner.Materials[0].SnapshotText == "updated" && recordOwner.Materials[0].IncludeInWorld,
+    "event updated fields and visibility union");
+recordOwner.Materials = new() { new() { Day = 42, StableKey = "same", SnapshotText = "recovered" } };
+Record(42, "after load");
+Require(recordOwner.Materials.Count == 1 && recordOwner.Materials[0].SnapshotText == "after load", "restored source causes exact index rebuild");
+var actionsOwner = new AnimusForge.NpcActionRecordOwner();
+var actionStorage = new Dictionary<string,List<AnimusForge.NpcActionEntry>>();
+int actionSequences = 0, fullRevisions = 0, dayRevisions = 0;
+void RecordAction(int day, string key, bool window = false, bool across = false) => actionsOwner.Record(
+    actionStorage, "hero", "fact", key, day, window, across, 2, () => ++actionSequences,
+    (text, stable, gameDay, order, sequence) => AnimusForge.NpcActionRecordOwner.Create(new() {
+        ActorHeroId = " hero ", GameDate = "date", RelatedHeroIds = new() { " a ", "A", "" }
+    }, text, stable, gameDay, order, sequence, false), () => fullRevisions++, _ => dayRevisions++);
+RecordAction(42,"key",true,true); RecordAction(42,"key",true,true); RecordAction(43,"key",true,true);
+Require(actionSequences == 1 && actionStorage["hero"].Count == 1, "recent cross-window dedupe before sequence/capture");
+RecordAction(53,"key",true,true);
+Require(actionSequences == 2 && actionStorage["hero"].Count == 1 && fullRevisions == 1,
+    "expired recent index removed before same-key new action");
+Require(actionStorage["hero"][0].RelatedHeroIds.SequenceEqual(new[]{"a"}) && actionStorage["hero"][0].ActorHeroId == "hero",
+    "record construction normalizes and detaches related facts");
+RecordAction(54,"second"); RecordAction(55,"third");
+Require(actionStorage["hero"].Count == 2 && dayRevisions == 4 && fullRevisions == 2, "bounded append revision/timeline semantics");
+var valuePort = new AnimusForge.WeeklyMaterialValuePort {
+    IsGold = token => token == "GOLD", RewardValue = (_, amount) => amount * 7,
+    AllRewardValue = _ => 70, FixedAssetValue = token => token == "town_A" ? 35000 : null,
+    DebtValue = id => id == "known" ? 12000 : null, MissingDebt = _ => {},
+    AllPartyValue = prisoner => prisoner ? 9000 : 8000,
+    PartyValue = (_, amount, prisoner) => amount * (prisoner ? 10 : 20)
+};
+Require(AnimusForge.WeeklyMemoryMaterialValuePolicy.EstimateWeeklyMemoryMaterialTagValue("[ATT:3:ALL]",valuePort)==8000
+    && AnimusForge.WeeklyMemoryMaterialValuePolicy.EstimateWeeklyMemoryMaterialTagValue("[ATP:2:3]",valuePort)==30,
+    "original ALL/index valuation routes remain shared");
+Require(AnimusForge.WeeklyMemoryMaterialValuePolicy.EstimateWeeklyMemoryMaterialTagValue("[ACTION:GIVE_ASSET:town_A:1]",valuePort)==35000
+    && AnimusForge.WeeklyMemoryMaterialValuePolicy.EstimateWeeklyMemoryMaterialTagValue("[ADP:known]",valuePort)==12000,
+    "fixed asset and confirmed debt valuation");
+Console.WriteLine("PASS campaignMaterial record-construction/index/update/recovery/recent-dedupe/expiry/bounds/valuation LIVE=NOT_RUN SAVE=NOT_RUN");
