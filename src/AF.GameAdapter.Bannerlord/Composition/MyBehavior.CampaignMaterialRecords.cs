@@ -279,4 +279,13 @@ public partial class MyBehavior
 		Logger.Log("DatabaseReload", "replaced static opening knowledge; removedDerivedWeekZeroRecords=" + removedOpeningRecordCount + " kingdomSummaries=" + _eventKingdomOpeningSummaries.Count);
 	}
 
+
+    private static void NormalizeEventRecordEntriesInPlace(List<EventRecordEntry> source)
+        => WeeklyEventDataImportOwner.NormalizeEventRecordEntriesInPlace(source, NeutralizeWeeklyReportScenarioName,
+            BuildFallbackWeeklyReportShortSummary, NormalizeWeeklyReportTagText);
+    private static List<EventMaterialReference> NormalizeEventMaterialReferencesInPlace(List<EventMaterialReference> materials, bool neutralizeWeeklyText)
+        => WeeklyEventDataImportOwner.NormalizeEventMaterialReferencesInPlace(materials, neutralizeWeeklyText, NeutralizeWeeklyReportScenarioName);
+    private static List<string> NormalizeEventMaterialIdListInPlace(List<string> values)
+        => WeeklyEventDataImportOwner.NormalizeEventMaterialIdListInPlace(values);
+
 }

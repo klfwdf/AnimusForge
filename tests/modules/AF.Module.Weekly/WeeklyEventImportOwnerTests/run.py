@@ -11,7 +11,14 @@ host=source("src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.cs");record=so
 shim="using System;using System.Linq;using System.Collections.Generic;using System.Text.RegularExpressions;namespace AnimusForge { public partial class MyBehavior {"+extract.declaration(host,"internal sealed class EventRecordEntry")+extract.declaration(legacy,"internal sealed class EventMaterialReference")+extract.declaration(record,"internal sealed class EventImportPayload")+"} public partial class RewardSystemBehavior {"+extract.declaration(debt,"public class DebtExportEntry")+extract.declaration(debt,"public class DebtLineExportEntry")+"} internal static class WeeklyGenerationRules {"+"\n".join(extract.declaration(rules,x) for x in ["internal static string BuildFallbackWeeklyReportShortSummary","internal static string NormalizeWeeklyReportTagText","internal static string NeutralizeWeeklyReportScenarioName"])+"}}"
 methods=[extract.declaration(record,x) for x in ["private void ApplyImportedEventData", "private void ReplaceDatabaseOpeningKnowledge"]]
 methods.append(re.search(r"private static List<EventRecordEntry> SanitizeEventRecordEntries\([^;]+;",record).group())
+for name in ["NormalizeEventRecordEntriesInPlace", "NormalizeEventMaterialReferencesInPlace", "NormalizeEventMaterialIdListInPlace"]:
+ match=re.search(r"private static [^\r\n]+ " + name + r"\([^;]+;",record)
+ assert match and "=>" in match.group()
+ methods.append(match.group())
 shim="using System.Threading;"+shim+"namespace AnimusForge { public partial class MyBehavior {"+"\n".join(methods)+(HERE/"HostLifecycle.cs.txt").read_text(encoding="utf-8")+"} public static class Logger { public static void Log(string a,string b){} }}"
+# Compile the exact pre-extraction implementation as a parity oracle, not a clone sanitizer.
+original=(HERE/"OriginalNormalization.cs.txt").read_text(encoding="utf-8").replace("private static", "internal static")
+shim += "namespace AnimusForge { using EventRecordEntry=MyBehavior.EventRecordEntry;using EventMaterialReference=MyBehavior.EventMaterialReference; internal static class OriginalNormalizer {"+original+"internal static string NeutralizeWeeklyReportScenarioName(string x)=>WeeklyGenerationRules.NeutralizeWeeklyReportScenarioName(x);internal static string BuildFallbackWeeklyReportShortSummary(string x)=>WeeklyGenerationRules.BuildFallbackWeeklyReportShortSummary(x);internal static string NormalizeWeeklyReportTagText(string x)=>WeeklyGenerationRules.NormalizeWeeklyReportTagText(x);}}"
 (out/"Shims.cs").write_text(shim,encoding="utf-8");(out/"Program.cs").write_text((HERE/"Program.cs.txt").read_text(encoding="utf-8"),encoding="utf-8")
 paths=["src/modules/AF.Module.Weekly/Generation/WeeklyReportMaterialRevisionOwner.cs","src/modules/AF.Module.Weekly/ImportExport/WeeklyEventDataImportOwner.cs","src/modules/AF.Module.Economy/Debt/DebtImportMergePolicy.cs"]
 links="".join('<Compile Include="'+str(ROOT/path)+'"/>' for path in paths)

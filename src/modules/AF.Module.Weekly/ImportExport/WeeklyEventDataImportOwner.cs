@@ -269,4 +269,109 @@ internal static class WeeklyEventDataImportOwner
         return normalizedEventId.StartsWith("weekly_report:world:0:", StringComparison.OrdinalIgnoreCase)
             || normalizedEventId.StartsWith("weekly_report:kingdom:0:", StringComparison.OrdinalIgnoreCase);
     }
+
+	internal static void NormalizeEventRecordEntriesInPlace(List<EventRecordEntry> source, Func<string,string> neutralize, Func<string,string> shortSummary, Func<string,string> normalizeTags)
+	{
+		if (source == null)
+		{
+			return;
+		}
+		for (int num = source.Count - 1; num >= 0; num--)
+		{
+			EventRecordEntry eventRecordEntry = source[num];
+			if (eventRecordEntry == null)
+			{
+				source.RemoveAt(num);
+				continue;
+			}
+			string text = (eventRecordEntry.EventId ?? "").Trim();
+			string text2 = (eventRecordEntry.Title ?? "").Trim();
+			if (string.IsNullOrWhiteSpace(text) || string.IsNullOrWhiteSpace(text2))
+			{
+				source.RemoveAt(num);
+				continue;
+			}
+			bool flag = text.StartsWith("weekly_report:", StringComparison.OrdinalIgnoreCase);
+			eventRecordEntry.EventId = text;
+			eventRecordEntry.WeekIndex = Math.Max(0, eventRecordEntry.WeekIndex);
+			eventRecordEntry.EventKind = (eventRecordEntry.EventKind ?? "").Trim();
+			eventRecordEntry.ScopeKingdomId = (eventRecordEntry.ScopeKingdomId ?? "").Trim();
+			eventRecordEntry.Title = flag ? neutralize(text2) : text2;
+			eventRecordEntry.ShortSummary = shortSummary(eventRecordEntry.ShortSummary);
+			eventRecordEntry.Summary = flag ? neutralize(eventRecordEntry.Summary) : (eventRecordEntry.Summary ?? "").Trim();
+			eventRecordEntry.TagText = normalizeTags(eventRecordEntry.TagText);
+			eventRecordEntry.PromptText = flag ? neutralize(eventRecordEntry.PromptText) : (eventRecordEntry.PromptText ?? "").Trim();
+			eventRecordEntry.CreatedDay = Math.Max(0, eventRecordEntry.CreatedDay);
+			eventRecordEntry.CreatedDate = (eventRecordEntry.CreatedDate ?? "").Trim();
+			if (string.IsNullOrWhiteSpace(eventRecordEntry.ShortSummary))
+			{
+				eventRecordEntry.ShortSummary = shortSummary(eventRecordEntry.Summary);
+			}
+			eventRecordEntry.Materials = NormalizeEventMaterialReferencesInPlace(eventRecordEntry.Materials, flag, neutralize);
+		}
+		List<EventRecordEntry> list = source.OrderByDescending((EventRecordEntry x) => x.WeekIndex).ThenByDescending((EventRecordEntry x) => x.CreatedDay).ThenBy((EventRecordEntry x) => x.Title ?? "", StringComparer.OrdinalIgnoreCase).ToList();
+		source.Clear();
+		source.AddRange(list);
+	}
+
+	internal static List<EventMaterialReference> NormalizeEventMaterialReferencesInPlace(List<EventMaterialReference> materials, bool neutralizeWeeklyText, Func<string,string> neutralize)
+	{
+		List<EventMaterialReference> list = materials ?? new List<EventMaterialReference>();
+		for (int num = list.Count - 1; num >= 0; num--)
+		{
+			EventMaterialReference eventMaterialReference = list[num];
+			if (eventMaterialReference == null)
+			{
+				list.RemoveAt(num);
+				continue;
+			}
+			eventMaterialReference.MaterialType = (eventMaterialReference.MaterialType ?? "").Trim();
+			eventMaterialReference.Label = neutralizeWeeklyText ? neutralize(eventMaterialReference.Label) : (eventMaterialReference.Label ?? "").Trim();
+			eventMaterialReference.SnapshotText = neutralizeWeeklyText ? neutralize(eventMaterialReference.SnapshotText) : (eventMaterialReference.SnapshotText ?? "").Trim();
+			eventMaterialReference.HeroId = (eventMaterialReference.HeroId ?? "").Trim();
+			eventMaterialReference.KingdomId = (eventMaterialReference.KingdomId ?? "").Trim();
+			eventMaterialReference.SettlementId = (eventMaterialReference.SettlementId ?? "").Trim();
+			eventMaterialReference.ActionKind = (eventMaterialReference.ActionKind ?? "").Trim();
+			eventMaterialReference.ActorHeroId = (eventMaterialReference.ActorHeroId ?? "").Trim();
+			eventMaterialReference.ActorClanId = (eventMaterialReference.ActorClanId ?? "").Trim();
+			eventMaterialReference.ActorKingdomId = (eventMaterialReference.ActorKingdomId ?? "").Trim();
+			eventMaterialReference.TargetHeroId = (eventMaterialReference.TargetHeroId ?? "").Trim();
+			eventMaterialReference.TargetClanId = (eventMaterialReference.TargetClanId ?? "").Trim();
+			eventMaterialReference.TargetKingdomId = (eventMaterialReference.TargetKingdomId ?? "").Trim();
+			eventMaterialReference.SettlementOwnerHeroId = (eventMaterialReference.SettlementOwnerHeroId ?? "").Trim();
+			eventMaterialReference.SettlementOwnerClanId = (eventMaterialReference.SettlementOwnerClanId ?? "").Trim();
+			eventMaterialReference.SettlementOwnerKingdomId = (eventMaterialReference.SettlementOwnerKingdomId ?? "").Trim();
+			eventMaterialReference.PreviousSettlementOwnerHeroId = (eventMaterialReference.PreviousSettlementOwnerHeroId ?? "").Trim();
+			eventMaterialReference.PreviousSettlementOwnerClanId = (eventMaterialReference.PreviousSettlementOwnerClanId ?? "").Trim();
+			eventMaterialReference.PreviousSettlementOwnerKingdomId = (eventMaterialReference.PreviousSettlementOwnerKingdomId ?? "").Trim();
+			eventMaterialReference.LocationText = (eventMaterialReference.LocationText ?? "").Trim();
+			eventMaterialReference.RelatedHeroIds = NormalizeEventMaterialIdListInPlace(eventMaterialReference.RelatedHeroIds);
+			eventMaterialReference.RelatedClanIds = NormalizeEventMaterialIdListInPlace(eventMaterialReference.RelatedClanIds);
+			eventMaterialReference.RelatedKingdomIds = NormalizeEventMaterialIdListInPlace(eventMaterialReference.RelatedKingdomIds);
+			eventMaterialReference.SourceStableKeys = NormalizeEventMaterialIdListInPlace(eventMaterialReference.SourceStableKeys);
+			eventMaterialReference.SourceActionKinds = NormalizeEventMaterialIdListInPlace(eventMaterialReference.SourceActionKinds);
+			eventMaterialReference.SourceMaterialCount = Math.Max(0, eventMaterialReference.SourceMaterialCount);
+			eventMaterialReference.ActionStableKey = (eventMaterialReference.ActionStableKey ?? "").Trim();
+		}
+		return list;
+	}
+
+	internal static List<string> NormalizeEventMaterialIdListInPlace(List<string> values)
+	{
+		List<string> list = values ?? new List<string>();
+		for (int num = list.Count - 1; num >= 0; num--)
+		{
+			string text = (list[num] ?? "").Trim();
+			if (string.IsNullOrWhiteSpace(text))
+			{
+				list.RemoveAt(num);
+			}
+			else
+			{
+				list[num] = text;
+			}
+		}
+		return list;
+	}
+
 }
