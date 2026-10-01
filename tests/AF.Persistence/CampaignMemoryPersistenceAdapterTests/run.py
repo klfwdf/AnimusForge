@@ -22,6 +22,7 @@ for marker,value in dto_extra.items():harness=harness.replace(marker,value)
 paths=['src/AF.GameAdapter.Bannerlord/Persistence/CampaignMemoryPersistenceAdapter.cs','src/AF.Persistence/CampaignSaveChunkHelper.cs','src/AF.Persistence/OwnerJsonStorageCodec.cs','src/modules/AF.Module.Memory/Records/MemoryPersistenceModels.cs','src/modules/AF.Module.Memory/Records/NpcActionEntry.cs']
 paths += ['src/AF.GameAdapter.Bannerlord/Persistence/'+name+'.cs' for name in ['CampaignShownRecordPersistenceAdapter','CampaignPersonaPersistenceAdapter','CampaignNpcActionPersistenceAdapter','CampaignWeeklyRecordPersistenceAdapter','CampaignMaterialPersistenceAdapter']]
 paths.append('src/modules/AF.Module.Memory/Records/NpcActionLedger.cs')
+paths += ['src/AF.GameAdapter.Bannerlord/Persistence/CampaignKingdomPersistenceAdapter.cs','src/modules/AF.Module.Kingdom/Stability/KingdomStabilityPolicy.cs','src/modules/AF.Module.Kingdom/Rebellion/RebellionRules.cs']
 paths.append('src/modules/AF.Module.Weekly/Models/WeeklyLegacyDtos.cs')
 paths += ['src/modules/AF.Module.Memory/Records/CampaignMaterialRecordOwner.cs','src/modules/AF.Module.Memory/Records/EventSourceMaterialIndex.cs']
 material_source=(ROOT/'src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.CampaignMaterialRecords.cs').read_text(encoding='utf-8-sig')
