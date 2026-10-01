@@ -1,0 +1,72 @@
+// Appended to the existing receipt fixtures by the isolated terminal runner.
+var materialState = new AnimusForge.MemoryBusinessStateOwner();
+AnimusForge.WeeklyMemoryMaterialTrigger Trigger(string key, int day = 42, int scene = -1, int dialogue = -1)
+    => new() { MemoryId = "hero-1", GameDayIndex = day, SceneSessionId = scene,
+        DialogueSessionId = dialogue, StableKey = key, FootholdKingdomId = "kingdom_A",
+        NormalizedTagText = "[ACTION:DUEL]", Tags = new() { "[ACTION:DUEL]" } };
+var materialDraft = new AnimusForge.DailyMemoryDraft { HeroId = "hero-1", GameDayIndex = 42,
+    Lines = new() { new() { Text = "hello" } } };
+materialState.StageWeeklyTrigger(Trigger("scene", scene: 3), 42);
+materialState.StageWeeklyTrigger(Trigger("native", dialogue: 4), 42);
+materialState.StageWeeklyTrigger(Trigger("loose"), 42);
+materialState.StageWeeklyTrigger(Trigger("other-day", day: 41), 42);
+materialState.AttachPendingWeeklyTriggers(materialDraft, new() { SceneSessionId = 8, DialogueSessionId = 9 }, 42);
+Require(materialDraft.WeeklyMaterialTriggers.Count == 1 && materialDraft.WeeklyMaterialTriggers[0].StableKey == "loose", "no-session attachment only");
+materialState.AttachPendingWeeklyTriggers(materialDraft, new() { SceneSessionId = 3, DialogueSessionId = 9 }, 42);
+Require(materialDraft.WeeklyMaterialTriggers.Count == 2 && materialState.PendingWeeklyTriggers.Count == 2, "same-day scene matches independently of dialogue");
+materialState.AttachPendingWeeklyTriggers(materialDraft, new() { SceneSessionId = 8, DialogueSessionId = 4 }, 42);
+Require(materialDraft.WeeklyMaterialTriggers.Count == 3 && materialState.PendingWeeklyTriggers.Single().StableKey == "other-day", "native match and cross-day separation");
+materialState.AddWeeklyTrigger(materialDraft, Trigger("SCENE"));
+Require(materialDraft.WeeklyMaterialTriggers.Count == 3, "case-insensitive stable-key dedupe");
+materialState.StageWeeklyTrigger(Trigger("boundary", day: 40), 42);
+materialState.StageWeeklyTrigger(Trigger("expired", day: 39), 42);
+Require(materialState.PendingWeeklyTriggers.Any(x => x.StableKey == "boundary") && !materialState.PendingWeeklyTriggers.Any(x => x.StableKey == "expired"), "two-day expiry boundary");
+
+var materialPublication = new AnimusForge.WeeklyActionOutcomePublicationOwner();
+materialPublication.Import(null, 7, out _);
+var materialCandidate = Candidate(requestId: "terminal:actual-draft");
+Prepare(materialPublication.Ledger, materialCandidate, Payload(), 9000);
+materialPublication.Ledger.Complete(materialCandidate.ReceiptId, materialCandidate.CandidateHash,
+    WeeklyMemoryMaterialOutcomeState.Confirmed, "", 9001, out _);
+bool Attach(WeeklyMemoryMaterialOutcomeReceipt receipt) => materialState.AttachConfirmedWeeklyOutcome(receipt, 43, "day43", 9010, out _);
+materialState.Blocks["hero-1"] = new() { new() { HeroId = "hero-1", GameDayIndex = 42 } };
+Require(materialPublication.Publish(materialCandidate.ReceiptId, materialCandidate.CandidateHash,
+    43, 9010, _ => true, Attach, out _) == WeeklyMemoryMaterialOutcomeOperationStatus.NotReady,
+    "compressed original day waits for current draft");
+Require(materialPublication.Ledger.FirstConfirmed() != null, "not-ready preserves receipt");
+materialState.Drafts["hero-1"] = new() { new() { HeroId = "hero-1", GameDayIndex = 43 } };
+Require(!Attach(materialPublication.Ledger.FirstConfirmed()), "empty new draft not ready");
+materialState.Drafts["hero-1"][0].Lines.Add(new() { Text = "ready" });
+Require(materialPublication.Publish(materialCandidate.ReceiptId, materialCandidate.CandidateHash,
+    43, 9020, _ => true, Attach, out _) == WeeklyMemoryMaterialOutcomeOperationStatus.Accepted,
+    "actual confirmed attachment and ledger completion");
+var actualTrigger = materialState.Drafts["hero-1"][0].WeeklyMaterialTriggers.Single();
+Require(actualTrigger.GameDayIndex == 43 && actualTrigger.GameDate == "day43"
+    && actualTrigger.OutcomeReceiptId == materialCandidate.ReceiptId && actualTrigger.EstimatedValueDenars == 25002,
+    "actual current-day provenance and frozen value");
+materialPublication.Publish(materialCandidate.ReceiptId, materialCandidate.CandidateHash, 43, 9030,
+    _ => true, _ => throw new Exception("must not republish"), out _);
+Require(materialState.Drafts["hero-1"][0].WeeklyMaterialTriggers.Count == 1, "published receipt once");
+var conflictCandidate = Candidate(requestId: "terminal:partial-failure", originGameDay: 43);
+Require(materialPublication.Ledger.Prepare(conflictCandidate, Payload(), 9100, out _)
+    == WeeklyMemoryMaterialOutcomeOperationStatus.Accepted, "partial conflict prepare");
+materialPublication.Ledger.Complete(conflictCandidate.ReceiptId, conflictCandidate.CandidateHash,
+    WeeklyMemoryMaterialOutcomeState.Confirmed, "", 9101, out _);
+var conflictReceipt = materialPublication.Ledger.FirstConfirmed();
+var conflict = actualTrigger.CopyForSummary();
+conflict.StableKey = "weekly_outcome:" + conflictReceipt.ReceiptId + ":" + conflictReceipt.PayloadHash;
+conflict.NpcName = "wrong frozen payload";
+materialState.Drafts["hero-1"][0].WeeklyMaterialTriggers.Add(conflict);
+Require(materialPublication.Publish(conflictCandidate.ReceiptId, conflictCandidate.CandidateHash,
+    43, 9102, _ => true, Attach, out _) == WeeklyMemoryMaterialOutcomeOperationStatus.NotReady
+    && materialPublication.Ledger.FirstConfirmed() != null, "partial conflicting draft never marked applied");
+var monetary = AnimusForge.WeeklyMemoryMaterialPolicy.EvaluateWeeklyMemoryMaterialTags(
+    new() { "[ACTION:GIVE_ASSET:GOLD:20000]" }, _ => 20000);
+Require(!monetary.Eligible, "strict value threshold retained");
+Require(AnimusForge.WeeklyMemoryMaterialPolicy.EvaluateWeeklyMemoryMaterialTags(
+    new() { "[ACTION:DUEL]" }, _ => 0).Eligible, "major tag independent of value");
+var political = AnimusForge.WeeklyPoliticalMaterialPolicy.SelectPoliticalReasonMaterialParts(
+    new() { "议题类型：宣战", "关系恶化", "原版理由：领土争执", "模型评分：4", "费用：10", "战争状态：交战", "无关细节" });
+Require(political.Count <= 6 && political[0] == "议题类型：宣战" && political[1].StartsWith("核心原因：")
+    && political.Contains("原版理由：领土争执"), "political priority and bounded material preserved");
+Console.WriteLine("PASS weeklyTerminal actual-pending/session/day/expiry/confirmed-publication/partial-failure/material/political LIVE=NOT_RUN SAVE=NOT_RUN");
