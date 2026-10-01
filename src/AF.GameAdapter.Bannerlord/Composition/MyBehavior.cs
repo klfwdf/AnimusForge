@@ -199,7 +199,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		public Clan OwnerClan;
 	}
 
-	private class DialogueDay
+	internal class DialogueDay
 	{
 		public int GameDayIndex;
 
@@ -365,7 +365,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		public string DisplayName;
 	}
 
-	private sealed class EventRecordEntry
+	internal sealed class EventRecordEntry
 	{
 		public string EventId;
 
@@ -772,80 +772,11 @@ public partial class MyBehavior : CampaignBehaviorBase
 		public string Label;
 	}
 
-	private sealed class WeeklyReportRequestResult
-	{
-		public bool Success;
 
-		public string Title;
 
-		public string ShortSummary;
 
-		public string Report;
 
-		public string TagText;
 
-		public string PromptPreview;
-
-		public string FailureReason;
-
-		public int AttemptsUsed;
-
-		public bool IsRateLimit;
-
-		public bool IsRequestsPerMinuteLimit;
-
-		public bool IsQuotaLimit;
-
-		public int? RetryAfterSeconds;
-	}
-
-	private sealed class WeeklyReportBatchBlockResult
-	{
-		public string ReportId;
-
-		public string Mode;
-
-		public string Kind;
-
-		public string KingdomId;
-
-		public string Title;
-
-		public string ShortSummary;
-
-		public string Report;
-
-		public string TagText;
-
-		public bool Parsed;
-
-		public string FailureReason;
-	}
-
-	private sealed class WeeklyReportBatchRequestResult
-	{
-		public bool Success = false;
-
-		public string PromptPreview = "";
-
-		public string RawResponse = "";
-
-		public string FailureReason = "";
-
-		public List<WeeklyReportBatchBlockResult> Blocks = new List<WeeklyReportBatchBlockResult>();
-
-		public List<string> MissingReportIds = new List<string>();
-
-		public int AttemptsUsed = 0;
-
-		public bool IsRateLimit;
-
-		public bool IsRequestsPerMinuteLimit;
-
-		public bool IsQuotaLimit;
-
-		public int? RetryAfterSeconds;
-	}
 
 	private sealed class WeeklyReportBatchExecutionResult
 	{
@@ -1330,7 +1261,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		public Banner Banner;
 	}
 
-	private sealed class ApiCallResult
+	internal sealed class ApiCallResult
 	{
 		public bool Success;
 
@@ -1409,26 +1340,28 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 	private const double ShoutPromptContextHardBudgetMs = 15000.0;
 
-	private Dictionary<string, List<DialogueDay>> _dialogueHistory = new Dictionary<string, List<DialogueDay>>();
+	private Dictionary<string, List<DialogueDay>> _dialogueHistory { get => _memoryBusinessState.History; set => _memoryBusinessState.History = value; }
 
-	private Dictionary<string, string> _dialogueHistoryStorage = new Dictionary<string, string>();
+	private Dictionary<string, string> _dialogueHistoryStorage { get => _memoryBusinessState.HistoryStorage; set => _memoryBusinessState.HistoryStorage = value; }
 
-	private Dictionary<string, List<DailyMemoryDraft>> _dailyMemoryDrafts = new Dictionary<string, List<DailyMemoryDraft>>(StringComparer.OrdinalIgnoreCase);
+	private readonly MemoryBusinessStateOwner _memoryBusinessState = new MemoryBusinessStateOwner();
 
-	private Dictionary<string, string> _dailyMemoryDraftStorage = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+	private Dictionary<string, List<DailyMemoryDraft>> _dailyMemoryDrafts { get => _memoryBusinessState.Drafts; set => _memoryBusinessState.Drafts = value; }
 
-	private Dictionary<string, List<CompressedMemoryBlock>> _compressedMemoryBlocks = new Dictionary<string, List<CompressedMemoryBlock>>(StringComparer.OrdinalIgnoreCase);
+	private Dictionary<string, string> _dailyMemoryDraftStorage { get => _memoryBusinessState.DraftStorage; set => _memoryBusinessState.DraftStorage = value; }
 
-	private Dictionary<string, string> _compressedMemoryBlockStorage = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+	private Dictionary<string, List<CompressedMemoryBlock>> _compressedMemoryBlocks { get => _memoryBusinessState.Blocks; set => _memoryBusinessState.Blocks = value; }
 
-	private List<WeeklyMemoryMaterialTrigger> _pendingWeeklyMemoryMaterialTriggers = new List<WeeklyMemoryMaterialTrigger>();
+	private Dictionary<string, string> _compressedMemoryBlockStorage { get => _memoryBusinessState.BlockStorage; set => _memoryBusinessState.BlockStorage = value; }
 
-	private List<MemorySummaryJob> _memorySummaryQueue = new List<MemorySummaryJob>();
+	private List<WeeklyMemoryMaterialTrigger> _pendingWeeklyMemoryMaterialTriggers { get => _memoryBusinessState.PendingWeeklyTriggers; set => _memoryBusinessState.PendingWeeklyTriggers = value; }
+
+	private List<MemorySummaryJob> _memorySummaryQueue { get => _memoryBusinessState.DailyQueue; set => _memoryBusinessState.DailyQueue = value; }
 
 	private string _memorySummaryQueueJsonStorage = "";
 
 
-	private bool _memorySummaryFailurePopupActive;
+	private ref bool _memorySummaryFailurePopupActive => ref _memoryFailureNotices.Active;
 
 	private int _nativeConversationMemorySessionCounter;
 
@@ -1443,19 +1376,19 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 	private readonly HashSet<PartyBase> _destroyedPartyMemoryCleanupDedup = new HashSet<PartyBase>();
 
-	private Dictionary<string, MemoryOverviewState> _memoryOverviewStates = new Dictionary<string, MemoryOverviewState>(StringComparer.OrdinalIgnoreCase);
+	private Dictionary<string, MemoryOverviewState> _memoryOverviewStates { get => _memoryBusinessState.Overviews; set => _memoryBusinessState.Overviews = value; }
 
-	private Dictionary<string, string> _memoryOverviewStateStorage = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+	private Dictionary<string, string> _memoryOverviewStateStorage { get => _memoryBusinessState.OverviewStorage; set => _memoryBusinessState.OverviewStorage = value; }
 
-	private List<MemoryOverviewJob> _memoryOverviewQueue = new List<MemoryOverviewJob>();
+	private List<MemoryOverviewJob> _memoryOverviewQueue { get => _memoryBusinessState.OverviewQueue; set => _memoryBusinessState.OverviewQueue = value; }
 
 	private string _memoryOverviewQueueJsonStorage = "";
 
-	private Dictionary<string, MajorActionSummaryState> _npcMajorActionSummaries = new Dictionary<string, MajorActionSummaryState>(StringComparer.OrdinalIgnoreCase);
+	private Dictionary<string, MajorActionSummaryState> _npcMajorActionSummaries { get => _memoryBusinessState.MajorSummaries; set => _memoryBusinessState.MajorSummaries = value; }
 
-	private Dictionary<string, string> _npcMajorActionSummaryStorage = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+	private Dictionary<string, string> _npcMajorActionSummaryStorage { get => _memoryBusinessState.MajorStorage; set => _memoryBusinessState.MajorStorage = value; }
 
-	private List<MajorActionSummaryJob> _npcMajorActionSummaryQueue = new List<MajorActionSummaryJob>();
+	private List<MajorActionSummaryJob> _npcMajorActionSummaryQueue { get => _memoryBusinessState.MajorQueue; set => _memoryBusinessState.MajorQueue = value; }
 
 	private string _npcMajorActionSummaryQueueJsonStorage = "";
 
@@ -1467,25 +1400,25 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 	private readonly HashSet<string> _dailyMaintenanceJobKeys = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
-	private readonly HashSet<string> _dirtyMemoryOverviewIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+	private HashSet<string> _dirtyMemoryOverviewIds { get => _memoryBusinessState.DirtyOverviewIds; }
 
-	private readonly Queue<string> _pendingMemoryOverviewCandidateScanIds = new Queue<string>();
+	private Queue<string> _pendingMemoryOverviewCandidateScanIds { get => _memoryBusinessState.OverviewCandidateIds; }
 
-	private readonly HashSet<string> _pendingMemoryOverviewCandidateScanIdSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+	private HashSet<string> _pendingMemoryOverviewCandidateScanIdSet { get => _memoryBusinessState.OverviewCandidateIdSet; }
 
 	private PendingAutoWeeklyReportBuild _pendingAutoWeeklyReportBuild;
 
-	private List<string> _dailyMemoryDraftSealOwnerKeys;
+	private List<string> _dailyMemoryDraftSealOwnerKeys { get => _memoryBusinessState.Sealing.OwnerKeys; set => _memoryBusinessState.Sealing.OwnerKeys = value; }
 
-	private int _dailyMemoryDraftSealOwnerIndex;
+	private int _dailyMemoryDraftSealOwnerIndex { get => _memoryBusinessState.Sealing.OwnerIndex; set => _memoryBusinessState.Sealing.OwnerIndex = value; }
 
-	private int _dailyMemoryDraftSealDraftIndex = -1;
+	private int _dailyMemoryDraftSealDraftIndex { get => _memoryBusinessState.Sealing.DraftIndex; set => _memoryBusinessState.Sealing.DraftIndex = value; }
 
-	private int _dailyMemoryDraftSealTargetDay = -1;
+	private int _dailyMemoryDraftSealTargetDay { get => _memoryBusinessState.Sealing.TargetDay; set => _memoryBusinessState.Sealing.TargetDay = value; }
 
-	private HashSet<string> _dailyMemoryDraftSealQueued;
+	private HashSet<string> _dailyMemoryDraftSealQueued { get => _memoryBusinessState.Sealing.Queued; set => _memoryBusinessState.Sealing.Queued = value; }
 
-	private HashSet<string> _dailyMemoryDraftSealQueuedMajor;
+	private HashSet<string> _dailyMemoryDraftSealQueuedMajor { get => _memoryBusinessState.Sealing.QueuedMajor; set => _memoryBusinessState.Sealing.QueuedMajor = value; }
 
 	private readonly WeeklyReportCommitQueueOwner<PendingWeeklyReportCommitContext, WeeklyReportGenerationResult> _weeklyReportCommitQueue =
 		new WeeklyReportCommitQueueOwner<PendingWeeklyReportCommitContext, WeeklyReportGenerationResult>(CompletePendingWeeklyReportCommit, () => new WeeklyReportGenerationResult());
@@ -1524,13 +1457,13 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 	private long _lastMemoryOverviewCandidateScanUtcTicks;
 
-	private Dictionary<string, List<NpcActionEntry>> _npcMajorActions = new Dictionary<string, List<NpcActionEntry>>();
+	private Dictionary<string, List<NpcActionEntry>> _npcMajorActions { get => _memoryBusinessState.MajorActions; set => _memoryBusinessState.MajorActions = value; }
 
-	private Dictionary<string, string> _npcMajorActionStorage = new Dictionary<string, string>();
+	private Dictionary<string, string> _npcMajorActionStorage { get => _memoryBusinessState.MajorActionStorage; set => _memoryBusinessState.MajorActionStorage = value; }
 
-	private Dictionary<string, List<NpcActionEntry>> _npcRecentActions = new Dictionary<string, List<NpcActionEntry>>();
+	private Dictionary<string, List<NpcActionEntry>> _npcRecentActions { get => _memoryBusinessState.RecentActions; set => _memoryBusinessState.RecentActions = value; }
 
-	private Dictionary<string, string> _npcRecentActionStorage = new Dictionary<string, string>();
+	private Dictionary<string, string> _npcRecentActionStorage { get => _memoryBusinessState.RecentActionStorage; set => _memoryBusinessState.RecentActionStorage = value; }
 
 	private readonly Dictionary<string, HashSet<string>> _npcRecentActionStableKeyIndex = new Dictionary<string, HashSet<string>>(StringComparer.OrdinalIgnoreCase);
 
@@ -1590,7 +1523,10 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 	private const int WeeklyReportReadingXpBatchSize = 20;
 
-	private List<string> _unreadWeeklyReportNoticeEventIds = new List<string>();
+	private readonly WeeklyNoticeStateOwner _weeklyNoticeOwner = new WeeklyNoticeStateOwner();
+ private WeeklyNoticePort _weeklyNoticePort;
+ private WeeklyNoticePort WeeklyNoticePort => _weeklyNoticePort ??= new WeeklyNoticePort { FindRecord = FindWeeklyReportRecordById, IsBulletin = IsWorldBulletinEventId, NearestKingdom = ResolveNearestWeeklyReportKingdomId, Log = Logger.Log, Publish = record => MBInformationManager.AddNotice(new AnimusForgeWeeklyReportMapNotification(record.EventId, BuildWeeklyReportNoticeTitle(record), BuildWeeklyReportNoticeDescription(record))) };
+ private List<string> _unreadWeeklyReportNoticeEventIds { get => _weeklyNoticeOwner.Unread; set => _weeklyNoticeOwner.Unread = value; }
 
 	private List<string> _weeklyReportReadingXpClaimedEventIds = new List<string>();
 
@@ -1602,9 +1538,9 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 	private int _weeklyReportReadingXpPendingSteward;
 
-	private readonly HashSet<string> _weeklyReportNoticeEventIdsShownThisSession = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+	private HashSet<string> _weeklyReportNoticeEventIdsShownThisSession { get => _weeklyNoticeOwner.Shown; }
 
-	private bool _weeklyReportNoticeQueueNormalizedForCurrentPolicy;
+	private bool _weeklyReportNoticeQueueNormalizedForCurrentPolicy { get => _weeklyNoticeOwner.NormalizedForPolicy; set => _weeklyNoticeOwner.NormalizedForPolicy = value; }
 
 	private MapNotificationView _weeklyReportRegisteredMapNotificationView;
 
@@ -4153,57 +4089,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		_activeNativeConversationMemorySessionId = -1;
 	}
 
-	private void TryEnqueueMajorActionSummaryForDraft(DailyMemoryDraft draft, HashSet<string> queuedMajorHeroIds, bool ownerAlreadyEligible = false)
-	{
-		try
-		{
-			if (draft == null || !draft.HasLlmDialogue)
-			{
-				return;
-			}
-			string heroId = NormalizeMemoryHeroId(draft.HeroId);
-			if (string.IsNullOrWhiteSpace(heroId) || IsNonHeroMemoryId(heroId) || (!ownerAlreadyEligible && !IsMemoryEntityEligibleForCompressedMemory(heroId)) || _npcMajorActions == null || !_npcMajorActions.TryGetValue(heroId, out var actions) || actions == null)
-			{
-				// Major-action summaries belong to Heroes only; callers may reuse an owner-level eligibility check for a slice.
-				return;
-			}
-			List<NpcActionEntry> sanitizedActions = SanitizeNpcActionEntries(actions, keepOnlyRecentWindow: false);
-			if (sanitizedActions.Count <= 0 || !HasMajorActionsNeedingSummary(heroId, sanitizedActions))
-			{
-				return;
-			}
-			if (_npcMajorActionSummaryQueue == null)
-			{
-				_npcMajorActionSummaryQueue = new List<MajorActionSummaryJob>();
-			}
-			MajorActionSummaryJob existing = _npcMajorActionSummaryQueue.FirstOrDefault((MajorActionSummaryJob x) => x != null && string.Equals(NormalizeMemoryHeroId(x.HeroId), heroId, StringComparison.OrdinalIgnoreCase));
-			if (existing != null)
-			{
-				existing.TriggerGameDayIndex = Math.Max(existing.TriggerGameDayIndex, draft.GameDayIndex);
-				if (string.IsNullOrWhiteSpace(existing.TriggerGameDate))
-				{
-					existing.TriggerGameDate = (draft.GameDate ?? "").Trim();
-				}
-				queuedMajorHeroIds?.Add(heroId);
-				return;
-			}
-			if (queuedMajorHeroIds != null && !queuedMajorHeroIds.Add(heroId))
-			{
-				return;
-			}
-			_npcMajorActionSummaryQueue.Add(new MajorActionSummaryJob
-			{
-				HeroId = heroId,
-				HeroName = (draft.HeroName ?? "").Trim(),
-				TriggerGameDayIndex = draft.GameDayIndex,
-				TriggerGameDate = (draft.GameDate ?? "").Trim()
-			});
-		}
-		catch (Exception ex)
-		{
-			Logger.Log("NpcMajorSummary", "[ERROR] TryEnqueueMajorActionSummaryForDraft failed: " + ex.Message);
-		}
-	}
+	private void TryEnqueueMajorActionSummaryForDraft(DailyMemoryDraft draft, HashSet<string> queuedMajorHeroIds, bool ownerAlreadyEligible = false) => MemoryQueueState.TryEnqueueMajorActionSummaryForDraft(draft, queuedMajorHeroIds, ownerAlreadyEligible);
 
 	private void TryEnqueueMemoryOverviewForHero(Hero hero, List<CompressedMemoryBlock> blocks = null)
 	{
@@ -4226,55 +4112,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private void TryEnqueueMemoryOverviewForMemoryId(string memoryId, string memoryName, List<CompressedMemoryBlock> blocks = null)
-	{
-		try
-		{
-			string heroId = NormalizeMemoryHeroId(memoryId);
-			if (!IsMemoryEntityEligibleForCompressedMemory(heroId))
-			{
-				return;
-			}
-			List<CompressedMemoryBlock> sanitizedBlocks = SanitizeCompressedMemoryBlocks(blocks ?? LoadCompressedMemoryBlocksById(heroId));
-			if (!HasMemoryOverviewPendingBlocks(heroId, sanitizedBlocks))
-			{
-				return;
-			}
-			if (_memoryOverviewQueue == null)
-			{
-				_memoryOverviewQueue = new List<MemoryOverviewJob>();
-			}
-			MemoryOverviewJob existing = _memoryOverviewQueue.FirstOrDefault((MemoryOverviewJob x) => x != null && string.Equals(NormalizeMemoryHeroId(x.HeroId), heroId, StringComparison.OrdinalIgnoreCase));
-			CompressedMemoryBlock latestBlock = sanitizedBlocks.OrderByDescending((CompressedMemoryBlock x) => x.GameDayIndex).ThenByDescending((CompressedMemoryBlock x) => x.EndHour).FirstOrDefault();
-			string heroName = (memoryName ?? latestBlock?.HeroName ?? "NPC").Trim();
-			if (string.IsNullOrWhiteSpace(heroName))
-			{
-				heroName = "NPC";
-			}
-			if (existing != null)
-			{
-				existing.HeroName = string.IsNullOrWhiteSpace(existing.HeroName) ? heroName : existing.HeroName;
-				existing.TriggerGameDayIndex = Math.Max(existing.TriggerGameDayIndex, latestBlock?.GameDayIndex ?? 0);
-				if (string.IsNullOrWhiteSpace(existing.TriggerGameDate))
-				{
-					existing.TriggerGameDate = (latestBlock?.GameDate ?? "").Trim();
-				}
-				return;
-			}
-			_memoryOverviewQueue.Add(new MemoryOverviewJob
-			{
-				HeroId = heroId,
-				HeroName = heroName,
-				TriggerGameDayIndex = latestBlock?.GameDayIndex ?? 0,
-				TriggerGameDate = (latestBlock?.GameDate ?? "").Trim()
-			});
-			_memoryOverviewQueue = SanitizeMemoryOverviewQueue(_memoryOverviewQueue);
-		}
-		catch (Exception ex)
-		{
-			Logger.Log("MemoryOverview", "[ERROR] TryEnqueueMemoryOverviewForMemoryId failed: " + ex.Message);
-		}
-	}
+	private void TryEnqueueMemoryOverviewForMemoryId(string memoryId, string memoryName, List<CompressedMemoryBlock> blocks = null) => MemoryQueueState.TryEnqueueMemoryOverviewForMemoryId(memoryId, memoryName, blocks);
 
 	private void TryEnqueueMemoryOverviewForAllCandidates()
 	{
@@ -4399,17 +4237,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private void ResetDailyMemoryDraftSealSliceState()
-	{
-		_dailyMemoryDraftSealOwnerKeys = null;
-		_dailyMemoryDraftSealOwnerIndex = 0;
-		_dailyMemoryDraftSealDraftIndex = -1;
-		_dailyMemoryDraftSealTargetDay = -1;
-		_dailyMemoryDraftSealQueued = null;
-		_dailyMemoryDraftSealQueuedMajor = null;
-		_dailyMemorySealState = null;
-		_dailyMemorySealCompletedPass = false;
-	}
+	private void ResetDailyMemoryDraftSealSliceState() { _memoryBusinessState.Sealing.Reset(); }
 
 	private bool HasCompressedMemoryBlock(string heroId, int dayIndex)
 	{
@@ -4680,39 +4508,10 @@ public partial class MyBehavior : CampaignBehaviorBase
 		return result;
 	}
 
-	private DailyMemoryDraft FindMemoryDraft(MemorySummaryJob job)
-	{
-		if (job == null)
-		{
-			return null;
-		}
-		string text = NormalizeMemoryHeroId(job.HeroId);
-		if (string.IsNullOrWhiteSpace(text) || _dailyMemoryDrafts == null || !_dailyMemoryDrafts.TryGetValue(text, out var value) || value == null)
-		{
-			return null;
-		}
-		// A persisted queue key must agree with the draft owner; never summarize or retarget an ambiguous old-save draft.
-		return value.FirstOrDefault((DailyMemoryDraft x) => x != null && x.GameDayIndex == job.GameDayIndex && string.Equals(NormalizeMemoryHeroId(x.HeroId), text, StringComparison.OrdinalIgnoreCase));
-	}
+	private DailyMemoryDraft FindMemoryDraft(MemorySummaryJob job) => MemoryQueueState.FindMemoryDraft(job);
 
-	private bool HasMemorySummaryJobStillPending(MemorySummaryJob job)
-	{
-		try
-		{
-			string heroId = NormalizeMemoryHeroId(job?.HeroId);
-			if (job == null || job.RetryCount >= 3 || string.IsNullOrWhiteSpace(heroId) || !IsMemoryEntityEligibleForCompressedMemory(heroId) || HasCompressedMemoryBlock(heroId, job.GameDayIndex))
-			{
-				return false;
-			}
-			DailyMemoryDraft draft = FindMemoryDraft(job);
-			// Retry exhaustion is stored on both queue and draft, so old saves cannot silently recreate a terminal job.
-			return draft != null && draft.SummaryRetryCount < 3 && draft.HasLlmDialogue && CountDailyMemorySummarySourceChars(draft) > 0;
-		}
-		catch
-		{
-			return false;
-		}
-	}
+	private MemoryBusinessStateOwner MemoryQueueState { get { _memoryBusinessState.QueuePort ??= new MemoryQueuePort { IsEntityEligible = IsMemoryEntityEligibleForCompressedMemory, OverviewStartCount = GetMemoryOverviewStartBlockCountFromSettings, CurrentDay = () => (int)CampaignTime.Now.ToDays, Log = Logger.Log }; return _memoryBusinessState; } }
+	private bool HasMemorySummaryJobStillPending(MemorySummaryJob job) => MemoryQueueState.HasMemorySummaryJobStillPending(job);
 
 	private async Task<MemorySummaryExecutionResult> ExecuteMemorySummaryJobAsync(MemorySummaryJob job, int maxAttempts, string expectedJobFingerprint = null, MemorySummaryRunOwner.Lease run = null)
 	{
@@ -4871,56 +4670,12 @@ public partial class MyBehavior : CampaignBehaviorBase
 			CancelUnavailableHeroCompressionWorkById(heroId, "memory_overview_apply");
 			return false;
 		}
-		if (_memoryOverviewStates == null)
-		{
-			_memoryOverviewStates = new Dictionary<string, MemoryOverviewState>(StringComparer.OrdinalIgnoreCase);
-		}
-		state.HeroId = heroId;
-		if (string.IsNullOrWhiteSpace(state.HeroName))
-		{
-			state.HeroName = (job.HeroName ?? "").Trim();
-		}
-		_memoryOverviewStates[heroId] = SanitizeMemoryOverviewState(state);
-		if (_memoryOverviewQueue != null)
-		{
-			_memoryOverviewQueue.RemoveAll((MemoryOverviewJob x) => x != null && string.Equals(NormalizeMemoryHeroId(x.HeroId), heroId, StringComparison.OrdinalIgnoreCase));
-		}
-		Logger.Log("MemoryOverview", "summary_success hero=" + heroId + " blocks=" + (state.IncludedBlockIds?.Count ?? 0));
-		return true;
+		return _memoryBusinessState.ApplyOverview(job, state, heroId, () => Logger.Log("MemoryOverview", "summary_success hero=" + heroId + " blocks=" + (state.IncludedBlockIds?.Count ?? 0)));
 	}
 
 	private void MarkMemoryOverviewFailure(MemoryOverviewJob job, string error)
 	{
-		if (job == null)
-		{
-			return;
-		}
-		string heroId = NormalizeMemoryHeroId(job.HeroId);
-		if (_memoryOverviewQueue != null)
-		{
-			foreach (MemoryOverviewJob item in _memoryOverviewQueue)
-			{
-				if (item != null && string.Equals(NormalizeMemoryHeroId(item.HeroId), heroId, StringComparison.OrdinalIgnoreCase))
-				{
-					item.RetryCount = 3;
-					item.LastError = (error ?? "").Trim();
-				}
-			}
-		}
-		if (!string.IsNullOrWhiteSpace(heroId))
-		{
-			MemoryOverviewState state = GetMemoryOverviewState(heroId) ?? new MemoryOverviewState
-			{
-				HeroId = heroId,
-				HeroName = (job.HeroName ?? "").Trim()
-			};
-			state.LastError = (error ?? "").Trim();
-			if (_memoryOverviewStates == null)
-			{
-				_memoryOverviewStates = new Dictionary<string, MemoryOverviewState>(StringComparer.OrdinalIgnoreCase);
-			}
-			_memoryOverviewStates[heroId] = SanitizeMemoryOverviewState(state);
-		}
+		_memoryBusinessState.FailOverview(job, error);
 	}
 
 	private static string BuildMajorActionSummarySystemPrompt(int targetChars)
@@ -4993,56 +4748,12 @@ public partial class MyBehavior : CampaignBehaviorBase
 			CancelUnavailableHeroCompressionWorkById(heroId, "major_action_summary_apply");
 			return false;
 		}
-		if (_npcMajorActionSummaries == null)
-		{
-			_npcMajorActionSummaries = new Dictionary<string, MajorActionSummaryState>(StringComparer.OrdinalIgnoreCase);
-		}
-		state.HeroId = heroId;
-		if (string.IsNullOrWhiteSpace(state.HeroName))
-		{
-			state.HeroName = (job.HeroName ?? "").Trim();
-		}
-		_npcMajorActionSummaries[heroId] = SanitizeMajorActionSummaryState(state);
-		if (_npcMajorActionSummaryQueue != null)
-		{
-			_npcMajorActionSummaryQueue.RemoveAll((MajorActionSummaryJob x) => x != null && string.Equals(NormalizeMemoryHeroId(x.HeroId), heroId, StringComparison.OrdinalIgnoreCase));
-		}
-		Logger.Log("NpcMajorSummary", "summary_success hero=" + heroId + " day=" + state.LastSummarizedDay + " sequence=" + state.LastSummarizedSequence);
-		return true;
+		return _memoryBusinessState.ApplyMajor(job, state, heroId, () => Logger.Log("NpcMajorSummary", "summary_success hero=" + heroId + " day=" + state.LastSummarizedDay + " sequence=" + state.LastSummarizedSequence));
 	}
 
 	private void MarkMajorActionSummaryFailure(MajorActionSummaryJob job, string error)
 	{
-		if (job == null)
-		{
-			return;
-		}
-		string heroId = NormalizeMemoryHeroId(job.HeroId);
-		if (_npcMajorActionSummaryQueue != null)
-		{
-			foreach (MajorActionSummaryJob item in _npcMajorActionSummaryQueue)
-			{
-				if (item != null && string.Equals(NormalizeMemoryHeroId(item.HeroId), heroId, StringComparison.OrdinalIgnoreCase))
-				{
-					item.RetryCount = 3;
-					item.LastError = (error ?? "").Trim();
-				}
-			}
-		}
-		if (!string.IsNullOrWhiteSpace(heroId))
-		{
-			MajorActionSummaryState state = GetMajorActionSummaryState(heroId) ?? new MajorActionSummaryState
-			{
-				HeroId = heroId,
-				HeroName = (job.HeroName ?? "").Trim()
-			};
-			state.LastError = (error ?? "").Trim();
-			if (_npcMajorActionSummaries == null)
-			{
-				_npcMajorActionSummaries = new Dictionary<string, MajorActionSummaryState>(StringComparer.OrdinalIgnoreCase);
-			}
-			_npcMajorActionSummaries[heroId] = SanitizeMajorActionSummaryState(state);
-		}
+		_memoryBusinessState.FailMajor(job, error);
 	}
 
 	private static string BuildMemorySummarySystemPrompt(DailyMemoryDraft draft)
@@ -5152,53 +4863,21 @@ public partial class MyBehavior : CampaignBehaviorBase
 			CancelUnavailableHeroCompressionWorkById(memoryId, "memory_summary_apply");
 			return false;
 		}
-		List<CompressedMemoryBlock> blocks = LoadCompressedMemoryBlocksById(memoryId);
-		blocks.RemoveAll((CompressedMemoryBlock x) => x != null && x.GameDayIndex == job.GameDayIndex);
-		blocks.Add(block);
-		SaveCompressedMemoryBlocksById(memoryId, blocks);
-		List<DailyMemoryDraft> drafts = LoadDailyMemoryDraftsById(memoryId);
-		drafts.RemoveAll((DailyMemoryDraft x) => x != null && x.GameDayIndex == job.GameDayIndex);
-		SaveDailyMemoryDraftsById(memoryId, drafts);
-		if (hero != null)
-		{
-			ShoutBehavior.ClearNativeConversationSessionHistoryForExternal(hero, hero.CharacterObject, hero.Name?.ToString(), job.GameDayIndex);
-		}
-		if (_memorySummaryQueue != null)
-		{
-			_memorySummaryQueue.RemoveAll((MemorySummaryJob x) => x != null && string.Equals(NormalizeMemoryHeroId(x.HeroId), memoryId, StringComparison.OrdinalIgnoreCase) && x.GameDayIndex == job.GameDayIndex);
-		}
-		Logger.Log("CompressedMemory", "summary_success hero=" + (job.HeroId ?? "") + " day=" + job.GameDayIndex + " title=" + (block.RichTitle ?? ""));
-		if (!string.IsNullOrWhiteSpace(block.PlayerHistoryMaterial))
-		{
-			Settlement settlement = hero?.CurrentSettlement ?? Settlement.CurrentSettlement;
-			PlayerNotorietyBehavior.RecordPublicMemoryForExternal(hero, settlement, block.PlayerHistoryMaterial, block.PlayerPublicity, block.PlayerPublicityReason, block.GameDayIndex, block.GameDate);
-		}
-		RecordPublicDailyMemoryWeeklyMaterial(block);
-		RecordWeeklyMemoryMaterialForBlock(block);
-		TryEnqueueMemoryOverviewForMemoryId(memoryId, job.HeroName, blocks);
-		return true;
+		return _memoryBusinessState.ApplyDaily(job, block, memoryId, new MemoryDailyCommitEffects
+        {
+            MarkOverviewDirty = MarkMemoryOverviewDirty,
+            ClearNativeHistory = day => { if (hero != null) ShoutBehavior.ClearNativeConversationSessionHistoryForExternal(hero, hero.CharacterObject, hero.Name?.ToString(), day); },
+            LogSuccess = () => Logger.Log("CompressedMemory", "summary_success hero=" + (job.HeroId ?? "") + " day=" + job.GameDayIndex + " title=" + (block.RichTitle ?? "")),
+            RecordPublicMemory = value => PlayerNotorietyBehavior.RecordPublicMemoryForExternal(hero, hero?.CurrentSettlement ?? Settlement.CurrentSettlement, value.PlayerHistoryMaterial, value.PlayerPublicity, value.PlayerPublicityReason, value.GameDayIndex, value.GameDate),
+            RecordPublicWeeklyMaterial = RecordPublicDailyMemoryWeeklyMaterial,
+            RecordWeeklyMaterial = RecordWeeklyMemoryMaterialForBlock,
+            EnqueueOverview = TryEnqueueMemoryOverviewForMemoryId
+        });
 	}
 
 	private void MarkMemorySummaryFailure(MemorySummaryJob job, string error)
 	{
-		if (job == null || _memorySummaryQueue == null)
-		{
-			return;
-		}
-		foreach (MemorySummaryJob item in _memorySummaryQueue)
-		{
-			if (item != null && string.Equals(NormalizeMemoryHeroId(item.HeroId), NormalizeMemoryHeroId(job.HeroId), StringComparison.OrdinalIgnoreCase) && item.GameDayIndex == job.GameDayIndex)
-			{
-				item.RetryCount = 3;
-				item.LastError = (error ?? "").Trim();
-			}
-		}
-		DailyMemoryDraft draft = FindMemoryDraft(job);
-		if (draft != null)
-		{
-			draft.SummaryRetryCount = 3;
-			draft.LastSummaryError = (error ?? "").Trim();
-		}
+		_memoryBusinessState.FailDaily(job, error);
 	}
 
 	private void OnDailyTick()
@@ -17249,7 +16928,7 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 			dataStore.SyncData("_af_weeklyReportReadingXpPendingLeadership_v1", ref _weeklyReportReadingXpPendingLeadership);
 			dataStore.SyncData("_af_weeklyReportReadingXpPendingSteward_v1", ref _weeklyReportReadingXpPendingSteward);
 			NormalizeWeeklyReportReadingXpPendingBatch();
-			_weeklyReportNoticeEventIdsShownThisSession.Clear();
+			_weeklyNoticeOwner.ResetShown();
 			_weeklyReportNoticeQueueNormalizedForCurrentPolicy = false;
 			_weeklyReportRegisteredMapNotificationView = null;
 			_eventSourceMaterials.Clear();
@@ -20605,7 +20284,7 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
             {
                 SkillObject skill = skillMap[parsed.Key];
                 int value = parsed.Value;
-				
+
 				hero.SetSkillValue(skill, value);
 				applied++;
 			}
@@ -23737,391 +23416,57 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 		return aliases;
 	}
 
-	private void MergeMemoryEntityDataById(string sourceMemoryId, string targetMemoryId)
-	{
-		string source = NormalizeMemoryHeroId(sourceMemoryId);
-		string target = NormalizeMemoryHeroId(targetMemoryId);
-		if (string.IsNullOrWhiteSpace(source) || string.IsNullOrWhiteSpace(target) || string.Equals(source, target, StringComparison.OrdinalIgnoreCase))
-		{
-			return;
-		}
-		if (_dialogueHistory != null && _dialogueHistory.TryGetValue(source, out var sourceHistory) && sourceHistory != null && sourceHistory.Count > 0)
-		{
-			SaveDialogueHistoryById(target, MergeDialogueDayLists(LoadDialogueHistoryById(target), sourceHistory));
-		}
-		if (_dailyMemoryDrafts != null && _dailyMemoryDrafts.TryGetValue(source, out var sourceDrafts) && sourceDrafts != null && sourceDrafts.Count > 0)
-		{
-			SaveDailyMemoryDraftsById(target, MergeDailyMemoryDraftLists(LoadDailyMemoryDraftsById(target), sourceDrafts, target));
-		}
-		if (_compressedMemoryBlocks != null && _compressedMemoryBlocks.TryGetValue(source, out var sourceBlocks) && sourceBlocks != null && sourceBlocks.Count > 0)
-		{
-			SaveCompressedMemoryBlocksById(target, MergeCompressedMemoryBlockLists(LoadCompressedMemoryBlocksById(target), sourceBlocks, target));
-		}
-		RetargetMemoryQueues(source, target);
-		MergeMemoryOverviewStateById(source, target);
-		MergeMajorActionSummaryStateById(source, target);
-		MergeNpcActionStorageById(_npcMajorActions, source, target, keepOnlyRecentWindow: false);
-		MergeNpcActionStorageById(_npcRecentActions, source, target, keepOnlyRecentWindow: true);
-		RetargetMemoryOverviewCandidateScanIds(source, target);
-		RetargetInteractionMemoryRecoveryProjection(source, target);
-		RemoveMemoryEntityDataById(source);
-	}
+	private MemoryIdentityPort _memoryIdentityPort;
+ private MemoryBusinessStateOwner MemoryIdentityState { get { var owner=MemoryQueueState;owner.IdentityPort ??= _memoryIdentityPort ??= new MemoryIdentityPort { LoadHistory=LoadDialogueHistoryById, SaveHistory=SaveDialogueHistoryById, Recovery=()=>MemoryRecoveryState, RefreshRecentIndex=RefreshNpcRecentActionStableKeyIndexForHero, MarkWeeklySourcesDirty=()=>_weeklyReportMaterialRevisions.MarkAll(), MarkOverviewDirty=MarkMemoryOverviewDirty };return owner; } }
+ private void MergeMemoryEntityDataById(string sourceMemoryId,string targetMemoryId) => MemoryIdentityState.MergeMemoryEntityDataById(sourceMemoryId,targetMemoryId);
 
-	private static List<DialogueDay> MergeDialogueDayLists(IEnumerable<DialogueDay> targetDays, IEnumerable<DialogueDay> sourceDays)
-	{
-		Dictionary<int, DialogueDay> byDay = new Dictionary<int, DialogueDay>();
-		void AddDays(IEnumerable<DialogueDay> days)
-		{
-			foreach (DialogueDay day in days ?? Enumerable.Empty<DialogueDay>())
-			{
-				if (day == null)
-				{
-					continue;
-				}
-				int dayIndex = Math.Max(0, day.GameDayIndex);
-				if (!byDay.TryGetValue(dayIndex, out var merged))
-				{
-					merged = new DialogueDay
-					{
-						GameDayIndex = dayIndex,
-						GameDate = (day.GameDate ?? "").Trim(),
-						Lines = new List<string>(),
-						MemoryCommitMarkers = new Dictionary<string, string>(StringComparer.Ordinal)
-					};
-					byDay[dayIndex] = merged;
-				}
-				if (string.IsNullOrWhiteSpace(merged.GameDate))
-				{
-					merged.GameDate = (day.GameDate ?? "").Trim();
-				}
-				foreach (string line in day.Lines ?? new List<string>())
-				{
-					string text = (line ?? "").Trim();
-					if (!string.IsNullOrWhiteSpace(text) && !merged.Lines.Contains(text, StringComparer.Ordinal))
-					{
-						merged.Lines.Add(text);
-					}
-				}
-				foreach (KeyValuePair<string, string> marker in SanitizeMemoryCommitMarkers(day.MemoryCommitMarkers))
-				{
-					merged.MemoryCommitMarkers[marker.Key] = marker.Value;
-				}
-			}
-		}
-		AddDays(targetDays);
-		AddDays(sourceDays);
-		return byDay.Values.Where((DialogueDay x) => (x.Lines != null && x.Lines.Count > 0)
-			|| (x.MemoryCommitMarkers != null && x.MemoryCommitMarkers.Count > 0)).OrderBy((DialogueDay x) => x.GameDayIndex).ToList();
-	}
+	private static List<DialogueDay> MergeDialogueDayLists(IEnumerable<DialogueDay> targetDays,IEnumerable<DialogueDay> sourceDays) => MemoryBusinessStateOwner.MergeDialogueDayLists(targetDays,sourceDays);
 
 	private static List<DailyMemoryDraft> RetargetDailyMemoryDrafts(IEnumerable<DailyMemoryDraft> drafts, string targetMemoryId)
 	{
-		string target = NormalizeMemoryHeroId(targetMemoryId);
-		foreach (DailyMemoryDraft draft in drafts ?? Enumerable.Empty<DailyMemoryDraft>())
-		{
-			if (draft == null)
-			{
-				continue;
-			}
-			draft.HeroId = target;
-			foreach (WeeklyMemoryMaterialTrigger trigger in draft.WeeklyMaterialTriggers ?? new List<WeeklyMemoryMaterialTrigger>())
-			{
-				if (trigger != null)
-				{
-					trigger.MemoryId = target;
-				}
-			}
-		}
-		return SanitizeDailyMemoryDrafts(drafts);
+		return MemoryBusinessStateOwner.RetargetDailyMemoryDrafts(drafts, targetMemoryId);
 	}
 
 	private static List<DailyMemoryDraft> MergeDailyMemoryDraftLists(IEnumerable<DailyMemoryDraft> targetDrafts, IEnumerable<DailyMemoryDraft> sourceDrafts, string targetMemoryId)
 	{
-		Dictionary<int, DailyMemoryDraft> byDay = new Dictionary<int, DailyMemoryDraft>();
-		void AddDrafts(IEnumerable<DailyMemoryDraft> drafts)
-		{
-			foreach (DailyMemoryDraft draft in RetargetDailyMemoryDrafts(drafts, targetMemoryId))
-			{
-				if (!byDay.TryGetValue(draft.GameDayIndex, out var merged))
-				{
-					byDay[draft.GameDayIndex] = draft;
-					continue;
-				}
-				if (string.IsNullOrWhiteSpace(merged.HeroName))
-				{
-					merged.HeroName = draft.HeroName;
-				}
-				if (string.IsNullOrWhiteSpace(merged.GameDate))
-				{
-					merged.GameDate = draft.GameDate;
-				}
-				merged.HasLlmDialogue = merged.HasLlmDialogue || draft.HasLlmDialogue;
-				merged.QueuedForSummary = merged.QueuedForSummary || draft.QueuedForSummary;
-				merged.SummaryRetryCount = Math.Max(merged.SummaryRetryCount, draft.SummaryRetryCount);
-				if (string.IsNullOrWhiteSpace(merged.LastSummaryError))
-				{
-					merged.LastSummaryError = draft.LastSummaryError;
-				}
-				merged.Lines.AddRange(draft.Lines ?? new List<DailyMemoryLine>());
-				merged.WeeklyMaterialTriggers.AddRange(draft.WeeklyMaterialTriggers ?? new List<WeeklyMemoryMaterialTrigger>());
-			}
-		}
-		AddDrafts(targetDrafts);
-		AddDrafts(sourceDrafts);
-		return SanitizeDailyMemoryDrafts(byDay.Values);
+		return MemoryBusinessStateOwner.MergeDailyMemoryDraftLists(targetDrafts, sourceDrafts, targetMemoryId);
 	}
 
 	private static List<CompressedMemoryBlock> RetargetCompressedMemoryBlocks(IEnumerable<CompressedMemoryBlock> blocks, string targetMemoryId)
 	{
-		string target = NormalizeMemoryHeroId(targetMemoryId);
-		foreach (CompressedMemoryBlock block in blocks ?? Enumerable.Empty<CompressedMemoryBlock>())
-		{
-			if (block == null)
-			{
-				continue;
-			}
-			block.HeroId = target;
-			block.Id = BuildCompressedMemoryBlockId(target, block.GameDayIndex);
-			foreach (WeeklyMemoryMaterialTrigger trigger in block.WeeklyMaterialTriggers ?? new List<WeeklyMemoryMaterialTrigger>())
-			{
-				if (trigger != null)
-				{
-					trigger.MemoryId = target;
-				}
-			}
-		}
-		return SanitizeCompressedMemoryBlocks(blocks);
+		return MemoryBusinessStateOwner.RetargetCompressedMemoryBlocks(blocks, targetMemoryId);
 	}
 
 	private static List<CompressedMemoryBlock> MergeCompressedMemoryBlockLists(IEnumerable<CompressedMemoryBlock> targetBlocks, IEnumerable<CompressedMemoryBlock> sourceBlocks, string targetMemoryId)
 	{
-		Dictionary<int, CompressedMemoryBlock> byDay = new Dictionary<int, CompressedMemoryBlock>();
-		void AddBlocks(IEnumerable<CompressedMemoryBlock> blocks)
-		{
-			foreach (CompressedMemoryBlock block in RetargetCompressedMemoryBlocks(blocks, targetMemoryId))
-			{
-				if (!byDay.TryGetValue(block.GameDayIndex, out var merged))
-				{
-					byDay[block.GameDayIndex] = block;
-					continue;
-				}
-				if (string.IsNullOrWhiteSpace(merged.HeroName))
-				{
-					merged.HeroName = block.HeroName;
-				}
-				if (string.IsNullOrWhiteSpace(merged.GameDate))
-				{
-					merged.GameDate = block.GameDate;
-				}
-				merged.StartHour = Math.Min(merged.StartHour, block.StartHour);
-				merged.EndHour = Math.Max(merged.EndHour, block.EndHour);
-				merged.Scenes.AddRange(block.Scenes ?? new List<string>());
-				if (string.IsNullOrWhiteSpace(merged.RichTitle))
-				{
-					merged.RichTitle = block.RichTitle;
-				}
-				merged.Summary = MergeDistinctTextBlocks(merged.Summary, block.Summary);
-				merged.AfefLines.AddRange(block.AfefLines ?? new List<string>());
-				merged.PlayerPublicity = MergeDistinctTextBlocks(merged.PlayerPublicity, block.PlayerPublicity);
-				merged.PlayerHistoryMaterial = MergeDistinctTextBlocks(merged.PlayerHistoryMaterial, block.PlayerHistoryMaterial);
-				merged.PlayerPublicityReason = MergeDistinctTextBlocks(merged.PlayerPublicityReason, block.PlayerPublicityReason);
-				merged.WeeklyMaterialTriggers.AddRange(block.WeeklyMaterialTriggers ?? new List<WeeklyMemoryMaterialTrigger>());
-				if (merged.CreatedUtcTicks <= 0L || (block.CreatedUtcTicks > 0L && block.CreatedUtcTicks < merged.CreatedUtcTicks))
-				{
-					merged.CreatedUtcTicks = block.CreatedUtcTicks;
-				}
-			}
-		}
-		AddBlocks(targetBlocks);
-		AddBlocks(sourceBlocks);
-		return SanitizeCompressedMemoryBlocks(byDay.Values);
+		return MemoryBusinessStateOwner.MergeCompressedMemoryBlockLists(targetBlocks, sourceBlocks, targetMemoryId);
 	}
 
 	private static string MergeDistinctTextBlocks(string first, string second)
 	{
-		string left = (first ?? "").Trim();
-		string right = (second ?? "").Trim();
-		if (string.IsNullOrWhiteSpace(left))
-		{
-			return right;
-		}
-		if (string.IsNullOrWhiteSpace(right) || string.Equals(left, right, StringComparison.Ordinal))
-		{
-			return left;
-		}
-		if (left.IndexOf(right, StringComparison.Ordinal) >= 0)
-		{
-			return left;
-		}
-		if (right.IndexOf(left, StringComparison.Ordinal) >= 0)
-		{
-			return right;
-		}
-		return left + "\n" + right;
+		return MemoryBusinessStateOwner.MergeDistinctTextBlocks(first, second);
 	}
 
 	private void RetargetMemoryQueues(string sourceMemoryId, string targetMemoryId)
 	{
-		string source = NormalizeMemoryHeroId(sourceMemoryId);
-		string target = NormalizeMemoryHeroId(targetMemoryId);
-		bool changedSummaryQueue = false;
-		foreach (MemorySummaryJob job in _memorySummaryQueue ?? new List<MemorySummaryJob>())
-		{
-			if (job != null && string.Equals(NormalizeMemoryHeroId(job.HeroId), source, StringComparison.OrdinalIgnoreCase))
-			{
-				job.HeroId = target;
-				changedSummaryQueue = true;
-			}
-		}
-		if (changedSummaryQueue)
-		{
-			_memorySummaryQueue = SanitizeMemorySummaryQueue(_memorySummaryQueue);
-		}
-		bool changedTriggers = false;
-		foreach (WeeklyMemoryMaterialTrigger trigger in _pendingWeeklyMemoryMaterialTriggers ?? new List<WeeklyMemoryMaterialTrigger>())
-		{
-			if (trigger != null && string.Equals(NormalizeMemoryHeroId(trigger.MemoryId), source, StringComparison.OrdinalIgnoreCase))
-			{
-				trigger.MemoryId = target;
-				changedTriggers = true;
-			}
-		}
-		if (changedTriggers)
-		{
-			_pendingWeeklyMemoryMaterialTriggers = SanitizeWeeklyMemoryMaterialTriggers(_pendingWeeklyMemoryMaterialTriggers);
-		}
-		bool changedOverviewQueue = false;
-		foreach (MemoryOverviewJob job2 in _memoryOverviewQueue ?? new List<MemoryOverviewJob>())
-		{
-			if (job2 != null && string.Equals(NormalizeMemoryHeroId(job2.HeroId), source, StringComparison.OrdinalIgnoreCase))
-			{
-				job2.HeroId = target;
-				changedOverviewQueue = true;
-			}
-		}
-		if (changedOverviewQueue)
-		{
-			_memoryOverviewQueue = SanitizeMemoryOverviewQueue(_memoryOverviewQueue);
-		}
-		bool changedMajorQueue = false;
-		foreach (MajorActionSummaryJob job3 in _npcMajorActionSummaryQueue ?? new List<MajorActionSummaryJob>())
-		{
-			if (job3 != null && string.Equals(NormalizeMemoryHeroId(job3.HeroId), source, StringComparison.OrdinalIgnoreCase))
-			{
-				job3.HeroId = target;
-				changedMajorQueue = true;
-			}
-		}
-		if (changedMajorQueue)
-		{
-			_npcMajorActionSummaryQueue = SanitizeMajorActionSummaryQueue(_npcMajorActionSummaryQueue);
-		}
+		_memoryBusinessState.RetargetMemoryQueues(sourceMemoryId, targetMemoryId);
 	}
 
 	private void MergeMemoryOverviewStateById(string sourceMemoryId, string targetMemoryId)
 	{
-		string source = NormalizeMemoryHeroId(sourceMemoryId);
-		string target = NormalizeMemoryHeroId(targetMemoryId);
-		if (_memoryOverviewStates == null || !_memoryOverviewStates.TryGetValue(source, out var sourceState) || sourceState == null)
-		{
-			return;
-		}
-		_memoryOverviewStates.TryGetValue(target, out var targetState);
-		if (targetState == null)
-		{
-			sourceState.HeroId = target;
-			_memoryOverviewStates[target] = SanitizeMemoryOverviewState(sourceState);
-			return;
-		}
-		targetState.HeroId = target;
-		if (string.IsNullOrWhiteSpace(targetState.HeroName))
-		{
-			targetState.HeroName = sourceState.HeroName;
-		}
-		targetState.Summary = MergeDistinctTextBlocks(targetState.Summary, sourceState.Summary);
-		targetState.IncludedBlockIds = (targetState.IncludedBlockIds ?? new List<string>()).Concat(sourceState.IncludedBlockIds ?? new List<string>()).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
-		targetState.UpdatedUtcTicks = Math.Max(targetState.UpdatedUtcTicks, sourceState.UpdatedUtcTicks);
-		if (string.IsNullOrWhiteSpace(targetState.LastError))
-		{
-			targetState.LastError = sourceState.LastError;
-		}
-		_memoryOverviewStates[target] = SanitizeMemoryOverviewState(targetState);
+		_memoryBusinessState.MergeMemoryOverviewStateById(sourceMemoryId, targetMemoryId);
 	}
 
 	private void MergeMajorActionSummaryStateById(string sourceMemoryId, string targetMemoryId)
 	{
-		string source = NormalizeMemoryHeroId(sourceMemoryId);
-		string target = NormalizeMemoryHeroId(targetMemoryId);
-		if (_npcMajorActionSummaries == null || !_npcMajorActionSummaries.TryGetValue(source, out var sourceState) || sourceState == null)
-		{
-			return;
-		}
-		_npcMajorActionSummaries.TryGetValue(target, out var targetState);
-		if (targetState == null)
-		{
-			sourceState.HeroId = target;
-			_npcMajorActionSummaries[target] = SanitizeMajorActionSummaryState(sourceState);
-			return;
-		}
-		targetState.HeroId = target;
-		if (string.IsNullOrWhiteSpace(targetState.HeroName))
-		{
-			targetState.HeroName = sourceState.HeroName;
-		}
-		targetState.Summary = MergeDistinctTextBlocks(targetState.Summary, sourceState.Summary);
-		targetState.LastSummarizedDay = Math.Max(targetState.LastSummarizedDay, sourceState.LastSummarizedDay);
-		targetState.LastSummarizedSequence = Math.Max(targetState.LastSummarizedSequence, sourceState.LastSummarizedSequence);
-		targetState.UpdatedUtcTicks = Math.Max(targetState.UpdatedUtcTicks, sourceState.UpdatedUtcTicks);
-		if (string.IsNullOrWhiteSpace(targetState.LastError))
-		{
-			targetState.LastError = sourceState.LastError;
-		}
-		_npcMajorActionSummaries[target] = SanitizeMajorActionSummaryState(targetState);
+		_memoryBusinessState.MergeMajorActionSummaryStateById(sourceMemoryId, targetMemoryId);
 	}
 
-	private void MergeNpcActionStorageById(Dictionary<string, List<NpcActionEntry>> storage, string sourceMemoryId, string targetMemoryId, bool keepOnlyRecentWindow)
-	{
-		string source = NormalizeMemoryHeroId(sourceMemoryId);
-		string target = NormalizeMemoryHeroId(targetMemoryId);
-		if (storage == null || !storage.TryGetValue(source, out var sourceActions) || sourceActions == null || sourceActions.Count == 0)
-		{
-			return;
-		}
-		storage.TryGetValue(target, out var targetActions);
-		List<NpcActionEntry> merged = SanitizeNpcActionEntries((targetActions ?? new List<NpcActionEntry>()).Concat(sourceActions).ToList(), keepOnlyRecentWindow);
-		if (merged.Count > 0)
-		{
-			storage[target] = merged;
-			_weeklyReportMaterialRevisions.MarkAll();
-		}
-		if (keepOnlyRecentWindow)
-		{
-			RefreshNpcRecentActionStableKeyIndexForHero(target, merged);
-		}
-	}
+	private void MergeNpcActionStorageById(Dictionary<string,List<NpcActionEntry>> storage,string sourceMemoryId,string targetMemoryId,bool keepOnlyRecentWindow) => MemoryIdentityState.MergeNpcActionStorageById(storage,sourceMemoryId,targetMemoryId,keepOnlyRecentWindow);
 
 	private void RetargetMemoryOverviewCandidateScanIds(string sourceMemoryId, string targetMemoryId)
 	{
-		string source = NormalizeMemoryHeroId(sourceMemoryId);
-		string target = NormalizeMemoryHeroId(targetMemoryId);
-		if (_dirtyMemoryOverviewIds != null && _dirtyMemoryOverviewIds.Remove(source))
-		{
-			_dirtyMemoryOverviewIds.Add(target);
-		}
-		if (_pendingMemoryOverviewCandidateScanIdSet != null && _pendingMemoryOverviewCandidateScanIdSet.Remove(source))
-		{
-			_pendingMemoryOverviewCandidateScanIdSet.Add(target);
-		}
-		if (_pendingMemoryOverviewCandidateScanIds == null || _pendingMemoryOverviewCandidateScanIds.Count <= 0)
-		{
-			return;
-		}
-		List<string> ids = _pendingMemoryOverviewCandidateScanIds.Select((string x) => string.Equals(NormalizeMemoryHeroId(x), source, StringComparison.OrdinalIgnoreCase) ? target : NormalizeMemoryHeroId(x)).Where((string x) => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
-		_pendingMemoryOverviewCandidateScanIds.Clear();
-		foreach (string id in ids)
-		{
-			_pendingMemoryOverviewCandidateScanIds.Enqueue(id);
-		}
+		_memoryBusinessState.RetargetMemoryOverviewCandidateScanIds(sourceMemoryId, targetMemoryId);
 	}
 
 	private List<string> BuildNonHeroPartyMemoryNeedles(MobileParty mobileParty, PartyBase partyBase = null)
@@ -24190,76 +23535,7 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 		return partyNeedles.Any((string needle) => ContainsExactNonHeroPartyNeedle(text, needle));
 	}
 
-	private bool CancelUnavailableHeroCompressionWorkById(string memoryId, string reason)
-	{
-		string text = NormalizeMemoryHeroId(memoryId);
-		if (string.IsNullOrWhiteSpace(text) || IsNonHeroMemoryId(text))
-		{
-			return false;
-		}
-		// Cancel only LLM work and its derived summaries. Source drafts/blocks/pending triggers are retained because
-		// they can still carry weekly-report facts even after the Hero is no longer a valid conversation target.
-		bool removed = false;
-		if (_memorySummaryQueue != null)
-		{
-			removed |= _memorySummaryQueue.RemoveAll((MemorySummaryJob x) => x != null && string.Equals(NormalizeMemoryHeroId(x.HeroId), text, StringComparison.OrdinalIgnoreCase)) > 0;
-		}
-		if (_memoryOverviewStates != null)
-		{
-			removed |= _memoryOverviewStates.Remove(text);
-		}
-		if (_memoryOverviewStateStorage != null)
-		{
-			removed |= _memoryOverviewStateStorage.Remove(text);
-		}
-		if (_memoryOverviewQueue != null)
-		{
-			removed |= _memoryOverviewQueue.RemoveAll((MemoryOverviewJob x) => x != null && string.Equals(NormalizeMemoryHeroId(x.HeroId), text, StringComparison.OrdinalIgnoreCase)) > 0;
-		}
-		if (_npcMajorActionSummaries != null)
-		{
-			removed |= _npcMajorActionSummaries.Remove(text);
-		}
-		if (_npcMajorActionSummaryStorage != null)
-		{
-			removed |= _npcMajorActionSummaryStorage.Remove(text);
-		}
-		if (_npcMajorActionSummaryQueue != null)
-		{
-			removed |= _npcMajorActionSummaryQueue.RemoveAll((MajorActionSummaryJob x) => x != null && string.Equals(NormalizeMemoryHeroId(x.HeroId), text, StringComparison.OrdinalIgnoreCase)) > 0;
-		}
-		if (_dirtyMemoryOverviewIds.Remove(text))
-		{
-			removed = true;
-		}
-		if (_pendingMemoryOverviewCandidateScanIdSet.Remove(text))
-		{
-			removed = true;
-		}
-		if (_pendingMemoryOverviewCandidateScanIds.Count > 0)
-		{
-			List<string> kept = _pendingMemoryOverviewCandidateScanIds.Where((string x) => !string.Equals(NormalizeMemoryHeroId(x), text, StringComparison.OrdinalIgnoreCase)).ToList();
-			if (kept.Count != _pendingMemoryOverviewCandidateScanIds.Count)
-			{
-				removed = true;
-				_pendingMemoryOverviewCandidateScanIds.Clear();
-				foreach (string item in kept)
-				{
-					_pendingMemoryOverviewCandidateScanIds.Enqueue(item);
-				}
-			}
-		}
-		if (_dailyMemoryDraftSealQueued != null)
-		{
-			_dailyMemoryDraftSealQueued.RemoveWhere((string x) => (x ?? "").StartsWith(text + "|", StringComparison.OrdinalIgnoreCase));
-		}
-		_dailyMemoryDraftSealQueuedMajor?.Remove(text);
-		if (removed)
-		{
-			Logger.Log("CompressedMemory", "cancelled unavailable hero compression work hero=" + text + " reason=" + (reason ?? ""));
-		}
-		return removed;
-	}
+	private bool CancelUnavailableHeroCompressionWorkById(string memoryId, string reason) => MemoryQueueState.CancelUnavailableHeroCompressionWorkById(memoryId, reason);
 
 	private void CancelUnavailableHeroCompressionWorkAfterLoad()
 	{
@@ -24323,48 +23599,7 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 		}
 	}
 
-	private void RemoveMemoryEntityDataById(string memoryId)
-	{
-		string text = NormalizeMemoryHeroId(memoryId);
-		if (string.IsNullOrWhiteSpace(text))
-		{
-			return;
-		}
-		QuarantineInteractionMemoryRecoveryProjection(text, "memory_recovery_subject_removed");
-		_dialogueHistory?.Remove(text);
-		_dialogueHistoryStorage?.Remove(text);
-		_dailyMemoryDrafts?.Remove(text);
-		_dailyMemoryDraftStorage?.Remove(text);
-		_compressedMemoryBlocks?.Remove(text);
-		_compressedMemoryBlockStorage?.Remove(text);
-		_memorySummaryQueue?.RemoveAll((MemorySummaryJob x) => x != null && string.Equals(NormalizeMemoryHeroId(x.HeroId), text, StringComparison.OrdinalIgnoreCase));
-		_pendingWeeklyMemoryMaterialTriggers?.RemoveAll((WeeklyMemoryMaterialTrigger x) => x != null && string.Equals(NormalizeMemoryHeroId(x.MemoryId), text, StringComparison.OrdinalIgnoreCase));
-		_memoryOverviewStates?.Remove(text);
-		_memoryOverviewStateStorage?.Remove(text);
-		_memoryOverviewQueue?.RemoveAll((MemoryOverviewJob x) => x != null && string.Equals(NormalizeMemoryHeroId(x.HeroId), text, StringComparison.OrdinalIgnoreCase));
-		_npcMajorActionSummaries?.Remove(text);
-		_npcMajorActionSummaryStorage?.Remove(text);
-		_npcMajorActionSummaryQueue?.RemoveAll((MajorActionSummaryJob x) => x != null && string.Equals(NormalizeMemoryHeroId(x.HeroId), text, StringComparison.OrdinalIgnoreCase));
-		bool removedMajorActions = _npcMajorActions?.Remove(text) == true;
-		_npcMajorActionStorage?.Remove(text);
-		bool removedRecentActions = _npcRecentActions?.Remove(text) == true;
-		_npcRecentActionStorage?.Remove(text);
-		if (removedMajorActions || removedRecentActions)
-		{
-			_weeklyReportMaterialRevisions.MarkAll();
-		}
-		_dirtyMemoryOverviewIds?.Remove(text);
-		_pendingMemoryOverviewCandidateScanIdSet?.Remove(text);
-		if (_pendingMemoryOverviewCandidateScanIds != null && _pendingMemoryOverviewCandidateScanIds.Count > 0)
-		{
-			List<string> kept = _pendingMemoryOverviewCandidateScanIds.Where((string x) => !string.Equals(NormalizeMemoryHeroId(x), text, StringComparison.OrdinalIgnoreCase)).ToList();
-			_pendingMemoryOverviewCandidateScanIds.Clear();
-			foreach (string item in kept)
-			{
-				_pendingMemoryOverviewCandidateScanIds.Enqueue(item);
-			}
-		}
-	}
+	private void RemoveMemoryEntityDataById(string memoryId) => MemoryIdentityState.RemoveMemoryEntityDataById(memoryId);
 
 	private void CleanupNonHeroMemoryForRemovedParty(PartyBase partyBase, MobileParty mobileParty, string reason)
 	{
@@ -24508,19 +23743,7 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 	{
 		return MemoryRecordRules.SanitizeMemoryOverviewQueue(jobs);
 	}
-	private MemoryOverviewState GetMemoryOverviewState(string heroId)
-	{
-		heroId = NormalizeMemoryHeroId(heroId);
-		if (string.IsNullOrWhiteSpace(heroId) || _memoryOverviewStates == null)
-		{
-			return null;
-		}
-		if (_memoryOverviewStates.TryGetValue(heroId, out var value))
-		{
-			return SanitizeMemoryOverviewState(CloneMemorySummarySource(value));
-		}
-		return null;
-	}
+	private MemoryOverviewState GetMemoryOverviewState(string heroId) => MemoryQueueState.GetMemoryOverviewState(heroId);
 
 	private static bool IsMemoryBlockIncludedInOverview(CompressedMemoryBlock block, HashSet<string> includedIds)
 	{
@@ -24532,55 +23755,9 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 		return !string.IsNullOrWhiteSpace(blockId) && includedIds.Contains(blockId);
 	}
 
-	private bool HasMemoryOverviewPendingBlocks(string heroId, List<CompressedMemoryBlock> blocks)
-	{
-		// This is a read-only eligibility query, not a publication/sanitization owner.
-		// Project exactly the fields used by Count/IsMemoryBlockIncludedInOverview
-		// after ONE SanitizeCompressedMemoryBlocks pass. Do not clone/sort unrelated
-		// scenes, AFEF text or weekly trigger graphs just to discard them here.
-		List<string> blockIds = new List<string>();
-		HashSet<string> seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-		foreach (CompressedMemoryBlock block in blocks ?? Enumerable.Empty<CompressedMemoryBlock>())
-		{
-			if (block == null) continue;
-			string ownerId = NormalizeMemoryHeroId(block.HeroId);
-			if (string.IsNullOrWhiteSpace(ownerId) || block.GameDayIndex < 0) continue;
-			string blockId = string.IsNullOrWhiteSpace(block.Id) ? BuildCompressedMemoryBlockId(ownerId, block.GameDayIndex) : block.Id;
-			// The original sanitizer reserves an untrimmed ID even when its first
-			// block later fails content validation. Keep that ordering and identity.
-			if (!seen.Add(blockId)) continue;
-			string title = StripMemoryTitleDateTime((block.RichTitle ?? "").Trim());
-			bool hasContent = !string.IsNullOrWhiteSpace(block.Summary)
-				|| (block.AfefLines?.Any(line => !string.IsNullOrWhiteSpace(line)) ?? false)
-				|| !string.IsNullOrWhiteSpace(title);
-			if (hasContent) blockIds.Add(blockId.Trim());
-		}
-		// Do not deduplicate the trimmed list: raw IDs " x " and "x" count as two
-		// blocks, but both match the same IncludedBlockId in the original query.
-		if (blockIds.Count < GetMemoryOverviewStartBlockCountFromSettings()) return false;
-		MemoryOverviewState state = GetMemoryOverviewState(heroId);
-		if (state != null && !string.IsNullOrWhiteSpace(state.LastError)) return false;
-		if (state == null || string.IsNullOrWhiteSpace(state.Summary)) return true;
-		HashSet<string> included = new HashSet<string>(state.IncludedBlockIds ?? new List<string>(), StringComparer.OrdinalIgnoreCase);
-		return blockIds.Any(id => !included.Contains(id));
-	}
+	private bool HasMemoryOverviewPendingBlocks(string heroId, List<CompressedMemoryBlock> blocks) => MemoryQueueState.HasMemoryOverviewPendingBlocks(heroId, blocks);
 
-	private bool HasMemoryOverviewJobStillPending(MemoryOverviewJob job)
-	{
-		try
-		{
-			string heroId = NormalizeMemoryHeroId(job?.HeroId);
-			if (job == null || job.RetryCount >= 3 || string.IsNullOrWhiteSpace(heroId) || !IsMemoryEntityEligibleForCompressedMemory(heroId) || _compressedMemoryBlocks == null || !_compressedMemoryBlocks.TryGetValue(heroId, out var blocks) || blocks == null)
-			{
-				return false;
-			}
-			return HasMemoryOverviewPendingBlocks(heroId, blocks);
-		}
-		catch
-		{
-			return false;
-		}
-	}
+	private bool HasMemoryOverviewJobStillPending(MemoryOverviewJob job) => MemoryQueueState.HasMemoryOverviewJobStillPending(job);
 
 	private static MajorActionSummaryState SanitizeMajorActionSummaryState(MajorActionSummaryState state)
 	{
@@ -24594,92 +23771,15 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 	{
 		return MemoryRecordRules.NormalizeMajorActionSummaryQueue(jobs);
 	}
-	private MajorActionSummaryState GetMajorActionSummaryState(string heroId)
-	{
-		heroId = NormalizeMemoryHeroId(heroId);
-		if (string.IsNullOrWhiteSpace(heroId) || _npcMajorActionSummaries == null)
-		{
-			return null;
-		}
-		if (_npcMajorActionSummaries.TryGetValue(heroId, out var value))
-		{
-			return SanitizeMajorActionSummaryState(CloneMemorySummarySource(value));
-		}
-		return null;
-	}
+	private MajorActionSummaryState GetMajorActionSummaryState(string heroId) => MemoryQueueState.GetMajorActionSummaryState(heroId);
 
-	private static void GetMajorActionMaxCursor(IEnumerable<NpcActionEntry> actions, out int day, out int sequence)
-	{
-		day = 0;
-		sequence = 0;
-		foreach (NpcActionEntry action in actions ?? Enumerable.Empty<NpcActionEntry>())
-		{
-			if (action == null)
-			{
-				continue;
-			}
-			int actionDay = Math.Max(0, action.Day);
-			int actionSequence = Math.Max(0, action.Sequence);
-			if (actionDay > day || (actionDay == day && actionSequence > sequence))
-			{
-				day = actionDay;
-				sequence = actionSequence;
-			}
-		}
-	}
+	private static void GetMajorActionMaxCursor(IEnumerable<NpcActionEntry> actions, out int day, out int sequence) => MemoryBusinessStateOwner.GetMajorActionMaxCursor(actions, out day, out sequence);
 
-	private static bool IsNpcActionAfterSummaryCursor(NpcActionEntry action, MajorActionSummaryState state)
-	{
-		if (action == null)
-		{
-			return false;
-		}
-		if (state == null || string.IsNullOrWhiteSpace(state.Summary))
-		{
-			return true;
-		}
-		int day = Math.Max(0, action.Day);
-		int sequence = Math.Max(0, action.Sequence);
-		return day > state.LastSummarizedDay || (day == state.LastSummarizedDay && sequence > state.LastSummarizedSequence);
-	}
+	private static bool IsNpcActionAfterSummaryCursor(NpcActionEntry action, MajorActionSummaryState state) => MemoryBusinessStateOwner.IsNpcActionAfterSummaryCursor(action, state);
 
-	private bool HasMajorActionsNeedingSummary(string heroId, List<NpcActionEntry> actions)
-	{
-		if (actions == null || actions.Count <= 0)
-		{
-			return false;
-		}
-		MajorActionSummaryState state = GetMajorActionSummaryState(heroId);
-		if (state != null && !string.IsNullOrWhiteSpace(state.LastError))
-		{
-			// A completed three-attempt failure remains inspectable, but cannot recreate an automatic queue on every day tick.
-			return false;
-		}
-		if (state == null || string.IsNullOrWhiteSpace(state.Summary))
-		{
-			return true;
-		}
-		GetMajorActionMaxCursor(actions, out var day, out var sequence);
-		return day > state.LastSummarizedDay || (day == state.LastSummarizedDay && sequence > state.LastSummarizedSequence);
-	}
+	private bool HasMajorActionsNeedingSummary(string heroId, List<NpcActionEntry> actions) => MemoryQueueState.HasMajorActionsNeedingSummary(heroId, actions);
 
-	private bool HasMajorActionSummaryJobStillPending(MajorActionSummaryJob job)
-	{
-		try
-		{
-			string heroId = NormalizeMemoryHeroId(job?.HeroId);
-			if (job == null || job.RetryCount >= 3 || string.IsNullOrWhiteSpace(heroId) || IsNonHeroMemoryId(heroId) || !IsMemoryEntityEligibleForCompressedMemory(heroId) || _npcMajorActions == null || !_npcMajorActions.TryGetValue(heroId, out var actions) || actions == null)
-			{
-				// Major-action summaries are Hero-only; malformed nonhero queue data must not stay runnable.
-				return false;
-			}
-			return HasMajorActionsNeedingSummary(heroId, SanitizeNpcActionEntries(actions, keepOnlyRecentWindow: false));
-		}
-		catch
-		{
-			return false;
-		}
-	}
+	private bool HasMajorActionSummaryJobStillPending(MajorActionSummaryJob job) => MemoryQueueState.HasMajorActionSummaryJobStillPending(job);
 
 	private static string BuildMajorActionSummarySourceLine(Hero hero, NpcActionEntry entry)
 	{
@@ -24721,20 +23821,7 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 
 	private List<DailyMemoryDraft> LoadDailyMemoryDraftsById(string memoryId)
 	{
-		string text = NormalizeMemoryHeroId(memoryId);
-		if (string.IsNullOrWhiteSpace(text))
-		{
-			return new List<DailyMemoryDraft>();
-		}
-		if (_dailyMemoryDrafts == null)
-		{
-			_dailyMemoryDrafts = new Dictionary<string, List<DailyMemoryDraft>>(StringComparer.OrdinalIgnoreCase);
-		}
-		if (_dailyMemoryDrafts.TryGetValue(text, out var value) && value != null)
-		{
-			return value;
-		}
-		return new List<DailyMemoryDraft>();
+		return _memoryBusinessState.LoadDrafts(memoryId);
 	}
 
 	private void SaveDailyMemoryDrafts(Hero hero, List<DailyMemoryDraft> drafts)
@@ -24744,24 +23831,7 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 
 	private void SaveDailyMemoryDraftsById(string memoryId, List<DailyMemoryDraft> drafts)
 	{
-		string text = NormalizeMemoryHeroId(memoryId);
-		if (string.IsNullOrWhiteSpace(text))
-		{
-			return;
-		}
-		if (_dailyMemoryDrafts == null)
-		{
-			_dailyMemoryDrafts = new Dictionary<string, List<DailyMemoryDraft>>(StringComparer.OrdinalIgnoreCase);
-		}
-		List<DailyMemoryDraft> list = SanitizeDailyMemoryDrafts(drafts);
-		if (list.Count > 0)
-		{
-			_dailyMemoryDrafts[text] = list;
-		}
-		else
-		{
-			_dailyMemoryDrafts.Remove(text);
-		}
+		_memoryBusinessState.SaveDrafts(memoryId, drafts);
 	}
 
 	private List<CompressedMemoryBlock> LoadCompressedMemoryBlocks(Hero hero)
@@ -24771,20 +23841,7 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 
 	private List<CompressedMemoryBlock> LoadCompressedMemoryBlocksById(string memoryId)
 	{
-		string text = NormalizeMemoryHeroId(memoryId);
-		if (string.IsNullOrWhiteSpace(text))
-		{
-			return new List<CompressedMemoryBlock>();
-		}
-		if (_compressedMemoryBlocks == null)
-		{
-			_compressedMemoryBlocks = new Dictionary<string, List<CompressedMemoryBlock>>(StringComparer.OrdinalIgnoreCase);
-		}
-		if (_compressedMemoryBlocks.TryGetValue(text, out var value) && value != null)
-		{
-			return value;
-		}
-		return new List<CompressedMemoryBlock>();
+		return _memoryBusinessState.LoadBlocks(memoryId);
 	}
 
 	private void SaveCompressedMemoryBlocks(Hero hero, List<CompressedMemoryBlock> blocks)
@@ -24794,25 +23851,7 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 
 	private void SaveCompressedMemoryBlocksById(string memoryId, List<CompressedMemoryBlock> blocks)
 	{
-		string text = NormalizeMemoryHeroId(memoryId);
-		if (string.IsNullOrWhiteSpace(text))
-		{
-			return;
-		}
-		if (_compressedMemoryBlocks == null)
-		{
-			_compressedMemoryBlocks = new Dictionary<string, List<CompressedMemoryBlock>>(StringComparer.OrdinalIgnoreCase);
-		}
-		List<CompressedMemoryBlock> list = SanitizeCompressedMemoryBlocks(blocks);
-		if (list.Count > 0)
-		{
-			_compressedMemoryBlocks[text] = list;
-		}
-		else
-		{
-			_compressedMemoryBlocks.Remove(text);
-		}
-		MarkMemoryOverviewDirty(text);
+		_memoryBusinessState.SaveBlocks(memoryId, blocks, MarkMemoryOverviewDirty);
 	}
 
 	private static string ResolveCurrentMemorySceneLabel()
@@ -35446,38 +34485,12 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 		return string.Equals((group.GroupKind ?? "").Trim(), "world", StringComparison.OrdinalIgnoreCase) ? "世界周报" : "王国周报";
 	}
 
-	private static string BuildWeeklyReportGroupReportId(WeeklyEventMaterialPreviewGroup group)
-	{
-		if (group == null)
-		{
-			return "";
-		}
-		if (string.Equals((group.GroupKind ?? "").Trim(), "world", StringComparison.OrdinalIgnoreCase))
-		{
-			return "world";
-		}
-		string text = (group.KingdomId ?? "").Trim();
-		return string.IsNullOrWhiteSpace(text) ? "" : ("kingdom:" + text);
-	}
+	private static readonly WeeklyGenerationRules _weeklyGenerationRules = new WeeklyGenerationRules(PlayerNotorietyBehavior.RenderPlayerNamedReferenceForExternal);
+	private static string BuildWeeklyReportGroupReportId(WeeklyEventMaterialPreviewGroup group) => WeeklyGenerationRules.BuildWeeklyReportGroupReportId(group);
 
-	private static Dictionary<string, WeeklyEventMaterialPreviewGroup> BuildWeeklyReportGroupMap(IEnumerable<WeeklyEventMaterialPreviewGroup> groups)
-	{
-		Dictionary<string, WeeklyEventMaterialPreviewGroup> dictionary = new Dictionary<string, WeeklyEventMaterialPreviewGroup>(StringComparer.OrdinalIgnoreCase);
-		foreach (WeeklyEventMaterialPreviewGroup item in groups ?? Enumerable.Empty<WeeklyEventMaterialPreviewGroup>())
-		{
-			string text = BuildWeeklyReportGroupReportId(item);
-			if (!string.IsNullOrWhiteSpace(text) && !dictionary.ContainsKey(text))
-			{
-				dictionary[text] = item;
-			}
-		}
-		return dictionary;
-	}
+	private static Dictionary<string, WeeklyEventMaterialPreviewGroup> BuildWeeklyReportGroupMap(IEnumerable<WeeklyEventMaterialPreviewGroup> groups) => WeeklyGenerationRules.BuildWeeklyReportGroupMap(groups);
 
-	private static List<string> BuildWeeklyBatchExpectedReportIds(WeeklyReportBatchRequest batch)
-	{
-		return (batch?.Groups ?? new List<WeeklyEventMaterialPreviewGroup>()).Select(BuildWeeklyReportGroupReportId).Where((string x) => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
-	}
+	private static List<string> BuildWeeklyBatchExpectedReportIds(WeeklyReportBatchRequest batch) => WeeklyGenerationRules.BuildWeeklyBatchExpectedReportIds(batch);
 
 	private static List<WeeklyReportBatchRequest> BuildWeeklyReportBatchRequests(List<WeeklyEventMaterialPreviewGroup> groups, int weekIndex, int startDay, int endDay)
 	{
@@ -35506,10 +34519,7 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 		return (list.Count == 0) ? ("未命名周报批次[" + text + "]") : ("批次[" + text + "]：" + string.Join(" | ", list));
 	}
 
-	private static bool IsWeeklyReportBatchPromptPrepared(WeeklyReportBatchRequest batch)
-	{
-		return batch != null && !string.IsNullOrWhiteSpace(batch.SystemPrompt) && !string.IsNullOrWhiteSpace(batch.UserPrompt);
-	}
+	private static bool IsWeeklyReportBatchPromptPrepared(WeeklyReportBatchRequest batch) => WeeklyGenerationRules.IsWeeklyReportBatchPromptPrepared(batch);
 
 	private void PrepareWeeklyReportBatchPrompt(WeeklyReportBatchRequest batch)
 	{
@@ -35612,174 +34622,19 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 		return (_latestWeeklyReportBatchDevPreviews ?? new List<DevWeeklyReportBatchPreviewEntry>()).LastOrDefault((DevWeeklyReportBatchPreviewEntry x) => x != null && string.Equals(x.PreviewKey, text, StringComparison.OrdinalIgnoreCase));
 	}
 
-	private static string BuildWeeklyReportFailureReason(string response, bool parseFailed)
-	{
-		string text = (response ?? "").Trim();
-		if (parseFailed)
-		{
-			return LlmRetryPrompt.BuildFailureDetail(string.IsNullOrWhiteSpace(text) ? "模型返回为空，且无法解析。" : "模型返回无法解析。", text);
-		}
-		if (string.IsNullOrWhiteSpace(text))
-		{
-			return "接口返回为空响应。";
-		}
-		return text;
-	}
+	private static string BuildWeeklyReportFailureReason(string response, bool parseFailed) => WeeklyGenerationRules.BuildWeeklyReportFailureReason(response, parseFailed);
 
-	private static string NormalizeWeeklyReportTagText(string text)
-	{
-		string text2 = (text ?? "").Replace("\r", "").Trim();
-		if (string.IsNullOrWhiteSpace(text2))
-		{
-			return "";
-		}
-		List<string> list = new List<string>();
-		foreach (string item in text2.Split(new char[1] { '\n' }, StringSplitOptions.RemoveEmptyEntries))
-		{
-			string text3 = item.Trim();
-			if (!string.IsNullOrWhiteSpace(text3))
-			{
-				list.Add(text3);
-			}
-		}
-		return string.Join("\n", list).Trim();
-	}
+	private static string NormalizeWeeklyReportTagText(string text) => WeeklyGenerationRules.NormalizeWeeklyReportTagText(text);
 
-	private static bool TryValidateWeeklyReportTagText(string rawTagText, out string normalizedTagText, out string stabilityTag, out string failureReason)
-	{
-		normalizedTagText = "";
-		stabilityTag = "";
-		failureReason = "";
-		string text = NormalizeWeeklyReportTagText(rawTagText);
-		if (string.IsNullOrWhiteSpace(text))
-		{
-			failureReason = "缺少 [TAGS]。";
-			return false;
-		}
-		List<string> list = text.Split(new char[1] { '\n' }, StringSplitOptions.RemoveEmptyEntries).Select((string x) => (x ?? "").Trim()).Where((string x) => !string.IsNullOrWhiteSpace(x)).ToList();
-		if (list.Count == 1)
-		{
-			string text2 = (list[0] ?? "").Trim().ToUpperInvariant();
-			if (text2 == "STAB_FLAT" || GetWeeklyReportStabilityDeltaForTag(text2) != 0)
-			{
-				normalizedTagText = text2;
-				stabilityTag = text2;
-				return true;
-			}
-		}
-		string text3 = "";
-		for (Match match = Regex.Match(text, "(?<![A-Z0-9_])STAB_(?:DOWN_[1-4]|UP_[1-4]|FLAT)(?![A-Z0-9_])", RegexOptions.IgnoreCase); match.Success; match = match.NextMatch())
-		{
-			string text4 = (match.Value ?? "").Trim().ToUpperInvariant();
-			if (string.IsNullOrWhiteSpace(text3))
-			{
-				text3 = text4;
-			}
-			else if (!string.Equals(text3, text4, StringComparison.Ordinal))
-			{
-				failureReason = "包含多个相互冲突的稳定度标签。";
-				return false;
-			}
-		}
-		if (string.IsNullOrWhiteSpace(text3))
-		{
-			failureReason = "缺少合法稳定度标签。";
-			return false;
-		}
-		normalizedTagText = text3;
-		stabilityTag = text3;
-		return true;
-	}
+	private static bool TryValidateWeeklyReportTagText(string rawTagText, out string normalizedTagText, out string stabilityTag, out string failureReason) => WeeklyGenerationRules.TryValidateWeeklyReportTagText(rawTagText, out normalizedTagText, out stabilityTag, out failureReason);
 
-	private static int GetWeeklyReportStabilityDeltaForTag(string tag)
-	{
-		switch (((tag ?? "").Trim()).ToUpperInvariant())
-		{
-		case "STAB_DOWN_4":
-			return -15;
-		case "STAB_DOWN_3":
-			return -10;
-		case "STAB_DOWN_2":
-			return -5;
-		case "STAB_DOWN_1":
-			return -1;
-		case "STAB_UP_1":
-			return 1;
-		case "STAB_UP_2":
-			return 5;
-		case "STAB_UP_3":
-			return 10;
-		case "STAB_UP_4":
-			return 15;
-		default:
-			return 0;
-		}
-	}
+	private static int GetWeeklyReportStabilityDeltaForTag(string tag) => WeeklyGenerationRules.GetWeeklyReportStabilityDeltaForTag(tag);
 
-	private static int ExtractWeeklyReportStabilityDelta(string tagText)
-	{
-		string text = NormalizeWeeklyReportTagText(tagText);
-		if (string.IsNullOrWhiteSpace(text))
-		{
-			return 0;
-		}
-		int num = 0;
-		foreach (string item in text.Split(new char[1] { '\n' }, StringSplitOptions.RemoveEmptyEntries))
-		{
-			string text2 = (item ?? "").Trim();
-			if (string.Equals(text2, "STAB_FLAT", StringComparison.OrdinalIgnoreCase))
-			{
-				num = 0;
-				continue;
-			}
-			if (text2.StartsWith("STAB_", StringComparison.OrdinalIgnoreCase))
-			{
-				num = GetWeeklyReportStabilityDeltaForTag(text2);
-			}
-		}
-		return num;
-	}
+	private static int ExtractWeeklyReportStabilityDelta(string tagText) => WeeklyGenerationRules.ExtractWeeklyReportStabilityDelta(tagText);
 
-	private static string BuildFallbackWeeklyReportShortSummary(string report)
-	{
-		string text = NeutralizeWeeklyReportScenarioName(report).Replace("\r", " ").Replace("\n", " ").Trim();
-		while (text.Contains("  "))
-		{
-			text = text.Replace("  ", " ");
-		}
-		if (string.IsNullOrWhiteSpace(text))
-		{
-			return "";
-		}
-		if (text.Length <= 140)
-		{
-			return text;
-		}
-		string text2 = text.Substring(0, 140).TrimEnd();
-		int num = Math.Max(text2.LastIndexOf('。'), Math.Max(text2.LastIndexOf('；'), Math.Max(text2.LastIndexOf('，'), text2.LastIndexOf(' '))));
-		if (num >= 40)
-		{
-			text2 = text2.Substring(0, num).TrimEnd();
-		}
-		return text2.Trim();
-	}
+	private static string BuildFallbackWeeklyReportShortSummary(string report) => WeeklyGenerationRules.BuildFallbackWeeklyReportShortSummary(report);
 
-	private static string NeutralizeWeeklyReportScenarioName(string text)
-	{
-		string text2 = (text ?? "").Trim();
-		if (string.IsNullOrWhiteSpace(text2))
-		{
-			return "";
-		}
-		text2 = text2.Replace("卡拉迪亚大陆", "大陆");
-		text2 = text2.Replace("卡拉迪亚", "大陆");
-		text2 = Regex.Replace(text2, "\\bCalradia\\b", "大陆", RegexOptions.IgnoreCase);
-		while (text2.Contains("大陆大陆"))
-		{
-			text2 = text2.Replace("大陆大陆", "大陆");
-		}
-		return text2.Trim();
-	}
+	private static string NeutralizeWeeklyReportScenarioName(string text) => WeeklyGenerationRules.NeutralizeWeeklyReportScenarioName(text);
 
 	private WeeklyPromptSnapshot CaptureWeeklyPromptSnapshot(Hero targetHero, CharacterObject targetCharacter, string kingdomIdOverride)
 	{
@@ -37000,60 +35855,9 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 		}
 	}
 
-	private async Task<WeeklyReportRequestResult> GenerateWeeklyReportGroupWithRetriesAsync(WeeklyEventMaterialPreviewGroup group, int weekIndex, int startDay, int endDay, int maxAttempts)
-	{
-		WeeklyReportRequestResult weeklyReportRequestResult = new WeeklyReportRequestResult();
-		string text = BuildWeeklyReportSystemPrompt(group);
-		string text2 = BuildWeeklyReportUserPrompt(group, weekIndex, startDay, endDay);
-		string text3 = BuildWeeklyReportPromptPreviewText(group, text, text2);
-		weeklyReportRequestResult.PromptPreview = text3;
-		string text4 = BuildWeeklyReportGroupDisplayLabel(group);
-		for (int i = 1; i <= Math.Max(1, maxAttempts); i++)
-		{
-			ApiCallResult apiCallResult = await CallWeeklyReportApiDetailed(text, text2);
-			string text5 = apiCallResult.Success ? (apiCallResult.Content ?? "") : ("错误: " + (apiCallResult.ErrorMessage ?? "未知错误"));
-			Logger.LogEventPromptExchange(text4 + " [尝试 " + i + "/" + maxAttempts + "]", text3, text5);
-			if (!apiCallResult.Success)
-			{
-				weeklyReportRequestResult.FailureReason = BuildWeeklyReportFailureReason(apiCallResult.ErrorMessage, parseFailed: false);
-				weeklyReportRequestResult.AttemptsUsed = i;
-				weeklyReportRequestResult.IsRateLimit = apiCallResult.IsRateLimit;
-				weeklyReportRequestResult.IsRequestsPerMinuteLimit = apiCallResult.IsRequestsPerMinuteLimit;
-				weeklyReportRequestResult.IsQuotaLimit = apiCallResult.IsQuotaLimit;
-				weeklyReportRequestResult.RetryAfterSeconds = apiCallResult.RetryAfterSeconds;
-			}
-			else if (!TryParseWeeklyReportResponse(apiCallResult.Content, group, weekIndex, out var title, out var shortSummary, out var report, out var tagText))
-			{
-				weeklyReportRequestResult.FailureReason = BuildWeeklyReportFailureReason(apiCallResult.Content, parseFailed: true);
-				weeklyReportRequestResult.AttemptsUsed = i;
-			}
-			else
-			{
-				weeklyReportRequestResult.Success = true;
-				weeklyReportRequestResult.Title = title;
-				weeklyReportRequestResult.ShortSummary = shortSummary;
-				weeklyReportRequestResult.Report = report;
-				weeklyReportRequestResult.TagText = tagText;
-				weeklyReportRequestResult.AttemptsUsed = i;
-				return weeklyReportRequestResult;
-			}
-			if (i < maxAttempts)
-			{
-				Logger.Log("EventWeeklyReport", text4 + " 第" + i + "次请求失败，准备自动重试。原因：" + weeklyReportRequestResult.FailureReason);
-				int num = 1200;
-				if (weeklyReportRequestResult.IsRateLimit)
-				{
-					num = Math.Max(num, 60000);
-				}
-				if (weeklyReportRequestResult.RetryAfterSeconds.HasValue)
-				{
-					num = Math.Max(num, weeklyReportRequestResult.RetryAfterSeconds.Value * 1000);
-				}
-				await Task.Delay(num);
-			}
-		}
-		return weeklyReportRequestResult;
-	}
+	private static readonly WeeklyGenerationAttemptOwner _weeklyGenerationAttemptOwner = new WeeklyGenerationAttemptOwner(_weeklyGenerationRules);
+ private WeeklyGenerationAttemptPort CreateWeeklyGenerationAttemptPort() => new WeeklyGenerationAttemptPort { CallGroup = CallWeeklyReportApiDetailed, CallBatch = CallWeeklyReportBatchApiAttemptAsync, LogExchange = Logger.LogEventPromptExchange, Log = Logger.Log, Delay = milliseconds => Task.Delay(milliseconds) };
+ private async Task<WeeklyReportRequestResult> GenerateWeeklyReportGroupWithRetriesAsync(WeeklyEventMaterialPreviewGroup group, int weekIndex, int startDay, int endDay, int maxAttempts) { string system = BuildWeeklyReportSystemPrompt(group); string user = BuildWeeklyReportUserPrompt(group, weekIndex, startDay, endDay); return await _weeklyGenerationAttemptOwner.GenerateWeeklyReportGroupWithRetriesAsync(group, weekIndex, startDay, endDay, maxAttempts, system, user, BuildWeeklyReportPromptPreviewText(group, system, user), BuildWeeklyReportGroupDisplayLabel(group), CreateWeeklyGenerationAttemptPort()); }
 
 	private async Task<ApiCallResult> CallWeeklyReportBatchApiAttemptAsync(string systemPrompt, string userPrompt, long runtimeGeneration, bool firstAttempt)
 	{
@@ -37081,102 +35885,9 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 		return await attempt.ConfigureAwait(false);
 	}
 
-	private async Task<WeeklyReportBatchRequestResult> GenerateWeeklyReportBatchWithRetriesAsync(WeeklyReportBatchRequest batch, int maxAttempts, long runtimeGeneration = 0L)
-	{
-		WeeklyReportBatchRequestResult weeklyReportBatchRequestResult = new WeeklyReportBatchRequestResult();
-		if (!IsWeeklyReportBatchPromptPrepared(batch))
-		{
-			weeklyReportBatchRequestResult.FailureReason = "Weekly batch prompt was not prepared on the main thread.";
-			weeklyReportBatchRequestResult.MissingReportIds = BuildWeeklyBatchExpectedReportIds(batch);
-			return weeklyReportBatchRequestResult;
-		}
-		string text = batch.SystemPrompt;
-		string text2 = batch.UserPrompt;
-		string text3 = batch.PromptPreview ?? "";
-		string text4 = BuildWeeklyReportBatchDisplayLabel(batch);
-		weeklyReportBatchRequestResult.PromptPreview = text3;
-		for (int i = 1; i <= Math.Max(1, maxAttempts); i++)
-		{
-			if (runtimeGeneration > 0L && SaveRuntimeGuard.IsStale(runtimeGeneration, "weekly_batch_before_attempt"))
-			{
-				weeklyReportBatchRequestResult.Success = false;
-				weeklyReportBatchRequestResult.FailureReason = SaveRuntimeGuard.BuildStaleRequestErrorText();
-				weeklyReportBatchRequestResult.MissingReportIds = BuildWeeklyBatchExpectedReportIds(batch);
-				return weeklyReportBatchRequestResult;
-			}
-			ApiCallResult apiCallResult = await CallWeeklyReportBatchApiAttemptAsync(text, text2, runtimeGeneration, i == 1);
-			if (runtimeGeneration > 0L && SaveRuntimeGuard.IsStale(runtimeGeneration, "weekly_batch_after_attempt"))
-			{
-				weeklyReportBatchRequestResult.Success = false;
-				weeklyReportBatchRequestResult.FailureReason = SaveRuntimeGuard.BuildStaleRequestErrorText();
-				weeklyReportBatchRequestResult.MissingReportIds = BuildWeeklyBatchExpectedReportIds(batch);
-				return weeklyReportBatchRequestResult;
-			}
-			string text5 = apiCallResult.Success ? (apiCallResult.Content ?? "") : (apiCallResult.ErrorMessage ?? "未知错误");
-			weeklyReportBatchRequestResult.RawResponse = text5;
-			Logger.LogEventPromptExchange(text4 + " [灏濊瘯 " + i + "/" + maxAttempts + "]", text3, text5);
-			weeklyReportBatchRequestResult.AttemptsUsed = i;
-			CaptureWeeklyReportBatchAttemptFailureMetadata(weeklyReportBatchRequestResult, apiCallResult);
-			if (!apiCallResult.Success)
-			{
-				weeklyReportBatchRequestResult.Success = false;
-				weeklyReportBatchRequestResult.FailureReason = BuildWeeklyReportFailureReason(apiCallResult.ErrorMessage, parseFailed: false);
-				weeklyReportBatchRequestResult.Blocks = new List<WeeklyReportBatchBlockResult>();
-				weeklyReportBatchRequestResult.MissingReportIds = BuildWeeklyBatchExpectedReportIds(batch);
-			}
-			else if (!TryParseWeeklyBatchResponse(apiCallResult.Content, batch, out var blocks, out var missingReportIds, out var failureReason))
-			{
-				weeklyReportBatchRequestResult.Success = false;
-				weeklyReportBatchRequestResult.FailureReason = LlmRetryPrompt.BuildFailureDetail(failureReason, apiCallResult.Content, apiCallResult.ResponseBody);
-				weeklyReportBatchRequestResult.Blocks = blocks ?? new List<WeeklyReportBatchBlockResult>();
-				weeklyReportBatchRequestResult.MissingReportIds = missingReportIds ?? BuildWeeklyBatchExpectedReportIds(batch);
-			}
-			else
-			{
-				weeklyReportBatchRequestResult.Blocks = blocks ?? new List<WeeklyReportBatchBlockResult>();
-				weeklyReportBatchRequestResult.MissingReportIds = missingReportIds ?? new List<string>();
-				if (weeklyReportBatchRequestResult.MissingReportIds.Count == 0)
-				{
-					weeklyReportBatchRequestResult.Success = true;
-					weeklyReportBatchRequestResult.FailureReason = "";
-					return weeklyReportBatchRequestResult;
-				}
-				weeklyReportBatchRequestResult.Success = false;
-				weeklyReportBatchRequestResult.FailureReason = LlmRetryPrompt.BuildFailureDetail(failureReason, apiCallResult.Content, apiCallResult.ResponseBody);
-			}
-			if (i < maxAttempts)
-			{
-#if false
-				Logger.Log("EventWeeklyReport", text4 + " 绗? + i + "娆℃壒閲忚姹傚け璐ワ紝鍑嗗鑷姩閲嶈瘯銆傚師鍥狅細" + weeklyReportBatchRequestResult.FailureReason);
-#endif
-				Logger.Log("EventWeeklyReport", text4 + " 第 " + i + " 次批量请求失败，准备自动重试。原因：" + weeklyReportBatchRequestResult.FailureReason);
-				int num = 1200;
-				if (weeklyReportBatchRequestResult.IsRateLimit)
-				{
-					num = Math.Max(num, 60000);
-				}
-				if (weeklyReportBatchRequestResult.RetryAfterSeconds.HasValue)
-				{
-					num = Math.Max(num, weeklyReportBatchRequestResult.RetryAfterSeconds.Value * 1000);
-				}
-				await Task.Delay(num);
-			}
-		}
-		return weeklyReportBatchRequestResult;
-	}
+	private async Task<WeeklyReportBatchRequestResult> GenerateWeeklyReportBatchWithRetriesAsync(WeeklyReportBatchRequest batch, int maxAttempts, long runtimeGeneration = 0L) => await _weeklyGenerationAttemptOwner.GenerateWeeklyReportBatchWithRetriesAsync(batch, maxAttempts, runtimeGeneration, BuildWeeklyReportBatchDisplayLabel(batch), CreateWeeklyGenerationAttemptPort());
 
-	private static void CaptureWeeklyReportBatchAttemptFailureMetadata(WeeklyReportBatchRequestResult result, ApiCallResult attempt)
-	{
-		if (result == null)
-		{
-			return;
-		}
-		bool failed = attempt != null && !attempt.Success;
-		result.IsRateLimit = failed && attempt.IsRateLimit;
-		result.IsRequestsPerMinuteLimit = failed && attempt.IsRequestsPerMinuteLimit;
-		result.IsQuotaLimit = failed && attempt.IsQuotaLimit;
-		result.RetryAfterSeconds = failed ? attempt.RetryAfterSeconds : null;
-	}
+	private static void CaptureWeeklyReportBatchAttemptFailureMetadata(WeeklyReportBatchRequestResult result, ApiCallResult attempt) => WeeklyGenerationRules.CaptureWeeklyReportBatchAttemptFailureMetadata(result, attempt);
 
 	private async Task<WeeklyReportBatchExecutionResult> ExecuteWeeklyReportBatchAsync(WeeklyReportBatchRequest batch, int batchIndex, int maxAttempts, long runtimeGeneration)
 	{
@@ -38179,234 +36890,15 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 		return stringBuilder.ToString().TrimEnd();
 	}
 
-	private static bool TryParseWeeklyBatchResponse(string rawResponse, WeeklyReportBatchRequest batch, out List<WeeklyReportBatchBlockResult> blocks, out List<string> missingReportIds, out string failureReason)
-	{
-		blocks = new List<WeeklyReportBatchBlockResult>();
-		missingReportIds = new List<string>();
-		failureReason = "";
-		string text = (rawResponse ?? "").Replace("\r", "").Trim();
-		if (string.IsNullOrWhiteSpace(text))
-		{
-			failureReason = "批量周报响应为空。";
-			missingReportIds = BuildWeeklyBatchExpectedReportIds(batch);
-			return false;
-		}
-		Dictionary<string, WeeklyEventMaterialPreviewGroup> weeklyReportGroupMap = BuildWeeklyReportGroupMap(batch?.Groups);
-		Dictionary<string, WeeklyReportBatchBlockResult> dictionary = new Dictionary<string, WeeklyReportBatchBlockResult>(StringComparer.OrdinalIgnoreCase);
-		MatchCollection matchCollection = Regex.Matches(text, "\\[REPORT_BLOCK_BEGIN\\]\\s*(?<body>[\\s\\S]*?)\\s*\\[REPORT_BLOCK_END\\]", RegexOptions.IgnoreCase);
-		if (matchCollection.Count == 0)
-		{
-			failureReason = "响应中没有找到任何 REPORT_BLOCK。";
-			missingReportIds = BuildWeeklyBatchExpectedReportIds(batch);
-			return false;
-		}
-		foreach (Match item in matchCollection)
-		{
-			WeeklyReportBatchBlockResult weeklyReportBatchBlockResult;
-			string text2 = (item.Groups["body"]?.Value ?? "").Trim();
-			if (!TryParseWeeklyBatchBlock(text2, batch, weeklyReportGroupMap, out weeklyReportBatchBlockResult))
-			{
-				weeklyReportBatchBlockResult = weeklyReportBatchBlockResult ?? new WeeklyReportBatchBlockResult();
-			}
-			if (!string.IsNullOrWhiteSpace(weeklyReportBatchBlockResult.ReportId) && (!dictionary.TryGetValue(weeklyReportBatchBlockResult.ReportId, out var value) || (!value.Parsed && weeklyReportBatchBlockResult.Parsed)))
-			{
-				dictionary[weeklyReportBatchBlockResult.ReportId] = weeklyReportBatchBlockResult;
-			}
-			blocks.Add(weeklyReportBatchBlockResult);
-		}
-		List<string> list = new List<string>();
-		foreach (string item2 in BuildWeeklyBatchExpectedReportIds(batch))
-		{
-			if (!dictionary.TryGetValue(item2, out var value2))
-			{
-				missingReportIds.Add(item2);
-			}
-			else if (!value2.Parsed)
-			{
-				missingReportIds.Add(item2);
-				list.Add(item2);
-			}
-		}
-		if (missingReportIds.Count > 0)
-		{
-			failureReason = (list.Count == 0) ? ("批量周报响应缺少部分 report_id：" + string.Join("、", missingReportIds)) : ((list.Count == missingReportIds.Count) ? ("批量周报响应中的 report_id 解析失败：" + string.Join("、", list)) : ("批量周报响应缺少或解析失败的 report_id：" + string.Join("、", missingReportIds)));
-		}
-		return blocks.Any((WeeklyReportBatchBlockResult x) => x != null && x.Parsed);
-	}
+	private static bool TryParseWeeklyBatchResponse(string rawResponse, WeeklyReportBatchRequest batch, out List<WeeklyReportBatchBlockResult> blocks, out List<string> missingReportIds, out string failureReason) => _weeklyGenerationRules.TryParseWeeklyBatchResponse(rawResponse, batch, out blocks, out missingReportIds, out failureReason);
 
-	private static bool TryParseWeeklyBatchBlock(string rawBlockBody, WeeklyReportBatchRequest batch, Dictionary<string, WeeklyEventMaterialPreviewGroup> groupMap, out WeeklyReportBatchBlockResult block)
-	{
-		block = new WeeklyReportBatchBlockResult();
-		string text = (rawBlockBody ?? "").Trim();
-		if (string.IsNullOrWhiteSpace(text))
-		{
-			block.FailureReason = "空 block。";
-			return false;
-		}
-		block.ReportId = ExtractWeeklyBatchHeaderValue(text, "report_id");
-		block.Mode = ExtractWeeklyBatchHeaderValue(text, "mode");
-		block.Kind = ExtractWeeklyBatchHeaderValue(text, "kind");
-		block.KingdomId = ExtractWeeklyBatchHeaderValue(text, "kingdom_id");
-		if (string.IsNullOrWhiteSpace(block.ReportId))
-		{
-			block.FailureReason = "缺少 report_id。";
-			return false;
-		}
-		if (groupMap == null || !groupMap.TryGetValue(block.ReportId, out var value) || value == null)
-		{
-			block.FailureReason = "report_id 未在输入批次中找到：" + block.ReportId;
-			return false;
-		}
-		bool flag = value.OutputMode == WeeklyReportOutputMode.TitleShortTagsOnly;
-		if (!string.IsNullOrWhiteSpace(block.Mode))
-		{
-			string text2 = (block.Mode ?? "").Trim().ToLowerInvariant();
-			if (flag && !string.Equals(text2, "title_short_tags_only", StringComparison.OrdinalIgnoreCase))
-			{
-				block.FailureReason = "mode 与输入批次不一致。";
-				return false;
-			}
-			if (!flag && !string.Equals(text2, "full_report", StringComparison.OrdinalIgnoreCase))
-			{
-				block.FailureReason = "mode 与输入批次不一致。";
-				return false;
-			}
-		}
-		if (string.Equals((block.Kind ?? "").Trim(), "kingdom", StringComparison.OrdinalIgnoreCase))
-		{
-			string text2 = (value.KingdomId ?? "").Trim();
-			if (string.IsNullOrWhiteSpace((block.KingdomId ?? "").Trim()) || !string.Equals((block.KingdomId ?? "").Trim(), text2, StringComparison.OrdinalIgnoreCase))
-			{
-				block.FailureReason = "kingdom_id 与输入批次不一致。";
-				return false;
-			}
-		}
-		string text3 = Regex.Replace(text, "^report_id=.*?$", "", RegexOptions.Multiline | RegexOptions.IgnoreCase).Trim();
-		text3 = Regex.Replace(text3, "^mode=.*?$", "", RegexOptions.Multiline | RegexOptions.IgnoreCase).Trim();
-		text3 = Regex.Replace(text3, "^kind=.*?$", "", RegexOptions.Multiline | RegexOptions.IgnoreCase).Trim();
-		text3 = Regex.Replace(text3, "^kingdom_id=.*?$", "", RegexOptions.Multiline | RegexOptions.IgnoreCase).Trim();
-		if (!TryParseWeeklyReportResponse(text3, value, (batch != null) ? batch.WeekIndex : 0, out var title, out var shortSummary, out var report, out var tagText))
-		{
-			block.FailureReason = BuildWeeklyReportFailureReason(text3, parseFailed: true);
-			return false;
-		}
-		block.Title = title;
-		block.ShortSummary = shortSummary;
-		block.Report = report;
-		block.TagText = tagText;
-		block.Parsed = true;
-		return true;
-	}
+	private static bool TryParseWeeklyBatchBlock(string rawBlockBody, WeeklyReportBatchRequest batch, Dictionary<string, WeeklyEventMaterialPreviewGroup> groupMap, out WeeklyReportBatchBlockResult block) => _weeklyGenerationRules.TryParseWeeklyBatchBlock(rawBlockBody, batch, groupMap, out block);
 
-	private static string ExtractWeeklyBatchHeaderValue(string text, string key)
-	{
-		if (string.IsNullOrWhiteSpace(text) || string.IsNullOrWhiteSpace(key))
-		{
-			return "";
-		}
-		Match match = Regex.Match(text, "^" + Regex.Escape(key.Trim()) + "=(?<value>.*)$", RegexOptions.Multiline | RegexOptions.IgnoreCase);
-		return match.Success ? ((match.Groups["value"]?.Value ?? "").Trim()) : "";
-	}
+	private static string ExtractWeeklyBatchHeaderValue(string text, string key) => WeeklyGenerationRules.ExtractWeeklyBatchHeaderValue(text, key);
 
-	private static bool TryParseWeeklyReportResponse(string rawResponse, WeeklyEventMaterialPreviewGroup group, int weekIndex, out string title, out string shortSummary, out string report, out string tagText)
-	{
-		title = "";
-		shortSummary = "";
-		report = "";
-		tagText = "";
-		bool flag = (group?.OutputMode ?? WeeklyReportOutputMode.FullReport) == WeeklyReportOutputMode.TitleShortTagsOnly;
-		string text = (rawResponse ?? "").Replace("\r", "").Trim();
-		if (string.IsNullOrWhiteSpace(text))
-		{
-			return false;
-		}
-		if (flag && text.IndexOf("[REPORT]", StringComparison.OrdinalIgnoreCase) >= 0)
-		{
-			return false;
-		}
-		Match match = Regex.Match(text, "\\[TITLE\\](?<title>[\\s\\S]*?)(?=\\[SHORT\\]|\\[REPORT\\]|\\[TAGS\\]|$)", RegexOptions.IgnoreCase);
-		Match match2 = flag ? Regex.Match(text, "\\[SHORT\\](?<short>[\\s\\S]*?)(?=\\[TAGS\\]|$)", RegexOptions.IgnoreCase) : Regex.Match(text, "\\[SHORT\\](?<short>[\\s\\S]*?)(?=\\[REPORT\\]|\\[TAGS\\]|$)", RegexOptions.IgnoreCase);
-		Match match3 = flag ? null : Regex.Match(text, "\\[REPORT\\](?<report>[\\s\\S]*?)(?=\\[TAGS\\]|$)", RegexOptions.IgnoreCase);
-		Match match4 = Regex.Match(text, "\\[TAGS\\](?<tags>[\\s\\S]*)$", RegexOptions.IgnoreCase);
-		if (match.Success)
-		{
-			title = (match.Groups["title"]?.Value ?? "").Trim();
-		}
-		if (match2.Success)
-		{
-			shortSummary = BuildFallbackWeeklyReportShortSummary(match2.Groups["short"]?.Value ?? "");
-		}
-		if (match4.Success)
-		{
-			if (!TryValidateWeeklyReportTagText(match4.Groups["tags"]?.Value ?? "", out tagText, out var _, out _))
-			{
-				return false;
-			}
-		}
-		if (!flag && match3 != null && match3.Success)
-		{
-			report = (match3.Groups["report"]?.Value ?? "").Trim();
-		}
-		if (string.IsNullOrWhiteSpace(title) || string.IsNullOrWhiteSpace(shortSummary) || string.IsNullOrWhiteSpace(tagText))
-		{
-			return false;
-		}
-		if (flag)
-		{
-			report = "";
-		}
-		else if (string.IsNullOrWhiteSpace(report))
-		{
-			return false;
-		}
-		if (string.IsNullOrWhiteSpace(shortSummary))
-		{
-			shortSummary = BuildFallbackWeeklyReportShortSummary(flag ? text : report);
-		}
-		title = PlayerNotorietyBehavior.RenderPlayerNamedReferenceForExternal(NeutralizeWeeklyReportScenarioName(title));
-		shortSummary = BuildFallbackWeeklyReportShortSummary(PlayerNotorietyBehavior.RenderPlayerNamedReferenceForExternal(shortSummary));
-		report = PlayerNotorietyBehavior.RenderPlayerNamedReferenceForExternal(NeutralizeWeeklyReportScenarioName(report));
-		return true;
-	}
+	private static bool TryParseWeeklyReportResponse(string rawResponse, WeeklyEventMaterialPreviewGroup group, int weekIndex, out string title, out string shortSummary, out string report, out string tagText) => _weeklyGenerationRules.TryParseWeeklyReportResponse(rawResponse, group, weekIndex, out title, out shortSummary, out report, out tagText);
 
-	private static bool TryParseWeeklyFullOnDemandReportResponse(string rawResponse, out string title, out string shortSummary, out string report)
-	{
-		title = "";
-		shortSummary = "";
-		report = "";
-		string text = (rawResponse ?? "").Trim();
-		if (string.IsNullOrWhiteSpace(text))
-		{
-			return false;
-		}
-		Match match = Regex.Match(text, "\\[TITLE\\](?<title>[\\s\\S]*?)(?=\\[SHORT\\]|\\[REPORT\\]|\\[TAGS\\]|$)", RegexOptions.IgnoreCase);
-		Match match2 = Regex.Match(text, "\\[SHORT\\](?<short>[\\s\\S]*?)(?=\\[REPORT\\]|\\[TAGS\\]|$)", RegexOptions.IgnoreCase);
-		Match match3 = Regex.Match(text, "\\[REPORT\\](?<report>[\\s\\S]*?)(?=\\[TAGS\\]|$)", RegexOptions.IgnoreCase);
-		if (match.Success)
-		{
-			title = (match.Groups["title"]?.Value ?? "").Trim();
-		}
-		if (match2.Success)
-		{
-			shortSummary = BuildFallbackWeeklyReportShortSummary(match2.Groups["short"]?.Value ?? "");
-		}
-		if (match3.Success)
-		{
-			report = (match3.Groups["report"]?.Value ?? "").Trim();
-		}
-		if (string.IsNullOrWhiteSpace(title) || string.IsNullOrWhiteSpace(report))
-		{
-			return false;
-		}
-		if (string.IsNullOrWhiteSpace(shortSummary))
-		{
-			shortSummary = BuildFallbackWeeklyReportShortSummary(report);
-		}
-		title = PlayerNotorietyBehavior.RenderPlayerNamedReferenceForExternal(NeutralizeWeeklyReportScenarioName(title));
-		shortSummary = BuildFallbackWeeklyReportShortSummary(PlayerNotorietyBehavior.RenderPlayerNamedReferenceForExternal(shortSummary));
-		report = PlayerNotorietyBehavior.RenderPlayerNamedReferenceForExternal(NeutralizeWeeklyReportScenarioName(report));
-		return true;
-	}
+	private static bool TryParseWeeklyFullOnDemandReportResponse(string rawResponse, out string title, out string shortSummary, out string report) => _weeklyGenerationRules.TryParseWeeklyFullOnDemandReportResponse(rawResponse, out title, out shortSummary, out report);
 
 	private static string BuildDefaultWeeklyReportTitle(WeeklyEventMaterialPreviewGroup group, int weekIndex)
 	{
@@ -40460,7 +38952,7 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 			}
 			if (!ReferenceEquals(_weeklyReportRegisteredMapNotificationView, mapNotificationView))
 			{
-				_weeklyReportNoticeEventIdsShownThisSession.Clear();
+				_weeklyNoticeOwner.ResetShown();
 				mapNotificationView.RegisterMapNotificationType(typeof(AnimusForgeWeeklyReportMapNotification), typeof(AnimusForgeWeeklyReportMapNotificationItemVM));
 				_weeklyReportRegisteredMapNotificationView = mapNotificationView;
 			}
@@ -40473,111 +38965,11 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 		}
 	}
 
-	private void TryPublishUnreadWeeklyReportMapNotifications()
-	{
-		if (_unreadWeeklyReportNoticeEventIds == null || _unreadWeeklyReportNoticeEventIds.Count == 0 || !IsWeeklyReportMapNotificationEnabled())
-		{
-			return;
-		}
-		NormalizeUnreadWeeklyReportNoticesForCurrentPolicy();
-		if (_unreadWeeklyReportNoticeEventIds.Count == 0 || !CanPublishWeeklyReportMapNotification() || !TryEnsureWeeklyReportMapNotificationRegistered())
-		{
-			return;
-		}
-		_unreadWeeklyReportNoticeEventIds = SanitizeUnreadWeeklyReportNoticeEventIds(_unreadWeeklyReportNoticeEventIds);
-		foreach (string eventId in _unreadWeeklyReportNoticeEventIds.ToList())
-		{
-			if (_weeklyReportNoticeEventIdsShownThisSession.Contains(eventId))
-			{
-				continue;
-			}
-			EventRecordEntry eventRecordEntry = FindWeeklyReportRecordById(eventId);
-			if (eventRecordEntry == null)
-			{
-				MarkWeeklyReportNoticeRead(eventId);
-				continue;
-			}
-			MBInformationManager.AddNotice(new AnimusForgeWeeklyReportMapNotification(eventId, BuildWeeklyReportNoticeTitle(eventRecordEntry), BuildWeeklyReportNoticeDescription(eventRecordEntry)));
-			_weeklyReportNoticeEventIdsShownThisSession.Add(eventId);
-		}
-	}
+	private void TryPublishUnreadWeeklyReportMapNotifications() { if (_unreadWeeklyReportNoticeEventIds == null || _unreadWeeklyReportNoticeEventIds.Count == 0 || !IsWeeklyReportMapNotificationEnabled()) return; NormalizeUnreadWeeklyReportNoticesForCurrentPolicy(); if (_unreadWeeklyReportNoticeEventIds.Count == 0 || !CanPublishWeeklyReportMapNotification() || !TryEnsureWeeklyReportMapNotificationRegistered()) return; _weeklyNoticeOwner.PublishPending(WeeklyNoticePort); }
 
-	private void QueueWeeklyReportMapNotice(string eventId)
-	{
-		if (!IsWeeklyReportMapNotificationEnabled())
-		{
-			return;
-		}
-		string text = (eventId ?? "").Trim();
-		if (string.IsNullOrWhiteSpace(text))
-		{
-			return;
-		}
-		if (_unreadWeeklyReportNoticeEventIds == null)
-		{
-			_unreadWeeklyReportNoticeEventIds = new List<string>();
-		}
-		if (!_unreadWeeklyReportNoticeEventIds.Any((string x) => string.Equals((x ?? "").Trim(), text, StringComparison.OrdinalIgnoreCase)))
-		{
-			_unreadWeeklyReportNoticeEventIds.Add(text);
-		}
-	}
+	private void QueueWeeklyReportMapNotice(string eventId) { if (IsWeeklyReportMapNotificationEnabled()) _weeklyNoticeOwner.Queue(eventId); }
 
-	private void NormalizeUnreadWeeklyReportNoticesForCurrentPolicy()
-	{
-		if (_weeklyReportNoticeQueueNormalizedForCurrentPolicy)
-		{
-			return;
-		}
-		try
-		{
-			List<string> unreadEventIds = SanitizeUnreadWeeklyReportNoticeEventIds(_unreadWeeklyReportNoticeEventIds);
-			Dictionary<int, List<EventRecordEntry>> kingdomReportsByWeek = new Dictionary<int, List<EventRecordEntry>>();
-			HashSet<string> retainedBulletinIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-			foreach (string eventId in unreadEventIds)
-			{
-				EventRecordEntry entry = FindWeeklyReportRecordById(eventId);
-				if (entry != null && IsWorldBulletinEventId(entry.EventId))
-				{
-					// One bulletin now; kingdom-scope bulletins from earlier builds no longer pop.
-					if (string.Equals((entry.EventKind ?? "").Trim(), "world", StringComparison.OrdinalIgnoreCase))
-					{
-						retainedBulletinIds.Add(entry.EventId ?? "");
-					}
-					continue;
-				}
-				if (entry == null || !string.Equals((entry.EventKind ?? "").Trim(), "kingdom", StringComparison.OrdinalIgnoreCase))
-				{
-					continue;
-				}
-				if (!kingdomReportsByWeek.TryGetValue(entry.WeekIndex, out List<EventRecordEntry> entries))
-				{
-					entries = new List<EventRecordEntry>();
-					kingdomReportsByWeek[entry.WeekIndex] = entries;
-				}
-				entries.Add(entry);
-			}
-			HashSet<string> retainedEventIds = new HashSet<string>(retainedBulletinIds, StringComparer.OrdinalIgnoreCase);
-			foreach (List<EventRecordEntry> entries in kingdomReportsByWeek.Values)
-			{
-				string nearestKingdomId = ResolveNearestWeeklyReportKingdomId(entries.Select((EventRecordEntry x) => x?.ScopeKingdomId));
-				EventRecordEntry nearestEntry = entries.FirstOrDefault((EventRecordEntry x) => string.Equals((x?.ScopeKingdomId ?? "").Trim(), nearestKingdomId, StringComparison.OrdinalIgnoreCase));
-				if (nearestEntry != null)
-				{
-					retainedEventIds.Add(nearestEntry.EventId ?? "");
-				}
-			}
-			_unreadWeeklyReportNoticeEventIds = unreadEventIds.Where((string x) => retainedEventIds.Contains(x)).ToList();
-		}
-		catch (Exception ex)
-		{
-			Logger.Log("EventWeeklyReport", "[WARN] normalize legacy weekly report notices failed: " + ex.Message);
-		}
-		finally
-		{
-			_weeklyReportNoticeQueueNormalizedForCurrentPolicy = true;
-		}
-	}
+	private void NormalizeUnreadWeeklyReportNoticesForCurrentPolicy() => _weeklyNoticeOwner.NormalizeUnreadWeeklyReportNoticesForCurrentPolicy(WeeklyNoticePort);
 
 	private static bool IsWeeklyReportMapNotificationEnabled()
 	{
@@ -40596,20 +38988,7 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 		}
 	}
 
-	private void MarkWeeklyReportNoticeRead(string eventId)
-	{
-		string text = (eventId ?? "").Trim();
-		if (string.IsNullOrWhiteSpace(text))
-		{
-			return;
-		}
-		_weeklyReportNoticeEventIdsShownThisSession.Remove(text);
-		if (_unreadWeeklyReportNoticeEventIds == null || _unreadWeeklyReportNoticeEventIds.Count == 0)
-		{
-			return;
-		}
-		_unreadWeeklyReportNoticeEventIds = _unreadWeeklyReportNoticeEventIds.Where((string x) => !string.Equals((x ?? "").Trim(), text, StringComparison.OrdinalIgnoreCase)).ToList();
-	}
+	private void MarkWeeklyReportNoticeRead(string eventId) => _weeklyNoticeOwner.MarkRead(eventId);
 
 	internal bool OpenWeeklyReportNoticeFromMap(string eventId)
 	{
@@ -40884,20 +39263,14 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 		return "weekly_report:" + (eventKind ?? "").Trim().ToLowerInvariant() + ":" + Math.Max(0, weekIndex) + ":" + ((scopeKingdomId ?? "").Trim());
 	}
 
-	private static List<string> SanitizeUnreadWeeklyReportNoticeEventIds(IEnumerable<string> source)
-	{
-		return SanitizeWeeklyReportEventIds(source);
-	}
+	private static List<string> SanitizeUnreadWeeklyReportNoticeEventIds(IEnumerable<string> source) => WeeklyNoticeStateOwner.SanitizeUnreadWeeklyReportNoticeEventIds(source);
 
 	private static List<string> SanitizeWeeklyReportReadingXpClaimedEventIds(IEnumerable<string> source)
 	{
 		return SanitizeWeeklyReportEventIds(source);
 	}
 
-	private static List<string> SanitizeWeeklyReportEventIds(IEnumerable<string> source)
-	{
-		return (source ?? Enumerable.Empty<string>()).Where((string x) => !string.IsNullOrWhiteSpace(x)).Select((string x) => x.Trim()).Where((string x) => x.StartsWith("weekly_report:", StringComparison.OrdinalIgnoreCase)).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
-	}
+	private static List<string> SanitizeWeeklyReportEventIds(IEnumerable<string> source) => WeeklyNoticeStateOwner.SanitizeWeeklyReportEventIds(source);
 
 	private void TryQueueWeeklyReportMapNoticeForGeneratedReport(WeeklyEventMaterialPreviewGroup group, int weekIndex, string nearestKingdomId, HashSet<string> queuedEventIds)
 	{
@@ -41300,7 +39673,7 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 		_weeklyReportReadingXpPendingCharm = 0;
 		_weeklyReportReadingXpPendingLeadership = 0;
 		_weeklyReportReadingXpPendingSteward = 0;
-		_weeklyReportNoticeEventIdsShownThisSession.Clear();
+		_weeklyNoticeOwner.ResetShown();
 		_weeklyReportNoticeQueueNormalizedForCurrentPolicy = false;
 		_weeklyReportRegisteredMapNotificationView = null;
 		_weeklyReportGenerationInProgress = false;

@@ -66,6 +66,14 @@ internal sealed class ExecutionTranscriptStore
         record.Lines.Add(line);
         return true;
     }
+    internal ExecutionTranscript Complete(string id, bool deathCommitted, string actor)
+    {
+        var record = Find(id);
+        if (record == null || record.Outcome != "statement") return null;
+        record.Outcome = deathCommitted ? "executed" : "cancelled";
+        record.Actor = actor;
+        return record;
+    }
     internal Dictionary<string, string> Save()
     {
         var result = new Dictionary<string, string>(_opaque, StringComparer.Ordinal);
