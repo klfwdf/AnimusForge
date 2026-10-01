@@ -26,3 +26,12 @@
   h.ReplaceDatabaseOpeningKnowledge(new(){HasWorldSummaryFile=true,WorldSummary="",HasKingdomSummariesFile=true});
   if(h.Order.Single()!="ensure:False:1:1:2"||h.InFlight.Count!=1||h.InFlight.Values.Single()!="old source hash")throw new Exception("actual replace pending clear/inflight keep/revision/unsanitized ensure order");
  }
+
+ internal static void VerifyWeeklyRestore(){
+  var h=new MyBehavior();var records=new List<EventRecordEntry>{new(){EventId=" raw ",Title=" raw title "}};
+  h.RestoreDatabaseReloadWeeklyData(" raw world ",new(){{"K"," value "}},records,"");
+  if(h._publishedWorldWeeklyHistoryRevision!=1||!ReferenceEquals(h._eventRecordEntries,records)||h._eventWorldOpeningSummary!=" raw world "||h.Order.Single()!="fingerprint:1")throw new Exception("actual restore domain/fingerprint order/changed revision");
+  string unchanged=h.BuildPublishedWorldWeeklyProductsFingerprint();h.Order.Clear();
+  h.RestoreDatabaseReloadWeeklyData(null,null,records,unchanged);
+  if(h._publishedWorldWeeklyHistoryRevision!=1||h._eventWorldOpeningSummary!=""||h._eventKingdomOpeningSummaries.Count!=0||h.Order.Single()!="fingerprint:2")throw new Exception("actual restore unchanged products no revision despite opening mark");
+ }

@@ -59,3 +59,9 @@ Check(ids.SequenceEqual(new[]{"a","a","B"})&&material.SourceMaterialCount==0&&ma
 WeeklyEventDataImportOwner.NormalizeEventRecordEntriesInPlace(null,x=>x,x=>x,x=>x);
 Check(WeeklyEventDataImportOwner.NormalizeEventMaterialReferencesInPlace(null,false,x=>x).Count==0&&WeeklyEventDataImportOwner.NormalizeEventMaterialIdListInPlace(null).Count==0,"null list behavior");
 Console.WriteLine("PASS actual Weekly in-place normalization: original parity/list-entry-material-id identity/stable sorting/null/removal/trim/clamp/no cloning LIVE=NOT_RUN SAVE=NOT_RUN");
+
+string restoredWorld="old";var restoredDict=new Dictionary<string,string>();var restoredList=new List<Entry>{new(){EventId="old"}};var inputDict=new Dictionary<string,string>{{"K"," one "},{"k",null}};var inputList=new List<Entry>{new(){EventId=" raw ",Title=" untrimmed "}};var previousList=restoredList;int restoreMarks=0;
+WeeklyEventDataImportOwner.RestoreOpeningAndRecords(null,inputDict,inputList,ref restoredWorld,ref restoredDict,ref restoredList,()=>{Check(ReferenceEquals(restoredList,previousList),"restore mark before assigning records");restoreMarks++;});
+Check(restoredWorld==""&&restoredDict.Count==1&&restoredDict["K"]==""&&restoredDict.Comparer.Equals(StringComparer.OrdinalIgnoreCase)&&!ReferenceEquals(restoredDict,inputDict)&&ReferenceEquals(restoredList,inputList)&&inputList[0].Title==" untrimmed "&&restoreMarks==1,"typed restore exact comparer/null/assignment identity/no sanitize");
+MyBehavior.VerifyWeeklyRestore();
+Console.WriteLine("PASS actual Weekly restore: mark-before-records/OrdinalIgnoreCase/new-dictionary/reference records/fingerprint-difference-only revision LIVE=NOT_RUN SAVE=NOT_RUN");
