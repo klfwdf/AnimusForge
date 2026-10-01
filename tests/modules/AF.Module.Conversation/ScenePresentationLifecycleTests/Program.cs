@@ -1,4 +1,4 @@
-using AnimusForge;
+﻿using AnimusForge;
 using TaleWorlds.MountAndBlade;
 using TaleWorlds.Library;
 using TaleWorlds.Engine;
@@ -98,3 +98,5 @@ audio.CleanupSceneLipSyncAfterPlaybackFinished(1);int deferred=audio._deferredCl
 Require(first.AgentVisuals.Ends==1,"native detach once");
 audio.StopAllLipSyncPlaybackAndCleanup();Require(audio._agentSoundEvents.Count==0 && audio._deferredCleanupQueue.Count==0,"stop all clears held resources");
 Console.WriteLine($"PASS: {assertions} production presentation/audio lifecycle assertions (stubbed game/native, no files).");
+
+SceneSpeechOutputContract.Run();

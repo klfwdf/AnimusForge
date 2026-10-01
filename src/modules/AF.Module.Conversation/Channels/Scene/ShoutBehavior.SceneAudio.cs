@@ -11,6 +11,28 @@ using TaleWorlds.MountAndBlade;
 namespace AnimusForge;
 public partial class ShoutBehavior
 {
+ private SceneSpeechOutputPort _sceneSpeechOutput;
+ private SceneSpeechOutputPort SceneSpeechOutput => _sceneSpeechOutput ??= new SceneSpeechOutputPort
+ {
+  SanitizeUiText = SanitizeSceneSpeechText, SanitizeTtsText = SanitizeSceneSpeechTextForTts,
+  BuildPatienceBadge = BuildPatienceBadgeForNpc, NpcDisplayName = GetSceneNpcHistoryNameForPrompt,
+  IsHostile = IsAgentHostileToMainAgent, IsTtsEnabled = IsTtsPlaybackEnabledForShout, CanLipSync = CanAgentUseSceneLipSync,
+  ResolveHero = ResolveHeroFromAgentIndex, ExternalHeroVoice = MyBehavior.GetNpcVoiceIdForExternal,
+  EstimateTypingDuration = EstimateBubbleTypingDurationSeconds, Audio = () => SceneAudio,
+  RemoveHostileInteraction = RemoveHostileSpeechInteraction, CaptureInteractionToken = CaptureSpeechInteractionToken,
+  Report = LogTtsReport, ClearPendingBubble = ClearPendingTtsBubbleSyncForAgent,
+  ClearPendingFeed = ClearPendingSceneDialogueFeedForAgent, EnqueueCompletionToken = EnqueuePendingSpeechCompletionToken,
+  EnqueueBubble = EnqueuePendingNpcBubble, ScheduleFeed = ScheduleNpcSpeechToMessageFeed,
+  ShowBubble = TryShowNpcBubble, ArmInteractionTimeout = ScheduleInteractionTimeoutArm,
+ };
+ private void RemoveHostileSpeechInteraction(int agentIndex)
+ {
+  _activeInteractionSessions.Remove(agentIndex);
+  _pendingInteractionTimeoutArms.Remove(agentIndex);
+  lock (_ttsBubbleSyncLock) { _pendingSpeechCompletionTokenQueues.Remove(agentIndex); }
+ }
+ private long CaptureSpeechInteractionToken(int agentIndex)
+  => _activeInteractionSessions.TryGetValue(agentIndex, out var session) && session != null ? session.InteractionToken : 0L;
  private SceneAudioLipSyncController _sceneAudio;
  private SceneAudioLipSyncController SceneAudio => _sceneAudio ??= new SceneAudioLipSyncController(new SceneAudioLipSyncPort
  {

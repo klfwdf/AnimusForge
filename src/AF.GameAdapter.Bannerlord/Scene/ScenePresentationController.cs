@@ -1,3 +1,4 @@
+﻿using SceneSpeechPlaybackInfo = AnimusForge.ShoutBehavior.SceneSpeechPlaybackInfo;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -31,6 +32,154 @@ internal sealed class ScenePresentationController
   _maxRange = maxRange; _historyFingerprint = historyFingerprint;
   _activateMovement = activateMovement; _deactivateMovement = deactivateMovement; _onEnd = onEnd;
  }
+	internal SceneSpeechPlaybackInfo ShowNpcSpeechOutput(SceneSpeechOutputPort port, NpcDataPacket npc, Agent liveAgent, string content, bool allowTts = true, bool attachTtsToSceneAgent = true, bool suppressInteractionTimeoutArm = false)
+	{
+		SceneSpeechPlaybackInfo sceneSpeechPlaybackInfo = new SceneSpeechPlaybackInfo();
+		if (!_canParticipate(liveAgent))
+		{
+			return sceneSpeechPlaybackInfo;
+		}
+		string text = port.SanitizeUiText(content);
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return sceneSpeechPlaybackInfo;
+		}
+		try
+		{
+			string text2 = port.BuildPatienceBadge(npc, liveAgent);
+			if (!string.IsNullOrWhiteSpace(text2))
+			{
+				text = "【" + text2 + "】" + text;
+			}
+		}
+		catch
+		{
+		}
+		int packetAgentIndex = npc?.AgentIndex ?? (-1);
+		int num = (liveAgent != null) ? liveAgent.Index : packetAgentIndex;
+		if (packetAgentIndex >= 0 && num >= 0 && packetAgentIndex != num)
+		{
+			port.Report("ShowNpcSpeechOutput.AgentIndexMismatch", num, $"packetAgentIndex={packetAgentIndex};liveAgentIndex={num}");
+		}
+		string npcDisplayName = port.NpcDisplayName(npc);
+		if (string.IsNullOrWhiteSpace(npcDisplayName))
+		{
+			npcDisplayName = "NPC";
+		}
+		bool flagHostileSpeech = port.IsHostile(liveAgent);
+		if (flagHostileSpeech && num >= 0)
+		{
+			port.RemoveHostileInteraction(num);
+		}
+		long interactionToken = 0L;
+		if (!flagHostileSpeech && !suppressInteractionTimeoutArm && num >= 0)
+		{
+			interactionToken = port.CaptureInteractionToken(num);
+		}
+		bool flag = false;
+		TtsEngine.PlaybackRequest acceptedRequest = null;
+		bool flag2 = allowTts && port.IsTtsEnabled();
+		sceneSpeechPlaybackInfo.TtsEnabled = flag2;
+		string text3 = "scene_lipsync_not_requested";
+		bool flag3 = flag2 && attachTtsToSceneAgent && num >= 0 && _canParticipate(liveAgent) && port.CanLipSync(liveAgent, out text3);
+		int num2 = (flag3 ? num : (-1));
+		port.Report("ShowNpcSpeechOutput.Enter", num, $"allowTts={allowTts};attachToSceneAgent={attachTtsToSceneAgent};suppressTimeoutArm={suppressInteractionTimeoutArm};effectiveAgentIndex={num2};contentLen={(text ?? string.Empty).Length};hostileSpeech={flagHostileSpeech};lipSyncSafe={flag3};lipSyncReason={text3}");
+		if (!allowTts)
+		{
+			try
+			{
+				Logger.Log("LipSync", "[SAFEGUARD] Skip TTS for current speech. agentIndex=" + num);
+			}
+			catch
+			{
+			}
+		}
+		else if (flag2 && attachTtsToSceneAgent && num >= 0 && num2 < 0)
+		{
+			try
+			{
+				Logger.Log("LipSync", "[SAFEGUARD] Use detached TTS without scene lipsync. agentIndex=" + num + ", reason=" + text3);
+			}
+			catch
+			{
+			}
+		}
+		if (flag2)
+		{
+			string text4 = "";
+			string text5 = port.SanitizeTtsText(text);
+			try
+			{
+				if (npc != null && npc.IsHero)
+				{
+					Hero hero = port.ResolveHero(num);
+					if (hero != null)
+					{
+						text4 = port.ExternalHeroVoice(hero);
+						if (string.IsNullOrWhiteSpace(text4))
+						{
+							text4 = VoiceMapper.ResolveVoiceId(hero);
+						}
+					}
+				}
+				if (string.IsNullOrWhiteSpace(text4) && npc != null)
+				{
+					text4 = VoiceMapper.ResolveVoiceIdForNonHero(npc.IsFemale, npc.Age, num);
+				}
+				if (!string.IsNullOrWhiteSpace(text5))
+				{
+					flag = TtsEngine.Instance.SpeakAsync(text5, -1, -1f, num2, text4, request =>
+					{
+						acceptedRequest = request;
+						sceneSpeechPlaybackInfo.TtsAccepted = true;
+						sceneSpeechPlaybackInfo.WaitForPlaybackFinished = num2 >= 0;
+						sceneSpeechPlaybackInfo.VisualDurationSeconds = Math.Max(0.75f, port.EstimateTypingDuration(text));
+						port.Audio().TrackTtsPlaybackRequest(request, delegate
+						{
+							if (num2 < 0) { return; }
+						sceneSpeechPlaybackInfo.VisualDurationSeconds = Math.Max(0.75f, port.EstimateTypingDuration(text));
+						port.ClearPendingBubble(num, true);
+						port.ClearPendingFeed(num);
+						if (interactionToken != 0L)
+						{
+							port.EnqueueCompletionToken(num, interactionToken);
+						}
+						port.EnqueueBubble(num, liveAgent, text, npcDisplayName, sceneSpeechPlaybackInfo.VisualDurationSeconds);
+						port.ScheduleFeed(num, npcDisplayName, text, sceneSpeechPlaybackInfo);
+						});
+					});
+				}
+			}
+			catch
+			{
+			}
+			if (!flag && acceptedRequest != null) { port.Audio().RetireTtsPlaybackRequest(acceptedRequest); }
+			sceneSpeechPlaybackInfo.TtsAccepted = flag;
+			sceneSpeechPlaybackInfo.WaitForPlaybackFinished = flag && num2 >= 0;
+			port.Report("ShowNpcSpeechOutput.SpeakAttempt", num, $"effectiveAgentIndex={num2};speakAccepted={flag};voiceId={text4};lipSyncSafe={flag3};lipSyncReason={text3};ttsLen={(text5 ?? string.Empty).Length};uiLen={(text ?? string.Empty).Length}");
+		}
+		if (flag && num2 >= 0 && _canParticipate(liveAgent))
+		{
+			MeetingBattleLockMissionBehavior.ReapplyMeetingLockForAgentIfNeeded(liveAgent, recaptureAnchor: false, preserveFacing: true);
+			return sceneSpeechPlaybackInfo;
+		}
+		float num3 = port.EstimateTypingDuration(text);
+		sceneSpeechPlaybackInfo.VisualDurationSeconds = num3;
+		if (!port.ShowBubble(liveAgent, text, num3))
+		{
+			Logger.Log("FloatingText", "[Fallback] bubble unavailable, use message: npc=" + npcDisplayName);
+		}
+		if (interactionToken != 0L)
+		{
+			port.ArmInteractionTimeout(num, interactionToken, num3);
+		}
+		port.ScheduleFeed(num, npcDisplayName, text, sceneSpeechPlaybackInfo);
+		MeetingBattleLockMissionBehavior.ReapplyMeetingLockForAgentIfNeeded(liveAgent, recaptureAnchor: false, preserveFacing: true);
+		port.Report("ShowNpcSpeechOutput.BubbleFallback", num, $"interactionToken={interactionToken};typingDuration={num3:F2};ttsAccepted={flag};ttsEnabled={flag2}");
+		return sceneSpeechPlaybackInfo;
+	}
+
+
  internal static void BumpPresentation() { _presentationVersion = unchecked(_presentationVersion + 1); }
  internal string TradeRequestMode;
  internal bool TradeOwnsState;
@@ -631,4 +780,28 @@ internal sealed class ScenePresentationHotkeyPort
  internal Func<Action> CaptureMerge;
  internal Action<string> Cancel;
  internal Action DrawPreview;
+}
+
+// Stateless named leaves; shared interaction/bubble state remains in its original authoritative adapter.
+internal sealed class SceneSpeechOutputPort
+{
+ internal Func<string,string> SanitizeUiText, SanitizeTtsText;
+ internal Func<NpcDataPacket,Agent,string> BuildPatienceBadge;
+ internal Func<NpcDataPacket,string> NpcDisplayName;
+ internal Func<Agent,bool> IsHostile;
+ internal Func<bool> IsTtsEnabled;
+ internal SceneLipSyncAgentCheck CanLipSync;
+ internal Func<int,TaleWorlds.CampaignSystem.Hero> ResolveHero;
+ internal Func<TaleWorlds.CampaignSystem.Hero,string> ExternalHeroVoice;
+ internal Func<string,float> EstimateTypingDuration;
+ internal Func<SceneAudioLipSyncController> Audio;
+ internal Action<int> RemoveHostileInteraction, ClearPendingFeed;
+ internal Func<int,long> CaptureInteractionToken;
+ internal Action<string,int,string> Report;
+ internal Action<int,bool> ClearPendingBubble;
+ internal Action<int,long> EnqueueCompletionToken;
+ internal Action<int,Agent,string,string,float> EnqueueBubble;
+ internal Action<int,string,string,SceneSpeechPlaybackInfo> ScheduleFeed;
+ internal Func<Agent,string,float,bool> ShowBubble;
+ internal Action<int,long,float> ArmInteractionTimeout;
 }
