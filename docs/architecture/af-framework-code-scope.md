@@ -1,3 +1,13 @@
+<a id="source-relocation-20261001"></a>
+### 源码目录归位当前定位（2026-10-01）
+
+批准179候选实际**178原样归位 + RewardSystemBehavior.cs外交消费者hold**，根级tracked C#327→149。仅物理路径变化，namespace/类型/程序集/存档/API/算法/入口不变，不称职责抽取完成。详细实际映射/保留/验证/失败/提交集中在[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#source-relocation-20261001)，目录用途读[简明说明](af-source-directory-guide.md)。下列历史坐标保留当时语境，现态使用已接通[813锚点JSON](af-framework-code-map.json)。
+
+- 新坐标例：`src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.cs`、`Channels/Native/ShoutBehavior.NativeTurn.cs`、`Channels/Courier/CourierDeliveryBehavior.cs`；Prompt配置/组合、LLM传输、Knowledge宿主/语义组件归位到相应既有模块。
+- GameAdapter/领域宿主及UI/patch只迁179许可中的178个文件，MyBehavior22/DuelSettings整家族/SubModule/IntegratedModuleHost和制作组/外交等保留，不把目录名称当作新的生命周期或完整领域完成。
+- 地图绑定源码/消费者修订`2524ddcf1802c82685796eeb949060faeed7f60a`，106物理路径变化、生产hash/符号/一基行号不变；仅3个已审测试路径literal锚点调整hash。813 recorded/working-tree均PASS，非游戏测试。
+- 双API实际Compile各1150无漏重、资源7逻辑名相同；六构建exit0、严格非外交C43 43PASS/0FAIL/0BLOCKED_ENV、1.3/1.4实际message各45PASS。实机/旧档/真实网络/性能及许可/凭据风险仍未验。
+
 <a id="j-history-test-proof-scope-20261001"></a>
 ### J 历史非外交测试证明范围（2026-10-01）
 

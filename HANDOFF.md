@@ -1,3 +1,10 @@
+# 当前交接：AF 源码物理归位有限离线交付（2026-10-01）
+
+- 批准179候选实际**178原样归位 + 1外交消费者hold**，根级tracked C# **327→149**；RewardSystemBehavior.cs原样留根，外交J12测试不改。不是职责抽取或整个领域重写；MyBehavior22/DuelSettings/SubModule/IntegratedModuleHost等混合宿主保留。
+- 双API实际Compile各1150无漏重、7资源逻辑名保持；Debug/Release两API+Bootstrap六构建exit0；最终严格具名非外交C43 **43PASS/0FAIL/0BLOCKED_ENV**；真实1.3/1.4 message/history各45PASS；代码图813两模式PASS。首轮C43两路径失配/1.3缺SaveSystem失败日志保留，已明确诊断与复验，不称全仓PASS。
+- 本地`a4ebda43`意图、`dbae81d3`小片、`63b1a8e0`其余迁移、`2524ddcf`路径消费者；正式收尾提交以Git日志为准。完整证据/保留/失败/未验读[唯一主台账当前条目](docs/animusforge-refactoring-and-repository-reorganization-plan.md#source-relocation-20261001)，现态入口读[目录说明](docs/architecture/af-source-directory-guide.md)和[范围图](docs/architecture/af-framework-code-scope.md#source-relocation-20261001)。
+- 原SessionTransport dirty/22旧tools/NuGet/产物保留，无push/Stage/部署/清理/下载安装/一键行为变更/仓外扩写。实机/旧档/真实网络/性能、TPAC许可HOLD、旧凭据轮换未验。下方旧当前记录保留历史，不恢复施工/上传授权。
+
 # 当前交接：J 历史非外交测试闭环（2026-10-01）
 
 - **本轮有限PASS**：空intent `ec74d44d`；六包精确本地测试/metadata提交，无产品源码/Host异常政策改动。新Debug/Release双API+Bootstrap六构建通过；最终严格具名同候选C43 **43 PASS/0 FAIL/0 BLOCKED_ENV**，不是全仓PASS；当前1.3真实message DLL45检查通过。38旧J16入口一次映射，最近33既有失败中28已复验PASS；外交1排除、shared-Service及captured/sealing外交耦合延期，旧B1 current15断言已有限闭合但原完整inverse保留延期；Budget新generate-pair实际双workload/原比较已验，Budget/finite两新入口在最终C43复验；含外交注册名的CampaignComposition共享入口保守延期（前序空壳注册记录保留）。详见[唯一主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#j-history-nondiplomacy-closeout-20261001)与[测试证明范围](docs/architecture/af-framework-code-scope.md#j-history-test-proof-scope-20261001)。

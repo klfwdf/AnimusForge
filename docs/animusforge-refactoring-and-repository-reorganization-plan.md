@@ -1,3 +1,49 @@
+<a id="source-relocation-20261001"></a>
+
+**2026-10-01 当前入口：** 本轮批准源码物理归位的有限离线交付；下方旧当前入口保留历史。前轮 J 历史非外交闭环、A/J17/R05-i 不重开。
+
+## AF 源码物理归位有限交付（2026-10-01）
+
+### 授权与实际替代关系
+
+用户明确批准[精确179候选总清单](plans/2026-10-01-source-relocation-manifest.json)及必要路径消费者/正式交付/本地验证和切片提交。工作区 `E:/AnimusForge-refactor-continuation-20260831`、分支 `codex/af-main-refactor-continuation-20260831`，冻结基线 `8f3903e257b2a454763efc9468af47ee0bd37ee1`，本地意图 `a4ebda43`。
+
+**实际178归位 + 1具名hold，取代原提案“179全部归位”的预期，而不重写原提案：** P3 实施时确认 `tests/modules/AF.Module.Kingdom/J12DomainOwnerSourceContractTests/test_j12_domain_owners.py` 为外交domain测试，读取 `RewardSystemBehavior.cs`。按原批准的外交排除条件，检查根级目标为空、SHA与批准基线一致后，仅把该源码字节原样还回根级；该测试完全未改。P1 41 / P2 7 / P3 130，**根级tracked C# 327 → 149**；原提案148保留 + 此hold，逐文件保留理由仍读总清单。`CourierLetterReplyPopup.cs/VM`两既有外交消费者hold保持。
+
+这只是物理结构完成，不代表真实职责抽取、所有领域改写或拆DLL。namespace、类型、程序集、存档键、公开API、算法、默认入口均不变。`MyBehavior`22根级partial、`DuelSettings`整个家族、`SubModule`、`IntegratedModuleHost`及其他混合宿主/制作组保留；未调查保守保留只覆盖库存，不冒充责任审查。[简明目录说明](architecture/af-source-directory-guide.md)与[当前代码范围图](architecture/af-framework-code-scope.md#source-relocation-20261001)提供新入口。
+
+### 字节、编译集合与路径接通
+
+- 全178移动目标的checkout raw-byte SHA与批准清单一致；HEAD新路径内容按LF归一化与基线相等。另148原保留文件raw SHA及新增Reward hold、初始dirty字节保持。checkout CRLF与旧Git blob LF可能不同，审批清单分开记录hash；Git添加时可能规范化换行，不把Git blob raw-byte相等冒充checkout byte相等。
+- 小批次 `KnowledgeRetrievalConfig.cs` 门禁通过后再并行余项：两个API的**实际**无target MSBuild求值均为 **1150唯一Compile / 0缺失 / 0额外 / 0重复**，完整旧→新映射一一等价；7嵌入资源路径/显式LogicalName相同。主 `AnimusForge.csproj` / `myaimod.sln`无需修改，没有额外重复Compile Include。基线见[求值清单](plans/2026-10-01-source-relocation-compile-baseline.json)，迁后证据 `artifacts/source-relocation/final-compile-9792995a227a/results.json`。
+- `2524ddcf`只改114个必要当前路径消费者/测试helper/非外交活动清单文件。`tests/output_isolation.py::current_source_path`为纯测试178项静态映射，旧review键和历史`git show`路径保留。GameLifetime/ChannelPersona只有具名、唯一片段严格inverse后继续原review/hash保护；源码digest不刷新。Shared fixture动态读取和迁后glob重复计数由实证失败驱动修正；历史/cleanup库存键、断言数量和业务语义不改。
+- 活动 `docs/phase8/bridge-binding-manifest.json` / `full-domain-readiness-catalog.json`只接通非外交路径；外交条目与基线对象精确相等。原版同名csproj误命中、历史记录与原Policy/GCCZ旧tools入口保持只读；无外交源码/tests/fixtures/metadata变更。
+- 813锚点代码图绑定 `2524ddcf1802c82685796eeb949060faeed7f60a`；106个物理路径更新，生产hash/符号/行号不变。另3个测试源码锚点因已审路径literal改动更新hash：`ProactiveQualificationReplay.cs`、`J13D2DomainOwnerContractReplay.cs`、`J13E1DomainOwnerContractReplay.cs`；精确diff理由/前后hash在 `artifacts/source-relocation/code-map-test-hash-review.json`，非盲刷。recorded/working-tree两模式813均PASS，仅为定位校验。
+
+### 实际验证与保留失败
+
+| 验证层 | 实际结果 / 证据 | 限制 |
+| --- | --- | --- |
+| Debug/Release × API1.3/API1.4 + Bootstrap | 六构建exit0，六DLL与各自marker SHA复核；`artifacts/source-relocation/build-evidence.json`；Debug `build-39cc284499964c43ad685a15e74e35e8`、Release `build-d0aa0a3cebfb45a1af49284c2121b218` | 审过的进程内原构建脚本隔离副本、新UUID输出、拒已有目录/禁prune/最小env；原一键行为不改，无Stage/Deploy |
+| 最终严格具名非外交C43 | 同Debug1.4候选，`artifacts/source-relocation/p4-c-final/c-f170024f446f/{results.json,candidate.json,aggregate.log}`，**43 PASS / 0 FAIL / 0 BLOCKED_ENV，exit0**，测试冻结2524ddcf | 不是全仓PASS；外交/真实游戏责任不提升 |
+| 首轮C43 | `p4-c/c-aadec6be9e18` **41 PASS/2 FAIL**；Team eligibility duplicate和Readiness迁后真实source读取失效，修当前路径/glob后62Readiness及307 typed adapter+源码/行为负控通过，再最终C43复验 | 原失败证据保留，不刷新expected或跳用例 |
+| 实际message/history DLL | API1.4 `actual-message-063216f5bd24/api-1.4`与API1.3 `actual-message13-ecfc3e1bf937/actual`均**45检查PASS** | 首次1.3缺SaveSystem的明确失败负控保留；后读取旧合法receipt绑定的单DLL根，SHA `880F3B27D5C6C13D3C31152F7561EED610BAE7DD43D389856C733C095B54C586`，无下载/混合.tmp fallback；不证明完整runtime依赖闭包 |
+| P1 定向 | 7只读suite共38unittest及Python AST；报告 `p1-0ef8c433-5918-4eab-845d-32908529a065/p1-report.json`；两集成缺口修后Readiness62、typed adapters307/负控 | 仅覆盖相应提取/路径/契约，不是三渠道完整游戏运行 |
+| P2 定向 | `artifacts/tests/source-relocation-p2/run-bf2110d02eb14f7ba7639e760f4a10d5/entity-text.log`，19 scenarios /57 fields旧当前输出byte parity PASS；7 moved/22 retained raw hashes PASS | 其他legacy默认旧输出/full-env runner未盲跑 |
+| P3 定向 | `p3-sdk8-verification-0cd1a1809f92479695d18684d648e020`：Debt48及2行为负控、Encounter55、J02 source inverse PASS | SDK10首次NU1100原日志保留，诊断后用已有SDK8，不下载ref；Game/旧档未验 |
+| 共享helper与范围 | output-isolation 11 unittest PASS；178 resolver+hold+148 retained检查、编译集合及提交后源码等价、排除子树/原dirty保护PASS；diff check通过 | helper仅测试，不新增游戏Tick/缓存/队列/扫描；性能不作新声称 |
+
+### 本地提交、安全与未验
+
+- `a4ebda43` 精确审批意图/计划checkpoint。
+- `dbae81d3` 已验小批次Knowledge配置原样归位。
+- `63b1a8e0` 已验其余177移动（178总数），外交消费者hold已还回；无产品算法修改。
+- `2524ddcf` 必要当前路径消费者/严格历史证明接通；正式文档/代码图收尾另一本地提交，以Git日志为准。回退只允许具名inverse commit，不reset/改历史。
+- 初始dirty `src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.SessionTransport.cs`未纳入索引/提交，raw SHA仍 `a393a98b42c1f2d37150578d5d5ede170540be8eb4874751fbc2821eb9cfe23e`；原22旧tools、NuGet、其他产物不清理/误提交。两旧执行线程复核idle；不把某一时刻进程清单当成永久无写者保证。
+- D实机/旧档/真实provider网络/音频/性能仍NOT-RUN；TPAC来源/发布HOLD与旧凭据轮换风险未闭。没有push、Stage、部署、下载/安装、外仓扩写、全局配置或一键行为变更；合成TEMP仅沿此前精确许可 `E:/tmp/af-j17-20260930`，最小env不继承凭据。没有清理旧产物或真实资料。
+
+---
+
 <a id="j17-b6-c-resume-20261001"></a>
 
 **2026-10-01 当前入口：** [J 历史非外交测试闭环](#j-history-nondiplomacy-closeout-20261001)；本轮唯一详细表/实证见该条，下列旧“当前/OPEN”按明确替代关系读，不重开已闭A/J17/R05-i。
