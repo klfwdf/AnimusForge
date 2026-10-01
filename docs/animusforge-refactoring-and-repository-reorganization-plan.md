@@ -29,7 +29,7 @@ Release双API+Bootstrap均exit0、0错误（存在既有nullable等警告），g
 
 <a id="coup-scene-repair-20261001"></a>
 
-### 政变专用进场与受击崩溃修复（2026-10-01，OFFLINE_VERIFIED；未部署/实机）
+### 政变专用进场与受击崩溃修复（2026-10-01，DEPLOYED / OFFLINE_VERIFIED；实机未验）
 
 用户反馈选兵后没有专用 SETS 进场选项，按提示进城后崩溃。基线 `9e5c8fc0`，`F:/AnimusForge-main` tracked clean。11:51:50–11:52:02 的 SETS 日志确认 `town_V5` armed_coup、53 名友军生成、631 守军储备、开战后崩溃；无 Coup `mission_started`。转储 `TaleWorlds.MountAndBlade.Launcher.exe.30168.dmp` 的当前 managed 栈与异常栈均指向 `BattleAgentLogic.OnAgentHit` 空引用。仅提取异常类型与方法名，证据 `artifacts/coup-scene-repair-20261001/managed-crash-evidence.json`。
 
@@ -49,6 +49,10 @@ Release双API+Bootstrap均exit0、0错误（存在既有nullable等警告），g
 最终验证根 `artifacts/coup-scene-repair-20261001/`：`final-build.log` 为官方统一脚本双 API+Bootstrap Release 构建 exit 0（仅进程内隔离输出/中间目录，磁盘一键脚本不变，无 Stage/Deploy）。1.3=`v1.3.15.110062`、1.4=`v1.4.6.115628`；SHA256 分别 `FBBA9019C742D1CF65222AFD4830646D169EA5E2655E2F64D3553A3BFC6F2335` / `3009B03DDC31A7CE7F0B8FBB648820214C464B37EE0DB8DA7F6AEF526E98C3C9`。`final-registration/registration.log` 为无场景 fixture 的真实依赖注册，四标志 True、44目标（40 prefix/2 postfix/2 transpiler），exit 0。`final-scene-probe/registration.log` 的 26 新回归 + 原 36 状态/拘押 + 29 选兵 = 91 PASS，exit 0；两探针输入 DLL 哈希未变。本任务 diff 检查通过。
 
 证据边界：场景 fixture 使用绕过构造的 Mission/Settlement/CharacterObject 与空 managed 行为列表，显式临时替换城镇/家族上下文、菜单注册和完整资格查询，验证真实事件顺序和生产挂载/Origin/菜单阶段逻辑；没有运行原生场景/Agent 受击/城镇 UI 点击/完整胜负结算。1.3 只编译，实机与真实旧档 NOT-RUN，不能据此承诺全部场景不崩溃。全局代码地图仍因本轮未修改的 SubModule.cs 历史锚点过期失败，不刷新旧证据。期间另有周报 UI/生图并行改动，仅保留且未纳入本任务提交；构建针对当时工作树，不表示整份 DLL 只含政变差异。需后续获准覆盖后，在同 town_V5 案例验证专用入口、mission_started、首次交战、大厅转场及存读档。回滚仅 `git revert f5225e5d`，不得撤回先前入口修复或其他任务。
+
+**后续部署授权与结果（2026-10-01 12:10，取代本节上方“未部署”状态）**：用户明确要求“部署”，确认游戏/启动器均退出后，使用已验 `f5225e5d` 候选双 DLL+Bootstrap，通过原 `scripts/build/deploy_module.ps1` 覆盖统一 `Modules/AnimusForge`；未把正在施工的内战日推进源码重新编入。脚本更新11文件（9个程序/符号/marker及当前已提交的2个周报GUI资源），Stage全部238文件与安装文件SHA256逐一一致，XML仅加载Bootstrap，两实现哈希与上列最终候选完全相同。旧Stage资源与当前锁定来源不同，首次预检在游戏写入前拒绝；核实路径均位于工作区且无reparse后，将旧Stage整体移至本任务deployment目录保存，再让原脚本重建验证，未改一键流程或绕过校验。
+
+部署日志/复核为 `artifacts/coup-scene-repair-20261001/deployment/deploy-final.log`、`verification.json`；原正式产物和旧Stage的位置分别记录于 `official-artifact-backup.txt` / `stage-backup.txt`。游戏文件回滚点 `C:/Users/29310/AppData/Local/AnimusForge/Recovery/deploy/deploy-48d4a5523d284c4f87e1032da000c21a`，complete与所有旧文件备份哈希已验证。未启动游戏、未操作存档、未推送；还需实测专用菜单→首次交战→大厅转场。其他内战并行源码保持原样。
 
 <a id="civilwar-review-repair-20261001"></a>
 
