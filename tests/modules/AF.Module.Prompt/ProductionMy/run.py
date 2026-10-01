@@ -29,7 +29,7 @@ output = ROOT / "artifacts/tests/prompt-j03-production-my/current"
 output.mkdir(parents=True, exist_ok=True)
 (output / "Stubs.cs").write_text(stubs, encoding="utf-8")
 (output / "Program.cs").write_text((HERE / "Harness.cs.txt").read_text(encoding="utf-8").replace("@@METHOD@@", method), encoding="utf-8")
-links = [ROOT / "PromptListRetrievalService.cs",
+links = [ROOT / "src/modules/AF.Module.Prompt/Retrieval/PromptListRetrievalService.cs",
          ROOT / "src/modules/AF.Module.Prompt/Retrieval/PromptCandidateSelection.cs",
          ROOT / "src/modules/AF.Module.Prompt/Retrieval/PromptCandidateSnapshotIndex.cs",
          ROOT / "src/modules/AF.Module.Prompt/Retrieval/PromptSemanticWarmupSeedBatch.cs"]

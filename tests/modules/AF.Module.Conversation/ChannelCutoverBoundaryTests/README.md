@@ -10,7 +10,7 @@ This offline suite executes extracted production control flow against determinis
 
 ## Production code executed
 
-- Scene's contiguous default-entry block, from `string output = "";` after `group_turn_prompt_ready` to immediately before `apiSw.Stop()` in `ShoutBehavior.cs`. It runs inside one loop iteration, preserving terminal `break` versus stale `return` semantics.
+- Scene's contiguous default-entry block, from `string output = "";` after `group_turn_prompt_ready` to immediately before `apiSw.Stop()` in `src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.cs`. It runs inside one loop iteration, preserving terminal `break` versus stale `return` semantics.
 - Scene's actual `GenerateSceneShoutMainReplyAsync`, `CreateSceneShoutMainReplyPorts`, `RunDetachedRefactorFallbackAsync`, and `RecordSceneReplyHistoryOnMainThreadAsync` declarations.
 - Scene's actual `PrepareSceneMainReplySpeechText`, `QueueSceneMainReplyOnMainThreadAsync`, all four end/relay/action stripping helpers, the full `GiveAssetTagCodec`, and the contiguous tail sanitization statements. This extends the check beyond an empty main ActionPlan to the text actually passed to the speech queue.
 - Scene's exact relay/queue decision expressions, `replyIsDirectPlayerResponse = firstTurn`, and the production battle-postprocess suppression predicate. Only their input bindings are synthetic.

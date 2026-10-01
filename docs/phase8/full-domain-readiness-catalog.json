@@ -97,8 +97,8 @@
       ],
       "entryPaths": [
         "SubModule.cs",
-        "CampaignTickDiagnosticsPatch.cs",
-        "FeatureDiagnosticLogFile.cs"
+        "src/AF.GameAdapter.Bannerlord/Diagnostics/CampaignTickDiagnosticsPatch.cs",
+        "src/AF.GameAdapter.Bannerlord/Diagnostics/FeatureDiagnosticLogFile.cs"
       ],
       "promptAction": {
         "prompt": "NOT_APPLICABLE",
@@ -140,9 +140,9 @@
         "adapter-owner"
       ],
       "entryPaths": [
-        "BannerlordApiCompat.cs",
-        "InteractionComponentSafePatch.cs",
-        "PlayerEncounterCompat.cs",
+        "src/AF.GameAdapter.Bannerlord/Compatibility/BannerlordApiCompat.cs",
+        "src/AF.GameAdapter.Bannerlord/Patches/Safety/InteractionComponentSafePatch.cs",
+        "src/AF.GameAdapter.Bannerlord/Compatibility/PlayerEncounterCompat.cs",
         "src/AF.Bootstrap/BootstrapRuntime.cs"
       ],
       "promptAction": {
@@ -183,8 +183,8 @@
         "persistence-owner"
       ],
       "entryPaths": [
-        "CampaignSaveChunkHelper.cs",
-        "AIConfigHandler.cs",
+        "src/AF.Persistence/CampaignSaveChunkHelper.cs",
+        "src/modules/AF.Module.Prompt/Configuration/AIConfigHandler.cs",
         "docs/fixtures/phase4-persistence-profile-config/syncdata-binding-catalog.json"
       ],
       "promptAction": {
@@ -236,7 +236,7 @@
         "encounter-owner"
       ],
       "entryPaths": [
-        "ShoutBehavior.cs",
+        "src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.cs",
         "src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.ScenePostprocess.cs",
         "LordEncounterBehavior.cs",
         "src/modules/AF.Module.Conversation/Internal/Pipeline/LegacyChannelInteractionFacade.cs"
@@ -436,8 +436,8 @@
         "economy-owner"
       ],
       "entryPaths": [
-        "RewardSystemBehavior.PlayerRpCrafting.cs",
-        "RewardSystemBehavior.RpItemIntroduction.cs",
+        "src/modules/AF.Module.Economy/Host/RewardSystemBehavior.PlayerRpCrafting.cs",
+        "src/modules/AF.Module.Economy/Host/RewardSystemBehavior.RpItemIntroduction.cs",
         "RewardSystemBehavior.cs",
         "src/modules/AF.Module.Economy/Authorization/RewardSystemBehavior.EconomyAssetAuthorization.cs",
         "src/modules/AF.Module.Economy/Debt/RewardSystemBehavior.DailyEconomyLifecycle.cs",
@@ -715,7 +715,7 @@
         "MilitaryExerciseBehavior.cs",
         "MeetingBattleLockMissionBehavior.cs",
         "TroopInspectionBehavior.cs",
-        "NoblePrisonerEscortBehavior.cs",
+        "src/modules/AF.Module.Encounter/Escort/NoblePrisonerEscortBehavior.cs",
         "NoblePrisonerExecutionOrderBehavior.cs"
       ],
       "promptAction": {
@@ -763,13 +763,13 @@
         "duel-owner"
       ],
       "entryPaths": [
-        "CourierDeliveryBehavior.cs",
-        "DuelBehavior.Outcomes.cs",
-        "DuelBehavior.cs",
+        "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.cs",
+        "src/modules/AF.Module.Duel/Host/DuelBehavior.Outcomes.cs",
+        "src/modules/AF.Module.Duel/Host/DuelBehavior.cs",
         "DuelSettings.cs",
-        "FourberieDuelCompatibility.cs",
+        "src/modules/AF.Module.Duel/Host/FourberieDuelCompatibility.cs",
         "src/modules/AF.Module.Duel/DuelOutcomeReceipt.cs",
-        "ShoutBehavior.cs",
+        "src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.cs",
         "src/modules/AF.Module.Actions/Execute/LegacyNativeActionPlanExecutor.cs",
         "src/modules/AF.Module.Actions/Receipts/InteractionResultCommitter.cs",
         "src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.ScenePostprocess.cs"
@@ -820,11 +820,11 @@
         "issue-owner"
       ],
       "entryPaths": [
-        "CompanionProactiveChatBehavior.cs",
-        "CourierDeliveryBehavior.cs",
-        "ProactiveNpcRequestBehavior.cs",
-        "VanillaIssueOfferBridge.cs",
-        "VanillaIssuePromptBehavior.cs",
+        "src/modules/AF.Module.Conversation/Proactive/CompanionProactiveChatBehavior.cs",
+        "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.cs",
+        "src/modules/AF.Module.Conversation/Proactive/ProactiveNpcRequestBehavior.cs",
+        "src/modules/AF.Module.Issue/Host/VanillaIssueOfferBridge.cs",
+        "src/modules/AF.Module.Issue/Host/VanillaIssuePromptBehavior.cs",
         "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.CampaignLifetime.cs",
         "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.CommitDispatch.cs",
         "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.DeliveredMemory.cs",
@@ -899,16 +899,16 @@
         "reports-owner"
       ],
       "entryPaths": [
-        "AnimusForgeUniqueCosmeticItemBehavior.cs",
-        "AnimusForgeWeeklyReportMapNotification.cs",
+        "src/modules/AF.Module.Settlement/Host/AnimusForgeUniqueCosmeticItemBehavior.cs",
+        "src/AF.GameAdapter.Bannerlord/UI/Weekly/AnimusForgeWeeklyReportMapNotification.cs",
         "MyBehavior.WeeklyActionOutcomeReceipts.cs",
         "MyBehavior.cs",
         "NobleGatheringBehavior.cs",
-        "PlayerNotorietyBehavior.ConversationOutcomes.cs",
-        "PlayerNotorietyBehavior.cs",
-        "RomanceSystemBehavior.cs",
-        "SexualConceptionBehavior.cs",
-        "TerminalWeeklyReportBrowserPopupVM.cs",
+        "src/modules/AF.Module.Social/Host/PlayerNotorietyBehavior.ConversationOutcomes.cs",
+        "src/modules/AF.Module.Social/Host/PlayerNotorietyBehavior.cs",
+        "src/modules/AF.Module.Social/Host/RomanceSystemBehavior.cs",
+        "src/modules/AF.Module.Social/Host/SexualConceptionBehavior.cs",
+        "src/AF.GameAdapter.Bannerlord/UI/Weekly/TerminalWeeklyReportBrowserPopupVM.cs",
         "src/modules/AF.Module.Social/Notoriety/NotorietyConversationOutcomeReceipt.cs",
         "src/modules/AF.Module.Social/Notoriety/NotorietyObservationOwner.cs",
         "src/modules/AF.Module.Social/Proactive/ProactiveCandidateQualification.cs",
@@ -989,7 +989,7 @@
       ],
       "entryPaths": [
         "KingdomStrategicProfileBehavior.cs",
-        "KnowledgeLibraryBehavior.cs",
+        "src/modules/AF.Module.Knowledge/Host/KnowledgeLibraryBehavior.cs",
         "MyBehavior.PersonaGeneration.cs",
         "MyBehavior.PersonaReadiness.cs",
         "MyBehavior.PromotedPersonaGeneration.cs",
@@ -1047,22 +1047,22 @@
         "tts-owner"
       ],
       "entryPaths": [
-        "AnimusForgeApiOnboardingPopup.cs",
-        "AnimusForgeApiOnboardingVM.cs",
-        "AnimusForgeNativeConversationOverlay.cs",
+        "src/AF.GameAdapter.Bannerlord/UI/Onboarding/AnimusForgeApiOnboardingPopup.cs",
+        "src/AF.GameAdapter.Bannerlord/UI/Onboarding/AnimusForgeApiOnboardingVM.cs",
+        "src/AF.GameAdapter.Bannerlord/UI/Conversation/AnimusForgeNativeConversationOverlay.cs",
         "AnimusForgeTerminalBehavior.cs",
-        "AnimusForgeTerminalSettings.cs",
+        "src/modules/AF.Module.UI/Settings/AnimusForgeTerminalSettings.cs",
         "AnimusForgeTerminalUiModels.cs",
-        "DevWeeklyReportPopup.cs",
-        "DevWeeklyReportPopupVM.cs",
+        "src/AF.GameAdapter.Bannerlord/UI/Weekly/DevWeeklyReportPopup.cs",
+        "src/AF.GameAdapter.Bannerlord/UI/Weekly/DevWeeklyReportPopupVM.cs",
         "DuelSettings.TerminalSave.cs",
-        "ModOnboardingBehavior.cs",
+        "src/modules/AF.Module.Onboarding/Host/ModOnboardingBehavior.cs",
         "SceneActionsIntegrationBoundary.cs",
         "SubModule.cs",
         "TerminalSettingsRegistry.cs",
         "TerminalVassalageTributeHistoryPopupVM.cs",
-        "TerminalWeeklyReportBrowserPopupVM.cs",
-        "TtsEngine.cs",
+        "src/AF.GameAdapter.Bannerlord/UI/Weekly/TerminalWeeklyReportBrowserPopupVM.cs",
+        "src/modules/AF.Module.Llm/Tts/TtsEngine.cs",
         "WarStats/AfWarStatsDeathItemVM.cs",
         "WarStats/AfWarStatsEncyclopedia.cs",
         "KingdomFactionTab.cs",
@@ -1208,7 +1208,7 @@
       "implementationState": "ACTIVE_BOUNDARY",
       "entryPaths": [
         "SubModule.cs",
-        "CampaignTickDiagnosticsPatch.cs"
+        "src/AF.GameAdapter.Bannerlord/Diagnostics/CampaignTickDiagnosticsPatch.cs"
       ],
       "requiredCases": [
         "A_ONLY",
@@ -1234,8 +1234,8 @@
       "owner": "Compatibility.GameAdapter",
       "implementationState": "ACTIVE_BOUNDARY",
       "entryPaths": [
-        "BannerlordApiCompat.cs",
-        "InteractionComponentSafePatch.cs"
+        "src/AF.GameAdapter.Bannerlord/Compatibility/BannerlordApiCompat.cs",
+        "src/AF.GameAdapter.Bannerlord/Patches/Safety/InteractionComponentSafePatch.cs"
       ],
       "requiredCases": [
         "A_ONLY",
@@ -1270,7 +1270,7 @@
       "owner": "Foundation.Persistence",
       "implementationState": "DESIGN_INVENTORY",
       "entryPaths": [
-        "CampaignSaveChunkHelper.cs",
+        "src/AF.Persistence/CampaignSaveChunkHelper.cs",
         "MyBehavior.cs",
         "RewardSystemBehavior.cs"
       ],
@@ -1299,7 +1299,7 @@
       "implementationState": "ACTIVE_BOUNDARY",
       "entryPaths": [
         "src/modules/AF.Module.Llm/Transport/LegacyConfiguredChatGateway.cs",
-        "ShoutBehavior.cs",
+        "src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.cs",
         "src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.ScenePostprocess.cs"
       ],
       "requiredCases": [
@@ -1466,7 +1466,7 @@
       "implementationState": "ACTIVE_BOUNDARY",
       "entryPaths": [
         "SceneTauntBehavior.cs",
-        "DuelBehavior.cs"
+        "src/modules/AF.Module.Duel/Host/DuelBehavior.cs"
       ],
       "requiredCases": [
         "A_ONLY",
@@ -1492,7 +1492,7 @@
       "owner": "Conversation.Courier",
       "implementationState": "OPT_IN",
       "entryPaths": [
-        "CourierDeliveryBehavior.cs",
+        "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.cs",
         "src/modules/AF.Module.Conversation/Internal/Pipeline/LegacyChannelInteractionFacade.cs"
       ],
       "requiredCases": [
@@ -1520,7 +1520,7 @@
       "implementationState": "OPT_IN",
       "entryPaths": [
         "MyBehavior.WeeklyActionOutcomeReceipts.cs",
-        "PlayerNotorietyBehavior.ConversationOutcomes.cs"
+        "src/modules/AF.Module.Social/Host/PlayerNotorietyBehavior.ConversationOutcomes.cs"
       ],
       "requiredCases": [
         "A_ONLY",
@@ -1547,7 +1547,7 @@
       "implementationState": "ACTIVE_BOUNDARY",
       "entryPaths": [
         "src/modules/AF.Module.Knowledge/LegacyKnowledgeRagGateway.cs",
-        "KnowledgeLibraryBehavior.cs"
+        "src/modules/AF.Module.Knowledge/Host/KnowledgeLibraryBehavior.cs"
       ],
       "requiredCases": [
         "A_ONLY",
@@ -1574,8 +1574,8 @@
       "owner": "UI.RuntimeIntegration",
       "implementationState": "ACTIVE_BOUNDARY",
       "entryPaths": [
-        "AnimusForgeNativeConversationOverlay.cs",
-        "TtsEngine.cs",
+        "src/AF.GameAdapter.Bannerlord/UI/Conversation/AnimusForgeNativeConversationOverlay.cs",
+        "src/modules/AF.Module.Llm/Tts/TtsEngine.cs",
         "SceneActionsIntegrationBoundary.cs"
       ],
       "requiredCases": [

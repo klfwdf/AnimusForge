@@ -67,7 +67,7 @@ assert "GetMatchedExtraRuleHitsForWorker(" in knowledge_worker and "input.NeedsF
 
 # J06d: only game-thread capture may call the live eligibility functions. Both
 # worker entries must publish their request's detached facts before retrieval.
-ai = (ROOT / "AIConfigHandler.cs").read_text(encoding="utf-8-sig")
+ai = (ROOT / "src/modules/AF.Module.Prompt/Configuration/AIConfigHandler.cs").read_text(encoding="utf-8-sig")
 capture_eligibility = extract.declaration(ai, "internal static PromptRuleEligibility CapturePromptRuleEligibility(")
 rag_gate = extract.declaration(ai, "private static bool IsRuleCurrentlyEligibleForRag(")
 preprocess_gate = extract.declaration(ai, "public static bool CanInjectRuleTopicIntoPreprocessForExternal(")
@@ -86,7 +86,7 @@ assert "captured.CanInjectRuleTopicIntoPreprocess(text)" in preprocess_gate and 
 assert "Eligibility = CapturePromptRuleEligibility(targetHero, targetCharacter, runtimeTarget)" in capture_request, "shared request must capture eligibility on game thread"
 courier_begin = extract.declaration(source, "internal CourierPreprocessRequest BeginCourierRulePreprocess(")
 assert "Eligibility = CapturePromptRuleEligibility(targetHero, targetCharacter, runtimeTarget)" in courier_begin, "courier request must capture eligibility on game thread"
-native_schedule = (ROOT / "ShoutBehavior.NativePromptBuild.cs").read_text(encoding="utf-8-sig")
+native_schedule = (ROOT / "src/modules/AF.Module.Conversation/Channels/Native/ShoutBehavior.NativePromptBuild.cs").read_text(encoding="utf-8-sig")
 courier_schedule = (ROOT / "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.PromptSchedule.cs").read_text(encoding="utf-8-sig")
 if args.mutate == "drop-worker-eligibility":
     native_schedule = native_schedule.replace("ApplyGuardrailRuntimeTarget(phases.Request.Target, phases.Request.Eligibility)", "ApplyGuardrailRuntimeTarget(phases.Request.Target)")
@@ -109,8 +109,8 @@ assert courier_schedule.index('source + "_knowledge_capture"') < courier_schedul
 assert 'SaveRuntimeGuard.IsStale(runtimeGeneration, "native_conversation_knowledge_retrieval")' in native_schedule and native_schedule.count("IsNativeConversationAdmissionCurrent(admission, out _)") == 3, "Native must reject stale or replaced knowledge results"
 assert 'if (knowledgeInput == null) return null;' in courier_schedule and courier_schedule.count("IsCourierPromptRunCurrent(promptRun) || !IsCourierPromptInputCurrent(input)") == 4, "Courier must reject stale owner/source after knowledge capture and before final use"
 assert "GetLoreContextWithCandidates(" in capture_sections and "AIConfigHandler.GetLoreContext(" not in capture_sections, "final section must consume worker Lore candidates"
-entity = (ROOT / "WorldEntityRetrievalService.cs").read_text(encoding="utf-8-sig")
-knowledge_host = (ROOT / "KnowledgeLibraryBehavior.cs").read_text(encoding="utf-8-sig")
+entity = (ROOT / "src/modules/AF.Module.Knowledge/Entities/WorldEntityRetrievalService.cs").read_text(encoding="utf-8-sig")
+knowledge_host = (ROOT / "src/modules/AF.Module.Knowledge/Host/KnowledgeLibraryBehavior.cs").read_text(encoding="utf-8-sig")
 if args.mutate == "drop-lore-publication":
     knowledge_host = knowledge_host.replace("PublishPromptRules();", "", 1)
 if args.mutate == "drop-lore-invalidation":

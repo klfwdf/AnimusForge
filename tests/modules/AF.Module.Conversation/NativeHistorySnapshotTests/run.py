@@ -2,11 +2,14 @@ import argparse,importlib.util,subprocess,os
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[4];HERE=Path(__file__).parent
 import sys
+sys.path.insert(0, str(ROOT / "tests"))
+from output_isolation import current_source_path
+import sys
 sys.path.insert(0,str(ROOT/'tests'))
 from output_isolation import new_run_root
 p=argparse.ArgumentParser();p.add_argument('--original',action='store_true');p.add_argument('--mutate');p.add_argument('--native',action='store_true');p.add_argument('--run-root',type=Path);a=p.parse_args()
 spec=importlib.util.spec_from_file_location('ex',ROOT/'tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py');ex=importlib.util.module_from_spec(spec);spec.loader.exec_module(ex)
-def read(n):return subprocess.check_output(['git','show','659bb998:'+n],cwd=ROOT).decode('utf-8-sig') if a.original else (ROOT/n).read_text(encoding='utf-8-sig')
+def read(n):return subprocess.check_output(['git','show','659bb998:'+n],cwd=ROOT).decode('utf-8-sig') if a.original else (current_source_path(ROOT, n)).read_text(encoding='utf-8-sig')
 s=read('MyBehavior.cs');models=(['private sealed class DailyMemoryLine','private sealed class DailyMemoryDraft','private sealed class CompressedMemoryBlock','private sealed class WeeklyMemoryMaterialTrigger'] if a.original else [])+['private sealed class MemoryRecallCandidate']
 methods=['private static string NormalizeMemoryHeroId(','private static string GetMemoryHeroId(','private static bool IsNonHeroMemoryId(','private static string FormatMemoryHourRange(','private static string FormatCompressedMemoryAgeSuffix(','private static string FormatPastAfefLineForPrompt(','private static string StripMemoryTitleDateTime(','private static string BuildMemoryRecallQueryText(','private static void AssignMemoryCandidateDisplayIds(','private bool TryBuildMemoryRecallCandidates(','private bool TrySelectMemoryIdsWithPreprocess(','private string BuildCompressedMemoryContextById(','private string BuildHistoryContextById(']
 recovery=(ROOT/'MyBehavior.MemoryRecovery.cs').read_text(encoding='utf-8-sig') if not a.original else ''

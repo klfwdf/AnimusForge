@@ -128,7 +128,7 @@ def validate_chunk_contract(catalog: dict) -> dict:
     # The helper's own overloads have no persisted key and are intentionally absent.
     assert_true(actual_chunked == expected_chunked, f"chunked key mismatch: missing={sorted(expected_chunked - actual_chunked)} extra={sorted(actual_chunked - expected_chunked)}")
     assert_true(actual_flattened == expected_flattened, f"flattened dictionary key mismatch: missing={sorted(expected_flattened - actual_flattened)} extra={sorted(actual_flattened - expected_flattened)}")
-    helper = (ROOT / "CampaignSaveChunkHelper.cs").read_text(encoding="utf-8")
+    helper = (ROOT / "src/AF.Persistence/CampaignSaveChunkHelper.cs").read_text(encoding="utf-8")
     contract = catalog["chunkContract"]
     int_fields = {
         "StorageChunkMaxBytes": "storageChunkMaxBytes",

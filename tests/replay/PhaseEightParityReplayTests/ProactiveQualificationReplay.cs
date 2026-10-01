@@ -10,7 +10,7 @@ internal static class ProactiveQualificationReplay
     internal static void Run(Assembly assembly, string repo)
     {
         string ownerPath = Path.Combine(repo, "src/modules/AF.Module.Social/Proactive/ProactiveCandidateQualification.cs");
-        string hostPath = Path.Combine(repo, "ProactiveNpcRequestBehavior.cs");
+        string hostPath = Path.Combine(repo, "src/modules/AF.Module.Conversation/Proactive/ProactiveNpcRequestBehavior.cs");
         if (!File.Exists(ownerPath)) throw new InvalidOperationException("Proactive qualification: Social owner source missing");
         string ownerSource = File.ReadAllText(ownerPath);
         string hostSource = File.ReadAllText(hostPath);

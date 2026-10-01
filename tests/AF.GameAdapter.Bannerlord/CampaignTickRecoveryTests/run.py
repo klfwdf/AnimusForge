@@ -20,8 +20,8 @@ parser.add_argument("--dotnet", default=str(ROOT / "local/dotnet/8.0.425/dotnet.
 parser.add_argument("--mutate", choices=["ignore-skip"])
 args = parser.parse_args()
 
-diagnostics = (ROOT / "CampaignTickDiagnosticsPatch.cs").read_text(encoding="utf-8-sig")
-safety = (ROOT / "AnimusForgeMobilePartyAiSafetyPatch.cs").read_text(encoding="utf-8-sig")
+diagnostics = (ROOT / "src/AF.GameAdapter.Bannerlord/Diagnostics/CampaignTickDiagnosticsPatch.cs").read_text(encoding="utf-8-sig")
+safety = (ROOT / "src/AF.GameAdapter.Bannerlord/Patches/Safety/AnimusForgeMobilePartyAiSafetyPatch.cs").read_text(encoding="utf-8-sig")
 consume = extract.declaration(diagnostics, "public static bool ConsumePriorCrashSuspectPartySkip(")
 load = extract.declaration(diagnostics, "private static void LoadPriorCrashSuspectFromCheckpoint(")
 prefix = extract.declaration(safety, "public static bool PartyHourlyAiTickPrefix(")

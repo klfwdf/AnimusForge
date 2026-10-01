@@ -1,6 +1,6 @@
 # Scene input lifetime / BattleSpeech frozen replay regression
 
-This suite executes extracted production methods from `ShoutBehavior.cs`, `Channels/Scene/ScenePlayerShoutRequestOwner.cs`, and the AF compatibility bridge. It covers audit F4 (stale input after an await), F5 (BattleSpeech ordinary fallback loses the framed target), and overlapping gate waiter ownership.
+This suite executes extracted production methods from `src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.cs`, `Channels/Scene/ScenePlayerShoutRequestOwner.cs`, and the AF compatibility bridge. It covers audit F4 (stale input after an await), F5 (BattleSpeech ordinary fallback loses the framed target), and overlapping gate waiter ownership.
 
 ## Run
 

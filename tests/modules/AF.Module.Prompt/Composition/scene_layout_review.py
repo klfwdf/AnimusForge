@@ -2,6 +2,9 @@
 from pathlib import Path
 import importlib.util,subprocess,json
 ROOT=Path(__file__).resolve().parents[4]
+import sys
+sys.path.insert(0, str(ROOT / "tests"))
+from output_isolation import current_source_path
 spec=importlib.util.spec_from_file_location('scene_extract',ROOT/'tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py')
 ex=importlib.util.module_from_spec(spec);spec.loader.exec_module(ex)
 BASELINE='d9d266c7'
@@ -11,7 +14,7 @@ def verify():
     expressions=[]
     for review in REVIEWS:
         baseline=subprocess.check_output(['git','show',BASELINE+':'+review['path']],cwd=ROOT).decode('utf-8-sig').replace('\r\n','\n')
-        current=(ROOT/review['path']).read_text(encoding='utf-8-sig')
+        current=(current_source_path(ROOT, review['path'])).read_text(encoding='utf-8-sig')
         for patch in review['patches']:
             assert baseline.count(patch['before'])==1,'reviewed original Scene layout drift: '+patch['symbol']
             method=ex.declaration(current,patch['signature'].split('(')[0]+'(')

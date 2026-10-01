@@ -15,8 +15,8 @@ spec = importlib.util.spec_from_file_location(
 extract = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(extract)
 
-presentation = (ROOT / "ShoutBehavior.NativeTurnPresentation.cs").read_text(encoding="utf-8-sig")
-lifetime = (ROOT / "ShoutBehavior.CampaignLifetime.cs").read_text(encoding="utf-8-sig")
+presentation = (ROOT / "src/modules/AF.Module.Conversation/Channels/Native/ShoutBehavior.NativeTurnPresentation.cs").read_text(encoding="utf-8-sig")
+lifetime = (ROOT / "src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.CampaignLifetime.cs").read_text(encoding="utf-8-sig")
 arm = extract.declaration(presentation, "private void TryQueueCeremonyExecutionOrder(")
 clear = extract.declaration(presentation, "internal static void ClearCeremonyExecutionOrder()")
 clear_owner = extract.declaration(presentation, "internal static void ClearCeremonyExecutionOrder(ShoutBehavior owner)")

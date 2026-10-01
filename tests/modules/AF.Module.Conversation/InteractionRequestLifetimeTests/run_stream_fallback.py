@@ -24,7 +24,7 @@ parser.add_argument('--mutate', choices=['fallback-drops-token', 'retry-drops-to
 parser.add_argument('--newtonsoft', type=Path, help='Newtonsoft.Json.dll; defaults to the one shipped with the selected SDK')
 args = parser.parse_args()
 
-source = (ROOT / 'ShoutNetwork.cs').read_text(encoding='utf-8-sig')
+source = (ROOT / 'src/modules/AF.Module.Llm/ShoutNetwork.cs').read_text(encoding='utf-8-sig')
 method = extract.declaration(source, 'public static async Task CallApiWithMessagesStream(')
 for anchor in (FALLBACK, RETRY_TOKEN, FALLBACK_GUARD, RETRY_GUARD):
     if method.count(anchor) != 1:

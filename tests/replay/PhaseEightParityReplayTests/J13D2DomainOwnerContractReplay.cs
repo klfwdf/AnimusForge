@@ -10,7 +10,7 @@ internal static class J13D2DomainOwnerContractReplay
         {
             if (!condition) throw new InvalidOperationException("J13D2 owner contract: " + label);
         }
-        string proactive = Read("ProactiveNpcRequestBehavior.cs");
+        string proactive = Read("src/modules/AF.Module.Conversation/Proactive/ProactiveNpcRequestBehavior.cs");
         string qualification = Read("src/modules/AF.Module.Social/Proactive/ProactiveCandidateQualification.cs");
         Require(proactive.Contains("_cooldownOwner.TryBeginScan(", StringComparison.Ordinal)
             && proactive.Contains("FindBestRequestCandidate(scan.Settings", StringComparison.Ordinal)
@@ -20,10 +20,10 @@ internal static class J13D2DomainOwnerContractReplay
             && proactive.Contains("_sessionOwner.Clear();", StringComparison.Ordinal)
             && proactive.Contains("_openingOwner.Clear();", StringComparison.Ordinal), "Social hourly-to-opening consumer chain");
 
-        string bridge = Read("VanillaIssueOfferBridge.cs");
+        string bridge = Read("src/modules/AF.Module.Issue/Host/VanillaIssueOfferBridge.cs");
         string state = Read("src/modules/AF.Module.Issue/Runtime/IssueRuntimeStateOwner.cs");
         string action = Read("src/modules/AF.Module.Issue/Actions/IssueActionOwner.cs");
-        string completion = Read("VanillaIssuePromptBehavior.cs");
+        string completion = Read("src/modules/AF.Module.Issue/Host/VanillaIssuePromptBehavior.cs");
         Require(bridge.Contains("IssueActionOwner.TryAcceptIssueSelf(", StringComparison.Ordinal)
             && bridge.Contains("IssueActionOwner.TryAcceptIssueWithCompanion(", StringComparison.Ordinal)
             && bridge.Contains("IssueActionOwner.TryTurnInIssue(", StringComparison.Ordinal)
@@ -46,8 +46,8 @@ internal static class J13D2DomainOwnerContractReplay
         int turnInFact = turnIn.IndexOf("MyBehavior.AppendExternalNpcFact(", StringComparison.Ordinal);
         Require(questExecuted >= 0 && turnInFact > questExecuted, "turn-in fact after original execution");
 
-        Require(Read("AIConfigHandler.cs").Contains("VanillaIssueOfferBridge.BuildRuntimePromptBlockForExternal(", StringComparison.Ordinal)
-            && Read("ShoutBehavior.cs").Contains("VanillaIssueOfferBridge.ApplyIssueOfferTags(", StringComparison.Ordinal)
+        Require(Read("src/modules/AF.Module.Prompt/Configuration/AIConfigHandler.cs").Contains("VanillaIssueOfferBridge.BuildRuntimePromptBlockForExternal(", StringComparison.Ordinal)
+            && Read("src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.cs").Contains("VanillaIssueOfferBridge.ApplyIssueOfferTags(", StringComparison.Ordinal)
             // J17-B7 (aa3539ca) moved the shared Scene/Native unified postprocess out of Channels/Scene/ShoutBehavior.ScenePostprocess.cs.
             && Read("src/modules/AF.Module.Conversation/Internal/Postprocess/ShoutBehavior.UnifiedActionPostprocess.cs")
                 .Contains("VanillaIssueOfferBridge.BuildRuntimePostprocessRulesForExternal(", StringComparison.Ordinal)

@@ -16,7 +16,7 @@ extract = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(extract)
 # cb045840 moved these Courier projections unchanged (private -> internal) into the Prompt owner.
 courier = (ROOT / "src/modules/AF.Module.Prompt/Composition/MainPromptMessageAssemblyOwner.cs").read_text(encoding="utf-8-sig")
-scene = (ROOT / "ShoutBehavior.cs").read_text(encoding="utf-8-sig")
+scene = (ROOT / "src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.cs").read_text(encoding="utf-8-sig")
 courier_methods = "\n".join(extract.declaration(courier, signature) for signature in (
     "internal static object CreateCourierChatMessage(",
     "internal static bool TryConvertCourierMemoryMessageToChatMessage(",
@@ -41,7 +41,7 @@ template = (HERE / "Harness.cs.txt").read_text(encoding="utf-8-sig")
     '<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType>'
     '<TargetFramework>net8.0</TargetFramework><Nullable>disable</Nullable>'
     '<ImplicitUsings>enable</ImplicitUsings></PropertyGroup><ItemGroup><Compile Include="'
-    + str(ROOT / "ConversationMessage.cs") + '" /><Compile Include="'
+    + str(ROOT / "src/modules/AF.Module.Conversation/Internal/History/ConversationMessage.cs") + '" /><Compile Include="'
     + str(ROOT / "src/modules/AF.Module.Prompt/Composition/ConversationRoleClassificationOwner.cs")
     + '" /></ItemGroup></Project>', encoding="utf-8")
 (out / "NuGet.Config").write_text(

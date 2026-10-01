@@ -23,7 +23,7 @@ methods = "\n\n".join(extract.declaration(source, marker) for marker in (
     "public string BuildVisibleEquipmentPostprocessListForAI(Hero hero, MentionedWorldEntities mentions",
     "public string BuildFilteredInventorySummaryForAI(",
     "public string BuildFilteredSettlementMerchantInventorySummaryForAI("))
-scene_role = extract.declaration((ROOT / "ShoutBehavior.cs").read_text(encoding="utf-8-sig"),
+scene_role = extract.declaration((ROOT / "src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.cs").read_text(encoding="utf-8-sig"),
                                  "private static string BuildSceneNpcRoleIntroForPrompt(")
 scene_hero = extract.declaration(scene_role, "if (includeInventorySummary && RewardSystemBehavior.Instance != null)")
 scene_merchant = extract.declaration(scene_role, "if (includeInventorySummary && RewardSystemBehavior.Instance != null && characterObject != null && RewardSystemBehavior.Instance.TryGetSettlementMerchantKind")
@@ -38,7 +38,7 @@ output.mkdir(parents=True, exist_ok=True)
 template = (HERE / "Harness.cs.txt").read_text(encoding="utf-8")
 (output / "Program.cs").write_text(template.replace("@@METHODS@@", methods)
                                   .replace("@@SCENE_HERO@@", scene_hero).replace("@@SCENE_MERCHANT@@", scene_merchant), encoding="utf-8")
-links = [ROOT / "PromptListRetrievalService.cs",
+links = [ROOT / "src/modules/AF.Module.Prompt/Retrieval/PromptListRetrievalService.cs",
          ROOT / "src/modules/AF.Module.Prompt/Retrieval/PromptCandidateSelection.cs",
          ROOT / "src/modules/AF.Module.Prompt/Retrieval/PromptCandidateSnapshotIndex.cs",
          ROOT / "src/modules/AF.Module.Prompt/Retrieval/PromptSemanticWarmupSeedBatch.cs"]

@@ -30,13 +30,13 @@ EXPECTED_WIRED = {
     "action-memory": ("src/modules/AF.Module.Actions/Receipts/InteractionResultCommitter.cs", "Commit"),
     "action-economy": ("src/modules/AF.Module.Actions/Execute/LegacyNativeActionPlanExecutor.cs", "ValidateAndExecuteCore"),
     "conversation-siege": ("AfGcczShoutBridge.cs", "IsActive"),
-    "conversation-courier": ("CourierDeliveryBehavior.cs", "IsCourierBridgeEnabled"),
-    "memory-social-reports": ("PlayerNotorietyBehavior.ConversationOutcomes.cs", "IsSocialReportsBridgeEnabled"),
+    "conversation-courier": ("src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.cs", "IsCourierBridgeEnabled"),
+    "memory-social-reports": ("src/modules/AF.Module.Social/Host/PlayerNotorietyBehavior.ConversationOutcomes.cs", "IsSocialReportsBridgeEnabled"),
     "gateway-knowledge-profile": ("src/modules/AF.Module.Knowledge/LegacyKnowledgeRagGateway.cs", "GenerateAsync"),
     "policy-world-diplomacy": ("src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.cs", "NotifyExternalDiplomacyResolved"),
     "ui-runtime-integration": ("SceneActionsIntegrationBoundary.cs", "InitializeRuntime"),
-    "host-runtime": ("CampaignTickDiagnosticsPatch.cs", "EnsurePatched"),
-    "scene-duel": ("DuelBehavior.cs", "IsSceneDuelBridgeEnabled"),
+    "host-runtime": ("src/AF.GameAdapter.Bannerlord/Diagnostics/CampaignTickDiagnosticsPatch.cs", "EnsurePatched"),
+    "scene-duel": ("src/modules/AF.Module.Duel/Host/DuelBehavior.cs", "IsSceneDuelBridgeEnabled"),
 }
 EXPECTED_CONFIGURABLE = frozenset(EXPECTED_WIRED)
 EXPECTED_GATE_TOKENS = {
@@ -680,7 +680,7 @@ def run(
     require(catalog.is_relative_to(project), "catalog must be inside project root")
     require(config.is_relative_to(project), "config must be inside project root")
     validate_mandatory_interaction_safety(
-        (project / "InteractionComponentSafePatch.cs").read_text(encoding="utf-8"),
+        (project / "src/AF.GameAdapter.Bannerlord/Patches/Safety/InteractionComponentSafePatch.cs").read_text(encoding="utf-8"),
         (project / "Patch_TriggerMassiveHook.cs").read_text(encoding="utf-8"),
     )
     catalog_index = load_catalog(load_json(catalog, "full-domain catalog"))

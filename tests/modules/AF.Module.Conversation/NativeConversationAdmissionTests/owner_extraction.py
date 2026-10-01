@@ -2,6 +2,9 @@
 from pathlib import Path
 import hashlib,json,subprocess
 ROOT=Path(__file__).resolve().parents[4]
+import sys
+sys.path.insert(0, str(ROOT / "tests"))
+from output_isolation import current_source_path
 REVIEW=json.loads((ROOT/'tests/modules/AF.Module.Conversation/NativeTicket/source-review.json').read_text(encoding='utf-8'))
 CLAIM_REVIEW=json.loads((ROOT/'tests/modules/AF.Module.Conversation/NativeDispatchClaim/source-review.json').read_text(encoding='utf-8'))
 MAIN_REPLY_REVIEW=json.loads((ROOT/'tests/modules/AF.Module.Conversation/NativeMainReply/source-review.json').read_text(encoding='utf-8'))
@@ -53,7 +56,7 @@ def restore_claim(path,source):
     return restore_packet(CLAIM_REVIEW,path,restore_main_reply(path,source))
 def restore_main_reply(path,source):
     for file, digest in MAIN_REPLY_REVIEW.get('addedFiles',{}).items():
-        assert hashlib.sha256(restore_request_lifetime(file,(ROOT/file).read_text(encoding='utf-8-sig')).encode()).hexdigest()==digest, 'Unreviewed main-reply dependency: '+file
+        assert hashlib.sha256(restore_request_lifetime(file,(current_source_path(ROOT, file)).read_text(encoding='utf-8-sig')).encode()).hexdigest()==digest, 'Unreviewed main-reply dependency: '+file
     return restore_packet(MAIN_REPLY_REVIEW,path,restore_observation(path,source))
 # Accepted-reply deferral: the completion request carries game-thread side effects that
 # run only for a non-discarded dispatch (NativeTurn/run.py executes that). Project exactly
@@ -95,5 +98,5 @@ def restore_observation(path,source):
     return restore_packet(OBSERVATION_REVIEW,path,source)
 if __name__=='__main__':
     for path in REVIEW['files']:
-        restore(path,(ROOT/path).read_text(encoding='utf-8-sig'))
+        restore(path,(current_source_path(ROOT, path)).read_text(encoding='utf-8-sig'))
         print('PASS exact admission-owner inverse '+path)

@@ -9,6 +9,9 @@ import subprocess
 from xml.sax.saxutils import escape
 
 ROOT = Path(__file__).resolve().parents[4]
+import sys
+sys.path.insert(0, str(ROOT / "tests"))
+from output_isolation import current_source_path
 HERE = Path(__file__).resolve().parent
 spec = importlib.util.spec_from_file_location('boundary_extractor', ROOT / 'tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py')
 ex = importlib.util.module_from_spec(spec)
@@ -123,7 +126,7 @@ def main():
     instrumented = blocks['PARTIAL'].replace('Task.Delay(30000)', 'Task.Delay(180)')
     (output / 'CourierOwner.cs').write_text(instrumented, encoding='utf-8')
     includes = '<Reference Include="Newtonsoft.Json"><HintPath>' + escape(str(newtonsoft)) + '</HintPath></Reference>'
-    includes += ''.join('<Compile Include="' + escape(str(ROOT / item)) + '" Link="' + escape(Path(item).name) + '"/>' for item in LINKS)
+    includes += ''.join('<Compile Include="' + escape(str(current_source_path(ROOT, item))) + '" Link="' + escape(Path(item).name) + '"/>' for item in LINKS)
     (output / 'Tests.csproj').write_text('<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><ImplicitUsings>enable</ImplicitUsings><Nullable>disable</Nullable></PropertyGroup><ItemGroup>' + includes + '</ItemGroup></Project>', encoding='utf-8')
     (output / 'NuGet.Config').write_text('<configuration><packageSources><clear/></packageSources></configuration>', encoding='utf-8')
     meta = '\n'.join(name + ' SHA256=' + hashlib.sha256(value.encode()).hexdigest() for name, value in original.items())

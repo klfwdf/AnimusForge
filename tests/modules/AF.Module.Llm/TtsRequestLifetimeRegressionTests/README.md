@@ -8,11 +8,11 @@ python -B tests/modules/AF.Module.Llm/TtsRequestLifetimeRegressionTests/run_muta
 python -B -m unittest discover -s tests/modules/AF.Module.Llm/TtsRequestLifetimeRegressionTests -p test_wiring.py
 ```
 
-默认读取当前工作树 `TtsEngine.cs` 和 `ShoutBehavior.cs`。输出与日志仅在本目录 `.generated/`。`--consumer-source` 可显式传入待集成源码；日志记录路径和 SHA-256，**该模式不能声称已验证生产接线**。SDK 可通过 `--dotnet` 指定（默认使用 AFMOD 本地 SDK）。
+默认读取当前工作树 `src/modules/AF.Module.Llm/Tts/TtsEngine.cs` 和 `src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.cs`。输出与日志仅在本目录 `.generated/`。`--consumer-source` 可显式传入待集成源码；日志记录路径和 SHA-256，**该模式不能声称已验证生产接线**。SDK 可通过 `--dotnet` 指定（默认使用 AFMOD 本地 SDK）。
 
 ## 证据边界
 
-- 编译完整真实 `TtsEngine.cs`，生命周期、WorkerLoop、ProcessJob、Gateway 调用桥、事件发布、CTS 与实际线程均非测试重写。
+- 编译完整真实 `src/modules/AF.Module.Llm/Tts/TtsEngine.cs`，生命周期、WorkerLoop、ProcessJob、Gateway 调用桥、事件发布、CTS 与实际线程均非测试重写。
 - 11 个 P/Invoke 声明只在生成的测试副本中替换为立即抛异常，禁止加载原生音频/窗口 API。游戏对象/设置、网络 Gateway 是 fixture；不调用真实在线 TTS、Bannerlord 或存档。
 - 成功音频使用 16 字节 PCM fixture，写入 `.generated/<run>/audio-fixtures/`，以无声 Tableau 路径推进真实事件和计时循环，不播放声音。
 - 消费端提取真实请求 owner、注册/完成/timeout wait 方法；Mission、save generation 为 stub。不以简化消费端替代完整 ShoutBehavior 编译和实机验证。

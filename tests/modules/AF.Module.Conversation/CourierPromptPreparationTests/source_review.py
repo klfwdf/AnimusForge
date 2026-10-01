@@ -2,6 +2,9 @@
 from pathlib import Path
 import hashlib,importlib.util,json,subprocess
 ROOT=Path(__file__).resolve().parents[4];HERE=Path(__file__).parent
+import sys
+sys.path.insert(0, str(ROOT / "tests"))
+from output_isolation import current_source_path
 
 def restore(source):
  review=json.loads((HERE/'source-review.json').read_text(encoding='utf-8-sig'))
@@ -18,7 +21,7 @@ def restore(source):
  # acceptance is run_j17_reviewed_delta.py + run.py/run_liveness.py.
  fixed=subprocess.check_output(['git','show','6e419f6d17859fc49fef538e8a2ea5acf922deb3:'+review['path']],cwd=ROOT).decode('utf-8-sig').replace('\r\n','\n')
  assert fixed==expected,'Reviewed Courier prompt historical candidate changed'
- current=(ROOT/review['path']).read_text(encoding='utf-8-sig')
+ current=(current_source_path(ROOT, review['path'])).read_text(encoding='utf-8-sig')
  assert source in (current,expected,before),'Unexpected Courier prompt inverse input'
  exspec=importlib.util.spec_from_file_location('prompt_decl',ROOT/'tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py');ex=importlib.util.module_from_spec(exspec);exspec.loader.exec_module(ex)
  live=ex.courier_source(None)
@@ -30,7 +33,7 @@ def restore(source):
  return before
 
 def verify():
- current=(ROOT/'CourierDeliveryBehavior.cs').read_text(encoding='utf-8-sig');restore(current)
+ current=(ROOT/'src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.cs').read_text(encoding='utf-8-sig');restore(current)
  import main_assembly_projection
  main_assembly_projection.projected_messages()
  from unittest.mock import patch

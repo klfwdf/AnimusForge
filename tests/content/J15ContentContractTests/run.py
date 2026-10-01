@@ -875,27 +875,27 @@ def verify_formats_and_references() -> None:
     check(xml_targets <= set(J15B_EXPECTED) | set(INTEGRATION_EXPECTED), "SubModule XML targets must be mapped")
 
     movie_consumers = {
-        "GUI/Prefabs/AnimusForgeApiOnboardingPopup.xml": "AnimusForgeApiOnboardingPopup.cs",
-        "GUI/Prefabs/AnimusForgeConversationHistoryLog.xml": "AnimusForgeConversationHistoryLogPopup.cs",
-        "GUI/Prefabs/AnimusForgeNativeConversationOverlay.xml": "AnimusForgeNativeConversationOverlay.cs",
+        "GUI/Prefabs/AnimusForgeApiOnboardingPopup.xml": "src/AF.GameAdapter.Bannerlord/UI/Onboarding/AnimusForgeApiOnboardingPopup.cs",
+        "GUI/Prefabs/AnimusForgeConversationHistoryLog.xml": "src/AF.GameAdapter.Bannerlord/UI/Conversation/AnimusForgeConversationHistoryLogPopup.cs",
+        "GUI/Prefabs/AnimusForgeNativeConversationOverlay.xml": "src/AF.GameAdapter.Bannerlord/UI/Conversation/AnimusForgeNativeConversationOverlay.cs",
         "GUI/Prefabs/AnimusForgeTerminalPopup.xml": "AnimusForgeTerminalUiModels.cs",
         "GUI/Prefabs/AnimusForgeWorldEventInboxPopup.xml": "WorldEvents/WorldEventInbox.cs",
         "GUI/Prefabs/AnimusForgeWorldMessageTimelinePopup.xml": "WorldMessageTimelineUi.cs",
-        "GUI/Prefabs/CourierLetterInputPopup.xml": "CourierLetterInputPopup.cs",
+        "GUI/Prefabs/CourierLetterInputPopup.xml": "src/AF.GameAdapter.Bannerlord/UI/Courier/CourierLetterInputPopup.cs",
         "GUI/Prefabs/CourierLetterReplyPopup.xml": "CourierLetterReplyPopup.cs",
         "GUI/Prefabs/CustomPolicyComposePopup.xml": "PolicySystem/UI/KingdomPolicyUi.cs",
         "GUI/Prefabs/CustomPolicyHistoryPopup.xml": "PolicySystem/UI/KingdomPolicyUi.cs",
         "GUI/Prefabs/CustomPolicyResultPopup.xml": "PolicySystem/UI/KingdomPolicyUi.cs",
-        "GUI/Prefabs/DevHistoryEditPopup.xml": "DevHistoryEditPopup.cs",
-        "GUI/Prefabs/DevLargeSelectionPopup.xml": "DevLargeSelectionPopup.cs",
-        "GUI/Prefabs/DevWeeklyReportPopup.xml": "DevWeeklyReportPopup.cs",
-        "GUI/Prefabs/FloatingTextLayer.xml": "FloatingTextMissionView.cs",
+        "GUI/Prefabs/DevHistoryEditPopup.xml": "src/AF.GameAdapter.Bannerlord/UI/Editors/DevHistoryEditPopup.cs",
+        "GUI/Prefabs/DevLargeSelectionPopup.xml": "src/AF.GameAdapter.Bannerlord/UI/Editors/DevLargeSelectionPopup.cs",
+        "GUI/Prefabs/DevWeeklyReportPopup.xml": "src/AF.GameAdapter.Bannerlord/UI/Weekly/DevWeeklyReportPopup.cs",
+        "GUI/Prefabs/FloatingTextLayer.xml": "src/AF.GameAdapter.Bannerlord/UI/Conversation/FloatingTextMissionView.cs",
         "GUI/Prefabs/LocalPolicyComposePopup.xml": "PolicySystem/UI/LocalPolicyUi.cs",
         "GUI/Prefabs/LocalPolicyHistoryPopup.xml": "PolicySystem/UI/LocalPolicyUi.cs",
-        "GUI/Prefabs/PlayerNotorietyPopup.xml": "PlayerNotorietyPopup.cs",
-        "GUI/Prefabs/PlayerRpForgePopup.xml": "PlayerRpForgePopup.cs",
+        "GUI/Prefabs/PlayerNotorietyPopup.xml": "src/AF.GameAdapter.Bannerlord/UI/Social/PlayerNotorietyPopup.cs",
+        "GUI/Prefabs/PlayerRpForgePopup.xml": "src/AF.GameAdapter.Bannerlord/UI/Economy/PlayerRpForgePopup.cs",
         "GUI/Prefabs/PolicyEffectModuleManagerPopup.xml": "PolicySystem/UI/PolicyEffectModuleManagerUi.cs",
-        "GUI/Prefabs/ShoutTextInputPopup.xml": "ShoutTextInputPopup.cs",
+        "GUI/Prefabs/ShoutTextInputPopup.xml": "src/AF.GameAdapter.Bannerlord/UI/Conversation/ShoutTextInputPopup.cs",
         "GUI/Prefabs/WorldDiplomacyComposePopup.xml": "src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.cs",
     }
     for target, consumer in movie_consumers.items():
@@ -906,11 +906,11 @@ def verify_formats_and_references() -> None:
         check(f'LoadMovie("{movie}"' in text or via_field, f"movie consumer drift: {movie}")
 
     sprite_consumers = {
-        "GUI/SpriteParts/af_courier/": "AnimusForgeCourierUiSprites.cs",
-        "GUI/SpriteParts/af_player_notoriety/": "AnimusForgePlayerNotorietyUiSprites.cs",
-        "GUI/SpriteParts/af_player_rp_forge/": "AnimusForgePlayerRpForgeUiSprites.cs",
+        "GUI/SpriteParts/af_courier/": "src/AF.GameAdapter.Bannerlord/UI/Courier/AnimusForgeCourierUiSprites.cs",
+        "GUI/SpriteParts/af_player_notoriety/": "src/AF.GameAdapter.Bannerlord/UI/Social/AnimusForgePlayerNotorietyUiSprites.cs",
+        "GUI/SpriteParts/af_player_rp_forge/": "src/AF.GameAdapter.Bannerlord/UI/Economy/AnimusForgePlayerRpForgeUiSprites.cs",
         "GUI/SpriteParts/af_vassalage_notifications/": "VassalageBehavior.cs",
-        "GUI/SpriteParts/af_weekly_": "AnimusForgeWeeklyReportMapNotification.cs",
+        "GUI/SpriteParts/af_weekly_": "src/AF.GameAdapter.Bannerlord/UI/Weekly/AnimusForgeWeeklyReportMapNotification.cs",
         "GUI/SpriteParts/af_world_diplomacy/": "src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.cs",
     }
     for target in (item for item in J15B_EXPECTED if item.endswith(".png")):
@@ -919,12 +919,12 @@ def verify_formats_and_references() -> None:
         text = (ROOT / matches[0]).read_text(encoding="utf-8-sig")
         check(Path(target).name in text, f"sprite consumer drift: {target}")
 
-    bulletin_movie = (ROOT / "DevWeeklyReportPopup.cs").read_text(encoding="utf-8-sig")
+    bulletin_movie = (ROOT / "src/AF.GameAdapter.Bannerlord/UI/Weekly/DevWeeklyReportPopup.cs").read_text(encoding="utf-8-sig")
     check('_movieName = "WorldBulletinPanel";' in bulletin_movie, "movie consumer drift: WorldBulletinPanel")
-    bulletin_sprites = (ROOT / "AnimusForgeWeeklyReportMapNotification.cs").read_text(encoding="utf-8-sig")
+    bulletin_sprites = (ROOT / "src/AF.GameAdapter.Bannerlord/UI/Weekly/AnimusForgeWeeklyReportMapNotification.cs").read_text(encoding="utf-8-sig")
     check('BulletinCategory = "af_world_bulletin"' in bulletin_sprites, "sprite category drift: af_world_bulletin")
-    catalog = (ROOT / "CourierLetterThemes.cs").read_text(encoding="utf-8-sig")
-    sprites = (ROOT / "AnimusForgeCourierUiSprites.cs").read_text(encoding="utf-8-sig")
+    catalog = (ROOT / "src/AF.GameAdapter.Bannerlord/UI/Courier/CourierLetterThemes.cs").read_text(encoding="utf-8-sig")
+    sprites = (ROOT / "src/AF.GameAdapter.Bannerlord/UI/Courier/AnimusForgeCourierUiSprites.cs").read_text(encoding="utf-8-sig")
     for target in COURIER_THEME_EXPECTED:
         stem = Path(target).stem
         if stem in ("af_courier_scroll_base", "af_courier_button_band"):
@@ -945,7 +945,7 @@ def verify_formats_and_references() -> None:
     brush = (ROOT / J15B_EXPECTED["GUI/Brushes/AFCourierLetterBrushes.xml"]["source"]).read_text(encoding="utf-8-sig")
     courier_prefab = (ROOT / J15B_EXPECTED["GUI/Prefabs/CourierLetterInputPopup.xml"]["source"]).read_text(encoding="utf-8-sig")
     check("AFCourierLetter." in brush and "AFCourierLetter." in courier_prefab, "courier brush linkage")
-    band_owner = (ROOT / "AnimusForgeCourierUiSprites.cs").read_text(encoding="utf-8-sig")
+    band_owner = (ROOT / "src/AF.GameAdapter.Bannerlord/UI/Courier/AnimusForgeCourierUiSprites.cs").read_text(encoding="utf-8-sig")
     for name in ("AFCourierLetter.Band.Button", "AFCourierLetter.Band.Button.Text"):
         check(f'Name="{name}"' in brush, f"courier band brush missing: {name}")
     check('ButtonBrushName = "AFCourierLetter.Band.Button"' in band_owner, "courier band brush runtime owner drift")

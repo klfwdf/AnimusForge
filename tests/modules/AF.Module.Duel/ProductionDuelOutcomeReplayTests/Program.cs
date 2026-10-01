@@ -125,10 +125,10 @@ internal static class Program
 
     private static void VerifySourceGuards(string projectRoot)
     {
-        string behaviorPath = Path.Combine(projectRoot, "DuelBehavior.cs");
-        string hostPath = Path.Combine(projectRoot, "DuelBehavior.Outcomes.cs");
+        string behaviorPath = Path.Combine(projectRoot, "src/modules/AF.Module.Duel/Host/DuelBehavior.cs");
+        string hostPath = Path.Combine(projectRoot, "src/modules/AF.Module.Duel/Host/DuelBehavior.Outcomes.cs");
         string contractPath = Path.Combine(projectRoot, "src", "modules", "AF.Module.Duel", "DuelOutcomeReceipt.cs");
-        string fourberiePath = Path.Combine(projectRoot, "FourberieDuelCompatibility.cs");
+        string fourberiePath = Path.Combine(projectRoot, "src/modules/AF.Module.Duel/Host/FourberieDuelCompatibility.cs");
         foreach (string path in new[] { behaviorPath, hostPath, contractPath, fourberiePath })
         {
             Require(File.Exists(path), "Required production source is missing: " + path);
@@ -296,7 +296,7 @@ internal static class Program
 
     private static void VerifyStakeArmSourceGuard(string projectRoot)
     {
-        string behaviorPath = Path.Combine(projectRoot, "DuelBehavior.cs");
+        string behaviorPath = Path.Combine(projectRoot, "src/modules/AF.Module.Duel/Host/DuelBehavior.cs");
         Require(File.Exists(behaviorPath), "Required production source is missing: " + behaviorPath);
         string method = ExtractMethod(
             File.ReadAllText(behaviorPath),
@@ -314,12 +314,12 @@ internal static class Program
 
     private static void VerifyPendingArtifactSourceGuard(string projectRoot)
     {
-        string behavior = File.ReadAllText(Path.Combine(projectRoot, "DuelBehavior.cs"))
+        string behavior = File.ReadAllText(Path.Combine(projectRoot, "src/modules/AF.Module.Duel/Host/DuelBehavior.cs"))
             .Replace("\r\n", "\n", StringComparison.Ordinal);
-        string host = File.ReadAllText(Path.Combine(projectRoot, "DuelBehavior.Outcomes.cs"));
-        string shoutBehavior = File.ReadAllText(Path.Combine(projectRoot, "ShoutBehavior.cs"));
+        string host = File.ReadAllText(Path.Combine(projectRoot, "src/modules/AF.Module.Duel/Host/DuelBehavior.Outcomes.cs"));
+        string shoutBehavior = File.ReadAllText(Path.Combine(projectRoot, "src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.cs"));
         string nativeCoordinator = File.ReadAllText(Path.Combine(projectRoot, "src", "modules", "AF.Module.Conversation", "Channels", "Native", "NativeConversationTurnCoordinator.cs"));
-        string nativeCommit = File.ReadAllText(Path.Combine(projectRoot, "ShoutBehavior.NativeTurnCommit.cs"));
+        string nativeCommit = File.ReadAllText(Path.Combine(projectRoot, "src/modules/AF.Module.Conversation/Channels/Native/ShoutBehavior.NativeTurnCommit.cs"));
         // J17-B7 (aa3539ca) moved the unified Scene/Native postprocess wrapper and work item into Internal/Postprocess.
         string scenePostprocess = File.ReadAllText(Path.Combine(projectRoot, "src", "modules", "AF.Module.Conversation", "Channels", "Scene", "ShoutBehavior.ScenePostprocess.cs"))
             + File.ReadAllText(Path.Combine(projectRoot, "src", "modules", "AF.Module.Conversation", "Internal", "Postprocess", "ShoutBehavior.UnifiedActionPostprocess.cs"));
@@ -463,11 +463,11 @@ internal static class Program
             projectRoot, "src", "modules", "AF.Module.Actions", "Execute", "LegacyChannelActionCommitter.cs"));
         string executor = File.ReadAllText(Path.Combine(
             projectRoot, "src", "modules", "AF.Module.Actions", "Execute", "LegacyNativeActionPlanExecutor.cs"));
-        string host = File.ReadAllText(Path.Combine(projectRoot, "DuelBehavior.Outcomes.cs"))
+        string host = File.ReadAllText(Path.Combine(projectRoot, "src/modules/AF.Module.Duel/Host/DuelBehavior.Outcomes.cs"))
             + File.ReadAllText(Path.Combine(projectRoot, "src", "modules", "AF.Module.Duel", "DuelBehavior.DispatchOwner.cs"));
-        string behavior = File.ReadAllText(Path.Combine(projectRoot, "DuelBehavior.cs"));
-        string shout = File.ReadAllText(Path.Combine(projectRoot, "ShoutBehavior.cs"));
-        string courier = File.ReadAllText(Path.Combine(projectRoot, "CourierDeliveryBehavior.cs"))
+        string behavior = File.ReadAllText(Path.Combine(projectRoot, "src/modules/AF.Module.Duel/Host/DuelBehavior.cs"));
+        string shout = File.ReadAllText(Path.Combine(projectRoot, "src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.cs"));
+        string courier = File.ReadAllText(Path.Combine(projectRoot, "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.cs"))
             + File.ReadAllText(Path.Combine(projectRoot, "src", "modules", "AF.Module.Conversation", "Channels", "Courier", "CourierDeliveryBehavior.DomainCommit.cs"));
         string receipt = File.ReadAllText(Path.Combine(
             projectRoot, "src", "modules", "AF.Module.Duel", "DuelOutcomeReceipt.cs"));
@@ -771,14 +771,14 @@ internal static class Program
         string[] relevantSources =
         {
             Path.Combine(projectRoot, "AnimusForge.csproj"),
-            Path.Combine(projectRoot, "DuelBehavior.cs"),
-            Path.Combine(projectRoot, "DuelBehavior.Outcomes.cs"),
+            Path.Combine(projectRoot, "src/modules/AF.Module.Duel/Host/DuelBehavior.cs"),
+            Path.Combine(projectRoot, "src/modules/AF.Module.Duel/Host/DuelBehavior.Outcomes.cs"),
             Path.Combine(projectRoot, "src", "modules", "AF.Module.Duel", "DuelBehavior.DispatchOwner.cs"),
             Path.Combine(projectRoot, "src", "modules", "AF.Module.Duel", "DuelSettlementEffectOwner.cs"),
-            Path.Combine(projectRoot, "FourberieDuelCompatibility.cs"),
+            Path.Combine(projectRoot, "src/modules/AF.Module.Duel/Host/FourberieDuelCompatibility.cs"),
             Path.Combine(projectRoot, "MyBehavior.cs"),
-            Path.Combine(projectRoot, "ShoutBehavior.cs"),
-            Path.Combine(projectRoot, "CourierDeliveryBehavior.cs"),
+            Path.Combine(projectRoot, "src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.cs"),
+            Path.Combine(projectRoot, "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.cs"),
             Path.Combine(projectRoot, "src", "modules", "AF.Module.Conversation", "Channels", "Courier", "CourierDeliveryBehavior.DomainCommit.cs"),
             Path.Combine(projectRoot, "src", "modules", "AF.Module.Conversation", "Channels", "Courier", "CourierDeliveryBehavior.ReplyWait.cs"),
             Path.Combine(projectRoot, "src", "modules", "AF.Module.Conversation", "Channels", "Courier", "CourierDeliveryBehavior.PromptMessages.cs"),

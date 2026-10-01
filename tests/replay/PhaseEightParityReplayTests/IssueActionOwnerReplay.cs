@@ -10,7 +10,7 @@ internal static class IssueActionOwnerReplay
     internal static void Run(Assembly assembly, string repo)
     {
         string ownerPath = Path.Combine(repo, "src/modules/AF.Module.Issue/Actions/IssueActionOwner.cs");
-        string hostPath = Path.Combine(repo, "VanillaIssueOfferBridge.cs");
+        string hostPath = Path.Combine(repo, "src/modules/AF.Module.Issue/Host/VanillaIssueOfferBridge.cs");
         string promptPath = Path.Combine(repo, "src/modules/AF.Module.Issue/Runtime/IssueRuntimePromptOwner.cs");
         string turnInPath = Path.Combine(repo, "src/modules/AF.Module.Issue/Actions/IssueTurnInDecisionOwner.cs");
         if (!File.Exists(ownerPath)) throw new InvalidOperationException("Issue actions: owner source missing");

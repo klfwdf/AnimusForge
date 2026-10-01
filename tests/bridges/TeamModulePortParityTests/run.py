@@ -10,6 +10,9 @@ import subprocess
 import sys
 
 ROOT = Path(__file__).resolve().parents[3]
+import sys
+sys.path.insert(0, str(ROOT / "tests"))
+from output_isolation import current_source_path
 sys.path.insert(0, str(ROOT / "tests"))
 from output_isolation import new_run_root, resolve_dotnet
 HERE = Path(__file__).resolve().parent
@@ -33,7 +36,7 @@ MAP = {
 
 
 def read(path):
-    return (ROOT/path).read_text(encoding="utf-8-sig")
+    return (current_source_path(ROOT, path)).read_text(encoding="utf-8-sig")
 
 
 
@@ -143,10 +146,9 @@ def owner_parity(baseline):
     spec = importlib.util.spec_from_file_location("port_courier_commit", ROOT / "tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py")
     extractor = importlib.util.module_from_spec(spec); spec.loader.exec_module(extractor)
     courier_core = extractor.declaration(domain, "private bool CommitGeneratedReplyActionsAtRecipientCore(")
-    current_paths = [ROOT / "MyBehavior.cs", ROOT / "ShoutBehavior.cs"]
+    current_paths = [ROOT / "MyBehavior.cs"]
     current_paths += sorted((ROOT / "src/modules/AF.Module.Conversation/Channels/Scene").glob("*.cs"))
     current_paths += sorted((ROOT / "src/modules/AF.Module.Conversation/Internal/Postprocess").glob("*.cs"))
-    current_paths += [ROOT / "CourierDeliveryBehavior.cs"]
     current_paths += sorted((ROOT / "src/modules/AF.Module.Conversation/Channels/Courier").glob("*.cs"))
     current = "\n".join(path.read_text(encoding="utf-8-sig") for path in current_paths)
     baseline_paths = ["MyBehavior.cs", "ShoutBehavior.cs", "ShoutBehavior.ScenePostprocess.cs", "CourierDeliveryBehavior.cs"]
@@ -275,7 +277,7 @@ def main():
     out = new_run_root(ROOT, "team-module-port-parity", args.run_root)
     (out / "owner-signatures.json").write_text(json.dumps(signatures, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     (out / "NuGet.Config").write_text('<configuration><packageSources><clear /></packageSources></configuration>', encoding="utf-8")
-    target = util.project(out / "Base", "TeamModulePortParity", [ROOT/p for p in SOURCES] + [HERE / "OwnerStubs.cs", HERE / "Program.cs"], executable=True)
+    target = util.project(out / "Base", "TeamModulePortParity", [current_source_path(ROOT, p) for p in SOURCES] + [HERE / "OwnerStubs.cs", HERE / "Program.cs"], executable=True)
     code, log = util.run_dotnet(args.dotnet, ["run", "--project", str(target), "-c", "Release"], out)
     print(log, end="")
     if code:
@@ -294,7 +296,7 @@ def main():
             folder = out/name; folder.mkdir(exist_ok=True)
             mutated = folder/Path(adapter_path).name
             mutated.write_text(adapters.replace(old, new), encoding="utf-8")
-            sources = [mutated if path == adapter_path else ROOT/path for path in SOURCES]
+            sources = [mutated if path == adapter_path else current_source_path(ROOT, path) for path in SOURCES]
             project = util.project(folder, "TeamModulePortParity", sources + [HERE/"OwnerStubs.cs", HERE/"Program.cs"], executable=True)
             result, text = util.run_dotnet(args.dotnet, ["run", "--project", str(project), "-c", "Release"], out)
             (folder/"run.log").write_text(text, encoding="utf-8")
@@ -302,7 +304,7 @@ def main():
                 print(text); raise AssertionError("Mutation not rejected by runtime assertions: " + name)
             mutation_log.append("PASS behavioral mutation rejected: " + name)
             print(mutation_log[-1])
-    fingerprint = "\n".join(f"{p} SHA256={hashlib.sha256((ROOT/p).read_bytes()).hexdigest()}" for p in SOURCES)
+    fingerprint = "\n".join(f"{p} SHA256={hashlib.sha256((current_source_path(ROOT, p)).read_bytes()).hexdigest()}" for p in SOURCES)
     calls = "\n".join(f"{name} calls={count}" for name,count in sorted(seen.items()))
     (out/"run.log").write_text(fingerprint+"\n"+calls+"\n"+log+"\n"+"\n".join(mutation_log)+"\n", encoding="utf-8")
     return 0

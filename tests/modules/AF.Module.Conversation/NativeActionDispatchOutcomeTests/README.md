@@ -15,7 +15,7 @@ SDK 使用 `G:\AFMOD\.dotnet-sdk`；复用项目 `.tmp/dotnet-cli` / `.tmp/nuget
 ## 真正执行的部分
 
 - 从源码抽取实际 `ApplyNativeConversationGameActionsOnMainThreadAsync`、result 类型和 Native 调用方的完成判定片段。
-- Link `ShoutBehavior.NativeActionDispatch.cs` 的真实执行边界、诊断隔离和类型化异常；使用现有 `ActionExecutionEffectState` 的原始声明。
+- Link `src/modules/AF.Module.Conversation/Channels/Native/ShoutBehavior.NativeActionDispatch.cs` 的真实执行边界、诊断隔离和类型化异常；使用现有 `ActionExecutionEffectState` 的原始声明。
 - 抽取实际普通/主动 UI 的动作失败 catch 分支，验证 suppressReadyNotice 和失败报告，不调用重试入口。
 - 队列、游戏对象、实际业务 Core、最后历史存储、UI 通知服务为明确 fixture。历史计数只是证明完成分支是否被越过，不冒充真实 AFEF/存档验证。UI 展示 scope 本身由已有展示套件另测。
 

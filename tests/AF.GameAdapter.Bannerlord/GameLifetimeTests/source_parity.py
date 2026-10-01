@@ -2,6 +2,9 @@
 from pathlib import Path
 import hashlib,importlib.util,json,re,subprocess
 ROOT=Path(__file__).resolve().parents[3];HERE=Path(__file__).parent;BASELINE='807bc5b9'
+import sys
+sys.path.insert(0, str(ROOT / "tests"))
+from output_isolation import current_source_path
 spec=importlib.util.spec_from_file_location('life_decl',ROOT/'tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py');e=importlib.util.module_from_spec(spec);spec.loader.exec_module(e)
 PATHS=('ShoutBehavior.cs','CourierDeliveryBehavior.cs','src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.DetachedPostprocess.cs','SubModule.cs','MyBehavior.MemorySummaryMainThread.cs')
 MOVED_DEPENDENCIES={
@@ -151,10 +154,19 @@ def expected(path):
   s=s.replace('    private MemorySummaryDispatcher _memorySummaryDispatcher;', '    private MemorySummaryDispatcher _memorySummaryDispatcher;\n    private int _campaignRuntimeRetired;',1).replace('            ReferenceEquals(Instance, _owner) && SaveRuntimeGuard.IsCurrentGeneration(generation);','            Volatile.Read(ref _owner._campaignRuntimeRetired) == 0\n            && ReferenceEquals(Instance, _owner) && SaveRuntimeGuard.IsCurrentGeneration(generation);',1)
  return s
 
+
+def restore_relocation_runner(path, source):
+ if path != 'tests/AF.GameAdapter.Bannerlord/GameLifetimeTests/run_bindings.py': return source
+ edits=[("ROOT=Path(__file__).resolve().parents[3];HERE=Path(__file__).parent\nspec=importlib.util.spec_from_file_location('util',ROOT/'tests/AF.Contracts/ModuleFrameworkApiTests/run.py');util=importlib.util.module_from_spec(spec);spec.loader.exec_module(util)\n", 'ROOT=Path(__file__).resolve().parents[3];HERE=Path(__file__).parent\nimport sys\nsys.path.insert(0, str(ROOT / "tests"))\nfrom output_isolation import current_source_path\nspec=importlib.util.spec_from_file_location(\'util\',ROOT/\'tests/AF.Contracts/ModuleFrameworkApiTests/run.py\');util=importlib.util.module_from_spec(spec);spec.loader.exec_module(util)\n'), ("out=HERE/'.generated/bindings';out.mkdir(parents=True,exist_ok=True)\nshout=(ROOT/'ShoutBehavior.cs').read_text(encoding='utf-8-sig');courier=(ROOT/'src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.DetachedPostprocess.cs').read_text(encoding='utf-8-sig')\ncode=(HERE/'Bindings.cs.txt').read_text(encoding='utf-8-sig').replace('@@NATIVE@@',ex.declaration(shout,'private Task<T> RunNativeConversationMainThreadFuncAsync<T>(')).replace('@@WAIT@@',ex.declaration(shout,'private static async Task<T> AwaitNativeConversationMainThreadFuncAsync<T>(')).replace('@@COURIER@@',ex.declaration(courier,'private async Task<T> RunCourierOwnerPhaseAsync<T>('))\n", "out=HERE/'.generated/bindings';out.mkdir(parents=True,exist_ok=True)\nshout=(ROOT/'src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.cs').read_text(encoding='utf-8-sig');courier=(ROOT/'src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.DetachedPostprocess.cs').read_text(encoding='utf-8-sig')\ncode=(HERE/'Bindings.cs.txt').read_text(encoding='utf-8-sig').replace('@@NATIVE@@',ex.declaration(shout,'private Task<T> RunNativeConversationMainThreadFuncAsync<T>(')).replace('@@WAIT@@',ex.declaration(shout,'private static async Task<T> AwaitNativeConversationMainThreadFuncAsync<T>(')).replace('@@COURIER@@',ex.declaration(courier,'private async Task<T> RunCourierOwnerPhaseAsync<T>('))\n"), ('(out/\'Program.cs\').write_text(\'using System.Diagnostics;\\n\'+code,encoding=\'utf-8\');(out/\'NuGet.Config\').write_text(\'<configuration><packageSources><clear/></packageSources></configuration>\')\nfiles=[out/\'Program.cs\']+[ROOT/p for p in [\'src/AF.Foundation.Runtime/Scheduling/PendingOperationRegistry.cs\',\'PreprocessFormatException.cs\',\'MyBehavior.CampaignLifetime.cs\',\'ShoutBehavior.CampaignLifetime.cs\',\'src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.CampaignLifetime.cs\',\'src/modules/AF.Module.Conversation/Internal/InteractionRequestLease.cs\',\'src/modules/AF.Module.Conversation/Internal/ConversationRequestLifetime.cs\',\'src/modules/AF.Module.Conversation/Channels/Native/NativeConversationAdmissionOwner.cs\']]\nproject=util.project(out,\'Bindings\',files,executable=True);code,log=util.run_dotnet((os.environ.get("DOTNET_EXE") or os.environ.get("AF_DOTNET") or str(Path(__file__).resolve().parents[3] / "local/dotnet/8.0.425/dotnet.exe")),[\'run\',\'--project\',str(project),\'-c\',\'Release\'],out);(out/\'run.log\').write_text(log,encoding=\'utf-8\');print(log,end=\'\');raise SystemExit(code)\n', '(out/\'Program.cs\').write_text(\'using System.Diagnostics;\\n\'+code,encoding=\'utf-8\');(out/\'NuGet.Config\').write_text(\'<configuration><packageSources><clear/></packageSources></configuration>\')\nfiles=[out/\'Program.cs\']+[current_source_path(ROOT, p) for p in [\'src/AF.Foundation.Runtime/Scheduling/PendingOperationRegistry.cs\',\'PreprocessFormatException.cs\',\'MyBehavior.CampaignLifetime.cs\',\'ShoutBehavior.CampaignLifetime.cs\',\'src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.CampaignLifetime.cs\',\'src/modules/AF.Module.Conversation/Internal/InteractionRequestLease.cs\',\'src/modules/AF.Module.Conversation/Internal/ConversationRequestLifetime.cs\',\'src/modules/AF.Module.Conversation/Channels/Native/NativeConversationAdmissionOwner.cs\']]\nproject=util.project(out,\'Bindings\',files,executable=True);code,log=util.run_dotnet((os.environ.get("DOTNET_EXE") or os.environ.get("AF_DOTNET") or str(Path(__file__).resolve().parents[3] / "local/dotnet/8.0.425/dotnet.exe")),[\'run\',\'--project\',str(project),\'-c\',\'Release\'],out);(out/\'run.log\').write_text(log,encoding=\'utf-8\');print(log,end=\'\');raise SystemExit(code)\n')]
+ for before, after in reversed(edits):
+  assert source.count(after)==1, "Unreviewed source relocation runner delta: "+path
+  source=source.replace(after,before,1)
+ return source
+
 def check_dependencies():
  data=json.loads((HERE/'source-review.json').read_text(encoding='utf-8'))
  for p,h in data['dependencies'].items():
-  source=restore_lifetime_dependency(p,(ROOT/MOVED_DEPENDENCIES.get(p,p)).read_text(encoding='utf-8-sig'))
+  source=restore_lifetime_dependency(p,restore_relocation_runner(p,(current_source_path(ROOT, MOVED_DEPENDENCIES.get(p,p))).read_text(encoding='utf-8-sig')))
   if p=='src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.CommitDispatch.cs':source=restore_commit(source)
   if p in data.get('reviewedRunnerEdits',{}):
    for before,after in reversed(data['reviewedRunnerEdits'][p]):
@@ -229,11 +241,11 @@ def restore(path,source):
  return old(path)
 
 def restore_method(path,sig,method):
- actual=(ROOT/path).read_text(encoding='utf-8-sig')
+ actual=(current_source_path(ROOT, path)).read_text(encoding='utf-8-sig')
  if path.endswith('CourierDeliveryBehavior.DetachedPostprocess.cs'):
   assert restore_dequeue(e.declaration(actual,sig))==e.declaration(expected(path),sig), 'Unreviewed game lifetime method'
  else:restore(path,actual)
  assert method==e.declaration(actual,sig),'Unreviewed game lifetime method'
  return e.declaration(old(path),sig)
 if __name__=='__main__':
- for p in PATHS:restore(p,(ROOT/p).read_text(encoding='utf-8-sig'));print('PASS lifecycle exact inverse '+p)
+ for p in PATHS:restore(p,(current_source_path(ROOT, p)).read_text(encoding='utf-8-sig'));print('PASS lifecycle exact inverse '+p)

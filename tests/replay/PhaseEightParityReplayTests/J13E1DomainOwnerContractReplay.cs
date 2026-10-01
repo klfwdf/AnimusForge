@@ -14,8 +14,8 @@ internal static class J13E1DomainOwnerContractReplay
         string campaign = Read("src/AF.GameAdapter.Bannerlord/Composition/CampaignComposition.cs");
         string ticks = Read("src/AF.GameAdapter.Bannerlord/Composition/ApplicationTickComposition.cs");
         string patches = Read("src/AF.GameAdapter.Bannerlord/Composition/StartupPatchComposition.cs");
-        string host = Read("DuelBehavior.cs");
-        string outcomeHost = Read("DuelBehavior.Outcomes.cs");
+        string host = Read("src/modules/AF.Module.Duel/Host/DuelBehavior.cs");
+        string outcomeHost = Read("src/modules/AF.Module.Duel/Host/DuelBehavior.Outcomes.cs");
         string dispatch = Read("src/modules/AF.Module.Duel/DuelBehavior.DispatchOwner.cs");
         string settlement = Read("src/modules/AF.Module.Duel/DuelSettlementEffectOwner.cs");
         string courier = Read("src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.DomainCommit.cs");

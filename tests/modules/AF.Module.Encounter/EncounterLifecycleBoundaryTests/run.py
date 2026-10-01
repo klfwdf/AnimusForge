@@ -36,9 +36,9 @@ def main():
     ]
     methods = "\n".join(EXTRACTOR.declaration(source, signature) for signature in signatures)
     template = template.replace("@@RELEASE_METHODS@@", methods)
-    duel = (ROOT / "DuelBehavior.cs").read_text(encoding="utf-8-sig")
+    duel = (ROOT / "src/modules/AF.Module.Duel/Host/DuelBehavior.cs").read_text(encoding="utf-8-sig")
     template = template.replace("@@DUEL_METHOD@@", EXTRACTOR.declaration(duel, "public static void GlobalSourceMissionLeaveTick("))
-    focus = (ROOT / "InteractionComponentSafePatch.cs").read_text(encoding="utf-8-sig")
+    focus = (ROOT / "src/AF.GameAdapter.Bannerlord/Patches/Safety/InteractionComponentSafePatch.cs").read_text(encoding="utf-8-sig")
     template = template.replace("@@FOCUS_METHOD@@", EXTRACTOR.declaration(focus, "public static void EnsurePatched("))
     assert "@@" not in template
     output = new_run_root(ROOT, "encounter-lifecycle-boundary", args.run_root)

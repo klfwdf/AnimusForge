@@ -57,7 +57,7 @@ def method_body(source, name):
 
 
 legacy_log = old("Logger.cs")
-log = new("Logger.cs")
+log = new("src/AF.GameAdapter.Bannerlord/Diagnostics/Logger.cs")
 queue = new("src/AF.Foundation.Runtime/Diagnostics/BoundedLogWriteQueue.cs")
 trace = new("src/AF.Foundation.Runtime/Diagnostics/DiagnosticTraceContext.cs")
 metric = new("src/AF.Foundation.Runtime/Diagnostics/MetricWindow.cs")
@@ -78,7 +78,7 @@ absent(log, "_logWriteQueue", "_logWriterRunning", "_traceState", "_metricsLock"
 unchanged_region(legacy_log, log, "\tpublic static void RecordHitRate(", "\tprivate static void MaybeFlushMetrics(")
 
 legacy_perf = old("PerfProbe.cs")
-perf = new("PerfProbe.cs")
+perf = new("src/AF.GameAdapter.Bannerlord/Diagnostics/PerfProbe.cs")
 window = new("src/AF.Foundation.Runtime/Diagnostics/PerformanceWindow.cs")
 required(legacy_perf, "FlushIntervalSeconds = 30.0", "EnabledStateRefreshIntervalTicks = TimeSpan.FromMilliseconds(250.0).Ticks")
 required(window, "FlushIntervalSeconds = 30.0", "TopBucketCount = 8", "lock (SyncRoot)",
@@ -95,7 +95,7 @@ for method in ("ResetWindow", "RecordFrameDt", "CompareBucketsByMaxThenSum"):
 assert method_body(legacy_perf, "RecordElapsed").removesuffix("FlushIfDue();") == method_body(window, "RecordElapsed")
 
 legacy_freeze = old("FreezeWatchdog.cs")
-freeze = new("FreezeWatchdog.cs")
+freeze = new("src/AF.GameAdapter.Bannerlord/Diagnostics/FreezeWatchdog.cs")
 state = new("src/AF.Foundation.Runtime/Diagnostics/FreezeWatchState.cs")
 required(legacy_freeze, "_recentEventNext = (_recentEventNext + 1) % RecentEventLimit",
          "_currentScope = state.Parent", "new Thread(MonitorLoop)", "MiniDumpWriteDump")

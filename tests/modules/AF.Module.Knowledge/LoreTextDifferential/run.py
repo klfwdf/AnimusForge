@@ -49,8 +49,8 @@ for name in ("old", "current"):
         index = subprocess.check_output(["git", "show", "77a3d234:src/modules/AF.Module.Knowledge/Index/KnowledgeRuleIndex.cs"], cwd=ROOT).decode("utf-8-sig")
         retriever = subprocess.check_output(["git", "show", "77a3d234:src/modules/AF.Module.Knowledge/Lore/LoreCandidateRetriever.cs"], cwd=ROOT).decode("utf-8-sig")
     else:
-        source = (ROOT / "KnowledgeLibraryBehavior.cs").read_text(encoding="utf-8-sig")
-        ai_source = (ROOT / "AIConfigHandler.cs").read_text(encoding="utf-8-sig")
+        source = (ROOT / "src/modules/AF.Module.Knowledge/Host/KnowledgeLibraryBehavior.cs").read_text(encoding="utf-8-sig")
+        ai_source = (ROOT / "src/modules/AF.Module.Prompt/Configuration/AIConfigHandler.cs").read_text(encoding="utf-8-sig")
         index = (ROOT / "src/modules/AF.Module.Knowledge/Index/KnowledgeRuleIndex.cs").read_text(encoding="utf-8-sig")
         retriever = (ROOT / "src/modules/AF.Module.Knowledge/Lore/LoreCandidateRetriever.cs").read_text(encoding="utf-8-sig")
     out = output / name

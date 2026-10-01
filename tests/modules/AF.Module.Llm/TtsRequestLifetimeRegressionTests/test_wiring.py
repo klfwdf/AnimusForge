@@ -3,10 +3,10 @@ from pathlib import Path
 import importlib.util,os,re,unittest
 ROOT=Path(__file__).resolve().parents[4]
 spec=importlib.util.spec_from_file_location('ex',ROOT/'tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py');ex=importlib.util.module_from_spec(spec);spec.loader.exec_module(ex)
-SOURCE=Path(os.environ.get('TTS_CONSUMER_SOURCE',str(ROOT/'ShoutBehavior.cs')))
+SOURCE=Path(os.environ.get('TTS_CONSUMER_SOURCE',str(ROOT/'src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.cs')))
 class Wiring(unittest.TestCase):
  @classmethod
- def setUpClass(cls):cls.s=SOURCE.read_text(encoding='utf-8-sig');cls.e=(ROOT/'TtsEngine.cs').read_text(encoding='utf-8-sig')
+ def setUpClass(cls):cls.s=SOURCE.read_text(encoding='utf-8-sig');cls.e=(ROOT/'src/modules/AF.Module.Llm/Tts/TtsEngine.cs').read_text(encoding='utf-8-sig')
  def m(self,name):return ex.declaration(self.s,name)
  def test_typed_subscription_and_unsubscription(self):
   sub=self.m('private void SubscribeTtsPlaybackEvents(');unsub=self.m('private void UnsubscribeTtsPlaybackEventsInternal(')

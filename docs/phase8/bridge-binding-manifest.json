@@ -80,7 +80,7 @@
       "owner": "Foundation.Runtime",
       "entryPaths": [
         "SubModule.cs",
-        "CampaignTickDiagnosticsPatch.cs"
+        "src/AF.GameAdapter.Bannerlord/Diagnostics/CampaignTickDiagnosticsPatch.cs"
       ],
       "symbols": [
         {
@@ -89,7 +89,7 @@
           "kind": "method"
         },
         {
-          "path": "CampaignTickDiagnosticsPatch.cs",
+          "path": "src/AF.GameAdapter.Bannerlord/Diagnostics/CampaignTickDiagnosticsPatch.cs",
           "symbol": "CampaignTickDiagnosticsPatch",
           "kind": "type"
         }
@@ -112,7 +112,7 @@
       ],
       "runtimeBinding": {
         "state": "wired",
-        "entryPath": "CampaignTickDiagnosticsPatch.cs",
+        "entryPath": "src/AF.GameAdapter.Bannerlord/Diagnostics/CampaignTickDiagnosticsPatch.cs",
         "symbol": "EnsurePatched",
         "frequency": "startup",
         "notes": "CampaignTick diagnostics patching is gated before Harmony patch application; disabled falls back to safe unpatched mode."
@@ -127,17 +127,17 @@
       "topology": "PAIR",
       "owner": "Compatibility.GameAdapter",
       "entryPaths": [
-        "BannerlordApiCompat.cs",
-        "InteractionComponentSafePatch.cs"
+        "src/AF.GameAdapter.Bannerlord/Compatibility/BannerlordApiCompat.cs",
+        "src/AF.GameAdapter.Bannerlord/Patches/Safety/InteractionComponentSafePatch.cs"
       ],
       "symbols": [
         {
-          "path": "BannerlordApiCompat.cs",
+          "path": "src/AF.GameAdapter.Bannerlord/Compatibility/BannerlordApiCompat.cs",
           "symbol": "BannerlordApiCompat",
           "kind": "type"
         },
         {
-          "path": "InteractionComponentSafePatch.cs",
+          "path": "src/AF.GameAdapter.Bannerlord/Patches/Safety/InteractionComponentSafePatch.cs",
           "symbol": "InteractionComponentSafePatch",
           "kind": "type"
         }
@@ -183,13 +183,13 @@
       "topology": "CROSS_CUT",
       "owner": "Foundation.Persistence",
       "entryPaths": [
-        "CampaignSaveChunkHelper.cs",
+        "src/AF.Persistence/CampaignSaveChunkHelper.cs",
         "MyBehavior.cs",
         "RewardSystemBehavior.cs"
       ],
       "symbols": [
         {
-          "path": "CampaignSaveChunkHelper.cs",
+          "path": "src/AF.Persistence/CampaignSaveChunkHelper.cs",
           "symbol": "CampaignSaveChunkHelper",
           "kind": "type"
         },
@@ -238,7 +238,7 @@
       "owner": "Conversation.Gateway",
       "entryPaths": [
         "src/modules/AF.Module.Llm/Transport/LegacyConfiguredChatGateway.cs",
-        "ShoutBehavior.cs",
+        "src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.cs",
         "src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.ScenePostprocess.cs"
       ],
       "symbols": [
@@ -248,7 +248,7 @@
           "kind": "type"
         },
         {
-          "path": "ShoutBehavior.cs",
+          "path": "src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.cs",
           "symbol": "ShoutBehavior",
           "kind": "type"
         }
@@ -534,7 +534,7 @@
       "owner": "Scene.Duel",
       "entryPaths": [
         "SceneTauntBehavior.cs",
-        "DuelBehavior.cs"
+        "src/modules/AF.Module.Duel/Host/DuelBehavior.cs"
       ],
       "symbols": [
         {
@@ -543,7 +543,7 @@
           "kind": "type"
         },
         {
-          "path": "DuelBehavior.cs",
+          "path": "src/modules/AF.Module.Duel/Host/DuelBehavior.cs",
           "symbol": "DuelBehavior",
           "kind": "type"
         }
@@ -566,7 +566,7 @@
       ],
       "runtimeBinding": {
         "state": "wired",
-        "entryPath": "DuelBehavior.cs",
+        "entryPath": "src/modules/AF.Module.Duel/Host/DuelBehavior.cs",
         "symbol": "IsSceneDuelBridgeEnabled",
         "frequency": "event",
         "notes": "Scene duel dispatch and prepare requests pass one immutable gate before queueing or mission dispatch; native fallback is preserved."
@@ -581,12 +581,12 @@
       "topology": "PAIR",
       "owner": "Conversation.Courier",
       "entryPaths": [
-        "CourierDeliveryBehavior.cs",
+        "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.cs",
         "src/modules/AF.Module.Conversation/Internal/Pipeline/LegacyChannelInteractionFacade.cs"
       ],
       "symbols": [
         {
-          "path": "CourierDeliveryBehavior.cs",
+          "path": "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.cs",
           "symbol": "CourierDeliveryBehavior",
           "kind": "type"
         },
@@ -614,7 +614,7 @@
       ],
       "runtimeBinding": {
         "state": "wired",
-        "entryPath": "CourierDeliveryBehavior.cs",
+        "entryPath": "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.cs",
         "symbol": "IsCourierBridgeEnabled",
         "frequency": "event",
         "notes": "All explicit Courier detached facade/reservation entry points share one gate; no default Courier caller or delivery/return state-machine cutover is claimed."
@@ -630,7 +630,7 @@
       "owner": "Memory.SocialReports",
       "entryPaths": [
         "MyBehavior.WeeklyActionOutcomeReceipts.cs",
-        "PlayerNotorietyBehavior.ConversationOutcomes.cs"
+        "src/modules/AF.Module.Social/Host/PlayerNotorietyBehavior.ConversationOutcomes.cs"
       ],
       "symbols": [
         {
@@ -639,7 +639,7 @@
           "kind": "method"
         },
         {
-          "path": "PlayerNotorietyBehavior.ConversationOutcomes.cs",
+          "path": "src/modules/AF.Module.Social/Host/PlayerNotorietyBehavior.ConversationOutcomes.cs",
           "symbol": "FinalizeConversationForExternal",
           "kind": "method"
         }
@@ -662,7 +662,7 @@
       ],
       "runtimeBinding": {
         "state": "wired",
-        "entryPath": "PlayerNotorietyBehavior.ConversationOutcomes.cs",
+        "entryPath": "src/modules/AF.Module.Social/Host/PlayerNotorietyBehavior.ConversationOutcomes.cs",
         "symbol": "IsSocialReportsBridgeEnabled",
         "frequency": "event",
         "notes": "The exact Notoriety finalize seam and weekly receipt owner entry points are gated; both remain bounded opt-in sidecars and real weekly/notoriety sequencing is still blocked."
@@ -678,7 +678,7 @@
       "owner": "Gateway.KnowledgeProfile",
       "entryPaths": [
         "src/modules/AF.Module.Knowledge/LegacyKnowledgeRagGateway.cs",
-        "KnowledgeLibraryBehavior.cs"
+        "src/modules/AF.Module.Knowledge/Host/KnowledgeLibraryBehavior.cs"
       ],
       "symbols": [
         {
@@ -687,7 +687,7 @@
           "kind": "type"
         },
         {
-          "path": "KnowledgeLibraryBehavior.cs",
+          "path": "src/modules/AF.Module.Knowledge/Host/KnowledgeLibraryBehavior.cs",
           "symbol": "KnowledgeLibraryBehavior",
           "kind": "type"
         }
@@ -726,18 +726,18 @@
       "topology": "CROSS_CUT",
       "owner": "UI.RuntimeIntegration",
       "entryPaths": [
-        "AnimusForgeNativeConversationOverlay.cs",
-        "TtsEngine.cs",
+        "src/AF.GameAdapter.Bannerlord/UI/Conversation/AnimusForgeNativeConversationOverlay.cs",
+        "src/modules/AF.Module.Llm/Tts/TtsEngine.cs",
         "SceneActionsIntegrationBoundary.cs"
       ],
       "symbols": [
         {
-          "path": "AnimusForgeNativeConversationOverlay.cs",
+          "path": "src/AF.GameAdapter.Bannerlord/UI/Conversation/AnimusForgeNativeConversationOverlay.cs",
           "symbol": "AnimusForgeNativeConversationOverlay",
           "kind": "type"
         },
         {
-          "path": "TtsEngine.cs",
+          "path": "src/modules/AF.Module.Llm/Tts/TtsEngine.cs",
           "symbol": "TtsEngine",
           "kind": "type"
         },

@@ -15,7 +15,7 @@ def main():
  (out/'Gateway.cs').write_text(gateway,encoding='utf-8')
  for name in ['src/AF.Contracts/Internal/InteractionContracts.cs','src/AF.Contracts/Internal/LlmContracts.cs','src/modules/AF.Module.Prompt/Composition/LegacyPromptPackageAdapter.cs','src/AF.Foundation.Runtime/Lifecycle/SaveRuntimeGuard.cs']:
   (out/Path(name).name).write_text((ROOT/name).read_text(encoding='utf-8-sig'),encoding='utf-8')
- retry=(ROOT/'LlmRetryPrompt.cs').read_text(encoding='utf-8-sig')
+ retry=(ROOT/'src/AF.GameAdapter.Bannerlord/UI/Errors/LlmRetryPrompt.cs').read_text(encoding='utf-8-sig')
  detail='\n'.join(ex.declaration(retry,sig) for sig in ['public static string BuildFailureDetail(','private static string NormalizeFullText('])
  (out/'Retry.cs').write_text('using System;using System.Text;namespace AnimusForge { public static class LlmRetryPrompt { '+detail+' } }',encoding='utf-8')
  (out/'Program.cs').write_text((HERE/'Harness.cs.txt').read_text(encoding='utf-8-sig'),encoding='utf-8')

@@ -1,6 +1,6 @@
 # Shared main-thread function boundary tests
 
-This suite extracts both production declarations from `ShoutBehavior.cs` and compiles them with the real `PreprocessFormatException`. Only the queue, thread identity and optional diagnostics are fixtures; no Bannerlord gameplay is emulated.
+This suite extracts both production declarations from `src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.cs` and compiles them with the real `PreprocessFormatException`. Only the queue, thread identity and optional diagnostics are fixtures; no Bannerlord gameplay is emulated.
 
 ```powershell
 G:\Python310\python.exe tests/AF.Foundation.Runtime/MainThreadFunctionBoundaryTests/run.py

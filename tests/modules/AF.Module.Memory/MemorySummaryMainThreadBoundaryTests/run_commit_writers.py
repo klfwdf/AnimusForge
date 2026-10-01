@@ -102,8 +102,8 @@ def main():
     if a.mutate=='ignore-main-thread':commit=replace(commit,'if (!TWParallel.IsMainThread())','if (false)')
     if a.mutate=='fake-commit-success':commit=replace(commit,'return accepted\n','return true\n')
     files['CommitEntry.cs']=commit
-    files['DevTextEditorHelper.cs']=read('DevTextEditorHelper.cs')
-    files['TextInputSanitizer.cs']=read('AnimusForgeTextInputSanitizer.cs')
+    files['DevTextEditorHelper.cs']=read('src/AF.GameAdapter.Bannerlord/UI/Common/DevTextEditorHelper.cs')
+    files['TextInputSanitizer.cs']=read('src/AF.GameAdapter.Bannerlord/UI/Common/AnimusForgeTextInputSanitizer.cs')
     files['DialogueHistoryEntry.cs']=read('AnimusForgeDialogueHistoryEntry.cs')
     # Replace only the game registry fixture; FindHeroById itself now executes actual code.
     files['Fixture.cs'],count=re.subn(r'^  Hero FindHeroById\([^\n]+\n','',files['Fixture.cs'],flags=re.M)

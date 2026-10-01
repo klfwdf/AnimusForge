@@ -10,7 +10,7 @@ ROOT = Path(__file__).resolve().parents[4]
 HERE = Path(__file__).resolve().parent
 OWNER = ROOT / "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.DeliveredMemory.cs"
 SOURCE = ROOT / "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.SessionTransport.cs"
-ROOT_HOST = ROOT / "CourierDeliveryBehavior.cs"
+ROOT_HOST = ROOT / "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.cs"
 spec = importlib.util.spec_from_file_location(
     "extract", ROOT / "tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py")
 extract = importlib.util.module_from_spec(spec)

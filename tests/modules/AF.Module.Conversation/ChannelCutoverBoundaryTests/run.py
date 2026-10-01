@@ -12,6 +12,8 @@ import sys
 
 
 ROOT = Path(__file__).resolve().parents[4]
+sys.path.insert(0, str(ROOT / "tests"))
+from output_isolation import current_source_path
 HERE = Path(__file__).resolve().parent
 SCENE_LIFECYCLE_DISPATCHES = {
     "SCENE_PRIMARY_RELEASE_DELEGATE": "scene_primary_first_release",
@@ -65,7 +67,7 @@ def source(path: str, ref: str | None) -> str:
         return subprocess.check_output(
             ["git", "show", f"{ref}:{path}"], cwd=ROOT
         ).decode("utf-8-sig").replace("\r\n", "\n")
-    return (ROOT / path).read_text(encoding="utf-8-sig")
+    return current_source_path(ROOT, path).read_text(encoding="utf-8-sig")
 
 
 def scene_source(ref: str | None) -> str:

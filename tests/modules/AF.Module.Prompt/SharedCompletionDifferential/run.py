@@ -12,6 +12,9 @@ from pathlib import Path
 import subprocess
 
 ROOT = Path(__file__).resolve().parents[4]
+import sys
+sys.path.insert(0, str(ROOT / "tests"))
+from output_isolation import current_source_path
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0,str(ROOT/'tests'))
 from output_isolation import new_run_root, resolve_dotnet, minimal_test_environment
@@ -46,7 +49,7 @@ for revision in ("old", "current"):
     def read(path: str) -> str:
         if revision == "old":
             return subprocess.check_output(["git", "show", "77a3d234:" + path], cwd=ROOT).decode("utf-8-sig")
-        return (ROOT / path).read_text(encoding="utf-8-sig")
+        return (current_source_path(ROOT, path)).read_text(encoding="utf-8-sig")
     source = read("MyBehavior.cs")
     methods = "\n".join(extract.declaration(source, marker) for marker in markers)
     if revision == "current" and args.mutate:
@@ -75,7 +78,7 @@ for revision in ("old", "current"):
 
 def component(path: str, extra_env: dict | None = None) -> dict:
     component.counter += 1
-    result = subprocess.run([sys.executable, str(ROOT / path), "--emit-json", "--run-root", str(output/(Path(path).parent.name+"-"+str(component.counter)))], cwd=ROOT, env=dict(env, **(extra_env or {})), capture_output=True, text=True, encoding="utf-8", errors="replace")
+    result = subprocess.run([sys.executable, str(current_source_path(ROOT, path)), "--emit-json", "--run-root", str(output/(Path(path).parent.name+"-"+str(component.counter)))], cwd=ROOT, env=dict(env, **(extra_env or {})), capture_output=True, text=True, encoding="utf-8", errors="replace")
     if result.returncode:
         print(result.stdout, result.stderr, sep="\n")
         raise SystemExit(result.returncode)

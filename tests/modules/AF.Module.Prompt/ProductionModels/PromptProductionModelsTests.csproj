@@ -6,20 +6,20 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Program.cs" />
-    <Compile Include="../../../../AIConfigModel.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Prompt/Configuration/AIConfigModel.cs" />
     <Compile Include="../../../../DuelConfig.cs" />
     <Compile Include="../../../../RewardConfig.cs" />
     <Compile Include="../../../../LoanConfig.cs" />
     <Compile Include="../../../../SurroundingsConfig.cs" />
-    <Compile Include="../../../../GuardrailConfigModel.cs" />
-    <Compile Include="../../../../GuardrailRulePromptConfig.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Prompt/Configuration/GuardrailConfigModel.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Prompt/Configuration/GuardrailRulePromptConfig.cs" />
     <Compile Include="../../../../DuelStakeConfig.cs" />
-    <Compile Include="../../../../KnowledgeRetrievalConfig.cs" />
-    <Compile Include="../../../../ActionPostprocessConfigModel.cs" />
-    <Compile Include="../../../../PostprocessRuleEntry.cs" />
-    <Compile Include="../../../../PreprocessPromptsConfigModel.cs" />
-    <Compile Include="../../../../ProactiveNpcRequestPromptsConfigModel.cs" />
-    <Compile Include="../../../../RpItemIntroductionPromptsConfigModel.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Knowledge/Configuration/KnowledgeRetrievalConfig.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Prompt/Configuration/ActionPostprocessConfigModel.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Prompt/Configuration/PostprocessRuleEntry.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Prompt/Configuration/PreprocessPromptsConfigModel.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Prompt/Configuration/ProactiveNpcRequestPromptsConfigModel.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Prompt/Configuration/RpItemIntroductionPromptsConfigModel.cs" />
     <Compile Include="../../../../src/modules/AF.Module.Prompt/Configuration/PromptConfigurationSnapshot.cs" />
     <Reference Include="Newtonsoft.Json"><HintPath>../../../../local/dotnet/8.0.425/sdk/8.0.425/Newtonsoft.Json.dll</HintPath></Reference>
   </ItemGroup>

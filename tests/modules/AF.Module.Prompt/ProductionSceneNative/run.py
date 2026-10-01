@@ -11,13 +11,13 @@ HERE = Path(__file__).resolve().parent
 spec = importlib.util.spec_from_file_location("extract", ROOT / "tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py")
 extract = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(extract)
-source = (ROOT / "ShoutBehavior.cs").read_text(encoding="utf-8-sig")
+source = (ROOT / "src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.cs").read_text(encoding="utf-8-sig")
 top = extract.declaration(source, "private static string BuildSceneSystemTopPromptIntroForSingle(")
 runtime = extract.declaration(source, "private static string BuildSceneUserRuntimeContextForSingle(")
 role = extract.declaration(source, "private static string BuildSceneNpcRoleIntroForPrompt(")
 assert "BuildFilteredInventorySummaryForAI(hero, inventoryMentions, promptListMax, includePrivateBattleEquipment: includeTradePricing)" in role
 assert "BuildFilteredSettlementMerchantInventorySummaryForAI(characterObject, inventoryMentions, promptListMax)" in role
-native = extract.declaration((ROOT / "ShoutBehavior.NativeTurnPrompt.cs").read_text(encoding="utf-8-sig"), "private void CapturePromptRules()")
+native = extract.declaration((ROOT / "src/modules/AF.Module.Conversation/Channels/Native/ShoutBehavior.NativeTurnPrompt.cs").read_text(encoding="utf-8-sig"), "private void CapturePromptRules()")
 assert native.count("ctx?.MentionedEntities") >= 2
 assert "BuildSceneSystemTopPromptIntroForSingle(npc, targetHero, presentNpcs, includeInventorySummary, includeTradePricing, partyTransferTopicSelected, ctx?.MentionedEntities)" in native
 assert "BuildSceneUserRuntimeContextForSingle(npc, targetHero, presentNpcs, includeInventorySummary, includeTradePricing, partyTransferTopicSelected, ctx?.MentionedEntities)" in native

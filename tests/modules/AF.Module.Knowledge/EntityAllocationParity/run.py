@@ -14,7 +14,7 @@ spec.loader.exec_module(extract)
 parser = argparse.ArgumentParser()
 parser.add_argument("--mutate", choices=["drop-detached-scope", "drop-detached-distance"])
 args = parser.parse_args()
-source = (ROOT / "WorldEntityRetrievalService.cs").read_text(encoding="utf-8-sig")
+source = (ROOT / "src/modules/AF.Module.Knowledge/Entities/WorldEntityRetrievalService.cs").read_text(encoding="utf-8-sig")
 markers = [
     "internal sealed class EntityMatch<T>", "internal sealed class DetachedEntityCandidate\n",
     "private static void ApplyGlobalInjectionLimit(", "private static void ApplyDetachedGlobalInjectionLimit(",

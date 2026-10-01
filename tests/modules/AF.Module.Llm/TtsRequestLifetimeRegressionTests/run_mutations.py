@@ -1,7 +1,7 @@
 from pathlib import Path
 import argparse,subprocess,sys
 HERE=Path(__file__).resolve().parent;ROOT=HERE.parents[3]
-p=argparse.ArgumentParser();p.add_argument('--consumer-source',type=Path,default=ROOT/'ShoutBehavior.cs');a=p.parse_args()
+p=argparse.ArgumentParser();p.add_argument('--consumer-source',type=Path,default=ROOT/'src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.cs');a=p.parse_args()
 mutations=['accept-after-publication','accept-under-lock','revive-dequeued','network-token-none','duplicate-terminal','late-legacy-event','match-agent-only','ignore-scene-epoch']
 failed=0
 for m in mutations:

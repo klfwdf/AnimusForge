@@ -3,6 +3,9 @@ import argparse,hashlib,json,os,subprocess,sys
 from pathlib import Path
 from xml.sax.saxutils import escape
 ROOT=Path(__file__).resolve().parents[4];HERE=Path(__file__).resolve().parent
+import sys
+sys.path.insert(0, str(ROOT / "tests"))
+from output_isolation import current_source_path
 sys.path.insert(0,str(ROOT/'tests'))
 from output_isolation import new_run_root,resolve_dotnet,minimal_test_environment
 STAGE='src/modules/AF.Module.Conversation/Channels/Native/NativeConversationMainReplyStage.cs'
@@ -23,7 +26,7 @@ review=json.loads((HERE/'source-review.json').read_text(encoding='utf-8'))
 original=subprocess.check_output(['git','show',review['baseline']+':ShoutBehavior.cs'],cwd=ROOT).decode('utf-8-sig').replace('\r\n','\n')
 evidence=review['files']['ShoutBehavior.cs'];assert hashlib.sha256(original.encode()).hexdigest()==evidence['beforeSha256'];old=evidence['edits'][0]['before'];assert original.count(old)==1
 out=new_run_root(ROOT,'native-main-reply',args.run_root)
-consumer=evidence['edits'][0]['after'];live=(ROOT/'ShoutBehavior.cs').read_text(encoding='utf-8-sig')
+consumer=evidence['edits'][0]['after'];live=(ROOT/'src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.cs').read_text(encoding='utf-8-sig')
 import sys
 sys.path.insert(0,str(ROOT/'tests/modules/AF.Module.Conversation/NativeConversationAdmissionTests'))
 from turn_extraction import projected_source
@@ -37,7 +40,7 @@ code=code.replace('internal long Generation=1,Epoch=1,Revision=1;', 'internal An
 for name in ['ConversationRequestLifetime','InteractionRequestLease']:(out/(name+'.cs')).write_text((ROOT/('src/modules/AF.Module.Conversation/Internal/'+name+'.cs')).read_text(encoding='utf-8-sig'),encoding='utf-8')
 (out/'Program.cs').write_text(code,encoding='utf-8')
 for path in [STAGE,CONTRACTS,HOST,'src/modules/AF.Module.Llm/Protocol/LlmVisibleReplyNormalizer.cs']:
- s=(ROOT/path).read_text(encoding='utf-8-sig')
+ s=(current_source_path(ROOT, path)).read_text(encoding='utf-8-sig')
  if args.mutate in MUTATIONS and path==MUTATIONS[args.mutate][0]:
   _,before,after=MUTATIONS[args.mutate];assert s.count(before)==1;s=s.replace(before,after,1)
  if args.mutate=='empty-before-validation' and path==STAGE:

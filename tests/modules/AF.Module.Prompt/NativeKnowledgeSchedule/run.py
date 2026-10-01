@@ -14,7 +14,7 @@ spec.loader.exec_module(extract)
 parser = argparse.ArgumentParser()
 parser.add_argument("--mutate", choices=["drop-final-admission", "drop-knowledge-generation"])
 args = parser.parse_args()
-source = (ROOT / "ShoutBehavior.NativePromptBuild.cs").read_text(encoding="utf-8-sig")
+source = (ROOT / "src/modules/AF.Module.Conversation/Channels/Native/ShoutBehavior.NativePromptBuild.cs").read_text(encoding="utf-8-sig")
 method = extract.declaration(source, "private async Task<MyBehavior.ShoutPromptContext> BuildNativePromptContextScheduledAsync(")
 if args.mutate == "drop-final-admission":
     needle = "if (!IsNativeConversationAdmissionCurrent(admission, out _))"

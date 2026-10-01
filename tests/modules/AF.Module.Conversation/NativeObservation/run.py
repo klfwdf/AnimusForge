@@ -4,7 +4,7 @@ import argparse,importlib.util,os,subprocess
 ROOT=Path(__file__).resolve().parents[4];HERE=Path(__file__).resolve().parent
 spec=importlib.util.spec_from_file_location('extract',ROOT/'tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py');ex=importlib.util.module_from_spec(spec);spec.loader.exec_module(ex)
 p=argparse.ArgumentParser();p.add_argument('--baseline',action='store_true');p.add_argument('--mutate',choices=['move-back-to-worker','duplicate-observation','skip-target','tts-back-to-worker']);a=p.parse_args()
-s=(subprocess.check_output(['git','show','00574541:ShoutBehavior.cs'],cwd=ROOT).decode('utf-8-sig').replace('\r\n','\n') if a.baseline else (ROOT/'ShoutBehavior.cs').read_text(encoding='utf-8-sig'))
+s=(subprocess.check_output(['git','show','00574541:ShoutBehavior.cs'],cwd=ROOT).decode('utf-8-sig').replace('\r\n','\n') if a.baseline else (ROOT/'src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.cs').read_text(encoding='utf-8-sig'))
 # The unchanged boundary is source-projected from verified current phases; NativeTurn executes the new schedule.
 import sys
 sys.path.insert(0,str(ROOT/'tests/modules/AF.Module.Conversation/NativeConversationAdmissionTests'))
