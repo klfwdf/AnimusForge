@@ -1,5 +1,7 @@
 # 当前交接：J17 收尾与远端 CivilWar 合并（2026-10-01）
 
+- **本会话快报/场景插画/画廊RP功能已部署（2026-10-01）**：用户“部署”授权，干净源码`454a63b3`重新Release双API+Bootstrap通过；官方单模块脚本更新9文件，安装后238个Stage文件哈希一致，Bootstrap唯一入口。实机/真实旧档/生图耗时未验，未推送。[部署与回滚证据](docs/animusforge-refactoring-and-repository-reorganization-plan.md#illustrator-deploy-20261001)。
+
 - **快报配图提前生成（2026-10-01）**：`5f096d08`，正文发布后即开始生成本期新画；打开/重开复用本期精确缓存或加入进行中任务，关闭面板不取消后台任务，失败不自动重试。此项替代旧“每次打开都重生”。22状态检查、两个实际DLL关闭/取消检查及Release双API+Bootstrap通过；真实导出/API/游戏未验，未部署/推送。[源码坐标、证据和回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#bulletin-prefetch-20261001)。
 
 - **篡位发动门槛已离线实现（2026-10-01，未部署）**：`d7dff15a`，默认4级家族/300影响力/实际60名突击队另留1人，MCM可调；不扣影响力、无筹备费用或等待。菜单/选兵前/确认后重验，门槛随确认窗快照，登记后不追检，大厅仍最少1人，旧会话沿用原门槛。113契约、206真实DLL/夹具检查、Release双API+Bootstrap通过；原生UI、MCM改值持久化及真实旧档未验，无部署/推送。[源码、验证与回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#coup-admission-sixty-20261001)。
