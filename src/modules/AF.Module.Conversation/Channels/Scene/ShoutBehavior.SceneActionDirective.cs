@@ -75,7 +75,7 @@ public partial class ShoutBehavior
 	/// Game-thread offer check for one postprocess request.  Returns the
 	/// allowed logical keys, or null when the reply keeps the local result.
 	/// </summary>
-	private static IReadOnlyList<string> TryOfferSceneActionDirective(int targetAgentIndex, string rawReply)
+	internal static IReadOnlyList<string> TryOfferSceneActionDirective(int targetAgentIndex, string rawReply)
 	{
 		try
 		{
@@ -97,7 +97,7 @@ public partial class ShoutBehavior
 		}
 	}
 
-	private static List<PostprocessRuleEntry> BuildSceneActionDirectiveRules(IReadOnlyList<string> offeredKeys)
+	internal static List<PostprocessRuleEntry> BuildSceneActionDirectiveRules(IReadOnlyList<string> offeredKeys)
 	{
 		if (offeredKeys == null || offeredKeys.Count == 0)
 		{
@@ -116,7 +116,7 @@ public partial class ShoutBehavior
 	}
 
 	/// <summary>Keeps at most one concrete, allow-listed tag from the raw postprocess output.</summary>
-	private static string NormalizeSceneActionDirectiveTag(string raw, IReadOnlyList<string> offeredKeys)
+	internal static string NormalizeSceneActionDirectiveTag(string raw, IReadOnlyList<string> offeredKeys)
 	{
 		if (offeredKeys == null || offeredKeys.Count == 0)
 		{

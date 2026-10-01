@@ -258,7 +258,7 @@ public static class LegacyInteractionSnapshotAdapters
             ["rule_runtime_context"] = FirstNonEmpty(targetName, CurrentLocationId(), "native_conversation"),
             ["excluded_rule_ids"] = string.Empty
         };
-        return CreateEnvelope(
+        return ShoutBehavior.BindNativeDetachedPostprocessSource(CreateEnvelope(
             InteractionChannel.NativeConversation,
             subjectId,
             playerText,
@@ -268,7 +268,7 @@ public static class LegacyInteractionSnapshotAdapters
             facts,
             null,
             promptSections,
-            postprocessPromptSections);
+            postprocessPromptSections));
     }
 
     /// <summary>

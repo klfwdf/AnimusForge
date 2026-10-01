@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -809,7 +809,7 @@ public sealed partial class CourierDeliveryBehavior : CampaignBehaviorBase
 			.ToList();
 	}
 
-	private ShoutBehavior.CourierActionPostprocessWorkItem PrepareCourierDetachedPostprocessWorkItem(
+	private ConversationCourierPostprocessWorkItem PrepareCourierDetachedPostprocessWorkItem(
 		Hero recipient,
 		CourierReplyGenerationRequest request,
 		string playerText,
@@ -834,7 +834,7 @@ public sealed partial class CourierDeliveryBehavior : CampaignBehaviorBase
 		bool diplomacy = ShoutBehavior.HasInjectedRuleBlockForExternal(extras, "diplomacy") || ShoutBehavior.HasPreprocessRuleHitForExternal(selected, "diplomacy");
 		bool worldMap = ShoutBehavior.HasInjectedRuleBlockForExternal(extras, "worldmap_party_command") || ShoutBehavior.HasPreprocessRuleHitForExternal(selected, "worldmap_party_command");
 		bool vassalage = ShoutBehavior.HasInjectedRuleBlockForExternal(extras, "kingdom_vassalage") || ShoutBehavior.HasPreprocessRuleHitForExternal(selected, "kingdom_vassalage");
-		if (!ShoutBehavior.TryPrepareCourierActionPostprocessForExternal(
+		if (!ConversationActionPostprocessOwner.TryPrepareCourierActionPostprocessForExternal(
 			recipient,
 			recipient.CharacterObject,
 			recipient.Name?.ToString() ?? request.RecipientName ?? "NPC",
@@ -851,7 +851,7 @@ public sealed partial class CourierDeliveryBehavior : CampaignBehaviorBase
 			kingdomService,
 			false,
 			partyTransfer,
-			out ShoutBehavior.CourierActionPostprocessWorkItem workItem,
+			out ConversationCourierPostprocessWorkItem workItem,
 			out _,
 			voteDeal,
 			diplomacy,

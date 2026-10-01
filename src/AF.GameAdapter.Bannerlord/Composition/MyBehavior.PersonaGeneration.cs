@@ -60,24 +60,13 @@ public partial class MyBehavior
             ? "该 NPC 的上次生成请求刚刚失败，请稍后再试。" : "该 NPC 的个性与背景正在生成，请等待当前请求完成后再试。" };
         try
         {
-			string sys = "你是《骑马与砍杀2：霸主》NPC的人设生成器。你只输出严格 JSON，不要输出任何额外文字。JSON 仅包含两个字段：personality 和 background。没有额外要求时，personality 和 background 各约 300 个中文字符；如果玩家自定义生成要求指定了篇幅、详略或文风，则以玩家自定义生成要求为准。每个字段都必须以完整句子结束，不要在半句话处停止。内容必须符合提供的事实，不要杜撰与事实冲突的家族关系或身份；若事实中提供了势力/效忠信息，必须保持一致，禁止声称效忠于其他统治者或属于其他势力。";
-			sys = AppendNpcPersonaGenerationRequirementsToSystemPrompt(sys);
-			string facts = BuildHeroFactsForPersonaGeneration(hero);
-			string user = "请基于以下信息生成该 NPC 的【个性】与【历史背景】。必须综合“人物百科背景”“家族背景”“所在家族百科背景”“王国百科背景”“家族族长背景”；这些素材是事实来源，不要复制成百科原文。\n" + facts;
-			if (overwriteExisting)
-			{
-				string oldPersonality = NormalizePersonaPromptSourceText(personality, 500);
-				string oldBackground = NormalizePersonaPromptSourceText(background, 500);
-				user += "\n这是重新生成人设请求：请生成一版不同但仍符合事实的人设，不要照搬旧文本。"
-					+ "\n旧个性（仅用于避重）：" + (string.IsNullOrWhiteSpace(oldPersonality) ? "无" : oldPersonality)
-					+ "\n旧背景（仅用于避重）：" + (string.IsNullOrWhiteSpace(oldBackground) ? "无" : oldBackground);
-			}
+			NpcPersonaPrompt prompt = NpcPersonaTextRules.BuildNative(BuildHeroFactsForPersonaGeneration(hero), personality, background, overwriteExisting, DuelSettings.GetSettings()?.NpcPersonaGenerationRequirements);
             // This async method snapshots provider settings before its first await. It starts an
             // asynchronous HTTP operation, never a blocking wait or a Task.Run that reads live settings.
             return new NpcPersonaGenerationWork
             {
                 Id = id, OriginalPersonality = personality, OriginalBackground = background, Reservation = lease,
-                Response = CallAuxiliaryGatewayDetailed(sys, user, "NpcPersona", 0, forceThinkingDisabled: false)
+                Response = CallAuxiliaryGatewayDetailed(prompt.System, prompt.User, "NpcPersona", 0, forceThinkingDisabled: false)
             };
         }
         catch { _npcPersonaGeneration.Complete(lease, saved: false); throw; }
