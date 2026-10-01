@@ -45,6 +45,17 @@ static class Program
             foreach (var method in root.DescendantNodes().OfType<MethodDeclarationSyntax>())
             {
                 string methodName = method.Identifier.ValueText;
+                string eventOwner = methodName switch
+                {
+                    "OnMapEventEnded" => "WorldDiplomacyBattleApplication.Record",
+                    "CaptureNativeDiplomacyDecision" => "WorldDiplomacyNativeDecisionApplication.Capture",
+                    "RemoveQueuedNativeDiplomacyDecisions" => "WorldDiplomacyNativeDecisionApplication.Sanitize",
+                    "GetRoundHardDurationDays" => "WorldDiplomacyEventRules.RoundHardDurationDays",
+                    _ => null
+                };
+                if (eventOwner != null && (method.Body?.Statements.Count != 1 || !method.ToString().Contains(eventOwner)
+                    || method.DescendantNodes().Any(n => n is IfStatementSyntax or ForEachStatementSyntax or TryStatementSyntax)))
+                    errors.Add("retained event host regained rules/ordering: " + methodName);
                 if (methodName == "IsThreatConsequenceClanEligible") errors.Add("clan qualification still owned by Behavior");
                 if (new[] { "EnsureKingdomBorderCache", "GetRealmRelationProfile", "ResolveCourtSettlement" }.Contains(methodName))
                 {
@@ -192,6 +203,13 @@ static class Program
                 if (call.Expression.ToString().Contains("ClearWarPressure") || call.Expression.ToString().Contains("ClonePeaceTerms"))
                     errors.Add("offer effect adapter owns settlement ordering: " + call.Expression);
         }
+        if (path.EndsWith("WorldDiplomacyBehavior.ImmediateActionPort.cs") && root.ToString().Contains("HasTradeAgreement("))
+            errors.Add("immediate trade receipt collapsed unreadable state into false");
+        if (path.EndsWith("WorldDiplomacyBehavior.PublicationPort.cs") || path.EndsWith("WorldDiplomacyBehavior.OrchestrationHost.cs"))
+            foreach (var method in root.DescendantNodes().OfType<MethodDeclarationSyntax>())
+                if (new[] { "CaptureDestinations", "CaptureCourtTargets", "CapturePropagationDistances" }.Contains(method.Identifier.ValueText)
+                    && (method.Body?.Statements.Count != 1 || !method.ToString().Contains("WorldDiplomacyGeographyApplication.")))
+                    errors.Add("geography projection regained host filtering: " + method.Identifier.ValueText);
         if (path.EndsWith("WorldDiplomacyBehavior.ThreatSettlementPort.cs", StringComparison.Ordinal))
         {
             foreach (var assignment in root.DescendantNodes().OfType<AssignmentExpressionSyntax>())
@@ -316,6 +334,9 @@ static class Program
             ("AIConfigHandler.cs", "class X { object F() => AnimusForge.WorldDiplomacyBehavior.Instance; }") };
         foreach (var (path, text) in mutations)
             Check(Violations(path, CSharpSyntaxTree.ParseText(text).GetRoot()).Count > 0, "dependency mutation must be rejected " + path);
+        foreach (string method in new[] { "OnMapEventEnded", "CaptureNativeDiplomacyDecision", "RemoveQueuedNativeDiplomacyDecisions", "GetRoundHardDurationDays" })
+            Check(Violations(host, CSharpSyntaxTree.ParseText("class X { void " + method + "() { if (true) OldOrdering(); } }").GetRoot()).Count > 0,
+                "event host rule mutation rejected: " + method);
         foreach (string owner in new[] { "DiplomacyCrossDomainActionOwner", "WorldDiplomacyPresentation", "WorldDiplomacyComposePopup", "WorldDiplomacyOrchestration", "DiplomacyPoliticalRewardApplication" })
             Check(Violations("RewardSystemBehavior.cs", CSharpSyntaxTree.ParseText("using Alias = AnimusForge." + owner + "; class X { object F() => typeof(Alias); }").GetRoot()).Count > 0,
                 "all concrete module owners reject external alias/typeof bypass: " + owner);

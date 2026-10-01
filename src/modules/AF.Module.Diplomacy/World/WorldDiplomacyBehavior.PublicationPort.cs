@@ -28,53 +28,7 @@ public sealed partial class WorldDiplomacyBehavior
         public void Log(string message) => WorldDiplomacyBehavior.Log(message);
         public WorldDiplomacyPublicationSnapshot CaptureDestinations(string authorId, string originId)
         {
-            Kingdom author = ResolveKingdom(authorId);
-            Settlement origin = ResolveSettlementById(originId);
-		List<Settlement> settlements = Settlement.All
-			.Where(x => x != null && !x.IsHideout && !string.IsNullOrWhiteSpace(x.StringId))
-			.OrderBy(x => x.StringId, StringComparer.OrdinalIgnoreCase)
-			.ToList();
-		float maxCivilianDistance = origin == null || settlements.Count == 0
-			? 0f
-			: settlements.Max(x => origin.GatePosition.Distance(x.GatePosition));
-		List<WorldDiplomacyPropagationApplication.SettlementTarget> settlementTargets =
-			new List<WorldDiplomacyPropagationApplication.SettlementTarget>(settlements.Count);
-		foreach (Settlement settlement in settlements)
-		{
-			bool isOrigin = origin != null && settlement == origin;
-			settlementTargets.Add(new WorldDiplomacyPropagationApplication.SettlementTarget
-			{
-				Id = settlement.StringId,
-				IsOrigin = isOrigin,
-				Distance = isOrigin || origin == null
-					? maxCivilianDistance
-					: origin.GatePosition.Distance(settlement.GatePosition)
-			});
-		}
-		List<Tuple<Kingdom, Settlement>> courtDestinations = Kingdom.All
-			.Where(x => x != null && !x.IsEliminated && x != author && !string.IsNullOrWhiteSpace(x.StringId))
-			.OrderBy(x => x.StringId, StringComparer.OrdinalIgnoreCase)
-            .Select(x => Tuple.Create(x, _owner.ResolveCourtSettlement(x)))
-			.ToList();
-		float maxCourtDistance = origin == null
-			? 0f
-			: courtDestinations.Where(x => x.Item2 != null).Select(x => origin.GatePosition.Distance(x.Item2.GatePosition)).DefaultIfEmpty(0f).Max();
-		List<WorldDiplomacyPropagationApplication.CourtTarget> courtTargets =
-			new List<WorldDiplomacyPropagationApplication.CourtTarget>(courtDestinations.Count);
-		foreach (Tuple<Kingdom, Settlement> destination in courtDestinations)
-		{
-			courtTargets.Add(new WorldDiplomacyPropagationApplication.CourtTarget
-			{
-				KingdomId = destination.Item1.StringId,
-				SettlementId = destination.Item2?.StringId ?? "",
-				IsPlayerAffiliated = IsPlayerAffiliatedKingdom(destination.Item1),
-				Distance = origin == null || destination.Item2 == null
-					? maxCourtDistance
-					: origin.GatePosition.Distance(destination.Item2.GatePosition)
-			});
-		}
-
-            return new WorldDiplomacyPublicationSnapshot(settlementTargets, courtTargets, maxCivilianDistance, maxCourtDistance);
+            return WorldDiplomacyGeographyApplication.Publication(new GeographyPort(_owner, authorId, originId));
         }
     }
 }

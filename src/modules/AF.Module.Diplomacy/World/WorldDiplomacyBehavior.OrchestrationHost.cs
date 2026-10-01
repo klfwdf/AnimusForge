@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using AnimusForge.Refactor.Domain;
@@ -154,50 +154,11 @@ public sealed partial class WorldDiplomacyBehavior
         // Propagation/world snapshots (infrequent, bounded by rules).
         public List<WorldDiplomacyPropagationApplication.CourtTarget> CaptureCourtTargets()
         {
-            var targets = new List<WorldDiplomacyPropagationApplication.CourtTarget>();
-            foreach (Kingdom kingdom in Kingdom.All.Where(x => x != null && !x.IsEliminated && !string.IsNullOrWhiteSpace(x.StringId)).OrderBy(x => x.StringId, StringComparer.OrdinalIgnoreCase))
-            {
-                targets.Add(new WorldDiplomacyPropagationApplication.CourtTarget
-                {
-                    KingdomId = kingdom.StringId,
-                    SettlementId = _owner.ResolveCourtSettlement(kingdom)?.StringId ?? "",
-                    IsPlayerAffiliated = WorldDiplomacyBehavior.IsPlayerAffiliatedKingdom(kingdom)
-                });
-            }
-            return targets;
+            return WorldDiplomacyGeographyApplication.CourtTargets(new GeographyPort(_owner, null, null));
         }
         public WorldDiplomacyPropagationApplication.DistanceSnapshot CapturePropagationDistances(WorldDiplomacyDocument document)
         {
-            List<Settlement> allSettlements = Settlement.All.Where(x => x != null).ToList();
-            List<Settlement> settlements = allSettlements.Where(x => !x.IsHideout && !string.IsNullOrWhiteSpace(x.StringId)).ToList();
-            List<Tuple<Kingdom, Settlement>> courts = Kingdom.All
-                .Where(x => x != null && !x.IsEliminated && !string.IsNullOrWhiteSpace(x.StringId))
-                .OrderBy(x => x.StringId, StringComparer.OrdinalIgnoreCase)
-                .Select(x => Tuple.Create(x, _owner.ResolveCourtSettlement(x)))
-                .ToList();
-            Dictionary<string, Settlement> settlementsById = new Dictionary<string, Settlement>(StringComparer.OrdinalIgnoreCase);
-            foreach (Settlement settlement in allSettlements)
-            {
-                if (!string.IsNullOrWhiteSpace(settlement.StringId) && !settlementsById.ContainsKey(settlement.StringId))
-                    settlementsById.Add(settlement.StringId, settlement);
-            }
-            if (!settlementsById.TryGetValue(document?.OriginSettlementId ?? "", out Settlement origin)) return null;
-            Dictionary<string, float> settlementDistances = new Dictionary<string, float>(StringComparer.OrdinalIgnoreCase);
-            foreach (KeyValuePair<string, Settlement> destination in settlementsById)
-                settlementDistances.Add(destination.Key, origin.GatePosition.Distance(destination.Value.GatePosition));
-            Dictionary<string, float> courtDistances = new Dictionary<string, float>(StringComparer.OrdinalIgnoreCase);
-            foreach (Tuple<Kingdom, Settlement> court in courts)
-            {
-                if (court.Item2 != null && !courtDistances.ContainsKey(court.Item1.StringId))
-                    courtDistances.Add(court.Item1.StringId, origin.GatePosition.Distance(court.Item2.GatePosition));
-            }
-            return new WorldDiplomacyPropagationApplication.DistanceSnapshot
-            {
-                MaxCivilianDistance = settlements.Count == 0 ? 0f : settlements.Max(x => origin.GatePosition.Distance(x.GatePosition)),
-                MaxCourtDistance = courts.Where(x => x.Item2 != null).Select(x => origin.GatePosition.Distance(x.Item2.GatePosition)).DefaultIfEmpty(0f).Max(),
-                SettlementDistances = settlementDistances,
-                CourtDistances = courtDistances
-            };
+            return WorldDiplomacyGeographyApplication.Recalculation(new GeographyPort(_owner, null, document?.OriginSettlementId));
         }
 
         // Presentation / effect leafs and world snapshots.
@@ -231,7 +192,7 @@ public sealed partial class WorldDiplomacyBehavior
         public int DaysPerYear() => WorldDiplomacyBehavior.DaysPerYear;
         public int RecentBattleRetentionDays() => WorldDiplomacyBehavior.RecentBattleRetentionDays;
         public int NativeSignalBaseValue(string action) =>
-            action == "declare_war" ? WorldDiplomacyBehavior.NativeWarSignalBase : WorldDiplomacyBehavior.NativeOtherSignalBase;
+            WorldDiplomacyEventRules.NativeSignalBaseValue(action);
         public IReadOnlyList<WorldDiplomacyThreat> Threats() => _owner._storage?.DiplomaticThreats;
 
         // Module/service leafs.

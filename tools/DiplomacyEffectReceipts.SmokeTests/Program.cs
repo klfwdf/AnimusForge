@@ -13,6 +13,7 @@ internal static class Program
     private static void Main()
     {
         PoliticalEngineReplay.Run(Check);
+        ImmediateReplay.Run(Check);
         foreach (Fault fault in new[] { Fault.None, Fault.Before, Fault.NoOp, Fault.After, Fault.Unreadable })
         {
             foreach (string worldAction in new[] { "peace", "alliance", "trade" })

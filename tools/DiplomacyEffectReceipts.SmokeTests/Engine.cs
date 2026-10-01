@@ -1,7 +1,7 @@
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.CampaignBehaviors;
 
-internal enum Fault { None, Before, NoOp, After, Unreadable, BetweenPeaceAndTerms }
+internal enum Fault { None, Before, NoOp, After, Unreadable, NoOpUnreadable, BeforeUnreadable, BetweenPeaceAndTerms }
 internal static class Engine
 {
     internal static Fault Fault;
@@ -29,13 +29,13 @@ internal static class Engine
     internal static void Apply(Action mutation)
     {
         Calls++;
-        if (Fault == Fault.Before) throw new InvalidOperationException("before mutation");
-        if (Fault == Fault.NoOp) return;
+        if (Fault is Fault.Before or Fault.BeforeUnreadable) throw new InvalidOperationException("before mutation");
+        if (Fault is Fault.NoOp or Fault.NoOpUnreadable) return;
         mutation();
         if (Fault is Fault.After or Fault.Unreadable) throw new InvalidOperationException("observer after mutation");
     }
     internal static void Read()
-    { if (Calls > 0 && Fault == Fault.Unreadable) throw new InvalidOperationException("readback unavailable"); }
+    { if (Calls > 0 && Fault is Fault.Unreadable or Fault.NoOpUnreadable or Fault.BeforeUnreadable) throw new InvalidOperationException("readback unavailable"); }
 }
 
 namespace AnimusForge
@@ -161,6 +161,7 @@ namespace TaleWorlds.CampaignSystem.Settlements
 }
 namespace TaleWorlds.CampaignSystem.Actions
 {
+    public static class DeclareWarAction { public static void ApplyByKingdomDecision(Kingdom a,Kingdom b)=>Engine.Apply(()=>Engine.AtWar=true); }
     public static class MakePeaceAction
     {
         public static void Apply(object first, object second) => Engine.Apply(() => Engine.AtWar = false);
