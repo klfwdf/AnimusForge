@@ -20,7 +20,7 @@ _active = ContextVar("af2_terminal_review_projection", default=False)
 
 
 def normalized(text):
-    return text.replace("\r\n", "\n")
+    return text.removeprefix("\ufeff").replace("\r\n", "\n")
 
 
 def digest(text):
