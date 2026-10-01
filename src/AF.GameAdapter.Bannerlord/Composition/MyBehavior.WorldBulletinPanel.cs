@@ -25,22 +25,7 @@ public partial class MyBehavior
 	private WorldBulletinLayout FindWorldBulletinLayout(string eventId) => WorldBulletinState.FindWorldBulletinLayout(eventId);
 
 	private bool TryShowWorldBulletinPanel(EventRecordEntry entry, string eventId)
-	{
-		WorldBulletinPanelData data;
-		try
-		{
-			data = BuildWorldBulletinPanelData(entry, eventId);
-		}
-		catch (Exception ex)
-		{
-			Logger.Log("WorldBulletinPanel", "[WARN] panel data build failed, using legacy popup: " + ex.Message);
-			return false;
-		}
-		return DevWeeklyReportPopup.ShowWorldBulletin(data, 10.0, delegate
-		{
-			TryAwardWeeklyReportReadingXp(eventId);
-		});
-	}
+		=> WeeklyEditor.TryShowWorldBulletinPanel(entry, eventId);
 
 	private WorldBulletinPanelData BuildWorldBulletinPanelData(EventRecordEntry entry, string eventId) => WorldBulletinState.BuildWorldBulletinPanelData(entry, eventId);
 

@@ -677,7 +677,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		public long ElapsedMilliseconds;
 	}
 
-	private sealed class DevWeeklyReportBatchPreviewEntry
+	internal sealed class DevWeeklyReportBatchPreviewEntry
 	{
 		public string PreviewKey = "";
 
@@ -28069,67 +28069,6 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 		}, "返回素材列表");
 	}
 
-	private string BuildDevEventMaterialDetailText(EventMaterialReference material)
-	{
-		if (material == null)
-		{
-			return "无效素材。";
-		}
-		StringBuilder stringBuilder = new StringBuilder();
-		AppendDevNpcActionField(stringBuilder, "素材类型", TranslateEventMaterialTypeForDev(material.MaterialType));
-		AppendDevNpcActionField(stringBuilder, "素材标签", (material.Label ?? "").Trim());
-		AppendDevNpcActionField(stringBuilder, "人物", ResolveHeroDisplay(material.HeroId));
-		AppendDevNpcActionField(stringBuilder, "王国", ResolveKingdomDisplay(material.KingdomId));
-		AppendDevNpcActionField(stringBuilder, "定居点", ResolveSettlementDisplay(material.SettlementId));
-		AppendDevNpcActionField(stringBuilder, "行动类型", GetDevNpcActionKindDisplay(material.ActionKind));
-		AppendDevNpcActionField(stringBuilder, "相关人物", string.Join("、", ResolveHeroNames(material.RelatedHeroIds)));
-		AppendDevNpcActionField(stringBuilder, "相关家族", string.Join("、", ResolveClanNames(material.RelatedClanIds)));
-		AppendDevNpcActionField(stringBuilder, "相关王国", string.Join("、", ResolveKingdomNames(material.RelatedKingdomIds)));
-		AppendDevNpcActionField(stringBuilder, "原始素材数", Math.Max(0, material.SourceMaterialCount).ToString());
-		AppendDevNpcActionField(stringBuilder, "来源StableKey", string.Join(" | ", (material.SourceStableKeys ?? new List<string>()).Where((string x) => !string.IsNullOrWhiteSpace(x)).Select((string x) => x.Trim())));
-		AppendDevNpcActionField(stringBuilder, "来源ActionKind", string.Join(" | ", (material.SourceActionKinds ?? new List<string>()).Where((string x) => !string.IsNullOrWhiteSpace(x)).Select((string x) => x.Trim())));
-		switch ((material.MaterialType ?? "").Trim().ToLowerInvariant())
-		{
-		case "world_opening_summary":
-			stringBuilder.AppendLine();
-			stringBuilder.AppendLine("【素材正文】");
-			stringBuilder.AppendLine(!string.IsNullOrWhiteSpace(material.SnapshotText) ? material.SnapshotText.Trim() : ((_eventWorldOpeningSummary ?? "").Trim()));
-			break;
-		case "kingdom_opening_summary":
-			stringBuilder.AppendLine();
-			stringBuilder.AppendLine("【素材正文】");
-			stringBuilder.AppendLine(!string.IsNullOrWhiteSpace(material.SnapshotText) ? material.SnapshotText.Trim() : ResolveKingdomOpeningSummaryById(material.KingdomId));
-			break;
-		case "npc_recent_action":
-		case "npc_major_action":
-			NpcActionEntry npcActionEntry = ResolveEventMaterialNpcAction(material);
-			if (npcActionEntry != null)
-			{
-				stringBuilder.AppendLine();
-				stringBuilder.AppendLine(BuildDevNpcActionDetailText(npcActionEntry));
-			}
-			else
-			{
-				stringBuilder.AppendLine();
-				stringBuilder.AppendLine("【素材正文】");
-				if (!string.IsNullOrWhiteSpace(material.SnapshotText))
-				{
-					stringBuilder.AppendLine(material.SnapshotText.Trim());
-				}
-				else
-				{
-					stringBuilder.AppendLine("未能在当前行动记录中定位到这条 NPC 行为，可能是旧记录被裁剪掉了。");
-				}
-			}
-			break;
-		default:
-			stringBuilder.AppendLine();
-			stringBuilder.AppendLine("【素材正文】");
-			stringBuilder.AppendLine(string.IsNullOrWhiteSpace(material.SnapshotText) ? "这条素材当前没有额外快照文本。" : material.SnapshotText.Trim());
-			break;
-		}
-		return stringBuilder.ToString().TrimEnd();
-	}
 
 	private string ResolveKingdomOpeningSummaryById(string kingdomId)
 	{
@@ -28243,72 +28182,8 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 		return text;
 	}
 
-	private void OpenDevWeeklyEventMaterialPreviewMenu()
-	{
-		List<WeeklyEventMaterialPreviewGroup> list = BuildWeeklyEventMaterialPreviewGroups();
-		List<InquiryElement> list2 = new List<InquiryElement>();
-		list2.Add(new InquiryElement("back", "返回", null));
-		foreach (WeeklyEventMaterialPreviewGroup item in list)
-		{
-			list2.Add(new InquiryElement(item, BuildWeeklyEventMaterialPreviewGroupLabel(item), null));
-		}
-		MultiSelectionInquiryData data = new MultiSelectionInquiryData("本周事件素材预览", BuildWeeklyEventMaterialPreviewMenuDescription(list), list2, isExitShown: true, 0, 1, "查看", "返回", delegate(List<InquiryElement> selected)
-		{
-			if (selected == null || selected.Count == 0)
-			{
-				OpenDevWeeklyReportPromptPreviewMenu();
-			}
-			else if (selected[0].Identifier is string text && text == "back")
-			{
-				OpenDevWeeklyReportPromptPreviewMenu();
-			}
-			else if (selected[0].Identifier is WeeklyEventMaterialPreviewGroup weeklyEventMaterialPreviewGroup)
-			{
-				OpenDevWeeklyEventMaterialPreviewGroupDetail(weeklyEventMaterialPreviewGroup, 0);
-			}
-			else
-			{
-				OpenDevWeeklyEventMaterialPreviewMenu();
-			}
-		}, delegate
-		{
-			OpenDevEventEditorMenu();
-		});
-		MBInformationManager.ShowMultiSelectionInquiry(data);
-	}
 
-	private string BuildWeeklyEventMaterialPreviewMenuDescription(List<WeeklyEventMaterialPreviewGroup> groups)
-	{
-		int currentGameDayIndexSafe = GetCurrentGameDayIndexSafe();
-		int num = Math.Max(0, currentGameDayIndexSafe - currentGameDayIndexSafe % 7);
-		int num2 = Math.Max(1, currentGameDayIndexSafe / 7 + 1);
-		int num3 = (groups != null) ? groups.Sum((WeeklyEventMaterialPreviewGroup x) => (x?.PromptMaterials?.Count).GetValueOrDefault()) : 0;
-		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.AppendLine("这里展示“如果现在生成本周事件”，系统会拿去喂给事件生成器的素材池。");
-		stringBuilder.AppendLine("当前按世界事件与各王国事件分组展示。");
-		stringBuilder.AppendLine(" ");
-		stringBuilder.AppendLine("当前周数：第 " + num2 + " 周");
-		stringBuilder.AppendLine("当前取材区间：第 " + num + " 日 到 第 " + currentGameDayIndexSafe + " 日");
-		stringBuilder.AppendLine("分组数量：" + ((groups != null) ? groups.Count : 0));
-		stringBuilder.AppendLine("素材总数：" + num3);
-		stringBuilder.AppendLine(" ");
-		stringBuilder.AppendLine("当前已接入的素材：世界开局概要、王国开局概要、本周 NPC 行动。");
-		return stringBuilder.ToString().TrimEnd();
-	}
 
-	private static string BuildWeeklyEventMaterialPreviewGroupLabel(WeeklyEventMaterialPreviewGroup group)
-	{
-		if (group == null)
-		{
-			return "无效分组";
-		}
-		string text = string.IsNullOrWhiteSpace(group.Summary) ? "" : BuildDevSummaryPreview(group.Summary, 44);
-		int count = (group.Materials != null) ? group.Materials.Count : 0;
-		int count2 = (group.PromptMaterials != null) ? group.PromptMaterials.Count : 0;
-		string text2 = count + " / " + count2 + " 条素材";
-		string text3 = string.Equals((group.OutputMode).ToString(), WeeklyReportOutputMode.TitleShortTagsOnly.ToString(), StringComparison.OrdinalIgnoreCase) ? "短" : "全";
-		return (group.Title ?? "未命名分组") + " [" + text3 + " | " + text2 + "]" + (string.IsNullOrWhiteSpace(text) ? "" : (" " + text));
-	}
 
 	private List<WeeklyEventMaterialPreviewGroup> BuildWeeklyEventMaterialPreviewGroups()
 	{
@@ -29529,95 +29404,9 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 		return BuildFallbackWeeklyReportShortSummary(latestWeeklyReportRecord?.ShortSummary ?? latestWeeklyReportRecord?.Summary);
 	}
 
-	public List<WeeklyReportBrowserCountryData> GetTerminalWeeklyReportBrowserCountries()
-	{
-		try
-		{
-			EnsureWeekZeroOpeningSummaryEvents();
-		}
-		catch
-		{
-		}
-		List<EventRecordEntry> list = SanitizeEventRecordEntries(_eventRecordEntries);
-		List<WeeklyReportBrowserCountryData> list2 = new List<WeeklyReportBrowserCountryData>();
-		HashSet<string> hashSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-		WeeklyReportBrowserCountryData item = BuildWeeklyReportBrowserCountryData("world", "", "\u4e16\u754c\u5468\u62a5", isWorld: true, list);
-		list2.Add(item);
-		hashSet.Add("world:");
-		foreach (Kingdom item2 in GetDevEditableKingdoms().OrderBy((Kingdom x) => ResolveKingdomDisplay(x?.StringId), StringComparer.OrdinalIgnoreCase))
-		{
-			string text = (item2?.StringId ?? "").Trim();
-			if (!string.IsNullOrWhiteSpace(text) && hashSet.Add("kingdom:" + text))
-			{
-				list2.Add(BuildWeeklyReportBrowserCountryData("kingdom", text, ResolveKingdomDisplay(text), isWorld: false, list));
-			}
-		}
-		foreach (string item3 in list.Where((EventRecordEntry x) => x != null && string.Equals((x.EventKind ?? "").Trim(), "kingdom", StringComparison.OrdinalIgnoreCase) && !string.IsNullOrWhiteSpace(x.ScopeKingdomId)).Select((EventRecordEntry x) => (x.ScopeKingdomId ?? "").Trim()).Distinct(StringComparer.OrdinalIgnoreCase).OrderBy((string x) => ResolveKingdomDisplay(x), StringComparer.OrdinalIgnoreCase))
-		{
-			if (hashSet.Add("kingdom:" + item3))
-			{
-				list2.Add(BuildWeeklyReportBrowserCountryData("kingdom", item3, ResolveKingdomDisplay(item3), isWorld: false, list));
-			}
-		}
-		return list2;
-	}
 
-	private static WeeklyReportBrowserCountryData BuildWeeklyReportBrowserCountryData(string eventKind, string scopeKingdomId, string displayName, bool isWorld, List<EventRecordEntry> source)
-	{
-		string text = (scopeKingdomId ?? "").Trim();
-		string text3 = (isWorld ? "world" : text);
-		string text2 = (displayName ?? "").Trim();
-		if (string.IsNullOrWhiteSpace(text2))
-		{
-			text2 = (isWorld ? "\u4e16\u754c\u5468\u62a5" : text);
-		}
-		return new WeeklyReportBrowserCountryData
-		{
-			CountryId = text3,
-			DisplayName = text2,
-			IsWorld = isWorld,
-			Reports = BuildWeeklyReportBrowserEntries(source, eventKind, text)
-		};
-	}
 
-	private static List<WeeklyReportBrowserEntryData> BuildWeeklyReportBrowserEntries(List<EventRecordEntry> source, string eventKind, string scopeKingdomId)
-	{
-		string text = (eventKind ?? "").Trim();
-		string text2 = (scopeKingdomId ?? "").Trim();
-		return (source ?? new List<EventRecordEntry>()).Where((EventRecordEntry x) => x != null && string.Equals((x.EventKind ?? "").Trim(), text, StringComparison.OrdinalIgnoreCase) && string.Equals((x.ScopeKingdomId ?? "").Trim(), text2, StringComparison.OrdinalIgnoreCase)).OrderByDescending((EventRecordEntry x) => x.WeekIndex).ThenByDescending((EventRecordEntry x) => x.CreatedDay).ThenByDescending((EventRecordEntry x) => x.Title ?? "", StringComparer.OrdinalIgnoreCase).Select(delegate(EventRecordEntry x)
-		{
-			string text3 = (x.Title ?? "").Trim();
-			if (string.IsNullOrWhiteSpace(text3))
-			{
-				text3 = BuildWeeklyReportBrowserDefaultTitle(text, text2, x.WeekIndex);
-			}
-			return new WeeklyReportBrowserEntryData
-			{
-				EventId = (x.EventId ?? "").Trim(),
-				WeekIndex = Math.Max(0, x.WeekIndex),
-				Title = text3,
-				BodyText = !string.IsNullOrWhiteSpace(x.Summary) ? x.Summary.Trim() : (!string.IsNullOrWhiteSpace(x.ShortSummary) ? x.ShortSummary.Trim() : "\u5f53\u524d\u8fd9\u671f\u5468\u62a5\u8fd8\u6ca1\u6709\u6b63\u6587\u3002"),
-				CreatedDate = (!string.IsNullOrWhiteSpace(x.CreatedDate) ? x.CreatedDate.Trim() : ("\u7b2c " + Math.Max(0, x.CreatedDay) + " \u65e5")),
-				CreatedDay = Math.Max(0, x.CreatedDay),
-				TagText = (x.TagText ?? "").Trim(),
-				HasFullReport = !string.IsNullOrWhiteSpace(x.Summary)
-			};
-		}).ToList();
-	}
 
-	private static string BuildWeeklyReportBrowserDefaultTitle(string eventKind, string scopeKingdomId, int weekIndex)
-	{
-		if (string.Equals((eventKind ?? "").Trim(), "world", StringComparison.OrdinalIgnoreCase))
-		{
-			return "\u4e16\u754c\u7b2c" + Math.Max(0, weekIndex) + "\u5468\u5468\u62a5";
-		}
-		string text = ResolveKingdomDisplay(scopeKingdomId);
-		if (string.IsNullOrWhiteSpace(text))
-		{
-			text = "\u738b\u56fd";
-		}
-		return text + "\u7b2c" + Math.Max(0, weekIndex) + "\u5468\u5468\u62a5";
-	}
 
 	private EventRecordEntry FindWeeklyReportRecordById(string eventId)
 	{
@@ -31025,22 +30814,6 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 		return PlayerNotorietyBehavior.RenderPlayerNamedReferenceForExternal(NeutralizeWeeklyReportScenarioName(material.Label));
 	}
 
-	private static string BuildWeeklyReportPromptPreviewText(WeeklyEventMaterialPreviewGroup group, string systemPrompt, string userPrompt)
-	{
-		StringBuilder stringBuilder = new StringBuilder();
-		AppendDevNpcActionField(stringBuilder, "生成对象", string.Equals((group?.GroupKind ?? "").Trim(), "world", StringComparison.OrdinalIgnoreCase) ? "世界周报" : "王国周报");
-		AppendDevNpcActionField(stringBuilder, "关联王国", ResolveKingdomDisplay(group?.KingdomId));
-		AppendDevNpcActionField(stringBuilder, "输出模式", ((group?.OutputMode ?? WeeklyReportOutputMode.FullReport) == WeeklyReportOutputMode.TitleShortTagsOnly) ? "title_short_tags_only" : "full_report");
-		AppendDevNpcActionField(stringBuilder, "篇幅档位", GetWeeklyReportPromptProfile().Label);
-		AppendDevNpcActionField(stringBuilder, "MaxTokens", GetEventAndRebellionApiMaxTokens().ToString());
-		stringBuilder.AppendLine();
-		stringBuilder.AppendLine("【System Prompt】");
-		stringBuilder.AppendLine(systemPrompt ?? "");
-		stringBuilder.AppendLine();
-		stringBuilder.AppendLine("【User Prompt】");
-		stringBuilder.AppendLine(userPrompt ?? "");
-		return stringBuilder.ToString().TrimEnd();
-	}
 
 	private static string BuildWeeklyBatchReportSystemPrompt(WeeklyReportBatchRequest batch)
 	{
@@ -31213,25 +30986,6 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 		return Regex.Replace(annotatedExistingSuffix, escapedName + "(?![\\(（])", match => name + "(统治者)", RegexOptions.CultureInvariant);
 	}
 
-	private static string BuildWeeklyBatchPromptPreviewText(WeeklyReportBatchRequest batch, string systemPrompt, string userPrompt)
-	{
-		StringBuilder stringBuilder = new StringBuilder();
-		List<WeeklyEventMaterialPreviewGroup> list = (batch?.Groups ?? new List<WeeklyEventMaterialPreviewGroup>()).Where((WeeklyEventMaterialPreviewGroup x) => x != null).ToList();
-		AppendDevNpcActionField(stringBuilder, "批次周数", ((batch != null) ? batch.WeekIndex : 0).ToString());
-		AppendDevNpcActionField(stringBuilder, "取材区间", ((batch != null) ? batch.StartDay : 0) + "-" + ((batch != null) ? batch.EndDay : 0));
-		AppendDevNpcActionField(stringBuilder, "批次块数", list.Count.ToString());
-		AppendDevNpcActionField(stringBuilder, "批次模式", ((batch?.OutputMode ?? WeeklyReportOutputMode.FullReport) == WeeklyReportOutputMode.TitleShortTagsOnly) ? "title_short_tags_only" : "full_report");
-		AppendDevNpcActionField(stringBuilder, "批次对象", string.Join(" | ", list.Select(BuildWeeklyReportGroupReportId).Where((string x) => !string.IsNullOrWhiteSpace(x))));
-		AppendDevNpcActionField(stringBuilder, "输出模式", string.Join(" | ", list.Select((WeeklyEventMaterialPreviewGroup x) => ((x?.OutputMode ?? WeeklyReportOutputMode.FullReport) == WeeklyReportOutputMode.TitleShortTagsOnly) ? "title_short_tags_only" : "full_report")));
-		AppendDevNpcActionField(stringBuilder, "MaxTokens", GetEventAndRebellionApiMaxTokens().ToString());
-		stringBuilder.AppendLine();
-		stringBuilder.AppendLine("【System Prompt】");
-		stringBuilder.AppendLine(systemPrompt ?? "");
-		stringBuilder.AppendLine();
-		stringBuilder.AppendLine("【User Prompt】");
-		stringBuilder.AppendLine(userPrompt ?? "");
-		return stringBuilder.ToString().TrimEnd();
-	}
 
 	private static bool TryParseWeeklyBatchResponse(string rawResponse, WeeklyReportBatchRequest batch, out List<WeeklyReportBatchBlockResult> blocks, out List<string> missingReportIds, out string failureReason) => _weeklyGenerationRules.TryParseWeeklyBatchResponse(rawResponse, batch, out blocks, out missingReportIds, out failureReason);
 
@@ -31973,104 +31727,7 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 		AddUniqueId(eventMaterialReference.SourceStableKeys, eventMaterialReference.ActionStableKey);
 	}
 
-	private void OpenDevWeeklyEventMaterialPreviewGroupDetail(WeeklyEventMaterialPreviewGroup group, int page)
-	{
-		if (group == null)
-		{
-			OpenDevWeeklyEventMaterialPreviewMenu();
-			return;
-		}
-		List<EventMaterialReference> list = OrderWeeklyPreviewMaterials(group.Materials).ToList();
-		if (page < 0)
-		{
-			page = 0;
-		}
-		const int pageSize = 16;
-		int num = Math.Max(1, (int)Math.Ceiling((double)Math.Max(1, list.Count) / (double)pageSize));
-		if (page >= num)
-		{
-			page = num - 1;
-		}
-		List<InquiryElement> list2 = new List<InquiryElement>();
-		list2.Add(new InquiryElement("back", "返回分组列表", null));
-		if (page > 0)
-		{
-			list2.Add(new InquiryElement("prev_page", "上一页", null));
-		}
-		if (page + 1 < num)
-		{
-			list2.Add(new InquiryElement("next_page", "下一页", null));
-		}
-		list2.Add(new InquiryElement("__sep__", "----------------", null));
-		foreach (EventMaterialReference item in list.Skip(page * pageSize).Take(pageSize))
-		{
-			list2.Add(new InquiryElement(item, BuildWeeklyPreviewMaterialLabel(item), null));
-		}
-		MultiSelectionInquiryData data = new MultiSelectionInquiryData(group.Title ?? "素材预览", BuildWeeklyPreviewGroupDetailText(group, page, num), list2, isExitShown: true, 0, 1, "查看素材", "返回", delegate(List<InquiryElement> selected)
-		{
-			if (selected == null || selected.Count == 0)
-			{
-				OpenDevWeeklyEventMaterialPreviewMenu();
-			}
-			else if (selected[0].Identifier is string text)
-			{
-				switch (text)
-				{
-				case "back":
-					OpenDevWeeklyEventMaterialPreviewMenu();
-					break;
-				case "prev_page":
-					OpenDevWeeklyEventMaterialPreviewGroupDetail(group, page - 1);
-					break;
-				case "next_page":
-					OpenDevWeeklyEventMaterialPreviewGroupDetail(group, page + 1);
-					break;
-				default:
-					OpenDevWeeklyEventMaterialPreviewGroupDetail(group, page);
-					break;
-				}
-			}
-			else if (selected[0].Identifier is EventMaterialReference eventMaterialReference)
-			{
-				OpenDevWeeklyPreviewMaterialDetail(group, eventMaterialReference, page);
-			}
-			else
-			{
-				OpenDevWeeklyEventMaterialPreviewGroupDetail(group, page);
-			}
-		}, delegate
-		{
-			OpenDevWeeklyEventMaterialPreviewMenu();
-		});
-		MBInformationManager.ShowMultiSelectionInquiry(data);
-	}
 
-	private static string BuildWeeklyPreviewMaterialLabel(EventMaterialReference material)
-	{
-		if (material == null)
-		{
-			return "无效素材";
-		}
-		string text = TranslateEventMaterialTypeForDev(material.MaterialType);
-		string text6 = material.ActionDay.HasValue ? ("[第" + material.ActionDay.Value + "日] ") : "";
-		if ((material.MaterialType ?? "").Trim().StartsWith("npc_", StringComparison.OrdinalIgnoreCase))
-		{
-			string text2 = ResolveHeroDisplay(material.HeroId);
-			string text3 = ResolveSettlementDisplay(material.SettlementId);
-			string text4 = BuildDevSummaryPreview(material.SnapshotText, 18);
-			if (!string.IsNullOrWhiteSpace(text3))
-			{
-				return text6 + "[" + text + "] " + (string.IsNullOrWhiteSpace(text2) ? "某领主" : text2) + " - " + text3;
-			}
-			if (!string.IsNullOrWhiteSpace(text4))
-			{
-				return text6 + "[" + text + "] " + (string.IsNullOrWhiteSpace(text2) ? "某领主" : text2) + " - " + text4;
-			}
-			return text6 + "[" + text + "] " + (string.IsNullOrWhiteSpace(text2) ? "某领主" : text2);
-		}
-		string text5 = BuildDevSummaryPreview(!string.IsNullOrWhiteSpace(material.Label) ? material.Label : material.SnapshotText, 24);
-		return text6 + "[" + text + "] " + (string.IsNullOrWhiteSpace(text5) ? "无预览" : text5);
-	}
 
 	internal static IEnumerable<EventMaterialReference> OrderWeeklyPreviewMaterials(List<EventMaterialReference> materials)
 	{
@@ -32154,223 +31811,14 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 		return 2;
 	}
 
-	private string BuildWeeklyPreviewGroupDetailText(WeeklyEventMaterialPreviewGroup group, int page, int totalPages)
-	{
-		StringBuilder stringBuilder = new StringBuilder();
-		AppendDevNpcActionField(stringBuilder, "分组标题", group.Title ?? "");
-		AppendDevNpcActionField(stringBuilder, "分组类型", TranslateEventKindForDev(group.GroupKind));
-		AppendDevNpcActionField(stringBuilder, "关联王国", ResolveKingdomDisplay(group.KingdomId));
-		AppendDevNpcActionField(stringBuilder, "素材数量", ((group.Materials != null) ? group.Materials.Count : 0).ToString());
-		AppendDevNpcActionField(stringBuilder, "页码", (page + 1) + "/" + Math.Max(1, totalPages));
-		if (!string.IsNullOrWhiteSpace(group.Summary))
-		{
-			stringBuilder.AppendLine();
-			stringBuilder.AppendLine("【说明】");
-			stringBuilder.AppendLine(group.Summary.Trim());
-		}
-		if (group.Materials == null || group.Materials.Count == 0)
-		{
-			stringBuilder.AppendLine();
-			stringBuilder.AppendLine("当前这个分组还没有可用素材。");
-		}
-		return stringBuilder.ToString().TrimEnd();
-	}
 
-	private void OpenDevWeeklyPreviewMaterialDetail(WeeklyEventMaterialPreviewGroup group, EventMaterialReference material, int returnPage)
-	{
-		string text = BuildDevEventMaterialDetailText(material);
-		InformationManager.ShowInquiry(new InquiryData("本周素材详情", text, isAffirmativeOptionShown: true, isNegativeOptionShown: false, "返回素材列表", "", delegate
-		{
-			OpenDevWeeklyEventMaterialPreviewGroupDetail(group, returnPage);
-		}, null));
-	}
 
-	private void OpenDevWeeklyReportPromptPreviewMenu()
-	{
-		List<InquiryElement> list = new List<InquiryElement>();
-		list.Add(new InquiryElement("back", "返回", null));
-		list.Add(new InquiryElement("single", "查看单组 Prompt", null));
-		list.Add(new InquiryElement("batch", "查看 Batch Prompt/Response", null));
-		MultiSelectionInquiryData data = new MultiSelectionInquiryData("本周周报 Prompt 预览", "选择要查看的调试视图。单组视图用于逐王国核对，Batch 视图用于查看实际批量请求和最近一次返回。", list, isExitShown: true, 0, 1, "进入", "返回", delegate(List<InquiryElement> selected)
-		{
-			if (selected == null || selected.Count == 0)
-			{
-				OpenDevEventEditorMenu();
-			}
-			else if (selected[0].Identifier is string text)
-			{
-				switch (text)
-				{
-				case "single":
-					OpenDevWeeklyReportSinglePromptPreviewMenu();
-					break;
-				case "batch":
-					OpenDevWeeklyBatchPromptPreviewMenu();
-					break;
-				default:
-					OpenDevEventEditorMenu();
-					break;
-				}
-			}
-			else
-			{
-				OpenDevEventEditorMenu();
-			}
-		}, delegate
-		{
-			OpenDevWeeklyReportPromptPreviewMenu();
-		});
-		MBInformationManager.ShowMultiSelectionInquiry(data);
-	}
 
-	private void OpenDevWeeklyReportSinglePromptPreviewMenu()
-	{
-		List<WeeklyEventMaterialPreviewGroup> list = BuildWeeklyEventMaterialPreviewGroups();
-		List<InquiryElement> list2 = new List<InquiryElement>();
-		list2.Add(new InquiryElement("back", "返回", null));
-		foreach (WeeklyEventMaterialPreviewGroup item in list)
-		{
-			list2.Add(new InquiryElement(item, BuildWeeklyEventMaterialPreviewGroupLabel(item), null));
-		}
-		MultiSelectionInquiryData data = new MultiSelectionInquiryData("本周周报 Prompt 预览", BuildWeeklyReportPromptPreviewMenuDescription(list), list2, isExitShown: true, 0, 1, "查看 Prompt", "返回", delegate(List<InquiryElement> selected)
-		{
-			if (selected == null || selected.Count == 0)
-			{
-				OpenDevEventEditorMenu();
-			}
-			else if (selected[0].Identifier is string text && text == "back")
-			{
-				OpenDevEventEditorMenu();
-			}
-			else if (selected[0].Identifier is WeeklyEventMaterialPreviewGroup weeklyEventMaterialPreviewGroup)
-			{
-				OpenDevWeeklyReportPromptDetail(weeklyEventMaterialPreviewGroup);
-			}
-			else
-			{
-				OpenDevWeeklyReportPromptPreviewMenu();
-			}
-		}, delegate
-		{
-			OpenDevEventEditorMenu();
-		});
-		MBInformationManager.ShowMultiSelectionInquiry(data);
-	}
 
-	private string BuildWeeklyReportPromptPreviewMenuDescription(List<WeeklyEventMaterialPreviewGroup> groups)
-	{
-		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.AppendLine("这里展示当前这一周会发给大模型的周报请求 Prompt。");
-		stringBuilder.AppendLine("当前只在开发态使用，生成结果会写回事件编辑，不会自动发给 NPC。");
-		stringBuilder.AppendLine(" ");
-		stringBuilder.AppendLine("分组数量：" + ((groups != null) ? groups.Count : 0));
-		stringBuilder.AppendLine("篇幅档位：" + GetWeeklyReportPromptProfile().Label);
-		stringBuilder.AppendLine("每分钟生成上限：" + GetWeeklyReportRequestsPerMinute());
-		stringBuilder.AppendLine("MaxTokens：" + GetEventAndRebellionApiMaxTokens());
-		return stringBuilder.ToString().TrimEnd();
-	}
 
-	private void OpenDevWeeklyBatchPromptPreviewMenu()
-	{
-		int currentGameDayIndexSafe = GetCurrentGameDayIndexSafe();
-		int num = Math.Max(0, currentGameDayIndexSafe - currentGameDayIndexSafe % 7);
-		int num2 = Math.Max(1, currentGameDayIndexSafe / 7 + 1);
-		List<WeeklyReportBatchRequest> list = BuildWeeklyReportBatchRequests(OrderWeeklyReportGenerationGroups(BuildWeeklyEventMaterialPreviewGroups()), num2, num, currentGameDayIndexSafe);
-		List<InquiryElement> list2 = new List<InquiryElement>();
-		list2.Add(new InquiryElement("back", "返回", null));
-		foreach (WeeklyReportBatchRequest item in list)
-		{
-			DevWeeklyReportBatchPreviewEntry latestWeeklyReportBatchDevPreview = FindLatestWeeklyReportBatchDevPreview(item);
-			string text = (latestWeeklyReportBatchDevPreview == null) ? "未执行" : (latestWeeklyReportBatchDevPreview.Success ? "有响应" : "失败响应");
-			int count = (item?.Groups ?? new List<WeeklyEventMaterialPreviewGroup>()).Count;
-			list2.Add(new InquiryElement(item, BuildWeeklyReportBatchDisplayLabel(item) + " [" + count + "块 | " + text + "]", null));
-		}
-		MultiSelectionInquiryData data = new MultiSelectionInquiryData("本周周报 Batch Prompt/Response", BuildWeeklyBatchPromptPreviewMenuDescription(list), list2, isExitShown: true, 0, 1, "查看详情", "返回", delegate(List<InquiryElement> selected)
-		{
-			if (selected == null || selected.Count == 0)
-			{
-				OpenDevWeeklyReportPromptPreviewMenu();
-			}
-			else if (selected[0].Identifier is string text && text == "back")
-			{
-				OpenDevWeeklyReportPromptPreviewMenu();
-			}
-			else if (selected[0].Identifier is WeeklyReportBatchRequest weeklyReportBatchRequest)
-			{
-				OpenDevWeeklyBatchPromptDetail(weeklyReportBatchRequest);
-			}
-			else
-			{
-				OpenDevWeeklyBatchPromptPreviewMenu();
-			}
-		}, delegate
-		{
-			OpenDevWeeklyReportPromptPreviewMenu();
-		});
-		MBInformationManager.ShowMultiSelectionInquiry(data);
-	}
 
-	private string BuildWeeklyBatchPromptPreviewMenuDescription(List<WeeklyReportBatchRequest> batches)
-	{
-		int num = (batches ?? new List<WeeklyReportBatchRequest>()).Sum((WeeklyReportBatchRequest x) => (x?.Groups ?? new List<WeeklyEventMaterialPreviewGroup>()).Count);
-		int num2 = (batches ?? new List<WeeklyReportBatchRequest>()).Count((WeeklyReportBatchRequest x) => FindLatestWeeklyReportBatchDevPreview(x) != null);
-		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.AppendLine("这里展示当前这一周实际会发送的批量周报请求。");
-		stringBuilder.AppendLine("每个批次会显示完整 batch prompt，以及最近一次执行缓存下来的 response 原文。");
-		stringBuilder.AppendLine(" ");
-		stringBuilder.AppendLine("批次数量：" + ((batches != null) ? batches.Count : 0));
-		stringBuilder.AppendLine("覆盖周报目标：" + num);
-		stringBuilder.AppendLine("已有最近响应缓存：" + num2);
-		stringBuilder.AppendLine("批次上限：" + GetWeeklyReportBatchSize());
-		stringBuilder.AppendLine("篇幅档位：" + GetWeeklyReportPromptProfile().Label);
-		stringBuilder.AppendLine("每分钟生成上限：" + GetWeeklyReportRequestsPerMinute());
-		stringBuilder.AppendLine("MaxTokens：" + GetEventAndRebellionApiMaxTokens());
-		return stringBuilder.ToString().TrimEnd();
-	}
 
-	private void OpenDevWeeklyReportPromptDetail(WeeklyEventMaterialPreviewGroup group)
-	{
-		int currentGameDayIndexSafe = GetCurrentGameDayIndexSafe();
-		int num = Math.Max(0, currentGameDayIndexSafe - currentGameDayIndexSafe % 7);
-		int num2 = Math.Max(1, currentGameDayIndexSafe / 7 + 1);
-		string text = BuildWeeklyReportSystemPrompt(group);
-		string text2 = BuildWeeklyReportUserPrompt(group, num2, num, currentGameDayIndexSafe);
-		InformationManager.ShowInquiry(new InquiryData("周报 Prompt 详情", BuildWeeklyReportPromptPreviewText(group, text, text2), isAffirmativeOptionShown: true, isNegativeOptionShown: false, "返回 Prompt 列表", "", delegate
-		{
-			OpenDevWeeklyReportPromptPreviewMenu();
-		}, null));
-	}
 
-	private void OpenDevWeeklyBatchPromptDetail(WeeklyReportBatchRequest batch)
-	{
-		string text = BuildWeeklyBatchReportSystemPrompt(batch);
-		string text2 = BuildWeeklyBatchReportUserPrompt(batch);
-		string text3 = BuildWeeklyBatchPromptPreviewText(batch, text, text2);
-		DevWeeklyReportBatchPreviewEntry latestWeeklyReportBatchDevPreview = FindLatestWeeklyReportBatchDevPreview(batch);
-		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.AppendLine(text3);
-		stringBuilder.AppendLine();
-		stringBuilder.AppendLine("【最近一次 Response】");
-		if (latestWeeklyReportBatchDevPreview == null)
-		{
-			stringBuilder.AppendLine("当前没有缓存的 batch response。需要先实际生成一次本周周报。");
-		}
-		else
-		{
-			stringBuilder.AppendLine("执行结果：" + (latestWeeklyReportBatchDevPreview.Success ? "成功" : "失败"));
-			stringBuilder.AppendLine("尝试次数：" + latestWeeklyReportBatchDevPreview.AttemptsUsed);
-			if (!string.IsNullOrWhiteSpace(latestWeeklyReportBatchDevPreview.FailureReason))
-			{
-				stringBuilder.AppendLine("失败原因：" + latestWeeklyReportBatchDevPreview.FailureReason);
-			}
-			stringBuilder.AppendLine();
-			stringBuilder.AppendLine(string.IsNullOrWhiteSpace(latestWeeklyReportBatchDevPreview.ResponsePreview) ? "响应原文为空。" : latestWeeklyReportBatchDevPreview.ResponsePreview.Trim());
-		}
-		InformationManager.ShowInquiry(new InquiryData("Batch Prompt/Response 详情", stringBuilder.ToString().TrimEnd(), isAffirmativeOptionShown: true, isNegativeOptionShown: false, "返回 Batch 列表", "", delegate
-		{
-			OpenDevWeeklyBatchPromptPreviewMenu();
-		}, null));
-	}
 
 #if false
 	private void ConfirmGenerateDevWeeklyReports()
@@ -32393,24 +31841,6 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 
 #endif
 
-	private void ConfirmGenerateDevWeeklyReports()
-	{
-		List<WeeklyEventMaterialPreviewGroup> list = OrderWeeklyReportGenerationGroups(BuildWeeklyEventMaterialPreviewGroups());
-		int currentGameDayIndexSafe = GetCurrentGameDayIndexSafe();
-		int startDay = Math.Max(0, currentGameDayIndexSafe - currentGameDayIndexSafe % 7);
-		int weekIndex = Math.Max(1, currentGameDayIndexSafe / 7 + 1);
-		int batchCount = BuildWeeklyReportBatchRequests(list, weekIndex, startDay, currentGameDayIndexSafe).Count;
-		List<string> list2 = GetKingdomIdsByPlayerProximity(list.Where((WeeklyEventMaterialPreviewGroup x) => string.Equals((x.GroupKind ?? "").Trim(), "kingdom", StringComparison.OrdinalIgnoreCase)).Select((WeeklyEventMaterialPreviewGroup x) => x.KingdomId));
-		string text = ((list2.Count > 0) ? string.Join(" -> ", list2.Select(ResolveKingdomDisplay).Where((string x) => !string.IsNullOrWhiteSpace(x))) : "无");
-		string message = "即将按当前周素材生成开发态周报草案。\n\n- 生成对象：世界周报 + 各王国周报\n- 生成结果：写入事件编辑中的事件记录\n- NPC 会常驻读取近期三个王国短周报；命中特定规则时读取完整周报\n- 生成优先级：最近王国 > 世界事件 > 其他王国按距离依次生成\n\n本次预计请求数：" + batchCount + "\n篇幅档位：" + GetWeeklyReportPromptProfile().Label + "\n每分钟生成上限：" + GetWeeklyReportRequestsPerMinute() + "\n按距离排序的王国：" + text + "\nMaxTokens：" + GetEventAndRebellionApiMaxTokens() + "\n\n是否开始？";
-		InformationManager.ShowInquiry(new InquiryData("生成本周周报草案", message, isAffirmativeOptionShown: true, isNegativeOptionShown: true, "开始生成", "取消", delegate
-		{
-			_ = GenerateDevWeeklyReportsAsync();
-		}, delegate
-		{
-			OpenDevEventEditorMenu();
-		}));
-	}
 
 	private async Task GenerateDevWeeklyReportsAsync()
 	{
