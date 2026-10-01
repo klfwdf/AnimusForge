@@ -49,6 +49,12 @@ for name in ["IsValidMemoryCommitMarker", "IsMemoryRecoveryHexDigest"]:
 shim = "using System;using System.Linq;namespace AnimusForge { public partial class MyBehavior {" + "\n".join(guards) + "}}\n"
 shim += "namespace AnimusForge { public static class Logger { public static void Log(string area,string message){} } }\n"
 shim += "namespace TaleWorlds.Library { public static class TWParallel { public static bool IsMainThread()=>true; } public static class MBMath { public static int ClampInt(int x,int min,int max)=>Math.Clamp(x,min,max); } }\n"
+receipt_host = (ROOT / "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.WeeklyActionOutcomeReceipts.cs").read_text(encoding="utf-8-sig")
+prepare = extract.declaration(receipt_host,"internal static WeeklyMemoryMaterialOutcomeOperationStatus PrepareWeeklyActionOutcomeForExternal")
+shim = "using AnimusForge.Refactor.Runtime;using AnimusForge.Refactor.Contracts;using TaleWorlds.CampaignSystem;using TaleWorlds.Library;" + shim
+shim += "namespace AnimusForge { public partial class MyBehavior {" + prepare + (HERE / "OutcomePrepareGate.cs.txt").read_text(encoding="utf-8") + "}}"
+shim += "namespace TaleWorlds.CampaignSystem { public class Campaign { public static Campaign Current=new(); public AnimusForge.MyBehavior Owner; public T GetCampaignBehavior<T>() where T:class => Owner as T; }}"
+shim += "namespace AnimusForge.Refactor.Runtime { internal static class FeatureBridgeRuntime { internal static bool IsEnabled(string id)=>true; } internal static class FeatureBridgeIds { internal const string MemorySocialReports=\"weekly\"; }}"
 (out / "Guards.cs").write_text(shim, encoding="utf-8")
 (out / "Program.cs").write_text("using AnimusForge;\n" + (HERE / "Program.cs").read_text(encoding="utf-8-sig")
                                + "\n" + (HERE / "TerminalCases.cs.txt").read_text(encoding="utf-8-sig"), encoding="utf-8")

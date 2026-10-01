@@ -166,34 +166,9 @@ public partial class MyBehavior
         }
 	}
 
-	private static bool ResolvePlayerFootholdKingdomForWeeklyMemoryMaterial(out string kingdomId, out string settlementId)
-	{
-		kingdomId = "";
-		settlementId = "";
-		try
-		{
-			Settlement settlement = Settlement.CurrentSettlement ?? MobileParty.MainParty?.CurrentSettlement;
-			settlementId = GetSettlementId(settlement);
-			kingdomId = GetKingdomId(settlement?.MapFaction);
-			if (string.IsNullOrWhiteSpace(kingdomId))
-			{
-				kingdomId = GetKingdomId(settlement?.OwnerClan?.Kingdom);
-			}
-			if (!string.IsNullOrWhiteSpace(kingdomId))
-			{
-				return true;
-			}
-			List<string> nearest = GetKingdomIdsByPlayerProximity(GetDevEditableKingdoms().Select((Kingdom x) => x?.StringId));
-			kingdomId = nearest.FirstOrDefault((string x) => !string.IsNullOrWhiteSpace(x)) ?? "";
-			return !string.IsNullOrWhiteSpace(kingdomId);
-		}
-		catch
-		{
-			kingdomId = "";
-			settlementId = "";
-			return false;
-		}
-	}
+    private static bool ResolvePlayerFootholdKingdomForWeeklyMemoryMaterial(out string kingdomId, out string settlementId)
+        => WeeklyMaterialValueBannerlordAdapter.TryResolvePlayerFoothold(GetSettlementId, GetKingdomId,
+            GetDevEditableKingdoms, GetKingdomIdsByPlayerProximity, out kingdomId, out settlementId);
 
 	private static string BuildWeeklyMemoryMaterialTagLabel(string tag)
 		=> WeeklyMemoryMaterialPolicy.BuildWeeklyMemoryMaterialTagLabel(tag);

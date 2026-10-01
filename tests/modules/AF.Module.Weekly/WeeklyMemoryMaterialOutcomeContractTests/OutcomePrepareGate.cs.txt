@@ -1,0 +1,13 @@
+
+ internal WeeklyMemoryMaterialOutcomeLedger FixtureLedger=new();
+ internal int FixtureBuildCalls;
+ internal bool FixtureSubjectUnavailable;
+ private bool IsWeeklyActionOutcomeOwnerActive()=>true;
+ private WeeklyMemoryMaterialOutcomeLedger EnsureWeeklyActionOutcomeLedger()=>FixtureLedger;
+ private void RefreshWeeklyActionOutcomeWorkFlag(){}
+ private bool TryBuildWeeklyActionOutcomePayload(WeeklyMemoryMaterialOutcomeCandidate candidate,bool nonhero,string name,out WeeklyMemoryMaterialFrozenPayload payload,out string error) {
+  FixtureBuildCalls++;payload=null;
+  if(FixtureSubjectUnavailable){error="weekly_material_subject_unavailable";return false;}
+  if(!WeeklyMemoryMaterialValuePolicy.TryValidateOutcomeCandidate(candidate,SaveRuntimeGuard.IsCurrentGeneration,out error))return false;
+  return WeeklyMemoryMaterialValuePolicy.TryBuildFrozenOutcome(candidate,new(){MemoryId=candidate.SubjectId,NpcName=name,FootholdKingdomId="K",FootholdSettlementId="T",SubjectName=()=>"NPC",CurrentDay=()=>candidate.OriginGameDay,CurrentDate=()=>"now"},new(){IsGold=s=>false,RewardValue=(s,n)=>30000,DebtValue=s=>0},out payload,out error);
+ }

@@ -2,6 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using TaleWorlds.CampaignSystem;
+using TaleWorlds.CampaignSystem.Party;
+using TaleWorlds.CampaignSystem.Settlements;
+using AnimusForge.Refactor.Runtime;
 using PartyTransferPromptEntry = AnimusForge.MyBehavior.PartyTransferPromptEntry;
 using SettlementTransferPromptEntry = AnimusForge.MyBehavior.SettlementTransferPromptEntry;
 
@@ -170,4 +173,50 @@ internal static class WeeklyMaterialValueBannerlordAdapter
 		}
 		return null;
 	}
+    internal static bool TryCaptureOutcomeContext(WeeklyMemoryMaterialOutcomeCandidate candidate, bool isNonHero, string npcName,
+        Func<string,string> normalizeId, Func<string,bool> isNonHeroId, Func<string,bool> entityEligible,
+        Func<string,Hero> findHero, Func<Hero,bool> heroEligible, WeeklyOutcomeFootholdResolver resolveFoothold,
+        Func<int> currentDay, Func<string> currentDate, out WeeklyActionOutcomeMaterialContext context,
+        out WeeklyMaterialValuePort values, out string errorCode)
+    {
+        context = null; values = null; errorCode = string.Empty;
+        string memoryId = normalizeId(candidate.SubjectId);
+        if (string.IsNullOrWhiteSpace(memoryId) || isNonHero != isNonHeroId(memoryId) || !entityEligible(memoryId))
+        { errorCode = "weekly_material_subject_invalid"; return false; }
+        Hero memoryHero = isNonHero ? null : (Hero.Find(candidate.SubjectId) ?? findHero(memoryId));
+        if (!isNonHero && !heroEligible(memoryHero))
+        { errorCode = "weekly_material_subject_unavailable"; return false; }
+        if (!resolveFoothold(out string kingdomId, out string settlementId))
+        { errorCode = "weekly_material_foothold_missing"; return false; }
+        context = new WeeklyActionOutcomeMaterialContext {
+            MemoryId = memoryId, NpcName = npcName, FootholdKingdomId = kingdomId, FootholdSettlementId = settlementId,
+            SubjectName = () => memoryHero?.Name?.ToString() ?? "NPC", CurrentDay = currentDay, CurrentDate = currentDate
+        };
+        values = new WeeklyMaterialValuePort {
+            IsGold = RewardSystemBehavior.IsGoldAssetTokenForExternal,
+            RewardValue = (asset, amount) => RewardSystemBehavior.Instance?.EstimateItemValueForExternal(memoryHero ?? Hero.MainHero, asset, amount) ?? 0L,
+            DebtValue = id => TryEstimateDebtValueByIdForWeeklyMemoryMaterial(id, out long value) ? value : (long?)null
+        };
+        return true;
+    }
+
+    internal static bool TryResolvePlayerFoothold(Func<Settlement,string> settlementIdOf, Func<IFaction,string> kingdomIdOf,
+        Func<IEnumerable<Kingdom>> editableKingdoms, Func<IEnumerable<string>,List<string>> proximityIds,
+        out string kingdomId, out string settlementId)
+    {
+        kingdomId = ""; settlementId = "";
+        try
+        {
+            Settlement settlement = Settlement.CurrentSettlement ?? MobileParty.MainParty?.CurrentSettlement;
+            settlementId = settlementIdOf(settlement);
+            kingdomId = kingdomIdOf(settlement?.MapFaction);
+            if (string.IsNullOrWhiteSpace(kingdomId)) kingdomId = kingdomIdOf(settlement?.OwnerClan?.Kingdom);
+            if (!string.IsNullOrWhiteSpace(kingdomId)) return true;
+            List<string> nearest = proximityIds(editableKingdoms().Select(x => x?.StringId));
+            kingdomId = nearest.FirstOrDefault(x => !string.IsNullOrWhiteSpace(x)) ?? "";
+            return !string.IsNullOrWhiteSpace(kingdomId);
+        }
+        catch { kingdomId = ""; settlementId = ""; return false; }
+    }
 }
+internal delegate bool WeeklyOutcomeFootholdResolver(out string kingdomId, out string settlementId);
