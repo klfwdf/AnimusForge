@@ -16,20 +16,30 @@ internal sealed class MemoryBusinessStateOwner
     internal Dictionary<string,List<DailyMemoryDraft>> Drafts=new(StringComparer.OrdinalIgnoreCase);
     internal Dictionary<string,List<MyBehavior.DialogueDay>> History=new(StringComparer.OrdinalIgnoreCase);
     internal List<MemorySummaryJob> DailyQueue=new();
+    internal Dictionary<string,List<CompressedMemoryBlock>> Blocks=new(StringComparer.OrdinalIgnoreCase);
     @@STATE_METHODS@@
 }
 internal sealed class Hero { internal string StringId = "hero"; internal object CharacterObject, Name; }
 internal static class ShoutBehavior { internal static void ClearNativeConversationSessionHistoryForExternal(Hero hero,object character,string name) { } }
+internal static class BlockTrace { internal static List<string> Events=new(); }
+internal static class Logger { internal static void Log(string category,string message)=>BlockTrace.Events.Add("log"); }
 internal sealed class AdapterProbe
 {
     internal MemoryBusinessStateOwner _memoryBusinessState;
     internal MemoryDailyDeveloperEditContext Context;
     internal MemoryDailyDeveloperEditEffects Effects;
     internal long Generation = 1;
+    internal Dictionary<string,MemoryOverviewState> _memoryOverviewStates;
+    internal List<MemoryOverviewJob> _memoryOverviewQueue;
+    private Dictionary<string,List<CompressedMemoryBlock>> _compressedMemoryBlocks { get=>_memoryBusinessState.Blocks;set=>_memoryBusinessState.Blocks=value; }
+    private string GetMemoryHeroId(Hero _) => Context.HeroId;
+    private List<CompressedMemoryBlock> LoadCompressedMemoryBlocks(Hero _) => _memoryBusinessState.LoadBlocks(Context.HeroId);
+    private void MarkMemoryOverviewDirty(string _) => BlockTrace.Events.Add("dirty");
+    private void TryEnqueueMemoryOverviewForHero(Hero _,List<CompressedMemoryBlock> blocks)=>BlockTrace.Events.Add("enqueue");
     private bool IsMemorySourceEditorCurrent(long value) => value == Generation;
     private MemoryDailyDeveloperEditContext CaptureDailyDeveloperEditContext(Hero _) => Context;
     private MemoryDailyDeveloperEditEffects CaptureDailyDeveloperEditEffects(Hero _, int day, string reason) => Effects;
-    private MemoryImportExportState CaptureMemoryImportExportState() => new() { DailyDrafts = _memoryBusinessState.Drafts, SummaryQueue = _memoryBusinessState.DailyQueue };
+    private MemoryImportExportState CaptureMemoryImportExportState() => new() { DailyDrafts = _memoryBusinessState.Drafts, SummaryQueue = _memoryBusinessState.DailyQueue, Blocks=_memoryBusinessState.Blocks,Overviews=_memoryOverviewStates,OverviewQueue=_memoryOverviewQueue };
     private List<DialogueDay> LoadDialogueHistory(Hero _) => Effects.LoadHistory();
     private void SaveDialogueHistory(Hero _, List<DialogueDay> records) => Effects.SaveHistory(records);
     @@ADAPTERS@@
@@ -124,6 +134,13 @@ internal static class Program
         Check(MemoryDeveloperEditOwner.EditDialogueHistoryLine(records,5,0,"  ",effects.SaveHistory)&&records.Count==1&&records[0].Lines.Count==0&&records[0].MemoryCommitMarkers.Count==1,"legacy blank delete preserves marker-only day");
         Check(!MemoryDeveloperEditOwner.EditDialogueHistoryLine(records,5,0,"invalid",_=>throw new Exception()),"legacy invalid line selection does not publish");
         Check(!probe.TryApplyDevDialogueHistoryLineDataMutation(new(),5,0,"late",0),"late legacy input callback rejected before loading history");
+        state.Blocks["hero"]=new(){new(){HeroId="hero",HeroName="NPC",Id="block",GameDayIndex=5,Summary="old"}};
+        probe._memoryOverviewStates=new(){["hero"]=new(){Summary="overview"}};probe._memoryOverviewQueue=new(){new(){HeroId="hero"},new(){HeroId="other"}};BlockTrace.Events.Clear();
+        Check(!probe.TryApplyDevCompressedMemoryBlockDataMutation(new(),"block",_=>throw new Exception(),0)&&!probe.DeleteDevCompressedMemoryBlockData(new(),"block",0)&&BlockTrace.Events.Count==0,"late compressed mutation/delete rejected before state access");
+        Check(probe.TryApplyDevCompressedMemoryBlockDataMutation(new(){Name="NPC"},"block",x=>x.Summary="updated",1)&&state.Blocks["hero"][0].Summary=="updated","actual compressed mutation adapter uses existing block owner");
+        Check(BlockTrace.Events.SequenceEqual(new[]{"dirty","enqueue","log"})&&!probe._memoryOverviewStates.ContainsKey("hero")&&probe._memoryOverviewQueue.Count==1,"dirty then invalidate then enqueue/log preserves original effect order");
+        BlockTrace.Events.Clear();Check(!probe.DeleteDevCompressedMemoryBlockData(new(),"missing",1)&&BlockTrace.Events.Count==0,"missing compressed block does not invalidate overview");
+        Check(probe.DeleteDevCompressedMemoryBlockData(new(),"block",1)&&!state.Blocks.ContainsKey("hero")&&BlockTrace.Events.SequenceEqual(new[]{"dirty","enqueue","log"}),"actual compressed delete publishes block removal and invalidation");
         Console.WriteLine("PASS DailyDeveloperEdit checks="+checks+" live=NOT_RUN");
     }
 }

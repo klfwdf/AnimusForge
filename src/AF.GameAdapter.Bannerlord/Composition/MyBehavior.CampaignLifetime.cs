@@ -7,6 +7,15 @@ namespace AnimusForge;
 
 public partial class MyBehavior
 {
+    internal static void RetireConversationRequestsForDeveloperClear()
+    {
+        const string reason = "dev_clear_all_data";
+        // Close the old generation before any data reset so queued/late results cannot refill it.
+        SaveRuntimeGuard.AdvanceGeneration(reason);
+        ShoutBehavior.ResetTransientRuntimeForLoadedSaveExternal(reason);
+        CourierDeliveryBehavior.ResetTransientRuntimeForLoadedSaveExternal(reason);
+    }
+
     internal void RetireCampaignRuntime(string reason)
     {
         // Close admission before draining: a concurrent submit may capture the new generation

@@ -69,6 +69,13 @@ internal static partial class MemoryDeveloperEditOwner
         state.OverviewQueue?.RemoveAll(x => x != null && MemoryRecordRules.NormalizeMemoryHeroId(x.HeroId) == id);
     }
 
+    internal static void InvalidateOverviewForManualEdit(string heroId, MemoryImportExportState state)
+    {
+        state.Overviews ??= new Dictionary<string, MemoryOverviewState>(StringComparer.OrdinalIgnoreCase);
+        state.OverviewQueue ??= new List<MemoryOverviewJob>();
+        InvalidateOverview(heroId, state);
+    }
+
     internal static bool SaveOverview(string heroId, string heroName, string input,
         IEnumerable<CompressedMemoryBlock> blocks, long updatedUtcTicks, MemoryImportExportState state)
     {

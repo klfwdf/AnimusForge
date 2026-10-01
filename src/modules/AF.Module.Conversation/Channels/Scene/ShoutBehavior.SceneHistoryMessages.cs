@@ -48,6 +48,14 @@ namespace AnimusForge;
 
 public partial class ShoutBehavior
 {
+    internal List<string> CaptureVisibleSceneHistoryLinesForPrompt(int viewerAgentIndex, string viewerName, bool useDistanceLabels)
+    {
+        lock (_historyLock)
+        {
+            if (_publicConversationHistory.Count == 0) return null;
+            return BuildVisibleSceneHistoryLines(_publicConversationHistory, viewerAgentIndex, viewerName, useDistanceLabels);
+        }
+    }
 	private static List<string> KeepAfefFactsAndRecentHistoryLines(List<string> lines, int maxConversationLines)
 	{
 
