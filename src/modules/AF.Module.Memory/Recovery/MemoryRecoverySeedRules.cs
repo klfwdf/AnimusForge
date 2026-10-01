@@ -64,7 +64,7 @@ internal static class MemoryRecoverySeedRules {
                 }
             }
         };
-    
+
 }
 internal static string RenderInteractionMemoryFact(string factsText)
     {
