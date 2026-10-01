@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
@@ -8,12 +8,12 @@ using AnimusForge.Refactor.Runtime;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Conversation;
 
+using static AnimusForge.ShoutBehavior;
+
 namespace AnimusForge;
 
-public partial class ShoutBehavior
-{
     // Native game adapter; phase ordering belongs to NativeConversationTurnCoordinator.
-    private sealed partial class NativeConversationTurnHost : INativeConversationTurnHost
+    internal sealed partial class NativeConversationTurnRuntime : INativeConversationTurnHost
     {
         // Request-local phase output, published only after its awaited capture completes.
         private string historyForPostprocess;
@@ -52,16 +52,16 @@ public partial class ShoutBehavior
             if (shouldRecordPlayerInput && !directNoblePrisonerConversation)
             {
                 string nativeDirectCommandTargetUnavailableReason = "";
-                bool nativeDirectCommandTargetAvailable = await _owner.RunNativeConversationMainThreadFuncAsync(
+                bool nativeDirectCommandTargetAvailable = await _ports.RunNativeConversationMainThreadFuncAsync(
                     "direct_scene_command_target_validation",
                     nativeTargetLog,
                     nativeTargetAgentIndex,
-                    () => _owner.IsNativeConversationAdmissionCurrent(admission, out nativeDirectCommandTargetUnavailableReason),
+                    () => _ports.IsNativeConversationAdmissionCurrent(admission, out nativeDirectCommandTargetUnavailableReason),
                     false).ConfigureAwait(false);
                 if (!nativeDirectCommandTargetAvailable)
                 {
                     string reason = string.IsNullOrWhiteSpace(nativeDirectCommandTargetUnavailableReason) ? "main_thread_validation_failed" : nativeDirectCommandTargetUnavailableReason;
-                    await _owner.RollbackNativeConversationPendingPlayerHistoryAsync(admission, nativePendingAfefKey, nativePendingPlayerHistoryEventSequence, reason).ConfigureAwait(false);
+                    await _ports.RollbackNativeConversationPendingPlayerHistoryAsync(admission, nativePendingAfefKey, nativePendingPlayerHistoryEventSequence, reason).ConfigureAwait(false);
                     Logger.Log("ShoutBehavior", "[NativeConversation] skipped direct scene command because target is unavailable target=" + nativeTargetLog + " agentIndex=" + nativeTargetAgentIndex + " reason=" + reason);
                     return NativeConversationTurnStep.Stop("");
                 }
@@ -120,21 +120,21 @@ public partial class ShoutBehavior
                 return NativeConversationTurnStep.Stop(SaveRuntimeGuard.BuildStaleRequestErrorText());
             }
             string nativePostprocessTargetUnavailableReason = "";
-            bool nativePostprocessTargetAvailable = await _owner.RunNativeConversationMainThreadFuncAsync(
+            bool nativePostprocessTargetAvailable = await _ports.RunNativeConversationMainThreadFuncAsync(
                 "postprocess_target_validation",
                 nativeTargetLog,
                 nativeTargetAgentIndex,
-                () => _owner.IsNativeConversationAdmissionCurrent(admission, out nativePostprocessTargetUnavailableReason),
+                () => _ports.IsNativeConversationAdmissionCurrent(admission, out nativePostprocessTargetUnavailableReason),
                 false).ConfigureAwait(false);
             if (!nativePostprocessTargetAvailable)
             {
                 string reason = string.IsNullOrWhiteSpace(nativePostprocessTargetUnavailableReason) ? "main_thread_validation_failed" : nativePostprocessTargetUnavailableReason;
-                await _owner.RollbackNativeConversationPendingPlayerHistoryAsync(admission, nativePendingAfefKey, nativePendingPlayerHistoryEventSequence, reason).ConfigureAwait(false);
+                await _ports.RollbackNativeConversationPendingPlayerHistoryAsync(admission, nativePendingAfefKey, nativePendingPlayerHistoryEventSequence, reason).ConfigureAwait(false);
                 Logger.Log("ShoutBehavior", "[NativeConversation] dropped completed response because target is unavailable target=" + nativeTargetLog + " agentIndex=" + nativeTargetAgentIndex + " reason=" + reason);
                 return NativeConversationTurnStep.Stop("");
             }
             FreezeWatchdog.Mark("NativeConversation.action_tags_start", "target=" + (npcName ?? "unknown") + " agent=" + nativeTargetAgentIndex, immediate: true);
-            NativeConversationGameActionResult nativeActionResult = await _owner.ApplyNativeConversationGameActionsOnMainThreadAsync(
+            NativeConversationGameActionResult nativeActionResult = await _ports.ApplyNativeConversationGameActionsOnMainThreadAsync(
                 targetHero,
                 targetCharacter,
                 npc,
@@ -230,7 +230,7 @@ public partial class ShoutBehavior
                 nativeDuelStakeOptions = RewardSystemBehavior.Instance.BuildDuelStakeOptionsForAI(nativeDuelTargetHero);
             }
             nativeSceneMechanismPostprocessRules = sceneMechanismPostprocessSelected
-                ? _owner.BuildRuntimeSceneMechanismPostprocessRulesForScene(
+                ? _ports.BuildRuntimeSceneMechanismPostprocessRulesForScene(
                     npc,
                     nativeSceneSummonTargets,
                     nativeSceneGuideTargets,
@@ -253,4 +253,3 @@ public partial class ShoutBehavior
                 }
         }
     }
-}

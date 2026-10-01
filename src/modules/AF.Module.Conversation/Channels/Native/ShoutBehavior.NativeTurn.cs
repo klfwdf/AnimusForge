@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
@@ -10,15 +10,15 @@ using AnimusForge.Refactor.Runtime;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Conversation;
 
+using static AnimusForge.ShoutBehavior;
+
 namespace AnimusForge;
 
-public partial class ShoutBehavior
-{
     // One instance per admitted turn. Opaque game references stay here; only guarded
     // game-thread callbacks may dereference them. The module owns stage progression.
-    private sealed partial class NativeConversationTurnHost : INativeConversationTurnHost
+    internal sealed partial class NativeConversationTurnRuntime : INativeConversationTurnHost
     {
-        private readonly ShoutBehavior _owner;
+        private readonly NativeConversationTurnPorts _ports;
         private readonly NativeConversationAdmission admission;
         private readonly Action<string> onStreamText;
         private readonly Action<string> onPostprocessStarted;
@@ -51,11 +51,11 @@ public partial class ShoutBehavior
         private List<SceneGuidePromptTarget> nativeSceneGuideTargets;
         private List<string> preprocessExcludedRuleIds;
 
-        internal NativeConversationTurnHost(ShoutBehavior owner, NativeConversationAdmission admission,
+        internal NativeConversationTurnRuntime(NativeConversationTurnPorts ports, NativeConversationAdmission admission,
             string playerText, Action<string> onStreamText, Action<string> onPostprocessStarted,
             Action<string, Hero, CharacterObject> onMainReplyReady, bool npcInitiatedOpening)
         {
-            _owner = owner;
+            _ports = ports ?? throw new ArgumentNullException(nameof(ports));
             this.admission = admission;
             this.playerText = playerText;
             this.onStreamText = onStreamText;
@@ -71,10 +71,10 @@ public partial class ShoutBehavior
             string reason = "";
             ExceptionDispatchInfo failure = null;
             using ExecutionContext context = ExecutionContext.Capture();
-            bool accepted = await _owner.RunNativeConversationMainThreadFuncAsync(phase,
+            bool accepted = await _ports.RunNativeConversationMainThreadFuncAsync(phase,
                 nativeTargetLog, nativeTargetAgentIndex, () =>
                 {
-                    if (!_owner.IsNativeConversationAdmissionCurrent(admission, out reason)) return false;
+                    if (!_ports.IsNativeConversationAdmissionCurrent(admission, out reason)) return false;
                     try
                     {
                         // Queue callbacks do not otherwise flow AsyncLocal prompt/guardrail state.
@@ -98,7 +98,7 @@ public partial class ShoutBehavior
                 }, false).ConfigureAwait(false);
             failure?.Throw();
             if (!accepted && nativePendingAfefKey != null)
-                await _owner.RollbackNativeConversationPendingPlayerHistoryAsync(admission,
+                await _ports.RollbackNativeConversationPendingPlayerHistoryAsync(admission,
                     nativePendingAfefKey, nativePendingPlayerHistoryEventSequence,
                     string.IsNullOrWhiteSpace(reason) ? "main_thread_capture_failed" : reason).ConfigureAwait(false);
             return accepted;
@@ -109,8 +109,8 @@ public partial class ShoutBehavior
             nativeTurnSw = Stopwatch.StartNew();
             runtimeGeneration = admission.Generation;
             playerText = (playerText ?? "").Replace("\r", "").Trim();
-            if (!await _owner.RunNativeConversationMainThreadFuncAsync("admitted_request_start", admission.NpcName,
-                admission.AgentIndex, () => _owner.IsNativeConversationAdmissionCurrent(admission, out _), false).ConfigureAwait(false))
+            if (!await _ports.RunNativeConversationMainThreadFuncAsync("admitted_request_start", admission.NpcName,
+                admission.AgentIndex, () => _ports.IsNativeConversationAdmissionCurrent(admission, out _), false).ConfigureAwait(false))
                 return NativeConversationTurnStep.Stop("");
             targetHero = admission.Hero;
             targetCharacter = admission.Character;
@@ -139,7 +139,7 @@ public partial class ShoutBehavior
             routingInput = npcInitiatedOpening ? npcOpeningUserText : promptPlayerText;
             shouldRecordPlayerInput = !npcInitiatedOpening;
             FreezeWatchdog.Mark("NativeConversation.persona_start", "target=" + (npcName ?? "unknown"), immediate: true);
-            bool personaReady = await _owner.EnsureNativeConversationPersonaReadyAsync(admission, onStreamText).ConfigureAwait(false);
+            bool personaReady = await _ports.EnsureNativeConversationPersonaReadyAsync(admission, onStreamText).ConfigureAwait(false);
             FreezeWatchdog.Mark("NativeConversation.persona_done", "target=" + (npcName ?? "unknown") + " ready=" + personaReady, immediate: true);
             if (SaveRuntimeGuard.IsStale(runtimeGeneration, "native_conversation_persona_ready"))
             {
@@ -151,11 +151,11 @@ public partial class ShoutBehavior
             }
             nativeTargetAgentIndex = admission.AgentIndex;
             string nativeInitialTargetUnavailableReason = "";
-            NativeConversationPreparationSnapshot nativePreparation = await _owner.RunNativeConversationMainThreadFuncAsync(
+            NativeConversationPreparationSnapshot nativePreparation = await _ports.RunNativeConversationMainThreadFuncAsync(
                 "request_target_validation",
                 npcName,
                 nativeTargetAgentIndex,
-                () => _owner.CaptureNativeConversationPreparation(admission, targetHero, targetCharacter, npcName, routingInput, out nativeInitialTargetUnavailableReason),
+                () => _ports.CaptureNativeConversationPreparation(admission, targetHero, targetCharacter, npcName, routingInput, out nativeInitialTargetUnavailableReason),
                 (NativeConversationPreparationSnapshot)null).ConfigureAwait(false);
             if (nativePreparation == null)
             {
@@ -177,4 +177,28 @@ public partial class ShoutBehavior
             return NativeConversationTurnStep.Continue();
         }
     }
+
+public partial class ShoutBehavior
+{
+    private NativeConversationTurnPorts CreateNativeConversationTurnPorts() => new NativeConversationTurnPorts
+    {
+        ApplyNativeConversationGameActionsOnMainThreadAsync = ApplyNativeConversationGameActionsOnMainThreadAsync,
+        BuildNativePromptContextScheduledAsync = BuildNativePromptContextScheduledAsync,
+        BuildRuntimeSceneMechanismPostprocessRulesForScene = BuildRuntimeSceneMechanismPostprocessRulesForScene,
+        BuildSceneFollowControlPromptInstruction = BuildSceneFollowControlPromptInstruction,
+        BuildSceneSummonClosurePromptInstruction = BuildSceneSummonClosurePromptInstruction,
+        BuildStrictSceneMessagesForNpc = BuildStrictSceneMessagesForNpc,
+        CaptureNativeConversationPreparation = CaptureNativeConversationPreparation,
+        EnsureNativeConversationPersonaReadyAsync = EnsureNativeConversationPersonaReadyAsync,
+        IsNativeConversationAdmissionCurrent = IsNativeConversationAdmissionCurrent,
+        LogTtsReport = LogTtsReport,
+        PrepareNativeConversationPendingHistoryAsync = PrepareNativeConversationPendingHistoryAsync,
+        RollbackNativeConversationPendingPlayerHistoryAsync = RollbackNativeConversationPendingPlayerHistoryAsync,
+        TrySpeakNativeConversationReplyWithTts = TrySpeakNativeConversationReplyWithTts,
+        DispatchValidation = RunNativeConversationMainThreadFuncAsync,
+        DispatchPreparation = RunNativeConversationMainThreadFuncAsync,
+        DispatchHistoryWork = RunNativeConversationMainThreadFuncAsync,
+        DispatchWeeklySnapshot = RunNativeConversationMainThreadFuncAsync,
+        CreateMainReplyHost = (admission, target, key, sequence) => new NativeConversationMainReplyHost(this, admission, target, key, sequence)
+    };
 }

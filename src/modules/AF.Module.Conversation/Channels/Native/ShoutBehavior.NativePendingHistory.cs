@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -8,7 +8,7 @@ namespace AnimusForge;
 public partial class ShoutBehavior
 {
     // Request-owned prompt data and tentative-input identity, not a persistent commit receipt.
-    private sealed class NativeConversationPendingHistory
+    internal sealed class NativeConversationPendingHistory
     {
         internal string HistoryKey;
         internal string PlayerName;

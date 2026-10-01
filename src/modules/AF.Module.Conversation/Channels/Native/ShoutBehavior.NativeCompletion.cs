@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using AnimusForge.Refactor.Contracts;
 using TaleWorlds.CampaignSystem;
 
@@ -17,7 +17,7 @@ public partial class ShoutBehavior
     }
 
     // Prepared text only. No public API and no new persistence schema.
-    private sealed class NativeConversationCompletionRequest
+    internal sealed class NativeConversationCompletionRequest
     {
         internal string PlayerText;
         internal string OpeningFact;

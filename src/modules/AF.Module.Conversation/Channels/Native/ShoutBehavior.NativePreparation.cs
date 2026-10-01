@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using AnimusForge.SiegeAftermathIntervention;
@@ -11,7 +11,7 @@ namespace AnimusForge;
 public partial class ShoutBehavior
 {
     // Request-owned data from one main-thread capture, not a public game-object API.
-    private sealed class NativeConversationPreparationSnapshot
+    internal sealed class NativeConversationPreparationSnapshot
     {
         public NpcDataPacket Npc;
         public string TargetLog;

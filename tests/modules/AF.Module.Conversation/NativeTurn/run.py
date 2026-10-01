@@ -18,8 +18,8 @@ start=commit.index('                SceneActionPostprocessWorkItem workItem = nu
 # Select the actual prepare/network/complete statements, not a reimplementation.
 end=commit.index('\n\n            }',start)
 slice=commit[start:end]
-prepare_signature=ex.declaration(read('src/modules/AF.Module.Conversation/Internal/Postprocess/ShoutBehavior.UnifiedActionPostprocess.cs'),'private static SceneActionPostprocessWorkItem PrepareSceneUnifiedActionPostprocess(').split('\n',1)[0]
-prepare_signature=prepare_signature.replace('private static','private')
+prepare_signature=ex.declaration(read('src/modules/AF.Module.Conversation/Internal/Postprocess/ShoutBehavior.UnifiedActionPostprocess.cs'),'internal static SceneActionPostprocessWorkItem PrepareSceneUnifiedActionPostprocess(').split('\n',1)[0]
+prepare_signature=prepare_signature.replace('internal static','private')
 for t in ['Hero','CharacterObject','List<RewardSystemBehavior.DuelStakeOption>','List<PostprocessRuleEntry>','List<SceneSummonPromptTarget>','List<SceneGuidePromptTarget>','List<string>','List<NpcDataPacket>','DetachedPromptSections']:
  prepare_signature=prepare_signature.replace(t+' ', 'object ')
 fields=[]
@@ -31,12 +31,13 @@ for file in ['ShoutBehavior.NativeTurn.cs','ShoutBehavior.NativeTurnPrompt.cs','
 coordinator=read('src/modules/AF.Module.Conversation/Channels/Native/NativeConversationTurnCoordinator.cs')
 if a.mutate=='skip-stage-stop':coordinator=coordinator.replace('if (!step.CanContinue) return step.StopText;','if (false) return step.StopText;',1)
 if a.mutate=='duplicate-commit':coordinator=coordinator.replace('step = await host.PostprocessAndCommitAsync().ConfigureAwait(false);','step = await host.PostprocessAndCommitAsync().ConfigureAwait(false);\n        step = await host.PostprocessAndCommitAsync().ConfigureAwait(false);',1)
-if a.mutate=='skip-capture-guard':capture=capture.replace('if (!_owner.IsNativeConversationAdmissionCurrent(admission, out reason)) return false;',';',1)
+if a.mutate=='skip-capture-guard':capture=capture.replace('if (!_ports.IsNativeConversationAdmissionCurrent(admission, out reason)) return false;',';',1)
 if a.mutate=='capture-on-worker':capture=capture.replace('capture();','Task.Run(capture).GetAwaiter().GetResult();',1)
 if a.mutate=='normalize-on-worker':slice=slice.replace('postprocessed = CompleteSceneUnifiedActionPostprocess(workItem, succeeded, content, error)','postprocessed = Task.Run(() => CompleteSceneUnifiedActionPostprocess(workItem, succeeded, content, error)).GetAwaiter().GetResult()',1)
 if a.mutate=='swallow-capture-failure':capture=capture.replace('failure?.Throw();',';',1)
 code=(HERE/'Harness.cs.txt').read_text(encoding='utf-8').replace('@@CAPTURE@@',capture).replace('@@SLICE@@',slice).replace('@@FIELDS@@','\n'.join(fields)).replace('@@PREPARE@@',prepare_signature)
 code=code.replace('@@NETWORK@@',ex.declaration(read('src/modules/AF.Module.Conversation/Internal/Postprocess/ConversationActionPostprocessOwner.cs'),'internal sealed class PostprocessNetworkRequest'))
+code = code.replace('_owner', '_ports')
 assert '@@' not in code
 out=new_run_root(ROOT,'native-turn',a.run_root)
 (out/'Program.cs').write_text(code,encoding='utf-8');(out/'Coordinator.cs').write_text(coordinator,encoding='utf-8')
