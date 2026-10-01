@@ -15035,34 +15035,8 @@ TeamModuleServices.CivilWar.AdvanceWeek(devEditableKingdom, weekIndex, GetKingdo
 				CampaignNpcActionPersistenceAdapter.Save(dataStore, _memoryBusinessState, SanitizeNpcActionEntries);
 				dataStore.SyncData("_npcActionGlobalOrderCounter_v1", ref _npcActionGlobalOrderCounter);
 				CampaignPersonaPersistenceAdapter.Save(dataStore, _npcPersonaProfiles, _npcPersonaProfileStorage, TryPrepareNpcPersonaProfileForWrite);
-				_eventKingdomOpeningSummaryStorage.Clear();
-				foreach (KeyValuePair<string, string> item2 in _eventKingdomOpeningSummaries)
-				{
-					string text = (item2.Key ?? "").Trim();
-					string text2 = (item2.Value ?? "").Trim();
-					if (!string.IsNullOrWhiteSpace(text) && !string.IsNullOrWhiteSpace(text2))
-					{
-						_eventKingdomOpeningSummaryStorage[text] = text2;
-					}
-				}
-				Dictionary<string, string> dictionary6 = CampaignSaveChunkHelper.FlattenStringDictionary(_eventKingdomOpeningSummaryStorage, "_eventKingdomOpeningSummaries_v1", "EventOpeningSummary");
-				dataStore.SyncData("_eventKingdomOpeningSummaries_v1", ref dictionary6);
-				CampaignSaveChunkHelper.SaveChunkedString(dataStore, "_eventWorldOpeningSummary_v1", _eventWorldOpeningSummary ?? "", "EventOpeningSummary");
-				Stopwatch eventRecordSaveStopwatch = Stopwatch.StartNew();
-				try
-				{
-					NormalizeEventRecordEntriesInPlace(_eventRecordEntries);
-					_eventRecordJsonStorage = JsonConvert.SerializeObject(_eventRecordEntries);
-				}
-				catch (Exception ex5)
-				{
-					_eventRecordJsonStorage = "[]";
-					Logger.Log("EventRecord", "[ERROR] Serialize event records failed: " + ex5.Message);
-				}
-				CampaignSaveChunkHelper.SaveChunkedString(dataStore, "_eventRecordEntries_v1", _eventRecordJsonStorage ?? "[]", "EventRecord");
-				eventRecordSaveStopwatch.Stop();
-				Logger.Log("EventRecord", "[SyncData] save entries=" + (_eventRecordEntries?.Count ?? 0) + " chars=" + (_eventRecordJsonStorage?.Length ?? 0) + " ms=" + Math.Round(eventRecordSaveStopwatch.Elapsed.TotalMilliseconds, 2));
-				_eventRecordJsonStorage = "";
+				CampaignWeeklyRecordPersistenceAdapter.SaveOpenings(dataStore, _eventKingdomOpeningSummaries, _eventKingdomOpeningSummaryStorage, _eventWorldOpeningSummary);
+				CampaignWeeklyRecordPersistenceAdapter.SaveRecords(dataStore, _eventRecordEntries, ref _eventRecordJsonStorage, NormalizeEventRecordEntriesInPlace);
 				_unreadWeeklyReportNoticeEventIds = SanitizeUnreadWeeklyReportNoticeEventIds(_unreadWeeklyReportNoticeEventIds).Where((string x) => FindWeeklyReportRecordById(x) != null).ToList();
 				List<string> unreadWeeklyReportNoticeEventIds = new List<string>(_unreadWeeklyReportNoticeEventIds);
 				dataStore.SyncData("_af_unreadWeeklyReportNotices_v1", ref unreadWeeklyReportNoticeEventIds);
@@ -15183,44 +15157,8 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 			NormalizeNpcActionSequences(_npcMajorActions);
 			NormalizeNpcActionSequences(_npcRecentActions);
 			_npcActionGlobalOrderCounter = Math.Max(_npcActionGlobalOrderCounter, GetMaxNpcActionSequence(_npcMajorActions, _npcRecentActions, _eventSourceMaterials));
-			_eventKingdomOpeningSummaries.Clear();
-			_eventKingdomOpeningSummaryStorage.Clear();
-			Dictionary<string, string> dictionary12 = new Dictionary<string, string>();
-			dataStore.SyncData("_eventKingdomOpeningSummaries_v1", ref dictionary12);
-			_eventKingdomOpeningSummaryStorage = CampaignSaveChunkHelper.RestoreStringDictionary(dictionary12, "EventOpeningSummary");
-			if (_eventKingdomOpeningSummaryStorage != null)
-			{
-				foreach (KeyValuePair<string, string> item6 in _eventKingdomOpeningSummaryStorage)
-				{
-					string text3 = (item6.Key ?? "").Trim();
-					string text4 = (item6.Value ?? "").Trim();
-					if (!string.IsNullOrWhiteSpace(text3) && !string.IsNullOrWhiteSpace(text4))
-					{
-						_eventKingdomOpeningSummaries[text3] = text4;
-					}
-				}
-			}
-			_eventWorldOpeningSummary = CampaignSaveChunkHelper.LoadChunkedString(dataStore, "_eventWorldOpeningSummary_v1", "EventOpeningSummary") ?? "";
-			Stopwatch eventRecordLoadStopwatch = Stopwatch.StartNew();
-			_eventRecordEntries.Clear();
-			_eventRecordJsonStorage = CampaignSaveChunkHelper.LoadChunkedString(dataStore, "_eventRecordEntries_v1", "EventRecord") ?? "";
-			if (!string.IsNullOrWhiteSpace(_eventRecordJsonStorage))
-			{
-				try
-				{
-					List<EventRecordEntry> list4 = JsonConvert.DeserializeObject<List<EventRecordEntry>>(_eventRecordJsonStorage) ?? new List<EventRecordEntry>();
-					NormalizeEventRecordEntriesInPlace(list4);
-					_eventRecordEntries = list4;
-				}
-				catch (Exception ex7)
-				{
-					Logger.Log("EventRecord", "[ERROR] Deserialize event records failed: " + ex7.Message);
-					_eventRecordEntries = new List<EventRecordEntry>();
-				}
-			}
-			eventRecordLoadStopwatch.Stop();
-			Logger.Log("EventRecord", "[SyncData] load entries=" + (_eventRecordEntries?.Count ?? 0) + " chars=" + (_eventRecordJsonStorage?.Length ?? 0) + " ms=" + Math.Round(eventRecordLoadStopwatch.Elapsed.TotalMilliseconds, 2));
-			_eventRecordJsonStorage = "";
+			CampaignWeeklyRecordPersistenceAdapter.LoadOpenings(dataStore, _eventKingdomOpeningSummaries, ref _eventKingdomOpeningSummaryStorage, ref _eventWorldOpeningSummary);
+			CampaignWeeklyRecordPersistenceAdapter.LoadRecords(dataStore, ref _eventRecordEntries, ref _eventRecordJsonStorage, NormalizeEventRecordEntriesInPlace);
 			List<string> unreadWeeklyReportNoticeEventIdsLoad = new List<string>();
 			dataStore.SyncData("_af_unreadWeeklyReportNotices_v1", ref unreadWeeklyReportNoticeEventIdsLoad);
 			_unreadWeeklyReportNoticeEventIds = SanitizeUnreadWeeklyReportNoticeEventIds(unreadWeeklyReportNoticeEventIdsLoad).Where((string x) => FindWeeklyReportRecordById(x) != null).ToList();

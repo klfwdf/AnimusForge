@@ -6,10 +6,12 @@ namespace AnimusForge { internal static class Logger { public static bool IsModL
 internal sealed class MemoryBusinessStateOwner {
 @@STATE_FIELDS@@
 }
-internal class MyBehavior {
+public partial class MyBehavior {
 @@DIALOGUE_DAY@@
 @@SHOWN_RECORD@@
 @@PERSONA_PROFILE@@
+@@EVENT_RECORD@@
+
 internal static bool IsMemoryRecoveryHexDigest(string x)=>x!=null && x.Length==64 && x.All(c=>Uri.IsHexDigit(c));
 internal static bool IsValidMemoryCommitMarker(string a,string b,string c)=>IsMemoryRecoveryHexDigest(a)&&IsMemoryRecoveryHexDigest(c)&&(b=="user"||b=="fact"||b=="assistant"); }
 }
@@ -27,4 +29,8 @@ class Program {static int checks;static void Check(bool x,string n){if(!x)throw 
  var shown=new Dictionary<string,MyBehavior.HeroShownRecord>{{" HERO:X ",new(){ShownGold=-2,ShownItems=new(){{"ok",1},{"bad",-1}}}},{"empty",new()}};var shownStorage=new Dictionary<string,string>();var other=new Store{IsSaving=true};CampaignShownRecordPersistenceAdapter.Save(other,shown,shownStorage);Check(shownStorage.Count==1,"shown save excludes empty");other.IsSaving=false;CampaignShownRecordPersistenceAdapter.Load(other,shown,ref shownStorage);Check(shown.ContainsKey("hero:x")&&shown["hero:x"].ShownGold==0&&shown["hero:x"].ShownItems.Count==1,"shown normalizes key gold and valid item amounts");
  var profiles=new Dictionary<string,MyBehavior.NpcPersonaProfile>{{"good",new(){HeroId="good",Personality="p"}},{"skip",new()}};var profileStorage=new Dictionary<string,string>();other.IsSaving=true;CampaignPersonaPersistenceAdapter.Save(other,profiles,profileStorage,(key,value)=>key!="skip");Check(profileStorage.Count==1,"persona preparation filters original save");((Dictionary<string,string>)other.Data["_npcPersonaProfiles_v1"])["bad"]="invalid";other.IsSaving=false;CampaignPersonaPersistenceAdapter.Load(other,profiles,ref profileStorage);Check(profiles.Count==1&&profiles["good"].Personality=="p","persona bad item isolated");
  state.MajorActions["x"]=new(){new(){Day=1,Text="major"}};state.RecentActions["x"]=new(){new(){Day=1,Text="expired"},new(){Day=20,Text="recent"}};other.IsSaving=true;CampaignNpcActionPersistenceAdapter.Save(other,state,(items,recent)=>NpcActionLedger.SanitizeNpcActionEntries(items,recent,20));Check(state.RecentActionStorage["x"].Contains("expired"),"recent save remains unsanitized per legacy order");other.IsSaving=false;var actions=state.MajorActions;CampaignNpcActionPersistenceAdapter.Load(other,state,(items,recent)=>NpcActionLedger.SanitizeNpcActionEntries(items,recent,20));Check(ReferenceEquals(actions,state.MajorActions)&&state.MajorActions["x"].Count==1,"major load retains authority and no recent cutoff");Check(state.RecentActions["x"].Count==1&&state.RecentActions["x"][0].Text=="recent","recent load applies original cutoff");
+
+ var opening=new Dictionary<string,string>{{" k "," value "}};var openingStorage=new Dictionary<string,string>();var world="world";other.IsSaving=true;CampaignWeeklyRecordPersistenceAdapter.SaveOpenings(other,opening,openingStorage,world);Check(openingStorage["k"]=="value","weekly opening save trims exact");other.IsSaving=false;CampaignWeeklyRecordPersistenceAdapter.LoadOpenings(other,opening,ref openingStorage,ref world);Check(opening["k"]=="value"&&world=="world","weekly openings roundtrip");
+ var records=new List<MyBehavior.EventRecordEntry>{new(){EventId="id",Title="title"}};string recordJson="";int normalized=0;other.IsSaving=true;CampaignWeeklyRecordPersistenceAdapter.SaveRecords(other,records,ref recordJson,x=>normalized++);other.IsSaving=false;CampaignWeeklyRecordPersistenceAdapter.LoadRecords(other,ref records,ref recordJson,x=>normalized++);Check(records.Count==1&&records[0].EventId=="id"&&normalized==2,"weekly record IO invokes original normalization each phase");Check(recordJson=="","weekly load retires json scratch");
+ var corrupt=new Store();CampaignSaveChunkHelper.SaveChunkedString(new Store{IsSaving=true},"noop","x");corrupt.IsSaving=true;CampaignSaveChunkHelper.SaveChunkedString(corrupt,"_eventRecordEntries_v1","invalid");corrupt.IsSaving=false;CampaignWeeklyRecordPersistenceAdapter.LoadRecords(corrupt,ref records,ref recordJson,x=>normalized++);Check(records.Count==0,"weekly corrupt record batch isolated");
 Console.WriteLine($"{checks} assertions PASS");}}
