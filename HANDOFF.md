@@ -1,5 +1,7 @@
 # 当前交接：J17 收尾与远端 CivilWar 合并（2026-10-01）
 
+- **政变后旧王朝复位已离线实现（2026-10-01，未部署）**：`f1760f76`；扣押分支排除旧王族，释放分支将原王族加入实际叛军（可无地跟随）；只有明确叛军夺位胜利恢复原王朝及发动前国名，和平/妥协不复位，旧王死亡由原王族现任族长继承。建国后登记可保存并手动重试，普通玩家派系开关不拦政变战争结算。205内战契约、128政变契约、228真实DLL夹具与规则smoke、Release双API+Bootstrap通过；游戏/真实旧档/原生战争未验，无部署推送。[源码、边界、验证及回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#coup-restoration-victory-20261001)。
+
 - **快报事件配图与宽版UI已离线完成（2026-10-01）**：`a3183aaa`，收集期到期且≥2组真实其他消息后，选定事件即并行生图/写稿；冻结事实和多人物参考，标题润色不重画，作废取消。报纸加宽、16:9沿用预设映射、去黑色遮罩，并增强冲突动作提示。29任务+46政策+10人物检查、Release双API/Bootstrap、两DLL存档/生命周期/等比fit通过；未部署/推送，实机/GPU/真实API未验。[源码、证据、回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#bulletin-event-art-20261001)。
 
 - **城镇记忆间隔改为7游戏日（2026-10-01，未部署）**：按用户要求替代下方3日默认值，其他成本限制和手工保护不变；60项检查及Release双API+Bootstrap通过，实机/玩家旧档未验。[本次验证与回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#town-memory-seven-days-20261001)。
