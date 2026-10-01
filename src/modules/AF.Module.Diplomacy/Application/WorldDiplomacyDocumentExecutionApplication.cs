@@ -300,6 +300,7 @@ internal static class WorldDiplomacyDocumentExecutionApplication
             for (int index = 0; index < command.ActionCount; index++) inputTargets.Add(command.ActionAt(index).TargetKingdomId);
         }
 		List<string> allAddressed = legacy ? null : port.NormalizeKingdomIdList(inputTargets, author);
+		List<WorldDiplomacyDocumentActionReceipt> receipts = new List<WorldDiplomacyDocumentActionReceipt>(command.ActionCount);
 		for (int index = 0; index < command.ActionCount; index++)
 		{
 			WorldDiplomacyDocumentAction action = actions[index];
@@ -307,6 +308,8 @@ internal static class WorldDiplomacyDocumentExecutionApplication
 			string target = targets[index];
             if (!legacy) WorldDiplomacyDocumentApplication.BeginAction(document, action, target);
 			bool noAction = string.Equals(WorldDiplomacyIntentVocabulary.NormalizeIntent(input.Intent), "statement", StringComparison.OrdinalIgnoreCase);
+			bool effectAttempted = false;
+			bool outcomeKnown = true;
 			try
 			{
 				if (!legacy && !noAction && orchestration.TryGetDiplomaticStateViolation(input.Intent, author, target, out string executionBlockReason))
@@ -317,6 +320,7 @@ internal static class WorldDiplomacyDocumentExecutionApplication
 				}
 				else if (!noAction || legacyPublic)
 				{
+					effectAttempted = true;
 					WorldDiplomacyThreatApplication.ApplyDocumentPressure(document, port.FindWarPressure, port.NormalizeKingdomIdList, port.AddWarPressure);
                     if (!legacyPublic)
                     {
@@ -332,6 +336,7 @@ internal static class WorldDiplomacyDocumentExecutionApplication
 			}
 			catch (Exception ex)
 			{
+				outcomeKnown = false;
 				if (!legacyPublic && string.IsNullOrWhiteSpace(document.MechanicalResult))
 				{
 					document.MechanicalResult = "外交机制未执行：" + WorldDiplomacyTextRules.Limit(ex.Message, 180);
@@ -339,7 +344,10 @@ internal static class WorldDiplomacyDocumentExecutionApplication
 				port.Log("multi-target diplomatic action failed without discarding declaration document=" + command.DocumentId
 					+ " action=" + input.ActionId + " intent=" + input.Intent + " error=" + ex.Message);
 			}
-            WorldDiplomacyDocumentApplication.CaptureActionResult(document, action);
+			var receipt = new WorldDiplomacyDocumentActionReceipt(input.ActionId, target,
+				effectAttempted, outcomeKnown, document.ChangedDiplomaticState, document.MechanicalResult);
+			receipts.Add(receipt);
+			WorldDiplomacyDocumentApplication.CaptureActionResult(document, action, receipt);
 		}
         if (legacy)
         {
@@ -358,7 +366,7 @@ internal static class WorldDiplomacyDocumentExecutionApplication
 			document, orchestration.Threats(), author,
 			(threat, doc) => orchestration.ApplyDiplomaticThreatReputationPenalty(threat, doc));
 
-		WorldDiplomacyDocumentApplication.SealActions(document, allAddressed, sourceContextDocumentId);
+		WorldDiplomacyDocumentApplication.SealActions(document, allAddressed, sourceContextDocumentId, receipts);
 		orchestration.SettleInternationalReputationForDocument(document);
 		try
 		{

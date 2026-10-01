@@ -7,6 +7,27 @@ namespace AnimusForge;
 
 // One canonical document record and one writable storage list. The host supplies
 // current Bannerlord identities and date values before entering this owner.
+internal readonly struct WorldDiplomacyDocumentActionReceipt
+{
+    internal readonly string ActionId;
+    internal readonly string TargetKingdomId;
+    internal readonly bool EffectAttempted;
+    internal readonly bool OutcomeKnown;
+    internal readonly bool Applied;
+    internal readonly string Message;
+
+    internal WorldDiplomacyDocumentActionReceipt(string actionId, string targetKingdomId,
+        bool effectAttempted, bool outcomeKnown, bool applied, string message)
+    {
+        ActionId = actionId ?? "";
+        TargetKingdomId = targetKingdomId ?? "";
+        EffectAttempted = effectAttempted;
+        OutcomeKnown = outcomeKnown;
+        Applied = applied;
+        Message = message ?? "";
+    }
+}
+
 internal static class WorldDiplomacyDocumentApplication
 {
     internal sealed class CreationSnapshot
@@ -85,15 +106,16 @@ internal static class WorldDiplomacyDocumentApplication
         document.MechanicalResult = "";
     }
 
-    internal static void CaptureActionResult(WorldDiplomacyDocument document, WorldDiplomacyDocumentAction action)
+    internal static void CaptureActionResult(WorldDiplomacyDocument document,
+        WorldDiplomacyDocumentAction action, WorldDiplomacyDocumentActionReceipt receipt)
     {
-        action.ChangedDiplomaticState = document.ChangedDiplomaticState;
-        action.MechanicalResult = document.MechanicalResult ?? "";
+        action.ChangedDiplomaticState = receipt.Applied;
+        action.MechanicalResult = receipt.Message;
         action.PeaceTerms = document.PeaceTerms;
     }
 
     internal static void SealActions(WorldDiplomacyDocument document, List<string> addressedKingdomIds,
-        string originalSourceDocumentId)
+        string originalSourceDocumentId, IReadOnlyList<WorldDiplomacyDocumentActionReceipt> receipts)
     {
         List<WorldDiplomacyDocumentAction> actions = document.Actions;
         document.ProcessingActionId = "";
@@ -103,7 +125,7 @@ internal static class WorldDiplomacyDocumentApplication
             actions[0].RespondingToOfferDocumentId,
             actions[0].RespondingToThreatDocumentId,
             originalSourceDocumentId);
-        document.ChangedDiplomaticState = actions.Any(x => x.ChangedDiplomaticState);
+        document.ChangedDiplomaticState = receipts.Any(x => x.Applied);
         document.MechanicalResult = WorldDiplomacyDocumentFactRules.BuildMultiActionMechanicalResult(actions);
         document.RequiresResponse = actions.Any(x => x.RequiresResponse);
     }

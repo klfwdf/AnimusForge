@@ -242,6 +242,11 @@ def main():
  assert 'port.ResolveKingdomId(input.TargetKingdomId)' in executor
  assert 'WorldDiplomacyIntentVocabulary.NormalizeIntent(input.Intent)' in executor
  assert 'WorldDiplomacyOfferContractRules.CommitmentMatchesIntent(intent, input.Commitment)' in executor
+ assert 'new WorldDiplomacyDocumentActionReceipt(input.ActionId, target,' in executor
+ assert 'WorldDiplomacyDocumentApplication.CaptureActionResult(document, action, receipt)' in executor
+ assert 'WorldDiplomacyDocumentApplication.SealActions(document, allAddressed, sourceContextDocumentId, receipts)' in executor
+ assert 'document.ChangedDiplomaticState = receipts.Any(x => x.Applied)' in read(APPDIR+'WorldDiplomacyDocumentApplication.cs')
+ assert 'outcomeKnown = false;' in executor
  assert executor.count('orchestration.ExecuteImmediateIntent(')==1
  history=read('Refactor/Domain/WorldDiplomacyCanonicalHistoryRules.cs')
  for forbidden in ['TryScheduleTokenCompression(', 'CommitCompression(', 'EnqueueCompressionJob(', 'AppendCanonicalDocumentEvents(', 'SyncPublishedPolicyArtifacts(']:
