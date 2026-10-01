@@ -69,6 +69,13 @@ internal static class SettlementEntryTroopSelectionBehavior
             _spawnKing = AccessTools.Method(_setsLogicType, "SpawnArmedCoupKing", new[] { typeof(CharacterObject), typeof(MatrixFrame) }) ?? throw new MissingMethodException(_setsLogicType.FullName, "SpawnArmedCoupKing");
             _countRole = AccessTools.Method(_setsLogicType, "CountArmedCoupRole", new[] { typeof(string) }) ?? throw new MissingMethodException(_setsLogicType.FullName, "CountArmedCoupRole");
             _isArmedLogic = AccessTools.PropertyGetter(_setsLogicType, "IsArmedCoup") ?? throw new MissingMethodException(_setsLogicType.FullName, "IsArmedCoup");
+            Bind<Action>(host, "ValidateArmedCoupRuntime")();
+            // Campaign events invoke the last registered listener first. Attach only after
+            // SETS has added its exact mission logic, independently of registration order.
+            MethodInfo missionStarted = AccessTools.Method(host, "OnMissionStarted", new[] { typeof(IMission) })
+                ?? throw new MissingMethodException(host.FullName, "OnMissionStarted");
+            harmony.Patch(missionStarted, postfix: new HarmonyMethod(
+                AccessTools.Method(typeof(SettlementEntryTroopSelectionBehavior), nameof(SetsMissionStartedPostfix))));
             Patch(harmony, host, "IsSetsCommandMissionCandidate", nameof(CommandCandidatePrefix));
             Patch(harmony, host, "ResolveSetsPlayerCommandTeamForExternal", nameof(CommandTeamPrefix));
             Patch(harmony, host, "EnsureSetsCommandUiReadyForExternal", nameof(CommandReadyPrefix));
@@ -90,6 +97,11 @@ internal static class SettlementEntryTroopSelectionBehavior
     {
         MethodInfo method = AccessTools.Method(owner, name) ?? throw new MissingMethodException(owner.FullName, name);
         return Delegate.CreateDelegate(typeof(T), method) as T ?? throw new InvalidOperationException("Incompatible AF delegate: " + name);
+    }
+
+    private static void SetsMissionStartedPostfix(IMission mission)
+    {
+        CoupCampaignBehavior.NotifySetsMissionReady(mission);
     }
 
     private static Action<int, string> OptionalSpeechCallback(Type owner, string name)

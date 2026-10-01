@@ -113,6 +113,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 
 	internal static void QueueArmedCoupEntry(string settlementId, string locationId, TroopRoster roster, List<string[]> defenders)
 	{
+		ValidateArmedCoupRuntime();
 		bool valid = !string.IsNullOrWhiteSpace(settlementId) && !string.IsNullOrWhiteSpace(locationId);
 		_armedCoupSettlementId = valid ? settlementId : null;
 		_armedCoupLocationId = valid ? locationId : null;
@@ -151,7 +152,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 			Type[] casualtyArgs = { typeof(CharacterObject), typeof(bool), typeof(string) };
 			_coupFollowerCasualty = owner == null ? null : AccessTools.Method(owner, "NotifyFollowerCasualty", casualtyArgs);
 			_coupDefenderCasualty = owner == null ? null : AccessTools.Method(owner, "NotifyDefenderCasualty", casualtyArgs);
-			_coupOriginConstructor = originType?.GetConstructor(new[] { typeof(CharacterObject), typeof(bool) });
+			_coupOriginConstructor = originType == null ? null : AccessTools.Constructor(originType, new[] { typeof(CharacterObject), typeof(bool) });
 		}
 		catch (Exception ex)
 		{
@@ -172,10 +173,19 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private static IAgentOriginBase CreateCoupOrigin(CharacterObject character, bool ally)
+	internal static void ValidateArmedCoupRuntime()
 	{
 		ResolveCoupReflection();
-		return _coupOriginConstructor?.Invoke(new object[] { character, ally }) as IAgentOriginBase;
+		if (_coupOriginConstructor == null || _coupFollowerCasualty == null || _coupDefenderCasualty == null)
+			throw new InvalidOperationException("Armed coup origin/casualty bindings are unavailable.");
+	}
+
+	private static IAgentOriginBase CreateCoupOrigin(CharacterObject character, bool ally)
+	{
+		ValidateArmedCoupRuntime();
+		if (character == null) throw new ArgumentNullException(nameof(character));
+		return _coupOriginConstructor.Invoke(new object[] { character, ally }) as IAgentOriginBase
+			?? throw new InvalidOperationException("Armed coup troop origin could not be created.");
 	}
 
 	private enum EntryProfileKind
