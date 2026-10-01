@@ -1,3 +1,22 @@
+<a id="bulletin-prefetch-20261001"></a>
+
+### 快报本期配图提前生成（2026-10-01，OFFLINE_VERIFIED）
+
+用户要求快报配图提前生成。本条明确取代旧“每次打开快报重新生成”：每期发布时创建新画，打开/重开同一期使用其已准备成图或接入正在进行的任务；不借用别期/旧周报图库图片。工作区 `F:/AnimusForge-main`、分支 `codex/af-main-refactor-continuation-20260831`；检查点 `3308d58`，产品和测试 `5f096d08`。无部署/推送，其他并发Coup改动保留。
+
+源码责任图（修订 `5f096d08`）：
+
+- `MyBehavior.WorldBulletin.cs:935–947`、`src/modules/AF.Module.Weekly/Panel/WorldBulletinPanelVM.cs:50–56`：最终快报正文/版式记录落定后、地图通知前调用同DLL PrepareIssue；生成侧异常不阻断快报发布。
+- `extensions/AnimusForge.Illustrator/src/Core/BulletinIllustrationPreloader.cs:11–119`：发布触发生成，打开加入同一任务，手动重绘显式换代；独立命名空间`bulletin_prepared_v1`按期ID、标题、副标题、完整正文生成键。历史期仅加载精确键的已准备图片，缺图才生成；发布新期不读取旧图。任务元数据最多48项，完成后不保留图片字节；事件驱动，无新Tick轮询。沿用全局4worker/8scope上限，繁忙/失败显示手动重绘，不自动付费重试。
+- `extensions/AnimusForge.Illustrator/src/Core/IllustratorRuntime.cs:171–179,272–298`：新增默认关闭的campaignOwned生命周期选项，仅快报后台任务使用；保持Campaign实例、CampaignKey、总开关和取消校验，切存档/关闭生图会取消；原界面scope仍检查TopScreen。Reset清理后台任务。
+- `extensions/AnimusForge.Illustrator/src/UI/Patches/WeeklyReportPopupIllustrationPatch.cs:205–207,285–391,438–558`：弹窗挂接/显示与生成任务分离；成图后台读盘、主线程注册纹理，检查view scope/key/load版本防晚结果串图。共享StartGeneration保留原人物双参考、纹章、导演、历史动作、1536×1024快报尺寸、HTTP及缓存流程，普通周报仍走原界面任务。删除本期画作不会自动重生，需点击重绘。
+
+验证：`extensions/AnimusForge.Illustrator/tests/BulletinPreloadTests/`链接生产preloader、使用scope/disk/generator桩，22项PASS（发布/打开并发去重、手动重绘、失败不重试、Reset/迟到完成、历史缓存精确键、缺图、删除、关闭开关、48项上限）。实际双DLL检查确认CloseOverlay仅取消显示scope，独立后台scope不受影响且可单独取消；检查PrepareIssue在地图通知前。脚本`artifacts/bulletin-prefetch-20261001/check-lifecycle.ps1`，不是游戏或网络调用。
+
+最终隔离Release 1.3/1.4+Bootstrap均exit0、0错误（既有警告保留），产物/引用/哈希/日志在 `artifacts/bulletin-prefetch-20261001/build-480e65f68a7c4b41a859d50866567998/`。构建包括当时并发工作树，不冒称只有本任务产品。git diff --check PASS。
+
+未验：实际后台原生人物/纹章导出、真实HTTP耗时、游戏内发布→通知→打开/切屏、真实旧档；未Stage/部署/推送/付费生图。不保证通知刚出现时图片已经完成，未完成时面板显示进度。回滚仅定向revert `5f096d08`，会恢复打开时生图；本期缓存文件保留，不清理用户画廊。本包不提升J17/C/D。
+
 <a id="coup-admission-sixty-20261001"></a>
 
 ### 城镇强攻政变发动门槛：至少60名突击队员（2026-10-01，OFFLINE_VERIFIED / 未部署）
