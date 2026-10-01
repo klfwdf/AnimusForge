@@ -114,7 +114,7 @@ public partial class MyBehavior
     }
 
     // Ephemeral, main-thread-only view. It must never be stored on the async input.
-    private sealed class MemorySummarySourceView
+    internal sealed class MemorySummarySourceView
     {
         internal string HeroId;
         internal object Job;

@@ -108,10 +108,8 @@ public partial class MyBehavior
 
     internal void CompleteExecutionTranscript(ExecutionRequest request, bool deathCommitted, ExecutionActor actor = ExecutionActor.Undecided)
     {
-        var record = _executionTranscripts.Find(request?.SessionId.ToString("N"));
-        if (record == null || record.Outcome != "statement") return;
-        record.Outcome = deathCommitted ? "executed" : "cancelled";
-        record.Actor = actor.ToString();
+        var record = _executionTranscripts.Complete(request?.SessionId.ToString("N"), deathCommitted, actor.ToString());
+        if (record == null) return;
         if (!deathCommitted) { ResetExecutionMemoryRuntime(); return; }
         string publicQuote = GetExecutionLastWordsExcerpt(record);
         if (!string.IsNullOrEmpty(publicQuote))
