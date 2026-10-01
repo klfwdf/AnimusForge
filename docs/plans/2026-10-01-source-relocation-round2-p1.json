@@ -1,0 +1,486 @@
+{
+  "schema_version": 1,
+  "owner": "P1 round2 Reward/Courier reply UI",
+  "status": "proposal-only-awaiting-exact-manifest-approval",
+  "workspace": "E:/AnimusForge-refactor-continuation-20260831",
+  "branch": "codex/af-main-refactor-continuation-20260831",
+  "head": "3d6641f26c6a5c4673d5cb42771009ddca735ee8",
+  "entries": [
+    {
+      "old": "RewardSystemBehavior.cs",
+      "new": "src/modules/AF.Module.Economy/Host/RewardSystemBehavior.cs",
+      "sha256": "6589574891c50398e52a99ed99b471772f0df30273dfb38237df172e1820e201",
+      "lines": 18230,
+      "responsibility": "Mixed Economy Campaign host: generated reward item registration/save keys, debts/trust/merchant facts, reward/asset/trade/recruitment and live-game consumers. Existing authoritative partials remain one class; no algorithm/state extraction.",
+      "evidence": [
+        {
+          "line": 42,
+          "symbol": "RewardSystemBehavior : CampaignBehaviorBase"
+        },
+        {
+          "line": 59,
+          "symbol": "GeneratedRewardItemManifestFileName"
+        },
+        {
+          "line": 60,
+          "symbol": "GeneratedRewardPlayerRosterStorageKey"
+        },
+        {
+          "line": 824,
+          "symbol": "RegisterEvents"
+        },
+        {
+          "line": 1091,
+          "symbol": "SyncData"
+        }
+      ],
+      "destination_exists": false,
+      "path_consumers": [
+        {
+          "path": "docs/architecture/af-framework-code-scope.md",
+          "line": 4,
+          "kind": "documentation-evidence",
+          "text": "批准179候选实际**178原样归位 + RewardSystemBehavior.cs外交消费者hold**，根级tracked C#327→149。仅物理路径变化，namespace/类型/程序集/存档/API/算法/入口不变，不称职责抽取完成。详细实际映射/保留/验证/失败/提交集中在[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#source-relocation-20261",
+          "shared_owner": "P4"
+        },
+        {
+          "path": "docs/architecture/af-framework-code-scope.md",
+          "line": 73,
+          "kind": "documentation-evidence",
+          "text": "| R05-f | `RewardSystemBehavior.cs:15521` `StripHeroTradeActionTags` | 保留渠道呈现/标签筛选；不是统一 parser 已迁完。 |",
+          "shared_owner": "P4"
+        },
+        {
+          "path": "docs/architecture/af-framework-code-scope.md",
+          "line": 229,
+          "kind": "documentation-evidence",
+          "text": "| E100（J17-A A2-5/`WorldEntityRetrievalService` 全成员首轮分区，源 `944712f8`） | 双 API Compile 清单中 `WorldEntityRetrievalService.cs:18–3821` 均为 **267 个同名同坐标语法成员**（14 类型、82 字段、5 属性、165 方法、1 构造）；按声明起始行九段互斥覆盖：`:1–268` 93（`MentionedWorldEntities`/Prompt ",
+          "shared_owner": "P4"
+        },
+        {
+          "path": "docs/architecture/af-framework-code-scope.md",
+          "line": 253,
+          "kind": "documentation-evidence",
+          "text": "| E76（J17-A A2-5/`MyBehavior` 外部行动桥，源 `944712f8`） | 双 API 清单中 `MyBehavior.cs:2723–2795,3226–3396` 七个方法同名同坐标。四个 public static 入口 `RecordNpcActionForExternal:2723–2735`、`RecordPlayerActionForExternal:2737–2747`、`RecordPlayerHighValueRpCraftFo",
+          "shared_owner": "P4"
+        },
+        {
+          "path": "docs/architecture/af-framework-code-scope.md",
+          "line": 260,
+          "kind": "documentation-evidence",
+          "text": "| R391-E72（J17-A A2-5/R07 `RewardSystemBehavior` 宿主成员，源 `ecc4c76e`；与 `ada9894a` 无 diff） | 根级三文件 `RewardSystemBehavior.cs`、`.PlayerRpCrafting.cs`、`.RpItemIntroduction.cs` 627 方法/270 字段/31 嵌套；模块 partial 12 文件（Economy 11 + `Social/Recruitment/",
+          "shared_owner": "P4"
+        },
+        {
+          "path": "docs/architecture/af-framework-code-scope.md",
+          "line": 273,
+          "kind": "documentation-evidence",
+          "text": "| E61（J17-A A2/R07 配置、标签与数量协议小簇，源 `944712f8`） | 又逐文件审 12 个导航 null 的双 API Compile 文件、各 72 声明：`AIConfigModel.cs:3–8`（3）、`DuelStakeConfig.cs:3–10`（4）、`KnowledgeRetrievalConfig.cs:3–12`（5）、`SurroundingsConfig.cs:4–20`（8）、`ProactiveNpcRequestPro",
+          "shared_owner": "P4"
+        },
+        {
+          "path": "docs/architecture/af-framework-code-scope.md",
+          "line": 301,
+          "kind": "documentation-evidence",
+          "text": "| E33（J17-A A2/R07/R08 世界实体检索定向审查，源 `944712f8`） | `WorldEntityRetrievalService.cs` 是双 API 各 267 声明的根级 `UNRESOLVED` 文件，**本行只审关键链，未审完 267 声明**。`:270–315` `CaptureEntityCandidates` 主线程捕获游戏对象与脱离对象元数据；`:374–414` `MatchDetachedCandidates` 在 worke",
+          "shared_owner": "P4"
+        },
+        {
+          "path": "docs/architecture/af-framework-code-scope.md",
+          "line": 734,
+          "kind": "documentation-evidence",
+          "text": "产品 `3f2c454e` 将既有 public Economy contract/planner/main-thread port 原样归入 `src/AF.Contracts/Compatibility/Economy` 与 `src/modules/AF.Module.Economy/{Planning,Execution}`，并以 `Projection/EconomyPromptProjection.cs` 承担 Debt/Trust detached 文本投影。`",
+          "shared_owner": "P4"
+        },
+        {
+          "path": "docs/architecture/af-framework-code-scope.md",
+          "line": 945,
+          "kind": "documentation-evidence",
+          "text": "| `PromptListRetrievalService.cs:12,190-286`；`MyBehavior.cs:24041-24094,24407-24521`；`RewardSystemBehavior.cs:18449-18530` | 唯一候选 owner；My 生产固定资产消费者 4、Reward 生产装备/商人 11、Scene 原始 hero/merchant 片段直接执行，全量/展示/私装/原顺序/target 与 settlement 隔离；检索 13",
+          "shared_owner": "P4"
+        },
+        {
+          "path": "docs/architecture/af-source-directory-guide.md",
+          "line": 31,
+          "kind": "documentation-evidence",
+          "text": "根级tracked C#实际 **327 → 149**：批准179候选中178归位，1项因外交消费者hold；原提案148保留项不变，新增 `RewardSystemBehavior.cs`。",
+          "shared_owner": "P4"
+        },
+        {
+          "path": "docs/architecture/af-source-directory-guide.md",
+          "line": 35,
+          "kind": "documentation-evidence",
+          "text": "- `RewardSystemBehavior.cs`因J12外交domain测试读取旧路径原样留根；其获准partial归位不改变同一类型。`CourierLetterReplyPopup.cs/VM`原有外交消费者hold也保持。",
+          "shared_owner": "P4"
+        },
+        {
+          "path": "tests/modules/AF.Module.Economy/DebtNormalization/README.md",
+          "line": 4,
+          "kind": "documentation-evidence",
+          "text": "`RewardSystemBehavior.cs`, compiles it with the real",
+          "shared_owner": "P4"
+        },
+        {
+          "path": "tests/modules/AF.Module.Economy/DebtNormalization/run.py",
+          "line": 16,
+          "kind": "current-path-consumer",
+          "text": "REWARD = ROOT / \"RewardSystemBehavior.cs\"",
+          "shared_owner": "P4"
+        },
+        {
+          "path": "tests/modules/AF.Module.Economy/GiveAssetTagCodec.StressTests/Program.cs",
+          "line": 178,
+          "kind": "current-path-consumer",
+          "text": "string rewardSystem = File.ReadAllText(Path.Combine(repoRoot, \"RewardSystemBehavior.cs\"))",
+          "shared_owner": "P4"
+        },
+        {
+          "path": "tests/modules/AF.Module.Economy/HeroAssetScopeRegressionTests/run.py",
+          "line": 12,
+          "kind": "current-path-consumer",
+          "text": "owner = extractor.source('RewardSystemBehavior.cs', ref)",
+          "shared_owner": "P4"
+        },
+        {
+          "path": "tests/modules/AF.Module.Economy/ProductionEconomyOwnerReplayTests/Program.cs",
+          "line": 66,
+          "kind": "current-path-consumer",
+          "text": "string ownerSource = File.ReadAllText(Path.Combine(projectRoot, \"RewardSystemBehavior.cs\"));",
+          "shared_owner": "P4"
+        },
+        {
+          "path": "tests/modules/AF.Module.Economy/PromptProjection/run.py",
+          "line": 29,
+          "kind": "current-path-consumer",
+          "text": "reward = (ROOT / \"RewardSystemBehavior.cs\").read_text(encoding=\"utf-8-sig\")",
+          "shared_owner": "P4"
+        },
+        {
+          "path": "tests/modules/AF.Module.Kingdom/J12DomainOwnerSourceContractTests/test_j12_domain_owners.py",
+          "line": 18,
+          "kind": "current-path-consumer",
+          "text": "reward = read(\"RewardSystemBehavior.cs\")",
+          "shared_owner": "P4"
+        },
+        {
+          "path": "tests/modules/AF.Module.Memory/MemorySummaryMainThreadBoundaryTests/run_writers.py",
+          "line": 51,
+          "kind": "current-path-consumer",
+          "text": "reward = read(\"RewardSystemBehavior.cs\")",
+          "shared_owner": "P4"
+        },
+        {
+          "path": "tests/modules/AF.Module.Memory/MemorySummaryMainThreadBoundaryTests/run_writers.py",
+          "line": 60,
+          "kind": "current-path-consumer",
+          "text": "inventory.append(dict(file=\"RewardSystemBehavior.cs\", signature=\"public class RewardItemInfo\",",
+          "shared_owner": "P4"
+        },
+        {
+          "path": "tests/modules/AF.Module.Persona/HeroPersonaGenerationTests/j13_source_parity.py",
+          "line": 49,
+          "kind": "historical-or-review-key",
+          "text": "assert read('RewardSystemBehavior.cs') == prior('RewardSystemBehavior.cs'), 'promotion caller changed'",
+          "shared_owner": "P4"
+        },
+        {
+          "path": "tests/modules/AF.Module.Prompt/ProductionReward/run.py",
+          "line": 19,
+          "kind": "current-path-consumer",
+          "text": "root_source = (ROOT / \"RewardSystemBehavior.cs\").read_text(encoding=\"utf-8-sig\")",
+          "shared_owner": "P4"
+        },
+        {
+          "path": "tests/replay/PhaseEightParityReplayTests/Program.cs",
+          "line": 58,
+          "kind": "current-path-consumer",
+          "text": "\"RewardSystemBehavior.cs\", \"src/modules/AF.Module.Social/Recruitment/RecruitmentOwner.cs\",",
+          "shared_owner": "P4"
+        },
+        {
+          "path": "tools/PhaseEightReadiness/verify_j13_recruitment.py",
+          "line": 26,
+          "kind": "historical-or-review-key",
+          "text": "old = source('RewardSystemBehavior.cs', BASELINE)",
+          "shared_owner": "P4"
+        },
+        {
+          "path": "tools/PhaseEightReadiness/verify_j13_recruitment.py",
+          "line": 27,
+          "kind": "current-path-consumer",
+          "text": "host = source('RewardSystemBehavior.cs', args.revision)",
+          "shared_owner": "P4"
+        }
+      ],
+      "approval_required": true,
+      "move_mode": "byte-preserving only, type/namespace/assembly/API/save keys remain unchanged",
+      "hold_superseded": "Old-path tests including diplomacy test consumer are not reason to keep root under latest request."
+    },
+    {
+      "old": "CourierLetterReplyPopup.cs",
+      "new": "src/AF.GameAdapter.Bannerlord/UI/Courier/CourierLetterReplyPopup.cs",
+      "sha256": "c304a1f4517ef8ed25068bbcc65046f5f988bc0ccf0837e78fd4d51b61275174",
+      "lines": 316,
+      "responsibility": "Gauntlet reply/impact popup, input/focus, deferred close/reply, encyclopedia suspend/resume and pause registration. Runtime movie string/resource unchanged.",
+      "evidence": [
+        {
+          "line": 10,
+          "symbol": "CourierLetterReplyPopup"
+        },
+        {
+          "line": 56,
+          "symbol": "ShowWithReply"
+        },
+        {
+          "line": 99,
+          "symbol": "Open/LoadMovie(\"CourierLetterReplyPopup\")"
+        },
+        {
+          "line": 150,
+          "symbol": "HandleOpenEncyclopediaLink"
+        },
+        {
+          "line": 158,
+          "symbol": "SuspendForEncyclopediaNavigation"
+        },
+        {
+          "line": 179,
+          "symbol": "ResumeAfterEncyclopediaNavigation"
+        }
+      ],
+      "destination_exists": false,
+      "path_consumers": [
+        {
+          "path": "docs/architecture/af-framework-code-scope.md",
+          "line": 272,
+          "kind": "documentation-evidence",
+          "text": "| E62（J17-A A2/R07 UI 文本、运行时素材与模块路径接缝，源 `944712f8`） | 逐文件读取另 14 个原导航 null、两 API 各 195 声明的 Compile 文件：`AnimusForgeCourierUiSprites.cs:16–301`（37）、`AnimusForgePlayerNotorietyUiSprites.cs:15–273`（36）、`AnimusForgePlayerRpForgeUiSprites.cs:15–30",
+          "shared_owner": "P4"
+        },
+        {
+          "path": "docs/architecture/af-source-directory-guide.md",
+          "line": 35,
+          "kind": "documentation-evidence",
+          "text": "- `RewardSystemBehavior.cs`因J12外交domain测试读取旧路径原样留根；其获准partial归位不改变同一类型。`CourierLetterReplyPopup.cs/VM`原有外交消费者hold也保持。",
+          "shared_owner": "P4"
+        },
+        {
+          "path": "tests/content/J15ContentContractTests/run.py",
+          "line": 885,
+          "kind": "current-path-consumer",
+          "text": "\"GUI/Prefabs/CourierLetterReplyPopup.xml\": \"CourierLetterReplyPopup.cs\",",
+          "shared_owner": "P4"
+        },
+        {
+          "path": "tests/modules/AF.Module.Diplomacy/WorldDiplomacyIntentBoundary.SmokeTests/Program.cs",
+          "line": 569,
+          "kind": "current-path-consumer",
+          "text": "string popup = File.ReadAllText(FindRepositoryFile(\"CourierLetterReplyPopup.cs\"), Encoding.UTF8);",
+          "shared_owner": "P4"
+        }
+      ],
+      "approval_required": true,
+      "move_mode": "byte-preserving only, type/namespace/assembly/API/save keys remain unchanged",
+      "hold_superseded": "Old-path tests including diplomacy test consumer are not reason to keep root under latest request."
+    },
+    {
+      "old": "CourierLetterReplyPopupVM.cs",
+      "new": "src/AF.GameAdapter.Bannerlord/UI/Courier/CourierLetterReplyPopupVM.cs",
+      "sha256": "fde7b44fb00c9e6a2633a43353e96ba795d4eff7423679c2c46aa98f8fbf1b80",
+      "lines": 186,
+      "responsibility": "Existing UI data source: letter/title/reply/impact bindings, safe encyclopedia link formatting and close/reply delegates. No changed DTO/type/serialization/markup contract.",
+      "evidence": [
+        {
+          "line": 6,
+          "symbol": "CourierLetterReplyPopupVM : ViewModel"
+        },
+        {
+          "line": 150,
+          "symbol": "CourierLetterReplyPopupVM constructor"
+        },
+        {
+          "line": 158,
+          "symbol": "Letters stay plain in storage"
+        },
+        {
+          "line": 169,
+          "symbol": "ExecuteClose"
+        },
+        {
+          "line": 174,
+          "symbol": "ExecuteReply"
+        },
+        {
+          "line": 182,
+          "symbol": "ExecuteOpenEncyclopediaLink"
+        }
+      ],
+      "destination_exists": false,
+      "path_consumers": [
+        {
+          "path": "tests/modules/AF.Module.Diplomacy/WorldDiplomacyIntentBoundary.SmokeTests/Program.cs",
+          "line": 570,
+          "kind": "current-path-consumer",
+          "text": "string popupVm = File.ReadAllText(FindRepositoryFile(\"CourierLetterReplyPopupVM.cs\"), Encoding.UTF8);",
+          "shared_owner": "P4"
+        }
+      ],
+      "approval_required": true,
+      "move_mode": "byte-preserving only, type/namespace/assembly/API/save keys remain unchanged",
+      "hold_superseded": "Old-path tests including diplomacy test consumer are not reason to keep root under latest request."
+    }
+  ],
+  "existing_partial_family_retained": [
+    {
+      "path": "src/modules/AF.Module.Economy/Authorization/RewardSystemBehavior.EconomyAssetAuthorization.cs",
+      "sha256": "906dbc796eabdf13dcc83d918f20461f1a9949ad15cc3d08518d77684d2da763",
+      "reason": "Already under Economy responsibility directory; remain in place; full partial family remains same namespace/assembly/type."
+    },
+    {
+      "path": "src/modules/AF.Module.Economy/Debt/RewardSystemBehavior.DailyEconomyLifecycle.cs",
+      "sha256": "49c50e5559541f3b54b0a860f162a3fa61962218fe6eaf7608b7cf3f0082b99a",
+      "reason": "Already under Economy responsibility directory; remain in place; full partial family remains same namespace/assembly/type."
+    },
+    {
+      "path": "src/modules/AF.Module.Economy/Debt/RewardSystemBehavior.DebtLedger.cs",
+      "sha256": "c4d85a53b2af67d8a6084fb58ab4515ab8f148f22a0b4da3b90d77ec863c4883",
+      "reason": "Already under Economy responsibility directory; remain in place; full partial family remains same namespace/assembly/type."
+    },
+    {
+      "path": "src/modules/AF.Module.Economy/Debt/RewardSystemBehavior.DebtNormalizationPolicy.cs",
+      "sha256": "18b5dbe8fcf1ae133ca20d6bdfe4bf868d57d3a4df0480bc25d9c3ab7290cf28",
+      "reason": "Already under Economy responsibility directory; remain in place; full partial family remains same namespace/assembly/type."
+    },
+    {
+      "path": "src/modules/AF.Module.Economy/Debt/RewardSystemBehavior.DebtPromiseLifecycle.cs",
+      "sha256": "504f73d083926bd0ffe0225ed6a0e16a4e031716f6bb2140e6b51af3098e845c",
+      "reason": "Already under Economy responsibility directory; remain in place; full partial family remains same namespace/assembly/type."
+    },
+    {
+      "path": "src/modules/AF.Module.Economy/Debt/RewardSystemBehavior.DebtSchedulePolicy.cs",
+      "sha256": "974099f87a9936f7d45ebd800491aa8bf5fca2a250c0104fa6f2f5d05f66bae3",
+      "reason": "Already under Economy responsibility directory; remain in place; full partial family remains same namespace/assembly/type."
+    },
+    {
+      "path": "src/modules/AF.Module.Economy/Execution/Hero/RewardSystemBehavior.EconomyReplay.cs",
+      "sha256": "d9e9ef3f0ba958c46a90379b26c20319084a8360be96c8ba290f597a25132d26",
+      "reason": "Already under Economy responsibility directory; remain in place; full partial family remains same namespace/assembly/type."
+    },
+    {
+      "path": "src/modules/AF.Module.Economy/Execution/Merchant/RewardSystemBehavior.EconomyMerchantReplay.cs",
+      "sha256": "c022b2cdbd769428d3c13468bb7b7785b79ec19a30899e2fcdaafec7f6c335ba",
+      "reason": "Already under Economy responsibility directory; remain in place; full partial family remains same namespace/assembly/type."
+    },
+    {
+      "path": "src/modules/AF.Module.Economy/Execution/Party/RewardSystemBehavior.EconomyPartyReplay.cs",
+      "sha256": "4207a505c23b178a51ac1a3dba139e6d04d74cd272001d702da3fb4696fcccaf",
+      "reason": "Already under Economy responsibility directory; remain in place; full partial family remains same namespace/assembly/type."
+    },
+    {
+      "path": "src/modules/AF.Module.Economy/Host/RewardSystemBehavior.PlayerRpCrafting.cs",
+      "sha256": "5e59f5fc24fba1cc381318f4d4602e19b16574424e44bde8ab4198ade85387b8",
+      "reason": "Already under Economy responsibility directory; remain in place; full partial family remains same namespace/assembly/type."
+    },
+    {
+      "path": "src/modules/AF.Module.Economy/Host/RewardSystemBehavior.RpItemIntroduction.cs",
+      "sha256": "bb06d8c26d87ea6d0e02ab5278afae62c584e12311db1e5d780a680ad69c4a8f",
+      "reason": "Already under Economy responsibility directory; remain in place; full partial family remains same namespace/assembly/type."
+    },
+    {
+      "path": "src/modules/AF.Module.Economy/Projection/RewardSystemBehavior.InventoryPromptCapture.cs",
+      "sha256": "3a4452f5c1f0b7e369bf14aaf35b166fbf9333887f65ce7b979e101b3cfb916e",
+      "reason": "Already under Economy responsibility directory; remain in place; full partial family remains same namespace/assembly/type."
+    },
+    {
+      "path": "src/modules/AF.Module.Economy/Trust/RewardSystemBehavior.TrustState.cs",
+      "sha256": "50a2644c2aa60f413ad325094070019e51d32c1a27a6cd3b684236a0bc59c7c7",
+      "reason": "Already under Economy responsibility directory; remain in place; full partial family remains same namespace/assembly/type."
+    }
+  ],
+  "mandatory_current_consumer_changes": [
+    {
+      "path": "tests/output_isolation.py",
+      "change": "P4 append exact 3 historical→current path mappings; no historical git show key rewrite."
+    },
+    {
+      "path": "tests/modules/AF.Module.Diplomacy/WorldDiplomacyIntentBoundary.SmokeTests/Program.cs",
+      "lines": [
+        569,
+        570
+      ],
+      "change": "Change only 2 FindRepositoryFile file-name args to approved Courier reply UI current paths; all assertions/fixtures/metadata semantics and diplomacy product stay untouched."
+    },
+    {
+      "path": "tests/modules/AF.Module.Kingdom/J12DomainOwnerSourceContractTests/test_j12_domain_owners.py",
+      "lines": [
+        10,
+        11,
+        18
+      ],
+      "change": "Current read maps RewardSystemBehavior root to approved Host path, by current_source_path or precise direct argument; no test assertions/fixtures change."
+    },
+    {
+      "path": "tests/content/J15ContentContractTests/run.py",
+      "lines": [
+        885,
+        903
+      ],
+      "change": "Movie consumers dictionary popup source path only; movie/resource target unchanged."
+    },
+    {
+      "path": "tests/replay/PhaseEightParityReplayTests/Program.cs",
+      "lines": [
+        58
+      ],
+      "change": "Current source freshness file list root Reward path → approved Host path; preserve candidate/behavior checks."
+    }
+  ],
+  "consumer_policy": "P4 owns all shared/mixed consumers and formal docs/Git index. Current checkout reads use approved physical path; historical git show/ref, metadata review keys/baselineSha/line inverse identifiers remain old; source byte hashes unchanged. Necessary diplomacy TEST path-only edits now permitted; diplomacy product/fixtures/business/metadata semantics excluded.",
+  "verification_plan": [
+    {
+      "check": "All 3 current sources exist, destinations absent, source SHA256 recorded; uniqueness of old/new manifest",
+      "side_effect": "Read-only; completed now."
+    },
+    {
+      "check": "After approval: actual Compile old→new correspondence on both BannerlordApi 1.3/1.4, resource logical names unchanged; byte hashes before/after",
+      "side_effect": "Read-only evaluation; P4 serial integration."
+    },
+    {
+      "check": "After approval: targeted Economy prompt/debt/source contracts and popup J15 path checks; diplomacy test 2-line path resolution checks, no broad diplomacy behavior acceptance claim",
+      "side_effect": "P4 determines runner environment/output; only fresh UUID workspace artifacts, no live network/Stage/game."
+    },
+    {
+      "check": "After approval: both API builds + Bootstrap using existing procedure as P4 mandates",
+      "side_effect": "Workspace artifacts only; no one-click cover, Stage, deploy, push."
+    }
+  ],
+  "retained": [
+    {
+      "path": "13 existing src/modules/AF.Module.Economy/**/RewardSystemBehavior*.cs partial files",
+      "reason": "Already correctly under Economy Authorization/Debt/Execution/Host/Projection/Trust; no rescan/move of initial178 beyond explicitly assigned Reward family."
+    },
+    {
+      "path": "AnimusForge/GUI/Prefabs/CourierLetterReplyPopup.xml and content resource map",
+      "reason": "Runtime movie/resource remains unchanged; physical source path change only."
+    },
+    {
+      "path": "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.SessionTransport.cs",
+      "reason": "Preexisting tracked dirty; excluded and never overwritten."
+    },
+    {
+      "path": "Diplomacy product/source/fixtures/metadata business semantics; Policy/GCCZ/Gathering/Vengeance/third-party/resources/archives/artifacts/old tools/NuGet",
+      "reason": "Remain excluded. Old tracked tool path consumers documented, no business tool execution/cleanup."
+    }
+  ],
+  "verified_now": [
+    "Actual HEAD/branch and only tracked dirty observed.",
+    "Reward main actual Campaign events/save and existing Host partial roles read; popup/VM UI bindings and resources read.",
+    "Targeted candidate filename consumers inspected; first-round 178 inventory not rescanned.",
+    "All 3 proposed targets absent; no production source moved/edited; no tests/build/commit."
+  ],
+  "limitations": [
+    "Consumer-kind classification conservative; mixed same path may serve baseline key/current read and requires local context before patch.",
+    "Root mixed Economy host physically归位 not algorithm extraction or entire Economy rewrite.",
+    "No runtime/save/ABI/real-network acceptance performed."
+  ]
+}
