@@ -116,3 +116,21 @@ Require(AnimusForge.WeeklyMemoryMaterialValuePolicy.EstimateWeeklyMemoryMaterial
     && AnimusForge.WeeklyMemoryMaterialValuePolicy.EstimateWeeklyMemoryMaterialTagValue("[ADP:known]",valuePort)==12000,
     "fixed asset and confirmed debt valuation");
 Console.WriteLine("PASS campaignMaterial record-construction/index/update/recovery/recent-dedupe/expiry/bounds/valuation LIVE=NOT_RUN SAVE=NOT_RUN");
+
+Require(WorldBulletinCampaignMaterialPolicy.WarReason("CausedByRebellion")=="叛乱" && WorldBulletinCampaignMaterialPolicy.WarReason("other")=="未载明", "campaign war reason classification");
+Require(WorldBulletinCampaignMaterialPolicy.PairKey("b","a")=="a|b" && WorldBulletinCampaignMaterialPolicy.PairKey("a","b")=="a|b", "campaign grouping independent side order");
+Require(WorldBulletinCampaignMaterialPolicy.WarSentence("A","B")=="A向B宣战，两国进入战争状态。" && WorldBulletinCampaignMaterialPolicy.PeaceDetail("A","L1","B","L2",true)=="A君主：L1；B君主：L2；议和方式：王国议会决议", "campaign diplomacy exact facts");
+Require(WorldBulletinCampaignMaterialPolicy.SiegePriority(true)==65 && WorldBulletinCampaignMaterialPolicy.SiegeStability(false,false)==-3 && WorldBulletinCampaignMaterialPolicy.TransferSentence("T","O","N","gift")=="T以“gift”的方式由O转归N，并非攻城夺取。", "ownership provenance and town/castle priority");
+Require(!WorldBulletinCampaignMaterialPolicy.ShouldIncludeBattle(false,true,false,false,false,300,300) && WorldBulletinCampaignMaterialPolicy.ShouldIncludeBattle(false,true,false,false,false,301,300) && !WorldBulletinCampaignMaterialPolicy.ShouldIncludeBattle(false,true,true,true,true,2000,300) && WorldBulletinCampaignMaterialPolicy.ShouldIncludeBattle(true,false,false,true,false,1,300), "original battle threshold/lord/player/raid visibility");
+Require(WorldBulletinCampaignMaterialPolicy.BattlePriority(1000,300,true,true)==65 && WorldBulletinCampaignMaterialPolicy.BattleStability(300,300)==1, "original battle priority and strict stability threshold");
+foreach(var ruler in new[]{false,true}) foreach(var natural in new[]{false,true}) {
+ Require(WorldBulletinCampaignMaterialPolicy.DeathPriority(ruler,natural)==(ruler?(natural?70:90):(natural?25:50)) && WorldBulletinCampaignMaterialPolicy.DeathStability(ruler,natural)==(ruler?-8:(natural?0:-2)), "death ruler/natural priority and stability");
+}
+var deathCapture=new WorldBulletinDeathMaterialCapture {Who="W",VictimTitle="V",Age=40,HasKiller=true,KillerName="K",KillerTitle="KT",HasPublicExecutionFacts=true,Execution=true,Venue=" at venue ",Method=" by method ",Charge=" charge ",ToneLabel="tone",LegitimacyLabel="legitimate",PlayerStruck=true};
+Require(WorldBulletinCampaignMaterialPolicy.DeathSentence(deathCapture)=="W at venue 被K by method  charge 。" && WorldBulletinCampaignMaterialPolicy.DeathDetail(deathCapture)=="死者身份：V，年约40岁；行事者：K（KT）；审判：tone，legitimate，由执行者亲自行刑", "public execution exact provenance fact");
+deathCapture.HasPublicExecutionFacts=false;deathCapture.Execution=false;deathCapture.Detail="DiedInBattle";
+Require(WorldBulletinCampaignMaterialPolicy.DeathSentence(deathCapture)=="W战死沙场，死于K之手。" && WorldBulletinCampaignMaterialPolicy.DeathGroup(false,"DiedInBattle","K","V",42,"A|B")=="clash:42:A|B", "death joins original battle grouping");
+Require(WorldBulletinCampaignMaterialPolicy.CapturedDetail("P",false,"","")=="被俘者身份：P" && WorldBulletinCampaignMaterialPolicy.CapturedPriority(true)==65 && WorldBulletinCampaignMaterialPolicy.CapturedStability(true)==-4, "ruler captive facts and priority");
+Require(WorldBulletinCampaignMaterialPolicy.EventPriority("civil_war")==80 && WorldBulletinCampaignMaterialPolicy.RebellionSentence("C","K")=="C家族举兵反叛，脱离了K。" && WorldBulletinCampaignMaterialPolicy.CreatedDetail("F",false,"")=="开国者：F" && WorldBulletinCampaignMaterialPolicy.RaidSentence("V","H","K")=="V村遭H（K）劫掠得手。", "remaining campaign fact family rules");
+Console.WriteLine("PASS WorldBulletin campaign material policy: diplomacy/ownership/battle/death/execution/captured/kingdom/raid/civilwar priority/provenance LIVE=NOT_RUN SAVE=NOT_RUN");
+Require(WorldBulletinCampaignMaterialPolicy.KingdomContextLine("K","R",2,3,false,77,new List<string>())=="K：君主R，城镇2座、城堡3座，眼下没有战事" && WorldBulletinCampaignMaterialPolicy.KingdomContextLine("K","R",2,3,true,77,new List<string>{"E"})=="K：君主R，城镇2座、城堡3座，稳定度77，正与E交战", "bounded captured kingdom context exact projection");
