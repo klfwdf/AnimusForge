@@ -3,9 +3,11 @@ from pathlib import Path
 import sys
 
 root = Path(__file__).resolve().parents[4]
+sys.path.insert(0, str(root / "tests"))
+from output_isolation import current_source_path
 
 def method(path, signature):
-    text = (root / path).read_text(encoding="utf-8-sig")
+    text = current_source_path(root, path).read_text(encoding="utf-8-sig")
     start = text.index("\t" + signature)
     # These methods end at the class-member indentation. Braces inside strings are immaterial.
     end = text.index("\n\t}\n", start) + len("\n\t}")

@@ -13,7 +13,7 @@ import sys
 
 ROOT = Path(__file__).resolve().parents[4]
 sys.path.insert(0, str(ROOT / "tests"))
-from output_isolation import current_source_path
+from output_isolation import current_source_path, new_run_root, minimal_test_environment
 HERE = Path(__file__).resolve().parent
 SCENE_LIFECYCLE_DISPATCHES = {
     "SCENE_PRIMARY_RELEASE_DELEGATE": "scene_primary_first_release",
@@ -257,10 +257,7 @@ def main() -> int:
         if template.count(placeholder) != 1:
             raise ValueError(f"Expected exactly one {placeholder}")
         template = template.replace(placeholder, block)
-    output = (args.run_root.resolve() if args.run_root else ROOT / ".tmp" / "channel-cutover-boundary" / args.output_name)
-    if args.run_root and not output.is_relative_to((ROOT / "artifacts").resolve()):
-        parser.error("--run-root must be under workspace artifacts")
-    output.mkdir(parents=True, exist_ok=True)
+    output = new_run_root(ROOT, "channel-cutover-boundary", args.run_root)
     (output / "Program.cs").write_text(template, encoding="utf-8")
     shutil.copyfile(args.newtonsoft, output / "Newtonsoft.Json.dll")
     (output / "Boundary.csproj").write_text(
@@ -278,12 +275,7 @@ def main() -> int:
     metadata = "source=" + (args.source_ref or "working-tree") + "\n" + "\n".join(fingerprints)
     (output / "source-fingerprints.txt").write_text(metadata + "\n", encoding="utf-8")
     print(metadata, flush=True)
-    env = os.environ.copy()
-    env["DOTNET_ROOT"] = str(Path(dotnet).parent)
-    env["DOTNET_CLI_HOME"] = str(ROOT / ".tmp" / "dotnet-cli")
-    env["DOTNET_CLI_TELEMETRY_OPTOUT"] = "1"
-    env["DOTNET_NOLOGO"] = "1"
-    env["DOTNET_CLI_UI_LANGUAGE"] = "en"
+    env = minimal_test_environment(Path(dotnet), output)
     result = subprocess.run(
         [dotnet, "run", "--project", str(output / "Boundary.csproj"), "--configuration", "Release"],
         cwd=output, env=env, capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=120

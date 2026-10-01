@@ -124,7 +124,8 @@ def validate_chunk_contract(catalog: dict) -> dict:
     expected_flattened = set(catalog["flattenedDictionaryStorageKeys"])
     # +1 _af_worldBulletin_v1 (MyBehavior.WorldBulletin.cs SyncWorldBulletinData via SaveChunkedString/LoadChunkedString).
     assert_true(len(expected_chunked) == 14, "chunked string key catalog must contain 14 keys")
-    assert_true(len(expected_flattened) == 44, "flattened dictionary key catalog must contain 44 keys")
+    # 982a5861: +Execution transcript storage and existing GCCZ town-memory key now flattened.
+    assert_true(len(expected_flattened) == 46, "flattened dictionary key catalog must contain 46 keys")
     actual_chunked = resolve_storage_call_keys("SaveChunkedString", 1) | resolve_storage_call_keys("LoadChunkedString", 1)
     actual_flattened = resolve_storage_call_keys("FlattenStringDictionary", 1)
     # The helper's own overloads have no persisted key and are intentionally absent.
@@ -221,7 +222,8 @@ def validate_persistence(catalog: dict) -> dict:
     assert_true(catalog["saveTypePolicy"].startswith("preserve"), "save identity policy is not conservative")
     assert_true(len(keys) == len(set(keys)), "duplicate literal SyncData key in catalog")
     # ada9894a: +Coup(4) +CivilWar(1) +RichExecutions(_rex_*, 30) keys, -one-shot Xihai legacy cleanup key.
-    assert_true(len(keys) == 177, f"expected 177 unique literal keys, got {len(keys)}")
+    # 982a5861 adds only _af_executionTranscripts_v1; existing save keys remain unchanged.
+    assert_true(len(keys) == 178, f"expected 178 unique literal keys, got {len(keys)}")
 
     discovered: set[str] = set()
     for relative in catalog["sourceFiles"]:
