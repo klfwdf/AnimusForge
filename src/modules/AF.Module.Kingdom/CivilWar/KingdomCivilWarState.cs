@@ -108,6 +108,14 @@ internal sealed class KingdomCivilWarFactionState
 	public string ResolutionError = "";
 	public bool ResolutionNeedsReview;
 	public bool ResolutionReturnCompleted;
+	// A coup-origin war may fight for the displaced dynasty; ordinary wars leave these empty.
+	public string CoupId = "";
+	public string RestorationClanId = "";
+	public string RestorationHeroId = "";
+	public string RestorationKingdomName = "";
+	public string RestorationKingdomShortName = "";
+	// Set only by the war-result owner before its own peace/return effects run.
+	public bool RestorationVictoryConfirmed;
 }
 
 internal sealed class KingdomCivilWarHistoryEntry

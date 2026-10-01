@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using AnimusForge.Refactor.Contracts;
 using Newtonsoft.Json;
 using TaleWorlds.CampaignSystem;
+using TaleWorlds.CampaignSystem.Actions;
 using TaleWorlds.CampaignSystem.GameState;
 using TaleWorlds.CampaignSystem.Settlements;
 using TaleWorlds.Core;
@@ -21,7 +22,7 @@ namespace AnimusForge.CoupSystem;
 // to oppose the new ruler; ordinary weekly rebellion relation thresholds do not apply.
 internal sealed class CoupRebellionBridge : CampaignBehaviorBase
 {
-    private enum RequestState { Queued, Naming, Ready, NamingFailed, Completed }
+    private enum RequestState { Queued, Naming, Ready, NamingFailed, Completed, WarCreated }
 
     private sealed class Request
     {
@@ -34,6 +35,12 @@ internal sealed class CoupRebellionBridge : CampaignBehaviorBase
         public bool LoyalistSelection;
         public string FormerKingId;
         public string FormerRulingClanId;
+        public bool TrackCivilWar;
+        public bool RestoreDynasty;
+        public string OriginalName;
+        public string OriginalShortName;
+        public string RebelKingdomId;
+        public bool RegistrationBlocked;
         public List<string> Followers = new List<string>();
         public int Week;
         public int Relation;
@@ -82,6 +89,8 @@ internal sealed class CoupRebellionBridge : CampaignBehaviorBase
     {
         private const BindingFlags All = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance;
         internal readonly MethodInfo Resolve = Method("ResolveKingdomRebellion", 4);
+        internal readonly MethodInfo CanTrackCoupWar = Method("CanTrackCoupCivilWar", 1);
+        internal readonly MethodInfo RegisterCoupWar = Method("TryRegisterCoupCivilWar", 9);
         internal readonly MethodInfo BuildPrompt = Method("BuildRebelKingdomNamingRequest", 6);
         internal readonly MethodInfo Generate = Method("GenerateRebelKingdomNamingFromPrompts", 4);
         internal readonly MethodInfo Execute = Method("TryExecuteKingdomRebellionWithNaming", 10);
@@ -114,6 +123,8 @@ internal sealed class CoupRebellionBridge : CampaignBehaviorBase
         internal AfAccess()
         {
             Type byRefString = typeof(string).MakeByRefType(), byRefInt = typeof(int).MakeByRefType();
+            Require(CanTrackCoupWar, typeof(bool), false, typeof(Kingdom));
+            Require(RegisterCoupWar, typeof(bool), false, typeof(string), typeof(Kingdom), typeof(Kingdom), typeof(Clan), typeof(Hero), typeof(bool), typeof(string), typeof(string), byRefString);
             Require(Resolve, SelectedClan.DeclaringType, false, typeof(Kingdom), typeof(int), typeof(bool), typeof(bool));
             Require(BuildPrompt, typeof(void), false, typeof(Clan), typeof(Kingdom), typeof(int), typeof(IEnumerable<Clan>), byRefString, byRefString);
             Require(Generate, NamingType, false, typeof(string), typeof(string), typeof(string), typeof(int));
@@ -163,6 +174,17 @@ internal sealed class CoupRebellionBridge : CampaignBehaviorBase
     private string _outcomesJson;
     private bool _saveValid = true;
     private bool _hasWork;
+    private bool _hasRegistrationFailure;
+    internal bool HasPendingWarRegistration => _hasRegistrationFailure;
+
+    internal void RetryPendingWarRegistration()
+    {
+        foreach (Request request in _requests.Values)
+            if (request.State == RequestState.WarCreated) request.RegistrationBlocked = false;
+        _hasRegistrationFailure = false;
+        _hasWork = _requests.Values.Any(r => r.State != RequestState.Completed && !r.RegistrationBlocked);
+        _tickDelay = 0f;
+    }
     private long _generation;
     private float _tickDelay;
     private string _runningId;
@@ -208,7 +230,7 @@ internal sealed class CoupRebellionBridge : CampaignBehaviorBase
         ResetRuntime();
         _requests.Clear(); _outcomes.Clear();
         _requestsJson = _outcomesJson = null;
-        _saveValid = true; _hasWork = false;
+        _saveValid = true; _hasWork = false; _hasRegistrationFailure = false;
     }
 
     private void OnGameLoaded(CampaignGameStarter starter)
@@ -217,7 +239,8 @@ internal sealed class CoupRebellionBridge : CampaignBehaviorBase
         if (!_saveValid) { Show("政变后叛乱存档异常，已停用自动重放并保留原始记录。"); return; }
         foreach (Request request in _requests.Values)
             if (request.State == RequestState.Naming) request.State = RequestState.Queued;
-        _hasWork = _requests.Values.Any(r => r.State != RequestState.Completed);
+        _hasRegistrationFailure = _requests.Values.Any(r => r.RegistrationBlocked);
+        _hasWork = _requests.Values.Any(r => r.State != RequestState.Completed && !r.RegistrationBlocked);
     }
 
     public override void SyncData(IDataStore store)
@@ -237,6 +260,9 @@ internal sealed class CoupRebellionBridge : CampaignBehaviorBase
             _outcomes = JsonConvert.DeserializeObject<Dictionary<string, Outcome>>(_outcomesJson ?? "{}") ?? new Dictionary<string, Outcome>(StringComparer.Ordinal);
             _saveValid = _requests.All(p => p.Value != null && p.Key == p.Value.Id && !string.IsNullOrWhiteSpace(p.Value.KingdomId)
                 && (!p.Value.LoyalistSelection || (!string.IsNullOrWhiteSpace(p.Value.FormerKingId) && !string.IsNullOrWhiteSpace(p.Value.FormerRulingClanId)))
+                && (!p.Value.TrackCivilWar || (!string.IsNullOrWhiteSpace(p.Value.OriginalName) && !string.IsNullOrWhiteSpace(p.Value.OriginalShortName)))
+                && (p.Value.State != RequestState.WarCreated || (p.Value.TrackCivilWar && !string.IsNullOrWhiteSpace(p.Value.RebelKingdomId)))
+                && (!p.Value.RegistrationBlocked || p.Value.State == RequestState.WarCreated)
                 && p.Value.Followers != null && Enum.IsDefined(typeof(RequestState), p.Value.State))
                 && _outcomes.All(p => !string.IsNullOrWhiteSpace(p.Key) && p.Value != null);
         }
@@ -256,17 +282,26 @@ internal sealed class CoupRebellionBridge : CampaignBehaviorBase
         try
         {
             int week = Math.Max(0, (int)CampaignTime.Now.ToDays / 7);
-            List<CoupLoyalistCandidate> candidates = SelectLoyalists(owner, kingdom, session.KingId, session.OriginalRulingClanId, out message);
+            bool restore = session.Disposition == CoupKingDisposition.Release;
+            List<CoupLoyalistCandidate> candidates;
+            if (!(bool)_af.CanTrackCoupWar.Invoke(owner, new object[] { kingdom }))
+            { candidates = new List<CoupLoyalistCandidate>(); message = "内战系统已关闭，跳过政变后内战。"; }
+            else candidates = SelectLoyalists(owner, kingdom, session.KingId, session.OriginalRulingClanId, restore, out message);
             Clan clan = candidates.Count == 0 ? null : kingdom.Clans.FirstOrDefault(c => c.StringId == candidates[0].ClanId);
             var request = new Request
             {
                 LoyalistSelection = true, FormerKingId = session.KingId, FormerRulingClanId = session.OriginalRulingClanId,
+                TrackCivilWar = true, RestoreDynasty = restore,
+                OriginalName = string.IsNullOrWhiteSpace(session.OriginalKingdomName) ? kingdom.Name.ToString() : session.OriginalKingdomName,
+                OriginalShortName = string.IsNullOrWhiteSpace(session.OriginalKingdomShortName) ? kingdom.InformalName.ToString() : session.OriginalKingdomShortName,
                 Id = coupId, KingdomId = kingdom.StringId, RulingClanId = kingdom.RulingClan?.StringId,
                 RulerId = kingdom.Leader?.StringId, ClanId = clan?.StringId, ClanLeaderId = clan?.Leader?.StringId,
                 Week = week, State = clan == null ? RequestState.Completed : RequestState.Queued,
                 Message = message,
                 Followers = candidates.Skip(1).Select(c => c.ClanId).ToList()
             };
+            if (clan != null && request.RestoreDynasty && CanJoinRestoration(request, kingdom, out Clan dynasty)
+                && dynasty != clan && !request.Followers.Contains(dynasty.StringId)) request.Followers.Add(dynasty.StringId);
             _requests.Add(coupId, request);
             if (clan != null) { _hasWork = true; request.Message = "旧王支持者已集结：" + clan.Name + "将领导反抗，另有" + request.Followers.Count + "个家族响应；将使用 AF 原命名与建国流程，忙时顺序等待。"; }
             message = request.Message;
@@ -276,7 +311,7 @@ internal sealed class CoupRebellionBridge : CampaignBehaviorBase
         catch (Exception ex) { message = "政变后叛乱登记失败：" + Error(ex); Logger.Log("Coup", message); return false; }
     }
 
-    private List<CoupLoyalistCandidate> SelectLoyalists(MyBehavior owner, Kingdom kingdom, string formerKingId, string formerClanId, out string message)
+    private List<CoupLoyalistCandidate> SelectLoyalists(MyBehavior owner, Kingdom kingdom, string formerKingId, string formerClanId, bool allowFormerClan, out string message)
     {
         var candidates = new List<CoupLoyalistCandidate>();
         message = "旧王家族及更支持旧王的家族中，目前没有具备带地起兵条件的候选人。";
@@ -293,6 +328,7 @@ internal sealed class CoupRebellionBridge : CampaignBehaviorBase
             bool eligible = (bool)_af.ValidateClan.Invoke(owner, args);
             int oldRelation = 0, newRelation = (int)args[4];
             bool formerFamily = candidate?.StringId == formerClanId;
+            if (formerFamily && !allowFormerClan) { eligible = false; args[3] = "旧王被扣押，其家族不参与本次内战。"; }
             if (eligible)
             {
                 oldRelation = candidate.Leader == formerKing ? 100 : candidate.Leader.GetRelation(formerKing);
@@ -342,15 +378,66 @@ internal sealed class CoupRebellionBridge : CampaignBehaviorBase
         if (request.LoyalistSelection && !StillSupportsFormerKing(request, clan, kingdom))
         { message = "原候选家族已改变对新旧国王的支持，本次不再起兵。"; return false; }
         request.Relation = (int)args[4]; request.Towns = (int)args[5]; request.Castles = (int)args[6];
+        if (request.TrackCivilWar && !(bool)_af.CanTrackCoupWar.Invoke(owner, new object[] { kingdom }))
+        { message = "内战系统已关闭，本次不创建无结算归属的叛军。"; return false; }
+        if (request.TrackCivilWar && request.RestoreDynasty && !CanJoinRestoration(request, kingdom, out _))
+        { message = "旧王家族已无法参与复位内战，本次不再起兵。"; return false; }
         foreach (string id in request.Followers)
         {
             Clan follower = MBObjectManager.Instance.GetObject<Clan>(id);
+            if (request.TrackCivilWar && !request.RestoreDynasty && id == request.FormerRulingClanId) continue;
             object[] followerArgs = { follower, kingdom, clan, false, null, 0, 0, 0, 0 };
             if ((bool)_af.ValidateFollower.Invoke(owner, followerArgs)
                 && (request.LoyalistSelection ? StillSupportsFormerKing(request, follower, kingdom)
                     : (bool)_af.FollowerEligible.Invoke(null, new object[] { followerArgs[5], followerArgs[6], 0f }))) followers.Add(follower);
         }
+        // The released royal family can join a supporter-led restoration even after
+        // losing its last fief. It need not qualify to found the rebel kingdom itself.
+        if (request.TrackCivilWar && request.RestoreDynasty && CanJoinRestoration(request, kingdom, out Clan dynasty)
+            && dynasty != clan && !followers.Contains(dynasty)) followers.Add(dynasty);
         return true;
+    }
+
+    private static bool CanJoinRestoration(Request request, Kingdom kingdom, out Clan dynasty)
+    {
+        dynasty = MBObjectManager.Instance.GetObject<Clan>(request.FormerRulingClanId);
+        Hero formerKing = MBObjectManager.Instance.GetObject<Hero>(request.FormerKingId);
+        return formerKing != null && (!formerKing.IsAlive || !formerKing.IsPrisoner)
+            && dynasty != null && !dynasty.IsEliminated && dynasty != Clan.PlayerClan && dynasty.Kingdom == kingdom
+            && dynasty.Leader?.IsAlive == true && !dynasty.Leader.IsChild && !dynasty.Leader.IsPrisoner;
+    }
+
+    // A real rebel kingdom already exists. Failure here may retry registration, never creation.
+    private void RegisterCreatedWar(Request request, MyBehavior owner)
+    {
+        try
+        {
+            Kingdom home = MBObjectManager.Instance.GetObject<Kingdom>(request.KingdomId);
+            Kingdom rebel = MBObjectManager.Instance.GetObject<Kingdom>(request.RebelKingdomId);
+            Clan leader = MBObjectManager.Instance.GetObject<Clan>(request.ClanId);
+            Hero formerKing = MBObjectManager.Instance.GetObject<Hero>(request.FormerKingId);
+            if (home == null || rebel == null || leader?.Kingdom != rebel || formerKing == null)
+                throw new InvalidOperationException("已经建国，但内战参与方记录暂不可用。");
+            if (request.RestoreDynasty)
+            {
+                Clan dynasty = MBObjectManager.Instance.GetObject<Clan>(request.FormerRulingClanId);
+                if (dynasty?.Kingdom == home && CanJoinRestoration(request, home, out _))
+                    ChangeKingdomAction.ApplyByJoinToKingdomByDefection(dynasty, home, rebel, default(CampaignTime), true);
+                if (dynasty?.Kingdom != rebel) throw new InvalidOperationException("旧王家族尚未加入复位叛军。");
+            }
+            object[] args = { request.Id, home, rebel, leader, formerKing, request.RestoreDynasty, request.OriginalName, request.OriginalShortName, null };
+            if (!(bool)_af.RegisterCoupWar.Invoke(owner, args)) throw new InvalidOperationException(args[8] as string);
+            Complete(request, args[8] as string);
+        }
+        catch (Exception ex)
+        {
+            request.Message = "叛军已建立，内战登记等待重试：" + Error(ex);
+            request.RegistrationBlocked = true;
+            _hasRegistrationFailure = true;
+            _hasWork = _requests.Values.Any(r => r.State != RequestState.Completed && !r.RegistrationBlocked);
+            Logger.Log("Coup", "war_registration_pending coup=" + request.Id + " rebel=" + request.RebelKingdomId + " reason=" + request.Message);
+            Show(request.Message + " 可在城镇菜单选择“重试政变内战登记”；不会再次创建叛军王国。");
+        }
     }
 
     // Real engine time: campaign TickEvent stops while a town/menu is paused.
@@ -378,8 +465,9 @@ internal sealed class CoupRebellionBridge : CampaignBehaviorBase
             if (_runningId != null || _choiceId != null || Mission.Current != null
                 || !(Game.Current?.GameStateManager?.ActiveState is MapState) || _af.IsBusy(owner)
                 || (InformationManager.IsAnyInquiryActive() && _progressId == null)) return;
-            Request request = _requests.Values.FirstOrDefault(r => r.State != RequestState.Completed);
+            Request request = _requests.Values.FirstOrDefault(r => r.State != RequestState.Completed && !r.RegistrationBlocked);
             if (request == null) { _hasWork = false; return; }
+            if (request.State == RequestState.WarCreated) { RegisterCreatedWar(request, owner); return; }
             if (!Validate(request, owner, out Kingdom kingdom, out Clan clan, out List<Clan> followers, out string note))
             { Complete(request, note); return; }
             if (request.State == RequestState.NamingFailed) { ShowNamingFailure(request); return; }
@@ -395,8 +483,25 @@ internal sealed class CoupRebellionBridge : CampaignBehaviorBase
                 request.State = RequestState.Completed;
                 request.Message = "政变后叛乱开始执行，本次判定已消费。";
                 object[] args = { clan, kingdom, request.Week, true, request.Relation, request.Towns, request.Castles, naming, followers, null };
-                try { bool success = (bool)_af.Execute.Invoke(owner, args); Complete(request, (success ? "" : "叛乱未完成：") + args[9]); }
-                catch (Exception ex) { Complete(request, "叛乱结算异常，已发生变化保留且不会重复建国：" + Error(ex)); }
+                try
+                {
+                    bool success = (bool)_af.Execute.Invoke(owner, args);
+                    if (request.TrackCivilWar && clan.Kingdom != null && clan.Kingdom != kingdom)
+                    {
+                        request.RebelKingdomId = clan.Kingdom.StringId; request.State = RequestState.WarCreated;
+                        RegisterCreatedWar(request, owner);
+                    }
+                    else Complete(request, (success ? "" : "叛乱未完成：") + args[9]);
+                }
+                catch (Exception ex)
+                {
+                    if (request.TrackCivilWar && clan.Kingdom != null && clan.Kingdom != kingdom)
+                    {
+                        request.RebelKingdomId = clan.Kingdom.StringId; request.State = RequestState.WarCreated;
+                        RegisterCreatedWar(request, owner);
+                    }
+                    else Complete(request, "叛乱结算异常，已发生变化保留且不会重复建国：" + Error(ex));
+                }
                 return;
             }
             StartNaming(request, owner, kingdom, clan, followers);
@@ -404,7 +509,7 @@ internal sealed class CoupRebellionBridge : CampaignBehaviorBase
         catch (Exception ex)
         {
             Logger.Log("Coup", "bridge_tick_failed: " + ex);
-            Request request = _requests.Values.FirstOrDefault(r => r.State != RequestState.Completed);
+            Request request = _requests.Values.FirstOrDefault(r => r.State != RequestState.Completed && !r.RegistrationBlocked);
             if (request != null && _runningId == null) Complete(request, "政变后叛乱接缝异常，本次结束：" + Error(ex));
         }
     }
@@ -416,6 +521,9 @@ internal sealed class CoupRebellionBridge : CampaignBehaviorBase
         string system = (string)args[4], user = (string)args[5];
         if (request.LoyalistSelection)
             user += "\n本次起兵背景：玩家刚通过武装政变夺位，起兵家族属于旧王家族或更支持旧王的家族；这是反对篡位的起兵，不要求与新王关系为负。请以此为建国命名与简介的背景。";
+        if (request.TrackCivilWar)
+            user += request.RestoreDynasty ? "\n旧王已获释，本次战争目标为旧王朝复位；仅叛军胜利可复位，和平谈判不复位。"
+                : "\n旧王被扣押，旧王及其家族不参与本次内战，不要宣称旧王亲自起兵。";
         string requestId = request.Id;
         string logTarget = "政变后叛乱建国命名 - " + request.ClanId;
         int attempts = _af.NamingAttempts;
@@ -467,7 +575,7 @@ internal sealed class CoupRebellionBridge : CampaignBehaviorBase
         if (_runningId == request.Id) _runningId = null;
         Logger.Log("Coup", "rebellion_completed coup=" + request.Id + " result=" + message);
         Show(message);
-        _hasWork = _requests.Values.Any(r => r.State != RequestState.Completed);
+        _hasWork = _requests.Values.Any(r => r.State != RequestState.Completed && !r.RegistrationBlocked);
     }
 
     internal bool TryRecordCoupOutcome(CoupSession session, Hero formerKing, Settlement settlement, bool success, bool captured, out string message)

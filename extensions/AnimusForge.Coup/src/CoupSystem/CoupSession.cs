@@ -117,6 +117,8 @@ internal sealed class CoupSession
     public string KingdomId;
     public string KingId;
     public string OriginalRulingClanId;
+    public string OriginalKingdomName;
+    public string OriginalKingdomShortName;
     public string OriginalOwnerClanId;
     public CoupPhase Phase;
     public CoupKingDisposition Disposition;

@@ -102,6 +102,11 @@ internal sealed class CoupCampaignBehavior : CampaignBehaviorBase
     private void OnSessionLaunched(CampaignGameStarter starter)
     {
         starter.AddGameMenuOption("town", "af_armed_coup", "宣权篡位", MenuCondition, _ => Begin(), false, -1);
+        starter.AddGameMenuOption("town", "af_coup_retry_war_registration", "重试政变内战登记", args =>
+        {
+            args.optionLeaveType = GameMenuOption.LeaveType.Continue;
+            return CoupRebellionBridge.Instance?.HasPendingWarRegistration == true;
+        }, _ => CoupRebellionBridge.Instance?.RetryPendingWarRegistration(), false, -1);
         starter.AddGameMenuOption("town", "af_coup_enter_street", "率领政变突击队攻入城镇", args => SceneEntryCondition(args, CoupPhase.Street), _ => EnterSelectedScene(), false, -1);
         starter.AddGameMenuOption("town", "af_coup_enter_hall", "率领政变突击队攻入领主大厅", args => SceneEntryCondition(args, CoupPhase.Hall), _ => EnterSelectedScene(), false, -1);
         starter.AddGameMenuOption("town", "af_coup_aftermath", "进入政变胜利处置", args =>
@@ -229,6 +234,7 @@ internal sealed class CoupCampaignBehavior : CampaignBehaviorBase
             EntryRequirements = CoupSettings.CaptureAdmissionForNewCoup(),
             SettlementId = town.StringId, KingdomId = kingdom.StringId, KingId = kingdom.Leader.StringId,
             OriginalRulingClanId = kingdom.RulingClan.StringId, OriginalOwnerClanId = town.OwnerClan.StringId,
+            OriginalKingdomName = kingdom.Name.ToString(), OriginalKingdomShortName = kingdom.InformalName.ToString(),
             PlayerHealth = Hero.MainHero.HitPoints, KingHealth = Math.Max(1, kingdom.Leader.HitPoints), Phase = CoupPhase.Preparing
         };
         string id = _session.Id;

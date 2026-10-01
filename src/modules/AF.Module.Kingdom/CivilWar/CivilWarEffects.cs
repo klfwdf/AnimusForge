@@ -82,6 +82,7 @@ internal static class CivilWarEffects
 		Register(new GrantPrivilegesEffect());
 		Register(new AbdicateEffect());
 		Register(new UsurpThroneEffect());
+		Register(new RestoreCoupDynastyEffect());
 		Register(new SecedeEffect());
 		Register(new ConcessionEffect());
 		Register(new CrownVictoryEffect());
