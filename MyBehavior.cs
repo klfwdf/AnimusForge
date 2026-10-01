@@ -1669,6 +1669,13 @@ public partial class MyBehavior : CampaignBehaviorBase
 	private AutomaticKingdomRebellionOwner<PendingAutomaticKingdomRebellionContext> _automaticKingdomRebellions = new AutomaticKingdomRebellionOwner<PendingAutomaticKingdomRebellionContext>();
 	private AutomaticKingdomRebellionOwner<PendingAutomaticKingdomRebellionContext> AutomaticKingdomRebellions => _automaticKingdomRebellions ??= new AutomaticKingdomRebellionOwner<PendingAutomaticKingdomRebellionContext>();
 
+	// Keep Coup independent of the rebellion scheduler's backing fields. Main thread only.
+	internal bool HasBlockingRebellionFlowForCoup()
+	{
+		return AutomaticKingdomRebellions.FlowActive || !AutomaticKingdomRebellions.CanStart
+			|| _devForcedKingdomRebellionInProgress || _weeklyReportGenerationInProgress;
+	}
+
 	private bool _devForcedKingdomRebellionInProgress;
 
 	private bool _pendingDevForcedKingdomRebellionReady;

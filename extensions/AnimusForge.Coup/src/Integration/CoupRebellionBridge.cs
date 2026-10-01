@@ -94,11 +94,8 @@ internal sealed class CoupRebellionBridge : CampaignBehaviorBase
             ?? throw new MissingFieldException("AF naming result", "FailureReason");
         internal readonly int NamingAttempts = (int)(typeof(MyBehavior).GetField("RebelKingdomNamingMaxAttempts", All)
             ?? throw new MissingFieldException("AF", "RebelKingdomNamingMaxAttempts")).GetRawConstantValue();
-        internal readonly FieldInfo[] Busy = new[]
-        {
-            Field("_automaticKingdomRebellionFlowActive"), Field("_automaticKingdomRebellionInProgress"),
-            Field("_devForcedKingdomRebellionInProgress"), Field("_weeklyReportGenerationInProgress")
-        };
+        internal readonly Func<MyBehavior, bool> Busy = (Func<MyBehavior, bool>)Delegate.CreateDelegate(
+            typeof(Func<MyBehavior, bool>), Method("HasBlockingRebellionFlowForCoup", 0));
         internal readonly ConstructorInfo MemoryConstructor = typeof(InteractionMemoryCommit).GetConstructor(All, null,
             new[] { typeof(string), typeof(InteractionChannel), typeof(string), typeof(string), typeof(string), typeof(string),
                 typeof(IEnumerable<FactRecord>), typeof(long), typeof(long), typeof(string), typeof(int), typeof(int),
@@ -122,7 +119,7 @@ internal sealed class CoupRebellionBridge : CampaignBehaviorBase
             Require(MemoryStatus, MemoryStatus.ReturnType, true, typeof(string), typeof(string), typeof(string));
             if (!MemoryStatus.ReturnType.IsEnum || MemoryStatus.ReturnType.FullName != "AnimusForge.Refactor.Runtime.InteractionMemoryRecoveryLookupStatus"
                 || SelectedClan.FieldType != typeof(Clan) || SelectedFollowers.FieldType != typeof(List<Clan>) || ResolutionMessage.FieldType != typeof(string)
-                || NamingFailure.FieldType != typeof(string) || Busy.Any(field => field.IsStatic || field.FieldType != typeof(bool)))
+                || NamingFailure.FieldType != typeof(string))
                 throw new MissingMemberException("AF rebellion/memory result or busy-field shape changed");
         }
 
@@ -137,13 +134,11 @@ internal sealed class CoupRebellionBridge : CampaignBehaviorBase
             MethodInfo method = typeof(MyBehavior).GetMethods(All).SingleOrDefault(m => m.Name == name && m.GetParameters().Length == count);
             return method ?? throw new MissingMethodException("AF " + name + "/" + count);
         }
-        private static FieldInfo Field(string name) => typeof(MyBehavior).GetField(name, All) ?? throw new MissingFieldException("AF", name);
         private static FieldInfo ResultField(string name) => typeof(MyBehavior).GetNestedType("KingdomRebellionResolutionResult", BindingFlags.NonPublic)?.GetField(name, All)
             ?? throw new MissingFieldException("AF rebellion result", name);
         internal bool IsBusy(MyBehavior owner)
         {
-            foreach (FieldInfo field in Busy) if ((bool)field.GetValue(owner)) return true;
-            return false;
+            return owner == null || Busy(owner);
         }
     }
 

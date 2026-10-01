@@ -97,6 +97,7 @@ internal static class Program
         Invoke(guards, "Register", harmony);
 
         SelectionRegression.Run(coup, Write);
+        EntryGateRegression.Run(af, coup, Write);
 
         bool ready = ReadFlag(sets, "IsAvailable") & ReadFlag(rebellion, "IsAvailable")
             & ReadFlag(guards, "MissionProtectionAvailable") & ReadFlag(guards, "CaptivityProtectionAvailable");
@@ -119,7 +120,7 @@ internal static class Program
             a.GetName().Name == "TaleWorlds.CampaignSystem" || a.GetName().Name == "TaleWorlds.MountAndBlade"
             || a.GetName().Name == "SandBox" || a.GetName().Name == "0Harmony"))
             Write("RUNTIME_DEPENDENCY " + loaded.GetName().Name + " MVID=" + loaded.ManifestModule.ModuleVersionId + " path=" + loaded.Location);
-        Write("Game/Campaign/mission not started; no LLM provider invoked; registration and selection datafactory fixture only.");
+        Write("Game/Campaign/mission not started; no LLM provider invoked; registration, entry-state and selection datafactory fixtures only.");
         Write(ready && unchanged && targetCount > 0 ? "PASS registration smoke" : "FAIL registration smoke");
         // Keep log redirection until process exit: AF may flush its background log queue.
         return ready && unchanged && targetCount > 0 ? 0 : 1;

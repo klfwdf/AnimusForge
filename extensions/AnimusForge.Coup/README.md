@@ -1,6 +1,6 @@
-# AnimusForge 宣权篡位（独立子模组）
+# AnimusForge 宣权篡位
 
-依赖已安装的 AnimusForge、Harmony 与 MCM。启动器勾选 **AnimusForge - 宣权篡位**，排在 AnimusForge 后面。模块 ID 为 `AnimusForge_Coup`，只加载自己的 `AnimusForge.Coup.dll`，不替换 AF 或原版 DLL。
+当前主线已将 Coup 编入 `AnimusForge.dll`，由 `IntegratedModuleHost` 启动，只需启用统一的 AnimusForge 模块。MCM 仍保留独立设置页。下方独立子模组构建说明仅供维护旧输出；旧模块检测到主体接管后会跳过注册。
 
 ## 使用
 
@@ -16,6 +16,10 @@
 本子模组持有政变目标、状态和存档。街道与大厅的进场、随行生成、编队、守军波次和指挥交给已安装 AF 的 SETS。政变只登记本次进城、判定国王与大厅门口，并在胜利后执行王位、归属和叛乱。它不改 SETS 的日常随行存档，也不走 SETS 的占领菜单。
 
 这些接缝不是 AF 公共 API V1 的兼容承诺。SETS 不可用时关闭发动入口并记录原因。菜单结算由实时引擎 tick 驱动，避免城镇暂停时卡住。退出与读档后不保留 Agent 引用。政治执行仍在游戏主线程。
+
+入口与叛乱调度的忙碌状态通过主体的 `HasBlockingFlowForCoup` / `HasBlockingRebellionFlowForCoup` 查询，启动时绑定并缓存 delegate，不依赖主体私有字段布局。菜单重算和已有引擎调度仅作 O(1) 状态判断；缺失接口或 SETS 查询异常仍关闭入口。统一主线使用仓库 `scripts/build/build_single_module.ps1` 构建两版和 Bootstrap，未授权时不添加 `-Deploy`。
+
+`Guards registered` 启动日志里的 `captivity=False` 还可能表示战役拘押行为尚未构造；它不是单独的补丁失败证据。需结合 `Automatic detention protection unavailable` 错误与战役生命周期验证判断。
 
 两版从同一源码编译，分别位于 `artifacts/1.3` 与 `artifacts/1.4`。部署只放与当前游戏匹配的一个实现；不把两份实现同时声明到启动器。当前双构建脚本需要 1.4 游戏安装，1.3 编译使用固定的完整 `Bannerlord.ReferenceAssemblies 1.3.15.110062` 引用包。
 
