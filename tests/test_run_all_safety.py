@@ -120,6 +120,13 @@ class RunAllSafetyTests(unittest.TestCase):
             cmd = runner.command(project.name, {"args": ["--artifact-root", "fixture"]}, "synthetic")
         self.assertEqual(cmd[-3:], ["--", "--artifact-root", "fixture"])
 
+    def test_debt_fixture_gets_explicit_python_not_inherited_path(self):
+        project = self.repo / "DebtTests.csproj"
+        project.write_text('<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><TargetFramework>net8.0</TargetFramework><DebtPythonExe>python</DebtPythonExe></PropertyGroup></Project>')
+        with patch.object(runner, "ROOT", self.repo):
+            cmd = runner.command(project.name, {}, "synthetic")
+        self.assertIn("-p:DebtPythonExe=" + runner.sys.executable, cmd)
+
     def test_csproj_rejects_old_bin_target_before_runtime(self):
         target = self.repo / "bin" / "ExampleTests.dll"
         target.parent.mkdir(parents=True)
