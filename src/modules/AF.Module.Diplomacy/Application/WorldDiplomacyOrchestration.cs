@@ -127,7 +127,6 @@ internal interface IWorldDiplomacyOrchestrationHost
     WorldDiplomacyPolicyRoundApplication.Parties ResolvePolicyParties(WorldDiplomacyPolicySignal signal);
     string ResolvePropagationReceiverId(string kingdomId, string settlementId);
     int OfferCooldownLastFailedRoundDay(WorldDiplomacyOfferCooldownKey key);
-    string BuildExternalFactBody(string action, string initiatorId, string targetId, string reason);
     bool ExternalProposalTakenEffect(string intent, string initiatorId, string targetId);
     string NewThreatId();
 
@@ -1977,7 +1976,8 @@ internal sealed class WorldDiplomacyOrchestration : IWorldDiplomacyOrchestration
             intent => _host.ExternalProposalTakenEffect(intent, initiatorId, targetId),
             domain => ClearBilateralOfferCooldowns(initiatorId, targetId, domain),
             (title, factBody, origin, playerAuthored) => CreateDocument(initiatorId, targetId, title, factBody, origin, playerAuthored, false, ""),
-            normalized => _host.BuildExternalFactBody(normalized, initiatorId, targetId, reason),
+            normalized => WorldDiplomacyTextRules.BuildExternalFactBody(normalized,
+                _host.PartyNameOrEmpty(initiatorId), _host.PartyNameOrEmpty(targetId), reason),
             playerInsertion => EnsureActiveRound(initiatorId, targetId, playerInsertion),
             candidate => CanExternalDiplomacyFactJoinRound(candidate, initiatorId, targetId),
             TryIncludeResultSettlementTarget,
