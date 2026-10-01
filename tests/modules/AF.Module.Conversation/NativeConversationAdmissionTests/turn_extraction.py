@@ -12,6 +12,7 @@ import sys
 sys.path.insert(0, str(ROOT / "tests"))
 from output_isolation import current_source_path
 from remote_feature_delta import restore_remote_feature_delta
+from af2_f5_migration_review import exact_inverse
 spec = importlib.util.spec_from_file_location('turn_decl', ROOT/'tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py')
 ex = importlib.util.module_from_spec(spec); spec.loader.exec_module(ex)
 REVIEW = json.loads((ROOT/'tests/modules/AF.Module.Conversation/NativeTurn/source-review.json').read_text())
@@ -45,15 +46,24 @@ def restore_ceremony_owner(file, text):
         text = text.replace(after, before, 1)
     return text
 
+def restore_f5_network_request_delta(file, text):
+    if file != 'ShoutBehavior.NativeTurnCommit.cs': return text
+    before='succeeded = TryRequestSceneUnifiedActionPostprocess(workItem.SystemPrompt,\n                        workItem.UserPrompt, out content, out error);'
+    after='succeeded = TryRequestSceneUnifiedActionPostprocess(workItem.NetworkRequest.SystemPrompt,\n                        workItem.NetworkRequest.UserPrompt, out content, out error);'
+    if text.count(before) == 1 and text.count(after) == 0: return text
+    assert text.count(after) == 1 and text.count(before) == 0, 'Unreviewed F5 detached network argument drift'
+    return text.replace(after, before, 1)
+
 def reviewed_turn_source(file):
     try:
-        return restore_ceremony_owner(file, (current_source_path(ROOT, file)).read_text(encoding='utf-8-sig'))
+        return restore_ceremony_owner(file, restore_f5_network_request_delta(file, (current_source_path(ROOT, file)).read_text(encoding='utf-8-sig')))
     except AssertionError as error:
         if not str(error).startswith('unreviewed remote feature drift: '):
             raise
         raise AssertionError('Unreviewed J07b source drift: turn dependency ' + file) from error
 
 def projected_source(source):
+    source = exact_inverse("ShoutBehavior.cs", source)
     source = restore_remote_feature_delta("ShoutBehavior.cs", source)
     original = subprocess.check_output(['git','show',REVIEW['baseline']+':ShoutBehavior.cs'],cwd=ROOT).decode('utf-8-sig').replace('\r\n','\n')
     if source == original: return source
@@ -83,7 +93,7 @@ def projected_source(source):
     parts = {}
     for file in REVIEW['addedFiles']:
         if not file.startswith('ShoutBehavior.NativeTurn'): continue
-        text = restore_remote_feature_delta(file, (current_source_path(ROOT, file)).read_text(encoding='utf-8-sig'))
+        text = restore_remote_feature_delta(file, restore_f5_network_request_delta(file, (current_source_path(ROOT, file)).read_text(encoding='utf-8-sig')))
         for name in re.findall(r'(?:public async Task<NativeConversationTurnStep>|private void) (\w+)\(\)',text):
             signature = ('public async Task<NativeConversationTurnStep> ' if name.endswith('Async') else 'private void ')+name+'()'
             body = ex.declaration(text,signature).split('{',1)[1].rsplit('}',1)[0]
@@ -131,7 +141,7 @@ def projected_source(source):
     fields = {}
     for file in REVIEW['addedFiles']:
         if file.startswith('ShoutBehavior.NativeTurn'):
-            text=restore_remote_feature_delta(file, (current_source_path(ROOT, file)).read_text(encoding='utf-8-sig'))
+            text=restore_remote_feature_delta(file, restore_f5_network_request_delta(file, (current_source_path(ROOT, file)).read_text(encoding='utf-8-sig')))
             fields.update({name:typ for typ,name in re.findall(r'^        private ([\w.]+(?:<[^;=\n]+>)?(?:\[\])?) (\w+);$',text,re.M)})
     for name,typ in fields.items():
         expected = re.sub(r'(?m)^(\s*)'+re.escape(typ)+r' '+name+r' = ',r'\1'+name+' = ',expected)

@@ -1,0 +1,63 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using AnimusForge;
+long next=100;
+var owner=new NativeConversationSessionOwner(()=>++next,2);
+int count=0;
+void Check(bool condition,string name) { if(!condition) throw new Exception(name); Console.WriteLine("PASS "+name);count++; }
+AnimusForgeDialogueHistoryEntry Entry(long seq,string text,string kind="player",int day=1) => new AnimusForgeDialogueHistoryEntry { EventSequence=seq,Text=text,Kind=kind,GameDayIndex=day,Speaker="speaker" };
+owner.Append("hero",Entry(1,"old"));owner.Append("hero",Entry(2,"fact","fact"));owner.Append("hero",Entry(3,"two"));owner.Append("hero",Entry(4,"three"));
+Check(owner.Snapshot("hero",1).Select(x=>x.Text).SequenceEqual(new[]{"fact","three"}),"facts-outside-normal-budget");
+var snapshot=owner.GetTail("hero",20);snapshot[0].Text="mutated";Check(owner.GetTail("hero",20)[0].Text=="fact","snapshot-detached");
+owner.Append("hero",Entry(5,"npc","npc"));Check(owner.IsLastNpcLine("hero","npc"),"external-npc-dedup");
+Check(owner.TryMarkDialog("hero","line") && !owner.TryMarkDialog("hero","line"),"current-dialog-dedup");owner.CloseInput(false);Check(owner.HasHistory("hero") && owner.TryMarkDialog("hero","line"),"close-keeps-history-clears-dedup");
+owner.Append("rollback",Entry(10,"player"));owner.Append("rollback",Entry(10,"fact","fact"));owner.RollbackPlayerEvent("rollback",10);Check(owner.GetTail("rollback",20).Single().Kind=="fact","tentative-rollback-exact-player-only");
+var old=Entry(20,"old","npc");owner.Append("edit",old);owner.SyncDay("edit",1,new[]{old},new[]{Entry(0,"new","npc")});Check(owner.GetTail("edit",20).Single().EventSequence==20,"manual-edit-preserves-sequence");
+owner.Append("edit",Entry(30,"next-day","npc",2));owner.Clear("edit",1);Check(owner.GetTail("edit",20).Single().GameDayIndex==2,"summary-day-clear-preserves-other-days");
+for(int i=0;i<14;i++)owner.QueueFact("hero",new ConversationMessage { EventSequence=i,Role="system",Content="fact"+i,SpeakerHeroId="h",TargetHeroId="target",VisibleAgentIndices=new List<int>{i} });
+var facts=owner.ConsumeFacts("hero");Check(facts.Count==12 && facts[0].EventSequence==2 && facts[11].VisibleAgentIndices.Single()==13 && facts[0].SpeakerHeroId=="h" && facts[0].TargetHeroId=="target","pending-afef-limit-metadata");Check(owner.ConsumeFacts("hero").Count==0,"pending-afef-consume-once");
+owner.QueueFact("hero",new ConversationMessage {Content="remain"});owner.Clear("hero",-1);Check(owner.ConsumeFacts("hero").Count==1,"history-clear-not-fact-loss");
+Check(!owner.HasHistory("hero"),"all-days-clear-removes-transient-history");
+owner.ClearAll();Check(!owner.HasHistory("edit") && !owner.HasHistory("rollback"),"retirement-clears-single-state");
+var player=Entry(51," player\r text ","player",4);player.GameDate="date";player.GameHour=7;player.Scene="scene";player.TargetAgentIndex=9;player.TargetName=" Explicit ";
+var npc=Entry(52," npc ","NPC",4);npc.Speaker="";
+var fact=Entry(53,"【当下行为】[过往行为]fact","FACT",4);fact.Speaker="some NPC";
+var projected=NativeConversationSessionOwner.ProjectHistoryMessages(new(){ player,npc,fact,Entry(54," "),Entry(55,"unknown","other") }," Target ",3,new Dictionary<int,float>{{9,12.5f},{3,2f}});
+Check(projected.Count==4 && projected.Select(x=>x.Role).SequenceEqual(new[]{"user","assistant","system","user"}),"projection-role-order-empty-and-unknown");
+Check(projected[0].EventSequence==51 && projected[0].GameDayIndex==4 && projected[0].GameDate=="date" && projected[0].GameHour==7 && projected[0].Scene=="scene","projection-metadata-preserved");
+Check(projected[0].TargetAgentIndex==9 && projected[0].TargetName=="Explicit" && projected[0].PlayerDistanceMeters==12.5f && projected[0].SpeakerName=="你" && projected[0].SpeakerAgentIndex==-1,"projection-player-explicit-target-detached-distance");
+Check(projected[1].SpeakerName=="Target" && projected[1].SpeakerAgentIndex==3 && projected[1].Content=="npc","projection-npc-target-fallback");
+Check(projected[2].SpeakerName=="系统" && projected[2].Content=="[AFEF NPC行为补充] fact" && projected[2].SpeakerAgentIndex==-1,"projection-fact-system-scope");
+Check(projected[3].TargetAgentIndex==3 && projected[3].TargetName=="Target" && projected[3].PlayerDistanceMeters==2f,"projection-player-target-fallback");
+Check(NativeConversationSessionOwner.ProjectHistoryMessages(new(){npc},"",-1,null).Single().SpeakerName=="NPC","projection-empty-npc-name");
+Check(NativeConversationSessionOwner.ProjectHistoryMessages(new(){player},"",-1,null).Single().PlayerDistanceMeters==-1f,"projection-unavailable-distance");
+Check(NativeConversationSessionOwner.ResolveHistoryLineLimit(999,500,7)==500 && NativeConversationSessionOwner.ResolveHistoryLineLimit(1,500,7)==1 && NativeConversationSessionOwner.ResolveHistoryLineLimit(0,500,7)==7 && NativeConversationSessionOwner.ResolveHistoryLineLimit(-2,500,7)==7,"history-limit-legacy-default-and-clamp");
+Check(ConversationSpeechTextRules.NormalizeNativeConversationFactLineForPrompt("[AFEF玩家行为补充] ready","NPC")=="[AFEF玩家行为补充] ready","fact-existing-identity-preserved");
+Check(ConversationSpeechTextRules.NormalizeNativeConversationFactLineForPrompt("【当下行为】 ","NPC")=="","fact-empty-after-scope");
+Check(ConversationSpeechTextRules.NormalizeNativeConversationVisibleTextKey("Bob: hello (move) *wave* [MOOD:HAPPY] [FOL]",default)=="hello","visible-key-pure-default-options");
+Check(ConversationSpeechTextRules.NormalizeNativeConversationVisibleTextKey("Bob: hello (move) *wave*",new(false,true))=="hello *wave*","visible-key-pure-preserve-options");
+Check(ConversationSpeechTextRules.NormalizeNativeConversationVisibleTextKey("Bob: hello (move) *wave*",new(true,false))=="hello (move) *wave*","visible-key-pure-detailed-options");
+Check(ConversationSpeechTextRules.NormalizeNativeConversationHistoryTextForPostprocess("Bob: hello (move) *wave* [END] [RELAY:2]")=="hello (move) *wave*","history-key-preserves-stage-directions");
+owner.Append("latest",Entry(71,"Bob: hello (move) *wave*","npc"));
+Check(owner.LatestNpcUtterance("latest",new(true,false))=="hello (move) *wave*" && owner.LatestNpcUtterance("latest")=="hello","owner-normalization-options-no-live-callback");
+string[] corpus={null,"","   ","Bob: hello","bad, prefix: hello","hello (move) *wave* **double**", "hello（move）", "[MOOD:HAPPY]hello[ACTION:SCENE_STOP_FOLLOW][NO_CONTINUE][END][RELAY:2]", "ACTION:MOOD:HAPPY hello", "【当前对话】\nhello", "hello  其他人也要说话", "Gold: 12\nhello", "InventoryItems: stuff\nhello", "[RELAY:接力编号]", "【当下行为】[过往行为]plain", "[AFEF NPC行为补充] plain", "{\"reply\":\"hello [FOL]\"}", "line1\r\nline2 [A:H_J_P_P_C]", "hello [ADP:stuff] [ATT:x] [ATP:y] [GUI:z]"};
+foreach(bool detailed in new[]{false,true}) foreach(bool preserve in new[]{false,true}) {
+ LegacySpeechTextOracle.Detailed=detailed;LegacySpeechTextOracle.PreserveAsterisk=preserve;
+ var opts=new ConversationSpeechTextOptions(detailed,preserve);
+ foreach(string text in corpus) {
+  Check(ConversationSpeechTextRules.NormalizeNativeConversationVisibleTextKey(text,opts)==LegacySpeechTextOracle.NormalizeNativeConversationVisibleTextKey(text),"frozen-visible-normalization-parity");
+  Check(ConversationSpeechTextRules.NormalizeNativeConversationHistoryTextForPostprocess(text)==LegacySpeechTextOracle.NormalizeNativeConversationHistoryTextForPostprocess(text),"frozen-history-normalization-parity");
+  foreach(string speaker in new[]{null,"player"," NPC ","some_npc"}) Check(ConversationSpeechTextRules.NormalizeNativeConversationFactLineForPrompt(text,speaker)==LegacySpeechTextOracle.NormalizeNativeConversationFactLineForPrompt(text,speaker),"frozen-fact-normalization-parity");
+ }
+}
+var budgetOwner=new NativeConversationSessionOwner(()=>++next,500);
+for(int i=0;i<500;i++)budgetOwner.Append("budget",Entry(i,"line"+i,"player"));
+for(int i=0;i<200;i++)budgetOwner.Append("budget",Entry(500+i,"fact"+i,"fact"));
+var capturedDistances=new Dictionary<int,float>{{3,4f}};
+for(int i=0;i<10;i++)NativeConversationSessionOwner.ProjectHistoryMessages(budgetOwner.Snapshot("budget",100),"Target",3,capturedDistances);
+long beforeAllocation=GC.GetAllocatedBytesForCurrentThread();var timer=System.Diagnostics.Stopwatch.StartNew();int projectedRecords=0;
+for(int i=0;i<250;i++)projectedRecords+=NativeConversationSessionOwner.ProjectHistoryMessages(budgetOwner.Snapshot("budget",100),"Target",3,capturedDistances).Count;
+timer.Stop();long allocated=GC.GetAllocatedBytesForCurrentThread()-beforeAllocation;
+Console.WriteLine("NativeHistoryBudget jobs=250 stored=700 ordinaryBudget=100 outputRecords="+projectedRecords+" elapsedMs="+timer.Elapsed.TotalMilliseconds+" allocatedBytes="+allocated+" gameDistanceCapture=NOT_MEASURED");
+Console.WriteLine("NativeSessionOwner PASS="+count+" FAIL=0 LIVE=NOT_RUN");

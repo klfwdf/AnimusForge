@@ -19,6 +19,7 @@ code=code.replace('@@REROLL_UI@@',ex.declaration(ui_source,'private async Task R
 code=code.replace('@@PROMOTED_RESPONSE@@', 'return response.Task;' if a.original else 'SkillCalls++;return skillResponse.Task;')
 code=code.replace('@@PROMOTED_HELPERS@@', '' if a.original else (HERE/'PromotedHelpers.cs.txt').read_text(encoding='utf-8')).replace('@@PROMOTED_TESTS@@', '' if a.original else (HERE/'PromotedTests.cs.txt').read_text(encoding='utf-8')).replace('@@RUN_PROMOTED@@', '' if a.original else 'PromotedCases();')
 code=code.replace('@@RESERVATION_TESTS@@','' if a.original else (HERE/'Reservations.cs.txt').read_text(encoding='utf-8'))
+code=code.replace('@@TEXT_RULE_CASES@@','' if a.original else (HERE/'TextRules.cs.txt').read_text(encoding='utf-8')).replace('@@RUN_TEXT_RULES@@','' if a.original else 'TextRuleCases();')
 out=util.new_run_root(ROOT,'HeroPersonaGenerationTests',a.run_root)
 (out/'Program.cs').write_text(code,encoding='utf-8');(out/'NuGet.Config').write_text('<configuration><packageSources><clear/></packageSources></configuration>')
 files=[out/'Program.cs',ROOT/'src/modules/AF.Module.Memory/Summary/MemorySummaryDispatcher.cs',ROOT/'src/modules/AF.Module.Memory/Summary/IMemorySummaryDispatchHost.cs']
@@ -40,6 +41,13 @@ if not a.original:
  (out/'Promoted.cs').write_text(promoted,encoding='utf-8');files.append(out/'Promoted.cs')
 if not a.original:
  (out/'Policy.cs').write_text(policy,encoding='utf-8');files.append(out/'Policy.cs')
+ files += [ROOT/'src/modules/AF.Module.Persona/Generation/NpcPersonaTextRules.cs',ROOT/'src/modules/AF.Module.Llm/Protocol/JsonResponseTextCodec.cs']
 project=util.project(out,'HeroPersonaProof',files,executable=True)
+if not a.original:
+ newtonsoft=Path(os.environ.get('AF_NEWTONSOFT') or str(Path(a.dotnet).parent/'sdk/8.0.425/Newtonsoft.Json.dll'))
+ if not newtonsoft.is_file(): raise SystemExit('Missing existing Newtonsoft.Json.dll: '+str(newtonsoft))
+ from xml.sax.saxutils import escape
+ xml=project.read_text(encoding='utf-8').replace('</ItemGroup>', '<Reference Include="Newtonsoft.Json"><HintPath>'+escape(str(newtonsoft))+'</HintPath></Reference></ItemGroup>')
+ project.write_text(xml,encoding='utf-8')
 code,log=util.run_dotnet(a.dotnet,['run','--project',str(project),'-c','Release'],out)
 (out/'run.log').write_text(log,encoding='utf-8');print(log,end='');raise SystemExit(code)

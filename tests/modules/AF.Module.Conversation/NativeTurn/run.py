@@ -36,6 +36,7 @@ if a.mutate=='capture-on-worker':capture=capture.replace('capture();','Task.Run(
 if a.mutate=='normalize-on-worker':slice=slice.replace('postprocessed = CompleteSceneUnifiedActionPostprocess(workItem, succeeded, content, error)','postprocessed = Task.Run(() => CompleteSceneUnifiedActionPostprocess(workItem, succeeded, content, error)).GetAwaiter().GetResult()',1)
 if a.mutate=='swallow-capture-failure':capture=capture.replace('failure?.Throw();',';',1)
 code=(HERE/'Harness.cs.txt').read_text(encoding='utf-8').replace('@@CAPTURE@@',capture).replace('@@SLICE@@',slice).replace('@@FIELDS@@','\n'.join(fields)).replace('@@PREPARE@@',prepare_signature)
+code=code.replace('@@NETWORK@@',ex.declaration(read('src/modules/AF.Module.Conversation/Internal/Postprocess/ConversationActionPostprocessOwner.cs'),'internal sealed class PostprocessNetworkRequest'))
 assert '@@' not in code
 out=new_run_root(ROOT,'native-turn',a.run_root)
 (out/'Program.cs').write_text(code,encoding='utf-8');(out/'Coordinator.cs').write_text(coordinator,encoding='utf-8')

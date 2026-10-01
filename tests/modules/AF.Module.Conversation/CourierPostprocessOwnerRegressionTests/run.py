@@ -11,7 +11,7 @@ from xml.sax.saxutils import escape
 ROOT = Path(__file__).resolve().parents[4]
 import sys
 sys.path.insert(0, str(ROOT / "tests"))
-from output_isolation import current_source_path
+from output_isolation import current_source_path, new_run_root, minimal_test_environment
 HERE = Path(__file__).resolve().parent
 spec = importlib.util.spec_from_file_location('boundary_extractor', ROOT / 'tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py')
 ex = importlib.util.module_from_spec(spec)
@@ -20,7 +20,7 @@ SIGNATURES = [
     'public static LegacyInteractionPipelinePorts CreateCourierDetachedPortsForExternal(',
     'private static LegacyInteractionPipelinePorts CreateCourierDetachedPorts(',
     'private static IReadOnlyList<string> ReadCourierCsvFact(',
-    'private ShoutBehavior.CourierActionPostprocessWorkItem PrepareCourierDetachedPostprocessWorkItem(',
+    'private ConversationCourierPostprocessWorkItem PrepareCourierDetachedPostprocessWorkItem(',
     'private InteractionEnvelope CapturePreparedCourierReplyEnvelope(',
     'private static string PrepareNpcReplyForActionPostprocess(',
     'private static bool LooksLikeApiError(',
@@ -65,7 +65,7 @@ def extract():
     return {
         'METHODS': '\n\n'.join(ex.declaration(courier, signature) for signature in SIGNATURES),
         'PARTIAL': ex.source('src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.DetachedPostprocess.cs', None),
-        'WORK_ITEM': ex.declaration(shout, 'internal sealed class CourierActionPostprocessWorkItem'),
+        'WORK_ITEM': '\n'.join(ex.declaration(ex.source('src/modules/AF.Module.Conversation/Internal/Postprocess/ConversationActionPostprocessOwner.cs', None), signature) for signature in ('internal sealed class PostprocessNetworkRequest', 'internal sealed class ConversationCourierPostprocessWorkItem')),
         'LIFETIME': '\n\n'.join(lifetime),
     }
 
@@ -106,8 +106,7 @@ def main():
         newtonsoft = resolve_newtonsoft(args.newtonsoft)
     except FileNotFoundError as error:
         parser.error(str(error))
-    output = HERE / '.generated' / args.output_name
-    output.mkdir(parents=True, exist_ok=True)
+    output = new_run_root(ROOT, 'courier-postprocess-owner-' + args.output_name, None)
     blocks = extract()
     original = dict(blocks)
     if args.mutation:
@@ -133,8 +132,7 @@ def main():
     meta += '\nMutation=' + (args.mutation or 'none')
     meta += '\nInstrumentation=Task.Delay(30000) -> Task.Delay(180); generated copy only\n'
     (output / 'source-fingerprints.txt').write_text(meta, encoding='utf-8')
-    env = os.environ.copy()
-    env.update(DOTNET_ROOT=str(Path(args.dotnet).parent), DOTNET_CLI_HOME=str(output / 'cli'), DOTNET_CLI_TELEMETRY_OPTOUT='1', DOTNET_NOLOGO='1', DOTNET_CLI_UI_LANGUAGE='en')
+    env = minimal_test_environment(Path(args.dotnet), output)
     result = subprocess.run([args.dotnet, 'run', '--project', str(output / 'Tests.csproj'), '-c', 'Release'], cwd=output, env=env, capture_output=True, text=True, encoding='utf-8', errors='replace', timeout=120)
     log = meta + result.stdout + result.stderr
     (output / 'run.log').write_text(log, encoding='utf-8')

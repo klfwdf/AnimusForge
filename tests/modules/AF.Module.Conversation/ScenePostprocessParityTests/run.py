@@ -5,7 +5,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[4]
 import sys
 sys.path.insert(0, str(ROOT / "tests"))
-from output_isolation import current_source_path
+from output_isolation import current_source_path, new_run_root, minimal_test_environment
 HERE = Path(__file__).resolve().parent
 spec = importlib.util.spec_from_file_location('cutover_extraction', ROOT/'tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py')
 extractor = importlib.util.module_from_spec(spec)
@@ -13,6 +13,7 @@ spec.loader.exec_module(extractor)
 BASELINE = 'd40808b3'
 SIGNATURE = 'private static string TryRunSceneUnifiedActionPostprocess('
 TEAM_MODULE_FILES = (
+    'src/bridges/Vengeance/Host/PublicExecutionOrderPolicy.cs',
     'src/AF.Contracts/Internal/TeamModules/IPolicyModulePort.cs',
     'src/AF.Contracts/Internal/TeamModules/IGatheringModulePort.cs',
     'src/AF.Contracts/Internal/TeamModules/ISiegeModulePort.cs',
@@ -87,7 +88,17 @@ def stub_helpers(old_source, method):
     return '\n'.join(blocks)
 
 
+def owner_phase_source():
+    # Ownership/accessibility and detached target type names are harness wiring only.
+    # The complete method bodies are taken from the current real owner, not the compatibility facade.
+    owner=extractor.source('src/modules/AF.Module.Conversation/Internal/Postprocess/ConversationActionPostprocessOwner.cs',None)
+    return owner.replace('internal static','private static').replace('internal sealed class','private sealed class').replace('PostprocessSummonTarget','SceneSummonPromptTarget').replace('PostprocessGuideTarget','SceneGuidePromptTarget')
+
 def extract_candidate(ref):
+    if not ref:
+        shared=owner_phase_source()
+        signatures=[SIGNATURE,'private sealed class SceneActionPostprocessWorkItem','private sealed class PostprocessNetworkRequest','private static void ApplyStageQualifications(','private static SceneActionPostprocessWorkItem PrepareSceneUnifiedActionPostprocess(','private static bool TryRequestSceneUnifiedActionPostprocess(','private static string CompleteSceneUnifiedActionPostprocess(']
+        return '\n'.join(extractor.declaration(shared,signature) for signature in signatures), True
     scene=extractor.source('ShoutBehavior.cs',ref)
     shared_path='src/modules/AF.Module.Conversation/Internal/Postprocess/ShoutBehavior.UnifiedActionPostprocess.cs'
     try:
@@ -141,13 +152,12 @@ def main():
     blocks={'BASELINE':original,'CANDIDATE':candidate,'HELPERS':stub_helpers(old_source,original)}
     for key,val in blocks.items(): template=template.replace('@@'+key+'@@',val)
     if '@@' in template: raise ValueError('Unexpanded placeholder')
-    output=HERE/'.generated'/args.output_name
-    output.mkdir(parents=True,exist_ok=True)
+    output=new_run_root(ROOT,'scene-postprocess-parity-'+args.output_name,None)
     (output/'Program.cs').write_text(template,encoding='utf-8')
     (output/'Parity.csproj').write_text('<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><ImplicitUsings>enable</ImplicitUsings><Nullable>disable</Nullable></PropertyGroup>'+team_module_project_items()+'</Project>')
     (output/'NuGet.Config').write_text('<configuration><packageSources><clear/></packageSources></configuration>')
     meta=f'baseline={BASELINE} candidate={args.source_ref or "working-tree"} phaseSplit={phases} mutation={args.mutate or "none"}\n'+'\n'.join(k+' sha256='+hashlib.sha256(v.encode()).hexdigest() for k,v in blocks.items())
-    env=os.environ.copy(); env['DOTNET_ROOT']=str(Path(args.dotnet).parent); env['DOTNET_CLI_HOME']=str(ROOT/'.tmp/dotnet-cli'); env['DOTNET_GENERATE_ASPNET_CERTIFICATE']='false'; env['DOTNET_CLI_TELEMETRY_OPTOUT']='1'; env['DOTNET_NOLOGO']='1'; env['DOTNET_CLI_UI_LANGUAGE']='en'
+    env=minimal_test_environment(Path(args.dotnet),output)
     r=subprocess.run([args.dotnet,'run','--project',str(output/'Parity.csproj'),'-c','Release'],cwd=output,env=env,capture_output=True,text=True,encoding='utf-8',errors='replace',timeout=120)
     log=meta+'\n'+r.stdout+r.stderr
     (output/'source-fingerprints.txt').write_text(meta+'\n',encoding='utf-8')

@@ -1,4 +1,4 @@
-import argparse,importlib.util,subprocess,os
+import argparse,importlib.util,subprocess,os,hashlib
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[4];HERE=Path(__file__).parent
 import sys
@@ -6,7 +6,7 @@ sys.path.insert(0, str(ROOT / "tests"))
 from output_isolation import current_source_path
 import sys
 sys.path.insert(0,str(ROOT/'tests'))
-from output_isolation import new_run_root
+from output_isolation import new_run_root, minimal_test_environment
 p=argparse.ArgumentParser();p.add_argument('--original',action='store_true');p.add_argument('--mutate');p.add_argument('--native',action='store_true');p.add_argument('--run-root',type=Path);a=p.parse_args()
 spec=importlib.util.spec_from_file_location('ex',ROOT/'tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py');ex=importlib.util.module_from_spec(spec);spec.loader.exec_module(ex)
 def read(n):return subprocess.check_output(['git','show','659bb998:'+n],cwd=ROOT).decode('utf-8-sig') if a.original else (current_source_path(ROOT, n)).read_text(encoding='utf-8-sig')
@@ -64,14 +64,20 @@ if not a.original:
  (out/'Snapshot.cs').write_text(snap,encoding='utf-8')
 if a.native:(out/'PendingOperationRegistry.cs').write_text((ROOT/'src/AF.Foundation.Runtime/Scheduling/PendingOperationRegistry.cs').read_text(encoding='utf-8-sig'),encoding='utf-8')
 if not a.original:
+ # Keep the real recovery adapter wrappers; link their two state-free owner dependencies.
+ owner=read('src/modules/AF.Module.Memory/Summary/MemoryRecoveryStateOwner.cs')
+ pure=[]
+ for signature in ['internal static bool IsValidMemoryCommitMarker(', 'internal static bool IsMemoryRecoveryHexDigest(']:
+  start=owner.index(signature);end=owner.index(';',start)+1;pure.append(owner[start:end])
+ (out/'RecoveryMarkerOwner.cs').write_text('using System.Linq; namespace AnimusForge; internal sealed class MemoryRecoveryStateOwner { '+'\n'.join(pure)+' }',encoding='utf-8')
+ (out/'recovery-marker-source-sha256.txt').write_text('\n'.join(hashlib.sha256(span.encode()).hexdigest() for span in pure),encoding='utf-8')
+if not a.original:
  (out/'Models.cs').write_text(read('src/modules/AF.Module.Memory/Records/MemoryPersistenceModels.cs'),encoding='utf-8')
  (out/'NpcActionEntry.cs').write_text(read('src/modules/AF.Module.Memory/Records/NpcActionEntry.cs'),encoding='utf-8')
 (out/'Program.cs').write_text(code,encoding='utf-8');(out/'Guard.cs').write_text(read('SaveRuntimeGuard.cs' if a.original else 'src/AF.Foundation.Runtime/Lifecycle/SaveRuntimeGuard.cs'),encoding='utf-8');(out/'Error.cs').write_text(read('PreprocessFormatException.cs'),encoding='utf-8')
 (out/'Proof.csproj').write_text('<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><LangVersion>latest</LangVersion>'+('<DefineConstants>ORIGINAL</DefineConstants>' if a.original else '')+'</PropertyGroup></Project>',encoding='utf-8');(out/'NuGet.Config').write_text('<configuration><packageSources><clear/></packageSources></configuration>',encoding='utf-8')
 dotnet=os.environ.get('DOTNET_EXE',str(ROOT/'local/dotnet/8.0.425/dotnet.exe'))
-(out/'cli').mkdir();(out/'appdata').mkdir()
-env={key:os.environ[key] for key in ('SystemRoot','WINDIR','ProgramData','HOMEDRIVE','HOMEPATH','OS','USERNAME','USERDOMAIN','ProgramFiles','ProgramFiles(x86)','CommonProgramFiles','CommonProgramFiles(x86)','PROCESSOR_ARCHITECTURE') if key in os.environ}
-env.update(PATH=str(Path(dotnet).parent),DOTNET_ROOT=str(Path(dotnet).parent),DOTNET_CLI_HOME=str(out/'cli'),USERPROFILE=str(out/'cli'),HOME=str(out/'cli'),LOCALAPPDATA=str(out/'appdata'),NUGET_PACKAGES=str(ROOT/'.tmp/nuget-packages'),DOTNET_GENERATE_ASPNET_CERTIFICATE='false',DOTNET_SKIP_FIRST_TIME_EXPERIENCE='1',DOTNET_CLI_TELEMETRY_OPTOUT='1',DOTNET_CLI_UI_LANGUAGE='en',APPDATA=str(out/'appdata'),TEMP='E:/tmp/af-j17-20260930',TMP='E:/tmp/af-j17-20260930')
+env=minimal_test_environment(Path(dotnet),out)
 build=subprocess.run([dotnet,'build',str(out/'Proof.csproj'),'-c','Release','-p:UseAppHost=false','-p:RestoreConfigFile='+str(out/'NuGet.Config')],cwd=ROOT,env=env,capture_output=True,text=True,encoding='utf-8',errors='replace',timeout=180)
 run=subprocess.run([dotnet,str(out/'bin/Release/net8.0/Proof.dll')],cwd=ROOT,env=env,capture_output=True,text=True,encoding='utf-8',errors='replace',timeout=180) if build.returncode==0 else None
 log=build.stdout+build.stderr+((run.stdout+run.stderr) if run else '');(out/'run.log').write_text(log,encoding='utf-8');print(log);raise SystemExit(build.returncode or (run.returncode if run else 0))

@@ -45,7 +45,8 @@ sealed class ProbeHost
 @@CAPTURE@@
     internal Task<bool> Capture(Action action) => CaptureOnGameThreadAsync("probe", action);
     private string GetSceneNpcHistoryNameForPrompt(object npc) => "NPC";
-    private sealed class SceneActionPostprocessWorkItem {internal bool RequiresNetwork;internal string SystemPrompt="system",UserPrompt="user";}
+    @@NETWORK@@
+    private sealed class SceneActionPostprocessWorkItem {internal bool RequiresNetwork;internal string SystemPrompt="system",UserPrompt="user";internal PostprocessNetworkRequest NetworkRequest=new("system","user");}
 @@PREPARE@@
     {Check.That(FakeOwner.IsGame,"prepare-on-game-thread");Check.That(AIConfigHandler.Runtime.Value=="request","prepare-request-context");Prepared++;return new SceneActionPostprocessWorkItem{RequiresNetwork=RequiresNetwork};}
     private bool TryRequestSceneUnifiedActionPostprocess(string system,string user,out string content,out string error)

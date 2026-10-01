@@ -21,7 +21,7 @@ class TurnSourceTests(unittest.TestCase):
         self.assertNotEqual(changed,content)
         def read(path,*args,**kwargs):
             return changed if path==current_source_path(ROOT, target) else original(path,*args,**kwargs)
-        with patch.object(Path,'read_text',read), patch.dict(turn.REVIEW['addedFiles'],{target:hashlib.sha256(turn.restore_remote_feature_delta(target,changed).encode()).hexdigest()}):
+        with patch.object(Path,'read_text',read), patch.dict(turn.REVIEW['addedFiles'],{target:hashlib.sha256(turn.restore_remote_feature_delta(target,turn.restore_f5_network_request_delta(target,changed)).encode()).hexdigest()}):
             with self.assertRaisesRegex(AssertionError,'algorithm/argument/order drift'):
                 turn.projected_source(original(ROOT/'src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.cs',encoding='utf-8-sig'))
 
@@ -61,5 +61,17 @@ class TurnSourceTests(unittest.TestCase):
         self.assertLess(prompt.index('Task.Run(nativeHistoryWork)'),prompt.index('BuildNativePromptContextScheduledAsync('))
         self.assertLess(prompt.index('BuildNativePromptContextScheduledAsync('),prompt.index('await persistedHeroHistoryTask'))
         self.assertIn('"persisted_history_accept"',prompt)
+
+    def test_new_owner_mutation_cannot_hide_behind_legacy_inverse(self):
+        from af2_f5_migration_review import OWNERS, verify_owners
+        original = Path.read_text
+        for name in OWNERS:
+            target = current_source_path(ROOT, name)
+            def changed(path, *args, **kwargs):
+                value = original(path, *args, **kwargs)
+                return value + "\n// unreviewed owner mutation\n" if path == target else value
+            with self.subTest(owner=name), patch.object(Path, 'read_text', changed):
+                with self.assertRaisesRegex(AssertionError, 'Unreviewed F5 dependency'):
+                    verify_owners()
 
 if __name__=='__main__':unittest.main(verbosity=2)

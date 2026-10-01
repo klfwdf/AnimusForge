@@ -14,7 +14,7 @@ def main():
     parser.add_argument('--output-prefix',default='',help='Prefix generated negative-control artifact directories.')
     args=parser.parse_args()
     for mutation in ['drop-reward','relay-as-direct','drop-rule-hits','skip-normalize','allow-recompletion']:
-        result=subprocess.run([sys.executable,str(HERE/'run.py'),'--dotnet',args.dotnet,'--mutate',mutation,'--output-name',args.output_prefix+'mutant-'+mutation],capture_output=True,text=True,encoding='utf-8',errors='replace')
+        result=subprocess.run([sys.executable,"-B",str(HERE/'run.py'),'--dotnet',args.dotnet,'--mutate',mutation,'--output-name',args.output_prefix+'mutant-'+mutation],capture_output=True,text=True,encoding='utf-8',errors='replace')
         output=result.stdout+result.stderr
         expected='second completion was not rejected' if mutation=='allow-recompletion' else 'mismatch'
         if result.returncode != 1 or expected not in output or 'The build failed' in output:
