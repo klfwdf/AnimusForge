@@ -2,6 +2,9 @@
 from pathlib import Path
 import hashlib,json,subprocess,importlib.util
 ROOT=Path(__file__).resolve().parents[4]
+import sys
+sys.path.insert(0, str(ROOT / "tests"))
+from output_isolation import current_source_path
 REVIEW=json.loads((Path(__file__).parent/'source-review.json').read_text(encoding='utf-8'))
 SCENE_REVIEW=json.loads((Path(__file__).parent/'scene-additive-review.json').read_text(encoding='utf-8'))
 COURIER_REVIEW=json.loads((Path(__file__).parent/'courier-additive-review.json').read_text(encoding='utf-8'))
@@ -59,7 +62,7 @@ def restore(path,current,verify_dependencies=True,live_current=None):
     current=owner_inverse.restore(path,restore_scene_additions(path,current))
     if verify_dependencies:
         for dependency,expected_hash in REVIEW.get('dependencies',{}).items():
-            source=restore_scene_additions(dependency,(ROOT/current_path(dependency)).read_text(encoding='utf-8-sig'))
+            source=restore_scene_additions(dependency,current_source_path(ROOT,current_path(dependency)).read_text(encoding='utf-8-sig'))
             assert hashlib.sha256(owner_inverse.restore(dependency,source).encode()).hexdigest()==expected_hash, 'Unreviewed Native API dependency: '+dependency
     evidence=REVIEW['files'].get(path)
     if evidence is None: return current
@@ -71,11 +74,11 @@ def restore(path,current,verify_dependencies=True,live_current=None):
         expected[h['oldStart']:h['oldEnd']]=h['after'].splitlines(keepends=True)
     expected=''.join(expected)
     assert hashlib.sha256(expected.encode()).hexdigest()==evidence['afterSha256'], 'Native API candidate hash mismatch: '+path
-    observed = live_current if live_current is not None else (ROOT/current_path(path)).read_text(encoding='utf-8-sig')
+    observed = live_current if live_current is not None else current_source_path(ROOT,current_path(path)).read_text(encoding='utf-8-sig')
     assert owner_inverse.restore(path,restore_scene_additions(path,observed))==expected, 'Unreviewed Native API live source: '+path
     assert current in (old,expected), 'Unexpected Native API proof input: '+path
     return old
 if __name__=='__main__':
-    for path in COURIER_REVIEW['files']:restore_scene_additions(path,(ROOT/current_path(path)).read_text(encoding='utf-8-sig'))
-    for path in REVIEW['files']:restore(path,(ROOT/current_path(path)).read_text(encoding='utf-8-sig'))
+    for path in COURIER_REVIEW['files']:restore_scene_additions(path,current_source_path(ROOT,current_path(path)).read_text(encoding='utf-8-sig'))
+    for path in REVIEW['files']:restore(path,current_source_path(ROOT,current_path(path)).read_text(encoding='utf-8-sig'))
     print('PASS exact Native API inverse: '+str(len(REVIEW['files']))+' original files; '+str(len(COURIER_REVIEW['files']))+' reviewed Courier additive files; original dependency hashes retained')
