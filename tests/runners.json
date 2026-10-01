@@ -362,6 +362,14 @@
     "--finite"
    ],
    "note": "15 current Memory-only source and negative controls; historical full inverse/captured-sealing diplomacy-coupled layer remains deferred in its original separate entry."
+  },
+  "tests/modules/AF.Module.Social/PatienceOwnerTests/PatienceOwnerTests.csproj": {
+   "expect": "PASS",
+   "note": "AF2 final closeout: real production rule/state owner aggregate regression; engine effects/live save acceptance remain separate."
+  },
+  "tests/modules/AF.Module.Kingdom/RebellionOwnerTests/RebellionOwnerTests.csproj": {
+   "expect": "PASS",
+   "note": "AF2 final closeout: real production rule/state owner aggregate regression; engine effects/live save acceptance remain separate."
   }
  }
 }

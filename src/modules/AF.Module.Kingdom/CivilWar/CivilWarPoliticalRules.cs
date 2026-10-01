@@ -5,6 +5,13 @@ namespace AnimusForge;
 
 internal static class CivilWarPoliticalRules
 {
+	internal const int PoliticalResultPriority = 80;
+	internal static string PoliticalResultKind(string key)
+	{
+		return key.Contains(":war:outbreak") ? "civil_war"
+			: key.Contains(":war:resolved") ? "civil_war_resolution" : "civil_war_politics";
+	}
+
 	internal const int ExitDays = 7, ActionDays = 7, ReplyDays = 3;
 	internal const int SuppressCost = 100, DissolveCost = 200;
 	internal const int SuppressInfluenceLoss = 20, SuppressLeaderGrievance = 15, SuppressMemberGrievance = 8;

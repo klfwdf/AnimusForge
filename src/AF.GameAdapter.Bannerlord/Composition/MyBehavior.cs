@@ -633,16 +633,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		public double BestScore;
 	}
 
-	private class PatienceState
-	{
-		public float Value;
-
-		public float LastDay;
-
-		public int NoInterestRounds;
-
-		public int ExhaustedRefusalCount;
-	}
+	private class PatienceState : PatienceRecord { public PatienceState() { } }
 
 	private class PatienceStateSaveModel
 	{
@@ -684,14 +675,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		public string PrivateLoveLevel;
 	}
 
-	private enum PatienceMood
-	{
-		Neutral,
-		Delighted,
-		Joy,
-		Annoyed,
-		Bored
-	}
+
 
 	private enum ExportImportScope
 	{
@@ -1596,7 +1580,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 	private string _civilWarJsonStorage = "";
 
-		private HashSet<string> _modCreatedRebelKingdomIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+	private readonly RebelKingdomIdentityOwner _rebelKingdomIdentity = new RebelKingdomIdentityOwner();
 
 	private Dictionary<string, string> _modCreatedRebelKingdomIdStorage = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
@@ -1768,7 +1752,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 	private static readonly Regex TransferPrisonerTagRegex = new Regex("\\[ATP:(ALL|\\d+):(ALL|\\d+)\\]", RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
-	private Dictionary<string, PatienceState> _patienceStates = new Dictionary<string, PatienceState>();
+	private readonly PatienceOwner<PatienceState> _patienceOwner = new PatienceOwner<PatienceState>();
 
 	private Dictionary<string, string> _patienceStorage = new Dictionary<string, string>();
 
@@ -10898,76 +10882,22 @@ public static int GetKingdomStabilityRoyalDomainLoyaltyAdjustmentForTown(Town to
 
 	private static string NormalizeRebelPromptSourceText(string text, int maxLength = 1200)
 	{
-		string text2 = (text ?? "").Replace("\r", " ").Replace("\n", " ").Trim();
-		while (text2.Contains("  "))
-		{
-			text2 = text2.Replace("  ", " ");
-		}
-		if (string.IsNullOrWhiteSpace(text2))
-		{
-			return "";
-		}
-		if (text2.Length > maxLength)
-		{
-			text2 = text2.Substring(0, maxLength).TrimEnd();
-		}
-		return text2.Trim();
+		return RebellionNamingRules.NormalizeSource(text, maxLength);
 	}
 
 	private string BuildHeroBackgroundForRebelNamingPrompt(Hero hero)
 	{
-		if (hero == null)
-		{
-			return "无";
-		}
-		string text = NormalizeRebelPromptSourceText(hero.EncyclopediaText?.ToString() ?? "", 900);
-		if (!string.IsNullOrWhiteSpace(text))
-		{
-			return text;
-		}
-		string heroDisplayName = GetHeroDisplayName(hero);
-		string clanDisplayName = GetClanDisplayName(hero.Clan);
-		string text2 = (hero.Culture?.Name?.ToString() ?? "").Trim();
-		string value = string.IsNullOrWhiteSpace(text2) ? "" : (text2 + "文化");
-		return NormalizeRebelPromptSourceText(heroDisplayName + "出身于" + clanDisplayName + "家族，现为" + value + "背景的领主。", 300);
+		return RebellionNamingRules.HeroBackground(hero != null, hero?.EncyclopediaText?.ToString(), GetHeroDisplayName(hero), GetClanDisplayName(hero?.Clan), hero?.Culture?.Name?.ToString());
 	}
 
 	private string BuildKingdomBackgroundForRebelNamingPrompt(Kingdom kingdom)
 	{
-		if (kingdom == null)
-		{
-			return "无";
-		}
-		string text = NormalizeRebelPromptSourceText(kingdom.EncyclopediaText?.ToString() ?? "", 1200);
-		if (!string.IsNullOrWhiteSpace(text))
-		{
-			return text;
-		}
-		string kingdomOpeningSummary = GetKingdomOpeningSummary(kingdom);
-		text = NormalizeRebelPromptSourceText(kingdomOpeningSummary, 1200);
-		if (!string.IsNullOrWhiteSpace(text))
-		{
-			return text;
-		}
-		return GetKingdomDisplayName(kingdom, "该王国") + "是当前叛乱所脱离的旧政权。";
+		return RebellionNamingRules.KingdomBackground(kingdom != null, kingdom?.EncyclopediaText?.ToString(), kingdom != null ? GetKingdomOpeningSummary(kingdom) : "", GetKingdomDisplayName(kingdom, "该王国"));
 	}
 
 	private string BuildSettlementBackgroundForRebelNamingPrompt(Settlement settlement)
 	{
-		if (settlement == null)
-		{
-			return "无";
-		}
-		string text = NormalizeRebelPromptSourceText(settlement.EncyclopediaText?.ToString() ?? "", 600);
-		if (!string.IsNullOrWhiteSpace(text))
-		{
-			return text;
-		}
-		string settlementDisplayName = GetSettlementDisplayName(settlement);
-		string text2 = settlement.IsTown ? "城镇" : (settlement.IsCastle ? "城堡" : "定居点");
-		string text3 = (settlement.Culture?.Name?.ToString() ?? "").Trim();
-		string kingdomDisplayName = GetKingdomDisplayName(settlement.MapFaction as Kingdom, "无明确王国归属");
-		return NormalizeRebelPromptSourceText(settlementDisplayName + "是一处" + text2 + "，文化为" + (string.IsNullOrWhiteSpace(text3) ? "未知" : text3) + "，当前归属于" + kingdomDisplayName + "。", 220);
+		return RebellionNamingRules.SettlementBackground(settlement != null, settlement?.EncyclopediaText?.ToString(), GetSettlementDisplayName(settlement), settlement?.IsTown ?? false, settlement?.IsCastle ?? false, settlement?.Culture?.Name?.ToString(), GetKingdomDisplayName(settlement?.MapFaction as Kingdom, "未明确归属王国"));
 	}
 
 	private string BuildRebelSettlementSummaryForNamingPrompt(IEnumerable<Settlement> settlements)
@@ -10981,28 +10911,15 @@ public static int GetKingdomStabilityRoyalDomainLoyaltyAdjustmentForTown(Town to
 		{
 			string settlementDisplayName = GetSettlementDisplayName(settlement);
 			string settlementBackgroundForRebelNamingPrompt = BuildSettlementBackgroundForRebelNamingPrompt(settlement);
-			list.Add("- " + settlementDisplayName + "：" + settlementBackgroundForRebelNamingPrompt);
+			list.Add(RebellionNamingRules.SettlementLine(settlementDisplayName, settlementBackgroundForRebelNamingPrompt));
 		}
-		if (list.Count == 0)
-		{
-			return "无";
-		}
-		return string.Join("\n", list);
+		return RebellionNamingRules.JoinSettlementSummary(list);
 	}
 
 	private string BuildRebelBackgroundForNamingPrompt(Kingdom oldKingdom, int weekIndex)
 	{
 		EventRecordEntry weeklyReportRecordByWeek = FindWeeklyReportRecordByWeek("kingdom", GetKingdomId(oldKingdom), weekIndex - 1);
-		string text = NormalizeRebelPromptSourceText(weeklyReportRecordByWeek?.ShortSummary ?? "", 320);
-		if (string.IsNullOrWhiteSpace(text))
-		{
-			text = NormalizeRebelPromptSourceText(weeklyReportRecordByWeek?.Summary ?? "", 420);
-		}
-		if (!string.IsNullOrWhiteSpace(text))
-		{
-			return "叛乱背景：上周" + GetKingdomDisplayName(oldKingdom, "原王国") + "周报提到，" + text + "。这场叛乱正是在这样的局势中爆发，主导家族带着现有封地脱离旧王国，准备自立为新的政治实体。";
-		}
-		return "叛乱背景：该家族因与旧王国统治层关系恶化，在王国内部稳定度恶化时带着现有封地脱离旧王国，并准备自立为新的政治实体。";
+		return RebellionNamingRules.RebelBackground(weeklyReportRecordByWeek?.ShortSummary, weeklyReportRecordByWeek?.Summary, GetKingdomDisplayName(oldKingdom, "原王国"));
 	}
 
 	private EventRecordEntry FindWeeklyReportRecordByWeek(string eventKind, string scopeKingdomId, int weekIndex)
@@ -11014,54 +10931,17 @@ public static int GetKingdomStabilityRoyalDomainLoyaltyAdjustmentForTown(Town to
 
 	private static string BuildWeeklyReportLeadInForRebelNamingPrompt(EventRecordEntry entry)
 	{
-		if (entry == null)
-		{
-			return "无";
-		}
-		string text = NormalizeRebelPromptSourceText(entry.ShortSummary, 260);
-		if (string.IsNullOrWhiteSpace(text))
-		{
-			text = NormalizeRebelPromptSourceText(entry.Summary, 500);
-		}
-		if (string.IsNullOrWhiteSpace(text))
-		{
-			return "无";
-		}
-		string text2 = NormalizeRebelPromptSourceText(entry.Title, 80);
-		if (string.IsNullOrWhiteSpace(text2))
-		{
-			return text;
-		}
-		return text2 + "：" + text;
+		return RebellionNamingRules.WeeklyLeadIn(entry?.Title, entry?.ShortSummary, entry?.Summary);
 	}
 
 	private static string NormalizeRebelKingdomNameToken(string text, int maxLength)
 	{
-		string text2 = (text ?? "").Replace("\r", " ").Replace("\n", " ").Trim();
-		while (text2.Contains("  "))
-		{
-			text2 = text2.Replace("  ", " ");
-		}
-		text2 = text2.Trim().Trim('\"', '\'', '“', '”', '‘', '’', '：', ':', '-', '·');
-		if (string.IsNullOrWhiteSpace(text2))
-		{
-			return "";
-		}
-		if (text2.Length > maxLength)
-		{
-			text2 = text2.Substring(0, maxLength).TrimEnd();
-		}
-		return text2.Trim();
+		return RebellionNamingRules.NormalizeName(text, maxLength);
 	}
 
 	private static string NormalizeRebelKingdomLoreText(string text)
 	{
-		string text2 = (text ?? "").Replace("\r", " ").Replace("\n", " ").Trim();
-		while (text2.Contains("  "))
-		{
-			text2 = text2.Replace("  ", " ");
-		}
-		return text2.Trim();
+		return RebellionNamingRules.NormalizeLore(text);
 	}
 
 	private static ClanVisualSnapshot CaptureClanVisualSnapshot(Clan clan)
@@ -11199,53 +11079,25 @@ public static int GetKingdomStabilityRoyalDomainLoyaltyAdjustmentForTown(Town to
 
 	private static int ComputeColorDistance(uint colorA, uint colorB)
 	{
-		int num = (int)((colorA >> 16) & 0xFF);
-		int num2 = (int)((colorA >> 8) & 0xFF);
-		int num3 = (int)(colorA & 0xFF);
-		int num4 = (int)((colorB >> 16) & 0xFF);
-		int num5 = (int)((colorB >> 8) & 0xFF);
-		int num6 = (int)(colorB & 0xFF);
-		return Math.Abs(num - num4) + Math.Abs(num2 - num5) + Math.Abs(num3 - num6);
+		return RebellionRules.ColorDistance(colorA, colorB);
 	}
 
 	private static RebelFactionColorChoice BuildRandomUniqueRebelFactionColors(Clan clan, Kingdom oldKingdom, ClanVisualSnapshot snapshot)
 	{
 		List<uint> bannerPaletteColors = GetBannerPaletteColors();
-		uint num = snapshot?.BackgroundColor ?? 4291609515U;
+		uint num = snapshot?.BackgroundColor ?? RebellionRules.DefaultBackground;
 		uint num2 = snapshot?.IconColor ?? uint.MaxValue;
-		if (bannerPaletteColors.Count == 0)
+		bool noPalette = bannerPaletteColors.Count == 0;
+		var used = noPalette ? new HashSet<uint>() : CollectUsedFactionPrimaryColors(oldKingdom, clan);
+		RebellionRules.SelectColors(bannerPaletteColors, used, num, num2, noPalette || BannerManager.GetColorId(num2) >= 0,
+			count => MBRandom.RandomInt(count), out uint backgroundColor, out uint iconColor);
+		if (noPalette)
 		{
 			return new RebelFactionColorChoice
 			{
-				BackgroundColor = num,
-				IconColor = ((num2 != num) ? num2 : 4289374890U),
-				Banner = ((snapshot?.Banner != null) ? new Banner(snapshot.Banner, num, (num2 != num) ? num2 : 4289374890U) : null)
+				BackgroundColor = backgroundColor, IconColor = iconColor,
+				Banner = snapshot?.Banner != null ? new Banner(snapshot.Banner, backgroundColor, iconColor) : null
 			};
-		}
-		HashSet<uint> usedFactionPrimaryColors = CollectUsedFactionPrimaryColors(oldKingdom, clan);
-		List<uint> list = bannerPaletteColors.Where((uint x) => !usedFactionPrimaryColors.Contains(x) && x != num).ToList();
-		if (list.Count == 0)
-		{
-			list = bannerPaletteColors.Where((uint x) => x != num).ToList();
-		}
-		if (list.Count == 0)
-		{
-			list = bannerPaletteColors;
-		}
-		uint backgroundColor = list[MBRandom.RandomInt(list.Count)];
-		List<uint> list2 = bannerPaletteColors.Where((uint x) => x != backgroundColor).ToList();
-		uint iconColor = num2;
-		if (iconColor == backgroundColor || BannerManager.GetColorId(iconColor) < 0 || ComputeColorDistance(backgroundColor, iconColor) < 140)
-		{
-			iconColor = list2.OrderByDescending((uint x) => ComputeColorDistance(backgroundColor, x)).FirstOrDefault();
-			if (iconColor == 0)
-			{
-				iconColor = list2.FirstOrDefault();
-			}
-			if (iconColor == 0 || iconColor == backgroundColor)
-			{
-				iconColor = uint.MaxValue;
-			}
 		}
 		Banner banner = snapshot?.Banner ?? clan?.ClanOriginalBanner ?? clan?.Banner;
 		Banner banner2 = ((banner != null) ? new Banner(banner, backgroundColor, iconColor) : Banner.CreateRandomClanBanner((clan?.StringId ?? "new_kingdom").GetDeterministicHashCode()));
@@ -11296,18 +11148,7 @@ public static int GetKingdomStabilityRoyalDomainLoyaltyAdjustmentForTown(Town to
 
 	private static string BuildRebelKingdomNamingSystemPrompt()
 	{
-		StringBuilder stringBuilder = new StringBuilder();
-		string text = (DuelSettings.GetSettings()?.KingdomRebellionSystemPrompt ?? "").Replace("\r", "").Trim();
-		if (!string.IsNullOrWhiteSpace(text))
-		{
-			stringBuilder.AppendLine(text);
-			stringBuilder.AppendLine(" ");
-		}
-		stringBuilder.AppendLine("输出格式：");
-		stringBuilder.AppendLine("[NAME]正式国名");
-		stringBuilder.AppendLine("[SHORT]简称");
-		stringBuilder.AppendLine("[LORE]百科简介");
-		return stringBuilder.ToString().TrimEnd();
+		return RebellionNamingRules.BuildSystemPrompt(DuelSettings.GetSettings()?.KingdomRebellionSystemPrompt);
 	}
 
 	private static string BuildRebelFollowerSummaryForNamingPrompt(IEnumerable<Clan> followerClans)
@@ -11330,18 +11171,17 @@ public static int GetKingdomStabilityRoyalDomainLoyaltyAdjustmentForTown(Town to
 			{
 				text = "暂无可用封地摘要";
 			}
-			list.Add(clanDisplayName + "（族长：" + heroDisplayName + "；" + text + "）");
+			list.Add(RebellionNamingRules.FollowerLine(clanDisplayName, heroDisplayName, text));
 		}
-		if (list.Count == 0)
-		{
-			return "无";
-		}
-		return string.Join("\n", list.Distinct(StringComparer.OrdinalIgnoreCase).Select((string x) => "- " + x));
+		return RebellionNamingRules.JoinFollowerSummary(list);
 	}
 
-	private string BuildRebelKingdomNamingUserPrompt(Clan clan, Kingdom oldKingdom, int weekIndex, IEnumerable<Clan> followerClans = null)
+	private string BuildRebelKingdomNamingUserPrompt(Clan clan, Kingdom oldKingdom, int weekIndex, IEnumerable<Clan> followerClans = null, IReadOnlyCollection<string> existingNames = null)
 	{
 		List<string> list = new List<string>();
+		if (existingNames != null) list.AddRange(existingNames);
+		else
+		{
 		try
 		{
 			foreach (Kingdom item in Kingdom.All.Where((Kingdom x) => x != null))
@@ -11356,6 +11196,7 @@ public static int GetKingdomStabilityRoyalDomainLoyaltyAdjustmentForTown(Town to
 		catch
 		{
 		}
+		}
 		string text2 = string.Join("、", list.Distinct(StringComparer.OrdinalIgnoreCase));
 		List<Settlement> list2 = clan?.Settlements?.Where((Settlement x) => x != null && (x.IsTown || x.IsCastle)).ToList() ?? new List<Settlement>();
 		string text3 = (list2.Count > 0) ? string.Join("、", list2.Select(GetSettlementDisplayName)) : "无";
@@ -11367,84 +11208,34 @@ public static int GetKingdomStabilityRoyalDomainLoyaltyAdjustmentForTown(Town to
 		string rebelBackgroundForNamingPrompt = BuildRebelBackgroundForNamingPrompt(oldKingdom, weekIndex);
 		EventRecordEntry weeklyReportRecordByWeek = FindWeeklyReportRecordByWeek("world", "", weekIndex - 1);
 		EventRecordEntry weeklyReportRecordByWeek2 = FindWeeklyReportRecordByWeek("kingdom", GetKingdomId(oldKingdom), weekIndex - 1);
-		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.AppendLine("【叛乱建国命名任务】");
-		stringBuilder.AppendLine("当前周次：第 " + Math.Max(0, weekIndex) + " 周");
-		stringBuilder.AppendLine("主导家族：" + GetClanDisplayName(clan));
-		stringBuilder.AppendLine("主导族长：" + GetHeroDisplayName(clan?.Leader));
-		stringBuilder.AppendLine("家族文化：" + ((clan?.Culture?.Name?.ToString() ?? "").Trim()));
-		stringBuilder.AppendLine("原所属王国：" + GetKingdomDisplayName(oldKingdom, "原王国"));
-		stringBuilder.AppendLine("原所属王国领袖（被背叛者）：" + GetHeroDisplayName(oldKingdom?.Leader));
-		stringBuilder.AppendLine("原王国执政家族：" + GetClanDisplayName(oldKingdom?.RulingClan));
-		stringBuilder.AppendLine("当前核心封地：" + text3);
-		stringBuilder.AppendLine(rebelBackgroundForNamingPrompt);
-		stringBuilder.AppendLine();
-		stringBuilder.AppendLine("【叛乱核心定居点百科】");
-		stringBuilder.AppendLine(rebelSettlementSummaryForNamingPrompt);
-		stringBuilder.AppendLine();
-		stringBuilder.AppendLine("【联合响应家族】");
-		stringBuilder.AppendLine(rebelFollowerSummaryForNamingPrompt);
-		stringBuilder.AppendLine();
-		stringBuilder.AppendLine("【叛乱家族族长背景】");
-		stringBuilder.AppendLine(heroBackgroundForRebelNamingPrompt);
-		stringBuilder.AppendLine();
-		stringBuilder.AppendLine("【原王国统治者背景】");
-		stringBuilder.AppendLine(heroBackgroundForRebelNamingPrompt2);
-		stringBuilder.AppendLine();
-		stringBuilder.AppendLine("【原王国背景】");
-		stringBuilder.AppendLine(kingdomBackgroundForRebelNamingPrompt);
-		stringBuilder.AppendLine();
-		stringBuilder.AppendLine("【上周世界周报】");
-		stringBuilder.AppendLine(BuildWeeklyReportLeadInForRebelNamingPrompt(weeklyReportRecordByWeek));
-		stringBuilder.AppendLine();
-		stringBuilder.AppendLine("【上周原王国周报】");
-		stringBuilder.AppendLine(BuildWeeklyReportLeadInForRebelNamingPrompt(weeklyReportRecordByWeek2));
-		if (!string.IsNullOrWhiteSpace(text2))
+		return RebellionNamingRules.BuildUserPrompt(new RebellionNamingFacts
 		{
-			stringBuilder.AppendLine();
-			stringBuilder.AppendLine("现有王国名称（禁止重名）：" + text2);
-		}
-		stringBuilder.AppendLine("请生成一个正式名、一个简称，以及一段百科简介。");
-		return stringBuilder.ToString().TrimEnd();
+			WeekIndex = weekIndex, ClanName = GetClanDisplayName(clan), LeaderName = GetHeroDisplayName(clan?.Leader),
+			CultureName = (clan?.Culture?.Name?.ToString() ?? "").Trim(), KingdomName = GetKingdomDisplayName(oldKingdom, "原王国"),
+			KingName = GetHeroDisplayName(oldKingdom?.Leader), RulingClanName = GetClanDisplayName(oldKingdom?.RulingClan),
+			SettlementNames = text3, RebelBackground = rebelBackgroundForNamingPrompt,
+			SettlementSummary = rebelSettlementSummaryForNamingPrompt, FollowerSummary = rebelFollowerSummaryForNamingPrompt,
+			LeaderBackground = heroBackgroundForRebelNamingPrompt, KingBackground = heroBackgroundForRebelNamingPrompt2,
+			KingdomBackground = kingdomBackgroundForRebelNamingPrompt,
+			WorldWeekly = BuildWeeklyReportLeadInForRebelNamingPrompt(weeklyReportRecordByWeek),
+			KingdomWeekly = BuildWeeklyReportLeadInForRebelNamingPrompt(weeklyReportRecordByWeek2), ExistingNames = text2
+		});
 	}
 
-	private void BuildRebelKingdomNamingRequest(Clan clan, Kingdom oldKingdom, int weekIndex, IEnumerable<Clan> followerClans, out string systemPrompt, out string userPrompt)
+	private void BuildRebelKingdomNamingRequest(Clan clan, Kingdom oldKingdom, int weekIndex, IEnumerable<Clan> followerClans, out string systemPrompt, out string userPrompt, IReadOnlyCollection<string> existingNames = null)
 	{
 		systemPrompt = BuildRebelKingdomNamingSystemPrompt();
-		userPrompt = BuildRebelKingdomNamingUserPrompt(clan, oldKingdom, weekIndex, followerClans);
+		userPrompt = BuildRebelKingdomNamingUserPrompt(clan, oldKingdom, weekIndex, followerClans, existingNames);
 	}
 
 	private static bool TryParseRebelKingdomNamingResponse(string rawResponse, out string formalName, out string shortName, out string encyclopediaText)
 	{
-		formalName = "";
-		shortName = "";
-		encyclopediaText = "";
-		string text = (rawResponse ?? "").Replace("\r", "").Trim();
-		if (string.IsNullOrWhiteSpace(text))
-		{
-			return false;
-		}
-		Match match = Regex.Match(text, "\\[NAME\\](?<name>[\\s\\S]*?)(?=\\[SHORT\\]|\\[LORE\\]|$)", RegexOptions.IgnoreCase);
-		Match match2 = Regex.Match(text, "\\[SHORT\\](?<short>[\\s\\S]*?)(?=\\[LORE\\]|$)", RegexOptions.IgnoreCase);
-		Match match3 = Regex.Match(text, "\\[LORE\\](?<lore>[\\s\\S]*)$", RegexOptions.IgnoreCase);
-		if (match.Success)
-		{
-			formalName = NormalizeRebelKingdomNameToken(match.Groups["name"]?.Value ?? "", 24);
-		}
-		if (match2.Success)
-		{
-			shortName = NormalizeRebelKingdomNameToken(match2.Groups["short"]?.Value ?? "", 14);
-		}
-		if (match3.Success)
-		{
-			encyclopediaText = NormalizeRebelKingdomLoreText(match3.Groups["lore"]?.Value ?? "");
-		}
-		return !string.IsNullOrWhiteSpace(formalName) && !string.IsNullOrWhiteSpace(shortName) && !string.IsNullOrWhiteSpace(encyclopediaText);
+		return RebellionNamingRules.TryParse(rawResponse, out formalName, out shortName, out encyclopediaText);
 	}
 
-	private const int RebelKingdomNamingTimeoutMs = 60000;
+	private const int RebelKingdomNamingTimeoutMs = RebellionNamingOwner.TimeoutMs;
 
-	private const int RebelKingdomNamingMaxAttempts = 3;
+	private const int RebelKingdomNamingMaxAttempts = RebellionNamingOwner.MaxAttempts;
 
 	private static RebelKingdomNamingResult BuildFailedRebelKingdomNamingResult(string failureReason, int attemptsUsed = 0)
 	{
@@ -11456,81 +11247,38 @@ public static int GetKingdomStabilityRoyalDomainLoyaltyAdjustmentForTown(Town to
 		};
 	}
 
-	private RebelKingdomNamingResult GenerateRebelKingdomNamingFromPrompts(string systemPrompt, string userPrompt, string logTarget, int maxAttempts = RebelKingdomNamingMaxAttempts)
+	private RebelKingdomNamingResult GenerateRebelKingdomNamingFromPrompts(string systemPrompt, string userPrompt, string logTarget, int maxAttempts = RebelKingdomNamingMaxAttempts, IReadOnlyCollection<string> existingNames = null)
 	{
-		int numAttempts = Math.Max(1, maxAttempts);
-		RebelKingdomNamingResult rebelKingdomNamingResult = BuildFailedRebelKingdomNamingResult("", 0);
-		for (int i = 1; i <= numAttempts; i++)
-		{
-			ApiCallResult apiCallResult = null;
-			try
+		var names = new HashSet<string>(existingNames ?? Array.Empty<string>(), StringComparer.OrdinalIgnoreCase);
+		var outcome = RebellionNamingOwner.Generate(
+			async () =>
 			{
-				Task<ApiCallResult> task = CallRebelKingdomNamingGatewayDetailed(systemPrompt, userPrompt);
-				Task task2 = Task.WhenAny(task, Task.Delay(RebelKingdomNamingTimeoutMs)).GetAwaiter().GetResult();
-				if (task2 == task)
+				var result = await CallRebelKingdomNamingGatewayDetailed(systemPrompt, userPrompt);
+				return result == null ? null : new RebellionNamingAttempt
 				{
-					apiCallResult = task.GetAwaiter().GetResult();
-				}
-				else
-				{
-					apiCallResult = new ApiCallResult
-					{
-						ErrorMessage = "叛乱命名请求超时（60 秒）。"
-					};
-				}
-			}
-			catch (Exception ex)
-			{
-				apiCallResult = new ApiCallResult
-				{
-					ErrorMessage = ex.Message
+					Success = result.Success, Content = result.Content, ErrorMessage = result.ErrorMessage,
+					ResponseBody = result.ResponseBody, IsRateLimit = result.IsRateLimit,
+					IsRequestsPerMinuteLimit = result.IsRequestsPerMinuteLimit, IsQuotaLimit = result.IsQuotaLimit,
+					RetryAfterSeconds = result.RetryAfterSeconds
 				};
-			}
-			rebelKingdomNamingResult.AttemptsUsed = i;
-			rebelKingdomNamingResult.IsRateLimit = apiCallResult?.IsRateLimit ?? false;
-			rebelKingdomNamingResult.IsRequestsPerMinuteLimit = apiCallResult?.IsRequestsPerMinuteLimit ?? false;
-			rebelKingdomNamingResult.IsQuotaLimit = apiCallResult?.IsQuotaLimit ?? false;
-			rebelKingdomNamingResult.RetryAfterSeconds = apiCallResult?.RetryAfterSeconds;
-			string text = apiCallResult?.Success == true ? (apiCallResult.Content ?? "") : ("错误: " + (apiCallResult?.ErrorMessage ?? "未知错误"));
-			Logger.LogEventPromptExchange((logTarget ?? "叛乱建国命名") + " [尝试 " + i + "/" + numAttempts + "]", "【System Prompt】\n" + (systemPrompt ?? "") + "\n\n【User Prompt】\n" + (userPrompt ?? ""), text);
-			if (apiCallResult?.Success == true && TryParseRebelKingdomNamingResponse(apiCallResult.Content, out var formalName, out var shortName, out var encyclopediaText))
-			{
-				formalName = NormalizeRebelKingdomNameToken(formalName, 24);
-				shortName = NormalizeRebelKingdomNameToken(shortName, 14);
-				encyclopediaText = NormalizeRebelKingdomLoreText(encyclopediaText);
-				if (!string.IsNullOrWhiteSpace(formalName) && !string.IsNullOrWhiteSpace(shortName) && !string.IsNullOrWhiteSpace(encyclopediaText) && !IsDuplicateKingdomName(formalName))
-				{
-					return new RebelKingdomNamingResult
-					{
-						FormalName = formalName,
-						ShortName = shortName,
-						EncyclopediaText = encyclopediaText,
-						Success = true,
-						AttemptsUsed = i
-					};
-				}
-				rebelKingdomNamingResult.FailureReason = LlmRetryPrompt.BuildFailureDetail("模型返回的国名为空、无效或与现有王国重名。", apiCallResult.Content, apiCallResult.ResponseBody);
-			}
-			else
-			{
-				rebelKingdomNamingResult.FailureReason = (apiCallResult?.Success == true) ? LlmRetryPrompt.BuildFailureDetail("模型返回无法按 [NAME]/[SHORT]/[LORE] 解析。", apiCallResult.Content, apiCallResult.ResponseBody) : (apiCallResult?.ErrorMessage ?? "命名请求失败。");
-			}
-			if (i < numAttempts)
-			{
-				Logger.Log("KingdomRebellion", "[WARN] Rebel kingdom naming attempt failed; retrying. target=" + (logTarget ?? "") + " attempt=" + i + "/" + numAttempts + " reason=" + (rebelKingdomNamingResult.FailureReason ?? ""));
-				int num = 1200;
-				if (apiCallResult?.IsRateLimit == true)
-				{
-					num = Math.Max(num, GetWeeklyReportRequestIntervalMs());
-				}
-				if (apiCallResult?.RetryAfterSeconds != null)
-				{
-					num = Math.Max(num, apiCallResult.RetryAfterSeconds.Value * 1000);
-				}
-				Thread.Sleep(num);
-			}
-		}
-		return rebelKingdomNamingResult;
+			}, name => names.Contains(name.Trim()), LlmRetryPrompt.BuildFailureDetail,
+			(attempt, total, result) => Logger.LogEventPromptExchange((logTarget ?? "叛乱建国命名") + " [尝试 " + attempt + "/" + total + "]", "【System Prompt】\n" + (systemPrompt ?? "") + "\n\n【User Prompt】\n" + (userPrompt ?? ""), result?.Success == true ? result.Content ?? "" : ("错误: " + (result?.ErrorMessage ?? "未知错误"))),
+			(attempt, total, reason) => Logger.Log("KingdomRebellion", "[WARN] Rebel kingdom naming attempt failed; retrying. target=" + (logTarget ?? "") + " attempt=" + attempt + "/" + total + " reason=" + (reason ?? "")),
+			GetWeeklyReportRequestIntervalMs, maxAttempts);
+		return new RebelKingdomNamingResult
+		{
+			Success = outcome.Success, FormalName = outcome.FormalName, ShortName = outcome.ShortName,
+			EncyclopediaText = outcome.EncyclopediaText, AttemptsUsed = outcome.AttemptsUsed,
+			FailureReason = outcome.FailureReason, IsRateLimit = outcome.IsRateLimit,
+			IsRequestsPerMinuteLimit = outcome.IsRequestsPerMinuteLimit, IsQuotaLimit = outcome.IsQuotaLimit,
+			RetryAfterSeconds = outcome.RetryAfterSeconds
+		};
+	}
+
+	private static string[] CaptureRebellionExistingNames()
+	{
+		try { return Kingdom.All.Where(x => x != null).Select(x => (x.Name?.ToString() ?? "").Trim()).Where(x => !string.IsNullOrWhiteSpace(x)).ToArray(); }
+		catch { return Array.Empty<string>(); }
 	}
 
 	private RebelKingdomNamingResult GenerateRebelKingdomNaming(Clan clan, Kingdom oldKingdom, int weekIndex, IEnumerable<Clan> followerClans = null, int maxAttempts = RebelKingdomNamingMaxAttempts)
@@ -11539,134 +11287,75 @@ public static int GetKingdomStabilityRoyalDomainLoyaltyAdjustmentForTown(Town to
 		{
 			return BuildFailedRebelKingdomNamingResult("主导家族为空，无法请求命名。");
 		}
-		BuildRebelKingdomNamingRequest(clan, oldKingdom, weekIndex, followerClans, out var systemPrompt, out var userPrompt);
-		return GenerateRebelKingdomNamingFromPrompts(systemPrompt, userPrompt, "叛乱建国命名 - " + GetClanId(clan), maxAttempts);
+		string[] rebellionExistingNames = CaptureRebellionExistingNames();
+		BuildRebelKingdomNamingRequest(clan, oldKingdom, weekIndex, followerClans, out var systemPrompt, out var userPrompt, rebellionExistingNames);
+		return GenerateRebelKingdomNamingFromPrompts(systemPrompt, userPrompt, "叛乱建国命名 - " + GetClanId(clan), maxAttempts, rebellionExistingNames);
 	}
 
-	private bool TryValidateClanForKingdomRebellion(Clan clan, Kingdom kingdom, bool forceTrigger, out string note, out int relationToKing, out int townCount, out int castleCount)
+	private static RebellionClanFacts CaptureRebellionClanFacts(Clan clan, Kingdom kingdom)
 	{
-		note = "";
-		relationToKing = 0;
-		townCount = 0;
-		castleCount = 0;
-		if (clan == null)
+		return new RebellionClanFacts
 		{
-			note = "家族为空。";
-			return false;
-		}
-		if (kingdom == null || kingdom.IsEliminated)
+			Exists = clan != null, KingdomExists = kingdom != null, KingdomEliminated = kingdom?.IsEliminated ?? false,
+			PlayerClan = clan != null && clan == Clan.PlayerClan, InKingdom = clan != null && clan.Kingdom == kingdom,
+			RulingClan = clan != null && (clan == kingdom?.RulingClan || clan == kingdom?.Leader?.Clan),
+			Eliminated = clan?.IsEliminated ?? false, Bandit = clan?.IsBanditFaction ?? false,
+			Minor = clan?.IsMinorFaction ?? false, Rebel = clan?.IsRebelClan ?? false,
+			Mercenary = clan != null && (clan.IsUnderMercenaryService || clan.IsClanTypeMercenary),
+			LeaderExists = clan?.Leader != null, LeaderAlive = clan?.Leader?.IsAlive ?? false,
+			LeaderChild = clan?.Leader?.IsChild ?? false, LeaderPrisoner = clan?.Leader?.IsPrisoner ?? false
+		};
+	}
+	private bool TryValidateClanForKingdomRebellion(Clan clan, Kingdom kingdom, bool forceTrigger, out string note, out int relationToKing, out int townCount, out int castleCount, Dictionary<Clan, RebellionClanFacts> captured = null)
+	{
+		RebellionClanFacts facts;
+		if (clan == null || captured == null || !captured.TryGetValue(clan, out facts))
 		{
-			note = "王国不存在或已灭亡。";
-			return false;
+			facts = CaptureRebellionClanFacts(clan, kingdom);
+			if (string.IsNullOrEmpty(RebellionRules.CandidatePreflightNote(facts)))
+			{
+				facts.TownCount = clan.Settlements?.Count(x => x != null && x.IsTown) ?? 0;
+				facts.CastleCount = clan.Settlements?.Count(x => x != null && x.IsCastle) ?? 0;
+				if (string.IsNullOrEmpty(RebellionRules.CandidateNote(facts, true)))
+				{
+					try { facts.RelationToKing = kingdom.Leader != null ? clan.Leader.GetRelation(kingdom.Leader) : 0; }
+					catch { facts.RelationToKing = 0; }
+				}
+			}
+			if (clan != null && captured != null) captured[clan] = facts;
 		}
-		if (clan == Clan.PlayerClan)
-		{
-			note = "玩家家族不参与该系统的自动叛乱。";
-			return false;
-		}
-		if (clan.Kingdom != kingdom)
-		{
-			note = "该家族当前不隶属于此王国。";
-			return false;
-		}
-		if (clan == kingdom.RulingClan || clan == kingdom.Leader?.Clan)
-		{
-			note = "执政家族不会作为叛乱候选。";
-			return false;
-		}
-		if (clan.IsEliminated)
-		{
-			note = "该家族已灭亡。";
-			return false;
-		}
-		if (clan.IsBanditFaction || clan.IsMinorFaction || clan.IsRebelClan)
-		{
-			note = "该家族派系类型不适合纳入该叛乱逻辑。";
-			return false;
-		}
-		if (clan.IsUnderMercenaryService || clan.IsClanTypeMercenary)
-		{
-			note = "佣兵家族不会作为叛乱候选。";
-			return false;
-		}
-		Hero leader = clan.Leader;
-		if (leader == null || !leader.IsAlive || leader.IsChild)
-		{
-			note = "族长状态无效。";
-			return false;
-		}
-		if (leader.IsPrisoner)
-		{
-			note = "族长当前被囚，暂不触发带城反出。";
-			return false;
-		}
-		townCount = clan.Settlements?.Count((Settlement x) => x != null && x.IsTown) ?? 0;
-		castleCount = clan.Settlements?.Count((Settlement x) => x != null && x.IsCastle) ?? 0;
-		if (townCount + castleCount <= 0)
-		{
-			note = "该家族没有城镇或城堡，不能带城反出。";
-			return false;
-		}
-		try
-		{
-			relationToKing = ((kingdom.Leader != null) ? leader.GetRelation(kingdom.Leader) : 0);
-		}
-		catch
-		{
-			relationToKing = 0;
-		}
-		if (!forceTrigger && relationToKing > -5)
-		{
-			note = "与国王关系未低于 -5，暂不列入自动叛乱候选。";
-			return false;
-		}
-		return true;
+		relationToKing = facts.RelationToKing; townCount = facts.TownCount; castleCount = facts.CastleCount;
+		note = RebellionRules.CandidateNote(facts, forceTrigger);
+		return string.IsNullOrEmpty(note);
 	}
 
 	private static float ComputeKingdomRebellionCandidateScore(Clan clan, Kingdom kingdom, int relationToKing, int townCount, int castleCount)
 	{
-		float num = 0f;
-		num += Math.Min(900f, Math.Max(0f, clan?.Renown ?? 0f) * 0.45f);
-		num += Math.Max(0, clan?.Tier ?? 0) * 140;
-		num += Math.Min(420f, Math.Max(0f, clan?.CurrentTotalStrength ?? 0f) / 4f);
-		num += townCount * 140;
-		num += castleCount * 70;
-		num += Math.Max(0, -relationToKing) * 1.5f;
-		if (clan?.Leader?.Culture != null && kingdom?.Leader?.Culture != null && clan.Leader.Culture == kingdom.Leader.Culture)
+		return RebellionRules.CandidateScore(new RebellionClanFacts
 		{
-			num += 8f;
-		}
-		return num;
+			Renown = clan?.Renown ?? 0f, Tier = clan?.Tier ?? 0, Strength = clan?.CurrentTotalStrength ?? 0f,
+			TownCount = townCount, CastleCount = castleCount, RelationToKing = relationToKing,
+			SameKingCulture = clan?.Leader?.Culture != null && kingdom?.Leader?.Culture != null && clan.Leader.Culture == kingdom.Leader.Culture
+		});
 	}
 
-	private bool TryValidateClanForRebelFollower(Clan clan, Kingdom kingdom, Clan leaderClan, bool forceTrigger, out string note, out int relationToKing, out int relationToLeader, out int townCount, out int castleCount)
+	private bool TryValidateClanForRebelFollower(Clan clan, Kingdom kingdom, Clan leaderClan, bool forceTrigger, out string note, out int relationToKing, out int relationToLeader, out int townCount, out int castleCount, Dictionary<Clan, RebellionClanFacts> captured = null)
 	{
 		note = "";
 		relationToKing = 0;
 		relationToLeader = 0;
 		townCount = 0;
 		castleCount = 0;
-		if (clan == null || leaderClan == null)
-		{
-			note = "家族为空。";
-			return false;
-		}
-		if (clan == leaderClan)
-		{
-			note = "主导家族不作为跟随候选。";
-			return false;
-		}
-		if (!TryValidateClanForKingdomRebellion(clan, kingdom, forceTrigger: true, out note, out relationToKing, out townCount, out castleCount))
+		note = RebellionRules.FollowerPreflightNote(clan != null, leaderClan != null, clan == leaderClan);
+		if (!string.IsNullOrEmpty(note)) return false;
+		if (!TryValidateClanForKingdomRebellion(clan, kingdom, forceTrigger: true, out note, out relationToKing, out townCount, out castleCount, captured))
 		{
 			return false;
 		}
 		Hero leader = clan.Leader;
 		Hero leader2 = leaderClan.Leader;
-		if (leader == null || leader2 == null)
-		{
-			note = "族长状态无效。";
-			return false;
-		}
+		note = RebellionRules.FollowerLeaderNote(leader != null, leader2 != null);
+		if (!string.IsNullOrEmpty(note)) return false;
 		try
 		{
 			relationToLeader = leader.GetRelation(leader2);
@@ -11680,32 +11369,27 @@ public static int GetKingdomStabilityRoyalDomainLoyaltyAdjustmentForTown(Town to
 
 	private static bool IsEligibleRebelFollowerByStandardRules(int relationToKing, int relationToLeader, float score)
 	{
-		return relationToLeader - relationToKing >= 15;
+		return RebellionRules.FollowerEligible(relationToKing, relationToLeader);
 	}
 
 	private static bool IsEligibleRebelFollowerByRelativeFallback(int relationToKing, int relationToLeader, float score)
 	{
-		return false;
+		return RebellionRules.FollowerFallback();
 	}
 
 	private static float ComputeKingdomRebellionFollowerScore(Clan clan, Kingdom kingdom, Clan leaderClan, int relationToKing, int relationToLeader)
 	{
-		float num = 0f;
-		num += Math.Max(0, relationToLeader) * 3.5f;
-		num += Math.Max(0, -relationToKing) * 2.5f;
-		if (clan?.Leader?.Culture != null && leaderClan?.Leader?.Culture != null && clan.Leader.Culture == leaderClan.Leader.Culture)
+		return RebellionRules.FollowerScore(new RebellionClanFacts
 		{
-			num += 6f;
-		}
-		if (clan?.Leader?.Culture != null && kingdom?.Leader?.Culture != null && clan.Leader.Culture == kingdom.Leader.Culture)
-		{
-			num -= 4f;
-		}
-		return num;
+			RelationToKing = relationToKing, RelationToLeader = relationToLeader,
+			SameLeaderCulture = clan?.Leader?.Culture != null && leaderClan?.Leader?.Culture != null && clan.Leader.Culture == leaderClan.Leader.Culture,
+			SameKingCulture = clan?.Leader?.Culture != null && kingdom?.Leader?.Culture != null && clan.Leader.Culture == kingdom.Leader.Culture
+		});
 	}
 
-	private List<KingdomRebellionFollowerInfo> EvaluateKingdomRebellionFollowers(Kingdom kingdom, Clan leaderClan, bool forceTrigger)
+	private List<KingdomRebellionFollowerInfo> EvaluateKingdomRebellionFollowers(Kingdom kingdom, Clan leaderClan, bool forceTrigger, Dictionary<Clan, RebellionClanFacts> captured = null)
 	{
+		captured ??= new Dictionary<Clan, RebellionClanFacts>();
 		List<KingdomRebellionFollowerInfo> list = new List<KingdomRebellionFollowerInfo>();
 		if (kingdom == null || leaderClan == null)
 		{
@@ -11724,7 +11408,7 @@ public static int GetKingdomStabilityRoyalDomainLoyaltyAdjustmentForTown(Town to
 				ClanId = GetClanId(clan),
 				ClanName = GetClanDisplayName(clan)
 			};
-			if (!TryValidateClanForRebelFollower(clan, kingdom, leaderClan, forceTrigger, out var note, out var relationToKing, out var relationToLeader, out var townCount, out var castleCount))
+			if (!TryValidateClanForRebelFollower(clan, kingdom, leaderClan, forceTrigger, out var note, out var relationToKing, out var relationToLeader, out var townCount, out var castleCount, captured))
 			{
 				kingdomRebellionFollowerInfo.Eligible = false;
 				kingdomRebellionFollowerInfo.Note = note;
@@ -11757,11 +11441,12 @@ public static int GetKingdomStabilityRoyalDomainLoyaltyAdjustmentForTown(Town to
 			}
 			list.Add(kingdomRebellionFollowerInfo);
 		}
-		return list.OrderByDescending((KingdomRebellionFollowerInfo x) => x.Eligible).ThenByDescending((KingdomRebellionFollowerInfo x) => x.Score).ThenBy((KingdomRebellionFollowerInfo x) => x.ClanName ?? "", StringComparer.OrdinalIgnoreCase).ToList();
+		return RebellionRules.Sort(list, x => x.Eligible, x => x.Score, x => x.ClanName);
 	}
 
-	private List<KingdomRebellionCandidateInfo> EvaluateKingdomRebellionCandidates(Kingdom kingdom, bool forceTrigger)
+	private List<KingdomRebellionCandidateInfo> EvaluateKingdomRebellionCandidates(Kingdom kingdom, bool forceTrigger, Dictionary<Clan, RebellionClanFacts> captured = null)
 	{
+		captured ??= new Dictionary<Clan, RebellionClanFacts>();
 		List<KingdomRebellionCandidateInfo> list = new List<KingdomRebellionCandidateInfo>();
 		if (kingdom == null)
 		{
@@ -11780,7 +11465,7 @@ public static int GetKingdomStabilityRoyalDomainLoyaltyAdjustmentForTown(Town to
 				ClanId = GetClanId(clan),
 				ClanName = GetClanDisplayName(clan)
 			};
-			if (!TryValidateClanForKingdomRebellion(clan, kingdom, forceTrigger, out var note, out var relationToKing, out var townCount, out var castleCount))
+			if (!TryValidateClanForKingdomRebellion(clan, kingdom, forceTrigger, out var note, out var relationToKing, out var townCount, out var castleCount, captured))
 			{
 				kingdomRebellionCandidateInfo.Eligible = false;
 				kingdomRebellionCandidateInfo.Note = note;
@@ -11803,7 +11488,7 @@ public static int GetKingdomStabilityRoyalDomainLoyaltyAdjustmentForTown(Town to
 			}
 			list.Add(kingdomRebellionCandidateInfo);
 		}
-		return list.OrderByDescending((KingdomRebellionCandidateInfo x) => x.Eligible).ThenByDescending((KingdomRebellionCandidateInfo x) => x.Score).ThenBy((KingdomRebellionCandidateInfo x) => x.ClanName ?? "", StringComparer.OrdinalIgnoreCase).ToList();
+		return RebellionRules.Sort(list, x => x.Eligible, x => x.Score, x => x.ClanName);
 	}
 
 	private KingdomRebellionResolutionResult ResolveKingdomRebellion(Kingdom kingdom, int weekIndex, bool executeAction, bool forceTrigger)
@@ -11844,10 +11529,11 @@ public static int GetKingdomStabilityRoyalDomainLoyaltyAdjustmentForTown(Town to
 			kingdomRebellionResolutionResult.Message = GetKingdomDisplayName(kingdom, "该王国") + "当前缺少有效领袖，跳过叛乱判定。";
 			return kingdomRebellionResolutionResult;
 		}
-		kingdomRebellionResolutionResult.Candidates = EvaluateKingdomRebellionCandidates(kingdom, forceTrigger: false);
+		var captured = new Dictionary<Clan, RebellionClanFacts>();
+		kingdomRebellionResolutionResult.Candidates = EvaluateKingdomRebellionCandidates(kingdom, forceTrigger: false, captured: captured);
 		foreach (KingdomRebellionCandidateInfo item in kingdomRebellionResolutionResult.Candidates.Where((KingdomRebellionCandidateInfo x) => x != null && x.Clan != null))
 		{
-			item.PreviewFollowerClanNames = EvaluateKingdomRebellionFollowers(kingdom, item.Clan, forceTrigger: false).Where((KingdomRebellionFollowerInfo x) => x != null && x.Eligible && x.Clan != null).Select((KingdomRebellionFollowerInfo x) => GetClanDisplayName(x.Clan)).Where((string x) => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
+			item.PreviewFollowerClanNames = EvaluateKingdomRebellionFollowers(kingdom, item.Clan, forceTrigger: false, captured: captured).Where((KingdomRebellionFollowerInfo x) => x != null && x.Eligible && x.Clan != null).Select((KingdomRebellionFollowerInfo x) => GetClanDisplayName(x.Clan)).Where((string x) => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
 		}
 		if (!forceTrigger)
 		{
@@ -11856,9 +11542,9 @@ public static int GetKingdomStabilityRoyalDomainLoyaltyAdjustmentForTown(Town to
 				kingdomRebellionResolutionResult.Message = GetKingdomDisplayName(kingdom, "该王国") + "当前稳定度为“" + kingdomRebellionResolutionResult.StabilityTierText + "”，本周没有叛乱概率。";
 				return kingdomRebellionResolutionResult;
 			}
-			float randomFloat = MBRandom.RandomFloat;
+			bool passed = RebellionRules.PassChance(false, kingdomRebellionResolutionResult.TriggerChance, () => MBRandom.RandomFloat, out float randomFloat);
 			kingdomRebellionResolutionResult.Roll = randomFloat;
-			kingdomRebellionResolutionResult.PassedChanceGate = randomFloat < kingdomRebellionResolutionResult.TriggerChance;
+			kingdomRebellionResolutionResult.PassedChanceGate = passed;
 			if (!kingdomRebellionResolutionResult.PassedChanceGate)
 			{
 				kingdomRebellionResolutionResult.Message = GetKingdomDisplayName(kingdom, "该王国") + "本周叛乱抽签未命中。当前档位“" + kingdomRebellionResolutionResult.StabilityTierText + "”，概率 " + FormatKingdomRebellionChance(kingdomRebellionResolutionResult.TriggerChance) + "，本次掷值 " + randomFloat.ToString("0.000") + "。";
@@ -11869,14 +11555,14 @@ public static int GetKingdomStabilityRoyalDomainLoyaltyAdjustmentForTown(Town to
 		{
 			kingdomRebellionResolutionResult.PassedChanceGate = true;
 		}
-		KingdomRebellionCandidateInfo kingdomRebellionCandidateInfo = kingdomRebellionResolutionResult.Candidates.FirstOrDefault((KingdomRebellionCandidateInfo x) => x != null && x.Eligible && x.Clan != null);
+		KingdomRebellionCandidateInfo kingdomRebellionCandidateInfo = RebellionRules.FirstEligible(kingdomRebellionResolutionResult.Candidates, x => x != null && x.Eligible && x.Clan != null);
 		if (kingdomRebellionCandidateInfo == null)
 		{
 			kingdomRebellionResolutionResult.Message = GetKingdomDisplayName(kingdom, "该王国") + "当前没有满足条件的带城叛乱候选家族。";
 			return kingdomRebellionResolutionResult;
 		}
 		kingdomRebellionResolutionResult.SelectedClan = kingdomRebellionCandidateInfo.Clan;
-		kingdomRebellionResolutionResult.FollowerCandidates = EvaluateKingdomRebellionFollowers(kingdom, kingdomRebellionCandidateInfo.Clan, forceTrigger: false);
+		kingdomRebellionResolutionResult.FollowerCandidates = EvaluateKingdomRebellionFollowers(kingdom, kingdomRebellionCandidateInfo.Clan, forceTrigger: false, captured: captured);
 		kingdomRebellionResolutionResult.SelectedFollowerClans = kingdomRebellionResolutionResult.FollowerCandidates.Where((KingdomRebellionFollowerInfo x) => x != null && x.Eligible && x.Clan != null).Select((KingdomRebellionFollowerInfo x) => x.Clan).ToList();
 		if (!executeAction)
 		{
@@ -12084,34 +11770,13 @@ public static int GetKingdomStabilityRoyalDomainLoyaltyAdjustmentForTown(Town to
 
 	private void MarkModCreatedRebelKingdom(Kingdom kingdom)
 	{
-		string kingdomId = GetKingdomId(kingdom);
-		if (string.IsNullOrWhiteSpace(kingdomId))
-		{
-			return;
-		}
-		if (_modCreatedRebelKingdomIds == null)
-		{
-			_modCreatedRebelKingdomIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-		}
-		_modCreatedRebelKingdomIds.Add(kingdomId);
+		_rebelKingdomIdentity.Mark(GetKingdomId(kingdom));
 	}
 
 	private bool IsKnownOrLegacyModCreatedRebelKingdom(Kingdom kingdom)
 	{
-		string kingdomId = GetKingdomId(kingdom);
-		if (string.IsNullOrWhiteSpace(kingdomId))
-		{
-			return false;
-		}
-		if (_modCreatedRebelKingdomIds != null && _modCreatedRebelKingdomIds.Contains(kingdomId))
-		{
-			return true;
-		}
-		if (!kingdomId.StartsWith("new_kingdom", StringComparison.OrdinalIgnoreCase))
-		{
-			return false;
-		}
-		return _kingdomStabilityValues != null && _kingdomStabilityValues.ContainsKey(kingdomId);
+		string id = GetKingdomId(kingdom);
+		return RebellionRules.IsKnownOrLegacy(id, _rebelKingdomIdentity.IsKnown(id), _kingdomStabilityValues != null && _kingdomStabilityValues.ContainsKey(id));
 	}
 
 	private static Clan FindKingdomClanMatchingBanner(Kingdom kingdom, Banner banner, Clan excludedClan)
@@ -12205,22 +11870,9 @@ public static int GetKingdomStabilityRoyalDomainLoyaltyAdjustmentForTown(Town to
 	{
 		try
 		{
-			if (kingdom == null || kingdom.IsEliminated)
-			{
-				return false;
-			}
-			if (!allowPlayerKingdom && Clan.PlayerClan?.Kingdom == kingdom)
-			{
-				return false;
-			}
-			if (kingdom.Settlements != null && kingdom.Settlements.Count > 0)
-			{
-				return false;
-			}
-			if (requireKnownModRebelKingdom && !IsKnownOrLegacyModCreatedRebelKingdom(kingdom))
-			{
-				return false;
-			}
+			if (!RebellionRules.CanDiscontinue(kingdom != null, kingdom?.IsEliminated ?? false,
+				Clan.PlayerClan?.Kingdom == kingdom, kingdom?.Settlements != null && kingdom.Settlements.Count > 0,
+				!requireKnownModRebelKingdom || IsKnownOrLegacyModCreatedRebelKingdom(kingdom), allowPlayerKingdom)) return false;
 			bool canBeDiscontinued = true;
 			CampaignEventDispatcher.Instance.CanKingdomBeDiscontinued(kingdom, ref canBeDiscontinued);
 			if (!canBeDiscontinued)
@@ -12272,7 +11924,7 @@ public static int GetKingdomStabilityRoyalDomainLoyaltyAdjustmentForTown(Town to
 		try
 		{
 			bool scannedKnownRebelKingdom = false;
-			foreach (string kingdomId in (_modCreatedRebelKingdomIds ?? new HashSet<string>(StringComparer.OrdinalIgnoreCase)).ToList())
+			foreach (string kingdomId in _rebelKingdomIdentity.Snapshot().ToList())
 			{
 				string text = (kingdomId ?? "").Trim();
 				if (string.IsNullOrWhiteSpace(text))
@@ -12349,7 +12001,7 @@ public static int GetKingdomStabilityRoyalDomainLoyaltyAdjustmentForTown(Town to
 		{
 			return;
 		}
-		_modCreatedRebelKingdomIds?.Remove(text);
+		_rebelKingdomIdentity.Remove(text);
 		_modCreatedRebelKingdomIdStorage?.Remove(text);
 		_kingdomStabilityValues?.Remove(text);
 		_kingdomStabilityStorage?.Remove(text);
@@ -12576,7 +12228,8 @@ TeamModuleServices.CivilWar.AdvanceWeek(devEditableKingdom, weekIndex, GetKingdo
 			ContinueAutomaticKingdomRebellionFlow();
 			return;
 		}
-		BuildRebelKingdomNamingRequest(clan, kingdom, pendingAutomaticKingdomRebellionContext.WeekIndex, list, out var systemPrompt, out var userPrompt);
+		string[] rebellionExistingNames = CaptureRebellionExistingNames();
+		BuildRebelKingdomNamingRequest(clan, kingdom, pendingAutomaticKingdomRebellionContext.WeekIndex, list, out var systemPrompt, out var userPrompt, rebellionExistingNames);
 		long namingRequestVersion = AutomaticKingdomRebellions.BeginNaming();
 		InformationManager.ShowInquiry(new InquiryData("正在生成叛乱建国命名", "系统正在为本周自动叛乱生成新王国的名称与百科简介。\n\n这一步完成前不会继续本轮自动叛乱与周报流程。\n请稍候，结果完成后会自动弹出。", isAffirmativeOptionShown: false, isNegativeOptionShown: false, "", "", null, null), pauseGameActiveState: true);
 		long runtimeGeneration = SaveRuntimeGuard.CaptureGeneration();
@@ -12586,7 +12239,7 @@ TeamModuleServices.CivilWar.AdvanceWeek(devEditableKingdom, weekIndex, GetKingdo
 			RebelKingdomNamingResult namingResult;
 			try
 			{
-				namingResult = GenerateRebelKingdomNamingFromPrompts(systemPrompt, userPrompt, logTarget, RebelKingdomNamingMaxAttempts);
+				namingResult = GenerateRebelKingdomNamingFromPrompts(systemPrompt, userPrompt, logTarget, RebelKingdomNamingMaxAttempts, rebellionExistingNames);
 			}
 			catch (Exception ex)
 			{
@@ -12801,7 +12454,8 @@ TeamModuleServices.CivilWar.AdvanceWeek(devEditableKingdom, weekIndex, GetKingdo
 			ShowAutomaticKingdomRebellionCompletionPopup(context, kingdom, clan, list, success: false, GetKingdomDisplayName(kingdom, "该王国") + " 当前由玩家作为国王统治，且 MCM 已开启玩家王国稳定度叛乱免疫，本次自动稳定度叛乱已跳过。");
 			return;
 		}
-		BuildRebelKingdomNamingRequest(clan, kingdom, context.WeekIndex, list, out var systemPrompt, out var userPrompt);
+		string[] rebellionExistingNames = CaptureRebellionExistingNames();
+		BuildRebelKingdomNamingRequest(clan, kingdom, context.WeekIndex, list, out var systemPrompt, out var userPrompt, rebellionExistingNames);
 		long namingRequestVersion = AutomaticKingdomRebellions.BeginNaming();
 		InformationManager.ShowInquiry(new InquiryData("正在重新生成叛乱建国命名", "系统正在按修正后的事件/叛乱API配置重新请求新王国名称与百科简介。\n\n这一步完成前不会继续本轮自动叛乱与周报流程。", isAffirmativeOptionShown: false, isNegativeOptionShown: false, "", "", null, null), pauseGameActiveState: true);
 		long runtimeGeneration = SaveRuntimeGuard.CaptureGeneration();
@@ -12811,7 +12465,7 @@ TeamModuleServices.CivilWar.AdvanceWeek(devEditableKingdom, weekIndex, GetKingdo
 			RebelKingdomNamingResult namingResult;
 			try
 			{
-				namingResult = GenerateRebelKingdomNamingFromPrompts(systemPrompt, userPrompt, logTarget, RebelKingdomNamingMaxAttempts);
+				namingResult = GenerateRebelKingdomNamingFromPrompts(systemPrompt, userPrompt, logTarget, RebelKingdomNamingMaxAttempts, rebellionExistingNames);
 			}
 			catch (Exception ex)
 			{
@@ -16977,10 +16631,7 @@ TeamModuleServices.CivilWar.AdvanceWeek(devEditableKingdom, weekIndex, GetKingdo
 		{
 			_weeklyReportAppliedStabilityDeltaStorage = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 		}
-		if (_modCreatedRebelKingdomIds == null)
-		{
-			_modCreatedRebelKingdomIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-		}
+
 		if (_modCreatedRebelKingdomIdStorage == null)
 		{
 			_modCreatedRebelKingdomIdStorage = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
@@ -17254,7 +16905,7 @@ TeamModuleServices.CivilWar.AdvanceWeek(devEditableKingdom, weekIndex, GetKingdo
 				Dictionary<string, string> dictionary14c = CampaignSaveChunkHelper.FlattenStringDictionary(_weeklyReportAppliedStabilityDeltaStorage, "_weeklyReportAppliedStabilityDeltas_v1", "WeeklyReportStability");
 				dataStore.SyncData("_weeklyReportAppliedStabilityDeltas_v1", ref dictionary14c);
 				_modCreatedRebelKingdomIdStorage.Clear();
-				foreach (string rebelKingdomId in _modCreatedRebelKingdomIds ?? new HashSet<string>(StringComparer.OrdinalIgnoreCase))
+				foreach (string rebelKingdomId in _rebelKingdomIdentity.Snapshot())
 				{
 					string text6 = (rebelKingdomId ?? "").Trim();
 					if (!string.IsNullOrWhiteSpace(text6))
@@ -17669,7 +17320,7 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 					}
 				}
 			}
-			_modCreatedRebelKingdomIds.Clear();
+			_rebelKingdomIdentity.Clear();
 			_modCreatedRebelKingdomIdStorage.Clear();
 			Dictionary<string, string> dictionary17 = new Dictionary<string, string>();
 			dataStore.SyncData("_modCreatedRebelKingdomIds_v1", ref dictionary17);
@@ -17681,7 +17332,7 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 					string text8 = (key ?? "").Trim();
 					if (!string.IsNullOrWhiteSpace(text8))
 					{
-						_modCreatedRebelKingdomIds.Add(text8);
+						_rebelKingdomIdentity.Mark(text8);
 					}
 				}
 			}
@@ -17757,7 +17408,7 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 			_kingdomStabilityRelationOffsetStorage = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 			_weeklyReportAppliedStabilityDeltas = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
 			_weeklyReportAppliedStabilityDeltaStorage = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-			_modCreatedRebelKingdomIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+			_rebelKingdomIdentity.Clear();
 			_modCreatedRebelKingdomIdStorage = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 			_lastAutoGeneratedWeeklyReportWeek = -1;
 			_lastProcessedKingdomRebellionWeek = -1;
@@ -19423,7 +19074,8 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 			return;
 		}
 		List<Clan> list = followerClans?.Where((Clan x) => x != null && x != clan).GroupBy((Clan x) => GetClanId(x), StringComparer.OrdinalIgnoreCase).Select((IGrouping<string, Clan> x) => x.First()).ToList() ?? new List<Clan>();
-		BuildRebelKingdomNamingRequest(clan, kingdom, weekIndex, list, out var systemPrompt, out var userPrompt);
+		string[] rebellionExistingNames = CaptureRebellionExistingNames();
+		BuildRebelKingdomNamingRequest(clan, kingdom, weekIndex, list, out var systemPrompt, out var userPrompt, rebellionExistingNames);
 		_devForcedKingdomRebellionInProgress = true;
 		_pendingDevForcedKingdomRebellionReady = false;
 		_pendingDevForcedKingdomRebellionContext = null;
@@ -19445,7 +19097,7 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 			RebelKingdomNamingResult namingResult;
 			try
 			{
-				namingResult = GenerateRebelKingdomNamingFromPrompts(systemPrompt, userPrompt, logTarget, RebelKingdomNamingMaxAttempts);
+				namingResult = GenerateRebelKingdomNamingFromPrompts(systemPrompt, userPrompt, logTarget, RebelKingdomNamingMaxAttempts, rebellionExistingNames);
 			}
 			catch (Exception ex)
 			{
@@ -32398,27 +32050,12 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 
 	private static int ComputePatienceMaxFromRelation(int relation)
 	{
-		double a = ((relation >= 0) ? (30.0 + (double)relation * 0.5) : (30.0 + (double)relation * 0.18));
-		return ClampInt((int)Math.Round(a), 10, 80);
+		return PatienceRules.ComputePatienceMaxFromRelation(relation);
 	}
 
 	private static int ToTenLevelIndexByRatio(float current, int max)
 	{
-		if (max <= 0)
-		{
-			return 1;
-		}
-		double num = ClampFloat(current / (float)max, 0f, 1f);
-		int num2 = (int)Math.Ceiling(num * 10.0);
-		if (num2 < 1)
-		{
-			num2 = 1;
-		}
-		if (num2 > 10)
-		{
-			num2 = 10;
-		}
-		return num2;
+		return PatienceRules.ToTenLevelIndexByRatio(current, max);
 	}
 
 	private static int ToTenLevelIndexByRelation(int relation)
@@ -32438,8 +32075,7 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 
 	private static string GetPatienceLevelText(float current, int max)
 	{
-		int num = ToTenLevelIndexByRatio(current, max);
-		return PatienceLevelTexts[num - 1];
+		return PatienceRules.GetPatienceLevelText(current, max);
 	}
 
 	private static string GetRelationLevelText(int relation)
@@ -32839,79 +32475,11 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 		return text;
 	}
 
-	private static string BuildHeroPatienceKey(Hero hero)
-	{
-		string text = (hero?.StringId ?? "").Trim().ToLower();
-		if (string.IsNullOrEmpty(text))
-		{
-			return "";
-		}
-		return "hero:" + text;
-	}
+	private static string BuildHeroPatienceKey(Hero hero) => PatienceRules.HeroKey(hero?.StringId);
 
-	private static string BuildUnnamedPatienceKey(string unnamedKey, string npcName)
-	{
-		string text = (unnamedKey ?? "").Trim().ToLower();
-		if (!string.IsNullOrEmpty(text))
-		{
-			return "unnamed:" + text;
-		}
-		string text2 = (npcName ?? "").Trim().ToLower();
-		if (string.IsNullOrEmpty(text2))
-		{
-			return "";
-		}
-		return "name:" + text2;
-	}
+	private static string BuildUnnamedPatienceKey(string unnamedKey, string npcName) => PatienceRules.UnnamedKey(unnamedKey, npcName);
 
-	private PatienceState GetOrCreateStateUnsafe(string key, int maxPatience, float nowDay)
-	{
-		if (string.IsNullOrWhiteSpace(key))
-		{
-			return null;
-		}
-		if (!_patienceStates.TryGetValue(key, out var value) || value == null)
-		{
-			value = new PatienceState
-			{
-				Value = maxPatience,
-				LastDay = nowDay,
-				NoInterestRounds = 0
-			};
-			_patienceStates[key] = value;
-		}
-		return value;
-	}
 
-	private void RecoverPatienceUnsafe(PatienceState state, int maxPatience, float nowDay)
-	{
-		if (state == null)
-		{
-			return;
-		}
-		if (nowDay > state.LastDay)
-		{
-			float num = nowDay - state.LastDay;
-			if (num > 0f)
-			{
-				state.Value += num * 4f;
-				state.LastDay = nowDay;
-				if (state.NoInterestRounds > 0)
-				{
-					int num2 = (int)Math.Floor(num);
-					if (num2 > 0)
-					{
-						state.NoInterestRounds = Math.Max(0, state.NoInterestRounds - num2);
-					}
-				}
-			}
-		}
-		state.Value = ClampFloat(state.Value, 0f, maxPatience);
-		if (state.Value > 0.01f && state.ExhaustedRefusalCount > 0)
-		{
-			state.ExhaustedRefusalCount = 0;
-		}
-	}
 
 	private PatienceSnapshot GetHeroPatienceSnapshot(Hero hero)
 	{
@@ -32944,12 +32512,7 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 		int num = ComputePatienceMaxFromRelation(relationWithPlayerSafe);
 		float nowCampaignDay = GetNowCampaignDay();
 		float value;
-		lock (_patienceLock)
-		{
-			PatienceState orCreateStateUnsafe = GetOrCreateStateUnsafe(text, num, nowCampaignDay);
-			RecoverPatienceUnsafe(orCreateStateUnsafe, num, nowCampaignDay);
-			value = orCreateStateUnsafe.Value;
-		}
+		value = _patienceOwner.Snapshot(text, num, nowCampaignDay);
 		snap.Key = text;
 		snap.Relation = relationWithPlayerSafe;
 		snap.Max = num;
@@ -32985,12 +32548,7 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 		}
 		float nowCampaignDay = GetNowCampaignDay();
 		float value;
-		lock (_patienceLock)
-		{
-			PatienceState orCreateStateUnsafe = GetOrCreateStateUnsafe(text, 30, nowCampaignDay);
-			RecoverPatienceUnsafe(orCreateStateUnsafe, 30, nowCampaignDay);
-			value = orCreateStateUnsafe.Value;
-		}
+		value = _patienceOwner.Snapshot(text, 30, nowCampaignDay);
 		result.Current = value;
 		result.PatienceLevel = GetPatienceLevelText(value, 30);
 		try
@@ -33006,154 +32564,32 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 
 	private static PatienceMood ParseMoodToken(string token)
 	{
-		string text = (token ?? "").Trim().ToLower();
-		if (string.IsNullOrEmpty(text))
-		{
-			return PatienceMood.Neutral;
-		}
-		switch (text)
-		{
-		case "delighted":
-		case "very_happy":
-		case "thrilled":
-		case "heartwarmed":
-		case "heart_warmed":
-		case "affectionate":
-		case "fond":
-		case "sweet":
-			return PatienceMood.Delighted;
-		default:
-			if (!(text == "鎰夊揩"))
-			{
-				switch (text)
-				{
-				default:
-					if (!(text == "鐢熸皵"))
-					{
-						if (text == "bored" || text == "boring" || text == "鏃犺亰")
-						{
-							return PatienceMood.Bored;
-						}
-						return PatienceMood.Neutral;
-					}
-					goto case "annoyed";
-				case "annoyed":
-				case "angry":
-				case "upset":
-				case "irritated":
-				case "displeased":
-				case "涓嶆偊":
-					return PatienceMood.Annoyed;
-				}
-			}
-			goto case "joy";
-		case "joy":
-		case "happy":
-		case "positive":
-		case "amused":
-		case "friendly":
-		case "鍠滄偊":
-			return PatienceMood.Joy;
-		}
+		return PatienceRules.ParseMoodToken(token);
 	}
 
 	private static PatienceMood ExtractMoodAndStripTag(ref string text)
 	{
-		PatienceMood result = PatienceMood.Neutral;
-		string text2 = text ?? "";
-		MatchCollection matchCollection = MoodTagRegex.Matches(text2);
-		if (matchCollection != null && matchCollection.Count > 0)
-		{
-			string value = matchCollection[matchCollection.Count - 1].Groups[1].Value;
-			result = ParseMoodToken(value);
-			text2 = MoodTagRegex.Replace(text2, "");
-		}
-		text = (text2 ?? "").Trim();
-		return result;
+		return PatienceRules.ExtractMoodAndStripTag(ref text);
 	}
 
 	private static int ComputePatienceDelta(PatienceMood mood, ref int noInterestRounds)
 	{
-		int num;
-		switch (mood)
-		{
-		case PatienceMood.Delighted:
-			num = 2;
-			noInterestRounds = Math.Max(0, noInterestRounds - 3);
-			break;
-		case PatienceMood.Joy:
-			num = 1;
-			noInterestRounds = Math.Max(0, noInterestRounds - 2);
-			break;
-		case PatienceMood.Annoyed:
-			num = -3;
-			noInterestRounds++;
-			break;
-		case PatienceMood.Bored:
-			num = -2;
-			noInterestRounds++;
-			break;
-		default:
-			num = -1;
-			noInterestRounds++;
-			break;
-		}
-		if (mood != PatienceMood.Joy && mood != PatienceMood.Delighted && noInterestRounds >= 3)
-		{
-			num--;
-		}
-		return num;
+		return PatienceRules.ComputePatienceDelta(mood, ref noInterestRounds);
 	}
 
 	private static int ComputeNativeRelationDelta(PatienceMood mood, int currentRelation)
 	{
-		switch (mood)
-		{
-		case PatienceMood.Delighted:
-			if (currentRelation >= 95)
-			{
-				return 0;
-			}
-			return 1;
-		case PatienceMood.Annoyed:
-			if (currentRelation <= -95)
-			{
-				return 0;
-			}
-			return -1;
-		default:
-			return 0;
-		}
+		return PatienceRules.ComputeNativeRelationDelta(mood, currentRelation);
 	}
 
 	private static int ComputePrivateLoveDelta(PatienceMood mood)
 	{
-		switch (mood)
-		{
-		case PatienceMood.Delighted:
-			return 2;
-		case PatienceMood.Joy:
-			return 1;
-		case PatienceMood.Bored:
-			return -1;
-		case PatienceMood.Annoyed:
-			return -2;
-		default:
-			return 0;
-		}
+		return PatienceRules.ComputePrivateLoveDelta(mood);
 	}
 
 	private static int ComputeRoyalDomainConversationLoyaltyDelta(PatienceMood mood)
 	{
-		switch (mood)
-		{
-		case PatienceMood.Delighted:
-			return RoyalDomainConversationDelightedLoyaltyDelta;
-		case PatienceMood.Joy:
-			return RoyalDomainConversationJoyLoyaltyDelta;
-		default:
-			return 0;
-		}
+		return PatienceRules.ComputeRoyalDomainConversationLoyaltyDelta(mood);
 	}
 
 	private static Settlement GetCurrentRoyalDomainConversationSettlement()
@@ -33178,7 +32614,7 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 		bool isPlayerFamilyOrCompanion = targetHero.IsPlayerCompanion
 			|| (playerClan != null && (targetHero.CompanionOf == playerClan || targetHero.Clan == playerClan))
 			|| RomanceSystemBehavior.IsPlayerCompanionOrFamily(targetHero);
-		return targetHero != mainHero && !targetHero.IsPrisoner && !isPlayerFamilyOrCompanion && !targetHero.IsLord;
+		return PatienceRules.RoyalLoyaltyEligible(true, targetHero == mainHero, targetHero.IsPrisoner, isPlayerFamilyOrCompanion, targetHero.IsLord);
 	}
 
 	private static void ApplyRoyalDomainConversationLoyaltyFromMood(PatienceMood mood, Hero targetHero, string unnamedKey, string npcName, bool directConversation)
@@ -33223,55 +32659,16 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 
 	private bool ApplyPatienceDeltaInternal(string key, int maxPatience, PatienceMood mood, out int before, out int after)
 	{
-		before = 0;
-		after = 0;
-		if (string.IsNullOrWhiteSpace(key) || maxPatience <= 0)
-		{
-			return false;
-		}
-		float nowCampaignDay = GetNowCampaignDay();
-		lock (_patienceLock)
-		{
-			PatienceState orCreateStateUnsafe = GetOrCreateStateUnsafe(key, maxPatience, nowCampaignDay);
-			RecoverPatienceUnsafe(orCreateStateUnsafe, maxPatience, nowCampaignDay);
-			int num = (int)Math.Round(orCreateStateUnsafe.Value);
-			int num2 = ComputePatienceDelta(mood, ref orCreateStateUnsafe.NoInterestRounds);
-			orCreateStateUnsafe.Value = ClampFloat(orCreateStateUnsafe.Value + (float)num2, 0f, maxPatience);
-			orCreateStateUnsafe.LastDay = nowCampaignDay;
-			int num3 = (int)Math.Round(orCreateStateUnsafe.Value);
-			before = num;
-			after = num3;
-			return num > 0 && num3 <= 0;
-		}
+		var result = _patienceOwner.Apply(key, maxPatience, GetNowCampaignDay(), mood);
+		before = result.Before; after = result.After;
+		return result.BecameExhausted;
 	}
 
 	private bool ApplyPatiencePostprocessMoodOverrideInternal(string key, int maxPatience, PatienceMood mood, out int before, out int after, out int delta)
 	{
-		before = 0;
-		after = 0;
-		delta = 0;
-		if (string.IsNullOrWhiteSpace(key) || maxPatience <= 0 || mood == PatienceMood.Neutral)
-		{
-			return false;
-		}
-		float nowCampaignDay = GetNowCampaignDay();
-		lock (_patienceLock)
-		{
-			PatienceState orCreateStateUnsafe = GetOrCreateStateUnsafe(key, maxPatience, nowCampaignDay);
-			RecoverPatienceUnsafe(orCreateStateUnsafe, maxPatience, nowCampaignDay);
-			before = (int)Math.Round(orCreateStateUnsafe.Value);
-			int neutralBaseNoInterestRounds = Math.Max(0, orCreateStateUnsafe.NoInterestRounds - 1);
-			int neutralNoInterestRounds = neutralBaseNoInterestRounds;
-			int neutralDelta = ComputePatienceDelta(PatienceMood.Neutral, ref neutralNoInterestRounds);
-			int moodNoInterestRounds = neutralBaseNoInterestRounds;
-			int moodDelta = ComputePatienceDelta(mood, ref moodNoInterestRounds);
-			delta = moodDelta - neutralDelta;
-			orCreateStateUnsafe.Value = ClampFloat(orCreateStateUnsafe.Value + (float)delta, 0f, maxPatience);
-			orCreateStateUnsafe.NoInterestRounds = moodNoInterestRounds;
-			orCreateStateUnsafe.LastDay = nowCampaignDay;
-			after = (int)Math.Round(orCreateStateUnsafe.Value);
-			return before > 0 && after <= 0;
-		}
+		var result = _patienceOwner.OverrideNeutral(key, maxPatience, GetNowCampaignDay(), mood);
+		before = result.Before; after = result.After; delta = result.Delta;
+		return result.BecameExhausted;
 	}
 
 	private static string BuildExhaustedReply(string npcName, int relation, int refusalCount = 1)
@@ -33374,13 +32771,9 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 		bool flag = ApplyPatienceDeltaInternal(heroPatienceSnapshot.Key, heroPatienceSnapshot.Max, patienceMood, out before, out after);
 		int relation = heroPatienceSnapshot.Relation;
 		int privateLove = heroPatienceSnapshot.PrivateLove;
-		int num = ComputeNativeRelationDelta(patienceMood, relation);
+		int num = PatienceRules.HeroRelationEffect(patienceMood, relation, before, correction: false);
 		int num2 = ComputePrivateLoveDelta(patienceMood);
 		bool flag2 = before <= 0;
-		if (flag2)
-		{
-			num--;
-		}
 		int num3 = relation;
 		if (num != 0)
 		{
@@ -33698,10 +33091,6 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 
 	private void SyncPatienceData(IDataStore dataStore)
 	{
-		if (_patienceStates == null)
-		{
-			_patienceStates = new Dictionary<string, PatienceState>();
-		}
 		if (_patienceStorage == null)
 		{
 			_patienceStorage = new Dictionary<string, string>();
@@ -33717,7 +33106,7 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 				lock (_patienceLock)
 				{
 					_patienceStorage.Clear();
-					foreach (KeyValuePair<string, PatienceState> patienceState in _patienceStates)
+					foreach (KeyValuePair<string, PatienceState> patienceState in _patienceOwner.SaveSnapshot())
 					{
 						if (!string.IsNullOrWhiteSpace(patienceState.Key) && patienceState.Value != null)
 						{
@@ -33744,7 +33133,7 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 			}
 			lock (_patienceLock)
 			{
-				_patienceStates.Clear();
+				_patienceOwner.Clear();
 				_patienceStorage.Clear();
 			}
 			Dictionary<string, string> dictionary2 = new Dictionary<string, string>();
@@ -33756,6 +33145,7 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 			}
 			lock (_patienceLock)
 			{
+				var loaded = new Dictionary<string, PatienceState>();
 				foreach (KeyValuePair<string, string> item in _patienceStorage)
 				{
 					if (string.IsNullOrWhiteSpace(item.Key) || string.IsNullOrWhiteSpace(item.Value))
@@ -33767,7 +33157,7 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 						PatienceStateSaveModel patienceStateSaveModel = JsonConvert.DeserializeObject<PatienceStateSaveModel>(item.Value);
 						if (patienceStateSaveModel != null)
 						{
-							_patienceStates[item.Key] = new PatienceState
+							loaded[item.Key] = new PatienceState
 							{
 								Value = patienceStateSaveModel.Value,
 								LastDay = patienceStateSaveModel.LastDay,
@@ -33780,6 +33170,7 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 					{
 					}
 				}
+				_patienceOwner.Replace(loaded);
 			}
 		}
 		catch (Exception ex)
@@ -33787,7 +33178,7 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 			Logger.Log("Patience", "[ERROR] SyncPatienceData failed: " + ex.Message);
 			lock (_patienceLock)
 			{
-				_patienceStates = new Dictionary<string, PatienceState>();
+				_patienceOwner.Clear();
 				_patienceStorage = new Dictionary<string, string>();
 			}
 		}
@@ -42213,7 +41604,7 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 		_kingdomStabilityRelationOffsetStorage = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 		_weeklyReportAppliedStabilityDeltas = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
 		_weeklyReportAppliedStabilityDeltaStorage = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-		_modCreatedRebelKingdomIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+		_rebelKingdomIdentity.Clear();
 		_modCreatedRebelKingdomIdStorage = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 		_lastAutoGeneratedWeeklyReportWeek = -1;
 		_lastProcessedKingdomRebellionWeek = -1;
@@ -42267,7 +41658,7 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 		_unnamedPersonaJsonStorage = "";
 		lock (_patienceLock)
 		{
-			_patienceStates = new Dictionary<string, PatienceState>();
+			_patienceOwner.Clear();
 			_patienceStorage = new Dictionary<string, string>();
 		}
 		_dailyMaintenanceQueue.Clear();
