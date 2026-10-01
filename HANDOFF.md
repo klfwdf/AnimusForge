@@ -1,5 +1,7 @@
 # 当前交接：J17 收尾与远端 CivilWar 合并（2026-10-01）
 
+- **政策投票五项性格已离线接通（2026-10-01）**：`d54ac0eb`，玩家/NPC 首次评议保存政策手段的仁慈/荣誉/慷慨/勇气/审慎画像，原投票计算加入独立 P，保留实际损失扣分、拉票承诺与提案者保护；MCM 性格倍率默认1。旧政策无画像保持原评分，重新评议可生成。Release 双API+Bootstrap通过，两候选定向回归各1475断言通过；1.3离线runner补用了本机通用依赖，不代表纯1.3运行时验收。未部署/推送，真实模型、旧档和游戏投票未验。[源码证据、产物与回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#policy-personality-vote-20261001)。
+
 - **驻守城镇遇敌出城已离线修复（2026-10-01）**：`a9539dc0`，实际已进目标城镇/城堡的驻守部队不再自动转成攻击围城军，并屏蔽原版 initiative 绕锁出击；城外援军、巡逻、明确攻击及到期语义保留。24项真实方法/桩Campaign回归与3故障变异通过，Release双API+Bootstrap零错误。未部署/实机，旧逻辑已转攻击的命令需取消后重新下达驻守。[代码责任图、证据、产物及逆向回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#settlement-stay-sortie-20261001)。
 
 - **政变大厅 F 门转场抢占已修复并部署（2026-10-01 12:34）**：`5623ac25` 接管所属Coup任务的原版PassageUsePoint.OnUse，取消裸F轮询，守卫清除后先HallSelection选兵再登记大厅援军，避免原版直跳导致撤退/普通大厅。双API+Bootstrap、14新增+91既有离线回归、安装DLL门补丁注册PASS；11文件覆盖、238文件哈希一致，旧文件已备份。真实F/大厅交战/旧档未验，失败旧局需读发动前存档重测。[实机故障序列、精确坐标、部署证据与回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#coup-passage-transition-20261001)。
