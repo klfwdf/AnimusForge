@@ -152,152 +152,17 @@ public partial class MyBehavior
         }
     }
 
-    private bool TryBuildWeeklyActionOutcomePayload(
-        WeeklyMemoryMaterialOutcomeCandidate candidate,
-        bool isNonHero,
-        string npcName,
-        out WeeklyMemoryMaterialFrozenPayload payload,
-        out string errorCode)
+    private bool TryBuildWeeklyActionOutcomePayload(WeeklyMemoryMaterialOutcomeCandidate candidate,
+        bool isNonHero, string npcName, out WeeklyMemoryMaterialFrozenPayload payload, out string errorCode)
     {
         payload = null;
-        errorCode = string.Empty;
-        if (candidate == null
-            || !candidate.TryValidate(out errorCode)
-            || !SaveRuntimeGuard.IsCurrentGeneration(candidate.RuntimeGeneration))
-        {
-            errorCode = string.IsNullOrWhiteSpace(errorCode)
-                ? "weekly_material_candidate_stale"
-                : errorCode;
-            return false;
-        }
-
-        string memoryId = NormalizeMemoryHeroId(candidate.SubjectId);
-        if (string.IsNullOrWhiteSpace(memoryId)
-            || isNonHero != IsNonHeroMemoryId(memoryId)
-            || !IsMemoryEntityEligibleForCompressedMemory(memoryId))
-        {
-            errorCode = "weekly_material_subject_invalid";
-            return false;
-        }
-        Hero memoryHero = isNonHero ? null : (Hero.Find(candidate.SubjectId) ?? FindHeroById(memoryId));
-        if (!isNonHero && !IsHeroNpcEligibleForCompressedMemory(memoryHero))
-        {
-            errorCode = "weekly_material_subject_unavailable";
-            return false;
-        }
-        if (!ResolvePlayerFootholdKingdomForWeeklyMemoryMaterial(
-                out string footholdKingdomId,
-                out string footholdSettlementId))
-        {
-            errorCode = "weekly_material_foothold_missing";
-            return false;
-        }
-
-        var atoms = new List<WeeklyMemoryMaterialAtom>();
-        long totalValue = 0L;
-        for (int index = 0; index < candidate.Intents.Count; index++)
-        {
-            WeeklyMemoryMaterialIntent intent = candidate.Intents[index];
-            if (!TryFreezeWeeklyActionOutcomeValue(intent, memoryHero, out long valueDenars))
-            {
-                continue;
-            }
-            try
-            {
-                totalValue = checked(totalValue + valueDenars);
-            }
-            catch (OverflowException)
-            {
-                errorCode = "weekly_material_value_overflow";
-                return false;
-            }
-            atoms.Add(new WeeklyMemoryMaterialAtom(
-                index,
-                intent.Kind,
-                valueDenars,
-                intent.QuantityToken));
-        }
-        if (atoms.Count == 0 || totalValue <= WeeklyMemoryMaterialValueThresholdDenars)
-        {
-            errorCode = "weekly_material_not_eligible";
-            return false;
-        }
-
-        string resolvedName = string.IsNullOrWhiteSpace(npcName)
-            ? memoryHero?.Name?.ToString() ?? "NPC"
-            : npcName.Trim();
-        string originDate = candidate.OriginGameDay == GetCurrentGameDayIndexSafe()
-            ? GetCurrentGameDateTextSafe()
-            : "day:" + candidate.OriginGameDay.ToString(CultureInfo.InvariantCulture);
-        string reason = string.Join("；", atoms
-            .Select(atom => BuildWeeklyMemoryMaterialTagLabel(atom.Label)
-                + " owner-confirmed " + atom.ValueDenars.ToString(CultureInfo.InvariantCulture) + " 第纳尔")
-            .Distinct(StringComparer.OrdinalIgnoreCase))
-            + "；本轮已确认估值合计严格大于 "
-            + WeeklyMemoryMaterialValueThresholdDenars.ToString(CultureInfo.InvariantCulture)
-            + " 第纳尔";
-        return WeeklyMemoryMaterialFrozenPayload.TryCreate(
-            memoryId,
-            resolvedName,
-            originDate,
-            footholdKingdomId,
-            footholdSettlementId,
-            atoms,
-            totalValue,
-            reason,
-            out payload,
-            out errorCode);
+        if (!WeeklyMemoryMaterialValuePolicy.TryValidateOutcomeCandidate(candidate, SaveRuntimeGuard.IsCurrentGeneration, out errorCode)) return false;
+        if (!WeeklyMaterialValueBannerlordAdapter.TryCaptureOutcomeContext(candidate, isNonHero, npcName,
+            NormalizeMemoryHeroId, IsNonHeroMemoryId, IsMemoryEntityEligibleForCompressedMemory, FindHeroById,
+            IsHeroNpcEligibleForCompressedMemory, ResolvePlayerFootholdKingdomForWeeklyMemoryMaterial,
+            GetCurrentGameDayIndexSafe, GetCurrentGameDateTextSafe, out var context, out var values, out errorCode)) return false;
+        return WeeklyMemoryMaterialValuePolicy.TryBuildFrozenOutcome(candidate, context, values, out payload, out errorCode);
     }
-
-    private static bool TryFreezeWeeklyActionOutcomeValue(
-        WeeklyMemoryMaterialIntent intent,
-        Hero memoryHero,
-        out long valueDenars)
-    {
-        valueDenars = 0L;
-        if (intent == null || !intent.TryValidate(out _))
-        {
-            return false;
-        }
-        switch (intent.Kind)
-        {
-            case WeeklyMemoryMaterialKind.GiveGold:
-                return TryParseWeeklyActionPositiveValue(intent.AmountToken, out valueDenars);
-            case WeeklyMemoryMaterialKind.GiveAsset:
-                if (RewardSystemBehavior.IsGoldAssetTokenForExternal(intent.AssetToken))
-                {
-                    return TryParseWeeklyActionPositiveValue(intent.QuantityToken, out valueDenars);
-                }
-                if (!int.TryParse(intent.QuantityToken, NumberStyles.None, CultureInfo.InvariantCulture, out int amount)
-                    || amount <= 0)
-                {
-                    return false;
-                }
-                try
-                {
-                    valueDenars = Math.Max(0L, RewardSystemBehavior.Instance?
-                        .EstimateItemValueForExternal(memoryHero ?? Hero.MainHero, intent.AssetToken, amount) ?? 0L);
-                    return valueDenars > 0L;
-                }
-                catch
-                {
-                    valueDenars = 0L;
-                    return false;
-                }
-            case WeeklyMemoryMaterialKind.DebtCreate:
-                return string.Equals(intent.DirectionToken, "P", StringComparison.OrdinalIgnoreCase)
-                    && TryParseWeeklyActionPositiveValue(intent.AmountToken, out valueDenars);
-            case WeeklyMemoryMaterialKind.DebtResolve:
-                return WeeklyMaterialValueBannerlordAdapter.TryEstimateDebtValueByIdForWeeklyMemoryMaterial(intent.DebtId, out valueDenars)
-                    && valueDenars > 0L;
-            default:
-                return false;
-        }
-    }
-
-    private static bool TryParseWeeklyActionPositiveValue(string value, out long result)
-        => long.TryParse((value ?? string.Empty).Trim(), NumberStyles.None,
-            CultureInfo.InvariantCulture, out result) && result > 0L;
 
     private WeeklyMemoryMaterialOutcomeOperationStatus TryPublishWeeklyActionOutcome(
         string receiptId, string candidateHash)
