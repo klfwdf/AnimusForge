@@ -31916,6 +31916,7 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 	{
 		RetireConversationRequestsForDeveloperClear();
 		OnDeveloperClearWeeklyActionOutcomes(SaveRuntimeGuard.CurrentGeneration);
+		ClearInteractionMemoryRecoveryForDeveloperClear();
 		_npcPersonaGeneration.Reset();
 		CancelWeeklyFullReportCompletions();
 		ResetMemorySummaryMainThreadActions();

@@ -543,6 +543,18 @@ internal void ScheduleInteractionMemoryRecoveryRetry()
             DateTime.UtcNow.Ticks + InteractionMemoryRecoveryRetryDelayTicks);
         Volatile.Write(ref HasWork, 1);
     }
+internal void ClearVisibleMemoryForDeveloperClear()
+    {
+        InteractionMemoryRecoveryLedger ledger = EnsureInteractionMemoryRecoveryLedger();
+        bool canRebind = Volatile.Read(ref LoadConfirmed) != 0 && !ledger.IsDisabled;
+        ledger.ClearVisibleMemoryForDeveloperClear();
+        Volatile.Write(ref HasWork, 0);
+        Interlocked.Exchange(ref NextAttemptTicks, 0L);
+        // Preserve failed-load admission; developer clear must not manufacture proof.
+        Volatile.Write(ref LoadConfirmed, canRebind ? 1 : 0);
+        Interlocked.Exchange(ref LoadedGeneration, canRebind ? SaveRuntimeGuard.CurrentGeneration : 0L);
+    }
+
 internal void ResetInteractionMemoryRecoveryTransientState(string reason)
     {
         Volatile.Write(ref HasWork, 0);

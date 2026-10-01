@@ -517,6 +517,18 @@ internal sealed class InteractionMemoryRecoveryLedger
         return exported;
     }
 
+    internal void ClearVisibleMemoryForDeveloperClear()
+    {
+        // This explicit data reset is not a successful load or an action replay.
+        bool wasDisabled = _disabled;
+        string disabledReason = _disabledReason;
+        Import(new Dictionary<string, string>(StringComparer.Ordinal));
+        if (wasDisabled)
+        {
+            Disable(disabledReason);
+        }
+    }
+
     internal void Import(IDictionary<string, string> storage)
     {
         _entries.Clear();

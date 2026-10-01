@@ -511,6 +511,14 @@
     "{ROOT}/artifacts/af2-host-terminal-closeout/runner/{RUN}/MemoryDailyDeveloperLifecycle"
    ],
    "note": "Actual whole MemoryBusinessStateOwner lifecycle methods and exact host consumers; isolated synthetic output."
+  },
+  "tests/modules/AF.Module.Memory/MemoryDailyDeveloperEditTests/verify_recovery_clear.py": {
+   "expect": "PASS",
+   "args": [
+    "--run-root",
+    "{ROOT}/artifacts/af2-host-terminal-closeout/runner/{RUN}/MemoryRecoveryDeveloperClear"
+   ],
+   "note": "Explicit visible-journal clear preserves disabled admission and prior confirmed generation; actual ledger/SaveRuntimeGuard linked."
   }
  }
 }

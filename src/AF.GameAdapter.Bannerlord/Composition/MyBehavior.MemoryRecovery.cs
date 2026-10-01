@@ -374,6 +374,12 @@ public partial class MyBehavior
         SyncWorldBulletinData(dataStore);
     }
 
+    private void ClearInteractionMemoryRecoveryForDeveloperClear()
+    {
+        MemoryRecoveryState.ClearVisibleMemoryForDeveloperClear();
+        _interactionMemoryRecoveryStorage = EnsureInteractionMemoryRecoveryLedger().Export();
+    }
+
     private void SyncInteractionMemoryRecoveryData(IDataStore dataStore)
     {
         try
