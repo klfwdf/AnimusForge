@@ -219,10 +219,30 @@ Test.True(weeklyEvaluation.Contains("!ShouldAugmentWeeklyMemoryMaterialWithPlaye
 string weeklyProductionConsumer = Section(weeklyAdapter,"private void MarkWeeklyMemoryMaterialTriggerInternal(");
 Test.True(weeklyProductionConsumer.Contains("WeeklyMemoryMaterialPolicy.TryApplyPlayerTransferredValueToWeeklyMemoryMaterialEvaluation(evaluation, tags, draft, npcName, sceneSessionId, nativeDialogueSessionId);",StringComparison.Ordinal), "real weekly host consumer must reach the evaluation owner");
 Test.True(HasSharedRewardCodec(shoutBehavior, scenePostprocess), "shared Native/Scene/Courier reward codec chain missing");
+string nativeAdmission = File.ReadAllText(Path.Combine(repoRoot, "src/modules/AF.Module.Conversation/Channels/Native/ShoutBehavior.NativeAdmission.cs"));
+string nativeCommit = File.ReadAllText(Path.Combine(repoRoot, "src/modules/AF.Module.Conversation/Channels/Native/ShoutBehavior.NativeTurnCommit.cs"));
+string nativeCoordinator = File.ReadAllText(Path.Combine(repoRoot, "src/modules/AF.Module.Conversation/Channels/Native/NativeConversationTurnCoordinator.cs"));
+string nativeSubmit = Section(shoutBehavior, "private Task<string> SubmitNativeConversationTextInternalAsync(");
+string nativePostprocess = Section(nativeCommit, "public async Task<NativeConversationTurnStep> PostprocessAndCommitAsync(");
+string scenePostprocessConsumer = Section(sceneChains, "private async Task<bool> TryPublishImmediateSceneReactionAsync(");
+string courierPostprocessConsumer = Section(courier, "private ConversationCourierPostprocessWorkItem PrepareCourierDetachedPostprocessWorkItem(");
 Test.True(nativeOverlay.Contains("ShoutBehavior.SubmitNativeConversationForOverlayAsync(", StringComparison.Ordinal)
-    && scenePostprocess.Contains("private static string TryRunSceneUnifiedActionPostprocess(", StringComparison.Ordinal)
-    && sceneChains.Contains("TryRunSceneUnifiedActionPostprocess(", StringComparison.Ordinal)
-    && courier.Contains("ConversationActionPostprocessOwner.TryPrepareCourierActionPostprocessForExternal(", StringComparison.Ordinal)
+    && Section(nativeAdmission, "internal static Task<string> SubmitNativeConversationForOverlayAsync(").Contains("owner.SubmitNativeConversationAdmittedAsync(", StringComparison.Ordinal)
+    && Section(nativeAdmission, "private async Task<string> SubmitNativeConversationAdmittedAsync(").Contains("SubmitNativeConversationTextInternalAsync(", StringComparison.Ordinal)
+    && nativeSubmit.Contains("NativeConversationTurnCoordinator.RunAsync(new NativeConversationTurnRuntime(", StringComparison.Ordinal)
+    && nativeCoordinator.Contains("await host.PostprocessAndCommitAsync()", StringComparison.Ordinal)
+    && nativePostprocess.Contains("PrepareSceneUnifiedActionPostprocess(", StringComparison.Ordinal)
+    && nativePostprocess.Contains("TryRequestSceneUnifiedActionPostprocess(", StringComparison.Ordinal)
+    && nativePostprocess.Contains("CompleteSceneUnifiedActionPostprocess(", StringComparison.Ordinal)
+    && scenePostprocessConsumer.Contains("PrepareSceneUnifiedActionPostprocess(", StringComparison.Ordinal)
+    && scenePostprocessConsumer.Contains("TryRequestSceneUnifiedActionPostprocess(", StringComparison.Ordinal)
+    && scenePostprocessConsumer.Contains("CompleteSceneUnifiedActionPostprocess(", StringComparison.Ordinal)
+    && Section(scenePostprocess, "internal static SceneActionPostprocessWorkItem PrepareSceneUnifiedActionPostprocess(").Contains("ConversationActionPostprocessOwner.PrepareSceneUnifiedActionPostprocess(", StringComparison.Ordinal)
+    && Section(scenePostprocess, "internal static bool TryRequestSceneUnifiedActionPostprocess(").Contains("ConversationActionPostprocessOwner.TryRequestSceneUnifiedActionPostprocess(", StringComparison.Ordinal)
+    && Section(scenePostprocess, "internal static string CompleteSceneUnifiedActionPostprocess(").Contains("ConversationActionPostprocessOwner.CompleteSceneUnifiedActionPostprocess(", StringComparison.Ordinal)
+    && Section(sharedPostprocessOwner, "internal static SceneActionPostprocessWorkItem PrepareSceneUnifiedActionPostprocess(").Contains("NormalizeRewardPostprocessTagsForScene(content,", StringComparison.Ordinal)
+    && Section(sharedPostprocessOwner, "internal static string CompleteSceneUnifiedActionPostprocess(").Contains("return workItem.Normalize(content);", StringComparison.Ordinal)
+    && courierPostprocessConsumer.Contains("ConversationActionPostprocessOwner.TryPrepareCourierActionPostprocessForExternal(", StringComparison.Ordinal)
     && shoutBehavior.Contains("ConversationActionPostprocessOwner.NormalizeRewardPostprocessTagsForScene(", StringComparison.Ordinal),
     "real Native overlay and Courier owner must reach the shared Shout postprocessor");
 Test.True(!HasSharedRewardCodec(shoutBehavior.Replace("GiveAssetTagCodec.ReplaceTags(text,", "RemovedCodec(text,"), scenePostprocess),
@@ -234,14 +254,25 @@ Test.True(!HasSharedRewardCodec(shoutBehavior, scenePostprocess.Replace("Normali
 Test.True(shoutBehavior.Contains("GiveAssetTagCodec.Extract", StringComparison.Ordinal) && shoutBehavior.Contains("GiveAssetTagCodec.StripTags", StringComparison.Ordinal), "scene/courier parser integration missing");
 Test.True(rewardSystem.Contains("GiveAssetTagCodec.ReplaceTags", StringComparison.Ordinal) && rewardSystem.Contains("GiveAssetTagCodec.StripTags", StringComparison.Ordinal), "all reward execution parser integration missing");
 Test.True(!rewardSystem.Contains("known_global_give_asset", StringComparison.Ordinal), "global fuzzy lookup must not replace a postprocess asset name");
-Test.True(myBehavior.Contains("LooksLikeFixedAssetTransferIdForExternal", StringComparison.Ordinal)
-    && myBehavior.Contains("TryResolveFixedAssetTransferEntryByIdForExternal", StringComparison.Ordinal)
-    && rewardSystem.Contains("TryResolveFixedAssetTokenForGiveAsset", StringComparison.Ordinal)
-    && rewardSystem.Contains("allowDirectFixedAssetIdOverride", StringComparison.Ordinal),
+string fixedAssetFacade = File.ReadAllText(Path.Combine(repoRoot, "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.PartyAssetTransfers.cs"));
+string fixedAssetAdapter = File.ReadAllText(Path.Combine(repoRoot, "src/AF.GameAdapter.Bannerlord/Composition/PartyAssetTransferBannerlordAdapter.cs"));
+string fixedAssetProjection = File.ReadAllText(Path.Combine(repoRoot, "src/modules/AF.Module.Economy/Projection/PartyTransferProjectionOwner.cs"));
+string fixedAssetResolution = Section(fixedAssetAdapter, "public static bool TryResolveFixedAssetTransferEntryByIdForExternal(");
+string fixedAssetRewardConsumer = Section(rewardSystem, "private static bool TryResolveFixedAssetTokenForGiveAsset(");
+Test.True(fixedAssetFacade.Contains("=> PartyAssetTransferBannerlordAdapter.LooksLikeFixedAssetTransferIdForExternal(assetToken);", StringComparison.Ordinal)
+    && fixedAssetFacade.Contains("=> PartyAssetTransferBannerlordAdapter.TryResolveFixedAssetTransferEntryByIdForExternal(assetToken, out entry);", StringComparison.Ordinal)
+    && fixedAssetAdapter.Contains("=> PartyTransferProjectionOwner.LooksLikeFixedAssetTransferIdForExternal(assetToken);", StringComparison.Ordinal)
+    && Section(fixedAssetProjection, "internal static bool LooksLikeFixedAssetTransferIdForExternal(").Length > 0
+    && fixedAssetResolution.Length > 0
+    && fixedAssetRewardConsumer.Contains("if (MyBehavior.TryResolveFixedAssetTransferEntryByIdForExternal(token, out entry))", StringComparison.Ordinal)
+    && rewardSystem.Contains("allowDirectFixedAssetIdOverride: !isPromptAuthorized", StringComparison.Ordinal),
     "an exact fixed-asset ID outside the prompt snapshot must route to a real transfer before RP fallback");
-Test.True(!myBehavior.Contains("if (!LooksLikeFixedAssetTransferIdForExternal(text))", StringComparison.Ordinal)
-    && myBehavior.Contains("FindSettlementByExactRuntimeIdForFixedAssetTransfer", StringComparison.Ordinal)
-    && rewardSystem.Contains("if (MyBehavior.TryResolveFixedAssetTransferEntryByIdForExternal(token, out entry))", StringComparison.Ordinal),
+string exactSettlementLookup = Section(fixedAssetAdapter, "internal static Settlement FindSettlementByExactRuntimeIdForFixedAssetTransfer(");
+Test.True(!fixedAssetResolution.Contains("if (!LooksLikeFixedAssetTransferIdForExternal(text))", StringComparison.Ordinal)
+    && fixedAssetResolution.Contains("FindSettlementByExactRuntimeIdForFixedAssetTransfer(settlementId)", StringComparison.Ordinal)
+    && exactSettlementLookup.Contains("return Settlement.Find(text);", StringComparison.Ordinal)
+    && !exactSettlementLookup.Contains("Settlement.All", StringComparison.Ordinal)
+    && fixedAssetRewardConsumer.Contains("if (MyBehavior.TryResolveFixedAssetTransferEntryByIdForExternal(token, out entry))", StringComparison.Ordinal),
     "an exact custom Settlement.StringId must resolve as a fixed asset without a global settlement scan");
 Match tournamentParticipantPromptContract = Regex.Match(myBehavior,
     @"private void RecordTournamentParticipantNpcActions\(.*?(?=\r?\n\s*private static Kingdom ResolveTournamentHostKingdom)",

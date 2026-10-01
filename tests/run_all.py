@@ -326,7 +326,10 @@ def main(argv: list[str]) -> int:
                 done = execute(cmd, entry_env, build_root, spec.get("timeout", 1200))
                 code, text = done.returncode, done.stdout + "\n--- stderr ---\n" + done.stderr
             except subprocess.TimeoutExpired as ex:
-                code, text = "TIMEOUT", str(ex)
+                def timeout_text(value):
+                    return value.decode("utf-8", errors="replace") if isinstance(value, bytes) else (value or "")
+                code, text = "TIMEOUT", (str(ex) + "\n--- timeout partial stdout ---\n"
+                    + timeout_text(ex.stdout) + "\n--- timeout partial stderr ---\n" + timeout_text(ex.stderr))
             except (OSError, ValueError) as ex:
                 code, text = 1, f"isolated execution rejected: {ex}"
         entry_log_path(out, entry).write_text(text, encoding="utf-8")

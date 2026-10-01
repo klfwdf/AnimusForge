@@ -17,6 +17,12 @@ internal static class Program
 
     private static void Main()
     {
+        try { RunBody(); }
+        catch (Exception error) { Console.Error.WriteLine(error); Environment.ExitCode = 1; }
+    }
+
+    private static void RunBody()
+    {
         Check(EconomyPromptProjection.BuildTrustStatus(0, "中性观望", 6)
             == "综合信任 0（中性观望，6/10）", "trust status");
         Check(EconomyTrustPolicy.Clamp(-101) == -100 && EconomyTrustPolicy.Clamp(101) == 100,

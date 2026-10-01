@@ -8,6 +8,7 @@ from pathlib import Path
 import sys as _relocation_sys
 _relocation_sys.path.insert(0, str(Path(__file__).resolve().parents[4] / "tests"))
 from output_isolation import current_source_path
+from af2_terminal_migration_review import historical_source
 from remote_feature_delta import restore_remote_feature_delta
 import subprocess
 
@@ -225,7 +226,7 @@ if __name__=='__main__':
     parser.add_argument('--finite',action='store_true')
     args=parser.parse_args()
     if not args.finite:parser.error('select --finite; this adapter is not a whole-host completion gate')
-    verify_current_memory_source((current_source_path(ROOT, 'MyBehavior.cs')).read_text(encoding='utf-8-sig'))
+    verify_current_memory_source(historical_source('MyBehavior.cs')) # Entry-only terminal inverse before F3/B1; mutated legacy test arguments are not re-restored.
     # This named finite entry executes the current negative controls too, while
     # the default historical test_source_parity.py entry remains unchanged.
     import unittest

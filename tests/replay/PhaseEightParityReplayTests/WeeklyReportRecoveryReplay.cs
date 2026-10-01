@@ -18,13 +18,20 @@ internal static class WeeklyReportRecoveryReplay
         Type hostType = af.GetType("AnimusForge.MyBehavior", true);
         Type Nested(string name) => hostType.GetNestedType(name, BindingFlags.NonPublic);
         object New(string name) => Activator.CreateInstance(Nested(name), true);
-        object Get(object o, string name) => o.GetType().GetField(name, M).GetValue(o);
-        void Set(object o, string name, object value) => o.GetType().GetField(name, M).SetValue(o, value);
+        bool UiForward(string name) => name == "_weeklyReportRetryContext" || name == "_weeklyReportManualRetryVersion";
+        object Get(object o, string name) => UiForward(name) && o.GetType() == hostType
+            ? o.GetType().GetProperty(name, M).GetValue(o) : o.GetType().GetField(name, M).GetValue(o);
+        void Set(object o, string name, object value)
+        {
+            if (UiForward(name) && o.GetType() == hostType) o.GetType().GetProperty(name, M).SetValue(o, value);
+            else o.GetType().GetField(name, M).SetValue(o, value);
+        }
         object Call(object o, string name, params object[] args) => o.GetType().GetMethod(name, M).Invoke(o, args);
         void Check(bool ok, string label) { if (!ok) throw new InvalidOperationException("Weekly recovery: " + label); }
         object host = RuntimeHelpers.GetUninitializedObject(hostType);
         Set(host, "_memoryBusinessState", Activator.CreateInstance(af.GetType("AnimusForge.MemoryBusinessStateOwner", true), true));
         Set(host, "_weeklyNoticeOwner", Activator.CreateInstance(af.GetType("AnimusForge.WeeklyNoticeStateOwner", true), true));
+        Set(host, "_campaignMaterialRecords", Activator.CreateInstance(af.GetType("AnimusForge.CampaignMaterialRecordOwner", true), true));
         Type revisionType = af.GetType("AnimusForge.WeeklyReportMaterialRevisionOwner", true);
         object revisions = Activator.CreateInstance(revisionType, true);
         Set(host, "_weeklyReportMaterialRevisions", revisions);
@@ -98,6 +105,16 @@ internal static class WeeklyReportRecoveryReplay
             Expression.Invoke(Expression.Constant(capture), Expression.Convert(parameters.Single(p => p.Type.Name == "InquiryData"), typeof(object))), parameters).Compile();
         inquiryEvent.AddEventHandler(null, observer);
         instance.SetValue(null, host);
+        // Offline environment leaf only: this replay has no Campaign.Current session.
+        // Use the actual factory/controller and retain real main-thread/host/generation checks.
+        object weeklyEditor = hostType.GetProperty("WeeklyEditor", M).GetValue(host);
+        object weeklyPort = weeklyEditor.GetType().GetField("_port", M).GetValue(weeklyEditor);
+        Type parallel = Assembly.Load("TaleWorlds.Library").GetType("TaleWorlds.Library.TWParallel", true);
+        Type guard = af.GetType("AnimusForge.SaveRuntimeGuard", true);
+        Func<long, bool> offlineCurrent = generation => (bool)parallel.GetMethod("IsMainThread", M).Invoke(null, null)
+            && ReferenceEquals(instance.GetValue(null), host)
+            && (bool)guard.GetMethod("IsCurrentGeneration", M).Invoke(null, new object[] { generation });
+        weeklyPort.GetType().GetField("IsCurrent", M).SetValue(weeklyPort, offlineCurrent);
         try
         {
             object partial = Context(Groups(world, kingdom), false, snapshot);

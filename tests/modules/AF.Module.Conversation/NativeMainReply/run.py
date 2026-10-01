@@ -6,6 +6,8 @@ ROOT=Path(__file__).resolve().parents[4];HERE=Path(__file__).resolve().parent
 import sys
 sys.path.insert(0, str(ROOT / "tests"))
 from output_isolation import current_source_path
+from af2_terminal_migration_review import historical_source
+AF2_FIXTURE_METADATA = {'sourceClass': 'legacy-mainreply-captured-adapter-oracle/current-pure-stage', 'terminalBindingAndExactInverseRequired': True, 'currentOwnerCompileLinksProjected': False, 'currentOwnerEvidence': ['NativeEffectsRuntimeTests/run.py', 'NativeTurn/run.py'], 'wholeCurrentProtocolExecution': 'NOT_RUN'}
 sys.path.insert(0,str(ROOT/'tests'))
 from output_isolation import new_run_root,resolve_dotnet,minimal_test_environment
 STAGE='src/modules/AF.Module.Conversation/Channels/Native/NativeConversationMainReplyStage.cs'
@@ -40,7 +42,7 @@ code=code.replace('internal long Generation=1,Epoch=1,Revision=1;', 'internal An
 for name in ['ConversationRequestLifetime','InteractionRequestLease']:(out/(name+'.cs')).write_text((ROOT/('src/modules/AF.Module.Conversation/Internal/'+name+'.cs')).read_text(encoding='utf-8-sig'),encoding='utf-8')
 (out/'Program.cs').write_text(code,encoding='utf-8')
 for path in [STAGE,CONTRACTS,HOST,'src/modules/AF.Module.Llm/Protocol/LlmVisibleReplyNormalizer.cs']:
- s=(current_source_path(ROOT, path)).read_text(encoding='utf-8-sig')
+ s=historical_source(path) if path == HOST else (current_source_path(ROOT, path)).read_text(encoding='utf-8-sig') # Only old captured host copy; current pure STAGE/CONTRACTS/normalizer stay direct.
  if args.mutate in MUTATIONS and path==MUTATIONS[args.mutate][0]:
   _,before,after=MUTATIONS[args.mutate];assert s.count(before)==1;s=s.replace(before,after,1)
  if args.mutate=='empty-before-validation' and path==STAGE:

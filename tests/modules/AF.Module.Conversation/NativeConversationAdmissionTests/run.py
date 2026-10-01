@@ -4,6 +4,8 @@ import sys
 ROOT=Path(__file__).resolve().parents[4];HERE=Path(__file__).parent
 sys.path.insert(0,str(ROOT/'tests'))
 from output_isolation import new_run_root,resolve_dotnet,minimal_test_environment
+from af2_terminal_migration_review import historical_source
+AF2_FIXTURE_METADATA = {'sourceClass': 'legacy-admission-protocol-oracle/current-admission-authority', 'terminalBindingAndExactInverseRequired': True, 'currentOwnerCompileLinksProjected': False, 'currentOwnerEvidence': ['NativeEffectsRuntimeTests/run.py', 'NativeTurn/run.py'], 'wholeCurrentProtocolExecution': 'NOT_RUN'}
 spec=importlib.util.spec_from_file_location('extractor',ROOT/'tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py');ex=importlib.util.module_from_spec(spec);spec.loader.exec_module(ex)
 p=argparse.ArgumentParser();p.add_argument('--mutate',choices=['drop-busy','release-new-slot','skip-timeout-cas','skip-queued-action-guard','skip-generation','old-overlay-finalizer','skip-queued-epoch']);p.add_argument('--run-root',type=Path);args=p.parse_args()
 s=(ROOT / 'src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.cs').read_text(encoding='utf-8-sig');partial=(ROOT / 'src/modules/AF.Module.Conversation/Channels/Native/ShoutBehavior.NativeAdmission.cs').read_text(encoding='utf-8-sig')
@@ -61,7 +63,7 @@ for key,value in values.items():code=code.replace('@@'+key+'@@',value)
 assert '@@' not in code
 out=new_run_root(ROOT,'NativeConversationAdmissionTests',args.run_root)
 (out/'Program.cs').write_text(code,encoding='utf-8');(out/'Admission.cs').write_text(partial,encoding='utf-8')
-dispatch=(ROOT / 'src/modules/AF.Module.Conversation/Channels/Native/ShoutBehavior.NativeActionDispatch.cs').read_text(encoding='utf-8-sig')
+dispatch=historical_source('ShoutBehavior.NativeActionDispatch.cs') # Old host copy matches projected private ACTION_RESULT; not current runtime CompileLink.
 if args.mutate=='skip-queued-action-guard':dispatch=dispatch.replace('if (!IsNativeConversationAdmissionCurrent(admission, out _))','if (false)',1)
 (out/'ActionDispatch.cs').write_text(dispatch,encoding='utf-8')
 (out/'Effect.cs').write_text('namespace AnimusForge.Refactor.Contracts;\n'+ex.declaration((ROOT/'src/AF.Contracts/Internal/InteractionContracts.cs').read_text(encoding='utf-8-sig'),'public enum ActionExecutionEffectState'),encoding='utf-8')

@@ -19,6 +19,8 @@ static void Set(object value, string name, object fieldValue)
 }
 static object Call(object value, string name, params object[] args) => value.GetType().GetMethod(name, Members).Invoke(value, args);
 
+try
+{
 string repo = ReplayCandidateInput.RepositoryRoot();
 string dll = ReplayCandidateInput.Read(args);
 string marker = Path.ChangeExtension(dll, ".build.json");
@@ -526,3 +528,9 @@ Check(((IDictionary)Get(lifecycle, "_activeWars")).Count == 1
     "terminal clear preserves live pair while resetting counts, deaths and history");
 Console.WriteLine("PASS PhaseEightParityReplay terminal=paging/search/identity/details/back/empty/close tags=full-search/details/snapshot-export/refresh-back/empty weekly=country/date/full-body/tags/empty/back/completion-lifecycle/xml war=ledger/archive/stale/reverse-count/death/recent/v1-v5/terminal live=NOT_RUN");
 Console.WriteLine("implementationSha256=" + Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(dll))));
+}
+catch (Exception error)
+{
+    Console.Error.WriteLine(error);
+    Environment.ExitCode = 1;
+}
