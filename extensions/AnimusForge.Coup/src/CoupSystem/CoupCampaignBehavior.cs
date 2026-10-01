@@ -343,6 +343,7 @@ internal sealed class CoupCampaignBehavior : CampaignBehaviorBase
         _mission = concrete;
         _endingMission = null;
         _session.SceneEntered = true;
+        if (_session.Phase == CoupPhase.Hall) _session.HallEntered = true;
         concrete.AddMissionBehavior(new CoupMissionBehavior(_session, town));
         Log("mission_started");
     }
@@ -393,6 +394,7 @@ internal sealed class CoupCampaignBehavior : CampaignBehaviorBase
     {
         if (!IsMissionActive(mission) || CurrentSession.Phase != CoupPhase.Street) return;
         if (!CurrentSession.TryAdvance(CoupPhase.Street, CoupPhase.HallSelection)) return;
+        CurrentSession.GateBreached = true;
         Instance.Log("street_complete");
     }
     internal static void NotifyVictory(Mission mission)
@@ -558,7 +560,7 @@ internal sealed class CoupCampaignBehavior : CampaignBehaviorBase
         if (owner == null) throw new InvalidOperationException("AF 事件与叛乱系统不可用。");
         if (!_session.FactsCommitted)
         {
-            if (!owner.TryRecordCoupOutcome(_session.Id, king, town, true, _session.Disposition == CoupKingDisposition.Capture, out string message)) throw new InvalidOperationException(message);
+            if (!owner.TryRecordCoupOutcome(_session, king, town, true, _session.Disposition == CoupKingDisposition.Capture, out string message)) throw new InvalidOperationException(message);
             _session.FactsCommitted = true;
         }
         if (!_session.RebellionQueued)
@@ -601,7 +603,7 @@ internal sealed class CoupCampaignBehavior : CampaignBehaviorBase
         if (!_session.FactsCommitted)
         {
             var owner = CoupRebellionBridge.Instance;
-            if (owner == null || !owner.TryRecordCoupOutcome(_session.Id, FindKing(), Settlement.Find(_session.SettlementId), false, false, out _))
+            if (owner == null || !owner.TryRecordCoupOutcome(_session, FindKing(), Settlement.Find(_session.SettlementId), false, false, out _))
                 throw new InvalidOperationException("政变失败事实暂时无法写入。");
             _session.FactsCommitted = true;
         }

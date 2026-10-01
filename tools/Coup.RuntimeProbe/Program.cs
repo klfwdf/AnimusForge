@@ -100,7 +100,11 @@ internal static class Program
 
         SelectionRegression.Run(coup, Write);
         EntryGateRegression.Run(af, coup, Write);
-        if (_sceneFixture) SceneLifecycleRegression.Run(af, coup, Write);
+        if (_sceneFixture)
+        {
+            SceneLifecycleRegression.Run(af, coup, Write);
+            CoupBulletinRegression.Run(af, coup, Write);
+        }
 
         bool ready = ReadFlag(sets, "IsAvailable") & ReadFlag(rebellion, "IsAvailable")
             & ReadFlag(guards, "MissionProtectionAvailable") & ReadFlag(guards, "CaptivityProtectionAvailable");

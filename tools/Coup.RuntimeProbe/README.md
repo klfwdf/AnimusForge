@@ -21,6 +21,8 @@ dotnet build .\tools\Coup.RuntimeProbe\Coup.RuntimeProbe.csproj -c Release -p:Ga
 
 本检查比成员存在性检查多验证了私有 delegate 创建、Harmony 绑定和拘押 transpiler 的实际 IL 匹配。它不启动游戏，不验证各补丁在真实 AF 全部其他补丁挂载后的组合行为，不验证原生场景、导航、指挥 UI、伤亡政治结算或存档兼容性。
 
+`--scene-fixture` 还执行 Coup 快报宿主回归：真实 `TryRecordCoupOutcomeForBulletin` / `CaptureWorldBulletinEvent`，只替换设置开关并使用未构造的 MyBehavior；验证分类、触发分数、区域归属、超过64条后的去重、真实 Newtonsoft JSON 往返及关闭快报不阻断结算。没有执行真实政治结算、游戏存档、生成式报道或UI。完整文案、阶段事实和NPC注入另由 `extensions/AnimusForge.Coup/tests/Coup.ContractTests` 链接生产会话/报告/快报策略验证。
+
 入口回归调用真实 Coup delegate 和主体 owner 查询，逐项注入/清理六种 pending 对象、随行活动/保护/叛乱状态，验证缺失 delegate 和查询异常继续关闭入口。叛乱回归使用跳过构造的 MyBehavior fixture，驱动真实调度 owner 的命名、完成、消费和取消；未构造游戏或任务对象，随行 Active 仅作为状态 fixture 直接设置。拘押回归先验证未构造行为时不可用，再正常构造 CoupCaptivityBehavior 验证注册成功，并验证存档有效标志保护。因此四标志检查在行为构造后执行，避免把加载期无实例误报为拘押补丁失败；不声称测试了真实存档加载。
 
 追加可选第五参数 `--scene-fixture` 可运行进场崩溃及大厅门转场回归。它**会创建绕过构造的 Mission/Settlement/CharacterObject 及 Campaign/Agent fixture**，初始化空 managed 行为列表；在独立 Harmony owner 下临时替换城镇/家族上下文读取、菜单注册和入口资格查询，结束时卸载 fixture 补丁并还原实例。真实生产 Origin 工厂与 OnScoreHit 回调、真实 MbEvent 逆注册顺序、SETS handler/postfix/Coup 挂载与幂等、菜单阶段显示均执行。门测试调用真实已补丁的 PassageUsePoint.OnUse，以最低优先级计数桩观测是否漏回原版；实际生产目标判断、阶段切换、清空原版转场、任务结束处理与大厅选兵回调均执行。原生 EndMission、血量采样、显示与 PartyScreen 是桩，ScriptComponentBehavior 仅补空的脚本类型元数据供静态初始化，并还原原字段。未启动 Game/原生场景，不证明真实 F 输入、完整资格、渲染/受击、选兵到结算或旧档成功。日志分别标 `SCENE_SCOPE` / `PASSAGE_SCOPE`，不能写成实机验收。

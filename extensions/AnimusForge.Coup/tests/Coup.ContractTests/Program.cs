@@ -1,5 +1,7 @@
 using System;
 using System.Text.Json;
+using System.Collections.Generic;
+using AnimusForge;
 using AnimusForge.CoupSystem;
 
 internal static class Program
@@ -112,6 +114,64 @@ internal static class Program
         Assert(!session.IsResumable && session.IsSettled, "mid-fight technical stop settles after casualties");
         session.CasualtiesCommitted = false;
         Assert(!session.IsSettled, "technical stop waits for casualty commit");
+        CheckBulletinReport();
         Console.WriteLine("Coup contracts: " + _assertions + " PASS");
+    }
+
+    private static void CheckBulletinReport()
+    {
+        var session = NewSession();
+        Assert(!CoupOutcomeReport.CanReport(session, true) && !CoupOutcomeReport.CanReport(session, false), "unsettled fighting cannot publish a final result");
+        session.Troops.Add(Troop("a"));
+        session.Troops.Add(Troop("b"));
+        session.Troops[0].HallSelected = true;
+        session.Troops[1].TryRecordCasualty(true);
+        session.Troops.Add(Troop("g", CoupTroopRole.GateGuard));
+        session.Troops[2].TryRecordCasualty(false);
+        string Report(bool success, bool captured = false, bool war = true) =>
+            CoupOutcomeReport.Build(session, "玩家领主", "德泰尔", "加伦", "瓦兰迪亚", success, captured, war);
+        string unentered = Report(false);
+        Assert(unentered.Contains("未记录到实际进场") && !unentered.Contains("进入城镇街道"), "pre-scene failure does not invent a battle");
+        session.SceneEntered = true;
+        string street = Report(false);
+        Assert(street.Contains("瓦兰迪亚的加伦针对国王德泰尔") && street.Contains("突击队共2人"), "report names place, realm, ruler and assault size");
+        Assert(street.Contains("进入城镇街道") && !street.Contains("突破大厅入口") && !street.Contains("攻入领主大厅"), "street-only result reports only observed progress");
+        Assert(street.Contains("政变失败") && street.Contains("脱离原王国并与之开战"), "failed result includes confirmed consequences");
+        Assert(!Report(false, false, false).Contains("与之开战"), "no war claimed when original kingdom no longer at war");
+        session.GateBreached = true;
+        Assert(Report(false).Contains("突破大厅入口") && !Report(false).Contains("攻入领主大厅"), "breaching gate alone does not invent hall combat");
+        session.HallEntered = true;
+        string hall = Report(false);
+        Assert(hall.Contains("率1名突击队员攻入领主大厅") && !hall.Contains("制服国王"), "hall failure does not invent king subdued");
+        session.KingSubdued = true;
+        session.CasualtiesCommitted = session.RulingClanCommitted = session.TownCommitted = session.CustodyCommitted = true;
+        Assert(CoupOutcomeReport.CanReport(session, true), "fully confirmed victory may publish");
+        session.CustodyCommitted = false;
+        Assert(!CoupOutcomeReport.CanReport(session, true), "incomplete custody blocks victory report");
+        session.CustodyCommitted = true;
+        string victory = Report(true, true);
+        Assert(victory.Contains("制服国王") && victory.Contains("取得瓦兰迪亚王位并接管加伦") && victory.Contains("旧王被扣押"), "victory report includes exact outcome and custody");
+        Assert(Report(true).Contains("选择不扣押旧王"), "non-capture disposition is described without inventing a release action");
+        Assert(victory.Contains("突击队阵亡1、负伤0；守军阵亡0、负伤1"), "counts come from actual session casualties, not total defender reserve");
+        session.DefectionCommitted = true;
+        Assert(!CoupOutcomeReport.CanReport(session, false), "failure before withdrawal cannot publish final outcome");
+        session.WithdrawalCommitted = true;
+        Assert(CoupOutcomeReport.CanReport(session, false), "confirmed failure may publish");
+        var options = new JsonSerializerOptions { IncludeFields = true };
+        var saved = JsonSerializer.Deserialize<CoupSession>(JsonSerializer.Serialize(session, options), options);
+        Assert(saved.GateBreached && saved.HallEntered, "new progress survives session JSON roundtrip");
+        var old = JsonSerializer.Deserialize<CoupSession>("{\"SceneEntered\":true}", options);
+        Assert(!old.GateBreached && !old.HallEntered, "old JSON does not invent missing progress");
+
+        var fact = new WorldBulletinEvent { Kind = "coup_success", Key = "coup:test:bulletin", Group = "coup:test", Score = 95,
+            Day = 5, Hour = 120, InvolvesPlayer = true, Sentence = victory, KingdomIds = new List<string> { "vlandia" } };
+        var focus = new WorldBulletinFocus { PlayerKingdomId = "vlandia" };
+        Assert(WorldBulletinPolicy.IsTrigger(fact, focus), "coup opens normal bulletin collection window");
+        var selection = WorldBulletinPolicy.Select(new List<WorldBulletinEvent> { fact }, new WorldBulletinScopeState { WindowEndHour = 144 }, focus, 144);
+        Assert(selection?.Major == fact, "dedicated coup fact is selectable as headline");
+        Assert(WorldBulletinPolicy.BuildTemplate(selection).Major.Contains(victory), "offline fallback preserves place, process and outcome");
+        Assert(WorldBulletinPolicy.BuildUserPrompt("天下", "某日", selection, null).Contains(victory), "LLM receives full untruncated coup narrative");
+        Assert(WorldBulletinPolicy.BuildNpcDetailBlock(WorldBulletinPolicy.NpcKingdomHeader, "瓦兰迪亚", "vlandia", new[] { fact }, 5).Contains(victory), "NPC bulletin knowledge receives the same full facts");
+        Assert(WorldBulletinPolicy.TitleForKind("coup_success") == "政变夺位" && WorldBulletinPolicy.TitleForKind("coup_failure") == "政变失败", "dedicated fallback titles distinguish final outcomes");
     }
 }
