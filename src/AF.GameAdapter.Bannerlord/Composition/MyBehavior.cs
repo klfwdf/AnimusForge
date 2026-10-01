@@ -492,34 +492,6 @@ public partial class MyBehavior : CampaignBehaviorBase
 		public List<WeeklyReportBrowserEntryData> Reports = new List<WeeklyReportBrowserEntryData>();
 	}
 
-	private sealed class EventSourceMaterialEntry
-	{
-		public int Day;
-
-		public int Sequence;
-
-		public string GameDate;
-
-		public string MaterialKind;
-
-		public string Label;
-
-		public string SnapshotText;
-
-		public string StableKey;
-
-		public string KingdomId;
-
-		public string SettlementId;
-
-		public string ActorHeroId;
-
-		public string ActorKingdomId;
-
-		public bool IncludeInWorld;
-
-		public bool IncludeInKingdom;
-	}
 
 	private sealed class TownStatSnapshot
 	{
@@ -1452,7 +1424,6 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 	private Dictionary<string, string> _npcRecentActionStorage { get => _memoryBusinessState.RecentActionStorage; set => _memoryBusinessState.RecentActionStorage = value; }
 
-	private readonly Dictionary<string, HashSet<string>> _npcRecentActionStableKeyIndex = new Dictionary<string, HashSet<string>>(StringComparer.OrdinalIgnoreCase);
 
 	private int _npcActionGlobalOrderCounter;
 
@@ -1473,15 +1444,11 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 	private string _eventRecordJsonStorage = "";
 
-	private List<EventSourceMaterialEntry> _eventSourceMaterials = new List<EventSourceMaterialEntry>();
 
 	private readonly WeeklyReportMaterialRevisionOwner _weeklyReportMaterialRevisions = new WeeklyReportMaterialRevisionOwner();
 
 	private string _eventSourceMaterialJsonStorage = "";
 
-	private Dictionary<string, EventSourceMaterialEntry> _eventSourceMaterialIndex = new Dictionary<string, EventSourceMaterialEntry>(StringComparer.OrdinalIgnoreCase);
-	private readonly AnimusForge.Refactor.Runtime.EventSourceMaterialIndex<EventSourceMaterialEntry> _eventSourceMaterialIndexBinding =
-		new AnimusForge.Refactor.Runtime.EventSourceMaterialIndex<EventSourceMaterialEntry>(item => item.Day, item => item.StableKey, BuildEventSourceMaterialIndexKey);
 
 	private KingdomStabilityOwner _kingdomStability = new KingdomStabilityOwner();
 	private KingdomStabilityOwner KingdomStability => _kingdomStability ??= new KingdomStabilityOwner();
@@ -12228,67 +12195,6 @@ TeamModuleServices.CivilWar.AdvanceWeek(devEditableKingdom, weekIndex, GetKingdo
 			}
 		}
 
-		private void RecordEventSourceMaterial(string materialKind, string label, string snapshotText, string stableKey, string kingdomId, string settlementId, bool includeInWorld, bool includeInKingdom, string actorHeroId = "", string actorKingdomId = "", int dayOverride = -1, string gameDateOverride = "")
-	{
-		string normalizedMaterialKind = (materialKind ?? "").Trim();
-		string normalizedActorHeroId = (actorHeroId ?? "").Trim();
-		bool isPlayerMaterial = IsPlayerWeeklySourceMaterial(normalizedMaterialKind, normalizedActorHeroId, stableKey);
-		string text = isPlayerMaterial
-			? PlayerNotorietyBehavior.RenderPlayerHistoryMaterialForExternal(snapshotText)
-			: PlayerNotorietyBehavior.RenderPlayerNamedReferenceForExternal(snapshotText);
-		text = (text ?? "").Replace("\r", " ").Replace("\n", " ").Trim();
-		if (string.IsNullOrWhiteSpace(text))
-		{
-			return;
-		}
-		string normalizedLabel = PlayerNotorietyBehavior.RenderPlayerNamedReferenceForExternal(label).Trim();
-		if (_eventSourceMaterials == null)
-		{
-			_eventSourceMaterials = new List<EventSourceMaterialEntry>();
-		}
-		int currentGameDayIndexSafe = dayOverride >= 0 ? dayOverride : GetCurrentGameDayIndexSafe();
-		string text2 = NpcActionLedger.NormalizeStableKey(stableKey, normalizedLabel + ":" + text);
-		if (!_eventSourceMaterialIndexBinding.IsCurrent(_eventSourceMaterials, _eventSourceMaterialIndex)) RebuildEventSourceMaterialIndex();
-		string indexKey = BuildEventSourceMaterialIndexKey(currentGameDayIndexSafe, text2);
-		// A complete index owns misses too; a new daily key must not rescan all history.
-		_eventSourceMaterialIndex.TryGetValue(indexKey, out var eventSourceMaterialEntry);
-		if (eventSourceMaterialEntry != null)
-		{
-			eventSourceMaterialEntry.Label = normalizedLabel;
-			eventSourceMaterialEntry.SnapshotText = text;
-			eventSourceMaterialEntry.MaterialKind = normalizedMaterialKind;
-			eventSourceMaterialEntry.KingdomId = (kingdomId ?? "").Trim();
-			eventSourceMaterialEntry.SettlementId = (settlementId ?? "").Trim();
-			eventSourceMaterialEntry.ActorHeroId = normalizedActorHeroId;
-			eventSourceMaterialEntry.ActorKingdomId = (actorKingdomId ?? "").Trim();
-			eventSourceMaterialEntry.IncludeInWorld = eventSourceMaterialEntry.IncludeInWorld || includeInWorld;
-			eventSourceMaterialEntry.IncludeInKingdom = eventSourceMaterialEntry.IncludeInKingdom || includeInKingdom;
-			_weeklyReportMaterialRevisions.MarkDay(currentGameDayIndexSafe);
-			return;
-		}
-		EventSourceMaterialEntry newEntry = new EventSourceMaterialEntry
-		{
-			Day = currentGameDayIndexSafe,
-			Sequence = ++_npcActionGlobalOrderCounter,
-			GameDate = string.IsNullOrWhiteSpace(gameDateOverride) ? GetCurrentGameDateTextSafe() : gameDateOverride.Trim(),
-			MaterialKind = normalizedMaterialKind,
-			Label = normalizedLabel,
-			SnapshotText = text,
-			StableKey = text2,
-			KingdomId = (kingdomId ?? "").Trim(),
-			SettlementId = (settlementId ?? "").Trim(),
-			ActorHeroId = normalizedActorHeroId,
-			ActorKingdomId = (actorKingdomId ?? "").Trim(),
-			IncludeInWorld = includeInWorld,
-			IncludeInKingdom = includeInKingdom
-		};
-		_eventSourceMaterials.Add(newEntry);
-		_weeklyReportMaterialRevisions.MarkDay(currentGameDayIndexSafe);
-		_eventSourceMaterialIndex[indexKey] = newEntry;
-		// Publish the new structural binding only after both authoritative append
-		// and index insertion succeed. A failed insert leaves the old probe stale.
-		_eventSourceMaterialIndexBinding.Bind(_eventSourceMaterials, _eventSourceMaterialIndex);
-	}
 
 	private static bool IsPlayerWeeklySourceMaterial(string materialKind, string actorHeroId, string stableKey)
 	{
@@ -12934,46 +12840,6 @@ TeamModuleServices.CivilWar.AdvanceWeek(devEditableKingdom, weekIndex, GetKingdo
 		}
 	}
 
-	private static NpcActionEntry CreateNpcActionEntry(Hero hero, string text, string stableKey, int day, int order, int sequence, NpcActionFacts facts, bool isMajor)
-	{
-		NpcActionFacts npcActionFacts = facts ?? CreateNpcActionFacts("", hero);
-		if (string.IsNullOrWhiteSpace(npcActionFacts.ActorHeroId))
-		{
-			ApplyActorFacts(npcActionFacts, hero);
-		}
-		npcActionFacts.IsMajor = isMajor;
-		NpcActionEntry npcActionEntry = new NpcActionEntry
-		{
-			Day = Math.Max(0, day),
-			Order = Math.Max(1, order),
-			Sequence = Math.Max(0, sequence),
-			GameDate = GetCurrentGameDateTextSafe(),
-			Text = (text ?? "").Trim(),
-			StableKey = NpcActionLedger.NormalizeStableKey(stableKey, text),
-			ActionKind = (npcActionFacts.ActionKind ?? "").Trim(),
-			ActorHeroId = (npcActionFacts.ActorHeroId ?? "").Trim(),
-			ActorClanId = (npcActionFacts.ActorClanId ?? "").Trim(),
-			ActorKingdomId = (npcActionFacts.ActorKingdomId ?? "").Trim(),
-			TargetHeroId = (npcActionFacts.TargetHeroId ?? "").Trim(),
-			TargetClanId = (npcActionFacts.TargetClanId ?? "").Trim(),
-			TargetKingdomId = (npcActionFacts.TargetKingdomId ?? "").Trim(),
-			SettlementId = (npcActionFacts.SettlementId ?? "").Trim(),
-			SettlementName = (npcActionFacts.SettlementName ?? "").Trim(),
-			SettlementOwnerHeroId = (npcActionFacts.SettlementOwnerHeroId ?? "").Trim(),
-			SettlementOwnerClanId = (npcActionFacts.SettlementOwnerClanId ?? "").Trim(),
-			SettlementOwnerKingdomId = (npcActionFacts.SettlementOwnerKingdomId ?? "").Trim(),
-			PreviousSettlementOwnerHeroId = (npcActionFacts.PreviousSettlementOwnerHeroId ?? "").Trim(),
-			PreviousSettlementOwnerClanId = (npcActionFacts.PreviousSettlementOwnerClanId ?? "").Trim(),
-			PreviousSettlementOwnerKingdomId = (npcActionFacts.PreviousSettlementOwnerKingdomId ?? "").Trim(),
-			LocationText = (npcActionFacts.LocationText ?? "").Trim(),
-			Won = npcActionFacts.Won,
-			IsMajor = isMajor
-		};
-		CopyFactIds(npcActionFacts.RelatedHeroIds, npcActionEntry.RelatedHeroIds);
-		CopyFactIds(npcActionFacts.RelatedClanIds, npcActionEntry.RelatedClanIds);
-		CopyFactIds(npcActionFacts.RelatedKingdomIds, npcActionEntry.RelatedKingdomIds);
-		return npcActionEntry;
-	}
 
 	private static List<NpcActionEntry> SanitizeNpcActionEntries(List<NpcActionEntry> source, bool keepOnlyRecentWindow)
 	{
@@ -12999,32 +12865,6 @@ TeamModuleServices.CivilWar.AdvanceWeek(devEditableKingdom, weekIndex, GetKingdo
 		RecordNpcActionInternal(_npcRecentActions, hero, text, stableKey, keepOnlyRecentWindow: true, dedupeAcrossWindow, MaxRecentNpcActionEntriesPerHero, facts, isMajor: false, allowNonLordHero);
 	}
 
-	private void RecordPlayerNotorietyActionFromNpcAction(string text, string stableKey, NpcActionFacts facts, bool isMajor)
-	{
-		try
-		{
-			string normalizedText = (text ?? "").Replace("\r", " ").Replace("\n", " ").Trim();
-			if (string.IsNullOrWhiteSpace(normalizedText))
-			{
-				return;
-			}
-			int day = GetCurrentGameDayIndexSafe();
-			int sequence = ++_npcActionGlobalOrderCounter;
-			string actionKind = (facts?.ActionKind ?? "").Trim();
-			string settlementId = (facts?.SettlementId ?? "").Trim();
-			string settlementName = (facts?.SettlementName ?? "").Trim();
-			string locationText = (facts?.LocationText ?? "").Trim();
-			Settlement settlement = ResolveSettlementById(settlementId);
-			string settlementCultureId = settlement?.Culture?.StringId ?? "";
-			string actorCultureId = Hero.MainHero?.Culture?.StringId ?? "";
-			string targetCultureId = ResolveHeroCultureId(facts?.TargetHeroId);
-			PlayerNotorietyBehavior.RecordPlayerActionForExternal(normalizedText, stableKey, actionKind, isMajor, day, GetCurrentGameDateTextSafe(), sequence, settlementId, settlementName, locationText, actorCultureId, targetCultureId, settlementCultureId, facts?.Won);
-		}
-		catch (Exception ex)
-		{
-			Logger.Log("PlayerNotoriety", "RecordPlayerNotorietyActionFromNpcAction failed: " + ex.Message);
-		}
-	}
 
 	private static string ResolveHeroCultureId(string heroId)
 	{
@@ -13055,71 +12895,6 @@ TeamModuleServices.CivilWar.AdvanceWeek(devEditableKingdom, weekIndex, GetKingdo
 		}
 	}
 
-	private void RecordNpcActionInternal(Dictionary<string, List<NpcActionEntry>> storage, Hero hero, string text, string stableKey, bool keepOnlyRecentWindow, bool dedupeAcrossWindow, int maxEntries, NpcActionFacts facts, bool isMajor, bool allowNonLordHero = false)
-	{
-		try
-		{
-			if (storage == null || !ShouldTrackNpcActionHero(hero, allowNonLordHero))
-			{
-				return;
-			}
-			if (hero == Hero.MainHero)
-			{
-				RecordPlayerNotorietyActionFromNpcAction(text, stableKey, facts, isMajor);
-				return;
-			}
-			string npcActionHeroKey = GetNpcActionHeroKey(hero);
-			string text2 = NpcActionLedger.NormalizeText(text);
-			if (string.IsNullOrWhiteSpace(npcActionHeroKey) || string.IsNullOrWhiteSpace(text2))
-			{
-				return;
-			}
-			string text3 = NpcActionLedger.NormalizeStableKey(stableKey, text2);
-			int currentGameDayIndexSafe = GetCurrentGameDayIndexSafe();
-			if (!storage.TryGetValue(npcActionHeroKey, out var value) || value == null)
-			{
-				value = new List<NpcActionEntry>();
-				storage[npcActionHeroKey] = value;
-			}
-			bool entriesChanged = NpcActionLedger.RemoveInvalid(value, keepOnlyRecentWindow ? NpcActionLedger.RecentWindowMinimumDay(currentGameDayIndexSafe) : int.MinValue, keepOnlyRecentWindow, e => e.Text, e => e.Day);
-			if (entriesChanged)
-			{
-				_weeklyReportMaterialRevisions.MarkAll();
-			}
-			if (keepOnlyRecentWindow && entriesChanged)
-			{
-				RefreshNpcRecentActionStableKeyIndexForHero(npcActionHeroKey, value);
-			}
-			if (dedupeAcrossWindow)
-			{
-				if ((keepOnlyRecentWindow && IsNpcRecentActionStableKeyKnown(npcActionHeroKey, text3)) || NpcActionLedger.ContainsStableKey(value, text3, e => e.StableKey))
-				{
-					return;
-				}
-			}
-			else if (NpcActionLedger.ContainsForDay(value, currentGameDayIndexSafe, text3, text2, e => e.Day, e => e.StableKey, e => e.Text))
-			{
-				return;
-			}
-			int order = NpcActionLedger.NextOrder(value, currentGameDayIndexSafe, e => e.Day, e => e.Order);
-			int sequence = ++_npcActionGlobalOrderCounter;
-			NpcActionEntry npcActionEntry = CreateNpcActionEntry(hero, text2, text3, currentGameDayIndexSafe, order, sequence, facts, isMajor);
-			if (maxEntries > 0 && value.Count >= maxEntries)
-			{
-				_weeklyReportMaterialRevisions.MarkAll();
-			}
-			NpcActionLedger.Append(value, npcActionEntry, maxEntries, CompareNpcActionTimeline);
-			_weeklyReportMaterialRevisions.MarkDay(currentGameDayIndexSafe);
-			if (keepOnlyRecentWindow)
-			{
-				RefreshNpcRecentActionStableKeyIndexForHero(npcActionHeroKey, value);
-			}
-		}
-		catch (Exception ex)
-		{
-			Logger.Log("NpcAction", "[ERROR] RecordNpcActionInternal: " + ex.Message);
-		}
-	}
 
 	private bool HasRecentNpcActionStableKeyWithinWindow(Hero hero, string stableKey, int currentDay)
 	{
@@ -17260,20 +17035,7 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 		RebuildNpcRecentActionStableKeyIndex();
 	}
 
-	private static string BuildEventSourceMaterialIndexKey(int day, string stableKey)
-	{
-		string text = (stableKey ?? "").Trim();
-		return Math.Max(0, day) + "|" + text;
-	}
 
-	private void RebuildEventSourceMaterialIndex()
-	{
-		var source = _eventSourceMaterials;
-		var rebuilt = _eventSourceMaterialIndexBinding.Build(source);
-		if (!ReferenceEquals(source, _eventSourceMaterials)) throw new InvalidOperationException("Event material source changed during index rebuild.");
-		_eventSourceMaterialIndex = rebuilt;
-		_eventSourceMaterialIndexBinding.Bind(source, rebuilt);
-	}
 
 	private void RebuildNpcRecentActionStableKeyIndex()
 	{
@@ -17284,48 +17046,7 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 		}
 	}
 
-	private void RefreshNpcRecentActionStableKeyIndexForHero(string heroKey, List<NpcActionEntry> entries)
-	{
-		string text = (heroKey ?? "").Trim();
-		if (string.IsNullOrWhiteSpace(text))
-		{
-			return;
-		}
-		if (!_npcRecentActionStableKeyIndex.TryGetValue(text, out HashSet<string> stableKeys) || stableKeys == null)
-		{
-			stableKeys = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-		}
-		else
-		{
-			stableKeys.Clear();
-		}
-		if (entries != null)
-		{
-			for (int index = 0; index < entries.Count; index++)
-			{
-				string stableKey = (entries[index]?.StableKey ?? "").Trim();
-				if (!string.IsNullOrWhiteSpace(stableKey))
-				{
-					stableKeys.Add(stableKey);
-				}
-			}
-		}
-		if (stableKeys.Count > 0)
-		{
-			_npcRecentActionStableKeyIndex[text] = stableKeys;
-		}
-		else
-		{
-			_npcRecentActionStableKeyIndex.Remove(text);
-		}
-	}
 
-	private bool IsNpcRecentActionStableKeyKnown(string heroKey, string stableKey)
-	{
-		string text = (heroKey ?? "").Trim();
-		string text2 = (stableKey ?? "").Trim();
-		return !string.IsNullOrWhiteSpace(text) && !string.IsNullOrWhiteSpace(text2) && _npcRecentActionStableKeyIndex.TryGetValue(text, out var value) && value != null && value.Contains(text2);
-	}
 
 	public void QueueMissingOnnxGateCheckAfterOnboarding()
 	{
@@ -32089,39 +31810,6 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 		return list;
 	}
 
-	private static List<EventSourceMaterialEntry> SanitizeEventSourceMaterials(List<EventSourceMaterialEntry> source)
-	{
-		List<EventSourceMaterialEntry> list = new List<EventSourceMaterialEntry>();
-		if (source == null)
-		{
-			return list;
-		}
-		foreach (EventSourceMaterialEntry item in source)
-		{
-			string text = (item?.SnapshotText ?? "").Replace("\r", " ").Replace("\n", " ").Trim();
-			if (item == null || string.IsNullOrWhiteSpace(text))
-			{
-				continue;
-			}
-			list.Add(new EventSourceMaterialEntry
-			{
-				Day = Math.Max(0, item.Day),
-				Sequence = Math.Max(0, item.Sequence),
-				GameDate = (item.GameDate ?? "").Trim(),
-				MaterialKind = (item.MaterialKind ?? "").Trim(),
-				Label = (item.Label ?? "").Trim(),
-				SnapshotText = text,
-				StableKey = NpcActionLedger.NormalizeStableKey(item.StableKey, text),
-				KingdomId = (item.KingdomId ?? "").Trim(),
-				SettlementId = (item.SettlementId ?? "").Trim(),
-				ActorHeroId = (item.ActorHeroId ?? "").Trim(),
-				ActorKingdomId = (item.ActorKingdomId ?? "").Trim(),
-				IncludeInWorld = item.IncludeInWorld,
-				IncludeInKingdom = item.IncludeInKingdom
-			});
-		}
-		return list.OrderBy((EventSourceMaterialEntry x) => x.Day).ThenBy((EventSourceMaterialEntry x) => (x.Sequence > 0) ? x.Sequence : int.MaxValue).ThenBy((EventSourceMaterialEntry x) => x.Label ?? "", StringComparer.OrdinalIgnoreCase).ToList();
-	}
 
 	private void OpenDevEventViewerMenu(int page)
 	{
