@@ -6,6 +6,11 @@ touch Reward/Duel/Team/Entity services. Not a runtime test; pair with the Compos
 """
 from __future__ import annotations
 import argparse, importlib.util, re
+import sys as _legacy_sys
+from pathlib import Path as _LegacyPath
+_legacy_sys.path.insert(0, str(_LegacyPath(__file__).resolve().parents[4] / "tests"))
+from af2_terminal_migration_review import historical_source
+AF2_FIXTURE_METADATA = {"sourceClass": "legacy-oracle-extraction", "currentOwnerReplayProjected": False}
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[4]
@@ -15,7 +20,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument("--mutate", choices=["assembly-reads-game", "routing-before-request", "drop-worker-eligibility", "drop-knowledge-worker", "drop-knowledge-eligibility", "drop-extra-worker", "drop-entity-worker", "entity-worker-live-read", "drop-native-knowledge-guard", "drop-courier-knowledge-guard", "drop-lore-publication", "drop-lore-invalidation", "drop-entity-allocation-worker"])
 args = parser.parse_args()
 
-source = (ROOT / "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.cs").read_text(encoding="utf-8-sig")
+source = historical_source('src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.cs')
 game_services = re.compile(r"\b(RewardSystemBehavior\.Instance|DuelBehavior\.|TeamModuleServices\.|WorldEntityRetrievalService\.|VoteDealBehavior\.|LordEncounterBehavior\.|MobileParty\.MainParty|Clan\.PlayerClan|Hero\.MainHero|RomanceSystemBehavior\.)")
 orchestrator = extract.declaration(source, "private ShoutPromptContext BuildShoutPromptContextForExternalInternal(")
 capture_request = extract.declaration(source, "private PromptBuildRequest CapturePromptBuildRequest(")
@@ -86,8 +91,8 @@ assert "captured.CanInjectRuleTopicIntoPreprocess(text)" in preprocess_gate and 
 assert "Eligibility = CapturePromptRuleEligibility(targetHero, targetCharacter, runtimeTarget)" in capture_request, "shared request must capture eligibility on game thread"
 courier_begin = extract.declaration(source, "internal CourierPreprocessRequest BeginCourierRulePreprocess(")
 assert "Eligibility = CapturePromptRuleEligibility(targetHero, targetCharacter, runtimeTarget)" in courier_begin, "courier request must capture eligibility on game thread"
-native_schedule = (ROOT / "src/modules/AF.Module.Conversation/Channels/Native/ShoutBehavior.NativePromptBuild.cs").read_text(encoding="utf-8-sig")
-courier_schedule = (ROOT / "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.PromptSchedule.cs").read_text(encoding="utf-8-sig")
+native_schedule = historical_source('src/modules/AF.Module.Conversation/Channels/Native/ShoutBehavior.NativePromptBuild.cs')
+courier_schedule = historical_source('src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.PromptSchedule.cs')
 if args.mutate == "drop-worker-eligibility":
     native_schedule = native_schedule.replace("ApplyGuardrailRuntimeTarget(phases.Request.Target, phases.Request.Eligibility)", "ApplyGuardrailRuntimeTarget(phases.Request.Target)")
 if args.mutate == "drop-knowledge-worker":

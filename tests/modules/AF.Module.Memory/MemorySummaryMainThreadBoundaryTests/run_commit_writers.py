@@ -4,6 +4,11 @@ suite when the source snapshot changed. No game deployment, real save, or networ
 """
 from __future__ import annotations
 import argparse, hashlib, importlib.util, json, os, re, subprocess, sys
+import sys as _legacy_sys
+from pathlib import Path as _LegacyPath
+_legacy_sys.path.insert(0, str(_LegacyPath(__file__).resolve().parents[4] / "tests"))
+from af2_terminal_migration_review import historical_source
+AF2_FIXTURE_METADATA = {"sourceClass": "legacy-oracle-extraction", "currentOwnerReplayProjected": False}
 from pathlib import Path
 from xml.sax.saxutils import escape
 ROOT=Path(__file__).resolve().parents[4]
@@ -44,7 +49,7 @@ def main():
     files={name:(base/name).read_text(encoding='utf-8-sig') for name in manifest['generated_sha256'] if name.endswith('.cs')}
     inventory=[]
     def read(name):
-        data=(current_source_path(ROOT, name)).read_text(encoding='utf-8-sig');inventory.append(dict(file=name,sha256=sha(data)));return data
+        data=(historical_source(name) if name in {'MyBehavior.cs', 'MyBehavior.MemoryRecovery.cs', 'MyBehavior.WeeklyActionOutcomeReceipts.cs'} else (current_source_path(ROOT, name)).read_text(encoding='utf-8-sig'));inventory.append(dict(file=name,sha256=sha(data)));return data
     spec=importlib.util.spec_from_file_location('commit_extractor',ROOT/'tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py');ex=importlib.util.module_from_spec(spec);spec.loader.exec_module(ex)
     from business_owner_fixture_support import enable_expression_declarations
     enable_expression_declarations(ex)

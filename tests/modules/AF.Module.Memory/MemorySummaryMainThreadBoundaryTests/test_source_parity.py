@@ -3,6 +3,7 @@ from pathlib import Path
 import sys as _relocation_sys
 _relocation_sys.path.insert(0, str(Path(__file__).resolve().parents[4] / "tests"))
 from output_isolation import current_source_path
+from af2_terminal_migration_review import historical_fixture
 import importlib.util
 import json
 import subprocess
@@ -27,9 +28,11 @@ class InverseGuards(unittest.TestCase):
         with self.assertRaisesRegex(AssertionError, message):
             inverse.restore_memory_summary_source("MyBehavior.cs", source)
 
+    @historical_fixture
     def test_exact_whole_baseline(self):
         self.assertEqual(BASELINE, inverse.restore_memory_summary_source("MyBehavior.cs", SOURCE))
 
+    @historical_fixture
     def test_queue_normalization_body_is_exact_old_semantics(self):
         spec = importlib.util.spec_from_file_location("normalizer_extract", ROOT / "tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py")
         extractor = importlib.util.module_from_spec(spec)
@@ -44,6 +47,7 @@ class InverseGuards(unittest.TestCase):
                 ").ThenBy((" + model + " x) => x.HeroName).ToList();", 1)
             self.assertEqual(prior, restored)  # No mutation/filter/dedupe body rewrite hidden by wrapper inverse.
 
+    @historical_fixture
     def test_raw_input_four_declaration_inverse(self):
         review = REVIEW["rawSourceFingerprintReview"]
         text = read_current(review["inputPath"])
@@ -59,6 +63,7 @@ class InverseGuards(unittest.TestCase):
             text = text.replace(current, old, 1)
         self.assertEqual(text, baseline)  # Includes unchanged generic JSON/editor/plan hash and async/parse/release bodies.
 
+    @historical_fixture
     def test_single_draft_line_and_bind_are_exact_previous_bodies(self):
         spec = importlib.util.spec_from_file_location("draft_entry_extract", ROOT / "tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py")
         extractor = importlib.util.module_from_spec(spec)
@@ -79,6 +84,7 @@ class InverseGuards(unittest.TestCase):
         self.assertIn("SanitizeDailyMemoryDraftLine(sourceLine, draft);", entry)
         self.assertNotIn(").Where((DailyMemoryLine x)", entry)
 
+    @historical_fixture
     def test_inner_structure_fix_has_narrow_inverse(self):
         review = REVIEW["innerStructureReview"]
         baseline = subprocess.check_output(["git", "show", review["baseline"] + ":" + review["path"]], cwd=ROOT).decode("utf-8-sig").replace("\r\n", "\n")
@@ -87,6 +93,7 @@ class InverseGuards(unittest.TestCase):
             baseline = baseline.replace(edit["before"], edit["after"], 1)
         self.assertEqual(baseline, read_current(review["path"]))
 
+    @historical_fixture
     def test_dispatcher_dependency_direction_and_host_shape(self):
         runtime = (ROOT / "src/modules/AF.Module.Memory/Summary/MemorySummaryDispatcher.cs").read_text(encoding="utf-8-sig")
         host = (current_source_path(ROOT, "MyBehavior.MemorySummaryMainThread.cs")).read_text(encoding="utf-8-sig")
@@ -98,30 +105,36 @@ class InverseGuards(unittest.TestCase):
         self.assertIn("MemorySummaryDispatch.Submit(generation, operation)", host)
         self.assertIn("MemorySummaryDispatch.SubmitCompletion(generation, operation)", host)
 
+    @historical_fixture
     def test_planner_only_changes_elapsed_owner_read(self):
         old = subprocess.check_output(["git", "show", "9617f96a:MyBehavior.MemorySummaryPlanning.cs"], cwd=ROOT).decode("utf-8-sig").replace("\r\n", "\n")
         self.assertEqual(old.count("_memorySummaryMainThreadElapsedTicks"), 2)
         self.assertEqual(old.replace("_memorySummaryMainThreadElapsedTicks", "MemorySummaryDispatchElapsedTicks"),
                          read_current("MyBehavior.MemorySummaryPlanning.cs"))
 
+    @historical_fixture
     def test_changed_accepted_body(self):
         self.reject(SOURCE.replace("_eventSourceMaterialIndexBinding.Build(source);",
                                    "_eventSourceMaterialIndexBinding.Build(null);", 1),
                     "Unreviewed B1 declaration")
 
+    @historical_fixture
     def test_added_composition_span_drift(self):
         self.reject(SOURCE.replace("item => item.Day, item => item.StableKey",
                                    "item => 0, item => item.StableKey", 1),
                     "Unreviewed B1 added source span")
 
+    @historical_fixture
     def test_duplicate_composition_span(self):
         self.reject(SOURCE + REVIEW["addedSourceSpans"][0]["text"],
                     "Unreviewed B1 added source span")
 
+    @historical_fixture
     def test_unlisted_surrounding_change(self):
         self.reject(SOURCE + "\n// unreviewed extra source\n",
                     "Unreviewed B1 surrounding source changes")
 
+    @historical_fixture
     def test_deleted_original_cannot_return(self):
         extractor = importlib.util.spec_from_file_location(
             "guard_extract", ROOT / "tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py")
@@ -132,11 +145,13 @@ class InverseGuards(unittest.TestCase):
                                    body + "\npublic override void SyncData(IDataStore dataStore)", 1),
                     "Deleted B1 declaration unexpectedly restored")
 
+    @historical_fixture
     def test_added_campaign_scope_cannot_drift(self):
         self.reject(SOURCE.replace("_campaignMemoryMaintenanceCycleActive = true;",
                                    "_campaignMemoryMaintenanceCycleActive = false;", 1),
                     "Unreviewed B1 added source span")
 
+    @historical_fixture
     def test_whole_components_and_test_inputs_are_locked(self):
         original = Path.read_text
         targets = list(REVIEW["productionDependencies"]) + [
@@ -153,6 +168,7 @@ class InverseGuards(unittest.TestCase):
                 with patch.object(Path, "read_text", changed):
                     self.reject(SOURCE, "Unreviewed B1 (production dependency|evidence)")
 
+    @historical_fixture
     def test_obsolete_partial_cannot_reenter(self):
         original = Path.exists
         removed = ROOT / "MyBehavior.EventSourceMaterialIndex.cs"
@@ -173,10 +189,12 @@ class CurrentScopeGuards(InverseGuards):
         with self.assertRaisesRegex(AssertionError,message):
             inverse.verify_current_memory_source(source)
 
+    @historical_fixture
     def test_exact_whole_baseline(self):
         self.assertTrue(inverse.verify_current_memory_source(SOURCE))
         # Deliberately not an assertion of whole-host inverse equivalence.
 
+    @historical_fixture
     def test_queue_normalization_body_is_exact_old_semantics(self):
         owner=(ROOT/self.RECORDS).read_text(encoding='utf-8-sig')
         for model,suffix,day in [('MemorySummaryJob','MemorySummaryQueue','GameDayIndex'),('MajorActionSummaryJob','MajorActionSummaryQueue','TriggerGameDayIndex')]:
@@ -187,6 +205,7 @@ class CurrentScopeGuards(InverseGuards):
             host=self.extract(SOURCE,'private static List<'+model+'> Sanitize'+suffix+'(')
             self.assertIn('MemoryRecordRules.Sanitize'+suffix+'(',host)
 
+    @historical_fixture
     def test_raw_input_four_declaration_inverse(self):
         review=REVIEW['rawSourceFingerprintReview']
         current=read_current(review['inputPath'])
@@ -198,6 +217,7 @@ class CurrentScopeGuards(InverseGuards):
         # Current DTO/copy/framing parity is executed by Budget's real 65,808-check pair.
         self.assertIn('ComputeMemorySummarySourceFingerprint(source)',current)
 
+    @historical_fixture
     def test_single_draft_line_and_bind_are_exact_previous_bodies(self):
         owner=(ROOT/self.RECORDS).read_text(encoding='utf-8-sig')
         old=subprocess.check_output(['git','show','40b92e67:MyBehavior.cs'],cwd=ROOT).decode('utf-8-sig').replace('\r\n','\n')
@@ -221,6 +241,7 @@ class CurrentScopeGuards(InverseGuards):
         self.assertIn('SanitizeDailyMemoryDraftLine(sourceLine, draft);',entry)
         self.assertIn('TWParallel.IsMainThread() ? sourceEntry : sourceEntry?.CopyForSummary()',entry)
 
+    @historical_fixture
     def test_inner_structure_fix_has_narrow_inverse(self):
         path=REVIEW['innerStructureReview']['path']
         live=read_current(path)
@@ -229,6 +250,7 @@ class CurrentScopeGuards(InverseGuards):
         self.assertIn('_triggerStructureProbe.MoveNext();',live)
         # Source guards below reject modified components. Coupled sealing runtime remains deferred.
 
+    @historical_fixture
     def test_planner_only_changes_elapsed_owner_read(self):
         path='MyBehavior.MemorySummaryPlanning.cs'
         live=read_current(path)
@@ -237,16 +259,19 @@ class CurrentScopeGuards(InverseGuards):
         self.assertNotIn('_memorySummaryMainThreadElapsedTicks',live)
         self.assertIn('MemorySummaryRunOwner.Lease run',live)
 
+    @historical_fixture
     def test_duplicate_composition_span(self):
         import re
         span=re.search(r'private readonly AnimusForge\.Refactor\.Runtime\.EventSourceMaterialIndex<EventSourceMaterialEntry> _eventSourceMaterialIndexBinding\s*=\s*[^;]+;',SOURCE).group()
         self.reject(SOURCE+'\n'+span,'Unreviewed B1 added source span')
 
+    @historical_fixture
     def test_added_campaign_scope_cannot_drift(self):
         anchor='_campaignMemoryMaintenanceCycleActive = true;'
         self.assertEqual(SOURCE.count(anchor),1)
         self.reject(SOURCE.replace(anchor,'_campaignMemoryMaintenanceCycleActive = false;',1),'Unreviewed B1 declaration')
 
+    @historical_fixture
     def test_whole_components_and_test_inputs_are_locked(self):
         read=Path.read_text
         # Do not load or run the diplomacy-coupled Captured/Sealing fixture groups here.

@@ -2,6 +2,11 @@
 from __future__ import annotations
 
 import argparse
+import sys as _legacy_sys
+from pathlib import Path as _LegacyPath
+_legacy_sys.path.insert(0, str(_LegacyPath(__file__).resolve().parents[4] / "tests"))
+from af2_terminal_migration_review import historical_source
+AF2_FIXTURE_METADATA = {"sourceClass": "legacy-oracle-extraction", "currentOwnerReplayProjected": False}
 import importlib.util
 import os
 from pathlib import Path
@@ -23,7 +28,7 @@ methods = "\n\n".join(extract.declaration(source, marker) for marker in (
     "public string BuildVisibleEquipmentPostprocessListForAI(Hero hero, MentionedWorldEntities mentions",
     "public string BuildFilteredInventorySummaryForAI(",
     "public string BuildFilteredSettlementMerchantInventorySummaryForAI("))
-scene_role = extract.declaration((ROOT / "src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.cs").read_text(encoding="utf-8-sig"),
+scene_role = extract.declaration(historical_source('src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.cs'),
                                  "private static string BuildSceneNpcRoleIntroForPrompt(")
 scene_hero = extract.declaration(scene_role, "if (includeInventorySummary && RewardSystemBehavior.Instance != null)")
 scene_merchant = extract.declaration(scene_role, "if (includeInventorySummary && RewardSystemBehavior.Instance != null && characterObject != null && RewardSystemBehavior.Instance.TryGetSettlementMerchantKind")

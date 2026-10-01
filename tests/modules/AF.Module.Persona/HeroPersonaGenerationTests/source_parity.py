@@ -3,6 +3,7 @@ from pathlib import Path
 import sys as _relocation_sys
 _relocation_sys.path.insert(0, str(Path(__file__).resolve().parents[4] / "tests"))
 from output_isolation import current_source_path
+from af2_terminal_migration_review import historical_fixture
 from af2_f5_migration_review import exact_inverse, verify_owners
 import hashlib,importlib.util,json,subprocess
 ROOT=Path(__file__).resolve().parents[4];HERE=Path(__file__).parent
@@ -66,6 +67,7 @@ def restore_historical(source,strict=True):
 
 # J17 moved unrelated Memory/Weekly code; compare only this owner, not the old whole host.
 CURRENT_REVIEW='f6e2ead7'
+@historical_fixture
 def restore(source,strict=True):
  verify_owners()
  source=exact_inverse('MyBehavior.cs',source,verify=False)
@@ -92,6 +94,7 @@ def restore(source,strict=True):
   assert '_npcPersonaGeneration.Reset();' in ex.declaration(source,signature),'Missing persona reset consumer'
  return prior()
 
+@historical_fixture
 def verify():
  restore((current_source_path(ROOT, 'MyBehavior.cs')).read_text(encoding='utf-8-sig'))
  old=ex.declaration(prior(),'private async Task<string> GenerateNpcPersonaAsync(')

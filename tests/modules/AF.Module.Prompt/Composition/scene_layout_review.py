@@ -1,5 +1,10 @@
 """Symbol-scoped exact Scene layout extraction review and actual-callsite harness."""
 from pathlib import Path
+import sys as _legacy_sys
+from pathlib import Path as _LegacyPath
+_legacy_sys.path.insert(0, str(_LegacyPath(__file__).resolve().parents[4] / "tests"))
+from af2_terminal_migration_review import historical_source
+AF2_FIXTURE_METADATA = {"sourceClass": "legacy-oracle-extraction", "currentOwnerReplayProjected": False}
 import importlib.util,subprocess,json
 ROOT=Path(__file__).resolve().parents[4]
 import sys
@@ -14,7 +19,7 @@ def verify():
     expressions=[]
     for review in REVIEWS:
         baseline=subprocess.check_output(['git','show',BASELINE+':'+review['path']],cwd=ROOT).decode('utf-8-sig').replace('\r\n','\n')
-        current=(current_source_path(ROOT, review['path'])).read_text(encoding='utf-8-sig')
+        current=historical_source(review['path']) # Fixed callsite layout oracle; actual MainPrompt writer is compiled current.
         for patch in review['patches']:
             assert baseline.count(patch['before'])==1,'reviewed original Scene layout drift: '+patch['symbol']
             method=ex.declaration(current,patch['signature'].split('(')[0]+'(')

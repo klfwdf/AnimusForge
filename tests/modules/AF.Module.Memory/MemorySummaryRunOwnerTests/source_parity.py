@@ -2,6 +2,7 @@ from pathlib import Path
 import sys as _relocation_sys
 _relocation_sys.path.insert(0, str(Path(__file__).resolve().parents[4] / "tests"))
 from output_isolation import current_source_path
+from af2_terminal_migration_review import terminal_review, historical_fixture
 from remote_feature_delta import restore_remote_feature_delta
 import subprocess,json,hashlib
 ROOT=Path(__file__).resolve().parents[4];HERE=Path(__file__).parent
@@ -41,6 +42,7 @@ def _restore_j02_guard_path(path,source,require_new=False):
             return source.replace(new,'SaveRuntimeGuard.cs',1)
     return source
 
+@terminal_review
 def restore(path,source):
     path=str(path).replace(chr(92),"/")
     review=json.loads((HERE/'source-review.json').read_text(encoding='utf-8'))
@@ -67,6 +69,7 @@ def restore(path,source):
     source=_restore_j02_guard_path(path,restore_remote_feature_delta(path,source))
     assert source in (expected,old),'Unreviewed memory-run source changes: '+path
     return old
+@historical_fixture
 def verify_current():
     """J17 consumer scope; old whole-owner inverse remains a historical proof."""
     import importlib.util

@@ -270,6 +270,11 @@ public partial class RewardSystemBehavior
 internal static class Program
 {
     private static int Main()
+{
+    try { return RunBody(); }
+    catch (Exception error) { Console.Error.WriteLine(error); return 1; }
+}
+private static int RunBody()
     {
         int checks = RewardSystemBehavior.RunDebtNormalizationTests();
         Console.WriteLine("PASS economyDebtNormalization checks=" + checks);

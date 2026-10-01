@@ -2,6 +2,11 @@
 Only new sealing fixtures are written; source baseline mode preserves original implementation.
 """
 from pathlib import Path
+import sys as _legacy_sys
+from pathlib import Path as _LegacyPath
+_legacy_sys.path.insert(0, str(_LegacyPath(__file__).resolve().parents[4] / "tests"))
+from af2_terminal_migration_review import historical_source
+AF2_FIXTURE_METADATA = {"sourceClass": "legacy-oracle-extraction", "currentOwnerReplayProjected": False}
 import argparse,hashlib,importlib.util,json,os,re,subprocess,sys
 from xml.sax.saxutils import escape
 ROOT=Path(__file__).resolve().parents[4];HERE=Path(__file__).resolve().parent
@@ -79,7 +84,7 @@ def apply_seal_mutation(seal, mutation):
 def main():
  ap=argparse.ArgumentParser(description=__doc__);g=ap.add_mutually_exclusive_group();g.add_argument('--original',action='store_true');g.add_argument('--source-baseline',choices=['73a6977c','9158132c','40b92e67','4d6994bc','8ae0f831']);g.add_argument('--mutate',choices=MUTATIONS);ap.add_argument('--run-root',type=Path);a=ap.parse_args();baseline=a.source_baseline or (BASELINE if a.original else None);sys.stdout.reconfigure(encoding='utf-8')
  ex=module('seal_ex',ROOT/'tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py');module('sealing_ex_support',HERE/'business_owner_fixture_support.py').enable_expression_declarations(ex);cap=module('seal_capture',HERE/'run_captured.py')
- def read(path):return subprocess.check_output(['git','show',baseline+':'+path],cwd=ROOT).decode('utf-8-sig').replace('\r\n','\n') if baseline and not path.startswith('tools/') else (current_source_path(ROOT, path)).read_text(encoding='utf-8-sig')
+ def read(path):return subprocess.check_output(['git','show',baseline+':'+path],cwd=ROOT).decode('utf-8-sig').replace('\r\n','\n') if baseline and not path.startswith('tools/') else (historical_source(path) if path in {'MyBehavior.cs', 'MyBehavior.MemoryRecovery.cs', 'MyBehavior.WeeklyActionOutcomeReceipts.cs'} else (current_source_path(ROOT, path)).read_text(encoding='utf-8-sig'))
  source=read('MyBehavior.cs');manifest=[];snippets=[];sealing_path=current_source_path(ROOT, 'MyBehavior.MemorySealing.cs');new_sealing=not a.original and sealing_path.exists()
  if a.mutate and a.mutate not in ('abandon-incomplete-same-day',) and not new_sealing: raise ValueError('Sealing mutation requires MyBehavior.MemorySealing.cs')
  names=list(dict.fromkeys(cap.NAMES+'''BindDailyMemoryDraftWeeklyTrigger SanitizeDailyMemoryDraftLine TrySealPastDailyMemoryDrafts ResetDailyMemoryDraftSealSliceState HasPastDailyMemoryDrafts TryRunCampaignMemoryMaintenance HasCompressedMemoryBlock TryEnqueueMajorActionSummaryForDraft HasDailyMemoryDraftAfefLines SanitizeMemorySummaryQueue SanitizeMajorActionSummaryQueue CancelUnavailableHeroCompressionWorkById IsDailyMaintenanceBudgetExceeded HasPendingDeferredDailyMaintenanceWork ProcessDeferredDailyMaintenance ExecuteDailyMaintenanceJob EnqueueDailyMaintenanceJob BuildDailyMaintenanceJobKey'''.split()))

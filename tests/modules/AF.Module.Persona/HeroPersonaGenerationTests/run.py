@@ -1,4 +1,9 @@
 from pathlib import Path
+import sys as _legacy_sys
+from pathlib import Path as _LegacyPath
+_legacy_sys.path.insert(0, str(_LegacyPath(__file__).resolve().parents[4] / "tests"))
+from af2_terminal_migration_review import historical_source
+AF2_FIXTURE_METADATA = {"sourceClass": "legacy-oracle-extraction", "currentOwnerReplayProjected": False}
 import sys as _relocation_sys
 _relocation_sys.path.insert(0, str(Path(__file__).resolve().parents[4] / "tests"))
 from output_isolation import current_source_path
@@ -14,7 +19,7 @@ if a.original:
  code=code.replace('@@GENERATOR@@','\n'.join(ex.declaration(s,sig) for sig in ['private async Task<string> GenerateNpcPersonaAsync(','private async Task EnsureNpcPersonaGeneratedAsync(','public static async Task EnsureNpcPersonaGeneratedForExternalAsync('])).replace('@@RESET@@','_npcPersonaAutoGenInFlight.Clear();_npcPersonaAutoGenRetryAfterUtcTicks.Clear()').replace('@@ACTIVE@@','return _npcPersonaAutoGenInFlight.Contains(id);').replace('@@COOLING@@','return _npcPersonaAutoGenRetryAfterUtcTicks.ContainsKey(id);')
 else:
  code=code.replace('@@GENERATOR@@','').replace('@@RESET@@','_npcPersonaGeneration.Reset()').replace('@@ACTIVE@@','_npcPersonaGeneration.GetState(id,out bool active,out _);return active;').replace('@@COOLING@@','_npcPersonaGeneration.GetState(id,out _,out bool cooling);return cooling;')
-ui_source=s if a.original else (current_source_path(ROOT, 'MyBehavior.cs')).read_text(encoding='utf-8-sig')
+ui_source=s if a.original else historical_source('MyBehavior.cs')
 code=code.replace('@@REROLL_UI@@',ex.declaration(ui_source,'private async Task RunHeroPersonaRerollAsync('))
 code=code.replace('@@PROMOTED_RESPONSE@@', 'return response.Task;' if a.original else 'SkillCalls++;return skillResponse.Task;')
 code=code.replace('@@PROMOTED_HELPERS@@', '' if a.original else (HERE/'PromotedHelpers.cs.txt').read_text(encoding='utf-8')).replace('@@PROMOTED_TESTS@@', '' if a.original else (HERE/'PromotedTests.cs.txt').read_text(encoding='utf-8')).replace('@@RUN_PROMOTED@@', '' if a.original else 'PromotedCases();')

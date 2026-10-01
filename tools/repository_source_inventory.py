@@ -79,6 +79,9 @@ def classify_path(path: str) -> str | None:
     if top in SOURCE_ROOTS and any(part.lower() in {"bin", "obj"} for part in parts[1:-1]):
         return "HOLD:build-output"
 
+    if path == "extensions/AnimusForge.Illustrator/tests/GalleryRpConversionTests/synthetic-source.fixture":
+        return "tests"
+
     if top == "AnimusForge":
         if len(parts) < 2:
             return None

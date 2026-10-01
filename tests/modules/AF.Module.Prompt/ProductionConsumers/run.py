@@ -6,6 +6,11 @@ PromptListRetrievalService contract; it does not simulate game inventory.
 from __future__ import annotations
 
 import argparse
+import sys as _legacy_sys
+from pathlib import Path as _LegacyPath
+_legacy_sys.path.insert(0, str(_LegacyPath(__file__).resolve().parents[4] / "tests"))
+from af2_terminal_migration_review import historical_source
+AF2_FIXTURE_METADATA = {"sourceClass": "legacy-oracle-extraction", "currentOwnerReplayProjected": False}
 import importlib.util
 from pathlib import Path
 
@@ -22,7 +27,7 @@ parser.add_argument("--mutate", choices=["remove-private-filter", "remove-agent-
 args = parser.parse_args()
 
 def method(path: str, marker: str) -> str:
-    return extract.declaration((current_source_path(ROOT, path)).read_text(encoding="utf-8-sig"), marker)
+    return extract.declaration(historical_source(path) if path in {"MyBehavior.cs", "ShoutBehavior.cs", "ShoutBehavior.NativePromptBuild.cs", "src/modules/AF.Module.Conversation/Channels/Native/ShoutBehavior.NativePromptBuild.cs", "src/modules/AF.Module.Conversation/Channels/Native/ShoutBehavior.NativeTurnPrompt.cs", "src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.SceneConversationChains.cs", "src/modules/AF.Module.Conversation/Channels/Native/ShoutBehavior.NativePromptBuild.cs", "src/modules/AF.Module.Conversation/Channels/Native/ShoutBehavior.NativeTurnPrompt.cs", "src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.SceneConversationChains.cs", "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.PromptSchedule.cs"} else (current_source_path(ROOT, path)).read_text(encoding="utf-8-sig"), marker)
 
 def ordered(body: str, *fragments: str) -> None:
     positions = [body.find(fragment) for fragment in fragments]

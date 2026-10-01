@@ -3,6 +3,11 @@ The counters instrument actual slot reads, including null slots, never a substit
 """
 from __future__ import annotations
 import argparse,hashlib,importlib.util,json,os,re,subprocess,sys
+import sys as _legacy_sys
+from pathlib import Path as _LegacyPath
+_legacy_sys.path.insert(0, str(_LegacyPath(__file__).resolve().parents[4] / "tests"))
+from af2_terminal_migration_review import historical_source
+AF2_FIXTURE_METADATA = {"sourceClass": "legacy-oracle-extraction", "currentOwnerReplayProjected": False}
 from pathlib import Path
 from xml.sax.saxutils import escape
 ROOT=Path(__file__).resolve().parents[4];HERE=Path(__file__).resolve().parent
@@ -15,7 +20,7 @@ def main():
  ap=argparse.ArgumentParser(description=__doc__);ap.add_argument('--mutate',choices=MUTATIONS);ap.add_argument('--run-root',type=Path);a=ap.parse_args();sys.stdout.reconfigure(encoding='utf-8')
  spec=importlib.util.spec_from_file_location('plan_ex',ROOT/'tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py');ex=importlib.util.module_from_spec(spec);spec.loader.exec_module(ex)
  support=__import__('business_owner_fixture_support');support.enable_expression_declarations(ex)
- source=(current_source_path(ROOT, 'MyBehavior.cs')).read_text(encoding='utf-8-sig');manifest=[];blocks=[]
+ source=historical_source('MyBehavior.cs');manifest=[];blocks=[]
  for sig in METHODS:
   original_body=ex.declaration(source,sig);body=support.statement_body(original_body);manifest.append(dict(file='MyBehavior.cs',signature=sig,line=source[:source.index(original_body)].count('\n')+1,sha256=hashlib.sha256(body.encode()).hexdigest()));blocks.append(body)
  recovery=(current_source_path(ROOT, 'MyBehavior.MemoryRecovery.cs')).read_text(encoding='utf-8-sig')

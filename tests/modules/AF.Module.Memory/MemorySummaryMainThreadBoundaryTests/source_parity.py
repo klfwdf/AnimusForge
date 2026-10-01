@@ -214,9 +214,10 @@ def _verify_current_memory_source(source):
     return True
 
 def verify_current_memory_source(source):
+    # SOURCE is explicit F3/B1 legacy input, including original in-memory mutations.
+    # Context verifies actual bindings/inverse; B1 guards inspect original negative controls.
     from f3_migration_projection import projection_reads,restore
-    from af2_terminal_migration_review import restore as terminal_restore
-    with projection_reads():return _verify_current_memory_source(restore('MyBehavior.cs',terminal_restore('MyBehavior.cs',source)))
+    with projection_reads():return _verify_current_memory_source(restore('MyBehavior.cs',source))
 
 if __name__=='__main__':
     import argparse

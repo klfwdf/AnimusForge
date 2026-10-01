@@ -135,13 +135,20 @@ def prepare_generated(generated: Path | None = None) -> Path:
 
 def run(dotnet: str, project: Path, generated: Path) -> tuple[int, str]:
     env = minimal_test_environment(Path(dotnet), project.parent)
-    command = [dotnet, "run", "--project", str(project), "-c", "Release",
+    command = [dotnet, "build", str(project), "-c", "Release",
                "-p:NuGetAudit=false", "-p:DebtPythonExe=" + sys.executable,
                "-p:RestoreConfigFile=" + str(generated / "NuGet.Config")]
-    result = subprocess.run(command, cwd=ROOT, env=env, capture_output=True, text=True,
-                            encoding="utf-8", errors="replace")
-    return result.returncode, result.stdout + result.stderr
-
+    build = subprocess.run(command, cwd=ROOT, env=env, capture_output=True, text=True,
+                           encoding="utf-8", errors="replace")
+    build_log = build.stdout + build.stderr
+    if build.returncode:
+        return build.returncode, build_log
+    # Current.csproj and each distinct Mutant.csproj have their own fresh output roots.
+    assembly = project.parent / "bin" / "Release" / "net8.0" / (project.stem + ".dll")
+    assert assembly.is_file(), "Fresh debt normalization runtime assembly missing: " + str(assembly)
+    result = subprocess.run([dotnet, str(assembly)], cwd=ROOT, env=env,
+                            capture_output=True, text=True, encoding="utf-8", errors="replace")
+    return result.returncode, build_log + result.stdout + result.stderr
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)

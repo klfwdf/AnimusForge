@@ -30,9 +30,7 @@ static class Test
 
 internal static class Program
 {
-private static bool HasSharedRewardCodec(string shout, string completion)
-{
-    static string Section(string source, string start)
+private static string Section(string source, string start)
     {
         int first = source.IndexOf(start, StringComparison.Ordinal);
         if (first < 0) return string.Empty;
@@ -47,6 +45,10 @@ private static bool HasSharedRewardCodec(string shout, string completion)
         }
         return string.Empty;
     }
+
+private static bool HasSharedRewardCodec(string shout, string completion)
+{
+
     string translator = Section(shout, "internal static string TranslateRewardItemIndexesForScene(");
     string normalizer = Section(shout, "internal static string NormalizeRewardPostprocessTagsForScene(");
     return translator.Contains("GiveAssetTagCodec.ReplaceTags(text,", StringComparison.Ordinal)
@@ -71,6 +73,11 @@ private static bool HasAmbiguousTerminator(string asset)
 }
 
 private static int Main()
+{
+    try { return RunBody(); }
+    catch (Exception error) { Console.Error.WriteLine(error); return 1; }
+}
+private static int RunBody()
 {
 string[] importantNames =
 {
@@ -201,7 +208,16 @@ string courier = File.ReadAllText(Path.Combine(repoRoot, "src/modules/AF.Module.
     + File.ReadAllText(Path.Combine(repoRoot, "src", "modules", "AF.Module.Conversation", "Channels", "Courier", "CourierDeliveryBehavior.GenerationLifecycle.cs"))
     + File.ReadAllText(Path.Combine(repoRoot, "src", "modules", "AF.Module.Conversation", "Channels", "Courier", "CourierDeliveryBehavior.DomainCommit.cs"));
 string nativeOverlay = File.ReadAllText(Path.Combine(repoRoot, "src/AF.GameAdapter.Bannerlord/UI/Conversation/AnimusForgeNativeConversationOverlay.cs"));
-Test.True(myBehavior.Contains("GiveAssetTagCodec.TryParseWhole", StringComparison.Ordinal), "free-conversation input codec missing");
+// The historical My anchor was weekly-material transfer eligibility, not free-input parsing.
+string weeklyPolicy = File.ReadAllText(Path.Combine(repoRoot,"src/modules/AF.Module.Weekly/Materials/WeeklyMemoryMaterialPolicy.cs"));
+string weeklyAdapter = File.ReadAllText(Path.Combine(repoRoot,"src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.WeeklyMaterials.cs"));
+string transferEligibility = Section(weeklyPolicy,"internal static bool ShouldAugmentWeeklyMemoryMaterialWithPlayerTransferredValue(").Replace("\r\n","\n");
+Test.Equal("internal static bool ShouldAugmentWeeklyMemoryMaterialWithPlayerTransferredValue(IEnumerable<string> tags)\n\t{\n\t\tforeach (string tag in tags ?? Enumerable.Empty<string>())\n\t\t{\n\t\t\tstring text = (tag ?? \"\").Trim();\n\t\t\tif (GiveAssetTagCodec.TryParseWhole(text, out _) ||\n\t\t\t\tRegex.IsMatch(text, \"^\\\\[AD:\\\\d+:\\\\d+:P:[^\\\\]]*\\\\]$\", RegexOptions.IgnoreCase) ||\n\t\t\t\tRegex.IsMatch(text, \"^\\\\[ADP:[^\\\\]\\\\r\\\\n:;]+\\\\]$\", RegexOptions.IgnoreCase) ||\n\t\t\t\tRegex.IsMatch(text, \"^\\\\[ATT:(?:ALL|\\\\d+):(?:ALL|\\\\d+)\\\\]$\", RegexOptions.IgnoreCase) ||\n\t\t\t\tRegex.IsMatch(text, \"^\\\\[ATP:(?:ALL|\\\\d+):(?:ALL|\\\\d+)\\\\]$\", RegexOptions.IgnoreCase))\n\t\t\t{\n\t\t\t\treturn true;\n\t\t\t}\n\t\t}\n\t\treturn false;\n\t}", transferEligibility, "weekly transfer tag eligibility must retain the complete original16a codec method");
+Test.True(transferEligibility.Contains("GiveAssetTagCodec.TryParseWhole(text, out _)", StringComparison.Ordinal), "weekly-material transferred-value eligibility codec missing");
+string weeklyEvaluation = Section(weeklyPolicy,"internal static void TryApplyPlayerTransferredValueToWeeklyMemoryMaterialEvaluation(");
+Test.True(weeklyEvaluation.Contains("!ShouldAugmentWeeklyMemoryMaterialWithPlayerTransferredValue(tags)",StringComparison.Ordinal), "weekly evaluation must consume the exact codec eligibility");
+string weeklyProductionConsumer = Section(weeklyAdapter,"private void MarkWeeklyMemoryMaterialTriggerInternal(");
+Test.True(weeklyProductionConsumer.Contains("WeeklyMemoryMaterialPolicy.TryApplyPlayerTransferredValueToWeeklyMemoryMaterialEvaluation(evaluation, tags, draft, npcName, sceneSessionId, nativeDialogueSessionId);",StringComparison.Ordinal), "real weekly host consumer must reach the evaluation owner");
 Test.True(HasSharedRewardCodec(shoutBehavior, scenePostprocess), "shared Native/Scene/Courier reward codec chain missing");
 Test.True(nativeOverlay.Contains("ShoutBehavior.SubmitNativeConversationForOverlayAsync(", StringComparison.Ordinal)
     && scenePostprocess.Contains("private static string TryRunSceneUnifiedActionPostprocess(", StringComparison.Ordinal)
