@@ -87,6 +87,23 @@ await using (ReplayServer serverError = await ReplayServer.StartAsync((_, _) =>
     AssertTrue(result.Status == LlmResultStatus.RetryableFailure && result.ErrorCode == "http_503", "5xx replay was not retryable");
 }
 
+await using (ReplayServer boundedMemory = await ReplayServer.StartAsync((_, _) =>
+    (400, "thinking unsupported; reject this control")))
+{
+    LegacyConfiguredChatGateway gateway = new LegacyConfiguredChatGateway(
+        _ => "fixture", thinkingEnabled: false, retryWithoutThinkingOnBadRequest: false);
+    var request = new LlmGenerateRequest(
+        new TraceContext("bounded-town-memory", 1, 1, "replay", "1.4"),
+        new LlmProviderSnapshot("replay", boundedMemory.Url, "replay-model", 2000, 384),
+        new PromptPackage(new[] { new PromptMessage("user", "fixture") }, 384, "replay-model"));
+    LlmGenerateResult result = await gateway.GenerateAsync(request, CancellationToken.None);
+    AssertTrue(result.Status != LlmResultStatus.Succeeded && boundedMemory.Requests.Count == 1,
+        "bounded town memory unexpectedly retried a failed attempt");
+    var payload = Newtonsoft.Json.Linq.JObject.Parse(boundedMemory.Requests[0].Body);
+    AssertTrue((int)payload["max_tokens"] == 384 && (bool)payload["thinking"]["enabled"] == false,
+        "bounded town memory token/thinking controls changed in HTTP serialization");
+}
+
 await using (ReplayServer slow = await ReplayServer.StartAsync(async (_, _) =>
 {
     await Task.Delay(5000);

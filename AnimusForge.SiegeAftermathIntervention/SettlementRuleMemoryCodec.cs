@@ -10,10 +10,10 @@ namespace AnimusForge.SiegeAftermathIntervention;
 /// </summary>
 public static class SettlementRuleMemoryCodec
 {
-    private const string CurrentVersionToken = "v2";
+    private const string CurrentVersionToken = "v3";
     private const string LegacyVersionToken = "v1";
     private const int CurrentHeaderFieldCount = 4;
-    private const int CurrentEntryFieldCount = 11;
+    private const int CurrentEntryFieldCount = 12;
     private const int LegacyFieldCount = 17;
 
     public static string Encode(SettlementRuleMemoryRecord record)
@@ -45,6 +45,7 @@ public static class SettlementRuleMemoryCodec
             fields.Add(entry.DurationWasMinimum ? "1" : "0");
             fields.Add(EncodeText(entry.Narrative));
             fields.Add(entry.NarrativeIsManual ? "1" : "0");
+            fields.Add(EncodeEvolution(entry.Evolution));
         }
         return string.Join("|", fields);
     }
@@ -60,7 +61,7 @@ public static class SettlementRuleMemoryCodec
         string[] fields = payload.Split('|');
         try
         {
-            if (fields.Length > 0 && string.Equals(fields[0], CurrentVersionToken, StringComparison.Ordinal))
+            if (fields.Length > 0 && (string.Equals(fields[0], CurrentVersionToken, StringComparison.Ordinal) || fields[0] == "v2"))
             {
                 return TryDecodeCurrent(settlementId, fields, out record);
             }
@@ -86,19 +87,20 @@ public static class SettlementRuleMemoryCodec
         out SettlementRuleMemoryRecord record)
     {
         record = null;
+        int entryFieldCount = fields[0] == "v2" ? 11 : CurrentEntryFieldCount;
         if (fields.Length < CurrentHeaderFieldCount
             || !TryParseNonNegative(fields[2], out int cultureStartDay)
             || !int.TryParse(fields[3], NumberStyles.None, CultureInfo.InvariantCulture, out int entryCount)
             || entryCount < 1
             || entryCount > SettlementRuleMemoryStore.MaximumRulerMemories
-            || fields.Length != CurrentHeaderFieldCount + (entryCount * CurrentEntryFieldCount))
+            || fields.Length != CurrentHeaderFieldCount + (entryCount * entryFieldCount))
         {
             return false;
         }
 
         var entries = new List<SettlementRuleMemoryEntry>(entryCount);
         int offset = CurrentHeaderFieldCount;
-        for (int index = 0; index < entryCount; index++, offset += CurrentEntryFieldCount)
+        for (int index = 0; index < entryCount; index++, offset += entryFieldCount)
         {
             if (!TryParseNonNegative(fields[offset + 5], out int ruleStartDay)
                 || !TryParseNonNegative(fields[offset + 6], out int minimumDurationDays)
@@ -119,7 +121,8 @@ public static class SettlementRuleMemoryCodec
                 recordedDurationDays,
                 durationWasMinimum,
                 DecodeText(fields[offset + 9]),
-                narrativeIsManual));
+                narrativeIsManual,
+                entryFieldCount == 11 ? null : DecodeEvolution(fields[offset + 11])));
         }
 
         record = new SettlementRuleMemoryRecord(
@@ -167,6 +170,41 @@ public static class SettlementRuleMemoryCodec
             previousDurationDays,
             previousDurationWasMinimum);
         return record.CurrentRule != null;
+    }
+
+    private static string EncodeEvolution(SettlementRuleMemoryEvolution state)
+    {
+        var fields = new List<string> {
+            state.Revision.ToString(CultureInfo.InvariantCulture),
+            state.GeneratedRevision.ToString(CultureInfo.InvariantCulture),
+            state.LastGeneratedDay.ToString(CultureInfo.InvariantCulture),
+            state.PendingSinceDay.ToString(CultureInfo.InvariantCulture) };
+        foreach (var fact in state.Facts)
+        {
+            fields.Add(fact.Day.ToString(CultureInfo.InvariantCulture));
+            fields.Add(EncodeText(fact.Id));
+            fields.Add(EncodeText(fact.Text));
+        }
+        return string.Join(";", fields);
+    }
+
+    private static SettlementRuleMemoryEvolution DecodeEvolution(string payload)
+    {
+        var fields = payload.Split(';');
+        if (fields.Length < 4 || (fields.Length - 4) % 3 != 0
+            || (fields.Length - 4) / 3 > SettlementRuleMemoryEvolution.MaximumEvents
+            || !long.TryParse(fields[0], NumberStyles.None, CultureInfo.InvariantCulture, out long revision) || revision < 1 || revision == long.MaxValue
+            || !long.TryParse(fields[1], NumberStyles.None, CultureInfo.InvariantCulture, out long generated) || generated > revision
+            || !int.TryParse(fields[2], NumberStyles.AllowLeadingSign, CultureInfo.InvariantCulture, out int lastDay) || lastDay < -1
+            || !int.TryParse(fields[3], NumberStyles.AllowLeadingSign, CultureInfo.InvariantCulture, out int pendingDay) || pendingDay < -1)
+            throw new FormatException("Invalid town memory evolution state.");
+        var facts = new List<SettlementRuleMemoryFact>();
+        for (int i = 4; i < fields.Length; i += 3)
+        {
+            if (!TryParseNonNegative(fields[i], out int day)) throw new FormatException("Invalid town fact day.");
+            facts.Add(new SettlementRuleMemoryFact(DecodeText(fields[i + 1]), DecodeText(fields[i + 2]), day));
+        }
+        return new SettlementRuleMemoryEvolution(revision, generated, lastDay, pendingDay, facts);
     }
 
     private static string EncodeText(string value)

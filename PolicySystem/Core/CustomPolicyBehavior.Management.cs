@@ -4530,9 +4530,21 @@ public sealed partial class CustomPolicyBehavior
 		return active;
 	}
 
-	private static void InvokeLocalPolicyLifecycleMemoryHook(string eventKind, string recordId, IEnumerable<string> targetFiefIds)
+	private void InvokeLocalPolicyLifecycleMemoryHook(string eventKind, string recordId, IEnumerable<string> targetFiefIds)
 	{
-		// Reserved internal extension point. Local policy lifecycle events intentionally do not write NPC/AFEF memory yet.
+		// Only post-commit lifecycle facts. No NPC/AFEF write, forecast or full policy scan.
+		try
+		{
+			if (!_localPolicyRecords.TryGetValue(recordId ?? "", out string raw)) return;
+			var record = JsonConvert.DeserializeObject<LocalPolicyRecordSaveData>(raw);
+			if (record == null) return;
+			string fact = AnimusForge.SiegeAftermathIntervention.SettlementRuleMemoryEventText.Policy(eventKind, record.PolicyName);
+			if (string.IsNullOrWhiteSpace(fact)) return;
+			string eventId = "policy:" + recordId + ":" + eventKind + ":" + (record.Renewals?.Count ?? 0);
+			foreach (string id in (targetFiefIds ?? Array.Empty<string>()).Distinct(StringComparer.OrdinalIgnoreCase))
+				GcczTownRuleMemoryRuntimeBridge.RecordConfirmedEvent(Settlement.Find(id), eventId, fact);
+		}
+		catch (Exception ex) { Logger.Log("GcczTownRuleMemory", "Policy fact capture failed: " + ex.Message); }
 	}
 
 	private static void ShowPolicyRenewalResultPopup(string policyObjectId, PolicyDraftRequest request, PolicyApplicationResult application)
