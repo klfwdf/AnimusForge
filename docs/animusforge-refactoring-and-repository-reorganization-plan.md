@@ -19,7 +19,13 @@
 
 <a id="civilwar-political-panel-20261001"></a>
 
-### 派系面板、事件政治与内战消息（2026-10-01，OFFLINE_VERIFIED / 未部署）
+### 派系面板、事件政治与内战消息（2026-10-01，DEPLOYED / OFFLINE_VERIFIED）
+
+**后续部署（2026-10-01 13:56，用户明确授权，取代本节实施轮“未部署”状态）**：最终严格通过仓库原版 `一键编译覆盖推送/一键编译并覆盖.bat --no-launch` 完成重新编译及覆盖，保持脚本默认Debug配置。1.3（v1.3.15.110062）、1.4（v1.4.6.115628）及Bootstrap全部编译成功、0错误；原有告警未屏蔽。未修改BAT/PowerShell构建部署入口，未推送。执行初期工具进程Path/PSModulePath无法解析系统工具/Get-FileHash，仅为本次子进程补齐系统路径；旧Debug Stage资源与当前源码不同，完整移存后由原脚本重新生成并校验，未跳过检查。
+
+最终覆盖 `F:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord/Modules/AnimusForge`，此轮BAT更新9个程序文件；全部238个Stage文件与安装目录SHA-256相等，三份build marker对应DLL哈希一致，XML仅加载Bootstrap。最新9文件旧版备份及complete标记：`C:/Users/29310/AppData/Local/AnimusForge/Recovery/deploy/deploy-b44ea9731b19450e8af075d7655f81c5/manifest.json`。在用户补充要求使用BAT之前，曾用原部署子脚本部署已验证Release产物并更新28文件，备份位于 `deploy-b17d7d63b7fc4c84aa241d58b7bbd3fe/manifest.json`（同Recovery/deploy父目录），28份旧文件哈希也已核验。最终安装以BAT的Debug新编译结果为准；如需撤销整个本轮部署，按最新9文件、再前序28文件的顺序按manifest恢复并验证oldSha256，不整目录删除未知文件。旧Release Stage/产物及旧Debug Stage保留于 `artifacts/civilwar-review-20261001/deploy-input-backup-d6b88837cb5a4fabbd6bb040e5f8b45f/`。
+
+最终证据为 `artifacts/civilwar-review-20261001/political-oneclick-deploy-final.log`、`political-oneclick-verification.json`；前序部署记录 `political-deploy.log`、`political-deploy-retry.log`、`political-deployment-verification.json`。本次没有启动游戏，实机、真实旧档和帧耗时仍未验。
 
 本包执行用户“派系面板操作与事件驱动政治系统”实施计划，并补查周报、快报、人物记忆链路。工作区 `F:/AnimusForge-main`，分支 `codex/af-main-refactor-continuation-20260831`；本地意图检查点 `c1c3e5e`，产品/回归提交 `3b8337d78d22528570ddb299dd3fabcf21f39870`，身份收尾修复 `79874aaa`（新统治家族转王室阵营）。保留政策、处决、政变、图库等并行作者改动；主体提交仅包含本任务20文件；身份收尾仅改2个本包文件。本包不修改一键构建/覆盖入口、不扩展公开子MOD API、不部署或推送，不增加王室阵营AI自动招募。
 
