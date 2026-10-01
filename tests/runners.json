@@ -247,10 +247,9 @@
   "tools/PersistenceIdentityAudit.py": {
    "args": [
     "--baseline",
-    "ada9894a7c840036cbf27caaea87e37df657f29c",
-    "--review-civilwar-v2"
+    "d57e9be23788348a9e8885bae5c4b7950783662e"
    ],
-   "note": "Approved remote CivilWar v2 key replaces v1 string key only; baseline/raw diff retained, all other key/type/behavior deltas fail. This is not old-save acceptance."
+   "note": "AF2 approved product baseline after previously delivered execution/CivilWar changes; every literal key/type/behavior delta still fails, not old-save acceptance."
   },
   "tools/PhaseEightReadiness/readiness.py": {
    "expect": "NEEDS_INPUT"
@@ -386,6 +385,12 @@
   "tests/modules/AF.Module.Conversation/NativeSessionOwnerTests/run_detached.py": {
    "expect": "PASS",
    "note": "AF2 F5 real owner/detached pipeline fixture; live game and save not verified."
+  },
+  "extensions/AnimusForge.Illustrator/tests/GalleryRpConversionTests/GalleryRpConversionTests.csproj": {
+   "args": [
+    "{ROOT}/extensions/AnimusForge.Illustrator/tests/GalleryRpConversionTests/synthetic-source.fixture"
+   ],
+   "note": "Caller-owned synthetic existence-only fixture; original production converter assertions unchanged, no image cache or save input."
   }
  }
 }
