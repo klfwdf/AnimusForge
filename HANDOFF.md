@@ -1,5 +1,7 @@
 # 当前交接：J17 收尾与远端 CivilWar 合并（2026-10-01）
 
+- **内战派系五项审查修复已部署（2026-10-01）**：产品/回归 `76503341`，修复内战标签双重过滤、玩家国王缺答复规则、失败结算丢记录、废除政策误增不满、拒绝参战仍扣忠诚度。56 项真实 owner/效果＋桩游戏回归、原 smoke/交互契约、最终 Release 双 API+Bootstrap PASS；按用户后续“部署”授权覆盖单模块，更新9文件，部署后238个Stage文件哈希一致。实机/真实旧档未验；异常副作用不明确时保留状态等待核对。源码坐标、构建版本/哈希、历史地图失败、旧 Stage 和安装备份见[本任务台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#civilwar-review-repair-20261001)，不替代其他任务或J17总体验收。
+
 - **宣权篡位灰色入口已离线修复（2026-10-01）**：`f1c27b5b` 将 Coup 的旧私有字段反射改为当前主体状态查询，保持冲突阻挡与失败关闭。Release 双 API+Bootstrap、真实 1.4 注册四标志、36 状态/拘押生命周期与 29 选兵回归通过；拘押加载期 False 已证为实例生命周期条件，未改拘押产品代码。未部署/推送/游戏旧档验收，其他内战/周报并行改动保留。独立产物、精确坐标、全局地图历史失败及回滚见[本任务台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#coup-entry-repair-20261001)，不提升 J17 总体状态。
 
 - **即时快报审查修复（2026-10-01）**：修复读档后最新快报选错、坏存档原文被自动初始化覆盖、过期摘要混入近期消息；38规则检查 + 16真实方法/桩存储回放 PASS，Release双API+Bootstrap通过，实机/真实旧档未验。新增恢复字段随原存档键保存，查询缓存避免每次对话全量扫描。仅本地提交，无部署/推送；详细源码坐标、构建哈希、其他任务并发边界与回滚见[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#world-bulletin-review-fixes-20261001)。
