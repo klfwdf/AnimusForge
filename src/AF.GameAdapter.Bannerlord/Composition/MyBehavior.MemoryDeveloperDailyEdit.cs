@@ -77,7 +77,20 @@ public partial class MyBehavior
 		}
 		foreach (DailyMemoryLine line in lines ?? Enumerable.Empty<DailyMemoryLine>())
 		{
-			ConversationMessage message = BuildUncompressedMemoryConversationMessage(line, npcName, line?.TargetAgentIndex ?? -1);
+            int currentDay = 0;
+            string currentScene = "";
+            if (line != null && !string.IsNullOrWhiteSpace(line.Text)
+                && UncompressedMemoryMessageAssemblyOwner.IsUnknownMemorySceneLabel(line.Scene))
+            {
+                try
+                {
+                    currentDay = GetCurrentGameDayIndexSafe();
+                    if (line.GameDayIndex == currentDay) currentScene = ResolveCurrentMemorySceneLabel();
+                }
+                catch { }
+            }
+            ConversationMessage message = UncompressedMemoryMessageAssemblyOwner.BuildUncompressedMemoryConversationMessage(
+                line, npcName, line?.TargetAgentIndex ?? -1, currentDay, currentScene);
 			if (message == null || string.IsNullOrWhiteSpace(message.Content))
 			{
 				continue;

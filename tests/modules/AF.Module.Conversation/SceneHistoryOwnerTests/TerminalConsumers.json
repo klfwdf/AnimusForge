@@ -1,0 +1,194 @@
+[
+  {
+    "symbol": "RecordExtraFactToSceneHistory",
+    "exact": "private void RecordExtraFactToSceneHistory(string extraFact, List<NpcDataPacket> nearbyData) => RecordExtraFactToSceneHistoryCaptured(extraFact, nearbyData);"
+  },
+  {
+    "symbol": "AppendNativeConversationSessionLineToSceneHistory",
+    "exact": "private void AppendNativeConversationSessionLineToSceneHistory(Hero targetHero, CharacterObject targetCharacter, string npcName, string speaker, string text, string kind, long eventSequence = 0L, int targetAgentIndexOverride = -1, NpcDataPacket targetNpc = null, int playerTargetAgentIndexOverride = -1, string playerTargetNameOverride = null) => AppendNativeConversationSessionLineToSceneHistoryCaptured(targetHero, targetCharacter, npcName, speaker, text, kind, eventSequence, targetAgentIndexOverride, targetNpc, playerTargetAgentIndexOverride, playerTargetNameOverride);"
+  },
+  {
+    "symbol": "RemoveNativeConversationSessionHistoryEventFromSceneHistory",
+    "exact": "private void RemoveNativeConversationSessionHistoryEventFromSceneHistory(long eventSequence) => RemoveNativeConversationSessionHistoryEventFromSceneHistoryCaptured(eventSequence);"
+  },
+  {
+    "symbol": "AppendActionAfefFactToSceneHistoryInOrder",
+    "exact": "private void AppendActionAfefFactToSceneHistoryInOrder(int targetAgentIndex, string fact, bool mirrorToNativeSharedHistory = true) => AppendActionAfefFactToSceneHistoryInOrderCaptured(targetAgentIndex, fact, mirrorToNativeSharedHistory);"
+  },
+  {
+    "symbol": "RecordPlayerMessage",
+    "exact": "private bool RecordPlayerMessage(string text, List<NpcDataPacket> nearbyData, int primaryTargetAgentIndex = -1, string primaryTargetName = \"\", Dictionary<int, Agent> audienceAgentsByIndex = null, bool requireMemoryReceipt = false) => RecordPlayerMessageCaptured(text, nearbyData, primaryTargetAgentIndex, primaryTargetName, audienceAgentsByIndex, requireMemoryReceipt);"
+  },
+  {
+    "symbol": "PromotePersonalizedExtraFactInScenePrivateHistory",
+    "exact": "private void PromotePersonalizedExtraFactInScenePrivateHistory(\n\t\tstring personalizedExtraFact,\n\t\tint personalizedAgentIndex) => PromotePersonalizedExtraFactInScenePrivateHistoryCaptured(personalizedExtraFact, personalizedAgentIndex);"
+  },
+  {
+    "symbol": "RecordResponseForAllNearbySafe",
+    "exact": "private bool RecordResponseForAllNearbySafe(List<NpcDataPacket> nearbyData, int speakerAgentIndex, string speakerName, string response, bool requireMemoryReceipt = false) => RecordResponseForAllNearbySafeCaptured(nearbyData, speakerAgentIndex, speakerName, response, requireMemoryReceipt);"
+  },
+  {
+    "symbol": "RecordSystemFactForNearbySafe",
+    "exact": "private void RecordSystemFactForNearbySafe(List<NpcDataPacket> nearbyData, string factText) => RecordSystemFactForNearbySafeCaptured(nearbyData, factText);"
+  },
+  {
+    "symbol": "TryRenderSceneHistoryLine",
+    "exact": "private static bool TryRenderSceneHistoryLine(ConversationMessage msg, HashSet<string> allowedSpeakers, out string rendered, int viewerAgentIndex = -1, string fallbackTargetNpcName = \"\", bool useNpcNameAddress = false, bool useSceneDistanceSpeechLabels = true) => HistorySectionProjectionOwner.TryRenderSceneHistoryLine(msg, allowedSpeakers, out rendered, viewerAgentIndex, fallbackTargetNpcName, useNpcNameAddress, useSceneDistanceSpeechLabels, GetPlayerDisplayNameForShout());"
+  },
+  {
+    "symbol": "FormatSceneHistorySection",
+    "exact": "private static string FormatSceneHistorySection(string sectionText) => HistorySectionProjectionOwner.FormatSceneHistorySection(sectionText);"
+  },
+  {
+    "symbol": "FilterHistorySectionAgainstScenePublicHistory",
+    "exact": "internal static string FilterHistorySectionAgainstScenePublicHistory(string historySection, string scenePublicHistorySection) => HistorySectionProjectionOwner.FilterHistorySectionAgainstScenePublicHistory(historySection, scenePublicHistorySection, new ConversationSpeechTextOptions(IsDetailedSceneSpeechPromptEnabled(), ShouldPreserveSceneAsteriskActions()));"
+  },
+  {
+    "symbol": "BuildHistoryLineSemanticKeySet",
+    "exact": "private static HashSet<string> BuildHistoryLineSemanticKeySet(string section) => HistorySectionProjectionOwner.BuildHistoryLineSemanticKeySet(section, new ConversationSpeechTextOptions(IsDetailedSceneSpeechPromptEnabled(), ShouldPreserveSceneAsteriskActions()));"
+  },
+  {
+    "symbol": "IsHistorySectionHeaderLine",
+    "exact": "private static bool IsHistorySectionHeaderLine(string line) => HistorySectionProjectionOwner.IsHistorySectionHeaderLine(line);"
+  },
+  {
+    "symbol": "IsHistorySectionDateHeaderLine",
+    "exact": "private static bool IsHistorySectionDateHeaderLine(string line) => HistorySectionProjectionOwner.IsHistorySectionDateHeaderLine(line);"
+  },
+  {
+    "symbol": "BuildHistoryLineSemanticKey",
+    "exact": "private static string BuildHistoryLineSemanticKey(string line) => HistorySectionProjectionOwner.BuildHistoryLineSemanticKey(line, new ConversationSpeechTextOptions(IsDetailedSceneSpeechPromptEnabled(), ShouldPreserveSceneAsteriskActions()));"
+  },
+  {
+    "symbol": "StripHistoryLineSpeakerPrefixForDedupe",
+    "exact": "private static string StripHistoryLineSpeakerPrefixForDedupe(string text) => HistorySectionProjectionOwner.StripHistoryLineSpeakerPrefixForDedupe(text);"
+  },
+  {
+    "symbol": "PruneEmptyHistoryDateBlocks",
+    "exact": "private static string PruneEmptyHistoryDateBlocks(List<string> lines) => HistorySectionProjectionOwner.PruneEmptyHistoryDateBlocks(lines);"
+  },
+  {
+    "symbol": "NormalizeScenePlayerHistoryLine",
+    "exact": "private static string NormalizeScenePlayerHistoryLine(string text, string targetNpcName = \"\", bool useNpcNameAddress = false, float playerDistanceMeters = -1f) => HistorySectionProjectionOwner.NormalizeScenePlayerHistoryLine(text, targetNpcName, useNpcNameAddress, playerDistanceMeters, GetPlayerDisplayNameForShout());"
+  },
+  {
+    "symbol": "SplitPersistedHeroHistorySections",
+    "exact": "internal static void SplitPersistedHeroHistorySections(string persistedHeroHistory, out string privateRecentWindowSection, out string persistedWithoutRecentWindow) => HistorySectionProjectionOwner.SplitPersistedHeroHistorySections(persistedHeroHistory, out privateRecentWindowSection, out persistedWithoutRecentWindow);"
+  },
+  {
+    "symbol": "IsPrivateRecentWindowHeader",
+    "exact": "private static bool IsPrivateRecentWindowHeader(string line) => HistorySectionProjectionOwner.IsPrivateRecentWindowHeader(line);"
+  },
+  {
+    "symbol": "RemoveNativeMessagesAlreadyInPersistentMemory",
+    "exact": "internal static List<ConversationMessage> RemoveNativeMessagesAlreadyInPersistentMemory(List<ConversationMessage> nativeMessages, List<ConversationMessage> persistentMessages) => HistorySectionProjectionOwner.RemoveNativeMessagesAlreadyInPersistentMemory(nativeMessages, persistentMessages);"
+  },
+  {
+    "symbol": "BuildConversationMemoryDedupKey",
+    "exact": "private static string BuildConversationMemoryDedupKey(ConversationMessage message) => HistorySectionProjectionOwner.BuildConversationMemoryDedupKey(message);"
+  },
+  {
+    "symbol": "NormalizeSceneHeroId",
+    "exact": "private static string NormalizeSceneHeroId(string heroId) => SceneHistoryProjectionOwner.NormalizeSceneHeroId(heroId);"
+  },
+  {
+    "symbol": "IsSameSceneHeroId",
+    "exact": "private static bool IsSameSceneHeroId(string left, string right) => SceneHistoryProjectionOwner.IsSameSceneHeroId(left, right);"
+  },
+  {
+    "symbol": "ContainsSceneHeroId",
+    "exact": "private static bool ContainsSceneHeroId(IEnumerable<string> heroIds, string heroId) => SceneHistoryProjectionOwner.ContainsSceneHeroId(heroIds, heroId);"
+  },
+  {
+    "symbol": "IsSceneHistoryVisibleToAgentOrHero",
+    "exact": "private static bool IsSceneHistoryVisibleToAgentOrHero(ConversationMessage msg, int viewerAgentIndex, string viewerHeroId) => SceneHistoryProjectionOwner.IsSceneHistoryVisibleToAgentOrHero(msg, viewerAgentIndex, viewerHeroId);"
+  },
+  {
+    "symbol": "IsSceneHistoryMessageRelatedToHero",
+    "exact": "private static bool IsSceneHistoryMessageRelatedToHero(ConversationMessage msg, string heroId) => SceneHistoryProjectionOwner.IsSceneHistoryMessageRelatedToHero(msg, heroId);"
+  },
+  {
+    "symbol": "DoesSceneHistoryBucketRelateToHero",
+    "exact": "private static bool DoesSceneHistoryBucketRelateToHero(IEnumerable<ConversationMessage> messages, string heroId) => SceneHistoryProjectionOwner.DoesSceneHistoryBucketRelateToHero(messages, heroId);"
+  },
+  {
+    "symbol": "BuildSceneHistoryMergeKey",
+    "exact": "private static string BuildSceneHistoryMergeKey(ConversationMessage msg) => SceneHistoryProjectionOwner.BuildSceneHistoryMergeKey(msg, new ConversationSpeechTextOptions(IsDetailedSceneSpeechPromptEnabled(), ShouldPreserveSceneAsteriskActions()));"
+  },
+  {
+    "symbol": "IsSingleUseSceneNpcFactText",
+    "exact": "private static bool IsSingleUseSceneNpcFactText(string text) => SceneHistoryProjectionOwner.IsSingleUseSceneNpcFactText(text);"
+  },
+  {
+    "symbol": "IsSceneConversationTurn",
+    "exact": "private static bool IsSceneConversationTurn(ConversationMessage msg) => SceneHistoryProjectionOwner.IsSceneConversationTurn(msg);"
+  },
+  {
+    "symbol": "RemoveExpiredSingleUseSceneNpcFacts",
+    "exact": "private static void RemoveExpiredSingleUseSceneNpcFacts(List<ConversationMessage> history) => SceneHistoryProjectionOwner.RemoveExpiredSingleUseSceneNpcFacts(history);"
+  },
+  {
+    "symbol": "GetLatestSceneNpcUtteranceFromHistory",
+    "exact": "private static string GetLatestSceneNpcUtteranceFromHistory(List<ConversationMessage> history, int targetAgentIndex) => SceneHistoryProjectionOwner.GetLatestSceneNpcUtteranceFromHistory(history, targetAgentIndex);"
+  },
+  {
+    "symbol": "BuildNativeConversationHistoryKey",
+    "exact": "private static string BuildNativeConversationHistoryKey(Hero targetHero, CharacterObject targetCharacter, string npcName, int targetAgentIndex = -1, NpcDataPacket npc = null) => CaptureNativeConversationHistoryKey(targetHero, targetCharacter, npcName, targetAgentIndex, npc);"
+  },
+  {
+    "symbol": "AppendNativeConversationSessionHistory",
+    "exact": "private static void AppendNativeConversationSessionHistory(Hero targetHero, CharacterObject targetCharacter, string npcName, string speaker, string text, string kind, long eventSequence = 0L, bool bridgeToSceneHistory = true, int targetAgentIndex = -1, NpcDataPacket npc = null, int playerTargetAgentIndex = -1, string playerTargetName = null, string capturedHistoryKey = null) => AppendNativeConversationSessionHistoryCaptured(targetHero, targetCharacter, npcName, speaker, text, kind, eventSequence, bridgeToSceneHistory, targetAgentIndex, npc, playerTargetAgentIndex, playerTargetName, capturedHistoryKey);"
+  },
+  {
+    "symbol": "NormalizeWildernessNonHeroMemoryKeyPart",
+    "exact": "private static string NormalizeWildernessNonHeroMemoryKeyPart(string value) => NativeHistoryIdentityProjectionOwner.NormalizeWildernessNonHeroMemoryKeyPart(value);"
+  },
+  {
+    "symbol": "BuildNativeConversationNonHeroUnnamedKey",
+    "exact": "private static string BuildNativeConversationNonHeroUnnamedKey(CharacterObject targetCharacter, string npcName, int agentIndex) => CaptureNativeConversationNonHeroUnnamedKey(targetCharacter, npcName, agentIndex);"
+  },
+  {
+    "symbol": "BuildVisibleSceneHistoryLines",
+    "exact": "internal static List<string> BuildVisibleSceneHistoryLines(List<ConversationMessage> history, int viewerAgentIndex, string targetNpcName = \"\", bool useNpcNameAddress = false) => CaptureAndBuildVisibleSceneHistoryLines(history, viewerAgentIndex, targetNpcName, useNpcNameAddress);"
+  },
+  {
+    "symbol": "GetNpcConversationHistorySnapshot",
+    "exact": "private List<ConversationMessage> GetNpcConversationHistorySnapshot(int npcAgentIndex) => CaptureNpcConversationHistory(npcAgentIndex);"
+  },
+  {
+    "symbol": "GetAuxiliarySceneDialogueHistoryLines",
+    "exact": "private List<string> GetAuxiliarySceneDialogueHistoryLines(int targetAgentIndex, int maxLines) => CaptureAuxiliarySceneDialogueHistoryLines(targetAgentIndex, maxLines);"
+  },
+  {
+    "symbol": "GetLatestSceneNpcUtterance",
+    "exact": "private string GetLatestSceneNpcUtterance(int targetAgentIndex) => targetAgentIndex < 0 ? \"\" : SceneHistoryOwner.LatestNpcUtterance(targetAgentIndex);"
+  },
+  {
+    "symbol": "_npcConversationHistory",
+    "absent": "private Dictionary<int, List<ConversationMessage>> _npcConversationHistory = new Dictionary<int, List<ConversationMessage>>();"
+  },
+  {
+    "symbol": "_publicConversationHistory",
+    "absent": "private List<ConversationMessage> _publicConversationHistory = new List<ConversationMessage>();"
+  },
+  {
+    "symbol": "ResetInstanceTransientRuntimeForLoadedSave",
+    "required": "SceneHistoryOwner.Reset();"
+  },
+  {
+    "symbol": "OnMissionStarted",
+    "required": "SceneHistoryOwner.Reset();"
+  },
+  {
+    "symbol": "OnMissionEnded",
+    "required": "SceneHistoryOwner.Reset();"
+  },
+  {
+    "symbol": "scene_history_diagnostics",
+    "exact": "\t\t\t\tSceneHistoryOwner.AppendDiagnostics(sb);"
+  },
+  {
+    "symbol": "native_context_visible_history",
+    "exact": "\t\tsceneHistoryLines = instance.CaptureVisibleSceneHistoryLinesForPrompt(targetAgentIndex, GetSceneNpcHistoryNameForPrompt(targetNpc), false);"
+  }
+]

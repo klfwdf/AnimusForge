@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using TaleWorlds.CampaignSystem;
@@ -44,14 +44,7 @@ public partial class ShoutBehavior
 	}
 
 	private long ComputePresentationHistoryFingerprint()
-	{
-		lock (_historyLock)
-		{
-			int count = _publicConversationHistory?.Count ?? 0;
-			long last = count > 0 ? (_publicConversationHistory[count - 1]?.EventSequence ?? 0L) : 0L;
-			return (last << 16) ^ count;
-		}
-	}
+		=> SceneHistoryOwner.PublicFingerprint();
 
 	// The turn's framed audience: every non-excluded member currently in range (locked at any distance).
 	// ProcessCurrentScenePlayerShout still adds 10 m bystanders around the addressee and the player.
@@ -144,9 +137,9 @@ public partial class ShoutBehavior
  {
   lock (_historyLock)
   {
-   return Presentation.BuildHistory(_publicConversationHistory?.Count ?? 0, index => {
-    ConversationMessage message=_publicConversationHistory[index];
-    return message==null ? default : new ScenePresentationHistoryRecord { Exists=true, EventSequence=message.EventSequence,
+   return Presentation.BuildHistory(SceneHistoryOwner.PublicCount, index => {
+    SceneHistoryScalarRecord message=SceneHistoryOwner.ReadPublicScalar(index);
+    return !message.Exists ? default : new ScenePresentationHistoryRecord { Exists=true, EventSequence=message.EventSequence,
      Role=message.Role, Content=message.Content, TargetName=message.TargetName, SpeakerName=message.SpeakerName };
    }, TryNormalizeAfefFactLineForPrompt, maxLines);
   }

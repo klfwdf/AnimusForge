@@ -1,0 +1,50 @@
+using System;using System.Collections.Generic;using System.Linq;using System.Text.RegularExpressions;using System.Threading;using System.Threading.Tasks;
+namespace AnimusForge;
+internal static class MainPromptMessageAssemblyOwner { @@CREATE@@ }
+internal static class ShoutUtils { @@METADATA@@ @@STRIP@@ @@SPLIT@@ }
+internal static class LlmVisibleReplyNormalizer { internal static string NormalizeComplete(string text)=>text; }
+internal static class ConversationActionPostprocessOwner { internal static string StripActionTagsForSceneSpeech(string text)=>text; }
+internal static class Logger { internal static void Log(string a,string b){} }
+internal static class Program {
+ static int count;static void C(bool pass,string why){count++;Console.WriteLine("CHECK "+count+" "+why);if(!pass)throw new Exception("FAIL "+why);}
+ static ConversationMessage M(long seq,string role,string text,int speaker=7,string hero="ada",params int[] visible)=>new(){EventSequence=seq,Role=role,Content=text,SpeakerName=speaker==7?"Ada":"Borin",SpeakerAgentIndex=speaker,SpeakerHeroId=hero,VisibleAgentIndices=visible.ToList(),GameDayIndex=5,GameDate="today",GameHour=9,Scene="town"};
+ static async Task Main(){try{await RunTests();}catch(Exception error){Console.Error.WriteLine(error);Environment.ExitCode=1;}}
+ static async Task RunTests(){
+ object gate=new();var owner=new SceneConversationHistoryOwner(gate);var pub=M(1,"system","[AFEF NPC行为补充] shared",-1,"",7);var priv=M(1,"system",pub.Content,-1,"",7);
+ owner.AppendPair(7,pub,priv);C(owner.PublicCount==1&&owner.PublicFingerprint()==((1L<<16)^1),"sole owner initial count/fingerprint");
+ pub.Content="same reference update";C(owner.CapturePublic()[0].Content==pub.Content,"write retains message identity");pub.Content="[AFEF NPC行为补充] shared";
+ var detached=owner.CapturePublic();detached[0].Content="mutated";detached[0].VisibleAgentIndices.Clear();C(owner.CapturePublic()[0].Content==pub.Content&&owner.CapturePublic()[0].VisibleAgentIndices.Count==1,"read deep detached metadata and visibility");
+ C(owner.ReadPublicScalar(0).Exists&&owner.ReadPublicScalar(0).Role=="system","typed scalar public reader");
+ C(owner.CapturePrivateFactForPromotion(7,pub.Content,out int index,out var candidate),"last private fact candidate captured");candidate.Content="personal";candidate.TargetAgentIndex=7;candidate.TargetHeroId="ada";candidate.VisibleHeroIds=new(){"ada"};candidate.VisibleAgentIndices=new(){7};
+ C(owner.ApplyPrivateFactPromotion(7,index,pub.Content,candidate)&&priv.Content=="personal"&&pub.Content!="personal","private promotion keeps distinct write identities");
+ C(!owner.ApplyPrivateFactPromotion(7,index,pub.Content,candidate),"promotion cannot overwrite changed source");
+ owner.AppendNpc(8,M(2,"assistant","other bucket",8,"ada",7));owner.AppendPublic(M(3,"assistant","own public",7,"ada",7));
+ var merged=owner.CaptureNpc(7,"ADA",default);C(merged.Any(x=>x.Content=="other bucket"),"hero bucket relation recovers agent-index-changed history");C(merged.Select(x=>x.EventSequence).SequenceEqual(new long[]{1,2,3}),"merge dedups sequence role and stable chronology");
+ C(!owner.CaptureNpc(7,"different",default).Any(x=>x.Content=="other bucket"),"unrelated private bucket not exposed");
+ C(SceneHistoryProjectionOwner.IsSceneHistoryVisibleToAgentOrHero(M(1,"user","x",7,"",99),7,"ada")==false,"agent visibility restricts strangers");var byHero=M(1,"user","x",7,"",99);byHero.VisibleHeroIds.Add(" ADA ");C(SceneHistoryProjectionOwner.IsSceneHistoryVisibleToAgentOrHero(byHero,7,"ada"),"hero visibility case/trim accepted");
+ var cap=new SceneConversationHistoryOwner(new());for(int i=0;i<15;i++)cap.AppendPublic(M(i+1,"user","row"+i,-1,"",7));cap.AppendPublic(M(20,"system","[AFEF NPC行为补充] fact",-1,"",7));
+ var visible=cap.CaptureVisiblePublicLines(7,"ada","Ada",false,"Player",3);C(visible.Count==4&&visible.Any(x=>x.Contains("fact"))&&visible.Any(x=>x.Contains("row14"))&&!visible.Any(x=>x.Contains("row10")),"visible backwards cap never truncates AFEF");
+ C(cap.CaptureVisiblePublicLines(8,"borin","Borin",false,"Player",3)==null,"private visibility prevents public rendering");C(cap.CaptureVisiblePublicLines(7,"ada","Ada",false,"Player",3,2).Count==2,"auxiliary max applies after history cap");
+ cap.AppendNpc(7,M(80,"user","rollback",-1,"",7));cap.AppendPublic(M(80,"user","rollback",-1,"",7));cap.AppendPublic(M(80,"system","fact untouched",-1,"",7));cap.RollbackPlayerEvent(80);
+ C(!cap.CapturePublic().Any(x=>x.Role=="user"&&x.EventSequence==80)&&cap.CapturePublic().Any(x=>x.Role=="system"&&x.EventSequence==80),"rollback removes player only public/private");
+ var fact=M(1,"system","[AFEF NPC行为补充] 今天稍早时候刚与Ada见过面。",-1,"",7);cap.AppendNpc(7,fact);cap.AppendNpc(7,M(2,"assistant","turn",7,"ada",7));cap.PruneNpcFacts(7);C(!cap.CaptureNpc(7,"",default).Any(x=>x.Content==fact.Content),"single use fact pruned only after later turn");
+ var newest=new SceneConversationHistoryOwner(new());newest.AppendPublic(M(1,"user","old"));newest.AppendPublic(M(2,"assistant","Ada: previous reply"));newest.AppendPublic(M(3,"user","current"));C(newest.LatestNpcUtterance(7)=="previous reply","latest utterance stays within prior player turn");
+ foreach(string input in new[]{"", "【历史】\n---- day1 ----\nNPC: hello\n---- day2 ----\n你: hello", "【近期对话窗口】\nAda: reply\n【长期记忆】\nbody", "【历史】\n---- empty ----"}){
+ C(LegacyHistoryProjection.FormatSceneHistorySection(input)==HistorySectionProjectionOwner.FormatSceneHistorySection(input),"same-input formatted blocks/numbering");
+ LegacyHistoryProjection.SplitPersistedHeroHistorySections(input,out var a,out var b);HistorySectionProjectionOwner.SplitPersistedHeroHistorySections(input,out var c,out var d);C(a==c&&b==d,"same-input private/long history split");
+ C(LegacyHistoryProjection.FilterHistorySectionAgainstScenePublicHistory(input,"【场景历史】\n[1] NPC: hello")==HistorySectionProjectionOwner.FilterHistorySectionAgainstScenePublicHistory(input,"【场景历史】\n[1] NPC: hello"),"same-input semantic filter/empty dates");
+ }
+ foreach(string role in new[]{"assistant","user","system","other"}){var m=M(1,role,role=="system"?"[AFEF NPC行为补充] fact":"hello");C(LegacyHistoryProjection.TryRenderSceneHistoryLine(m,null,out var old,7,"Ada",false,false)==HistorySectionProjectionOwner.TryRenderSceneHistoryLine(m,null,out var current,7,"Ada",false,false,"Player")&&old==current,"same-input role rendering");}
+ var duplicates=new List<ConversationMessage>{M(1,"assistant","Ada: duplicate"),M(2,"assistant","Ada: duplicate"),M(3,"user","Player对Ada说: hi")};var persisted=new List<ConversationMessage>{M(99,"assistant","Ada: duplicate")};
+ C(HistorySectionProjectionOwner.RemoveNativeMessagesAlreadyInPersistentMemory(duplicates,persisted).Count==2&&LegacyHistoryProjection.RemoveNativeMessagesAlreadyInPersistentMemory(duplicates,persisted).Count==2,"count-based dedup removes only one occurrence");
+ C(NativeHistoryIdentityProjectionOwner.BuildKey(new(){HasHero=true,HeroId=" Hero "})=="Hero","hero key priority");C(NativeHistoryIdentityProjectionOwner.BuildKey(new(){HasHero=true,HeroId=""})=="","resolved empty hero key stays empty");C(NativeHistoryIdentityProjectionOwner.BuildKey(new(){HasWildernessMemory=true,WildernessMemoryId="af_nonhero:party"})=="af_nonhero:party","party scoped identity priority");
+ C(NativeHistoryIdentityProjectionOwner.BuildKey(new(){UnnamedKey="  Troop:Guard  ",AgentIndex=7})=="native_nonhero:troop:guard|agent:7","temporary key normalized plus agent");C(NativeHistoryIdentityProjectionOwner.BuildKey(new(){UnnamedKey="troop:g|AGENT:2",AgentIndex=7})=="native_nonhero:troop:g|agent:2","existing agent suffix not duplicated");C(NativeHistoryIdentityProjectionOwner.BuildKey(new(){CaptureFailed=true,FailureHeroId="Hero",FailureKey="bad"})=="Hero","failed capture hero fallback");
+ C(NativeHistoryIdentityProjectionOwner.BuildUnnamedKey(false,"", "",true,"", "faction","leader")=="mix:neutral:soldier:npc:kingdom:faction:lord:leader","unnamed troop-less party projection");
+ var session=new NativeConversationSessionOwner(()=>10,10);var entry=NativeHistoryIdentityProjectionOwner.BuildEntry(10,5,"date",9,"scene","Ada"," Player ","hello","player",7,11,"Other");session.Append("key",entry);var entries=session.Snapshot("key",10);C(entries[0].TargetAgentIndex==11&&entries[0].TargetName=="Other"&&entries[0].Speaker=="Player","real native SessionOwner consumes projected target and clock");
+ var bridge=SceneHistoryProjectionOwner.BuildNativeSceneBridgeMessage("reply","npc","Ada","Ada",7,10,11,"Other",5,default);C(bridge.Role=="assistant"&&bridge.SpeakerAgentIndex==7&&bridge.TargetAgentIndex==-1,"native scene bridge role projection");
+ var before=SaveRuntimeGuard.CaptureGeneration();var pending=owner.CaptureNpc(7,"ada",default);await Task.Yield();SaveRuntimeGuard.AdvanceGeneration("devclear");owner.Reset();C(!SaveRuntimeGuard.IsCurrentGeneration(before)&&owner.PublicCount==0&&owner.CaptureNpc(7,"ada",default).Count==0,"yielded old generation rejected and sole table reset");C(pending.Count>0,"already detached history remains stable after reset");
+ @@PRESENTATION@@
+ NativeAppendCaptureProbe.Run();
+ Console.WriteLine("PASS scene/native history authority checks="+count+" live=NOT_RUN");
+ }
+}
