@@ -1,3 +1,30 @@
+<a id="coup-admission-sixty-20261001"></a>
+
+### 城镇强攻政变发动门槛：至少60名突击队员（2026-10-01，OFFLINE_VERIFIED / 未部署）
+
+用户确认实施默认家族4级、影响力300、实际突击队60人，另留1名接应；全部可在原篡位MCM的“发动条件”中修改（等级0–6、影响力0–5000、人数1–120，前两项0表示不限制）。影响力只检查、不扣除，无筹备、费用或等待；本条取代此前未实施的筹备讨论。工作区 `F:/AnimusForge-main`，分支 `codex/af-main-refactor-continuation-20260831`；意图checkpoint `e84108f`，产品/测试/使用说明 `d7dff15a`。本轮不部署、不推送。
+
+| 源码坐标（`d7dff15a`，一基） | 责任及真实消费者 |
+| --- | --- |
+| `extensions/AnimusForge.Coup/src/CoupSettings.cs:18–28,64–76` | 三项MCM默认/范围/提示；CaptureAdmissionForNewCoup在确认窗前固定参数；CheckNewCoupRequirements直接按基础数值检查，不为菜单刷新分配快照对象。 |
+| `extensions/AnimusForge.Coup/src/CoupSystem/CoupSession.cs:11–44,113–114,172–180` | CoupEntryRequirements规范化/资格规则/差额提示；既有 `_afCoupSession_v1` 新增EntryRequirements，缺项旧会话为0级/0影响力/1人；显式null或越界保留原JSON并拒绝继续。 |
+| `extensions/AnimusForge.Coup/src/CoupSystem/CoupCampaignBehavior.cs:127–130,183–267,270–300,672–680` | 菜单接资格检查并移除写死60人文案；确认窗显示实际条件；选兵前/确认后复核快照与健康名册，排除英雄及伤兵，必须留接应；登记后CheckSessionAdmission立即放行；健康计数直接遍历本队名册一次。 |
+| `extensions/AnimusForge.Coup/src/CoupSystem/CoupTroopSelection.cs:15–18,30–37,58–64` | 内部Open/CreateInitializationData新增minimum参数，默认1供大厅使用；界面标题、确认资格实际应用上下限，街道传快照minimum。 |
+| `extensions/AnimusForge.Coup/tests/Coup.ContractTests/Program.cs`；`tools/Coup.RuntimeProbe/SelectionRegression.cs`、`CoupAdmissionRegression.cs`（后两者同目录） | 边界/真实Newtonsoft旧会话/参数规范化；真实选兵数据工厂59/60、上下界、大厅1人；实际设置属性、名册计数、资格复核与街道确认回调/SETS队列。 |
+
+行为边界：默认街道上限60，所以默认必须恰好选60人且本队至少61名健康普通士兵。最低人数大于上限时提示配置冲突，不改用户设置。门槛与战斗参数在打开确认窗时固定，当前世界状态在选兵前及确认时重验；注册Street/Started后，不因影响力下降、修改设置或伤亡低于60而取消，大厅仍至少1名幸存者。原失败/王位/领地/快报记忆保持。无新增计时器、每帧反射或世界部队扫描；菜单资格只读本家族和本队名册，所需失败提示按拒绝情况生成。
+
+验证与产物：`artifacts/coup-admission-20261001/`。
+
+- `contract.log`：**113 PASS**，新增22项默认条件、3/4级、299/300影响力、60/61兵力、冲突/禁用/边界/旧JSON/新JSON及已开战大厅1人；仅原快报测试字段两条CS0649提示。
+- `build.log`：原 `scripts/build/build_single_module.ps1`，Release **1.3、1.4、Bootstrap通过**。使用 `e84108f` git archive + 本任务5个产品/契约文件overlay独立source，开始时跟踪文件干净，后续他人的快报/插画WIP不混入；最终5文件与工作区哈希一致，见 `verification.json`，未改构建脚本。
+- 1.3产物 `source/bin/Release/single_module_artifacts/versions/1.3/AnimusForge.dll`，参考 `v1.3.15.110062`，SHA256 `64D27C36B33FEF4474F033AA2DC1778ABD8C6311E98EA483E64DCDDB32438057`；1.4同根 `versions/1.4/AnimusForge.dll`，参考 `v1.4.6.115628`，SHA256 `F42DCEFB951BC3FD0FA2105F0790EA421149B2E76CEAA29DBB1D1545994082DA`。
+- `probe-build.log`及`probe/registration.log`：**206 PASS**（36选兵、36入口/拘押、17门、26场景、12快报、50战斗设置、29发动门槛）；4可用标志true、45个Harmony目标、输入DLL哈希不变。使用新1.4实现和真实1.4managed依赖，不声称1.3运行时或完整实机。
+- 门槛fixture实际调用设置默认资格、已存门槛复核、健康计数及街道选兵回调/队列；59人、影响力变299、名册减至60、选择混伤兵均拒绝，成功恰好60人且无影响力扣除或真实名册转移。其他世界上下文、PartyScreen、守军采集均为明确桩。初次夹具试图替换MCM泛型Instance getter遭Harmony NotImplementedException，保留 `probe-fixture-initial-failure.log`；最终不替换该getter，检查真实默认入口与独立设置对象捕获，不将其描述为游戏MCM改值持久化已验。
+- `git diff --check`通过。`code-map.log`仍为已有 `Stale source content: SubModule.cs`，没有调整无关文件或将全仓代码地图记为通过。
+
+未验证：MCM实际分组/滑块/改值持久化、灰色tooltip渲染、原生选兵箭头/按钮、完整实机战斗、真实旧游戏存档和1.3运行时。回滚使用 `git revert d7dff15a` 的针对性逆向提交，保留后续共享文件改动，不hard reset。本轮无游戏覆盖或部署备份；记录和产物均留上述artifacts目录。
+
 <a id="gallery-rp-items-20261001"></a>
 
 ### 画廊转RP物品与对话插画入口去重（2026-10-01，OFFLINE_VERIFIED）

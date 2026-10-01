@@ -1,5 +1,7 @@
 # 当前交接：J17 收尾与远端 CivilWar 合并（2026-10-01）
 
+- **篡位发动门槛已离线实现（2026-10-01，未部署）**：`d7dff15a`，默认4级家族/300影响力/实际60名突击队另留1人，MCM可调；不扣影响力、无筹备费用或等待。菜单/选兵前/确认后重验，门槛随确认窗快照，登记后不追检，大厅仍最少1人，旧会话沿用原门槛。113契约、206真实DLL/夹具检查、Release双API+Bootstrap通过；原生UI、MCM改值持久化及真实旧档未验，无部署/推送。[源码、验证与回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#coup-admission-sixty-20261001)。
+
 - **画廊转RP物品/插画入口去重（2026-10-01）**：`fed01fb6`，画廊选图→编辑介绍→加入背包，沿用原展示物品链路向NPC提供画作介绍；保留DialogueUI现有场景插画按钮，移除额外右上角注入。19转换检查、双API+Bootstrap、真实DLL回调与RP介绍JSON/共享事实读取通过。未部署/推送，游戏及真实旧档未验。[源码、证据与回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#gallery-rp-items-20261001)。
 
 - **派系面板与事件政治已一键编译部署（2026-10-01 13:56）**：`3b8337d7` + `79874aaa`，玩家加入/退出/创建/起兵，国王压制/谈判/妥协/强制解散，跨国七天冷却、保存的三日回应、v4兼容、日级分批处理；补齐周报素材、快报类别、相关领袖事迹及AFEF。180项离线回归、规则smoke、Release双API+Bootstrap及实际DLL面板XML/关闭补丁探针通过。用户授权后通过原版一键编译并覆盖BAT完成Debug双API+Bootstrap，最终更新9程序文件、238安装哈希一致，旧版备份已验；真实游戏/旧档/命名服务/发布与帧耗时未验；其他作者改动保留，无推送。[源码责任、候选、性能边界及聚焦回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#civilwar-political-panel-20261001)。
