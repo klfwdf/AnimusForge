@@ -6,7 +6,12 @@
     <Nullable>disable</Nullable>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <!-- Compile and runtime must use the same pinned game-reference authority.
+         Replay dependency copying rejects mismatched assemblies rather than overwriting them. -->
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>$(Bannerlord14ReferencePath)/Newtonsoft.Json.dll</HintPath>
+      <Private>true</Private>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\ReplayDependencies\ReplayCandidateInput.cs" Link="ReplayCandidateInput.cs" />
