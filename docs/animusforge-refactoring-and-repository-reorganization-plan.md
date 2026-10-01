@@ -1,3 +1,11 @@
+<a id="coup-entry-repair-20261001"></a>
+
+### 宣权篡位入口修复（2026-10-01，ACTIVE）
+
+本轮用户要求修复城镇“宣权篡位”灰色不可点击。工作区 `F:/AnimusForge-main`，分支 `codex/af-main-refactor-continuation-20260831`，基线 `3c00ae2e` tracked clean。实际游戏日志与已安装 1.4 DLL 探针均确认：SETS `_pendingMissionEntry` 已由字段变为 owner-backed 属性；叛乱 `_automaticKingdomRebellionFlowActive` 等字段已迁入 owner，但 Coup 仍反射旧字段，导致 `host=False rebellion=False`。原审查证据 `artifacts/coup-runtime-probe/audit-20261001/registration.log`。
+
+范围：主体提供窄内部状态查询，Coup 缓存 delegate 并保持失败关闭；完善现有真实 DLL 注册探针的状态与拘押生命周期回归。不改变玩法资格、存档键、场景伤害、一键流程或公共 API V1；不推送、部署。注意启动时 `captivity=False` 尚不能证明补丁失败，当前 getter 还要求战役实例存在。出口：状态阻挡/清理回归、1.3/1.4+Bootstrap 构建、真实 1.4 DLL 注册通过；实机及旧档单列未验。仅本地提交本任务差异，保留现存未跟踪文件。
+
 <a id="j17-b6-c-resume-20261001"></a>
 
 ### J17 剩余 B6 / C 本轮恢复（2026-10-01，用户要求暂停，明日继续）
