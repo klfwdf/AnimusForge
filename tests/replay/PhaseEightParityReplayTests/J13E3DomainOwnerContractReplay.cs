@@ -30,7 +30,7 @@ internal static class J13E3DomainOwnerContractReplay
         foreach (string patch in new[] { "Patch_Conversation_Start_Intercept",
             "Patch_ConversationManager_OpenMapConversation", "Patch_ConversationManager_SetupAndStartMapConversation" })
         {
-            string source = Read(patch + ".cs");
+            string source = Read("src/AF.GameAdapter.Bannerlord/Encounter/" + patch + ".cs");
             Require(Count(patches, patch + ".ManualPatch(harmony)") == 1
                 && source.Contains("EncounterConversationTargetResolver.TryResolveExplicitPrisonerFromArguments(__args)", StringComparison.Ordinal)
                 && source.Contains("EncounterConversationTargetResolver.TryResolveLordFromArgumentsThenEncounterLeader(", StringComparison.Ordinal)

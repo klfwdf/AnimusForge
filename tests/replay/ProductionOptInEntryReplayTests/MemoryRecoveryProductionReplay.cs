@@ -100,6 +100,11 @@ internal static class MemoryRecoveryProductionReplay
             "CommitExternalDialogueHistoryRecoverable",
             AnyStatic)
             ?? throw new InvalidOperationException("missing recoverable commit owner");
+        Type recoveryOwnerType = RequireType(ownerType.Assembly, "AnimusForge.MemoryRecoveryStateOwner");
+        MethodInfo preparedCommit = RequireInstanceMethod(recoveryOwnerType, "CommitPrepared");
+        MethodInfo ownerAuxiliaryGate = recoveryOwnerType.GetMethod(
+            "ShouldCompleteInitialInteractionMemoryNotoriety", AnyStatic)
+            ?? throw new InvalidOperationException("missing recovery owner auxiliary gate");
 
         Require(!CallsMethod(recoveryWriter, weeklyAttach),
             "memory recovery writer still consumes transient weekly candidates");
@@ -113,9 +118,12 @@ internal static class MemoryRecoveryProductionReplay
             "legacy live writer unexpectedly lost its existing notoriety best-effort behavior");
         Require(CallsMethod(recoverableCommit, initialAuxiliary),
             "initial recoverable commit no longer owns the one-shot auxiliary boundary");
-        Require(CallsMethod(recoverableCommit, initialAuxiliaryGate),
+        Require(CallsMethod(recoverableCommit, preparedCommit)
+                && CallsMethod(preparedCommit, ownerAuxiliaryGate)
+                && CallsMethod(initialAuxiliaryGate, ownerAuxiliaryGate),
             "recoverable commit bypassed the Began/completed auxiliary gate");
-        Require((recoverableCommit.GetMethodBody()?.ExceptionHandlingClauses.Count ?? 0) >= 2,
+        Require((recoverableCommit.GetMethodBody()?.ExceptionHandlingClauses.Count ?? 0) >= 1
+                && (preparedCommit.GetMethodBody()?.ExceptionHandlingClauses.Count ?? 0) >= 1,
             "exact auxiliary failure is no longer isolated from the completed core receipt");
         Require(!CallsMethod(initialAuxiliary, notorietyNote),
             "initial auxiliary boundary downgraded to the legacy void notoriety owner");
@@ -532,6 +540,7 @@ internal static class MemoryRecoveryProductionReplay
         const int dayIndex = 84;
 
         object owner = RuntimeHelpers.GetUninitializedObject(ownerType);
+        Set(owner, "_memoryBusinessState", New(RequireType(ownerType.Assembly, "AnimusForge.MemoryBusinessStateOwner")));
         object work = New(workType);
         Set(work, "RecoveryId", recoveryId);
         Set(work, "PayloadHash", payloadHash);
@@ -948,7 +957,13 @@ internal static class MemoryRecoveryProductionReplay
     private static object CreateOwnerWithLedger(Type ownerType, object ledger)
     {
         object owner = RuntimeHelpers.GetUninitializedObject(ownerType);
-        Set(owner, "_interactionMemoryRecoveryLedger", ledger);
+        object state = New(RequireType(ownerType.Assembly, "AnimusForge.MemoryBusinessStateOwner"));
+        Set(owner, "_memoryBusinessState", state);
+        Type recoveryType = RequireType(ownerType.Assembly, "AnimusForge.MemoryRecoveryStateOwner");
+        object recovery = Activator.CreateInstance(recoveryType, AnyInstance, null, new[] { state }, null)
+            ?? throw new InvalidOperationException("could not create actual memory recovery owner");
+        Set(recovery, "Ledger", ledger);
+        Set(owner, "_memoryRecoveryState", recovery);
         return owner;
     }
 
