@@ -156,4 +156,18 @@ internal sealed class NpcActionRecordOwner
             if (!string.IsNullOrWhiteSpace(id) && !destination.Exists(x => string.Equals(x, id, StringComparison.OrdinalIgnoreCase))) destination.Add(id);
         }
     }
+
+    internal static void ResetContainers(ref Dictionary<string,List<NpcActionEntry>> major, ref Dictionary<string,string> majorStorage,
+        ref Dictionary<string,List<NpcActionEntry>> recent, ref Dictionary<string,string> recentStorage)
+    {
+        major = new Dictionary<string,List<NpcActionEntry>>(); majorStorage = new Dictionary<string,string>();
+        recent = new Dictionary<string,List<NpcActionEntry>>(); recentStorage = new Dictionary<string,string>();
+    }
+    internal static void EnsureContainers(ref Dictionary<string,List<NpcActionEntry>> major, ref Dictionary<string,string> majorStorage,
+        ref Dictionary<string,List<NpcActionEntry>> recent, ref Dictionary<string,string> recentStorage)
+    {
+        major ??= new Dictionary<string,List<NpcActionEntry>>(); majorStorage ??= new Dictionary<string,string>();
+        recent ??= new Dictionary<string,List<NpcActionEntry>>(); recentStorage ??= new Dictionary<string,string>();
+    }
+
 }

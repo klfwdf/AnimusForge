@@ -33,6 +33,10 @@ paths += ["src/modules/AF.Module.Weekly/Materials/WorldBulletinCampaignMaterialP
           "AnimusForge.SiegeAftermathIntervention/SiegeActionTagCatalog.cs",
           "AnimusForge.SiegeAftermathIntervention/SiegeInterventionActionKind.cs",
           "AnimusForge.SiegeAftermathIntervention/LegacyTownTagAdapter.cs"]
+# Memory owner authority fields now live in explicit partials; compile those real declarations.
+paths += ["src/modules/AF.Module.Memory/Summary/MemoryBusinessStateOwner.Identity.cs",
+          "src/modules/AF.Module.Memory/Summary/MemoryBusinessStateOwner.IdentityStores.cs",
+          "src/modules/AF.Module.Memory/Summary/MemoryBusinessStateOwner.Queues.cs"]
 paths = list(dict.fromkeys(path.replace("\\", "/") for path in paths))
 spec = importlib.util.spec_from_file_location("extract", ROOT / "tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py")
 extract = importlib.util.module_from_spec(spec)
@@ -53,6 +57,18 @@ receipt_host = (ROOT / "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.Wee
 prepare = extract.declaration(receipt_host,"internal static WeeklyMemoryMaterialOutcomeOperationStatus PrepareWeeklyActionOutcomeForExternal")
 shim = "using AnimusForge.Refactor.Runtime;using AnimusForge.Refactor.Contracts;using TaleWorlds.CampaignSystem;using TaleWorlds.Library;" + shim
 shim += "namespace AnimusForge { public partial class MyBehavior {" + prepare + (HERE / "OutcomePrepareGate.cs.txt").read_text(encoding="utf-8") + "}}"
+# Compile the actual record adapter against real authority fields and original non-ref aliases.
+reset_methods=[]
+for name in ["ResetNpcActionRecordContainers", "EnsureNpcActionRecordContainers"]:
+ match=re.search(r"private void " + name + r"\([^;]+;",record_host)
+ assert match and "=>" in match.group()
+ reset_methods.append(match.group())
+aliases=[]
+for name in ["_npcMajorActions", "_npcMajorActionStorage", "_npcRecentActions", "_npcRecentActionStorage"]:
+ match=re.search(r"private Dictionary<[^\r\n]+ " + name + r"[^\r\n]+",host)
+ assert match
+ aliases.append(match.group())
+shim += "namespace AnimusForge { public partial class MyBehavior { private readonly MemoryBusinessStateOwner _memoryBusinessState=new();"+"\n".join(aliases+reset_methods)+"internal void VerifyActualRecordContainerAdapter(){EnsureNpcActionRecordContainers();ResetNpcActionRecordContainers();if(_npcMajorActions.Count!=0||_npcRecentActions.Count!=0||_npcMajorActionStorage.Count!=0||_npcRecentActionStorage.Count!=0)throw new System.Exception(\"actual alias adapter\");}}}"
 shim += "namespace TaleWorlds.CampaignSystem { public class Campaign { public static Campaign Current=new(); public AnimusForge.MyBehavior Owner; public T GetCampaignBehavior<T>() where T:class => Owner as T; }}"
 shim += "namespace AnimusForge.Refactor.Runtime { internal static class FeatureBridgeRuntime { internal static bool IsEnabled(string id)=>true; } internal static class FeatureBridgeIds { internal const string MemorySocialReports=\"weekly\"; }}"
 (out / "Guards.cs").write_text(shim, encoding="utf-8")

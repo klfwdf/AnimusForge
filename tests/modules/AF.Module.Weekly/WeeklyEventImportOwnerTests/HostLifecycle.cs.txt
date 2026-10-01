@@ -35,3 +35,21 @@
   h.RestoreDatabaseReloadWeeklyData(null,null,records,unchanged);
   if(h._publishedWorldWeeklyHistoryRevision!=1||h._eventWorldOpeningSummary!=""||h._eventKingdomOpeningSummaries.Count!=0||h.Order.Single()!="fingerprint:2")throw new Exception("actual restore unchanged products no revision despite opening mark");
  }
+
+ private bool IsMemorySourceEditorCurrent(long generation)=>generation==17;
+ private sealed class WeeklyEventMaterialPreviewGroup {internal string GroupKind,KingdomId;}
+ private string BuildDefaultWeeklyReportTitle(WeeklyEventMaterialPreviewGroup group,int week)=>group.GroupKind+":"+group.KingdomId+":"+week;
+ private EventRecordEntry FindWeeklyReportRecordById(string id)=>_eventRecordEntries.Find(x=>x.EventId==id);
+ private string BuildPublishedWorldWeeklyProductState(EventRecordEntry entry){Order.Add("state");return entry.Title+":"+entry.Summary;}
+ private void NotifyPublishedWorldWeeklyProductChanged(string previous,EventRecordEntry updated){Order.Add("product");}
+ internal static void VerifyDeveloperEdits(){
+  var h=new MyBehavior();var entry=new EventRecordEntry{EventId="event",Title="old",Summary="old summary",EventKind="kind",ScopeKingdomId="scope",WeekIndex=3};h._eventRecordEntries.Add(entry);
+  if(h.SetDeveloperWorldOpeningSummary("wrong",16)||h.ClearDeveloperOpeningSummaries(16)||h.ApplyDeveloperEventTitle(entry,"wrong",16)!=null||h.ApplyDeveloperEventReport(entry,"wrong",16)!=null||h._eventWorldOpeningSummary!="old"||h.Order.Count!=0)throw new Exception("retired editor intents do not mutate/read/notify");
+  if(!h.SetDeveloperWorldOpeningSummary(" world ",17)||h._eventWorldOpeningSummary!="world")throw new Exception("current world trim");
+  var dictionary=h._eventKingdomOpeningSummaries;h._eventKingdomOpeningSummaries["k"]="value";
+  if(!h.ClearDeveloperOpeningSummaries(17)||!ReferenceEquals(dictionary,h._eventKingdomOpeningSummaries)||dictionary.Count!=0)throw new Exception("clear preserves existing dictionary identity");
+  h.Order.Clear();var projected=new EventRecordEntry{EventId="event",Title="projection"};var result=h.ApplyDeveloperEventTitle(projected," ",17);
+  if(entry.Title!="kind:scope:3"||result.Title!=entry.Title||ReferenceEquals(result,entry)||!h.Order.SequenceEqual(new[]{"state","product","timeline:0"}))throw new Exception("stored lookup/default title/sanitize then product timeline order");
+  h.Order.Clear();var detached=new EventRecordEntry{EventId="not-in-store",Title="fallback",Summary="before"};result=h.ApplyDeveloperEventReport(detached," updated ",17);
+  if(!ReferenceEquals(result,detached)||detached.Summary!="updated"||h._eventRecordEntries.Count!=1||!h.Order.SequenceEqual(new[]{"state","product","timeline:0"}))throw new Exception("original fallback identity without appending phantom record");
+ }

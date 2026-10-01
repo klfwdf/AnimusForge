@@ -386,4 +386,59 @@ internal static class WeeklyEventDataImportOwner
         markOpening();
         currentRecords = restoredRecords;
     }
+
+    internal static void SetWorldOpeningSummary(string input, ref string world, Action markOpening)
+    { world = (input ?? "").Trim(); markOpening(); }
+    internal static void ClearOpeningSummaries(ref string world, ref Dictionary<string,string> kingdoms, Action markOpening)
+    {
+        world = ""; markOpening();
+        if (kingdoms == null) kingdoms = new Dictionary<string,string>(); else kingdoms.Clear();
+    }
+    internal static string GetKingdomOpeningSummary(string kingdomId, Dictionary<string,string> kingdoms)
+    {
+        string id = (kingdomId ?? "").Trim();
+        if (kingdoms == null || string.IsNullOrWhiteSpace(id) || !kingdoms.TryGetValue(id, out var value)) return "";
+        return (value ?? "").Trim();
+    }
+    internal static void SaveKingdomOpeningSummary(string kingdomId, string summary, ref Dictionary<string,string> kingdoms, Action markOpening)
+    {
+        if (kingdoms == null) kingdoms = new Dictionary<string,string>();
+        string id = (kingdomId ?? "").Trim();
+        if (string.IsNullOrWhiteSpace(id)) return;
+        string text = (summary ?? "").Trim();
+        if (string.IsNullOrWhiteSpace(text)) kingdoms.Remove(id); else kingdoms[id] = text;
+        markOpening();
+    }
+    internal static EventRecordEntry ApplyDeveloperEventEdit(EventRecordEntry entry, string input, bool editTitle,
+        ref List<EventRecordEntry> records, Func<string,EventRecordEntry> find, Func<EventRecordEntry,string> productState,
+        Func<EventRecordEntry,string> defaultTitle, Func<List<EventRecordEntry>,List<EventRecordEntry>> sanitize,
+        Action<string,EventRecordEntry> notifyProduct, Action notifyTimeline)
+    {
+        var stored = find(entry.EventId) ?? entry;
+        string previous = productState(stored);
+        if (editTitle)
+        {
+            stored.Title = (input ?? "").Trim();
+            if (string.IsNullOrWhiteSpace(stored.Title)) stored.Title = defaultTitle(stored);
+        }
+        else stored.Summary = (input ?? "").Trim();
+        records = sanitize(records);
+        var updated = find(stored.EventId);
+        notifyProduct(previous, updated);
+        notifyTimeline();
+        return updated ?? entry;
+    }
+    internal static void ResetContainers(ref Dictionary<string,string> kingdoms, ref Dictionary<string,string> kingdomStorage,
+        ref string world, ref List<EventRecordEntry> records, ref string recordsJson)
+    {
+        kingdoms = new Dictionary<string,string>(); kingdomStorage = new Dictionary<string,string>();
+        world = ""; records = new List<EventRecordEntry>(); recordsJson = "[]";
+    }
+    internal static void EnsureContainers(ref Dictionary<string,string> kingdoms, ref Dictionary<string,string> kingdomStorage,
+        ref string world, ref List<EventRecordEntry> records, ref string recordsJson)
+    {
+        kingdoms ??= new Dictionary<string,string>(); kingdomStorage ??= new Dictionary<string,string>();
+        world ??= ""; records ??= new List<EventRecordEntry>(); recordsJson ??= "";
+    }
+
 }
