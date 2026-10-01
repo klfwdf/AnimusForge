@@ -130,6 +130,9 @@ internal sealed class CoupSession
     public bool CustodyCommitted;
     public bool FactsCommitted;
     public bool RebellionQueued;
+    // Old completed sessions do not replay disposition or political effects after update.
+    public bool AftermathPending;
+    public bool AftermathOpened;
     public bool DefectionCommitted;
     public bool WithdrawalCommitted;
     public bool PoliticalCommitStarted;
@@ -171,6 +174,7 @@ internal sealed class CoupSession
 
     internal bool IsValid()
     {
+        if (AftermathPending && (AftermathOpened || Phase != CoupPhase.Completed)) return false;
         if (string.IsNullOrWhiteSpace(Id) || string.IsNullOrWhiteSpace(SettlementId)
             || string.IsNullOrWhiteSpace(KingdomId) || string.IsNullOrWhiteSpace(KingId)
             || string.IsNullOrWhiteSpace(OriginalRulingClanId) || string.IsNullOrWhiteSpace(OriginalOwnerClanId)

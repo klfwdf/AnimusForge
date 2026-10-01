@@ -321,6 +321,18 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 		SettlementEntryTroopSelectionLog.Log("Queued native settlement-taken menu after SETS victory. settlement=" + settlementId + ", survivors=" + (_pendingVictoryMenuEntry.SurvivingRoster?.TotalManCount ?? 0) + ", source=" + _pendingVictoryMenuEntry.Source + ", skipOwnershipTransfer=" + skipOwnershipTransfer + ", ownedIncident=" + setsOwnedIncident + ", killedNotable=" + setsTownRiotKilledNotable);
 	}
 
+	// Called by Coup only after its own political transaction has committed. Do not
+	// re-capture an already transferred town or queue ordinary SETS victory on scene exit.
+	internal static bool TryOpenCoupVictoryMenu(string settlementId, TroopRoster survivors, string source)
+	{
+		if (Mission.Current != null || Game.Current?.GameStateManager?.ActiveState is not MapState
+			|| InformationManager.IsAnyInquiryActive() || PlayerEncounterCompat.HasEncounterBattleContext()) return false;
+		Settlement town = Settlement.Find(settlementId);
+		if (town?.IsTown != true || Clan.PlayerClan == null || town.OwnerClan != Clan.PlayerClan
+			|| MobileParty.MainParty?.CurrentSettlement != town || PlayerEncounter.LocationEncounter?.Settlement != town) return false;
+		return SiegeAiInterventionBehavior.TryOpenSettlementEntryVictoryMenu(town, survivors, source, transferOwnership: false);
+	}
+
 	internal static void QueueVillageVictoryReward(string settlementId, string source)
 	{
 		if (string.IsNullOrWhiteSpace(settlementId))
@@ -7067,7 +7079,9 @@ agent.Controller = AgentControllerType.None;
 			ClearSetsUsableProtectionState("sets_victory");
 			PrepareVictoryExit(source);
 			QueueVictoryPostMissionFlow(source);
-			InformationManager.DisplayMessage(new InformationMessage(SetsSettlementEntryProfile.BuildVictoryMessage(_sceneKind), Color.FromUint(SuccessColor)));
+			InformationManager.DisplayMessage(new InformationMessage(_armedCoup
+				? "【宣权篡位】本场守军已被击溃。继续完成政变目标，夺位结算后进入胜利处置菜单。"
+				: SetsSettlementEntryProfile.BuildVictoryMessage(_sceneKind), Color.FromUint(SuccessColor)));
 			SettlementEntryTroopSelectionLog.Log("Victory reached. settlement=" + _settlementId + ", survivors=" + (_survivingRoster?.TotalManCount ?? 0) + ", source=" + source);
 		}
 

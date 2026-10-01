@@ -26,6 +26,7 @@ internal static class Program
     {
         BattleOptionsRegression();
         EntryRequirementsRegression();
+        LoyalistRegression();
         var session = NewSession();
         session.Troops.Add(Troop("1"));
         Assert(session.IsValid(), "valid mission snapshot");
@@ -118,6 +119,41 @@ internal static class Program
         Assert(!session.IsSettled, "technical stop waits for casualty commit");
         CheckBulletinReport();
         Console.WriteLine("Coup contracts: " + _assertions + " PASS");
+    }
+
+    private static void LoyalistRegression()
+    {
+        Assert(CoupLoyalistPolicy.Opposes(false, 80, 40), "positive relation to new king does not block stronger old allegiance");
+        Assert(!CoupLoyalistPolicy.Opposes(false, 40, 80), "new king preferred remains loyal");
+        Assert(!CoupLoyalistPolicy.Opposes(false, 40, 40), "equal relations do not manufacture opposition");
+        Assert(CoupLoyalistPolicy.Opposes(true, 0, 100), "dispossessed ruling family has its own claim");
+        Assert(CoupLoyalistPolicy.Opposes(false, -10, -50), "relative support also works with negative relations");
+        var candidates = new List<CoupLoyalistCandidate> {
+            new CoupLoyalistCandidate { ClanId = "neutral", RelationToOldKing = 20, RelationToNewKing = 20 },
+            new CoupLoyalistCandidate { ClanId = "b", RelationToOldKing = 60, RelationToNewKing = 30, Fortifications = 3, ClanTier = 5 },
+            new CoupLoyalistCandidate { ClanId = "a", RelationToOldKing = 60, RelationToNewKing = 30, Fortifications = 3, ClanTier = 5 },
+            new CoupLoyalistCandidate { ClanId = "royal", FormerRulingClan = true, RelationToNewKing = 80, Fortifications = 1 }
+        };
+        var ranked = CoupLoyalistPolicy.Rank(candidates);
+        Assert(ranked.Count == 3 && ranked[0].ClanId == "royal", "old royal family leads before stronger supporters");
+        Assert(ranked[1].ClanId == "a" && ranked[2].ClanId == "b", "stable id breaks otherwise identical ties");
+        candidates.RemoveAt(3);
+        Assert(CoupLoyalistPolicy.Rank(candidates)[0].ClanId == "a", "unavailable old royal family permits another supporter to lead");
+        Assert(CoupLoyalistPolicy.Rank(new List<CoupLoyalistCandidate>()).Count == 0, "no physical candidates never invents a rebel");
+        var session = NewSession();
+        Assert(!session.AftermathPending && !session.AftermathOpened, "old session does not auto replay disposition");
+        session.AftermathPending = true;
+        Assert(!session.IsValid(), "street victory cannot request political aftermath");
+        session.Phase = CoupPhase.Completed; session.KingSubdued = true; session.Disposition = CoupKingDisposition.Release;
+        session.CasualtiesCommitted = session.RulingClanCommitted = session.TownCommitted = session.CustodyCommitted
+            = session.FactsCommitted = session.RebellionQueued = true;
+        Assert(session.IsValid(), "fully committed coup may wait for disposition");
+        var restored = Newtonsoft.Json.JsonConvert.DeserializeObject<CoupSession>(Newtonsoft.Json.JsonConvert.SerializeObject(session));
+        Assert(restored.IsValid() && restored.AftermathPending, "pending disposition survives reload");
+        restored.AftermathOpened = true;
+        Assert(!restored.IsValid(), "contradictory pending and opened flags rejected");
+        restored.AftermathPending = false;
+        Assert(restored.IsValid(), "opened receipt terminates pending work");
     }
 
     private static void EntryRequirementsRegression()

@@ -23,6 +23,7 @@ internal static class SettlementEntryTroopSelectionBehavior
     private static Action<Formation, Agent> _markCommandable;
     private static Action<int, string> _interruptSpeech, _cancelSpeech;
     private static Func<bool> _hasBlockingFlow;
+    private static Func<string, TroopRoster, string, bool> _openAftermath;
     private static MethodInfo _queueCoup, _clearCoup, _spawnKing, _countRole, _isArmedLogic;
     private static Type _setsLogicType;
     internal static bool IsAvailable { get; private set; }
@@ -38,6 +39,7 @@ internal static class SettlementEntryTroopSelectionBehavior
         _markCommandable = null;
         _interruptSpeech = _cancelSpeech = null;
         _hasBlockingFlow = null;
+        _openAftermath = null;
         _queueCoup = _clearCoup = _spawnKing = _countRole = _isArmedLogic = null;
         _setsLogicType = null;
     }
@@ -62,6 +64,7 @@ internal static class SettlementEntryTroopSelectionBehavior
                 _cancelSpeech = OptionalSpeechCallback(speech, "CancelAgentSpeechForRemovalExternal");
             }
             _hasBlockingFlow = Bind<Func<bool>>(host, "HasBlockingFlowForCoup");
+            _openAftermath = Bind<Func<string, TroopRoster, string, bool>>(host, "TryOpenCoupVictoryMenu");
             _queueCoup = AccessTools.Method(host, "QueueArmedCoupEntryWithOptions", new[] { typeof(string), typeof(string), typeof(TroopRoster), typeof(List<string[]>), typeof(int), typeof(int), typeof(int), typeof(int) }) ?? throw new MissingMethodException(host.FullName, "QueueArmedCoupEntryWithOptions");
             _clearCoup = AccessTools.Method(host, "ClearArmedCoupEntry") ?? throw new MissingMethodException(host.FullName, "ClearArmedCoupEntry");
             _setsLogicType = host.GetNestedType("SettlementEntryTroopSelectionMissionLogic", BindingFlags.NonPublic) ?? throw new MissingMemberException(host.FullName, "SettlementEntryTroopSelectionMissionLogic");
@@ -153,6 +156,9 @@ internal static class SettlementEntryTroopSelectionBehavior
     }
 
     internal static void ClearArmedCoup() => _clearCoup?.Invoke(null, null);
+
+    internal static bool TryOpenCoupAftermath(string settlementId, TroopRoster survivors, string source)
+        => IsAvailable && _openAftermath != null && _openAftermath(settlementId, survivors, source);
 
     private static MissionBehavior FindSetsLogic(Mission mission)
     {
