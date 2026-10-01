@@ -16,6 +16,17 @@ python -B tests/modules/AF.Module.Conversation/ScenePostprocessParityTests/run_g
 
 The red baseline command intentionally exits 1. Output uses a fresh repository-local `artifacts/tests/scene-request-lifetime/` directory; `--run-root` selects a new explicit directory; no source checkout or game deployment is performed. `--dotnet` overrides the local SDK executable.
 
+## Deferred request cancellation
+
+```powershell
+python -B tests/modules/AF.Module.Conversation/SceneRequestLifetimeRegressionTests/run_deferred_cancellation.py
+python -B tests/modules/AF.Module.Conversation/SceneRequestLifetimeRegressionTests/run_deferred_cancellation.py --mutate deadline-does-not-cancel
+python -B tests/modules/AF.Module.Conversation/SceneRequestLifetimeRegressionTests/run_deferred_cancellation.py --mutate scope-does-not-bind
+python -B tests/modules/AF.Module.Conversation/SceneRequestLifetimeRegressionTests/run_deferred_cancellation.py --mutate identity-ignores-cancel
+```
+
+The current case must exit 0; each mutation must compile and exit 1 at its named assertion. Deadline and scope mutations reject `scene-deferred-deadline-aborts-actual-request`; the identity mutation rejects `scene-deferred-canceled-result-no-commit`. The fixture extracts the actual deadline, current-request predicate, transport scope, blocking request seam and cleanup. It runs production lifetime/transport sources with an in-memory sender, not a real provider. Deadline and owner retirement both abort the request and prevent the commit sentinel; downstream game actions are **NOT-RUN**. Each fresh output directory contains `run.log` and `result.json` with source/harness hashes, compilation presence and exit code. `--run-root` must name a new repository-local directory.
+
 ## Evidence and scope
 
 - Current: 30 runtime cases, including a 20 m framed target, exact framed audience, live agent identity replacement, mission / generation / session / player / newer input rejection, one-shot replay before and after gate completion, and main-thread resume.
