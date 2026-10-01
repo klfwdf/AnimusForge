@@ -97,4 +97,8 @@ internal sealed class CampaignMaterialRecordOwner
 		}
 		return list.OrderBy((EventSourceMaterialEntry x) => x.Day).ThenBy((EventSourceMaterialEntry x) => (x.Sequence > 0) ? x.Sequence : int.MaxValue).ThenBy((EventSourceMaterialEntry x) => x.Label ?? "", StringComparer.OrdinalIgnoreCase).ToList();
 	}
+
+    internal void ResetMaterials() => Materials = new List<EventSourceMaterialEntry>();
+    internal void EnsureMaterials() => Materials ??= new List<EventSourceMaterialEntry>();
+
 }

@@ -298,4 +298,38 @@ public partial class MyBehavior
         if (!string.Equals(previousWorldWeeklyProductsFingerprint, BuildPublishedWorldWeeklyProductsFingerprint(), StringComparison.Ordinal))
             Interlocked.Increment(ref _publishedWorldWeeklyHistoryRevision);
     }
+
+    private bool SetDeveloperWorldOpeningSummary(string input, long generation)
+    {
+        if (!IsMemorySourceEditorCurrent(generation)) return false;
+        WeeklyEventDataImportOwner.SetWorldOpeningSummary(input, ref _eventWorldOpeningSummary, _weeklyReportMaterialRevisions.MarkOpening);
+        return true;
+    }
+    private bool ClearDeveloperOpeningSummaries(long generation)
+    {
+        if (!IsMemorySourceEditorCurrent(generation)) return false;
+        WeeklyEventDataImportOwner.ClearOpeningSummaries(ref _eventWorldOpeningSummary, ref _eventKingdomOpeningSummaries, _weeklyReportMaterialRevisions.MarkOpening);
+        return true;
+    }
+    private EventRecordEntry ApplyDeveloperEventTitle(EventRecordEntry entry, string input, long generation)
+        => ApplyDeveloperEventEdit(entry, input, true, generation);
+    private EventRecordEntry ApplyDeveloperEventReport(EventRecordEntry entry, string input, long generation)
+        => ApplyDeveloperEventEdit(entry, input, false, generation);
+    private EventRecordEntry ApplyDeveloperEventEdit(EventRecordEntry entry, string input, bool editTitle, long generation)
+    {
+        if (entry == null || !IsMemorySourceEditorCurrent(generation)) return null;
+        return WeeklyEventDataImportOwner.ApplyDeveloperEventEdit(entry, input, editTitle, ref _eventRecordEntries,
+            FindWeeklyReportRecordById, BuildPublishedWorldWeeklyProductState,
+            stored => BuildDefaultWeeklyReportTitle(new WeeklyEventMaterialPreviewGroup { GroupKind = stored.EventKind,
+                KingdomId = stored.ScopeKingdomId }, stored.WeekIndex), SanitizeEventRecordEntries,
+            NotifyPublishedWorldWeeklyProductChanged, NotifyWorldMessageWeeklyTimelineChanged);
+    }
+
+
+    private void ResetNpcActionRecordContainers()
+        => NpcActionRecordOwner.ResetContainers(ref _memoryBusinessState.MajorActions, ref _memoryBusinessState.MajorActionStorage,
+            ref _memoryBusinessState.RecentActions, ref _memoryBusinessState.RecentActionStorage);
+    private void EnsureNpcActionRecordContainers()
+        => NpcActionRecordOwner.EnsureContainers(ref _memoryBusinessState.MajorActions, ref _memoryBusinessState.MajorActionStorage,
+            ref _memoryBusinessState.RecentActions, ref _memoryBusinessState.RecentActionStorage);
 }

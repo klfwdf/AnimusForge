@@ -14872,22 +14872,7 @@ TeamModuleServices.CivilWar.AdvanceWeek(devEditableKingdom, weekIndex, GetKingdo
 		{
 			_npcMajorActionSummaryQueueJsonStorage = "";
 		}
-		if (_npcMajorActions == null)
-		{
-			_npcMajorActions = new Dictionary<string, List<NpcActionEntry>>();
-		}
-		if (_npcMajorActionStorage == null)
-		{
-			_npcMajorActionStorage = new Dictionary<string, string>();
-		}
-		if (_npcRecentActions == null)
-		{
-			_npcRecentActions = new Dictionary<string, List<NpcActionEntry>>();
-		}
-		if (_npcRecentActionStorage == null)
-		{
-			_npcRecentActionStorage = new Dictionary<string, string>();
-		}
+		EnsureNpcActionRecordContainers();
 		if (_npcActionGlobalOrderCounter < 0)
 		{
 			_npcActionGlobalOrderCounter = 0;
@@ -14900,30 +14885,9 @@ TeamModuleServices.CivilWar.AdvanceWeek(devEditableKingdom, weekIndex, GetKingdo
 		{
 			_npcPersonaProfileStorage = new Dictionary<string, string>();
 		}
-		if (_eventKingdomOpeningSummaries == null)
-		{
-			_eventKingdomOpeningSummaries = new Dictionary<string, string>();
-		}
-		if (_eventKingdomOpeningSummaryStorage == null)
-		{
-			_eventKingdomOpeningSummaryStorage = new Dictionary<string, string>();
-		}
-		if (_eventWorldOpeningSummary == null)
-		{
-			_eventWorldOpeningSummary = "";
-		}
-		if (_eventRecordEntries == null)
-		{
-			_eventRecordEntries = new List<EventRecordEntry>();
-		}
-		if (_eventRecordJsonStorage == null)
-		{
-			_eventRecordJsonStorage = "";
-		}
-		if (_eventSourceMaterials == null)
-		{
-			_eventSourceMaterials = new List<EventSourceMaterialEntry>();
-		}
+		WeeklyEventDataImportOwner.EnsureContainers(ref _eventKingdomOpeningSummaries, ref _eventKingdomOpeningSummaryStorage,
+            ref _eventWorldOpeningSummary, ref _eventRecordEntries, ref _eventRecordJsonStorage);
+		_campaignMaterialRecords.EnsureMaterials();
 		if (_eventSourceMaterialJsonStorage == null)
 		{
 			_eventSourceMaterialJsonStorage = "";
@@ -27261,49 +27225,14 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 	}
 
 	private string GetKingdomOpeningSummary(Kingdom kingdom)
-	{
-		if (kingdom == null || _eventKingdomOpeningSummaries == null)
-		{
-			return "";
-		}
-		string text = (kingdom.StringId ?? "").Trim();
-		if (string.IsNullOrWhiteSpace(text))
-		{
-			return "";
-		}
-		if (!_eventKingdomOpeningSummaries.TryGetValue(text, out var value))
-		{
-			return "";
-		}
-		return (value ?? "").Trim();
-	}
+        => kingdom == null ? "" : WeeklyEventDataImportOwner.GetKingdomOpeningSummary(kingdom.StringId, _eventKingdomOpeningSummaries);
 
 	private void SaveKingdomOpeningSummary(Kingdom kingdom, string summary)
-	{
-		if (kingdom == null)
-		{
-			return;
-		}
-		if (_eventKingdomOpeningSummaries == null)
-		{
-			_eventKingdomOpeningSummaries = new Dictionary<string, string>();
-		}
-		string text = (kingdom.StringId ?? "").Trim();
-		if (string.IsNullOrWhiteSpace(text))
-		{
-			return;
-		}
-		string text2 = (summary ?? "").Trim();
-		if (string.IsNullOrWhiteSpace(text2))
-		{
-			_eventKingdomOpeningSummaries.Remove(text);
-		}
-		else
-		{
-			_eventKingdomOpeningSummaries[text] = text2;
-		}
-		_weeklyReportMaterialRevisions.MarkOpening();
-	}
+    {
+        if (kingdom == null) return;
+        WeeklyEventDataImportOwner.SaveKingdomOpeningSummary(kingdom.StringId, summary, ref _eventKingdomOpeningSummaries,
+            _weeklyReportMaterialRevisions.MarkOpening);
+    }
 
 	private static Kingdom FindKingdomById(string kingdomId)
 	{
@@ -33074,19 +33003,13 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 		_npcMajorActionSummaryStorage = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 		_npcMajorActionSummaryQueue = new List<MajorActionSummaryJob>();
 		_npcMajorActionSummaryQueueJsonStorage = "[]";
-		_npcMajorActions = new Dictionary<string, List<NpcActionEntry>>();
-		_npcMajorActionStorage = new Dictionary<string, string>();
-		_npcRecentActions = new Dictionary<string, List<NpcActionEntry>>();
-		_npcRecentActionStorage = new Dictionary<string, string>();
+		ResetNpcActionRecordContainers();
 		_npcActionGlobalOrderCounter = 0;
 		_npcPersonaProfiles = new Dictionary<string, NpcPersonaProfile>();
 		_npcPersonaProfileStorage = new Dictionary<string, string>();
-		_eventKingdomOpeningSummaries = new Dictionary<string, string>();
-		_eventKingdomOpeningSummaryStorage = new Dictionary<string, string>();
-		_eventWorldOpeningSummary = "";
-		_eventRecordEntries = new List<EventRecordEntry>();
-		_eventRecordJsonStorage = "[]";
-		_eventSourceMaterials = new List<EventSourceMaterialEntry>();
+		WeeklyEventDataImportOwner.ResetContainers(ref _eventKingdomOpeningSummaries, ref _eventKingdomOpeningSummaryStorage,
+            ref _eventWorldOpeningSummary, ref _eventRecordEntries, ref _eventRecordJsonStorage);
+		_campaignMaterialRecords.ResetMaterials();
 		_eventSourceMaterialJsonStorage = "[]";
 		_weeklyReportMaterialRevisions.MarkAll();
 		_weeklyReportMaterialRevisions.MarkOpening();

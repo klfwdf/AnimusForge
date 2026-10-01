@@ -162,3 +162,26 @@ Require(MyBehavior.PrepareWeeklyActionOutcomeForExternal(prepareGateCandidate,fa
 prepareGateOwner.FixtureSubjectUnavailable=true;
 Require(MyBehavior.PrepareWeeklyActionOutcomeForExternal(prepareGateCandidate,false,"NPC")==WeeklyMemoryMaterialOutcomeOperationStatus.Duplicate && prepareGateOwner.FixtureBuildCalls==1, "actual host duplicate identity probe before unavailable subject or valuation");
 Console.WriteLine("PASS actual owner-confirmed Prepare gate: receipt identity probe precedes live capture/value rebuild");
+
+new MyBehavior().VerifyActualRecordContainerAdapter();
+RecordResetTerminalCases.Run();
+static class RecordResetTerminalCases
+{
+    internal static void Run()
+    {
+        var major=new Dictionary<string,List<NpcActionEntry>>();var recent=new Dictionary<string,List<NpcActionEntry>>();
+        var majorStorage=new Dictionary<string,string>();var recentStorage=new Dictionary<string,string>();
+        var kept=major;NpcActionRecordOwner.EnsureContainers(ref major,ref majorStorage,ref recent,ref recentStorage);
+        if(!ReferenceEquals(major,kept))throw new Exception("NPC ensure existing identity");
+        NpcActionRecordOwner.ResetContainers(ref major,ref majorStorage,ref recent,ref recentStorage);
+        if(ReferenceEquals(major,kept)||major.Count!=0||recent.Count!=0||!major.Comparer.Equals(EqualityComparer<string>.Default))throw new Exception("NPC reset exact default comparer/new identity");
+        major=null;majorStorage=null;recent=null;recentStorage=null;
+        NpcActionRecordOwner.EnsureContainers(ref major,ref majorStorage,ref recent,ref recentStorage);
+        if(major==null||recent==null||majorStorage==null||recentStorage==null)throw new Exception("NPC ensure null containers");
+        var materials=new CampaignMaterialRecordOwner();var index=materials.Index;var binding=materials.Binding;var old=materials.Materials;
+        materials.ResetMaterials();materials.EnsureMaterials();
+        if(ReferenceEquals(old,materials.Materials)||!ReferenceEquals(index,materials.Index)||!ReferenceEquals(binding,materials.Binding))throw new Exception("material reset only source; original derived rebuild timing preserved");
+        materials.Materials=null;materials.EnsureMaterials();if(materials.Materials==null)throw new Exception("material ensure");
+        Console.WriteLine("PASS actual record reset/ensure capabilities: original comparer/container identity/derived-index-later timing CLEAR=NOT_RUN");
+    }
+}

@@ -65,3 +65,20 @@ WeeklyEventDataImportOwner.RestoreOpeningAndRecords(null,inputDict,inputList,ref
 Check(restoredWorld==""&&restoredDict.Count==1&&restoredDict["K"]==""&&restoredDict.Comparer.Equals(StringComparer.OrdinalIgnoreCase)&&!ReferenceEquals(restoredDict,inputDict)&&ReferenceEquals(restoredList,inputList)&&inputList[0].Title==" untrimmed "&&restoreMarks==1,"typed restore exact comparer/null/assignment identity/no sanitize");
 MyBehavior.VerifyWeeklyRestore();
 Console.WriteLine("PASS actual Weekly restore: mark-before-records/OrdinalIgnoreCase/new-dictionary/reference records/fingerprint-difference-only revision LIVE=NOT_RUN SAVE=NOT_RUN");
+
+MyBehavior.VerifyDeveloperEdits();
+var opening=new Dictionary<string,string>(StringComparer.OrdinalIgnoreCase);int editMarks=0;
+WeeklyEventDataImportOwner.SaveKingdomOpeningSummary(" K "," text ",ref opening,()=>editMarks++);
+Check(WeeklyEventDataImportOwner.GetKingdomOpeningSummary("k",opening)=="text"&&editMarks==1,"opening getter respects original dictionary comparer");
+WeeklyEventDataImportOwner.SaveKingdomOpeningSummary("K",null,ref opening,()=>editMarks++);
+Check(opening.Count==0&&editMarks==2,"blank kingdom summary removes and marks");
+opening=null;WeeklyEventDataImportOwner.SaveKingdomOpeningSummary(" ","ignored",ref opening,()=>editMarks++);
+Check(opening!=null&&editMarks==2,"blank kingdom ID still initializes dictionary but no mark");
+string openingWorld=null,openingJson=null;Dictionary<string,string> openingStorage=null;List<Entry> openingRecords=null;
+WeeklyEventDataImportOwner.EnsureContainers(ref opening,ref openingStorage,ref openingWorld,ref openingRecords,ref openingJson);
+var keptOpening=opening;var keptRecords=openingRecords;openingJson="kept";
+WeeklyEventDataImportOwner.EnsureContainers(ref opening,ref openingStorage,ref openingWorld,ref openingRecords,ref openingJson);
+Check(ReferenceEquals(keptOpening,opening)&&ReferenceEquals(keptRecords,openingRecords)&&openingJson=="kept","ensure preserves populated containers/storage");
+WeeklyEventDataImportOwner.ResetContainers(ref opening,ref openingStorage,ref openingWorld,ref openingRecords,ref openingJson);
+Check(!ReferenceEquals(keptOpening,opening)&&!ReferenceEquals(keptRecords,openingRecords)&&openingJson=="[]"&&openingWorld==""&&opening.Comparer.Equals(EqualityComparer<string>.Default),"reset exact default comparer/new references/json");
+Console.WriteLine("PASS actual Weekly developer edit intents: retired guard/stored-fallback/defaulttitle/sanitize/product-timeline-order/kingdom-summary/reset/ensure LIVE=NOT_RUN CLEAR=NOT_RUN");
