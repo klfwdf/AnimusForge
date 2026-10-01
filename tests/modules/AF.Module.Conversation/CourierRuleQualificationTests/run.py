@@ -21,7 +21,7 @@ parser.add_argument("--mutate", choices=["no-trim"])
 args = parser.parse_args()
 shout = (ROOT / "src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.cs").read_text(encoding="utf-8-sig")
 courier = (ROOT / "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.cs").read_text(encoding="utf-8-sig")
-predicate = extract.declaration(shout, "private static bool HasPreprocessRuleHit(")
+predicate = extract.declaration(shout, "internal static bool HasPreprocessRuleHit(")
 owner = extract.declaration((ROOT/"src/modules/AF.Module.Conversation/Internal/Postprocess/ConversationActionPostprocessOwner.cs").read_text(encoding="utf-8-sig"),"internal static bool HasPreprocessRuleHit(")
 seam = extract.declaration(shout, "internal static bool HasPreprocessRuleHitForExternal(")
 assert "private static bool HasPreprocessRuleHit(" not in courier

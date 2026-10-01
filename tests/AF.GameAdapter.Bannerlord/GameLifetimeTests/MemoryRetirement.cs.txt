@@ -31,3 +31,5 @@ internal static class Program {
   Console.WriteLine($"MemoryRetirement checks={checks} failures=0; actual My dispatcher/retirement/host binding; Campaign and reset hook fixture.");
  }catch(Exception e){Console.WriteLine(e);Environment.ExitCode=1;} }
 }
+
+namespace AnimusForge { internal static class CourierDeliveryBehavior { internal static void ResetTransientRuntimeForLoadedSaveExternal(string reason) { } } }

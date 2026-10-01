@@ -32,7 +32,11 @@ static class Program {
     internal static TaskCompletionSource<bool> LateChunk;
     static int checks;
     static void Check(bool value,string name){checks++;if(!value)throw new Exception("ASSERT "+name);}
-    static async Task Main() {
+    static async Task<int> Main() {
+        try { await MainChecks(); return 0; }
+        catch(Exception ex) { Console.Error.WriteLine(ex); return 1; }
+    }
+    static async Task MainChecks() {
         CancellationToken observed=default;
         Send=async(_,token)=>{observed=token;await Task.Delay(Timeout.Infinite,token);return null;};
         Task<string> timeout=CallNativeConversationApiAsync(new(),null);

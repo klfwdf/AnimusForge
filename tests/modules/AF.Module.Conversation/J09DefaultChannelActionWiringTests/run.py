@@ -1,5 +1,11 @@
 """Audit the three default channel action tails against the J09 shared boundary."""
 from pathlib import Path
+import sys as _legacy_sys
+from pathlib import Path as _LegacyPath
+_legacy_sys.path.insert(0, str(_LegacyPath(__file__).resolve().parents[4] / "tests"))
+from af2_terminal_migration_review import historical_source
+# Explicit legacy oracle; current owner build/replay inputs are not projected.
+AF2_FIXTURE_METADATA = {'sourceClass': 'legacy-oracle-extraction', 'terminalBindingAndExactInverseRequired': True, 'currentOwnerReplayProjected': False}
 import argparse
 import importlib.util
 
@@ -27,9 +33,9 @@ def ordered(text, *markers):
 
 
 def main():
-    shout = (ROOT / "src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.cs").read_text(encoding="utf-8-sig")
-    native = (ROOT / "src/modules/AF.Module.Conversation/Channels/Native/ShoutBehavior.NativeActionCommit.cs").read_text(encoding="utf-8-sig")
-    scene = (ROOT / "src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.ScenePostprocess.cs").read_text(encoding="utf-8-sig")
+    shout = historical_source('src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.cs')
+    native = historical_source('src/modules/AF.Module.Conversation/Channels/Native/ShoutBehavior.NativeActionCommit.cs')
+    scene = historical_source('src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.ScenePostprocess.cs')
     courier = extractor.courier_source(None)
     courier_dispatch = (ROOT / "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.CommitDispatch.cs").read_text(
         encoding="utf-8-sig")

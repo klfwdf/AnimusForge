@@ -50,10 +50,15 @@ def restore_request_lifetime(path,source):
         source=source.replace(after,before,1)
     return source
 
+from af2_terminal_migration_review import terminal_review
+
+@terminal_review
 def restore(path,source):
     return restore_packet(REVIEW,path,restore_claim(path,restore_request_lifetime(path,source)))
+@terminal_review
 def restore_claim(path,source):
     return restore_packet(CLAIM_REVIEW,path,restore_main_reply(path,source))
+@terminal_review
 def restore_main_reply(path,source):
     for file, digest in MAIN_REPLY_REVIEW.get('addedFiles',{}).items():
         assert hashlib.sha256(restore_request_lifetime(file,(current_source_path(ROOT, file)).read_text(encoding='utf-8-sig')).encode()).hexdigest()==digest, 'Unreviewed main-reply dependency: '+file
@@ -88,6 +93,7 @@ def restore_accepted_reply(path,source):
         assert source.count(block)==1, 'Unreviewed accepted-reply drift: '+path
         source=source.replace(block,'')
     return source
+@terminal_review
 def restore_observation(path,source):
     source=restore_accepted_reply(path,source)
     if path == "ShoutBehavior.cs":

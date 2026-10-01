@@ -1,5 +1,11 @@
 """Execute the real deferred postprocess Queue against a physical-main-thread scheduler fixture."""
 import argparse
+import sys as _legacy_sys
+from pathlib import Path as _LegacyPath
+_legacy_sys.path.insert(0, str(_LegacyPath(__file__).resolve().parents[4] / "tests"))
+from af2_terminal_migration_review import historical_source
+# Explicit legacy oracle; current owner build/replay inputs are not projected.
+AF2_FIXTURE_METADATA = {'sourceClass': 'legacy-oracle-extraction', 'terminalBindingAndExactInverseRequired': True, 'currentOwnerReplayProjected': False}
 import hashlib
 import os
 from pathlib import Path
@@ -34,7 +40,7 @@ def main():
         except (FileNotFoundError,subprocess.CalledProcessError): source=run.extractor.source('ShoutBehavior.ScenePostprocess.cs',args.source_ref)
         try: shared=run.extractor.source(shared_path,args.source_ref)
         except (FileNotFoundError,subprocess.CalledProcessError): shared=source
-    else: source=run.extractor.source(scene_path,None)
+    else: source=historical_source(scene_path)
     if not args.source_ref:
         shared=run.owner_phase_source()
     snippets={

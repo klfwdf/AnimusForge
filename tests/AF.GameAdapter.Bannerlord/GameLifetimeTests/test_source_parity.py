@@ -10,6 +10,9 @@ INVERSE = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(INVERSE)
 
 
+from af2_terminal_migration_review import historical_test_case
+
+@historical_test_case
 class SourceInverseTests(unittest.TestCase):
     def setUp(self):
         self.source = (ROOT / "src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.cs").read_text(encoding="utf-8-sig")

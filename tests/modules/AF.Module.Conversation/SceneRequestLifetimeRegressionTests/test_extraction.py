@@ -3,6 +3,9 @@ import unittest
 import run
 
 
+from af2_terminal_migration_review import historical_test_case
+
+@historical_test_case
 class ExtractionTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):

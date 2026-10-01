@@ -7,6 +7,9 @@ spec=importlib.util.spec_from_file_location('extract',ROOT/'tests/modules/AF.Mod
 import sys
 sys.path.insert(0,str(ROOT/'tests/modules/AF.Module.Conversation/NativeConversationAdmissionTests'))
 from turn_extraction import projected_source
+from af2_terminal_migration_review import historical_test_case
+
+@historical_test_case
 class RawPresentationSourceTests(unittest.TestCase):
     def test_full_source_and_observer_body_preserved(self):
         s=(ROOT/'src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.cs').read_text(encoding='utf-8-sig');old=subprocess.check_output(['git','show','00574541:ShoutBehavior.cs'],cwd=ROOT).decode('utf-8-sig').replace('\r\n','\n')

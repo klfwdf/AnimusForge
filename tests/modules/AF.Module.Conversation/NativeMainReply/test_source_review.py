@@ -7,6 +7,9 @@ spec=importlib.util.spec_from_file_location('inverse',ROOT/'tests/modules/AF.Mod
 import sys
 sys.path.insert(0,str(ROOT/'tests/modules/AF.Module.Conversation/NativeConversationAdmissionTests'))
 from turn_extraction import projected_source
+from af2_terminal_migration_review import historical_test_case
+
+@historical_test_case
 class MainReplySourceTests(unittest.TestCase):
     def test_full_source_restores_to_previous_candidate(self):
         live=(ROOT/'src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.cs').read_text(encoding='utf-8-sig')

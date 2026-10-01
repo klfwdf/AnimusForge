@@ -1,4 +1,10 @@
 from pathlib import Path
+import sys as _legacy_sys
+from pathlib import Path as _LegacyPath
+_legacy_sys.path.insert(0, str(_LegacyPath(__file__).resolve().parents[4] / "tests"))
+from af2_terminal_migration_review import historical_source
+# Explicit legacy oracle; current owner build/replay inputs are not projected.
+AF2_FIXTURE_METADATA = {'sourceClass': 'legacy-oracle-extraction', 'terminalBindingAndExactInverseRequired': True, 'currentOwnerReplayProjected': False}
 import argparse,hashlib,importlib.util,os,re,subprocess,sys
 sys.stdout.reconfigure(encoding='utf-8')
 ROOT=Path(__file__).resolve().parents[4];HERE=Path(__file__).resolve().parent
@@ -10,7 +16,7 @@ def main():
  p=argparse.ArgumentParser();p.add_argument('--source-ref');p.add_argument('--output-name',default='current');p.add_argument('--dotnet',default=None);p.add_argument('--mutation',choices=['omit-completion-check','omit-final-check']);p.add_argument('--run-root',type=Path);a=p.parse_args();a.dotnet=str(resolve_dotnet(ROOT,a.dotnet))
  if not re.fullmatch(r'[A-Za-z0-9_-]+',a.output_name):p.error('invalid output name')
  spec=importlib.util.spec_from_file_location('ex',ROOT/'tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py');ex=importlib.util.module_from_spec(spec);spec.loader.exec_module(ex)
- scene=ex.source('ShoutBehavior.cs',None);owner=ex.source('src/modules/AF.Module.Conversation/Channels/Scene/ScenePlayerShoutRequestOwner.cs',None);compat=ex.source(COMPAT,None);v2=ex.source(V2,a.source_ref)
+ scene=historical_source('ShoutBehavior.cs');owner=historical_source('src/modules/AF.Module.Conversation/Channels/Scene/ScenePlayerShoutRequestOwner.cs');compat=ex.source(COMPAT,None);v2=ex.source(V2,a.source_ref)
  scene_types='\n'.join(ex.declaration(owner,sig) for sig in ['internal sealed class ShoutTargetingContext','internal sealed class ScenePlayerShoutRequest','internal sealed class ScenePlayerShoutContext','internal sealed class ScenePlayerShoutRequestOwner'])
  h='\n'.join(ex.declaration(scene,sig) for sig in ['internal object CaptureScenePlayerShoutRequestForReplay(','private ScenePlayerShoutRequest CaptureScenePlayerShoutRequest(','private bool IsScenePlayerShoutRequestCurrent(','internal bool IsCapturedScenePlayerShoutRequestCurrent('])
  c='\n'.join(ex.declaration(compat,sig) for sig in ['private static void BindOptionalCapturedPlayerShoutMethods(','internal static bool IsCapturedPlayerShoutCurrent('])

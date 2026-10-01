@@ -18,7 +18,7 @@ parser.add_argument('--mutate', choices=['drop-timeout-token', 'drop-stream-call
 args = parser.parse_args()
 out = new_run_root(ROOT, 'native-transport-lifetime', args.run_root)
 source = (ROOT / 'src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.cs').read_text(encoding='utf-8-sig')
-method = extract.declaration(source, 'private static async Task<string> CallNativeConversationApiAsync(')
+method = extract.declaration(source, 'internal static async Task<string> CallNativeConversationApiAsync(')
 if args.mutate == 'drop-timeout-token':
     method = method.replace('cancellationToken: requestTimeout.Token', 'cancellationToken: CancellationToken.None')
 elif args.mutate == 'drop-stream-caller':

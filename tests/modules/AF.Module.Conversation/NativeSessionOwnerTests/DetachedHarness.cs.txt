@@ -42,6 +42,11 @@ namespace AnimusForge {
   internal static int Prepared,Normalized;
   internal static List<string> PreparedHits;
   internal static readonly ConcurrentQueue<Action> Queue=new();
+  private readonly FixtureSceneMovement _sceneMovement=new();
+  private sealed class FixtureSceneMovement {
+   internal List<SceneSummonPromptTarget> BuildSceneSummonPromptTargets(List<NpcDataPacket> n,Dictionary<int,Hero> h){Program.MainOnly();return new();}
+   internal List<SceneGuidePromptTarget> BuildSceneGuidePromptTargets(TaleWorlds.MountAndBlade.Agent agent,int index){Program.MainOnly();return new();}
+  }
   internal static LegacyInteractionPipelinePorts Ports()=>CreateNativeConversationDetachedPortsCore(new[]{"ACTION:GIVE_GOLD","ACTION:MOOD"},12,64);
   private static bool TryResolveNativeConversationTarget(out Hero hero,out CharacterObject character,out string name){Program.MainOnly();hero=Target;character=Character;name="NPC";return Available;}
   private static int TryResolveNativeConversationAgentIndex(Hero h,CharacterObject c){Program.MainOnly();return -1;}

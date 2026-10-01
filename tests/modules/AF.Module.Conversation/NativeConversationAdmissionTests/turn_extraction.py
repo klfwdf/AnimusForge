@@ -62,7 +62,11 @@ def reviewed_turn_source(file):
             raise
         raise AssertionError('Unreviewed J07b source drift: turn dependency ' + file) from error
 
+from af2_terminal_migration_review import historical_fixture, restore as terminal_restore
+
+@historical_fixture
 def projected_source(source):
+    source = terminal_restore("ShoutBehavior.cs", source)
     source = exact_inverse("ShoutBehavior.cs", source)
     source = restore_remote_feature_delta("ShoutBehavior.cs", source)
     original = subprocess.check_output(['git','show',REVIEW['baseline']+':ShoutBehavior.cs'],cwd=ROOT).decode('utf-8-sig').replace('\r\n','\n')

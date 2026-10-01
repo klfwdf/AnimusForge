@@ -1,4 +1,10 @@
 from pathlib import Path
+import sys as _legacy_sys
+from pathlib import Path as _LegacyPath
+_legacy_sys.path.insert(0, str(_LegacyPath(__file__).resolve().parents[4] / "tests"))
+from af2_terminal_migration_review import historical_source
+# Explicit legacy oracle; current owner build/replay inputs are not projected.
+AF2_FIXTURE_METADATA = {'sourceClass': 'legacy-oracle-extraction', 'terminalBindingAndExactInverseRequired': True, 'currentOwnerReplayProjected': False}
 import argparse, importlib.util, os, re
 ROOT=Path(__file__).resolve().parents[4];HERE=Path(__file__).parent
 import sys
@@ -13,7 +19,7 @@ def load(n,p):
  sp=importlib.util.spec_from_file_location(n,p);m=importlib.util.module_from_spec(sp);sp.loader.exec_module(m);return m
 ex=load('ex',ROOT/'tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py');util=load('util',ROOT/'tests/AF.Contracts/ModuleFrameworkApiTests/run.py')
 inverse=load('liveness_inverse',HERE/'liveness_review.py')
-def source(path):return inverse.old_source(path) if a.old else (current_source_path(ROOT, path)).read_text(encoding='utf-8-sig')
+def source(path):return inverse.old_source(path) if a.old else historical_source(path)
 courier=source('CourierDeliveryBehavior.cs') if a.old else ex.courier_source(None);partial=source('src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.PromptPreparation.cs')
 phase=ex.declaration((ROOT/'src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.DetachedPostprocess.cs').read_text(encoding='utf-8-sig'),'private async Task<T> RunCourierOwnerPhaseAsync<T>(').replace('Task.Delay(30000)','Task.Delay(180)')
 base=(HERE/'Harness.cs.txt').read_text(encoding='utf-8-sig').split('internal static class Program {')[0]
@@ -67,7 +73,7 @@ hooks=(HERE/'LivenessHooks.cs.txt').read_text(encoding='utf-8-sig').replace('@@M
 if a.output_name and a.run_root:p.error('Use either --output-name or --run-root')
 out=new_run_root(ROOT,'courier-prompt-liveness',a.run_root or (HERE/'.generated'/a.output_name if a.output_name else None))
 (out/'NuGet.Config').write_text('<configuration><packageSources><clear /></packageSources></configuration>')
-(out/'Prompt.cs').write_text(partial,encoding='utf-8');(out/'Schedule.cs').write_text((ROOT/'src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.PromptSchedule.cs').read_text(encoding='utf-8-sig'),encoding='utf-8');(out/'Host.cs').write_text('#define LIVENESS\n'+base,encoding='utf-8');(out/'Hooks.cs').write_text(hooks,encoding='utf-8')
+(out/'Prompt.cs').write_text(partial,encoding='utf-8');(out/'Schedule.cs').write_text(historical_source('src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.PromptSchedule.cs'),encoding='utf-8');(out/'Host.cs').write_text('#define LIVENESS\n'+base,encoding='utf-8');(out/'Hooks.cs').write_text(hooks,encoding='utf-8')
 (out/'Program.cs').write_text((HERE/'LivenessCases.cs.txt').read_text(encoding='utf-8-sig'),encoding='utf-8')
 files=[out/'Prompt.cs',out/'Host.cs',out/'Hooks.cs',out/'Program.cs',ROOT/'src/AF.Foundation.Runtime/Scheduling/PendingOperationRegistry.cs',ROOT/'src/modules/AF.Module.Prompt/Composition/PromptExtrasComposer.cs',ROOT/'src/modules/AF.Module.Prompt/Composition/ConversationRoleClassificationOwner.cs',ROOT/'src/modules/AF.Module.Prompt/Composition/MainPromptMessageAssemblyOwner.cs',ROOT/'src/modules/AF.Module.Conversation/Internal/ConversationRequestLifetime.cs',ROOT/'src/modules/AF.Module.Conversation/Internal/InteractionRequestLease.cs']
 if not a.old:files.append(out/'Schedule.cs')

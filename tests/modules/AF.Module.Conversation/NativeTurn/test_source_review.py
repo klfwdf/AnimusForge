@@ -9,6 +9,9 @@ from output_isolation import current_source_path
 spec=importlib.util.spec_from_file_location('turn',ROOT/'tests/modules/AF.Module.Conversation/NativeConversationAdmissionTests/turn_extraction.py')
 turn=importlib.util.module_from_spec(spec);spec.loader.exec_module(turn)
 
+from af2_terminal_migration_review import historical_test_case
+
+@historical_test_case
 class TurnSourceTests(unittest.TestCase):
     def test_complete_algorithm_and_surroundings(self):
         turn.projected_source((ROOT/'src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.cs').read_text(encoding='utf-8-sig'))

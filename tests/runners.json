@@ -69,7 +69,8 @@
    ]
   },
   "tests/bridges/TeamModulePortParityTests/run.py": {
-   "expect": "PREEXISTING_FAIL"
+   "expect": "PREEXISTING_FAIL",
+   "note": "Historical protocol/UI oracle with unchanged assertions and review hashes; mandatory fixed inverse binds current owners/consumers. Not whole current channel execution acceptance; separate actual lifecycle owners cover mapped risks."
   },
   "tests/content/J15ContentContractTests/GcczLoaderHarness.csproj": {
    "args": [
@@ -82,7 +83,8 @@
    "args": [
     "--run-root",
     "{ROOT}/artifacts/j-history-20261001/p6/{RUN}/BattleSpeechCapturedTriggerRegressionTests"
-   ]
+   ],
+   "note": "Historical protocol/UI oracle with unchanged assertions and review hashes; mandatory fixed inverse binds current owners/consumers. Not whole current channel execution acceptance; separate actual lifecycle owners cover mapped risks."
   },
   "tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py": {
    "args": [

@@ -6,6 +6,9 @@ import unittest
 from run import SCENE_LIFECYCLE_DISPATCHES, courier_source, declaration, extract, scene_source, source
 
 
+from af2_terminal_migration_review import historical_test_case
+
+@historical_test_case
 class ExtractionTests(unittest.TestCase):
     def test_strings_and_comments_do_not_end_declaration(self):
         method = '''private void M()

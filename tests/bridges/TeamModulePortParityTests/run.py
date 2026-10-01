@@ -1,6 +1,12 @@
 """Prove first-slice port delegation and exact owner receiver-only replacement."""
 from __future__ import annotations
 import argparse
+import sys as _legacy_sys
+from pathlib import Path as _LegacyPath
+_legacy_sys.path.insert(0, str(_LegacyPath(__file__).resolve().parents[3] / "tests"))
+from af2_terminal_migration_review import historical_source, historical_fixture
+# Explicit legacy oracle; current owner build/replay inputs are not projected.
+AF2_FIXTURE_METADATA = {'sourceClass': 'legacy-source-parity/current-adapter-execution', 'terminalBindingAndExactInverseRequired': True, 'currentOwnerReplayProjected': False}
 import hashlib
 import importlib.util
 import json
@@ -79,6 +85,7 @@ def restore_reviewed_nonport_deltas(path, current, prior):
     return current
 
 
+@historical_fixture
 def owner_parity(baseline):
     replacements = {f"TeamModuleServices.{port}.{method}": f"{owner}.{method}"
         for port, (owner, methods) in MAP.items() for method in methods}
@@ -150,7 +157,7 @@ def owner_parity(baseline):
     current_paths += sorted((ROOT / "src/modules/AF.Module.Conversation/Channels/Scene").glob("*.cs"))
     current_paths += sorted((ROOT / "src/modules/AF.Module.Conversation/Internal/Postprocess").glob("*.cs"))
     current_paths += sorted((ROOT / "src/modules/AF.Module.Conversation/Channels/Courier").glob("*.cs"))
-    current = "\n".join(path.read_text(encoding="utf-8-sig") for path in current_paths)
+    current = "\n".join(historical_source(path) for path in current_paths)
     baseline_paths = ["MyBehavior.cs", "ShoutBehavior.cs", "ShoutBehavior.ScenePostprocess.cs", "CourierDeliveryBehavior.cs"]
     prior = "\n".join(
         subprocess.check_output(["git", "show", f"{baseline}:{path}"], cwd=ROOT)

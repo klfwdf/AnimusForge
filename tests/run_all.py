@@ -274,7 +274,9 @@ def main(argv: list[str]) -> int:
         parent = checked_path(Path(approved))
         if parent == Path(parent.anchor) or parent.is_relative_to(ROOT.resolve()) or ROOT.resolve().is_relative_to(parent):
             raise ValueError("AF_TEST_TEMP_ROOT must be outside, and not contain, the workspace")
-        tmp = checked_path(parent / (ROOT.name + "-" + run_name))
+        # Keep deeply nested synthetic fixtures below Windows MAX_PATH without changing data-root guards.
+        temp_name = "af2-" + hashlib.sha256(str(ROOT.resolve()).encode("utf-8")).hexdigest()[:8] + "-" + uuid.uuid4().hex[:8]
+        tmp = checked_path(parent / temp_name)
         if tmp.exists():
             raise ValueError("synthetic TEMP run directory already exists")
     except (ValueError, OSError) as ex:

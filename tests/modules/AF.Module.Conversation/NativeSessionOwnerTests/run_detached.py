@@ -17,7 +17,7 @@ out = new_run_root(ROOT, 'native-detached-postprocess', a.run_root)
 dotnet = resolve_dotnet(ROOT, a.dotnet)
 owner = courier.ex.source('src/modules/AF.Module.Conversation/Internal/Postprocess/ConversationActionPostprocessOwner.cs', None)
 facade = courier.ex.source('src/modules/AF.Module.Conversation/Internal/Postprocess/ShoutBehavior.UnifiedActionPostprocess.cs', None)
-prepare = courier.ex.declaration(facade, 'private static SceneActionPostprocessWorkItem PrepareSceneUnifiedActionPostprocess(')
+prepare = courier.ex.declaration(facade, 'internal static SceneActionPostprocessWorkItem PrepareSceneUnifiedActionPostprocess(')
 prepare = prepare[:prepare.index('{')] + '''{
     Program.MainOnly();Prepared++;PreparedHits=preprocessRuleHits;
     if(Immediate)return new SceneActionPostprocessWorkItem("[ACTION:MOOD:NEUTRAL]");
