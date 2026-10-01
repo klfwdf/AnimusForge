@@ -1,0 +1,24 @@
+using AnimusForge;using TaleWorlds.CampaignSystem;using Newtonsoft.Json;
+using System; using System.Collections.Generic; using System.Linq;
+namespace TaleWorlds.CampaignSystem { public interface IDataStore { bool IsSaving {get;} bool IsLoading {get;} bool SyncData<T>(string key,ref T value); } }
+namespace TaleWorlds.Library { internal static class TWParallel { public static bool IsMainThread()=>true; } internal static class MBMath { public static int ClampInt(int x,int a,int b)=>Math.Clamp(x,a,b); } }
+namespace AnimusForge { internal static class Logger { public static bool IsModLogicEnabled=>false; public static void Log(string a,string b){} }
+internal sealed class MemoryBusinessStateOwner {
+@@STATE_FIELDS@@
+}
+internal class MyBehavior {
+@@DIALOGUE_DAY@@
+internal static bool IsMemoryRecoveryHexDigest(string x)=>x!=null && x.Length==64 && x.All(c=>Uri.IsHexDigit(c));
+internal static bool IsValidMemoryCommitMarker(string a,string b,string c)=>IsMemoryRecoveryHexDigest(a)&&IsMemoryRecoveryHexDigest(c)&&(b=="user"||b=="fact"||b=="assistant"); }
+}
+
+
+class Store:IDataStore {public bool IsSaving {get;set;} public bool IsLoading=>!IsSaving; public Dictionary<string,object> Data=new();public List<string> Keys=new();public bool SyncData<T>(string key,ref T value){ Keys.Add(key);if(IsSaving)Data[key]=value;else if(Data.TryGetValue(key,out var x))value=(T)x;return true;}}
+class Program {static int checks;static void Check(bool x,string n){if(!x)throw new Exception(n);checks++;Console.WriteLine("PASS "+n);}static void Main(){
+ var state=new MemoryBusinessStateOwner(); state.History["npc:x"]=new(){new MyBehavior.DialogueDay{GameDayIndex=2,GameDate="d",Lines=new(){"hello"}}};state.Drafts["npc:x"]=new(){new DailyMemoryDraft{HeroId="npc:x",GameDayIndex=2,Lines=new(){new DailyMemoryLine{Text="line",GameDayIndex=2}}}};
+ state.Blocks["npc:x"]=new(){new CompressedMemoryBlock{Id="block",HeroId="npc:x",GameDayIndex=1,Summary="s"}};state.Overviews["npc:x"]=new(){HeroId="npc:x",Summary="overview"};state.MajorSummaries["npc:x"]=new(){HeroId="npc:x",Summary="major"};
+ var adapter=new CampaignMemoryPersistenceAdapter(state);var store=new Store{IsSaving=true};adapter.Save(store,_=>{},_=>false);
+ var required=new[]{"_dialogueHistory_v2","_af_dailyMemoryDrafts_v1","_af_compressedMemoryBlocks_v1","_af_memorySummaryQueue_v1","_af_memoryOverviewStates_v1","_af_memoryOverviewQueue_v1","_af_npcMajorActionSummaries_v1","_af_npcMajorActionSummaryQueue_v1"};Check(required.All(k=>store.Keys.Contains(k)),"legacy storage keys present");Check(required.Select(k=>store.Keys.IndexOf(k)).SequenceEqual(required.Select(k=>store.Keys.IndexOf(k)).Order()),"legacy domain order");
+ var h=state.History;var drafts=state.Drafts;store.IsSaving=false;var callbacks=new List<string>();adapter.Load(store,()=>callbacks.Add("history"),()=>callbacks.Add("daily"));Check(ReferenceEquals(h,state.History)&&ReferenceEquals(drafts,state.Drafts),"authoritative history and draft containers retained");Check(callbacks.SequenceEqual(new[]{"history","daily"}),"diagnostic order");Check(state.History["npc:x"][0].Lines[0]=="hello","history roundtrip");Check(state.Drafts["npc:x"][0].Lines[0].Text=="line","draft roundtrip");Check(state.Blocks["npc:x"][0].Id=="block","block roundtrip");Check(state.Overviews["npc:x"].Summary=="overview","overview roundtrip");Check(state.MajorSummaries["npc:x"].Summary=="major","major summary roundtrip");
+ ((Dictionary<string,string>)store.Data["_dialogueHistory_v2"])["bad"]="invalid";adapter.Load(store,()=>{},()=>{});Check(state.History.ContainsKey("npc:x")&&!state.History.ContainsKey("bad"),"corrupt owner isolated");
+ var empty=new Store();adapter.Load(empty,()=>{},()=>{});Check(state.History.Count==0&&state.Drafts.Count==0&&state.Blocks.Count==0&&state.Overviews.Count==0&&state.MajorSummaries.Count==0,"missing stores reset");Check(state.DailyQueue.Count==0&&state.OverviewQueue.Count==0&&state.MajorQueue.Count==0,"missing queues empty");Console.WriteLine($"{checks} assertions PASS");}}
