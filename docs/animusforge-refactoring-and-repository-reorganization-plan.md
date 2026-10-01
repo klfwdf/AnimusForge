@@ -17,11 +17,25 @@
 
 <a id="coup-entry-repair-20261001"></a>
 
-### 宣权篡位入口修复（2026-10-01，ACTIVE）
+### 宣权篡位入口修复（2026-10-01，OFFLINE_VERIFIED；未部署/实机）
 
 本轮用户要求修复城镇“宣权篡位”灰色不可点击。工作区 `F:/AnimusForge-main`，分支 `codex/af-main-refactor-continuation-20260831`，基线 `3c00ae2e` tracked clean。实际游戏日志与已安装 1.4 DLL 探针均确认：SETS `_pendingMissionEntry` 已由字段变为 owner-backed 属性；叛乱 `_automaticKingdomRebellionFlowActive` 等字段已迁入 owner，但 Coup 仍反射旧字段，导致 `host=False rebellion=False`。原审查证据 `artifacts/coup-runtime-probe/audit-20261001/registration.log`。
 
 范围：主体提供窄内部状态查询，Coup 缓存 delegate 并保持失败关闭；完善现有真实 DLL 注册探针的状态与拘押生命周期回归。不改变玩法资格、存档键、场景伤害、一键流程或公共 API V1；不推送、部署。注意启动时 `captivity=False` 尚不能证明补丁失败，当前 getter 还要求战役实例存在。出口：状态阻挡/清理回归、1.3/1.4+Bootstrap 构建、真实 1.4 DLL 注册通过；实机及旧档单列未验。仅本地提交本任务差异，保留现存未跟踪文件。
+
+修复提交 `f1c27b5b`，意图 checkpoint `0ea97567`。保持原九类 SETS 阻挡条件，叛乱查询转接实际 scheduler 的 `FlowActive` / `CanStart` 以及强制叛乱/周报忙碌状态。反射仅启动绑定；菜单条件与既有引擎调度调用缓存 delegate，固定数量布尔/空值检查，O(1)，无新轮询、全量扫描或每次反射分配。接口不可用、查询抛错和缺失 owner 均继续失败关闭；拘押产品代码未改。
+
+| 已核实源码（`f1c27b5b`，一基行号） | 真实消费者与职责 |
+| --- | --- |
+| `SettlementEntryTroopSelectionBehavior.cs:889–897`，`HasBlockingFlowForCoup` | 读取 SETS 当前 owner/现有待处理状态；不转移进城或政治状态所有权。 |
+| `MyBehavior.cs:1672–1677`，`HasBlockingRebellionFlowForCoup` | 读取真实自动叛乱 owner 和既有宿主忙碌状态；不改叛乱执行算法。 |
+| `extensions/AnimusForge.Coup/src/Integration/SettlementEntryTroopSelectionBehavior.cs:25,64,176–190` | 启动缓存状态委托，`CoupCampaignBehavior.CanBegin` 经 `HasPendingFlowForCoup` 使用；取消旧 FieldInfo 列表。 |
+| `extensions/AnimusForge.Coup/src/Integration/CoupRebellionBridge.cs:97–98,139–142` | `AfAccess.Busy` 为缓存的开放实例委托，`IsBusy` 保留当前 owner 约束。 |
+| `tools/Coup.RuntimeProbe/EntryGateRegression.cs:1–116` / `Program.cs:98–103` | 真实 DLL 查询的 pending/异常/调度/拘押生命周期 fixture；未运行真实 Campaign/Mission。 |
+
+验证：Release 官方统一构建（不加 Stage/Deploy）通过 1.3=`v1.3.15.110062`、1.4=`v1.4.6.115628` 和 Bootstrap，exit 0。首次共用产物被并行构建替换，故最终仅在进程内替换官方脚本的输出/中间目录后复验，磁盘构建脚本未改。最终证据根 `artifacts/coup-entry-repair-20261001/`：`build-isolated.log`、`verified-build/*/*.build.json`、`verified-probe/registration.log`、`evidence.json`。最终 1.4 探针 exit 0，四可用标志 True，36 项入口/拘押生命周期 + 29 项选兵 fixture PASS，42 个 prefix/transpiler 目标，输入 DLL 哈希未变。1.3 SHA256 `0D244823445FBE8A96F91C4B6DF5138CAC1D68A2695A5864C801E9397AB5ECB8`；1.4 SHA256 `C41D57FCF3EFB96D42B022FBB3BCADA64C1F05675E72CC18DB52EDA4CF6107E7`。
+
+边界：构建期间工作区另有内战/周报并行改动，全部保留、未纳入本修复提交；构建针对当时工作树，不能声称整个 DLL 仅含本提交差异。本任务四产品文件与修复提交一致。本任务 diff 检查通过；全局代码地图 `--working-tree` 因历史 `SubModule.cs` 内容锚点过期失败，该文件相对本轮基线未变，未刷新无关证据或冒充全仓验收。未跑 1.3 真实 runtime、游戏菜单/战斗/胜负结算/旧档/全套 MOD 组合；未验证 UI 点击。拘押在正常行为构造后通过，加载期 False 是生命周期条件，撤回“仅凭加载期 False 判定拘押保护故障”的推断。游戏仍使用旧 DLL，需另行授权覆盖后实测。回滚用 `git revert f1c27b5b` 定向撤回修复，禁止 reset 或回滚他人改动。
 
 <a id="j17-b6-c-resume-20261001"></a>
 
