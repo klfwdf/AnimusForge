@@ -2,7 +2,7 @@
 
 本轮授权替代“仅计划/不启动”；唯一主台账末尾“最后三个原闭包与同候选验证进度”和当前代码范围图收集证据。最后三个 original core 已实际迁 owner（D9eb43b6d/B355acce0/C581faa44），保持公共入口/保存/程序集身份。
 
-最终候选同一1337rawinputs：Debug/Release双API+Bootstrap六构建exit0（debug-79b41f2958a0/frozen-release-1af4885c8d79）。cf059766测试逆投影packet286bindings/89paths及4漂移负控PASS；完整 final-gates-c7aef2bb 正进行，不能提前称门禁通过。旧run明确CANCELLED_PARTIAL。当前owner实测、历史protocol/UIoracle、sourceinverse、实际DLLreplay分层，不把整体Courier/ModuleNative提交未直测覆盖藏掉。
+最终候选同一1337rawinputs：Debug/Release双API+Bootstrap六构建exit0（debug-79b41f2958a0/frozen-release-1af4885c8d79）。b7c3b21f测试逆投影packet367bindings/127paths及4漂移负控PASS；完整 final-gates-c7aef2bb 已结束：354入口，266 PASS/71 FAIL，另17项分状态记录，当前仍VERIFY，不能称门禁通过。69受影响入口正在同候选隔离重验；两真实DLL回放按具名迁移链诊断，不以历史投影替代。旧run明确CANCELLED_PARTIAL。当前owner实测、历史protocol/UIoracle、sourceinverse、实际DLLreplay分层，不把整体Courier/ModuleNative提交未直测覆盖藏掉。
 
 LIVE/真实旧档/网络/TTS/帧性能NOT_RUN；证书全局影响归因UNKNOWN；512terminal原淘汰边界保持。保护原SessionTransport raw dirty及tools/NuGet，不push/部署/清理。下方旧交付均历史，不授权本轮推送。
 

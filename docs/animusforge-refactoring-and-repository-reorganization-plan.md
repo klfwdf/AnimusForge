@@ -5926,3 +5926,13 @@ R2计划交付门槛：已给固定技术路线、真实来源与目标、写入
 - 新 `final-gates-c7aef2bb` 正在完整执行，尚未形成最终 receipt，不预报通过。已见准确旧review/test签名/依赖缺口会按责任修复；无放宽断言/刷新旧 hash/将整体 runtime 盲区隐去。完整 current Courier PromptSchedule 和 ModuleNativeSubmission 没有 whole-consumer direct runner，pure routing/owner生命周期/实际编译接线不是其整体执行证明。NativeTTS具体 fallback 责任另核，通用 Audio lifecycle 不替代。
 - 838 原地图 ID 刷新到当前 recorded/working-tree 两模式 PASS；真正 MyBehavior48 partial/2408 direct syntax declarations/34642 member-span lines，ShoutBehavior29/1352/22219。主文件29836/21301 physical lines；197 个受影响真实 owner class declarations、逐文件规模/责任资料见当前 JSON。数字是语法声明不是唯一语义方法或业务复杂度，不用 owner名字/过渡partial/行数阈值冒充终态。
 - LIVE、真实旧档/网络/TTS/帧性能 NOT_RUN；Weekly 512 terminal/64 pending 原淘汰边界已真实复现并保留，未扩 schema/capacity。SDK 初始证书 stdout 信号的实际全局影响归因 UNKNOWN，未读私钥、未清理/回滚；后续所有受控启动明确抑制 first-run cert。原 SessionTransport raw dirty、旧 NuGet/tools 与用户计划保留；无推送、Stage、一键语义/系统配置变化。
+
+
+### 2026-10-02 同候选完整门禁首轮真实结果与修复验证（VERIFY）
+
+- `final-gates-c7aef2bb/results.json` 完整354入口：266 PASS、71 FAIL、5 PREEXISTING_FAIL、5 NEEDS_INPUT、3 SUPERSEDED_BY_RUNNER、3 BLOCKED_ENV、1 ENV_STATE，aggregate exit1。该轮不是全当前产品通过；原 `final-gates-6f0e6394` 仍 CANCELLED_PARTIAL。
+- 三个20分钟超时已用同候选/原断言、仅顶层捕获与阶段输出在独占合成夹具定位。GiveAsset先80467断言通过后失败于旧宿主源码锚；Debt当前与16a正常各48通过、两预期失败变异立即退出。OptIn同F040D91B真实DLL先失败旧辅助记忆direct IL边；具名current coordinator链适配后 MemoryRecovery3561、Notoriety、CourierReservation18、CourierInbound115通过，随后Weekly旧direct IL边失败。PhaseEight同DLL亦首先命中Weekly旧direct IL边，继续按实际owner和消费者验证。支持未捕断言/process-lifecycle等候解释，未作Windows wait-chain证实，不能断言WER或产品死锁，也不能将整入口记PASS。
+- `d0b2d6dd` 仅显式历史protocol/UI读取scope、实际current源依赖与异常输出适配；`b7c3b21f` 固定367 actual bindings/127 bounded inverse paths，四漂移负控实际PASS，旧review hash不刷新。首次unittest模块搜索路径错误保留，直接运行原脚本后4项通过。新ownerfixtures/真实DLL/产品构建不作historical投影。
+- `repository_source_inventory.py` 当前完整实跑 PASS：20007 tracked、unknown_count0；仅精确 synthetic-source.fixture 分类为tests，未清理任何untracked/目录。业务owner状态仍工具原UNVERIFIED说明，不拿分类通过冒职责验收。
+- 已启动 `after-gates-b7c3` 69受影响入口同候选重验，输出未完成不预报通过。两真实DLL replay另按完整具名链继续诊断；仅offline Campaign membership环境叶可明确替身，保原host/generation/主线程和真capture→queue→commit，该Campaign资格不因此获验收。
+- 产品仍冻结581faa44，后续仅测试/证据；同1337 raw输入六构建证据保持。Native保留wait晚回调与实际Audio原子联测补证据，不扩wholepipeline；wholeCourierSchedule、ModuleNativeSubmission、NativeWait运行盲区及LIVE/旧档/帧性能均分层保留。
