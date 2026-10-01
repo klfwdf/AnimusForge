@@ -22,4 +22,27 @@ internal static class ConversationRoleClassificationOwner
 		return speaker.Length > 0 && recipient.Length > 0
 			&& string.Equals(speaker, recipient, StringComparison.OrdinalIgnoreCase);
 	}
+internal static int FindDialogueHistorySpeakerDelimiter(string line)
+	{
+		if (string.IsNullOrWhiteSpace(line))
+		{
+			return -1;
+		}
+		int colon = line.IndexOf(':');
+		int cnColon = line.IndexOf('：');
+		if (colon < 0)
+		{
+			return cnColon;
+		}
+		if (cnColon < 0)
+		{
+			return colon;
+		}
+		return Math.Min(colon, cnColon);
+	}
+internal static bool IsLikelyPlayerHistorySpeaker(string speaker)
+	{
+		string text = (speaker ?? "").Trim();
+		return text.IndexOf("玩家", StringComparison.Ordinal) >= 0 || text.IndexOf("你", StringComparison.Ordinal) >= 0 || text.IndexOf("MainHero", StringComparison.OrdinalIgnoreCase) >= 0;
+	}
 }

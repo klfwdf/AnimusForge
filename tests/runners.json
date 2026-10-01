@@ -519,6 +519,14 @@
     "{ROOT}/artifacts/af2-host-terminal-closeout/runner/{RUN}/MemoryRecoveryDeveloperClear"
    ],
    "note": "Explicit visible-journal clear preserves disabled admission and prior confirmed generation; actual ledger/SaveRuntimeGuard linked."
+  },
+  "tests/modules/AF.Module.Prompt/SceneHistoryMessageAssemblyTests/verify_uncompressed.py": {
+   "expect": "PASS",
+   "args": [
+    "--run-root",
+    "{ROOT}/artifacts/af2-host-terminal-closeout/runner/{RUN}/UncompressedMemoryPrompt"
+   ],
+   "note": "Actual detached draft/role/AFEF assembly compared with fixed old bodies; host capture and sole-consumer proof."
   }
  }
 }

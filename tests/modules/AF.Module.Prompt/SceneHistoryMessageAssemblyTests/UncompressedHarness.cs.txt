@@ -1,0 +1,63 @@
+using System;using System.Collections.Generic;using System.Linq;using System.Threading.Tasks;
+namespace TaleWorlds.Library { internal static class TWParallel { internal static bool IsMainThread()=>true; } internal static class MBMath { internal static int ClampInt(int x,int a,int b)=>Math.Max(a,Math.Min(b,x)); } }
+namespace TaleWorlds.CampaignSystem { public sealed class Hero {public object Name;public string StringId;} }
+namespace AnimusForge {
+internal static class DuelSettings {internal const int DailyConversationHistoryLineLimitMin=10,DailyConversationHistoryLineLimitMax=500;internal static int Limit=10;internal static Action OnReadLimit;internal static int GetDailyConversationHistoryLineLimitForExternal(){OnReadLimit?.Invoke();return Limit;} }
+internal static class Logger {internal static List<string> Lines=new();internal static void Log(string c,string s)=>Lines.Add(s);}
+public class FixtureState {
+ internal static int Day=5;internal static string Scene="当前街道";internal static bool SceneFails;
+ internal List<DailyMemoryDraft> Drafts=new();internal HashSet<int> Compressed=new();internal int SceneSession=2,NativeSession=3;internal string Key="active";internal bool Eligible=true;
+ internal static string NormalizeMemoryHeroId(string id)=>(id??"").Trim();internal bool IsMemoryEntityEligibleForCompressedMemory(string id)=>Eligible;
+ internal List<DailyMemoryDraft> LoadDailyMemoryDraftsById(string id)=>Drafts;
+ internal static bool IsNonHeroMemoryId(string id)=>id.StartsWith("nonhero",StringComparison.Ordinal);
+ internal static int GetCurrentGameDayIndexSafe()=>Day;internal static string ResolveCurrentMemorySceneLabel()=>SceneFails?throw new Exception("scene unavailable"):Scene;
+ internal int GetCurrentSceneSessionIdForDailyMemorySuppression()=>SceneSession;internal int GetCurrentNativeConversationMemorySessionIdForSuppression()=>NativeSession;
+ internal string BuildCurrentMemorySessionKey(int s,int n)=>Key;internal bool HasCompressedMemoryBlock(string id,int day)=>Compressed.Contains(day);
+ internal static bool HasDailyMemoryDraftAfefLines(DailyMemoryDraft d)=>d?.Lines!=null&&d.Lines.Any(x=>x!=null&&x.IsAfef&&!string.IsNullOrWhiteSpace(x.Text));
+ internal static int CountDailyMemoryDraftLines(IEnumerable<DailyMemoryDraft> ds)=>ds.Sum(d=>d?.Lines?.Count??0);
+ internal static string GetMemoryHeroId(TaleWorlds.CampaignSystem.Hero h)=>h.StringId;internal static void LogNonHeroMemoryTrace(string s)=>Logger.Lines.Add(s);
+}
+public partial class MyBehavior : FixtureState {
+ @@DAY@@
+ internal List<ConversationMessage> Build(string id="hero",string name="NPC",int agent=7,bool include=false)=>CaptureAndBuildUncompressedMemoryRoleMessagesById(id,name,agent,include);
+ internal static bool IsMemoryRecoveryHexDigest(string s)=>s!=null&&s.Length==64&&s.All(c=>"0123456789ABCDEF".Contains(c));
+ internal static bool IsValidMemoryCommitMarker(string a,string b,string c)=>IsMemoryRecoveryHexDigest(a)&&IsMemoryRecoveryHexDigest(c)&&new[]{"user","assistant","fact"}.Contains(b);
+}
+internal static class Program {
+ static int count;static void C(bool ok,string why){count++;if(!ok)throw new Exception(why);}
+ static DailyMemoryLine L(string speaker,string text,int day=5,bool fact=false,string key="")=>new(){Speaker=speaker,Text=text,GameDayIndex=day,GameDate="day"+day,GameHour=35,Scene="未知场景",IsAfef=fact,MemorySessionKey=key};
+ static string Message(ConversationMessage m)=>string.Join("|",m.GameDayIndex,m.GameDate,m.GameHour,m.Scene,m.Role,m.Content,m.SpeakerName,m.SpeakerAgentIndex,m.TargetAgentIndex,m.TargetName,m.PlayerDistanceMeters);
+ static void Same(List<DailyMemoryDraft> drafts,HashSet<int> compressed=null,bool include=false,string id="hero") {
+ var old=new LegacyUncompressed{Drafts=drafts,Compressed=compressed??new()};var current=new MyBehavior{Drafts=drafts,Compressed=compressed??new()};
+ C(old.Build(id:id,include:include).Select(Message).SequenceEqual(current.Build(id:id,include:include).Select(Message)),"same input old/full owner equality");
+ }
+ static async Task Main(){
+ var rows=new List<DailyMemoryLine>{L("玩家","玩家说"),L("NPC","回复"),L("路人","旁听"),L("","[场景喊话] 其他人：听到的话"),L("","[场景喊话]"),L("","玩家对NPC喊：你好"),L("","NPC:名称前缀"),L("ignored","事实",fact:true),L("玩家","suppressed",key:" ACTIVE "),L("玩家","旧日同key",day:3,key:"active")};
+ Same(new(){new(){GameDayIndex=5,HasLlmDialogue=true,Lines=rows},new(){GameDayIndex=3,HasLlmDialogue=true,Lines=new(){rows[^1]}}});
+ var p=new MyBehavior{Drafts=new(){new(){GameDayIndex=5,HasLlmDialogue=true,Lines=rows}}};var messages=p.Build();
+ C(!messages.Any(x=>x.Content=="suppressed"),"active key trim/case suppression");C(p.Build(include:true).Any(x=>x.Content=="suppressed"),"include current session clears key suppression");
+ C(messages.Any(x=>x.Role=="system"&&x.SpeakerName=="AFEF"&&x.TargetAgentIndex==-1&&x.TargetName==""),"AFEF role and target reset");
+ C(messages.Any(x=>x.Content=="听到的话"&&x.Role=="assistant"&&x.SpeakerName=="其他人"&&x.SpeakerAgentIndex==-1),"scene overheard assistant not viewer identity");
+ C(messages.Any(x=>x.Content=="回复"&&x.SpeakerAgentIndex==7&&x.TargetAgentIndex==-1),"own NPC assistant index");C(messages.All(x=>x.GameHour==23&&x.Scene=="当前街道"),"hour clamp and current unknown scene fallback");
+ var many=Enumerable.Range(0,18).Select(i=>L("玩家","row"+i)).ToList();many.Insert(1,L("","fact1",fact:true));many.Insert(4,L("","fact2",fact:true));
+ Same(new(){new(){GameDayIndex=5,Lines=many}});p.Drafts=new(){new(){GameDayIndex=5,Lines=many}};var capped=p.Build();C(capped.Count(x=>x.Role!="system")==10&&capped.Count(x=>x.Role=="system")==2&&capped.Any(x=>x.Content=="row17")&&!capped.Any(x=>x.Content=="row0"),"AFEF uncapped recent conversation limit");
+ foreach(int limit in new[]{-1,10,500,999}){DuelSettings.Limit=limit;Same(p.Drafts);}DuelSettings.Limit=10;
+ Same(new(){null,new(){GameDayIndex=1,Lines=new(){L("玩家","skip",1)}},new(){GameDayIndex=2,Lines=new(){L("AFEF","keepFact",2,true)}},new(){GameDayIndex=4,HasLlmDialogue=true,Lines=new(){L("NPC","compressed",4)}},new(){GameDayIndex=5,Lines=null}},new(){4});
+ Same(new(),id:"nonhero|id");Same(new(){new(){GameDayIndex=5,Lines=rows}},include:true,id:"nonhero|id");
+ var pastTodayLine=L("玩家","current line in old draft",key:"active");Same(new(){new(){GameDayIndex=3,HasLlmDialogue=true,Lines=new(){pastTodayLine}}});
+ var ordered=new List<DailyMemoryDraft>{new(){GameDayIndex=4,HasLlmDialogue=true,Lines=new(){L("玩家","old",4)}},new(){GameDayIndex=5,Lines=new(){L("NPC","same1")}},new(){GameDayIndex=5,Lines=new(){L("NPC","same2"),L("NPC","same2")}}};Same(ordered);
+ p.Drafts=ordered;C(p.Build().Select(x=>x.Content).SequenceEqual(new[]{"old","same1","same2","same2"}),"stable day tie and duplicate lines retained");
+ var target=L("玩家","target override");target.TargetAgentIndex=11;target.TargetName="Other";target.Scene="已知场景";var projected=UncompressedMemoryMessageAssemblyOwner.BuildUncompressedMemoryConversationMessage(target,"NPC",7,5,"fallback");
+ C(projected.Role=="user"&&projected.TargetAgentIndex==11&&projected.TargetName=="Other"&&projected.Scene=="已知场景","player target metadata and known scene preserved");
+ FixtureState.SceneFails=true;Same(new(){new(){GameDayIndex=5,Lines=rows}});FixtureState.SceneFails=false;
+ C(ConversationRoleClassificationOwner.FindDialogueHistorySpeakerDelimiter("a：b:c")==1&&ConversationRoleClassificationOwner.FindDialogueHistorySpeakerDelimiter("a:b：c")==1,"earliest CN/ASCII colon priority");
+ C(ConversationRoleClassificationOwner.IsLikelyPlayerHistorySpeaker("MainHero")&&ConversationRoleClassificationOwner.IsLikelyPlayerHistorySpeaker("你")&&!ConversationRoleClassificationOwner.IsLikelyPlayerHistorySpeaker("NPC"),"shared player speaker rules");
+ foreach(string scene in new[]{"", " 未知场景 ","大地图或未知场景","某个地方"})C(UncompressedMemoryMessageAssemblyOwner.IsUnknownMemorySceneLabel(scene),"unknown scene label");
+ var line=L("NPC","detached");var snapshot=new UncompressedMemoryPromptSnapshot{CurrentDay=5,CurrentScene="captured",MemoryName="NPC",TargetAgentIndex=7,HistoryLineLimit=10,HistoryLineMinimum=10,HistoryLineMaximum=500,Drafts=new(){new(){GameDayIndex=5,Lines=new(){line.CopyForSummary()}}}};
+ line.Text="changed";line.Scene="changed";var detached=UncompressedMemoryMessageAssemblyOwner.Assemble(snapshot,out _);C(detached[0].Content=="detached"&&detached[0].Scene=="captured","detached scalar copy independent of live mutation");
+ C(detached.Select(Message).SequenceEqual(UncompressedMemoryMessageAssemblyOwner.Assemble(snapshot,out _).Select(Message)),"retry same snapshot stable and no consume");
+ DuelSettings.OnReadLimit=()=>SaveRuntimeGuard.AdvanceGeneration("yielded capture");C(p.Build().Count==0,"late generation after capture cannot publish");DuelSettings.OnReadLimit=null;
+ var before=SaveRuntimeGuard.CaptureGeneration();await Task.Yield();SaveRuntimeGuard.AdvanceGeneration("clear");C(!SaveRuntimeGuard.IsCurrentGeneration(before),"yielded old request rejected");
+ Console.WriteLine("PASS uncompressed prompt same-input checks="+count+" live=NOT_RUN");
+ }
+}}
