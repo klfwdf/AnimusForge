@@ -429,6 +429,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 
 	public override void RegisterEvents()
 	{
+		RegisterTownRuleMemoryEvents();
 		SiegeInterventionSceneTauntSuppressionPatch.EnsurePatched();
 		SiegeInterventionCommandOriginPatch.EnsurePatched();
 		GcczVolunteerRecruitmentRatePatch.EnsurePatched();
@@ -15378,6 +15379,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			MarkAftermathResolvedForCompletion(settlement, aftermath);
 			PrepareCompletedInterventionSummary(aftermath);
 			_hasPendingAftermath = false;
+			RecordCompletedTownMemory(settlement, attackerParty, aftermath);
 			GcczDiagnosticLog.Log("Outcome", "finalized settlement=" + (settlement.StringId ?? "N/A")
 				+ " aftermath=" + aftermath
 				+ " reason=" + (reason ?? "N/A")

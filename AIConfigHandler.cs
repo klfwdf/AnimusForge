@@ -2765,7 +2765,8 @@ public static class AIConfigHandler
 		string reasoningEffort,
 		int timeoutMilliseconds,
 		string source,
-		InteractionStage stage = InteractionStage.Postprocess)
+		InteractionStage stage = InteractionStage.Postprocess,
+		bool allowThinkingControlFallback = true)
 	{
 		string apiLine;
 #if BANNERLORD_1_4_OR_GREATER
@@ -2785,7 +2786,7 @@ public static class AIConfigHandler
 			_ => apiKey,
 			temperature: temperature,
 			disableThinking: false,
-			retryWithoutThinkingOnBadRequest: thinkingEnabled || !string.Equals(DuelSettings.ResolveThinkingControlFormat(apiUrl, modelName), "plain", StringComparison.OrdinalIgnoreCase),
+			retryWithoutThinkingOnBadRequest: allowThinkingControlFallback && (thinkingEnabled || !string.Equals(DuelSettings.ResolveThinkingControlFormat(apiUrl, modelName), "plain", StringComparison.OrdinalIgnoreCase)),
 			thinkingEnabled: thinkingEnabled,
 			reasoningEffort: reasoningEffort);
 		return gateway.GenerateAsync(
@@ -2910,7 +2911,13 @@ public static class AIConfigHandler
 		return TryCallAuxiliarySimpleDialogueOnce(messages, maxTokens, temperature, out content, out error);
 	}
 
-	private static bool TryCallAuxiliarySimpleDialogueOnce(IEnumerable<object> messages, int maxTokens, float temperature, out string content, out string error)
+	/// <summary>One existing auxiliary attempt with an additional caller-owned output ceiling.</summary>
+	internal static bool TryCallBoundedAuxiliarySimpleDialogueOnceForExternal(IEnumerable<object> messages, int maxTokens, float temperature, out string content, out string error)
+	{
+		return TryCallAuxiliarySimpleDialogueOnce(messages, maxTokens, temperature, out content, out error, maxTokens);
+	}
+
+	private static bool TryCallAuxiliarySimpleDialogueOnce(IEnumerable<object> messages, int maxTokens, float temperature, out string content, out string error, int? outputTokenCeiling = null)
 	{
 		content = "";
 		error = "";
@@ -2928,6 +2935,10 @@ public static class AIConfigHandler
 			DuelSettings settings = DuelSettings.GetSettings();
 			int requestedMaxTokens = Math.Max(Math.Max(16, maxTokens), maxTokens + 512);
 			int actualMaxTokens = ResolveAuxiliaryApiMaxTokens(settings, requestedMaxTokens);
+			if (outputTokenCeiling.HasValue)
+			{
+				actualMaxTokens = Math.Min(actualMaxTokens, Math.Max(16, outputTokenCeiling.Value));
+			}
 			float effectiveTemperature = settings?.GetAuxiliaryApiTemperature() ?? temperature;
 			LlmGenerateResult generated = GenerateConfiguredGatewayResult(
 				copiedMessages,
@@ -2940,7 +2951,8 @@ public static class AIConfigHandler
 				reasoningEffort: DuelSettings.ReasoningEffortHigh,
 				DuelSettings.LlmRequestTimeoutMilliseconds,
 				"AuxiliarySimpleDialogue",
-				InteractionStage.MainReply);
+				InteractionStage.MainReply,
+				allowThinkingControlFallback: !outputTokenCeiling.HasValue);
 			if (generated == null || generated.Status != LlmResultStatus.Succeeded)
 			{
 				error = LlmRetryPrompt.BuildFailureDetail(generated?.ErrorCode ?? "gateway_failure", "", "");

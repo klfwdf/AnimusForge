@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <LangVersion>10.0</LangVersion>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../../../../AnimusForge.SiegeAftermathIntervention/AnimusForge.SiegeAftermathIntervention.csproj" />
+    <Compile Include="../../../../GcczTownRuleMemoryGenerationBridge.cs" Link="ProductionGenerationBridge.cs" />
+    <Compile Include="../../../../GcczTownRuleMemoryRuntimeBridge.cs" Link="ProductionRuntimeBridge.cs" />
+    <Compile Include="../../../../GcczTownRuleMemoryRulerAdapter.cs" Link="ProductionRulerAdapter.cs" />
+    <Compile Include="../../../../SiegeAiInterventionBehavior.TownRuleMemoryEvents.cs" Link="ProductionEvents.cs" />
+    <Compile Include="../../../../CampaignSaveChunkHelper.cs" Link="ProductionSaveChunks.cs" />
+  </ItemGroup>
+</Project>
