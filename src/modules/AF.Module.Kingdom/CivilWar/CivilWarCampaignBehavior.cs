@@ -155,9 +155,11 @@ internal sealed class CivilWarCampaignBehavior : CampaignBehaviorBase
 			RecordFiefDenied(kingdom, claimant, outcome as SettlementClaimantDecision.ClanAsDecisionOutcome);
 			return;
 		}
-		// Only enforced policy decisions count here; war/peace grievance comes from WarDeclared/MakePeace.
+		// Conclusion runs after ApplyChosenOutcome. Approved repeal also sets ShouldDecisionBeEnforced;
+		// only a policy still active can be recorded as imposed. War/peace has separate event sources.
 		KingdomPolicyDecision policyDecision = decision as KingdomPolicyDecision;
-		if (policyDecision == null || !(outcome is KingdomPolicyDecision.PolicyDecisionOutcome policyOutcome) || !policyOutcome.ShouldDecisionBeEnforced) return;
+		if (policyDecision == null || !(outcome is KingdomPolicyDecision.PolicyDecisionOutcome policyOutcome) || !policyOutcome.ShouldDecisionBeEnforced
+			|| policyDecision.Policy == null || !kingdom.ActivePolicies.Contains(policyDecision.Policy)) return;
 		TeamModuleServices.CivilWar.RecordPolicyImposed(kingdom, policyDecision.Policy?.StringId ?? "", Week(), "王国强推政策：" + (policyDecision.Policy?.Name?.ToString() ?? "现行政策"));
 	}
 

@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 
 namespace AnimusForge;
 
-// Save model v3 (`_af_kingdom_civil_war_v3`). A kingdom holds several concurrent factions, each with its own
+// Save model v3 (payload under the existing `_af_kingdom_civil_war_v2` key). A kingdom holds several concurrent factions, each with its own
 // demand, grievance, ultimatum and war. Only ids and numbers are stored; catalog content is looked up by id so
 // removing a catalog entry dissolves affected factions on load instead of failing. v2 saves (single `Faction`)
 // are migrated into `Factions` by the owner's Sanitize.
@@ -72,6 +72,11 @@ internal sealed class KingdomCivilWarFactionState
 	public bool RebelKingdomDestroyed;
 	public bool PlayerFollowAsked;
 	public List<string> WarClanIds = new List<string>();
+	// Persist the chosen settlement across retries; never reroll after game effects have started.
+	public string ResolutionOutcomeId = "";
+	public string ResolutionError = "";
+	public bool ResolutionNeedsReview;
+	public bool ResolutionReturnCompleted;
 }
 
 internal sealed class KingdomCivilWarHistoryEntry

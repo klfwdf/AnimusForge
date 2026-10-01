@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>disable</Nullable>
+    <PythonExecutable Condition="'$(PythonExecutable)' == ''">python</PythonExecutable>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <Compile Include="../../../../src/modules/AF.Module.Kingdom/CivilWar/*.cs" Exclude="../../../../src/modules/AF.Module.Kingdom/CivilWar/CivilWarCampaignBehavior.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Kingdom/Stability/KingdomStabilityPolicy.cs" />
+    <Compile Include="../../../../src/AF.Contracts/Internal/TeamModules/ICivilWarModulePort.cs" />
+    <Compile Include="../../../../src/AF.Contracts/Internal/InteractionContracts.cs" />
+    <Compile Include="../../../../src/AF.Contracts/Internal/LlmContracts.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Actions/Tags/LegacyActionTagCatalog.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Actions/Tags/LegacyActionTagParser.cs" />
+  </ItemGroup>
+  <Target Name="ExtractReviewEntryPoints" BeforeTargets="BeforeCompile">
+    <Exec Command="&quot;$(PythonExecutable)&quot; &quot;$(MSBuildProjectDirectory)/extract_entry_points.py&quot; &quot;$(IntermediateOutputPath)ReviewEntryPoints.cs&quot;" />
+    <ItemGroup><Compile Include="$(IntermediateOutputPath)ReviewEntryPoints.cs" /></ItemGroup>
+  </Target>
+</Project>

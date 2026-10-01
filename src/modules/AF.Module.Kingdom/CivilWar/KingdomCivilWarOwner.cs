@@ -436,6 +436,12 @@ internal sealed class KingdomCivilWarOwner
 
 	private void AdvanceOpenWar(Kingdom kingdom, KingdomCivilWarKingdomState state, KingdomCivilWarFactionState faction, int week, CivilWarTuning tuning, Action<Kingdom, int> adjustStability)
 	{
+		if (faction.ResolutionNeedsReview) return;
+		if (!string.IsNullOrWhiteSpace(faction.ResolutionOutcomeId))
+		{
+			ResolveWar(kingdom, state, faction, week, tuning, adjustStability);
+			return;
+		}
 		Clan leader = CivilWarWorld.FindClan(faction.LeaderClanId);
 		string name = FactionName(faction, CivilWarCatalog.FindDemand(faction.DemandId));
 		if (leader == null && string.IsNullOrWhiteSpace(faction.RebelKingdomId)) { Dissolve(kingdom, state, faction, week, tuning, name + "的领袖已不存在，起兵作罢"); return; }
@@ -548,6 +554,11 @@ internal sealed class KingdomCivilWarOwner
 		// Staying (or a failed defection): the player stands with the crown against the rising.
 		record.Side = KingdomCivilWarSide.Crown; record.FactionId = ""; record.SideSinceWeek = week;
 		state.PlayerSide = "crown";
+		// Also repair marks made by an older build before the player chose to stay.
+		if (player?.Settlements != null)
+			foreach (Settlement settlement in player.Settlements)
+				if (settlement != null && _oppositionMarkFaction.TryGetValue(settlement.StringId, out string markedBy) && markedBy == faction.Id)
+					_oppositionMarkFaction.Remove(settlement.StringId);
 		message = follow ? "未能转投叛军，你的家族留在王国一方。" : "你的家族拒绝追随" + name + "，站到了王室一边。";
 		AddHistory(state, week, message);
 		return true;
@@ -579,9 +590,11 @@ internal sealed class KingdomCivilWarOwner
 		CivilWarWarGoal goal = faction.WarGoal == 0 ? CivilWarCatalog.EffectiveWarGoal(demand) : (CivilWarWarGoal)faction.WarGoal;
 		string log = "forced";
 		CivilWarOutcomeDef outcome;
-		if (faction.RebelKingdomDestroyed) outcome = CivilWarCatalog.FindOutcome(CivilWarCatalog.CrownVictoryOutcomeId);
+		if (!string.IsNullOrWhiteSpace(faction.ResolutionOutcomeId)) outcome = CivilWarCatalog.FindOutcome(faction.ResolutionOutcomeId);
+		else if (faction.RebelKingdomDestroyed) outcome = CivilWarCatalog.FindOutcome(CivilWarCatalog.CrownVictoryOutcomeId);
 		else if (faction.EndedByPeace) outcome = CivilWarCatalog.FindOutcome(goal == CivilWarWarGoal.Secede ? CivilWarCatalog.SecedeOutcomeId : CivilWarCatalog.NegotiatedOutcomeId);
 		else outcome = CivilWarDecisions.PickOutcome(goal, WarFeatures(kingdom, state, faction, leader, week, tuning), tuning, RandomFloat, out log);
+		if (outcome != null) faction.ResolutionOutcomeId = outcome.Id;
 		CivilWarEffectContext ctx = BuildContext(kingdom, state, faction, demand, leader, week);
 		string reason = "无可用结局";
 		bool applied = outcome != null && CivilWarEffects.TryApply(outcome.EffectId, ctx, out reason);
@@ -590,8 +603,16 @@ internal sealed class KingdomCivilWarOwner
 		AddHistory(state, week, text);
 		WriteMaterial(kingdom, week, text);
 		Logger.Log("KingdomCivilWar", "resolve faction=" + faction.Id + " outcome=" + (outcome?.Id ?? "none") + " applied=" + applied + " log=" + CivilWarWorld.Limit(log, 300));
-		FinishFaction(kingdom, state, faction, week, tuning, adjustStability, applied && outcome.RebelsWon ? -4 : 6);
-		CivilWarAftermath mood = !applied || outcome.Id == CivilWarCatalog.NegotiatedOutcomeId ? CivilWarAftermath.Settled
+		if (!applied)
+		{
+			faction.ResolutionError = CivilWarWorld.Limit(reason, 240);
+			// Guard/reconciliation failures can retry weekly. An unexpected exception may have applied
+			// additive effects already: retain the save record and require inspection, never replay blindly.
+			faction.ResolutionNeedsReview = outcome == null || !ctx.RetryableFailure;
+			return;
+		}
+		FinishFaction(kingdom, state, faction, week, tuning, adjustStability, outcome.RebelsWon ? -4 : 6);
+		CivilWarAftermath mood = outcome.Id == CivilWarCatalog.NegotiatedOutcomeId ? CivilWarAftermath.Settled
 			: outcome.RebelsWon ? CivilWarAftermath.Emboldened : CivilWarAftermath.Suppressed;
 		ApplyAftermath(kingdom, state, week, tuning, mood);
 	}
@@ -864,6 +885,7 @@ internal sealed class KingdomCivilWarOwner
 		switch (faction.Stage)
 		{
 			case KingdomCivilWarStage.OpenWar:
+				if (!string.IsNullOrWhiteSpace(faction.ResolutionError)) return faction.ResolutionNeedsReview ? "结算异常 · 已保留状态，需检查日志" : "结算未完成 · 下周重试";
 				return string.IsNullOrWhiteSpace(faction.RebelKingdomId) ? "起兵中 · 叛军王国建立中" : "内战 · 第 " + Math.Max(1, week - faction.WarStartWeek + 1) + " 周";
 			case KingdomCivilWarStage.Ultimatum:
 				return faction.PlayerAnswerPending ? "最后通牒 · 待国王答复（剩 " + Math.Max(0, faction.PlayerAnswerDeadlineWeek - week) + " 周）" : "最后通牒 · 等待裁决";
@@ -1029,7 +1051,8 @@ internal sealed class KingdomCivilWarOwner
 	{
 		if (demand == null || kingdom == null) return "";
 		if (demand.Target == CivilWarDemandTarget.EnemyKingdom) return StrongestForeignEnemy(kingdom, state)?.StringId ?? "";
-		if (demand.Target == CivilWarDemandTarget.ImposedPolicy) return state?.LastImposedPolicyId ?? "";
+		if (demand.Target == CivilWarDemandTarget.ImposedPolicy)
+			return kingdom.ActivePolicies.Any(x => x.StringId == state?.LastImposedPolicyId) ? state.LastImposedPolicyId : "";
 		return "";
 	}
 
@@ -1174,7 +1197,8 @@ internal sealed class KingdomCivilWarOwner
 
 	private void IndexOppositionSettlements(KingdomCivilWarKingdomState state, KingdomCivilWarFactionState faction)
 	{
-		foreach (string clanId in (faction.WarClanIds ?? new List<string>()).Concat(Members(state, faction).Select(x => x.ClanId)).Distinct(StringComparer.OrdinalIgnoreCase))
+		// The player is not a combatant until AnswerFollow adds their clan to WarClanIds.
+		foreach (string clanId in (faction.WarClanIds ?? new List<string>()).Distinct(StringComparer.OrdinalIgnoreCase))
 		{
 			Clan clan = CivilWarWorld.FindClan(clanId);
 			if (clan?.Settlements == null) continue;
