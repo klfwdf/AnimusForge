@@ -123,6 +123,9 @@ internal static class DocumentExecutionReplay
             && p.Events.IndexOf("propagation") < p.Events.IndexOf("round"), "multi action validates entire batch before ordered effects and history/propagation/round");
         Test.True(doc.Actions.All(a => a.ChangedDiplomaticState && a.MechanicalResult.StartsWith("effect ")),
             "every action captures its own actual mechanical receipt");
+        (p, orch) = Fixture(); doc = Document("b", "c", "d", "e", "f"); Run(p, orch, doc);
+        Test.True(p.Effects == 0 && p.Events.Count == 0 && !doc.IsReadyForPublication,
+            "oversized persisted action lists are rejected before snapshot capture and live-world work");
         foreach (string[] targets in new[] { new[] { "b", "b" }, new[] { "b", "missing" }, new[] { "vassal" } })
         {
             (p, orch) = Fixture(); doc = Document(targets); Run(p, orch, doc);
