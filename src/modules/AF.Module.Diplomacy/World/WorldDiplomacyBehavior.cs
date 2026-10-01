@@ -1662,6 +1662,8 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 		{
 			return null;
 		}
+		Settlement indexed = DiplomacyIdentityResolver.Settlement(settlementId.Trim());
+		if (indexed != null) return indexed;
 		return Settlement.All.FirstOrDefault(x => x != null
 			&& string.Equals(x.StringId, settlementId, StringComparison.OrdinalIgnoreCase));
 	}
@@ -1905,15 +1907,20 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 		{
 			return null;
 		}
+		string normalizedId = id.Trim();
+		Kingdom indexed = DiplomacyIdentityResolver.Kingdom(normalizedId);
+		if (indexed != null && !indexed.IsEliminated) return indexed;
 		return Kingdom.All.FirstOrDefault(x => x != null
 			&& !x.IsEliminated
-			&& (string.Equals(x.StringId, id.Trim(), StringComparison.OrdinalIgnoreCase)
-				|| string.Equals(x.Name?.ToString(), id.Trim(), StringComparison.OrdinalIgnoreCase)));
+			&& (string.Equals(x.StringId, normalizedId, StringComparison.OrdinalIgnoreCase)
+				|| string.Equals(x.Name?.ToString(), normalizedId, StringComparison.OrdinalIgnoreCase)));
 	}
 	private static Kingdom ResolveKingdomIncludingEliminated(string id)
 	{
 		if (string.IsNullOrWhiteSpace(id) || Campaign.Current == null) return null;
 		string normalizedId = id.Trim();
+		Kingdom indexed = DiplomacyIdentityResolver.Kingdom(normalizedId);
+		if (indexed != null) return indexed;
 		return Kingdom.All.FirstOrDefault(x => x != null
 			&& (string.Equals(x.StringId, normalizedId, StringComparison.OrdinalIgnoreCase)
 				|| string.Equals(x.Name?.ToString(), normalizedId, StringComparison.OrdinalIgnoreCase)));

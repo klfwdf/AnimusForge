@@ -14533,6 +14533,15 @@ RunRepairCorrectionAndJobDecisionTests();
         behaviorSource += File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOrchestration.cs"));
         behaviorSource += File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyPromptComposer.cs"));
         behaviorSource += File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyDraftRepairApplication.cs"));
+        string identitySource = File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Adapters/DiplomacyIdentityResolver.cs"));
+        int indexedKingdom = behaviorSource.IndexOf("Kingdom indexed = DiplomacyIdentityResolver.Kingdom(normalizedId)", StringComparison.Ordinal);
+        int fallbackKingdom = indexedKingdom < 0 ? -1
+            : behaviorSource.IndexOf("return Kingdom.All.FirstOrDefault", indexedKingdom, StringComparison.Ordinal);
+        Test.True(indexedKingdom >= 0 && fallbackKingdom > indexedKingdom
+            && behaviorSource.Contains("Settlement indexed = DiplomacyIdentityResolver.Settlement(settlementId.Trim())", StringComparison.Ordinal)
+            && identitySource.Contains("Campaign.Current?.CampaignObjectManager?.Find<Kingdom>(id)", StringComparison.Ordinal)
+            && identitySource.Contains("Campaign.Current?.CampaignObjectManager?.Find<Settlement>(id)", StringComparison.Ordinal),
+            "stable diplomacy IDs use the campaign index before legacy name or case-insensitive fallback scans");
         foreach (string transition in new[] { "EnsureOpen", "TryScheduleNormal", "Close", "AdvanceRelay", "IntegratePlayerDeclaration" })
             Test.True(behaviorSource.Contains("WorldDiplomacyRoundApplication." + transition + "(", StringComparison.Ordinal),
                 "live host must bind the application transition: " + transition);

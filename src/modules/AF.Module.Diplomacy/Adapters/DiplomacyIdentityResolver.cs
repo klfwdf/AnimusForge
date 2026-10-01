@@ -1,4 +1,5 @@
 using TaleWorlds.CampaignSystem;
+using TaleWorlds.CampaignSystem.Settlements;
 
 namespace AnimusForge;
 
@@ -15,6 +16,12 @@ internal static class DiplomacyIdentityResolver
     {
         if (string.IsNullOrEmpty(id)) return null;
         try { return Campaign.Current?.CampaignObjectManager?.Find<Kingdom>(id); }
+        catch { return null; }
+    }
+    internal static Settlement Settlement(string id)
+    {
+        if (string.IsNullOrEmpty(id)) return null;
+        try { return Campaign.Current?.CampaignObjectManager?.Find<Settlement>(id); }
         catch { return null; }
     }
 }
