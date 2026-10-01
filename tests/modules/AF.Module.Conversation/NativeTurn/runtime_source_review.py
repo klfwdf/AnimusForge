@@ -21,8 +21,10 @@ def restore_runtime_move(file, source):
         marker = '\npublic partial class ShoutBehavior\n{\n    private NativeConversationTurnPorts CreateNativeConversationTurnPorts()'
         assert source.count(marker) == 1
         source, factory = source.split(marker)
-        bound = dict(re.findall(r'^        (\w+) = (\w+),$', factory, re.M))
+        bound = dict(re.findall(r'^        (\w+) = ([\w.]+),$', factory, re.M))
         expected = {name: name for name in CAPABILITIES}
+        for name in ['BuildSceneFollowControlPromptInstruction', 'BuildSceneSummonClosurePromptInstruction']:
+            expected[name] = '_sceneMovement.' + name
         expected.update({'Dispatch' + suffix: 'RunNativeConversationMainThreadFuncAsync'
                          for suffix in ['Validation', 'Preparation', 'HistoryWork', 'WeeklySnapshot']})
         assert bound == expected, 'native capability binding drift'

@@ -1,0 +1,202 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+
+struct Vec3 { internal int Marker; internal Vec3(int value) { Marker = value; } internal Vec3 AsVec2 => this; internal float DistanceSquared(Vec3 other) => (Marker-other.Marker)*(Marker-other.Marker); }
+sealed class Agent { internal int Index; internal string Name = "speaker"; internal Vec3 Position; internal bool Active = true; internal bool IsActive() => Active; internal bool Faded; internal void FadeOut(bool first, bool second) { Faded = true; } }
+sealed class Location { internal List<Location> LocationsOfPassages = new(); }
+sealed class Passage { internal Vec3 Position; }
+sealed class LocationCharacter { }
+sealed class LocationComplex { internal static LocationComplex Current = new LocationComplex(); internal LocationCharacter Character = new LocationCharacter(); internal LocationCharacter FindCharacter(Agent agent) => agent == null ? null : Character; internal readonly List<(LocationCharacter character, Location from, Location to)> Changes = new(); internal void ChangeLocation(LocationCharacter character, Location from, Location to) { Changes.Add((character, from, to)); } }
+sealed class CampaignMission { internal static CampaignMission Current = new CampaignMission(); internal Location Location = new Location(); }
+sealed class Mission { internal static Mission Current = new Mission(); internal float CurrentTime; internal List<Agent> Agents = new(); }
+sealed class EscortAgentBehavior { internal delegate bool OnTargetReachedDelegate(); }
+static class Logger { internal static void Log(string category, string message) { } }
+sealed class NpcDataPacket { internal int AgentIndex; internal string Name = "NPC"; }
+
+sealed class Probe
+{
+@@TYPES@@
+    internal sealed class SceneSummonPromptTarget { internal int PromptId; internal LocationCharacter LocationCharacter; }
+    internal sealed class SceneGuidePromptTarget { internal int PromptId; internal string DisplayName; internal LocationCharacter LocationCharacter; internal Location SourceLocation; }
+    readonly Dictionary<int, SceneFollowReturnState> _sceneFollowReturnStates = new();
+    readonly Dictionary<int, PendingSceneFollowCommand> _pendingSceneFollowCommands = new();
+    readonly Dictionary<int, SceneSummonBatchState> _activeSceneSummonBatches = new();
+    readonly List<ActiveSceneSummonRequest> _activeSceneSummonRequests = new();
+    readonly List<ActiveSceneGuideRequest> _activeSceneGuideRequests = new();
+    readonly List<SceneReturnJob> _activeSceneReturnJobs = new();
+    readonly Dictionary<int, Queue<ActiveSceneSummonRequest>> _pendingSceneSummonLaunchQueues = new();
+    readonly object _launchGate = new();
+    int _nextSceneSummonBatchId = 1;
+    bool Following, Relay, PrepareSucceeded = true;
+    readonly Location RelayLocation = new();
+    readonly Vec3 RelayPosition = new(55);
+    readonly List<string> Calls = new();
+    int SummonProxyCleanups, ReturnProxyCleanups;
+    SceneSummonBatchState PreparedBatch;
+    bool IsAgentFollowingPlayerBySceneCommand(Agent agent) => Following;
+    void StopSceneSummonFollowPlayer(Agent agent, bool restoreDailyBehaviors = true) { Calls.Add("stop-follow"); Following = false; }
+    bool TryDetachSceneSummonConversationAgentForRelay(Agent agent, out Location location, out Vec3? position) { location = RelayLocation; position = RelayPosition; return Relay; }
+    SceneSummonConversationSession TryGetSceneSummonConversationSessionForAgentIndex(int index) => null;
+    void BeginSceneSummonConversationReturn(SceneSummonConversationSession session) => Calls.Add("return-session");
+    void EnsureCurrentMission() { }
+    void CancelSceneGuideActionForAgent(int index) => Calls.Add("cancel-guide");
+    void CancelSceneSummonActionForAgent(int index, LocationCharacter character) => Calls.Add("cancel-summon");
+    bool TryStartNextSceneSummonBatchRequest(SceneSummonBatchState batch, Agent agent, bool isInitialRequest, out ActiveSceneSummonRequest request)
+    { PreparedBatch = batch; Calls.Add("prepare"); request = PrepareSucceeded ? new ActiveSceneSummonRequest { BatchId = batch.BatchId, SpeakerAgentIndex = agent.Index } : null; return PrepareSucceeded; }
+    void CleanupSceneSummonDoorProxyAgent(ActiveSceneSummonRequest request) => SummonProxyCleanups++;
+    void CleanupSceneReturnDoorProxyAgent(SceneReturnJob job) => ReturnProxyCleanups++;
+@@METHODS@@
+    const float SCENE_SUMMON_TARGET_ARRIVAL_DISTANCE_SQ = 9f, SCENE_SUMMON_MESSENGER_DOOR_DISTANCE_SQ = 4f;
+    sealed class RestorePort { internal Action<Agent> RestoreAgentAutonomy = _ => { }; }
+    readonly RestorePort _ports = new();
+    readonly Dictionary<LocationCharacter, Agent> Resolved = new();
+    Passage Door;
+    int Navigations;
+    Location LastDoorTarget;
+    Agent ResolveAgentForLocationCharacter(LocationCharacter character) => Resolved.TryGetValue(character, out var agent) ? agent : null;
+    static bool CanAgentParticipateInSceneSpeech(Agent agent) => agent != null && agent.IsActive();
+    void ApplySceneReturnWalkPacing(Agent agent) { }
+    bool NavigateAgentToWorldPosition(Agent agent, Vec3 targetPosition, float rangeThreshold = .8f, bool doNotRun = false) { Navigations++; return true; }
+    Passage FindCurrentScenePassageToLocation(Location location) { LastDoorTarget = location; return Door; }
+    Vec3 GetPassageWaitingPosition(Passage passage) => passage.Position;
+    Agent EnsureSceneReturnDoorProxyAgent(SceneReturnJob job, Passage passage, Agent owner) => new Agent();
+    static void Require(bool condition, string name) { if (!condition) throw new Exception("ASSERT " + name); }
+    internal static int Run()
+    {
+        int passed = 0;
+        void Case(string name, Action run) { run(); passed++; Console.WriteLine("PASS " + name); }
+        Case("invalid-admission-has-no-cancel-side-effect", () => {
+            var p = new Probe(); var agent = new Agent { Index = 7, Active = false };
+            Require(!p.StartSceneSummonBatchAction(new NpcDataPacket { AgentIndex = 7 }, agent, new() { new() }, out _), "invalid-summon");
+            Require(p.Calls.Count == 0 && p._activeSceneSummonBatches.Count == 0, "invalid-admission-effects");
+        });
+        Case("follow-return-origin-and-cancel-order-preserved", () => {
+            var p = new Probe { Following = true }; var original = new Location(); var agent = new Agent { Index = 7, Position = new Vec3(1) };
+            p._sceneFollowReturnStates[7] = new SceneFollowReturnState { OriginalLocation = original, OriginalPosition = new Vec3(42) };
+            p._pendingSceneFollowCommands[7] = new PendingSceneFollowCommand();
+            Require(p.StartSceneSummonBatchAction(new NpcDataPacket { AgentIndex = 7 }, agent, new() { new() }, out _), "summon-start");
+            Require(ReferenceEquals(p.PreparedBatch.OriginalSpeakerLocation, original) && p.PreparedBatch.OriginalSpeakerPosition.Value.Marker == 42, "original-follow-origin");
+            Require(p.Calls.SequenceEqual(new[] { "stop-follow", "cancel-guide", "cancel-summon", "prepare" }), "cancel-before-publish-order");
+            Require(!p._pendingSceneFollowCommands.ContainsKey(7) && !p._sceneFollowReturnStates.ContainsKey(7), "old-follow-state-cleared");
+        });
+        Case("relay-location-identity-overrides-current-coordinate", () => {
+            var p = new Probe { Relay = true }; var agent = new Agent { Index = 7, Position = new Vec3(1) };
+            Require(p.StartSceneSummonBatchAction(new NpcDataPacket { AgentIndex = 7 }, agent, new() { new() }, out _), "relay-start");
+            Require(ReferenceEquals(p.PreparedBatch.OriginalSpeakerLocation, p.RelayLocation) && p.PreparedBatch.OriginalSpeakerPosition.Value.Marker == 55, "relay-origin-not-current-coordinate");
+        });
+        Case("initial-prepare-failure-rolls-back-active-batch-not-prior-effects", () => {
+            var p = new Probe { PrepareSucceeded = false, Following = true }; var agent = new Agent { Index = 7 };
+            Require(!p.StartSceneSummonBatchAction(new NpcDataPacket { AgentIndex = 7 }, agent, new() { new() }, out _), "prepare-failure-rejected");
+            Require(p._activeSceneSummonBatches.Count == 0 && !p.Following && p.Calls.Count == 4, "nontransactional-failure-not-replayed");
+        });
+        Case("batch-cancel-cleans-only-owned-active-and-queued-requests", () => {
+            var p = new Probe(); var first = new ActiveSceneSummonRequest { BatchId = 10 }; var other = new ActiveSceneSummonRequest { BatchId = 11 };
+            p._activeSceneSummonBatches[10] = new SceneSummonBatchState(); p._activeSceneSummonRequests.AddRange(new[] { first, other });
+            p._pendingSceneSummonLaunchQueues[7] = new Queue<ActiveSceneSummonRequest>(new[] { first, other });
+            p.CancelSceneSummonBatch(10); p.CancelSceneSummonBatch(10);
+            Require(p.SummonProxyCleanups == 1 && p._activeSceneSummonRequests.Single() == other, "batch-cancel-owned-active-only");
+            Require(p._pendingSceneSummonLaunchQueues[7].Single() == other && !p._activeSceneSummonBatches.ContainsKey(10), "batch-cancel-owned-queue-only");
+        });
+        Case("guide-requires-location-character-and-preserves-relay-origin", () => {
+            var p = new Probe { Relay = true }; var agent = new Agent { Index = 7 };
+            Require(!p.StartSceneGuideAction(new NpcDataPacket { AgentIndex = 7 }, agent, new SceneGuidePromptTarget(), out _), "guide-no-character-rejected");
+            var target = new SceneGuidePromptTarget { LocationCharacter = new LocationCharacter(), SourceLocation = new Location() };
+            Require(p.StartSceneGuideAction(new NpcDataPacket { AgentIndex = 7 }, agent, target, out var request), "guide-character-admitted");
+            Require(ReferenceEquals(request.TargetLocationCharacter, target.LocationCharacter) && ReferenceEquals(request.OriginalGuideLocation, p.RelayLocation), "guide-object-target-and-origin");
+        });
+        Case("return-replacement-keeps-character-target-and-other-jobs", () => {
+            var p = new Probe(); var character = new LocationCharacter(); var other = new LocationCharacter();
+            p.QueueSceneReturnJob("first", character, null, new Vec3(1)); p.QueueSceneReturnJob("other", other, null, new Vec3(2));
+            p.QueueSceneReturnJob("replace", character, null, new Vec3(3));
+            Require(p.ReturnProxyCleanups == 1 && p._activeSceneReturnJobs.Count == 2, "return-replaces-only-same-character");
+            Require(p._activeSceneReturnJobs.Single(x => ReferenceEquals(x.LocationCharacter, character)).OriginalPosition.Value.Marker == 3, "return-coordinate-is-fallback-not-target");
+        });
+        Case("door-path-uses-location-graph-no-coordinate-node", () => {
+            var from = new Location(); var hop = new Location(); var target = new Location();
+            from.LocationsOfPassages.Add(hop); hop.LocationsOfPassages.Add(from); hop.LocationsOfPassages.Add(target);
+            Require(FindSceneLocationPath(from, target).SequenceEqual(new[] { from, hop, target }), "door-location-object-path");
+            Require(FindSceneLocationPath(from, new Location()) == null && FindSceneLocationPath(from, from).Single() == from, "unreachable-and-same-location");
+        });
+        Case("cross-door-return-keeps-character-target-and-next-location", () => {
+            var p = new Probe(); var current = new Location(); var hop = new Location(); var origin = new Location();
+            current.LocationsOfPassages.Add(hop); hop.LocationsOfPassages.Add(origin); CampaignMission.Current.Location = current;
+            var character = new LocationCharacter(); var agent = new Agent { Index = 7, Position = new Vec3(0) }; p.Resolved[character] = agent; p.Door = new Passage { Position = new Vec3(0) };
+            LocationComplex.Current.Changes.Clear();
+            Require(p.TickSceneReturnJob(new SceneReturnJob { LocationCharacter = character, OriginalLocation = origin }), "door-return-done");
+            Require(ReferenceEquals(p.LastDoorTarget, hop) && agent.Faded && p.ReturnProxyCleanups == 1, "next-door-node-and-proxy-release");
+            Require(LocationComplex.Current.Changes.Count == 2 && ReferenceEquals(LocationComplex.Current.Changes[0].character, character) && ReferenceEquals(LocationComplex.Current.Changes[1].to, origin), "character-return-through-location");
+        });
+        Case("return-awaits-door-distance-without-changing-character", () => {
+            var p = new Probe(); var current = new Location(); var origin = new Location(); current.LocationsOfPassages.Add(origin); CampaignMission.Current.Location = current;
+            var character = new LocationCharacter(); p.Resolved[character] = new Agent { Index = 7, Position = new Vec3(10) }; p.Door = new Passage { Position = new Vec3(0) }; LocationComplex.Current.Changes.Clear();
+            Require(!p.TickSceneReturnJob(new SceneReturnJob { LocationCharacter = character, OriginalLocation = origin }) && p.Navigations == 1 && LocationComplex.Current.Changes.Count == 0, "distance-only-waits-no-location-effect");
+        });
+        Case("return-target-disappeared-finishes-without-navigation-effect", () => {
+            var p = new Probe(); int changes = LocationComplex.Current.Changes.Count;
+            Require(p.TickSceneReturnJob(new SceneReturnJob { LocationCharacter = new LocationCharacter(), OriginalLocation = new Location() }) && p.Navigations == 0 && LocationComplex.Current.Changes.Count == changes, "missing-target-no-movement");
+        });
+        return passed;
+    }
+}
+sealed class LifecycleProbe
+{
+@@TYPES@@
+    internal sealed class SceneSummonPromptTarget { }
+@@STATE@@
+    readonly object _launchGate = new();
+    long _generation;
+    Mission _mission = Mission.Current;
+    int SummonCleanups, GuideCleanups, ReturnCleanups, Arrivals;
+    void CleanupSceneSummonDoorProxyAgent(ActiveSceneSummonRequest request) { SummonCleanups++; }
+    void CleanupSceneGuideDoorProxyAgent(ActiveSceneGuideRequest request) { GuideCleanups++; }
+    void CleanupSceneReturnDoorProxyAgent(SceneReturnJob job) { ReturnCleanups++; }
+    void InvalidateSceneCommandFollowerCache() { _sceneCommandFollowerCache.Clear(); _sceneCommandFollowerCacheMission = null; _nextSceneCommandFollowerCacheRefreshApplicationTime = 0; }
+    static void StopSceneGuideEscort(Agent agent) { }
+    void ReleaseSceneGuideArrivalHold(int index, bool restoreAutonomy) { _sceneGuideArrivalHolds.Remove(index); }
+    void TriggerSceneGuideArrivalAndReturn(ActiveSceneGuideRequest request, bool reachedDoor) { Arrivals++; }
+@@LIFECYCLE@@
+    static void Require(bool condition, string name) { if (!condition) throw new Exception("ASSERT " + name); }
+    internal static int Run()
+    {
+        int passed = 0;
+        void Case(string name, Action run) { run(); passed++; Console.WriteLine("PASS " + name); }
+        Case("mission-reset-clears-all-motion-state-and-proxies-once", () => {
+            var p = new LifecycleProbe();
+            var guide = new ActiveSceneGuideRequest { GuideAgentIndex = 7 };
+            p._activeSceneGuideRequests.Add(guide); p._activeSceneSummonRequests.Add(new()); p._activeSceneReturnJobs.Add(new());
+            p._activeSceneSummonConversationSessions.Add(new()); p._activeSceneSummonBatches[1] = new(); p._sceneSummonScriptedAgentIndices.Add(7);
+            p._pendingSceneSummonLaunchQueues[7] = new(); p._pendingSceneGuideLaunchQueues[7] = new();
+            p._pendingSceneSummonReturnsAfterSpeech[7] = new(); p._pendingSceneFollowCommands[7] = new(); p._pendingSceneGuideReturnsAfterSpeech[7] = new();
+            p._sceneGuideArrivalHolds[7] = new(); p._sceneFollowReturnStates[7] = new(); p._transientSceneFollowAgentIndices.Add(7);
+            p._sceneGhostWalkStates[7] = new(); p._sceneCommandFollowerCache.Add(new());
+            p.Reset(); p.Reset();
+            Require(guide.Cancelled && p.SummonCleanups == 1 && p.GuideCleanups == 1 && p.ReturnCleanups == 1, "cleanup-at-most-once");
+            Require(p._activeSceneGuideRequests.Count + p._activeSceneSummonRequests.Count + p._activeSceneReturnJobs.Count + p._activeSceneSummonConversationSessions.Count + p._activeSceneSummonBatches.Count + p._sceneSummonScriptedAgentIndices.Count + p._pendingSceneSummonLaunchQueues.Count + p._pendingSceneGuideLaunchQueues.Count + p._pendingSceneSummonReturnsAfterSpeech.Count + p._pendingSceneFollowCommands.Count + p._pendingSceneGuideReturnsAfterSpeech.Count + p._sceneGuideArrivalHolds.Count + p._sceneFollowReturnStates.Count + p._transientSceneFollowAgentIndices.Count + p._sceneGhostWalkStates.Count + p._sceneCommandFollowerCache.Count == 0, "single-owner-state-empty");
+        });
+        Case("cancel-guide-retires-late-arrival-before-next-command", () => {
+            var p = new LifecycleProbe(); var guide = new ActiveSceneGuideRequest { GuideAgentIndex = 7 }; p._activeSceneGuideRequests.Add(guide);
+            var callback = p.BuildSceneGuideArrivalCallback(guide, false); p.CancelSceneGuideActionForAgent(7); callback();
+            Require(guide.Cancelled && !guide.ArrivalTriggered && p.Arrivals == 0, "cancelled-arrival-has-no-effect");
+            var next = new ActiveSceneGuideRequest { GuideAgentIndex = 7 }; p._activeSceneGuideRequests.Add(next);
+            p.BuildSceneGuideArrivalCallback(next, false)(); Require(next.ArrivalTriggered && p.Arrivals == 1, "new-command-still-admitted");
+        });
+        Case("mission-end-rejects-late-arrival-same-agent-index", () => {
+            var p = new LifecycleProbe(); var guide = new ActiveSceneGuideRequest { GuideAgentIndex = 7 }; var callback = p.BuildSceneGuideArrivalCallback(guide, true);
+            p.Reset(); callback(); Require(p.Arrivals == 0 && !guide.ArrivalTriggered, "generation-rejects-late-arrival");
+        });
+        Case("mission-replacement-does-not-clean-same-index-new-agent", () => {
+            var p = new LifecycleProbe(); p._activeSceneSummonRequests.Add(new()); p._activeSceneGuideRequests.Add(new()); p._activeSceneReturnJobs.Add(new());
+            Mission.Current = new Mission(); p.EnsureCurrentMission();
+            Require(p.SummonCleanups + p.GuideCleanups + p.ReturnCleanups == 0, "new-mission-no-proxy-index-effects");
+            Require(ReferenceEquals(p._mission, Mission.Current) && p._activeSceneGuideRequests.Count == 0, "new-mission-bound-clean-state");
+        });
+        Case("guide-arrival-is-once-and-preserves-door-receipt", () => {
+            var p = new LifecycleProbe(); var guide = new ActiveSceneGuideRequest { GuideAgentIndex = 7 }; var callback = p.BuildSceneGuideArrivalCallback(guide, true);
+            callback(); callback(); Require(p.Arrivals == 1 && p.GuideCleanups == 1 && guide.ArrivalReachedDoor, "arrival-once-door-preserved");
+        });
+        return passed;
+    }
+}
+static class Program { static void Main() { Console.WriteLine("SceneMovementLifecycle PASS=" + (Probe.Run() + LifecycleProbe.Run() + AnimusForge.CompactProbe.Run()) + " FAIL=0"); } }

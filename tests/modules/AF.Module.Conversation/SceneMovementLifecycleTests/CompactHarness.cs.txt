@@ -1,0 +1,48 @@
+using System;
+using System.Collections.Generic;
+using System.Threading;
+namespace AnimusForge;
+@@OPTIONS@@
+// Model backend and pure formatter substitutes; the detached runtime is production source.
+static class AIConfigHandler
+{
+    internal static int Calls, ModelThread, Count, Tokens;
+    internal static float Temperature;
+    internal static bool Success = true;
+    internal static string Reply = "";
+    internal static bool TryCallAuxiliarySimpleDialogue(List<object> messages, int tokens, float temperature, out string reply, out string error)
+    {
+        ++Calls; ModelThread = Thread.CurrentThread.ManagedThreadId; Count = messages.Count; Tokens = tokens; Temperature = temperature;
+        reply = Reply; error = "synthetic_failure"; return Success;
+    }
+}
+static class ShoutUtils { internal static string StripNamePrefixedLineSafely(string text, int maxPrefixLength) => text; }
+static class ConversationSpeechTextRules
+{
+    internal static bool Detailed, Preserve;
+    internal static string StripLeakedPromptContentForShout(string text) => text;
+    internal static string StripStageDirectionsForPassiveShout(string text, ConversationSpeechTextOptions options) { Detailed = options.Detailed; Preserve = options.PreserveAsterisk; return text; }
+}
+static class CompactProbe
+{
+    static void Require(bool value, string label) { if (!value) throw new Exception("ASSERT " + label); }
+    internal static int Run()
+    {
+        int callerThread = Thread.CurrentThread.ManagedThreadId;
+        var messages = new List<object> { "detached-role-message" };
+        var input = new SceneCompactReactionInput(messages, new ConversationSpeechTextOptions(true, false)); messages.Clear();
+        AIConfigHandler.Calls = 0; AIConfigHandler.Success = true; AIConfigHandler.Reply = " hello [FOL][ASS:7][GUI:8][ACTION:END] ";
+        string result = SceneCompactReactionRuntime.GenerateAsync(input).GetAwaiter().GetResult();
+        Require(result == "hello" && AIConfigHandler.Count == 1 && AIConfigHandler.Calls == 1, "detached-copy-and-internal-tags-hidden");
+        Require(AIConfigHandler.Tokens == 80 && AIConfigHandler.Temperature == .35f && AIConfigHandler.ModelThread != callerThread, "original-model-limits-background-only");
+        Require(ConversationSpeechTextRules.Detailed && !ConversationSpeechTextRules.Preserve, "captured-formatter-options");
+        Console.WriteLine("PASS compact-arrival-detached-messages-options-model-limits");
+        AIConfigHandler.Calls = 0; AIConfigHandler.Success = false;
+        Require(SceneCompactReactionRuntime.GenerateAsync(input).GetAwaiter().GetResult() == "" && AIConfigHandler.Calls == 1, "backend-failure-not-retried");
+        Console.WriteLine("PASS compact-model-failure-no-retry");
+        AIConfigHandler.Calls = 0;
+        Require(SceneCompactReactionRuntime.GenerateAsync(null).GetAwaiter().GetResult() == "" && AIConfigHandler.Calls == 0, "retired-capture-no-model-call");
+        Console.WriteLine("PASS compact-stale-capture-no-model-call");
+        return 3;
+    }
+}

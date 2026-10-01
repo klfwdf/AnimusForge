@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -40,6 +40,8 @@ using TaleWorlds.Library;
 using TaleWorlds.Localization;
 using TaleWorlds.MountAndBlade;
 using TaleWorlds.MountAndBlade.Missions;
+
+using static AnimusForge.SceneMovementController;
 
 namespace AnimusForge;
 
@@ -128,7 +130,7 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 			string trustBlock = ExtractTrustPromptBlock(baseExtras, out var baseExtrasWithoutTrust);
 			SplitSceneExtraSections(baseExtrasWithoutTrust, out var miscExtrasSection, out var ruleExtrasSection, out var knowledgeExtrasSection);
 			bool partyTransferTopicSelected = HasPartyTransferRuleContext(baseExtras);
-			string sceneFollowControlInstruction = BuildSceneFollowControlPromptInstruction(speakerNpc);
+			string sceneFollowControlInstruction = _sceneMovement.BuildSceneFollowControlPromptInstruction(speakerNpc);
 			string sceneMechanismPromptSection = BuildSceneMechanismPromptSection(null, null, null, sceneFollowControlInstruction, speakerNpc);
 			if (!string.IsNullOrWhiteSpace(sceneMechanismPromptSectionBase))
 			{
@@ -225,12 +227,12 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 				{
 					sysPrompt.AppendLine(presentNpcListBlock);
 				}
-				string sceneSummonClosureInstruction = BuildSceneSummonClosurePromptInstruction(allNpcData);
+				string sceneSummonClosureInstruction = _sceneMovement.BuildSceneSummonClosurePromptInstruction(allNpcData);
 				if (!string.IsNullOrWhiteSpace(sceneSummonClosureInstruction))
 				{
 					sysPrompt.AppendLine(sceneSummonClosureInstruction);
 				}
-				string sceneFollowControlInstruction = BuildSceneFollowControlPromptInstruction(data);
+				string sceneFollowControlInstruction = _sceneMovement.BuildSceneFollowControlPromptInstruction(data);
 				if (!string.IsNullOrWhiteSpace(sceneFollowControlInstruction))
 				{
 					sysPrompt.AppendLine(sceneFollowControlInstruction);
@@ -427,10 +429,10 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 			List<string> roundNpcVisibleTexts = new List<string>();
 			HashSet<int> roundNpcSpeakerIndices = new HashSet<int>();
 			List<NpcDataPacket> actionPromptParticipants = (framedNpcData != null && framedNpcData.Count > 0) ? framedNpcData : new List<NpcDataPacket> { primaryNpc };
-			List<SceneSummonPromptTarget> sceneSummonTargets = BuildSceneSummonPromptTargets(actionPromptParticipants, resolvedHeroes);
+			List<SceneSummonPromptTarget> sceneSummonTargets = _sceneMovement.BuildSceneSummonPromptTargets(actionPromptParticipants, resolvedHeroes);
 			int sceneGuideFirstPromptId = ((sceneSummonTargets != null && sceneSummonTargets.Count > 0) ? sceneSummonTargets.Max((SceneSummonPromptTarget x) => x?.PromptId ?? 0) : 0) + 1;
-			List<SceneGuidePromptTarget> sceneGuideTargets = BuildSceneGuidePromptTargets(firstPromptId: sceneGuideFirstPromptId);
-			string sceneSummonClosureInstruction = BuildSceneSummonClosurePromptInstruction(actionPromptParticipants);
+			List<SceneGuidePromptTarget> sceneGuideTargets = _sceneMovement.BuildSceneGuidePromptTargets(firstPromptId: sceneGuideFirstPromptId);
+			string sceneSummonClosureInstruction = _sceneMovement.BuildSceneSummonClosurePromptInstruction(actionPromptParticipants);
 			string sceneMechanismPromptSectionBase = BuildSceneMechanismPromptSection(sceneSummonTargets, sceneGuideTargets, sceneSummonClosureInstruction, null, primaryNpc);
 			bool multiNpcScene = speakableCandidates.Count > 1;
 			bool relaySingleFramedNpc = framedNpcData != null && framedNpcData.Count == 1;
@@ -616,7 +618,7 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 					string baseExtras = StripScenePersonaBlocks((ctx?.Extras ?? "").Trim());
 					string trustBlock = ExtractTrustPromptBlock(baseExtras, out var baseExtrasWithoutTrust);
 					SplitSceneExtraSections(baseExtrasWithoutTrust, out var miscExtrasSection, out var ruleExtrasSection, out var knowledgeExtrasSection);
-					string sceneFollowControlInstruction = BuildSceneFollowControlPromptInstruction(currentSpeaker);
+					string sceneFollowControlInstruction = _sceneMovement.BuildSceneFollowControlPromptInstruction(currentSpeaker);
 					string sceneMechanismPromptSection = BuildSceneMechanismPromptSection(sceneSummonTargets, sceneGuideTargets, sceneSummonClosureInstruction, sceneFollowControlInstruction, currentSpeaker);
 					List<string> historyLines = null;
 					lock (_historyLock)
@@ -865,8 +867,8 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 				bool battleSpeechPerformanceActive = BattleSpeechApiV1.ShouldSuppressOrdinarySceneFollowups(Mission.Current);
 				bool suppressBattleSpeechFollowups = battleSpeechClaimedReply || battleSpeechPerformanceActive;
 				battleSpeechClaimedRound |= suppressBattleSpeechFollowups;
-				bool flag9 = endRequested && IsAgentFollowingPlayerBySceneCommand(currentSpeakerAgent);
-				bool flag10 = endRequested && TryGetSceneSummonConversationSessionForAgentIndex(currentSpeaker.AgentIndex) != null;
+				bool flag9 = endRequested && _sceneMovement.IsAgentFollowingPlayerBySceneCommand(currentSpeakerAgent);
+				bool flag10 = endRequested && _sceneMovement.TryGetSceneSummonConversationSessionForAgentIndex(currentSpeaker.AgentIndex) != null;
 				cleaned = PrepareSceneMainReplySpeechText(cleaned, flag9, flag10);
 				string visibleReplyForReceipt = SanitizeSceneSpeechText(cleaned);
 				if (!string.IsNullOrWhiteSpace(cleaned))
@@ -1055,7 +1057,7 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 					if (!SaveRuntimeGuard.IsCurrentGeneration(sceneReplyGeneration)
 						|| sceneReplySessionId != Volatile.Read(ref _sceneHistorySessionId)
 						|| !IsSceneConversationEpochCurrent(conversationEpoch)) return false;
-					SuppressOrdinarySceneFollowupsForBattleSpeech(speakableCandidates);
+					_sceneMovement.SuppressOrdinarySceneFollowupsForBattleSpeech(speakableCandidates);
 					return true;
 				}, fallback: false);
 				if (!followupSettled) receipt?.Fail("scene.followup_unconfirmed");
@@ -1758,4 +1760,71 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 			Logger.Log("ShoutBehavior", "[ImmediateSceneReaction] persona snapshot failed agent=" + npc.AgentIndex + " error=" + ex.Message);
 		}
 	}
+	private async Task<SceneCompactReactionInput> CaptureCompactSceneReactionInputAsync(NpcDataPacket targetNpc, Hero contextHero, List<NpcDataPacket> allNpcData, string extraFactLine, string singleReplyUserContent, Func<bool> isCurrent)
+	{
+		if (targetNpc == null || allNpcData == null || allNpcData.Count == 0)
+		{
+			return null;
+		}
+		allNpcData = CloneNpcDataSnapshot(allNpcData);
+		ApplySceneLocalDisambiguatedNames(allNpcData);
+		targetNpc = allNpcData.FirstOrDefault((NpcDataPacket x) => x != null && x.AgentIndex >= 0 && x.AgentIndex == targetNpc.AgentIndex) ?? CloneNpcDataPacket(targetNpc);
+		if (targetNpc == null)
+		{
+			return null;
+		}
+        long generation = SaveRuntimeGuard.CaptureGeneration();
+        int session = Volatile.Read(ref _sceneHistorySessionId);
+        Mission sourceMission = await RunNativeConversationMainThreadFuncAsync("compact_reaction_scope", targetNpc.Name, targetNpc.AgentIndex, () => CanPublishImmediateSceneReaction(isCurrent) ? Mission.Current : null, (Mission)null).ConfigureAwait(false);
+        if (sourceMission == null) return null;
+		await EnsurePersonaForCandidatesAsync(new List<NpcDataPacket> { targetNpc }, contextHero != null ? new Dictionary<int, Hero> { [targetNpc.AgentIndex] = contextHero } : new Dictionary<int, Hero>());
+        return await RunNativeConversationMainThreadFuncAsync("compact_reaction_messages", targetNpc.Name, targetNpc.AgentIndex, () =>
+        {
+            if (!CanPublishImmediateSceneReaction(isCurrent) || !SaveRuntimeGuard.IsCurrentGeneration(generation) || session != _sceneHistorySessionId || !ReferenceEquals(sourceMission, Mission.Current)) return null;
+		Agent npcAgent = (targetNpc.AgentIndex >= 0) ? Mission.Current?.Agents?.FirstOrDefault((Agent a) => a != null && a.Index == targetNpc.AgentIndex) : null;
+		CharacterObject npcCharacter = (npcAgent?.Character as CharacterObject) ?? contextHero?.CharacterObject;
+		string npcKingdomIdOverride = TryGetKingdomIdOverrideFromAgent(npcAgent);
+		MyBehavior.ShoutPromptContext shoutPromptContext = MyBehavior.BuildShoutPromptContextForExternal(contextHero, "请直接根据刚刚发生的公开互动做出即时反应。", null, targetNpc.CultureId ?? "neutral", hasAnyHero: targetNpc.IsHero, targetCharacter: npcCharacter, kingdomIdOverride: npcKingdomIdOverride, targetAgentIndex: targetNpc.AgentIndex, suppressDynamicRuleAndLore: true);
+		StringBuilder stringBuilder = new StringBuilder();
+		string presentNpcListBlock = BuildScenePresentNpcListBlockForPrompt(allNpcData, targetNpc);
+		if (!string.IsNullOrWhiteSpace(presentNpcListBlock))
+		{
+			stringBuilder.AppendLine(presentNpcListBlock);
+		}
+		string baseExtras = StripScenePersonaBlocks((shoutPromptContext?.Extras ?? "").Trim());
+		string trustBlock = ExtractTrustPromptBlock(baseExtras, out var baseExtrasWithoutTrust);
+		bool gcczImmediatePromptExtras = HasGcczImmediatePromptExtras(baseExtras);
+		SplitSceneExtraSections(baseExtrasWithoutTrust, out var miscExtrasSection, out var ruleExtrasSection, out var knowledgeExtrasSection);
+		if (!gcczImmediatePromptExtras)
+		{
+			miscExtrasSection = "";
+			ruleExtrasSection = "";
+			knowledgeExtrasSection = "";
+		}
+		string systemRuleBlock = gcczImmediatePromptExtras ? BuildSceneSystemRuleBlock(ruleExtrasSection, null) : "";
+		string gcczIdentityOverrideBlock = BuildGcczImmediateIdentityOverrideBlock(contextHero, npcCharacter, targetNpc.AgentIndex, baseExtras);
+		bool partyTransferTopicSelected = HasPartyTransferRuleContext(baseExtras);
+		List<string> historyLines = null;
+		lock (_historyLock)
+		{
+			if (_publicConversationHistory.Count > 0)
+			{
+				historyLines = BuildVisibleSceneHistoryLines(_publicConversationHistory, targetNpc.AgentIndex, GetSceneNpcHistoryNameForPrompt(targetNpc), useNpcNameAddress: false);
+			}
+		}
+		string persistedHeroHistory = (contextHero != null) ? MyBehavior.BuildHistoryContextForExternal(contextHero, 0, "", GetLatestSceneNpcUtterance(targetNpc.AgentIndex)) : BuildWildernessNonHeroHistoryContextForPrompt(targetNpc, null, npcCharacter, targetNpc.AgentIndex, "", GetLatestSceneNpcUtterance(targetNpc.AgentIndex));
+		string privateRecentWindowSection = "";
+		string persistedWithoutRecentWindow = "";
+		SplitPersistedHeroHistorySections(persistedHeroHistory, out privateRecentWindowSection, out persistedWithoutRecentWindow);
+		string roleTopIntro = BuildSceneSystemTopPromptIntroForSingle(targetNpc, contextHero, new List<NpcDataPacket> { targetNpc }, partyTransferTopicSelected: partyTransferTopicSelected);
+		string roleRuntimeContext = BuildCompactSceneUserRuntimeContextForShortReply(targetNpc, contextHero, new List<NpcDataPacket> { targetNpc }, partyTransferTopicSelected: partyTransferTopicSelected);
+		string layeredPrompt = AppendPlayerCustomPromptRuleToSystemPrompt(roleTopIntro);
+		layeredPrompt = MainPromptMessageAssemblyOwner.BuildSceneReactionSystemPrompt(gcczIdentityOverrideBlock, systemRuleBlock, layeredPrompt);
+		string extraFactUserBlock = BuildCurrentAfefFactPromptBlock(extraFactLine);
+		List<ConversationMessage> persistentMemoryRoleMessages = BuildUncompressedMemoryRoleMessagesForPrompt(contextHero, npcCharacter, targetNpc, targetNpc.AgentIndex);
+		List<object> messages = BuildStrictSceneMessagesForNpc(targetNpc.AgentIndex, layeredPrompt, MainPromptMessageAssemblyOwner.BuildSceneSingleSpeakerPrefixSections(MainPromptMessageAssemblyOwner.SceneSingleSpeakerLayout.CompactArrival, privateRecentWindowSection, persistedWithoutRecentWindow, roleRuntimeContext, stringBuilder.ToString().Trim(), extraFactUserBlock, trustBlock, miscExtrasSection, "", knowledgeExtrasSection, ""), new string[1] { singleReplyUserContent }, suppressReplyFormatInstruction: true, persistentHistoryMessages: persistentMemoryRoleMessages);
+            return new SceneCompactReactionInput(messages, new ConversationSpeechTextOptions(IsDetailedSceneSpeechPromptEnabled(), ShouldPreserveSceneAsteriskActions()));
+        }, (SceneCompactReactionInput)null).ConfigureAwait(false);
+    }
+
 }

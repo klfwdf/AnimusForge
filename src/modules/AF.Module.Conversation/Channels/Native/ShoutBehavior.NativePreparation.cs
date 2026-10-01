@@ -62,10 +62,10 @@ public partial class ShoutBehavior
 		{
 			nativeResolvedHeroes[nativeTargetAgentIndex] = targetHero;
 		}
-		List<SceneSummonPromptTarget> nativeSceneSummonTargets = (nativeTargetAgentIndex >= 0) ? BuildSceneSummonPromptTargets(presentNpcs, nativeResolvedHeroes) : null;
+		List<SceneSummonPromptTarget> nativeSceneSummonTargets = (nativeTargetAgentIndex >= 0) ? _sceneMovement.BuildSceneSummonPromptTargets(presentNpcs, nativeResolvedHeroes) : null;
 		int nativeSceneGuideFirstPromptId = ((nativeSceneSummonTargets != null && nativeSceneSummonTargets.Count > 0) ? nativeSceneSummonTargets.Max((SceneSummonPromptTarget x) => x?.PromptId ?? 0) : 0) + 1;
 		Agent nativeTargetAgent = (nativeTargetAgentIndex >= 0) ? Mission.Current?.Agents?.FirstOrDefault((Agent a) => a != null && a.Index == nativeTargetAgentIndex) : null;
-		List<SceneGuidePromptTarget> nativeSceneGuideTargets = (nativeTargetAgentIndex >= 0) ? BuildSceneGuidePromptTargets(nativeTargetAgent, nativeSceneGuideFirstPromptId) : null;
+		List<SceneGuidePromptTarget> nativeSceneGuideTargets = (nativeTargetAgentIndex >= 0) ? _sceneMovement.BuildSceneGuidePromptTargets(nativeTargetAgent, nativeSceneGuideFirstPromptId) : null;
 		List<string> preprocessExcludedRuleIds = BuildPreprocessExcludedRuleIdsForCurrentInteraction(targetHero, targetCharacter, nativeTargetAgentIndex, npc.IsHero, nativeSceneSummonTargets, nativeSceneGuideTargets, npc, presentNpcs, routingInput);
         return new NativeConversationPreparationSnapshot
         {
