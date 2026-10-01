@@ -23,6 +23,8 @@ internal static class WeeklyReportRecoveryReplay
         object Call(object o, string name, params object[] args) => o.GetType().GetMethod(name, M).Invoke(o, args);
         void Check(bool ok, string label) { if (!ok) throw new InvalidOperationException("Weekly recovery: " + label); }
         object host = RuntimeHelpers.GetUninitializedObject(hostType);
+        Set(host, "_memoryBusinessState", Activator.CreateInstance(af.GetType("AnimusForge.MemoryBusinessStateOwner", true), true));
+        Set(host, "_weeklyNoticeOwner", Activator.CreateInstance(af.GetType("AnimusForge.WeeklyNoticeStateOwner", true), true));
         Type revisionType = af.GetType("AnimusForge.WeeklyReportMaterialRevisionOwner", true);
         object revisions = Activator.CreateInstance(revisionType, true);
         Set(host, "_weeklyReportMaterialRevisions", revisions);
