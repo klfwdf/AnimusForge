@@ -105,6 +105,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 	private static TroopRoster _armedCoupRoster;
 	// Coup-owned defender records: { recordId, characterId, sourcePartyId, role }.
 	private static List<string[]> _armedCoupDefenders;
+	private static int _armedCoupEntryLimit, _armedCoupWaveSize, _armedCoupWaveIntervalSeconds, _armedCoupMaxActiveWaves;
 	// Resolved once; spawn/casualty paths must not scan assemblies per agent.
 	private static bool _coupReflectionResolved;
 	private static ConstructorInfo _coupOriginConstructor;
@@ -113,12 +114,31 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 
 	internal static void QueueArmedCoupEntry(string settlementId, string locationId, TroopRoster roster, List<string[]> defenders)
 	{
+		QueueArmedCoupEntryWithOptions(settlementId, locationId, roster, defenders,
+			locationId == LordHallLocationId ? 20 : 60, DefenderReserveWaveSize, (int)DefenderReserveWaveIntervalSeconds, MaxActiveDefenderReserveWaves);
+	}
+
+	// Primitive-value internal seam also supports the legacy separate Coup assembly.
+	internal static void QueueArmedCoupEntryWithOptions(string settlementId, string locationId, TroopRoster roster, List<string[]> defenders,
+		int allyLimit, int waveSize, int waveIntervalSeconds, int maxActiveWaves)
+	{
 		ValidateArmedCoupRuntime();
+		if (allyLimit < 1 || allyLimit > (locationId == LordHallLocationId ? 40 : 120)
+			|| waveSize < 1 || waveSize > 60 || waveIntervalSeconds < 5 || waveIntervalSeconds > 120
+			|| maxActiveWaves < 1 || maxActiveWaves > 4)
+		{
+			ClearArmedCoupEntry();
+			throw new ArgumentOutOfRangeException(nameof(allyLimit), "Invalid armed coup battle options.");
+		}
 		bool valid = !string.IsNullOrWhiteSpace(settlementId) && !string.IsNullOrWhiteSpace(locationId);
 		_armedCoupSettlementId = valid ? settlementId : null;
 		_armedCoupLocationId = valid ? locationId : null;
 		_armedCoupRoster = valid ? roster : null;
 		_armedCoupDefenders = valid && defenders != null ? new List<string[]>(defenders) : null;
+		_armedCoupEntryLimit = valid ? allyLimit : 0;
+		_armedCoupWaveSize = valid ? waveSize : 0;
+		_armedCoupWaveIntervalSeconds = valid ? waveIntervalSeconds : 0;
+		_armedCoupMaxActiveWaves = valid ? maxActiveWaves : 0;
 	}
 
 	internal static void ClearArmedCoupEntry()
@@ -127,6 +147,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 		_armedCoupLocationId = null;
 		_armedCoupRoster = null;
 		_armedCoupDefenders = null;
+		_armedCoupEntryLimit = _armedCoupWaveSize = _armedCoupWaveIntervalSeconds = _armedCoupMaxActiveWaves = 0;
 	}
 
 	// Armed only for the exact queued location; entering another location is an ordinary visit.
@@ -1570,7 +1591,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 			EnsureProfileRosters();
 			bool armedCoup = IsArmedCoupEntry(settlement.StringId, nextLocation?.StringId);
 			EntryProfileKind profileKind = armedCoup || IsOwnEntrySettlement(settlement) ? EntryProfileKind.OwnSettlement : EntryProfileKind.OtherSettlement;
-			int limit = armedCoup ? (nextLocation?.StringId == LordHallLocationId ? 20 : 60) : GetProfileLimit(profileKind);
+			int limit = armedCoup ? _armedCoupEntryLimit : GetProfileLimit(profileKind);
 			int configuredCount;
 			int unavailableCount;
 			TroopRoster selected;
@@ -1600,6 +1621,9 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 				IsOwnSettlement = !armedCoup && profileKind == EntryProfileKind.OwnSettlement,
 				ArmedCoup = armedCoup,
 				ArmedCoupDefenders = armedCoup && _armedCoupDefenders != null ? new List<string[]>(_armedCoupDefenders) : null,
+				CoupWaveSize = armedCoup ? _armedCoupWaveSize : DefenderReserveWaveSize,
+				CoupWaveIntervalSeconds = armedCoup ? _armedCoupWaveIntervalSeconds : (int)DefenderReserveWaveIntervalSeconds,
+				CoupMaxActiveWaves = armedCoup ? _armedCoupMaxActiveWaves : MaxActiveDefenderReserveWaves,
 				SceneKind = sceneKind,
 				ActivateVillageAftermath = activateVillageAftermath,
 				CreatedUtc = DateTime.UtcNow
@@ -2606,6 +2630,9 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 		public bool IsOwnSettlement;
 		public bool ArmedCoup;
 		public List<string[]> ArmedCoupDefenders;
+		public int CoupWaveSize = DefenderReserveWaveSize;
+		public int CoupWaveIntervalSeconds = (int)DefenderReserveWaveIntervalSeconds;
+		public int CoupMaxActiveWaves = MaxActiveDefenderReserveWaves;
 		public SetsSettlementSceneKind SceneKind;
 		public bool ActivateVillageAftermath;
 		public DateTime CreatedUtc;
@@ -2658,6 +2685,8 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 		private readonly SetsUrbanCaptureSession _shadowCaptureSession;
 		private readonly List<DefenderReserveEntry> _remainingDefenderReserve;
 		private readonly bool _armedCoup;
+		private readonly int _defenderWaveSize, _maxActiveDefenderWaves;
+		private readonly float _defenderWaveIntervalSeconds;
 		private readonly HashSet<int> _alliedAgentIndexes = new HashSet<int>();
 		private readonly Dictionary<int, Agent> _alliedAgentsByIndex = new Dictionary<int, Agent>();
 		private readonly Dictionary<int, Agent> _pendingScatteredPlayerHeroAgentsByIndex = new Dictionary<int, Agent>();
@@ -2749,6 +2778,9 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 			_selectedRoster = CloneRoster(entry?.SelectedRoster, _limit);
 			_survivingRoster = CloneRoster(_selectedRoster, int.MaxValue);
 			_armedCoup = entry?.ArmedCoup ?? false;
+			_defenderWaveSize = _armedCoup ? entry.CoupWaveSize : DefenderReserveWaveSize;
+			_defenderWaveIntervalSeconds = _armedCoup ? entry.CoupWaveIntervalSeconds : DefenderReserveWaveIntervalSeconds;
+			_maxActiveDefenderWaves = _armedCoup ? entry.CoupMaxActiveWaves : MaxActiveDefenderReserveWaves;
 			// Armed coups spawn exactly the coup-owned defender records; the coup session is the
 			// single authority on roles, so the host never re-derives them from live rosters.
 			_remainingDefenderReserve = !_defenderConflictEnabled ? new List<DefenderReserveEntry>()
@@ -5547,7 +5579,7 @@ if (_spawnedAlliedCount > 0)
 					return;
 				}
 				int activeWaveCount = CountActiveDefenderReserveWaves();
-				if (activeWaveCount >= MaxActiveDefenderReserveWaves)
+				if (activeWaveCount >= _maxActiveDefenderWaves)
 				{
 					return;
 				}
@@ -5593,7 +5625,7 @@ if (_spawnedAlliedCount > 0)
 				{
 					return;
 				}
-				List<DefenderReserveEntry> defenders = PeekDefenderReserve(DefenderReserveWaveSize, phaseKind);
+				List<DefenderReserveEntry> defenders = PeekDefenderReserve(_defenderWaveSize, phaseKind);
 				List<CharacterObject> troops = ExtractCharacters(defenders);
 				List<DefenderReserveEntry> spawnedDefenders = new List<DefenderReserveEntry>();
 				int waveNumber = _defenderReserveWaveIndex + 1;
@@ -5606,15 +5638,15 @@ if (_spawnedAlliedCount > 0)
 				}
 				RemoveDefenderReserveEntries(spawnedDefenders);
 				_defenderReserveWaveIndex++;
-				_nextDefenderReserveWaveTime = (base.Mission?.CurrentTime ?? 0f) + DefenderReserveWaveIntervalSeconds;
+				_nextDefenderReserveWaveTime = (base.Mission?.CurrentTime ?? 0f) + _defenderWaveIntervalSeconds;
 				RefreshSetsUsableProtectionState("defender_reserve_wave");
 				ResetDefenderReserveProgress(CountLiveTrackedEnemies(), "defender_reserve_wave_" + waveNumber);
 				RefreshEnemyNativeCombatOrders();
 				if (spawned > 0)
 				{
-					InformationManager.DisplayMessage(new InformationMessage(SetsSettlementEntryProfile.BuildReserveWaveMessage(_sceneKind, phaseKind, waveNumber, MaxActiveDefenderReserveWaves), Color.FromUint(WarningColor)));
+					InformationManager.DisplayMessage(new InformationMessage(SetsSettlementEntryProfile.BuildReserveWaveMessage(_sceneKind, phaseKind, waveNumber, _maxActiveDefenderWaves), Color.FromUint(WarningColor)));
 				}
-				SettlementEntryTroopSelectionLog.Log("Spawned defender reserve wave. settlement=" + _settlementId + ", wave=" + waveNumber + ", activeWaves=" + CountActiveDefenderReserveWaves() + "/" + MaxActiveDefenderReserveWaves + ", phase=" + phaseKind + ", requested=" + troops.Count + ", spawned=" + spawned + ", skipped=" + Math.Max(0, troops.Count - spawned) + ", remainingTotal=" + (_remainingDefenderReserve?.Count ?? 0) + ", nextWaveTime=" + _nextDefenderReserveWaveTime.ToString("0.0"));
+				SettlementEntryTroopSelectionLog.Log("Spawned defender reserve wave. settlement=" + _settlementId + ", wave=" + waveNumber + ", activeWaves=" + CountActiveDefenderReserveWaves() + "/" + _maxActiveDefenderWaves + ", phase=" + phaseKind + ", requested=" + troops.Count + ", spawned=" + spawned + ", skipped=" + Math.Max(0, troops.Count - spawned) + ", remainingTotal=" + (_remainingDefenderReserve?.Count ?? 0) + ", nextWaveTime=" + _nextDefenderReserveWaveTime.ToString("0.0"));
 			}
 			catch (Exception ex)
 			{

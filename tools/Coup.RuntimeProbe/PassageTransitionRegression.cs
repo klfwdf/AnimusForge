@@ -127,6 +127,28 @@ internal static class PassageTransitionRegression
             check((string)host.GetField("_armedCoupLocationId", All).GetValue(null) == "lordshall", "hall selection queues armed lordshall rather than ordinary visit");
             object selected = host.GetField("_armedCoupRoster", All).GetValue(null);
             check((int)selected.GetType().GetProperty("TotalManCount").GetValue(selected) == 1, "hall queue carries selected reinforcements");
+            // Same production callback with an expanded saved setting and more survivors.
+            object options = sessionType.GetField("BattleOptions").GetValue(session);
+            options.GetType().GetField("HallAllyLimit").SetValue(options, 40);
+            for (int i = 0; i < 40; i++)
+            {
+                object survivor = Activator.CreateInstance(recordType);
+                recordType.GetField("CharacterId").SetValue(survivor, "probe_coup_survivor");
+                troops.Add(survivor);
+            }
+            phase.SetValue(session, Enum.Parse(phase.FieldType, "HallSelection"));
+            ownerType.GetMethod("OpenHallSelection", All).Invoke(owner, null);
+            check((int)_selection[1] == 40, "expanded hall picker uses saved cap for 41 survivors");
+            object forty = selected.GetType().GetMethod("CreateDummyTroopRoster", All).Invoke(null, null);
+            selected.GetType().GetMethod("AddToCounts", All).Invoke(forty, new object[] { _soldier, 40, false, 0, 0, true, -1 });
+            ((Delegate)_selection[3]).DynamicInvoke(forty);
+            selected = host.GetField("_armedCoupRoster", All).GetValue(null);
+            check((int)selected.GetType().GetProperty("TotalManCount").GetValue(selected) == 40,
+                "real hall confirmation queues 40 troops without legacy truncation");
+            options.GetType().GetField("HallAllyLimit").SetValue(options, 1);
+            phase.SetValue(session, Enum.Parse(phase.FieldType, "HallSelection"));
+            ownerType.GetMethod("OpenHallSelection", All).Invoke(owner, null);
+            check((int)_selection[1] == 1, "minimum hall cap still limits healthy survivors");
             host.GetMethod("ClearArmedCoupEntry", All).Invoke(null, null);
 
             // Outside this exact mission the original passage route must remain available.

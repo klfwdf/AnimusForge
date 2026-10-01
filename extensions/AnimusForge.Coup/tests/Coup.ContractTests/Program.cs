@@ -24,6 +24,7 @@ internal static class Program
 
     private static void Main()
     {
+        BattleOptionsRegression();
         var session = NewSession();
         session.Troops.Add(Troop("1"));
         Assert(session.IsValid(), "valid mission snapshot");
@@ -116,6 +117,69 @@ internal static class Program
         Assert(!session.IsSettled, "technical stop waits for casualty commit");
         CheckBulletinReport();
         Console.WriteLine("Coup contracts: " + _assertions + " PASS");
+    }
+
+    private static void BattleOptionsRegression()
+    {
+        var defaults = CoupBattleOptions.LegacyDefaults();
+        Assert(defaults.IsValid() && defaults.StreetAllyLimit == 60 && defaults.HallAllyLimit == 20
+            && defaults.GateGuardLimit == 10 && defaults.HallGuardLimit == 20
+            && defaults.DefenderWaveSize == 30 && defaults.DefenderWaveIntervalSeconds == 30
+            && defaults.MaxActiveDefenderWaves == 4, "historical defaults preserved");
+        var min = CoupBattleOptions.Normalize(int.MinValue, -1, 0, 0, 0, 0, 0);
+        Assert(min.IsValid() && min.StreetAllyLimit == 1 && min.HallAllyLimit == 1 && min.GateGuardLimit == 1
+            && min.HallGuardLimit == 1 && min.DefenderWaveSize == 1 && min.DefenderWaveIntervalSeconds == 5
+            && min.MaxActiveDefenderWaves == 1, "MCM low outliers clamped");
+        var max = CoupBattleOptions.Normalize(int.MaxValue, 999, 999, 999, 999, 999, 999);
+        Assert(max.IsValid() && max.StreetAllyLimit == 120 && max.HallAllyLimit == 40 && max.GateGuardLimit == 30
+            && max.HallGuardLimit == 40 && max.DefenderWaveSize == 60 && max.DefenderWaveIntervalSeconds == 120
+            && max.MaxActiveDefenderWaves == 4, "MCM high outliers clamped");
+        foreach (var field in typeof(CoupBattleOptions).GetFields())
+        {
+            var invalid = CoupBattleOptions.LegacyDefaults();
+            field.SetValue(invalid, 0);
+            Assert(!invalid.IsValid(), "saved low outlier rejected: " + field.Name);
+            field.SetValue(invalid, int.MaxValue);
+            Assert(!invalid.IsValid(), "saved high outlier rejected: " + field.Name);
+        }
+        var session = NewSession();
+        session.BattleOptions = max;
+        for (int i = 0; i < 120; i++) session.Troops.Add(Troop("ally" + i));
+        for (int i = 0; i < 40; i++) session.Troops[i].HallSelected = true;
+        for (int i = 0; i < 30; i++) session.Troops.Add(Troop("gate" + i, CoupTroopRole.GateGuard));
+        for (int i = 0; i < 40; i++) session.Troops.Add(Troop("guard" + i, CoupTroopRole.HallGuard));
+        Assert(session.IsValid(), "expanded roster boundaries accepted");
+        session.Troops[40].HallSelected = true;
+        Assert(!session.IsValid(), "expanded hall boundary enforced");
+        session.Troops[40].HallSelected = false;
+        foreach (var role in new[] { CoupTroopRole.Ally, CoupTroopRole.GateGuard, CoupTroopRole.HallGuard })
+        {
+            session.Troops.Add(Troop("overflow", role));
+            Assert(!session.IsValid(), "expanded role boundary enforced: " + role);
+            session.Troops.RemoveAt(session.Troops.Count - 1);
+        }
+        var jsonOptions = new JsonSerializerOptions { IncludeFields = true };
+        var restored = JsonSerializer.Deserialize<CoupSession>(JsonSerializer.Serialize(session, jsonOptions), jsonOptions);
+        Assert(restored.IsValid() && restored.BattleOptions.StreetAllyLimit == 120
+            && restored.BattleOptions.DefenderWaveIntervalSeconds == 120, "expanded snapshot survives JSON roundtrip");
+        session = NewSession();
+        var json = System.Text.Json.Nodes.JsonNode.Parse(JsonSerializer.Serialize(session, jsonOptions));
+        json.AsObject().Remove("BattleOptions");
+        restored = JsonSerializer.Deserialize<CoupSession>(json.ToJsonString(), jsonOptions);
+        Assert(restored.IsValid() && restored.BattleOptions.StreetAllyLimit == 60
+            && restored.BattleOptions.DefenderWaveSize == 30, "old save uses historical defaults");
+        json["BattleOptions"] = null;
+        Assert(!JsonSerializer.Deserialize<CoupSession>(json.ToJsonString(), jsonOptions).IsValid(), "explicit null snapshot rejected");
+        json["BattleOptions"] = new System.Text.Json.Nodes.JsonObject { ["StreetAllyLimit"] = 60 };
+        Assert(!JsonSerializer.Deserialize<CoupSession>(json.ToJsonString(), jsonOptions).IsValid(), "partial snapshot rejected");
+        session.BattleOptions = min;
+        session.Troops.Add(Troop("one"));
+        session.Troops[0].HallSelected = true;
+        Assert(session.IsValid(), "one-soldier snapshot accepted");
+        var next = CoupBattleOptions.LegacyDefaults();
+        next.StreetAllyLimit = 99;
+        Assert(session.BattleOptions.StreetAllyLimit == 1 && restored.BattleOptions.StreetAllyLimit == 60,
+            "sessions do not share options with future coups");
     }
 
     private static void CheckBulletinReport()
