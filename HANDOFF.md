@@ -1,4 +1,11 @@
-# 当前交接：合并 main 参战邀请修复并交付 main（2026-10-01）
+# 当前交接：AF 2.0 最终职责收官实施（2026-10-01）
+
+- 本轮授权实施F0–F6/S1–S6；五组完整职责差集冻结并进入实施，不继承历史push/Stage/部署/仓外写入许可。Persona宿主Prompt/fallback规则是五组外具名OPEN，待用户裁定，不能宣称原J差集全闭。
+- 起始 `320c1aad`，空意图 `3d59d616`；两API求值各1172唯一Compile/8资源，51宿主partial与旧A成员证据复用并按变更/保留/迁移具名分类。原SessionTransport raw dirty与旧tools/NuGet保持不提交、不清理。
+- F1/F2/F3/F4/F5范围、旁支、接口、必要门禁及新增预算见[唯一主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#af2-final-responsibility-closeout-20261001)。产品迁移/最终六构建/全量分类/S6尚未验收；F7 LIVE/SAVE/真实网络/帧性能NOT-RUN。
+- 全量runner仓外TEMP仍待精确许可。Conversation早期越界写入一个精确TEMP源码引用文件，覆盖旧文件与否UNKNOWN，已停止且不清理；详情如实记主台账。旧凭据轮换未确认，不读取/复述秘密。
+
+# 历史交接：合并 main 参战邀请修复并交付 main（2026-10-01）
 
 - 用户已明确授权先合并最新 `main`、保留修复并验证，再普通推送到 `origin/main`；这只改变本轮发布目标，不授权强推、部署或清理。
 - 意图 `ff0ce7e4`，双父合并 `7dc16f68` 保留远端 `0a641aab` 的参战邀请去重修复及现有源码归位/功能；唯一测试冲突仅适配两个 canonical 路径，新增断言完整保留。
