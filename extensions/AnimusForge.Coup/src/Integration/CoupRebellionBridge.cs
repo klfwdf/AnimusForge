@@ -17,8 +17,8 @@ using TaleWorlds.ObjectSystem;
 
 namespace AnimusForge.CoupSystem;
 
-// A temporary, version-probed adapter to the installed AF owner. All eligibility,
-// naming/provider calls and political execution remain AF's existing implementations.
+// AF owns physical eligibility, naming and political execution. Coup owns the reason
+// to oppose the new ruler; ordinary weekly rebellion relation thresholds do not apply.
 internal sealed class CoupRebellionBridge : CampaignBehaviorBase
 {
     private enum RequestState { Queued, Naming, Ready, NamingFailed, Completed }
@@ -31,6 +31,9 @@ internal sealed class CoupRebellionBridge : CampaignBehaviorBase
         public string RulerId;
         public string ClanId;
         public string ClanLeaderId;
+        public bool LoyalistSelection;
+        public string FormerKingId;
+        public string FormerRulingClanId;
         public List<string> Followers = new List<string>();
         public int Week;
         public int Relation;
@@ -232,15 +235,17 @@ internal sealed class CoupRebellionBridge : CampaignBehaviorBase
             _requests = JsonConvert.DeserializeObject<Dictionary<string, Request>>(_requestsJson ?? "{}") ?? new Dictionary<string, Request>(StringComparer.Ordinal);
             _outcomes = JsonConvert.DeserializeObject<Dictionary<string, Outcome>>(_outcomesJson ?? "{}") ?? new Dictionary<string, Outcome>(StringComparer.Ordinal);
             _saveValid = _requests.All(p => p.Value != null && p.Key == p.Value.Id && !string.IsNullOrWhiteSpace(p.Value.KingdomId)
+                && (!p.Value.LoyalistSelection || (!string.IsNullOrWhiteSpace(p.Value.FormerKingId) && !string.IsNullOrWhiteSpace(p.Value.FormerRulingClanId)))
                 && p.Value.Followers != null && Enum.IsDefined(typeof(RequestState), p.Value.State))
                 && _outcomes.All(p => !string.IsNullOrWhiteSpace(p.Key) && p.Value != null);
         }
         catch (Exception ex) { _saveValid = false; Logger.Log("Coup", "Bridge save rejected; original JSON retained: " + ex); }
     }
 
-    internal bool TryQueueCoupRebellion(string coupId, Kingdom kingdom, out string message)
+    internal bool TryQueueCoupRebellion(CoupSession session, Kingdom kingdom, out string message)
     {
         message = "";
+        string coupId = session?.Id;
         MyBehavior owner = MyBehavior.Instance;
         if (!Ready(owner) || string.IsNullOrWhiteSpace(coupId) || kingdom == null)
         { message = "AF 叛乱接缝、存档或王国尚未就绪。"; return false; }
@@ -250,24 +255,64 @@ internal sealed class CoupRebellionBridge : CampaignBehaviorBase
         try
         {
             int week = Math.Max(0, (int)CampaignTime.Now.ToDays / 7);
-            object result = _af.Resolve.Invoke(owner, new object[] { kingdom, week, false, true });
-            Clan clan = _af.SelectedClan.GetValue(result) as Clan;
+            List<CoupLoyalistCandidate> candidates = SelectLoyalists(owner, kingdom, session.KingId, session.OriginalRulingClanId, out message);
+            Clan clan = candidates.Count == 0 ? null : kingdom.Clans.FirstOrDefault(c => c.StringId == candidates[0].ClanId);
             var request = new Request
             {
+                LoyalistSelection = true, FormerKingId = session.KingId, FormerRulingClanId = session.OriginalRulingClanId,
                 Id = coupId, KingdomId = kingdom.StringId, RulingClanId = kingdom.RulingClan?.StringId,
                 RulerId = kingdom.Leader?.StringId, ClanId = clan?.StringId, ClanLeaderId = clan?.Leader?.StringId,
                 Week = week, State = clan == null ? RequestState.Completed : RequestState.Queued,
-                Message = _af.ResolutionMessage.GetValue(result) as string,
-                Followers = ((_af.SelectedFollowers.GetValue(result) as IEnumerable<Clan>) ?? Enumerable.Empty<Clan>())
-                    .Where(c => c != null && c != clan).Select(c => c.StringId).Distinct(StringComparer.Ordinal).ToList()
+                Message = message,
+                Followers = candidates.Skip(1).Select(c => c.ClanId).ToList()
             };
             _requests.Add(coupId, request);
-            if (clan != null) { _hasWork = true; request.Message = "政变后的一次叛乱判定已登记，将使用 AF 原命名与建国流程；忙时顺序等待。"; }
+            if (clan != null) { _hasWork = true; request.Message = "旧王支持者已集结：" + clan.Name + "将领导反抗，另有" + request.Followers.Count + "个家族响应；将使用 AF 原命名与建国流程，忙时顺序等待。"; }
             message = request.Message;
-            Logger.Log("Coup", "rebellion_registered coup=" + coupId + " state=" + request.State);
+            Logger.Log("Coup", "rebellion_registered coup=" + coupId + " state=" + request.State + " leader=" + request.ClanId + " followers=" + request.Followers.Count + " reason=" + request.Message);
             return true;
         }
         catch (Exception ex) { message = "政变后叛乱登记失败：" + Error(ex); Logger.Log("Coup", message); return false; }
+    }
+
+    private List<CoupLoyalistCandidate> SelectLoyalists(MyBehavior owner, Kingdom kingdom, string formerKingId, string formerClanId, out string message)
+    {
+        var candidates = new List<CoupLoyalistCandidate>();
+        message = "旧王家族及更支持旧王的家族中，目前没有具备带地起兵条件的候选人。";
+        if (!DuelSettings.IsKingdomStabilityAndRebellionEnabled())
+        { message = "AF 王国稳定度与叛乱已关闭，跳过政变后反叛。"; return candidates; }
+        if (PlayerKingdomRebellionImmunity.ShouldProtectKingdom(kingdom))
+        { message = "玩家王国叛乱免疫已开启，跳过政变后反叛。"; return candidates; }
+        Hero formerKing = MBObjectManager.Instance.GetObject<Hero>(formerKingId);
+        if (formerKing == null || kingdom?.Leader == null)
+            throw new InvalidOperationException("政变前后统治者身份缺失，不能判定支持关系。");
+        foreach (Clan candidate in kingdom.Clans)
+        {
+            object[] args = { candidate, kingdom, true, null, 0, 0, 0 };
+            bool eligible = (bool)_af.ValidateClan.Invoke(owner, args);
+            int oldRelation = 0, newRelation = (int)args[4];
+            bool formerFamily = candidate?.StringId == formerClanId;
+            if (eligible)
+            {
+                oldRelation = candidate.Leader == formerKing ? 100 : candidate.Leader.GetRelation(formerKing);
+                eligible = CoupLoyalistPolicy.Opposes(formerFamily, oldRelation, newRelation);
+                if (!eligible) args[3] = "对旧王的支持未超过对新王的支持。";
+            }
+            Logger.Log("Coup", "loyalist_candidate clan=" + candidate?.StringId + " oldFamily=" + formerFamily
+                + " oldRelation=" + oldRelation + " newRelation=" + newRelation + " eligible=" + eligible + " note=" + args[3]);
+            if (eligible) candidates.Add(new CoupLoyalistCandidate { ClanId = candidate.StringId, FormerRulingClan = formerFamily,
+                RelationToOldKing = oldRelation, RelationToNewKing = newRelation, Fortifications = (int)args[5] + (int)args[6], ClanTier = candidate.Tier });
+        }
+        return CoupLoyalistPolicy.Rank(candidates);
+    }
+
+    private static bool StillSupportsFormerKing(Request request, Clan clan, Kingdom kingdom)
+    {
+        if (clan?.Leader == null || kingdom?.Leader == null) return false;
+        if (clan.StringId == request.FormerRulingClanId) return true;
+        Hero formerKing = MBObjectManager.Instance.GetObject<Hero>(request.FormerKingId);
+        return formerKing != null && CoupLoyalistPolicy.Opposes(false,
+            clan.Leader.GetRelation(formerKing), clan.Leader.GetRelation(kingdom.Leader));
     }
 
     private bool Ready(MyBehavior owner)
@@ -291,15 +336,18 @@ internal sealed class CoupRebellionBridge : CampaignBehaviorBase
             || kingdom.RulingClan?.StringId != request.RulingClanId || kingdom.Leader?.StringId != request.RulerId
             || clan?.Leader?.StringId != request.ClanLeaderId)
         { message = "王国、统治者或原候选族长已变化，本次结束，不重选家族。"; return false; }
-        object[] args = { clan, kingdom, false, null, 0, 0, 0 };
+        object[] args = { clan, kingdom, request.LoyalistSelection, null, 0, 0, 0 };
         if (!(bool)_af.ValidateClan.Invoke(owner, args)) { message = "原候选家族不再符合 AF 规则：" + args[3] + " 本次结束。"; return false; }
+        if (request.LoyalistSelection && !StillSupportsFormerKing(request, clan, kingdom))
+        { message = "原候选家族已改变对新旧国王的支持，本次不再起兵。"; return false; }
         request.Relation = (int)args[4]; request.Towns = (int)args[5]; request.Castles = (int)args[6];
         foreach (string id in request.Followers)
         {
             Clan follower = MBObjectManager.Instance.GetObject<Clan>(id);
             object[] followerArgs = { follower, kingdom, clan, false, null, 0, 0, 0, 0 };
             if ((bool)_af.ValidateFollower.Invoke(owner, followerArgs)
-                && (bool)_af.FollowerEligible.Invoke(null, new object[] { followerArgs[5], followerArgs[6], 0f })) followers.Add(follower);
+                && (request.LoyalistSelection ? StillSupportsFormerKing(request, follower, kingdom)
+                    : (bool)_af.FollowerEligible.Invoke(null, new object[] { followerArgs[5], followerArgs[6], 0f }))) followers.Add(follower);
         }
         return true;
     }
@@ -365,6 +413,8 @@ internal sealed class CoupRebellionBridge : CampaignBehaviorBase
         object[] args = { clan, kingdom, request.Week, followers, null, null };
         _af.BuildPrompt.Invoke(owner, args);
         string system = (string)args[4], user = (string)args[5];
+        if (request.LoyalistSelection)
+            user += "\n本次起兵背景：玩家刚通过武装政变夺位，起兵家族属于旧王家族或更支持旧王的家族；这是反对篡位的起兵，不要求与新王关系为负。请以此为建国命名与简介的背景。";
         string requestId = request.Id;
         string logTarget = "政变后叛乱建国命名 - " + request.ClanId;
         int attempts = _af.NamingAttempts;

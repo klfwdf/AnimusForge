@@ -8,6 +8,7 @@
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <Compile Include="../../src/CoupSystem/CoupSession.cs" Link="CoupSession.cs" />
+    <Compile Include="../../src/CoupSystem/CoupLoyalistPolicy.cs" Link="CoupLoyalistPolicy.cs" />
     <Compile Include="../../src/CoupSystem/CoupOutcomeReport.cs" Link="CoupOutcomeReport.cs" />
     <Compile Include="../../../../src/modules/AF.Module.Weekly/Bulletin/WorldBulletinPolicy.cs" Link="WorldBulletinPolicy.cs" />
     <Compile Include="../../../../tests/modules/AF.Module.Weekly/WorldBulletinPolicy.SmokeTests/LayoutStub.cs" Link="LayoutStub.cs" />
