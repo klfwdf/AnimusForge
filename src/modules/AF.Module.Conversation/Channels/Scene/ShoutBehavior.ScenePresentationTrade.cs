@@ -17,6 +17,8 @@ public sealed class ScenePresentationTradeOption
 	public int UnitValue { get; internal set; }
 	// Opaque host option; presentation code only passes it back for thumbnails.
 	public object HostOption { get; internal set; }
+ internal bool IsSettlement { get; set; }
+ internal string ValidationName { get; set; }
 }
 
 // Give/show inside the persistent scene session. Replaces the old popup chain (resource list, one
@@ -25,10 +27,7 @@ public sealed class ScenePresentationTradeOption
 // with the player's next line, exactly like the one-shot "给予其物品并交流" flow.
 public partial class ShoutBehavior
 {
-	private static volatile string _presentationTradeRequestMode;
-	private bool _presentationTradeOwnsState;
-	private bool _presentationTradeStaged;
-	private string _presentationTradeSummary = "";
+
 
 	// Used by BeginShoutTradeFlow and the scene give panel, so both apply the same target rules.
 	private string GetShoutTradeTargetIneligibility(ShoutChatMode mode)
@@ -86,27 +85,19 @@ public partial class ShoutBehavior
 		{
 			return false;
 		}
-		_presentationTradeRequestMode = mode;
+		Presentation.TradeRequestMode = mode;
 		BumpPresentation();
 		ResumeGame();
 		return true;
 	}
 
-	private void ReleasePresentationTrade()
-	{
-		if (_presentationTradeOwnsState)
-		{
-			ResetShoutTradeState();
-		}
-		_presentationTradeOwnsState = false;
-		_presentationTradeStaged = false;
-		_presentationTradeSummary = "";
-	}
+	private void ReleasePresentationTrade() => Presentation.ReleaseTrade(ResetShoutTradeState);
 
 	public static string ConsumeScenePresentationTradeRequestForExternal()
 	{
-		string mode = _presentationTradeRequestMode;
-		_presentationTradeRequestMode = null;
+		ShoutBehavior owner = CurrentInstance;
+		string mode = owner?.Presentation.TradeRequestMode;
+		if (owner != null) owner.Presentation.TradeRequestMode = null;
 		return mode;
 	}
 
@@ -115,13 +106,13 @@ public partial class ShoutBehavior
 		get
 		{
 			ShoutBehavior owner = CurrentInstance;
-			return owner != null && owner._presentationTradeStaged;
+			return owner != null && owner.Presentation.TradeStaged;
 		}
 	}
 
 	public static string GetScenePresentationStagedTradeSummaryForExternal()
 	{
-		return CurrentInstance?._presentationTradeSummary ?? "";
+		return CurrentInstance?.Presentation.TradeSummary ?? "";
 	}
 
 	// Loads the host option list for the session addressee. Never shows a popup.
@@ -146,7 +137,7 @@ public partial class ShoutBehavior
 			status = "另一个给予流程正在进行，请先完成它。";
 			return result;
 		}
-		ScenePresentationMember addressee = owner.FindPresentationMember(owner._presentationAddresseeIndex);
+		ScenePresentationController.Member addressee = owner.FindPresentationMember(owner.Presentation._presentationAddresseeIndex);
 		NpcDataPacket target = owner.IsPresentationAudience(addressee) ? ShoutUtils.ExtractNpcData(addressee.Agent) : null;
 		if (target == null)
 		{
@@ -154,13 +145,13 @@ public partial class ShoutBehavior
 			return result;
 		}
 		// Reopening the give panel replaces a staged gift; refresh the session banner when that happens.
-		bool hadStaged = owner._presentationTradeStaged;
+		bool hadStaged = owner.Presentation.TradeStaged;
 		owner.ReleasePresentationTrade();
 		if (hadStaged)
 		{
 			BumpPresentation();
 		}
-		owner._presentationTradeOwnsState = true;
+		owner.Presentation.TradeOwnsState = true;
 		owner._shoutTradeTargetHeroOverride = null;
 		owner._shoutTradeTargetCharacterOverride = null;
 		owner._shoutTradeTargetNpc = target;
@@ -203,61 +194,22 @@ public partial class ShoutBehavior
 
 	// Stages the chosen items; nothing moves until the next line is sent.
 	public static bool StageScenePresentationTradeForExternal(IReadOnlyList<int> indices, IReadOnlyList<int> amounts, out string status)
-	{
-		status = "";
-		ShoutBehavior owner = CurrentInstance;
-		if (owner == null || !owner._presentationTradeOwnsState || owner._shoutTradeOptions == null || owner._shoutTradeOptions.Count == 0)
-		{
-			status = "给予列表已失效，请重新打开。";
-			return false;
-		}
-		if (indices == null || amounts == null || indices.Count == 0 || indices.Count != amounts.Count)
-		{
-			status = "请先选择要给予的资源。";
-			return false;
-		}
-		owner._shoutPendingTradeItems.Clear();
-		HashSet<int> seen = new HashSet<int>();
-		for (int i = 0; i < indices.Count; i++)
-		{
-			int index = indices[i];
-			if (index < 0 || index >= owner._shoutTradeOptions.Count || !seen.Add(index))
-			{
-				continue;
-			}
-			ShoutTradeResourceOption option = owner._shoutTradeOptions[index];
-			int amount = option.SettlementEntry != null ? 1 : amounts[i];
-			if (amount < 1 || amount > option.AvailableAmount)
-			{
-				owner._shoutPendingTradeItems.Clear();
-				status = "数量超出可用范围：" + (option.Name ?? "资源");
-				return false;
-			}
-			owner._shoutPendingTradeItems.Add(new ShoutPendingTradeItem
-			{
-				IsGold = option.IsGold,
-				ItemId = option.ItemId,
-				ItemName = option.Name,
-				Item = option.Item,
-				InventoryUnitValue = option.InventoryUnitValue,
-				PartyEntry = option.PartyEntry,
-				SettlementEntry = option.SettlementEntry,
-				Amount = amount
-			});
-		}
-		if (owner._shoutPendingTradeItems.Count == 0)
-		{
-			status = "请先选择要给予的资源。";
-			return false;
-		}
-		owner._shoutPendingTradeItemIndex = owner._shoutPendingTradeItems.Count;
-		owner._presentationTradeStaged = true;
-		string verb = IsShoutTradeShowMode(owner._shoutTradeMode) ? "展示" : "给予";
-		owner._presentationTradeSummary = verb + " " + (owner._shoutTradeTargetNpc?.Name ?? "对方") + "："
-			+ string.Join("、", owner._shoutPendingTradeItems.Select(x => CourierDeliveryBehavior.GetCourierLetterTransferDisplayTitleForExternal(x.ItemName) + " ×" + x.Amount));
-		BumpPresentation();
-		return true;
-	}
+ {
+  ShoutBehavior owner=CurrentInstance;
+  if (owner==null) { status="给予列表已失效，请重新打开。"; return false; }
+  List<ScenePresentationTradeOption> options=owner._shoutTradeOptions?.Select(option => new ScenePresentationTradeOption {
+   Name=CourierDeliveryBehavior.GetCourierLetterTransferDisplayTitleForExternal(option.Name), ValidationName=option.Name, Available=option.AvailableAmount,
+   IsSettlement=option.SettlementEntry!=null }).ToList();
+  return owner.Presentation.StageTrade(options, indices, amounts, IsShoutTradeShowMode(owner._shoutTradeMode) ? "展示" : "给予",
+   owner._shoutTradeTargetNpc?.Name, owner._shoutPendingTradeItems.Clear,
+   owner.StagePresentationTransferItem, () => owner._shoutPendingTradeItemIndex=owner._shoutPendingTradeItems.Count, out status);
+ }
+ private void StagePresentationTransferItem(int index,int amount)
+ {
+  ShoutTradeResourceOption option=_shoutTradeOptions[index];
+  _shoutPendingTradeItems.Add(new ShoutPendingTradeItem { IsGold=option.IsGold, ItemId=option.ItemId, ItemName=option.Name,
+   Item=option.Item, InventoryUnitValue=option.InventoryUnitValue, PartyEntry=option.PartyEntry, SettlementEntry=option.SettlementEntry, Amount=amount });
+ }
 
 	public static void CancelScenePresentationTradeForExternal()
 	{
@@ -266,7 +218,7 @@ public partial class ShoutBehavior
 		{
 			return;
 		}
-		bool staged = owner._presentationTradeStaged;
+		bool staged = owner.Presentation.TradeStaged;
 		owner.ReleasePresentationTrade();
 		if (staged)
 		{
@@ -278,29 +230,16 @@ public partial class ShoutBehavior
 	private bool SubmitPresentationTrade(string content, out string status)
 	{
 		status = "";
-		bool valid = _presentationTradeOwnsState && _shoutTradeTargetNpc != null && _shoutPendingTradeItems.Count > 0;
 		ShoutTargetingContext context = BuildPresentationTargetingContext();
-		if (valid && !context.CandidateAgentIndices.Contains(_shoutTradeTargetNpc.AgentIndex))
-		{
-			valid = false;
-		}
-		if (!valid)
-		{
-			ReleasePresentationTrade();
-			BumpPresentation();
-			status = "给予对象已离开或给予已失效，本次没有交付，话也没有发出。";
-			return false;
-		}
+  if (!Presentation.ValidateStagedTrade(_shoutTradeTargetNpc != null && _shoutPendingTradeItems.Count > 0,
+   _shoutTradeTargetNpc != null && context.CandidateAgentIndices.Contains(_shoutTradeTargetNpc.AgentIndex), ResetShoutTradeState, out status)) return false;
 		int target = _shoutTradeTargetNpc.AgentIndex;
-		_presentationTradeOwnsState = false;
-		_presentationTradeStaged = false;
-		_presentationTradeSummary = "";
+		Presentation.ConsumeStagedTrade();
 		_activeShoutTargetingContext = context;
 		BeginShoutProcessing("scene_presentation_trade_submit");
 		ActivateMultiSceneMovementSuppression(new int[1] { target });
 		// Validates the target again, applies the transfer / records the showing, then sends the line.
-		ClearPresentationRound();
-		_presentationRoundPendingSince = GetApplicationTimeSafe();
+		Presentation.BeginRound(GetApplicationTimeSafe());
 		OnShoutTradeChatConfirmed(content);
 		BumpPresentation();
 		return true;

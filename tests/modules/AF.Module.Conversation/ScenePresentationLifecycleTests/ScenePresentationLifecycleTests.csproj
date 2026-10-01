@@ -1,0 +1,8 @@
+<Project Sdk="Microsoft.NET.Sdk">
+ <PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><ImplicitUsings>enable</ImplicitUsings><Nullable>disable</Nullable><LangVersion>latest</LangVersion></PropertyGroup>
+ <ItemGroup>
+  <Compile Include="../../../../src/AF.GameAdapter.Bannerlord/Scene/ScenePresentationController.cs" Link="Production/ScenePresentationController.cs" />
+  <Compile Include="../../../../src/AF.GameAdapter.Bannerlord/Scene/SceneAudioLipSyncController.cs" Link="Production/SceneAudioLipSyncController.cs" />
+  <Compile Include="../../../../src/modules/AF.Module.Conversation/Channels/Scene/ScenePresentationPolicy.cs" Link="Production/ScenePresentationPolicy.cs" />
+ </ItemGroup>
+</Project>
