@@ -1,0 +1,43 @@
+using AnimusForge;
+using Entry=AnimusForge.MyBehavior.EventRecordEntry;
+using Payload=AnimusForge.MyBehavior.EventImportPayload;
+using Debt=AnimusForge.RewardSystemBehavior.DebtExportEntry;
+using System.Text.Json;
+static void Check(bool x,string m){if(!x)throw new Exception(m);}
+static List<Entry> Sanitize(List<Entry> x)=>WeeklyEventDataImportOwner.SanitizeEventRecordEntries(x,WeeklyGenerationRules.NeutralizeWeeklyReportScenarioName,WeeklyGenerationRules.BuildFallbackWeeklyReportShortSummary,WeeklyGenerationRules.NormalizeWeeklyReportTagText);
+string world="old";var kingdoms=new Dictionary<string,string>{{"old","old kingdom"}};int revisions=0;
+var payload=new Payload{HasWorldSummaryFile=true,WorldSummary=" new ",HasKingdomSummariesFile=true,KingdomSummaries=new(){{"old",""},{"new"," incoming "}}};
+WeeklyEventDataImportOwner.ApplyOpening(payload,false,ref world,ref kingdoms,()=>revisions++);
+Check(world=="old" && kingdoms["old"]=="old kingdom" && kingdoms["new"]=="incoming" && revisions==1,"skip opening duplicates");
+WeeklyEventDataImportOwner.ApplyOpening(payload,true,ref world,ref kingdoms,()=>revisions++);
+Check(world=="new" && !kingdoms.ContainsKey("old") && revisions==2,"overwrite empty removes opening");
+var records=new List<Entry>{new(){EventId="e",Title="old",WeekIndex=1},new(){EventId="bad"}};
+payload=new(){HasEventRecordsFile=true,EventRecords=new(){new(){EventId="e",Title="new"},new(){EventId="new",Title="Calradia",Summary=" summary ",Materials=new(){new(){HeroId=" hero ",SourceStableKeys=new(){" k ",""}}}}}};
+WeeklyEventDataImportOwner.ApplyRecords(payload,false,ref records,Sanitize);
+Check(records.Count==2 && records.Single(x=>x.EventId=="e").Title=="old" && records.Single(x=>x.EventId=="new").Materials.Single().HeroId=="hero","skip records/sanitize material graph");
+WeeklyEventDataImportOwner.ApplyRecords(payload,true,ref records,Sanitize);
+Check(records.Single(x=>x.EventId=="e").Title=="new","overwrite records case-insensitive identity");
+var dynamicRecord=new Entry{EventId="dynamic",Title=" byte-for-byte ",WeekIndex=2,Summary=" raw "};records=new(){dynamicRecord,new(){EventId="weekly_report:world:0:id",WeekIndex=0,EventKind="world"},new(){EventId="weekly_report:kingdom:0:id",WeekIndex=0},new(){EventId="weekly_report:world:0:wrongweek",WeekIndex=1}};
+payload=new(){HasWorldSummaryFile=true,WorldSummary="",HasKingdomSummariesFile=true,KingdomSummaries=new(){{"k"," s "}}};
+int removed=WeeklyEventDataImportOwner.ReplaceOpening(payload,ref world,ref kingdoms,ref records,()=>revisions++,out bool removedWorld);
+Check(removed==2 && removedWorld && ReferenceEquals(records[0],dynamicRecord) && dynamicRecord.Title==" byte-for-byte " && records.Count==2,"replacement canonical week0 only/no dynamic normalization");
+try{WeeklyEventDataImportOwner.ReplaceOpening(new(),ref world,ref kingdoms,ref records,()=>{},out _);throw new Exception("expected incomplete rejected");}catch(InvalidOperationException){}
+var oldDebt=new Debt{OwedGold=4};var newDebt=new Debt{OwedGold=7};var debts=new Dictionary<string,Debt>{{"key",oldDebt}};
+var imports=new Dictionary<string,Debt>{{"key",newDebt},{"new",newDebt},{"",newDebt},{"null",null}};
+var merged=DebtImportMergePolicy.ApplyImportedDebtEntries(debts,imports,false);
+Check(ReferenceEquals(merged,debts)&&ReferenceEquals(merged["key"],oldDebt)&&merged.Count==2,"debt skip same existing identity/null skips");
+var originalAlgorithm = new Dictionary<string,Debt>(debts);
+foreach(var item in imports) if(!string.IsNullOrEmpty(item.Key)&&item.Value!=null) {originalAlgorithm.Remove(item.Key);originalAlgorithm[item.Key]=item.Value;}
+merged=DebtImportMergePolicy.ApplyImportedDebtEntries(debts,imports,true);
+Check(ReferenceEquals(merged["key"],newDebt)&&merged.Keys.SequenceEqual(originalAlgorithm.Keys)&&merged.Values.SequenceEqual(originalAlgorithm.Values),"debt overwrite original remove/assign algorithm and enumeration");
+var json=new JsonSerializerOptions{IncludeFields=true};
+string fixture=Path.Combine(Directory.GetCurrentDirectory(),"fixture");Directory.CreateDirectory(fixture);
+bool Load(out Payload p,out string err)=>WeeklyEventDataImportOwner.TryLoadEventDataFromImportDir(fixture,out p,out err,path=>JsonDocument.Parse(File.ReadAllText(path)).RootElement.GetProperty("Summary").GetString(),path=>JsonSerializer.Deserialize<Dictionary<string,string>>(File.ReadAllText(path),json),path=>JsonSerializer.Deserialize<List<Entry>>(File.ReadAllText(path),json),Sanitize);
+Check(!Load(out _,out var error)&&error.Contains("找不到"),"missing files preflight");
+File.WriteAllText(Path.Combine(fixture,"WorldOpeningSummary.json"),"{\"Summary\":\" world \"}");
+Check(Load(out payload,out error)&&payload.WorldSummary=="world" && !payload.HasEventRecordsFile,"optional import files");
+File.WriteAllText(Path.Combine(fixture,"EventRecords.json"),"bad json");
+Check(!Load(out payload,out error)&&payload.HasWorldSummaryFile&&error.Length>0,"bad JSON stops preflight without domain commit");
+Check(world=="" && records.Count==2,"failed prepare leaves save state untouched");
+MyBehavior.VerifyImportLifecycle();
+Console.WriteLine("PASS actual Weekly event/debt import owners: preparation/JSON/overwrite/skip/invalid/material/derived-only/dynamic-preservation/identity LIVE=NOT_RUN SAVE=NOT_RUN");

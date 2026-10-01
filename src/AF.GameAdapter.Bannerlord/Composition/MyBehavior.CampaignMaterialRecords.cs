@@ -217,4 +217,66 @@ public partial class MyBehavior
     private bool IsNpcRecentActionStableKeyKnown(string heroKey, string stableKey)
         => _npcActionRecords.IsNpcRecentActionStableKeyKnown(heroKey, stableKey);
 
+	internal sealed class EventImportPayload
+	{
+		public bool HasWorldSummaryFile;
+
+		public string WorldSummary;
+
+		public bool HasKingdomSummariesFile;
+
+		public Dictionary<string, string> KingdomSummaries = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+
+		public bool HasEventRecordsFile;
+
+		public List<EventRecordEntry> EventRecords = new List<EventRecordEntry>();
+	}
+
+    private void ApplyImportedEventData(EventImportPayload payload, bool overwriteExisting)
+    {
+        if (payload == null) return;
+        WeeklyEventDataImportOwner.ApplyOpening(payload, overwriteExisting,
+            ref _eventWorldOpeningSummary, ref _eventKingdomOpeningSummaries, _weeklyReportMaterialRevisions.MarkOpening);
+        if (!payload.HasEventRecordsFile) return;
+        string previous = BuildPublishedWorldWeeklyProductsFingerprint();
+        WeeklyEventDataImportOwner.ApplyRecords(payload, overwriteExisting, ref _eventRecordEntries, SanitizeEventRecordEntries);
+        if (!string.Equals(previous, BuildPublishedWorldWeeklyProductsFingerprint(), StringComparison.Ordinal))
+            Interlocked.Increment(ref _publishedWorldWeeklyHistoryRevision);
+        NotifyWorldMessageWeeklyTimelineChanged();
+    }
+
+
+    private static List<EventRecordEntry> SanitizeEventRecordEntries(List<EventRecordEntry> source)
+        => WeeklyEventDataImportOwner.SanitizeEventRecordEntries(source, NeutralizeWeeklyReportScenarioName,
+            BuildFallbackWeeklyReportShortSummary, NormalizeWeeklyReportTagText);
+
+
+    private bool TryLoadEventDataFromImportDir(string importDir, out EventImportPayload payload, out string error)
+        => WeeklyEventDataImportOwner.TryLoadEventDataFromImportDir(importDir, out payload, out error,
+            path => PlayerExportsStore.ReadJson<EventWorldOpeningSummaryJson>(path)?.Summary,
+            PlayerExportsStore.ReadJson<Dictionary<string,string>>, PlayerExportsStore.ReadJson<List<EventRecordEntry>>,
+            SanitizeEventRecordEntries);
+
+
+	private void ReplaceDatabaseOpeningKnowledge(EventImportPayload payload)
+	{
+        int removedOpeningRecordCount = WeeklyEventDataImportOwner.ReplaceOpening(payload,
+            ref _eventWorldOpeningSummary, ref _eventKingdomOpeningSummaries, ref _eventRecordEntries,
+            _weeklyReportMaterialRevisions.MarkOpening, out bool removedWorldOpeningRecord);
+		// Pending requests are tied to old derived entries.  Keep in-flight requests: their source-hash guard rejects stale results safely.
+		lock (_weekZeroShortSummaryQueueLock)
+		{
+			_weekZeroShortSummaryPendingQueue.RemoveAll((WeekZeroShortSummaryRequest x) => IsDatabaseReloadOpeningEventId(x?.EventId));
+			_weekZeroShortSummaryGenerationAttempted.RemoveWhere(IsDatabaseReloadOpeningEventId);
+		}
+		// A blank world summary removes the published week-zero world report, so it needs a revision signal even though no new report is upserted.
+		if (removedWorldOpeningRecord && string.IsNullOrWhiteSpace(_eventWorldOpeningSummary))
+		{
+			Interlocked.Increment(ref _publishedWorldWeeklyHistoryRevision);
+		}
+		// Reload owns only canonical week-zero entries.  Skipping the usual global sanitation keeps arbitrary dynamic history byte-for-byte untouched.
+		EnsureWeekZeroOpeningSummaryEvents(sanitizeAfter: false);
+		Logger.Log("DatabaseReload", "replaced static opening knowledge; removedDerivedWeekZeroRecords=" + removedOpeningRecordCount + " kingdomSummaries=" + _eventKingdomOpeningSummaries.Count);
+	}
+
 }
