@@ -1,5 +1,7 @@
 # 当前交接：J17 收尾与远端 CivilWar 合并（2026-10-01）
 
+- **场景插画16:9已离线修复（2026-10-01）**：`c4ac6035`，场景/地图会话生成固定请求1280×720，images的size与Chat的aspect_ratio均有真实参数接线；快报3:2及百科不变。Release双API+Bootstrap通过，真实服务端与游戏未验，未部署/推送。[源码坐标、证据与回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#scene-image-16x9-20261001)。
+
 - **政变专用进场与受击崩溃已离线修复（2026-10-01）**：`f5225e5d` 补街道/大厅专用菜单，修复 internal Origin 构造器漏绑定和 MbEvent 逆序导致 Coup 场景漏挂载。转储栈定位 BattleAgentLogic.OnAgentHit；最终双 API+Bootstrap、真实注册四标志、26 新回归+65 既有回归 PASS。尚未部署、原生进场/受击/旧档未验，不将离线 fixture 当实机完成；[证据与回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#coup-scene-repair-20261001)。保留其他周报 UI/生图并行改动。
 
 - **快报生图与封存控件已离线修复（2026-10-01）**：`5d0969b8`，快报每次打开重新生成1536×1024横图，不加载旧图；图片按实际比例缩放，封存改金边深红按钮。Release双API+Bootstrap、两个实际DLL尺寸验证、XML/资源映射通过。未部署/推送，真实生图及游戏点击未验；并发Coup改动保留。[范围、精确源码坐标与回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#bulletin-image-controls-20261001)。

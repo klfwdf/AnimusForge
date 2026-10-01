@@ -1,3 +1,13 @@
+<a id="scene-image-16x9-20261001"></a>
+
+### 场景插画16:9请求尺寸（2026-10-01，OFFLINE_VERIFIED）
+
+用户追加要求场景插画16:9，并强调 images 端口必须实际设置尺寸。检查点 `0888082`，产品提交 `c4ac6035`，仍在 `F:/AnimusForge-main` 的 `codex/af-main-refactor-continuation-20260831`。仅修改 `extensions/AnimusForge.Illustrator/src/UI/Overlays/IllustrationCardPopup.cs:683–693` 的 ExecuteConversationGenerationCore：用 WithImageSize 将单次场景/地图会话生图快照设为现有预设1280×720，同时给导演16:9构图说明。每次生成一次常数成本快照复制，无新增扫描/Tick；全局MCM、快报3:2、百科与旧图缓存行为保持。
+
+请求链核实：`UniversalOpenAiImageClient.cs:95,553,772–786` 读取本次 options.ImageSize，edits multipart 和 generations JSON 均发送 size；Chat 分支用 ResolveGeminiAspectRatio 转为 aspect_ratio=16:9。提示词不是尺寸参数的替代。上游对1280×720及aspect_ratio的支持未测，不承诺服务端接受或遵循；不增加自动尺寸回退/付费重试。
+
+Release双API+Bootstrap均exit0、0错误（存在既有nullable等警告），git diff --check PASS。隔离构建复用既有helper，输出 `artifacts/scene-image-16x9-20261001/build-f641ebc272284905b95180af4d55e5c0/`；其中build.log、invocation.json及三个build.json记录实际引用/源码状态/哈希。未改官方脚本、未Stage/部署/推送；真实API输出像素、游戏显示/旧档NOT-RUN。回滚只定向revert `c4ac6035`，不回滚并发工作或前项快报修复。
+
 <a id="bulletin-image-controls-20261001"></a>
 
 ### 快报新生横图与封存控件（2026-10-01，OFFLINE_VERIFIED）
