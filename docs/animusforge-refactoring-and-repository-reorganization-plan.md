@@ -19,11 +19,26 @@
 
 <a id="coup-scene-repair-20261001"></a>
 
-### 政变专用进场与受击崩溃修复（2026-10-01，ACTIVE）
+### 政变专用进场与受击崩溃修复（2026-10-01，OFFLINE_VERIFIED；未部署/实机）
 
 用户反馈选兵后没有专用 SETS 进场选项，按提示进城后崩溃。基线 `9e5c8fc0`，`F:/AnimusForge-main` tracked clean。11:51:50–11:52:02 的 SETS 日志确认 `town_V5` armed_coup、53 名友军生成、631 守军储备、开战后崩溃；无 Coup `mission_started`。转储 `TaleWorlds.MountAndBlade.Launcher.exe.30168.dmp` 的当前 managed 栈与异常栈均指向 `BattleAgentLogic.OnAgentHit` 空引用。仅提取异常类型与方法名，证据 `artifacts/coup-scene-repair-20261001/managed-crash-evidence.json`。
 
 确认缺陷：SETS 仅用 public GetConstructor 查找 internal CoupAgentOrigin 构造器，返回 null 后仍 SpawnAgent，原版受击无条件调用 Origin.OnScoreHit；MbEvent 后注册先执行，Coup 的 OnMissionStarted 早于 SETS 添加 mission logic，漏装场景 owner；当前街道/大厅确实仅提示原版入口。范围为专用阶段菜单、SETS 挂载后通知、Origin 绑定及创建失败关闭，保留普通场景/伤害和存档语义。出口为真实 DLL 注册/Origin 回归、真实方法事件顺序/菜单回归及双 API+Bootstrap；实机与旧档单列未验。不部署、不推送，保留其它作者改动。
+
+修复 `f5225e5d`，意图 checkpoint `822e0ca6`。专用菜单为“率领政变突击队攻入城镇”与“率领政变突击队攻入领主大厅”，由会话阶段选择；点击时重验场景与战役资格，再从权威会话名单登记 SETS 并调用原版 LocationEncounter。原版入口保留已有 armed-coup 识别能力，提示不再要求玩家寻找普通城镇/大厅按钮。SET​​S OnMissionStarted postfix 在其逻辑完成挂载后通知 Coup，不依赖事件监听顺序；重复通知通过当前 Mission 引用拒绝重复安装。Origin 使用 AccessTools.Constructor 查找非公开构造器；启动和排队时验证构造器/伤亡回调，创建失败抛错而不生成空 Origin 的兵员。没有抑制原版 BattleAgentLogic.OnAgentHit，也没有将伤害归零。
+
+| 源码坐标（`f5225e5d`，一基） | 责任及实际消费者 |
+| --- | --- |
+| `SettlementEntryTroopSelectionBehavior.cs:114–121,140–158,176–189` | 主体 `QueueArmedCoupEntry` / `CreateCoupOrigin` 验证缓存绑定；供友军、守军及国王的原有生成路径调用。 |
+| `extensions/AnimusForge.Coup/src/Integration/SettlementEntryTroopSelectionBehavior.cs:72–78,102–105` | 启动校验 Origin 接缝，真实 SETS OnMissionStarted postfix 调用 Coup。 |
+| `extensions/AnimusForge.Coup/src/CoupSystem/CoupCampaignBehavior.cs:102–181,261–278,331–349` | 两个菜单与点击重验/进场，国王从 kingdom.Leader O(1) 查询，场景按已有 armed SETS、城镇和会话门禁挂载。 |
+| `tools/Coup.RuntimeProbe/SceneLifecycleRegression.cs:1–173` | 可选真实方法 fixture：Origin 创建与 OnScoreHit、真实逆序 MbEvent/SETS postfix、幂等/非政变放行及阶段菜单显示。 |
+
+性能：构造器仍只解析一次；新挂载通知每次任务开始执行一次，非每帧扫描；菜单资格读取当前国王替代全局 Hero.FindFirst；仅点击进场时按既有会话名单重建名册。存档键/枚举/政治结算语义未改。
+
+最终验证根 `artifacts/coup-scene-repair-20261001/`：`final-build.log` 为官方统一脚本双 API+Bootstrap Release 构建 exit 0（仅进程内隔离输出/中间目录，磁盘一键脚本不变，无 Stage/Deploy）。1.3=`v1.3.15.110062`、1.4=`v1.4.6.115628`；SHA256 分别 `FBBA9019C742D1CF65222AFD4830646D169EA5E2655E2F64D3553A3BFC6F2335` / `3009B03DDC31A7CE7F0B8FBB648820214C464B37EE0DB8DA7F6AEF526E98C3C9`。`final-registration/registration.log` 为无场景 fixture 的真实依赖注册，四标志 True、44目标（40 prefix/2 postfix/2 transpiler），exit 0。`final-scene-probe/registration.log` 的 26 新回归 + 原 36 状态/拘押 + 29 选兵 = 91 PASS，exit 0；两探针输入 DLL 哈希未变。本任务 diff 检查通过。
+
+证据边界：场景 fixture 使用绕过构造的 Mission/Settlement/CharacterObject 与空 managed 行为列表，显式临时替换城镇/家族上下文、菜单注册和完整资格查询，验证真实事件顺序和生产挂载/Origin/菜单阶段逻辑；没有运行原生场景/Agent 受击/城镇 UI 点击/完整胜负结算。1.3 只编译，实机与真实旧档 NOT-RUN，不能据此承诺全部场景不崩溃。全局代码地图仍因本轮未修改的 SubModule.cs 历史锚点过期失败，不刷新旧证据。期间另有周报 UI/生图并行改动，仅保留且未纳入本任务提交；构建针对当时工作树，不表示整份 DLL 只含政变差异。需后续获准覆盖后，在同 town_V5 案例验证专用入口、mission_started、首次交战、大厅转场及存读档。回滚仅 `git revert f5225e5d`，不得撤回先前入口修复或其他任务。
 
 <a id="civilwar-review-repair-20261001"></a>
 
