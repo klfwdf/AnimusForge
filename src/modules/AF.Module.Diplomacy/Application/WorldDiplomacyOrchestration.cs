@@ -431,6 +431,7 @@ internal sealed class WorldDiplomacyOrchestration : IWorldDiplomacyOrchestration
     // Read projection for host adapters; canonical writes stay inside the store.
     internal WorldDiplomacyStorage CurrentStorage => _stateStore.Current;
     public void ReplaceStorage(WorldDiplomacyStorage storage) => _stateStore.Replace(storage);
+    internal bool MarkDocumentRead(string documentId) => WorldDiplomacyTimelineApplication.MarkRead(Storage, documentId);
 
     // ---------- leaf helpers shared by orchestration methods ----------
 

@@ -43,7 +43,14 @@ internal static class WorldDiplomacyTimelineApplication
         IWorldDiplomacyTimelineStateSource source, string documentId, out bool ownerAvailable)
     {
         ownerAvailable = source.TryGetState(out WorldDiplomacyStorage storage);
-        return ownerAvailable && WorldDiplomacyPresentationQueries.MarkRead(
-            WorldDiplomacyRoundLifecycleRules.ResolveDocument(storage?.Documents, documentId));
+        return ownerAvailable && MarkRead(storage, documentId);
+    }
+
+    internal static bool MarkRead(WorldDiplomacyStorage storage, string documentId)
+    {
+        WorldDiplomacyDocument document = WorldDiplomacyRoundLifecycleRules.ResolveDocument(storage?.Documents, documentId);
+        if (document == null) return false;
+        document.IsRead = true;
+        return true;
     }
 }

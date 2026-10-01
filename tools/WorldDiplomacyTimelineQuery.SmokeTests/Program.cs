@@ -342,6 +342,8 @@ internal static class Program
         string campaign = File.ReadAllText(campaignPath, Encoding.UTF8);
         string startup = File.ReadAllText(startupPath, Encoding.UTF8);
         string queries = File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyPresentationQueries.cs"));
+        string notificationPresentation = File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.Presentation.cs"));
+        string worldOrchestration = File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOrchestration.cs"));
         string inbox = File.ReadAllText(FindRepositoryFile("WorldEvents", "WorldEventInbox.cs"), Encoding.UTF8);
 
         foreach (string source in new[] { contract, facade, documentContract, documentFacade, readContract, readFacade })
@@ -412,9 +414,11 @@ internal static class Program
         Test.True(behavior.Contains("public static bool MarkDocumentReadForExternal(string documentId)", StringComparison.Ordinal)
                   && behavior.Contains("return WorldDiplomacyTimelineQueryHost.MarkDocumentRead(documentId);", StringComparison.Ordinal)
                   && moduleAdapter.Contains("WorldDiplomacyTimelineApplication.MarkRead(TimelineSource, documentId, out ownerAvailable)", StringComparison.Ordinal)
-                  && timelineApplication.Contains("WorldDiplomacyPresentationQueries.MarkRead(", StringComparison.Ordinal)
+                  && timelineApplication.Contains("document.IsRead = true;", StringComparison.Ordinal)
+                  && notificationPresentation.Contains("_owner._orchestration.MarkDocumentRead(id)", StringComparison.Ordinal)
+                  && worldOrchestration.Contains("WorldDiplomacyTimelineApplication.MarkRead(Storage, documentId)", StringComparison.Ordinal)
                   && !behavior.Contains("TryMarkDocumentReadForCommand", StringComparison.Ordinal)
-                  && queries.Contains("document.IsRead = true;", StringComparison.Ordinal),
+                  && !queries.Contains("document.IsRead = true;", StringComparison.Ordinal),
             "legacy document-read surface must delegate while Application owns the mutation");
     }
 

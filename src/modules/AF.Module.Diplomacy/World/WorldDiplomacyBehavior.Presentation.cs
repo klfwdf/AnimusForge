@@ -63,7 +63,7 @@ public sealed partial class WorldDiplomacyBehavior
             });
         public string Standing(string kingdomId) => WorldDiplomacyPresentationQueries.Standing(_owner._storage, kingdomId);
         public string Submit(WorldDiplomacyPlayerDocumentCommand command) => WorldDiplomacyPlayerApplication.Execute(this, command, _owner._orchestration);
-        public bool MarkRead(string id) => WorldDiplomacyPresentationQueries.MarkRead(_owner.ResolveDocument(id));
+        public bool MarkRead(string id) => _owner._orchestration.MarkDocumentRead(id);
         public bool CanOpenReply(string documentId, string roundId, long generation)
         {
             return generation == _owner._runtimeGeneration && _owner.ResolveDocument(documentId) != null

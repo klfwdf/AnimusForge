@@ -28,12 +28,6 @@ internal static class WorldDiplomacyPresentationQueries
                             new WorldDiplomacyTimelineCountryReference(action.TargetKingdomId, action.TargetKingdomName)))));
     }
 
-    internal static bool MarkRead(WorldDiplomacyDocument document)
-    {
-        if (document == null) return false;
-        document.IsRead = true;
-        return true;
-    }
     internal static string BuildImpactText(WorldDiplomacyDocument document)
     {
         if (document == null) return "";
