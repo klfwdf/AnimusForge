@@ -529,7 +529,7 @@ public sealed class RichExecutionCampaignBehavior : CampaignBehaviorBase
         var provisional = prisoners[0];
         _selectedVictim = provisional.Hero;
         _selectedSource = provisional.Source;
-        _selectedMethod = _methods.All.FirstOrDefault();
+        _selectedMethod = _methods.All.FirstOrDefault(method => ExecutionMethodRules.IsVisibleInSelection(method.StringId));
         _selectedCharge = _charges.All.FirstOrDefault();
         _selectedTone = ExecutionTone.Judicial;
 

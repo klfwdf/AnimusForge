@@ -20,7 +20,7 @@ public partial class DuelSettings
 	[SettingPropertyGroup(CivilWarGroup, GroupOrder = 125)]
 	public float CivilWarRandomness { get; set; } = 1f;
 
-	[SettingPropertyInteger("成派不满阈值", 10, 100, "0", Order = 3, RequireRestart = false, HintText = "某家族累计不满达到该值后，才有机会牵头成立反对派。默认 35。")]
+	[SettingPropertyInteger("成派不满阈值", 10, 100, "0", Order = 3, RequireRestart = false, HintText = "某家族累计不满达到该值后，才有机会牵头成立反对派。王室阵营的NPC家族在负面事件后达到该值，会立即撤回支持、转为中立；国王家族与玩家家族除外。默认 35。")]
 	[SettingPropertyGroup(CivilWarGroup, GroupOrder = 125)]
 	public int CivilWarDiscontentThreshold { get; set; } = 35;
 

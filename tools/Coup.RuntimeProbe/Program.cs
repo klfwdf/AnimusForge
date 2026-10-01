@@ -18,15 +18,17 @@ internal static class Program
     private static string _gameRoot;
     private static string _afPath;
     private static string _coupPath;
+    private static bool _sceneFixture;
 
     private static int Main(string[] args)
     {
-        if (args.Length != 4)
+        if (args.Length != 4 && !(args.Length == 5 && args[4] == "--scene-fixture"))
         {
-            Console.Error.WriteLine("Usage: Coup.RuntimeProbe.exe <game-root> <installed-af.dll> <coup.dll> <workspace-log-directory>");
+            Console.Error.WriteLine("Usage: Coup.RuntimeProbe.exe <game-root> <installed-af.dll> <coup.dll> <workspace-log-directory> [--scene-fixture]");
             return 2;
         }
         _gameRoot = Path.GetFullPath(args[0]);
+        _sceneFixture = args.Length == 5;
         _afPath = Path.GetFullPath(args[1]);
         _coupPath = Path.GetFullPath(args[2]);
         string root = Path.GetFullPath(args[3]);
@@ -97,29 +99,40 @@ internal static class Program
         Invoke(guards, "Register", harmony);
 
         SelectionRegression.Run(coup, Write);
+        EntryGateRegression.Run(af, coup, Write);
+        if (_sceneFixture)
+        {
+            SceneLifecycleRegression.Run(af, coup, Write);
+            CoupBulletinRegression.Run(af, coup, Write);
+            CoupSettingsRegression.Run(af, coup, Write);
+            CoupAdmissionRegression.Run(af, coup, Write);
+            CoupLoyalistAftermathRegression.Run(af, coup, Write);
+        }
 
         bool ready = ReadFlag(sets, "IsAvailable") & ReadFlag(rebellion, "IsAvailable")
             & ReadFlag(guards, "MissionProtectionAvailable") & ReadFlag(guards, "CaptivityProtectionAvailable");
-        int prefixCount = 0, transpilerCount = 0, targetCount = 0;
+        int prefixCount = 0, postfixCount = 0, transpilerCount = 0, targetCount = 0;
         foreach (MethodBase target in Harmony.GetAllPatchedMethods().OrderBy(m => m.DeclaringType.FullName).ThenBy(m => m.Name))
         {
             Patches patches = Harmony.GetPatchInfo(target);
             var prefixes = patches.Prefixes.Where(p => p.owner == RegistrationOwner).ToArray();
+            var postfixes = patches.Postfixes.Where(p => p.owner == RegistrationOwner).ToArray();
             var transpilers = patches.Transpilers.Where(p => p.owner == RegistrationOwner).ToArray();
-            if (prefixes.Length + transpilers.Length == 0) continue;
+            if (prefixes.Length + postfixes.Length + transpilers.Length == 0) continue;
             targetCount++;
             prefixCount += prefixes.Length;
+            postfixCount += postfixes.Length;
             transpilerCount += transpilers.Length;
-            Write("PATCH " + target.DeclaringType.FullName + "." + target.Name + " prefixes=" + prefixes.Length + " transpilers=" + transpilers.Length);
+            Write("PATCH " + target.DeclaringType.FullName + "." + target.Name + " prefixes=" + prefixes.Length + " postfixes=" + postfixes.Length + " transpilers=" + transpilers.Length);
         }
-        Write("PATCH_TOTAL targets=" + targetCount + " prefixes=" + prefixCount + " transpilers=" + transpilerCount);
+        Write("PATCH_TOTAL targets=" + targetCount + " prefixes=" + prefixCount + " postfixes=" + postfixCount + " transpilers=" + transpilerCount);
         bool unchanged = beforeAf == Hash(_afPath) && beforeCoup == Hash(_coupPath);
         Write("SOURCE_DLLS_UNCHANGED " + unchanged);
         foreach (Assembly loaded in AppDomain.CurrentDomain.GetAssemblies().Where(a =>
             a.GetName().Name == "TaleWorlds.CampaignSystem" || a.GetName().Name == "TaleWorlds.MountAndBlade"
             || a.GetName().Name == "SandBox" || a.GetName().Name == "0Harmony"))
             Write("RUNTIME_DEPENDENCY " + loaded.GetName().Name + " MVID=" + loaded.ManifestModule.ModuleVersionId + " path=" + loaded.Location);
-        Write("Game/Campaign/mission not started; no LLM provider invoked; registration and selection datafactory fixture only.");
+        Write("Game/Campaign/mission not started; no LLM provider invoked; registration, entry-state and selection datafactory fixtures only.");
         Write(ready && unchanged && targetCount > 0 ? "PASS registration smoke" : "FAIL registration smoke");
         // Keep log redirection until process exit: AF may flush its background log queue.
         return ready && unchanged && targetCount > 0 ? 0 : 1;

@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
@@ -306,6 +307,14 @@ public static class TownPromptComposer
             userPrompt,
             "personality",
             NormalizeRuleMemoryValue(entry.RulerPersonality, string.Empty, text.SettlementRuleMemoryUnknownPersonality));
+        string previous = string.IsNullOrWhiteSpace(entry.Narrative)
+            ? string.Join(" / ", record.RulerMemories.Skip(1).Select(e => e.RulerName + ": " + e.Narrative))
+            : entry.Narrative;
+        string events = string.Join(Environment.NewLine, entry.Evolution.Facts.Select(f =>
+            "day " + f.Day.ToString(CultureInfo.InvariantCulture) + ": " + f.Text));
+        string evolution = ApplyTemplate(text.SettlementRuleMemoryEvolutionTemplate, "previous", previous);
+        evolution = ApplyTemplate(evolution, "events", events);
+        userPrompt += Environment.NewLine + evolution;
         userPrompt = userPrompt.Trim()
             + Environment.NewLine
             + Environment.NewLine

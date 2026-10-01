@@ -20,16 +20,18 @@ internal enum ExecutionSpeechPhase
 
 internal readonly struct ExecutionSpeechLine
 {
-    internal ExecutionSpeechLine(ExecutionSpeechPhase phase, ExecutionSpeechLineRole role, string text)
+    internal ExecutionSpeechLine(ExecutionSpeechPhase phase, ExecutionSpeechLineRole role, string text, bool isLastStatement = false)
     {
         Phase = phase;
         Role = role;
         Text = text ?? string.Empty;
+        IsLastStatement = isLastStatement;
     }
 
     internal ExecutionSpeechPhase Phase { get; }
     internal ExecutionSpeechLineRole Role { get; }
     internal string Text { get; }
+    internal bool IsLastStatement { get; }
 }
 
 /// <summary>
@@ -56,6 +58,7 @@ internal sealed class ExecutionSpeechLineParser
 
     private string _pending = string.Empty;
     private ExecutionSpeechPhase _phase = ExecutionSpeechPhase.Opening;
+    private bool _lastStatement;
 
     internal int AcceptedCount { get; private set; }
 
@@ -73,7 +76,7 @@ internal sealed class ExecutionSpeechLineParser
             if (breakAt < 0) break;
             var raw = _pending.Substring(0, breakAt);
             _pending = _pending.Substring(breakAt + 1);
-            if (TryAccept(raw, ref _phase, out var line))
+            if (TryAccept(raw, ref _phase, ref _lastStatement, out var line))
             {
                 produced.Add(line);
                 AcceptedCount++;
@@ -93,19 +96,26 @@ internal sealed class ExecutionSpeechLineParser
 
         var tail = _pending;
         _pending = string.Empty;
-        if (!TryAccept(tail, ref _phase, out var line)) return Array.Empty<ExecutionSpeechLine>();
+        if (!TryAccept(tail, ref _phase, ref _lastStatement, out var line)) return Array.Empty<ExecutionSpeechLine>();
         AcceptedCount++;
         return new[] { line };
     }
 
-    private static bool TryAccept(string raw, ref ExecutionSpeechPhase phase, out ExecutionSpeechLine line)
+    private static bool TryAccept(string raw, ref ExecutionSpeechPhase phase, ref bool lastStatement, out ExecutionSpeechLine line)
     {
         line = default;
         var text = (raw ?? string.Empty).Trim();
         if (text.Length == 0) return false;
+        if (text == "[最后陈述]" || text.Equals("[last_statement]", StringComparison.OrdinalIgnoreCase))
+        {
+            lastStatement = phase == ExecutionSpeechPhase.Opening;
+            return false;
+        }
         if (TryReadPhase(text, out var marker))
         {
+            if (marker < phase) return false;
             phase = marker;
+            lastStatement = false;
             return false;
         }
         foreach (var (label, role) in Labels)
@@ -113,8 +123,10 @@ internal sealed class ExecutionSpeechLineParser
             if (!StartsWithLabel(text, label, out var spoken)) continue;
             spoken = spoken.Trim().Trim('"', '“', '”');
             if (spoken.Length == 0 || role == ExecutionSpeechLineRole.Unknown) return false;
+            if (phase == ExecutionSpeechPhase.Aftermath && role == ExecutionSpeechLineRole.Victim) return false;
             if (spoken.Length > MaximumLineCharacters) spoken = spoken.Substring(0, MaximumLineCharacters);
-            line = new ExecutionSpeechLine(phase, role, spoken);
+            line = new ExecutionSpeechLine(phase, role, spoken, lastStatement && role == ExecutionSpeechLineRole.Victim);
+            if (role != ExecutionSpeechLineRole.Victim) lastStatement = false;
             return true;
         }
 

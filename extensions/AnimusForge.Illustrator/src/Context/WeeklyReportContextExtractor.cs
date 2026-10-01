@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Linq;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Settlements;
 using TaleWorlds.Core;
@@ -23,7 +24,7 @@ namespace AnimusForge.Illustrator.Context
 
     /// <summary>
     /// 子模块侧周报结构化快照：弹窗文本只解析一次，人物、地点候选及其来源句与日期由快照承载。
-    /// 导演在同一次请求中选择事件；最早提及的人物与地点不是已选中的主角和现场。
+    /// 快报先选定事实并冻结参与者；普通周报保留正文候选。提及地点不自动等于事件现场。
     /// 地点只在周报文本真实提及定居点时解析，解析不到就标未知，
     /// 绝不用"主角/玩家当前所在地"冒充事件现场。
     /// </summary>
@@ -41,9 +42,18 @@ namespace AnimusForge.Illustrator.Context
         public string ReportDateLabel = string.Empty;
     }
 
+    public sealed class WeeklyReportCharacterReference
+    {
+        public Hero Hero;
+        public HeroVisualProfile Profile;
+        public string HeroId, Name, Role, Evidence, BannerCode;
+    }
+
     public sealed class WeeklyReportVisualContext
     {
         public WeeklyReportIllustrationSnapshot Snapshot { get; set; }
+        public bool IsFrozenEvent { get; set; }
+        public List<WeeklyReportCharacterReference> Characters { get; } = new List<WeeklyReportCharacterReference>();
         public string Title { get; set; } = string.Empty;
         public string Subtitle { get; set; } = string.Empty;
         public string HeadlineSummary { get; set; } = string.Empty;
@@ -65,15 +75,16 @@ namespace AnimusForge.Illustrator.Context
                 : NarrativeFactRouter.BuildEventEvidence(Title, Subtitle, HeadlineSummary));
             sb.AppendLine("以上是事件内容而非画面文字。保留各句的当事人、地点、否定、计划与结果，不把人物或结果跨事件拼接；未明确的结果保持未知。");
 
-            if (ProtagonistProfile != null)
+            if (IsFrozenEvent)
+                sb.AppendLine("【已选定事件】事实区已锁定本期配图事件。只画这一事件；不能改选其他消息，不能因标题或措辞变化换事件。事件发生时的角色身份优先于人物目前的头衔；相关君主或领主不等于亲临现场。");
+            foreach (var person in Characters)
             {
                 sb.AppendLine();
-                sb.AppendLine("=== 【本期提及人物的可选身份资料】 ===");
-                if (!string.IsNullOrWhiteSpace(Snapshot?.ProtagonistEvidence))
-                    sb.AppendLine("【此人对应原文】" + Snapshot.ProtagonistEvidence);
-                sb.AppendLine("此人为本期正文中识别到的参考人物，并非预先指定的画面主角。只有选中的事件确实涉及此人时才使用其身份资料；选择其他事件时不必让他入画。没有参考图的参与方仍按所选事件表达，参考图数量不决定画中人数。");
-                sb.AppendLine(ProtagonistProfile.BuildVisualSummary());
+                sb.AppendLine("=== 【人物：" + person.Name + "；事件角色：" + person.Role + "】 ===");
+                sb.AppendLine("【对应事实】" + person.Evidence);
+                sb.AppendLine(person.Profile?.BuildVisualSummary() ?? "该人物外貌未能提取，不能借用其他人的脸或装备。");
             }
+            sb.AppendLine("各人物的全身图与同名头肩图必须一一对应，只锁定身份外貌，不复制站姿或背景。是否入画服从事件事实，不把相关人物全部强塞入现场；未提供参考的角色不得套用其他人的脸。");
 
             if (EnvironmentProfile != null && (Snapshot == null || Snapshot.EventSettlement != null))
             {
@@ -103,10 +114,10 @@ namespace AnimusForge.Illustrator.Context
             if (!string.IsNullOrWhiteSpace(Title)) sb.AppendLine("【报头原文】" + Title);
             if (!string.IsNullOrWhiteSpace(Subtitle)) sb.AppendLine("【核心局势原文】" + Subtitle);
             if (!string.IsNullOrWhiteSpace(HeadlineSummary)) sb.AppendLine("【事件要闻原文】" + HeadlineSummary);
-            if (ProtagonistProfile != null)
+            foreach (var person in Characters)
             {
-                sb.AppendLine("【可选参考人物背景】以下仅补充该人物的身份；生平、地位与装备不构成本期事件，也不要求将其作为主角。");
-                sb.AppendLine(ProtagonistProfile.BuildDirectorOnlyFacts());
+                sb.AppendLine("【人物背景：" + person.Name + "】当前身份仅供辨识，不改写事件角色：" + person.Role);
+                sb.AppendLine(person.Profile?.BuildDirectorOnlyFacts());
             }
             if (EnvironmentProfile != null) sb.AppendLine(EnvironmentProfile.BuildDirectorOnlyFacts());
             return sb.ToString().TrimEnd();
@@ -119,6 +130,7 @@ namespace AnimusForge.Illustrator.Context
         {
             var sb = new StringBuilder();
             if (!string.IsNullOrWhiteSpace(SceneThemeDirective)) sb.AppendLine(SceneThemeDirective);
+            sb.AppendLine("【事件张力】冲突、突袭、俘获、政变报道优先抓住行动进行中的可信瞬间，明确一方施加行动、另一方的身体回应和双方力量关系；不要把事件画成并排站立、面向观众合影或安静巡视。可用重心偏移、前后错位、局部遮挡、斜向动势和远近对比突出行动，景别由叙事选择，主体足够大以读出表情与动作。被俘用失去行动自由与控制关系表达，不能画成贵宾陪同出游。艺术动作不得新增伤亡、刑罚、反抗、肢体伤害或颠倒胜负；和平、议和、自然死亡报道按真实情绪表现，不强行改成战斗。光影增强层次但不涂黑背景，环境仍然可读。");
             // 周报是历史事件的艺术再现，不复用实时会话中“未知陈设一律不补”的现场复原规则。
             return sb.ToString().TrimEnd();
         }
@@ -133,32 +145,77 @@ namespace AnimusForge.Illustrator.Context
     {
         public static WeeklyReportVisualContext ExtractFromWeeklyReport(string title, string subtitle, string body)
         {
-            var snapshot = BuildSnapshot(title, subtitle, body);
+            return Extract(BuildSnapshot(title, subtitle, body), null);
+        }
+
+        internal static WeeklyReportVisualContext ExtractFromPlan(global::AnimusForge.WorldBulletinIllustrationPlan plan)
+        {
+            if (plan == null) return null;
+            var snapshot = BuildSnapshot(plan.Title, "", plan.Facts);
+            snapshot.ReportDateLabel = plan.DateText ?? "";
+            return Extract(snapshot, plan);
+        }
+
+        // Called once on the game thread at selection/open. One hero enumeration, bounded four portraits.
+        private static WeeklyReportVisualContext Extract(WeeklyReportIllustrationSnapshot snapshot, global::AnimusForge.WorldBulletinIllustrationPlan plan)
+        {
             var context = new WeeklyReportVisualContext
             {
-                Snapshot = snapshot,
-                Title = snapshot.Title,
-                Subtitle = snapshot.Subtitle,
-                HeadlineSummary = snapshot.Headline,
-                EventTheme = snapshot.Theme,
-                ProtagonistHero = snapshot.ProtagonistHero,
+                Snapshot = snapshot, IsFrozenEvent = plan != null,
+                Title = snapshot.Title, Subtitle = snapshot.Subtitle,
+                HeadlineSummary = snapshot.Headline, EventTheme = snapshot.Theme,
                 SceneThemeDirective = GenerateSceneDirective(snapshot.Theme, snapshot.EventSettlement, snapshot.Headline)
             };
-
-            // 提取一位已提及人物的可选身份基准；是否登场以及画面重心由所选事件决定。
-            if (snapshot.ProtagonistHero != null)
+            var heroes = EnumerateHeroes().Where(h => h != null).GroupBy(h => h.StringId).Select(g => g.First()).ToList();
+            var requested = plan?.Participants?.Where(p => p != null && !string.IsNullOrWhiteSpace(p.HeroId)).Take(4).ToList();
+            if (requested != null && requested.Count > 0)
             {
-                var app = CharacterAppearanceSnapshot.FromHero(snapshot.ProtagonistHero, snapshot.ProtagonistHero.BattleEquipment);
-                context.ProtagonistProfile = HeroVisualExtractor.Extract(snapshot.ProtagonistHero, useCivilian: false, appearance: app);
-                context.ProtagonistProfile.CurrentStateDetail = string.Empty;
-                context.ProtagonistProfile.Appearance = app;
+                var byId = heroes.ToDictionary(h => h.StringId, StringComparer.Ordinal);
+                foreach (var p in requested)
+                {
+                    byId.TryGetValue(p.HeroId, out var hero);
+                    AddCharacter(context, hero, p.HeroId, p.Name, p.Role);
+                }
             }
+            else
+            {
+                // Old saves have no IDs. Match only the major text, never add people from minor news.
+                foreach (var hero in heroes.Where(h => !string.IsNullOrWhiteSpace(h.Name?.ToString()) && h.Name.ToString().Length >= 2)
+                    .Select(h => new { Hero = h, Index = snapshot.EventFacts.IndexOf(h.Name.ToString(), StringComparison.Ordinal) })
+                    .Where(h => h.Index >= 0).OrderBy(h => h.Index).ThenByDescending(h => h.Hero.IsFactionLeader).Take(4))
+                    AddCharacter(context, hero.Hero, hero.Hero.StringId, hero.Hero.Name.ToString(), "正文当事人，具体角色依对应事实");
+            }
+            var first = context.Characters.FirstOrDefault(c => c.Hero != null);
+            context.ProtagonistHero = snapshot.ProtagonistHero = first?.Hero;
+            context.ProtagonistProfile = first?.Profile;
+            snapshot.ProtagonistEvidence = first?.Evidence ?? "";
 
             // 地点资料保留对应原文，不能将整期最早出现的地点直接绑定为导演选中事件的现场。
             context.EnvironmentProfile = EnvironmentVisualExtractor.Extract(snapshot.EventSettlement, eventAnchored: true, eventDateLabel: snapshot.ReportDateLabel);
             ApplyEventSceneAnchoring(context, snapshot.EventSettlement);
 
             return context;
+        }
+
+        private static void AddCharacter(WeeklyReportVisualContext context, Hero hero, string id, string name, string role)
+        {
+            if (context.Characters.Any(p => p.HeroId == id)) return;
+            var person = new WeeklyReportCharacterReference { Hero = hero, HeroId = id,
+                Name = string.IsNullOrWhiteSpace(name) ? hero?.Name?.ToString() ?? id : name, Role = role ?? "" };
+            person.Evidence = FindMentionEvidence(context.Snapshot.EventFacts, person.Name);
+            if (hero != null)
+            {
+                try
+                {
+                    var appearance = CharacterAppearanceSnapshot.FromHero(hero, hero.BattleEquipment);
+                    person.Profile = HeroVisualExtractor.Extract(hero, useCivilian: false, appearance: appearance);
+                    person.Profile.CurrentStateDetail = string.Empty;
+                    person.Profile.Appearance = appearance;
+                    person.BannerCode = (hero.Clan?.Banner ?? hero.Clan?.Kingdom?.Banner)?.BannerCode;
+                }
+                catch (Exception ex) { TaleWorlds.Library.Debug.Print("[Illustrator] Participant snapshot failed: " + id + " " + ex.Message); }
+            }
+            context.Characters.Add(person);
         }
 
         /// <summary>
@@ -178,7 +235,6 @@ namespace AnimusForge.Illustrator.Context
                 Headline = cleanHeadline,
                 EventFacts = eventFacts,
                 Theme = ClassifyEventTheme(eventFacts),
-                ProtagonistHero = ResolveProtagonistHero(eventFacts),
                 EventSettlement = ResolveEventSettlement(eventFacts)
             };
             snapshot.ProtagonistEvidence = FindMentionEvidence(eventFacts, snapshot.ProtagonistHero?.Name?.ToString());
@@ -195,46 +251,6 @@ namespace AnimusForge.Illustrator.Context
             }
 
             return snapshot;
-        }
-
-        /// <summary>
-        /// 在证据正文中选一位可供身份图的已提及英雄；不预选事件或要求此人登场。
-        /// 无命中时保持未知；收报人不能冒充事件当事人。只在打开周报时扫描一次。
-        /// </summary>
-        private static Hero ResolveProtagonistHero(string fullText)
-        {
-            if (string.IsNullOrWhiteSpace(fullText)) return null;
-
-            Hero best = null;
-            int bestIndex = int.MaxValue;
-            int bestRank = int.MinValue;
-
-            try
-            {
-                foreach (var hero in EnumerateHeroes())
-                {
-                    if (hero == null) continue;
-                    string name = hero.Name != null ? hero.Name.ToString() : null;
-                    if (string.IsNullOrWhiteSpace(name) || name.Length < 2) continue;
-
-                    int idx = fullText.IndexOf(name, StringComparison.Ordinal);
-                    if (idx < 0) continue;
-
-                    int rank = (hero.IsFactionLeader ? 4 : 0) + (hero.Clan != null && hero.Clan.Leader == hero ? 2 : 0) + (hero.IsAlive ? 1 : 0);
-                    if (idx < bestIndex || (idx == bestIndex && rank > bestRank))
-                    {
-                        best = hero;
-                        bestIndex = idx;
-                        bestRank = rank;
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                TaleWorlds.Library.Debug.Print($"[Illustrator] Weekly report protagonist resolution failed: {ex.Message}");
-            }
-
-            return best;
         }
 
         private static IEnumerable<Hero> EnumerateHeroes()
@@ -405,7 +421,7 @@ namespace AnimusForge.Illustrator.Context
         /// </summary>
         private static string GenerateSceneDirective(WeeklyReportEventTheme theme, Settlement settlement, string headline)
         {
-            return "【周报事件纪事管线】从本期完整正文中自主选定一个明确事件及一个有叙事力的瞬间，再推导行动、空间关系和机位。" +
+            return "【周报事件纪事管线】依据给出的事件事实选取有叙事力的瞬间；事实区已选定事件时必须保持该事件，再推导行动、空间关系和机位。" +
                 "让画面通过参与方正在做什么、事件如何发生及已知结果说明本期纪事；不能仅让领主站立或骑马展示，再把事件地点缩成远处布景。" +
                 "并非每次都要战斗、群像或广角：安静的谈判、重整、交接等瞬间也可以，只要确实属于选中事件，画面的关系与行动能让人读懂发生了什么。" +
                 "人物与环境篇幅随事件需要决定，不罗列整套装备；图中的具名人物、参与阵营、地点关联、计划、否定、未遂与胜负结局必须有正文依据，不把不同要闻拼成一次事件。" +
@@ -420,6 +436,8 @@ namespace AnimusForge.Illustrator.Context
                 return string.Empty;
             }
             // 按完整句提取证据前不能截断，否则尾部的失败/撤退/未遂会丢失。
+            int minorStart = body.IndexOf("【其他消息】", StringComparison.Ordinal);
+            if (minorStart >= 0) body = body.Substring(0, minorStart);
             return NarrativeFactRouter.CleanText(body);
         }
 

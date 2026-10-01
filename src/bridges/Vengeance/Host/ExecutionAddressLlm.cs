@@ -36,21 +36,33 @@ internal sealed class ExecutionAddressFacts
         };
         if (string.IsNullOrWhiteSpace(facts.Language)) facts.Language = "English";
         facts._body = BuildBody(request, facts.VictimName);
+        facts._systemPrompt = AIConfigHandler.ExecutionCeremonySystemPrompt.Replace("{language}", facts.Language);
+        if (string.IsNullOrWhiteSpace(facts._systemPrompt)) throw new InvalidOperationException("Execution prompt missing");
+        try
+        {
+            facts._recall = MyBehavior.CaptureHistoryContextWorkForHero(request.Victim,
+                "公开处决 最后陈述 " + request.Charge?.GetName() + " " + request.Executor?.Name,
+                null, false, SaveRuntimeGuard.CurrentGeneration);
+            facts._recent = string.Join("\n", MyBehavior.GetDialogueHistoryEntriesForExternal(request.Victim, 12)
+                .Select(x => x.Speaker + ": " + x.Text));
+            facts._major = MyBehavior.BuildNpcMajorActionsRuntimeInstructionForExternal(request.Victim);
+        }
+        catch (Exception ex) { RexLog.Warning("Execution memory capture unavailable: " + ex.GetType().Name); }
         return facts;
     }
 
-    internal string BuildSystemPrompt()
+    private string _systemPrompt = string.Empty;
+    private string _recent = string.Empty;
+    private string _major = string.Empty;
+    private Func<string> _recall;
+    internal string BuildSystemPrompt() => _systemPrompt;
+    internal string BuildUserPrompt()
     {
-        return "你在为一场公开处决一次性写完三个阶段的现场发言。先单独写阶段标记，再写该阶段台词。" +
-               "阶段标记只能是「[开场]」「[行刑中]」「[结束后]」。台词一行一个人，格式只能是「刽子手: 台词」「死刑犯: 台词」或「围观: 台词」。" +
-               "开场：刽子手宣读罪名与判决，死刑犯说一到三句刑前宣言，围观三到四句，刽子手收束。" +
-               "行刑中：处刑已经开始，死刑犯说两到三句，围观说三到四句。" +
-               "结束后：处刑已经完成，死刑犯不再说话，围观说三到四句。" +
-               "三个阶段合计不超过二十四行。不要写动作、心理描写、旁白，也不要替监刑的玩家说话。" +
-               "台词使用游戏语言 " + Language + "。事实只采用用户给出的内容，缺失的身份不要编造。";
+        string recalled = string.Empty;
+        try { recalled = _recall?.Invoke() ?? string.Empty; }
+        catch (Exception ex) { RexLog.Warning("Execution memory recall unavailable: " + ex.GetType().Name); }
+        return ExecutionAddressContextPolicy.Compose(_body, recalled, _recent, _major);
     }
-
-    internal string BuildUserPrompt() => _body;
 
     private static string BuildBody(ExecutionRequest request, string victimName)
     {
@@ -67,8 +79,8 @@ internal sealed class ExecutionAddressFacts
         builder.AppendLine("身份：" + Safe(() => MyBehavior.BuildHeroIdentityTitleForExternal(victim)));
         builder.AppendLine("贵族：" + (request.VictimIsNoble ? "是" : "否"));
         MyBehavior.GetNpcPersonaForExternal(victim, out var personality, out var background);
-        if (!string.IsNullOrWhiteSpace(personality)) builder.AppendLine("性格：" + personality.Trim());
-        if (!string.IsNullOrWhiteSpace(background)) builder.AppendLine("背景：" + background.Trim());
+        if (!string.IsNullOrWhiteSpace(personality)) builder.AppendLine("性格：" + ExecutionAddressContextPolicy.Bound(personality.Trim(), 400));
+        if (!string.IsNullOrWhiteSpace(background)) builder.AppendLine("背景：" + ExecutionAddressContextPolicy.Bound(background.Trim(), 600));
         builder.AppendLine("英勇：" + TraitLabel(victim, DefaultTraits.Valor));
         builder.AppendLine("荣誉：" + TraitLabel(victim, DefaultTraits.Honor));
         builder.AppendLine("与玩家关系：" + RelationLabel(victim, request.Executor));
@@ -86,7 +98,9 @@ internal sealed class ExecutionAddressFacts
         builder.AppendLine("刽子手：本镇行刑人，没有个人姓名与氏族。");
         builder.AppendLine("围观：本镇平民，没有具名贵族。");
         builder.AppendLine("监刑者：" + OrUnknown(request.Executor?.Name?.ToString()) + "，只在场，不发言。");
-        return builder.ToString();
+        string body = builder.ToString();
+        int caseStart = body.IndexOf("【案件】", StringComparison.Ordinal);
+        return caseStart < 0 ? body : body.Substring(caseStart) + "\n" + body.Substring(0, caseStart);
     }
 
     private static string EvidencePlace(ExecutionRequest request)
@@ -346,7 +360,7 @@ internal sealed class ExecutionAddressPlayback
                 crowdIndex = _crowd;
             }
 
-            if (!_director.TryAppendCue(speaker, crowdIndex, line.Text)) continue;
+            if (!_director.TryAppendCue(speaker, crowdIndex, line.Text, line.Phase, line.IsLastStatement)) continue;
             if (speaker == SpeechSpeaker.Crowd) _crowd++;
             _shown++;
         }
@@ -441,6 +455,7 @@ internal static class ExecutionAddressLlm
             return false;
         }
 
+        director.BindRecording(request);
         if (!director.TryBeginIncremental(executioner, victim, crowd, facts.VictimName, out var failure))
         {
             Interlocked.Exchange(ref _active, 0);
@@ -527,10 +542,13 @@ internal static class ExecutionAddressLlm
         var parser = new ExecutionSpeechLineParser();
         try
         {
+            // Recall uses the existing detached snapshot, never live Heroes on a worker.
+            string userPrompt = await Task.Run(() => facts.BuildUserPrompt(), token).ConfigureAwait(false);
+            token.ThrowIfCancellationRequested();
             var messages = new List<object>
             {
                 new { role = "system", content = facts.BuildSystemPrompt() },
-                new { role = "user", content = facts.BuildUserPrompt() }
+                new { role = "user", content = userPrompt }
             };
             await LegacyShoutNetworkGateway.SendLegacyMessagesStreamAsync(
                 messages,

@@ -1669,6 +1669,13 @@ public partial class MyBehavior : CampaignBehaviorBase
 	private AutomaticKingdomRebellionOwner<PendingAutomaticKingdomRebellionContext> _automaticKingdomRebellions = new AutomaticKingdomRebellionOwner<PendingAutomaticKingdomRebellionContext>();
 	private AutomaticKingdomRebellionOwner<PendingAutomaticKingdomRebellionContext> AutomaticKingdomRebellions => _automaticKingdomRebellions ??= new AutomaticKingdomRebellionOwner<PendingAutomaticKingdomRebellionContext>();
 
+	// Keep Coup independent of the rebellion scheduler's backing fields. Main thread only.
+	internal bool HasBlockingRebellionFlowForCoup()
+	{
+		return AutomaticKingdomRebellions.FlowActive || !AutomaticKingdomRebellions.CanStart
+			|| _devForcedKingdomRebellionInProgress || _weeklyReportGenerationInProgress;
+	}
+
 	private bool _devForcedKingdomRebellionInProgress;
 
 	private bool _pendingDevForcedKingdomRebellionReady;
@@ -2054,6 +2061,9 @@ public partial class MyBehavior : CampaignBehaviorBase
 		try
 		{
 			SaveRuntimeGuard.AdvanceGeneration(reason);
+			ResetExecutionMemoryRuntime();
+			PublicExecutionOrderRuntime.Reset();
+			if (reason == "new_game_created") _executionTranscripts.Load(null);
 			ResetLocalTransientRuntimeForLoadedSave(reason);
 			ShoutBehavior.ResetTransientRuntimeForLoadedSaveExternal(reason);
 			CourierDeliveryBehavior.ResetTransientRuntimeForLoadedSaveExternal(reason);
@@ -12002,6 +12012,11 @@ public static int GetKingdomStabilityRoyalDomainLoyaltyAdjustmentForTown(Town to
 			Logger.Log("KingdomRebellion", "[ERROR] Rebel kingdom creation blocked by invalid naming result. clan=" + GetClanId(clan) + " formal=" + text + " short=" + text2);
 			return false;
 		}
+		if (Campaign.Current?.KingdomManager == null || clan == null || clan.Kingdom != kingdom || clan.IsEliminated || clan.Leader == null || !clan.Leader.IsAlive)
+		{
+			message = "建国前条件已变化，未离开原王国。";
+			return false;
+		}
 		ClanVisualSnapshot clanVisualSnapshot = CaptureClanVisualSnapshot(clan);
 		ChangeKingdomAction.ApplyByLeaveWithRebellionAgainstKingdom(clan, showNotification: true);
 		RestoreClanVisualSnapshot(clan, clanVisualSnapshot);
@@ -12016,6 +12031,11 @@ public static int GetKingdomStabilityRoyalDomainLoyaltyAdjustmentForTown(Town to
 		}
 		kingdomManager.CreateKingdom(new TextObject(text, null), new TextObject(text2, null), clan.Culture ?? kingdom.Culture, clan, null, new TextObject(text3, null), new TextObject(text, null), null);
 		Kingdom kingdom2 = clan.Kingdom;
+		if (kingdom2 == null || kingdom2 == kingdom || kingdom2.IsEliminated)
+		{
+			message = "家族已离开原王国，但建国结果尚未确认。";
+			return false;
+		}
 		if (kingdom != null && !kingdom.IsEliminated)
 		{
 			SetKingdomStabilityValue(kingdom, KingdomStabilityDefaultValue);
@@ -16800,6 +16820,7 @@ TeamModuleServices.CivilWar.AdvanceWeek(devEditableKingdom, weekIndex, GetKingdo
 
 	public override void SyncData(IDataStore dataStore)
 	{
+		SyncExecutionTranscripts(dataStore);
 		if (_shownRecords == null)
 		{
 			_shownRecords = new Dictionary<string, HeroShownRecord>();

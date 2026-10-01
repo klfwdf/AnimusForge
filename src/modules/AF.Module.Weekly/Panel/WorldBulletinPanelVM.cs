@@ -28,6 +28,8 @@ internal sealed class WorldBulletinPanelData
 	public string IllustrationSubtitle = "";
 
 	public string IllustrationBody = "";
+
+	public WorldBulletinIllustrationPlan IllustrationPlan;
 }
 
 // Shared by the floating weekly-report overlay and the inline bulletin slot so one generation pipeline feeds both.
@@ -50,7 +52,12 @@ public interface IWeeklyIllustrationSink
 internal static class WorldBulletinPanelIllustrationBridge
 {
 	// (slot, eventId, title, subtitle, body) -> true when the slot was attached.
-	public static Func<WorldBulletinIllustrationVM, string, string, string, string, bool> AttachSlot;
+	public static Func<WorldBulletinIllustrationVM, string, string, string, string, WorldBulletinIllustrationPlan, bool> AttachSlot;
+
+	// Fired once after an issue's final text has been published, before its map notice.
+	public static Action<string, string, string, string> PrepareIssue;
+	public static Action<WorldBulletinIllustrationPlan> PrepareSelection;
+	public static Action<WorldBulletinIllustrationPlan> CancelSelection;
 }
 
 public sealed class WorldBulletinMinorItemVM : ViewModel
@@ -78,6 +85,25 @@ public sealed class WorldBulletinMinorItemVM : ViewModel
 
 public sealed class WorldBulletinIllustrationVM : ViewModel, IWeeklyIllustrationSink
 {
+	private float _imageWidth = 368f;
+	private float _imageHeight = 207f;
+
+	[DataSourceProperty]
+	public float ImageWidth => _imageWidth;
+
+	[DataSourceProperty]
+	public float ImageHeight => _imageHeight;
+
+	// One constant-time update per publication; no Tick, texture copy or image resampling.
+	public void FitImage(int width, int height)
+	{
+		float scale = Math.Min(368f / Math.Max(1, width), 207f / Math.Max(1, height));
+		_imageWidth = Math.Max(1, width) * scale;
+		_imageHeight = Math.Max(1, height) * scale;
+		OnPropertyChangedWithValue(_imageWidth, nameof(ImageWidth));
+		OnPropertyChangedWithValue(_imageHeight, nameof(ImageHeight));
+	}
+
 	private bool _isAvailable;
 
 	private string _spriteName = "";
@@ -230,8 +256,6 @@ public sealed class WorldBulletinIllustrationVM : ViewModel, IWeeklyIllustration
 
 public sealed class WorldBulletinPanelVM : ViewModel
 {
-	private const float BodyIndentWithDropCap = 74f;
-
 	private readonly Action _onClose;
 
 	private readonly Action<string> _onOpenEncyclopediaLink;
@@ -256,9 +280,6 @@ public sealed class WorldBulletinPanelVM : ViewModel
 
 	[DataSourceProperty]
 	public string DropCapText { get; }
-
-	[DataSourceProperty]
-	public float BodyMarginLeft { get; }
 
 	[DataSourceProperty]
 	public string BodyText { get; }
@@ -313,13 +334,11 @@ public sealed class WorldBulletinPanelVM : ViewModel
 			HasDropCap = true;
 			DropCapText = first.ToString();
 			BodyText = formatted.Substring(1);
-			BodyMarginLeft = BodyIndentWithDropCap;
 		}
 		else
 		{
 			DropCapText = "";
 			BodyText = formatted;
-			BodyMarginLeft = 0f;
 		}
 		List<KeyValuePair<string, string>> minors = data.Minors ?? new List<KeyValuePair<string, string>>();
 		int leftCount = (minors.Count + 1) / 2;

@@ -22,9 +22,8 @@ internal static class SettlementEntryTroopSelectionBehavior
     private static Action<Team, Agent> _bindOrderController;
     private static Action<Formation, Agent> _markCommandable;
     private static Action<int, string> _interruptSpeech, _cancelSpeech;
-    private static readonly List<FieldInfo> PendingObjects = new List<FieldInfo>();
-    private static readonly List<Func<bool>> ActiveFlags = new List<Func<bool>>();
-    private static FieldInfo _pendingRebellion;
+    private static Func<bool> _hasBlockingFlow;
+    private static Func<string, TroopRoster, string, bool> _openAftermath;
     private static MethodInfo _queueCoup, _clearCoup, _spawnKing, _countRole, _isArmedLogic;
     private static Type _setsLogicType;
     internal static bool IsAvailable { get; private set; }
@@ -39,9 +38,8 @@ internal static class SettlementEntryTroopSelectionBehavior
         _bindOrderController = null;
         _markCommandable = null;
         _interruptSpeech = _cancelSpeech = null;
-        PendingObjects.Clear();
-        ActiveFlags.Clear();
-        _pendingRebellion = null;
+        _hasBlockingFlow = null;
+        _openAftermath = null;
         _queueCoup = _clearCoup = _spawnKing = _countRole = _isArmedLogic = null;
         _setsLogicType = null;
     }
@@ -65,19 +63,22 @@ internal static class SettlementEntryTroopSelectionBehavior
                 _interruptSpeech = OptionalSpeechCallback(speech, "InterruptAgentSpeechForCombatExternal");
                 _cancelSpeech = OptionalSpeechCallback(speech, "CancelAgentSpeechForRemovalExternal");
             }
-            foreach (string name in new[] { "_pendingProfileSelection", "_pendingMissionEntry", "_pendingVictoryMenuEntry",
-                "_pendingVillageVictoryRewardEntry", "_pendingVillageAftermathEncounterExit", "_pendingSettlementCivilianGatherRequest" })
-                PendingObjects.Add(RequiredField(host, name));
-            ActiveFlags.Add(RequiredFlag(host, "_setsEntryMissionActive"));
-            ActiveFlags.Add(RequiredFlag(host, "_setsActiveUsableProtection"));
-            _pendingRebellion = RequiredField(host, "_pendingSameKingdomVassalRebellionKingdomId");
-            _queueCoup = AccessTools.Method(host, "QueueArmedCoupEntry", new[] { typeof(string), typeof(string), typeof(TroopRoster), typeof(List<string[]>) }) ?? throw new MissingMethodException(host.FullName, "QueueArmedCoupEntry");
+            _hasBlockingFlow = Bind<Func<bool>>(host, "HasBlockingFlowForCoup");
+            _openAftermath = Bind<Func<string, TroopRoster, string, bool>>(host, "TryOpenCoupVictoryMenu");
+            _queueCoup = AccessTools.Method(host, "QueueArmedCoupEntryWithOptions", new[] { typeof(string), typeof(string), typeof(TroopRoster), typeof(List<string[]>), typeof(int), typeof(int), typeof(int), typeof(int) }) ?? throw new MissingMethodException(host.FullName, "QueueArmedCoupEntryWithOptions");
             _clearCoup = AccessTools.Method(host, "ClearArmedCoupEntry") ?? throw new MissingMethodException(host.FullName, "ClearArmedCoupEntry");
             _setsLogicType = host.GetNestedType("SettlementEntryTroopSelectionMissionLogic", BindingFlags.NonPublic) ?? throw new MissingMemberException(host.FullName, "SettlementEntryTroopSelectionMissionLogic");
             // Resolved once here; the mission tick must not look methods up per call.
             _spawnKing = AccessTools.Method(_setsLogicType, "SpawnArmedCoupKing", new[] { typeof(CharacterObject), typeof(MatrixFrame) }) ?? throw new MissingMethodException(_setsLogicType.FullName, "SpawnArmedCoupKing");
             _countRole = AccessTools.Method(_setsLogicType, "CountArmedCoupRole", new[] { typeof(string) }) ?? throw new MissingMethodException(_setsLogicType.FullName, "CountArmedCoupRole");
             _isArmedLogic = AccessTools.PropertyGetter(_setsLogicType, "IsArmedCoup") ?? throw new MissingMethodException(_setsLogicType.FullName, "IsArmedCoup");
+            Bind<Action>(host, "ValidateArmedCoupRuntime")();
+            // Campaign events invoke the last registered listener first. Attach only after
+            // SETS has added its exact mission logic, independently of registration order.
+            MethodInfo missionStarted = AccessTools.Method(host, "OnMissionStarted", new[] { typeof(IMission) })
+                ?? throw new MissingMethodException(host.FullName, "OnMissionStarted");
+            harmony.Patch(missionStarted, postfix: new HarmonyMethod(
+                AccessTools.Method(typeof(SettlementEntryTroopSelectionBehavior), nameof(SetsMissionStartedPostfix))));
             Patch(harmony, host, "IsSetsCommandMissionCandidate", nameof(CommandCandidatePrefix));
             Patch(harmony, host, "ResolveSetsPlayerCommandTeamForExternal", nameof(CommandTeamPrefix));
             Patch(harmony, host, "EnsureSetsCommandUiReadyForExternal", nameof(CommandReadyPrefix));
@@ -101,18 +102,9 @@ internal static class SettlementEntryTroopSelectionBehavior
         return Delegate.CreateDelegate(typeof(T), method) as T ?? throw new InvalidOperationException("Incompatible AF delegate: " + name);
     }
 
-    private static FieldInfo RequiredField(Type owner, string name) => AccessTools.Field(owner, name)
-        ?? throw new MissingFieldException(owner.FullName, name);
-
-    // Host flags may be a static bool field or a static bool property (e.g. an owner-backed getter).
-    private static Func<bool> RequiredFlag(Type owner, string name)
+    private static void SetsMissionStartedPostfix(IMission mission)
     {
-        FieldInfo field = AccessTools.Field(owner, name);
-        if (field != null && field.IsStatic && field.FieldType == typeof(bool)) return () => (bool)field.GetValue(null);
-        MethodInfo getter = AccessTools.PropertyGetter(owner, name);
-        if (getter != null && getter.IsStatic && getter.ReturnType == typeof(bool))
-            return (Func<bool>)Delegate.CreateDelegate(typeof(Func<bool>), getter);
-        throw new MissingFieldException(owner.FullName, name);
+        CoupCampaignBehavior.NotifySetsMissionReady(mission);
     }
 
     private static Action<int, string> OptionalSpeechCallback(Type owner, string name)
@@ -150,17 +142,23 @@ internal static class SettlementEntryTroopSelectionBehavior
 
     // Defenders are the coup session's own records; the host spawns exactly these and
     // reports casualties back by record id, so roles and source parties never diverge.
-    internal static void QueueArmedCoup(string settlementId, string locationId, TroopRoster roster, IEnumerable<CoupTroopRecord> defenders)
+    internal static void QueueArmedCoup(string settlementId, string locationId, TroopRoster roster, IEnumerable<CoupTroopRecord> defenders, CoupBattleOptions options)
     {
         if (!IsAvailable) throw new InvalidOperationException("AF SETS兼容桥未就绪。");
+        if (options == null || !options.IsValid()) throw new InvalidOperationException("政变战斗参数损坏。");
         var records = new List<string[]>();
         if (defenders != null)
             foreach (CoupTroopRecord record in defenders)
                 records.Add(new[] { record.Id, record.CharacterId, record.SourcePartyId, record.Role.ToString() });
-        _queueCoup.Invoke(null, new object[] { settlementId, locationId, roster, records });
+        _queueCoup.Invoke(null, new object[] { settlementId, locationId, roster, records,
+            locationId == "lordshall" ? options.HallAllyLimit : options.StreetAllyLimit,
+            options.DefenderWaveSize, options.DefenderWaveIntervalSeconds, options.MaxActiveDefenderWaves });
     }
 
     internal static void ClearArmedCoup() => _clearCoup?.Invoke(null, null);
+
+    internal static bool TryOpenCoupAftermath(string settlementId, TroopRoster survivors, string source)
+        => IsAvailable && _openAftermath != null && _openAftermath(settlementId, survivors, source);
 
     private static MissionBehavior FindSetsLogic(Mission mission)
     {
@@ -198,12 +196,10 @@ internal static class SettlementEntryTroopSelectionBehavior
 
     internal static bool HasPendingFlowForCoup()
     {
-        if (!IsAvailable) return true;
+        if (!IsAvailable || _hasBlockingFlow == null) return true;
         try
         {
-            foreach (FieldInfo field in PendingObjects) if (field.GetValue(null) != null) return true;
-            foreach (Func<bool> flag in ActiveFlags) if (flag()) return true;
-            return !string.IsNullOrEmpty(_pendingRebellion.GetValue(null) as string);
+            return _hasBlockingFlow();
         }
         catch (Exception ex)
         {

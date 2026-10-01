@@ -480,6 +480,7 @@ public sealed partial class TownExecutionMissionBehavior : MissionLogic, IExecut
     private bool _postLethalExecutionActionPending;
     private bool _usingGenericExecutionAction;
     private bool _lethalAttempted;
+    internal bool HasReachedLethalFrame => _lethalAttempted;
     private bool _missionDeathApplied;
     private bool _campaignCommitPending;
     private bool _campaignCommitAttempted;

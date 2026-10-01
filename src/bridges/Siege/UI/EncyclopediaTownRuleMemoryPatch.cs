@@ -65,6 +65,7 @@ internal static class EncyclopediaTownRuleMemoryPatch
 
 	internal static void OnApplicationTick()
 	{
+		GcczTownRuleMemoryGenerationBridge.OnApplicationTick();
 		var changedSettlementIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 		while (GcczTownRuleMemoryRuntimeBridge.TryDequeueChangedSettlementId(out string settlementId))
 		{

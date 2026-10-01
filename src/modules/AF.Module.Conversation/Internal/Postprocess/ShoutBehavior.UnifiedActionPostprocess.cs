@@ -97,6 +97,12 @@ public partial class ShoutBehavior
 	{
 		string text = StripActionTagsForSceneSpeech(replyText ?? "");
 		string resolvedChainName = string.IsNullOrWhiteSpace(chainName) ? ResolveScenePostprocessChainName() : chainName.Trim();
+		bool executionTopic = HasPreprocessRuleHit(preprocessRuleHits, PublicExecutionOrderPolicy.RuleId);
+        bool executionNative = resolvedChainName == "native_conversation" || resolvedChainName == "meeting";
+        var executionPermit = executionTopic ? PublicExecutionOrderRuntime.Capture(targetAgentIndex, resolvedChainName,
+            executionNative || (relaySingleFramedNpc && relayPrimaryTargetAgentIndex == targetAgentIndex),
+            replyIsDirectPlayerResponse, playerText, replyText) : null;
+        var executionRules = executionPermit == null ? null : AIConfigHandler.GetGuardrailRulePostprocessRules(PublicExecutionOrderPolicy.RuleId);
 		bool kingdomVassalagePreprocessHit = HasPreprocessRuleHit(preprocessRuleHits, "kingdom_vassalage");
 		bool nobleGatheringRuleInjected = HasPreprocessRuleHit(preprocessRuleHits, "noble_gathering");
 		bool persistentAdpDebtRuleInjected = HasPreprocessRuleHit(preprocessRuleHits, PersistentAdpDebtPostprocessRuleId);
@@ -297,7 +303,7 @@ public partial class ShoutBehavior
 		}
 		List<PostprocessRuleEntry> mergedRules = siegeInterventionExclusive
 			? MergePostprocessRulesForScene(siegeInterventionRules, nobleExecutionOrderRules)
-			: MergePostprocessRulesForScene(duelRules, transactionRules, kingdomRules, royalRules, vassalageRules, lordsHallRules, meetingReleaseRules, vanillaIssueRules, heroJoinPartyRules, mechanismRules, nobleExecutionOrderRules, partyTransferRules, voteDealRules, customPolicyAgendaRules, diplomacyRules, worldMapPartyCommandRules, nobleGatheringRules, marriageRules, proposeAgendaRules, siegeSurrenderRules, npcSurrenderRules, siegeInterventionRules, relayRules, intimacyRules, sceneActionRules);
+			: MergePostprocessRulesForScene(duelRules, transactionRules, kingdomRules, royalRules, vassalageRules, lordsHallRules, meetingReleaseRules, vanillaIssueRules, heroJoinPartyRules, mechanismRules, nobleExecutionOrderRules, partyTransferRules, voteDealRules, customPolicyAgendaRules, diplomacyRules, worldMapPartyCommandRules, nobleGatheringRules, marriageRules, proposeAgendaRules, siegeSurrenderRules, npcSurrenderRules, siegeInterventionRules, relayRules, intimacyRules, sceneActionRules, executionRules);
 		bool royalPostprocessRuleInjected = (royalRules ?? new List<PostprocessRuleEntry>()).Any((PostprocessRuleEntry x) => string.Equals((x?.Tag ?? "").Trim(), "[ACTION:KING_ABDICATE_TO_PLAYER]", StringComparison.OrdinalIgnoreCase));
 		bool vassalagePostprocessRuleInjected = (vassalageRules ?? new List<PostprocessRuleEntry>()).Any((PostprocessRuleEntry x) => (x?.Tag ?? "").StartsWith("[ACTION:VASSALAGE:", StringComparison.OrdinalIgnoreCase));
 		int annexationRuleCount = (mergedRules ?? new List<PostprocessRuleEntry>()).Count((PostprocessRuleEntry x) => (x?.Tag ?? "").StartsWith("[ACTION:KINGDOM_ANNEX:", StringComparison.OrdinalIgnoreCase));
@@ -628,6 +634,7 @@ public partial class ShoutBehavior
 			string siegeInterventionTags = siegeInterventionPostprocessEnabled ? TeamModuleServices.Siege.NormalizePostprocessTags(siegeInterventionPostprocessEnabled, content, siegeInterventionRules) : "";
 			string relayTags = relayRuleInjected ? NormalizeAutoGroupRelayPostprocessTagsForScene(content, relayCandidates, targetAgentIndex) : "";
 			string intimacyTags = SexualConceptionBehavior.NormalizePostprocessTags(content, intimacyRules);
+			string executionTags = PublicExecutionOrderRuntime.Normalize(executionPermit, content);
 			string sceneActionTags = NormalizeSceneActionDirectiveTag(content, sceneActionOfferedKeys);
 			if (sceneActionOfferedKeys != null)
 			{
@@ -636,7 +643,7 @@ public partial class ShoutBehavior
 			}
 			string text21 = siegeInterventionExclusive
 				? MergeNormalizedPostprocessBlocksForScene(siegeInterventionTags, nobleExecutionOrderTags)
-				: MergeNormalizedPostprocessBlocksForScene(text10, text11, text12, royalTags, vassalageTags, text13, text14, text15, text16, text17, nobleExecutionOrderTags, text18, voteDealTags, customPolicyAgendaTags, diplomacyTags, worldMapPartyCommandTags, nobleGatheringTags, marriageTags, proposeAgendaTags, siegeSurrenderTags, npcSurrenderTags, siegeInterventionTags, relayTags, intimacyTags, sceneActionTags);
+				: MergeNormalizedPostprocessBlocksForScene(text10, text11, text12, royalTags, vassalageTags, text13, text14, text15, text16, text17, nobleExecutionOrderTags, text18, voteDealTags, customPolicyAgendaTags, diplomacyTags, worldMapPartyCommandTags, nobleGatheringTags, marriageTags, proposeAgendaTags, siegeSurrenderTags, npcSurrenderTags, siegeInterventionTags, relayTags, intimacyTags, sceneActionTags, executionTags);
 			text21 = AfGcczShoutBridge.ValidateTownPostprocessDecision(text21);
 			if (string.IsNullOrWhiteSpace(text21))
 			{

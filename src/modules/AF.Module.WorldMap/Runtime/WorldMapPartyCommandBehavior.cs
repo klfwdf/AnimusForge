@@ -88,6 +88,45 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 
 	public static WorldMapPartyCommandBehavior Instance { get; private set; }
 
+	internal static bool ShouldSuppressSettlementStayInitiative(MobileParty party)
+	{
+		WorldMapPartyCommandBehavior behavior = Instance;
+		// Called by the native AI model. Reject traveling parties before touching the
+		// queue; settled heroes need only one dictionary lookup, not a world scan.
+		if (behavior == null || party == null || party == MobileParty.MainParty
+			|| party.CurrentSettlement == null || !party.CurrentSettlement.IsFortification)
+		{
+			return false;
+		}
+		lock (behavior._queueLock)
+		{
+			if (behavior._queues.Count == 0)
+			{
+				return false;
+			}
+			Hero leader = party.LeaderHero;
+			string actorKey = leader != null ? leader.StringId : BuildPartyActorKey(party, createGuid: false);
+			if (string.IsNullOrWhiteSpace(actorKey)
+				|| !behavior._queues.TryGetValue(actorKey, out PartyCommandQueueState state)
+				|| IsStopPending(state))
+			{
+				return false;
+			}
+			return IsPartyHoldingInsideCommandSettlement(party, GetCurrentCommand(state));
+		}
+	}
+
+	private static bool IsPartyHoldingInsideCommandSettlement(MobileParty party, PartyCommandEntry command)
+	{
+		Settlement settlement = party?.CurrentSettlement;
+		// ArrivalDay also accepts proximity to the gate. Only actual entry into the
+		// ordered town/castle protects defenders; outside relief parties still fight.
+		return settlement != null && settlement.IsFortification
+			&& string.Equals(command?.Kind, nameof(CommandKind.GoToSettlement), StringComparison.OrdinalIgnoreCase)
+			&& string.Equals(command.TargetId, settlement.StringId, StringComparison.OrdinalIgnoreCase)
+			&& !IsPartyAtWarWithSettlement(party, settlement);
+	}
+
 	internal static bool ShouldProtectGovernorExpeditionLeaderFromNativeReplacement(MobileParty party)
 	{
 		// Harmony invokes this once per party/day. Keep the common path allocation-free:
@@ -1337,7 +1376,8 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 			AdvanceCommand(hero, party, state, "go_hold_until_expired_before_arrival");
 			return;
 		}
-		if (state.ArrivalDay < 0.0 || !IsPartyAtSettlement(party, settlement, SettlementArrivalDistance))
+		if (state.ArrivalDay < 0.0 || !IsPartyAtSettlement(party, settlement, SettlementArrivalDistance)
+			|| !IsAiDecisionLockActive(party) || !IsPartyVisitingSettlement(party, settlement))
 		{
 			string actionKey = "visit:" + settlement.StringId;
 			bool shouldRefresh = !string.Equals(state.LastIssuedActionKey, actionKey, StringComparison.OrdinalIgnoreCase)
@@ -3807,6 +3847,10 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 			return false;
 		}
 		settlement = ResolveSettlementById(command.TargetId);
+		if (IsPartyHoldingInsideCommandSettlement(party, command))
+		{
+			return false;
+		}
 		if (TryResolveHostileBesiegerParty(party, settlement, out besiegerParty))
 		{
 			attackCommand = new PartyCommandEntry

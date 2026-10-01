@@ -31,6 +31,11 @@ internal sealed class ExecutionSpeechDirector : ISpeechPlaybackSink
     private Guid? _preparedSession;
     private bool _aborted;
     private bool _reactionPlayed;
+    private ExecutionRequest? _recordingRequest;
+    private int _shownSequence;
+
+    // Presentation evidence only. Hosts may record it; observers never own execution.
+    internal static Action<ExecutionRequest, int, SpeechCue, Agent, IReadOnlyList<Agent>>? LineShown { get; set; }
 
     internal ExecutionSpeechDirector(ISpeechPlanProvider? provider = null)
     {
@@ -40,6 +45,7 @@ internal sealed class ExecutionSpeechDirector : ISpeechPlaybackSink
     internal bool HasStarted => _playback?.HasStarted == true;
     internal bool IsBusy => !_aborted && _playback?.IsBusy == true;
     internal int PreparedCrowdCount => _crowd.Count;
+    internal void BindRecording(ExecutionRequest request) => _recordingRequest = request;
 
     // Lets the AnimusForge host replace the catalog once per ceremony. The
     // shared source keeps no network client of its own.
@@ -62,7 +68,8 @@ internal sealed class ExecutionSpeechDirector : ISpeechPlaybackSink
         return true;
     }
 
-    internal bool TryAppendCue(SpeechSpeaker speaker, int crowdIndex, string text)
+    internal bool TryAppendCue(SpeechSpeaker speaker, int crowdIndex, string text,
+        ExecutionSpeechPhase phase = ExecutionSpeechPhase.Opening, bool isLastStatement = false)
     {
         if (_aborted || _playback is null || string.IsNullOrWhiteSpace(text)) return false;
         if (speaker == SpeechSpeaker.Crowd && (crowdIndex < 0 || crowdIndex >= _crowd.Count)) return false;
@@ -70,7 +77,8 @@ internal sealed class ExecutionSpeechDirector : ISpeechPlaybackSink
         var bounded = text.Trim();
         if (bounded.Length > 240) bounded = bounded.Substring(0, 240);
         var cue = new SpeechCue(speaker, crowdIndex, bounded, string.Empty,
-            ExecutionSpeechTiming.GetLineSeconds(bounded) + ExecutionSpeechTiming.FadeSeconds);
+            ExecutionSpeechTiming.GetLineSeconds(bounded) + ExecutionSpeechTiming.FadeSeconds,
+            phase: phase, isLastStatement: isLastStatement);
         return _playback.TryAppend(cue);
     }
 
@@ -135,6 +143,7 @@ internal sealed class ExecutionSpeechDirector : ISpeechPlaybackSink
         }
         if (!IsActive(executioner)) { failureDetail = "the executioner is unavailable"; return false; }
 
+        _recordingRequest = request;
         BindActors(executioner, victim, crowd);
         // Pick distinct residents once, not the same first two actors every ceremony.
         var random = new Random(request.SessionId.GetHashCode());
@@ -247,14 +256,30 @@ internal sealed class ExecutionSpeechDirector : ISpeechPlaybackSink
     bool ISpeechPlaybackSink.IsReady => true;
     bool ISpeechPlaybackSink.HasFailed => false;
     bool ISpeechPlaybackSink.IsSpeakerAvailable(SpeechSpeaker speaker, int crowdIndex) =>
-        IsActive(ResolveSpeaker(speaker, crowdIndex));
+        IsActive(ResolveSpeaker(speaker, crowdIndex)) &&
+        (speaker != SpeechSpeaker.Victim || Mission.Current?.GetMissionBehavior<TownExecutionMissionBehavior>()?.HasReachedLethalFrame != true);
 
     bool ISpeechPlaybackSink.TryStart(SpeechCue cue)
     {
         var speaker = ResolveSpeaker(cue.Speaker, cue.CrowdIndex);
         if (!IsActive(speaker)) return false;
+        var controller = Mission.Current?.GetMissionBehavior<TownExecutionMissionBehavior>();
+        if (cue.Speaker == SpeechSpeaker.Victim &&
+            (cue.Phase == ExecutionSpeechPhase.Aftermath || controller?.HasReachedLethalFrame == true)) return false;
         var shown = ExecutionSpeechBubbleBridge.TryShow(speaker!, cue.Text, cue.DurationSeconds);
         if (!shown) return false;
+        if (_recordingRequest != null && LineShown != null)
+        {
+            try
+            {
+                var witnesses = new List<Agent>(_crowd.Count + 2);
+                if (IsActive(_victim)) witnesses.Add(_victim!);
+                if (IsActive(_executioner)) witnesses.Add(_executioner!);
+                witnesses.AddRange(_crowd.Where(IsActive));
+                LineShown?.Invoke(_recordingRequest, ++_shownSequence, cue, speaker!, witnesses);
+            }
+            catch (Exception exception) { RexLog.Warning("Speech recording failed: " + exception.Message); }
+        }
         EchoToMessageLog(cue);
         TryPlayReaction(cue, speaker!);
         return true;

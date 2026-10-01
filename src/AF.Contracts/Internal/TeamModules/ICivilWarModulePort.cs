@@ -5,6 +5,56 @@ using TaleWorlds.CampaignSystem.Settlements;
 
 namespace AnimusForge.Refactor.Modules;
 
+internal enum CivilWarAction { JoinCrown, JoinOpposition, Leave, Found, Detonate, Suppress, Negotiate, Concede, ForceDissolve, Respond }
+internal enum CivilWarActionStatus { Applied, Rejected, AwaitingPlayer, AwaitingKingdom, PartialFailure }
+internal sealed class CoupCivilWarRegistration
+{
+    public string CoupId;
+    public string KingdomId;
+    public string RebelKingdomId;
+    public string LeaderClanId;
+    public string FormerKingId;
+    public string FormerClanId;
+    public bool RestoreDynasty;
+    public string OriginalName;
+    public string OriginalShortName;
+}
+internal sealed class CivilWarActionRequest
+{
+	public string OperationId = "";
+	public string KingdomId = "";
+	public string FactionId = "";
+	public int Version = -1;
+	public CivilWarAction Action;
+	public string DemandId = "";
+	public string TargetId = "";
+	public int OfferTier = 1;
+	public bool OfferInfluence;
+	public bool Accept;
+}
+internal sealed class CivilWarActionQuote
+{
+	public bool Allowed;
+	public string Reason = "";
+	public string Consequence = "";
+	public int Gold;
+	public int Influence;
+	public int CooldownUntilDay;
+	public int Version;
+}
+internal sealed class CivilWarActionResult
+{
+	public CivilWarActionStatus Status;
+	public string Message = "";
+	public string FactionId = "";
+}
+internal sealed class CivilWarFoundingOption
+{
+	public string DemandId = "";
+	public string TargetId = "";
+	public string Text = "";
+}
+
 // One clan row in the faction panel.
 internal sealed class CivilWarPanelClan
 {
@@ -36,6 +86,9 @@ internal sealed class CivilWarPanelFaction
 // The player's own kingdom only. Built on demand when the kingdom screen tab opens.
 internal sealed class CivilWarPanelKingdom
 {
+	public string KingdomId = "";
+	public string Identity = "";
+	public long Revision;
 	public bool Available;
 	public string EmptyText = "";
 	public string Name = "";
@@ -53,8 +106,19 @@ internal sealed class CivilWarPanelKingdom
 // Same-DLL owner for staged civil wars. Host code keeps only these calls.
 internal interface ICivilWarModulePort
 {
+    bool CanTrackCoupWar(Kingdom kingdom);
+    bool TryRegisterCoupWar(CoupCivilWarRegistration registration, out string message);
+	long Revision { get; }
+	event Action StateChanged;
+	List<CivilWarFoundingOption> GetFoundingOptions(string kingdomId);
+	CivilWarActionQuote Quote(CivilWarActionRequest request);
+	CivilWarActionResult Execute(CivilWarActionRequest request);
+	void NotifyPoliticalChange(Kingdom kingdom, string sourceId);
+	void ProcessPending();
+	bool TryTakePoliticalResponse(out CivilWarActionRequest request, out string text);
 	void Load(string json);
 	string Save();
+	void AdvanceDay(int dayIndex);
 	void AdvanceWeek(Kingdom kingdom, int weekIndex, int stability, Action<Kingdom, int> adjustStability, IReadOnlyList<string> recentEvents);
 	void RecordGrievance(Kingdom kingdom, string sourceId, IEnumerable<Clan> clans, float points, int week, string text);
 	void RecordPolicyImposed(Kingdom kingdom, string policyId, int week, string text);

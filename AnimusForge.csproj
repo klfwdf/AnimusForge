@@ -78,6 +78,11 @@
   </PropertyGroup>
   <ItemGroup />
   <ItemGroup>
+    <EmbeddedResource Include="content\modules\AF.Module.Prompt\ModuleData\RuleBehaviorPrompts.json">
+      <LogicalName>AnimusForge.Defaults.ExecutionRulePrompts.json</LogicalName>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
     <EmbeddedResource Include="content\modules\AF.Module.Prompt\ModuleData\PreprocessPrompts.json">
       <LogicalName>AnimusForge.Defaults.PreprocessPrompts.json</LogicalName>
     </EmbeddedResource>

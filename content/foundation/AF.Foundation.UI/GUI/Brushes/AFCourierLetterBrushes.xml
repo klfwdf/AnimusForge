@@ -1,4 +1,17 @@
 <Brushes>
+  <Brush Name="AFWorldBulletin.Archive.Button">
+    <Layers>
+      <BrushLayer Name="Border" Sprite="BlankWhiteSquare_9" Color="#87633CFF" />
+      <BrushLayer Name="Fill" Sprite="BlankWhiteSquare_9" Color="#D7BA86FF" ExtendLeft="-1" ExtendRight="-1" ExtendTop="-1" ExtendBottom="-1" />
+    </Layers>
+    <Styles>
+      <Style Name="Default"><BrushLayer Name="Border" ColorFactor="1" /><BrushLayer Name="Fill" ColorFactor="1" /></Style>
+      <Style Name="Hovered"><BrushLayer Name="Border" ColorFactor="0.8" /><BrushLayer Name="Fill" ColorFactor="1.12" /></Style>
+      <Style Name="Pressed"><BrushLayer Name="Border" ColorFactor="0.7" /><BrushLayer Name="Fill" ColorFactor="0.88" /></Style>
+      <Style Name="Disabled"><BrushLayer Name="Border" AlphaFactor="0.5" /><BrushLayer Name="Fill" AlphaFactor="0.5" /></Style>
+    </Styles>
+  </Brush>
+
   <Brush Name="AFCourierLetter.Title.Text" BaseBrush="Info.Text" Font="simkai" TextHorizontalAlignment="Center" TextVerticalAlignment="Center">
     <Styles>
       <Style Name="Default" FontSize="34" FontColor="#15100BFF" TextOutlineAmount="0" TextGlowRadius="0" TextBlur="0" TextShadowOffset="0" />

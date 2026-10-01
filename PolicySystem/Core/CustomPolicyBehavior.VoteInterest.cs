@@ -9,17 +9,19 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Election;
+using TaleWorlds.CampaignSystem.CharacterDevelopment;
 using TaleWorlds.CampaignSystem.Settlements;
 
 namespace AnimusForge;
 
 // Vote support for AF dynamic policies. Vanilla KingdomPolicyDecision.DetermineSupport only reads
 // three political weights, so lords ignore what a custom policy actually does to their own fiefs.
-// This postfix adds two terms on the same scale as vanilla's political score S:
+// This postfix adds three terms on the same scale as vanilla's political score S:
 //   U = self-interest derived from the policy's structured module effects (cached per policy/day)
+//   P = policy-method affinity with the voter's five personality traits
 //   R = relation between the voter's leader and the proposer's leader
-// Enforce outcome: result += 60 * (U' + R); reject outcome: result -= 100 * (U' + R),
-// where U' = -U for abolition agendas (abolishing removes the benefits). R follows the agenda
+// Enforce outcome: result += 60 * (U' + P' + R); reject outcome: result -= 100 * (U' + P' + R),
+// where U' = -U and P' = -P for abolition agendas (abolishing removes the benefits). R follows the agenda
 // proposer, except for the AF natural-expiry abolition agenda (forced ruler proposer), where it
 // follows the policy's original proposer and favors keeping the policy.
 // The proposer clan itself is never adjusted, so vanilla cancellation logic is unchanged.
@@ -117,6 +119,8 @@ public sealed partial class CustomPolicyBehavior
 
 		internal string PolicyProposerClanId = string.Empty;
 
+		internal PolicyVotePersonalityProfile Personality;
+
 		internal readonly Dictionary<string, float> InterestByClanId = new Dictionary<string, float>(StringComparer.OrdinalIgnoreCase);
 
 		internal readonly Dictionary<string, string> DetailByClanId = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
@@ -187,6 +191,8 @@ public sealed partial class CustomPolicyBehavior
 
 	private static float _voteRelationWeight = 1f;
 
+	private static float _votePersonalityWeight = 1f;
+
 	private static bool _voteInterestFailureLogged;
 
 	private static void Patch_KingdomPolicyDecision_DetermineSupport_Postfix(
@@ -219,7 +225,7 @@ public sealed partial class CustomPolicyBehavior
 				return;
 			}
 			RefreshVoteInterestSettings();
-			if (!_voteInterestEnabled || (_voteInterestWeight <= 0f && _voteRelationWeight <= 0f))
+			if (!_voteInterestEnabled || (_voteInterestWeight <= 0f && _voteRelationWeight <= 0f && _votePersonalityWeight <= 0f))
 			{
 				return;
 			}
@@ -238,12 +244,13 @@ public sealed partial class CustomPolicyBehavior
 			}
 			bool isInverted = IsVoteInterestInvertedDecision(__instance);
 			float relation = ComputeVoteRelation(entry, proposerClan, clan, isInverted);
-			float delta = (isInverted ? -interest : interest) + relation;
+			float personality = ComputeVotePersonality(entry, clan.Leader);
+			float delta = ComputeVoteScoreDelta(isInverted, interest, relation, personality);
 			float scale = outcome.ShouldDecisionBeEnforced ? 60f : -100f;
 			float original = __result;
 			if (outcome.ShouldDecisionBeEnforced)
 			{
-				LogVoteInterestOnce(policy, clan, isInverted, original / scale, interest, relation, detail);
+				LogVoteInterestOnce(policy, clan, isInverted, original / scale, interest, relation, personality, detail);
 			}
 			if (Math.Abs(delta) < 0.0001f)
 			{
@@ -259,6 +266,11 @@ public sealed partial class CustomPolicyBehavior
 				PolicySystemLog.Failure("Vote", "vote-interest-failed", ex.Message, ex.ToString());
 			}
 		}
+	}
+
+	private static float ComputeVoteScoreDelta(bool isInverted, float interest, float relation, float personality)
+	{
+		return (isInverted ? -(interest + personality) : interest + personality) + relation;
 	}
 
 	private static bool IsVoteInterestInvertedDecision(KingdomPolicyDecision decision)
@@ -292,6 +304,7 @@ public sealed partial class CustomPolicyBehavior
 			_voteInterestEnabled = settings.PolicyVoteInterestEnabled;
 			_voteInterestWeight = ClampVoteInterest(settings.PolicyVoteInterestWeight, 0f, 3f);
 			_voteRelationWeight = ClampVoteInterest(settings.PolicyVoteRelationWeight, 0f, 3f);
+			_votePersonalityWeight = ClampVoteInterest(settings.PolicyVotePersonalityWeight, 0f, 3f);
 		}
 		catch
 		{
@@ -346,9 +359,17 @@ public sealed partial class CustomPolicyBehavior
 		return entry;
 	}
 
-	// R > 0 pushes toward the enforce outcome. Normally it follows the agenda proposer. For the AF
-	// natural-expiry abolition agenda the ruler is a forced proposer, so friends of the policy's
-	// original proposer lean toward keeping the policy (rejecting the abolition) instead.
+	private static float ComputeVotePersonality(VoteInterestCacheEntry entry, Hero leader)
+	{
+		if (_votePersonalityWeight <= 0f || entry.Personality == null || leader == null) return 0f;
+		return _votePersonalityWeight * PolicyVotePersonality.Compute(entry.Personality,
+			leader.GetTraitLevel(DefaultTraits.Mercy), leader.GetTraitLevel(DefaultTraits.Honor),
+			leader.GetTraitLevel(DefaultTraits.Generosity), leader.GetTraitLevel(DefaultTraits.Valor),
+			leader.GetTraitLevel(DefaultTraits.Calculating));
+	}
+
+	// R follows the agenda proposer, except natural-expiry abolition: friends of the original
+	// policy proposer lean toward keeping that policy. P and U instead reverse with abolition.
 	private static float ComputeVoteRelation(VoteInterestCacheEntry entry, Clan agendaProposer, Clan clan, bool isInverted)
 	{
 		if (_voteRelationWeight <= 0f)
@@ -394,6 +415,7 @@ public sealed partial class CustomPolicyBehavior
 			IssuerKingdomId = FirstNonEmpty(data.IssuerKingdomId, data.OwnerKingdomId),
 			ProposerClanId = data.ProposerClanId ?? string.Empty
 		};
+		entry.Personality = PolicyVotePersonality.CloneValidated(data.VotePersonality);
 		entry.KingdomId = context.TargetKingdomId;
 		entry.PolicyProposerClanId = data.ProposerClanId ?? string.Empty;
 		entry.IsSystemExpiryAgenda = string.Equals(data.Status, DynamicPolicyStatusExpiryVotePending, StringComparison.OrdinalIgnoreCase);
@@ -845,6 +867,7 @@ public sealed partial class CustomPolicyBehavior
 		float politicalScore,
 		float interest,
 		float relation,
+		float personality,
 		string detail)
 	{
 		int day = GetCurrentCampaignDay();
@@ -859,6 +882,7 @@ public sealed partial class CustomPolicyBehavior
 			return;
 		}
 		float effectiveInterest = isInverted ? -interest : interest;
+		float effectivePersonality = isInverted ? -personality : personality;
 		PolicySystemLog.Write("Vote", "support-adjusted",
 			"policy=" + (policy.StringId ?? string.Empty)
 			+ " clan=" + (clan.StringId ?? string.Empty)
@@ -866,7 +890,8 @@ public sealed partial class CustomPolicyBehavior
 			+ " S=" + politicalScore.ToString("0.00", CultureInfo.InvariantCulture)
 			+ " U=" + effectiveInterest.ToString("0.00", CultureInfo.InvariantCulture)
 			+ " R=" + relation.ToString("0.00", CultureInfo.InvariantCulture)
-			+ " total=" + (politicalScore + effectiveInterest + relation).ToString("0.00", CultureInfo.InvariantCulture)
+			+ " P=" + effectivePersonality.ToString("0.00", CultureInfo.InvariantCulture)
+			+ " total=" + (politicalScore + effectiveInterest + relation + effectivePersonality).ToString("0.00", CultureInfo.InvariantCulture)
 			+ (string.IsNullOrEmpty(detail) ? string.Empty : " parts=" + detail));
 	}
 }

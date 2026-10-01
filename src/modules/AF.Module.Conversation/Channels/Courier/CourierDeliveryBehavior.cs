@@ -77,7 +77,7 @@ public sealed partial class CourierDeliveryBehavior : CampaignBehaviorBase
 	private const int NpcInitiatedLetterScanTargetTicks = 45;
 	private const int NpcInitiatedLetterScanMaxHeroesPerTick = 16;
 	private const double NpcInitiatedLetterScanFrameBudgetMilliseconds = 1.0;
-	private static readonly string[] CourierExcludedRuleIds = new[] { "duel", "meeting_taunt", "lords_hall_access", "scene_mechanism_actions", "encounter_release_player", "noble_deference" };
+	private static readonly string[] CourierExcludedRuleIds = new[] { "public_execution_start", "duel", "meeting_taunt", "lords_hall_access", "scene_mechanism_actions", "encounter_release_player", "noble_deference" };
 
 	private enum CourierStage
 	{

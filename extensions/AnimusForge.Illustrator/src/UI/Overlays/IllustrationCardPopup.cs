@@ -688,7 +688,9 @@ namespace AnimusForge.Illustrator.UI.Overlays
                 : (convContext.InterlocutorCharacter != null && convContext.InterlocutorCharacter.Name != null
                     ? convContext.InterlocutorCharacter.Name.ToString()
                     : "对方");
-            var options = IllustratorRuntime.CaptureOptions();
+            // Preserve the selected resolution tier while requesting a 16:9 scene image.
+            var options = IllustratorRuntime.CaptureOptions()?.WithSceneImageSize();
+            baseArtDirection += "\n【场景插画画幅】使用横向16:9构图，目标分辨率为" + options?.ImageSize + "，保持人物与场景的自然比例，不拉伸方图或竖图。";
             if (options?.EnableOffscreenRendering != true)
             {
                 _dataSource.SetReady("请先开启离屏渲染；本次生图需要人物完整装备立绘，不使用模板或旧截图替代。");

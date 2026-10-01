@@ -25,6 +25,7 @@ public sealed class InteractionCommitResult { }
 @@COURIER_VISIBLE_SANITIZER@@
 @@LEGACY_PROMPT_ADAPTER@@
 @@GIVE_ASSET_CODEC@@
+@@PUBLIC_EXECUTION_POLICY@@
 public static class LegacyConfiguredChatGateway
 {
     @@BUILD_PROMPT@@
@@ -487,6 +488,7 @@ public sealed class ProductionBlockHost
 
     // Only input bindings are fixtures. The relay/queue/direct-response expressions
     // and the battle suppression method are extracted verbatim from production.
+    @@SCENE_RULE_HIT_METHOD@@
     public static (bool Queue, bool Relay, bool Direct) TailDecisions(string ruleName, bool firstTurn,
         bool suppressBattleSpeechFollowups, bool endRequested, int remainingTurns, int candidateCount)
     {
@@ -1012,6 +1014,14 @@ public static class Program
                 Require(result.Relay == expectedRelay && result.Queue == (expectedRelay || actionOnly),
                     "Authoritative Scene tail must preserve battle/end/turn/candidate eligibility and action-only execution");
                 Require(result.Direct == firstTurn, "Relay rounds must preserve firstTurn=false, not force direct player response");
+            }, host => Task.CompletedTask);
+        foreach (string hit in new[] { "public_execution_start", "unrelated_rule" })
+        foreach (bool battle in new[] { false, true })
+            await Case("scene-tail/public-execution/" + hit + "/battle=" + battle, false, s => { }, s =>
+            {
+                var result = ProductionBlockHost.TailDecisions(hit, true, battle, false, 0, 0);
+                Require(result.Queue == (hit == "public_execution_start" && !battle) && !result.Relay,
+                    "Merged execution rule must queue its authoritative postprocess without bypassing battle suppression");
             }, host => Task.CompletedTask);
     }
 

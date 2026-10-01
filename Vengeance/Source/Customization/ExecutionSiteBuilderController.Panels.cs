@@ -142,6 +142,7 @@ internal sealed partial class ExecutionSiteBuilderController
     private void ShowMethodPanel()
     {
         var items = RichExecutionApi.Methods.All
+            .Where(method => ExecutionMethodRules.IsVisibleInSelection(method.StringId))
             .Select(method => new ExecutionSiteBuilderPanelDefinition(
                 method.StringId,
                 method.GetName().ToString(),
@@ -158,7 +159,7 @@ internal sealed partial class ExecutionSiteBuilderController
     {
         var method = RichExecutionApi.Methods.All.FirstOrDefault(candidate =>
             string.Equals(candidate.StringId, methodId, StringComparison.OrdinalIgnoreCase));
-        if (method is null)
+        if (method is null || !ExecutionMethodRules.IsVisibleInSelection(method.StringId))
         {
             Status("{=REX_Builder_Method_Invalid}The selected execution method is no longer available.");
             return;
