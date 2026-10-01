@@ -1,3 +1,29 @@
+<a id="settlement-stay-sortie-20261001"></a>
+
+### 驻守城镇遇敌自行出城修复（2026-10-01，OFFLINE_VERIFIED）
+
+玩家反馈接受驻守命令的 NPC 在敌军来袭时自行出城。当前工作区 `F:/AnimusForge-main`、分支 `codex/af-main-refactor-continuation-20260831`；基线 `5623ac25`，意图检查点 `984e6ae`，产品及回归提交 `a9539dc0`。本片仅修复已经进入命令目标城镇/城堡的部队；不改变城外援军解围、敌对目标攻城、明确攻击、巡逻、驻守天数和原有队列结束语义。未部署、Stage、打包或推送。
+
+根因证据：原 `TryBuildGoToSettlementAttackCommand` 不区分城内守军和城外援军，发现敌对围城部队即将 GoToSettlement 转为 FORCE AttackParty；1.3 原版 `原版游戏本体代码1.3.x/TaleWorlds.CampaignSystem/Party/MobilePartyAi.cs:467–473` 与 1.4 原版 `原版游戏本体代码1.4.5/TaleWorlds.CampaignSystem/TaleWorlds/CampaignSystem/Party/MobilePartyAi.cs:483–490` 都允许针对 TargetSettlement 的主动交战绕过 DoNotMakeNewDecisions。玩家现场日志/存档未提供，因此这证明可触发反馈的源码路径，不等同于实机复现。
+
+本片代码责任图（修订 `a9539dc0`）：
+
+- `src/modules/AF.Module.WorldMap/Runtime/WorldMapPartyCommandBehavior.cs:91–128`：`ShouldSuppressSettlementStayInitiative` / `IsPartyHoldingInsideCommandSettlement` 查询当前活动命令与真实 CurrentSettlement；仅实际进入非敌对目标城镇/城堡的 GoToSettlement 生效，城门距离与 ArrivalDay 不能代替进城。无命令、已推进、停止中、玩家主队、其他命令/目标、村庄均不拦截。
+- 同文件 `:1360–1418`：`TickGoToSettlement` 在城内也检查丢失的 AI 锁/前往目标，按现有小时事件恢复；稳定状态不重复下发，原版战斗中的刷新仍由现有 Preempt 阻挡。原计时/完成与队列推进保留。
+- 同文件 `:3840–3882`：`TryBuildGoToSettlementAttackCommand` 在自动转换前识别城内驻守，避免变成强制出击；同一消费者覆盖接单转换和后续小时转换。
+- `CourierMobilePartyAIModel.cs:70–79`：现有注册的 AI model 通过 WorldMap 查询屏蔽城内驻守的原版 initiative，其他情况继续委托 inner。未新增 Harmony/存档键/标签/三渠道私有链路；三渠道既有共享执行器均受同一修复影响，未跑真实 LLM 对话。
+
+性能：AI model 原调用频率上先用 CurrentSettlement/IsFortification 排除行军部队，再用现有队列锁及 O(1) 字典查询；英雄热路径不拼字符串、不枚举世界或队列，不反射，不增加 Tick/轮询。非英雄沿用现有 party key；移动补发仍仅在原小时命令维护中触发。
+
+验证：
+
+- `python tests/modules/AF.Module.WorldMap/SettlementStayRegressionTests/run.py`：24 项 PASS；原样抽取生产查询/转换/小时处理/model 入口，Campaign 对象、原生移动副作用和队列推进末端为桩。覆盖围攻前后、实际进城与城门附近、城外解围、敌城攻城、巡逻/明确攻击、定时完成、停止/无命令、非英雄、inner model 保留、丢锁/改目标重下发及战斗期不打断。证据 `artifacts/tests/settlement-stay/run-bcba3df860514231b5c8f9d46c926e93/result.log`。
+- 同 runner 的 `--mutation conversion` / `initiative` / `refresh` 全部被行为断言检出；只变异隔离生成文件，不改生产源码。对应证据目录 `run-e014a150c1bc438597fa024746108225` / `run-015c31d1b5c8473c800c55836c833c9a` / `run-087c1d4322e54374b8ff427db5cc459d`。
+- 官方 `scripts/build/build_single_module.ps1 -ProjectRoot F:\AnimusForge-main -BannerlordRoot "F:\SteamLibrary\steamapps\common\Mount & Blade II Bannerlord" -Configuration Release`（无 Stage/Deploy）：1.3 `v1.3.15.110062`、1.4 `v1.4.6.115628` 与 Bootstrap 全部 exit 0。两实现各 338 warning / 0 error，Bootstrap 0/0；无本片两个生产文件的编译警告。SDK `local/dotnet/8.0.425`，日志 `artifacts/settlement-stay-20261001/build.log`。构建前核实输出目录在仓内且无 reparse，旧 Release 产物备份到同证据目录 `previous-build/`。
+- DLL SHA256：1.3 `2FA519EBCE7A1F09D55539F5E16A3AE537BA26ED08F4A9C5A7110116DB1D4285`；1.4 `81801CE4B62175C89FB47BFBAB9A9AA4B2CC64FBD09F2C0E904EE463D4AAFDB2`；Bootstrap `733754D3416996466189E3415BD2BCFCE2653CB6491F8AB5C31F89FBCE20011A`。位于 `bin/Release/single_module_artifacts/`，各 build.json 绑定相同哈希。
+
+未验证：游戏实际进出城/围城战、军团与其他 MOD 的联合行为、真实旧档加载及三渠道端到端。已被旧代码转成 AttackParty 的存档命令缺少原始驻守来源，不能安全反推；安装后需取消旧攻击并重新下达驻守，避免撤销玩家明确攻击意图。恢复原版“主动出击”逻辑用聚焦逆向提交 `git revert a9539dc0`，不重置历史，不覆盖游戏文件；本条不提升全仓 J17 的验收状态。
+
 <a id="bulletin-dropcap-flow-20261001"></a>
 
 ### 快报首字绕排与封存按钮重设计（2026-10-01，OFFLINE_VERIFIED）
