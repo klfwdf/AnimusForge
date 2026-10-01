@@ -13,6 +13,14 @@ internal sealed class CivilWarModuleAdapter : ICivilWarModulePort
 {
 	private static readonly Regex TagPattern = new Regex("^\\[A:CIVIL_FACTION:(JOIN:(CROWN|OPPOSITION)|RECRUIT|DETONATE|ANSWER:(ACCEPT|REFUSE))\\]$", RegexOptions.IgnoreCase | RegexOptions.Compiled);
 	private readonly KingdomCivilWarOwner _owner = new KingdomCivilWarOwner();
+	public long Revision => _owner.Revision;
+	public event Action StateChanged { add { _owner.StateChanged += value; } remove { _owner.StateChanged -= value; } }
+	public List<CivilWarFoundingOption> GetFoundingOptions(string kingdomId) => _owner.GetFoundingOptions(kingdomId, Clan.PlayerClan);
+	public CivilWarActionQuote Quote(CivilWarActionRequest request) => _owner.Quote(request, Clan.PlayerClan);
+	public CivilWarActionResult Execute(CivilWarActionRequest request) => _owner.Execute(request, Clan.PlayerClan);
+	public void NotifyPoliticalChange(Kingdom kingdom, string sourceId) => _owner.NotifyPoliticalChange(kingdom, sourceId);
+	public void ProcessPending() => _owner.ProcessPending();
+	public bool TryTakePoliticalResponse(out CivilWarActionRequest request, out string text) => _owner.TryTakePoliticalResponse(out request, out text);
 
 	public void Load(string json)
 	{
@@ -73,7 +81,7 @@ internal sealed class CivilWarModuleAdapter : ICivilWarModulePort
 		if (!DuelSettings.IsCivilWarFactionsEnabled()) return new List<PostprocessRuleEntry>();
 		return new List<PostprocessRuleEntry>
 		{
-			new PostprocessRuleEntry { Tag = "[A:CIVIL_FACTION:JOIN:CROWN]", Description = "玩家明确决定自己的家族加入当前王国已成形的王室派，且当前NPC明确确认时输出。询问、犹豫或派系未成形时禁止。" },
+			new PostprocessRuleEntry { Tag = "[A:CIVIL_FACTION:JOIN:CROWN]", Description = "玩家正式封臣明确决定家族加入本国王室阵营，且当前NPC确认时输出。无需先存在反对派；换派须先退出并等待七天，不能用对话绕过。" },
 			new PostprocessRuleEntry { Tag = "[A:CIVIL_FACTION:JOIN:OPPOSITION]", Description = "玩家明确决定自己的家族加入当前王国已成形的反对派，且当前NPC明确确认时输出。询问、犹豫或派系未成形时禁止。" },
 			new PostprocessRuleEntry { Tag = "[A:CIVIL_FACTION:RECRUIT]", Description = "玩家已有明确派系，并明确说服当前NPC的整个家族加入该派系，双方都无条件同意时输出。拒绝、身份不明或只是本人入队时禁止。" },
 			new PostprocessRuleEntry { Tag = "[A:CIVIL_FACTION:DETONATE]", Description = "玩家明确要求立即引爆当前王国的内战，且当前NPC明确同意执行时输出。讨论、威胁或劝阻时禁止。" },

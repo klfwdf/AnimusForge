@@ -153,7 +153,8 @@ internal static class CivilWarCatalog
 		new CivilWarGrievanceSourceDef { Id = "lands_raided", Name = "领地遭劫", DecayPerWeek = 0.20f },
 		new CivilWarGrievanceSourceDef { Id = "fief_lost", Name = "失守封地", DecayPerWeek = 0.10f },
 		new CivilWarGrievanceSourceDef { Id = "broken_pledge", Name = "国王背诺", DecayPerWeek = 0.06f },
-		new CivilWarGrievanceSourceDef { Id = "demand_refused", Name = "诉求被拒", DecayPerWeek = 0.10f }
+		new CivilWarGrievanceSourceDef { Id = "demand_refused", Name = "诉求被拒", DecayPerWeek = 0.10f },
+		new CivilWarGrievanceSourceDef { Id = "royal_suppression", Name = "王室打压", DecayPerWeek = 0.10f }
 	};
 
 	// ---------------------------------------------------------------- demands
@@ -203,7 +204,7 @@ internal static class CivilWarCatalog
 		{
 			Id = "autonomy", FactionNameFormat = "{leader}为首的分离派", Text = "承认本派封地自治", Color = "#8C5A12FF",
 			BaseWeight = 0.02f, MinFortifications = 1, MaxLeaderRelationToKing = -5,
-			Affinity = A(("fief_denied", 0.6f), ("lands_raided", 0.5f), ("demand_refused", 0.5f), ("broken_pledge", 0.5f)),
+			Affinity = A(("royal_suppression", 0.8f), ("fief_denied", 0.6f), ("lands_raided", 0.5f), ("demand_refused", 0.5f), ("broken_pledge", 0.5f)),
 			AcceptEffectId = CivilWarEffectIds.GrantPrivileges,
 			Accept = new CivilWarChance(0.25f, W(CivilWarFeature.KingMercy, 0.12f), W(CivilWarFeature.KingAuthoritarian, -0.20f), W(CivilWarFeature.FactionPower, 0.35f)),
 			Escalate = new CivilWarChance(0.20f, W(CivilWarFeature.FactionGrievance, 0.40f), W(CivilWarFeature.FactionPower, 0.35f), W(CivilWarFeature.LeaderValor, 0.08f)),
@@ -213,7 +214,7 @@ internal static class CivilWarCatalog
 		{
 			Id = UsurpDemandId, FactionNameFormat = "{leader}为首的宣权派", Text = "国王退位，由本派领袖继位", Color = "#8C1E1EFF",
 			BaseWeight = 0.01f, MinFortifications = 1, MaxLeaderRelationToKing = -10,
-			Affinity = A(("royal_execution", 0.7f), ("broken_pledge", 0.6f), ("demand_refused", 0.8f)),
+			Affinity = A(("royal_suppression", 1f), ("royal_execution", 0.7f), ("broken_pledge", 0.6f), ("demand_refused", 0.8f)),
 			AcceptEffectId = CivilWarEffectIds.Abdicate,
 			Accept = new CivilWarChance(0.02f, W(CivilWarFeature.FactionPower, 0.25f), W(CivilWarFeature.Instability, 0.10f), W(CivilWarFeature.KingValor, -0.05f)),
 			Escalate = new CivilWarChance(0.20f, W(CivilWarFeature.FactionGrievance, 0.40f), W(CivilWarFeature.FactionPower, 0.35f), W(CivilWarFeature.LeaderCalculating, 0.06f)),

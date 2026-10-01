@@ -12012,6 +12012,11 @@ public static int GetKingdomStabilityRoyalDomainLoyaltyAdjustmentForTown(Town to
 			Logger.Log("KingdomRebellion", "[ERROR] Rebel kingdom creation blocked by invalid naming result. clan=" + GetClanId(clan) + " formal=" + text + " short=" + text2);
 			return false;
 		}
+		if (Campaign.Current?.KingdomManager == null || clan == null || clan.Kingdom != kingdom || clan.IsEliminated || clan.Leader == null || !clan.Leader.IsAlive)
+		{
+			message = "建国前条件已变化，未离开原王国。";
+			return false;
+		}
 		ClanVisualSnapshot clanVisualSnapshot = CaptureClanVisualSnapshot(clan);
 		ChangeKingdomAction.ApplyByLeaveWithRebellionAgainstKingdom(clan, showNotification: true);
 		RestoreClanVisualSnapshot(clan, clanVisualSnapshot);
@@ -12026,6 +12031,11 @@ public static int GetKingdomStabilityRoyalDomainLoyaltyAdjustmentForTown(Town to
 		}
 		kingdomManager.CreateKingdom(new TextObject(text, null), new TextObject(text2, null), clan.Culture ?? kingdom.Culture, clan, null, new TextObject(text3, null), new TextObject(text, null), null);
 		Kingdom kingdom2 = clan.Kingdom;
+		if (kingdom2 == null || kingdom2 == kingdom || kingdom2.IsEliminated)
+		{
+			message = "家族已离开原王国，但建国结果尚未确认。";
+			return false;
+		}
 		if (kingdom != null && !kingdom.IsEliminated)
 		{
 			SetKingdomStabilityValue(kingdom, KingdomStabilityDefaultValue);
