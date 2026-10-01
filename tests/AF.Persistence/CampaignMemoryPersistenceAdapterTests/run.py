@@ -20,9 +20,14 @@ harness=(HERE/'Harness.cs.txt').read_text(encoding='utf-8').replace('@@STATE_FIE
 for marker,value in dto_extra.items():harness=harness.replace(marker,value)
 (out/'Program.cs').write_text(harness,encoding='utf-8')
 paths=['src/AF.GameAdapter.Bannerlord/Persistence/CampaignMemoryPersistenceAdapter.cs','src/AF.Persistence/CampaignSaveChunkHelper.cs','src/AF.Persistence/OwnerJsonStorageCodec.cs','src/modules/AF.Module.Memory/Records/MemoryPersistenceModels.cs','src/modules/AF.Module.Memory/Records/NpcActionEntry.cs']
-paths += ['src/AF.GameAdapter.Bannerlord/Persistence/'+name+'.cs' for name in ['CampaignShownRecordPersistenceAdapter','CampaignPersonaPersistenceAdapter','CampaignNpcActionPersistenceAdapter','CampaignWeeklyRecordPersistenceAdapter']]
+paths += ['src/AF.GameAdapter.Bannerlord/Persistence/'+name+'.cs' for name in ['CampaignShownRecordPersistenceAdapter','CampaignPersonaPersistenceAdapter','CampaignNpcActionPersistenceAdapter','CampaignWeeklyRecordPersistenceAdapter','CampaignMaterialPersistenceAdapter']]
 paths.append('src/modules/AF.Module.Memory/Records/NpcActionLedger.cs')
 paths.append('src/modules/AF.Module.Weekly/Models/WeeklyLegacyDtos.cs')
+paths += ['src/modules/AF.Module.Memory/Records/CampaignMaterialRecordOwner.cs','src/modules/AF.Module.Memory/Records/EventSourceMaterialIndex.cs']
+material_source=(ROOT/'src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.CampaignMaterialRecords.cs').read_text(encoding='utf-8-sig')
+a=material_source.index('\tinternal sealed class EventSourceMaterialEntry');z=material_source.index('\n\t}',a)+4
+harness=harness.replace('@@SOURCE_MATERIAL@@',material_source[a:z])
+(out/'Program.cs').write_text(harness,encoding='utf-8')
 reference=ROOT/'local/dotnet/8.0.425/sdk/8.0.425/Newtonsoft.Json.dll'
 (out/'Tests.csproj').write_text('<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><ImplicitUsings>enable</ImplicitUsings><NoWarn>CS0649</NoWarn></PropertyGroup><ItemGroup>'+''.join('<Compile Include="'+str(ROOT/p)+'"/>' for p in paths)+'<Reference Include="Newtonsoft.Json"><HintPath>'+str(reference)+'</HintPath></Reference></ItemGroup></Project>',encoding='utf-8')
 (out/'NuGet.Config').write_text('<configuration><packageSources><clear/></packageSources></configuration>')

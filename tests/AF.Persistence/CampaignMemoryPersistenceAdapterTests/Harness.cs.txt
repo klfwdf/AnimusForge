@@ -1,5 +1,6 @@
 using AnimusForge;using TaleWorlds.CampaignSystem;using Newtonsoft.Json;
 using System; using System.Collections.Generic; using System.Linq;
+namespace AnimusForge.Refactor.Runtime {}
 namespace TaleWorlds.CampaignSystem { public interface IDataStore { bool IsSaving {get;} bool IsLoading {get;} bool SyncData<T>(string key,ref T value); } }
 namespace TaleWorlds.Library { internal static class TWParallel { public static bool IsMainThread()=>true; } internal static class MBMath { public static int ClampInt(int x,int a,int b)=>Math.Clamp(x,a,b); } }
 namespace AnimusForge { internal static class Logger { public static bool IsModLogicEnabled=>false; public static void Log(string a,string b){} }
@@ -11,6 +12,7 @@ public partial class MyBehavior {
 @@SHOWN_RECORD@@
 @@PERSONA_PROFILE@@
 @@EVENT_RECORD@@
+@@SOURCE_MATERIAL@@
 
 internal static bool IsMemoryRecoveryHexDigest(string x)=>x!=null && x.Length==64 && x.All(c=>Uri.IsHexDigit(c));
 internal static bool IsValidMemoryCommitMarker(string a,string b,string c)=>IsMemoryRecoveryHexDigest(a)&&IsMemoryRecoveryHexDigest(c)&&(b=="user"||b=="fact"||b=="assistant"); }
@@ -33,4 +35,6 @@ class Program {static int checks;static void Check(bool x,string n){if(!x)throw 
  var opening=new Dictionary<string,string>{{" k "," value "}};var openingStorage=new Dictionary<string,string>();var world="world";other.IsSaving=true;CampaignWeeklyRecordPersistenceAdapter.SaveOpenings(other,opening,openingStorage,world);Check(openingStorage["k"]=="value","weekly opening save trims exact");other.IsSaving=false;CampaignWeeklyRecordPersistenceAdapter.LoadOpenings(other,opening,ref openingStorage,ref world);Check(opening["k"]=="value"&&world=="world","weekly openings roundtrip");
  var records=new List<MyBehavior.EventRecordEntry>{new(){EventId="id",Title="title"}};string recordJson="";int normalized=0;other.IsSaving=true;CampaignWeeklyRecordPersistenceAdapter.SaveRecords(other,records,ref recordJson,x=>normalized++);other.IsSaving=false;CampaignWeeklyRecordPersistenceAdapter.LoadRecords(other,ref records,ref recordJson,x=>normalized++);Check(records.Count==1&&records[0].EventId=="id"&&normalized==2,"weekly record IO invokes original normalization each phase");Check(recordJson=="","weekly load retires json scratch");
  var corrupt=new Store();CampaignSaveChunkHelper.SaveChunkedString(new Store{IsSaving=true},"noop","x");corrupt.IsSaving=true;CampaignSaveChunkHelper.SaveChunkedString(corrupt,"_eventRecordEntries_v1","invalid");corrupt.IsSaving=false;CampaignWeeklyRecordPersistenceAdapter.LoadRecords(corrupt,ref records,ref recordJson,x=>normalized++);Check(records.Count==0,"weekly corrupt record batch isolated");
+
+ var materialOwner=new CampaignMaterialRecordOwner();materialOwner.Materials.Add(new(){Day=2,Label="label",SnapshotText="fact",StableKey="key"});materialOwner.Materials.Add(null);string materialJson="";other.IsSaving=true;CampaignMaterialPersistenceAdapter.Save(other,materialOwner,ref materialJson);Check(materialJson==""&&materialOwner.Materials.Count==2,"material save scratch retired without changing authority list");other.IsSaving=false;CampaignMaterialPersistenceAdapter.Load(other,materialOwner,ref materialJson);materialOwner.RebuildEventSourceMaterialIndex();Check(materialOwner.Materials.Count==1&&materialOwner.Index.Count==1&&materialJson=="","material normalized load and original index rebuild");
 Console.WriteLine($"{checks} assertions PASS");}}

@@ -15059,17 +15059,7 @@ TeamModuleServices.CivilWar.AdvanceWeek(devEditableKingdom, weekIndex, GetKingdo
 				_weeklyReportReadingXpPendingLeadership = weeklyReportReadingXpPendingLeadership;
 				_weeklyReportReadingXpPendingSteward = weeklyReportReadingXpPendingSteward;
 				NormalizeWeeklyReportReadingXpPendingBatch();
-				try
-				{
-					_eventSourceMaterialJsonStorage = JsonConvert.SerializeObject(SanitizeEventSourceMaterials(_eventSourceMaterials));
-				}
-				catch (Exception ex6)
-				{
-					_eventSourceMaterialJsonStorage = "[]";
-					Logger.Log("EventMaterial", "[ERROR] Serialize event source materials failed: " + ex6.Message);
-				}
-				CampaignSaveChunkHelper.SaveChunkedString(dataStore, "_eventSourceMaterials_v1", _eventSourceMaterialJsonStorage ?? "[]", "EventMaterial");
-				_eventSourceMaterialJsonStorage = "";
+				CampaignMaterialPersistenceAdapter.Save(dataStore, _campaignMaterialRecords, ref _eventSourceMaterialJsonStorage);
 				_kingdomStabilityStorage.Clear();
 				foreach (KeyValuePair<string, int> kingdomStabilityValue in _kingdomStabilityValues)
 				{
@@ -15173,22 +15163,7 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 			_weeklyNoticeOwner.ResetShown();
 			_weeklyReportNoticeQueueNormalizedForCurrentPolicy = false;
 			_weeklyReportRegisteredMapNotificationView = null;
-			_eventSourceMaterials.Clear();
-			_eventSourceMaterialJsonStorage = CampaignSaveChunkHelper.LoadChunkedString(dataStore, "_eventSourceMaterials_v1", "EventMaterial") ?? "";
-			if (!string.IsNullOrWhiteSpace(_eventSourceMaterialJsonStorage))
-			{
-				try
-				{
-					List<EventSourceMaterialEntry> list5 = JsonConvert.DeserializeObject<List<EventSourceMaterialEntry>>(_eventSourceMaterialJsonStorage) ?? new List<EventSourceMaterialEntry>();
-					_eventSourceMaterials = SanitizeEventSourceMaterials(list5);
-				}
-				catch (Exception ex8)
-				{
-					Logger.Log("EventMaterial", "[ERROR] Deserialize event source materials failed: " + ex8.Message);
-					_eventSourceMaterials = new List<EventSourceMaterialEntry>();
-				}
-			}
-			_eventSourceMaterialJsonStorage = "";
+			CampaignMaterialPersistenceAdapter.Load(dataStore, _campaignMaterialRecords, ref _eventSourceMaterialJsonStorage);
 			RebuildEventSourceMaterialIndex();
 			_weeklyReportMaterialRevisions.MarkAll();
 			_weeklyReportMaterialRevisions.MarkOpening();
