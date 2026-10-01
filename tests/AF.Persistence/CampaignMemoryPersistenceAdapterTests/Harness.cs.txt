@@ -7,7 +7,11 @@ namespace AnimusForge { internal static class Logger { public static bool IsModL
 internal sealed class MemoryBusinessStateOwner {
 @@STATE_FIELDS@@
 }
+internal static class ClearRetireProbe { internal static readonly List<string> Steps=new(); internal static long Generation; }
+internal static class ShoutBehavior { internal static void ResetTransientRuntimeForLoadedSaveExternal(string reason) { ClearRetireProbe.Steps.Add("scene:"+reason); ClearRetireProbe.Generation=SaveRuntimeGuard.CurrentGeneration; } }
+internal static class CourierDeliveryBehavior { internal static void ResetTransientRuntimeForLoadedSaveExternal(string reason) { ClearRetireProbe.Steps.Add("courier:"+reason); } }
 public partial class MyBehavior {
+@@CLEAR_RETIRE@@
 @@DIALOGUE_DAY@@
 @@SHOWN_RECORD@@
 @@PERSONA_PROFILE@@
@@ -47,4 +51,5 @@ other.IsSaving=false;leafOrder.Clear();CampaignVoicePersonaPersistenceAdapter.Lo
 other.IsSaving=true;CampaignVoicePersonaPersistenceAdapter.Save(other,ref voiceJson,ref voiceFolder,ref unnamedJson,()=>throw new Exception("voice fail"),()=>"",()=>throw new Exception("unnamed fail"));Check(voiceJson==""&&unnamedJson=="","voice and unnamed export failure isolates empty scratch");
 other.IsSaving=false;int imported=0;CampaignVoicePersonaPersistenceAdapter.Load(other,ref voiceJson,ref voiceFolder,ref unnamedJson,x=>{},x=>{imported++;return false;},x=>{imported++;throw new Exception("restore fail");});Check(imported==1,"blank voice skips import but unnamed still receives blank and catches failure");
 var notices=new WeeklyNoticeStateOwner();notices.Unread=new(){" weekly_report:one ","weekly_report:ONE","bad","weekly_report:missing"};notices.ReadingXpClaimedEventIds=new(){"weekly_report:one","bad","weekly_report:missing"};notices.ReadingXpPendingCount=-3;notices.ReadingXpPendingCharm=11;notices.ReadingXpPendingLeadership=-2;notices.ReadingXpPendingSteward=4;other.IsSaving=true;CampaignWeeklyNoticePersistenceAdapter.Save(other,notices,x=>x.Equals("weekly_report:one",StringComparison.OrdinalIgnoreCase));Check(notices.Unread.SequenceEqual(new[]{"weekly_report:one"})&&notices.ReadingXpClaimedEventIds.SequenceEqual(new[]{"weekly_report:one"}),"notice and claimed sanitize dedupe and existing-record policy");Check(notices.ReadingXpPendingCount==0&&notices.ReadingXpPendingCharm==0&&notices.ReadingXpPendingLeadership==0&&notices.ReadingXpPendingSteward==0,"notice pending batch zero count clears original rewards");notices.Unread=new();notices.ReadingXpClaimedEventIds=new();other.IsSaving=false;CampaignWeeklyNoticePersistenceAdapter.Load(other,notices,x=>true);Check(notices.Unread.Count==1&&notices.ReadingXpClaimedEventIds.Count==1,"notice legacy keys and owner-state roundtrip");notices.ReadingXpPendingCount=2;notices.ReadingXpPendingCharm=-2;notices.ReadingXpPendingSteward=7;notices.NormalizeReadingXpPendingBatch();Check(notices.ReadingXpPendingCount==2&&notices.ReadingXpPendingCharm==0&&notices.ReadingXpPendingSteward==7,"positive pending count preserves nonnegative reward values");
+long retiredGeneration=SaveRuntimeGuard.CaptureGeneration();MyBehavior.RetireConversationRequestsForDeveloperClear();Check(!SaveRuntimeGuard.IsCurrentGeneration(retiredGeneration)&&ClearRetireProbe.Generation==SaveRuntimeGuard.CurrentGeneration&&ClearRetireProbe.Steps.SequenceEqual(new[]{"scene:dev_clear_all_data","courier:dev_clear_all_data"}),"developer clear retires old generation before channel resets with explicit reason");
 Console.WriteLine($"{checks} assertions PASS");}}

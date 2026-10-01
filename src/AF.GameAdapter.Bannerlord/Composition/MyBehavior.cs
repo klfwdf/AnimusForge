@@ -14804,50 +14804,12 @@ TeamModuleServices.CivilWar.AdvanceWeek(devEditableKingdom, weekIndex, GetKingdo
 		{
 			_shownRecordStorage = new Dictionary<string, string>();
 		}
-		if (_dialogueHistory == null)
-		{
-			_dialogueHistory = new Dictionary<string, List<DialogueDay>>();
-		}
-		if (_dialogueHistoryStorage == null)
-		{
-			_dialogueHistoryStorage = new Dictionary<string, string>();
-		}
-		if (_dailyMemoryDrafts == null)
-		{
-			_dailyMemoryDrafts = new Dictionary<string, List<DailyMemoryDraft>>(StringComparer.OrdinalIgnoreCase);
-		}
-		if (_dailyMemoryDraftStorage == null)
-		{
-			_dailyMemoryDraftStorage = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-		}
-		if (_compressedMemoryBlocks == null)
-		{
-			_compressedMemoryBlocks = new Dictionary<string, List<CompressedMemoryBlock>>(StringComparer.OrdinalIgnoreCase);
-		}
-		if (_compressedMemoryBlockStorage == null)
-		{
-			_compressedMemoryBlockStorage = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-		}
-		if (_memorySummaryQueue == null)
-		{
-			_memorySummaryQueue = new List<MemorySummaryJob>();
-		}
+		_memoryBusinessState.EnsureHistoryAndDailyPersistenceContainers();
 		if (_memorySummaryQueueJsonStorage == null)
 		{
 			_memorySummaryQueueJsonStorage = "";
 		}
-		if (_memoryOverviewStates == null)
-		{
-			_memoryOverviewStates = new Dictionary<string, MemoryOverviewState>(StringComparer.OrdinalIgnoreCase);
-		}
-		if (_memoryOverviewStateStorage == null)
-		{
-			_memoryOverviewStateStorage = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-		}
-		if (_memoryOverviewQueue == null)
-		{
-			_memoryOverviewQueue = new List<MemoryOverviewJob>();
-		}
+		_memoryBusinessState.EnsureOverviewPersistenceContainers();
 		if (_memoryOverviewQueueJsonStorage == null)
 		{
 			_memoryOverviewQueueJsonStorage = "";
@@ -14856,18 +14818,7 @@ TeamModuleServices.CivilWar.AdvanceWeek(devEditableKingdom, weekIndex, GetKingdo
 		{
 			_wildernessNonHeroPartyMemoryIds = new Dictionary<MobileParty, string>();
 		}
-		if (_npcMajorActionSummaries == null)
-		{
-			_npcMajorActionSummaries = new Dictionary<string, MajorActionSummaryState>(StringComparer.OrdinalIgnoreCase);
-		}
-		if (_npcMajorActionSummaryStorage == null)
-		{
-			_npcMajorActionSummaryStorage = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-		}
-		if (_npcMajorActionSummaryQueue == null)
-		{
-			_npcMajorActionSummaryQueue = new List<MajorActionSummaryJob>();
-		}
+		_memoryBusinessState.EnsureMajorSummaryPersistenceContainers();
 		if (_npcMajorActionSummaryQueueJsonStorage == null)
 		{
 			_npcMajorActionSummaryQueueJsonStorage = "";
@@ -32978,30 +32929,21 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 
 	private void ClearAllDataForCurrentSave()
 	{
+		RetireConversationRequestsForDeveloperClear();
 		_npcPersonaGeneration.Reset();
 		CancelWeeklyFullReportCompletions();
 		ResetMemorySummaryMainThreadActions();
 		_shownRecords = new Dictionary<string, HeroShownRecord>();
 		_shownRecordStorage = new Dictionary<string, string>();
-		_dialogueHistory = new Dictionary<string, List<DialogueDay>>();
-		_dialogueHistoryStorage = new Dictionary<string, string>();
-		_dailyMemoryDrafts = new Dictionary<string, List<DailyMemoryDraft>>(StringComparer.OrdinalIgnoreCase);
-		_dailyMemoryDraftStorage = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-		_compressedMemoryBlocks = new Dictionary<string, List<CompressedMemoryBlock>>(StringComparer.OrdinalIgnoreCase);
-		_compressedMemoryBlockStorage = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-		_memorySummaryQueue = new List<MemorySummaryJob>();
+		_memoryBusinessState.ClearHistoryAndDailyForCurrentSave();
 		_memorySummaryQueueJsonStorage = "[]";
 		_memorySummaryRunOwner.Reset();
 		ResetMemoryFailureNotices();
 		_nativeConversationMemorySessionCounter = 0;
 		_activeNativeConversationMemorySessionId = -1;
-		_memoryOverviewStates = new Dictionary<string, MemoryOverviewState>(StringComparer.OrdinalIgnoreCase);
-		_memoryOverviewStateStorage = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-		_memoryOverviewQueue = new List<MemoryOverviewJob>();
+		_memoryBusinessState.ClearOverviewForCurrentSave();
 		_memoryOverviewQueueJsonStorage = "[]";
-		_npcMajorActionSummaries = new Dictionary<string, MajorActionSummaryState>(StringComparer.OrdinalIgnoreCase);
-		_npcMajorActionSummaryStorage = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-		_npcMajorActionSummaryQueue = new List<MajorActionSummaryJob>();
+		_memoryBusinessState.ClearMajorSummaryForCurrentSave();
 		_npcMajorActionSummaryQueueJsonStorage = "[]";
 		ResetNpcActionRecordContainers();
 		_npcActionGlobalOrderCounter = 0;
@@ -33079,9 +33021,7 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 		_dailyMaintenanceQueue.Clear();
 		_dailyMaintenanceJobKeys.Clear();
 		ResetDailyMemoryDraftSealSliceState();
-		_dirtyMemoryOverviewIds.Clear();
-		_pendingMemoryOverviewCandidateScanIds.Clear();
-		_pendingMemoryOverviewCandidateScanIdSet.Clear();
+		_memoryBusinessState.ClearOverviewDiscoveryForCurrentSave();
 		_pendingAutoWeeklyReportBuild = null;
 		KingdomMaintenance.ResetRelations();
 		ResetPendingWeeklyKingdomRebellionMaintenance();
@@ -33399,19 +33339,7 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 		}
 	}
 
-	private void InvalidateMemoryOverviewAfterManualMemoryEdit(Hero npc, string reason)
-	{
-		string heroId = GetMemoryHeroId(npc);
-		if (string.IsNullOrWhiteSpace(heroId))
-		{
-			return;
-		}
-		_memoryOverviewStates ??= new Dictionary<string, MemoryOverviewState>(StringComparer.OrdinalIgnoreCase);
-		_memoryOverviewQueue ??= new List<MemoryOverviewJob>();
-		MemoryDeveloperEditOwner.InvalidateOverview(heroId, CaptureMemoryImportExportState());
-		TryEnqueueMemoryOverviewForHero(npc, LoadCompressedMemoryBlocks(npc));
-		Logger.Log("MemoryOverview", "manual_edit_invalidate hero=" + heroId + " reason=" + (reason ?? ""));
-	}
+
 
 
 

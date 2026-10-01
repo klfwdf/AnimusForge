@@ -18,10 +18,15 @@ for name,marker in [('HeroShownRecord','@@SHOWN_RECORD@@'),('NpcPersonaProfile',
  a=source.index(prefix+name);z=source.index('\n\t}',a)+4;dto_extra[marker]=source[a:z]
 harness=(HERE/'Harness.cs.txt').read_text(encoding='utf-8').replace('@@STATE_FIELDS@@','\n'.join(fields)).replace('@@DIALOGUE_DAY@@',daydto)
 for marker,value in dto_extra.items():harness=harness.replace(marker,value)
+lifecycle=(ROOT/'src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.CampaignLifetime.cs').read_text(encoding='utf-8-sig')
+a=lifecycle.index('    internal static void RetireConversationRequestsForDeveloperClear()');z=lifecycle.index('\n    }',a)+6
+harness=harness.replace('@@CLEAR_RETIRE@@',lifecycle[a:z])
+
 (out/'Program.cs').write_text(harness,encoding='utf-8')
 paths=['src/AF.GameAdapter.Bannerlord/Persistence/CampaignMemoryPersistenceAdapter.cs','src/AF.Persistence/CampaignSaveChunkHelper.cs','src/AF.Persistence/OwnerJsonStorageCodec.cs','src/modules/AF.Module.Memory/Records/MemoryPersistenceModels.cs','src/modules/AF.Module.Memory/Records/NpcActionEntry.cs']
 paths += ['src/AF.GameAdapter.Bannerlord/Persistence/'+name+'.cs' for name in ['CampaignShownRecordPersistenceAdapter','CampaignPersonaPersistenceAdapter','CampaignNpcActionPersistenceAdapter','CampaignWeeklyRecordPersistenceAdapter','CampaignMaterialPersistenceAdapter']]
 paths.append('src/modules/AF.Module.Memory/Records/NpcActionLedger.cs')
+paths.append('src/AF.Foundation.Runtime/Lifecycle/SaveRuntimeGuard.cs')
 paths += ['src/AF.GameAdapter.Bannerlord/Persistence/CampaignWeeklyNoticePersistenceAdapter.cs','src/modules/AF.Module.Weekly/Generation/WeeklyNoticeStateOwner.cs']
 paths.append('src/AF.GameAdapter.Bannerlord/Persistence/CampaignVoicePersonaPersistenceAdapter.cs')
 paths += ['src/AF.GameAdapter.Bannerlord/Persistence/CampaignKingdomPersistenceAdapter.cs','src/modules/AF.Module.Kingdom/Stability/KingdomStabilityPolicy.cs','src/modules/AF.Module.Kingdom/Rebellion/RebellionRules.cs']

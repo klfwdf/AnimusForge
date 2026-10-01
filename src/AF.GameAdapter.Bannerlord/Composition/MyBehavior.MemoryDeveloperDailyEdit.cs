@@ -130,6 +130,41 @@ public partial class MyBehavior
 	{ MemoryDeveloperEditOwner.NormalizeDevDailyMemoryDraftForSave(GetMemoryHeroId(npc), npc?.Name?.ToString(), draft); }
 
 
+    internal bool DeleteDevCompressedMemoryBlockData(Hero npc, string blockId, long generation)
+    {
+        if (npc == null || !IsMemorySourceEditorCurrent(generation)) return false;
+        LoadCompressedMemoryBlocks(npc);
+        MemoryImportExportState state = CaptureMemoryImportExportState();
+        bool removed = MemoryDeveloperEditOwner.DeleteBlock(GetMemoryHeroId(npc), blockId, state, MarkMemoryOverviewDirty);
+        _compressedMemoryBlocks = state.Blocks;
+        if (removed) InvalidateDevMemoryOverviewData(npc, "delete_block");
+        return removed;
+    }
+
+    internal bool TryApplyDevCompressedMemoryBlockDataMutation(Hero npc, string blockId,
+        Action<CompressedMemoryBlock> mutate, long generation)
+    {
+        if (npc == null || !IsMemorySourceEditorCurrent(generation)) return false;
+        LoadCompressedMemoryBlocks(npc);
+        MemoryImportExportState state = CaptureMemoryImportExportState();
+        bool updated = MemoryDeveloperEditOwner.EditBlock(GetMemoryHeroId(npc), npc.Name?.ToString(), blockId, mutate, state, MarkMemoryOverviewDirty);
+        _compressedMemoryBlocks = state.Blocks;
+        if (updated) InvalidateDevMemoryOverviewData(npc, "edit_block");
+        return updated;
+    }
+
+    private void InvalidateDevMemoryOverviewData(Hero npc, string reason)
+    {
+        string heroId = GetMemoryHeroId(npc);
+        if (string.IsNullOrWhiteSpace(heroId)) return;
+        MemoryImportExportState state = CaptureMemoryImportExportState();
+        MemoryDeveloperEditOwner.InvalidateOverviewForManualEdit(heroId, state);
+        _memoryOverviewStates = state.Overviews;
+        _memoryOverviewQueue = state.OverviewQueue;
+        TryEnqueueMemoryOverviewForHero(npc, LoadCompressedMemoryBlocks(npc));
+        Logger.Log("MemoryOverview", "manual_edit_invalidate hero=" + heroId + " reason=" + (reason ?? ""));
+    }
+
     internal bool TryApplyDevDialogueHistoryLineDataMutation(Hero npc, int day, int lineIndex, string input, long generation)
     {
         if (npc == null || !IsMemorySourceEditorCurrent(generation)) return false;

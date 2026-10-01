@@ -149,6 +149,96 @@ internal sealed partial class MemoryBusinessStateOwner
 
     private static bool Same(string left, string normalizedRight) => string.Equals(
         MemoryRecordRules.NormalizeMemoryHeroId(left), normalizedRight, StringComparison.OrdinalIgnoreCase);
+
+    internal void EnsureHistoryAndDailyPersistenceContainers()
+    {
+		if (History == null)
+		{
+			History = new Dictionary<string, List<MyBehavior.DialogueDay>>();
+		}
+		if (HistoryStorage == null)
+		{
+			HistoryStorage = new Dictionary<string, string>();
+		}
+		if (Drafts == null)
+		{
+			Drafts = new Dictionary<string, List<DailyMemoryDraft>>(StringComparer.OrdinalIgnoreCase);
+		}
+		if (DraftStorage == null)
+		{
+			DraftStorage = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+		}
+		if (Blocks == null)
+		{
+			Blocks = new Dictionary<string, List<CompressedMemoryBlock>>(StringComparer.OrdinalIgnoreCase);
+		}
+		if (BlockStorage == null)
+		{
+			BlockStorage = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+		}
+		if (DailyQueue == null)
+		{
+			DailyQueue = new List<MemorySummaryJob>();
+		}
+    }
+    internal void EnsureOverviewPersistenceContainers()
+    {
+		if (Overviews == null)
+		{
+			Overviews = new Dictionary<string, MemoryOverviewState>(StringComparer.OrdinalIgnoreCase);
+		}
+		if (OverviewStorage == null)
+		{
+			OverviewStorage = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+		}
+		if (OverviewQueue == null)
+		{
+			OverviewQueue = new List<MemoryOverviewJob>();
+		}
+    }
+    internal void EnsureMajorSummaryPersistenceContainers()
+    {
+		if (MajorSummaries == null)
+		{
+			MajorSummaries = new Dictionary<string, MajorActionSummaryState>(StringComparer.OrdinalIgnoreCase);
+		}
+		if (MajorStorage == null)
+		{
+			MajorStorage = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+		}
+		if (MajorQueue == null)
+		{
+			MajorQueue = new List<MajorActionSummaryJob>();
+		}
+    }
+    internal void ClearHistoryAndDailyForCurrentSave()
+    {
+		History = new Dictionary<string, List<MyBehavior.DialogueDay>>();
+		HistoryStorage = new Dictionary<string, string>();
+		Drafts = new Dictionary<string, List<DailyMemoryDraft>>(StringComparer.OrdinalIgnoreCase);
+		DraftStorage = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+		Blocks = new Dictionary<string, List<CompressedMemoryBlock>>(StringComparer.OrdinalIgnoreCase);
+		BlockStorage = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+		DailyQueue = new List<MemorySummaryJob>();
+    }
+    internal void ClearOverviewForCurrentSave()
+    {
+		Overviews = new Dictionary<string, MemoryOverviewState>(StringComparer.OrdinalIgnoreCase);
+		OverviewStorage = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+		OverviewQueue = new List<MemoryOverviewJob>();
+    }
+    internal void ClearMajorSummaryForCurrentSave()
+    {
+		MajorSummaries = new Dictionary<string, MajorActionSummaryState>(StringComparer.OrdinalIgnoreCase);
+		MajorStorage = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+		MajorQueue = new List<MajorActionSummaryJob>();
+    }
+    internal void ClearOverviewDiscoveryForCurrentSave()
+    {
+		DirtyOverviewIds.Clear();
+		OverviewCandidateIds.Clear();
+		OverviewCandidateIdSet.Clear();
+    }
 }
 
 // Each effect is one engine/cross-domain operation, not a callback to host memory rules.
