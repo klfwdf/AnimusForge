@@ -5936,3 +5936,11 @@ R2计划交付门槛：已给固定技术路线、真实来源与目标、写入
 - `repository_source_inventory.py` 当前完整实跑 PASS：20007 tracked、unknown_count0；仅精确 synthetic-source.fixture 分类为tests，未清理任何untracked/目录。业务owner状态仍工具原UNVERIFIED说明，不拿分类通过冒职责验收。
 - 已启动 `after-gates-b7c3` 69受影响入口同候选重验，输出未完成不预报通过。两真实DLL replay另按完整具名链继续诊断；仅offline Campaign membership环境叶可明确替身，保原host/generation/主线程和真capture→queue→commit，该Campaign资格不因此获验收。
 - 产品仍冻结581faa44，后续仅测试/证据；同1337 raw输入六构建证据保持。Native保留wait晚回调与实际Audio原子联测补证据，不扩wholepipeline；wholeCourierSchedule、ModuleNativeSubmission、NativeWait运行盲区及LIVE/旧档/帧性能均分层保留。
+
+
+### P8 实际保存键兼容缺陷与最小修复（2026-10-02）
+
+- 首轮 `PersistenceIdentityAudit` 的四个 ReadingXp 键差异已核实为产品缺陷：`7c4f7849` 抽取 notice state/ref receiver 时，八处 Save/Load literal误成 `_afowner.ReadingXpPending{Count,Charm,Leadership,Steward}_v1`。原16a主SyncData明确是 `_af_weeklyReportReadingXpPending..._v1`。F040D91B旧候选该边界不可验收，未部署/未操作真实旧档。
+- 最小只恢复八literal，无字段/state/保存顺序/规则变化。真实当前9adapter+WeeklyNotice owner夹具添加固定16a键序与预置legacy值，原40断言之后 red真实exit1；恢复后44 assertions PASS。独占编译副本只将Count键再变坏，真实legacy-load断言拒绝exit1；不从current错误键抽expected。原首次uncaught red和caught red日志均保留。
+- 有限机械差集核查九个本轮Campaign persistence adapter：SyncData literal集合逐原16a主对照，仅上述四个错键，无其他新增receiver-like key。Voice folder实际原literal保持，UNRESOLVED为ref参数审计器诊断待修，不猜成产品兼容失败。完整序列化/live/save-import验收不由literal对照替代。
+- 旧samecandidate69入口 `after-gates-b7c3` 已完整结束：32 PASS/37 FAIL（exit1），包含原PromptProjection变异timeout；原354/71FAIL仍保。产品修复后必须fresh同候选六构建和受影响门禁，不复用F040该保存边界验收。
