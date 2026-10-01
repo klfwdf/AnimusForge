@@ -138,8 +138,9 @@ internal static class SceneLifecycleRegression
             attached.SetValue(owner, null);
             phase.SetValue(session, Enum.Parse(phase.FieldType, "Suspended"));
             check(!visible("af_coup_enter_street") && !visible("af_coup_enter_hall"), "technical suspension cannot reopen combat entry");
+            PassageTransitionRegression.Run(af, coup, owner, session, mission, write);
             write("PASS scene lifecycle fixture assertions=" + checks);
-            write("SCENE_SCOPE synthetic Mission lists, Settlement and CharacterObject; no native scene, agents or Campaign constructed. Only fixture settlement/clan queries, menu registration and eligibility replaced; real MbEvent, SETS handler/postfix, Coup admission, origin factory and phase callbacks executed.");
+            write("SCENE_SCOPE synthetic Mission lists, Settlement and CharacterObject; no native game started. Fixture settlement/clan queries, menu registration and eligibility replaced; real MbEvent, SETS handler/postfix, Coup admission, origin factory and phase callbacks executed. Additional synthetic Campaign/Agent boundaries are listed in PASSAGE_SCOPE.");
         }
         finally
         {
