@@ -59,7 +59,7 @@ def _is_reviewed_deleted(item):
     return item.get('status') != 'UNREVIEWED_WIP'
 
 
-def restore_memory_summary_source(path, source):
+def _restore_memory_summary_source(path, source):
     source = restore_remote_feature_delta(path, source)
     if path != 'MyBehavior.cs':
         return source
@@ -187,7 +187,7 @@ def current_scope_baseline(path):
 def current_scope_dependencies(review):
     return list(review['productionDependencies'])+['src/modules/AF.Module.Memory/Records/MemoryPersistenceModels.cs','src/modules/AF.Module.Memory/Records/NpcActionEntry.cs']
 
-def verify_current_memory_source(source):
+def _verify_current_memory_source(source):
     """Finite Memory guards only. No captured/sealing execution or whole-host inverse."""
     spec=importlib.util.spec_from_file_location('b1_current_extract',ROOT/'tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py')
     extractor=importlib.util.module_from_spec(spec);spec.loader.exec_module(extractor)
@@ -213,6 +213,10 @@ def verify_current_memory_source(source):
     assert source==(current_source_path(ROOT, 'MyBehavior.cs')).read_text(encoding='utf-8-sig'),'Unreviewed B1 surrounding source changes'
     return True
 
+def verify_current_memory_source(source):
+    from f3_migration_projection import projection_reads,restore
+    with projection_reads():return _verify_current_memory_source(restore('MyBehavior.cs',source))
+
 if __name__=='__main__':
     import argparse
     parser=argparse.ArgumentParser(description='Explicit finite Memory-only guards; historical whole-owner inverse remains separate.')
@@ -228,3 +232,8 @@ if __name__=='__main__':
     result=unittest.TextTestRunner(verbosity=2).run(unittest.defaultTestLoader.loadTestsFromTestCase(current_tests.CurrentScopeGuards))
     if not result.wasSuccessful():raise SystemExit(1)
     print('B1_CURRENT_SCOPE_PASS checks='+str(result.testsRun)+' diplomacy_coupled_replays=DEFERRED whole_host_inverse=NOT_RUN')
+
+# Fixed separately tested migration; no old review hashes are refreshed.
+def restore_memory_summary_source(path,source):
+    from f3_migration_projection import projection_reads,restore
+    with projection_reads():return _restore_memory_summary_source(path,restore(path,source))

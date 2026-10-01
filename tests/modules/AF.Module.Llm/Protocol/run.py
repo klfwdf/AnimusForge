@@ -11,6 +11,7 @@ import re
 import stat
 import subprocess
 import sys
+import uuid
 from xml.sax.saxutils import escape
 
 
@@ -20,7 +21,7 @@ if ROOT is None:
     raise RuntimeError("AnimusForge Git root not found")
 import sys
 sys.path.insert(0, str(ROOT / "tests"))
-from output_isolation import current_source_path
+from output_isolation import current_source_path, minimal_test_environment
 BASE_REVISION = "99360142b9b4fa5ca309cadf2cf62b627b1cdda8"
 OUTPUT_ROOT = ROOT / "artifacts/tests/llm-protocol"
 spec = importlib.util.spec_from_file_location("boundary_extractor", ROOT / "tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py")
@@ -217,7 +218,7 @@ def mutate(sources: dict[str, str], mutation: str) -> None:
 def check_output_path(name: str) -> Path:
     if not re.fullmatch(r"[A-Za-z0-9_-]+", name) or ".." in name:
         raise ValueError("Unsafe output name")
-    output = OUTPUT_current_source_path(ROOT, name)
+    output = OUTPUT_ROOT / (name + "-" + uuid.uuid4().hex)
     root = ROOT.resolve(strict=True)
     chain = (ROOT, ROOT / "artifacts", ROOT / "artifacts/tests", OUTPUT_ROOT, output)
     for path in chain:
@@ -296,9 +297,7 @@ def main() -> int:
         meta = {"phase": args.phase, "layout": args.layout, "sourceRef": ref, "mutation": args.mutation, "fingerprint": fingerprint, "blockSha256": block_hashes}
         marker.write_text(json.dumps(meta, indent=2, sort_keys=True), encoding="utf-8")
         sdk = Path(args.dotnet).resolve().parent
-        env = os.environ.copy()
-        env.update(DOTNET_ROOT=str(sdk), DOTNET_CLI_HOME=str(ROOT / ".tmp/dotnet-cli"), NUGET_PACKAGES=str(ROOT / ".tmp/nuget-packages"), DOTNET_CLI_TELEMETRY_OPTOUT="1", DOTNET_SKIP_FIRST_TIME_EXPERIENCE="1", DOTNET_GENERATE_ASPNET_CERTIFICATE="false", DOTNET_CLI_WORKLOAD_UPDATE_NOTIFY_DISABLE="true")
-        env["PATH"] = str(sdk) + os.pathsep + env.get("PATH", "")
+        env = minimal_test_environment(Path(args.dotnet), output)
         steps = (("restore", [args.dotnet, "restore", "Tests.csproj", "--configfile", "NuGet.Config"]),
                  ("build", [args.dotnet, "build", "Tests.csproj", "-c", "Release", "--no-restore"]),
                  ("run", [args.dotnet, str(output / "bin/Release/net8.0/Tests.dll"), *( ["--only", EXPECTED_FAILURES[args.mutation]] if args.mutation else [] )]))

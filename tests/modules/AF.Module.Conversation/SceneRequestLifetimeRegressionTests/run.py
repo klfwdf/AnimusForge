@@ -47,6 +47,10 @@ def generate(source_ref=None):
  utils='\n'.join(ex.declaration(u,x) for x in ['public static List<Agent> GetNearbyNPCAgents()','private static List<Agent> GetNearbyNPCAgentsLegacy('])
  pre=(HERE/'Harness.cs.txt').read_text(encoding='utf-8-sig')
  for k,v in [('FIELDS','\n'.join(fields)),('GATES',gm),('METHODS',methods),('REQUEST',request),('MODULE_SCENE_CONTEXT',module_context),('MODULE_SCENE_THREAD',module_scene_thread),('SCENE_REQUEST_TYPES',scene_request_types),('PREFIX',prefix),('REPLAY',replay),('RESUME',resume),('OBSERVER',observer),('RECORD',record),('UTILS',utils)]:pre=pre.replace('@@'+k+'@@',v)
+ if 'PublicExecutionOrderRuntime.Reset();' in methods:
+  runtime=ex.source('src/bridges/Vengeance/Host/PublicExecutionOrderRuntime.cs',source_ref)
+  # The actual retirement methods run; mission/controller types are outside this request-lifetime fixture.
+  pre+='\ninternal static class PublicExecutionOrderRuntime { private static readonly object Gate=new object(); private static readonly System.Collections.Generic.Dictionary<string,object> Permits=new(); private static FixtureExecutionConversationManager _manager; private static Action _handler; '+ex.declaration(runtime,'private static void ClearConversation(')+' '+ex.declaration(runtime,'internal static void Reset(')+' }\ninternal sealed class FixtureExecutionConversationManager {internal event Action ConversationEndOneShot;}'
  assert '@@' not in pre
  return pre
 

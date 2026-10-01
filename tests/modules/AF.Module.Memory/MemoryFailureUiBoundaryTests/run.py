@@ -24,8 +24,10 @@ code=(HERE/'Harness.cs.txt').read_text(encoding='utf-8-sig').replace('string err
 out=new_run_root(ROOT,'MemoryFailureUiBoundaryTests',a.run_root)
 if not a.original:
  ui=read('MyBehavior.MemoryFailureNotice.cs')
+ owner=read('src/modules/AF.Module.Memory/Summary/MemoryFailureNoticeOwner.cs')
+ code=code.replace('private bool _memorySummaryFailurePopupActive;', 'private ref bool _memorySummaryFailurePopupActive => ref _memoryFailureNotices.Active;')
  mutations={
-  'off-main-ui':('if (!TWParallel.IsMainThread()) return;','if (false) return;'),
+  'off-main-ui':('if (!_port.IsMainThread()) return;','if (false) return;'),
   'drop-generation':('&& SaveRuntimeGuard.IsCurrentGeneration(generation)','&& true'),
   'drop-campaign':('return ReferenceEquals(Campaign.Current?.GetCampaignBehavior<MyBehavior>(), this);','return true;'),
   'drop-owner':('ReferenceEquals(Instance, this)','true'),
@@ -34,8 +36,14 @@ if not a.original:
   'diagnostic-throws':('// Optional diagnostics must not hide an actionable memory failure.\n            return;','// Mutated observer.\n            throw;'),
  }
  if a.mutate:
-  old,new=mutations[a.mutate];assert old in ui;ui=ui.replace(old,new,1)
+  old,new=mutations[a.mutate];target=owner if a.mutate in {'off-main-ui','drop-revision','keep-pending-on-reset'} else ui
+  assert target.count(old)==1,(a.mutate,target.count(old));target=target.replace(old,new,1)
+  if a.mutate in {'off-main-ui','drop-revision','keep-pending-on-reset'}:owner=target
+  else:ui=target
  (out/'Notice.cs').write_text(ui,encoding='utf-8')
+ (out/'MemoryFailureNoticeOwner.cs').write_text(owner,encoding='utf-8')
+ import json
+ (out/'source-manifest.json').write_text(json.dumps({'actual_owner_sha256':hashlib.sha256(read('src/modules/AF.Module.Memory/Summary/MemoryFailureNoticeOwner.cs').encode()).hexdigest(),'actual_host_sha256':hashlib.sha256(read('MyBehavior.MemoryFailureNotice.cs').encode()).hexdigest(),'mutation':a.mutate},indent=2),encoding='utf-8')
 (out/'Program.cs').write_text(code,encoding='utf-8');(out/'SaveRuntimeGuard.cs').write_text(read('src/AF.Foundation.Runtime/Lifecycle/SaveRuntimeGuard.cs'),encoding='utf-8')
 (out/'Proof.csproj').write_text('<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><LangVersion>latest</LangVersion>'+('<DefineConstants>ORIGINAL</DefineConstants>' if a.original else '')+'</PropertyGroup></Project>',encoding='utf-8');(out/'NuGet.Config').write_text('<configuration><packageSources><clear/></packageSources></configuration>',encoding='utf-8')
 dotnet=str(resolve_dotnet(ROOT))
