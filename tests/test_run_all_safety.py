@@ -92,7 +92,7 @@ class RunAllSafetyTests(unittest.TestCase):
         self.assertIn("-p:UseArtifactsOutput=true", cmd)
         self.assertIn(f"-p:ArtifactsPath={build_root}", cmd)
         self.assertIn(f"-p:ReplayOutputRoot={build_root}", cmd)
-        self.assertIn(f"-p:OutDir={build_root / 'runtime'}/", cmd)
+        self.assertIn(f"-p:OutDir={build_root / 'bin' / 'runtime'}/", cmd)
         self.assertFalse(build_root.exists())
 
     def test_csproj_runs_evaluated_isolated_target_not_old_bin(self):
@@ -112,6 +112,13 @@ class RunAllSafetyTests(unittest.TestCase):
         self.assertEqual(launch.call_args_list[0].args[0][1], "build")
         self.assertNotIn("--project", launch.call_args_list[0].args[0])
         self.assertEqual(launch.call_args_list[-1].args[0], ["dotnet", str(target), "fixture"])
+
+    def test_csproj_runtime_options_are_separated_from_build_options(self):
+        project = self.repo / "ExampleTests.csproj"
+        project.write_text('<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><TargetFramework>net8.0</TargetFramework></PropertyGroup></Project>')
+        with patch.object(runner, "ROOT", self.repo):
+            cmd = runner.command(project.name, {"args": ["--artifact-root", "fixture"]}, "synthetic")
+        self.assertEqual(cmd[-3:], ["--", "--artifact-root", "fixture"])
 
     def test_csproj_rejects_old_bin_target_before_runtime(self):
         target = self.repo / "bin" / "ExampleTests.dll"
