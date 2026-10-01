@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "sourceRevision": "ccd6c2fd7bef4977253db5452875402286317dd8",
+  "sourceRevision": "2524ddcf1802c82685796eeb949060faeed7f60a",
   "remoteBaseline": "10defeb4976f3ffa096a77e847fba254308f6aba",
   "meaning": "Navigation only, not whole-file completion or a permanent feature allowlist. Refresh the current map when symbols change.",
   "anchors": [
@@ -127,7 +127,7 @@
     },
     {
       "id": "native.admission",
-      "path": "ShoutBehavior.NativeAdmission.cs",
+      "path": "src/modules/AF.Module.Conversation/Channels/Native/ShoutBehavior.NativeAdmission.cs",
       "start": 17,
       "end": 17,
       "symbol": "internal sealed class NativeConversationAdmission",
@@ -138,7 +138,7 @@
     },
     {
       "id": "native.preparation",
-      "path": "ShoutBehavior.NativePreparation.cs",
+      "path": "src/modules/AF.Module.Conversation/Channels/Native/ShoutBehavior.NativePreparation.cs",
       "start": 14,
       "end": 14,
       "symbol": "private sealed class NativeConversationPreparationSnapshot",
@@ -160,7 +160,7 @@
     },
     {
       "id": "native.history.bridge",
-      "path": "ShoutBehavior.cs",
+      "path": "src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.cs",
       "start": 16063,
       "end": 16063,
       "symbol": "private static Func<string> CaptureNativeConversationPersistedHistoryWork",
@@ -171,7 +171,7 @@
     },
     {
       "id": "native.history.dispatch",
-      "path": "ShoutBehavior.NativeTurnPrompt.cs",
+      "path": "src/modules/AF.Module.Conversation/Channels/Native/ShoutBehavior.NativeTurnPrompt.cs",
       "start": 75,
       "end": 75,
       "symbol": "\"persisted_history_capture\", nativeTargetLog, nativeTargetAgentIndex,",
@@ -182,7 +182,7 @@
     },
     {
       "id": "native.history.accept",
-      "path": "ShoutBehavior.NativeTurnPrompt.cs",
+      "path": "src/modules/AF.Module.Conversation/Channels/Native/ShoutBehavior.NativeTurnPrompt.cs",
       "start": 114,
       "end": 114,
       "symbol": "if (!await _owner.RunNativeConversationMainThreadFuncAsync(\"persisted_history_accept\"",
@@ -193,7 +193,7 @@
     },
     {
       "id": "native.dispatch.shared",
-      "path": "ShoutBehavior.cs",
+      "path": "src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.cs",
       "start": 19326,
       "end": 19326,
       "symbol": "private Task<T> RunNativeConversationMainThreadFuncAsync<T>",
@@ -380,7 +380,7 @@
     },
     {
       "id": "scene.player-group.dispatch-await",
-      "path": "ShoutBehavior.cs",
+      "path": "src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.cs",
       "start": 26290,
       "end": 26290,
       "symbol": "private async Task ProcessCapturedScenePlayerShoutAsync(",
@@ -391,7 +391,7 @@
     },
     {
       "id": "scene.player-group.kickoff",
-      "path": "ShoutBehavior.cs",
+      "path": "src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.cs",
       "start": 26321,
       "end": 26321,
       "symbol": "private Task ProcessCurrentScenePlayerShout(",
@@ -490,7 +490,7 @@
     },
     {
       "id": "memory.summary.rendering",
-      "path": "PlayerNotorietyBehavior.cs",
+      "path": "src/modules/AF.Module.Social/Host/PlayerNotorietyBehavior.cs",
       "start": 204,
       "end": 204,
       "symbol": "internal static string CaptureMemorySummaryHistoryRenderingIdentity()",
@@ -1315,7 +1315,7 @@
     },
     {
       "id": "native.persona.consumer",
-      "path": "ShoutBehavior.PersonaPreparation.cs",
+      "path": "src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.PersonaPreparation.cs",
       "start": 18,
       "end": 18,
       "symbol": "private async Task<bool> EnsureNativeConversationPersonaReadyAsync(",
@@ -1326,7 +1326,7 @@
     },
     {
       "id": "scene.persona.consumer",
-      "path": "ShoutBehavior.PersonaPreparation.cs",
+      "path": "src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.PersonaPreparation.cs",
       "start": 96,
       "end": 96,
       "symbol": "private async Task EnsurePersonaForCandidatesAsync(",
@@ -1469,7 +1469,7 @@
     },
     {
       "id": "lifetime.shout.retire",
-      "path": "ShoutBehavior.CampaignLifetime.cs",
+      "path": "src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.CampaignLifetime.cs",
       "start": 29,
       "end": 29,
       "symbol": "internal void RetireCampaignRuntime(string reason)",
@@ -1667,7 +1667,7 @@
     },
     {
       "id": "native.module.entry",
-      "path": "ShoutBehavior.ModuleNativeSubmission.cs",
+      "path": "src/modules/AF.Module.Conversation/Channels/Native/ShoutBehavior.ModuleNativeSubmission.cs",
       "symbol": "internal static void SubmitModuleNativeDialogue(",
       "match": "contains",
       "status": "wired-boundary",
@@ -1876,7 +1876,7 @@
     },
     {
       "id": "llm.host.send-nonstream",
-      "path": "ShoutNetwork.cs",
+      "path": "src/modules/AF.Module.Llm/ShoutNetwork.cs",
       "start": 133,
       "end": 133,
       "symbol": "private static Task<HttpResponseMessage> SendPrimaryNonStreamingRequestAsync(",
@@ -1887,7 +1887,7 @@
     },
     {
       "id": "llm.host.send-stream",
-      "path": "ShoutNetwork.cs",
+      "path": "src/modules/AF.Module.Llm/ShoutNetwork.cs",
       "start": 147,
       "end": 147,
       "symbol": "private static Task<HttpResponseMessage> SendPrimaryStreamingRequestAsync(",
@@ -1898,7 +1898,7 @@
     },
     {
       "id": "llm.host.normalized-tail-log",
-      "path": "ShoutNetwork.cs",
+      "path": "src/modules/AF.Module.Llm/ShoutNetwork.cs",
       "start": 251,
       "end": 251,
       "symbol": "private static void LogNormalizedMessageTail(",
@@ -1909,7 +1909,7 @@
     },
     {
       "id": "llm.host.call-nonstream",
-      "path": "ShoutNetwork.cs",
+      "path": "src/modules/AF.Module.Llm/ShoutNetwork.cs",
       "start": 665,
       "end": 665,
       "symbol": "public static async Task<string> CallApiWithMessages(List<object> messages, int maxTokens, bool recordTokenStats = true, int? overrideMaxTokens = null, bool forceDisableThinking = false, bool promptRetryOnError = false, CancellationToken cancellationToken = default(CancellationToken), float? overrideTemperature = null)",
@@ -1920,7 +1920,7 @@
     },
     {
       "id": "llm.host.call-stream",
-      "path": "ShoutNetwork.cs",
+      "path": "src/modules/AF.Module.Llm/ShoutNetwork.cs",
       "start": 889,
       "end": 889,
       "symbol": "public static async Task CallApiWithMessagesStream(List<object> messages, int maxTokens, Action<string> onChunk, Action<string> onComplete, Action<string> onError, CancellationToken cancellationToken = default(CancellationToken), bool promptRetryOnError = true)",
@@ -2074,7 +2074,7 @@
     },
     {
       "id": "diagnostics.trace.facade",
-      "path": "Logger.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/Diagnostics/Logger.cs",
       "start": 280,
       "end": 280,
       "symbol": "public static IDisposable BeginTrace(string channel, string heroId = null, string npcName = null, string traceId = null)",
@@ -2085,7 +2085,7 @@
     },
     {
       "id": "diagnostics.metric.facade",
-      "path": "Logger.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/Diagnostics/Logger.cs",
       "start": 508,
       "end": 508,
       "symbol": "public static void Metric(string metric, bool ok = true, double latencyMs = -1.0)",
@@ -2096,7 +2096,7 @@
     },
     {
       "id": "diagnostics.log-queue.facade",
-      "path": "Logger.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/Diagnostics/Logger.cs",
       "start": 1366,
       "end": 1366,
       "symbol": "private static void EnqueueLogWrite(string path, string content, bool isVerbose = false, bool bypassBackpressure = false)",
@@ -2107,7 +2107,7 @@
     },
     {
       "id": "diagnostics.performance.facade",
-      "path": "PerfProbe.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/Diagnostics/PerfProbe.cs",
       "start": 9,
       "end": 9,
       "symbol": "internal static class PerfProbe",
@@ -2118,7 +2118,7 @@
     },
     {
       "id": "diagnostics.freeze.facade",
-      "path": "FreezeWatchdog.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/Diagnostics/FreezeWatchdog.cs",
       "start": 15,
       "end": 15,
       "symbol": "internal static class FreezeWatchdog",
@@ -2129,7 +2129,7 @@
     },
     {
       "id": "diagnostics.query-telemetry.residual",
-      "path": "Logger.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/Diagnostics/Logger.cs",
       "start": 522,
       "end": 522,
       "symbol": "public static void RecordHitRate(string domain, string tag, bool hit, string detail = null, string inputText = null)",
@@ -2140,7 +2140,7 @@
     },
     {
       "id": "diagnostics.llm-telemetry.residual",
-      "path": "Logger.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/Diagnostics/Logger.cs",
       "start": 788,
       "end": 788,
       "symbol": "private static void ProcessTokenStatsWriteQueue()",
@@ -2195,7 +2195,7 @@
     },
     {
       "id": "j03.config.facade",
-      "path": "AIConfigHandler.cs",
+      "path": "src/modules/AF.Module.Prompt/Configuration/AIConfigHandler.cs",
       "start": 46,
       "end": 46,
       "symbol": "public static class AIConfigHandler",
@@ -2206,7 +2206,7 @@
     },
     {
       "id": "j03.config.reload",
-      "path": "AIConfigHandler.cs",
+      "path": "src/modules/AF.Module.Prompt/Configuration/AIConfigHandler.cs",
       "start": 7734,
       "end": 7734,
       "symbol": "public static void ReloadConfig()",
@@ -2250,7 +2250,7 @@
     },
     {
       "id": "j03.retrieval.adapter",
-      "path": "PromptListRetrievalService.cs",
+      "path": "src/modules/AF.Module.Prompt/Retrieval/PromptListRetrievalService.cs",
       "start": 12,
       "end": 12,
       "symbol": "public static class PromptListRetrievalService",
@@ -2272,7 +2272,7 @@
     },
     {
       "id": "j03.retrieval.scope",
-      "path": "AIConfigHandler.cs",
+      "path": "src/modules/AF.Module.Prompt/Configuration/AIConfigHandler.cs",
       "start": 2723,
       "end": 2723,
       "symbol": "internal static IDisposable BeginGuardrailRuntimeScope()",
@@ -2283,7 +2283,7 @@
     },
     {
       "id": "j03.retrieval.rules.remaining",
-      "path": "AIConfigHandler.cs",
+      "path": "src/modules/AF.Module.Prompt/Configuration/AIConfigHandler.cs",
       "start": 1853,
       "end": 1853,
       "symbol": "private static List<GuardrailRulePromptConfig> GetAllEnabledRulePrompts()",
@@ -2294,7 +2294,7 @@
     },
     {
       "id": "j03.retrieval.warmup.remaining",
-      "path": "AIConfigHandler.cs",
+      "path": "src/modules/AF.Module.Prompt/Configuration/AIConfigHandler.cs",
       "start": 1964,
       "end": 1964,
       "symbol": "private static void RunGuardrailSemanticWarmup(string source, PromptSemanticWarmupSeedBatch seeds)",
@@ -2437,7 +2437,7 @@
     },
     {
       "id": "j03.retrieval.eval.remaining",
-      "path": "AIConfigHandler.cs",
+      "path": "src/modules/AF.Module.Prompt/Configuration/AIConfigHandler.cs",
       "start": 4736,
       "end": 4736,
       "symbol": "private static bool TryGetGuardrailEvalSnapshot(string userText, string secondaryText, out GuardrailEvalSnapshot snapshot, IEnumerable<string> excludedRuleIds, bool applyRuntimeAutoExclusions, PromptRuleEvaluationPorts ports = null)",
@@ -2558,7 +2558,7 @@
     },
     {
       "id": "j03.retrieval.ports",
-      "path": "AIConfigHandler.cs",
+      "path": "src/modules/AF.Module.Prompt/Configuration/AIConfigHandler.cs",
       "start": 37,
       "end": 37,
       "symbol": "internal sealed class PromptRuleEvaluationPorts",
@@ -2668,7 +2668,7 @@
     },
     {
       "id": "j04.host.target.apply",
-      "path": "AIConfigHandler.cs",
+      "path": "src/modules/AF.Module.Prompt/Configuration/AIConfigHandler.cs",
       "start": 5741,
       "end": 5741,
       "symbol": "internal static void ApplyGuardrailRuntimeTarget(PromptRuntimeTargetBinding binding)",
@@ -2822,7 +2822,7 @@
     },
     {
       "id": "j04f.native.schedule",
-      "path": "ShoutBehavior.NativePromptBuild.cs",
+      "path": "src/modules/AF.Module.Conversation/Channels/Native/ShoutBehavior.NativePromptBuild.cs",
       "start": 20,
       "end": 20,
       "symbol": "private async Task<MyBehavior.ShoutPromptContext> BuildNativePromptContextScheduledAsync(",
@@ -3031,7 +3031,7 @@
     },
     {
       "id": "knowledge.index.consumer",
-      "path": "KnowledgeLibraryBehavior.cs",
+      "path": "src/modules/AF.Module.Knowledge/Host/KnowledgeLibraryBehavior.cs",
       "start": 508,
       "end": 508,
       "symbol": "private static readonly KnowledgeRuleIndex Index =",
@@ -3053,7 +3053,7 @@
     },
     {
       "id": "knowledge.lore.consumer",
-      "path": "KnowledgeLibraryBehavior.cs",
+      "path": "src/modules/AF.Module.Knowledge/Host/KnowledgeLibraryBehavior.cs",
       "start": 598,
       "end": 598,
       "symbol": "private static readonly LoreCandidateRetriever Retriever =",
@@ -3097,7 +3097,7 @@
     },
     {
       "id": "knowledge.entity.consumer",
-      "path": "WorldEntityRetrievalService.cs",
+      "path": "src/modules/AF.Module.Knowledge/Entities/WorldEntityRetrievalService.cs",
       "start": 686,
       "end": 686,
       "symbol": "EntityInjectionAllocator.Select(candidates, maxCount, mentionCount",
@@ -3108,7 +3108,7 @@
     },
     {
       "id": "prompt.eligibility.capture",
-      "path": "AIConfigHandler.cs",
+      "path": "src/modules/AF.Module.Prompt/Configuration/AIConfigHandler.cs",
       "start": 5775,
       "end": 5775,
       "symbol": "internal static PromptRuleEligibility CapturePromptRuleEligibility(",
@@ -3141,7 +3141,7 @@
     },
     {
       "id": "prompt.eligibility.native",
-      "path": "ShoutBehavior.NativePromptBuild.cs",
+      "path": "src/modules/AF.Module.Conversation/Channels/Native/ShoutBehavior.NativePromptBuild.cs",
       "start": 56,
       "end": 56,
       "symbol": "Task<MyBehavior.ShoutPromptContext> routingTask = RunNativeConversationBackgroundPreprocessAsync(",
@@ -3174,7 +3174,7 @@
     },
     {
       "id": "j06.lore.prepare",
-      "path": "KnowledgeLibraryBehavior.cs",
+      "path": "src/modules/AF.Module.Knowledge/Host/KnowledgeLibraryBehavior.cs",
       "start": 601,
       "end": 601,
       "symbol": "internal static long PreparePromptLoreRetrieval(",
@@ -3185,7 +3185,7 @@
     },
     {
       "id": "j06.lore.worker",
-      "path": "KnowledgeLibraryBehavior.cs",
+      "path": "src/modules/AF.Module.Knowledge/Host/KnowledgeLibraryBehavior.cs",
       "start": 621,
       "end": 621,
       "symbol": "internal static LoreCandidateRules CollectPromptLoreCandidates(",
@@ -3196,7 +3196,7 @@
     },
     {
       "id": "j06.entity.capture",
-      "path": "WorldEntityRetrievalService.cs",
+      "path": "src/modules/AF.Module.Knowledge/Entities/WorldEntityRetrievalService.cs",
       "start": 270,
       "end": 270,
       "symbol": "internal static EntityCapture CaptureEntityCandidates(",
@@ -3207,7 +3207,7 @@
     },
     {
       "id": "j06.entity.score",
-      "path": "WorldEntityRetrievalService.cs",
+      "path": "src/modules/AF.Module.Knowledge/Entities/WorldEntityRetrievalService.cs",
       "start": 374,
       "end": 374,
       "symbol": "internal static DetachedEntityMatches MatchDetachedCandidates(",
@@ -3218,7 +3218,7 @@
     },
     {
       "id": "j06.entity.final",
-      "path": "WorldEntityRetrievalService.cs",
+      "path": "src/modules/AF.Module.Knowledge/Entities/WorldEntityRetrievalService.cs",
       "start": 514,
       "end": 514,
       "symbol": "internal static WorldEntityPromptContext BuildPromptContext(",
@@ -3251,7 +3251,7 @@
     },
     {
       "id": "j06.extra.worker",
-      "path": "AIConfigHandler.cs",
+      "path": "src/modules/AF.Module.Prompt/Configuration/AIConfigHandler.cs",
       "start": 5419,
       "end": 5419,
       "symbol": "internal static List<GuardrailRuleHit> GetMatchedExtraRuleHitsForWorker(",
@@ -3262,7 +3262,7 @@
     },
     {
       "id": "j06.extra.format",
-      "path": "AIConfigHandler.cs",
+      "path": "src/modules/AF.Module.Prompt/Configuration/AIConfigHandler.cs",
       "start": 5437,
       "end": 5437,
       "symbol": "internal static string FormatMatchedExtraRuleInstructions(",
@@ -3273,7 +3273,7 @@
     },
     {
       "id": "j06.lore.settings",
-      "path": "KnowledgeLibraryBehavior.cs",
+      "path": "src/modules/AF.Module.Knowledge/Host/KnowledgeLibraryBehavior.cs",
       "start": 570,
       "end": 570,
       "symbol": "internal static PromptLoreSettings CapturePromptLoreSettings(",
@@ -3295,7 +3295,7 @@
     },
     {
       "id": "j06.lore.published_snapshot",
-      "path": "KnowledgeLibraryBehavior.cs",
+      "path": "src/modules/AF.Module.Knowledge/Host/KnowledgeLibraryBehavior.cs",
       "start": 519,
       "end": 519,
       "symbol": "private static void PublishPromptRules()",
@@ -3306,7 +3306,7 @@
     },
     {
       "id": "j06.entity.worker_allocation",
-      "path": "WorldEntityRetrievalService.cs",
+      "path": "src/modules/AF.Module.Knowledge/Entities/WorldEntityRetrievalService.cs",
       "start": 415,
       "end": 415,
       "symbol": "private static void ApplyDetachedGlobalInjectionLimit(int maxCount, int mentionCount,",
@@ -3361,7 +3361,7 @@
     },
     {
       "id": "native.completion.context",
-      "path": "ShoutBehavior.NativeCompletion.cs",
+      "path": "src/modules/AF.Module.Conversation/Channels/Native/ShoutBehavior.NativeCompletion.cs",
       "start": 71,
       "end": 71,
       "symbol": "private bool IsNativeConversationCompletionContextCurrent(NativeConversationCompletionScope scope)",
@@ -3394,7 +3394,7 @@
     },
     {
       "id": "native.mainreply.host",
-      "path": "ShoutBehavior.NativeMainReply.cs",
+      "path": "src/modules/AF.Module.Conversation/Channels/Native/ShoutBehavior.NativeMainReply.cs",
       "start": 11,
       "end": 11,
       "symbol": "private sealed class NativeConversationMainReplyHost : INativeConversationMainReplyHost",
@@ -3405,7 +3405,7 @@
     },
     {
       "id": "native.raw.observation",
-      "path": "ShoutBehavior.cs",
+      "path": "src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.cs",
       "start": 19986,
       "end": 19986,
       "symbol": "private static void SubmitNativeConversationSceneActionObservation(string replyText, int agentIndex)",
@@ -3416,7 +3416,7 @@
     },
     {
       "id": "native.turn.entry",
-      "path": "ShoutBehavior.cs",
+      "path": "src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.cs",
       "start": 19980,
       "end": 19980,
       "symbol": "private Task<string> SubmitNativeConversationTextInternalAsync(NativeConversationAdmission admission, string playerText, Action<string> onStreamText = null, string currentDialogTextOverride = null, Action<string> onPostprocessStarted = null, Action<string, Hero, CharacterObject> onMainReplyReady = null, bool npcInitiatedOpening = false)",
@@ -3438,7 +3438,7 @@
     },
     {
       "id": "native.turn.capture",
-      "path": "ShoutBehavior.NativeTurn.cs",
+      "path": "src/modules/AF.Module.Conversation/Channels/Native/ShoutBehavior.NativeTurn.cs",
       "start": 69,
       "end": 69,
       "symbol": "private async Task<bool> CaptureOnGameThreadAsync(string phase, Action capture)",
@@ -3449,7 +3449,7 @@
     },
     {
       "id": "native.turn.prepare",
-      "path": "ShoutBehavior.NativeTurn.cs",
+      "path": "src/modules/AF.Module.Conversation/Channels/Native/ShoutBehavior.NativeTurn.cs",
       "start": 107,
       "end": 107,
       "symbol": "public async Task<NativeConversationTurnStep> PrepareAsync()",
@@ -3460,7 +3460,7 @@
     },
     {
       "id": "native.turn.prompt",
-      "path": "ShoutBehavior.NativeTurnPrompt.cs",
+      "path": "src/modules/AF.Module.Conversation/Channels/Native/ShoutBehavior.NativeTurnPrompt.cs",
       "start": 66,
       "end": 66,
       "symbol": "public async Task<NativeConversationTurnStep> BuildPromptAsync()",
@@ -3471,7 +3471,7 @@
     },
     {
       "id": "native.turn.prompt-rules",
-      "path": "ShoutBehavior.NativeTurnPrompt.cs",
+      "path": "src/modules/AF.Module.Conversation/Channels/Native/ShoutBehavior.NativeTurnPrompt.cs",
       "start": 132,
       "end": 132,
       "symbol": "private void CapturePromptRules()",
@@ -3482,7 +3482,7 @@
     },
     {
       "id": "native.turn.prompt-messages",
-      "path": "ShoutBehavior.NativeTurnPrompt.cs",
+      "path": "src/modules/AF.Module.Conversation/Channels/Native/ShoutBehavior.NativeTurnPrompt.cs",
       "start": 192,
       "end": 192,
       "symbol": "private void CapturePromptMessages()",
@@ -3493,7 +3493,7 @@
     },
     {
       "id": "native.turn.presentation",
-      "path": "ShoutBehavior.NativeTurnPresentation.cs",
+      "path": "src/modules/AF.Module.Conversation/Channels/Native/ShoutBehavior.NativeTurnPresentation.cs",
       "start": 34,
       "end": 34,
       "symbol": "public async Task<NativeConversationTurnStep> ReceiveAndPresentAsync()",
@@ -3504,7 +3504,7 @@
     },
     {
       "id": "native.turn.commit",
-      "path": "ShoutBehavior.NativeTurnCommit.cs",
+      "path": "src/modules/AF.Module.Conversation/Channels/Native/ShoutBehavior.NativeTurnCommit.cs",
       "start": 49,
       "end": 49,
       "symbol": "public async Task<NativeConversationTurnStep> PostprocessAndCommitAsync()",
@@ -3515,7 +3515,7 @@
     },
     {
       "id": "native.turn.postprocess-rules",
-      "path": "ShoutBehavior.NativeTurnCommit.cs",
+      "path": "src/modules/AF.Module.Conversation/Channels/Native/ShoutBehavior.NativeTurnCommit.cs",
       "start": 186,
       "end": 186,
       "symbol": "private void CapturePostprocessRules()",
@@ -3526,7 +3526,7 @@
     },
     {
       "id": "native.turn.postprocess-targets",
-      "path": "ShoutBehavior.NativeTurnCommit.cs",
+      "path": "src/modules/AF.Module.Conversation/Channels/Native/ShoutBehavior.NativeTurnCommit.cs",
       "start": 228,
       "end": 228,
       "symbol": "private void CapturePostprocessTargets()",
@@ -3537,7 +3537,7 @@
     },
     {
       "id": "native.turn.direct-scene",
-      "path": "ShoutBehavior.NativeTurnCommit.cs",
+      "path": "src/modules/AF.Module.Conversation/Channels/Native/ShoutBehavior.NativeTurnCommit.cs",
       "start": 249,
       "end": 249,
       "symbol": "private void CaptureDirectSceneCommand()",
@@ -3581,7 +3581,7 @@
     },
     {
       "id": "llm.primary.nonstream",
-      "path": "ShoutNetwork.cs",
+      "path": "src/modules/AF.Module.Llm/ShoutNetwork.cs",
       "start": 665,
       "end": 665,
       "symbol": "public static async Task<string> CallApiWithMessages(List<object> messages, int maxTokens, bool recordTokenStats = true, int? overrideMaxTokens = null, bool forceDisableThinking = false, bool promptRetryOnError = false, CancellationToken cancellationToken = default(CancellationToken), float? overrideTemperature = null)",
@@ -3614,7 +3614,7 @@
     },
     {
       "id": "llm.primary.streaming",
-      "path": "ShoutNetwork.cs",
+      "path": "src/modules/AF.Module.Llm/ShoutNetwork.cs",
       "start": 889,
       "end": 889,
       "symbol": "public static async Task CallApiWithMessagesStream(List<object> messages, int maxTokens, Action<string> onChunk, Action<string> onComplete, Action<string> onError, CancellationToken cancellationToken = default(CancellationToken), bool promptRetryOnError = true)",
@@ -3779,7 +3779,7 @@
     },
     {
       "id": "actions.default.native",
-      "path": "ShoutBehavior.NativeActionCommit.cs",
+      "path": "src/modules/AF.Module.Conversation/Channels/Native/ShoutBehavior.NativeActionCommit.cs",
       "start": 20,
       "end": 20,
       "symbol": "private NativeConversationGameActionResult ApplyNativeConversationGameActionsCore(",
@@ -5704,7 +5704,7 @@
     },
     {
       "id": "social.notoriety.host",
-      "path": "PlayerNotorietyBehavior.cs",
+      "path": "src/modules/AF.Module.Social/Host/PlayerNotorietyBehavior.cs",
       "start": 2122,
       "end": 2122,
       "symbol": "private void FinalizeConversationByHeroId(",
@@ -5726,7 +5726,7 @@
     },
     {
       "id": "social.romance.host",
-      "path": "RomanceSystemBehavior.cs",
+      "path": "src/modules/AF.Module.Social/Host/RomanceSystemBehavior.cs",
       "start": 746,
       "end": 746,
       "symbol": "public void SetPrivateLove(",
@@ -5803,7 +5803,7 @@
     },
     {
       "id": "social.proactive.opening.host",
-      "path": "ProactiveNpcRequestBehavior.cs",
+      "path": "src/modules/AF.Module.Conversation/Proactive/ProactiveNpcRequestBehavior.cs",
       "start": 937,
       "end": 937,
       "symbol": "private bool TryConsumePendingOpening(",
@@ -5814,7 +5814,7 @@
     },
     {
       "id": "social.proactive.opening.cancel",
-      "path": "ProactiveNpcRequestBehavior.cs",
+      "path": "src/modules/AF.Module.Conversation/Proactive/ProactiveNpcRequestBehavior.cs",
       "start": 1349,
       "end": 1349,
       "symbol": "private void CancelActiveSession(",
@@ -5836,7 +5836,7 @@
     },
     {
       "id": "issue.alternative.dispatch.host",
-      "path": "VanillaIssueOfferBridge.cs",
+      "path": "src/modules/AF.Module.Issue/Host/VanillaIssueOfferBridge.cs",
       "start": 269,
       "end": 269,
       "symbol": "private static void OnAlternativePartyScreenClosed(",
@@ -5847,7 +5847,7 @@
     },
     {
       "id": "issue.alternative.dispatch.complete",
-      "path": "VanillaIssueOfferBridge.cs",
+      "path": "src/modules/AF.Module.Issue/Host/VanillaIssueOfferBridge.cs",
       "start": 302,
       "end": 302,
       "symbol": "private static bool CompleteAlternativeDispatch(",
@@ -5858,7 +5858,7 @@
     },
     {
       "id": "issue.alternative.load",
-      "path": "VanillaIssuePromptBehavior.cs",
+      "path": "src/modules/AF.Module.Issue/Host/VanillaIssuePromptBehavior.cs",
       "start": 23,
       "end": 23,
       "symbol": "public override void SyncData(",
@@ -5946,7 +5946,7 @@
     },
     {
       "id": "social.proactive.cooldown.scan.host",
-      "path": "ProactiveNpcRequestBehavior.cs",
+      "path": "src/modules/AF.Module.Conversation/Proactive/ProactiveNpcRequestBehavior.cs",
       "start": 403,
       "end": 403,
       "symbol": "private void TryStartNewRequest(",
@@ -5957,7 +5957,7 @@
     },
     {
       "id": "social.proactive.cooldown.apply.host",
-      "path": "ProactiveNpcRequestBehavior.cs",
+      "path": "src/modules/AF.Module.Conversation/Proactive/ProactiveNpcRequestBehavior.cs",
       "start": 978,
       "end": 978,
       "symbol": "private void ApplyCooldowns(",
@@ -6034,7 +6034,7 @@
     },
     {
       "id": "social.proactive.scan.host",
-      "path": "ProactiveNpcRequestBehavior.cs",
+      "path": "src/modules/AF.Module.Conversation/Proactive/ProactiveNpcRequestBehavior.cs",
       "start": 472,
       "end": 472,
       "symbol": "private void ProcessCandidateScan(",
@@ -6111,7 +6111,7 @@
     },
     {
       "id": "social.proactive.session.start.host",
-      "path": "ProactiveNpcRequestBehavior.cs",
+      "path": "src/modules/AF.Module.Conversation/Proactive/ProactiveNpcRequestBehavior.cs",
       "start": 542,
       "end": 542,
       "symbol": "private void StartRequest(",
@@ -6122,7 +6122,7 @@
     },
     {
       "id": "social.proactive.session.cancel.host",
-      "path": "ProactiveNpcRequestBehavior.cs",
+      "path": "src/modules/AF.Module.Conversation/Proactive/ProactiveNpcRequestBehavior.cs",
       "start": 1349,
       "end": 1349,
       "symbol": "private void CancelActiveSession(",
@@ -6206,7 +6206,7 @@
       "match": "contains",
       "status": "wired-j13d2-offline-verified",
       "note": "Production DLL replay plus source ownership contract; live Campaign not run",
-      "fileSha256": "45df4cb91027ab9fcb193cb95497807878538e2d44daf17a487031c645c22c04"
+      "fileSha256": "1c8329b5ec13d450fc936dd4bba3e0be4ed4306afd05b657ae37ffde72c0bf50"
     },
     {
       "id": "issue.receipt.owner",
@@ -6232,7 +6232,7 @@
     },
     {
       "id": "issue.receipt.host",
-      "path": "VanillaIssuePromptBehavior.cs",
+      "path": "src/modules/AF.Module.Issue/Host/VanillaIssuePromptBehavior.cs",
       "start": 40,
       "end": 40,
       "symbol": "private void OnQuestCompleted(",
@@ -6371,7 +6371,7 @@
       "match": "contains",
       "status": "wired-j13d2-offline-verified",
       "note": "Aggregate source wiring; not live Quest evidence",
-      "fileSha256": "b2bf1d8f56b370ae90cd64f9eac11b6d0fd56a22a67bc92945e8a9bceb190a2a"
+      "fileSha256": "14628cbf077eff3fb7470cfd6e941d26f12a6d5b84bfc6017e10201b084f4b30"
     },
     {
       "id": "world.inbox.behavior",
@@ -6705,7 +6705,7 @@
     },
     {
       "id": "duel.outcome.begin",
-      "path": "DuelBehavior.Outcomes.cs",
+      "path": "src/modules/AF.Module.Duel/Host/DuelBehavior.Outcomes.cs",
       "start": 134,
       "end": 134,
       "symbol": "private static bool TryBeginDuelOutcome(",
@@ -6716,7 +6716,7 @@
     },
     {
       "id": "duel.outcome.record",
-      "path": "DuelBehavior.Outcomes.cs",
+      "path": "src/modules/AF.Module.Duel/Host/DuelBehavior.Outcomes.cs",
       "start": 374,
       "end": 374,
       "symbol": "private static bool TryRecordDuelOutcome(",
@@ -6727,7 +6727,7 @@
     },
     {
       "id": "duel.outcome.finalize",
-      "path": "DuelBehavior.Outcomes.cs",
+      "path": "src/modules/AF.Module.Duel/Host/DuelBehavior.Outcomes.cs",
       "start": 432,
       "end": 432,
       "symbol": "private static bool TryFinalizeDuelOutcome(",
@@ -6738,7 +6738,7 @@
     },
     {
       "id": "duel.outcome.effectadapter",
-      "path": "DuelBehavior.Outcomes.cs",
+      "path": "src/modules/AF.Module.Duel/Host/DuelBehavior.Outcomes.cs",
       "start": 514,
       "end": 514,
       "symbol": "private static bool TryCreateDuelOutcomeEffects(",
@@ -6749,7 +6749,7 @@
     },
     {
       "id": "duel.host.arena",
-      "path": "DuelBehavior.cs",
+      "path": "src/modules/AF.Module.Duel/Host/DuelBehavior.cs",
       "start": 1767,
       "end": 1767,
       "symbol": "private void EndDuelLocal(bool playerDefeated)",
@@ -6760,7 +6760,7 @@
     },
     {
       "id": "duel.host.wilderness",
-      "path": "DuelBehavior.cs",
+      "path": "src/modules/AF.Module.Duel/Host/DuelBehavior.cs",
       "start": 4346,
       "end": 4346,
       "symbol": "private static void SettleWildernessDuelRuntime(WildernessDuelBattleRuntime runtime, bool playerDefeated, string source)",
@@ -6771,7 +6771,7 @@
     },
     {
       "id": "duel.host.meeting",
-      "path": "DuelBehavior.cs",
+      "path": "src/modules/AF.Module.Duel/Host/DuelBehavior.cs",
       "start": 7527,
       "end": 7527,
       "symbol": "private void EndDuel(bool playerDefeated)",
@@ -6822,7 +6822,7 @@
       "match": "exact",
       "status": "replay-j13e1-offline-verified",
       "note": "Aggregate source wiring only; behavior and live evidence separate",
-      "fileSha256": "20b18d8387bed152c71306b66214c10f7a2afc111d8c650e3fe248e9240275d9"
+      "fileSha256": "a10f36db11a50ad6c50e843bb46abedbeb8ca763290036b881be0d9940e268c7"
     },
     {
       "id": "duel.replay.dispatch",
@@ -7849,7 +7849,7 @@
     },
     {
       "id": "ui.weekly.host-open",
-      "path": "DevWeeklyReportPopup.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/UI/Weekly/DevWeeklyReportPopup.cs",
       "start": 94,
       "end": 94,
       "symbol": "public static bool Show(",
@@ -7860,7 +7860,7 @@
     },
     {
       "id": "ui.weekly.host-close",
-      "path": "DevWeeklyReportPopup.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/UI/Weekly/DevWeeklyReportPopup.cs",
       "start": 279,
       "end": 279,
       "symbol": "private void Close(bool silent)",
@@ -7871,7 +7871,7 @@
     },
     {
       "id": "ui.overlay.host-open",
-      "path": "AnimusForgeNativeConversationOverlay.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/UI/Conversation/AnimusForgeNativeConversationOverlay.cs",
       "start": 179,
       "end": 179,
       "symbol": "private static bool Show(ScreenBase screen)",
@@ -7882,7 +7882,7 @@
     },
     {
       "id": "ui.overlay.host-close",
-      "path": "AnimusForgeNativeConversationOverlay.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/UI/Conversation/AnimusForgeNativeConversationOverlay.cs",
       "start": 1629,
       "end": 1629,
       "symbol": "private void Close(bool silent)",
@@ -7926,7 +7926,7 @@
     },
     {
       "id": "onboarding.host-dismissal",
-      "path": "ModOnboardingBehavior.cs",
+      "path": "src/modules/AF.Module.Onboarding/Host/ModOnboardingBehavior.cs",
       "start": 755,
       "end": 755,
       "symbol": "private void ProcessUnexpectedOnboardingDismissal()",
@@ -7937,7 +7937,7 @@
     },
     {
       "id": "onboarding.host-tick",
-      "path": "ModOnboardingBehavior.cs",
+      "path": "src/modules/AF.Module.Onboarding/Host/ModOnboardingBehavior.cs",
       "start": 297,
       "end": 297,
       "symbol": "private void OnTick(float dt)",
@@ -7948,7 +7948,7 @@
     },
     {
       "id": "onboarding.popup-open",
-      "path": "AnimusForgeApiOnboardingPopup.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/UI/Onboarding/AnimusForgeApiOnboardingPopup.cs",
       "start": 43,
       "end": 43,
       "symbol": "public static bool Show(",
@@ -7959,7 +7959,7 @@
     },
     {
       "id": "onboarding.popup-close",
-      "path": "AnimusForgeApiOnboardingPopup.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/UI/Onboarding/AnimusForgeApiOnboardingPopup.cs",
       "start": 157,
       "end": 157,
       "symbol": "public void Close(bool silent)",
@@ -7970,7 +7970,7 @@
     },
     {
       "id": "onboarding.vm-pump",
-      "path": "AnimusForgeApiOnboardingVM.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/UI/Onboarding/AnimusForgeApiOnboardingVM.cs",
       "start": 1102,
       "end": 1102,
       "symbol": "public void OnTick()",
@@ -8388,7 +8388,7 @@
     },
     {
       "id": "af2.path.logs",
-      "path": "AnimusForgeModulePaths.cs",
+      "path": "src/AF.Persistence/AnimusForgeModulePaths.cs",
       "start": 45,
       "end": 45,
       "symbol": "public static string GetLogsDirectory()",
@@ -8498,7 +8498,7 @@
     },
     {
       "id": "af2.terminal.path",
-      "path": "AnimusForgeTerminalSettings.cs",
+      "path": "src/modules/AF.Module.UI/Settings/AnimusForgeTerminalSettings.cs",
       "start": 103,
       "end": 103,
       "symbol": "internal static string GetSettingsPath()",
@@ -8509,7 +8509,7 @@
     },
     {
       "id": "af2.terminal.save",
-      "path": "AnimusForgeTerminalSettings.cs",
+      "path": "src/modules/AF.Module.UI/Settings/AnimusForgeTerminalSettings.cs",
       "start": 123,
       "end": 123,
       "symbol": "internal static void TrySaveSettingsFile(string path, AnimusForgeTerminalSettingsData data)",
@@ -8597,7 +8597,7 @@
     },
     {
       "id": "af2.model.embedding",
-      "path": "OnnxEmbeddingEngine.cs",
+      "path": "src/modules/AF.Module.Knowledge/Semantic/OnnxEmbeddingEngine.cs",
       "start": 471,
       "end": 471,
       "symbol": "AnimusForgeModelStore.ModelFiles files = AnimusForgeModelStore.ResolveEmbedding();",
@@ -8608,7 +8608,7 @@
     },
     {
       "id": "af2.model.reranker",
-      "path": "OnnxCrossEncoderReranker.cs",
+      "path": "src/modules/AF.Module.Knowledge/Semantic/OnnxCrossEncoderReranker.cs",
       "start": 556,
       "end": 556,
       "symbol": "AnimusForgeModelStore.ModelFiles files = AnimusForgeModelStore.ResolveReranker();",
@@ -8718,7 +8718,7 @@
     },
     {
       "id": "af2.model.cold-init",
-      "path": "OnnxEmbeddingEngine.cs",
+      "path": "src/modules/AF.Module.Knowledge/Semantic/OnnxEmbeddingEngine.cs",
       "start": 306,
       "end": 306,
       "symbol": "private volatile bool _initialized;",
@@ -8861,7 +8861,7 @@
     },
     {
       "id": "j17.scene-retire",
-      "path": "ShoutBehavior.cs",
+      "path": "src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.cs",
       "start": 34105,
       "end": 34105,
       "symbol": "_sceneRequestLifetime.Retire();",
@@ -8883,7 +8883,7 @@
     },
     {
       "id": "j17.native.admission-lifetime",
-      "path": "ShoutBehavior.NativeAdmission.cs",
+      "path": "src/modules/AF.Module.Conversation/Channels/Native/ShoutBehavior.NativeAdmission.cs",
       "start": 142,
       "end": 142,
       "symbol": "admission.Lifetime = new AnimusForge.Refactor.Runtime.ConversationRequestLifetime();",
@@ -8894,7 +8894,7 @@
     },
     {
       "id": "j17.channel.retirement",
-      "path": "ShoutBehavior.CampaignLifetime.cs",
+      "path": "src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.CampaignLifetime.cs",
       "start": 10,
       "end": 10,
       "symbol": "private void RetireChannelRequestLifetimes()",
@@ -8905,7 +8905,7 @@
     },
     {
       "id": "j17.scene.lifetime-field",
-      "path": "ShoutBehavior.CampaignLifetime.cs",
+      "path": "src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.CampaignLifetime.cs",
       "start": 8,
       "end": 8,
       "symbol": "private AnimusForge.Refactor.Runtime.ConversationRequestLifetime _sceneRequestLifetime = new AnimusForge.Refactor.Runtime.ConversationRequestLifetime();",
