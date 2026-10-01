@@ -1,13 +1,13 @@
 <Brushes>
   <Brush Name="AFWorldBulletin.Archive.Button">
     <Layers>
-      <BrushLayer Name="Border" Sprite="BlankWhiteSquare_9" Color="#A8843CFF" />
-      <BrushLayer Name="Fill" Sprite="BlankWhiteSquare_9" Color="#742C20FF" ExtendLeft="-3" ExtendRight="-3" ExtendTop="-3" ExtendBottom="-3" />
+      <BrushLayer Name="Border" Sprite="BlankWhiteSquare_9" Color="#87633CFF" />
+      <BrushLayer Name="Fill" Sprite="BlankWhiteSquare_9" Color="#D7BA86FF" ExtendLeft="-1" ExtendRight="-1" ExtendTop="-1" ExtendBottom="-1" />
     </Layers>
     <Styles>
       <Style Name="Default"><BrushLayer Name="Border" ColorFactor="1" /><BrushLayer Name="Fill" ColorFactor="1" /></Style>
-      <Style Name="Hovered"><BrushLayer Name="Border" ColorFactor="1.3" /><BrushLayer Name="Fill" ColorFactor="1.35" /></Style>
-      <Style Name="Pressed"><BrushLayer Name="Border" ColorFactor="0.85" /><BrushLayer Name="Fill" ColorFactor="0.7" /></Style>
+      <Style Name="Hovered"><BrushLayer Name="Border" ColorFactor="0.8" /><BrushLayer Name="Fill" ColorFactor="1.12" /></Style>
+      <Style Name="Pressed"><BrushLayer Name="Border" ColorFactor="0.7" /><BrushLayer Name="Fill" ColorFactor="0.88" /></Style>
       <Style Name="Disabled"><BrushLayer Name="Border" AlphaFactor="0.5" /><BrushLayer Name="Fill" AlphaFactor="0.5" /></Style>
     </Styles>
   </Brush>
