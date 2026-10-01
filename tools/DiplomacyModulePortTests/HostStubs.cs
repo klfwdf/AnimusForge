@@ -28,6 +28,10 @@ namespace TaleWorlds.CampaignSystem
         }
     }
 }
+namespace TaleWorlds.CampaignSystem.Settlements
+{
+    internal sealed class Settlement { public string StringId { get; set; } }
+}
 namespace AnimusForge
 {
     internal static class WorldDiplomacyPresentation
@@ -54,8 +58,6 @@ namespace AnimusForge
     {
         public static WorldDiplomacyTimelineDocumentsResult Timeline(WorldDiplomacyStorage storage, int maxCount)
         { Recording.Call("documents",maxCount); return WorldDiplomacyTimelineDocumentsResult.Available(Array.Empty<WorldDiplomacyTimelineDocument>()); }
-        public static bool MarkRead(WorldDiplomacyDocument document)
-        { if (document == null) return false; document.IsRead = true; return true; }
     }
     internal readonly struct WorldDiplomacyProactiveSpeakerCandidate { }
     internal interface IWorldDiplomacyProactiveDiscussionSource
