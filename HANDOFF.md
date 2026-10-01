@@ -1,4 +1,11 @@
-# 当前交接：远端功能合并、9归位与普通推送（2026-10-01）
+# 当前交接：合并 main 参战邀请修复并交付 main（2026-10-01）
+
+- 用户已明确授权先合并最新 `main`、保留修复并验证，再普通推送到 `origin/main`；这只改变本轮发布目标，不授权强推、部署或清理。
+- 意图 `ff0ce7e4`，双父合并 `7dc16f68` 保留远端 `0a641aab` 的参战邀请去重修复及现有源码归位/功能；唯一测试冲突仅适配两个 canonical 路径，新增断言完整保留。
+- 原测试 Program 在本地 net8 宿主通过 5 项冒烟检查；封存候选 Release 两 API + Bootstrap 构建零错误，真实 DLL/marker 核验通过；两 API 各 1172 Compile / 8 资源集合与此前相同，813 代码图两模式通过。不是实机或全仓测试验收。
+- [本轮唯一台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#main-call-to-war-integration-20261001)记录源码坐标、失败诊断、保护范围和发布核对；实际推送以最终远端 ref 与本地 receipt 为准。原 SessionTransport raw dirty / 1599 未跟踪文件保持，不纳入提交；无 Stage、游戏部署、下载、清理或一键脚本修改。
+
+# 历史交接：远端功能合并、9归位与普通推送（2026-10-01）
 
 - 普通merge `9ee686ee`保留远端`982a5861`功能与本地目录；9新增按精确批准canonical归位，root tracked C#仍0，总定位336，future新外交未覆盖。
 - 两API1172 Compile/8资源、purecore186实际增量核通过；六隔离构建/marker、实际DLL各45、最终严格非外交C43 43PASS/0FAIL/0BLOCKED_ENV、813地图两模式通过。受影响Execution/Weekly/CivilWar/Coup/GCCZ/Policy/Illustrator/WorldMap专项有限通过，不称LIVE或全仓PASS。

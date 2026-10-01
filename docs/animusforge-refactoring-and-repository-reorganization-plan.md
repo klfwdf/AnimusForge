@@ -1,3 +1,29 @@
+<a id="main-call-to-war-integration-20261001"></a>
+## 合并 main 参战邀请修复并交付 main（2026-10-01）
+
+用户先要求核对 main 的 Bug 修复，随后明确要求推送 main，并批准先合并、保留修复和验证。目标是 `origin/refs/heads/main`，不是切换其他工作树、强推、部署、打包或清理。下方此前专用分支发布记录保持历史原文，本轮目标以此条为准。
+
+### 范围与源码证据
+
+- 开始 HEAD `a73ac70b`，最新 main `0a641aab7bb3f802625e7a06a8667138aaf0c3d2`，唯一远端独有提交是参战邀请重定向后清理原提案的修复。当前工作区分支不切换，其他 main 工作树不写入。
+- 空意图提交 `ff0ce7e4`；普通双父 merge `7dc16f68d0186d2bacc045318b4a062e02c58de7`，parents `ff0ce7e4` / `0a641aab`。生产只增加上游原样 36 行；测试保留上游新增断言，仅替换两个已迁移源码路径，未还原根级 C# 副本。
+- `src/modules/AF.Module.Diplomacy/Agenda/VoteDealBehavior.cs:743,1304`：`StartExpiredAgendaElection` / `StartDecisionElectionSafe` 在启动选举后调用清理；`:1314-1347` 的 `TryConsumeRedirectedPlayerCallToWarProposal` 保留上游类型、玩家王国、非雇佣兵和仍待决提案条件，再移除外方原提案。只在选举入口运行，不新增逐帧轮询或全王国扫描，不改存档身份。
+- `tests/modules/AF.Module.Diplomacy/AgendaMapNotification.SmokeTests/Program.cs`：唯一冲突是旧源码路径，保留本地 canonical 路径和上游完整 5 项冒烟断言。实际生产新增行与上游补丁逐行一致，测试归一文本与上游只差两个路径。
+
+### 验证与实际失败
+
+- 原 Program 通过本地 SDK 8.0.425 的 net8 链接宿主编译/运行，报告 `Agenda map notification smoke tests passed: 5`。原 net6 项目首次缺 6.0.36 引用/host packs，`NU1100`；未下载或修改测试项目目标框架，宿主只是本地验证适配，不称 net6 原环境通过。
+- 工作树构建曾选中旧 artifacts 内 net6 `System.dll` / `System.Core.dll`，导致 `CS0731` / `CS1069`；命令行 glob 排除未正确生效又引入旧 obj 特性重复。通过实际 `ReferencePath` 查明污染，不为此修改产品或一键脚本。首次完整编码命令超 Windows 长度限制、深层 archive 解包超路径限制也分别保留失败日志。
+- 最终从候选 index tree 封存编译输入到仓内短路径，省略项目原已排除的缓存和原版源码；两 API **1172 Compile / 8 EmbeddedResource** 与此前已验证集合完全相同，1172 源文件逐字节等于候选 archive。使用原构建脚本的进程内安全适配：新输出根、拒绝重置已有目录、不修剪生成依赖、离线 restore；未改保存的脚本，未 Stage / Deploy。
+- 最终 Release 1.3（实际引用 `v1.3.15.110062`）、1.4（`v1.4.7.117484`）和 Bootstrap 三构建 exit 0、零错误；三个真实 DLL 的 SHA 与 build marker 相等，两实现 SHA 不同。813 代码图 recorded/working-tree 两模式 PASS，`git diff --cached --check` PASS。完整游戏、真实旧档、真实网络、性能及全仓回归 NOT-RUN；不把源码冒烟断言当作 Campaign 行为验收。
+- 完整本地证据：`artifacts/main-sync-20261001-868a68def44c/verified-merge.json`、`compile-gate.json`、`agenda-smoke-net8/`、`sealed-release-short/`；各失败日志保留，不上传这些生成产物。
+
+### 保护与普通推送
+
+- 原 SessionTransport raw SHA `a393a98b42c1f2d37150578d5d5ede170540be8eb4874751fbc2821eb9cfe23e` 和全部 1599 个原未跟踪文件逐字节保持；未 stash、暂存或提交。封存构建使用 index，不混入 dirty / 未跟踪源码。
+- 原 `a73ac70b` 已在获准专用 origin 分支发布；新增 checkpoint 无文件差异，本轮 merge 仅上述两文件。main 独有历史路径筛查中，17 项潜在缓存/二进制路径没有新增提交；当前 161 个 `.tmp` 前缀旧 tracked blob 均与原 main 相同，不擅自删除或冒称仓库已无历史产物。新本地保护/构建材料均留 ignored 路径。
+- 发布前再次 fetch 并核实最新 main 是本候选祖先，执行 `git push origin HEAD:refs/heads/main`；禁止 force / rebase / reset，若远端新增分叉则停止。推送结果只由退出码和随后 `ls-remote` 完整 SHA 相等确认，最终回执保存本地 `push-receipt.json`。聚焦回滚以新 inverse/revert 提交实施，不改写共享历史。
+
 <a id="remote-feature-merge-20261001"></a>
 ## 远端功能合并、9新增归位及普通推送（2026-10-01）
 
