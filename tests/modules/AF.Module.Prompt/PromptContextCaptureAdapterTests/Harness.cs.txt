@@ -1,0 +1,102 @@
+using System;
+using System.Linq;
+using System.Collections.Generic;
+using TaleWorlds.CampaignSystem;
+using WeeklyPromptSnapshot = AnimusForge.MyBehavior.WeeklyPromptSnapshot;
+namespace TaleWorlds.CampaignSystem
+{
+    public sealed class Hero { public string StringId="hero"; }
+    public sealed class CharacterObject { public string StringId="char"; public Hero HeroObject; }
+    public struct CampaignVec2 { public bool IsValid()=>true; }
+}
+namespace TaleWorlds.CampaignSystem.Party { internal sealed class MobileParty { internal static MobileParty MainParty=new();internal CampaignVec2 Position; } }
+namespace TaleWorlds.Library { internal static class TWParallel { internal static bool IsMainThread()=>true; } }
+namespace AnimusForge.Refactor.Modules
+{
+    internal static class TeamModuleServices { internal static GatheringPort Gathering=new();internal static PolicyPort Policy=new(); }
+    internal sealed class GatheringPort { internal string BuildFeastAttendanceContext(Hero h){AnimusForge.Trace.Add("feast");return "feast";} }
+    internal sealed class PolicyPort { internal string BuildActivePolicyDialogueContextForExternal(Hero h,CharacterObject c,string kingdom){AnimusForge.Trace.Add("policy");return "policy";} }
+}
+namespace AnimusForge
+{
+    internal static class Trace { internal static List<string> Events=new();internal static void Add(string s)=>Events.Add(s); }
+    internal static class Logger { internal static void Log(string c,string s){} }
+    internal static class FreezeWatchdog { internal static void Mark(string a,string b){} }
+    internal static class AIConfigHandler
+    {
+        internal static bool LoanEnabled=true,RewardEnabled=true;
+        internal static string BuildGuardrailClarificationHint(params object[] args)=>"clarification";
+        internal static string GetLoreContextWithCandidates(params object[] args){Trace.Add("lore");return "lore";}
+    }
+    internal sealed class RewardSystemBehavior
+    {
+        internal static RewardSystemBehavior Instance=new();internal static bool ThrowDebt;
+        internal bool HasUnpaidDebtForInteraction(Hero h,CharacterObject c){Trace.Add("debt-probe");if(ThrowDebt)throw new Exception();return true;}
+        internal string BuildDueDateReferenceForAI(){Trace.Add("loan-date");return "loan-date";}
+        internal string BuildDebtHintForAI(Hero h){Trace.Add("loan");return "loan";}
+        internal string BuildTrustPromptForAI(Hero h){Trace.Add("trust");return "trust";}
+        internal string BuildSettlementMerchantDebtHintForAI(CharacterObject c){Trace.Add("merchant");return "merchant";}
+    }
+    internal static class DuelBehavior
+    {
+        internal static bool HasResult=true,Won=true;internal static int Consumes;
+        internal static bool TryConsumeLastDuelResult(Hero h,out bool won){Trace.Add("duel");won=Won;Consumes++;bool result=HasResult;HasResult=false;return result;}
+    }
+    internal static class LordEncounterBehavior { internal static bool IsEncounterMeetingMissionActive;internal static bool TryGetSavedMainPartyPosition(out CampaignVec2 pos){pos=new();return true;} }
+    internal static class ShoutUtils { internal static string BuildNearbySettlementsDetailForPrompt(CampaignVec2 p,Hero h){Trace.Add("surroundings");return "nearby";} }
+    internal static class MyBehavior { @@WEEKLY@@ }
+    internal static class AfGcczShoutBridge { internal static bool Active;internal static bool IsActive()=>Active; }
+    public sealed class WorldEntityPromptContext { public string MainPromptBlock="entity-main",PostprocessPromptBlock="entity-post";public List<string> ExplicitMentionedKingdomIds=new(){"kingdom"};public bool HasContent=true;public int MatchCount=1; }
+    public static partial class WorldEntityRetrievalService
+    {
+        internal static WorldEntityPromptContext BuildPromptContext(MentionedWorldEntities m,string name,Hero h,bool resident,HashSet<string> rules,string input,bool player,EntityCapture capture,DetachedEntityMatches matches){Trace.Add("entity");return new();}
+    }
+    internal static class VoteDealBehavior { internal static WorldEntityPromptContext BuildUnifiedAgendaPromptContextForExternal(Hero h,MentionedWorldEntities m){Trace.Add("agenda");return new();} }
+    internal static class RomanceSystemBehavior { internal static bool Enabled;internal static void SetMarriagePostprocessContextEnabled(Hero h,bool value){Trace.Add("marriage");Enabled=value;} }
+    internal static class Program
+    {
+        static int checks;
+        static WeeklyPromptSnapshot Weekly() => new("", "", "", "", "", "");
+        static void Check(bool ok,string name){checks++;if(!ok)throw new Exception("FAIL "+name);}
+        static PromptContextCaptureBannerlordPorts Ports()=>new(){
+            IsPartyTransferEligible=()=>false,HasDuelRuntimeTarget=()=>true,WasRecentlyDefeated=_=>true,WasRecentlyReleased=_=>true,
+            BuildPlayerDisplayName=(h,c,i)=>"player",BuildPrisonerStatus=_=>"prisoner",BuildHeroArmyFact=()=>"hero-army",BuildPlayerArmyFact=()=>"player-army",BuildResidentRecentActions=()=>"resident",
+            BuildTriggeredRules=flags=>{Trace.Add("rules:"+flags.UseRewardContext+":"+flags.IncludeDuelStakeContext);return "rules";},
+            IsWorldBulletinEnabled=()=>true,CaptureWorldBulletinSnapshot=()=>{Trace.Add("weekly-snapshot");return Weekly();},
+            ShouldExcludeWeeklyShortReport=(r,s)=>{Trace.Add("weekly-exclude");return true;},BuildWeeklyShortReports=(e,s)=>{Trace.Add("weekly-short");return "short";},BuildWeeklyFullReports=(r,s)=>{Trace.Add("weekly-full");return "full";},ObserverKnowsPlayer=()=>true,LogStage=(s,d,i)=>{}
+        };
+        static PromptBuildRequest Request()=>new(){Input="input",HasAnyHero=true,PlayerClanTier=3,MinimumClanTier=1,TargetDisplayName="NPC"};
+        static PromptRoutingResult Routing()=>new(){AuxiliaryRuleHitIds=new(){"kingdom_agenda"},Duel=new(){Hit=true},Marriage=new(){Hit=true},Surroundings=new(){Hit=true}};
+        static void Capture(PromptBuildRequest request,PromptRoutingResult routing,Hero hero,CharacterObject character,WeeklyPromptSnapshot weekly,out PromptContextFlags flags,out PromptExtrasSections extras,out PromptEntityCapture entity)
+            =>PromptContextCaptureBannerlordAdapter.CapturePromptSections(Ports(),request,routing,new(){AuxiliaryMentions=new(){Entities=new(){"mention"}}},new(),hero,character,weekly,out flags,out extras,out entity,out _);
+        static void Main()
+        {
+            Trace.Events.Clear();DuelBehavior.HasResult=true;Capture(Request(),Routing(),new(),new(),null,out var flags,out var extras,out var entity);
+            Check(Trace.Events.IndexOf("trust")<Trace.Events.IndexOf("duel")&&Trace.Events.Contains("trust"),"trust captured before destructive Duel consume");
+            Check(Trace.Events.IndexOf("duel")<Trace.Events.IndexOf("rules:True:True"),"triggered rules see consumed Duel reward promotion");
+            Check(flags.UseRewardContext&&flags.IncludeDuelStakeContext&&flags.PlayerWonLastDuel,"returned flags preserve Duel result");
+            Check(extras.TrustPrompt=="trust"&&!string.IsNullOrWhiteSpace(extras.DuelResultLine),"pre-duel trust retained alongside result");
+            Check(Trace.Events.Count(x=>x=="weekly-snapshot")==1&&Trace.Events.IndexOf("weekly-exclude")<Trace.Events.IndexOf("weekly-short")&&Trace.Events.IndexOf("weekly-short")<Trace.Events.IndexOf("weekly-full"),"single weekly snapshot shared in legacy layer order");
+            Check(Trace.Events.IndexOf("entity")<Trace.Events.IndexOf("agenda")&&Trace.Events.Last()=="marriage","entity then agenda then final marriage effect");
+            Check(extras.HeroArmyRuntimeFact=="hero-army"&&extras.PlayerArmyRuntimeFact=="player-army"&&extras.ResidentRecentActions=="resident"&&extras.NearbySettlementsDetail=="nearby"&&extras.ActivePolicyContext=="policy","all live leaf facts captured");
+            Check(entity.HasContent&&entity.AgendaHasContent&&entity.MainPromptBlock=="entity-main"&&entity.PostprocessPromptBlock=="entity-post","complete entity and agenda outputs");
+            Trace.Events.Clear();Capture(Request(),Routing(),new(),new(),Weekly(),out flags,out extras,out entity);
+            Check(!Trace.Events.Contains("weekly-snapshot")&&Trace.Events.Contains("rules:False:False")&&extras.DuelResultLine==null,"retry does not reconsume result or recapture supplied weekly snapshot");
+            var loanRouting=Routing();loanRouting.Loan=new(){Hit=true};Trace.Events.Clear();Capture(Request(),loanRouting,new(),new(),Weekly(),out flags,out extras,out entity);
+            Check(Trace.Events.Contains("loan-date")&&Trace.Events.Contains("loan")&&!Trace.Events.Contains("trust"),"loan capture excludes trust");
+            var merchant=Routing();merchant.Reward=new(){Hit=true};Trace.Events.Clear();Capture(Request(),merchant,null,new(),Weekly(),out flags,out extras,out entity);
+            Check(Trace.Events.Contains("merchant")&&!Trace.Events.Contains("duel")&&!RomanceSystemBehavior.Enabled,"character merchant captures debt without Hero effects");
+            var suppressed=Request();suppressed.SuppressDynamicRuleAndLore=true;Trace.Events.Clear();Capture(suppressed,Routing(),new(),new(),Weekly(),out flags,out extras,out entity);
+            Check(!Trace.Events.Contains("lore")&&!Trace.Events.Any(x=>x.StartsWith("rules:"))&&!Trace.Events.Contains("entity")&&entity==null,"suppression preserves dynamic capture exclusions");
+            var prefetched=Request();prefetched.UsePrefetchedLoreContext=true;prefetched.PrefetchedLoreContext="prefetched";Trace.Events.Clear();Capture(prefetched,Routing(),new(),new(),Weekly(),out flags,out extras,out entity);
+            Check(extras.LoreContext=="prefetched"&&!Trace.Events.Contains("lore"),"prefetched lore avoids live lookup");
+            RewardSystemBehavior.ThrowDebt=true;Trace.Events.Clear();Capture(Request(),Routing(),new(),new(),Weekly(),out flags,out extras,out entity);
+            Check(!flags.PersistentAdpDebtPostprocess&&Trace.Events.Contains("trust"),"debt lookup failure retains old fallback and capture continuation");
+            RewardSystemBehavior.ThrowDebt=false;DuelBehavior.HasResult=true;Trace.Events.Clear();var failingPorts=Ports();
+            failingPorts.BuildTriggeredRules=_=>throw new Exception("rule-capture-failed");bool failed=false;
+            try{PromptContextCaptureBannerlordAdapter.CapturePromptSections(failingPorts,Request(),Routing(),new(){AuxiliaryMentions=new()},new(),new(),new(),null,out _,out _,out _,out _);}catch(Exception e){failed=e.Message=="rule-capture-failed";}
+            Check(failed&&!DuelBehavior.HasResult&&Trace.Events.Contains("duel")&&!Trace.Events.Contains("weekly-short")&&!Trace.Events.Contains("marriage"),"rule failure preserves consumed Duel and suppresses later effects without rollback");
+            Console.WriteLine("PASS PromptContextCaptureAdapter checks="+checks+" actual-adapter=true dependencies=STUBBED live=NOT_RUN");
+        }
+    }
+}

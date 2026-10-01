@@ -1,9 +1,10 @@
 from pathlib import Path
-import importlib.util,sys,subprocess
+import importlib.util,sys,subprocess,argparse
 R=Path(__file__).resolve().parents[4]; H=Path(__file__).parent
 sys.path.insert(0,str(R/'tests'));from output_isolation import minimal_test_environment
 s=importlib.util.spec_from_file_location('ex',R/'tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py');ex=importlib.util.module_from_spec(s);s.loader.exec_module(ex)
-out=R/'artifacts/af2-host-terminal-closeout/line-b/daily-developer-edit-tests';out.mkdir(parents=True,exist_ok=True)
+parser=argparse.ArgumentParser();parser.add_argument('--run-root',type=Path);args=parser.parse_args()
+out=(args.run_root or R/'artifacts/af2-host-terminal-closeout/line-b/daily-developer-edit-tests').resolve();out.mkdir(parents=True,exist_ok=True)
 state=(R/'src/modules/AF.Module.Memory/Summary/MemoryBusinessStateOwner.cs').read_text(encoding='utf-8-sig')
 methods='\n'.join(ex.declaration(state,x) for x in ['internal List<DailyMemoryDraft> LoadDrafts(', 'internal void SaveDrafts('])
 day=ex.declaration((R/'src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.cs').read_text(encoding='utf-8-sig'),'internal class DialogueDay')

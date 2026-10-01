@@ -1,8 +1,9 @@
 from pathlib import Path
-import os, subprocess, sys, importlib.util
+import os, subprocess, sys, importlib.util, argparse
 ROOT=Path(__file__).resolve().parents[4]; HERE=Path(__file__).resolve().parent
 sys.path.insert(0,str(ROOT/'tests')); from output_isolation import minimal_test_environment
-out=ROOT/'artifacts/af2-host-terminal-closeout/line-b/memory-recall-tests';out.mkdir(parents=True,exist_ok=True)
+parser=argparse.ArgumentParser();parser.add_argument('--run-root',type=Path);args=parser.parse_args()
+out=(args.run_root or ROOT/'artifacts/af2-host-terminal-closeout/line-b/memory-recall-tests').resolve();out.mkdir(parents=True,exist_ok=True)
 s=importlib.util.spec_from_file_location('extract',ROOT/'tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py');m=importlib.util.module_from_spec(s);s.loader.exec_module(m)
 text=(ROOT/'src/modules/AF.Module.Memory/Summary/MemoryRecoveryStateOwner.cs').read_text(encoding='utf-8-sig')
 start=text.index('internal static bool ShouldCompleteInitialInteractionMemoryNotoriety(')
