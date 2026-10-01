@@ -4,6 +4,19 @@ using System.Linq;
 namespace AnimusForge;
 internal static partial class MemoryDeveloperEditOwner
 {
+    internal static bool EditDialogueHistoryLine(List<MyBehavior.DialogueDay> source, int day, int lineIndex,
+        string input, Action<List<MyBehavior.DialogueDay>> saveHistory)
+    {
+        var selected = source.FirstOrDefault(x => x.GameDayIndex == day);
+        if (selected?.Lines == null || lineIndex < 0 || lineIndex >= selected.Lines.Count) return false;
+        if (string.IsNullOrWhiteSpace(input)) selected.Lines.RemoveAt(lineIndex);
+        else selected.Lines[lineIndex] = input; // Preserve exact raw editor input, including whitespace.
+        source = source.Where(x => x != null && ((x.Lines != null && x.Lines.Count > 0)
+            || (x.MemoryCommitMarkers != null && x.MemoryCommitMarkers.Count > 0))).ToList();
+        saveHistory(source);
+        return true;
+    }
+
     internal static void DeleteDailyDraft(MemoryBusinessStateOwner state, MemoryDailyDeveloperEditContext context,
         MemoryDailyDeveloperEditEffects effects, int day)
     {

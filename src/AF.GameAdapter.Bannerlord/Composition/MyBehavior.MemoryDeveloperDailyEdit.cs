@@ -130,6 +130,13 @@ public partial class MyBehavior
 	{ MemoryDeveloperEditOwner.NormalizeDevDailyMemoryDraftForSave(GetMemoryHeroId(npc), npc?.Name?.ToString(), draft); }
 
 
+    internal bool TryApplyDevDialogueHistoryLineDataMutation(Hero npc, int day, int lineIndex, string input, long generation)
+    {
+        if (npc == null || !IsMemorySourceEditorCurrent(generation)) return false;
+        return MemoryDeveloperEditOwner.EditDialogueHistoryLine(LoadDialogueHistory(npc), day, lineIndex, input,
+            records => SaveDialogueHistory(npc, records));
+    }
+
     internal bool DeleteDevDailyMemoryDraftData(Hero npc, int day, long generation)
     {
         if (!IsMemorySourceEditorCurrent(generation)) return false;
