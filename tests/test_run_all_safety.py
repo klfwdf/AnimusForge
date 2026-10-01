@@ -92,6 +92,7 @@ class RunAllSafetyTests(unittest.TestCase):
         self.assertIn("-p:UseArtifactsOutput=true", cmd)
         self.assertIn(f"-p:ArtifactsPath={build_root}", cmd)
         self.assertIn(f"-p:ReplayOutputRoot={build_root}", cmd)
+        self.assertIn(f"-p:OutDir={build_root / 'runtime'}/", cmd)
         self.assertFalse(build_root.exists())
 
     def test_csproj_runs_evaluated_isolated_target_not_old_bin(self):
