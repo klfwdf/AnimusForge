@@ -46,6 +46,7 @@ internal sealed class CoupRebellionBridge : CampaignBehaviorBase
 
     private sealed class Outcome
     {
+        public string ActorHeroId;
         public string HeroId;
         public string SettlementId;
         public string KingdomId;
@@ -89,7 +90,7 @@ internal sealed class CoupRebellionBridge : CampaignBehaviorBase
         internal readonly MethodInfo FollowerEligible = Method("IsEligibleRebelFollowerByStandardRules", 3);
         internal readonly MethodInfo NamingSucceeded = Method("IsRebelKingdomNamingSuccess", 1);
         internal readonly MethodInfo Weekly = Method("RecordEventSourceMaterial", 12);
-        internal readonly MethodInfo Bulletin = Method("TryRecordCoupOutcomeForBulletin", 6);
+        internal readonly MethodInfo Bulletin = Method("TryRecordCoupOutcomeWithParticipantsForBulletin", 8);
         internal readonly MethodInfo PrepareMemory = Method("TryPrepareExternalDialogueHistoryRecoveryIdentity", 6);
         internal readonly MethodInfo CommitMemory = Method("CommitExternalDialogueHistoryRecoverable", 3);
         internal readonly MethodInfo MemoryStatus = Method("GetExternalDialogueHistoryRecoveryStatus", 3);
@@ -122,7 +123,7 @@ internal sealed class CoupRebellionBridge : CampaignBehaviorBase
             Require(FollowerEligible, typeof(bool), true, typeof(int), typeof(int), typeof(float));
             Require(NamingSucceeded, typeof(bool), true, NamingType);
             Require(Weekly, typeof(void), false, typeof(string), typeof(string), typeof(string), typeof(string), typeof(string), typeof(string), typeof(bool), typeof(bool), typeof(string), typeof(string), typeof(int), typeof(string));
-            Require(Bulletin, typeof(bool), false, typeof(string), typeof(bool), typeof(string), typeof(string), typeof(string), typeof(string));
+            Require(Bulletin, typeof(bool), false, typeof(string), typeof(bool), typeof(string), typeof(string), typeof(string), typeof(string), typeof(string), typeof(string));
             Require(PrepareMemory, typeof(bool), true, typeof(InteractionMemoryCommit), typeof(bool), typeof(string), byRefString, byRefString, byRefString);
             Require(CommitMemory, typeof(MemoryCommitResult), true, typeof(InteractionMemoryCommit), typeof(bool), typeof(string));
             Require(MemoryStatus, MemoryStatus.ReturnType, true, typeof(string), typeof(string), typeof(string));
@@ -485,7 +486,7 @@ internal sealed class CoupRebellionBridge : CampaignBehaviorBase
             string place = settlement.Name.ToString(), king = formerKing.Name.ToString(), player = Hero.MainHero.Name.ToString();
             receipt = new Outcome
             {
-                HeroId = formerKing.StringId, SettlementId = settlement.StringId, KingdomId = (settlement.MapFaction as Kingdom)?.StringId ?? "",
+                ActorHeroId = Hero.MainHero.StringId, HeroId = formerKing.StringId, SettlementId = settlement.StringId, KingdomId = (settlement.MapFaction as Kingdom)?.StringId ?? "",
                 Success = success, Captured = captured, Day = (int)CampaignTime.Now.ToDays, Date = CampaignTime.Now.ToString(),
                 NpcText = success ? player + "在" + place + "发动武装政变并击败了你；这次政变已经成功。" : player + "在" + place + "针对你发动武装政变，但突击失败，随后撤回留守部队。",
                 PlayerText = success ? "你在" + place + "针对" + king + "发动武装政变并取得成功。" : "你在" + place + "针对" + king + "发动武装政变失败，撤回留守部队。"
@@ -555,7 +556,7 @@ internal sealed class CoupRebellionBridge : CampaignBehaviorBase
             {
                 receipt.BulletinHandled = (bool)_af.Bulletin.Invoke(owner, new object[] {
                     coupId, success, receipt.BulletinText, "发生时间：" + receipt.Date,
-                    receipt.OriginalKingdomId, receipt.ActorKingdomId });
+                    receipt.OriginalKingdomId, receipt.ActorKingdomId, receipt.ActorHeroId ?? Hero.MainHero.StringId, receipt.HeroId });
                 if (!receipt.BulletinHandled) { message = "政变快报事实尚未接受。"; return false; }
             }
             message = "政变事实已按当前设置登记到行动、记忆、周报与快报入口。";

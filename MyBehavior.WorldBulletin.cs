@@ -163,6 +163,17 @@ public partial class MyBehavior
 	// Returns true only for a newly recorded fact, so callers apply stability once per fact.
 	private bool CaptureWorldBulletinEvent(string kind, string key, int score, string sentence, bool involvesPlayer, string group, string detail, params string[] kingdomIds)
 	{
+		return CaptureWorldBulletinEvent(kind, key, score, sentence, involvesPlayer, group, detail, Array.Empty<WorldBulletinParticipant>(), kingdomIds);
+	}
+
+	private static WorldBulletinParticipant[] BulletinParticipants(params (Hero Hero, string Role)[] people)
+	{
+		return people.Where(x => x.Hero != null).GroupBy(x => x.Hero.StringId).Take(4)
+			.Select(x => new WorldBulletinParticipant { HeroId = x.Key, Name = x.First().Hero.Name?.ToString() ?? "", Role = x.First().Role }).ToArray();
+	}
+
+	private bool CaptureWorldBulletinEvent(string kind, string key, int score, string sentence, bool involvesPlayer, string group, string detail, WorldBulletinParticipant[] participants, params string[] kingdomIds)
+	{
 		if (!IsWorldBulletinEnabled())
 		{
 			return false;
@@ -195,6 +206,7 @@ public partial class MyBehavior
 			Group = (group ?? "").Trim(),
 			Detail = kind == "execution_last_words" ? (detail ?? "") : WorldBulletinPolicy.Truncate((PlayerNotorietyBehavior.RenderPlayerNamedReferenceForExternal(detail) ?? "").Replace("\r", " ").Replace("\n", " "), 220),
 			InvolvesPlayer = involvesPlayer,
+			Participants = new List<WorldBulletinParticipant>(participants ?? Array.Empty<WorldBulletinParticipant>()),
 			KingdomIds = (kingdomIds ?? Array.Empty<string>()).Where(x => !string.IsNullOrWhiteSpace(x)).Select(x => x.Trim()).Distinct(StringComparer.OrdinalIgnoreCase).ToList()
 		};
 		events.Add(e);
@@ -214,13 +226,21 @@ public partial class MyBehavior
 	// including an explicit settings-off skip; disabling news must not block gameplay settlement.
 	internal bool TryRecordCoupOutcomeForBulletin(string coupId, bool success, string sentence, string detail, string kingdomId, string actorKingdomId)
 	{
+		return TryRecordCoupOutcomeWithParticipantsForBulletin(coupId, success, sentence, detail, kingdomId, actorKingdomId, "", "");
+	}
+
+	internal bool TryRecordCoupOutcomeWithParticipantsForBulletin(string coupId, bool success, string sentence, string detail, string kingdomId, string actorKingdomId, string actorId, string formerKingId)
+	{
 		if (string.IsNullOrWhiteSpace(coupId) || string.IsNullOrWhiteSpace(sentence)) return false;
 		if (!IsWorldBulletinEnabled()) return true;
 		string key = "coup:" + coupId.Trim() + ":bulletin";
 		// Cold outcome/retry path; inspect the bounded retained set, not only the 64-event tail.
 		if (EnsureWorldBulletinState().Events.Any(e => e != null && string.Equals(e.Key, key, StringComparison.Ordinal))) return true;
 		return CaptureWorldBulletinEvent(success ? "coup_success" : "coup_failure", key, success ? 95 : 80,
-			sentence, true, "coup:" + coupId.Trim(), detail, kingdomId, actorKingdomId);
+			sentence, true, "coup:" + coupId.Trim(), detail, new[] {
+				new WorldBulletinParticipant { HeroId = actorId ?? "", Role = "政变发动者" },
+				new WorldBulletinParticipant { HeroId = formerKingId ?? "", Role = "政变针对的原国王" }
+			}, kingdomId, actorKingdomId);
 	}
 
 	// Bulletin stability replaces the legacy weekly STAB tags, so it runs only when bulletins actually publish;
@@ -261,7 +281,7 @@ public partial class MyBehavior
 			string sentence = GetKingdomDisplayName(k1) + "向" + GetKingdomDisplayName(k2) + "宣战，两国进入战争状态。";
 			string detailText = "宣战方君主：" + GetHeroDisplayName(k1.Leader) + "；被宣战方君主：" + GetHeroDisplayName(k2.Leader) + "；宣战缘由：" + GetWorldBulletinWarReason(detail);
 			CaptureWorldBulletinEvent("war_declared", "war:" + GetKingdomId(k1) + ":" + GetKingdomId(k2) + ":" + GetCurrentGameDayIndexSafe(), 70, sentence, false,
-				"diplomacy:" + WorldBulletinPairKey(k1, k2), detailText, GetKingdomId(k1), GetKingdomId(k2));
+				"diplomacy:" + WorldBulletinPairKey(k1, k2), detailText, BulletinParticipants((k1.Leader, "宣战方君主，未证实亲临现场"), (k2.Leader, "被宣战方君主，未证实亲临现场")), GetKingdomId(k1), GetKingdomId(k2));
 		}
 		catch (Exception ex)
 		{
@@ -280,7 +300,7 @@ public partial class MyBehavior
 			string sentence = GetKingdomDisplayName(k1) + "与" + GetKingdomDisplayName(k2) + "停战议和，双方结束战争状态。";
 			string detailText = GetKingdomDisplayName(k1) + "君主：" + GetHeroDisplayName(k1.Leader) + "；" + GetKingdomDisplayName(k2) + "君主：" + GetHeroDisplayName(k2.Leader) + "；议和方式：" + (detail == MakePeaceAction.MakePeaceDetail.ByKingdomDecision ? "王国议会决议" : "双方议定");
 			if (CaptureWorldBulletinEvent("peace_made", "peace:" + GetKingdomId(k1) + ":" + GetKingdomId(k2) + ":" + GetCurrentGameDayIndexSafe(), 60, sentence, false,
-				"diplomacy:" + WorldBulletinPairKey(k1, k2), detailText, GetKingdomId(k1), GetKingdomId(k2)))
+				"diplomacy:" + WorldBulletinPairKey(k1, k2), detailText, BulletinParticipants((k1.Leader, "议和一方君主，未证实亲临现场"), (k2.Leader, "议和另一方君主，未证实亲临现场")), GetKingdomId(k1), GetKingdomId(k2)))
 			{
 				ApplyWorldBulletinStability(GetKingdomId(k1), 2);
 				ApplyWorldBulletinStability(GetKingdomId(k2), 2);
@@ -364,7 +384,7 @@ public partial class MyBehavior
 			{
 				Hero actor = capturerHero ?? newOwner;
 				string sentence = GetHeroDisplayName(actor) + "攻陷" + name + "，该地由" + oldName + "转归" + newName + "。";
-			if (CaptureWorldBulletinEvent("settlement_siege", key, settlement.IsTown ? 65 : 50, sentence, involvesPlayer, settlementGroup, ownerDetail + "；攻城统帅：" + GetHeroDisplayName(actor), newId, oldId))
+			if (CaptureWorldBulletinEvent("settlement_siege", key, settlement.IsTown ? 65 : 50, sentence, involvesPlayer, settlementGroup, ownerDetail + "；攻城统帅：" + GetHeroDisplayName(actor), BulletinParticipants((actor, "攻城统帅"), (oldOwner, "原领主，未证实在场"), (newOwner, "新领主，未证实在场")), newId, oldId))
 				{
 					ApplyWorldBulletinStability(newId, settlement.IsTown ? 4 : 2);
 					ApplyWorldBulletinStability(oldId, settlement.IsTown ? -6 : -3);
@@ -375,11 +395,11 @@ public partial class MyBehavior
 			if (!string.IsNullOrEmpty(newId) && string.Equals(newId, oldId, StringComparison.OrdinalIgnoreCase))
 			{
 				string grant = name + "被授予" + GetHeroDisplayName(newOwner) + "（方式：" + label + "）。";
-				CaptureWorldBulletinEvent("fief_grant", key, 20, grant, involvesPlayer, "fief_grant:" + newId + ":" + GetCurrentGameDayIndexSafe(), ownerDetail, newId);
+				CaptureWorldBulletinEvent("fief_grant", key, 20, grant, involvesPlayer, "fief_grant:" + newId + ":" + GetCurrentGameDayIndexSafe(), ownerDetail, BulletinParticipants((newOwner, "获授封地者")), newId);
 				return;
 			}
 			string transfer = name + "以“" + label + "”的方式由" + oldName + "转归" + newName + "，并非攻城夺取。";
-			CaptureWorldBulletinEvent("settlement_transfer", key, 30, transfer, involvesPlayer, settlementGroup, ownerDetail, newId, oldId);
+			CaptureWorldBulletinEvent("settlement_transfer", key, 30, transfer, involvesPlayer, settlementGroup, ownerDetail, BulletinParticipants((newOwner, "新领主"), (oldOwner, "原领主")), newId, oldId);
 		}
 		catch (Exception ex)
 		{
@@ -505,7 +525,7 @@ public partial class MyBehavior
 					detailText.Append("；地点：").Append(place);
 				}
 			}
-			if (CaptureWorldBulletinEvent(kind, "killed:" + victimId, score, sentence, IsWorldBulletinPlayerHero(killer) || IsWorldBulletinPlayerHero(victim), group, detailText.ToString(), kingdomId, GetKingdomId(killer?.Clan?.Kingdom)))
+			if (CaptureWorldBulletinEvent(kind, "killed:" + victimId, score, sentence, IsWorldBulletinPlayerHero(killer) || IsWorldBulletinPlayerHero(victim), group, detailText.ToString(), BulletinParticipants((victim, "死者"), (natural ? null : killer, "致死方，是否亲自行刑依事实")), kingdomId, GetKingdomId(killer?.Clan?.Kingdom)))
 			{
 				ApplyWorldBulletinStability(kingdomId, ruler ? -8 : (natural ? 0 : -2));
 			}
@@ -534,7 +554,7 @@ public partial class MyBehavior
 			string group = "clash:" + GetCurrentGameDayIndexSafe() + ":" + WorldBulletinPairKey(captor?.MapFaction, prisoner.MapFaction);
 			string detailText = "被俘者身份：" + WorldBulletinHeroTitle(prisoner) + (captor != null ? "；俘获者：" + GetHeroDisplayName(captor) + "（" + WorldBulletinHeroTitle(captor) + "）" : "");
 			if (CaptureWorldBulletinEvent(ruler ? "ruler_captured" : "lord_captured", "captured:" + GetHeroId(prisoner) + ":" + GetCurrentGameDayIndexSafe(), ruler ? 65 : 35, sentence, IsWorldBulletinPlayerHero(captor),
-				group, detailText, kingdomId, GetKingdomId(captor?.Clan?.Kingdom)))
+				group, detailText, BulletinParticipants((prisoner, "被俘者"), (captor, "俘获方")), kingdomId, GetKingdomId(captor?.Clan?.Kingdom)))
 			{
 				ApplyWorldBulletinStability(kingdomId, ruler ? -4 : -1);
 			}
@@ -589,7 +609,7 @@ public partial class MyBehavior
 				+ "；败方" + GetMapEventSideCommittedTroopCount(loser) + "人，" + BuildMapEventCasualtyText(loser)
 				+ (winnerLord ? "；胜方统帅：" + WorldBulletinHeroTitle(winner.LeaderParty.LeaderHero) : "")
 				+ (loserLord ? "；败方统帅：" + WorldBulletinHeroTitle(loser.LeaderParty.LeaderHero) : "");
-			if (CaptureWorldBulletinEvent(siege ? "siege_battle" : "battle", "battle:" + BuildMapEventStableKey(mapEvent, location), score, sentence, involvesPlayer, group, detailText, winnerId, loserId))
+			if (CaptureWorldBulletinEvent(siege ? "siege_battle" : "battle", "battle:" + BuildMapEventStableKey(mapEvent, location), score, sentence, involvesPlayer, group, detailText, BulletinParticipants((winner.LeaderParty?.LeaderHero, "胜方统帅"), (loser.LeaderParty?.LeaderHero, "败方统帅")), winnerId, loserId))
 			{
 				int swing = troops > MajorNpcBattleTroopThreshold ? 2 : 1;
 				ApplyWorldBulletinStability(winnerId, swing);
@@ -611,7 +631,7 @@ public partial class MyBehavior
 				return;
 			}
 			CaptureWorldBulletinEvent("kingdom_destroyed", "kingdom_destroyed:" + GetKingdomId(kingdom), 100, GetKingdomDisplayName(kingdom) + "已经覆灭，这个王国不复存在。", false,
-				"realm:" + GetKingdomId(kingdom), "末代君主：" + GetHeroDisplayName(kingdom.Leader), GetKingdomId(kingdom));
+				"realm:" + GetKingdomId(kingdom), "末代君主：" + GetHeroDisplayName(kingdom.Leader), BulletinParticipants((kingdom.Leader, "事件相关君主，是否亲临现场依事实")), GetKingdomId(kingdom));
 		}
 		catch (Exception ex)
 		{
@@ -632,7 +652,7 @@ public partial class MyBehavior
 			{
 				string sentence = GetClanDisplayName(clan) + "家族举兵反叛，脱离了" + GetKingdomDisplayName(oldKingdom) + "。";
 				if (CaptureWorldBulletinEvent("kingdom_rebellion", "rebellion:" + GetClanId(clan) + ":" + GetKingdomId(oldKingdom), 70, sentence, involvesPlayer,
-					"realm:" + GetKingdomId(oldKingdom), "叛乱家族族长：" + GetHeroDisplayName(clan.Leader) + "；原王国君主：" + GetHeroDisplayName(oldKingdom.Leader), GetKingdomId(oldKingdom)))
+					"realm:" + GetKingdomId(oldKingdom), "叛乱家族族长：" + GetHeroDisplayName(clan.Leader) + "；原王国君主：" + GetHeroDisplayName(oldKingdom.Leader), BulletinParticipants((clan.Leader, "反叛家族族长"), (oldKingdom.Leader, "原王国君主，未证实在场")), GetKingdomId(oldKingdom)))
 				{
 					ApplyWorldBulletinStability(GetKingdomId(oldKingdom), -8);
 				}
@@ -641,7 +661,7 @@ public partial class MyBehavior
 			{
 				string sentence = GetClanDisplayName(clan) + "家族建立了新王国" + GetKingdomDisplayName(newKingdom) + "。";
 				CaptureWorldBulletinEvent("kingdom_created", "kingdom_created:" + GetKingdomId(newKingdom), 75, sentence, involvesPlayer,
-					"realm:" + GetKingdomId(oldKingdom ?? newKingdom), "开国者：" + GetHeroDisplayName(clan.Leader) + (oldKingdom != null ? "；此前效忠：" + GetKingdomDisplayName(oldKingdom) : ""), GetKingdomId(newKingdom), GetKingdomId(oldKingdom));
+					"realm:" + GetKingdomId(oldKingdom ?? newKingdom), "开国者：" + GetHeroDisplayName(clan.Leader) + (oldKingdom != null ? "；此前效忠：" + GetKingdomDisplayName(oldKingdom) : ""), BulletinParticipants((clan.Leader, "开国者")), GetKingdomId(newKingdom), GetKingdomId(oldKingdom));
 			}
 		}
 		catch (Exception ex)
@@ -669,7 +689,7 @@ public partial class MyBehavior
 			// A realm's raids on one day collapse into a single "等N起" line.
 			string owner = settlement.Village?.Bound != null ? GetSettlementDisplayName(settlement.Village.Bound) : "";
 			if (CaptureWorldBulletinEvent("raid", "raid:" + GetSettlementId(settlement) + ":" + GetCurrentGameDayIndexSafe(), 25, sentence, IsWorldBulletinPlayerHero(raider),
-				"raid:" + GetCurrentGameDayIndexSafe() + ":" + GetKingdomId(raider.MapFaction) + ">" + victimId, owner.Length > 0 ? "该村隶属：" + owner : "", victimId, GetKingdomId(raider.MapFaction)))
+				"raid:" + GetCurrentGameDayIndexSafe() + ":" + GetKingdomId(raider.MapFaction) + ">" + victimId, owner.Length > 0 ? "该村隶属：" + owner : "", BulletinParticipants((raider, "劫掠方统帅")), victimId, GetKingdomId(raider.MapFaction)))
 			{
 				ApplyWorldBulletinStability(victimId, -1);
 			}
@@ -690,7 +710,7 @@ public partial class MyBehavior
 				return;
 			}
 			CaptureWorldBulletinEvent("civil_war", "civil_war:" + (stableKey ?? GetKingdomId(kingdom)), 80, GetKingdomDisplayName(kingdom) + "爆发内战，国内各家族兵戎相见。", Clan.PlayerClan?.Kingdom == kingdom,
-				"realm:" + GetKingdomId(kingdom), "在位君主：" + GetHeroDisplayName(kingdom.Leader), GetKingdomId(kingdom));
+				"realm:" + GetKingdomId(kingdom), "在位君主：" + GetHeroDisplayName(kingdom.Leader), BulletinParticipants((kingdom.Leader, "事件相关君主，是否亲临现场依事实")), GetKingdomId(kingdom));
 		}
 		catch (Exception ex)
 		{
@@ -776,16 +796,27 @@ public partial class MyBehavior
 			WorldBulletinPolicy.AbandonWindow(scope);
 			return;
 		}
+		if (!WorldBulletinPolicy.HasEnoughMinorNews(selection))
+		{
+			// Keep gathering real, deduplicated groups. Neither text nor image API starts yet.
+			scope.WindowEndHour = now + 1.0;
+			return;
+		}
 		long generation = SaveRuntimeGuard.CaptureGeneration();
 		Kingdom home = FindKingdomById(focus.PlayerKingdomId);
 		string scopeLine = "快报视角：天下大事，但以" + (home != null ? GetKingdomDisplayName(home) : "玩家所在地区") + "读者关心的角度组织；与玩家本人或该国相关的事实优先交代";
 		WorldBulletinText template = WorldBulletinPolicy.BuildTemplate(selection);
 		string userPrompt = WorldBulletinPolicy.BuildUserPrompt(scopeLine, GetCurrentGameDateTextSafe(), selection, BuildWorldBulletinKingdomContext(selection));
 		string systemPrompt = WorldBulletinPolicy.BuildSystemPrompt(selection.MajorFacts.Count, selection.Minors.Count);
+		WorldBulletinIllustrationPlan illustrationPlan = WorldBulletinPolicy.BuildIllustrationPlan(selection,
+			"selection:" + (scope.Sequence + 1).ToString(CultureInfo.InvariantCulture) + ":" + scope.WindowEndHour.ToString("R", CultureInfo.InvariantCulture),
+			GetCurrentGameDateTextSafe());
 		Logger.Log("WorldBulletin", "[Select] home=" + focus.PlayerKingdomId + " majorFacts=" + selection.MajorFacts.Count + " minors=" + selection.Minors.Count + " minorEvents=" + selection.Minors.Sum(x => x.Events.Count));
 		// Set last: if anything above throws, the flag stays clear and the next tick retries instead of blocking forever.
 		_worldBulletinInFlight = true;
-		_ = RunWorldBulletinRequestAsync(scope.WindowEndHour, generation, selection, template, systemPrompt, userPrompt);
+		try { WorldBulletinPanelIllustrationBridge.PrepareSelection?.Invoke(illustrationPlan); }
+		catch (Exception ex) { Logger.Log("WorldBulletin", "[Illustration] selected-event preparation failed: " + ex.Message); }
+		_ = RunWorldBulletinRequestAsync(scope.WindowEndHour, generation, selection, template, systemPrompt, userPrompt, illustrationPlan);
 	}
 
 	// Main thread, once per publish: at most four kingdoms, each checked against the others for war.
@@ -831,7 +862,7 @@ public partial class MyBehavior
 		return lines;
 	}
 
-	private async Task RunWorldBulletinRequestAsync(double windowEndHour, long generation, WorldBulletinSelection selection, WorldBulletinText template, string systemPrompt, string userPrompt)
+	private async Task RunWorldBulletinRequestAsync(double windowEndHour, long generation, WorldBulletinSelection selection, WorldBulletinText template, string systemPrompt, string userPrompt, WorldBulletinIllustrationPlan illustrationPlan)
 	{
 		WorldBulletinText result = null;
 		try
@@ -856,7 +887,7 @@ public partial class MyBehavior
 		}
 		_worldBulletinMainThreadActions.Enqueue(delegate
 		{
-			CompleteWorldBulletin(windowEndHour, generation, selection, template, result);
+			CompleteWorldBulletin(windowEndHour, generation, selection, template, result, illustrationPlan);
 		});
 	}
 
@@ -877,7 +908,7 @@ public partial class MyBehavior
 		}
 	}
 
-	private void CompleteWorldBulletin(double windowEndHour, long generation, WorldBulletinSelection selection, WorldBulletinText template, WorldBulletinText generated)
+	private void CompleteWorldBulletin(double windowEndHour, long generation, WorldBulletinSelection selection, WorldBulletinText template, WorldBulletinText generated, WorldBulletinIllustrationPlan illustrationPlan)
 	{
 		if (SaveRuntimeGuard.IsStale(generation, "world_bulletin_complete"))
 		{
@@ -888,18 +919,20 @@ public partial class MyBehavior
 		WorldBulletinScopeState scope = state.World;
 		if (Math.Abs(scope.WindowEndHour - windowEndHour) > 0.001)
 		{
+			CancelWorldBulletinIllustration(illustrationPlan);
 			return;
 		}
 		// Switched off (or auto reports disabled) while the request was out: close the window, publish nothing.
 		if (!IsWorldBulletinPublishingEnabled())
 		{
 			WorldBulletinPolicy.AbandonWindow(scope);
+			CancelWorldBulletinIllustration(illustrationPlan);
 			Logger.Log("WorldBulletin", "[Publish] skipped: bulletin publishing turned off during the request");
 			return;
 		}
 		try
 		{
-			PublishWorldBulletin(scope, selection, template, generated);
+			PublishWorldBulletin(scope, selection, template, generated, illustrationPlan);
 		}
 		catch (Exception ex)
 		{
@@ -909,10 +942,17 @@ public partial class MyBehavior
 				WorldBulletinPolicy.AbandonWindow(scope);
 			}
 			Logger.Log("WorldBulletin", "[ERROR] publish failed, window closed: " + ex);
+			CancelWorldBulletinIllustration(illustrationPlan);
 		}
 	}
 
-	private void PublishWorldBulletin(WorldBulletinScopeState scope, WorldBulletinSelection selection, WorldBulletinText template, WorldBulletinText generated)
+	private static void CancelWorldBulletinIllustration(WorldBulletinIllustrationPlan plan)
+	{
+		try { if (plan != null) WorldBulletinPanelIllustrationBridge.CancelSelection?.Invoke(plan); }
+		catch (Exception ex) { Logger.Log("WorldBulletin", "[Illustration] cancel failed: " + ex.Message); }
+	}
+
+	private void PublishWorldBulletin(WorldBulletinScopeState scope, WorldBulletinSelection selection, WorldBulletinText template, WorldBulletinText generated, WorldBulletinIllustrationPlan illustrationPlan)
 	{
 		WorldBulletinText text = generated ?? template;
 		string title = string.IsNullOrWhiteSpace(text.Title) ? template.Title : text.Title;
@@ -933,10 +973,12 @@ public partial class MyBehavior
 		UpsertWorldBulletinRecord(eventId, "world", "", title, shortText, body, day);
 		_worldBulletinLatestEventId = eventId;
 		RecordWorldBulletinLayout(eventId, selection);
+		WorldBulletinLayout publishedLayout = FindWorldBulletinLayout(eventId);
+		if (publishedLayout != null) publishedLayout.IllustrationPlan = illustrationPlan;
 		try
 		{
 			var prepare = WorldBulletinPanelIllustrationBridge.PrepareIssue;
-			if (prepare != null)
+			if (illustrationPlan == null && prepare != null)
 			{
 				EventRecordEntry published = FindWeeklyReportRecordById(eventId);
 				if (published != null)

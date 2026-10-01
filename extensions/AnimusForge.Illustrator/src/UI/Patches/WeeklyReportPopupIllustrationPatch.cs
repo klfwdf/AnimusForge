@@ -2,6 +2,8 @@ using System;
 using TaleWorlds.GauntletUI.BaseTypes;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Linq;
+using Newtonsoft.Json.Linq;
 using System.Threading.Tasks;
 using HarmonyLib;
 using TaleWorlds.Engine.GauntletUI;
@@ -204,6 +206,8 @@ namespace AnimusForge.Illustrator.UI.Patches
 
                 global::AnimusForge.WorldBulletinPanelIllustrationBridge.AttachSlot = AttachWorldBulletinSlot;
                 global::AnimusForge.WorldBulletinPanelIllustrationBridge.PrepareIssue = BulletinIllustrationPreloader.Prepare;
+                global::AnimusForge.WorldBulletinPanelIllustrationBridge.PrepareSelection = BulletinIllustrationPreloader.PrepareSelection;
+                global::AnimusForge.WorldBulletinPanelIllustrationBridge.CancelSelection = BulletinIllustrationPreloader.CancelSelection;
                 BulletinIllustrationPreloader.Updated = RefreshPreparedBulletin;
 
                 MethodInfo closeMethod = AccessTools.Method(targetType, "Close");
@@ -282,7 +286,7 @@ namespace AnimusForge.Illustrator.UI.Patches
             BeginCachedLoad("点击【生成纪事插画】绘制本周大事件");
         }
 
-        private static bool AttachWorldBulletinSlot(global::AnimusForge.WorldBulletinIllustrationVM slot, string eventId, string title, string subtitleText, string bodyText)
+        private static bool AttachWorldBulletinSlot(global::AnimusForge.WorldBulletinIllustrationVM slot, string eventId, string title, string subtitleText, string bodyText, global::AnimusForge.WorldBulletinIllustrationPlan plan)
         {
             if (slot == null) return false;
             bool enabled;
@@ -299,9 +303,9 @@ namespace AnimusForge.Illustrator.UI.Patches
                 IllustrationScope ownerScope = null;
                 ownerScope = new IllustrationScope(topScreen, "weekly_report", () => CloseOverlayForScope(ownerScope));
                 _scope = ownerScope;
-                _currentContext = WeeklyReportContextExtractor.ExtractFromWeeklyReport(title, subtitleText, bodyText);
+                _currentContext = plan == null ? WeeklyReportContextExtractor.ExtractFromWeeklyReport(title, subtitleText, bodyText) : WeeklyReportContextExtractor.ExtractFromPlan(plan);
                 // Bulletin ids are unique per issue, so the cache key survives reopening from the chronicle.
-                _currentEventKey = BulletinIllustrationPreloader.KeyFor(eventId, title, subtitleText, bodyText);
+                _currentEventKey = plan == null ? BulletinIllustrationPreloader.KeyFor(eventId, title, subtitleText, bodyText) : BulletinIllustrationPreloader.KeyFor(plan);
                 _redrawCount = 0;
                 _bulletinSlot = slot;
                 _sink = slot;
@@ -481,17 +485,15 @@ namespace AnimusForge.Illustrator.UI.Patches
             var options = IllustratorRuntime.CaptureOptions();
             if (bulletin)
             {
-                options = options?.WithImageSize("1536x1024");
-                const string composition = "【快报版式】画幅为横向3:2，围绕本期事件重新创作完整插画；不要照搬旧作品，不要将方图或竖图拉伸为横图。";
+                options = options?.WithSceneImageSize();
+                string composition = "【快报版式】画幅为横向16:9，目标尺寸" + options?.ImageSize + "，围绕已选定的同一事件重新创作完整插画；不要照搬旧作品，不要将方图或竖图拉伸为横图。";
                 artDirection += "\n" + composition;
                 hardFacts += "\n" + composition;
             }
             string campaignKey = generationScope.CampaignKey;
 
-            var protagonist = context.ProtagonistHero;
-            var appearance = context.ProtagonistProfile?.Appearance;
-            string protagonistName = protagonist?.Name?.ToString() ?? "当事人";
-            string bannerCode = (protagonist?.Clan?.Banner ?? protagonist?.Clan?.Kingdom?.Banner)?.BannerCode;
+            // All names, roles, banners and appearance snapshots were captured on the game thread.
+            var people = context.Characters.Take(4).ToArray();
 
             return generationScope.Run(async token =>
             {
@@ -508,25 +510,34 @@ namespace AnimusForge.Illustrator.UI.Patches
                 if (!string.IsNullOrWhiteSpace(actionHistory)) workerArtDirection += "\n" + actionHistory;
                 var promptPlan = new IllustrationPromptPlan("周报历史纪事插画", hardFacts, workerArtDirection, directorFacts);
                 var refs = new List<IllustrationReferenceImage>();
-                // 离屏舞台提取在 scope 内携带 token：关闭弹窗或重新生成时旧任务立即取消并拆舞台
-                Task<CharacterPortraitReferences> portraitStage = null;
-                if (options?.EnableOffscreenRendering == true && protagonist != null)
+                var banners = new HashSet<string>(StringComparer.Ordinal);
+                // Sequential native stages keep GPU work bounded. No per-frame scan or parallel tableau allocation.
+                foreach (var person in people)
                 {
-                    portraitStage = ScreenCaptureHelper.ExtractHeroPortraitReferencesAsync(protagonist, cancellationToken: token, cleanTempFiles: options?.AutoCleanTempFiles == true, appearance: appearance);
-                }
-                if (portraitStage != null)
-                {
-                    var portraits = await portraitStage.ConfigureAwait(false);
-                    IllustrationReferenceRouting.AddCharacter(refs, null, portraits, protagonistName,
-                        $"本期提及人物【{protagonistName}】的可选身份参考：仅在导演选中的事件确实涉及他且需要他入画时，锁定五官、须发和实际穿戴；与同名头肩图属于同一人。供图不指定主角、人数、景别或骑乘动作；正文未选此人时不要把他加入其他事件。人物参与事件的行动与环境按导演纪事描述统一重绘，不复制原立绘姿势、背景和游戏渲染质感。", eventReference: true);
-                }
-                // 纹章由原生渲染导出，保留完整背景、配色、描边与变换
-                if (!string.IsNullOrWhiteSpace(bannerCode))
-                {
-                    string emblemB64 = await BannerEmblemComposer.ComposeToBase64Async(bannerCode, cleanTempFiles: options?.AutoCleanTempFiles == true, cancellationToken: token).ConfigureAwait(false);
-                    if (!string.IsNullOrWhiteSpace(emblemB64))
+                    token.ThrowIfCancellationRequested();
+                    CharacterPortraitReferences portraits = null;
+                    if (options?.EnableOffscreenRendering == true && person.Hero != null && person.Profile?.Appearance != null)
+                        portraits = await ScreenCaptureHelper.ExtractHeroPortraitReferencesAsync(person.Hero,
+                            cancellationToken: token, cleanTempFiles: options.AutoCleanTempFiles,
+                            appearance: person.Profile.Appearance).ConfigureAwait(false);
+                    if (portraits != null)
+                        IllustrationReferenceRouting.AddCharacter(refs, null, portraits, person.Name,
+                            $"事件人物【{person.Name}】，角色【{person.Role}】。全身与同名头肩图属于同一人，只锁定五官、须发和实际穿戴；不得借给另一方使用。人物行动按已选事件重新创作，不复制参考立绘站姿、背景或游戏渲染质感。相关身份不等于亲临现场，是否入画以事件事实为准。", eventReference: true);
+                    GenerationDiagnostics.Current?.RecordStage("weekly_participant_references", new JObject {
+                        ["heroId"] = person.HeroId, ["name"] = person.Name, ["role"] = person.Role,
+                        ["fullBody"] = !string.IsNullOrWhiteSpace(portraits?.FullBody),
+                        ["headDetail"] = !string.IsNullOrWhiteSpace(portraits?.HeadDetail)
+                    });
+                    if (!string.IsNullOrWhiteSpace(person.BannerCode) && banners.Add(person.BannerCode))
                     {
-                        refs.Add(new IllustrationReferenceImage(emblemB64, $"参考人物【{protagonistName}】所属家族的真实纹章标准样图，不代表本期所有事件的阵营：只有所选事件确实涉及该家族且存在有依据的纹章载体时使用，底色、徽记形状和配色须一致；不将该纹章贴给其他参与方，不因提供样图新增盾牌或旗帜载体", IllustrationReferenceKind.EventEmblem));
+                        string emblemB64 = await BannerEmblemComposer.ComposeToBase64Async(person.BannerCode,
+                            cleanTempFiles: options?.AutoCleanTempFiles == true, cancellationToken: token).ConfigureAwait(false);
+                        if (!string.IsNullOrWhiteSpace(emblemB64))
+                        {
+                            string owners = string.Join("、", people.Where(p => p.BannerCode == person.BannerCode).Select(p => p.Name));
+                            refs.Add(new IllustrationReferenceImage(emblemB64,
+                                $"人物【{owners}】所属家族纹章参考；仅在该阵营已有依据的载体上使用，保留底色和徽记，不贴给敌方，不因提供参考新增旗帜或盾牌。", IllustrationReferenceKind.EventEmblem));
+                        }
                     }
                 }
 
@@ -557,7 +568,7 @@ namespace AnimusForge.Illustrator.UI.Patches
 
         private static string BuildWeeklyRedrawDirective(int redrawIndex)
         {
-            return $"【纪事重绘 · 第 {redrawIndex} 次绘制】参考本期最近作品的事件与行动摘要，自主选择同一事件的另一可信瞬间、观察位置或叙事重点，也可从本期正文另选一则明确事件。" +
+            return $"【纪事重绘 · 第 {redrawIndex} 次绘制】参考本期最近作品的事件与行动摘要，自主选择同一事件的另一可信瞬间、观察位置或叙事重点，始终围绕已选事件，不改选其他消息。" +
                 "保留所选事件的参与方、地点关联和已知结果；不能为变化编造新事件，不能用更换领主展示姿势代替事件叙事。旧作品与人物参考不是发生事实，身份装备只在对应人物实际入画时生效。";
         }
 

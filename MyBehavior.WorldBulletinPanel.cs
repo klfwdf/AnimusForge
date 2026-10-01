@@ -15,6 +15,8 @@ internal sealed class WorldBulletinLayout
 	public List<string> KingdomIds = new List<string>();
 
 	public List<string> MinorKinds = new List<string>();
+
+	public WorldBulletinIllustrationPlan IllustrationPlan;
 }
 
 // Instant-bulletin panel: built on open (user click, not a tick path); one linear pass over the body text
@@ -123,7 +125,8 @@ public partial class MyBehavior
 			MetaText = BuildWorldBulletinMetaText(entry, layout, worldScope),
 			BodyText = major,
 			IllustrationSubtitle = BuildWeeklyReportPopupSubtitle(entry),
-			IllustrationBody = BuildWeeklyReportPopupBodyText(entry)
+			IllustrationBody = BuildWeeklyReportPopupBodyText(entry),
+			IllustrationPlan = layout?.IllustrationPlan
 		};
 		for (int i = 0; i < minorLines.Count; i++)
 		{

@@ -76,13 +76,50 @@ internal static class Program
         }
         var jobs = (IDictionary)typeof(BulletinIllustrationPreloader).GetField("Jobs", BindingFlags.NonPublic | BindingFlags.Static).GetValue(null);
         Check(jobs.Count <= 48, "Metadata cache bounded");
+        BulletinIllustrationPreloader.Reset();
+        var plan = new AnimusForge.WorldBulletinIllustrationPlan { Identity = "selection:1", Facts = "甲发动政变，制伏乙。", Title = "旧标题" };
+        plan.Participants.Add(new AnimusForge.WorldBulletinParticipant { HeroId = "a", Role = "政变发动者" });
+        plan.Participants.Add(new AnimusForge.WorldBulletinParticipant { HeroId = "b", Role = "原国王" });
+        string selectedKey = BulletinIllustrationPreloader.KeyFor(plan);
+        plan.Title = "润色后标题";
+        Check(selectedKey == BulletinIllustrationPreloader.KeyFor(plan), "Prose title never invalidates selected art");
+        plan.Facts += "政变失败。";
+        Check(selectedKey != BulletinIllustrationPreloader.KeyFor(plan), "Changed outcome invalidates key");
+        plan.Facts = "甲发动政变，制伏乙。";
+        plan.Participants[1].HeroId = "c";
+        Check(selectedKey != BulletinIllustrationPreloader.KeyFor(plan), "Changed actor invalidates key");
+        plan.Participants[1].HeroId = "b";
+        int requests = WeeklyReportPopupIllustrationPatch.Requests.Count;
+        BulletinIllustrationPreloader.PrepareSelection(plan);
+        var selected = BulletinIllustrationPreloader.Find(selectedKey);
+        Check(selected.Pending && WeeklyReportPopupIllustrationPatch.Requests.Count == requests + 1, "Selection immediately starts generation");
+        BulletinIllustrationPreloader.PrepareSelection(plan);
+        BulletinIllustrationPreloader.Ensure(selectedKey, context);
+        Check(WeeklyReportPopupIllustrationPatch.Requests.Count == requests + 1, "Publication/open joins selected image job");
+        BulletinIllustrationPreloader.CancelSelection(plan);
+        WeeklyReportPopupIllustrationPatch.Requests[requests](WeeklyReportPopupIllustrationPatch.Success());
+        Check(!selected.Pending && !selected.Ready && selected.Scope.Closed && selected.Status.Contains("作废"), "Invalidated selection rejects late completion");
+        BulletinIllustrationPreloader.Reset();
+        BulletinIllustrationPreloader.PrepareSelection(plan);
+        WeeklyReportPopupIllustrationPatch.Requests[WeeklyReportPopupIllustrationPatch.Requests.Count - 1](WeeklyReportPopupIllustrationPatch.Success());
+        BulletinIllustrationPreloader.CancelSelection(plan);
+        Check(!BulletinIllustrationPreloader.Find(selectedKey).Ready, "Invalidation also clears already-completed selection");
+        BulletinIllustrationPreloader.Reset();
         Console.WriteLine("PASS " + checks + " production preloader checks with fake scope, disk and generator; no game/network.");
     }
 }
 namespace AnimusForge.Illustrator.Context
 {
     internal class WeeklyReportVisualContext { }
-    internal static class WeeklyReportContextExtractor { internal static WeeklyReportVisualContext ExtractFromWeeklyReport(string t,string s,string b) => new WeeklyReportVisualContext(); }
+    internal static class WeeklyReportContextExtractor {
+        internal static WeeklyReportVisualContext ExtractFromWeeklyReport(string t,string s,string b) => new WeeklyReportVisualContext();
+        internal static WeeklyReportVisualContext ExtractFromPlan(AnimusForge.WorldBulletinIllustrationPlan plan) => new WeeklyReportVisualContext();
+    }
+}
+namespace AnimusForge
+{
+    internal class WorldBulletinParticipant { internal string HeroId, Role; }
+    internal class WorldBulletinIllustrationPlan { internal string Identity, Facts, Title; internal List<WorldBulletinParticipant> Participants = new(); }
 }
 namespace AnimusForge.Illustrator.Core
 {
