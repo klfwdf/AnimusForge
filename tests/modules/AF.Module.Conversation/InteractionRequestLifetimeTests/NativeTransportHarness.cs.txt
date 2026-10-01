@@ -23,8 +23,9 @@ static class LegacyShoutNetworkGateway {
     }
 }
 static class Program {
-    // Only the deadline duration is reduced in this fixture; the entire real consumer is unchanged.
-    private const int NativeConversationMainReplyTimeoutMs=60;
+    // Only the deadline duration is controlled in this fixture; the real consumer is unchanged.
+    // The timeout case is short, but caller-cancel cases must not race initial streaming JIT.
+    private static int NativeConversationMainReplyTimeoutMs=60;
     static string BuildNativeConversationStreamingVisibleText(string text)=>text;
     @@NATIVE@@
     internal static Func<HttpRequestMessage,CancellationToken,Task<HttpResponseMessage>> Send;
@@ -38,6 +39,7 @@ static class Program {
         Task winner=await Task.WhenAny(timeout,Task.Delay(1500));
         Check(winner==timeout&&observed.IsCancellationRequested,"native-timeout-aborts-actual-send");
         Check((await timeout).Contains("生成超时"),"native-owner-timeout-preserves-error");
+        NativeConversationMainReplyTimeoutMs=5000;
         using var caller=new CancellationTokenSource();var entered=new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
         Send=async(_,token)=>{observed=token;entered.TrySetResult(true);await Task.Delay(Timeout.Infinite,token);return null;};
         Task<string> cancelled=CallNativeConversationApiAsync(new(),_=>{},caller.Token);await entered.Task;caller.Cancel();

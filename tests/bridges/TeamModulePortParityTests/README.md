@@ -1,5 +1,18 @@
 # 制作组 typed port：接线等价验收
 
+## 2026-10-01 历史债务修复（当前入口）
+
+- `run_adapters.py` 是明确的非外交有限门禁：真实三个 port/adapter，307 条原有委派断言，3 个 adapter 行为变异，以及漏读 Scene 接缝、重复 Courier 提交、交换 Courier 文本的 3 个来源负控。不编译 Service 替身。
+- `run.py` 完整 Service 门禁仍延期：新增 CivilWar 装配依赖 WorldDiplomacy，当前任务硬排除外交，不能伪造类型或删属性凑 PASS。集中双 API 编译只能证明编译接线，不代替完整 Service 运行。
+- 当前来源核对包含 `Internal/Postprocess/ShoutBehavior.UnifiedActionPostprocess.cs`（`aa3539ca` 迁移）。`cd0d942d` 退役 Courier 重复 fallback，`f6c95ac3` 归属唯一 domain commit；只允许两个逐字相同的 Policy/Gathering 历史表达式各从两处变一处，保留 recipient、参数、delivery 与 consumed guards。当前 13 方法/29 调用，不把旧 31 调用当永久玩法要求。
+- 新 SDK 默认由 `tests/output_isolation.py` 解析；`--run-root` 只接受全新仓内目录，不再写旧 `.generated/current`，不执行清理。
+
+```powershell
+python tests/bridges/TeamModulePortParityTests/run_adapters.py --run-root <new-repository-local-directory>
+```
+
+以下内容为历史验收记录；全文逆变换已被原 runner 的逐表达式来源核对取代，不代表当前全文件行为或完整 Service 已验证。
+
 ## 一句话
 
 **新增的是调用接缝，不是第二套政策、宴会或 GCCZ 业务。** 这套测试检查“转交给谁、参数有没有变、事实结果有没有被复制或吞掉”。

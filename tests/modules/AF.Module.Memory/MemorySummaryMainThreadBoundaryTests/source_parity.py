@@ -155,3 +155,54 @@ def restore_memory_summary_source(path, source):
     # the exact replacements above and fails here, even if all listed hashes still match.
     assert restored == baseline, 'Unreviewed B1 surrounding source changes'
     return restored
+
+
+CURRENT_SCOPE_REVISION = 'f6e2ead7'
+
+def current_scope_baseline(path):
+    return subprocess.check_output(['git','show',CURRENT_SCOPE_REVISION+':'+path],cwd=ROOT).decode('utf-8-sig').replace('\r\n','\n')
+
+def current_scope_dependencies(review):
+    return list(review['productionDependencies'])+['src/modules/AF.Module.Memory/Records/MemoryPersistenceModels.cs','src/modules/AF.Module.Memory/Records/NpcActionEntry.cs']
+
+def verify_current_memory_source(source):
+    """Finite Memory guards only. No captured/sealing execution or whole-host inverse."""
+    spec=importlib.util.spec_from_file_location('b1_current_extract',ROOT/'tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py')
+    extractor=importlib.util.module_from_spec(spec);spec.loader.exec_module(extractor)
+    review=json.loads((HERE/'source-review-b1.json').read_text(encoding='utf-8'))
+    accepted=current_scope_baseline('MyBehavior.cs')
+    for signature in ['private void RebuildEventSourceMaterialIndex(', 'private void TryRunCampaignMemoryMaintenance(', 'private void RunCampaignMemoryMaintenanceCycle(']:
+        assert extractor.declaration(source,signature)==extractor.declaration(accepted,signature),'Unreviewed B1 declaration: '+signature
+    # Bind the actual index composition once, including selectors. Appended duplicate fields fail.
+    import re
+    composition=re.search(r'private readonly AnimusForge\.Refactor\.Runtime\.EventSourceMaterialIndex<EventSourceMaterialEntry> _eventSourceMaterialIndexBinding\s*=\s*[^;]+;',accepted).group()
+    assert source.count(composition)==1,'Unreviewed B1 added source span'
+    for item in review['deletedDeclarations']:
+        if _is_reviewed_deleted(item):
+            assert item['signature'] not in source,'Deleted B1 declaration unexpectedly restored'
+    for path in current_scope_dependencies(review):
+        assert (ROOT/path).read_text(encoding='utf-8-sig')==current_scope_baseline(path),'Unreviewed B1 production dependency: '+path
+    # Material runner safety/path updates have their own reviewed and replayed package.
+    path=review['evidence']['materials']['runner']
+    material=subprocess.check_output(['git','show','35842e17:'+path],cwd=ROOT).decode('utf-8-sig').replace('\r\n','\n')
+    assert (ROOT/path).read_text(encoding='utf-8-sig')==material,'Unreviewed B1 evidence: '+path
+    for path in review.get('removedProductionFiles',[]):
+        assert not (ROOT/path).exists(),'Obsolete B1 production file restored: '+path
+    assert source==(ROOT/'MyBehavior.cs').read_text(encoding='utf-8-sig'),'Unreviewed B1 surrounding source changes'
+    return True
+
+if __name__=='__main__':
+    import argparse
+    parser=argparse.ArgumentParser(description='Explicit finite Memory-only guards; historical whole-owner inverse remains separate.')
+    parser.add_argument('--finite',action='store_true')
+    args=parser.parse_args()
+    if not args.finite:parser.error('select --finite; this adapter is not a whole-host completion gate')
+    verify_current_memory_source((ROOT/'MyBehavior.cs').read_text(encoding='utf-8-sig'))
+    # This named finite entry executes the current negative controls too, while
+    # the default historical test_source_parity.py entry remains unchanged.
+    import unittest
+    spec=importlib.util.spec_from_file_location('current_memory_scope_tests',HERE/'test_source_parity.py')
+    current_tests=importlib.util.module_from_spec(spec);spec.loader.exec_module(current_tests)
+    result=unittest.TextTestRunner(verbosity=2).run(unittest.defaultTestLoader.loadTestsFromTestCase(current_tests.CurrentScopeGuards))
+    if not result.wasSuccessful():raise SystemExit(1)
+    print('B1_CURRENT_SCOPE_PASS checks='+str(result.testsRun)+' diplomacy_coupled_replays=DEFERRED whole_host_inverse=NOT_RUN')

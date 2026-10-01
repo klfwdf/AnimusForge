@@ -26,3 +26,8 @@ G:/Python310/python.exe -X utf8 -B tests/modules/AF.Module.Conversation/CourierH
 - 唯一超时改写在生成测试源码：30000 ms 缩为 180 ms；生产未变。`.generated/` 下项目/日志不提交。
 - 历史算法与文本另由 `NativeHistorySnapshotTests` 852 项及 Native 27 项验证；生产 DLL Courier replay 只验证宿主合同，不运行真实运输或资产修改。
 - 未覆盖：人设、preprocess/lore 和剩余消息构造线程安全；完整 Campaign/Mission 生命周期；真实网络取消；历史规模/帧耗时；三渠道版本化提交 SDK。旧同步公开 Capture API 仍须主线程并可能阻塞，不是新 SDK。
+
+
+## Historical runner repair (2026-10-01)
+
+The old whole-root inverse is superseded by the unchanged HistoryPreparation helper/harness, both current GenerationLifecycle captures, prepared-history forwarding/reuse and named source mutations. The immutable 73774a94 baseline remains unchanged. run.py supports --run-root for a new repository-local output directory; capture/resolve/accept behavioral assertions remain unchanged.

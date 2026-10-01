@@ -15,3 +15,8 @@ Tests cover background versus direct calls, bounded concurrent publication, stal
 Generated fixtures/logs remain under ignored `.generated`. None of these results is real Bannerlord UI or save acceptance.
 
 Later memory-snapshot defaults are first checked/restored through NativeHistorySnapshotTests/source_parity.py. This keeps the original notice producer and whole-owner inverse checks intact; the live notice implementation still runs.
+
+
+## 2026-10-01 历史入口维护
+
+使用当前实际 9 个错误发布调用、Popup 转发和 OnEngineTick，验证两个 reset 消费者；不再逆向整旧 MyBehavior。实际 Notice owner/UI fixture 85 检查通过，drop-generation 负控编译成功后 12 失败。当前证明仅限 UI 失败发布，不宣称整个 summary/retrieval 算法等价。支持 `--run-root`，仅写新仓内输出。

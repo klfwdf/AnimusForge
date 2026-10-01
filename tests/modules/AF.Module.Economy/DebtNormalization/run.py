@@ -6,9 +6,12 @@ import importlib.util
 import os
 from pathlib import Path
 import subprocess
+import sys
 
 
 ROOT = Path(__file__).resolve().parents[4]
+sys.path.insert(0, str(ROOT / "tests"))
+from output_isolation import new_run_root, resolve_dotnet, minimal_test_environment
 HERE = Path(__file__).resolve().parent
 REWARD = ROOT / "RewardSystemBehavior.cs"
 LEDGER = ROOT / "src/modules/AF.Module.Economy/Debt/RewardSystemBehavior.DebtLedger.cs"
@@ -131,12 +134,10 @@ def prepare_generated(generated: Path | None = None) -> Path:
 
 
 def run(dotnet: str, project: Path, generated: Path) -> tuple[int, str]:
-    env = dict(os.environ)
-    env["DOTNET_CLI_HOME"] = str(ROOT / ".dotnet-cli-home")
-    env["DOTNET_CLI_TELEMETRY_OPTOUT"] = "1"
-    env["DOTNET_NOLOGO"] = "1"
+    env = minimal_test_environment(Path(dotnet), project.parent)
     command = [dotnet, "run", "--project", str(project), "-c", "Release",
-               "-p:NuGetAudit=false", "-p:RestoreConfigFile=" + str(generated / "NuGet.Config")]
+               "-p:NuGetAudit=false", "-p:DebtPythonExe=" + sys.executable,
+               "-p:RestoreConfigFile=" + str(generated / "NuGet.Config")]
     result = subprocess.run(command, cwd=ROOT, env=env, capture_output=True, text=True,
                             encoding="utf-8", errors="replace")
     return result.returncode, result.stdout + result.stderr
@@ -144,7 +145,8 @@ def run(dotnet: str, project: Path, generated: Path) -> tuple[int, str]:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--dotnet", default=os.environ.get("DOTNET_EXE", r"G:\AFMOD\.dotnet-sdk\dotnet.exe"))
+    parser.add_argument("--dotnet")
+    parser.add_argument("--run-root", type=Path)
     parser.add_argument("--skip-mutation", action="store_true")
     # Used by DebtNormalizationTests.csproj so the csproj entry is self-sufficient: it extracts the
     # production DebtRecord (with the same drift assertions) into its own obj dir, then exits.
@@ -155,8 +157,19 @@ def main() -> int:
     if args.prepare_only:
         prepare_generated(Path(args.generated_dir) if args.generated_dir else None)
         return 0
-    generated = prepare_generated()
-    code, log = run(args.dotnet, HERE / "DebtNormalizationTests.csproj", generated)
+    args.dotnet = str(resolve_dotnet(ROOT, args.dotnet))
+    generated = prepare_generated(new_run_root(ROOT, "debt-normalization", args.run_root))
+    project = generated / "Current.csproj"
+    project.write_text(
+        '<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType>'
+        '<TargetFramework>net8.0</TargetFramework><EnableDefaultCompileItems>false</EnableDefaultCompileItems>'
+        '<ImplicitUsings>disable</ImplicitUsings><Nullable>disable</Nullable></PropertyGroup><ItemGroup>'
+        f'<Compile Include="{HERE / "Program.cs"}" Link="Program.cs" />'
+        '<Compile Include="ProductionDebtRecord.cs" />'
+        f'<Compile Include="{POLICY}" Link="DebtNormalizationPolicy.cs" />'
+        f'<Compile Include="{SCHEDULE_POLICY}" Link="DebtSchedulePolicy.cs" />'
+        '</ItemGroup></Project>', encoding="utf-8")
+    code, log = run(args.dotnet, project, generated)
     (generated / "current.log").write_text(log, encoding="utf-8")
     print(log, end="")
     assert code == 0, "Current production debt normalization failed"

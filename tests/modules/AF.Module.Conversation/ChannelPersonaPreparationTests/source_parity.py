@@ -29,12 +29,30 @@ def expected(path):
 
 def restore(path,source):
  if path not in ('ShoutBehavior.cs','CourierDeliveryBehavior.cs'):return source
- life_spec=importlib.util.spec_from_file_location('lifetime_inverse',ROOT/'tests/AF.GameAdapter.Bannerlord/GameLifetimeTests/source_parity.py');life=importlib.util.module_from_spec(life_spec);life_spec.loader.exec_module(life)
- source=life.restore(path,source)
+ live=(ROOT/path).read_text(encoding='utf-8-sig')
+ assert source==live,'Unreviewed '+('Courier' if path.startswith('Courier') else 'Shout')+' input change'
  review=json.loads((HERE/'source-review.json').read_text(encoding='utf-8'))
  for p,h in review['dependencies'].items():
-  assert hashlib.sha256((ROOT/p).read_text(encoding='utf-8-sig').encode()).hexdigest()==h,'Unreviewed channel persona dependency: '+p
- assert source==expected(path),'Unreviewed '+('Courier source change' if path.startswith('Courier') else 'Shout source change')+' beyond channel persona preparation'
+  text=(ROOT/p).read_text(encoding='utf-8-sig')
+  if p.endswith('/run.py'):
+   expected_runner=subprocess.check_output(['git','show','f6e2ead7:'+p],cwd=ROOT).decode('utf-8-sig').replace('\r\n','\n')
+   if p.endswith('/run.py'):
+    for delta in review['runnerSafetyChanges']:
+     assert expected_runner.count(delta['before'])==1
+     expected_runner=expected_runner.replace(delta['before'],delta['after'],1)
+   assert text==expected_runner,'Unreviewed channel persona dependency: '+p
+  else:assert hashlib.sha256(text.encode()).hexdigest()==h,'Unreviewed channel persona dependency: '+p
+ # Native now has a thin admission delegate; Courier preparation lives in GenerationLifecycle.
+ scopes={'ShoutBehavior.NativeTurn.cs':['public async Task<NativeConversationTurnStep> PrepareAsync('],
+         'ShoutBehavior.cs':['private Task<string> SubmitNativeConversationTextInternalAsync('],
+         'src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.GenerationLifecycle.cs':[
+          'private async Task PrepareAndGenerateCourierReplyOffMainThreadAsync(',
+          'private async Task PrepareAndGenerateInboundLetterOffMainThreadAsync(']}
+ for actual,signatures in scopes.items():
+  text=(ROOT/actual).read_text(encoding='utf-8-sig')
+  accepted=subprocess.check_output(['git','show','f6e2ead7:'+actual],cwd=ROOT).decode('utf-8-sig').replace('\r\n','\n')
+  for signature in signatures:
+   assert e.declaration(text,signature)==e.declaration(accepted,signature),'Unreviewed channel persona consumer: '+signature
  return old(path)
 if __name__=='__main__':
- for p in ['ShoutBehavior.cs','CourierDeliveryBehavior.cs']:restore(p,(ROOT/p).read_text(encoding='utf-8-sig'));print('PASS exact whole source inverse: '+p)
+ for p in ['ShoutBehavior.cs','CourierDeliveryBehavior.cs']:restore(p,(ROOT/p).read_text(encoding='utf-8-sig'));print('PASS scoped current persona consumer, retained historical snapshot: '+p)

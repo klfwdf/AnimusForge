@@ -32,8 +32,25 @@ internal static class Program
         try
         {
             Environment.SetEnvironmentVariable(AnimusForgeDataPaths.OverrideEnvironmentVariable, null);
-            string expected = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "AnimusForge");
-            Check(AnimusForgeDataPaths.ResolveRoot() == expected, "default LocalAppData root");
+            string localAppData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+            if (string.IsNullOrWhiteSpace(localAppData))
+            {
+                // Credential-free synthetic profiles can have no Windows KnownFolder binding.
+                // The production contract must reject, never fall back to relative/user data.
+                bool unavailableRejected = false;
+                try { AnimusForgeDataPaths.ResolveRoot(); }
+                catch (InvalidOperationException ex)
+                {
+                    unavailableRejected = ex.Message == "LocalAppData is unavailable; AnimusForge user data has no safe fallback.";
+                }
+                Check(unavailableRejected, "unavailable LocalAppData fails closed with the precise cause");
+                Console.WriteLine("NOT-RUN default LocalAppData root: isolated profile has no KnownFolder binding; fail-closed behavior verified");
+            }
+            else
+            {
+                string expected = Path.Combine(localAppData, "AnimusForge");
+                Check(AnimusForgeDataPaths.ResolveRoot() == expected, "default LocalAppData root");
+            }
 
             string isolated = isolatedRoot();
             Check(AnimusForgeDataPaths.ResolveRoot(isolated) == isolated, "explicit absolute root");

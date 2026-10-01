@@ -17,3 +17,8 @@ G:/Python310/python.exe -X utf8 -B tests/modules/AF.Module.Conversation/CourierO
 `CourierPostprocessOwnerRegressionTests`原39项中，CancelAfterStart原来要求已发生副作用但仍返回取消；本轮明确改为验证返回真实结果且副作用仍恰好一次，其余断言保留。独立新用例复现原缺陷，不是只改旧测试让其变绿。
 
 `source_parity.py`记录三段精确替换，保持其余整个DetachedPostprocess文件不变，并为历史测试提供严格旧声明还原。原历史owner-phase哈希没有被无证据刷新。
+
+
+## Historical runner repair (2026-10-01)
+
+Historical 4140bd04 uses CourierDeliveryBehavior.DetachedPostprocess.cs at the root. The review now compares the actual RunCourierOwnerPhaseAsync declaration, the three original receipt edits and exact J17 dequeue callback inverse, not unrelated postprocess members or relocated runner paths. run.py supports --run-root; claimed-cancel/timeout behavior is unchanged.

@@ -5,7 +5,7 @@
   "candidates": [
     {
       "id": "legacy-channel-interaction-facade",
-      "path": "Refactor/Adapters/LegacyChannelInteractionFacade.cs",
+      "path": "src/modules/AF.Module.Conversation/Internal/Pipeline/LegacyChannelInteractionFacade.cs",
       "symbols": [
         "LegacyChannelInteractionFacade"
       ],
@@ -40,7 +40,7 @@
     },
     {
       "id": "legacy-native-opt-in-runner",
-      "path": "Refactor/Adapters/LegacyNativeConversationOptInRunner.cs",
+      "path": "src/modules/AF.Module.Conversation/Channels/Native/LegacyNativeConversationOptInRunner.cs",
       "symbols": [
         "LegacyNativeConversationOptInRunner",
         "LegacyNativeConversationOptInResult"
@@ -73,7 +73,7 @@
     },
     {
       "id": "legacy-configured-chat-gateway",
-      "path": "Refactor/Adapters/LegacyConfiguredChatGateway.cs",
+      "path": "src/modules/AF.Module.Llm/Transport/LegacyConfiguredChatGateway.cs",
       "symbols": [
         "LegacyConfiguredChatGateway"
       ],
@@ -140,11 +140,13 @@
       "id": "xihai-equipment-cleanup-tombstone",
       "path": "AnimusForgeUniqueCosmeticItemBehavior.cs",
       "symbols": [
-        "_af_xihai_legacy_equipment_cleanup_v1"
+        "_spawnResolved",
+        "_spawnSettlementId",
+        "TrySeedOnce"
       ],
       "ownerDomainId": "social-progression-reports",
       "disposition": "KEEP",
-      "rationale": "Registered save migration tombstone with retry.",
+      "rationale": "Historical cleanup tombstone superseded by ada9894a; current owner retains the singleton spawn gate and preserves existing equipment. Removed _af_xihai_legacy_equipment_cleanup_v1 old-key migration is NOT-RUN, not claimed as implemented.",
       "activeCallers": [
         "SubModule registration",
         "SyncData"
@@ -254,7 +256,7 @@
     },
     {
       "id": "native-prompt-parity",
-      "path": "Refactor/Adapters/LegacyNativePromptParity.cs",
+      "path": "src/modules/AF.Module.Prompt/Composition/LegacyNativePromptParity.cs",
       "symbols": [
         "LegacyNativePromptParity"
       ],

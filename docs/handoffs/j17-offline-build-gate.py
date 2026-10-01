@@ -12,9 +12,12 @@ import uuid
 
 ROOT = Path(__file__).resolve().parents[2]
 ap = argparse.ArgumentParser()
+ap.add_argument('--output-parent',type=Path)
 ap.add_argument('--configuration', choices=['Debug', 'Release'], required=True)
 args = ap.parse_args()
-out = ROOT / 'artifacts/j17b/session-20261001/p6-integration' / ('build-' + uuid.uuid4().hex)
+parent=args.output_parent or ROOT / 'artifacts/j17b/session-20261001/p6-integration'
+parent=parent.resolve();parent.relative_to(ROOT/'artifacts')
+out = parent / ('build-' + uuid.uuid4().hex)
 out.mkdir(parents=True, exist_ok=False)
 script_path = ROOT / 'scripts/build/build_single_module.ps1'
 source = script_path.read_text(encoding='utf-8-sig')

@@ -5,6 +5,7 @@ from __future__ import annotations
 import copy
 import hashlib
 import json
+import os
 import shutil
 import sys
 import tempfile
@@ -17,6 +18,10 @@ import readiness
 
 HERE = Path(__file__).resolve().parent
 PROJECT = HERE.parents[1]
+# This runner only creates/cleans its unique fixture children, never old artifacts.
+FIXTURE_PARENT = Path(os.environ.get("AF_PHASE8_TEST_OUTPUT_ROOT", PROJECT / "artifacts/phase8-readiness")).resolve()
+if not FIXTURE_PARENT.is_relative_to((PROJECT / "artifacts").resolve()):
+    raise ValueError("AF_PHASE8_TEST_OUTPUT_ROOT must stay inside workspace artifacts")
 NOW = datetime(2026, 9, 1, 8, 0, tzinfo=timezone.utc)
 COMMIT = "a" * 40
 VERSION = "0.0.0-fixture"
@@ -25,10 +30,11 @@ STATE = readiness.SourceState(COMMIT, True, True)
 
 class ReadinessTests(unittest.TestCase):
     def setUp(self) -> None:
-        # All test writes and automatic cleanup stay under this owned tool path.
-        self.temporary = tempfile.TemporaryDirectory(prefix=".fixture-", dir=HERE)
+        # All writes and cleanup stay inside newly allocated artifact fixtures.
+        FIXTURE_PARENT.mkdir(parents=True, exist_ok=True)
+        self.temporary = tempfile.TemporaryDirectory(prefix=".fixture-", dir=FIXTURE_PARENT)
         self.root = Path(self.temporary.name).resolve()
-        self.assertTrue(self.root.is_relative_to(HERE))
+        self.assertTrue(self.root.is_relative_to(FIXTURE_PARENT))
         self.addCleanup(self.temporary.cleanup)
         for relative in readiness.POLICY_FILES:
             target = self.root / relative
@@ -442,9 +448,9 @@ class ReadinessTests(unittest.TestCase):
         self.assertEqual("FIXTURE-VALID", result["status"], result["blockingIssues"])
 
     def test_resolved_junction_or_symlink_escape_is_rejected(self) -> None:
-        external = tempfile.TemporaryDirectory(prefix=".fixture-external-", dir=HERE)
+        external = tempfile.TemporaryDirectory(prefix=".fixture-external-", dir=FIXTURE_PARENT)
         outside = Path(external.name).resolve()
-        self.assertTrue(outside.is_relative_to(HERE))
+        self.assertTrue(outside.is_relative_to(FIXTURE_PARENT))
         self.addCleanup(external.cleanup)
         payload = b"FIXTURE ONLY: outside the declared project root"
         (outside / "outside.log").write_bytes(payload)

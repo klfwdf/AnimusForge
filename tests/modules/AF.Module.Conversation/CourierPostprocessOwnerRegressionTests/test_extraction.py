@@ -9,6 +9,8 @@ class ExtractionTests(unittest.TestCase):
     def setUpClass(cls):
         cls.blocks = run.extract()
         cls.courier = run.ex.courier_source(None)
+        for part in ("CommitDispatch", "PromptPreparation"):
+            cls.courier += "\n" + run.ex.source("src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior." + part + ".cs", None)
 
     def test_complete_production_owner_partial(self):
         self.assertEqual(run.ex.source("src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.DetachedPostprocess.cs", None), self.blocks["PARTIAL"])
