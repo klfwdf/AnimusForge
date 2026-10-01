@@ -77,10 +77,10 @@ public sealed class DevWeeklyReportPopup
 		}
 		try
 		{
-			Func<WorldBulletinIllustrationVM, string, string, string, string, bool> attach = WorldBulletinPanelIllustrationBridge.AttachSlot;
+			var attach = WorldBulletinPanelIllustrationBridge.AttachSlot;
 			if (attach != null)
 			{
-				attach(popup._bulletinPanel.Illustration, bulletin.EventId ?? "", bulletin.HeadlineText ?? "", bulletin.IllustrationSubtitle ?? "", bulletin.IllustrationBody ?? "");
+				attach(popup._bulletinPanel.Illustration, bulletin.EventId ?? "", bulletin.HeadlineText ?? "", bulletin.IllustrationSubtitle ?? "", bulletin.IllustrationBody ?? "", bulletin.IllustrationPlan);
 			}
 		}
 		catch (Exception ex)

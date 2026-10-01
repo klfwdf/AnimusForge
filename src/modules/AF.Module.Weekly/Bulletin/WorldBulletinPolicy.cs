@@ -7,6 +7,23 @@ using System.Text.RegularExpressions;
 namespace AnimusForge;
 
 // One observed campaign fact. Stored in the save; sentences are plain facts with no prompt instructions.
+internal sealed class WorldBulletinParticipant
+{
+	public string HeroId = "";
+	public string Name = "";
+	public string Role = "";
+}
+
+// Persisted with the issue layout. Identity and facts are independent of the writer's wording.
+internal sealed class WorldBulletinIllustrationPlan
+{
+	public string Identity = "";
+	public string Title = "";
+	public string DateText = "";
+	public string Facts = "";
+	public List<WorldBulletinParticipant> Participants = new List<WorldBulletinParticipant>();
+}
+
 internal sealed class WorldBulletinEvent
 {
 	public string Key = "";
@@ -30,6 +47,8 @@ internal sealed class WorldBulletinEvent
 	public List<string> KingdomIds = new List<string>();
 
 	public bool InvolvesPlayer;
+
+	public List<WorldBulletinParticipant> Participants = new List<WorldBulletinParticipant>();
 }
 
 // One minor line: several same-group events collapse into it.
@@ -62,6 +81,10 @@ internal sealed class WorldBulletinScopeState
 // Everything the bulletin system persists, saved as one JSON chunk.
 internal sealed class WorldBulletinSaveState
 {
+	// Recovery copy only; never interpreted as current facts or injected into prompts.
+	// Optional JSON field keeps the existing save key and old valid states compatible.
+	public string PreservedUnreadableState;
+
 	public List<WorldBulletinEvent> Events = new List<WorldBulletinEvent>();
 
 	// The single bulletin's scope (named World for save compatibility).
@@ -113,6 +136,24 @@ internal sealed class WorldBulletinFocus
 
 internal static class WorldBulletinPolicy
 {
+	public static WorldBulletinIllustrationPlan BuildIllustrationPlan(WorldBulletinSelection selection, string identity, string dateText)
+	{
+		if (selection?.Major == null) return null;
+		WorldBulletinEvent lead = selection.Major;
+		// One illustration depicts the lead story only; other headlines stay in the newspaper.
+		List<WorldBulletinEvent> facts = new List<WorldBulletinEvent> { lead };
+		foreach (var fact in selection.MajorFacts ?? new List<WorldBulletinEvent>())
+			if (fact != null && fact.Key != lead.Key && facts.Count < MaxMajorFacts &&
+				!string.IsNullOrWhiteSpace(lead.Group) && fact.Group == lead.Group && !facts.Any(x => x.Key == fact.Key)) facts.Add(fact);
+		var plan = new WorldBulletinIllustrationPlan { Identity = identity ?? "", Title = TitleForKind(lead.Kind), DateText = dateText ?? "" };
+		plan.Facts = string.Join("\n", facts.Select(f => (f.Sentence ?? "") + (string.IsNullOrWhiteSpace(f.Detail) ? "" : "\n补充事实：" + f.Detail)));
+		foreach (var fact in facts)
+			foreach (var person in fact.Participants ?? new List<WorldBulletinParticipant>())
+				if (person != null && !string.IsNullOrWhiteSpace(person.HeroId) && plan.Participants.Count < 4 && !plan.Participants.Any(x => x.HeroId == person.HeroId))
+					plan.Participants.Add(new WorldBulletinParticipant { HeroId = person.HeroId, Name = person.Name, Role = person.Role });
+		return plan;
+	}
+
 	public const int WorldMembershipScore = 40;
 
 	public const int HomeMembershipScore = 25;
@@ -145,6 +186,12 @@ internal static class WorldBulletinPolicy
 	public const int MaxEvents = 300;
 
 	public const int MaxMinors = 4;
+	public const int MinimumMinors = 2;
+
+	public static bool HasEnoughMinorNews(WorldBulletinSelection selection)
+	{
+		return selection?.Major != null && selection.Minors.Count(m => m?.Events != null && m.Events.Count > 0 && !string.IsNullOrWhiteSpace(m.Sentence)) >= MinimumMinors;
+	}
 
 	public const int MaxMajorFacts = 5;
 
@@ -420,13 +467,13 @@ internal static class WorldBulletinPolicy
 	public const string NpcSurroundingsHeader = "周边相关王国完整周报";
 
 	// excludeKingdomId: the NPC's own kingdom block already lists those facts; world headlines skip them.
-	public static string BuildNpcWorldBlock(IEnumerable<WorldBulletinEvent> events, int currentDay, string latestBulletinTitle, string latestBulletinShort, string excludeKingdomId = null)
+	public static string BuildNpcWorldBlock(IEnumerable<WorldBulletinEvent> events, int currentDay, string latestBulletinTitle, string latestBulletinShort, int latestBulletinDay, string excludeKingdomId = null)
 	{
 		List<WorldBulletinEvent> facts = RecentWorldFacts(
 			(events ?? Enumerable.Empty<WorldBulletinEvent>()).Where(e => string.IsNullOrWhiteSpace(excludeKingdomId) || !InvolvesKingdom(e, excludeKingdomId)),
 			currentDay, NpcWorldFacts);
 		List<string> lines = facts.Select(e => FormatFactLine(e, currentDay)).ToList();
-		if (!string.IsNullOrWhiteSpace(latestBulletinShort))
+		if (latestBulletinDay >= 0 && latestBulletinDay <= currentDay && latestBulletinDay >= currentDay - NpcDigestDays && !string.IsNullOrWhiteSpace(latestBulletinShort))
 		{
 			lines.Add("- 最新快报《" + (latestBulletinTitle ?? "").Trim() + "》：" + latestBulletinShort.Trim());
 		}
@@ -707,6 +754,14 @@ internal static class WorldBulletinPolicy
 			return "叛旗高举";
 		case "civil_war":
 			return "内战爆发";
+		case "civil_war_resolution":
+			return "内战结束";
+		case "civil_war_politics":
+			return "派系交涉";
+		case "coup_success":
+			return "政变夺位";
+		case "coup_failure":
+			return "政变失败";
 		case "raid":
 			return "村庄遭劫";
 		default:

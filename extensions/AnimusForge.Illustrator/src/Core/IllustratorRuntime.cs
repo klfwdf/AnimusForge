@@ -20,7 +20,7 @@ namespace AnimusForge.Illustrator.Core
         public string ApiBaseUrl { get; }
         public string ApiKey { get; }
         public string ModelName { get; }
-        public string ImageSize { get; }
+        public string ImageSize { get; private set; }
         public string SelectedQuality { get; }
         public string SelectedStyle { get; }
         public string CustomStylePrompt { get; }
@@ -35,6 +35,30 @@ namespace AnimusForge.Illustrator.Core
         public string DirectorApiKey { get; }
         public string DirectorModelName { get; }
         public int DirectorApproximateTokens { get; }
+
+        // Per-request sizing must never overwrite the player's shared MCM setting.
+        internal IllustrationOptions WithImageSize(string imageSize)
+        {
+            var copy = (IllustrationOptions)MemberwiseClone();
+            copy.ImageSize = imageSize;
+            return copy;
+        }
+
+        // Map the existing presets to exact 16:9 sizes with both edges divisible by 16.
+        // The smallest tier is 1280x720: 1024x576 falls below GPT Image 2's pixel minimum.
+        internal IllustrationOptions WithSceneImageSize()
+        {
+            switch (ImageSize)
+            {
+                case "2048x2048":
+                    return WithImageSize("2048x1152");
+                case "1344x768":
+                case "1024x1536":
+                    return WithImageSize("1536x864");
+                default:
+                    return WithImageSize("1280x720");
+            }
+        }
 
         internal IllustrationOptions(IllustratorSettings settings, string directorUrl, string directorKey, string directorModel)
         {
@@ -147,6 +171,7 @@ namespace AnimusForge.Illustrator.Core
         public static void Reset()
         {
             AssertMainThread();
+            BulletinIllustrationPreloader.Reset();
             foreach (var scope in Scopes.ToArray()) scope.Close();
             TickScopes();
             BannerEmblemComposer.Reset();
@@ -249,16 +274,18 @@ namespace AnimusForge.Illustrator.Core
         private readonly ScreenBase _screen;
         private readonly string _category;
         private readonly Action _onClose;
+        private readonly bool _campaignOwned;
         private CancellationTokenSource _request;
         private bool _closed;
         private bool _disposed;
         private long _revision;
         public string CampaignKey { get; }
 
-        public IllustrationScope(ScreenBase screen, string category, Action onClose)
+        public IllustrationScope(ScreenBase screen, string category, Action onClose, bool campaignOwned = false)
         {
             IllustratorRuntime.AssertMainThread();
             _screen = screen;
+            _campaignOwned = campaignOwned;
             _campaign = Campaign.Current;
             _category = category;
             _onClose = onClose;
@@ -268,7 +295,7 @@ namespace AnimusForge.Illustrator.Core
 
         public bool IsCurrent => !_closed && _campaign != null && ReferenceEquals(_campaign, Campaign.Current) &&
             !string.IsNullOrEmpty(CampaignKey) && CampaignKey == IllustratorRuntime.CampaignKey &&
-            ReferenceEquals(_screen, ScreenManager.TopScreen) && !_screen.IsFinalized && IllustratorRuntime.IsEnabled(_category);
+            (_campaignOwned || (ReferenceEquals(_screen, ScreenManager.TopScreen) && _screen != null && !_screen.IsFinalized)) && IllustratorRuntime.IsEnabled(_category);
 
         public bool Run<T>(Func<CancellationToken, Task<T>> work, Action<T> complete, Action<string> fail)
         {

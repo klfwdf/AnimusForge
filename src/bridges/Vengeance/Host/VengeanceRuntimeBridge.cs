@@ -66,6 +66,8 @@ internal static class VengeanceRuntimeBridge
     private static void SubscribeExecutionMemoryFacts()
     {
         UnsubscribeExecutionMemoryFacts();
+        ExecutionSpeechDirector.LineShown = (request, sequence, cue, speaker, witnesses) =>
+            Campaign.Current?.GetCampaignBehavior<MyBehavior>()?.RecordExecutionSpeech(request, sequence, cue, speaker, witnesses);
         RichExecutionEvents.ExecutionDeathCommitting += OnExecutionDeathCommitting;
         RichExecutionEvents.ExecutionCompleted += OnExecutionCompleted;
         RichExecutionEvents.ExecutionCancelled += OnExecutionCancelled;
@@ -73,6 +75,7 @@ internal static class VengeanceRuntimeBridge
 
     private static void UnsubscribeExecutionMemoryFacts()
     {
+        ExecutionSpeechDirector.LineShown = null;
         RichExecutionEvents.ExecutionDeathCommitting -= OnExecutionDeathCommitting;
         RichExecutionEvents.ExecutionCompleted -= OnExecutionCompleted;
         RichExecutionEvents.ExecutionCancelled -= OnExecutionCancelled;
@@ -96,11 +99,18 @@ internal static class VengeanceRuntimeBridge
         }
     }
 
-    private static void OnExecutionCompleted(object sender, ExecutionCompletedEventArgs args) =>
-        ForgetExecutionFacts(args?.Outcome?.Request?.Victim);
+    private static void OnExecutionCompleted(object sender, ExecutionCompletedEventArgs args)
+    {
+        try { Campaign.Current?.GetCampaignBehavior<MyBehavior>()?.CompleteExecutionTranscript(args?.Outcome?.Request,
+            args?.Outcome?.Success == true && args.Outcome.DeathCommitted, args?.Outcome?.Actor ?? ExecutionActor.Undecided); }
+        finally { ForgetExecutionFacts(args?.Outcome?.Request?.Victim); }
+    }
 
-    private static void OnExecutionCancelled(object sender, ExecutionCancelledEventArgs args) =>
-        ForgetExecutionFacts(args?.Request?.Victim);
+    private static void OnExecutionCancelled(object sender, ExecutionCancelledEventArgs args)
+    {
+        try { Campaign.Current?.GetCampaignBehavior<MyBehavior>()?.CompleteExecutionTranscript(args?.Request, false); }
+        finally { ForgetExecutionFacts(args?.Request?.Victim); }
+    }
 
     private static void ForgetExecutionFacts(Hero victim)
     {

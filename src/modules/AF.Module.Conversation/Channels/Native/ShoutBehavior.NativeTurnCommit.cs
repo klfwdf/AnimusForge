@@ -172,14 +172,11 @@ public partial class ShoutBehavior
             string directive = nativeSceneActionDirective;
             string reply = postprocessReply;
             int agentIndex = nativeTargetAgentIndex;
-            bool ceremonyOrder = nativeCeremonyExecutionOrderRequested;
-            if (string.IsNullOrEmpty(directive) && !ceremonyOrder)
+            if (string.IsNullOrEmpty(directive))
                 return null;
             return () =>
             {
                 SubmitSceneActionDirective(directive, agentIndex, reply);
-                if (ceremonyOrder)
-                    TryQueueCeremonyExecutionOrder(agentIndex);
             };
         }
 

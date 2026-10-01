@@ -57,7 +57,8 @@ internal enum SpeechReaction { None, Fear }
 internal sealed class SpeechCue
 {
     internal SpeechCue(SpeechSpeaker speaker, int crowdIndex, string text, string textId,
-        float durationSeconds, SpeechReaction reaction = SpeechReaction.None, bool isPause = false)
+        float durationSeconds, SpeechReaction reaction = SpeechReaction.None, bool isPause = false,
+        ExecutionSpeechPhase phase = ExecutionSpeechPhase.Opening, bool isLastStatement = false)
     {
         if (float.IsNaN(durationSeconds) || float.IsInfinity(durationSeconds) || durationSeconds < 0f)
             throw new ArgumentOutOfRangeException(nameof(durationSeconds));
@@ -68,6 +69,8 @@ internal sealed class SpeechCue
         DurationSeconds = durationSeconds;
         Reaction = isPause ? SpeechReaction.None : reaction;
         IsPause = isPause;
+        Phase = phase;
+        IsLastStatement = isLastStatement && speaker == SpeechSpeaker.Victim && phase == ExecutionSpeechPhase.Opening;
     }
 
     internal SpeechSpeaker Speaker { get; }
@@ -78,6 +81,8 @@ internal sealed class SpeechCue
     internal float DurationSeconds { get; }
     internal SpeechReaction Reaction { get; }
     internal bool IsPause { get; }
+    internal ExecutionSpeechPhase Phase { get; }
+    internal bool IsLastStatement { get; }
 
     internal static SpeechCue Pause(float seconds) =>
         new(SpeechSpeaker.Executioner, -1, string.Empty, string.Empty, seconds, isPause: true);

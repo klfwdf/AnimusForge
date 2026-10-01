@@ -58,7 +58,7 @@ internal static class SelectionRegression
         Type completedType = typeof(Action<>).MakeGenericType(rosterType);
         Delegate completed = Delegate.CreateDelegate(completedType, callbacks, typeof(Callbacks).GetMethod(nameof(Callbacks.Completed)));
         Action cancelled = callbacks.Cancelled;
-        object[] Arguments(object party, object roster, int limit) => new[] { party, roster, (object)limit, "selection regression", completed, cancelled };
+        object[] Arguments(object party, object roster, int limit, int minimum = 1) => new[] { party, roster, (object)limit, "selection regression", completed, cancelled, minimum };
         object data = Invoke(factory, Arguments(owner, available, 60));
         object Field(string name) => data.GetType().GetField(name, All).GetValue(data);
 
@@ -121,6 +121,23 @@ internal static class SelectionRegression
         closed.DynamicInvoke(null, available, Field("LeftPrisonerRoster"), owner, selected, Field("RightPrisonerRoster"), true);
         Assert(callbacks.CompletedCount == 1 && callbacks.CancelledCount == 1, "cancel close dispatches only cancellation");
         Assert(Count(realMembers) == 0 && Count(realPrisoners) == 0 && ReferenceEquals(GetProperty(owner, "ItemRoster"), inventory), "callbacks preserve owner roster and inventory references");
+        Reject(Arguments(owner, available, 60, 0), typeof(ArgumentOutOfRangeException), "zero minimum rejected");
+        Reject(Arguments(owner, available, 60, 61), typeof(ArgumentOutOfRangeException), "minimum above cap rejected");
+        data = Invoke(factory, Arguments(owner, available, 60, 60));
+        selected = Field("RightMemberRoster");
+        condition = (Delegate)Field("PartyPresentationDoneButtonConditionDelegate");
+        AddCount(selected, soldier, 59);
+        Assert(!CanComplete(), "60-soldier admission rejects actual selection of 59");
+        AddCount(selected, soldier, 1);
+        Assert(CanComplete(), "60-soldier admission accepts actual selection of 60");
+        AddCount(selected, soldier, 1);
+        Assert(!CanComplete(), "selection still enforces upper cap");
+        Assert(Field("RightPartyName").ToString().Contains("60 至 60"), "selection title displays actual minimum and maximum");
+        data = Invoke(factory, Arguments(owner, available, 20));
+        selected = Field("RightMemberRoster");
+        condition = (Delegate)Field("PartyPresentationDoneButtonConditionDelegate");
+        AddCount(selected, soldier, 1);
+        Assert(CanComplete(), "hall caller default still accepts one survivor");
         write("PASS selection datafactory regression assertions=" + checks);
         write("SELECTION_LIMITATION native PartyVM.InitializeUpgrades/transfer arrows and reset UI were not executed; requires in-game verification.");
     }

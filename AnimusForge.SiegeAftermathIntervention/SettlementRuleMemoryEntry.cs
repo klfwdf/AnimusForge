@@ -18,7 +18,8 @@ public sealed class SettlementRuleMemoryEntry
         int recordedRuleDurationDays,
         bool durationWasMinimum,
         string narrative,
-        bool narrativeIsManual)
+        bool narrativeIsManual,
+        SettlementRuleMemoryEvolution evolution = null)
     {
         RulerId = rulerId ?? string.Empty;
         RulerName = rulerName ?? string.Empty;
@@ -31,6 +32,7 @@ public sealed class SettlementRuleMemoryEntry
         DurationWasMinimum = durationWasMinimum;
         Narrative = narrative ?? string.Empty;
         NarrativeIsManual = narrativeIsManual;
+        Evolution = evolution ?? new SettlementRuleMemoryEvolution();
     }
 
     public string RulerId { get; }
@@ -54,6 +56,8 @@ public sealed class SettlementRuleMemoryEntry
     public string Narrative { get; }
 
     public bool NarrativeIsManual { get; }
+
+    public SettlementRuleMemoryEvolution Evolution { get; }
 
     public bool HasIdentity => !string.IsNullOrWhiteSpace(RulerId) || !string.IsNullOrWhiteSpace(RulerName);
 }

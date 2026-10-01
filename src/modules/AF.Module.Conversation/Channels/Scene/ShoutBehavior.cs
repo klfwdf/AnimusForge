@@ -9349,7 +9349,7 @@ private static void SplitSceneNpcRoleIntroSections(string fullIntro, bool isHero
 		{
 			return true;
 		}
-		return Regex.IsMatch(GiveAssetTagCodec.StripTags(text), "\\[(?:ACTION:(?:GIVE_ASSET|KINGDOM_SERVICE|JOIN_MERCENARY|JOIN_VASSAL|TRADE_TRUST|KING_ABDICATE_TO_PLAYER|VASSALAGE|KINGDOM_ANNEX|AGENDA|WORLDMAP_ORDER|DUEL|ISSUE_|QUEST_TURN_IN|NOBLE_GATHERING|NOBLE_PRISONER_EXECUTE|NOBLE_EXECUTE_ESCORT|NOBLE_EXECUTE_PARTY_PRISONER|TROOP_INSPECTION_SLAUGHTER_PRISONERS|INTIMACY_INTERNAL|MEETING_TAUNT_BATTLE|LET_PLAYER_GO|ENCOUNTER_RELEASE_PLAYER|NPC_SURRENDER|SIEGE_|6|召集)[^\\]]*|A:(?:H_J_P_P_(?:C&L|[CL])|C_J_P_K|C_J_K:[^\\]]+|P_J_K_[MV]|P_L_K)|AD:[^\\]]*|ADP:[^\\]]*)\\]", RegexOptions.IgnoreCase);
+		return Regex.IsMatch(GiveAssetTagCodec.StripTags(text), "\\[(?:ACTION:(?:PUBLIC_EXECUTION_START|GIVE_ASSET|KINGDOM_SERVICE|JOIN_MERCENARY|JOIN_VASSAL|TRADE_TRUST|KING_ABDICATE_TO_PLAYER|VASSALAGE|KINGDOM_ANNEX|AGENDA|WORLDMAP_ORDER|DUEL|ISSUE_|QUEST_TURN_IN|NOBLE_GATHERING|NOBLE_PRISONER_EXECUTE|NOBLE_EXECUTE_ESCORT|NOBLE_EXECUTE_PARTY_PRISONER|TROOP_INSPECTION_SLAUGHTER_PRISONERS|INTIMACY_INTERNAL|MEETING_TAUNT_BATTLE|LET_PLAYER_GO|ENCOUNTER_RELEASE_PLAYER|NPC_SURRENDER|SIEGE_|6|召集)[^\\]]*|A:(?:H_J_P_P_(?:C&L|[CL])|C_J_P_K|C_J_K:[^\\]]+|P_J_K_[MV]|P_L_K)|AD:[^\\]]*|ADP:[^\\]]*)\\]", RegexOptions.IgnoreCase);
 	}
 
 	private bool TryApplyDeferredScenePostprocessActionTagsDirectly(
@@ -9379,6 +9379,7 @@ private static void SplitSceneNpcRoleIntroSections(string fullIntro, bool isHero
 			replyIsDirectPlayerResponse,
 			ref tags,
 			out _);
+		PublicExecutionOrderRuntime.Consume(targetAgentIndex, ref tags);
 		NoblePrisonerEscortBehavior.TryProcessSceneExecutionTag(targetAgentIndex, replyIsDirectPlayerResponse, ref tags);
 		if (string.IsNullOrWhiteSpace(tags))
 		{
@@ -18736,6 +18737,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			content = "";
 			return worldMapResult;
 		}
+		PublicExecutionOrderRuntime.Consume(resolvedTargetAgentIndex, ref content);
 		NoblePrisonerEscortBehavior.TryProcessSceneExecutionTag(
 			resolvedTargetAgentIndex,
 			!string.IsNullOrWhiteSpace(latestPlayerText),
@@ -25128,7 +25130,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		List<string> list = new List<string>();
 		HashSet<string> hashSet2 = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 		string text = "";
-		foreach (Match item in Regex.Matches(raw ?? "", "\\[(?:ACTION:[^\\]\\r\\n]*|A:(?:P_J_K_[MV]|P_L_K))\\]", RegexOptions.IgnoreCase))
+		foreach (Match item in Regex.Matches(raw ?? "", "\\[(?:ACTION:[^\\]\\r\\n]*|A:(?:P_J_K_[MV]|P_L_K|CIVIL_FACTION:[^\\]\\r\\n]+))\\]", RegexOptions.IgnoreCase))
 		{
 			string text3 = (item?.Value ?? "").Trim();
 			if (string.IsNullOrWhiteSpace(text3))
@@ -25832,6 +25834,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 
 	private void ResetSceneShoutRuntimeOnMissionEnd(string reason)
 	{
+		PublicExecutionOrderRuntime.Reset();
 		lock (_ttsBubbleSyncLock) { _ttsPlaybackOwners.Clear(); _activeTtsPlaybackRequests.Clear(); }
 		try
 		{
@@ -26781,6 +26784,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 						{
 							return;
 						}
+						PublicExecutionOrderRuntime.Consume(matchedNpc.AgentIndex, ref content);
 						bool noblePrisonerExecutionQueued = allowPlayerDirectedActions
 							&& NoblePrisonerEscortBehavior.TryProcessSceneExecutionTag(
 								matchedNpc.AgentIndex,

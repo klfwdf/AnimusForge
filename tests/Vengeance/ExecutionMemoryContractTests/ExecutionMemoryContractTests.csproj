@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType><TargetFramework>net472</TargetFramework><LangVersion>latest</LangVersion>
+    <ImplicitUsings>enable</ImplicitUsings><Nullable>disable</Nullable>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="../../../src/modules/AF.Module.Memory/Records/ExecutionTranscriptStore.cs" Link="Production/ExecutionTranscriptStore.cs" />
+    <Compile Include="../../../src/bridges/Vengeance/Host/ExecutionAddressContextPolicy.cs" Link="Production/ExecutionAddressContextPolicy.cs" />
+    <Compile Include="../../../src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.ExecutionMemory.cs" Link="Production/MyBehavior.ExecutionMemory.cs" />
+    <Compile Include="../../../src/bridges/Vengeance/Host/PublicExecutionOrderPolicy.cs" Link="Production/PublicExecutionOrderPolicy.cs" />
+    <Compile Include="../../../src/bridges/Vengeance/Host/PublicExecutionOrderRuntime.cs" Link="Production/PublicExecutionOrderRuntime.cs" />
+    <Compile Include="../../../src/modules/AF.Module.Prompt/Configuration/ExecutionPromptConfiguration.cs" Link="Production/ExecutionPromptConfiguration.cs" />
+    <Compile Include="../../../src/modules/AF.Module.Prompt/Configuration/GuardrailRulePromptConfig.cs" Link="Production/GuardrailRulePromptConfig.cs" />
+    <Compile Include="../../../src/modules/AF.Module.Prompt/Configuration/PostprocessRuleEntry.cs" Link="Production/PostprocessRuleEntry.cs" />
+    <Compile Include="../../../src/modules/AF.Module.Prompt/Composition/PromptRuleEligibility.cs" Link="Production/PromptRuleEligibility.cs" />
+    <EmbeddedResource Include="../../../content/modules/AF.Module.Prompt/ModuleData/RuleBehaviorPrompts.json" LogicalName="AnimusForge.Defaults.ExecutionRulePrompts.json" />
+    <Compile Include="../../../Vengeance/Source/Core/ExecutionEnums.cs" Link="Production/ExecutionEnums.cs" />
+    <Compile Include="../../../Vengeance/Source/Core/ExecutionMethodRules.cs" Link="Production/ExecutionMethodRules.cs" />
+    <Compile Include="../../../Vengeance/Source/Scene/Speech/*.cs" Link="Production/%(Filename)%(Extension)" />
+    <Reference Include="Newtonsoft.Json"><HintPath>../../../_deps_auto/Newtonsoft.Json.dll</HintPath></Reference>
+  </ItemGroup>
+</Project>

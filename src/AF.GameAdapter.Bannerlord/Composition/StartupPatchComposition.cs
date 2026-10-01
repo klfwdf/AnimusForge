@@ -26,6 +26,7 @@ internal static class StartupPatchComposition
 			{
 				PatchClassProcessor patchClassProcessor3 = harmony.CreateClassProcessor(typeof(Patch_GlobalUI_Click));
 				patchClassProcessor3.Patch();
+				harmony.CreateClassProcessor(typeof(KingdomFactionFinalizePatch)).Patch();
 			}
 			catch (Exception ex3)
 			{

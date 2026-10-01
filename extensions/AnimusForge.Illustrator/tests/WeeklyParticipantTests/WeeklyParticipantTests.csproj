@@ -1,0 +1,9 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><EnableDefaultCompileItems>false</EnableDefaultCompileItems></PropertyGroup>
+  <ItemGroup>
+    <Compile Include="Program.cs" />
+    <Compile Include="../../src/Context/WeeklyReportContextExtractor.cs" Link="WeeklyReportContextExtractor.cs" />
+    <Compile Include="../../src/Context/NarrativeFactRouter.cs" Link="NarrativeFactRouter.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Weekly/Bulletin/WorldBulletinPolicy.cs" Link="WorldBulletinPolicy.cs" />
+  </ItemGroup>
+</Project>

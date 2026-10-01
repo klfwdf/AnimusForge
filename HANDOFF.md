@@ -19,12 +19,70 @@
 - 本地`a4ebda43`意图、`dbae81d3`小片、`63b1a8e0`其余迁移、`2524ddcf`路径消费者；正式收尾提交以Git日志为准。完整证据/保留/失败/未验读[唯一主台账当前条目](docs/animusforge-refactoring-and-repository-reorganization-plan.md#source-relocation-20261001)，现态入口读[目录说明](docs/architecture/af-source-directory-guide.md)和[范围图](docs/architecture/af-framework-code-scope.md#source-relocation-20261001)。
 - 原SessionTransport dirty/22旧tools/NuGet/产物保留，无push/Stage/部署/清理/下载安装/一键行为变更/仓外扩写。实机/旧档/真实网络/性能、TPAC许可HOLD、旧凭据轮换未验。下方旧当前记录保留历史，不恢复施工/上传授权。
 
+# 当前交接：本地功能与远端融合（2026-10-01）
+
+- **融合版本已部署并完成复核（2026-10-01）**：实际安装源码`6c32576c`，原脚本更新28文件，238个Stage/安装哈希一致，原文件Recovery备份与complete标记通过；包含城镇记忆7日间隔/384 tokens。实机/真实旧档/provider未验；用户已授权本轮提交推送。[部署验收、证据及安装回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#merged-deployment-verified-20261001)。此项替代下方历史“未部署”状态。
+
+- **远端8f3903e2已融合，未推送/部署**：保留本地城镇记忆7日间隔、快报/政变/处决等功能与远端测试收尾、场景死代码清理；两份文档冲突保留双方证据。修正渠道fixture对本地公开处决规则的依赖，群聊31、渠道138、记忆60、处决98、调度19、源码15检查与Release双API+Bootstrap通过；全仓C/实机/真实旧档未验。[本次源码责任、失败修复、证据和回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#remote-integration-20261001-town-memory)。下方各任务记录保留各自验收范围。
+
 # 当前交接：J 历史非外交测试闭环（2026-10-01）
 
 - **本轮有限PASS**：空intent `ec74d44d`；六包精确本地测试/metadata提交，无产品源码/Host异常政策改动。新Debug/Release双API+Bootstrap六构建通过；最终严格具名同候选C43 **43 PASS/0 FAIL/0 BLOCKED_ENV**，不是全仓PASS；当前1.3真实message DLL45检查通过。38旧J16入口一次映射，最近33既有失败中28已复验PASS；外交1排除、shared-Service及captured/sealing外交耦合延期，旧B1 current15断言已有限闭合但原完整inverse保留延期；Budget新generate-pair实际双workload/原比较已验，Budget/finite两新入口在最终C43复验；含外交注册名的CampaignComposition共享入口保守延期（前序空壳注册记录保留）。详见[唯一主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#j-history-nondiplomacy-closeout-20261001)与[测试证明范围](docs/architecture/af-framework-code-scope.md#j-history-test-proof-scope-20261001)。
 - A/J17迁移/R05-i已闭状态不重开；原SessionTransport dirty/22旧tools/NuGet保留。D实机/旧档/真实network/性能、TPAC HOLD、凭据轮换仍未验；无push/Stage/部署/安装下载/外仓写/清理。下方旧“当前”记录为历史，不能恢复其上传/施工授权。
 
 # 当前交接：J17 收尾与远端 CivilWar 合并（2026-10-01）
+
+- **政变后旧王朝复位已离线实现（2026-10-01，未部署）**：`f1760f76`；扣押分支排除旧王族，释放分支将原王族加入实际叛军（可无地跟随）；只有明确叛军夺位胜利恢复原王朝及发动前国名，和平/妥协不复位，旧王死亡由原王族现任族长继承。建国后登记可保存并手动重试，普通玩家派系开关不拦政变战争结算。205内战契约、128政变契约、228真实DLL夹具与规则smoke、Release双API+Bootstrap通过；游戏/真实旧档/原生战争未验，无部署推送。[源码、边界、验证及回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#coup-restoration-victory-20261001)。
+
+- **快报事件配图与宽版UI已离线完成（2026-10-01）**：`a3183aaa`，收集期到期且≥2组真实其他消息后，选定事件即并行生图/写稿；冻结事实和多人物参考，标题润色不重画，作废取消。报纸加宽、16:9沿用预设映射、去黑色遮罩，并增强冲突动作提示。29任务+46政策+10人物检查、Release双API/Bootstrap、两DLL存档/生命周期/等比fit通过；未部署/推送，实机/GPU/真实API未验。[源码、证据、回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#bulletin-event-art-20261001)。
+
+- **城镇记忆间隔改为7游戏日（2026-10-01，未部署）**：按用户要求替代下方3日默认值，其他成本限制和手工保护不变；60项检查及Release双API+Bootstrap通过，实机/玩家旧档未验。[本次验证与回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#town-memory-seven-days-20261001)。
+
+- **城镇记忆确认事件与限频更新已离线完成（2026-10-01，未部署）**：`eb39f14b`，接入易主/继任、战后实际结果、文化和地方政策生命周期；按需累计、3游戏日/1分钟限频、2并发、384输出tokens，手工正文保护、失败保留、主线程版本校验；原键v1/v2读入与v3分块保存。59定向检查、token/HTTP回放、Release双API+Bootstrap通过；实机/真实API/玩家旧档未验，GCCZ外仓路径不存在未同步，无推送。[源码坐标、性能、存档及回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#town-memory-refresh-20261001)。
+
+- **政变旧王支持者反抗与处置菜单已离线修复（2026-10-01，未部署）**：`86991dc3`，按用户选择，原王族/更支持旧王的合格有地家族可反抗，不再要求与新王关系≤−5；旧请求/普通周叛乱保持。夺位结算后通过原入口打开胜利处置菜单，跳过重复转城、失败可手动重试、成功收据防重开；修正政变场景冒用SETS的TAB提示。128契约、223实际DLL/夹具、Release双API+Bootstrap通过；真实建国/命名/GCCZ菜单及旧档未验，无部署/推送；旧已完成政变不追溯重算。[故障日志、源码、验证与回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#coup-loyalists-and-aftermath-20261001)。
+
+- **本会话快报/场景插画/画廊RP功能已部署（2026-10-01）**：用户“部署”授权，干净源码`454a63b3`重新Release双API+Bootstrap通过；官方单模块脚本更新9文件，安装后238个Stage文件哈希一致，Bootstrap唯一入口。实机/真实旧档/生图耗时未验，未推送。[部署与回滚证据](docs/animusforge-refactoring-and-repository-reorganization-plan.md#illustrator-deploy-20261001)。
+
+- **快报配图提前生成（2026-10-01）**：`5f096d08`，正文发布后即开始生成本期新画；打开/重开复用本期精确缓存或加入进行中任务，关闭面板不取消后台任务，失败不自动重试。此项替代旧“每次打开都重生”。22状态检查、两个实际DLL关闭/取消检查及Release双API+Bootstrap通过；真实导出/API/游戏未验，未部署/推送。[源码坐标、证据和回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#bulletin-prefetch-20261001)。
+
+- **篡位发动门槛已离线实现（2026-10-01，未部署）**：`d7dff15a`，默认4级家族/300影响力/实际60名突击队另留1人，MCM可调；不扣影响力、无筹备费用或等待。菜单/选兵前/确认后重验，门槛随确认窗快照，登记后不追检，大厅仍最少1人，旧会话沿用原门槛。113契约、206真实DLL/夹具检查、Release双API+Bootstrap通过；原生UI、MCM改值持久化及真实旧档未验，无部署/推送。[源码、验证与回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#coup-admission-sixty-20261001)。
+
+- **画廊转RP物品/插画入口去重（2026-10-01）**：`fed01fb6`，画廊选图→编辑介绍→加入背包，沿用原展示物品链路向NPC提供画作介绍；保留DialogueUI现有场景插画按钮，移除额外右上角注入。19转换检查、双API+Bootstrap、真实DLL回调与RP介绍JSON/共享事实读取通过。未部署/推送，游戏及真实旧档未验。[源码、证据与回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#gallery-rp-items-20261001)。
+
+- **派系面板与事件政治已一键编译部署（2026-10-01 13:56）**：`3b8337d7` + `79874aaa`，玩家加入/退出/创建/起兵，国王压制/谈判/妥协/强制解散，跨国七天冷却、保存的三日回应、v4兼容、日级分批处理；补齐周报素材、快报类别、相关领袖事迹及AFEF。180项离线回归、规则smoke、Release双API+Bootstrap及实际DLL面板XML/关闭补丁探针通过。用户授权后通过原版一键编译并覆盖BAT完成Debug双API+Bootstrap，最终更新9程序文件、238安装哈希一致，旧版备份已验；真实游戏/旧档/命名服务/发布与帧耗时未验；其他作者改动保留，无推送。[源码责任、候选、性能边界及聚焦回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#civilwar-political-panel-20261001)。
+
+- **篡位MCM七项战斗参数已离线实现（2026-10-01，未部署）**：`0aff8322`，街道/大厅突击队、门卫/大厅护卫、守军每波/间隔/存活波数均可调；默认保持现状，发动时快照并保存，下次政变生效。接通SETS真实人数/波次，旧接口及普通场景保持默认。修复Newtonsoft复用对象掩盖部分损坏快照；91契约、170真实DLL/夹具检查、Release双API+Bootstrap通过。并行WIP排除在隔离构建外；MCM实显、大规模导航性能和真实旧档未验，无部署/推送。[源码、完整证据与回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#coup-mcm-battle-options-20261001)。
+
+- **处决遗言/喊话行刑已离线接通，轮刑选择已隐藏（2026-10-01）**：`68dd6cd5`，三阶段台词结合相关记忆，实际气泡显示后才记原文；不等遗言播完，未显示后半段不补记。死亡成功后才供公共消息转述，新增实录存档保留最近100场。必须单选本场刽子手，通过统一后处理启动；否定/条件/错目标/迟到/重复不执行，Native 仍等对话关闭。普通及自定义方法列表隐藏轮刑，旧 ID/预设保留。98项定向断言、原parser、Release双API+Bootstrap及独立复仇编译通过；真实模型/游戏/旧档未验，本轮未部署推送。[唯一台账、源码坐标、候选哈希与逆向回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#execution-last-words-20261001)。
+
+- **政变完整结果快报已接入并部署（2026-10-01 13:06）**：`a4723aef`，成功/失败最终事实包含城镇/王国/双方、实际街道/大厅过程、处置与伤亡；进入现有快报Prompt/模板及NPC知识，原记忆/周报保持。63政变契约、38快报规则、真实DLL117检查及双API+Bootstrap通过。排除并行内战WIP，用已提交基线+本任务overlay快照构建部署；27文件更新、238哈希一致，备份已验。沿用收集窗口/冷却，关闭快报不阻塞结算，旧完成事件不补发；真实文案/NPC转述/旧档未验。[精确源码、构建失败与隔离证据、回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#coup-bulletin-outcome-20261001)。
+
+- **政策投票五项性格已离线接通（2026-10-01）**：`d54ac0eb`，玩家/NPC 首次评议保存政策手段的仁慈/荣誉/慷慨/勇气/审慎画像，原投票计算加入独立 P，保留实际损失扣分、拉票承诺与提案者保护；MCM 性格倍率默认1。旧政策无画像保持原评分，重新评议可生成。Release 双API+Bootstrap通过，两候选定向回归各1475断言通过；1.3离线runner补用了本机通用依赖，不代表纯1.3运行时验收。未部署/推送，真实模型、旧档和游戏投票未验。[源码证据、产物与回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#policy-personality-vote-20261001)。
+
+- **驻守城镇遇敌出城已离线修复（2026-10-01）**：`a9539dc0`，实际已进目标城镇/城堡的驻守部队不再自动转成攻击围城军，并屏蔽原版 initiative 绕锁出击；城外援军、巡逻、明确攻击及到期语义保留。24项真实方法/桩Campaign回归与3故障变异通过，Release双API+Bootstrap零错误。未部署/实机，旧逻辑已转攻击的命令需取消后重新下达驻守。[代码责任图、证据、产物及逆向回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#settlement-stay-sortie-20261001)。
+
+- **政变大厅 F 门转场抢占已修复并部署（2026-10-01 12:34）**：`5623ac25` 接管所属Coup任务的原版PassageUsePoint.OnUse，取消裸F轮询，守卫清除后先HallSelection选兵再登记大厅援军，避免原版直跳导致撤退/普通大厅。双API+Bootstrap、14新增+91既有离线回归、安装DLL门补丁注册PASS；11文件覆盖、238文件哈希一致，旧文件已备份。真实F/大厅交战/旧档未验，失败旧局需读发动前存档重测。[实机故障序列、精确坐标、部署证据与回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#coup-passage-transition-20261001)。
+
+- **快报首字绕排与封存按钮已离线修复（2026-10-01）**：`5f5bb1bc`，首字去蓝金底图，实际测量仅前三行缩进、后文全宽并保留链接；封存改浅纸色细描边，去ESC字样。Release双API+Bootstrap及两DLL各152排版/字符检查PASS，游戏字体/控件加载/滚动点击未验，未部署/推送。[精确坐标、证据与回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#bulletin-dropcap-flow-20261001)。
+
+- **王室阵营会因事件撤回支持（2026-10-01）**：`f77c4f51`，负面事件命中的王室阵营NPC累计不满达到现有MCM门槛（默认35）立即退为中立，玩家/王族不自动退出；记录历史和周报素材，不直接换国或起兵。复用现有事件，无新增轮询；102项生命周期检查和Release双API+Bootstrap通过。未部署、未实机；[源码坐标、边界、证据与回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#civilwar-crown-withdrawal-20261001)。此前“王室阵营无自动退出”的说明由此替代，AI自动加入王室阵营仍未实现。
+
+- **场景插画预设映射已替代固定尺寸（2026-10-01）**：`82269de8`，选2048方形→2048×1152，1344/1536档→1536×864，其余现有档→1280×720；只转换本次场景请求，设置原值保留。双API+Bootstrap和两个DLL各六预设检查PASS，未部署/推送/真实API或游戏验收。[源码坐标、验证与回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#scene-image-presets-20261001)。下方固定1280×720交付为历史。
+
+- **全部派系不满改为每日平滑衰减（2026-10-01）**：`05870e6f`，按用户明确选择保持原7天累计降幅，覆盖全部9来源。日事件处理已有记录、缓存系数和复用缓冲，存档日期防重复与旧档追扣；成派/通牒仍按周。76项生命周期回归、原smoke、Release双API+Bootstrap通过；合成100家族×9来源测得日事件均值0.1859ms，实机耗时/旧档未验。本片未部署；[具体证据、源码坐标与回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#civilwar-daily-decay-20261001)。未新增自动保皇派。
+
+- **场景插画16:9已离线修复（2026-10-01）**：`c4ac6035`，场景/地图会话生成固定请求1280×720，images的size与Chat的aspect_ratio均有真实参数接线；快报3:2及百科不变。Release双API+Bootstrap通过，真实服务端与游戏未验，未部署/推送。[源码坐标、证据与回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#scene-image-16x9-20261001)。
+
+- **政变专用进场与受击崩溃修复已部署（2026-10-01 12:10）**：`f5225e5d` 补街道/大厅专用菜单，修复 internal Origin 构造器漏绑定和 MbEvent 逆序导致 Coup 场景漏挂载。最终双 API+Bootstrap、真实注册四标志、26 新回归+65 既有回归 PASS；用户随后授权部署，原脚本更新11文件，Stage全部238文件哈希一致，旧文件已备份。未把当前内战施工源码重新编入。原生进场/受击/旧档未验，不将离线 fixture 当实机完成；[证据与回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#coup-scene-repair-20261001)。
+
+- **快报生图与封存控件已离线修复（2026-10-01）**：`5d0969b8`，快报每次打开重新生成1536×1024横图，不加载旧图；图片按实际比例缩放，封存改金边深红按钮。Release双API+Bootstrap、两个实际DLL尺寸验证、XML/资源映射通过。未部署/推送，真实生图及游戏点击未验；并发Coup改动保留。[范围、精确源码坐标与回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#bulletin-image-controls-20261001)。
+
+- **内战派系五项审查修复已部署（2026-10-01）**：产品/回归 `76503341`，修复内战标签双重过滤、玩家国王缺答复规则、失败结算丢记录、废除政策误增不满、拒绝参战仍扣忠诚度。56 项真实 owner/效果＋桩游戏回归、原 smoke/交互契约、最终 Release 双 API+Bootstrap PASS；按用户后续“部署”授权覆盖单模块，更新9文件，部署后238个Stage文件哈希一致。实机/真实旧档未验；异常副作用不明确时保留状态等待核对。源码坐标、构建版本/哈希、历史地图失败、旧 Stage 和安装备份见[本任务台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#civilwar-review-repair-20261001)，不替代其他任务或J17总体验收。
+
+- **宣权篡位灰色入口已离线修复（2026-10-01）**：`f1c27b5b` 将 Coup 的旧私有字段反射改为当前主体状态查询，保持冲突阻挡与失败关闭。Release 双 API+Bootstrap、真实 1.4 注册四标志、36 状态/拘押生命周期与 29 选兵回归通过；拘押加载期 False 已证为实例生命周期条件，未改拘押产品代码。未部署/推送/游戏旧档验收，其他内战/周报并行改动保留。独立产物、精确坐标、全局地图历史失败及回滚见[本任务台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#coup-entry-repair-20261001)，不提升 J17 总体状态。
+
+- **即时快报审查修复（2026-10-01）**：修复读档后最新快报选错、坏存档原文被自动初始化覆盖、过期摘要混入近期消息；38规则检查 + 16真实方法/桩存储回放 PASS，Release双API+Bootstrap通过，实机/真实旧档未验。新增恢复字段随原存档键保存，查询缓存避免每次对话全量扫描。仅本地提交，无部署/推送；详细源码坐标、构建哈希、其他任务并发边界与回滚见[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#world-bulletin-review-fixes-20261001)。
 
 - **最新 R05-i 精确清理（2026-10-01）**：`ccd6c2fd` 仅删除恒真分支后的旧群聊死尾段；活 per-hero/旁听、开关分支与反射/兼容入口保留。31编译行为+15源码检查、两个编译成功具名负控、Debug/Release双API+Bootstrap通过。新候选完整C唯一失败是尚未写入的文档锚点，已补齐并定向收尾；原失败不改写，D仍NOT-RUN。详见[唯一台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#j17-r05-i-cleanup-20261001)及[813代码地图](docs/architecture/af-framework-code-map.json)。无推送/部署。
 

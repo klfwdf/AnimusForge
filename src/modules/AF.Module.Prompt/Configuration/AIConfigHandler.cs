@@ -1750,6 +1750,8 @@ public static class AIConfigHandler
 		{
 			return false;
 		}
+		if (text == "public_execution_start")
+			return PublicExecutionOrderRuntime.IsEligible(GetGuardrailRuntimeTargetAgentIndexForExternal());
 		if (IsSceneMoveRule(text) && ShouldExcludeSceneMoveRuleForCurrentMission())
 		{
 			return false;
@@ -1847,8 +1849,20 @@ public static class AIConfigHandler
 		var revision = _promptConfiguration.Read();
 		return _ruleRegistryCache.GetOrBuild(revision.Revision,
 			() => _promptConfiguration.Capture().Revision,
-			() => PromptRuleRegistry.Build(revision.Value.ReadGuardrailForOwner()));
+			() =>
+			{
+				var rules = PromptRuleRegistry.Build(revision.Value.ReadGuardrailForOwner());
+				if (!rules.ContainsKey("public_execution_start"))
+				{
+					var rule = ExecutionPromptConfiguration.CreateOrderRule();
+					if (rule != null) rules[rule.Id] = rule;
+				}
+				return rules;
+			});
 	}
+
+	internal static string ExecutionCeremonySystemPrompt => !string.IsNullOrWhiteSpace(_guardrail?.ExecutionCeremonySystemPrompt)
+		? _guardrail.ExecutionCeremonySystemPrompt : ExecutionPromptConfiguration.SystemPrompt;
 
 	private static List<GuardrailRulePromptConfig> GetAllEnabledRulePrompts()
 	{
@@ -2751,7 +2765,8 @@ public static class AIConfigHandler
 		string reasoningEffort,
 		int timeoutMilliseconds,
 		string source,
-		InteractionStage stage = InteractionStage.Postprocess)
+		InteractionStage stage = InteractionStage.Postprocess,
+		bool allowThinkingControlFallback = true)
 	{
 		string apiLine;
 #if BANNERLORD_1_4_OR_GREATER
@@ -2771,7 +2786,7 @@ public static class AIConfigHandler
 			_ => apiKey,
 			temperature: temperature,
 			disableThinking: false,
-			retryWithoutThinkingOnBadRequest: thinkingEnabled || !string.Equals(DuelSettings.ResolveThinkingControlFormat(apiUrl, modelName), "plain", StringComparison.OrdinalIgnoreCase),
+			retryWithoutThinkingOnBadRequest: allowThinkingControlFallback && (thinkingEnabled || !string.Equals(DuelSettings.ResolveThinkingControlFormat(apiUrl, modelName), "plain", StringComparison.OrdinalIgnoreCase)),
 			thinkingEnabled: thinkingEnabled,
 			reasoningEffort: reasoningEffort);
 		return gateway.GenerateAsync(
@@ -2896,7 +2911,13 @@ public static class AIConfigHandler
 		return TryCallAuxiliarySimpleDialogueOnce(messages, maxTokens, temperature, out content, out error);
 	}
 
-	private static bool TryCallAuxiliarySimpleDialogueOnce(IEnumerable<object> messages, int maxTokens, float temperature, out string content, out string error)
+	/// <summary>One existing auxiliary attempt with an additional caller-owned output ceiling.</summary>
+	internal static bool TryCallBoundedAuxiliarySimpleDialogueOnceForExternal(IEnumerable<object> messages, int maxTokens, float temperature, out string content, out string error)
+	{
+		return TryCallAuxiliarySimpleDialogueOnce(messages, maxTokens, temperature, out content, out error, maxTokens);
+	}
+
+	private static bool TryCallAuxiliarySimpleDialogueOnce(IEnumerable<object> messages, int maxTokens, float temperature, out string content, out string error, int? outputTokenCeiling = null)
 	{
 		content = "";
 		error = "";
@@ -2914,6 +2935,10 @@ public static class AIConfigHandler
 			DuelSettings settings = DuelSettings.GetSettings();
 			int requestedMaxTokens = Math.Max(Math.Max(16, maxTokens), maxTokens + 512);
 			int actualMaxTokens = ResolveAuxiliaryApiMaxTokens(settings, requestedMaxTokens);
+			if (outputTokenCeiling.HasValue)
+			{
+				actualMaxTokens = Math.Min(actualMaxTokens, Math.Max(16, outputTokenCeiling.Value));
+			}
 			float effectiveTemperature = settings?.GetAuxiliaryApiTemperature() ?? temperature;
 			LlmGenerateResult generated = GenerateConfiguredGatewayResult(
 				copiedMessages,
@@ -2926,7 +2951,8 @@ public static class AIConfigHandler
 				reasoningEffort: DuelSettings.ReasoningEffortHigh,
 				DuelSettings.LlmRequestTimeoutMilliseconds,
 				"AuxiliarySimpleDialogue",
-				InteractionStage.MainReply);
+				InteractionStage.MainReply,
+				allowThinkingControlFallback: !outputTokenCeiling.HasValue);
 			if (generated == null || generated.Status != LlmResultStatus.Succeeded)
 			{
 				error = LlmRetryPrompt.BuildFailureDetail(generated?.ErrorCode ?? "gateway_failure", "", "");
@@ -5803,6 +5829,7 @@ public static class AIConfigHandler
 			try { result.KingdomAgendaEligible = IsKingdomLordOrKingRuleTargetForPreprocess(hero, targetCharacter); } catch { }
 			try { result.MarriageEligible = hero != null && !string.IsNullOrWhiteSpace(RomanceSystemBehavior.Instance?.BuildMarriageRuntimeInstruction(hero)); } catch { }
 			try { result.NpcMajorActionsEligible = !string.IsNullOrWhiteSpace(MyBehavior.BuildNpcMajorActionsRuntimeInstructionForExternal(hero)); } catch { }
+			try { result.PublicExecutionEligible = PublicExecutionOrderRuntime.IsEligible(binding.AgentIndex); } catch { }
 			try { result.LordsHallAccessEligible = !string.IsNullOrWhiteSpace(BuildRuntimeLordsHallAccessInstructionForExternal()); } catch { }
 			result.HasAnyTargetIdentity = hero != null || targetCharacter != null || !string.IsNullOrWhiteSpace(binding.TroopId) || !string.IsNullOrWhiteSpace(binding.UnnamedRank);
 		}
@@ -6663,6 +6690,8 @@ public static class AIConfigHandler
 				Logger.Log("AIConfig", "[KingdomServicePostprocessRules] playerClan=null targetKingdomId=" + ((dictionary != null && dictionary.TryGetValue("targetKingdomId", out var value0)) ? (value0 ?? "") : "") + " playerTier=" + num + " mercTier=" + num2 + " vassalTier=" + num3 + " trustCurrent=" + num6 + " trustMerc=" + num4 + " trustVassal=" + num5);
 				return list;
 			}
+			// Civil-war answers also belong to player rulers, before service/recruitment early returns.
+			list.AddRange(TeamModuleServices.CivilWar.BuildPostprocessRules());
 			if (IsPlayerKingdomRecruitmentModeActive(playerClan, kingdom))
 			{
 				Clan clan = ResolveConversationTargetClan();
@@ -6673,7 +6702,7 @@ public static class AIConfigHandler
 				{
 					text5 = (value1 ?? "").Trim();
 				}
-				Logger.Log("AIConfig", "[KingdomServicePostprocessRules] player_ruler state=" + text4 + " playerClan=" + (playerClan?.StringId ?? "") + " playerKingdom=" + (kingdom?.StringId ?? "") + " targetClan=" + (clan?.StringId ?? "") + " targetHero=" + (hero?.StringId ?? "") + " targetClanIdToken=" + text5 + " rules=（无，C_J_K已迁移到NPC_JOIN）");
+				Logger.Log("AIConfig", "[KingdomServicePostprocessRules] player_ruler state=" + text4 + " playerClan=" + (playerClan?.StringId ?? "") + " playerKingdom=" + (kingdom?.StringId ?? "") + " targetClan=" + (clan?.StringId ?? "") + " targetHero=" + (hero?.StringId ?? "") + " targetClanIdToken=" + text5 + " rules=civil_war");
 				return list;
 			}
 			string text = ResolveRuntimeKingdomServiceStateKeyForPostprocess(kingdom, flag, kingdom2, flag2, num, num2, num3, num4, num5, num6);
@@ -6720,7 +6749,6 @@ public static class AIConfigHandler
 					Description = description
 				});
 			}
-			list.AddRange(TeamModuleServices.CivilWar.BuildPostprocessRules());
 				Logger.Log("AIConfig", "[KingdomServicePostprocessRules] state=" + text + " playerClan=" + (playerClan?.StringId ?? "") + " playerKingdom=" + (kingdom?.StringId ?? "") + " targetKingdom=" + (kingdom2?.StringId ?? "") + " targetKingdomIdToken=" + text2 + " isMercenaryService=" + flag + " isSameKingdom=" + flag2 + " playerTier=" + num + " mercTier=" + num2 + " vassalTier=" + num3 + " trustCurrent=" + num6 + " trustMerc=" + num4 + " trustVassal=" + num5 + " rules=" + ((list.Count == 0) ? "（无）" : string.Join(",", list.Select((PostprocessRuleEntry x) => x?.Tag ?? "").Where((string x) => !string.IsNullOrWhiteSpace(x)))));
 		}
 		catch
@@ -7424,6 +7452,8 @@ public static class AIConfigHandler
 			}
 			switch (text)
 			{
+			case "public_execution_start":
+				return PublicExecutionOrderRuntime.IsEligible(GetGuardrailRuntimeTargetAgentIndexForExternal());
 			case "kingdom_service":
 				return true;
 			case "siege_intervention_aftermath":

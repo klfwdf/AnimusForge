@@ -50,6 +50,22 @@ internal static class Program
 		Check(s.Minors.Any(m => m.Events.Count == 3 && m.Sentence.Contains("另有1起同类事件")), "home raids collapse into one minor");
 		Check(!s.Minors.SelectMany(m => m.Events).Any(e => e.Key == "fief"), "score-20 fief grant dropped");
 		Check(!s.Minors.SelectMany(m => m.Events).Any(e => e.Key == "raid:far"), "far-away raid below world bar dropped");
+		var enoughNews = WorldBulletinPolicy.Select(events.Concat(new[] { Ev("cap:home", "lord_captured", 109, 35, "本国领主被俘。", "clash:4:vlandia|aserai", false, "vlandia", "aserai") }).ToList(), new WorldBulletinScopeState { WindowEndHour = 130 }, focus, 130);
+		Check(WorldBulletinPolicy.HasEnoughMinorNews(enoughNews), "two distinct minor groups allow generation");
+		Check(!WorldBulletinPolicy.HasEnoughMinorNews(s), "below-threshold foreign capture does not pad minor count");
+		Check(!WorldBulletinPolicy.HasEnoughMinorNews(new WorldBulletinSelection { Major = s.Major, Minors = new() { s.Minors[0] } }), "three raids in one group still count as one minor");
+		Check(!WorldBulletinPolicy.HasEnoughMinorNews(new WorldBulletinSelection { Major = s.Major }), "zero minors wait without generating");
+		s.Major.Participants.Add(new WorldBulletinParticipant { HeroId = "a", Name = "甲", Role = "死者" });
+		s.Major.Participants.Add(new WorldBulletinParticipant { HeroId = "player", Name = "玩家", Role = "行刑方" });
+		events[1].Participants.Add(new WorldBulletinParticipant { HeroId = "b", Name = "乙", Role = "死者" });
+		events[6].Participants.Add(new WorldBulletinParticipant { HeroId = "unrelated", Name = "外部君主", Role = "另一战事君主" });
+		var art = WorldBulletinPolicy.BuildIllustrationPlan(s, "selection:1", "1084年夏季8日");
+		Check(art.Participants.Select(p => p.HeroId).SequenceEqual(new[] { "a", "player", "b" }), "art preserves all core participants but excludes unrelated headline");
+		Check(art.Facts.Contains("甲被玩家处决") && art.Facts.Contains("乙被玩家处决") && !art.Facts.Contains("宣战") && !art.Facts.Contains("村一"), "art freezes only same-story facts");
+		s.Major.Participants[0].Role = "已改写";
+		Check(art.Participants[0].Role == "死者", "plan clones event-time role independently of source mutations");
+		var filledMinors = WorldBulletinPolicy.MergeMinors(new List<string>(), enoughNews.Minors, out int filledCount);
+		Check(filledMinors.Count >= 2 && filledMinors.All(m => !string.IsNullOrWhiteSpace(m)) && filledCount == 0, "missing generated minors filled with real selected facts");
 
 		// Bonuses alone never make a headline: a home fief grant (20+20) must not trigger.
 		Check(!WorldBulletinPolicy.IsTrigger(events[5], focus), "home fief grant is not a trigger");
@@ -69,10 +85,16 @@ internal static class Program
 		Check(detail.Contains("甲被玩家处决") && detail.Contains("乙被玩家处决") && detail.Contains("村三遭劫掠"), "detail block lists every fact of a story");
 		// Scene prompts end the rule section only on the legacy "完整周报" headers.
 		Check(detail.StartsWith("【NPC所属王国完整周报】\n标题：瓦兰迪亚"), "detail block keeps the legacy header the scene splitter recognises");
-		string world = WorldBulletinPolicy.BuildNpcWorldBlock(events, 5, "血染刑场", "玩家连斩两人");
+		string world = WorldBulletinPolicy.BuildNpcWorldBlock(events, 5, "血染刑场", "玩家连斩两人", 4);
 		Check(world.StartsWith("【世界完整周报】") && world.Contains("南帝国向北帝国宣战") && !world.Contains("远方村") && world.Contains("最新快报《血染刑场》"), "world block: legacy header, headlines only + latest bulletin");
-		string worldForSouth = WorldBulletinPolicy.BuildNpcWorldBlock(events, 5, "", "", "empire_s");
+		string worldForSouth = WorldBulletinPolicy.BuildNpcWorldBlock(events, 5, "", "", -1, "empire_s");
 		Check(!worldForSouth.Contains("南帝国向北帝国宣战"), "world block skips facts already in the NPC kingdom block");
+		Check(WorldBulletinPolicy.BuildNpcWorldBlock(null, 100, "旧停战", "甲乙停战", 10) == "", "90-day-old bulletin excluded");
+		Check(WorldBulletinPolicy.BuildNpcWorldBlock(null, 12, "边界", "消息", 5).Contains("边界"), "seven-day boundary included");
+		Check(WorldBulletinPolicy.BuildNpcWorldBlock(null, 13, "边界", "消息", 5) == "", "eight-day-old bulletin excluded");
+		Check(WorldBulletinPolicy.BuildNpcWorldBlock(null, 5, "未知", "消息", -1) == "", "unknown publication day excluded");
+		Check(WorldBulletinPolicy.BuildNpcWorldBlock(null, 5, "未来", "消息", 6) == "", "future publication day excluded");
+		Check(WorldBulletinPolicy.BuildNpcWorldBlock(events, 5, "旧停战", "甲乙停战", -1).Contains("南帝国向北帝国宣战"), "old bulletin filtering preserves recent raw facts");
 
 		// A non-headline that outranks the real trigger by bonus (player raid 25+30+20=75 vs far war 70)
 		// must not sink the window: the lead is the strongest trigger.

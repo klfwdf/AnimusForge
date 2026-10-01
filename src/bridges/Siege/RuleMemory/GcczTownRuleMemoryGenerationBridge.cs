@@ -1,161 +1,112 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using AnimusForge.SiegeAftermathIntervention;
 
 namespace AnimusForge;
 
-/// <summary>
-/// Schedules one guarded AF generation request for a missing town-tenure narrative.
-/// </summary>
+/// <summary>Demand-driven generation; workers receive snapshots and completions commit on the main tick.</summary>
 internal static class GcczTownRuleMemoryGenerationBridge
 {
-	internal delegate bool TryStoreNarrative(
-		string settlementId,
-		string rulerId,
-		int ruleStartDay,
-		string narrative);
+    internal delegate bool TryStoreNarrative(SettlementRuleMemoryRecord expected, int day, string narrative);
+    private const int MaximumInFlight = 2;
+    private static readonly object Gate = new object();
+    private static readonly HashSet<string> InFlight = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+    private static readonly Dictionary<string, DateTime> RetryAfter = new Dictionary<string, DateTime>(StringComparer.OrdinalIgnoreCase);
+    private static readonly ConcurrentQueue<Completion> Completed = new ConcurrentQueue<Completion>();
+    private static long _epoch;
+    private static int _activeWorkers;
 
-	private const int GenerationMaxTokens = 220;
-	private const float GenerationTemperature = 0.45f;
-	private static readonly TimeSpan FailureCooldown = TimeSpan.FromMinutes(1);
-	private static readonly object Gate = new object();
-	private static readonly HashSet<string> InFlightKeys = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-	private static readonly Dictionary<string, DateTime> RetryAfterUtc = new Dictionary<string, DateTime>(StringComparer.OrdinalIgnoreCase);
+    private sealed class Completion
+    {
+        internal long Epoch;
+        internal long Generation;
+        internal SettlementRuleMemoryRecord Record;
+        internal int Day;
+        internal string Narrative;
+        internal string Error;
+        internal TryStoreNarrative Store;
+        internal Action<string> OnStored;
+    }
 
-	internal static void Queue(
-		SettlementRuleMemoryRecord record,
-		int currentDay,
-		bool force,
-		TryStoreNarrative tryStore,
-		Action<string> onStored)
-	{
-		if (record?.CurrentRule == null
-			|| !string.IsNullOrWhiteSpace(record.CurrentRule.Narrative)
-			|| tryStore == null)
-		{
-			return;
-		}
+    internal static void Queue(SettlementRuleMemoryRecord record, int currentDay, bool force,
+        TryStoreNarrative tryStore, Action<string> onStored)
+    {
+        if (tryStore == null || !SettlementRuleMemoryEvolution.ShouldGenerate(record, currentDay, force)) return;
+        // Even explicit regeneration observes network backpressure; never erase the last good text.
+        lock (Gate)
+        {
+            if (_activeWorkers >= MaximumInFlight || InFlight.Count >= MaximumInFlight || InFlight.Contains(record.SettlementId)
+                || (RetryAfter.TryGetValue(record.SettlementId, out var until) && until > DateTime.UtcNow)) return;
+        }
+        var prompt = TownPromptComposer.BuildSettlementRuleMemoryGenerationPrompt(record, currentDay, GcczTownPromptResourceProvider.GetCatalog());
+        if (string.IsNullOrWhiteSpace(prompt.SystemPrompt) || string.IsNullOrWhiteSpace(prompt.UserPrompt)) return;
+        var completion = new Completion { Epoch = Interlocked.Read(ref _epoch),
+            Generation = SaveRuntimeGuard.CaptureGeneration(), Record = record, Day = currentDay,
+            Store = tryStore, OnStored = onStored };
+        lock (Gate)
+        {
+            if (_activeWorkers >= MaximumInFlight || InFlight.Count >= MaximumInFlight || !InFlight.Add(record.SettlementId)) return;
+            _activeWorkers++;
+            RetryAfter[record.SettlementId] = DateTime.UtcNow.AddMinutes(1);
+        }
+        Task.Run(() =>
+        {
+            try
+            {
+                var messages = new object[] {
+                    new { role = "system", content = prompt.SystemPrompt },
+                    new { role = "user", content = prompt.UserPrompt } };
+                if (AIConfigHandler.TryCallBoundedAuxiliarySimpleDialogueOnceForExternal(messages, 384, 0.45f, out var content, out var error))
+                {
+                    if (SettlementRuleMemoryNarrativePolicy.TryParseGeneratedResponse(content, out var narrative)) completion.Narrative = narrative;
+                    else completion.Error = "invalid_memory_response";
+                }
+                else completion.Error = error;
+            }
+            catch (Exception ex) { completion.Error = ex.Message; }
+            lock (Gate)
+            {
+                _activeWorkers--;
+                if (completion.Epoch == Interlocked.Read(ref _epoch)) Completed.Enqueue(completion);
+            }
+        });
+    }
 
-		SettlementRuleMemoryGenerationPrompt prompt = TownPromptComposer.BuildSettlementRuleMemoryGenerationPrompt(
-			record,
-			currentDay,
-			GcczTownPromptResourceProvider.GetCatalog());
-		if (string.IsNullOrWhiteSpace(prompt.SystemPrompt) || string.IsNullOrWhiteSpace(prompt.UserPrompt))
-		{
-			return;
-		}
+    internal static void OnApplicationTick()
+    {
+        for (int i = 0; i < MaximumInFlight && Completed.TryDequeue(out var result); i++)
+        {
+            if (result.Epoch != Interlocked.Read(ref _epoch)) continue;
+            lock (Gate) InFlight.Remove(result.Record.SettlementId);
+            if (SaveRuntimeGuard.IsStale(result.Generation)) continue;
+            bool stored = false;
+            try
+            {
+                stored = !string.IsNullOrWhiteSpace(result.Narrative)
+                    && result.Store(result.Record, result.Day, result.Narrative);
+                if (stored) result.OnStored?.Invoke(result.Record.SettlementId);
+            }
+            catch (Exception ex) { result.Error = ex.Message; }
+            if (!stored)
+            {
+                lock (Gate) RetryAfter[result.Record.SettlementId] = DateTime.UtcNow.AddMinutes(1);
+            }
+            Logger.Log("GcczTownRuleMemory", (stored ? "Generated town memory. Settlement=" : "Town memory generation was not stored. Settlement=")
+                + result.Record.SettlementId + (stored ? "" : ", Reason=" + (result.Error ?? "source_changed")));
+        }
+    }
 
-		string generationKey = BuildGenerationKey(record);
-		long runtimeGeneration = SaveRuntimeGuard.CaptureGeneration();
-		lock (Gate)
-		{
-			if (InFlightKeys.Contains(generationKey))
-			{
-				return;
-			}
-			if (!force
-				&& RetryAfterUtc.TryGetValue(generationKey, out DateTime retryAfter)
-				&& retryAfter > DateTime.UtcNow)
-			{
-				return;
-			}
-			InFlightKeys.Add(generationKey);
-		}
-
-		Task.Run(delegate
-		{
-			bool stored = false;
-			string error = string.Empty;
-			try
-			{
-				var messages = new object[]
-				{
-					new { role = "system", content = prompt.SystemPrompt },
-					new { role = "user", content = prompt.UserPrompt },
-				};
-				if (AIConfigHandler.TryCallAuxiliarySimpleDialogueOnceForExternal(
-					messages,
-					GenerationMaxTokens,
-					GenerationTemperature,
-					out string content,
-					out error)
-					&& !SaveRuntimeGuard.IsStale(runtimeGeneration, "gccz_town_memory")
-					&& SettlementRuleMemoryNarrativePolicy.TryParseGeneratedResponse(content, out string narrative))
-				{
-					stored = tryStore(
-						record.SettlementId,
-						record.CurrentRule.RulerId,
-						record.CurrentRule.RuleStartDay,
-						narrative);
-				}
-			}
-			catch (Exception ex)
-			{
-				error = ex.Message;
-			}
-			finally
-			{
-				CompleteGeneration(generationKey, stored);
-				if (stored)
-				{
-					onStored?.Invoke(record.SettlementId);
-					Logger.Log("GcczTownRuleMemory", "Generated town memory. Settlement=" + record.SettlementId + ", Ruler=" + record.CurrentRule.RulerId);
-				}
-				else if (!SaveRuntimeGuard.IsStale(runtimeGeneration))
-				{
-					Logger.Log("GcczTownRuleMemory", "Town memory generation was not stored. Settlement=" + record.SettlementId + ", Error=" + NormalizeLogValue(error));
-				}
-			}
-		});
-	}
-
-	internal static void AllowImmediateRetry(SettlementRuleMemoryRecord record)
-	{
-		lock (Gate)
-		{
-			RetryAfterUtc.Remove(BuildGenerationKey(record));
-		}
-	}
-
-	internal static void Reset()
-	{
-		lock (Gate)
-		{
-			InFlightKeys.Clear();
-			RetryAfterUtc.Clear();
-		}
-	}
-
-	private static void CompleteGeneration(string generationKey, bool stored)
-	{
-		lock (Gate)
-		{
-			InFlightKeys.Remove(generationKey);
-			if (stored)
-			{
-				RetryAfterUtc.Remove(generationKey);
-			}
-			else
-			{
-				RetryAfterUtc[generationKey] = DateTime.UtcNow.Add(FailureCooldown);
-			}
-		}
-	}
-
-	private static string BuildGenerationKey(SettlementRuleMemoryRecord record)
-	{
-		SettlementRuleMemoryEntry rule = record?.CurrentRule;
-		return (record?.SettlementId ?? string.Empty)
-			+ "|"
-			+ (rule?.RulerId ?? rule?.RulerName ?? string.Empty)
-			+ "|"
-			+ (rule?.RuleStartDay ?? 0);
-	}
-
-	private static string NormalizeLogValue(string value)
-	{
-		string normalized = (value ?? string.Empty).Replace("\r", " ").Replace("\n", " ").Trim();
-		return string.IsNullOrWhiteSpace(normalized) ? "none" : normalized;
-	}
+    internal static void Reset()
+    {
+        lock (Gate)
+        {
+            Interlocked.Increment(ref _epoch);
+            InFlight.Clear();
+            RetryAfter.Clear();
+            while (Completed.TryDequeue(out _)) { }
+        }
+    }
 }

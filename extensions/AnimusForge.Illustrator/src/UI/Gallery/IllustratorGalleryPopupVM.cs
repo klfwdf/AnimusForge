@@ -71,6 +71,8 @@ namespace AnimusForge.Illustrator.UI.Gallery
         private readonly GalleryPreviewLoader _previewLoader;
         private bool _disposed;
         private int _refreshVersion;
+        private readonly Func<bool> _isCurrent;
+        private bool _rpConversionOpen;
 
         public IllustratorGalleryPopupVM(Action onClose, string campaignKey)
             : this(onClose, campaignKey, () => string.Equals(campaignKey, IllustratorRuntime.CampaignKey, StringComparison.Ordinal))
@@ -81,6 +83,7 @@ namespace AnimusForge.Illustrator.UI.Gallery
         {
             _onClose = onClose;
             _campaignKey = campaignKey;
+            _isCurrent = isCurrent;
             _previewLoader = new GalleryPreviewLoader(() => !_disposed && isCurrent(),
                 IllustratorRuntime.PostCritical, GauntletTextureLoader.ReadPreparedImageForUi);
             RefreshItems(false);
@@ -111,6 +114,7 @@ namespace AnimusForge.Illustrator.UI.Gallery
                     _hasSelection = value;
                     OnPropertyChangedWithValue(value, nameof(HasSelection));
                     OnPropertyChanged(nameof(HasNoSelection));
+                    OnPropertyChanged(nameof(CanConvertToRpItem));
                 }
             }
         }
@@ -128,6 +132,7 @@ namespace AnimusForge.Illustrator.UI.Gallery
                 {
                     _selectedSpriteName = value;
                     OnPropertyChangedWithValue(value, nameof(SelectedSpriteName));
+                    OnPropertyChanged(nameof(CanConvertToRpItem));
                 }
             }
         }
@@ -326,6 +331,46 @@ namespace AnimusForge.Illustrator.UI.Gallery
                     HandleItemSelect(item);
                     break;
                 }
+            }
+        }
+
+        [DataSourceProperty]
+        public bool CanConvertToRpItem => !_disposed && !_rpConversionOpen && HasSelection && !string.IsNullOrEmpty(SelectedSpriteName);
+
+        public void ExecuteConvertToRpItem()
+        {
+            IllustratorRuntime.AssertMainThread();
+            if (!CanConvertToRpItem || !_isCurrent() || _selectedItem?.Item == null) return;
+            var image = _selectedItem.Item.CopyMetadata();
+            var campaign = TaleWorlds.CampaignSystem.Campaign.Current;
+            var rewardOwner = RewardSystemBehavior.Instance;
+            _rpConversionOpen = true;
+            OnPropertyChanged(nameof(CanConvertToRpItem));
+            bool opened = CourierLetterInputPopup.Show("转为 RP 物品", GalleryRpItemConverter.ItemName(image),
+                "确认画卷介绍后加入背包。向 NPC 展示时会读取这段介绍；可在此修正画面内容。",
+                GalleryRpItemConverter.BuildIntroduction(image), description =>
+                {
+                    _rpConversionOpen = false;
+                    OnPropertyChanged(nameof(CanConvertToRpItem));
+                    if (_disposed || !_isCurrent() || !ReferenceEquals(campaign, TaleWorlds.CampaignSystem.Campaign.Current) ||
+                        !ReferenceEquals(rewardOwner, RewardSystemBehavior.Instance)) return;
+                    try
+                    {
+                        GalleryRpItemConverter.TryConvert(image, _campaignKey, description, out string result);
+                        StatusText = result;
+                    }
+                    catch (Exception ex) { StatusText = "转换未完成，请检查背包后再试：" + ex.Message; }
+                }, () =>
+                {
+                    _rpConversionOpen = false;
+                    OnPropertyChanged(nameof(CanConvertToRpItem));
+                    if (!_disposed) StatusText = "已取消转换，未添加物品。";
+                });
+            if (!opened)
+            {
+                _rpConversionOpen = false;
+                OnPropertyChanged(nameof(CanConvertToRpItem));
+                StatusText = "无法打开画卷介绍编辑框。";
             }
         }
 

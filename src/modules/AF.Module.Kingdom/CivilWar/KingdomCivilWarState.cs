@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 
 namespace AnimusForge;
 
-// Save model v3 (`_af_kingdom_civil_war_v3`). A kingdom holds several concurrent factions, each with its own
+// Save model v4 (payload under the existing `_af_kingdom_civil_war_v2` key). A kingdom holds several concurrent factions, each with its own
 // demand, grievance, ultimatum and war. Only ids and numbers are stored; catalog content is looked up by id so
 // removing a catalog entry dissolves affected factions on load instead of failing. v2 saves (single `Faction`)
 // are migrated into `Factions` by the owner's Sanitize.
@@ -27,17 +27,48 @@ internal enum KingdomCivilWarSide
 
 internal sealed class KingdomCivilWarClanState
 {
+	[JsonIgnore] internal KingdomCivilWarKingdomState Owner;
+	[JsonIgnore] internal KingdomCivilWarFactionState CachedFaction;
+	[JsonIgnore] internal float CachedGrievance;
+	[JsonIgnore] internal float CachedStrength;
+	public int MembershipEvaluationDay = -1;
+	public int LastDecayDay = -1;
+	public int SideSinceDay = -1;
 	public string ClanId = "";
 	public KingdomCivilWarSide Side = KingdomCivilWarSide.Middle;
 	public string FactionId = "";
 	public int SideSinceWeek;
 	public int LastRecruitWeek;
-	// grievance source id -> points (decays weekly by the source's DecayPerWeek)
+	// grievance source id -> points (decays daily, preserving the source's seven-day DecayPerWeek)
 	public Dictionary<string, float> Grievance = new Dictionary<string, float>(StringComparer.Ordinal);
 }
 
 internal sealed class KingdomCivilWarFactionState
 {
+	[JsonIgnore] internal float GrievanceSum;
+	[JsonIgnore] internal float CachedStrength;
+	[JsonIgnore] internal int CachedMemberCount;
+	[JsonIgnore] internal List<string> LastParticipantIds = new List<string>();
+	public bool EscalationPending;
+	public bool CrossedSeventy;
+	public int WarEvaluationDay = -1;
+	public int Version;
+	public bool PlayerFounded;
+	public int UltimatumDay = -1;
+	public int AnswerDeadlineDay = -1;
+	public int WarRequestDay = -1;
+	public int WarStartDay = -1;
+	public int GovernanceUntilDay;
+	public int ProposalUntilDay;
+	public int LastDemandDay = -1;
+	public int LastEscalationDay = -1;
+	public bool SuppressionExtended;
+	public bool DemandLocked;
+	public CivilWarPendingResponse PendingResponse;
+	public string PendingConcessionOperationId = "";
+	public string PendingConcessionRulerId = "";
+	public string PendingConcessionLeaderId = "";
+	public string RebellionOperationId = "";
 	public string Id = "";
 	public KingdomCivilWarStage Stage = KingdomCivilWarStage.FactionFormed;
 	public int StageWeek;
@@ -49,7 +80,7 @@ internal sealed class KingdomCivilWarFactionState
 	public int UltimatumWeek;
 	public int Refusals;
 	public int Defers;
-	// Mean total grievance of the member clans (0..100), refreshed weekly. Independent per faction.
+	// Mean total grievance of member clans (0..100), updated by events and daily decay.
 	public float Grievance;
 	public bool PlayerAnswerPending;
 	public bool PlayerPrompted;
@@ -72,6 +103,19 @@ internal sealed class KingdomCivilWarFactionState
 	public bool RebelKingdomDestroyed;
 	public bool PlayerFollowAsked;
 	public List<string> WarClanIds = new List<string>();
+	// Persist the chosen settlement across retries; never reroll after game effects have started.
+	public string ResolutionOutcomeId = "";
+	public string ResolutionError = "";
+	public bool ResolutionNeedsReview;
+	public bool ResolutionReturnCompleted;
+	// A coup-origin war may fight for the displaced dynasty; ordinary wars leave these empty.
+	public string CoupId = "";
+	public string RestorationClanId = "";
+	public string RestorationHeroId = "";
+	public string RestorationKingdomName = "";
+	public string RestorationKingdomShortName = "";
+	// Set only by the war-result owner before its own peace/return effects run.
+	public bool RestorationVictoryConfirmed;
 }
 
 internal sealed class KingdomCivilWarHistoryEntry
@@ -82,11 +126,19 @@ internal sealed class KingdomCivilWarHistoryEntry
 
 internal sealed class KingdomCivilWarKingdomState
 {
+	[JsonIgnore] internal float CachedGrievance;
+	public int FormationAttemptDay = -1;
+	public int FormationDueDay = -1;
+	public int CooldownUntilDay = -1;
+	public int AftermathUntilDay = -1;
+	public int NoPeaceUntilDay = -1;
 	public string KingdomId = "";
 	// Kingdom-level summary: Discontent when no faction exists; otherwise the most advanced faction stage.
 	public KingdomCivilWarStage Stage = KingdomCivilWarStage.Discontent;
 	public int StageWeek;
 	public int LastAdvancedWeek;
+	// -1 means a pre-daily-decay save: establish today's baseline without retroactive decay.
+	public int LastGrievanceDecayDay = -1;
 	// No new faction forms before this week (set when a faction finishes). Existing factions keep running.
 	public int CooldownUntilWeek;
 	// Mood of the remaining factions after the last civil war (CivilWarAftermath), valid through AftermathUntilWeek.
@@ -110,6 +162,33 @@ internal sealed class KingdomCivilWarKingdomState
 
 internal sealed class KingdomCivilWarStorage
 {
-	public int Version = 3;
+	public int Version = 4;
+	public Dictionary<string, int> ClanExitUntilDay = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+	public Dictionary<string, CivilWarOperation> Operations = new Dictionary<string, CivilWarOperation>(StringComparer.Ordinal);
 	public Dictionary<string, KingdomCivilWarKingdomState> Kingdoms = new Dictionary<string, KingdomCivilWarKingdomState>(StringComparer.OrdinalIgnoreCase);
+}
+
+internal sealed class CivilWarPendingResponse
+{
+	[JsonIgnore] internal bool Prompted;
+	public bool Accepted;
+	public string ResponseOperationId = "";
+	public string OperationId = "";
+	public string RulerClanId = "";
+	public string LeaderClanId = "";
+	public bool Dissolve;
+	public int Gold;
+	public int Influence;
+	public int DeadlineDay;
+}
+
+// A receipt is saved before entering native code. Unknown partial effects are never blindly replayed.
+internal sealed class CivilWarOperation
+{
+	public string Fingerprint = "";
+	public string FactionId = "";
+	public int Status;
+	public string Message = "";
+	public bool InProgress;
+	public bool FactsWritten;
 }

@@ -119,6 +119,584 @@
 
 ---
 
+<a id="merged-deployment-verified-20261001"></a>
+
+### 融合版本部署及中断后复核完成（2026-10-01，DEPLOYED / LIVE_NOT_RUN）
+
+用户先明确要求“部署”，部署成功后中断，随后要求“提交并推送”。实际安装源码为融合提交 `6c32576c497ffe5ed039cbd70b0829bb6c981514`；部署前后tracked clean、HEAD一致。复用同一不可变候选中已通过双API+Bootstrap及361项定向检查的Release产物，确认候选与当前源码仅测试/文档不同，三个DLL hash与原验证记录一致；没有重新编入未验证工作树，也没有改一键脚本。
+
+执行原 `scripts/build/deploy_module.ps1`，ProjectRoot指向 `artifacts/remote-integration-20261001/candidate`、显式提供已验1.3/1.4/Bootstrap产物，先Stage后部署至 `F:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord/Modules/AnimusForge`。238个Stage文件中更新28个（9个DLL/PDB/marker及界面/配置资源）；保留未列入Stage的安装文件和ONNX。部署脚本exit0，未启动游戏。
+
+中断前脚本已完成自动备份/逐文件替换；本轮补齐独立复核：**238个安装文件SHA256全部等于预先记录的Stage清单**；唯一匹配的28文件Recovery manifest、新旧hash、备份原文件hash及complete标记均通过；SubModule.xml唯一声明 `AnimusForge.Bootstrap.dll`。城镇记忆7日间隔与384输出token限制包含于本次安装。真实游戏、真实provider、玩家旧档仍NOT-RUN。
+
+完整本地证据：`artifacts/merged-deployment-20261001/` 的 `stage.log`、`stage-inventory.json`、`deployment-plan.json`、`deploy.log`、`deployment-verification.json`。安装回滚目录：`C:/Users/29310/AppData/Local/AnimusForge/Recovery/deploy/deploy-8f657b5a517744a29d8fff15fd3b9ef9`；仅按manifest恢复本次替换项，不镜像删除模块或改玩家数据。旧DLL不支持新的城镇记忆v3，回退时应使用升级前存档。
+
+本轮用户已授权提交并推送当前 `codex/af-main-refactor-continuation-20260831`。获取远端后仍为 `8f3903e2`，没有新增分叉；待推历史检查未包含 `.gitignore` 明确排除的本地专用交接。只提交本轮验收文档，原本地功能/融合历史随当前分支普通快进推送；未跟踪文件、产物与Recovery不提交。实际推送结果以完成后的远端ref核对为准。
+
+<a id="remote-integration-20261001-town-memory"></a>
+
+### 本地功能与远端8f3903e2融合（2026-10-01，OFFLINE_VERIFIED / 未推送部署）
+
+用户明确要求“拉取融合”。起始本地 `0bf63e000337e2292456fafbccf4de0b2c635b26`、远端 `8f3903e257b2a454763efc9468af47ee0bd37ee1`，相对共同祖先 `3c00ae2e` 分别独有75/28提交；开始时tracked clean。空检查点 `28daf5869ec848898f72821046c24158fb215be6` 后执行 `git merge --no-ff --no-commit origin/codex/af-main-refactor-continuation-20260831`，完整保留双方历史，不rebase/reset，不推送/部署，未跟踪文件不纳入。
+
+仅 `HANDOFF.md` 与本主台账产生内容冲突：保留双方新功能/验证记录，旧WIP摘要采用远端的“历史”标注；两父版本的主台账anchor集合全部保留。产品自动合并仅 `src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.SceneConversationChains.cs`：保留远端 `HandleGroupResponse` 不可达旧尾段清理（当前360–382附近），并保留本地约967行 `HasPreprocessRuleHit(postprocessPreprocessHits, PublicExecutionOrderPolicy.RuleId)` 后处理条件。程序核对合并源文件严格等于远端文件加这一条本地条件，不丢活per-hero/旁听链路。城镇记忆最短7游戏日、384输出tokens保持。
+
+**测试适配**：`tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py:202–207` 及 `Harness.cs.txt:28,491–501,1018–1027` 补齐本地公开处决条件依赖：提取真实 `HasPreprocessRuleHit`/`PublicExecutionOrderPolicy`，仅绑定合成前处理输入，不删除或替换生产判断。新增公开处决/无关规则×战斗抑制4例。初跑SDK10为net8要求本机缺失的8.0.30离线引用包；保留失败日志，隔离fixture目录添加global.json使用已有8.0.421/8.0.27后，群聊通过，渠道暴露上述真实fixture依赖缺口；适配后通过。没有安装SDK/修改产品构建脚本/给产品降级。
+
+**当前候选验证**：群聊receipt **31 PASS**；渠道cutover **138 PASS/0 FAIL**；城镇记忆 **60 PASS**；处决memory/order **98 PASS**；调度安全unittest **19 PASS**；渠道源码抽取unittest **15 PASS**。Release双API+Bootstrap沿原脚本全部exit0、0错误（已有warning保留），真实引用1.3.15/1.4.6。构建采用已解决冲突的Git tree `e31f9fca36b4e7bf906dadfba53514888434eeef` 的不可变仓内快照；之后仅测试/文档适配，产品源码与构建tree一致。证据 `artifacts/remote-integration-20261001/` 下 `candidate.json`、`build.log`、各测试log、`verification.json` 保存父版本、tree、测试与产物SHA256；旧失败日志保留。
+
+**未验/回滚**：完整远端C43/全仓矩阵未在融合候选重跑，不能把远端既有报告当融合候选全量PASS；远端代码地图保留其原证据绑定。实机、真实旧档、provider、帧性能NOT-RUN。本次合并记录为本节之后建立的双父提交；如需撤销，仅对该merge使用 `git revert -m 1 <merge>` 保留本地历史，不hard reset，也不撤回其他作者后续提交。检查点28daf586用于定位合并前状态。
+
+<a id="coup-restoration-victory-20261001"></a>
+## 2026-10-01 政变后内战与旧王朝复位（OFFLINE_VERIFIED / 实机 VERIFY）
+
+- 产品及测试提交：`f1760f76`；修改前检查点：`2df0fb9a`。本项承接 `86991dc3` 的旧王支持者筛选与胜利处置，扩展内战结果，不重写普通每周叛乱或攻城处置。用户确认：释放旧王若内战结束前死亡，由原王族现任族长继承。
+- 扣押分支：旧王家族不参与本次政变反抗；其他符合旧王支持关系及真实起兵资格的家族仍可起兵，胜利沿普通夺位结果，不为被扣押旧王复位。释放分支：原王族可在无封地时跟随有地支持者，实际转入叛军；并非凭空制造领主、封地或兵力。原王族、族长和旧王自由状态在执行时复核。
+- 登记：原建国流程产生真实叛军王国后，内部端口将其接入既有 CivilWar owner 的 OpenWar 状态、日级事件队列和战争结算。新增可选复位身份、原国名/简称、明确胜利确认收据；不增加公开子模组API，不改变原存档键。原国名在发动时快照；旧未完成会话缺失名字只能以接入时现名回退，无法凭空恢复历史改名。旧请求缺少跟踪字段沿旧行为，已完成事件不追补。
+- 结局：仅 `rebels_usurp` 明确胜利可应用 `restore_coup_dynasty`；外部议和、谈判和妥协不能复位或改名。胜利授权在归国动作引起停战之前保存，部分归国失败/读档继续同一结果。旧王存活则必须仍是原王族族长、成年自由；旧王死亡改用原王族现任合格族长。族灭、人物被俘、原王族离开交战双方等异常保留待处理，不擅自释放或替换王族。原王国已经消亡时沿既有终止规则，不从已毁王国自动重建国家。
+- 设置与性能：保留叛乱总开关、内战开关及起兵资格中的玩家免疫；普通“玩家为国王时也形成派系”默认关闭，因此新增仅推进已登记政变战争的受限分支，避免改变普通派系形成规则。候选筛选/参与方快照在发动与建国时进行；沿既有日级事件合并、32记录/约1ms预算的分批队列，无新全世界扫描、逐帧反射或自动失败轮询。建国后登记失败保留 `WarCreated` 和王国ID，城镇菜单手动重试只登记、不重复建国。
+
+### 代码证据（修订 f1760f76；路径:一基行区间 / 符号）
+
+| 责任 | 源码 | 覆盖与边界 |
+| --- | --- | --- |
+| 原名快照及重试入口 | `extensions/AnimusForge.Coup/src/CoupSystem/CoupSession.cs:120-121`；`CoupCampaignBehavior.cs:102-111,232-241` | 既有会话JSON可选字段；城镇显式重试 |
+| 处置分流、真实家族加入与登记 | `extensions/AnimusForge.Coup/src/Integration/CoupRebellionBridge.cs:22-49,174-188,280-344,378-447,465-526` | 扣押排除、释放无地王族加入、存档与故障留存、命名背景 |
+| 同DLL内部接缝 | `MyBehavior.CivilWarPolitics.cs:7-18`；`src/AF.Contracts/Internal/TeamModules/ICivilWarModulePort.cs:10-21,109-110` | 9参数注册桥，缓存反射校验；公开API不变 |
+| 战争接管/幂等 | `src/modules/AF.Module.Kingdom/CivilWar/KingdomCivilWarOwner.Coup.cs:10-66` | 实际交战双方校验、派系状态、归档收据防重复、政治事实发布 |
+| 原王族与胜利收据 | `src/modules/AF.Module.Kingdom/CivilWar/KingdomCivilWarState.cs:112-118` | 旧字段缺失无复位；存档键 `_af_kingdom_civil_war_v2` 与v4兼容 |
+| 胜利/和平隔离与真实动作 | `src/modules/AF.Module.Kingdom/CivilWar/KingdomCivilWarOwner.cs:635-675`；`RestoreCoupDynastyEffect.cs:9-48` | 明确胜利授权、归国/换统治家族/全名简称恢复与后置校验；事实按实际生死分支描述 |
+| 默认玩家派系关闭时收尾 | `src/modules/AF.Module.Kingdom/CivilWar/KingdomCivilWarOwner.Events.cs:148-173` | 仅推进保存的政变OpenWar，不生成普通派系，沿原队列和版本通知 |
+
+### 验证与交付
+
+- 证据目录：`artifacts/coup-restoration-20261001/`；最终源码基线 `2df0fb9a`，叠加已提交集成HEAD `930f3ec6` 的差异和本任务源码，56文件清单及SHA在 `final-source-manifest.json`。所有覆盖的C#与提交前工作区一致。最初隔离时排除了并行快报5处接口更改；该作者提交 `a3183aaa` 后，最终快照已包括其完整依赖，不再使用旧6参数临时隔离桥。
+- 使用未修改的 `scripts/build/build_single_module.ps1`，Release、1.3引用 `_deps_auto`（1.3.15.110062）、1.4引用本机游戏（1.4.6.115628），双实现+Bootstrap全部成功，日志 `build-final.log`。最终DLL SHA256：1.3 `aa0d3edb3e0e1c012570271f55e1c27ee72d9ebee8de7442bd00881b6a26a9dc`；1.4 `caa2e064863457a6bb0ce89e0410a456358738f4ec7af1bd5df5477fdad81965`；Bootstrap `cbe5cdb67d6a780594334da2775f246eba901882470f55759e9317422760d567`。未部署、打包或推送。
+- `CivilWarLifecycle.ContractTests`：205 PASS（原180+本次25）；真实owner/effect与假游戏动作，覆盖原王复位、已故族长继承、原全名/简称、外部和平/预选结果不复位、谈判不复位、胜利自身停战后部分失败与JSON续结算、被俘人选、普通结果隔离、登记幂等/已结算重放、关闭普通玩家派系下政变结算及普通分支不变。`CivilWarRules.SmokeTests` PASS。记录 `civilwar-snapshot-final.log` / `civilwar-smoke-final.log`。
+- 政变生产源码契约128 PASS（`coup-contract-final.log`）。最终真实1.4 DLL探针228断言PASS，四个可用标志True、45个Harmony目标、输入DLL未变化（`probe-final/registration.log`）；重跑原选兵、入口、F门转场、快报、MCM、门槛、胜利处置。新增5项检查扣押王族排除、无地加入、被俘拒绝、已建国JSON/重试；世界上下文和原生动作仍为夹具，无LLM/原生游戏启动。探针只重定向既有GetLogsDirectory，AF Logger部分诊断仍可能写当前日志，不宣称用户日志完全未写。
+- 已纠正验证问题并保留日志：MSBuild初次找不到 `python`（9009），改命令传 `-p:PythonExecutable=E:/PYTHON/python.exe`，不改构建入口；初次快报8参数依赖不完整，最终完整集成重建；真实MBObject注册改变fixture字典对象标识，调整测试注册前后保存/重建映射，不改产品资格。`git diff --check` PASS。code-map历史修订795锚点PASS；`--working-tree` 仍报既有 `Stale source content: SubModule.cs`，不以历史锚点通过冒充当前全仓映射通过。
+- NOT-RUN：真实游戏内建国/转家族、实际战争胜利与外交议和、原生王族继承和国名显示、存档完整加载、UI手动重试与其他MOD组合。离线通过不代表这些验收已完成；旧已完成政变不会自动追补新战争。
+- 回滚：对产品提交 `f1760f76` 做定向逆提交，保留其他作者和既有存档；不要硬重置至检查点。新战争的复位元数据旧代码不解释，游戏回退建议使用发动前存档。本轮无游戏覆盖，无需撤销安装文件。
+
+<a id="bulletin-event-art-20261001"></a>
+## 2026-10-01 快报事件配图、多人物参考与宽版 UI（OFFLINE_VERIFIED / 实机 VERIFY）
+
+- 产品提交：`a3183aaa`；开工检查点：`79d81e1`。用户本轮要求一并实现：关键人物各自提供立绘、选定事件即生图、冲突画面增强动作张力、至少两条真实其他消息、去背景黑色遮罩、纸面横向加宽且配图16:9。替代此前 `5f096d08` 的“正文发布后预生成”和快报3:2设计；此前场景16:9预设与现有归档按钮/首字绕排保持。
+- 生效流程：原24游戏小时收集期到期后，真实选择结果须有至少2组小消息才开始文案和配图；不足时每游戏小时继续收集，不调用两条API、不编造填充。原72游戏小时刊后冷却保留。达到条件后先冻结头条主事件及同组事实，再并行启动配图与写稿。标题、修辞改写不换图；事件身份/事实/参与者角色进入缓存键，事实改变产生不同键。整期无关头条、小消息不混入新配图计划。
+- 人物：事件采集保存HeroId、名字与当时角色；政变明确传玩家和原国王两个ID，保留旧6参方法，新8参入口不同名。每次生成最多4名，主线程一次解析并冻结各自外貌，后台串行复用原离屏舞台获取每人全身/头肩参考，按名字标识，家族纹章去重。诊断增加`weekly_participant_references`，分别记录全身与头肩是否提取成功。无ID旧快报按主文多人物回退，排除“其他消息”；无法解析的ID保持未知，不借用另一人的脸。
+- 配图任务仍归战役scope，关闭面板只清理显示scope；重复打开/重复通知合并任务，无自动付费重试。未发布选择作废时取消任务并拒绝晚回调；已完成任务也取消其可用状态。已发期数的事实计划保存在原存档键下的可选`Layouts[].IllustrationPlan`，回看使用同一计划键，不因模型文案不同重画。已完成但后来作废的付费请求无法撤销，画廊磁盘记录不会主动删除。
+- 张力与UI：导演和本地降级提示均要求冲突事件有施加行动、身体回应、控制关系及可读表情，移除固定远景主体占比；不新增伤亡/反抗/刑罚，和平事件不强制战斗。纸面882→1026（高814保持），图片框400×239、内部368×207；快报复用场景16:9预设映射（2048×2048→2048×1152等），真实返回图等比fit。去掉全屏黑色Sprite/Color，输入阻挡仍保留。
+
+### 代码证据（修订 a3183aaa，路径:一基行区间 / 符号）
+
+| 责任 | 代码 / 实际消费者 | 覆盖与边界 |
+| --- | --- | --- |
+| 事实计划及消息门槛 | `src/modules/AF.Module.Weekly/Bulletin/WorldBulletinPolicy.cs:10-29,139-158,191-194` / `WorldBulletinIllustrationPlan`, `BuildIllustrationPlan`, `HasEnoughMinorNews` | 同组事实快照、最多4人、至少2条；不改评分与冷却 |
+| 事件采集与并行启动 | `MyBehavior.WorldBulletin.cs:164-247,799-819,909-990` / `BulletinParticipants`, `TryRecordCoupOutcomeWithParticipantsForBulletin`, `AdvanceWorldBulletinScope`, `CompleteWorldBulletin`, `PublishWorldBulletin` | 事实先启动图片，正文完成关联计划；作废取消 |
+| 政变人物桥 | `extensions/AnimusForge.Coup/src/Integration/CoupRebellionBridge.cs:47-50,93-93,126-126,489-489,557-560` / `Outcome.ActorHeroId`, `AfAccess.Bulletin`, `TryRecordCoupOutcome` | 只提交本任务5处更改；同时存在的内战任务修改未纳入 |
+| 人物快照 | `extensions/AnimusForge.Illustrator/src/Context/WeeklyReportContextExtractor.cs:46-52,151-222` / `WeeklyReportCharacterReference`, `ExtractFromPlan`, `Extract`, `AddCharacter` | 主线程每次选择/打开一遍英雄解析；最多4人，不在Tick扫描 |
+| 任务与缓存 | `extensions/AnimusForge.Illustrator/src/Core/BulletinIllustrationPreloader.cs:28-72,83-159` / `KeyFor`, `PrepareSelection`, `CancelSelection`, `Ensure`, `Finish` | 标题不入键，事实/角色入键；晚回调不可恢复作废图 |
+| 实际生成消费者 | `extensions/AnimusForge.Illustrator/src/UI/Patches/WeeklyReportPopupIllustrationPatch.cs:476-565` / `StartGeneration` | 16:9请求、逐人双参考及诊断，沿用原导演/网络/缓存链 |
+| 存档到面板 | `MyBehavior.WorldBulletinPanel.cs:9-20,125-130`, `DevWeeklyReportPopup.cs:80-83`, `src/modules/AF.Module.Weekly/Panel/WorldBulletinPanelVM.cs:54-65,94-114` | 计划传入现有插画槽，真实图等比fit |
+| 版式 | `content/modules/AF.Module.Weekly/GUI/Prefabs/WorldBulletinPanel.xml:4-25,155-197` | 去遮罩、横向加宽、16:9框；实际字体/缩放需游戏验证 |
+
+### 验证与交付边界
+
+- 最终Release：原`build_single_module.ps1`经既有本地helper仅在当前进程隔离输出/obj，1.3（`v1.3.15.110062`）、1.4（`v1.4.6.115628`）和Bootstrap全部0错误，退出0；未改官方入口，未Stage/Deploy/打包/推送。产物：`artifacts/bulletin-event-art-20261001/build-425b284bd1da4172ab8ca70a07d90836/`，含命令、完整build.log、引用与hash；构建时工作树还有其他作者内战变更，因此这是集成编译证据，不是独立可部署发布包。
+- 真实源文件测试：`BulletinPreloadTests` 29项PASS（选定即请求、标题不失效、事实/人物变更失效、取消/晚完成/已完成作废、回看/重绘/重试/战役切换）；`WorldBulletinPolicy.SmokeTests` 46项PASS；`WeeklyParticipantTests` 10项PASS（双方ID和独立外貌、旧档主文回退、缺失ID、日期/角色/结果、4人上限）。游戏对象/原生外貌提取服务为桩，不代表GPU或HTTP已验。
+- 发现并修正测试样例：原样例只有一组合格小消息，35分外地俘获低于世界收录门槛；新增真实合格本国俘获样例验证第二组，并保留拒绝单组/低分凑数断言。没有为测试放宽业务门槛。
+- 两实际DLL的`verify-dll.ps1`均PASS：关闭UI不取消战役图片scope、选定/取消桥及Coup新旧签名存在、2048×1152 fit368×207、方图fit207×207、旧JSON默认兼容及新计划往返持久化。XML解析/框尺寸/无遮罩/无ESC字样，以及门槛在两API入口之前的源码核对PASS。日志与脚本在`artifacts/bulletin-event-art-20261001/`。
+- NOT-RUN：真实游戏Gauntlet加载/鼠标/不同分辨率布局、旧存档完整加载、双人物GPU立绘、真实导演/服务商16:9输出及视觉张力。服务商若忽略size，显示会等比留边；不能凭离线检查宣称返回像素或画作质量已验。用户截图对应既有旧图不批量重绘。
+- 回滚：对产品提交`a3183aaa`做定向逆提交；新增存档字段为可选，旧字段/键不变。勿硬重置、勿覆盖其他作者WIP。后续部署需新的明确授权并用最终集成源重建核对，不能直接覆盖这个混有并行WIP的验证目录。
+
+<a id="town-memory-seven-days-20261001"></a>
+
+### 城镇记忆自动刷新最短间隔调整为7游戏日（2026-10-01，OFFLINE_VERIFIED / 未部署）
+
+用户明确要求“间隔7个游戏日”。本条只替代下方 `town-memory-refresh-20261001` 的3日默认间隔，其他累计条件、按需触发、手工正文保护、1分钟请求间隔、2并发与384输出tokens不变。产品仅 `AnimusForge.SiegeAftermathIntervention/SettlementRuleMemoryEvolution.cs:12` 的 `MinimumRefreshDays` 由3改7；同步已有边界测试和功能说明。第6日仍拒绝、第7日允许，3次变化不能绕过7日门槛；60项既有/边界检查PASS。原脚本Release双API+Bootstrap全部exit0、0错误（原有warning保留），15产品源hash一致；实际引用1.3.15/1.4.6，产物hash见本任务verification.json。
+
+独立证据与候选位于 `artifacts/town-memory-seven-days-20261001/`（`tests.log`、`build.log`、`build-manifest.json`）。沿用上一片已验证基线加15文件overlay隔离其他作者未提交改动；未调用Stage/Deploy。真实游戏、真实provider、玩家旧档仍NOT-RUN。回滚只逆向本次间隔/测试/说明提交，不回滚前片城镇记忆功能；无存档结构变化。
+
+<a id="town-memory-refresh-20261001"></a>
+
+### 城镇记忆接入确认事件、按需限频刷新（2026-10-01，OFFLINE_VERIFIED / 未部署）
+
+用户先要求分析“城镇记忆不会变化”，随后明确授权接入确认事件、累计按需限频更新、记录实际易主时间、保护手工正文，并追问 token/性能。源码/定向回归已提交 `eb39f14ba1b9a4f162e73b1b74c5abb3e565bff9`；意图检查点 `7336fd8`。保留其他任务的 Coup/Weekly/Illustrator/CivilWar 改动。没有部署、推送、修改一键流程或运行真实 API。
+
+**交付行为**：复用原易主与族长继任事件，即时记录战役日（授地传参为家族成员时按实际 OwnerClan.Leader 归属）；保留最近三任。接入原生战后处置、GCCZ 成功终结的实际掠取/死亡/救济计数、成功文化变更、地方政策发布/续期/废除/到期。命令、对话和政策预测不当成结果；GCCZ 内部原生 mercy 不重复冒充最终结果。地方政策 `target_lost` 参数是剩余目标，故不误写“这些城失去政策”。未新增全国/NPC政策或无关机制事件，也不补造安装前未知历史。
+
+已有自动正文按 dirty revision 累积：距成功生成至少3游戏日，且3次有效变化或首变更等待1游戏日，下次百科/合资格对话读取时才请求；空正文可立即请求。每城网络尝试间隔至少1分钟，失败/拒收后再冷却1分钟；无自动重试循环。全局最多2个物理请求，读档前的未结束请求仍占额度；主线程每帧最多处理2个完成结果，无新增全城/Tick扫描。事件最多12条/每条480字符/每任，旧正文当上下文；未变化观察复用 snapshot。手工正文保持，只有用户显式开发者重生成/清空才释放保护；刷新失败保留原文。新增事件/文化/性格/手工编辑/同日反复易主/读档均有 revision/generation 拒收保护。
+
+**Token/线程**：真实辅助接口原先用 MCM 总额度覆盖调用参数；本次新增 internal 限额入口复用相同 gateway，城镇请求上限384输出 tokens、保留更低用户额度、thinking=false，关闭本次兼容性自动重发；其他调用原额度/兼容回退不变。输入事件为有界字符资料，不冒称精确 tokenizer 上限。worker 只发送快照并排队 DTO，主线程重新读取 ruler/culture/personality 后接受结果。
+
+**存档**：原字典与初始化键身份不变，值升级 v3；读取 v1/v2 时保留旧正文及 manual 标记，新增元数据默认初始化。三任×12条长中文事件可超过 TaleWorlds 单字符串限制，因此接入现有 `CampaignSaveChunkHelper.FlattenStringDictionary/RestoreStringDictionary`，每块≤12000 UTF-8字节，旧未分块值兼容。没有写入玩家存档。
+
+| 核实源码坐标（基于上述产品提交，一基行号） | 实际责任/消费者 |
+| --- | --- |
+| `AnimusForge.SiegeAftermathIntervention/SettlementRuleMemoryEvolution.cs:1–71`；`SettlementRuleMemoryStore.cs:21–173,265–308` | 有界事件、累计/限频规则、源版本、手工保护、唯一结果提交 |
+| `AnimusForge.SiegeAftermathIntervention/SettlementRuleMemoryCodec.cs:20–213`；`GcczTownRuleMemoryRuntimeBridge.cs:25–79` | v1/v2读取、v3字段、原存档键分块往返 |
+| `GcczTownRuleMemoryRuntimeBridge.cs:222–243,306–360`；`GcczTownRuleMemoryGenerationBridge.cs:34–112` | 显式重生成、确认事实、实际领主观察、并发/重试间隔与主线程接收 |
+| `SiegeAiInterventionBehavior.TownRuleMemoryEvents.cs:13–50`；`SiegeAiInterventionBehavior.cs:430–433,15378–15384` | 生命周期订阅、族长 fiefs 范围、成功终结事实，非新玩法执行器 |
+| `PolicySystem/Core/CustomPolicyBehavior.Management.cs:4533–4548` | 读取指定政策记录及明确目标；复用既有 post-commit hook，不改效果数值/AFEF |
+| `AnimusForge.SiegeAftermathIntervention/TownPromptComposer.cs:287–325`；`TownPromptTextCatalog.cs`/`GcczTownPrompt.zh-CN.json` | 已确认事实与旧正文进入同一生成输入，角色/事件归属约束 |
+| `AIConfigHandler.cs:2757–2799,2914–2955`；`EncyclopediaTownRuleMemoryPatch.cs:66–69` | 既有辅助 gateway 额外调用方 token 上限、仅本调用禁回退、真实主线程 tick |
+
+**验证**：`tests/modules/AnimusForge.SiegeAftermathIntervention/TownRuleMemory.Tests` 链接真实 core、Generation/Runtime/Ruler bridge、事件 listener、存档分块器，受控传输与值型 Bannerlord 桩，共 **59 PASS**。覆盖 v1/v2/v3、同日ABA、手工/新事实晚结果、失败保留、主线程写回、易主实际日、族长/原生与 GCCZ 结算、读档仍受物理并发限制、长中文三任分块往返。`verify_auxiliary_budget.ps1` 提取实际辅助方法验证16000→384/保留128/最小16/旧调用不变；`ConfiguredChatGatewayReplayTests` 原回归加HTTP端384/thinking=false/错误仅一次请求 PASS。核心合成微基准：50000次未变化观察均值0.586µs，10000次有界事件插入均值6.375µs，不是游戏帧性能。代码 diff 按仓库现有CRLF设置检查通过。
+
+**双版本构建**：使用已提交基线 `79d81e17e05a0568a267123b038ca39a93ad0e6a` + 本任务15个产品文件 overlay 的本地独立快照，沿原 `scripts/build/build_single_module.ps1 -Configuration Release` 构建1.3/1.4/Bootstrap全部exit0、0错误，保留既有warning。实际引用1.3=`v1.3.15.110062`、1.4=`v1.4.6.115628`。最终15源文件hash与快照一致。证据目录 `artifacts/town-memory-refresh-20261001/`：`build-manifest.json`、`contract-tests.log`、`token-budget.log`、`gateway-replay.log`、`dual-build.log`、`verification.json`；后者保存产物SHA256。首轮 Windows tar 中文路径解包失败后用Python tarfile安全解包；核心初编缺少LINQ引用已修复。最终验收不复用失败候选。
+
+**未验/边界**：真实游戏UI/事件顺序、真实provider、玩家旧档、完整帧耗时 NOT-RUN。`G:/AFMOD/GCCZ` 不存在，故未外仓同步；可复用实现已在仓内 GCCZ core，未创建未知外仓。原合资格对话范围不扩大、NPC个人/AFEF/场景短期记忆独立。源回滚用聚焦 `git revert eb39f14b`；旧DLL不能读取新v3数据，若部署后回退须使用升级前存档或另做显式v3→v2导出，不能删玩家数据。
+
+<a id="coup-loyalists-and-aftermath-20261001"></a>
+
+### 政变后旧王支持者反抗与胜利处置接线（2026-10-01，OFFLINE_VERIFIED / 未部署）
+
+用户实机反馈：夺位后没有带城反叛候选，且提示TAB进入攻城处置但菜单没出现；随后明确选择“按新旧国王关系，旧王家族和更支持旧王的有地家族优先反抗，不要求与玩家关系为负”。工作区 `F:/AnimusForge-main`、分支 `codex/af-main-refactor-continuation-20260831`，checkpoint `aa04423`，产品/回归/使用说明 `86991dc3`；不改普通每周叛乱、不保证无合格家族时强造反叛。其它作者 `SettlementRuleMemoryEntry.cs` WIP保留、不纳入提交，无GCCZ可复用规则文件改动或外仓同步。
+
+故障证据：`artifacts/coup-loyalist-aftermath-20261001/reported-case.log`。加伦 `town_V5`、政变 `3bdff42f29034fb1b6801df6d7add10c` 在14:36:27进入HallSelection，14:36:38制服国王，14:36:51 `rebellion_registered state=Completed` 与政变完成；SETS同一时刻记录hall胜利，却无处置队列。原桥虽以forceTrigger=true调用ResolveKingdomRebellion，宿主Resolve内部候选仍硬编码forceTrigger:false，要求与新王关系≤−5；“强制”只跳过抽签。原ReachVictory无条件显示普通SETS菜单提示，而QueueVictoryPostMissionFlow明确排除_armedCoup。日志未保存当时各族具体关系，不能断言每家究竟因被俘、无地还是关系被筛除。
+
+| 源码坐标（`86991dc3`，一基） | 责任与消费者 |
+| --- | --- |
+| `extensions/AnimusForge.Coup/src/CoupSystem/CoupLoyalistPolicy.cs:1–29` | 政变专用反抗条件与排序；原王族优先，其余旧王关系严格大于新王关系才入选；按关系差、封地、家族等级、ID稳定排序。物理起兵资格由宿主AF负责。 |
+| `extensions/AnimusForge.Coup/src/Integration/CoupRebellionBridge.cs:34–36,238–240,245–350,416–417` | 请求保存新策略/旧王/原王族ID，旧请求保持旧策略；一次遍历目标王国家族，AF结构性校验force=true绕过负关系阈值，再应用政变支持规则；剩余支持者响应，逐族记录拒绝原因；起兵前重验候选，不重新抽人；命名背景注明反对夺位，命名及政治执行仍复用AF。 |
+| `extensions/AnimusForge.Coup/src/CoupSystem/CoupSession.cs:133–135,177` | AftermathPending/AftermathOpened沿原存档键保存，拒绝待开/已开矛盾状态；旧Completed记录不自动补发。 |
+| `extensions/AnimusForge.Coup/src/CoupSystem/CoupCampaignBehavior.cs:107–115,131,202,465–476,607–656` | 完成王位/城镇/拘押/事实/反叛登记后标记待处置；已有engine tick等待MapState且无弹窗，再尝试打开；失败保留Completed和待办、停止自动重试，由城镇“进入政变胜利处置”手动重试；归属变化取消，不重做政治事务。 |
+| `extensions/AnimusForge.Coup/src/Integration/SettlementEntryTroopSelectionBehavior.cs`；`SettlementEntryTroopSelectionBehavior.cs:326–335,7082–7085` | 缓存TryOpenCoupVictoryMenu delegate；真实目标/MapState/LocationEncounter/玩家归属门禁，通过现有SiegeAiIntervention入口transferOwnership=false打开原版胜利菜单；传幸存者、沿菜单进入GCCZ。政变战斗提示改为本场守军被击溃，普通SETS提示保留。 |
+| `tools/Coup.RuntimeProbe/CoupLoyalistAftermathRegression.cs`；`extensions/AnimusForge.Coup/tests/Coup.ContractTests/Program.cs` | 纯支持/排序/JSON/处置状态；真实选择器、关系变化和开关；实际Coup owner→adapter→SETS gate，在原生菜单边界截获验证参数与幂等。 |
+
+运行频率：候选仅登记时遍历一次目标王国家族，最多排序一次；之后只复核已选主导者/跟随者，旧王使用ObjectManager按ID查找，无新增世界英雄扫描。处置沿已有0.25秒engine工作泵，仅标志/上下文门禁；实际尝试只构建一次幸存名册，失败置retryBlocked等待手动操作。总开关、玩家王国免疫以及族长存活/成年/非俘虏、有城镇或城堡等条件继续有效；扣押旧王可能导致原王族不能领头，由其余合格支持者领导。
+
+验证证据 `artifacts/coup-loyalist-aftermath-20261001/`：
+
+- `contract.log`：**128 PASS**，新增15项旧/新王关系、原王族优先、正关系反抗、相等关系不反抗、稳定排序、无候选与处置持久状态；两条原快报测试字段CS0649，无错误。
+- `build.log`：原单模块脚本Release **1.3/1.4/Bootstrap通过**。隔离源码来自 `aa04423` git archive +本任务8个产品/契约文件overlay；与最终工作区8文件hash一致，见 `verification.json`。构建/部署脚本不改。
+- 1.3 DLL：`source/bin/Release/single_module_artifacts/versions/1.3/AnimusForge.dll`，参考v1.3.15.110062，SHA256 `6EA62E4A2A442366A9DC5E4FD5A5972AD4049C24874EC320EF1D5693C4760B01`；1.4同根 `versions/1.4/AnimusForge.dll`，参考v1.4.6.115628，SHA256 `758D387CC2734D094B979E5F38DCC62A061037EEB3356B5B6714EE6ECDBD642B`。
+- `probe-build.log`、`probe/registration.log`：**223 PASS**（原206+本次17），四可用标志true、45个Harmony目标、输入DLL不变。新选择器实际执行，ObjectManager/JSON真实；物理起兵资格和关系为明示fixture，未执行真实起兵/LLM。处置运行真实owner→adapter→host gate，原生菜单打开函数是桩，核实transferOwnership=false、过滤伤亡、失败可重试、成功及读档不重开、城镇换主取消。没有把桩记录当原生菜单显示或处置奖励已验。
+- `git diff --check`通过；`code-map.log`仍为既有 `Stale source content: SubModule.cs`，未刷新无关地图。
+
+未验证：真实NPC关系下的反叛建国与跟随、命名服务、原版胜利菜单/GCCZ选择及奖励完整链、游戏存档与1.3运行时；未部署/推送。原已完成的反叛请求和政变不会重开，以免重复结算，实机重测应读夺位结算前存档。本轮没有改已结束这局的战役数据。回滚用 `git revert 86991dc3` 聚焦逆向提交，保留后续共享文件变更，不hard reset；产物/日志如上，无新增游戏部署备份。
+
+<a id="illustrator-deploy-20261001"></a>
+
+### 本会话快报/插画/画廊改动已部署（2026-10-01，DEPLOYED / LIVE_NOT_RUN）
+
+用户明确要求“部署”。基于干净源码 `454a63b3` 重新隔离构建Release双API与Bootstrap，三个构建exit0、0错误；两实际DLL重验快报关闭不取消后台任务、DialogueUI回调保留/重复注入移除、RP介绍JSON往返及共享NPC物品描述读取通过。构建期间及部署前后tracked clean、HEAD一致，未运行游戏/启动器。构建实证 `artifacts/illustrator-deploy-20261001/build-77f7887ba5db4a9d8ee2913a9fbf702a/`。
+
+核实仓内绝对路径及无reparse后，将旧正式产物和Stage整体移入本任务备份（精确映射`artifacts/illustrator-deploy-20261001/workspace-backups.json`），把新构建的9个DLL/PDB/marker逐项哈希校验后提升到正式Release artifacts。未修改官方脚本。执行原 `scripts/build/deploy_module.ps1 -Configuration Release` 部署单模块 `F:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord/Modules/AnimusForge`，报告更新 **9文件**。
+
+部署后Stage **238文件全部SHA256一致**，SubModule.xml仅声明`AnimusForge.Bootstrap.dll`，Recovery有complete标记。部署日志 `artifacts/illustrator-deploy-20261001/deployment.log`，验收JSON `artifacts/illustrator-deploy-20261001/verification.json`。游戏目录未列入Stage的文件保留，无推送或启动游戏。本会话前述“未部署”是当时状态，现在已包含于本次安装；实机视觉、NPC展示、生图接口、后台GPU/耗时及真实旧档仍NOT-RUN，不提升J17/C/D。
+
+安装回滚点：`C:/Users/29310/AppData/Local/AnimusForge/Recovery/deploy/deploy-3d1a0f26dc3d4933868b6bd7f5351a99`（原文件与manifest/complete）。仅按该清单恢复本次替换项，不对整个模块目录镜像删除；源码回滚按各功能记录的定向提交处理。
+
+<a id="bulletin-prefetch-20261001"></a>
+
+### 快报本期配图提前生成（2026-10-01，OFFLINE_VERIFIED）
+
+用户要求快报配图提前生成。本条明确取代旧“每次打开快报重新生成”：每期发布时创建新画，打开/重开同一期使用其已准备成图或接入正在进行的任务；不借用别期/旧周报图库图片。工作区 `F:/AnimusForge-main`、分支 `codex/af-main-refactor-continuation-20260831`；检查点 `3308d58`，产品和测试 `5f096d08`。无部署/推送，其他并发Coup改动保留。
+
+源码责任图（修订 `5f096d08`）：
+
+- `MyBehavior.WorldBulletin.cs:935–947`、`src/modules/AF.Module.Weekly/Panel/WorldBulletinPanelVM.cs:50–56`：最终快报正文/版式记录落定后、地图通知前调用同DLL PrepareIssue；生成侧异常不阻断快报发布。
+- `extensions/AnimusForge.Illustrator/src/Core/BulletinIllustrationPreloader.cs:11–119`：发布触发生成，打开加入同一任务，手动重绘显式换代；独立命名空间`bulletin_prepared_v1`按期ID、标题、副标题、完整正文生成键。历史期仅加载精确键的已准备图片，缺图才生成；发布新期不读取旧图。任务元数据最多48项，完成后不保留图片字节；事件驱动，无新Tick轮询。沿用全局4worker/8scope上限，繁忙/失败显示手动重绘，不自动付费重试。
+- `extensions/AnimusForge.Illustrator/src/Core/IllustratorRuntime.cs:171–179,272–298`：新增默认关闭的campaignOwned生命周期选项，仅快报后台任务使用；保持Campaign实例、CampaignKey、总开关和取消校验，切存档/关闭生图会取消；原界面scope仍检查TopScreen。Reset清理后台任务。
+- `extensions/AnimusForge.Illustrator/src/UI/Patches/WeeklyReportPopupIllustrationPatch.cs:205–207,285–391,438–558`：弹窗挂接/显示与生成任务分离；成图后台读盘、主线程注册纹理，检查view scope/key/load版本防晚结果串图。共享StartGeneration保留原人物双参考、纹章、导演、历史动作、1536×1024快报尺寸、HTTP及缓存流程，普通周报仍走原界面任务。删除本期画作不会自动重生，需点击重绘。
+
+验证：`extensions/AnimusForge.Illustrator/tests/BulletinPreloadTests/`链接生产preloader、使用scope/disk/generator桩，22项PASS（发布/打开并发去重、手动重绘、失败不重试、Reset/迟到完成、历史缓存精确键、缺图、删除、关闭开关、48项上限）。实际双DLL检查确认CloseOverlay仅取消显示scope，独立后台scope不受影响且可单独取消；检查PrepareIssue在地图通知前。脚本`artifacts/bulletin-prefetch-20261001/check-lifecycle.ps1`，不是游戏或网络调用。
+
+最终隔离Release 1.3/1.4+Bootstrap均exit0、0错误（既有警告保留），产物/引用/哈希/日志在 `artifacts/bulletin-prefetch-20261001/build-480e65f68a7c4b41a859d50866567998/`。构建包括当时并发工作树，不冒称只有本任务产品。git diff --check PASS。
+
+未验：实际后台原生人物/纹章导出、真实HTTP耗时、游戏内发布→通知→打开/切屏、真实旧档；未Stage/部署/推送/付费生图。不保证通知刚出现时图片已经完成，未完成时面板显示进度。回滚仅定向revert `5f096d08`，会恢复打开时生图；本期缓存文件保留，不清理用户画廊。本包不提升J17/C/D。
+
+<a id="coup-admission-sixty-20261001"></a>
+
+### 城镇强攻政变发动门槛：至少60名突击队员（2026-10-01，OFFLINE_VERIFIED / 未部署）
+
+用户确认实施默认家族4级、影响力300、实际突击队60人，另留1名接应；全部可在原篡位MCM的“发动条件”中修改（等级0–6、影响力0–5000、人数1–120，前两项0表示不限制）。影响力只检查、不扣除，无筹备、费用或等待；本条取代此前未实施的筹备讨论。工作区 `F:/AnimusForge-main`，分支 `codex/af-main-refactor-continuation-20260831`；意图checkpoint `e84108f`，产品/测试/使用说明 `d7dff15a`。本轮不部署、不推送。
+
+| 源码坐标（`d7dff15a`，一基） | 责任及真实消费者 |
+| --- | --- |
+| `extensions/AnimusForge.Coup/src/CoupSettings.cs:18–28,64–76` | 三项MCM默认/范围/提示；CaptureAdmissionForNewCoup在确认窗前固定参数；CheckNewCoupRequirements直接按基础数值检查，不为菜单刷新分配快照对象。 |
+| `extensions/AnimusForge.Coup/src/CoupSystem/CoupSession.cs:11–44,113–114,172–180` | CoupEntryRequirements规范化/资格规则/差额提示；既有 `_afCoupSession_v1` 新增EntryRequirements，缺项旧会话为0级/0影响力/1人；显式null或越界保留原JSON并拒绝继续。 |
+| `extensions/AnimusForge.Coup/src/CoupSystem/CoupCampaignBehavior.cs:127–130,183–267,270–300,672–680` | 菜单接资格检查并移除写死60人文案；确认窗显示实际条件；选兵前/确认后复核快照与健康名册，排除英雄及伤兵，必须留接应；登记后CheckSessionAdmission立即放行；健康计数直接遍历本队名册一次。 |
+| `extensions/AnimusForge.Coup/src/CoupSystem/CoupTroopSelection.cs:15–18,30–37,58–64` | 内部Open/CreateInitializationData新增minimum参数，默认1供大厅使用；界面标题、确认资格实际应用上下限，街道传快照minimum。 |
+| `extensions/AnimusForge.Coup/tests/Coup.ContractTests/Program.cs`；`tools/Coup.RuntimeProbe/SelectionRegression.cs`、`CoupAdmissionRegression.cs`（后两者同目录） | 边界/真实Newtonsoft旧会话/参数规范化；真实选兵数据工厂59/60、上下界、大厅1人；实际设置属性、名册计数、资格复核与街道确认回调/SETS队列。 |
+
+行为边界：默认街道上限60，所以默认必须恰好选60人且本队至少61名健康普通士兵。最低人数大于上限时提示配置冲突，不改用户设置。门槛与战斗参数在打开确认窗时固定，当前世界状态在选兵前及确认时重验；注册Street/Started后，不因影响力下降、修改设置或伤亡低于60而取消，大厅仍至少1名幸存者。原失败/王位/领地/快报记忆保持。无新增计时器、每帧反射或世界部队扫描；菜单资格只读本家族和本队名册，所需失败提示按拒绝情况生成。
+
+验证与产物：`artifacts/coup-admission-20261001/`。
+
+- `contract.log`：**113 PASS**，新增22项默认条件、3/4级、299/300影响力、60/61兵力、冲突/禁用/边界/旧JSON/新JSON及已开战大厅1人；仅原快报测试字段两条CS0649提示。
+- `build.log`：原 `scripts/build/build_single_module.ps1`，Release **1.3、1.4、Bootstrap通过**。使用 `e84108f` git archive + 本任务5个产品/契约文件overlay独立source，开始时跟踪文件干净，后续他人的快报/插画WIP不混入；最终5文件与工作区哈希一致，见 `verification.json`，未改构建脚本。
+- 1.3产物 `source/bin/Release/single_module_artifacts/versions/1.3/AnimusForge.dll`，参考 `v1.3.15.110062`，SHA256 `64D27C36B33FEF4474F033AA2DC1778ABD8C6311E98EA483E64DCDDB32438057`；1.4同根 `versions/1.4/AnimusForge.dll`，参考 `v1.4.6.115628`，SHA256 `F42DCEFB951BC3FD0FA2105F0790EA421149B2E76CEAA29DBB1D1545994082DA`。
+- `probe-build.log`及`probe/registration.log`：**206 PASS**（36选兵、36入口/拘押、17门、26场景、12快报、50战斗设置、29发动门槛）；4可用标志true、45个Harmony目标、输入DLL哈希不变。使用新1.4实现和真实1.4managed依赖，不声称1.3运行时或完整实机。
+- 门槛fixture实际调用设置默认资格、已存门槛复核、健康计数及街道选兵回调/队列；59人、影响力变299、名册减至60、选择混伤兵均拒绝，成功恰好60人且无影响力扣除或真实名册转移。其他世界上下文、PartyScreen、守军采集均为明确桩。初次夹具试图替换MCM泛型Instance getter遭Harmony NotImplementedException，保留 `probe-fixture-initial-failure.log`；最终不替换该getter，检查真实默认入口与独立设置对象捕获，不将其描述为游戏MCM改值持久化已验。
+- `git diff --check`通过。`code-map.log`仍为已有 `Stale source content: SubModule.cs`，没有调整无关文件或将全仓代码地图记为通过。
+
+未验证：MCM实际分组/滑块/改值持久化、灰色tooltip渲染、原生选兵箭头/按钮、完整实机战斗、真实旧游戏存档和1.3运行时。回滚使用 `git revert d7dff15a` 的针对性逆向提交，保留后续共享文件改动，不hard reset。本轮无游戏覆盖或部署备份；记录和产物均留上述artifacts目录。
+
+<a id="gallery-rp-items-20261001"></a>
+
+### 画廊转RP物品与对话插画入口去重（2026-10-01，OFFLINE_VERIFIED）
+
+用户要求画廊作品转RP物品用于向NPC展示；随后明确移除野外右上角重复按钮，因为DialogueUI已有场景插画入口。实际工作区 `F:/AnimusForge-main`、分支 `codex/af-main-refactor-continuation-20260831`；检查点 `979be29`，产品及定向测试 `fed01fb6`。本包保留原DialogueUI按钮、生图回调、自动生图及百科入口；不改其他并发CivilWar/Coup/Weekly改动，不部署或推送。
+
+源码责任图（修订 `fed01fb6`）：
+
+- `extensions/AnimusForge.Illustrator/src/UI/Gallery/GalleryRpItemConverter.cs:15–103`：标题/主题/行动摘要生成可编辑画卷介绍，不复制原始生图prompt；作品身份按规范化CampaignKey+图片Key隔离，同名不同画不合并。TryConvert主线程检查战役、RP owner、背包、原文件和非空介绍，调用现有TryCreateGeneratedInventoryItemForExternal、TrySetGeneratedRpItemIntroductionForExternal、GenerateKnownInventoryItemToRosterForExternal。先保存介绍再入背包；同稳定物品ID已在背包时只更新介绍，避免重复添加；已送出的画卷可再制作一份。原图不删除。无新存档schema，沿用生成RP物品记录及玩家背包恢复机制。
+- `extensions/AnimusForge.Illustrator/src/UI/Gallery/IllustratorGalleryPopupVM.cs:74–87,337–375`、`extensions/AnimusForge.Illustrator/GUI/Prefabs/IllustratorGalleryPopup.xml:107–115`：选中且预览成功后可点“转为RP物品”；现有CourierLetterInputPopup填写/确认介绍，取消不交付；关闭/切存档/owner变化时拒绝迟到提交。仅转换点击时一次原文件存在检查、一次背包扫描和现有RP模板解析，不增加Tick扫描/网络请求。
+- `extensions/AnimusForge.Illustrator/src/UI/Patches/ConversationIllustrationPatch.cs:24–67`：删除GauntletMovie.Load按钮注入、原生Map/Mission fallback及按钮跟踪刷新；保留HandleConversationIllustrateClicked和主回复自动重绘patch。`IllustratorSettings.cs`移除已删除入口的刷新调用。DialogueUI原有`AFDialogueNativeOverlay.xml:29–31`的按钮及`Native/IllustratorBridge.cs:32–42`的回调解析未改。
+- 三渠道展示继续调用共享`CourierDeliveryBehavior.GetCourierLetterTransferFactDescriptionForExternal`（`src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.LetterInventory.cs:657–685`），从RP介绍进入物品事实；Scene/Native共享Shout处理、Courier共享PromptMessages。NPC读取画卷文字介绍，不是新增多模态图片上传，也不把艺术描绘写成已发生世界事实。
+
+验证：`extensions/AnimusForge.Illustrator/tests/GalleryRpConversionTests/`链接真实转换器和输入清洗，19检查PASS（游戏/RP注册/背包是桩，非实机）；覆盖成功、重复、新对象同ID、同标题不同作品、介绍失败、交付失败及重试、空描述、删除/缺图、跨战役与规范化Key。命令：`local/dotnet/8.0.425/dotnet.exe run --project extensions/AnimusForge.Illustrator/tests/GalleryRpConversionTests/GalleryRpConversionTests.csproj --configuration Release -- artifacts/gallery-rp-20261001/image-fixture.txt`。
+
+最终隔离Release双API+Bootstrap exit0、0错误，保留既有警告；记录 `artifacts/gallery-rp-20261001/build-365e512b9bae40c7919310e0947737ae/`。两个实际DLL通过DialogueUI反射回调解析、旧注入不存在、自动hook保留、真实RP记录JSON往返及共享NPC物品描述读取、XML绑定检查；fixture仅内存注入，不读写真实存档/manifest，脚本`artifacts/gallery-rp-20261001/check-dll.ps1`。首轮验证脚本因PowerShell读取无BOM中文失败，补UTF8 BOM后通过，非产品编码问题。内容映射已有画廊预制体，git diff --check PASS。构建包含当时其他作者工作树，不冒称仅本提交产物。
+
+未验：游戏内画廊/输入框点击、背包图标与物品显示、真实保存读档、三渠道NPC实际回复、角色切换及现场性能。未Stage/部署/推送/付费生图。回滚只定向revert `fed01fb6`；已经写入玩家存档的画卷沿用既有RP记录，不随代码回滚删除。本包不提升J17/C/D总验收。
+
+<a id="civilwar-political-panel-20261001"></a>
+
+### 派系面板、事件政治与内战消息（2026-10-01，DEPLOYED / OFFLINE_VERIFIED）
+
+**后续部署（2026-10-01 13:56，用户明确授权，取代本节实施轮“未部署”状态）**：最终严格通过仓库原版 `一键编译覆盖推送/一键编译并覆盖.bat --no-launch` 完成重新编译及覆盖，保持脚本默认Debug配置。1.3（v1.3.15.110062）、1.4（v1.4.6.115628）及Bootstrap全部编译成功、0错误；原有告警未屏蔽。未修改BAT/PowerShell构建部署入口，未推送。执行初期工具进程Path/PSModulePath无法解析系统工具/Get-FileHash，仅为本次子进程补齐系统路径；旧Debug Stage资源与当前源码不同，完整移存后由原脚本重新生成并校验，未跳过检查。
+
+最终覆盖 `F:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord/Modules/AnimusForge`，此轮BAT更新9个程序文件；全部238个Stage文件与安装目录SHA-256相等，三份build marker对应DLL哈希一致，XML仅加载Bootstrap。最新9文件旧版备份及complete标记：`C:/Users/29310/AppData/Local/AnimusForge/Recovery/deploy/deploy-b44ea9731b19450e8af075d7655f81c5/manifest.json`。在用户补充要求使用BAT之前，曾用原部署子脚本部署已验证Release产物并更新28文件，备份位于 `deploy-b17d7d63b7fc4c84aa241d58b7bbd3fe/manifest.json`（同Recovery/deploy父目录），28份旧文件哈希也已核验。最终安装以BAT的Debug新编译结果为准；如需撤销整个本轮部署，按最新9文件、再前序28文件的顺序按manifest恢复并验证oldSha256，不整目录删除未知文件。旧Release Stage/产物及旧Debug Stage保留于 `artifacts/civilwar-review-20261001/deploy-input-backup-d6b88837cb5a4fabbd6bb040e5f8b45f/`。
+
+最终证据为 `artifacts/civilwar-review-20261001/political-oneclick-deploy-final.log`、`political-oneclick-verification.json`；前序部署记录 `political-deploy.log`、`political-deploy-retry.log`、`political-deployment-verification.json`。本次没有启动游戏，实机、真实旧档和帧耗时仍未验。
+
+本包执行用户“派系面板操作与事件驱动政治系统”实施计划，并补查周报、快报、人物记忆链路。工作区 `F:/AnimusForge-main`，分支 `codex/af-main-refactor-continuation-20260831`；本地意图检查点 `c1c3e5e`，产品/回归提交 `3b8337d78d22528570ddb299dd3fabcf21f39870`，身份收尾修复 `79874aaa`（新统治家族转王室阵营）。保留政策、处决、政变、图库等并行作者改动；主体提交仅包含本任务20文件；身份收尾仅改2个本包文件。本包不修改一键构建/覆盖入口、不扩展公开子MOD API、不部署或推送，不增加王室阵营AI自动招募。
+
+**落地行为**：原派系页加入身份、派系卡片选择、底部操作入口；创建诉求/目标、国王治理及补偿采用原生选项菜单，显示报价与禁用理由，最终确认重验版本/角色/目标/资源。玩家正式封臣可加入、离开、建派、下令或建议起兵；跨国七天冷却、一次关系惩罚、确定性继任、建国期间锁成员、叛军玩家看到原王国内战。国王压制/谈判/妥协/强制解散使用共用入口和七天冷却；待玩家答复保存三日条款，超时拒绝/抗命。真实议和归国先于补偿；宣权/独立使用实际王权与战争效果；明确失败不删除组织，已知安全的未完议和/归国重试，未知副作用保留核查。
+
+**调度与保存**：回调登记不满并合并王国待办；家族/派系不满与实力使用可增量重建的运行缓存，每日衰减沿用九种原来源的七天比例，新王室打压为七天累计10%。工作器最多32个可让出记录步、约1ms软预算，空队列常数返回；原生政治动作/建国提交不可被软预算抢占，不能把离线数字称为实机帧耗时上限。日级期限覆盖通牒、回答、个人/治理冷却、命名超时、战争期限、余波和停战承诺；成派/成员/事件升级防刷骰，玩家自建诉求保持，已送达诉求锁定。旧周入口仅兼容排队，不重复裁决。原保存键、类/枚举身份保留，JSON payload v4可读取v2/v3，保存操作回执、回复、未完成协议和命名状态；读档不会再次扣付已确认款项。
+
+**消息与记忆**：成功动作、派系成立/诉求变化、内战爆发与结局进入事件素材、参与领袖的重大/近期事迹和共用AFEF历史/每日记忆；玩家使用玩家行动入口。待回应、拒绝补偿和失败结算不写成成功事实。素材键不再仅使用国家+周，避免同日不同事件互相覆盖；快报沿用原捕获/选择/写稿/发布与NPC读取链路，区分“内战爆发 / 内战结束 / 派系交涉”，不保证每条素材一定被选入周报或立即发布。
+
+| 源码坐标（`3b8337d7` + `79874aaa`，一基；责任） | 真实入口及覆盖 |
+| --- | --- |
+| `src/AF.Contracts/Internal/TeamModules/ICivilWarModulePort.cs:10–117` | 同DLL请求、报价、结果、建派选项、待回应与刷新契约；公开API不变。 |
+| `src/modules/AF.Module.Kingdom/CivilWar/KingdomCivilWarOwner.Actions.cs:57–364` | Quote / Execute / ExecutePoliticalAction / CompletePoliticalResponse / PublishPoliticalResult：UI、AI、对话共用资格与效果，收据、失败保留、记录。 |
+| `src/modules/AF.Module.Kingdom/CivilWar/KingdomCivilWarOwner.Events.cs:19–322` | 日期迁移、合并队列、ProcessPending、DecayPoliticalRecords、EvaluatePoliticalKingdom、AI治理、目标变化；回调不递归建国。 |
+| `src/modules/AF.Module.Kingdom/CivilWar/KingdomCivilWarOwner.cs:251–274,515–660,741–834,1196–1231` | 兼容周/日入口、建国回报、保留失败、战争结算、旧对话转接、增量缓存。旧存档身份与真实效果owner保留。 |
+| `src/modules/AF.Module.Kingdom/CivilWar/KingdomCivilWarState.cs:29–186`；`CivilWarPoliticalRules.cs:8–29`（同目录） | v4追加字段、运行缓存不入档、初始策略费用/权重；`CivilWarCatalog.cs`登记第十种来源与诉求亲和权重。 |
+| `src/modules/AF.Module.Kingdom/CivilWar/CivilWarCampaignBehavior.cs:26–99` | 每日/主线程Tick、死亡继任、王国消亡、议和/归属/政策回调及三日回应弹窗；原事件来源保持。 |
+| `KingdomFactionTab.cs:57–95,350–476`；`KingdomFactionTab.Actions.cs:11–87` | 卡片/底部入口、报价与二次确认菜单、打开/状态变化刷新、关闭世代；未宣称实机布局/点击已验。 |
+| `src/AF.GameAdapter.Bannerlord/Composition/StartupPatchComposition.cs:27–29` | 显式注册面板OnFinalize补丁，防止只有补丁类而没有消费者。 |
+| `MyBehavior.cs:12012–12042`；`MyBehavior.CivilWarPolitics.cs:7–21` | 原异步命名/建国前后守卫；薄适配周报、快报及AFEF入口，原对话/记忆owner继续负责写入。 |
+| `src/modules/AF.Module.Weekly/Bulletin/WorldBulletinPolicy.cs:712–717`；`MyBehavior.WorldBulletinPanel.cs:210–212` | 新快报兜底标题/分类，避免把谈判或战争结局标成爆发。 |
+| `tests/modules/AF.Module.Kingdom/CivilWarLifecycle.ContractTests/PoliticalActionsTests.cs`；`Program.cs`/`Fakes.cs`（同目录） | 链接真实生产owner/效果/契约，只有游戏对象和原生动作使用桩；不是真实Campaign存档验收。 |
+
+**已验证**：生命周期/政治操作180项PASS；既有CivilWarRules smoke PASS（net6 EOL/fixture未赋值告警保留）。覆盖退出/跨国冷却/继任/创建、明确同意不二次掷骰、共享费用/冷却、补偿不叠加旧诉求、三日超时、真实桩转款/议和/归国/夺位/独立、重复点击、未知扣款失败不重放、已接受议和失败存读档后安全续结、v2/v3迁移、消息去重、缓存平均与成派防刷骰。100家族×10来源100日均值约0.27–0.37ms；另100新增家族、两派、100事件合并一个待办，分批总计约0.93–1.35ms（均为合成桩环境，受JIT/机器负载影响）。
+
+原构建辅助 `E:/PYTHON/python.exe artifacts/civilwar-review-20261001/run_build.py --configuration Release` 仅在内存隔离官方脚本的产物/obj路径，没有Stage/Deploy。最终候选 `artifacts/civilwar-review-20261001/build-5913b76c5c464547aa551fbedd995b34/` 的Release 1.3（`v1.3.15.110062`）、1.4（`v1.4.6.115628`）及Bootstrap exit0。该构建基于当时并行工作树，不是排除其他任务的独立发布包；之后20个本任务源码与测试归入上述提交。`political-final-evidence.json`记录源文件SHA-256、候选及未验项。两个实际DLL均反射生成完整面板XML，8个按钮模板、派系数据源、方法与子控件点击路由通过；用Windows PowerShell/.NET Framework独立进程注册真实OnFinalize Harmony类通过。此前PS新版.NET的BinaryFormatter异常属于探针宿主限制，切回游戏同类Framework宿主后通过，未改产品规避。
+
+**未验证/交付边界**：未运行真实Campaign、真实旧档、实际命名服务；未实测面板布局、鼠标/手柄点击、原生战争/家族归属副作用、快报实际选中发布、真实模型读取记忆和帧耗时。上述离线结果不等于实机验收。全仓历史代码地图不因本功能自动重标为完成；本表只覆盖具名消费者。本轮无游戏部署/远端推送。
+
+**回滚**：依次对 `79874aaa`、`3b8337d7` 做聚焦逆向提交（先 `git revert 79874aaa`，再 `git revert 3b8337d7`，先核对之后同文件改动），禁止整树reset；`c1c3e5e`是开工标记，不是回退整个共享工作树的授权。v4新增保存字段向后读取依赖老版本对未知JSON字段的兼容；回滚前另留玩家存档，真实降版旧档未验。
+
+<a id="coup-mcm-battle-options-20261001"></a>
+
+### 篡位 MCM 七项战斗参数（2026-10-01，OFFLINE_VERIFIED / 未部署）
+
+用户确认并要求实施“战斗规模与难度、适度扩展”方案。工作区 `F:/AnimusForge-main`，分支 `codex/af-main-refactor-continuation-20260831`；意图checkpoint `795c3125`，产品/测试/使用说明 `0aff8322`。保留原总开关，增加街道突击队60（1–120）、大厅突击队20（1–40）、门卫10（1–30）、大厅护卫20（1–40）、每波30（1–60）、间隔30秒（5–120）、存活波数4（1–4）。不改变胜败政治后果、伤亡、快报和记忆规则；未修改一键构建/覆盖脚本，未部署或推送。
+
+参数只在Begin读取MCM并限幅，作为脱离设置对象的BattleOptions存入既有 `_afCoupSession_v1` JSON；转场/读档沿用快照。旧JSON缺少快照时保留历史默认，显式null/部分字段/越界快照由IsValid拒绝，沿用SyncData保存原JSON及停用入口的保护。真实Newtonsoft初次回归发现其默认复用已初始化对象会掩盖缺字段，最终给该字段指定ObjectCreationHandling.Replace后通过；未把缺项损坏当旧档迁移。
+
+| 源码坐标（`0aff8322`，一基） | 真实职责与消费者 |
+| --- | --- |
+| `extensions/AnimusForge.Coup/src/CoupSettings.cs:14–51` | 原页/标识/目录不变；七项整数属性、两组中文提示、默认/范围/免重启；CaptureBattleOptions返回归一化独立快照。 |
+| `extensions/AnimusForge.Coup/src/CoupSystem/CoupSession.cs:11–40,75–77,135–164` | CoupBattleOptions及旧档默认，真实JSON替换语义；单次名册校验遍历累计四角色人数，按保存快照验证。 |
+| `extensions/AnimusForge.Coup/src/CoupSystem/CoupCampaignBehavior.cs:212–261,283–313,319–333,470–508` | Begin固定参数并显示实际确认文案；街道选兵保留接应兵；真实健康守军按大厅/门卫/街道分配；大厅只选幸存者且重验上限；QueueCurrentScene带入当前快照。 |
+| `extensions/AnimusForge.Coup/src/Integration/SettlementEntryTroopSelectionBehavior.cs:65,142–153` | 注册时缓存新八参数内部方法；传本场人数、每波/间隔/存活波数，快照损坏拒绝调用。 |
+| `SettlementEntryTroopSelectionBehavior.cs:108–150,1594–1626,2633–2635,2781–2783,5569–5653` | 新QueueArmedCoupEntryWithOptions接收基础类型值并验证；旧四参数方法转默认；进场和mission缓存参数，取消60/20再次截断；已有增援调度使用缓存，普通SETS仍用原值。 |
+| `extensions/AnimusForge.Coup/tests/Coup.ContractTests/Program.cs:122–183`；`tools/Coup.RuntimeProbe/CoupSettingsRegression.cs`；`PassageTransitionRegression.cs:130–158`（后两者同目录） | 生产快照/边界/存档契约；真实MCM元数据/Newtonsoft/adapter/准备/构造/波次/分配；真实大厅选兵回调40人及最小上限。 |
+
+性能：只在发动读取设置；门口/大厅/街道的名册生成仍由原owner执行一次，守军数量以实际健康名册为准。每场任务缓存三项波次值，无新增tick、全局扫描或每帧反射；沿用原友军分批生成、原定时波次入口和原守军来源顺序。两场景共用波次规则，首波随战斗开始生成，存活波数满或兵源耗尽不会额外生成。普通定居点无政变参数污染。
+
+验证证据统一在 `artifacts/coup-mcm-20261001/`：
+
+- `contract.log`：**91 PASS**，新增28项默认/上下界/损坏快照/人数上限/JSON往返；两个原快报测试字段CS0649提示，无测试错误。
+- `build.log`：原 `scripts/build/build_single_module.ps1`，Release **1.3 / 1.4 / Bootstrap 全通过**。使用 `795c3125` git archive +本任务7个产品/契约文件overlay的独立source，排除并行内战/对话/快报WIP；没有复制其他作者未提交源码。最终源码与快照7文件哈希一致，见 `verification.json`。首次构建亦通过，随后因真实JSON缺字段边界修复重新双构建，旧日志保留 `build-initial.log`。
+- 1.3 DLL：`source/bin/Release/single_module_artifacts/versions/1.3/AnimusForge.dll`，引用 `v1.3.15.110062`，SHA256 `36A8460630BA85AED71ACFEFD2DA36176E7120D1C387376026AB6CD96EE742BF`。
+- 1.4 DLL：同根 `versions/1.4/AnimusForge.dll`，引用 `v1.4.6.115628`，SHA256 `666679FB17833B3C8D6594AFB1BAE79E9198BC22313FF40AB6F194197E7189D9`。
+- `probe-build.log`、`probe-console.log`、`probe/registration.log`：**170 PASS**（29选兵、36入口/拘押、26场景、17门转场、12快报、50设置/兵源/波次），四可用标志true，45个Harmony目标，输入DLL哈希不变。两DLL参数均指向新1.4实现，使用1.4游戏managed依赖；不声称运行了1.3实机。
+- 设置fixture真实执行MCM属性读取、Newtonsoft反序列化、adapter→host queue→entry preparation→mission构造；120/40名册不截断；默认旧接缝和普通SETS隔离；实际首波/定时方法验证60人首波、120秒间隔、4波满等待、空位后仅剩5人、无剩余停止；真实BuildDefenders验证健康数0/3/45/75及伤兵排除。原生生成/时间/波数统计、世界查询和资格是明示桩，不能据此声称游戏性能。初次产品失败保留 `probe-initial-failure.log`；随后增加兵源夹具时的未初始化/字段反射失败保留 `probe-allocation-fixture-failure.log`，最终修正测试读取Settlement.Town字段及基类声明getter后通过。
+- `git diff --check`通过；`code-map.log`仍为既有 `Stale source content: SubModule.cs`，未改无关地图或把全仓地图记为通过。
+
+未验证：真实MCM分组/滑块渲染、原生选兵界面与箭头、各文化120人街道/40人大厅的导航拥堵和性能、完整实机政变胜败、真实旧游戏存档与1.3运行时。离线验证不代表以上验收。回滚用 `git revert 0aff8322` 的针对性逆向提交，若共享文件有后续变动需逐块保留；不hard reset。未触及游戏安装，无新增部署备份；大于旧上限的新政变存档不保证旧程序可读，回退应使用发动前存档。
+
+<a id="coup-bulletin-outcome-20261001"></a>
+
+### 政变地点／过程／最终结果接入快报（2026-10-01，DEPLOYED / OFFLINE_VERIFIED）
+
+用户要求快报包含“在哪里政变、过程、最终结果”。工作区 `F:/AnimusForge-main`，分支 `codex/af-main-refactor-continuation-20260831`；意图checkpoint `b1952b4`，产品与测试 `a4723aef`。开始时已有政策/内战及台账的其它作者改动，全部保留，不纳入本提交。只在已确认的成功/失败结算后登记专用 `coup_success` / `coup_failure`；不在选兵/技术中断时宣布胜负，不追溯补发旧已完成政变。
+
+事实含原王国与城镇、玩家与目标国王、突击队规模、已观察到的街道进入/突破门口/大厅进入/制服国王、实际记录伤亡、夺位/接城/扣押或不扣押、失败带地叛离及已生效的战争。`GateBreached` / `HallEntered` 为现有 `_afCoupSession_v1` JSON 的可选字段，旧档缺失时不虚构进度；已制服国王足以证明大厅到达。结果收据在 `_afCoupOutcomeBridge_v1` 新增冻结正文/原王国/玩家王国/处理标志，重试不因改名改变原文。原记忆/玩家与NPC行动/周报素材写入保持；快报完整Sentence进入原写稿Prompt、模板fallback与三渠道复用的NPC快报知识入口，不另写一套对话记忆。
+
+| 源码坐标（`a4723aef`，一基） | 真实职责及消费者 |
+| --- | --- |
+| `extensions/AnimusForge.Coup/src/CoupSystem/CoupSession.cs:68–71`；`CoupCampaignBehavior.cs:346,397,563,606`（同目录） | 持久进度由真实场景进入/门突破设置，成功失败均传实际会话给结果owner。 |
+| `extensions/AnimusForge.Coup/src/CoupSystem/CoupOutcomeReport.cs:1–62` | `CanReport` 拒绝未完成伤亡/王权/城镇/拘押或叛离/撤回的最终报告；Build 一次遍历会话兵员生成确认事实。 |
+| `extensions/AnimusForge.Coup/src/Integration/CoupRebellionBridge.cs:61–64,89,122,422–513` | 冻结报告，注册并调用主体快报接缝；快报未接受时保留已完成回执供重试。关闭快报属于按设置跳过，不能阻塞政变结算。 |
+| `MyBehavior.WorldBulletin.cs:213–224` | `TryRecordCoupOutcomeForBulletin`→原Capture入口，稳定键 `coup:<id>:bulletin` / 独立同案group；成功95、失败80，保留原收集窗口/冷却/发布开关，不额外发LLM请求。 |
+| `src/modules/AF.Module.Weekly/Bulletin/WorldBulletinPolicy.cs:714–717` | 专用fallback标题“政变夺位／政变失败”；原选择、Prompt、NPC知识消费者不改路由。 |
+
+性能：每次最终收据只汇总一次O(本次兵员数)并冻结正文；重试只查现有最多300条快报事实，解决一般64条尾部去重的跨窗口遗漏，无每帧/每日新扫描或额外模型调用。模式关闭跳过收录；正常收录沿用24游戏小时收集窗口、72小时冷却及现有大事件竞争规则，并非保证即时弹窗或每次独占头条。
+
+验证根 `artifacts/coup-bulletin-20261001/`：政变契约 **63 PASS**（新报告、正负结果、进度缺失/JSON往返、模板/写稿/NPC全文）；既有快报规则 **38 PASS**；真实1.4 DLL注册与fixture **117 PASS**（原105 + 新12个快报宿主分类、区域、64条以后去重、JSON往返、模式关闭检查），四标志True、45个Harmony目标、输入DLL哈希未变。实际入口代码执行，但fixture的MyBehavior未构造且设置开关替换，未执行真实政治结算/存档/模型请求。日志 `coup-contract-final.log`、`bulletin-policy.log`、`snapshot-probe/registration.log`。
+
+首次全工作树构建被其它作者正在编辑的内战缺失 `MigratePoliticalDays` / `PlayerPoliticalKingdom` 两方法阻断；后续探针因该失败无产物而失败，原日志保留。为不改动/等待他人WIP，以已提交 `baf324f6` git archive 加本任务10文件精确overlay建独立快照，完整列表/哈希 `snapshot.json`；在 `source/` 内调用原统一脚本，显式引用原 `_deps_auto`，Release 1.3/1.4+Bootstrap exit0，`snapshot-build.log`。最终引用 `v1.3.15.110062` / `v1.4.6.115628`；1.3 SHA256 `A41167E3309247859A0AB0CE75020A4A934F497EA574B86DEEA5EDBEE19D605F`，1.4 `9C9A6D4377426833F03D77DB37BE840196C258C7BB076E76F1FAC12BB08D2031`。不把独立候选成功写成其它未完成内战源码已通过；全局地图仍因未改SubModule.cs旧锚点失败，本任务diff通过。
+
+部署沿用同一政变任务此前授权，13:06确认游戏退出后从已验快照调用未改的正式覆盖脚本，更新27文件，Stage全部238文件与安装目录SHA256一致；只加载Bootstrap，未知安装文件保留，未推送。`deployment.log` / `deployment-verification.json` 记录完整校验；备份 `C:/Users/29310/AppData/Local/AnimusForge/Recovery/deploy/deploy-8363c3c06fc94e24a2686c0dbd492027` 的complete和旧文件哈希已验。源回滚仅 `git revert a4723aef`，不能撤回此前场景修复或其它作者改动。未实测最终报道文案、游戏NPC转述、成功/失败完整战役及真实旧档；需从新结算政变开始验证，旧已完成事件不补发。
+
+<a id="settlement-stay-sortie-20261001"></a>
+
+### 驻守城镇遇敌自行出城修复（2026-10-01，OFFLINE_VERIFIED）
+
+玩家反馈接受驻守命令的 NPC 在敌军来袭时自行出城。当前工作区 `F:/AnimusForge-main`、分支 `codex/af-main-refactor-continuation-20260831`；基线 `5623ac25`，意图检查点 `984e6ae`，产品及回归提交 `a9539dc0`。本片仅修复已经进入命令目标城镇/城堡的部队；不改变城外援军解围、敌对目标攻城、明确攻击、巡逻、驻守天数和原有队列结束语义。未部署、Stage、打包或推送。
+
+根因证据：原 `TryBuildGoToSettlementAttackCommand` 不区分城内守军和城外援军，发现敌对围城部队即将 GoToSettlement 转为 FORCE AttackParty；1.3 原版 `原版游戏本体代码1.3.x/TaleWorlds.CampaignSystem/Party/MobilePartyAi.cs:467–473` 与 1.4 原版 `原版游戏本体代码1.4.5/TaleWorlds.CampaignSystem/TaleWorlds/CampaignSystem/Party/MobilePartyAi.cs:483–490` 都允许针对 TargetSettlement 的主动交战绕过 DoNotMakeNewDecisions。玩家现场日志/存档未提供，因此这证明可触发反馈的源码路径，不等同于实机复现。
+
+本片代码责任图（修订 `a9539dc0`）：
+
+- `src/modules/AF.Module.WorldMap/Runtime/WorldMapPartyCommandBehavior.cs:91–128`：`ShouldSuppressSettlementStayInitiative` / `IsPartyHoldingInsideCommandSettlement` 查询当前活动命令与真实 CurrentSettlement；仅实际进入非敌对目标城镇/城堡的 GoToSettlement 生效，城门距离与 ArrivalDay 不能代替进城。无命令、已推进、停止中、玩家主队、其他命令/目标、村庄均不拦截。
+- 同文件 `:1360–1418`：`TickGoToSettlement` 在城内也检查丢失的 AI 锁/前往目标，按现有小时事件恢复；稳定状态不重复下发，原版战斗中的刷新仍由现有 Preempt 阻挡。原计时/完成与队列推进保留。
+- 同文件 `:3840–3882`：`TryBuildGoToSettlementAttackCommand` 在自动转换前识别城内驻守，避免变成强制出击；同一消费者覆盖接单转换和后续小时转换。
+- `CourierMobilePartyAIModel.cs:70–79`：现有注册的 AI model 通过 WorldMap 查询屏蔽城内驻守的原版 initiative，其他情况继续委托 inner。未新增 Harmony/存档键/标签/三渠道私有链路；三渠道既有共享执行器均受同一修复影响，未跑真实 LLM 对话。
+
+性能：AI model 原调用频率上先用 CurrentSettlement/IsFortification 排除行军部队，再用现有队列锁及 O(1) 字典查询；英雄热路径不拼字符串、不枚举世界或队列，不反射，不增加 Tick/轮询。非英雄沿用现有 party key；移动补发仍仅在原小时命令维护中触发。
+
+验证：
+
+- `python tests/modules/AF.Module.WorldMap/SettlementStayRegressionTests/run.py`：24 项 PASS；原样抽取生产查询/转换/小时处理/model 入口，Campaign 对象、原生移动副作用和队列推进末端为桩。覆盖围攻前后、实际进城与城门附近、城外解围、敌城攻城、巡逻/明确攻击、定时完成、停止/无命令、非英雄、inner model 保留、丢锁/改目标重下发及战斗期不打断。证据 `artifacts/tests/settlement-stay/run-bcba3df860514231b5c8f9d46c926e93/result.log`。
+- 同 runner 的 `--mutation conversion` / `initiative` / `refresh` 全部被行为断言检出；只变异隔离生成文件，不改生产源码。对应证据目录 `run-e014a150c1bc438597fa024746108225` / `run-015c31d1b5c8473c800c55836c833c9a` / `run-087c1d4322e54374b8ff427db5cc459d`。
+- 官方 `scripts/build/build_single_module.ps1 -ProjectRoot F:\AnimusForge-main -BannerlordRoot "F:\SteamLibrary\steamapps\common\Mount & Blade II Bannerlord" -Configuration Release`（无 Stage/Deploy）：1.3 `v1.3.15.110062`、1.4 `v1.4.6.115628` 与 Bootstrap 全部 exit 0。两实现各 338 warning / 0 error，Bootstrap 0/0；无本片两个生产文件的编译警告。SDK `local/dotnet/8.0.425`，日志 `artifacts/settlement-stay-20261001/build.log`。构建前核实输出目录在仓内且无 reparse，旧 Release 产物备份到同证据目录 `previous-build/`。
+- DLL SHA256：1.3 `2FA519EBCE7A1F09D55539F5E16A3AE537BA26ED08F4A9C5A7110116DB1D4285`；1.4 `81801CE4B62175C89FB47BFBAB9A9AA4B2CC64FBD09F2C0E904EE463D4AAFDB2`；Bootstrap `733754D3416996466189E3415BD2BCFCE2653CB6491F8AB5C31F89FBCE20011A`。位于 `bin/Release/single_module_artifacts/`，各 build.json 绑定相同哈希。
+
+未验证：游戏实际进出城/围城战、军团与其他 MOD 的联合行为、真实旧档加载及三渠道端到端。已被旧代码转成 AttackParty 的存档命令缺少原始驻守来源，不能安全反推；安装后需取消旧攻击并重新下达驻守，避免撤销玩家明确攻击意图。恢复原版“主动出击”逻辑用聚焦逆向提交 `git revert a9539dc0`，不重置历史，不覆盖游戏文件；本条不提升全仓 J17 的验收状态。
+
+<a id="policy-personality-vote-20261001"></a>
+
+### 政策投票接入五项人物性格（2026-10-01，OFFLINE_VERIFIED）
+
+用户要求在既有政治立场、利益与关系评分之外加入政策手段和人物性格的匹配。工作区 `F:/AnimusForge-main`，分支 `codex/af-main-refactor-continuation-20260831`；修改前检查点 `8c7df9d`（基线 `6aa6850`）。保留其他任务的改动，不推送、不部署、不修改构建入口。
+
+- 范围：玩家/NPC 原有第一次评议输出五轴 `votePersonality`，保存到现有 JSON 记录并接入 `DetermineSupport` postfix；MCM 独立性格倍率，实际利益扣分不变。
+- 兼容/性能：旧数据缺字段视为无性格修正；新评议严格验证数值和字段。沿用政策/日缓存，仅原投票调用读取五项特质，不新增 LLM 请求、世界扫描、Tick 或锁。
+- 退出门：新/旧数据、五轴方向、损益独立、废除反向、承诺优先的定向回归，以及官方双 API + Bootstrap 编译。真实 LLM 语义评分、MCM 操作、投票画面及真实旧档需实机验收。
+
+产品与测试提交 `d54ac0eb`。已完成的职责及源码证据（该修订）：
+
+- `PolicySystem/Core/PolicyVotePersonality.cs:10–97`：五轴可选存档 DTO、新评议严格数值/字段合同、复制与常数评分。正向 trait +2、轴 +1 贡献 +1；五项合计限制 [-2,2]。仅评估政策手段，不按稳定度/忠诚度负值或关键词推断“残忍”。
+- `PolicySystem/Core/CustomPolicyBehavior.Generation.cs:1956,2835,3545,4664,4756–4759` 和 `Models.cs:177–178,491–492`：玩家首次评议、严格解析、pending assessment 深复制及动态议程保存；`Lifecycle.cs:4121` 保留到历史记录。
+- `PolicySystem/Npc/NpcRulerPolicyBehavior.Generation.cs:3497–3499,3626,3650–3652,4604,4740`、`NpcPolicyContracts.cs:160–161,303–304`、`CustomPolicyBehavior.cs:783`：NPC 同一语义合同，草案→raw→规范记录→动态议程完整传递；不由统治者个人性格代替政策手段。
+- `PolicySystem/Core/CustomPolicyBehavior.VoteInterest.cs:192–273,298–308,362–369,418,862–897`：真实 `DetermineSupport` postfix 消费 P，沿用利益/关系总开关、提案家族豁免及 `__runOriginal` 拉票保护。采用案 `delta=U+R+P`，废除案 `delta=-U+R-P`；效果为空仍缓存性格。日志增加 P；五次 trait 读取只在已有按需投票计算发生，不新增网络请求/全表扫描。
+- `DuelSettings.cs:2146–2160`：保留原开关字段身份，更新标签；新增“投票性格权重”0–3、默认 1、0 关闭。旧政策缺少画像时保持原评分，可重新评议。
+- `tests/bridges/Policy/PolicyEffectModule.ContractTests/PolicyVotePersonalityTests.cs:12–151`：真实 DLL 反射验证五轴/边界/非有限值/缺字段/旧记录/存档往返/深复制/无效果缓存/废除方向/负面损益独立；复用 Program 的玩家语义修复与 NPC 单国两阶段回归。csproj 新增可选 `PolicyTestAssemblyPath`，只用于独立验证已构建候选，不改官方构建流程。
+
+验证与产物：
+
+- 官方 `scripts/build/build_single_module.ps1 -ProjectRoot F:/AnimusForge-main -BannerlordRoot "F:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord" -Configuration Release`，未传 Stage/Deploy：1.3 `v1.3.15.110062`、1.4 `v1.4.6.115628`、Bootstrap 均成功；两实现各338条既有警告/0错误，Bootstrap 0/0。构建前核实两个清理目标在仓内且无 reparse；保留旧产物。
+- 隔离 runner 用 `PolicyTestAssemblyPath` 指向本次对应实现，运行 `--policy-personality-only`：两候选各 **1475 assertions PASS**（包含反射辅助与既有回归断言，非1475个独立场景）。1.3 首次因依赖缺失无法启动，补通用依赖后定位缺 `TaleWorlds.SaveSystem`，再补本机 bin 缺件后通过。**1.3 核心引用来自 `_deps_auto`，但离线 runner 的缺失通用依赖来自本机 1.4.8 / 已有1.4依赖，不能视作纯1.3运行时或游戏加载验收**；失败与后续日志全部保留。
+- 证据目录 `artifacts/policy-personality-20261001/`：`build.log`、`test-build-1.3.log`、`test-build-1.4.log`、`tests-1.3-final.log`、`tests-1.4.log`、`source-hashes.json`；`candidate/` 保留已验产物，`previous-build/` 保留本轮之前的构建输出。1.3 DLL SHA256 `74A12F737F307BD7C37BE4703B1E43A77E67537181651638747F0CF8E294248C`；1.4 `689BDDFDA6A2BEE3AA2C55F70D1F1A20F9A15EC73A27DBD0EDFA4D34E4CB51E3`；Bootstrap `8EEF2901B78818AD926223E54BD2A8AF8A375E091C94D4D08B932D2F2BFC98D8`。共享工作树其他任务源码仅作为当时构建输入，本结果不验收其后续变动。
+- 未验：真实 LLM 语义判断、真实旧存档、MCM 点击、Harmony 实机命中与两游戏版本实际投票；离线反射检查不替代上述验收。未部署、推送或写外仓。回滚用针对 `d54ac0eb` 的反向提交；不 hard reset，也不覆盖其他任务。
+
+<a id="bulletin-dropcap-flow-20261001"></a>
+
+### 快报首字绕排与封存按钮重设计（2026-10-01，OFFLINE_VERIFIED）
+
+用户截图要求首字无蓝金底图、只有前三行让出首字空间、后文恢复普通全宽排版，以及封存控件重新设计去掉ESC。实际工作区 `F:/AnimusForge-main`、分支 `codex/af-main-refactor-continuation-20260831`；检查点 `18b58fa`、产品提交 `5f5bb1bc`。本条替代此前快报首字整段缩进和深红封存控件，不改快报生图/存储机制；并发CivilWar/Coup改动保留。
+
+代码责任图（修订 `5f5bb1bc`）：
+
+- `src/modules/AF.Module.Weekly/Panel/WorldBulletinBodyWidget.cs:13–95`：新增实际消费者控件；按原生RichText、字体、缩放与栏宽测量前三行，Lead缩进62，Tail从第四行恢复全宽。首字位于同一滚动正文内，纯深棕文字无底图。无首字时全篇正常排版。缓存文本/栏宽/画刷/语言/缩放，稳定帧仅常数比较；重排最多十次有界前缀测量加头尾高度测量，不做反射/世界扫描。
+- 同文件 `:98–150`：WorldBulletinTextFlow.SplitToHeight/ Split 在完整标签边界分段，闭合并重开链接/样式，不截断UTF16代理对，保持正文字符与链接目标。前缀最多512可见字符；余文原样交给原生RichText继续排版。
+- `src/modules/AF.Module.Weekly/Panel/WorldBulletinPanelVM.cs:270–282,316–335`：移除整段BodyMarginLeft；保持原有首字判定，已被百科链接占用的起始字符不拆开。
+- `content/modules/AF.Module.Weekly/GUI/Prefabs/WorldBulletinPanel.xml:87–109,150–156`：绑定自定义控件及原生Lead/Tail链接事件，滚动面板无永久左边距；封存控件154×38、浅纸色细描边与两侧菱形装饰，移除ESC文字。点击仍执行ExecuteClose，原ESC键关闭行为保留。
+- `content/foundation/AF.Foundation.UI/GUI/Brushes/AFCourierLetterBrushes.xml:2–14`：细棕描边/浅纸色填充及四状态画刷，无新贴图。
+
+最终隔离Release双API+Bootstrap **exit0、0错误**（保留既有警告）；日志/哈希/引用信息 `artifacts/bulletin-text-flow-20261001/build-91924060745044babd552d3b6f4af51f/`。双版编译后真实生产helper各152检查PASS：嵌套链接/样式、所有切分边界、UTF16、空文/短文/换行、长正文，及3栏宽×2字号×3缩放下真实RichText三行排版；使用合成字体和语言，不能冒称游戏字体/GPU。验证工具 `artifacts/bulletin-text-flow-20261001/FlowCheck.cs`、`check.ps1`；首次脚本缺依赖、随后测试重复注册Default字体，修正验证工具后双版通过，非产品故障。
+
+XML解析/子控件引用、首字无背景、Tail无左缩进、封存绑定/无ESC标记、官方内容映射及git diff --check均PASS。未改官方构建部署脚本、未Stage/部署/推送。实际游戏字体观感、自定义控件加载、滚动/点击/缩放和旧档仍NOT-RUN。整个构建包含当时并发工作树，不冒称仅本提交产物；本包不提升J17/C/D。回滚仅定向revert `5f5bb1bc`，不hard reset或撤回他人提交。
+
+<a id="coup-passage-transition-20261001"></a>
+
+### 政变大厅门原版 F 转场抢占修复（2026-10-01，DEPLOYED / OFFLINE_VERIFIED）
+
+用户实测 F 直接进普通大厅，无选兵/援军，挥拳触发 SceneTaunt。现场 `18b58fa0`，已有三处周报UI未提交改动保留。日志 12:19:02 正常 Coup mission_started；12:20:54 原版门结束街道，Coup 被判 Failed/撤退；12:20:55 原版 town_keep 开始；12:21:03 SceneTaunt 犯罪与武装冲突，12:21:07 failure_committed。两版 PassageUsePoint.OnUse 都直接写 NextLocation 并 EndMission，现有 Coup 只轮询裸 F 键，没有接管门回调。范围：仅所属 Coup Mission 的 PassageUsePoint.OnUse 门禁与大厅转场，通过实际门事件完成 Street→HallSelection；未清守卫不放行，不允许原版把 active Coup 转进普通 location；普通任务通道仍原样放行。不放宽既有战斗/伤害保护，不逆改已经写入存档的失败结果。出口：真实 OnUse Harmony 路径的正/负/重复回归、大厅阶段接续、双API+Bootstrap；实机未验单列。沿用本会话部署授权，但覆盖前须确认游戏退出。
+
+修复提交 `5623ac25`，检查点 `db0ecae3`。删除裸 F 轮询，注册实际 `PassageUsePoint.OnUse(Agent,sbyte)` 最高优先级前缀，纳入 MissionProtectionAvailable 注册门禁。只在当前/收尾 Coup Mission 内接管；NPC不能通过原版门移出，玩家用大厅门时复核守卫记录与SETS剩余角色，未清除提示阻挡，完成则 Street→HallSelection，再清 NextLocation/PreviousLocation 并结束街道。已有地图tick打开幸存者选择，确认后登记 Hall、lordshall 与选定援军；重复使用不重复结束。真正场景出口仍判撤退，其他场景原版门原样放行。没有新增每帧轮询/反射；通道使用时查询一次任务行为，守卫扫描仅交互触发，保留原1秒目标检查。
+
+| 源码（`5623ac25`，一基） | 已接线责任 |
+| --- | --- |
+| `extensions/AnimusForge.Coup/src/CoupSystem/CoupGuards.cs:71–72,195–203` | 注册真实门 OnUse，按精确 Mission 授权，阻止原版写 NextLocation/直接结束场景。 |
+| `extensions/AnimusForge.Coup/src/CoupSystem/CoupMissionBehavior.cs:79–114,260–265` | HandlePassageUse 拥有门目标/角色/守卫/阶段校验与转场；EndScene 清除两个原版地点字段，不再裸键轮询。 |
+| `tools/Coup.RuntimeProbe/PassageTransitionRegression.cs:1–165` / `SceneLifecycleRegression.cs:142` | 实际 Harmony OnUse→真实 Coup目标/阶段/EndScene→真实结束回调→幸存者选兵回调→大厅武装队列，另验普通任务放行。 |
+
+验证根 `artifacts/coup-passage-repair-20261001/`：`failure-sequence.log` 保存脱敏短序列；`build.log` 为原统一脚本进程内隔离输出的 Release 双API+Bootstrap exit0，磁盘流程未改，引用1.3=`v1.3.15.110062` / 1.4=`v1.4.6.115628`。1.3 DLL SHA256 `7E2233DD062B4E41A9878D64DCE35A43310E65E38294812A904D9944DBC0AB90`；1.4 `CC56454661FA454358F9024DD49C4723D46CA7B2CE9A4029C533FCE2ABC9074F`。`passage-probe-v2/registration.log`：新增14门回归+原26场景/36状态/29选兵=105 PASS，四标志True，45目标（41prefix/2postfix/2transpiler），exit0。首次fixture因原生脚本元数据尚未初始化失败；仅在fixture补空 Managed._moduleTypes 字典并还原，第二次通过，未修改产品以绕过测试。已安装DLL `installed-probe/registration.log` 再验注册和65默认回归PASS，明确看到 PassageUsePoint.OnUse 补丁且输入DLL哈希未变。
+
+fixture边界：模拟Campaign/MenuManager/Mission/Agent/Passage状态，只把原生EndMission、健康采样、PartyScreen和显示作为桩，实际生产EndScene清字段与两个结束回调、选兵回调均执行；最低优先级哨兵确认Coup内不会落入原版，普通任务会放行。未模拟真实键盘/引擎渲染/场景加载/战斗/旧档，不能写成实机验收。全局地图检查仍报未改的SubModule.cs历史内容过期，不刷新无关证据；本任务diff通过。
+
+部署：沿用用户此前授权，12:34确认游戏进程退出，原 `scripts/build/deploy_module.ps1` 更新11文件，Stage全部238文件与安装目录逐个哈希一致，XML唯一Bootstrap，两DLL与上述候选一致。旧Stage和正式产物先保存到本任务deployment目录，安装未知文件保留；日志 `deployment/deploy.log` / `verification.json`。游戏回滚备份 `C:/Users/29310/AppData/Local/AnimusForge/Recovery/deploy/deploy-2c278d48487943d4b627fe56a313adad`，complete与旧文件哈希已验。其它同期UI改动保留，不纳入本修复提交；候选构建针对当时完整工作树，不冒称整DLL只有本差异。未推送、未操作存档。旧试验已failure_committed，重测应读发动前存档；本补丁不反写撤销历史失败。源码回滚只 `git revert 5623ac25`，保留之前入口/Origin修复。
+
+<a id="civilwar-crown-withdrawal-20261001"></a>
+
+### 王室阵营受事件影响撤回支持（2026-10-01，OFFLINE_VERIFIED）
+
+用户要求“通过事件啊，坏事干多了哪还能拥护国王”。本包接通现有负面事件对王室阵营的自动退出，不增加AI自动加入王室阵营、不代替玩家站队、不改变王国归属或直接发动内战。当前仓库/分支沿用本主台账；检查点 `10a2056a`，产品提交 `f77c4f51`；下列源码坐标均绑定此修订。回滚只逆向该提交，不撤销此前每日平滑衰减和其他任务。
+
+- `src/modules/AF.Module.Kingdom/CivilWar/KingdomCivilWarOwner.cs:146–179`，`AddGrievance`：按既有事件先结算每日衰减并追加本次点数；只对事件命中的王室阵营NPC检查累计不满。达到现有 MCM `CivilWarDiscontentThreshold`（默认35）立即转 Middle、清除 FactionId、记录退出周。国王/玩家家族、外国家族、非政治家族、非王室成员、关闭功能、未知/零点事件仍按原边界排除。允许没有反对派时撤回支持；后续加入反对派仍走原周规则。
+- 同一事件批量聚合退出家族，写入历史、周报素材与 `KingdomCivilWar` 日志；已退出家族后续事件不重复记退出事实。设置只在首个合格王室成员出现时读取一次，额外复杂度为受影响王室家族数×已记录来源数（当前9类），不增加任何Tick/日/周轮询或全世界家族扫描；仅实际退出时分配名称列表与报告文本。
+- `DuelSettings.CivilWar.cs:23–25` 补现有门槛提示，不改MCM属性名/默认值/存储身份；存档沿用已有 Side/FactionId/SideSinceWeek，无新存档键或格式迁移。
+- **回归102检查 PASS**：复用真实owner、adapter和提取的真实政策事件方法；新增26项覆盖混合来源积累、9来源精确门槛、MCM门槛、每日衰减后再判断、立即执行、无反对派退出、一次事实、存读档、王族/玩家/外国家族/关闭/未知/零点/既有反对派隔离。`artifacts/civilwar-review-20261001/crown-withdrawal-tests.log`；TaleWorlds动作与素材宿主仍为桩，不当作实机验收。
+- **Release双API+Bootstrap PASS**：`artifacts/civilwar-review-20261001/build-60eaf408adfb469ea3356ae8e67258d0/` exit 0，引用1.3.15.110062 / 1.4.6.115628，原正式入口的隔离离线执行；构建时HEAD为检查点加本片工作树，随后提交为 `f77c4f51`，脚本未修改。本片未部署/推送，保留此前其他功能的部署和其他作者改动。实际游戏事件、NPC对话记忆回读、旧档与性能尚未实机验证；不提升全局J17/C/D或历史代码地图状态。
+
+<a id="civilwar-daily-decay-20261001"></a>
+
+### 全部派系不满按日平滑衰减（2026-10-01，OFFLINE_VERIFIED）
+
+用户提出每周衰减太久，并明确选择“保持原总速度：把每周20%折算成每天约3.14%，只让下降更平滑”；后续询问性能和其他来源，范围确认为全部9种不满。检查点 `4c12531`，产品/测试提交 `05870e6f`。同工作树其他任务的政变、快报、插画改动保留；本片未部署/推送，不复用上一个五项修复的部署记录声称此片已安装。
+
+- `CivilWarCampaignBehavior.cs:35–41`、`CivilWarModuleAdapter.cs:40`、`ICivilWarModulePort.cs:58`：真实 DailyTickEvent → typed port → owner；`CivilWarWorld.cs:39–43` 提供游戏日索引。上述 CivilWar 路径均位于 `src/modules/AF.Module.Kingdom/CivilWar/`，契约位于 `src/AF.Contracts/Internal/TeamModules/`。
+- `KingdomCivilWarOwner.cs:218–251,264–267,1195–1204`：日保留系数为 `(1 - 原周衰减率)^(1/7)`；只扫描已存王国/家族/来源，复用键列表和系数字典，同日重复回调跳过；跨日补算按来源求幂，不逐日循环。周维护只刷新家族并核对当天是否已结算，不额外扣一笔周衰减。成派、最后通牒、战争推进仍按原周节奏。事件追加新不满前先补旧值，避免把新点数扣入过去几天。
+- `CivilWarCatalog.cs:39–41,269–271`：缓存全部来源的日系数，保留原周参数。每周20/15/12/10/8/6%分别折算每日约3.1375/2.2950/1.8096/1.4939/1.1841/0.8800%，不下调每次烧村的20点。
+- `KingdomCivilWarState.cs:94–96`：同原存档键追加 `LastGrievanceDecayDay=-1`；旧存档首次日处理建立基准，不追扣历史；新存档保留日期防重复；关闭功能期间仅推进日期，重新开启不补扣停用期间。真实旧档仍未验证。
+- **验证**：`CivilWarLifecycle.ContractTests` **76检查 PASS**，含全部9来源的7日等价、单日平滑、同日/读档/周维护去重、旧格式基准、关闭重开、新事件不追扣、真实日事件方法体到adapter/owner；原 `CivilWarRules.SmokeTests` PASS。日志为 `artifacts/civilwar-review-20261001/daily-decay-tests.log` 和 `daily-decay-smoke.log`。
+- **性能离线样本**：真实owner＋桩游戏上下文，100家族×9来源、100次日事件，总18.59ms，均值0.1859ms/次。仅代表本机该合成工作量的CPU耗时，不是实际游戏帧耗时保证；新增频率每游戏日一次，无逐帧轮询或全世界Clan扫描。
+- **Release双API+Bootstrap PASS**：`artifacts/civilwar-review-20261001/build-7e45d50bb81d40cab1d587f7fea10767/` exit 0，引用1.3.15.110062 / 1.4.6.115628；构建时HEAD `be67ba6e` + 本片工作树，之后本片提交为 `05870e6f`。并发其他任务继续改动，未把此构建当最新整仓全量验收。正式构建/覆盖入口未改。
+- **未验与回滚**：实机每日事件顺序、实际卡顿、真实旧档 NOT-RUN；历史代码地图working-tree漂移继续保留，本片坐标以 `05870e6f` 为准，不刷新全局哈希。回滚仅逆向 `05870e6f`，不撤销其他任务。本轮还只读确认“王室阵营默认包含国王家族、其他家族默认中立、没有AI自动招募保皇派”，未新增保皇派功能。
+
+<a id="scene-image-presets-20261001"></a>
+
+### 场景插画分辨率预设映射（2026-10-01，OFFLINE_VERIFIED）
+
+用户要求选择2048×2048时场景插画生成2048×1152。本条取代下方固定1280×720行为；检查点 `a24baa5`，产品提交 `82269de8`。实际工作区与分支仍为 `F:/AnimusForge-main`、`codex/af-main-refactor-continuation-20260831`；并发CivilWar产品/测试改动保留，不纳入本任务提交。
+
+- `extensions/AnimusForge.Illustrator/src/Core/IllustratorRuntime.cs:47–63` 的 WithSceneImageSize 将现有六预设映射为三档：1024×1024/1280×720/720×1280→1280×720，1344×768/1024×1536→1536×864，2048×2048→2048×1152。所有输出严格16:9且两边为16倍数；最低档避免1024×576低于GPT Image 2像素下限。每次生成只做常数时间switch及请求快照复制，MCM原值不修改。
+- `extensions/AnimusForge.Illustrator/src/UI/Overlays/IllustrationCardPopup.cs:691–693` 的 ExecuteConversationGenerationCore 接入映射，导演提示使用实际映射尺寸；images仍经原请求链发送size，Chat发送对应aspect_ratio。仅新生成场景/地图会话图受影响，旧图缓存保留，快报及百科行为不变。
+- `extensions/AnimusForge.Illustrator/src/Settings/IllustratorSettings.cs:221` 更新现有Size下拉提示，说明三档映射及服务商支持前提；未增加配置字段/预设索引或迁移用户配置。
+
+验证：隔离Release双API（1.3.15引用/1.4.6引用）与Bootstrap全部exit0、0错误，既有警告保留；两个实际DLL各跑六个预设，映射、原快照不变、16:9、16倍数、像素下限、Chat比例全部PASS。脚本 `artifacts/scene-image-presets-20261001/verify.ps1`，构建日志/修订状态/哈希 `artifacts/scene-image-presets-20261001/build-ee3e060cc92a47ef98e63606b89d149b/`；整个DLL包含当时工作树并发内容，不冒称仅本提交产物。git diff --check PASS。
+
+未验：真实API（尤其第三方中转尺寸支持）、游戏UI和旧档；未Stage/部署/推送，无付费生图。源码回滚仅定向revert `82269de8`（会恢复固定1280×720实现），不回滚其他作者内容。本条不提升J17/C/D总体验收。
+
+<a id="scene-image-16x9-20261001"></a>
+
+### 场景插画16:9请求尺寸（2026-10-01，OFFLINE_VERIFIED）
+
+用户追加要求场景插画16:9，并强调 images 端口必须实际设置尺寸。检查点 `0888082`，产品提交 `c4ac6035`，仍在 `F:/AnimusForge-main` 的 `codex/af-main-refactor-continuation-20260831`。仅修改 `extensions/AnimusForge.Illustrator/src/UI/Overlays/IllustrationCardPopup.cs:683–693` 的 ExecuteConversationGenerationCore：用 WithImageSize 将单次场景/地图会话生图快照设为现有预设1280×720，同时给导演16:9构图说明。每次生成一次常数成本快照复制，无新增扫描/Tick；全局MCM、快报3:2、百科与旧图缓存行为保持。
+
+请求链核实：`UniversalOpenAiImageClient.cs:95,553,772–786` 读取本次 options.ImageSize，edits multipart 和 generations JSON 均发送 size；Chat 分支用 ResolveGeminiAspectRatio 转为 aspect_ratio=16:9。提示词不是尺寸参数的替代。上游对1280×720及aspect_ratio的支持未测，不承诺服务端接受或遵循；不增加自动尺寸回退/付费重试。
+
+Release双API+Bootstrap均exit0、0错误（存在既有nullable等警告），git diff --check PASS。隔离构建复用既有helper，输出 `artifacts/scene-image-16x9-20261001/build-f641ebc272284905b95180af4d55e5c0/`；其中build.log、invocation.json及三个build.json记录实际引用/源码状态/哈希。未改官方脚本、未Stage/部署/推送；真实API输出像素、游戏显示/旧档NOT-RUN。回滚只定向revert `c4ac6035`，不回滚并发工作或前项快报修复。
+
+<a id="bulletin-image-controls-20261001"></a>
+
+### 快报新生横图与封存控件（2026-10-01，OFFLINE_VERIFIED）
+
+用户截图反馈快报生图比例不符、不得复用旧图及封存入口需要控件。实际工作区 `F:/AnimusForge-main`、分支 `codex/af-main-refactor-continuation-20260831`；本地意图检查点 `fc80afe`，产品提交 `5d0969b8`。仅修改以下五个产品文件，保留并发 Coup/SETS 改动；不改一键流程、不部署、不推送、不删除图库。
+
+源码责任与消费者（坐标对应 `5d0969b8`）：
+
+- `extensions/AnimusForge.Illustrator/src/UI/Patches/WeeklyReportPopupIllustrationPatch.cs:283–320,426–434,543–550`：快报 AttachSlot 每次打开（含历史期刊重开）直接请求新图，绕过 BeginCachedLoad 和周报自动生成开关；总生图启用开关仍有效。每请求设置 1536×1024 与横向3:2构图；失败/取消不回退旧图，旧作品继续保留在画廊。普通周报仍沿原缓存及开关逻辑。发布时用实际 sprite 尺寸通知快报 VM。
+- `extensions/AnimusForge.Illustrator/src/Core/IllustratorRuntime.cs:23,39–45`：WithImageSize 返回请求快照副本，不改 MCM 全局尺寸或其他渠道。
+- `src/modules/AF.Module.Weekly/Panel/WorldBulletinPanelVM.cs:79–98`：FitImage 将实际图片等比放入288×192区域；服务端忽略尺寸返回方图/竖图时居中留边，不拉伸、不裁掉主体。每次发布 O(1)，不增加 Tick、扫描、反射或重采样。
+- `content/modules/AF.Module.Weekly/GUI/Prefabs/WorldBulletinPanel.xml:20–27,150–155`、`content/foundation/AF.Foundation.UI/GUI/Brushes/AFCourierLetterBrushes.xml:2–14`：3:2内框和动态尺寸绑定；封存改144×46金边深红按钮，四状态反馈、文字不抢事件，继续绑定 ExecuteClose 与既有 ESC/阅读停留逻辑。
+
+验证：复用现有隔离构建 helper，仅复制到本任务 artifacts 后调整输出根，官方脚本及既有产物不改。Release 1.3（引用v1.3.15.110062）、1.4（引用v1.4.6.115628）与 Bootstrap 全部 exit 0；产物、build.json 哈希与日志在 `artifacts/bulletin-image-controls-20261001/build-69112d2217284c7d97b3119df7cffe60/`。构建包括当时工作树的其他作者改动，不能把整个 DLL 称为本提交独有产物。本任务产品源码从构建至提交无变化。
+
+两个实际 DLL 的定向检查均 PASS：4种比例 FitImage、请求尺寸副本不改变原值、XML尺寸/关闭绑定与四状态、快报新生图入口源码检查。临时验证入口 `artifacts/bulletin-image-controls-20261001/verify.ps1`；初次 XML 读取因 Windows PowerShell 默认编码失败，改明确 UTF8 后双版通过，产品 XML 无编码错误。官方 Get-AnimusForgeContentLayout 确认预制体与画刷分别映射到 GUI/Prefabs 和 GUI/Brushes，git diff --check PASS。
+
+未验：真实生图请求及服务端遵循比例、游戏内视觉/鼠标/ESC、切页取消、旧档及 GPU；未覆盖游戏或打包发布。本包不提升 J17/C/D 状态。源码回滚仅定向 revert `5d0969b8`，不 hard reset、不回滚 Coup/SETS 等并发提交。
+
+<a id="coup-scene-repair-20261001"></a>
+
+### 政变专用进场与受击崩溃修复（2026-10-01，DEPLOYED / OFFLINE_VERIFIED；实机未验）
+
+用户反馈选兵后没有专用 SETS 进场选项，按提示进城后崩溃。基线 `9e5c8fc0`，`F:/AnimusForge-main` tracked clean。11:51:50–11:52:02 的 SETS 日志确认 `town_V5` armed_coup、53 名友军生成、631 守军储备、开战后崩溃；无 Coup `mission_started`。转储 `TaleWorlds.MountAndBlade.Launcher.exe.30168.dmp` 的当前 managed 栈与异常栈均指向 `BattleAgentLogic.OnAgentHit` 空引用。仅提取异常类型与方法名，证据 `artifacts/coup-scene-repair-20261001/managed-crash-evidence.json`。
+
+确认缺陷：SETS 仅用 public GetConstructor 查找 internal CoupAgentOrigin 构造器，返回 null 后仍 SpawnAgent，原版受击无条件调用 Origin.OnScoreHit；MbEvent 后注册先执行，Coup 的 OnMissionStarted 早于 SETS 添加 mission logic，漏装场景 owner；当前街道/大厅确实仅提示原版入口。范围为专用阶段菜单、SETS 挂载后通知、Origin 绑定及创建失败关闭，保留普通场景/伤害和存档语义。出口为真实 DLL 注册/Origin 回归、真实方法事件顺序/菜单回归及双 API+Bootstrap；实机与旧档单列未验。不部署、不推送，保留其它作者改动。
+
+修复 `f5225e5d`，意图 checkpoint `822e0ca6`。专用菜单为“率领政变突击队攻入城镇”与“率领政变突击队攻入领主大厅”，由会话阶段选择；点击时重验场景与战役资格，再从权威会话名单登记 SETS 并调用原版 LocationEncounter。原版入口保留已有 armed-coup 识别能力，提示不再要求玩家寻找普通城镇/大厅按钮。SET​​S OnMissionStarted postfix 在其逻辑完成挂载后通知 Coup，不依赖事件监听顺序；重复通知通过当前 Mission 引用拒绝重复安装。Origin 使用 AccessTools.Constructor 查找非公开构造器；启动和排队时验证构造器/伤亡回调，创建失败抛错而不生成空 Origin 的兵员。没有抑制原版 BattleAgentLogic.OnAgentHit，也没有将伤害归零。
+
+| 源码坐标（`f5225e5d`，一基） | 责任及实际消费者 |
+| --- | --- |
+| `SettlementEntryTroopSelectionBehavior.cs:114–121,140–158,176–189` | 主体 `QueueArmedCoupEntry` / `CreateCoupOrigin` 验证缓存绑定；供友军、守军及国王的原有生成路径调用。 |
+| `extensions/AnimusForge.Coup/src/Integration/SettlementEntryTroopSelectionBehavior.cs:72–78,102–105` | 启动校验 Origin 接缝，真实 SETS OnMissionStarted postfix 调用 Coup。 |
+| `extensions/AnimusForge.Coup/src/CoupSystem/CoupCampaignBehavior.cs:102–181,261–278,331–349` | 两个菜单与点击重验/进场，国王从 kingdom.Leader O(1) 查询，场景按已有 armed SETS、城镇和会话门禁挂载。 |
+| `tools/Coup.RuntimeProbe/SceneLifecycleRegression.cs:1–173` | 可选真实方法 fixture：Origin 创建与 OnScoreHit、真实逆序 MbEvent/SETS postfix、幂等/非政变放行及阶段菜单显示。 |
+
+性能：构造器仍只解析一次；新挂载通知每次任务开始执行一次，非每帧扫描；菜单资格读取当前国王替代全局 Hero.FindFirst；仅点击进场时按既有会话名单重建名册。存档键/枚举/政治结算语义未改。
+
+最终验证根 `artifacts/coup-scene-repair-20261001/`：`final-build.log` 为官方统一脚本双 API+Bootstrap Release 构建 exit 0（仅进程内隔离输出/中间目录，磁盘一键脚本不变，无 Stage/Deploy）。1.3=`v1.3.15.110062`、1.4=`v1.4.6.115628`；SHA256 分别 `FBBA9019C742D1CF65222AFD4830646D169EA5E2655E2F64D3553A3BFC6F2335` / `3009B03DDC31A7CE7F0B8FBB648820214C464B37EE0DB8DA7F6AEF526E98C3C9`。`final-registration/registration.log` 为无场景 fixture 的真实依赖注册，四标志 True、44目标（40 prefix/2 postfix/2 transpiler），exit 0。`final-scene-probe/registration.log` 的 26 新回归 + 原 36 状态/拘押 + 29 选兵 = 91 PASS，exit 0；两探针输入 DLL 哈希未变。本任务 diff 检查通过。
+
+证据边界：场景 fixture 使用绕过构造的 Mission/Settlement/CharacterObject 与空 managed 行为列表，显式临时替换城镇/家族上下文、菜单注册和完整资格查询，验证真实事件顺序和生产挂载/Origin/菜单阶段逻辑；没有运行原生场景/Agent 受击/城镇 UI 点击/完整胜负结算。1.3 只编译，实机与真实旧档 NOT-RUN，不能据此承诺全部场景不崩溃。全局代码地图仍因本轮未修改的 SubModule.cs 历史锚点过期失败，不刷新旧证据。期间另有周报 UI/生图并行改动，仅保留且未纳入本任务提交；构建针对当时工作树，不表示整份 DLL 只含政变差异。需后续获准覆盖后，在同 town_V5 案例验证专用入口、mission_started、首次交战、大厅转场及存读档。回滚仅 `git revert f5225e5d`，不得撤回先前入口修复或其他任务。
+
+**后续部署授权与结果（2026-10-01 12:10，取代本节上方“未部署”状态）**：用户明确要求“部署”，确认游戏/启动器均退出后，使用已验 `f5225e5d` 候选双 DLL+Bootstrap，通过原 `scripts/build/deploy_module.ps1` 覆盖统一 `Modules/AnimusForge`；未把正在施工的内战日推进源码重新编入。脚本更新11文件（9个程序/符号/marker及当前已提交的2个周报GUI资源），Stage全部238文件与安装文件SHA256逐一一致，XML仅加载Bootstrap，两实现哈希与上列最终候选完全相同。旧Stage资源与当前锁定来源不同，首次预检在游戏写入前拒绝；核实路径均位于工作区且无reparse后，将旧Stage整体移至本任务deployment目录保存，再让原脚本重建验证，未改一键流程或绕过校验。
+
+部署日志/复核为 `artifacts/coup-scene-repair-20261001/deployment/deploy-final.log`、`verification.json`；原正式产物和旧Stage的位置分别记录于 `official-artifact-backup.txt` / `stage-backup.txt`。游戏文件回滚点 `C:/Users/29310/AppData/Local/AnimusForge/Recovery/deploy/deploy-48d4a5523d284c4f87e1032da000c21a`，complete与所有旧文件备份哈希已验证。未启动游戏、未操作存档、未推送；还需实测专用菜单→首次交战→大厅转场。其他内战并行源码保持原样。
+
+<a id="civilwar-review-repair-20261001"></a>
+
+### 内战派系审查五项修复（2026-10-01，DEPLOYED / OFFLINE_VERIFIED）
+
+用户在只读审查后要求修复五项发现，修复期间又明确要求“部署”。工作区 `F:/AnimusForge-main`，分支 `codex/af-main-refactor-continuation-20260831`；审查基线 `3c00ae2e`，本地意图检查点 `83b4edd`，产品与回归提交 `76503341`。范围：CivilWar 标签接线、玩家国王通牒规则、失败结算状态保留、政策撤销误判和玩家拒绝参战后的忠诚度；不改一键构建、存档键、三渠道默认路由。同期 Coup/WorldBulletin 改动及提交完整保留；部署候选包含同工作树已经提交的这些改动，无远端推送。
+
+- 完成条件：五项行为有真实源码回归；故障后的结算与存读档不丢记录、不重复付款；双 API + Bootstrap 编译；记录实机未验范围。运行频率保持事件回调/每国每周推进，最多现有 4 派；可重试结算每周一次，无新 Tick 扫描、反射或轮询；忠诚度查询仍 O(1)，站队修复只遍历玩家领地。
+- **回归 PASS**：`dotnet run --project tests/modules/AF.Module.Kingdom/CivilWarLifecycle.ContractTests/CivilWarLifecycle.ContractTests.csproj --configuration Release -p:PythonExecutable=E:/PYTHON/python.exe`，最终 **56 项**；另有 CivilWarRules smoke、既有 InteractionPipeline（含三渠道 commit boundary）全部通过。生命周期测试链接真实 owner/effects/world/adapter/parser，提取真实提示词、正则、政策事件方法体，TaleWorlds 动作与 AF 宿主使用桩；不代表游戏、Harmony 或实际存档验收。首次测试入口因 MSBuild 找不到 Python、缺一个桩字段而失败，补可配置 `PythonExecutable` 和桩字段后通过；既有交互测试首次 `--no-restore` 缺 assets，正常还原后通过。最终日志 `artifacts/civilwar-review-20261001/lifecycle-tests.log`。
+- **最终 Release 双 API + Bootstrap PASS**：`artifacts/civilwar-review-20261001/build-80ab1f2326cf4c11aaeaa96ac6c909ab/`，exit 0；实际引用 `v1.3.15.110062` / `v1.4.6.115628`。DLL SHA256 前缀分别 `C3B8A73B2BAF` / `025F1451D90C` / Bootstrap `1C969212D209`，完整哈希在各 `*.build.json`。构建时 HEAD 为 `1ad2fc4f` 加本轮工作树，随后原样提交为 `76503341`；首轮 Debug 与中间 Release 不替代最终候选。复用现有离线 helper，仅在仓内 artifacts 副本适配本机依赖和独立输出，未改正式入口。
+- **部署 PASS**：按后续授权，把已验证的 9 个 DLL/PDB/marker 文件校验后提升到正式 Release artifacts，使用原 `scripts/build/deploy_module.ps1` 覆盖 `F:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord/Modules/AnimusForge`。脚本报告更新 **9 文件**，部署后 Stage 全部 **238 文件**逐一 SHA256 匹配，XML 唯一 DLL 入口为 Bootstrap。只有启动器进程，未启动游戏验收。旧 Stage 含未知 `AssetSources`，原校验器拒绝清理；检查仓内绝对路径及无 reparse 后，整体保存在 `artifacts/civilwar-review-20261001/stage-before-deploy-38f614450931406890f45f952613eaef`，再由正式脚本重建，未绕过 Stage 清单验证。安装目录未知文件保留。
+- **部署回滚**：`C:/Users/29310/AppData/Local/AnimusForge/Recovery/deploy/deploy-7398db95ab0149369238f2fce97e3fd7`，有 `complete`、`manifest.json` 和旧文件备份。部署日志与复核结果为 `artifacts/civilwar-review-20261001/deployment.log`、`deployment-verification.json`。源码需要回滚时只对 `76503341` 做定向 inverse/revert，不 hard reset，不撤销同期其他提交。
+
+本包代码坐标（源码修订 `76503341`；符号与以下范围已核对）：
+
+| 文件与一基范围 | 真实职责 / 消费者 |
+| --- | --- |
+| `AIConfigHandler.cs:6655–6679`、`ShoutBehavior.cs:25117–25168`、`src/modules/AF.Module.Actions/Tags/LegacyActionTagCatalog.cs:68–75` | 玩家家族资格保留；CivilWar 规则在国王提前返回前合并；统一后处理保留已提供的内战标签，共享动作解析器允许该有限协议族。消费者为 Native/Scene/Courier 共享后处理与提交入口，模块执行器仍验证具体动作。 |
+| `src/modules/AF.Module.Kingdom/CivilWar/KingdomCivilWarOwner.cs:437–444,586–619`、`CivilWarEffects.cs:95–173`、`KingdomCivilWarState.cs:74–79` | 战争结局固定、失败保留状态、可核对的议和/归国/清理按周重试；归国阶段完成点持久化。不能确认副作用的异常标为需检查，保留战争记录，不自动重复付款/奖惩。 |
+| `src/modules/AF.Module.Kingdom/CivilWar/KingdomCivilWarOwner.cs:533–564,883–889,1198–1207` | 参战确认后才索引玩家领地；拒绝时修复旧缓存；面板展示重试或需检查状态。忠诚度模型仍读取常数时间缓存。 |
+| `src/modules/AF.Module.Kingdom/CivilWar/CivilWarCampaignBehavior.cs:158–164`、`KingdomCivilWarOwner.cs:1050–1056` | 以政策最终仍生效区分通过新政策与通过废除政策；不再形成针对已废除政策的诉求。已对照两版本原版 ApplyChosenOutcome → OnKingdomDecisionConcluded 顺序。 |
+
+**未验证 / 保留项**：实机、真实旧档、实际 UI 与原生动作/Harmony 仍 NOT-RUN；本机安装游戏为 1.4.8，实际编译引用为上述 1.4.6，不能写成 1.4.8 实机通过。新增结算字段沿用原 `_af_kingdom_civil_war_v2` 键与 v3 payload，旧数据默认值兼容只到离线层。无法确认副作用的结算故障需人工核对日志和存档，当前不提供盲目重试按钮。全局地图 recorded-revision 795 锚点 PASS（记录修订 `4e4aad06`）；working-tree 在既有 `SubModule.cs` 内容漂移处 FAIL，该文件从本包检查点到现态无改动，不刷新全局地图掩盖历史差异。本包不提升 J17/C/D 整体验收状态。
+
+<a id="world-bulletin-review-fixes-20261001"></a>
+
+### 即时快报审查三项修复（2026-10-01，OFFLINE_VERIFIED）
+
+用户在只读审查后要求修复：读档选择最旧快报、损坏存档原文被 Tick 初始化覆盖、过期快报混入近7日消息。工作区 `F:/AnimusForge-main`，分支 `codex/af-main-refactor-continuation-20260831`；审查产品基线 `3c00ae2e`，本轮修改前本地意图检查点 `a6532bc2`。本条只替代上述三个发现，不提升 J17/C/D 或其他任务状态。同期 Coup/CivilWar 在同工作树独立修改/提交，保留其改动；本任务只提交快报相关路径，不推送/部署。
+
+- `MyBehavior.WorldBulletinNpc.cs:16–18,33–35,53–108`：`FindLatestWorldBulletinRecord` 按 CreatedDay、数值期号找最新世界快报，不依赖存取档降序与发布追加顺序；缓存列表身份/数量/索引/事件 ID。每次 NPC 快照读取正常 O(1)，加载、列表替换、追加/删除、缓存索引被排序移动后才 O(N) 重选；无新增 Tick 扫描。调用共享 `BuildNpcWorldBlock` 传入真实发布日期，三渠道继续共用快照。
+- `src/modules/AF.Module.Weekly/Bulletin/WorldBulletinPolicy.cs:64–67,427–437`：摘要日期必须在当前日与前7日之间，未知/未来日期不注入，保留近期原始事实、原有标题契约。`PreservedUnreadableState` 为原 JSON 中新增的可选恢复字段，不作当前事实或提示词输入。
+- `MyBehavior.WorldBulletin.cs:80–94,990–1004,1032–1059`：`EnsureWorldBulletinState` / `SyncWorldBulletinData` 将损坏原文保留在恢复字段中；尚未初始化时仍原样回存。初始化后新事件、期号和原文共同存储，成功重载后恢复字段继续保存。原 `_af_worldBulletin_v1` 键与类型身份不改；新游戏清理旧缓存和恢复状态。
+
+验证（针对上述源码；非真实游戏验收）：
+
+1. `dotnet run --project tests/modules/AF.Module.Weekly/WorldBulletinPolicy.SmokeTests/WorldBulletinPolicy.SmokeTests.csproj`：**38 PASS**，含新增90日过期、7/8日边界、未知/未来日期与原始事实保留。
+2. `python tests/modules/AF.Module.Weekly/WorldBulletinPolicy.SmokeTests/run_host_regression.py`：**16 PASS**。原样提取真实宿主方法，链接生产 policy 与 `_deps_auto/Newtonsoft.Json.dll`；覆盖排序、数值期号、缓存追加/删除/替换/重排、坏原文精确保留、初始化、带新事实的保存/加载、后续再保存、有效旧格式和新游戏。IDataStore/分块存储及游戏对象为桩，不代表真实 SaveSystem 或小时事件派发。首次 net8 harness 因旧 Newtonsoft 缺 `System.Security.Permissions` 失败；最终改为产品相同的 net472 后通过，未安装依赖。生成材料在 `artifacts/world-bulletin-review/host-u6h2tbbz/`。
+3. 原 `scripts/build/build_single_module.ps1 -ProjectRoot F:/AnimusForge-main -BannerlordRoot "F:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord" -Configuration Release`，不传 Stage/Deploy：双 API + Bootstrap **exit 0**。引用 `_deps_auto` **1.3.15.110062**、`.tmp/build_check/1.4` **1.4.6.115628**；实现各338 warning/0 error，Bootstrap 0/0。构建含当时共享工作树的其他任务改动，不把此结果声称为其后续源码验证。完整日志 `artifacts/world-bulletin-review/build-release.log`。实现 SHA256：1.3 `59BE695007F60A2FA3016A879EC4841F7FF81C84EE8FA9325677C943F3DD7191`；1.4 `00402FCD3D236DE128E1428B937EC090D255AE2C7878B0B5401FFB90F0B8FDCA`；Bootstrap `4F10884F4C6A55967A3ECB82BC57CD690074FD2DAD2E83820B3E59BD27B1118D`。
+4. 本次路径 `git diff --check` 通过。未运行 Debug、全仓 C、真实三渠道/provider、旧档或 UI 实机；未 Stage、覆盖、打包或推送。回滚使用本次修复提交的定向 inverse commit，不 reset 共享分支。旧程序不认识新增恢复字段，因此有坏档恢复材料时，回退前须保留当前存档副本。
+
+<a id="coup-entry-repair-20261001"></a>
+
+### 宣权篡位入口修复（2026-10-01，OFFLINE_VERIFIED；未部署/实机）
+
+本轮用户要求修复城镇“宣权篡位”灰色不可点击。工作区 `F:/AnimusForge-main`，分支 `codex/af-main-refactor-continuation-20260831`，基线 `3c00ae2e` tracked clean。实际游戏日志与已安装 1.4 DLL 探针均确认：SETS `_pendingMissionEntry` 已由字段变为 owner-backed 属性；叛乱 `_automaticKingdomRebellionFlowActive` 等字段已迁入 owner，但 Coup 仍反射旧字段，导致 `host=False rebellion=False`。原审查证据 `artifacts/coup-runtime-probe/audit-20261001/registration.log`。
+
+范围：主体提供窄内部状态查询，Coup 缓存 delegate 并保持失败关闭；完善现有真实 DLL 注册探针的状态与拘押生命周期回归。不改变玩法资格、存档键、场景伤害、一键流程或公共 API V1；不推送、部署。注意启动时 `captivity=False` 尚不能证明补丁失败，当前 getter 还要求战役实例存在。出口：状态阻挡/清理回归、1.3/1.4+Bootstrap 构建、真实 1.4 DLL 注册通过；实机及旧档单列未验。仅本地提交本任务差异，保留现存未跟踪文件。
+
+修复提交 `f1c27b5b`，意图 checkpoint `0ea97567`。保持原九类 SETS 阻挡条件，叛乱查询转接实际 scheduler 的 `FlowActive` / `CanStart` 以及强制叛乱/周报忙碌状态。反射仅启动绑定；菜单条件与既有引擎调度调用缓存 delegate，固定数量布尔/空值检查，O(1)，无新轮询、全量扫描或每次反射分配。接口不可用、查询抛错和缺失 owner 均继续失败关闭；拘押产品代码未改。
+
+| 已核实源码（`f1c27b5b`，一基行号） | 真实消费者与职责 |
+| --- | --- |
+| `SettlementEntryTroopSelectionBehavior.cs:889–897`，`HasBlockingFlowForCoup` | 读取 SETS 当前 owner/现有待处理状态；不转移进城或政治状态所有权。 |
+| `MyBehavior.cs:1672–1677`，`HasBlockingRebellionFlowForCoup` | 读取真实自动叛乱 owner 和既有宿主忙碌状态；不改叛乱执行算法。 |
+| `extensions/AnimusForge.Coup/src/Integration/SettlementEntryTroopSelectionBehavior.cs:25,64,176–190` | 启动缓存状态委托，`CoupCampaignBehavior.CanBegin` 经 `HasPendingFlowForCoup` 使用；取消旧 FieldInfo 列表。 |
+| `extensions/AnimusForge.Coup/src/Integration/CoupRebellionBridge.cs:97–98,139–142` | `AfAccess.Busy` 为缓存的开放实例委托，`IsBusy` 保留当前 owner 约束。 |
+| `tools/Coup.RuntimeProbe/EntryGateRegression.cs:1–116` / `Program.cs:98–103` | 真实 DLL 查询的 pending/异常/调度/拘押生命周期 fixture；未运行真实 Campaign/Mission。 |
+
+验证：Release 官方统一构建（不加 Stage/Deploy）通过 1.3=`v1.3.15.110062`、1.4=`v1.4.6.115628` 和 Bootstrap，exit 0。首次共用产物被并行构建替换，故最终仅在进程内替换官方脚本的输出/中间目录后复验，磁盘构建脚本未改。最终证据根 `artifacts/coup-entry-repair-20261001/`：`build-isolated.log`、`verified-build/*/*.build.json`、`verified-probe/registration.log`、`evidence.json`。最终 1.4 探针 exit 0，四可用标志 True，36 项入口/拘押生命周期 + 29 项选兵 fixture PASS，42 个 prefix/transpiler 目标，输入 DLL 哈希未变。1.3 SHA256 `0D244823445FBE8A96F91C4B6DF5138CAC1D68A2695A5864C801E9397AB5ECB8`；1.4 SHA256 `C41D57FCF3EFB96D42B022FBB3BCADA64C1F05675E72CC18DB52EDA4CF6107E7`。
+
+边界：构建期间工作区另有内战/周报并行改动，全部保留、未纳入本修复提交；构建针对当时工作树，不能声称整个 DLL 仅含本提交差异。本任务四产品文件与修复提交一致。本任务 diff 检查通过；全局代码地图 `--working-tree` 因历史 `SubModule.cs` 内容锚点过期失败，该文件相对本轮基线未变，未刷新无关证据或冒充全仓验收。未跑 1.3 真实 runtime、游戏菜单/战斗/胜负结算/旧档/全套 MOD 组合；未验证 UI 点击。拘押在正常行为构造后通过，加载期 False 是生命周期条件，撤回“仅凭加载期 False 判定拘押保护故障”的推断。游戏仍使用旧 DLL，需另行授权覆盖后实测。回滚用 `git revert f1c27b5b` 定向撤回修复，禁止 reset 或回滚他人改动。
+
 <a id="j17-b6-c-resume-20261001"></a>
 
 **2026-10-01 当前入口：** [J 历史非外交测试闭环](#j-history-nondiplomacy-closeout-20261001)；本轮唯一详细表/实证见该条，下列旧“当前/OPEN”按明确替代关系读，不重开已闭A/J17/R05-i。
@@ -4964,6 +5542,36 @@ R2计划交付门槛：已给固定技术路线、真实来源与目标、写入
 - **离线验证**：纯 C# `CivilWarRules.SmokeTests` 通过（net6.0 仅有 EOL 提示）；官方 `一键编译覆盖推送/build_single_module.ps1` 不带 `-Stage/-Deploy` 的 Debug 1.3、Debug 1.4、Bootstrap 均 **0 错误**，最终日志为 `F:/AnimusForge-main/.tmp/civilwar-v2-final-build.log`。真实 Campaign 事件时序、Gauntlet/MCM 点击、临时叛军战斗副作用、旧档 round-trip 和帧性能仍 **NOT-RUN**；未 push、部署或覆盖游戏。
 - **回滚/交接**：v2 owner 代码回滚点为 `20aca83b`，宿主接线为 `c3eb128c`；详细源码在 `src/modules/AF.Module.Kingdom/CivilWar/`，宿主桥接在 `MyBehavior.cs`、`src/AF.Contracts/Internal/TeamModules/ICivilWarModulePort.cs`。工作树仍有其他会话的既有脏文件，未回滚、未纳入上述提交。
 
+
+<a id="execution-last-words-20261001"></a>
+## 处决台词、遗言记忆、喊话行刑与隐藏轮刑（2026-10-01）
+
+状态：**离线实现与验证完成，实机/真实模型/旧档 NOT-RUN**。代码提交 `68dd6cd535fb4faaaa70b8ed5ee9a0b7b20622eb`，开工空检查点 `94a3b9f`。用户确认完整戏剧场面、相关记忆、专设最后陈述、现场记录及公共消息，并明确沿用当前行刑节奏、必须选中本场刽子手；追加要求隐藏轮刑。
+
+**已实现行为**：每场一次生成开场/行刑中/结束后三阶段，最后陈述优先靠前；规则迁入 `RuleBehaviorPrompts.json`，旧配置缺字段读取程序集内置默认而不覆写用户磁盘配置。主线程捕获案件/人设/近期对话/重大经历和既有召回快照，后台调用既有召回及模型入口，资料合计不超过 6000 字符；缺失记忆不阻塞行刑。显示成功后才提交现场发言，整条气泡为记录单位，提前行刑不补入排队未显示的后半段；死亡阶段禁犯人续言，本地兜底同样标识最后陈述。
+
+**保存/传播**：AF 单一实录 owner 使用新增 `_af_executionTranscripts_v1` 字典键及既有 chunk helper；保留最近 100 场已识别记录，每场最多 24 行、每行 240 字符。原始记录包含场次、受刑者/监刑者、地点、刑罚、罪名、阶段、角色、实际原文及结局；未知/损坏记录保留原始串，旧档无字段为空且不补造遗言。现场有效存活 Hero、已有非 Hero 记忆身份走共用 recoverable memory 接口；不为临时群众创建人物履历，不把玩家当 NPC 记忆 owner。名单每场捕获一次，逐句只检查已捕获参与者的存活与 30 米可听范围。正式死亡成功提交后才作为遗言加入周报素材及同组快报事实；公共消息最多引用前三条实际最后陈述，保留原文和转述/未经证实边界。快报遗言细节不走普通 220 字截断，以免引号和事实边界被截掉。实录不依赖死者继续压缩记忆。记忆失败不重执行游戏动作。
+
+**命令**：话题 `public_execution_start`（默认 34）及模型标签 `[ACTION:PUBLIC_EXECUTION_START]` 接通资格捕获、话题选择、后处理规则、规范化和既有 Scene/Native 执行路径。内部规范化生成不提供给模型的场次绑定 receipt，消费时重验 Mission、控制器、场次、Agent 对象、存档代际、待行刑状态并单次消费。场景要求单选本场刽子手及直接玩家回复；信使排除。否定、询问、引述、条件/等待命令及明确拒绝回复不授权；移除旧 Native 裸关键词触发。场景提交后启动现有控制器，Native 保留对话关闭后启动；离场/换档/宿主退役清除未消费请求。开始事实不冒充死亡事实。
+
+**轮刑**：普通审判和自定义刑场方法列表隐藏 `breaking_wheel`，默认临时请求也避开它；保留注册 ID、规则、策略和旧预设读取，未删除历史数据或改动刑罚结算。
+
+| 源码证据（提交 68dd6cd5 的一基坐标） | 符号、消费者与覆盖边界 |
+| --- | --- |
+| `ExecutionAddressLlm.cs:29–70,537–577`；`ExecutionAddressContextPolicy.cs:1–12`；`ExecutionPromptConfiguration.cs:1–21` | `Capture/BuildUserPrompt/RunAsync` 消费既有 detached recall、配置和 LLM transport；没有第二套 HTTP 客户端或全帧扫描。真实 provider 未验。 |
+| `Vengeance/Source/Scene/ExecutionSpeechDirector.cs:262–289`；`Speech/ExecutionSpeechLineParser.cs:1–176` | `TryStart` 在气泡成功后通知；parser 持跨分片阶段/最后陈述状态，拒绝阶段倒退后的死者台词。共享复仇源码仅通知内部 host，不引用 AF 记忆类型。 |
+| `MyBehavior.ExecutionMemory.cs:20–140`；`ExecutionTranscriptStore.cs:1–91` | SyncData、显示事件、完成/取消事件到实录/共同记忆/公共消息；原文和压缩摘要分离。原 `_rex_*` 身份保留，新键为本次有意增量。 |
+| `PublicExecutionOrderRuntime.cs:32–119`；`PublicExecutionOrderPolicy.cs:1–19`；`Internal/Postprocess/ShoutBehavior.UnifiedActionPostprocess.cs:100–105,637–649`（位于 `src/modules/AF.Module.Conversation/`） | 捕获资格/后处理标签到一次性执行许可；旧 Native raw keyword 分支已删除，Scene 与 Native 统一入口而保持触发时机差异。 |
+| `Vengeance/Source/Core/ExecutionMethodRules.cs:58–60`；`UI/ExecutionJudgementVM.cs:97–101`；`Customization/ExecutionSiteBuilderController.Panels.cs:142–164` | `IsVisibleInSelection` 实际供两个选择界面消费；旧轮刑数据仍可按 ID 解析。 |
+
+**验证实跑**：
+- `dotnet run --project tests/Vengeance/ExecutionMemoryContractTests/ExecutionMemoryContractTests.csproj -c Release`：**98 断言 PASS**，直接链接生产 parser、playback、planner、实录 owner、实际 AF 记忆桥和命令 runtime；Campaign/Mission/存储宿主为桩，Newtonsoft 为项目真实依赖。覆盖分片、兜底、无群众、未显示/显示失败、提前中断、死亡后禁言、去重、旧/坏存档、原文存读、100 场与 24 行边界、现场知情范围、取消/死亡新闻边界、初次记忆失败保留实录、选错/未选、否定/疑问/条件/引述、拒绝、重复/迟到/换档请求、控制器拒绝、Native 关闭/退役、默认配置、话题资格及轮刑隐藏。
+- 既有 `tests/Vengeance/ExecutionSpeechLineParserTests`：PASS。
+- 原 `scripts/build/build_single_module.ps1` 不带 Stage/Deploy，Release **1.3 + 1.4 + Bootstrap 全部 0 错误**，保留既有 nullable 等编译警告。实际引用标记为 `v1.3.15.110062` / `v1.4.6.115628`。
+- 独立 `RichExecutions.csproj` 编译 **0 错误、15 警告**；沿用该工程默认 `BannerlordApi=1.4.8` 设置及当前本机安装引用，不将这个配置名当成真实 1.4.8 引擎验收。Intermediate/Output 全部重定向到本任务仓内 `.tmp/execution-memory/standalone-*`，未覆写独立模块输出或游戏文件。
+- 日志/独立候选/源哈希：`.tmp/execution-memory/`，AF DLL 快照 `verified/1.3/`、`verified/1.4/`；`verified-manifest.json` 记录构建时源哈希。1.3 SHA256 `1c04cd703e4fa08070afa0da4083664b14459ce76331cc761c1dbead34042cfb`；1.4 `284901fa7f38bcdc96f91bab9c522a47d15f1533efd4d4a5bcd1160dfe7d459a`。候选来自当时完整工作树，包含未纳入本提交的其他会话并行源码；不能把它声称为本提交干净检出的二进制复现。只读/本地验证未访问真实玩家记忆资料。
+
+**未验证/回滚**：真实模型措辞与引用准确性、游戏中选中刽子手的喊话/Native 关闭时序、七种刑罚实际阶段切换、气泡/TTS、真实旧存档和三渠道实机读取仍 NOT-RUN；离线桩不替代这些验收。本轮未推送、未部署、未改一键流程。回滚产品仅对 `68dd6cd5` 作逆向提交；不 hard reset，不回滚并行内战/政变/快报改动。`MyBehavior.cs` 只提交本功能的 reset/SyncData 两处，其他作者的建国检查保持未暂存。
 
 <a id="j17-r05-i-cleanup-20261001"></a>
 ## J17 R05-i 具名死尾段删除（2026-10-01）

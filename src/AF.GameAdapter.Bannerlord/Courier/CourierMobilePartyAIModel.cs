@@ -69,6 +69,12 @@ public sealed class CourierMobilePartyAIModel : DefaultMobilePartyAIModel
 
 	public override bool ShouldPartyCheckInitiativeBehavior(MobileParty mobileParty)
 	{
+		// Native initiative can bypass DoNotMakeNewDecisions when the enemy is
+		// attacking TargetSettlement. An active stay order keeps its defenders inside.
+		if (WorldMapPartyCommandBehavior.ShouldSuppressSettlementStayInitiative(mobileParty))
+		{
+			return false;
+		}
 		return _inner.ShouldPartyCheckInitiativeBehavior(mobileParty);
 	}
 

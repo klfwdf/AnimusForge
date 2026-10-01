@@ -780,6 +780,7 @@ public sealed partial class CustomPolicyBehavior : CampaignBehaviorBase, INonRea
 				AuthoritarianWeight = authoritarian,
 				OligarchicWeight = oligarchic,
 				EgalitarianWeight = egalitarian,
+				VotePersonality = PolicyVotePersonality.CloneValidated(record.VotePersonality),
 				Status = DynamicPolicyStatusPending,
 				CreatedUtcTicks = record.CreatedUtcTicks > 0L ? record.CreatedUtcTicks : DateTime.UtcNow.Ticks
 			};

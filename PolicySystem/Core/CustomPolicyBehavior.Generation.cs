@@ -1953,6 +1953,7 @@ public sealed partial class CustomPolicyBehavior
 			AuthoritarianWeight = assessment.AuthoritarianWeight,
 			OligarchicWeight = assessment.OligarchicWeight,
 			EgalitarianWeight = assessment.EgalitarianWeight,
+			VotePersonality = PolicyVotePersonality.CloneValidated(assessment.VotePersonality),
 			DurationDays = assessment.DurationDays,
 			EffectDurationMode = assessment.EffectDurationMode,
 			Effects = null,
@@ -2831,6 +2832,7 @@ public sealed partial class CustomPolicyBehavior
 				AuthoritarianWeight = authoritarianWeight,
 				OligarchicWeight = oligarchicWeight,
 				EgalitarianWeight = egalitarianWeight,
+				VotePersonality = PolicyVotePersonality.CloneValidated(result.MainAssessment.VotePersonality),
 				Status = DynamicPolicyStatusPending,
 				CreatedUtcTicks = DateTime.UtcNow.Ticks,
 				PlayerPayloadJson = JsonConvert.SerializeObject(pending)
@@ -3540,6 +3542,7 @@ public sealed partial class CustomPolicyBehavior
 			+ "- authoritarianWeight:number，范围 [-1,1]。\n"
 			+ "- oligarchicWeight:number，范围 [-1,1]。\n"
 			+ "- egalitarianWeight:number，范围 [-1,1]；三项不得全为 0。\n"
+			+ PolicyVotePersonality.PromptContract + "\n"
 			+ costSchema
 			+ "- effectDurationMode:string，只能是 permanent 或 finite。\n"
 			+ "- durationDays:number，permanent 时为 0，finite 时为正整数。";
@@ -4658,7 +4661,7 @@ public sealed partial class CustomPolicyBehavior
 		HashSet<string> expected = new HashSet<string>(new[]
 		{
 			"publicFeedback", "impactSummary", "numericIntent", "policyContentDigest", "feedbackDigest",
-			"authoritarianWeight", "oligarchicWeight", "egalitarianWeight", "effectDurationMode", "durationDays"
+			"authoritarianWeight", "oligarchicWeight", "egalitarianWeight", "votePersonality", "effectDurationMode", "durationDays"
 		}, StringComparer.Ordinal);
 		if (request?.UseAiEvaluatedCost == true)
 		{
@@ -4750,7 +4753,10 @@ public sealed partial class CustomPolicyBehavior
 			}
 			parsed["vassalIndependenceDelta"] = value;
 		}
-		return parsed.ToObject<PolicyMainAssessmentResult>();
+		PolicyVotePersonalityProfile personality = PolicyVotePersonality.ReadRequired(parsed["votePersonality"]);
+		PolicyMainAssessmentResult assessment = parsed.ToObject<PolicyMainAssessmentResult>();
+		assessment.VotePersonality = personality;
+		return assessment;
 	}
 
 	private static string RepairJsonBoundaryQuotes(string json)

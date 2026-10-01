@@ -35,7 +35,8 @@ internal static class GcczTownRuleMemoryRuntimeBridge
 			{
 				lock (Gate)
 				{
-					_serializedRecordsBySettlement = SettlementRuleMemorySaveCodec.Encode(Store.Export());
+					_serializedRecordsBySettlement = CampaignSaveChunkHelper.FlattenStringDictionary(
+						SettlementRuleMemorySaveCodec.Encode(Store.Export()), RecordsBySettlementKey, "GcczTownRuleMemory");
 					_storageInitialized = true;
 				}
 				dataStore.SyncData(StorageInitializedKey, ref _storageInitialized);
@@ -52,7 +53,8 @@ internal static class GcczTownRuleMemoryRuntimeBridge
 			Dictionary<string, string> serialized = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 			dataStore.SyncData(StorageInitializedKey, ref initialized);
 			dataStore.SyncData(RecordsBySettlementKey, ref serialized);
-			SettlementRuleMemorySaveDecodeResult decoded = SettlementRuleMemorySaveCodec.Decode(serialized);
+			SettlementRuleMemorySaveDecodeResult decoded = SettlementRuleMemorySaveCodec.Decode(
+				CampaignSaveChunkHelper.RestoreStringDictionary(serialized, "GcczTownRuleMemory"));
 			int rejected = decoded.RejectedCount;
 			lock (Gate)
 			{
@@ -232,11 +234,10 @@ internal static class GcczTownRuleMemoryRuntimeBridge
 				settlement.StringId,
 				record.CurrentRule.RulerId,
 				record.CurrentRule.RuleStartDay,
-				string.Empty,
+				record.CurrentRule.Narrative,
 				false,
 				out record);
 		}
-		GcczTownRuleMemoryGenerationBridge.AllowImmediateRetry(record);
 		ChangedSettlementIds.Enqueue(settlement.StringId);
 		QueueCurrentNarrativeGeneration(record, GetCurrentCampaignDay(), true);
 		return true;
@@ -264,6 +265,11 @@ internal static class GcczTownRuleMemoryRuntimeBridge
 			lock (Gate)
 			{
 				update = ObserveCurrentRule(settlement, previousOwner, GetCurrentCampaignDay());
+				if (update.CultureChanged)
+					Store.TryRecordConfirmedEvent(settlement.StringId, new SettlementRuleMemoryFact(
+						"culture:" + update.Record.CurrentRule.Evolution.Revision,
+						"城镇文化已变更为“" + settlement.Culture?.Name + "”（当时领主：“" + settlement.OwnerClan?.Leader?.Name + "”）。",
+						GetCurrentCampaignDay()));
 			}
 			if (update.Accepted)
 			{
@@ -297,27 +303,57 @@ internal static class GcczTownRuleMemoryRuntimeBridge
 			ChangedSettlementIds.Enqueue);
 	}
 
-	private static bool TryStoreGeneratedNarrative(
-		string settlementId,
-		string rulerId,
-		int ruleStartDay,
-		string narrative)
+	private static bool TryStoreGeneratedNarrative(SettlementRuleMemoryRecord expected, int requestDay, string narrative)
 	{
+		// Main-thread completion: refresh live ruler/culture/personality before source acceptance.
+		Settlement settlement = Settlement.Find(expected.SettlementId);
+		if (settlement?.IsTown != true) return false;
 		lock (Gate)
 		{
-			return Store.TryGet(settlementId, out SettlementRuleMemoryRecord current)
-				&& current.CurrentRule != null
-				&& string.Equals(current.CurrentRule.RulerId, rulerId, StringComparison.OrdinalIgnoreCase)
-				&& current.CurrentRule.RuleStartDay == ruleStartDay
-				&& string.IsNullOrWhiteSpace(current.CurrentRule.Narrative)
-				&& Store.TrySetNarrative(
-					settlementId,
-					rulerId,
-					ruleStartDay,
-					narrative,
-					false,
-					out _);
+			ObserveCurrentRule(settlement, null, GetCurrentCampaignDay());
+			return Store.TryStoreGeneratedNarrative(expected, GetCurrentCampaignDay(), narrative);
 		}
+	}
+
+	internal static void RecordConfirmedEvent(Settlement settlement, string eventId, string fact)
+	{
+		if (settlement?.IsTown != true || string.IsNullOrWhiteSpace(fact)) return;
+		try
+		{
+			int day = GetCurrentCampaignDay();
+			lock (Gate)
+			{
+				ObserveCurrentRule(settlement, null, day);
+				Store.TryRecordConfirmedEvent(settlement.StringId, new SettlementRuleMemoryFact(eventId,
+					"当时领主：“" + settlement.OwnerClan?.Leader?.Name + "”。" + fact, day));
+			}
+		}
+		catch (Exception ex) { Logger.Log("GcczTownRuleMemory", "Confirmed event capture failed: " + ex.Message); }
+	}
+
+	internal static void ObserveOwnerChange(Settlement settlement, Hero oldOwner, Hero newOwner)
+	{
+		// A grant may name a clan member; the authoritative town ruler is its owning clan's leader.
+		newOwner = settlement?.OwnerClan?.Leader ?? newOwner;
+		if (settlement?.IsTown != true || newOwner == null || GcczTownRuleMemoryRulerAdapter.IsSameHero(oldOwner, newOwner)) return;
+		try
+		{
+			int day = GetCurrentCampaignDay();
+			lock (Gate)
+			{
+				if (!Store.TryGet(settlement.StringId, out _) && oldOwner != null)
+					Store.Observe(GcczTownRuleMemoryRulerAdapter.CreateObservation(settlement, oldOwner, day, true));
+				var update = Store.Observe(GcczTownRuleMemoryRulerAdapter.CreateObservation(settlement, newOwner, day, false));
+				if (update.RulerChanged || update.Initialized)
+				{
+					Store.TryRecordConfirmedEvent(settlement.StringId, new SettlementRuleMemoryFact(
+						"owner:" + update.Record.CurrentRule.Evolution.Revision,
+						"城镇领主由“" + (oldOwner?.Name?.ToString() ?? "未知") + "”变为“" + newOwner.Name + "”。", day));
+					ChangedSettlementIds.Enqueue(settlement.StringId);
+				}
+			}
+		}
+		catch (Exception ex) { Logger.Log("GcczTownRuleMemory", "Owner event capture failed: " + ex.Message); }
 	}
 
 	private static SettlementRuleMemoryUpdate ObserveCurrentRule(
