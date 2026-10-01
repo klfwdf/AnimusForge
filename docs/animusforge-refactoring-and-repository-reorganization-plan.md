@@ -1,3 +1,34 @@
+<a id="coup-mcm-battle-options-20261001"></a>
+
+### 篡位 MCM 七项战斗参数（2026-10-01，OFFLINE_VERIFIED / 未部署）
+
+用户确认并要求实施“战斗规模与难度、适度扩展”方案。工作区 `F:/AnimusForge-main`，分支 `codex/af-main-refactor-continuation-20260831`；意图checkpoint `795c3125`，产品/测试/使用说明 `0aff8322`。保留原总开关，增加街道突击队60（1–120）、大厅突击队20（1–40）、门卫10（1–30）、大厅护卫20（1–40）、每波30（1–60）、间隔30秒（5–120）、存活波数4（1–4）。不改变胜败政治后果、伤亡、快报和记忆规则；未修改一键构建/覆盖脚本，未部署或推送。
+
+参数只在Begin读取MCM并限幅，作为脱离设置对象的BattleOptions存入既有 `_afCoupSession_v1` JSON；转场/读档沿用快照。旧JSON缺少快照时保留历史默认，显式null/部分字段/越界快照由IsValid拒绝，沿用SyncData保存原JSON及停用入口的保护。真实Newtonsoft初次回归发现其默认复用已初始化对象会掩盖缺字段，最终给该字段指定ObjectCreationHandling.Replace后通过；未把缺项损坏当旧档迁移。
+
+| 源码坐标（`0aff8322`，一基） | 真实职责与消费者 |
+| --- | --- |
+| `extensions/AnimusForge.Coup/src/CoupSettings.cs:14–51` | 原页/标识/目录不变；七项整数属性、两组中文提示、默认/范围/免重启；CaptureBattleOptions返回归一化独立快照。 |
+| `extensions/AnimusForge.Coup/src/CoupSystem/CoupSession.cs:11–40,75–77,135–164` | CoupBattleOptions及旧档默认，真实JSON替换语义；单次名册校验遍历累计四角色人数，按保存快照验证。 |
+| `extensions/AnimusForge.Coup/src/CoupSystem/CoupCampaignBehavior.cs:212–261,283–313,319–333,470–508` | Begin固定参数并显示实际确认文案；街道选兵保留接应兵；真实健康守军按大厅/门卫/街道分配；大厅只选幸存者且重验上限；QueueCurrentScene带入当前快照。 |
+| `extensions/AnimusForge.Coup/src/Integration/SettlementEntryTroopSelectionBehavior.cs:65,142–153` | 注册时缓存新八参数内部方法；传本场人数、每波/间隔/存活波数，快照损坏拒绝调用。 |
+| `SettlementEntryTroopSelectionBehavior.cs:108–150,1594–1626,2633–2635,2781–2783,5569–5653` | 新QueueArmedCoupEntryWithOptions接收基础类型值并验证；旧四参数方法转默认；进场和mission缓存参数，取消60/20再次截断；已有增援调度使用缓存，普通SETS仍用原值。 |
+| `extensions/AnimusForge.Coup/tests/Coup.ContractTests/Program.cs:122–183`；`tools/Coup.RuntimeProbe/CoupSettingsRegression.cs`；`PassageTransitionRegression.cs:130–158`（后两者同目录） | 生产快照/边界/存档契约；真实MCM元数据/Newtonsoft/adapter/准备/构造/波次/分配；真实大厅选兵回调40人及最小上限。 |
+
+性能：只在发动读取设置；门口/大厅/街道的名册生成仍由原owner执行一次，守军数量以实际健康名册为准。每场任务缓存三项波次值，无新增tick、全局扫描或每帧反射；沿用原友军分批生成、原定时波次入口和原守军来源顺序。两场景共用波次规则，首波随战斗开始生成，存活波数满或兵源耗尽不会额外生成。普通定居点无政变参数污染。
+
+验证证据统一在 `artifacts/coup-mcm-20261001/`：
+
+- `contract.log`：**91 PASS**，新增28项默认/上下界/损坏快照/人数上限/JSON往返；两个原快报测试字段CS0649提示，无测试错误。
+- `build.log`：原 `scripts/build/build_single_module.ps1`，Release **1.3 / 1.4 / Bootstrap 全通过**。使用 `795c3125` git archive +本任务7个产品/契约文件overlay的独立source，排除并行内战/对话/快报WIP；没有复制其他作者未提交源码。最终源码与快照7文件哈希一致，见 `verification.json`。首次构建亦通过，随后因真实JSON缺字段边界修复重新双构建，旧日志保留 `build-initial.log`。
+- 1.3 DLL：`source/bin/Release/single_module_artifacts/versions/1.3/AnimusForge.dll`，引用 `v1.3.15.110062`，SHA256 `36A8460630BA85AED71ACFEFD2DA36176E7120D1C387376026AB6CD96EE742BF`。
+- 1.4 DLL：同根 `versions/1.4/AnimusForge.dll`，引用 `v1.4.6.115628`，SHA256 `666679FB17833B3C8D6594AFB1BAE79E9198BC22313FF40AB6F194197E7189D9`。
+- `probe-build.log`、`probe-console.log`、`probe/registration.log`：**170 PASS**（29选兵、36入口/拘押、26场景、17门转场、12快报、50设置/兵源/波次），四可用标志true，45个Harmony目标，输入DLL哈希不变。两DLL参数均指向新1.4实现，使用1.4游戏managed依赖；不声称运行了1.3实机。
+- 设置fixture真实执行MCM属性读取、Newtonsoft反序列化、adapter→host queue→entry preparation→mission构造；120/40名册不截断；默认旧接缝和普通SETS隔离；实际首波/定时方法验证60人首波、120秒间隔、4波满等待、空位后仅剩5人、无剩余停止；真实BuildDefenders验证健康数0/3/45/75及伤兵排除。原生生成/时间/波数统计、世界查询和资格是明示桩，不能据此声称游戏性能。初次产品失败保留 `probe-initial-failure.log`；随后增加兵源夹具时的未初始化/字段反射失败保留 `probe-allocation-fixture-failure.log`，最终修正测试读取Settlement.Town字段及基类声明getter后通过。
+- `git diff --check`通过；`code-map.log`仍为既有 `Stale source content: SubModule.cs`，未改无关地图或把全仓地图记为通过。
+
+未验证：真实MCM分组/滑块渲染、原生选兵界面与箭头、各文化120人街道/40人大厅的导航拥堵和性能、完整实机政变胜败、真实旧游戏存档与1.3运行时。离线验证不代表以上验收。回滚用 `git revert 0aff8322` 的针对性逆向提交，若共享文件有后续变动需逐块保留；不hard reset。未触及游戏安装，无新增部署备份；大于旧上限的新政变存档不保证旧程序可读，回退应使用发动前存档。
+
 <a id="coup-bulletin-outcome-20261001"></a>
 
 ### 政变地点／过程／最终结果接入快报（2026-10-01，DEPLOYED / OFFLINE_VERIFIED）
