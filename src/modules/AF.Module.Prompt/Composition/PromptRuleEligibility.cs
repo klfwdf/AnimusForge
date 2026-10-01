@@ -27,6 +27,7 @@ internal sealed class PromptRuleEligibility
 	internal bool MarriageEligible;
 	internal bool NpcMajorActionsEligible;
 	internal bool LordsHallAccessEligible;
+	internal bool PublicExecutionEligible;
 	/// <summary>Any target identity (hero, character, troop or unnamed rank) is bound.</summary>
 	internal bool HasAnyTargetIdentity;
 
@@ -69,6 +70,7 @@ internal sealed class PromptRuleEligibility
 		switch (text)
 		{
 			case "siege_intervention_aftermath": return GcczSiegeAftermathActive;
+			case "public_execution_start": return PublicExecutionEligible;
 			case "kingdom_vassalage": return VassalageEligible;
 			case "diplomacy": return DiplomacyEligible;
 			case "world_diplomacy_discussion": return WorldDiplomacyEligible;
@@ -95,6 +97,7 @@ internal sealed class PromptRuleEligibility
 		{
 			case "kingdom_service": return true;
 			case "siege_intervention_aftermath": return GcczSiegeAftermathActive;
+			case "public_execution_start": return PublicExecutionEligible;
 			case "kingdom_vassalage": return VassalageEligible;
 			case "diplomacy": return DiplomacyEligible;
 			case "world_diplomacy_discussion": return WorldDiplomacyEligible;

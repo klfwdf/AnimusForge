@@ -119,7 +119,8 @@ internal static class PromptRuleIdPolicy
 	internal static bool IsRuntimeGatedPreprocessRuleId(string ruleId)
 	{
 		string id = (ruleId ?? "").Trim();
-		return string.Equals(id, "kingdom_vassalage", StringComparison.OrdinalIgnoreCase)
+		return string.Equals(id, "public_execution_start", StringComparison.OrdinalIgnoreCase)
+			|| string.Equals(id, "kingdom_vassalage", StringComparison.OrdinalIgnoreCase)
 			|| string.Equals(id, "diplomacy", StringComparison.OrdinalIgnoreCase)
 			|| string.Equals(id, "world_diplomacy_discussion", StringComparison.OrdinalIgnoreCase)
 			|| string.Equals(id, "kingdom_agenda", StringComparison.OrdinalIgnoreCase);

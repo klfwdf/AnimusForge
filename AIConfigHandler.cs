@@ -1750,6 +1750,8 @@ public static class AIConfigHandler
 		{
 			return false;
 		}
+		if (text == "public_execution_start")
+			return PublicExecutionOrderRuntime.IsEligible(GetGuardrailRuntimeTargetAgentIndexForExternal());
 		if (IsSceneMoveRule(text) && ShouldExcludeSceneMoveRuleForCurrentMission())
 		{
 			return false;
@@ -1847,8 +1849,20 @@ public static class AIConfigHandler
 		var revision = _promptConfiguration.Read();
 		return _ruleRegistryCache.GetOrBuild(revision.Revision,
 			() => _promptConfiguration.Capture().Revision,
-			() => PromptRuleRegistry.Build(revision.Value.ReadGuardrailForOwner()));
+			() =>
+			{
+				var rules = PromptRuleRegistry.Build(revision.Value.ReadGuardrailForOwner());
+				if (!rules.ContainsKey("public_execution_start"))
+				{
+					var rule = ExecutionPromptConfiguration.CreateOrderRule();
+					if (rule != null) rules[rule.Id] = rule;
+				}
+				return rules;
+			});
 	}
+
+	internal static string ExecutionCeremonySystemPrompt => !string.IsNullOrWhiteSpace(_guardrail?.ExecutionCeremonySystemPrompt)
+		? _guardrail.ExecutionCeremonySystemPrompt : ExecutionPromptConfiguration.SystemPrompt;
 
 	private static List<GuardrailRulePromptConfig> GetAllEnabledRulePrompts()
 	{
@@ -5803,6 +5817,7 @@ public static class AIConfigHandler
 			try { result.KingdomAgendaEligible = IsKingdomLordOrKingRuleTargetForPreprocess(hero, targetCharacter); } catch { }
 			try { result.MarriageEligible = hero != null && !string.IsNullOrWhiteSpace(RomanceSystemBehavior.Instance?.BuildMarriageRuntimeInstruction(hero)); } catch { }
 			try { result.NpcMajorActionsEligible = !string.IsNullOrWhiteSpace(MyBehavior.BuildNpcMajorActionsRuntimeInstructionForExternal(hero)); } catch { }
+			try { result.PublicExecutionEligible = PublicExecutionOrderRuntime.IsEligible(binding.AgentIndex); } catch { }
 			try { result.LordsHallAccessEligible = !string.IsNullOrWhiteSpace(BuildRuntimeLordsHallAccessInstructionForExternal()); } catch { }
 			result.HasAnyTargetIdentity = hero != null || targetCharacter != null || !string.IsNullOrWhiteSpace(binding.TroopId) || !string.IsNullOrWhiteSpace(binding.UnnamedRank);
 		}
@@ -7425,6 +7440,8 @@ public static class AIConfigHandler
 			}
 			switch (text)
 			{
+			case "public_execution_start":
+				return PublicExecutionOrderRuntime.IsEligible(GetGuardrailRuntimeTargetAgentIndexForExternal());
 			case "kingdom_service":
 				return true;
 			case "siege_intervention_aftermath":

@@ -34,14 +34,17 @@ internal sealed class LocalSpeechPlanProvider : ISpeechPlanProvider
                 speaker == SpeechSpeaker.Crowd ? crowdRandom : random;
             var id = recentHistory.Pick(category, candidates, speakerRandom);
             var template = templates.First(item => item.Id == id);
-            var text = localize(template.Id, template.Fallback);
+            var text = localize(template.Id, template.Fallback) ?? string.Empty;
+            if (text.Length > ExecutionSpeechLineParser.MaximumLineCharacters)
+                text = text.Substring(0, ExecutionSpeechLineParser.MaximumLineCharacters);
             if (string.IsNullOrWhiteSpace(text) || text.Contains("{=") || text.Contains("{VICTIM}") ||
                 text.Contains("{EXECUTOR}") || text.Contains("{CHARGE}") || text.Contains("{METHOD}") ||
                 text.Contains("{EVIDENCE_PLACE}"))
                 throw new InvalidOperationException("Unresolved speech text: " + template.Id);
             selected[id] = category;
             return new SpeechCue(speaker, crowdIndex, text, id,
-                ExecutionSpeechTiming.GetLineSeconds(text) + ExecutionSpeechTiming.FadeSeconds, reaction);
+                ExecutionSpeechTiming.GetLineSeconds(text) + ExecutionSpeechTiming.FadeSeconds, reaction,
+                isLastStatement: speaker == SpeechSpeaker.Victim);
         }
 
         var tone = context.Tone == ExecutionTone.Spectacle ? "Spectacle" :

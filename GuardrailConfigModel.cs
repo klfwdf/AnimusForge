@@ -4,6 +4,7 @@ namespace AnimusForge;
 
 public class GuardrailConfigModel
 {
+    public string ExecutionCeremonySystemPrompt { get; set; } = "";
 	public string GlobalPrompt { get; set; } = "你是一个NPC。";
 
 	public string GlobalGuardrail { get; set; } = "";

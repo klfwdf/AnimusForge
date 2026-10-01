@@ -96,6 +96,7 @@ internal sealed class ExecutionJudgementVM : ViewModel
         Methods = new MBBindingList<ExecutionMethodItemVM>();
         foreach (var method in methodDefinitions)
         {
+            if (!ExecutionMethodRules.IsVisibleInSelection(method.StringId)) continue;
             Methods.Add(new ExecutionMethodItemVM(method, SelectMethod));
         }
 
