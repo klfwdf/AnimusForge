@@ -1,5 +1,7 @@
 # 当前交接：J17 收尾与远端 CivilWar 合并（2026-10-01）
 
+- **画廊转RP物品/插画入口去重（2026-10-01）**：`fed01fb6`，画廊选图→编辑介绍→加入背包，沿用原展示物品链路向NPC提供画作介绍；保留DialogueUI现有场景插画按钮，移除额外右上角注入。19转换检查、双API+Bootstrap、真实DLL回调与RP介绍JSON/共享事实读取通过。未部署/推送，游戏及真实旧档未验。[源码、证据与回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#gallery-rp-items-20261001)。
+
 - **篡位MCM七项战斗参数已离线实现（2026-10-01，未部署）**：`0aff8322`，街道/大厅突击队、门卫/大厅护卫、守军每波/间隔/存活波数均可调；默认保持现状，发动时快照并保存，下次政变生效。接通SETS真实人数/波次，旧接口及普通场景保持默认。修复Newtonsoft复用对象掩盖部分损坏快照；91契约、170真实DLL/夹具检查、Release双API+Bootstrap通过。并行WIP排除在隔离构建外；MCM实显、大规模导航性能和真实旧档未验，无部署/推送。[源码、完整证据与回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#coup-mcm-battle-options-20261001)。
 
 - **处决遗言/喊话行刑已离线接通，轮刑选择已隐藏（2026-10-01）**：`68dd6cd5`，三阶段台词结合相关记忆，实际气泡显示后才记原文；不等遗言播完，未显示后半段不补记。死亡成功后才供公共消息转述，新增实录存档保留最近100场。必须单选本场刽子手，通过统一后处理启动；否定/条件/错目标/迟到/重复不执行，Native 仍等对话关闭。普通及自定义方法列表隐藏轮刑，旧 ID/预设保留。98项定向断言、原parser、Release双API+Bootstrap及独立复仇编译通过；真实模型/游戏/旧档未验，本轮未部署推送。[唯一台账、源码坐标、候选哈希与逆向回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#execution-last-words-20261001)。
