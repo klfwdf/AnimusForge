@@ -244,7 +244,14 @@ def main():
  assert 'WorldDiplomacyIntentVocabulary.NormalizeIntent(input.Intent)' in executor
  assert 'WorldDiplomacyOfferContractRules.CommitmentMatchesIntent(intent, input.Commitment)' in executor
  assert 'new WorldDiplomacyDocumentActionReceipt(input.ActionId, target,' in executor
- assert 'WorldDiplomacyDocumentApplication.CaptureActionResult(document, action, receipt)' in executor
+ assert 'WorldDiplomacyDocumentApplication.CaptureActionResult(document, resultAction, receipt)' in executor
+ assert 'WorldDiplomacyDocumentExecutionCommand(document, actions)' in executor
+ assert 'document.Actions = frozenActions' in executor
+ assert 'validationDocument, requiredPeaceOffer' in executor
+ assert 'DocumentHasUnsafeMultiplePeaceAcceptances(validationDocument' in executor
+ assert 'BeginAction(document, input.Materialize(), target)' in executor
+ assert 'outcomeKnown &= orchestration.ExecuteImmediateIntent(' in executor
+ assert 'outcomeKnown &= orchestration.TrySettleRelayOffer(document) != WorldDiplomacyOfferOutcome.Unknown' in executor
  assert 'WorldDiplomacyDocumentApplication.SealActions(document, allAddressed, sourceContextDocumentId, receipts)' in executor
  assert 'document.ChangedDiplomaticState = receipts.Any(x => x.Applied)' in read(APPDIR+'WorldDiplomacyDocumentApplication.cs')
  assert 'outcomeKnown = false;' in executor

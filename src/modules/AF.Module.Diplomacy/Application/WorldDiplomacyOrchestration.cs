@@ -393,8 +393,8 @@ internal interface IWorldDiplomacyOrchestration
     void RetryDiplomaticThreatDomesticPenalties();
     void RetryDiplomaticThreatComplianceConsequences();
     void RetryDiplomaticThreatHistoryResults();
-    void TrySettleRelayOffer(WorldDiplomacyDocument document);
-    void ExecuteImmediateIntent(string authorId, string targetId, string intent, WorldDiplomacyDocument document);
+    WorldDiplomacyOfferOutcome TrySettleRelayOffer(WorldDiplomacyDocument document);
+    WorldDiplomacyImmediateActionReceipt ExecuteImmediateIntent(string authorId, string targetId, string intent, WorldDiplomacyDocument document);
     int ApplyNationalPrestigeDelta(string kingdomId, int delta, WorldDiplomacyDocument sourceDocument, string reason);
     void SettleInternationalReputationForDocument(WorldDiplomacyDocument document);
     void RecoverUnsettledAiInternationalReputation();
@@ -2134,14 +2134,14 @@ internal sealed class WorldDiplomacyOrchestration : IWorldDiplomacyOrchestration
         WorldDiplomacyThreatSettlementApplication.RetryDiplomaticThreatHistoryResults(Storage, _host.ThreatSettlement(), this);
     }
 
-    public void TrySettleRelayOffer(WorldDiplomacyDocument document)
+    public WorldDiplomacyOfferOutcome TrySettleRelayOffer(WorldDiplomacyDocument document)
     {
-        WorldDiplomacyOfferApplication.Settle(document, _host.OfferAction(), this);
+        return WorldDiplomacyOfferApplication.Settle(document, _host.OfferAction(), this);
     }
 
-    public void ExecuteImmediateIntent(string authorId, string targetId, string intent, WorldDiplomacyDocument document)
+    public WorldDiplomacyImmediateActionReceipt ExecuteImmediateIntent(string authorId, string targetId, string intent, WorldDiplomacyDocument document)
     {
-        WorldDiplomacyImmediateActionApplication.Execute(_host.ImmediateAction(), authorId, targetId, intent, document);
+        return WorldDiplomacyImmediateActionApplication.Execute(_host.ImmediateAction(), authorId, targetId, intent, document);
     }
 
     public int ApplyNationalPrestigeDelta(string kingdomId, int delta, WorldDiplomacyDocument sourceDocument, string reason)

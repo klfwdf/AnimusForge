@@ -27,6 +27,7 @@ internal sealed class WorldDiplomacyDocumentExecutionCommand
 
     internal readonly struct ActionInput
     {
+        internal readonly bool Exists;
         internal readonly string ActionId;
         internal readonly string TargetKingdomId;
         internal readonly string TargetKingdomName;
@@ -46,8 +47,12 @@ internal sealed class WorldDiplomacyDocumentExecutionCommand
         internal readonly string CessionToKingdomId;
         internal readonly int DailyTribute;
         internal readonly int DurationDays;
+        internal readonly string MechanicalResult;
+        internal readonly bool ChangedDiplomaticState;
+        internal readonly bool HistoryResultRecorded;
         internal ActionInput(WorldDiplomacyDocumentAction action)
         {
+            Exists = action != null;
             ActionId = action?.ActionId;
             TargetKingdomId = action?.TargetKingdomId;
             TargetKingdomName = action?.TargetKingdomName;
@@ -67,7 +72,45 @@ internal sealed class WorldDiplomacyDocumentExecutionCommand
             CessionToKingdomId = action?.PeaceTerms?.CessionToKingdomId;
             DailyTribute = action?.PeaceTerms?.DailyTribute ?? 0;
             DurationDays = action?.PeaceTerms?.DurationDays ?? 0;
+            MechanicalResult = action?.MechanicalResult;
+            ChangedDiplomaticState = action?.ChangedDiplomaticState == true;
+            HistoryResultRecorded = action?.HistoryResultRecorded == true;
         }
+
+        internal WorldDiplomacyDocumentAction Materialize() => !Exists ? null : new WorldDiplomacyDocumentAction
+        {
+            ActionId = ActionId,
+            TargetKingdomId = TargetKingdomId,
+            TargetKingdomName = TargetKingdomName,
+            Intent = Intent,
+            NegotiationMove = NegotiationMove,
+            Commitment = Commitment,
+            RespondingToOfferDocumentId = RespondingToOfferDocumentId,
+            RespondingToOfferActionId = RespondingToOfferActionId,
+            RespondingToThreatDocumentId = RespondingToThreatDocumentId,
+            RespondingToThreatActionId = RespondingToThreatActionId,
+            RequiresResponse = RequiresResponse,
+            PeaceTerms = !HasPeaceTerms ? null : new WorldDiplomacyPeaceTerms
+            {
+                TributePayerKingdomId = TributePayerKingdomId,
+                TributeReceiverKingdomId = TributeReceiverKingdomId,
+                CessionSettlementId = CessionSettlementId,
+                CessionFromKingdomId = CessionFromKingdomId,
+                CessionToKingdomId = CessionToKingdomId,
+                DailyTribute = DailyTribute,
+                DurationDays = DurationDays
+            },
+            MechanicalResult = MechanicalResult,
+            ChangedDiplomaticState = ChangedDiplomaticState,
+            HistoryResultRecorded = HistoryResultRecorded
+        };
+    }
+
+    internal List<WorldDiplomacyDocumentAction> MaterializeActions()
+    {
+        var actions = new List<WorldDiplomacyDocumentAction>(_actions.Length);
+        for (int index = 0; index < _actions.Length; index++) actions.Add(_actions[index].Materialize());
+        return actions;
     }
 
     internal WorldDiplomacyDocumentExecutionCommand(WorldDiplomacyDocument document,
@@ -96,6 +139,17 @@ internal static class WorldDiplomacyDocumentExecutionApplication
         IWorldDiplomacyOrchestration orchestration, WorldDiplomacyDocument document,
         string intent, string commitment, bool requiresResponse, string tone, float confidence)
     {
+        ProcessAnalyzedDocument(port, orchestration, document, intent, commitment,
+            requiresResponse, tone, confidence, out _);
+    }
+
+    // An optional synchronous receipt sink for complete Application-level replays.
+    internal static void ProcessAnalyzedDocument(IWorldDiplomacyDocumentExecutionPort port,
+        IWorldDiplomacyOrchestration orchestration, WorldDiplomacyDocument document,
+        string intent, string commitment, bool requiresResponse, string tone, float confidence,
+        out List<WorldDiplomacyDocumentActionReceipt> receipts)
+    {
+        receipts = new List<WorldDiplomacyDocumentActionReceipt>();
         if (document == null) return;
         bool legacy = document.Actions == null || document.Actions.Count == 0;
         // Transient normalization preserves the old save shape and action/source identities.
@@ -112,13 +166,17 @@ internal static class WorldDiplomacyDocumentExecutionApplication
         // Reject malformed or oversized saved action lists before copying values.
         if (actions.Count < 1 || actions.Count > port.MaxDiplomaticActionsPerDocument) return;
         var command = new WorldDiplomacyDocumentExecutionCommand(document, actions);
-        ExecuteItems(port, orchestration, document, actions, command, legacy);
+        // Keep the saved record, but detach its input action objects from callbacks.
+        // The separate validation view never exposes mutable canonical actions.
+        List<WorldDiplomacyDocumentAction> frozenActions = command.MaterializeActions();
+        if (!legacy) document.Actions = frozenActions;
+        ExecuteItems(port, orchestration, document, command, legacy, receipts);
     }
 
     private static void ExecuteItems(IWorldDiplomacyDocumentExecutionPort port,
         IWorldDiplomacyOrchestration orchestration, WorldDiplomacyDocument document,
-        IReadOnlyList<WorldDiplomacyDocumentAction> actions,
-        WorldDiplomacyDocumentExecutionCommand command, bool legacy)
+        WorldDiplomacyDocumentExecutionCommand command, bool legacy,
+        List<WorldDiplomacyDocumentActionReceipt> receipts)
     {
         string author = port.ResolveKingdomId(command.AuthorKingdomId);
         if (command.ActionCount < 1 || command.ActionCount > port.MaxDiplomaticActionsPerDocument || author == null) return;
@@ -133,15 +191,18 @@ internal static class WorldDiplomacyDocumentExecutionApplication
 			return;
 		}
 		string sourceContextDocumentId = command.SourceDocumentId ?? "";
-		WorldDiplomacyRound round = port.ResolveRound(command.RoundId);
-		orchestration.PruneInvalidOffers(round);
+        WorldDiplomacyRound round = port.ResolveRound(command.RoundId);
+        orchestration.PruneInvalidOffers(round);
+        WorldDiplomacyDocument validationDocument = legacy ? document : new WorldDiplomacyDocument
+        {
+            Actions = command.MaterializeActions()
+        };
 		List<string> targets = new List<string>(command.ActionCount);
 		HashSet<string> uniqueTargets = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 		HashSet<string> newSettlementTargets = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 		int statementCount = 0;
 		for (int index = 0; index < command.ActionCount; index++)
 		{
-			WorldDiplomacyDocumentAction action = actions[index];
 			var input = command.ActionAt(index);
 			string target = port.ResolveKingdomId(input.TargetKingdomId);
 			string intent = WorldDiplomacyIntentVocabulary.NormalizeIntent(input.Intent);
@@ -169,7 +230,7 @@ internal static class WorldDiplomacyDocumentExecutionApplication
                 return;
             }
             if (publicStatement) { targets.Add(target); continue; }
-            if (action == null || target == null || target == author || port.IsEliminated(target)
+            if (!input.Exists || target == null || target == author || port.IsEliminated(target)
                 || !WorldDiplomacyAuthorityRules.HasIndependentAuthority(port.CaptureAuthority(target)) || !uniqueTargets.Add(target))
             {
                 orchestration.SuppressInvalidDocumentBeforePropagation(document, legacy
@@ -230,7 +291,7 @@ internal static class WorldDiplomacyDocumentExecutionApplication
                 if (!command.WasReadyForPublication) port.Notify("外交宣言没有发布：正文中的外交动作与当前真实状态不相容。");
                 return;
             }
-            if (!legacy) WorldDiplomacyDocumentFactRules.MirrorPrimaryActionToDocument(document, action);
+            if (!legacy) WorldDiplomacyDocumentFactRules.MirrorPrimaryActionToDocument(document, input.Materialize());
 			string proposalIntent = WorldDiplomacyIntentVocabulary.ResponseIntentToProposalIntent(intent);
 			if (!command.IsPlayerAuthored && !string.IsNullOrWhiteSpace(proposalIntent)
 				&& !WorldDiplomacyRoundLifecycleRules.HasOpenProposalForDocument(document, author, target, proposalIntent, port.ResolveRound))
@@ -262,7 +323,7 @@ internal static class WorldDiplomacyDocumentExecutionApplication
 			command.IsExternalResponseOnly,
 			command.SourceDocumentId,
 			requireAnyOpenPeaceOffer: command.IsRelayTurn || command.IsPlayerAuthored);
-		if (!WorldDiplomacyDocumentFactRules.DocumentContainsRequiredPeaceOfferResponse(document, requiredPeaceOffer))
+		if (!WorldDiplomacyDocumentFactRules.DocumentContainsRequiredPeaceOfferResponse(validationDocument, requiredPeaceOffer))
 		{
 			orchestration.SuppressInvalidDocumentBeforePropagation(document, "required_peace_offer_response_missing");
 			if (command.IsPlayerAuthored && (!legacy || !command.WasReadyForPublication))
@@ -271,7 +332,7 @@ internal static class WorldDiplomacyDocumentExecutionApplication
 			}
 			return;
 		}
-		if (!legacy && WorldDiplomacyDocumentFactRules.DocumentHasUnsafeMultiplePeaceAcceptances(document, port.ResolveDocument))
+		if (!legacy && WorldDiplomacyDocumentFactRules.DocumentHasUnsafeMultiplePeaceAcceptances(validationDocument, port.ResolveDocument))
 		{
 			orchestration.SuppressInvalidDocumentBeforePropagation(document, "multiple_peace_acceptances_have_cross_terms");
 			return;
@@ -302,13 +363,20 @@ internal static class WorldDiplomacyDocumentExecutionApplication
             for (int index = 0; index < command.ActionCount; index++) inputTargets.Add(command.ActionAt(index).TargetKingdomId);
         }
 		List<string> allAddressed = legacy ? null : port.NormalizeKingdomIdList(inputTargets, author);
-		List<WorldDiplomacyDocumentActionReceipt> receipts = new List<WorldDiplomacyDocumentActionReceipt>(command.ActionCount);
+		List<WorldDiplomacyDocumentAction> resultActions = legacy ? null : new List<WorldDiplomacyDocumentAction>(command.ActionCount);
 		for (int index = 0; index < command.ActionCount; index++)
 		{
-			WorldDiplomacyDocumentAction action = actions[index];
 			var input = command.ActionAt(index);
 			string target = targets[index];
-            if (!legacy) WorldDiplomacyDocumentApplication.BeginAction(document, action, target);
+            if (!legacy)
+            {
+                // Callbacks may replace or mutate the saved list. Rebuild the bounded
+                // effect view from private inputs and completed results each time.
+                document.Actions = command.MaterializeActions();
+                for (int prior = 0; prior < resultActions.Count; prior++)
+                    document.Actions[prior] = new WorldDiplomacyDocumentExecutionCommand.ActionInput(resultActions[prior]).Materialize();
+            }
+            if (!legacy) WorldDiplomacyDocumentApplication.BeginAction(document, input.Materialize(), target);
 			bool noAction = string.Equals(WorldDiplomacyIntentVocabulary.NormalizeIntent(input.Intent), "statement", StringComparison.OrdinalIgnoreCase);
 			bool effectAttempted = false;
 			bool outcomeKnown = true;
@@ -326,9 +394,11 @@ internal static class WorldDiplomacyDocumentExecutionApplication
 					WorldDiplomacyThreatApplication.ApplyDocumentPressure(document, port.FindWarPressure, port.NormalizeKingdomIdList, port.AddWarPressure);
                     if (!legacyPublic)
                     {
-					if (WorldDiplomacyIntentVocabulary.IsImmediateIntent(input.Intent)) orchestration.ExecuteImmediateIntent(author, target, WorldDiplomacyIntentVocabulary.NormalizeIntent(input.Intent), document);
+					if (WorldDiplomacyIntentVocabulary.IsImmediateIntent(input.Intent))
+                        outcomeKnown &= orchestration.ExecuteImmediateIntent(author, target,
+                            WorldDiplomacyIntentVocabulary.NormalizeIntent(input.Intent), document).Known;
 					orchestration.ProcessDiplomaticThreatDocument(document, author, target, recordTargetDecisions: legacy);
-					orchestration.TrySettleRelayOffer(document);
+					outcomeKnown &= orchestration.TrySettleRelayOffer(document) != WorldDiplomacyOfferOutcome.Unknown;
                     }
 					orchestration.ApplyDiplomaticPressureEffect(document);
 				}
@@ -349,7 +419,14 @@ internal static class WorldDiplomacyDocumentExecutionApplication
 			var receipt = new WorldDiplomacyDocumentActionReceipt(input.ActionId, target,
 				effectAttempted, outcomeKnown, document.ChangedDiplomaticState, document.MechanicalResult);
 			receipts.Add(receipt);
-			WorldDiplomacyDocumentApplication.CaptureActionResult(document, action, receipt);
+			if (!legacy)
+            {
+                WorldDiplomacyDocumentAction resultAction = input.Materialize();
+                WorldDiplomacyDocumentApplication.CaptureActionResult(document, resultAction, receipt);
+                // CaptureActionResult copies peace terms from the mutable document.
+                // Detach those terms before the next game-action callback runs.
+                resultActions.Add(new WorldDiplomacyDocumentExecutionCommand.ActionInput(resultAction).Materialize());
+            }
 		}
         if (legacy)
         {
@@ -358,6 +435,7 @@ internal static class WorldDiplomacyDocumentExecutionApplication
                 legacyPublic || command.ActionAt(0).Intent == "statement");
             return;
         }
+		document.Actions = resultActions;
 		orchestration.RecordDiplomaticThreatTargetDecisionsForActions(document, author);
 		bool requiredThreatActionDeferred = orchestration.DeferUnresolvedRequiredThreatAction(
 			document,

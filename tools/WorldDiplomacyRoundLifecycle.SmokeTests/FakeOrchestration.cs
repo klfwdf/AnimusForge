@@ -697,13 +697,15 @@ internal class FakeOrchestration : IWorldDiplomacyOrchestration
     {
         Calls.Add("RetryDiplomaticThreatHistoryResults");
     }
-    public virtual void TrySettleRelayOffer(WorldDiplomacyDocument document)
+    public virtual WorldDiplomacyOfferOutcome TrySettleRelayOffer(WorldDiplomacyDocument document)
     {
         Calls.Add("TrySettleRelayOffer");
+        return WorldDiplomacyOfferOutcome.None;
     }
-    public virtual void ExecuteImmediateIntent(string authorId, string targetId, string intent, WorldDiplomacyDocument document)
+    public virtual WorldDiplomacyImmediateActionReceipt ExecuteImmediateIntent(string authorId, string targetId, string intent, WorldDiplomacyDocument document)
     {
         Calls.Add("ExecuteImmediateIntent");
+        return new WorldDiplomacyImmediateActionReceipt(false, "");
     }
     public virtual int ApplyNationalPrestigeDelta(string kingdomId, int delta, WorldDiplomacyDocument sourceDocument, string reason)
     {

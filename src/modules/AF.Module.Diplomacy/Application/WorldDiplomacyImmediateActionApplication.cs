@@ -31,7 +31,7 @@ internal interface IWorldDiplomacyImmediateActionPort
 
 internal static class WorldDiplomacyImmediateActionApplication
 {
-    internal static void Execute(
+    internal static WorldDiplomacyImmediateActionReceipt Execute(
         IWorldDiplomacyImmediateActionPort port,
         string authorId, string targetId, string intent, WorldDiplomacyDocument document)
     {
@@ -39,7 +39,7 @@ internal static class WorldDiplomacyImmediateActionApplication
         {
             document.MechanicalResult = "外交行动未执行：发文者当前没有有效的自主发文权限。";
             port.Log("AI diplomatic action blocked author=" + (authorId ?? "") + " document=" + (document.DocumentId ?? "") + " reason=" + reason);
-            return;
+            return new WorldDiplomacyImmediateActionReceipt(false, document.MechanicalResult);
         }
         WorldDiplomacyImmediateActionReceipt receipt = intent switch
         {
@@ -48,7 +48,7 @@ internal static class WorldDiplomacyImmediateActionApplication
             "cancel_trade" => port.CancelTrade(authorId, targetId, document),
             _ => default
         };
-        if (document == null || receipt.Message == null) return;
+        if (document == null || receipt.Message == null) return receipt;
         document.MechanicalResult = receipt.Message;
         if (receipt.Applied) document.ChangedDiplomaticState = true;
         if (receipt.Applied && intent == "declare_war")
@@ -57,5 +57,6 @@ internal static class WorldDiplomacyImmediateActionApplication
             port.Storage.LastOffensiveWarDayByKingdom[authorId] = port.CurrentDay;
         }
         if (receipt.Diagnostic != null) port.Log(receipt.Diagnostic);
+        return receipt;
     }
 }
