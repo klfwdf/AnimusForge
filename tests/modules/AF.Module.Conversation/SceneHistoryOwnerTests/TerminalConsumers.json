@@ -189,6 +189,9 @@
   },
   {
     "symbol": "native_context_visible_history",
-    "exact": "\t\tsceneHistoryLines = instance.CaptureVisibleSceneHistoryLinesForPrompt(targetAgentIndex, GetSceneNpcHistoryNameForPrompt(targetNpc), false);"
+    "source": "src/AF.GameAdapter.Bannerlord/Composition/SceneExternalPromptCaptureAdapter.cs",
+    "exact": "\t\tsceneHistoryLines = _ports.CaptureVisibleSceneHistoryLinesForPrompt(targetAgentIndex, _ports.GetSceneNpcHistoryNameForPrompt(targetNpc), false);",
+    "binding_source": "src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.ExternalPromptCapture.cs",
+    "binding_exact": "CaptureVisibleSceneHistoryLinesForPrompt = CaptureVisibleSceneHistoryLinesForPrompt,"
   }
 ]

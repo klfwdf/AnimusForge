@@ -23,8 +23,8 @@ MUTATIONS = {
         "empty-dequeue-retires-worker",
     ),
     "reset-keeps-queue": (
-        "internal T[] Reset()\n\t{\n\t\tlock (_gate)\n\t\t{\n\t\t\tT[] dropped = _queue.ToArray();\n\t\t\t_queue.Clear();",
-        "internal T[] Reset()\n\t{\n\t\tlock (_gate)\n\t\t{\n\t\t\tT[] dropped = _queue.ToArray();",
+        "_generation++;\n\t\t\tdropped = _queue.ToArray();\n\t\t\t_queue.Clear();",
+        "_generation++;\n\t\t\tdropped = _queue.ToArray();",
         "reset-clears-queue-and-worker",
     ),
 }

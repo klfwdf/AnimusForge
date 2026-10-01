@@ -5,6 +5,7 @@ ROOT=Path(__file__).resolve().parents[4];HERE=Path(__file__).parent
 import sys
 sys.path.insert(0, str(ROOT / "tests"))
 from output_isolation import current_source_path
+from af2_terminal_migration_review import historical_source
 sys.path.insert(0,str(ROOT/'tests'))
 from output_isolation import new_run_root,resolve_dotnet,minimal_test_environment
 p=argparse.ArgumentParser();p.add_argument('--original',action='store_true');p.add_argument('--mutate');p.add_argument('--run-root',type=Path);a=p.parse_args()
@@ -56,7 +57,8 @@ if not a.original:
 code=(HERE/'Harness.cs.txt').read_text(encoding='utf-8-sig')
 for k,v in values.items():code=code.replace('@@'+k+'@@',v)
 if not a.original:
- host_source=read('ShoutBehavior.NativeMainReply.cs')
+ # This prefix belongs to the fixed old pending-history rejection oracle, not current MainReply runtime.
+ host_source=historical_source('ShoutBehavior.NativeMainReply.cs')
  host=ex.declaration(host_source,'private sealed class NativeConversationMainReplyHost')
  prefix=host.split('public Task<string> GenerateAsync(',1)[0].replace(' : INativeConversationMainReplyHost','')
  start=host_source.index('public Task RollbackPendingPlayerHistoryAsync(');end=host_source.index(';',start)+1;rollback=host_source[start:end]

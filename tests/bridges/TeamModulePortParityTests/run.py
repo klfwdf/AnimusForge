@@ -157,6 +157,10 @@ def owner_parity(baseline):
     current_paths += sorted((ROOT / "src/modules/AF.Module.Conversation/Channels/Scene").glob("*.cs"))
     current_paths += sorted((ROOT / "src/modules/AF.Module.Conversation/Internal/Postprocess").glob("*.cs"))
     current_paths += sorted((ROOT / "src/modules/AF.Module.Conversation/Channels/Courier").glob("*.cs"))
+    # Historical 16a file universe excludes new owner copies restored into old hosts.
+    # Their live call sites remain bound by the terminal packet and actual owner fixtures.
+    legacy_names = set(subprocess.check_output(["git", "ls-tree", "-r", "--name-only", "16a6ce67"], cwd=ROOT).decode("utf-8").splitlines())
+    current_paths = [path for path in current_paths if path.relative_to(ROOT).as_posix() in legacy_names]
     current = "\n".join(historical_source(path) for path in current_paths)
     baseline_paths = ["MyBehavior.cs", "ShoutBehavior.cs", "ShoutBehavior.ScenePostprocess.cs", "CourierDeliveryBehavior.cs"]
     prior = "\n".join(

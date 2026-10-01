@@ -7,7 +7,9 @@ namespace TaleWorlds.Library {internal static class TWParallel {internal static 
 namespace TaleWorlds.CampaignSystem {public sealed class Campaign {public static Campaign Current=new();public T GetCampaignBehavior<T>()=>(T)(object)MyBehavior.Instance;}}
 namespace AnimusForge {
  internal static class Logger {internal static void Log(string c,string m){} }
- internal static class SaveRuntimeGuard {internal static long Generation=1;internal static bool IsCurrentGeneration(long g)=>g==Generation;}
+ internal static class SaveRuntimeGuard {internal static long Generation=1;internal static bool IsCurrentGeneration(long g)=>g==Generation;internal static long AdvanceGeneration(string reason)=>Interlocked.Increment(ref Generation);}
+ // Named no-op channel leaf for the unrelated developer-clear member compiled in this partial.
+ internal static class ShoutBehavior {internal static void ResetTransientRuntimeForLoadedSaveExternal(string reason){} }
  public partial class MyBehavior {
   public static MyBehavior Instance;internal Action DuringRetirement;
   private sealed class Persona {internal void Reset(){}}private Persona _npcPersonaGeneration=new();

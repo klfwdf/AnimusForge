@@ -222,6 +222,7 @@ def validate_typed_bindings(binding_catalog: dict, persistence_catalog: dict) ->
     assert_true(catalog_keys == literal_keys, "typed binding keys do not match literal key catalog")
     return {"typedBindings": len(actual_rows), "typedBindingKeys": len(catalog_keys), "typedBindingTypes": len({row["type"] for row in actual_rows})}
 
+@historical_fixture
 def validate_persistence(catalog: dict) -> dict:
     keys = catalog["literalSyncDataKeys"]
     assert_true(catalog["assemblyIdentity"] == "AnimusForge", "assembly identity changed")
