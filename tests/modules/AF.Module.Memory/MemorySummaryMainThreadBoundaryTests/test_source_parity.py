@@ -156,5 +156,113 @@ class InverseGuards(unittest.TestCase):
             self.reject(SOURCE, "Obsolete B1 production file restored")
 
 
-if __name__ == "__main__":
-    unittest.main(verbosity=2)
+class CurrentScopeGuards(InverseGuards):
+    """Explicit current Memory-only successor; original historical tests remain unchanged."""
+    RECORDS = 'src/modules/AF.Module.Memory/Records/MemoryPersistenceModels.cs'
+
+    def extract(self,text,signature):
+        spec=importlib.util.spec_from_file_location('finite_memory_extract',ROOT/'tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py')
+        module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module)
+        return module.declaration(text,signature)
+
+    def reject(self,source,message):
+        with self.assertRaisesRegex(AssertionError,message):
+            inverse.verify_current_memory_source(source)
+
+    def test_exact_whole_baseline(self):
+        self.assertTrue(inverse.verify_current_memory_source(SOURCE))
+        # Deliberately not an assertion of whole-host inverse equivalence.
+
+    def test_queue_normalization_body_is_exact_old_semantics(self):
+        owner=(ROOT/self.RECORDS).read_text(encoding='utf-8-sig')
+        for model,suffix,day in [('MemorySummaryJob','MemorySummaryQueue','GameDayIndex'),('MajorActionSummaryJob','MajorActionSummaryQueue','TriggerGameDayIndex')]:
+            current=self.extract(owner,'internal static List<'+model+'> Normalize'+suffix+'(')
+            old=self.extract(BASELINE,'private static List<'+model+'> Sanitize'+suffix+'(')
+            restored=current.replace('internal static','private static',1).replace('Normalize'+suffix,'Sanitize'+suffix,1).replace('return list;','return list.OrderBy(('+model+' x) => x.'+day+').ThenBy(('+model+' x) => x.HeroName).ToList();',1)
+            self.assertEqual(old,restored)
+            host=self.extract(SOURCE,'private static List<'+model+'> Sanitize'+suffix+'(')
+            self.assertIn('MemoryRecordRules.Sanitize'+suffix+'(',host)
+
+    def test_raw_input_four_declaration_inverse(self):
+        review=REVIEW['rawSourceFingerprintReview']
+        current=(ROOT/review['inputPath']).read_text(encoding='utf-8-sig')
+        accepted=inverse.current_scope_baseline(review['inputPath'])
+        old=subprocess.check_output(['git','show',review['baseline']+':'+review['inputPath']],cwd=ROOT).decode('utf-8-sig').replace('\r\n','\n')
+        for item in review['inputDeclarations']:
+            self.assertEqual(inverse._sha256(self.extract(old,item['signature'])),item['baselineSha256'])
+            self.assertEqual(self.extract(current,item['signature']),self.extract(accepted,item['signature']))
+        # Current DTO/copy/framing parity is executed by Budget's real 65,808-check pair.
+        self.assertIn('ComputeMemorySummarySourceFingerprint(source)',current)
+
+    def test_single_draft_line_and_bind_are_exact_previous_bodies(self):
+        owner=(ROOT/self.RECORDS).read_text(encoding='utf-8-sig')
+        old=subprocess.check_output(['git','show','40b92e67:MyBehavior.cs'],cwd=ROOT).decode('utf-8-sig').replace('\r\n','\n')
+        drafts=self.extract(old,'private static List<DailyMemoryDraft> SanitizeDailyMemoryDrafts(')
+        line=self.extract(owner,'internal static DailyMemoryLine SanitizeDailyMemoryDraftLine(')
+        old_lines=drafts[drafts.index('x.GameDayIndex = draft.GameDayIndex;'):drafts.index('return x;')]
+        self.assertEqual(line.count('MyBehavior.IsValidMemoryCommitMarker('),1)
+        line=line.replace('MyBehavior.IsValidMemoryCommitMarker(', 'IsValidMemoryCommitMarker(',1)
+        # Preserve ordered old normalization operations; approved commit-marker checks were added.
+        at=0
+        for operation in (part.strip() for part in old_lines.splitlines()):
+            if operation:
+                found=line.find(operation,at)
+                self.assertGreaterEqual(found,0,operation)
+                at=found+len(operation)
+        bind=self.extract(owner,'internal static void BindDailyMemoryDraftWeeklyTrigger(')
+        entry=self.extract(owner,'internal static DailyMemoryDraft SanitizeDailyMemoryDraftEntry(')
+        for operation in ['trigger.MemoryId = memoryId;','trigger.GameDayIndex = gameDayIndex;','trigger.GameDate = string.IsNullOrWhiteSpace(trigger.GameDate) ? gameDate : trigger.GameDate;']:
+            self.assertIn(operation,bind)
+        self.assertIn('BindDailyMemoryDraftWeeklyTrigger(trigger, text, draft.GameDayIndex, draft.GameDate);',entry)
+        self.assertIn('SanitizeDailyMemoryDraftLine(sourceLine, draft);',entry)
+        self.assertIn('TWParallel.IsMainThread() ? sourceEntry : sourceEntry?.CopyForSummary()',entry)
+
+    def test_inner_structure_fix_has_narrow_inverse(self):
+        path=REVIEW['innerStructureReview']['path']
+        live=(ROOT/path).read_text(encoding='utf-8-sig')
+        self.assertEqual(live,inverse.current_scope_baseline(path))
+        self.assertIn('_lineStructureProbe.MoveNext();',live)
+        self.assertIn('_triggerStructureProbe.MoveNext();',live)
+        # Source guards below reject modified components. Coupled sealing runtime remains deferred.
+
+    def test_planner_only_changes_elapsed_owner_read(self):
+        path='MyBehavior.MemorySummaryPlanning.cs'
+        live=(ROOT/path).read_text(encoding='utf-8-sig')
+        self.assertEqual(live,inverse.current_scope_baseline(path))
+        self.assertEqual(live.count('MemorySummaryDispatchElapsedTicks * 1000.0 / Stopwatch.Frequency'),2)
+        self.assertNotIn('_memorySummaryMainThreadElapsedTicks',live)
+        self.assertIn('MemorySummaryRunOwner.Lease run',live)
+
+    def test_duplicate_composition_span(self):
+        import re
+        span=re.search(r'private readonly AnimusForge\.Refactor\.Runtime\.EventSourceMaterialIndex<EventSourceMaterialEntry> _eventSourceMaterialIndexBinding\s*=\s*[^;]+;',SOURCE).group()
+        self.reject(SOURCE+'\n'+span,'Unreviewed B1 added source span')
+
+    def test_added_campaign_scope_cannot_drift(self):
+        anchor='_campaignMemoryMaintenanceCycleActive = true;'
+        self.assertEqual(SOURCE.count(anchor),1)
+        self.reject(SOURCE.replace(anchor,'_campaignMemoryMaintenanceCycleActive = false;',1),'Unreviewed B1 declaration')
+
+    def test_whole_components_and_test_inputs_are_locked(self):
+        read=Path.read_text
+        # Do not load or run the diplomacy-coupled Captured/Sealing fixture groups here.
+        targets=inverse.current_scope_dependencies(REVIEW)+[REVIEW['evidence']['materials']['runner']]
+        for target in targets:
+            with self.subTest(path=target):
+                path=ROOT/target
+                def changed(file,*args,**kwargs):
+                    text=read(file,*args,**kwargs)
+                    return text+'\n// unreviewed dependency\n' if file==path else text
+                with patch.object(Path,'read_text',changed):
+                    self.reject(SOURCE,'Unreviewed B1 (production dependency|evidence)')
+
+
+if __name__ == '__main__':
+    import sys
+    if '--finite' in sys.argv:
+        sys.argv.remove('--finite')
+        result=unittest.TextTestRunner(verbosity=2).run(unittest.defaultTestLoader.loadTestsFromTestCase(CurrentScopeGuards))
+        print('B1_FINITE_SCOPE historical_full_inverse=NOT_RUN captured_sealing_runtime=DEFERRED')
+        raise SystemExit(0 if result.wasSuccessful() else 1)
+    # No skips or weakened assertions: default still runs the original historical suite.
+    unittest.main(defaultTest='InverseGuards',verbosity=2)
