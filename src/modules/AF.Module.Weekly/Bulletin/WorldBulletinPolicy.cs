@@ -62,6 +62,10 @@ internal sealed class WorldBulletinScopeState
 // Everything the bulletin system persists, saved as one JSON chunk.
 internal sealed class WorldBulletinSaveState
 {
+	// Recovery copy only; never interpreted as current facts or injected into prompts.
+	// Optional JSON field keeps the existing save key and old valid states compatible.
+	public string PreservedUnreadableState;
+
 	public List<WorldBulletinEvent> Events = new List<WorldBulletinEvent>();
 
 	// The single bulletin's scope (named World for save compatibility).
@@ -420,13 +424,13 @@ internal static class WorldBulletinPolicy
 	public const string NpcSurroundingsHeader = "周边相关王国完整周报";
 
 	// excludeKingdomId: the NPC's own kingdom block already lists those facts; world headlines skip them.
-	public static string BuildNpcWorldBlock(IEnumerable<WorldBulletinEvent> events, int currentDay, string latestBulletinTitle, string latestBulletinShort, string excludeKingdomId = null)
+	public static string BuildNpcWorldBlock(IEnumerable<WorldBulletinEvent> events, int currentDay, string latestBulletinTitle, string latestBulletinShort, int latestBulletinDay, string excludeKingdomId = null)
 	{
 		List<WorldBulletinEvent> facts = RecentWorldFacts(
 			(events ?? Enumerable.Empty<WorldBulletinEvent>()).Where(e => string.IsNullOrWhiteSpace(excludeKingdomId) || !InvolvesKingdom(e, excludeKingdomId)),
 			currentDay, NpcWorldFacts);
 		List<string> lines = facts.Select(e => FormatFactLine(e, currentDay)).ToList();
-		if (!string.IsNullOrWhiteSpace(latestBulletinShort))
+		if (latestBulletinDay >= 0 && latestBulletinDay <= currentDay && latestBulletinDay >= currentDay - NpcDigestDays && !string.IsNullOrWhiteSpace(latestBulletinShort))
 		{
 			lines.Add("- 最新快报《" + (latestBulletinTitle ?? "").Trim() + "》：" + latestBulletinShort.Trim());
 		}
