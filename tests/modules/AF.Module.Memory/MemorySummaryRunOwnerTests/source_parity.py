@@ -2,6 +2,7 @@ from pathlib import Path
 import sys as _relocation_sys
 _relocation_sys.path.insert(0, str(Path(__file__).resolve().parents[4] / "tests"))
 from output_isolation import current_source_path
+from remote_feature_delta import restore_remote_feature_delta
 import subprocess,json,hashlib
 ROOT=Path(__file__).resolve().parents[4];HERE=Path(__file__).parent
 
@@ -61,9 +62,9 @@ def restore(path,source):
     for delta in reversed(review['paths'][path]):
         a,b=delta['start'],delta['end'];assert ''.join(lines[a:b])==delta['before'];lines[a:b]=[delta['after']]
     expected=''.join(lines)
-    live=_restore_j02_guard_path(path,(current_source_path(ROOT, path)).read_text(encoding='utf-8-sig'),require_new=True)
+    live=_restore_j02_guard_path(path,restore_remote_feature_delta(path,(current_source_path(ROOT, path)).read_text(encoding='utf-8-sig')),require_new=True)
     assert live==expected,'Unreviewed live memory-run source: '+path
-    source=_restore_j02_guard_path(path,source)
+    source=_restore_j02_guard_path(path,restore_remote_feature_delta(path,source))
     assert source in (expected,old),'Unreviewed memory-run source changes: '+path
     return old
 def verify_current():

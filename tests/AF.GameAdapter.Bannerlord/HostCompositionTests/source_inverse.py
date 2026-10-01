@@ -2,6 +2,10 @@
 from pathlib import Path
 import importlib.util
 import subprocess
+import sys
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "tests"))
+from remote_feature_delta import restore_remote_feature_delta
 
 ROOT = Path(__file__).resolve().parents[3]
 BASELINE = '3706e87dfc4be2cf150b9f45f029e7f105a28fd3'
@@ -65,7 +69,9 @@ def restore_submodule(current):
     expected_startup = ('using System;\nusing HarmonyLib;\n\nnamespace AnimusForge;\n\n'
         '// Startup patch and service composition stays on the Bannerlord main-thread entry point.\n'
         'internal static class StartupPatchComposition\n{\n\t' + moved_startup + '\n}\n')
-    assert read(DEST / 'StartupPatchComposition.cs') == expected_startup, 'Startup body/order/catches changed'
+    assert restore_remote_feature_delta(
+        'src/AF.GameAdapter.Bannerlord/Composition/StartupPatchComposition.cs',
+        read(DEST / 'StartupPatchComposition.cs')) == expected_startup, 'Startup body/order/catches changed'
 
     # ada9894a (reviewed): dt is threaded to both phase lists and IntegratedModuleHost.Tick(dt)
     # is appended as the last phase of each, after VassalageBehavior and before WarStats.

@@ -5,6 +5,7 @@ ROOT=Path(__file__).resolve().parents[3];HERE=Path(__file__).parent;BASELINE='80
 import sys
 sys.path.insert(0, str(ROOT / "tests"))
 from output_isolation import current_source_path
+from remote_feature_delta import restore_remote_feature_delta
 spec=importlib.util.spec_from_file_location('life_decl',ROOT/'tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py');e=importlib.util.module_from_spec(spec);spec.loader.exec_module(e)
 PATHS=('ShoutBehavior.cs','CourierDeliveryBehavior.cs','src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.DetachedPostprocess.cs','SubModule.cs','MyBehavior.MemorySummaryMainThread.cs')
 MOVED_DEPENDENCIES={
@@ -58,6 +59,7 @@ def restore_commit(source):
  return baseline
 
 def restore_lifetime_dependency(path, source):
+ source = restore_remote_feature_delta(path, source)
  if path=='tests/AF.GameAdapter.Bannerlord/GameLifetimeTests/Bindings.cs.txt':
   reviewed=subprocess.check_output(['git','show','ec74d44d:'+path],cwd=ROOT).decode('utf-8-sig').replace('\r\n','\n')
   assert source==reviewed, 'Unreviewed game lifetime binding fixture'
@@ -197,6 +199,8 @@ def check_dependencies():
 spec_owner=importlib.util.spec_from_file_location('j07b_admission_inverse',ROOT/'tests/modules/AF.Module.Conversation/NativeConversationAdmissionTests/owner_extraction.py');owner_inverse=importlib.util.module_from_spec(spec_owner);spec_owner.loader.exec_module(owner_inverse)
 
 def restore(path,source):
+ # Courier Prompt owns its current-input binding and historical whole-host projection.
+ if path != "CourierDeliveryBehavior.cs": source = restore_remote_feature_delta(path, source)
  source=owner_inverse.restore(path,source)
  if path=='ShoutBehavior.cs':
   # J03 exact inverse: d11eb572 added five request scopes; 2aa4edb7 moved

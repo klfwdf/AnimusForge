@@ -1,6 +1,6 @@
 $ErrorActionPreference = 'Stop'
 $repository = (Resolve-Path (Join-Path $PSScriptRoot '../../../..')).Path
-$source = [IO.File]::ReadAllText((Join-Path $repository 'AIConfigHandler.cs'))
+$source = [IO.File]::ReadAllText((Join-Path $repository 'src/modules/AF.Module.Prompt/Configuration/AIConfigHandler.cs'))
 function Get-ProductionMethod([string]$signature) {
     $start = $source.IndexOf($signature, [StringComparison]::Ordinal)
     if ($start -lt 0) { throw "Missing production method: $signature" }

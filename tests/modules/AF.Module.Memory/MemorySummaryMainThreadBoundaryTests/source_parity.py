@@ -8,6 +8,7 @@ from pathlib import Path
 import sys as _relocation_sys
 _relocation_sys.path.insert(0, str(Path(__file__).resolve().parents[4] / "tests"))
 from output_isolation import current_source_path
+from remote_feature_delta import restore_remote_feature_delta
 import subprocess
 
 ROOT = Path(__file__).resolve().parents[4]
@@ -59,6 +60,7 @@ def _is_reviewed_deleted(item):
 
 
 def restore_memory_summary_source(path, source):
+    source = restore_remote_feature_delta(path, source)
     if path != 'MyBehavior.cs':
         return source
     run_spec = importlib.util.spec_from_file_location('memory_run_inverse', ROOT / 'tests/modules/AF.Module.Memory/MemorySummaryRunOwnerTests/source_parity.py')

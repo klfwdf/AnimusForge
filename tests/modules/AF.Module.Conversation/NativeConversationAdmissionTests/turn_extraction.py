@@ -11,6 +11,7 @@ ROOT = Path(__file__).resolve().parents[4]
 import sys
 sys.path.insert(0, str(ROOT / "tests"))
 from output_isolation import current_source_path
+from remote_feature_delta import restore_remote_feature_delta
 spec = importlib.util.spec_from_file_location('turn_decl', ROOT/'tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py')
 ex = importlib.util.module_from_spec(spec); spec.loader.exec_module(ex)
 REVIEW = json.loads((ROOT/'tests/modules/AF.Module.Conversation/NativeTurn/source-review.json').read_text())
@@ -23,6 +24,9 @@ def tokens(text):
 
 def restore_ceremony_owner(file, text):
     """Reverse only J17's owner-aware subscription retirement, not its behavior tests."""
+    # Already historical ceremony-owner input is still checked by the original exact edits.
+    if file != "ShoutBehavior.NativeTurnPresentation.cs" or "private static ShoutBehavior _ceremonyOrderOwner;" not in text:
+        text = restore_remote_feature_delta(file, text)
     if file != 'ShoutBehavior.NativeTurnPresentation.cs': return text
     edits = [
         ('        private static ShoutBehavior _ceremonyOrderOwner;\n', ''),
@@ -45,6 +49,7 @@ def reviewed_turn_source(file):
     return restore_ceremony_owner(file, (current_source_path(ROOT, file)).read_text(encoding='utf-8-sig'))
 
 def projected_source(source):
+    source = restore_remote_feature_delta("ShoutBehavior.cs", source)
     original = subprocess.check_output(['git','show',REVIEW['baseline']+':ShoutBehavior.cs'],cwd=ROOT).decode('utf-8-sig').replace('\r\n','\n')
     if source == original: return source
     # The reconstruction must not discard mutations to the supplied host. Bind
@@ -73,7 +78,7 @@ def projected_source(source):
     parts = {}
     for file in REVIEW['addedFiles']:
         if not file.startswith('ShoutBehavior.NativeTurn'): continue
-        text = (current_source_path(ROOT, file)).read_text(encoding='utf-8-sig')
+        text = restore_remote_feature_delta(file, (current_source_path(ROOT, file)).read_text(encoding='utf-8-sig'))
         for name in re.findall(r'(?:public async Task<NativeConversationTurnStep>|private void) (\w+)\(\)',text):
             signature = ('public async Task<NativeConversationTurnStep> ' if name.endswith('Async') else 'private void ')+name+'()'
             body = ex.declaration(text,signature).split('{',1)[1].rsplit('}',1)[0]
@@ -121,7 +126,7 @@ def projected_source(source):
     fields = {}
     for file in REVIEW['addedFiles']:
         if file.startswith('ShoutBehavior.NativeTurn'):
-            text=(current_source_path(ROOT, file)).read_text(encoding='utf-8-sig')
+            text=restore_remote_feature_delta(file, (current_source_path(ROOT, file)).read_text(encoding='utf-8-sig'))
             fields.update({name:typ for typ,name in re.findall(r'^        private ([\w.]+(?:<[^;=\n]+>)?(?:\[\])?) (\w+);$',text,re.M)})
     for name,typ in fields.items():
         expected = re.sub(r'(?m)^(\s*)'+re.escape(typ)+r' '+name+r' = ',r'\1'+name+' = ',expected)

@@ -21,13 +21,15 @@ class TurnSourceTests(unittest.TestCase):
         self.assertNotEqual(changed,content)
         def read(path,*args,**kwargs):
             return changed if path==current_source_path(ROOT, target) else original(path,*args,**kwargs)
-        with patch.object(Path,'read_text',read), patch.dict(turn.REVIEW['addedFiles'],{target:hashlib.sha256(changed.encode()).hexdigest()}):
+        with patch.object(Path,'read_text',read), patch.dict(turn.REVIEW['addedFiles'],{target:hashlib.sha256(turn.restore_remote_feature_delta(target,changed).encode()).hexdigest()}):
             with self.assertRaisesRegex(AssertionError,'algorithm/argument/order drift'):
                 turn.projected_source(original(ROOT/'src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.cs',encoding='utf-8-sig'))
 
     def test_ceremony_delta_cannot_hide_lost_cleanup(self):
         target='ShoutBehavior.NativeTurnPresentation.cs'
         content=(current_source_path(ROOT, target)).read_text(encoding='utf-8-sig')
+        # Historical owner proof remains intact after the reviewed remote retirement.
+        content=turn.restore_remote_feature_delta(target,content)
         restored=turn.restore_ceremony_owner(target,content)
         self.assertEqual(hashlib.sha256(restored.encode()).hexdigest(),turn.REVIEW['addedFiles'][target])
         for before in ['            _ceremonyOrderOwner = null;\n',

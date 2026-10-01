@@ -7,7 +7,7 @@ import sys
 ROOT = Path(__file__).resolve().parents[4]
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(ROOT / "tests"))
-from output_isolation import new_run_root, resolve_dotnet, minimal_test_environment
+from output_isolation import new_run_root, resolve_dotnet, minimal_test_environment, current_source_path
 
 
 def method(source, signature):
@@ -17,10 +17,11 @@ def method(source, signature):
 
 
 parser = argparse.ArgumentParser()
+parser.add_argument("--run-root", type=Path)
 parser.add_argument("--mutation", choices=["conversion", "initiative", "refresh"])
 args = parser.parse_args()
 owner = (ROOT / "src/modules/AF.Module.WorldMap/Runtime/WorldMapPartyCommandBehavior.cs").read_text(encoding="utf-8-sig")
-model = (ROOT / "CourierMobilePartyAIModel.cs").read_text(encoding="utf-8-sig")
+model = current_source_path(ROOT, "CourierMobilePartyAIModel.cs").read_text(encoding="utf-8-sig")
 signatures = [
     "internal static bool ShouldSuppressSettlementStayInitiative(",
     "private static bool IsPartyHoldingInsideCommandSettlement(",
@@ -49,7 +50,7 @@ elif args.mutation == "refresh":
     methods = methods.replace(before, "", 1)
 
 generated = (HERE / "Fixture.cs").read_text(encoding="utf-8").replace("// OWNER_METHODS", methods).replace("// MODEL_METHOD", model_method)
-output = new_run_root(ROOT, "settlement-stay", None)
+output = new_run_root(ROOT, "settlement-stay", args.run_root)
 (output / "Program.cs").write_text(generated, encoding="utf-8")
 (output / "Probe.csproj").write_text('<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><TargetFramework>net8.0</TargetFramework><OutputType>Exe</OutputType><EnableDefaultCompileItems>false</EnableDefaultCompileItems><NoWarn>CS0649</NoWarn></PropertyGroup><ItemGroup><Compile Include="Program.cs" /></ItemGroup></Project>', encoding="utf-8")
 (output / "NuGet.Config").write_text('<configuration><packageSources><clear /></packageSources></configuration>', encoding="utf-8")

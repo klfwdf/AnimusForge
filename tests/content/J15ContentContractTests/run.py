@@ -636,6 +636,18 @@ def git_worktree_blob(revision: str, path: str) -> bytes:
     )
 
 
+def verify_approved_remote_content(source: Path, before_digest: str, after_lf_digest: str) -> None:
+    """Admit only the approved remote bytes, preserving the historical digest."""
+    relative = source.relative_to(ROOT).as_posix()
+    before = subprocess.check_output(["git", "show", "8f3903e2:" + relative], cwd=ROOT).replace(b"\r\n", b"\n")
+    after = subprocess.check_output(["git", "show", "982a5861:" + relative], cwd=ROOT).replace(b"\r\n", b"\n")
+    old_digests = {hashlib.sha256(before).hexdigest().upper(),
+                   hashlib.sha256(before.replace(b"\n", b"\r\n")).hexdigest().upper()}
+    check(before_digest in old_digests, f"historical content review changed: {relative}")
+    check(hashlib.sha256(after).hexdigest().upper() == after_lf_digest, f"approved remote review changed: {relative}")
+    check(source.read_bytes().replace(b"\r\n", b"\n") == after, f"unreviewed current content delta: {relative}")
+
+
 def verify_map_and_resources() -> None:
     map_path = ROOT / "content" / "content-map.json"
     payload = json.loads(map_path.read_text(encoding="utf-8"))
@@ -654,7 +666,11 @@ def verify_map_and_resources() -> None:
         source = ROOT / expected["source"]
         check(source.is_file(), f"missing migrated source: {source}")
         digest = hashlib.sha256(source.read_bytes()).hexdigest().upper()
-        check(digest == expected["sha256"], f"source hash drift: {target}")
+        if target == "ModuleData/GcczTownPrompt.zh-CN.json":
+            verify_approved_remote_content(source, expected["sha256"],
+                "9723B75F2107BAD47392CF6F67F31EBD2CAD578EE7EC41AB56BBBB5F5D6DFC6C")
+        else:
+            check(digest == expected["sha256"], f"source hash drift: {target}")
         old = ROOT / "AnimusForge" / Path(target)
         check(not old.exists(), f"old editable source remains: {old}")
 
@@ -670,8 +686,15 @@ def verify_map_and_resources() -> None:
             # Unchanged up to the pre-integration commit, then exactly the reviewed edit.
             check(git_worktree_blob(J15B_REVIEWED_EDIT_PARENT, expected["source"]) == baseline,
                   f"source bytes drifted from J15b baseline before reviewed edit: {target}")
-            check(J15B_REVIEWED_EDITS[target] in source_digests(source),
-                  f"source hash drift after reviewed edit: {target}")
+            if target in {"ModuleData/RuleBehaviorPrompts.json", "GUI/Brushes/AFCourierLetterBrushes.xml"}:
+                approved_after_digest = {
+                    "ModuleData/RuleBehaviorPrompts.json": "9E2DC7AAC8A636C423D79BA81F6B648ECD4A5C845A6980B0131AE9992763204D",
+                    "GUI/Brushes/AFCourierLetterBrushes.xml": "7043B8D41EA01FE40947AC6500F88AF9F000978EB0909BBE7AD94D84BE4C5C70",
+                }[target]
+                verify_approved_remote_content(source, J15B_REVIEWED_EDITS[target], approved_after_digest)
+            else:
+                check(J15B_REVIEWED_EDITS[target] in source_digests(source),
+                      f"source hash drift after reviewed edit: {target}")
         else:
             check(source.read_bytes() == baseline, f"source bytes drifted from J15b baseline: {target}")
         old = ROOT / "AnimusForge" / Path(target)
@@ -709,8 +732,12 @@ def verify_map_and_resources() -> None:
         check(not entry.get("logicalName"), f"non-embedded content must not invent a LogicalName: {target}")
         source = ROOT / expected["source"]
         check(source.is_file(), f"missing integration source: {source}")
-        check(INTEGRATION_WORKTREE_EDITS.get(target, expected["sha256"]) in source_digests(source),
-              f"source hash drift: {target}")
+        if target == "GUI/Prefabs/IllustratorGalleryPopup.xml":
+            verify_approved_remote_content(source, INTEGRATION_WORKTREE_EDITS.get(target, expected["sha256"]),
+                "DDB767890DE94EC49FC286B30917170B3C3734799E0E282DE2EAD59F331D0BE3")
+        else:
+            check(INTEGRATION_WORKTREE_EDITS.get(target, expected["sha256"]) in source_digests(source),
+                  f"source hash drift: {target}")
 
     for target, expected in WORLD_BULLETIN_EXPECTED.items():
         entry = by_target[target]
@@ -720,7 +747,11 @@ def verify_map_and_resources() -> None:
         check(expected["source"] == f"content/modules/AF.Module.Weekly/{target}", f"world bulletin source layout: {target}")
         source = ROOT / expected["source"]
         check(source.is_file(), f"missing world bulletin source: {source}")
-        check(expected["sha256"] in source_digests(source), f"source hash drift: {target}")
+        if target == "GUI/Prefabs/WorldBulletinPanel.xml":
+            verify_approved_remote_content(source, expected["sha256"],
+                "527432BFC5DED1A0F0A2012C9A3948740C542BDE6C42F8220CD02BE592FE6ABF")
+        else:
+            check(expected["sha256"] in source_digests(source), f"source hash drift: {target}")
         check(not (ROOT / "AnimusForge" / target).exists(), f"world bulletin duplicated in legacy root: {target}")
 
     for target, expected in COURIER_THEME_EXPECTED.items():
@@ -811,9 +842,17 @@ def verify_project_resources() -> None:
         culture = item.findtext("WithCulture")
         if logical:
             resources[logical] = {"include": include, "culture": culture}
-    expected_names = {item["logicalName"] for item in J15A_EXPECTED.values()}
-    check(set(resources) == expected_names, "EmbeddedResource LogicalName set must match the seven defaults")
-    for expected in J15A_EXPECTED.values():
+    # 982a5861 adds a distinct embedded fallback for the approved execution feature.
+    # The original seven default resource identities remain checked below.
+    execution_default = {
+        "logicalName": "AnimusForge.Defaults.ExecutionRulePrompts.json",
+        "source": "content/modules/AF.Module.Prompt/ModuleData/RuleBehaviorPrompts.json",
+        "withCulture": None,
+    }
+    expected_resources = [*J15A_EXPECTED.values(), execution_default]
+    expected_names = {item["logicalName"] for item in expected_resources}
+    check(set(resources) == expected_names, "EmbeddedResource LogicalName set must match seven original defaults plus execution")
+    for expected in expected_resources:
         actual = resources[expected["logicalName"]]
         check(actual["include"] == expected["source"], f"include path: {expected['logicalName']}")
         check(actual["culture"] == expected["withCulture"], f"WithCulture: {expected['logicalName']}")
