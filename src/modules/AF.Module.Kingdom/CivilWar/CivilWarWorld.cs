@@ -37,6 +37,12 @@ internal static class CivilWarWorld
 		catch { return null; }
 	}
 
+	internal static int CurrentDay()
+	{
+		try { return Math.Max(0, (int)CampaignTime.Now.ToDays); }
+		catch { return 0; }
+	}
+
 	internal static int CurrentWeek()
 	{
 		try { return Math.Max(1, (int)(CampaignTime.Now.ToDays / 7.0)); }

@@ -37,6 +37,8 @@ internal sealed class CivilWarModuleAdapter : ICivilWarModulePort
 		}
 	}
 
+	public void AdvanceDay(int dayIndex) => _owner.AdvanceDay(dayIndex);
+
 	public void AdvanceWeek(Kingdom kingdom, int weekIndex, int stability, Action<Kingdom, int> adjustStability, IReadOnlyList<string> recentEvents)
 	{
 		_owner.AdvanceWeek(kingdom, weekIndex, stability, (target, delta) => adjustStability?.Invoke(target, delta), recentEvents);

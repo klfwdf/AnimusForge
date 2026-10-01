@@ -37,6 +37,8 @@ internal sealed class CivilWarGrievanceSourceDef
 	internal string Id = "";
 	internal string Name = "";
 	internal float DecayPerWeek = 0.15f;
+	// Cached at catalog initialization; daily processing never recomputes the seventh root.
+	internal double DailyRetention;
 }
 
 internal sealed class CivilWarDemandDef
@@ -265,6 +267,8 @@ internal static class CivilWarCatalog
 		List<string> errors = Validate(effectIds);
 		HashSet<string> bad = new HashSet<string>(errors.Select(x => x.Split(':')[0]), StringComparer.Ordinal);
 		_sourcesById = Sources.Where(x => !bad.Contains("source/" + x.Id)).GroupBy(x => x.Id).ToDictionary(x => x.Key, x => x.First(), StringComparer.Ordinal);
+		foreach (CivilWarGrievanceSourceDef source in _sourcesById.Values)
+			source.DailyRetention = Math.Pow(1d - source.DecayPerWeek, 1d / 7d);
 		_validDemands = Demands.Where(x => !bad.Contains("demand/" + x.Id)).ToList();
 		_validOutcomes = Outcomes.Where(x => !bad.Contains("outcome/" + x.Id)).ToList();
 		_demandsById = _validDemands.GroupBy(x => x.Id).ToDictionary(x => x.Key, x => x.First(), StringComparer.Ordinal);

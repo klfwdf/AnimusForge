@@ -25,6 +25,10 @@ internal sealed class KingdomCivilWarOwner
 	// Settlement -> faction id that marked it; owners change during the war, so clearing cannot use the current owner.
 	private readonly Dictionary<string, string> _oppositionMarkFaction = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 	private readonly HashSet<string> _openWarKingdoms = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+	// Reused on the campaign thread: no per-clan key-array allocation or per-point exponentiation.
+	private readonly List<string> _decaySourceKeys = new List<string>(16);
+	private readonly Dictionary<string, double> _decayFactors = new Dictionary<string, double>(StringComparer.Ordinal);
+	private static readonly double UnknownSourceDailyRetention = Math.Pow(0.85d, 1d / 7d);
 
 	internal KingdomCivilWarStorage Storage { get { return _storage; } }
 
@@ -146,6 +150,7 @@ internal sealed class KingdomCivilWarOwner
 		CivilWarGrievanceSourceDef source = CivilWarCatalog.FindSource(sourceId);
 		if (source == null || points <= 0f) return;
 		KingdomCivilWarKingdomState state = GetOrCreate(kingdom, week);
+		DecayGrievanceToDay(kingdom, state, CivilWarWorld.CurrentDay());
 		foreach (Clan clan in (clans ?? Enumerable.Empty<Clan>()).Where(x => x != null && x.Kingdom == kingdom && IsPoliticalClan(x)))
 			AddPoints(GetOrCreateClan(state, clan, week), source.Id, points);
 		if (!string.IsNullOrWhiteSpace(text)) AddHistory(state, week, text);
@@ -209,6 +214,42 @@ internal sealed class KingdomCivilWarOwner
 			+ "\n\n已被拒绝 " + faction.Refusals + " 次。若不答复，将在第 " + faction.PlayerAnswerDeadlineWeek + " 周自动判定。拒绝可能导致内战。";
 	}
 
+	// One campaign event per day. Only stored kingdoms/clans/sources are visited, never the world clan list.
+	internal void AdvanceDay(int dayIndex)
+	{
+		if (dayIndex < 0) return;
+		foreach (KingdomCivilWarKingdomState state in _storage.Kingdoms.Values)
+			DecayGrievanceToDay(CivilWarWorld.FindKingdom(state.KingdomId), state, dayIndex);
+	}
+
+	private void DecayGrievanceToDay(Kingdom kingdom, KingdomCivilWarKingdomState state, int day)
+	{
+		if (day < 0 || day == state.LastGrievanceDecayDay) return;
+		int previousDay = state.LastGrievanceDecayDay;
+		state.LastGrievanceDecayDay = day;
+		// Disabled periods do not accrue a catch-up bill on re-enable; legacy saves start from today.
+		if (previousDay < 0 || day < previousDay || kingdom == null || kingdom.IsEliminated || !DuelSettings.IsCivilWarFactionsEnabled()
+			|| (CivilWarWorld.IsPlayerRuled(kingdom) && !DuelSettings.IsCivilWarPlayerKingdomFactionsAllowed()) || IsActiveRebelKingdom(kingdom)) return;
+		int days = day - previousDay;
+		_decayFactors.Clear();
+		foreach (KingdomCivilWarClanState clan in state.Clans.Values)
+		{
+			_decaySourceKeys.Clear();
+			_decaySourceKeys.AddRange(clan.Grievance.Keys);
+			foreach (string sourceId in _decaySourceKeys)
+			{
+				if (!_decayFactors.TryGetValue(sourceId, out double factor))
+				{
+					double daily = CivilWarCatalog.FindSource(sourceId)?.DailyRetention ?? UnknownSourceDailyRetention;
+					factor = days == 1 ? daily : Math.Pow(daily, days);
+					_decayFactors[sourceId] = factor;
+				}
+				clan.Grievance[sourceId] = CivilWarRules.Clamp((float)(clan.Grievance[sourceId] * factor), 0f, MaxClanGrievance);
+			}
+		}
+		SaveSummary(state);
+	}
+
 	// ------------------------------------------------------------ weekly slice
 
 	internal void AdvanceWeek(Kingdom kingdom, int weekIndex, int stability, Action<Kingdom, int> adjustStability, IReadOnlyList<string> ignoredRecentEvents)
@@ -222,7 +263,8 @@ internal sealed class KingdomCivilWarOwner
 		CivilWarTuning tuning = DuelSettings.BuildCivilWarTuning();
 		KingdomCivilWarKingdomState state = GetOrCreate(kingdom, weekIndex);
 		if (state.LastAdvancedWeek >= weekIndex) return;
-		DecayAndRefresh(kingdom, state, weekIndex);
+		DecayGrievanceToDay(kingdom, state, CivilWarWorld.CurrentDay());
+		RefreshClans(kingdom, state, weekIndex);
 		state.LastAdvancedWeek = weekIndex;
 		try
 		{
@@ -1093,7 +1135,7 @@ internal sealed class KingdomCivilWarOwner
 	{
 		string id = kingdom.StringId ?? "";
 		KingdomCivilWarKingdomState state;
-		if (!_storage.Kingdoms.TryGetValue(id, out state) || state == null) { state = new KingdomCivilWarKingdomState { KingdomId = id, StageWeek = week }; _storage.Kingdoms[id] = state; }
+		if (!_storage.Kingdoms.TryGetValue(id, out state) || state == null) { state = new KingdomCivilWarKingdomState { KingdomId = id, StageWeek = week, LastGrievanceDecayDay = CivilWarWorld.CurrentDay() }; _storage.Kingdoms[id] = state; }
 		if (state.Clans == null) state.Clans = new Dictionary<string, KingdomCivilWarClanState>(StringComparer.OrdinalIgnoreCase);
 		if (state.Factions == null) state.Factions = new List<KingdomCivilWarFactionState>();
 		if (state.History == null) state.History = new List<KingdomCivilWarHistoryEntry>();
@@ -1150,14 +1192,8 @@ internal sealed class KingdomCivilWarOwner
 		return CivilWarRules.Clamp(members / Math.Max(1f, CivilWarWorld.Strength(kingdom)), 0f, 1f);
 	}
 
-	private static void DecayAndRefresh(Kingdom kingdom, KingdomCivilWarKingdomState state, int week)
+	private static void RefreshClans(Kingdom kingdom, KingdomCivilWarKingdomState state, int week)
 	{
-		foreach (KingdomCivilWarClanState clan in state.Clans.Values)
-			foreach (string sourceId in clan.Grievance.Keys.ToList())
-			{
-				CivilWarGrievanceSourceDef source = CivilWarCatalog.FindSource(sourceId);
-				clan.Grievance[sourceId] = CivilWarRules.Clamp(clan.Grievance[sourceId] * (1f - (source == null ? 0.15f : source.DecayPerWeek)), 0f, MaxClanGrievance);
-			}
 		foreach (Clan clan in CivilWarWorld.LandedClans(kingdom)) GetOrCreateClan(state, clan, week);
 		// Clans that left the kingdom drop out of their pre-war faction.
 		foreach (KingdomCivilWarClanState record in state.Clans.Values.Where(x => x.Side == KingdomCivilWarSide.Opposition))

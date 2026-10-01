@@ -32,7 +32,7 @@ internal sealed class KingdomCivilWarClanState
 	public string FactionId = "";
 	public int SideSinceWeek;
 	public int LastRecruitWeek;
-	// grievance source id -> points (decays weekly by the source's DecayPerWeek)
+	// grievance source id -> points (decays daily, preserving the source's seven-day DecayPerWeek)
 	public Dictionary<string, float> Grievance = new Dictionary<string, float>(StringComparer.Ordinal);
 }
 
@@ -92,6 +92,8 @@ internal sealed class KingdomCivilWarKingdomState
 	public KingdomCivilWarStage Stage = KingdomCivilWarStage.Discontent;
 	public int StageWeek;
 	public int LastAdvancedWeek;
+	// -1 means a pre-daily-decay save: establish today's baseline without retroactive decay.
+	public int LastGrievanceDecayDay = -1;
 	// No new faction forms before this week (set when a faction finishes). Existing factions keep running.
 	public int CooldownUntilWeek;
 	// Mood of the remaining factions after the last civil war (CivilWarAftermath), valid through AftermathUntilWeek.
