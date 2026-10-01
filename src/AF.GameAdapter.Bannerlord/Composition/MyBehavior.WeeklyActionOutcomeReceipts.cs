@@ -300,143 +300,22 @@ public partial class MyBehavior
             CultureInfo.InvariantCulture, out result) && result > 0L;
 
     private WeeklyMemoryMaterialOutcomeOperationStatus TryPublishWeeklyActionOutcome(
-        string receiptId,
-        string candidateHash)
+        string receiptId, string candidateHash)
     {
-        WeeklyMemoryMaterialOutcomeLedger ledger = EnsureWeeklyActionOutcomeLedger();
-        WeeklyMemoryMaterialOutcomeOperationStatus status = ledger.GetPublishWork(
-            receiptId,
-            candidateHash,
-            out WeeklyMemoryMaterialOutcomeReceipt receipt,
-            out string errorCode);
-        if (status != WeeklyMemoryMaterialOutcomeOperationStatus.Accepted)
-        {
-            RefreshWeeklyActionOutcomeWorkFlag();
-            return status;
-        }
-
-        WeeklyMemoryMaterialFrozenPayload frozen = receipt.Payload;
-        string memoryId = NormalizeMemoryHeroId(frozen.MemoryId);
-        int currentDay = GetCurrentGameDayIndexSafe();
-        if (receipt.OriginGameDay > currentDay || !IsMemoryEntityEligibleForCompressedMemory(memoryId))
-        {
-            ledger.Complete(receiptId, candidateHash, WeeklyMemoryMaterialOutcomeState.Unknown,
-                "weekly_material_publish_target_invalid", out _);
-            RefreshWeeklyActionOutcomeWorkFlag();
-            return WeeklyMemoryMaterialOutcomeOperationStatus.NotReady;
-        }
-
-        int storageDay = receipt.OriginGameDay < currentDay
-                && HasCompressedMemoryBlock(memoryId, receipt.OriginGameDay)
-            ? currentDay
-            : receipt.OriginGameDay;
-        List<DailyMemoryDraft> drafts = LoadDailyMemoryDraftsById(memoryId);
-        DailyMemoryDraft draft = drafts.FirstOrDefault(item => item != null
-            && item.GameDayIndex == storageDay);
-        if (draft == null || draft.Lines == null || draft.Lines.Count == 0)
-        {
-            ScheduleWeeklyActionOutcomeRetry();
-            return WeeklyMemoryMaterialOutcomeOperationStatus.NotReady;
-        }
-
-        string stableKey = "weekly_outcome:" + receipt.ReceiptId + ":" + receipt.PayloadHash;
-        if (!HasExactWeeklyActionOutcomeTrigger(draft, receipt, stableKey))
-        {
-            List<string> labels = frozen.Atoms
-                .Select(atom => atom?.Label)
-                .Where(label => !string.IsNullOrWhiteSpace(label))
-                .Distinct(StringComparer.OrdinalIgnoreCase)
-                .ToList();
-            AddWeeklyMemoryMaterialTriggerToDraft(draft, new WeeklyMemoryMaterialTrigger
-            {
-                MemoryId = memoryId,
-                NpcName = frozen.NpcName,
-                GameDayIndex = storageDay,
-                GameDate = storageDay == receipt.OriginGameDay
-                    ? frozen.OriginGameDate
-                    : GetCurrentGameDateTextSafe(),
-                SceneSessionId = receipt.SceneSessionId,
-                DialogueSessionId = receipt.DialogueSessionId,
-                TargetAgentIndex = receipt.TargetAgentIndex,
-                FootholdKingdomId = frozen.FootholdKingdomId,
-                FootholdSettlementId = frozen.FootholdSettlementId,
-                NormalizedTagText = string.Join("\n", labels),
-                Tags = labels,
-                EstimatedValueDenars = frozen.EstimatedValueDenars,
-                TriggerReason = frozen.Reason,
-                StableKey = stableKey,
-                OutcomeReceiptId = receipt.ReceiptId,
-                OutcomeCandidateHash = receipt.CandidateHash,
-                OutcomePayloadHash = receipt.PayloadHash,
-                OutcomeActionFingerprint = receipt.ActionFingerprint,
-                OutcomeTurnFingerprint = receipt.TurnFingerprint,
-                CreatedUtcTicks = receipt.ConfirmedUtcTicks > 0L
-                    ? receipt.ConfirmedUtcTicks
-                    : DateTime.UtcNow.Ticks
-            });
-            SaveDailyMemoryDraftsById(memoryId, drafts);
-            drafts = LoadDailyMemoryDraftsById(memoryId);
-            draft = drafts.FirstOrDefault(item => item != null && item.GameDayIndex == storageDay);
-        }
-        if (!HasExactWeeklyActionOutcomeTrigger(draft, receipt, stableKey))
-        {
-            ScheduleWeeklyActionOutcomeRetry();
-            return WeeklyMemoryMaterialOutcomeOperationStatus.NotReady;
-        }
-
-        status = ledger.MarkApplied(receiptId, candidateHash, out errorCode);
-        RefreshWeeklyActionOutcomeWorkFlag();
-        if (status == WeeklyMemoryMaterialOutcomeOperationStatus.Accepted
-            || status == WeeklyMemoryMaterialOutcomeOperationStatus.Duplicate)
+        int storageDay = -1;
+        var status = EnsureWeeklyActionOutcomePublication().Publish(receiptId, candidateHash,
+            GetCurrentGameDayIndexSafe(), DateTime.UtcNow.Ticks,
+            IsMemoryEntityEligibleForCompressedMemory,
+            receipt => _memoryBusinessState.AttachConfirmedWeeklyOutcome(receipt,
+                GetCurrentGameDayIndexSafe(), GetCurrentGameDateTextSafe(), DateTime.UtcNow.Ticks,
+                out storageDay), out var applied);
+        if (applied != null)
         {
             Logger.Log("WeeklyActionOutcome", "material attached receipt=" + receiptId
-                + " memory=" + memoryId + " day=" + storageDay
-                + " value=" + frozen.EstimatedValueDenars);
+                + " memory=" + applied.Payload.MemoryId + " day=" + storageDay
+                + " value=" + applied.Payload.EstimatedValueDenars);
         }
         return status;
-    }
-
-    private static bool HasExactWeeklyActionOutcomeTrigger(
-        DailyMemoryDraft draft,
-        WeeklyMemoryMaterialOutcomeReceipt receipt,
-        string stableKey)
-    {
-        if (draft?.WeeklyMaterialTriggers == null || receipt?.Payload == null)
-        {
-            return false;
-        }
-        WeeklyMemoryMaterialFrozenPayload frozen = receipt.Payload;
-        List<string> labels = frozen.Atoms
-            .Select(atom => atom?.Label)
-            .Where(label => !string.IsNullOrWhiteSpace(label))
-            .Distinct(StringComparer.OrdinalIgnoreCase)
-            .ToList();
-        string normalizedTagText = string.Join("\n", labels);
-        return draft.WeeklyMaterialTriggers.Any(trigger => trigger != null
-                && string.Equals(trigger.StableKey, stableKey, StringComparison.Ordinal)
-                && string.Equals(trigger.OutcomeReceiptId, receipt.ReceiptId, StringComparison.Ordinal)
-                && string.Equals(trigger.OutcomeCandidateHash, receipt.CandidateHash, StringComparison.Ordinal)
-                && string.Equals(trigger.OutcomePayloadHash, receipt.PayloadHash, StringComparison.Ordinal)
-                && string.Equals(trigger.OutcomeActionFingerprint, receipt.ActionFingerprint, StringComparison.Ordinal)
-                && string.Equals(trigger.OutcomeTurnFingerprint, receipt.TurnFingerprint, StringComparison.Ordinal)
-                && string.Equals(NormalizeMemoryHeroId(trigger.MemoryId), frozen.MemoryId,
-                    StringComparison.OrdinalIgnoreCase)
-                && string.Equals(trigger.NpcName, frozen.NpcName, StringComparison.Ordinal)
-                && trigger.GameDayIndex == draft.GameDayIndex
-                && trigger.SceneSessionId == receipt.SceneSessionId
-                && trigger.DialogueSessionId == receipt.DialogueSessionId
-                && trigger.TargetAgentIndex == receipt.TargetAgentIndex
-                && string.Equals(trigger.FootholdKingdomId, frozen.FootholdKingdomId,
-                    StringComparison.Ordinal)
-                && string.Equals(trigger.FootholdSettlementId, frozen.FootholdSettlementId,
-                    StringComparison.Ordinal)
-                && string.Equals(trigger.NormalizedTagText, normalizedTagText,
-                    StringComparison.Ordinal)
-                && (trigger.Tags ?? new List<string>()).SequenceEqual(
-                    labels,
-                    StringComparer.OrdinalIgnoreCase)
-                && trigger.EstimatedValueDenars == frozen.EstimatedValueDenars
-                && string.Equals(trigger.TriggerReason, frozen.Reason, StringComparison.Ordinal));
     }
 
     private WeeklyMemoryMaterialOutcomeLedger EnsureWeeklyActionOutcomeLedger()

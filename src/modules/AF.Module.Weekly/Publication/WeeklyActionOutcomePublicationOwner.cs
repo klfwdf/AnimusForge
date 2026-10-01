@@ -37,6 +37,39 @@ internal sealed class WeeklyActionOutcomePublicationOwner
         return receipt;
     }
 
+    // Receipt order and non-transactional draft publication are unchanged. A failed
+    // or incomplete attachment stays Confirmed for the existing bounded recovery tick.
+    internal WeeklyMemoryMaterialOutcomeOperationStatus Publish(string receiptId,
+        string candidateHash, int currentDay, long utcTicks, Func<string, bool> isEligible,
+        Func<WeeklyMemoryMaterialOutcomeReceipt, bool> attachDraft,
+        out WeeklyMemoryMaterialOutcomeReceipt applied)
+    {
+        applied = null;
+        var status = Ledger.GetPublishWork(receiptId, candidateHash, out var receipt, out _);
+        if (status != WeeklyMemoryMaterialOutcomeOperationStatus.Accepted)
+        {
+            RefreshWork();
+            return status;
+        }
+        if (receipt.OriginGameDay > currentDay || !isEligible(receipt.Payload.MemoryId))
+        {
+            Ledger.Complete(receiptId, candidateHash, WeeklyMemoryMaterialOutcomeState.Unknown,
+                "weekly_material_publish_target_invalid", out _);
+            RefreshWork();
+            return WeeklyMemoryMaterialOutcomeOperationStatus.NotReady;
+        }
+        if (!attachDraft(receipt))
+        {
+            ScheduleRetry(utcTicks);
+            return WeeklyMemoryMaterialOutcomeOperationStatus.NotReady;
+        }
+        status = Ledger.MarkApplied(receiptId, candidateHash, out _);
+        RefreshWork();
+        if (status == WeeklyMemoryMaterialOutcomeOperationStatus.Accepted
+            || status == WeeklyMemoryMaterialOutcomeOperationStatus.Duplicate) applied = receipt;
+        return status;
+    }
+
     internal bool Import(IDictionary<string, string> storage, long generation, out string error)
     {
         if (!Ledger.Import(storage, out error))
