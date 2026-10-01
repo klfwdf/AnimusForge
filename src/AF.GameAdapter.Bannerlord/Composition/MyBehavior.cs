@@ -1373,15 +1373,15 @@ public partial class MyBehavior : CampaignBehaviorBase
  private WeeklyNoticePort WeeklyNoticePort => _weeklyNoticePort ??= new WeeklyNoticePort { FindRecord = FindWeeklyReportRecordById, IsBulletin = IsWorldBulletinEventId, NearestKingdom = ResolveNearestWeeklyReportKingdomId, Log = Logger.Log, Publish = record => MBInformationManager.AddNotice(new AnimusForgeWeeklyReportMapNotification(record.EventId, BuildWeeklyReportNoticeTitle(record), BuildWeeklyReportNoticeDescription(record))) };
  private List<string> _unreadWeeklyReportNoticeEventIds { get => _weeklyNoticeOwner.Unread; set => _weeklyNoticeOwner.Unread = value; }
 
-	private List<string> _weeklyReportReadingXpClaimedEventIds = new List<string>();
+	private List<string> _weeklyReportReadingXpClaimedEventIds { get => _weeklyNoticeOwner.ReadingXpClaimedEventIds; set => _weeklyNoticeOwner.ReadingXpClaimedEventIds = value; }
 
-	private int _weeklyReportReadingXpPendingCount;
+	private int _weeklyReportReadingXpPendingCount { get => _weeklyNoticeOwner.ReadingXpPendingCount; set => _weeklyNoticeOwner.ReadingXpPendingCount = value; }
 
-	private int _weeklyReportReadingXpPendingCharm;
+	private int _weeklyReportReadingXpPendingCharm { get => _weeklyNoticeOwner.ReadingXpPendingCharm; set => _weeklyNoticeOwner.ReadingXpPendingCharm = value; }
 
-	private int _weeklyReportReadingXpPendingLeadership;
+	private int _weeklyReportReadingXpPendingLeadership { get => _weeklyNoticeOwner.ReadingXpPendingLeadership; set => _weeklyNoticeOwner.ReadingXpPendingLeadership = value; }
 
-	private int _weeklyReportReadingXpPendingSteward;
+	private int _weeklyReportReadingXpPendingSteward { get => _weeklyNoticeOwner.ReadingXpPendingSteward; set => _weeklyNoticeOwner.ReadingXpPendingSteward = value; }
 
 	private HashSet<string> _weeklyReportNoticeEventIdsShownThisSession { get => _weeklyNoticeOwner.Shown; }
 
@@ -14998,28 +14998,7 @@ TeamModuleServices.CivilWar.AdvanceWeek(devEditableKingdom, weekIndex, GetKingdo
 				CampaignPersonaPersistenceAdapter.Save(dataStore, _npcPersonaProfiles, _npcPersonaProfileStorage, TryPrepareNpcPersonaProfileForWrite);
 				CampaignWeeklyRecordPersistenceAdapter.SaveOpenings(dataStore, _eventKingdomOpeningSummaries, _eventKingdomOpeningSummaryStorage, _eventWorldOpeningSummary);
 				CampaignWeeklyRecordPersistenceAdapter.SaveRecords(dataStore, _eventRecordEntries, ref _eventRecordJsonStorage, NormalizeEventRecordEntriesInPlace);
-				_unreadWeeklyReportNoticeEventIds = SanitizeUnreadWeeklyReportNoticeEventIds(_unreadWeeklyReportNoticeEventIds).Where((string x) => FindWeeklyReportRecordById(x) != null).ToList();
-				List<string> unreadWeeklyReportNoticeEventIds = new List<string>(_unreadWeeklyReportNoticeEventIds);
-				dataStore.SyncData("_af_unreadWeeklyReportNotices_v1", ref unreadWeeklyReportNoticeEventIds);
-				_unreadWeeklyReportNoticeEventIds = SanitizeUnreadWeeklyReportNoticeEventIds(unreadWeeklyReportNoticeEventIds);
-				_weeklyReportReadingXpClaimedEventIds = SanitizeWeeklyReportReadingXpClaimedEventIds(_weeklyReportReadingXpClaimedEventIds).Where((string x) => FindWeeklyReportRecordById(x) != null).ToList();
-				List<string> weeklyReportReadingXpClaimedEventIds = new List<string>(_weeklyReportReadingXpClaimedEventIds);
-				dataStore.SyncData("_af_weeklyReportReadingXpClaimed_v1", ref weeklyReportReadingXpClaimedEventIds);
-				_weeklyReportReadingXpClaimedEventIds = SanitizeWeeklyReportReadingXpClaimedEventIds(weeklyReportReadingXpClaimedEventIds).Where((string x) => FindWeeklyReportRecordById(x) != null).ToList();
-				NormalizeWeeklyReportReadingXpPendingBatch();
-				int weeklyReportReadingXpPendingCount = _weeklyReportReadingXpPendingCount;
-				int weeklyReportReadingXpPendingCharm = _weeklyReportReadingXpPendingCharm;
-				int weeklyReportReadingXpPendingLeadership = _weeklyReportReadingXpPendingLeadership;
-				int weeklyReportReadingXpPendingSteward = _weeklyReportReadingXpPendingSteward;
-				dataStore.SyncData("_af_weeklyReportReadingXpPendingCount_v1", ref weeklyReportReadingXpPendingCount);
-				dataStore.SyncData("_af_weeklyReportReadingXpPendingCharm_v1", ref weeklyReportReadingXpPendingCharm);
-				dataStore.SyncData("_af_weeklyReportReadingXpPendingLeadership_v1", ref weeklyReportReadingXpPendingLeadership);
-				dataStore.SyncData("_af_weeklyReportReadingXpPendingSteward_v1", ref weeklyReportReadingXpPendingSteward);
-				_weeklyReportReadingXpPendingCount = weeklyReportReadingXpPendingCount;
-				_weeklyReportReadingXpPendingCharm = weeklyReportReadingXpPendingCharm;
-				_weeklyReportReadingXpPendingLeadership = weeklyReportReadingXpPendingLeadership;
-				_weeklyReportReadingXpPendingSteward = weeklyReportReadingXpPendingSteward;
-				NormalizeWeeklyReportReadingXpPendingBatch();
+				CampaignWeeklyNoticePersistenceAdapter.Save(dataStore, _weeklyNoticeOwner, id => FindWeeklyReportRecordById(id) != null);
 				CampaignMaterialPersistenceAdapter.Save(dataStore, _campaignMaterialRecords, ref _eventSourceMaterialJsonStorage);
 				CampaignKingdomPersistenceAdapter.Save(dataStore, _kingdomStabilityValues, ref _kingdomStabilityStorage, _kingdomStabilityRelationAppliedOffsets, ref _kingdomStabilityRelationOffsetStorage, _weeklyReportAppliedStabilityDeltas, ref _weeklyReportAppliedStabilityDeltaStorage, _rebelKingdomIdentity, ref _modCreatedRebelKingdomIdStorage);
 				dataStore.SyncData("_lastAutoGeneratedWeeklyReportWeek_v1", ref _lastAutoGeneratedWeeklyReportWeek);
@@ -15046,17 +15025,7 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 			_npcActionGlobalOrderCounter = Math.Max(_npcActionGlobalOrderCounter, GetMaxNpcActionSequence(_npcMajorActions, _npcRecentActions, _eventSourceMaterials));
 			CampaignWeeklyRecordPersistenceAdapter.LoadOpenings(dataStore, _eventKingdomOpeningSummaries, ref _eventKingdomOpeningSummaryStorage, ref _eventWorldOpeningSummary);
 			CampaignWeeklyRecordPersistenceAdapter.LoadRecords(dataStore, ref _eventRecordEntries, ref _eventRecordJsonStorage, NormalizeEventRecordEntriesInPlace);
-			List<string> unreadWeeklyReportNoticeEventIdsLoad = new List<string>();
-			dataStore.SyncData("_af_unreadWeeklyReportNotices_v1", ref unreadWeeklyReportNoticeEventIdsLoad);
-			_unreadWeeklyReportNoticeEventIds = SanitizeUnreadWeeklyReportNoticeEventIds(unreadWeeklyReportNoticeEventIdsLoad).Where((string x) => FindWeeklyReportRecordById(x) != null).ToList();
-			List<string> weeklyReportReadingXpClaimedEventIdsLoad = new List<string>();
-			dataStore.SyncData("_af_weeklyReportReadingXpClaimed_v1", ref weeklyReportReadingXpClaimedEventIdsLoad);
-			_weeklyReportReadingXpClaimedEventIds = SanitizeWeeklyReportReadingXpClaimedEventIds(weeklyReportReadingXpClaimedEventIdsLoad).Where((string x) => FindWeeklyReportRecordById(x) != null).ToList();
-			dataStore.SyncData("_af_weeklyReportReadingXpPendingCount_v1", ref _weeklyReportReadingXpPendingCount);
-			dataStore.SyncData("_af_weeklyReportReadingXpPendingCharm_v1", ref _weeklyReportReadingXpPendingCharm);
-			dataStore.SyncData("_af_weeklyReportReadingXpPendingLeadership_v1", ref _weeklyReportReadingXpPendingLeadership);
-			dataStore.SyncData("_af_weeklyReportReadingXpPendingSteward_v1", ref _weeklyReportReadingXpPendingSteward);
-			NormalizeWeeklyReportReadingXpPendingBatch();
+			CampaignWeeklyNoticePersistenceAdapter.Load(dataStore, _weeklyNoticeOwner, id => FindWeeklyReportRecordById(id) != null);
 			_weeklyNoticeOwner.ResetShown();
 			_weeklyReportNoticeQueueNormalizedForCurrentPolicy = false;
 			_weeklyReportRegisteredMapNotificationView = null;
@@ -32765,19 +32734,7 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 		}
 	}
 
-	private void NormalizeWeeklyReportReadingXpPendingBatch()
-	{
-		_weeklyReportReadingXpPendingCount = Math.Max(0, _weeklyReportReadingXpPendingCount);
-		_weeklyReportReadingXpPendingCharm = Math.Max(0, _weeklyReportReadingXpPendingCharm);
-		_weeklyReportReadingXpPendingLeadership = Math.Max(0, _weeklyReportReadingXpPendingLeadership);
-		_weeklyReportReadingXpPendingSteward = Math.Max(0, _weeklyReportReadingXpPendingSteward);
-		if (_weeklyReportReadingXpPendingCount == 0)
-		{
-			_weeklyReportReadingXpPendingCharm = 0;
-			_weeklyReportReadingXpPendingLeadership = 0;
-			_weeklyReportReadingXpPendingSteward = 0;
-		}
-	}
+	private void NormalizeWeeklyReportReadingXpPendingBatch() => _weeklyNoticeOwner.NormalizeReadingXpPendingBatch();
 
 	private static int CalculateWeeklyReportReadingXp(int meaningfulUnitCount, int xpPerHundred, int skillCap)
 	{
