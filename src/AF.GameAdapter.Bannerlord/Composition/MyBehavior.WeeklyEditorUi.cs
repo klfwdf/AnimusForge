@@ -1,0 +1,191 @@
+using AnimusForge.Refactor.Runtime;
+using System;
+using System.Collections;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Globalization;
+using System.IO;
+using System.Linq;
+using System.Net;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Reflection;
+using System.Runtime.InteropServices;
+using System.Security.Cryptography;
+using System.Text;
+using System.Text.RegularExpressions;
+using System.Threading;
+using System.Threading.Tasks;
+using AnimusForge.Refactor.Adapters;
+using AnimusForge.Refactor.Contracts;
+using AnimusForge.Refactor.Modules;
+using AnimusForge.SiegeAftermathIntervention;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using SandBox.Tournaments.MissionLogics;
+using SandBox.View.Map;
+using TaleWorlds.CampaignSystem;
+using TaleWorlds.CampaignSystem.Actions;
+using TaleWorlds.CampaignSystem.CharacterDevelopment;
+using TaleWorlds.CampaignSystem.ComponentInterfaces;
+using TaleWorlds.CampaignSystem.Encounters;
+using TaleWorlds.CampaignSystem.Extensions;
+using TaleWorlds.CampaignSystem.GameState;
+using TaleWorlds.CampaignSystem.GameMenus;
+using TaleWorlds.CampaignSystem.LogEntries;
+using TaleWorlds.CampaignSystem.MapEvents;
+using TaleWorlds.CampaignSystem.Map;
+using TaleWorlds.CampaignSystem.Election;
+using TaleWorlds.CampaignSystem.Party;
+using TaleWorlds.CampaignSystem.Party.PartyComponents;
+using TaleWorlds.CampaignSystem.Roster;
+using TaleWorlds.CampaignSystem.Siege;
+using TaleWorlds.CampaignSystem.Settlements;
+using TaleWorlds.CampaignSystem.Settlements.Locations;
+using TaleWorlds.CampaignSystem.Settlements.Workshops;
+using TaleWorlds.CampaignSystem.TournamentGames;
+using TaleWorlds.CampaignSystem.ViewModelCollection.GameMenu.Events;
+using TaleWorlds.Core;
+using TaleWorlds.Library;
+using TaleWorlds.Library.EventSystem;
+using TaleWorlds.Localization;
+using TaleWorlds.MountAndBlade;
+using TaleWorlds.SaveSystem;
+
+namespace AnimusForge;
+
+public partial class MyBehavior
+{
+ private static readonly WeeklyEditorDisplayPort WeeklyEditorDisplay = new WeeklyEditorDisplayPort
+ {
+  PromptProfileLabel = () => GetWeeklyReportPromptProfile().Label,
+  ResolveHeroDisplay = ResolveHeroDisplay,
+  ResolveSettlementDisplay = ResolveSettlementDisplay,
+  BuildDevSummaryPreview = BuildDevSummaryPreview,
+  TranslateEventMaterialTypeForDev = TranslateEventMaterialTypeForDev,
+  AppendDevNpcActionField = AppendDevNpcActionField,
+  ResolveKingdomDisplay = ResolveKingdomDisplay,
+  GetEventAndRebellionApiMaxTokens = GetEventAndRebellionApiMaxTokens,
+  BuildWeeklyReportGroupReportId = BuildWeeklyReportGroupReportId,
+ };
+ private WeeklyReportEditorController _weeklyEditor;
+ private WeeklyReportEditorController CreateWeeklyEditor() => new WeeklyReportEditorController(new WeeklyEditorPort
+ {
+  CaptureGeneration = SaveRuntimeGuard.CaptureGeneration, IsCurrent = IsMemorySourceEditorCurrent,
+  EventRecords = () => _eventRecordEntries, WorldOpeningSummary = () => _eventWorldOpeningSummary,
+  BuildBulletinPanel = BuildWorldBulletinPanelData, AwardReadingXp = id => TryAwardWeeklyReportReadingXp(id),
+  PromptProfileLabel = () => GetWeeklyReportPromptProfile().Label,
+  ResolveHeroDisplay = ResolveHeroDisplay,
+  ResolveSettlementDisplay = ResolveSettlementDisplay,
+  BuildDevSummaryPreview = BuildDevSummaryPreview,
+  TranslateEventMaterialTypeForDev = TranslateEventMaterialTypeForDev,
+  AppendDevNpcActionField = AppendDevNpcActionField,
+  ResolveKingdomDisplay = ResolveKingdomDisplay,
+  GetEventAndRebellionApiMaxTokens = GetEventAndRebellionApiMaxTokens,
+  BuildWeeklyReportGroupReportId = BuildWeeklyReportGroupReportId,
+  BuildWeeklyEventMaterialPreviewGroups = BuildWeeklyEventMaterialPreviewGroups,
+  OrderWeeklyReportGenerationGroups = OrderWeeklyReportGenerationGroups,
+  BuildWeeklyReportBatchRequests = BuildWeeklyReportBatchRequests,
+  FindLatestWeeklyReportBatchDevPreview = FindLatestWeeklyReportBatchDevPreview,
+  BuildWeeklyReportSystemPrompt = BuildWeeklyReportSystemPrompt,
+  BuildWeeklyReportUserPrompt = BuildWeeklyReportUserPrompt,
+  BuildWeeklyBatchReportSystemPrompt = BuildWeeklyBatchReportSystemPrompt,
+  BuildWeeklyBatchReportUserPrompt = BuildWeeklyBatchReportUserPrompt,
+  OrderWeeklyPreviewMaterials = OrderWeeklyPreviewMaterials,
+  ResolveEventMaterialNpcAction = ResolveEventMaterialNpcAction,
+  GetKingdomIdsByPlayerProximity = GetKingdomIdsByPlayerProximity,
+  GetDevEditableKingdoms = GetDevEditableKingdoms,
+  SanitizeEventRecordEntries = SanitizeEventRecordEntries,
+  GetWeeklyReportBatchSize = GetWeeklyReportBatchSize,
+  GetWeeklyReportRequestsPerMinute = GetWeeklyReportRequestsPerMinute,
+  GenerateDevWeeklyReportsAsync = GenerateDevWeeklyReportsAsync,
+  OpenDevEventEditorMenu = OpenDevEventEditorMenu,
+  ResolveKingdomOpeningSummaryById = ResolveKingdomOpeningSummaryById,
+  BuildDevNpcActionDetailText = BuildDevNpcActionDetailText,
+  GetDevNpcActionKindDisplay = GetDevNpcActionKindDisplay,
+  ResolveHeroNames = ResolveHeroNames,
+  ResolveClanNames = ResolveClanNames,
+  ResolveKingdomNames = ResolveKingdomNames,
+  TranslateEventKindForDev = TranslateEventKindForDev,
+  GetCurrentGameDayIndexSafe = GetCurrentGameDayIndexSafe,
+  EnsureWeekZeroOpeningSummaryEvents = EnsureWeekZeroOpeningSummaryEvents,
+  BuildWeeklyReportBatchDisplayLabel = BuildWeeklyReportBatchDisplayLabel,
+ });
+ private WeeklyReportEditorController WeeklyEditor
+ {
+  get
+  {
+   var owner = _weeklyEditor ?? (_weeklyEditor = CreateWeeklyEditor());
+   owner.SynchronizeGeneration(SaveRuntimeGuard.CaptureGeneration());
+   return owner;
+  }
+ }
+
+	private string BuildDevEventMaterialDetailText(EventMaterialReference material)
+		=> WeeklyEditor.BuildDevEventMaterialDetailText(material);
+
+	private void OpenDevWeeklyEventMaterialPreviewMenu()
+		=> WeeklyEditor.OpenDevWeeklyEventMaterialPreviewMenu();
+
+	private string BuildWeeklyEventMaterialPreviewMenuDescription(List<WeeklyEventMaterialPreviewGroup> groups)
+		=> WeeklyEditor.BuildWeeklyEventMaterialPreviewMenuDescription(groups);
+
+	private static string BuildWeeklyEventMaterialPreviewGroupLabel(WeeklyEventMaterialPreviewGroup group)
+		=> WeeklyEditorProjection.BuildWeeklyEventMaterialPreviewGroupLabel(WeeklyEditorDisplay, group);
+
+	public List<WeeklyReportBrowserCountryData> GetTerminalWeeklyReportBrowserCountries()
+		=> WeeklyEditor.GetTerminalWeeklyReportBrowserCountries();
+
+	private static WeeklyReportBrowserCountryData BuildWeeklyReportBrowserCountryData(string eventKind, string scopeKingdomId, string displayName, bool isWorld, List<EventRecordEntry> source)
+		=> WeeklyEditorProjection.BuildWeeklyReportBrowserCountryData(WeeklyEditorDisplay, eventKind, scopeKingdomId, displayName, isWorld, source);
+
+	private static List<WeeklyReportBrowserEntryData> BuildWeeklyReportBrowserEntries(List<EventRecordEntry> source, string eventKind, string scopeKingdomId)
+		=> WeeklyEditorProjection.BuildWeeklyReportBrowserEntries(WeeklyEditorDisplay, source, eventKind, scopeKingdomId);
+
+	private static string BuildWeeklyReportBrowserDefaultTitle(string eventKind, string scopeKingdomId, int weekIndex)
+		=> WeeklyEditorProjection.BuildWeeklyReportBrowserDefaultTitle(WeeklyEditorDisplay, eventKind, scopeKingdomId, weekIndex);
+
+	private static string BuildWeeklyReportPromptPreviewText(WeeklyEventMaterialPreviewGroup group, string systemPrompt, string userPrompt)
+		=> WeeklyEditorProjection.BuildWeeklyReportPromptPreviewText(WeeklyEditorDisplay, group, systemPrompt, userPrompt);
+
+	private static string BuildWeeklyBatchPromptPreviewText(WeeklyReportBatchRequest batch, string systemPrompt, string userPrompt)
+		=> WeeklyEditorProjection.BuildWeeklyBatchPromptPreviewText(WeeklyEditorDisplay, batch, systemPrompt, userPrompt);
+
+	private void OpenDevWeeklyEventMaterialPreviewGroupDetail(WeeklyEventMaterialPreviewGroup group, int page)
+		=> WeeklyEditor.OpenDevWeeklyEventMaterialPreviewGroupDetail(group, page);
+
+	private static string BuildWeeklyPreviewMaterialLabel(EventMaterialReference material)
+		=> WeeklyEditorProjection.BuildWeeklyPreviewMaterialLabel(WeeklyEditorDisplay, material);
+
+	private string BuildWeeklyPreviewGroupDetailText(WeeklyEventMaterialPreviewGroup group, int page, int totalPages)
+		=> WeeklyEditor.BuildWeeklyPreviewGroupDetailText(group, page, totalPages);
+
+	private void OpenDevWeeklyPreviewMaterialDetail(WeeklyEventMaterialPreviewGroup group, EventMaterialReference material, int returnPage)
+		=> WeeklyEditor.OpenDevWeeklyPreviewMaterialDetail(group, material, returnPage);
+
+	private void OpenDevWeeklyReportPromptPreviewMenu()
+		=> WeeklyEditor.OpenDevWeeklyReportPromptPreviewMenu();
+
+	private void OpenDevWeeklyReportSinglePromptPreviewMenu()
+		=> WeeklyEditor.OpenDevWeeklyReportSinglePromptPreviewMenu();
+
+	private string BuildWeeklyReportPromptPreviewMenuDescription(List<WeeklyEventMaterialPreviewGroup> groups)
+		=> WeeklyEditor.BuildWeeklyReportPromptPreviewMenuDescription(groups);
+
+	private void OpenDevWeeklyBatchPromptPreviewMenu()
+		=> WeeklyEditor.OpenDevWeeklyBatchPromptPreviewMenu();
+
+	private string BuildWeeklyBatchPromptPreviewMenuDescription(List<WeeklyReportBatchRequest> batches)
+		=> WeeklyEditor.BuildWeeklyBatchPromptPreviewMenuDescription(batches);
+
+	private void OpenDevWeeklyReportPromptDetail(WeeklyEventMaterialPreviewGroup group)
+		=> WeeklyEditor.OpenDevWeeklyReportPromptDetail(group);
+
+	private void OpenDevWeeklyBatchPromptDetail(WeeklyReportBatchRequest batch)
+		=> WeeklyEditor.OpenDevWeeklyBatchPromptDetail(batch);
+
+	private void ConfirmGenerateDevWeeklyReports()
+		=> WeeklyEditor.ConfirmGenerateDevWeeklyReports();
+
+}
