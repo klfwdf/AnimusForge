@@ -365,6 +365,16 @@ internal static class MainPromptMessageAssemblyOwner
     internal static string BuildSceneReactionSystemPrompt(string identityOverride, string ruleBlock, string customRoleIntro)
         => BuildSceneCompositeUserBlock("", BuildSceneCompositeUserBlock("", identityOverride, ruleBlock), customRoleIntro);
 
+    internal static AnimusForge.Refactor.Contracts.DetachedInteractionPromptSections BuildExternalScenePromptSections(
+        string mainSystem, string mainHistory, string postSystem, string postHistory, string postUser)
+    {
+        var main = new AnimusForge.Refactor.Contracts.DetachedPromptSections(
+            new[] { mainSystem }, new[] { mainHistory }, Array.Empty<string>(), appendCurrentPlayerInput: true);
+        var postprocess = new AnimusForge.Refactor.Contracts.DetachedPostprocessPromptSections(
+            new[] { postSystem }, new[] { postHistory }, new[] { postUser }, appendLatestVisibleReply: true);
+        return new AnimusForge.Refactor.Contracts.DetachedInteractionPromptSections(main, postprocess);
+    }
+
     private static string JoinSystemSections(string playerCustomRuleBlock, string system)
     {
         var sections = new List<string>(2);
