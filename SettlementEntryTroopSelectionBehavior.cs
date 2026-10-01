@@ -886,6 +886,16 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 		}
 	}
 
+	// Coup queries the current owners through one cached delegate, not their storage layout.
+	internal static bool HasBlockingFlowForCoup()
+	{
+		return _pendingProfileSelection != null || _pendingMissionEntry != null
+			|| _pendingVictoryMenuEntry != null || _pendingVillageVictoryRewardEntry != null
+			|| _pendingVillageAftermathEncounterExit != null || _pendingSettlementCivilianGatherRequest != null
+			|| _setsEntryMissionActive || _setsActiveUsableProtection
+			|| !string.IsNullOrEmpty(_pendingSameKingdomVassalRebellionKingdomId);
+	}
+
 	private static bool IsSetsCommandMissionCandidate(Mission mission)
 	{
 		try

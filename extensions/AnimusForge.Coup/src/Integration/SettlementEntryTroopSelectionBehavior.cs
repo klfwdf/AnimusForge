@@ -22,9 +22,7 @@ internal static class SettlementEntryTroopSelectionBehavior
     private static Action<Team, Agent> _bindOrderController;
     private static Action<Formation, Agent> _markCommandable;
     private static Action<int, string> _interruptSpeech, _cancelSpeech;
-    private static readonly List<FieldInfo> PendingObjects = new List<FieldInfo>();
-    private static readonly List<Func<bool>> ActiveFlags = new List<Func<bool>>();
-    private static FieldInfo _pendingRebellion;
+    private static Func<bool> _hasBlockingFlow;
     private static MethodInfo _queueCoup, _clearCoup, _spawnKing, _countRole, _isArmedLogic;
     private static Type _setsLogicType;
     internal static bool IsAvailable { get; private set; }
@@ -39,9 +37,7 @@ internal static class SettlementEntryTroopSelectionBehavior
         _bindOrderController = null;
         _markCommandable = null;
         _interruptSpeech = _cancelSpeech = null;
-        PendingObjects.Clear();
-        ActiveFlags.Clear();
-        _pendingRebellion = null;
+        _hasBlockingFlow = null;
         _queueCoup = _clearCoup = _spawnKing = _countRole = _isArmedLogic = null;
         _setsLogicType = null;
     }
@@ -65,12 +61,7 @@ internal static class SettlementEntryTroopSelectionBehavior
                 _interruptSpeech = OptionalSpeechCallback(speech, "InterruptAgentSpeechForCombatExternal");
                 _cancelSpeech = OptionalSpeechCallback(speech, "CancelAgentSpeechForRemovalExternal");
             }
-            foreach (string name in new[] { "_pendingProfileSelection", "_pendingMissionEntry", "_pendingVictoryMenuEntry",
-                "_pendingVillageVictoryRewardEntry", "_pendingVillageAftermathEncounterExit", "_pendingSettlementCivilianGatherRequest" })
-                PendingObjects.Add(RequiredField(host, name));
-            ActiveFlags.Add(RequiredFlag(host, "_setsEntryMissionActive"));
-            ActiveFlags.Add(RequiredFlag(host, "_setsActiveUsableProtection"));
-            _pendingRebellion = RequiredField(host, "_pendingSameKingdomVassalRebellionKingdomId");
+            _hasBlockingFlow = Bind<Func<bool>>(host, "HasBlockingFlowForCoup");
             _queueCoup = AccessTools.Method(host, "QueueArmedCoupEntry", new[] { typeof(string), typeof(string), typeof(TroopRoster), typeof(List<string[]>) }) ?? throw new MissingMethodException(host.FullName, "QueueArmedCoupEntry");
             _clearCoup = AccessTools.Method(host, "ClearArmedCoupEntry") ?? throw new MissingMethodException(host.FullName, "ClearArmedCoupEntry");
             _setsLogicType = host.GetNestedType("SettlementEntryTroopSelectionMissionLogic", BindingFlags.NonPublic) ?? throw new MissingMemberException(host.FullName, "SettlementEntryTroopSelectionMissionLogic");
@@ -99,20 +90,6 @@ internal static class SettlementEntryTroopSelectionBehavior
     {
         MethodInfo method = AccessTools.Method(owner, name) ?? throw new MissingMethodException(owner.FullName, name);
         return Delegate.CreateDelegate(typeof(T), method) as T ?? throw new InvalidOperationException("Incompatible AF delegate: " + name);
-    }
-
-    private static FieldInfo RequiredField(Type owner, string name) => AccessTools.Field(owner, name)
-        ?? throw new MissingFieldException(owner.FullName, name);
-
-    // Host flags may be a static bool field or a static bool property (e.g. an owner-backed getter).
-    private static Func<bool> RequiredFlag(Type owner, string name)
-    {
-        FieldInfo field = AccessTools.Field(owner, name);
-        if (field != null && field.IsStatic && field.FieldType == typeof(bool)) return () => (bool)field.GetValue(null);
-        MethodInfo getter = AccessTools.PropertyGetter(owner, name);
-        if (getter != null && getter.IsStatic && getter.ReturnType == typeof(bool))
-            return (Func<bool>)Delegate.CreateDelegate(typeof(Func<bool>), getter);
-        throw new MissingFieldException(owner.FullName, name);
     }
 
     private static Action<int, string> OptionalSpeechCallback(Type owner, string name)
@@ -198,12 +175,10 @@ internal static class SettlementEntryTroopSelectionBehavior
 
     internal static bool HasPendingFlowForCoup()
     {
-        if (!IsAvailable) return true;
+        if (!IsAvailable || _hasBlockingFlow == null) return true;
         try
         {
-            foreach (FieldInfo field in PendingObjects) if (field.GetValue(null) != null) return true;
-            foreach (Func<bool> flag in ActiveFlags) if (flag()) return true;
-            return !string.IsNullOrEmpty(_pendingRebellion.GetValue(null) as string);
+            return _hasBlockingFlow();
         }
         catch (Exception ex)
         {
