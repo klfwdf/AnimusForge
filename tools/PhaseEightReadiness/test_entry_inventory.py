@@ -15,6 +15,10 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 import entry_inventory  # noqa: E402
 
 EXPANDED_ENTRIES = {
+    # Remote vote-interest owner is inventoried, not accepted as reviewed policy gameplay.
+    "policy-political": (
+        "PolicySystem/Core/CustomPolicyBehavior.VoteInterest.cs",
+    ),
     # J12 Economy moved real owners into the module tree and added a detached
     # projection; current owner review must be renewed before COMPLETE returns.
     "economy-reward-debt": (

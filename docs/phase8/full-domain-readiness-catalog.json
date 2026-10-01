@@ -515,6 +515,7 @@
         "PolicySystem/Core/CustomPolicyBehavior.PartySizeLimit.cs",
         "PolicySystem/Core/CustomPolicyBehavior.Targets.cs",
         "PolicySystem/Core/CustomPolicyBehavior.VillageRaidBan.cs",
+        "PolicySystem/Core/CustomPolicyBehavior.VoteInterest.cs",
         "PolicySystem/Core/CustomPolicyBehavior.cs",
         "PolicySystem/Effects/PolicyEffectSaveCodec.cs",
         "PolicySystem/Npc/NpcRulerPolicyBehavior.cs"
@@ -553,7 +554,7 @@
         "persistence-domain-owners"
       ],
       "ownerAssignmentState": "ASSIGNED",
-      "entryCoverage": "COMPLETE"
+      "entryCoverage": "REPRESENTATIVE"
     },
     {
       "number": 12,
