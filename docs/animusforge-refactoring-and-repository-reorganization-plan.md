@@ -1,3 +1,32 @@
+<a id="coup-loyalists-and-aftermath-20261001"></a>
+
+### 政变后旧王支持者反抗与胜利处置接线（2026-10-01，OFFLINE_VERIFIED / 未部署）
+
+用户实机反馈：夺位后没有带城反叛候选，且提示TAB进入攻城处置但菜单没出现；随后明确选择“按新旧国王关系，旧王家族和更支持旧王的有地家族优先反抗，不要求与玩家关系为负”。工作区 `F:/AnimusForge-main`、分支 `codex/af-main-refactor-continuation-20260831`，checkpoint `aa04423`，产品/回归/使用说明 `86991dc3`；不改普通每周叛乱、不保证无合格家族时强造反叛。其它作者 `SettlementRuleMemoryEntry.cs` WIP保留、不纳入提交，无GCCZ可复用规则文件改动或外仓同步。
+
+故障证据：`artifacts/coup-loyalist-aftermath-20261001/reported-case.log`。加伦 `town_V5`、政变 `3bdff42f29034fb1b6801df6d7add10c` 在14:36:27进入HallSelection，14:36:38制服国王，14:36:51 `rebellion_registered state=Completed` 与政变完成；SETS同一时刻记录hall胜利，却无处置队列。原桥虽以forceTrigger=true调用ResolveKingdomRebellion，宿主Resolve内部候选仍硬编码forceTrigger:false，要求与新王关系≤−5；“强制”只跳过抽签。原ReachVictory无条件显示普通SETS菜单提示，而QueueVictoryPostMissionFlow明确排除_armedCoup。日志未保存当时各族具体关系，不能断言每家究竟因被俘、无地还是关系被筛除。
+
+| 源码坐标（`86991dc3`，一基） | 责任与消费者 |
+| --- | --- |
+| `extensions/AnimusForge.Coup/src/CoupSystem/CoupLoyalistPolicy.cs:1–29` | 政变专用反抗条件与排序；原王族优先，其余旧王关系严格大于新王关系才入选；按关系差、封地、家族等级、ID稳定排序。物理起兵资格由宿主AF负责。 |
+| `extensions/AnimusForge.Coup/src/Integration/CoupRebellionBridge.cs:34–36,238–240,245–350,416–417` | 请求保存新策略/旧王/原王族ID，旧请求保持旧策略；一次遍历目标王国家族，AF结构性校验force=true绕过负关系阈值，再应用政变支持规则；剩余支持者响应，逐族记录拒绝原因；起兵前重验候选，不重新抽人；命名背景注明反对夺位，命名及政治执行仍复用AF。 |
+| `extensions/AnimusForge.Coup/src/CoupSystem/CoupSession.cs:133–135,177` | AftermathPending/AftermathOpened沿原存档键保存，拒绝待开/已开矛盾状态；旧Completed记录不自动补发。 |
+| `extensions/AnimusForge.Coup/src/CoupSystem/CoupCampaignBehavior.cs:107–115,131,202,465–476,607–656` | 完成王位/城镇/拘押/事实/反叛登记后标记待处置；已有engine tick等待MapState且无弹窗，再尝试打开；失败保留Completed和待办、停止自动重试，由城镇“进入政变胜利处置”手动重试；归属变化取消，不重做政治事务。 |
+| `extensions/AnimusForge.Coup/src/Integration/SettlementEntryTroopSelectionBehavior.cs`；`SettlementEntryTroopSelectionBehavior.cs:326–335,7082–7085` | 缓存TryOpenCoupVictoryMenu delegate；真实目标/MapState/LocationEncounter/玩家归属门禁，通过现有SiegeAiIntervention入口transferOwnership=false打开原版胜利菜单；传幸存者、沿菜单进入GCCZ。政变战斗提示改为本场守军被击溃，普通SETS提示保留。 |
+| `tools/Coup.RuntimeProbe/CoupLoyalistAftermathRegression.cs`；`extensions/AnimusForge.Coup/tests/Coup.ContractTests/Program.cs` | 纯支持/排序/JSON/处置状态；真实选择器、关系变化和开关；实际Coup owner→adapter→SETS gate，在原生菜单边界截获验证参数与幂等。 |
+
+运行频率：候选仅登记时遍历一次目标王国家族，最多排序一次；之后只复核已选主导者/跟随者，旧王使用ObjectManager按ID查找，无新增世界英雄扫描。处置沿已有0.25秒engine工作泵，仅标志/上下文门禁；实际尝试只构建一次幸存名册，失败置retryBlocked等待手动操作。总开关、玩家王国免疫以及族长存活/成年/非俘虏、有城镇或城堡等条件继续有效；扣押旧王可能导致原王族不能领头，由其余合格支持者领导。
+
+验证证据 `artifacts/coup-loyalist-aftermath-20261001/`：
+
+- `contract.log`：**128 PASS**，新增15项旧/新王关系、原王族优先、正关系反抗、相等关系不反抗、稳定排序、无候选与处置持久状态；两条原快报测试字段CS0649，无错误。
+- `build.log`：原单模块脚本Release **1.3/1.4/Bootstrap通过**。隔离源码来自 `aa04423` git archive +本任务8个产品/契约文件overlay；与最终工作区8文件hash一致，见 `verification.json`。构建/部署脚本不改。
+- 1.3 DLL：`source/bin/Release/single_module_artifacts/versions/1.3/AnimusForge.dll`，参考v1.3.15.110062，SHA256 `6EA62E4A2A442366A9DC5E4FD5A5972AD4049C24874EC320EF1D5693C4760B01`；1.4同根 `versions/1.4/AnimusForge.dll`，参考v1.4.6.115628，SHA256 `758D387CC2734D094B979E5F38DCC62A061037EEB3356B5B6714EE6ECDBD642B`。
+- `probe-build.log`、`probe/registration.log`：**223 PASS**（原206+本次17），四可用标志true、45个Harmony目标、输入DLL不变。新选择器实际执行，ObjectManager/JSON真实；物理起兵资格和关系为明示fixture，未执行真实起兵/LLM。处置运行真实owner→adapter→host gate，原生菜单打开函数是桩，核实transferOwnership=false、过滤伤亡、失败可重试、成功及读档不重开、城镇换主取消。没有把桩记录当原生菜单显示或处置奖励已验。
+- `git diff --check`通过；`code-map.log`仍为既有 `Stale source content: SubModule.cs`，未刷新无关地图。
+
+未验证：真实NPC关系下的反叛建国与跟随、命名服务、原版胜利菜单/GCCZ选择及奖励完整链、游戏存档与1.3运行时；未部署/推送。原已完成的反叛请求和政变不会重开，以免重复结算，实机重测应读夺位结算前存档。本轮没有改已结束这局的战役数据。回滚用 `git revert 86991dc3` 聚焦逆向提交，保留后续共享文件变更，不hard reset；产物/日志如上，无新增游戏部署备份。
+
 <a id="illustrator-deploy-20261001"></a>
 
 ### 本会话快报/插画/画廊改动已部署（2026-10-01，DEPLOYED / LIVE_NOT_RUN）
