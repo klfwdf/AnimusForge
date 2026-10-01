@@ -144,7 +144,7 @@ def command(path: str, spec: dict, run_name: str, build_root: Path | None = None
     if build_root is not None:
         # SDK-native per-project bin/obj layout also isolates ProjectReference builds.
         cmd += ["-p:UseArtifactsOutput=true", "-p:UseAppHost=false", f"-p:ArtifactsPath={build_root}",
-                f"-p:ReplayOutputRoot={build_root}", f"-p:OutDir={build_root / 'runtime'}/"]
+                f"-p:ReplayOutputRoot={build_root}", f"-p:OutDir={build_root / 'bin' / 'runtime'}/"]
     if "BannerlordReplayDependencies.targets" in text:
         cmd += [f"-p:GameRoot={GAME}", f"-p:Bannerlord14ReferencePath={REFS14}",
                 f"-p:ReplayHarmonyModulePath={HARMONY_MODULE}",
@@ -156,7 +156,7 @@ def command(path: str, spec: dict, run_name: str, build_root: Path | None = None
         cmd += [f"-p:ReplayCandidateDll={DLL14}", "--", str(DLL14),
                 hashlib.sha256(DLL14.read_bytes()).hexdigest().upper()]
     elif extra:
-        cmd += extra
+        cmd += ["--", *extra]
     return cmd
 
 
