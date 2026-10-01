@@ -1,0 +1,192 @@
+using System;
+using System.Collections.Concurrent;
+using System.Diagnostics;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using TaleWorlds.CampaignSystem;
+using TaleWorlds.MountAndBlade;
+using static AnimusForge.ShoutBehavior;
+using static AnimusForge.SceneMovementController;
+namespace TaleWorlds.CampaignSystem
+{
+    public class Hero { public string StringId="hero"; public static Hero MainHero=new(); }
+    public class CharacterObject { public Hero HeroObject; public string StringId="character"; public object Name="npc"; }
+    public class PartyBase { }
+}
+namespace TaleWorlds.MountAndBlade
+{
+    public class Agent { public int Index; public object Character; }
+    public class Mission { public static Mission Current; public List<Agent> Agents=new(); }
+}
+namespace AnimusForge
+{
+    internal static class SaveRuntimeGuard { internal static long Generation=1; internal static bool IsCurrentGeneration(long value)=>value==Generation; }
+    internal static class Logger { internal static void Log(string area,string text) { } }
+    internal static class FreezeWatchdog { internal static void Mark(string area,string text,bool immediate=false) { } }
+    internal class Color { internal Color(float a,float b,float c) { } }
+    internal class InformationMessage { internal InformationMessage(string text,Color color) { } }
+    internal static class InformationManager { internal static void DisplayMessage(InformationMessage value) { } }
+    internal partial class ShoutBehavior
+    {
+        internal class NpcDataPacket { public int AgentIndex=7; public string Name="npc",UnnamedKey="unnamed",PromptGivenName,PromptDisplayName; }
+        internal class SceneSummonPromptTarget { }
+        internal class SceneGuidePromptTarget { }
+        internal class SceneSpeechPlaybackInfo { }
+        @@ITEM@@
+        internal static bool CanPublishImmediateSceneReaction(Func<bool> predicate)=>predicate?.Invoke()!=false;
+        internal static bool ContainsOpenLordsHallActionTag(string text)=>false;
+        internal static bool CanAgentParticipateInSceneSpeech(Agent a)=>a!=null;
+        internal static bool IsAgentHostileToMainAgent(Agent a)=>false;
+        internal static bool TryProcessCustomPolicyAgendaActionTag(Hero h,string chain,string player,ref string text,string reply=null)=>false;
+        internal static string ResolveScenePostprocessChainName()=>"scene";
+        internal static bool ContainsVassalageActionTagForLog(string text)=>false;
+        internal static bool ContainsKingdomAnnexActionTagForLog(string text)=>false;
+        internal static bool MayContainGeneratedRpItemReward(string text)=>false;
+        internal static RewardSystemBehavior.RpItemIntroductionContext CreateRpItemIntroductionContextForReward(Hero h,NpcDataPacket n,CharacterObject c,int index,string name,string player,string reply)=>null;
+        internal static bool ShouldSuppressSceneConversationControlForMeeting()=>false;
+        internal static bool IsMeetingSceneConversationReleaseSensitive()=>false;
+        internal static void StripMeetingTauntTagsForSceneConversation(ref string text) { }
+        internal static bool TryResolveWildernessNonHeroRewardParty(Hero h,CharacterObject c,int index,out PartyBase party) { party=null;return false; }
+        internal static string StripLeakedPromptContentForShout(string text)=>text;
+        internal static string StripStageDirectionsForPassiveShout(string text)=>text;
+        internal static string StripActionTagsForSceneSpeech(string text)=>text;
+        internal static string BuildFallbackSceneTauntSpeech(bool escalated)=>"taunt";
+        internal static string SanitizeSceneSpeechText(string text)=>text;
+        internal static string PrepareSceneHistorySpeechText(string text)=>text;
+        internal static void RefreshHostileCombatAgentAutonomy(Agent agent) { }
+    }
+    internal sealed class SceneMovementController
+    {
+        internal class SceneSummonConversationSession { }
+        internal class ActiveSceneSummonRequest { }
+        internal class ActiveSceneGuideRequest { }
+        internal bool TryConsumeSceneFollowStopTag(NpcDataPacket n,Agent a,ref string text)=>false;
+        internal bool TryConsumeSceneFollowStartTag(NpcDataPacket n,Agent a,ref string text)=>false;
+        internal bool TryConsumeSceneEndChatActionTag(NpcDataPacket n,Agent a,ref string text,out SceneSummonConversationSession s) { s=null;return false; }
+        internal bool TryTriggerSceneSummonAction(NpcDataPacket n,Agent a,List<SceneSummonPromptTarget> st,List<SceneGuidePromptTarget> gt,ref string text,out ActiveSceneSummonRequest r) { r=null;return false; }
+        internal bool TryTriggerSceneGuideAction(NpcDataPacket n,Agent a,List<SceneGuidePromptTarget> gt,List<SceneSummonPromptTarget> st,ref string text,out ActiveSceneGuideRequest r) { r=null;return false; }
+        internal void RefreshSceneSummonConversationForSpeaker(int i) { }
+        internal void ScheduleSceneFollowCommandAfterSpeech(int i,bool startFollow,SceneSpeechPlaybackInfo p) { }
+        internal void SetPendingSummonReturn(int i,SceneSummonConversationSession s,bool only) { }
+        internal bool ShouldReturnOnlySceneSummonSpeaker(SceneSummonConversationSession s,Agent a)=>false;
+        internal void ScheduleSceneSummonReturnAfterSpeech(int i,SceneSpeechPlaybackInfo p) { }
+        internal void ScheduleSceneGuideReturnAfterSpeech(int i,SceneSpeechPlaybackInfo p) { }
+        internal void SchedulePreparedSceneSummonLaunch(ActiveSceneSummonRequest r,SceneSpeechPlaybackInfo p,string text) { }
+        internal void SchedulePreparedSceneGuideLaunch(ActiveSceneGuideRequest r,SceneSpeechPlaybackInfo p,string text) { }
+        internal void BeginSceneSummonConversationReturn(SceneSummonConversationSession s) { }
+        internal void FlushSceneFollowCommandAfterSpeech(int i)=>Probe.Step("follow");
+        internal void FlushSceneSummonReturnAfterSpeech(int i)=>Probe.Step("summon_return");
+        internal void FlushSceneGuideReturnAfterSpeech(int i)=>Probe.Step("guide_return");
+        internal void FlushPendingSceneSummonLaunches(int i)=>Probe.Step("summon_launch");
+        internal void FlushPendingSceneGuideLaunches(int i)=>Probe.Step("guide_launch");
+    }
+    internal static class PublicExecutionOrderRuntime { internal static void Consume(int i,ref string text) { Probe.Effects++; } }
+    internal static class NoblePrisonerEscortBehavior { internal static bool TryProcessSceneExecutionTag(int i,bool allowed,ref string text)=>false; }
+    internal static class NoblePrisonerExecutionOrderBehavior { internal static bool TryProcessAcceptedTag(Hero h,int i,bool allowed,ref string text,out bool done) { done=false;return false; } }
+    internal static class MyBehavior
+    {
+        internal static void ApplyPatienceFromSceneHeroResponseExternal(Hero h,ref string text) { }
+        internal static void ApplyPatienceFromSceneUnnamedResponseExternal(string key,string name,ref string text) { }
+        internal static bool TryApplyPartyTransferTagsForExternal(Hero h,CharacterObject c,int i,ref string text,out List<string> facts,out List<string> notifications) { facts=new();notifications=new();if(Probe.TransferPartial) { facts.Add("AFEF observed source debit, partial delivery");return true; }return false; }
+        internal static void AppendExternalDialogueHistory(Hero h,string p,string reply,string fact) { }
+    }
+    internal static class VoteDealBehavior { internal static void ProcessAgendaTagsDispatch(Hero h,ref string text) { } }
+    internal static class DiplomacyBehavior { internal static void ProcessDiplomacyTagsDispatch(Hero h,ref string text) { } }
+    internal static class WorldMapPartyCommandBehavior
+    {
+        internal class WorldMapOrderApplyResult { internal bool NeedsChannelExit; }
+        internal static WorldMapOrderApplyResult ProcessWorldMapOrderTagsDispatch(Hero h,ref string text)=>new();
+        internal static WorldMapOrderApplyResult ProcessWorldMapOrderTagsDispatch(Hero h,CharacterObject c,int i,ref string text)=>new();
+    }
+    internal static class DuelBehavior
+    {
+        internal static void TryCacheDuelAfterLinesFromText(Hero h,ref string text) { }
+        internal static void TryCacheDuelStakeFromText(Hero h,ref string text) { }
+        internal static void SetNextDuelRiskWarningEnabled(bool flag) { }
+    }
+    internal static class VanillaIssueOfferBridge { internal static void ApplyIssueOfferTags(Hero h,ref string text) { Probe.IssueEffects++; } }
+    internal static class TeamModuleServices
+    {
+        internal static Gather Gathering=new();
+        internal class Gather { internal bool TryApplyNobleGatheringTagsForExternal(Hero h,ref string text,out List<string> facts,out List<string> notices) { facts=null;notices=null;return false; } }
+    }
+    internal sealed class RewardSystemBehavior
+    {
+        internal static RewardSystemBehavior Instance;
+        internal class RpItemIntroductionContext { }
+        internal void ApplyRewardTags(Hero h,Hero player,ref string text,RpItemIntroductionContext context) { }
+        internal List<string> ConsumeLastGeneratedNpcFactLines()=>null;
+        internal bool TryApplyNonHeroJoinPlayerPartyTagForExternal(CharacterObject c,int i,string given,string display,ref string text,out List<string> facts,out List<string> notices) { facts=null;notices=null;return false; }
+        internal void ApplyPartyRewardTags(PartyBase p,Hero player,string name,CharacterObject c,ref string text,RpItemIntroductionContext context) { }
+        internal void ApplyMerchantRewardTags(CharacterObject c,Hero player,ref string text,RpItemIntroductionContext context) { }
+    }
+    internal class RomanceSystemBehavior { internal static RomanceSystemBehavior Instance; internal void ApplyMarriageTags(Hero h,Hero player,ref string text,bool runPostprocessIfMissing=false) { } }
+    internal static class SexualConceptionBehavior { internal static void TryApplyIntimacyTags(Hero h,ref string text,string chain) { } }
+    internal static class LordEncounterBehavior
+    {
+        internal static bool TryProcessMeetingTauntAction(Hero h,ref string text,out bool done) { done=false;return false; }
+        internal static bool TryConsumeMeetingPlayerReleaseTag(Hero h,ref string text,out bool done) { done=false;return false; }
+        internal static void StripMeetingPlayerReleaseTag(ref string text) { }
+        internal static bool TryExecuteNpcSurrenderFromDirectDialog(Hero h,CharacterObject c,int i,string reason)=>false;
+        internal static void TryExecuteMeetingPlayerRelease(Hero h,string reason) { }
+    }
+    internal static class SceneTauntBehavior { internal static bool TryProcessSceneTauntAction(Hero h,CharacterObject c,int i,ref string text,out bool escalated) { escalated=false;return false; } }
+    internal static class ShoutUtils { internal static bool TryTriggerDuelAction(NpcDataPacket n,string player,ref string text)=>false; internal static void ExecuteDuel(Agent agent) { } }
+    @@EFFECT@@
+    internal static class Probe
+    {
+        internal static int Effects,IssueEffects,Speech,History,PrivateHistory,Facts,Epoch=1;
+        internal static bool TransferPartial; internal static string FailStep;
+        internal static List<string> Steps=new();
+        internal static void Step(string value) { Steps.Add(value);if(FailStep==value)throw new Exception("synthetic_"+value); }
+        static void Require(bool value,string name) { if(!value)throw new Exception("ASSERT "+name); }
+        static void Reset() { Effects=IssueEffects=Speech=History=PrivateHistory=Facts=0;Epoch=1;TransferPartial=false;FailStep=null;Steps.Clear();SaveRuntimeGuard.Generation=1;Mission.Current=new();Mission.Current.Agents.Add(new Agent { Index=7,Character=new CharacterObject() }); }
+        static SceneSpeechEffectController Owner()=>new(new SceneSpeechEffectPorts
+        {
+            IsSceneConversationEpochCurrent=e=>e<=0 || e==Epoch,
+            ResolveHeroFromAgentIndex=i=>new(),
+            TryTriggerOpenLordsHallAction=(NpcDataPacket n,Agent a,ref string text)=>false,
+            TryConsumeSceneNpcSurrenderTag=(NpcDataPacket n,ref string text,out Hero h,out CharacterObject c,out int i)=>{h=null;c=null;i=-1;return false;},
+            ShowNpcSpeechOutput=(n,a,text,tts,attach,suppress)=>{Speech++;if(FailStep=="speech")throw new Exception("synthetic_speech");return new();},
+            RecordResponseForAllNearbySafe=(list,i,name,text,receipt)=>{History++;return true;},
+            PersistNpcSpeechToNamedHeroes=(i,name,text,list,receipt)=>{PrivateHistory++;return true;},
+            RecordSystemFactForNearbySafe=(list,fact)=>Facts++,
+            HoldSceneConversationParticipants=list=>{}, AddAgentToStareList=(agent,interrupt)=>{},
+            ScheduleSceneAutonomyRestoreAfterSpeech=(i,p)=>{},GetDuelLiteralHit=()=>false,
+        },new());
+        static void Dispatch(SceneSpeechEffectController owner,SceneSpeechQueueItem item,bool duplicate=false)
+        {
+            var posts=new ConcurrentQueue<Action>();
+            var runtime=new SceneSpeechExecutionRuntime<SceneSpeechQueueItem>(()=>false,action=>{posts.Enqueue(action);if(duplicate)posts.Enqueue(action);},owner.Publish,p=>p.CompletionSource.TrySetResult(false),ms=>Task.CompletedTask);
+            runtime.Enqueue(item);var watch=Stopwatch.StartNew();
+            while(!item.CompletionSource.Task.IsCompleted || !posts.IsEmpty)
+            { while(posts.TryDequeue(out var action))action();if(watch.ElapsedMilliseconds>3000)throw new Exception("fixture_dispatch_timeout");Thread.Sleep(1); }
+        }
+        static SceneSpeechQueueItem Item()=>new() { SourceMission=Mission.Current,RuntimeGeneration=1,Npc=new(),Content="reply",ContextSnapshot=new(),CommitHistory=true,RequiredConversationEpoch=1,CompletionSource=new(TaskCreationOptions.RunContinuationsAsynchronously) };
+        static SceneSpeechCompletionController Completion(bool hall=false)=>new(new SceneSpeechCompletionPorts
+        {
+            PrepareInteractionCompletion=i=>Step("prepare"), FlushDialogueFeed=i=>Step("feed"),TryFlushLordsHallEntry=i=>{Step("hall");return hall;},
+            FlushMeetingRelease=i=>Step("meeting"),FlushWorldMapExit=i=>Step("worldmap"),FlushAutonomyRestore=i=>Step("autonomy"),CleanupLipSync=i=>Step("lipsync"),MainThreadQueueCount=()=>0,
+            RunStep=(name,i,action)=>{try{action();}catch(Exception){}},
+        },new());
+        internal static void Run()
+        {
+            int pass=0;void Case(string name,Action test){Reset();test();pass++;Console.WriteLine("PASS "+name);}
+            Case("duplicate-publish-effect-history-speech-once",()=>{var owner=Owner();var item=Item();Dispatch(owner,item,true);Require(Effects==1&&Speech==1&&History==1&&PrivateHistory==1&&item.CompletionSource.Task.Result,"effect-history-speech-once");});
+            Case("mission-replacement-before-effects",()=>{var item=Item();Mission.Current=new();Mission.Current.Agents.Add(new Agent { Index=7,Character=new CharacterObject() });Dispatch(Owner(),item);Require(Effects==0&&IssueEffects==0&&!item.CompletionSource.Task.Result,"mission-no-effects");});
+            Case("save-generation-before-effects",()=>{var item=Item();SaveRuntimeGuard.Generation=2;Dispatch(Owner(),item);Require(Effects==0&&Speech==0&&!item.CompletionSource.Task.Result,"generation-no-effects");});
+            Case("stale-epoch-before-deferred-issue-effects",()=>{var item=Item();item.Content="[ACTION:ISSUE_ACCEPT_SELF]";Epoch=2;Dispatch(Owner(),item);Require(Effects==0&&IssueEffects==0&&!item.CompletionSource.Task.Result,"epoch-before-issue-effect");});
+            Case("immediate-reaction-cancel-before-effect",()=>{var item=Item();item.CanStillPublish=()=>false;Dispatch(Owner(),item);Require(Effects==0&&Speech==0&&!item.CompletionSource.Task.Result,"cancel-no-effects");});
+            Case("partial-presentation-failure-no-retry",()=>{FailStep="speech";var owner=Owner();var item=Item();Dispatch(owner,item,true);Require(Effects==1&&Speech==1&&History==0&&!item.CompletionSource.Task.Result,"failed-effects-no-retry");});
+            Case("transfer-observed-partial-afef-once",()=>{TransferPartial=true;var owner=Owner();var item=Item();Dispatch(owner,item,true);Require(Facts==1&&Effects==1&&History==1,"partial-fact-once");});
+            Case("speech-completion-original-motion-order",()=>{Completion().Complete(7);Require(Steps.SequenceEqual(new[]{"prepare","feed","follow","hall","meeting","worldmap","summon_return","guide_return","autonomy","summon_launch","guide_launch","lipsync"}),"completion-order");});
+            Case("hall-entry-preserves-meeting-worldmap-shortcircuit",()=>{Completion(true).Complete(7);Require(!Steps.Contains("meeting")&&!Steps.Contains("worldmap")&&Steps.Contains("summon_launch")&&Steps.Last()=="lipsync","hall-shortcircuit");});
+            Case("completion-failed-group-next-step-continues",()=>{FailStep="meeting";Completion().Complete(7);Require(!Steps.Contains("worldmap")&&Steps.Contains("summon_return")&&Steps.Last()=="lipsync","completion-fail-open-group-order");});
+            Case("invalid-completion-no-work",()=>{Completion().Complete(-1);Require(Steps.Count==0,"negative-completion-no-work");});
+            Console.WriteLine("SceneSpeechEffectsRuntime PASS="+pass+" FAIL=0");
+        }
+    }
+    internal static class Program { static int Main() { try { Probe.Run();return 0; } catch(Exception ex) { Console.Error.WriteLine("ASSERTION FAILURE: "+ex);return 1; } } }
+}
