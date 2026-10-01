@@ -35,7 +35,7 @@ internal static class Program
 {
     private static int Main()
     {
-        string settings = ReadRepositoryFile("DuelSettings.cs");
+        string settings = ReadRepositoryFile("src/AF.GameAdapter.Bannerlord/Configuration/Mcm/DuelSettings.cs");
         string behavior = ReadRepositoryFile(Path.Combine(
             "src", "modules", "AF.Module.Diplomacy", "World", "WorldDiplomacyBehavior.cs"));
         string jobRuntime = ReadRepositoryFile(Path.Combine(

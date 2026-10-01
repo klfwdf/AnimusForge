@@ -1,11 +1,14 @@
 """Bounded source witness for Weekly's synchronous game-fact preparation path."""
 
 from pathlib import Path
+import sys as _relocation_sys
+_relocation_sys.path.insert(0, str(Path(__file__).resolve().parents[4] / "tests"))
+from output_isolation import current_source_path
 import re
 
 
 ROOT = Path(__file__).resolve().parents[4]
-HOST = (ROOT / "MyBehavior.cs").read_text(encoding="utf-8-sig")
+HOST = (current_source_path(ROOT, "MyBehavior.cs")).read_text(encoding="utf-8-sig")
 AGGREGATION = (ROOT / "src/modules/AF.Module.Weekly/Materials/WeeklyMaterialAggregationOwner.cs").read_text(encoding="utf-8-sig")
 PROMPT = (ROOT / "src/modules/AF.Module.Weekly/Materials/WeeklyPromptMaterialOwner.cs").read_text(encoding="utf-8-sig")
 LEGACY_DTOS = (ROOT / "src/modules/AF.Module.Weekly/Models/WeeklyLegacyDtos.cs").read_text(encoding="utf-8-sig")

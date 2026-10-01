@@ -1,5 +1,8 @@
 """Link actual run owner/adapter into existing fixtures; never changes product conditions."""
 from pathlib import Path
+import sys as _relocation_sys
+_relocation_sys.path.insert(0, str(Path(__file__).resolve().parents[4] / "tests"))
+from output_isolation import current_source_path
 import re
 ROOT=Path(__file__).resolve().parents[4]
 
@@ -25,4 +28,4 @@ def include(files, original=False):
             text=text.replace('List<MemoryOverviewExecutionResult> overview)', 'List<MemoryOverviewExecutionResult> overview, AnimusForge.Refactor.Runtime.MemorySummaryRunOwner.Lease run = null)')
         files[name]=text
     for path in ['MyBehavior.MemorySummaryRun.cs','src/modules/AF.Module.Memory/Summary/MemorySummaryRunOwner.cs']:
-        files[Path(path).name]=(ROOT/path).read_text(encoding='utf-8-sig')
+        files[Path(path).name]=(current_source_path(ROOT, path)).read_text(encoding='utf-8-sig')

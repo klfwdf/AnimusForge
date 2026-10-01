@@ -2,6 +2,9 @@ import argparse
 import os
 import subprocess
 from pathlib import Path
+import sys as _relocation_sys
+_relocation_sys.path.insert(0, str(Path(__file__).resolve().parents[4] / "tests"))
+from output_isolation import current_source_path
 
 ROOT = Path(__file__).resolve().parents[4]
 HERE = Path(__file__).parent
@@ -11,7 +14,7 @@ parser.add_argument("--source-baseline", choices=["9617f96a"])
 parser.add_argument("--mutate", choices=["ignore-generation", "ignore-owner", "unbounded-drain", "unbounded-inline", "ignore-time-budget", "omit-time-charge", "omit-time-reset"])
 args = parser.parse_args()
 
-boundary_path = ROOT / "MyBehavior.MemorySummaryMainThread.cs"
+boundary_path = current_source_path(ROOT, "MyBehavior.MemorySummaryMainThread.cs")
 if args.original:
     original = subprocess.check_output(
         ["git", "show", "e40c92d7:MyBehavior.cs"], cwd=ROOT,
@@ -30,7 +33,7 @@ if not boundary_path.exists():
 
 boundary = (subprocess.check_output(["git", "show", args.source_baseline + ":MyBehavior.MemorySummaryMainThread.cs"], cwd=ROOT).decode("utf-8-sig").replace("\r\n", "\n") if args.source_baseline else boundary_path.read_text(encoding="utf-8-sig"))
 runtime = (ROOT / "src/modules/AF.Module.Memory/Summary/MemorySummaryDispatcher.cs").read_text(encoding="utf-8-sig") if "MemorySummaryDispatcher" in boundary else None
-process = (ROOT / "MyBehavior.cs").read_text(encoding="utf-8-sig")
+process = (current_source_path(ROOT, "MyBehavior.cs")).read_text(encoding="utf-8-sig")
 required_process_fragments = [
     "await RunMemorySummaryRunPhaseAsync(run, runtimeGeneration",
     "ApplyMemorySummarySuccess(result.Job, result.Block)",

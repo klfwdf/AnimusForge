@@ -37,7 +37,7 @@ def restore(source):
 def verify():
     restore((ROOT/'src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.cs').read_text(encoding='utf-8-sig'))
     # The existing renderer ignores maxLines; reusing the captured path's zero preserves that behavior.
-    current=(ROOT/'MyBehavior.cs').read_text(encoding='utf-8-sig')
+    current=(ROOT/'src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.cs').read_text(encoding='utf-8-sig')
     body=m.declaration(current,'private string BuildHistoryContextById(')
     assert body.count('maxLines')==1,'History maxLines semantics changed; revisit Courier parity'
     print('PASS historical baseline identity; current history owner + two generation consumers; maxLines remains unused; other root responsibilities excluded')

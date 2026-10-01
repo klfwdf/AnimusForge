@@ -20,7 +20,7 @@ internal static class J13E2DomainOwnerContractReplay
         int Count(string source, string value) =>
             source.Split(value, StringSplitOptions.None).Length - 1;
 
-        string host = Read("SceneTauntBehavior.cs");
+        string host = Read("src/modules/AF.Module.Taunt/Host/SceneTauntBehavior.cs");
         string campaign = Read("src/AF.GameAdapter.Bannerlord/Composition/CampaignComposition.cs");
         string patches = Read("src/AF.GameAdapter.Bannerlord/Composition/StartupPatchComposition.cs");
         string context = Read("src/modules/AF.Module.Taunt/ScenePeaceConflictContextOwner.cs");

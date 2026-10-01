@@ -1,8 +1,11 @@
 from pathlib import Path
+import sys as _relocation_sys
+_relocation_sys.path.insert(0, str(Path(__file__).resolve().parents[4] / "tests"))
+from output_isolation import current_source_path
 import re
 
 root = Path(__file__).resolve().parents[4]
-source = (root / 'MyBehavior.cs').read_text(encoding='utf-8-sig')
+source = (current_source_path(root, 'MyBehavior.cs')).read_text(encoding='utf-8-sig')
 
 
 def method(name, text=source):

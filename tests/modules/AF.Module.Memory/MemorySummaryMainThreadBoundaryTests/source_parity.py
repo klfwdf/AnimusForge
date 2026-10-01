@@ -5,17 +5,37 @@ import hashlib
 import importlib.util
 import json
 from pathlib import Path
+import sys as _relocation_sys
+_relocation_sys.path.insert(0, str(Path(__file__).resolve().parents[4] / "tests"))
+from output_isolation import current_source_path
 import subprocess
 
 ROOT = Path(__file__).resolve().parents[4]
 HERE = Path(__file__).resolve().parent
 
 
+
+
+def _restore_round2_current_paths(path, source):
+    """Undo only reviewed current-file locator/import edits; retain original review hashes."""
+    reviewed = {'tests/modules/AF.Module.Memory/MemorySummaryMainThreadBoundaryTests/run.py': {'before_sha256': 'f4d3d5e365ba5f648cb1302f322d7ce7360fff2a227e16ff9abc5fbc53956317', 'edits': [('', 'import sys as _relocation_sys\n_relocation_sys.path.insert(0, str(Path(__file__).resolve().parents[4] / "tests"))\nfrom output_isolation import current_source_path\n'), ('boundary_path = ROOT / "MyBehavior.MemorySummaryMainThread.cs"\n', 'boundary_path = current_source_path(ROOT, "MyBehavior.MemorySummaryMainThread.cs")\n'), ('process = (ROOT / "MyBehavior.cs").read_text(encoding="utf-8-sig")\n', 'process = (current_source_path(ROOT, "MyBehavior.cs")).read_text(encoding="utf-8-sig")\n')]}, 'tests/modules/AF.Module.Memory/MemorySummaryMainThreadBoundaryTests/run_business.py': {'before_sha256': 'c2f7ca8b45f92f4f748f6c240065031e172da8665786750bb84fe3f190491332', 'edits': [('from output_isolation import new_run_root\n', 'from output_isolation import new_run_root, current_source_path\n'), ('        planning = subprocess.check_output(["git","show","155f1b7a:MyBehavior.MemorySummaryPlanning.cs"],cwd=ROOT).decode("utf-8-sig").replace("\\r\\n","\\n") if args.run_owner_baseline else (ROOT / "MyBehavior.MemorySummaryPlanning.cs").read_text(encoding="utf-8-sig")\n', '        planning = subprocess.check_output(["git","show","155f1b7a:MyBehavior.MemorySummaryPlanning.cs"],cwd=ROOT).decode("utf-8-sig").replace("\\r\\n","\\n") if args.run_owner_baseline else (current_source_path(ROOT, "MyBehavior.MemorySummaryPlanning.cs")).read_text(encoding="utf-8-sig")\n'), ('    if not args.original and (ROOT / "MyBehavior.MemoryMaintenanceBudget.cs").is_file():\n', '    if not args.original and (current_source_path(ROOT, "MyBehavior.MemoryMaintenanceBudget.cs")).is_file():\n'), ('            files[target] = (ROOT / relative).read_text(encoding="utf-8-sig")\n', '            files[target] = (current_source_path(ROOT, relative)).read_text(encoding="utf-8-sig")\n'), ("            files[Path(relative).name]=(ROOT/relative).read_text(encoding='utf-8-sig')\n", "            files[Path(relative).name]=(current_source_path(ROOT, relative)).read_text(encoding='utf-8-sig')\n")]}, 'tests/modules/AF.Module.Memory/MemorySummaryMainThreadBoundaryTests/run_captured.py': {'before_sha256': '402fe81edcb425c0ebd13a34a301171900e214decc8aaff6f573ee809c094fbd', 'edits': [('from output_isolation import new_run_root\n', 'from output_isolation import new_run_root, current_source_path\n'), ("    def read(path):return subprocess.check_output(['git','show',a.source_baseline+':'+path],cwd=ROOT).decode('utf-8-sig').replace('\\r\\n','\\n') if a.source_baseline else (ROOT/path).read_text(encoding='utf-8-sig')\n", "    def read(path):return subprocess.check_output(['git','show',a.source_baseline+':'+path],cwd=ROOT).decode('utf-8-sig').replace('\\r\\n','\\n') if a.source_baseline else (current_source_path(ROOT, path)).read_text(encoding='utf-8-sig')\n"), ("    planning=(ROOT/'MyBehavior.MemorySummaryPlanning.cs').read_text(encoding='utf-8-sig')\n", "    planning=(current_source_path(ROOT, 'MyBehavior.MemorySummaryPlanning.cs')).read_text(encoding='utf-8-sig')\n"), ("    recovery=(ROOT/'MyBehavior.MemoryRecovery.cs').read_text(encoding='utf-8-sig')\n", "    recovery=(current_source_path(ROOT, 'MyBehavior.MemoryRecovery.cs')).read_text(encoding='utf-8-sig')\n"), ('    files={\'Product.cs\':product,\'Input.cs\':capture,\'Boundary.cs\':(ROOT/\'MyBehavior.MemorySummaryMainThread.cs\').read_text(encoding=\'utf-8-sig\'),\'Guard.cs\':(ROOT/\'src/AF.Foundation.Runtime/Lifecycle/SaveRuntimeGuard.cs\').read_text(encoding=\'utf-8-sig\'),\'Program.cs\':(HERE/\'CapturedHarness.cs.txt\').read_text(encoding=\'utf-8-sig\'),\'Proof.csproj\':\'<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><LangVersion>latest</LangVersion><NoWarn>CS0649</NoWarn></PropertyGroup><ItemGroup><Reference Include="Newtonsoft.Json"><HintPath>\'+escape(str(deps))+\'</HintPath></Reference></ItemGroup></Project>\',\'NuGet.Config\':\'<configuration><packageSources><clear/></packageSources></configuration>\'}\n', '    files={\'Product.cs\':product,\'Input.cs\':capture,\'Boundary.cs\':(current_source_path(ROOT, \'MyBehavior.MemorySummaryMainThread.cs\')).read_text(encoding=\'utf-8-sig\'),\'Guard.cs\':(ROOT/\'src/AF.Foundation.Runtime/Lifecycle/SaveRuntimeGuard.cs\').read_text(encoding=\'utf-8-sig\'),\'Program.cs\':(HERE/\'CapturedHarness.cs.txt\').read_text(encoding=\'utf-8-sig\'),\'Proof.csproj\':\'<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><LangVersion>latest</LangVersion><NoWarn>CS0649</NoWarn></PropertyGroup><ItemGroup><Reference Include="Newtonsoft.Json"><HintPath>\'+escape(str(deps))+\'</HintPath></Reference></ItemGroup></Project>\',\'NuGet.Config\':\'<configuration><packageSources><clear/></packageSources></configuration>\'}\n'), ("            files[Path(relative).name]=(ROOT/relative).read_text(encoding='utf-8-sig')\n", "            files[Path(relative).name]=(current_source_path(ROOT, relative)).read_text(encoding='utf-8-sig')\n")]}, 'tests/modules/AF.Module.Memory/MemorySummaryMainThreadBoundaryTests/run_commit_writers.py': {'before_sha256': '6fb04aac063a82bb38453664236d699cd7489dc7ec6c941d6d71141fac0fe6fb', 'edits': [('from output_isolation import new_run_root, resolve_dotnet, minimal_test_environment\n', 'from output_isolation import new_run_root, resolve_dotnet, minimal_test_environment, current_source_path\n'), ("                if 'signature' not in entry and sha((ROOT/entry['file']).read_text(encoding='utf-8-sig'))!=entry['sha256']:return None\n", "                if 'signature' not in entry and sha((current_source_path(ROOT, entry['file'])).read_text(encoding='utf-8-sig'))!=entry['sha256']:return None\n"), ("        data=(ROOT/name).read_text(encoding='utf-8-sig');inventory.append(dict(file=name,sha256=sha(data)));return data\n", "        data=(current_source_path(ROOT, name)).read_text(encoding='utf-8-sig');inventory.append(dict(file=name,sha256=sha(data)));return data\n")]}, 'tests/modules/AF.Module.Memory/MemorySummaryMainThreadBoundaryTests/run_materials.py': {'before_sha256': '20193ecfa160ca982b7e39e2cbd173e64c4e6f133f6c68a62e5aca0242a21210', 'edits': [('from output_isolation import new_run_root, resolve_dotnet, minimal_test_environment\n', 'from output_isolation import new_run_root, resolve_dotnet, minimal_test_environment, current_source_path\n'), ("    def read(name):return (ROOT/name).read_text(encoding='utf-8-sig')\n", "    def read(name):return (current_source_path(ROOT, name)).read_text(encoding='utf-8-sig')\n")]}, 'tests/modules/AF.Module.Memory/MemorySummaryMainThreadBoundaryTests/run_planning.py': {'before_sha256': '851e20ca775727725bf33e525a096ec94f8562ac7c3f426c779e80eb66f4029c', 'edits': [('from output_isolation import new_run_root\n', 'from output_isolation import new_run_root, current_source_path\n'), (" source=(ROOT/'MyBehavior.cs').read_text(encoding='utf-8-sig');manifest=[];blocks=[]\n", " source=(current_source_path(ROOT, 'MyBehavior.cs')).read_text(encoding='utf-8-sig');manifest=[];blocks=[]\n"), (" recovery=(ROOT/'MyBehavior.MemoryRecovery.cs').read_text(encoding='utf-8-sig')\n", " recovery=(current_source_path(ROOT, 'MyBehavior.MemoryRecovery.cs')).read_text(encoding='utf-8-sig')\n"), (" inp=(ROOT/'MyBehavior.MemorySummaryInput.cs').read_text(encoding='utf-8-sig');body=ex.declaration(inp,'private static string ComputeMemorySummaryFingerprint(');blocks.append(body)\n", " inp=(current_source_path(ROOT, 'MyBehavior.MemorySummaryInput.cs')).read_text(encoding='utf-8-sig');body=ex.declaration(inp,'private static string ComputeMemorySummaryFingerprint(');blocks.append(body)\n"), (" planning=(ROOT/'MyBehavior.MemorySummaryPlanning.cs').read_text(encoding='utf-8-sig');production_planning=planning\n", " planning=(current_source_path(ROOT, 'MyBehavior.MemorySummaryPlanning.cs')).read_text(encoding='utf-8-sig');production_planning=planning\n"), (' files={\'Product.cs\':prefix+\'\\n\'+\'\\n\'.join(blocks)+\'\\n}}\',\'Planning.cs\':planning,\'Boundary.cs\':(ROOT/\'MyBehavior.MemorySummaryMainThread.cs\').read_text(encoding=\'utf-8-sig\'),\'Guard.cs\':(ROOT/\'src/AF.Foundation.Runtime/Lifecycle/SaveRuntimeGuard.cs\').read_text(encoding=\'utf-8-sig\'),\'Program.cs\':(HERE/\'PlanningHarness.cs.txt\').read_text(encoding=\'utf-8-sig\'),\'Proof.csproj\':\'<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><LangVersion>latest</LangVersion><NoWarn>CS0649;CS0162</NoWarn></PropertyGroup><ItemGroup><Reference Include="Newtonsoft.Json"><HintPath>\'+escape(str(deps))+\'</HintPath></Reference></ItemGroup></Project>\',\'NuGet.Config\':\'<configuration><packageSources><clear/></packageSources></configuration>\'}\n', ' files={\'Product.cs\':prefix+\'\\n\'+\'\\n\'.join(blocks)+\'\\n}}\',\'Planning.cs\':planning,\'Boundary.cs\':(current_source_path(ROOT, \'MyBehavior.MemorySummaryMainThread.cs\')).read_text(encoding=\'utf-8-sig\'),\'Guard.cs\':(ROOT/\'src/AF.Foundation.Runtime/Lifecycle/SaveRuntimeGuard.cs\').read_text(encoding=\'utf-8-sig\'),\'Program.cs\':(HERE/\'PlanningHarness.cs.txt\').read_text(encoding=\'utf-8-sig\'),\'Proof.csproj\':\'<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><LangVersion>latest</LangVersion><NoWarn>CS0649;CS0162</NoWarn></PropertyGroup><ItemGroup><Reference Include="Newtonsoft.Json"><HintPath>\'+escape(str(deps))+\'</HintPath></Reference></ItemGroup></Project>\',\'NuGet.Config\':\'<configuration><packageSources><clear/></packageSources></configuration>\'}\n'), ("         files[Path(relative).name]=(ROOT/relative).read_text(encoding='utf-8-sig')\n", "         files[Path(relative).name]=(current_source_path(ROOT, relative)).read_text(encoding='utf-8-sig')\n")]}, 'tests/modules/AF.Module.Memory/MemorySummaryMainThreadBoundaryTests/run_sealing.py': {'before_sha256': '455a5765dcf3997986f79ab089d89a5cef027317f1ab5c45bcf5fe90ba575679', 'edits': [('from output_isolation import new_run_root\n', 'from output_isolation import new_run_root, current_source_path\n'), (" def read(path):return subprocess.check_output(['git','show',baseline+':'+path],cwd=ROOT).decode('utf-8-sig').replace('\\r\\n','\\n') if baseline and not path.startswith('tools/') else (ROOT/path).read_text(encoding='utf-8-sig')\n source=read('MyBehavior.cs');manifest=[];snippets=[];sealing_path=ROOT/'MyBehavior.MemorySealing.cs';new_sealing=not a.original and sealing_path.exists()\n", " def read(path):return subprocess.check_output(['git','show',baseline+':'+path],cwd=ROOT).decode('utf-8-sig').replace('\\r\\n','\\n') if baseline and not path.startswith('tools/') else (current_source_path(ROOT, path)).read_text(encoding='utf-8-sig')\n source=read('MyBehavior.cs');manifest=[];snippets=[];sealing_path=current_source_path(ROOT, 'MyBehavior.MemorySealing.cs');new_sealing=not a.original and sealing_path.exists()\n"), ("         files[Path(relative).name]=(ROOT/relative).read_text(encoding='utf-8-sig')\n", "         files[Path(relative).name]=(current_source_path(ROOT, relative)).read_text(encoding='utf-8-sig')\n")]}, 'tests/modules/AF.Module.Memory/MemorySummaryMainThreadBoundaryTests/run_terminal.py': {'before_sha256': 'a835a0b237ebe5aa8dc8f43bd552664ac2dd9a5ebe930d1a72cb5def8f562945', 'edits': [('from output_isolation import new_run_root\n', 'from output_isolation import new_run_root, current_source_path\n'), ("        data=(ROOT/name).read_text(encoding='utf-8-sig');manifest.append(dict(file=name,sha256=hashlib.sha256(data.encode()).hexdigest()));return data\n", "        data=(current_source_path(ROOT, name)).read_text(encoding='utf-8-sig');manifest.append(dict(file=name,sha256=hashlib.sha256(data.encode()).hexdigest()));return data\n"), ('        if (ROOT/extra).exists():files[Path(extra).name]=read(extra)\n', '        if (current_source_path(ROOT, extra)).exists():files[Path(extra).name]=read(extra)\n'), ("            files[Path(relative).name]=(ROOT/relative).read_text(encoding='utf-8-sig')\n", "            files[Path(relative).name]=(current_source_path(ROOT, relative)).read_text(encoding='utf-8-sig')\n")]}, 'tests/modules/AF.Module.Memory/MemorySummaryMainThreadBoundaryTests/run_writers.py': {'before_sha256': '804a5ebececf1cf712a75fdab4f52a81485f50d0f0e37e6c28b5842981e40fa6', 'edits': [('', 'import sys as _relocation_sys\n_relocation_sys.path.insert(0, str(Path(__file__).resolve().parents[4] / "tests"))\nfrom output_isolation import current_source_path\n'), ('        text = (ROOT / name).read_text(encoding="utf-8-sig")\n', '        text = (current_source_path(ROOT, name)).read_text(encoding="utf-8-sig")\n'), ("            files[Path(relative).name]=(ROOT/relative).read_text(encoding='utf-8-sig')\n", "            files[Path(relative).name]=(current_source_path(ROOT, relative)).read_text(encoding='utf-8-sig')\n")]}}
+    packet = reviewed.get(str(path).replace(chr(92), "/"))
+    if packet is None:
+        return source
+    if hashlib.sha256(source.encode()).hexdigest() == packet["before_sha256"]:
+        return source
+    for before, after in reversed(packet["edits"]):
+        assert source.count(after) == 1, "Unreviewed B1 evidence round2 source locator: " + str(path)
+        source = source.replace(after, before, 1)
+    assert hashlib.sha256(source.encode()).hexdigest() == packet["before_sha256"], "Unreviewed B1 evidence round2 surrounding runner: " + str(path)
+    return source
+
 def _sha256(text):
     return hashlib.sha256(text.encode()).hexdigest()
 
 
 def _restore_j02_guard_source_path(path, text):
+    text = _restore_round2_current_paths(path, text)
     path = str(path).replace('\\', '/')
     if path in {
         'tests/modules/AF.Module.Memory/MemorySummaryMainThreadBoundaryTests/run.py',
@@ -66,17 +86,17 @@ def restore_memory_summary_source(path, source):
     for label in labels:
         evidence = review['evidence'][label]
         for role in ('runner', 'harness'):
-            text = _restore_j02_guard_source_path(evidence[role], (ROOT / evidence[role]).read_text(encoding='utf-8-sig'))
+            text = _restore_j02_guard_source_path(evidence[role], (current_source_path(ROOT, evidence[role])).read_text(encoding='utf-8-sig'))
             text = run_inverse.restore(evidence[role], text)
             assert _sha256(text) == evidence['testSourceSha256'][role], 'Unreviewed B1 evidence source: ' + evidence[role]
         for dependency_path, expected in evidence.get('additionalTestSourceSha256', {}).items():
-            text = _restore_j02_guard_source_path(dependency_path, (ROOT / dependency_path).read_text(encoding='utf-8-sig'))
+            text = _restore_j02_guard_source_path(dependency_path, (current_source_path(ROOT, dependency_path)).read_text(encoding='utf-8-sig'))
             text = run_inverse.restore(dependency_path, text)
             assert _sha256(text) == expected, 'Unreviewed B1 evidence dependency: ' + dependency_path
     # New runtime components are reviewed as whole input files, not silently
     # trusted because only the MyBehavior facade is inverse-transformed.
     for dependency_path, expected in review.get('productionDependencies', {}).items():
-        text = run_inverse.restore(dependency_path, (ROOT / dependency_path).read_text(encoding='utf-8-sig'))
+        text = run_inverse.restore(dependency_path, (current_source_path(ROOT, dependency_path)).read_text(encoding='utf-8-sig'))
         writer_spec = importlib.util.spec_from_file_location('memory_writer_inverse', ROOT / 'tests/modules/AF.Module.Memory/MemorySummaryBudgetTests/source_review.py')
         writer_inverse = importlib.util.module_from_spec(writer_spec); writer_spec.loader.exec_module(writer_inverse)
         text = writer_inverse.restore_writer(dependency_path, text)
@@ -99,7 +119,7 @@ def restore_memory_summary_source(path, source):
     def current_text(item_path):
         if item_path == path:
             return source
-        return (ROOT / item_path).read_text(encoding='utf-8-sig').replace('\r\n', '\n')
+        return (current_source_path(ROOT, item_path)).read_text(encoding='utf-8-sig').replace('\r\n', '\n')
 
     for item in (review.get('unreviewedWip') or {}).get('declarations') or []:
         signature = item['signature']
@@ -181,14 +201,14 @@ def verify_current_memory_source(source):
         if _is_reviewed_deleted(item):
             assert item['signature'] not in source,'Deleted B1 declaration unexpectedly restored'
     for path in current_scope_dependencies(review):
-        assert (ROOT/path).read_text(encoding='utf-8-sig')==current_scope_baseline(path),'Unreviewed B1 production dependency: '+path
+        assert (current_source_path(ROOT, path)).read_text(encoding='utf-8-sig')==current_scope_baseline(path),'Unreviewed B1 production dependency: '+path
     # Material runner safety/path updates have their own reviewed and replayed package.
     path=review['evidence']['materials']['runner']
     material=subprocess.check_output(['git','show','35842e17:'+path],cwd=ROOT).decode('utf-8-sig').replace('\r\n','\n')
-    assert (ROOT/path).read_text(encoding='utf-8-sig')==material,'Unreviewed B1 evidence: '+path
+    assert _restore_round2_current_paths(path, (current_source_path(ROOT, path)).read_text(encoding='utf-8-sig'))==material,'Unreviewed B1 evidence: '+path
     for path in review.get('removedProductionFiles',[]):
-        assert not (ROOT/path).exists(),'Obsolete B1 production file restored: '+path
-    assert source==(ROOT/'MyBehavior.cs').read_text(encoding='utf-8-sig'),'Unreviewed B1 surrounding source changes'
+        assert not (current_source_path(ROOT, path)).exists(),'Obsolete B1 production file restored: '+path
+    assert source==(current_source_path(ROOT, 'MyBehavior.cs')).read_text(encoding='utf-8-sig'),'Unreviewed B1 surrounding source changes'
     return True
 
 if __name__=='__main__':
@@ -197,7 +217,7 @@ if __name__=='__main__':
     parser.add_argument('--finite',action='store_true')
     args=parser.parse_args()
     if not args.finite:parser.error('select --finite; this adapter is not a whole-host completion gate')
-    verify_current_memory_source((ROOT/'MyBehavior.cs').read_text(encoding='utf-8-sig'))
+    verify_current_memory_source((current_source_path(ROOT, 'MyBehavior.cs')).read_text(encoding='utf-8-sig'))
     # This named finite entry executes the current negative controls too, while
     # the default historical test_source_parity.py entry remains unchanged.
     import unittest

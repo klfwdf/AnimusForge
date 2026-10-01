@@ -5,6 +5,9 @@ changes are excused by updating its hashes. This proof checks complete changed h
 files and the unchanged reservation owner, plus named promoted/unnamed consumers.
 """
 from pathlib import Path
+import sys as _relocation_sys
+_relocation_sys.path.insert(0, str(Path(__file__).resolve().parents[4] / "tests"))
+from output_isolation import current_source_path
 import subprocess
 import argparse
 
@@ -17,7 +20,7 @@ args = parser.parse_args()
 def read(path):
     if args.revision:
         return subprocess.check_output(['git', 'show', args.revision + ':' + path], cwd=ROOT).decode('utf-8-sig').replace('\r\n', '\n')
-    return (ROOT / path).read_bytes().decode('utf-8-sig').replace('\r\n', '\n')
+    return (current_source_path(ROOT, path)).read_bytes().decode('utf-8-sig').replace('\r\n', '\n')
 
 def prior(path):
     return subprocess.check_output(['git', 'show', BASELINE + ':' + path], cwd=ROOT).decode('utf-8-sig').replace('\r\n', '\n')

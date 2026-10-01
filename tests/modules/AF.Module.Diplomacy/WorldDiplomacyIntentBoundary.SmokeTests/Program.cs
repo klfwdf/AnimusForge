@@ -531,7 +531,7 @@ internal static class Program
 
 		string impactBuilder = ExtractMethod(source, "public static string BuildDiplomaticStandingImpactTextForExternal(");
 		string boundaryImpact = ExtractMethod(source, "private static string BuildInternationalReputationImpactDeltaText(");
-		string timeline = File.ReadAllText(FindRepositoryFile("WorldMessageTimelineUi.cs"), Encoding.UTF8);
+		string timeline = File.ReadAllText(FindRepositoryFile("src/AF.GameAdapter.Bannerlord/UI/WorldTimeline/WorldMessageTimelineUi.cs"), Encoding.UTF8);
 		Test.True(impactBuilder.Contains("【外交结果】", StringComparison.Ordinal)
 			&& impactBuilder.Contains("【国际声誉】", StringComparison.Ordinal)
 			&& impactBuilder.Contains("【国家威望】", StringComparison.Ordinal)
@@ -566,16 +566,16 @@ internal static class Program
 			&& naturalCalculation.Contains("step = -InternationalReputationNormalDecayStep", StringComparison.Ordinal)
 			&& naturalCalculation.Contains("step = 1", StringComparison.Ordinal),
 			"all natural reputation bands must tick daily while long time skips remain batched instead of scanning every elapsed day");
-		string popup = File.ReadAllText(FindRepositoryFile("CourierLetterReplyPopup.cs"), Encoding.UTF8);
-		string popupVm = File.ReadAllText(FindRepositoryFile("CourierLetterReplyPopupVM.cs"), Encoding.UTF8);
-		string repositoryRoot = Path.GetDirectoryName(FindRepositoryFile("DuelSettings.cs"))!;
+		string popup = File.ReadAllText(FindRepositoryFile("src/AF.GameAdapter.Bannerlord/UI/Courier/CourierLetterReplyPopup.cs"), Encoding.UTF8);
+		string popupVm = File.ReadAllText(FindRepositoryFile("src/AF.GameAdapter.Bannerlord/UI/Courier/CourierLetterReplyPopupVM.cs"), Encoding.UTF8);
+		string repositoryRoot = Path.GetDirectoryName(FindRepositoryFile("AnimusForge.csproj"))!;
 		string popupPrefab = File.ReadAllText(Path.Combine(repositoryRoot, "AnimusForge", "GUI", "Prefabs", "CourierLetterReplyPopup.xml"), Encoding.UTF8);
 		Test.True(popup.Contains("string impactText = null", StringComparison.Ordinal)
 			&& popupVm.Contains("public string ImpactText", StringComparison.Ordinal)
 			&& popupVm.Contains("public bool HasImpact", StringComparison.Ordinal)
 			&& popupPrefab.Contains("Text=\"@ImpactText\"", StringComparison.Ordinal),
 			"the formal letter popup must bind the standing changes and reasons into its right-side impact area");
-		string encyclopedia = File.ReadAllText(FindRepositoryFile("EncyclopediaKingdomStabilityPatch.cs"), Encoding.UTF8);
+		string encyclopedia = File.ReadAllText(FindRepositoryFile("src/AF.GameAdapter.Bannerlord/UI/Kingdom/EncyclopediaKingdomStabilityPatch.cs"), Encoding.UTF8);
 		Test.True(encyclopedia.Contains("BuildKingdomDiplomaticStandingEncyclopediaTextForExternal", StringComparison.Ordinal),
 			"kingdom encyclopedia refresh must append prestige and international reputation beside stability");
 		string encyclopediaStanding = ExtractMethod(source, "public static string BuildKingdomDiplomaticStandingEncyclopediaTextForExternal(");
@@ -1607,7 +1607,7 @@ internal static class Program
                 + forbiddenPromptDisclosure);
         }
 
-        string settings = File.ReadAllText(FindRepositoryFile("DuelSettings.cs"), Encoding.UTF8);
+        string settings = File.ReadAllText(FindRepositoryFile("src/AF.GameAdapter.Bannerlord/Configuration/Mcm/DuelSettings.cs"), Encoding.UTF8);
         string mcmCooldownSetting = ExtractSection(
             settings,
             "[SettingPropertyInteger(\"贸易/结盟失败冷却（天）\"",
@@ -1630,7 +1630,7 @@ internal static class Program
 				"private const string CanonicalHistoryCacheAffinityKey = \"diplomacy-history:v28\";",
 				StringComparison.Ordinal),
 			"the exact own-reputation prompt must advance canonical-history cache affinity to v28");
-		string settings = File.ReadAllText(FindRepositoryFile("DuelSettings.cs"), Encoding.UTF8);
+		string settings = File.ReadAllText(FindRepositoryFile("src/AF.GameAdapter.Bannerlord/Configuration/Mcm/DuelSettings.cs"), Encoding.UTF8);
 		Test.True(settings.Contains("【AnimusForge 王国外交共同契约 v25】", StringComparison.Ordinal),
 			"the negotiated-round contract must use common diplomacy contract v25");
 
@@ -3182,7 +3182,7 @@ internal static class Program
 			FindRepositoryFile(Path.Combine("src", "modules", "AF.Module.Diplomacy", "Direct", "DiplomacyBehavior.Actions.cs")),
 			Encoding.UTF8);
 		string declareWarPatch = File.ReadAllText(
-			FindRepositoryFile("Patch_Meeting_SuppressDeclareWarAction.cs"),
+			FindRepositoryFile("src/AF.GameAdapter.Bannerlord/Encounter/Patch_Meeting_SuppressDeclareWarAction.cs"),
 			Encoding.UTF8);
 		string startupComposition = File.ReadAllText(
 			FindRepositoryFile(Path.Combine("src", "AF.GameAdapter.Bannerlord", "Composition", "StartupPatchComposition.cs")),
@@ -3286,7 +3286,7 @@ internal static class Program
 			FindRepositoryFile(Path.Combine("PolicySystem", "Context", "WorldDiplomacyPolicyContext.cs")),
             Encoding.UTF8);
         string settings = File.ReadAllText(
-            FindRepositoryFile("DuelSettings.cs"),
+            FindRepositoryFile("src/AF.GameAdapter.Bannerlord/Configuration/Mcm/DuelSettings.cs"),
             Encoding.UTF8);
 
         string roundDto = ExtractSection(

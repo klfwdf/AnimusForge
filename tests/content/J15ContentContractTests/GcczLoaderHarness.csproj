@@ -7,7 +7,7 @@
     <LangVersion>10.0</LangVersion>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="..\..\..\GcczLocalizedResourceLoader.cs" Link="GcczLocalizedResourceLoader.cs" />
+    <Compile Include="..\..\..\src\bridges\Siege\Resources\GcczLocalizedResourceLoader.cs" Link="GcczLocalizedResourceLoader.cs" />
     <EmbeddedResource Include="Fixtures\EmbeddedGood.txt" LogicalName="Harness.Good" />
     <EmbeddedResource Include="Fixtures\EmbeddedInvalid.txt" LogicalName="Harness.Invalid" />
   </ItemGroup>

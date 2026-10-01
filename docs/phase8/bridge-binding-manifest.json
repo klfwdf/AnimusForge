@@ -32,7 +32,7 @@
       "owner": "Build.Composition",
       "entryPaths": [
         "src/AF.Bootstrap/BootstrapRuntime.cs",
-        "SubModule.cs"
+        "src/AF.GameAdapter.Bannerlord/Composition/SubModule.cs"
       ],
       "symbols": [
         {
@@ -41,7 +41,7 @@
           "kind": "type"
         },
         {
-          "path": "SubModule.cs",
+          "path": "src/AF.GameAdapter.Bannerlord/Composition/SubModule.cs",
           "symbol": "SubModule",
           "kind": "type"
         }
@@ -79,12 +79,12 @@
       "topology": "PAIR",
       "owner": "Foundation.Runtime",
       "entryPaths": [
-        "SubModule.cs",
+        "src/AF.GameAdapter.Bannerlord/Composition/SubModule.cs",
         "src/AF.GameAdapter.Bannerlord/Diagnostics/CampaignTickDiagnosticsPatch.cs"
       ],
       "symbols": [
         {
-          "path": "SubModule.cs",
+          "path": "src/AF.GameAdapter.Bannerlord/Composition/SubModule.cs",
           "symbol": "OnApplicationTick",
           "kind": "method"
         },
@@ -184,8 +184,8 @@
       "owner": "Foundation.Persistence",
       "entryPaths": [
         "src/AF.Persistence/CampaignSaveChunkHelper.cs",
-        "MyBehavior.cs",
-        "RewardSystemBehavior.cs"
+        "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.cs",
+        "src/modules/AF.Module.Economy/Host/RewardSystemBehavior.cs"
       ],
       "symbols": [
         {
@@ -194,12 +194,12 @@
           "kind": "type"
         },
         {
-          "path": "MyBehavior.cs",
+          "path": "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.cs",
           "symbol": "MyBehavior",
           "kind": "type"
         },
         {
-          "path": "RewardSystemBehavior.cs",
+          "path": "src/modules/AF.Module.Economy/Host/RewardSystemBehavior.cs",
           "symbol": "RewardSystemBehavior",
           "kind": "type"
         }
@@ -336,7 +336,7 @@
       "owner": "Action.Memory",
       "entryPaths": [
         "src/modules/AF.Module.Actions/Receipts/InteractionResultCommitter.cs",
-        "MyBehavior.MemoryRecovery.cs"
+        "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.MemoryRecovery.cs"
       ],
       "symbols": [
         {
@@ -345,7 +345,7 @@
           "kind": "type"
         },
         {
-          "path": "MyBehavior.MemoryRecovery.cs",
+          "path": "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.MemoryRecovery.cs",
           "symbol": "CommitExternalDialogueHistoryRecoverable",
           "kind": "method"
         }
@@ -485,12 +485,12 @@
       "topology": "PAIR",
       "owner": "Conversation.SettlementSiege",
       "entryPaths": [
-        "AfGcczShoutBridge.cs",
+        "src/bridges/Siege/Host/AfGcczShoutBridge.cs",
         "SiegeAiInterventionBehavior.cs"
       ],
       "symbols": [
         {
-          "path": "AfGcczShoutBridge.cs",
+          "path": "src/bridges/Siege/Host/AfGcczShoutBridge.cs",
           "symbol": "IsActive",
           "kind": "method"
         },
@@ -518,7 +518,7 @@
       ],
       "runtimeBinding": {
         "state": "wired",
-        "entryPath": "AfGcczShoutBridge.cs",
+        "entryPath": "src/bridges/Siege/Host/AfGcczShoutBridge.cs",
         "symbol": "IsActive",
         "frequency": "event",
         "notes": "The AF-side adapter is the single gate for prompt/postprocess/action exchange; Siege runtime and ordinary native scenes remain separate."
@@ -533,12 +533,12 @@
       "topology": "PAIR",
       "owner": "Scene.Duel",
       "entryPaths": [
-        "SceneTauntBehavior.cs",
+        "src/modules/AF.Module.Taunt/Host/SceneTauntBehavior.cs",
         "src/modules/AF.Module.Duel/Host/DuelBehavior.cs"
       ],
       "symbols": [
         {
-          "path": "SceneTauntBehavior.cs",
+          "path": "src/modules/AF.Module.Taunt/Host/SceneTauntBehavior.cs",
           "symbol": "SceneTauntBehavior",
           "kind": "type"
         },
@@ -629,12 +629,12 @@
       "topology": "PAIR",
       "owner": "Memory.SocialReports",
       "entryPaths": [
-        "MyBehavior.WeeklyActionOutcomeReceipts.cs",
+        "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.WeeklyActionOutcomeReceipts.cs",
         "src/modules/AF.Module.Social/Host/PlayerNotorietyBehavior.ConversationOutcomes.cs"
       ],
       "symbols": [
         {
-          "path": "MyBehavior.WeeklyActionOutcomeReceipts.cs",
+          "path": "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.WeeklyActionOutcomeReceipts.cs",
           "symbol": "CompleteWeeklyActionOutcomeForExternal",
           "kind": "method"
         },
@@ -728,7 +728,7 @@
       "entryPaths": [
         "src/AF.GameAdapter.Bannerlord/UI/Conversation/AnimusForgeNativeConversationOverlay.cs",
         "src/modules/AF.Module.Llm/Tts/TtsEngine.cs",
-        "SceneActionsIntegrationBoundary.cs"
+        "src/AF.GameAdapter.Bannerlord/Composition/SceneActionsIntegrationBoundary.cs"
       ],
       "symbols": [
         {
@@ -742,7 +742,7 @@
           "kind": "type"
         },
         {
-          "path": "SceneActionsIntegrationBoundary.cs",
+          "path": "src/AF.GameAdapter.Bannerlord/Composition/SceneActionsIntegrationBoundary.cs",
           "symbol": "InitializeRuntime",
           "kind": "method"
         }
@@ -764,7 +764,7 @@
       ],
       "runtimeBinding": {
         "state": "wired",
-        "entryPath": "SceneActionsIntegrationBoundary.cs",
+        "entryPath": "src/AF.GameAdapter.Bannerlord/Composition/SceneActionsIntegrationBoundary.cs",
         "symbol": "InitializeRuntime",
         "frequency": "startup",
         "notes": "Optional SceneActions/BattleSpeech integration is initialized once and fails closed without changing native gameplay."

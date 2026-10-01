@@ -13,7 +13,7 @@ ROOT = Path(__file__).resolve().parents[4]
 sys.path.insert(0, str(ROOT / "tests"))
 from output_isolation import new_run_root, resolve_dotnet, minimal_test_environment
 HERE = Path(__file__).resolve().parent
-REWARD = ROOT / "RewardSystemBehavior.cs"
+REWARD = ROOT / "src/modules/AF.Module.Economy/Host/RewardSystemBehavior.cs"
 LEDGER = ROOT / "src/modules/AF.Module.Economy/Debt/RewardSystemBehavior.DebtLedger.cs"
 DAILY_LIFECYCLE = ROOT / "src/modules/AF.Module.Economy/Debt/RewardSystemBehavior.DailyEconomyLifecycle.cs"
 POLICY = ROOT / "src/modules/AF.Module.Economy/Debt/RewardSystemBehavior.DebtNormalizationPolicy.cs"

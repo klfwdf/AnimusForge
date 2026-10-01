@@ -6,7 +6,7 @@ import argparse,hashlib,importlib.util,json,os,re,subprocess,sys
 from xml.sax.saxutils import escape
 ROOT=Path(__file__).resolve().parents[4];HERE=Path(__file__).resolve().parent
 sys.path.insert(0,str(ROOT/'tests'))
-from output_isolation import new_run_root
+from output_isolation import new_run_root, current_source_path
 BASELINE='62abfdb3'
 MUTATIONS=[
  'abandon-incomplete-same-day','ignore-empty-probe','ignore-stale-queued-job','ignore-owner-binding',
@@ -75,8 +75,8 @@ def apply_seal_mutation(seal, mutation):
 def main():
  ap=argparse.ArgumentParser(description=__doc__);g=ap.add_mutually_exclusive_group();g.add_argument('--original',action='store_true');g.add_argument('--source-baseline',choices=['73a6977c','9158132c','40b92e67','4d6994bc','8ae0f831']);g.add_argument('--mutate',choices=MUTATIONS);ap.add_argument('--run-root',type=Path);a=ap.parse_args();baseline=a.source_baseline or (BASELINE if a.original else None);sys.stdout.reconfigure(encoding='utf-8')
  ex=module('seal_ex',ROOT/'tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py');cap=module('seal_capture',HERE/'run_captured.py')
- def read(path):return subprocess.check_output(['git','show',baseline+':'+path],cwd=ROOT).decode('utf-8-sig').replace('\r\n','\n') if baseline and not path.startswith('tools/') else (ROOT/path).read_text(encoding='utf-8-sig')
- source=read('MyBehavior.cs');manifest=[];snippets=[];sealing_path=ROOT/'MyBehavior.MemorySealing.cs';new_sealing=not a.original and sealing_path.exists()
+ def read(path):return subprocess.check_output(['git','show',baseline+':'+path],cwd=ROOT).decode('utf-8-sig').replace('\r\n','\n') if baseline and not path.startswith('tools/') else (current_source_path(ROOT, path)).read_text(encoding='utf-8-sig')
+ source=read('MyBehavior.cs');manifest=[];snippets=[];sealing_path=current_source_path(ROOT, 'MyBehavior.MemorySealing.cs');new_sealing=not a.original and sealing_path.exists()
  if a.mutate and a.mutate not in ('abandon-incomplete-same-day',) and not new_sealing: raise ValueError('Sealing mutation requires MyBehavior.MemorySealing.cs')
  names=list(dict.fromkeys(cap.NAMES+'''BindDailyMemoryDraftWeeklyTrigger SanitizeDailyMemoryDraftLine TrySealPastDailyMemoryDrafts ResetDailyMemoryDraftSealSliceState HasPastDailyMemoryDrafts TryRunCampaignMemoryMaintenance HasCompressedMemoryBlock TryEnqueueMajorActionSummaryForDraft HasDailyMemoryDraftAfefLines SanitizeMemorySummaryQueue SanitizeMajorActionSummaryQueue CancelUnavailableHeroCompressionWorkById IsDailyMaintenanceBudgetExceeded HasPendingDeferredDailyMaintenanceWork ProcessDeferredDailyMaintenance ExecuteDailyMaintenanceJob EnqueueDailyMaintenanceJob BuildDailyMaintenanceJobKey'''.split()))
  def add(sig,path='MyBehavior.cs',text=None):
@@ -205,7 +205,7 @@ def main():
    manifest.append(dict(file=name,sha256=hashlib.sha256(read(name).encode()).hexdigest(),whole_component=True))
  if 'MemorySummaryDispatcher' in files.get('Boundary.cs', ''):
      for relative in ['src/modules/AF.Module.Memory/Summary/IMemorySummaryDispatchHost.cs','src/modules/AF.Module.Memory/Summary/MemorySummaryDispatcher.cs']:
-         files[Path(relative).name]=(ROOT/relative).read_text(encoding='utf-8-sig')
+         files[Path(relative).name]=(current_source_path(ROOT, relative)).read_text(encoding='utf-8-sig')
  run_scope_spec=importlib.util.spec_from_file_location('memory_run_fixture',ROOT/'tests/modules/AF.Module.Memory/MemorySummaryRunOwnerTests/fixture_support.py');run_scope=importlib.util.module_from_spec(run_scope_spec);run_scope_spec.loader.exec_module(run_scope)
  run_scope.include(files, original=False)
  files['Proof.csproj']=files['Proof.csproj'].replace('<OutputType>','<EnableDefaultCompileItems>false</EnableDefaultCompileItems><OutputType>',1).replace('</Project>','<ItemGroup>'+''.join('<Compile Include="'+name+'" />' for name in files if name.endswith('.cs'))+'</ItemGroup></Project>')

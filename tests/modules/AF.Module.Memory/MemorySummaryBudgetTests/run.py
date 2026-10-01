@@ -7,7 +7,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[4]
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(ROOT / 'tests'))
-from output_isolation import new_run_root, resolve_dotnet, minimal_test_environment
+from output_isolation import new_run_root, resolve_dotnet, minimal_test_environment, current_source_path
 MODELS = []
 RECORDS = 'src/modules/AF.Module.Memory/Records/MemoryPersistenceModels.cs'
 WRITER = 'src/modules/AF.Module.Memory/Summary/MemorySourceFingerprintWriter.cs'
@@ -23,7 +23,7 @@ def main():
         raise ValueError('Baseline and mutation are exclusive')
     spec = importlib.util.spec_from_file_location('extract', ROOT/'tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py')
     ex = importlib.util.module_from_spec(spec); spec.loader.exec_module(ex)
-    read = lambda path: (ROOT/path).read_text(encoding='utf-8-sig')
+    read = lambda path: (current_source_path(ROOT, path)).read_text(encoding='utf-8-sig')
     root = read('MyBehavior.cs'); capture = read('MyBehavior.MemorySummaryInput.cs')
     declarations = []
     def extract(source, path, signature):

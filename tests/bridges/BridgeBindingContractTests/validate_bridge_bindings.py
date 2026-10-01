@@ -29,12 +29,12 @@ EXPECTED_WIRED = {
     "conversation-action": ("src/modules/AF.Module.Actions/Receipts/InteractionResultCommitter.cs", "Commit"),
     "action-memory": ("src/modules/AF.Module.Actions/Receipts/InteractionResultCommitter.cs", "Commit"),
     "action-economy": ("src/modules/AF.Module.Actions/Execute/LegacyNativeActionPlanExecutor.cs", "ValidateAndExecuteCore"),
-    "conversation-siege": ("AfGcczShoutBridge.cs", "IsActive"),
+    "conversation-siege": ("src/bridges/Siege/Host/AfGcczShoutBridge.cs", "IsActive"),
     "conversation-courier": ("src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.cs", "IsCourierBridgeEnabled"),
     "memory-social-reports": ("src/modules/AF.Module.Social/Host/PlayerNotorietyBehavior.ConversationOutcomes.cs", "IsSocialReportsBridgeEnabled"),
     "gateway-knowledge-profile": ("src/modules/AF.Module.Knowledge/LegacyKnowledgeRagGateway.cs", "GenerateAsync"),
     "policy-world-diplomacy": ("src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.cs", "NotifyExternalDiplomacyResolved"),
-    "ui-runtime-integration": ("SceneActionsIntegrationBoundary.cs", "InitializeRuntime"),
+    "ui-runtime-integration": ("src/AF.GameAdapter.Bannerlord/Composition/SceneActionsIntegrationBoundary.cs", "InitializeRuntime"),
     "host-runtime": ("src/AF.GameAdapter.Bannerlord/Diagnostics/CampaignTickDiagnosticsPatch.cs", "EnsurePatched"),
     "scene-duel": ("src/modules/AF.Module.Duel/Host/DuelBehavior.cs", "IsSceneDuelBridgeEnabled"),
 }
@@ -681,7 +681,7 @@ def run(
     require(config.is_relative_to(project), "config must be inside project root")
     validate_mandatory_interaction_safety(
         (project / "src/AF.GameAdapter.Bannerlord/Patches/Safety/InteractionComponentSafePatch.cs").read_text(encoding="utf-8"),
-        (project / "Patch_TriggerMassiveHook.cs").read_text(encoding="utf-8"),
+        (project / "src/AF.GameAdapter.Bannerlord/Composition/Patch_TriggerMassiveHook.cs").read_text(encoding="utf-8"),
     )
     catalog_index = load_catalog(load_json(catalog, "full-domain catalog"))
     counts = validate_manifest(load_json(manifest, "bridge binding manifest"), catalog_index, project)

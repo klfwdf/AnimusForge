@@ -63,7 +63,7 @@ class BridgeBindingManifestTests(unittest.TestCase):
 
     def test_mandatory_safety_cannot_be_disabled_by_bridge(self) -> None:
         patch = (ROOT / "src/AF.GameAdapter.Bannerlord/Patches/Safety/InteractionComponentSafePatch.cs").read_text(encoding="utf-8")
-        install = (ROOT / "Patch_TriggerMassiveHook.cs").read_text(encoding="utf-8")
+        install = (ROOT / "src/AF.GameAdapter.Bannerlord/Composition/Patch_TriggerMassiveHook.cs").read_text(encoding="utf-8")
         altered = patch.replace("if (_patched)", "if (!FeatureBridgeRuntime.IsEnabled(FeatureBridgeIds.RuntimeGameAdapter)) return;\n        if (_patched)")
         with self.assertRaises(validator.BridgeBindingFailure):
             validator.validate_mandatory_interaction_safety(altered, install)
@@ -129,7 +129,7 @@ class BridgeBindingManifestTests(unittest.TestCase):
     def test_declared_only_cannot_claim_runtime_entry(self) -> None:
         def mutate(document: dict) -> None:
             document["bindings"][0]["runtimeBinding"]["state"] = "wired"
-            document["bindings"][0]["runtimeBinding"]["entryPath"] = "SubModule.cs"
+            document["bindings"][0]["runtimeBinding"]["entryPath"] = "src/AF.GameAdapter.Bannerlord/Composition/SubModule.cs"
             document["bindings"][0]["runtimeBinding"]["symbol"] = "SubModule"
             document["bindings"][0]["runtimeBinding"]["frequency"] = "startup"
 
@@ -143,7 +143,7 @@ class BridgeBindingManifestTests(unittest.TestCase):
 
     def test_terminal_ui_path_is_rejected(self) -> None:
         def mutate(document: dict) -> None:
-            document["bindings"][1]["entryPaths"][0] = "AnimusForgeTerminalBehavior.cs"
+            document["bindings"][1]["entryPaths"][0] = "src/AF.GameAdapter.Bannerlord/UI/Terminal/AnimusForgeTerminalBehavior.cs"
 
         self.assert_manifest_rejected(mutate)
 
@@ -158,7 +158,7 @@ class BridgeBindingManifestTests(unittest.TestCase):
             binding = next(item for item in document["bindings"] if item["id"] == "scene-duel")
             binding["runtimeBinding"] = {
                 "state": "wired",
-                "entryPath": "SceneTauntBehavior.cs",
+                "entryPath": "src/modules/AF.Module.Taunt/Host/SceneTauntBehavior.cs",
                 "symbol": "SceneTauntBehavior",
                 "frequency": "event",
                 "notes": "test",
@@ -243,7 +243,7 @@ class BridgeBindingManifestTests(unittest.TestCase):
             )
 
     def test_cached_siege_gate_requires_initializer(self) -> None:
-        source = (ROOT / "AfGcczShoutBridge.cs").read_text(encoding="utf-8")
+        source = (ROOT / "src/bridges/Siege/Host/AfGcczShoutBridge.cs").read_text(encoding="utf-8")
         altered = source.replace(
             "FeatureBridgeRuntime.IsEnabled(FeatureBridgeIds.ConversationSiege)",
             "FeatureBridgeRuntime.IsEnabled(FeatureBridgeIds.ConversationGateway)",

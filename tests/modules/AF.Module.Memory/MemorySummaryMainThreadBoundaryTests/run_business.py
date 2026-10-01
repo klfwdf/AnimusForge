@@ -19,7 +19,7 @@ from xml.sax.saxutils import escape
 ROOT = Path(__file__).resolve().parents[4]
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(ROOT / 'tests'))
-from output_isolation import new_run_root
+from output_isolation import new_run_root, current_source_path
 B1A_MODELS = {'DailyMemoryLine','DailyMemoryDraft','CompressedMemoryBlock','WeeklyMemoryMaterialTrigger','MemorySummaryJob','MemoryOverviewState','MemoryOverviewJob','MajorActionSummaryState','MajorActionSummaryJob'}
 BASELINE = "e40c92d7"
 MODELS = ["DailyMemoryLine", "DailyMemoryDraft", "CompressedMemoryBlock",
@@ -239,7 +239,7 @@ def main():
         files['MemoryPersistenceModels.cs']=(ROOT/'src/modules/AF.Module.Memory/Records/MemoryPersistenceModels.cs').read_text(encoding='utf-8-sig')
         files['NpcActionEntry.cs']=(ROOT/'src/modules/AF.Module.Memory/Records/NpcActionEntry.cs').read_text(encoding='utf-8-sig')
     if not args.original:
-        planning = subprocess.check_output(["git","show","155f1b7a:MyBehavior.MemorySummaryPlanning.cs"],cwd=ROOT).decode("utf-8-sig").replace("\r\n","\n") if args.run_owner_baseline else (ROOT / "MyBehavior.MemorySummaryPlanning.cs").read_text(encoding="utf-8-sig")
+        planning = subprocess.check_output(["git","show","155f1b7a:MyBehavior.MemorySummaryPlanning.cs"],cwd=ROOT).decode("utf-8-sig").replace("\r\n","\n") if args.run_owner_baseline else (current_source_path(ROOT, "MyBehavior.MemorySummaryPlanning.cs")).read_text(encoding="utf-8-sig")
         manifest["planning_sha256"] = hashlib.sha256(planning.encode()).hexdigest()
         if args.mutate == "keep-invalid-queue":
             planning = replace_exact(planning, "source[index] = null;", "source[index] = job;")
@@ -251,13 +251,13 @@ def main():
             # the actual shared scanner's dispatch, not the now-empty old callback.
             planning = replace_exact(planning, "await RunMemorySummaryRunPhaseAsync(run, generation, delegate", "await Task.Run(delegate", count=4)
         files["Planning.cs"] = planning
-    if not args.original and (ROOT / "MyBehavior.MemoryMaintenanceBudget.cs").is_file():
+    if not args.original and (current_source_path(ROOT, "MyBehavior.MemoryMaintenanceBudget.cs")).is_file():
         for target, relative in [("BudgetBinding.cs", "MyBehavior.MemoryMaintenanceBudget.cs"),
                                  ("BudgetRuntime.cs", "src/modules/AF.Module.Memory/Summary/MemoryMaintenanceWorkBudget.cs")]:
-            files[target] = (ROOT / relative).read_text(encoding="utf-8-sig")
+            files[target] = (current_source_path(ROOT, relative)).read_text(encoding="utf-8-sig")
     if 'MemorySummaryDispatcher' in files.get('Boundary.cs', ''):
         for relative in ['src/modules/AF.Module.Memory/Summary/IMemorySummaryDispatchHost.cs','src/modules/AF.Module.Memory/Summary/MemorySummaryDispatcher.cs']:
-            files[Path(relative).name]=(ROOT/relative).read_text(encoding='utf-8-sig')
+            files[Path(relative).name]=(current_source_path(ROOT, relative)).read_text(encoding='utf-8-sig')
     if args.mutate == "swallow-completion-error" and "MemorySummaryDispatcher.cs" in files:
         files["MemorySummaryDispatcher.cs"] = replace_exact(files["MemorySummaryDispatcher.cs"], "if (failure != null) ExceptionDispatchInfo.Capture(failure).Throw();", "/* fault: swallowed partial execution error */")
     run_scope_spec=importlib.util.spec_from_file_location('memory_run_fixture',ROOT/'tests/modules/AF.Module.Memory/MemorySummaryRunOwnerTests/fixture_support.py');run_scope=importlib.util.module_from_spec(run_scope_spec);run_scope_spec.loader.exec_module(run_scope)

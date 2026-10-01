@@ -7,24 +7,24 @@ from pathlib import Path
 from xml.sax.saxutils import escape
 ROOT=Path(__file__).resolve().parents[4];HERE=Path(__file__).resolve().parent
 sys.path.insert(0,str(ROOT/'tests'))
-from output_isolation import new_run_root
+from output_isolation import new_run_root, current_source_path
 MUTATIONS=['unbounded-slices','ignore-structure','compact-rechecks-predicate','restart-on-write','omit-unavailable-cleanup','ignore-overview-exclusion','read-live-sort-keys','cleanup-collects-plan','ignore-slice-time','fresh-slice-budget']
 MODELS=['MemorySummaryJob','MajorActionSummaryJob','MemoryOverviewJob','MajorActionSummaryState','MemoryOverviewState']
 METHODS=['private static List<MemorySummaryJob> NormalizeMemorySummaryQueue(','private static List<MajorActionSummaryJob> NormalizeMajorActionSummaryQueue(','private static string NormalizeMemoryHeroId(','private static bool IsNonHeroMemoryId(','private static List<MemorySummaryJob> SanitizeMemorySummaryQueue(','private static List<MajorActionSummaryJob> SanitizeMajorActionSummaryQueue(','private static List<MemoryOverviewJob> SanitizeMemoryOverviewQueue(','private bool CancelUnavailableHeroCompressionWorkById(','private static bool IsDailyMaintenanceBudgetExceeded(']
 def main():
  ap=argparse.ArgumentParser(description=__doc__);ap.add_argument('--mutate',choices=MUTATIONS);ap.add_argument('--run-root',type=Path);a=ap.parse_args();sys.stdout.reconfigure(encoding='utf-8')
  spec=importlib.util.spec_from_file_location('plan_ex',ROOT/'tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py');ex=importlib.util.module_from_spec(spec);spec.loader.exec_module(ex)
- source=(ROOT/'MyBehavior.cs').read_text(encoding='utf-8-sig');manifest=[];blocks=[]
+ source=(current_source_path(ROOT, 'MyBehavior.cs')).read_text(encoding='utf-8-sig');manifest=[];blocks=[]
  for sig in METHODS:
   body=ex.declaration(source,sig);manifest.append(dict(file='MyBehavior.cs',signature=sig,line=source[:source.index(body)].count('\n')+1,sha256=hashlib.sha256(body.encode()).hexdigest()));blocks.append(body)
- recovery=(ROOT/'MyBehavior.MemoryRecovery.cs').read_text(encoding='utf-8-sig')
+ recovery=(current_source_path(ROOT, 'MyBehavior.MemoryRecovery.cs')).read_text(encoding='utf-8-sig')
  for name in ('IsValidMemoryCommitMarker','IsMemoryRecoveryHexDigest'):
   match=re.search(r'internal static bool '+name+r'\([^;]+;',recovery);assert match,name;blocks.append(match.group())
  for name in ['NonHeroMemoryIdPrefix','DailyMaintenanceMaxJobsPerTick']:
   m=re.search(r'private const (?:string|int) '+name+r' = [^;]+;',source);assert m,name;blocks.append(m.group())
- inp=(ROOT/'MyBehavior.MemorySummaryInput.cs').read_text(encoding='utf-8-sig');body=ex.declaration(inp,'private static string ComputeMemorySummaryFingerprint(');blocks.append(body)
+ inp=(current_source_path(ROOT, 'MyBehavior.MemorySummaryInput.cs')).read_text(encoding='utf-8-sig');body=ex.declaration(inp,'private static string ComputeMemorySummaryFingerprint(');blocks.append(body)
  manifest.append(dict(file='MyBehavior.MemorySummaryInput.cs',signature='private static string ComputeMemorySummaryFingerprint(',sha256=hashlib.sha256(body.encode()).hexdigest()))
- planning=(ROOT/'MyBehavior.MemorySummaryPlanning.cs').read_text(encoding='utf-8-sig');production_planning=planning
+ planning=(current_source_path(ROOT, 'MyBehavior.MemorySummaryPlanning.cs')).read_text(encoding='utf-8-sig');production_planning=planning
  def change(old,new,count=1):
   nonlocal planning
   assert planning.count(old)==count,(old,planning.count(old));planning=planning.replace(old,new)
@@ -48,12 +48,12 @@ def main():
  # Same resolution as run_terminal.py/run_business.py: tests/run_all.py passes the SDK-bundled DLL via AF_NEWTONSOFT.
  deps=Path(os.environ.get('AF_NEWTONSOFT') or os.environ.get('NEWTONSOFT_JSON_PATH') or str(ROOT/'.tmp/nuget-packages/newtonsoft.json/13.0.3/lib/net6.0/Newtonsoft.Json.dll'))
  if not deps.is_file():raise ValueError('Existing Newtonsoft DLL missing; no downloads allowed: '+str(deps))
- files={'Product.cs':prefix+'\n'+'\n'.join(blocks)+'\n}}','Planning.cs':planning,'Boundary.cs':(ROOT/'MyBehavior.MemorySummaryMainThread.cs').read_text(encoding='utf-8-sig'),'Guard.cs':(ROOT/'src/AF.Foundation.Runtime/Lifecycle/SaveRuntimeGuard.cs').read_text(encoding='utf-8-sig'),'Program.cs':(HERE/'PlanningHarness.cs.txt').read_text(encoding='utf-8-sig'),'Proof.csproj':'<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><LangVersion>latest</LangVersion><NoWarn>CS0649;CS0162</NoWarn></PropertyGroup><ItemGroup><Reference Include="Newtonsoft.Json"><HintPath>'+escape(str(deps))+'</HintPath></Reference></ItemGroup></Project>','NuGet.Config':'<configuration><packageSources><clear/></packageSources></configuration>'}
+ files={'Product.cs':prefix+'\n'+'\n'.join(blocks)+'\n}}','Planning.cs':planning,'Boundary.cs':(current_source_path(ROOT, 'MyBehavior.MemorySummaryMainThread.cs')).read_text(encoding='utf-8-sig'),'Guard.cs':(ROOT/'src/AF.Foundation.Runtime/Lifecycle/SaveRuntimeGuard.cs').read_text(encoding='utf-8-sig'),'Program.cs':(HERE/'PlanningHarness.cs.txt').read_text(encoding='utf-8-sig'),'Proof.csproj':'<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><LangVersion>latest</LangVersion><NoWarn>CS0649;CS0162</NoWarn></PropertyGroup><ItemGroup><Reference Include="Newtonsoft.Json"><HintPath>'+escape(str(deps))+'</HintPath></Reference></ItemGroup></Project>','NuGet.Config':'<configuration><packageSources><clear/></packageSources></configuration>'}
  files['MemoryPersistenceModels.cs']=(ROOT/'src/modules/AF.Module.Memory/Records/MemoryPersistenceModels.cs').read_text(encoding='utf-8-sig')
  files['NpcActionEntry.cs']=(ROOT/'src/modules/AF.Module.Memory/Records/NpcActionEntry.cs').read_text(encoding='utf-8-sig')
  if 'MemorySummaryDispatcher' in files.get('Boundary.cs', ''):
      for relative in ['src/modules/AF.Module.Memory/Summary/IMemorySummaryDispatchHost.cs','src/modules/AF.Module.Memory/Summary/MemorySummaryDispatcher.cs']:
-         files[Path(relative).name]=(ROOT/relative).read_text(encoding='utf-8-sig')
+         files[Path(relative).name]=(current_source_path(ROOT, relative)).read_text(encoding='utf-8-sig')
  run_scope_spec=importlib.util.spec_from_file_location('memory_run_fixture',ROOT/'tests/modules/AF.Module.Memory/MemorySummaryRunOwnerTests/fixture_support.py');run_scope=importlib.util.module_from_spec(run_scope_spec);run_scope_spec.loader.exec_module(run_scope)
  run_scope.include(files, original=False)
  for name,text in files.items():(out/name).write_bytes(text.encode())

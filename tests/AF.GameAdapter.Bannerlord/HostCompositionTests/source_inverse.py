@@ -126,7 +126,7 @@ def restore_submodule(current):
 
 
 def verify():
-    restore_submodule(read(ROOT / 'SubModule.cs'))
+    restore_submodule(read(ROOT / 'src/AF.GameAdapter.Bannerlord/Composition/SubModule.cs'))
     for name in MOVED:
         assert not (ROOT / 'Refactor/Modules' / name).exists(), 'Old composition source still exists: ' + name
         expected = old('Refactor/Modules/' + name)

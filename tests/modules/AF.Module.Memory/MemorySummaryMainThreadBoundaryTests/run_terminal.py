@@ -8,7 +8,7 @@ from xml.sax.saxutils import escape
 ROOT = Path(__file__).resolve().parents[4]
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0,str(ROOT/'tests'))
-from output_isolation import new_run_root
+from output_isolation import new_run_root, current_source_path
 MUTATIONS = ['ignore-parse-source','ignore-final-source','omit-daily-save','omit-line-add','omit-pending-consume','drop-afef','reuse-recovery-source','drop-recovery-marker','drop-recent-marker','omit-recent-save','weekly-false-success','weekly-drop-provenance','swallow-completion-failure','omit-major-entry','omit-block-publish']
 ADMISSION_MUTATIONS = ['old-predicate','skip-title-pass','trim-seen-id','seen-after-content','require-same-owner']
 
@@ -23,7 +23,7 @@ def main():
     capture=module('terminal_capture_inventory',HERE/'run_captured.py');business=module('terminal_business_inventory',HERE/'run_business.py');ex=module('terminal_extractor',ROOT/'tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py')
     manifest=[]
     def read(name):
-        data=(ROOT/name).read_text(encoding='utf-8-sig');manifest.append(dict(file=name,sha256=hashlib.sha256(data.encode()).hexdigest()));return data
+        data=(current_source_path(ROOT, name)).read_text(encoding='utf-8-sig');manifest.append(dict(file=name,sha256=hashlib.sha256(data.encode()).hexdigest()));return data
     source=read('MyBehavior.cs');snippets=[]
     names=list(dict.fromkeys(capture.NAMES+[re.search(r'(\w+)\($',s).group(1) for s in business.METHODS]+'''AppendDailyMemoryLineById LoadDailyMemoryDraftsById SaveDailyMemoryDraftsById IsDailyMemoryLinePublished AttachPendingWeeklyMemoryMaterialTriggers AddWeeklyMemoryMaterialTriggerToDraft PrunePendingWeeklyMemoryMaterialTriggers LoadCompressedMemoryBlocksById SaveCompressedMemoryBlocksById MarkMemoryOverviewDirty CountDailyMemoryDraftLines HasCompressedMemoryBlock LoadDialogueHistoryById SaveDialogueHistoryById RemoveExpiredSingleUseNpcFactLines IsSingleUseNpcFactLine IsFirstMeetingNpcFactBody IsMeaningfulDirectConversationLine IsMeaningfulConversationLine IsSystemFactLine IsLoreInjectionHistoryLine CountDialogueHistoryLines RecordNpcMajorAction RecordNpcActionInternal CreateNpcActionEntry GetNpcActionHeroKey CompareNpcActionTimeline'''.split()))
     # Admission/maintenance scans have their own real business suite, not this terminal scenario.
@@ -156,7 +156,7 @@ def main():
     for name in ['src/modules/AF.Module.Weekly/Publication/WeeklyActionOutcomePublicationOwner.cs','src/modules/AF.Module.Weekly/Receipts/WeeklyMemoryMaterialOutcomeReceipt.cs','src/AF.Contracts/Internal/InteractionContracts.cs','src/AF.Contracts/Internal/LlmContracts.cs','src/AF.Contracts/Compatibility/Economy/EconomyRewardDebtContracts.cs']:
         files[Path(name).name]=read(name)
     for extra in ['MyBehavior.MemorySummaryData.cs','MyBehavior.MemorySummaryFingerprint.cs','MyBehavior.MemorySummaryPlanning.cs']:
-        if (ROOT/extra).exists():files[Path(extra).name]=read(extra)
+        if (current_source_path(ROOT, extra)).exists():files[Path(extra).name]=read(extra)
     deps=Path(os.environ.get('AF_NEWTONSOFT') or os.environ.get('NEWTONSOFT_JSON_PATH') or str(ROOT/'.tmp/nuget-packages/newtonsoft.json/13.0.3/lib/net6.0/Newtonsoft.Json.dll'))
     if not deps.is_file():raise ValueError('Existing Newtonsoft dependency missing')
     files['Proof.csproj']='<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><LangVersion>latest</LangVersion><NoWarn>CS0649</NoWarn></PropertyGroup><ItemGroup><Reference Include="Newtonsoft.Json"><HintPath>'+escape(str(deps))+'</HintPath></Reference></ItemGroup></Project>'
@@ -166,7 +166,7 @@ def main():
             files[Path(name).name]=read(name)
     if 'MemorySummaryDispatcher' in files.get('Boundary.cs', ''):
         for relative in ['src/modules/AF.Module.Memory/Summary/IMemorySummaryDispatchHost.cs','src/modules/AF.Module.Memory/Summary/MemorySummaryDispatcher.cs']:
-            files[Path(relative).name]=(ROOT/relative).read_text(encoding='utf-8-sig')
+            files[Path(relative).name]=(current_source_path(ROOT, relative)).read_text(encoding='utf-8-sig')
     run_scope_spec=importlib.util.spec_from_file_location('memory_run_fixture',ROOT/'tests/modules/AF.Module.Memory/MemorySummaryRunOwnerTests/fixture_support.py');run_scope=importlib.util.module_from_spec(run_scope_spec);run_scope_spec.loader.exec_module(run_scope)
     run_scope.include(files, original=bool(a.source_baseline))
     if a.run_scope_cases:

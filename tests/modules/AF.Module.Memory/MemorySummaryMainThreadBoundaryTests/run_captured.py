@@ -8,7 +8,7 @@ from xml.sax.saxutils import escape
 ROOT=Path(__file__).resolve().parents[4]
 HERE=Path(__file__).resolve().parent
 sys.path.insert(0, str(ROOT / 'tests'))
-from output_isolation import new_run_root
+from output_isolation import new_run_root, current_source_path
 B1A_MODELS={'DailyMemoryLine','DailyMemoryDraft','CompressedMemoryBlock','WeeklyMemoryMaterialTrigger','MemorySummaryJob','MemoryOverviewState','MemoryOverviewJob','MajorActionSummaryState','MajorActionSummaryJob'}
 MODELS=['DailyMemoryLine','DailyMemoryDraft','CompressedMemoryBlock','WeeklyMemoryMaterialTrigger','MemorySummaryJob','MemorySummaryExecutionResult','MemoryOverviewState','MemoryOverviewJob','MemoryOverviewExecutionResult','MajorActionSummaryState','MajorActionSummaryJob','MajorActionSummaryExecutionResult','DailySummaryQueueResult']
 NAMES='''RunDailySummaryQueueItemsAsync ExecuteDailySummaryQueueItemAsync ExecuteMemorySummaryJobAsync ExecuteMajorActionSummaryJobAsync ExecuteMemoryOverviewJobAsync FindMemoryDraft HasMemorySummaryJobStillPending HasMajorActionSummaryJobStillPending HasMemoryOverviewJobStillPending HasMajorActionsNeedingSummary HasMemoryOverviewPendingBlocks GetMemoryOverviewState GetMajorActionSummaryState SanitizeMemoryOverviewState SanitizeMajorActionSummaryState GetMajorActionMaxCursor IsNpcActionAfterSummaryCursor IsMemoryBlockIncludedInOverview BuildCompressedMemoryBlockId NormalizeMemoryHeroId IsNonHeroMemoryId CountDailyMemorySummarySourceChars BuildMemorySummarySystemPrompt BuildMemorySummaryUserPrompt BuildMajorActionSummarySystemPrompt BuildMajorActionSummaryUserPrompt GetMajorActionSummaryTargetChars BuildMajorActionSummarySourceLine BuildMemoryOverviewSummarySystemPrompt BuildMemoryOverviewSummaryUserPrompt BuildMemoryOverviewBlockSourceText BuildCompressionWritingRequirementsPromptSection TryParseMemorySummaryResponse TryParseMajorActionSummaryResponse TryParseMemoryOverviewResponse TryParseBestSummaryJsonObject TryParseTaggedSummaryObject AddTaggedSummaryProperty TryExtractTaggedBlock TryParseLooseSummaryJsonObject AddLooseJsonStringProperties TryExtractLooseJsonStringProperty SkipJsonWhitespace TryReadLooseJsonStringValue BuildRequiredJsonFieldDescription BuildRequiredJsonFieldGroupDescription HasAnyNonWhiteSpaceJsonProperty IsEmptySummaryMarker GetJsonStringIgnoreCase GetJsonPropertyIgnoreCase BuildSummaryJsonParseFailureMessage StripJsonResponseEnvelope ExtractJsonObjectPayloads StripMemoryTitleDateTime FormatMemoryHourRange BuildDailyMemoryLineForPrompt ResolveMemoryLineSceneForPrompt SanitizeDailyMemoryDrafts SanitizeCompressedMemoryBlocks SanitizeNpcActionEntries SanitizeWeeklyMemoryMaterialTriggers NormalizeWeeklyMemoryMaterialTags ExtractWeeklyMemoryMaterialTags NormalizeWeeklyMemoryMaterialTagText BuildWeeklyMemoryMaterialTriggerStableKey ComputeWeeklyMemoryMaterialHash CopyFactIds AddUniqueId'''.split()
@@ -19,7 +19,7 @@ def main():
     ap=argparse.ArgumentParser(description=__doc__);ap.add_argument('--mutate',choices=MUTATIONS);ap.add_argument('--source-baseline',choices=['8bcde78b']);ap.add_argument('--observe-rebuilds',action='store_true');ap.add_argument('--run-root',type=Path);a=ap.parse_args()
     sys.stdout.reconfigure(encoding='utf-8')
     spec=importlib.util.spec_from_file_location('capture_ex',ROOT/'tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py');ex=importlib.util.module_from_spec(spec);spec.loader.exec_module(ex)
-    def read(path):return subprocess.check_output(['git','show',a.source_baseline+':'+path],cwd=ROOT).decode('utf-8-sig').replace('\r\n','\n') if a.source_baseline else (ROOT/path).read_text(encoding='utf-8-sig')
+    def read(path):return subprocess.check_output(['git','show',a.source_baseline+':'+path],cwd=ROOT).decode('utf-8-sig').replace('\r\n','\n') if a.source_baseline else (current_source_path(ROOT, path)).read_text(encoding='utf-8-sig')
     if a.source_baseline and a.mutate:raise ValueError('Baseline and mutation are exclusive')
     source=read('MyBehavior.cs');snippets=[];manifest=[]
     def add(sig):
@@ -46,11 +46,11 @@ def main():
         match=re.search(r'^\s*private [^\n]*?\b'+name+r'\(',source,re.M)
         if not match:raise ValueError('Missing declaration '+name)
         add(match.group().strip())
-    planning=(ROOT/'MyBehavior.MemorySummaryPlanning.cs').read_text(encoding='utf-8-sig')
+    planning=(current_source_path(ROOT, 'MyBehavior.MemorySummaryPlanning.cs')).read_text(encoding='utf-8-sig')
     for sig in ['private sealed class MemorySummaryPlanEntry','private MemorySummaryPlanEntry DescribeMemorySummaryJob(']:
         body=ex.declaration(planning,sig);snippets.append(body)
         manifest.append(dict(file='MyBehavior.MemorySummaryPlanning.cs',signature=sig,line=planning[:planning.index(body)].count('\n')+1,sha256=hashlib.sha256(body.encode()).hexdigest()))
-    recovery=(ROOT/'MyBehavior.MemoryRecovery.cs').read_text(encoding='utf-8-sig')
+    recovery=(current_source_path(ROOT, 'MyBehavior.MemoryRecovery.cs')).read_text(encoding='utf-8-sig')
     for name in ['IsValidMemoryCommitMarker','IsMemoryRecoveryHexDigest']:
         match=re.search(r'(?:private|internal) static bool '+name+r'\([^;]+;',recovery)
         if not match or '=>' not in match.group():raise ValueError('Missing expression-bodied recovery guard '+name)
@@ -120,7 +120,7 @@ def main():
     deps=ROOT/'.tmp/nuget-packages/newtonsoft.json/13.0.3/lib/net6.0/Newtonsoft.Json.dll'
     if not deps.is_file():raise ValueError('Existing Newtonsoft DLL missing; no downloads allowed')
     out=new_run_root(ROOT,'memory-b1a-captured',a.run_root)
-    files={'Product.cs':product,'Input.cs':capture,'Boundary.cs':(ROOT/'MyBehavior.MemorySummaryMainThread.cs').read_text(encoding='utf-8-sig'),'Guard.cs':(ROOT/'src/AF.Foundation.Runtime/Lifecycle/SaveRuntimeGuard.cs').read_text(encoding='utf-8-sig'),'Program.cs':(HERE/'CapturedHarness.cs.txt').read_text(encoding='utf-8-sig'),'Proof.csproj':'<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><LangVersion>latest</LangVersion><NoWarn>CS0649</NoWarn></PropertyGroup><ItemGroup><Reference Include="Newtonsoft.Json"><HintPath>'+escape(str(deps))+'</HintPath></Reference></ItemGroup></Project>','NuGet.Config':'<configuration><packageSources><clear/></packageSources></configuration>'}
+    files={'Product.cs':product,'Input.cs':capture,'Boundary.cs':(current_source_path(ROOT, 'MyBehavior.MemorySummaryMainThread.cs')).read_text(encoding='utf-8-sig'),'Guard.cs':(ROOT/'src/AF.Foundation.Runtime/Lifecycle/SaveRuntimeGuard.cs').read_text(encoding='utf-8-sig'),'Program.cs':(HERE/'CapturedHarness.cs.txt').read_text(encoding='utf-8-sig'),'Proof.csproj':'<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><LangVersion>latest</LangVersion><NoWarn>CS0649</NoWarn></PropertyGroup><ItemGroup><Reference Include="Newtonsoft.Json"><HintPath>'+escape(str(deps))+'</HintPath></Reference></ItemGroup></Project>','NuGet.Config':'<configuration><packageSources><clear/></packageSources></configuration>'}
     files['MemorySummaryRules.cs']=read('src/modules/AF.Module.Memory/Summary/MemorySummaryRules.cs')
     if not a.source_baseline:
         files['MemoryPersistenceModels.cs']=read('src/modules/AF.Module.Memory/Records/MemoryPersistenceModels.cs')
@@ -156,7 +156,7 @@ def main():
         files['MyBehavior.MemorySourceFingerprint.cs']=mapper;files['MemorySourceFingerprintWriter.cs']=runtime
     if 'MemorySummaryDispatcher' in files.get('Boundary.cs', ''):
         for relative in ['src/modules/AF.Module.Memory/Summary/IMemorySummaryDispatchHost.cs','src/modules/AF.Module.Memory/Summary/MemorySummaryDispatcher.cs']:
-            files[Path(relative).name]=(ROOT/relative).read_text(encoding='utf-8-sig')
+            files[Path(relative).name]=(current_source_path(ROOT, relative)).read_text(encoding='utf-8-sig')
     run_scope_spec=importlib.util.spec_from_file_location('memory_run_fixture',ROOT/'tests/modules/AF.Module.Memory/MemorySummaryRunOwnerTests/fixture_support.py');run_scope=importlib.util.module_from_spec(run_scope_spec);run_scope_spec.loader.exec_module(run_scope)
     run_scope.include(files, original=bool(a.source_baseline))
     if not a.source_baseline:

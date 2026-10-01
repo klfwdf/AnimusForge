@@ -17,7 +17,7 @@ internal static class J13D3DomainOwnerContractReplay
         string policy = Read("PolicySystem/Npc/NpcRulerPolicyBehavior.Generation.cs");
         string policyUi = Read("PolicySystem/UI/PolicySystemUi.cs");
         string diplomacy = Read("src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.cs");
-        string terminal = Read("AnimusForgeTerminalBehavior.cs");
+        string terminal = Read("src/AF.GameAdapter.Bannerlord/UI/Terminal/AnimusForgeTerminalBehavior.cs");
 
         Require(composition.Contains("AddBehavior(new AnimusForgeWorldEventBehavior())", StringComparison.Ordinal)
             && host.Contains("_inbox.Import(CampaignSaveChunkHelper.RestoreStringDictionary(stored, \"WorldEventInbox\"), unreadIds)", StringComparison.Ordinal)

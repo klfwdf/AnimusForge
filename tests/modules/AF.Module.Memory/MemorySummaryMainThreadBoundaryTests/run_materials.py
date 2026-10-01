@@ -6,7 +6,7 @@ import argparse, hashlib, importlib.util, json, os, re, subprocess, sys
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[4];HERE=Path(__file__).resolve().parent
 sys.path.insert(0,str(ROOT/'tests'))
-from output_isolation import new_run_root, resolve_dotnet, minimal_test_environment
+from output_isolation import new_run_root, resolve_dotnet, minimal_test_environment, current_source_path
 SIGNATURES=['private sealed class EventSourceMaterialEntry','private void RecordEventSourceMaterial(','private static bool IsPlayerWeeklySourceMaterial(','private static string NormalizeNpcActionStableKey(','private static string BuildEventSourceMaterialIndexKey(','private void RebuildEventSourceMaterialIndex(','private static List<EventSourceMaterialEntry> SanitizeEventSourceMaterials(']
 MUTATIONS=['ignore-structure','ignore-map-binding','ignore-source-binding','publish-partial','blank-last-wins','omit-append-bind','restore-fallback']
 
@@ -14,7 +14,7 @@ def main():
     ap=argparse.ArgumentParser(description=__doc__);ap.add_argument('--source-baseline',choices=['62abfdb3','c21523f8']);ap.add_argument('--mutate',choices=MUTATIONS);ap.add_argument('--run-root',type=Path);a=ap.parse_args();sys.stdout.reconfigure(encoding='utf-8')
     if a.source_baseline and a.mutate:raise ValueError('Use either historical real source or one current mutation')
     spec=importlib.util.spec_from_file_location('material_ex',ROOT/'tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py');ex=importlib.util.module_from_spec(spec);spec.loader.exec_module(ex)
-    def read(name):return (ROOT/name).read_text(encoding='utf-8-sig')
+    def read(name):return (current_source_path(ROOT, name)).read_text(encoding='utf-8-sig')
     def digest(text):return hashlib.sha256(text.encode()).hexdigest()
     def change(text,old,new,count=1):
         if text.count(old)!=count:raise ValueError('Materials mutation anchor drift: '+old)

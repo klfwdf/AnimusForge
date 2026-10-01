@@ -326,18 +326,18 @@ internal static class WeeklyActionOutcomeProductionReplay
     private static void AssertCurrentProductionBuild(Assembly assembly)
     {
         DirectoryInfo directory = new DirectoryInfo(AppContext.BaseDirectory);
-        while (directory != null && !File.Exists(Path.Combine(directory.FullName, "MyBehavior.cs")))
+        while (directory != null && !File.Exists(Path.Combine(directory.FullName, "AnimusForge.csproj")))
         {
             directory = directory.Parent;
         }
         Require(directory != null, "repository root for production freshness was not found");
         string[] sources =
         {
-            "MyBehavior.cs",
-            "MyBehavior.MemoryRecovery.cs",
+            "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.cs",
+            "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.MemoryRecovery.cs",
             "src/modules/AF.Module.Social/Host/PlayerNotorietyBehavior.cs",
             "src/modules/AF.Module.Social/Host/PlayerNotorietyBehavior.ConversationOutcomes.cs",
-            "MyBehavior.WeeklyActionOutcomeReceipts.cs",
+            "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.WeeklyActionOutcomeReceipts.cs",
             "src/AF.GameAdapter.Bannerlord/Composition/LegacyInteractionSnapshotAdapters.cs",
             "src/modules/AF.Module.Actions/Execute/LegacyNativeActionPlanExecutor.cs",
             "src/modules/AF.Module.Actions/Receipts/InteractionResultCommitter.cs",

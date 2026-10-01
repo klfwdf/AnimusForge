@@ -12,6 +12,9 @@ import importlib.util
 import json
 import os
 from pathlib import Path
+import sys as _relocation_sys
+_relocation_sys.path.insert(0, str(Path(__file__).resolve().parents[4] / "tests"))
+from output_isolation import current_source_path
 import subprocess
 import sys
 
@@ -43,7 +46,7 @@ def main():
     inventory = []
 
     def read(name):
-        text = (ROOT / name).read_text(encoding="utf-8-sig")
+        text = (current_source_path(ROOT, name)).read_text(encoding="utf-8-sig")
         inventory.append(dict(file=name, sha256=hashlib.sha256(text.encode()).hexdigest()))
         return text
 
@@ -85,7 +88,7 @@ def main():
              "NuGet.Config": '<configuration><packageSources><clear/></packageSources></configuration>'}
     if 'MemorySummaryDispatcher' in files.get('Boundary.cs', ''):
         for relative in ['src/modules/AF.Module.Memory/Summary/IMemorySummaryDispatchHost.cs','src/modules/AF.Module.Memory/Summary/MemorySummaryDispatcher.cs']:
-            files[Path(relative).name]=(ROOT/relative).read_text(encoding='utf-8-sig')
+            files[Path(relative).name]=(current_source_path(ROOT, relative)).read_text(encoding='utf-8-sig')
     out = HERE / ".generated/writers" / (args.mutate or "current")
     out.mkdir(parents=True, exist_ok=True)
     run_scope_spec=importlib.util.spec_from_file_location('memory_run_fixture',ROOT/'tests/modules/AF.Module.Memory/MemorySummaryRunOwnerTests/fixture_support.py');run_scope=importlib.util.module_from_spec(run_scope_spec);run_scope_spec.loader.exec_module(run_scope)

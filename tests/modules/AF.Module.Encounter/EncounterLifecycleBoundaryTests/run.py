@@ -22,7 +22,7 @@ def main():
     if not dotnet.is_file():
         parser.error(f"dotnet executable not found: {dotnet}")
     template = Path(__file__).with_name("Harness.cs.txt").read_text(encoding="utf-8")
-    source = (ROOT / "LordEncounterBehavior.cs").read_text(encoding="utf-8-sig")
+    source = (ROOT / "src/AF.GameAdapter.Bannerlord/Encounter/LordEncounterBehavior.cs").read_text(encoding="utf-8-sig")
     signatures = [
         "private sealed class MeetingPlayerReleaseRequest",
         "private static MeetingPlayerReleaseRequest CaptureMeetingPlayerReleaseRequest(",

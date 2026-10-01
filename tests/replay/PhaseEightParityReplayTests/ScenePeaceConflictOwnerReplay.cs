@@ -40,7 +40,7 @@ internal static class ScenePeaceConflictOwnerReplay
             && (bool)physical.Invoke(null, new[] { (object)true, peace }),
             "physical MCM switch did not gate owner admission");
 
-        string host = File.ReadAllText(Path.Combine(repo, "SceneTauntBehavior.cs"));
+        string host = File.ReadAllText(Path.Combine(repo, "src/modules/AF.Module.Taunt/Host/SceneTauntBehavior.cs"));
         Check(host.Contains("ScenePeaceConflictContextOwner.CanInitialize(in facts);", StringComparison.Ordinal)
             && host.Contains("ScenePeaceConflictContextOwner.CanInitializePhysical(physicalEnabled, in facts)", StringComparison.Ordinal)
             && host.Contains("return CanInitializePeaceSceneConflict(settlement);", StringComparison.Ordinal)

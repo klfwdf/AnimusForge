@@ -23,8 +23,8 @@ internal static class J13E5DomainOwnerContractReplay
         }
         int Count(string source, string value) => source.Split(value, StringSplitOptions.None).Length - 1;
 
-        string host = Read("MilitaryExerciseBehavior.cs");
-        string terminal = Read("AnimusForgeTerminalBehavior.cs");
+        string host = Read("src/modules/AF.Module.Exercise/Host/MilitaryExerciseBehavior.cs");
+        string terminal = Read("src/AF.GameAdapter.Bannerlord/UI/Terminal/AnimusForgeTerminalBehavior.cs");
         string patches = Read("src/AF.GameAdapter.Bannerlord/Composition/StartupPatchComposition.cs");
         string identity = Read("src/modules/AF.Module.Exercise/ExerciseMapEventIdentityOwner.cs");
         string session = Read("src/modules/AF.Module.Exercise/MilitaryExerciseSessionOwner.cs");

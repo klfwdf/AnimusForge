@@ -13,7 +13,7 @@ spec = importlib.util.spec_from_file_location("extract", ROOT / "tests/modules/A
 extract = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(extract)
 source = (ROOT / "src/modules/AF.Module.Prompt/Configuration/AIConfigHandler.cs").read_text(encoding="utf-8-sig")
-session_source = (ROOT / "MyBehavior.cs").read_text(encoding="utf-8-sig")
+session_source = (ROOT / "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.cs").read_text(encoding="utf-8-sig")
 mission_source = (ROOT / "src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.cs").read_text(encoding="utf-8-sig")
 assert session_source.count('AIConfigHandler.TryStartBackgroundSemanticWarmup("session_launch")') == 1
 mission_seed = 'PromptSemanticWarmupSeedBatch semanticWarmupSeeds = AIConfigHandler.CaptureGuardrailSemanticWarmupSeeds();'

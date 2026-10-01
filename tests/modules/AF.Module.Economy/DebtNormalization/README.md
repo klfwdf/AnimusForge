@@ -1,7 +1,7 @@
 # Economy debt normalization production test
 
 This focused executable extracts the private production `DebtRecord` schema from
-`RewardSystemBehavior.cs`, compiles it with the real
+`src/modules/AF.Module.Economy/Host/RewardSystemBehavior.cs`, compiles it with the real
 `EconomyDebtNormalizationPolicy` and `EconomyDebtSchedulePolicy`, and exercises
 legacy migration, invalid-line removal, clamps, aggregate rebuilding, unlimited
 due handling, note limits, idempotence, due windows, reminder cadence, and

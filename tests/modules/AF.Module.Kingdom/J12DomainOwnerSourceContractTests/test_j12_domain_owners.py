@@ -5,10 +5,13 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[4]
+import sys
+sys.path.insert(0, str(ROOT / "tests"))
+from output_isolation import current_source_path
 
 
 def read(relative: str) -> str:
-    return (ROOT / relative).read_text(encoding="utf-8-sig")
+    return current_source_path(ROOT, relative).read_text(encoding="utf-8-sig")
 
 
 class J12DomainOwnerSourceContracts(unittest.TestCase):

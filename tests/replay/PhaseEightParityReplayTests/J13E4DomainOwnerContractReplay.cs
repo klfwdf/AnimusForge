@@ -21,14 +21,14 @@ internal static class J13E4DomainOwnerContractReplay
 
         string campaign = Read("src/AF.GameAdapter.Bannerlord/Composition/CampaignComposition.cs");
         string patches = Read("src/AF.GameAdapter.Bannerlord/Composition/StartupPatchComposition.cs");
-        string terminal = Read("AnimusForgeTerminalBehavior.cs");
-        string sets = Read("SettlementEntryTroopSelectionBehavior.cs");
-        string inspection = Read("TroopInspectionBehavior.cs");
+        string terminal = Read("src/AF.GameAdapter.Bannerlord/UI/Terminal/AnimusForgeTerminalBehavior.cs");
+        string sets = Read("src/AF.GameAdapter.Bannerlord/SettlementEntry/SettlementEntryTroopSelectionBehavior.cs");
+        string inspection = Read("src/AF.GameAdapter.Bannerlord/TroopInspection/TroopInspectionBehavior.cs");
         string entryOwner = Read("src/modules/AF.Module.Settlement/SettlementMissionEntryOwner.cs");
         string followerOwner = Read("src/modules/AF.Module.Settlement/SettlementFollowerMissionOwner.cs");
         string inspectionOwner = Read("src/modules/AF.Module.Settlement/TroopInspectionSessionOwner.cs");
         string siege = Read("SiegeAiInterventionBehavior.cs");
-        string castle = Read("CastleAftermathSiegeSceneBridge.cs");
+        string castle = Read("src/bridges/Siege/Host/CastleAftermathSiegeSceneBridge.cs");
 
         Require(Count(campaign, "campaignGameStarter.AddBehavior(new SettlementEntryTroopSelectionBehavior())") == 1
             && Count(patches, "SettlementEntryTroopSelectionBehavior.RegisterHarmonyPatches(harmony)") == 1
