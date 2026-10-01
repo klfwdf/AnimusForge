@@ -2061,6 +2061,9 @@ public partial class MyBehavior : CampaignBehaviorBase
 		try
 		{
 			SaveRuntimeGuard.AdvanceGeneration(reason);
+			ResetExecutionMemoryRuntime();
+			PublicExecutionOrderRuntime.Reset();
+			if (reason == "new_game_created") _executionTranscripts.Load(null);
 			ResetLocalTransientRuntimeForLoadedSave(reason);
 			ShoutBehavior.ResetTransientRuntimeForLoadedSaveExternal(reason);
 			CourierDeliveryBehavior.ResetTransientRuntimeForLoadedSaveExternal(reason);
@@ -16807,6 +16810,7 @@ TeamModuleServices.CivilWar.AdvanceWeek(devEditableKingdom, weekIndex, GetKingdo
 
 	public override void SyncData(IDataStore dataStore)
 	{
+		SyncExecutionTranscripts(dataStore);
 		if (_shownRecords == null)
 		{
 			_shownRecords = new Dictionary<string, HeroShownRecord>();

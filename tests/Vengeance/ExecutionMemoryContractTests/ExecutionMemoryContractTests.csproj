@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType><TargetFramework>net472</TargetFramework><LangVersion>latest</LangVersion>
+    <ImplicitUsings>enable</ImplicitUsings><Nullable>disable</Nullable>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="../../../ExecutionTranscriptStore.cs" Link="Production/ExecutionTranscriptStore.cs" />
+    <Compile Include="../../../ExecutionAddressContextPolicy.cs" Link="Production/ExecutionAddressContextPolicy.cs" />
+    <Compile Include="../../../MyBehavior.ExecutionMemory.cs" Link="Production/MyBehavior.ExecutionMemory.cs" />
+    <Compile Include="../../../PublicExecutionOrderPolicy.cs" Link="Production/PublicExecutionOrderPolicy.cs" />
+    <Compile Include="../../../PublicExecutionOrderRuntime.cs" Link="Production/PublicExecutionOrderRuntime.cs" />
+    <Compile Include="../../../ExecutionPromptConfiguration.cs" Link="Production/ExecutionPromptConfiguration.cs" />
+    <Compile Include="../../../GuardrailRulePromptConfig.cs" Link="Production/GuardrailRulePromptConfig.cs" />
+    <Compile Include="../../../PostprocessRuleEntry.cs" Link="Production/PostprocessRuleEntry.cs" />
+    <Compile Include="../../../src/modules/AF.Module.Prompt/Composition/PromptRuleEligibility.cs" Link="Production/PromptRuleEligibility.cs" />
+    <EmbeddedResource Include="../../../content/modules/AF.Module.Prompt/ModuleData/RuleBehaviorPrompts.json" LogicalName="AnimusForge.Defaults.ExecutionRulePrompts.json" />
+    <Compile Include="../../../Vengeance/Source/Core/ExecutionEnums.cs" Link="Production/ExecutionEnums.cs" />
+    <Compile Include="../../../Vengeance/Source/Core/ExecutionMethodRules.cs" Link="Production/ExecutionMethodRules.cs" />
+    <Compile Include="../../../Vengeance/Source/Scene/Speech/*.cs" Link="Production/%(Filename)%(Extension)" />
+    <Reference Include="Newtonsoft.Json"><HintPath>../../../_deps_auto/Newtonsoft.Json.dll</HintPath></Reference>
+  </ItemGroup>
+</Project>

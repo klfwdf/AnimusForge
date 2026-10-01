@@ -193,7 +193,7 @@ public partial class MyBehavior
 			Score = score,
 			Sentence = text,
 			Group = (group ?? "").Trim(),
-			Detail = WorldBulletinPolicy.Truncate((PlayerNotorietyBehavior.RenderPlayerNamedReferenceForExternal(detail) ?? "").Replace("\r", " ").Replace("\n", " "), 220),
+			Detail = kind == "execution_last_words" ? (detail ?? "") : WorldBulletinPolicy.Truncate((PlayerNotorietyBehavior.RenderPlayerNamedReferenceForExternal(detail) ?? "").Replace("\r", " ").Replace("\n", " "), 220),
 			InvolvesPlayer = involvesPlayer,
 			KingdomIds = (kingdomIds ?? Array.Empty<string>()).Where(x => !string.IsNullOrWhiteSpace(x)).Select(x => x.Trim()).Distinct(StringComparer.OrdinalIgnoreCase).ToList()
 		};

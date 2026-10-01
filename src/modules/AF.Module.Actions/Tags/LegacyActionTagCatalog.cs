@@ -43,6 +43,7 @@ public static class LegacyActionTagCatalog
         "ACTION:NPC_SURRENDER",
         "ACTION:OPEN_LORDS_HALL",
         "ACTION:PROPOSE",
+        "ACTION:PUBLIC_EXECUTION_START",
         "ACTION:QUEST_TURN_IN",
         "ACTION:SCENE_*",
         "ACTION:SETS_*",

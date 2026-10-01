@@ -55,6 +55,10 @@ public static class ExecutionMethodRules
 
     public static IReadOnlyList<ExecutionMethodRule> All => RegisteredRules;
 
+    // Hide new wheel selections without deleting the method identity used by old records/presets.
+    internal static bool IsVisibleInSelection(string methodId) =>
+        !string.Equals(methodId, BreakingWheel, StringComparison.OrdinalIgnoreCase);
+
     public static bool TryGet(string methodId, out ExecutionMethodRule rule)
     {
         foreach (var candidate in RegisteredRules)
