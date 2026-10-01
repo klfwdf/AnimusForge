@@ -1,3 +1,18 @@
+<a id="civilwar-daily-decay-20261001"></a>
+
+### 全部派系不满按日平滑衰减（2026-10-01，OFFLINE_VERIFIED）
+
+用户提出每周衰减太久，并明确选择“保持原总速度：把每周20%折算成每天约3.14%，只让下降更平滑”；后续询问性能和其他来源，范围确认为全部9种不满。检查点 `4c12531`，产品/测试提交 `05870e6f`。同工作树其他任务的政变、快报、插画改动保留；本片未部署/推送，不复用上一个五项修复的部署记录声称此片已安装。
+
+- `CivilWarCampaignBehavior.cs:35–41`、`CivilWarModuleAdapter.cs:40`、`ICivilWarModulePort.cs:58`：真实 DailyTickEvent → typed port → owner；`CivilWarWorld.cs:39–43` 提供游戏日索引。上述 CivilWar 路径均位于 `src/modules/AF.Module.Kingdom/CivilWar/`，契约位于 `src/AF.Contracts/Internal/TeamModules/`。
+- `KingdomCivilWarOwner.cs:218–251,264–267,1195–1204`：日保留系数为 `(1 - 原周衰减率)^(1/7)`；只扫描已存王国/家族/来源，复用键列表和系数字典，同日重复回调跳过；跨日补算按来源求幂，不逐日循环。周维护只刷新家族并核对当天是否已结算，不额外扣一笔周衰减。成派、最后通牒、战争推进仍按原周节奏。事件追加新不满前先补旧值，避免把新点数扣入过去几天。
+- `CivilWarCatalog.cs:39–41,269–271`：缓存全部来源的日系数，保留原周参数。每周20/15/12/10/8/6%分别折算每日约3.1375/2.2950/1.8096/1.4939/1.1841/0.8800%，不下调每次烧村的20点。
+- `KingdomCivilWarState.cs:94–96`：同原存档键追加 `LastGrievanceDecayDay=-1`；旧存档首次日处理建立基准，不追扣历史；新存档保留日期防重复；关闭功能期间仅推进日期，重新开启不补扣停用期间。真实旧档仍未验证。
+- **验证**：`CivilWarLifecycle.ContractTests` **76检查 PASS**，含全部9来源的7日等价、单日平滑、同日/读档/周维护去重、旧格式基准、关闭重开、新事件不追扣、真实日事件方法体到adapter/owner；原 `CivilWarRules.SmokeTests` PASS。日志为 `artifacts/civilwar-review-20261001/daily-decay-tests.log` 和 `daily-decay-smoke.log`。
+- **性能离线样本**：真实owner＋桩游戏上下文，100家族×9来源、100次日事件，总18.59ms，均值0.1859ms/次。仅代表本机该合成工作量的CPU耗时，不是实际游戏帧耗时保证；新增频率每游戏日一次，无逐帧轮询或全世界Clan扫描。
+- **Release双API+Bootstrap PASS**：`artifacts/civilwar-review-20261001/build-7e45d50bb81d40cab1d587f7fea10767/` exit 0，引用1.3.15.110062 / 1.4.6.115628；构建时HEAD `be67ba6e` + 本片工作树，之后本片提交为 `05870e6f`。并发其他任务继续改动，未把此构建当最新整仓全量验收。正式构建/覆盖入口未改。
+- **未验与回滚**：实机每日事件顺序、实际卡顿、真实旧档 NOT-RUN；历史代码地图working-tree漂移继续保留，本片坐标以 `05870e6f` 为准，不刷新全局哈希。回滚仅逆向 `05870e6f`，不撤销其他任务。本轮还只读确认“王室阵营默认包含国王家族、其他家族默认中立、没有AI自动招募保皇派”，未新增保皇派功能。
+
 <a id="scene-image-16x9-20261001"></a>
 
 ### 场景插画16:9请求尺寸（2026-10-01，OFFLINE_VERIFIED）
