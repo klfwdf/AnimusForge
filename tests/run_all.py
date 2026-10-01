@@ -167,6 +167,38 @@ def blocked(cmd: list[str]) -> str | None:
     return None
 
 
+def execute(cmd: list[str], env: dict, build_root: Path, timeout: int):
+    """SDK8 run can launch old bin/ output despite isolated build properties."""
+    options = dict(cwd=ROOT, env=env, capture_output=True, text=True,
+                   encoding="utf-8", errors="replace", timeout=timeout)
+    if len(cmd) < 3 or cmd[1] != "run":
+        return subprocess.run(cmd, **options)
+    separator = cmd.index("--") if "--" in cmd else len(cmd)
+    runtime_args = cmd[separator + 1:]
+    build = [cmd[0], "build", *[arg for arg in cmd[2:separator] if arg != "--project"]]
+    built = subprocess.run(build, **options)
+    if built.returncode:
+        return built
+    project = cmd[cmd.index("--project") + 1]
+    configuration = cmd[cmd.index("-c") + 1]
+    properties = [arg for arg in cmd[2:separator] if arg.startswith("-p:")]
+    query = [cmd[0], "msbuild", project, "-nologo", f"-p:Configuration={configuration}",
+             *properties, "-getProperty:TargetPath,TargetFramework"]
+    evaluated = subprocess.run(query, **options)
+    if evaluated.returncode:
+        return evaluated
+    metadata = json.loads(evaluated.stdout)["Properties"]
+    target = checked_path(Path(metadata["TargetPath"]))
+    if not target.is_relative_to(build_root.resolve()) or not target.is_file():
+        raise ValueError("evaluated test target escaped isolated build output or is missing")
+    # .NET Framework fixtures run directly; managed .NET fixtures use their selected SDK.
+    launch = [str(target)] if metadata["TargetFramework"].startswith("net4") else [cmd[0], str(target)]
+    done = subprocess.run([*launch, *runtime_args], **options)
+    done.stdout = built.stdout + evaluated.stdout + "\n--- isolated target ---\n" + str(target) + "\n" + done.stdout
+    done.stderr = built.stderr + evaluated.stderr + done.stderr
+    return done
+
+
 def entry_log_path(out: Path, entry: str) -> Path:
     name = re.sub(r"[^A-Za-z0-9._-]", "_", entry)
     if len(str(out / (name + ".log"))) >= 240:
@@ -272,11 +304,12 @@ def main(argv: list[str]) -> int:
             code, text = None, reason
         else:
             try:
-                done = subprocess.run(cmd, cwd=ROOT, env=entry_env, capture_output=True, text=True,
-                                      encoding="utf-8", errors="replace", timeout=spec.get("timeout", 1200))
+                done = execute(cmd, entry_env, build_root, spec.get("timeout", 1200))
                 code, text = done.returncode, done.stdout + "\n--- stderr ---\n" + done.stderr
             except subprocess.TimeoutExpired as ex:
                 code, text = "TIMEOUT", str(ex)
+            except (OSError, ValueError) as ex:
+                code, text = 1, f"isolated execution rejected: {ex}"
         entry_log_path(out, entry).write_text(text, encoding="utf-8")
         if reason:
             status = "BLOCKED_ENV"
