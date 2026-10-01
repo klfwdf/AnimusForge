@@ -1,5 +1,7 @@
 # 当前交接：本地功能与远端融合（2026-10-01）
 
+- **融合版本已部署并完成复核（2026-10-01）**：实际安装源码`6c32576c`，原脚本更新28文件，238个Stage/安装哈希一致，原文件Recovery备份与complete标记通过；包含城镇记忆7日间隔/384 tokens。实机/真实旧档/provider未验；用户已授权本轮提交推送。[部署验收、证据及安装回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#merged-deployment-verified-20261001)。此项替代下方历史“未部署”状态。
+
 - **远端8f3903e2已融合，未推送/部署**：保留本地城镇记忆7日间隔、快报/政变/处决等功能与远端测试收尾、场景死代码清理；两份文档冲突保留双方证据。修正渠道fixture对本地公开处决规则的依赖，群聊31、渠道138、记忆60、处决98、调度19、源码15检查与Release双API+Bootstrap通过；全仓C/实机/真实旧档未验。[本次源码责任、失败修复、证据和回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#remote-integration-20261001-town-memory)。下方各任务记录保留各自验收范围。
 
 # 当前交接：J 历史非外交测试闭环（2026-10-01）
