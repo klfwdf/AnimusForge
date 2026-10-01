@@ -1,5 +1,7 @@
 # 当前交接：J17 收尾与远端 CivilWar 合并（2026-10-01）
 
+- **政变专用进场与受击崩溃已离线修复（2026-10-01）**：`f5225e5d` 补街道/大厅专用菜单，修复 internal Origin 构造器漏绑定和 MbEvent 逆序导致 Coup 场景漏挂载。转储栈定位 BattleAgentLogic.OnAgentHit；最终双 API+Bootstrap、真实注册四标志、26 新回归+65 既有回归 PASS。尚未部署、原生进场/受击/旧档未验，不将离线 fixture 当实机完成；[证据与回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#coup-scene-repair-20261001)。保留其他周报 UI/生图并行改动。
+
 - **快报生图与封存控件已离线修复（2026-10-01）**：`5d0969b8`，快报每次打开重新生成1536×1024横图，不加载旧图；图片按实际比例缩放，封存改金边深红按钮。Release双API+Bootstrap、两个实际DLL尺寸验证、XML/资源映射通过。未部署/推送，真实生图及游戏点击未验；并发Coup改动保留。[范围、精确源码坐标与回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#bulletin-image-controls-20261001)。
 
 - **内战派系五项审查修复已部署（2026-10-01）**：产品/回归 `76503341`，修复内战标签双重过滤、玩家国王缺答复规则、失败结算丢记录、废除政策误增不满、拒绝参战仍扣忠诚度。56 项真实 owner/效果＋桩游戏回归、原 smoke/交互契约、最终 Release 双 API+Bootstrap PASS；按用户后续“部署”授权覆盖单模块，更新9文件，部署后238个Stage文件哈希一致。实机/真实旧档未验；异常副作用不明确时保留状态等待核对。源码坐标、构建版本/哈希、历史地图失败、旧 Stage 和安装备份见[本任务台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#civilwar-review-repair-20261001)，不替代其他任务或J17总体验收。
