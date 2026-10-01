@@ -1244,3 +1244,41 @@ owner封存尾部已逐draft计费并复用稳定排序；单draft内line净化�
 产品/行为 `e62e2a82`、`9ec814eb`、`5873d594`，MCM/聚合 `bee366a8`：`src/modules/AF.Module.Taunt/ScenePeaceConflictContextOwner.cs:7–67` 持有和平场景/MCM 物理入口判定；`SceneTauntPenaltyLedgerOwner.cs:9–114` 持有延迟犯罪和信任小数状态/提交转换；`SceneTauntConflictLifecycleOwner.cs:5–47` 持有普通/carryover/升格/结束状态。`SceneTauntBehavior.cs:31,83–97,119–264,792–859,2057,2357–2405,3015–3093,3947–3974,4000–4130,5365–5689,7450–7510,8156–8170,8545–8625,9769–9828` 保留 Campaign/Mission/TW/保存/原生处罚与队伍还原适配；原 `CampaignComposition.cs:38` 和 `StartupPatchComposition.cs:333–369` 的五 patch 注册不变。当前 DLL 回放、聚合契约、六构建与保存/API 证据见[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md)；[代码地图](af-framework-code-map.json)绑定 `bee366a8`，647 锚点两模式通过且只用于定位。**J13e2 `OFFLINE_VERIFIED`、J13 `ACTIVE`，下一包 e3 Encounter**；真实 Mission/Harmony/旧档/MCM/帧性能 **NOT-RUN**，不提前 J14。
 
 ## 以下为 e1 范围（历史）
+
+
+<a id="af2-host-terminal-closeout-20261002"></a>
+## 2026-10-02 P1–P8 宿主职责收闭：当前源码与分层验证
+
+本条替代上方旧坐标/`mixed-host` 的本轮已迁责任判断；历史记录与旧 review hash 不删除。当前机器可核地图仍保留 838 个原 ID，另附 `terminalResponsibilities` 的具名 old symbol → 实际 owner → production consumer → 唯一状态/生命周期与 `hostTypeInventory`，不以过渡 partial 或 owner 名称代替生产接线。
+
+| 原职责 | 真正 owner / 消费者 | 唯一状态与频率 |
+|---|---|---|
+| Weekly trigger/material/政治文本/值冻结 | MemoryBusinessStateOwner、WeeklyMemoryMaterial/ValuePolicy、WeeklyMaterialValueBannerlordAdapter；真实 publication/receipt 消费 | 原 pending/draft/ledger；触发/发布频率，无新增 Tick 全扫 |
+| Weekly generation/commit/system prompt | WeeklyReportRuntimeOwner、WeeklyPromptMaterialOwner；MyBehavior.WeeklyRuntime 薄入口及 D typed retry | 同原 wave/commit/prompt queue、context 游标、revision/record/preview，保预算 |
+| Recall/history selection/context | MemoryRecallContextOwner、HistoryArchiveRecallOwner；具名 capture adapter | 原 MemoryBusinessStateOwner，阻塞失败不降级 |
+| Prompt/current draft/角色/人物装备 | SceneHistoryMessageAssemblyOwner、UncompressedMemoryMessageAssemblyOwner、PersonaIntroMessageComposer + typed live capture adapters | detached scalar 快照，请求频率；游戏读取不后台化 |
+| Public external Scene prompt 135 行 | SceneExternalPromptCaptureAdapter → MainPromptMessageAssemblyOwner；原 public hook 薄门面 | 原 Movement/History/Persona authority，无新 state |
+| Party/asset transfer | Economy Authorization/Projection/Execution/EffectObserver + PartyAssetTransferBannerlordAdapter | 原 roster/资产真值，非事务 source-only effect 仍产生 AFEF，无回滚/重试 |
+| Native/Scene chains/发言执行 | NativeConversationTurn/GameEffectsRuntime、SceneConversationSessionRuntime、SceneSpeechEffectController、SceneSystemNpcShoutRuntime | 同 PendingOperationRegistry/claim/TCS；epoch/mission/generation 检查先于迟到 effects |
+| Scene bounded history | SceneConversationHistoryOwner、HistorySectionProjectionOwner、NativeHistoryIdentityProjectionOwner；实际写读 adapter/Presentation scalar 消费 | private stores + 原 gate，写入保身份，读出 detached；fingerprint O(1) |
+| Guide/summon/follow/return | SceneMovementController，Native/Scene effects/Audio completion 真消费 | 原 19 motion 字段、Agent/LocationCharacter；callback mission+generation 退役 |
+| 音频/呈现与完整 output 151 行 | SceneAudioLipSyncController、ScenePresentationController | 单资源/requestidentity/订阅 owner，真实完成同步一次，无第二音频状态 |
+| 编辑/导入/reload | Memory/Persona/Weekly/Event/Root/Package/Import UI controllers、真实领域 edit/import owner、DatabaseReloadController/Preflight | shared DeveloperEditorSession；原事务 rollback 与非事务 import 顺序分别保留 |
+| Memory queue 131+45 行 | MemorySummaryQueueRunRuntime；typed 单 job/结果叶能力 | 原 RunOwner/AttemptRunner，two-wave/60s/来源重验/接受顺序不变 |
+
+### 真正类型规模，不按同名前缀文件统计
+
+Roslyn `ClassDeclarationSyntax.Members` 直接语法声明（不是 semantic unique symbols，也非算法复杂度）：MyBehavior **48** 个真正 partial，**2408** direct declarations、**34642** own-member span lines；ShoutBehavior **29** 个真正 partial，**1352** direct declarations、**22219** span lines。基线 16a6ce67 分别为 My 24/2442/50391、Shout 28/1644/38124。新增 facade/DTO 会保留成员数，不能谎称成员数量大幅下降；主文件与真实 owner 各文件规模在 JSON inventory 中。
+
+### 明确保留用途，不是整宿主业务豁免
+
+- `SyncData`/ClearAllDataForCurrentSave 保唯一保存/显式开发清空组合顺序；真实分段 Reset/Ensure、storage IO 已归原 authority，清空仅 synthetic 测试，未执行真实用户数据。
+- `CreateNative/SceneActionPlanExecutorForExternal` 保外部兼容与既有 Actions family 组合，不新增规则。
+- `TrySpeakNativeConversationReplyWithTts` 保 native conversation engine/native wait 适配；Audio identity/resource 生命周期由唯一 controller 管理。
+- `TriggerShout`、trade inquiry/options 与当前 Army/SceneLocation/roster 事实读取是原具体游戏入口/资格/live 叶边界；未重写交易、人物生成、攻城/外交/Kingdom 玩法。
+- `CallUniversalApiDetailed` 保原 provider 兼容 IO；`RecordExternalPlayerHighValueRpCraft`、`RecordAnimusForgeSiegeInterventionForExternal` 保已有外部玩法钩子、实物观察与领域 owner 消费。
+- `BuildHeroFactsForPersonaGeneration`、`BuildNpcIdentityInfoForPrompt` 保原人物生成 live facts，不是本轮新人物 intro composer 的回调；后者三完整 intro 与装备/默认角色规则已真迁。
+
+### 验证层边界
+
+当前 owner/headless game-capability 生命周期、固定 historical protocol/UI oracle、精确 inverse/漂移负控、真实 DLL replay 分开报告。Debug/Release API1.3/API1.4/Bootstrap 同一 1337 raw inputs 六构建 exit0；总门禁进行中，不能提前称通过。完整当前 Courier PromptSchedule 与 ModuleNativeSubmission 执行仍没有 whole-consumer direct runner；纯 routing/关键迟到与 effect owner 实测、实际编译/接线不能替代这两个整体覆盖。LIVE、真实旧档、真实网络/TTS/帧性能 NOT_RUN。Weekly 原 512 terminal/64 pending 淘汰边界保持；证书全局影响归因 UNKNOWN，未擅自回滚。

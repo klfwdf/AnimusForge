@@ -1,3 +1,18 @@
+# 本轮当前交接：P1–P8 host terminal closeout（2026-10-02）
+
+本轮授权替代“仅计划/不启动”；唯一主台账末尾“最后三个原闭包与同候选验证进度”和当前代码范围图收集证据。最后三个 original core 已实际迁 owner（D9eb43b6d/B355acce0/C581faa44），保持公共入口/保存/程序集身份。
+
+最终候选同一1337rawinputs：Debug/Release双API+Bootstrap六构建exit0（debug-79b41f2958a0/frozen-release-1af4885c8d79）。cf059766测试逆投影packet286bindings/89paths及4漂移负控PASS；完整 final-gates-c7aef2bb 正进行，不能提前称门禁通过。旧run明确CANCELLED_PARTIAL。当前owner实测、历史protocol/UIoracle、sourceinverse、实际DLLreplay分层，不把整体Courier/ModuleNative提交未直测覆盖藏掉。
+
+LIVE/真实旧档/网络/TTS/帧性能NOT_RUN；证书全局影响归因UNKNOWN；512terminal原淘汰边界保持。保护原SessionTransport raw dirty及tools/NuGet，不push/部署/清理。下方旧交付均历史，不授权本轮推送。
+
+# 当前交接：AF2 两大宿主 P1–P8 终态实施（2026-10-02）
+
+- 用户已直接授权 [完整终态计划](docs/plans/af2-host-terminal-closeout-20261002.md) P1–P8 实施并持续到出口；计划中“仅规划/不启动”是被本轮 supersession 的历史状态，原验收标准不改。意图 `16a6ce67`，当前 ACTIVE，尚未宣布源码职责闭合。
+- 四执行线按独占簇迁真实 owner，唯一集成人维护共享边界/两个主文件/保存组合/索引和集中门禁；过渡 partial 不算完成。原 SessionTransport raw dirty 与旧 tools/NuGet 未提交、不清理。
+- [唯一主台账当前入口](docs/animusforge-refactoring-and-repository-reorganization-plan.md#af2-host-terminal-closeout-implementation-20261002)保存授权、退出门、切片和失败/未验；既有 [代码图](docs/architecture/af-framework-code-scope.md#af2-final-responsibility-closeout-20261001)是旧已验证导航，不能当新候选验收。
+- 新精确合成 TEMP 目录另获授权，仅当前新子树；无 push/Stage/部署/游戏覆盖/真实玩家音频清理。实机、旧档、真实网络/音频/帧成本仍 NOT_RUN。SDK 首次初始化证书 stdout 信号已披露，只有既有证书只读元信息，实际写入归因 UNKNOWN；不擅自删除或改系统配置。
+
 # 当前交接：7 个残留测试/工具 FAIL 离线闭环（2026-10-02）
 
 - 新授权仅替代下方“7残留”停点：意图 `9488c9be`、已验证切片 `9cff3ee8`；产品仍冻结 `2287069b`，1212同源hash/原SessionTransport保护一致，原dirty/tools/NuGet及他人计划不纳入提交、不清理。
