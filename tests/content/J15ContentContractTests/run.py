@@ -909,7 +909,7 @@ def verify_formats_and_references() -> None:
         "GUI/SpriteParts/af_courier/": "src/AF.GameAdapter.Bannerlord/UI/Courier/AnimusForgeCourierUiSprites.cs",
         "GUI/SpriteParts/af_player_notoriety/": "src/AF.GameAdapter.Bannerlord/UI/Social/AnimusForgePlayerNotorietyUiSprites.cs",
         "GUI/SpriteParts/af_player_rp_forge/": "src/AF.GameAdapter.Bannerlord/UI/Economy/AnimusForgePlayerRpForgeUiSprites.cs",
-        "GUI/SpriteParts/af_vassalage_notifications/": "VassalageBehavior.cs",
+        "GUI/SpriteParts/af_vassalage_notifications/": "src/modules/AF.Module.Diplomacy/Vassalage/VassalageBehavior.cs",
         "GUI/SpriteParts/af_weekly_": "src/AF.GameAdapter.Bannerlord/UI/Weekly/AnimusForgeWeeklyReportMapNotification.cs",
         "GUI/SpriteParts/af_world_diplomacy/": "src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.cs",
     }

@@ -486,7 +486,7 @@
       "owner": "Conversation.SettlementSiege",
       "entryPaths": [
         "src/bridges/Siege/Host/AfGcczShoutBridge.cs",
-        "SiegeAiInterventionBehavior.cs"
+        "src/AF.GameAdapter.Bannerlord/Composition/SiegeAftermath/SiegeAiInterventionBehavior.cs"
       ],
       "symbols": [
         {
@@ -495,7 +495,7 @@
           "kind": "method"
         },
         {
-          "path": "SiegeAiInterventionBehavior.cs",
+          "path": "src/AF.GameAdapter.Bannerlord/Composition/SiegeAftermath/SiegeAiInterventionBehavior.cs",
           "symbol": "ShouldRunSiegeInterventionPostprocessForExternal",
           "kind": "method"
         }

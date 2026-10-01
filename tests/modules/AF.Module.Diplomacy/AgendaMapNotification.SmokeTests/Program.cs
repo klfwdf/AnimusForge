@@ -2,7 +2,7 @@ using System;
 using System.IO;
 
 string root = FindRepositoryRoot();
-string source = File.ReadAllText(Path.Combine(root, "VoteDealBehavior.MapNotification.cs"));
+string source = File.ReadAllText(Path.Combine(root, "src/modules/AF.Module.Diplomacy/Agenda/VoteDealBehavior.MapNotification.cs"));
 
 string registration = ExtractMethod(source, "private bool TryEnsureAgendaMapNotificationRegistered()");
 Assert(registration.Contains("view.RegisterMapNotificationType", StringComparison.Ordinal),
@@ -26,7 +26,7 @@ static string FindRepositoryRoot()
     DirectoryInfo? current = new DirectoryInfo(AppContext.BaseDirectory);
     while (current != null)
     {
-        if (File.Exists(Path.Combine(current.FullName, "VoteDealBehavior.MapNotification.cs")))
+        if (File.Exists(Path.Combine(current.FullName, "src/modules/AF.Module.Diplomacy/Agenda/VoteDealBehavior.MapNotification.cs")))
         {
             return current.FullName;
         }
