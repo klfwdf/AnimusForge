@@ -1,5 +1,7 @@
 # 当前交接：J17 收尾与远端 CivilWar 合并（2026-10-01）
 
+- **快报首字绕排与封存按钮已离线修复（2026-10-01）**：`5f5bb1bc`，首字去蓝金底图，实际测量仅前三行缩进、后文全宽并保留链接；封存改浅纸色细描边，去ESC字样。Release双API+Bootstrap及两DLL各152排版/字符检查PASS，游戏字体/控件加载/滚动点击未验，未部署/推送。[精确坐标、证据与回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#bulletin-dropcap-flow-20261001)。
+
 - **王室阵营会因事件撤回支持（2026-10-01）**：`f77c4f51`，负面事件命中的王室阵营NPC累计不满达到现有MCM门槛（默认35）立即退为中立，玩家/王族不自动退出；记录历史和周报素材，不直接换国或起兵。复用现有事件，无新增轮询；102项生命周期检查和Release双API+Bootstrap通过。未部署、未实机；[源码坐标、边界、证据与回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#civilwar-crown-withdrawal-20261001)。此前“王室阵营无自动退出”的说明由此替代，AI自动加入王室阵营仍未实现。
 
 - **场景插画预设映射已替代固定尺寸（2026-10-01）**：`82269de8`，选2048方形→2048×1152，1344/1536档→1536×864，其余现有档→1280×720；只转换本次场景请求，设置原值保留。双API+Bootstrap和两个DLL各六预设检查PASS，未部署/推送/真实API或游戏验收。[源码坐标、验证与回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#scene-image-presets-20261001)。下方固定1280×720交付为历史。

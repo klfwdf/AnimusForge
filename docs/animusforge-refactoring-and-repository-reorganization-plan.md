@@ -1,3 +1,21 @@
+<a id="bulletin-dropcap-flow-20261001"></a>
+
+### 快报首字绕排与封存按钮重设计（2026-10-01，OFFLINE_VERIFIED）
+
+用户截图要求首字无蓝金底图、只有前三行让出首字空间、后文恢复普通全宽排版，以及封存控件重新设计去掉ESC。实际工作区 `F:/AnimusForge-main`、分支 `codex/af-main-refactor-continuation-20260831`；检查点 `18b58fa`、产品提交 `5f5bb1bc`。本条替代此前快报首字整段缩进和深红封存控件，不改快报生图/存储机制；并发CivilWar/Coup改动保留。
+
+代码责任图（修订 `5f5bb1bc`）：
+
+- `src/modules/AF.Module.Weekly/Panel/WorldBulletinBodyWidget.cs:13–95`：新增实际消费者控件；按原生RichText、字体、缩放与栏宽测量前三行，Lead缩进62，Tail从第四行恢复全宽。首字位于同一滚动正文内，纯深棕文字无底图。无首字时全篇正常排版。缓存文本/栏宽/画刷/语言/缩放，稳定帧仅常数比较；重排最多十次有界前缀测量加头尾高度测量，不做反射/世界扫描。
+- 同文件 `:98–150`：WorldBulletinTextFlow.SplitToHeight/ Split 在完整标签边界分段，闭合并重开链接/样式，不截断UTF16代理对，保持正文字符与链接目标。前缀最多512可见字符；余文原样交给原生RichText继续排版。
+- `src/modules/AF.Module.Weekly/Panel/WorldBulletinPanelVM.cs:270–282,316–335`：移除整段BodyMarginLeft；保持原有首字判定，已被百科链接占用的起始字符不拆开。
+- `content/modules/AF.Module.Weekly/GUI/Prefabs/WorldBulletinPanel.xml:87–109,150–156`：绑定自定义控件及原生Lead/Tail链接事件，滚动面板无永久左边距；封存控件154×38、浅纸色细描边与两侧菱形装饰，移除ESC文字。点击仍执行ExecuteClose，原ESC键关闭行为保留。
+- `content/foundation/AF.Foundation.UI/GUI/Brushes/AFCourierLetterBrushes.xml:2–14`：细棕描边/浅纸色填充及四状态画刷，无新贴图。
+
+最终隔离Release双API+Bootstrap **exit0、0错误**（保留既有警告）；日志/哈希/引用信息 `artifacts/bulletin-text-flow-20261001/build-91924060745044babd552d3b6f4af51f/`。双版编译后真实生产helper各152检查PASS：嵌套链接/样式、所有切分边界、UTF16、空文/短文/换行、长正文，及3栏宽×2字号×3缩放下真实RichText三行排版；使用合成字体和语言，不能冒称游戏字体/GPU。验证工具 `artifacts/bulletin-text-flow-20261001/FlowCheck.cs`、`check.ps1`；首次脚本缺依赖、随后测试重复注册Default字体，修正验证工具后双版通过，非产品故障。
+
+XML解析/子控件引用、首字无背景、Tail无左缩进、封存绑定/无ESC标记、官方内容映射及git diff --check均PASS。未改官方构建部署脚本、未Stage/部署/推送。实际游戏字体观感、自定义控件加载、滚动/点击/缩放和旧档仍NOT-RUN。整个构建包含当时并发工作树，不冒称仅本提交产物；本包不提升J17/C/D。回滚仅定向revert `5f5bb1bc`，不hard reset或撤回他人提交。
+
 <a id="coup-passage-transition-20261001"></a>
 
 ### 政变大厅门原版 F 转场抢占修复（2026-10-01，ACTIVE）
