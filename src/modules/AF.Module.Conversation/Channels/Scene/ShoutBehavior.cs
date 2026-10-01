@@ -7636,7 +7636,7 @@ private static void SplitSceneNpcRoleIntroSections(string fullIntro, bool isHero
 		{
 			return !string.Equals(before, tags ?? "", StringComparison.Ordinal);
 		}
-		ApplyNativeConversationActionTags(
+		_nativeGameEffects.ApplyNativeConversationActionTags(
 			targetHero,
 			targetCharacter,
 			ref tags,
