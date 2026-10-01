@@ -145,8 +145,6 @@ public sealed partial class WorldDiplomacyBehavior
             (WorldDiplomacyBehavior.ResolveKingdom(kingdomId)
                 ?? WorldDiplomacyBehavior.ResolveSettlementById(settlementId)?.OwnerClan?.Kingdom)?.StringId;
         public int OfferCooldownLastFailedRoundDay(WorldDiplomacyOfferCooldownKey key) => _owner.GetOfferCooldownLastFailedRoundDay(key);
-        public string BuildExternalFactBody(string action, string initiatorId, string targetId, string reason) =>
-            WorldDiplomacyBehavior.BuildExternalFactBody(action, WorldDiplomacyBehavior.ResolveKingdom(initiatorId), WorldDiplomacyBehavior.ResolveKingdom(targetId), reason);
         public bool ExternalProposalTakenEffect(string intent, string initiatorId, string targetId) =>
             new OfferActionPort(_owner).HasTakenEffect(intent, initiatorId, targetId);
         public string NewThreatId() => WorldDiplomacyBehavior.NewId("diplomacy_threat");

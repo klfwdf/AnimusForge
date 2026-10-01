@@ -9,6 +9,21 @@ namespace AnimusForge.Refactor.Domain;
 
 public static class WorldDiplomacyTextRules
 {
+	public static string BuildExternalFactBody(string action, string initiatorName, string targetName, string reason)
+	{
+		string result = action switch
+		{
+			"declare_war" => initiatorName + "的统治者在面对面交涉中向" + targetName + "正式宣战。",
+			"propose_peace" or "accept_peace" => initiatorName + "与" + targetName + "已经通过面对面交涉达成和平。",
+			"propose_alliance" or "accept_alliance" => initiatorName + "与" + targetName + "已经通过面对面交涉缔结同盟。",
+			"break_alliance" => initiatorName + "在面对面交涉后终止了与" + targetName + "的同盟。",
+			"propose_trade" or "accept_trade" => initiatorName + "与" + targetName + "已经通过面对面交涉缔结贸易协定。",
+			"cancel_trade" => initiatorName + "在面对面交涉后终止了与" + targetName + "的贸易协定。",
+			_ => initiatorName + "与" + targetName + "完成了一次具有公开影响的面对面外交交涉。"
+		};
+		return result + (string.IsNullOrWhiteSpace(reason) ? "" : "\n\n缘由：" + reason.Trim());
+	}
+
 	public static string NormalizeBody(string value)
 	{
 		string text = (value ?? "").Replace("\r\n", "\n").Replace('\r', '\n').Trim();

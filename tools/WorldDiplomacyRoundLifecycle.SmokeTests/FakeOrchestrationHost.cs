@@ -425,11 +425,6 @@ internal class FakeOrchestrationHost : IWorldDiplomacyOrchestrationHost
         Calls.Add("OfferCooldownLastFailedRoundDay");
         return default;
     }
-    public virtual string BuildExternalFactBody(string action, string initiatorId, string targetId, string reason)
-    {
-        Calls.Add("BuildExternalFactBody");
-        return "";
-    }
     public virtual bool ExternalProposalTakenEffect(string intent, string initiatorId, string targetId)
     {
         Calls.Add("ExternalProposalTakenEffect");

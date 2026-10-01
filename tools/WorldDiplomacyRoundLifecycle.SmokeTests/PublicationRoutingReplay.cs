@@ -44,6 +44,25 @@ internal static class PublicationRoutingReplay
     }
     internal static void Run()
     {
+        var oralFacts = new Dictionary<string, string>
+        {
+            ["declare_war"] = "甲的统治者在面对面交涉中向乙正式宣战。",
+            ["propose_peace"] = "甲与乙已经通过面对面交涉达成和平。",
+            ["accept_peace"] = "甲与乙已经通过面对面交涉达成和平。",
+            ["propose_alliance"] = "甲与乙已经通过面对面交涉缔结同盟。",
+            ["accept_alliance"] = "甲与乙已经通过面对面交涉缔结同盟。",
+            ["break_alliance"] = "甲在面对面交涉后终止了与乙的同盟。",
+            ["propose_trade"] = "甲与乙已经通过面对面交涉缔结贸易协定。",
+            ["accept_trade"] = "甲与乙已经通过面对面交涉缔结贸易协定。",
+            ["cancel_trade"] = "甲在面对面交涉后终止了与乙的贸易协定。"
+        };
+        foreach (var fact in oralFacts)
+            Test.True(WorldDiplomacyTextRules.BuildExternalFactBody(fact.Key, "甲", "乙", null) == fact.Value,
+                "oral fact wording remains stable for " + fact.Key);
+        Test.True(WorldDiplomacyTextRules.BuildExternalFactBody("other", "甲", "乙", "  原因  ")
+            == "甲与乙完成了一次具有公开影响的面对面外交交涉。\n\n缘由：原因",
+            "fallback oral fact and trimmed reason remain stable");
+
         var immediate = new Port { FailCapture = true };
         var orchIm = new Orch(immediate);
         var player = new WorldDiplomacyDocument { DocumentId = "player", AuthorKingdomId = "a", TargetKingdomId = "b", IsPlayerAuthored = true };

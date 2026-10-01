@@ -16751,6 +16751,12 @@ RunRepairCorrectionAndJobDecisionTests();
         Test.True(behaviorSource.Contains("WorldDiplomacyRoundProgressApplication.ProcessDueRelayArrivals(", StringComparison.Ordinal)
             && behaviorSource.Contains("WorldDiplomacyDocumentPublicationApplication.NotifyExternalDiplomacyResolved(", StringComparison.Ordinal),
             "the host must route relay arrivals through the round-progress Application and external facts through the publication Application");
+        Test.True(textRulesSource.Contains("public static string BuildExternalFactBody(", StringComparison.Ordinal)
+            && behaviorSource.Contains("WorldDiplomacyTextRules.BuildExternalFactBody(normalized,", StringComparison.Ordinal)
+            && !behaviorSource.Contains("private static string BuildExternalFactBody(", StringComparison.Ordinal)
+            && !File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.OrchestrationHost.cs"))
+                .Contains("BuildExternalFactBody(", StringComparison.Ordinal),
+            "external fact wording belongs to Domain with only live names supplied by the host");
         Test.True(behaviorSource.Contains("_host.ResolvePartyId,", StringComparison.Ordinal)
             && behaviorSource.Contains("MarkPlayerCourtReachedByRelay,", StringComparison.Ordinal)
             && behaviorSource.Contains("resultSettlementSlotId: settlementSlotId", StringComparison.Ordinal)
