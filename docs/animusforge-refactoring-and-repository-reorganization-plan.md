@@ -1,3 +1,36 @@
+<a id="af2-final-responsibility-closeout-20261001"></a>
+## AF 2.0 主体最终职责收官：F0 已核定，五组实施中（2026-10-01）
+
+**当前授权**：用户本轮授权实施独立 [F0–F6/S1–S6 计划](plans/af2-final-responsibility-closeout-20261001.md)，取代该文件历史“仅规划/默认串行”停点；不授权推送、Stage、部署、仓外写入、清理、自动化或新 chat。此前 main 发布记录整体保留为历史，不发出本轮操作指令。现态 `ACTIVE / FIVE_PACKAGE_SCOPE_FROZEN / PRODUCT_MIGRATION_NOT_YET_VERIFIED`；Persona 新发现具名 OPEN，等待用户范围裁定，不能宣称原 J 差集全部闭合。
+
+### 基线与保护
+
+- 已核实根 `E:/AnimusForge-refactor-continuation-20260831`、分支 `codex/af-main-refactor-continuation-20260831`、起始 HEAD `320c1aad10df86b6078c1731c0ff8966ebd7c3f5`、产品基线 `d57e9be23788348a9e8885bae5c4b7950783662e`；本地空意图 `3d59d616`。仅集成者操作 Git、共享宿主/项目/正式台账及串行最终构建，业务执行者不覆盖他人改动。
+- 原 `src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.SessionTransport.cs` raw dirty（git diff 空）仍保护，SHA256 `a393a98b42c1f2d37150578d5d5ede170540be8eb4874751fbc2821eb9cfe23e`；精确原内容与初始全部 status 存在 `artifacts/af2-final-closeout/integration/f0/`，不提交旧 tools/NuGet/产物、不清理。
+- MSBuild 只求值，两 API **1172 Compile、1172 unique、8 EmbeddedResource**；资源逻辑名相同。J17-A 1128 基线经实际 rename 对账净增44（49新增/5退出包含两个 rename detector 未配对桥文件，不等于49新业务）。全部两个宿主家族 **51 partial**：与旧 A 源 LF归一后33未变、18有具名变更；旧逐成员证据 E120–E133及后续正式成果复用，不重审全仓，不把未变文件等同薄适配。逐文件 oldPath/hash/旧成员证据ID/本轮分类在 `host-partial-delta.json`，当前源码与消费者按符号重定位。
+
+### 一次冻结差集与边界
+
+| 包 | 必迁完整职责 | 真正保留与退出门 |
+| --- | --- | --- |
+| F1 Kingdom | 候选/跟随资格评分、稳定排序、概率及首个合格选择；命名文本/Prompt/解析/3次尝试策略；颜色距离/选择、known/legacy集合生命周期、landless基础资格；CivilWar仅key/kind/priority微映射 | TW事实/实时重名、Banner应用、CanKingdomBeDiscontinued事件veto、实际王国动作/保存/UI。强制仅跳概率、候选仍normal规则；惰性随机消费次数与顺序、同分、无候选/免疫/失效目标、全部auto/manual/retry消费者有回归。 |
+| F2 Social耐心 | max/level/恢复/mood/无兴趣/关系及私好/loyalty结果、唯一状态表/锁/load/reset生命周期 | 旧nested类型/四JSON字段与 `_patienceStates_v1` 身份、Hero/非Hero事实及TW/Romance实际效果/External门面。按key O(1)恢复，neutral纠偏不重复扣减、save/load唯一状态、UI只查询；不新增Courier扣减。 |
+| F3 Memory | 三summary Success/Failure完整接受；身份merge全部旁支和queue retarget；ExecutionTranscript Complete；Planning分类/排序/空洞压实/跨tick游标；Sealing normalization/index-tail/seal-state；Recovery marker/part-write/reconcile/retry/readiness；typed source fingerprint编码 | SourceWrites线程/owner-generation与live identity capture、真实RunOwner/Dispatcher、保存身份、Live资格和Native/Weekly窄effects。单一容器load rebind、来源变更/代际/重复迟到/部分成功/通知失败/合并/跨tick结构变化/marker-part失败，保留captured/sealing完整有效断言。 |
+| F4 Weekly | legacy batch/full解析与identity/缺失/重复/部分结果、retry与限流策略、全部auto/manual/first-week/full/recovery；未读通知失效驱动有界消费；WorldBulletin记录/收集窗/inflight/发布/周限额账本/布局与最新期缓存 | 既有wave/commit queue及WorldBulletinPolicy不重做；live event capture、SyncData、真实UI/Illustrator实际调用保留，制作组业务不重写。空闲tick不重复净化/复制全未读集合，按实际记录/字符/候选量检查；源变化/取消/迟到/重试用尽/通知已读顺序均覆盖。 |
+| F5 Conversation | 公共资格/命中merge/prepare/响应normalizer/one-shot complete脱离Shout核心字段；Native history/dedup/tentative/pendingAFEF唯一owner；default/detached/public/reflection所有入口同阶段 | Live Hero/Character/Agent采集与受保护效果应用、Scene群聊primary-first/旁听/relay/呈现、Courier运输/到达/来信/预生成时点、必要兼容门面保留。约60共同helper成簇迁移，worker仅detached网络/文本；三渠道hit→标签→唯一效果→可见文本→AFEF、取消/重入/晚结果/群聊完整生产回归。 |
+
+新增预算是在原完整包内承接遗漏：F4 WorldBulletin约1–2、F3完整partial约2–3工程日等效；F1旁支约3个聚合规则实现与定向用例，不另造模块/DLL/框架。预算不是实时交付保证。共享接口无匿名决定：F3经原 `ClearNativeConversationSessionHistoryForExternal(key, day)` 窄门面进入F5；F2既有External门面不变；cross-domain effects保原提交顺序/失败语义；公共Scene候选从宿主nested live捕获映射detached值，不动反射/保存类型身份。
+
+五组外具名 **Persona OPEN**：`MyBehavior.PersonaGeneration.cs:50–81` 完整system/user规则，`MyBehavior.PromotedPersonaGeneration.cs:118–129,168–178` fallback/技能Prompt，`MyBehavior.cs:18143,20955` Normalize/自定义要求仍在宿主；现有 `NpcPersonaGenerationOwner`只lease/cooldown，不能当完整业务owner。建议独立窄Persona收口（约1–2工程日等效）已交用户裁定；未授权不迁移。不把独立内聚领域Behavior/制作组内部业务按文件大强拆；旧具体错误/性能/隐私风险维持原OPEN，不能冒充已修复。
+
+### 验证准备、失败与未验
+
+- 本轮没有完成产品门禁。F1现有DomainOwner原Program+真实module隔离基线PASS；首次原项目旧obj被glob纳入 `CS0579`，转为artifacts显式Compile诊断，不改原项目/清obj。F3 captured/sealing基线真实编译缺 `WeeklyAggregateEventLineOwner`（fixture缺实际源）；F5 SceneParity缺 `PublicExecutionOrderPolicy/Runtime`（fixture缺实际源）。失败原记录保留；不得改hash/expected掩盖。
+- 最终同源Debug/Release × API1.3/1.4 + Bootstrap、全量分类、地图双模式、保存/ABI/动态消费者及S6五项影响分析均待实施；实际DLL、fixture、LIVE/SAVE不同层。F7实机/旧档/真实网络/帧性能 **NOT-RUN**。
+- 全量 `tests/run_all.py` 明确要求仓外合成TEMP：本轮没有该精确根写入授权，未绕过guard，待明确许可；已审入口还不等于全部传递副作用审完。
+- 范围违规如实记录：Conversation早期未经授权把源码引用搜索输出写入精确仓外 `C:/Users/PC/AppData/Local/Temp/af-f5-refs.txt`，当前26354字节，写前未查存在，是否覆盖旧同名文件 **UNKNOWN**；已停仓外写入、不删除，内容类别是源码符号路径/行号/引用。不得用本台账追认授权。
+- 旧凭据暴露轮换状态未确认，不读取/复述秘密；本轮不上载历史、不部署/推送、不修一键构建语义。
+
 <a id="main-call-to-war-integration-20261001"></a>
 ## 合并 main 参战邀请修复并交付 main（2026-10-01）
 
