@@ -1,3 +1,37 @@
+<a id="source-relocation-round3-20261001"></a>
+## 第三轮最后38源码归位有限交付（2026-10-01）
+
+**本轮完成**：用户明确批准冻结清单SHA256 `33f852bd63b6d47a110787a809a26323c2566d2983a048a35af387fdd1852c74` 的38 old/new及必要当前路径消费者、验证、本地提交。根级tracked C# **38→0**，累计 **327→149→38→0**（178+111+38）；不是根资源/依赖/产物清空或业务重构。前两轮外交/制作组root保留条件被本轮明确替代，历史记录不改。
+
+### 实施与责任
+
+- 外交18整体进入`src/modules/AF.Module.Diplomacy/{Direct,World,Annexation,Profiles,Vassalage,Agenda,Guards}`；Strategic2/VoteDeal4整partial保持。团队19游戏绑定实质规则/状态机/保存宿主进入`src/AF.GameAdapter.Bannerlord/Composition/SiegeAftermath`，NobleGathering1进入`Composition/Gathering`；Siege6整家族保持，明确不是薄桥/纯core业务抽取。
+- 所有38raw checkout SHA等于批准；提交Git blob SHA等于原基线；无业务、namespace、CLR类型、保存key/数值身份、程序集/API或默认入口修改。纯core递归SDK树外安置20游戏宿主，184core源码及独立csproj hash保持。无重复Include/compat副本，主csproj/sln/一键脚本与运行资源不改。
+- 意图`c283963b`，外交PeaceTerms小片`71b04bfa`，余37`6b6603c2`，必要消费者`2401bbfd`；正式文档提交以Git最新日志为准。六分配消费者8处current literals、共享helper327映射、bridge清单2/currentcatalog16纯路径变更；exact inverse核对，无历史git show/review键、原metadata hash、fixture或断言语义修改。
+- 813map更新1物理源码坐标和1C#测试导航hash；先严格逆映射新literal得到原正文并核原hash，非盲刷新。绑定sourceRevision`2401bbfdb0930bfec8bbf45baf800a77e8f7e077`，813 recorded/working-tree均PASS。
+
+### 实际门禁及证据
+
+| 门禁 | 实际结果 | 仓内证据 |
+| --- | --- | --- |
+| 小批次与全部38双API无target求值 | 两API各1150 Compile无漏/重；7嵌入资源LogicalName同基线；纯core184不变 | `artifacts/source-relocation-round3/small-gate-5612b20072c2/result.json`；`full-gate-aa57e5f9d4bd4a6286e6e6f99adbef11/result.json` |
+| 38 raw/提交基线字节及保护 | 全38相等、旧路径消失、root C#0、原dirty SHA保持 | `artifacts/source-relocation-round3/committed-byte-audit.json`；P1 `p1-raw-c6266b6d0ce54e41af48df10e96fb29d/raw-report.json`；P2 `p2-byte-boundary-audit.json` |
+| Debug/Release双API+Bootstrap六隔离构建 | 两轮exit0，六DLL marker hash一致 | `builds/build-e661eef7c93a4c0bac937c7099b15940/results.json`；`builds/build-4640532f4e98458d98f0033991e9cd6e/results.json`；`six-build-marker-audit.json` |
+| 同实际1.4Release候选严格非外交C43 | **43PASS/0FAIL/0BLOCKED_ENV，exit0**，冻结消费者2401bbfd | `regression/c-e62f96b45650/{results.json,candidate.json,aggregate.log}` |
+| 两API实际DLL message/history | 各45检查，build/run均exit0 | `messages-ed0087cfa7f54bd0a364094bf18cdefb/{1.3,1.4}/result.json`及run.log |
+| 新增纯路径有限消费者 | Prompt source-only、J15格式/资源、Agenda原Program隔离net8源码扫描3、J13源接线编译；NonStreaming240/15primary/9configured/2domain；三adapter307/13签名/29调用+3源码3行为负控PASS | `p3-completion.json`；`p3-direct-0141cd988b6742d58762c8f4a52503fa`；`p3-helper-eed4ba36801b4b17bc90367e09656310` |
+| 地图 | 813两模式PASS，原符号/范围保留 | `map-path-audit.json`；`code-map-evidence.json` |
+
+所有验证使用已审runner/现有SDK、最小环境与新UUID仓内输出。C43只沿用此前精确授权合成TEMP `E:/tmp/af-j17-20260930`，不扩大；1.3 SaveSystem为旧已审hash绑定只读依赖。Debug/Release在源切片提交前/交错进行，invocation各记实际HEAD/diff与脚本hash，最终38提交后raw和Git基线核对一致。一次无target求值入口因Python默认GBK读取UTF-8计划失败，未执行求值/改索引；显式UTF-8后完成，不隐瞒该调用失败，也不视为产品失败。
+
+### 未来外交覆盖与未验/保护
+
+以后新外交应在`src/modules/AF.Module.Diplomacy`对应canonical目录另行核接口/保存身份并实施；本轮未覆盖新实现/删旧业务，不在root恢复副本或双编译。外部新外交写者身份未知已实证记录；本轮移动前HEAD/源hash/目标不存在门禁没有实际冲突，不扩历史审计或联系其他对话。
+
+完整Compression/IntentBoundary仅current路径存在及严格inverse验，完整外交/Campaign业务未跑；历史完整TeamModuleServices入口的CS0246 `ICivilWarModulePort`未修，本次C43用独立三adapter有限入口，不声称完整服务PASS。实机、旧档、真实provider网络/音频/性能、PDB远端SourceLink下载未验，TPAC许可HOLD与旧凭据轮换未证实。不是全仓PASS。
+
+原`CourierDeliveryBehavior.SessionTransport.cs` dirty rawSHA `a393a98b42c1f2d37150578d5d5ede170540be8eb4874751fbc2821eb9cfe23e`及旧tools/NuGet/历史产物保留；无push、Stage、部署、清理、安装下载、仓外镜像/G镜像或一键行为变更。当前导航见[目录说明](architecture/af-source-directory-guide.md)、[范围说明](architecture/af-framework-code-scope.md#source-relocation-round3-20261001)、[813地图](architecture/af-framework-code-map.json)。最终现场/提交和保护记录见`artifacts/source-relocation-round3/final-delivery.json`。
+
 <a id="source-relocation-round2-20261001"></a>
 
 **2026-10-01 当前唯一入口：第二轮源码物理归位有限交付。** 此条明确替代[第一轮](#source-relocation-20261001)的混合AF宿主根级保留与Reward/回信UI测试路径hold；第一轮178移动和所有旧实证保留为历史，不重做领域业务审计。

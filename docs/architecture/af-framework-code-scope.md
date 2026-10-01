@@ -1,3 +1,10 @@
+<a id="source-relocation-round3-20261001"></a>
+### 第三轮当前源码定位（2026-10-01）
+
+精确批准最后38项原样归位：外交18进入`src/modules/AF.Module.Diplomacy`，GCCZ实质游戏宿主19进入`src/AF.GameAdapter.Bannerlord/Composition/SiegeAftermath`，NobleGathering整体进入`Composition/Gathering`。根级tracked C#38→0，累计327归位；不称root资源目录清空，不改变业务owner/算法/namespace/类型/程序集/保存身份/API。前两轮root保留状态由本条明确替代，历史只保留证据语境。
+
+双API1150 Compile/7资源与纯core184边界通过；813地图绑定消费者修订`2401bbfdb0930bfec8bbf45baf800a77e8f7e077`，1物理源码坐标变更、1纯路径C#测试hash经严格正文inverse核对，其余hash/符号/行范围不变，两模式通过。新外交未来替换canonical目录、不建立root副本/双编译；本轮没有实施覆盖。逐项源码责任/一基符号行/保存身份见[冻结38清单](../plans/2026-10-01-source-relocation-round3-manifest.json)，完整验证/未验/提交只写[唯一主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#source-relocation-round3-20261001)。
+
 <a id="source-relocation-round2-20261001"></a>
 
 ## 当前源码物理布局：第二轮有限交付（2026-10-01）

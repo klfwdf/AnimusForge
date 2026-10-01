@@ -1,3 +1,10 @@
+# 当前交接：第三轮最后38源码归位有限交付（2026-10-01）
+
+- 批准38项原样归位（外交18、GCCZ实质游戏宿主19、Gathering1）；根级tracked C#38→0，三轮累计327归位，不表示root资源/产物清空。业务/namespace/类型/保存身份/API/程序集和默认入口不改。
+- 两API各1150 Compile/7资源及纯core184保持；六隔离构建通过；严格非外交C43 43PASS/0FAIL/0BLOCKED_ENV；两API实际DLL各45检查；813map两模式PASS。新增外交消费者只验必要路径/有限源码接线，不扩完整业务。
+- 本地c283963b意图、71b04bfa小片、6b6603c2余37、2401bbfd消费者；正式文档提交以Git日志为准。完整证据、实际失败、保护/未验仅见[唯一主台账第三轮](docs/animusforge-refactoring-and-repository-reorganization-plan.md#source-relocation-round3-20261001)。[目录说明](docs/architecture/af-source-directory-guide.md)/[范围图](docs/architecture/af-framework-code-scope.md#source-relocation-round3-20261001)为现态；下方前两轮root保留只是历史，已明确替代。
+- 未来新外交canonical为src/modules/AF.Module.Diplomacy，后续另行实施，不root副本/双编译。本轮未覆盖新实现。原SessionTransport dirty/旧tools/NuGet/产物保留，无push/Stage/部署/清理/安装下载/外仓或G镜像/一键变更。完整历史服务/外交、实机旧档/网络音频性能、远端SourceLink、TPAC许可及凭据轮换未验。
+
 # 当前交接：第二轮源码物理归位有限交付（2026-10-01）
 
 - 第二轮批准111项已全部raw-byte原样归位；根级tracked C# **149→38**，两轮累计327→149→38、289归位。MyBehavior22及其他混合AF宿主整家族/整文件归宿主；30具证纯AF-side桥单独归src/bridges。根级38明确为18外交产品+20制作组实质规则/状态机/业务存档，不擅自迁排除业务。
