@@ -30,6 +30,8 @@ internal sealed class AdapterProbe
     private MemoryDailyDeveloperEditContext CaptureDailyDeveloperEditContext(Hero _) => Context;
     private MemoryDailyDeveloperEditEffects CaptureDailyDeveloperEditEffects(Hero _, int day, string reason) => Effects;
     private MemoryImportExportState CaptureMemoryImportExportState() => new() { DailyDrafts = _memoryBusinessState.Drafts, SummaryQueue = _memoryBusinessState.DailyQueue };
+    private List<DialogueDay> LoadDialogueHistory(Hero _) => Effects.LoadHistory();
+    private void SaveDialogueHistory(Hero _, List<DialogueDay> records) => Effects.SaveHistory(records);
     @@ADAPTERS@@
 }
 internal static class Program
@@ -116,6 +118,12 @@ internal static class Program
         MemoryDeveloperEditOwner.ClearMemoryWithHistorySync(state,context,export,_=>effects);
         Check(syncBeforeClear&&!state.Drafts.ContainsKey("hero")&&!export.Blocks.ContainsKey("hero")&&!export.Overviews.ContainsKey("hero")&&export.OverviewQueue.Count==0,"compressed clear attempts history sync before clearing same authoritative containers");
         Check(records[0].Lines.SequenceEqual(new[]{"clear"}),"per-draft sync failure does not replay or erase historical dialogue");
+        records=new(){new(){GameDayIndex=5,Lines=new(){"initial"},MemoryCommitMarkers=new(){["marker"]="receipt"}}};
+        effects.SaveHistory=x=>records=x;
+        Check(MemoryDeveloperEditOwner.EditDialogueHistoryLine(records,5,0,"  raw\r\ninput  ",effects.SaveHistory)&&records[0].Lines[0]=="  raw\r\ninput  ","legacy editor retains raw nonempty input verbatim");
+        Check(MemoryDeveloperEditOwner.EditDialogueHistoryLine(records,5,0,"  ",effects.SaveHistory)&&records.Count==1&&records[0].Lines.Count==0&&records[0].MemoryCommitMarkers.Count==1,"legacy blank delete preserves marker-only day");
+        Check(!MemoryDeveloperEditOwner.EditDialogueHistoryLine(records,5,0,"invalid",_=>throw new Exception()),"legacy invalid line selection does not publish");
+        Check(!probe.TryApplyDevDialogueHistoryLineDataMutation(new(),5,0,"late",0),"late legacy input callback rejected before loading history");
         Console.WriteLine("PASS DailyDeveloperEdit checks="+checks+" live=NOT_RUN");
     }
 }
