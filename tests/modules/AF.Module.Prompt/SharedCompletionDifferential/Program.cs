@@ -9,6 +9,7 @@ namespace AnimusForge
 {
     public sealed class Hero { public string StringId; public string Name; public CharacterObject CharacterObject; }
     public sealed class CharacterObject { public string StringId; public Hero HeroObject; }
+    public static class TWParallel { public static bool IsMainThread() => true; }
     public sealed class MentionedWorldEntities
     {
         public List<string> Entities = new List<string>();
@@ -124,6 +125,11 @@ namespace AnimusForge
         private static string BuildHeroArmyRuntimeFactForPrompt(Hero hero) => "";
         private static string BuildPlayerArmyRuntimeFactForPrompt(Hero hero, CharacterObject character, int agent) => "";
         private static string BuildResidentRecentActionsPrompt(Hero hero, CharacterObject character, int agent) => "";
+        // This fixture covers shared retrieval composition, not WorldBulletin gameplay.
+        // Keep the new capture branch explicitly disabled; accidental entry must fail loudly.
+        private static bool IsWorldBulletinPublishingEnabled() => false;
+        private static WeeklyPromptSnapshot CaptureWorldBulletinNpcSnapshot(Hero hero, CharacterObject character, string kingdom)
+            => throw new InvalidOperationException("WorldBulletin capture is outside this detached retrieval fixture");
         private static bool ShouldExcludeNpcShortReportFromWeeklyShortLayer(string rules, Hero hero, CharacterObject character, string kingdom, WeeklyPromptSnapshot weekly) => false;
         private static string BuildWeeklyShortReportsPromptBlock(Hero hero, CharacterObject character, string kingdom, bool exclude, WeeklyPromptSnapshot weekly) => "";
         private static string BuildTriggeredWeeklyFullReportsPromptBlock(string rules, Hero hero, CharacterObject character, string kingdom, WeeklyPromptSnapshot weekly) => "";
