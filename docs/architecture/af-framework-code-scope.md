@@ -1,3 +1,12 @@
+<a id="remote-feature-merge-20261001"></a>
+### 远端功能合并当前范围（2026-10-01）
+
+普通合并保留远端`982a5861`的Execution/Weekly/CivilWar/Coup/GCCZ/Policy/Illustrator/WorldMap功能及本地结构；源合并`9ee686ee`双父分别是`4d1d4ad7`/`982a5861`。新增9按[冻结审批清单](../plans/2026-10-01-remote-merge-new-source-relocation-manifest.json)归canonical，root C#仍0，总定位336；不是future外交替代。具体owner/一基行/remote blob SHA均在该清单；旧现有23root变更在canonical normalized正文等于remote，不以ours/theirs覆盖实现。
+
+813地图绑定最终负控包装修订`e3d65455`（前序测试接合`5691a9c7`）；19文件内容hash更新均先绑定获准remote实际源码diff，114一基符号坐标逐个重定位，不以旧业务hash保持假通过。旧review仍以精确approved delta投影验证历史承诺，同时Execution98、NativeTurn112及新Reset/permit/Harmony/保存等当前行为另验；未把已退役owner guard重新塞回生产。保存keys178、typed205/flattened46、主Compile1172/资源8、purecore186均按真实功能增量核，不死守前轮数量。
+
+完成/失败/有限未验与普通推送事实只记[唯一主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#remote-feature-merge-20261001)，目录导航见[简明说明](af-source-directory-guide.md)。历史全文保留，不称全仓或LIVE验收通过。
+
 <a id="source-relocation-round3-20261001"></a>
 ### 第三轮当前源码定位（2026-10-01）
 
