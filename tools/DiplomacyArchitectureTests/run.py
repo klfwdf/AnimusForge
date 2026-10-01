@@ -238,6 +238,7 @@ def main():
  assert 'DiplomacyConversationBridge.BuildDiplomacyMemory' in current
  executor=read(APPDIR+'WorldDiplomacyDocumentExecutionApplication.cs')
  assert 'ProcessAnalyzedMultiActionDocument(' not in executor
+ assert executor.index('actions.Count > port.MaxDiplomaticActionsPerDocument) return;') < executor.index('new WorldDiplomacyDocumentExecutionCommand(document, actions)')
  assert 'new WorldDiplomacyDocumentExecutionCommand(document, actions)' in executor
  assert 'port.ResolveKingdomId(input.TargetKingdomId)' in executor
  assert 'WorldDiplomacyIntentVocabulary.NormalizeIntent(input.Intent)' in executor

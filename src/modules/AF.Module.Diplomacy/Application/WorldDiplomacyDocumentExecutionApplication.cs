@@ -109,6 +109,8 @@ internal static class WorldDiplomacyDocumentExecutionApplication
                 RespondingToThreatDocumentId = document.RespondingToThreatDocumentId,
                 RespondingToThreatActionId = document.RespondingToThreatActionId } }
             : document.Actions;
+        // Reject malformed or oversized saved action lists before copying values.
+        if (actions.Count < 1 || actions.Count > port.MaxDiplomaticActionsPerDocument) return;
         var command = new WorldDiplomacyDocumentExecutionCommand(document, actions);
         ExecuteItems(port, orchestration, document, actions, command, legacy);
     }
