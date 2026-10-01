@@ -130,4 +130,4 @@
   <ItemGroup>
     <Compile Include="../../Refactor/Contracts/WorldDiplomacyLifecycleEvent.cs" Link="WorldDiplomacyLifecycleEvent.cs" />
   </ItemGroup>
-</Project>
+<ItemGroup><Compile Include="../../Refactor/Domain/WorldDiplomacyEventRules.cs" /><Compile Include="../../Refactor/Domain/WorldDiplomacyGeographyRules.cs" /><Compile Include="../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyNativeDecisionApplication.cs" /><Compile Include="../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyBattleApplication.cs" /><Compile Include="../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyGeographyApplication.cs" /></ItemGroup><ItemGroup><Compile Include="../../Refactor/Contracts/WorldDiplomacyDocumentReadCommandContracts.cs" /></ItemGroup></Project>

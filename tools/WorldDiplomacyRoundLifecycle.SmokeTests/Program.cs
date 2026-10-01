@@ -230,6 +230,7 @@ RunRepairCorrectionAndJobDecisionTests();
         ThreatSettlementReplay.Run();
         PrestigeApplicationReplay.Run();
         WorldProfileReplay.Run();
+        RetainedHostRulesReplay.Run();
         CampaignApplicationReplay.Run();
         InitialPeaceReplay.Run();
         HistoryCaptureReplay.Run();

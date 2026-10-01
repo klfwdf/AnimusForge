@@ -111,6 +111,9 @@ APP_OWNERS={
 
 # Behavior private methods that must be thin lifecycle/compat forwarders only.
 FORWARDERS={
+ 'OnMapEventEnded':'WorldDiplomacyBattleApplication.Record',
+ 'CaptureNativeDiplomacyDecision':'WorldDiplomacyNativeDecisionApplication.Capture',
+ 'RemoveQueuedNativeDiplomacyDecisions':'WorldDiplomacyNativeDecisionApplication.Sanitize',
  'OnNewGameCreated':'DiplomacyModuleServices.World.OnLifecycle',
  'OnGameLoaded':'DiplomacyModuleServices.World.OnLifecycle',
  'OnSessionLaunched':'DiplomacyModuleServices.World.OnLifecycle',
@@ -155,17 +158,17 @@ WORLD_FORBIDDEN={'SelectPresentedThreatStageDocumentIds','SelectNoncompliedThrea
 
 # Whitelisted WorldDiplomacy*Application references inside World/ adapter files.
 BEHAVIOR_APP_WHITELIST={
- 'WorldDiplomacyBehavior.cs':{'WorldDiplomacyTickApplication','WorldDiplomacyWarAdmissionApplication',
+ 'WorldDiplomacyBehavior.cs':{'WorldDiplomacyNativeDecisionApplication','WorldDiplomacyBattleApplication','WorldDiplomacyTickApplication','WorldDiplomacyWarAdmissionApplication',
   'WorldDiplomacyDocumentApplication','WorldDiplomacyPeaceAdmissionApplication','WorldDiplomacyActionSelectionApplication',
   'WorldDiplomacyNotificationApplication','WorldDiplomacyLlmMessageApplication'},
  'WorldDiplomacyBehavior.JobRuntime.cs':{'WorldDiplomacyLlmDispatchApplication','WorldDiplomacyCompletionApplication'},
  'WorldDiplomacyBehavior.LlmDispatchSource.cs':{'WorldDiplomacyLlmApplication','WorldDiplomacyLlmMessageApplication'},
  'WorldDiplomacyBehavior.Presentation.cs':{'WorldDiplomacyPlayerApplication'},
- 'WorldDiplomacyBehavior.OrchestrationHost.cs':{'WorldDiplomacyPolicyRoundApplication','WorldDiplomacyPropagationApplication',
+ 'WorldDiplomacyBehavior.OrchestrationHost.cs':{'WorldDiplomacyGeographyApplication','WorldDiplomacyPolicyRoundApplication','WorldDiplomacyPropagationApplication',
   'WorldDiplomacyDocumentExecutionApplication','WorldDiplomacyPublicationRoutingApplication',
   'WorldDiplomacyTurnSchedulingApplication','WorldDiplomacyRoundProgressApplication',
   'WorldDiplomacyRoundApplication','WorldDiplomacyActionSelectionApplication'},
- 'WorldDiplomacyBehavior.PublicationPort.cs':{'WorldDiplomacyPropagationApplication'},
+ 'WorldDiplomacyBehavior.PublicationPort.cs':{'WorldDiplomacyGeographyApplication'},
 }
 
 def main():

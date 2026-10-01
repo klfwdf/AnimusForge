@@ -62,8 +62,6 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 	private const int CompressionRetryInitialHours = 1;
 	private const int CompressionRetryMaximumHours = 24;
 	private const int MaxPendingJobs = 24;
-	private const int NativeWarSignalBase = 24;
-	private const int NativeOtherSignalBase = 42;
 	private const int FixedMaxConcurrentOffensiveWars = 2;
 	private const int FailedServiceCooldownHours = 12;
 	private const float CessionCastleUnlockThreshold = 90f;
@@ -483,44 +481,7 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 	}
 	private void OnMapEventEnded(MapEvent mapEvent)
 	{
-		try
-		{
-			if (mapEvent == null || !mapEvent.HasWinner || mapEvent.IsHideoutBattle)
-			{
-				return;
-			}
-			List<string> attackerKingdomIds = ResolveMapEventSideKingdomIds(mapEvent.AttackerSide);
-			List<string> defenderKingdomIds = ResolveMapEventSideKingdomIds(mapEvent.DefenderSide);
-			if (attackerKingdomIds.Count == 0 || defenderKingdomIds.Count == 0
-				|| !attackerKingdomIds.Except(defenderKingdomIds, StringComparer.OrdinalIgnoreCase).Any()
-				|| !defenderKingdomIds.Except(attackerKingdomIds, StringComparer.OrdinalIgnoreCase).Any())
-			{
-				return;
-			}
-			int day = CurrentDay();
-			string stableKey = "battle:" + day.ToString(CultureInfo.InvariantCulture)
-				+ ":" + (mapEvent.StringId ?? "")
-				+ ":" + string.Join(",", attackerKingdomIds.OrderBy(x => x, StringComparer.OrdinalIgnoreCase))
-				+ ":" + string.Join(",", defenderKingdomIds.OrderBy(x => x, StringComparer.OrdinalIgnoreCase));
-			_orchestration.RecordBattleFact(new WorldDiplomacyBattleFact
-			{
-				BattleId = stableKey,
-				Day = day,
-				GameDate = FormatCampaignDate(day),
-				BattleType = ResolveMapEventBattleType(mapEvent),
-				Location = mapEvent.MapEventSettlement?.Name?.ToString() ?? "閲庡",
-				AttackerKingdomIds = attackerKingdomIds,
-				DefenderKingdomIds = defenderKingdomIds,
-				AttackerLeaderNames = ResolveMapEventSideLeaderNames(mapEvent.AttackerSide),
-				DefenderLeaderNames = ResolveMapEventSideLeaderNames(mapEvent.DefenderSide),
-				WinnerSide = mapEvent.WinningSide == BattleSideEnum.Attacker ? "attacker" : "defender",
-				IsPlayerInvolved = mapEvent.IsPlayerMapEvent
-			});
-		}
-		catch (Exception ex)
-		{
-			Log("record recent battle failed: " + ex.Message);
-		}
+		WorldDiplomacyBattleApplication.Record(new BattlePort(mapEvent), _orchestration);
 	}
 	private static List<string> ResolveMapEventSideKingdomIds(MapEventSide side)
 	{
@@ -945,92 +906,11 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 	}
 	private bool CaptureNativeDiplomacyDecision(Kingdom hostKingdom, KingdomDecision decision)
 	{
-		if (hostKingdom == null || decision == null)
-		{
-			return false;
-		}
-		Kingdom target = null;
-		string action = "";
-		if (decision is DeclareWarDecision warDecision)
-		{
-			target = warDecision.FactionToDeclareWarOn as Kingdom;
-			action = "declare_war";
-		}
-		else if (decision is MakePeaceKingdomDecision peaceDecision)
-		{
-			target = peaceDecision.FactionToMakePeaceWith as Kingdom;
-			action = "propose_peace";
-		}
-		else if (decision is StartAllianceDecision allianceDecision)
-		{
-			target = allianceDecision.KingdomToStartAllianceWith;
-			action = "propose_alliance";
-		}
-		else if (decision is TradeAgreementDecision tradeDecision)
-		{
-			target = tradeDecision.TargetKingdom;
-			action = "propose_trade";
-		}
-		else
-		{
-			return false;
-		}
-		if (target == null || target == hostKingdom || target.IsEliminated)
-		{
-			return false;
-		}
-		Clan proposer = decision.ProposerClan;
-		Kingdom sourceKingdom = proposer?.Kingdom ?? hostKingdom;
-		bool isIncomingPlayerOffer = IsPlayerKingdom(hostKingdom)
-			&& (action == "propose_peace" || action == "propose_alliance" || action == "propose_trade")
-			&& target != hostKingdom;
-		if (isIncomingPlayerOffer)
-		{
-			sourceKingdom = target;
-			target = hostKingdom;
-		}
-		if (sourceKingdom == null || sourceKingdom.IsEliminated)
-		{
-			return false;
-		}
-		string reason = BuildNativeDecisionReason(sourceKingdom, target, decision, action);
-		return _orchestration.RecordNativeSignal(sourceKingdom.StringId, target.StringId, action, reason);
+		return WorldDiplomacyNativeDecisionApplication.Capture(new NativeDecisionPort(hostKingdom, decision), 0, _orchestration);
 	}
 	private void RemoveQueuedNativeDiplomacyDecisions()
 	{
-		if (Campaign.Current == null)
-		{
-			return;
-		}
-		int removedCount = 0;
-		foreach (Kingdom kingdom in Kingdom.All)
-		{
-			if (kingdom == null)
-			{
-				continue;
-			}
-			List<KingdomDecision> queuedDiplomacy = kingdom.UnresolvedDecisions
-				.Where(IsNativeDiplomacyDecision)
-				.ToList();
-			foreach (KingdomDecision decision in queuedDiplomacy)
-			{
-				try
-				{
-					CaptureNativeDiplomacyDecision(kingdom, decision);
-					kingdom.RemoveDecision(decision);
-					removedCount++;
-				}
-				catch (Exception ex)
-				{
-					Log("remove queued native diplomacy decision failed kingdom="
-						+ (kingdom.StringId ?? "") + " type=" + decision.GetType().Name + " error=" + ex.Message);
-				}
-			}
-		}
-		if (removedCount > 0)
-		{
-			Log("removed queued native diplomacy decisions count=" + removedCount.ToString(CultureInfo.InvariantCulture));
-		}
+		WorldDiplomacyNativeDecisionApplication.Sanitize(new NativeDecisionPort(), _orchestration);
 	}
 	private static bool IsNativeDiplomacyDecision(KingdomDecision decision)
 	{
@@ -1946,9 +1826,7 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 	}
 	private static int GetRoundHardDurationDays(int targetDurationDays)
 	{
-		if (targetDurationDays <= 15) return 18;
-		if (targetDurationDays >= 28) return 32;
-		return RelayHardDurationDays;
+		return WorldDiplomacyEventRules.RoundHardDurationDays(targetDurationDays);
 	}
 	private static int GetOffensiveWarCooldownDays()
 	{

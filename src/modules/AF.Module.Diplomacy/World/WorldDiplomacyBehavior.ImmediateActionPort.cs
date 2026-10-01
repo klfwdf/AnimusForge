@@ -3,6 +3,7 @@ using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Actions;
 using TaleWorlds.CampaignSystem.CampaignBehaviors;
 using AnimusForge.Refactor.Domain;
+using AnimusForge.Refactor.Adapters;
 
 namespace AnimusForge;
 
@@ -21,43 +22,36 @@ public sealed partial class WorldDiplomacyBehavior
             Kingdom author = WorldDiplomacyBehavior.ResolveKingdom(authorId); Kingdom target = WorldDiplomacyBehavior.ResolveKingdom(targetId);
             bool enforcing = WorldDiplomacyRoundLifecycleRules.IsEnforcingRejectedUltimatum(_owner._storage?.DiplomaticThreats, authorId, targetId);
             if (!_owner.CanDeclareWar(author, target, out string reason, enforcing)) return new(false, "宣战未执行：" + reason);
-            Exception error = null;
-            try { WorldDiplomacyBehavior.RunDiplomaticAction("world_diplomacy_declare_war", () => DeclareWarAction.ApplyByKingdomDecision(author, target)); }
-            catch (Exception ex) { error = ex; }
-            string diagnostic = error == null ? null : "declare war action raised after live-state check author=" + authorId + " target=" + targetId + " error=" + error.Message;
-            if (FactionManager.IsAtWarAgainstFaction(author, target))
-            {
-                return new(true, "已宣战", diagnostic);
-            }
-            return new(false, error == null ? "宣战未执行：游戏状态未发生变化" : "宣战未执行：" + WorldDiplomacyTextRules.Limit(error.Message, 180), diagnostic);
+            return Measure(() => RunDiplomaticAction("world_diplomacy_declare_war", () => DeclareWarAction.ApplyByKingdomDecision(author, target)),
+                () => FactionManager.IsAtWarAgainstFaction(author, target), "宣战", "已宣战");
         }
         public WorldDiplomacyImmediateActionReceipt BreakAlliance(string authorId, string targetId, WorldDiplomacyDocument document)
         {
             Kingdom author = WorldDiplomacyBehavior.ResolveKingdom(authorId); Kingdom target = WorldDiplomacyBehavior.ResolveKingdom(targetId);
             IAllianceCampaignBehavior alliance = Campaign.Current?.GetCampaignBehavior<IAllianceCampaignBehavior>();
             if (alliance == null) return new(false, "解盟未执行：同盟系统不可用");
-            if (!alliance.IsAllyWithKingdom(author, target)) return new(false, "解盟未执行：双方当前没有同盟");
-            Exception error = null;
-            try { WorldDiplomacyBehavior.RunDiplomaticAction("world_diplomacy_break_alliance", () => PermanentAllianceGuard.RunAuthorizedBreak("world_diplomacy_break_alliance", author, target, () => alliance.EndAlliance(author, target))); }
-            catch (Exception ex) { error = ex; }
-            string diagnostic = error == null ? null : "break alliance action raised after live-state check author=" + authorId + " target=" + targetId + " error=" + error.Message;
-            return !alliance.IsAllyWithKingdom(author, target)
-                ? new(true, "已解除同盟", diagnostic)
-                : new(false, error == null ? "解盟未执行：游戏状态未发生变化" : "解盟未执行：" + WorldDiplomacyTextRules.Limit(error.Message, 180), diagnostic);
+            try { if (!alliance.IsAllyWithKingdom(author, target)) return new(false, "解盟未执行：双方当前没有同盟"); }
+            catch (Exception ex) { return new(false, "解盟状态无法确认", ex.Message, false); }
+            return Measure(() => RunDiplomaticAction("world_diplomacy_break_alliance", () => PermanentAllianceGuard.RunAuthorizedBreak("world_diplomacy_break_alliance", author, target, () => alliance.EndAlliance(author, target))),
+                () => !alliance.IsAllyWithKingdom(author, target), "解盟", "已解除同盟");
         }
         public WorldDiplomacyImmediateActionReceipt CancelTrade(string authorId, string targetId, WorldDiplomacyDocument document)
         {
             Kingdom author = WorldDiplomacyBehavior.ResolveKingdom(authorId); Kingdom target = WorldDiplomacyBehavior.ResolveKingdom(targetId);
             ITradeAgreementsCampaignBehavior trade = Campaign.Current?.GetCampaignBehavior<ITradeAgreementsCampaignBehavior>();
             if (trade == null) return new(false, "终止贸易未执行：贸易系统不可用");
-            if (!BannerlordApiCompat.HasTradeAgreement(trade, author, target)) return new(false, "终止贸易未执行：双方当前没有贸易协定");
-            Exception error = null;
-            try { WorldDiplomacyBehavior.RunDiplomaticAction("world_diplomacy_cancel_trade", () => trade.EndTradeAgreement(author, target)); }
-            catch (Exception ex) { error = ex; }
-            string diagnostic = error == null ? null : "cancel trade action raised after live-state check author=" + authorId + " target=" + targetId + " error=" + error.Message;
-            return !BannerlordApiCompat.HasTradeAgreement(trade, author, target)
-                ? new(true, "已终止贸易协定", diagnostic)
-                : new(false, error == null ? "终止贸易未执行：游戏状态未发生变化" : "终止贸易未执行：" + WorldDiplomacyTextRules.Limit(error.Message, 180), diagnostic);
+            if (!BannerlordApiCompat.TryGetTradeAgreementState(trade, author, target, out bool active)) return new(false, "贸易协定状态无法确认", null, false);
+            if (!active) return new(false, "终止贸易未执行：双方当前没有贸易协定");
+            return Measure(() => RunDiplomaticAction("world_diplomacy_cancel_trade", () => trade.EndTradeAgreement(author, target)),
+                () => BannerlordApiCompat.TryGetTradeAgreementState(trade, author, target, out bool after)
+                    ? !after : throw new InvalidOperationException("贸易协定状态无法读取"), "终止贸易", "已终止贸易协定");
+        }
+        private static WorldDiplomacyImmediateActionReceipt Measure(Action action, Func<bool> confirm, string label, string success)
+        {
+            var receipt = DiplomacyEffectReadback.Execute(action, confirm);
+            string message = !receipt.IsKnown ? label + "执行后状态无法确认"
+                : receipt.Applied ? success : label + "未执行：游戏状态未发生变化";
+            return new WorldDiplomacyImmediateActionReceipt(receipt.Applied, message, receipt.Diagnostic, receipt.IsKnown);
         }
     }
 }

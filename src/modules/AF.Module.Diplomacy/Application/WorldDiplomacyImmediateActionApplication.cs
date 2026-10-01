@@ -5,12 +5,14 @@ namespace AnimusForge;
 
 internal readonly struct WorldDiplomacyImmediateActionReceipt
 {
+    internal readonly bool Known;
     internal readonly bool Applied;
     internal readonly string Message;
     internal readonly string Diagnostic;
-    internal WorldDiplomacyImmediateActionReceipt(bool applied, string message, string diagnostic = null)
+    internal WorldDiplomacyImmediateActionReceipt(bool applied, string message, string diagnostic = null, bool known = true)
     {
-        Applied = applied;
+        Known = known;
+        Applied = known && applied;
         Message = message ?? "";
         Diagnostic = diagnostic;
     }
