@@ -68,7 +68,8 @@ public sealed partial class CourierDeliveryBehavior
         internal CourierDeliveryBehavior Behavior;
         internal InteractionEnvelope Envelope;
         internal Hero Recipient;
-        internal ShoutBehavior.CourierActionPostprocessWorkItem WorkItem;
+        internal ConversationCourierPostprocessWorkItem WorkItem;
+        internal PostprocessNetworkRequest NetworkRequest;
     }
 
     private static string NormalizeCourierDetachedVisibleReply(string rawText)
@@ -114,7 +115,7 @@ public sealed partial class CourierDeliveryBehavior
                     request.LetterText, request.HistoryText, reply);
                 return workItem == null ? null : new CourierDetachedPostprocessOwner
                 {
-                    Behavior = behavior, Envelope = envelope, Recipient = recipient, WorkItem = workItem
+                    Behavior = behavior, Envelope = envelope, Recipient = recipient, WorkItem = workItem, NetworkRequest = workItem.NetworkRequest
                 };
             }, cancellationToken).ConfigureAwait(false);
         if (owner == null) return null;
@@ -122,8 +123,8 @@ public sealed partial class CourierDeliveryBehavior
         owners.Add(context, owner);
         return new PromptPackage(new[]
         {
-            new PromptMessage("system", owner.WorkItem.SystemPrompt),
-            new PromptMessage("user", owner.WorkItem.UserPrompt)
+            new PromptMessage("system", owner.NetworkRequest.SystemPrompt),
+            new PromptMessage("user", owner.NetworkRequest.UserPrompt)
         }, 5000, "legacy-courier-postprocess");
     }
 

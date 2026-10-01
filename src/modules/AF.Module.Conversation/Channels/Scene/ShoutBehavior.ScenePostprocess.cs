@@ -289,12 +289,11 @@ public partial class ShoutBehavior
 				}
 
 				// Only immutable request strings enter the blocking auxiliary network call.
-				string systemPrompt = workItem.SystemPrompt;
-				string userPrompt = workItem.UserPrompt;
+				PostprocessNetworkRequest networkRequest = workItem.NetworkRequest;
 				string content = null;
 				string error = null;
 				bool succeeded = !workItem.RequiresNetwork
-					|| TryRequestSceneUnifiedActionPostprocess(systemPrompt, userPrompt, out content, out error);
+					|| TryRequestSceneUnifiedActionPostprocess(networkRequest.SystemPrompt, networkRequest.UserPrompt, out content, out error);
 				if (!IsRequestCurrent())
 				{
 					Complete(ScenePostprocessStatus.Stale);

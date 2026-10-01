@@ -92,8 +92,8 @@ public partial class ShoutBehavior
                 string content = null;
                 string error = null;
                 if (workItem.RequiresNetwork)
-                    succeeded = TryRequestSceneUnifiedActionPostprocess(workItem.SystemPrompt,
-                        workItem.UserPrompt, out content, out error);
+                    succeeded = TryRequestSceneUnifiedActionPostprocess(workItem.NetworkRequest.SystemPrompt,
+                        workItem.NetworkRequest.UserPrompt, out content, out error);
                 postprocessed = null;
                 if (!await CaptureOnGameThreadAsync("postprocess_complete", () =>
                 {

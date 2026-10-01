@@ -21,6 +21,7 @@ public sealed class FullInteractionPipeline : IInteractionPipeline
     private readonly IVisibleReplyNormalizer _visibleReplyNormalizer;
     private readonly IActionPostprocessor _actionPostprocessor;
     private readonly CapabilitySet _capabilities;
+    private readonly Func<PostprocessContext, CancellationToken, Task<ActionPlan>> _completeImmediate;
 
     public FullInteractionPipeline(
         IRuleSelector ruleSelector,
@@ -31,6 +32,21 @@ public sealed class FullInteractionPipeline : IInteractionPipeline
         IVisibleReplyNormalizer visibleReplyNormalizer,
         IActionPostprocessor actionPostprocessor,
         CapabilitySet capabilities)
+        : this(ruleSelector, mainPromptComposer, postprocessContextBuilder, postprocessPromptComposer,
+            llmGateway, visibleReplyNormalizer, actionPostprocessor, capabilities, null)
+    {
+    }
+
+    public FullInteractionPipeline(
+        IRuleSelector ruleSelector,
+        IPromptPackageComposer mainPromptComposer,
+        IPostprocessContextBuilder postprocessContextBuilder,
+        IPostprocessPromptComposer postprocessPromptComposer,
+        ILlmGateway llmGateway,
+        IVisibleReplyNormalizer visibleReplyNormalizer,
+        IActionPostprocessor actionPostprocessor,
+        CapabilitySet capabilities,
+        Func<PostprocessContext, CancellationToken, Task<ActionPlan>> completeImmediate)
     {
         _ruleSelector = ruleSelector ?? throw new ArgumentNullException(nameof(ruleSelector));
         _mainPromptComposer = mainPromptComposer ?? throw new ArgumentNullException(nameof(mainPromptComposer));
@@ -40,6 +56,7 @@ public sealed class FullInteractionPipeline : IInteractionPipeline
         _visibleReplyNormalizer = visibleReplyNormalizer ?? throw new ArgumentNullException(nameof(visibleReplyNormalizer));
         _actionPostprocessor = actionPostprocessor ?? throw new ArgumentNullException(nameof(actionPostprocessor));
         _capabilities = capabilities ?? throw new ArgumentNullException(nameof(capabilities));
+        _completeImmediate = completeImmediate;
     }
 
     public async Task<InteractionResult> GenerateAsync(
@@ -90,7 +107,10 @@ public sealed class FullInteractionPipeline : IInteractionPipeline
         cancellationToken.ThrowIfCancellationRequested();
         if (postprocessPrompt == null)
         {
-            return Result(InteractionStatus.Succeeded, string.Empty, visibleReply, main.RawText, null);
+            ActionPlan immediatePlan = _completeImmediate == null ? null
+                : await _completeImmediate(context, cancellationToken).ConfigureAwait(false);
+            cancellationToken.ThrowIfCancellationRequested();
+            return Result(InteractionStatus.Succeeded, string.Empty, visibleReply, main.RawText, immediatePlan);
         }
 
         LlmGenerateResult postprocess = await GenerateStageAsync(

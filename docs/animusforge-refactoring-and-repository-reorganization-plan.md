@@ -25,6 +25,8 @@
 
 ### 验证准备、失败与未验
 
+- F5/F5d 产品独立候选（在F1/F2提交上，仅重放Persona主宿主22项及本包源/适配）1182 Compile/8资源，Debug两API+Bootstrap exit0：`integration/builds/f5-debug-61d848119ef0`。Native owner12、turn112、detached25、Scene71 oracle+43queue+6gate、Courier44及原8运行期mutation、Persona285/Readiness169为具名有限证明；默认渠道与detached均同共同stage，immediate完成一次且0后处理网络。旧Native全宿主审批投影仍需绑定本产品冻结修订补永久inverse，不刷新旧ec74/algorithm hash；此项未过不称F5全退出。Native历史700record样本snapshot约0.04425ms/50136B每request，仅合成观测且事实不占500普通上限，不称实机性能。
+
 - F1/F2 已完成独立有限切片验证：从 `336718c6` 原源码逐包重放，仅本包新增5 Compile（1177/8资源），隔离 Debug 两API+Bootstrap exit0（`integration/builds/f1-f2-debug-5bc329564e4e`）；两个正式net8 owner聚合项目 PASS、实际NativeTurn112 PASS。178保存键/42Behavior与产品基线无差集。两API实际DLL反射验证原 nested identity、Newtonsoft四字段JSON往返、owner load/save/reset及无第二活表 PASS（`integration/actual-patience/actual-{1.3,1.4}-3.log`）。首次harness缺Security.Permissions及误把float当int/错期望5.0的诊断日志保留，修正测试宿主/期望5.5后复验；不是IDataStore或真实旧档验收。共享主文件索引仅纳此切片，其他包工作树保持。
 
 - 本轮没有完成产品门禁。F1现有DomainOwner原Program+真实module隔离基线PASS；首次原项目旧obj被glob纳入 `CS0579`，转为artifacts显式Compile诊断，不改原项目/清obj。F3 captured/sealing基线真实编译缺 `WeeklyAggregateEventLineOwner`（fixture缺实际源）；F5 SceneParity缺 `PublicExecutionOrderPolicy/Runtime`（fixture缺实际源）。失败原记录保留；不得改hash/expected掩盖。

@@ -432,14 +432,15 @@ public sealed partial class CourierDeliveryBehavior
 			string completionLogDetails = " preprocessHits=" + ((selectedRuleHits == null || selectedRuleHits.Count == 0) ? "(none)" : string.Join(",", selectedRuleHits)) + " duel=" + duelInjected + " reward=" + rewardInjected + " loan=" + loanInjected + " kingdom=" + kingdomServiceInjected + " kingdomVassalage=" + kingdomVassalageInjected + " kingdomAnnexation=" + kingdomAnnexationInjected + " lordsHall=" + lordsHallInjected + " meetingRelease=" + meetingReleaseInjected + " vanillaIssue=" + vanillaIssueInjected + " heroJoin=" + heroJoinPartyInjected + " sceneMechanism=" + sceneMechanismInjected + " partyTransfer=" + partyTransferInjected + " voteDeal=" + voteDealInjected + " diplomacy=" + diplomacyInjected + " worldMap=" + worldMapPartyCommandInjected;
 			try
 			{
-				if (!ShoutBehavior.TryPrepareCourierActionPostprocessForExternal(recipient, recipient.CharacterObject, recipient.Name?.ToString() ?? request.RecipientName ?? "NPC", request.LetterText, request.HistoryText, postprocessReply, duelInjected, rewardInjected, loanInjected, kingdomServiceInjected, lordsHallInjected, meetingReleaseInjected, vanillaIssueInjected, heroJoinPartyInjected, sceneMechanismInjected, partyTransferInjected, out ShoutBehavior.CourierActionPostprocessWorkItem workItem, out string immediateResult, voteDealInjected, diplomacyInjected, worldMapPartyCommandInjected, selectedRuleHits, request.EntityPostprocessContext, -1, true, true, kingdomVassalageInjected, kingdomAnnexationInjected, "courier"))
+				if (!ConversationActionPostprocessOwner.TryPrepareCourierActionPostprocessForExternal(recipient, recipient.CharacterObject, recipient.Name?.ToString() ?? request.RecipientName ?? "NPC", request.LetterText, request.HistoryText, postprocessReply, duelInjected, rewardInjected, loanInjected, kingdomServiceInjected, lordsHallInjected, meetingReleaseInjected, vanillaIssueInjected, heroJoinPartyInjected, sceneMechanismInjected, partyTransferInjected, out ConversationCourierPostprocessWorkItem workItem, out string immediateResult, voteDealInjected, diplomacyInjected, worldMapPartyCommandInjected, selectedRuleHits, request.EntityPostprocessContext, -1, true, true, kingdomVassalageInjected, kingdomAnnexationInjected, "courier"))
 				{
 					FinalizeCourierReplyGenerationOnMainThread(request, reply, immediateResult, completionLogDetails);
 					return;
 				}
+				PostprocessNetworkRequest networkRequest = workItem.NetworkRequest;
 				Task.Run(delegate
 				{
-					RunCourierReplyPostprocessOffMainThread(request, reply, workItem, completionLogDetails);
+					RunCourierReplyPostprocessOffMainThread(request, reply, workItem, networkRequest, completionLogDetails);
 				});
 				Log("postprocess http queued chain=courier session=" + session.Id);
 				return;
@@ -459,9 +460,9 @@ public sealed partial class CourierDeliveryBehavior
 		}
 	}
 
-	private void RunCourierReplyPostprocessOffMainThread(CourierReplyGenerationRequest request, string reply, ShoutBehavior.CourierActionPostprocessWorkItem workItem, string completionLogDetails)
+	private void RunCourierReplyPostprocessOffMainThread(CourierReplyGenerationRequest request, string reply, ConversationCourierPostprocessWorkItem workItem, PostprocessNetworkRequest networkRequest, string completionLogDetails)
 	{
-		if (request == null || workItem == null || SaveRuntimeGuard.IsStale(request.RuntimeGeneration, "courier_reply_postprocess_start"))
+		if (request == null || networkRequest == null || SaveRuntimeGuard.IsStale(request.RuntimeGeneration, "courier_reply_postprocess_start"))
 		{
 			return;
 		}
@@ -472,7 +473,7 @@ public sealed partial class CourierDeliveryBehavior
 		{
 			using IDisposable requestWorker = request.SourceRun.Lifetime.Enter();
 			using IDisposable requestCancellation = LlmNonStreamingTransport.PushOwnerCancellation(request.SourceRun.Token);
-			success = AIConfigHandler.TryCallAuxiliaryActionPostprocess(workItem.SystemPrompt, workItem.UserPrompt, 5000, 0f, out content, out error);
+			success = AIConfigHandler.TryCallAuxiliaryActionPostprocess(networkRequest.SystemPrompt, networkRequest.UserPrompt, 5000, 0f, out content, out error);
 		}
 		catch (OperationCanceledException) when (request?.SourceRun?.Token.IsCancellationRequested == true) { return; }
 		catch (Exception ex)
@@ -485,7 +486,7 @@ public sealed partial class CourierDeliveryBehavior
 		}, "reply_postprocess_generated");
 	}
 
-	private void CompleteCourierReplyPostprocessOnMainThread(CourierReplyGenerationRequest request, string reply, ShoutBehavior.CourierActionPostprocessWorkItem workItem, bool success, string content, string error, string completionLogDetails)
+	private void CompleteCourierReplyPostprocessOnMainThread(CourierReplyGenerationRequest request, string reply, ConversationCourierPostprocessWorkItem workItem, bool success, string content, string error, string completionLogDetails)
 	{
 		if (request == null || SaveRuntimeGuard.IsStale(request.RuntimeGeneration, "courier_reply_postprocess"))
 		{

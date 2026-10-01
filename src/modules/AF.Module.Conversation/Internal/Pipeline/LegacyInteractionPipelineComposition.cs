@@ -38,6 +38,22 @@ public sealed class LegacyInteractionPipelinePorts
         Func<InteractionEnvelope, RuleSelection, string, string, PostprocessContext, PromptPackage> composePostprocessPrompt,
         Func<InteractionEnvelope, RuleSelection, string, string, PostprocessContext, CancellationToken, Task<PromptPackage>> composePostprocessPromptAsync,
         Func<string, PostprocessContext, CancellationToken, Task<ActionPlan>> parseActionsAsync)
+        : this(selectRules, composePrompt, buildPostprocessContext, parseActions, normalizeVisibleReply,
+            capabilities, composePostprocessPrompt, composePostprocessPromptAsync, parseActionsAsync, null)
+    {
+    }
+
+    public LegacyInteractionPipelinePorts(
+        Func<GameInteractionSnapshot, RuleSelection> selectRules,
+        Func<InteractionEnvelope, RuleSelection, CapabilitySet, PromptPackage> composePrompt,
+        Func<GameInteractionSnapshot, RuleSelection, CapabilitySet, PostprocessContext> buildPostprocessContext,
+        Func<string, PostprocessContext, ActionPlan> parseActions,
+        Func<string, IEnumerable<string>, string> normalizeVisibleReply,
+        CapabilitySet capabilities,
+        Func<InteractionEnvelope, RuleSelection, string, string, PostprocessContext, PromptPackage> composePostprocessPrompt,
+        Func<InteractionEnvelope, RuleSelection, string, string, PostprocessContext, CancellationToken, Task<PromptPackage>> composePostprocessPromptAsync,
+        Func<string, PostprocessContext, CancellationToken, Task<ActionPlan>> parseActionsAsync,
+        Func<PostprocessContext, CancellationToken, Task<ActionPlan>> completeImmediate)
     {
         SelectRules = selectRules ?? throw new ArgumentNullException(nameof(selectRules));
         ComposePrompt = composePrompt ?? throw new ArgumentNullException(nameof(composePrompt));
@@ -48,6 +64,7 @@ public sealed class LegacyInteractionPipelinePorts
         ComposePostprocessPrompt = composePostprocessPrompt;
         ComposePostprocessPromptAsync = composePostprocessPromptAsync;
         ParseActionsAsync = parseActionsAsync;
+        CompleteImmediate = completeImmediate;
         if (parseActionsAsync != null && composePostprocessPromptAsync == null)
         {
             throw new ArgumentException("An asynchronous action owner requires an asynchronous postprocess capture.", nameof(composePostprocessPromptAsync));
@@ -63,6 +80,7 @@ public sealed class LegacyInteractionPipelinePorts
     public Func<InteractionEnvelope, RuleSelection, string, string, PostprocessContext, PromptPackage> ComposePostprocessPrompt { get; }
     public Func<InteractionEnvelope, RuleSelection, string, string, PostprocessContext, CancellationToken, Task<PromptPackage>> ComposePostprocessPromptAsync { get; }
     public Func<string, PostprocessContext, CancellationToken, Task<ActionPlan>> ParseActionsAsync { get; }
+    public Func<PostprocessContext, CancellationToken, Task<ActionPlan>> CompleteImmediate { get; }
 }
 
 /// <summary>
@@ -104,7 +122,8 @@ public static class LegacyInteractionPipelineComposition
                 gateway,
                 new DelegateVisibleReplyNormalizer(ports.NormalizeVisibleReply),
                 new DelegateActionPostprocessor(ports.ParseActions, ports.ParseActionsAsync),
-                ports.Capabilities);
+                ports.Capabilities,
+                ports.CompleteImmediate);
         }
         return new InteractionRequestCoordinator(pipeline, currentGeneration);
     }

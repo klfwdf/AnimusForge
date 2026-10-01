@@ -17774,16 +17774,7 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 
 	private static string TrimToMaxChars(string s, int maxChars)
 	{
-		if (string.IsNullOrWhiteSpace(s))
-		{
-			return "";
-		}
-		s = s.Trim();
-		if (s.Length <= maxChars)
-		{
-			return s;
-		}
-		return s.Substring(0, maxChars).Trim();
+		return JsonResponseTextCodec.TrimToMaxChars(s, maxChars);
 	}
 
 	private static string NormalizeGeneratedPersonaText(string text)
@@ -17793,20 +17784,7 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 
 	private static string NormalizePersonaPromptSourceText(string text, int maxLength = 1200)
 	{
-		string text2 = (text ?? "").Replace("\r", " ").Replace("\n", " ").Trim();
-		while (text2.Contains("  "))
-		{
-			text2 = text2.Replace("  ", " ");
-		}
-		if (string.IsNullOrWhiteSpace(text2))
-		{
-			return "";
-		}
-		if (maxLength > 0 && text2.Length > maxLength)
-		{
-			text2 = text2.Substring(0, maxLength).TrimEnd();
-		}
-		return text2.Trim();
+		return NpcPersonaTextRules.NormalizePersonaPromptSourceText(text, maxLength);
 	}
 
 	private static string GetHeroEncyclopediaBackgroundForPersonaPrompt(Hero hero, int maxLength = 1000)
@@ -20557,67 +20535,17 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 
 	private static bool TryParsePersonaJson(string text, out string personality, out string background)
 	{
-		personality = "";
-		background = "";
-		if (string.IsNullOrWhiteSpace(text))
-		{
-			return false;
-		}
-		string text2 = StripJsonResponseEnvelope(text);
-		List<string> candidates = ExtractJsonObjectPayloads(text2);
-		if (candidates.Count == 0)
-		{
-			candidates.Add(text2);
-		}
-		foreach (string candidate in candidates)
-		{
-			try
-			{
-				JObject jObject = JObject.Parse(candidate);
-				string parsedPersonality = GetJsonStringIgnoreCase(jObject, "personality", "profile", "description");
-				string parsedBackground = GetJsonStringIgnoreCase(jObject, "background");
-				if (!string.IsNullOrWhiteSpace(parsedPersonality) || !string.IsNullOrWhiteSpace(parsedBackground))
-				{
-					personality = parsedPersonality;
-					background = parsedBackground;
-					return true;
-				}
-			}
-			catch
-			{
-			}
-		}
-		personality = ExtractLoosePersonaJsonField(text2, "personality", "profile", "description");
-		background = ExtractLoosePersonaJsonField(text2, "background");
-		return !string.IsNullOrWhiteSpace(personality) || !string.IsNullOrWhiteSpace(background);
+		return NpcPersonaTextRules.TryParsePersonaJson(text, out personality, out background);
 	}
 
 	private static string ExtractLoosePersonaJsonField(string text, params string[] fieldNames)
 	{
-		foreach (string fieldName in fieldNames ?? new string[0])
-		{
-			if (TryExtractLooseJsonStringProperty(text, fieldName, out var value) && !string.IsNullOrWhiteSpace(value))
-			{
-				return value.Trim();
-			}
-		}
-		return "";
+		return NpcPersonaTextRules.ExtractLoosePersonaJsonField(text, fieldNames);
 	}
 
 	private static string AppendNpcPersonaGenerationRequirementsToSystemPrompt(string systemPrompt)
 	{
-		string text = (systemPrompt ?? "").Trim();
-		string text2 = (DuelSettings.GetSettings()?.NpcPersonaGenerationRequirements ?? "").Replace("\r", "").Trim();
-		if (string.IsNullOrWhiteSpace(text2))
-		{
-			return text;
-		}
-		string text3 = "【玩家自定义生成要求】\n" + text2;
-		if (string.IsNullOrWhiteSpace(text))
-		{
-			return text3;
-		}
-		return text + "\n\n" + text3;
+		return NpcPersonaTextRules.AppendNpcPersonaGenerationRequirementsToSystemPrompt(systemPrompt, DuelSettings.GetSettings()?.NpcPersonaGenerationRequirements);
 	}
 
 	private static SkillObject[] GetPromotedCompanionSkillObjects()
@@ -20670,42 +20598,14 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 		}
 		try
 		{
-			string text = raw.Trim();
-			if (text.StartsWith("```", StringComparison.Ordinal))
-			{
-				int firstLine = text.IndexOf('\n');
-				if (firstLine >= 0)
-				{
-					text = text.Substring(firstLine + 1).Trim();
-				}
-				int fence = text.LastIndexOf("```", StringComparison.Ordinal);
-				if (fence >= 0)
-				{
-					text = text.Substring(0, fence).Trim();
-				}
-			}
-			int start = text.IndexOf('{');
-			int end = text.LastIndexOf('}');
-			if (start >= 0 && end > start)
-			{
-				text = text.Substring(start, end - start + 1);
-			}
-			JObject root = JObject.Parse(text);
-			JObject skillsObj = root["skills"] as JObject ?? root["Skills"] as JObject ?? root;
 			Dictionary<string, SkillObject> skillMap = BuildPromotedSkillMap();
+            if (!NpcPersonaTextRules.TryParseSkills(raw, skillMap.Keys.ToArray(), out var values)) return false;
 			int applied = 0;
-			foreach (JProperty prop in skillsObj.Properties())
-			{
-				string key = NormalizePromotedSkillKey(prop.Name);
-				if (!skillMap.TryGetValue(key, out var skill) || skill == null)
-				{
-					continue;
-				}
-				if (!int.TryParse(prop.Value?.ToString() ?? "", out var value))
-				{
-					continue;
-				}
-				value = Math.Max(0, Math.Min(330, value));
+			foreach (var parsed in values)
+            {
+                SkillObject skill = skillMap[parsed.Key];
+                int value = parsed.Value;
+				
 				hero.SetSkillValue(skill, value);
 				applied++;
 			}
@@ -20740,9 +20640,7 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 
 	private static string NormalizePromotedSkillKey(string key)
 	{
-		string text = (key ?? "").Trim().ToLowerInvariant();
-		text = Regex.Replace(text, "[^a-z0-9]", "");
-		return text;
+		return NpcPersonaTextRules.NormalizePromotedSkillKey(key);
 	}
 
 	private static string BuildPlayerClanUnmarriedCandidatesForPrompt(Hero playerHero, Hero targetHero, int maxEntries = 12)
@@ -29819,22 +29717,7 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 
 	private static string StripJsonResponseEnvelope(string content)
 	{
-		string text = (content ?? "").Trim('\uFEFF', '\u200B', '\u200C', '\u200D', ' ', '\t', '\r', '\n');
-		if (text.StartsWith("```", StringComparison.Ordinal))
-		{
-			int firstLineEnd = text.IndexOf('\n');
-			if (firstLineEnd >= 0)
-			{
-				text = text.Substring(firstLineEnd + 1).Trim();
-			}
-			int lastFence = text.LastIndexOf("```", StringComparison.Ordinal);
-			if (lastFence >= 0)
-			{
-				text = text.Substring(0, lastFence).Trim();
-			}
-		}
-		text = Regex.Replace(text, "^(?:json)\\s*(?=[\\r\\n{\\[])", "", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant).Trim();
-		return text;
+		return JsonResponseTextCodec.StripJsonResponseEnvelope(content);
 	}
 
 	private static string ExtractFirstJsonPayload(string text)
@@ -29854,75 +29737,7 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 
 	private static List<string> ExtractJsonObjectPayloads(string text)
 	{
-		List<string> list = new List<string>();
-		text = (text ?? "").Trim();
-		if (string.IsNullOrWhiteSpace(text))
-		{
-			return list;
-		}
-		bool inString = false;
-		bool escaped = false;
-		int depth = 0;
-		int start = -1;
-		for (int i = 0; i < text.Length; i++)
-		{
-			char ch = text[i];
-			if (depth == 0)
-			{
-				if (ch == '{')
-				{
-					start = i;
-					depth = 1;
-					inString = false;
-					escaped = false;
-				}
-				continue;
-			}
-			if (inString)
-			{
-				if (escaped)
-				{
-					escaped = false;
-				}
-				else if (ch == '\\')
-				{
-					escaped = true;
-				}
-				else if (ch == '"')
-				{
-					inString = false;
-				}
-				continue;
-			}
-			if (ch == '"')
-			{
-				inString = true;
-				continue;
-			}
-			if (ch == '{')
-			{
-				depth++;
-				continue;
-			}
-			if (ch == '}')
-			{
-				depth--;
-				if (depth == 0)
-				{
-					if (start >= 0)
-					{
-						list.Add(text.Substring(start, i - start + 1).Trim());
-					}
-					start = -1;
-				}
-				if (depth < 0)
-				{
-					depth = 0;
-					start = -1;
-				}
-			}
-		}
-		return list;
+		return JsonResponseTextCodec.ExtractJsonObjectPayloads(text);
 	}
 
 	private static string ExtractBalancedJsonPayload(string text, int start, char open, char close)
@@ -30147,129 +29962,17 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 
 	private static bool TryExtractLooseJsonStringProperty(string text, string propertyName, out string value)
 	{
-		value = "";
-		if (string.IsNullOrWhiteSpace(text) || string.IsNullOrWhiteSpace(propertyName))
-		{
-			return false;
-		}
-		string key = "\"" + propertyName + "\"";
-		int searchIndex = 0;
-		while (searchIndex < text.Length)
-		{
-			int keyIndex = text.IndexOf(key, searchIndex, StringComparison.OrdinalIgnoreCase);
-			if (keyIndex < 0)
-			{
-				return false;
-			}
-			int colonIndex = SkipJsonWhitespace(text, keyIndex + key.Length);
-			if (colonIndex >= text.Length || text[colonIndex] != ':')
-			{
-				searchIndex = keyIndex + key.Length;
-				continue;
-			}
-			int valueStart = SkipJsonWhitespace(text, colonIndex + 1);
-			if (valueStart >= text.Length || text[valueStart] != '"')
-			{
-				searchIndex = keyIndex + key.Length;
-				continue;
-			}
-			if (TryReadLooseJsonStringValue(text, valueStart, out value))
-			{
-				return true;
-			}
-			searchIndex = keyIndex + key.Length;
-		}
-		return false;
+		return JsonResponseTextCodec.TryExtractLooseJsonStringProperty(text, propertyName, out value);
 	}
 
 	private static int SkipJsonWhitespace(string text, int index)
 	{
-		while (index < (text?.Length ?? 0) && char.IsWhiteSpace(text[index]))
-		{
-			index++;
-		}
-		return index;
+		return JsonResponseTextCodec.SkipJsonWhitespace(text, index);
 	}
 
 	private static bool TryReadLooseJsonStringValue(string text, int quoteIndex, out string value)
 	{
-		value = "";
-		if (string.IsNullOrEmpty(text) || quoteIndex < 0 || quoteIndex >= text.Length || text[quoteIndex] != '"')
-		{
-			return false;
-		}
-		StringBuilder stringBuilder = new StringBuilder();
-		bool escaped = false;
-		for (int i = quoteIndex + 1; i < text.Length; i++)
-		{
-			char ch = text[i];
-			if (escaped)
-			{
-				switch (ch)
-				{
-				case '"':
-				case '\\':
-				case '/':
-					stringBuilder.Append(ch);
-					break;
-				case 'b':
-					stringBuilder.Append('\b');
-					break;
-				case 'f':
-					stringBuilder.Append('\f');
-					break;
-				case 'n':
-					stringBuilder.Append('\n');
-					break;
-				case 'r':
-					stringBuilder.Append('\r');
-					break;
-				case 't':
-					stringBuilder.Append('\t');
-					break;
-				case 'u':
-					if (i + 4 < text.Length && int.TryParse(text.Substring(i + 1, 4), System.Globalization.NumberStyles.HexNumber, System.Globalization.CultureInfo.InvariantCulture, out var codePoint))
-					{
-						stringBuilder.Append((char)codePoint);
-						i += 4;
-					}
-					else
-					{
-						stringBuilder.Append(ch);
-					}
-					break;
-				default:
-					stringBuilder.Append(ch);
-					break;
-				}
-				escaped = false;
-				continue;
-			}
-			if (ch == '\\')
-			{
-				escaped = true;
-				continue;
-			}
-			if (ch == '"')
-			{
-				int next = SkipJsonWhitespace(text, i + 1);
-				if (next >= text.Length || text[next] == ',' || text[next] == '}' || text[next] == ']')
-				{
-					value = stringBuilder.ToString();
-					return !string.IsNullOrWhiteSpace(value);
-				}
-			}
-			if (ch == '\r' || ch == '\n')
-			{
-				stringBuilder.Append(' ');
-			}
-			else
-			{
-				stringBuilder.Append(ch);
-			}
-		}
-		value = stringBuilder.ToString();
-		return !string.IsNullOrWhiteSpace(value);
+		return JsonResponseTextCodec.TryReadLooseJsonStringValue(text, quoteIndex, out value);
 	}
 
 	private static string BuildRequiredJsonFieldDescription(string[] primaryKeys, string[] secondaryKeys)
@@ -30306,29 +30009,12 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 
 	private static string GetJsonStringIgnoreCase(JObject obj, params string[] names)
 	{
-		JToken token = GetJsonPropertyIgnoreCase(obj, names);
-		return token?.ToString() ?? "";
+		return JsonResponseTextCodec.GetJsonStringIgnoreCase(obj, names);
 	}
 
 	private static JToken GetJsonPropertyIgnoreCase(JObject obj, params string[] names)
 	{
-		if (obj == null || names == null)
-		{
-			return null;
-		}
-		foreach (string name in names)
-		{
-			if (string.IsNullOrWhiteSpace(name))
-			{
-				continue;
-			}
-			JProperty prop = obj.Properties().FirstOrDefault((JProperty x) => string.Equals(x.Name, name, StringComparison.OrdinalIgnoreCase));
-			if (prop != null)
-			{
-				return prop.Value;
-			}
-		}
-		return null;
+		return JsonResponseTextCodec.GetJsonPropertyIgnoreCase(obj, names);
 	}
 
 	private static string BuildSummaryJsonParseFailureMessage(string prefix, string parseError, string content)
