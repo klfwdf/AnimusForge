@@ -1,0 +1,47 @@
+// Fake game/lifecycle ports only. PublicExecutionOrderRuntime and its policy are real source.
+using System;
+using System.Collections.Generic;
+namespace TaleWorlds.MountAndBlade
+{
+    public sealed class Agent
+    {
+        public int Index;
+        public bool Active = true;
+        public bool IsActive() { AnimusForge.Probe.MainOnly(); return Active; }
+    }
+    public sealed class Mission
+    {
+        private static Mission current;
+        public static bool ThrowRead;
+        public static Mission Current { get { AnimusForge.Probe.MainOnly(); if (ThrowRead) throw new Exception("mission read failed"); return current; } set { current = value; } }
+        public List<Agent> Agents = new List<Agent>();
+        public object Controller;
+        public T GetMissionBehavior<T>() where T : class { AnimusForge.Probe.MainOnly(); return Controller as T; }
+    }
+}
+namespace TaleWorlds.CampaignSystem.Conversation
+{
+    public sealed class ConversationManager { public event Action ConversationEndOneShot; }
+}
+namespace TaleWorlds.CampaignSystem
+{
+    public sealed class Campaign { public static Campaign Current; public Conversation.ConversationManager ConversationManager; }
+}
+namespace RichExecutions.Scene
+{
+    public sealed class Request { public Guid SessionId = Guid.NewGuid(); }
+    public sealed class TownExecutionMissionBehavior
+    {
+        public Request Request = new Request();
+        public RichExecutions.Core.ExecutionSessionState State = RichExecutions.Core.ExecutionSessionState.WaitingForPlayer;
+        public TaleWorlds.MountAndBlade.Agent Executioner;
+        public bool IsCeremonyExecutioner(TaleWorlds.MountAndBlade.Agent agent) { AnimusForge.Probe.MainOnly(); return ReferenceEquals(agent, Executioner); }
+        public bool TryBeginExecution(RichExecutions.Core.ExecutionActor actor) => throw new Exception("capture must never start execution");
+    }
+}
+namespace AnimusForge
+{
+    internal static class SaveRuntimeGuard { internal static long CurrentGeneration = 1; internal static bool IsCurrentGeneration(long value) => value == CurrentGeneration; }
+    internal static class Logger { internal static void Log(string category, string message) { } }
+    internal static class ShoutBehavior { internal static void AppendExternalTargetedSceneNpcFactForExternal(string text, int index) => throw new Exception("capture must never write facts"); }
+}

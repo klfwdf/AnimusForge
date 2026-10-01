@@ -81,6 +81,12 @@ internal static class Program
     }
     private static void Main()
     {
+        var defaultRule = ExecutionPromptConfiguration.CreateOrderRule();
+        Check(defaultRule != null && defaultRule.Id == "public_execution_start" && !string.IsNullOrWhiteSpace(defaultRule.Instruction), "real embedded execution rule default is available");
+        Check(!string.IsNullOrWhiteSpace(ExecutionPromptConfiguration.SystemPrompt), "real embedded ceremony prompt is available");
+        AIConfigHandler.Evaluation = Evaluation("public_execution_start");
+        var defaultHits = AIConfigHandler.GetHits("execution", null, out _);
+        Check(defaultHits.Count == 1 && defaultHits[0].RuleId == defaultRule.Id && defaultHits[0].Instruction == defaultRule.Instruction, "production registry injects missing execution rule from actual resource");
         AIConfigHandler.Evaluation = Evaluation("custom");
         AIConfigHandler.OnEvaluate = () => AIConfigHandler.Reload("new text", "new other");
         var hits = AIConfigHandler.GetHits("input", null, out var mentions);

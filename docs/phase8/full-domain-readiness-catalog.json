@@ -454,7 +454,13 @@
         "src/modules/AF.Module.Economy/Projection/EconomyPromptProjection.cs",
         "src/modules/AF.Module.Economy/Projection/RewardSystemBehavior.InventoryPromptCapture.cs",
         "src/modules/AF.Module.Economy/Trust/EconomyTrustPolicy.cs",
-        "src/modules/AF.Module.Economy/Trust/RewardSystemBehavior.TrustState.cs"
+        "src/modules/AF.Module.Economy/Trust/RewardSystemBehavior.TrustState.cs",
+        "src/modules/AF.Module.Economy/Host/DebtPromiseQuest.cs",
+        "src/modules/AF.Module.Economy/Host/GiveAssetTagCodec.cs",
+        "src/modules/AF.Module.Economy/Host/PlayerRpCraftItemComponentService.cs",
+        "src/modules/AF.Module.Economy/Host/PlayerRpCraftModels.cs",
+        "src/modules/AF.Module.Economy/Host/PlayerRpCraftTemplateSelectorLog.cs",
+        "src/modules/AF.Module.Economy/Host/TransferQuantitySpec.cs"
       ],
       "promptAction": {
         "prompt": "APPLICABLE",
@@ -603,7 +609,30 @@
         "src/modules/AF.Module.WorldMap/Runtime/WorldMapPartyCommandBehavior.Protocol.cs",
         "src/modules/AF.Module.WorldMap/Runtime/WorldMapPartyCommandBehavior.QueueRuntime.cs",
         "src/modules/AF.Module.WorldMap/Runtime/WorldMapPartyCommandBehavior.cs",
-        "src/modules/AF.Module.WorldMap/Runtime/WorldMapPendingRequestCoordinator.cs"
+        "src/modules/AF.Module.WorldMap/Runtime/WorldMapPendingRequestCoordinator.cs",
+        "src/modules/AF.Module.Diplomacy/Agenda/VoteDealBehavior.Agenda.cs",
+        "src/modules/AF.Module.Diplomacy/Agenda/VoteDealBehavior.MapNotification.cs",
+        "src/modules/AF.Module.Diplomacy/Agenda/VoteDealBehavior.Propose.cs",
+        "src/modules/AF.Module.Diplomacy/Agenda/VoteDealBehavior.cs",
+        "src/modules/AF.Module.Diplomacy/Annexation/KingdomAnnexationDiagnosticLog.cs",
+        "src/modules/AF.Module.Diplomacy/Direct/DiplomacyPeaceTermsService.cs",
+        "src/modules/AF.Module.Diplomacy/Guards/DiplomacyRecentPeaceGuard.cs",
+        "src/modules/AF.Module.Diplomacy/Guards/Patch_Diplomacy_GuardFactionManagerDeclareWar.cs",
+        "src/modules/AF.Module.Diplomacy/Guards/Patch_Diplomacy_RegisterMakePeaceAction.cs",
+        "src/modules/AF.Module.Diplomacy/Guards/PermanentAllianceGuard.cs",
+        "src/modules/AF.Module.Diplomacy/Profiles/KingdomStrategicProfileBehavior.DevUi.cs",
+        "src/modules/AF.Module.Diplomacy/Profiles/KingdomStrategicProfileBehavior.cs",
+        "src/modules/AF.Module.Diplomacy/Vassalage/UI/TerminalVassalageTributeHistoryPopupVM.cs",
+        "src/modules/AF.Module.Diplomacy/Vassalage/VassalageDiagnosticLog.cs",
+        "src/modules/AF.Module.Diplomacy/World/WorldDiplomacyLlmClient.cs",
+        "src/modules/AF.Module.Kingdom/CivilWar/CivilWarPoliticalRules.cs",
+        "src/modules/AF.Module.Kingdom/CivilWar/KingdomCivilWarOwner.Actions.cs",
+        "src/modules/AF.Module.Kingdom/CivilWar/KingdomCivilWarOwner.Coup.cs",
+        "src/modules/AF.Module.Kingdom/CivilWar/KingdomCivilWarOwner.Events.cs",
+        "src/modules/AF.Module.Kingdom/CivilWar/RestoreCoupDynastyEffect.cs",
+        "src/modules/AF.Module.Kingdom/Rebellion/RebellionNamingOwner.cs",
+        "src/modules/AF.Module.Kingdom/Rebellion/RebellionNamingRules.cs",
+        "src/modules/AF.Module.Kingdom/Rebellion/RebellionRules.cs"
       ],
       "promptAction": {
         "prompt": "APPLICABLE",
@@ -662,7 +691,8 @@
         "src/AF.GameAdapter.Bannerlord/Composition/SiegeAftermath/SiegeAiInterventionBehavior.TownEconomyEffectAdapter.cs",
         "src/AF.GameAdapter.Bannerlord/Composition/SiegeAftermath/SiegeAiInterventionBehavior.TownSettlementEffectAdapter.cs",
         "src/AF.GameAdapter.Bannerlord/Composition/SiegeAftermath/SiegeAiInterventionBehavior.cs",
-        "src/AF.GameAdapter.Bannerlord/Composition/SiegeAftermath/VillageAftermathBehavior.cs"
+        "src/AF.GameAdapter.Bannerlord/Composition/SiegeAftermath/VillageAftermathBehavior.cs",
+        "src/AF.GameAdapter.Bannerlord/Composition/SiegeAftermath/SiegeAiInterventionBehavior.TownRuleMemoryEvents.cs"
       ],
       "promptAction": {
         "prompt": "APPLICABLE",
@@ -699,7 +729,7 @@
         "persistence-domain-owners"
       ],
       "ownerAssignmentState": "ASSIGNED",
-      "entryCoverage": "COMPLETE"
+      "entryCoverage": "REPRESENTATIVE"
     },
     {
       "number": 14,
@@ -937,7 +967,17 @@
         "src/modules/AF.Module.Weekly/Publication/WeeklyActionOutcomePublicationOwner.cs",
         "src/modules/AF.Module.Weekly/Receipts/WeeklyMemoryMaterialOutcomeReceipt.cs",
         "src/modules/AF.Module.Weekly/Scheduling/WeeklyAutoScheduleOwner.cs",
-        "src/modules/AF.Module.Weekly/Scheduling/WeeklyReportSchedulePolicy.cs"
+        "src/modules/AF.Module.Weekly/Scheduling/WeeklyReportSchedulePolicy.cs",
+        "src/modules/AF.Module.Social/Host/MarriageSceneNotificationSafety.cs",
+        "src/modules/AF.Module.Social/Patience/PatienceOwner.cs",
+        "src/modules/AF.Module.Social/Patience/PatienceRules.cs",
+        "src/modules/AF.Module.Weekly/Generation/WeeklyGenerationAttemptOwner.cs",
+        "src/modules/AF.Module.Weekly/Generation/WeeklyGenerationModels.cs",
+        "src/modules/AF.Module.Weekly/Generation/WeeklyGenerationRules.cs",
+        "src/modules/AF.Module.Weekly/Generation/WeeklyNoticeStateOwner.cs",
+        "src/modules/AF.Module.Weekly/Generation/WorldBulletinStateOwner.Presentation.cs",
+        "src/modules/AF.Module.Weekly/Generation/WorldBulletinStateOwner.cs",
+        "src/modules/AF.Module.Weekly/Panel/WorldBulletinBodyWidget.cs"
       ],
       "promptAction": {
         "prompt": "APPLICABLE",
@@ -996,7 +1036,8 @@
         "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.cs",
         "src/modules/AF.Module.Persona/Generation/NpcPersonaGenerationOwner.cs",
         "src/modules/AF.Module.Persona/Generation/NpcPersonaProfilePolicy.cs",
-        "src/modules/AF.Module.Persona/Generation/NpcPersonaReadinessSnapshot.cs"
+        "src/modules/AF.Module.Persona/Generation/NpcPersonaReadinessSnapshot.cs",
+        "src/modules/AF.Module.Persona/Generation/NpcPersonaTextRules.cs"
       ],
       "promptAction": {
         "prompt": "APPLICABLE",
@@ -1035,7 +1076,7 @@
         "persistence-domain-owners"
       ],
       "ownerAssignmentState": "ASSIGNED",
-      "entryCoverage": "COMPLETE"
+      "entryCoverage": "REPRESENTATIVE"
     },
     {
       "number": 19,

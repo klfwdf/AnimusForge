@@ -59,25 +59,25 @@ EXPANDED_ENTRIES = {
         "src/modules/AF.Module.Kingdom/CivilWar/CivilWarWorld.cs",
     ),
     "social-progression-reports": (
-        "AnimusForgeWeeklyReportMapNotification.cs",
-        "MyBehavior.WeeklyActionOutcomeReceipts.cs",
+        "src/AF.GameAdapter.Bannerlord/UI/Weekly/AnimusForgeWeeklyReportMapNotification.cs",
+        "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.WeeklyActionOutcomeReceipts.cs",
         "src/modules/AF.Module.Weekly/Generation/WeeklyFullReportCompletionOwner.cs",
         "src/modules/AF.Module.Weekly/Scheduling/WeeklyReportSchedulePolicy.cs",
         "src/modules/AF.Module.Weekly/Scheduling/WeeklyAutoScheduleOwner.cs",
         "src/modules/AF.Module.Weekly/Materials/WeeklyReportTextHelper.cs",
         "src/modules/AF.Module.Weekly/Materials/WeeklyMaterialBatchPlanner.cs",
-        "TerminalWeeklyReportBrowserPopupVM.cs",
+        "src/AF.GameAdapter.Bannerlord/UI/Weekly/TerminalWeeklyReportBrowserPopupVM.cs",
         # User-approved instant world bulletin owners; presence stays REPRESENTATIVE.
         "src/modules/AF.Module.Weekly/Bulletin/WorldBulletinPolicy.cs",
         "src/modules/AF.Module.Weekly/Panel/WorldBulletinPanelVM.cs",
     ),
     "ui-tts-external-integration": (
-        "AnimusForgeTerminalBehavior.cs",
-        "AnimusForgeTerminalUiModels.cs",
-        "AnimusForgeTerminalSettings.cs",
-        "TerminalWeeklyReportBrowserPopupVM.cs",
-        "TerminalVassalageTributeHistoryPopupVM.cs",
-        "DevWeeklyReportPopup.cs",
+        "src/AF.GameAdapter.Bannerlord/UI/Terminal/AnimusForgeTerminalBehavior.cs",
+        "src/AF.GameAdapter.Bannerlord/UI/Terminal/AnimusForgeTerminalUiModels.cs",
+        "src/modules/AF.Module.UI/Settings/AnimusForgeTerminalSettings.cs",
+        "src/AF.GameAdapter.Bannerlord/UI/Weekly/TerminalWeeklyReportBrowserPopupVM.cs",
+        "src/modules/AF.Module.Diplomacy/Vassalage/UI/TerminalVassalageTributeHistoryPopupVM.cs",
+        "src/AF.GameAdapter.Bannerlord/UI/Weekly/DevWeeklyReportPopup.cs",
         "WarStats/AfWarStatsMapNavigationEntry.cs",
         "WarStats/AfWarStatsPopupVM.cs",
         "WarStats/AfWarStatsEncyclopedia.cs",
@@ -86,6 +86,59 @@ EXPANDED_ENTRIES = {
         "content/modules/AF.Module.Weekly/GUI/Prefabs/DevWeeklyReportPopup.xml",
     ),
 }
+
+# Existing production candidates previously masked by the unresolved root glob.
+EXPANDED_ENTRIES['knowledge-persona-profile'] = EXPANDED_ENTRIES.get('knowledge-persona-profile', ()) + (
+    'src/modules/AF.Module.Persona/Generation/NpcPersonaTextRules.cs',
+)
+EXPANDED_ENTRIES['economy-reward-debt'] = EXPANDED_ENTRIES.get('economy-reward-debt', ()) + (
+    'src/modules/AF.Module.Economy/Host/DebtPromiseQuest.cs',
+    'src/modules/AF.Module.Economy/Host/GiveAssetTagCodec.cs',
+    'src/modules/AF.Module.Economy/Host/PlayerRpCraftItemComponentService.cs',
+    'src/modules/AF.Module.Economy/Host/PlayerRpCraftModels.cs',
+    'src/modules/AF.Module.Economy/Host/PlayerRpCraftTemplateSelectorLog.cs',
+    'src/modules/AF.Module.Economy/Host/TransferQuantitySpec.cs',
+)
+EXPANDED_ENTRIES['settlement-siege-gccz-sets'] = EXPANDED_ENTRIES.get('settlement-siege-gccz-sets', ()) + (
+    'src/AF.GameAdapter.Bannerlord/Composition/SiegeAftermath/SiegeAiInterventionBehavior.TownRuleMemoryEvents.cs',
+)
+EXPANDED_ENTRIES['social-progression-reports'] = EXPANDED_ENTRIES.get('social-progression-reports', ()) + (
+    'src/modules/AF.Module.Social/Host/MarriageSceneNotificationSafety.cs',
+    'src/modules/AF.Module.Social/Patience/PatienceOwner.cs',
+    'src/modules/AF.Module.Social/Patience/PatienceRules.cs',
+    'src/modules/AF.Module.Weekly/Generation/WeeklyGenerationAttemptOwner.cs',
+    'src/modules/AF.Module.Weekly/Generation/WeeklyGenerationModels.cs',
+    'src/modules/AF.Module.Weekly/Generation/WeeklyGenerationRules.cs',
+    'src/modules/AF.Module.Weekly/Generation/WeeklyNoticeStateOwner.cs',
+    'src/modules/AF.Module.Weekly/Generation/WorldBulletinStateOwner.Presentation.cs',
+    'src/modules/AF.Module.Weekly/Generation/WorldBulletinStateOwner.cs',
+    'src/modules/AF.Module.Weekly/Panel/WorldBulletinBodyWidget.cs',
+)
+EXPANDED_ENTRIES['world-simulation-worldmap'] = EXPANDED_ENTRIES.get('world-simulation-worldmap', ()) + (
+    'src/modules/AF.Module.Diplomacy/Agenda/VoteDealBehavior.Agenda.cs',
+    'src/modules/AF.Module.Diplomacy/Agenda/VoteDealBehavior.MapNotification.cs',
+    'src/modules/AF.Module.Diplomacy/Agenda/VoteDealBehavior.Propose.cs',
+    'src/modules/AF.Module.Diplomacy/Agenda/VoteDealBehavior.cs',
+    'src/modules/AF.Module.Diplomacy/Annexation/KingdomAnnexationDiagnosticLog.cs',
+    'src/modules/AF.Module.Diplomacy/Direct/DiplomacyPeaceTermsService.cs',
+    'src/modules/AF.Module.Diplomacy/Guards/DiplomacyRecentPeaceGuard.cs',
+    'src/modules/AF.Module.Diplomacy/Guards/Patch_Diplomacy_GuardFactionManagerDeclareWar.cs',
+    'src/modules/AF.Module.Diplomacy/Guards/Patch_Diplomacy_RegisterMakePeaceAction.cs',
+    'src/modules/AF.Module.Diplomacy/Guards/PermanentAllianceGuard.cs',
+    'src/modules/AF.Module.Diplomacy/Profiles/KingdomStrategicProfileBehavior.DevUi.cs',
+    'src/modules/AF.Module.Diplomacy/Profiles/KingdomStrategicProfileBehavior.cs',
+    'src/modules/AF.Module.Diplomacy/Vassalage/UI/TerminalVassalageTributeHistoryPopupVM.cs',
+    'src/modules/AF.Module.Diplomacy/Vassalage/VassalageDiagnosticLog.cs',
+    'src/modules/AF.Module.Diplomacy/World/WorldDiplomacyLlmClient.cs',
+    'src/modules/AF.Module.Kingdom/CivilWar/CivilWarPoliticalRules.cs',
+    'src/modules/AF.Module.Kingdom/CivilWar/KingdomCivilWarOwner.Actions.cs',
+    'src/modules/AF.Module.Kingdom/CivilWar/KingdomCivilWarOwner.Coup.cs',
+    'src/modules/AF.Module.Kingdom/CivilWar/KingdomCivilWarOwner.Events.cs',
+    'src/modules/AF.Module.Kingdom/CivilWar/RestoreCoupDynastyEffect.cs',
+    'src/modules/AF.Module.Kingdom/Rebellion/RebellionNamingOwner.cs',
+    'src/modules/AF.Module.Kingdom/Rebellion/RebellionNamingRules.cs',
+    'src/modules/AF.Module.Kingdom/Rebellion/RebellionRules.cs',
+)
 
 
 class EntryInventoryTests(unittest.TestCase):
@@ -108,8 +161,8 @@ class EntryInventoryTests(unittest.TestCase):
         self.assertIn("src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.InboundCompletion.cs", result["courier-proactive-issue"])
         self.assertIn("src/modules/AF.Module.Conversation/Channels/Courier/CourierInboundCompletionCommitCoordinator.cs", result["courier-proactive-issue"])
         self.assertIn("src/modules/AF.Module.Conversation/Channels/Courier/CourierInboundCompletionReceipt.cs", result["courier-proactive-issue"])
-        self.assertIn("PlayerNotorietyBehavior.ConversationOutcomes.cs", result["social-progression-reports"])
-        self.assertIn("PlayerEncounterCompat.cs", result["game-adapter-compatibility"])
+        self.assertIn("src/modules/AF.Module.Social/Host/PlayerNotorietyBehavior.ConversationOutcomes.cs", result["social-progression-reports"])
+        self.assertIn("src/AF.GameAdapter.Bannerlord/Compatibility/PlayerEncounterCompat.cs", result["game-adapter-compatibility"])
         self.assertIn("src/modules/AF.Module.Conversation/Internal/DetachedInteractionHost.cs", result["action-commit"])
 
     def test_report_includes_stable_source_reasons(self) -> None:
@@ -131,6 +184,7 @@ class EntryInventoryTests(unittest.TestCase):
             Path("obj/Terminal.g.cs"),
             Path("Modules/AnimusForge/Foo.cs"),
             Path("terminal/scratch.cs"),
+            Path("scratch/terminal/scratch.cs"),
             Path("Foo.g.cs"),
             Path("原版游戏本体代码1.4.5/Foo.cs"),
         ):
@@ -161,7 +215,7 @@ class EntryInventoryTests(unittest.TestCase):
                 with self.subTest(domain=domain, path=path):
                     document = copy.deepcopy(original)
                     entry = next(item for item in document["domains"] if item["id"] == domain)
-                    entry["entryPaths"] = [item for item in entry["entryPaths"] if item != path]
+                    entry["entryPaths"] = [entry_inventory.canonical_path(item) for item in entry["entryPaths"] if entry_inventory.canonical_path(item) != path]
                     with patch.object(Path, "read_text", return_value=json.dumps(document)):
                         errors = entry_inventory.check_catalog(ROOT)
                         diagnostics = io.StringIO()
@@ -174,7 +228,7 @@ class EntryInventoryTests(unittest.TestCase):
         document = {"domains": [
             {"id": "ui-tts-external-integration", "entryPaths": ["Existing.cs"],
              "ownerAssignmentState": "ASSIGNED", "entryCoverage": "COMPLETE"},
-            {"id": "social-progression-reports", "entryPaths": ["MyBehavior.cs"],
+            {"id": "social-progression-reports", "entryPaths": ["src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.cs"],
              "ownerAssignmentState": "ASSIGNED", "entryCoverage": "COMPLETE"},
             {"id": "unassigned-domain", "entryPaths": [],
              "ownerAssignmentState": "ROLE_PLACEHOLDER", "entryCoverage": "REPRESENTATIVE"},
@@ -185,8 +239,8 @@ class EntryInventoryTests(unittest.TestCase):
             path.parent.mkdir(parents=True)
             path.write_text(json.dumps(document), encoding="utf-8")
             with patch.object(entry_inventory, "build_inventory", return_value={
-                "ui-tts-external-integration": ["Existing.cs", "AnimusForgeTerminalUiModels.cs"],
-                "social-progression-reports": ["MyBehavior.cs"],
+                "ui-tts-external-integration": ["Existing.cs", "src/AF.GameAdapter.Bannerlord/UI/Terminal/AnimusForgeTerminalUiModels.cs"],
+                "social-progression-reports": ["src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.cs"],
             }):
                 entry_inventory.update_catalog(project)
                 result = json.loads(path.read_text(encoding="utf-8"))
@@ -194,7 +248,7 @@ class EntryInventoryTests(unittest.TestCase):
                 self.assertEqual(result, json.loads(path.read_text(encoding="utf-8")))
             self.assertEqual(result["domains"][0]["entryCoverage"], "REPRESENTATIVE")
             self.assertEqual(result["domains"][0]["ownerAssignmentState"], "ASSIGNED")
-            self.assertEqual(result["domains"][0]["entryPaths"], ["AnimusForgeTerminalUiModels.cs", "Existing.cs"])
+            self.assertEqual(result["domains"][0]["entryPaths"], sorted(["src/AF.GameAdapter.Bannerlord/UI/Terminal/AnimusForgeTerminalUiModels.cs", "Existing.cs"]))
             self.assertEqual(result["domains"][1:], document["domains"][1:])
 
     def test_catalog_state_matches_owner_review(self) -> None:
@@ -208,6 +262,12 @@ class EntryInventoryTests(unittest.TestCase):
         errors = entry_inventory.check_catalog(ROOT, require_preparation_state=True)
         self.assertTrue(errors)
         self.assertIn("ownerAssignmentState changed", " ".join(errors))
+
+    def test_relocation_resolves_patterns_without_crossing_path_segments(self) -> None:
+        self.assertIn("src/AF.GameAdapter.Bannerlord/Composition/SiegeAftermath/SiegeAiInterventionBehavior.cs", entry_inventory._matches(ROOT, "SiegeAiInterventionBehavior*.cs"))
+        self.assertIn("src/AF.GameAdapter.Bannerlord/UI/Terminal/AnimusForgeTerminalUiModels.cs", entry_inventory._matches(ROOT, "AnimusForgeTerminal*.cs"))
+        self.assertEqual(entry_inventory._matches(ROOT, "AF.GameAdapter*.cs"), [])
+        self.assertTrue(entry_inventory._excluded(Path("src/AF.GameAdapter.Bannerlord/UI/Terminal/obj/Foo.cs")))
 
     def test_check_rejects_drift(self) -> None:
         self.assertEqual(entry_inventory.check_catalog(ROOT), [])

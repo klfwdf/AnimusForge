@@ -78,17 +78,43 @@ internal static class Program
     private static void Main()
     {
         AIConfigHandler.HeroId.Value = "parent";
-        var target = new PromptRuntimeTargetBinding("", "target", "", "", "", -1);
+        var agent = new TaleWorlds.MountAndBlade.Agent { Index = 7 };
+        var controller = new RichExecutions.Scene.TownExecutionMissionBehavior { Executioner = agent };
+        TaleWorlds.MountAndBlade.Mission.Current = new TaleWorlds.MountAndBlade.Mission { Controller = controller, Agents = new System.Collections.Generic.List<TaleWorlds.MountAndBlade.Agent> { agent } };
+        var target = new PromptRuntimeTargetBinding("", "target", "", "", "", 7);
         var hero = new Hero();
         var facts = AIConfigHandler.CapturePromptRuleEligibility(hero, null, target);
         Check(facts.IsCaptured && facts.GcczSiegeAftermathActive && facts.VassalageEligible && facts.DiplomacyEligible
             && facts.WorldDiplomacyEligible && facts.KingdomAgendaEligible && facts.MarriageEligible
             && facts.NpcMajorActionsEligible && facts.LordsHallAccessEligible && facts.HasAnyTargetIdentity,
-            "all 11 facts captured against current target");
+            "original facts captured against current target");
         Check(AIConfigHandler.HeroId.Value == "parent", "capture restores parent target");
+        Check(facts.PublicExecutionEligible, "real runtime grants current active ceremony executioner");
+        Check(!AIConfigHandler.CapturePromptRuleEligibility(hero, null, new PromptRuntimeTargetBinding("", "target", "", "", "", 8)).PublicExecutionEligible, "wrong agent denied");
+        agent.Active = false;
+        Check(!AIConfigHandler.CapturePromptRuleEligibility(hero, null, target).PublicExecutionEligible, "inactive executioner denied");
+        agent.Active = true;
+        controller.State = RichExecutions.Core.ExecutionSessionState.Cancelled;
+        Check(!AIConfigHandler.CapturePromptRuleEligibility(hero, null, target).PublicExecutionEligible, "non-waiting ceremony denied");
+        controller.State = RichExecutions.Core.ExecutionSessionState.WaitingForPlayer;
+        controller.Request = null;
+        Check(!AIConfigHandler.CapturePromptRuleEligibility(hero, null, target).PublicExecutionEligible, "missing request denied");
+        controller.Request = new RichExecutions.Scene.Request();
+        controller.Executioner = new TaleWorlds.MountAndBlade.Agent();
+        Check(!AIConfigHandler.CapturePromptRuleEligibility(hero, null, target).PublicExecutionEligible, "other ceremony actor denied");
+        controller.Executioner = agent;
+        var mission = TaleWorlds.MountAndBlade.Mission.Current;
+        TaleWorlds.MountAndBlade.Mission.Current = null;
+        Check(!AIConfigHandler.CapturePromptRuleEligibility(hero, null, target).PublicExecutionEligible, "missing mission denied");
+        TaleWorlds.MountAndBlade.Mission.Current = mission;
+        TaleWorlds.MountAndBlade.Mission.ThrowRead = true;
+        var failedExecution = AIConfigHandler.CapturePromptRuleEligibility(hero, null, target);
+        Check(!failedExecution.PublicExecutionEligible && failedExecution.LordsHallAccessEligible, "execution read failure isolated and denied");
+        TaleWorlds.MountAndBlade.Mission.ThrowRead = false;
         int liveBefore = Probe.LiveCalls;
         Task.Run(() =>
         {
+            Check(facts.IsRuleEligibleForRag("public_execution_start") && facts.CanInjectRuleTopicIntoPreprocess("public_execution_start"), "worker execution eligibility uses captured real-runtime fact");
             Check(facts.IsRuleEligibleForRag("kingdom_vassalage"), "worker RAG uses captured facts");
             Check(facts.CanInjectRuleTopicIntoPreprocess("lords_hall_access"), "worker preprocess uses captured facts");
         }).GetAwaiter().GetResult();

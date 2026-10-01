@@ -7,6 +7,7 @@ import json
 import re
 import subprocess
 import zipfile
+import argparse
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -31,6 +32,11 @@ def git_text(*arguments: str) -> str:
         ).strip()
     except Exception:
         return ""
+
+
+def is_nuget_migration_cache(path: Path) -> bool:
+    parts = [part.lower() for part in path.parts]
+    return any(parts[index:index + 2] == ["nuget", "migrations"] for index in range(len(parts) - 1))
 
 
 def build_file_set() -> tuple[dict[str, Path], dict[str, str]]:
@@ -67,7 +73,7 @@ def build_file_set() -> tuple[dict[str, Path], dict[str, str]]:
             if not path.is_file():
                 continue
             parts = {part.lower() for part in path.relative_to(ROOT).parts}
-            if parts & {"bin", "obj", ".git", ".tmp", ".vs", "runs"}:
+            if parts & {"bin", "obj", ".git", ".tmp", ".vs", "runs"} or is_nuget_migration_cache(path.relative_to(ROOT)):
                 continue
             if path.name.lower() in excluded_names:
                 continue
@@ -78,42 +84,42 @@ def build_file_set() -> tuple[dict[str, Path], dict[str, str]]:
     host_files = [
         "AnimusForge.csproj",
         "Properties/AssemblyInfo.cs",
-        "SubModule.cs",
-        "AIConfigHandler.cs",
-        "AIConfigModel.cs",
-        "DuelSettings.cs",
-        "MyBehavior.cs",
-        "WorldEntityRetrievalService.cs",
-        "PromptListRetrievalService.cs",
-        "CourierDeliveryBehavior.cs",
-        "ShoutBehavior.cs",
-        "AnimusForgeTerminalBehavior.cs",
-        "HotkeyInputGuard.cs",
-        "KingdomStrategicProfileBehavior.cs",
-        "KingdomStrategicProfileBehavior.DevUi.cs",
-        "ProactiveNpcRequestBehavior.cs",
-        "ProactiveNpcRequestPromptsConfigModel.cs",
-        "VassalageBehavior.cs",
-        "VoteDealBehavior.cs",
-        "VoteDealBehavior.Agenda.cs",
-        "VoteDealBehavior.MapNotification.cs",
-        "VoteDealBehavior.Propose.cs",
+        "src/AF.GameAdapter.Bannerlord/Composition/SubModule.cs",
+        "src/modules/AF.Module.Prompt/Configuration/AIConfigHandler.cs",
+        "src/modules/AF.Module.Prompt/Configuration/AIConfigModel.cs",
+        "src/AF.GameAdapter.Bannerlord/Configuration/Mcm/DuelSettings.cs",
+        "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.cs",
+        "src/modules/AF.Module.Knowledge/Entities/WorldEntityRetrievalService.cs",
+        "src/modules/AF.Module.Prompt/Retrieval/PromptListRetrievalService.cs",
+        "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.cs",
+        "src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.cs",
+        "src/AF.GameAdapter.Bannerlord/UI/Terminal/AnimusForgeTerminalBehavior.cs",
+        "src/AF.GameAdapter.Bannerlord/UI/Common/HotkeyInputGuard.cs",
+        "src/modules/AF.Module.Diplomacy/Profiles/KingdomStrategicProfileBehavior.cs",
+        "src/modules/AF.Module.Diplomacy/Profiles/KingdomStrategicProfileBehavior.DevUi.cs",
+        "src/modules/AF.Module.Conversation/Proactive/ProactiveNpcRequestBehavior.cs",
+        "src/modules/AF.Module.Prompt/Configuration/ProactiveNpcRequestPromptsConfigModel.cs",
+        "src/modules/AF.Module.Diplomacy/Vassalage/VassalageBehavior.cs",
+        "src/modules/AF.Module.Diplomacy/Agenda/VoteDealBehavior.cs",
+        "src/modules/AF.Module.Diplomacy/Agenda/VoteDealBehavior.Agenda.cs",
+        "src/modules/AF.Module.Diplomacy/Agenda/VoteDealBehavior.MapNotification.cs",
+        "src/modules/AF.Module.Diplomacy/Agenda/VoteDealBehavior.Propose.cs",
         "src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.cs",
         "src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.JobRuntime.cs",
         "src/modules/AF.Module.Diplomacy/World/WorldDiplomacyJobRuntimeCoordinator.cs",
         "src/modules/AF.Module.Diplomacy/World/WorldDiplomacyRequestLeaseCoordinator.cs",
-        "WorldDiplomacyLlmClient.cs",
-        "OnnxEmbeddingEngine.cs",
-        "AnimusForgeTextInputSanitizer.cs",
+        "src/modules/AF.Module.Diplomacy/World/WorldDiplomacyLlmClient.cs",
+        "src/modules/AF.Module.Knowledge/Semantic/OnnxEmbeddingEngine.cs",
+        "src/AF.GameAdapter.Bannerlord/UI/Common/AnimusForgeTextInputSanitizer.cs",
         "src/AF.Foundation.Runtime/Lifecycle/SaveRuntimeGuard.cs",
-        "Logger.cs",
+        "src/AF.GameAdapter.Bannerlord/Diagnostics/Logger.cs",
         "src/AF.Foundation.Runtime/Diagnostics/DiagnosticTraceContext.cs",
         "src/AF.Foundation.Runtime/Diagnostics/MetricWindow.cs",
         "src/AF.Foundation.Runtime/Diagnostics/BoundedLogWriteQueue.cs",
         "src/AF.GameAdapter.Bannerlord/Composition/StartupPatchComposition.cs",
         "src/AF.GameAdapter.Bannerlord/Composition/ApplicationTickComposition.cs",
         "src/modules/AF.Module.Llm/Protocol/LlmApiCompat.cs",
-        "LlmRetryPrompt.cs",
+        "src/AF.GameAdapter.Bannerlord/UI/Errors/LlmRetryPrompt.cs",
     ]
     for relative in host_files:
         add_file(relative, "host_integration")
@@ -194,6 +200,8 @@ def validate_files(files: dict[str, Path]) -> None:
         lower = relative.lower()
         if lower.startswith("animusforge/onnx/") or path.suffix.lower() in blocked_suffixes:
             raise RuntimeError(f"Blocked ONNX/binary asset selected: {delivery}")
+        if is_nuget_migration_cache(path.relative_to(ROOT)):
+            raise RuntimeError(f"Generated/private path selected: {delivery}")
         if any(
             part.lower() in {"bin", "obj", "runs", ".tmp", ".git"}
             for part in path.relative_to(ROOT).parts
@@ -212,15 +220,15 @@ def validate_files(files: dict[str, Path]) -> None:
         )
 
 
-def create_package() -> dict[str, object]:
+def create_package(output_dir: Path = OUTPUT_DIR) -> dict[str, object]:
     files, categories = build_file_set()
     validate_files(files)
 
     now = datetime.now().astimezone()
     stamp = now.strftime("%Y%m%d_%H%M%S")
     package_name = f"AnimusForge_PolicySystem_FullSourceOverlay_{stamp}"
-    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
-    zip_path = OUTPUT_DIR / f"{package_name}.zip"
+    output_dir.mkdir(parents=True, exist_ok=True)
+    zip_path = output_dir / f"{package_name}.zip"
 
     manifest_files: list[dict[str, object]] = []
     for relative, path in sorted(files.items(), key=lambda item: item[0].lower()):
@@ -362,5 +370,27 @@ OVERLAY 目录保留仓库相对路径，包含：
     }
 
 
+def main() -> int:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--validate-only", action="store_true", help="Validate the complete selection without creating a package")
+    parser.add_argument("--out-dir", type=Path, help="Create an isolated package in a new workspace-local directory")
+    args = parser.parse_args()
+    output = OUTPUT_DIR
+    if args.out_dir is not None:
+        # Reuse the reviewed output guard; never overwrite an earlier package run.
+        import sys
+        sys.path.insert(0, str(ROOT / "tests"))
+        from output_isolation import new_run_root
+        output = new_run_root(ROOT, "policy-source-overlay", args.out_dir)
+    if args.validate_only:
+        files, categories = build_file_set()
+        validate_files(files)
+        result = {"fileCount": len(files), "categories": sorted(set(categories.values())), "validationOnly": True}
+    else:
+        result = create_package(output)
+    print(json.dumps(result, ensure_ascii=False, indent=2))
+    return 0
+
+
 if __name__ == "__main__":
-    print(json.dumps(create_package(), ensure_ascii=False, indent=2))
+    raise SystemExit(main())
