@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "sourceRevision": "d0363c1a2ffb57fe8224c705fd555bd73403293c",
+  "sourceRevision": "fa555f7c00b3e0bb38cae9eeb39c5330af698e50",
   "remoteBaseline": "10defeb4976f3ffa096a77e847fba254308f6aba",
   "meaning": "Navigation only, not whole-file completion or a permanent feature allowlist. Refresh the current map when symbols change.",
   "anchors": [
@@ -5524,7 +5524,7 @@
       "match": "contains",
       "status": "wired-j13a2-wave-admission-slice-offline-verified",
       "note": "真实宿主的准备和 commit 入口拒绝旧 owner/代，无需后续 tick、不报假成功。",
-      "fileSha256": "01a54086f4374eba63a031ca62a17a85e0b19f48168d0e995899007c204d7144"
+      "fileSha256": "485f86d8afba1cc8f22d74689898f06f691a9763d7cf8b62d8330d78f0e7f37c"
     },
     {
       "id": "weekly.recovery.combined",
@@ -5535,7 +5535,7 @@
       "match": "contains",
       "status": "wired-j13a-offline-verified",
       "note": "真实 Inquiry 回调、失败分组重采、生产提交和 publication revision；固定响应边界、非实机。",
-      "fileSha256": "b6877f328d9fa353e844a17901df41174ed8727db0f512170542495dae1be48f"
+      "fileSha256": "15ec1a80924ff05cf1f4dc460d69540e9e9c00144d0e61c91b4f648757829138"
     },
     {
       "id": "weekly.receipts.ledger",
@@ -6371,7 +6371,7 @@
       "match": "contains",
       "status": "wired-j13d2-offline-verified",
       "note": "Aggregate source wiring; not live Quest evidence",
-      "fileSha256": "14628cbf077eff3fb7470cfd6e941d26f12a6d5b84bfc6017e10201b084f4b30"
+      "fileSha256": "41beba54bc2204fe82310da00873bec5914f46d2de276d54f54b336a4aedf323"
     },
     {
       "id": "world.inbox.behavior",
@@ -7339,7 +7339,7 @@
       "match": "exact",
       "status": "replay-j13e3-offline-verified",
       "note": "Source-wiring only; current DLL replay separate",
-      "fileSha256": "9109965ecb127b4c51b18966ce094cf200af3a7a6ed4eb7ac50c85250bb15065"
+      "fileSha256": "6c4ecf86fcadf7249ebdd9aed4e847974ba05842054625202bf5f27a3882d780"
     },
     {
       "id": "settlement.owner.entry",
