@@ -4,9 +4,18 @@
 from __future__ import annotations
 
 import argparse
+import fnmatch
 import json
 import sys
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "tests"))
+from output_isolation import CURRENT_SOURCE_RELOCATIONS
+
+
+def canonical_path(path: str) -> str:
+    return CURRENT_SOURCE_RELOCATIONS.get(path, path)
+
 
 RULES = {
     "knowledge-persona-profile": ("MyBehavior.Persona*.cs", "MyBehavior.PromotedPersonaGeneration.cs", "src/modules/AF.Module.Persona/**/*.cs"),
@@ -46,7 +55,7 @@ RULES = {
 }
 CATALOG_PATH = Path("docs/phase8/full-domain-readiness-catalog.json")
 EXCLUDED_PARTS = {
-    ".tmp", "_deps_auto", "artifacts", "bin", "obj", "terminal", "tools",
+    ".tmp", "_deps_auto", "artifacts", "bin", "obj", "tools",
 }
 
 
@@ -59,7 +68,7 @@ def _excluded(path: Path) -> bool:
     ):
         return True
     lowered = set(parts)
-    if lowered & EXCLUDED_PARTS:
+    if lowered & EXCLUDED_PARTS or ("terminal" in lowered and parts[:4] != ("src", "af.gameadapter.bannerlord", "ui", "terminal")):
         return True
     if any("原版游戏" in part for part in path.parts):
         return True
@@ -73,6 +82,13 @@ def _matches(project: Path, pattern: str) -> list[str]:
     for path in project.glob(pattern):
         if path.is_file() and not _excluded(path.relative_to(project)):
             paths.add(path.relative_to(project).as_posix())
+    # The old reviewed patterns still name physical-move identities. Resolve only
+    # the explicit relocation table, keeping generated/deployment exclusions.
+    for old, current in CURRENT_SOURCE_RELOCATIONS.items():
+        if len(Path(old).parts) == len(Path(pattern).parts) and fnmatch.fnmatchcase(old, pattern):
+            path = project / current
+            if path.is_file() and not _excluded(Path(current)):
+                paths.add(current)
     return sorted(paths)
 
 
@@ -109,7 +125,7 @@ def check_catalog(project: Path, *, require_preparation_state: bool = False) -> 
         if domain_id not in domains:
             errors.append(f"missing domain: {domain_id}")
             continue
-        actual = domains[domain_id].get("entryPaths", [])
+        actual = [canonical_path(path) for path in domains[domain_id].get("entryPaths", [])]
         missing = sorted(set(candidates) - set(actual))
         if missing:
             errors.append(f"{domain_id} missing: {', '.join(missing)}")
@@ -127,7 +143,7 @@ def update_catalog(project: Path) -> None:
     document = json.loads(path.read_text(encoding="utf-8"))
     for domain in document["domains"]:
         if domain["id"] in inventory:
-            existing = set(domain["entryPaths"])
+            existing = {canonical_path(path) for path in domain["entryPaths"]}
             candidates = set(inventory[domain["id"]])
             if candidates - existing:
                 domain["entryCoverage"] = "REPRESENTATIVE"

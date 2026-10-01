@@ -13,6 +13,8 @@ import xml.etree.ElementTree as ET
 
 
 ROOT = Path(__file__).resolve().parents[3]
+sys.path.insert(0, str(ROOT / "tests"))
+from output_isolation import new_run_root, minimal_test_environment
 DEFAULT_RUN_ROOT = ROOT / "artifacts" / "j15-content" / ("j15-contracts-" + uuid.uuid4().hex)
 J15B_BASELINE_REVISION = "f54a812757699f108371b6bfd1c37de0222d9adb"
 
@@ -1043,8 +1045,8 @@ def verify_inventory_and_overlay() -> None:
         check(categories[delivery] == "runtime_assets", f"overlay category preserved: {delivery}")
 
 
-def run_command(command: list[str]) -> None:
-    completed = subprocess.run(command, cwd=ROOT, text=True, encoding="utf-8", errors="replace")
+def run_command(command: list[str], env: dict[str, str]) -> None:
+    completed = subprocess.run(command, cwd=ROOT, env=env, text=True, encoding="utf-8", errors="replace")
     check(completed.returncode == 0, f"command failed ({completed.returncode}): {' '.join(command)}")
 
 
@@ -1055,8 +1057,7 @@ def main() -> int:
     run_root = args.run_root.resolve()
     allowed_root = (ROOT / "artifacts" / "j15-content").resolve()
     check(allowed_root in run_root.parents, "run root must remain under the authorized J15 content directory")
-    check(not run_root.exists(), "run root must be new; existing fixtures are never cleared")
-    run_root.mkdir(parents=True)
+    run_root = new_run_root(ROOT, "j15-content", run_root)
 
     verify_map_and_resources()
     verify_project_resources()
@@ -1066,21 +1067,29 @@ def main() -> int:
 
     # Toolchain paths default to the original dev machine; override per machine without editing the runner.
     pwsh = Path(os.environ.get("AF_J15_PWSH", r"C:\Program Files\PowerShell\7-preview\pwsh.exe"))
+    dotnet = Path(os.environ.get("AF_J15_DOTNET8", str(ROOT / "local" / "dotnet" / "8.0.425" / "dotnet.exe")))
+    env = minimal_test_environment(dotnet, run_root)
+    # PowerShell contract scripts only operate their synthetic local fixture roots.
+    env["PATH"] = os.pathsep.join([str(dotnet.parent), str(pwsh.parent), os.environ.get("SystemRoot", "C:/Windows") + "/System32"])
     run_command([
         str(pwsh), "-NoLogo", "-NoProfile", "-File",
         str(Path(__file__).with_name("ContentLayoutContractTests.ps1")),
         "-ProjectRoot", str(ROOT), "-RunRoot", str(run_root),
-    ])
+    ], env)
     run_command([
         str(pwsh), "-NoLogo", "-NoProfile", "-File",
         str(Path(__file__).with_name("PlayerExportsContractTests.ps1")),
         "-ProjectRoot", str(ROOT), "-RunRoot", str(run_root / "playerexports"),
-    ])
-    dotnet = Path(os.environ.get("AF_J15_DOTNET8", str(ROOT / "local" / "dotnet" / "8.0.425" / "dotnet.exe")))
+    ], env)
+    build_root = run_root / "gccz-build"
     run_command([
-        str(dotnet), "run", "--project", str(Path(__file__).with_name("GcczLoaderHarness.csproj")),
-        "-c", "Release", "--", str(run_root / "gccz"),
-    ])
+        str(dotnet), "build", str(Path(__file__).with_name("GcczLoaderHarness.csproj")),
+        "-c", "Release", "-p:UseAppHost=false", "-p:UseArtifactsOutput=true",
+        "-p:NuGetAudit=false", f"-p:ArtifactsPath={build_root}", f"-p:OutDir={build_root / 'runtime'}/",
+    ], env)
+    run_command([
+        str(dotnet), str(build_root / "runtime/GcczLoaderHarness.dll"), str(run_root / "gccz"),
+    ], env)
     print(f"j15ContentContracts mappings={len(EXPECTED)} j15b={len(J15B_EXPECTED)} j15c={len(J15C_EXPECTED)} "
           f"holds={len(CURRENT_HOLD_PATHS)} invalidCases=8 gcczFallbackCases=4 overlayAliases=14 PASS")
     return 0

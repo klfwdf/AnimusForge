@@ -15,6 +15,7 @@ Toolchain (override by environment; missing tools make the affected entries BLOC
   AF_BANNERLORD_ROOT / AF_WORKSHOP_DIR  game + workshop roots for replay/policy entries
   AF_REPLAY_14_REFS                     1.4 reference dir (default <repo>/.tmp/build_check/1.4)
   AF_REPLAY_CANDIDATE_DLL               isolated 1.4 implementation DLL for same-candidate replay
+  AF_REPLAY_DEBUG_CANDIDATE_DLL         explicitly selected Debug-only seam replay candidate
   AF_REPLAY_STAGE_BIN                   isolated/private dependency bin for replay
   AF_TEST_TEMP_ROOT                     explicitly approved TEMP parent, outside the repo (required)
 
@@ -75,6 +76,12 @@ NEWTONSOFT = SDK8_DIR / "sdk" / "8.0.425" / "Newtonsoft.Json.dll"
 STAGE_BIN = env_path("AF_REPLAY_STAGE_BIN", ROOT / "bin" / "Debug" / "single_module_stage" / "AnimusForge" / "bin" / "Win64_Shipping_Client")
 DLL14 = env_path("AF_REPLAY_CANDIDATE_DLL", ROOT / "bin" / "Debug" / "single_module_artifacts" / "versions" / "1.4" / "AnimusForge.dll")
 
+DEBUG_DLL14 = env_path("AF_REPLAY_DEBUG_CANDIDATE_DLL", ROOT / "bin" / "Debug" / "single_module_artifacts" / "versions" / "1.4" / "AnimusForge.dll")
+
+
+def candidate_dll(spec: dict) -> Path:
+    return DEBUG_DLL14 if spec.get("candidateConfiguration") == "Debug" else DLL14
+
 
 def replay_module(name: str, installed_name: str, workshop_id: str) -> Path:
     installed = GAME / "Modules" / installed_name
@@ -132,6 +139,7 @@ def discover() -> list[str]:
 def command(path: str, spec: dict, run_name: str, build_root: Path | None = None) -> list[str]:
     p = ROOT / path
     extra = expand(spec.get("args", []), run_name)
+    candidate = candidate_dll(spec)
     if p.suffix == ".py":
         text = p.read_text(encoding="utf-8", errors="replace")
         if p.name.startswith("test_") and "__main__" not in text and "TestCase" in text:
@@ -152,11 +160,11 @@ def command(path: str, spec: dict, run_name: str, build_root: Path | None = None
                 f"-p:ReplayHarmonyModulePath={HARMONY_MODULE}",
                 f"-p:ReplayMcmModulePath={MCM_MODULE}",
                 f"-p:ReplayUiExtenderModulePath={UIEXTENDER_MODULE}",
-                f"-p:ReplayPrivateRuntimePath={STAGE_BIN}"]
+                f"-p:ReplayPrivateRuntimePath={candidate.parent if spec.get('candidateConfiguration') == 'Debug' else STAGE_BIN}"]
     cmd += expand(spec.get("msbuild", []), run_name)
-    if spec.get("candidateDll") and DLL14.exists():
-        cmd += [f"-p:ReplayCandidateDll={DLL14}", "--", str(DLL14),
-                hashlib.sha256(DLL14.read_bytes()).hexdigest().upper()]
+    if spec.get("candidateDll") and candidate.exists():
+        cmd += [f"-p:ReplayCandidateDll={candidate}"]
+        cmd += ["--", str(candidate), hashlib.sha256(candidate.read_bytes()).hexdigest().upper()]
     elif extra:
         cmd += extra if extra[0] == "--" else ["--", *extra]
     return cmd
@@ -231,6 +239,12 @@ def main(argv: list[str]) -> int:
     if invalid_execution:
         print("runners.json: invalid execution mode", invalid_execution)
         return 2
+    invalid_candidates = [k for k, v in specs.items()
+                          if v.get("candidateConfiguration") not in (None, "Debug")
+                          or (v.get("candidateConfiguration") and not v.get("candidateDll"))]
+    if invalid_candidates:
+        print("runners.json: invalid candidate configuration", invalid_candidates)
+        return 2
     entries = discover()
     stale = sorted(set(specs) - set(entries))
     if stale:
@@ -299,8 +313,9 @@ def main(argv: list[str]) -> int:
             entry_env["ANIMUSFORGE_DATA_ROOT"] = str(entry_root / "data")
             cmd += ["--", "--isolated-full", str(entry_root)]
         reason = blocked(cmd)
-        if spec.get("candidateDll") and not DLL14.is_file():
-            reason = f"missing replay candidate {DLL14}"
+        candidate = candidate_dll(spec)
+        if spec.get("candidateDll") and not candidate.is_file():
+            reason = f"missing {spec.get('candidateConfiguration', 'default')} replay candidate {candidate}"
         start = time.time()
         if reason:
             code, text = None, reason
@@ -323,7 +338,12 @@ def main(argv: list[str]) -> int:
             status = "FAIL"
         tail = [line for line in text.strip().splitlines() if line.strip()][-1:] or [""]
         return {"id": entry, "exit": code, "status": status, "expect": expect,
-                "seconds": round(time.time() - start, 1), "last": tail[0][:240]}
+                "seconds": round(time.time() - start, 1), "last": tail[0][:240],
+                "command": cmd,
+                **({"candidateConfiguration": spec.get("candidateConfiguration", "default"),
+                    "candidateDll": str(candidate),
+                    "candidateSha256": hashlib.sha256(candidate.read_bytes()).hexdigest().upper() if candidate.is_file() else None}
+                   if spec.get("candidateDll") else {})}
 
     with ThreadPoolExecutor(max_workers=max(1, args.jobs)) as pool:
         results = sorted(pool.map(run, entries), key=lambda r: r["id"])

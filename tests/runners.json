@@ -301,7 +301,8 @@
    "candidateDll": true
   },
   "tests/replay/PrimaryLlmGatewayReplayTests/PrimaryLlmGatewayReplayTests.csproj": {
-   "candidateDll": true
+   "candidateDll": true,
+   "candidateConfiguration": "Debug"
   },
   "tests/replay/ProductionEconomyAwareCommitReplayTests/ProductionEconomyAwareCommitReplayTests.csproj": {
    "candidateDll": true
@@ -391,6 +392,12 @@
     "{ROOT}/extensions/AnimusForge.Illustrator/tests/GalleryRpConversionTests/synthetic-source.fixture"
    ],
    "note": "Caller-owned synthetic existence-only fixture; original production converter assertions unchanged, no image cache or save input."
+  },
+  "tools/package_policy_system_source_overlay.py": {
+   "args": [
+    "--out-dir",
+    "{ROOT}/artifacts/package_policy_system_source_overlay/runner-{RUN}"
+   ]
   }
  }
 }

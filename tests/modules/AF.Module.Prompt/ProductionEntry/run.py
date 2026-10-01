@@ -10,12 +10,17 @@ import subprocess
 
 ROOT = Path(__file__).resolve().parents[4]
 HERE = Path(__file__).resolve().parent
+import sys
+sys.path.insert(0, str(ROOT / "tests"))
+from output_isolation import new_run_root, minimal_test_environment, resolve_dotnet
 EXTRACTOR = ROOT / "tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py"
 spec = importlib.util.spec_from_file_location("af_extract", EXTRACTOR)
 extractor = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(extractor)
 
 parser = argparse.ArgumentParser()
+parser.add_argument("--run-root", type=Path)
+parser.add_argument("--mutate-resource", action="store_true")
 parser.add_argument("--mutate-unpin", action="store_true")
 args = parser.parse_args()
 source = (ROOT / "src/modules/AF.Module.Prompt/Configuration/AIConfigHandler.cs").read_text(encoding="utf-8-sig")
@@ -26,8 +31,7 @@ if args.mutate_unpin:
     assert old in hits
     hits = hits.replace(old, "using IDisposable configurationScope = new NoopScope();", 1)
 template = (HERE / "Harness.cs.txt").read_text(encoding="utf-8")
-output = ROOT / "artifacts/tests/prompt-j03-production-entry" / ("unpin-red" if args.mutate_unpin else "current")
-output.mkdir(parents=True, exist_ok=True)
+output = new_run_root(ROOT, "prompt-j03-production-entry", args.run_root)
 (output / "Program.cs").write_text(template.replace("@@REGISTRY@@", registry).replace("@@HITS@@", hits), encoding="utf-8")
 (output / "Proof.csproj").write_text("""<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><EnableDefaultCompileItems>false</EnableDefaultCompileItems></PropertyGroup><ItemGroup>
 <Compile Include="Program.cs" />
@@ -36,13 +40,14 @@ output.mkdir(parents=True, exist_ok=True)
 <Compile Include="../../../../src/modules/AF.Module.Prompt/Configuration/RevisionedPromptConfigurationStore.cs" Link="RevisionedPromptConfigurationStore.cs" />
 <Compile Include="../../../../src/modules/AF.Module.Prompt/Configuration/PromptRevisionedDerivedCache.cs" Link="PromptRevisionedDerivedCache.cs" />
 <Compile Include="../../../../src/modules/AF.Module.Prompt/Configuration/PromptRuleRegistry.cs" Link="PromptRuleRegistry.cs" />
+<Compile Include="../../../../src/modules/AF.Module.Prompt/Configuration/ExecutionPromptConfiguration.cs" Link="ExecutionPromptConfiguration.cs" />
+<EmbeddedResource Include="../../../../content/modules/AF.Module.Prompt/ModuleData/RuleBehaviorPrompts.json" LogicalName="AnimusForge.Defaults.ExecutionRulePrompts.json" />
 <Compile Include="../../../../src/modules/AF.Module.Prompt/Retrieval/GuardrailRuleHit.cs" Link="GuardrailRuleHit.cs" />
 <Reference Include="Newtonsoft.Json"><HintPath>../../../../local/dotnet/8.0.425/sdk/8.0.425/Newtonsoft.Json.dll</HintPath></Reference>
-</ItemGroup></Project>""", encoding="utf-8")
+</ItemGroup></Project>""".replace("../../../../", ROOT.as_posix() + "/").replace("AnimusForge.Defaults.ExecutionRulePrompts.json", "Wrong.ExecutionRulePrompts.json" if args.mutate_resource else "AnimusForge.Defaults.ExecutionRulePrompts.json"), encoding="utf-8")
 (output / "NuGet.Config").write_text("<configuration><packageSources><clear /></packageSources></configuration>", encoding="utf-8")
-dotnet = ROOT / "local/dotnet/8.0.425/dotnet.exe"
-env = dict(os.environ, DOTNET_ROOT=str(dotnet.parent), DOTNET_CLI_HOME=str(ROOT / ".tmp/dotnet-cli"),
-           DOTNET_CLI_TELEMETRY_OPTOUT="1", DOTNET_SKIP_FIRST_TIME_EXPERIENCE="1", DOTNET_GENERATE_ASPNET_CERTIFICATE="false")
+dotnet = resolve_dotnet(ROOT)
+env = minimal_test_environment(dotnet, output)
 build = subprocess.run([str(dotnet), "build", str(output / "Proof.csproj"), "-c", "Release", "--nologo",
                         "-p:UseAppHost=false", "-p:NuGetAudit=false", "-p:RestoreConfigFile=" + str(output / "NuGet.Config")],
                        cwd=ROOT, env=env, capture_output=True, text=True, encoding="utf-8", errors="replace")

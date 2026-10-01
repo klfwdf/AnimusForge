@@ -44,14 +44,8 @@ AppDomain.CurrentDomain.AssemblyResolve += (_, arguments) =>
 };
 
 Assembly animusForge = Assembly.LoadFrom(implementationPath);
-Type settingsType = animusForge.GetType("AnimusForge.DuelSettings", true);
 Type gatewayType = animusForge.GetType("AnimusForge.Refactor.Contracts.LegacyShoutNetworkGateway", true);
-object settings = settingsType.GetMethod("GetSettings", BindingFlags.Public | BindingFlags.Static).Invoke(null, null);
-settingsType.GetProperty("ApiUrl").SetValue(settings, "http://replay.invalid/v1/chat/completions", null);
-settingsType.GetProperty("ApiKey").SetValue(settings, "primary-replay-secret", null);
-settingsType.GetProperty("ModelName").SetValue(settings, "deepseek-replay", null);
-settingsType.GetProperty("MainApiThinkingEnabled").SetValue(settings, true, null);
-
+// Validate synthetic-only seams before settings initialization or any request. Never use a live fallback.
 MethodInfo sendMethod = gatewayType.GetMethod("SendLegacyMessagesAsync", BindingFlags.Public | BindingFlags.Static);
 MethodInfo streamMethod = gatewayType.GetMethod("SendLegacyMessagesStreamAsync", BindingFlags.Public | BindingFlags.Static);
 MethodInfo pushMethod = animusForge.GetType("AnimusForge.ShoutNetwork", true)
@@ -59,7 +53,14 @@ MethodInfo pushMethod = animusForge.GetType("AnimusForge.ShoutNetwork", true)
 MethodInfo pushStreamMethod = animusForge.GetType("AnimusForge.ShoutNetwork", true)
     .GetMethod("PushStreamingTransportOverrideForExternal", BindingFlags.Public | BindingFlags.Static);
 AssertTrue(sendMethod != null && streamMethod != null && pushMethod != null && pushStreamMethod != null,
-    "production primary Gateway replay seam is missing");
+    "PrimaryLlmGatewayReplayTests requires a Debug candidate with DEBUG-only synthetic transport seams; Release is not supported by this replay");
+
+Type settingsType = animusForge.GetType("AnimusForge.DuelSettings", true);
+object settings = settingsType.GetMethod("GetSettings", BindingFlags.Public | BindingFlags.Static).Invoke(null, null);
+settingsType.GetProperty("ApiUrl").SetValue(settings, "http://replay.invalid/v1/chat/completions", null);
+settingsType.GetProperty("ApiKey").SetValue(settings, "primary-replay-secret", null);
+settingsType.GetProperty("ModelName").SetValue(settings, "deepseek-replay", null);
+settingsType.GetProperty("MainApiThinkingEnabled").SetValue(settings, true, null);
 
 List<string> requestBodies = new List<string>();
 int requestCount = 0;
@@ -258,7 +259,7 @@ using (IDisposable streamCancelScope = (IDisposable)pushStreamMethod.Invoke(null
         "primary stream cancellation did not release the call promptly elapsedMs=" + cancelWatch.ElapsedMilliseconds);
 }
 
-Console.WriteLine("PASS primaryLlmGatewayReplay nonStream=1 stream=1 thinkingFallbacks=2 Unicode=1 partialNoReplay=1 credentialBoundary=1 cancellations=2");
+Console.WriteLine("PASS primaryLlmGatewayReplay candidateRequirement=Debug nonStream=1 stream=1 thinkingFallbacks=2 Unicode=1 partialNoReplay=1 credentialBoundary=1 cancellations=2");
 
 internal sealed class FaultingSseContent : HttpContent
 {
