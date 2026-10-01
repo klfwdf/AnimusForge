@@ -21,7 +21,7 @@ def restore(path,source):
   else:raise AssertionError('Unreviewed B1 declaration migration: '+p)
  return source
 @contextmanager
-def projection_reads():
+def _f3_projection_reads():
  read=Path.read_text
  for p,h in PACKET['dependencies'].items():
   assert sha(read(ROOT/p,encoding='utf-8-sig'))==h,'Unreviewed B1 production dependency: '+p
@@ -31,6 +31,12 @@ def projection_reads():
   except ValueError:return text
   return restore(p,text) if p in PACKET['paths'] else text
  with patch.object(Path,'read_text',projected):yield
+
+@contextmanager
+def projection_reads():
+ from af2_terminal_migration_review import projection_reads as terminal_projection_reads
+ with terminal_projection_reads():
+  with _f3_projection_reads():yield
 
 def read_current(path):
  with projection_reads():return (ROOT/key(path)).read_text(encoding='utf-8-sig')
