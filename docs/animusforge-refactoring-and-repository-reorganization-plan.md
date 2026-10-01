@@ -1,3 +1,11 @@
+<a id="coup-scene-repair-20261001"></a>
+
+### 政变专用进场与受击崩溃修复（2026-10-01，ACTIVE）
+
+用户反馈选兵后没有专用 SETS 进场选项，按提示进城后崩溃。基线 `9e5c8fc0`，`F:/AnimusForge-main` tracked clean。11:51:50–11:52:02 的 SETS 日志确认 `town_V5` armed_coup、53 名友军生成、631 守军储备、开战后崩溃；无 Coup `mission_started`。转储 `TaleWorlds.MountAndBlade.Launcher.exe.30168.dmp` 的当前 managed 栈与异常栈均指向 `BattleAgentLogic.OnAgentHit` 空引用。仅提取异常类型与方法名，证据 `artifacts/coup-scene-repair-20261001/managed-crash-evidence.json`。
+
+确认缺陷：SETS 仅用 public GetConstructor 查找 internal CoupAgentOrigin 构造器，返回 null 后仍 SpawnAgent，原版受击无条件调用 Origin.OnScoreHit；MbEvent 后注册先执行，Coup 的 OnMissionStarted 早于 SETS 添加 mission logic，漏装场景 owner；当前街道/大厅确实仅提示原版入口。范围为专用阶段菜单、SETS 挂载后通知、Origin 绑定及创建失败关闭，保留普通场景/伤害和存档语义。出口为真实 DLL 注册/Origin 回归、真实方法事件顺序/菜单回归及双 API+Bootstrap；实机与旧档单列未验。不部署、不推送，保留其它作者改动。
+
 <a id="civilwar-review-repair-20261001"></a>
 
 ### 内战派系审查五项修复（2026-10-01，DEPLOYED / OFFLINE_VERIFIED）
