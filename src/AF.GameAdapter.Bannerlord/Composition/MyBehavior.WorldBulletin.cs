@@ -174,9 +174,9 @@ public partial class MyBehavior
 			{
 				return;
 			}
-			string sentence = GetKingdomDisplayName(k1) + "向" + GetKingdomDisplayName(k2) + "宣战，两国进入战争状态。";
-			string detailText = "宣战方君主：" + GetHeroDisplayName(k1.Leader) + "；被宣战方君主：" + GetHeroDisplayName(k2.Leader) + "；宣战缘由：" + GetWorldBulletinWarReason(detail);
-			CaptureWorldBulletinEvent("war_declared", "war:" + GetKingdomId(k1) + ":" + GetKingdomId(k2) + ":" + GetCurrentGameDayIndexSafe(), 70, sentence, false,
+			string sentence = WorldBulletinCampaignMaterialPolicy.WarSentence(GetKingdomDisplayName(k1), GetKingdomDisplayName(k2));
+			string detailText = WorldBulletinCampaignMaterialPolicy.WarDetail(GetHeroDisplayName(k1.Leader), GetHeroDisplayName(k2.Leader), GetWorldBulletinWarReason(detail));
+			CaptureWorldBulletinEvent("war_declared", "war:" + GetKingdomId(k1) + ":" + GetKingdomId(k2) + ":" + GetCurrentGameDayIndexSafe(), WorldBulletinCampaignMaterialPolicy.EventPriority("war_declared"), sentence, false,
 				"diplomacy:" + WorldBulletinPairKey(k1, k2), detailText, BulletinParticipants((k1.Leader, "宣战方君主，未证实亲临现场"), (k2.Leader, "被宣战方君主，未证实亲临现场")), GetKingdomId(k1), GetKingdomId(k2));
 		}
 		catch (Exception ex)
@@ -193,9 +193,9 @@ public partial class MyBehavior
 			{
 				return;
 			}
-			string sentence = GetKingdomDisplayName(k1) + "与" + GetKingdomDisplayName(k2) + "停战议和，双方结束战争状态。";
-			string detailText = GetKingdomDisplayName(k1) + "君主：" + GetHeroDisplayName(k1.Leader) + "；" + GetKingdomDisplayName(k2) + "君主：" + GetHeroDisplayName(k2.Leader) + "；议和方式：" + (detail == MakePeaceAction.MakePeaceDetail.ByKingdomDecision ? "王国议会决议" : "双方议定");
-			if (CaptureWorldBulletinEvent("peace_made", "peace:" + GetKingdomId(k1) + ":" + GetKingdomId(k2) + ":" + GetCurrentGameDayIndexSafe(), 60, sentence, false,
+			string sentence = WorldBulletinCampaignMaterialPolicy.PeaceSentence(GetKingdomDisplayName(k1), GetKingdomDisplayName(k2));
+			string detailText = WorldBulletinCampaignMaterialPolicy.PeaceDetail(GetKingdomDisplayName(k1), GetHeroDisplayName(k1.Leader), GetKingdomDisplayName(k2), GetHeroDisplayName(k2.Leader), detail == MakePeaceAction.MakePeaceDetail.ByKingdomDecision);
+			if (CaptureWorldBulletinEvent("peace_made", "peace:" + GetKingdomId(k1) + ":" + GetKingdomId(k2) + ":" + GetCurrentGameDayIndexSafe(), WorldBulletinCampaignMaterialPolicy.EventPriority("peace_made"), sentence, false,
 				"diplomacy:" + WorldBulletinPairKey(k1, k2), detailText, BulletinParticipants((k1.Leader, "议和一方君主，未证实亲临现场"), (k2.Leader, "议和另一方君主，未证实亲临现场")), GetKingdomId(k1), GetKingdomId(k2)))
 			{
 				ApplyWorldBulletinStability(GetKingdomId(k1), 2);
@@ -208,35 +208,15 @@ public partial class MyBehavior
 		}
 	}
 
-	private static string GetWorldBulletinWarReason(DeclareWarAction.DeclareWarDetail detail)
-	{
-		switch (detail)
-		{
-		case DeclareWarAction.DeclareWarDetail.CausedByPlayerHostility:
-			return "玩家一方的敌对行为";
-		case DeclareWarAction.DeclareWarDetail.CausedByKingdomDecision:
-			return "王国议会决议";
-		case DeclareWarAction.DeclareWarDetail.CausedByRebellion:
-			return "叛乱";
-		case DeclareWarAction.DeclareWarDetail.CausedByCrimeRatingChange:
-			return "犯罪恶名";
-		case DeclareWarAction.DeclareWarDetail.CausedByKingdomCreation:
-			return "新王国建立";
-		case DeclareWarAction.DeclareWarDetail.CausedByClaimOnThrone:
-			return "争夺王位";
-		case DeclareWarAction.DeclareWarDetail.CausedByCallToWarAgreement:
-			return "盟约参战";
-		default:
-			return "未载明";
-		}
-	}
+    private static string GetWorldBulletinWarReason(DeclareWarAction.DeclareWarDetail detail)
+        => WorldBulletinCampaignMaterialPolicy.WarReason(detail.ToString());
 
 	// Order-independent, so A-vs-B war and B-vs-A peace land in one story.
 	private static string WorldBulletinPairKey(IFaction a, IFaction b)
 	{
 		string x = GetKingdomId(a);
 		string y = GetKingdomId(b);
-		return string.CompareOrdinal(x, y) <= 0 ? x + "|" + y : y + "|" + x;
+		return WorldBulletinCampaignMaterialPolicy.PairKey(x, y);
 	}
 
 	private static string WorldBulletinHeroTitle(Hero hero)
@@ -247,12 +227,12 @@ public partial class MyBehavior
 		}
 		if (IsWorldBulletinRuler(hero))
 		{
-			return GetKingdomDisplayName(hero.Clan?.Kingdom) + "君主";
+			return WorldBulletinCampaignMaterialPolicy.HeroTitle(true, GetKingdomDisplayName(hero.Clan?.Kingdom), "", false);
 		}
 		string clan = GetClanDisplayName(hero.Clan);
 		string kingdom = hero.Clan?.Kingdom != null ? GetKingdomDisplayName(hero.Clan.Kingdom) : "";
 		bool clanLeader = hero.Clan != null && hero.Clan.Leader == hero;
-		return kingdom + clan + "家族" + (clanLeader ? "族长" : "成员");
+		return WorldBulletinCampaignMaterialPolicy.HeroTitle(false, kingdom, clan, clanLeader);
 	}
 
 	private void OnWorldBulletinSettlementOwnerChanged(Settlement settlement, bool openToClaim, Hero newOwner, Hero oldOwner, Hero capturerHero, ChangeOwnerOfSettlementAction.ChangeOwnerOfSettlementDetail detail)
@@ -273,29 +253,27 @@ public partial class MyBehavior
 			string oldName = GetKingdomDisplayName(oldKingdom, GetClanDisplayName(oldOwner?.Clan) + "家族");
 			string newName = GetKingdomDisplayName(newKingdom, GetClanDisplayName(newOwner?.Clan) + "家族");
 			string settlementGroup = "siege:" + GetSettlementId(settlement);
-			string ownerDetail = (settlement.IsTown ? "城镇" : "城堡")
-				+ (oldOwner != null ? "；原领主：" + GetHeroDisplayName(oldOwner) + "（" + WorldBulletinHeroTitle(oldOwner) + "）" : "")
-				+ (newOwner != null ? "；新领主：" + GetHeroDisplayName(newOwner) + "（" + WorldBulletinHeroTitle(newOwner) + "）" : "");
+			string ownerDetail = WorldBulletinCampaignMaterialPolicy.OwnerDetail(settlement.IsTown, oldOwner != null, GetHeroDisplayName(oldOwner), WorldBulletinHeroTitle(oldOwner), newOwner != null, GetHeroDisplayName(newOwner), WorldBulletinHeroTitle(newOwner));
 			if (detail == ChangeOwnerOfSettlementAction.ChangeOwnerOfSettlementDetail.BySiege)
 			{
 				Hero actor = capturerHero ?? newOwner;
-				string sentence = GetHeroDisplayName(actor) + "攻陷" + name + "，该地由" + oldName + "转归" + newName + "。";
-			if (CaptureWorldBulletinEvent("settlement_siege", key, settlement.IsTown ? 65 : 50, sentence, involvesPlayer, settlementGroup, ownerDetail + "；攻城统帅：" + GetHeroDisplayName(actor), BulletinParticipants((actor, "攻城统帅"), (oldOwner, "原领主，未证实在场"), (newOwner, "新领主，未证实在场")), newId, oldId))
+				string sentence = WorldBulletinCampaignMaterialPolicy.SiegeSentence(GetHeroDisplayName(actor), name, oldName, newName);
+			if (CaptureWorldBulletinEvent("settlement_siege", key, WorldBulletinCampaignMaterialPolicy.SiegePriority(settlement.IsTown), sentence, involvesPlayer, settlementGroup, ownerDetail + "；攻城统帅：" + GetHeroDisplayName(actor), BulletinParticipants((actor, "攻城统帅"), (oldOwner, "原领主，未证实在场"), (newOwner, "新领主，未证实在场")), newId, oldId))
 				{
-					ApplyWorldBulletinStability(newId, settlement.IsTown ? 4 : 2);
-					ApplyWorldBulletinStability(oldId, settlement.IsTown ? -6 : -3);
+					ApplyWorldBulletinStability(newId, WorldBulletinCampaignMaterialPolicy.SiegeStability(settlement.IsTown, true));
+					ApplyWorldBulletinStability(oldId, WorldBulletinCampaignMaterialPolicy.SiegeStability(settlement.IsTown, false));
 				}
 				return;
 			}
 			string label = GetSettlementOwnerChangeDetailLabel(detail);
-			if (!string.IsNullOrEmpty(newId) && string.Equals(newId, oldId, StringComparison.OrdinalIgnoreCase))
+			if (WorldBulletinCampaignMaterialPolicy.SameKingdom(newId, oldId))
 			{
-				string grant = name + "被授予" + GetHeroDisplayName(newOwner) + "（方式：" + label + "）。";
-				CaptureWorldBulletinEvent("fief_grant", key, 20, grant, involvesPlayer, "fief_grant:" + newId + ":" + GetCurrentGameDayIndexSafe(), ownerDetail, BulletinParticipants((newOwner, "获授封地者")), newId);
+				string grant = WorldBulletinCampaignMaterialPolicy.GrantSentence(name, GetHeroDisplayName(newOwner), label);
+				CaptureWorldBulletinEvent("fief_grant", key, WorldBulletinCampaignMaterialPolicy.EventPriority("fief_grant"), grant, involvesPlayer, "fief_grant:" + newId + ":" + GetCurrentGameDayIndexSafe(), ownerDetail, BulletinParticipants((newOwner, "获授封地者")), newId);
 				return;
 			}
-			string transfer = name + "以“" + label + "”的方式由" + oldName + "转归" + newName + "，并非攻城夺取。";
-			CaptureWorldBulletinEvent("settlement_transfer", key, 30, transfer, involvesPlayer, settlementGroup, ownerDetail, BulletinParticipants((newOwner, "新领主"), (oldOwner, "原领主")), newId, oldId);
+			string transfer = WorldBulletinCampaignMaterialPolicy.TransferSentence(name, oldName, newName, label);
+			CaptureWorldBulletinEvent("settlement_transfer", key, WorldBulletinCampaignMaterialPolicy.EventPriority("settlement_transfer"), transfer, involvesPlayer, settlementGroup, ownerDetail, BulletinParticipants((newOwner, "新领主"), (oldOwner, "原领主")), newId, oldId);
 		}
 		catch (Exception ex)
 		{
@@ -362,68 +340,34 @@ public partial class MyBehavior
 			bool ruler = snapshot?.Ruler ?? IsWorldBulletinRuler(victim);
 			Kingdom kingdom = (snapshot != null ? FindKingdomById(snapshot.KingdomId) : null) ?? victim.Clan?.Kingdom;
 			string victimTitle = snapshot?.Title ?? WorldBulletinHeroTitle(victim);
-			string who = ruler
-				? GetKingdomDisplayName(kingdom) + "的君主" + GetHeroDisplayName(victim)
-				: (kingdom != null ? GetKingdomDisplayName(kingdom) : "") + GetClanDisplayName(victim.Clan) + "家族的" + GetHeroDisplayName(victim);
-			bool natural = detail == KillCharacterAction.KillCharacterActionDetail.DiedOfOldAge || detail == KillCharacterAction.KillCharacterActionDetail.DiedInLabor;
-			string killerName = killer != null ? GetHeroDisplayName(killer) : "";
-			string sentence;
-			VengeanceExecutionFacts executionFacts = ResolvePublicExecutionFacts(victim, detail);
-			if (executionFacts != null)
+            string deathDetail = detail.ToString();
+            string who = WorldBulletinCampaignMaterialPolicy.KilledWho(ruler,
+                kingdom != null || ruler ? GetKingdomDisplayName(kingdom) : "", GetClanDisplayName(victim.Clan), GetHeroDisplayName(victim));
+            bool natural = WorldBulletinCampaignMaterialPolicy.IsNaturalDeath(deathDetail);
+            string killerName = killer != null ? GetHeroDisplayName(killer) : "";
+            VengeanceExecutionFacts executionFacts = ResolvePublicExecutionFacts(victim, detail);
+            bool execution = executionFacts != null || IsExecutionKillDetail(detail);
+            var material = new WorldBulletinDeathMaterialCapture {
+                Who = who, VictimTitle = victimTitle, Age = (int)victim.Age,
+                HasKiller = killer != null, KillerName = killerName, KillerTitle = killer != null ? WorldBulletinHeroTitle(killer) : "",
+                Detail = deathDetail, Execution = execution, HasPublicExecutionFacts = executionFacts != null,
+                Venue = executionFacts != null ? BuildPublicExecutionVenueText(executionFacts) : "",
+                Method = executionFacts != null ? BuildPublicExecutionMethodText(executionFacts) : "",
+                Charge = executionFacts != null ? BuildPublicExecutionChargeText(executionFacts) : "",
+                ToneLabel = executionFacts?.ToneLabel, LegitimacyLabel = executionFacts?.LegitimacyLabel,
+                PlayerStruck = executionFacts?.PlayerStruck ?? false,
+                ExecutionPlace = execution && executionFacts == null ? ResolveHeroExecutionLocationText(ResolveHeroExecutionSettlement(victim, killer), victim, killer) : ""
+            };
+            string sentence = WorldBulletinCampaignMaterialPolicy.DeathSentence(material);
+            int score = WorldBulletinCampaignMaterialPolicy.DeathPriority(ruler, natural);
+            string kind = WorldBulletinCampaignMaterialPolicy.DeathKind(ruler);
+            string kingdomId = GetKingdomId(kingdom);
+            string group = WorldBulletinCampaignMaterialPolicy.DeathGroup(execution, deathDetail, GetHeroId(killer), GetHeroId(victim), GetCurrentGameDayIndexSafe(),
+                deathDetail == "DiedInBattle" ? WorldBulletinPairKey(killer?.MapFaction, victim.MapFaction) : "");
+            string detailText = WorldBulletinCampaignMaterialPolicy.DeathDetail(material);
+			if (CaptureWorldBulletinEvent(kind, "killed:" + victimId, score, sentence, IsWorldBulletinPlayerHero(killer) || IsWorldBulletinPlayerHero(victim), group, detailText, BulletinParticipants((victim, "死者"), (natural ? null : killer, "致死方，是否亲自行刑依事实")), kingdomId, GetKingdomId(killer?.Clan?.Kingdom)))
 			{
-				sentence = who + BuildPublicExecutionVenueText(executionFacts) + (killer != null ? "被" + killerName : "被") + BuildPublicExecutionMethodText(executionFacts) + BuildPublicExecutionChargeText(executionFacts) + "。";
-			}
-			else if (IsExecutionKillDetail(detail))
-			{
-				sentence = who + (killer != null ? "被" + killerName + "处决。" : "被处决。");
-			}
-			else if (detail == KillCharacterAction.KillCharacterActionDetail.DiedInBattle)
-			{
-				sentence = who + "战死沙场" + (killer != null ? "，死于" + killerName + "之手。" : "。");
-			}
-			else if (detail == KillCharacterAction.KillCharacterActionDetail.Murdered)
-			{
-				sentence = who + (killer != null ? "遭" + killerName + "谋杀。" : "遭人谋杀。");
-			}
-			else if (detail == KillCharacterAction.KillCharacterActionDetail.DiedOfOldAge)
-			{
-				sentence = who + "寿终离世。";
-			}
-			else
-			{
-				sentence = who + "离世。";
-			}
-			int score = ruler ? (natural ? 70 : 90) : (natural ? 25 : 50);
-			string kind = ruler ? "ruler_killed" : "lord_killed";
-			string kingdomId = GetKingdomId(kingdom);
-			// One executioner's or murderer's victims form one story; a battle death joins that day's clash between the realms.
-			bool execution = executionFacts != null || IsExecutionKillDetail(detail);
-			string group = execution ? "execution:" + GetHeroId(killer) + ":" + GetCurrentGameDayIndexSafe()
-				: detail == KillCharacterAction.KillCharacterActionDetail.Murdered ? "murder:" + GetHeroId(killer)
-				: detail == KillCharacterAction.KillCharacterActionDetail.DiedInBattle ? "clash:" + GetCurrentGameDayIndexSafe() + ":" + WorldBulletinPairKey(killer?.MapFaction, victim.MapFaction)
-				: "death:" + GetHeroId(victim);
-			StringBuilder detailText = new StringBuilder();
-			detailText.Append("死者身份：").Append(victimTitle).Append("，年约").Append((int)victim.Age).Append("岁");
-			if (killer != null)
-			{
-				detailText.Append("；行事者：").Append(killerName).Append("（").Append(WorldBulletinHeroTitle(killer)).Append("）");
-			}
-			if (executionFacts != null)
-			{
-				detailText.Append("；审判：").Append(executionFacts.ToneLabel).Append("，").Append(executionFacts.LegitimacyLabel)
-					.Append(executionFacts.PlayerStruck ? "，由执行者亲自行刑" : "，由行刑人行刑");
-			}
-			else if (execution)
-			{
-				string place = ResolveHeroExecutionLocationText(ResolveHeroExecutionSettlement(victim, killer), victim, killer);
-				if (!string.IsNullOrWhiteSpace(place))
-				{
-					detailText.Append("；地点：").Append(place);
-				}
-			}
-			if (CaptureWorldBulletinEvent(kind, "killed:" + victimId, score, sentence, IsWorldBulletinPlayerHero(killer) || IsWorldBulletinPlayerHero(victim), group, detailText.ToString(), BulletinParticipants((victim, "死者"), (natural ? null : killer, "致死方，是否亲自行刑依事实")), kingdomId, GetKingdomId(killer?.Clan?.Kingdom)))
-			{
-				ApplyWorldBulletinStability(kingdomId, ruler ? -8 : (natural ? 0 : -2));
+				ApplyWorldBulletinStability(kingdomId, WorldBulletinCampaignMaterialPolicy.DeathStability(ruler, natural));
 			}
 		}
 		catch (Exception ex)
@@ -443,16 +387,16 @@ public partial class MyBehavior
 			Hero captor = capturer?.LeaderHero ?? capturer?.MobileParty?.LeaderHero;
 			bool ruler = IsWorldBulletinRuler(prisoner);
 			Kingdom kingdom = prisoner.Clan?.Kingdom;
-			string who = ruler ? GetKingdomDisplayName(kingdom) + "的君主" + GetHeroDisplayName(prisoner) : GetHeroDisplayName(prisoner) + "（" + GetKingdomDisplayName(kingdom, GetClanDisplayName(prisoner.Clan) + "家族") + "）";
-			string sentence = who + (captor != null ? "被" + GetHeroDisplayName(captor) + "俘虏。" : "被敌方俘虏。");
+			string who = WorldBulletinCampaignMaterialPolicy.CapturedWho(ruler, GetKingdomDisplayName(kingdom), GetHeroDisplayName(prisoner), GetKingdomDisplayName(kingdom, GetClanDisplayName(prisoner.Clan) + "家族"));
+			string sentence = WorldBulletinCampaignMaterialPolicy.CapturedSentence(who, captor != null, GetHeroDisplayName(captor));
 			string kingdomId = GetKingdomId(kingdom);
 			// Same group as the day's clashes between these realms, so a battle and its captives read as one story.
 			string group = "clash:" + GetCurrentGameDayIndexSafe() + ":" + WorldBulletinPairKey(captor?.MapFaction, prisoner.MapFaction);
-			string detailText = "被俘者身份：" + WorldBulletinHeroTitle(prisoner) + (captor != null ? "；俘获者：" + GetHeroDisplayName(captor) + "（" + WorldBulletinHeroTitle(captor) + "）" : "");
-			if (CaptureWorldBulletinEvent(ruler ? "ruler_captured" : "lord_captured", "captured:" + GetHeroId(prisoner) + ":" + GetCurrentGameDayIndexSafe(), ruler ? 65 : 35, sentence, IsWorldBulletinPlayerHero(captor),
+			string detailText = WorldBulletinCampaignMaterialPolicy.CapturedDetail(WorldBulletinHeroTitle(prisoner), captor != null, GetHeroDisplayName(captor), WorldBulletinHeroTitle(captor));
+			if (CaptureWorldBulletinEvent(ruler ? "ruler_captured" : "lord_captured", "captured:" + GetHeroId(prisoner) + ":" + GetCurrentGameDayIndexSafe(), WorldBulletinCampaignMaterialPolicy.CapturedPriority(ruler), sentence, IsWorldBulletinPlayerHero(captor),
 				group, detailText, BulletinParticipants((prisoner, "被俘者"), (captor, "俘获方")), kingdomId, GetKingdomId(captor?.Clan?.Kingdom)))
 			{
-				ApplyWorldBulletinStability(kingdomId, ruler ? -4 : -1);
+				ApplyWorldBulletinStability(kingdomId, WorldBulletinCampaignMaterialPolicy.CapturedStability(ruler));
 			}
 		}
 		catch (Exception ex)
@@ -486,28 +430,24 @@ public partial class MyBehavior
 			bool siege = mapEvent.IsSiegeAssault;
 			// Raid fights are covered by the raid event; a lord running down villagers or caravans is not news.
 			bool lordVsLord = winnerLord && loserLord;
-			if (!involvesPlayer && (mapEvent.IsRaid || (!siege && !lordVsLord && troops <= MajorNpcBattleTroopThreshold)))
+			if (!WorldBulletinCampaignMaterialPolicy.ShouldIncludeBattle(involvesPlayer, winnerLord, loserLord, mapEvent.IsRaid, siege, troops, MajorNpcBattleTroopThreshold))
 			{
 				return;
 			}
-			int score = (troops >= 1000 ? 55 : (troops > MajorNpcBattleTroopThreshold ? 40 : (lordVsLord ? 30 : 20))) + (siege ? 10 : 0);
+			int score = WorldBulletinCampaignMaterialPolicy.BattlePriority(troops, MajorNpcBattleTroopThreshold, lordVsLord, siege);
 			string location = GetMapEventLocationLabel(mapEvent);
 			string winnerFaction = GetFactionDisplayName(winner.MapFaction, "一方");
 			string loserFaction = GetFactionDisplayName(loser.MapFaction, "另一方");
-			string sentence = location + (siege ? "攻城战：" : "一战：") + GetPrimaryOtherSideLabel(winner) + "（" + winnerFaction + "）击败" + GetPrimaryOtherSideLabel(loser) + "（" + loserFaction + "）"
-				+ (troops > 0 ? "，双方约" + troops + "人参战。" : "。");
+			string sentence = WorldBulletinCampaignMaterialPolicy.BattleSentence(location, siege, GetPrimaryOtherSideLabel(winner), winnerFaction, GetPrimaryOtherSideLabel(loser), loserFaction, troops);
 			string winnerId = GetKingdomId(winner.MapFaction);
 			string loserId = GetKingdomId(loser.MapFaction);
 			string group = siege && mapEvent.MapEventSettlement != null
 				? "siege:" + GetSettlementId(mapEvent.MapEventSettlement)
 				: "clash:" + GetCurrentGameDayIndexSafe() + ":" + WorldBulletinPairKey(winner.MapFaction, loser.MapFaction);
-			string detailText = "胜方" + GetMapEventSideCommittedTroopCount(winner) + "人，" + BuildMapEventCasualtyText(winner)
-				+ "；败方" + GetMapEventSideCommittedTroopCount(loser) + "人，" + BuildMapEventCasualtyText(loser)
-				+ (winnerLord ? "；胜方统帅：" + WorldBulletinHeroTitle(winner.LeaderParty.LeaderHero) : "")
-				+ (loserLord ? "；败方统帅：" + WorldBulletinHeroTitle(loser.LeaderParty.LeaderHero) : "");
+			string detailText = WorldBulletinCampaignMaterialPolicy.BattleDetail(GetMapEventSideCommittedTroopCount(winner), BuildMapEventCasualtyText(winner), GetMapEventSideCommittedTroopCount(loser), BuildMapEventCasualtyText(loser), winnerLord, winnerLord ? WorldBulletinHeroTitle(winner.LeaderParty.LeaderHero) : "", loserLord, loserLord ? WorldBulletinHeroTitle(loser.LeaderParty.LeaderHero) : "");
 			if (CaptureWorldBulletinEvent(siege ? "siege_battle" : "battle", "battle:" + BuildMapEventStableKey(mapEvent, location), score, sentence, involvesPlayer, group, detailText, BulletinParticipants((winner.LeaderParty?.LeaderHero, "胜方统帅"), (loser.LeaderParty?.LeaderHero, "败方统帅")), winnerId, loserId))
 			{
-				int swing = troops > MajorNpcBattleTroopThreshold ? 2 : 1;
+				int swing = WorldBulletinCampaignMaterialPolicy.BattleStability(troops, MajorNpcBattleTroopThreshold);
 				ApplyWorldBulletinStability(winnerId, swing);
 				ApplyWorldBulletinStability(loserId, -swing);
 			}
@@ -526,8 +466,8 @@ public partial class MyBehavior
 			{
 				return;
 			}
-			CaptureWorldBulletinEvent("kingdom_destroyed", "kingdom_destroyed:" + GetKingdomId(kingdom), 100, GetKingdomDisplayName(kingdom) + "已经覆灭，这个王国不复存在。", false,
-				"realm:" + GetKingdomId(kingdom), "末代君主：" + GetHeroDisplayName(kingdom.Leader), BulletinParticipants((kingdom.Leader, "事件相关君主，是否亲临现场依事实")), GetKingdomId(kingdom));
+			CaptureWorldBulletinEvent("kingdom_destroyed", "kingdom_destroyed:" + GetKingdomId(kingdom), WorldBulletinCampaignMaterialPolicy.EventPriority("kingdom_destroyed"), WorldBulletinCampaignMaterialPolicy.DestroyedSentence(GetKingdomDisplayName(kingdom)), false,
+				"realm:" + GetKingdomId(kingdom), WorldBulletinCampaignMaterialPolicy.DestroyedDetail(GetHeroDisplayName(kingdom.Leader)), BulletinParticipants((kingdom.Leader, "事件相关君主，是否亲临现场依事实")), GetKingdomId(kingdom));
 		}
 		catch (Exception ex)
 		{
@@ -546,18 +486,18 @@ public partial class MyBehavior
 			bool involvesPlayer = clan == Clan.PlayerClan;
 			if (detail == ChangeKingdomAction.ChangeKingdomActionDetail.LeaveWithRebellion && oldKingdom != null)
 			{
-				string sentence = GetClanDisplayName(clan) + "家族举兵反叛，脱离了" + GetKingdomDisplayName(oldKingdom) + "。";
-				if (CaptureWorldBulletinEvent("kingdom_rebellion", "rebellion:" + GetClanId(clan) + ":" + GetKingdomId(oldKingdom), 70, sentence, involvesPlayer,
-					"realm:" + GetKingdomId(oldKingdom), "叛乱家族族长：" + GetHeroDisplayName(clan.Leader) + "；原王国君主：" + GetHeroDisplayName(oldKingdom.Leader), BulletinParticipants((clan.Leader, "反叛家族族长"), (oldKingdom.Leader, "原王国君主，未证实在场")), GetKingdomId(oldKingdom)))
+				string sentence = WorldBulletinCampaignMaterialPolicy.RebellionSentence(GetClanDisplayName(clan), GetKingdomDisplayName(oldKingdom));
+				if (CaptureWorldBulletinEvent("kingdom_rebellion", "rebellion:" + GetClanId(clan) + ":" + GetKingdomId(oldKingdom), WorldBulletinCampaignMaterialPolicy.EventPriority("kingdom_rebellion"), sentence, involvesPlayer,
+					"realm:" + GetKingdomId(oldKingdom), WorldBulletinCampaignMaterialPolicy.RebellionDetail(GetHeroDisplayName(clan.Leader), GetHeroDisplayName(oldKingdom.Leader)), BulletinParticipants((clan.Leader, "反叛家族族长"), (oldKingdom.Leader, "原王国君主，未证实在场")), GetKingdomId(oldKingdom)))
 				{
 					ApplyWorldBulletinStability(GetKingdomId(oldKingdom), -8);
 				}
 			}
 			else if (detail == ChangeKingdomAction.ChangeKingdomActionDetail.CreateKingdom && newKingdom != null)
 			{
-				string sentence = GetClanDisplayName(clan) + "家族建立了新王国" + GetKingdomDisplayName(newKingdom) + "。";
-				CaptureWorldBulletinEvent("kingdom_created", "kingdom_created:" + GetKingdomId(newKingdom), 75, sentence, involvesPlayer,
-					"realm:" + GetKingdomId(oldKingdom ?? newKingdom), "开国者：" + GetHeroDisplayName(clan.Leader) + (oldKingdom != null ? "；此前效忠：" + GetKingdomDisplayName(oldKingdom) : ""), BulletinParticipants((clan.Leader, "开国者")), GetKingdomId(newKingdom), GetKingdomId(oldKingdom));
+				string sentence = WorldBulletinCampaignMaterialPolicy.CreatedSentence(GetClanDisplayName(clan), GetKingdomDisplayName(newKingdom));
+				CaptureWorldBulletinEvent("kingdom_created", "kingdom_created:" + GetKingdomId(newKingdom), WorldBulletinCampaignMaterialPolicy.EventPriority("kingdom_created"), sentence, involvesPlayer,
+					"realm:" + GetKingdomId(oldKingdom ?? newKingdom), WorldBulletinCampaignMaterialPolicy.CreatedDetail(GetHeroDisplayName(clan.Leader), oldKingdom != null, GetKingdomDisplayName(oldKingdom)), BulletinParticipants((clan.Leader, "开国者")), GetKingdomId(newKingdom), GetKingdomId(oldKingdom));
 			}
 		}
 		catch (Exception ex)
@@ -581,11 +521,11 @@ public partial class MyBehavior
 				return;
 			}
 			string victimId = GetKingdomId(settlement.MapFaction);
-			string sentence = settlement.Name + "村遭" + GetHeroDisplayName(raider) + "（" + GetFactionDisplayName(raider.MapFaction, "敌军") + "）劫掠得手。";
+			string sentence = WorldBulletinCampaignMaterialPolicy.RaidSentence(settlement.Name?.ToString(), GetHeroDisplayName(raider), GetFactionDisplayName(raider.MapFaction, "敌军"));
 			// A realm's raids on one day collapse into a single "等N起" line.
 			string owner = settlement.Village?.Bound != null ? GetSettlementDisplayName(settlement.Village.Bound) : "";
-			if (CaptureWorldBulletinEvent("raid", "raid:" + GetSettlementId(settlement) + ":" + GetCurrentGameDayIndexSafe(), 25, sentence, IsWorldBulletinPlayerHero(raider),
-				"raid:" + GetCurrentGameDayIndexSafe() + ":" + GetKingdomId(raider.MapFaction) + ">" + victimId, owner.Length > 0 ? "该村隶属：" + owner : "", BulletinParticipants((raider, "劫掠方统帅")), victimId, GetKingdomId(raider.MapFaction)))
+			if (CaptureWorldBulletinEvent("raid", "raid:" + GetSettlementId(settlement) + ":" + GetCurrentGameDayIndexSafe(), WorldBulletinCampaignMaterialPolicy.EventPriority("raid"), sentence, IsWorldBulletinPlayerHero(raider),
+				"raid:" + GetCurrentGameDayIndexSafe() + ":" + GetKingdomId(raider.MapFaction) + ">" + victimId, WorldBulletinCampaignMaterialPolicy.RaidDetail(owner), BulletinParticipants((raider, "劫掠方统帅")), victimId, GetKingdomId(raider.MapFaction)))
 			{
 				ApplyWorldBulletinStability(victimId, -1);
 			}
@@ -605,8 +545,8 @@ public partial class MyBehavior
 			{
 				return;
 			}
-			CaptureWorldBulletinEvent("civil_war", "civil_war:" + (stableKey ?? GetKingdomId(kingdom)), 80, GetKingdomDisplayName(kingdom) + "爆发内战，国内各家族兵戎相见。", Clan.PlayerClan?.Kingdom == kingdom,
-				"realm:" + GetKingdomId(kingdom), "在位君主：" + GetHeroDisplayName(kingdom.Leader), BulletinParticipants((kingdom.Leader, "事件相关君主，是否亲临现场依事实")), GetKingdomId(kingdom));
+			CaptureWorldBulletinEvent("civil_war", "civil_war:" + (stableKey ?? GetKingdomId(kingdom)), WorldBulletinCampaignMaterialPolicy.EventPriority("civil_war"), WorldBulletinCampaignMaterialPolicy.CivilWarSentence(GetKingdomDisplayName(kingdom)), Clan.PlayerClan?.Kingdom == kingdom,
+				"realm:" + GetKingdomId(kingdom), WorldBulletinCampaignMaterialPolicy.CivilWarDetail(GetHeroDisplayName(kingdom.Leader)), BulletinParticipants((kingdom.Leader, "事件相关君主，是否亲临现场依事实")), GetKingdomId(kingdom));
 		}
 		catch (Exception ex)
 		{
@@ -652,9 +592,9 @@ public partial class MyBehavior
 					}
 				}
 				List<string> enemies = all.Where(k => k != kingdom && kingdom.IsAtWarWith(k)).Select(k => GetKingdomDisplayName(k)).Take(4).ToList();
-				string line = GetKingdomDisplayName(kingdom) + "：君主" + GetHeroDisplayName(kingdom.Leader) + "，城镇" + towns + "座、城堡" + castles + "座"
-					+ (DuelSettings.IsKingdomStabilityAndRebellionEnabled() ? "，稳定度" + GetKingdomStabilityValue(kingdom) : "")
-					+ "，" + (enemies.Count > 0 ? "正与" + string.Join("、", enemies) + "交战" : "眼下没有战事");
+				bool stabilityEnabled = DuelSettings.IsKingdomStabilityAndRebellionEnabled();
+                string line = WorldBulletinCampaignMaterialPolicy.KingdomContextLine(GetKingdomDisplayName(kingdom), GetHeroDisplayName(kingdom.Leader), towns, castles, stabilityEnabled,
+                    stabilityEnabled ? GetKingdomStabilityValue(kingdom) : 0, enemies);
 				lines.Add(line);
 			}
 		}

@@ -20,7 +20,8 @@ paths = next(ast.literal_eval(node.value) for node in tree.body if isinstance(no
 project = ET.parse(HERE / "WeeklyMemoryMaterialOutcomeContractTests.csproj")
 paths += [str((HERE / node.attrib["Include"].replace("\\", "/")).resolve().relative_to(ROOT))
           for node in project.findall(".//Compile")]
-paths += ["src/modules/AF.Module.Memory/Records/CampaignMaterialRecordOwner.cs",
+paths += ["src/modules/AF.Module.Weekly/Materials/WorldBulletinCampaignMaterialPolicy.cs",
+          "src/modules/AF.Module.Memory/Records/CampaignMaterialRecordOwner.cs",
           "src/modules/AF.Module.Memory/Records/NpcActionRecordOwner.cs",
           "src/modules/AF.Module.Memory/Records/EventSourceMaterialIndex.cs",
           "src/modules/AF.Module.Weekly/Materials/WeeklyMemoryMaterialValuePolicy.cs",
