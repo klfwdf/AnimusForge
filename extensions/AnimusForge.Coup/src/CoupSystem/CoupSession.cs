@@ -8,6 +8,41 @@ internal enum CoupPhase { Preparing, Street, HallSelection, Hall, AwaitingResolu
 internal enum CoupTroopRole { Ally, StreetDefender, GateGuard, HallGuard }
 internal enum CoupKingDisposition { Undecided, Release, Capture }
 
+// Missing in legacy sessions means the original one-soldier admission rule.
+internal sealed class CoupEntryRequirements
+{
+    public int MinimumClanTier;
+    public int MinimumInfluence;
+    public int MinimumTroops = 1;
+
+    internal static int Clamp(int value, int min, int max) => Math.Max(min, Math.Min(value, max));
+    internal static CoupEntryRequirements Normalize(int tier, int influence, int troops) => new CoupEntryRequirements
+    {
+        MinimumClanTier = Clamp(tier, 0, 6), MinimumInfluence = Clamp(influence, 0, 5000), MinimumTroops = Clamp(troops, 1, 120)
+    };
+    internal bool IsValid() => MinimumClanTier >= 0 && MinimumClanTier <= 6
+        && MinimumInfluence >= 0 && MinimumInfluence <= 5000 && MinimumTroops >= 1 && MinimumTroops <= 120;
+
+    internal bool Check(int tier, float influence, int healthyRegulars, int streetLimit, out string reason)
+        => Evaluate(MinimumClanTier, MinimumInfluence, MinimumTroops, tier, influence, healthyRegulars, streetLimit, out reason);
+
+    // Menu refresh uses primitive values rather than allocating a settings snapshot.
+    internal static bool Evaluate(int minimumTier, int minimumInfluence, int minimumTroops,
+        int tier, float influence, int healthyRegulars, int streetLimit, out string reason)
+    {
+        reason = "";
+        if (minimumTroops > streetLimit)
+            reason = "篡位配置冲突：最低突击队人数" + minimumTroops + "超过街道上限" + streetLimit + "，请在 MCM 中调整。";
+        else if (tier < minimumTier)
+            reason = "家族等级不足：" + tier + "／" + minimumTier + "级。";
+        else if (minimumInfluence > 0 && (float.IsNaN(influence) || float.IsInfinity(influence) || influence < minimumInfluence))
+            reason = "影响力不足：" + influence.ToString("0.##") + "／" + minimumInfluence + "（仅检查，不扣除）。";
+        else if (healthyRegulars < minimumTroops + 1)
+            reason = "至少需要" + (minimumTroops + 1) + "名健康普通士兵，其中1人留守接应；当前" + healthyRegulars + "人。";
+        return reason.Length == 0;
+    }
+}
+
 // Detached values captured once at Begin; never consult MCM while a coup is in flight.
 // No field initializers here: an explicitly stored but incomplete snapshot is invalid.
 internal sealed class CoupBattleOptions
@@ -75,6 +110,8 @@ internal sealed class CoupSession
     // Missing in old JSON: initialize to the historical rules, independent of current MCM.
     [Newtonsoft.Json.JsonProperty(ObjectCreationHandling = Newtonsoft.Json.ObjectCreationHandling.Replace)]
     public CoupBattleOptions BattleOptions = CoupBattleOptions.LegacyDefaults();
+    [Newtonsoft.Json.JsonProperty(ObjectCreationHandling = Newtonsoft.Json.ObjectCreationHandling.Replace)]
+    public CoupEntryRequirements EntryRequirements = new CoupEntryRequirements();
     public string Id = Guid.NewGuid().ToString("N");
     public string SettlementId;
     public string KingdomId;
@@ -139,6 +176,7 @@ internal sealed class CoupSession
             || string.IsNullOrWhiteSpace(OriginalRulingClanId) || string.IsNullOrWhiteSpace(OriginalOwnerClanId)
             || !Enum.IsDefined(typeof(CoupPhase), Phase) || !Enum.IsDefined(typeof(CoupPhase), ResumePhase) || !Enum.IsDefined(typeof(CoupKingDisposition), Disposition)
             || BattleOptions == null || !BattleOptions.IsValid()
+            || EntryRequirements == null || !EntryRequirements.IsValid()
             || Troops == null || float.IsNaN(PlayerHealth) || float.IsInfinity(PlayerHealth)
             || float.IsNaN(KingHealth) || float.IsInfinity(KingHealth)) return false;
         if ((Phase == CoupPhase.AwaitingResolution || Phase == CoupPhase.Completed || HasPoliticalCommit)
