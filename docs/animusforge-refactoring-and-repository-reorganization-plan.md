@@ -6049,3 +6049,38 @@ R2计划交付门槛：已给固定技术路线、真实来源与目标、写入
 真正类型统计：MyBehavior48 partial/2408 direct syntax declarations/34642 own-member span lines，主29836 physical lines；ShoutBehavior29/1352/22219，主21301。本轮197个实际owner class声明及逐owner规模/修订在JSON；这些不是semantic unique方法数或复杂度。838原ID recorded/working-tree均PASS。具名保留为engine/game-thread叶捕获、兼容ABI/publichook、保存/生命周期顺序组合、原Actions factory、原具体provider/nativewait/交易或未列领域玩法，不以整partial/“实时”为完整context业务豁免。
 
 **NOT_RUN**：实机/真实旧档/真实网络和TTS/帧性能，完整current CourierSchedule、ModuleNativeSubmission与NativeWait whole-consumer。当前关键原子接受门与owner实测不替代这些整体层。SDK首次certificate stdout可能副作用的实际归因仍UNKNOWN，未读私钥/回滚系统。Weekly512terminal/64pending原边界（512Applied+64取消pending→448Applied+64Unknown）保留，不造576特例ledger。原SessionTransport rawdirty及tools/NuGet/user计划保护，未push/Stage/deploy/清理真实玩家资料或改一键覆盖语义。唯一额外写授权仍只精确合成TEMP根的新隔离子树。
+
+
+<a id="local-policy-jurisdiction-20261002"></a>
+## 地方政策无王国失效：最小管辖职责重构（2026-10-02）
+
+- 最新授权仅修地方政策，不处理王国政策展示。起点 `917ea758`，本地意图检查点 `0d7e9e43`，已验证产品与回归切片 `208ce554`。原 SessionTransport dirty、旧 tools/NuGet 未纳入提交、不清理；没有 push、Stage、游戏覆盖、仓外写入或构建脚本修改。本条替代旧交接中本次地方政策状态，不撤销其他功能历史结论。
+- 根因：目标管辖统一要求发布王国，独立家族合法封地因此被拒绝；语义快照也只收录王国封地。现在统一入口按 scope 选择授权依据，地方按所选且仍属于发布家族的封地及合法村庄/家族/领袖关联确定边界，明确其他目标仍受既有授权约束。无证据失败关闭，不扩展为世界目标。王国/跨国授权、国家对象模块限制、费用、UI、持久化身份及公开 API 不改。
+
+### 本切片源码责任证据（revision `208ce554`；一基行号）
+
+| 源码 | 符号 / 范围 | 覆盖与保留边界 |
+| --- | --- | --- |
+| `PolicySystem/Effects/PolicyEffectJurisdictionContext.cs:10–80` | `PolicyEffectJurisdictionContext`, `FromSnapshot`, `CaptureFief` | 每调用一次上下文，缓存按封地 ID 查找；编译用脱离游戏对象的请求快照，注册/刷新用当前归属。不是存档字段。 |
+| `PolicySystem/Effects/PolicyEffectTargetJurisdiction.cs:20–274` | `TryApply`, `TryApplyLocal`, `CanProjectSettlementOwnerClan` | 唯一作用域授权入口；S 限所选封地，显式目标和跨国规则保留；严格拒绝或运行时裁剪失效对象。 |
+| `PolicySystem/Core/CustomPolicyBehavior.Effects.cs:146–270,2609–3140,6631–6700,6912–6990,7394–7465` | `TryRegisterPolicyEffectBundleInternal`, `RefreshActivePolicyEffectCanonicalTargets`, TargetPlan materialization/refresh, `CreatePlayerPolicyEffectTargetResolver`, `AddPolicyEffectPrimaryTargetForModule` | 编译、注册、运行时、延长所复用的刷新入口消费同一管辖；删除地方路径重复王国筛选；保留五参数投影接口。延长费用/UI流程未改。 |
+| `PolicySystem/Targets/PolicyTargetSemanticRouter.cs:87–92,561–754` | `BuildWorldSnapshot`, `CapturePrimaryFief` | 现有缓存快照附带管辖证据，额外只捕获独立玩家家族的封地，不扫描所有独立对象。 |
+| `tests/bridges/Policy/PolicyEffectModule.ContractTests/LocalJurisdictionTests.cs:15–216` | `TestKingdomlessLocalJurisdiction`, `TestLocalJurisdictionRegistration` | 合成目标矩阵和真实注册/刷新入口；仅临时替换 Settlement.Find 的合成查找，finally 撤销。 |
+
+频率：在既有快照失效重建、目标解析、注册和刷新时工作，不新增逐帧任务；上下文缓存封地证据，各效果按 ID 集合检查。快照已有归属/领袖/王国变更失效机制沿用。框架导航仍见 `docs/architecture/af-framework-code-scope.md`，其旧全框架验证不等于本次游戏验收。
+
+### 验证与失败记录
+
+本地证据根：`artifacts/local-policy-jurisdiction-20261002/`（构建产物不提交）。
+
+- RED：`red-test.log` 用改前 DLL 复现 `政策效果目标缺少发布地王国边界。`。首次测试构建重复 assembly attributes，原因是重定向 obj 后旧 obj 被默认 glob 收录；仅构建调用排除 bin/obj/local/artifacts 后成功，未清理旧文件。
+- 初次产品构建遗漏 Targets.cs 对 resolver 的调用参数，报 CS7036；将默认上下文构造收敛到 resolver 后修复。最后产品构建 `builds/build-6c9e92610f054fd7a6aefa0fedbfe326/results.json` exit 0，之后只追加测试，无产品修改。
+- 使用现有非破坏包装：`python -B docs/handoffs/j17-offline-build-gate.py --configuration Debug --output-parent E:/AnimusForge-refactor-continuation-20260831/artifacts/local-policy-jurisdiction-20261002/builds`。Debug `BannerlordApi=1.3`、`BannerlordApi=1.4` 与 Bootstrap 均成功；统一脚本验证输出 marker。实际引用版本 1.3.15.110062 / 1.4.7.117484。产品存在原有警告，不声称零警告。
+- 测试项目 `tests/bridges/Policy/PolicyEffectModule.ContractTests/PolicyEffectModule.ContractTests.csproj` 分别引用最终两 API DLL 构建，均零错误零警告。日志 `final-test-build.log`、`final14-test-build.log`；输出与 obj 独立放本证据根。
+- 两 API 各执行：`--policy-target-jurisdiction-only` PASS 62；`--policy-all-modules-contract-only` PASS 1457 / 18 modules；`--policy-target-plan-only` PASS 765。日志分别 `final-*.log` 和 `final14-*.log`。计数有重叠，不相加称唯一覆盖。
+- 覆盖独立及已入国发布家族、村庄/家族/领袖投影、非法目标、登记前失地拒绝、运行中失地清除、序列化后刷新、地方显式跨国授权与国家限制；全国既有断言未放宽。注册/刷新入口使用合成游戏对象，中央授权逻辑未 mock。
+- `git diff --check` / staged diff 检查通过。未修改一键输出语义、公开 API 或存档类型。
+
+### 明确未验
+
+真实游戏发布/评议期间失地时序、完整延长效果交互及费用扣除、代表性真实旧档加载、实机 1.3/1.4、帧耗时仍 **NOT_RUN**。离线 JSON 往返与延长共用刷新入口不等于真实读档/延长端到端验收；不声称全仓测试通过。没有部署或推送授权。
