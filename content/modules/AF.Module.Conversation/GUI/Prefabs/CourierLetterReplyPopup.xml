@@ -36,18 +36,40 @@
                 </ScrollbarWidget>
               </Children>
             </Widget>
-            <RichTextWidget IsVisible="@HasImpact" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="245" SuggestedHeight="90" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="780" MarginTop="585" ClipContents="true" Brush="AFCourierLetter.Meta.Text" Text="@ImpactText" DoNotAcceptEvents="false" Command.LinkClick="ExecuteOpenEncyclopediaLink" Command.LinkAlternateClick="ExecuteOpenEncyclopediaLink" />
+            <!-- Impact stays separate from the letter body; long summaries scroll without losing entity links. -->
+            <Widget Id="ImpactSummary" IsVisible="@HasImpact" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="245" SuggestedHeight="90" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="780" MarginTop="585">
+              <Children>
+                <ScrollablePanel Id="ImpactScrollPanel" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginRight="12" ClipRect="ImpactClipRect" InnerPanel="ImpactClipRect\ImpactInnerPanel" AutoHideScrollBars="true" VerticalScrollbar="..\ImpactScrollbar" DoNotAcceptEvents="false">
+                  <Children>
+                    <Widget Id="ImpactClipRect" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" ClipContents="true">
+                      <Children>
+                        <Widget Id="ImpactInnerPanel" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" VerticalAlignment="Top">
+                          <Children>
+                            <RichTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" Brush="AFCourierLetter.Meta.Text" Text="@ImpactText" CanBreakWords="true" DoNotAcceptEvents="false" Command.LinkClick="ExecuteOpenEncyclopediaLink" Command.LinkAlternateClick="ExecuteOpenEncyclopediaLink" />
+                          </Children>
+                        </Widget>
+                      </Children>
+                    </Widget>
+                  </Children>
+                </ScrollablePanel>
+                <ScrollbarWidget Id="ImpactScrollbar" WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="8" HorizontalAlignment="Right" AlignmentAxis="Vertical" Handle="ImpactHandle" MaxValue="100" MinValue="0" Sprite="BlankWhiteSquare_9" Color="#7A5A3A55" DoNotAcceptEvents="false">
+                  <Children>
+                    <Widget Id="ImpactHandle" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="28" Sprite="BlankWhiteSquare_9" Color="#7A5A3ABB" DoNotAcceptEvents="false" />
+                  </Children>
+                </ScrollbarWidget>
+              </Children>
+            </Widget>
             <ListPanel WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" HorizontalAlignment="Center" VerticalAlignment="Bottom" MarginBottom="66" LayoutImp.LayoutMethod="VerticalBottomToTop">
               <Children>
-                <ButtonWidget DoNotPassEventsToChildren="true" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="380" SuggestedHeight="44" Brush="AFCourierLetter.Band.Button" Command.Click="ExecuteClose" UpdateChildrenStates="true">
+                <ButtonWidget DoNotPassEventsToChildren="true" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="380" SuggestedHeight="32" Brush="AFCourierLetter.Band.Button" Command.Click="ExecuteClose" UpdateChildrenStates="true">
                   <Children>
-                    <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="24" VerticalAlignment="Center" MarginLeft="20" MarginRight="20" Brush="AFCourierLetter.Band.Button.Text" Text="@CloseText" DoNotAcceptEvents="true" />
+                    <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="24" VerticalAlignment="Center" MarginLeft="20" MarginRight="20" Brush="AFCourierLetter.Band.Button.Text" Brush.FontSize="19" Text="@CloseText" DoNotAcceptEvents="true" />
                   </Children>
                 </ButtonWidget>
-                <Widget IsVisible="@CanReply" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="1" SuggestedHeight="10" />
-                <ButtonWidget IsVisible="@CanReply" DoNotPassEventsToChildren="true" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="380" SuggestedHeight="44" Brush="AFCourierLetter.Band.Button" Command.Click="ExecuteReply" UpdateChildrenStates="true">
+                <Widget IsVisible="@CanReply" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="1" SuggestedHeight="8" />
+                <ButtonWidget IsVisible="@CanReply" DoNotPassEventsToChildren="true" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="380" SuggestedHeight="32" Brush="AFCourierLetter.Band.Button" Command.Click="ExecuteReply" UpdateChildrenStates="true">
                   <Children>
-                    <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="24" VerticalAlignment="Center" MarginLeft="20" MarginRight="20" Brush="AFCourierLetter.Band.Button.Text" Text="@ReplyText" DoNotAcceptEvents="true" />
+                    <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="24" VerticalAlignment="Center" MarginLeft="20" MarginRight="20" Brush="AFCourierLetter.Band.Button.Text" Brush.FontSize="19" Text="@ReplyText" DoNotAcceptEvents="true" />
                   </Children>
                 </ButtonWidget>
               </Children>
