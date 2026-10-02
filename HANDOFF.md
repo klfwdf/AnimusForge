@@ -1,3 +1,11 @@
+# 当前交付：远端世界书已融合部署，追加导演自定义输入（2026-10-03）
+
+- merge `e6e0fe4d` 合入main `016baa7a` 的四套内置世界书/双来源导入，保留最新生图、内战和对话代码；导演输入产品 `1ed96cb5` 也已按原脚本更新游戏。
+- MCM画卷第3组新增“自定义导演提示词”长编辑器；只给导演、下一次请求生效，空白默认、在途快照/事实/输出格式保留。指南第7节。
+- 最终双API+Bootstrap0错误、两DLL16审查入口PASS（导演各73）；新档API完成→知识库导入→四套选择实际DLL链路每API32项。未实机MCM/新档/GPU/provider，历史总内容oracle仍FAIL，独立完整源/Stage/安装核验通过。
+- 已部署 `Modules/AnimusForge`，3378受管文件hash匹配，1944非受管保护文件大小/mtime未变；原Stage和两次Recovery可回滚。未push/新ZIP/启动游戏，旧发布包不含此候选。原共享文档dirty保留。
+- [唯一主台账与源码/回滚坐标](docs/animusforge-refactoring-and-repository-reorganization-plan.md#remote-fusion-worldbook-director-20261003)、[使用说明](docs/illustrator_pipeline_diagnostics.md#7-自定义导演提示词)。最终本地收据 `artifacts/illustrator-custom-director-20261003/receipt.json`；本条替代下方各次历史“未部署”对本轮组合候选的状态。
+
 # 当前交接：正式封臣 / 对话正文 / 拦截原版返回修复（2026-10-03，离线）
 
 - `50a5a4fa` 修复玩家初始小势力标签误拒正式封臣，投票“强推”不满只计实际执行的逆多数决策；概率/冷却未改，不称反馈玩家高频已实机归因。
