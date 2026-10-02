@@ -8,7 +8,7 @@
 
 - `src/AF.Contracts/Internal/TeamModules/{IPolicy,IGathering,ISiege}ModulePort.cs`：三组专用 internal 契约。
 - `src/bridges/{Policy,Gathering,Siege}/*ModuleAdapter.cs`：分别转接原业务 owner 的无状态薄实现。
-- `G:\AFMOD\AF-REFACTOR\src\AF.GameAdapter.Bannerlord\Composition\TeamModuleServices.cs`：类型确定的单例接线。
+- `src/AF.GameAdapter.Bannerlord/Composition/TeamModuleServices.cs`：类型确定的无状态单例接线。
 - `src/AF.Foundation.Runtime/ModuleDirectory/InternalModuleDirectory.cs`：登记、冻结、依赖/版本校验和状态查询。
 - `src/AF.Foundation.Runtime/ModuleDirectory/ModuleDirectoryLifecycleOwner.cs`：目录状态、加载/停止和冻结快照的唯一 owner。
 - `src/AF.GameAdapter.Bannerlord/Composition/ModuleFrameworkRuntime.cs`：选择制作组目录工厂、转接 Campaign 注册与保留旧查询入口，不再持有目录状态。
@@ -62,12 +62,12 @@ new Directory → TryRegister(definition) → CompleteRegistration()
 登记/依赖校验在冷启动；实际主体调用通过 typed 单例直达原 adapter，不逐次查字典。公共查询按需构造少量只读快照，不新增每帧扫描或网络请求。框架目录不持久化，不改变任何 SaveableTypeDefiner/SyncData 键。
 
 
-## 制作组 → AF 的 Native 服务（新增）
+## 制作组 → AF 的三渠道服务
 
-制作组代码可通过 `CoreDialogueServices.CreateClient()` 取得 **internal** `CoreDialogueClient`，使用 `SubmitNative(requestId, playerText)`、operation 的 `Completion` / `Snapshot` / `Cancel()`；不依赖公共 `Api.V1`。
+同 DLL 制作组代码可通过 `CoreDialogueServices.CreateClient()` 取得 **internal** `CoreDialogueClient`，调用 `SubmitNative(requestId, playerText)`、`SubmitScene(contextTicket, requestId, playerText)` 或 `SubmitCourier(contextTicket, requestId, playerText)`；operation 提供 `Completion` / `Snapshot` / `Cancel()`。这不是独立 DLL 可引用的 public API。
 
-- 实际链路：`CoreDialogueServices` → `ShoutBehavior.SubmitModuleNativeDialogue` → 原主线程 dispatcher → 原 `SubmitNativeConversationAdmittedAsync` → 唯一动作/记忆收尾。
-- 输入是当前 Native 对话的玩家文本，不接受 Hero、任意 handler、Prompt 或动作委托。业务模块不能借服务冒造 AFEF/改变原资格规则。
-- client 的128票据保留/相同ID去重/容量拒绝、仅开始前取消，与公共投影有相同 owner 语义。内部状态定义与公开enum通过显式映射隔离。
-- 公共 API 是这一真实内部服务的消费者；尚未把政策/宴会/GCCZ的业务调用全部改造成双向服务。此前主体→制作组13方法/31调用贡献port仍是原范围。
-- Scene/Courier 服务仍待完整owner回执，不声称内部双向全模块已完成。
+- Native 复用 `ShoutBehavior.SubmitModuleNativeDialogue` 和原主线程准入；仅提交当前对话玩家文本，不接受指定 Hero、任意 handler、Prompt 或动作委托。
+- Scene 先在游戏主线程、有效场景喊话框选期间调用 `CaptureSceneContextTicket()`；Courier 先在原 UI 完成收件人、模式和附件草稿，再在游戏主线程调用 `CaptureCourierContextTicket()`。两者返回 `null` 表示当前无法签发；票据不透明，提交可从任意线程调用，由原 owner 一次 claim 和重验，不绕过资格/效果/历史/AFEF。
+- 每个 client 最多保留 128 个不同请求 ID，完全相同 ID、渠道、票据和文本重试返回同一 operation；冲突/容量拒绝，不淘汰终态 ID。`Cancel()` 只保证主线程开始前取消；开始后的部分/未知效果不能当作回滚，也不能自动换 ID 重发。`Dispose()` 撤销本 client 待领票据和未开始任务，已开始结果仍可读取。
+- 最小调用：`var client = CoreDialogueServices.CreateClient(); var ticket = client.CaptureSceneContextTicket(); if (ticket != null) { var operation = client.SubmitScene(ticket, "scene-turn-1", "请说说你的看法"); var result = await operation.Completion; } client.Dispose();`；Courier 对应改用 `CaptureCourierContextTicket()`/`SubmitCourier(...)`。更新自有 UI 时由调用方回游戏主线程；不要从后台持有或操作 Hero/Agent/Mission。
+- 公共 `Api.V1` 投影同一内部服务，但内外枚举/DTO 分开；政策、宴会、GCCZ 的主体→模块 13 方法 typed ports 仍另行保留。三渠道服务可用不等于全部模块已改为双向调用，更不等于实机通过。
