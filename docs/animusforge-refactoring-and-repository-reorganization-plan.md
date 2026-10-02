@@ -1,3 +1,59 @@
+<a id="bulletin-kingdom-archive-fix"></a>
+# 当前修复：终端王国档案关联最新快报（OFFLINE_VERIFIED）
+
+用户在“新快报已生成但终端王国周报还是旧内容”的只读分析后明确授权“修”。本条替代 `artifacts/bulletin-terminal-analysis-20261003/` 的未修状态；不重新处理之前对话、ONNX、政变/内战或正式封臣任务，不延续任何历史部署授权。
+
+## 原因、获准变化与保留行为
+
+- 实际问题是查询类别断开：快报发布为 `world`、空 `ScopeKingdomId`；原王国页只查 `kingdom` 和本国 scope。存档已读回快报并不意味着王国页能显示；跨周生成的 `:brief` 只是局势提要，不能当作最新快报。
+- 新快报在原 `EventRecordEntry` 增加可选 `BulletinKingdomIds`，发布时收集大事件、合并事实和全部小消息国家，不采用报头三国上限。只有一份 canonical world 正文，国家页投影引用；未新增 LLM 请求，未改 NPC/LLM 的世界/王国记忆归属。
+- 王国页保留本国旧周报/提要，并包含相关即时快报；已消失国家也可从记录关联发现。按日期、周索引、同日期号倒序。快报模式默认世界档案，显式选国优先，关闭快报时保留原默认选国策略。
+- 标签明确分为“即时快报 / 王国局势提要 / 周报档案”，快报显示期号而非周数；保留 `weekly_reports` 终端节点 ID、既有 full-report 生成与关闭生命周期。
+- 旧 JSON 缺字段/null 继续可读；原 `_eventRecordEntries_v1`、分块格式、程序集/类型身份不变。导入 clone 与保存/读取原地规范化均保留关联；新快报关联不受 48 个布局缓存裁剪影响。
+- 老快报缺字段时，仅从仍保留的旧布局构建一次关联索引。已清理布局的旧快报无法可靠恢复国家归属，不从正文猜测；完整正文仍在世界档案。旧布局原本最多三国且不含所有小消息，此兼容回退不声称恢复其未知关联。
+- 世界消息复用档案时按 EventId 去重并合并国家筛选，保留原分类 ID、消息上限和其他政策/外交源；不会因多国可见而出现重复快报行。
+
+## Git / 真实源码职责
+
+工作区 `F:/AnimusForge-main`，分支 `codex/af-main-refactor-continuation-20260831`；检查点 `5b9af04d`，产品和测试提交 `c3e59a4f`。修改前两份文档 dirty 与其他未跟踪文件保留，产品提交只含本任务 20 文件。下表全部绑定该产品修订；定位校验不是实机验证。
+
+| 源码路径（相对仓库） | 一基行范围 | 真实职责 / 消费者 |
+| --- | --- | --- |
+| `src/modules/AF.Module.Weekly/Panel/WeeklyReportArchivePolicy.cs` | 11–74 | 关联、分类及期号纯策略；无正文猜测/网络 |
+| `src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.cs` | 341–371 | 原存档 JSON DTO 的可选关联列表，不改类型/键 |
+| `src/modules/AF.Module.Weekly/Generation/WorldBulletinStateOwner.cs` | 229–256 | 发布前收集大事件、合并事实及小消息涉及国家 |
+| `src/modules/AF.Module.Weekly/Generation/WorldBulletinStateOwner.cs` | 277–305 | metadata 在变更/时间线通知前赋值；只一份正文 |
+| `src/modules/AF.Module.Weekly/Generation/WorldBulletinStateOwner.Presentation.cs` | 45–55 | 开档案时读取旧布局索引，不写存档 |
+| `src/modules/AF.Module.Weekly/ImportExport/WeeklyEventDataImportOwner.cs` | 99–187 | JSON 导入 clone 保留关联与去重 |
+| `src/modules/AF.Module.Weekly/ImportExport/WeeklyEventDataImportOwner.cs` | 274–317 | 保存/读取原地规范化保留关联 |
+| `src/AF.GameAdapter.Bannerlord/UI/Editors/WeeklyEditorProjection.cs` | 71–97 | 世界记录与王国关联查询、日期/期号排序 |
+| `src/AF.GameAdapter.Bannerlord/UI/Editors/WeeklyReportEditorController.cs` | 249–285 | 真实消费者；一次快照、活跃/消失王国档案 |
+| `src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.WeeklyEditorUi.cs` | 84–84 | 主机绑定同一 WorldBulletinState owner |
+| `src/AF.GameAdapter.Bannerlord/UI/Weekly/TerminalWeeklyReportBrowserPopupVM.cs` | 233–270 | 快报模式默认世界页；显式选择优先 |
+| `src/AF.GameAdapter.Bannerlord/UI/WorldTimeline/WorldMessageTimelineUi.cs` | 172–250 | 单 ID 单行，合并国家筛选，不改变其他消息源 |
+
+保留责任：原 Campaign 保存 adapter 与分块 helper 未重写，仅通过实际源码回放检验新增字段；原周报取材/生成、世界知识、NPC prompt 层、政治规则和插画生命周期不变。
+
+## 性能与验证
+
+- 新关联捕获每期发布一次；布局索引仅在打开/重建档案时读取至多 48 份布局。按原 UI 打开或源修订变化刷新机制投影，没有新增逐帧全量扫描/轮询、后台游戏对象读取、正文复制或网络调用。保存/导入仍沿原规范化扫描，新增关联归一化仅与该记录涉及国家数成比例。
+- `python -B tests/modules/AF.Module.Weekly/BulletinArchiveTests/run.py --out artifacts/bulletin-archive-fix-20261003/archive-regression-delivery`：**48 行为断言 PASS**。真实生产策略、Upsert、投影、VM、导入规范化、存档 adapter、UTF-8 分块 helper 和时间线方法；游戏/设置/渲染/日志为替身，发布传参另有源码接线断言。保存/读取并非仅 JSON mock。
+- `dotnet run --project tests/modules/AF.Module.Weekly/EditorLifecycleTests/EditorLifecycleTests.csproj`：原 **33** 生命周期断言保留，新增真实 controller 接线 **8**，合计 **41 PASS**；包括 once-per-open 索引、活跃/消失/小消息国家及无关国家排除。
+- 既有 `WeeklyEventImportOwnerTests/run.py`：原导入/规范化 parity、restore、developer intents 与单债务快照测试全部 PASS；仅为新增生产依赖补 link，不删除或修改旧断言。
+- 既有 `WorldBulletinPolicy.SmokeTests` 策略 **ALL PASS**；`run_host_regression.py` **16 PASS**，原状态恢复/序列/缓存边界保留。
+- 现有终端 XML 的期号宽度、国家点击与正文绑定静态检查 PASS，无 XML 产品改动；不是 Gauntlet 视觉验收。
+- 原入口 `scripts/build/build_single_module.ps1 -ProjectRoot F:/AnimusForge-main -BannerlordRoot 'F:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord' -Configuration Debug` 最终 **三构建 success / 0 error**。1.3 引用 `v1.3.15.110062`、1.4 引用 `v1.4.6.115628`，两个实现各 341 个警告，Bootstrap 0 警告；不称零警告。
+- 12 个真实代码坐标在产品提交和当前工作树双校验 PASS；`git diff --check -- src tests` PASS。最终测试源 manifest、DLL build marker/sha256 和日志集中在 `artifacts/bulletin-archive-fix-20261003/receipt.json`，三个 DLL 位于 `bin/Debug/single_module_artifacts/`。
+- 初次定向回放的两次 fixture 断言失败（共用列表期望值、误认为原地规范化不重排）及既有 host harness 相对 Newtonsoft HintPath 编译失败日志保留；修正测试期望/使用绝对引用后通过，未削弱国家归属、存档或旧断言。
+
+## 未验证 / 回滚与下一验收
+
+- **LIVE / PLAYER_SAVE / DEPLOY / STAGE / PACKAGE / PUSH = NOT_RUN**。未启动游戏、未覆盖 Modules、未改构建/覆盖流程；原本已安装的旧 DLL 不会因本轮本地构建自动升级。
+- 玩家具体旧档、真实 Gauntlet 加载/点击/渲染以及实机两个版本尚未验；保存测试为真实算法加内存 IDataStore 边界，不等同于玩家存档验收。
+- 本轮没有修复独立的“序列化失败回退写 `[]`”风险，也不把该路径宣称为已保护；本次已证实的是正常保存/读取保留关联与查询修复。
+- 获准部署后：打开终端→查看快报与周报，检查世界最新一期，再检查本期大事件和小消息相关国家；保存/读回复查，确认无关国家不出现该快报、世界消息筛选无重复。
+- 局部回滚用 `git revert c3e59a4f`，不 hard-reset / 改历史；检查点 `5b9af04d` 仅定位。精确产品补丁在 `artifacts/bulletin-archive-fix-20261003/task.patch`，保留其他作者 dirty。
+
 <a id="remote-fusion-worldbook-director-20261003"></a>
 # 当前交付：远端世界书融合、新档链路补验与自定义导演规则（2026-10-03）
 

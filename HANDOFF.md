@@ -1,3 +1,9 @@
+# 当前修复：终端王国档案显示相关最新快报（离线已验证）
+
+- 产品/测试 `c3e59a4f`，检查点 `5b9af04d`：补单份快报的持久国家关联，王国页包含相关快报且保留历史周报/提要；期号/日期排序和分类明确，世界消息按 ID 去重并合并国家筛选。
+- 48 档案/保存/UI/时间线断言、41 编辑器断言、16 状态断言及既有策略/导入测试 PASS；原入口 Debug 1.3.15 / 1.4.6 + Bootstrap 成功，0 error。真实 Gauntlet、玩家旧档和实机未验，未部署/Stage/打包/push。
+- [唯一主台账与源码坐标](docs/animusforge-refactoring-and-repository-reorganization-plan.md#bulletin-kingdom-archive-fix)和本地 `artifacts/bulletin-archive-fix-20261003/receipt.json` 记录界限、失败日志与回滚。旧快报已丢布局关联者仍可在世界档案看，不猜国家；不是序列化失败兜底的修复。此前部署历史不包含本轮新源码。
+
 # 当前交付：远端世界书已融合部署，追加导演自定义输入（2026-10-03）
 
 - merge `e6e0fe4d` 合入main `016baa7a` 的四套内置世界书/双来源导入，保留最新生图、内战和对话代码；导演输入产品 `1ed96cb5` 也已按原脚本更新游戏。
