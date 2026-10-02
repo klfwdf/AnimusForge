@@ -6024,3 +6024,19 @@ R2计划交付门槛：已给固定技术路线、真实来源与目标、写入
 - 检查保留项（不冒充已修）：`ValidateApiTargetAsync:1926–1940` 没有 max_tokens；Anthropic 转换默认 1024，`ApplyAnthropicThinking:535–560` 在 <2048 时省略思考，合成请求实证。因此握手不覆盖真实生成 Token 上限/思考组合；MCM 某些独立测试也使用较低限额。新 YJ 面板未调用旧引导 `ApplyYjGeminiPresetThinkingDefaults:669–698`，沿用现有 MCM 思考值，不把旧预设默认值迁移当作已授权功能更改。`TryPersistMcmSettings:3447–3474` 保存失败只记 WARN，新面板缺少失败反馈，实机持久化仍 NOT_RUN。
 - 性能：URL 解析仅每次构建请求/拉模型目录运行，常量域名匹配，不加 Tick 扫描、反射、缓存轮询或新锁。
 - 未验证：真实 API/SSE、完整实际传输发送、MCM/Gauntlet 实机刷新、保存失败恢复、旧档；未 push/部署/覆盖游戏。回滚使用本任务代码提交的 focused inverse/revert，不 reset 或改写其他任务历史。
+
+
+## 主 API 正文流式 MCM 开关（2026-10-02）
+<a id="primary-api-streaming-option-20261002"></a>
+
+- 授权与范围：用户要求正文 API 的流式 MCM 开关，并明确“继续做，询问不影响实现”。意图 `94d0a1ff`，不接管并行周报/CivilWar/Coup/Illustrator 改动；不改默认交互入口、提示词、后处理动作规则、一键构建或部署流程。
+- 配置：`src/AF.GameAdapter.Bannerlord/Configuration/Mcm/DuelSettings.cs:982–984` 增加 `MainApiStreamingEnabled`，名称“开启流式传输”，放主 API 组 Order=10，默认 false、无需重启；`src/AF.GameAdapter.Bannerlord/UI/Terminal/TerminalSettingsRegistry.cs:132` 注册同一字段。仍由原 MCM/终端保存路径持久化，不建第二份配置。
+- 真实发送：`src/modules/AF.Module.Llm/ShoutNetwork.cs:665–704` 保持原 public 方法签名，用每次请求的开关选择现有 JSON/SSE core。三渠道通过 `LegacyShoutNetworkGateway.SendLegacyMessagesAsync/SendLegacyMessagesStreamAsync` 共用入口；无预览回调时 SSE 汇总后只返回一个完整业务回复。原 native callback 自动流式现在也服从开关，默认关闭会回到非流式，这是有意行为变化，不宣称全部原有 native 行为不变。
+- 参数/失败：`CallApiWithMessagesNonStreamingCore:704` 的原逻辑仅逆向命名，不改本体；`CallApiWithMessagesStreamCore:928` 保留 overrideMaxTokens、overrideTemperature、forceDisableThinking、recordTokenStats。思考参数明确拒绝后的 plain SSE retry 保留 overrides；未发布任何正文时保留原有限 non-stream fallback，显式走 core 避免开关开启后的递归重入。选定模式不随请求中途改设置而切换。
+- 完成边界：`src/modules/AF.Module.Llm/Streaming/LlmStreamingTransport.cs:31,66,108–121,154,168–181` 记录 DONE/OpenAI finish_reason/Anthropic message_stop；Primary SSE 正常完成检查位于 `ShoutNetwork.cs:1122`。缺结束标记、坏分片、已显示正文后的读取失败只能报错，不提交完成回调，不重放；caller cancellation 传播且不提交半句正文；非流式回调和 SSE 汇总再次拒绝失效 generation。业务后处理仍 await 完整正文，不按 chunk 触发。
+- 实际验证：新增 `tests/replay/PrimaryStreamingOptionReplayTests` 在最终真实 Debug 1.4 DLL 安装两个合成 sender，15项 PASS（off/on、terminal/MCM 同字段、JSON/SSE 请求、完整汇总/预览、参数保留、finish_reason 无 DONE、EOF/坏 chunk 拒绝、取消、中途改开关、HTTP错误、stale、thinking retry、有限 fallback）。输出 `artifacts/tests/primary-streaming-option/run-f1f1284859b44e5b9da1a24e5de16095`；现有 Primary 回放也 PASS，输出 `run-2d531764670d43119b5afb437b281cad`。candidate 路径、build marker/SHA 和依赖 manifest 均校验；无真实网络 fallback。
+- 其他门禁：既有 StreamingTransport 17 checks PASS，`artifacts/tests/llm-streamingtransport/run-0ecdbb7f3625402995b916e3ff8015a9`；LegacyShoutGatewayResultRegressionTests 40 PASS/0FAIL；NonStreamingTransport 240 checks/15 primary/9 configured/2 domain PASS，`artifacts/tests/llm-nonstreamingtransport/run-77738ff4f9d34695bbf22e3c4666ba92`。non-stream suite 从新 core 精确逆向方法名，原 reviewed SHA 继续强校验，未刷新 baseline；dispatch 另由真实 DLL 证明。现有 Primary 回放把“partial 算完成”有意改成 preview-only + error，并验证取消传播。
+- 最终构建：原统一脚本仅在进程内隔离到精确新目录、拒覆盖旧目录、禁 prune；磁盘脚本不变，无 Stage/Deploy。`artifacts/primary-streaming-option-20261002/final-build-cec343a0d2314978aeed0c1629aadab5/build.log` 为 Debug 1.3+1.4+Bootstrap 全 PASS/0 errors，保留既有 warnings。引用 1.3.15.110062/1.4.6.115628；implementation SHA 分别 F5479027222CB3D55F4AA68BF7885E6884D7A4B7D08D914FB0C3A6DF6B5478F2 / 0E84C6ACE6911675F2300EC685D54DDA3BC192762F1292FD9DB9C375A6206383。
+- 失败如实保留：首轮新 runner 输出等于 bin 根被现有目录边界拒绝，已修为 bin/Release/net8.0 子目录，不弱化 guard；扩展 stale fixture 首轮反射误用旧 namespace，已按实际 `AnimusForge.SaveRuntimeGuard` 修复并15项复验。失败日志未删除，均非已隐藏的产品 PASS。
+- 性能/存档：每次正文请求读取一次模式；沿用现有 SSE 解析/累积，仅随已有 JSON chunk 检查终止字段，不新增 Tick 扫描、轮询、锁、游戏对象状态或存档键。新增设置走已有 MCM 全局配置，旧配置缺字段按默认关闭。
+- 未验：真实游戏 MCM/Gauntlet 显示/持久化、三渠道实机动作、TTS、旧档、YJ 真实 SSE、全仓全量测试及 Release 候选；合成网络/真实DLL回放不等于实机验收。本任务未追加付费调用、未 push/覆盖游戏。恢复用本任务提交的 focused inverse/revert，不能 reset 或改写并行作者历史。

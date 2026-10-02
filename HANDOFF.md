@@ -1,3 +1,9 @@
+# 当前交接：主 API 正文流式 MCM 选项（2026-10-02）
+
+- 新增主 API“开启流式传输”，默认关闭、无需重启，终端/MCM 共用 `MainApiStreamingEnabled`；共享正文入口按开关走 JSON/SSE，有回调则预览，无回调则完整汇总后返回。native 原有 callback-selected stream 也统一受控，非正文 API 配置/发送入口不改。
+- 保留温度/Token/思考参数和有限重试；缺正常结束标记、坏 chunk、断流、取消、stale 均不把半句提交为完整业务回复。后处理仍在正文完成后处理，不按分片执行动作。
+- 最终隔离 Debug 双API+Bootstrap PASS；真实 DLL 15项新回放及既有 Primary 回放 PASS，transport17/gateway40/non-stream240 checks PASS。未部署/push、未真实 API 或游戏验收；保留并行 dirty。详细范围/源码坐标/修订与失败记录见[主台账条目](docs/animusforge-refactoring-and-repository-reorganization-plan.md#primary-api-streaming-option-20261002)。
+
 # 当前交接：YJ URL 与 API 设置/请求头检查（2026-10-02）
 
 - 新旧引导 YJ Base URL 改为 `https://www.shenlanqaq.com/v1`；Gemini 兼容保留旧域名；修复共享 query-chat 拼接和代理前缀 models 丢 `/v1`。终端/MCM 共用设置对象，终端手动/关闭 dirty 保存；API 面板在保存完成时写回。

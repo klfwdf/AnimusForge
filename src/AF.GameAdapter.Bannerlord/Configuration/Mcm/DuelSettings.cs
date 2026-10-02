@@ -979,6 +979,10 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 	[SettingPropertyGroup("1. AI 核心配置/1. 主API（正文生成）", GroupOrder = -300)]
 	public int MainApiMaxTokens { get; set; } = DefaultGeneralApiMaxTokens;
 
+	[SettingPropertyBool("开启流式传输", Order = 10, RequireRestart = false, HintText = "开启后，主 API 正文使用 SSE 流式传输；支持分片显示的界面可逐步显示文字，其他渠道仍在收完后显示。后处理只接收完整正文。关闭后等待完整回复。仅影响正文，不影响前处理、后处理和周报 API。默认关闭；下次正文请求生效。 ")]
+	[SettingPropertyGroup("1. AI 核心配置/1. 主API（正文生成）", GroupOrder = -300)]
+	public bool MainApiStreamingEnabled { get; set; } = false;
+
 	[SettingPropertyInteger("最小家族等级", 0, 6, "0", Order = 0, RequireRestart = false)]
 	[SettingPropertyGroup("2. 决斗规则")]
 	public int MinimumClanTier { get; set; } = 0;
