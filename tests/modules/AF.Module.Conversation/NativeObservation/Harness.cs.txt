@@ -88,7 +88,8 @@ namespace AnimusForge
             Check(task.Wait(5000),"phase-settled:"+scenario);
             return task.GetAwaiter().GetResult();
         }
-        private static void Main()
+        private static int Main() { try { Run(); return 0; } catch(Exception error) { Console.Error.WriteLine("FAIL " + error); return 1; } }
+        private static void Run()
         {
             string result=Run("healthy");
 #if BASELINE

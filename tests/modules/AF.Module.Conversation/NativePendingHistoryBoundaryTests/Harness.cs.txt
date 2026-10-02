@@ -81,7 +81,8 @@ static class Program{
  static int checks;
  static void Check(bool yes,string name){if(!yes)throw new Exception("FAIL "+name);checks++;Console.WriteLine("PASS "+name);}
  static T Finish<T>(ShoutBehavior owner,Task<T> task){try{var w=Stopwatch.StartNew();while(!task.IsCompleted&&w.ElapsedMilliseconds<3000){owner.Pump();Thread.Sleep(1);}Check(task.IsCompleted,"task settled");return task.GetAwaiter().GetResult();}catch(Exception ex){throw new Exception("FAIL unexpected history task failure",ex);}}
- static void Main(){
+ static int Main(){try{Run();return 0;}catch(Exception error){Console.Error.WriteLine("FAIL "+error);return 1;}}
+ static void Run(){
 #if ORIGINAL
  Host.Reset();var owner=new ShoutBehavior();owner.Fact("party-a");var data=Task.Run(()=>owner.Prepare()).GetAwaiter().GetResult();Check(Host.WrongThread>0&&data.Messages.Count==1&&data.Facts.Count==1,"REPRODUCED actual prepare reads/writes game history from worker");
  Host.Key="party-b";owner.Seed("party-b",2);Task.Run(()=>owner.Reject(data)).GetAwaiter().GetResult();Check(owner.Rows("party-a")==1&&owner.SceneRows(data.Sequence)==0,"REPRODUCED recomputed party key leaves original Native row but removes scene mirror");

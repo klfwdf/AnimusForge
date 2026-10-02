@@ -39,6 +39,12 @@ static class Program
 {
     static async Task Main()
     {
+        try { await RunBody(); }
+        catch (Exception error) { Console.Error.WriteLine(error); Environment.ExitCode = 1; }
+    }
+
+    static async Task RunBody()
+    {
         string requestBody=null;bool close=false;TrackedContent successContent=new(
             "event: ignored\n\n"+
             "data: {\"choices\":[{\"delta\":{\"reasoning_content\":\"理由\"}}]}\n\n"+

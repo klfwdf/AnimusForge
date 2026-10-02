@@ -339,7 +339,7 @@
     },
     {
       "id": "rhubarb-sound-playback-flag",
-      "path": "ShoutBehavior.cs",
+      "path": "src/AF.GameAdapter.Bannerlord/Scene/SceneAudioLipSyncController.cs",
       "symbols": [
         "_enableRhubarbSoundEventPlayback"
       ],

@@ -30,7 +30,8 @@ class MainReplySourceTests(unittest.TestCase):
         with patch.object(Path,'read_text',changed):
             with self.assertRaisesRegex(AssertionError,'Unreviewed J07b source drift: turn dependency'):
                 inverse.restore_main_reply('ShoutBehavior.cs',live)
-        with self.assertRaisesRegex(AssertionError,'Unreviewed J07b source drift: (turn entry|relocated host input)'):
+        # This deliberately mutated mapped-host input must now fail the strict outer terminal binding first.
+        with self.assertRaisesRegex(AssertionError,r'^Unreviewed terminal source: src/modules/AF[.]Module[.]Conversation/Channels/Scene/ShoutBehavior[.]cs$'):
             inverse.restore_main_reply('ShoutBehavior.cs',live.replace('return NativeConversationTurnCoordinator.RunAsync(', 'return MissingTurnCoordinator.RunAsync(',1))
     def test_unreviewed_stage_change_rejected(self):
         original=Path.read_text;target=ROOT/'src/modules/AF.Module.Conversation/Channels/Native/NativeConversationMainReplyStage.cs'

@@ -460,7 +460,15 @@
         "src/modules/AF.Module.Economy/Host/PlayerRpCraftItemComponentService.cs",
         "src/modules/AF.Module.Economy/Host/PlayerRpCraftModels.cs",
         "src/modules/AF.Module.Economy/Host/PlayerRpCraftTemplateSelectorLog.cs",
-        "src/modules/AF.Module.Economy/Host/TransferQuantitySpec.cs"
+        "src/modules/AF.Module.Economy/Host/TransferQuantitySpec.cs",
+        "src/modules/AF.Module.Economy/Authorization/PartyTransferAuthorizationOwner.cs",
+        "src/modules/AF.Module.Economy/Debt/DebtImportMergePolicy.cs",
+        "src/modules/AF.Module.Economy/Execution/Party/PartyTransferEffectObserver.cs",
+        "src/modules/AF.Module.Economy/Execution/Party/PartyTransferExecutionContext.cs",
+        "src/modules/AF.Module.Economy/Execution/Party/PartyTransferExecutionOwner.cs",
+        "src/modules/AF.Module.Economy/Projection/PartyTransferProjectionOwner.cs",
+        "src/modules/AF.Module.Economy/Projection/PartyTransferPromptOwner.cs",
+        "src/modules/AF.Module.Economy/Projection/SettlementTransferPromptOwner.cs"
       ],
       "promptAction": {
         "prompt": "APPLICABLE",
@@ -977,7 +985,15 @@
         "src/modules/AF.Module.Weekly/Generation/WeeklyNoticeStateOwner.cs",
         "src/modules/AF.Module.Weekly/Generation/WorldBulletinStateOwner.Presentation.cs",
         "src/modules/AF.Module.Weekly/Generation/WorldBulletinStateOwner.cs",
-        "src/modules/AF.Module.Weekly/Panel/WorldBulletinBodyWidget.cs"
+        "src/modules/AF.Module.Weekly/Panel/WorldBulletinBodyWidget.cs",
+        "src/modules/AF.Module.Weekly/Generation/WeeklyReportRuntimeOwner.cs",
+        "src/modules/AF.Module.Weekly/ImportExport/WeeklyEventDataImportOwner.cs",
+        "src/modules/AF.Module.Weekly/Materials/WeeklyMemoryMaterialPolicy.cs",
+        "src/modules/AF.Module.Weekly/Materials/WeeklyMemoryMaterialValuePolicy.cs",
+        "src/modules/AF.Module.Weekly/Materials/WeeklyPoliticalMaterialPolicy.cs",
+        "src/modules/AF.Module.Weekly/Materials/WeeklyPromptMaterialOwner.MaterialCopies.cs",
+        "src/modules/AF.Module.Weekly/Materials/WeeklyPromptMaterialOwner.SystemPrompt.cs",
+        "src/modules/AF.Module.Weekly/Materials/WorldBulletinCampaignMaterialPolicy.cs"
       ],
       "promptAction": {
         "prompt": "APPLICABLE",
@@ -1037,7 +1053,9 @@
         "src/modules/AF.Module.Persona/Generation/NpcPersonaGenerationOwner.cs",
         "src/modules/AF.Module.Persona/Generation/NpcPersonaProfilePolicy.cs",
         "src/modules/AF.Module.Persona/Generation/NpcPersonaReadinessSnapshot.cs",
-        "src/modules/AF.Module.Persona/Generation/NpcPersonaTextRules.cs"
+        "src/modules/AF.Module.Persona/Generation/NpcPersonaTextRules.cs",
+        "src/modules/AF.Module.Persona/Import/PersonaImportOwner.cs",
+        "src/modules/AF.Module.Persona/Import/UnnamedPersonaImportValidationOwner.cs"
       ],
       "promptAction": {
         "prompt": "APPLICABLE",

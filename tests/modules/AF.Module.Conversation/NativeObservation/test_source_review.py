@@ -36,7 +36,8 @@ class RawPresentationSourceTests(unittest.TestCase):
         with patch.object(Path,'read_text',changed):
             with self.assertRaisesRegex(AssertionError,'Unreviewed J07b source drift: turn dependency'):
                 inverse.restore_observation('ShoutBehavior.cs',live)
-        with self.assertRaisesRegex(AssertionError,'Unreviewed J07b source drift: (turn entry|relocated host input)'):
+        # This deliberately mutated mapped-host input must now fail the strict outer terminal binding first.
+        with self.assertRaisesRegex(AssertionError,r'^Unreviewed terminal source: src/modules/AF[.]Module[.]Conversation/Channels/Scene/ShoutBehavior[.]cs$'):
             inverse.restore_observation('ShoutBehavior.cs',live.replace('return NativeConversationTurnCoordinator.RunAsync(', 'return MissingTurnCoordinator.RunAsync(',1))
     def test_crlf_and_bom_unchanged(self):
         raw=(ROOT/'src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.cs').read_bytes();self.assertEqual(raw.count(b'\r\n'),raw.count(b'\n'));self.assertFalse(raw.startswith(b'\xef\xbb\xbf'))
