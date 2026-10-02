@@ -10,7 +10,13 @@
 - 新增真实协议源回归与既有 Protocol 13项 PASS，最终隔离 Debug 双API+Bootstrap PASS/0错误。不是实机/真实 API 验收；未部署/push，保留其他 dirty。
 - 握手不覆盖实际生成 tokens/Anthropic thinking，新旧 YJ 思考默认值不一致和 API 面板保存失败反馈不足均明确保留。详细证据与代码坐标见[主台账本次条目](docs/animusforge-refactoring-and-repository-reorganization-plan.md#yj-api-settings-audit-20261002)。本条仅交付本次配置/协议小修，不替代其他并行任务状态。
 
-# 本轮当前交接：P1–P8 host terminal closeout（2026-10-02）
+# 当前交接：AF 2.0 收尾交付（2026-10-02，离线接入已就绪）
+
+[执行计划](docs/plans/af2-module-integration-delivery-closeout-20261002.md) R0–R3 已执行到 **INTEGRATION_HANDOFF_READY**：B0/B1 本轮直验 PASS，B2/B3 同源证据 REUSED_PASS；只修改接入/交接文档，无具名产品阻塞和产品改动。制作组可按[内部指南](docs/architecture/af-internal-module-guide-v1.md)及[公开 V1 指南](docs/architecture/af-public-api-guide-v1.md)接入。旧宿主拆分后置。
+
+冻结源码 `dd6f45bf` 的 1337 raw 输入与 Debug/Release 六 DLL hash 已复核；SessionTransport raw hash `a393a98b…` 在冻结源中，受保护 dirty 未暂存。远端 main 只读核对仍为 `261a3be3`。v1.3.5/v1.4.5 的 U1–U9 实机、代表性旧档和独立子 MOD 加载仍 **NOT_RUN**，故不是 USE_ACCEPTED 或发布；原 355 runner 非全 PASS。详细状态/下一步见[主台账本次条目](docs/animusforge-refactoring-and-repository-reorganization-plan.md#af2-module-integration-delivery-plan-20261002)，源码责任见[代码范围图](docs/architecture/af-framework-code-scope.md)。未 push、Stage、打包、部署或触碰真实玩家数据。
+
+# 历史交接：P1–P8 host terminal closeout（2026-10-02）
 
 本轮授权替代“仅计划/不启动”；唯一主台账末尾“最后三个原闭包与同候选验证进度”和当前代码范围图收集证据。最后三个 original core 已实际迁 owner（D9eb43b6d/B355acce0/C581faa44），保持公共入口/保存/程序集身份。
 
