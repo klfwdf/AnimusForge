@@ -6607,3 +6607,17 @@ R2计划交付门槛：已给固定技术路线、真实来源与目标、写入
 - 已验证代码地图（工具修订 `9ee66b68`）：`tools/RerankerCpuCudaBenchmark/Runner.cs:12-38` `BenchmarkHooks.Configure` 负责测试后端、TF32与 profiling；`:60-81` `TimedCall/GetTokenLengths` 负责缓存条件、时钟和原分词长度；`:82-158` `Main` 执行原生产 batch；`benchmark.py:54-101` `protected/build` 负责原文件保护与 source-derived 构建；`:121-142` `run_one` 独立进程/采样；`:144-213` `compare_scores/aggregate` 负责误差、排序、全部轮次和 provider 证据；`prepare_dependencies.py:8-56` 负责 workspace-only pinned DLL 解压。覆盖的是重排序调用，未覆盖知识召回/规则资格/真实世界书、三个对话渠道、实机帧时间、并发、读档、native DLL 与其他模组共进程加载。
 - 17 个保护关键源/脚本/模型/配置/原依赖 SHA256 前后相同；游戏、产品入口无写入。建议继续评估**可选 CUDA 重排序**，不默认开启，不把向量模型一并 GPU 化；先在目标 5060 复测，再另行授权正式接入与实机验证。报告不替代任何既有产品交付/部署状态。
 - 回滚仅涉及本次 tools 子目录（可对工具提交做 focused inverse）和独立 artifacts 输出；不 hard reset，不覆盖游戏。共享台账/HANDOFF 原先 dirty，当前只追加具名段落并保留其他作者内容，不将混合改动提交进工具修订。
+
+
+<a id="bulletin-courier-layout-20261003"></a>
+## 快报布局、右侧花纹与信使摘要滚动（2026-10-03，OFFLINE_VERIFIED）
+
+本轮用户指定 UI 修复，检查点 `26d02429`，原始内容基线 `ab4b4b7f`。保留并行快报政策与 ShoutBehavior 修改；未 Stage、覆盖游戏、打包或推送。
+
+- `content/modules/AF.Module.Weekly/GUI/Prefabs/WorldBulletinPanel.xml:122-154`：其余消息容器1078居中、两栏各529左右锚定，正文左对齐；删除左下提示；封存154×38居中底部、下边距76。保留显示门、关闭命令、百科链接。
+- `content/modules/AF.Module.Conversation/GUI/Prefabs/CourierLetterReplyPopup.xml:40-77`：影响摘要245×90独立 ScrollablePanel/ClipRect/InnerPanel/Scrollbar，文本CoverChildren；回信/关闭44→32、间距8、字号19。正文滚动、主题、可回复门和链接不变。只有静态XML，无新增轮询或运行时图片处理。
+- `content/modules/AF.Module.Weekly/GUI/SpriteParts/af_world_bulletin/af_world_bulletin_parchment.png`：原有左侧纹样局部镜像融合，补底边缺口及用户红框指出的右下内侧竖向边框。最终仅ROI `(1390,790,1685,1068)` 有RGB变化，1730×1100 RGBA和完整alpha不变。试做纸角扩补未采用。
+- Pen同一文档节点 sAH0C/ZDlZa/Q7eE4l 已同步；截图见本地 `artifacts/bulletin-courier-ui-20261003/pen-final/`，原节点备份 pen-before.txt，原PNG parchment-before.png。现有角饰负坐标和禁用火漆节点的边界提示为历史装饰，不修改它们。
+- 定向 `tests/content/BulletinCourierLayoutTests/run.py` 13项PASS；XML内容/命令逆向比对原基线、原生双API滚动绑定、尺寸/链接/图片alpha与局部性验证通过。原内容布局contract valid=1 real=3362 invalid=8 PASS。旧J15总oracle仍FAIL：预修改map与现map均3362，旧预期3361，保留失败证据，不刷新旧oracle。
+- 原 `scripts/build/build_single_module.ps1` Debug无Stage构建1.3/1.4/Bootstrap exit0，见 build-dual.log；构建包含当时并行工作树，不声称隔离产品树或最新全部并行源码通过。之后仅修PNG与离线工具，无C#变动。
+- NOT_RUN：真实Gauntlet滚轮/拖拽/链接点击、游戏不同分辨率及旧档。Pen为静态预览，不证明真实滚动。回滚用本轮产品提交的定向inverse commit，不reset、不回滚并行代码。
