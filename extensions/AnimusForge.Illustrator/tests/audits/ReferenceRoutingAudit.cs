@@ -135,7 +135,7 @@ public static class ReferenceRoutingAudit
     }
     private static List<Instruction> Workflow(Assembly assembly, string owner, string entry)
     {
-        return assembly.GetTypes().Where(t => t.FullName.StartsWith(owner + "+") && t.Name.Contains("<" + entry + ">"))
+        return Descendants(assembly.GetType(owner, true)).Where(t => t.FullName.StartsWith(owner + "+") && t.Name.Contains("<" + entry + ">"))
             .SelectMany(t => t.GetMethods(All).Where(m => m.DeclaringType == t && m.Name == "MoveNext"))
             .SelectMany(Instructions).ToList();
     }
@@ -145,7 +145,8 @@ public static class ReferenceRoutingAudit
         string weekly = "AnimusForge.Illustrator.UI.Patches.WeeklyReportPopupIllustrationPatch";
         var encyclopedia = Workflow(assembly, popup, "ExecuteEncyclopediaGenerationCore");
         var conversation = Workflow(assembly, popup, "ExecuteConversationGenerationCore");
-        var report = Workflow(assembly, weekly, "TriggerRegenerateCore");
+        // Production weekly/bulletin generation now shares StartGeneration; verify actual owner rather than its thin UI caller.
+        var report = Workflow(assembly, weekly, "StartGeneration");
         foreach (var workflow in new[] { encyclopedia, conversation, report })
         {
             Check(workflow.Any(i => IsCall(i, "AddCharacter")), "compiled workflow uses paired character-reference routing");
@@ -191,6 +192,13 @@ public static class ReferenceRoutingAudit
         var armorCalls = Instructions(extractor.GetMethod("ExtractArmorSlot", All));
         Check(armorCalls.Any(i => IsCall(i, "get_IsUsingTableau")) && armorCalls.Any(i => IsCall(i, "IsHeraldicArmorSlot")) && armorCalls.Any(i => IsCall(i, "set_HasHeraldicArmor")),
             "real armor extraction wires the native tableau flag into the worn-carrier predicate");
+    }
+
+    private static IEnumerable<Type> Descendants(Type owner)
+    {
+        yield return owner;
+        foreach (Type child in owner.GetNestedTypes(All))
+            foreach (Type descendant in Descendants(child)) yield return descendant;
     }
 
     public static void Run(string dllPath)

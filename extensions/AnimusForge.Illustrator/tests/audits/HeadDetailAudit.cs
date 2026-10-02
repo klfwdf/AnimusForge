@@ -32,6 +32,15 @@ public static class HeadDetailAudit
         var assembly = Assembly.LoadFrom(dllPath);
         var helper = assembly.GetType("AnimusForge.Illustrator.Engine.ScreenCaptureHelper", true);
         var references = assembly.GetType("AnimusForge.Illustrator.Engine.CharacterPortraitReferences", true);
+        Check((int)helper.GetField("PortraitCaptureTimeoutMs", Static).GetRawConstantValue() == 12000, "portrait wall-clock budget covers low-frame-rate native warmup");
+        var cutoff = helper.GetMethod("ShouldStopStageForFrameBudget", Static);
+        Check(!(bool)cutoff.Invoke(null, new object[] { true, 1440, 240 }), "high-FPS portrait is not stopped by unrelated 240-frame cap");
+        Check((bool)cutoff.Invoke(null, new object[] { false, 240, 240 }), "banner frame cutoff remains unchanged");
+        var classify = helper.GetMethod("ClassifyPortraitCaptureFailure", Static);
+        Check((string)classify.Invoke(null, new object[] { false, 0, 20, 0L, null }) == "portrait.provider_warmup_timeout", "failure identifies provider not receiving UI updates");
+        Check((string)classify.Invoke(null, new object[] { false, 21, 20, 0L, "portrait.export_request_failed" }) == "portrait.export_request_failed", "failure identifies native export request rejection");
+        Check((string)classify.Invoke(null, new object[] { true, 21, 20, 0L, null }) == "portrait.export_file_missing", "failure identifies native PNG never arriving");
+        Check((string)classify.Invoke(null, new object[] { true, 21, 20, 128L, null }) == "portrait.export_file_unstable", "failure identifies PNG still changing");
         Check(references.GetProperty("FullBody").SetMethod == null && references.GetProperty("HeadDetail").SetMethod == null,
             "reference pair is immutable after capture");
 

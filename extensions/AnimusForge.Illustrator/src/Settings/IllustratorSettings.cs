@@ -70,7 +70,7 @@ namespace AnimusForge.Illustrator
         [SettingPropertyGroup("1. 基础设置", GroupOrder = 1)]
         public bool AutoCleanTempFiles { get; set; } = false;
 
-        [SettingPropertyText("生图 API 端点地址 (Base URL)", HintText = "兼容 OpenAI 格式的生图端点。例如官方端点 https://api.openai.com/v1、硅基流动 https://api.siliconflow.cn/v1 或各种中转站(如 https://yjapi.manqiaotechnology.com/v1)。", Order = 1, RequireRestart = false)]
+        [SettingPropertyText("生图 API 端点地址 (Base URL)", HintText = "填写服务根地址或 /v1。默认有参考图时优先 /images/edits（真实上传参考图），无参考图才用 /images/generations；完整 edits 地址也可识别。模型必须支持所选通道；不支持 edits 不会静默丢图转文生图。", Order = 1, RequireRestart = false)]
         [SettingPropertyGroup("2. 生图 API 配置 (OpenAI 兼容)", GroupOrder = 2)]
         public string ApiBaseUrl { get; set; } = "https://api.siliconflow.cn/v1";
 

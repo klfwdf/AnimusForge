@@ -859,6 +859,9 @@ namespace AnimusForge.Illustrator.Engine
             public int WarmupTicks;
             public int MaxTicks;
             public int Ticks;
+            public string FailureCode;
+            public string ViewFailureCode;
+            public int LastProbeTick;
             public bool SaveRequested;
             public Newtonsoft.Json.Linq.JObject ExportState;
             public Newtonsoft.Json.Linq.JObject RetireState;
@@ -903,6 +906,7 @@ namespace AnimusForge.Illustrator.Engine
             {
                 if (Volatile.Read(ref pump.CancelRequested) != 0 || pump.CancellationToken.IsCancellationRequested || !ReferenceEquals(ScreenManager.TopScreen, pump.Screen) || pump.Screen.IsFinalized)
                 {
+                    pump.FailureCode = pump.CancellationToken.IsCancellationRequested ? "portrait.cancelled" : "portrait.screen_changed";
                     FinishStage(pump);
                     pump.Done.TrySetCanceled();
                     return;
@@ -918,18 +922,16 @@ namespace AnimusForge.Illustrator.Engine
                     if (view != null && TriggerTableauViewSave(view, out pump.Dir, out pump.Prefix))
                     {
                         pump.SaveRequested = true;
+                        pump.ViewFailureCode = null;
                         pump.ExportState = CapturePortraitState(portrait);
                         TaleWorlds.Library.Debug.Print($"[OffscreenRenderer] Stage save requested at tick={pump.Ticks}, waiting for file...");
                     }
-                    else if (pump.Ticks == pump.MaxTicks)
-                    {
-                        var tw = pump.Widget as TextureWidget;
-                        TaleWorlds.Library.Debug.Print($"[OffscreenRenderer] Stage never resolved view (provider={(tw?.TextureProvider != null)})");
-                    }
+                    else pump.ViewFailureCode = view == null ? "portrait.tableau_unavailable" : "portrait.export_request_failed";
                 }
 
-                if (pump.SaveRequested)
+                if (pump.SaveRequested && (pump.LastProbeTick == 0 || unchecked((uint)(Environment.TickCount - pump.LastProbeTick)) >= 50))
                 {
+                    pump.LastProbeTick = Environment.TickCount;
                     string path = FindOffscreenFile(pump.Dir, pump.Prefix);
                     if (path != null)
                     {
@@ -953,14 +955,18 @@ namespace AnimusForge.Illustrator.Engine
                     }
                 }
 
-                if (pump.Ticks >= pump.MaxTicks)
+                // Frame count is not elapsed time: 240 frames can be under two seconds on high-FPS PCs.
+                // Portraits retain the existing wall-clock deadline; banner cadence is unchanged.
+                if (ShouldStopStageForFrameBudget(portrait != null, pump.Ticks, pump.MaxTicks))
                 {
+                    pump.FailureCode = "stage.frame_budget_exhausted";
                     FinishStage(pump);
                     pump.Done.TrySetResult(null);
                 }
             }
             catch (Exception ex)
             {
+                pump.FailureCode = "portrait.pump_exception:" + ex.GetType().Name;
                 TaleWorlds.Library.Debug.Print($"[OffscreenRenderer] Stage pump error: {ex.Message}");
                 FinishStage(pump);
                 pump.Done.TrySetResult(null);
@@ -998,6 +1004,7 @@ namespace AnimusForge.Illustrator.Engine
         private static void FinishStage(OffscreenStagePump pump)
         {
             if (pump == null || Interlocked.Exchange(ref pump.Finished, 1) != 0) return;
+            if (pump.RetireState == null) pump.RetireState = CapturePortraitState(pump.Widget as NativeCharacterExportWidget);
             if (ReferenceEquals(_activeStage, pump)) _activeStage = null;
             TaleWorlds.Library.Debug.Print($"[OffscreenRenderer] Retiring stage: widget={pump.Widget?.Id}, saveRequested={pump.SaveRequested}, ticks={pump.Ticks}");
             try
@@ -1038,10 +1045,12 @@ namespace AnimusForge.Illustrator.Engine
             {
                 await Task.Delay(20, cancellationToken).ConfigureAwait(false);
                 byte[] pngBytes = File.ReadAllBytes(path);
-                if (pngBytes == null || pngBytes.Length == 0) return null;
+                if (pngBytes == null || pngBytes.Length == 0) { Core.GenerationDiagnostics.Current?.RecordStage("portrait_decode", new Newtonsoft.Json.Linq.JObject { ["failureCode"] = "portrait.empty_png" }); return null; }
                 using (var bmp = NativePortraitImage.DecodeFinalRenderPng(pngBytes, cancellationToken))
                 {
-                    return ConvertBitmapToBase64(bmp, maxDimension);
+                    string encoded = ConvertBitmapToBase64(bmp, maxDimension);
+                    Core.GenerationDiagnostics.Current?.RecordStage("portrait_decode", new Newtonsoft.Json.Linq.JObject { ["success"] = !string.IsNullOrEmpty(encoded), ["bytes"] = pngBytes.Length, ["width"] = bmp.Width, ["height"] = bmp.Height });
+                    return encoded;
                 }
             }
             catch (OperationCanceledException)
@@ -1050,6 +1059,7 @@ namespace AnimusForge.Illustrator.Engine
             }
             catch (Exception ex)
             {
+                Core.GenerationDiagnostics.Current?.RecordStage("portrait_decode", new Newtonsoft.Json.Linq.JObject { ["failureCode"] = "portrait.png_decode_failed", ["error"] = ex.GetType().Name + ": " + ex.Message });
                 TaleWorlds.Library.Debug.Print($"[OffscreenRenderer] Read offscreen png failed: {ex.Message}");
                 return null;
             }
@@ -1074,9 +1084,15 @@ namespace AnimusForge.Illustrator.Engine
         /// </summary>
         private static async Task<string> ExtractViaStageAsync(string widgetId, Action<Widget> configure, int warmupTicks, int maxTicks, int timeoutMs, CancellationToken cancellationToken, bool cleanTempFiles)
         {
+            var queueClock = System.Diagnostics.Stopwatch.StartNew();
+            Core.GenerationDiagnostics.Current?.RecordStage("portrait_queue_wait");
             await _stageLock.WaitAsync(cancellationToken).ConfigureAwait(false);
+            Core.GenerationDiagnostics.Current?.RecordStage("portrait_queue_acquired", new Newtonsoft.Json.Linq.JObject { ["elapsedMs"] = queueClock.ElapsedMilliseconds });
             OffscreenStagePump pump = null;
             bool delivered = false;
+            string setupFailure = "portrait.setup_not_started";
+            var stageClock = System.Diagnostics.Stopwatch.StartNew();
+            Core.GenerationDiagnostics.Current?.RecordStage("portrait_stage_begin", new Newtonsoft.Json.Linq.JObject { ["view"] = widgetId, ["timeoutMs"] = timeoutMs });
             try
             {
                 var done = new TaskCompletionSource<string>(TaskCreationOptions.RunContinuationsAsynchronously);
@@ -1089,6 +1105,7 @@ namespace AnimusForge.Illustrator.Engine
                     var top = ScreenManager.TopScreen;
                     if (top == null)
                     {
+                        setupFailure = "portrait.no_top_screen";
                         TaleWorlds.Library.Debug.Print($"[OffscreenRenderer] Stage '{widgetId}' aborted: no top screen");
                         return false;
                     }
@@ -1099,6 +1116,7 @@ namespace AnimusForge.Illustrator.Engine
                     var root = movie?.Movie?.RootWidget;
                     if (root == null)
                     {
+                        setupFailure = "portrait.prefab_root_missing";
                         TaleWorlds.Library.Debug.Print($"[OffscreenRenderer] Stage '{widgetId}' aborted: prefab not loaded or empty root");
                         try { if (movie != null) layer.ReleaseMovie(movie); } catch { }
                         return false;
@@ -1136,6 +1154,7 @@ namespace AnimusForge.Illustrator.Engine
                     else widget = FindChildRecursive(root, w => w.Id == widgetId);
                     if (widget == null)
                     {
+                        setupFailure = "portrait.widget_missing";
                         TaleWorlds.Library.Debug.Print($"[OffscreenRenderer] Stage '{widgetId}' aborted: widget not found in prefab");
                         try { layer.ReleaseMovie(movie); } catch { }
                         return false;
@@ -1159,6 +1178,7 @@ namespace AnimusForge.Illustrator.Engine
                 }
                 catch (Exception ex)
                 {
+                    setupFailure = "portrait.setup_exception:" + ex.GetType().Name;
                     TaleWorlds.Library.Debug.Print($"[OffscreenRenderer] Stage create failed: {ex.Message}");
                     if (pump != null) FinishStage(pump);
                     else try { if (movie != null) layer?.ReleaseMovie(movie); } catch { }
@@ -1166,6 +1186,7 @@ namespace AnimusForge.Illustrator.Engine
                 }
             }, cancellationToken).ConfigureAwait(false);
             if (!started) return null;
+            setupFailure = null;
 
             var winner = await Task.WhenAny(done.Task, Task.Delay(timeoutMs, cancellationToken)).ConfigureAwait(false);
             if (winner == done.Task)
@@ -1178,6 +1199,11 @@ namespace AnimusForge.Illustrator.Engine
             cancellationToken.ThrowIfCancellationRequested();
             return null;
             }
+            catch (OperationCanceledException)
+            {
+                if (pump != null && string.IsNullOrEmpty(pump.FailureCode)) pump.FailureCode = "portrait.cancelled";
+                throw;
+            }
             finally
             {
                 // Never release serialization before native UI retirement finishes.
@@ -1185,6 +1211,14 @@ namespace AnimusForge.Illustrator.Engine
                 try
                 {
                     // Native state was copied on the game thread. Write diagnostics on the worker.
+                    if (!delivered && pump != null && string.IsNullOrEmpty(pump.FailureCode))
+                        pump.FailureCode = ClassifyPortraitCaptureFailure(pump.SaveRequested, (int?)pump.RetireState?["providerUpdates"] ?? 0, pump.WarmupTicks, pump.SeenLength, pump.ViewFailureCode);
+                    Core.GenerationDiagnostics.Current?.RecordStage("portrait_stage_result", new Newtonsoft.Json.Linq.JObject
+                    {
+                        ["view"] = widgetId, ["success"] = delivered, ["failureCode"] = delivered ? null : (pump?.FailureCode ?? setupFailure),
+                        ["timeoutMs"] = timeoutMs, ["elapsedMs"] = stageClock.ElapsedMilliseconds,
+                        ["applicationTicks"] = pump?.Ticks ?? 0, ["saveRequested"] = pump?.SaveRequested ?? false, ["delivered"] = delivered
+                    });
                     if (pump != null && (pump.ExportState != null || pump.RetireState != null))
                         Core.GenerationDiagnostics.Current?.RecordStage("portrait_capture_state", new Newtonsoft.Json.Linq.JObject
                         {
@@ -1198,6 +1232,15 @@ namespace AnimusForge.Illustrator.Engine
                 }
                 finally { _stageLock.Release(); }
             }
+        }
+
+        internal static bool ShouldStopStageForFrameBudget(bool isPortrait, int ticks, int maxTicks) => !isPortrait && ticks >= maxTicks;
+
+        internal static string ClassifyPortraitCaptureFailure(bool saveRequested, int providerUpdates, int warmupUpdates, long seenLength, string viewFailure)
+        {
+            if (saveRequested) return seenLength > 0 ? "portrait.export_file_unstable" : "portrait.export_file_missing";
+            if (providerUpdates <= warmupUpdates) return "portrait.provider_warmup_timeout";
+            return string.IsNullOrEmpty(viewFailure) ? "portrait.tableau_unavailable" : viewFailure;
         }
 
         // Full native banner render, never a texture CPU read or atlas reconstruction.
@@ -1254,7 +1297,7 @@ namespace AnimusForge.Illustrator.Engine
         /// 离屏渲染指定英雄的真实 3D 立绘（真实体型、五官、发型、装备、家族纹章底色）。
         /// 人物资源加载需要更多预热帧，故 warmup 比纹章长。
         /// </summary>
-        public static async Task<string> ExtractHeroPortraitOffscreenAsync(Hero hero, bool useCivilian = false, int maxDimension = 768, int timeoutMs = 3500, CancellationToken cancellationToken = default, bool cleanTempFiles = false, string equipmentCodeOverride = null, AnimusForge.Illustrator.Context.CharacterAppearanceSnapshot appearance = null)
+        public static async Task<string> ExtractHeroPortraitOffscreenAsync(Hero hero, bool useCivilian = false, int maxDimension = 768, int timeoutMs = PortraitCaptureTimeoutMs, CancellationToken cancellationToken = default, bool cleanTempFiles = false, string equipmentCodeOverride = null, AnimusForge.Illustrator.Context.CharacterAppearanceSnapshot appearance = null)
         {
             if (hero == null) return null;
             try
@@ -1273,7 +1316,7 @@ namespace AnimusForge.Illustrator.Engine
         /// <summary>
         /// 离屏渲染非英雄 CharacterObject（要人、酒馆店主等没有 Hero 对象的对话方）的真实 3D 立绘。
         /// </summary>
-        public static async Task<string> ExtractCharacterPortraitOffscreenAsync(CharacterObject character, int maxDimension = 768, int timeoutMs = 3500, CancellationToken cancellationToken = default, string bodyProperties = null, bool cleanTempFiles = false, string equipmentCodeOverride = null, AnimusForge.Illustrator.Context.CharacterAppearanceSnapshot appearance = null)
+        public static async Task<string> ExtractCharacterPortraitOffscreenAsync(CharacterObject character, int maxDimension = 768, int timeoutMs = PortraitCaptureTimeoutMs, CancellationToken cancellationToken = default, string bodyProperties = null, bool cleanTempFiles = false, string equipmentCodeOverride = null, AnimusForge.Illustrator.Context.CharacterAppearanceSnapshot appearance = null)
         {
             if (character == null) return null;
             try

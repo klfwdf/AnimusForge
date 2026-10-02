@@ -55,6 +55,13 @@ public static class PortraitNoDrawAudit
         return result;
     }
 
+    private static IEnumerable<Type> Descendants(Type owner)
+    {
+        yield return owner;
+        foreach (Type child in owner.GetNestedTypes(All))
+            foreach (Type descendant in Descendants(child)) yield return descendant;
+    }
+
     public static void Run(string dllPath)
     {
         checks = 0;
@@ -103,7 +110,7 @@ public static class PortraitNoDrawAudit
             "native construction selects CharacterTableauTextureProvider");
 
         Type helper = assembly.GetType("AnimusForge.Illustrator.Engine.ScreenCaptureHelper", true);
-        var creators = assembly.GetTypes().Where(t => t == helper || t.FullName.StartsWith(helper.FullName + "+", StringComparison.Ordinal))
+        var creators = Descendants(helper)
             .SelectMany(t => t.GetMethods(All | BindingFlags.DeclaredOnly))
             .Where(m => m.Name.Contains("ExtractViaStageAsync"))
             .Select(m => new { Method = m, Il = ReadIl(m) })

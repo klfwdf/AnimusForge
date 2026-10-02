@@ -26,18 +26,19 @@ namespace AnimusForge.Illustrator.Engine
         // CharacterViewModel.StanceTypes values verified in the 1.3 and 1.4 sources.
         // EmphasizeFace uses the native tableau camera, not a crop of the full-body PNG.
         // Keep this dependency on the widget's public int API rather than adding a VM DLL dependency.
+        internal const int PortraitCaptureTimeoutMs = 12000;
         internal const int FullBodyPortraitStance = 0;
         internal const int HeadDetailPortraitStance = 1;
         internal const int HeadDetailRenderDimension = 768;
 
-        public static async Task<CharacterPortraitReferences> ExtractHeroPortraitReferencesAsync(Hero hero, bool useCivilian = false, int maxDimension = 768, int timeoutMs = 3500, CancellationToken cancellationToken = default, bool cleanTempFiles = false, string equipmentCodeOverride = null, CharacterAppearanceSnapshot appearance = null)
+        public static async Task<CharacterPortraitReferences> ExtractHeroPortraitReferencesAsync(Hero hero, bool useCivilian = false, int maxDimension = 768, int timeoutMs = PortraitCaptureTimeoutMs, CancellationToken cancellationToken = default, bool cleanTempFiles = false, string equipmentCodeOverride = null, CharacterAppearanceSnapshot appearance = null)
         {
             if (hero == null) return new CharacterPortraitReferences(null, null);
             try
             {
                 // Snapshot once before either render, including randomized NPC bodies and cosmetic equipment.
                 var frozen = await PrepareHeroPortraitAppearanceAsync(hero, useCivilian, equipmentCodeOverride, appearance, cancellationToken).ConfigureAwait(false);
-                if (frozen == null) return new CharacterPortraitReferences(null, null);
+                if (frozen == null) { Core.GenerationDiagnostics.Current?.RecordStage("portrait_snapshot_failed", new Newtonsoft.Json.Linq.JObject { ["failureCode"] = "portrait.appearance_snapshot_missing" }); return new CharacterPortraitReferences(null, null); }
                 return await CollectCharacterPortraitReferencesAsync(
                     (headDetail, token) => ExtractAppearancePortraitAsync(frozen, headDetail, maxDimension, timeoutMs, token, cleanTempFiles),
                     cancellationToken).ConfigureAwait(false);
@@ -45,18 +46,19 @@ namespace AnimusForge.Illustrator.Engine
             catch (OperationCanceledException) { throw; }
             catch (Exception ex)
             {
+                Core.GenerationDiagnostics.Current?.RecordStage("portrait_snapshot_failed", new Newtonsoft.Json.Linq.JObject { ["failureCode"] = "portrait.hero_snapshot_exception", ["error"] = ex.GetType().Name + ": " + ex.Message });
                 TaleWorlds.Library.Debug.Print("[OffscreenRenderer] Hero reference preparation failed: " + ex.Message);
                 return new CharacterPortraitReferences(null, null);
             }
         }
 
-        public static async Task<CharacterPortraitReferences> ExtractCharacterPortraitReferencesAsync(CharacterObject character, int maxDimension = 768, int timeoutMs = 3500, CancellationToken cancellationToken = default, string bodyProperties = null, bool cleanTempFiles = false, string equipmentCodeOverride = null, CharacterAppearanceSnapshot appearance = null)
+        public static async Task<CharacterPortraitReferences> ExtractCharacterPortraitReferencesAsync(CharacterObject character, int maxDimension = 768, int timeoutMs = PortraitCaptureTimeoutMs, CancellationToken cancellationToken = default, string bodyProperties = null, bool cleanTempFiles = false, string equipmentCodeOverride = null, CharacterAppearanceSnapshot appearance = null)
         {
             if (character == null) return new CharacterPortraitReferences(null, null);
             try
             {
                 var frozen = await PrepareCharacterPortraitAppearanceAsync(character, bodyProperties, equipmentCodeOverride, appearance, cancellationToken).ConfigureAwait(false);
-                if (frozen == null) return new CharacterPortraitReferences(null, null);
+                if (frozen == null) { Core.GenerationDiagnostics.Current?.RecordStage("portrait_snapshot_failed", new Newtonsoft.Json.Linq.JObject { ["failureCode"] = "portrait.appearance_snapshot_missing" }); return new CharacterPortraitReferences(null, null); }
                 return await CollectCharacterPortraitReferencesAsync(
                     (headDetail, token) => ExtractAppearancePortraitAsync(frozen, headDetail, maxDimension, timeoutMs, token, cleanTempFiles),
                     cancellationToken).ConfigureAwait(false);
@@ -64,6 +66,7 @@ namespace AnimusForge.Illustrator.Engine
             catch (OperationCanceledException) { throw; }
             catch (Exception ex)
             {
+                Core.GenerationDiagnostics.Current?.RecordStage("portrait_snapshot_failed", new Newtonsoft.Json.Linq.JObject { ["failureCode"] = "portrait.character_snapshot_exception", ["error"] = ex.GetType().Name + ": " + ex.Message });
                 TaleWorlds.Library.Debug.Print("[OffscreenRenderer] Character reference preparation failed: " + ex.Message);
                 return new CharacterPortraitReferences(null, null);
             }
@@ -74,14 +77,18 @@ namespace AnimusForge.Illustrator.Engine
         internal static async Task<CharacterPortraitReferences> CollectCharacterPortraitReferencesAsync(Func<bool, CancellationToken, Task<string>> capture, CancellationToken token)
         {
             token.ThrowIfCancellationRequested();
+            Core.GenerationDiagnostics.Current?.RecordStage("portrait_full_body_begin");
             string fullBody = await capture(false, token).ConfigureAwait(false);
+            Core.GenerationDiagnostics.Current?.RecordStage("portrait_full_body_result", new Newtonsoft.Json.Linq.JObject { ["success"] = !string.IsNullOrWhiteSpace(fullBody), ["failureCode"] = string.IsNullOrWhiteSpace(fullBody) ? "portrait.full_body_unavailable" : null });
             token.ThrowIfCancellationRequested();
             if (string.IsNullOrWhiteSpace(fullBody)) return new CharacterPortraitReferences(null, null);
 
             string headDetail = null;
             try
             {
+                Core.GenerationDiagnostics.Current?.RecordStage("portrait_head_detail_begin");
                 headDetail = await capture(true, token).ConfigureAwait(false);
+                Core.GenerationDiagnostics.Current?.RecordStage("portrait_head_detail_result", new Newtonsoft.Json.Linq.JObject { ["success"] = !string.IsNullOrWhiteSpace(headDetail), ["reason"] = string.IsNullOrWhiteSpace(headDetail) ? "optional head detail unavailable; full body retained" : null });
                 token.ThrowIfCancellationRequested();
             }
             catch (OperationCanceledException) { throw; }
@@ -129,6 +136,7 @@ namespace AnimusForge.Illustrator.Engine
         private static async Task<string> ExtractAppearancePortraitAsync(CharacterAppearanceSnapshot appearance, bool headDetail, int maxDimension, int timeoutMs, CancellationToken token, bool cleanTempFiles)
         {
             token.ThrowIfCancellationRequested();
+            Core.GenerationDiagnostics.Current?.RecordStage("portrait_view_begin", new Newtonsoft.Json.Linq.JObject { ["view"] = headDetail ? "head_detail" : "full_body", ["timeoutMs"] = timeoutMs });
             string path = await ExtractViaStageAsync("OffscreenCharacter", widget =>
             {
                 var characterWidget = widget as CharacterTableauWidget;

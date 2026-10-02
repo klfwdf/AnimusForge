@@ -1,3 +1,22 @@
+<a id="illustrator-chain-review-20261002"></a>
+## 当前任务交付：生图全链路诊断、立绘与端点/耗时审查
+
+**状态：OFFLINE_VERIFIED_WITH_LIVE_LIMITS。** 用户授权审查并修复立绘获取、默认edits、正文自定义规则是否影响生图和失败步骤日志，追加核实 `/images/edits`/`image/edits` 与供应商一分钟/游戏三分钟差异。仅本地源码/离线验证/提交；未push、Stage、部署、重打包。原一键流程、程序集/存档身份和玩家设置未重置。详细用户指南见[生图全链路诊断](illustrator_pipeline_diagnostics.md)，本地唯一收据 `artifacts/illustrator-chain-review-20261002/receipt.json`。
+
+**确认与修改：** 本机12个保留请求均有成功记录，其中最近百科/会话有真实立绘落盘；没有报告玩家的失败trace，不据此否定反馈或声称复现。确认人物默认3.5秒及240帧双门槛（高FPS会提前退出）、百科无条件忽略Offscreen开关、URL字符串对query/已有后缀处理不稳、48事件头部保留会丢晚期失败、Debug-only步骤未落入AF人类日志。改为人物每视图12秒墙钟、人物不触发帧数截止（旗帜保持），外观/队列/创建/provider/落盘/稳定性/PNG有具体错误码；采集文件probe50ms节流，沿用串行锁/主线程创建及安全退休，不手动tickScene/GPU或截图替代人物。百科主动关离屏才不采集，必需全身失败仍停止、可选头图不凭空造。默认有图走实际multipart edits，精确gens带图/edits无图本地拒绝；单数非精确URL明确提示复数；完整接口切换保留已有前缀与query，不丢参考改文生图。
+
+**提示词/耗时证据：** 正文RuleBehaviorPrompts不直接注入视觉导演，独立视觉system+硬事实/艺术指导/画风；复用API配置不复用正文规则。对白可能间接受正文规则影响并进入导演上下文；自定义画风/负面词只在自定义预设生效。新增prompt_sources/image_prompt_sources明确输入来源。已有成功记录201.2秒为前置+导演约77秒、图像请求到响应约124秒，不是报告玩家；不能把供应商一分钟推成游戏多等两分钟的根因。新增worker_started/complete、director HTTP、image HTTP/下载/解码、cache、main_thread_delivery（totalMs/dispatchWaitMs）、纹理begin/发布（publishMs）及迟到丢弃。UI发布仅指绑定/注册，不是GPU可见帧证明。
+
+**日志/安全/性能：** 同ID的trace.json+steps.log在安装模块Logs/image save/Diagnostics，UI回写后摘要由既有Logger进AF Mod_Logic；保留最近12目录、96最新事件、512KiB metadata及既有参考图预算；steps128KiB滚动+最多一previous。晚期失败/结算保留，最具体failureCode不被泛化立绘错误覆盖，成功重试清理最终失败状态；请求体/实际提示词仅进脱敏私有诊断，不进人类摘要。key/Bearer/query/userinfo和返回base64脱敏；UI/offline没有活动host时不写真实AF日志。日志只在请求/阶段边界，反射快照至多保存/退休各一次；只在实际采集时等待，不增加全量每帧扫描或放宽原生退休。最后缓存审查发现既有跨类别全局排序违反原优先级断言，修为类别内索引候选排序，保留损坏默认图回退/原所有断言。
+
+**实际源码职责坐标（随本轮提交绑定）：** `Core/UniversalOpenAiImageClient.cs:60` GenerateImageAsync、:293 ResolveImageEndpoint/:492 ResolveEditsEndpointUrl、:1040 DownloadImageBytesAsync为真实HTTP消费者；`Core/GenerationDiagnostics.cs:27` MaxEvents、:331 AddEvent/:355 WriteStepSummary/:380 WriteDelivery为有界脱敏落盘；`Engine/CharacterPortraitReferences.cs:29` PortraitCaptureTimeoutMs/:136 ExtractAppearancePortraitAsync经`Engine/ScreenCaptureHelper.cs:902` PumpOffscreenStage/:1085 ExtractViaStageAsync/:1237 frame policy/:1239 failure classifier调用原生widget；`Core/IllustratorRuntime.cs:325/340` worker/main-thread时序；`Engine/DiskImageCacheManager.cs:120/178` LoadImage/SaveImage是缓存owner，百科/对话/周报真实Publish入口记录UI结果。上述坐标前缀均为 `extensions/AnimusForge.Illustrator/src/`。稳定链路说明集中指南，不新建第二进度表。
+
+**验证：** 原脚本隔离源根 `.tmp/illustrator-chain-review-candidate-20261002`，已提交基线445c877d+15精确本轮overlay；双API参考v1.3.15.110062/v1.4.6.115628+Bootstrap Debug 0error，候选DLL marker/hash一致，overlay与当前本轮源码零差异。两实际DLL各九套原审查：端点174、诊断65、双视图37、NoDraw16、prompt194、导演45、颜色47、参考路由64、缓存画廊72，18入口exit0；HTTP全部内存截获，无真实付费请求。原负例保留，包括端点无图/错误/参考丢失拒绝、secretredaction、晚期失败保留、并发隔离/取消与图库晚到拒绝。诊断fixture的可选reflection参数补齐、NoDraw/Reference只枚举目标owner嵌套类型（不扫描加载无关类型）、周报接线核对实际StartGeneration共享owner；不删断言。已有失败与修后日志保留。
+
+**失败层与边界：** 早期两套工作树构建PASS；随后另一会话新增对话UI dirty使完整树报ConversationReplyWaitOwner缺失，最终未以旧结果冒充当前全树成功，改用上述隔离候选。CacheGallery原跨类别断言真实失败后局部修复通过，不把旧失败改名PASS。其他作者输入框/上手引导/对话UI/未跟踪文件与两文档原dirty均保留、不夹入本轮产品提交。玩家现场/GPU/对应服务/真实旧档/组合并行UI仍NOT_RUN；之前1.5包不含本轮变化。恢复点614ce5e与本地artifacts before；回滚用本轮产品聚焦逆提交，不覆盖其他dirty或hardreset。
+
+---
+
 <a id="remote-main-fusion-20261002"></a>
 ## 当前交付：远端 main 外交/政策融合（2026-10-02）
 

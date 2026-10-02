@@ -452,18 +452,23 @@ namespace AnimusForge.Illustrator.UI.Overlays
                 if (_generationCount > 1 || priorVersions > 0) artDirection += "\n" + VisualDirectorEngine.BuildRedrawVariationDirective(_generationCount + priorVersions);
                 if (usedMotifs.Count > 0) artDirection += $"\n【已用过的场景母题·须避开】：{string.Join("；", usedMotifs)}——结合本次人物行动选择场景与镜头，不仅更换背景。";
                 var promptPlan = new IllustrationPromptPlan("人物百科纪事", hardFacts, artDirection, directorFacts);
-                var portraits = await ScreenCaptureHelper.ExtractHeroPortraitReferencesAsync(hero,
-                    maxDimension: 768, cancellationToken: token, cleanTempFiles: options?.AutoCleanTempFiles == true,
-                    equipmentCodeOverride: equipmentCode, appearance: appearance).ConfigureAwait(false);
-                if (string.IsNullOrWhiteSpace(portraits.FullBody))
-                    throw new InvalidOperationException("百科完整装备离屏立绘未取得，已停止生成；请稍后重试。");
+                CharacterPortraitReferences portraits = null;
+                if (options?.EnableOffscreenRendering == true)
+                {
+                    portraits = await ScreenCaptureHelper.ExtractHeroPortraitReferencesAsync(hero,
+                        maxDimension: 768, cancellationToken: token, cleanTempFiles: options.AutoCleanTempFiles,
+                        equipmentCodeOverride: equipmentCode, appearance: appearance).ConfigureAwait(false);
+                    if (string.IsNullOrWhiteSpace(portraits.FullBody))
+                        throw new InvalidOperationException("百科完整装备离屏立绘未取得，已停止生成；请查看本次 portrait_stage_result 的 failureCode。");
+                }
+                else GenerationDiagnostics.Current?.RecordStage("portrait_capture_disabled", new JObject { ["reason"] = "offscreen rendering explicitly disabled", ["portrait"] = "encyclopedia" });
 
                 var refs = new System.Collections.Generic.List<IllustrationReferenceImage>();
                 var genRefsList = new System.Collections.Generic.List<IllustrationReferenceImage>();
                 IllustrationReferenceRouting.AddCharacter(refs, genRefsList, portraits, heroName,
                     $"人物【{heroName}】的身份参考图：锁定容貌、发型肤色与实际装备；人物行动、手势、视线和机位由导演重新构思；依据新场景重建人物体积、衣褶、透视与受光，以统一艺术画风完整重绘。");
                 // 纹章由原生渲染导出，导出控件不向屏幕绘制；取消信号贯穿请求
-                if (profile.HasHeraldicArmor && !string.IsNullOrWhiteSpace(bannerCode))
+                if (options?.EnableOffscreenRendering == true && profile.HasHeraldicArmor && !string.IsNullOrWhiteSpace(bannerCode))
                 {
                     string emblemB64 = await BannerEmblemComposer.ComposeToBase64Async(bannerCode, cleanTempFiles: options?.AutoCleanTempFiles == true, cancellationToken: token).ConfigureAwait(false);
                     if (!string.IsNullOrWhiteSpace(emblemB64))
@@ -906,13 +911,16 @@ namespace AnimusForge.Illustrator.UI.Overlays
 
             // 无缓存条目的试采使用唯一纹理名；注册失败时保留原来的正式插画。
             if (item != null) ReleaseActiveSprite();
+            var publishClock = System.Diagnostics.Stopwatch.StartNew();
+            GenerationDiagnostics.WriteDelivery(item?.DiagnosticId, "ui_texture_begin", "bytes=" + (imageBytes?.Length ?? 0));
             var sprite = GauntletTextureLoader.LoadOrRegisterPngBytes(spriteName, imageBytes);
-            if (sprite == null) return false;
+            if (sprite == null) { GenerationDiagnostics.WriteDelivery(item?.DiagnosticId, "ui_texture_failed", "texture registration returned null; bytes=" + (imageBytes?.Length ?? 0)); return false; }
             if (item == null) ReleaseActiveSprite();
             _activeSpriteName = spriteName;
             if (!string.IsNullOrWhiteSpace(item?.Title)) _dataSource.TitleText = item.Title;
             _dataSource.SetIllustration(item?.SubjectKey ?? spriteName, spriteName, prompt);
             if (_backdropLayer != null) HideMapConversationSceneUnderIllustration();
+            GenerationDiagnostics.WriteDelivery(item?.DiagnosticId, "ui_publish_complete", "sprite=" + spriteName + "; bytes=" + (imageBytes?.Length ?? 0) + "; publishMs=" + publishClock.ElapsedMilliseconds);
             return true;
         }
 
