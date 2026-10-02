@@ -71,3 +71,20 @@ new Directory → TryRegister(definition) → CompleteRegistration()
 - 每个 client 最多保留 128 个不同请求 ID，完全相同 ID、渠道、票据和文本重试返回同一 operation；冲突/容量拒绝，不淘汰终态 ID。`Cancel()` 只保证主线程开始前取消；开始后的部分/未知效果不能当作回滚，也不能自动换 ID 重发。`Dispose()` 撤销本 client 待领票据和未开始任务，已开始结果仍可读取。
 - 最小调用：`var client = CoreDialogueServices.CreateClient(); var ticket = client.CaptureSceneContextTicket(); if (ticket != null) { var operation = client.SubmitScene(ticket, "scene-turn-1", "请说说你的看法"); var result = await operation.Completion; } client.Dispose();`；Courier 对应改用 `CaptureCourierContextTicket()`/`SubmitCourier(...)`。更新自有 UI 时由调用方回游戏主线程；不要从后台持有或操作 Hero/Agent/Mission。
 - 公共 `Api.V1` 投影同一内部服务，但内外枚举/DTO 分开；政策、宴会、GCCZ 的主体→模块 13 方法 typed ports 仍另行保留。三渠道服务可用不等于全部模块已改为双向调用，更不等于实机通过。
+
+## 四扩展的宿主目录接入（2026-10-02）
+
+这是已有四扩展的真实生命周期元数据，不新增玩法 port 或动态注册。三组制作组接缝与四扩展共七个目录模块；内战端口仍未在本目录登记，本包不改变该范围。
+
+| 模块 ID | 能力 ID / V1 | Ready/Available 的确切边界 |
+|---|---|---|
+| af.extension.illustrator | af.extension.illustrator.host / 1 | 原初始化入口完成；不代表生图开关/provider或所有补丁可用 |
+| af.extension.dialogue_ui | af.extension.dialogue_ui.host / 1 | 资源初始化后仍等待延迟Presentation安装；主呈现安装成功才就绪，可选轮盘回退保留 |
+| af.extension.coup | af.extension.coup.host / 1 | 原Start完成且Mission保护、入城、叛乱三个既有兼容探针可用；不代表当前可发动政变 |
+| af.extension.vengeance | af.extension.vengeance.host / 1 | 真实embedded认领/宿主挂接成功；原战役准备/注册失败可见，不代表当前可处决 |
+
+四项初始为 NotInitialized；启动/安装返回失败或抛出时 unavailable/failed（V1合并为Unavailable）。注册失败只影响对应宿主；不能由注册成功覆盖启动失败。停止/重载按原目录生命周期处理，卸载期间状态报告不能复活stopped目录。状态只在上述同步生命周期事件更新，不是实时健康检测或MCM状态镜像；实际 gameplay 请求仍由原owner重验。
+
+独立消费者通过 `AfApi.GetSnapshot().Modules` 读取这些条目，`IsExternallyCallable` 始终 false；不能把 `.host` 当 `AfApi.GetCapability(...)` 的公开调用能力。公共ActionExecute/MemoryWrite/ExtensionRegister仍NotSupported。宿主Start/RegisterCampaign/Tick/Shutdown执行路径保持，Tick没有新查询/扫描/锁/反射。
+
+[本包证据/源码/未验/回滚](../animusforge-refactoring-and-repository-reorganization-plan.md#four-hosted-extension-catalog-20261002)。
