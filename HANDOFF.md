@@ -1,3 +1,9 @@
+# 当前交接：YJ URL 与 API 设置/请求头检查（2026-10-02）
+
+- 新旧引导 YJ Base URL 改为 `https://www.shenlanqaq.com/v1`；Gemini 兼容保留旧域名；修复共享 query-chat 拼接和代理前缀 models 丢 `/v1`。终端/MCM 共用设置对象，终端手动/关闭 dirty 保存；API 面板在保存完成时写回。
+- 新增真实协议源回归与既有 Protocol 13项 PASS，最终隔离 Debug 双API+Bootstrap PASS/0错误。不是实机/真实 API 验收；未部署/push，保留其他 dirty。
+- 握手不覆盖实际生成 tokens/Anthropic thinking，新旧 YJ 思考默认值不一致和 API 面板保存失败反馈不足均明确保留。详细证据与代码坐标见[主台账本次条目](docs/animusforge-refactoring-and-repository-reorganization-plan.md#yj-api-settings-audit-20261002)。本条仅交付本次配置/协议小修，不替代其他并行任务状态。
+
 # 本轮当前交接：P1–P8 host terminal closeout（2026-10-02）
 
 本轮授权替代“仅计划/不启动”；唯一主台账末尾“最后三个原闭包与同候选验证进度”和当前代码范围图收集证据。最后三个 original core 已实际迁 owner（D9eb43b6d/B355acce0/C581faa44），保持公共入口/保存/程序集身份。
