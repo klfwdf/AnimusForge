@@ -146,7 +146,8 @@ internal static class Program
         outcome.Status=Fixture.LastStatus;outcome.Trace=Fixture.Trace.ToArray();outcome.Calls=Fixture.Calls;outcome.Rollbacks=Fixture.Rollbacks;outcome.WrongThread=Fixture.WrongThread;outcome.Popup=Fixture.Popup;
         return outcome;
     }
-    private static void Main()
+    private static int Main() { try { Run(); return 0; } catch(Exception error) { Console.Error.WriteLine("FAIL " + error); return 1; } }
+    private static void Run()
     {
         Check(!default(NativeConversationMainReplyResult).CanContinue,"default-result-stops");
         var cases=new (string Name,string Reply,NativeConversationMainReplyStatus Status)[]{
