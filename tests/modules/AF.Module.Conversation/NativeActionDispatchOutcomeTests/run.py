@@ -43,6 +43,17 @@ if not args.original:
  (out/'Boundary.cs').write_text(boundary,encoding='utf-8')
 (out/'NativeConversationDispatchClaim.cs').write_text((ROOT/'src/modules/AF.Module.Conversation/Channels/Native/NativeConversationDispatchClaim.cs').read_text(encoding='utf-8-sig'),encoding='utf-8')
 (out/'CompletionStubs.cs').write_text((ROOT/'tests/modules/AF.Module.Conversation/NativeCompletionBoundaryTests/NoCompletionStubs.cs.txt').read_text(encoding='utf-8-sig'),encoding='utf-8')
+if not args.original and not args.timeout_baseline:
+ result_decl='private sealed class NativeConversationGameActionResult'
+ admission_decl='private class NativeConversationAdmission'
+ assert code.count(result_decl)==1 and code.count(admission_decl)==1
+ code=code.replace(result_decl,'internal sealed class NativeConversationGameActionResult',1).replace(admission_decl,'internal class NativeConversationAdmission',1)
+ (out/'Program.cs').write_text(code,encoding='utf-8')
+ (out/'DispatchBridge.cs').write_text((ROOT/'tests/modules/AF.Module.Conversation/NativeConversationAdmissionTests/DispatchBridge.cs.txt').read_text(encoding='utf-8-sig'),encoding='utf-8')
+ completion=(out/'CompletionStubs.cs').read_text(encoding='utf-8-sig')
+ exception_decl='NativeConversationHistoryCommitException : System.InvalidOperationException'
+ assert completion.count(exception_decl)==1
+ (out/'CompletionStubs.cs').write_text(completion.replace(exception_decl,'NativeConversationHistoryCommitException : NativeConversationGameEffectsRuntime.NativeConversationHistoryCommitException',1),encoding='utf-8')
 (out/'Proof.csproj').write_text('<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><LangVersion>latest</LangVersion>'+('<DefineConstants>ORIGINAL</DefineConstants>' if args.original else '<DefineConstants>TIMEOUT_BASELINE</DefineConstants>' if args.timeout_baseline else '')+'</PropertyGroup></Project>')
 (out/'PendingOperationRegistry.cs').write_text((ROOT/'src/AF.Foundation.Runtime/Scheduling/PendingOperationRegistry.cs').read_text(encoding='utf-8-sig'),encoding='utf-8')
 (out/'NuGet.Config').write_text('<configuration><packageSources><clear/></packageSources></configuration>')

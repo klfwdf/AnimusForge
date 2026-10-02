@@ -1,0 +1,36 @@
+// Test-only proposal: preserve whole current NativeActionDispatch.cs as a compile link.
+// This boundary fixture does not instantiate the complete effects runtime.
+using System;
+using System.Diagnostics;
+using static AnimusForge.ShoutBehavior;
+namespace AnimusForge;
+internal sealed partial class NativeConversationGameEffectsRuntime
+{
+    private sealed class FixtureDispatchPorts
+    {
+        internal Func<NativeConversationAdmission, bool> IsCurrent;
+        internal bool IsNativeConversationAdmissionCurrent(NativeConversationAdmission admission, out string reason)
+        { reason = "fixture"; return IsCurrent(admission); }
+    }
+    private FixtureDispatchPorts _ports;
+    internal class NativeConversationHistoryCommitException : InvalidOperationException { }
+    internal static NativeConversationGameActionResult ExecuteFixture(NativeConversationAdmission admission,
+        Func<NativeConversationGameActionResult> execute, string targetLog, int targetAgentIndex,
+        Action beforeOwner, Action onDiscard, Func<NativeConversationAdmission, bool> isCurrent)
+    {
+        var owner = new NativeConversationGameEffectsRuntime { _ports = new FixtureDispatchPorts { IsCurrent = isCurrent } };
+        return owner.ExecuteNativeConversationActionDispatch(admission, execute, targetLog,
+            targetAgentIndex, beforeOwner, onDiscard);
+    }
+}
+public partial class ShoutBehavior
+{
+    private NativeConversationGameActionResult ExecuteNativeConversationActionDispatch(
+        NativeConversationAdmission admission, Func<NativeConversationGameActionResult> execute,
+        string targetLog, int targetAgentIndex, Action beforeOwner = null, Action onDiscard = null)
+        => NativeConversationGameEffectsRuntime.ExecuteFixture(admission, execute, targetLog, targetAgentIndex,
+            beforeOwner, onDiscard, current => IsNativeConversationAdmissionCurrent(current, out _));
+    private static void ObserveNativeActionDispatch(string stage, string targetLog, int targetAgentIndex,
+        Stopwatch watch = null, Exception error = null)
+        => NativeConversationGameEffectsRuntime.ObserveNativeActionDispatch(stage, targetLog, targetAgentIndex, watch, error);
+}

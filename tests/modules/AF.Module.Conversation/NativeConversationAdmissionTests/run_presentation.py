@@ -46,7 +46,18 @@ for name,text in [('Program.cs',code),('Admission.cs',partial),('Presentation.cs
 (out/'Effect.cs').write_text('namespace AnimusForge.Refactor.Contracts;\n'+ex.declaration((ROOT/'src/AF.Contracts/Internal/InteractionContracts.cs').read_text(encoding='utf-8-sig'),'public enum ActionExecutionEffectState'),encoding='utf-8')
 (out/'CompletionStubs.cs').write_text((ROOT/'tests/modules/AF.Module.Conversation/NativeCompletionBoundaryTests/NoCompletionStubs.cs.txt').read_text(encoding='utf-8-sig'),encoding='utf-8')
 spec_core=importlib.util.spec_from_file_location('native_core_fixture',ROOT/'tests/modules/AF.Module.Conversation/NativeModuleSubmissionTests/fixture_support.py');core_fixture=importlib.util.module_from_spec(spec_core);spec_core.loader.exec_module(core_fixture);core_fixture.include_operation_sources(out);core_fixture.include_admission_owner(out)
-code=core_fixture.migrate_admission_fixture(code);(out/'Program.cs').write_text(code,encoding='utf-8')
+code=core_fixture.migrate_admission_fixture(code)
+# The generated host protocol remains a reviewed oracle; execute the whole CURRENT dispatch atom via one typed test leaf.
+result_decl='private sealed class NativeConversationGameActionResult'
+assert code.count(result_decl)==1
+code=code.replace(result_decl,'internal sealed class NativeConversationGameActionResult',1)
+(out/'Program.cs').write_text(code,encoding='utf-8')
+(out/'DispatchBridge.cs').write_text((HERE/'DispatchBridge.cs.txt').read_text(encoding='utf-8-sig'),encoding='utf-8')
+completion=(out/'CompletionStubs.cs').read_text(encoding='utf-8-sig')
+exception_decl='NativeConversationHistoryCommitException : System.InvalidOperationException'
+assert completion.count(exception_decl)==1
+completion=completion.replace(exception_decl,'NativeConversationHistoryCommitException : NativeConversationGameEffectsRuntime.NativeConversationHistoryCommitException',1)
+(out/'CompletionStubs.cs').write_text(completion,encoding='utf-8')
 (out/'PendingOperationRegistry.cs').write_text((ROOT/'src/AF.Foundation.Runtime/Scheduling/PendingOperationRegistry.cs').read_text(encoding='utf-8-sig'),encoding='utf-8')
 (out/'Proof.csproj').write_text('<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><LangVersion>latest</LangVersion><NoWarn>CS0169;CS0414;CS0219</NoWarn></PropertyGroup></Project>')
 (out/'NuGet.Config').write_text('<configuration><packageSources><clear/></packageSources></configuration>')
