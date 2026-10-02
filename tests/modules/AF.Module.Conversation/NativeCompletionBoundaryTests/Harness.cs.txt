@@ -121,7 +121,8 @@ static class Program {
 #if !ORIGINAL
  static ShoutBehavior.NativeConversationActionDispatchException Fault(ShoutBehavior o,Task<string> task,AnimusForge.Refactor.Contracts.ActionExecutionEffectState state){Check(SpinUntilPump(o),"faulting callback pumped");Check(SpinWait.SpinUntil(()=>task.IsCompleted,3000),"fault completed");try{task.GetAwaiter().GetResult();throw new Exception("FAIL expected typed failure");}catch(ShoutBehavior.NativeConversationActionDispatchException e){Check(e.EffectState==state&&!e.CanRetryAutomatically,"failure preserves actual start boundary and no replay");return e;}}
 #endif
- static void Main(){
+ static int Main(){try{Run();return 0;}catch(Exception error){Console.Error.WriteLine("FAIL "+error);return 1;}}
+ static void Run(){
 #if MEMORY_BASELINE
   foreach(string mode in new[]{"missing","false","throw"}) {
    Host.Reset();Host.OwnerPresent=mode!="missing";Host.OwnerAccept=mode!="false";Host.MemoryThrows=mode=="throw";

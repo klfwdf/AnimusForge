@@ -155,7 +155,8 @@ namespace AnimusForge
             try { task.GetAwaiter().GetResult(); throw new Exception("FAIL rejection missing"); }
             catch (ShoutBehavior.NativeConversationAdmissionException ex) { Check(ex.ReasonCode == reason, "rejection " + reason); }
         }
-        static void Main()
+        static int Main() { try { Run(); return 0; } catch(Exception error) { Console.Error.WriteLine("FAIL " + error); return 1; } }
+        static void Run()
         {
             Host.Reset(); var first = Submit("one"); Check(ShoutBehavior.IsNativeConversationBackendBusy(), "main caller captures before Task.Run");
             Check(ShoutBehavior.CanSubmitNativeConversationForExternal(), "busy does not close eligible overlay");
