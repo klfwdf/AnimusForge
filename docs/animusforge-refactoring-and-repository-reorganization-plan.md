@@ -1,3 +1,54 @@
+<a id="remote-fusion-worldbook-director-20261003"></a>
+# 当前交付：远端世界书融合、新档链路补验与自定义导演规则（2026-10-03）
+
+状态：**DEPLOYED / OFFLINE_VERIFIED**，不是实机签收。用户明确授权检查远端、拉取融合、部署，并追加新档世界书检查与导演提示词输入。
+
+## Git 与已部署范围
+
+- `origin/main` 从 `720d8449` 更新为 `016baa7a`（北京时间2026-10-03 01:27:15）；仅一个远端新提交，恢复四套已审查的8月30日世界书与双来源导入。无冲突merge `e6e0fe4d`，当前分支仍 `codex/af-main-refactor-continuation-20260831`；不改名、不切换其他工作树。
+- 保留 `a596ea6c` 的单图/后台/拖拽，以及并行 `50a5a4fa` 内战、`0e4634ed` 对话正文/拦截返回的实际最新代码；不是只部署本会话内容。两份原dirty文档定向stash/恢复，未夹带提交。
+- 新输入检查点 `71546d5b`，产品 `1ed96cb5`。只动 Illustrator settings、冻结options、共享导演payload与定向audit；不改一键脚本、接口endpoint、默认交互入口或公开API。
+- 由原 `build_single_module.ps1` 构建双API+Bootstrap；原 `deploy_module.ps1` 分别部署融合候选（3148个受管文件变化）与含新导演输入的最终候选（9个运行时文件变化）。最终 **3378个Stage文件与安装hash完全一致**。
+- 安装到 `F:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord/Modules/AnimusForge`，仍单模块、XML只加载Bootstrap、分别选择1.3/1.4，不覆盖TaleWorlds/游戏原版DLL；模块版本保持v1.5.0。
+- 1944个非受管保护文件核对部署前后大小/mtime不变，包含ONNX、日志与图片缓存；不是对这些文件做逐字节hash声明。内置3139个世界书文件属批准的受管默认内容，替换前旧字节在原部署Recovery；AppData私有导出不进入Stage、不回写源码。
+- **未push、未新打ZIP、未启动游戏**。之前1.5 ZIP不是最终候选；下方历史“未部署”结论仅对各次历史交付有效，本条明确替代本轮组合候选状态。
+
+## 自定义导演输入的用户契约
+
+MCM → AI画卷生图系统 → 第3组视觉导演API配置 → **自定义导演提示词 / 打开编辑器**。长文本编辑器保存，留空默认；旧设置同ID `AnimusForge_Illustrator_v1`，字段 `CustomDirectorPrompt`。规则只进导演，控制构图/动作/景别/叙事，不替代身份/装备/事实/输出格式，不直接拼到生图端；画风/负面词保持各自入口。导演关闭/未配置时此项不生效，失败继续原有语义。下一次生成采用新输入，在途任务冻结快照不变；自定义纳入设置指纹、空输入旧指纹不变，不自动付费重画。
+
+新增 `prompt_sources.customDirectorRuleChars/customDirectorRulesActive` 只在请求期记录采用状态；字段处理/指纹/拼接仅发生在保存/请求时，不每帧读取MCM或磁盘，不新增轮询。
+
+## 新档世界书弹窗：实际链路与限制
+
+- `CampaignComposition` 注册behavior → `OnNewGameCreatedEvent/OnGameStarted` 标记welcome → 战役已开始且约2秒后 `OnTick` 打开完整API向导 → API配置完成callback → **知识库数据导入** → “一键导入” → **选择导入文件夹**列出四套世界书。不是游戏一启动就直接弹世界书选择，也不要求先有AppData导出。
+- 缺ONNX gate会延后而保留pendingwelcome；API未完成还在前一步。完成过设置的旧档不会重复弹新档首次导入。新资料目录来源是模组目录及玩家导出，选项Identifier是实际绝对路径，同名源不会错用。
+- 两个最终实际DLL各 **32项**真实方法链路回放PASS；仅Campaign身份、ONNX gate和原生UI sinks为假。实际MCM/新档屏幕/输入焦点、API真实验证、旧档仍未实机验收，不把sink收到Inquiry当作原生窗口已渲染。
+
+## 源码证据（仓库根目录下，一基行号）
+
+| 文件 / 修订 | 符号与实际消费者 | 已覆盖 / 未覆盖 |
+|---|---|---|
+| `extensions/AnimusForge.Illustrator/src/Settings/IllustratorSettings.cs`，1ed96cb5 | 44构造接线；452–458 MCM按钮/持久字段；549–570 `OpenCustomDirectorPromptEditor`，调既有LongTextEditor/SaveCurrentSettings | 默认空、按钮属性与冻结行为实DLL；长编辑器焦点/跨进程MCM重载未实机 |
+| `extensions/AnimusForge.Illustrator/src/Core/IllustratorRuntime.cs`，1ed96cb5 | 28、79–87 options快照/缓存指纹；Card/Weekly共享CaptureOptions | 在途冻结、修改指纹、空保持；原生命周期不变 |
+| `extensions/AnimusForge.Illustrator/src/Core/VisualDirectorEngine.cs`，1ed96cb5 | 167–168来源diagnostics；674–689 `BuildDirectorPayload`；779实际HTTP接入 | 四种模式、多模态/文字fallback、请求一次注入、不直接append原文；真实模型遵循程度未验 |
+| `src/AF.Persistence/PlayerExportsStore.cs`，远端016baa7a/merge e6e0fe4d | 49–107 `GetPlayerExportsRootPath/GetImportFolders/AddImportFolders`，新档和开发导入消费 | 实际四套库/同名双源/缺用户目录；用户真实导入写入未实机 |
+| `src/modules/AF.Module.Onboarding/Host/ModOnboardingBehavior.cs`，融合e6e0fe4d | 219–244事件/OnGameStarted；301–324 OnTick；1208–1250 API完成callback；3243–3284导入Inquiry；3661–3721 folder picker | 两DLL真实chain+sinks 32各PASS；游戏/HTTP/菜单实际显示未验 |
+| `src/AF.GameAdapter.Bannerlord/Composition/CampaignComposition.cs`、`ApplicationTickComposition.cs`，融合e6e0fe4d | 前者19注册；后者67/109普通/watched engine Tick | 源接线核实，不替代事件实机顺序验收 |
+
+## 验证与故障保留
+
+- Debug两API（引用v1.3.15.110062/v1.4.6.115628）+Bootstrap0错误；最终两DLL各8个生图audit入口共16全部exit0，其中DirectorStatus各73项含新增输入矩阵。首次融合两DLL各6入口共12通过。
+- 导入生产文件fixture **76项**，DataPaths **63项**；内战生命周期 **330项**（包含新增资格/投票36），对话行为/source/XML **93项**通过。测试的游戏/网络为stub，不称整个仓库全绿。
+- 四套内置世界书3139文件来源/结构契约通过；最终3362个content-map资源源/Stage对应完全一致，另16个XML/运行时文件，共3378。所有最终DLL与markers hash匹配。
+- 原Stage旧对话模板与当前source不一致，原脚本拒绝清理（未覆盖游戏）：完整移动到本地本轮 `old-stage-before-fusion` 后原脚本新Stage成功。未弱化校验/未改脚本。
+- 历史J15总oracle仍失败：EXPECTED3361而实际3362，唯一额外项是已批准本地对话修复的 `AFDialogueConversationItem.xml`。保留FAIL，不删断言/刷新旧hash；当前源/Stage/安装精确全集hash与定向导入/部署回滚/未知文件保护契约独立PASS。
+- 初次测试的不存在项目名、python PATH、根目录参数、GameStarted field被错当property均是harness/启动修正，失败日志保留；不改生产迁就测试。
+
+证据：本地 `artifacts/remote-fusion-deploy-20261003-020306/deployment-verified.json`（融合/旧Stage/原dirty备份/stash）与 `artifacts/illustrator-custom-director-20261003/receipt.json`（最终源码/16audits/安装全量hash/回滚位置）。指南 `docs/illustrator_pipeline_diagnostics.md` 第7节。
+
+回滚：源码用merge e6e0fe4d或产品1ed96cb5的聚焦inverse/revert，不hard reset、不重写他人历史；安装先查两次原脚本Recovery manifest，仅恢复其列举的变更。首次3148变更备份 `C:/Users/29310/AppData/Local/AnimusForge/Recovery/deploy/deploy-0e98004d654541cc811e91ab3a706149`，最终9个运行时文件备份 `C:/Users/29310/AppData/Local/AnimusForge/Recovery/deploy/deploy-75a20c096c7040218806f7bf52e36cec`。
+
 <a id="illustrator-background-single-portrait-drag"></a>
 # 本地交付：单人物单立绘、后台生图与弹窗跟手（2026-10-03）
 
