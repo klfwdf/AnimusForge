@@ -2,7 +2,7 @@
 
 <a id="af2-module-integration-delivery-plan-20261002"></a>
 
-状态：`ACTIVE`。按[收尾交付计划](plans/af2-module-integration-delivery-closeout-20261002.md)执行 R0–R3；先交付使用，旧宿主治理后置，历史未完成项不改标 DONE。起始 HEAD `261a3be3a8935e9e313f8de057c462012d3a7f13`，分支 `codex/af-main-refactor-continuation-20260831`；保护既有 SessionTransport dirty、tools/NuGet 和其他作者改动。仅在具名阻塞时修改产品；未授权 push、Stage、打包、部署、仓外写入或真实玩家数据操作。
+状态：`INTEGRATION_HANDOFF_READY`（仅候选与制作组接入/离线；`USE_ACCEPTED` 未达成）。按[收尾交付计划](plans/af2-module-integration-delivery-closeout-20261002.md)执行 R0–R3；先交付使用，旧宿主治理后置，历史未完成项不改标 DONE。起始 HEAD `261a3be3a8935e9e313f8de057c462012d3a7f13`，分支 `codex/af-main-refactor-continuation-20260831`；保护既有 SessionTransport dirty、tools/NuGet 和其他作者改动。仅在具名阻塞时修改产品；未授权 push、Stage、打包、部署、仓外写入或真实玩家数据操作。
 
 ### R0 开测前冻结（2026-10-02）
 
@@ -36,6 +36,8 @@ U1–U9 的命令/日志模板是测试人员在合法测试环境逐版本填�
 - **U1–U5、U7、U9：v1.3.5 与 v1.4.5 均 NOT_RUN**；**U6、U8：仅上述离线反例/13 port 接缝 REUSED_PASS，所需实机离场/关窗与逐接缝操作仍 NOT_RUN**。本轮没有合法测试战役/代表性旧档副本/对应精确版本的实机操作记录；不得从既有游戏目录或 fixture 推导使用接受。若实际安装版本不是冻结 v1.3.5/v1.4.5，应重新明确适用版本和候选，不把未测补丁版外推。
 
 **交付状态：`INTEGRATION_HANDOFF_READY`（仅候选与制作组接入/离线层），`USE_ACCEPTED` 未达成。** 制作组可按两份指南在同 DLL typed ports 与 V1 public 入口开始集成，但不得称游戏或独立子 MOD 已实测。最小下一步：获有权测试人员在 v1.3.5、v1.4.5 的测试环境分别按冻结 U1–U9 执行并附日志/测试档状态/旧档副本证据；仅对声明通过的版本签收。恢复使用保留的同一整套冻结候选与测试档副本，勿混用不同实现 DLL、勿覆盖玩家原档。发布/部署另需独立授权和依赖/许可/隐私检查。本轮达到离线交接出口即停，不加宿主治理或常驻门禁。
+
+### 历史开工规划（已被上方 R1–R3 签收替代；以下原文不再表示当前状态或待执行步骤）
 
 - 当前工作区/分支不变；本会话已直接查询远端 main 为 `261a3be3a8935e9e313f8de057c462012d3a7f13`，与本地 HEAD 一致。新计划及导航仍本地未提交；SessionTransport 原产品 dirty 另行保护。后续交付必须核对已有产物/1337 输入证据是否包含 dirty，不把工作树构建直接冒充纯 main 构建；本次没有判定或改写其归属。
 - 已有能力仍复用：CoreDialogueClient:27–55 三渠道和上下文票据；AfApi:18–28 三渠道 Available、另外三项 NotSupported；TeamModuleRegistration.CreateDirectory:16 与 Postprocess owner:393–418 的 typed 接线。内部指南:11、65–73 的旧路径/状态应修正文档，不重做 J。
