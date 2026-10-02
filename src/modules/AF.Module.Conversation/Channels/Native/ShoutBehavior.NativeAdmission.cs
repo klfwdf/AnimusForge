@@ -241,6 +241,10 @@ public partial class ShoutBehavior
                 && _owner.IsNativeConversationContextStampCurrent(_snapshot);
         internal bool IsCurrent()
             => HasCurrentContext() && _owner.IsNativeConversationContextCurrent(_snapshot, out _);
+        // Mode text is scoped to the conversation/NPC, not to one request revision.
+        // Read-only display observation: never use this weaker check for action dispatch.
+        internal bool HasCurrentConversationContext()
+            => _snapshot != null && _owner.IsNativeConversationContextCurrent(_snapshot, out _);
     }
 
     internal static NativeConversationPresentationScope CaptureNativeConversationPresentationScopeForOverlay()

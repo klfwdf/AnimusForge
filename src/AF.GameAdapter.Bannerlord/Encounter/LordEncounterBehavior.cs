@@ -135,6 +135,13 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 
 	private static string _lastLowHealthMeetingBlockedHeroId;
 
+    private static readonly EncounterPendingReturnOwner<PlayerEncounter, PartyBase> _nativeDialogueHandoffOwner = new EncounterPendingReturnOwner<PlayerEncounter, PartyBase>();
+    private static ConversationManager _nativeDialogueHandoffManager;
+    private static Hero _nativeDialogueHandoffHero;
+    private static bool _nativeDialogueHandoffIntercepted;
+    private static bool _nativeDialogueReturnPending;
+    private static Hero _nativeDialogueReturnHero;
+
 	private static readonly EncounterPendingReturnOwner<PlayerEncounter, PartyBase> _pendingReturnOwner = new EncounterPendingReturnOwner<PlayerEncounter, PartyBase>();
 
 	private static bool _pendingReturnToEncounterMenuAfterUnauthorizedMeetingExit => _pendingReturnOwner.IsPending;
@@ -358,6 +365,8 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 
 	private static void MarkPendingReturnToEncounterMenuAfterUnauthorizedMeetingExit(string reason)
 	{
+        _nativeDialogueReturnPending = false;
+        _nativeDialogueReturnHero = null;
 		bool marked = false;
 		try
 		{
@@ -374,6 +383,8 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 	private static void ClearPendingReturnToEncounterMenuAfterUnauthorizedMeetingExit(string reason)
 	{
 		_pendingReturnOwner.Clear();
+        _nativeDialogueReturnPending = false;
+        _nativeDialogueReturnHero = null;
 		Logger.Log("MeetingRelease", "Cleared pending unauthorized meeting exit return. Reason=" + (reason ?? "N/A"));
 	}
 
@@ -398,6 +409,7 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 
 	private void OnSessionLaunched(CampaignGameStarter starter)
 	{
+        ClearNativeDialogueHandoff();
 		ClearNativeSettlementRequestMeetingContext("session_launched");
 		AddGameMenus(starter);
 		AddConversationOptions(starter);
@@ -3580,6 +3592,11 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 
 	internal static void OnEngineTick()
 	{
+        if (_pendingReturnToEncounterMenuAfterUnauthorizedMeetingExit)
+        {
+            try { TryForcePendingReturnToEncounterMenuAfterUnauthorizedMeetingExitIfReady(); }
+            catch (Exception ex) { Logger.Log("MeetingRelease", "Engine tick return failed: " + ex.Message); }
+        }
 		if (_pendingForceNativeEncounterAttack)
 		{
 			try
@@ -3783,6 +3800,13 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 			ClearPendingReturnToEncounterMenuAfterUnauthorizedMeetingExit("missing_player_encounter");
 			return;
 		}
+        // Revalidate after the native map conversation has popped. A release, attack,
+        // surrender or actual battle may have begun after the conversation-end callback.
+        if (_nativeDialogueReturnPending && !CanReturnFromNativeDialogueHandoff(_nativeDialogueReturnHero, true))
+        {
+            ClearPendingReturnToEncounterMenuAfterUnauthorizedMeetingExit("native_handoff_became_native_flow");
+            return;
+        }
 		if (IsCustomEncounterMenuHardSuppressedUntilBackOnMap())
 		{
 			Logger.Log("MeetingRelease", "Skipped forced custom encounter menu return while custom menu hard suppression is active.");
@@ -8554,6 +8578,62 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 		}
 	}
 
+    private static void ClearNativeDialogueHandoff()
+    {
+        try { if (_nativeDialogueHandoffManager != null) _nativeDialogueHandoffManager.ConversationEndOneShot -= OnNativeDialogueHandoffEnded; }
+        catch { }
+        _nativeDialogueHandoffManager = null;
+        _nativeDialogueHandoffHero = null;
+        _nativeDialogueHandoffIntercepted = false;
+        _nativeDialogueHandoffOwner.Clear();
+    }
+
+    private static void RegisterNativeDialogueHandoff(Hero target)
+    {
+        if (_nativeDialogueReturnPending) ClearPendingReturnToEncounterMenuAfterUnauthorizedMeetingExit("native_handoff_reopened");
+        ClearNativeDialogueHandoff();
+        var manager = Campaign.Current?.ConversationManager;
+        if (manager == null || PlayerEncounter.Current == null) return;
+        _nativeDialogueHandoffIntercepted = !PlayerEncounter.PlayerIsAttacker;
+        if (!_nativeDialogueHandoffIntercepted || !_nativeDialogueHandoffOwner.Mark(PlayerEncounter.Current,
+            GetCurrentEncounterPartySafe(), SaveRuntimeGuard.CaptureGeneration())) return;
+        _nativeDialogueHandoffHero = target;
+        _nativeDialogueHandoffManager = manager;
+        manager.ConversationEndOneShot += OnNativeDialogueHandoffEnded;
+    }
+
+    private static bool CanReturnFromNativeDialogueHandoff(Hero target, bool currentScope)
+    {
+        bool release = PlayerEncounter.LeaveEncounter || _pendingNativeConversationMeetingRelease != null
+            || _pendingNativeConversationNpcSurrender || _pendingMeetingReleaseSafePassageFinalReapply;
+        bool combat = HasPendingForceNativeEncounterAttack() || HasPendingMeetingBattleNativeResult()
+            || HasPendingForceNativeDefeatCaptivityMenu() || HasPendingForceNativeEncounterBattleMenu()
+            || PlayerEncounterCompat.HasEncounterBattleContext() || PlayerEncounterCompat.HasCampaignBattleResult()
+            || PlayerEncounterCompat.IsInPostBattleResultFlow() || MeetingBattleRuntime.IsCombatEscalated;
+        bool native = IsNativeEncounterActivityContext(target) || MapSeaContextGuard.IsCurrentPlayerEncounterAtSea(target);
+        return NativeDialogueReturnPolicy.ShouldReturn(!PlayerEncounter.PlayerIsAttacker, currentScope, release, combat, native);
+    }
+
+    private static void OnNativeDialogueHandoffEnded()
+    {
+        try
+        {
+            bool current = _nativeDialogueHandoffIntercepted && _nativeDialogueHandoffOwner.IsCurrent(PlayerEncounter.Current,
+                GetCurrentEncounterPartySafe(), SaveRuntimeGuard.CaptureGeneration());
+            Hero target = _nativeDialogueHandoffHero;
+            if (!CanReturnFromNativeDialogueHandoff(target, current)) return;
+            // Only release the suppression created by THIS menu-to-dialogue handoff.
+            // Never clear suppression belonging to battle, captivity, release or another feature.
+            if (!string.Equals(_suppressCustomEncounterMenuReason, "native_dialogue_handoff", StringComparison.Ordinal)) return;
+            ClearCustomEncounterMenuHardSuppression("native_dialogue_handoff_ended");
+            MarkPendingReturnToEncounterMenuAfterUnauthorizedMeetingExit("native_dialogue_handoff_ended");
+            _nativeDialogueReturnPending = _pendingReturnOwner.IsPending;
+            _nativeDialogueReturnHero = _nativeDialogueReturnPending ? target : null;
+        }
+        catch (Exception ex) { Logger.Log("LordEncounter", "Native dialogue handoff return failed: " + ex.Message); }
+        finally { ClearNativeDialogueHandoff(); }
+    }
+
 	private static void OpenNativeEncounterConversation(Hero target)
 	{
 		try
@@ -8568,6 +8648,7 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 				}
 			}
 			SetTarget(target);
+            RegisterNativeDialogueHandoff(target);
 			SuppressCustomEncounterMenuUntilBackOnMap("native_dialogue_handoff");
 			Campaign.Current.CurrentConversationContext = ConversationContext.PartyEncounter;
 			try
@@ -8619,6 +8700,7 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 		}
 		catch (Exception ex)
 		{
+            ClearNativeDialogueHandoff();
 			Logger.Log("LordEncounter", "OpenNativeEncounterConversation failed: " + ex);
 		}
 	}

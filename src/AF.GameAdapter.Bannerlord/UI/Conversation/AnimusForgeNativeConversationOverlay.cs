@@ -53,6 +53,10 @@ public sealed partial class AnimusForgeNativeConversationOverlay
 
 	private bool _isSubmitting;
 
+    private readonly ConversationModeTextOwner _modeText = new ConversationModeTextOwner();
+    private ShoutBehavior.NativeConversationPresentationScope _modeTextScope;
+
+
 	private bool _npcOpeningAutoStarted;
 
 	private int _submitGeneration;
@@ -275,6 +279,21 @@ public sealed partial class AnimusForgeNativeConversationOverlay
 	{
 		try
 		{
+            // Cache only within this NPC/token/save scope. Native advancement or a changed
+            // target retires both texts; this is deliberately not a per-frame lookup.
+            if (_modeTextScope != null && !_modeTextScope.HasCurrentConversationContext())
+            {
+                _modeText.Reset();
+                _modeTextScope = null;
+            }
+            string restoreText = null;
+            if (isVisible)
+            {
+                _modeTextScope ??= ShoutBehavior.CaptureNativeConversationPresentationScopeForOverlay();
+                restoreText = _modeText.EnterAi(ConversationHelper.GetCurrentDialogText());
+            }
+            else if (_dataSource.IsCustomAnswerVisible && _modeTextScope?.HasCurrentConversationContext() == true)
+                restoreText = _modeText.LeaveAi(ConversationHelper.GetCurrentDialogText(), _waitingDotsActive);
 			if (!isVisible)
 			{
                 // Retire this UI generation; late callbacks must not lock the next AI entry.
@@ -300,6 +319,8 @@ public sealed partial class AnimusForgeNativeConversationOverlay
 				_postRestoreForceRestoreTicks = 8;
 				RestoreNativeConversationInputAfterOrdinaryMode(forceAnswerRestore: true);
 			}
+            if (restoreText != null && _modeTextScope?.HasCurrentConversationContext() == true)
+                ConversationHelper.UpdateDialogText(restoreText);
 		}
 		catch (Exception ex)
 		{
@@ -1620,6 +1641,8 @@ public sealed partial class AnimusForgeNativeConversationOverlay
 			return;
 		}
 		_isClosed = true;
+        _modeText.Reset();
+        _modeTextScope = null;
 		_submitPresentationScope = null;
 		StopWaitingDotsAnimation();
 		ClearPendingPostprocessNotice();
