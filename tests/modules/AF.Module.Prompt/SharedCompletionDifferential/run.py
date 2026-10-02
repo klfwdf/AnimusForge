@@ -51,7 +51,17 @@ for revision in ("old", "current"):
             return subprocess.check_output(["git", "show", "77a3d234:" + path], cwd=ROOT).decode("utf-8-sig")
         return (current_source_path(ROOT, path)).read_text(encoding="utf-8-sig")
     source = read("MyBehavior.cs")
-    methods = "\n".join(extract.declaration(source, marker) for marker in markers)
+    adapter = ""
+    if revision == "old":
+        methods = "\n".join(extract.declaration(source, marker) for marker in markers)
+    else:
+        # Current full capture owner + actual factory; old branch remains the original oracle.
+        methods = "\n".join(extract.declaration(source, marker) for marker in (markers[0], markers[2]))
+        capture = read("src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.PromptContextCapture.cs")
+        methods += "\n" + extract.declaration(capture, markers[1])
+        methods += "\n" + extract.declaration(capture, "private PromptContextCaptureBannerlordPorts CreatePromptContextCapturePorts(")
+        # Alias only game types to this suite's existing synthetic API leaves; body is untouched.
+        adapter = "using Hero = AnimusForge.Hero; using CharacterObject = AnimusForge.CharacterObject; using CampaignVec2 = AnimusForge.CampaignVec2; using MobileParty = AnimusForge.MobileParty; using TWParallel = AnimusForge.TWParallel;\n" + read("src/AF.GameAdapter.Bannerlord/Composition/PromptContextCaptureBannerlordAdapter.cs")
     if revision == "current" and args.mutate:
         needles = {
             "drop-lore": ("extrasSections.LoreContext = loreContext;", "extrasSections.LoreContext = \"\";"),
@@ -59,8 +69,8 @@ for revision in ("old", "current"):
             "drop-rule": ("extrasSections.TriggeredRuleInstructions = value8;", "extrasSections.TriggeredRuleInstructions = \"\";"),
         }
         before, after = needles[args.mutate]
-        assert methods.count(before) == 1, "mutation anchor drift: " + args.mutate
-        methods = methods.replace(before, after, 1)
+        assert adapter.count(before) == 1, "mutation anchor drift: " + args.mutate
+        adapter = adapter.replace(before, after, 1)
     (out / "Production.cs").write_text("using System;\nusing System.Collections.Generic;\nusing System.Diagnostics;\nusing System.Linq;\nusing System.Threading;\nnamespace AnimusForge { public partial class MyBehavior {\n" + methods + "\n}}\n", encoding="utf-8")
     for filename in composition:
         (out / filename).write_text(read("src/modules/AF.Module.Prompt/Composition/" + filename), encoding="utf-8")
@@ -68,6 +78,10 @@ for revision in ("old", "current"):
         (out / filename).write_text(read(filename), encoding="utf-8")
     (out / "Program.cs").write_bytes((HERE / "Program.cs").read_bytes())
     files = ["Program.cs", "Production.cs", "GuardrailRuleHit.cs", "PreprocessFormatException.cs"] + composition
+    if revision == "current":
+        (out / "CaptureAdapter.cs").write_text(adapter, encoding="utf-8")
+        (out / "GameTypeNamespaces.cs").write_text("namespace TaleWorlds.CampaignSystem { internal class TestNamespace { } } namespace TaleWorlds.CampaignSystem.Party { internal class TestNamespace { } } namespace TaleWorlds.Library { internal class TestNamespace { } } namespace AnimusForge.Refactor.Modules { internal class TestNamespace { } }", encoding="utf-8")
+        files += ["CaptureAdapter.cs", "GameTypeNamespaces.cs"]
     (out / "Proof.csproj").write_text('<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><EnableDefaultCompileItems>false</EnableDefaultCompileItems><UseAppHost>false</UseAppHost><NuGetAudit>false</NuGetAudit>' + ('<DefineConstants>CURRENT</DefineConstants>' if revision == 'current' else '') + '</PropertyGroup><ItemGroup>' + ''.join(f'<Compile Include="{name}" />' for name in files) + '</ItemGroup></Project>', encoding="utf-8")
     (out / "NuGet.Config").write_text("<configuration><packageSources><clear /></packageSources></configuration>", encoding="utf-8")
     result = subprocess.run([str(dotnet), "build", str(out / "Proof.csproj"), "-c", "Release", "--nologo", "-p:RestoreConfigFile=" + str(out / "NuGet.Config")], cwd=out, env=env, capture_output=True, text=True, encoding="utf-8", errors="replace")

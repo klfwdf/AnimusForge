@@ -46,7 +46,15 @@ for revision in ("old", "current"):
         source = subprocess.check_output(["git", "show", "77a3d234:ShoutBehavior.cs"], cwd=ROOT).decode("utf-8-sig")
     else:
         source = (ROOT / "src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.cs").read_text(encoding="utf-8-sig")
-    methods = "\n".join(extract.declaration(source, marker) for marker in markers)
+    if revision == "old":
+        methods = "\n".join(extract.declaration(source, marker) for marker in markers)
+    else:
+        # Current capture + detached real assembly owners; never use a historical projection here.
+        current_markers = ('internal static object CreateChatMessage(', 'private static string BuildStrictSceneMessagesSystemPrompt(', 'private static void AppendStrictSceneUserSections(', 'internal static string BuildSceneCompositeUserBlock(', 'internal static string StripScenePersonaBlocks(', 'internal static string ExtractTrustPromptBlock(', 'private static bool IsSceneWeeklyFullReportHeader(', 'private static string FormatSceneRuleSection(', 'private static string FormatSceneKnowledgeSection(', 'internal static void SplitSceneExtraSections(', 'internal static string BuildSceneSystemRuleBlock(', 'internal static async Task<string> CallNativeConversationApiAsync(')
+        history = (ROOT / "src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.SceneHistoryMessages.cs").read_text(encoding="utf-8-sig")
+        history_markers = ('private List<object> BuildStrictSceneMessagesForNpc(', 'internal SceneHistoryMessageAssemblyInput CaptureStrictSceneMessageInputForNpc(', 'private static void AppendConversationMessages(')
+        methods = "\n".join(extract.declaration(source, marker) for marker in current_markers)
+        methods += "\n" + "\n".join(extract.declaration(history, marker) for marker in history_markers)
     out = output / revision
     out.mkdir(parents=True, exist_ok=True)
     (out / "Production.cs").write_text("using System;\nusing System.Collections.Generic;\nusing System.Diagnostics;\nusing System.Linq;\nusing System.Text;\nusing System.Threading;\nusing System.Threading.Tasks;\nnamespace AnimusForge { public partial class ShoutBehavior {\n" + methods + "\n}}\n", encoding="utf-8")
@@ -58,7 +66,7 @@ for revision in ("old", "current"):
     (out / "Proof.csproj").write_text('<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><EnableDefaultCompileItems>false</EnableDefaultCompileItems><UseAppHost>false</UseAppHost><NuGetAudit>false</NuGetAudit></PropertyGroup><ItemGroup><Compile Include="Program.cs" /><Compile Include="Production.cs" /></ItemGroup></Project>', encoding="utf-8")
     if revision == "current":
         project=(out / "Proof.csproj").read_text(encoding="utf-8")
-        extra=[ROOT / "src/modules/AF.Module.Prompt/Composition/MainPromptMessageAssemblyOwner.cs", ROOT / "src/modules/AF.Module.Prompt/Composition/ConversationRoleClassificationOwner.cs"]
+        extra=[ROOT / path for path in ['src/modules/AF.Module.Prompt/Composition/MainPromptMessageAssemblyOwner.cs', 'src/modules/AF.Module.Prompt/Composition/ConversationRoleClassificationOwner.cs', 'src/modules/AF.Module.Prompt/Composition/SceneHistoryMessageAssemblyOwner.cs', 'src/modules/AF.Module.Conversation/Internal/History/ConversationMessage.cs', 'src/modules/AF.Module.Conversation/Internal/History/ConversationSpeechTextRules.cs', 'src/modules/AF.Module.Conversation/Internal/History/SceneHistoryProjectionOwner.cs', 'src/AF.Contracts/Internal/InteractionContracts.cs', 'src/AF.Contracts/Internal/LlmContracts.cs']]
         project=project.replace("</PropertyGroup>", "<DefineConstants>CURRENT</DefineConstants></PropertyGroup>")
         project=project.replace("</ItemGroup>", "".join('<Compile Include="'+str(path)+'" />' for path in extra)+"</ItemGroup>")
         (out / "Proof.csproj").write_text(project, encoding="utf-8")

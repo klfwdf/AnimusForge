@@ -17,7 +17,7 @@ args = parser.parse_args()
 source = (ROOT / "src/modules/AF.Module.Conversation/Channels/Native/ShoutBehavior.NativePromptBuild.cs").read_text(encoding="utf-8-sig")
 method = extract.declaration(source, "private async Task<MyBehavior.ShoutPromptContext> BuildNativePromptContextScheduledAsync(")
 if args.mutate == "drop-final-admission":
-    needle = "if (!IsNativeConversationAdmissionCurrent(admission, out _))"
+    needle = "if (!_ports.IsNativeConversationAdmissionCurrent(admission, out _))"
     at = method.rfind(needle)
     assert at >= 0
     method = method[:at] + "if (false)" + method[at + len(needle):]
@@ -27,7 +27,7 @@ if args.mutate == "drop-knowledge-generation":
     method = method.replace(needle, "false", 1)
 out = ROOT / "artifacts/tests/prompt-j06-native-knowledge" / (args.mutate or "current")
 out.mkdir(parents=True, exist_ok=True)
-(out / "Production.cs").write_text("using System;\nusing System.Collections.Generic;\nusing System.Diagnostics;\nusing System.Threading;\nusing System.Threading.Tasks;\nusing TaleWorlds.CampaignSystem;\nnamespace AnimusForge { public partial class ShoutBehavior {\n" + method + "\n}}\n", encoding="utf-8")
+(out / "Production.cs").write_text("using System;\nusing System.Collections.Generic;\nusing System.Diagnostics;\nusing System.Threading;\nusing System.Threading.Tasks;\nusing TaleWorlds.CampaignSystem;\nnamespace AnimusForge { internal sealed partial class NativeConversationTurnRuntime {\n" + method + "\n}}\n", encoding="utf-8")
 (out / "Program.cs").write_bytes((HERE / "Program.cs").read_bytes())
 (out / "Proof.csproj").write_text('<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><EnableDefaultCompileItems>false</EnableDefaultCompileItems><UseAppHost>false</UseAppHost><NuGetAudit>false</NuGetAudit></PropertyGroup><ItemGroup><Compile Include="Program.cs"/><Compile Include="Production.cs"/></ItemGroup></Project>', encoding="utf-8")
 (out / "NuGet.Config").write_text("<configuration><packageSources><clear /></packageSources></configuration>", encoding="utf-8")

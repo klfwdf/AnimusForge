@@ -5944,3 +5944,12 @@ R2计划交付门槛：已给固定技术路线、真实来源与目标、写入
 - 最小只恢复八literal，无字段/state/保存顺序/规则变化。真实当前9adapter+WeeklyNotice owner夹具添加固定16a键序与预置legacy值，原40断言之后 red真实exit1；恢复后44 assertions PASS。独占编译副本只将Count键再变坏，真实legacy-load断言拒绝exit1；不从current错误键抽expected。原首次uncaught red和caught red日志均保留。
 - 有限机械差集核查九个本轮Campaign persistence adapter：SyncData literal集合逐原16a主对照，仅上述四个错键，无其他新增receiver-like key。Voice folder实际原literal保持，UNRESOLVED为ref参数审计器诊断待修，不猜成产品兼容失败。完整序列化/live/save-import验收不由literal对照替代。
 - 旧samecandidate69入口 `after-gates-b7c3` 已完整结束：32 PASS/37 FAIL（exit1），包含原PromptProjection变异timeout；原354/71FAIL仍保。产品修复后必须fresh同候选六构建和受影响门禁，不复用F040该保存边界验收。
+
+
+### 保存键修复后新同候选验证进度（2026-10-02，仍 VERIFY）
+
+- 产品候选 `dd6f45bf`，Debug `debug-b67c7b0cc63f` 与 frozen Release `frozen-release-f0bd0f0c6496` 均实际双API+Bootstrap exit0；1324Compile/8resources，同1337 raw输入与当前产品逐SHA一致。source manifest SHA `1898f2032c04972b2a3f1340e9ce1afd278a2da53300b62278cdd9fd17204543`。新Release1.4 SHA `DEAA0BE7FDE9E4C88AA2169A86CD7A7E5368B4697B5367F2EC9F305DA9D6D521`，新Release1.3 SHA `AACC654B0F4FAE2F824CA457CC23F627A49054EFFC0DE08375CF510775B795DC`。旧F040只历史失败/诊断，不复用保存边界验收。
+- `7c5c7cd1` 固定397actualbindings/149boundedpaths；4inverse/dependency/body-neighbor-extra负控真实PASS，不刷历史review hash。新current fixtures/真实DLL/产品build不投影历史。
+- 正式 `current-gates-7c5c/results.json`：40受影响入口25PASS/15FAIL、aggregate exit1。实际新DLL完整OptIn（MemoryRecovery3561、CourierReservation18、CourierInbound115等）及PhaseEight全部原序列回放PASS；NativeWaitAudioBoundary当前7原子+wholeAudio真实25检查PASS。不是整体当前runtime/game/live验收，也不把旧266PASS拼新版完整354。
+- 剩余15：Courier3与Composition当前LlmContracts编译闭包；NativeCompletion/Admission/MainReply三个mutation子进程timeout（正常入口通过，不算mutation拒绝）；Duel当前normalizer helper internal签名；CivilWar MSBuild Python实际路径；J17 net10工具/fixture依赖；Memory旧copy比较；NativeFinal/Knowledge/Shared capture实际源位置；mandatoryPersistence typedref解析。仅有限测试/工具引用与异常输出修正，生产仍冻结。SDK10.0.400已核实际存在，进程内显式选本机dotnet；未安装/全局配置。
+- 838原代码图ID保持，仅3个已批准PhaseEight测试坐标/hash更新；真实owner规模、P1–P8映射/单状态/影响分析沿既有完整收据，数字不冒语义完成。LIVE/旧档/真实网络音频/帧性能NOT_RUN与证书归因UNKNOWN保持；原rawdirty/tools/NuGet不stage、不清理，未push/Stage/部署。

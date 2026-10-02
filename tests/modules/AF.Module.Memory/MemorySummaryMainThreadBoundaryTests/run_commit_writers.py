@@ -32,7 +32,9 @@ def main():
             manifest=json.loads((base/'manifest.json').read_text(encoding='utf-8'))
             if manifest.get('mutation') is not None:return None
             for entry in manifest['extraction']:
-                if 'signature' not in entry and sha((current_source_path(ROOT, entry['file'])).read_text(encoding='utf-8-sig'))!=entry['sha256']:return None
+                if 'signature' not in entry:
+                    text = (historical_source(entry['file']) if entry['file'] in {'MyBehavior.cs', 'MyBehavior.MemoryRecovery.cs', 'MyBehavior.WeeklyActionOutcomeReceipts.cs'} else current_source_path(ROOT, entry['file']).read_text(encoding='utf-8-sig'))
+                    if sha(text) != entry['sha256']: return None
             for name,digest in manifest['generated_sha256'].items():
                 if hashlib.sha256((base/name).read_bytes()).hexdigest()!=digest:return None
             result=re.search(r'^TERMINAL_RESULT scenarios=(\d+) failures=0\b',(base/'run.log').read_text(encoding='utf-8'),re.M)

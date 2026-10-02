@@ -418,7 +418,7 @@ internal static class Program
                     .Contains("PrepareSceneUnifiedActionPostprocess(", StringComparison.Ordinal)
                 && ExtractMethod(nativeCommit, "public async Task<NativeConversationTurnStep> PostprocessAndCommitAsync(")
                     .Contains("CompleteSceneUnifiedActionPostprocess(", StringComparison.Ordinal)
-                && ExtractMethod(scenePostprocess, "private static string TryRunSceneUnifiedActionPostprocess(")
+                && ExtractMethod(scenePostprocess, "internal static string TryRunSceneUnifiedActionPostprocess(")
                     .Contains("ConversationActionPostprocessOwner.TryRunSceneUnifiedActionPostprocess(", StringComparison.Ordinal)
                 && ExtractMethod(sharedPostprocessOwner, "internal static string TryRunSceneUnifiedActionPostprocess(")
                     .Contains("PrepareSceneUnifiedActionPostprocess(", StringComparison.Ordinal)
