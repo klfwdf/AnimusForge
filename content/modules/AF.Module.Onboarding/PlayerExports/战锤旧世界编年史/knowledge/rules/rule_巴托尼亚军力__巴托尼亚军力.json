@@ -1,0 +1,212 @@
+{
+  "Id": "rule_巴托尼亚军力__巴托尼亚军力",
+  "Keywords": [
+    "巴托尼亚军力",
+    "巴托尼亚军队",
+    "骑士",
+    "圣杯骑士",
+    "巴托尼亚王国骑士",
+    "探险骑士",
+    "巴托尼亚飞马骑士",
+    "农奴长弓手",
+    "封建征兵",
+    "骑士冲锋",
+    "女神的军队"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "巴托尼亚军队的核心是骑士——从王国骑士到探险骑士，再到圣杯骑士，这支以重装骑兵为主体的军队是旧世界最令人生畏的冲锋力量。在骑士身后，数目庞大的农奴步弓手和武装民兵构成了第二线，为贵族骑兵的决胜冲锋提供掩护。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "巴托尼亚的军队是湖之女神在地上的剑与矛。我们的军队结构简单而威严：骑士是剑尖，农奴是剑身，飞马骑士是天空之刃。王国骑士是巴托尼亚骑士团的骨干——每一位都是通过了侍从训练并在比武场证明了自己的贵族子弟，他们身披板甲、骑乘纯血的巴托尼亚战马，在冲锋时的动量足以击穿任何盾墙。探险骑士是那些抛下了领地和头衔四处游历的骑士精英，他们的盔甲上刻满了在异国他乡获得的荣耀印记。而圣杯骑士——他们是女神的选民，每一位都经过了终极的考验，他们的身体被圣杯之水净化到几乎不受凡间武器伤害的地步，他们的长枪在冲锋时能够刺穿恶魔的皮层。飞马骑士是我们对抗空中威胁和侧翼突袭的快速反应部队。在骑士的身后，农奴们手持长弓与长矛填补阵线——是的，他们不是骑士，但一个巴托尼亚长弓手能从三百步外射中兽人的眼窝，这在旧世界只有帝国火枪手可以相提并论。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "指挥巴托尼亚军队的最大挑战在于平衡骑士的荣耀冲动与战场的实际需要。每一个巴托尼亚骑士从八岁开始就被灌输一个信念——光荣的冲锋是士兵最高的成就，在敌人面前后退是比死亡更可怕的耻辱。这造就了世界上最强大的冲锋骑兵，但也意味着骑士们可能会在关键时刻被对手的挑衅激怒而自行冲锋，破坏了整条战线的节奏。有经验的巴托尼亚将军会在战斗开始时用号角、旗帜和事先约定的信号系统来确保骑士在正确的时机发动冲锋。圣杯骑士作为战场上的终极威慑力量，不应被过早投入——将他们保留到敌军精锐方阵暴露弱点的那一刻，一次时机完美的圣杯骑士冲锋可以决定整场战役的胜负。农奴步兵虽然单兵战力不如帝国长戟兵，但他们的长弓在防御战中具有惊人的杀伤力——一个聪明的巴托尼亚统帅会在战场正面布置拒马，配合长弓手的火力打击，迫使敌军在靠近骑士冲锋线之前就必须付出惨重代价。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 100
+        },
+        "IdentityIds": null
+      },
+      "Content": "巴托尼亚军事体系的理论依据根植于其封建征兵制与骑士团独立的双重结构。每个领主都有义务向国王提供与其封地大小成比例的骑士和农奴士兵——这一制度在《吉勒斯法典》中有明确规定。从战术层面分析，巴托尼亚的军事思想围绕着一个核心概念展开：不对称冲击——用少数但超精英的骑士力量在决定性时刻以不可抵挡的冲锋摧毁敌军的意志和阵型。这与帝国的均衡战术形成鲜明对比——帝国依赖步兵、火枪和炮兵的协同，而巴托尼亚几乎将所有赌注压在骑兵上。这一战略之所以可行，部分归功于巴托尼亚战马的卓越品质——这些战马被认为含有精灵血统，比世界任何其他种类的马匹更快、更壮、更耐战。飞马同样独特，它们是巴托尼亚独有的物种，栖息在灰色山脉的高山湖泊附近。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "巴托尼亚军力对于女性领主来说不仅是战场上的一面旗帜——它是城堡在男人远征时仍然不被攻陷的保证。我在丈夫带领骑士团参加阿拉比圣战的三年间独自掌管着边境城堡的防御，发现了一件事：当男人们把所有的精锐骑士都带走时，留下来的是一批因为各种原因未被选入远征军的二等骑士和年老战士，以及全部农奴步弓手。我发现这些被低估的防御力量如果被组织得当——老骑士负责指挥塔楼哨位，年轻农奴弓箭手在城墙上轮班值守，庄园妇女负责煮制滚油和搬运补给——一座边境城堡可以在没有任何圣杯骑士参与的情况下抵挡住绿皮部落连续数月的袭扰。巴托尼亚的军事传统的盲点在于它过度崇拜进攻，而作为必须在男人离开后守住家园的女人，我学会了防守的力量——不是荣耀的冲锋，而是每晚都能确保城门被闩紧的沉闷纪律。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "巴托尼亚的军事力量在家族战略层面上是一种代际投资——你在这一代投入在骑士培养上的资源将在你孙辈的战争中以胜利的形式兑现。我们家族的军事传统中有两条铁律：第一，家族长子的骑士训练由家族中最年长的退役骑士亲自负责，不接受任何外来雇佣的武术教练，因为骑士的技艺可以通过雇佣获得，但骑士的品格只能通过血脉传承中的自律来打磨；第二，每一个家族管理的庄园都必须保持至少三名具备基本长弓训练的青壮年农奴，他们的训练费用从家族的军事预算中列支。这项传统在纸面上违反巴托尼亚禁止农奴携带武器的条文，但所有公爵都对此视而不见，因为每个人都知道在绿皮大军压境时你需要的不是合法与否而是是否有人站在城墙上。我们的家族军队在规模上从来不是巴托尼亚最大的，但我们的撤退率是最低的——因为每一个参战的家族骑士都清楚，他身后城堡的塔楼上站着他的母亲和姐妹。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我在巴托尼亚以雇佣兵身份参加过两次边境冲突，对这支军队最大的印象不是骑士冲锋的壮观——那确实很壮观，但真正让你活命的是骑士冲锋过后你还活着的时候看到的景象。巴托尼亚的骑兵在冲入敌阵后会形成一种旋风式的多方切割——冲锋不只是一次直线撞击，而是一波接一波的连续冲击，每一波都针对前一波撞出的缺口。这种战术对骑兵的默契要求极高，需要长年累月在比武场上的共同训练——这也是为什么巴托尼亚骑士团在换防补充新兵时战斗力会短暂下降。而对我这种拿钱卖命的雇佣兵而言，站在巴托尼亚农奴长弓手队列中比站在帝国火枪手队列中让我感觉更安全——不是因为长弓更强，而是因为巴托尼亚的农奴弓箭手在战斗结束清理战场时从不放过任何一个还在地上抽搐的敌人伤兵，因为他们知道如果不这样做，那个伤兵可能在明年痊愈后带领更多同族回来烧掉自己的村庄。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "巴托尼亚军队的后勤供应是旧世界最被低估的军事商业市场——一套板甲需要至少三名专业铁匠连续工作数月，一把骑士马上长枪的特制枪杆来自吉索鲁克斯山谷中唯一一片特定品种的白蜡树林，而巴托尼亚战马的饲料配方中含有帝国农场里不种植的特殊草料品种。我们商会专门从事巴托尼亚城堡的军粮保供，我的账本上写着一条铁律：一个圣杯骑士的战马每天消耗的燕麦和豆饼相当于四个农奴家庭一天的口粮总和，而巴托尼亚法律禁止农奴拒绝向领主提供战马草料——这意味着在军粮供应紧张时，城堡周围五里内的农奴家庭会自动进入饥荒模式，而且没有人会向上级报告这一情况，因为这是惯例而非危机。巴托尼亚军队的战斗力在账本上可以精确换算为几组关键物资的库存量——当城堡地窖中储存的燕麦下降到冬季最低线以下时，贵族骑士之间爆发私下决斗的概率会上升三成。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "不对称冲击——巴托尼亚以少数超精英骑兵在决定性时刻决胜的核心战术思想",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "巴托尼亚军队的核心是骑士——从王国骑士到探险骑士"
+  ]
+}

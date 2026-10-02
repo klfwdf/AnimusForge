@@ -1,0 +1,150 @@
+{
+  "Id": "rule_人间风俗__私生子的姓氏",
+  "Keywords": [
+    "私生子姓氏",
+    "维水",
+    "风暴",
+    "佛花"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "维斯特洛贵族的非婚生子女常按出生或成长地区使用地域姓氏：北境为雪诺，多恩为沙德，河间地为河文，谷地为石东，王领为维水，风暴地为风暴，河湾地为佛花，铁群岛为派克，西境为希山。并非每个平民私生子都会获得这些姓，使用它通常意味着父母至少一方有可辨认身份。地域姓给予社会位置，也不断提醒本人不在合法继承序列；国王有权使私生子合法化，但政治承认与家人接纳并非同一件事。一个姓能标出出身，不能预言品格、忠诚或命运。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "贵族从地域姓想到继承风险、婚配和承认程度。有人把私生子当亲人，有人只把他当可能被对手利用的血缘证据。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "普通人未必关心复杂法理，却会沿用贵族制造的偏见。私生子需要为同样的错误承担更多怀疑，尽管出生从来不是孩子的选择。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "军旅和远行有时让地域姓变成容易记住的旗号，也可能暂时淡化旧耻。真正长期相处的人最终会按行动评价一个人，而不是只按父母是否成婚。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人把私生子姓氏看成可执行的秩序。私生子的姓氏：各地习惯以雪诺、沙德、河文等地域姓标记有身份者的非婚生子女，姓氏提供名字也公开划出继承边界。它是否有效，取决于谁能授予权利、收取代价，并在违约时让判决真正落地。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起私生子姓氏时，关心它如何影响道路、命令和安全。私生子的姓氏：各地习惯以雪诺、沙德、河文等地域姓标记有身份者的非婚生子女，姓氏提供名字也公开划出继承边界。远方的制度只有在营火、城门和驿站里能被执行，才不是空话。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者会从习惯和象征理解私生子姓氏。私生子的姓氏：各地习惯以雪诺、沙德、河文等地域姓标记有身份者的非婚生子女，姓氏提供名字也公开划出继承边界。一项规矩若被反复实践，便会进入礼仪、手艺和祈祷；若只靠恐惧维持，危机一来就会露出裂缝。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民感受到私生子姓氏的方式最小也最准确。私生子的姓氏：各地习惯以雪诺、沙德、河文等地域姓标记有身份者的非婚生子女，姓氏提供名字也公开划出继承边界。他们记得税、粮、劳役、赈济和谁能为他们说话；宏大的名称，最终都要落在一家人的饭锅旁。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "私生子的姓氏：各地习惯以雪诺、沙德、河文等地域姓标记有身份者的非婚生子女，姓氏提供名字也公开划出继承边界。"
+  ]
+}

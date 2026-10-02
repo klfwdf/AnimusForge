@@ -1,0 +1,148 @@
+{
+  "Id": "rule_军旅实务__渡河",
+  "Keywords": [
+    "渡河"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "渡河体现了权力如何被宣布、执行并承受后果。命令从厅堂传到村舍时，总会经过人的选择与地方习惯。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "在渡河面前，领主谈权利，书记官谈程序，普通人谈能否安全回家；命令与执行决定一纸命令究竟是约束，还是另一场讨价还价的开始。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵执行渡河时只看旗帜、口令和补给，贵族却要计算盟誓与声望的余波；命令传得越远，地方上的解释往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "wanderer",
+          "priest",
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "商人和旅人从渡河中感受到的是关卡、赎金与消息价格，祭司和学者关注它如何塑造正当性；同一项决定，在不同阶层眼中很少有同一种重量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人谈起渡河，先想到军费、粮道和盟约。渡河体现了权力如何被宣布、执行并承受后果。命令从厅堂传到村舍时，总会经过人的选择与地方习惯。战场上的胜负固然重要，但谁能让军队在第二个月仍有马料和银币，往往更能决定战争的长短。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人对渡河的判断最直接。渡河体现了权力如何被宣布、执行并承受后果。命令从厅堂传到村舍时，总会经过人的选择与地方习惯。他们看旗帜是否在前方、命令是否清楚、伤员是否有人收回；一条漂亮的战略，若不能让人活着回营，就不值得歌唱。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者从后方看渡河。渡河体现了权力如何被宣布、执行并承受后果。命令从厅堂传到村舍时，总会经过人的选择与地方习惯。铁匠要把断剑重新烧红，神职者要为死者守夜；战争离开战场后，仍会在铁砧、墓地和空掉的座位上继续。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民承担渡河最沉的部分。渡河体现了权力如何被宣布、执行并承受后果。命令从厅堂传到村舍时，总会经过人的选择与地方习惯。征发会带走马、粮和儿子，旗帜换了几次，他们仍要修屋、埋人和等下一场冬天；他们判断胜负，只看村子是否还在。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "渡河：渡河体现了权力如何被宣布、执行并承受后果。命令从厅堂传到村舍时，总会经过人的选择与地方习惯。"
+  ]
+}

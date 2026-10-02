@@ -1,0 +1,156 @@
+{
+  "Id": "rule_家族根基__哈戈",
+  "Keywords": [
+    "哈戈",
+    "哈戈卡拉萨",
+    "多斯拉克",
+    "卡奥"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "哈戈这个名号属于多斯拉克草海上的卡拉萨传统。它没有城堡地契来规定边界，也没有学士替每次继承盖印；卡奥的权力由亲族、血盟卫、各部寇与普通骑手共同承认，并会随着勇气、馈赠、婚姻和判断而起落。卡拉萨携带家畜、帐幕、俘虏与记忆迁徙，营地中的妇孺和老人同样决定它能走多远。哈戈一部可能因战争改变路线与人数，但不能逃开草海的基本约束：马要有草，人要有水，追随者要相信首领不会把他们的性命白白耗掉。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "多斯拉克战士敬重敢在最前方迎敌的哈戈，也会暗中衡量他的胜利是否值得代价。卡奥可以要求勇气，却不能永远用死者的铃铛掩盖错误。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "wanderer",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "跟随营帐移动的人更关心哈戈会不会为产妇、幼童和受伤的马留下时间。草海崇尚强者，但任何卡拉萨都靠那些走得较慢的人延续到下一代。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sarnor",
+          "ghiscari"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "notable",
+          "slave"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "商路居民谈哈戈时，语气取决于他们曾见过礼物交换还是劫掠扬尘。对没有马的人而言，卡拉萨的荣誉很遥远，能否让家人避开冲突才是真正的判断。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待哈戈，会先看它的土地、婚盟、血脉和债务。多斯拉克卡拉萨之一，其根基是骑手结成的追随关系，而非北方林地或固定封土。家徽是门面，能否保护封地、兑现婚约并在危机中召集人马，才是家族真正的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起哈戈时，记得的是谁在营火边分过粮、谁把他们留在城外、谁在败局里仍站在旗旁。多斯拉克卡拉萨之一，其根基是骑手结成的追随关系，而非北方林地或固定封土。家族名声最终要落到具体的人和具体的命令上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意哈戈留下的仪式、墓地和传承。多斯拉克卡拉萨之一，其根基是骑手结成的追随关系，而非北方林地或固定封土。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见哈戈。多斯拉克卡拉萨之一，其根基是骑手结成的追随关系，而非北方林地或固定封土。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "哈戈：多斯拉克卡拉萨之一，其根基是骑手结成的追随关系，而非北方林地或固定封土。"
+  ]
+}

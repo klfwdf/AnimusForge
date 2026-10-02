@@ -1,0 +1,151 @@
+{
+  "Id": "rule_家族根基__无旗兄弟会",
+  "Keywords": [
+    "无旗兄弟会"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "无旗兄弟会起于艾德·史塔克以国王之手名义派出的一队人马，原本奉命追捕烧杀河间地的格雷果·克里冈。王权崩裂、派遣者死去后，他们失去可依附的合法军队，却没有放下保护百姓的誓言。贝里·唐德利恩、密尔的索罗斯以及贵族、士兵、猎人和平民共同组成这支流动武装；他们藏身洞穴与树林，袭击劫掠者，审判罪犯，也依赖乡民提供食物和消息。没有旗帜意味着不为某一家争王位，也意味着他们必须一次次证明自己不是另一伙强盗。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "river"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "河间地小民把兄弟会的名字在火塘旁低声传递。若领主军队只会夺粮，愿意绞死强盗、归还耕牛的人便像正义；但百姓也知道，任何持剑者都可能在饥饿时改变。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "river"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "河间地贵族对无旗兄弟会态度复杂。他们的最初命令具有合法来源，后来却在领主控制之外行动；一个保护百姓的骑士团若不受城堡节制，也会令所有拥有土地的人不安。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "river"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和游侠看重兄弟会熟悉林地、分散行动和依靠村民耳目的本事。追捕他们不只是打一场仗，而是要在每座磨坊、每条岔路上与当地人的记忆作对。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待无旗兄弟会，会先看它的土地、婚盟、血脉和债务。无旗兄弟会奉艾德·史塔克旧命追捕格雷果·克里冈，战乱后转为保护河间地小民的流动武装。家徽是门面，能否保护封地、兑现婚约并在危机中召集人马，才是家族真正的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起无旗兄弟会时，记得的是谁在营火边分过粮、谁把他们留在城外、谁在败局里仍站在旗旁。无旗兄弟会奉艾德·史塔克旧命追捕格雷果·克里冈，战乱后转为保护河间地小民的流动武装。家族名声最终要落到具体的人和具体的命令上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意无旗兄弟会留下的仪式、墓地和传承。无旗兄弟会奉艾德·史塔克旧命追捕格雷果·克里冈，战乱后转为保护河间地小民的流动武装。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见无旗兄弟会。无旗兄弟会奉艾德·史塔克旧命追捕格雷果·克里冈，战乱后转为保护河间地小民的流动武装。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "无旗兄弟会：无旗兄弟会奉艾德·史塔克旧命追捕格雷果·克里冈，战乱后转为保护河间地小民的流动武装。"
+  ]
+}

@@ -1,0 +1,162 @@
+﻿{
+  "Id": "rule_诺德",
+  "Keywords": [
+    "诺德",
+    "诺德维格"
+  ],
+  "RagShortTexts": [
+    "诺德人海上力量强大，能威胁沿海，但陆战经验不足且人口有限。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "nord"
+        ],
+        "KingdomIds": [
+          "nord"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "诺德维格？那是我们的土地，但说不上是我们的国。我们是跟着沃尔比约恩打出来的，他那个人不是好东西，但他够狠，能把那么多雅尔摁在一起。现在他儿子哈尔达尔坐王座，人不错——打仗冲前面，喝酒不赖账。可国王不是光喝酒打仗就行的。我们这些雅尔，祖上在自己峡湾里说了算几百年了，现在要听一个人的？说实话，别扭。哈尔达尔要我们服他，行，他得有他爹的本事——不是狠毒，是带我们出去抢。诺德人不抢就生锈。斯特吉亚人跟我们差不多，他们也抢，但他们选了大公，我们选了国王。区别在哪儿？区别是他们的大公是波耶们求着选的，我们的国王是打出来的。所以他们那边波耶跟大公顶牛，我们这边雅尔也跟国王顶牛。一回事。北境这地方，冷，地薄，不抢活不下去。谁带我们抢得多，我们就认谁。眼下A还没让我们失望，但如果他一直让我们在家待着，那就不一定了。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "诺德人？那是我们的远亲。隔着一片海，说话腔调不同，但骨子里是一样的东西：船，斧头，冬天，荣誉。他们跟我们一样，不喜欢被人管。区别是他们那边冒出个沃尔比约恩，硬生生把雅尔们捏成了一个王国，我们这边波耶们还能跟大公面对面地顶。说实话，诺德维格现在那帮雅尔的处境，跟我们差不多——上面坐着一个想集权的，底下全是不想被集的。A不靠巫婆下毒杀人，他是正经战士。我们尊重战士。但战士治国，不一定比我们的B会算计强。诺德人这些年南下劫掠没以前多了，A的精力多半耗在内斗上。斯特吉亚跟诺德维格没什么大仇，偶尔抢一抢，偶尔做买卖，边界上碰见了打，打完喝。他们是另一个版本的我们，比我们更穷，船更多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "诺德维格是北方那片冻土上新捏成的王国。一代人之前那地方还是一盘散沙，几个所谓国王管着木栅栏围的奴隶市场。现在有了真正的王——沃尔比约恩从帝国卫队带回来的金币和战场经验改变了局面。哈尔达尔继位后，算是坐稳了他爹打下的摊子，但诺德维格的政治基础仍是脆弱的：雅尔们各怀心思，统一不过是一代人的事，人心未附。从战略上看，诺德人的价值在海洋，他们是唯一有能力从海上威胁帝国西海岸和斯特吉亚沿海的力量。但他们的短板也明显：人口有限，陆地战争经验不足，一旦长船无法进入内河，威胁便大打折扣。目前在帝国内战中诺德维格保持低姿态，劫掠规模不大。值得关注的是A是否会选择用对外战争来转移内部矛盾，这是年轻王国最常见的出路。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "nord"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "国王？哈尔达尔是国王，这个我们知道。但他跟我有什么关系？我还是打鱼，我老婆还是晒鱼，冬天还是冻死人。以前没有国王，现在有了，税多了一份，别的一样。沃尔比约恩当年当国王，听说他死的时候把自己埋在金山里。妈的，我们的鱼换的钱，最后埋在他坟里。A比他好——至少不来抢我们闺女。他打仗的时候分战利品给手下，不是自己全吞。但他手底下的雅尔不一样，有的好有的坏。许尔夫家的收税狠，岛上的人骂。特尔家的还行。反正谁当雅尔都是收税，国王是谁我们不在乎。只要能出海，船在，鱼在，日子就过得下去。哪天不能出海了，管你什么国王雅尔，诺德人不能出海的诺德还是诺德吗？"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "诺德人？那边峡湾里的人。跟我们挺像的——冷地方出来的都一个样。他们船上比我们厉害，我们地上比他们厉害。小时候听爷爷讲，诺德人以前老南下过来抢，抢完就跑，气得这边的老爷们追不上。后来他们自己也有国王了，抢得少了。我有个认识的在沿海跑船，跟诺德来的水手喝过酒，说他们酒量跟我们差不多。他们那边的老百姓也打鱼也种不了什么地，跟我们一样遭罪。但他们国王好像比我们大公还压不住手下人，天天斗。我们这边波耶跟大公斗，好歹还坐一起开个会，他们那边雅尔跟国王斗，据说动不动就拔斧子。比我们还野。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "诺德人？北边海上来的强盗吧。我爷爷那辈，沿海村子最怕诺德长船——半夜靠岸，天亮前就抢完走了。现在听说他们不那么抢了，自己有了国王，国王不让随便抢。但他们还是爱往南跑，现在不是抢，是做买卖，卖什么鲸油海象牙，再把南方的东西买回去。跑商的说诺德人的地方冷得要死，一年四季刮风下雪，地种不了什么，全靠船。所以他们造船有一手，海上没人打得过他们。他们那个老国王死的时候把自己活埋了，埋在一堆金子里。这是真事还是吹的？要是真的，那这个人真是又贪又疯。现在这个新王据说还行，打仗不怂，给手下分钱。只要不来抢我们，他们爱埋谁埋谁。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "nord"
+        ],
+        "KingdomIds": [
+          "nord"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": [
+          "hero:lord_7_1"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "他们要我当国王。我的父亲把雅尔们打服了，他死的时候连黄金都带进了坟墓，留下的却是没人愿意坐的王座。我坐在上面，每个雅尔对我举杯的时候，眼睛都在估量我的斤两。父亲的手段我不全认同——下毒、收买、活埋，他对付敌人的办法我知道，我能用的只有仗剑。战士们爱我，他们在我麾下打仗，在我桌上喝酒，拿我的赏钱，说我是慷慨的主人。但他们不懂，国王不能只是慷慨的主人。雅尔们暗暗怀念过去那不需听命于人的日子，他们把对父亲的恨意放在我身上。我不能学我父亲那样对他们下毒，但我能带他们南下。诺德人的矛盾在峡湾里永远解不开，但在别人的海岸上，斧头可以让他们忘记这一点。斯特吉亚人理解我们，他们也是北境之子，但他们选了大公，而选了大公不算统一。我是国王，我要的诺德维格不是一个战时同盟，而是一个王国。我会带他们出去打，在刀剑的招呼之下，让自家人回家之后再自相怀疑。这是我能给他们的全部承诺。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "A",
+      "Kind": "kingdom_leader_name",
+      "TargetId": "nord",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": "B",
+      "Kind": "kingdom_leader_name",
+      "TargetId": "sturgia",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}

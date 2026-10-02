@@ -1,0 +1,135 @@
+{
+  "Id": "rule_家族根基__毕斯柏里",
+  "Keywords": [
+    "毕斯柏里家族",
+    "蜂蜜酒河",
+    "蜂巢堡",
+    "蜜蜂",
+    "海塔尔封臣"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "毕斯柏里家族以蜂巢堡为根基，领地靠近旧镇与蜂蜜酒河，是海塔尔麾下的河湾家族。家徽以黑黄相间的色彩和蜂巢为核心，清楚指向蜂蜜、蜂蜡、果园与温暖农地的地方经济。旧镇人更可能从蜂蜜、蜡烛和封臣关系认识毕斯柏里；远离河湾的人通常没有理由熟悉这个家名。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "reach"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "河湾贵族认得蜂巢堡的黑黄纹章，也自然把毕斯柏里与蜜蜂、蜂蜡和旧镇腹地联系起来。聪明人不会仅凭家徽断言全族秉性；这家人的实际价值，在于经营土地、服从海塔尔体系并把小而稳定的产出送入大城市场。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "reach"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "养蜂人知道蜂群既能酿蜜也会蜇人。蜂巢堡附近的人评价毕斯柏里，同样看甜与刺是否平衡：领主保护集市和蜂场，蜜、蜡与铜币便都能流动；若征取过重，再勤劳的蜂也只是在替别人填满陶罐。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待毕斯柏里家族，会先看它的土地、婚盟、血脉和债务。蜂蜜酒河附近蜂巢堡的河湾家族，隶属海塔尔，家徽以黑黄与蜂巢为核心。家徽是门面，能否保护封地、兑现婚约并在危机中召集人马，才是家族真正的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起毕斯柏里家族时，记得的是谁在营火边分过粮、谁把他们留在城外、谁在败局里仍站在旗旁。蜂蜜酒河附近蜂巢堡的河湾家族，隶属海塔尔，家徽以黑黄与蜂巢为核心。家族名声最终要落到具体的人和具体的命令上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意毕斯柏里家族留下的仪式、墓地和传承。蜂蜜酒河附近蜂巢堡的河湾家族，隶属海塔尔，家徽以黑黄与蜂巢为核心。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见毕斯柏里家族。蜂蜜酒河附近蜂巢堡的河湾家族，隶属海塔尔，家徽以黑黄与蜂巢为核心。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "毕斯柏里家族：蜂蜜酒河附近蜂巢堡的河湾家族，隶属海塔尔，家徽以黑黄与蜂巢为核心。"
+  ]
+}

@@ -1,0 +1,93 @@
+﻿{
+  "Id": "rule_马雷汶",
+  "Keywords": [
+    "马雷汶"
+  ],
+  "RagShortTexts": [
+    "马雷汶是奥克斯·霍尔附近以伐木为生的村庄"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "马雷汶是奥克斯·霍尔附近的一座村庄，坐落在莱恩诺山脉密林覆盖的陡坡上，俯瞰着整个奥克斯湖。村民们以伐木为生，砍下的高大树木被卖到沿海的城镇，是这一带最重要的木材产地。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "马雷汶的木材在瓦兰迪亚是出了名的好。莱恩诺山上的树，长得又高又直，砍下来不用怎么加工就能当船桅。奥克斯湖那边的造船匠，用的全是马雷汶的木料。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "townsfolk"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "想买好木料就去马雷汶。那里的伐木工在山坡上干活，砍下来的树顺着坡道滑到湖边，再装船沿着奥克斯湖运到下游。省了运费，价格也公道。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "马雷汶那地方，山高林密，站在村子边上往下看，整个奥克斯湖都在眼底。伐木工都是硬汉，成天在陡坡上跟大树较劲，手上的茧子比鞋底还厚。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "马雷汶",
+      "Kind": "bound_settlement_name",
+      "TargetId": "__bound_settlement__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": "奥克斯·霍尔",
+      "Kind": "bound_settlement_name",
+      "TargetId": "__bound_settlement__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}

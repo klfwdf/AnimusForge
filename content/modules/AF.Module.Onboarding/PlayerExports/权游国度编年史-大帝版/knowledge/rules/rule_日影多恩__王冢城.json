@@ -1,0 +1,153 @@
+{
+  "Id": "rule_日影多恩__王冢城",
+  "Keywords": [
+    "王冢城",
+    "亲王隘口",
+    "古墓"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "王冢城位于多恩西部高地，邻近亲王隘口和通向河湾地的山路。它的名字与古墓、旧王和边境传说相连，提醒人们多恩在归入七国之前曾长期以自己的方式抵抗外来王朝。此地山势险峻，水源有限，军队若要穿越便必须依赖熟悉山路、泉眼和补给点的人。王冢城既是山地聚落的中心，也是多恩对外来入侵保持警惕的地理记忆。历史上的边境战争可以被人谈起，却不应把未来战局写成既定；石山、隘口和墓丘才是它不会改变的背景。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "reach"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "对靠王冢城周边土地吃饭的人而言，日子由山泉、牧坡、林木、积雪和驮畜能走的窄路决定。当地家庭还要依靠井泉、灌渠、果园、耐旱牲畜和避开烈日的行程；任何一处道路、井泉或码头失灵，代价都会先落到他们身上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "reach"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "对攻守双方而言，王冢城的分量首先落在隘口、高坡、瞭望点与翻山所需的粮秣上。在七国的封建秩序中，王冢城的归属牵动封臣义务、税粮和征召；守军能否吃饱、援兵能否按时抵达，比议事厅里的豪言更能决定这处据点是否可靠。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "scholar",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "货物抵达王冢城以前，货主已经算过驮队脚程、坡道损耗、山口税与冬季封路。他们还会辨认多恩的口音、法令和通行凭据；名声可以从酒馆传得很远，真正的路程仍须由车轮、船桨或马蹄丈量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "王冢城能给一家人带来头衔，也能在灾年与战争中拖垮那一家人。在七国的封建秩序中，王冢城的归属牵动封臣义务、税粮和征召；旗帜更换之后，道路、粮仓、旧债和地方信任仍得由新主人逐一接手。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵靠脚底记住王冢城：落石、岔路、背风宿营处和最近的山泉。能补给、能避险、能找到向导，便值得在行程里标明；若三样都没有，再响亮的家名也救不了迷途者。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "数代人在王冢城留下的痕迹，一半藏在采石、伐木、铁件、山羊毛和贴着山势修筑的墙基，一半藏在七神、洛伊拿遗风与亲王治下不同血脉的共同记忆。一处据点因而不只是领主的大厅，也是婚丧、誓言、劳作与地方记忆反复发生的场所。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户、牧民和渔民评价王冢城最少绕弯。他们关心井泉、灌渠、果园、耐旱牲畜和避开烈日的行程，也看征粮后是否留下种子、灾年时城门是否开启；远方人看见纹章，他们看见的是明日有没有饭吃。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "王冢城：王冢城位于多恩西部高地，邻近亲王隘口和通向河湾地的山路。它的名字与古墓、旧王和边境传说相连，提醒人们多恩在归入七国之前曾长期以自己的方式抵抗外来王朝。此地山势险峻，水源有限，军队若要穿越便必须依赖熟悉山路、泉眼和补给点的人。王冢城既是山地聚落的中心，也是多恩对外来入侵保持警惕的地理记忆。历史上的边境战争可以被人谈起，却不应把未来战局写成既定；石山、隘口和墓丘才是它不会改变的背景。"
+  ]
+}

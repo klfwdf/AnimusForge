@@ -1,0 +1,213 @@
+{
+  "Id": "rule_帝国政治__帝国政治",
+  "Keywords": [
+    "帝国政治",
+    "帝国政治选帝侯",
+    "帝国政治帝国议会",
+    "帝国皇帝",
+    "选举君主制",
+    "西格玛教会",
+    "帝国法律",
+    "行省自治",
+    "帝国财政",
+    "帝国官僚",
+    "皇权与教权",
+    "帝国宪法"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "帝国的政治体系是旧世界最复杂的选举君主制——皇帝由十位选帝侯（及其三位教会同等选侯）在帝国议会上投票产生，一旦当选便终身在位。这套制度由西格玛本人创立，旨在平衡中央皇权与地方贵族势力，虽然时常陷入僵局与内斗，却奇迹般地维持了两千五百年的国祚。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "帝国的政治是我们既引以为傲又深感头痛的事物。十五位选举人——十位世俗选帝侯加上西格玛大主教、尤里克大主教和阿尔·乌里克大主教——在皇帝驾崩后聚集在阿尔道夫的帝国议会大厅，通过投票决定谁将继承皇位。理论上这是一场公平的选举，但实际上金钱、姻亲、军事威胁和教会背书比一个人的品德更能影响投票结果。选帝侯在自己的行省内拥有近乎国王的权力：征收赋税、颁布法律、维持军队，除了对皇帝的宣誓效忠之外几乎不受任何约束。西格玛教会拥有巨大的精神权威，大主教一句话就能让一个皇帝被民众唾弃，或者让一个无名之辈被拥戴为真命天子。这套制度笨拙、缓慢、充满腐败，但它确保了没有任何一个行省能单独控制帝国，也确保了在真正的危机面前帝国终将团结——尽管有时为时已晚。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "要想在帝国政治中生存，你必须理解权力不仅仅是军队和金钱——权力是信息、是关系、是时机。帝国议会每年在阿尔道夫召开，选帝侯们在此争论税收、贸易、军事调动和外交条约——表面上是在维护帝国，实际上是在互相算计。皇帝的真正权力源自三个方面：瑞克领的财政支持、瑞克卫队的军事力量、以及西格玛教会的授权仪式。一个失去了教会支持的皇帝将无法在议会上推行任何决议；一个失去了瑞克领的皇帝不过是寄人篱下的乞丐。聪明的选帝侯不会正面挑战皇帝，而是通过联姻、垄断某种贸易资源、或者在议会上组建投票联盟来扩大自己的影响力。而更聪明的皇帝则会在选帝侯之间制造微妙的对抗，确保没有任何一个行省强大到足以单独威胁皇权。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 100
+        },
+        "IdentityIds": null
+      },
+      "Content": "帝国的选举君主制是旧世界政治思想史上最精彩的宪法设计之一。十五位选举人中，十位世俗选帝侯分别代表瑞克领、米登领、塔拉贝克领、斯蒂尔领、诺德领、奥斯特领、奥斯特马克领、艾薇领、威森领和努恩领，三位教会选侯代表西格玛教会、尤里克教会和莫尔教会的至高权威。当皇帝去世后，选举会议必须在三个月内召开，否则按古老传统视为政治危机——三皇分立正是由于选举僵局演变而来。帝国议会的运作远比表面看起来更为精密：每一项帝国法律都需要议院通过，但实际上存在'黄金票决'的潜规则——某些选帝侯的投票在特定议题上具有不成文的影响力，比如诺德领在海军议题上、努恩领在军工议题上、西格玛大主教在宗教议题上。帝国的政治稳定性取决于一个微妙的平衡：选举君主制提供了权力转移的合法路径，避免了血统继承的僵化，但也带来了选举期间的外国干预风险和选帝侯之间的长期对立。学者们普遍认为，帝国的制度之所以存活了两千五百年，不是因为它的完美，而是因为它的灵活性——当规则失效时，帝国会找到新的规则。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "帝国的政治在纸面上是性别中立的——皇室继承法和选帝侯条例中没有任何条款明确禁止女性出任选帝侯或摄政，但当一个女人真正坐在帝国议会的席位中时，你会发现纸面上的平等在现实政治中是一层不堪一击的薄纸。我曾经以摄政身份代替年幼的儿子出席帝国议会，在会议上我提议的对奥斯特马克边境增拨防务经费的方案在措辞、数据和逻辑上无可挑剔，但在表决前米登领的老选帝侯公开说了一句'这个建议很有道理，不过在座的各位确定要让一位尚未从丧夫之痛中完全恢复的女士来替我们决定军事预算吗？'——方案以两票之差被搁置。帝国的政治对女人而言是一个永远在变形的迷宫：你需要比任何男性对手更精确地掌控细节以堵住性别质疑的嘴，又需要在关键时刻利用性别刻板印象让对手放松警惕——我最终的应对策略不是正面反击，而是在下一次议会酒会上，以'偶然泄露'的方式让那位米登领老选帝侯的儿子背上了向某吸血鬼密探出售贵族情报的嫌疑，两周后老选帝侯主动找到我表示'上次的防务方案非常合理，我们应该重新讨论'。女人在帝国政治中最大的武器在于——那些低估你智力的人会在你身上留下比别处更大的盲区。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "帝国的政治从家族角度看是一项代际战略——你在帝国议会中的任何一次表决都不是为了当下的利益，而是在为你孙子辈的政治资本埋下伏笔。我们家族在最近六代人的经营中积累了一套'三步循环'的议会策略：第一步是债务绑定——通过借贷让另一个选帝侯家族在经济上依赖于你，但此项借贷的合同条款要足够温和以至于对方不会立刻察觉这是一个陷阱；第二步是联盟消耗——在议会中主动支持你的债务盟友的一些无伤大雅但开销巨大的议案，让他把精力和资金都绞进这些次要事务中；第三步是危机收割——当该家族因资金链断裂陷入困境时，以'出于家族情谊'的名义提出一个他们无法拒绝的联姻和资源整合方案。帝国的议会政治从来不是关于议题本身，而是关于在表决之前谁已经欠下了谁的债——可以是金币的债、恩情的债、或者血统的债。我们家族最大的政治资本不是我们在议会中的席位，而是我们谨慎维持的'不树敌'声誉——在帝国政治中，最有力的攻击往往来自于那些最没有被注意到的方向。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "帝国的政治从议会大厅外面的街道上看起来完全是另一回事。我在阿尔道夫做过两年雇佣守卫，负责在帝国议会开会期间维持会场外围的'治安'——这个词的真正意思是确保那些欠了钱不想还的选帝侯代理人无法安全离开城市、确保那些携带了针孔记录的平民记者进入不了议会的听力范围、以及确保街上那些抗议的面包涨价民众在议会休会前被温和但坚定地驱散。帝国的政治真正的操作层不在议会桌上，而在包围议会的三层楼下：地下室的酒馆里，选帝侯们的侍从在交换情报；一楼的走廊里，各选帝侯的管家在互相试探对方的底线；大厅外广场上的我们这些雇佣兵则在确保那些可能搅局的人——包括试图闯入议会的异端分子、想通过制造混乱来敲诈钱财的街头帮派、以及某个选帝侯想秘密召见的平民情妇——都被以合适的理由控制在合适的距离之外。帝国的所有重大政治决策都是在议会外面决定的，议会表决只是装裱这些私下交易的最后一层金漆。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "帝国的政治在会计账本上揭示着另一个维度：选帝侯之间的每一次权力博弈最终都会在帝国的财政收支上留下可量化的痕迹。皇帝征收的帝国税与选帝侯各行省上缴的'自愿贡赋'之间的灰色差额是整个帝国政治中最敏感的会计科目——我之所以知道这一点，是因为我的商会负责为三个不同的选帝侯家族提供账目审计服务。一个选帝侯在议会上高调支持皇帝扩军议案的真实动机，往往可以在他接下来三个月内提前收购铁矿和粮食的远期订单中找到答案——他不只是爱国，他在通过预先垄断军需供应大发战争财。另一个选帝侯反对扩建诺德领舰队，公开理由是财政预算不足，但我们的审计揭示他在诺德领航线上持有大量私掠船队的隐蔽股份，帝国舰队越弱他的私掠船队利润越高。帝国的政治道德在商人的账本面前毫无遮掩——选举君主制最丑陋的部分不在于它偶尔瘫痪，而在于它让每一个政治立场都变成了可以定价的投资品，而真正了解价格的人从来不是投票的选帝侯本人，而是我们这些为他们管理财富的商人。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "选举人团——十五位拥有皇帝选举投票权的世俗与教会选侯",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "帝国的权力结构与决策机制"
+  ]
+}

@@ -1,0 +1,213 @@
+{
+  "Id": "rule_矮人文化喜好__矮人文化喜好",
+  "Keywords": [
+    "矮人文化",
+    "矮人喜好",
+    "黄金宝石",
+    "完美锻造",
+    "醇厚麦酒",
+    "长须传统",
+    "清算仇恨",
+    "坚守誓言",
+    "矮人文化达维",
+    "矮人文化卡拉克",
+    "矮人文化符文",
+    "矮人文化仇恨之书"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "矮人——自称达维——拥有旧世界最古老也最根深蒂固的文化偏好体系。他们天生对贵金属和宝石怀着不可言喻的痴迷：在黑暗的矿道深处挥动镐头敲开岩壁、在火炬下发现未经切割的天然宝石闪烁的微光，这是每一个矮人灵魂中最深沉的喜悦。他们是天生的工匠，最热爱的事情莫过于站在烈火熊熊的锻炉前将陨铁千锤百炼成完美无瑕的符文战斧——在他们眼中，任何一个粗糙的焊点或未打磨的毛刺都不可饶恕。在数小时艰苦的矿下劳作或血腥的战斗之后，没有什么比在卡拉克大殿中与族人共饮浓烈的麦酒、高唱粗犷的祖先战歌更能安抚矮人的心。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我们是达维，山脉之子！我们的热爱与人类的肤浅欲望截然不同——人类贪恋闪亮的东西却不懂得品味它们背后的地质年代，而我们的一镐头挖到的不仅是黄金，更是山脉在几十万年间缓慢挤压出的结晶记忆。站在锻炉前的不是工人，而是将大地的骨头锻造成文明骨架的创造者！符文铁匠将远古的魔法敲入陨铁最深处，每一锤都是不可复制的技艺——而人类和精灵只会用流水线生产一堆无法传家的垃圾。当然，一天的工作结束后，一杯够劲的麦酒比任何人类的葡萄酒都更对味——我们在卡拉克大殿里唱的歌粗粝但真诚，不像精灵那些扭来扭去的竖琴调。还有胡须——人类剪胡子简直是对祖先的不敬，每一根编入金环的胡须都代表一桩被记忆的承诺或一条被清偿的仇恨。我们从不忘记，因为遗忘是对死者最恶毒的背叛。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "矮人的文化偏好直接转化为军事工业能力——这是旧世界任何其他势力都无法提供的战略资产。他们对锻造的痴迷意味着矮人制造的武器和盔甲在质量上领先帝国同类产品三到五倍，一把矮人锻造的符文剑可以传承三十代人而刀刃不卷。他们对仇恨的执念意味着一旦矮人承诺出兵，他们不会因为任何损失而撤退——消灭敌人或流尽最后一滴血，没有第三种结果。但这也意味着你不能指望矮人军队在任何他们认为与仇恨之书上的条目无关的战场上投入百分之百的战斗力——对矮人来说，为盟友而战是义务，为格鲁吉而战是使命。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "矮人文化偏好可以从四个维度进行系统分析。第一，矿物审美维度——矮人对黄金和宝石的热爱并非贪婪性囤积而是审美性鉴赏：一个矮人矿工能根据断裂面光泽辨识出陨铁、辉锑矿和黑曜石之间的细微区别，这种辨识能力是数万年地下生存进化的结果。第二，锻造仪式维度——矮人的锻造过程本身是一项高度仪式化的文化行为：从选矿（必须在某个特定月相下打开特定矿脉）、冶炼（炉温由符文铁匠通过观察火焰颜色而非温度计控制）、锻打到淬火（使用从卡拉克地底三千米处引来的'先祖之水'），每一个环节都伴随着对应的先祖祷文和氏族秘传技巧，未经仪式步骤完成的武器在矮人眼中等同废铁。第三，麦酒社会维度——矮人的酿酒和饮酒习惯承担了关键的社会凝聚功能：在氏族酒宴上，座次依据胡须长度排列，祝酒词必须按照正确的祖先顺序进行，醉酒后打架被视为社交——而且只要双方第二天早上将酒馆的损坏赔偿并握手言和，这个插曲不会被记入仇恨之书。第四，胡须与誓言维度——胡须在矮人社会中具有准法律效力：当一位矮人用左手握住自己的胡须和右手与他人握手时，他正在签署一份无法撤销的契约；胡须上被编入的金环数量代表了主人一生中完成过的重大誓约数目。仇恨之书则是整个矮人文化的道德压舱石——每一个未经清偿的格鲁吉都在种族层面形成集体心理负担，大仇得报时的释然感几乎带有宗教体验的强度。矮人宁愿整个卡拉克被围困六千年，也绝不会在敌人面前撕毁一页承诺过的事情——因为对矮人来说，死亡只是物理终结，而背誓是灵魂的永久毁灭。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "矮人社会对女性的尊重体现在一个人类贵族女性需要很久才能真正理解的维度上——不是通过赞美诗而是通过继承权。矮人女性在氏族中拥有与男性完全平等的财产继承权和否决权，这不是装点门面的女权，而是因为矮人人口太少，任何一个失去女性意见的氏族决策都可能意味着一次本可避免的毁灭性战争。我佩戴的宝石项链上的每一颗蓝宝都来自我母亲、祖母和曾祖母在矿道中亲手开采的原石——在矮人的传统中，女性珠宝不仅是装饰，更是家族矿业知识的物质载体。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "雷铜氏族曾经因为一场酿酒配方被窃取的争端而与铜头氏族发生了长达三百七十八年的低烈度对峙。在那个期间，两个卡拉克之间的贸易被冻结、通婚被禁止，而我们积累了近四百条双向仇恨之书的条目。我曾祖父在他三百岁寿辰上用一桶特酿——掺了来自两个卡拉克各自最古老矿脉的微量金粉的联姻麦酒——完成了和解。这桶酒的两个配方现在刻在我家族大厅的石壁上作为永久纪念。在矮人社会中，麦酒有时比刀剑更具有解决仇恨的力量——这通常被人类忽视。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我在世界边缘山脉各个卡拉克之间奔波的年月里明白了一件事：矮人对完美锻造的执念近乎病态——但也正是这种执念使他们成为旧世界唯一不被时间打败的种族。我见过一个铁锤勇士花了四十七年时间在一把战斧的行刃上——在这四十七年里，人类帝国的皇帝换了三代，绿皮发起了六波Waaagh!，而这位矮人工匠只关心最后一个锤痕是否与他曾曾曾祖父留下的示范完全一致。如果你想要一把传奇武器来找矮人，但永远不要问他们多久能完成——因为从矮人的角度看，你已经在冒犯锻造本身的神圣性。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "矮人的麦酒贸易是旧世界最具套利空间却最少被讨论的商品市场之一。在帝国，一桶来自卡拉扎-阿-卡拉克的'至高麦酒'的售价可以在阿尔道夫买下一座三层楼商人住宅——而且这种酒根本不对外零售，所有产出由矮人氏族内部以配额形式分配。我的商行通过一项极为罕见的方法获得了每年三桶的定量——我的曾祖父曾在一次雪崩中用自己的马车和全部货物堵住了通往卡拉克·卡德林南门的冰裂隙，救了当时困在外面的三支采矿队。矮人不给感谢信不给勋章，但他们给了我的家族一项永久麦酒配额。至今三个世代过去了，这个配额本身的价值已经超越了我商行的其他所有业务总和。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "格鲁吉——矮人对任何冒犯和未清偿债务的记录条目，从欠付的啤酒钱到失陷的城塞等级不等",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "矮人的社会习俗与文化传统"
+  ]
+}

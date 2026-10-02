@@ -1,0 +1,153 @@
+{
+  "Id": "rule_家族根基__坚盾军",
+  "Keywords": [
+    "坚盾军",
+    "坚盾军家族"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "坚盾军是一支由奴隶湾获释者组成的武装兄弟会，名字体现他们希望以纪律与盾墙守住新得到的自由。成员来自不同主人、行业与语言背景，过去留下的烙印并不能自动使他们成为军队；共同操练、明确军饷和彼此信任才是组织根基。西蒙·条纹背等领袖让获释者拥有自己的指挥声音。坚盾军的存在本身便挑战旧奴隶主的偏见：被买卖过的人并非只能服从，也能拿起盾牌保护自己选择的生活。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "ghiscari"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "slave",
+          "peasant",
+          "artisan"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "奴隶湾获释者把坚盾军看作尊严的证明。能穿上自己选择的甲、为同伴守夜并领取军饷，意味着身体不再属于主人，武器也不再只替主人维持锁链。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "ghiscari"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "老兵知道热情不能代替训练。坚盾军若想被当作真正部队，就必须学会列阵、换岗、照料伤员和在恐惧中不打乱盾墙；出身不会替任何人挡矛。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "ghiscari"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "旧奴隶主畏惧坚盾军，不只是因为他们有武器，而是因为获释者开始彼此组织。一个人逃走还能被追回，一群懂得守门和传令的人便可能让旧秩序再也关不上门。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待坚盾军，会先看它的土地、婚盟、血脉和债务。坚盾军由奴隶湾获释者组织而成，以共同训练和保卫自由证明昔日奴隶也能成为守卫城市的战士。家徽是门面，能否保护封地、兑现婚约并在危机中召集人马，才是家族真正的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起坚盾军时，记得的是谁在营火边分过粮、谁把他们留在城外、谁在败局里仍站在旗旁。坚盾军由奴隶湾获释者组织而成，以共同训练和保卫自由证明昔日奴隶也能成为守卫城市的战士。家族名声最终要落到具体的人和具体的命令上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意坚盾军留下的仪式、墓地和传承。坚盾军由奴隶湾获释者组织而成，以共同训练和保卫自由证明昔日奴隶也能成为守卫城市的战士。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见坚盾军。坚盾军由奴隶湾获释者组织而成，以共同训练和保卫自由证明昔日奴隶也能成为守卫城市的战士。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "坚盾军：坚盾军由奴隶湾获释者组织而成，以共同训练和保卫自由证明昔日奴隶也能成为守卫城市的战士。"
+  ]
+}

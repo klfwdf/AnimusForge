@@ -1,0 +1,152 @@
+{
+  "Id": "rule_王朝编年__杰赫里斯调和王国",
+  "Keywords": [
+    "杰赫里斯一世",
+    "调和王",
+    "王国法典",
+    "杰赫里斯调和王国"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "杰赫里斯一世以调和与制度化巩固了坦格利安王朝。他与亚莉珊王后巡行七国，听取领主、教会和普通人的抱怨，推动王国法典、道路、继承惯例与教会和解。后世把他称为贤王，不是因为他的时代没有矛盾，而是因为他把龙的征服转化成可以被日常行政承受的秩序。许多贵族礼法、王室习惯和大议会先例都从他的统治中获得权威；对平民而言，贤王的名字往往附着在一条路、一座桥或一项较少苛刻的法令上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "lyseni"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "scholar",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "学者和祭司谈到杰赫里斯调和王国，争论的从来不只是哪一年发生了什么，也包括谁有资格记住、谁被迫沉默；名分与记忆在不同厅堂里会有不同的名字。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "lyseni"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "贵族把杰赫里斯调和王国当作法统与债务的账本，士兵记得其中的饥饿和尸骨，农户只在税册、旧堡垛和家中传下的忌讳里感到它的重量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "商旅与旅人很少掌握杰赫里斯调和王国的全貌，却会在酒馆、渡口和集市重复其中最能解释眼前利害的片段；传闻会变形，留下的影响却很少凭空消失。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人把杰赫里斯一世当作仍在生效的旧账。杰赫里斯调和王国：杰赫里斯一世以调和与制度化巩固了坦格利安王朝。他与亚莉珊王后巡行七国，听取领主、教会和普通人的抱怨，推动王国法典、道路、继承惯例与教会和解。后世把他称为贤王，不。一场过去的战争或一次王朝更替，会决定今日的税率、盟约、道路与谁有资格在大厅里先开口。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人记住杰赫里斯一世的方式不同于史官。杰赫里斯调和王国：杰赫里斯一世以调和与制度化巩固了坦格利安王朝。他与亚莉珊王后巡行七国，听取领主、教会和普通人的抱怨，推动王国法典、道路、继承惯例与教会和解。后世把他称为贤王，不。他们记得哪面旗倒下、哪座桥被烧、谁在雪里分过最后一口水；对他们来说，历史首先是身体留下的记忆。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者谈及杰赫里斯一世时，常把事实与寓意放在一起。杰赫里斯调和王国：杰赫里斯一世以调和与制度化巩固了坦格利安王朝。他与亚莉珊王后巡行七国，听取领主、教会和普通人的抱怨，推动王国法典、道路、继承惯例与教会和解。后世把他称为贤王，不。胜者会把它写成秩序的证明，败者会把它留作警告，而普通人只记得那一年粮价和墓地增加了多少。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民很少说出杰赫里斯一世的完整名字。杰赫里斯调和王国：杰赫里斯一世以调和与制度化巩固了坦格利安王朝。他与亚莉珊王后巡行七国，听取领主、教会和普通人的抱怨，推动王国法典、道路、继承惯例与教会和解。后世把他称为贤王，不。他们通过旧屋、家谱、墓碑和老人讲过的禁忌认识过去；只要某件往事还影响收税、征兵或婚姻，它就没有真正结束。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "杰赫里斯调和王国：杰赫里斯一世以调和与制度化巩固了坦格利安王朝。他与亚莉珊王后巡行七国，听取领主、教会和普通人的抱怨，推动王国法典、道路、继承惯例与教会和解。后世把他称为贤王，不"
+  ]
+}

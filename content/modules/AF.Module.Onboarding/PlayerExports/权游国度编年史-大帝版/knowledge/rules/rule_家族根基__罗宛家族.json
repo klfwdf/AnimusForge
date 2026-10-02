@@ -1,0 +1,131 @@
+{
+  "Id": "rule_家族根基__罗宛家族",
+  "Keywords": [
+    "罗宛家族",
+    "金树"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "罗宛家族以金树城为根基，是河湾地富有而有分量的提利尔封臣，家徽为银底金树。罗宛的现实力量来自肥沃土地、骑士、婚姻和在河湾诸强之间维持体面的能力。外地人很少单独谈论罗宛，河湾领主却知道金树城能带来粮食、兵员和一张需要在重大会议上认真对待的席位。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "reach"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "河湾诸侯把罗宛看作金树城一支富有、稳健而有分量的封臣。金树与园丁时代的传说替家门增添光彩，但他们在议事桌上的重量来自土地、兵役与婚盟。罗宛不必像玫瑰那样占据所有目光，一棵树只要根扎得深，旁人自然会绕开它生长。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "reach"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "金树城领民听惯了金色树木的家族故事，真正熟悉的却是果园、林地、谷仓和木匠手里的刨花。人们愿意相信领主如树荫般庇护地方，也会在苛税时讥讽金树之所以发亮，是因为吸走了泥里的每一枚铜币。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待罗宛家族，会先看它的土地、婚盟、血脉和债务。河湾金树城的强大封臣，家徽为银底金树。其地位来自肥沃土地、骑士、婚姻与园丁时代的地方记忆。家徽是门面，能否保护封地、兑现婚约并在危机中召集人马，才是家族真正的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起罗宛家族时，记得的是谁在营火边分过粮、谁把他们留在城外、谁在败局里仍站在旗旁。河湾金树城的强大封臣，家徽为银底金树。其地位来自肥沃土地、骑士、婚姻与园丁时代的地方记忆。家族名声最终要落到具体的人和具体的命令上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意罗宛家族留下的仪式、墓地和传承。河湾金树城的强大封臣，家徽为银底金树。其地位来自肥沃土地、骑士、婚姻与园丁时代的地方记忆。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见罗宛家族。河湾金树城的强大封臣，家徽为银底金树。其地位来自肥沃土地、骑士、婚姻与园丁时代的地方记忆。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "罗宛家族：河湾金树城的强大封臣，家徽为银底金树。其地位来自肥沃土地、骑士、婚姻与园丁时代的地方记忆；"
+  ]
+}

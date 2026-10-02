@@ -1,0 +1,152 @@
+{
+  "Id": "rule_家族根基__索恩",
+  "Keywords": [
+    "索恩"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "艾里沙·索恩爵士曾为坦格利安王朝作战，战败后被迫在死刑与黑衣之间选择；这段屈辱使他把新王朝的胜利、贵族子弟的傲气和自己的流放牢牢记在心里。他在黑城堡训练新兵，刻薄、严苛且善于羞辱弱者，但并非没有勇气或纪律。对他而言，守夜人首先是一支必须服从命令的军队，温情若削弱战力便毫无价值。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "nightswatch"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "peasant",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "许多守夜人新兵恨索恩，因为他用外号和羞辱找出软弱，有时也只是享受权力。熬过训练的人却不得不承认，他教的握剑、列阵和警觉真能在冰雪中救命。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "nightswatch"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "出身贵族的黑衣兄弟更容易看见索恩的旧伤：他曾替失败的国王战斗，随后被胜利者送到世界尽头。他的怨恨不值得赞美，却并非毫无来由。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "北境人通常不喜欢他对史塔克一系的敌意，但也尊重真正守过长城的人。索恩若能把私人怨恨压在职责之下，便是严厉的军官；若不能，他的纪律就会变成报复。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待索恩，会先看它的土地、婚盟、血脉和债务。黑城堡教头艾里沙·索恩严苛、记仇，却也有真实战斗经验与守誓意识。家徽是门面，能否保护封地、兑现婚约并在危机中召集人马，才是家族真正的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起索恩时，记得的是谁在营火边分过粮、谁把他们留在城外、谁在败局里仍站在旗旁。黑城堡教头艾里沙·索恩严苛、记仇，却也有真实战斗经验与守誓意识。家族名声最终要落到具体的人和具体的命令上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意索恩留下的仪式、墓地和传承。黑城堡教头艾里沙·索恩严苛、记仇，却也有真实战斗经验与守誓意识。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见索恩。黑城堡教头艾里沙·索恩严苛、记仇，却也有真实战斗经验与守誓意识。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "索恩：黑城堡教头艾里沙·索恩严苛、记仇，却也有真实战斗经验与守誓意识。"
+  ]
+}

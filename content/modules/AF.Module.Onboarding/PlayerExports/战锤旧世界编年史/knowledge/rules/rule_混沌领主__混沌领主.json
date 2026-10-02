@@ -1,0 +1,213 @@
+{
+  "Id": "rule_混沌领主__混沌领主",
+  "Keywords": [
+    "混沌领主",
+    "战团统帅",
+    "终极冠军",
+    "近战武艺",
+    "凡人巅峰",
+    "混沌指挥官",
+    "混沌领主混沌冠军",
+    "战争领袖",
+    "混沌高阶领主",
+    "战场死神",
+    "北方大军阀",
+    "黑暗统帅"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "混沌领主是混沌大军中的至高指挥官，他们在荣耀之路上走到了凡人形态的极限，拥有堪称恐怖的近战武艺、深厚的混沌恩赐和统帅千军的威望，是凡人中最接近恶魔的存在。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "chaos_culture"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "混沌领主不是靠继承或选举产生的——他们是从尸山血海中走出来的。要成为一个混沌领主，你必须杀死现任的混沌领主——这是不成文的规矩。每一个混沌领主都是行走的传奇：他们身上的每一道伤疤都是一个故事，每一处变异都对应着一场值得铭记的战斗胜利。当你看到混沌领主骑着他的坐骑出现在战场上时，就连他身后的混沌勇士们都会不由自主地压低呼吸。混沌领主只对神祇负责——他没有世俗的主人，因为世上没有人有资格做他的主人。这就是我们最崇高的理想。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "身爲混沌领主，你就是战役的核心。你的存在本身就为所有友军提供士气增益，你的战斗表现直接影响整场战斗的走向。在战略层面，你需要不断挑战更强大的敌人来获得更高的荣耀——停滞不前就是退步，退步就是死亡。你的装备选择至关重要：恐虐领主应有高伤害武器，纳垢领主应选择生存型装备，色孽领主优先速度，奸奇领主则侧重魔法物品。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "根据《混沌权力结构论》的研究，混沌领主的地位并非仅凭个人武力，还涉及三个关键要素：追随者数量、占领的领土面积，以及最重要的——神明眷顾的可见程度（即恩赐的数量）。历史上最强大的混沌领主是「永世神选」阿查恩——他是唯一同时获得四大邪神一致认可的存在，被认为是终结之时的预兆。混沌领主的平均在位周期据估算仅为六点三年——这段时间内他要么升魔成功，要么被杀。大多数混沌领主会建造一座个人要塞——通常位于战略要地，既是堡垒也是祭拜场所；这些要塞的风格随效忠的神祇而异：恐虐要塞为血红色矩形建筑配上角状塔楼，奸奇要塞则充满不可能的建筑几何和变形走廊。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我是混沌领主——一个女人走到这一步，我必须比任何男性更强大十倍。他们嘲笑过我、背叛过我、试图杀掉我，但他们都成了我刀下的亡魂。现在没有人在意我的性别了，他们只在意我手中的剑。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "身为部族首领和混沌领主的双重身份让你拥有极大的权威，但也带来了更大的危险。你的每一位副将都在等待机会取代你。永远不要展示软弱，永远随身携带武器——即使在与最信任的顾问交谈时。你的死亡将是整个部族的节日，因为这意味着新的权力分配。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "你被带去见一位混沌领主。他的要塞由钢铁和骨骼筑成，四处悬挂着旗帜和被串起的敌人头颅。他坐在熔岩和铁构成的王座上俯视着你，你能感到他正在评估你的价值——是否值得他亲手杀你。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "混沌领主的位置是流动的——这是一个永远在变化的权力体系。今天你是混沌领主，明天可能就是某个更年轻、更饥饿的战士踩着你的头颅登基。这种极度的不稳定正是混沌的本质，也是它力量的来源——永不停止的竞争推动着强者不断变强。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "混沌领主——混沌大军中凡人形态的巅峰指挥官，荣耀之路的冠冕阶段。",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "混沌领主战团统帅终极冠军"
+  ]
+}

@@ -1,0 +1,213 @@
+{
+  "Id": "rule_铁龙手__铁龙手",
+  "Keywords": [
+    "铁龙手",
+    "铁龙炮",
+    "炼金火焰",
+    "地下通道",
+    "狭窄清理",
+    "火焰部队",
+    "矮人喷火兵",
+    "坑道火焰",
+    "铁龙手燃烧",
+    "铁龙手重甲克星",
+    "隧道",
+    "铁龙"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "铁龙手——或称铁龙炮手——是矮人军队中最可怕的近距毁灭兵种：他们携带由矮人炼金术提炼的凝固焰流发射器（即铁龙炮），在短距离内喷射出一道如同龙息的黏着火焰，将整条坑道中的敌人烧成灰烬。在狭窄坑道与隧道中，没有任何东西比铁龙手更可怕。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "铁龙手！人类管那玩意儿叫铁龙炮——我告诉你那名字怎么来的：不是因为它喷得像龙的火，而是因为它喷出来的火会把任何东西烧成龙嘴里吐出来的那样焦！你知道我们矮人什么时候会请铁龙手出来吗？当一个坑道被老鼠人或者哥布林填满了，普通重步兵进去一寸一寸推代价太大——这时候铁龙手就拎着肩扛式喷火罐子从后头上来了。罐子里是炼金火焰——我们矮人的秘密配方：比人类的沥青火油稠三倍，喷出去之后就黏在石头面上继续烧，能在岩石上烧出油渍！然后「呼」一声——整条隧道变成一条横躺的锻炉，里面的绿皮连尖叫都来不及发出就被烧成炭沫子。但铁龙手真正的艺术不在火本身：在整个队伍中最冷静的人必须是铁龙手，因为他背着一罐能把整队人炸上天的燃料，面对一坑道密密麻麻张牙舞爪冲上来的怪物——他不能慌，一丝都不能。我们管他们叫铁龙手不叫喷火兵，因为矮人的手比龙爪还稳。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "铁龙手是对「拥挤型敌军」的特化杀伤兵种。其铁龙炮的黏着火焰在坑道中会沿隧道壁面形成持续燃烧的覆盖性火网——任何尝试穿过火网的单位在抵达铁龙手面前之前已处于三级以上的全身烧伤。在攻城战与坑道战中，铁龙手的最佳部署位置是「瓶颈后方二十尺」：此处火焰射流可完美覆盖通道全截面，而敌军冲锋入火网中的减速效果正好将其暴露在火舌中达四至七秒——足以将铁甲加热至熔点。但铁龙手的核心弱点是指数级的燃油消耗——一个铁龙罐在持续喷射下仅能维持约七十至九十秒的有效火流。战术调度铁龙手时，你的首要考量不是他们能杀多少，而是你把七十秒放在了最有价值的那段坑道里。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "铁龙炮的工程学起源可追溯至矮人黄金时代的「锻炉狂暴战车」计划——即矮人尝试将移动钢铁锻造炉变为战争机械的最早尝试。在公元前约2100年，符文铁匠布林德·炎发在卡拉克·卡德林的火炉殿中发现了一种独特配方：将炼金术精炼的菌石化石浆（一种地下深处地质压力下形成的可燃岩液，帝国学者称之为「石血」）与粉碎至微米级的反魔法符文石粉混合，制成黏度是松脂四倍的半固态燃料「拉库尔」。这种凝胶火焰的燃烧温度约为一千八百度，足以在接触三秒内使钢板软化、接触六秒融化，并且——与人类火油的根本不同——拉库尔火焰对岩石和金属有强附着力，也因此铁龙手可以在坑道中喷火后继续推进而不必担心火熄灭在光滑的岩壁上。历史上最著名的铁龙手作战记录为帝国历1534年「铁须深渊之隧」——四名铁龙手自行进入被数千只斯卡文鼠人盘踞的废弃矿道深层六层的「黑暗宫」，在约三百六十尺的通道中以轮替喷火的方式清空了整条矿道。当援军两日后到达时，四名铁龙手中的三人仍活着，靠着口粮和水坐在一条完整烧焦的鼠人骨葬上休息。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我的工程师长曾有幸在卡拉克·卡德林观摩过一次铁龙手的实弹训练。他说那不是火焰——那是一条被压缩到极点的橘白色龙舌从一条精钢管口中吐了出来。矮人给他解释——咬字不多但很清楚——说这种炼金燃料里混有粉碎的矮人符文石粉，所以烧出来时不光是热，还能顺带驱散魔法残余。我对这种把魔法和物理一同烧掉的技术感到深深的羡慕和不安。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "矮人盟友在借给我们家族的一支铁龙手小队清剿北境矿井鼠人时，我在场。他们把喷火口对着那条黑漆漆的主矿道先喷了一声——「呜」一声低沉而连续的嘶鸣，不是人类火油那种爆炸声——然后矿道转瞬间变成红色，几十只冲出来的鼠魔燃成了滚动的火团。清理完毕后，矿道壁上的火还在烧，把整个洞穴照成了暖色。一个小矮人转身看了我一眼说「现在就干净了」，语调和他说「今天晚上吃麦粥」是一个模样。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我见过一次铁龙手在开阔地上的战斗——别误会，那不是他们习惯的场地。敌方兽人狼骑从侧翼包抄，那组铁龙手站在那里不动等狼骑进入射程，然后一起喷——同时喷射。那阵火幕太宽了，四匹狼骑和马上的地精一起冲进了火里，尖叫连成一片，灰烟雾中你只能看到几匹没了骑手的狼嚎叫着逃出来，屁股上的毛还在烧。我们全队人在百码之外的目击位置都能感觉到热浪在脸上灼。打完那仗我记了一行：永远别在四十尺内问铁龙手今天心情。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "巴拉克·瓦尔商会曾商讨过是否购入铁龙手作为反海盗船近战防御的佣兵编制——喷火对付登舰的劫匪听起来完美。直到矮人顾问指出一件事：铁龙罐在受到强撞击（包括被球弹弩击中）时有概率爆炸，爆程大约二十五尺。你在木船上被那种油和火一起溅开的画面被标注为「不可投保之风险」之后该建议就无限期搁置在档案架的底层了。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "矮人肩扛式炼金火焰喷射器，燃料「拉库尔」燃烧温度约一千八百度",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "铁龙手铁龙炮炼金火焰"
+  ]
+}

@@ -1,0 +1,152 @@
+{
+  "Id": "rule_家族根基__第米提斯",
+  "Keywords": [
+    "第米提斯",
+    "第米提斯家族"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "第米提斯是罗拉斯的小家门，以铁匠手艺闻名。岛上每条渔船都需要钉、锚、链与工具，城门和武库也离不开能判断金属好坏的人；在这样的地方，锻炉既是生计，也是政治资本。第米提斯的影响来自对工匠、矿料进口和委托信用的经营，而不是遥远大陆上的封土传说。战争可能令刀矛订单骤增，和平则把火炉重新转向锚具与农具；无论局势如何变化，能把有限好铁用在正确地方的人都会被需要。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "nord"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "罗拉斯匠人与水手评价第米提斯，不听宴会上的自夸，只看锚链是否会在急潮中断裂。坏铁会杀人，好手艺也会让一个小家门比大姓更受尊重。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "nord"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "守城者把第米提斯视作武库与船坞之间的重要纽结，同时担心任何家门独占进口铁料。掌握锻炉的人能修门，也能决定谁先拿到新矛。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "nord"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "普通人更喜欢第米提斯的火炉为斧头、鱼钩和锅具忙碌。若所有好铁都被战争吃掉，最先感到家门权势的往往不是敌军，而是买不起工具的穷户。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待第米提斯，会先看它的土地、婚盟、血脉和债务。罗拉斯的工匠型家门，以锻炉、修船金属件与岛城武库需求积累地位。家徽是门面，能否保护封地、兑现婚约并在危机中召集人马，才是家族真正的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起第米提斯时，记得的是谁在营火边分过粮、谁把他们留在城外、谁在败局里仍站在旗旁。罗拉斯的工匠型家门，以锻炉、修船金属件与岛城武库需求积累地位。家族名声最终要落到具体的人和具体的命令上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意第米提斯留下的仪式、墓地和传承。罗拉斯的工匠型家门，以锻炉、修船金属件与岛城武库需求积累地位。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见第米提斯。罗拉斯的工匠型家门，以锻炉、修船金属件与岛城武库需求积累地位。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "第米提斯：罗拉斯的工匠型家门，以锻炉、修船金属件与岛城武库需求积累地位。"
+  ]
+}

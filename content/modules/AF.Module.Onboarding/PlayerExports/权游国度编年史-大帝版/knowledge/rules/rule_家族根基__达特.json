@@ -1,0 +1,131 @@
+{
+  "Id": "rule_家族根基__达特",
+  "Keywords": [
+    "达特",
+    "达特家族"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "达特家族统治柠檬林，家业位于绿血河沿岸。这里的柠檬园、灌渠和河船把多恩的阳光变成可食用、可交易的财富。果树需要多年照料，水渠也需不断清淤，因此达特家的稳定比一次显赫战功更依赖耐心经营。婚盟、河运和对果园水源的裁断，共同决定这个家门在多恩诸侯中的位置。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "多恩商人与领主提起达特，想到的是柠檬、河船和水渠。柠檬林若收成好，酒馆、厨房与远行船队都能从中获利；若河道争端失控，再肥沃的果园也会枯死。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "果农知道柠檬树不会因为领主急着收税就更快结果。他们尊敬肯修渠、按水量裁断争执的人，也会把夺水的管事记恨许多年。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待达特，会先看它的土地、婚盟、血脉和债务。达特家族以柠檬林为根基，沿绿血河经营果园、水渠与河运，是多恩绿洲生活的一部分。家徽是门面，能否保护封地、兑现婚约并在危机中召集人马，才是家族真正的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起达特时，记得的是谁在营火边分过粮、谁把他们留在城外、谁在败局里仍站在旗旁。达特家族以柠檬林为根基，沿绿血河经营果园、水渠与河运，是多恩绿洲生活的一部分。家族名声最终要落到具体的人和具体的命令上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意达特留下的仪式、墓地和传承。达特家族以柠檬林为根基，沿绿血河经营果园、水渠与河运，是多恩绿洲生活的一部分。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见达特。达特家族以柠檬林为根基，沿绿血河经营果园、水渠与河运，是多恩绿洲生活的一部分。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "达特：达特家族以柠檬林为根基，沿绿血河经营果园、水渠与河运，是多恩绿洲生活的一部分。"
+  ]
+}

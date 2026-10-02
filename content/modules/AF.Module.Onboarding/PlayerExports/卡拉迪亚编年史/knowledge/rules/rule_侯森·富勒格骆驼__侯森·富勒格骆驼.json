@@ -1,0 +1,28 @@
+﻿{
+  "Id": "rule_侯森·富勒格骆驼",
+  "Keywords": [
+    "侯森·富勒格骆驼"
+  ],
+  "RagShortTexts": [
+    "侯森·富勒格骆驼是阿塞莱商人驯化的极品骑乘骆驼"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "侯森·富勒格骆驼是阿塞莱商人驯化出的一种极品骑乘骆驼。一人半的身高让它能碾压一切步兵，骑在上面让人感到无比的安全感，阿塞莱人拿它来骑乘，只有贵族与苏丹才能骑乘这种极品的骆驼。骑乘骆驼的贵族显得高大威猛，可以有效震慑敌人。而且侯森骆驼跑得很快，几乎与良马别无二致，所以骑在骆驼上不会感觉很笨重。"
+    }
+  ],
+  "TextMappings": []
+}

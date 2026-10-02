@@ -1,0 +1,153 @@
+{
+  "Id": "rule_家族根基__安柏家族",
+  "Keywords": [
+    "安柏家族",
+    "最后壁炉城",
+    "巨人",
+    "锁链巨人"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "安柏家族以最后壁炉城为根基，守在北境东北、靠近长城与颤抖海的寒冷边缘。其纹章为田野上的锁链巨人，正符合这个家族在北境记忆中的形象：高大、粗豪、好战，且把对史塔克的古老效忠看得极重。安柏的土地比临冬城更接近塞外与漫长冬日，领主与小民都懂得粮食、木柴、牲畜和结实城墙比南方礼仪更可靠。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "北境诸侯把安柏视作最后壁炉城的巨人门卫。领地靠近长城与塞外，家族成员常以高大、粗直和好战闻名；但真正使他们有分量的不是体格，而是北方边界一有动静，他们往往比临冬城更早听见。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "最后壁炉城的人不把巨人挣脱锁链只当夸耀。冬夜漫长、野人袭扰和距离使每户人都要比南方更早准备武器。安柏若能在号角响时站在最前，粗暴会被称作豪迈；若只会在宴席上吼叫，北境人也分得清。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "freefolk"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "自由民把安柏看作长城南边最难缠的近邻之一。双方在边界上留下劫掠、血仇和彼此夸大的故事，也因此熟悉对方的勇气。安柏称自由民为野人，自由民则笑他们是给史塔克看门的巨人。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待安柏家族，会先看它的土地、婚盟、血脉和债务。最后壁炉城的北境封臣，纹章为锁链巨人。其家名连接北境东北边地、严冬生计、粗豪武勇与对史塔克的古老效忠。家徽是门面，能否保护封地、兑现婚约并在危机中召集人马，才是家族真正的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起安柏家族时，记得的是谁在营火边分过粮、谁把他们留在城外、谁在败局里仍站在旗旁。最后壁炉城的北境封臣，纹章为锁链巨人。其家名连接北境东北边地、严冬生计、粗豪武勇与对史塔克的古老效忠。家族名声最终要落到具体的人和具体的命令上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意安柏家族留下的仪式、墓地和传承。最后壁炉城的北境封臣，纹章为锁链巨人。其家名连接北境东北边地、严冬生计、粗豪武勇与对史塔克的古老效忠。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见安柏家族。最后壁炉城的北境封臣，纹章为锁链巨人。其家名连接北境东北边地、严冬生计、粗豪武勇与对史塔克的古老效忠。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "安柏家族：最后壁炉城的北境封臣，纹章为锁链巨人。其家名连接北境东北边地、严冬生计、粗豪武勇与对史塔克的古老效忠；"
+  ]
+}

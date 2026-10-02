@@ -1,0 +1,151 @@
+{
+  "Id": "rule_山谷地志__红垒",
+  "Keywords": [
+    "红垒"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "红垒是雷德佛家族的谷地城堡，位于山地道路与较开阔领地的交接处。它的红色名称可能来自石材、土壤或旗帜，在漫长年代里已成为当地辨认归属的标记。谷地城堡的价值往往不在于征服远方，而在于掌控一段山口、一座桥、一个可供补给的谷仓；红垒正属于这种地方权力。它既受艾林家法统和谷地骑士文化影响，也要面对山道盗匪、氏族冲突与季节造成的隔绝。城墙可以更换守卫，土地与道路的要求却不会。任何叙述都应把红垒看作一个持续运作的山地领地，而非已注定结局的战场。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vale"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "红垒可以写在领主的地契上，附近人真正依靠的却是山泉、牧坡、林木、积雪和驮畜能走的窄路。当地家庭还要依靠山羊、薄田、果园以及翻越明月山脉的驮队；任何一处道路、井泉或码头失灵，代价都会先落到他们身上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vale"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "守将衡量红垒，先查隘口、高坡、瞭望点与翻山所需的粮秣。在七国的封建秩序中，红垒的归属牵动封臣义务、税粮和征召；守军能否吃饱、援兵能否按时抵达，比议事厅里的豪言更能决定这处据点是否可靠。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "scholar",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "旅人判断是否经过红垒，看的是驮队脚程、坡道损耗、山口税与冬季封路。他们还会辨认谷地的口音、法令和通行凭据；名声可以从酒馆传得很远，真正的路程仍须由车轮、船桨或马蹄丈量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主可以凭红垒收税举兵，却也要为这里的治安与饥馑负责。在七国的封建秩序中，红垒的归属牵动封臣义务、税粮和征召；旗帜更换之后，道路、粮仓、旧债和地方信任仍得由新主人逐一接手。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "旅人在红垒附近最怕弄错落石、岔路、背风宿营处和最近的山泉。能补给、能避险、能找到向导，便值得在行程里标明；若三样都没有，再响亮的家名也救不了迷途者。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "修补红垒的人熟悉采石、伐木、铁件、山羊毛和贴着山势修筑的墙基，安慰死者家属的人熟悉七神礼拜堂、山民威胁与安达尔骑士传统。一处据点因而不只是领主的大厅，也是婚丧、誓言、劳作与地方记忆反复发生的场所。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "红垒的纹章离田地很远，收税人与守军却离田地很近。他们关心山羊、薄田、果园以及翻越明月山脉的驮队，也看征粮后是否留下种子、灾年时城门是否开启；远方人看见纹章，他们看见的是明日有没有饭吃。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "红垒：红垒是雷德佛家族的谷地城堡，位于山地道路与较开阔领地的交接处。它的红色名称可能来自石材、土壤或旗帜，在漫长年代里已成为当地辨认归属的标记。谷地城堡的价值往往不在于征服远方，而在于掌控一段山口、一座桥、一个可供补给的谷仓；红垒正属于这种地方权力。它既受艾林家法统和谷地骑士文化影响，也要面对山道盗匪、氏族冲突与季节造成的隔绝。城墙可以更换守卫，土地与道路的要求却不会。任何叙述都应把红垒看作一个持续运作的山地领地，而非已注定结局的战场。"
+  ]
+}

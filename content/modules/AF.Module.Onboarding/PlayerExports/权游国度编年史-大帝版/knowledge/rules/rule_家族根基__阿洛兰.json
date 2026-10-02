@@ -1,0 +1,152 @@
+{
+  "Id": "rule_家族根基__阿洛兰",
+  "Keywords": [
+    "阿洛兰",
+    "阿洛兰家族"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "阿洛兰是罗拉斯的家门之一，其声望与造船和航海相连。罗拉斯土地贫瘠，生活仰赖渔船、海运和能够穿过颤抖海坏天气的船体；因此一座船坞的木料、铁钉、绳索与熟练工匠，往往比华丽府邸更接近真正的权力。阿洛兰若能聚拢船匠、维持信用并让船只按期下水，就会在岛城议事与贸易中有声音。航线、雇主和统治者都可能改变，罗拉斯需要修船与出海的事实不会改变。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "nord"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "sailor",
+          "artisan"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "罗拉斯船匠看阿洛兰，先摸新船的接缝，再谈家门名声。经得住第一场北风的船才算承诺，挂在船头的彩漆不能堵住漏水的缝。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "nord"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "notable",
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "岛城商人愿意亲近懂船的家门，因为货物能否离港决定账本盈亏。他们也警惕阿洛兰把船坞人情变成港口上的垄断。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "nord"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "渔户希望阿洛兰造得起小船、修得快风损，而不只替富人打造远航大船。沉默者的信徒则提醒人们，海会检验每一句夸口。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待阿洛兰，会先看它的土地、婚盟、血脉和债务。罗拉斯的海上家门，声望系于造船、航海与岛屿城邦对可靠船只的长期需要。家徽是门面，能否保护封地、兑现婚约并在危机中召集人马，才是家族真正的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起阿洛兰时，记得的是谁在营火边分过粮、谁把他们留在城外、谁在败局里仍站在旗旁。罗拉斯的海上家门，声望系于造船、航海与岛屿城邦对可靠船只的长期需要。家族名声最终要落到具体的人和具体的命令上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意阿洛兰留下的仪式、墓地和传承。罗拉斯的海上家门，声望系于造船、航海与岛屿城邦对可靠船只的长期需要。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见阿洛兰。罗拉斯的海上家门，声望系于造船、航海与岛屿城邦对可靠船只的长期需要。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "阿洛兰：罗拉斯的海上家门，声望系于造船、航海与岛屿城邦对可靠船只的长期需要。"
+  ]
+}

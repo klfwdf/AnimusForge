@@ -1,0 +1,209 @@
+{
+  "Id": "rule_龙魔__龙魔",
+  "Keywords": [
+    "龙魔",
+    "远古巨兽",
+    "龙身人形",
+    "雷暴苏醒",
+    "巨型战锤",
+    "不朽种族",
+    "雷电崇拜",
+    "太古生物"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "龙魔是比人类文明还要古老的生物——它们拥有食人魔般的巨型上半身、龙类的覆鳞下半身及长尾，每头龙魔手中都挥舞着一柄比成年男子还重的巨型战锤。传说它们沉睡在世界尽头的雷霆山脉中，只当天空中的闪电足够猛烈时才苏醒。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "chaos_culture"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "啊，龙魔——那些远古的傲慢种族！北方最深的峡谷里能找到它们的踪迹，但只有在雷暴季节才能把它们请出来作战。这些生物不属于食人魔，不属于龙，甚至不属于这个世界正常的生命谱系；它们是古圣毁灭之前留下的一笔烂账。一头龙魔加入战帮通常不是为了诸神，而是因为混沌荒原上的雷暴最烈、闪电最密。战斗中它们慢，但每一下锤击能同时砸碎三排长矛兵的脊梁，被锤子击中的地面会裂开并在三息之内布满闪电纹。别试图命令它们——龙魔只尊重暴力和雷声。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "龙魔是混沌军队中最稀有的怪兽单位，其战场定位介于重型怪兽骑兵和突破型怪物之间。一队三头龙魔的正面冲击力足以撕裂帝国蒸汽坦克防线，但它们的致命弱点有三：其一，极度依赖雷暴天气——晴朗天空中的龙魔战斗力锐减三分之一以上；其二，速度极慢，机动性约等于矮人重型火炮平台；其三，无法隐蔽，龙魔在战场上的出现本身就是对敌方的心理警示，奇袭毫无可能。正确的使用方式是将龙魔编入第二波冲击序列，待混沌骑士撕开初步缺口后再让龙魔的大锤把整个防线从裂口处砸成粉碎。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "龙魔的起源是战锤世界中仍存争议的物种学谜题。努恩大学古生物学部的尤利安·施瓦茨教授在其著作《失落种族与古圣遗迹》（公元2398年）中提出：龙魔是古圣造物工程中的一个过渡物种，其化石记录可追溯至约公元前8000年的世界边缘山脉北部地层。另一学派——以矮人博学者托雷克·石须为代表——认为龙魔是食人魔种族在接触变异龙族血脉后产生的自然突变种群。值得关注的是灰山发现的那具完整龙魔冰封遗骸（公元2455年出土），体长二十一尺，锤重一百二十石，体表鳞片检测出未知金属成分（后被定名为'龙魔钢'）。至于龙魔的雷电崇拜行为，阿尔道夫魔法学院天体系将其定义为'生物电交感'——龙魔的神经系统可在雷暴天气中吸收并储存大气静电，将其转化为某种近似于次元能量的战斗能源。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "龙魔让我感到的不是恐惧——而是敬畏。它们见过古圣的荣光，见过世界的造物时代，见过我们种族的起源。作为统治者，我更愿意将龙魔视为活着的古代文献而非单纯的武器。与它们同行的人类混沌术士告诉我，在暴风雨的深夜，龙魔会对着闪电用某种古老的语言吟唱，那声音犹如群山在对话。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我要告诉你一个秘密：龙魔的效忠是可以用闪电购买的。我的家族曾在雷霆山脉以雷击木建了一座祭坛，每逢暴雨便燃起烈火——后来一头龙魔主动下山找到了我们。它不说话，但它把锤子放在祭坛前，这意味着它接受我们的供奉。没有混沌术士能给你这个诀窍，这是古老的血脉直觉。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "在世界边缘山脉北部遇到雷暴时，我躲在岩洞里看见过一头龙魔站在山脊上，举着锤子朝天，闪电直接劈在锤头上——我以为它会被烤焦，结果它动都不动，像是被雷劈得挺享受。那锤子被闪电击中后表面上的符文全亮了，蓝白色的光在山谷里映了整整一盏茶的工夫。后来本地的矮人跟我说那是'龙魔的进食'。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "努恩兵器行会悬赏过龙魔战锤的一枚碎片——你没听错，一片就够。他们说龙魔战锤的成分可能包含某种已不存在于这个世界的远古合金，如果能复制出来，帝国骑士的骑枪和步兵的戟将提升到不可同日而语的地步。目前成功带回过碎片的人只有一个：一个来自巴托尼亚的探险骑士，他说他用了一整瓶帕拉翁出产的天鹰白兰地跟一头受伤的龙魔换了凿下来的锤屑。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "龙魔钢：龙魔鳞片与战锤中检测出的远古未知合金成分，物理性质介于金属与生物角质之间，可能为古圣造物的遗留材料。",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "龙魔远古巨兽龙身人形"
+  ]
+}

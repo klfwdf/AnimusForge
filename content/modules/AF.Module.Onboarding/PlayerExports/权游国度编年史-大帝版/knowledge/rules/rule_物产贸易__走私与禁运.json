@@ -1,0 +1,146 @@
+{
+  "Id": "rule_物产贸易__走私与禁运",
+  "Keywords": [
+    "走私与禁运"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "走私并不总由贪婪开始，有时只是税太重、港口被封或一家人需要活路。统治者称它为对秩序的侵蚀，商人称它为灵活，沿岸居民则知道夜色中的小船能带来危险，也能带来急需的盐和药。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "商人衡量走私与禁运，先看货源、损耗和沿途关卡，再看货源与信用能否换来稳定的信用；一笔好买卖必须经得起季节和战乱的反复检验。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "artisan",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主把走私与禁运写进税收与军需，工匠关心原料是否足够，农户和搬运工承担价格起落最直接的重量；账面繁荣未必落到每双手上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "sailor",
+          "wanderer",
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "水手、脚夫与流动摊贩最早察觉走私与禁运的变化：风向、道路和一纸通行文书都能改变利润；学者记录这些细节，免得宏大的财富故事遮住具体的人。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人把走私与禁运看成一条可以计算的链。走私并不总由贪婪开始，有时只是税太重、港口被封或一家人需要活路。统治者称它为对秩序的侵蚀，商人称它为灵活，沿岸居民则知道夜色中的小船能带来危险，也能带来急需的盐。产地、关卡、船期、债务和保护费任何一处断裂，都会让远方的贵族立刻感到价格和权力的变化。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人遇到走私与禁运时，最先注意到的是能否买到马料、修好装备或找到下一处补给。走私并不总由贪婪开始，有时只是税太重、港口被封或一家人需要活路。统治者称它为对秩序的侵蚀，商人称它为灵活，沿岸居民则知道夜色中的小船能带来危险，也能带来急需的盐。他们不一定懂账本，却知道一袋盐和一枚铁钉在路上的真实分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者在走私与禁运中承担具体工作。走私并不总由贪婪开始，有时只是税太重、港口被封或一家人需要活路。统治者称它为对秩序的侵蚀，商人称它为灵活，沿岸居民则知道夜色中的小船能带来危险，也能带来急需的盐。有人把原料变成工具、布匹和药物，有人规定交换的节日与禁忌；财富由许多双手堆起，很少只属于一个名字。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民对走私与禁运的记忆来自收成和欠账。走私并不总由贪婪开始，有时只是税太重、港口被封或一家人需要活路。统治者称它为对秩序的侵蚀，商人称它为灵活，沿岸居民则知道夜色中的小船能带来危险，也能带来急需的盐。若价格上涨而工钱不涨，远方的繁荣只会变成更薄的面包；若道路安全，连小村也能从贸易中得到一点春天。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "走私与禁运：走私并不总由贪婪开始，有时只是税太重、港口被封或一家人需要活路。统治者称它为对秩序的侵蚀，商人称它为灵活，沿岸居民则知道夜色中的小船能带来危险，也能带来急需的盐"
+  ]
+}

@@ -1,0 +1,211 @@
+{
+  "Id": "rule_混沌邪神__混沌邪神",
+  "Keywords": [
+    "混沌邪神邪神",
+    "恐虐",
+    "纳垢",
+    "辛烈治",
+    "色孽",
+    "混沌邪神混沌四神",
+    "血神",
+    "瘟疫之父",
+    "混沌邪神命运编织者",
+    "黑暗王子"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "混沌四神是统治混沌领域的四位黑暗神祇。恐虐坐在黄铜王座之上，以鲜血和颅骨为食，他是一切战争和愤怒的源头。纳垢——瘟疫之父——外形臃肿腐败，却以扭曲的慈爱将疾病和腐朽赐予众生。辛烈治——命运编织者——是一只永远在变化的大鸟，他编织着所有凡人的命运丝线，以诡计和变化为乐。色孽——黑暗王子——是最年轻也是最危险的邪神，他掌控着一切极致的快感与痛苦，引诱灵魂在欲望的迷宫中永远沉沦。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "chaos_culture"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我们的神是真实的——不是虚无缥缈的信仰，而是在战场上显圣、在变异中赐福的活生生的力量。恐虐不在乎你的血来自谁，只要你不停地杀戮、不停地献上颅骨，你就能感受到他炙热的赞许涌过你的血管。纳垢爷爷是所有祖父中最慈爱的——他接纳一切被世界抛弃的人，将他们的痛苦化为忍耐，将他们的肉体化为坚不可摧的腐烂堡垒。辛烈治指引着我们的每一步——他的计划和反计划超越凡人的理解，但当你学会信任命运之风，你将在混沌中找到完美的心安。色孽赐予我们的不是罪恶，而是超越凡人极限的感官觉醒。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "混沌四神对军事战略的影响深远且具体。恐虐的信徒虽然暴躁易怒、容易被诱入埋伏，但在正面交锋中的战斗狂热几乎无人能挡。纳垢的军团行动缓慢但几乎不可阻挡，他们的疫病是任何补给线无法承受的灾难——围城战中他们可以耐心等待疾病替你打开城门。辛烈治的追随者虽看似混乱无章，背后却总隐藏着多层诡计，轻视他们将导致致命的战略误判。色孽的冠军追求完美的感官体验，速度、优雅和精致的残忍是他们的标志——他们往往是最难以预料的战术对手。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 100
+        },
+        "IdentityIds": null
+      },
+      "Content": "混沌四神代表了四种极端情感的宇宙级具象化。恐虐（Khorne）的本质是战争、愤怒、鲜血和勇气——但仅限于「无脑的勇气」，他鄙视魔法和诡计。纳垢（Nurgle）则是绝望、疾病、腐朽中的生命力和父亲般的扭曲慈爱的化身——他的赠礼是让信奉者不再恐惧死亡，因为死亡本身已成为他们的武器。辛烈治（Tzeentch）掌管道变化、命运、知识、希望和诡计——他是魔法本身的人格化，也是最难被凡人理解的邪神，因为他永远在编织无数可能性的网络。色孽（Slaanesh）诞生于精灵文明的堕落的最后一刻，他掌控欲望、快感、痛苦、完美主义以及一切感官极致的追求——他的信徒最终会变得对任何正常刺激都无感，只能追求越来越极端的体验来满足永远无法满足的灵魂。四神之间的关系网是宇宙政治学上最复杂的结构：恐虐与色孽、纳垢与辛烈治是天然的对手，但任何二对二的稳定平衡都可能被随机事件打破。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "混沌四神对女性信徒的态度迥异，这在神学上是一个被帝国清教徒故意忽略的课题。恐虐对性别毫无兴趣——他只看斩下的颅骨数量，诺斯卡盾女在血神眼中与任何男性冠军平等。纳垢——平心而论——是唯一一个以扭曲方式真正'关爱'信徒的神祇，无论男女老幼，他的腐烂拥抱一视同仁。辛烈治偏爱女术士，因为女性在直觉、隐蔽和多线程思维方面的某些特质与他的命运编织本性更加契合——至少有三位已知的混沌女巫曾成为辛烈治的神选冠军并差点各自颠覆了一个王国。色孽——黑暗王子的信徒无分性别但女性在其中面临独特的陷阱：因为这个世界的凡人社会赋予了女性在美与诱惑方面的独特武器，许多女性混沌冠军最初以为她们能奴役色孽的力量来完成自己的复仇或野心，却从未意识到黑暗王子的最终目的永远是将支配者变为被支配者。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "作为氏族族长，我必须精细管理氏族内部对不同邪神的崇拜平衡——这是诺斯卡政治中最微妙的艺术。一个氏族不能只崇拜一位邪神——单一神的庇护会使氏族在某些方面变得强大但在其他方面极为脆弱——但崇拜全部四位则意味着氏族不被任何一位邪神视为'专属领地'而可能在任何需要牺牲品时被随手丢弃。我的家族选择了一条古老的三神路径：以恐虐为战争之神、以辛烈治为命运之神、以纳垢为生存之神，但刻意性地避免一切与色孽相关的仪式——不是因为恐惧黑暗王子，而是因为色孽的崇拜者在其他三神的追随者面前天然的会被视为'软弱'而在政治结盟中遭到排斥。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "在混沌荒原的边缘地带，我曾在一处被遗弃的诺斯卡长屋中发现了四面并排的金属小祭坛——锈红、绿、蓝、紫——它们被主人愤怒地用斧头劈砍过。这暗示了屋主的绝望：他尝试了所有四位邪神，一个接一个地，可没有任何一位回应。在诺斯卡的文化中，这被认为是最恐怖的命运——不是被邪神诅咒，而是被邪神'忽略'。被忽略者被视为没有足够价值甚至连被毁灭都不配的存在。对于一位诺斯卡战士而言，最大的恐惧不是死亡，而是在无人知晓的角落里被遗忘。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "帝国境内对于混沌邪神崇拜的经济影响有一套复杂但不公开的监控体系。西格玛教会的猎巫人不仅追踪异端行为——他们还秘密追踪着一种经济指标：'献祭品物价指数'——即黑羊、特定香料和银制仪式器皿在灰色市场上的价格波动。当这些商品的价格在某个区域突然上涨时，通常意味着该区域出现了有组织的邪神秘密崇拜活动。我所在的商会有一次偶然发现，帝国努恩城中某种特定类型的紫色丝绸的购买量在三个月内激增了七倍，而买家全是匿名现金交易——猎巫人在接到我们的配合报告后，在城中破获了一个隐蔽的色孽仪式团体，其中有三位贵族和一位帝国工程师学院的讲师。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "恐虐——血神，坐于黄铜王座之上，战争与勇气的黑暗神祇",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "混沌邪神的神学属性与信仰体系"
+  ]
+}

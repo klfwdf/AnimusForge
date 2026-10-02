@@ -1,0 +1,132 @@
+{
+  "Id": "rule_家族根基__林德利",
+  "Keywords": [
+    "林德利",
+    "林德利家族"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "林德利家族统治蛇林，是谷地的贵族家门。密林与山路既提供木材、猎物和隐蔽，也带来盗匪、迷途和边界争执。家族的力量来自对林道、庄园和地方骑手的掌握，并通过婚盟与封臣义务嵌入艾林谷秩序。蛇林领主若只会守城而不懂林地，便无法真正统治这片以树影遮住道路的土地。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vale"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "谷地领主看重林德利对蛇林道路的熟悉。军队、商队和信使都可能在林中受阻，能维护路标、桥梁和巡逻的家族，远比席次靠前却无所作为的贵族有用。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vale"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "伐木人、猎户与烧炭工对蛇林每条小径都有自己的名字。他们希望林德利限制盗匪，也别把祖辈赖以生存的树林全圈成贵族猎场。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待林德利，会先看它的土地、婚盟、血脉和债务。林德利家族以蛇林为根基，是谷地封臣，家业受密林、山路与进入谷地腹地的交通塑造。家徽是门面，能否保护封地、兑现婚约并在危机中召集人马，才是家族真正的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起林德利时，记得的是谁在营火边分过粮、谁把他们留在城外、谁在败局里仍站在旗旁。林德利家族以蛇林为根基，是谷地封臣，家业受密林、山路与进入谷地腹地的交通塑造。家族名声最终要落到具体的人和具体的命令上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意林德利留下的仪式、墓地和传承。林德利家族以蛇林为根基，是谷地封臣，家业受密林、山路与进入谷地腹地的交通塑造。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见林德利。林德利家族以蛇林为根基，是谷地封臣，家业受密林、山路与进入谷地腹地的交通塑造。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "林德利：林德利家族以蛇林为根基，是谷地封臣，家业受密林、山路与进入谷地腹地的交通塑造。"
+  ]
+}

@@ -1,0 +1,151 @@
+{
+  "Id": "rule_家族根基__莫尔蒙-守夜人支",
+  "Keywords": [
+    "莫尔蒙-守夜人支",
+    "杰奥·莫尔蒙",
+    "熊老"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "杰奥·莫尔蒙曾是熊岛领主，后来把土地与继承权交给儿子乔拉，自愿穿上黑衣。他把北境领主的责任感、对粮食与纪律的敏锐带到绝境长城，最终成为守夜人总司令，人称“熊老”。黑衣誓言使他不再代表熊岛利益；在他眼中，贵族、私生子、盗猎者与逃犯一旦立誓，便都只是需要被训练、被约束也被保护的弟兄。长城人手衰败、南方漠不关心，而塞外的异常越来越难以用普通野人袭扰解释。杰奥的选择因此不是建立新的莫尔蒙支系，而是把一个旧领主的余生交给无人愿意认真倾听的北方边界。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "nightswatch"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "黑衣兄弟看熊老，既看见总司令，也看见一个懂得部下会饿、会怕、会偷懒的老领主。他的命令未必温柔，却通常知道代价落在谁身上。守夜人需要的不只是勇士，更是能让一群罪犯与弃儿仍像军团一样行动的人。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "北境贵族尊敬杰奥放下熊岛的决定，因为自愿舍弃土地比被迫失去更难。他仍带着莫尔蒙的熊性，却把家族荣誉交给了黑衣誓言。对北境人而言，他既是熊岛旧主，也是一个已经不能替熊岛站队的人。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "freefolk"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "自由民把守夜人总司令视作乌鸦首领，不会因他年老便放松警惕。他组织远征、派出游骑兵，也必须面对黑衣人对塞外所知越来越少的事实。熊老值得重视，不因他的爵位，而因他愿意亲自走进墙外的寒冷。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待莫尔蒙-守夜人支，会先看它的土地、婚盟、血脉和债务。杰奥·莫尔蒙放弃熊岛领主身份、穿上黑衣并成为守夜人总司令；他把北境领主的责任感带到人手衰败的绝境长城。家徽是门面，能否保护封地、兑现婚约并在危机中召集人马，才是家族真正的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起莫尔蒙-守夜人支时，记得的是谁在营火边分过粮、谁把他们留在城外、谁在败局里仍站在旗旁。杰奥·莫尔蒙放弃熊岛领主身份、穿上黑衣并成为守夜人总司令；他把北境领主的责任感带到人手衰败的绝境长城。家族名声最终要落到具体的人和具体的命令上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意莫尔蒙-守夜人支留下的仪式、墓地和传承。杰奥·莫尔蒙放弃熊岛领主身份、穿上黑衣并成为守夜人总司令；他把北境领主的责任感带到人手衰败的绝境长城。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见莫尔蒙-守夜人支。杰奥·莫尔蒙放弃熊岛领主身份、穿上黑衣并成为守夜人总司令；他把北境领主的责任感带到人手衰败的绝境长城。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "杰奥·莫尔蒙放弃熊岛领主身份、穿上黑衣并成为守夜人总司令；他把北境领主的责任感带到人手衰败的绝境长城。"
+  ]
+}

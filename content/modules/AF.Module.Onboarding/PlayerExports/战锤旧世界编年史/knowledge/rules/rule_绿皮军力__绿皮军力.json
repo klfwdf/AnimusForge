@@ -1,0 +1,216 @@
+{
+  "Id": "rule_绿皮军力__绿皮军力",
+  "Keywords": [
+    "绿皮军力",
+    "兽人小子",
+    "绿皮军力地精",
+    "战猪",
+    "绿皮萨满",
+    "绿皮军力Waaagh",
+    "绿皮军力黑兽人",
+    "绿皮军力大只佬",
+    "巨魔",
+    "绿皮巨人",
+    "野猪骑兵",
+    "地精射手",
+    "搞毛二哥力量",
+    "绿皮军力孢子繁殖",
+    "绿潮战术"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "绿皮的军队不是一支接受过训练的武装力量——它是一场行走的灾难。典型的绿皮军队包括：兽人小子——庞大的肌肉块带着粗糙的砍刀和石斧冲锋陷阵；兽人大只佬——最老最凶残的兽人精英，每人都曾独自斩杀过巨人或巨魔；地精——数量庞大的小个子用短弓和长矛进行骚扰，在有利时才敢上前捅一刀；以及被地精驾驭的巨兽——战猪骑兵、巨魔、甚至是巨大的巨人。绿皮萨满则在狂乱的舞蹈和嘶吼中召唤搞哥毛哥的力量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "看看我们的军队多风光！兽人小子们冲在最前面，把那些人类的盾墙撞得像脆木头一样散开。我们的战猪骑兵比那些笨重的帝国骑士快多了，而且猪还能咬人！地精虽然跑得快，但他们懂得造攻城车和投石机——那些玩意儿能砸烂任何城墙。最妙的是我们从来不用担心损失——死掉几个小子算什么，孢子一落地过段时间新的小子就长出来了。绿皮萨满比人类那些书呆子法师管用多了，他们用Waaagh！能量施法，越是打得热闹法术就越强！"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "面对绿皮军队需要截然不同的战术思维。他们的进攻狂野但缺乏纪律——可以利用诱敌战术分散他们的阵型。兽人小子的正面冲击力极强，不应直接用步兵硬接，而应在侧翼布置骑兵和远程火力。地精是他们的后勤和技术兵种——如果能优先消灭地精，剩下的兽人虽然更凶猛但也会失去攻城能力和远程支援。打击绿皮军队的关键在于斩首：他们的纪律完全依赖于战将的个人魅力和武力。如果战将被击杀，整支Waaagh！会在顷刻间变为互相厮杀的混乱。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 100
+        },
+        "IdentityIds": null
+      },
+      "Content": "绿皮军力体系完全基于体格和战斗经验的自然分层。底层是地精（Goblins）——包括普通地精、夜地精（Night Goblins，生活在洞穴中、使用毒蘑菇的亚种）和森林地精（Forest Goblins，驯养巨蜘蛛的亚种）。中层是兽人小子（Orc Boyz）——标准兽人战士，分为使用双持武器的「砍刀小子」和使用长矛/斧头的「坚挺小子」。上层是兽人大只佬（Orc Big 'Uns）——年龄最大、战斗经验最丰富的兽人精英。顶层是黑兽人（Black Orcs）——最纯粹、最纪律严明的兽人亚种，据说是混沌矮人通过奴隶育种制造的，如今已成为绿皮中最精锐的战士。特别兵种包括：野猪小子（骑战猪的兽人骑兵）、巨魔（Trolls，弱智但再生能力极强的大型怪物）、巨人（Giants，来自天空泰坦血统的巨大类人生物）以及各种被驯服或驱使的怪物。绿皮萨满的魔法基于Waaagh！能量——不同于其他种族需要学习魔法之风，绿皮萨满直接从周围绿皮的集体战斗情绪中汲取力量，越是战场就越是强大。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "帝国和其他文明国家的贵妇人们谈起绿皮时总是以扇掩面——但她们不知道的是，绿皮根本没有性别。他们通过孢子繁殖，没有女性兽人、没有母性地精、没有家庭单位。这意味着绿皮军队永远不会因为「保护妇孺」而撤退，永远不会因为「回家收割」而离开前线。作为一位管理边境领地的女领主，我必须明白：绿皮不会对妇女手下留情，不会以掠取为目的有限作战。他们来，他们打，他们留下的孢子在三年后会长成新一波绿皮——而你城堡里出生的女儿将在成年后面对与她母亲一样的绿潮。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "绿皮军队对于家族统治来说不是一个军事问题——是一个土地遗产问题。一支被歼灭的绿皮Waaagh！不会真正从你的封地上消失。它们的孢子渗入土壤、河水和你城堡地窖的阴暗角落。八年或十年后——正好是你的长子继承爵位的那年——一个新的绿皮部落会从你家猎场的地下冒出来。这意味着对抗绿皮不是一场战役，而是一笔永久性的家族防御支出。我每年划拨家族预算的百分之十五作为「孢子焚烧金」，在我的继承法条款中明确规定：任何继承爵位的子孙如果不能维持这笔防御金，其他子女有权在家族会议上弹劾他——因为放任绿皮繁殖本质上是对家族未来的犯罪。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "如果你想在旧世界当雇佣兵赚绿皮的钱——放弃。绿皮不付钱。他们唯一接受的货币是打架本身，而你恰好处于他们最想打的东西列表的顶部。但绿皮军队确实创造了一种独特的产业：绿潮之后的战场上残留着大量被砸碎的武器和甲具碎片，其中混杂着绿皮自身携带的粗糙黄金饰品和从矮人尸体上抢来的符文宝石。拾荒者——我的旧同行们——把这种生意称为「淘绿金」。风险是你必须在绿皮军队彻底离开而他们的散兵游勇还在四处游荡的窗口期完成搜索，这个窗口通常只有不到一天。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "作为诺德领边境贸易站的商会会长，我对绿皮军队的评估方式与帝国军事学院完全不同。我不关心一场Waaagh！的战术细节——我关心的是这场Waaagh！会切断我多少条商路、摧毁我多少个集散村庄、以及战后重建需要多少袋水泥和多少桶铁钉。绿皮造成的经济损失分为三个阶段：直接掠夺、贸易路线中断和战后土地污染。土地污染——孢子问题——在账本上是一项折旧期为二十年的固定资产减值。没有一个理性的商人愿意在发生过绿潮的区域投资不动产，这意味着每次绿潮都会在地图上划出一块永久性的经济死区。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Waaagh!能量——绿皮集体灵能力场，战斗规模越大效果越强，是绿皮萨满施法的能量来源",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "绿皮的军队不是一支接受过训练的武装力量——它是一场行走的灾难"
+  ]
+}

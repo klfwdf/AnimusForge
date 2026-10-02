@@ -1,0 +1,152 @@
+{
+  "Id": "rule_王领地志__罗斯比城",
+  "Keywords": [
+    "罗斯比城",
+    "君临东部"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "罗斯比城位于君临以东的王领腹地，是一座以领主庄园、耕地与通往都城的道路为骨架的城堡领。它不像红堡那样吞吐万人，却能以谷物、牲畜、驮队和本地骑士影响君临的日常供应。王领的贵族常被都城阴影遮住名字：他们离王座很近，因而更容易被征税、征召、婚盟和宫廷争斗牵动。罗斯比正体现了这种处境——一片看似平静的田野，背后却连着黑水湾、国王大道与都城市场。不应据此预言任何家族或人物的选择。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "crownlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "对靠罗斯比城周边土地吃饭的人而言，日子由井泉、田租、磨坊、林地和危急时能否进堡决定。当地家庭还要依靠王都市场、黑水湾船运、果园、田租和通往君临的道路；任何一处道路、井泉或码头失灵，代价都会先落到他们身上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "crownlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "对攻守双方而言，罗斯比城的分量首先落在外墙、塔楼、水井、粮仓与最近的援军道路上。在七国的封建秩序中，罗斯比城的归属牵动封臣义务、税粮和征召；守军能否吃饱、援兵能否按时抵达，比议事厅里的豪言更能决定这处据点是否可靠。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "scholar",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "货物抵达罗斯比城以前，货主已经算过领地税、庄园产物、驮队路程和堡下形成的小市集。他们还会辨认王领的口音、法令和通行凭据；名声可以从酒馆传得很远，真正的路程仍须由车轮、船桨或马蹄丈量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "罗斯比城能给一家人带来头衔，也能在灾年与战争中拖垮那一家人。在七国的封建秩序中，罗斯比城的归属牵动封臣义务、税粮和征召；旗帜更换之后，道路、粮仓、旧债和地方信任仍得由新主人逐一接手。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵靠脚底记住罗斯比城：坡势、城门、饮水与守军盘查外人的规矩。能补给、能避险、能找到向导，便值得在行程里标明；若三样都没有，再响亮的家名也救不了迷途者。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "数代人在罗斯比城留下的痕迹，一半藏在石墙、木梁、铁门、墓窖和代代修补留下的接缝，一半藏在七神、王家法令与征服以来不断改换的旗帜。一处据点因而不只是领主的大厅，也是婚丧、誓言、劳作与地方记忆反复发生的场所。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户、牧民和渔民评价罗斯比城最少绕弯。他们关心王都市场、黑水湾船运、果园、田租和通往君临的道路，也看征粮后是否留下种子、灾年时城门是否开启；远方人看见纹章，他们看见的是明日有没有饭吃。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "罗斯比城：罗斯比城位于君临以东的王领腹地，是一座以领主庄园、耕地与通往都城的道路为骨架的城堡领。它不像红堡那样吞吐万人，却能以谷物、牲畜、驮队和本地骑士影响君临的日常供应。王领的贵族常被都城阴影遮住名字：他们离王座很近，因而更容易被征税、征召、婚盟和宫廷争斗牵动。罗斯比正体现了这种处境——一片看似平静的田野，背后却连着黑水湾、国王大道与都城市场。不应据此预言任何家族或人物的选择。"
+  ]
+}

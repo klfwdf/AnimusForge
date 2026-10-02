@@ -1,0 +1,206 @@
+{
+  "Id": "rule_木精灵军力__木精灵军力",
+  "Keywords": [
+    "木精灵军力",
+    "林地斥候",
+    "永恒守卫",
+    "木精灵军树人",
+    "木精灵军狂野狩猎"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "木精灵的军队与艾索洛伦森林融为一体——他们的林地斥候能在枝头悄无声息地移动，射出涂有致命森林毒素的箭矢；永恒守卫组成如树根般牢不可破的长矛阵线。但最令人恐惧的还不是精灵战士本身，而是那些被称为树人的远古森林化身，以及当猎号吹响时席卷森林边缘的狂野狩猎——那是一场不分青红皂白的毁灭风暴。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "阿斯莱的战争之道不同于任何凡人军队。我们不需要攻城武器——我们的箭能在千步之外射穿盔甲缝隙。我们不需要厚重的城墙——艾索洛伦会用自己的枝条为我们挡下最猛烈的冲击。林地斥候是我们的耳目与毒刺，他们在森林中如同水中的鱼，可以在敌人的哨兵毫无察觉的情况下消灭整个巡逻队。永恒守卫——那些手持精灵长矛身披绿叶战甲的无言守护者——组成我们森林的防线，他们的战斗默契历经数百年磨合。树人是我们远古的盟友，当它们从千年的沉睡中被唤醒时，大地都会随之战栗。而狂野狩猎——当奥莱恩在盛夏最炽烈的正午吹响猎号时，每一个阿斯莱都会感到血液沸腾，森林本身也进入一种狂怒状态，那时任何不幸踏入我们边界的生灵都将化为肥料。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "在森林环境中与木精灵作战无异于自杀。每一个军事指挥官的首要原则就是：绝对不要让战斗进入艾索洛伦或任何密林地形。木精灵不会与你排兵布阵正面对决——他们会边打边撤、分割你的阵型、在密林中各个击破。他们的林地斥候是旧世界最卓越的散兵射手，能在高速移动中保持致命精准度。树人是最具破坏力的突袭单位，它们的躯体堪比攻城锤而它们的愤怒足以撕碎任何步兵阵线。木精灵军队最脆弱的地方在于开阔地带和攻城战——他们不擅长攻坚战且相对畏惧骑兵冲锋，但这种弱点只在远离森林时才能被利用。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 100
+        },
+        "IdentityIds": null
+      },
+      "Content": "木精灵的军事体系分为三个主要维度：凡人精灵战士、林地精魂盟军以及季节性狂野狩猎。精灵战士采用一种极为先进的'高速射击与机动'战术体系——林地斥候在目标被发现时就已经射出箭矢并从原位置消失。永恒守卫长矛阵展现了令人惊叹的纪律——他们能在完全不使用口令的情况下同步变换队形，据信是通过某种精魂共鸣实现的协同。树人本质上是与物质世界的树木融为一体的精魂实体，它们的战斗力与其年龄和体型直接相关；最古老的树人在战力上堪比一整个步兵连。狂野狩猎是木精灵军事能力中最不可预测的维度——这是一种在奥莱恩召唤下森林进入的集体战争狂热状态，所有参与者——无论是精灵、树精还是动物——都会进入一种近乎狂战士的杀戮狂怒中，持续时间可能从几天到数月不等。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "作为在旧世界混乱时代中管理领地事务的女性，我对木精灵军力的理解与那些只在战场上考虑问题的男性领主有着本质差异。战争的代价最终由村庄、农田和家庭承担——而这些都是我负责管理的领域。这种视角使我更关注木精灵军力的长期影响而非短期战功。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "作为家族之长，木精灵军力对我来说不仅是一个军事或政治问题，更是一个血脉延续的问题。每一次我们在木精灵军力相关的议题上做的决定，都将在族谱上被记录并被未来数代人检验。家族的生存优先于个人的荣耀——这是我在长老会议上一贯坚持的立场。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "在我的流浪生涯中，我对木精灵军力的了解不是来自书本或军事学院，而是来自那些在边境村庄的篝火旁从幸存者口中听来的真实经历。这些经历比任何官方记录都更粗糙但也更诚实——它们不会通过筛选和修饰来保护当权者的面子。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "从商业和手工业的角度看，木精灵军力对我这样的行会成员而言意味着一种稳定的市场——无论是军备供应、基础设施建设还是战后的重建合同。但木精灵军力也带来了风险：一旦相关区域陷入战火，我们最赚钱的贸易路线就会被切断，库存积压，保险费用飙升。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "木精灵军力——战锤旧世界核心概念条目",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "木精灵的军队与艾索洛伦森林融为一体——他们的林地斥候能在枝头"
+  ]
+}

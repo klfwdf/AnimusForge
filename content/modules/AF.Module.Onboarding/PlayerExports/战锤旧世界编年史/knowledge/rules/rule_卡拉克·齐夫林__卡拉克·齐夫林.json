@@ -1,0 +1,17 @@
+{
+  "Id": "rule_卡拉克·齐夫林__卡拉克·齐夫林",
+  "Keywords": ["卡拉克齐夫林_KF", "齐夫林城塞_KF", "花岗手要塞_KF", "齐夫林石门_KF", "齐夫林矮人领地_KF", "齐夫林国王_KF"],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":null,"IsFemale":null,"IsClanLeader":null,"SkillMin":null},"Content":"卡拉克·齐夫林位于灰色山脉最西侧，是矮人诸邦的西部前哨，由罗雷克·花岗手国王统治。此地的矮人以石工和边境守卫闻名，齐夫林的城门被称为「西部之口」——是所有通往巴托尼亚和帝国西部贸易路线的起点。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":["sturgia"],"KingdomIds":null,"SettlementIds":null,"Roles":null,"IsFemale":null,"IsClanLeader":null,"SkillMin":null},"Content":"卡拉克·齐夫林——吾族向西发出的第一声宣言！罗雷克王的双手厚实如花岗岩板，一掌能捏碎拳头大的鹅卵石。齐夫林的城门是旧世界西侧最宽的一座矮人大门，足够三头猛犸象并行通过。谁想从灰山进入旧世界西部，都得先过齐夫林这一关。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":["lord"],"IsFemale":null,"IsClanLeader":null,"SkillMin":null},"Content":"卡拉克·齐夫林在军事上控制着灰色山脉西侧的交通要隘。任何从东部山区进入巴托尼亚或帝国西部的大规模军事调动都必须经过齐夫林的外围通道。罗雷克·花岗手国王的要塞守军虽少，但地势险要，易守难攻的程度不亚于任何大型矮人城塞。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":["lord","notable","wanderer"],"IsFemale":null,"IsClanLeader":null,"SkillMin":{"Steward":120}},"Content":"卡拉克·齐夫林的经济以石门关服务和花岗岩贸易为支柱。齐夫林石门关是灰色山脉西侧最重要的过境通道，每天通行商队数量在百支以上。过境收费实行分级制度——矮人商队免税、帝国商队半税、巴托尼亚商队全税。齐夫林的花岗岩与卡弗卡马兹相比偏实用型——前者多用于建筑基石和路面铺设材料，量大价低但需求稳定。特殊经济项目：齐夫林同时还是一处矮人「信息枢纽」，西来的商队携带旧世界各地的消息在此汇总交换，商人们为此愿意支付不菲的信息费。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":["lord"],"IsFemale":true,"IsClanLeader":null,"SkillMin":null},"Content":"齐夫林的女性矮人管理着城塞的「信息台」——一处记录往来商队行程、天气状况和周边地形情报的石刻档案室。我的职责是将每一位商队领队提供的信息刻入石版并归档。罗雷克国王说，掌握信息的人掌控城门开关。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":["lord"],"IsFemale":null,"IsClanLeader":true,"SkillMin":null},"Content":"我们家族镇守齐夫林的西侧石门已有千年。罗雷克国王赐予我们「石门守望者」的世袭称号——这既是极高的荣誉也是极重的责任。我们家族的长须长老们有一句格言：石门不闭，则齐夫林不倒；齐夫林不倒，则灰山不乱。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":["wanderer"],"IsFemale":null,"IsClanLeader":null,"SkillMin":null},"Content":"齐夫林的石门是我见过最巨大的矮人建筑——高五十尺、厚二十尺、每一块门板都由整块花岗岩凿成。矮人告诉我，门轴用了最精密的球形轴承，让这两扇重达百吨的巨门也能单人推开。我在石门下的客栈住过一宿，那一晚至少有四十支商队从我眼皮底下进出。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":["notable"],"IsFemale":null,"IsClanLeader":null,"SkillMin":null},"Content":"齐夫林的信息集市是灰色山脉中最有价值的无形资产。各地的商人途经此处都会交换情报——哪条山路被绿皮封锁了、哪座人类城邦粮价暴跌了。精明的商人花几个金币请矮人信息管理员帮忙查阅近期商队报告，就能省下几百里徒劳的绕行。"}
+  ],
+  "TextMappings": [{"SourceText":"卡拉克·齐夫林是灰色山脉西侧的矮人边境城塞，以西部门户和花岗岩工艺闻名，由罗雷克·花岗手国王统治","Kind":null,"TargetId":null,"AgeMin":null,"AgeMax":null,"EmptyValueText":null,"TrueText":null,"FalseText":null}],
+  "RagShortTexts": ["卡拉克齐夫林灰色山脉矮人西部前哨石门"]
+}

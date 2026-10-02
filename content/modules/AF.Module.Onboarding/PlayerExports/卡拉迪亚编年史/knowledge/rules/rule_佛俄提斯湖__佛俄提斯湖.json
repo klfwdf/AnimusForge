@@ -1,0 +1,48 @@
+﻿{
+  "Id": "rule_佛俄提斯湖",
+  "Keywords": [
+    "佛俄提斯湖"
+  ],
+  "RagShortTexts": [
+    "佛俄提斯湖位于帝国境内靠近帝都。",
+    "佛俄提斯湖是帕拉人的圣地。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "佛俄提斯湖......似乎是帝国境内的一个小湖，靠着帝都，听说还挺美的"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "佛俄提斯湖是当年帕拉人的一处圣地，和巴旦尼亚人一样，帕拉人也有湖泊崇拜传统，他们在湖泊里祭祀圣灵，祈祷丰收与祥瑞"
+    }
+  ],
+  "TextMappings": []
+}

@@ -1,0 +1,94 @@
+﻿{
+  "Id": "rule_阿利斯维斯特",
+  "Keywords": [
+    "阿利斯维斯特",
+    "沼泽"
+  ],
+  "RagShortTexts": [
+    "阿利斯维斯特是罗瓦尔重要粮食产地。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "阿利斯维斯特是罗瓦尔附近的一座村庄。这里曾是一片荒芜的沼泽，但瓦兰迪亚定居者们将水排干，在山谷中开垦出农田，种起了小麦和黑麦。如今这里已经成为罗瓦尔重要的粮食产地。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "阿利斯维斯特那地方，祖辈们刚来的时候全是烂泥塘，蚊子比人多。后来硬是把沼泽的水排干了，开出了能种麦子的好田。罗瓦尔那么多迁居者，嘴都指着阿利斯维斯特的粮食填。从烂泥地里刨出一片粮仓，这可不是谁都能干成的事。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "townsfolk"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "阿利斯维斯特的小麦粉在罗瓦尔卖得好。那边的地是沼泽排干后开出来的，土黑得跟墨似的，种什么旺什么。罗瓦尔山里的矿工吃面包，面粉多半是从阿利斯维斯特拉过来的。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "阿利斯维斯特的田整整齐齐的，看着跟别处不一样。当地人说这里以前全是烂泥，是他们的祖辈一铲一铲挖沟排水，把沼泽变成了良田。现在走在田垄上，还能看见田边那些几十年前挖的排水沟还在淌水。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "阿利斯维斯特",
+      "Kind": "bound_settlement_name",
+      "TargetId": "__bound_settlement__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": "罗瓦尔",
+      "Kind": "bound_settlement_name",
+      "TargetId": "__bound_settlement__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}

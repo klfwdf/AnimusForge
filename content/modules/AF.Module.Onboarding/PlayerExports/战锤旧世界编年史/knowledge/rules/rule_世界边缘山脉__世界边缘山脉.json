@@ -1,0 +1,209 @@
+{
+  "Id": "rule_世界边缘山脉__世界边缘山脉",
+  "Keywords": [
+    "世界边缘山脉",
+    "卡拉克",
+    "矮人城塞",
+    "永恒峰",
+    "卡拉扎-阿-卡拉克",
+    "矮人领地",
+    "山脉地理",
+    "八峰山"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "世界边缘山脉是旧世界最宏伟的山脉，从北方的混沌荒原边缘一路延伸至南方恶地，贯穿整个旧世界东部。这里是矮人帝国的古老心脏地带——曾经每一座山峰中都燃烧着矮人城塞的锻炉，但如今绝大多数城塞已被绿皮、鼠人或更可怕的存在所占据，仅存的据点之间依靠残存的地脉网道和雷霆空艇勉强维持联系。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "世界边缘山脉是我们的家，我们的坟墓，我们的永恒见证。在黄金时代，从北方的卡拉克·龙岩到南方的卡拉克·八峰，每一座山峰下都烧着我们的锻炉，地下道路畅通无阻，商队从最北到最南只需穿越我们维护的隧道。现在呢？卡拉克·龙岩失联了，卡拉克·八峰落在绿皮和鼠人手里快三百年了，卡拉克·瓦恩被鼠人炸塌了城基。但卡拉扎-阿-卡拉克——永恒峰——还在。只要永恒峰的锻炉还燃着火，世界边缘山脉就还是达维的山脉。我们会从采矿隧道中一点一点地回推，每一座失陷的卡拉克都会有一天被重新收复——也许不是你我有生之年，但终有一天。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "世界边缘山脉的地缘价值在于其无可替代的战略纵深和矿产资源。谁控制了山脉的主要隘口——黑火隘口、死亡隘口、银色之路——谁就控制了从帝国到恶地的全部贸易路线。山脉深处的矿脉产出旧世界最优质的铁、铜、银和陨铁，矮人的工程师公会和符文铁匠公会在这里保持着人类无法复制的武器制造能力。但山脉也是旧世界最危险的地域——地下隧道中可能潜伏着整支鼠人军团，废弃的矿洞可能是绿皮孢子的温床，而更深处的黑暗中据说还沉睡着更古老而无法名状的恐怖。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "世界边缘山脉地质学上是旧世界最古老的造山带，其形成可追溯到古圣行星改造时期之前。山脉的主要岩层为花岗岩和片麻岩基底，富含矮人称之为星铁的陨铁——一种据信来自元古时期大规模陨石撞击事件的极其稀有金属，其硬度和轻量比是已知任何自然或人工材料的数倍。矮人地脉网道是在黄金时期由矮人先祖安塞斯特尔主持挖掘的，利用山脉中已存在的天然石灰岩洞穴系统进行扩建和加固，总长在鼎盛时期据估算超过了从北到南旧世界大陆长度的一倍以上。如今约七成的地脉网道已坍塌或被占领。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "作为一位在灰色山脉边境治理领地三十年的矮人氏族女性，世界边缘山脉对我来说不是地图上的线条而是血脉的边界。每一座失落的卡拉克都是一条被切断的家族根系，每一座仍屹立的城塞是我儿子们仍能活着收到我寄去的符文护身符的保证。山脉不仅是防御工事——它是矮人种族的子宫和坟墓。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我们家族在世界边缘山脉中拥有三个已被封堵的矿道入口——那是我们自长须战争以来就一直在维护的秘密补给线。谁控制了山脉的主要隘口谁就控制了从帝国到恶地的所有贸易，而我家族在最近十代人中一直在帝国和矮人至高王之间充当山隘控制权的外交掮客。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "穿越世界边缘山脉的旅人手册第一条规定：只走有矮人守卫标记的道路。第二条：如果没有矮人守卫标记，这条路可能在五十年前就被废弃了而你将在三天后发现自己在一个绿皮的地下洞穴中。第三条：永远不要试图不付费通过矮人维护的隧道——他们不会阻止你进入，但你可能永远走不出去。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "世界边缘山脉的矿产资源是旧世界最重要的硬通货——矮人城塞出产的铁、铜、银和陨铁支撑着帝国的武器工业和巴托尼亚的甲具需求。但山脉贸易的问题在于运输成本：一车从卡拉克·卡德林运出的铁矿石在抵达阿尔道夫时其价格已经翻了六倍，只因沿途需要贿赂不下四个绿皮部落和支付三个矮人关隘的过路费。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "卡拉扎-阿-卡拉克——永恒峰，矮人至高王的永恒王座所在地，最古老最强大的矮人城塞",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "世界边缘山脉的地理位置与战略意义"
+  ]
+}

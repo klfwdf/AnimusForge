@@ -1,0 +1,93 @@
+﻿{
+  "Id": "rule_卡南克",
+  "Keywords": [
+    "卡南克"
+  ],
+  "RagShortTexts": [
+    "卡南克猪肉因林中放养和橡子栗子而闻名。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "卡南克是奥斯蒂港附近的一座村庄，位于莱恩诺北部潮湿的林丘中。这个村庄以饲养优质猪而闻名，这些猪能在茂密的森林中穿梭，寻找橡子、栗子和蜻蜓为食。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "卡南克的猪肉在奥斯蒂港是抢手货。那里的猪一辈子在林子里跑，吃的是橡子和栗子，肉又紧又香。奥斯蒂港那些海盗出身的家伙，在海上漂几个月回来，第一件事就是去卡南克搞一头猪来烤。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "townsfolk"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "卡南克的熏火腿能存好几年不坏，海船上的水手最爱这口。莱恩诺北边的林子潮是潮了点，但猪在里面拱得欢实，长出来的肉就是比圈养的强。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "我在卡南克住过一晚，那儿的猪比别处的都精瘦，在林子里钻来钻去跟野猪差不多。当地人说这些猪能闻出哪儿有松露，比狗还灵。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "卡南克",
+      "Kind": "bound_settlement_name",
+      "TargetId": "__bound_settlement__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": "奥斯蒂港",
+      "Kind": "bound_settlement_name",
+      "TargetId": "__bound_settlement__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}

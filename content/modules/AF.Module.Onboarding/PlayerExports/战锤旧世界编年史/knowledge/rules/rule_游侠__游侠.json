@@ -1,0 +1,213 @@
+{
+  "Id": "rule_游侠__游侠",
+  "Keywords": [
+    "游侠",
+    "地面巡逻",
+    "弩箭飞斧",
+    "矮人侦察兵",
+    "罕见户外",
+    "山地猎手",
+    "矮人斥候",
+    "荒野",
+    "巡逻",
+    "侦察",
+    "山径",
+    "户外矮人"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "游侠是矮人社会中最罕见的职业——大多数矮人终其一生不离开地下坑道，而游侠却常年在地面荒野中巡逻、侦察、猎杀途经矮人领地的敌军斥候。他们身披轻型甲以便在山石间潜行，手持弩箭与飞斧，是矮人军队的眼线。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "游侠！别人都以为矮人怕户外所以一出了坑道就活不成——那帮人去找游侠站在高山口子的穿山风口里的样子！你得明白做一个游侠在矮人里头是多离奇的事儿：我们矮人打心眼儿里觉得山里头才是家，上头那片蓝不蓝灰不灰的天是「老天爷打哈欠漏出来的破帘子」。但总得有人在外头盯着对吧？坑道再深也得知道外头的Waaagh往哪去，谁在边界山脊上搭贼哨棚。所以游侠成了那些在族群里不太合群的矮子的出路——他们喜欢听风声不喜欢听锤声，喜欢看老鹰在天上打转而不是火炬在墙上晃。但这不意味着他们离经叛道——游侠依旧是矮人中的硬茬：他们能在雪里趴一宿纹丝不动，一把老弩射的比人类的步枪还准，而且出野外会换上一种专门从露石上切下来磨成的飞斧——你知道那玩意儿能砍进板甲然后卡在里面吗？一发飞斧嵌进去，那铁罐头走路都走不快，然后弩箭就朝缝里钻！"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "游侠填补了矮人军力最大的结构性短板——缺乏可在地面远距机动侦察的轻步兵单位。一个标准编制下的游侠班（五至八人）可在二十里山地行军后仍保有伏击作战的全效体力，其在高海拔岩区的潜行隐蔽性约为人类侦察兵的两倍。游侠在战术上最重要的能力不是杀伤而是信息：他们能以任何人都无法破解的矮人山哨信号在数小时内通过卡拉克之间的连续山脊烽火将一支敌军的规模、方向与装备情报传遍全世界边缘山脉。如果你的军队有矮人游侠作为前卫哨，你的指挥官就拥有了一颗可以随时打破战争迷雾的山地眼珠子。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "游侠的历史和矮人走出卡拉克差不多一样古老——即所谓的「地面回归时期」（公元前约2400年-公元前约1800年），当时矮人王国开始将势力范围从地下坑道延伸至全球山脉的地表以上。游侠最初的编制并非军事建制而是矿物勘探队——老一批的游侠由名为「云行者」矿业寻踪者转变而来，他们在海拔六千尺以上的山脉中寻找新的金矿与陨铁坠落点。随着绿皮与其他地表威胁增加，云行者逐渐携带武器、学习山中伏击战术，最终演变为独立的「游侠」兵种。游侠的飞斧技术——在矮人语中称「喀扎克」——并非简单的投掷武器，而是矮人户外战斗哲学的核心象征：一记飞斧须在石地上反弹一次后击中目标小腿或脚踝——利用石地弹性制造不可预测的攻击轨迹。帝国工程学院的弹道模拟研究表明这种技术的平均准确率低于直接投射约百分之三十，但在崎岖山地的实战中反弹攻击无法被格挡——这使其有效杀伤率反而高于直线投射。值得注意的是，由于长期在地表活动，游侠的视杆细胞与视锥细胞的分布比例与普通矮人不同——他们的视距显著高于地下矮人，而夜视力则稍弱——这是矮人生物学对不同生境的适应性变异的罕见例证。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "在军事词典里，我们常谈论「移动力」与「情报力」，却很少讨论把两者加在一起的「存在力」。游侠的存在力在于：当你穿行一条狭窄的山道，你不知道哪块岩石后面窝着一个游侠——你看不到他，但有他在的地方，地是最安全的——所有地精伏击都被他提前找到然后逐一摘掉了。我的将军曾说「一个游侠比你的一百个斥候值钱」，因为他从不说谎——矮人没有在军事报告中说谎的心理构造。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我家族的领地夹在两段峭壁之间，唯一的隘口哨站曾由一名退役游侠老矮人独自守护了整整十八年。他在职期间我方领地未遭到一次成功的地精夜袭——不是零伤亡，是零袭击。他退休那年把日志给了哨站：满满一屋子，每页只写着一行字加上几道符号——他做了十八年的信息记录没人能看懂，那是游侠的符号语言。日志现在在我的书架上，我还在等下一个能读他的矮人到来。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我在世界边缘山脉带商队时雇过一个矮人游侠当向导——他不要金克朗，只要求商队把他扔在山脊某一处然后给他三天回程时间。路上任何能找到的暗夜地精伏击点他都提前指出来，甚至指着一堆不起眼的碎石说那下面埋着地精「间谍坑道」的通风口。问他怎么知道的，他说「石头坐得不对」，然后就闭口不谈。那个矮人脚力强得像岩羊，我们跟在他后面翻山比平时多走一倍路却比平时早半天到达。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "你听过那个运游侠飞斧的商机吗？一柄矮人游侠用过的飞斧在黑市上能卖到六百金克朗，因为它的材质是一种特殊的切石器岩石——矮人叫它「呜呜石」（我发不准那个矮人词语），据说只在世界边缘山脉七千尺以上的裸石层能找到。我听过的最高开价来自一个努恩的武器商，他愿以每柄一千金克朗收购任意数量的游侠飞斧——然后他被矮人探员查上门，仓库里的所有同类矿材全部被没收。原来「呜呜石」的开采权是矮人王族专利。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "矮人军队中唯一在地面荒野活动的轻步兵侦察兵种",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "游侠地面巡逻弩箭飞斧"
+  ]
+}

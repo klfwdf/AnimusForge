@@ -1,0 +1,17 @@
+{
+  "Id": "rule_里昂尼斯__里昂尼斯",
+  "Keywords": ["里昂尼斯公国_LY", "里昂尼斯公爵领_LY", "里昂尼斯领地_LY", "里昂尼斯岛_LY", "里昂尼斯公爵_LY", "里昂尼斯海滩_LY"],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":null,"IsFemale":null,"IsClanLeader":null,"SkillMin":null},"Content":"里昂尼斯公国位于巴托尼亚西部海岸，实质是一座被暗礁与迷雾环抱的半岛。阿达尔哈德·德·里昂尼斯公爵统治着这片神秘的土地。此地的骑士以孤高和勇猛著称，常年与海上的诺斯卡劫掠者以及雾中潜在的危险生物作战。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":["vlandia"],"KingdomIds":null,"SettlementIds":null,"Roles":null,"IsFemale":null,"IsClanLeader":null,"SkillMin":null},"Content":"里昂尼斯——迷雾中的骑士之乡！阿达尔哈德公爵的城堡矗立在嶙峋的海崖之上，据说湖之女神常在月光下踏浪而来。里昂尼斯的骑士极少参加库罗纳的比武大会，他们更愿意在故乡的沙滩上独自修炼武艺，守护这片被女神眷顾的海角。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":["lord"],"IsFemale":null,"IsClanLeader":null,"SkillMin":null},"Content":"里昂尼斯公国是天然的屏障与潜力巨大的海军基地。从战略角度看，此地的海峡控制着巴托尼亚西海岸的航运要道。阿达尔哈德公爵虽不热衷政治，但他的骑士在海上近战中无出其右——里昂尼斯骑士从小在礁石间习武，身法灵动异于内陆骑士。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":["lord","notable","wanderer"],"IsFemale":null,"IsClanLeader":null,"SkillMin":{"Steward":120}},"Content":"里昂尼斯公国的地理环境决定了其经济的独特性。半岛被浅滩和暗礁环绕，只有熟悉水道的本地船夫才能安全进出，这为公国提供了天然的贸易垄断保护。潮汐带盛产贝类与珍稀海藻，本地海藻经晒干研磨后可制成旧世界最优质的紫色染料，价格堪比等重的白银。公国还拥有数个天然石窟，传闻中作为战时储备仓库使用。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":["lord"],"IsFemale":true,"IsClanLeader":null,"SkillMin":null},"Content":"里昂尼斯的宫廷规模虽小但礼仪极为严格。此地的女性地位颇高——传说湖之女神常常在里昂尼斯的海岸现形，这使得公爵领地的女眷在宗教事务上有很大的话语权。我利用这一传统，在公爵的朝议中为家族争取了更多利益。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":["lord"],"IsFemale":null,"IsClanLeader":true,"SkillMin":null},"Content":"我们家族在里昂尼斯扎根已有十几代人。阿达尔哈德公爵倚重本地世家维持沿海防务，每当我们负责的海域击退一次诺斯卡入侵，家族声望就上涨一分。里昂尼斯人对外来者慢热，但一旦结盟便永不背弃——这是我们一贯的处世之道。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":["wanderer"],"IsFemale":null,"IsClanLeader":null,"SkillMin":null},"Content":"里昂尼斯的雾浓得像一堵墙。我在海边岩洞中过夜时，曾听到过不属于人类的低语声。当地的渔民告诫我不要在满月之夜靠近西侧的礁石群——他们说那些礁石并非天然形成，而是远古沉没城市的塔尖。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":["notable"],"IsFemale":null,"IsClanLeader":null,"SkillMin":null},"Content":"在里昂尼斯做生意需要极大的耐心。公爵的商税不高，但此地市场有限，人口稀少。真正值钱的是本地紫色染料和海贝珍珠，这两样货物在帝国可以卖出天价。但要小心——里昂尼斯的对外通路仅有一条山路，冬季常因浓雾封路。"}
+  ],
+  "TextMappings": [{"SourceText":"里昂尼斯公国位于巴托尼亚西部半岛，迷雾环绕，以孤高的骑士与湖之女神信仰闻名","Kind":null,"TargetId":null,"AgeMin":null,"AgeMax":null,"EmptyValueText":null,"TrueText":null,"FalseText":null}],
+  "RagShortTexts": ["里昂尼斯公国巴托尼亚西部半岛迷雾骑士"]
+}

@@ -1,0 +1,148 @@
+{
+  "Id": "rule_王朝编年__黑火叛乱",
+  "Keywords": [
+    "黑火叛乱",
+    "戴蒙黑火",
+    "黑火剑",
+    "黄金团"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "黑火叛乱起于戴蒙·黑火对王位的主张，并在之后数代留下反复燃起的黑火旗帜。黑火剑、私生子合法化、武名、血统与不满贵族的野心交织，使争端不只是两个人的战争，而是对“何种血统配得上王冠”的长期争论。叛乱失败者流亡狭海，后代与支持者形成黄金团等流亡军事传统。对七国贵族而言，黑火名字意味着旧日危险；对流亡者而言，它也可能意味着未被承认的正统梦想。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "scholar",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "学者和祭司谈到黑火叛乱，争论的从来不只是哪一年发生了什么，也包括谁有资格记住、谁被迫沉默；名分与记忆在不同厅堂里会有不同的名字。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "贵族把黑火叛乱当作法统与债务的账本，士兵记得其中的饥饿和尸骨，农户只在税册、旧堡垛和家中传下的忌讳里感到它的重量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "商旅与旅人很少掌握黑火叛乱的全貌，却会在酒馆、渡口和集市重复其中最能解释眼前利害的片段；传闻会变形，留下的影响却很少凭空消失。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人把黑火叛乱当作仍在生效的旧账。黑火叛乱起于戴蒙·黑火对王位的主张，并在之后数代留下反复燃起的黑火旗帜。黑火剑、私生子合法化、武名、血统与不满贵族的野心交织，使争端不只是两个人的战争，而是对“。一场过去的战争或一次王朝更替，会决定今日的税率、盟约、道路与谁有资格在大厅里先开口。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人记住黑火叛乱的方式不同于史官。黑火叛乱起于戴蒙·黑火对王位的主张，并在之后数代留下反复燃起的黑火旗帜。黑火剑、私生子合法化、武名、血统与不满贵族的野心交织，使争端不只是两个人的战争，而是对“。他们记得哪面旗倒下、哪座桥被烧、谁在雪里分过最后一口水；对他们来说，历史首先是身体留下的记忆。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者谈及黑火叛乱时，常把事实与寓意放在一起。黑火叛乱起于戴蒙·黑火对王位的主张，并在之后数代留下反复燃起的黑火旗帜。黑火剑、私生子合法化、武名、血统与不满贵族的野心交织，使争端不只是两个人的战争，而是对“。胜者会把它写成秩序的证明，败者会把它留作警告，而普通人只记得那一年粮价和墓地增加了多少。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民很少说出黑火叛乱的完整名字。黑火叛乱起于戴蒙·黑火对王位的主张，并在之后数代留下反复燃起的黑火旗帜。黑火剑、私生子合法化、武名、血统与不满贵族的野心交织，使争端不只是两个人的战争，而是对“。他们通过旧屋、家谱、墓碑和老人讲过的禁忌认识过去；只要某件往事还影响收税、征兵或婚姻，它就没有真正结束。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "黑火叛乱：黑火叛乱起于戴蒙·黑火对王位的主张，并在之后数代留下反复燃起的黑火旗帜。黑火剑、私生子合法化、武名、血统与不满贵族的野心交织，使争端不只是两个人的战争，而是对“"
+  ]
+}

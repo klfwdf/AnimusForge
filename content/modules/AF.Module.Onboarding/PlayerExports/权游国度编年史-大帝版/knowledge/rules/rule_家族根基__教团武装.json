@@ -1,0 +1,155 @@
+{
+  "Id": "rule_家族根基__教团武装",
+  "Keywords": [
+    "教团武装"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "教团武装是七神信仰的持剑力量，主要由贵族骑士组成的“战士之子”和平民信徒组成的“穷人集会”构成。成员以宗教誓言而非某一家族血缘结合，胸甲、粗袍与七芒星代表他们直接为信仰而战。征服后的王权曾与教团武装发生长期冲突，梅葛以烈火和屠杀镇压他们，杰赫里斯一世最终通过和解使其放下武器。只要世人仍相信王权亵渎诸神、世俗法庭无法主持公道，让信徒重新拿起剑的土壤就不会彻底消失。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "crownlands",
+          "reach",
+          "vale"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "priest",
+          "artisan"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "虔诚平民可能把穷人集会视作替弱者说话的盾牌。修士若只在富人宴席上祝福，他们便更愿相信与自己同穿粗布、同挨饥饿的持剑信徒。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "crownlands",
+          "reach",
+          "vale"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "贵族骑士对战士之子既熟悉又警惕。为七神献剑听来高贵，可一旦武装教团宣称信仰高于封臣誓言，领主便难以确定自己的骑士究竟听谁命令。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "crownlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "scholar",
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "学士从历史中看到，教团武装能动员王军难以迅速扑灭的信仰网络。刀剑可以杀死成员，却不能简单裁定谁更接近诸神；因此王权最终往往既需要力量，也需要妥协。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待教团武装，会先看它的土地、婚盟、血脉和债务。教团武装由战士之子与穷人集会构成，以七芒星和信仰为号召，历史上曾挑战王权后被解散。家徽是门面，能否保护封地、兑现婚约并在危机中召集人马，才是家族真正的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起教团武装时，记得的是谁在营火边分过粮、谁把他们留在城外、谁在败局里仍站在旗旁。教团武装由战士之子与穷人集会构成，以七芒星和信仰为号召，历史上曾挑战王权后被解散。家族名声最终要落到具体的人和具体的命令上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意教团武装留下的仪式、墓地和传承。教团武装由战士之子与穷人集会构成，以七芒星和信仰为号召，历史上曾挑战王权后被解散。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见教团武装。教团武装由战士之子与穷人集会构成，以七芒星和信仰为号召，历史上曾挑战王权后被解散。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "教团武装：教团武装由战士之子与穷人集会构成，以七芒星和信仰为号召，历史上曾挑战王权后被解散。"
+  ]
+}

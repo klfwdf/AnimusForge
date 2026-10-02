@@ -1,0 +1,213 @@
+{
+  "Id": "rule_王国骑士__王国骑士",
+  "Keywords": [
+    "王国骑士",
+    "封地骑士",
+    "正式骑士",
+    "巴托尼亚主力",
+    "纹章骑士",
+    "骑士阶层",
+    "王国骑士骑士",
+    "封臣",
+    "骑士团",
+    "骑兵主力",
+    "重装骑士",
+    "贵族骑兵"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "王国骑士是巴托尼亚骑士阶层的中坚力量，已获得封地并拥有完整纹章权的正式骑士。他们是战场上最令人畏惧的重装骑兵，以雷霆般的冲锋粉碎敌军阵线。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "王国骑士——巴托尼亚铁拳的化身！从游侠骑士历经淬炼晋升而来，每一位王国骑士都拥有一座庄园、一面世代传承的纹章和一支由忠诚军士组成的小队。当数百名王国骑士并排冲锋时，大地在蹄铁下哀鸣，长枪如钢铁森林般整齐放平，空气中只剩下战马嘶鸣和钢铁碰撞的轰鸣。没有任何凡间的步兵能在正面承受这样的冲锋后依然保持阵型。我们不仅是战士，更是王国的基石——平时治理封地、征收税赋、裁决纠纷，战时披甲上马、为国王与女神献出生命。这是荣耀，更是责任。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "王国骑士是任何巴托尼亚军队的核心打击力量。一个标准的王国骑士冲锋可以击穿除混沌神选者和矮人碎铁盾墙外的绝大多数敌军防线。但他们的弱点也很明显：冲锋一旦停滞，王国骑士在马背上挥剑作战的效率远不如专业的步战单位。因此必须确保每一次冲锋都能一击决定胜负——要么在冲锋前用精确侦察选定薄弱点，要么保留预备队进行二次打击。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "王国骑士制度在巴托尼亚法律中占据核心地位。每位王国骑士受封时需宣誓「骑士之道」，其内容包括：效忠领主、守护弱者、礼拜女神、不说谎言、永不撤退。王国骑士的封地面积通常在五至二十个庄园之间，年收入折合金克朗约二百至八百之数。他们有权在自己的领地内行使初级司法权，但死刑判决需报领主或公爵批准。王国骑士的纹章需在库罗纳纹章院登记备案，异姓通婚时纹章需重新设计以体现联姻。军事上，王国骑士的基础装备为全身板甲、骑枪、长剑、筝形盾和至少一匹战马，有条件的骑士还会配备备用战马和三至五名武装随从。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "王国骑士——这些男人在生活中往往固执傲慢，但在战场上他们确实值得尊敬。作为女领主，管理好王国内的骑士们是一门精妙的艺术：要用荣誉激励他们，用律法约束他们，用恩惠收拢他们。但千万不可在他们面前表现出软弱。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我族能够养得起三位王国骑士已是极限——封地、马匹、装备和仆从的开销几乎吃掉了氏族年收入的七成。但这是必须付出的代价。没有王国骑士坐镇，山贼和兽人就会来劫掠我们的领地。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "王国骑士们经过时总是昂首挺胸，盔甲上的纹章漆得闪亮，仿佛整个世界都是他们的。他们会施舍几个铜板给路边的乞丐——但从不正眼瞧。在酒馆里千万别和他们起冲突，他们最擅长在决斗中用骑枪把你钉在墙上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "王国骑士是最好的高端客户——定制盔甲、镀金马刺、手工刺绣的纹章罩袍。一位王国骑士每年的装备开销抵得上五十个军士的总和。不过他们讨价还价时傲慢得令人牙痒，还不允许任何人在工艺上偷工减料。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "王国骑士是巴托尼亚正式骑士，拥有封地和完整纹章权",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "王国骑士是巴托尼亚骑士阶层的中坚力量"
+  ]
+}

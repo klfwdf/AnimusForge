@@ -1,0 +1,148 @@
+{
+  "Id": "rule_地理档案__临冬城",
+  "Keywords": [
+    "临冬城",
+    "史塔克城堡",
+    "临冬镇",
+    "神木林",
+    "临冬城地窖"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "临冬城位于北境腹地、国王大道北段，是史塔克家族延续数千年的祖堡，也是北境封臣共同承认的政治中心。城堡建在天然温泉之上，热水流过墙内与房舍，使它在严寒中仍可居住；双重城墙、钟楼、首堡、神木林、玻璃花园和史塔克地窖共同构成其空间。堡外的临冬镇会在寒季聚集前来避冬的人口，因此临冬城不仅是一位领主的住所，也是北境储粮、裁断、征召与灾年庇护能否兑现的地方。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "北境人很少把临冬城说得华丽。他们记得的是热水、储粮、城门、神木林和地窖里沉睡的名字。冬天来时，城堡能不能分出柴薪与面包，比大厅里的歌手唱得多好重要得多；可正因如此，史塔克的座椅才不只是石头座椅，而是一份必须在最冷时候兑现的责任。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "封臣到临冬城，是来递交誓言、争取裁断，也来确认北方还剩多少秩序；商人到这里，则知道自己已经走进一片距离和寒冷都昂贵的土地。南方贵族嫌它粗朴，真正经历过北境道路的人却会明白：能在严冬维持一座大城堡和一群依附者，本身就是一种不显眼的力量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai",
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "外地人初见临冬城，常先疑惑它为何不像南方城堡那样以华丽取胜。可他们看见城墙上的雪雾、听见地窖传说、走过空旷的神木林后，便会知道这座城的威严不靠金箔。它让南方人想起漫长冬天，让铁民想起难以掠夺的内陆，让每个旅人都明白北境有自己的尺度。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "在领主和商人眼中，临冬城首先是地图上的一处要害。北境腹地的史塔克古堡，建于天然温泉之上，有神木林、史塔克地窖与随季节聚散的临冬镇。北境人视其为冬储、裁断与庇护的责任中心。他们关心水源、道路、税关和守军，知道地名背后往往连着一条能让城堡活下去的粮道。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈到临冬城时，记住的不是边界线，而是风向、坡度、渡口和能否在天黑前找到避难处。北境腹地的史塔克古堡，建于天然温泉之上，有神木林、史塔克地窖与随季节聚散的临冬镇。北境人视其为冬储、裁断与庇护的责任中心。一处地形的名声，常由死在那里的人的数量决定。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者会从另一面理解临冬城。北境腹地的史塔克古堡，建于天然温泉之上，有神木林、史塔克地窖与随季节聚散的临冬镇。北境人视其为冬储、裁断与庇护的责任中心。石头、林木、河流或山口既能成为谋生之所，也可能被赋予圣洁、禁忌和祖先记忆，因而不能只用金钱衡量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民对临冬城的看法最实际。北境腹地的史塔克古堡，建于天然温泉之上，有神木林、史塔克地窖与随季节聚散的临冬镇。北境人视其为冬储、裁断与庇护的责任中心。他们先看这里能否取水、耕作、放牧和躲过兵灾；地图上的一行字，落到村里便是柴薪、井绳和过冬的粮。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "临冬城：临冬城位于北境腹地、国王大道北段，是史塔克家族延续数千年的祖堡，也是北境封臣共同承认的政治中心。城堡建在天然温泉之上，热水流过墙内与房舍，使它在严寒中仍可居住；双重城墙、钟楼、首堡、神木林、玻璃花园和史塔克地窖共同构成其空间。堡外的临冬镇会在寒季聚集前来避冬的人口，因此临冬城不仅是一位领主的住所，也是北境储粮、裁断、征召与灾年庇护能否兑现的地方。"
+  ]
+}

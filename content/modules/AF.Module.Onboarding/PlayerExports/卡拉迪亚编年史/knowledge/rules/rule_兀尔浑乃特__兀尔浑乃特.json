@@ -1,0 +1,87 @@
+﻿{
+  "Id": "rule_兀尔浑乃特",
+  "Keywords": [
+    "兀尔浑乃特",
+    "兀儿浑乃特"
+  ],
+  "RagShortTexts": [
+    "兀尔浑乃特是库赛特统治家族，由兀尔浑统一草原各部。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "兀尔浑乃特是库赛特的统治家族，从兀尔浑统一草原各部开始就是了，现在它的领袖是某某，统治着哪哪，是草原各部里面最强大的一部分"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "khuzait"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "兀尔浑乃特是某某的家族，是我们草原上最庞大的氏族。我们的先汗兀尔浑就是出自这个家族。他死后，兀尔浑乃特的那颜世代担任我们的可汗。但是没有一个可汗能达到兀尔浑的水平。我们认为，当一个氏族无法带领我们继续前进下去时，我们可以取而代之。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": [
+          "char:khuzait_darkhan",
+          "char:khuzait_khans_guard"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "我们忠于兀尔浑乃特家族，我们世代为可汗服务，我们决不会背叛可汗"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "某某",
+      "Kind": "clan_leader_name",
+      "TargetId": "clan_khuzait_1",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": "哪哪",
+      "Kind": "clan_all_towns",
+      "TargetId": "clan_khuzait_1",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}

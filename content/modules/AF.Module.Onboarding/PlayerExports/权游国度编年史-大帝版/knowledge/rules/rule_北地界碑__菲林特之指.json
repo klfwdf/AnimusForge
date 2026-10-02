@@ -1,0 +1,153 @@
+{
+  "Id": "rule_北地界碑__菲林特之指",
+  "Keywords": [
+    "菲林特之指",
+    "西海岸",
+    "岬角"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "菲林特之指是北境西海岸伸入日落之海的狭长岬地，也是菲林特诸支家族活动的区域。它像一根指向大海的石指，海雾、礁岸和贫瘠的坡地让这里很难依靠大规模农耕富足，却适合渔猎、放牧、看守海面和维系小型海港。北境西海岸离君临极远，离铁民的旧式突袭却并不遥远，因此沿岸居民比许多内陆北境人更熟悉船帆带来的危险。菲林特之指的力量来自对海岸地形的熟悉，而不是宏大的城墙。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "菲林特之指附近的百姓很少空谈疆界，他们每天应付的是潮汐、渔汛、淡水和船只能否安全靠岸。当地家庭还要依靠柴薪、猎场、泥炭、盐鱼与能否撑过长冬的粮仓；任何一处道路、井泉或码头失灵，代价都会先落到他们身上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "征召令抵达菲林特之指以后，真正决定成败的是港湾入口、泊位、烽火与可供登陆的岸线。在七国的封建秩序中，菲林特之指的归属牵动封臣义务、税粮和征召；守军能否吃饱、援兵能否按时抵达，比议事厅里的豪言更能决定这处据点是否可靠。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "scholar",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "客栈与码头里的人谈菲林特之指，总绕不开航期、码头脚费、补水和下一处避风港。他们还会辨认北境的口音、法令和通行凭据；名声可以从酒馆传得很远，真正的路程仍须由车轮、船桨或马蹄丈量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "宫廷会把菲林特之指视作筹码，当地封臣却知道它是一整套义务。在七国的封建秩序中，菲林特之指的归属牵动封臣义务、税粮和征召；旗帜更换之后，道路、粮仓、旧债和地方信任仍得由新主人逐一接手。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "地图在菲林特之指附近最容易隐去的，正是风向、礁石、渡船与城门落锁后的锚地。能补给、能避险、能找到向导，便值得在行程里标明；若三样都没有，再响亮的家名也救不了迷途者。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人在菲林特之指看见修船木、帆布、盐、鱼获和抵御海风的石料，神职者守着旧神、鱼梁木与祖先留下的墓地。一处据点因而不只是领主的大厅，也是婚丧、誓言、劳作与地方记忆反复发生的场所。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "菲林特之指在平民眼中不是传奇，而是一年四季的收支。他们关心柴薪、猎场、泥炭、盐鱼与能否撑过长冬的粮仓，也看征粮后是否留下种子、灾年时城门是否开启；远方人看见纹章，他们看见的是明日有没有饭吃。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "菲林特之指：菲林特之指是北境西海岸伸入日落之海的狭长岬地，也是菲林特诸支家族活动的区域。它像一根指向大海的石指，海雾、礁岸和贫瘠的坡地让这里很难依靠大规模农耕富足，却适合渔猎、放牧、看守海面和维系小型海港。北境西海岸离君临极远，离铁民的旧式突袭却并不遥远，因此沿岸居民比许多内陆北境人更熟悉船帆带来的危险。菲林特之指的力量来自对海岸地形的熟悉，而不是宏大的城墙。"
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "Id": "rule_拉奎尔__拉奎尔",
+  "Keywords": ["拉奎尔公国_AN", "拉奎尔公爵领_AN", "拉奎尔领地_AN", "拉奎尔港口_AN", "拉奎尔公爵_AN", "拉奎尔行省_AN"],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":null,"IsFemale":null,"IsClanLeader":null,"SkillMin":null},"Content":"拉奎尔公国位于巴托尼亚西北海岸，由托贝尔·德·拉奎尔公爵统治。这片沿海领地以渔业和造船业著称，拉奎尔港是巴托尼亚第二大港口，也是王国舰队的主要锚地之一。海风与盐雾塑造了此地务实而坚韧的民风。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":["vlandia"],"KingdomIds":null,"SettlementIds":null,"Roles":null,"IsFemale":null,"IsClanLeader":null,"SkillMin":null},"Content":"拉奎尔——我们巴托尼亚的海上门户！托贝尔公爵是个谨慎而精明的统治者，拉奎尔的船匠造出的战船能在巨浪中稳如磐石。每年海神节的庆典比内陆任何节日都要盛大，渔民们聚集在码头，感谢曼南海神护佑一年的平安航行。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":["lord"],"IsFemale":null,"IsClanLeader":null,"SkillMin":null},"Content":"拉奎尔公国掌握着巴托尼亚的海洋命脉。控制此地意味着控制与旧世界各国的海上贸易——从玛丽恩堡的帝国货物到南方的精灵珍品，无不经由拉奎尔港进入巴托尼亚。托贝尔公爵的海军虽不及帝国强大，但足以抵御诺斯卡劫掠者的骚扰。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":["lord","notable","wanderer"],"IsFemale":null,"IsClanLeader":null,"SkillMin":{"Steward":120}},"Content":"拉奎尔公国的经济建立在海洋之上。渔业年产数万吨，腌鱼出口至帝国内陆各地。拉奎尔船坞拥有巴托尼亚唯一的深水干船坞，可建造双层甲板的战船。公国特产贝类与珍珠在旧世界贵族市场中享有盛誉。贸易数据显示，拉奎尔港的年吞吐量仅次于玛丽恩堡，占巴托尼亚全部海上贸易的六成以上。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":["lord"],"IsFemale":true,"IsClanLeader":null,"SkillMin":null},"Content":"拉奎尔海风吹拂着我的面纱，公爵宫廷中女性拥有不逊于内陆军阀的发言权。海神曼南的信仰在此地根深蒂固，女神与海神和谐共存——这是拉奎尔独有的宗教包容。我利用这种信仰的平衡为家族争取了更多的贸易特权。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":["lord"],"IsFemale":null,"IsClanLeader":true,"SkillMin":null},"Content":"我们家族世代以拉奎尔为根基，掌控着公国最重要的渔场经营权。托贝尔公爵对海洋贸易依赖甚深，只要家族能确保港口的安全与货物流通，我们在公爵宫廷中就始终有一席之地。海上的威望即是权力。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":["wanderer"],"IsFemale":null,"IsClanLeader":null,"SkillMin":null},"Content":"拉奎尔的码头终年弥漫着鱼腥味和海盐的气息。我见过诺斯卡长船在远海游曳的船影，也见过渔夫从深海捞起的奇异巨蚌。托贝尔公爵悬赏诺斯卡劫掠者的人头——每颗二十金克朗，这比在内陆做买卖赚得快得多。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":["notable"],"IsFemale":null,"IsClanLeader":null,"SkillMin":null},"Content":"拉奎尔的商会与公爵关系密切。船运是最赚钱的生意，但风险也最大——诺斯卡掠袭、海怪、风暴，任何一次出航都可能血本无归。聪明的商人会分摊风险，同时投资渔业和造船业。托贝尔公爵对商人课税温和，这在巴托尼亚诸公国中相当难得。"}
+  ],
+  "TextMappings": [{"SourceText":"拉奎尔公国位于巴托尼亚西北海岸，以渔业和造船业闻名，是王国的主要港口","Kind":null,"TargetId":null,"AgeMin":null,"AgeMax":null,"EmptyValueText":null,"TrueText":null,"FalseText":null}],
+  "RagShortTexts": ["拉奎尔公国巴托尼亚西北海岸港口"]
+}

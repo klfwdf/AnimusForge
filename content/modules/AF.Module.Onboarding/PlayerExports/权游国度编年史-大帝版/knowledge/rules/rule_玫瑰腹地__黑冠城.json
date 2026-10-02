@@ -1,0 +1,155 @@
+{
+  "Id": "rule_玫瑰腹地__黑冠城",
+  "Keywords": [
+    "黑冠城",
+    "河湾地",
+    "盾牌列岛",
+    "海岸城堡",
+    "航道"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "黑冠城位于河湾地西南海岸，靠近盾牌列岛的航道。河湾地的海岸城堡不能只依靠肥沃田野，它们还要理解潮汐、暗礁、船坞和沿岸警戒。盾牌列岛挡在航道与海湾之间，既保护内陆港口，也把岛民置于海盗、铁民和远洋风暴的前方。黑冠城可以从渔业、盐、船运和农产交换中获利，同时承担观察海面与向邻近领主传讯的职责。其战略价值来自海陆交界和列岛航路，而非某一支舰队永久驻扎。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "reach"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "从黑冠城望出去，最贴近生活的并非纹章，而是潮汐、渔汛、淡水和船只能否安全靠岸。当地家庭还要依靠谷物、葡萄酒、果园、牧场与曼德河沿线的集市；任何一处道路、井泉或码头失灵，代价都会先落到他们身上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "reach"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "号角与旗帜之外，黑冠城的防务依靠港湾入口、泊位、烽火与可供登陆的岸线。在七国的封建秩序中，黑冠城的归属牵动封臣义务、税粮和征召；守军能否吃饱、援兵能否按时抵达，比议事厅里的豪言更能决定这处据点是否可靠。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "scholar",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "远行者在黑冠城停留多久，取决于航期、码头脚费、补水和下一处避风港。他们还会辨认河湾地的口音、法令和通行凭据；名声可以从酒馆传得很远，真正的路程仍须由车轮、船桨或马蹄丈量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "一纸封赐可以决定黑冠城的主人，却不能立刻赢得附近人的服从。在七国的封建秩序中，黑冠城的归属牵动封臣义务、税粮和征召；旗帜更换之后，道路、粮仓、旧债和地方信任仍得由新主人逐一接手。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "走过黑冠城的士兵记得风向、礁石、渡船与城门落锁后的锚地。能补给、能避险、能找到向导，便值得在行程里标明；若三样都没有，再响亮的家名也救不了迷途者。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "黑冠城的匠人靠修船木、帆布、盐、鱼获和抵御海风的石料留下手艺，神职者则用七神、骑士传奇与园丁王时代留下的门第记忆解释生死。一处据点因而不只是领主的大厅，也是婚丧、誓言、劳作与地方记忆反复发生的场所。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "住在领地下层的人用灶火和粮袋衡量黑冠城。他们关心谷物、葡萄酒、果园、牧场与曼德河沿线的集市，也看征粮后是否留下种子、灾年时城门是否开启；远方人看见纹章，他们看见的是明日有没有饭吃。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "黑冠城：黑冠城位于河湾地西南海岸，靠近盾牌列岛的航道。河湾地的海岸城堡不能只依靠肥沃田野，它们还要理解潮汐、暗礁、船坞和沿岸警戒。盾牌列岛挡在航道与海湾之间，既保护内陆港口，也把岛民置于海盗、铁民和远洋风暴的前方。黑冠城可以从渔业、盐、船运和农产交换中获利，同时承担观察海面与向邻近领主传讯的职责。其战略价值来自海陆交界和列岛航路，而非某一支舰队永久驻扎。"
+  ]
+}

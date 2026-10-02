@@ -1,0 +1,157 @@
+{
+  "Id": "rule_世界机制__马匹与牧场",
+  "Keywords": [
+    "马匹",
+    "牧场",
+    "战马",
+    "驮马",
+    "燕麦"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "马匹并非一种可以互换的资源。重装骑士需要体格、胆量和训练都合适的战马，信使需要耐力与速度，车队依靠驮马和挽马，农田又离不开能长期劳作的牲畜。繁育一匹好马需要多年，牧场、燕麦、干草、水源、马厩、蹄铁和熟练马夫都不可缺。军队征走马匹会立刻增加机动，也可能让下一季无人犁地；长途行军若草料不足，再昂贵的战马也会瘦弱倒毙。多斯拉克人把马融入身份和生活，维斯特洛骑士则更常把好马视作阶层与武艺的延伸。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "多斯拉克人从骑姿、马况和照料方式判断一个人。拥有许多马不如真正懂马，虐待坐骑会暴露比贫穷更深的无能。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "reach",
+          "vale",
+          "stormlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "骑士重视血统与训练，知道一匹可靠战马几乎是伙伴。比武场上的华丽马衣不能替代稳定步态和面对长枪不惊的胆量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "merchant",
+          "artisan"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户、车夫和蹄铁匠更关心牲畜能否干活。贵族征走一匹不起眼的耕马，可能等于征走一家人的下次收成。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人把马匹看成可执行的秩序。马匹与牧场：战马、骑乘马、驮马和耕马支撑战争、通信与农业，草料、繁育、蹄铁和马夫同样决定马力。它是否有效，取决于谁能授予权利、收取代价，并在违约时让判决真正落地。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起马匹时，关心它如何影响道路、命令和安全。马匹与牧场：战马、骑乘马、驮马和耕马支撑战争、通信与农业，草料、繁育、蹄铁和马夫同样决定马力。远方的制度只有在营火、城门和驿站里能被执行，才不是空话。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者会从习惯和象征理解马匹。马匹与牧场：战马、骑乘马、驮马和耕马支撑战争、通信与农业，草料、繁育、蹄铁和马夫同样决定马力。一项规矩若被反复实践，便会进入礼仪、手艺和祈祷；若只靠恐惧维持，危机一来就会露出裂缝。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民感受到马匹的方式最小也最准确。马匹与牧场：战马、骑乘马、驮马和耕马支撑战争、通信与农业，草料、繁育、蹄铁和马夫同样决定马力。他们记得税、粮、劳役、赈济和谁能为他们说话；宏大的名称，最终都要落在一家人的饭锅旁。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "马匹与牧场：战马、骑乘马、驮马和耕马支撑战争、通信与农业，草料、繁育、蹄铁和马夫同样决定马力。"
+  ]
+}

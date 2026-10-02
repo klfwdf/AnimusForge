@@ -1,0 +1,209 @@
+{
+  "Id": "rule_混沌外交__混沌外交",
+  "Keywords": [
+    "混沌外交",
+    "混沌外交毁灭之潮",
+    "南北对立",
+    "混沌侵袭",
+    "诺斯卡贸易",
+    "雇佣兵",
+    "互不信任",
+    "临时休战"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "混沌与文明世界之间不存在真正的外交——只有毁灭之潮与绝望抵抗之间的无尽循环。北方的混沌部落视南方诸国如同待收割的麦田，而帝国、基斯里夫和矮人则永远生活在入侵的阴影之下。偶尔会有诺斯卡部落与南方进行交易或雇佣，但这不过是下次入侵前暂时的喘息。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "chaos_culture"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我们不需要外交——我们需要的是敬畏。南方人只会用他们油滑的舌头和虚伪的条约来掩饰内心的恐惧。当诺斯卡的龙船出现在他们的海岸线上时，他们献上金银和奴隶来乞求和平，而这正揭示了他们根本的软弱。真正的对话是用战斧和火焰进行的——每一座燃烧的城镇都是我们传达给南方诸神的讯息：你们的神祇已死，你们的高墙将塌，你们的文明不过是等待被收割的祭品。在永世神选的旗帜下，任何谈判都只有一个结局：无条件的臣服或彻底的毁灭。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "与北方势力打交道需要极端的现实主义。诺斯卡部落并非铁板一块——在非入侵周期，某些部落愿意以雇佣兵身份换取金银和物资，甚至可以在短时间内充当北方的缓冲力量。但这种「外交」极度危险且不可靠：混沌诸神的意志随时可能改变，今天的雇佣兵明天可能成为入侵的先锋。任何与北方势力的接触都必须在不暴露防御弱点的前提下进行，且始终准备应对最坏的背叛。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 100
+        },
+        "IdentityIds": null
+      },
+      "Content": "南北关系的历史是一幅复杂的图景。在诺斯卡层面，沿海部落长期以来既袭击又贸易南方海岸线，形成了某种掠夺经济——他们将南方货物视为「勇敢者的战利品」，而南方港口城市则发展出专门应对诺斯卡袭击的防御体系。帝国北部各省（特别是诺德领和奥斯特领）与诺斯卡人之间的冲突已持续数千年，形成了根深蒂固的种族和文化仇恨。基斯里夫作为南北对峙的最前沿，发展出了独特的军事文化和传奇性的冰巫术传统。更深层地看，这种对立不仅是军事和地理的——它反映了两种宇宙观的不可调和性：秩序文明相信法则、理性和稳定，而混沌代表的是原始的、流动的、以力量为唯一仲裁者的世界观。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "南北之间的外交沉默中有一个层面很少被记录——那就是女性的非正式外交网络。诺斯卡盾女在劫掠期间有时会与南方俘虏建立一种奇特的、基于个人勇气认可的私下关系。我曾听说过一位诺斯卡女酋长在洗劫了一座帝国渔村后释放了村里所有的妇女儿童——因为她认为'她们在暴风雪中保护自己孩子的样子像北方人'。在基斯里夫一侧，女巫团偶尔通过梦境与北方的预言者进行无声的信息交流，这种交流没有任何文字记录，但在关键时刻影响了边境战略——比如提前疏散某个注定被劫掠的村镇。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "混沌部落之间的外交远比他们与南方的'外交'更加重要——也更加致命。我是黑狼氏族的族长，我必须在每次劫掠季节前派出使者到相邻的四个部落确认我们的'打猎区'边界——这不是和平协议，而是为了防止尚未集结足够力量之前就在内斗中消耗殆尽。部落间的使者系统自有一套不成文的规则：使者必须单身不带武器，在对方长屋门槛上放下自己的头盔（表示'我的脑袋现在在你手中'），然后用对方氏族的古代战歌作为开场白——唱错一句可能意味着死亡。我曾经花了整整一年学会了冰牙氏族的全本战歌，只为了确保我们两个部落在下一个夏季能够联合劫掠帝国的诺德领。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我在基斯里夫-诺斯卡边境当了七年走私贩，学会了北方部落之间那套无声的边界规则。诺斯卡人从不越过'血石'——荒原边缘的那些被旧血染成深褐色的界碑。但更令我震撼的是他们在面对被混沌严重扭曲的同族时的反应：如果一个诺斯卡部落出现了过度的变异——比如整个长屋的人开始长出多余的肢体和眼珠——相邻的部落不会救助他们，也不会利用他们的虚弱发动攻击，而是会一致地集体沉默、拉上所有的狗、往相反方向迁徙。他们对混沌的恐惧比南方人更加切身——因为他们知道失去人性的真正含义。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "帝国与诺斯卡之间的地下贸易网络是一个公开的秘密——但没有人愿意在官方记录中承认其规模。我所在的贸易公会精确追踪了诺斯卡劫掠与其后贸易之间的关联模式：在一次大规模劫掠之后的三到六个月内，玛丽恩堡的灰色市场上会涌入大量帝国铸造的金克朗——这些是诺斯卡人在北方无法使用的南方铸币，他们急于将其换成铁锭、造船用钉和腌肉。最讽刺的经济现象是：某些帝国北部商人实际上暗中希望发生小规模劫掠——不是怕被抢，而是因为劫掠后的贸易季节中诺斯卡人对南方商品的需求价格弹性几乎为零，利润率远超正常年份。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "南北对立——混沌与秩序文明之间不可调和的存在论冲突",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "混沌的对外关系与盟友体系"
+  ]
+}

@@ -1,0 +1,153 @@
+{
+  "Id": "rule_北地界碑__溪流地",
+  "Keywords": [
+    "溪流地",
+    "溪流",
+    "荒原"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "溪流地是莱斯威尔家族所在的北境领地，名称来自穿过冻土与丘陵的众多小溪。北境的水道在暖季供给牧场和磨坊，在寒季却可能结冰、漫溢或切断道路；这里的人必须按水流、冰层和草场安排放牧与运输。溪流地不以宏伟都市闻名，正因如此更能体现北境多数领地的真实样貌：分散的庄园、木屋、塔楼、粮仓与在远处风雪中彼此照应的村落。莱斯威尔家族与临冬城的关系属于封臣网络的一部分，但地方生存首先取决于天气与邻居。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "季节一变，溪流地周围的人首先检查水位、渡口、芦苇地、可耕高地和雨季道路。当地家庭还要依靠柴薪、猎场、泥炭、盐鱼与能否撑过长冬的粮仓；任何一处道路、井泉或码头失灵，代价都会先落到他们身上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "把溪流地守在手里，需要算清桥梁、浅滩、堤道、舟船与不陷入泥沼的粮道。在七国的封建秩序中，溪流地的归属牵动封臣义务、税粮和征召；守军能否吃饱、援兵能否按时抵达，比议事厅里的豪言更能决定这处据点是否可靠。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "scholar",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "溪流地在商路上的轻重，可以从水运、桥税、渡资、磨坊和沿河集市看出来。他们还会辨认北境的口音、法令和通行凭据；名声可以从酒馆传得很远，真正的路程仍须由车轮、船桨或马蹄丈量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "对封臣而言，溪流地既是一份权利，也是一笔必须偿还的责任。在七国的封建秩序中，溪流地的归属牵动封臣义务、税粮和征召；旗帜更换之后，道路、粮仓、旧债和地方信任仍得由新主人逐一接手。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "对赶在天黑前投宿的人来说，溪流地意味着哪处能涉水、哪条堤道不被洪水吞没。能补给、能避险、能找到向导，便值得在行程里标明；若三样都没有，再响亮的家名也救不了迷途者。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "石木会朽，溪流地仍靠匠人照料舟船、桥木、磨坊石、渔网与河岸圣堂，靠神职者保存旧神、鱼梁木与祖先留下的墓地。一处据点因而不只是领主的大厅，也是婚丧、誓言、劳作与地方记忆反复发生的场所。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "百姓不靠族谱判断溪流地好坏，他们看收成和征税。他们关心柴薪、猎场、泥炭、盐鱼与能否撑过长冬的粮仓，也看征粮后是否留下种子、灾年时城门是否开启；远方人看见纹章，他们看见的是明日有没有饭吃。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "溪流地：溪流地是莱斯威尔家族所在的北境领地，名称来自穿过冻土与丘陵的众多小溪。北境的水道在暖季供给牧场和磨坊，在寒季却可能结冰、漫溢或切断道路；这里的人必须按水流、冰层和草场安排放牧与运输。溪流地不以宏伟都市闻名，正因如此更能体现北境多数领地的真实样貌：分散的庄园、木屋、塔楼、粮仓与在远处风雪中彼此照应的村落。莱斯威尔家族与临冬城的关系属于封臣网络的一部分，但地方生存首先取决于天气与邻居。"
+  ]
+}

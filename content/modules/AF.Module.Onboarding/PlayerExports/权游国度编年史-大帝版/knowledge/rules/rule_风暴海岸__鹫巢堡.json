@@ -1,0 +1,152 @@
+{
+  "Id": "rule_风暴海岸__鹫巢堡",
+  "Keywords": [
+    "鹫巢堡",
+    "风暴港"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "鹫巢堡是风暴地的海岸城堡，也是科宁顿家族的传统席位。它在风暴地诸侯体系中并不以广阔田野闻名，却因海岸位置、港口联系和家族的骑士传统拥有分量。当地的城墙面对的既可能是海上来客，也可能是从内陆道路赶来的征召队伍；海风把狭海与石阶列岛的消息带来，家族纽带又把它牵入风息堡和王领的政治。鹫巢这一名称本身带有高处瞭望的意味，提醒人们风暴地贵族总要在坏天气与坏消息中做出判断。其固定背景是地域与家族记忆，不是任何未来结局的保证。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "stormlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "鹫巢堡附近的百姓很少空谈疆界，他们每天应付的是潮汐、渔汛、淡水和船只能否安全靠岸。当地家庭还要依靠雨林木材、猎物、瘠薄农田、渔获和躲避风暴的屋顶；任何一处道路、井泉或码头失灵，代价都会先落到他们身上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "stormlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "征召令抵达鹫巢堡以后，真正决定成败的是港湾入口、泊位、烽火与可供登陆的岸线。在七国的封建秩序中，鹫巢堡的归属牵动封臣义务、税粮和征召；守军能否吃饱、援兵能否按时抵达，比议事厅里的豪言更能决定这处据点是否可靠。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "scholar",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "客栈与码头里的人谈鹫巢堡，总绕不开航期、码头脚费、补水和下一处避风港。他们还会辨认风暴地的口音、法令和通行凭据；名声可以从酒馆传得很远，真正的路程仍须由车轮、船桨或马蹄丈量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "宫廷会把鹫巢堡视作筹码，当地封臣却知道它是一整套义务。在七国的封建秩序中，鹫巢堡的归属牵动封臣义务、税粮和征召；旗帜更换之后，道路、粮仓、旧债和地方信任仍得由新主人逐一接手。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "地图在鹫巢堡附近最容易隐去的，正是风向、礁石、渡船与城门落锁后的锚地。能补给、能避险、能找到向导，便值得在行程里标明；若三样都没有，再响亮的家名也救不了迷途者。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人在鹫巢堡看见修船木、帆布、盐、鱼获和抵御海风的石料，神职者守着七神、风暴王旧史与抵御海风的厚重石墙。一处据点因而不只是领主的大厅，也是婚丧、誓言、劳作与地方记忆反复发生的场所。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "鹫巢堡在平民眼中不是传奇，而是一年四季的收支。他们关心雨林木材、猎物、瘠薄农田、渔获和躲避风暴的屋顶，也看征粮后是否留下种子、灾年时城门是否开启；远方人看见纹章，他们看见的是明日有没有饭吃。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "鹫巢堡：鹫巢堡是风暴地的海岸城堡，也是科宁顿家族的传统席位。它在风暴地诸侯体系中并不以广阔田野闻名，却因海岸位置、港口联系和家族的骑士传统拥有分量。当地的城墙面对的既可能是海上来客，也可能是从内陆道路赶来的征召队伍；海风把狭海与石阶列岛的消息带来，家族纽带又把它牵入风息堡和王领的政治。鹫巢这一名称本身带有高处瞭望的意味，提醒人们风暴地贵族总要在坏天气与坏消息中做出判断。其固定背景是地域与家族记忆，不是任何未来结局的保证。"
+  ]
+}

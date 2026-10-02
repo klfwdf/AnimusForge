@@ -1,0 +1,186 @@
+﻿{
+  "Id": "rule_金冠",
+  "Keywords": [
+    "金冠",
+    "瓦兰迪亚金冠"
+  ],
+  "RagShortTexts": [
+    "瓦兰迪亚金冠是帝国皇帝赠予首任国王奥斯里克的礼物。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": [
+          "hero:lord_4_1"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "当我的曾祖父“铁臂”奥斯里克宣布自己为瓦兰迪亚国王时，皇帝亲自送给我们一顶金色的王冠作为友好的礼物。呵。帝国的礼物信不得。如果你把一根骨头扔进一群野狗当中，对那根骨头意味着什么呢？意味着你会被咬来咬去。我一生中的大部分时间要么坐在马鞍上，要么坐在被围困的堡垒前。我曾经想过，我命运多舛，但至少我的儿子可以安稳地统治。我们用这样的谎言欺骗自己，而和平是永远都不会有的。我的儿子将接续我的统治，他也将与自己的兄弟和封臣们争斗不休。在他之后，我的孙辈们也将互相争斗。至少，作为国王和王子，他们可以成天享受干燥的帐篷、美酒和柔软的床铺。人生无常，安宁无外乎于此。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "金冠？听说过。那是开国那会儿帝国皇帝送给咱们第一个国王的。金的呢，值老钱了。不过老辈人说那东西不吉利——拿了帝国的东西，就得替帝国挡灾。后来咱们跟帝国打来打去，这金冠也不知道是福是祸。反正现在在王宫里放着，跟咱们没关系。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "金冠这东西，怎么说呢——帝国给的，本身就是笔糊涂账。你说它是帝国承认咱们瓦兰迪亚的凭证吧，可它又是帝国送的礼。送礼是什么意思？要么是服软，要么是下套。德泰尔觉得是下套，也有道理。不过话说回来，没有这顶金冠，奥斯里克的后代们凭什么坐在那个位子上？我们这些人今天站德泰尔这边，明天站因加泰尔那边，说到底还不是因为那个位子谁都能争一争。金冠只有一个，戴上的人被所有人咬。不戴的人想被咬还没那个命。你说这金冠是好是坏？我也不知道。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": [
+          "clan_vlandia_3"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null
+      },
+      "Content": "金冠是瓦兰迪亚王权的象征，但我们对它的态度向来是克制的。我们不觉得帝国赠予金冠是什么善意，也不像有些人那样把它看作诅咒。它就是一顶王冠，重要的是戴王冠的人怎么治理。德泰尔国王用仲裁代替刀剑，这比金子更珍贵。但那些把金冠当骨头抢的人，永远不懂这个道理。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": [
+          "clan_vlandia_4"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null
+      },
+      "Content": "帝国的金冠？呸。那顶破帽子就是帝国套在我们脖子上的狗链。奥斯里克拿了，从此瓦兰迪亚的王就得在帝国的阴影底下坐着。德泰尔还觉得对不起帝国？他骨子里就是帝国的一条好狗。我们戴·科尔坦家族不认那顶金冠——我们认的是瓦兰迪亚的刀剑和马蹄。真正的国王不该戴别人给的冠，该自己抢来。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": [
+          "clan_vlandia_2"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null
+      },
+      "Content": "金冠是帝国的一件礼物，仅此而已。我对它没有什么特别的感情。德泰尔是国王，他戴着那顶冠，我面子上认他，这没问题。但就事论事，帝国当初送这东西，安的什么心，几代人下来大家心里都有数。我不像因加泰尔那样把话骂得那么难听，但真到了瓦兰迪亚需要更强硬的手腕的时候，这顶金冠的重量可能就得换个肩膀来担了。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": [
+          "clan_vlandia_1"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": false,
+        "SkillMin": null
+      },
+      "Content": "金冠是我们家族的，但也是我们家族的负担。从奥斯里克接过它那天起，每一代梅罗克的男人都没安生过。德泰尔说得对——帝国扔了一根骨头过来，从此我们全家都变成了野狗嘴里抢食的人。外人只看见金子亮，看不见金子下面压着多少血。德泰尔一辈子在马鞍上和堡垒前熬日子，我们这些看着他的人，心里清楚得很。"
+    },
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "瓦兰迪亚人有个金王冠，听说是早年间帝国皇帝送的。怪事，帝国跟瓦兰迪亚打了那么多年，开头居然是送礼送出来的。那顶冠子大概挺好看，不过瓦兰迪亚人自己为了它也没少打。金子就是金子，到哪儿都招事。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "金冠是当年帝国的一个权宜之计，用一顶冠换西海岸的暂时安宁。后来怎样？瓦兰迪亚人自己咬了自己几代人。这笔买卖算下来不亏。我们当然不会公开这么说，但元老院里私下议论起来，都觉得那顶金冠比一个军团还好使。至于现在，金冠还在他们手里，但戴金冠的人已经不再值得帝国费心了。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "瓦兰迪亚那顶金冠是个有趣的外交案例。帝国用一顶冠承认了一个国王，这顶冠从此成了那个王国合法性的根基，也成了他们内斗的根源。我们这些外人看得很清楚：谁戴那顶冠，谁就是瓦兰迪亚的国王，但那顶冠也会让他睡不好觉。德泰尔有句话传得很远——骨头扔进野狗群里。这话是他说自己的封臣和自己的家族。一个国王把自己比作野狗，这其中多少辛酸，不是我们能完全体会的。"
+    }
+  ],
+  "TextMappings": []
+}

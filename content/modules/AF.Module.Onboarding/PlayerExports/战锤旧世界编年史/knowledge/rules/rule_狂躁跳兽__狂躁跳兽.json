@@ -1,0 +1,208 @@
+{
+  "Id": "rule_狂躁跳兽__狂躁跳兽",
+  "Keywords": [
+    "狂躁跳兽",
+    "弹跳兽",
+    "利齿球",
+    "地精坐骑",
+    "洞穴怪物",
+    "跳跳",
+    "贪食魔球"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "狂躁跳兽是一种生长在地下洞穴中的球形怪物——它们本质上是一个长满利齿的贪食巨口配上两条强壮的短腿，以不可预测的弹跳方式在战场上四处冲撞，吞食沿途的一切活物。暗夜地精将它们当作坐骑、武器和宠物，骑在它们的背上在战场上乱蹦乱跳。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "跳跳是俺们绿皮最搞笑的发明——不对不是俺们发明的，是暗夜地精那些小疯子从蘑菇地里养出来的玩意儿！这东西本质上就是一个长了腿的大嘴巴，每天吃了蹦蹦了吃，脾气差得要命。暗夜地精骑在它们背上冲进战场，那玩意儿一蹦能蹦得比人还高，然后砸到敌人脸上张嘴就啃一口！俺亲眼见过一只跳跳吞了整整一个矮人——连同他的盔甲和斧头一起吞下去了，然后打了个嗝吐出几颗铁牙。唯一缺点是你不知道它们下一跳朝哪个方向——有时候是敌人那边，有时候是你自己这边。骑跳跳的地精要有不要命的勇气，反正俺是不骑！"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "从战术上说，狂躁跳兽及其骑手构成了一种极不可预测的捣乱性骑兵——它们没有常规骑兵的纪律或控制力，但弹跳式移动方式使它们能越过步兵的第一排防线直接冲击后方的弓箭手和火炮营。它们的防御力极其低下，几乎任何远程火力都足以杀死它们，但其恐怖的外观和不可预测的弹跳方向对大部分士兵都会产生强烈的恐慌效应。应对策略：将高度训练有素的部队——如大剑圣或骑士——部署在前线对付其正面冲击，后方部署散兵线以缓冲其穿透防线的弹跳动向。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "狂躁跳兽的生物分类学归属一直是阿尔道夫大学自然历史部争论不休的话题。主流观点以海因里希·冯·施佩施奈德博士的《暗黑土地志异》为基础，将跳兽归入'洞穴真菌共生杂食性弹跳哺乳-真菌混合体'纲——是的，这个分类名本身就是学术界对其困惑的体现。实际上，跳兽的核心生命周期是从暗夜地精培育的巨型地下真菌'跳菇'上生长出来的——跳兽的'胚胎期'是附着在蘑菇伞盖下的一种孢子囊，当它成熟后会自行脱落并开始自主觅食行为。跳兽没有真正的肠胃，只有一条从口腔直通体内消化腔的通道，而这个腔体的壁膜会分泌一种浓度高到足以在四小时内溶解铁甲的消化酶。最令人匪夷所思的记录来自帝国历2401年的'跳兽集体出洞'事件：约六百只跳兽在没有任何预兆的情况下同时离开灰色山脉洞穴系统，蹦跳穿过了两个帝国省份，所到之处吞食一切牲畜，最终在大约三周后集体因消化系统超负荷而爆炸死亡。事后解剖发现，它们的体内残留物包含了牛、羊、大门板块、铁锅和二具完整的帝国路标。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我第一次看到一只狂躁跳兽的标本是在米登海姆的自然奇物展览会上——它被浸泡在一大罐臭水酒精里，整个球状身体直径约四尺，那张大嘴即使在死后也保持着饥饿的半开状态，裂缝里塞满了看起来像牙但又像某种角质钩刺的东西。展览标签写着'来自灰色山脉洞穴，死亡方式：吞食一颗比它嘴略大的石头，卡住喉咙窒息'。老实说，这也许是最能概括狂躁跳兽一生的墓志铭——死于贪吃。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我曾经试图——或者说我的宫廷大管家试图——搞一只活体狂躁跳兽放进我们城堡动物园里。运输过程简直就是一次微型战争：那只跳兽在笼子里蹦了八天八夜毫不停歇，铁栏杆被它撞弯了三次，喂食物的仆人被它吞了两个。第八天早上我们决定在城堡典礼广场直接射杀它以结束闹剧，但那天早上笼子是空的——跳兽咬开了笼底，在城堡地基里挖了个洞，消失在了地下。后来每逢月圆，守夜的卫兵还能听到城堡地底深处有沉闷的弹跳声和某种咀嚼骨头的声音。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我们在灰色山脉隧道里第一次遇到狂躁跳兽的时候差点闹笑话——有个新手佣兵没见过这玩意儿，以为是一块从洞顶掉下来的大石头。结果那石头睁开嘴对他咧嘴一笑，然后蹦起来咬了他半边脸。我们一边砍它一边逃，那个跳兽就在隧道墙壁之间像弹珠一样来回弹跳，撞到岩壁撞到我们又撞回岩壁，最后终于撞到一支火枪上被我们崩飞。我们清点伤亡——五个受伤，全是来自同一个跳兽的撞击而非咬伤。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我在卡尔卡松的一个皮商行里见过一块狂躁跳兽的皮——说是皮，其实更像是一层硬化的真菌外壳加上粗糙的胶原纤维。那个商人声称这种皮革可以制作永远不会被咬穿的靴子，但因为尺寸太小只能做小孩鞋。我买了五双给我侄子侄女，结果三个月后他们的脚上都长了真菌皮肤病。医生说那些跳兽皮上有暗夜地精养殖时使用的促生菌种，对人类皮肤有侵蚀作用。退货无门，因为那个商人已经被一只逃逸的跳兽吃了。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "球形洞穴怪物，本质为长腿的贪食巨口",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "狂躁跳兽弹跳兽利齿球"
+  ]
+}

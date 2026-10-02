@@ -1,0 +1,133 @@
+{
+  "Id": "rule_家族根基__普莱斯坦",
+  "Keywords": [
+    "普莱斯坦",
+    "普莱斯坦家族"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "普莱斯坦家族是布拉佛斯的富裕家门，与城市的商贸和金融圈层相连。布拉佛斯财富来自航运、工坊、保险、远途贸易与铁金库形成的信用体系；任何显赫家庭都无法完全置身这些力量之外。普莱斯坦的家名不是田野上的城堡，而是一串被船长、债主、合伙人与官员反复确认的承诺。家族人物可能进入政治，也可能专注生意，但每一步都要接受这座城市精于记账的目光。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "scholar",
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "铁金库相关人士不会因普莱斯坦姓氏响亮就忽略风险。抵押、现金流和担保比宴席交情可靠；布拉佛斯最冷静的权力常坐在没有王冠的账房里。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "artisan",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "布拉佛斯小商户既羡慕普莱斯坦的资本，也害怕大家门利用关系挤压码头和工坊。若规则只保护大债主，共和国的自由便会显得像富人的专利。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待普莱斯坦，会先看它的土地、婚盟、血脉和债务。普莱斯坦是布拉佛斯富裕家门，活动于商贸与金融精英之间，家名要靠账目、担保和城市信用维持。家徽是门面，能否保护封地、兑现婚约并在危机中召集人马，才是家族真正的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起普莱斯坦时，记得的是谁在营火边分过粮、谁把他们留在城外、谁在败局里仍站在旗旁。普莱斯坦是布拉佛斯富裕家门，活动于商贸与金融精英之间，家名要靠账目、担保和城市信用维持。家族名声最终要落到具体的人和具体的命令上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意普莱斯坦留下的仪式、墓地和传承。普莱斯坦是布拉佛斯富裕家门，活动于商贸与金融精英之间，家名要靠账目、担保和城市信用维持。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见普莱斯坦。普莱斯坦是布拉佛斯富裕家门，活动于商贸与金融精英之间，家名要靠账目、担保和城市信用维持。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "普莱斯坦：普莱斯坦是布拉佛斯富裕家门，活动于商贸与金融精英之间，家名要靠账目、担保和城市信用维持。"
+  ]
+}

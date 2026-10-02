@@ -1,0 +1,208 @@
+{
+  "Id": "rule_帝国总称__帝国总称",
+  "Keywords": [
+    "帝国国号",
+    "瑞克皇朝",
+    "选帝侯联邦",
+    "旧世界人类文明",
+    "阿尔道夫皇廷",
+    "十三行省联邦",
+    "西格玛帝国称谓"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "帝国——正式名称为「帝国」或「西格玛帝国」——是旧世界最强大的人类国家，由西格玛本人在两千五百年前建立。它不是一个单一民族国家，而是十三个拥有高度自治权的行省组成的选帝侯联邦，由选举产生的皇帝在阿尔道夫统治。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我们就是帝国。不需要花哨的修饰词——整个旧世界的人类文明都在这个名字下找到了庇护和意义。西格玛建立了它，马格努斯在混沌大入侵后重建了它，卡尔·弗兰兹现在坐在它的金座上。十三个行省从诺斯卡海岸到黑色山脉，从灰色山脉到世界边缘山脉——每一个帝国农民和市民都知道他们属于一个比任何单个王国都更伟大的存在。帝国不是暴政——皇帝必须被选帝侯选举，各行省保留自己的法律和军队。但当我们面对共同的敌人时——无论来自北方、南方还是地下——我们只有一个名字：帝国。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "帝国的名号在外交和国际关系中有精确的法律定义。「帝国」指的是由十三个行省（包括十五位选帝侯代表的领地和自由城市）组成的联邦政治实体，其主权由选举产生的皇帝、选帝侯议会和西格玛教会共同行使。帝国的疆域按帝国大道系统和瑞克河水系划分，西部包括瑞克领和威森领，北部包括米登领和诺德领，东部包括斯提尔领、奥斯特领和奥斯特马克，南部包括塔拉贝克领和韦森领。帝国的法律体系以《帝国法典》为基础，各行省在帝国法律框架内保留高度自治。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "帝国的政治实体定位在旧世界国家体系中是独一无二的——它是一个以选举君主制为核心的联邦制国家，其结构复杂性远超巴托尼亚的封建君主制或矮人的城塞联盟。帝国的官方名称随历史演变经历了三个阶段：西格玛时代的「人类帝国」（Empire of Man）强调种族统一性；马格努斯改革后的「选帝侯联邦」（Electoral Confederacy）强调行省自治与皇权的平衡；而当代最通用的「帝国」或「西格玛帝国」则将前两个阶段的遗产融合为一个统一的称号。帝国在国际条约中的正式签名格式为「西格玛神圣帝国皇帝XX、瑞克领亲王、阿尔道夫守护者」——这一串头衔本身就是帝国政治结构的压缩表达：皇权（皇帝）+ 行省（瑞克领）+ 首都（阿尔道夫）。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "帝国的名称对帝国内部的女性贵族来说有一层男性很少注意到的意义。在帝国的官方叙事中，「帝国」总是以男性皇帝、男性选帝侯和男性将军的视角被讲述——但帝国的实际运转依赖于女性在基层社区、家庭农场和地方教会中维持的秩序网络。当男人们在帝国议会中为行省边界争吵时，是女人们在确保那些边界的村庄中孩子们仍然在上学、病人仍然在被照顾、墓园仍然在被祝圣。帝国的真正基础不是帝国大道——是帝国女人。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "帝国的称号对我们家族的外交地位有直接的法律意义。作为帝国选帝侯家族，我们在与巴托尼亚、矮人和其他势力的条约中不得签署「帝国」的名义——那只能由皇帝本人签署。但我们可以在条约中以「瑞克领家族X」或「米登领家族Y」的名义签字。理解这种名义层级对于维护家族的国际地位至关重要——滥用「帝国」名义的家族会被皇帝在帝国议会上公开降格。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "在旧世界各地流浪时你会发现一个奇怪的现象——虽然帝国人自己称呼自己的国家为「帝国」，但巴托尼亚骑士私下称它为「商人共和国」，矮人则保留了最古老的称号「人类诸领」。不同的外号反映了不同种族对帝国本质的不同理解：巴托尼亚人看到的是帝国的商业财富，矮人记住的是帝国建立前人类部落分裂的历史。而基斯里夫人只用一句话来称呼帝国：「南方的兄弟们」。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "帝国的称号在国际贸易合同中有明确的经济价值。以「帝国」名义签发的贸易特许状在所有帝国行省和大部分矮人城塞中享有最高级别的信任度——这意味着持有帝国皇帝亲自签章的贸易特许状的商人可以在瑞克河上的任何帝国港口免缴地方关税。但「帝国」特许状本身的价格——也就是行贿帝国宫廷官员以加速特许状审批的成本——在阿尔道夫的黑市中已经涨到了一张标准特许状市值的六倍。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "帝国——正式全称「西格玛神圣帝国」，人类在旧世界的最大规模政治实体",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "帝国的正式称谓与政治地位"
+  ]
+}

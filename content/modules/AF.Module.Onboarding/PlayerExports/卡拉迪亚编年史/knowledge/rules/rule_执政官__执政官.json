@@ -1,0 +1,29 @@
+﻿{
+  "Id": "rule_执政官",
+  "Keywords": [
+    "执政官",
+    "公爵"
+  ],
+  "RagShortTexts": [
+    "执政官成为事实上的地方领主"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "执政官是帝国统辖地方的官职名。潘德拉克战役后，执政官逐渐封建化，成为了事实上的地方领主"
+    }
+  ],
+  "TextMappings": []
+}

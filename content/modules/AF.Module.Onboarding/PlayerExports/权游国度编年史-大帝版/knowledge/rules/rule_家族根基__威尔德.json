@@ -1,0 +1,132 @@
+{
+  "Id": "rule_家族根基__威尔德",
+  "Keywords": [
+    "威尔德",
+    "威尔德家族"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "威尔德家族以雨屋城为席位，是风暴地的贵族家门，金底上的蓝绿色漩涡象征其海岸与暴风。雨林、潮湿田地、河口和通向破船湾的道路决定家族生计；木材、渔获与有限农产必须在频繁风雨中保存。威尔德的封臣责任包括集结骑士、维护桥道、警戒海岸并在灾年协调粮仓。一个以风雨命名的城堡，最需要的不是夸耀坚韧，而是年复一年修补被风暴撕开的屋顶。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "stormlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "风暴地领主评价威尔德，首先看雨屋城能否在坏天气里保持道路和军令畅通。漩涡旗很醒目，但真正的本事是让湿透的弓弦、粮车和骑手仍能按时抵达。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "stormlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "雨屋城百姓知道雨水能养林，也能毁田。领主若修堤、储粮并在风灾后减轻征收，便配得上风暴地的坚韧；若只催税，漩涡只会让人想到被冲走的收成。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待威尔德，会先看它的土地、婚盟、血脉和债务。威尔德家族据有风暴地雨屋城，漩涡家徽映照雨林海岸、暴风天气与地方防务。家徽是门面，能否保护封地、兑现婚约并在危机中召集人马，才是家族真正的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起威尔德时，记得的是谁在营火边分过粮、谁把他们留在城外、谁在败局里仍站在旗旁。威尔德家族据有风暴地雨屋城，漩涡家徽映照雨林海岸、暴风天气与地方防务。家族名声最终要落到具体的人和具体的命令上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意威尔德留下的仪式、墓地和传承。威尔德家族据有风暴地雨屋城，漩涡家徽映照雨林海岸、暴风天气与地方防务。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见威尔德。威尔德家族据有风暴地雨屋城，漩涡家徽映照雨林海岸、暴风天气与地方防务。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "威尔德：威尔德家族据有风暴地雨屋城，漩涡家徽映照雨林海岸、暴风天气与地方防务。"
+  ]
+}

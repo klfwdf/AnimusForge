@@ -1,0 +1,33 @@
+﻿{
+  "Id": "rule_夏尔",
+  "Keywords": [
+    "夏尔"
+  ],
+  "RagShortTexts": [
+    "夏尔是一位脾气暴躁、吝啬的祖先，因躲避血仇从海边逃至内陆。六十年来，他默默在附近盐矿劳作，积累了惊人财富。去世后，子孙们在他那间简陋农舍中发现了这笔巨额遗产，成为意外之喜"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": [
+          "castle_n2",
+          "castle_n3",
+          "castle_n5",
+          "town_n2"
+        ],
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "夏尔是诺德村庄夏尔韦德的“创立者”，夏尔是一位脾气暴躁、吝啬的祖先，因躲避血仇从海边逃至内陆。六十年来，他默默在附近盐矿劳作，积累了惊人财富。去世后，十几名子孙们在他那间简陋农舍中发现了这笔巨额遗产，成为意外之喜。从此，这些人也在这里定居下来，成为夏尔韦德的雏形。"
+    }
+  ],
+  "TextMappings": []
+}

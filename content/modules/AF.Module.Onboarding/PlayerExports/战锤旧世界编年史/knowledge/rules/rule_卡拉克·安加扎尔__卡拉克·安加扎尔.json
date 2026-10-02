@@ -1,0 +1,17 @@
+{
+  "Id": "rule_卡拉克·安加扎尔__卡拉克·安加扎尔",
+  "Keywords": ["卡拉克安加扎尔_KA", "安加扎尔城塞_KA", "安加扎尔铁矿_KA", "安加扎尔矮人领地_KA", "安加扎尔国王_KA", "灰色山脉城塞_KA"],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":null,"IsFemale":null,"IsClanLeader":null,"SkillMin":null},"Content":"卡拉克·安加扎尔是灰色山脉西麓的一座矮人城塞，由布拉加里克国王统治。此地以丰富的铁矿矿脉闻名，曾是矮人黄金时代的西部重镇，后遭绿皮攻陷，经数代矮人浴血奋战才得以收复。铁与血是这座城塞最深刻的记忆。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":["sturgia"],"KingdomIds":null,"SettlementIds":null,"Roles":null,"IsFemale":null,"IsClanLeader":null,"SkillMin":null},"Content":"卡拉克·安加扎尔——吾族从绿皮手中用铁锤夺回的家！布拉加里克王的曾祖父亲眼见证了城塞光复的那一刻，据传从矿道中涌出的毒孢子废气熏死了整整三个连队的哥布林。吾族的铁匠在此锻造的近战斧钺无人能敌，法沙隘口的低地人管它叫「灰山的铁砧」。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":["lord"],"IsFemale":null,"IsClanLeader":null,"SkillMin":null},"Content":"卡拉克·安加扎尔控制着灰色山脉西侧最重要的铁矿石产区。此地的铁矿品位极高，杂质含量低于百分之五，非常适合锻造武器级钢铁。布拉加里克国王的军队虽规模不大，但由于装备精良，在山地与绿皮部落的游击战中占据绝对优势。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":["lord","notable","wanderer"],"IsFemale":null,"IsClanLeader":null,"SkillMin":{"Steward":120}},"Content":"卡拉克·安加扎尔的经济结构以采矿业为绝对主导。安加扎尔铁矿脉绵延十七里，矿层厚度稳定在五至八尺之间，年铁矿石产量逾万吨。城塞设有四座大型冶炼炉和一座水力锤锻车间，因灰色山脉雪水融流提供了充沛的水力能源。精炼铁锭主要出口至帝国努恩兵工厂和巴托尼亚蒙福特军械库。近年来，安加扎尔开始发展铁器深加工——包括铁犁头、铁轨扣件和建筑用铁钉的批量生产，以应对军事需求波动带来的经济风险。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":["lord"],"IsFemale":true,"IsClanLeader":null,"SkillMin":null},"Content":"安加扎尔的矮人女性管理着城塞的储藏库和物资调配。矿难和绿皮突袭让此地的寡妇数量远超其他矮人城塞。我负责将损失的矿工名单登记入册并分配抚恤物资——这份沉重的工作没有人愿意接手，但它比铁锤更能维系城塞的运转。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":["lord"],"IsFemale":null,"IsClanLeader":true,"SkillMin":null},"Content":"我们氏族在安加扎尔掌管着最深的铁矿脉——我们的矿道已前进了三百里，是城塞最深最危险的矿层。布拉加里克王信任我们不仅因为铁矿，更因为我们家族在每一次绿皮入侵中都守住了矿道的入口。铁与厚颜无耻的绿皮——安加扎尔的历史就是这两者的交织。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":["wanderer"],"IsFemale":null,"IsClanLeader":null,"SkillMin":null},"Content":"安加扎尔的空气里永远弥漫着铁锈和焦炭的气味。城塞下层冶炼区的矮人在永不休止的锤打声中度过一生，其中许多人从未离开过地下。我在矿山口的卫兵宿舍住过，半夜听到远处矿井深处传来的隆隆声——据说是地底巨虫在更深的地层钻行。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":["notable"],"IsFemale":null,"IsClanLeader":null,"SkillMin":null},"Content":"安加扎尔铁锭是灰色山脉以西最好的冶金原料。帝国的兵工厂是最大的买家，他们用安加扎尔铁打造的长剑和矛头在近战中从未断过。与安加扎尔矮人做生意要记住一条铁律：按约定时间交货，否则下次你的名字会从供货名单上永远消失。"}
+  ],
+  "TextMappings": [{"SourceText":"卡拉克·安加扎尔是灰色山脉西麓的矮人铁矿城塞，由布拉加里克国王统治，曾从绿皮手中光复","Kind":null,"TargetId":null,"AgeMin":null,"AgeMax":null,"EmptyValueText":null,"TrueText":null,"FalseText":null}],
+  "RagShortTexts": ["卡拉克安加扎尔灰色山脉矮人铁矿城塞"]
+}

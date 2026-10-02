@@ -1,0 +1,132 @@
+{
+  "Id": "rule_家族根基__戴瑞家族",
+  "Keywords": [
+    "戴瑞家族",
+    "黑色农夫",
+    "坦格利安忠臣"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "戴瑞家族以戴瑞城为根基，领地靠近三叉戟河与国王大道，家徽为褐底黑色农夫。戴瑞在坦格利安王朝末期以坚定拥护三头龙闻名，王朝更替后仍被许多人视作旧王忠臣；这份记忆可以带来敬意，也可能招来怀疑。对当地农人而言，红龙旧旗远不如春播、通行军队和戴瑞城能否维持道路重要。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "river"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "河间贵族记得戴瑞家的土地靠近国王大道，也记得他们对龙王旧朝的忠诚。这样的记忆能成为荣誉，也能成为重担；旗帜换过之后，邻人仍会从婚姻、旧友和大厅里的陈设判断这家人心里供着谁。戴瑞的农夫纹章朴素，家族处境却从不简单。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "river"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "戴瑞城附近的人把大道看成生计，也看成灾祸。商队带来铜币、盐和消息，大军则带走粮草、马匹与屋顶。普通人评价戴瑞，不会只谈旧王朝；他们更记得领主是否拦得住抢掠，税吏是否把被踩坏的田仍算作丰收。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待戴瑞家族，会先看它的土地、婚盟、血脉和债务。国王大道附近戴瑞城的河间家族，家徽为褐底黑色农夫，以坦格利安旧王忠臣闻名。田地、道路与王朝记忆共同塑造其身份；箴言未知。家徽是门面，能否保护封地、兑现婚约并在危机中召集人马，才是家族真正的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起戴瑞家族时，记得的是谁在营火边分过粮、谁把他们留在城外、谁在败局里仍站在旗旁。国王大道附近戴瑞城的河间家族，家徽为褐底黑色农夫，以坦格利安旧王忠臣闻名。田地、道路与王朝记忆共同塑造其身份；箴言未知。家族名声最终要落到具体的人和具体的命令上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意戴瑞家族留下的仪式、墓地和传承。国王大道附近戴瑞城的河间家族，家徽为褐底黑色农夫，以坦格利安旧王忠臣闻名。田地、道路与王朝记忆共同塑造其身份；箴言未知。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见戴瑞家族。国王大道附近戴瑞城的河间家族，家徽为褐底黑色农夫，以坦格利安旧王忠臣闻名。田地、道路与王朝记忆共同塑造其身份；箴言未知。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "戴瑞家族：国王大道附近戴瑞城的河间家族，家徽为褐底黑色农夫，以坦格利安旧王忠臣闻名。田地、道路与王朝记忆共同塑造其身份；箴言未知。"
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "Id": "rule_蒙福特__蒙福特",
+  "Keywords": ["蒙福特公国_MO", "蒙福特公爵领_MO", "蒙福特领地_MO", "蒙福特要塞_MO", "蒙福特公爵_MO", "蒙福特山堡_MO"],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":null,"IsFemale":null,"IsClanLeader":null,"SkillMin":null},"Content":"蒙福特公国坐落在灰色山脉最险峻的峡谷之中，由弗尔卡德·德·蒙福特公爵统治。这是巴托尼亚最坚固的公爵领——蒙福特城堡依山而建，城墙与天然岩壁融为一体，自建城以来从未被敌军从外部攻破。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":["vlandia"],"KingdomIds":null,"SettlementIds":null,"Roles":null,"IsFemale":null,"IsClanLeader":null,"SkillMin":null},"Content":"蒙福特——永不陷落的山中之城！弗尔卡德公爵是巴托尼亚最优秀的防御战大师，他的蒙福特城堡面对过无数次绿皮部落的围攻，城墙上的战痕比任何比武冠军的奖章都多。我们蒙福特骑士不善言辞，但我们的盾阵能让最凶猛的兽人狂潮也化为齑粉。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":["lord"],"IsFemale":null,"IsClanLeader":null,"SkillMin":null},"Content":"蒙福特公国是巴托尼亚在东方的钢铁大门。灰色山脉中居住着大量绿皮部落，它们唯一的出口便是蒙福特峡谷。弗尔卡德公爵的守军常年扼守此隘口，为王国挡下了不计其数的绿潮侵袭。战略价值毋庸置疑——蒙福特失守，巴托尼亚东部将门户大开。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":["lord","notable","wanderer"],"IsFemale":null,"IsClanLeader":null,"SkillMin":{"Steward":120}},"Content":"蒙福特公国的经济建立在防御工业之上。公国拥有巴托尼亚最优质的采石场——灰色山脉的花岗岩质地坚硬、颜色深沉，是建造城堡塔楼的上乘石材。蒙福特的铁矿山产出一种含钨量较高的特殊铁矿石，经矮人冶炼法锻造后制成的锁子甲比普通铁甲轻三成而韧性强两成。这些军工产品不仅是自用物资，也是对外出口的重要商品，帝国和矮人都愿意支付高价购买蒙福特岩石与钢铁。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":["lord"],"IsFemale":true,"IsClanLeader":null,"SkillMin":null},"Content":"蒙福特的军旅生活让女性贵族也必须精通防御战术。我从小便被教导如何组织难民撤退、调配守城物资和指挥弓箭手射击。这里的男性骑士敬重有能力的人——不论性别。当敌人在山脚下喧嚣时，城堡里没有人关心你是男是女，只关心你能不能拉弓射箭。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":["lord"],"IsFemale":null,"IsClanLeader":true,"SkillMin":null},"Content":"我们家族世世代代驻守在蒙福特峡谷最前线的小型要塞中。弗尔卡德公爵称我们为「守山人」——这是一份含着铁锈味的荣誉。每一代族长都要在任期内亲手修补一次要塞的外墙，象征家族的防御使命永不断绝。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":["wanderer"],"IsFemale":null,"IsClanLeader":null,"SkillMin":null},"Content":"蒙福特的城堡让人感到窒息——两侧是高不见顶的灰色岩壁，仿佛整个世界都被压缩成了一道狭窄的峡谷。我在山下的小酒馆里见过弗尔卡德公爵检阅边防部队，那位老人脸上深深的疤痕比任何装饰都更像一枚勋章。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":["notable"],"IsFemale":null,"IsClanLeader":null,"SkillMin":null},"Content":"蒙福特的军工品贸易规模不大但利润极高。本地花岗岩和特种铁料在内陆极受欢迎，但运输困难——穿过灰色山脉的道路每年只有三到四个月畅通。囤货并等待最佳卖点是蒙福特商人的基本功。"}
+  ],
+  "TextMappings": [{"SourceText":"蒙福特公国位于灰色山脉峡谷中，以坚固的防御要塞和山战能力著称","Kind":null,"TargetId":null,"AgeMin":null,"AgeMax":null,"EmptyValueText":null,"TrueText":null,"FalseText":null}],
+  "RagShortTexts": ["蒙福特公国灰色山脉坚固要塞"]
+}

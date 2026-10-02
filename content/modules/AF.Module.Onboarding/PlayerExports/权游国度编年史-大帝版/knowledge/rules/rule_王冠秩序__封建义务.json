@@ -1,0 +1,148 @@
+{
+  "Id": "rule_王冠秩序__封建义务",
+  "Keywords": [
+    "封建义务",
+    "征召",
+    "效忠誓言",
+    "保护"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "维斯特洛的统治由层层誓言连接：国王之下有大领主，大领主之下有伯爵、骑士与有产者，最底层则是耕种土地、缴纳租税和承担劳役的百姓。封臣通常须响应征召、提供兵员与补给、出席议事并履行约定贡赋；领主则应保护封地、主持司法、承认继承和在灾难中维持秩序。婚姻、养育、监护与人质常被用来加固关系。义务很少完全清楚：对直属领主、姻亲与王冠的誓言可能互相冲突，距离和实力又决定命令究竟能执行到什么程度。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "贵族把封建义务说成互相承担，却会在每次征召时争论兵数、期限和优先誓言。最危险的问题通常不是无人宣誓，而是一个人曾向太多人宣誓。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵与农户看到的是誓言的重量：离田从军、交出粮马、替从未见过的争端流血。若领主不能保护家园，要求忠诚的声音就会显得格外空。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "priest",
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "商人需要稳定道路，神职者强调誓言神圣，学士记录权利先例。三者都知道，制度真正运转靠的不是漂亮词句，而是违约之后是否有人有能力追究。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "在领主和商人眼中，封建义务不是挂在墙上的名词，而是每天要付出代价的秩序。领主以土地、司法与保护换取封臣的军役、税赋和忠诚，层层誓言既维系王国也制造冲突。他们会先问谁承担义务、谁得到保护，以及违约之后由谁来主持公道。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起封建义务时，通常不会从冠冕和仪式说起。领主以土地、司法与保护换取封臣的军役、税赋和忠诚，层层誓言既维系王国也制造冲突。对他们而言，真正重要的是命令能否抵达、道路是否安全、粮食和报酬能否按时到手。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者对封建义务的看法各不相同，却都明白一件事：领主以土地、司法与保护换取封臣的军役、税赋和忠诚，层层誓言既维系王国也制造冲突。漂亮的誓言若没有土地、兵力或神圣传统支撑，很快就会被下一场危机重新解释。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "在市镇和村庄里，封建义务往往以很小的方式出现。领主以土地、司法与保护换取封臣的军役、税赋和忠诚，层层誓言既维系王国也制造冲突。人们记住的不是谁在大厅里说得最响，而是哪一条规矩让家人免于饥饿、征召或无休止的争斗。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "封建义务：领主以土地、司法与保护换取封臣的军役、税赋和忠诚，层层誓言既维系王国也制造冲突。"
+  ]
+}

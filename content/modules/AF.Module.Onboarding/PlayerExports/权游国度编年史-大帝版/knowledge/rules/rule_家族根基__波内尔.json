@@ -1,0 +1,154 @@
+{
+  "Id": "rule_家族根基__波内尔",
+  "Keywords": [
+    "波内尔",
+    "波内尔家族"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "波内尔家族是甜姐岛的领主，拥有姐妹屯之盾、波浪台之主和夜灯台守护者等头衔，并向桑德兰家族效忠。姐妹群岛的薄土与险海使捕鱼、航路、灯塔和款待传统格外重要。高德瑞奇·波内尔虽背负“强盗领主”的名声，却仍尊重宾客权；在这片常被风暴隔绝的岛上，一张热饭桌有时与一座烽火台同样能决定人的生死。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vale"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "谷地贵族对姐妹群岛人的礼法与口音常有偏见，却不能忽视夜灯台和海峡航路。波内尔若守好灯火、约束劫掠，便是在替整个谷地看守一扇潮湿的海门。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vale"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "sailor",
+          "peasant",
+          "artisan"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "甜姐岛渔民知道海从不在乎头衔。他们在意灯塔是否点亮、失事船员能否得到热汤，也知道所谓走私与活命之间有时只隔着一场坏收成。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "crownlands",
+          "river"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "sailor",
+          "merchant",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "外来船长对波内尔既警惕又依赖。姐妹群岛有暗礁、浓雾和难以捉摸的潮流；能安全靠岸时，他们感谢守灯人，货物被查扣时又会咒骂岛上的每一位领主。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待波内尔，会先看它的土地、婚盟、血脉和债务。波内尔家族统治甜姐岛，肩负姐妹屯、波浪台与夜灯台的海防，并向桑德兰家族效忠。家徽是门面，能否保护封地、兑现婚约并在危机中召集人马，才是家族真正的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起波内尔时，记得的是谁在营火边分过粮、谁把他们留在城外、谁在败局里仍站在旗旁。波内尔家族统治甜姐岛，肩负姐妹屯、波浪台与夜灯台的海防，并向桑德兰家族效忠。家族名声最终要落到具体的人和具体的命令上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意波内尔留下的仪式、墓地和传承。波内尔家族统治甜姐岛，肩负姐妹屯、波浪台与夜灯台的海防，并向桑德兰家族效忠。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见波内尔。波内尔家族统治甜姐岛，肩负姐妹屯、波浪台与夜灯台的海防，并向桑德兰家族效忠。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "波内尔：波内尔家族统治甜姐岛，肩负姐妹屯、波浪台与夜灯台的海防，并向桑德兰家族效忠。"
+  ]
+}

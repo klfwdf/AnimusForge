@@ -1,0 +1,211 @@
+{
+  "Id": "rule_玛利恩堡__玛利恩堡",
+  "Keywords": [
+    "玛利恩堡",
+    "马林堡",
+    "旧世界贸易中心",
+    "瑞克河口",
+    "独立城邦",
+    "商业贵族议会",
+    "海上贸易",
+    "雇佣兵中心",
+    "外海之门",
+    "黄金水道"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "玛利恩堡——亦作马林堡——坐落于瑞克河入海口的群岛之上，是旧世界最大的贸易都市和唯一位于帝国版图之外的独立人类城邦。曾为帝国瓦斯特领的首府，于帝国历2429年以一笔惊天贿赂向皇帝迪特尔四世买下了独立权，自此由最富有的商业家族组成的董事会统治。玛利恩堡扼守瑞克河口，控制着帝国全境的水运贸易咽喉——任何从帝国驶向海洋或从海洋驶入帝国的商船都必须经过玛利恩堡的关卡。极度富有，极度腐败，极度独立——这三重标签以几乎不被人注意的方式流入了玛利恩堡人的日常呼吸中。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "玛利恩堡——我们帝国胸口上那道用金币撬开的伤口。是的，我们帝国的每一枚金币、每一袋谷物、每一根从世界边缘山脉运来的铁锭，只要从水路出入帝国就必须在玛利恩堡的码头接受检查，而我们还得为此付给那些穿着绸缎的「董事」们一笔他们称之为「通航费」的钱。迪特尔四世——愿西格玛原谅他的贪婪——将一整片帝国领土卖给他的情妇和一群玛利恩堡商业家族，换来的那笔钱他花在了猎鹰和东方香水上面。帝国舰队至今不敢强行进入玛利恩堡港，不是因为怕那些商人——而是因为玛利恩堡拥有旧世界最庞大的雇佣兵市场，任何试图以武力收回这座城市的帝国军队都得面对一支由蒂利亚长矛兵、诺斯卡私掠船长、阿拉比骑射手和矮人炮手组成的、用黄金而非忠诚拼凑起来的佣兵联军。我们恨玛利恩堡，但我们离不开它——而且他们知道我们离不开。这是这场怨恨关系中最令人难以忍受的部分。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "玛利恩堡在军事上几乎无法被征服——不是因为它的城墙有多厚，而是因为它周围的瑞克河口沼泽地和浅滩使得任何规模的陆军都无法直接展开。城市本身建在十四个主要岛屿和数十个小沙洲上，各岛之间由超过两百座桥梁和栈道连接，这意味着攻城战在此处必须分解为数百场独立的小规模夺桥战——一场指挥官的地狱级后勤噩梦。玛利恩堡海军则是旧世界除了帝国舰队之外的唯一一支成建制的人类海军力量，其舰队虽以中小型快速炮舰为主而非主力战舰，但熟悉河口每一处沙洲、潮汐和暗礁的本地领航员使他们在防御战中几乎不可战胜。对于帝国的军事决策者来说，收回玛利恩堡的最现实策略不是正面军事进攻，而是通过经济封锁——在瑞克河上游建立替代性的内河中转港口——或通过政治渗透收买董事会中的敌对派系。但这两条路都已经被讨论了两百年而未有寸进。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "玛利恩堡的独立是帝国历史上最令人尴尬但又最具教育意义的外交事件。帝国历2429年，时任皇帝迪特尔四世——一个因在猎鹰和奢侈宴会上花费远多于军事防御而被后世历史学家一致评为帝国最差皇帝之一的人物——秘密接受了由玛利恩堡十大家族联合提出的贿赂：一笔据传相当于当时帝国三年财政总收入的巨款，交换条件是签署《瓦斯特领独立特许状》，使瓦斯特领首府玛利恩堡及其周边瑞克河入海口地区脱离帝国成为一个自由城邦。迪特尔在其签署特许状后仅两年便被选帝侯联合罢免——但为时已晚，玛利恩堡的商业家族已经在政治真空中迅速组建了董事会取代帝国总督，并以帝国当时正处于与巴托尼亚边境冲突的虚弱期为由拒绝归还主权。玛利恩堡的治理结构——董事会——是一种极为罕见的商业贵族寡头制：城中约四十个拥有古老公民权并可以通过缴纳入门费任命自己为终身董事候选人的家族控制着城市的一切立法。董事会的决策过程完全封闭，投票采用家族财富比例为权重的加权投票制——因此最富有的三个家族实际上拥有否决权。玛利恩堡地契系统中有一种独特的「水域永久租赁权」概念，允许私人永久拥有特定水道段的通行收费权——这个概念在帝国法律中不存在，也是法学家们争论了两百年的灰色地带。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "玛利恩堡的董事会是一个男性俱乐部——至少在公开名单上是这样——但拥有公共席位的男人名单与现实权力分布之间存在着一整道由他们的妻子、遗孀和情妇组成的隐形女性网络。我以帝国行省贵族的身份数次访问玛利恩堡董事会成员的宅邸，每一次晚餐后的「女眷退席」时间才是我此行的真正目的——因为在那间挂着丝绸帷幔的侧厅里，董事夫人们的谈话中透露出的关于港口关税即将上调或某家香料期货即将崩盘的信息，比她们丈夫在餐桌上花了两个小时都没有说出的任何话都更具商业价值。玛利恩堡的女性继承法比帝国更为灵活——一个没有儿子的商人可以指定他的女儿继承所有家族生意和董事会席位，只需要向市政法务部缴纳一笔「特殊继承公证费」，这笔费用恰好等于席位转让税的一半——你可以说它是法律，也可以说它是一道以钱为钥匙的侧门。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我们家族在玛利恩堡并非董事会成员——那是本地家族的特权，外来家族不论多富有永远只能做「入籍商人」而非法定公民——但我们拥有一项比公共席位可能更有价值的东西：在玛利恩堡东港多岛区名下持有一座私有码头仓库已有五代人。这座仓库附带的通行水域权授权我的货物在特定水道段免除市政吨位税——这是一项在帝国历1980年代由一位处境窘迫的玛利恩堡财务官出售给我曾曾祖父的永久特权，此后每一任试图撤销该特权的市政官员都会在即将投票之前收到我们家族呈上的、由每一位购买过该项特权的祖先签发的法律维权信函。家族之间在玛利恩堡不以武力相争——在这座城市中，法律的伤害力远大于刀剑。你打赢一场家族战争的全部意义在于：在你的对手流尽最后一滴血之前，你能不能先签署一份让他破产的合同。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我在玛利恩堡的码头区度过了三年——在「海龙酒馆」里当佣兵中介的跑腿，每天的工作是带着酒去不同的船宿间询问船长需不需要刀手。玛利恩堡的雇佣兵市场——确切地说不是市场，是一个自我运转的生态系统。你可以在日出前走进海龙酒馆的正厅，找到刚从阿拉比海难中逃生的弩手、在蒂利亚城邦政变中站错了边的退役长矛连队长、或是从矮人商队中逃跑的矮人炮手学徒——所有人都在等待下一顿酒钱和下一场不问原因的战争。玛利恩堡本身不发动战争，但它为旧世界每一场战争提供血肉。我见过一个巴托尼亚流亡骑士在玛利恩堡的佣兵登记处同时收到三份邀请——来自帝国边境伯爵、蒂利亚商业亲王和北方废土上一位混沌冠军——不是因为他三头六臂，而是因为在这座城市里忠诚是没有价格的变量，可以随时从合同上划掉。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "玛利恩堡的贸易法则比帝国的任何地方都简单——只有一个法则：所有的钱最终都会流经玛利恩堡。瑞克河是帝国的动脉，而玛利恩堡占据了动脉连接心脏（阿尔道夫）与外界海洋之间的唯一接口。玛利恩堡商会的实际运作逻辑不是「谁拥有商品」而是「谁知道商品何时到达」——我在河港登记处工作期间学到的第一课是：你不需要拥有那艘船，你只需要比帝国那边的人早两天知道船将何时到达。信息本身在玛利恩堡就是最昂贵的商品——一道瑞克河上游封锁的消息可以从玛利恩堡传至提利尔需要十天，但在这十天中坐拥瑞克河物资库存的商人可以轻松将售价提高至三倍。玛利恩堡的财富积累建立在两个不可复制的条件之上：不可替代的地理位置与完全没有任何道德负担的董事会——二者的结合使这座城市在一个充满战争与毁灭的旧世界中奇迹般地繁荣了三百年。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "董事会——玛利恩堡的商业贵族统治机构，以家族财富为权重的加权投票制",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "玛利恩堡的地理位置与战略意义"
+  ]
+}

@@ -1,0 +1,154 @@
+{
+  "Id": "rule_长城守望__长夜堡",
+  "Keywords": [
+    "长夜堡",
+    "夜堡",
+    "黑门",
+    "传说"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "长夜堡是绝境长城上最古老、也最充满阴影的废弃城堡之一。它比黑城堡早得多，厅堂、井穴、地道和黑门传说使其在守夜人的故事里始终占有位置。废弃并不代表无关紧要：一座旧城堡会留下石墙、储藏空间、秘密通路和让人不安的往事，既可能成为避难处，也可能成为无人敢久留的空壳。长夜堡的荒凉反映守夜人长期衰落——十九座城堡中多数已无人守卫，防线在地图上很长，在现实中却有大片空白。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "长夜堡附近的百姓很少空谈疆界，他们每天应付的是井泉、田租、磨坊、林地和危急时能否进堡。当地家庭还要依靠冻土、柴薪、海豹肉、补给车队和漫长守夜；任何一处道路、井泉或码头失灵，代价都会先落到他们身上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "征召令抵达长夜堡以后，真正决定成败的是外墙、塔楼、水井、粮仓与最近的援军道路。长夜堡首先服从守夜人的誓言与军团秩序，而非南方领主的私产法理；守军能否吃饱、援兵能否按时抵达，比议事厅里的豪言更能决定这处据点是否可靠。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "scholar",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "客栈与码头里的人谈长夜堡，总绕不开领地税、庄园产物、驮队路程和堡下形成的小市集。他们还会辨认绝境长城的口音、法令和通行凭据；名声可以从酒馆传得很远，真正的路程仍须由车轮、船桨或马蹄丈量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "宫廷会把长夜堡视作筹码，当地封臣却知道它是一整套义务。长夜堡首先服从守夜人的誓言与军团秩序，而非南方领主的私产法理；旗帜更换之后，道路、粮仓、旧债和地方信任仍得由新主人逐一接手。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "地图在长夜堡附近最容易隐去的，正是坡势、城门、饮水与守军盘查外人的规矩。能补给、能避险、能找到向导，便值得在行程里标明；若三样都没有，再响亮的家名也救不了迷途者。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人在长夜堡看见石墙、木梁、铁门、墓窖和代代修补留下的接缝，神职者守着守夜人誓言、旧神与长城阴影下的死者记忆。一处据点因而不只是领主的大厅，也是婚丧、誓言、劳作与地方记忆反复发生的场所。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "长夜堡在平民眼中不是传奇，而是一年四季的收支。他们关心冻土、柴薪、海豹肉、补给车队和漫长守夜，也看征粮后是否留下种子、灾年时城门是否开启；远方人看见纹章，他们看见的是明日有没有饭吃。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "长夜堡：长夜堡是绝境长城上最古老、也最充满阴影的废弃城堡之一。它比黑城堡早得多，厅堂、井穴、地道和黑门传说使其在守夜人的故事里始终占有位置。废弃并不代表无关紧要：一座旧城堡会留下石墙、储藏空间、秘密通路和让人不安的往事，既可能成为避难处，也可能成为无人敢久留的空壳。长夜堡的荒凉反映守夜人长期衰落——十九座城堡中多数已无人守卫，防线在地图上很长，在现实中却有大片空白。"
+  ]
+}

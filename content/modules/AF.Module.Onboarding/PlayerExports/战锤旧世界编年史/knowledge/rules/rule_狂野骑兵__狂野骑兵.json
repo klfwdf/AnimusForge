@@ -1,0 +1,208 @@
+{
+  "Id": "rule_狂野骑兵__狂野骑兵",
+  "Keywords": [
+    "狂野骑兵",
+    "奥莱恩卫队",
+    "森林神鹿",
+    "自然狂怒",
+    "鹿骑士",
+    "狩猎侍从",
+    "库诺斯骑手"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "狂野骑兵是木精灵猎神奥莱恩最狂热的亲卫铁骑，这些精灵骑手驾驭着雄伟的森林神鹿，以不可控的自然狂怒发起毁灭性的冲锋。他们代表艾索洛伦最原始的野性力量，是人类骑士团永远无法驯服和匹敌的纯粹暴力。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "狂野骑兵是库诺斯之子奥莱恩在凡间的荣耀军团，是野性狩猎的终极化身！我们的狂野骑兵不骑驯服的战马——他们与森林神鹿缔结灵魂羁绊，每一头鹿都是自主选择了它的骑手，而非被征服。当奥莱恩吹响狩猎号角，狂野骑兵是最先响应的——他们冲出林线时，连大地都为那鹿蹄的雷鸣而震颤。人类骑士引以为豪的驯马术在他们眼中不过是可悲的囚禁游戏。狂野骑兵不需要马鞍、不需要马刺、更不需要锁甲——他们是森林与精灵之间最完美的共生体，是艾索洛伦不朽愤怒的铁拳。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "狂野骑兵的战术定位是突破敌阵侧翼的冲击骑兵，但绝不可以将其与人类重骑兵混淆。他们的冲锋速度远超任何骑马单位，因为森林神鹿——非普通驯鹿——的力量、敏捷与攻击性都碾压普通战马。尤其是当奥莱恩亲自领军时，狂野骑兵会进入狂暴状态，其冲锋能在瞬间碾压一切未设防的侧翼阵线。对抗他们的唯一有效方案是：预设鹿角障砦与陷坑，并在防线中央部署长矛手组成龟甲阵列。但请记住，狂野骑兵一旦看到陷阱，便会发挥精灵的智力优势而转向寻找更软的突破口。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "狂野骑兵所骑乘的森林神鹿——精灵语称'盖尔克-法罗恩'，意为'库诺斯之蹄'——是旧世界独有的一种魔变鹿科生物。它们不同于任何已知的鹿种：成年神鹿的肩高可达八到九肘尺，鹿角天然生长为武器化分支结构，骨质密度约是普通鹿角的三倍，尖端硬度堪比帝国精钢。每一头神鹿都在出生时接受过精灵女祭司的自然魔法灌注，使其生长周期从普通鹿的五年缩短至两年，寿命则延长至两百年以上。最令人着迷的是神鹿与骑手之间的'猎魂契约'——根据《艾索洛伦圣祠碑文》的残片可以推断，契约仪式要求骑手喝下神鹿初生角脱膜时流出的鹿血，同时神鹿也吸入骑手的汗与泪，以此完成双向的灵魂绑定。此后二者共享情绪与痛感，这也是为什么狂野骑兵战死后，其神鹿往往迅速消瘦死亡，不受任何照料。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我在外交仪式上看到过一大群森林神鹿在月光草地上奔跑的景象——那种美超越了所有人类骑士竞技场上的盛装马术。但精灵们说，每只神鹿与骑手之间的羁绊是终身的：如果骑手战死，他的鹿将跳入最近的世界根须入口，消失在艾索洛伦深处，永不再出现在战场上。这让我想到帝国骑士们在主人死后被卖到下一个买家手中的战马，两者之间的区别就是整个木精灵文明的缩影——他们对待伙伴的态度，让我们显得像是野蛮的奴隶贩子。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我们家族有一次几乎被狂野骑兵团灭——那是在祖父时代，家族军队追击一支掠夺边境的兽人部落进入了洛伦边缘。我们本无意冒犯精灵领地，但狂野骑兵不会听任何解释。那一夜，鹿蹄声从丛林四面响起，我们失去了一半以上的兵力，包括祖父的两个兄弟。三十年后祖父才从一名精灵信使那里得知：我们当时追击的兽人部落是屠杀了某处神鹿圣地的元凶，狂野骑兵是为了复仇而冲锋——只是我们在错误的时间出现在了错误的鹿蹄之下。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "在洛伦森林东缘的一个猎人小屋里，住着一位曾与狂野骑兵有过一面之缘的老猎人。他说那是在一片暴风雨中，他看到林线处一群鹿角上闪烁着幽绿光芒的巨大鹿影在闪电中奔驰而过，每一头鹿上都骑着一个沉默的精灵，手持长矛，目光死寂。老猎人说他没有逃跑，而是跪下来低下了头——不是出于恐惧，而是出于某种说不清的虔诚。暴风雨过后，鹿蹄印还在泥地中，每一个都有八寸之深。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "在塔拉贝克河畔的皮革市场上，偶尔能收到一副'神鹿角'——那是狂野骑兵战死后留下的最稀有的战利品。据说这种鹿角每根能卖到四千到六千金克朗，因为它上面残存的自然魔力可以用于制作顶级精灵长弓的弓臂或高级魔法护符。但我认识一个买了鹿角的炼金师，交易之后他所有的炼金实验全部失败，动物不敢靠近他的实验室，连猫都不愿待在他的房子里。他说那鹿角还在恨他——一头死去的鹿还在从死亡的另一端憎恨所有非精灵。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "猎神奥莱恩的狂野亲卫鹿骑兵",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "狂野骑兵是木精灵猎神奥莱恩最狂热的亲卫铁骑"
+  ]
+}

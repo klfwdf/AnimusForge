@@ -1,0 +1,94 @@
+﻿{
+  "Id": "rule_勒芒塔尔",
+  "Keywords": [
+    "勒芒塔尔",
+    "毛皮"
+  ],
+  "RagShortTexts": [
+    "勒芒塔尔的毛皮在瓦兰迪亚很有名"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "勒芒塔尔是奥斯蒂港附近的一座村庄，位于埃伯半岛的群山之中。陡坡上长满了笔直的云杉和冷杉，村民们用陷阱诱捕貂、兔子和狐狸等毛皮兽。近来这片荒地吸引了不少新定居者，他们为森林的相对自由而来。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "勒芒塔尔的毛皮在整个瓦兰迪亚都是有名的。埃伯山里的貂皮又软又密，冷杉林里的狐狸毛色好，做围脖最漂亮。而且那地方的贵族管得松，不少想过自在日子的人都往那儿跑。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "townsfolk"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "勒芒塔尔的毛皮生意好做，山里的猎人设陷阱，一张好貂皮能卖不少第纳尔。新搬去的人越来越多，他们说那地方虽然荒，但自由，没那么多税吏盯着你。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "勒芒塔尔是个藏身的好地方。埃伯半岛的群山又深又冷，云杉林遮天蔽日，不熟悉的人进去就迷路。我在那儿碰见过一个猎人，他说他一年只下山两次，剩下的时间都在山里跟毛皮兽打交道。这种人越来越多，都是不想被贵族管着的。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "勒芒塔尔",
+      "Kind": "bound_settlement_name",
+      "TargetId": "__bound_settlement__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": "奥斯蒂港",
+      "Kind": "bound_settlement_name",
+      "TargetId": "__bound_settlement__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}

@@ -1,0 +1,208 @@
+{
+  "Id": "rule_巡林客__巡林客",
+  "Keywords": [
+    "巡林客",
+    "潜行射手",
+    "森林鬼魅",
+    "远程狙杀",
+    "林地幽灵",
+    "无声之箭",
+    "艾索洛伦之眼"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "巡林客是木精灵中最致命的潜行射手，他们如同森林中的无形鬼魅，能在常人无法想象的超远距离射出无声之箭，一击毙命。只有少数幸运的旅行者曾在艾索洛伦的边缘瞥见他们融入树冠的身影，而大多数人终其一生也不会知道巡林客是否真的存在。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "巡林客是艾索洛伦最寂静的守护者，是库诺斯猎神在凡人层面的意志延伸。我们的巡林客自童年起便在森林最深处接受训练，学习与每一片树叶、每一道光线合为一体。他们不需要护甲——因为任何敌人在看见他们之前就已经死了。一支巡林客的箭能在三百步之外穿过板甲的护目缝，精准到令人畏惧。当矮人伐木工、帝国殖民者或野兽人战帮试图玷污我们神圣的林地时，巡林客便是第一道防线——他们在入侵者察觉自己的行踪已被监视之前，便已经射出了致命的第一箭。巡林客的存在本身就是艾索洛伦对任何外来者的警告：这片森林看得见你。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "在艾索洛伦边境的任何军事行动中，巡林客是必须优先考虑的无形威胁。我的参谋们最头疼的不是正面战场的木精灵步兵，而是那些你永远看不到的潜行射手。他们能将一支侦察队精确地拔除干净而不留任何痕迹——哨兵倒下时嘴里还含着当天的第一口军粮。唯一有效的对策是：保持哨兵双人制，使用受过反潜行训练的猎犬随行，并在进入森林区域前提前以燃烧弹开辟防火隔离带，逼迫可能的潜行者暴露位置。但说实话，在真正的深林中，这些措施最多只能给你提供不到三成的存活率。有些地方天生就属于精灵，我们闯入其中本身就是一种自杀。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "巡林客的选拔与训练体系是艾索洛伦最严格的社会机制之一。每一代仅有在最黑暗的冬至之夜出生的精灵幼童才有资格被选为巡林客候补——木精灵称之为'库诺斯之选'。这些幼童在三岁前就被送入森林深处由高阶巡林客单独抚养，十岁时开始学习'静行术'——一种结合了幻术魔法与肌肉控制的潜行技术，允许他们在完全不被察觉的状态下穿越任何地形。巡林客使用的复合长弓名为'精灵猎弓'，弓臂由艾索洛伦世界根须滋养的'幽灵橡木'制成，这种木材的密度与弹性是普通紫杉的四倍。最令人称奇的是巡林客的'丛生之箭'——一支箭射出后可在飞行中分裂为三支，根据帝国军事学院对阿金多尔森林冲突中回收的箭矢分析，这种分裂机制涉及微观符文阵列的精密切割，技术复杂度远超当代帝国工程学。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我的兄长曾率领一支部队进入艾索洛伦追捕盗猎者。他们在森林边缘扎营的第一夜就遭到了巡林客的警告——三支插在营地中央土堆上的箭，排列如库诺斯的猎矛图腾。兄长说，那些箭的箭羽是连他都辨认不出的羽毛，箭头打磨得能照出人的瞳孔。他没有继续深入，而是撤退并在林地边界立了一块纪念碑，以示对森林的尊重。这大概是为什么他活着回来了——因为他懂得阅读无声之箭所传达的语言。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我们家族在灰色山脉的山麓拥有伐木权已有七代，但也因此与木精灵的巡林客结下了七代的血仇。每一任族长都会告诫继承者：当你走进森林，如果听不到鸟鸣，立即退出。那不是好兆头，而是巡林客已经清空了那片区域的信号——他们不会警告第二次。我们家族有三十七个成员的名字刻在祖祠的石碑上，每一个都倒在森林边缘，心脏被一支精美的精灵箭矢穿透。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我曾经护送一位来自托巴罗的学者穿越艾索洛伦的边缘地带寻找一种稀有草药。第四天，学者突然捂住喉咙倒下，我去扶他时才发现一支绿色箭羽的箭矢已经从他的后颈穿入、从喉结穿出。我没听到弓弦声，没看到人影，甚至没有感觉到任何风的异常。我拔腿就跑，沿来时的路狂奔了整整一天，直到跨过一条河流才敢回头看。那个学者——我想他这辈子唯一的错误就是他跨过了森林中某条他看不见的边界线。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "在阿尔道夫大学的一次学术聚会上，我遇到了一个从旅途中归来的植物学家。他声称自己收集了巡林客所用箭毒的样本——一种从艾索洛伦特有蘑菇中提取的生物碱。他把它叫做'寂静之死'，据说中毒者会先失去语言能力，然后失去视觉，最后在完全清醒的状态下因呼吸肌麻痹而窒息。最骇人的细节是：这种毒素在受害者体内会自行降解，任何验尸手段都查不出毒杀痕迹。那位植物学家计划发表论文，但他没能活到发表的那天——死在自己家里，喉咙上插着一支绿色羽箭。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "木精灵中最高阶的潜行射手与无声猎杀者",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "巡林客潜行射手森林鬼魅"
+  ]
+}

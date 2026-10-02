@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using AnimusForge;
@@ -151,25 +152,10 @@ internal static class Program
         string legacyFile = Path.Combine(legacyModule, "PlayerExports", "demo", "old.json");
         Directory.CreateDirectory(Path.GetDirectoryName(legacyFile));
         File.WriteAllText(legacyFile, "{\"old\":true}");
-        string pendingRoot = Path.Combine(Path.GetTempPath(), "af2-pending-" + Guid.NewGuid().ToString("N"));
-        Reject(() => PlayerExportsStore.EnsureLegacyMigrationReady(legacyModule, pendingRoot), "detected legacy data blocks an unready user root");
-        string marker = Path.Combine(legacyModule, "UserData", ".player-exports-ready.json");
-        Directory.CreateDirectory(Path.GetDirectoryName(marker));
-        string moduleKey = PlayerExportsStore.ComputeModuleRootKey(legacyModule);
-        if (Path.DirectorySeparatorChar == '\\')
-            Check(PlayerExportsStore.ComputeModuleRootKey(@"C:\Games\AnimusForge") == "341e25efcc78c23c0ae0dd148a422cbd8cbcd7746d6307246c90ab2bea29bf79", "C# migration key normalization");
-        string manifestHash = new string('a', 64);
-        File.WriteAllText(marker, "{\"schema\":1,\"sources\":{\"" + moduleKey + "\":\"" + manifestHash + "\"}}");
-        Reject(() => PlayerExportsStore.VerifyMigrationMarker(legacyModule, marker), "ready pointer without completed recovery cannot permit cutover");
-        string completed = Path.Combine(legacyModule, "Recovery", "player-exports-" + manifestHash.Substring(0, 24), "completed.json");
-        Directory.CreateDirectory(Path.GetDirectoryName(completed));
-        File.WriteAllText(completed, "{\"schema\":1,\"manifestSha256\":\"" + manifestHash + "\"}");
-        PlayerExportsStore.VerifyMigrationMarker(legacyModule, marker);
-        Check(true, "matching verified migration record permits cutover");
-        File.WriteAllText(marker, "{\"schema\":1,\"sources\":{\"different\":\"" + manifestHash + "\"}}");
-        Reject(() => PlayerExportsStore.VerifyMigrationMarker(legacyModule, marker), "unrelated migration record cannot permit cutover");
-        File.WriteAllText(marker, "{broken");
-        Reject(() => PlayerExportsStore.VerifyMigrationMarker(legacyModule, marker), "corrupt migration record cannot permit cutover");
+        string pendingExports = Path.Combine(legacyModule, "user", "UserData", "PlayerExports");
+        Check(PlayerExportsStore.GetImportFolders(legacyModule, pendingExports).Single().FullPath == Path.GetDirectoryName(legacyFile), "installed package is readable without a migration receipt");
+        Check(PlayerExportsStore.ResolveImportFolderPath("demo", legacyModule, pendingExports) == Path.GetDirectoryName(legacyFile), "installed name resolves before absent user data");
+        Check(!Directory.Exists(pendingExports) && File.ReadAllText(legacyFile) == "{\"old\":true}", "reading legacy data does not migrate or modify it");
 
         string settingsPath = Path.Combine(workspace, "artifacts", "tests", "af2-terminal-settings", Guid.NewGuid().ToString("N"), "TerminalSettings.json");
         Check(AnimusForgeTerminalSettings.GetSettingsPath() == Path.Combine(isolatedRoot(), "UserData", "Settings", "TerminalSettings.json"), "TerminalSettings uses typed user path");

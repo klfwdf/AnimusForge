@@ -1,0 +1,210 @@
+{
+  "Id": "rule_混沌历史__混沌历史",
+  "Keywords": [
+    "混沌历史",
+    "星门崩塌",
+    "混沌入侵",
+    "混沌历史永世神选",
+    "古圣时代",
+    "长夜纪元",
+    "毁灭之潮",
+    "莫卡",
+    "艾查恩崛起"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "混沌的入侵史是一部用血与灰烬书写的编年史。传说远古时代，世界极地的星门——通往异界的古老门户——轰然崩塌，混沌之风由此涌入凡尘。自那以后，每隔数十年或数百年，北方就会诞生一位永世神选，统合混沌诸部落，掀起席卷南方的毁灭之潮。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "chaos_culture"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "星门崩塌是诸神赐予凡人的最大礼物——在此之前，混沌之风被囚禁于异界，凡人只能在恍惚的梦中窥见真理的碎片。伟大的永世神选们是历史的真正缔造者，每一位都是诸神亲手挑选的毁灭使者：统一者莫卡曾将整片诺斯卡置于同一面战旗下，而艾查恩更是诸神意志的终极化身。那些南方人只会哀叹「入侵」和「灾难」，却不知每一次毁灭之潮都是涤荡堕落世界的必要之火。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "混沌入侵的历史周期表明，北方的威胁从未真正消失——它只在积聚力量。在历史上，帝国曾多次面对永世神选领导的毁灭大军，其中最惨烈的一次几乎将整个旧世界推入深渊。了解这些历史周期对于制定防御战略至关重要：当北方的部落开始异常统合、当混沌荒原的魔法之风异常活跃、当黑暗预兆频繁出现，下一轮入侵便已临近。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 100
+        },
+        "IdentityIds": null
+      },
+      "Content": "混沌入侵的历史可以划分为几个关键纪元：星门崩塌之前的古圣时代，混沌被隔绝于亚空间之外，凡人种族在古圣引导下繁荣；崩塌之后的长夜纪元，大地被混沌统治了数千年，直到第一代精灵和矮人联盟将混沌逼退；此后是永世神选时代的开端，每隔数百年的入侵周期深刻塑造了旧世界的政治地理格局——基斯里夫的建立、帝国各省的军事化、矮人城塞的逐步失陷，皆与这一周期息息相关。艾查恩作为最新的永世神选，其身世本身即是一部黑暗传奇：他本是帝国一位狂信圣殿骑士，在追寻真相的过程中堕入混沌，最终集齐了六件混沌神器，加冕为末日之主。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "混沌历史中有一个常被忽视的层面：女性在混沌势力兴衰中的隐秘角色。诺斯卡的盾女不仅仅是战斗参与者——她们是部落口述史的传承者。每一位诺斯卡酋长的母亲、妻子和姐妹都通过长屋夜谈将上一代勇士的事迹传递给下一代，她们决定了哪些英雄的故事被传唱、哪些名字被遗忘。更重要的是，混沌的女预言家——那些在荒原边缘隐居的老女巫——她们通过解梦和内脏占卜预测永世神选的到来，有时甚至早于任何混沌术士的占星推演。历史上至少有三位永世神选的崛起都与一位女预言家的指引密不可分。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "混沌部落的氏族历史记录方式与文明世界的编年史完全不同——我们不写书，我们在长屋的椽柱上刻下每一场战斗的时间、地点和颅骨数量。我的家族——黑狼氏——的长屋椽柱上总共刻着三千七百多个刻痕，最早的一道可以追溯到第一位永世神选莫卡的时代。每一个氏族对战的历史叙事都是片面且高度夸张的，但如果你把相邻五个诺斯卡部落的长屋柱子上的记载进行比对，就能拼凑出某一时期混沌入侵的真实规模。问题的核心在于氏族之间的宿怨使得没有人愿意分享自己的'荣耀柱'——除非你砍下对方的头来数。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "在基斯里夫的老兵酒馆里，你可以听到最原始版本的混沌入侵口述史。那些老兵——如果他们活过了不止一次入侵——会告诉你毁灭之潮之间存在着一种恐怖的规律性：每三代人左右就会出现一次大型入侵，而小规模的诺斯卡劫掠则从未停止。最令他们胆寒的不是艾查恩的名字，而是'当所有乌鸦朝南飞的年份'——这是过去三次大规模入侵前都出现过的共同预兆。基斯里夫人不是通过书籍学习历史，而是通过祖父在雪夜围炉时讲述的警告。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "混沌入侵的历史周期在商业上是一项不可忽视的宏观风险因素。帝国商会有一份秘密的风险评估日历——基于过去两千年间有记录的十九次大型混沌入侵的时间间隔，计算出下一次入侵的可能窗口期。在这份日历标注的'高危年份'中，北方各省的粮食期货价格会在秋收前被囤积商哄抬至少百分之四十，而帝国工程学院的防御建材订单则会提前被抢购一空。最精明的投资者在混沌入侵期间买入的是什么？不是黄金——黄金在围城中买不到面包——而是矮人城塞的地下仓储空间租赁权。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "大灾变——星门崩塌事件，混沌能量开始涌入物质世界的起点",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "混沌的入侵史是一部用血与灰烬书写的编年史"
+  ]
+}

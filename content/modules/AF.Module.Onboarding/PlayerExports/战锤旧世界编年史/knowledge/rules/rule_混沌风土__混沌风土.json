@@ -1,0 +1,211 @@
+{
+  "Id": "rule_混沌风土__混沌风土",
+  "Keywords": [
+    "混沌风土",
+    "混沌风土北方蛮族",
+    "诺斯卡习俗",
+    "部落生活",
+    "盾女",
+    "长屋",
+    "萨满",
+    "掠夺文化",
+    "战歌",
+    "狂战士"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "诺斯卡和混沌荒原的蛮族生活在旧世界最严酷的自然环境中。这些高大强壮的人类从小学习狩猎巨兽、驾驭龙船穿越冰海、以及用敌人的颅骨装饰长屋的门楣。他们的社会中，力量是最高的美德，懦弱是不可饶恕的罪恶。混沌诸神的崇拜渗透在生活的每一个层面——从婴儿出生时的神谕占卜到战士临终前的最后一次献祭。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "chaos_culture"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "你们这些南方人永远不会理解北方的生活方式。我们不是在「忍受」荒原——我们是在其中淬炼。在北方的长屋里，婴儿的第一声啼哭不是在温暖的襁褓中，而是在冰冷的兽皮上；男孩在能握住斧头的那一天就成为战士；老人则在最后一次狩猎中欣然赴死，因为他们知道瓦哈拉——邪神的宴席——在等待着勇敢者。我们的船不是用来捕鱼的，它们是用敌人的鲜血涂饰的征服之器。我们的女人不是温顺的仆人，她们是盾女，能像任何男子一样挥舞战斧。这就是北方——残酷、纯粹、真实。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "理解北方蛮族的社会结构是应对混沌威胁的关键。诺斯卡部落以长屋为中心建立小型定居点，由酋长（Jarl）和卡尔（Karl，部落之王）统治。他们的经济基础是狩猎、劫掠和有限的沿海贸易。最关键的一点是：诺斯卡战士的价值体系与南方完全不同——死亡不是失败，死者将在邪神座旁获得永生。这意味着与诺斯卡军队交战时，他们不会因伤亡而士气崩溃，反而会视牺牲为荣耀。任何试图通过与诺斯卡人进行常规战争来消耗他们的策略都注定失败。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 100
+        },
+        "IdentityIds": null
+      },
+      "Content": "诺斯卡和荒原蛮族的日常生活深受混沌诸神崇拜的影响，这种影响深入到他们的社会结构、婚姻制度、丧葬仪式和艺术表达中。诺斯卡长屋的布局遵循严格的宇宙观——中央火炉代表混沌的原始能量，屋顶的开口让灵魂和烟雾一同上升至诸神的领域。战士社会的等级由「战绩」决定——不单纯是杀敌数量，还包括对手的声望和献祭的完整度。诺斯卡的铆接艺术在世界范围内独一无二：他们的武器和盔甲上雕刻着精密的符文和献祭场景，这些雕刻不仅仅是装饰，更是将神恩封印于金属中的巫术实践。混沌术士（Vitki）在社会中占据特殊地位，他们既是祭司也是历史记录者，通过口传史诗保存部落的传奇。变异在这些部落中既被恐惧也被尊崇——轻微的变异被视为神恩的标记，而失控的变异（如混沌卵）则被视为神弃的标志，会被放逐或处决。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "诺斯卡女性的生活远比南方人想象的更复杂——也远比他们以为的更自主。在氏族内部，女性掌控着长屋的经济和社交秩序：她们管理冬季食物储备、支配掠夺品的分配、决定哪些访客能够在火炉旁过夜。最重要的是，诺斯卡女性是氏族记忆的终极守护者。当酋长们在战场上砍杀时，是母亲和祖母们在长屋的夜晚教育年轻战士关于荣誉、仇恨和氏族之间复杂的历史关系。盾女——那些选择走上战场的女性——既不罕见也不特殊，她们与男性战士共享同样的战斗装备和死亡期望，唯一的区别是她们必须先证明自己能够单独猎杀一只巨型冰原狼才能获得战斧佩戴权。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "氏族族长的权力在日常生活中的体现远超外人的认知。作为黑狼氏族之长，我的每一个早晨从'火炉审判'开始——氏族成员在长屋中央火炉前排成一列，每人提出他们一天的请求和昨日的纠纷。我必须当场裁决所有争议：从两块冻肉的归属到一场因为战歌中唱错了另一氏族祖先名字而引发的血仇。裁决不是依靠法律书籍——我们没有这种废物——而是依靠对氏族传统和诸神意志的理解。如果我的裁决被族人集体沉默所质疑，那意味着我可能需要在日落之前击败一位来自族内的挑战者。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "在诺斯卡部落中度过的那个冬天改变了我的整个世界观。我被雪暴困在了灰熊氏族的营地里，作为交换活下去的条件，我必须在长屋里干杂活——劈柴、剥兽皮、在萨满举行仪式时保持绝对的沉默。我亲眼看到了他们不是什么'无情的杀戮机器'——他们有关于爱情的诗歌，有哄孩子入睡的摇篮曲，有在漫长的极夜中群坐于火炉旁讲述的滑稽故事。但他们也有令人胆寒的习俗：当一个孩子生下来带有无法隐藏的严重变异时，不是由父母决定——而是由萨满用骨矛在婴儿额头上轻轻一触，如果骨矛变色就说明诸神拒绝了这个灵魂，孩子会被送到冰原上让自然接手。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "诺斯卡的掠夺经济对旧世界海上贸易保险业的影响是灾难性的——但也是高度可预测的。精明的玛丽恩堡保险公司不为诺斯卡劫掠提供标准保险，而是提供一种'季节风险债券'：投资者在非劫掠季节购买债券，保险公司用本金投资南方贸易，如果在下一个劫掠季节中特定航线未受劫掠，投资者获得本金加高息返还；如果航线被劫掠，投资者血本无归但保险公司避免了因为巨额赔付而破产。这种金融工具的精妙之处在于它实际上将诺斯卡劫掠的风险从货船船主转移到了拥有足够资本能力承受损失的投机者身上——而诺斯卡人既不知道也不在乎他们的暴力行为在遥远的玛丽恩堡证券市场上被精密定价。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "诺斯卡生活——以长屋为中心的半游牧式部落生活方式",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "混沌的社会习俗与文化传统"
+  ]
+}

@@ -1,0 +1,161 @@
+﻿{
+  "Id": "rule_厄尔辛",
+  "Keywords": [
+    "厄尔辛",
+    "狩猎之神",
+    "雪神"
+  ],
+  "RagShortTexts": [
+    "诺德猎人向厄尔辛祈祷，求丰厚猎物与精准箭矢。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "厄尔辛是诺德人信奉的狩猎之神，同时也是冬神与雪神。在诺德人的传说中，他掌管着冬季的冰雪、森林中的猎物以及战士的箭术。诺德猎人出猎前常向他祈祷，祈求他赐予丰厚的猎物和精准的箭矢。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "nord"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "厄尔辛是我们诺德人最敬重的神祇之一。北方的冬天漫长而严酷，没有他的庇护，你连一只兔子都猎不到。他是雪的主人，是森林的守护者，每一支射出去的箭能不能命中，全看厄尔辛赏不赏脸。出猎前不向他献祭的人，最好别指望能带着猎物回来。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "nord"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "厄尔辛不仅是猎人的神，也是战士的神。寒冬是我们的盟友，雪地是我们的战场，厄尔辛教会了我们如何在北方的冰雪中生存和战斗。传说中他的弓是用紫杉木制成的，箭矢就是漫天飞舞的雪花。我们诺德人箭术也许比不上巴旦尼亚人，但有了厄尔辛的庇佑，我们的猎弓一样能夺人性命。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "nord"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "warrior"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "打仗之前，老辈人会让我们给厄尔辛敬一碗酒。不是每个战士都打猎，但每个战士都希望自己的斧头和箭能准。厄尔辛管的就是这个——准头。传说他行走在雪地上不会留下脚印，他的箭能射中暴风雪中的一片雪花。我们诺德猎人拿箭的手法，就是从厄尔辛那儿传下来的。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "nord"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "townsfolk"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "厄尔辛的祭坛在诺德各地都有，通常建在森林边缘或者山脚下。猎人们把猎物的第一块肉献给他，求他保佑下一趟出猎也能有好收成。冬天暴雪封山的时候，大家会聚在祭坛边给他献祭，求他别把冬天拉得太长。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "诺德人信的厄尔辛，跟我们斯特吉亚人信奉的风雪之神有点像。北方人都知道，冬天是会杀人的，你得敬畏它。诺德人把狩猎和冬天一起交给厄尔辛管，也是有道理的——最凶的猎物都是在最冷的季节被捕到的。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "厄尔辛是诺德蛮族信仰体系中的狩猎与冬季之神。根据诺德人的口述传说，他手持紫杉木弓，以雪花为箭，行走于雪地而不留踪迹。在诺德社会中，猎人阶层是厄尔辛的主要崇拜者，但战士在出征前也会向他献祭。从比较宗教学的角度看，厄尔辛代表了卡拉迪亚北方民族将严酷自然环境神格化的典型做法。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "我在诺德人的村子里见过一次猎人们祭祀厄尔辛。他们把刚打到的麋鹿抬到林边的一个石堆旁，割下第一块肉，放在雪地上。然后所有人围着石堆唱了一首歌。我不懂歌词是什么意思，但那声音在北风里传出去，连林子里的鸟都安静了。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "厄尔辛",
+      "Kind": "bound_deity_name",
+      "TargetId": "__bound_deity__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}

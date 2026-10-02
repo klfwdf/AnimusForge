@@ -1,0 +1,133 @@
+{
+  "Id": "rule_家族根基__斯坦戈尼",
+  "Keywords": [
+    "斯坦戈尼",
+    "斯坦戈尼家族"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "斯坦戈尼家族处在泰洛西权贵网络中。城邦靠商人与佣兵支撑，又容易被石阶列岛和邻近自由城邦的战争拖入冲突。斯坦戈尼若赞助舰船或佣兵，就可能迅速扩大影响，也可能因一次败仗背上巨债；谨慎分散生意往往比豪言更能延续家门。 泰洛西坐落于石阶列岛门户，以艳丽染料、海运、奴隶贸易和频繁雇佣佣兵闻名。大君由权贵政治推举，商人家门必须同时经营舰船、城市派系与列岛局势。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "tyroshi"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "泰洛西权贵观察斯坦戈尼，会看它拥有多少船、能否联络佣兵以及在大君政治中站在哪一边。染亮的胡须很醒目，真正决定席位的仍是钱、舰队和盟友。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "tyroshi"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "sailor",
+          "slave"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "泰洛西染工、水手和码头奴隶从最具体处认识斯坦戈尼：染缸是否有原料、船主是否付钱、战争是否又封住海路。权贵换一种颜色庆祝，底层往往仍洗不掉手上的染料。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待斯坦戈尼，会先看它的土地、婚盟、血脉和债务。斯坦戈尼是泰洛西地方家门，在大君政治、海港财富和佣兵市场之间寻求安全与影响。家徽是门面，能否保护封地、兑现婚约并在危机中召集人马，才是家族真正的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起斯坦戈尼时，记得的是谁在营火边分过粮、谁把他们留在城外、谁在败局里仍站在旗旁。斯坦戈尼是泰洛西地方家门，在大君政治、海港财富和佣兵市场之间寻求安全与影响。家族名声最终要落到具体的人和具体的命令上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意斯坦戈尼留下的仪式、墓地和传承。斯坦戈尼是泰洛西地方家门，在大君政治、海港财富和佣兵市场之间寻求安全与影响。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见斯坦戈尼。斯坦戈尼是泰洛西地方家门，在大君政治、海港财富和佣兵市场之间寻求安全与影响。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "斯坦戈尼：斯坦戈尼是泰洛西地方家门，在大君政治、海港财富和佣兵市场之间寻求安全与影响。"
+  ]
+}

@@ -1,0 +1,132 @@
+{
+  "Id": "rule_家族根基__史文家族",
+  "Keywords": [
+    "史文家族"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "史文家族以石盔城统治风暴地东南，海岸、边境道路和广阔封臣网络使其长期具有分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "stormlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "史文家族以石盔城为根基，领地面向多恩海与风暴地东南道路。海岸城堡必须同时防备海盗、边疆冲突和来自内陆的征召，因此史文的分量来自石墙、船只、骑士与对风向的判断。多恩边境的旧仇让每一次婚盟和商队通行都带着额外的谨慎。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "stormlands",
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "sailor",
+          "soldier",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "水手把石盔城当作海路标志，边疆士兵把它当作观察山口与海面的哨所，多恩商人则关心城门是否愿意按规矩开放。史文若能让三种人都知道该向谁交涉，城堡便比单纯的石头更有价值。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待史文家族，会先看它的土地、婚盟、血脉和债务。史文家族以石盔城统治风暴地东南，海岸、边境道路和广阔封臣网络使其长期具有分量。家徽是门面，能否保护封地、兑现婚约并在危机中召集人马，才是家族真正的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起史文家族时，记得的是谁在营火边分过粮、谁把他们留在城外、谁在败局里仍站在旗旁。史文家族以石盔城统治风暴地东南，海岸、边境道路和广阔封臣网络使其长期具有分量。家族名声最终要落到具体的人和具体的命令上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意史文家族留下的仪式、墓地和传承。史文家族以石盔城统治风暴地东南，海岸、边境道路和广阔封臣网络使其长期具有分量。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见史文家族。史文家族以石盔城统治风暴地东南，海岸、边境道路和广阔封臣网络使其长期具有分量。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "史文家族：史文家族以石盔城统治风暴地东南，海岸、边境道路和广阔封臣网络使其长期具有分量。"
+  ]
+}

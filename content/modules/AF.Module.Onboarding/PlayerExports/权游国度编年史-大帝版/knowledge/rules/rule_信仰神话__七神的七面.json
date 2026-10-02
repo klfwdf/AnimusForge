@@ -1,0 +1,146 @@
+{
+  "Id": "rule_信仰神话__七神的七面",
+  "Keywords": [
+    "天父"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "七神信仰把神理解为七种面相：天父主持审判，圣母象征慈悲与生育，战士赐予勇气，少女守护纯洁与希望，铁匠代表劳作和创造，老妪提灯指引智慧，陌客则与死亡、未知和被排斥者相连。圣堂常设七面神像或七面一体的象征，祈祷者依自身处境向不同面相求助；教义强调它们并非七位彼此争斗的神，而是同一神性的七种显现。婚礼、册封骑士、葬礼、审判和节庆都能见到七神仪式。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "priest",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "虔诚信徒会在不同日子向不同面相祈祷：母亲求圣母，战士求战士，迷路者求老妪。陌客少有人亲近，却没有人能永远避开。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "贵族喜欢在天父前宣示公正、在战士前祝福刀剑，但仪式也会反过来衡量他们。一个残酷领主即使捐出宏伟圣堂，也未必能让百姓相信圣母认可他。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "scholar",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "工匠容易亲近铁匠，学者与老人常向老妪点灯。七面让同一信仰容纳不同生活，也让人能够用自己最熟悉的劳动理解神。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待七神时，会同时想到信仰与秩序。七神的七面：一个神性的七种面相，分别承载裁断、慈悲、勇武、纯真、劳作、智慧与死亡。祭坛、圣物和预言能够凝聚人心，也能让一项政治要求披上不可反驳的外衣。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人在危急时刻才最常谈起七神。七神的七面：一个神性的七种面相，分别承载裁断、慈悲、勇武、纯真、劳作、智慧与死亡。有人把它当作护身符，有人把它当作恐惧的名字；同一场祈祷，可能让人拔剑，也可能让人放下剑。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更在意七神的仪式、禁忌和传承。七神的七面：一个神性的七种面相，分别承载裁断、慈悲、勇武、纯真、劳作、智慧与死亡。神明是否回应无法由账本证明，但祭礼如何举行、谁能解释征兆，却实实在在决定着共同体的权威。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民把七神放进季节和家务里。七神的七面：一个神性的七种面相，分别承载裁断、慈悲、勇武、纯真、劳作、智慧与死亡。他们在出生、婚配、播种、疾病和死亡时求一个可以依靠的解释；神名未必相同，想让家人平安的愿望却相近。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "七神的七面：一个神性的七种面相，分别承载裁断、慈悲、勇武、纯真、劳作、智慧与死亡。"
+  ]
+}

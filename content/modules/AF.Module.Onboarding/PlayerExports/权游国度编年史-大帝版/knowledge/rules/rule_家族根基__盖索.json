@@ -1,0 +1,152 @@
+{
+  "Id": "rule_家族根基__盖索",
+  "Keywords": [
+    "盖索",
+    "盖索家族"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "盖索是伊班岛上的家门之一，生活被捕鲸季和寒海贸易塑造。猎获一头鲸并不等于财富已经到手：拖带、分割、炼油、保存、骨料加工和装船都需要大量协作，任何环节失序都会把收获变成腐败与争斗。盖索的根基因此存在于船与岸之间，既要赢得敢出海者的信任，也要约束监工、维护作坊并安排冬季储藏。船队规模可以改变，围绕风险与分配产生的责任不会改变。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "ibbenese"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "sailor",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "捕鲸人判断盖索，先看它是否肯用好绳、好叉和足够人手，也看死伤之后是否兑现份额。一个家门若只分享鲸油，不分享风险，很快就雇不到老船员。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "ibbenese"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "炼油工和骨匠希望盖索把收获安排得有秩序。抢着开工会糟蹋材料，拖欠工钱则会让最熟练的手转去别家炉火。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "ibbenese"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "notable",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "岸上家庭听见盖索的名字，想到出航名单与迟迟不归的船影。对他们而言，荣耀不是最大鲸骨，而是冬天有人记得敲响寡妇的门。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待盖索，会先看它的土地、婚盟、血脉和债务。伊班的寒海家门，其声望由捕鲸、加工、船只补给和对遇难家庭的责任共同构成。家徽是门面，能否保护封地、兑现婚约并在危机中召集人马，才是家族真正的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起盖索时，记得的是谁在营火边分过粮、谁把他们留在城外、谁在败局里仍站在旗旁。伊班的寒海家门，其声望由捕鲸、加工、船只补给和对遇难家庭的责任共同构成。家族名声最终要落到具体的人和具体的命令上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意盖索留下的仪式、墓地和传承。伊班的寒海家门，其声望由捕鲸、加工、船只补给和对遇难家庭的责任共同构成。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见盖索。伊班的寒海家门，其声望由捕鲸、加工、船只补给和对遇难家庭的责任共同构成。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "盖索：伊班的寒海家门，其声望由捕鲸、加工、船只补给和对遇难家庭的责任共同构成。"
+  ]
+}

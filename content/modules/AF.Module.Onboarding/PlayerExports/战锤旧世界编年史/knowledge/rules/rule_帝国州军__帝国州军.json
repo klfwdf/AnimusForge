@@ -1,0 +1,212 @@
+{
+  "Id": "rule_帝国州军__帝国州军",
+  "Keywords": [
+    "帝国州军",
+    "行省正规军",
+    "长戟兵",
+    "剑盾兵",
+    "火枪兵",
+    "纪律方阵",
+    "州兵",
+    "行省军团",
+    "民兵征召",
+    "帝国行省军力",
+    "帝国行省步兵"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "帝国州军是各选帝侯领地维持的正规步兵团——他们是帝国军事力量的脊梁，不是贵族组成的骑士也不是教会派遣的战斗牧师，而是从各城镇、乡村中征召并严格训练的平民士兵。长戟兵、剑盾兵和火枪兵在各自行省的旗帜下组成密集方阵，用纪律和统一行动来抵御旧世界最可怕的敌人。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "帝国州军——我们的父亲、兄弟和儿子们就在那里，站在阵线的最前面。任何有关帝国军队的宏大叙事——骑士团冲锋、魔法光矛、蒸汽坦克的轰鸣——背后沉默站立的是数十个团、数万名穿着各色行省制服的步兵。每个行省都有自己的建军传统：瑞克领长戟兵以铁一般的纪律闻名，他们的团在行军时步伐完全同步，就像一个拥有千万只脚的怪物；米登领步兵中混编了大量的白狼教狂热信徒，他们不一定是最守纪律的，但一定是最不怕死的；诺德领州军精于在沼泽和浅滩中作战——他们没有在硬土上进行大兵团操练的长久传统，但他们能以散兵队形在极端地形中拖垮任何来犯之敌。州军武器装备按行省经济实力各有差异——威森领火枪兵以射速傲视他省，他们训练的装填序列被帝国其他行省模仿；斯蒂尔领以弓弩手闻名，因为他们的行省地貌多丘陵不适宜火枪部队展开；奥斯特领和奥斯特马克领的州军中有大量与兽人有过多次实战经验的老兵，这使得他们成为帝国东部边境的不屈防线。但州军的真正力量也不是在你看到的一排排火枪手手中，而是你看不到的：每一个州军士兵背后有一套行省级的征兵、训练、补给和军饷体系支撑着他在战场上站住。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "帝国州军的指挥和运用是任何领主必须掌握的基本军事素养。州军的编制以行省为单位：一个完整的州军团通常由两千到四千名步兵组成，下辖若干个长戟兵连、剑盾兵连和火枪兵连。标准的战术方阵——被称为「帝国方阵」——是将火枪兵放置在两翼和前列进行连续射击，中央由剑盾兵和长戟兵组成厚重防线的三层纵深阵型。这一方阵的精髓在于旋转射击：前列火枪兵在射击完毕后不装填，直接通过第二列和第三列火枪兵预留在步兵连间的通道撤退到后方装填，同时新的一列火枪兵上前接替——这种旋转确保火枪火力持续不断，在兽人冲锋的全程提供不间断的压制。但州军方阵有一个普遍的弱点：纪律。当伤亡率达到三成以上时，绝大多数州军连队的士气和阵型会开始瓦解——只有最核心的老兵连队才能在如此高的伤亡率下坚持作战。因此，任何有经验的指挥官都会避免让州军承受过高的伤亡压力：当敌军冲锋即将击穿州军防线时，侧翼的骑士团必须在那之前就发动反冲锋来救援州军。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "帝国州军制度作为人类世界中规模最大、组织化程度最高的步兵体系，其法律基础和军事组织史是旧世界军事社会学中最完整的研究对象。根据《帝国军事编制法》——由皇帝马格努斯一世在帝国历2315年颁布的帝国史上第一部全国性军事法典——每个选帝侯领必须根据本省人口在帝国总人口中的比例维持一支常备州军。具体的维持比例是：每五百名男性公民中产生一名州军现役军人，同时在四十岁以下男性中保持预备役登记名册以备全面动员。哈尔伯德（长戟）作为州军的主要武器并非随意选择——马格努斯大帝在与高等精灵的军事交流中观察到长戟对大型怪物和骑兵的克制力后，亲自下令在全帝国范围内将长戟制度化。火枪连队的比例在帝国州军的编制中持续升高：从马格努斯时期的每团一成火枪手，到帝国历2400年时上升至每团三成火枪手，再到卡尔·弗兰兹统治时期火枪与长戟的比例接近一半一半。这一趋势反映了帝国工业产能的持续输出——努恩的军火工场在帝国历二十世纪三十年代的铅弹产出量比一个世纪前翻了六倍多——也反映了一个残酷的现实：训练一个能在战马冲锋前站稳双脚的长戟兵需要两年以上，而训练一个能在火枪线中进行基本装填动作的新兵只需要四个月。帝国州军的杰出战役历史包括但不限于：帝国历2512年的黑火口之战（一万二千州军在瑞克领和斯蒂尔领军协同下击退了四万兽人部落）、帝国历2515年的惊惧兽之灾（诺德领州军仅五百长戟兵在无骑兵支援的情况下歼灭了一头活体惊惧兽和它的变异仆从）、以及帝国历2520年的斯特弥防线防御——六千州军在暴风雪中坚守了一条长达十五公里的木墙防线九周，期间击退了十一次混沌武士的冲锋。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "帝国州军是我们女性在战争中最直接的痛。骑士们有板甲和马匹的缓冲，战斗牧师有信仰的铠甲——但州军士兵什么都没有，只有他们手里的长戟和旁边战友的肩膀。每一次帝国战争之后，都会有成千上万的女人从寄来的阵亡士兵名单中认出自己丈夫或儿子的名字。我们中的许多人会在战争开始前去城镇广场给即将出征的州军连队送食物——那是一种无法言说的告别仪式。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "州军的征召系统是每一个帝国世族领地管理的核心挑战。如果你的领地上有十个村庄，帝国法规定你必须按照各村壮丁数量比例按时向行省军总部提供新兵——但如果你的领地正值农耕期而你将一半的劳动力都送进州军，秋收时你的粮仓和税收将出现严重缺口。管理州军征召率的技巧是一种微妙的平衡：你可以申请将部分征兵名额折合为军饷代金交给行省——但这在选帝侯眼中会削弱你的军事声誉。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我们这些雇佣兵对州军有一种复杂的轻蔑和嫉妒。轻蔑是因为这些农家小伙子没经验——他们从来不像我们独自在野外求生、独自面对死亡那样去理解战斗；嫉妒是因为他们身后有整套帝国制度支撑——不管他们是打死还是战死，家人会收到一笔抚恤金。而对我们而言——打输了没有人记得你是谁，打赢了没有人替你数你丢了多少根手指。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "州军的补给合同是帝国各行省最大的商业蛋糕。每一个选帝侯领都有自己签约的长戟刃供应商、军装织坊和火药厂——这些合同的价值加起来超过一些小公国的全年岁入。瑞克领的长戟统一由阿尔道夫皇家锻造行会供货——标准制式的十英尺战戟单价为帝国金克朗两枚，而米登领产的短柄战戟因采用当地不同铁矿的材质价格要低三分之一。军装布料的颜色是各州州军的身份象征：瑞克红、米登蓝、塔拉贝克黄——这些染料的商业供应链是整个帝国纺织贸易的基础。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "帝国方阵——州军的标准战术阵型，火枪兵与长戟兵交替排列形成纵深防线和旋转射击循环",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "帝国州军行省正规军长戟兵"
+  ]
+}

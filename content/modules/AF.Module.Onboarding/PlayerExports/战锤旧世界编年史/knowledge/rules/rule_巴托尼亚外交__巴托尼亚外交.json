@@ -1,0 +1,210 @@
+{
+  "Id": "rule_巴托尼亚外交__巴托尼亚外交",
+  "Keywords": [
+    "巴托尼亚外交",
+    "巴托尼亚对外",
+    "骑士道对外",
+    "巴托尼亚侠义远征",
+    "巴托盟约",
+    "圣杯外交",
+    "斧咬隘口之盟",
+    "灰山誓约",
+    "骑士联盟"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "巴托尼亚的外交政策以骑士道为最高指导原则——荣耀即政策。巴托尼亚与帝国之间维持着时而冷淡时而合作的复杂关系，对南方的阿拉比诸国则保持着十字军式的宗教敌意，与矮人王国之间因对工艺与誓言的共同尊重而结成古老友谊，而与精灵的联系则隐藏在一层神秘的帷幕之后。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "巴托尼亚的外交不是外交官在软垫椅子上的窃窃私语——它是骑士在比武场上用长枪写成的光荣诗篇。对帝国我们心怀复杂的情感：一个帝国商人可以卖出不合理的高价坑害巴托尼亚的庄园主，但同一个帝国士兵也会在战场上与巴托尼亚骑士并肩抵抗混沌。我们尊重帝国，但从不信任它——那些选帝侯政治在我们看来是对君主制的败坏。矮人则完全不同：他们的誓言和我们的一样沉重，历史上矮人曾与巴托尼亚骑士并肩迎战绿皮入侵，这份恩情写在了铁砧石板上不会风化。南方的阿拉比诸国是异教徒，但圣战时代已经过去，如今维持着脆弱而不愉快的和平。而木精灵——在艾塞尔·洛伦森林中与我们毗邻——与他们之间有一道不可言说的神秘边界。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "巴托尼亚的外交决策中最重要的考量只有一个：骑士道的底线在哪里？与帝国结盟在军事上是明智的——帝国火枪和巴托尼亚骑士的协同作战可以摧毁几乎任何敌人，但在政治上你必须解释清楚为什么你要和那些'靠钱买选票的商人军'并肩作战，否则你的封臣会在私下质疑你的骑士品格。与矮人的盟约是巴托尼亚外交中最稳定的一块：矮人守护他们的誓言就像守护他们的锻造秘密一样严苛，他们从不主动背弃盟约。森林精灵与巴托尼亚之间的不干涉条约是一个微妙的外交创造，双方从未正式签署任何文字协议，但数百年来没有人跨越那条看不见的边界。任何巴托尼亚领主在考虑对外政策时都应该反复问自己：这个决定在圣杯大教堂中说出来时是否会让女神蒙羞？如果不确定，那就不要做。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 100
+        },
+        "IdentityIds": null
+      },
+      "Content": "巴托尼亚的外交实践是一个矛盾综合体——骑士道的荣誉绝对主义与地缘政治的现实主义之间持续拉扯。巴托尼亚-帝国关系史最能体现这种矛盾：两国之间从未正式发生全面战争，但灰色山脉的摩擦事件可以编成一套厚重的档案集。两国的边界争议主要集中在灰色山脉的隘口控制权上——隘口是贸易通道，谁控制了隘口谁就能征税。巴托尼亚与矮人的关系堪称旧世界外交史上的典范。在沃格特绿皮入侵时期矮人曾派遣工程师军团帮助巴托尼亚加固城堡防御，巴托尼亚国王回赠了整个鲍尔德洛山脉中一处银矿的开采权。与艾塞尔·洛伦精灵的关系是巴托尼亚外交中被最少书写但最神秘的部分。学者们注意到湖之女神在某些神学细节上与精灵神话中的湖泊女神存在相似性——但这是学术上的禁忌话题。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "巴托尼亚的外交场合中女性贵族扮演着一个被官方外交史完全忽视的角色——联姻谈判。当公爵们在议会上为灰色山脉隘口的通关税率争执时，他们的夫人们已经在上一季度的下午茶中通过交换家族情报达成了可接受的税率区间。巴托尼亚的女性贵族不能以自己名义签署条约，但她们可以以'偶然在丈夫面前提到'的方式影响公爵的外交决策。我在自己的摄政期内曾以'探望远方亲族'为名前往帝国边境省份——这次访问在巴托尼亚官方记录中是一次家族私事，但我在那次访问中与帝国奥斯特领的选帝侯夫人达成的关于边境村庄在冬季相互开放的默契在此后十年中避免了至少三次可能升级为战争的小规模摩擦。巴托尼亚的外交史是由骑士的誓言和长枪写成的——但那些在织锦靠垫上低声达成的、从未出现在任何档案中的女人们的外交，才是让誓言不至于因为一次错误的挑衅而被引燃的隐蔽阀门。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "家族外交是巴托尼亚贵族在王国层级外交之外运作的并行体系——国王有他的侠义远征，而我们有我们的跨国联姻。我们家族在过去四百年中与帝国一侧的至少三个贵族家族保持了代代相传的私下沟通渠道，这些渠道在帝国与巴托尼亚官方关系冷却到冰点时仍然保持畅通。在外交上最隐蔽也最有效的家族工具是'双重效忠'亲戚——我们刻意安排家族的一些旁支成员与帝国的平民商人通婚，他们的后代在巴托尼亚社会中没有正式的贵族地位，但他们在帝国境内以商人身份活动时可以接触到连帝国选帝侯都不一定了解的市场情报。当国王需要知道帝国方面的真实战备状态时，他派使者向我们请求的不是军队，而是信息。巴托尼亚的每一个古老公爵家族都拥有一个从未出现在任何公开记录中的私人外交档案——里面记录的不仅是条约，更多的是线人的名字、秘密渠道的联络暗号、以及那些在彼此敌对的阵营中仍维持着私下互信的跨国家族成员的通讯录。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "巴托尼亚的外交在我这样的雇佣兵眼里是一个由微妙规则构成的神秘游戏——我曾在灰色山脉隘口两边的哨站中都接过活，知道了一些在官方叙事中永远不会出现的事情。帝国和巴托尼亚每年春天都会在斧咬隘口举行一次'非正式边境会谈'，表面上是在讨论当年的通关商税，但我在帮一个帝国信使赶路时偷看过他的信袋——那里面除了关税谈判的备忘录，还有一份两方联手在隘口以北某座森林中进行联合剿匪行动的细节安排。帝国与巴托尼亚在公开场合彼此表现出冷淡的礼遇，但在阴暗处他们每年都在联合清剿那些同时威胁双方的共同敌人——混沌渗透、野兽人迁徙、以及试图控制隘口的强盗联盟。真正的外交不是写在条约上的漂亮话，而是在两国军队的巡逻路线被刻意安排成彼此不会接触的蜿蜒曲线中体现出来的默契——我在隘口两边都站过岗，我知道。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "巴托尼亚的外交政策对我们商人来说最核心的问题是通关税率——灰色山脉隘口的通行税是巴托尼亚和帝国之间所有贸易摩擦的经济根源。每年春季公爵议会上的关税谈判直接影响接下来一整年从帝国运入巴托尼亚的铁器、矿盐和布匹的价格，而我们商会的策略不是在议会上去争论税率，而是在谈判前三个月就通过提前在隘口两侧囤积足够的库存来对冲可能的税率波动。巴托尼亚在与矮人贸易上给予了我见过的最有利的待遇——矮人商队在巴托尼亚境内通行时缴纳的税仅仅是帝国商人的三分之一，这不是巴托尼亚偏爱矮人，而是矮人曾在一千年前以铁锤和誓约换取了这份特权且至今没有任何一个公爵敢提议修改，因为撕毁与矮人的盟约在巴托尼亚骑士道中被视为最不可饶恕的背信行为。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "斧咬隘口之盟——劳恩国王与卡尔·弗兰兹在兽人围困下并肩作战后建立的个人盟约",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "巴托尼亚的对外关系与盟友体系"
+  ]
+}

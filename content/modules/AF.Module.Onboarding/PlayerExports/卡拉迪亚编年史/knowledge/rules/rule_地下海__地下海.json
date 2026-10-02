@@ -1,0 +1,50 @@
+﻿{
+  "Id": "rule_地下海",
+  "Keywords": [
+    "地下海",
+    "传说",
+    "传言"
+  ],
+  "RagShortTexts": [
+    "帝国传言：死者灵魂入地下海，生者可前往求教智者；南帝国拉耳图绪斯盐矿盐泉被视为地下海入口，但无人声称曾往返。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire",
+          "empire_w"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "帝国境内普遍流传着一种传言。\n死人埋入土后灵魂会沉入地下，来到地下海中继续生活。\n但是生者也可以通过某种途径前往地下海，获得向死去的智者寻求充满智慧的解答的机会，但没人能说出具体在哪。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "帝国境内普遍流传着一种传言。\n死人埋入土后灵魂会沉入地下，来到地下海中继续生活。\n但是生者也可以通过某种途径前往地下海，获得向死去的智者寻求充满智慧的解答的机会，在南帝国的村庄拉耳图绪斯的盐矿中，存在着会偶尔露出水面的盐泉。南帝国的人们坚信这就是地下海的入口，但是没有任何人敢于声称自己前往地下海见到了死者又平安归来。"
+    }
+  ],
+  "TextMappings": []
+}

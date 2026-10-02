@@ -1,0 +1,300 @@
+﻿{
+  "Id": "rule_珀拉斯海",
+  "Keywords": [
+    "珀拉斯海",
+    "珀拉斯",
+    "战帆海",
+    "西海",
+    "帝国的内湖"
+  ],
+  "RagShortTexts": [
+    "珀拉斯海曾是帝国的内湖，商船自由通行。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "珀拉斯海是卡拉迪亚南方一片广阔的海域，连接着阿塞莱、帝国和瓦兰迪亚的海岸。在帝国鼎盛时期，这片海是帝国的内湖——沿岸所有城邦和部落都向帝国臣服，商船在帝国的舰队保护下自由通行。如今帝国分裂，北岸仍被西帝国和南帝国控制，但南岸已经尽数落入阿塞莱之手。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "珀拉斯海？那是帝国的内湖！几百年前，卡拉狄乌斯大帝的舰队横扫这片海域，沿岸所有城邦都向我们俯首称臣。帝国的商船不用带护卫，帝国的舰队就是法律。可现在呢？帝国裂成了三块，南岸的港口全归了阿塞莱人。我们帝国人只能缩在北方沿岸的几个港口里，看着沙漠民族的船帆在海上飘来飘去，想想就让人窝火。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "townsfolk"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "珀拉斯海以前是帝国的内湖，做生意的不用怕海盗，从古亚兹到俄尼拉随便走。现在呢？帝国分裂了，帝国的舰队成了摆设，南岸全归了阿塞莱人。现在从帝国港口出海，不请护卫的话能不能活着回来都是问题。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "帝国人总怀念珀拉斯海是内湖的日子。那时候沿岸的土地全是帝国的，商船在海上自由航行，海盗不敢露头。可现在帝国分裂了，西帝国和南帝国只勉强控着北岸，南岸全归了阿塞莱。你知道阿塞莱人管珀拉斯海叫什么吗？他们叫它“南方的怀抱”。一片海，两个名字，背后是帝国丢掉的一整个南方。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "帝国人曾经把珀拉斯海叫做他们的内湖。可笑。海是流动的，怎么可能属于谁？如今我们阿塞莱控制着整个南岸，古亚兹、撒纳拉——所有南方的港口都在我们手里。帝国人还守着北边那点岸线，但他们已经管不到我们了。珀拉斯海的南半部，现在是阿塞莱的海。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "townsfolk"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "珀拉斯海对我们阿塞莱人来说就是命脉。帝国的舰队曾经想镇压这片海上的一切，但那都过去了。现在南岸的港口全是我们阿塞莱的，从撒纳拉到古亚兹，我们的商船随便走。帝国人还在北边收他们的关税，但他们再也管不着我们。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "珀拉斯海见证了帝国的衰落和阿塞莱的崛起。帝国人以前骑着浪头在这片海上称王称霸，沿岸所有部落都得给他们交税。现在帝国分裂了，南岸全归了我们。老水手说，海从来不认主人，只认风向。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "帝国分裂之后，珀拉斯海的贸易路线重新洗牌了。以前帝国控制着整片海域，我们瓦兰迪亚的商人都得看他们脸色。现在南岸归了阿塞莱，北岸被两个帝国分着，中间的航道谁都能走。加拉多克的商会已经在讨论怎么从这片乱局里多分一杯羹。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "珀拉斯海？以前那是帝国的内湖，现在不是了。帝国一分裂，他们的舰队缩回了港口，南方的阿塞莱人占了南岸。我们斯特吉亚的长船也能顺着海峡往南跑，不用怕帝国的巡逻队。那片海现在谁都能去，谁拳头硬谁说了算。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "villager",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "珀拉斯海离我们太远了。不过我听游商说过，那片海曾经是帝国的内湖。帝国人把沿岸的城邦全收了当附庸，这片海就归了他们。现在帝国分裂了，南岸归了阿塞莱。帝国的内湖，现在变成了各方的猎场。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "sailor",
+          "seafarer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "珀拉斯海？那可不是闹着玩的。白天风平浪静得像一匹蓝绸子，太阳一落，浪头能有三层楼高。最要命的是暗礁，古亚兹港往西半天的航程，有一片叫“龙骨坟场”的礁石区，底下全是沉船。老水手说那是海神收税的地方。帝国的舰队曾经在这儿巡逻，现在嘛——他们连自己北边的海岸线都快看不住了。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "pirate",
+          "bandit",
+          "outlaw"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "珀拉斯海？那是我们的猎场。帝国分裂之后，他们的舰队就没影了，南岸归了阿塞莱，北岸被两个帝国分着。谁的拳头硬谁就是规矩。帝国的商船又慢又笨，阿塞莱的商船倒是快，但他们人手少。你要找活儿干？会操帆还是会使斧子？"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "scholar",
+          "artisan"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "steward": 150
+        }
+      },
+      "Content": "珀拉斯海在帝国史书中曾被称为“帝国之湖”。在卡拉狄乌斯大帝征服沿岸诸邦后，帝国的舰队控制了整片海域，所有贸易路线都在帝国的监护之下。但帝国分裂后，这种海上霸权迅速瓦解。如今，北方沿岸被西帝国和南帝国瓜分，而南方海岸则完全处于阿塞莱苏丹国的控制之下。珀拉斯海从“帝国之湖”变成了多方博弈的战场，这也正是帝国衰落的缩影。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "珀拉斯海上跑船的女人比你想的多。我姑母就是古亚兹港的船主，手下五条商船，全是女船长。海上不讲出身，只讲你能不能把船和货安全带回来。风暴可不会因为你是女人就刮得轻一点。帝国人以前觉得这海是他们的，现在阿塞莱人占了南岸，女人照样在海上掌舵。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "珀拉斯海",
+      "Kind": "bound_region_name",
+      "TargetId": "__bound_region__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": "古亚兹",
+      "Kind": "bound_settlement_name",
+      "TargetId": "__bound_settlement__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}

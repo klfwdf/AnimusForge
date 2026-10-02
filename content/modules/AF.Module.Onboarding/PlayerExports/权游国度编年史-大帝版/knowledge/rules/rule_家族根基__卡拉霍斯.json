@@ -1,0 +1,156 @@
+{
+  "Id": "rule_家族根基__卡拉霍斯",
+  "Keywords": [
+    "卡拉霍斯",
+    "卡拉霍斯家族"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "卡拉霍斯与新吉斯的统治秩序相连。新吉斯由古吉斯后裔建立，试图保存吉斯卡利语言、鹰身女妖象征、军团传统与严格等级，同时又必须依赖海运同奴隶湾和魁尔斯方向交换物资。卡拉霍斯的权力因此既来自贵族身份，也来自能否维持港口、军役、粮食与劳役体系。家门可能在城邦竞争中选择不同伙伴，但它无法摆脱一个事实：以强制劳动和等级供养的秩序，既能迅速集中资源，也会积累深刻恐惧与反抗。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "qartheen",
+          "ghiscari"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "新吉斯上层把卡拉霍斯视为军令与古制的维护者，要求它在外敌面前强硬、在内部等级上不失控制。越依靠恐惧的统治，越害怕一次公开软弱。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "qartheen",
+          "ghiscari"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "海商关心卡拉霍斯能否让港口安全而不过度征敛。新吉斯若只讲军团荣耀却耽误卸货，船会把利润带去别处。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "qartheen",
+          "ghiscari"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "slave",
+          "artisan",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "被役使者看到的是古制最沉重的一面。卡拉霍斯称之为秩序的东西，常意味着别人的锁链、鞭痕与没有选择的劳作。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待卡拉霍斯，会先看它的土地、婚盟、血脉和债务。新吉斯的统治型家门，根基在港口、军役、吉斯卡利等级和维持岛城供给的能力。家徽是门面，能否保护封地、兑现婚约并在危机中召集人马，才是家族真正的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起卡拉霍斯时，记得的是谁在营火边分过粮、谁把他们留在城外、谁在败局里仍站在旗旁。新吉斯的统治型家门，根基在港口、军役、吉斯卡利等级和维持岛城供给的能力。家族名声最终要落到具体的人和具体的命令上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意卡拉霍斯留下的仪式、墓地和传承。新吉斯的统治型家门，根基在港口、军役、吉斯卡利等级和维持岛城供给的能力。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见卡拉霍斯。新吉斯的统治型家门，根基在港口、军役、吉斯卡利等级和维持岛城供给的能力。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "卡拉霍斯：新吉斯的统治型家门，根基在港口、军役、吉斯卡利等级和维持岛城供给的能力。"
+  ]
+}

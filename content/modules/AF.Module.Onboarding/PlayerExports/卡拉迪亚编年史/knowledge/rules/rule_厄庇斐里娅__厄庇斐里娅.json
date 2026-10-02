@@ -1,0 +1,56 @@
+﻿{
+  "Id": "rule_厄庇斐里娅",
+  "Keywords": [
+    "厄庇斐里娅"
+  ],
+  "RagShortTexts": [
+    "厄庇斐里娅是北帝国保守派女将军"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "厄庇斐里娅是北帝国的保守派女将军，英姿飒爽，她不满于军人专权，于是亲自组建部队，让元老院有了自己的武装。A"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "厄庇斐里娅是印珀斯托雷斯家族的一名女贵族。这个家族以其对贵族寡头阵营狂热的忠诚，以及不合群的性格而闻名。然而和寡头派的大多数保守女性不同，她受训成为了一名战士。在内战爆发时，她带走了一部分家产，自己招募了一支战团，以对抗“暴君”拉盖娅和“暴发户”加里俄斯，力图维护元老院至高无上的地位。A"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "A",
+      "Kind": "status|hero|is_dead",
+      "TargetId": "lord_1_1_12",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": "她已经死去了",
+      "FalseText": "她至今仍在战斗"
+    }
+  ]
+}

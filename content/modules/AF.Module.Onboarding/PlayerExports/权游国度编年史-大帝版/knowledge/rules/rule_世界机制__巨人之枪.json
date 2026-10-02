@@ -1,0 +1,154 @@
+{
+  "Id": "rule_世界机制__巨人之枪",
+  "Keywords": [
+    "巨人之枪",
+    "危岩堡",
+    "雪山堡",
+    "长天堡"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "巨人之枪高耸于谷地，鹰巢城建在山巅附近，月门堡守住山脚入口。通往鹰巢城的陡峭小路依次经过危岩堡、雪山堡与长天堡，越往上越不适合马车和成建制军队；最后一段甚至要靠吊篮或狭窄山径运送人货。高处让鹰巢城难以强攻，也造成严重局限：冬雪、落石和缺乏耕地会切断补给，寒季里城中人员往往下撤月门堡。巨人之枪的安全来自距离与艰难，代价同样是距离与艰难。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vale"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "谷地骑士以巨人之枪的险峻自豪，却知道真正长期守卫依赖山脚仓库与每一处驿堡。敌人未必攻得上去，饥饿也不需要攻城梯。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vale"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "山民、驮夫和工匠不把鹰巢城只看作奇迹。他们记得每袋粮如何上山、每块石料如何搬运，也知道贵人的安全由无数双冻裂的手托着。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "scholar",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "外来者仰望高峰时容易相信它永不陷落。懂历史和补给的人会补上一句：无法攻取与适合居住并不是同一回事。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人把巨人之枪看成可执行的秩序。谷地最高险峰之一，月门堡与通往鹰巢城的三座驿堡把自然高山变成近乎封闭的防御体系。它是否有效，取决于谁能授予权利、收取代价，并在违约时让判决真正落地。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起巨人之枪时，关心它如何影响道路、命令和安全。谷地最高险峰之一，月门堡与通往鹰巢城的三座驿堡把自然高山变成近乎封闭的防御体系。远方的制度只有在营火、城门和驿站里能被执行，才不是空话。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者会从习惯和象征理解巨人之枪。谷地最高险峰之一，月门堡与通往鹰巢城的三座驿堡把自然高山变成近乎封闭的防御体系。一项规矩若被反复实践，便会进入礼仪、手艺和祈祷；若只靠恐惧维持，危机一来就会露出裂缝。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民感受到巨人之枪的方式最小也最准确。谷地最高险峰之一，月门堡与通往鹰巢城的三座驿堡把自然高山变成近乎封闭的防御体系。他们记得税、粮、劳役、赈济和谁能为他们说话；宏大的名称，最终都要落在一家人的饭锅旁。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "巨人之枪：谷地最高险峰之一，月门堡与通往鹰巢城的三座驿堡把自然高山变成近乎封闭的防御体系。"
+  ]
+}

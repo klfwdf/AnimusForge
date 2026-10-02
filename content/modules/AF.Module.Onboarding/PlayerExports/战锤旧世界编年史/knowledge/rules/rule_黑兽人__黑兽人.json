@@ -1,0 +1,208 @@
+{
+  "Id": "rule_黑兽人__黑兽人",
+  "Keywords": [
+    "黑兽人",
+    "最强兽人",
+    "纪律绿皮",
+    "重装兽人",
+    "变异精英",
+    "拼凑铁甲",
+    "终极搞哥造物"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "黑兽人是所有绿皮中最高大、最强壮、也最不寻常的变异精英——他们不仅块头更大、皮肤更黑，而且还拥有其他兽人完全不具备的一样东西：纪律。这些绿皮中的超级士兵身披拼凑的厚重铁甲，以冷酷的军事秩序碾压战场上的一切。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "黑兽人是搞哥毛二哥最顶级的造物！你看那些普通的绿皮小子就知道叽叽喳喳然后一拥而上然后被人类的大炮轰成碎片——蠢得要命！但黑兽人们不一样，他们又大又黑又狠，而且他们还知道咋排队、咋齐步走、咋一起把矛戳向同一方向！其他小子都在打架吵闹的时候黑兽人已经悄悄绕到敌军背后然后嗷一声全扑上去把对面剁成臊子了。有些死脑筋的矮子说黑兽人是浑沌矮子用黑魔法搞出来的实验品——放屁！黑兽人就是搞哥毛二哥觉得普通兽人太没出息了于是决定造一批真正能打赢大仗的硬茬子！"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "黑兽人在战术上是绿皮军队中最接近正规军人的单位——这不是在褒奖而是在警告。普通的兽人虽然数量庞大但其混乱可以被利用，而黑兽人步兵方阵的执行力与生存能力——兼具绿皮的蛮力与某种扭曲的纪律——使其成为一个需要被当作重装步兵认真对待的威胁。他们的弱点与优势同样明显：速度比普通兽人慢，装备过于沉重导致其难以追击快速部队，对侧翼和后方攻击的应对灵活性也远低于他们的正面作战能力。标准的应付策略是加强正面火力以消磨其铁甲的掩护，同时以骑兵连续袭扰侧后。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "黑兽人的起源是混沌矮人黑色要塞'扎尔-纳格隆德'中一段黑暗的实验史。在大约帝国历前100年，混沌矮人符文术士为了创造一种能在地下矿场中高效劳作且无需休息的奴隶战士，将捕获的普通兽人投入了被称为'绞肉机'的黑魔法熔炉中进行生物改造。改造过程涉及将混沌符文化合的铁水直接注入兽人的骨髓——这一过程死亡率约为九成，但幸存者骨骼密度增加四倍，肌肉纤维被黑魔法能量永久性强化，表皮黑色素极度增生导致皮肤化为暗黑。真正出人意料的是改造对兽人大脑的影响：黑兽人脑中负责攻击性的区域被抑制的同时，规划与协作的区域被精炼强化——混沌矮人无意中解决了兽人永世不改的纪律性缺陷。然而这一成果很快反噬了创造者——大量黑兽人逃出要塞，携带'纪律'基因回归绿皮部落，使得黑兽人成为兽人社会中最具威胁力的变异亚种。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "黑兽人总是让我想到一个悖论——如果给一个完全没有纪律性的种族灌入纪律，那到底是什么？他们比其他兽人更高大是因为黑暗魔法扭曲了他们的发育，他们的纪律是实验植入的机械反应而非真正的军人素养。有人告诉我，一个黑兽人的平均体重约合三十石，身披的杂铁护甲重达一千磅，但他们冲锋时仍然能以惊人的速度奔跑。我想象着这种生物在黑暗要塞的炼狱锻造炉中被创造时的场景——当第一只黑兽人睁开它的红眼时，连创造它的混沌矮人恐怕都感到了片刻的恐惧。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我们家族所在领地的南境曾有过一支黑兽人部落盘踞，他们在十年之内将那片地区的一切文明建设——农庄、磨坊、哨站——全部碾成了粉末。最可怕的是他们不是像普通绿皮那样打打闹闹就散了，而是像钉死在原地一样守住那个地区十一年，直到整个区域彻底变为不毛之地才离开。这就是黑兽人最不同寻常的地方：他们有耐心。一个愿意在原地等十一年的兽人，比一万个只会冲锋的兽人都要可怕。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我在世界边缘山脉的一个佣兵任务中撞见过一群黑兽人——大约二十个，正排着一队纵队行军，每一步都整齐得像我曾见过的帝国将士。但当你看到他们的体型——每个都像是一座移动的铁塔，手中握着比我整个人还重的大砍刀——那种整齐不再是让人安心的军容，而是让人魂飞魄散的画面。我的队长直接下令全队撤退，佣兵合同的钱我们也不要了。大家都没意见。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "在废品市场上，黑兽人的装备是最抢手的——不是说质量好，而是体积大。一块黑兽人肩甲重约两石，拆下来可以回炉锻造出至少三十把普通长剑。我的铁匠铺有整整一条生产线专门处理战场上捡回来的绿皮废铁，但黑兽人盔甲的熔炼温度要求最高，因为它们不仅掺杂了混沌矮人的黑铁技术配方，还附着了不知名的黑魔法残渣。处理不当会让整个熔炉里的铁汁爆炸，我就见过一次。从那以后我只收普通兽人的烂铁了。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "混沌矮人在黑魔法熔炉中改造出的超级兽人亚种",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "黑兽人最强兽人纪律绿皮"
+  ]
+}

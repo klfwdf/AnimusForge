@@ -1,0 +1,210 @@
+{
+  "Id": "rule_木精灵风土__木精灵风土",
+  "Keywords": [
+    "木精灵风土",
+    "阿斯莱社会",
+    "森林生活",
+    "精灵习俗",
+    "精魂崇拜",
+    "活树厅堂",
+    "月光仪式",
+    "记忆之树",
+    "血债法则"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "木精灵生活在与凡人迥异的时间节奏中——他们的寿命长达数千年，因此行事从不急躁。阿斯莱在活树厅堂中用餐，于月光下的林地中跳舞，将自己的历史以诗歌而非文字的形式口耳相传。他们不耕作也不放牧，而是从森林中获取一切所需，并以绝对尊重回馈自然。外族人很难理解他们的文化——因为那是一种完全脱离了文明世界的、以森林本身为唯一参照的生活方式。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我们的生活不能被外界粗鄙的词汇所定义。我们不建造——我们邀请树木生长成我们需要的形状。我们不种植——艾索洛伦的馈赠比任何犁耕的土地都丰盛。我们不记录历史——我们把历史唱进风中，让后代在风的歌声中学习祖先的事迹。时间对我们的意义不同于凡人——一场对话可能持续数年，一首歌可能在两代人类王朝的时间中依然在森林某处回响。阿斯莱的孩子们在出生时就被带到森林中最古老的树面前，让树的精魂触碰婴儿的额头——如果精魂拒绝了这个孩子，那么……有些传统不便对外人详述。节日方面，每年盛夏的狂野狩猎前夜是我们的至圣之夜，那时阿莉尔的女祭司们会举行迷幻的月光仪式，而猎人们会在自己的武器上涂抹百年前战死的英雄血液。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "理解木精灵的文化对于边境领主来说是决定生死的知识。阿斯莱不以人类的法律或逻辑行事——他们认为任何对森林的伤害都需要以血偿还，这种'以血还叶'的法则被严格执行。砍伐艾索洛伦边缘的一棵树可能会招致对被砍伐者的家族进行持续数代的报复。同时，木精灵偶尔会接纳迷途的外族人——那些在林中被发现且没有表现出敌意的旅行者有时会被允许活着离开，极少情况下甚至会被邀请进入森林——这说明阿斯莱并非单纯嗜血，而是有一套极其严格且外人难以理解的接待法则。如果你有属下在森林附近失踪，不要组织搜索队——这样做只会增加失踪者的名单；放弃也许意味着他们可能在某一天被森林送回来。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 100
+        },
+        "IdentityIds": null
+      },
+      "Content": "阿斯莱的社会结构打破了传统的人类学分类范畴。他们不按血缘关系组织家庭——事实上，木精灵的'家族'概念更接近一种精魂亲和社群，即某一群阿斯莱与某一特定类型的森林精魂之间建立了世代的共生关系。他们的经济体系完全颠覆了生产和交换的经典范式——阿斯莱不生产也不交易，他们的经济本质上是'森林互惠'：通过精魂媒介直接请求森林提供所需物质。木精灵的儿童教育令人惊叹——阿斯莱孩子不是在教室中学习而是通过与精魂的互动掌握森林的知识，这种教育方式使每个木精灵的认知框架都深刻嵌入了艾索洛伦的生态和魔法结构。葬礼习俗方面，阿斯莱死者不会被埋葬——他们的尸体会被安置在特定的'记忆之树'的树冠中，经过一段时间后尸体会完全分解并被树木吸收，据信死者的灵魂也因此与森林永久融合。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "作为一位在艾索洛伦度过三千年岁月的阿斯莱女性，我可以告诉你，我们文化中最被外人误解的方面是母婴传统与死亡观之间的深层联系。当一个阿斯莱孩子出生时，母亲不剪断脐带——她将胎盘连同脐带一起埋在家族的记忆之树下，这样孩子的生命力量将持续流入那棵树，而树的精魂也将从那一刻起守护这个孩子。我们不在分娩时尖叫或哭泣，因为哀痛会惊扰森林中更敏感的精魂。死亡——当它最终来临时——不是被哀悼的事件，而是一场归家的仪式：我们把逝者的身体高高安置在树冠中的编织吊床上，围绕古树唱起他在上一次狂野狩猎中亲手杀死的第一只野兽的狩猎之歌，让他的灵魂被树木吸收的同时也把他的故事永远保存在艾索洛伦的集体记忆之中。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "作为家族族长，我的日常生活中最消耗心力的不是战争或政治——而是持续不断地维护家族与精魂之间那份古老契约的细节。我们家族的绑定对象是雾与溪流之精——溪女——这种精魂反复无常、要求繁多，但给予的回报也极为珍贵：她们净化森林中的腐水、在入侵者周围制造迷雾、并在月夜中唱出预言之歌。然而溪女的脾气如同山洪般难以捉摸——上个月她们因为我们的一名年轻猎人不慎在溪流中清洗了沾血的刀刃而沉默了整整十天，导致家族领地的边界迷雾消散，差点让一队帝国斥候成功绘制出我们的内部路径。与精魂共存不只是浪漫的传说——它是一份无止境的、要求极高精细度的相互义务。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我在森林边缘经历过的最诡异的事情发生在一次无月之夜——我在一棵巨大的白杨树下扎营，半夜被一种低沉的、类似心跳的震动惊醒。整片林地似乎都在与树根同步脉动——不是风，风不会让地面产生那种节奏。后来一位老猎人告诉我那是木精灵在进行'深根之歌'仪式——一种集体葬礼，全氏族同时向记忆之树送入他们的死者精魂。他说如果你在那时踏入森林深处，你会被那种集体悲痛的低频震动压得失去方向感，永远迷失在树木的慈悲中。从那天起，我学会在扎营前先趴在地上听地面是否有规律的低鸣——如果有，远处一定在发生什么。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "从商会会长的视角来看，木精灵的'以血还叶'习俗是旧世界保险业中最棘手的一类风险评估对象。我们为布雷顿尼亚边境的伐木承包商提供意外险时，保险合同里有一项专门条款——任何在艾索洛伦森林边界线三英里内发生的伐木活动导致的'人身损失或精神损伤'，均不属于赔偿范围，因为在过去二十年里，在此区域内的索赔案件中，幸存者的证词都无法被任何正常逻辑框架所接受。最有名的案例是库尔伐木公司的十三名工人于同一天在森林三英里内作业后集体失踪，三个月后其中两人赤身裸体地从森林中走出——说不出一句完整的话，但两人的背上都被用树叶汁液烙印了一模一样的树皮纹路。保险公司最终将其定性为'不可抗力自然事件'并拒绝赔付。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "精魂崇拜——木精灵宗教体系的核心：崇拜森林中各类自然精魂而非抽象神祇",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "木精灵的社会习俗与文化传统"
+  ]
+}

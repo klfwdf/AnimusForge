@@ -1,0 +1,151 @@
+{
+  "Id": "rule_世界机制__瓦雷利亚钢",
+  "Keywords": [
+    "瓦雷利亚钢",
+    "族剑",
+    "魔法钢",
+    "重铸"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "瓦雷利亚钢比普通钢更轻、更坚韧，也能保持惊人的锋利，剑身常带烟色或水波般纹路。自由堡垒覆灭后，完整的锻造秘密随瓦雷利亚末日浩劫失传；少数顶尖工匠仍能重铸旧钢、改变形制，却无法凭寻常矿料制造新的同类。维斯特洛仅存的瓦雷利亚钢武器多被古老家族当作身份、记忆与继承权的一部分，一把族剑的归属有时比一箱金龙更能刺痛人心。它能伤害异鬼，但稀少数量决定了它永远不是可以普遍装备军队的答案。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "贵族看瓦雷利亚钢，常先看剑名与传承。失去族剑会被视作家门残缺，得到别家旧剑也可能带来荣耀之外的质疑。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "artisan"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "战士敬畏它的平衡与锋利，铁匠则知道重铸一把旧钢需要极少数人的手艺。真正懂兵器的人不会因为名声便忽略护手、刃口和使用者本领。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "nightswatch",
+          "freefolk"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "scholar",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "在长城附近，瓦雷利亚钢还有比家徽更迫切的意义。若寒冷传说成为现实，一把古老族剑可能突然承担整个时代未曾预料的用途。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人把瓦雷利亚钢看成可执行的秩序。轻韧锋利、带水波纹的失传钢材，多为古老家族珍藏，少数名匠仍能重铸却不能复制其秘密。它是否有效，取决于谁能授予权利、收取代价，并在违约时让判决真正落地。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起瓦雷利亚钢时，关心它如何影响道路、命令和安全。轻韧锋利、带水波纹的失传钢材，多为古老家族珍藏，少数名匠仍能重铸却不能复制其秘密。远方的制度只有在营火、城门和驿站里能被执行，才不是空话。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者会从习惯和象征理解瓦雷利亚钢。轻韧锋利、带水波纹的失传钢材，多为古老家族珍藏，少数名匠仍能重铸却不能复制其秘密。一项规矩若被反复实践，便会进入礼仪、手艺和祈祷；若只靠恐惧维持，危机一来就会露出裂缝。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民感受到瓦雷利亚钢的方式最小也最准确。轻韧锋利、带水波纹的失传钢材，多为古老家族珍藏，少数名匠仍能重铸却不能复制其秘密。他们记得税、粮、劳役、赈济和谁能为他们说话；宏大的名称，最终都要落在一家人的饭锅旁。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "瓦雷利亚钢：轻韧锋利、带水波纹的失传钢材，多为古老家族珍藏，少数名匠仍能重铸却不能复制其秘密。"
+  ]
+}

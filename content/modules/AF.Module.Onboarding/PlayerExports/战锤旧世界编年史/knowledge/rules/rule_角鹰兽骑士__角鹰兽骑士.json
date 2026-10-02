@@ -1,0 +1,213 @@
+{
+  "Id": "rule_角鹰兽骑士__角鹰兽骑士",
+  "Keywords": [
+    "角鹰兽骑士",
+    "皇家卫队",
+    "空中搏杀",
+    "凶猛坐骑",
+    "王国精英",
+    "飞行骑兵",
+    "皇家角鹰兽",
+    "空中骑士",
+    "国王亲卫",
+    "巅峰骑士",
+    "飞兽",
+    "天空霸主"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "角鹰兽骑士是巴托尼亚最精锐的空中骑兵，骑乘凶猛的角鹰兽——一种拥有狮身前躯、鹰首与巨翼的传奇生物。他们是国王的贴身卫队，代表着骑士武艺的终极成就。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "角鹰兽骑士！巴托尼亚天空中最耀眼的星辰！只有最勇猛的王国骑士，在完成探险誓言并获得圣杯的认可后，才有资格挑战驯服一头角鹰兽。这些猛兽栖息在灰色山脉的悬崖峭壁上，脾气暴烈如火，能一口咬穿混沌骑士的全身板甲。一名角鹰兽骑士的价值抵得上一整队王国骑士——他们从云端俯冲而下，利爪撕碎敌方战争机器的同时，骑士的长枪精准刺穿敌将的咽喉。国王的皇家飞马骑士已经足够令人敬畏，而角鹰兽骑士是飞马骑士之上的终极存在。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "角鹰兽骑士是战术上的王牌——空中优势意味着可以绕过敌方正面防线，直接打击敌方将领、战争机器或脆弱的后排单位。他们的威慑力远超实际杀伤力：敌军看到天空中出现角鹰兽的轮廓时往往就已经开始动摇。但角鹰兽数量极为稀少，全国在役者不过数十，每一次投入战斗都必须确保物有所值。损失一名角鹰兽骑士是国家的灾难。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "角鹰兽是旧世界最稀有的可驯服飞行生物之一，成年个体翼展超过四十尺，体重可达三千磅。角鹰兽骑士的选拔过程极为严苛：候选人需先在飞马骑士团服役满五年，再经国王本人提名，最后在灰色山脉的角鹰兽巢穴中独自完成驯服仪式——死亡率约四成。角鹰兽骑士的装备包括特制的轻质秘银板甲、可拆卸式飞行骑枪和一套与坐骑相连的鞍具锁扣系统。战术上，角鹰兽骑士除直接参战外还担任空中侦察与战场传令的职能。现任皇家角鹰兽骑士团团长巴尔多因公爵是巴托尼亚唯一一位同时拥有角鹰兽骑士和圣杯骑士双重头衔的存在。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "角鹰兽骑士从头顶掠过时，整个大地都在颤抖。这些骑士是男人中最有男子气概的存在——但也因此往往鲁莽自负。作为女领主，我欣赏他们的勇武，但更希望他们能多听听地面统帅的指挥，而不是一味追求个人荣耀。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我的氏族从未出过角鹰兽骑士——那是直属国王的最高荣耀。但我族子弟中有不少梦想着有朝一日能驯服一头角鹰兽。我告诉他们：先活过三次战役，再去想天上的事。脚踏实地才是氏族立足之本。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我在山区见过角鹰兽的巢穴——白骨堆积成山，有兽人的、野兽的、甚至还有几具骑士的。想驯服这种生物的人要么是疯子要么是圣徒。但我承认，看着角鹰兽骑士在夕阳下飞越雪峰的场面，是这世上少数能让我沉默的事物。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "角鹰兽的鞍具和护甲是工匠的最高杰作——必须轻便以免影响飞行，又必须坚固以抵御伤害。一套定制的角鹰兽鞍铠价格足以在小镇上买一栋房子。全国能做这活的工匠不超过五人，他们的技艺世代保密。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "角鹰兽骑士是巴托尼亚最强空中骑兵，骑乘狮身鹰翼的传奇生物",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "角鹰兽骑士是巴托尼亚最精锐的空中骑兵"
+  ]
+}

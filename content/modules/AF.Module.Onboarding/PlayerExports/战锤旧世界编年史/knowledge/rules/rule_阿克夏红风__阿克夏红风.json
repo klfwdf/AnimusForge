@@ -1,0 +1,211 @@
+{
+  "Id": "rule_阿克夏红风__阿克夏红风",
+  "Keywords": [
+    "阿克夏红风",
+    "火焰之风",
+    "火焰学院",
+    "红色魔法",
+    "LoreOfFire",
+    "毁灭之火",
+    "烈焰术",
+    "战斗法师火风",
+    "炽热激情",
+    "火魔法"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "阿克夏——红风——是毁灭、热量与勇气之风。它从北方吹来时是一股灼热的浪潮，聚积在火山口、燃烧的森林和炽热的沙漠上空。阿克夏是所有风中最危险的一支——它的力量来得最快，代价也最不可逆。火焰学院的法师——也被称为炽热术士——身上永远带着一层硫磺的气味和不可抑制的焦躁。他们的魔法是纯粹的破坏：火球、烈焰剑、区域性燃烧风暴。过度的阿克夏使用会在施法者脸上留下永久性的火焰纹身，在血管中注入挥之不去的炽火，最终让使用者燃烧为一捧被风吹散的骨灰。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "阿克夏红风是帝国军队最直接的魔法破坏力——没有其他风能像红风一样将敌军的阵线在一瞬间变为一道火焰墙壁。我们的火焰战斗法师是战场上最受普通士兵欢迎也是最被他们恐惧的存在：当一名火法师站在你身后召唤出一颗直径三尺的翻滚火球并将其推进敌军密集阵中时，你会向任何神祈祷让他多来几次；但当他手上的火焰开始不受控制地从指尖回窜到自身时，所有在他身边三十尺内的友军都在心里计算自己离最近水源的距离。火焰学院的学生是所有学院中死亡率最高的——不是因为混沌引诱（虽然这也不少），而是因为在学徒阶段有一道无法绕过的最终测试：'焰袍试炼'——学徒必须在全身被一层薄焰包裹的情况下从学院一楼走上三楼焚祭殿，任何恐惧的颤抖都会导致火焰失控向内燃烧。据说每年有超过两成的候选学徒死于焰袍试炼，但火焰学院从不公布这个数字。红风法师的另一个不为人知但极为致命的弱点是极度寒冷——在下雪战斗中的阿克夏法师需要比平时多出一倍的能量才能释放出同等的火焰，而在基斯里夫极寒地带他们的法术效果可能降低至平时的四分之一。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "阿克夏红风在军事战术中的核心价值——以最小的编制人员造成最大范围的对军伤害——使得火焰战斗法师在攻城战和反大型怪物作战中几乎不可替代。一座城门可以在十分钟内被两名阿克夏法师的聚焦火光束烧穿；一头混沌巨魔可以在三十秒内被一整套红风火球连射炸成碎肉而无需任何传统攻城器械或巨量弓箭手。但阿克夏法师同时也是所有帝国魔法部队中纪律最难管控的——他们天生的易燃性性格使得他们对指挥系统的响应速度比其他学院慢半档，而在战场上慢半档意味着一个火球可能落在己方阵线而非敌军头上。任何在战斗序列中配属了三名以上阿克夏法师的指挥官都应该在战前亲自向这些法师作一次不公开的简短训话——不是下达战术指令，而是给他们每一个人一个必须活着走出战场的具体理由。火焰法师死于火的人太多，因为当战斗过于激烈时，他们会本能地抽取超过安全阈值的红风，而这时唯一能让他们在反噬前停下来的不是学院教条——是一个活着还欠他一笔债务或一个承诺的人。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "阿克夏红风的灵能物理学是所有风中最直观但也最容易导致误判的。阿克夏的能量不是火——火只是红风在物质世界中的最低级显形。阿克夏的深层本质是'转换中的动能'——即从一种能量形态向另一种能量形态跃迁的那一瞬间中释放的爆发性溢出。这解释了为什么阿克夏不仅存在于火中，也存在于极端的愤怒中、性欲的顶峰、集体狂热的爆发和任何形式的剧烈情感排泄之中。古代的炽热术士——远早于帝国学院体系的存在——将阿克夏称为'跃火'而非'火焰'，因为在他们的理解中，阿克夏的第一属性不是燃烧而是变化速率。一个精通阿克夏的法师可以在不点燃任何物体的前提下使一柄钢剑的温度瞬间跃升至赤红、将一盆水瞬变为一盆蒸汽、或将一个穿着全身板甲的敌军骑士在盔甲内部加热至活活烤死的极端温度——所有这些都不需要可见的火，只需要对能量跃迁的精确操控。这种能力的可怕之处在于它绕过了帝国标准战术教条中的大多数物理防护，因此帝国军事法案明确规定：任何火焰学院弟子在未取得督战高塔的签字认可以前，禁止在封闭空间内施放超过二级的热能跃迁术。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "阿克夏红风对女性的影响方式不同于男性——这是我从小在家族记载中读到、并在自己见过三名女性火焰法师后确认的事实。女性阿克夏法师的火焰温度在统计上略低于男性（平均约差百分之八到十二），但她们对火焰的控制精度在平均值上超过男性。这意味着女性红风法师更适合精准打击敌军指挥官而非大面积杀伤任务——而战场上的现实是大多数指挥官从不要求精度，他们只要求更多的火力覆盖面积，因此女性火焰法师的战场效力被结构性低估。另一个被忽视的问题是阿克夏红风对女性生殖系统的潜在影响——火焰学院在女性学徒入学时需要签署一份非公开的健康豁免文件，内容涉及阿克夏能量对女性生育能力的不可逆影响。帝国军队中没有人愿意公开讨论这个问题，但每一个在火焰学院服役超过十年的女法师——据我所知——从无例外地在退役后被医学证明为永久不孕。这不是教条或纪律可以解决的——这是阿克夏的本质：红风在你体内燃烧的第一件东西不是你敌人的血肉，而是你自己的未来。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我们家族领地上有一座活跃的天然硫磺泉——它是阿克夏红风在地脉中的自然积累点——我在家族秘室中封存了一份祖先签署的私人协议：协议的另一方是火焰学院的前任大导师格赫拉·布兰兹，他在帝国历二三四二年秘密造访了我族的硫磺泉并确认这口泉是帝国南境最大的一处天然红风节点。作为向他永久提供通行权和使用权的回报，火焰学院同意在任何时候接受我们家族推荐的不超过三名见习学徒——无需通过阿尔道夫帝国魔法部考核——直接进入火焰学院进行红风训练。这是家族在两百年来一直小规模但稳定地保有自己的内部战斗法师的唯一原因，而这件事在帝国的任何官方文件上从未被记录过。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "当你和一名真正的高级阿克夏法师一同行路时——我只有过一次这种经历——你会注意到一件令你终身难忘的事情：他的眼睛不反射光。不是瞳孔扩散或某种医学变异，是他的虹膜本身似乎在主动吸收周围所有光源而非反射任何东西——因为在他的身体内部已经有足够的火在燃烧。他告诉我阿克夏的伟大秘密是：它不是让你学会如何生火，而是让你学会如何不再害怕被烧死。他说这话时我们正从一座被他自己在上一次失控中烧毁的无名村庄的废墟上行过，废墟边缘坐着一位失去一切的老妇人，她没有哭泣，只是盯着灰烬发呆。他看着老妇人说：'我对她说对不起，她说她没有听见。我想她是听见了。'他再也没有在这条路上和我说第二句话。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "阿克夏红风在帝国军备供应链中的位置极为特殊——火焰学院是帝国境内唯一合法的军用火焰投射器的唯一生产许可持有者，包括但不限于帝国制式火焰弹（实际是一种灌入了低纯度阿克夏能量的陶罐手雷）、火焰地雷（在敌军行进途中以预先充能的红风水晶触发的地面火焰陷阱）以及炎阳骑士团的仪式性火焰剑刃。火焰学院的军备部门由一个独立的附属商会管理——它不与阿尔道夫皇家军械局重复运营，但在销售额上可以与帝国冶金行业的老牌巨擘旗鼓相当。购买火焰学院的红风军备不需要魔法许可——只需要金币——这是帝国魔法部与军方之间一个长达数十年的灰色妥协：只要不涉及直接施法者，军方可以从火焰学院购买任何充能红风武器。这制造了一条帝国军事物资供应链中最暴利也最缺乏监管的管道。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "阿克夏红风——火焰、热力与勇气的八风之一，最具破坏性也最危险",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "阿克夏红风的魔法属性与能量来源"
+  ]
+}

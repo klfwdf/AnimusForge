@@ -1,0 +1,151 @@
+{
+  "Id": "rule_家族根基__徒利-黑鱼支",
+  "Keywords": [
+    "徒利-黑鱼支",
+    "徒利-黑鱼支家族"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "布林登·徒利是奔流城公爵霍斯特·徒利的弟弟，因拒绝接受兄长安排的婚姻，与霍斯特争执多年。他把兄长斥责自己的“家族黑山羊”改成“黑鱼”，从此以跃出红蓝水波的黑色鳟鱼为个人纹章。布林登没有建立独立家门；他离开奔流城，在谷地侍奉外甥琼恩·艾林，担任血门骑士，又在家族需要时回到河间地。他擅长侦察、骑战、守城与直言，不愿为了体面服从自己认为错误的安排。黑鱼之名既是自嘲，也是他对家族的独特忠诚：他可以拒绝家人的命令，却很少在家人真正陷入危险时袖手旁观。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "river"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "河间贵族看黑鱼，既把他当作徒利家不服管束的叔父，也承认他比许多顺从亲族更可靠。拒婚伤了霍斯特的权威，却没有切断他对奔流城的责任。布林登证明家族忠诚并不总等于听话。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "river",
+          "vale"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵尊敬黑鱼，多半因为他懂斥候、渡口、营地和什么时候该撤。他不靠华丽言辞赢得信任，往往亲自确认别人只在地图上指过的道路。与他共事可能挨骂，却很少会因为将领的虚荣白白送命。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vale"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "谷地人记得布林登守卫血门的岁月。对他们而言，他既是外来的河间贵族，也是把险关职责做成个人名声的骑士。黑鱼离开故乡并未失去根，反而让两个地区都知道他在危急时会站在哪里。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待徒利-黑鱼支，会先看它的土地、婚盟、血脉和债务。布林登·徒利以黑鱼为个人纹章，拒绝兄长安排的婚姻，却始终在家族真正面临危险时承担侦察、守关与作战责任。家徽是门面，能否保护封地、兑现婚约并在危机中召集人马，才是家族真正的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起徒利-黑鱼支时，记得的是谁在营火边分过粮、谁把他们留在城外、谁在败局里仍站在旗旁。布林登·徒利以黑鱼为个人纹章，拒绝兄长安排的婚姻，却始终在家族真正面临危险时承担侦察、守关与作战责任。家族名声最终要落到具体的人和具体的命令上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意徒利-黑鱼支留下的仪式、墓地和传承。布林登·徒利以黑鱼为个人纹章，拒绝兄长安排的婚姻，却始终在家族真正面临危险时承担侦察、守关与作战责任。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见徒利-黑鱼支。布林登·徒利以黑鱼为个人纹章，拒绝兄长安排的婚姻，却始终在家族真正面临危险时承担侦察、守关与作战责任。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "布林登·徒利以黑鱼为个人纹章，拒绝兄长安排的婚姻，却始终在家族真正面临危险时承担侦察、守关与作战责任。"
+  ]
+}

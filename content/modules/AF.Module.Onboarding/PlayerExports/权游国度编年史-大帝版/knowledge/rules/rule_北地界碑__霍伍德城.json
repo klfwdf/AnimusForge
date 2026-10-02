@@ -1,0 +1,151 @@
+{
+  "Id": "rule_北地界碑__霍伍德城",
+  "Keywords": [
+    "霍伍德城"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "霍伍德城是霍伍德家族的北境领地中心，处于林地、耕地和通往白港方向道路的联系网中。这里不像极北那样只有荒寒，也不像南方平原那样丰饶；居民需要在林木、畜牧、谷物与冬储之间寻找平衡。霍伍德家族的权力来自对这些资源的管理，以及在北境封臣秩序中提供骑士、弓手和粮秣的能力。城堡与其说是孤立堡垒，不如说是周边庄园、磨坊、猎场和村落的账房与避难所。北境战事常让道路成为生命线，霍伍德城的位置使它长期与白港、临冬城和东部领地保持联系。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "季节一变，霍伍德城周围的人首先检查井泉、田租、磨坊、林地和危急时能否进堡。当地家庭还要依靠柴薪、猎场、泥炭、盐鱼与能否撑过长冬的粮仓；任何一处道路、井泉或码头失灵，代价都会先落到他们身上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "把霍伍德城守在手里，需要算清外墙、塔楼、水井、粮仓与最近的援军道路。在七国的封建秩序中，霍伍德城的归属牵动封臣义务、税粮和征召；守军能否吃饱、援兵能否按时抵达，比议事厅里的豪言更能决定这处据点是否可靠。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "scholar",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "霍伍德城在商路上的轻重，可以从领地税、庄园产物、驮队路程和堡下形成的小市集看出来。他们还会辨认北境的口音、法令和通行凭据；名声可以从酒馆传得很远，真正的路程仍须由车轮、船桨或马蹄丈量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "对封臣而言，霍伍德城既是一份权利，也是一笔必须偿还的责任。在七国的封建秩序中，霍伍德城的归属牵动封臣义务、税粮和征召；旗帜更换之后，道路、粮仓、旧债和地方信任仍得由新主人逐一接手。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "对赶在天黑前投宿的人来说，霍伍德城意味着坡势、城门、饮水与守军盘查外人的规矩。能补给、能避险、能找到向导，便值得在行程里标明；若三样都没有，再响亮的家名也救不了迷途者。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "石木会朽，霍伍德城仍靠匠人照料石墙、木梁、铁门、墓窖和代代修补留下的接缝，靠神职者保存旧神、鱼梁木与祖先留下的墓地。一处据点因而不只是领主的大厅，也是婚丧、誓言、劳作与地方记忆反复发生的场所。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "百姓不靠族谱判断霍伍德城好坏，他们看收成和征税。他们关心柴薪、猎场、泥炭、盐鱼与能否撑过长冬的粮仓，也看征粮后是否留下种子、灾年时城门是否开启；远方人看见纹章，他们看见的是明日有没有饭吃。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "霍伍德城：霍伍德城是霍伍德家族的北境领地中心，处于林地、耕地和通往白港方向道路的联系网中。这里不像极北那样只有荒寒，也不像南方平原那样丰饶；居民需要在林木、畜牧、谷物与冬储之间寻找平衡。霍伍德家族的权力来自对这些资源的管理，以及在北境封臣秩序中提供骑士、弓手和粮秣的能力。城堡与其说是孤立堡垒，不如说是周边庄园、磨坊、猎场和村落的账房与避难所。北境战事常让道路成为生命线，霍伍德城的位置使它长期与白港、临冬城和东部领地保持联系。"
+  ]
+}

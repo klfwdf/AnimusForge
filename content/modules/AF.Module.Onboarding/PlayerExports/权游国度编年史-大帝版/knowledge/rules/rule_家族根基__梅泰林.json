@@ -1,0 +1,155 @@
+{
+  "Id": "rule_家族根基__梅泰林",
+  "Keywords": [
+    "梅泰林",
+    "梅泰林家族",
+    "白色猫头鹰"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "梅泰林家族据有雾林城，是风暴地的封臣，纹章为灰色底上的白色长角猫头鹰。雾林城周围林木、海雾与崎岖道路塑造了家门的生活：守军要熟悉林间小径，樵夫与猎户比远方骑士更懂天气，沿海消息常在雾中迟到。第一次多恩战争时，梅泰林伯爵与家人死于一桶被下毒的酒；这场旧祸使宴饮、使者与边境来客在地方记忆里都带上一层戒心。家门今日的选择可以改变，雾林城对谨慎、向导和可靠补给的需要不会改变。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "stormlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "风暴地武人认为雾林城最可贵的不是开阔地上的冲锋，而是能在低云和密林里认路。梅泰林若失去本地猎户与斥候，再多盔甲也只会在雾里打转。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "stormlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "林地居民看白猫头鹰旗，想到的是木材份额、狩猎边界和坏路上的巡逻。领主懂得听向导的话，城堡便是庇护；不懂，命令出了城门就会被雾吞掉。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "stormlands",
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "priest",
+          "scholar",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "懂旧史的人会提起那桶毒酒，却未必用它指控今日的多恩人。它更像一条冷硬的教训：边境战争里，宴席和酒封有时与刀剑一样需要查验。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待梅泰林，会先看它的土地、婚盟、血脉和债务。雾林城的风暴地家族，以灰底白色长角猫头鹰为徽，历史受密林、海雾与多恩战争旧创塑造。家徽是门面，能否保护封地、兑现婚约并在危机中召集人马，才是家族真正的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起梅泰林时，记得的是谁在营火边分过粮、谁把他们留在城外、谁在败局里仍站在旗旁。雾林城的风暴地家族，以灰底白色长角猫头鹰为徽，历史受密林、海雾与多恩战争旧创塑造。家族名声最终要落到具体的人和具体的命令上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意梅泰林留下的仪式、墓地和传承。雾林城的风暴地家族，以灰底白色长角猫头鹰为徽，历史受密林、海雾与多恩战争旧创塑造。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见梅泰林。雾林城的风暴地家族，以灰底白色长角猫头鹰为徽，历史受密林、海雾与多恩战争旧创塑造。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "梅泰林：雾林城的风暴地家族，以灰底白色长角猫头鹰为徽，历史受密林、海雾与多恩战争旧创塑造。"
+  ]
+}

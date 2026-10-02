@@ -1,0 +1,213 @@
+{
+  "Id": "rule_莱弥亚家族__莱弥亚家族",
+  "Keywords": [
+    "莱弥亚家族",
+    "女性吸血鬼",
+    "魅惑渗透",
+    "暗中操控",
+    "宫廷阴谋",
+    "莱弥亚姐妹会",
+    "莱弥亚",
+    "女吸血鬼",
+    "渗透者",
+    "魅惑",
+    "阴谋家",
+    "操控者"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "莱弥亚家族是吸血鬼血脉中最擅长隐秘渗透和暗中操控的一支，其成员全部为女性。她们以超凡的魅力和精密的阴谋手段渗透各大王国宫廷，在丝绒手套中操纵着旧世界的政治风云。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "莱弥亚姐妹——我们血族中最优雅也最危险的姐妹血脉！她们不穿铠甲、不持重剑，却比任何披甲战士都更具毁灭力。一个莱弥亚女吸血鬼可以在三个月内从宫廷侍女爬升到国王的枕边谏臣，用耳鬓厮磨的低语和精心调配的魅惑香水瓦解整个王国。她们的始祖涅芙拉塔，那美丽的莱弥亚女王，据说至今仍在遥远南方的白银山峰中统御着她的姐妹会。莱弥亚的姐妹们互相扶持又彼此提防——在她们的世界里没有永远的联盟，只有永远的秘密。其他血脉的吸血鬼常常低估她们，直到某天发现自己的行动计划已经被莱弥亚姐妹先一步透露给了敌人，而那个敌人不知何时早已成了莱弥亚的傀儡。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "莱弥亚家族的威胁不在于军队，而在于她们能在你毫不知情的情况下瓦解你的整个联盟和内部指挥系统。如果你的宫廷中出现了一名来历不明但魅力超常的女性，必须立即彻查其身份。莱弥亚吸血鬼擅长的是漫长的渗透而非直接的征服——她们可能在你身边潜伏数十年只为在一个关键时刻扭转你的决策。对付她们的最佳策略是建立严格的情报审察体系和血统检测机制。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "莱弥亚家族是吸血鬼十二原始血脉中最独特的一支——始祖涅芙拉塔是唯一不接受初拥转化男性的血族始祖，因此莱弥亚血统全部由女性构成，新成员的产生需通过复杂的姐妹会筛选和仪式考验。她们的领地不在希尔瓦尼亚，而是集中在南方白银山脉中的神秘城市「白银尖塔」。莱弥亚姐妹会的组织层级为：涅芙拉塔（女王）——五姐妹议会（核心）——侍女之环（十二人）——渗透者网络（遍布旧世界）。与其他吸血鬼血脉强调武力威慑不同，莱弥亚姐妹的终极目标是「无形的支配」——她们相信真正的大师应在历史的丝幕背后操控世界，让国王们以为自己主政而实际上每一道谕令都源自血族之手。帝国宫廷史料中至少有三位皇帝宠妃被怀疑是莱弥亚放出的渗透者。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "莱弥亚家族的故事让我百感交集。她们是旧世界唯一一支完全由女性主导的真正权力体系——凭借的并非蛮力，而是智慧与魅惑。我在她们的策略中看到了女性在权力游戏中可以扮演的另一种角色，尽管使用的手段令人不寒而栗。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我的氏族曾差点被一个莱弥亚女吸血鬼毁掉——她伪装成逃难的贵族小姐被收留在我族领地，半年后我们才发现她暗中挑拨了三家联盟氏族反目成仇。等我们追杀她时，她早已消失无踪，留下的只有满地裂痕和一个差点嫁给我儿子的婚约。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我在蒂利亚的边境小镇见过一个号称莱弥亚的女人——至少人们私下是这么传的。她独自住在山丘上的白色别墅里，从不下山，但镇上的官员和富商们却像朝圣一样排着队上山拜访。几年后我再次路过，发现那个镇已经改朝换代了。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "莱弥亚家族是奢侈品市场的重要推动者——她们购买最精美的丝绸、最珍贵的香水，还有古代精灵饰品。与她们交易的好处是钱多且从不拖欠，坏处是你永远搞不清这笔交易的背后到底在为哪个政治阴谋提供资金。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "莱弥亚家族是全女性吸血鬼血脉，以魅惑渗透和宫廷阴谋著称",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "莱弥亚家族的家族背景与政治地位"
+  ]
+}

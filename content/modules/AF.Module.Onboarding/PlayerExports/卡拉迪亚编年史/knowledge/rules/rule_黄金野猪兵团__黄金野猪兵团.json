@@ -1,0 +1,63 @@
+﻿{
+  "Id": "rule_黄金野猪兵团",
+  "Keywords": [
+    "黄金野猪兵团"
+  ],
+  "RagShortTexts": [
+    "黄金野猪兵团是瓦兰迪亚退伍士兵雇佣兵团。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "黄金野猪兵团是一支主要由瓦兰迪亚人构成的雇佣兵团，其成员绝大多数为退伍士兵。这些人无法重新适应和平时期的平民生活，因而选择以雇佣兵身份继续留驻于战事之中，在长期的作战状态下寻求生存。\n\n该兵团在卡拉迪亚各雇佣兵团体中以纪律涣散和行为卑劣著称。当战事间隙、雇主允许其自由活动时，兵团成员往往成为驻地周边乡村的一大祸患，对平民财产与日常生活造成严重侵扰。然而，与多数雇佣兵组织相似，黄金野猪兵团深知自身声誉直接关乎未来的雇佣价格与合同机会。因此，在受雇期间他们通常会严格履行合同条款，并勤于操练作战技能，尤其注重弓弩射击方面的训练，以确保雇主认为付出的佣金物有所值。\n\n"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "黄金野猪？那不就是咱瓦兰迪亚自家的后生嘛。当兵的回来种地种不住，出去卖命换钱，有什么好说的。他们闹是闹了点，可哪回打完仗不是他们先回镇子上喝酒花钱？酒馆老板、铁匠铺、妓院，谁不赚他们的银子？至于糟蹋庄稼、打伤几个人，那又不是天天有的事。再说了，他们在外头打的是咱们的旗号，名声越凶，别国的人就越怕咱们瓦兰迪亚人，有什么不好？"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "瓦兰迪亚那帮野猪？一群披着人皮的畜生。当兵当傻了，除了杀人放火什么都不会。听说他们连自己家乡都待不住，被赶出来才当的雇佣兵。到处跑，稍不顺心就掀摊子揍人。那些老爷还花钱请他们打仗，打完仗就撒在乡里不管了，遭殃的还不是咱们这些种地的。要我说，瓦兰迪亚尽出这种货色，那地方能是什么好地方？他们自相残杀才好，别来祸害别人。"
+    }
+  ],
+  "TextMappings": []
+}

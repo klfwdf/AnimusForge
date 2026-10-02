@@ -1,0 +1,149 @@
+{
+  "Id": "rule_世界机制__主要港口",
+  "Keywords": [
+    "主要港口",
+    "君临港口",
+    "旧镇港口"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "维斯特洛的大港各自连接一片腹地：君临吞吐王领与黑水湾的粮货，旧镇依靠蜜酒河、学城与河湾地财富，白港是北境最重要的海上门户，兰尼斯港承接西境矿产与手工业，海鸥镇则把谷地同狭海商路相连。港口需要码头、仓库、灯塔、领航员、税吏、修船场和不断清理的水道；一艘船带来的不只是货物，还有消息、外乡人和疾病。港口是王侯的税源，也是敌舰、封锁与饥荒最先施力的地方。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "sailor",
+          "artisan"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "商人、水手和码头匠人按泊位、仓租、吃水和修船速度评价港口。红堡或高塔的名声很响，真正决定下次是否再来的，是货能否安全卸下、账能否按约结清。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "统治者把港口视为钱袋与粮道，也必须防备走私、间谍和敌舰。守城墙而失码头，往往等于把城中人的胃交给海上对手。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "priest",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "穷人从港口寻找短工、施舍和出走的船，也最先承受货价暴涨与疫病。大港在远方故事里遍地机会，在码头背街却常满是拥挤、污水和无人认领的尸体。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人把主要港口看成可执行的秩序。君临、旧镇、白港、兰尼斯港和海鸥镇等海门连接腹地与远方，也是税收、补给、疫病和封锁的集中点。它是否有效，取决于谁能授予权利、收取代价，并在违约时让判决真正落地。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起主要港口时，关心它如何影响道路、命令和安全。君临、旧镇、白港、兰尼斯港和海鸥镇等海门连接腹地与远方，也是税收、补给、疫病和封锁的集中点。远方的制度只有在营火、城门和驿站里能被执行，才不是空话。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者会从习惯和象征理解主要港口。君临、旧镇、白港、兰尼斯港和海鸥镇等海门连接腹地与远方，也是税收、补给、疫病和封锁的集中点。一项规矩若被反复实践，便会进入礼仪、手艺和祈祷；若只靠恐惧维持，危机一来就会露出裂缝。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民感受到主要港口的方式最小也最准确。君临、旧镇、白港、兰尼斯港和海鸥镇等海门连接腹地与远方，也是税收、补给、疫病和封锁的集中点。他们记得税、粮、劳役、赈济和谁能为他们说话；宏大的名称，最终都要落在一家人的饭锅旁。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "主要港口：君临、旧镇、白港、兰尼斯港和海鸥镇等海门连接腹地与远方，也是税收、补给、疫病和封锁的集中点。"
+  ]
+}

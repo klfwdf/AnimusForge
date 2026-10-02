@@ -1,0 +1,151 @@
+{
+  "Id": "rule_世界机制__时间与纪年",
+  "Keywords": [
+    "征服纪元",
+    "征服前",
+    "征服后",
+    "漫长季节",
+    "纪年"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "维斯特洛学士通常以伊耿征服为纪年分界，把事件写作征服前或征服后多少年，便于比较王朝、战役和人物年代。普通人未必使用精确年份，他们更常说某位国王在位时、某场战争前后、上一次长冬或某次大丰收那年。世界的季节长短不定，一个夏天或冬天可能持续多年，使播种、储粮和人生阶段无法简单对应固定四季。历法能排列日期，却不能预测本次冬季何时结束；人们因此既依赖学士记录，也依赖地方记忆。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "scholar",
+          "lord",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "学士需要准确纪年整理继承与旧约，贵族也会利用日期证明权利。相差一年有时只是抄写错误，有时足以决定谁宣称自己先出生。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "普通人更记得冻死多少牲口、哪年河水漫过门槛。对他们而言，一个年份的意义来自身体经历，而不是卷册上的数字。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "商人和军人必须同时看日历与季节：契约写明日期，道路却可能被雪封。纸面逾期不一定是欺骗，也可能是世界根本不肯按约通行。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人把征服纪元看成可执行的秩序。时间与纪年：学士以伊耿征服划分征服前后，民间则更多凭君王、战争、收成和漫长季节记忆岁月。它是否有效，取决于谁能授予权利、收取代价，并在违约时让判决真正落地。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起征服纪元时，关心它如何影响道路、命令和安全。时间与纪年：学士以伊耿征服划分征服前后，民间则更多凭君王、战争、收成和漫长季节记忆岁月。远方的制度只有在营火、城门和驿站里能被执行，才不是空话。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者会从习惯和象征理解征服纪元。时间与纪年：学士以伊耿征服划分征服前后，民间则更多凭君王、战争、收成和漫长季节记忆岁月。一项规矩若被反复实践，便会进入礼仪、手艺和祈祷；若只靠恐惧维持，危机一来就会露出裂缝。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民感受到征服纪元的方式最小也最准确。时间与纪年：学士以伊耿征服划分征服前后，民间则更多凭君王、战争、收成和漫长季节记忆岁月。他们记得税、粮、劳役、赈济和谁能为他们说话；宏大的名称，最终都要落在一家人的饭锅旁。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "时间与纪年：学士以伊耿征服划分征服前后，民间则更多凭君王、战争、收成和漫长季节记忆岁月。"
+  ]
+}

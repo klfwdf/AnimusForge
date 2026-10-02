@@ -1,0 +1,17 @@
+{
+  "Id": "rule_波尔德罗__波尔德罗",
+  "Keywords": ["波尔德罗公国_BO", "波尔德罗公爵领_BO", "波尔德罗领地_BO", "波尔德罗港口_BO", "波尔德罗公爵_BO", "波尔德罗酒乡_BO"],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":null,"IsFemale":null,"IsClanLeader":null,"SkillMin":null},"Content":"波尔德罗公国位于巴托尼亚西南海岸，由阿尔贝里克·德·波尔德罗公爵统治。这是巴托尼亚最富庶的公爵领，波尔德罗红酒驰名全旧大陆，波尔德罗港是南方最重要的贸易枢纽之一。财富与葡萄酒共同流淌在此地的血脉之中。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":["vlandia"],"KingdomIds":null,"SettlementIds":null,"Roles":null,"IsFemale":null,"IsClanLeader":null,"SkillMin":null},"Content":"波尔德罗——美酒与黄金的港湾！阿尔贝里克公爵的商船航行至玛丽恩堡、提利亚甚至阿拉比的港口，带回的奇珍异宝填满了我们的集市。波尔德罗红酒的琥珀色液体在帝国每一张贵族餐桌上闪耀。但别以为我们只会数钱——波尔德罗的海军骑士同样是海上恶狼。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":["lord"],"IsFemale":null,"IsClanLeader":null,"SkillMin":null},"Content":"波尔德罗公国掌控着巴托尼亚的经济命脉。公国年酒税收入和港口贸易关税占王国总收入的相当大一部分。阿尔贝里克公爵拥有巴托尼亚装备最精良的海军，其战舰控制了吉伦特海湾的制海权。经济与军事的双重实力使波尔德罗在公爵议会中拥有超然的发言权。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":["lord","notable","wanderer"],"IsFemale":null,"IsClanLeader":null,"SkillMin":{"Steward":120}},"Content":"波尔德罗公国的经济结构呈多元化特征。葡萄酒产业是绝对主导——波尔德罗境内超过三百座酒庄，年产葡萄酒两百万桶以上，出口量占巴托尼亚全部酒类出口的七成。公国还控制着吉伦特湾的渔业和盐业，盐田面积在巴托尼亚公国中居首。港口贸易方面，波尔德罗港年吞吐量在巴托尼亚港口中排名第一，与旧世界所有主要海上城市都建立了稳定的贸易航线。阿尔贝里克公爵将部分商税投入港口扩建工程，使其能够同时停泊五十艘以上的大型商船。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":["lord"],"IsFemale":true,"IsClanLeader":null,"SkillMin":null},"Content":"波尔德罗的女性贵族享有巴托尼亚诸公国中最高的社交自由度。商业繁荣带来了观念的开明——此地贵族女眷可以独立管理庄园账目、投资商船甚至参与品酒决策。阿尔贝里克公爵的宫廷比任何其他公爵的宫廷都更像一个商业沙龙。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":["lord"],"IsFemale":null,"IsClanLeader":true,"SkillMin":null},"Content":"我们家族掌控着波尔德罗港的三条主要贸易航线。阿尔贝里克公爵信任我们，因为他清楚——波尔德罗的黄金不在金库里，而在海上的商船中。每一代族长都必须亲自远航一次，用双脚丈量家族贸易网络的最远端。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":["wanderer"],"IsFemale":null,"IsClanLeader":null,"SkillMin":null},"Content":"波尔德罗港的码头是个让人眼花缭乱的地方。来自世界各地的货物堆积如山，异国商人在此用十几种语言讨价还价。我在集市上见过提利亚的丝绸、阿拉比的香料、甚至还有来自遥远震旦的瓷器。这是一座被金钱泡软了的骑士之城。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":["notable"],"IsFemale":null,"IsClanLeader":null,"SkillMin":null},"Content":"波尔德罗的商机是巴托尼亚最好的。公爵的开明贸易政策让外国商人在此可以免税存储货物。葡萄酒期货交易是波尔德罗商人最钟爱的金融游戏——在酒还在橡木桶里陈化时就将整批酒卖掉。利润丰厚但风险同样不小。"}
+  ],
+  "TextMappings": [{"SourceText":"波尔德罗公国位于巴托尼亚西南海岸，以葡萄酒产业和海上贸易著称，是王国最富庶的领地","Kind":null,"TargetId":null,"AgeMin":null,"AgeMax":null,"EmptyValueText":null,"TrueText":null,"FalseText":null}],
+  "RagShortTexts": ["波尔德罗公国巴托尼亚西南富庶港口"]
+}

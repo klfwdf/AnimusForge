@@ -1,0 +1,210 @@
+{
+  "Id": "rule_矮人政治__矮人政治",
+  "Keywords": [
+    "矮人政治",
+    "至高王",
+    "矮人政治工程师公会",
+    "矮人政治符文铁匠",
+    "矮人议会",
+    "万王议会",
+    "长须者否决",
+    "卡拉克自治",
+    "氏族首领"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "矮人政治以卡拉克为中心，每个卡拉克由一位王统治，所有卡拉克之王的最高权威是至高王——世袭自矮人先祖安塞斯特尔的直系血脉。但矮人的政治远不止王室——工程师公会和符文铁匠公会掌握着巨大的经济和技术权力，矮人议会（长者会议）由各氏族最年长、最有智慧的长须者组成，他们在重大决策上拥有否决权。矮人政治的最大特点是缓慢和保守——任何重大的决议都需经过数百年的讨论。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我们的政治没有什么秘密——它就像花岗岩一样简单又结实。至高王是先祖安塞斯特尔的直系后裔，他统治永恒峰并在外交上代表所有达维。但各卡拉克的王在自己的城内拥有绝对权威——至高王不能命令卡拉克·卡德林的王应该怎样做，只能在全体卡拉克大会上提出建议。公会是我们的第二个权力中心——工程师公会控制着所有蒸汽武器和火药技术，符文铁匠公会守护着远古符文锻造的秘密，这两个公会如果不同意，连至高王的决策也推行不下去。人类觉得我们慢——对，因为我们在权衡每一个决定的千年后果。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "矮人政治体系的保守性和缓慢节奏既是弱项也是优势。弱项在于：矮人无法对快速变化的威胁做出迅速反应——当一个绿皮Waaagh！在南部形成时，北方的卡拉克可能花数十年还在讨论是否该派援军。但优势同样明显：一旦矮人做出了决定（尤其是军事上的承诺），他们将以令人难以置信的坚定性贯彻到底——不会因损失而退缩，不会因挫折而改弦易辙。与矮人签订条约时必须极度审慎——因为矮人将完整履行每一项条款，同时也会期待你同样一字不差地履行。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 100
+        },
+        "IdentityIds": null
+      },
+      "Content": "矮人权力结构由三个互相制衡的支柱组成。第一支柱是王权：至高王（High King）世袭于先祖安塞斯特尔的血脉，目前由索尔葛林·怨仇者担任；各卡拉克之王由氏族首领选举或世袭产生。第二支柱是公会权力：工程师公会掌握蒸汽动力、火药武器和飞行器技术；符文铁匠公会更为古老，掌握符文魔法的锻造技艺，由于符文知识只能在师徒间秘密传承，公会权力高度集中。第三支柱是氏族和长者会议：氏族首领（Thane）拥有对内部事务的自治权；长须者（Longbeards）的「嗯」（Hmm）——表示不同意——足够搁置任何议案。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "在矮人政治中，女性的直接公开权力受到限制——但这绝不意味着她们没有权力，只是她们行使权力的渠道不同。公会中没有女性正式成员，但氏族内部的贸易网络、婚姻联盟和粮食储备管理完全由女性控制。在战争时期，当所有男性长须者在前线时，女性长者实际上接管了卡拉克内部的议事决策——这种战时临时权力在历史上至少三次演变为永久性的制度变更，但每次战后都在官方叙事中被遗忘。我本人就曾在连续三代男性族长同时出征时主持了我氏族的所有贸易决策和跨卡拉克协商。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "矮人万王议会（Council of Kings）是矮人政治中的最高正式会议——理论上所有卡拉克之王在面临威胁时都应出席并达成共识。但在我作为族长的经历中，万王议会召开的实际过程是一个充满宿怨和旧债务复利计算的噩梦。上次我出席万王议会是为了讨论对艾查恩混沌入侵的联合应对——我们在讨论混沌之前，先花了四天时间处理了卡拉克·卡德林对卡拉克·阿祖尔关于三百年前一批秘银交易的定价争议。优先处理旧仇恨在前，讨论当前威胁在后——这是无法改变的矮人政治铁律。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "作为一个曾在卡拉扎-阿-卡拉克参与过贸易代表团的人类，我亲身体验了矮人政治中的'嗯'否决。我们的代表团向至高王呈递了关于增开一条新贸易路线的详尽提案——准备了两年、附带了帝国选帝侯的盖章。至高王听取了整个报告，然后转向身后一排白胡须长者。最中间的老矮人只深吸一口气，从鼻子里发出一声长长的'嗯——'。整个王座厅在接下来的四十分钟内没有任何人说话。然后至高王告诉我们：'提案需要进一步考虑。'我们被告知可以在三十至五十年后回来询问进展。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "从帝国商会的角度来看，矮人政治中的公会权力是令人又敬又怕的存在。工程师公会对蒸汽技术的垄断意味着任何帝国想要获得蒸汽坦克的设计改进都必须经过矮人审核——而这些审核的周期通常以十年为单位。符文铁匠公会更为棘手——符文武器是旧世界最值钱的商品，但符文铁匠公会控制着每一件符文武器的初始制作和终身维护，如果他们认为某个武器持有者'滥用'了符文（比如将一把符文剑用于砍柴），他们有权收回该物品且不予补偿。在商业法上这种条款毫无可挑战之处。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "至高王——世袭自先祖安塞斯特尔的矮人最高君主，统治永恒峰",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "矮人的权力结构与决策机制"
+  ]
+}

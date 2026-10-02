@@ -1,0 +1,153 @@
+{
+  "Id": "rule_家族根基__贝拉尔",
+  "Keywords": [
+    "贝拉尔",
+    "贝拉尔家族",
+    "渔业"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "贝拉尔是罗拉斯的贵族家门之一。对一座海雾笼罩、耕地有限的岛城而言，家门财富很难脱离渔场、盐、鲸油、海兽皮和跨海补粮；因此贝拉尔的地位既受上层议事影响，也受潮汐与普通船员的选择牵制。它需要维护秤具与仓单的可信，避免不同岛社因捕鱼水域和泊位爆发长期冲突。家族成员可以改换事业与同盟，贝拉尔这个名字若想继续有分量，就必须在每个坏季节重新证明自己能让关系网不断裂。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "nord"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "notable",
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "罗拉斯商人把贝拉尔的信用看得比金饰重要。仓单若能在两场风暴后仍兑现，家门就有朋友；秤杆若偏一次，旧交也会在下一艘船离港时消失。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "nord"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "sailor",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "渔民用捕鱼水域和收购价判断贝拉尔。允许小船保留活路的家门会得到消息与忠心，逼得太紧的则只会得到偷卸的鱼和夜里的咒骂。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "nord"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "priest",
+          "artisan"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "沉默者与制桶匠都明白，真正的富足来自保存而非炫耀。贝拉尔若肯修仓、备盐、照看失船家庭，贵族身份才不只是干燥屋顶下的一句话。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待贝拉尔，会先看它的土地、婚盟、血脉和债务。罗拉斯的地方家门，生存依赖渔场、仓储、船员与群岛社区之间的长期信用。家徽是门面，能否保护封地、兑现婚约并在危机中召集人马，才是家族真正的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起贝拉尔时，记得的是谁在营火边分过粮、谁把他们留在城外、谁在败局里仍站在旗旁。罗拉斯的地方家门，生存依赖渔场、仓储、船员与群岛社区之间的长期信用。家族名声最终要落到具体的人和具体的命令上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意贝拉尔留下的仪式、墓地和传承。罗拉斯的地方家门，生存依赖渔场、仓储、船员与群岛社区之间的长期信用。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见贝拉尔。罗拉斯的地方家门，生存依赖渔场、仓储、船员与群岛社区之间的长期信用。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "贝拉尔：罗拉斯的地方家门，生存依赖渔场、仓储、船员与群岛社区之间的长期信用。"
+  ]
+}

@@ -1,0 +1,152 @@
+{
+  "Id": "rule_龙石海岸__尖角城",
+  "Keywords": [
+    "尖角城",
+    "夏普角"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "尖角城位于黑水湾北岸、面向狭海的尖岬附近，是王领东部航线上的港镇与集市。海风、潮汐和过往船只塑造了此地的生活：渔民看云色，船主算潮时，地方贵族则在瞭望塔上观察来船和海盗。它距君临不远，却不等于都城；尖角城的粮食、木材和小型船队要在地方需求与首都市场之间周转。海湾一旦不宁，这类靠海的城镇最先感到价格、传闻和征发的变化。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "crownlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "季节一变，尖角城周围的人首先检查潮汐、渔汛、淡水和船只能否安全靠岸。当地家庭还要依靠捕鱼、盐业、码头、火山石地与狭海航运；任何一处道路、井泉或码头失灵，代价都会先落到他们身上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "crownlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "把尖角城守在手里，需要算清港湾入口、泊位、烽火与可供登陆的岸线。在七国的封建秩序中，尖角城的归属牵动封臣义务、税粮和征召；守军能否吃饱、援兵能否按时抵达，比议事厅里的豪言更能决定这处据点是否可靠。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "scholar",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "尖角城在商路上的轻重，可以从航期、码头脚费、补水和下一处避风港看出来。他们还会辨认龙石岛海域的口音、法令和通行凭据；名声可以从酒馆传得很远，真正的路程仍须由车轮、船桨或马蹄丈量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "对封臣而言，尖角城既是一份权利，也是一笔必须偿还的责任。在七国的封建秩序中，尖角城的归属牵动封臣义务、税粮和征召；旗帜更换之后，道路、粮仓、旧债和地方信任仍得由新主人逐一接手。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "对赶在天黑前投宿的人来说，尖角城意味着风向、礁石、渡船与城门落锁后的锚地。能补给、能避险、能找到向导，便值得在行程里标明；若三样都没有，再响亮的家名也救不了迷途者。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "石木会朽，尖角城仍靠匠人照料修船木、帆布、盐、鱼获和抵御海风的石料，靠神职者保存七神与光之王信仰并存时留下的圣堂、火焰和旧龙记忆。一处据点因而不只是领主的大厅，也是婚丧、誓言、劳作与地方记忆反复发生的场所。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "百姓不靠族谱判断尖角城好坏，他们看收成和征税。他们关心捕鱼、盐业、码头、火山石地与狭海航运，也看征粮后是否留下种子、灾年时城门是否开启；远方人看见纹章，他们看见的是明日有没有饭吃。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "尖角城：尖角城位于黑水湾北岸、面向狭海的尖岬附近，是王领东部航线上的港镇与集市。海风、潮汐和过往船只塑造了此地的生活：渔民看云色，船主算潮时，地方贵族则在瞭望塔上观察来船和海盗。它距君临不远，却不等于都城；尖角城的粮食、木材和小型船队要在地方需求与首都市场之间周转。海湾一旦不宁，这类靠海的城镇最先感到价格、传闻和征发的变化。"
+  ]
+}

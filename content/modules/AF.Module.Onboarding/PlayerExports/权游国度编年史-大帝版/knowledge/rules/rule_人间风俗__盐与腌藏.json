@@ -1,0 +1,128 @@
+{
+  "Id": "rule_人间风俗__盐与腌藏",
+  "Keywords": [
+    "盐与腌藏"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "盐把夏日的肉、鱼和乳酪留给漫长的寒冷，也把穷人与富人的餐桌分得很清楚。北方人把盐肉当作冬储，港口人从腌鱼里看见生计，贵族则用盐、香料和精致菜肴宣示财富；缺盐时，连寻常汤锅都会变成一场焦虑。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "贵族在盐与腌藏里辨认血脉与体面，乡绅在意邻里是否守规矩，祭司则提醒人们礼节背后的禁忌；身份与礼数使习惯变成可以传下去的秩序。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "谈到盐与腌藏，农户、工匠和商人不总能负担完整的礼数，却会保留最要紧的部分：称呼、座次、赠礼和道歉；失礼有时比少一袋粮更快招来麻烦。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵与旅人穿过不同地域时，最容易在盐与腌藏上犯错；懂得先观察再开口的人，往往比自称见多识广的人更快取得信任。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人把盐与腌藏看成可执行的秩序。盐把夏日的肉、鱼和乳酪留给漫长的寒冷，也把穷人与富人的餐桌分得很清楚。北方人把盐肉当作冬储，港口人从腌鱼里看见生计，贵族则用盐、香料和精致菜肴宣示财富；缺盐时。它是否有效，取决于谁能授予权利、收取代价，并在违约时让判决真正落地。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者会从习惯和象征理解盐与腌藏。盐把夏日的肉、鱼和乳酪留给漫长的寒冷，也把穷人与富人的餐桌分得很清楚。北方人把盐肉当作冬储，港口人从腌鱼里看见生计，贵族则用盐、香料和精致菜肴宣示财富；缺盐时。一项规矩若被反复实践，便会进入礼仪、手艺和祈祷；若只靠恐惧维持，危机一来就会露出裂缝。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民感受到盐与腌藏的方式最小也最准确。盐把夏日的肉、鱼和乳酪留给漫长的寒冷，也把穷人与富人的餐桌分得很清楚。北方人把盐肉当作冬储，港口人从腌鱼里看见生计，贵族则用盐、香料和精致菜肴宣示财富；缺盐时。他们记得税、粮、劳役、赈济和谁能为他们说话；宏大的名称，最终都要落在一家人的饭锅旁。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "盐与腌藏：盐把夏日的肉、鱼和乳酪留给漫长的寒冷，也把穷人与富人的餐桌分得很清楚。北方人把盐肉当作冬储，港口人从腌鱼里看见生计，贵族则用盐、香料和精致菜肴宣示财富；缺盐时，"
+  ]
+}

@@ -1,0 +1,213 @@
+{
+  "Id": "rule_盖尔·玛拉兹__盖尔·玛拉兹",
+  "Keywords": [
+    "盖尔·玛拉兹",
+    "碎颅者",
+    "西格玛圣锤",
+    "帝国皇权象征",
+    "传奇战锤",
+    "矮人赠礼",
+    "陨铁神器",
+    "选帝侯之誓",
+    "卡拉克·瓦恩铁砧",
+    "库尔根·铁须",
+    "皇权传承",
+    "战锤传奇"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "盖尔·玛拉兹——在矮人语中意为'碎颅者'——是神皇西格玛的神圣战锤，由矮人传奇符文铁匠库尔根·铁须在卡拉克·瓦恩的铁砧上以陨铁铸成，作为人类与矮人缔结永恒盟约的礼物。它不仅是帝国的最高皇权象征——谁手握盖尔·玛拉兹，谁就在法律与神学上被认可为西格玛在世间的唯一代理。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "盖尔·玛拉兹——碎颅者——如果你在帝国任何一个村庄问到这把锤子，任何一个能开口说话的人都会告诉你：这是世界上最伟大的武器。它由矮人最伟大的符文铁匠库尔根·铁须在卡拉克·瓦恩的深炉中铸造，矮人将它作为盟约的信物赠予了我们的建邦神皇西格玛——从那一天起直到现在，盖尔·玛拉兹从未在战场上被任何凡间兵器击碎。当西格玛在黑火隘口挥动它时，绿皮的颅骨在它的锤面下爆裂如同雨季的泥丸；当马格努斯大帝在混沌之战时举起它，恶魔的甲壳在它的符文光芒中化为了灰烬。现在它被保存在阿尔道夫大圣殿的至深处，只有在皇帝加冕的仪式上被大主教从圣坛上取下——当卡尔·弗兰兹握着这把锤子出现在战场上时，每一个帝国士兵都知道：西格玛本人正在注视着今天的一切。这把锤子不是铁——是帝国的灵魂被矮人的技艺凝固成了可握的形状。一个帝国人面对叛乱者时可以说'我将带着皇帝的旨意去'——但如果你手中握着盖尔·玛拉兹，你不需要说，对方已经在那把锤子的反光中看到了西格玛的眼睛。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "盖尔·玛拉兹在军事层面上的价值远远超过它作为一把武器的破坏力。当皇帝在战场上亲自挥舞盖尔·玛拉兹时，整个帝国战线的士气会在几息之内发生质变——士兵们相信这柄圣锤的存在意味着西格玛本人的意志降临了战场，这种信仰能够把一支即将崩溃的溃军重新焊成一座坚不可摧的阵线。但作为统帅也必须明白一点：让皇帝手持盖尔·玛拉兹上阵意味着这场战斗的胜负已经关系到整个帝国的存亡——因为这把锤子一旦在战场上遗失或被敌人缴获，帝国将失去皇权合法性的物理载体。在整个帝国历史上，盖尔·玛拉兹只有两次离开过皇帝之手：一次是在大主教手中用作加冕礼，另一次是在危急时被授意由皇帝最信任的战斗牧师暂时代管。任何将军在制定含有皇帝亲自上阵的作战计划时，必须为盖尔·玛拉兹的安全配置至少一整个中队的瑞克禁卫作为贴身护锤队——不是为了保护皇帝，而是为了保护那把锤子。没有了皇帝，帝国还可以再选一位；没有了盖尔·玛拉兹，帝国将成为一个没有法统的松散文本集合。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "盖尔·玛拉兹的材质与锻造问题是帝国与矮人学术圈中持续了超过两千年的争议话题。锤子本身重约十二磅——这个重量在设计上精确平衡了一击致命的重力与连续挥击的灵活性——由一种被称为'星铁'的特殊陨铁锻造而成。矮人方面的权威文献——《卡拉克·瓦恩锻造纪》中关于人类盟约之锤的章节——记载库尔根·铁须在卡拉克·瓦恩的深炉中花费了整整六十年完善这把锤子的设计，他在铸造过程中使用了至少三种不在任何已知符文体系中出现过的古矮人符文，其中一种符文的含义至今无法被解读。人类方面的研究则以阿尔道夫大学神学院的'圣锤学'为学术正统，学院档案中保存着从帝国历1世纪至今历代学者对圣锤的神学与材质分析——其中最引人入胜的发现是由帝国历2301年的学者阿尔布雷希特·冯·施蒂尔提出的'锤重变化假说'：他声称在分析了历代持锤者证词后发现，盖尔·玛拉兹的重量在'被西格玛认可之人'手中比在普通持握者手中轻了约两磅，暗示锤子本身具有某种意志选择性。这个假说从未被官方确认——炮术学院的工程师们坚持认为这是宗教狂热导致的测量误差——但它至今仍是阿尔道夫大学神学辩论中最受欢迎的论题之一。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "盖尔·玛拉兹对我的意义与它对男贵族的意义截然不同——那把锤子是由一个男人为一个男人铸造的，在它全部已知的历史中只有男人的手曾经举起过它。但这并不意味着站在它面前的女性不拥有对它的诠释权。在帝国历史上有至少三位摄政女公爵曾在大主教面前以皇后的名义执掌过盖尔·玛拉兹——虽然她们从未用它在战场上击碎过任何兽人的头颅，但她们握着锤柄签署的每一份法令都被帝国议会议事录记载为拥有与皇帝亲笔诏书同等的法律效力。我站在阿尔道夫大圣殿中被那把锤子从圣坛上俯视时感受到的并非自卑，而是一种黑色幽默般的清醒——这把锤子本身是铁，它的全部神圣性来自于人们决定相信什么，而女人们在这两千五百年中一直在帝国伟大的幕后默默决定着许多值得相信的事。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我们家族与盖尔·玛拉兹的关系可以用一个祖传的小秘密来精确地概括：我们的族谱中记录着，在帝国历1512年，一位我们家族的远祖曾被选为盖尔·玛拉兹的'守夜骑士'——这是一个官方法律文件中不存在但被数个古老家族以口述史形式保留下来的非正式职务，其职责是在皇帝加冕前夜独自跪在圣坛前守护圣锤，确保在交接仪式前没有任何不洁之人触碰它。这个传统自从三皇分立时代以来就已经被正式废止，但帝国贵族家族中依然有人在不公开的私下仪式中履行着类似的行为——这不是迷信，而是一种家族资历的自我认证：你的家族是否在某个历史节点上被皇帝亲自信任过足以将盖尔·玛拉兹的安全委托于你。拥有这种传承的家族在帝国议会的走廊中说话时带着一种外人难以察觉但我们都心知肚明的分量——因为你的家族曾经跪在这把圣锤面前以姓氏和鲜血发誓。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "盖尔·玛拉兹对一个普通雇佣兵来说意味着什么？意味着你在帝国军旗上看到的那把锤子与你之间隔着不可逾越的天与地。我在瑞克卫队的阅兵式上远远见过卡尔·弗兰兹持锤骑马经过——那把锤子比我想象的要小，但它被举起的瞬间周围数千人的呼喊声几乎把我的耳膜击穿。事后一个老军士在酒馆里告诉我，他曾在一个最靠近皇帝队伍的哨位上执勤，当那把锤子从马鞍侧袋中被抽出的瞬间他感受到的不是热或光，而是一种无法用语言描述的重量——仿佛空气中忽然多出了某种需要你跪下才能承受的东西。我不知道那是什么——也许只是老军士喝了太多便宜的麦酒——但我告诉你，在战场上当你看见那只持锤的手臂高高举起，你身边每一个帝国士兵都会不自觉地向前迈出一步，好像有什么看不见的力量把他们胸前的板甲从里面往外推了一把。锤子只是铁——老军士最后说——但帝国需要那把铁。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "盖尔·玛拉兹在帝国商人的行话中被称为'金色抵押物'——不是因为它可以拿去典当，而是因为在帝国所有需要最高信用背书的商业交易中，那把锤子的象征意义提供了一种无法被任何金币替代的最终担保。帝国财政部发行的国债——特别是那些以帝国议会的名义募集战争经费的长期债券——在市场上享有的超低利率正是因为投资者相信：只要盖尔·玛拉兹还在阿尔道夫大圣殿中，帝国作为一个整体就不会违约。这种心理效应在实际经济运行中表现为帝国国债与矮人王国金克朗之间的稳定兑换比率——这个比率在过去三百年中即使在战争期间也没有出现过超过5%的波动。在帝国商人行会内部有一个心照不宣的避险策略：当帝国政治出现严重分裂迹象时，我们买入的不是黄金——我们买入的是西格玛教会的免债券，因为那把锤子在教会的守护之下仍在发光。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "库尔根·铁须——铸造盖尔·玛拉兹的矮人传奇符文铁匠",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "盖尔·玛拉兹碎颅者西格玛圣锤"
+  ]
+}

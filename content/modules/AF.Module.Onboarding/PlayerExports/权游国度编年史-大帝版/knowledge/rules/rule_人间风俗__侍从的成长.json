@@ -1,0 +1,150 @@
+{
+  "Id": "rule_人间风俗__侍从的成长",
+  "Keywords": [
+    "骑士教育",
+    "服侍骑士",
+    "贵族少年",
+    "册封"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "贵族男孩常先做侍童，年长后成为骑士或领主的侍从。侍从要照料马匹、清理盔甲、携带盾牌与长枪、帮助主人穿甲，也学习骑术、剑术、纹章、礼仪和管理。战时他们跟随主人进入营地甚至战场，在荣耀故事发生前先面对泥泞、伤口与恐惧。侍从关系可以建立跨家族信任，也是人质、教育和政治联系的温和形式。表现出色者可能被册封骑士，但出身、财富和赞助仍深刻影响机会；服务一个坏主人也可能教会少年残忍而非荣誉。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "骑士把好侍从看作未来同袍，也可能只把他当方便仆役。真正的教导不在训话，而在少年每天看见主人如何对待弱者。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "平民孩子羡慕侍从接近盔甲和战马，却未必看见这条路需要家名与举荐。低阶出身者必须比贵族子弟更早证明自己有资格留下。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "priest",
+          "scholar",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "教士希望侍从学习骑士美德，学士更重视读写和判断。两者都明白，只会挥剑的少年很容易长成只会制造新仇的男人。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人把侍从看成可执行的秩序。侍从的成长：少年通过照料马匹与兵甲、学习礼仪和随军实践接近骑士身份，也近距离看见贵族世界的真实面目。它是否有效，取决于谁能授予权利、收取代价，并在违约时让判决真正落地。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起侍从时，关心它如何影响道路、命令和安全。侍从的成长：少年通过照料马匹与兵甲、学习礼仪和随军实践接近骑士身份，也近距离看见贵族世界的真实面目。远方的制度只有在营火、城门和驿站里能被执行，才不是空话。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者会从习惯和象征理解侍从。侍从的成长：少年通过照料马匹与兵甲、学习礼仪和随军实践接近骑士身份，也近距离看见贵族世界的真实面目。一项规矩若被反复实践，便会进入礼仪、手艺和祈祷；若只靠恐惧维持，危机一来就会露出裂缝。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民感受到侍从的方式最小也最准确。侍从的成长：少年通过照料马匹与兵甲、学习礼仪和随军实践接近骑士身份，也近距离看见贵族世界的真实面目。他们记得税、粮、劳役、赈济和谁能为他们说话；宏大的名称，最终都要落在一家人的饭锅旁。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "侍从的成长：少年通过照料马匹与兵甲、学习礼仪和随军实践接近骑士身份，也近距离看见贵族世界的真实面目。"
+  ]
+}

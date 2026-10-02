@@ -1,0 +1,213 @@
+{
+  "Id": "rule_嗜血狂魔__嗜血狂魔",
+  "Keywords": [
+    "嗜血狂魔",
+    "恐虐恶魔",
+    "巨斧长鞭",
+    "战争化身",
+    "高阶恶魔",
+    "狂怒终极",
+    "血神之怒",
+    "铜甲恶魔",
+    "巨型蝙蝠翼",
+    "地狱刑具",
+    "不可阻挡",
+    "毁灭使者"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "嗜血狂魔是恐虐座下的高阶恶魔，战争的最纯粹化身——它们拥有青铜般坚硬的皮肤、遮天蔽日的巨大蝙蝠翅膀和足以劈开城墙的巨斧与长鞭，每一次降临战场都意味着一场不可阻挡的毁灭盛宴。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "chaos_culture"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "嗜血狂魔——凡人的心脏在听到它展翅的声音时就会停止跳动。它们是恐虐愤怒的物理形态。你无法真正「召唤」它们——你只能通过足够多的屠杀和献祭来「吸引」它们的注意。当嗜血狂魔降临战场时，它的吼声会将附近的所有玻璃震碎，它的斧头一劈能将一整队重装骑士连同他们的马匹一起劈成两半。没有任何防护能抵抗它的攻击，没有任何凡人能与它一对一战斗超过三秒——它太伟大了、太高了、太强壮了。但在恐虐的眼中，即便是嗜血狂魔也有弱点——它们偶尔会因为愤怒而失去判断力，攻击不该攻击的对手。否则，它们就是完美的。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "嗜血狂魔是你所能召唤的最强大的战斗单位。它足以单挑战场上任何敌方将领或巨兽。但召唤嗜血狂魔需要一个完整的血祭仪式——你必须在战前积累了足够的杀戮计数。将它投入到敌人最强大的地方——不要让嗜血狂魔浪费时间清理小兵。一旦被召唤，它会在战斗结束或自身受到致命伤害后回归混沌魔域。注意：即使是你自己的军队也要与嗜血狂魔保持距离——它的攻击范围极大且不分敌我。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "根据《魔域高等恶魔名录》的分类，嗜血狂魔是恐虐座下「八大血将」中的最高级存在，共分为三个位阶：「血怒」——最低级的嗜血狂魔，虽然已是凡人无法企及的存在，但在魔域中的地位仅相当于「新兵」；「血鞭」——中级嗜血狂魔，获得使用地狱长鞭的权利，可独立指挥一支恶魔军团；「嗜血至尊」——最高位阶，只有八位，称为「恐虐八刃」，每位都指挥着一整个魔域战区。最著名的嗜血狂魔是「天血」安格拉特——在第一次大入侵中独自摧毁了帝国境内七座堡垒和一整支帝国军兵团，最终被矮人传奇屠魔勇士「石心」高崔克以符文巨斧配合人类法师的时空封印法术共同放逐。嗜血狂魔的铜皮天生免疫一切非魔法武器，凡人武器打在它们身上如同以木枝击打岩石。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我亲眼见过嗜血狂魔的降临。那种力量让人既恐惧又渴望——我祈祷有朝一日我也能变得如此强大，成为不可阻挡的战争化身。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "召唤嗜血狂魔是你作为部族首领最终极的底牌。但这个过程需要极其庞大的血祭——至少牺牲八百个有灵魂的活物作为祭品。保存这些头骨，用它们建造一座血神祭坛，在祭坛顶端呼唤恐虐的真名和嗜血狂魔的称号。一旦它回应你的召唤，你将成为整片北方废土所有人畏惧的存在。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "天边闪烁着一片不自然的红光，然后你听到了声音——一种低沉到让骨骼共振的巨吼。巨大的带翼黑影遮蔽了天空，它降落在战场上，掀起的狂风将你吹倒在地。那是嗜血狂魔，战争本身有了肉身。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "嗜血狂魔在混沌恶魔等级中属于最高阶的「大魔」——每位四大邪神都有各自的大魔。恐虐的大魔就是嗜血狂魔，它们通常以类人形态出现，拥有巨角、蝠翼和著名的「地狱刑具」组合——一把巨型战斧和一条火焰长鞭。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "嗜血狂魔——恐虐座下最高阶大魔，战争的最纯粹物理化身。",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "嗜血狂魔的家族背景与政治地位"
+  ]
+}

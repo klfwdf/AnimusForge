@@ -1,0 +1,155 @@
+{
+  "Id": "rule_家族根基__摩洛",
+  "Keywords": [
+    "摩洛",
+    "摩洛卡奥",
+    "摩洛卡拉萨"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "摩洛的卡拉萨来自多斯拉克人不断聚散的政治传统。一个强大卡奥死去后，旧部不会像城堡封臣那样自动服从某位继承人；有声望的寇可以带走亲族、马群和信任他的人，另起营火。摩洛的权威因此总带着两面：他要尊重曾共同骑行的旧关系，又必须证明自己的道路不同于前任。婚姻、血盟、胜利与礼物都能加固追随，却没有任何一项能代替持续的判断。卡拉萨可能改变规模与盟敌，摩洛仍会被同一问题追赶——人们为什么要在明天继续跟着他骑行。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "摩洛麾下的骑手最清楚，离开旧卡奥的营火既是自由也是赌命。若新首领能带来水草和胜利，分裂便会被歌成勇气；若不能，人们只会记得是谁把亲族带进荒地。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "卡拉萨中的老人和照料者不只看杀敌多少。他们看摩洛是否准许伤马休息、是否为病人放慢队伍、是否肯在分配中承认没有挥刀的人也维持着整个营地。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "qartheen",
+          "ghiscari"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "sailor",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "城邦使者把摩洛视为可以谈判却不能长期假定的力量。今天收下礼物的是一支完整卡拉萨，明天也许已分成数股；精明人谈的不只是卡奥，还要认得他身边最有分量的寇。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待摩洛，会先看它的土地、婚盟、血脉和债务。由独立营火、亲族与骑手誓从构成的卡拉萨，既继承旧联系，也必须凭当下的能力维系。家徽是门面，能否保护封地、兑现婚约并在危机中召集人马，才是家族真正的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起摩洛时，记得的是谁在营火边分过粮、谁把他们留在城外、谁在败局里仍站在旗旁。由独立营火、亲族与骑手誓从构成的卡拉萨，既继承旧联系，也必须凭当下的能力维系。家族名声最终要落到具体的人和具体的命令上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意摩洛留下的仪式、墓地和传承。由独立营火、亲族与骑手誓从构成的卡拉萨，既继承旧联系，也必须凭当下的能力维系。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见摩洛。由独立营火、亲族与骑手誓从构成的卡拉萨，既继承旧联系，也必须凭当下的能力维系。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "摩洛：由独立营火、亲族与骑手誓从构成的卡拉萨，既继承旧联系，也必须凭当下的能力维系。"
+  ]
+}

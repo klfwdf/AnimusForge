@@ -1,0 +1,156 @@
+{
+  "Id": "rule_家族根基__塞尔弥-巴利斯坦支",
+  "Keywords": [
+    "塞尔弥-巴利斯坦支",
+    "赛尔弥-巴利斯坦支",
+    "巴利斯坦·赛尔弥",
+    "巴利斯坦·塞尔弥",
+    "无畏的巴利斯坦"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "巴利斯坦·赛尔弥出身风暴地小贵族之家，十岁便穿着借来的盔甲参加黑港比武，因无畏挑战成年骑士而得名“无畏的巴利斯坦”。他后来成为御林铁卫，在战场、比武场与王朝更替中积累了七国少有的骑士声望。白袍曾要求他侍奉并不值得敬爱的国王，也迫使他一次次分辨忠诚究竟应献给宝座、誓言还是无辜者。年老被公开罢黜后，他跨海寻找丹妮莉丝·坦格利安，把剑与经验献给这位奴隶湾之主；这不是赛尔弥全族的阵营变化，而是一位老骑士在失去白袍之后，仍试图找到值得自己守护之人的个人选择。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "crownlands",
+          "stormlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "维斯特洛骑士很少否认巴利斯坦的勇武，即使立场相反，也会把他的名字当作白袍荣耀的尺度。敬佩之外仍有疑问：一个真正的骑士应当服从誓言到什么程度，又应在何时拒绝一个不配的君主。巴利斯坦的一生让这个问题无法轻易回答。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "ghiscari"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "peasant",
+          "slave"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "奴隶湾的人看见的是一位从日落之地而来的老骑士。他的旧名声对当地人未必重要，重要的是他愿不愿意把剑挡在女王与危险之间，又能否教会年轻战士纪律而非傲慢。白袍的传奇到了陌生土地，必须用今日的行动重新翻译。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "valyrian"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "坦格利安追随者容易把巴利斯坦归来看作旧王朝尚未耗尽的忠诚。他侍奉过多位君主，也亲眼见过王权如何腐坏；因此他的效忠既是一份礼物，也是一面沉默的镜子。被这样的人认可会增添威望，被他失望则同样危险。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待塞尔弥-巴利斯坦支，会先看它的土地、婚盟、血脉和债务。巴利斯坦·赛尔弥是名震七国的老骑士与前御林铁卫；离开白袍后，他跨海追随丹妮莉丝，以余生重新回答骑士应当忠于谁。家徽是门面，能否保护封地、兑现婚约并在危机中召集人马，才是家族真正的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起塞尔弥-巴利斯坦支时，记得的是谁在营火边分过粮、谁把他们留在城外、谁在败局里仍站在旗旁。巴利斯坦·赛尔弥是名震七国的老骑士与前御林铁卫；离开白袍后，他跨海追随丹妮莉丝，以余生重新回答骑士应当忠于谁。家族名声最终要落到具体的人和具体的命令上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意塞尔弥-巴利斯坦支留下的仪式、墓地和传承。巴利斯坦·赛尔弥是名震七国的老骑士与前御林铁卫；离开白袍后，他跨海追随丹妮莉丝，以余生重新回答骑士应当忠于谁。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见塞尔弥-巴利斯坦支。巴利斯坦·赛尔弥是名震七国的老骑士与前御林铁卫；离开白袍后，他跨海追随丹妮莉丝，以余生重新回答骑士应当忠于谁。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "巴利斯坦·赛尔弥是名震七国的老骑士与前御林铁卫；离开白袍后，他跨海追随丹妮莉丝，以余生重新回答骑士应当忠于谁。"
+  ]
+}
