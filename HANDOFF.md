@@ -1,3 +1,9 @@
+# 当前交接：地方政策无王国修复（2026-10-02，离线已验证）
+
+- 本次最新授权仅地方政策管辖最小重构：检查点 `0d7e9e43`、产品及测试 `208ce554`。统一按所选封地/发布家族及合法关联授权，王国政策展示、费用、公开 API 和存档格式未改。
+- Debug 两 API + Bootstrap 构建通过；两 API 各管辖 62、模块 1457（18 modules）、TargetPlan 765 断言通过，非唯一合计。实机、真实旧档与完整延长交互仍 NOT_RUN；未 push/部署/覆盖游戏，原 SessionTransport dirty 与其他作者文件保留。
+- 唯一详细证据、源码坐标及失败/未验见[主台账本次条目](docs/animusforge-refactoring-and-repository-reorganization-plan.md#local-policy-jurisdiction-20261002)；[既有框架代码图](docs/architecture/af-framework-code-scope.md)仅作导航。下方保留既有交付历史，不构成本次发布授权。
+
 # 当前交接：AF 2.0 收尾交付（2026-10-02，离线接入已就绪）
 
 [执行计划](docs/plans/af2-module-integration-delivery-closeout-20261002.md) R0–R3 已执行到 **INTEGRATION_HANDOFF_READY**：B0/B1 本轮直验 PASS，B2/B3 同源证据 REUSED_PASS；只修改接入/交接文档，无具名产品阻塞和产品改动。制作组可按[内部指南](docs/architecture/af-internal-module-guide-v1.md)及[公开 V1 指南](docs/architecture/af-public-api-guide-v1.md)接入。旧宿主拆分后置。
