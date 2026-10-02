@@ -10,6 +10,34 @@ internal static class CoupOutcomeReport
         && (success ? session.KingSubdued && session.RulingClanCommitted && session.TownCommitted && session.CustodyCommitted
             : session.DefectionCommitted && session.WithdrawalCommitted);
 
+    internal static string BuildPlayerVictory(CoupSession session, string kingdom, string ruler,
+        string town, string ownerClan, string king, bool kingStillHeld)
+    {
+        if (session?.HasConfirmedVictory != true) throw new InvalidOperationException("政变结算尚未全部确认，不能展示登基成功战报。");
+        int alliedKilled = 0, alliedWounded = 0, defenderKilled = 0, defenderWounded = 0;
+        foreach (CoupTroopRecord troop in session.Troops)
+        {
+            if (troop.Role == CoupTroopRole.Ally)
+            {
+                if (troop.Killed) alliedKilled++;
+                if (troop.Wounded) alliedWounded++;
+            }
+            else
+            {
+                if (troop.Killed) defenderKilled++;
+                if (troop.Wounded) defenderWounded++;
+            }
+        }
+        return "政变夺位已经完成。\n\n王国：" + kingdom + "\n当前统治者：" + ruler
+            + "\n接管城镇：" + town + "\n城镇当前归属：" + ownerClan
+            + "\n旧王处置：" + king + (session.Disposition == CoupKingDisposition.Capture
+                ? (kingStillHeld ? "已被扣押，当前仍由你的部队保管。" : "已执行扣押；目前已不在你的部队保管。")
+                : "已被迫退位，本次选择不扣押。")
+            + "\n\n已记录伤亡：\n突击队：阵亡 " + alliedKilled + "，负伤 " + alliedWounded
+            + "\n守军：阵亡 " + defenderKilled + "，负伤 " + defenderWounded
+            + "\n\n后续局势：已完成本次政变的叛乱资格评估与请求登记；是否实际起兵以之后的战役结果为准。";
+    }
+
     internal static string Build(CoupSession session, string player, string king, string town, string kingdom,
         bool success, bool captured, bool atWarWithOriginalKingdom)
     {

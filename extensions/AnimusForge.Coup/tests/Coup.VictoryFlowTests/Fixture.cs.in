@@ -1,0 +1,134 @@
+using System;using System.Collections.Generic;using System.Linq;
+using TaleWorlds.CampaignSystem;using TaleWorlds.CampaignSystem.SceneInformationPopupTypes;
+namespace TaleWorlds.CampaignSystem {
+ class Hero {public static Hero MainHero;public string Name="新王";public bool IsAlive=true,IsPrisoner;public object PartyBelongedToAsPrisoner;}
+ namespace SceneInformationPopupTypes {
+  class BecomeKingSceneNotificationItem {public enum RelevantContextType{Map} public Hero Hero;public BecomeKingSceneNotificationItem(Hero h){Hero=h;}public virtual RelevantContextType RelevantContext=>RelevantContextType.Map; public virtual string SceneID=>"scn_become_king_notification"; public virtual void OnCloseAction(){} }
+ }
+}
+namespace AnimusForge.CoupSystem {
+ class InquiryElement {public object Identifier;public bool IsEnabled;public string Title;public InquiryElement(object id,string t,object icon){Identifier=id;Title=t;IsEnabled=true;}public InquiryElement(object id,string t,object icon,bool enabled,string hint){Identifier=id;Title=t;IsEnabled=enabled;}}
+ class MultiSelectionInquiryData {public List<InquiryElement> Choices;public Action<List<InquiryElement>> AffirmativeAction,NegativeAction;public string AffirmativeText; public int Min,Max;
+  public MultiSelectionInquiryData(string title,string desc,List<InquiryElement> options,bool exit,int min,int max,string positive,string negative,Action<List<InquiryElement>> yes,Action<List<InquiryElement>> no){Choices=options;AffirmativeAction=yes;NegativeAction=no;AffirmativeText=positive;Min=min;Max=max;}}
+ class InquiryData {public string Title,Text,Button;public Action Yes,No;public bool NegativeShown;public InquiryData(string title,string text,bool yesShown,bool noShown,string yes,string no,Action positive,Action negative){Title=title;Text=text;Button=yes;Yes=positive;No=negative;NegativeShown=noShown;}}
+ class InformationMessage {public InformationMessage(string text){}}
+ static class InformationManager {public static bool Active;public static int Reports;public static InquiryData Last;public static bool IsAnyInquiryActive()=>Active;public static void DisplayMessage(InformationMessage m){}public static void ShowInquiry(InquiryData data,bool pause){Last=data;Active=true;Reports++;}}
+ static class MBInformationManager {public static bool? SceneActive=false;public static bool ThrowScene;public static int Scenes,Selections;public static bool Paused;public static MultiSelectionInquiryData Last;public static BecomeKingSceneNotificationItem Scene;
+  public static bool? GetIsAnySceneNotificationActive()=>SceneActive;
+  public static void ShowMultiSelectionInquiry(MultiSelectionInquiryData d,bool pause){Last=d;Selections++;Paused=pause;InformationManager.Active=true;}
+  public static void ShowSceneNotification(BecomeKingSceneNotificationItem d){Scenes++;if(ThrowScene)throw new Exception("renderer unavailable");Scene=d;SceneActive=true;}
+  public static void Reset(){SceneActive=false;ThrowScene=false;Scenes=Selections=0;Paused=false;Last=null;Scene=null;InformationManager.Active=false;InformationManager.Reports=0;InformationManager.Last=null;}
+ }
+ class Agent {public float Health=70;public bool Active=true;public bool IsActive()=>Active;}
+ interface IMission{}
+ class Mission:IMission {public static Mission Current;public bool IsMissionEnding;public int Ends;public CoupMissionBehavior Logic;public Action Ended;public event Func<bool> IsAgentInteractionAllowed_AdditionalCondition;
+  public T GetMissionBehavior<T>() where T:class=>Logic as T;
+  public void EndMission(){Ends++;IsMissionEnding=true;Logic?.Close();Current=null;Ended?.Invoke();}}
+ class MissionLogic {public Mission Mission;public virtual InquiryData OnEndMissionRequest(out bool can){can=true;return null;}protected virtual void OnEndMission(){} }
+ class Campaign {public static Campaign Current;public CampaignTimeControlMode TimeControlMode;public MenuManager GameMenuManager=new MenuManager();}
+ enum CampaignTimeControlMode{Stop}
+ class MenuManager {public object NextLocation,PreviousLocation;}
+ class MapState{}
+ class GameStateManager {public object ActiveState=new MapState();}
+ class Game {public static Game Current=new Game();public GameStateManager GameStateManager=new GameStateManager();}
+ class Clan {public string Name="玩家家族";}
+ class Kingdom {public static List<Kingdom> All=new List<Kingdom>();public string StringId="kingdom",Name="王国";public Hero Leader;}
+ class Settlement {public static Settlement CurrentSettlement;public static Settlement Target;public string StringId="town",Name="城镇";public Clan OwnerClan=new Clan();public static Settlement Find(string id)=>Target?.StringId==id?Target:null;}
+ class MobileParty {public static MobileParty MainParty=new MobileParty();public object Party=new object();public Settlement CurrentSettlement;}
+ static class GameMenu {public static int Switches;public static void SwitchToMenu(string id){Switches++;}}
+ static class PlayerEncounterCompat {public static bool Battle;public static bool HasEncounterBattleContext()=>Battle;}
+ static class CoupGuards {public static bool CaptivityProtectionAvailable=true;}
+ static class SettlementEntryTroopSelectionBehavior {public static int HallGuards;public static void ClearArmedCoup(){}public static int CountCoupRole(Mission m,string role)=>HallGuards;}
+ static class Logger {public static void Log(string area,string text){}}
+ class CoupCampaignBehavior {
+  public static CoupCampaignBehavior Instance;public static CoupSession CurrentSession=>Instance?._session;
+  public CoupSession _session;public Mission _mission,_endingMission;public Campaign _campaign;
+  public bool _processing,_selectionOpen,_dispositionOpen,_retryBlocked,_reportOpen,_coronationOpen,_requeuePending;
+  public float _nextCheck;public long _runtimeToken=1,_dispositionGeneration,_reportGeneration;
+  public int Commits;public bool ThrowCommit;
+  public Hero King=new Hero{Name="旧王"};
+  public CoupCampaignBehavior(CoupSession s){_session=s;_campaign=Campaign.Current;Instance=this;}
+  Hero FindKing()=>King;void Log(string s){}static void Show(string s){}void SetFailure(string s){_session.Phase=CoupPhase.Failed;}
+  void QueueCurrentScene(){}void OpenHallSelection(){}void CommitCasualties(){}void CommitFailure(){}
+  void CommitVictory(){Commits++;if(ThrowCommit)throw new Exception("partial political settlement");_session.Phase=CoupPhase.Completed;_session.CasualtiesCommitted=_session.RulingClanCommitted=_session.TownCommitted=_session.CustodyCommitted=_session.FactsCommitted=_session.RebellionQueued=true;_session.VictoryReportAcknowledged??=false;_session.CoronationRequested??=false;_session.AftermathPending=false;}
+  public void Ended(IMission m)=>OnMissionEnded(m);public void Present()=>PresentVictoryFeedback();
+__CAMPAIGN__
+ }
+ class CoupMissionBehavior:MissionLogic {
+  public CoupSession _session;public bool _initialized=true,_hall=true,_exiting,_victoryAwaitingChoice,_victoryPromptRequested;
+  public Agent _player=new Agent(),_king=new Agent{Active=false};
+  public CoupMissionBehavior(CoupSession s,Mission m){_session=s;Mission=m;}
+  public void Close()=>OnEndMission();bool DenyNativeInteraction()=>false;
+__MISSION__
+ }
+ static class Program {
+  static int Checks;static void Check(bool v,string name){if(!v)throw new Exception(name);Checks++;}
+  static CoupCampaignBehavior Setup(bool complete=false){
+   MBInformationManager.Reset();GameMenu.Switches=0;PlayerEncounterCompat.Battle=false;CoupGuards.CaptivityProtectionAvailable=true;SettlementEntryTroopSelectionBehavior.HallGuards=0;
+   Campaign.Current=new Campaign();Hero.MainHero=new Hero();Kingdom.All=new List<Kingdom>{new Kingdom{Leader=Hero.MainHero}};
+   Settlement.Target=new Settlement();Settlement.CurrentSettlement=Settlement.Target;MobileParty.MainParty=new MobileParty{CurrentSettlement=Settlement.Target};Game.Current.GameStateManager.ActiveState=new MapState();
+   var s=new CoupSession{SettlementId="town",KingdomId="kingdom",KingId="king",OriginalOwnerClanId="owner",OriginalRulingClanId="old",PlayerHealth=80,KingHealth=1,Started=true,KingSubdued=true,Phase=CoupPhase.Hall,VictoryReportAcknowledged=false,CoronationRequested=false};
+   var o=new CoupCampaignBehavior(s);var m=new Mission();var logic=new CoupMissionBehavior(s,m);m.Logic=logic;m.Ended=()=>o.Ended(m);o._mission=m;Mission.Current=m;
+   if(complete){s.Phase=CoupPhase.Completed;s.Disposition=CoupKingDisposition.Release;s.CasualtiesCommitted=s.RulingClanCommitted=s.TownCommitted=s.CustodyCommitted=s.FactsCommitted=s.RebellionQueued=true;Mission.Current=null;o._mission=null;}
+   return o;
+  }
+  static void Tick(CoupCampaignBehavior o)=>o.OnEngineTick(.3f);
+  static void Select(MultiSelectionInquiryData data,int index){InformationManager.Active=false;data.AffirmativeAction(new List<InquiryElement>{data.Choices[index]});}
+  static void Cancel(MultiSelectionInquiryData data){InformationManager.Active=false;data.NegativeAction(new List<InquiryElement>());}
+  static void CloseScene(){var d=MBInformationManager.Scene;MBInformationManager.SceneActive=false;d.OnCloseAction();}
+  static void Main(){
+   var o=Setup();var m=o._mission;bool can;
+   m.Logic.OnEndMissionRequest(out can);
+   Check(!can&&m.Ends==0&&o._session.Phase==CoupPhase.AwaitingResolution,"Tab immediately after last guard is blocked and establishes victory");
+   Check(o._session.Disposition==CoupKingDisposition.Undecided&&o.Commits==0,"no implicit choice or political effect");
+   Check(MBInformationManager.Selections==1&&MBInformationManager.Paused,"hall choice uses pause-enabled native single selection");
+   var old=MBInformationManager.Last;Check(old.Min==1&&old.Max==1&&old.AffirmativeText=="确认处置并离场","explicit single confirm");
+   Tick(o);Check(o.Commits==0,"map tick cannot commit while hall dialog open");
+   Cancel(old);Check(o._session.Disposition==CoupKingDisposition.Undecided&&m.Ends==0&&!o._dispositionOpen,"Escape/cancel never chooses capture or leaves");
+   m.Logic.OnEndMissionRequest(out can);var current=MBInformationManager.Last;
+   Check(!can&&MBInformationManager.Selections==2,"Tab reopens postponed choice");
+   old.AffirmativeAction(new List<InquiryElement>{old.Choices[1]});Check(o._session.Disposition==CoupKingDisposition.Undecided&&o._dispositionOpen,"old popup generation cannot hijack reopened dialog");
+   Select(current,0);Check(m.Ends==1&&o._session.Disposition==CoupKingDisposition.Release&&o.Commits==0,"release leaves once, commits only later on map");
+   current.AffirmativeAction(new List<InquiryElement>{current.Choices[1]});Check(m.Ends==1&&o._session.Disposition==CoupKingDisposition.Release,"duplicate callback ignored");
+   Tick(o);Check(o.Commits==1&&o._session.HasConfirmedVictory&&MBInformationManager.Scenes==0,"political settlement first");
+   Tick(o);Check(MBInformationManager.Scenes==1&&o._coronationOpen&&InformationManager.Reports==0,"native coronation precedes report");
+   Tick(o);Check(MBInformationManager.Scenes==1&&InformationManager.Reports==0,"no duplicate enqueue or report over scene");
+   CloseScene();Check(!o._coronationOpen&&InformationManager.Reports==0,"close queues report for safe next map tick");
+   Tick(o);Check(InformationManager.Reports==1&&o._reportOpen&&!InformationManager.Last.NegativeShown,"single modal report after animation");
+   var report=InformationManager.Last;Check(report.Text.Contains("当前统治者：新王")&&report.Button=="确认并返回城镇","authoritative result and return button");
+   InformationManager.Active=false;report.Yes();Check(o._session.VictoryReportAcknowledged==true&&GameMenu.Switches==1,"confirm acknowledged once and returns town");
+   report.Yes();Tick(o);Check(GameMenu.Switches==1&&o.Commits==1&&MBInformationManager.Scenes==1&&InformationManager.Reports==1,"settled confirmed flow idle and no repeat");
+   o=Setup();m=o._mission;m.Logic.OnEndMissionRequest(out can);Select(MBInformationManager.Last,1);Check(o._session.Disposition==CoupKingDisposition.Capture&&m.Ends==1,"capture uses explicit confirm");
+   o=Setup();CoupGuards.CaptivityProtectionAvailable=false;m=o._mission;m.Logic.OnEndMissionRequest(out can);Check(!MBInformationManager.Last.Choices[1].IsEnabled,"unavailable capture disabled");
+   Select(MBInformationManager.Last,1);Check(o._session.Disposition==CoupKingDisposition.Undecided&&m.Ends==0,"forged disabled selection rejected");
+   m.Logic.OnEndMissionRequest(out can);Select(MBInformationManager.Last,0);Check(m.Ends==1,"release still available without capture protection");
+   o=Setup();m=o._mission;m.Logic.OnEndMissionRequest(out can);current=MBInformationManager.Last;CoupGuards.CaptivityProtectionAvailable=false;Select(current,1);Check(m.Ends==0&&o._session.NeedsHallDisposition,"protection rechecked on callback");
+   o=Setup();m=o._mission;InformationManager.Active=true;m.Logic.OnEndMissionRequest(out can);Check(!can&&MBInformationManager.Selections==0,"other inquiry deferred rather than overwritten");
+   InformationManager.Active=false;m.Logic.OnEndMissionRequest(out can);Check(MBInformationManager.Selections==1,"choice opens after inquiry clears");
+   o=Setup();m=o._mission;m.Logic.OnEndMissionRequest(out can);current=MBInformationManager.Last;o._runtimeToken++;Select(current,0);Check(m.Ends==0&&o._session.NeedsHallDisposition,"stale runtime token rejected");
+   o=Setup();m=o._mission;m.Logic.OnEndMissionRequest(out can);current=MBInformationManager.Last;Mission.Current=new Mission();Select(current,0);Check(m.Ends==0&&o._session.NeedsHallDisposition,"changed active mission rejected");
+   o=Setup();m=o._mission;m.Logic.OnEndMissionRequest(out can);current=MBInformationManager.Last;InformationManager.Active=false;current.AffirmativeAction(new List<InquiryElement>());Check(m.Ends==0&&o._session.NeedsHallDisposition,"empty selection rejected");
+   o=Setup();m=o._mission;m.Logic.OnEndMissionRequest(out can);current=MBInformationManager.Last;InformationManager.Active=false;current.AffirmativeAction(new List<InquiryElement>{new InquiryElement((CoupKingDisposition)99,"bad",null)});Check(m.Ends==0&&o._session.NeedsHallDisposition,"unknown disposition rejected");
+   o=Setup();m=o._mission;m.Logic.OnEndMissionRequest(out can);current=MBInformationManager.Last;m.EndMission();Check(o._session.Phase==CoupPhase.AwaitingResolution&&!o._dispositionOpen,"external closure preserves established victory");
+   Select(current,1);Check(o._session.NeedsHallDisposition,"closed scene popup stale");Tick(o);Check(MBInformationManager.Selections==2&&o.Commits==0,"map recovery asks for still-undecided choice");Select(MBInformationManager.Last,0);Tick(o);Check(o.Commits==1,"map recovery commits once after explicit choice");
+   o=Setup();m=o._mission;m.Logic.OnEndMissionRequest(out can);o._session.Phase=CoupPhase.Suspended;o._session.ResumePhase=CoupPhase.AwaitingResolution;m.EndMission();Check(o._session.Phase==CoupPhase.Suspended,"technical victory interruption not reclassified as defeat");
+   o=Setup();m=o._mission;SettlementEntryTroopSelectionBehavior.HallGuards=1;m.Logic.OnEndMissionRequest(out can);Check(MBInformationManager.Selections==0&&o._session.Phase==CoupPhase.Hall,"live hall guard prevents victory UI");
+   o=Setup(true);o._session.FactsCommitted=false;Tick(o);Check(InformationManager.Reports==0&&MBInformationManager.Scenes==0,"partial settlement cannot present victory");
+   o=Setup();m=o._mission;m.Logic.OnEndMissionRequest(out can);Select(MBInformationManager.Last,0);o.ThrowCommit=true;Tick(o);Check(o._session.Phase==CoupPhase.Suspended&&o._retryBlocked&&InformationManager.Reports==0,"commit exception suspends, no success report");
+   o=Setup(true);InformationManager.Active=true;Tick(o);Check(MBInformationManager.Scenes==0,"result waits for competing inquiry");InformationManager.Active=false;MBInformationManager.SceneActive=true;Tick(o);Check(MBInformationManager.Scenes==0,"result waits for other cutscene");MBInformationManager.SceneActive=false;Tick(o);Check(MBInformationManager.Scenes==1,"result resumes after competing UI");
+   o=Setup(true);MBInformationManager.ThrowScene=true;Tick(o);Check(MBInformationManager.Scenes==1&&InformationManager.Reports==1&&!o._coronationOpen&&o._session.CoronationRequested==true,"animation failure falls back to report without political rollback");
+   o=Setup(true);MBInformationManager.SceneActive=null;Tick(o);Check(MBInformationManager.Scenes==0&&InformationManager.Reports==1,"missing scene UI falls back to report");
+   o=Setup(true);Kingdom.All[0].Leader=new Hero{Name="later ruler"};Tick(o);Check(MBInformationManager.Scenes==0&&InformationManager.Last.Text.Contains("当前统治者：later ruler"),"changed ruler not crowned as player");
+   o=Setup(true);o._session.CoronationRequested=true;Tick(o);Check(MBInformationManager.Scenes==0&&InformationManager.Reports==1,"loaded submitted animation does not resubmit and still reports");
+   o=Setup(true);o._session.CoronationRequested=o._session.VictoryReportAcknowledged=null;o._session.AftermathPending=true;Tick(o);Check(MBInformationManager.Scenes==0&&InformationManager.Reports==0,"legacy completed aftermath state never opens UI");
+   o=Setup(true);Tick(o);var notification=MBInformationManager.Scene;o._runtimeToken++;notification.OnCloseAction();Check(o._coronationOpen,"stale cutscene callback cannot mutate new runtime");
+   o=Setup(true);Tick(o);notification=MBInformationManager.Scene;CloseScene();notification.OnCloseAction();Tick(o);Check(InformationManager.Reports==1,"native notification close callback once");
+   o=Setup(true);o._session.CoronationRequested=true;Tick(o);report=InformationManager.Last;Settlement.CurrentSettlement=null;MobileParty.MainParty.CurrentSettlement=new Settlement{StringId="other"};InformationManager.Active=false;report.Yes();Check(GameMenu.Switches==0&&o._session.VictoryReportAcknowledged==true,"report does not hijack unrelated settlement");
+   o=Setup(true);o._session.CoronationRequested=true;Tick(o);report=InformationManager.Last;o._runtimeToken++;report.Yes();Check(o._session.VictoryReportAcknowledged==false,"stale report cannot acknowledge current session");
+   o=Setup(true);o._session.CoronationRequested=true;Tick(o);var oldReport=InformationManager.Last;InformationManager.Active=false;oldReport.No();Tick(o);report=InformationManager.Last;
+   Check(InformationManager.Reports==2&&o._session.VictoryReportAcknowledged==false,"cancelled report stays unacknowledged and reopens safely");
+   oldReport.Yes();oldReport.No();Check(o._reportOpen&&o._session.VictoryReportAcknowledged==false,"same-session stale report generation cannot acknowledge or close newer UI");
+   Console.WriteLine("PASS: "+Checks+" production disposition/mission/coronation/report lifecycle checks + wiring assertions");
+  }
+ }
+}
