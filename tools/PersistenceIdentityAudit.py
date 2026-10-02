@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+from PersistenceTypedRef import resolve_snapshot_bindings
 import json
 import os
 import re
@@ -65,10 +66,8 @@ def current_source_snapshot() -> list[tuple[Path, str]]:
 
 
 def current_sync(snapshot: list[tuple[Path, str]] | None = None) -> set[tuple[str, str]]:
-    values: set[tuple[str, str]] = set()
-    for _path, source in snapshot if snapshot is not None else current_source_snapshot():
-        values |= sync_bindings(source)
-    return values
+    captured = snapshot if snapshot is not None else current_source_snapshot()
+    return resolve_snapshot_bindings(ROOT, captured, sync_bindings)
 
 
 def parse_batch_cat_file(data: bytes, expected_objects: int | None = None) -> dict[str, str]:

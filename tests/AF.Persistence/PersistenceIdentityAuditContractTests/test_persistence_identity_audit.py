@@ -32,6 +32,19 @@ class PersistenceIdentityAuditTests(unittest.TestCase):
         self.assertNotEqual(audit.sync_bindings(field), audit.sync_bindings(local.replace('int>', 'string>')))
         self.assertEqual(audit.sync_bindings('return forSync;\ndata.SyncData("love", ref forSync);'), {("love", "UNRESOLVED")})
 
+    def test_semantic_refs_preserve_load_drift_and_method_scope(self) -> None:
+        source = 'class Owner { internal int Count; }\nclass Adapter {\n static void Save(Store data, Owner owner, string folder) {\n  int local = owner.Count; data.SyncData("count", ref local); data.SyncData("voice", ref folder);\n }\n static void Load(Store data, Owner owner, int folder) {\n  data.SyncData("count", ref owner.Count); data.SyncData("number", ref folder);\n }\n}\nclass Store { internal void SyncData<T>(string key, ref T value) {} }'
+        capture = lambda text: audit.current_sync([(Path("typed-scope.cs"), text)])
+        expected = {("count", "int"), ("voice", "string"), ("number", "int")}
+        self.assertEqual(capture(source), expected)
+        self.assertEqual(capture(source.replace("internal int Count", "internal bool Count")),
+                         expected | {("count", "bool")})
+        self.assertEqual(capture(source.replace("ref owner.Count", "ref owner.Missing")),
+                         expected | {("count", "UNRESOLVED")})
+        wrong_key = source.replace('data.SyncData("count", ref owner.Count)',
+                                   'data.SyncData("owner.Count", ref owner.Count)')
+        self.assertEqual(capture(wrong_key), expected | {("owner.Count", "int")})
+
     def test_batch_parser_reads_multiple_blobs_and_missing(self) -> None:
         payload = b"abc"
         data = b"a" * 40 + b" blob 3\n" + payload + b"\n" + b"b" * 40 + b" missing\n"
