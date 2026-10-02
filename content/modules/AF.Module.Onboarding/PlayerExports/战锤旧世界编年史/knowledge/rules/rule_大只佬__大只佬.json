@@ -1,0 +1,208 @@
+{
+  "Id": "rule_大只佬__大只佬",
+  "Keywords": [
+    "大只佬",
+    "兽人精英",
+    "二把手",
+    "最强小子",
+    "部落副手",
+    "大个兽",
+    "搞毛选拔"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "大只佬是绿皮部落中除了战争大王以外最强壮、最能打的兽人精英战士——他们通过无数次斗殴证明了自己比其他小子更狠更硬，从而获得这个尊号。大只佬们不仅是战场上的精锐突击力量，也是战争大王最依赖的副手与部落秩序维护者。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "大只佬是俺们绿皮里除老大之外最有资格骄傲的家伙！你看那些普通小子——瘦巴巴的软骨头，打架还得凑一群人才能打得过一条硬茬。但大只佬不一样——他们的肌肉长得跟岩石疙瘩似的，一个能顶二十个普通小子的战斗力！成为大只佬的证明就是你在每月一次的大混战中捶翻了足够多的敌人或者友军然后活到了最后，部落萨满会在你的脑壳上画一个搞哥或毛二哥的印记——但说实话俺也分不清哪个是哪个——总之画了你就正式是了！大只佬是老大最依赖的家伙，打硬仗的时候他们站在最前排，把对面最强的对手先锤烂，这样其他小子才敢跟着冲！"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "大只佬在兽人军事系统中的角色定位类似于人类军队中的精锐突击步兵——他们比普通兽人小子拥有更高的士气、更好的装备（主要是抢来的和打来的），并且更重要的是，他们的战斗经验远非普通绿皮可比。在战术层面，大只佬通常会组成的突击小队是兽人冲锋的矛头——他们是第一道撞上敌方阵线的绿皮力量，其作用是以压倒性的暴力在敌方阵型中撕开一个足够大的裂缝供后续步兵涌入。对抗策略需要对大只佬进行预识别——通常块头最大、戴最多战利品的兽人——并集中火力优先解决。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "大只佬的社会学意义远比其外表深沉得多。在绿皮社会中，'大只佬'并不仅仅是一个军事称号，它更接近一种类似于封建体系中'受封骑士'的地位象征：一个获得大只佬称号的兽人享有优先选择战利品、优先选择营地位置、优先挑战对方首领、以及在战争议会上对战争大王提供建议的权利。但这一地位不是锁定的——每年'搞盖节'的部落大混战中，现任大只佬必须重新证明自己，任何新的挑战者都可将其杀死并夺得名号。这在演化生物学上是一个高度高效的淘汰机制：它确保了只有最强壮的个体才能持续处于繁殖权与食物分配链顶端。根据帝国情报档案中最重要的兽人社会学著作《绿皮治理：野兽中的秩序》（作者不详，推测为一名在兽人部落中潜藏了十二年的帝国间谍）的记录，大只佬制度的出现确实显著提升了兽人部落的对外战争效率——因为在引入这一阶层之前，兽人冲锋的先锋往往是一堆最小最弱的小子，他们死得最快也最没有价值。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "大只佬的选拔机制让我想到人类王国的爵士册封仪式——兽人通过打架来证明实力，人类通过比武来证明技艺，本质上都是一场公开表演，目的是让所有人知道'这个人比其他人都强'。但区别在于，兽人大只佬的称号不是任何权威赐予的，而是他自己用伤疤挣来的。一个人类骑士可能需要国王的册封才能获得头衔，但一个兽人大只佬只需要足够多的被击败的对手。在某些方面，兽人的体系甚至更纯粹——头衔和暴力完全合一，没有任何虚伪的仪式性虚饰。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "与我们领地接壤的灰色山脉中有一个绿皮部落，其大只佬队长曾经单挑过我们家族最优秀的剑术大师——一场持续了近一个小时的角斗，最终我们的剑术大师力竭倒下。但那个大只佬队长没有杀他，而是把昏迷的剑术大师扛回我们的边界哨站门口，用矮人语在墙上刻了一个词：'再来'。从那以后我懂得了与大只佬相处的一条潜规则：尊重来自于力量，谈判来自于互相打服。我们用定期在边境为那个部落供应好铁的方式换取了他们向西进攻矮人而非南下侵犯我们领地。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我在灰色山脉的一个佣兵哨站里见过一个退役的狮鹫骑士——他是极少数曾经一对一击败过大只佬的人类。他断了一条腿，失了一只眼，但他把那场战斗描述为他一生最荣耀的时刻。他说大只佬的拳击每次都像攻城锤砸在盾牌上，但只要你能躲过前十六次重击，兽人就会开始喘气然后露出破绽。他把那个大只佬的獠牙取下来一直挂在脖子上当护身符，说那獠牙的诅咒是'让你永远记着什么才是真正的打架'。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "在废铁贸易中，大只佬淘汰下来的旧武器是受欢迎的中等货源——它们一般被抡变形了但不至于完全报废，回炉重铸后可以做成不错的民用工具。我的铁匠铺长期与一支专门在绿皮战场上捡破烂的拾荒队合作。那些拾荒者有一条心得：如果战场上倒地的兽人脑袋上画有红色或绿色的印记——那就是大只佬，搜一搜总能找出好东西比如矮人金币或碎裂的护身符甲片。但在搜刮之前，一定确定他下一秒不会突然站起来锤你。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "部落中仅次于战争大王的精英兽人战士",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "大只佬兽人精英二把手"
+  ]
+}

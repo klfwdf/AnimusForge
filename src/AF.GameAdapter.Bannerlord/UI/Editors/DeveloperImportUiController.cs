@@ -113,31 +113,17 @@ internal sealed class DeveloperImportUiController
 		}
 		catch (Exception ex)
 		{
-			InformationManager.DisplayMessage(new InformationMessage("PlayerExports 待迁移或路径不可用：" + ex.Message));
+			InformationManager.DisplayMessage(new InformationMessage("PlayerExports 路径不可用：" + ex.Message));
 			if (isExport) { onReturn(); return; }
 		}
 		List<InquiryElement> list = new List<InquiryElement>();
 		list.Add(new InquiryElement("__input__", isExport ? "手动输入文件夹名…" : "手动输入文件夹名/路径…", null));
 		if (!isExport && playerExportsRootPath != null)
 		{
-			list.Add(new InquiryElement("__latest__", "使用最新导出（自动）", null));
+			list.Add(new InquiryElement("__latest__", "使用最新玩家导出（自动）", null));
 		}
-		try
-		{
-			List<DirectoryInfo> list2 = (from d in (playerExportsRootPath == null ? Array.Empty<DirectoryInfo>() : new DirectoryInfo(playerExportsRootPath).GetDirectories())
-				where !d.Name.StartsWith(".", StringComparison.Ordinal)
-				orderby d.LastWriteTimeUtc descending
-				select d).ToList();
-			foreach (DirectoryInfo item in list2)
-			{
-				string title2 = item.Name + "  (" + item.LastWriteTime.ToString("yyyy-MM-dd HH:mm") + ")";
-				list.Add(new InquiryElement(item.Name, title2, null));
-			}
-		}
-		catch
-		{
-		}
-		string descriptionText = (isExport ? "选择目标文件夹（可覆盖已有）。" : "选择来源文件夹；迁移未完成时仍可手动输入只读绝对路径。");
+		AddFolderChoices(list, isExport, playerExportsRootPath);
+		string descriptionText = (isExport ? "选择目标文件夹（可覆盖已有）。" : "选择模组目录或玩家导出的资料；也可输入只读绝对路径。");
 		MultiSelectionInquiryData data = new MultiSelectionInquiryData(title, descriptionText, list, isExitShown: true, 0, 1, "选择", "返回", delegate(List<InquiryElement> selected)
 		{
     if (!_port.IsCurrent(generation)) return;
@@ -150,7 +136,7 @@ internal sealed class DeveloperImportUiController
 				string text = selected[0].Identifier as string;
 				if (text == "__input__")
 				{
-					InformationManager.ShowTextInquiry(new TextInquiryData(isExport ? "输入导出文件夹名" : "输入导入文件夹名/路径", isExport ? "留空=自动时间戳；输入已存在名称=覆盖导出。" : "留空=自动选择最新导出；也可输入完整路径（文件夹或 .json 文件）。", isAffirmativeOptionShown: true, isNegativeOptionShown: true, "确定", "取消", delegate(string input)
+					InformationManager.ShowTextInquiry(new TextInquiryData(isExport ? "输入导出文件夹名" : "输入导入文件夹名/路径", isExport ? "留空=自动时间戳；输入已存在名称=覆盖导出。" : "留空=自动选择最新玩家导出；也可输入完整路径（文件夹或 .json 文件）。", isAffirmativeOptionShown: true, isNegativeOptionShown: true, "确定", "取消", delegate(string input)
 					{
     if (!_port.IsCurrent(generation)) return;
 						onSelectedFolder(input);
@@ -180,6 +166,25 @@ internal sealed class DeveloperImportUiController
 		MBInformationManager.ShowMultiSelectionInquiry(data);
 	}
 
+
+	private static void AddFolderChoices(List<InquiryElement> elements, bool isExport, string userRoot)
+	{
+		if (!isExport)
+		{
+			foreach (var folder in PlayerExportsStore.GetImportFolders())
+				elements.Add(new InquiryElement(folder.FullPath, folder.Name + "  [" + folder.SourceLabel + "]  (" + folder.LastWriteTime.ToString("yyyy-MM-dd HH:mm") + ")", null));
+			return;
+		}
+		try
+		{
+			if (string.IsNullOrWhiteSpace(userRoot) || !Directory.Exists(userRoot)) return;
+			foreach (var folder in new DirectoryInfo(userRoot).GetDirectories()
+				.Where(d => !d.Name.StartsWith(".", StringComparison.Ordinal)).OrderByDescending(d => d.LastWriteTimeUtc))
+				elements.Add(new InquiryElement(folder.Name, folder.Name + "  (" + folder.LastWriteTime.ToString("yyyy-MM-dd HH:mm") + ")", null));
+		}
+		catch (IOException) { }
+		catch (UnauthorizedAccessException) { }
+	}
 
 	internal void ShowDuplicateImportInquiry(string title, string text, Action onOverwrite, Action onSkipDuplicates, Action onCancel)
 	{
@@ -350,31 +355,17 @@ internal sealed class DeveloperImportUiController
 		}
 		catch (Exception ex)
 		{
-			InformationManager.DisplayMessage(new InformationMessage("PlayerExports 待迁移或路径不可用：" + ex.Message));
+			InformationManager.DisplayMessage(new InformationMessage("PlayerExports 路径不可用：" + ex.Message));
 			if (isExport) { onReturn(); return; }
 		}
 		List<InquiryElement> list = new List<InquiryElement>();
-		list.Add(new InquiryElement("__input__", "手动输入文件夹名…", null));
+		list.Add(new InquiryElement("__input__", isExport ? "手动输入文件夹名…" : "手动输入文件夹名/路径…", null));
 		if (!isExport && playerExportsRootPath != null)
 		{
-			list.Add(new InquiryElement("__latest__", "使用最新导出（自动）", null));
+			list.Add(new InquiryElement("__latest__", "使用最新玩家导出（自动）", null));
 		}
-		try
-		{
-			List<DirectoryInfo> list2 = (from d in (playerExportsRootPath == null ? Array.Empty<DirectoryInfo>() : new DirectoryInfo(playerExportsRootPath).GetDirectories())
-				where !d.Name.StartsWith(".", StringComparison.Ordinal)
-				orderby d.LastWriteTimeUtc descending
-				select d).ToList();
-			foreach (DirectoryInfo item in list2)
-			{
-				string title2 = item.Name + "  (" + item.LastWriteTime.ToString("yyyy-MM-dd HH:mm") + ")";
-				list.Add(new InquiryElement(item.Name, title2, null));
-			}
-		}
-		catch
-		{
-		}
-		string descriptionText = (isExport ? "选择要导出的目标文件夹（可覆盖已有）。" : "选择来源文件夹；迁移未完成时仍可手动输入只读绝对路径。");
+		AddFolderChoices(list, isExport, playerExportsRootPath);
+		string descriptionText = (isExport ? "选择要导出的目标文件夹（可覆盖已有）。" : "选择模组目录或玩家导出的资料；也可输入只读绝对路径。");
 		MultiSelectionInquiryData data = new MultiSelectionInquiryData(title, descriptionText, list, isExitShown: true, 0, 1, "选择", "返回", delegate(List<InquiryElement> selected)
 		{
     if (!_port.IsCurrent(generation)) return;
@@ -387,7 +378,7 @@ internal sealed class DeveloperImportUiController
 				string text = selected[0].Identifier as string;
 				if (text == "__input__")
 				{
-					InformationManager.ShowTextInquiry(new TextInquiryData(isExport ? "输入导出文件夹名" : "输入导入文件夹名", isExport ? "留空=自动时间戳；输入已存在名称=覆盖导出。" : "留空=自动选择最新导出。", isAffirmativeOptionShown: true, isNegativeOptionShown: true, "确定", "取消", delegate(string input)
+					InformationManager.ShowTextInquiry(new TextInquiryData(isExport ? "输入导出文件夹名" : "输入导入文件夹名/路径", isExport ? "留空=自动时间戳；输入已存在名称=覆盖导出。" : "留空=最新玩家导出；名称优先查找模组目录，也可输入完整路径。", isAffirmativeOptionShown: true, isNegativeOptionShown: true, "确定", "取消", delegate(string input)
 					{
     if (!_port.IsCurrent(generation)) return;
 						if (string.IsNullOrEmpty(heroId))
@@ -492,7 +483,7 @@ internal sealed class DeveloperImportUiController
 				try { playerExportsRootPath = PlayerExportsStore.GetPlayerExportsRootPath(); }
 				catch (Exception ex)
 				{
-					InformationManager.DisplayMessage(new InformationMessage("PlayerExports 待迁移或路径不可用：" + ex.Message));
+					InformationManager.DisplayMessage(new InformationMessage("PlayerExports 路径不可用：" + ex.Message));
 					return;
 				}
 				string path = PlayerExportsStore.ResolveExportFolderName(folderName);
@@ -589,7 +580,7 @@ internal sealed class DeveloperImportUiController
 				try { playerExportsRootPath = PlayerExportsStore.GetPlayerExportsRootPath(); }
 				catch (Exception ex)
 				{
-					InformationManager.DisplayMessage(new InformationMessage("PlayerExports 待迁移或路径不可用：" + ex.Message));
+					InformationManager.DisplayMessage(new InformationMessage("PlayerExports 路径不可用：" + ex.Message));
 					return;
 				}
 				string path = PlayerExportsStore.ResolveExportFolderName(folderName);
@@ -646,17 +637,11 @@ internal sealed class DeveloperImportUiController
 			try { playerExportsRootPath = PlayerExportsStore.GetPlayerExportsRootPath(); }
 			catch (Exception)
 			{
-				InformationManager.DisplayMessage(new InformationMessage("PlayerExports 待迁移或路径不可用；仍可用只读绝对路径导入。"));
+				InformationManager.DisplayMessage(new InformationMessage("PlayerExports 路径不可用；仍可用只读绝对路径导入。"));
 			}
 			if (playerExportsRootPath != null)
-				list.Add(new InquiryElement("__latest__", "使用最新导出（自动）", null));
-			if (!string.IsNullOrWhiteSpace(playerExportsRootPath) && Directory.Exists(playerExportsRootPath))
-			{
-				foreach (DirectoryInfo item in new DirectoryInfo(playerExportsRootPath).GetDirectories().Where((DirectoryInfo x) => !x.Name.StartsWith(".", StringComparison.Ordinal)).OrderByDescending((DirectoryInfo x) => x.LastWriteTimeUtc))
-				{
-					list.Add(new InquiryElement(item.Name, item.Name + "  (" + item.LastWriteTime.ToString("yyyy-MM-dd HH:mm") + ")", null));
-				}
-			}
+				list.Add(new InquiryElement("__latest__", "使用最新玩家导出（自动）", null));
+			AddFolderChoices(list, false, playerExportsRootPath);
 			MultiSelectionInquiryData data = new MultiSelectionInquiryData("重载数据库 - 选择资料包", "选择来源资料包；系统会在确认前校验知识、王国性格/战略和声音数据。", list, isExitShown: true, 1, 1, "选择", "返回", delegate(List<InquiryElement> selected)
 			{
     if (!_port.IsCurrent(generation)) return;
@@ -668,7 +653,7 @@ internal sealed class DeveloperImportUiController
 				string text = selected[0].Identifier as string;
 				if (string.Equals(text, "__input__", StringComparison.Ordinal))
 				{
-					InformationManager.ShowTextInquiry(new TextInquiryData("输入资料包文件夹/路径", playerExportsRootPath == null ? "请输入只读的完整资料包文件夹路径。" : "留空会使用最新导出；也可输入完整资料包文件夹路径。", isAffirmativeOptionShown: true, isNegativeOptionShown: true, "继续", "返回", delegate(string input)
+					InformationManager.ShowTextInquiry(new TextInquiryData("输入资料包文件夹/路径", playerExportsRootPath == null ? "请输入只读的完整资料包文件夹路径。" : "留空=最新玩家导出；名称优先查找模组目录，也可输入完整资料包路径。", isAffirmativeOptionShown: true, isNegativeOptionShown: true, "继续", "返回", delegate(string input)
 					{
     if (!_port.IsCurrent(generation)) return;
 						BeginDatabaseReloadPreflight(input, action);

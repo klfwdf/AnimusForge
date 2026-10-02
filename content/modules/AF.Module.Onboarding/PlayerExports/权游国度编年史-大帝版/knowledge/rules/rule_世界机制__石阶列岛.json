@@ -1,0 +1,155 @@
+{
+  "Id": "rule_世界机制__石阶列岛",
+  "Keywords": [
+    "石阶列岛",
+    "多恩臂断裂",
+    "狭海航道",
+    "九铜板王"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "石阶列岛散布在多恩东端与厄索斯之间，传说是连接两洲的多恩臂被森林之子击碎后留下的残片。礁石、浅湾和众多小岛适合藏船、补水与伏击，使这里成为海盗和私掠者的天然巢穴；同时，往返狭海与夏日海的商船很难完全绕开这一区域。自由城邦、维斯特洛诸王和冒险者多次争夺岛屿，希望保护贸易或征收通行财富。九铜板王之战等旧事证明，岛上势力即使缺乏广阔土地，也能让两岸强国付出巨大代价。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai",
+          "tyroshi",
+          "myrish",
+          "lyseni"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "sailor",
+          "merchant",
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "邻近海岸的人把石阶列岛当作无法忽视的门槛。谁控制几处好锚地，谁就能护航、收钱或抢劫，而三者有时只差一面旗。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "佣兵和冒险者从群岛看见快速发财与建立名号的机会，老兵则记得热病、缺水和为一块无名礁石送命的人。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "slave",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "被海盗掳走的人不会浪漫化石阶列岛。对沿岸家庭而言，岛链不是传奇舞台，而是亲人可能消失、再也没有赎金消息的方向。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人把石阶列岛看成可执行的秩序。多恩与厄索斯之间的破碎岛链，扼守狭海和夏日海航道，长期吸引海盗、私掠者与争夺关税的强权。它是否有效，取决于谁能授予权利、收取代价，并在违约时让判决真正落地。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起石阶列岛时，关心它如何影响道路、命令和安全。多恩与厄索斯之间的破碎岛链，扼守狭海和夏日海航道，长期吸引海盗、私掠者与争夺关税的强权。远方的制度只有在营火、城门和驿站里能被执行，才不是空话。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者会从习惯和象征理解石阶列岛。多恩与厄索斯之间的破碎岛链，扼守狭海和夏日海航道，长期吸引海盗、私掠者与争夺关税的强权。一项规矩若被反复实践，便会进入礼仪、手艺和祈祷；若只靠恐惧维持，危机一来就会露出裂缝。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民感受到石阶列岛的方式最小也最准确。多恩与厄索斯之间的破碎岛链，扼守狭海和夏日海航道，长期吸引海盗、私掠者与争夺关税的强权。他们记得税、粮、劳役、赈济和谁能为他们说话；宏大的名称，最终都要落在一家人的饭锅旁。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "石阶列岛：多恩与厄索斯之间的破碎岛链，扼守狭海和夏日海航道，长期吸引海盗、私掠者与争夺关税的强权。"
+  ]
+}

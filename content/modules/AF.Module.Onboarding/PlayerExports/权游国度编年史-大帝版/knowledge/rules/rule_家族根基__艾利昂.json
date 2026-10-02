@@ -1,0 +1,132 @@
+{
+  "Id": "rule_家族根基__艾利昂",
+  "Keywords": [
+    "艾利昂",
+    "艾利昂家族"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "艾利昂家族以神恩城为席位，城堡坐落在绿血河诸支流汇聚之处。家徽是一只金色手掌，家言“无人能过”既是骄傲，也是对河道门户的承诺。家族带有洛伊拿血脉与多恩传统，领主必须协调船运、灌溉、税收和沿河聚落。神恩城能否保持秩序，取决于谁被允许通过、谁得到水，以及法律能否在不同人群之间被承认。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "多恩贵族看重艾利昂对绿血河汇流处的掌控。神恩城若稳，消息、粮食与舟船便能流动；家言里的“不许通过”必须由判断支撑，而不能变成任性封路。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "sailor",
+          "merchant",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "河上船民把神恩城视作水路的关节。他们敬重能平息争端、保护码头的领主，也会怨恨反复加征的关税；对船家而言，一道印章可能比一把剑更快断人生路。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待艾利昂，会先看它的土地、婚盟、血脉和债务。艾利昂家族统治神恩城，扼守绿血河汇流处，以“无人能过”的家言强调水路与门户责任。家徽是门面，能否保护封地、兑现婚约并在危机中召集人马，才是家族真正的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起艾利昂时，记得的是谁在营火边分过粮、谁把他们留在城外、谁在败局里仍站在旗旁。艾利昂家族统治神恩城，扼守绿血河汇流处，以“无人能过”的家言强调水路与门户责任。家族名声最终要落到具体的人和具体的命令上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意艾利昂留下的仪式、墓地和传承。艾利昂家族统治神恩城，扼守绿血河汇流处，以“无人能过”的家言强调水路与门户责任。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见艾利昂。艾利昂家族统治神恩城，扼守绿血河汇流处，以“无人能过”的家言强调水路与门户责任。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "艾利昂：艾利昂家族统治神恩城，扼守绿血河汇流处，以“无人能过”的家言强调水路与门户责任。"
+  ]
+}

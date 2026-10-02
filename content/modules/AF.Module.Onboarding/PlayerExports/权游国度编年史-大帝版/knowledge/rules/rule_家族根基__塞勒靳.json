@@ -1,0 +1,132 @@
+{
+  "Id": "rule_家族根基__塞勒靳",
+  "Keywords": [
+    "塞勒靳",
+    "塞勒靳家族"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "塞勒靳家族属于布拉佛斯的富裕家门，权力形态与维斯特洛封地贵族不同：它更多存在于船股、仓库、债权、宅邸和城市关系中。布拉佛斯的水道让货物与消息流动极快，也让一次违约迅速传遍码头。塞勒靳若想维持地位，必须同时应对海上风险、贸易竞争、海王政治与铁金库影响。缺少确证的家徽和祖训并不妨碍人们用最实际的标准评判它——是否守信。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "布拉佛斯商人看塞勒靳，首先看合同能不能兑现。共和国的贵族没有大片农奴替他们兜底，一艘沉船、一次坏债或一次错误结盟都可能让门面迅速失色。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "sailor",
+          "artisan",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "船匠和水手不关心塞勒靳在宴席上坐第几席。他们记得哪家按时付修船钱、哪家让寡妇拿到抚恤；海上的信用由这些细账组成。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待塞勒靳，会先看它的土地、婚盟、血脉和债务。塞勒靳是布拉佛斯的贵族商贸家门，地位依靠船只、仓库、婚盟与共和国政治中的信用。家徽是门面，能否保护封地、兑现婚约并在危机中召集人马，才是家族真正的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起塞勒靳时，记得的是谁在营火边分过粮、谁把他们留在城外、谁在败局里仍站在旗旁。塞勒靳是布拉佛斯的贵族商贸家门，地位依靠船只、仓库、婚盟与共和国政治中的信用。家族名声最终要落到具体的人和具体的命令上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意塞勒靳留下的仪式、墓地和传承。塞勒靳是布拉佛斯的贵族商贸家门，地位依靠船只、仓库、婚盟与共和国政治中的信用。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见塞勒靳。塞勒靳是布拉佛斯的贵族商贸家门，地位依靠船只、仓库、婚盟与共和国政治中的信用。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "塞勒靳：塞勒靳是布拉佛斯的贵族商贸家门，地位依靠船只、仓库、婚盟与共和国政治中的信用。"
+  ]
+}

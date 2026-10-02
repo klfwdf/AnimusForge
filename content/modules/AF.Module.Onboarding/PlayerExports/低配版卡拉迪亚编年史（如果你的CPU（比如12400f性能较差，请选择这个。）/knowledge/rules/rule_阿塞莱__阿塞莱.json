@@ -1,0 +1,133 @@
+﻿{
+  "Id": "rule_阿塞莱",
+  "Keywords": [
+    "阿塞莱",
+    "苏丹国"
+  ],
+  "RagShortTexts": [
+    "阿塞莱苏丹国是松散部落联盟，苏丹是魅力仲裁者。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "阿塞莱？苏丹是个好人。他不太管我们，我们也不太管他。我住在绿洲边上，种椰枣，养羊，骆驼商队路过的时候在集市上卖水。谁当苏丹跟我没关系，只要别加税。他没加过税，至少没加到我这头上。我听说他主持司法的时候总顺着老规矩，不偏向谁，但也有人说他管不住那些大家族——他们贿赂、钻空子、欺负小部族，苏丹看见了也只能装没看见。我觉得这事不该怪他。沙漠里的大家族什么时候听过别人管？以前帝国的使者还在的时候，买通一个部落去打另一个部落，现在使者不来了，部落们自己打自己，苏丹能让他们暂时不打，已经不容易了。\n\n不过说实话，这也就是暂时的。保不齐哪天就没有苏丹了"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "苏丹是个体面人，但他把体面用得太过。豪门的贿赂在沙子里拖着走，他不瞎，他是不想得罪人。\n\n温吉德在的时候，我们这些家族还在桌面底下互相踹腿。他不在了，腿就要伸上桌子了。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": [
+          "char:aserai_mameluke_axeman",
+          "char:aserai_mameluke_cavalry",
+          "char:aserai_mameluke_guard",
+          "char:aserai_mameluke_heavy_cavalry",
+          "char:aserai_mameluke_regular",
+          "char:aserai_mameluke_soldier",
+          "char:mamluke_palace_guard"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "我是主人的财产。主人是谁，我就替谁杀人。阿塞莱如何，我们不大关心。我们只为我们的主人服务。主人让我们往东，我们绝不往西"
+    },
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "阿塞莱？南边沙漠里那些人。我在北方，从来没亲眼见过骆驼，只看过跑商的人带回来的椰枣。他们那边好像有个叫温吉德的苏丹是个好人，不随便打仗。但阿塞莱人也不全是好人，跑商的人说，控制绿洲的部落就收点保护费让你走，住在沙漠里的部落就抢你，还有些叫马穆鲁克的奴隶兵，是从小买来练的，除了杀人啥也不会。我怕的不是苏丹，是那些部落守不守信、劫不劫货。以前帝国在的时候好像能管点事，现在帝国自己也在打内战，没空管他们了。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "阿塞莱苏丹国是一个松散部落联盟，依靠习惯法和苏丹个人威望粘合，制度化程度很低。苏丹是一位有魅力的仲裁者，但他选择以顺应习惯法而非强化王权的方式来治理，这使得阿塞莱仍然是一盘散沙，只是暂时不往不同方向吹。豪门家族通过贿赂和法律漏洞压制小部族，苏丹对此无力或不愿干预。这一弊端在和平时期表现为司法腐败，在战争时期随时可能演变为联盟内部的致命裂痕。\n\n军事上，阿塞莱的战斗力主要分散在各部落的武装中，马穆鲁克是最精锐的单位，但他们属于各自的主人，不构成苏丹直属的常备军。阿塞莱的危险不在于苏丹的野心——温吉德没有野心，而在于苏丹死后或威信崩溃时，这片沙漠会立刻回到帝国曾经精心维持的那种“代理人互噬”状态，而且这次没有外部力量来约束。吉勒德准备打仗，萨兰在积累怨恨，贾瓦勒坚守传统，胡勒延的家底再厚，也买不了一个永远和平的沙漠。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "阿塞莱？他们的马穆鲁克是真能打——纪律好，刀快，冲起来不要命。问题是重甲和队形不行，在平地上被我们方阵顶住就没后劲了。但你要是被他们绕到侧翼，或者被他们的轻骑兵粘上了，就很麻烦。他们的苏丹不太亲自带兵，好像是个大胖子商人，打仗的事基本交给吉勒德和胡勒延那些家族的埃米尔。我们本来觉得他们都差不多松散，后来校官说贾瓦勒和萨兰跟他们不是一回事，连规矩都不一样，打仗全凭自己想怎么打。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": [
+          "jawwal"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "我们是真正的阿塞莱人。住在黑羊毛帐篷里，想去哪儿就去哪儿。那些住在绿洲石头房子里的人，嘲笑我们自吹自擂，可每逢大节大祭，是谁忘记了仪轨？是谁忘记了祖先的诗篇？温吉德是个公正的人，我们认他这个苏丹，但他代表不了阿塞莱。阿塞莱的灵魂在黑帐篷里，在沙丘上，在商路旁边的驼铃声中。他坐在绿洲法院的软垫上仲裁纠纷，我们替他在沙漠里守着传统。没有我们在外头游牧，阿塞莱就只是帝国留下的一圈绿洲土围子。\n\n诗人唱我们的功绩，一代一代传下来。我们不靠贿赂，不靠法律漏洞，不靠苏丹的恩赐。我们靠的是剑，是骆驼，是几百年来没人能驯服的自由。总有一天，那些石头房子会塌，我们的黑帐篷还在沙丘上立着，风一吹，什么痕迹都不会留下。贾瓦勒不需要谁记住，贾瓦勒自己记着就够了。"
+    }
+  ],
+  "TextMappings": []
+}

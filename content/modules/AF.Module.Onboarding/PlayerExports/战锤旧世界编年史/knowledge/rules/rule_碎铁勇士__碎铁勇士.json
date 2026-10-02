@@ -1,0 +1,209 @@
+{
+  "Id": "rule_碎铁勇士__碎铁勇士",
+  "Keywords": [
+    "碎铁勇士",
+    "陨铁重甲",
+    "坑道守护者",
+    "坚如磐石",
+    "防御步兵",
+    "矮人铁壁",
+    "碎铁军团",
+    "坑道决战"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "碎铁勇士是矮人王国最深处坑道的守护者——他们全身披挂由陨铁锻造的超级重甲，手持铁刃巨斧或黑火药爆破雷管，每一个碎铁勇士都发誓死守卡拉克的地底大门，哪怕面对整支地精军团也不会后退一步。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "碎铁勇士！说起他们，我胸口这口郁气才舒坦些。那是我们矮人族最铁的壁垒——你在地下多深的地方见过他们？第七十二层坑道，空气稀薄到火把点不着的地方，碎铁勇士照样穿着全套陨铁重甲站得笔直，连胡须都不带颤一下。那陨铁你知道多重吗，人类骑士穿上连步子都迈不开，我们的碎铁勇士穿着它能在坑道里追着暗夜哥布林跑。一柄碎铁巨斧抡下去，绿皮的头盔和脑袋一起碎。更别提他们腰间挂的黑火药雷管——专为坑道战设计的，爆炸时冲击波会沿着岩壁传播，一队碎铁勇士能把整条隧道变成绿皮绞肉机。他们的誓言只有一个：卡拉克的大门在他们的呼吸停止之前绝不会被攻破。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "碎铁勇士是已知世界中最强的重型防御步兵，其性价比令任何指挥官都需要认真评估。单兵战斗力方面，一名碎铁勇士可在正面一对一对抗中击溃两名神选者——这源于陨铁装甲对混沌板甲的材质优势。但他们最致命的限制是移动速度：全副武装的碎铁勇士在平坦地形上的推进速度仅约为人类重步兵的三分之二。战场部署上，我建议将碎铁勇士钉死在最关键的地形瓶颈上——城门、桥头、峡谷——绝不要试图用他们追逐灵活的轻装敌军。他们的雷管爆破战术在坑道战中可以造成三倍以上的致命效果，因为封闭空间对爆炸冲击波的增强倍率是指数级的。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "碎铁勇士军团的历史可追溯至矮人黄金时代（约公元前3000年至公元前1500年），最初的碎铁军团由矮人至高王库尔根·铁须于卡拉克·八峰山的奠基时期组建，目的是守卫最深层的符文矿脉。陨铁冶炼工艺——在矮人语中称为'格罗姆里尔-卡扎克'——据信由符文铁匠祖师格伦吉尔·星锤于公元前约2800年发现：他在一次陨石坠落后立即封存了陨坑，并花了四百年时间才破解陨铁的净化-锻造-符文镶嵌三合一流程。现代碎铁勇士的标准装备包括：格罗姆里尔全覆式甲（全重约一百四十石，人类不可穿着）、碎铁巨斧（单刃或双刃，刃部镀有破解符文）、黑火药隧道雷管（装填矮人精炼黑火药与铁屑，在坑道环境中的有效杀伤半径约二十尺）。最著名的碎铁勇士事迹为'八峰山之守'（公元前1523年），三百名碎铁勇士在第六坑道中对抗十万绿皮大军，坚守六十六天直至自毁塌方——无一人生还，也无一绿皮突破。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "矮人的碎铁勇士让我深刻理解了'坚守'这个军事概念。人类军队会谈论荣耀、职责和西格玛——碎铁勇士不谈论任何东西。他们站进阵位之后就像山体的一部分，而山是不会撤退的。我派往卡拉克·卡德林的使节曾描述过碎铁勇士的换岗仪式：整个过程像石刻一般精确，无一人低语。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "碎铁勇士的名册是矮人宗族中最珍贵的东西之一——那上面记载的不仅是名字，更是每条坑道、每层深处的守护誓约由哪个家族负责。我家曾有三代男丁在碎铁军团中服役。第三代人在'暗火之灾'那年，当一整层矿道塌方后，他们拒绝撤退，最后那把碎铁巨斧被活着出去的矮人带回来，斧刃上还嵌着四十二个绿皮的牙。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "雇过矮人保镖的人都知道碎铁勇士的行情——贵得要命，但物有所值。有个碎铁退休老兵跟我走过一趟从卡拉克·希尔巴到巴拉克·瓦尔的矿道押运，那老矮人穿着半套陨铁胸甲，举着火把走在最前面，一整个暗夜哥布林突袭队在看到他的瞬间全跑了。他说哥布林能闻到陨铁的气味，知道那是什么，知道碰到陨铁就意味着撞上碎铁。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "铸甲行会的人每次谈到陨铁都会叹口气。那玩意儿不是地球上能开采到的矿——矮人们守着陨铁的源头和冶炼秘密比他们守着黄金还紧。帝国铸甲师花了几百年试图仿造陨铁重甲，最好的成果'帝国陨铁板甲'成本是一套骑士板甲的三十倍，性能却只有碎铁原件的三成。所有仿造计划最后都破产了。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "格罗姆里尔（陨铁）：矮人专属的星铁，从陨石中提炼的神秘金属，为已知世界最硬最轻的护甲材料，也是符文附着的唯一理想载体。",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "手持铁刃巨斧或黑火药爆破雷管"
+  ]
+}

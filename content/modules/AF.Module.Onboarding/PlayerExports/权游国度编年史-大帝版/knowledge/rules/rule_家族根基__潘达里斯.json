@@ -1,0 +1,155 @@
+{
+  "Id": "rule_家族根基__潘达里斯",
+  "Keywords": [
+    "潘达里斯",
+    "潘达里斯家族",
+    "瓦雷利亚血统"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "潘达里斯是里斯的贵族家门，家名带有瓦雷利亚后裔的色彩。里斯许多人保留银金头发、浅色眼眸与古老血统的自豪，但容貌本身不能支付船费，也不能在议事中自动换来多数。潘达里斯的地位取决于它能否把家谱、婚姻和礼仪转化为可靠盟友、受尊重的公共义务与足以养家的产业。对坦格利安旧联系的态度可以因个人和时代而不同；真正稳定的是里斯权贵常用血统包装现实竞争，而较小家门必须比豪门更谨慎地维护名声。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "lyseni",
+          "valyrian"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "scholar",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "重视瓦雷利亚血统的人会认真端详潘达里斯的家谱和婚配，却也知道末日浩劫后留下的后裔太多、龙王太少。血统能带来邀请，不能保证席位。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "lyseni"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "里斯市民更愿意按信用评价潘达里斯。紫色眼睛不会让货船更快靠岸，按时结账、在风暴后照顾船员才会。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "lyseni"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "slave",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "被支配者对贵族血脉的争论通常冷淡。无论主人宣称祖先来自哪座瓦雷利亚庄园，鞭子落下时都一样疼。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待潘达里斯，会先看它的土地、婚盟、血脉和债务。里斯的瓦雷利亚后裔家门，以血统记忆、城邦关系和有限资源维持体面。家徽是门面，能否保护封地、兑现婚约并在危机中召集人马，才是家族真正的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起潘达里斯时，记得的是谁在营火边分过粮、谁把他们留在城外、谁在败局里仍站在旗旁。里斯的瓦雷利亚后裔家门，以血统记忆、城邦关系和有限资源维持体面。家族名声最终要落到具体的人和具体的命令上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意潘达里斯留下的仪式、墓地和传承。里斯的瓦雷利亚后裔家门，以血统记忆、城邦关系和有限资源维持体面。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见潘达里斯。里斯的瓦雷利亚后裔家门，以血统记忆、城邦关系和有限资源维持体面。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "潘达里斯：里斯的瓦雷利亚后裔家门，以血统记忆、城邦关系和有限资源维持体面。"
+  ]
+}

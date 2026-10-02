@@ -1,0 +1,210 @@
+{
+  "Id": "rule_圣杯遗物__圣杯遗物",
+  "Keywords": [
+    "圣杯遗物",
+    "圣物匣",
+    "陨落骑士",
+    "农奴朝圣",
+    "士气鼓舞",
+    "圣骸",
+    "圣尸",
+    "圣骑士遗骨",
+    "朝圣之匣"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "圣杯遗物是巴托尼亚战场上最震撼人心的景象之一——那是一辆由农奴推动的简陋木车，车上放置着一个装饰着圣骸布的圣物匣，里面盛放着一具陨落圣杯骑士的遗骸。成群的农奴朝圣者跟在遗物车后面，他们不是来打仗的，而是来目睹圣骸并在圣光中获得面对死亡的勇气，而圣骸本身在战斗中会散发出灰色的神圣光芒鼓舞巴托尼亚战士继续战斗。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "圣杯遗物是巴托尼亚战争文化中最神圣也最引发争论的传统。当一位圣杯骑士战死在战场上时，他的遗体不会被埋入地下等候与先祖团聚——那是一位王国骑士和一名农奴的归宿——而是会被圣杯修女会接收并用圣物匣封存起来。这些圣物匣由受祝福的橡木和纯银饰片制成，巨大到需要至少六个农奴才能抬动，里面保存着圣杯骑士的遗骸——有时是他的剑，有时是他的头骨保护在一个水晶匣里，有时是具全身圣尸。巴托尼亚的农民们相信陨落圣徒的遗骸拥有保护凡人的神力——这种信仰源自于湖之女神早期的神学，其中提到凡是在女神恩宠中死去的人的身体不会受到混沌的腐化——所以当战争来临时，农奴们会放弃田地和家园，推着圣杯遗物车滚入战场，唱着古老的朝圣赞歌。这些农奴不是战士——他们中的许多人手上没有武器，只有割草的镰刀或甚至什么都没有——但当一个圣杯遗物车在场时，战场上所有巴托尼亚人的士气会提高到近乎不理性的水平：骑士们的长枪更精准，农奴们的恐惧会融化在遗物发出的灰色柔光中。但圣杯遗物的存在也意味着骑士们在战场上有一个沉重的责任：保护这辆脆弱的本车免于被俘获——因为最大的耻辱不是失去一座城堡，而是让异教徒或兽人把圣杯骑士的遗体带走拿走上面附着的任何并非属于它们的东西。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "圣杯遗物在战术上的价值高度依赖于敌人是否具有宗教敏感性。对于兽人、野兽人或混沌信徒，圣杯遗物的光芒只是一个潜在的攻击目标而已——它不会在任何意义上使它们感到恐惧或削弱它们的战斗力。但对于亡灵军团——吸血鬼、死灵法师、他们的骷髅奴仆——圣杯遗物具有实质性的战场削弱效果：圣骸的光芒能直接压制低级别的死灵仪式，使附近的骷髅和僵尸行动速度降低，偶尔甚至造成失控。因此，任何与希瓦尼亚邻居对抗的巴托尼亚领主都会花大力气确保至少一辆圣杯遗物车被编入远征军。但圣杯遗物也带来了一个军事管理上的负担：保护圣物匣的农奴群不仅没有任何战斗训练，他们还极其容易被敌方弓箭手或法术大面积射杀——这些伤亡会导致遗物周围的士气下降而直接相反于遗物本身的效果。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "圣杯遗物的教义基础和文物史是巴托尼亚宗教人类学中一个极具史料价值但极缺系统文献的研究领域。根据圣杯修女会内部传承的口头传统——从未被完整写成文字——圣遗物的神圣性源自湖之女神对陨落圣杯骑士的「永续之约」：女神在骑士生前将圣杯恩赐给他，在他死后并不收回这份恩赐，而是将其转存于骑士的遗骸中。从神学上而言，这意味着每一具妥善保存的圣杯骑士遗骸都是湖之女神存在的一处「在世镜像」。在巴托尼亚全境约有一百至一百二十具圣杯骑士遗骸被以不同形式保存——有些在公爵城堡中作为家族圣地，有些在乡村小教堂中作为村级护符，仅有约二十具被改装成战场用圣杯遗物车并被配发给前线军团。最早的有记录圣杯遗物车使用出现在巴托尼亚历七世纪——当时与红公爵的最后战役中，巴托尼亚步兵在敌众我寡的绝望局面中推着圣骑士埃默里克圣体车进入了决战，从此之后圣杯遗物被制度化为巴托尼亚战争机器的正当组成。每一辆圣杯遗物车在进入战斗前必须经历一个被称为「圣体激活」的仪式——这个仪式的细节从未被书写，仅由圣杯修女在战前向遗物执行，非修女人员被禁止旁观。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "圣杯遗物在我们巴托尼亚女性中引发着奇特的情感共振——当一队圣杯遗物车队经过村庄时，女人们会扔下手中的纺锤跪在路边唱圣歌。对这些农奴妇女来说，圣物匣是唯一能让她们在战争中看见神圣的事物——她们的儿子和丈夫们通常没有足够的身份接触到教会或骑士社会的上层，但她们相信圣骸能直接与女神沟通，为她们在战场上的亲人提供庇护。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "圣杯遗物的家族归属权在法律上属于一个极其微妙的灰色区域。一个陨落圣杯骑士的遗骸保存在哪个公爵领地内，意味着附近的修道院和教区会长期获得朝圣者的捐赠和供奉。这使得具有竞争力的家族会在暗地里竞争让更多陨落圣杯骑士的遗物安置在自己的地界内——这不是一件干净的事。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "圣杯遗物是我在巴托尼亚见过的最矛盾的东西——一辆装着一具骨头并且发出灰色光的木车，周围围着一群浑身泥巴的农奴，比我们还穷，手上别说剑，连短柄刀都没有几把，但面对死亡时他们在遗物光环中变得跟我见过的最勇的雇佣兵一样不退缩。我不懂是什么让他们面对的，也不确定我想懂。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "圣物匣的制造是巴托尼亚手工艺中最具宗教制约的奢侈产业。圣物匣的制作匠人必须获得教会许可——这些匠人自身必须是接受过洗礼并宣誓纯洁的神圣手艺人。橡木引自巴托尼亚最古老的森林，纯银锭由湖之女神修女会提供的受祝原料，水晶匣体由灰色山脉修道院的专属玻璃大师吹制——所有组件最后的组装必须在教堂内完成并且不得在月光下打开。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "圣物匣——由神圣橡木和纯银制成的移动圣骸容器，存放陨落圣杯骑士的遗骸",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "圣杯遗物圣物匣陨落骑士"
+  ]
+}

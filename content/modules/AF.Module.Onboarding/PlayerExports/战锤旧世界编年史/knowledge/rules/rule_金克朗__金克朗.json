@@ -1,0 +1,211 @@
+{
+  "Id": "rule_金克朗__金克朗",
+  "Keywords": [
+    "金克朗",
+    "银先令",
+    "铜便士",
+    "旧世界货币",
+    "帝国货币",
+    "铸币权",
+    "兑换比率",
+    "皇家铸币厂",
+    "玛丽恩堡",
+    "战争财政"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "金克朗（Gold Crown，简称GC）是旧世界最广泛流通的金币，由帝国铸造，正面印刻当前在位的皇帝头像，背面印刻西格玛圣锤和双尾彗星。一枚金克朗折合二十枚银先令，一枚银先令折合十二枚铜便士——这是旧世界所有商人、雇佣兵和贵族都必须熟练掌握的货币换算体系。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "帝国的金克朗是整个旧世界的硬通货。从马林堡的商行到世界边缘山脉的矮人集市，从巴托尼亚的港口到南方边境王子的关税站，没有人会拒绝一枚成色足的帝国金币。金克朗的铸造权属于帝国皇帝，由瑞克领的皇家铸币厂与选帝侯的授权铸币厂共同发行，理论上皇帝批准铸币额度，但实际上有些选帝侯会偷偷超发以填补行省财政——这也是帝国议会上经久不衰的争吵话题之一。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "理解旧世界的货币体系是理解战争财政的基础。招募一队持戟步兵每月需要数十金克朗的军饷，维持一支骑士中队则耗资数百，而从努恩铸造一门臼炮并配齐弹药的花费超过大多数男爵领一年的地租收入。战争的开销惊人，税收永远不够，因此每一位领主都必须学会在金克朗、军事需求和封臣满意之间走钢丝。有些家族靠商路税收维生，有些依赖庄园地租，有些则直接靠战利品和赎金——平衡收入来源的能力往往决定了王朝的存亡。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 100
+        },
+        "IdentityIds": null
+      },
+      "Content": "旧世界货币体系远比表面复杂。除了帝国的金克朗，还有巴托尼亚银币、矮人符文金币、边境王子的各种杂币、基斯里夫雪币以及南方蒂利亚城邦的杜卡特金币。兑换比率随战争、贸易路线中断和铸币贬值而波动。农奴和底层平民几乎不接触金币——他们以实物地租（谷物、牲畜、布匹）和铜便士为经济单位，年入十到三十金克朗对于平民已是体面的小康。贵族年入数千至数万金克朗不等，而帝国皇帝在一次大战中的军费开支可能超过百万。矮人的符文金币在收藏家和学者之间极为珍贵，它们不仅是货币，更是艺术品和古代历史的载体。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "在帝国的边境省份，女性领主对货币的理解与皇家铸币厂的男性官僚完全不同。他们关心的是金币的含金量和防伪标识，我们关心的是在混沌入侵期间一枚金克朗还能不能买到一袋粮食——以及当不能时，我们库存的实物地租物资需要维持多少个月的围城消耗。我的领地上有一项由我祖母设立、至今仍在运行的制度：每年税收的百分之二十以金币形式存入皇家银行，另百分之二十以实物形式存入家族的加固谷仓。男性官员嘲笑这是浪费，但上次混沌入侵围城七个月期间，我们的金币一文不值而实物储备救了整个封地。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "作为旧帝国的边境伯爵家族族长，金克朗的稳定性直接影响我能否从矮人处获得符文装备。矮人接受金克朗作为支付手段——但他们有自己独特的汇率，这个汇率不是市场决定的，而是由矮人长者会议根据他们对帝国皇帝当前信誉的'评估'而每半个世纪调整一次。如果任何选帝侯被矮人判定为'成色不足'——无论是其金币成色还是其个人信誉——矮人会单方面拒绝接受该选帝侯铸币厂发行的所有金克朗。我家族保持了三百五十年的完美矮人信用评级，这是我唯一不允许任何短视的经济决策去冒犯的东西。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "在旧世界各地流浪时我学会了一件事：永远不要在任何人类领土上交出你的最后一枚金克朗——但永远要在矮人城塞中主动付清你所有的矮人符文金币债务。人类债主可以跟你谈延期付款、抵押和减免；矮人债主不接受任何延期付款的理由，而且他们的催收系统包括在《仇恨之书》中添加你的名字——然后你的子子孙孙都会继续背负这笔债务连利息。最令人难忘的是，在玛利恩堡港口区一个老矮人钱币兑换商告诉我：'我们达维不给贷款，我们给的是一定要在收债日清偿的债务。不收债的达维不是一个真达维。'"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "帝国皇家铸币厂与选帝侯地方铸币厂之间的货币发行权矛盾是旧世界金融体系中最持久的制度性紧张。当所有十二位选帝侯同时将自己的金币注入流通市场时，每个克朗的实际购买力会因为含金量的微小差异而分化为不同级别——在玛丽恩堡的外汇市场上，一张瑞克领金克朗可以换到零八八张某些边境选帝侯的金克朗。我的商会每一季度都会发布一份秘密的'金克朗真实兑换表'——并非公开市场报价，而是内部使用的真实成交价——这张表在帝国财政大臣的眼中被视为最危险的走私品之一。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "金克朗——帝国铸造的旧世界标准金币，一枚等于二十枚银先令或二百四十枚铜便士",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "金克朗的经济活动与运行机制"
+  ]
+}

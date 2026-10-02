@@ -1,0 +1,168 @@
+﻿{
+  "Id": "rule_方旗骑士",
+  "Keywords": [
+    "方旗骑士"
+  ],
+  "RagShortTexts": [
+    "方旗骑士装备昂贵，重甲骑兵冲锋威慑力强。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "方旗骑士？扈从熬资历，挣战功，运气好被哪个男爵看中，册封的时候骑枪上挂一面方旗，这辈子就算站稳了。方旗骑士的装备钱可不是小数目——全覆盔、布面铁甲、链铠衬里、战马马铠，一套下来够养一队弩手好几年。但值。一个方旗骑士在阵前把骑枪放平，马蹄刨地，斗篷在背后绷成一面墙，对面步兵看着腿就软了。不过我也得说句实话：方旗骑士不好管。他们太傲。每个人都是打出来的，每个人腰间挂的不是剑是战绩，你让他列队他列了，但你让他别冲他未必听。因加泰尔在潘德拉克就是带着一帮方旗骑士追轻步兵，追到最后被帝国具装骑兵反冲，折了多少人。方旗骑士是瓦兰迪亚最锋利的刀，但刀太快了容易割自己手。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "方旗骑士？那跟我们没关系。我们村要是出个方旗骑士，全村祖坟冒青烟了。当方旗骑士首先得当扈从，扈从得有人给你担保，担保你的人至少得是个骑士，我们家往上数八辈全是种地的，连担保人的马夫都攀不上。我在集市上见过一次方旗骑士，骑在那高头大马上，浑身铁片子，脸都看不见，只能看见盔沿底下一条缝，那缝里透出来的光就够让人不敢喘气。他们那马也吓人，马铠比我的房子还值钱，马蹄子有我脑袋大。方旗骑士过街的时候没人敢正眼看，不是怕他抽你，是那铁蹄子万一磕着你，一下就没了。不过话说回来，打仗还得靠他们。弩手射箭射得好，但真要把对面阵线冲垮，还得这帮铁人压上去。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": [
+          "char:vlandian_banner_knight"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "我年轻时当扈从，不久前在城下受封。册封那天男爵大人亲手把方旗递给我，说旗在人在。我没说话。事后我的扈从说那面旗太小，跟别家那些大旗比寒碜。我跟他说，旗不是给你丈量布匹的，旗是挂在你骑枪上的命。对面弓箭手瞄的就是这面旗，我挂着它冲锋，就是告诉对面我在这儿，来打我。能挂方旗的人不躲不藏，冲锋的时候我们第一波撞进去，撤出来的时候最后一个走。帝国人说他们具装骑兵比我们强，我不争辩。他们纪律好，我们拼得凶。纪律好的人在阵列里不死，拼得凶的人在混战里活。我们瓦兰迪亚方旗骑士从来不跟人比纪律，我们比谁先撞碎对面的盾墙。但说实话，有时候冲得太深，回头看支援没跟上来，心里也是凉半截。这种话不能跟扈从讲，只能在心里闷着。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": [
+          "char:vlandian_crossbowman",
+          "char:vlandian_footman",
+          "char:vlandian_infantry",
+          "char:vlandian_levy_crossbowman",
+          "char:vlandian_marine_t5",
+          "char:vlandian_militia_archer",
+          "char:vlandian_militia_spearman",
+          "char:vlandian_recruit",
+          "char:vlandian_sergeant",
+          "char:vlandian_sharpshooter",
+          "char:vlandian_spearman",
+          "char:vlandian_swordsman",
+          "char:vlandian_voulgier"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "我在弩手阵里蹲了六年，最怕的不是对面冲骑，是我前方的方旗骑士突然决定不等命令就冲锋。他们一动，整条阵线就露了破绽，我们弩手就得赶紧收弩往侧翼撤，慢一步就被对面轻骑咬上。但我也服他们。有一回对面帝国重步压上来，我们的步兵线已经撑不住了，往后退了两步。然后右翼的方旗骑士不声不响就把骑枪放平了，没人下命令，他们自己整的队，马蹄声一起，我们这边所有人都松了口气。他们冲出去的时候旗子绷得噼啪响，撞进对面阵里的声音像铁砸铁，刚才还在往前压的帝国兵一下就乱了。方旗骑士冲完没恋战，拨马就回来了。回来的时候少了几个人，马背上挂着空蹬子，但活着回来的还在，骑枪断了换剑继续列队。我说不上喜欢他们——他们太傲了，对步兵说话眼皮都不抬，但我认他们。有他们在前面，我装填弩的时候手不抖。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "瓦兰迪亚方旗骑士是大陆上唯一一支能在重骑兵对决中和帝国具装骑兵互冲的部队。装备精良，马术一流，个人勇武无可置疑。他们的弱点在于纪律——瓦兰迪亚人的骑士传统强调个人荣誉，导致方旗骑士在阵列中倾向自由发挥而非协同作战。这一点帝国具装骑兵做得更好。在大型会战中，一队列阵整齐的具装骑兵可以来回冲穿方旗骑士的队形，因为方旗骑士冲锋时会不自觉地散开，各找各的目标。但在混战和边境冲突中，方旗骑士往往占上风——他们更习惯小规模、高强度的独立战斗，不依赖号令就能自行组织突破。从军费角度看，方旗骑士的装备和维护成本高得离谱，瓦兰迪亚能养活这么多重装骑兵，全靠弩手阵的低成本补了他们的坑。如果他们的国王哪天把方旗骑士的预算砍了，瓦兰迪亚的军力一夜之间腰斩。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "方旗骑士？瓦兰迪亚的铁骑兵。我在商路上远远见过一回。当时我们商队停在山坡上等路卡放行，底下平地上他们正在操练。那些骑兵从头到脚全是铁，马也是铁装裹着，跑起来地面都在震。我数了数，骑枪末梢都挂着小方旗，花花绿绿的，风一吹啪嗒嗒响。他们冲的时候真跟山塌下来一样，我站在山坡上都腿软。向导说在下面得叫声“方旗老爷”才行，叫错了要挨鞭子。我问他们打仗厉不厉害。他说，骑兵里排第二。第一是谁？帝国骑兵。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "跟方旗骑士打过一场，他们没正眼看我们，集中冲中路。那一次我才知道什么叫重骑兵——我们的人从侧面射箭过去，箭打在他们甲上弹开了，他们理都不理，只顾往前碾。马撞进步兵阵里的时候，我感觉地面往下沉了一下，然后就是断枪杆子和惨叫。我们的轻骑没敢接，撤了。回去长官拍桌子骂，说我们怂。我说那帮方旗骑士的甲比我们的盾都厚，冲起来骑枪快如闪电，你让我们怎么接？帝国人说方旗骑士纪律差，我看是屁话。冲锋纪律差能把我中路砸穿？他们差的是冲完以后的纪律——冲过去就开始各自找人杀，队形就散了。真要接他们，得趁他们散开的时候，在他们重新整队之前咬上去。但咬上去的代价也不小，那帮铁人短兵刃使起来一样要命。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": [
+          "char:imperial_cataphract",
+          "char:imperial_elite_cataphract"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "瓦兰迪亚方旗骑士？大陆上唯一配得上我们正眼看的骑兵。他们的装备和我们差不太多，布面甲对我们的扎甲，链铠衬底对鳞甲托底，竞技马对我们的帕尔马廷马，两边冲起来谁也别说谁比谁更扛揍。他们的马术不在我们之下，枪法也不差，单拿出来看，方旗骑士的个人素质不比我们任何一个人弱。但他们有个致命的毛病：纪律。在阵列对冲的时候，我们是按号令整体踏进，矛尖平齐，速度一致，节奏统一。方旗骑士冲起来比我们猛，但也比我们乱。他们的速度不是整体节奏，是各人看情况自己加的。冲到后半段，队形就散了，散的缝隙就是我们的突破口。我们打他们，靠的不是更快的枪，是更整齐的纵队后劲。冲完第一波之后，我们还能掉头再冲第二波——前提是能有骑兵掩护，方旗骑士就不太能。不是我笑话瓦兰迪亚的骑兵，他们的方旗骑士单挑是真不弱。但打仗不是单挑，是阵形和纪律的比拼。在这一点上，他们还得再多练几百年。"
+    }
+  ],
+  "TextMappings": []
+}

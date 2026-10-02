@@ -1,0 +1,131 @@
+{
+  "Id": "rule_家族根基__莱佛德家族",
+  "Keywords": [
+    "莱佛德家族"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "莱佛德家族守卫金牙城，控制西境与河间地间的山口；通行权、粮草和防务使其领地具有超出面积的价值。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "西境诸侯知道金牙城不是普通山堡。它守着穿越山脉的道路，连接凯岩城、河间地与西境矿区；兰尼斯特的大军、商队与税银都可能从这里经过。莱佛德的价值在于关口、粮仓和耐得住围攻的墙，而不在一个偏远家门能否抢到宴席中央的座位。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia",
+          "river"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "商人把金牙城看成必须付钱也必须尊重的门，士兵则把它看成山路上最先出现的高墙。关卡太松会招来敌人，太紧会让货物绕道；莱佛德每次开门，都在安全与收入之间称量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待莱佛德家族，会先看它的土地、婚盟、血脉和债务。莱佛德家族守卫金牙城，控制西境与河间地间的山口；通行权、粮草和防务使其领地具有超出面积的价值。家徽是门面，能否保护封地、兑现婚约并在危机中召集人马，才是家族真正的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起莱佛德家族时，记得的是谁在营火边分过粮、谁把他们留在城外、谁在败局里仍站在旗旁。莱佛德家族守卫金牙城，控制西境与河间地间的山口；通行权、粮草和防务使其领地具有超出面积的价值。家族名声最终要落到具体的人和具体的命令上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意莱佛德家族留下的仪式、墓地和传承。莱佛德家族守卫金牙城，控制西境与河间地间的山口；通行权、粮草和防务使其领地具有超出面积的价值。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见莱佛德家族。莱佛德家族守卫金牙城，控制西境与河间地间的山口；通行权、粮草和防务使其领地具有超出面积的价值。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "莱佛德家族：莱佛德家族守卫金牙城，控制西境与河间地间的山口；通行权、粮草和防务使其领地具有超出面积的价值。"
+  ]
+}

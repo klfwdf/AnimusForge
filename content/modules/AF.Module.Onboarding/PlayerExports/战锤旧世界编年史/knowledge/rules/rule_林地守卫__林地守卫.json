@@ -1,0 +1,213 @@
+{
+  "Id": "rule_林地守卫__林地守卫",
+  "Keywords": [
+    "林地守卫",
+    "木精灵主力",
+    "神圣长弓",
+    "森林防线",
+    "绿叶战甲",
+    "精灵弓箭手",
+    "长弓神射",
+    "艾索洛伦射手",
+    "利箭如雨",
+    "箭术大师",
+    "森林战士",
+    "羽翎射手"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "林地守卫是木精灵王国的主力军，他们手持神圣长弓，身披翠绿战甲，世代守护艾索洛伦的边界，以精准无比的箭术射杀一切胆敢侵犯森林的敌人。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "林地守卫的每一支箭矢都经过咏咒使的祝福，在射出时会寻找敌人盔甲的缝隙，仿佛拥有自己的意志。我们从小便学习如何倾听森林的低语——风会告诉我们敌人的位置，树叶会指示箭矢的方向。在艾索洛伦之外，林地守卫的箭术令人畏惧，据说他们能在三百步之外射中飞鸟的眼珠。当号角吹响时，整个林地守卫团会同时放箭，箭雨遮天蔽日，如同死神从天而降。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "林地守卫是你军队的脊梁。部署时将弓箭手沿树线高地布置，利用天然掩体形成交叉火力。不要让他们陷入近战——虽然精灵的单手剑技艺同样精湛，但林地守卫的真正价值在于远程压制。与树精配合使用效果最佳：树精在前排承受冲击，林地守卫在后方持续输出。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "历史记录显示，林地守卫的数量从未超过一万人，但其战斗力足以震慑数倍于己的敌军。军事学者「铁面」巴尔德尔在其《旧世界战争史》中记载，在「赤焰之战」中，仅八百名林地守卫就击退了五千名兽人入侵者。林地守卫采用的「星芒阵」是一种独特的分散射击战术——弓箭手不形成密集阵型，而是散落在森林中各自为战，利用天然掩体进行游击式射击，这项战术后来被帝国猎手借鉴，形成了帝国「银色子弹」神射手团的作战风格。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "林地守卫中有许多姐妹与我并肩作战。她们证明了精灵女性同样是战场上最致命的射手，箭术不分性别，只关乎天赋和训练。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "每个氏族都有义务向林地守卫团输送最优秀的弓箭手。这是氏族的光荣传统，也是你履行对艾索洛伦责任的表现。记住，一支训练有素的林地守卫部队胜过十倍数量的乌合之众。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "你亲眼见证了林地守卫的可怕。他们似乎与森林融为一体——前一秒还是空无一人的林间空地，下一秒箭矢已如雨点般从天而降。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "林地守卫不仅是战士，更是木精灵传统的捍卫者。每位林地守卫在获得长弓前都要通过严苛的试炼，证明自己对森林的忠诚。他们的长弓世代相传，弓身上铭刻着先祖的战绩。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "林地守卫——木精灵主力弓箭手部队，艾索洛伦的中坚防线。",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "林地守卫木精灵主力神圣长弓"
+  ]
+}

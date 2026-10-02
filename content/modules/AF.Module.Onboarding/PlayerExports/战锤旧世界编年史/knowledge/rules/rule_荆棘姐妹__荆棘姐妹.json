@@ -1,0 +1,213 @@
+{
+  "Id": "rule_荆棘姐妹__荆棘姐妹",
+  "Keywords": [
+    "荆棘姐妹",
+    "女性施法骑兵",
+    "神鹿坐骑",
+    "自然诅咒",
+    "荆棘魔法",
+    "暗影骑手",
+    "荆棘少女",
+    "鹿骑兵",
+    "诅咒法师",
+    "灌木突袭",
+    "法术骑射",
+    "森林斥候"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "荆棘姐妹是一支由女性精灵组成的精英施法骑兵部队，她们骑着敏捷的神鹿，在疾驰中施展荆棘魔法和自然诅咒，如同林间的暗影骑手般出没于战场边缘。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "荆棘姐妹代表了艾索洛伦最狂野的一面。她们只接纳女性，并认为女性与自然的联系更加紧密、更加直接。她们的魔法不像咏咒使那样温和优雅——荆棘姐妹的魔法是刺痛的、尖锐的、充满攻击性的。她们骑着「荆棘鹿」——一种性情暴躁的林地神鹿，蹄子能踩碎岩石，角能刺穿盔甲。一名荆棘姐妹可以从疾驰的鹿背上释放诅咒，让敌人的盔甲里长满荆棘，将他们的血肉与钢铁绞在一起。她们唱的战歌让盟友热血沸腾，让敌人心惊胆裂。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "荆棘姐妹是完美的游击骑兵。利用她们的速度优势不断骚扰敌军侧翼和后方，一边骑射一边释放减速诅咒。不要让她们停下来——她们的战斗力在运动中达到顶峰。与巨鹰配合使用效果极佳：巨鹰吸引注意力，荆棘姐妹从背后释放魔法。她们对重甲目标特别有效，因为荆棘魔法的诅咒会从盔甲内部形成。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "荆棘姐妹团的起源可以追溯到「枯藤之战」，彼时一群女性精灵在失去男性亲属后拒绝传统的守寡角色，自行拿起武器保卫家园。她们的创始团领袖「荆棘之母」托纳莉亚发明了独有的荆棘魔法体系——不同于吉阳和乌聚，而是汲取自森林自身的防御本能。荆棘姐妹团的核心法术包括：「皮肉荆棘」——在敌人体内催生荆棘；「鹿角之光」——让神鹿的角散发致盲光芒；「姐妹之缚」——多名荆棘姐妹联合施法，可将大型单位捆在原地。她们的神鹿坐骑是一种经过魔法培育的特殊品种，寿命可达数百年。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "荆棘姐妹是我的骄傲——她们证明女性不需要男性的保护，相反，我们是最危险的猎手。作为她们的领路人，我以身作则骑在最前方。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "荆棘姐妹的誓言是终身的，她们放弃了一切世俗牵绊，包括氏族归属。但她们仍然与母族保持着微妙的联系。作为氏族首领，你应当尊敬她们的选择，并在她们需要庇护时提供安全的森林营地。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "月光下，一群骑鹿的女子从迷雾中奔驰而出。她们不言语，只是从你身边掠过，空气中留下一阵苦涩的花香。等你反应过来时，你身后一棵大树的树干上已缠满了荆棘。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "荆棘姐妹团是一个纯女性的神秘组织，她们的入团仪式需要候选人在荆棘丛中赤足奔跑一整夜，以证明自己的意志和与自然的共鸣。团内以姐妹相称，无等级之分，但在战斗中自然形成一种直觉性的默契。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "荆棘姐妹——全女性精灵施法骑兵，骑神鹿施展荆棘魔法。",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "荆棘姐妹女性施法骑兵神鹿坐骑"
+  ]
+}

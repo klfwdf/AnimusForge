@@ -1,0 +1,131 @@
+{
+  "Id": "rule_家族根基__韦伍德家族",
+  "Keywords": [
+    "韦伍德家族",
+    "断轮",
+    "艾林封臣"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "韦伍德家族以铁橡城为根基，是谷地较有实力的古老封臣，家徽以绿底黑色断轮为核心。家族通过土地、婚姻、寄养与骑士网络同谷地诸家相连，在继承人稀少或政治封闭时尤其重要。纹章只是家族标识。谷地领主会留意韦伍德对婚约和继承的态度，铁橡城周围的居民则更关心道路、秋收与山口在冬前是否还能通行。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vale"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "谷地诸侯把韦伍德视作稳固而善于经营亲缘的一门。铁橡城的力量不靠一场传奇，而靠土地、婚姻、养子与骑士关系一层层织成。断轮纹章引人猜测旧事，现实中的韦伍德却更像一只仍能转动的轮子，许多家族都在其中占着一根辐条。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vale"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "铁橡城领民更在意橡林、磨坊和山麓田地。领主家的婚盟对他们看似遥远，却会决定下一次谁来巡路、谁主持法庭、年轻骑士被送到哪座厅堂。韦伍德若能让这些关系少生争斗，百姓便称其稳重；若亲缘变成争产，断掉的就不只是纹章上的轮。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待韦伍德家族，会先看它的土地、婚盟、血脉和债务。铁橡城的谷地强族，家徽为绿底黑色断轮。其影响来自土地、婚姻、寄养与骑士网络。家徽是门面，能否保护封地、兑现婚约并在危机中召集人马，才是家族真正的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起韦伍德家族时，记得的是谁在营火边分过粮、谁把他们留在城外、谁在败局里仍站在旗旁。铁橡城的谷地强族，家徽为绿底黑色断轮。其影响来自土地、婚姻、寄养与骑士网络。家族名声最终要落到具体的人和具体的命令上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意韦伍德家族留下的仪式、墓地和传承。铁橡城的谷地强族，家徽为绿底黑色断轮。其影响来自土地、婚姻、寄养与骑士网络。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见韦伍德家族。铁橡城的谷地强族，家徽为绿底黑色断轮。其影响来自土地、婚姻、寄养与骑士网络。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "韦伍德家族：铁橡城的谷地强族，家徽为绿底黑色断轮。其影响来自土地、婚姻、寄养与骑士网络；"
+  ]
+}

@@ -1,0 +1,157 @@
+{
+  "Id": "rule_世界机制__海豹湾",
+  "Keywords": [
+    "海豹湾",
+    "北境东岸",
+    "卡霍城海岸",
+    "寒海渔业"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "海豹湾位于北境东北海岸，面向寒冷多雾的海域。沿岸森林、河口和避风处支撑渔业、海豹猎取、小规模木材运输与地方航行，但漫长冬季、浮冰和突变风向压缩了出海时节。这里远离南方大港，船只受损后未必能迅速获得好木料、帆布和铁件，村落也更依赖本地储备。海湾在大领主的地图上只是边缘水域，对岸边居民却是每日天气、食物与外来威胁的来源。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "sailor",
+          "peasant",
+          "artisan"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "海豹湾渔户按冰情和鸟群决定出船，不会因领主急需鱼盐便轻视风向。海能养一家人，也能在一阵雾里抹去整条船。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "东北领主看重海湾警戒、烽火和小港补给。敌人不必攻下一座大城，只要烧掉几处船棚，就能让沿岸一冬难过。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "ibbenese",
+          "nightswatch"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "sailor",
+          "merchant",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "北方航海者把海豹湾当作航线中的熟悉阴影：可以避风，也可能被冰封。外来船长愿意相信本地领航员，因为海图不会标出每一块新生浮冰。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人把海豹湾看成可执行的秩序。北境东北部的寒冷海湾，沿岸生活依靠渔猎、木材和短暂航季，并受风雪与海上袭扰制约。它是否有效，取决于谁能授予权利、收取代价，并在违约时让判决真正落地。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起海豹湾时，关心它如何影响道路、命令和安全。北境东北部的寒冷海湾，沿岸生活依靠渔猎、木材和短暂航季，并受风雪与海上袭扰制约。远方的制度只有在营火、城门和驿站里能被执行，才不是空话。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者会从习惯和象征理解海豹湾。北境东北部的寒冷海湾，沿岸生活依靠渔猎、木材和短暂航季，并受风雪与海上袭扰制约。一项规矩若被反复实践，便会进入礼仪、手艺和祈祷；若只靠恐惧维持，危机一来就会露出裂缝。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民感受到海豹湾的方式最小也最准确。北境东北部的寒冷海湾，沿岸生活依靠渔猎、木材和短暂航季，并受风雪与海上袭扰制约。他们记得税、粮、劳役、赈济和谁能为他们说话；宏大的名称，最终都要落在一家人的饭锅旁。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "海豹湾：北境东北部的寒冷海湾，沿岸生活依靠渔猎、木材和短暂航季，并受风雪与海上袭扰制约。"
+  ]
+}

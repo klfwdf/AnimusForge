@@ -1,0 +1,188 @@
+﻿{
+  "Id": "rule_贾尔马律斯",
+  "Keywords": [
+    "贾尔马律斯",
+    "西行在"
+  ],
+  "RagShortTexts": [
+    "贾尔马律斯是西帝国谷仓，也是军团兵源地，加里俄斯皇帝故乡。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": [
+          "town_ew3"
+        ],
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "你们外地人笑我们迂腐？笑我们保守？我们在这儿种地的时候，你们的城还没从泥里长出来呢。贾尔马律斯的田，纪元前帕拉人就在耕了；我们的规矩，共和国那会儿就立下了。我们说话带口音？那是祖宗传下来的腔调，你们听不懂是你们舌头硬。卡尔索斯将军当年拔剑问元老听不听得懂——这就是我们贾尔马律斯人的脾气：话不跟你多说，道理讲一遍，听不懂就动真格的。你们沿海的靠倒卖过活，北边的靠皮毛过活，山里蛮子靠抢，我们靠的是地里的粮食和手里的剑。没有中原的麦子，帝国早饿死了。我们保守？我们当然保守。我们不保守，帝国就没人记得以前是什么样了。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_w"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "贾尔马律斯是中原的缩影——这话不光我们认，全帝国都认。我们中原将领，加里俄斯大元帅、克洛托耳、还有当年拔剑的卡尔索斯，都跟这片土地一个脾气：不玩虚的，不绕弯子。贾尔马律斯的兵源是帝国最好的。这儿的人从小在地里干活，肩膀宽，腰杆硬，拉进军团练半年就是一把好手。他们跟北边那些应征兵不一样——北方人打仗是为了熬过冬天，我们中原人打仗是传统，共和国那会儿就家家送儿子参军。但贾尔马律斯确实有一样不好：太倔。城里那帮老派人家，现在还念叨着共和时期的老规矩，加里俄斯开会搞“人民集会”，他们觉得不如元老院体面。我有时候想说，我们自己就是中原人，就别老嫌弃别人土了。但这话在贾尔马律斯说出来，他们能跟你瞪眼。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "clan_empire_west_2"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null
+      },
+      "Content": "贾尔马律斯。啊，那片麦子地。\n\n我去过几次。粮食是真的多，人也真的烦。我跟他们谈生意，他们看我的眼神就像看一只从西海岸爬上岸的海螃蟹。他们觉得沿海商人靠倒卖赚钱不光彩，他们靠种地最光荣。光荣能换金币吗？不过我跟贾尔马律斯的粮食商打交道久了，倒摸出门道了：这帮人嘴硬心硬，但合同签了绝不赖。他们那种老派的死脑筋，在生意场上倒是一种优势。你不用担心他们耍花招——不是不想，是不会。而且加里俄斯是西帝国的皇帝，贾尔马律斯是他的老巢，军粮订单大半从这儿出。我不喜欢那儿的天气，风大，土大，满街都是当兵的，没有一点沿海城邦的惬意。但我不会跟钱过不去。\n\n贾尔马律斯现在是A的地盘"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": [
+          "town_ew2",
+          "town_ew5",
+          "town_ew6"
+        ],
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "贾尔马律斯就在我们中原，没啥好说的。种地当兵吃饭睡觉。外边人笑我们土，说我们口音重，说我们老脑筋。老脑筋怎么了？我们这儿的规矩，祖上传下来的，没变过。共和那会儿我们就这么过日子，皇帝来了我们还这么过日子。加里俄斯是我们本地人，他当了皇帝，我们觉得脸上有光，但日子也没啥不一样。军粮照样交，兵照样当。要说有啥看不惯的，就是西边那些新爬上来的生意人。没钱的时候种地，有钱了还是种地。中原人不靠买卖，靠地。地不骗人。\n\n现在他们应该属于A"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "clan_empire_north_1",
+          "clan_empire_north_2",
+          "clan_empire_north_3",
+          "clan_empire_north_4",
+          "clan_empire_north_5",
+          "clan_empire_north_6",
+          "clan_empire_north_7",
+          "clan_empire_north_8",
+          "clan_empire_north_9",
+          "clan_empire_south_1",
+          "clan_empire_south_2",
+          "clan_empire_south_3",
+          "clan_empire_south_4",
+          "clan_empire_south_5",
+          "clan_empire_south_6",
+          "clan_empire_south_7",
+          "clan_empire_south_8",
+          "clan_empire_south_9",
+          "clan_empire_west_2",
+          "clan_empire_west_3"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "贾尔马律斯是帝国的谷仓，也是帝国的笑话。没有这个谷仓，帝国会饿死；有了这个谷仓，我们得忍受他们那套永无止境的自我吹嘘。他们觉得自己是帝国唯一的好人，其他地方的人都是次品。他们说话带着卡尔索斯式的大舌头口音，吃饭放蒜比什么都多。最可气的是他们还掌兵权。加里俄斯是中原人，克洛托耳是中原人，帝国军团里喊口令的全是中原嗓子。这股中原帮把持着西帝国的军权，我们南北两边还得跟他们打交道——买粮食得找他们，调兵得求他们。元老院有人在背后说，中原就是帝国的土霸王。这话没人敢当面讲。贾尔马律斯那边的人，听不得这些"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "贾尔马律斯？那个全是麦子和兵的地方。我们这儿有亲戚在那边，回来探亲的时候说话口音都变了，蒜味冲天。听说他们那儿规矩多，拜神都要按老礼，少一步老人都拿拐棍敲你。不过那边确实富，粮食多，当兵有出路。加里俄斯就是从那儿出来的。他们说加里俄斯对老兵好，给地给钱。我们这边当兵，打完仗回家地都荒了。有时候想，要是生在贾尔马律斯那地方，可能日子好过点。但听说那儿的人瞧不起外地人——算了。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "帝国有个地方叫贾尔马律斯。名字真长，读着都费劲。听跑商的人说那儿地肥得流油，随便撒种子都能长庄稼。那儿的人据说横得很，说话跟吼人似的。他们那儿的将军以前拔剑问元老听不听得懂他说话——啧，当兵的对穿袍子的动刀？换了在我们这儿，头都得砍。不过帝国那么大，粮食全靠那片地，穷横也得让他们横。反正离得远，跟我们没关系。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "贾尔马律斯是加里俄斯的起家之地，也是西帝国粮草和兵源的命门。从我们的情报看，中原这片地是帝国最早开发的农耕核心，贾尔马律斯人保留了帝国共和时代的军事传统，兵源素质在整个卡拉迪亚名列前茅。帝国军头多出中原，绝非偶然。但这座城市也是帝国最保守的地方，排外意识极强，民粹倾向从卡尔索斯时代一直延续到加里俄斯。加里俄斯靠这块地盘上台，但也受制于它——中原的老牌家族对加里俄斯搞的兵营式集会有看法。这种内部张力暂时不影响西帝国的军事输出，但内战一旦拖延，中原会不会一直是加里俄斯的铁盘，需要继续观察。从外部角度看，贾尔马律斯是西帝国的战略重心。谁能控制这座城的粮仓和兵营，谁就握住了西帝国的命脉。现在的控制者是加里俄斯，但将来的事谁也说不准。\n\n现在的控制者是A"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "A",
+      "Kind": "settlement_owner_leader_name",
+      "TargetId": "town_EW3",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}

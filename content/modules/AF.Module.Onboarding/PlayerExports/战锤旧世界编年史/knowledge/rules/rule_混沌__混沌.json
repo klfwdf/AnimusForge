@@ -1,0 +1,212 @@
+{
+  "Id": "rule_混沌__混沌",
+  "Keywords": [
+    "混沌",
+    "混沌勇士",
+    "邪神",
+    "北方蛮族",
+    "毁灭之力",
+    "永世神选",
+    "混沌恶魔亲王",
+    "混沌四神",
+    "混沌升魔",
+    "变异之风",
+    "混沌部落"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "混沌是旧世界一切文明的终极威胁——它不仅是北方荒原上的蛮族军队，更是一股从崩塌的极地星门中不断涌出的魔法毁灭之力。邪神的意志通过变异、梦境、低语和赐福渗透进凡人的灵魂，将所有接受其诱惑的人转化为混沌的奴仆。在北方，混沌勇士——身披黑铁重甲的邪神仆从——正在永世神选的旗帜下集结，准备掀起席卷旧世界的末世狂潮。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "chaos_culture"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "混沌不是毁灭——是真理。当星门崩塌时，凡世与非物质界之间的薄幕被撕开，诸神的真实面貌第一次向凡人们展现。那些软弱的南方人称之为诅咒的变异，是我们自愿接受的恩赐——每一根额外的肢干、每一寸角化的皮肤、每一道能灼烧凡人的目光，都是四位大能对灵魂的认可。恐虐赐予战斗的纯粹快感，纳垢赐予疾病无法触及的韧体，辛烈治赐予看透命运线的智慧，色孽赐予超越凡俗感知的完美速度与美感。总有一天——当艾查恩的统合之冠在阿尔道夫的废墟上反射最后一道日光时——整个旧世界都会明白：混沌不是终点，混沌是起点。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "混沌的本质远非简单的邪恶可以概括——它是宇宙诞生之初即存在的原初之力，是现实与非物质领域之间的张力体现。古代星门崩塌后，混沌能量自极地倾泻而入，从此北地成为凡界与混沌领域的交汇之所。四大邪神——恐虐（血神）、纳垢（瘟疫之父）、辛烈治（命运编织者）和色孽（黑暗王子）——各自代表一种极端情感的法理化具现。凡人若接受邪神的赠礼，肉身与灵魂将发生不可逆转的变异，最终或许能升魔成为恶魔亲王，获得近乎不朽的存在——付出的代价则是自我的彻底湮灭。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "混沌勇士的社会组织方式是基于一种被称为混沌印记制度的灵能等级体系。每一个北方部落的战士在其一生的征战之路中会经历从无标识的掠夺者，到获得第一位邪神低阶印记的混沌勇士，到被该邪神标记为受其特别关注的混沌神选者，最终在极少数情况下——完成升魔仪式成为恶魔亲王或混沌冠军的等级过程。四神之间对追随者的争夺是持续的、无情的、并常常在战场上以混沌内战的形式爆发——恐虐的信徒憎恨色孽的享乐主义，纳垢的信徒蔑视辛烈治的诡计多端。这种内斗是帝国防御北境时唯一可以依赖的混沌弱点——四神的联合是非常短暂的，通常在达成一个具体目标后就立刻瓦解为互相偷袭和暗算。艾查恩是目前已知唯一一个获得四神同时赐福且不被任何单一邪神完全控制的凡人——他的统合之冠使得他能暂时协调四神的追随者联合作战，但即使是他也不能永远压制邪神之间永恒的敌意。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "帝国北境的女性领主对混沌的理解与教堂讲道坛上的描述完全不同。官方教义将混沌描述为远方的那恶敌人，但北境的女贵族们知道混沌渗透的最常见途径不是北方的大军——而是女人在家门口遭遇到的诱惑。你农田的收成连续三年歉收，你的幼子在瘟疫中奄奄一息，一个友善的午夜来访者——或许是个老妇人——在你耳边耳语说你只需在月光下埋一颗黑色的种子就能保证下一年的收成。你做了，收成果然变好了，你的孩子活了下来。你以为这是运气。一年后你发现你的儿子在背着你说一种你没教过他的语言。这才是混沌在人类边界的真实入侵方式——不是号角，是低语。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "混沌是我家族谱系中最黑暗的几页——不是因为我们家族有人堕入了混沌，而是因为我们拒绝堕入混沌而付出了连续四代人的生命。我的曾祖父在奥斯特领边境击败了一个纳垢战帮后，战帮的术士在阵亡前对他发出诅咒——此后六十三年里，我家族中每一个活过五十岁的成员都死于同一种缓慢的消蚀性肺疾。猎巫人确认过这不是魔法感染——他们用盐水、银器和火焰反复测试了所有领土和家庭成员。但诅咒本身——它不需要魔法来延续。它通过悲伤、恐惧和预期来延续：我们家族的每一代父母都预期他们的孩子会在中年死去，这种预期本身变成了诅咒的载体。混沌不是只通过魔法打败魔法——它通过记忆传播。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "在诺斯卡当过雇佣兵的每个人都有一个共同点——他们从不谈论在诺斯卡具体看到了什么。不是因为雇佣兵有保密协议，而是因为你无法描述。混沌变异在书本上被描述为长出触手或多长一只眼睛——但真正让你崩溃的是那些变异的精细程度。我见过一个诺斯卡掠夺者，他的背部皮肤上浮现了某种活着的图纹——那些纹路在皮肤下缓慢移动，像是一幅不断重绘的微型地图，展示着当天他会杀死的敌人的精确位置。他从未在战斗中输过。但每天晚上他脱掉甲胄后都坐在火堆旁看着自己背部在火光中移动——那表情不是骄傲，是服从。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "混沌对旧世界经济最大的影响不在于战争破坏——而在于保险业和长期投资的瘫痪。任何位于北纬四十五度以北的固定资产——城堡、采矿场、森林伐木权——在帝国商业公会中的保险评级都低于C级，这意味着它们无法获得标准商业贷款利率。北方省份的经济因此永远处于半停滞状态——不是因为缺乏资源和劳动人口，而是因为任何理性的投资者都害怕把本金埋在几年后可能被混沌战帮转化为骷髅收成区的地方。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "混沌四神——恐虐/纳垢/辛烈治/色孽，分别代表暴力/瘟疫/诡计/享乐的极端情绪具象化",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "混沌混沌勇士邪神"
+  ]
+}

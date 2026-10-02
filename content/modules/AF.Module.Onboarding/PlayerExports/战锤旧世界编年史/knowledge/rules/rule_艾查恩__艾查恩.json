@@ -1,0 +1,209 @@
+{
+  "Id": "rule_艾查恩__艾查恩",
+  "Keywords": [
+    "艾查恩",
+    "艾查恩永世神选",
+    "混沌之主",
+    "艾查恩神选者",
+    "迪德里克",
+    "六件神器",
+    "末日之主",
+    "天启魔马"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "艾查恩，永世神选，混沌之主，末日之君——他是当今时代最令人恐惧的名字。身披六件混沌神器、骑着天启魔马的毁灭化身，统率着有史以来最庞大的混沌大军。传说他曾是一位帝国圣殿骑士，名为迪德里克·卡斯特纳，在追寻教会隐藏的真相时发现了混沌的本源，从此堕入黑暗并踏上成为诸神共通神选者的道路。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "chaos_culture"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "艾查恩不只是永世神选——他是诸神最后的答案，是终结这个腐败世界的烈火之剑。他曾是南方虚伪神祇的仆人，但他有勇气面对真相：西格玛不过是一个凡人，所谓的帝国信仰不过是建立在谎言之上的权力工具。艾查恩抛弃了他虚伪的信仰，穿越混沌荒原，完成了六道诸神的考验，获得了莫卡之甲、毁灭之眼、末日之火剑等六件混沌神器作为诸神认可的标志。我们追随他不是因为恐惧，而是因为他代表了最终的真理——世界的尽头并非毁灭，而是重生，混沌的统治才是宇宙的本来面目。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "艾查恩是最危险的永世神选，因为他不是纯粹的蛮族狂战士——他理解南方文明，了解其军事体系和信仰结构，并能够针对性地利用其弱点。他曾在帝国的圣殿骑士团中受过系统的军事训练，熟悉帝国各省的防御部署。更重要的是，他的存在本身足以统合平时争斗不休的混沌诸部落，这意味着他所领导的毁灭之潮在规模和协调性上都超越了以往任何一次入侵。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 100
+        },
+        "IdentityIds": null
+      },
+      "Content": "艾查恩的崛起是一段精心设计的黑暗传奇。他原名迪德里克·卡斯特纳，出生于诺德领的一个贵族家庭，自幼被送往西格玛圣殿骑士团受训。他的转折点始于阅读了一本被禁的异端文献——《天界之书》（Liber Celestia），其中揭示了西格玛并非神祇而是凡人的本质。这个发现驱使他离开骑士团，一路向北穿越基斯里夫和诺斯卡，进入混沌荒原深处。为了证明自己配得上永世神选的称号，他必须找到六件散落在荒原各处的混沌神器：莫卡之甲（Morkar's Armour，首任永世神选的板甲）、毁灭之眼（Eye of Sheerian，预知未来的宝石）、末日之火（Slayer of Kings，被囚禁恶魔之魂的魔剑）、混沌王冠（Crown of Domination，统合混沌意志的王冠）、天启魔马（Dorghar，可在现实与非物质界穿梭的恶魔坐骑）以及至尊统御之印。这些神器不仅赋予他无与伦比的力量，也将他的命运与混沌诸神永远绑定。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "艾查恩的故事中有一个最令人不安的细节——当他还叫迪德里克·卡斯特纳时，他的母亲在他出生时就感知到了某种黑暗。诺德领的产婆记录中提到'这孩子出生时没有哭泣，只是用一双不属于婴儿的眼睛凝视着接生人'。后来他母亲在一次诺斯卡劫掠中被掳走并死在北方——这是迪德里克仇恨混沌的根源，也是他最初加入西格玛圣殿骑士团的动机。但当他在《天界之书》中发现西格玛也不过是凡人时，他内心崩塌的不仅是信仰，更是他整个的母亲复仇叙事的合理性——如果他母亲的上帝不是真的，那么她的死亡是否也失去了意义？正是这个关于母亲的问题，而不是任何神学论证，真正将迪德里克推向了混沌。一个母亲记忆的重量，改变了旧世界的命运。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "作为与艾查恩大军接触过的诺斯卡氏族族长，我必须承认——我们对他的敬畏与我们对他的恐惧是同等的。艾查恩与之前的任何永世神选都不同：他不是用蛮力和威吓统合部落，而是用沉默。他很少在公众场合开口——每次在战前议事中他只说几句简短的话，但每一个词都恰中要害。他能用你氏族最古老的战歌的最生僻段落来回应你的挑衅，因为他花了数年在荒原中不仅收集神器，也收集了每一个主要诺斯卡氏族的历史。这使他拥有一种令人不安的能力：在你开口之前，他已经知道你在想什么。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "在旧世界各地流浪期间，我在帝国的许多酒馆中听说过艾查恩的各种传说。最令人不寒而栗的一个来自一位逃出诺斯卡的基斯里夫老雇佣兵——他说艾查恩的坐骑天启魔马朵尔加不是简单的恶魔战马，而是'曾经是三位不同的恶魔亲王，被诸神作为惩罚融合在一起，然后重塑为马形态服务于永世神选'。这三位恶魔亲王分别曾属于恐虐、纳垢和辛烈治——色孽被排除在外——这导致朵尔加在战斗中有时会突然停下并行做出只有疯王才会做出的行为。但最可怕的是，老雇佣兵声称亲眼看到朵尔加对一个它不喜欢的混沌冠军打了个响鼻——然后那个冠军就原地蒸发了。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "艾查恩崛起的经济影响是旧世界历史上最大的财富转移事件之一。当他统合了诺斯卡和荒原部落后，整个北方贸易体系被迫重组：原本在诺斯卡和帝国之间走私武器的商人失去了所有中间市场，因为所有部落要么加入了艾查恩的远征大军，要么被吞并消灭。在帝国一侧，武器、铁锭和粮食价格在艾查恩统一消息传到南方的两周内暴涨，而奢侈品的价格暴跌——因为没有人想在被围城时囤积香水。帝国铸币厂不得不紧急铸造了一批背面带有西格玛圣锤而非双尾彗星的战时金币，这是自西格玛时代以来从未有过的事。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "艾查恩——当代永世神选，前三圣殿骑士迪德里克·卡斯特纳堕落为末日之主",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "艾查恩艾查恩永世神选混沌之主"
+  ]
+}

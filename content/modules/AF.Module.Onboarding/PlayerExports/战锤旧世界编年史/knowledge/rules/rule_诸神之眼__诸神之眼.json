@@ -1,0 +1,209 @@
+{
+  "Id": "rule_诸神之眼__诸神之眼",
+  "Keywords": [
+    "诸神之眼",
+    "邪神眷顾",
+    "决胜赐福",
+    "混沌机制",
+    "击败获得",
+    "随机强化",
+    "黑暗诸神注视",
+    "冠军试炼"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "传说混沌荒原的战士相信，当你击败一位敌方勇士时，黑暗诸神的眼睛会短暂地从亚空间投向你——若你的杀戮足够荣耀，邪神可能当场赐予你一项超自然能力，这就是诸神之眼。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "chaos_culture"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "诸神之眼——这才是我们混沌勇士真正的荣耀之路！杀戮凡人是义务，但斩杀敌方勇士才是献祭。你感受过吗？当你和一个敌将单挑，剑刃相撞火花四溅的瞬间，你突然感到一股寒意从脑后升起——那不是恐惧，那是诸神睁开了眼！他们就在亚空间的幕布之后俯身凝视着这场对决。如果你在那一刻让你的剑技配得上他们注视的目光，你可能会获得一个额外赐福——多长出一条胳膊、你的皮肤变成硬化的龙鳞、或者你的怒吼带上了血神的声音。这不是运气，这是你对黑暗神祇虔诚的铁证！"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "诸神之眼是混沌军队中的一个核心激励机制——它在战术层面提供了极大的不确定性。你不能预测你的混沌领主在击杀敌方冠军后会获得什么赐福，但这恰恰是混沌的优势：对手同样无法预测。我的建议是：永远让你的领主优先寻求与敌方英雄单挑，而不是埋在普通部队中消耗时间。每获得一个赐福，你的指挥官就会变得更不可阻挡。但要警惕——连续快速获得多个赐福可能引发畸形突变，历史上那个叫'多臂'马戈斯的领主就是例子：他在一天之内斩杀了七个敌方英雄，获得了七次赐福，最后变成了一个无法骑马的畸变肿瘤。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "诸神之眼现象在学院文献中被称为'即时性混沌干预'（Immediate Chaotic Intervention, ICI），其研究始于米登海姆战斗学院院长马格努斯·冯·里希特霍芬于公元2007年的战场观察报告。ICI的核心机制被归纳为'注视-评估-赐福'三阶：第一阶段，邪神通过亚空间裂隙感知到一位正在进行英雄对决的凡人勇士；第二阶段，邪神在亚空间维度评估对决的'观赏价值'——主要是暴力程度、鲜血量和对手身份；第三阶段，若评估通过，邪神将自己的部分神力以变异、能力或神器的形式投射入物质世界给予胜方。据统计，恐虐最易回应（发生率约67%的已知案例），纳垢回应最慢但赐福最持久，辛烈治的赐福最不可预测（曾有一位领主获得的赐福是'预知自己死亡的时间'），色孽的赐福最注重审美（要求斩杀动作'优雅如舞蹈'）。帝国枢密院第322号绝密文件显示：帝国曾尝试通过分析ICI机制以开发'阻断邪神注视'的魔法阵，但在2421年的最后一次活体实验失控并导致整座魔法塔被吸入了亚空间，项目已被无限期终止。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "西格玛教会认为诸神之眼是邪神在'购买灵魂'，但从军事角度看，它是一种极其高效的战场激励机制。帝国军队需要军饷、土地、爵位来维持士气——混沌军队什么都不需要，士兵和将领的奖赏是即时直接来自神灵的注视。这种反馈链的比重金悬赏有效得多，也危险得多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "诸神之眼不只是战场机制——它决定了一个战帮的领导权。我的祖先就是因为在一次决斗中获得了血神赐福而成为部落首领的。谁能在诸神注视下赢得胜负，谁就赢得了一切。家族里每一代的男丁都会在成年礼上被派去猎杀一个敌方头目，带回他的首级作为'诸神之眼试炼'的证据。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "在米登海姆的酒馆里听一个退役帝国队长喝醉酒后说过：他们连队的连长一剑捅穿了一个诺斯卡掠夺者首领——以为结束了，然后那个诺斯卡人的尸体居然自己站起来，全身冒红光，长出了獠牙，把半个连队反杀了。队长说那是他这辈子第一次见到'诸神之眼'生效的场面。我不知道真假，但那老队长的眼神不像是吹牛。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "阿尔道夫的保险业行会居然真的针对'战场突变损失'开设了条款——专门针对那些因混沌领主在决斗中获得意外赐福而导致整支雇佣军覆没的情况。保费高得离谱，但你得承认这很有商业前瞻性。我认识的一个玛格丽塔商人就是因为低估了这个风险，投了整支雇佣矛兵队给一位边境伯爵对抗诺斯卡战帮，结果混沌首领连杀两员帝国冠军后长出了翅膀——全军覆没，赔偿金让他破产了。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "即时性混沌干预（ICI）：邪神在英雄对决瞬间介入物质世界、赐予胜方超自然能力的现象，是诸神之眼机制的学术定义。",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "诸神之眼的神学属性与信仰体系"
+  ]
+}

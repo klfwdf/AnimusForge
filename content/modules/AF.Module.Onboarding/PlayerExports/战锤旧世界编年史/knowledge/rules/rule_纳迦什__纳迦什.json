@@ -1,0 +1,211 @@
+{
+  "Id": "rule_纳迦什__纳迦什",
+  "Keywords": [
+    "纳迦什亡灵之主传",
+    "纳迦什死灵术起源",
+    "纳迦什尼赫卡拉祭司录",
+    "纳迦什黑暗金字塔考",
+    "纳迦什九卷经书",
+    "纳迦什不朽巫妖王",
+    "纳迦什亡灵鼻祖传",
+    "纳迦什萨城塞志",
+    "纳迦什永生者考",
+    "纳迦什陨落与复生"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "纳迦什是旧世界历史上最邪恶也最强大的个体之一——这位曾经的尼赫卡拉葬仪祭司以黑暗精灵的禁忌魔法与摩图斯祭礼的古老知识为原料，将死亡本身锻造成了一种可以操控、储存、增殖的魔法力量，从而创造了死灵术。他的野心不是征服一个王国——他要将整个旧世界变成他永恒统治下的无声亡灵帝国，以他的黑暗金字塔为枢纽、以九卷纳迦什经卷为法典、以他永远不死又永远不能真正活着的诅咒之身为皇冠。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "纳迦什对于我们帝国人来说不是远古传说——他是永不停歇的噩梦。两千年前他在尼赫卡拉的大沙漠中将死灵术的种子植入世界，而今天那些种子仍在生长、繁殖、吞噬。他创造的九卷经卷中至少有七卷仍流落在旧世界——任何一位亡灵法师只要能获得其中一卷就足以发动一场小规模的亡灵暴乱，而据说曼弗雷德·冯·卡斯坦因的私人图书馆中可能藏有其中三卷。纳迦什本人虽然被击败过两次——一次是被尼赫卡拉的末代国王阿尔卡迪萨以魔剑费尔布拉击碎骨骼，一次是被西格玛以战锤盖尔·马拉兹击碎他的重生形态——但他从未被真正杀死。他每过一千一百一十一年或一千六百六十六年就会在纳迦什萨的废墟中重新凝聚形体，而我们的帝国历似乎正好在以某种方式靠近他下一次复生的节点，任何有脑子的帝国军官都会在睡前计算这个数字。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "纳迦什的军事遗产是死灵术——这可能是旧世界最令防御者绝望的战争工具。一支亡灵军队不需要食物、不需要休息、不恐惧、不逃窜、不感染疫病、不因冬季减员，并且每攻陷一个村庄都会为己方增加新的士兵。与纳迦什的任何后继者——弗拉德、康拉德、曼弗雷德——作战的军事指挥官必须在开战前就接受一个沉重的数学前提：敌人越打越多，而你的人永远不够。纳迦什本人已经不再亲自指挥军队，但他的九卷经卷中所记载的咒法——尤其是大规模复活术、精神控制术和死亡天气操纵术——至今仍是所有亡灵军队的核心战术基石。从纯粹的军事技术分析角度看，纳迦什的悲剧在于他是一个超越了时代太多而把自己逼疯的天才——如果他将同等智力投入到防御性魔法研究上，也许极地星门至今仍能被关闭。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "纳迦什的完整传记覆盖了超过两千年的历史跨度。他出生于尼赫卡拉古王朝时期，是基姆利城邦的一位高级葬仪祭司——葬仪祭司是尼赫卡拉文明中专司死亡、防腐与灵魂旅行的高级学者阶层。纳迦什不满足于现有的葬仪知识，他前往北方的荒原中向被俘的黑暗精灵巫师学习了暗黑魔法的基础原理，随后将这些知识与尼赫卡拉的本土摩图斯祭礼——一种旨在让灵魂在死后继续旅行的宗教技术——融合起来。他在克里普斯峰顶建立了黑暗金字塔，以此为能量收集装置开始了持续数百年的大规模死灵术实验。他创造的不死长生药——以人类血液为基底、以黑暗魔法为催化剂的禁忌配方——后来被他的学生涅芙瑞塔窃取并被改造，从而导致了吸血鬼种族的诞生。他的九卷经卷分散在旧世界各地，每一卷都记载了他关于死亡魔法、权力哲学和宇宙秩序的部分知识——这些经卷的持有者几乎无一例外地会逐渐被腐化。他的第一次「死亡」发生在尼赫卡拉联军攻破纳迦什萨之际——国王阿尔卡迪萨挥舞着被矮人符文铁匠锻造的唯一武器、魔剑费尔布拉，将纳迦什的骨骼敲碎为粉末，但纳迦什的意志在六百年后重新凝聚成形。他的第二次「死亡」发生在帝历早期——崛起的西格玛在瑞克河畔遇上重生后尚未完全恢复的纳迦什并用盖尔·马拉兹击碎了他。纳迦什的回环率——每1111年或1666年一次——似乎在性质上与魔法之风的周期性潮汐同步，但没有人确切知道这两个数字背后的精确魔法数学。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "纳迦什的故事从女性视角重新阅读时会产生一种令人毛骨悚然的反转。在他的官方传记中他是一位孤独的天才——独自在黑暗金字塔中进行禁忌实验的疯狂术士。但在被删减的黑暗典籍片段中，纳迦什的第一批非自愿实验对象全部是尼赫卡拉女性战俘——他在她们身上测试了第一批长生不老药的配方，记录下每一个人的死亡时间、死亡形式和复活后的行为模式，然后将这些笔记编入了九卷经卷的第一卷中。涅芙瑞塔——第一个吸血鬼——在他眼中只是他的「成果」之一，一件成功的实验品，然后是一个叛逃了实验室的麻烦。但涅芙瑞塔的自我叙述完全是另一回事：她利用纳迦什被击败的混乱窃取了配方，然后改良了它，然后建立了自己的血族网络——她不是纳迦什的延续，她是纳迦什的超越者。纳迦什创造了死灵术，但他从未理解女性在死亡面前那种不同于男性的、更细密的恐怖——涅芙瑞塔理解了，并且她将这种理解转化为了更持久的永生形式。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "纳迦什的遗产对统治家族来说是最严重的长期威胁——不是因为他随时可能复生，而是因为他的经卷体系创造了一个自我维持的黑暗知识经济。我们家族档案室中有一卷从十七世纪起保密至今的调查报告——它追踪了过去四百年中九卷经卷中四卷的流动轨迹。结果是可怕的：这些经卷从不在市场上被出售，它们被赠予，被继承，被安排在婚姻契约的暗条款中被转让——上层的亡灵学者构成的隐秘网络比任何选帝侯家族的间谍网都更为密集和沉默。纳迦什真正不朽的不是他的身体——是他创造的知识体系具有永恒的吸引力：权力、永生、对死亡的彻底蔑视——任何一个在权力高峰上感到衰老恐惧的国王或公爵都是纳迦什经卷的天然潜在客户。我家族之所以从未被吸血鬼渗透进内环，不是因为我们有更强力的防范——而是因为我们有一条古老的禁令：任何姓氏中有冯字的贵族不得在家族城堡中过夜。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "走在尼赫卡拉的沙地边缘时脚下的沙子偶尔会踩碎什么东西——可能是一只蝎子的壳，可能是一位曾追随纳迦什的骷髅士兵的头盖骨，甚至在某个未被盗墓者发现的沙丘下可能压着纳迦什本人上一次重生时脱落的指甲——相信我，如果你在那片沙漠中走进过足够深的无人区，你会希望自己永远不要去想像纳迦什复生时第一个站起来的是哪具尸体。流浪者之间的传闻说纳迦什萨废墟中偶尔会传出声音——不是因为风，而是因为那些被纳迦什大仪式复活后又再次被军队遗弃的骷髅仍然记得他唤醒了它们的那一刻，它们会在特定的月相下轻微地颌骨抖动发出咔哒声，就像在等待一次永远不会下达的新指令。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "从旧世界经济史的角度看，纳迦什对尼赫卡拉的毁灭是旧世界南部市场版图上最大的一次结构性坍塌。尼赫卡拉曾经是南方最繁荣的青金石、香料、谷物和黄金产出国——当纳迦什的死亡魔法将这一切变成荒漠后，旧世界南端的长途贸易路线直接中断了数百年。今天在阿尔道夫的香料市场中，所谓的「尼赫卡拉古香料」几乎全是从阿拉比和埃斯塔利亚进口的廉价替代品，但市场上的老字号香料商会仍然坚持使用「尼赫卡拉」作为品名——不是因为他们欺骗顾客，而是因为在纳迦什毁灭一切之前，尼赫卡拉的香料质量对整个旧世界而言是神圣的标准，而那个标准再也回不来了。纳迦什的经济毁灭不仅仅在于产量——他创造了一种文化性的信任破产：再也没有商人相信在大沙漠深处进行长期投资是安全的，因为投资者永远在担心明天一觉醒来时供应链终端的城邦是否变成了另一座纳迦什萨。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "死灵术诞生——纳迦什将暗精魔法与葬仪祭礼融合而创造的禁忌学派",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "纳迦什亡灵之主传纳迦什死灵术起源纳迦什尼赫卡拉祭司录"
+  ]
+}

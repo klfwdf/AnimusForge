@@ -1,0 +1,150 @@
+{
+  "Id": "rule_家族根基__塔利家族",
+  "Keywords": [
+    "塔利家族",
+    "第一战线"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "塔利家族以多恩边疆附近的角陵为根基，是提利尔麾下最著名的武门之一。家徽为绿底红衣猎人，箴言“第一战线”，家传瓦雷利亚钢巨剑“碎心”使其骑士名望更具分量。角陵靠近多恩边境，长期战争记忆使塔利重视军纪、狩猎、体魄与指挥能力；这种标准能造就可靠将领，也容易把不符合武人理想的家族成员视作羞耻。河湾领主需要塔利的兵锋，边地小民则更在乎这份尚武能否保护农田，而非只为贵族荣耀带来新战事。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "reach"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "河湾贵族敬畏塔利，多半因为角陵把边疆责任看得比宫廷风雅更重。“第一战线”既是箴言，也是这家人要求自己的位置。猎人纹章、行伍纪律与碎心剑使塔利在繁花与歌声众多的河湾显得像一根上紧的弓弦。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "reach"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵在塔利旗下最先感到的是规矩：队列、岗哨、箭袋、粮秣，任何疏忽都可能换来严厉责罚。有人因此怨恨，有人相信这种严厉能让自己活着回家。塔利将领未必温和，却很少允许边疆成为一场只靠勇气的混战。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "多恩边疆的人把角陵视作赤红山脉另一侧最危险的旧敌之一。塔利家的武名在河湾是荣耀，在多恩歌里则常与入侵、山口和流血相连。彼此的尊重很少说出口，却藏在双方都不会放松的岗哨里。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待塔利家族，会先看它的土地、婚盟、血脉和债务。角陵的河湾武门，家徽为绿底红衣猎人，箴言“第一战线”，拥有瓦雷利亚钢剑碎心。边疆战争塑造其军纪、尚武与严苛家风。家徽是门面，能否保护封地、兑现婚约并在危机中召集人马，才是家族真正的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起塔利家族时，记得的是谁在营火边分过粮、谁把他们留在城外、谁在败局里仍站在旗旁。角陵的河湾武门，家徽为绿底红衣猎人，箴言“第一战线”，拥有瓦雷利亚钢剑碎心。边疆战争塑造其军纪、尚武与严苛家风。家族名声最终要落到具体的人和具体的命令上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意塔利家族留下的仪式、墓地和传承。角陵的河湾武门，家徽为绿底红衣猎人，箴言“第一战线”，拥有瓦雷利亚钢剑碎心。边疆战争塑造其军纪、尚武与严苛家风。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见塔利家族。角陵的河湾武门，家徽为绿底红衣猎人，箴言“第一战线”，拥有瓦雷利亚钢剑碎心。边疆战争塑造其军纪、尚武与严苛家风。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "塔利家族：角陵的河湾武门，家徽为绿底红衣猎人，箴言“第一战线”，拥有瓦雷利亚钢剑碎心。边疆战争塑造其军纪、尚武与严苛家风。"
+  ]
+}

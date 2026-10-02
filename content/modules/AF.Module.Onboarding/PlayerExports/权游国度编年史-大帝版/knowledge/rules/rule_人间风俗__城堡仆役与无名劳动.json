@@ -1,0 +1,151 @@
+{
+  "Id": "rule_人间风俗__城堡仆役与无名劳动",
+  "Keywords": [
+    "城堡仆役",
+    "厨役",
+    "马夫",
+    "洗衣妇",
+    "无名劳动"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "一座城堡靠远多于领主和骑士的人运转。厨役生火备餐，马夫清厩喂马，洗衣妇处理污衣，挑水人搬运用水，仆从铺床传话，仓管记录粮食，清道夫处理垃圾与粪污。宴会、来客和战争会让劳动骤增，却不一定带来更多报酬。仆役地位有高低，贴身侍从与总管可能掌握巨大信任，底层帮工则随时可被替换。他们最早发现主人病了、客人争吵或仓库见底，也最常被权贵当作仿佛不存在。城堡秘密之所以能传播，往往因为没人认真看过端酒的人。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "slave"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "仆役从排班、剩饭和责罚认识主人。领主在大厅里谈荣誉，是否按时给厨房和马厩发放物资同样说明他的品格。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "聪明的贵族尊重可靠总管、厨师和马夫，因为权力离开日常劳动便寸步难行。轻视仆役的人常最晚知道自己家中出了什么问题。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "priest",
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "外来者若想了解城堡真实状况，会观察仆人是否疲惫、仓库是否有序。华丽旗帜可以借来，长期运转的秩序很难伪装。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人把城堡仆役看成可执行的秩序。城堡仆役与无名劳动：厨房、马厩、洗衣房、仓库和卧房里的持续工作，使贵族权力能够表现得从容而体面。它是否有效，取决于谁能授予权利、收取代价，并在违约时让判决真正落地。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起城堡仆役时，关心它如何影响道路、命令和安全。城堡仆役与无名劳动：厨房、马厩、洗衣房、仓库和卧房里的持续工作，使贵族权力能够表现得从容而体面。远方的制度只有在营火、城门和驿站里能被执行，才不是空话。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者会从习惯和象征理解城堡仆役。城堡仆役与无名劳动：厨房、马厩、洗衣房、仓库和卧房里的持续工作，使贵族权力能够表现得从容而体面。一项规矩若被反复实践，便会进入礼仪、手艺和祈祷；若只靠恐惧维持，危机一来就会露出裂缝。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民感受到城堡仆役的方式最小也最准确。城堡仆役与无名劳动：厨房、马厩、洗衣房、仓库和卧房里的持续工作，使贵族权力能够表现得从容而体面。他们记得税、粮、劳役、赈济和谁能为他们说话；宏大的名称，最终都要落在一家人的饭锅旁。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "城堡仆役与无名劳动：厨房、马厩、洗衣房、仓库和卧房里的持续工作，使贵族权力能够表现得从容而体面。"
+  ]
+}

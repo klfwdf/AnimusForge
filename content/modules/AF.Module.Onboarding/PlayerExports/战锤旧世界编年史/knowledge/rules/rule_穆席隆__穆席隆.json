@@ -1,0 +1,213 @@
+{
+  "Id": "rule_穆席隆__穆席隆",
+  "Keywords": [
+    "穆席隆",
+    "被诅咒之城",
+    "亡灵占据",
+    "吸血鬼传说",
+    "黑暗沼泽",
+    "堕落公爵",
+    "废墟",
+    "不死诅咒",
+    "绝望之地",
+    "腐烂",
+    "沼泽之城",
+    "末代公爵"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "穆席隆曾是巴托尼亚最繁华的公国首府之一，如今却沦为被诅咒的废墟。传说末代公爵堕落为吸血鬼，亡灵与沼泽生物盘踞城中，活人避之唯恐不及。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "穆席隆——愿女神怜悯我们，莫要提起这个名字！那里的末代公爵墨洛温背弃了湖之女神的神圣誓言，转而信奉黑暗力量，将整座城市拖入万劫不复。如今穆席隆的城墙已被沼泽吞噬大半，夜晚时分城中的亡灵会发出凄厉的哀嚎。我们的父辈告诫我们，靠近那片诅咒之地的人将永远无法洗净身上的腐臭。骑士们说，那里仍然悬挂着墨洛温家族的黑色纹章，等待着某位勇士或愚者前去揭下。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "穆席隆的存在是对巴托尼亚骑士精神的永恒嘲讽。从军事角度看，那片沼泽形成了天然屏障，驻防军队难以穿越。历代国王都曾考虑过收复穆席隆，但每次远征均以惨败收场——不是因为敌军强大，而是因为那片土地本身就在抗拒活人。如果敌人以穆席隆为基地，他们将拥有难以被围剿的巢穴。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "穆席隆的诅咒具有深厚的历史渊源。公元前约五百年，墨洛温公爵在对外战争中接连失利后，开始寻求禁忌之术以挽回败局。他首先接触了暗影魔法，随后被冯·卡斯坦因家族的血族使者引诱，最终接受了吸血鬼的血吻。穆席隆的堕落并非一蹴而就——根据宫廷记录残片，城中先是出现居民失踪，随后庄稼枯萎，最后在短短三年内全城沦陷。穆席隆周围沼泽的形成也与黑暗魔法有关：死亡之风在城中汇聚，污染了原本肥沃的冲积平原。至今仍有学者认为穆席隆城堡地下可能埋藏着墨洛温公爵收集的黑暗典籍与神器。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "穆席隆的故事在我们女贵族间流传，警示着骄傲与虚荣的危险。据说墨洛温公爵的夫人曾是王国最美貌的女子，却被丈夫的黑暗秘密逼疯。那片废墟提醒我们，荣耀之下可能隐藏着无法言说的恐怖。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我的氏族中有祖辈曾参与过对穆席隆的远征，回来后至死不愿提起那段经历。他们说穆席隆的亡灵不只是士兵——还有儿童、妇女，整个城市的人被黑暗力量扭曲成了永恒的囚徒。我们必须守住边界，不能让同样的命运降临。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我曾远远望见过穆席隆，在月光下那座死城笼罩着幽幽绿芒。沼泽散发着令人作呕的硫磺气味。当地向导拒绝靠近五里之内，说有去无回。不过这倒是个寻宝的好借口——没有活人守卫的废墟，自然也没有活人能阻止我。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "穆席隆的黑市上有流言说，有人从废墟中盗出了墨洛温时代的珠宝和古剑。买家愿意出天价，但卖家的命运往往是暴毙或失踪。我从不接手穆席隆的货——诅咒的买卖不值得赚。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "穆席隆是巴托尼亚被诅咒的废弃公国首府，亡灵横行",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "穆席隆被诅咒之城亡灵占据"
+  ]
+}

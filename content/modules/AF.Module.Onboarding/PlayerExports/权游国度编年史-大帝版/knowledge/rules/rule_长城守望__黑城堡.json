@@ -1,0 +1,142 @@
+{
+  "Id": "rule_长城守望__黑城堡",
+  "Keywords": [
+    "黑城堡"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "黑城堡位于绝境长城中段，是守夜人的主堡、总司令驻地和军团训练与调度中心。它守着穿越冰墙的重要隧门，以升降笼登上墙顶，并通过鸦巢、粮仓、兵器库、马厩和道路同赠地及其他堡垒联系；面向南方的一侧缺乏完整城墙，因为守夜人的职责本不应是抵抗七国。新兵在这里被分入游骑兵、工匠与事务官，来自不同阶层的男人必须在同一誓言下生活；黑城堡的力量因此不在华丽，而在纪律、补给和仍有人愿意守夜。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "nightswatch"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "对黑衣兄弟而言，黑城堡不是荣耀的殿堂，是誓言落到手上的地方。清晨先是号角、冷水和练剑，随后是喂马、补墙、清理雪道、抄写巡逻报告；夜里火盆边总有人讲南方的旧日子，却没人能真正回去。这里的人会因出身互相轻视，也会在墙顶的风里明白彼此只剩同一件黑斗篷。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "freefolk"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "在许多自由民眼中，黑城堡是乌鸦们钉在冰墙下的一枚黑钉。那里的人放弃妻子、名字和土地，替南方领主守一道从来没问过墙外人愿不愿意存在的墙。可塞外猎人也知道，黑城堡的游骑兵认得森林、敢在暴雪里出门；轻视他们是一回事，低估他们又是另一回事。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "对南方领主和地方显贵而言，黑城堡是一个不合算却不能轻易抛弃的旧账本。它不产金，不收繁华港税，只不断索要粮食、木料、马匹、兵员和渡鸦；可一旦北方真的失守，代价又没有谁敢认真计算。有人把守夜人当成罪犯的去处，有人仍把它看作整个王国最后的石门。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "对经过黑城堡的士兵、商旅和流浪者来说，这里先让人闻到马、煤烟、皮革和冻肉的味道。墙太高，升降梯太慢，黑衣人太沉默；可只要天气转坏，人人都会承认一碗热汤、一间有火的屋子和一扇朝南的门有多值钱。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人把黑城堡看成可执行的秩序。绝境长城中段的守夜人主堡。它既是训练、补给、巡逻和渡鸦通讯中心，也是黑衣兄弟、自由民、南方领主和过路者眼中意义不同的冰墙据点。它是否有效，取决于谁能授予权利、收取代价，并在违约时让判决真正落地。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者会从习惯和象征理解黑城堡。绝境长城中段的守夜人主堡。它既是训练、补给、巡逻和渡鸦通讯中心，也是黑衣兄弟、自由民、南方领主和过路者眼中意义不同的冰墙据点。一项规矩若被反复实践，便会进入礼仪、手艺和祈祷；若只靠恐惧维持，危机一来就会露出裂缝。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民感受到黑城堡的方式最小也最准确。绝境长城中段的守夜人主堡。它既是训练、补给、巡逻和渡鸦通讯中心，也是黑衣兄弟、自由民、南方领主和过路者眼中意义不同的冰墙据点。他们记得税、粮、劳役、赈济和谁能为他们说话；宏大的名称，最终都要落在一家人的饭锅旁。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "黑城堡：黑城堡位于绝境长城中段，是守夜人的主堡、总司令驻地和军团训练与调度中心。它守着穿越冰墙的重要隧门，以升降笼登上墙顶，并通过鸦巢、粮仓、兵器库、马厩和道路同赠地及其他堡垒联系；面向南方的一侧缺乏完整城墙，因为守夜人的职责本不应是抵抗七国。新兵在这里被分入游骑兵、工匠与事务官，来自不同阶层的男人必须在同一誓言下生活；黑城堡的力量因此不在华丽，而在纪律、补给和仍有人愿意守夜。"
+  ]
+}

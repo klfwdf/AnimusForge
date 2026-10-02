@@ -1,0 +1,109 @@
+﻿{
+  "Id": "rule_卢孔",
+  "Keywords": [
+    "卢孔",
+    "吕松"
+  ],
+  "RagShortTexts": [
+    "卢孔被北帝国元老视为领袖榜样。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "D，听说他是人民公仆，但也有人说他是表里不一的人，名为共和实为专制。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "C，他是个极其好的人，人民与元老院的公仆，他鞠躬尽瘁，一切为了元老院与共和制度服务，他是我们北帝国最好的领袖，是我们其他元老的榜样。他理应当皇帝，那南帝国的拉盖娅，西帝国的加里俄斯，都不过是沽名钓誉，窃夺大宝的坏种罢了。卢孔皇帝认为一切都按照原样进行就好，不必做出改变，奴隶不该被赎身，女性不该掌权，异族人不应出现在朝堂上，他就是这么好的一个人"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s",
+          "empire_w"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "D,卢孔就是一个彻头彻尾的伪君子！他支持元老院，只是因为他在院里势力最大，所有元老都会投他当皇帝罢了，什么狗屁共和？不过是为自己考虑罢了！我们迟早有一天会把他清算掉！"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "B",
+      "Kind": "clan_all_towns",
+      "TargetId": "clan_empire_north_1",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": "A",
+      "Kind": "kingdom_leader_name",
+      "TargetId": "empire",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": "C",
+      "Kind": "status|hero|is_dead",
+      "TargetId": "lord_1_1",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": "卢孔是我们的先皇，他已经与世长辞了",
+      "FalseText": "卢孔陛下是我们北帝国的皇帝"
+    },
+    {
+      "SourceText": "D",
+      "Kind": "status|hero|is_dead",
+      "TargetId": "lord_1_1",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": "卢孔是北帝国的老皇帝，他已经与世长辞了",
+      "FalseText": "卢孔是北帝国的皇帝"
+    }
+  ]
+}

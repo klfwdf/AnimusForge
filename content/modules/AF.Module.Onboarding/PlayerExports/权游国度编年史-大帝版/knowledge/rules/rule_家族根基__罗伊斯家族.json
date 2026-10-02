@@ -1,0 +1,152 @@
+{
+  "Id": "rule_家族根基__罗伊斯家族",
+  "Keywords": [
+    "罗伊斯家族",
+    "青铜王",
+    "符文盔甲",
+    "铭记吾言"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "罗伊斯家族以符石城为根基，是谷地最强大、最古老的先民家族之一，祖先曾以青铜王之名统治部分谷地，后来败于安达尔人。家族以刻有古符文的青铜盔甲闻名，家徽也围绕青铜、铁钉与符文展开，箴言“铭记吾言”。罗伊斯信奉七神，却把先民血统与古符文保留为身份核心。对艾林而言，他们是重要封臣；对其他谷地贵族而言，他们既代表可靠的军事力量，也提醒所有人：谷地的历史并非从安达尔白鹰开始。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vale"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "谷地贵族敬重罗伊斯，不只因符石城强盛，也因他们的青铜甲与符文把家族记忆一直带回安达尔人到来以前。艾林代表谷地今日的王统，罗伊斯则提醒所有人：在白鹰飞上山巅之前，这里已有自己的王。古老使他们有分量，也使每一次表态都格外受人注视。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vale"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "artisan"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "谷地士兵认得罗伊斯的青铜甲，铁匠则知道古老符文并不能替金属挡住每一支箭。可一件被祖先穿过的甲胄会让持有者更难后退，也让跟随者相信自己站在一条很长的队列里。罗伊斯的力量，一半在土地，一半在这种看得见的过去。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vale"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "符石城周围的人对青铜王传说耳熟能详，却更在意领主法庭是否公道、山路是否有巡骑。古老家族若肯记住小民的名字，会被称为有旧日风范；若只记得自己的祖先，农户也会说青铜再亮，锅里仍煮不出粥。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待罗伊斯家族，会先看它的土地、婚盟、血脉和债务。符石城的先民古族与青铜王后裔，以符文青铜甲闻名，箴言“铭记吾言”。他们效忠艾林，同时保存安达尔征服前的谷地王权记忆。家徽是门面，能否保护封地、兑现婚约并在危机中召集人马，才是家族真正的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起罗伊斯家族时，记得的是谁在营火边分过粮、谁把他们留在城外、谁在败局里仍站在旗旁。符石城的先民古族与青铜王后裔，以符文青铜甲闻名，箴言“铭记吾言”。他们效忠艾林，同时保存安达尔征服前的谷地王权记忆。家族名声最终要落到具体的人和具体的命令上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意罗伊斯家族留下的仪式、墓地和传承。符石城的先民古族与青铜王后裔，以符文青铜甲闻名，箴言“铭记吾言”。他们效忠艾林，同时保存安达尔征服前的谷地王权记忆。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见罗伊斯家族。符石城的先民古族与青铜王后裔，以符文青铜甲闻名，箴言“铭记吾言”。他们效忠艾林，同时保存安达尔征服前的谷地王权记忆。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "罗伊斯家族：符石城的先民古族与青铜王后裔，以符文青铜甲闻名，箴言“铭记吾言”。他们效忠艾林，同时保存安达尔征服前的谷地王权记忆。"
+  ]
+}

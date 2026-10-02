@@ -1,0 +1,213 @@
+{
+  "Id": "rule_绿皮政治__绿皮政治",
+  "Keywords": [
+    "绿皮政治",
+    "绿皮政治战将",
+    "绿皮政治头目",
+    "决斗",
+    "绿皮政治最强即王",
+    "绿皮政治绿皮部落",
+    "Waaagh统一",
+    "斩首效应",
+    "萨满干政",
+    "黑兽人统治",
+    "战利品分配",
+    "沉默前奏"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "绿皮的政治制度完全建立在纯粹的力量竞争之上。最能打的兽人自动成为部落的战将，战将与战将之间通过决斗来统一多个部落，而一场大规模Waaagh!的形成需要一位强到能击败所有其他战将的超级老大。绿皮没有选举、没有世袭、没有法律——只有打架的结果。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "俺们的政治简单得很——谁最绿、最壮、最能打，谁说了算！老大之所以是老大不是因为他爸是老大——他爸早被他揍翻了——是因为他能把所有挑战他位置的愣头青的脑袋拧下来当球踢。如果另一个部落的老大觉得自己更猛，他会带着他的小子们来打我们的老大——如果老大被揍翻了，那新老大就是我们所有人的老大了。最棒的是当一个大佬能叫起全恶地的部落全部朝一个方向冲——那就是Waaagh!——在那种时候整个旧世界都是我们的！"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "绿皮政治的根本规律：没有世袭、没有法制、没有持久联盟。绿皮部落的政治统一依赖于一个具体的战将个人的战斗力——当他强时部落统一，当他受伤或衰老时部落立刻内讧。如果战将在战场上被公开展示地击败，Waaagh!会瞬间崩溃为互相残杀。这是对抗绿皮时最重要的战略情报。文明国家不应试图通过暗杀绿皮战将来瓦解Waaagh!——如果战将被暗杀而非被公开击败，他的继任者可以无缝接替。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "绿皮政治系统是旧世界所有政治体系中最纯粹的暴力等级制。兽人社会中不存在任何形式的血缘世袭或财富转移——一只兽人从出生到成为战将的唯一路径是不断挑战和击败比自己更强的兽人。地精在等级底层以诡计和群体攻击弥补个体力量的不足。黑兽人是绿皮等级体系中的异数——他们的纪律性和组织能力是其他绿皮无法比拟的特质。Waaagh!的形成需要两个条件：一位足够强大的战将和一个足够诱人的目标方向——后者通常由萨满的搞毛神启提供。当两个条件同时满足时，数十乃至上百个绿皮部落会在几周内完成从分裂到集结的转变。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "绿皮政治的性别维度完全不存在——这是绿皮对帝国边境女性统治者唯一不那么可怕的侧面。绿皮不涉及任何形式的性别暴力，因为他们根本不理解性别概念。在绿皮的政治光谱中，敌人只被分为能打的、不太能打的和一碰就碎的。这种纯粹使他们的威胁模式与混沌战帮有本质区别——你不需要准备应对绿皮的任何心理战术或政治渗透。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "理解绿皮政治对我家族防御战略至关重要。当绿皮部落在我封地边界聚集时，我们家族世代遵循的策略不是立刻动员所有兵力——那会消耗本应用于防御吸血鬼和混沌的资源。我们观察绿皮之间的打斗频率：如果打斗在减少，说明一个统一的大佬正在崛起——这需要全面动员。如果打斗在增加——我们只需加固巡逻即可。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "在恶地流浪时我曾经被一群兽人俘虏——他们没杀我，因为他们正在争论谁可以吃掉我。争执升级为打斗，打斗持续了大约一柱香的时间，最终获胜的那个兽人走到我面前——然后走开了。因为在争执过程中他完全忘记了为什么要打架。这就是绿皮政治的缩影：暴力是决策机制但暴力本身提供了足够的满足感，以至于最初的决策目标在暴力过程中被遗忘。结果是我活下来了。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "绿皮政治对旧世界贸易最重要的是绿潮的可预测性问题。学者试图通过兽人萨满的星象解读、搞毛神启的季节性模式以及恶地绿皮部落的人口周期来预测下一场绿潮的方向和时机。但这些预测的准确率不超过四成。对于商人而言，这意味着穿越恶地附近的贸易在任何时间都有不可预测的风险，保险业完全拒绝为恶地周边的商队提供战争险。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "战将政治——绿皮以决斗为唯一权力转移方式的暴力等级体系",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "绿皮的权力结构与决策机制"
+  ]
+}

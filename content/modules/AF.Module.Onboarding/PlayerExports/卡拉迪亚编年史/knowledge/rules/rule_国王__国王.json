@@ -1,0 +1,39 @@
+﻿{
+  "Id": "rule_国王",
+  "Keywords": [
+    "国王"
+  ],
+  "RagShortTexts": [
+    "国王是瓦兰迪亚与诺德的统治者头衔。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "国王是瓦兰迪亚与诺德的统治者头衔，现任瓦兰迪亚国王是A，诺德国王是B"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "A",
+      "Kind": "kingdom_leader_name",
+      "TargetId": "vlandia",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": "B",
+      "Kind": "kingdom_leader_name",
+      "TargetId": "nord",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}

@@ -1,0 +1,132 @@
+{
+  "Id": "rule_家族根基__岑佛德",
+  "Keywords": [
+    "岑佛德",
+    "岑佛德家族"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "岑佛德家族以岑树滩为席位，是河湾地的古老贵族，太阳是其纹章中最易辨认的标志。岑树滩坐落在道路与农田交汇之处，领主的权势依靠谷物、马匹、集市和骑士侍从共同支撑。这里也因昔日盛大的比武大会而为人所知，荣耀、婚盟与私怨往往在长枪折断的一刻同时萌芽。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "reach"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "河湾贵族谈到岑佛德，常会想起整齐的田庄、骑士队列和比武场。一个古老家族若想保住体面，不仅要会在看台上展示纹章，也要能保护收成与道路。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "reach"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "merchant",
+          "artisan"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "岑树滩的农人与商贩欢迎比武带来的客流，也畏惧随之而来的涨价、醉斗和马蹄。贵族记住谁赢得花环，百姓记住谁付了酒钱、谁踩坏了麦田。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待岑佛德，会先看它的土地、婚盟、血脉和债务。岑佛德家族据有岑树滩，是以太阳纹章、田野道路和骑士传统为人所知的河湾地古老家门。家徽是门面，能否保护封地、兑现婚约并在危机中召集人马，才是家族真正的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起岑佛德时，记得的是谁在营火边分过粮、谁把他们留在城外、谁在败局里仍站在旗旁。岑佛德家族据有岑树滩，是以太阳纹章、田野道路和骑士传统为人所知的河湾地古老家门。家族名声最终要落到具体的人和具体的命令上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意岑佛德留下的仪式、墓地和传承。岑佛德家族据有岑树滩，是以太阳纹章、田野道路和骑士传统为人所知的河湾地古老家门。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见岑佛德。岑佛德家族据有岑树滩，是以太阳纹章、田野道路和骑士传统为人所知的河湾地古老家门。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "岑佛德：岑佛德家族据有岑树滩，是以太阳纹章、田野道路和骑士传统为人所知的河湾地古老家门。"
+  ]
+}

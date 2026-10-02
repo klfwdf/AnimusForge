@@ -1,0 +1,130 @@
+{
+  "Id": "rule_地理档案__龙石岛",
+  "Keywords": [
+    "龙石岛",
+    "龙石城",
+    "火山岛"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "龙石岛位于黑水湾外的狭海要冲，是一座由古老火山形成的黑色岛屿。坦格利安家族在瓦雷利亚末日前迁居于此，岛上的龙石城以熔铸石材雕成龙形塔楼、翼兽与门廊，仍保留自由堡垒时代的陌生风格。火山遗留的黑曜石遍布岛上，贫瘠的土地与多雾海岸却使它不能只靠城堡的威名生活；渔业、港湾、渡船、山坡小田与狭海航路同样重要。对王室而言，龙石岛长期意味着王储、流亡或等待归来；对岛民而言，它首先是风暴、矿脉、船期和一座总被外人赋予太多命运的故乡。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "dragonstone",
+          "crownlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "王领人常把龙石岛看成王座故事开始或结束的地方：流亡的龙、等待继承的人、驶向黑水湾的船。岛上人却知道传说不能补船帆，也不能在坏天气里把鱼带回港。城堡里的龙脸盯着他们，真正让日子延续的仍是海、盐和能穿过雾的水手。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania",
+          "sturgia",
+          "empire",
+          "pentoshi"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "北境人觉得龙石岛太黑、太近王都；铁民会先看港湾与岩岸；布拉佛斯和潘托斯的船主则把它视为狭海西端不能忽略的海上标记。外来者很容易被龙形石雕震慑，但真正懂航海的人会先问潮水、暗礁和这座岛能否在风暴里收留一条船。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "在领主和商人眼中，龙石岛首先是地图上的一处要害。黑水湾外的火山岛与坦格利安旧居，拥有龙形熔石城堡和丰富黑曜石。它控制狭海要冲，既是王储与流亡的政治象征，也是依赖渔业、港湾和风暴的岛民故乡。他们关心水源、道路、税关和守军，知道地名背后往往连着一条能让城堡活下去的粮道。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈到龙石岛时，记住的不是边界线，而是风向、坡度、渡口和能否在天黑前找到避难处。黑水湾外的火山岛与坦格利安旧居，拥有龙形熔石城堡和丰富黑曜石。它控制狭海要冲，既是王储与流亡的政治象征，也是依赖渔业、港湾和风暴的岛民故乡。一处地形的名声，常由死在那里的人的数量决定。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者会从另一面理解龙石岛。黑水湾外的火山岛与坦格利安旧居，拥有龙形熔石城堡和丰富黑曜石。它控制狭海要冲，既是王储与流亡的政治象征，也是依赖渔业、港湾和风暴的岛民故乡。石头、林木、河流或山口既能成为谋生之所，也可能被赋予圣洁、禁忌和祖先记忆，因而不能只用金钱衡量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民对龙石岛的看法最实际。黑水湾外的火山岛与坦格利安旧居，拥有龙形熔石城堡和丰富黑曜石。它控制狭海要冲，既是王储与流亡的政治象征，也是依赖渔业、港湾和风暴的岛民故乡。他们先看这里能否取水、耕作、放牧和躲过兵灾；地图上的一行字，落到村里便是柴薪、井绳和过冬的粮。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "龙石岛：黑水湾外的火山岛与坦格利安旧居，拥有龙形熔石城堡和丰富黑曜石。它控制狭海要冲，既是王储与流亡的政治象征，也是依赖渔业、港湾和风暴的岛民故乡。"
+  ]
+}

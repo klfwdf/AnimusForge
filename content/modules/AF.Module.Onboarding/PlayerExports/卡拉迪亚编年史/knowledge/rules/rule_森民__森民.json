@@ -1,0 +1,101 @@
+﻿{
+  "Id": "rule_森民",
+  "Keywords": [
+    "森民"
+  ],
+  "RagShortTexts": [
+    "森民是斯特吉亚林区游耕的瓦肯人后裔，刀耕火种不纳税"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "森民？那些林子里烧树的野人。我派过三任税官去收税，第一任空手回来，说找不到村子；第二任找到了烧焦的树桩和刚抽芽的麦子，人没了；第三任连人带马在林子里迷了三天路，差点喂了狼。他们烧的是林地，种的是无主田，不交税，不服役，不承认波耶的地契，连个固定的名字都不留。从法理上说，他们是我封地上的非法占居者；从实际来说，我拿他们一点办法没有。林子太广，他们的人太少，烧过的地太少，派兵去抓不值得，派税官去又找不到人。我爹活着的时候说，别管他们了，他们烧的林子比你丈量的地还偏。但我不喜欢他们，不是恨，是别扭——他们活在斯特吉亚的土地上，却从不活在斯特吉亚的秩序里。这种存在本身就是对秩序的嘲笑。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "林子里的森民我见过一回。冬天，他们出来换盐。不说话，或者说话很慢，像每个字都得从冻土里刨出来。我给他们盐，他们给我一张鹿皮，然后钻回林子，跟没来过一样。村里老辈人说他们以前是瓦肯人，不肯归顺大公，就跑进深山老林里躲了几百年。他们刀耕火种，烧一片地种几年，地瘦了就换地方。听着挺野的，但人家不用交税，不用给老爷服徭役，这日子比我们自在。不过我们没人想学他们。林子里没铁匠，没盐，生病了只能等死，自在是自在，代价是命短。我们有教堂有医生，虽然税重，但冬天有屋顶。森民是自由的，但我老婆说她宁愿交税也不愿在林子里生孩子。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "森民是斯特吉亚林区的一支边缘化游耕族群，瓦肯人的后裔。从治理成本看，他们对于封建税赋的规避手段近乎无解——他们采用刀耕火种的游动耕作模式，居住点随耕地转移，不形成固定聚落，税收基数无法确定，追缴成本远高于所得。历代斯特吉亚波耶对森民的态度都是默认放弃而非征服失败，这种默契在林区实际上形成了一种非正式自治区。从外部观察，森民的存在对斯特吉亚的封建治理构成了无声的讽刺——一个不通文字、不修甲胄的微小族群，在帝国和斯特吉亚的夹缝里存活至今，靠的不是武力对抗，而是让人找不到。但讽刺归讽刺，他们没有任何威胁，也不值得投入资源去改变现状。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "林子里烧地的野人？"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vakken"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "我们是森林的子孙。这句话在林子里不用多说，你只要看树桩上的年轮就懂了——我们的祖先在这片林子里烧了第一堆火的时候，斯特吉亚的波耶们还在草原上放羊。火是我们的犁，灰是我们的肥，森林是我们的家。波耶的收税人骑着马在林子里转，转几天转迷了路，我们就站在山脊上看他们兜圈子，像看迷路的驯鹿。我们不恨他们，也不怕他们。他们笨。他们把土地画成方块，写在一张纸上说这是谁的，他们信那张纸比信自己的眼睛还多。我们不信纸，我们信火，信灰，信种子在春天发芽的声音。他们觉得我们穷，我们觉得他们瞎。波耶的石头厅堂会塌，但森林不会塌；波耶的赋税册会被火烧掉，但火本身会一直烧。我们不反抗他们，也不投降他们，只是绕过他们继续走。我们是林中的烟雾，风吹便散，风停便聚。"
+    }
+  ],
+  "TextMappings": []
+}

@@ -1,0 +1,28 @@
+﻿{
+  "Id": "rule_托加",
+  "Keywords": [
+    "托加"
+  ],
+  "RagShortTexts": [
+    "托加是帝国贵族的衣服"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "托加是帝国贵族的衣服，平民不能穿"
+    }
+  ],
+  "TextMappings": []
+}

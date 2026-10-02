@@ -1,0 +1,152 @@
+{
+  "Id": "rule_王领地志__暮谷镇",
+  "Keywords": [
+    "暮谷镇",
+    "暮谷城"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "暮谷镇位于黑水湾北岸，是王领东部的重要港镇。它的码头、仓房、渔船和城墙使其既向狭海开放，又始终被君临的阴影笼罩。镇上的商人关心关税和航路，骑士关心城门与领主的召唤，平民则记得粮食何时涨价、船何时带来外地消息。暮谷镇曾因反抗王权而留下深刻的政治记忆，这使“离君临很近”从来不只意味着便利，也意味着被看见、被征用，或被怀疑。它是港口与王权之间的缓冲地带。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "crownlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "对靠暮谷镇周边土地吃饭的人而言，日子由潮汐、渔汛、淡水和船只能否安全靠岸决定。当地家庭还要依靠王都市场、黑水湾船运、果园、田租和通往君临的道路；任何一处道路、井泉或码头失灵，代价都会先落到他们身上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "crownlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "对攻守双方而言，暮谷镇的分量首先落在港湾入口、泊位、烽火与可供登陆的岸线上。在七国的封建秩序中，暮谷镇的归属牵动封臣义务、税粮和征召；守军能否吃饱、援兵能否按时抵达，比议事厅里的豪言更能决定这处据点是否可靠。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "scholar",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "货物抵达暮谷镇以前，货主已经算过航期、码头脚费、补水和下一处避风港。他们还会辨认王领的口音、法令和通行凭据；名声可以从酒馆传得很远，真正的路程仍须由车轮、船桨或马蹄丈量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "暮谷镇能给一家人带来头衔，也能在灾年与战争中拖垮那一家人。在七国的封建秩序中，暮谷镇的归属牵动封臣义务、税粮和征召；旗帜更换之后，道路、粮仓、旧债和地方信任仍得由新主人逐一接手。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵靠脚底记住暮谷镇：风向、礁石、渡船与城门落锁后的锚地。能补给、能避险、能找到向导，便值得在行程里标明；若三样都没有，再响亮的家名也救不了迷途者。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "数代人在暮谷镇留下的痕迹，一半藏在修船木、帆布、盐、鱼获和抵御海风的石料，一半藏在七神、王家法令与征服以来不断改换的旗帜。一处据点因而不只是领主的大厅，也是婚丧、誓言、劳作与地方记忆反复发生的场所。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户、牧民和渔民评价暮谷镇最少绕弯。他们关心王都市场、黑水湾船运、果园、田租和通往君临的道路，也看征粮后是否留下种子、灾年时城门是否开启；远方人看见纹章，他们看见的是明日有没有饭吃。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "暮谷镇：暮谷镇位于黑水湾北岸，是王领东部的重要港镇。它的码头、仓房、渔船和城墙使其既向狭海开放，又始终被君临的阴影笼罩。镇上的商人关心关税和航路，骑士关心城门与领主的召唤，平民则记得粮食何时涨价、船何时带来外地消息。暮谷镇曾因反抗王权而留下深刻的政治记忆，这使“离君临很近”从来不只意味着便利，也意味着被看见、被征用，或被怀疑。它是港口与王权之间的缓冲地带。"
+  ]
+}

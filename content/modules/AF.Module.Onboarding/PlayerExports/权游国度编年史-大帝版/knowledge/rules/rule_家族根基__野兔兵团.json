@@ -1,0 +1,145 @@
+{
+  "Id": "rule_家族根基__野兔兵团",
+  "Keywords": [
+    "野兔兵团"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "野兔兵团是一群在乡野与道路间游荡的年轻战士，常唱骑士歌谣，以勇敢、冒险和赢得名声自许。他们没有古老封地，也缺乏大佣兵团稳定的财源，队伍靠同伴情谊、临时雇佣、赏金和对英雄生活的想象维持。歌谣让人敢于踏上道路，却不会自动教会他们守夜、分粮和约束冲动。野兔兵团能成为保护旅人的义士，也可能在欠饷与虚荣中滑向滋事，关键在于他们选择怎样理解“骑士”。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "乡村年轻人容易羡慕野兔兵团的歌与自由，仿佛只要背剑离家就能进入传奇。老人更关心这些武人会付饭钱，还是把别人的鸡当作冒险应得的奖赏。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "真正受过训练的士兵会检验野兔兵团的岗哨、队列和补给，而不是听他们唱得多响。热血能撑过第一次冲锋，军纪才能撑过第三个饥饿的夜晚。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable",
+          "artisan",
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "吟游者喜欢这样的年轻队伍，因为每张新面孔都渴望一个称号。但好歌会放大荣耀，也会掩盖死者；若野兔兵团只追求被传唱，迟早会把同伴的命押在一句漂亮歌词上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待野兔兵团，会先看它的土地、婚盟、血脉和债务。野兔兵团由四处游荡、唱诵骑士歌谣的年轻武人组成，其理想主义必须经受饥饿、军纪与真实战争考验。家徽是门面，能否保护封地、兑现婚约并在危机中召集人马，才是家族真正的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起野兔兵团时，记得的是谁在营火边分过粮、谁把他们留在城外、谁在败局里仍站在旗旁。野兔兵团由四处游荡、唱诵骑士歌谣的年轻武人组成，其理想主义必须经受饥饿、军纪与真实战争考验。家族名声最终要落到具体的人和具体的命令上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意野兔兵团留下的仪式、墓地和传承。野兔兵团由四处游荡、唱诵骑士歌谣的年轻武人组成，其理想主义必须经受饥饿、军纪与真实战争考验。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见野兔兵团。野兔兵团由四处游荡、唱诵骑士歌谣的年轻武人组成，其理想主义必须经受饥饿、军纪与真实战争考验。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "野兔兵团：野兔兵团由四处游荡、唱诵骑士歌谣的年轻武人组成，其理想主义必须经受饥饿、军纪与真实战争考验。"
+  ]
+}

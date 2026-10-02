@@ -1,0 +1,213 @@
+{
+  "Id": "rule_绿皮文化喜好__绿皮文化喜好",
+  "Keywords": [
+    "绿皮文化",
+    "绿皮喜好",
+    "Waaagh狂热",
+    "大就是好",
+    "牙齿财富",
+    "亮闪闪战利品",
+    "欺负弱者",
+    "纯粹战斗",
+    "绿皮文化兽人",
+    "绿皮文化地精",
+    "搞毛二哥",
+    "绿皮文化恶地"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "绿皮文化的全部核心可以概括为一个字：打。兽人和地精不存在任何与战斗无关的审美或追求——他们不想建城市、不想写诗歌、不想积累财富，他们只想找到下一个可以揍扁的目标。绿皮热爱酣畅淋漓的Waaagh!——当整个部落被战将的战嚎统合起来、绿皮小子们挥舞着砍刀冲锋时，那种纯粹的快乐是任何文明种族都无法理解的。他们迷恋庞大的体型——大只佬、大野猪、大偶像，越大越好，看到比他们小的生物畏惧颤抖是他们最享受的时刻。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Waaagh！你听到没有，就是这种感觉！当老大一声吼，所有小子一起冲，砍刀敲盾牌的声音比任何音乐都好听！我们不像人类那样为了金币打仗——金币又不能吃又不能敲人，我们要的是牙齿，牙齿才是真正的好东西，谁的牙齿项链最大串谁就最厉害！我们也不像尖耳朵那样搞什么好看的——我们把战场上捡来的亮闪闪铁片往盔甲上一钉，多有气势，小虾米看一眼就吓跑了！最过瘾的就是欺负矮垛子——那些矮墩子气急败坏又打不过我们的样子太好笑了，他们记仇记了几千年还不是拿我们没办法。我们不需要种田不需要盖房，我们天生就是会打的，死了又从蘑菇地里长出来接着打，这才是最对的生活方式！"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "绿皮的军事行为偏好具有高度的可预测性——这在战略上既是弱点也是机会。他们只追求酣畅淋漓的战斗，这意味着一支绿皮军队几乎不可能拒绝任何正面交战的机会。你可以利用这一点设计诱敌陷阱：在预设战场部署密集的火炮和火枪手阵列，然后派遣轻骑兵作为诱饵在绿皮前锋前挑衅——绿皮将不可避免地向你预设的屠杀区发起冲锋。但需注意：如果诱敌部队撤退得太早，绿皮不会追击而是会转而攻击最近的任何可打目标，包括你自己的侧翼营地。控制与绿皮交战的节奏必须精确到分钟。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "绿皮的价值体系可以通过五项核心偏好来完整建模。第一，战斗至上原则——绿皮衡量一切事物的唯一标准是'这能打吗'，一个和平的村庄在他们眼中毫无价值，但一个有城墙和守军的城镇就是巨大的诱惑，因为他们渴望的不是资源而是打的过程本身。第二，体型崇拜——在绿皮社会中，体型与力量严格正相关，最大的兽人自然成为头目，最大的野猪自然成为战将坐骑，最大的搞毛巨像自然成为部落的精神锚点；这种偏好导致绿皮在资源分配上会优先喂养最强大的个体以维持其体型优势。第三，牙齿经济——绿皮有不断再生的牙齿，这些牙齿在他们嘴中被磨损后脱落，新的会长出来，因此牙齿成为绿皮社会中唯一不会贬值的通货，可以用牙齿换取地精制造的武器、大只佬的保护或蘑菇啤酒；越是能打的兽人越容易从对手身上拔下牙齿，因此牙齿项链的长度与战斗力直接挂钩。第四，亮闪闪收集——绿皮对闪光金属片有不可抑制的收集冲动，这种行为的进化意义可能是为了在混乱的战场上通过闪光识别友军和彰显己方存在，但它也导致绿皮军队在视觉上格外嘈杂混乱。第五，欺凌偏好——绿皮特别享受欺凌体型小于自己的种族，尤其是矮人和人类，这种偏好的深层结构是一种对文明秩序的本能厌恶——矮人和人类代表了一切绿皮所不是的东西：城市、法律、契约、历史。正是这五种偏好的综合作用使绿皮成为任何文明社会的终极反题。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "绿皮对性别的无知在军事上创造了一种独特的不对称性。他们不懂得俘虏女性可能带来的政治筹码——在绿皮的思维框架中，俘虏只分两种：能打的（留着一会儿再打）和不能打的（踩扁算了）。但也正因如此，任何尝试用女性身份去影响绿皮谈判的策略都注定失败——你母亲的地位、你的婚姻联盟、你的家族继承权，这些在绿皮面前毫无意义。唯一能与绿皮沟通的语言是砍刀和牙齿——而这一点上，男女没有区别。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "格林氏族与绿皮打交道的经历可以追溯到曾曾曾祖父那一代——他的日记中记录了一条被称为格林定律的观察：一支绿皮部落在一个地区的活跃周期约为七年。第一年战将崛起并统合各散落部落，第二至第四年大规模劫掠，第五至第六年内讧开始削弱部落，第七年战将要么死于决斗要么死于人类联军围剿，然后孢子沉寂三年，循环重启。我族的领地防线和征税节奏就建立在这个七年周期之上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我在恶地边缘流浪时发现，理解绿皮喜好的关键是忘掉一切你学过的关于文明的知识。绿皮不会为了报复而在一个月后回来——他们甚至记不住昨天打过的架是谁赢了——但他们会在今天下午因为闻到了炊烟的味道而朝那座村庄发起冲锋。绿皮对亮闪闪的铁片的喜爱可以成为保命的手段：如果你把身上所有的金属装备扔在路上并且跑开，他们百分之九十的可能会停下来捡东西而不是追你。剩下的百分之十是他们觉得追你更有趣。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "绿皮的牙齿经济——被旧世界主流经济学家严重低估——实际上是恶地周边地区非正式贸易体系的基石。牙齿作为绿皮内部的通货具有自我调节的货币供给特性：兽人打斗时大量牙齿脱落，这些被地精收集并重新投入流通，在Waaagh!期间货币供给量激增导致牙齿贬值（一只野猪腿的价格会从三颗牙涨到十五颗），而在部落内讧减员后流通牙齿的总供给减少导致升值。人类商人不直接接受牙齿，但恶地边缘的走私者用人造珠子——可以模仿牙齿的观感——进行与地精的低级贸易交流，这其中有一种极不稳定的套利关系。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Waaagh!——绿皮集体灵能狂暴状态，部落被战将统合后爆发的可自我强化的战斗狂热",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "绿皮的社会习俗与文化传统"
+  ]
+}

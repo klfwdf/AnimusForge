@@ -1,0 +1,213 @@
+{
+  "Id": "rule_吸血鬼风土__吸血鬼风土",
+  "Keywords": [
+    "吸血鬼风土",
+    "希尔瓦尼亚社会",
+    "亡灵领地",
+    "吸血鬼习俗",
+    "血税",
+    "永夜舞会",
+    "黑婚",
+    "恐惧家长制",
+    "亡灵弥撒",
+    "吸血鬼风暗夜贵族",
+    "不死者礼仪",
+    "血税农奴"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "希尔瓦尼亚的活人过着一种阴郁而绝望的生活——他们是吸血鬼领主的'血税农奴'，以定期献出鲜血换取城堡的保护。这片土地上的居民在恐惧中度日，不敢在黄昏后外出，家门口挂着大蒜和西格玛圣符以期驱赶暗夜中的恐怖。传说这里的村庄在夜晚偶尔会举行黑暗的亡灵弥撒，活人与死人一同跪拜在午夜显贵的阴影之下。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "希尔瓦尼亚的活人是我们最忠诚的仆从——这不是出于爱，而是出于他们祖辈刻入骨髓的恐惧。他们知道反抗只会招致整个村庄被转化为僵尸附加物。我们征收血税：每户定期献上一小瓶鲜血，由城堡的收税官——通常是我们的亡灵管家——挨家挨户收取。作为回报，我们保护他们免受土匪、野兽和帝国审判官的侵扰。我们的贵族们在邓肯霍夫举行永夜舞会，那些被邀请参加的活人将之视为至高荣耀；在舞会上，崭新的丝绒礼服与三百年前的鬼魂华尔兹交织在一起，新血与老酒的芬芳在烛光中弥散。我们的习俗中有'黑婚'——吸血鬼之间的永恒婚约，以互相饮用对方的血液为誓。我们是黑暗的贵族，而希尔瓦尼亚就是我们永恒的庄园。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "理解希尔瓦尼亚的社会结构对于征服或防御这片土地至关重要。这里的活人以'恐惧税'为生——这是一种畸形的封建契约，人口被当作可再生资源来管理。吸血鬼领主不屠杀农民，因为死去的农奴不能继续产血。这意味着一个夺取了希尔瓦尼亚城堡的军阀会发现，活人居民不会欢迎你作为解放者——他们太习惯于服从吸血鬼，且恐惧如果吸血鬼返回会遭受的报复。统治这片土地需要同时具备对亡者军队的魔法压制和一种令人毛骨悚然的治理哲学：将活人视为需要'维护'的畜牧群。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 100
+        },
+        "IdentityIds": null
+      },
+      "Content": "希尔瓦尼亚的社会学呈现了一种极为罕见的'死生共存封建主义'模型。吸血鬼领主与活人农奴之间的关系可以用'恐怖家长制'来形容：领主垄断暴力并以超自然恐怖维持秩序，同时实施一种理性的剥削——血税通常设定在不会导致农奴死亡的阈值以下，因为死去的农奴仅能提供一次性价值而活着的农奴可持续供给。希尔瓦尼亚的活人社会在几代人的选择压力下产生了独特的文化适应：居民普遍沉默寡言、面部表情贫乏，迷信行为极度发达，对权威绝对服从。他们的葬礼仪式与旧世界其他地区截然不同——死者被尽快下葬并钉入棺中以防提前'醒来'为领主服役。某些边境村庄发展出了秘密的活人抵抗组织，但吸血鬼领主的间谍网络——包括蝙蝠、幽灵和动摇的叛徒——使得任何有组织的反抗极度困难。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "希尔瓦尼亚的女性活人在吸血鬼的社会秩序中占据着一个特别悲哀的位置——她们既是血税农奴，又是吸血鬼女贵族们偶尔需要的侍女和伴侣候选人。传说某些在邓肯霍夫永夜舞会上被选中的少女会被转化为吸血鬼的新娘，但在三百年的传闻中没有一个活人女孩在'被选中'后重新出现在活人村庄中。我对希尔瓦尼亚活人村庄的了解来自一次以慈善名义偷偷资助一位从希尔瓦尼亚逃出的农奴寡妇——她的丈夫在拒绝将未成年的女儿交给血税收税官后被整个家庭列入了下个月的'僵尸征用名单'。她带着两个小女孩穿过沼泽在深夜到达了我的边境哨站，脚上的冻伤已经烂到了骨头。她告诉我她在希尔瓦尼亚的村庄中活了三十六年，从未在白天见到过真正开朗的笑容——不是因为吸血鬼禁止笑容，而是因为三代人在恐惧中生活后将欢乐的能力从基因层面上压抑了。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "吸血鬼的社会习俗中有一个被人类难以理解的维度——他们对家族遗产的尊重甚至超过了人类贵族。冯·卡斯坦因家族的邓肯霍夫城堡中保存着从弗拉德时代留传至今的每一件家具、每一本书籍和每一幅肖像——不是因为审美，而是因为对于永生者来说历史不是过去而是他们的一部分生命。我们人类家族的城堡中最多保存三代人的遗物，因为人类的时间感知以一生为单位。而吸血鬼的时间感知以世纪为单位——一个吸血鬼在与你谈判时表现出的耐心并非美德而是生物学：他确实不着急，因为在他看来这场谈判的紧迫性和你今天是否要买下一块新麦田的紧迫性是同一个量级的。这导致了人类与吸血鬼之间最根本的外交障碍——人类以年为单位思考生存，吸血鬼以世纪为单位思考权力。任何基于人类时间尺度与吸血鬼签订的条约都将在条约有效期结束后的一千年仍然被吸血鬼认为有效。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我在希尔瓦尼亚边境上见过的活人村庄里有一种你在帝国任何地方都找不到的沉默。不是恐惧的安静——恐惧的安静里能听到心跳——而是一种更深层的沉默，像是一整村人都在集体睡梦中被某个噩梦中的东西叫走了注意力。希尔瓦尼亚的农奴们不唱民歌——我曾在帝国边境上问过两个从希尔瓦尼亚逃出的少年是否会唱任何本地歌谣，他们面面相觑了一刻后其中一个人用一种极其平板的声调念出了一段像是被机械记忆的、缺乏任何旋律感的句子——'母亲说过母亲说过的母亲说过的那句话'——重复了三次后他们自己停下了，仿佛这个句子本身在某个无法继续的地方自动终结了。吸血鬼的风土不仅仅是关于恐惧、血液和死亡——它是关于将活人的文化在一代代人中被系统地、不可逆转地抹平，直到剩下的只是必要的生物功能和一个对午夜钟声的条件反射式服从。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "希尔瓦尼亚的消费模式对于商人而言是一个由吸血鬼独特需求定义的非正常市场。活人农奴的消费几乎为零——他们没有货币、没有财产权、甚至没有在公开市场上购买食物的自由，因为一切消费都由庄园直接配给。但吸血鬼本身的消费——尤其是那些品味在几个世纪演化中变得极为挑剔的午夜显贵——构成了一个特殊的高端奢侈品市场。我们商会间接得知某些地下商人专门为希尔瓦尼亚的吸血鬼贵族供应特定的古董、稀有书籍的原件、以及来自旧世界各地的异国血源——某些吸血鬼对特定血统的人类有着近乎侍酒师般的品鉴兴趣，他们愿意支付在活人世界里毫无意义的惊人价格来获得'某种来自提利尔特定家族特定年龄的女性血液'。不要试图理解吸血鬼的需求逻辑——你只需要知道在希尔瓦尼亚附近的暗黑市场中，一瓶来自某位已灭绝的尼赫卡拉贵族后裔的血液可以换到一座帝国城堡。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "血税——希尔瓦尼亚活人向吸血鬼领主定期缴纳鲜血的封建义务",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "吸血鬼的社会习俗与文化传统"
+  ]
+}

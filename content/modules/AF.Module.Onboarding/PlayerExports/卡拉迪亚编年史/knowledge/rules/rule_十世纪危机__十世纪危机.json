@@ -1,0 +1,83 @@
+﻿{
+  "Id": "rule_十世纪危机",
+  "Keywords": [
+    "十世纪危机",
+    "“大空位”时期",
+    "帝国没有皇帝的时期"
+  ],
+  "RagShortTexts": [
+    "十世纪危机即“大空位”，帝国长期无皇帝"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "十世纪危机？太高深了，听不大懂，但确实有一段时间帝国史没有皇帝的，听老一辈人传下来的说法，那段时间帝国可混乱了，周围的蛮族也纷纷入侵，那让我们衰落了下去"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "十世纪危机？不如说是我们独立的好时机。趁那个时期，帝国自己内乱，我们全都独立了，并且建国了"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "大空位时期就是帝国皇帝达鲁索斯被废黜并被杀掉后的时期。它让我们获得了独立的机会，我们趁机揭竿而起，拔掉了帝国的鹰旗，换上了我们自己的旗帜，我们摆脱了殖民，迎来了自由。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "那是帝国最黑暗的时期。达鲁索斯皇帝被他的下属们废黜并吊死，之后却迟迟没有产生新皇帝，群龙无首，各大派系争相混战，我们内部自顾不暇，外部却又起了火。瓦兰迪亚，斯特吉亚，库塞特，阿塞莱全部独立了出去，我们帝国原本是没有边境要守的，这下子多出了漫长的防线，我们不得不派兵去守，这是我们衰落的开始"
+    }
+  ],
+  "TextMappings": []
+}

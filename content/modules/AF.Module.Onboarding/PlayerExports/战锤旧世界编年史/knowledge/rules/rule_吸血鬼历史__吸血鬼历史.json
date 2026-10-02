@@ -1,0 +1,213 @@
+{
+  "Id": "rule_吸血鬼历史__吸血鬼历史",
+  "Keywords": [
+    "吸血鬼历史",
+    "纳迦什",
+    "午夜显贵起源",
+    "亡灵战争",
+    "涅芙瑞塔",
+    "吸血鬼历弗拉德",
+    "吸血鬼历曼弗雷德",
+    "康拉德",
+    "吸血鬼历纳迦什经卷",
+    "拉赫米亚",
+    "卡斯坦因之戒",
+    "血族谱系"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "吸血鬼的起源与上古尼赫卡拉的亡灵之主纳迦什密不可分，传说正是他创造了永生的诅咒。数千年后，吸血鬼始祖弗拉德·冯·卡斯坦因降临希尔瓦尼亚，将这片土地变为黑夜的王国，并发动了对帝国的第一次亡灵战争。而最近一次的吸血鬼战争由曼弗雷德·冯·卡斯坦因挑起，至今帝国的老人们仍用这些传说吓唬不听话的孩子。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我们的历史始于纳迦什在大沙漠中的禁忌实验，但他只是打开了大门的锁——真正的午夜显贵诞生于涅芙瑞塔的朱唇之下。她的血裔向北流浪，最终弗拉德——或者说在他之前自称为弗拉德的瓦沙内什——来到了粗鄙的希尔瓦尼亚，迎娶了奥托·冯·德拉克的独女伊莎贝拉，从此将这片土地化为永恒的黑夜国度。弗拉德在第一次亡灵战争中几乎征服了整个帝国，若非叛徒泄露了他依赖卡斯坦因之戒复活的秘密，帝国早已沦陷。康拉德延续了战争但只知疯狂屠杀，而曼弗雷德——最狡猾也最令人忌惮的继承者——将战火一次又一次点燃。我们从不真正失败，只是暂时蛰伏。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "三次亡灵战争是帝国历史上最黑暗的篇章。弗拉德·冯·卡斯坦因在2010年发动第一次战争，利用亡灵不用休息、不惧饥寒的优势，在冬季长驱直入，最终在阿尔道夫围城战中因卡斯坦因之戒被窃而遭毁灭。康拉德在2100年发动第二次战争，虽战术粗野，但血腥杀戮令帝国北部化为无人鬼域。曼弗雷德发动的第三次战争最为诡诈，他一边谈判一边行军，几乎成功撕裂了整个帝国防线。任何研究过这些战史的指挥官都明白：吸血鬼敌军最可怕的不是其数量，而是其统帅的千年智慧。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 100
+        },
+        "IdentityIds": null
+      },
+      "Content": "吸血鬼的完整谱系学是一部血与诅咒的黑暗史诗。公元前约1600年，纳迦什在尼赫卡拉的克里普斯峰上炼制出禁忌的长生不老药，他将这配方封存在九卷纳迦什经卷之中。涅芙瑞塔——拉赫米亚的女王——在纳迦什第一次陨落后攫取经卷并以自己为实验品饮下药剂，成为第一个饮用者与第一个真正的吸血鬼。她创造了拉赫米亚血族，这些午夜显贵最初在尼赫卡拉的宫廷中以优雅的面纱隐藏獠牙。随着时间推移，血族向北扩散，分裂成五大谱系。冯·卡斯坦因的始祖弗拉德原本是拉赫米亚贵族瓦沙内什，他在帝国历1797年以新身份出现在希尔瓦尼亚并迅速掌控了这片被帝国遗弃的土地。血龙谱系则源自拉赫米亚的武圣艾伯赫拉什的改造，他击败一条巨龙并饮尽其血，从而开创了追求武道极致的新脉。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "吸血鬼历史中一个被男性史学家系统性忽视的维度是女性在其中的核心角色——不是作为受害者而是作为塑造者。涅芙瑞塔是第一个吸血鬼，这本身就说明了一切。伊莎贝拉·冯·卡斯坦因在官方叙事中只是弗拉德的新娘，但她实际上在弗拉德被暂时消灭后独自维持了希尔瓦尼亚的统治体制长达数十年，确保在曼弗雷德崛起之前冯·卡斯坦因的势力没有完全瓦解。而拉赫米亚姐妹会的整个组织——由女性吸血鬼主导的、在旧世界各大宫廷中运作的渗透网络——是旧世界最有影响力也最不为人知的女性权力机构之一，其创始人恰恰是涅芙瑞塔本人。吸血鬼的历史从女性视角看是一场长达数千年的女权实验——在诅咒将性别之间的体力差异抹平后，女性吸血鬼凭借在社交、耐心和生存策略上的天然优势证明了她们比许多男性吸血鬼更加擅长在这场永恒的夜间政治中存活。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "吸血鬼的千年历史对贵族家族而言是最严肃的警示录——因为吸血鬼战争的教训反复验证了同一条规则：家族内部的分裂比任何外部入侵都更具毁灭性。弗拉德之所以能几乎征服帝国，不是因为他拥有比帝国更多的军队，而是因为帝国选帝侯们在面对他的入侵时首先考虑的是如何借吸血鬼之手削弱各自的竞争对手。我们家族从三次亡灵战争中汲取的最重要教训是：在面对一个共同的永生敌人时，家族之间必须建立一种超越选票和联姻的、由共同生存利益驱动的军事互保机制。我们家族与沿希尔瓦尼亚边境的另外三个家族达成的非正式联防协议已经维持了三代人——它的存在从未在帝国议会上被公开讨论过，但每次吸血鬼的巡逻骑兵出现在远方丘陵上时，我们四个家族的信使会在一个时辰内向彼此通报而无需等待阿尔道夫的官方军令。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "吸血鬼的历史在流浪者口中不是一部编年史——它是一本恐怖故事集，每个故事都以最靠近希尔瓦尼亚方向的某个村庄的名字开头。我在奥斯特马克各哨站之间流浪时住过一座荒废的村庄的废墟，那个村庄一百年前被康拉德屠杀殆尽后在官方的地图上被标注为'已清除'，但我睡在那里的第一夜就理解了为什么帝国工程师从不考虑在那片土地上重建村庄——泥土在半夜会散发出一种微微泛蓝的光，那不是月光反射，而是从上一次亡灵大军经过时渗入地下的死灵魔力残余，一百年过去了它还在慢慢地从土壤中渗出。吸血鬼的历史对活人而言是一部地质层面的灾难记录——亡灵战争不是在一代人身上就结束的战争，它们改变了土壤、水源、空气的质感和人们的生育率，这种伤害会以隐蔽的方式在好几代人中缓慢遗传。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "吸血鬼战争的经济影响史是旧世界最被忽视但最不可忽略的领域。第一次亡灵战争结束后奥斯特领的耕地价格暴跌至战前的十分之一，不是因为土地被毁，而是因为没有一个自由农愿意购买在三年内可能再次被死尸践踏的田产。我们商会在第三次亡灵战争后以极低价格从绝望的帝国贵族手中收购了大量希尔瓦尼亚边缘地区的森林采伐权，这是一项高风险赌注——如果曼弗雷德卷土重来这些采伐权将一文不值——但如果和平维持三代人以上，这些木材在阿尔道夫的建筑市场中能卖出足以让我们家族成为选帝侯级别的经济力量的价格。吸血鬼的存在本身就是一种市场扭曲——希尔瓦尼亚周围的土地永远不可能按它们的实际生产潜力来定价，因为每一笔商业计算中都必须加入一个不可量化的参数：战争概率。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "涅芙瑞塔首饮——公元前约1600年第一个吸血鬼诞生的禁忌时刻",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "吸血鬼的起源与上古尼赫卡拉的亡灵之主纳迦什密不可分"
+  ]
+}

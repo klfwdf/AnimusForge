@@ -1,0 +1,152 @@
+{
+  "Id": "rule_家族根基__法曼",
+  "Keywords": [
+    "法曼家族",
+    "仙女岛",
+    "船只"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "法曼家族以仙女岛的仙女城为根基，是兰尼斯特麾下面向日落之海的岛屿家族，家徽以海上船只为主要形象。岛民依赖渔业、航行、港湾与有限农地，也长期承受铁民劫掠威胁。法曼家族历史中最广为人知的名字之一是航海者艾丽莎·法曼，她的远航属于个人传奇，不能证明全族都以探索为业。西境领主看重法曼的海岸与船只，仙女岛百姓则更关心风暴、鱼汛和黑帆。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "西境内陆贵族常把仙女岛视作海上的边缘，法曼却知道日落之海能把边缘变成前线。家族依附凯岩城，又必须保留岛屿领主的判断：陆上的召令、海上的季节和铁民的帆影不会总在同一天抵达。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "sailor",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "仙女岛的船主和渔民看法曼，先看港湾、灯火与护航。岛上的粮食和盐必须经过船，消息也从海上来。领主若不懂潮汐，命令便会被浪吞掉；若能让商船敢于靠岸，一面船纹旗就能比金狮更贴近岛民日常。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "sailor",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "铁民眼中的仙女岛是西境近海一块熟悉的目标，也是会还手的邻居。法曼世代面对长船，使岛上每处海湾都有旧警惕。袭掠者可能轻视西境人的海性，却不会轻视一个从小听着警钟长大的岛。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待法曼家族，会先看它的土地、婚盟、血脉和债务。仙女岛仙女城的西境海岛家族，家徽以船只为主。渔业、港湾、铁民威胁与艾丽莎·法曼的个人远航塑造其名声；箴言未知。家徽是门面，能否保护封地、兑现婚约并在危机中召集人马，才是家族真正的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起法曼家族时，记得的是谁在营火边分过粮、谁把他们留在城外、谁在败局里仍站在旗旁。仙女岛仙女城的西境海岛家族，家徽以船只为主。渔业、港湾、铁民威胁与艾丽莎·法曼的个人远航塑造其名声；箴言未知。家族名声最终要落到具体的人和具体的命令上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意法曼家族留下的仪式、墓地和传承。仙女岛仙女城的西境海岛家族，家徽以船只为主。渔业、港湾、铁民威胁与艾丽莎·法曼的个人远航塑造其名声；箴言未知。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见法曼家族。仙女岛仙女城的西境海岛家族，家徽以船只为主。渔业、港湾、铁民威胁与艾丽莎·法曼的个人远航塑造其名声；箴言未知。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "法曼家族：仙女岛仙女城的西境海岛家族，家徽以船只为主。渔业、港湾、铁民威胁与艾丽莎·法曼的个人远航塑造其名声；箴言未知。"
+  ]
+}

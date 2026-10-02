@@ -1,0 +1,213 @@
+{
+  "Id": "rule_幽冥引擎__幽冥引擎",
+  "Keywords": [
+    "幽冥引擎",
+    "悬浮祭坛",
+    "古代巫妖",
+    "亡灵修复",
+    "生者虚弱",
+    "死亡能量",
+    "亡灵引擎",
+    "浮空祭坛",
+    "死灵修复",
+    "生命削弱",
+    "巫妖祭坛",
+    "死亡光环"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "幽冥引擎是一座悬浮在死亡能量上的黑暗祭坛，由远古巫妖所操控。它在战场上辐射着强大的死亡光环——修复周围的不死生物，同时蚀耗所有活人的生命力与战斗意志。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "幽冥引擎——纳迦什遗留给我们的圣物！每一座幽冥引擎都是远古时代的死灵法术杰作，由一名持有数千载阅历的巫妖镇守其上。悬浮的祭坛用黑暗魔法从冥界汲取能量，再化为绿色光波向四周辐射。对亡者而言，这光芒是重生的甘泉——断骨重续、腐肉再生的奇迹在光芒笼罩下持续发生；对活人而言，这光芒是最恶毒的诅咒——士兵感到生命力从骨髓中被抽出，最坚强的老兵也会慢慢蹲下大口喘息。幽冥引擎不仅在战场上强大，在围攻中也极为致命：只需将一座引擎放置在城墙射程内三日，守城士兵就会因生命力流失而虚弱到无法拉弓持矛。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "幽冥引擎是你需要不惜一切代价尽快摧毁的敌方单位——它在战场上存在得越久，你付出的交换比就越惨痛。引擎不断地修复敌军亡灵，意味着你的每一次杀伤都可能被逆转。对付幽冥引擎最有效的方式是部署高机动性远程单位或飞行骑兵进行精确打击，用优势兵力在最短时间内瘫痪它。不要用步兵去围攻——引擎周围的死亡光环会先于你的士兵到达目的地之前就将他们削弱。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "幽冥引擎的历史可追溯至纳迦什大巫师第一次统治尼赫喀拉的时代。最初的设计是作为移动的「不死修复站」用于维持庞大的骷髅军团在长途征伐中不瓦解。每座引擎的中心是一块从死者冥界「掏回」的灵魂石，由一名发下不朽誓约的巫妖通过持续的咒文控制其能量输出。引擎的死亡光环强度可通过巫妖调节，从微量衰弱到全力爆发分为七个等级。最高等级下，引擎可在一百步范围内形成「绝对死亡区域」——任何活物进入后将在数分钟内被蚀干生命力。引擎自身也有弱点：悬浮系统依赖地面的死灵能量密度，在被充分净化的圣地上可能失效被迫落地；巫妖的专注一旦被某种大法术或神圣之力打断可能导致引擎失控反噬。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "幽冥引擎那绿色的光让我想起产褥热夺去我母亲生命时的病榻——同样的冰冷，同样的绝望。那祭坛上的巫妖曾是活人，自愿接受了永恒的诅咒以求永恒的知识。他们用灵魂交换了力量，这与某些人类贵族用良心换取权力何其相似。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "幽冥引擎曾经过我族的边界——我们无法对抗它，只能撤退。当我们几天后回到村庄时，发现所有农作物都枯萎了，井水变成了黑色，连土里的蚯蚓都死了。引擎没有触碰我们任何一个人，但大地被蚀耗后需要整整一年才能恢复生产。那一年我族差点饿死。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我在希尔瓦尼亚边境见过幽冥引擎的痕迹——不是引擎本身，而是它经过后留下的那条「死路」：路两侧百步内的树全部枯死，不再有鸟鸣，连苍蝇都不愿飞过。当地的猎人说，被引擎之光照射超过三次的人会在一年内死于内脏衰败。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "幽冥引擎所需的维护材料是最不可思议的：巫妖需要定期更换保存其残躯的防腐香料、祭坛的符文石会因能量过载而碎裂需要更换、连维系其悬浮的死灵能量都需要从古战场收集的「死亡尘埃」补充。供应这些材料是见不得光的买卖但利润高到离谱。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "幽冥引擎是悬浮的黑暗祭坛，由远古巫妖操控，辐射死亡能量",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "幽冥引擎悬浮祭坛古代巫妖"
+  ]
+}

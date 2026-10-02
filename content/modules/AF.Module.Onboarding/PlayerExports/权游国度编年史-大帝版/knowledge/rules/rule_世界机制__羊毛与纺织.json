@@ -1,0 +1,149 @@
+{
+  "Id": "rule_世界机制__羊毛与纺织",
+  "Keywords": [
+    "羊毛",
+    "亚麻",
+    "纺织",
+    "染色"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "衣物从牧羊和种麻开始。羊毛要清洗、梳理、纺线、织造和缩绒，亚麻需浸泡剥纤，染料又来自植物、矿物或昂贵进口；每一步都耗费水、燃料与熟练劳动。乡村家庭常在农闲纺线，城镇织工、染匠与商人再把布匹分成粗呢、帆布和贵族华服。军队需要斗篷、毯子、绷带和帐篷，使纺织同刀剑一样属于军需。衣料能展示阶层，制作衣料的人却多在烟、湿气和重复劳作中生活。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "merchant",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "织工看经纬密度，染匠看水与色，商人看成色和销路。好布能让一座小镇远近闻名，假染料也能在一季内毁掉信用。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "slave"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "乡村妇女和役使者承担大量纺线与洗毛，常一边照料孩子一边工作。贵人的一件新斗篷，可能汇集许多从未被叫出姓名的双手。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主从布匹看税收和体面，士兵与水手只求斗篷不透风、帆布不断裂。花纹能鼓舞人，坏线会在第一场雨里暴露。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人把羊毛看成可执行的秩序。羊毛与纺织：牧场、剪毛、纺线、织布和染色连接乡村女性、城镇作坊、军需与贵族衣饰。它是否有效，取决于谁能授予权利、收取代价，并在违约时让判决真正落地。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起羊毛时，关心它如何影响道路、命令和安全。羊毛与纺织：牧场、剪毛、纺线、织布和染色连接乡村女性、城镇作坊、军需与贵族衣饰。远方的制度只有在营火、城门和驿站里能被执行，才不是空话。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者会从习惯和象征理解羊毛。羊毛与纺织：牧场、剪毛、纺线、织布和染色连接乡村女性、城镇作坊、军需与贵族衣饰。一项规矩若被反复实践，便会进入礼仪、手艺和祈祷；若只靠恐惧维持，危机一来就会露出裂缝。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民感受到羊毛的方式最小也最准确。羊毛与纺织：牧场、剪毛、纺线、织布和染色连接乡村女性、城镇作坊、军需与贵族衣饰。他们记得税、粮、劳役、赈济和谁能为他们说话；宏大的名称，最终都要落在一家人的饭锅旁。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "羊毛与纺织：牧场、剪毛、纺线、织布和染色连接乡村女性、城镇作坊、军需与贵族衣饰。"
+  ]
+}

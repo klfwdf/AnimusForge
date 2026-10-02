@@ -1,0 +1,152 @@
+{
+  "Id": "rule_家族根基__荞斯",
+  "Keywords": [
+    "荞斯",
+    "荞斯家族"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "荞斯是颤抖海伊班文化圈中的家门。伊班人的财富常来自鲸脂、鲸骨、毛皮、木材和海产，代价则是漫长航程、寒冷与随时可能不归的船只。荞斯若要在本地立足，必须维系船员亲族、作坊、储藏场与外来买家的信用；这样的家业比南方庄园更流动，也更容易被一场坏海况击穿。家门的政治选择可以变化，岛民仍会按它如何对待失船者、欠工钱与冬季储备来判断其品格。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "ibbenese"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "sailor",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "伊班水手看荞斯，最在意船是否修好、配给是否足够、利润是否按约分。海上没有贵族椅子，只有谁的判断能让整船人回家。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "ibbenese"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "炼油工、骨匠与留守家庭知道每次丰收都带着死人的影子。荞斯若肯照顾遇难者家属，家门才配分享鲸业的财富。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "ibbenese"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "地方长者希望荞斯尊重岛社共同决定，不把外来银币看得高过本地粮仓。卖得再好的鲸油，也不能在航路断绝时当饭吃。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待荞斯，会先看它的土地、婚盟、血脉和债务。伊班地方家门，根基在寒海航行、毛皮鲸业与岛民互助，而非南方骑士式封土。家徽是门面，能否保护封地、兑现婚约并在危机中召集人马，才是家族真正的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起荞斯时，记得的是谁在营火边分过粮、谁把他们留在城外、谁在败局里仍站在旗旁。伊班地方家门，根基在寒海航行、毛皮鲸业与岛民互助，而非南方骑士式封土。家族名声最终要落到具体的人和具体的命令上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意荞斯留下的仪式、墓地和传承。伊班地方家门，根基在寒海航行、毛皮鲸业与岛民互助，而非南方骑士式封土。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见荞斯。伊班地方家门，根基在寒海航行、毛皮鲸业与岛民互助，而非南方骑士式封土。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "荞斯：伊班地方家门，根基在寒海航行、毛皮鲸业与岛民互助，而非南方骑士式封土。"
+  ]
+}

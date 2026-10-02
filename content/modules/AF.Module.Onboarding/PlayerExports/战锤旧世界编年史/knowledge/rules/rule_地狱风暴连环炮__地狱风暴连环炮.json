@@ -1,0 +1,210 @@
+{
+  "Id": "rule_地狱风暴连环炮__地狱风暴连环炮",
+  "Keywords": [
+    "地狱风暴连环炮",
+    "多管火炮",
+    "努恩兵工厂",
+    "实验武器",
+    "弹幕倾泻",
+    "帝国火力",
+    "地狱连珠铳",
+    "火药风暴",
+    "排枪炮"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "地狱风暴连环炮是帝国努恩兵工厂制造的实验性多管火器——它由九根独立枪管环绕一个中央旋转轴构成，通过手摇曲柄连续发射，在短短数十秒内倾泻出足以撕碎一整支冲锋编队的铅弹风暴。它的设计者在努恩工程师协会内部被称为「疯子奥托」，而整个帝国军队则称它为「最后一道防线」——因为当这架机器开火时，再也没有什么需要防守的了。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "地狱风暴连环炮——在努恩兵工厂里我们私下管它叫「西格玛的机关枪」，虽然这个称呼如果被大主教听到会引发一场神学辩论。这种武器的核心原理极其简单——九根枪管并排开火——但在工程实现上疯狂到只有努恩那些被火药烟气烧坏脑子的工程师才会认真尝试。它的运作依赖一个手摇曲柄，由两名操作员交替摇动——每人最多坚持一分钟因为手臂会酸到断掉——来带动旋转枪机系统依次对每一根枪管进行装填、发射、退膛和再装填。在理想条件下，一挺地狱风暴连环炮可以在六十秒内发射超过一百发包铅弹——这个数量足以让一整个兽人突袭连队在两分钟内从一群杀气腾腾的怪物变成一团看不出形状的碎肉。但问题在于「理想条件」这四个字。地狱风暴连环炮的连射状态对枪管温度的提升速度是普通加农炮的十倍，连续射击超过两分钟后枪管会热到发红，然后第一枚从过热枪管中射出的弹药会在出膛之前就在枪膛里爆炸——产生的结果通常是把操作员炸飞到墙上而机器变成一堆弯曲的废铁。全帝国只有努恩兵工厂具备制造这种武器的技术能力，年产量不超过十挺，现存总数约在五十挺左右。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "地狱风暴连环炮在战场部署中是一种需要精密计算的战术工具而非简单的「火力输出器」。首先，你必须为它选择一处固定阵地——这种武器无法在移动中操作，因此部署位置必须同时满足三个条件：它能覆盖敌军最可能的进攻路线；它不会被敌方的远程火力或魔法优先打掉；它在开火后不会误射己方部队。其次，弹药储备是一个容易被忽视的问题：一挺地狱风暴连环炮在一场激战中可能耗尽一个小型军火补给车的全部储备，没有补给的情况下它在开火三分钟后就会变成一堆死铁。最后且最重要的是温度控制——每一个配备地狱风暴连环炮的单位都必须有一名拥有至少五年操作经验的资深炮长，他知道何时停止射击让枪管冷却、何时即使冒着炸管风险也必须继续射击。错误的温度控制意味着要么过早停止射击给敌人可乘之机，要么太晚停止而失去武器本身。有经验的指挥官通常将地狱风暴连环炮用作「恐惧武器」而非「歼灭武器」——它在最初的几次连射中制造的巨大声响和致命的火光远比它实际造成的伤亡更有心理震撼效果。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "地狱风暴连环炮的工程学和军事史研究揭示了努恩兵工厂在十六世纪末至十七世纪间的实验性武器高潮。这种武器的直接原型是帝国历2451年由努恩首席工程师奥托·冯·舒斯特设计的「九管旋转炮」，其设计灵感据考证来源于三个独立的技术传统：矮人的多管旋转炮塔（矮人称之为「轮转粉碎机」）、火药实验家康拉德·福克斯的连发枪机构想，以及努恩蒸汽工程师对旋转蒸汽涡轮的传动机理改造。奥托本人在帝国历2472年的一次武器演示中因样机炸膛身亡——一颗从第三管炸出的螺栓击中了他的头骨——但他的设计遗稿被他的弟子们完成后继了生产。至今努恩工程师协会每年的「奥托日」——帝国历每年十一月十三日——的庆祝仪式中有一个传统节目：将一挺即将报废的地狱风暴连环炮在训练场上点燃直到炸膛，所有在场的工程师一同欢呼——这被视为对疯子奥托最真诚的致敬。帝国军队中关于这种武器的记录显示出一种有趣的矛盾：虽然各级指挥官普遍表示地狱风暴连环炮是「面对大规模步兵冲锋时不可或缺」的武器，但在连续使用超过九十秒的实战记录中，炸膛率高达约百分之十二——这意味着每八挺连环炮中就有一挺会在一次性过度使用中自毁。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "地狱风暴连环炮在帝国贵族女性眼中是最令人不安的战争发明。我们的父亲和丈夫们从战场上回来时骄傲地吹嘘他们的连环炮如何在一天之内打死了三千个绿皮——但没有人谈论操作这些机器的农奴士兵，他们中的一半在服役五年后会变得几乎听不见任何声音，从整日震耳欲聋的连环炮声中幸存下来的耳膜基本上都被摧毁了。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "家族旗下的领地如果能够容纳努恩工程师协会的一个武器试射场，那在帝国贵族圈子中是极高端的声望投资。这些试射场为家族提供稳定的火药供应和限量武器试用权——在家族之间因领土争端演变为军事对峙时，提前到达战场的三挺地狱风暴连环炮往往决定了接下来的谈判在谁的条件上进行。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "作为一个在帝国各路军队中辗转谋生的老佣兵，我可以负责任地说：你不想在战场上遇见这玩意儿——在它口里对着你的时候。我第一次也是唯一一次与地狱风暴连环炮的近距离接触是在诺德领的一次防御战中，兽人冲锋到我们的战壕前二十码时连环炮开了火，然后整个冲锋线就像一幅油画被泼上了硫酸那样融化了。那之后一整周我都听不见自己说话。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "地狱风暴连环炮的维护是帝国金属加工业中最特殊的一条供应链。每一根枪管在制造时都必须经过努恩兵工厂特有的四次淬火工艺——第一次是纯粹的钢铁铸造，第二次混入矮人提供的碳化物，第三次用矮人符文铁匠的专属炉火回火，第四次在西格玛主教堂的圣钟声中冷却。任何想要伪造这过程的人很快就会发现他的仿制品在开火后不久枪管就会从焊缝处断裂。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "九管枪身——地狱风暴连环炮的核心结构，九根独立枪管环绕中央旋转轴排列",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "地狱风暴连环炮多管火炮努恩兵工厂"
+  ]
+}

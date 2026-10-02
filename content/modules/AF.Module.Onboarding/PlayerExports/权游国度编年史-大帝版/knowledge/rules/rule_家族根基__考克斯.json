@@ -1,0 +1,132 @@
+{
+  "Id": "rule_家族根基__考克斯",
+  "Keywords": [
+    "考克斯",
+    "考克斯家族"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "考克斯家族是河间地的次要贵族，家业处在河网、林地和道路交错的乡间。捕鱼、狩猎、放牧与小块农田支撑地方生活，家族则在更强大的领主之间履行义务。这样的家门很少决定七国大势，却必须承担大势压下来时最具体的后果：征兵、供粮、接待队伍，并设法让庄园在洪水与战争之间继续运转。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "river"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "河间地贵族把考克斯看作封臣链条中的小环。只要他们守约、交粮并管住道路，便有存在价值；若强邻相争，小家族的谨慎往往比豪言更能保住血脉。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "river"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "sailor",
+          "artisan"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "河畔百姓不指望考克斯改变天下，只希望他们能赶走偷马贼、修补渡口，并在军队过境时替村庄少交几车粮。小领主离得近，因此善恶都更难隐藏。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待考克斯，会先看它的土地、婚盟、血脉和债务。考克斯家族是河间地的小家门，土地与河流生计紧密相连，并在强大封臣网络中求存。家徽是门面，能否保护封地、兑现婚约并在危机中召集人马，才是家族真正的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起考克斯时，记得的是谁在营火边分过粮、谁把他们留在城外、谁在败局里仍站在旗旁。考克斯家族是河间地的小家门，土地与河流生计紧密相连，并在强大封臣网络中求存。家族名声最终要落到具体的人和具体的命令上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意考克斯留下的仪式、墓地和传承。考克斯家族是河间地的小家门，土地与河流生计紧密相连，并在强大封臣网络中求存。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见考克斯。考克斯家族是河间地的小家门，土地与河流生计紧密相连，并在强大封臣网络中求存。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "考克斯：考克斯家族是河间地的小家门，土地与河流生计紧密相连，并在强大封臣网络中求存。"
+  ]
+}

@@ -1,0 +1,131 @@
+{
+  "Id": "rule_家族根基__贝尔摩尔家族",
+  "Keywords": [
+    "贝尔摩尔家族"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "贝尔摩尔家族以洪歌城为席位，是艾林谷的贵族家门，紫底上的六枚银铃构成其家徽。洪歌城坐落于群山与谷地道路之间，家族权力依靠农庄、牧地、山口和响应鹰巢城征召的骑士维持。铃声可以召集守卫、庆祝婚礼，也能在山谷中传递警讯；对贝尔摩尔而言，体面不只存在于宴席，还存在于道路是否畅通、山地氏族是否越界和属民能否安度冬季。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vale"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "谷地贵族把贝尔摩尔视作有分量的山谷封臣。洪歌城的银铃很容易被记住，但真正重要的是他们能否守住山道、按时集结，并在艾林诸侯争论时保持信用。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vale"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "notable",
+          "artisan"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "洪歌城的牧人和农户熟悉远处传来的铃声。喜庆时它意味着婚宴，警戒时它意味着收拢牲畜、关紧家门；他们希望贝尔摩尔的骑手总比劫掠者先到。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待贝尔摩尔家族，会先看它的土地、婚盟、血脉和债务。贝尔摩尔家族统治谷地洪歌城，六枚银铃纹章、山谷道路和古老封臣关系共同维系家名。家徽是门面，能否保护封地、兑现婚约并在危机中召集人马，才是家族真正的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起贝尔摩尔家族时，记得的是谁在营火边分过粮、谁把他们留在城外、谁在败局里仍站在旗旁。贝尔摩尔家族统治谷地洪歌城，六枚银铃纹章、山谷道路和古老封臣关系共同维系家名。家族名声最终要落到具体的人和具体的命令上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意贝尔摩尔家族留下的仪式、墓地和传承。贝尔摩尔家族统治谷地洪歌城，六枚银铃纹章、山谷道路和古老封臣关系共同维系家名。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见贝尔摩尔家族。贝尔摩尔家族统治谷地洪歌城，六枚银铃纹章、山谷道路和古老封臣关系共同维系家名。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "贝尔摩尔家族：贝尔摩尔家族统治谷地洪歌城，六枚银铃纹章、山谷道路和古老封臣关系共同维系家名。"
+  ]
+}

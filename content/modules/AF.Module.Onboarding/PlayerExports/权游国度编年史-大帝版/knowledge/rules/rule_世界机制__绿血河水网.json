@@ -1,0 +1,156 @@
+{
+  "Id": "rule_世界机制__绿血河水网",
+  "Keywords": [
+    "绿血河",
+    "多恩河流",
+    "绿血河孤儿",
+    "水上商路"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "绿血河由多恩内陆河流汇成，穿过炎热土地，在板条镇方向注入夏日海。水源使河岸能够发展果园、田地、渡口与市集，也让货物从内陆转上浅底船。洛伊拿人后裔中的绿血河孤儿长期居住在船上，以贸易、歌谣和水路保存自己的文化记忆；他们没有忘记娜梅莉亚带来的迁徙。河流水位、沙洲和旱季会改变可航路线，井渠和取水权因此同样是政治。对多恩而言，控制水并不只是占据河岸，而是维持各处居民能继续分享这条稀少生命线。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "sailor",
+          "merchant",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "绿血河孤儿与船商把河道当作家园和道路，熟悉每处浅滩与市集。岸上领主的边界会变，水上人记得的是哪段水在旱季仍能过船。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "河岸农人与匠人关心灌溉顺序、井渠维护和渡费。上游多截一层水，下游便不是少一次丰收，而可能少一个村庄。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "多恩领主知道河流既运粮也运兵，祭司与老人则提醒水上文化不只是税源。粗暴封河会得到短期控制，也会把熟悉航道的人推向敌对。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人把绿血河看成可执行的秩序。绿血河水网：多恩沙地中的生命线，汇聚支流后流向板条镇与夏日海，承载灌溉、船居者和内陆贸易。它是否有效，取决于谁能授予权利、收取代价，并在违约时让判决真正落地。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起绿血河时，关心它如何影响道路、命令和安全。绿血河水网：多恩沙地中的生命线，汇聚支流后流向板条镇与夏日海，承载灌溉、船居者和内陆贸易。远方的制度只有在营火、城门和驿站里能被执行，才不是空话。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者会从习惯和象征理解绿血河。绿血河水网：多恩沙地中的生命线，汇聚支流后流向板条镇与夏日海，承载灌溉、船居者和内陆贸易。一项规矩若被反复实践，便会进入礼仪、手艺和祈祷；若只靠恐惧维持，危机一来就会露出裂缝。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民感受到绿血河的方式最小也最准确。绿血河水网：多恩沙地中的生命线，汇聚支流后流向板条镇与夏日海，承载灌溉、船居者和内陆贸易。他们记得税、粮、劳役、赈济和谁能为他们说话；宏大的名称，最终都要落在一家人的饭锅旁。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "绿血河水网：多恩沙地中的生命线，汇聚支流后流向板条镇与夏日海，承载灌溉、船居者和内陆贸易。"
+  ]
+}

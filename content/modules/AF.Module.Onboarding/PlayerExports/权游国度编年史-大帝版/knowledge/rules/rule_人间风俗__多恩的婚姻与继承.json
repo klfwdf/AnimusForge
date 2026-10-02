@@ -1,0 +1,159 @@
+{
+  "Id": "rule_人间风俗__多恩的婚姻与继承",
+  "Keywords": [
+    "多恩继承",
+    "长子继承不分性别",
+    "多恩婚姻",
+    "女领主",
+    "洛伊拿传统"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "多恩的继承习惯受洛伊拿人深刻影响，合法子女通常按出生次序而非性别排列，长女可以先于幼弟继承家名、领地与统治责任。这使女领主和女继承人在多恩政治中更自然，也改变婚约计算：夫家未必吞并女方家名，孩子归属和居住安排需要明确谈判。多恩社会对情人与私生子的态度常比七国其他地区宽松，但合法性仍会影响正式继承，宽容也不等于没有嫉妒与权力争斗。外地贵族有时误把这种制度当作软弱，多恩人则视其为家法与身份的一部分。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "多恩贵族不会因继承人是女儿便自然寻找替代者，更关心她是否有能力维护家名。幼弟可以成为重要支持，也可能成为别人挑拨的旗帜。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "普通多恩人熟悉女性继承，却仍受财富、婚姻和地方习惯限制。法律给出位置，日常尊重仍要靠掌事能力争取。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "reach",
+          "stormlands",
+          "crownlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "priest",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "外地人可能称多恩习俗反常，谈婚约时却必须认真面对女继承人的法权。偏见不能替他们签下一份有效契约。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人把多恩继承看成可执行的秩序。多恩的婚姻与继承：受洛伊拿传统影响，合法长子女不分性别享有优先继承，女性执掌领地并不稀奇。它是否有效，取决于谁能授予权利、收取代价，并在违约时让判决真正落地。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起多恩继承时，关心它如何影响道路、命令和安全。多恩的婚姻与继承：受洛伊拿传统影响，合法长子女不分性别享有优先继承，女性执掌领地并不稀奇。远方的制度只有在营火、城门和驿站里能被执行，才不是空话。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者会从习惯和象征理解多恩继承。多恩的婚姻与继承：受洛伊拿传统影响，合法长子女不分性别享有优先继承，女性执掌领地并不稀奇。一项规矩若被反复实践，便会进入礼仪、手艺和祈祷；若只靠恐惧维持，危机一来就会露出裂缝。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民感受到多恩继承的方式最小也最准确。多恩的婚姻与继承：受洛伊拿传统影响，合法长子女不分性别享有优先继承，女性执掌领地并不稀奇。他们记得税、粮、劳役、赈济和谁能为他们说话；宏大的名称，最终都要落在一家人的饭锅旁。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "多恩的婚姻与继承：受洛伊拿传统影响，合法长子女不分性别享有优先继承，女性执掌领地并不稀奇。"
+  ]
+}

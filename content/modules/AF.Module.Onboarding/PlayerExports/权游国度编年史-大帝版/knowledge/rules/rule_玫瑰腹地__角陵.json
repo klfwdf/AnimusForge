@@ -1,0 +1,153 @@
+{
+  "Id": "rule_玫瑰腹地__角陵",
+  "Keywords": [
+    "角陵",
+    "红山脉",
+    "军队"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "角陵是塔利家族位于河湾地西南的传统城堡，坐落在向红山脉抬升的丘陵地带。塔利家的领地不像高庭那样以宫廷繁华著称，却拥有适合养马、放牧和耕作的土地，并能向河湾地诸侯提供训练有素的骑士与步兵。角陵的山丘位置使它既能观察西南道路，也能把河湾平原与多恩边缘的消息联系起来。这里的军事传统并不意味着居民只为战争而活；城堡的稳定还依赖佃农、粮仓、马厩、铁匠和季节性劳作。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "reach"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "季节一变，角陵周围的人首先检查山泉、牧坡、林木、积雪和驮畜能走的窄路。当地家庭还要依靠谷物、葡萄酒、果园、牧场与曼德河沿线的集市；任何一处道路、井泉或码头失灵，代价都会先落到他们身上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "reach"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "把角陵守在手里，需要算清隘口、高坡、瞭望点与翻山所需的粮秣。在七国的封建秩序中，角陵的归属牵动封臣义务、税粮和征召；守军能否吃饱、援兵能否按时抵达，比议事厅里的豪言更能决定这处据点是否可靠。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "scholar",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "角陵在商路上的轻重，可以从驮队脚程、坡道损耗、山口税与冬季封路看出来。他们还会辨认河湾地的口音、法令和通行凭据；名声可以从酒馆传得很远，真正的路程仍须由车轮、船桨或马蹄丈量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "对封臣而言，角陵既是一份权利，也是一笔必须偿还的责任。在七国的封建秩序中，角陵的归属牵动封臣义务、税粮和征召；旗帜更换之后，道路、粮仓、旧债和地方信任仍得由新主人逐一接手。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "对赶在天黑前投宿的人来说，角陵意味着落石、岔路、背风宿营处和最近的山泉。能补给、能避险、能找到向导，便值得在行程里标明；若三样都没有，再响亮的家名也救不了迷途者。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "石木会朽，角陵仍靠匠人照料采石、伐木、铁件、山羊毛和贴着山势修筑的墙基，靠神职者保存七神、骑士传奇与园丁王时代留下的门第记忆。一处据点因而不只是领主的大厅，也是婚丧、誓言、劳作与地方记忆反复发生的场所。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "百姓不靠族谱判断角陵好坏，他们看收成和征税。他们关心谷物、葡萄酒、果园、牧场与曼德河沿线的集市，也看征粮后是否留下种子、灾年时城门是否开启；远方人看见纹章，他们看见的是明日有没有饭吃。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "角陵：角陵是塔利家族位于河湾地西南的传统城堡，坐落在向红山脉抬升的丘陵地带。塔利家的领地不像高庭那样以宫廷繁华著称，却拥有适合养马、放牧和耕作的土地，并能向河湾地诸侯提供训练有素的骑士与步兵。角陵的山丘位置使它既能观察西南道路，也能把河湾平原与多恩边缘的消息联系起来。这里的军事传统并不意味着居民只为战争而活；城堡的稳定还依赖佃农、粮仓、马厩、铁匠和季节性劳作。"
+  ]
+}

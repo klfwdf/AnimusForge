@@ -1,0 +1,17 @@
+{
+  "Id": "rule_卡拉克·甘图克__卡拉克·甘图克",
+  "Keywords": ["卡拉克甘图克_KT", "甘图克城塞_KT", "锤拳要塞_KT", "甘图克铁匠城_KT", "甘图克矮人领地_KT", "甘图克国王_KT"],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":null,"IsFemale":null,"IsClanLeader":null,"SkillMin":null},"Content":"卡拉克·甘图克是灰色山脉中部以战锤锻造闻名的矮人城塞，由斯卡格·锤拳国王统治。此地的铁匠工艺独步灰色山脉，出产的矮人战锤在旧世界各国军队中都有使用者。城塞的标志是一座巨型石雕战锤，立在城门上方。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":["sturgia"],"KingdomIds":null,"SettlementIds":null,"Roles":null,"IsFemale":null,"IsClanLeader":null,"SkillMin":null},"Content":"卡拉克·甘图克——锤之圣殿！斯卡格王亲手锻造的那把「山碎锤」重达九十磅，曾一锤砸穿了一头巨魔的三层头骨。吾族打造战锤的秘法传了数千年：七层折叠、十三次淬火、在满月之夜最后一次击打。甘图克战锤一旦出手，从不回头。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":["lord"],"IsFemale":null,"IsClanLeader":null,"SkillMin":null},"Content":"卡拉克·甘图克的军工价值在于战锤的质量与产量。帝国步兵和巴托尼亚骑士都青睐甘图克战锤——其重心设计和淬火工艺使其穿透力强于普通战锤四成。斯卡格·锤拳国王的军械库常年保持数千把战锤的库存以供应盟友。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":["lord","notable","wanderer"],"IsFemale":null,"IsClanLeader":null,"SkillMin":{"Steward":120}},"Content":"卡拉克·甘图克的锻造产业链实现了高度集约化。城塞拥有灰色山脉最完备的锻锤车间——十台水力驱动的大型锻锤日夜运作，年产量可达两万把各式战锤。生产流程从铁矿分拣、粗炼、精锻、淬火到开刃共经过十七道工序，每道工序由专门的工匠家族负责，代代传承。战锤之外，甘图克还生产铁砧和铁匠工具——这些是旧世界各铁匠铺的必备基础装备，需求稳定且量大。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":["lord"],"IsFemale":true,"IsClanLeader":null,"SkillMin":null},"Content":"甘图克的女性矮人负责战锤握柄的皮革包裹和纹样雕刻。这不仅是技术活，还包含符文祝福——我在每一根握柄上刻下家族的锻造纹章，这是甘图克战锤不可仿冒的标志。一把真正的甘图克战锤握柄上必有十二道雕刻横纹，少一道便是赝品。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":["lord"],"IsFemale":null,"IsClanLeader":true,"SkillMin":null},"Content":"我们家族为甘图克城塞锻造兵器的历史比铁匠公会成立还要早两千年。每一位族长的姓氏后都冠以「铁锤」之号——这是斯卡格国王的祖先赐予我们家族的永久荣誉称号。锻造技艺在家族中只能口授，绝不外传。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":["wanderer"],"IsFemale":null,"IsClanLeader":null,"SkillMin":null},"Content":"甘图克城塞的锻造噪音是我听过最震耳欲聋的声响。即使在城塞外围几里外，地面也随着水力锻锤的打击而微微震动。矮人铁匠们在这地狱般的噪声中有条不紊地工作，仿佛那些巨响只是一首古老的锻造歌谣。一个矮人铁匠告诉我，聋了以后锻造效率反而更高。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":["notable"],"IsFemale":null,"IsClanLeader":null,"SkillMin":null},"Content":"甘图克战锤是旧世界最稳定的军工投资品。帝国州军每年采购定额在三千把左右，巴托尼亚骑士在过去十年内的订单增加了两倍。唯一的限制是产能——甘图克矮人不愿为追求产量而牺牲品质，因此订货通常需要提前一年预约。"}
+  ],
+  "TextMappings": [{"SourceText":"卡拉克·甘图克是灰色山脉中以战锤锻造工艺闻名于世的矮人城塞，由斯卡格·锤拳国王统治","Kind":null,"TargetId":null,"AgeMin":null,"AgeMax":null,"EmptyValueText":null,"TrueText":null,"FalseText":null}],
+  "RagShortTexts": ["卡拉克甘图克灰色山脉矮人战锤锻造城塞"]
+}

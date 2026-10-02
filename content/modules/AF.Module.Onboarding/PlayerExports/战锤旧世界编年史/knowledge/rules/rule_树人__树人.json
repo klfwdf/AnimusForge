@@ -1,0 +1,210 @@
+{
+  "Id": "rule_树人__树人",
+  "Keywords": [
+    "树人",
+    "杜尔苏",
+    "森林化身",
+    "远古守护者",
+    "精魂",
+    "树人树精",
+    "沉睡者",
+    "森林意志",
+    "根须之怒"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "树人是艾索洛伦中最古老、最强大的森林精魂——它们是远古树木被自然之灵附身后形成的活体巨人。一株愤怒的树人足以摧毁整座城堡的城墙，它们的树根能撕裂大地，树枝能扫平步兵阵列。其中最著名的树人杜尔苏据说是所有树精中最年长的，已经存活了数万年之久。这些远古守护者平时深眠于森林最隐秘之处，只有艾索洛伦面临重大威胁时才会被唤醒。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "树人不是我们的仆人——绝不是。它们是远古的盟友、是森林最古老的灵魂、是在精灵甚至还没有诞生之前就已经在这片土地上扎根的存在。我们敬畏它们，以古老森林之语与它们交流。杜尔苏——那是所有树人中最古老也最令人心痛的一位：它曾经是最温和的守护者，但在目睹了太多森林被凡人砍伐焚烧之后，它内心的愤怒已经凝结为一种冰冷的、伺机报复的沉默。唤醒一个树人是极其重大的决定——它们一旦被激怒极难平息，它们的愤怒会焚烧整片区域直至寸木不生。有时在狂野狩猎期间，一些较年轻的树人会自愿加入追猎的行列，它们沉重的脚步如同大地的心跳，为我们的猎杀提供最壮丽的配乐。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "树人是木精灵军队中最无法以常规战术应对的单位。它们的体型、力量和耐久力超越了任何凡间生物，将之视为重型攻城武器更为准确。对抗树人的唯一有效方法是大量集中火力——火炮、火焰投射或魔法攻击——在它们逼近我军阵线之前将其摧毁或重伤。树人极度畏惧火焰（这是显而易见的），但也具备惊人的恢复能力。在战场上识别树人的类别至关重要：较年轻的树精虽然危险但仍有弱点，而像杜尔苏那样的远古树人则几乎不可阻挡。如果你看到敌方阵线中出现了一尊移动的巨树，重新评估你的整场战役——因为你面对的不仅仅是精灵军队，而是艾索洛伦本身的意志。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 100
+        },
+        "IdentityIds": null
+      },
+      "Content": "树人在魔法生物学上的本质是'自然精魂的物质化寄生共生体'——一个由原始自然意识（精魂）与一株达到一定年龄阈值的大树融合而成的复合实体。这种融合与亡灵魔法的强制绑定不同——树人的精魂与树木之间的关系是共生的，精魂在融合过程中获得了在物理世界行动的躯壳，而树木获得了意识和超越生物学限制的生长潜力。树人的年龄与力量呈指数关系：刚形成的树精（约500-1000年的树木基础）大约有普通巨人两倍的战斗力，而像杜尔苏这样年龄估计在20000年以上的远古树人，其能力在理论上接近于一个小型自然神灵。杜尔苏的历史尤其值得关注——它在长须之战期间曾目睹矮人伐木队烧毁了艾索洛伦的一大片林地，这一事件对其造成了永久性的精神创伤，使得它此后对所有使用斧头和火把的生物保持一种近乎偏执的敌意。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "对于一位在艾索洛伦长大的精灵女性来说，树人不只是武器或守护者——它们是长者、是叔祖、是沉默的见证者。当我还是孩子时，最古老的白柳树人祖母曾允许我爬上它的苔藓覆盖的枝干，教会我如何聆听树皮内部的液流声——那是树木之间交流的语言，缓慢到人类和年轻精灵都无法察觉。树人祖母已经很久没有移动过了，它的根系深深扎入了一片远古战场下方的土层，在那里持续净化着数千年前渗入泥土的旧毒。这种代价——放弃移动、放弃成长、持续用自身去中和历史的毒害——是树人才真正理解的牺牲，不是任何血肉之躯能够承担的。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "作为林地议会的族长，我的另一项关键职责是维持家族领地内树人的休眠稳定性。唤醒树人的决定不是由奥莱恩或我的家族单方面做出的——必须经过与沉睡树人的精魂进行古老森林语对话，在获得其明确同意之后才能请求其苏醒战斗。这种对话可能需要数十年：首先将家族最古老的歌者安置在树人脚下持续吟唱唤醒之歌，每天日落时以泉水浇灌其根部，然后等待——有时等待一代精灵——直到树人的内部树液压力达到觉醒临界值。未经精魂同意的强制唤醒是绝对禁忌：曾经有个鲁莽的年轻精灵用血魔法强行激活了一棵沉睡的古橡精，结果那树人醒来后不分敌我地摧毁了方圆数里的一切，最后需要杜尔苏亲自前来将其'安抚'——也就是将其劈成两半。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "在世界边缘山脉的矮人废墟中，我遇到过一个老矮人矿工，他用一种非常务实的方式描述过树人：'不要在森林里焚烧任何东西。即使你冷得要死，即使狼群在周围嚎叫。一棵活树燃烧的声音会吵醒地下那些不该醒的东西。'他说的不是龙，不是恶魔——他说的是深埋于地底、根须延伸到森林每一个角落的远古树精系统。矮人在地下最深处的矿道中偶尔会遇到活着的树根——在世界边缘山脉离最近的森林数百英里之下，那些树根仍然是温热的、仍在缓慢脉动。他声称有一次他的矿镐不小心刺穿了一根特别粗的树根，三天后整条矿道被某种从岩石裂缝中涌入的青苔和藤蔓完全封死。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "从木材和建筑行业的角度看，树人代表着一种无法被理性经济模型量化的物理风险。帝国帝国建筑师公会有一份内部机密评估报告，试图计算在战争期间如果有远古树人攻击帝国城墙——城墙需要多厚才能抵抗树人的正面冲击。答案是：标准双层石墙对年轻树精有效，对杜尔苏级树人完全无意义——他的根须可以在一刻钟内穿越并瓦解任何非符文加固的石基结构。这份报告最令人不安的结论是：如果杜尔苏决定攻击阿尔道夫，现有的城市防御体系（包括帝国炮兵学院的强化火炮阵地）无法在任何合理时间内阻止他抵达西格玛大教堂。当然，前提是有人愚蠢到触发杜尔苏的攻击——这大概需要砍掉艾索洛伦的心脏树，任何有理智的人都不会尝试。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "树人——远古树木与自然精魂融合形成的活体守护巨人",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "树人杜尔苏森林化身"
+  ]
+}

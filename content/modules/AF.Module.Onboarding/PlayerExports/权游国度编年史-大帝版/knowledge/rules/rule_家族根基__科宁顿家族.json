@@ -1,0 +1,152 @@
+{
+  "Id": "rule_家族根基__科宁顿家族",
+  "Keywords": [
+    "科宁顿家族"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "科宁顿家族统治风暴地海岸附近的鹫巢堡，红白相对的双狮鹫是其家徽。家族曾拥有更高爵位和更广土地，琼恩·科宁顿在篡夺者战争中失势并流亡后，家门受到削封，昔日声望留下荣耀，也留下沉重阴影。鹫巢堡的主系仍需靠庄园、海岸道路、婚盟和封臣义务生存；一名流亡者的选择能改变家族处境，却不能抹去留在故土的亲族与百姓。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "stormlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "风暴地贵族提起科宁顿，既记得他们曾经显赫，也记得王权如何惩罚失败。鹫巢堡提醒每个封臣：个人忠诚可能被歌颂，代价却常由整个家门和数代继承人承担。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "stormlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "notable",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "鹫巢堡附近的人更在意削封后谁来修路、守岸和裁断争执。远方流亡者的荣辱会进入歌谣，留下的人却必须继续耕田、纳税并面对每一次换旗。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "crownlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "王领人物往往从旧日叛乱与王家惩处看科宁顿；有人认为削封理所应当，也有人明白过度羞辱一个古老家门，只会让旧忠诚在沉默中变得更尖锐。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待科宁顿家族，会先看它的土地、婚盟、血脉和债务。科宁顿家族以鹫巢堡为根基，红白双狮鹫家徽见证其昔日显赫、失势与仍未消散的风暴地身份。家徽是门面，能否保护封地、兑现婚约并在危机中召集人马，才是家族真正的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起科宁顿家族时，记得的是谁在营火边分过粮、谁把他们留在城外、谁在败局里仍站在旗旁。科宁顿家族以鹫巢堡为根基，红白双狮鹫家徽见证其昔日显赫、失势与仍未消散的风暴地身份。家族名声最终要落到具体的人和具体的命令上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意科宁顿家族留下的仪式、墓地和传承。科宁顿家族以鹫巢堡为根基，红白双狮鹫家徽见证其昔日显赫、失势与仍未消散的风暴地身份。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见科宁顿家族。科宁顿家族以鹫巢堡为根基，红白双狮鹫家徽见证其昔日显赫、失势与仍未消散的风暴地身份。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "科宁顿家族：科宁顿家族以鹫巢堡为根基，红白双狮鹫家徽见证其昔日显赫、失势与仍未消散的风暴地身份。"
+  ]
+}

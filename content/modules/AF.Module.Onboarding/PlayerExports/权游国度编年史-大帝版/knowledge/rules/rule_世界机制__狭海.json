@@ -1,0 +1,161 @@
+{
+  "Id": "rule_世界机制__狭海",
+  "Keywords": [
+    "狭海",
+    "维斯特洛与厄索斯",
+    "自由城邦航路",
+    "流亡者航线"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "狭海位于维斯特洛东岸与厄索斯自由城邦之间，最窄处使跨海航行远短于远洋远征。君临、龙石岛、谷地、多恩与布拉佛斯、潘托斯、密尔、泰洛西、里斯等地由此形成密集贸易和政治联系。谷物、酒、木材、羊毛、香料、武器和奴隶船在不同航线上出现，雇佣兵与流亡贵族也借海峡改变命运。航程虽相对短，风暴、海盗、封锁和季节仍会杀人；狭海从不是隔绝世界的空隙，而是一条不断搬运财富、战争与谣言的道路。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "crownlands",
+          "dragonstone",
+          "vale",
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "sailor",
+          "merchant",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "东岸港口的人把狭海当作生计，常比内陆贵族更早知道自由城邦发生了什么。海对他们不是异域边界，而是一条会涨价、会封锁的街道。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire",
+          "pentoshi",
+          "myrish",
+          "tyroshi",
+          "lyseni"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "wanderer",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "自由城邦商旅把维斯特洛看作市场、雇主或避难所。一次王位争端在他们眼里会迅速变成粮价、船价与雇佣契约。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "统治者看见舰队与登陆点，战士看见去异乡谋生的路，祭司看见信仰跨海传播。狭海很窄，窄到任何一岸都无法长期假装另一岸不存在。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人把狭海看成可执行的秩序。分隔又连接维斯特洛与西厄索斯的繁忙水域，商船、佣兵、流亡者和政治消息在两岸往返。它是否有效，取决于谁能授予权利、收取代价，并在违约时让判决真正落地。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起狭海时，关心它如何影响道路、命令和安全。分隔又连接维斯特洛与西厄索斯的繁忙水域，商船、佣兵、流亡者和政治消息在两岸往返。远方的制度只有在营火、城门和驿站里能被执行，才不是空话。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者会从习惯和象征理解狭海。分隔又连接维斯特洛与西厄索斯的繁忙水域，商船、佣兵、流亡者和政治消息在两岸往返。一项规矩若被反复实践，便会进入礼仪、手艺和祈祷；若只靠恐惧维持，危机一来就会露出裂缝。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民感受到狭海的方式最小也最准确。分隔又连接维斯特洛与西厄索斯的繁忙水域，商船、佣兵、流亡者和政治消息在两岸往返。他们记得税、粮、劳役、赈济和谁能为他们说话；宏大的名称，最终都要落在一家人的饭锅旁。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "狭海：分隔又连接维斯特洛与西厄索斯的繁忙水域，商船、佣兵、流亡者和政治消息在两岸往返。"
+  ]
+}

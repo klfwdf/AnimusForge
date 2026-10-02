@@ -1,0 +1,298 @@
+﻿{
+  "Id": "rule_至高王蒙",
+  "Keywords": [
+    "至高王蒙",
+    "蒙",
+    "巴旦尼亚",
+    "卡·班塞斯",
+    "船队"
+  ],
+  "RagShortTexts": [
+    "至高王蒙消失海上，巴旦尼亚人盼船队归来"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "至高王蒙是巴旦尼亚传说中最伟大的统治者，一位在古老年代统一了所有氏族的传奇人物。据说他曾在最黑暗的时代率领巴旦尼亚人击退了外敌，但最终在一场大战后消失于海上。巴旦尼亚人相信，蒙并没有真正死去——总有一天他会率领船队归来，拯救自己的子民于水火之中。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "蒙是我们巴旦尼亚人心中永不熄灭的火。在帝国人、瓦兰迪亚人还没有踏上这片土地的时候，蒙就统一了所有氏族，让我们第一次站在一起面对外敌。他消失在海上的那天，整个巴旦尼亚都在哭。但我们相信他没有死——在卡·班塞斯的峭壁上，心怀信念的人能在晴朗的日子里看到他的船队从远方归来。那一天，所有失去的土地都会回到我们手中。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "每一个巴旦尼亚的伯爵都熟知蒙的故事。他是我们第一个真正意义上的至高王，也是至今最伟大的那一个。在他之前，巴旦尼亚只是一盘散沙；在他之后，我们至少知道了什么叫做团结。那片从卡·班塞斯峭壁上能望到的瓦尔切格湾，据说就是他当年扬帆而去的方向。蒙的传说不仅是我们对过去的怀念，也是我们对未来的期望。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "villager",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "老人们说，蒙是森林之灵选中的王。他统一了巴旦尼亚，他的船队能在海面上飞驰，他的剑能劈开高山。后来他消失了——有人说他去了海那边的仙境，总有一天会回来。每年春天，卡·班塞斯那边都有人爬上艾塔·德鲁因的峭壁往北看，想看看他回来了没有。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "warrior"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "巴旦尼亚的勇士在出征前，有人会向蒙祈祷。他不是神，但他比神更近——他曾经是我们之中的一员，一个真正的巴旦尼亚人。如果他能在我们的时代归来，率领所有氏族重新统一，那些瓦兰迪亚骑士和帝国军团就别想再踩进我们的森林一步。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "scholar",
+          "elder"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "关于蒙的历史，巴旦尼亚人没有文字记载，一切都保存在歌谣和口述传说中。可以确定的是，他生活在帝国扩张之前的一个动荡年代，是第一位被所有氏族共同推举为至高王的领袖。关于他消失的原因，不同氏族有不同的说法——有人说他战死在了海上，有人说他带着亲卫队驶向了传说中的永生之地。但所有氏族都同意一点：他还会回来。这个信念已经成为了巴旦尼亚人在被外族不断蚕食的土地上坚持下去的精神支柱。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "巴旦尼亚人整天念叨的那个至高王蒙，在我们帝国人看来不过是个蛮族传说。他们说蒙会回来拯救他们——可这么多年过去了，蒙的船队在哪儿？倒是我们帝国的军团一波又一波地开进了他们的森林。不过话说回来，巴旦尼亚人打了这么多年还没被征服，那个传说的凝聚力恐怕确实不能小看。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "至高王蒙是巴旦尼亚口述史的核心人物。根据帝国边疆官员的记录，巴旦尼亚人普遍相信蒙是一位古代英雄王，在一次远征中消失于北方海域，并将于未来危急时刻归来。这种“沉睡王”或“归来王”的神话类型在卡拉迪亚边远民族中并不罕见，但蒙的传说在巴旦尼亚的政治动员中发挥了极为实际的作用——每当外敌入侵时，关于蒙即将归来的传言便会迅速在各氏族间流传，起到凝聚人心的效果。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "巴旦尼亚人信的那个蒙，我们瓦兰迪亚人也听说过。卡·班塞斯那地方我们打下来之后，发现当地人总喜欢蹲在峭壁上往北边看，就等着看他们那个死了不知多少年的老王回来。说实话，我们瓦兰迪亚人只信看得见的东西——男爵的城堡、骑士的长枪、手里的第纳尔。不过巴旦尼亚人打起来那股不要命的劲头，大概跟这个蒙也有点关系。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "卡·班塞斯落入我们手里之后，巴旦尼亚人还在念叨蒙回来。说实话这有点烦人，但也说明一个问题——他们在现实中打不过我们，只能盼着传说里的人来救他们。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "巴旦尼亚的蒙？我们在瓦尔切格湾那边的渔民说，巴旦尼亚人相信他们的老王会从海上回来。我们斯特吉亚人也有类似的传说，死去的大英雄会从风雪中归来。不过我们不会坐在峭壁上干等——我们选择自己去找他，或者在战歌里与他重逢。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "巴旦尼亚人相信一个叫蒙的古代至高王会回来拯救他们，年年有人在峭壁上等着看他的船队。我们阿塞莱人的苏丹不需要等什么归来——苏丹现在就坐在撒纳拉的宝座上。不过那些巴旦尼亚人在那么多敌人中间还没被灭掉，那个蒙大概确实给了他们不认命的骨头。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "巴旦尼亚人信的那个蒙，在草原上听起来像一首老歌。我们也有自己传说中的大汗，死后会化作狂风回来为草原上的勇士助阵。不过我们库赛特人不等着谁回来——我们自己去把想要的东西抢回来。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer",
+          "mercenary"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "巴旦尼亚人对至高王蒙的信仰让我觉得有点悲凉。那些在卡·班塞斯峭壁上望着北方的人，等了一代又一代，蒙的船队从来没出现过。现在那片地方连巴旦尼亚的旗都不飘了，改飘瓦兰迪亚和斯特吉亚的旗了。但他们的那些老奶奶还是会跟孩子们讲蒙的故事，眼睛亮得跟亲眼见过蒙一样。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "steward": 150
+        }
+      },
+      "Content": "至高王蒙在巴旦尼亚文化中的地位，相当于一个“救世主式的初代统一者”。他的传说结构包含了多个典型的英雄叙事元素：危难时刻的统一、对外敌的胜利、神秘消失于海上、预言中的归来。这种叙事在政治上具有极强的动员功能——在巴旦尼亚被帝国、瓦兰迪亚和斯特吉亚三面挤压的困境中，蒙的归来预言为各氏族提供了一个共享的希望符号。卡·班塞斯作为传说中能望见蒙归来的地点，也因此具有了特殊的宗教和政治意义，尽管如今这片土地已落入外族之手。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "至高王蒙",
+      "Kind": "bound_hero_name",
+      "TargetId": "__bound_hero__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": "卡·班塞斯",
+      "Kind": "bound_settlement_name",
+      "TargetId": "__bound_settlement__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}

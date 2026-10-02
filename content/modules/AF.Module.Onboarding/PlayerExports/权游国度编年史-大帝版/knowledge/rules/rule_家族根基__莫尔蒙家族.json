@@ -1,0 +1,152 @@
+{
+  "Id": "rule_家族根基__莫尔蒙家族",
+  "Keywords": [
+    "莫尔蒙家族",
+    "黑熊",
+    "昂首屹立"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "莫尔蒙家族以日落之海中的熊岛为根基，家徽为绿底黑熊，箴言“昂首屹立”。传说史塔克先祖从铁民手中赢得熊岛后将其赐给莫尔蒙；岛屿贫瘠、多林且长期遭受海上劫掠，家族远不如南方贵族富裕。熊岛妇女也常学习持械，因为男人出海、打渔或作战时，袭击不会等待。家传瓦雷利亚钢剑“长爪”属于莫尔蒙历史，但个人离家或加入守夜人不能被写成整个家族改变阵营。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "北境贵族尊敬莫尔蒙，往往不是因为熊岛富裕，而是因为那里贫瘠得容不得虚饰。岛上缺少良田，却守着北境西海岸；莫尔蒙男女都必须懂得拿起武器。绿底黑熊与“昂首屹立”不是宴会辞令，而是一个小家族面对海盗、寒冷和匮乏时的生存姿态。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "熊岛人会说，南方骑士需要侍从替他扣甲，岛上的女人却可能一手抱孩子、一手提斧。这里的人不把贫穷说成美德，只知道木屋要修、鱼网要补、海上若见长船便人人都得上岸。莫尔蒙是否值得追随，要看黑熊旗出现时是不是站在最危险的地方。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "sailor",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "铁民看熊岛，是看一块从海上难啃的旧骨头。它不富得值得长久占据，却近得足以袭掠；岛民世代防海，使每个小湾都可能藏着弓手和斧头。莫尔蒙在西海岸的名声，正是一次次把来客逼回浪里积出来的。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待莫尔蒙家族，会先看它的土地、婚盟、血脉和债务。北境熊岛的绿底黑熊家族，箴言“昂首屹立”。贫瘠岛屿、铁民劫掠、全民守岛与家传剑长爪塑造其传统；个人流亡或加入守夜人不代表本家改换阵营。家徽是门面，能否保护封地、兑现婚约并在危机中召集人马，才是家族真正的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起莫尔蒙家族时，记得的是谁在营火边分过粮、谁把他们留在城外、谁在败局里仍站在旗旁。北境熊岛的绿底黑熊家族，箴言“昂首屹立”。贫瘠岛屿、铁民劫掠、全民守岛与家传剑长爪塑造其传统；个人流亡或加入守夜人不代表本家改换阵营。家族名声最终要落到具体的人和具体的命令上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意莫尔蒙家族留下的仪式、墓地和传承。北境熊岛的绿底黑熊家族，箴言“昂首屹立”。贫瘠岛屿、铁民劫掠、全民守岛与家传剑长爪塑造其传统；个人流亡或加入守夜人不代表本家改换阵营。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见莫尔蒙家族。北境熊岛的绿底黑熊家族，箴言“昂首屹立”。贫瘠岛屿、铁民劫掠、全民守岛与家传剑长爪塑造其传统；个人流亡或加入守夜人不代表本家改换阵营。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "莫尔蒙家族：北境熊岛的绿底黑熊家族，箴言“昂首屹立”。贫瘠岛屿、铁民劫掠、全民守岛与家传剑长爪塑造其传统；个人流亡或加入守夜人不代表本家改换阵营。"
+  ]
+}

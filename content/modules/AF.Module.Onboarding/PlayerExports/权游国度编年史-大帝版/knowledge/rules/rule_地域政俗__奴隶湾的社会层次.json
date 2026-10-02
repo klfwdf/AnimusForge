@@ -1,0 +1,156 @@
+{
+  "Id": "rule_地域政俗__奴隶湾的社会层次",
+  "Keywords": [
+    "奴隶湾社会",
+    "善主",
+    "贤主",
+    "伟主"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "奴隶湾诸城长期由吉斯卡利主人阶层统治：阿斯塔波的善主、渊凯的贤主、弥林的伟主以不同尊号维护相似的高位，居住于金字塔宅邸，控制土地、贸易、军队训练与奴隶市场。其下有自由商人、工匠、书记、佣兵和依附者，再下则是人数庞大、来源复杂的奴隶，从家仆、矿工、田奴到受训士兵都被价格和用途区分。废奴能够打断买卖，却不会瞬间消除财富、技能、仇怨与供给依赖；旧主人可能隐藏资产，获释者也必须争取粮食、工资、住处和政治声音。任何新秩序都要面对这些层次留下的现实。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "ghiscari"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "主人阶层常把等级说成城市繁荣的自然秩序，强调金字塔、灌溉和贸易由他们维持。失去特权时，他们最先诉诸的往往不是道德，而是粮价、治安与旧契约。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "ghiscari"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "slave",
+          "artisan",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "奴隶与获释者不会把秩序理解成同一件事。能离开主人只是第一步；没有工资、住处和免受报复的力量，自由很容易变成另一种饥饿。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "ghiscari"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "scholar",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵看谁发饷，书记看谁掌握名册，祭司看谁能解释神意。奴隶湾的政治每一次变化，都要经过这些中间人才能真正进入街巷与田地。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人把奴隶湾社会看成可执行的秩序。奴隶湾的社会层次：金字塔贵族、商人行当、自由民与庞大奴隶人口相互依存，解放或复辟都会触动整套城市结构。它是否有效，取决于谁能授予权利、收取代价，并在违约时让判决真正落地。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起奴隶湾社会时，关心它如何影响道路、命令和安全。奴隶湾的社会层次：金字塔贵族、商人行当、自由民与庞大奴隶人口相互依存，解放或复辟都会触动整套城市结构。远方的制度只有在营火、城门和驿站里能被执行，才不是空话。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者会从习惯和象征理解奴隶湾社会。奴隶湾的社会层次：金字塔贵族、商人行当、自由民与庞大奴隶人口相互依存，解放或复辟都会触动整套城市结构。一项规矩若被反复实践，便会进入礼仪、手艺和祈祷；若只靠恐惧维持，危机一来就会露出裂缝。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民感受到奴隶湾社会的方式最小也最准确。奴隶湾的社会层次：金字塔贵族、商人行当、自由民与庞大奴隶人口相互依存，解放或复辟都会触动整套城市结构。他们记得税、粮、劳役、赈济和谁能为他们说话；宏大的名称，最终都要落在一家人的饭锅旁。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "奴隶湾的社会层次：金字塔贵族、商人行当、自由民与庞大奴隶人口相互依存，解放或复辟都会触动整套城市结构。"
+  ]
+}

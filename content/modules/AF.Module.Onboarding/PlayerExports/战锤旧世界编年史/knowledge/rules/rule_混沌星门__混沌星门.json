@@ -1,0 +1,209 @@
+{
+  "Id": "rule_混沌星门__混沌星门",
+  "Keywords": [
+    "混沌星门",
+    "极地之门",
+    "混沌星门星门崩塌",
+    "魔法之源",
+    "混沌星门变异之风",
+    "古圣遗产",
+    "亚空间裂口",
+    "非物质界"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "混沌星门据说是远古时期由不为人知的神族在极地建造的巨大传送装置，它在数万年前崩塌，从此不断向世界倾泻变异之力和魔法能量。北方荒原上的一切扭曲——变异生物、混沌邪力、魔法之风——最终都源自这座崩塌的星门。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "chaos_culture"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "星门是诸神的赐福，而不是诅咒。当它崩塌时，凡世与非物质界之间的薄幕被撕开了一道永不愈合的裂口，四位大能的意志从此可以畅通无阻地流入物质世界。变异不是腐败，而是凡躯在拥抱更高存在的真实形态。那些南方的弱者在星门之力面前瑟瑟发抖，但我们在星门的阴影下变得更强——每一次变异都是力量的赠礼，每一次灵魂的淬炼都更接近升魔的门槛。星门没有崩塌，它只是打开了。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "混沌星门的崩塌是所有旧世界灾难的根源。古圣的遗产——这座极地传送门——原本用于在星球之间瞬时传送，但某种未知的灾难导致它结构崩溃，非物质界（混沌领域）与物质世界之间的屏障在极地被撕裂。从那一刻起，魔法之风从极地向南持续吹拂，北方的土地逐渐变异为混沌荒原，所有的魔法使用——无论是人类法师、矮人符文还是精灵术法——都在通过星门获取能量的同时承受混沌泄漏的风险。帝国的战斗法师之所以必须经过严格训练和许可，根本原因就是每一次施法都可能成为混沌入侵的微小裂隙。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 100
+        },
+        "IdentityIds": null
+      },
+      "Content": "古圣——关于他们的真实身份，学者们争论了数千年。可以确定的是，他们是一个拥有超越当前所有种族理解能力的远古文明，在行星之间建立了传送网络，并在旧世界进行了大规模的地形改造和种族创造。混沌星门的崩塌标志了古圣时代的终结，但崩塌的确切原因从未被确认——高等精灵的档案称其为大灾变，矮人的铭文记载了大地撕裂的痛苦，混沌的传说则认为四位邪神合力打碎了星门。无论真因为何，崩塌的直接后果是：非物质界与物质界的边界在极地永久破裂，混沌能量开始持续涌出，北方大陆逐渐变形为无法居住的混沌荒原，而混沌恶魔从此可以一定程度上侵入现实世界。帝国的魔法学院将混沌星门的研究列为最高机密，因为理解星门就可能暗示理解如何关闭它——而关闭星门的意义不亚于终结混沌对旧世界的永恒威胁。但所有的研究表明，星门的结构已不可修复，它已经不仅仅是一个破损的装置，而是宇宙伤口本身。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "帝国战斗法师学院的女法师们流传着一则私下的观察：女性法师在星门崩塌后的魔法感应模式与男性有本质区别。由于魔法之风本身就是混沌的稀释形态，每一位施法者都会在引导风时感受到某种'召唤'——来自北方的、来自星门之源的诱惑。帝国法律要求每一位法师一旦开始感觉到'星门召唤'必须立即自我报告并接受净化仪式。但女法师之间私下交流的经验是：这种召唤对女性施法者的攻击方式更为隐蔽和情感化——它不像对男性那样以力量和权力的承诺诱惑，而是模仿失去的亲人的声音，在深夜的梦中以祖母或死去的孩子的形象出现，提供安慰和建议。许多意外堕入混沌的女性法师并非因为贪婪力量，而是因为她们无法拒绝那个在梦中哭喊着需要她们的'孩子'——而那个孩子的真实身份是星门的意识碎片。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "混沌星门对诺斯卡氏族的影响远不止于环境变异——它塑造了整个北方的灵能地理政治格局。每一个诺斯卡部落的领地选择都与星门能量的'涌浪'路线有关：混沌之风不是均匀地从极地吹来，而是沿着特定的地脉——类似于旧世界南方的黄金学院所说的'龙脉'——呈不规则的漩涡状涌动。最强大的氏族总是占据着'涌浪节点'——即魔法之风最集中的地方，因为在那里举行献祭仪式获得诸神回应的概率最高。争夺涌浪节点的战争是北方政治中最残酷也是最隐蔽的冲突，通常不被南方人的军事记录所察觉。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我在荒原南缘的一次调查中发现了一个令人不寒而栗的事实：混沌星门的影响区正在缓慢向南扩张。通过比对矮人古代铭文中记载的'可居住线'与当前的荒原边界，我估算每一百年荒原边缘向南移动大约一英里半。对帝国来说这意味着基斯里夫的可居住土地正在被缓慢地吞食，而对诺斯卡部落来说这意味着他们的狩猎区正变得更危险——不是因为变异的程度加深，而是因为他们曾经赖以生存的半稳定区域正在逐年消减。最绝望的是，我不认为有任何现有文明力量能够逆转这一趋势。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "混沌星门对旧世界商业的一个重要间接影响体现在魔法物品的保险附加费上。任何在帝国注册的商业魔法物品——从附魔火把到永锐之刃——都必须定期接受魔法学院的安全检定，而检定的核心内容是测量物品内部积累的'星门残余能量指数'。这个指数在北方省份要比南方高得多——同一把附魔剑在马林堡测出的残余能量可能只是阿尔道夫的三分之一，而这一差异直接反映在保险费率上。更微妙的是，星门能量的南移趋势意味着所有魔法物品的保险费率每年都在以微小但不可逆的速度上涨——这一升幅被巧妙地隐藏在复杂的保险条款中，但如果你做跨越十年的费率对比，趋势是无可置疑的。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "极地之门——古圣在极地建造的跨星际传送装置，崩塌后成为混沌能量的来源",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "混沌星门的地理位置与战略意义"
+  ]
+}

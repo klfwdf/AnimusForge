@@ -1,0 +1,94 @@
+﻿{
+  "Id": "rule_菲尔贝克",
+  "Keywords": [
+    "菲尔贝克",
+    "比斯坎海岸"
+  ],
+  "RagShortTexts": [
+    "菲尔贝克村庄位于比斯坎海岸巨岩，盛产葡萄酒。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "菲尔贝克是加伦附近的一座村庄，坐落在一块俯瞰比斯坎海岸的巨岩上。这里全年气候温暖，山坡上种满了葡萄，酿出的酒在整个瓦兰迪亚都有名气。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "菲尔贝克是我们瓦兰迪亚最好的葡萄产地之一。那块巨岩上的山坡，阳光足，海风吹得也恰到好处，长出来的葡萄甜得很。加伦那边王族喝的酒，有不少就是从这儿运过去的。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "townsfolk"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "想买好葡萄酒？去菲尔贝克。那里的葡萄园在比斯坎海岸的巨岩上，结出来的葡萄又大又甜。每年秋天收葡萄的时候，酒商们从各地赶来，跟过节一样热闹。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "菲尔贝克是我在瓦兰迪亚见过的最适合种葡萄的地方之一。站在那块巨岩上往下看，一边是大海，一边是葡萄架，风景好得能让人忘了在赶路。不过当地的酒农可不好惹，你要敢偷葡萄，他们的狗能追你半个山坡。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "菲尔贝克",
+      "Kind": "bound_settlement_name",
+      "TargetId": "__bound_settlement__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": "加伦",
+      "Kind": "bound_settlement_name",
+      "TargetId": "__bound_settlement__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}

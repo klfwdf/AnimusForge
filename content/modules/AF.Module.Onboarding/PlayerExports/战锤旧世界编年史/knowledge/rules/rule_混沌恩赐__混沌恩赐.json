@@ -1,0 +1,213 @@
+{
+  "Id": "rule_混沌恩赐__混沌恩赐",
+  "Keywords": [
+    "混沌恩赐",
+    "邪神赠礼",
+    "物理变异",
+    "鳞片肢体",
+    "无上荣耀",
+    "神恩标记",
+    "变异祝福",
+    "额外肢体",
+    "铜皮铁骨",
+    "恶魔器官",
+    "升格征兆",
+    "基因扭曲"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "混沌恩赐是邪神赐予其忠诚追随者的超自然赠礼——从皮肤硬化如鳞甲到长出额外的肢体或器官，这些物理变异既是荣耀的标记，也是混沌力量在凡世的具体体现，代表着神明的眷顾与认可。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "chaos_culture"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "混沌恩赐是我们的财富、我们的地位、我们的身份证明。你无法用金币买到恩赐——它们只能通过在战斗中取悦邪神而获得。每当你砍下一个有价值的敌人的头颅，或完成一次神明欣赏的壮举时，你可能会感到身体内部一阵剧烈的灼热或刺骨的极寒——那就是恩赐正在改变你的身体。有人长出覆盖全身的铜鳞，刀剑砍上去只能蹦出火花；有人获得了额外的眼睛或手臂；有人在伤口中长出可以喷射酸液的腺体。这是真正的荣耀。但恩赐也有代价——你的身体正在变成某种不再是「人类」的东西。接受太多恩赐的最终阶段，你的灵魂会完全被混沌吞噬。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "混沌恩赐是你培养精英单位的关键机制。每次战斗后，根据你的表现向特定的邪神分配荣耀点数。不同的邪神授予不同类型的恩赐：恐虐提供近战伤害加成和物理强化；纳垢提供生命恢复和毒素免疫；色孽提供速度暴增和魅惑能力；奸奇提供魔法抗性和预知。明智地分配恩赐点数——优先强化你的核心英雄和精锐部队。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "根据帝国战争医学院编撰的《恩赐分类解剖学》，混沌恩赐可分为五大类：第一类「表皮变异」——如鳞片皮肤、石质外壳、含毒汗腺；第二类「骨骼变异」——如增生的肋骨外甲、中空的轻量化骨骼、额外椎节以增加柔韧度；第三类「器官变异」——如第二心脏、酸液腺、声波器官可发出震碎玻璃的尖啸；第四类「感官变异」——如红外视觉、超听觉、魔法感应眼；第五类「意念变异」——这是最罕见的，涉及精神能力如心灵感应或预知。最危险且不可逆的变异被称为「混沌化临界点」——当一个人的恩赐总量超过身体原有生物质量的百分之四十时，其自我意识将不可逆转地被混沌意志取代，变为无法思考的混乱灵体，即所谓的遗弃者。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我身上的恩赐在许多人眼中是丑陋的——鳞片覆盖了我的脸颊，一只手的手指已经变成了爪子。但这是力量的代价，我欣然接受这场蜕变。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "你族中每位获得显著恩赐的族人都自动获得更高的社会地位——这是混沌社会的铁律。设立「恩赐之环」，让族人们展示他们的变异，这不仅能鼓舞士气，也是对邪神的公开效忠宣言。但注意——过度追求恩赐会导致「遗弃化」，那是你必须阻止的悲剧。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "你看到一位混沌勇士脱下了头盔——他的脸已不再是人类的脸。鳞片覆盖了原有的皮肤，一只眼睛被三只更小的复眼取代。他似乎对你惊恐的表情感到满意。这就是混沌恩赐——这些变异是他的荣耀。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "混沌恩赐在北方被视为最直接的社会地位指标。一个人身上的恩赐数量和显著程度决定了他在混沌军队中的级别。但南部学者指出，这种「礼物」实际上是灵魂被混沌腐蚀的外在表现，是自我意识逐渐被邪神意志取代的征兆。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "混沌恩赐——邪神赐予追随者的超自然物理变异，荣耀与力量的双重象征。",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "混沌恩赐邪神赠礼物理变异"
+  ]
+}

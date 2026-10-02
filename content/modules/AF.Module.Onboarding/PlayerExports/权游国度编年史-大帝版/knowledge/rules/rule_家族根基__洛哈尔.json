@@ -1,0 +1,154 @@
+{
+  "Id": "rule_家族根基__洛哈尔",
+  "Keywords": [
+    "洛哈尔",
+    "洛哈尔家族",
+    "海上贸易"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "洛哈尔是里斯的贵族家门之一，其生存环境由岛屿、海路和商业竞争塑造。海贸财富看似流动自由，实则被季风、海盗、港税、船员忠诚和外来粮价牢牢牵制；任何家门若忽视其中一环，便可能在一季之内失去多年积累。洛哈尔的根基因此不宜只理解为某处宅院，而是一组能让货物跨海、债务兑现、消息及时返回的关系。船队与阵营都可能改变，里斯家门对港口信用的依赖始终不会消失。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "lyseni"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "里斯海商评价洛哈尔，先问它的船长是否可靠、遇难赔付是否公道。船帆上的颜色会换，愿意再次为同一家门出海的老水手才是声誉。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "lyseni"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "城中权贵把洛哈尔的海上消息当作资产，也怕它把外来力量带进里斯内争。掌握航线的人既能送来粮食，也能替敌人指路。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "lyseni"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "slave",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "码头劳工看到的是卸货时长、伤亡补偿和监工脾气。洛哈尔若只记得货物价值而忘记搬货的人，港口会用怠工、偷漏与沉默回应。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待洛哈尔，会先看它的土地、婚盟、血脉和债务。里斯的海贸贵族家门，依靠航线、船员、经纪人与港口信用构成流动根基。家徽是门面，能否保护封地、兑现婚约并在危机中召集人马，才是家族真正的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起洛哈尔时，记得的是谁在营火边分过粮、谁把他们留在城外、谁在败局里仍站在旗旁。里斯的海贸贵族家门，依靠航线、船员、经纪人与港口信用构成流动根基。家族名声最终要落到具体的人和具体的命令上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意洛哈尔留下的仪式、墓地和传承。里斯的海贸贵族家门，依靠航线、船员、经纪人与港口信用构成流动根基。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见洛哈尔。里斯的海贸贵族家门，依靠航线、船员、经纪人与港口信用构成流动根基。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "洛哈尔：里斯的海贸贵族家门，依靠航线、船员、经纪人与港口信用构成流动根基。"
+  ]
+}

@@ -1,0 +1,157 @@
+{
+  "Id": "rule_家族根基__拜拉席恩-风暴息堡",
+  "Keywords": [
+    "拜拉席恩-风暴息堡",
+    "拜拉席恩-风息堡",
+    "蓝礼·拜拉席恩",
+    "风息堡拜拉席恩",
+    "夏日之王"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "风息堡的拜拉席恩旗帜围绕蓝礼·拜拉席恩及其广泛的风暴地—河湾地关系而展开。蓝礼继承风息堡，在宫廷中长大，容貌、衣着、礼貌和与人相处的敏锐使他很容易成为众人目光的中心。他对王权的理解更接近拥戴而非次序：一个能让领主愿意追随、让士兵欢呼、让盟友在婚宴上看见未来的人，也可以声称自己比沉默的合法继承人更适合统治。提利尔婚盟把玫瑰的粮食、骑士与舞台带到鹿旗下，使蓝礼的事业带着夏日般的光彩；但夏日之王必须证明，欢呼不仅能开始一场征程，也能承担其后的每一项责任。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "stormlands",
+          "reach"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "风暴地与河湾贵族在蓝礼身边看见一位懂得记住名字、分配荣誉并让盟友觉得自己重要的领袖。有人认为这就是王者才华，有人知道这种才华也需要不断的宴席、职位和胜利来供养。夏日越明亮，追随者越不愿想象阴云。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "stormlands",
+          "reach"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵喜欢漂亮盔甲、充足粮秣和愿意在队前露面的年轻领主，百姓则被比武、歌声和慷慨吸引。蓝礼让权力看起来不必总是阴沉，可普通人最终仍会用征粮、伤亡与能否平安回家衡量这场盛大夏日。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "crownlands",
+          "dragonstone"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "熟悉继承法的人很难替蓝礼找到先于兄长的次序，只能诉诸拥戴、才能与现实力量。支持者说王国需要最合适的人，反对者则问：若掌声可以越过律法，下一位更受欢迎的人又为何不能越过他。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待拜拉席恩-风暴息堡，会先看它的土地、婚盟、血脉和债务。蓝礼以风息堡、风暴地人望与提利尔婚盟汇聚追随者；他的王权语言重视拥戴、魅力和让众人看见共同未来的能力。家徽是门面，能否保护封地、兑现婚约并在危机中召集人马，才是家族真正的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起拜拉席恩-风暴息堡时，记得的是谁在营火边分过粮、谁把他们留在城外、谁在败局里仍站在旗旁。蓝礼以风息堡、风暴地人望与提利尔婚盟汇聚追随者；他的王权语言重视拥戴、魅力和让众人看见共同未来的能力。家族名声最终要落到具体的人和具体的命令上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意拜拉席恩-风暴息堡留下的仪式、墓地和传承。蓝礼以风息堡、风暴地人望与提利尔婚盟汇聚追随者；他的王权语言重视拥戴、魅力和让众人看见共同未来的能力。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见拜拉席恩-风暴息堡。蓝礼以风息堡、风暴地人望与提利尔婚盟汇聚追随者；他的王权语言重视拥戴、魅力和让众人看见共同未来的能力。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "蓝礼以风息堡、风暴地人望与提利尔婚盟汇聚追随者；他的王权语言重视拥戴、魅力和让众人看见共同未来的能力。"
+  ]
+}

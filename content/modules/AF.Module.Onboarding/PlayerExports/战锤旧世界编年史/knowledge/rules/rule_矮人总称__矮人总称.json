@@ -1,0 +1,207 @@
+{
+  "Id": "rule_矮人总称__矮人总称",
+  "Keywords": [
+    "群山王国",
+    "卡拉克安科",
+    "达维帝国",
+    "矮人城塞联盟",
+    "永恒王座",
+    "卡拉克诸邦"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "矮人的国家在矮人语中被称为「卡拉克·安科」——群山王国。这是一个由分布在世界边缘山脉和灰色山脉中的独立城塞（卡拉克）组成的联盟，由坐在卡拉扎-阿-卡拉克永恒王座上的至高王作为最高权威。群山王国曾经覆盖整条世界边缘山脉，但如今半数以上的城塞已经失陷。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我们是达维，我们的国家是卡拉克·安科——人类用他们的舌头叫我们「矮人」，管我们的国家叫「群山王国」。但在我们自己的语言中，卡拉克·安科的意思不仅是群山王国——它包含着「永恒之地」的含义，因为当精灵还在树上跳跃、人类还没有学会生火时，我们的先祖已经在这片山脉中开挖了第一座城塞。我们的政治实体不是一个单一的王国——它是由每一座独立的卡拉克通过远古誓言和共同的血脉网络组成的城塞联盟。至高王坐在卡拉扎-阿-卡拉克的永恒王座上，但每一位卡拉克王在自己的城塞中拥有自己的自主权、保留自己的氏族编年史和自己的仇恨之书。卡拉克·安科不是被创造的——它是被挖出来的。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "群山王国的政治结构是旧世界最古老且仍有效运作的联盟体系——它既不是帝国式的联邦选举制，也不是巴托尼亚式的神权君主制，而是一种以血缘誓言和石刻契约为纽带的氏族—城塞双层结构。每一座卡拉克由一个世袭的矮人王者统治，他同时是卡拉克最重要的氏族的族长和该卡拉克仇恨之书的主要守护者。至高王的权威来自三个来源：他的氏族是所有矮人氏族中最古老的一支、他坐于由先祖神格伦尼尔亲手雕刻的永恒王座上、以及他承担着整本《仇恨之书》的守护责任。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "群山王国（Karaz Ankor）在矮人语言体系和社会结构中承载着远超出人类语言中「王国」一词的内涵。卡拉克（Karaz）的词根源自「永恒」和「坚固」，安科（Ankor）意为「领域」或「共同体」——合起来的最准确翻译应为「永恒的坚固领域」。矮人的政治体系在学术上被描述为氏族—城塞双层联盟制：基础层是氏族——每个矮人从出生起就属于一个特定的氏族，氏族决定了其成员的姓氏、先祖谱系和最初的职业方向；上层是卡拉克——由在特定山脉中定居的氏族群体组成，每一座卡拉克的物理边界精确地与山脉矿脉走向和地下防御工事范围重合。群山王国的衰落在政治结构上体现为卡拉克数量从黄金时代的超过二十座下降到当今的不足十座仍在与至高王保持稳定联络——孤立城塞的失联或失陷在矮人法律中不意味着主权的放弃，它们只是暂时「在黑暗中」但仍然属于卡拉克·安科。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "作为一位矮人氏族的女性管理者，群山王国的官方叙事中缺少我族的另一半故事。永恒王座的史书由男性撰写、记载男性的功绩——但每一座仍在运转的卡拉克的地下粮食储备、氏族人口统计和冬季燃料分配都由矮人女性管理。安塞斯特尔带领先祖们建立了卡拉克的城墙，但确保城塞在被围困的百年中仍有足够的食物和温暖的锻炉的是他们的妻子。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "群山王国对我氏族的意义在于我们与卡拉扎-阿-卡拉克之间的直接连锁誓言。这些誓言是在长须战争时期由我的先祖向至高王立下的——每一个字都刻在氏族编年石上——要求我们在至高王发出战争征召时提供特定数量的铁锤勇士和碎铁者。作为族长，我必须确保氏族的人口和锻造产量能够同时满足我们自己的卡拉克防御需求和至高王的征召义务。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "在旧世界旅行时你会发现，不同种族对矮人国家的称呼反映了他们与矮人的关系深度。人类称其为「群山王国」或「矮人帝国」——一种基于外部观察的粗略标签。精灵在正式使用中称其为「卡拉克·安科」——他们与矮人一样古老所以知道正确的名字，尽管长须战争后他们很少用任何尊敬的语气说出它。绿皮称其为「矮垛子窝」——这比任何学术名称都更准确地描述了绿皮看待矮人的方式。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "群山王国的商业意义在旧世界贸易中常被低估。矮人不出口他们的核心技术——符文锻造和工程师公会的精密器械——但他们大量出口优质的铁、铜和银矿石以及矮人酿造的烈性麦酒。与群山王国签订长期矿石供应合同的帝国商人可以确保他们的铸造厂在未来五十年内不会面临原料短缺——但获得这份合同的前提是你的家族必须已经在矮人中建立了至少三代人的商业信誉。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "卡拉克·安科——矮人对自己国家的正式称谓，意为「永恒的坚固领域」",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "矮人的正式称谓与政治地位"
+  ]
+}

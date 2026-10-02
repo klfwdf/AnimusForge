@@ -1,0 +1,207 @@
+{
+  "Id": "rule_绿皮总称__绿皮总称",
+  "Keywords": [
+    "恶地部落",
+    "绿皮Waaagh",
+    "兽人战帮",
+    "地精部落",
+    "绿皮正式国名",
+    "搞毛领域"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "绿皮没有国家——他们只有部落和Waaagh!。在旧世界的恶地、世界边缘山脉的废弃矮人矿道、黑色山脉的幽谷和灰色山脉的高坡中，数百个绿皮部落以最纯粹的力量等级互相竞争。当一个足够强大的战将通过击败所有挑战者而统合多个部落时，这个力量集合体就被称为一场Waaagh!——而这场Waaagh!本身就成了绿皮在那一刻的临时国家。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "国家？俺们不需要国家！国家是软弱的人类和矮垛子用来假装他们不属于同一个打架圈的假玩意儿！俺们绿皮的领土就是任何俺们能走到然后打翻当地老大的地方！恶地是俺们最大的地盘——那里有最烈的太阳、最干的风和最硬的敌人！但谁说恶地有边界？昨天俺们在灰色山脉那边揍了一整窝矮人，那座山现在是绿皮的山——直到另一个更猛的绿皮老大来把它抢走！Waaagh!就是我们的国家——当格瑞姆格或者随便哪个最强战将在恶地上发声说「走这边打」，全恶地的绿皮都跟着走！这比任何选帝侯的投票都干脆！"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "绿皮的政治实体——如果可以这样称呼——是旧世界最纯粹的临时性现象。每一场Waaagh!都是一种以战将个人战斗力为唯一黏合剂的瞬时性力量集合。它的生命周期极其简单：一个足够强的战将统一多个部落→集结的绿皮向某个方向发动大规模入侵→入侵过程中战将可能被击败、或被另一个方向的更诱人目标分散注意→部落分裂为内讧→回到起点。这意味着对抗绿皮的最有效策略不是军事防御——而是加速Waaagh!的自然生命周期，通过诱敌、斩首或制造新的战斗方向来引导Waaagh!在内部分裂。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "绿皮的领土组织在比较政治学中被归类为瞬时性暴力等级制——一种不存在任何制度化权力转移机制、完全依赖当前最强个体的暴力能力来维持的政治秩序。绿皮部落的领地边界是动态的——「部落的领地」的实际含义是「该部落当前控制的区域」，而这个区域可能在一个月内因部落之间的决斗结果而改变数十英里。绿皮聚集区——恶地——是旧世界南部的干旱高原地区，其地质结构以暴露的红色砂岩和狭长的冲积山谷为特征，这些山谷中的水泉成为绿皮部落争夺的核心资源。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "绿皮的领土扩张模式对帝国南部边境的女性庄园主来说有一个好处——Waaagh!的方向是由战将的个人兴致和萨满的神启决定的，不存在任何基于政治理性计算的长期领土战略。这意味着上一百年从恶地向北蔓延的绿潮和下个一百年从恶地向西蔓延的绿潮之间没有因果关系——它们只是两个不同战将的个人选择。这种随机性使长期防御规划变得困难但也使绿皮从来不会像混沌那样对帝国构成持续性的战略威胁。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "绿皮领土的变迁对我家族领地的影响是周期性的。每一代人都需要在恶地方向维持一次大规模的军事缓冲区扩建——把前沿哨站向前推进到绿皮活动较少的区域，然后祈祷新哨站能维持至少三十年。我们家族在过去十二代人中已经重复了这个循环九次——每一次都是先推进、后坚守、最终被迫后撤到上一代人的起线附近。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "在恶地边缘旅行时你学到的第一件事是：不要用人类的时间概念来规划你的路线。昨天还是相对安全的路径今天可能已经成了两个部落交战的正中间。我在恶地北边当了三年向导，我向客户推荐的路线从来不是最安全的那条——因为安全这个概念在恶地根本不存在——而是退出速度最快的那条：确保你有足够的备选退路以便在局势突然变化时能在半天之内撤出绿皮活动区。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "绿皮领土的不可预测性对旧世界的远途贸易路线规划产生了决定性影响。从帝国南部到世界边缘山脉的任何商路都必须预计在恶地周边至少绕道两周的额外行程——而这些额外行程的成本在每次绿潮期间会继续攀升。但绿皮区域的不可控性也创造了利润极高的投机机会：在绿潮退去后第一个进入恶地周边废弃城镇收集被绿皮留下的战利品的商人可以获得不可思议的回报率。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Waaagh!政权——战将统一多个部落时形成的瞬时性暴力政治集合体",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "绿皮的正式称谓与政治地位"
+  ]
+}

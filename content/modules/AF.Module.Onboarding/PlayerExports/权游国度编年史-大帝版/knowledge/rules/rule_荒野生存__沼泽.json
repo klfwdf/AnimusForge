@@ -1,0 +1,147 @@
+{
+  "Id": "rule_荒野生存__沼泽",
+  "Keywords": [
+    "沼泽"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "沼泽地表看似平坦，实则布满软泥、暗水、虫群和会移动的安全路径。颈泽人依靠轻舟、木道与地方记忆通行；重甲骑兵和辎重车一旦离开堤道，速度与战斗力都会迅速消失。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "猎人、农户和旅人谈起沼泽，通常来自亲身吃过的亏。沼泽地表看似平坦，实则布满软泥、暗水、虫群和会移动的安全路径。颈泽人依靠轻舟、木道与地方记忆通行；重甲骑兵和辎重车一旦离开堤道，速度与战斗力都会迅速消失。荒野不会因为身份高贵而减轻寒冷、饥饿或迷路的后果。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主与士兵把沼泽视作行军和领地治理的一部分。沼泽地表看似平坦，实则布满软泥、暗水、虫群和会移动的安全路径。颈泽人依靠轻舟、木道与地方记忆通行；重甲骑兵和辎重车一旦离开堤道，速度与战斗力都会迅速消失。准备不足时，天气与地形杀死的人可能比敌军更多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "scholar",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "商人、学士和远行者会记录沼泽出现的征兆与应对方法。沼泽地表看似平坦，实则布满软泥、暗水、虫群和会移动的安全路径。颈泽人依靠轻舟、木道与地方记忆通行；重甲骑兵和辎重车一旦离开堤道，速度与战斗力都会迅速消失。可靠经验必须能够重复验证，而不能只靠酒馆里的夸张故事。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人关心沼泽会怎样影响道路、收成、牲畜和物价。沼泽地表看似平坦，实则布满软泥、暗水、虫群和会移动的安全路径。颈泽人依靠轻舟、木道与地方记忆通行；重甲骑兵和辎重车一旦离开堤道，速度与战斗力都会迅速消失。一次灾害若切断运输，远方城市也会感到后果。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵与旅人面对沼泽时，先保护火种、水、脚和同伴。沼泽地表看似平坦，实则布满软泥、暗水、虫群和会移动的安全路径。颈泽人依靠轻舟、木道与地方记忆通行；重甲骑兵和辎重车一旦离开堤道，速度与战斗力都会迅速消失。荒野里最昂贵的装备，也替代不了正确的停步时机。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者会用工具、药草、仪式和共同体记忆应对沼泽。沼泽地表看似平坦，实则布满软泥、暗水、虫群和会移动的安全路径。颈泽人依靠轻舟、木道与地方记忆通行；重甲骑兵和辎重车一旦离开堤道，速度与战斗力都会迅速消失。有人解释灾害为何到来，有人负责让受难者撑过今晚。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民对沼泽的判断最现实。沼泽地表看似平坦，实则布满软泥、暗水、虫群和会移动的安全路径。颈泽人依靠轻舟、木道与地方记忆通行；重甲骑兵和辎重车一旦离开堤道，速度与战斗力都会迅速消失。他们看的是地里还剩多少粮、牲畜能否活过冬，以及领主是否愿意承担保护责任。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "沼泽：沼泽地表看似平坦，实则布满软泥、暗水、虫群和会移动的安全路径。颈泽人依靠轻舟、木道与地方记忆通行；重甲骑兵和辎重车一旦离开堤道，速度与战斗力都会迅速消失。"
+  ]
+}

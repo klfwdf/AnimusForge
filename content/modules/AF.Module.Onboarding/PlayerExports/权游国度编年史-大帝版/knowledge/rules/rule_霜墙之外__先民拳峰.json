@@ -1,0 +1,151 @@
+{
+  "Id": "rule_霜墙之外__先民拳峰",
+  "Keywords": [
+    "先民拳峰"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "先民拳峰是塞外鬼影森林中的一座高丘，形状如巨人的拳头，因此得名。它并非城镇，却是北方荒野里罕见的高地：站在峰上能够越过树海观察远处，而峰脚的斜坡也能形成临时营地与防御圈。先民的名字说明这里被视作极古老土地的一部分，周围的森林、积雪、野兽和沉默比任何地图边界更真实。守夜人和自由民都可能把它当作路标、集结点或避风处，但其价值来自地形本身，不是某次可变行动。拳峰始终只是荒野中一块能让人看得更远、也更容易被看见的石头。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "谈到先民拳峰，最可靠的判断来自亲身生活其中的人；眼前的利害不是抽象名词，而是每天要作出的取舍。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "掌权者、士兵与平民会从各自的位置理解先民拳峰，他们的说法可能冲突，却共同决定它在世上留下的形状。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "scholar",
+          "wanderer",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "远方来客对先民拳峰的印象往往来自片段消息；真正的分量要等道路、账簿和人的记忆彼此印证之后才显出来。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人把先民拳峰看成可执行的秩序。先民拳峰是塞外鬼影森林中的一座高丘，形状如巨人的拳头，因此得名。它并非城镇，却是北方荒野里罕见的高地：站在峰上能够越过树海观察远处，而峰脚的斜坡也能形成临时营地。它是否有效，取决于谁能授予权利、收取代价，并在违约时让判决真正落地。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起先民拳峰时，关心它如何影响道路、命令和安全。先民拳峰是塞外鬼影森林中的一座高丘，形状如巨人的拳头，因此得名。它并非城镇，却是北方荒野里罕见的高地：站在峰上能够越过树海观察远处，而峰脚的斜坡也能形成临时营地。远方的制度只有在营火、城门和驿站里能被执行，才不是空话。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者会从习惯和象征理解先民拳峰。先民拳峰是塞外鬼影森林中的一座高丘，形状如巨人的拳头，因此得名。它并非城镇，却是北方荒野里罕见的高地：站在峰上能够越过树海观察远处，而峰脚的斜坡也能形成临时营地。一项规矩若被反复实践，便会进入礼仪、手艺和祈祷；若只靠恐惧维持，危机一来就会露出裂缝。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民感受到先民拳峰的方式最小也最准确。先民拳峰是塞外鬼影森林中的一座高丘，形状如巨人的拳头，因此得名。它并非城镇，却是北方荒野里罕见的高地：站在峰上能够越过树海观察远处，而峰脚的斜坡也能形成临时营地。他们记得税、粮、劳役、赈济和谁能为他们说话；宏大的名称，最终都要落在一家人的饭锅旁。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "先民拳峰：先民拳峰是塞外鬼影森林中的一座高丘，形状如巨人的拳头，因此得名。它并非城镇，却是北方荒野里罕见的高地：站在峰上能够越过树海观察远处，而峰脚的斜坡也能形成临时营地"
+  ]
+}

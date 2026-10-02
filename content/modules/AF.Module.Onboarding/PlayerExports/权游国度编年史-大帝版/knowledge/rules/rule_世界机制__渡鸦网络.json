@@ -1,0 +1,149 @@
+{
+  "Id": "rule_世界机制__渡鸦网络",
+  "Keywords": [
+    "渡鸦",
+    "信鸦",
+    "鸦巢"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "维斯特洛的城堡常设鸦巢，由学士饲养、配对并训练渡鸦飞回特定地点。信鸦能比骑手更快跨越山河，使召集封臣、报告战事和传递婚丧成为可能，但它们不是可以随意飞向任何人的魔法信使：多数鸟只认一个归巢，发送前必须选择正确笼位。风暴、猛禽、疲劳与敌方截获都会让消息失踪；蜡封能显示是否被拆，却不能保证内容未被抄录。聪明的领主会使用暗语、重复发送或另派骑手确认重要命令。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "scholar",
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "学士把鸦巢当作需要多年耐心维护的网络，领主却常在急报未到时责怪一只鸟。真正可靠的通信来自备份、清楚措辞和对航程限制的理解。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "sailor",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "前线人知道渡鸦送来的命令可能在数日前写成。它比骑手快，却仍可能让军队面对已经改变的局势；服从有时也需要判断消息是否过时。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "peasant",
+          "artisan"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "商人愿为早一天的消息付钱，普通人则常从城堡放飞渡鸦的数量猜测灾祸。黑翅升空不说明信中写了什么，却足以让粮价先动起来。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人把渡鸦看成可执行的秩序。渡鸦网络：由学士饲养训练的定向传信体系，速度远胜骑手，却受天气、目的地训练、密封和截获风险限制。它是否有效，取决于谁能授予权利、收取代价，并在违约时让判决真正落地。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起渡鸦时，关心它如何影响道路、命令和安全。渡鸦网络：由学士饲养训练的定向传信体系，速度远胜骑手，却受天气、目的地训练、密封和截获风险限制。远方的制度只有在营火、城门和驿站里能被执行，才不是空话。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者会从习惯和象征理解渡鸦。渡鸦网络：由学士饲养训练的定向传信体系，速度远胜骑手，却受天气、目的地训练、密封和截获风险限制。一项规矩若被反复实践，便会进入礼仪、手艺和祈祷；若只靠恐惧维持，危机一来就会露出裂缝。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民感受到渡鸦的方式最小也最准确。渡鸦网络：由学士饲养训练的定向传信体系，速度远胜骑手，却受天气、目的地训练、密封和截获风险限制。他们记得税、粮、劳役、赈济和谁能为他们说话；宏大的名称，最终都要落在一家人的饭锅旁。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "渡鸦网络：由学士饲养训练的定向传信体系，速度远胜骑手，却受天气、目的地训练、密封和截获风险限制。"
+  ]
+}

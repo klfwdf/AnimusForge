@@ -1,0 +1,45 @@
+﻿{
+  "Id": "rule_瓦良格",
+  "Keywords": [
+    "瓦良格"
+  ],
+  "RagShortTexts": [
+    "瓦良格是斯特吉亚勇士的统称"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "瓦良格是斯特吉亚的勇士们的统称，他们自愿上战场，装备较为精良"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "斯特吉亚人从不掩饰对瓦良格的自豪——我们就是卡拉迪亚的“瓦良格”。手持祖传的长斧，身披札甲，盾墙如山岳般不可动摇。帝国人嘲笑我们是北方蛮子？可正是我们的祖先用斧刃劈开了涅雷采斯的防线，也正是我们守护着大陆上最坚韧的步兵传统。每一面圆盾上的熊纹，每一次斧落甲裂的巨响，都在证明：瓦良格的魂，从未离开过斯特吉亚的雪原。\n\n瓦良格是我们的高级战士们，他们虽然家境优渥，但是他们自愿参军，我们为他们骄傲"
+    }
+  ],
+  "TextMappings": []
+}

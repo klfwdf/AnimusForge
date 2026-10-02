@@ -1,7 +1,7 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Security.Cryptography;
 using System.Text;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -49,61 +49,57 @@ internal static class PlayerExportsStore
 
 	internal static string GetPlayerExportsRootPath()
 	{
-		string dataRoot = AnimusForgeDataPaths.GetCurrentRoot();
-		string exports = AnimusForgeDataPaths.GetPlayerExportsDirectory(dataRoot);
-		if (string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable(AnimusForgeDataPaths.OverrideEnvironmentVariable)))
-			EnsureLegacyMigrationReady(GetModuleRootPath(), dataRoot);
-		return exports;
+		return AnimusForgeDataPaths.GetPlayerExportsDirectory(AnimusForgeDataPaths.GetCurrentRoot());
 	}
 
-	internal static void EnsureLegacyMigrationReady(string moduleRoot, string dataRoot)
+	internal sealed class ImportFolder
 	{
-		string legacy = Path.Combine(moduleRoot, FolderName);
-		if (!Directory.Exists(legacy)) return;
-		for (DirectoryInfo directory = new DirectoryInfo(legacy); directory != null; directory = directory.Parent)
-			if (directory.Exists && (directory.Attributes & FileAttributes.ReparsePoint) != 0)
-				throw new InvalidOperationException("Legacy PlayerExports crosses a reparse point; migration requires recovery.");
-		if (!Directory.EnumerateFileSystemEntries(legacy).Any()) return;
+		internal string Name { get; }
+		internal string FullPath { get; }
+		internal string SourceLabel { get; }
+		internal DateTime LastWriteTime { get; }
 
-		string marker = Path.Combine(AnimusForgeDataPaths.GetUserDataDirectory(dataRoot), ".player-exports-ready.json");
-		VerifyMigrationMarker(moduleRoot, marker);
+		internal ImportFolder(DirectoryInfo directory, string sourceLabel)
+		{
+			Name = directory.Name;
+			FullPath = directory.FullName;
+			SourceLabel = sourceLabel;
+			LastWriteTime = directory.LastWriteTime;
+		}
 	}
 
-	internal static void VerifyMigrationMarker(string moduleRoot, string marker)
+	internal static IReadOnlyList<ImportFolder> GetImportFolders()
 	{
-		PlayerExportsPackageExport.AssertNoReparse(marker);
-		if (!File.Exists(marker))
-			throw new InvalidOperationException("Legacy PlayerExports awaits verified migration; the new user-data root is not ready.");
+		string userRoot = null;
+		try { userRoot = GetPlayerExportsRootPath(); }
+		catch { /* An unavailable user root must not hide the installed library. */ }
+		return GetImportFolders(GetModuleRootPath(), userRoot);
+	}
+
+	// Menu-time only: inspect immediate package directories, never their contents.
+	internal static IReadOnlyList<ImportFolder> GetImportFolders(string moduleRoot, string userRoot)
+	{
+		var folders = new List<ImportFolder>();
+		var roots = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+		AddImportFolders(folders, roots, Path.Combine(moduleRoot, FolderName), "模组目录");
+		AddImportFolders(folders, roots, userRoot, "玩家导出");
+		return folders;
+	}
+
+	private static void AddImportFolders(List<ImportFolder> folders, HashSet<string> roots, string root, string sourceLabel)
+	{
+		if (string.IsNullOrWhiteSpace(root)) return;
 		try
 		{
-			if ((File.GetAttributes(marker) & FileAttributes.ReparsePoint) != 0)
-				throw new InvalidOperationException("Legacy PlayerExports migration record is a reparse point.");
-			string key = ComputeModuleRootKey(moduleRoot);
-			JObject record = JObject.Parse(File.ReadAllText(marker, Encoding.UTF8));
-			string manifestHash = record["sources"]?[key]?.Value<string>();
-			if (record.Value<int>("schema") != 1 || string.IsNullOrWhiteSpace(manifestHash)
-				|| manifestHash.Length != 64 || !manifestHash.All(Uri.IsHexDigit))
-				throw new InvalidOperationException("Legacy PlayerExports migration record does not match this module.");
-			string dataRoot = Directory.GetParent(Directory.GetParent(marker).FullName).FullName;
-			string completed = Path.Combine(dataRoot, "Recovery", "player-exports-" + manifestHash.Substring(0, 24), "completed.json");
-			PlayerExportsPackageExport.AssertNoReparse(completed);
-			if (!File.Exists(completed) || (File.GetAttributes(completed) & FileAttributes.ReparsePoint) != 0)
-				throw new InvalidOperationException("Legacy PlayerExports migration completion record is missing.");
-			JObject completion = JObject.Parse(File.ReadAllText(completed, Encoding.UTF8));
-			if (completion.Value<int>("schema") != 1 || completion.Value<string>("manifestSha256") != manifestHash)
-				throw new InvalidOperationException("Legacy PlayerExports migration completion record is inconsistent.");
+			string fullRoot = Path.GetFullPath(root).TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+			if (!roots.Add(fullRoot) || !Directory.Exists(fullRoot)) return;
+			foreach (DirectoryInfo directory in new DirectoryInfo(fullRoot).GetDirectories()
+				.Where(d => !d.Name.StartsWith(".", StringComparison.Ordinal))
+				.OrderByDescending(d => d.LastWriteTimeUtc))
+				folders.Add(new ImportFolder(directory, sourceLabel));
 		}
-		catch (Exception ex) when (!(ex is InvalidOperationException))
-		{
-			throw new InvalidOperationException("Legacy PlayerExports migration record is invalid; no old-path fallback is allowed.", ex);
-		}
-	}
-
-	internal static string ComputeModuleRootKey(string moduleRoot)
-	{
-		string normalized = Path.GetFullPath(moduleRoot).TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar).ToUpperInvariant();
-		using (var sha = SHA256.Create())
-			return BitConverter.ToString(sha.ComputeHash(Encoding.UTF8.GetBytes(normalized))).Replace("-", "").ToLowerInvariant();
+		catch (IOException) { }
+		catch (UnauthorizedAccessException) { }
 	}
 
 	internal static PlayerExportsPackageExport BeginExportPackage(string root, string folderName)
@@ -145,35 +141,29 @@ internal static class PlayerExportsStore
 	}
 
 	/// <summary>
-	/// Existing rooted path wins; otherwise PlayerExports/&lt;sanitized&gt;; blank input → the most recently written export folder (or null).
+	/// Absolute selection stays exact; names prefer the installed library, then user exports.
+	/// Blank input still means the latest user export, never a built-in worldbook.
 	/// </summary>
 	internal static string ResolveImportFolderPath(string folderName)
 	{
+		return ResolveImportFolderPath(folderName, GetModuleRootPath(), null);
+	}
+
+	internal static string ResolveImportFolderPath(string folderName, string moduleRoot, string playerExportsRootPath)
+	{
 		string text = (folderName ?? "").Trim();
-		if (!string.IsNullOrEmpty(text))
+		if (!string.IsNullOrEmpty(text) && Path.IsPathRooted(text))
+			return Path.GetFullPath(text);
+		if (text == "." || text == "..")
+			throw new ArgumentException("Invalid import folder name.", nameof(folderName));
+		string name = SanitizeFolderName(text);
+		if (!string.IsNullOrEmpty(name))
 		{
-			try
-			{
-				if (Path.IsPathRooted(text))
-				{
-					string fullPath = Path.GetFullPath(text);
-					if (Directory.Exists(fullPath))
-					{
-						return fullPath;
-					}
-				}
-			}
-			catch
-			{
-			}
+			string installed = Path.Combine(moduleRoot, FolderName, name);
+			if (Directory.Exists(installed)) return Path.GetFullPath(installed);
 		}
-		string playerExportsRootPath = GetPlayerExportsRootPath();
-		string text2 = SanitizeFolderName(folderName);
-		if (string.IsNullOrEmpty(text2))
-		{
-			return FindLatestExportFolder(playerExportsRootPath);
-		}
-		return Path.Combine(playerExportsRootPath, text2);
+		string userRoot = playerExportsRootPath ?? GetPlayerExportsRootPath();
+		return string.IsNullOrEmpty(name) ? FindLatestExportFolder(userRoot) : Path.Combine(userRoot, name);
 	}
 
 	internal static string FindLatestExportFolder(string root)

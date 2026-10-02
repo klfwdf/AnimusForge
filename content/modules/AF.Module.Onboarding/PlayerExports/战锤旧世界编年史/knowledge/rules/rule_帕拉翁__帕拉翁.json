@@ -1,0 +1,17 @@
+{
+  "Id": "rule_帕拉翁__帕拉翁",
+  "Keywords": ["帕拉翁公国_PA", "帕拉翁公爵领_PA", "帕拉翁领地_PA", "帕拉翁天马_PA", "帕拉翁公爵_PA", "帕拉翁山城_PA"],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":null,"IsFemale":null,"IsClanLeader":null,"SkillMin":null},"Content":"帕拉翁公国位于巴托尼亚东部灰色山脉的陡峭山脊上，由卡西翁·德·帕拉翁公爵统治。此地以天马骑士闻名于世——帕拉翁是巴托尼亚唯一大规模驯养飞马的公国，皇家飞马骑士团总部即设于此。山崖与云雾之间，飞马骑士俯瞰大地。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":["vlandia"],"KingdomIds":null,"SettlementIds":null,"Roles":null,"IsFemale":null,"IsClanLeader":null,"SkillMin":null},"Content":"帕拉翁——云端之上的公爵领！卡西翁公爵的城堡建在鹰巢峰顶，只有飞马才能轻松抵达。帕拉翁的男孩从小便学习与飞马幼驹相处，成年后若能驯服一匹飞马，便自动成为飞马骑士团的一员。站在帕拉翁的高塔上，整个巴托尼亚的田野尽收眼底。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":["lord"],"IsFemale":null,"IsClanLeader":null,"SkillMin":null},"Content":"帕拉翁公国控制着巴托尼亚的天空。飞马骑士团的战略价值无可估量——他们提供战场侦察、敌方将领斩首和关键位置突袭的能力，是巴托尼亚军队的空中之眼。卡西翁公爵还控制着灰色山脉的重要隘口，扼守着与帝国和矮人王国之间的陆路贸易要道。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":["lord","notable","wanderer"],"IsFemale":null,"IsClanLeader":null,"SkillMin":{"Steward":120}},"Content":"帕拉翁公国的特殊经济优势在于飞马贸易。一匹训练有素的纯种飞马价值三千至五千金克朗，各公国贵族趋之若鹜。公国垄断了飞马的驯养与出口，形成了从放马、驯马到销售的专业产业链。飞马牧场分布于帕拉翁的十余座高山草甸，每座牧场有一名骑士管理。此外，帕拉翁控制的山隘是灰色山脉最安全的贸易通道，每年有大量商队经此往返于帝国与巴托尼亚之间，过境税成为公国的第二大收入来源。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":["lord"],"IsFemale":true,"IsClanLeader":null,"SkillMin":null},"Content":"帕拉翁的女贵族需要适应高山生活——寒冷、孤独和稀薄的空气。但这也赋予了我们独特的韧性。卡西翁公爵的夫人独自管理着公国一半的飞马牧场，这在其他公国是不可思议的。在云端之上，传统的性别观念似乎也变得不那么沉重。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":["lord"],"IsFemale":null,"IsClanLeader":true,"SkillMin":null},"Content":"我们家族世代为帕拉翁公爵饲养飞马。这项技艺在家族内部口耳相传了几百年——飞马的配种、驯服、喂养都有不传之秘。卡西翁公爵对我们家族的信任正是建立在这独一无二的技艺之上。其他公国试过驯养飞马，无一成功。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":["wanderer"],"IsFemale":null,"IsClanLeader":null,"SkillMin":null},"Content":"帕拉翁的山路是巴托尼亚最险峻的道路。云雾中一不小心就会跌落万丈深渊。我在鹰巢峰下见过飞马骑士演练——他们从云层中俯冲而下的姿态，让我一时分不清是在看人类还是在看巨龙。帕拉翁人对天空的迷恋几乎到了疯狂的地步。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":["notable"],"IsFemale":null,"IsClanLeader":null,"SkillMin":null},"Content":"帕拉翁的贸易虽比不上海港公国，但山隘过境税是一项稳健的收入。灰色山脉的矮人商人定期经帕拉翁关口运送矿石和武器，帝国的商旅则用金银和毛皮交换巴托尼亚的葡萄酒与纺织品。控制关口是稳赚不赔的生意。"}
+  ],
+  "TextMappings": [{"SourceText":"帕拉翁公国位于巴托尼亚东部灰色山脉之上，以驯养飞马和天马骑士著称","Kind":null,"TargetId":null,"AgeMin":null,"AgeMax":null,"EmptyValueText":null,"TrueText":null,"FalseText":null}],
+  "RagShortTexts": ["帕拉翁公国灰色山脉飞马骑士"]
+}

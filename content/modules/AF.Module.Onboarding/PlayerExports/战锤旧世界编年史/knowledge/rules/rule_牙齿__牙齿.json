@@ -1,0 +1,212 @@
+{
+  "Id": "rule_牙齿__牙齿",
+  "Keywords": [
+    "牙齿",
+    "绿皮货币",
+    "牙币",
+    "兽人门牙",
+    "地精贸易",
+    "绿皮经济",
+    "烂牙",
+    "敲牙",
+    "兽人财富",
+    "牙价",
+    "绿皮市场"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "牙齿——在绿皮行话里叫「牙」或「牙齿」——是兽人和地精社会中唯一的通用货币。兽人的门牙会不停生长，因此谁的门牙越大越长，谁就越富有；敲掉敌人的牙拿来花，就是绿皮最简单的经济逻辑。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "牙！俺们绿皮不用那些亮闪闪的圆片子！人类和矮子整天攥着金啊银啊的——那些破玩意儿不能吃不能砸人，有个屁用？牙才是真家伙！你瞅俺这嘴，每颗牙都是俺亲手从别人嘴里敲下来的，大颗的兽人牙值钱，小颗的地精牙不值钱但也能攒一堆换把像样的砍刀。牙最好的地方是它自己会长——你今儿把牙全敲没了，过俩月又长一嘴，等于白赚一笔！但最烦那些屁精来摸你的牙——那帮小东西趁你睡觉的时候会偷偷伸手进你嘴里掰牙！黑兽人最有钱，因为他们的牙又大又黑又硬，一颗黑色大牙能换十颗普通牙。俺的规矩是：打架打输了你就得交牙，交了牙你就是俺的小弟，不交牙俺就把你整个人吃下去——从趾头开始。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "绿皮的牙齿货币体系虽然看似荒谬，但在军事后勤上有非常实际的意义。一支Waaagh的规模与牙齿的流通速度呈正比——当兽人大军攻克一座城市时，城中掠得的非牙齿财富会迅速被兽人遗忘，而战场上遍地拔下的牙齿则成为军队内部的流通资本。理解这一点对防御作战至关重要：如果你想延缓一支Waaagh的推进，烧毁敌方尸体以销毁「牙源」是一个不光彩但极其高效的策略。历史上卡拉克·八峰山沦陷的一个被忽视的原因，就是绿皮在攻城初期从矮人矿工尸体上拔走了海量牙齿，得以迅速在军队内部建立供给与佣兵招募体系。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "牙齿货币体系是绿皮生物特性与经济行为融合的最典型案例。兽人的牙齿——生物学上为不断生长的单齿根切牙——大约每四十至六十天完成一次生长-脱落周期，这一特性使得兽人个体既是货币生产者又是消费者。牙齿的价值体系遵循一套自发的市场铁律：牙的尺寸（对应兽人体型）决定面额、牙的硬度与色泽（黑兽人的深色牙齿因被认为附着有搞哥毛二哥的额外赐福）决定溢价、牙上残留的血肉与神经组织反而提供「新鲜度」溢价——一颗刚拔下还在滴血的牙比一颗干枯的牙值钱三倍。绿皮经济学家（这是个自相矛盾的词汇）估计，一支中等规模Waaagh（约一万至一万五千只绿皮）内部的牙齿流通池总量约为四十万到六十万颗，其年化流通速度约为人类金币的六倍，因为牙在绿皮手中平均持有时长不超过三天就会被花在酒、武器或更多打架上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我不止一次听到人类商人试图建立与绿皮部落的「牙齿汇率体系」——妄想用金克朗收购牙齿再反过来卖给兽人雇佣兵。每个尝试这么做的人都死了，原因很简单：对兽人来说，牙不是值多少钱的问题，牙就是从别人脸上拔下来的那个过程和那股疼劲儿才值钱。你拿一袋干净的牙去跟兽人交易，他会认为你是偷牙贼，然后把你的牙也拔了。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我们家族在边境亲王领地的贸易站曾有一整屋收缴来的兽人牙齿——是从战场上打扫回来的，大约三万多颗，大小和品相参差。我曾想用这批牙作为筹码收买一支兽人部落去攻打另一个部落，但我的顾问劝阻了我：他说牙齿在兽人手里是活的经济，一旦离开绿皮社会就只是烂骨头。后来我点火把那屋子烧了。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我们佣兵团跟一群地精做过交易——用三桶麦酒换了他们的向导服务。你猜他们找零用什么？一把黄牙，上面还挂着血丝。队长把那把牙串起来挂在马鞍上当辟邪，后来那匹马在夜里被什么东西咬死了，脖子上的牙印大小跟那串地精牙一模一样。队长就把那串牙扔进了河里。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "你知道市面上有一类人专门倒卖兽人牙齿吗？我们把这叫「白骨贸易」，在边境亲王领地是半合法的。大颗兽人门牙可以卖给药剂师公会磨成粉入药，据说是治秃顶的偏方。但我经手过的最大一笔单子——大约七千颗——买家不是药剂师，而是努恩的某个工程师学院研究员，他说他在研究'有机质弹药推进剂'。我没再往下问。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "绿皮社会中以兽人门牙作为唯一流通货币的原始经济体系",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "牙齿绿皮货币牙币"
+  ]
+}

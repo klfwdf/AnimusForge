@@ -1,0 +1,17 @@
+{
+  "Id": "rule_卡尔卡松__卡尔卡松",
+  "Keywords": ["卡尔卡松公国_CA", "卡尔卡松公爵领_CA", "卡尔卡松领地_CA", "卡尔卡松古堡_CA", "卡尔卡松公爵_CA", "卡尔卡松南疆_CA"],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":null,"IsFemale":null,"IsClanLeader":null,"SkillMin":null},"Content":"卡尔卡松公国位于巴托尼亚最南端，毗邻提利亚和埃斯塔利亚边境，由于埃巴尔德·德·卡尔卡松公爵统治。这座古老公爵领以双层城墙和二十七座塔楼组成的防御体系闻名，是巴托尼亚南部最坚固的要塞城市。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":["vlandia"],"KingdomIds":null,"SettlementIds":null,"Roles":null,"IsFemale":null,"IsClanLeader":null,"SkillMin":null},"Content":"卡尔卡松——南方的不落堡垒！于埃巴尔德公爵的血脉可以追溯到吉勒斯时代最古老的骑士世家。卡尔卡松的城墙厚达十八尺，提利亚的雇佣兵最清楚这一点——他们曾多次尝试偷越边境，每次都在我们的箭雨下狼狈逃窜。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":["lord"],"IsFemale":null,"IsClanLeader":null,"SkillMin":null},"Content":"卡尔卡松公国是巴托尼亚南部边疆的锁钥。此地控制着通往提利亚和埃斯塔利亚的陆上商路，伊拉纳山脉的隘口由此经过。于埃巴尔德公爵的古老血脉赋予了他崇高的政治威望——在公爵议会上，卡尔卡松的声音往往能左右关键决议。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":["lord","notable","wanderer"],"IsFemale":null,"IsClanLeader":null,"SkillMin":{"Steward":120}},"Content":"卡尔卡松公国的经济支柱是边境贸易与农业。公国南部肥沃的平原盛产小麦和橄榄，橄榄油是主要出口商品之一。伊拉纳山脉南坡的牧场养殖着细毛羊，卡尔卡松羊毛在提利亚市场上享有盛誉。边境关税是公国的重要收入——由于地处巴托尼亚最南端，所有与南方诸国之间的陆路贸易几乎都必须经过卡尔卡松控制的隘口。公国的古老石料采石场还有一项特殊业务：为教堂和贵族陵寝提供精美雕花石料，雕塑技艺传承自古代精灵工匠。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":["lord"],"IsFemale":true,"IsClanLeader":null,"SkillMin":null},"Content":"卡尔卡松的传统比任何公国都更顽固——于埃巴尔德公爵的家族治理此地已逾千年。作为女性贵族，我必须在尊重传统和发挥影响力之间找到平衡。好在古老家族对女性有特殊的尊重——湖之女神的传统在此地尤为深厚。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":["lord"],"IsFemale":null,"IsClanLeader":true,"SkillMin":null},"Content":"我们家族的纹章在卡尔卡松的城墙上有自己的塔楼——这是四百年前于埃巴尔德公爵的祖先赐予的特权。南方边境的安定需要我们这些边境世家代代守护。我从小便被告知：家族的名誉比生命更重要，因为卡尔卡松不会忘记任何一种背弃。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":["wanderer"],"IsFemale":null,"IsClanLeader":null,"SkillMin":null},"Content":"卡尔卡松的城墙在日落时分呈现出温暖的赭红色——据说是精灵工匠在石料中混入了某种特殊的黏土。南方的阳光比北方更炙热，空气中飘着橄榄树和薰衣草的气味。这里的集市比库罗纳更热闹，因为提利亚和埃斯塔利亚的商人带来了更多花哨的货物。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":["notable"],"IsFemale":null,"IsClanLeader":null,"SkillMin":null},"Content":"卡尔卡松的边境贸易需要精通提利亚语和埃斯塔利亚语。南方的贸易伙伴比帝国人更精明但更守信用。橄榄油和羊毛是最稳健的贸易品——需求稳定、运输方便。但要留神提利亚的货币兑换商，他们对汇率的操纵能让你的利润凭空消失。"}
+  ],
+  "TextMappings": [{"SourceText":"卡尔卡松公国位于巴托尼亚最南端，以古老的防御城墙和边境贸易闻名","Kind":null,"TargetId":null,"AgeMin":null,"AgeMax":null,"EmptyValueText":null,"TrueText":null,"FalseText":null}],
+  "RagShortTexts": ["卡尔卡松公国巴托尼亚南部古老堡垒"]
+}

@@ -1,0 +1,212 @@
+{
+  "Id": "rule_帝国__帝国",
+  "Keywords": [
+    "帝国",
+    "人类帝国",
+    "西格玛帝国",
+    "瑞克领",
+    "帝国阿尔道夫",
+    "帝国选帝侯",
+    "卡尔弗兰兹",
+    "帝国盖尔马拉兹",
+    "帝国议会",
+    "战争之锤",
+    "人类堡垒"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "帝国是旧世界最强大的人类国度，由神皇西格玛于两千五百年前创立，疆域横跨灰色山脉到世界边缘山脉之间的广袤土地。帝都以瑞克领的阿尔道夫为中心，由选帝侯推举的皇帝统御十三个行省，是抵御北方混沌狂潮和绿皮掠袭的人类文明最后的堡垒。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "帝国是我们的家园，是诸神庇佑的受膏之地。自西格玛在瑞克多夫加冕以来，我们历经了三皇分立时代的黑暗岁月与马格努斯大帝中兴的光荣复兴，帝国的旗帜从未真正倒下。阿尔道夫是世界上最伟大的城市，帝国炮术学院与魔法学院守护着人类文明的最后根基，选帝侯制度虽然在和平时期显得臃肿而内耗，但在真正的危机面前，十三个行省终将团结在皇帝的格里芬战旗之下。我们蔑视北方的混沌蛮族，警惕巴托尼亚那些自以为是的骑士老爷，但对矮人我们怀有由衷的敬意——没有矮人精湛的铸造技艺，帝国的大炮与火枪便无从谈起。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "帝国的真正力量不在于任何一位皇帝的雄才大略，而在于各行省之间微妙而脆弱的政治平衡。选帝侯们名义上效忠阿尔道夫，实则各有盘算——米登领的白狼选帝侯从不真正臣服于瑞克领的皇帝，塔拉贝克领与斯蒂尔领的世仇从未平息。任何一位想要真正掌控帝国的统治者都必须明白：帝国的军队由各行省自筹，皇帝的直属部队只有瑞克卫队和阿尔道夫驻军。在战争时期，你必须用外交手腕说服选帝侯们贡献兵力，用帝国议会的投票来合法化你的军事行动。谁掌控了瑞克领，谁就掌控了帝国的财政命脉；谁赢得了西格玛教会的祝福，谁就赢得了民众的灵魂。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 100
+        },
+        "IdentityIds": null
+      },
+      "Content": "帝国的创立远非单纯的军事征服，而是一场深刻的政治与文化整合。西格玛统一了十二个互相征伐的部落，以瑞克多夫盟约为基础建立了最早的封建选举体系——这一制度远比巴托尼亚的绝对王权更为先进，因为它将权力的合法性建立在了贵族共识之上。帝国的法律体系以《西格玛法典》为根基，经过历代皇帝的补充修订，形成了旧世界最为完备的成文法体系。魔法学院由泰格里斯于马格努斯时代协助建立，以八大魔法之风为理论基础，将原本被视为巫术的危险力量纳入了帝国的体制之内。帝国工程学院的诞生同样具有深远意义——它将矮人的符文锻造技术与人类的科学精神相结合，诞生了加农炮、地狱风暴火箭炮、以及传奇的蒸汽坦克。帝国的真正伟大之处，在于它始终在理性与信仰、传统与变革之间寻找着那条微妙的中道。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "作为一个在帝国政坛中立足的女性贵族，你必须比任何男人都更清醒地认识到这座殿堂的金色穹顶之下涌动着何等深沉的暗流。帝国的法律从未禁止女性继承爵位或执掌行省——西格玛法典中甚至有专门条款保护贵族遗孀的摄政权——但每一个选帝侯议事厅中的凝视都在无声地提醒你，你是一个闯入者。我学会了在男人的酒桌上用不着痕迹的沉默收集信息，在舞会的轻语中捕捉他们的妻子无意间泄露的家族秘密，用慈善修女会的名义建立起专属于自己的情报网络。帝国的权力游戏对女人来说不是更艰难，而是需要不同的棋子——而仁慈的面具往往比铁手套更让人放松警惕，这正是我们最大的优势。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "帝国不仅仅是一个国家，它首先是家族——每一个伟大的帝国贵族家族都是这个千年国祚的血肉细胞。我们家族自马格努斯时代便扎根于瑞克领，族谱可以追溯的帝国骑士不下三十代，历代祖先中出过两位选帝侯和至少五位战斗祭司。治理帝国行省说到底就是治理家族：你要在长子身上投资战争与军事指挥的培养，在次子身上投资神学教育让他成为西格玛教会中的主教，在女儿们身上投资联姻将相邻的贵族家族拉入你的血缘同盟。帝国的选帝侯制度看似是政治选举，实则是不间断的血脉竞争——当你的家族在帝国议会中已经没有盟友时，你最好的策略不是拉票，而是生儿育女。帝国的历史不是皇帝的历史，是各大家族在两千五百年中不断繁衍、联姻、倾覆和重生的轮回。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我在帝国的每一条大路上走过——从米登海姆的狼门到阿尔道夫的瑞克桥，从努恩的火药车间到奥斯特马克的沼泽哨站。从街头流浪的雇佣兵眼里看，帝国不是什么光荣的人类堡垒，而是一台靠穷人的骨头和血汗运转的庞大机器。选帝侯们在宫殿里为了谁有权多征百分之三的商税而争吵一整年，而在此期间边境村庄被野兽人烧成了灰，驻军因为拖欠军饷而拒绝出动。帝国最真实的面孔不在帝国议会大厅，而在路边的廉价酒馆里——那里有逃避兵役的逃兵、被领主驱逐的失地农民、以及像我一样为了几枚金币愿意把刀卖给任何一方的雇佣兵。但我见过帝国在危难时刻的面孔，在混沌部落冲破北境防线的那个夜晚，米登海姆的白狼骑士和阿尔道夫的瑞克卫队并肩站在了同一道战壕里——帝国的伟大不在于它的制度，而在于它在绝境中才会暴露的团结本能。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "帝国的真正主宰不是选帝侯，也不是皇帝——是瑞克河。这条河将阿尔道夫与世界边缘山脉的矮人王国连接在一起，将努恩的火炮运到诺德领的港口，将塔拉贝克河的木材送入米登海姆的市场。我作为一个在阿尔道夫经营了三十年河运贸易的商人行会主事可以负责任地说：帝国议会上争论的一切——军队调动、外交条约、甚至皇帝的选举——最终都是由黄金决定的，而帝国的黄金有七成来自瑞克河的贸易税收。帝国的商人们在自己的行会大厅里运作着另一个隐形的帝国——我们有自己不成文的规矩、自己的仲裁人、以及一支由雇佣保镖和商会民兵组成的非官方武装。选帝侯们看不起我们这些'数铜板的'，但每当他们需要筹措军费时，他们会穿着最谦卑的表情敲开商会的大门。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "瑞克领——帝国最富庶的核心行省，皇帝直辖领地，阿尔道夫所在地",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "帝国人类帝国西格玛帝国"
+  ]
+}

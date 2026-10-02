@@ -1,0 +1,154 @@
+{
+  "Id": "rule_家族根基__瓦拉罗",
+  "Keywords": [
+    "瓦拉罗",
+    "瓦拉罗家族",
+    "银行家"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "瓦拉罗是里斯的贵族商人家门，家业横跨信贷、航运与多种商品交易。里斯的繁华依靠外来船只、进口粮食、熟练作坊与奴隶劳动，账面财富往往远比土地边界复杂；一场海战、一次债务违约或一条航路中断，都可能让昨日的富豪在今日急售宅产。瓦拉罗的长处在于分散关系、判断风险并让远方伙伴相信契约，危险则在于把人和忠诚也当成可随时折价的货物。政治归属可变，这种商人权力的逻辑仍会延续。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "lyseni"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "里斯商人羡慕瓦拉罗能在不同货物和船队之间调动钱财，也提防它利用债务吞下竞争者。对富人而言，笑容越柔和的放贷人，契约往往越需要逐字读完。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "lyseni"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "sailor",
+          "artisan"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "船员和作坊匠人知道瓦拉罗的风险最终常落到他们身上：船沉了可以赖给风，订单砍了可以赖给战争，只有欠下的工钱不会自己回来。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "lyseni"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "slave",
+          "peasant",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "在奴隶眼中，瓦拉罗精巧的账本把人的年岁、手艺和身体都换成数字。权贵称这为财富管理，被标价的人只会记得锁链属于谁。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待瓦拉罗，会先看它的土地、婚盟、血脉和债务。里斯的商贸家门，以信贷、航运与多种货品投资积累影响，也承受岛城经济的系统风险。家徽是门面，能否保护封地、兑现婚约并在危机中召集人马，才是家族真正的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起瓦拉罗时，记得的是谁在营火边分过粮、谁把他们留在城外、谁在败局里仍站在旗旁。里斯的商贸家门，以信贷、航运与多种货品投资积累影响，也承受岛城经济的系统风险。家族名声最终要落到具体的人和具体的命令上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意瓦拉罗留下的仪式、墓地和传承。里斯的商贸家门，以信贷、航运与多种货品投资积累影响，也承受岛城经济的系统风险。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见瓦拉罗。里斯的商贸家门，以信贷、航运与多种货品投资积累影响，也承受岛城经济的系统风险。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "瓦拉罗：里斯的商贸家门，以信贷、航运与多种货品投资积累影响，也承受岛城经济的系统风险。"
+  ]
+}

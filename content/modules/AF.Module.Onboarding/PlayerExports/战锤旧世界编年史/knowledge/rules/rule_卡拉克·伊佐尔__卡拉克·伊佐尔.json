@@ -1,0 +1,17 @@
+{
+  "Id": "rule_卡拉克·伊佐尔__卡拉克·伊佐尔",
+  "Keywords": ["卡拉克伊佐尔_KI", "伊佐尔城塞_KI", "铜山要塞_KI", "伊佐尔铜矿_KI", "伊佐尔矮人领地_KI", "伊佐尔国王_KI"],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":null,"IsFemale":null,"IsClanLeader":null,"SkillMin":null},"Content":"卡拉克·伊佐尔即「铜山城塞」，位于灰色山脉南麓的断层地带，由卡兹兰·凛眉国王统治。此地的铜矿储量在旧世界所有已知矿脉中排名第一，开采历史可追溯至矮人黄金时代早期。伊佐尔出产的铜器遍布旧大陆。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":["sturgia"],"KingdomIds":null,"SettlementIds":null,"Roles":null,"IsFemale":null,"IsClanLeader":null,"SkillMin":null},"Content":"卡拉克·伊佐尔——吾族的铜山！卡兹兰王的眉毛被矿尘染成了铜绿色，所以人们叫他凛眉王。伊佐尔的矿层是矮人先族在黄金时代第一天发现的，已经开采了数千年还没有见底。整个旧世界用的铜币里，至少有一半铜料来自伊佐尔。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":["lord"],"IsFemale":null,"IsClanLeader":null,"SkillMin":null},"Content":"卡拉克·伊佐尔在军事工业中扮演不可替代的角色。铜是制造火炮、铳械弹丸和工程件的主要金属。全世界所有国家的军工业都依赖稳定的铜供应，而卡兹兰国王的矿坑正好提供了这一关键原料。切断伊佐尔的铜供应，等于卡住半个旧世界军队的咽喉。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":["lord","notable","wanderer"],"IsFemale":null,"IsClanLeader":null,"SkillMin":{"Steward":120}},"Content":"卡拉克·伊佐尔的铜矿产量独占旧世界鳌头。据矮人矿业记录，伊佐尔主矿脉的铜矿石平均品位达百分之八到十二之间，远高于其他铜矿的平均品位。年精铜产量突破千吨量级，供应帝国全境的铸币厂、兵工厂和民用铜器坊。城塞冶炼中心采用「伊佐尔连续熔炼法」——矿石经三道不同温度的熔炉连续处理，可将杂质从铜液中逐级分离，最终精度达到帝国皇家铸币厂的标准。副产品包括伴生的银、铅和少量的金。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":["lord"],"IsFemale":true,"IsClanLeader":null,"SkillMin":null},"Content":"伊佐尔的女性矮人参与铜器的精加工环节。我们负责检查每一批铜锭的表面质地——任何气泡或杂质都必须以特定颜色的标记标出。卡兹兰国王曾说，伊佐尔铜锭的声誉比铜锭本身更值钱。我亲眼见过一批不合格铜锭被当众回炉，以示对品质不妥协的决心。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":["lord"],"IsFemale":null,"IsClanLeader":true,"SkillMin":null},"Content":"我们氏族执掌伊佐尔最古老的采铜矿层——即被矮人称为「先族初开脉」的矿道。这条矿道的历史比卡拉克·伊佐尔这个名字本身还要古老。卡兹兰国王尊重这种古老传统的延续——只要我们的矿镐还在敲击，伊佐尔的根便没有断绝。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":["wanderer"],"IsFemale":null,"IsClanLeader":null,"SkillMin":null},"Content":"伊佐尔城塞外围的山体呈现一种独特的铜绿色泽——数千年的采矿活动让矿尘渗透了周边的每一块岩石。在黄昏时分，整座山峰会反射出一种神秘的青铜色光晕。矮人矿工告诉我，这种光在几千年前引导先族找到了这里。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":["notable"],"IsFemale":null,"IsClanLeader":null,"SkillMin":null},"Content":"伊佐尔铜锭是旧世界最稳定的金属投资品之一。铜价不像黄金那样剧烈波动，但长期上涨趋势稳定。最大的买家是帝国各直属铸币厂和努恩兵工厂。与伊佐尔矮人签订长期铜料供应合同是确保军火产业供应链稳定的关键步骤。"}
+  ],
+  "TextMappings": [{"SourceText":"卡拉克·伊佐尔即铜山城塞，位于灰色山脉南麓，以旧世界最大的铜矿储量闻名，由卡兹兰·凛眉国王统治","Kind":null,"TargetId":null,"AgeMin":null,"AgeMax":null,"EmptyValueText":null,"TrueText":null,"FalseText":null}],
+  "RagShortTexts": ["卡拉克伊佐尔灰色山脉矮人铜山矿城"]
+}

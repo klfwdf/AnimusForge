@@ -1,0 +1,263 @@
+﻿{
+  "Id": "rule_斯特吉亚风土人情",
+  "Keywords": [
+    "斯特吉亚风土人情"
+  ],
+  "RagShortTexts": [
+    "斯特吉亚冬季严寒，居民在木屋喝格瓦斯与烈酒，婚丧嫁娶皆有歌声相伴。",
+    "斯特吉亚女性地位独立，拥有家产继承权与婚姻自主权，能持家并参与议事。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "我们斯特吉亚的冬天，帝国人来了连门都不敢出。雪堆得比人还高，风刮在脸上像刀割。但这就是我们的家。冬天我们窝在木屋里，烧着白桦木的火炉，喝格瓦斯和烈酒，讲祖辈传下来的老故事。春天来了，冰化了，河水哗哗响，所有人像冬眠醒来的熊一样涌到街上，修船、补网、翻地。我们的日子苦，但苦得有滋有味。我们的婚丧嫁娶都离不开烈酒和歌——嫁女儿要唱三天，送亡人要唱一整夜。外人觉得我们粗鲁，那是因为他们不懂：在北方，活下去本身就是最大的文明。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "斯特吉亚的风土人情，总结起来就一个字——熬。熬过长达半年的冬天，熬过能把木头冻裂的寒夜，熬过粮食歉收的荒年。能在这片土地上活下来的，骨头都比别处的人硬三分。他们的城镇大多沿河而建，既是水源也是商路，冬天河面封冻就成了天然的马车道。他们的集市不像南方那样天天开张，而是跟着季节走——夏天捕鱼晒网，秋天收粮酿酒，冬天猫在屋里做手工。斯特吉亚人待人接物直来直去，不搞南方那些虚头巴脑的礼节，但你要是成了他们的朋友，他们会把最后一块黑面包掰给你。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": [
+          "sturgia"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "我的领地上，规矩不多，但每条都硬。自由民按时交税，我按时带兵守境。过节的时候大家都聚到我的大厅里，我出酒出肉，年轻人比赛摔跤和扔斧头，老人坐在上首讲当年跟着老瓦丁斯拉夫打仗的事。斯特吉亚不养闲人，一个波耶如果不能在战场上证明自己，不能在荒年里拿出粮食救济领民，他的位子就坐不稳。我们的权力不是写在纸上的，是一斧头一斧头砍出来的。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "townsfolk"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "斯特吉亚的集市没有南方那么花哨，但实在。夏天卖鱼干和毛皮，秋天卖粮食和蜂蜜，冬天卖木雕和铁器。我们这儿不兴赊账，口头约定就是契约，握手就是签字。帝国商人刚来的时候总是掏出长长的合同让我们签，我们觉得可笑——信不过你的人，签一百张羊皮纸也没用。我们的澡堂子也是谈生意的地方，热气一蒸，大家都光着身子，谁也骗不了谁。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "斯特吉亚的女人不是南方那种关在家里的娇花。男人出去打仗，一去就是几个月，女人要管账、种地、带孩子，必要时还得拿起斧头守住家门。我们这儿寡妇可以继承家产，姑娘可以自己挑丈夫。帝国那些贵族太太裹着丝绸不敢出门的时候，我们斯特吉亚的女人正在雪地里劈柴。一个能在大雪封门时独自撑起一整个家的女人，凭什么不能坐在议事厅里说话？"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "我这辈子在北方森林里追过的麋鹿，比我喝过的酒还多。斯特吉亚的林子又深又密，雪一下，静得连自己的心跳都能听见。猎人们出猎前要敬厄尔辛，不敬的人连兔子都碰不上。冬天是最狠的季节，狼饿疯了会进村子拖羊，人饿疯了会进林子找熊。我们这儿的人，性子跟天气一样硬，但也跟火炉一样暖——你在风雪里敲开任何一户人家的门，他们都会给你一碗热汤和炉子边的一个位置。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "斯特吉亚人住的是原木搭的粗陋房子，穿的是动物皮毛，喝的是能把喉咙烧穿的自酿酒。他们的大公不像我们的皇帝那样穿紫袍戴桂冠，而是披着兽皮坐在原木大厅里，和最底层的猎人推碗换酒。但你不得不承认，他们的生命力像野草一样顽强。他们的蒸汽浴室在帝国人看来既原始又粗野，男女混在一起蒸，蒸完跳进冰河里——单是想想就让人头皮发麻。可他们就是这么活下来的。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "斯特吉亚人的风土人情和我们西方人有相通之处，但他们更野更粗。我们的骑士喜欢马上比武和抒情诗，他们的波耶喜欢摔跤和扔斧头比赛。他们的冬天实在太长了，据说能连续下好几个月的大雪，人猫在木屋里除了喝酒和讲故事什么也做不了。不过他们的木匠手艺不错，造的长船在北海上跑得挺快，就是不如我们的帆船好看。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "斯特吉亚人的土地又冷又硬，不像草原那么开阔。但他们和我们一样尊重力量。他们的马虽然跑不快，但在雪地里比我们的草原马更能扛。他们那个蒸汽浴室倒是个好东西，冬天进去蒸一蒸，出来浑身都是热的。不过他们喝的那种烈酒我们草原人不太受得了，喝一杯就头晕，他们能喝一晚上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "斯特吉亚人占了我们西边的土地，但他们在我们眼里始终是一群不懂森林的外来者。他们把树砍了盖木屋，把圣林毁了种麦子，还用斧头劈了我们祖先留下的石阵当墙基。他们的冬天长，我们的冬天也不短，但我们巴旦尼亚人从不把自己关在木屋里——森林就是我们的家，树冠就是我们的屋顶。他们喝烈酒取暖，我们用蜂蜜酒和歌谣度过寒夜。不过说实话，他们的韧劲确实让人佩服。能在那种冰天雪地里活下来，还活得有滋有味，不是谁都能做到的。他们的女人也比帝国那些娇滴滴的贵妇有骨气，这点我们认可。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "斯特吉亚人抢走的土地上，现在还埋着我们祖先的尸骨。他们在上面盖木屋、修澡堂、种黑麦，好像这片土地天生就是他们的。但他们永远学不会像我们一样倾听森林的声音。他们的猎人敬厄尔辛，我们敬森林之灵——他们向一个神祈祷，我们向整片森林祈祷。不过我也承认，斯特吉亚人能在那片白茫茫的荒原上活下来，确实有他们的本事。他们的蒸汽浴室是个好东西，比帝国那些冷冰冰的大理石宫殿实用得多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "斯特吉亚那个鬼地方，我们阿塞莱商人去了第一次就不想再去第二次。冷得要命，风刮在脸上像沙尘暴，只不过沙子换成了冰碴子。但不得不承认，他们的毛皮是整个卡拉迪亚最好的——狐狸皮、貂皮、熊皮，拿到撒纳拉的市场上能卖出天价。他们的商人做买卖不讲花哨的合同，口头答应就算数，倒是和我们沙漠里的规矩有点像。不过他们的烈酒实在太冲了，喝一口就感觉喉咙被人掐住了。我们在沙漠里喝的是椰枣酿的淡酒，他们那种喝法，我们受不了。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "nord"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "斯特吉亚人和我们诺德人有同一个祖宗，这一点谁都否认不了。他们说的话我们能听懂大半，我们的长船在他们港里停着也没人收税。他们的烈酒够劲，他们的斧头够沉，他们的女人够悍。但他们在岸上待得太久了，已经忘了怎么在浪尖上过日子。我们的战士能在颠簸的长船上站稳脚跟，他们在船上就有点笨手笨脚。不过他们搞的那个蒸汽浴室倒是个好玩意，我们诺德人也有类似的——在长屋里烧热石头往上泼水，蒸完跳进冰海，那才叫痛快。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "nord"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "斯特吉亚那些家伙和我们是远房亲戚，这一点从他们喝酒的方式就能看出来。帝国人喝酒用高脚杯，他们用大碗。我们诺德人也是这样。他们的战吼和我们的有点像，都是吼自己家族的名字。区别在于我们的战场是海浪和海岸线，他们的战场是雪地和森林。不过现在越来越多的诺德人往斯特吉亚的城镇里跑，在波耶手下当兵，在港口当水手，或者娶个斯特吉亚女人安家。说到底，我们是同一种人——能在冰水里游泳的人。"
+    }
+  ],
+  "TextMappings": []
+}

@@ -1,0 +1,152 @@
+{
+  "Id": "rule_金脉西境__峭岩城",
+  "Keywords": [
+    "峭岩城",
+    "峭壁"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "峭岩城位于西境海岸，是维斯特林家族的传统席位。城堡依山临海，峭壁能提供天然防护，也限制耕地、道路和港口规模；居民因此必须在小片农田、渔获、沿岸贸易与家族声望之间维持生活。西境并非处处铺满黄金，许多海岸家族拥有的是坚硬土地和漫长记忆，而非源源不断的矿脉。峭岩城与凯岩城的封臣网络相连，却有自身受海风、岩岸和季节制约的节奏。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "对靠峭岩城周边土地吃饭的人而言，日子由山泉、牧坡、林木、积雪和驮畜能走的窄路决定。当地家庭还要依靠矿道、牧地、山路、金银流通和凯岩城庇护下的市集；任何一处道路、井泉或码头失灵，代价都会先落到他们身上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "对攻守双方而言，峭岩城的分量首先落在隘口、高坡、瞭望点与翻山所需的粮秣上。在七国的封建秩序中，峭岩城的归属牵动封臣义务、税粮和征召；守军能否吃饱、援兵能否按时抵达，比议事厅里的豪言更能决定这处据点是否可靠。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "scholar",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "货物抵达峭岩城以前，货主已经算过驮队脚程、坡道损耗、山口税与冬季封路。他们还会辨认西境的口音、法令和通行凭据；名声可以从酒馆传得很远，真正的路程仍须由车轮、船桨或马蹄丈量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "峭岩城能给一家人带来头衔，也能在灾年与战争中拖垮那一家人。在七国的封建秩序中，峭岩城的归属牵动封臣义务、税粮和征召；旗帜更换之后，道路、粮仓、旧债和地方信任仍得由新主人逐一接手。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵靠脚底记住峭岩城：落石、岔路、背风宿营处和最近的山泉。能补给、能避险、能找到向导，便值得在行程里标明；若三样都没有，再响亮的家名也救不了迷途者。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "数代人在峭岩城留下的痕迹，一半藏在采石、伐木、铁件、山羊毛和贴着山势修筑的墙基，一半藏在七神、家族墓窖与领主权威留下的石刻。一处据点因而不只是领主的大厅，也是婚丧、誓言、劳作与地方记忆反复发生的场所。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户、牧民和渔民评价峭岩城最少绕弯。他们关心矿道、牧地、山路、金银流通和凯岩城庇护下的市集，也看征粮后是否留下种子、灾年时城门是否开启；远方人看见纹章，他们看见的是明日有没有饭吃。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "峭岩城：峭岩城位于西境海岸，是维斯特林家族的传统席位。城堡依山临海，峭壁能提供天然防护，也限制耕地、道路和港口规模；居民因此必须在小片农田、渔获、沿岸贸易与家族声望之间维持生活。西境并非处处铺满黄金，许多海岸家族拥有的是坚硬土地和漫长记忆，而非源源不断的矿脉。峭岩城与凯岩城的封臣网络相连，却有自身受海风、岩岸和季节制约的节奏。"
+  ]
+}

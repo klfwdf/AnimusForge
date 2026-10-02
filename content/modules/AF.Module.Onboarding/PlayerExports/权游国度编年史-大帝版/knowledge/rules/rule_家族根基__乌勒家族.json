@@ -1,0 +1,132 @@
+{
+  "Id": "rule_家族根基__乌勒家族",
+  "Keywords": [
+    "乌勒家族",
+    "赫尔霍特",
+    "梅拉克西斯"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "乌勒家族以沙漠深处的狱门堡（赫尔霍特）为根基，是多恩沙地诸侯。家徽使用红黄相间、如火焰交错的图案，符合当地酷热与旱地印象。征服战争中，龙后雷妮丝与巨龙梅拉克西斯在狱门堡附近坠落，使乌勒之名同多恩抵抗龙焰的记忆相连。多恩流传“乌勒一半疯，另一半更糟”的说法，但这是带有畏惧和偏见的评价，不能当作全族心理事实。当地人更关心水井、阴凉、道路和领主是否能让沙漠中的聚落活下去。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "多恩贵族谈起狱门堡乌勒，常带着一种连笑话都要留心分寸的谨慎。沙地酷热、道路稀少，能在那里维持城堡与封臣本就需要严酷手腕。支持者称乌勒强硬，敌人说他们残忍；两种说法往往来自同一件事的两端。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "沙漠旅人最怕的不是旗帜，而是水囊见底。狱门堡周围的人看乌勒，先看井、路和庇护是否掌握在公正的手里。红黄火焰般的纹章很合这片土地，可真正灼人的从来不是布上的颜色，而是领主一句不容申辩的裁断。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待乌勒家族，会先看它的土地、婚盟、血脉和债务。多恩沙漠狱门堡的沙地诸侯，红黄火焰式纹章，因梅拉克西斯在附近坠落而进入抗龙记忆。“一半疯、一半更糟”是外界评价，不是全族事实。家徽是门面，能否保护封地、兑现婚约并在危机中召集人马，才是家族真正的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起乌勒家族时，记得的是谁在营火边分过粮、谁把他们留在城外、谁在败局里仍站在旗旁。多恩沙漠狱门堡的沙地诸侯，红黄火焰式纹章，因梅拉克西斯在附近坠落而进入抗龙记忆。“一半疯、一半更糟”是外界评价，不是全族事实。家族名声最终要落到具体的人和具体的命令上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意乌勒家族留下的仪式、墓地和传承。多恩沙漠狱门堡的沙地诸侯，红黄火焰式纹章，因梅拉克西斯在附近坠落而进入抗龙记忆。“一半疯、一半更糟”是外界评价，不是全族事实。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见乌勒家族。多恩沙漠狱门堡的沙地诸侯，红黄火焰式纹章，因梅拉克西斯在附近坠落而进入抗龙记忆。“一半疯、一半更糟”是外界评价，不是全族事实。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "乌勒家族：多恩沙漠狱门堡的沙地诸侯，红黄火焰式纹章，因梅拉克西斯在附近坠落而进入抗龙记忆。“一半疯、一半更糟”是外界评价，不是全族事实。"
+  ]
+}

@@ -1,0 +1,224 @@
+﻿{
+  "Id": "rule_斯特吉亚的军事制度",
+  "Keywords": [
+    "斯特吉亚的军事制度"
+  ],
+  "RagShortTexts": [
+    "斯特吉亚军事制度结合了波耶职业亲卫队与自由民动员，核心战术为重步兵盾墙。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "斯特吉亚的军事制度建立在波耶私兵与平民动员相结合的基础上。每一位波耶都维持着自己的亲卫队，这些亲卫是脱产的职业战士，装备精良、训练有素。战时大公向各波耶发出征召令，波耶们带着自己的亲卫和被武装起来的自由民应召而来。斯特吉亚军队的核心是重步兵盾墙，辅以轻骑兵袭扰和飞斧投射。他们的军队不像帝国那样有严格的军团编制，也不像瓦兰迪亚那样以重骑兵为主，而是以坚固的步兵阵线为根本，在北方雪原和森林中磨砺出了一套独特的作战方式。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "我们斯特吉亚的军队和别处不一样。帝国靠的是拿军饷的职业军团，瓦兰迪亚靠的是骑大马的贵族骑士，我们靠的是波耶的亲兵和拿得起斧头的自由民。平时波耶的亲卫队守卫领地，自由民种地打猎。一旦大公吹响号角，波耶们就带着自己的人聚拢起来，组成盾墙，迎着敌人压上去。我们不需要花里胡哨的战术，在北方这种地方，只有能扛住风雪和刀剑的步兵才靠得住。我们的瓦连格——那些贵族子弟组成的精锐步兵——站在盾墙最前排，飞斧开路，斧头收割，简单直接。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "作为波耶，我的亲卫队就是我的家底。这些小伙子不是临时拉来的农民，是从小在我领地上长大、经过严格训练的战士。他们之中最优秀的能升成资深瓦连格，到了那个级别就有资格骑马了——在北方能骑马作战是身份和实力的象征。战时大公号令下来，我带着亲卫去打头阵，领地上的自由民跟在后面。打完仗他们就回去种地，亲卫跟我回城堡。这套制度虽然不像帝国那样能养着十几万的军团，但胜在节省，而且每个战士都是为自己熟悉的人而战，士气不是拿钱换来的。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": [
+          "char:druzhinnik",
+          "char:druzhinnik_champion",
+          "char:varyag",
+          "char:varyag_veteran"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "我是瓦良格，从小摸斧头长大。我们和那些临时征召的平民兵不一样——我们的装备是家里置办的，筝形盾、单手斧、飞斧，每一样都是自己掏钱打的。我们在盾墙最前排，大公或波耶一声令下，先掷飞斧打乱敌阵，然后拔出斧头撞上去。资深瓦良格比我们更厉害，他们骑上马之后就成了亲卫骑兵，机动和冲击都更强。但不管是步兵还是骑兵，我们都认一个理：我们的命是和身后的土地、家人、波耶绑在一起的。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "打仗的时候，波耶的号角一响，我就得放下犁头拿起斧头。我不是职业兵，打完仗还要回去种地。但斯特吉亚的男人个个都会使斧头和盾牌，冬天农闲的时候我们就练队列和盾墙。帝国那些职业兵也许装备更齐整，但他们是在为军饷打仗，我们是在为自己的村子和家人打仗。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "斯特吉亚人的军队太笨重了。他们的步兵盾墙确实硬，我们的骑射手从正面射不透那面筝形盾。但他们的马不如我们，他们的骑兵追不上我们。在草原上打，他们根本碰不到我们，我们可以在他们外围放箭放到他们崩溃。不过我们也不会傻到去他们的森林和雪地里打他们——在那种地方，他们的步兵能把我们的骑射手堵在山谷里慢慢收拾。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "steward": 150
+        }
+      },
+      "Content": "斯特吉亚的军事制度是一种典型的分权封建征召体系，以波耶私兵为核心、自由民动员为补充。其瓦良格体系为卡拉迪亚诸国中独特的军事晋升路径：从瓦良格起步，经资深瓦良格，最终升为亲卫骑兵，完成了从重步兵到骑兵的跨越。在卡拉迪亚各国的军事制度对比中，斯特吉亚与诺德的步兵传统同源，但斯特吉亚发展出了更强的领土防御能力，而诺德则保留了更强的海上作战传统。与瓦兰迪亚北方重骑兵加南方弩兵方阵的协同体系相比，斯特吉亚缺乏远程火力和骑兵冲击力的配合，但在北方森林和雪地的防御战中表现出色。与阿塞莱的轻骑兵标枪体系相比，双方各有优势区域——斯特吉亚在冰雪中称雄，阿塞莱在沙漠中无敌。与帝国军制改革后的贵族私兵体系相比，两者在形式上趋同，但斯特吉亚的波耶私兵制度延续了更久，具有更强的传统约束力。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "斯特吉亚人的军事制度在我们看来似乎简陋，但说实话，帝国自己现在也半斤八两。潘德拉克会战之后，国库被掏空了，常备军团养不起了。阿雷尼科斯皇帝废除了常备军，改由执政官和贵族自己出钱养私兵。表面上是省了开支，实际上是把刀分给了各个家族。现在帝国的军队和斯特吉亚一样，靠的是贵族私兵——区别在于，他们的波耶自古以来就是这么打仗的，而我们帝国是被迫走上了这条路。更讽刺的是，阿雷尼科斯一死，那些手握私兵的贵族们立刻就不安分了。卢孔靠元老院，加里俄斯靠老兵，拉盖娅靠血统——三个人都自称正统，说到底不就是因为谁手里都有兵吗？军制改革省下来的钱，最后全花在内战上了。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "斯特吉亚人的军队和我们瓦兰迪亚完全是两个路子。我们靠的是北方的重骑兵和南方的弩手方阵互相配合——方旗骑士碾碎敌人的阵型，弩手在后排用密集的箭雨收割。斯特吉亚人呢？他们的波耶各自带兵，步兵盾墙虽然硬，但在我们的弩手面前就是活靶子。不过，到了北方的森林和雪地里，我们的骑兵冲锋受阻，弩手的视野也被林地遮蔽，那时候他们的步兵就能发挥优势了。所以我们一般不会主动深入斯特吉亚的腹地。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "斯特吉亚人的军事制度和他们抢我们土地的手段如出一辙——笨重、直接、不讲技巧。他们的盾墙在林间根本施展不开，一排排的大盾在树丛里撞来撞去，我们的弓箭手可以从四面八方射他们。他们的亲卫骑兵也跑不起来，北方的矮脚马在林子里比驴子还笨。但他们有一点我们不得不承认：在开阔的雪原和冰面上，那面筝形盾墙确实很难正面撼动。我们的战术是避开正面，用伏击和远程箭矢消耗他们。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "斯特吉亚人的军队到了沙漠里就是一堆废铁。他们的重甲步兵在烈日下撑不过半个时辰，厚皮袄和毛皮斗篷在纳哈撒的酷热里能把人蒸熟。他们的矮脚马在沙地里跑几步就喘。不过在北方的冰原上，他们确实是最适应的军队。我们阿塞莱人尊重任何能在恶劣环境里活下来的战士，而且他们的瓦良格一路从步兵升骑兵的做法，和我们某些部落的传统有几分相似——战士靠战功晋升，不靠出身。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "nord"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "斯特吉亚人的军事制度和我们诺德人有同一个根，但长出来的枝不一样。我们也是重步兵为主，也喜欢用盾墙和斧头，但我们的战场是长船的甲板和海岸线，他们的战场是雪地和森林。他们的瓦良格和我们的皇家侍卫有点像——都是精锐重步兵，装备好，纪律严。区别在于，我们的皇家侍卫全员都是水手，能在颠簸的长船上跳帮夺船；斯特吉亚人在船上就笨手笨脚了。不过他们的亲卫骑兵倒是个好东西，我们诺德人该学学——可惜我们没有那么多草场养马。"
+    }
+  ],
+  "TextMappings": []
+}

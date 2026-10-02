@@ -1,0 +1,154 @@
+{
+  "Id": "rule_山谷地志__长弓厅",
+  "Keywords": [
+    "长弓厅",
+    "亨特家族",
+    "谷地",
+    "山地氏族"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "长弓厅是亨特家族在谷地的席位。名称来自狩猎与弓术，也暗示了谷地并非只有重甲骑士：山林、峡谷和边缘道路更需要熟悉地形的弓手与猎人。亨特家的领地处在谷地山地与耕地相接之处，居民要面对冬季山风、氏族袭扰和道路安全，也能从林木、猎物和来往商旅中获利。长弓厅的厅堂里或许谈论骑士名誉，城外真正支撑领地的却是守林人、农户、铁匠和认得每条小径的人。可变的战局不应抹去这种长期的地方结构。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vale"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "季节一变，长弓厅周围的人首先检查井泉、田租、磨坊、林地和危急时能否进堡。当地家庭还要依靠山羊、薄田、果园以及翻越明月山脉的驮队；任何一处道路、井泉或码头失灵，代价都会先落到他们身上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vale"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "把长弓厅守在手里，需要算清外墙、塔楼、水井、粮仓与最近的援军道路。在七国的封建秩序中，长弓厅的归属牵动封臣义务、税粮和征召；守军能否吃饱、援兵能否按时抵达，比议事厅里的豪言更能决定这处据点是否可靠。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "scholar",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "长弓厅在商路上的轻重，可以从领地税、庄园产物、驮队路程和堡下形成的小市集看出来。他们还会辨认谷地的口音、法令和通行凭据；名声可以从酒馆传得很远，真正的路程仍须由车轮、船桨或马蹄丈量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "对封臣而言，长弓厅既是一份权利，也是一笔必须偿还的责任。在七国的封建秩序中，长弓厅的归属牵动封臣义务、税粮和征召；旗帜更换之后，道路、粮仓、旧债和地方信任仍得由新主人逐一接手。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "对赶在天黑前投宿的人来说，长弓厅意味着坡势、城门、饮水与守军盘查外人的规矩。能补给、能避险、能找到向导，便值得在行程里标明；若三样都没有，再响亮的家名也救不了迷途者。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "石木会朽，长弓厅仍靠匠人照料石墙、木梁、铁门、墓窖和代代修补留下的接缝，靠神职者保存七神礼拜堂、山民威胁与安达尔骑士传统。一处据点因而不只是领主的大厅，也是婚丧、誓言、劳作与地方记忆反复发生的场所。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "百姓不靠族谱判断长弓厅好坏，他们看收成和征税。他们关心山羊、薄田、果园以及翻越明月山脉的驮队，也看征粮后是否留下种子、灾年时城门是否开启；远方人看见纹章，他们看见的是明日有没有饭吃。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "长弓厅：长弓厅是亨特家族在谷地的席位。名称来自狩猎与弓术，也暗示了谷地并非只有重甲骑士：山林、峡谷和边缘道路更需要熟悉地形的弓手与猎人。亨特家的领地处在谷地山地与耕地相接之处，居民要面对冬季山风、氏族袭扰和道路安全，也能从林木、猎物和来往商旅中获利。长弓厅的厅堂里或许谈论骑士名誉，城外真正支撑领地的却是守林人、农户、铁匠和认得每条小径的人。可变的战局不应抹去这种长期的地方结构。"
+  ]
+}

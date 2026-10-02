@@ -1,0 +1,213 @@
+{
+  "Id": "rule_艾索洛伦的四季__艾索洛伦的四季",
+  "Keywords": [
+    "艾索洛伦的四季",
+    "森林轮回",
+    "春季复苏",
+    "夏季狂怒",
+    "秋冬沉睡",
+    "魔法季节",
+    "生命轮回",
+    "季节变换",
+    "森林节律",
+    "自然周期",
+    "永恒轮回",
+    "四季之力"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "艾索洛伦的四季并非仅仅关于时间流转——它是一场永恒的魔法循环。春季万物复苏，魔法能量澎湃涌动；夏季森林展现出狂怒的力量；秋冬季则是沉眠与净化的时节，整片森林进入神秘的内省状态。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "外面的人永远不会理解四季对我们意味着什么。当春临艾索洛伦时，我们感到血液中涌动着鲜活的力量——那是「萌芽庆典」的日子，每个精灵都放下武器唱歌跳舞。夏季，森林变得炽热而危险，林地守卫加倍巡逻，因为敌人也会被夏季的狂怒所吸引。秋天，我们举行「落叶祭」，缅怀逝去的先祖，并向橡树献上最丰美的果实。冬天，整片森林几乎陷入沉睡——我们减少活动，围在火炉旁讲述古老的故事。如果你没有经历过艾索洛伦的四季，你就不算真正活过。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "四季变化会直接影响你的军事决策。春季：进攻的最佳时机，魔法能量最强，树精苏醒。夏季：防御强化，森林生物凶猛，可以利用环境陷阱。秋季：资源丰收，物资充足，适合长期消耗战。冬季：收缩防御，保存实力，几乎所有木精灵单位的战斗力都会下降——但野林游侠例外，他们在冬夜中更为可怕。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "季节魔法理论最早由精灵贤者「观星者」维兰迪尔在《时轮论》中系统阐述。他发现在每季交替的前后七日，艾索洛伦的魔法边界会暂时「软化」，允许特定的魔法实体进出。春季交替产生「生门」——生命魔法能量外泄，可催生新树精；夏季交替形成「怒门」——火焰元素活跃；秋季交替打开「逝门」——亡灵气息短暂增强；冬季交替触发「寂门」——时间魔法效果放大。木精灵的四个主要节日分别对应这四扇「时之门」，每个节日持续七天七夜，期间所有精灵停止作战，按习俗这期间攻击木精灵被视为对自然的亵渎。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "四季教会了我耐心和智慧。身为女性，我天生更能感受季节流动中的细腻之处——春季的生机、秋季的忧伤，这些都在指导我如何治理领地。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "氏族的庆典日历必须严格遵循四季更迭。错过「萌芽庆典」会让氏族士气低落整整一年。每个季节都有相应的供奉仪式和猎物禁忌——违反这些规矩，你可能会得罪整个森林。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "你从未见过如此鲜明的四季转换。春天抵达时，整片森林在一夜间盛开；而秋日降临的那个黄昏，所有树叶同时从翠绿变成了金黄。这里的时间似乎有自己的节奏。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "艾索洛伦的四季不仅影响精灵本身，也深刻影响着森林中的所有魔法造物。树精在春季最具生命力，夏季最为凶暴，秋季开始休眠，冬季则像是真正的木材雕像。巨鹰在冬季南迁至森林边缘。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "艾索洛伦的四季——影响整个森林的永恒魔法轮回，精灵文化的核心节律。",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "艾索洛伦的四季森林轮回春季复苏"
+  ]
+}

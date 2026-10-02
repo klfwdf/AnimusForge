@@ -1,0 +1,133 @@
+{
+  "Id": "rule_家族根基__夸罗",
+  "Keywords": [
+    "夸罗",
+    "夸罗家族"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "夸罗家族生活在诺佛斯上城贵族、下城市场和通往内陆的道路之间，任何财富都要面对大胡子僧侣的宗教权威。夸罗若经营商队，需要有斧僧与护卫保护；若经营工坊，则受钟声、节日和神法规定的生活节奏约束。 诺佛斯分为悬崖上的上城与河畔下城，巨钟、石阶和有斧僧共同维持由大胡子僧侣支配的神权秩序。商队、地毯、盔甲与内陆道路带来财富，贵族家门仍必须尊重宗教裁断。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "norvos"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "诺佛斯贵族和商人看夸罗，不仅看家产，也看它与大胡子僧侣和三口巨钟所代表秩序的关系。财富可以买护卫与宅邸，却难以公开违抗掌握神法和武装僧侣的人。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "norvos"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "peasant",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "诺佛斯织工、搬运工和河船人从税赋、工钱与钟声下的禁令认识夸罗。上城宴席离他们很远，但每一道宗教裁断都会沿石阶落到市场。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待夸罗，会先看它的土地、婚盟、血脉和债务。夸罗是诺佛斯地方家门，其政治与生计必须服从大胡子僧侣、巨钟秩序和内陆商道。家徽是门面，能否保护封地、兑现婚约并在危机中召集人马，才是家族真正的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起夸罗时，记得的是谁在营火边分过粮、谁把他们留在城外、谁在败局里仍站在旗旁。夸罗是诺佛斯地方家门，其政治与生计必须服从大胡子僧侣、巨钟秩序和内陆商道。家族名声最终要落到具体的人和具体的命令上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意夸罗留下的仪式、墓地和传承。夸罗是诺佛斯地方家门，其政治与生计必须服从大胡子僧侣、巨钟秩序和内陆商道。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见夸罗。夸罗是诺佛斯地方家门，其政治与生计必须服从大胡子僧侣、巨钟秩序和内陆商道。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "夸罗：夸罗是诺佛斯地方家门，其政治与生计必须服从大胡子僧侣、巨钟秩序和内陆商道。"
+  ]
+}

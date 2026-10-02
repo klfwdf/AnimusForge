@@ -1,0 +1,46 @@
+﻿{
+  "Id": "rule_卡尔索斯",
+  "Keywords": [
+    "卡尔索斯",
+    "贾尔马律斯将军"
+  ],
+  "RagShortTexts": [
+    "贾尔马律斯将军卡尔索斯政变"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "卡尔索斯是谁？不知道，听说是古帝国的一个将军，政变了好像"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "steward": 120
+        }
+      },
+      "Content": "卡尔索斯是古帝国贾尔马律斯的将军，他当时在贾尔马律斯发动政变，试图夺取政权，不过失败了。他和大部分中原人一样，极其保守，且崇尚武力"
+    }
+  ],
+  "TextMappings": []
+}

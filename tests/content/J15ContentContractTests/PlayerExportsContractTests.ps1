@@ -14,9 +14,13 @@ if (-not $deploy.Contains('Legacy AnimusForge module folders were left untouched
     throw 'Legacy dual-module warning disappeared from deployment.'
 }
 $map = Get-Content -LiteralPath (Join-Path $ProjectRoot 'content\content-map.json') -Raw -Encoding UTF8 | ConvertFrom-Json
-if (@($map.entries | Where-Object { ([string]$_.target) -match '(^|/)PlayerExports(/|$)' }).Count -ne 0) {
-    throw 'PlayerExports entered the installable content map.'
+$books = @($map.entries | Where-Object { ([string]$_.target) -match '(^|/)PlayerExports(/|$)' })
+if ($books.Count -ne 3139 -or @($books | Where-Object {
+    $_.owner -ne 'AF.Module.Onboarding' -or
+    $_.source -cne ('content/modules/AF.Module.Onboarding/' + $_.target)
+}).Count -ne 0) {
+    throw 'Only the reviewed built-in worldbooks may enter the installable content map.'
 }
 & (Join-Path $PSScriptRoot 'ManagedDeployContractTests.ps1') -ProjectRoot $ProjectRoot -RunRoot $RunRoot
 if (-not $?) { throw 'Managed deployment contract failed.' }
-Write-Output 'playerExportsDeployment noSourceBackSync=1 noInstallMerge=1 noStageData=1 PASS'
+Write-Output 'playerExportsDeployment noSourceBackSync=1 noInstallMerge=1 fixedDefaultFiles=3139 PASS'

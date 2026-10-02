@@ -1,0 +1,17 @@
+{
+  "Id": "rule_吉索鲁__吉索鲁",
+  "Keywords": ["吉索鲁公国_GI", "吉索鲁公爵领_GI", "吉索鲁领地_GI", "吉索鲁北方边疆_GI", "吉索鲁公爵_GI", "吉索鲁森林_GI"],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":null,"IsFemale":null,"IsClanLeader":null,"SkillMin":null},"Content":"吉索鲁公国是巴托尼亚最北端的公爵领，由哈根·德·吉索鲁公爵统治。此地位于灰色山脉北麓，延伸至北方荒原的边缘地带，是抵御诺斯卡劫掠者与混沌部落入侵的第一道屏障。吉索鲁的骑士以坚韧和警惕闻名。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":["vlandia"],"KingdomIds":null,"SettlementIds":null,"Roles":null,"IsFemale":null,"IsClanLeader":null,"SkillMin":null},"Content":"吉索鲁——北方哨兵！哈根公爵的烽火台沿着灰色山脉一字排开，一旦北方的长船出现在地平线上，信火便传遍整个公国。我们吉索鲁人在苦涩的北风中长大，肩膀上的担子是整个巴托尼亚的安宁。这里的骑士不谈荣誉，只谈生存。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":["lord"],"IsFemale":null,"IsClanLeader":null,"SkillMin":null},"Content":"吉索鲁公国的战略价值无可替代。失去吉索鲁，混沌劫掠者将长驱直入巴托尼亚腹地。哈根公爵维持着一套精密的烽火预警系统，公国境内每隔数里便设有一座小型瞭望要塞。吉索鲁骑士不追求比武大会的荣耀，他们的战马在沼泽与森林中如履平地。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":["lord","notable","wanderer"],"IsFemale":null,"IsClanLeader":null,"SkillMin":{"Steward":120}},"Content":"吉索鲁公国的经济以防御需求为核心运转。公国征收北方防御税，各庄园需按比例提供兵员与粮草。黑色森林提供了优质硬木，用于制造长弓与攻城器械的支架。吉索鲁的马场专门培育耐寒战马品种——吉索鲁北方马，这种马比南方战马矮小但耐力极强。公国的铁匠铺则以生产锁子甲和长矛头闻名，铁矿来自灰色山脉的矮人贸易伙伴。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":["lord"],"IsFemale":true,"IsClanLeader":null,"SkillMin":null},"Content":"吉索鲁的贵族女性必须比南方的姊妹更坚强。北方袭击频发，当男人们出征时，女人们要负责指挥城堡的防御。哈根公爵的妻子便曾在一次诺斯卡突袭中亲自指挥守城，用滚油击退了登墙的蛮族。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":["lord"],"IsFemale":null,"IsClanLeader":true,"SkillMin":null},"Content":"我们家族镇守吉索鲁北部边境已历十代。每一代族长的名字都会被刻在边境石碑上——那些没从战场上回来的名字用红漆描过。哈根公爵对我们家族的忠诚深信不疑，因为整个巴托尼亚中没有人比我们更了解北方荒原的危险。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":["wanderer"],"IsFemale":null,"IsClanLeader":null,"SkillMin":null},"Content":"吉索鲁的北方边境令人毛骨悚然。灰色山脉以北，天空永远呈灰黄色，仿佛诸神都不愿多看那里一眼。我曾在边境哨站借宿，老兵们讲述着混沌劫掠者的故事——关于他们在满月之夜听到的、从北方荒原深处传来的非人吼叫。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":["notable"],"IsFemale":null,"IsClanLeader":null,"SkillMin":null},"Content":"吉索鲁不是做生意的理想之地。北方的危险让商人望而却步，但风险孕育暴利。帝国北方各州急需吉索鲁硬木制作弩机，而矮人急欲交换此地的优质铁矿石。每一次穿越灰色山脉的商队都可能遭遇劫掠，但平安归来的那一趟足以赚回全年的亏损。"}
+  ],
+  "TextMappings": [{"SourceText":"吉索鲁公国是巴托尼亚最北端的边疆公爵领，承担抵御北方入侵者的重任","Kind":null,"TargetId":null,"AgeMin":null,"AgeMax":null,"EmptyValueText":null,"TrueText":null,"FalseText":null}],
+  "RagShortTexts": ["吉索鲁公国巴托尼亚北方边陲"]
+}

@@ -1,0 +1,213 @@
+{
+  "Id": "rule_努恩__努恩",
+  "Keywords": [
+    "努恩",
+    "帝国工业中心",
+    "炮术学院",
+    "兵工厂",
+    "火枪铸造",
+    "威森领首府",
+    "帝国军工业",
+    "帝国炮术学校",
+    "铸铁区",
+    "努恩铁甲军",
+    "火药仓储",
+    "瑞克河工业带"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "努恩是帝国的军工心脏，威森领的首府，坐落于瑞克河中游。全城以冶铁高炉的浓烟和铸炮工坊的锤声闻名——帝国的每一门加农炮、每一杆火枪和每一发炮弹几乎都出自努恩的兵工厂与铸造车间，炮术学院更是旧世界最负盛名的火器与弹道学研究机构。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "努恩——帝国的铁与火之城！如果你问什么是帝国最好的东西，阿尔道夫会告诉你他们有一顶金色的王冠，而努恩会告诉你——那顶王冠下面的每一颗铆钉都是在我们这里打的。努恩的铸造区日夜不歇，从威森河上游运来的矿石在这里变成地狱风暴火箭炮的炮管、变成瑞克卫队胸甲上的每一片钢板、变成可以从帝国这头轰到那头的大加农炮。炮术学院培养出的是帝国最严谨的军事头脑——那些穿着黑皮围裙在弹道计算台上趴了一辈子的老学究们可以只凭一颗炮弹的落点推断出敌方炮兵阵地的精确位置。帝国人应该感到幸运：没有努恩的烟囱，帝国在北境面对混沌勇士时手中只有棍子。但话说回来，努恩的河水是褐色的铁锈水，努恩的空气中沉淀着硫磺与焦煤的颗粒，努恩孩子的鼻孔里每天积着一层黑灰——这是工业荣耀的代价，我们有胸襟承认，因为我们配得上这份荣耀。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "对帝国军事指挥官来说，努恩既是不可替代的战略资源，也是无法回避的军事弱点。帝国八成的火炮和九成的火药供应依赖于努恩铸造区与火药仓储设施，这就意味着——任何成功打击努恩的敌人等于同时瘫痪了帝国全境的火炮阵地。保卫努恩的关键在于控制其上游的瑞克河水道和下游的威森领粮道：努恩本身几乎不产粮，它的全部劳动力——包括数万名铁匠、铸造工和学徒——都靠着瑞克河运来的谷物过活。炮术学院外围的'铸铁城墙'是帝国最独特的城防工事——这道城墙不是石砌的，而是由数以万计的废弃铸铁炮筒以铆接方式连接而成的，在对抗炮击时具有出人意料的吸能效果。任何在努恩驻扎的指挥官都应记住：在城市内部，铸造行会的话语权不亚于市政官——在备战期间，你必须先与锻铁行会的主事们达成共识，因为全城三万铁匠的停工足以让你的战争计划在一天内化为废纸。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "努恩的炮术学院是旧世界现存最古老的系统性火器研究机构，由威森领选帝侯弗里德里希·冯·努恩于帝国历1955年创立——其初衷并非军事用途，而是为了解决威森领铁矿开采中日益增多的爆破工程需求。学院的第一个里程碑出现在帝国历1991年，首席弹道师埃伯哈德·施瓦茨发表了一篇具有划时代意义的论文，首次将抛物线计算引入火炮瞄准表——这篇论文的手稿至今保存在学院图书馆的防火室中。到帝国历2100年前后，炮术学院已经完成了从土木爆破到军事火器的全面转型，其标志性事件是'长管加农炮标准化'项目的完成——在此之前帝国的每一门加农炮都是独立的个体，炮管尺寸、火药装填量和弹丸规格互不通用，导致战场后勤处于噩梦状态；标准化改革后，帝国火炮的作战效率提升了至少三倍。学院的另一个鲜为人知的重要设施是位于铸造区地下的'声波测定所'——弹道师们利用一套复杂的传声铜管网络在努恩对岸的山坡上布置监听点，通过测定炮弹飞过时的声波延迟来计算弹道参数，这套系统在雾天无法目视弹道轨迹时具有不可替代的军事价值。蒸汽坦克的全部维护和修理工作也由炮术学院中的蒸汽研究专门小组负责——他们维护着十二辆坦克各自的'健康档案'，其中记录了从帝国历2023年至今的每一次故障维修和部件更换，档案总字数超过两百万。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "努恩这座城市对贵族女性的态度与帝国其他地方有所不同——因为这里的财富根基不是土地而是铁锤。在威森领的贵族圈中，我见过不止一位继承家族军工匠坊的寡妇将那些劝她'将生意交给可靠的男人打理'的长辈请出了她的铸造工坊大门，然后在一周内与矮人工匠签下了一份让同行眼红三年的优质陨铁采购合同。努恩的空气虽然呛人，但它的社会空气比其他帝国城市更自由——在炮术学院的弹道实验场上，数据的正确性不与性别相关，那门炮能不能打准取决于计算而不是你穿不穿裙子。当然这不是说努恩已经是一个平等主义的理想乐园——当我第一次以领主的身份走进锻铁行会的议事堂时，超过一半的座位上的男人发出了一阵近乎整齐的干咳。但我只用了八个月就让其中超过半数的人不再干咳——不是靠什么演讲，而是靠我父亲留给我的铸铁坊在他们的同行中连续拿下了三期帝国军部的竞标合同。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我们家族与努恩的命运密不可分——在我们家族的地下库房中保存着一份由努恩锻铁行会于帝国历2150年签署的'铁血盟约'，它授权我们家族在瑞克河上游的矿脉采掘方面拥有优先采购权。这份盟约是我们家族连续四代人在努恩投资铸造坊、资助炮术学院的研究、并以家族骑士护卫努恩商队的方式换来的。每一个有远见的帝国贵族家族都应该在努恩安置一枚棋子：不是作为征服者，而是作为赞助者——这里的铁匠行会不会向任何一柄剑低头，但他们会对一座新浇注的铜钟或者一车免费的焦煤表现出令人意外的合作热情。拥有努恩铸造坊股份的家族在帝国议会上发言时的底气完全不同——因为你知道，当你背后的桌子上摆着帝国八成火炮的供应链时，没有人会轻易起身打断你的发言。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我在努恩的铸铁区当了六年铸造学徒——别误会，不是那种能学本事的体面学徒，是真学徒，每天干的事就是把一百斤重的生铁块从炉口抬到浇注台，日复一日直到你的肩膀和手腕不再是自己的。努恩的铁匠阶层是世界上自尊心最强的物种——一个在鼓风炉前站了四十年、眼睛被火光烤成半瞎的老铁匠可能一个字也不认识，但他只要看一下铁水的颜色就能准确判断出炉温的度数，这个技能他永远不会教给你，直到你为他倒了十年茶。努恩的真正力量不在那些穿礼服参观炮术学院的贵族老爷眼中，而在铸铁区地下三层的铆接室里——那里有矮人工程师在教人类徒工如何将陨铁粉末按照特定比例混入钢水，这些技术从来没有被写在任何一本书上，它们只在血脉和师徒关系之间口耳相传。帝国的军事霸权建立在努恩的煤烟和汗水之上——任何在真正的熔炉边上流过汗的人都明白这句话的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "努恩的商业生态围绕着一条清晰的金色链条运转：帝国军部的火炮采购预算确定了努恩铸造区全年的订单量，而这些订单量的起伏又可以反向影响整个威森领乃至瑞克河中游地区的就业与粮价。我经营的火药原料进口生意处于这条链条的上游——硝石来自艾斯塔利亚，硫磺来自提利尔，而最好的木炭则来自塔拉贝克领的硬橡木。掌控这几条供应线的商人行会在努恩拥有的谈判筹码远比外人所知的高：如果硫磺船在瑞克河上因为'海关手续'被延误了两周，炮术学院的火药试验就会停摆，帝国军部的炮弹交付日程表就会崩溃，军需官们就会用他们最焦急的字体写信，而信最终会落到我们行会的桌面上。努恩是帝国武装力量的心脏——而心脏不能缺少血液，不能没有氧气，所以我们永远在前排。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "帝国炮术学院——努恩的火器与弹道学研究机构，旧世界最权威的火炮研究机构",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "努恩帝国工业中心炮术学院"
+  ]
+}

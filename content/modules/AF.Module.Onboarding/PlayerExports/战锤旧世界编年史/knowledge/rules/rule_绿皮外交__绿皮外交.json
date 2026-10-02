@@ -1,0 +1,211 @@
+{
+  "Id": "rule_绿皮外交__绿皮外交",
+  "Keywords": [
+    "绿皮外交",
+    "绿皮外交Waaagh",
+    "绿潮侵袭",
+    "劫掠",
+    "绿皮对外",
+    "不可谈判",
+    "最强即王",
+    "暴力等级绝对主义",
+    "地精贿赂",
+    "假巢战术"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "绿皮的外交只有一个字——打。他们不理解谈判、条约和联盟的概念，在绿皮的世界观里，一切关系都由力量决定。当你足够强时，其他绿皮会跟着你；当你不强时，其他绿皮会来揍你。对非绿皮种族而言，绿皮的外交政策就是周期性的绿潮入侵——你无法与他们达成和平协议，只能用武力击退他们并焚烧他们的孢子。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "外交？那是啥玩意儿？能吃不？听着你这小虾米——绿皮只理解一件事：谁最能打谁就是老大。我们不会像人类那样坐在桌子后面拿鹅毛笔假装友好——我们直接过去把对方老大揍翻，然后剩下的就自动变成我们的小子了。有时候别的部落的老大实在太能打，我们的老大就会暂时跟着他——这不叫结盟，这叫等时机，等哪天那个老大在战场上受伤了我们再把他揍翻取而代之。对尖耳朵、矮墩子和人类这些软蛋我们不需要外交——我们直接杀过去抢他们闪闪的玩意儿，然后十年后再杀回来抢更多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "任何试图与绿皮进行外交的统治者都会发现自己在对着石头说话。绿皮不理解主权、边界或停战这些概念——他们的认知结构使他们无法进行超越纯粹力量等级的外部交流。帝国历史上少数几次试图用雇佣绿皮部落对付其他绿皮部落的尝试都以灾难告终，因为绿皮无法区分敌人和雇主的区别——他们在打完第一个敌人后自然转向第二个能打的对手。防御绿皮的唯一有效策略是军事优势和定期清剿。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "绿皮外交的不可能性有着深刻的认知科学基础。绿皮大脑中不存在任何对应谈判、互惠或契约概念的神经结构——他们通过本能性的力量评估来处理一切外部互动。学术界将绿皮的这种特性称为暴力等级绝对主义。地精对兽人的服从建立在显而易见的体型差异之上而非任何形式的约定。Waaagh!的形成需要一位足够强大的战将和一个足够诱人的目标方向——后者通常由萨满的搞毛神启提供。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "绿皮外交的不可可能性对边境女性领主而言是一个奇怪的安慰——因为它意味着你的敌人不会通过计谋分化你们的联盟。混沌可能在你的贵族中渗透内奸，吸血鬼可能在你的廷臣中发展血仆，但绿皮永远不会。如果绿皮来了，你知道他们纯粹是为了打——这使你的防御准备可以被完全集中在军事层面而无须考虑第五纵队。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "绿皮外交的缺失在商路上制造了一个悖论——你无法通过谈判确保你在恶地边界的安全，但你可以通过向矮人支付护送费来间接获得这种安全。矮人与绿皮交战了数千年，他们比你更了解绿皮的行动模式。在恶地附近的家族安全投资不应该花费在雇佣更多的士兵上——应该花费在雇佣矮人工程师为你的城堡修建防御工事和加固外墙。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "在恶地周边流浪时你学到的第一课是绿皮有自己奇怪的信誉系统。如果你在荒野中遇到一群绿皮而你不逃跑——而是安静地站在原地直视他们的老大——他们可能不会立刻杀你。不是因为尊重，而是因为你没有按他们的预期逃跑，这种意外的行为模式会让他们暂时困惑。这个困惑的窗口期大约持续三到五次呼吸。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "绿皮外交的缺失创造了一种特殊的经济边缘化现象。任何在恶地边界运营的商队必须将利润的至少三分之一投入军事护送费用——这笔支出在其他贸易路线上通常可以通过外交途径如通关费或政治献金大幅降低。绿皮区域的不可谈判性使恶地周边的贸易利润结构非常特殊——只有极高利润率的商品才值得冒险穿越绿皮控制区。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Waaagh!外交——绿皮以暴力取代谈判的对外关系模式",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "绿皮的对外关系与盟友体系"
+  ]
+}

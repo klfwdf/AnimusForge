@@ -1,0 +1,210 @@
+{
+  "Id": "rule_木精灵政治__木精灵政治",
+  "Keywords": [
+    "木精灵政治",
+    "木精灵政奥莱恩",
+    "阿莉尔",
+    "林地议会",
+    "双王共治",
+    "神选国王",
+    "十二家族",
+    "季节统治",
+    "王廷政治"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "木精灵由两位君主共同统治——猎神奥莱恩与魔法女王阿莉尔，他们一个代表了森林的狂野之怒，另一个代表了森林的深邃智慧。这对神圣配偶在王廷中分别领导着精灵战士和施法者派系，双方的意见分歧有时会引发政治紧张。此外还存在称为林地议会的贵族议事机构，由最古老最受尊敬的精灵家族族长组成。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "奥莱恩与阿莉尔是我们永恒的王与后——但不要愚蠢地以为这是一段和谐的婚姻。奥莱恩代表着艾索洛伦的狂野意志，他在每年盛夏重生，在狂野狩猎中释放累积的杀戮欲望。阿莉尔则是森林的魔法之心，她的咒语编织在每一片树叶和每一根枝条之中。他们之间的分歧决定了我们整个种族的节奏：当奥莱恩的主宰之声响亮时，森林会向外扩张，我们会对侵入者发动残酷的报复；当阿莉尔的低语占据主导时，我们退缩回密林深处，专注于魔法研究和内部精炼。林地议会由十二个最古老家族的族长组成，他们在两位统治者之间维持着一种脆弱的平衡——有时服务于王廷的团结，有时则无情地利用王与后的分歧来推进自家势力的议程。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "木精灵的双王共治体制对外交和军事同盟的影响深远。奥莱恩和阿莉尔代表了木精灵内部两种截然不同的对外倾向——前者倾向于主动出击、惩罚入侵者甚至是先发制人的'预防性'狂野狩猎；后者则偏爱孤立与守势，以森林迷雾和误导咒语使入侵者自行灭亡。一个精明的外交家必须识别当前是哪个声音在王廷中占据上风：如果你是布雷顿尼亚的边境领主，在奥莱恩主政时期最好不要让你的农民靠近森林边缘。木精灵没有任何向外人递交的正式外交文书或条约——他们的'协议'通常以神秘的口头警告形式呈现，且执行力度因季节和政治气氛而变化。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 100
+        },
+        "IdentityIds": null
+      },
+      "Content": "奥莱恩与阿莉尔的双王体制在政治哲学上有深远的渊源——它本质上是两种统治合法性原则的共生：奥莱恩的权柄来自库诺斯（精灵狩猎之神）的直接化身传承，是一种神选国王制；阿莉尔的权柄来自她对森林魔法的掌握和被森林精魂们的认可，是一种魔法精英制。林地议会的十二家族同样各有渊源——它们大多数可以追溯到高等精灵殖民船队的指挥官家族，但在艾索洛伦漫长的独立历史中，每个家族都发展出了与特定精魂或自然领域的绑定关系。木精灵政治不同于人类宫廷最根本的一点在于：这里没有'忠诚'的概念——至少没有人类理解的那种——阿斯莱对奥莱恩的效忠是对季节和猎杀本身的忠诚，而非对某一个特定个体；当奥莱恩在冬天'死去'时，他的王权政治也随之进入休眠。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "阿莉尔的力量不仅仅是奥莱恩的魔法配偶——她是艾索洛伦一切有生命之物的共同母亲。当我在阿莉尔的宫廷中服务时，亲眼见证了她如何以无声的方式运行着一整张贯穿森林的女祭司情报网：每一条溪流、每一片苔藓、每一只甲虫都可以成为她的耳目。阿莉尔的政治手腕不像人类女王那样依赖魅惑或阴谋，她的力量在于她总能在准确的时间说出准确的话——当林地议会十二位族长争论不休时，她只需轻轻触碰一棵古树的树皮，让树根的震动向所有人传达她的不满。这种沟通方式让任何文字记录都显得多余且笨拙，也让外人永远无法真正渗透木精灵的政治。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "林地议会不是一个民主机构——它是十二股彼此竞争的自然力量在政治形式上的体现。我的家族占据着代表'暮光林地'的席位，这意味着我们必须在奥莱恩的狩猎狂热和阿莉尔的魔法保守之间找到第三条路——微光的、半明半暗的、既不是完全的暴力也不是完全的隐退。每次林地议会开会时，十二位族长在巨大的环形活树厅中就座，每棵座椅本身就是一棵被塑造为椅形的活树，通过树根震动来表达不同意——如果多数座椅的根部传来沉闷的'不'的低鸣，即便是奥莱恩或阿莉尔的提案也无法通过。这种政治系统的根本智慧在于：它无法被贿赂、无法被欺骗、也无法被任何形式的暗杀所颠覆，因为植物不懂这些。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我曾在布雷顿尼亚的边境村镇过冬时从一位老猎人那里听说，木精灵的政治可以通过观察森林外围动物的行为来预判。当狂野狩猎临近时，林中所有的鹿都会向南逃跑，鸟群会连续数日不落枝——这是奥莱恩在积蓄杀戮欲的信号。当阿莉尔在政治上处于主导时，森林边缘会弥漫一种蜜糖般的、令人昏昏欲睡的香气，迷路的旅行者会发现自己不知不觉中绕着森林外围打转而永远无法深入。如果你打算在某个特定季节靠近艾索洛伦边界，学会阅读这些自然预兆比任何政治分析都更可靠。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "从贸易和政治经济的交叉视角来看，木精灵政治体系的一个关键特征是完全没有中央财政。十二家族各自独立维持其领地和战团，不存在任何形式的税收或公共开支——这使得传统的外交施压手段（如经济制裁或贸易奖励）对木精灵完全无效。我曾在帝国商人公会中建议过用开放专属贸易权限来诱使木精灵在军事同盟中让步，结果被一位见过世面的老商人大笑——'他们不想要我们的黄金，他们甚至不想要我们最精良的帝国钢，因为他们有自己的冶金术比我们领先两千年。你能给一群不需要任何东西的人什么东西？'答案是什么也给不了——这也是为什么木精灵无法被收买或影响。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "奥莱恩——木精灵猎神之王，库诺斯化身，每年盛夏从橡树中重生",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "木精灵的权力结构与决策机制"
+  ]
+}

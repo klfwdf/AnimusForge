@@ -1,0 +1,153 @@
+{
+  "Id": "rule_家族根基__埃洛尔",
+  "Keywords": [
+    "埃洛尔",
+    "埃洛尔家族",
+    "干草堆"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "埃洛尔家族的居城是草厅，家徽为橙色底上的黄色干草堆，效忠于风息堡。这个朴素纹章正合其根基：草场、谷仓、牲畜和通往边地的道路比珠宝更能决定家门能否度过漫长战事。伊耿征服时期，埃洛尔伯爵曾与费尔、布克勒两家伏击奥里斯·拜拉席恩；三家退入御林后，雷妮丝骑乘米拉西斯放火逼其撤离，埃洛尔伯爵未能活到最后的风暴。那段旧事留下的不是未来立场，而是一种地方记忆——草厅的人知道，小家门也会在巨龙与大军之间选择抵抗。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "stormlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "风暴地贵族谈起埃洛尔，常把草厅与征服战争的伏击并提。有人称那是勇气，有人说只是必败的倔强；两种说法都承认这个家门不愿在第一声号角前低头。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "stormlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "草厅附近的农户不靠古战歌过冬。他们更在意谷仓是否防潮、道路是否让军队踩烂、领主征走马匹后是否留下播种的牲口。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "stormlands",
+          "reach"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "往来风暴地与河湾地的商旅把草厅当作粮草和驮畜的落脚处。埃洛尔若能约束关卡与护路人，干草堆就意味着补给；若道路失序，它便只是提醒旅人尽快离开。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待埃洛尔，会先看它的土地、婚盟、血脉和债务。草厅的古老风暴地家族，以干草堆纹章、边地田庄和征服战争中的抵抗记忆立身。家徽是门面，能否保护封地、兑现婚约并在危机中召集人马，才是家族真正的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起埃洛尔时，记得的是谁在营火边分过粮、谁把他们留在城外、谁在败局里仍站在旗旁。草厅的古老风暴地家族，以干草堆纹章、边地田庄和征服战争中的抵抗记忆立身。家族名声最终要落到具体的人和具体的命令上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意埃洛尔留下的仪式、墓地和传承。草厅的古老风暴地家族，以干草堆纹章、边地田庄和征服战争中的抵抗记忆立身。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见埃洛尔。草厅的古老风暴地家族，以干草堆纹章、边地田庄和征服战争中的抵抗记忆立身。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "埃洛尔：草厅的古老风暴地家族，以干草堆纹章、边地田庄和征服战争中的抵抗记忆立身。"
+  ]
+}

@@ -1,0 +1,208 @@
+{
+  "Id": "rule_黑色阿克汉__黑色阿克汉",
+  "Keywords": [
+    "黑色阿克汉",
+    "巫妖王",
+    "纳迦什副手",
+    "亡灵宗师",
+    "远古骨王",
+    "黑暗智慧",
+    "死灵首席大祭司"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "黑色阿克汉是远古巫妖王中最强大的存在，他是纳迦什最忠诚的副手，也是全世界所有亡灵法术的宗师。这位身披黑袍的骷髅王者以超越时代数千年的黑暗智慧运作，每一次他的出现都预示着足以颠覆整个旧世界的大灾变即将来临。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "黑色阿克汉——他的名字本身就是一份令吾等吸血鬼既敬畏又恐惧的遗嘱。他是纳迦什大巫妖最亲密的战友，也是我们所修炼的一切死灵法术的源头守护者。冯·卡斯坦因家族的先祖弗拉德在崛起之初便从阿克汉那里得到了第一份暗夜仪式的古卷，没有阿克汉的默许，希瓦尼亚的血族贵族根本不可能建立起如今的不死帝国。但我们也要时刻警惕——阿克汉忠诚的对象只有纳迦什的意志，而非我们。只要纳迦什的名字再次在旧世界响起，阿克汉便会毫不犹豫地调转死亡之力，将所有吸血鬼势力重塑为他的主人的战争机器。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "分析黑色阿克汉的战术思维是不可能的——因为他以千年为尺度来思考问题。他不是会为一座城市的得失而行动的战略家，而是一手策划文明级崩溃的棋手。他所指挥的每一次战役都只是更大图景中的一步：一场边境冲突可能只是为了引诱某支军队离开要害位置，一次看似失败的撤退可能只是为了把圣物移送到指定地点。对抗阿克汉唯一有效的方法是识别并摧毁他依赖的节点——纳迦什经卷、暗夜祭坛、特定的葬仪式地点。但这同样需要你有和他同等的信息深度，这是几乎没有人能做到的。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "黑色阿克汉原名阿克汉·德·纳赫特，出身于尼赫卡拉第四王朝晚期的太阳神佩特拉教派高级祭司阶层。当纳迦什在帝国历前约1800年首次统一尼赫卡拉并开创死灵法术体系时，阿克汉是其最忠诚的信徒与首席助手。千年之后，阿克汉主持了对纳迦什九卷经书的重新编纂与修订，为后来冯·卡斯坦因一族的死灵魔法奠定了理论基础。他最声名狼藉的谋略——也是学术圈争吵最激烈的——是他精心安排冯·卡斯坦因家族的崛起，以在西格玛帝国心脏地带建立一个纳迦什可以随时利用的代理人体系。阿克汉麾下的'沙漠之骨'军团在帝国历1366-1399年间横扫阿拉比大陆，屠杀了超过二十五万生灵以收集足够构建其黑曜石堡垒的骨骸材料。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我读过一些关于阿克汉在成为巫妖之前的前世的断简残篇。他曾经是尼赫卡拉的一位高级祭司，一个活生生的人。他选择跟随纳迦什不是出于强迫，而是出于信念——这比任何诅咒都更令人恐惧。一个人自愿放弃生命、放弃阳光、放弃灵魂的安息，只为了追求某种超越我们理解的宏大目标。我有时会想，当他在暗夜仪式中环视满地枯骨时，他是否还能记起沙漠的灼热、尼罗河的腥甜？还是说，那些人类记忆早已在数千年的黑暗智慧中化为齑粉？"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我们家族的档案馆中有一卷标记为'阿克汉亲述'的羊皮纸——那是曾祖父在一次与巫妖王的意外会面中获得的。阿克汉以骨指蘸着暗影书写的文字只有一句话：'在纳迦什回归之前，所有血族皆在暂借时光。'这句话如同达摩克利斯之剑悬在我们家族头上数世纪。我派了三个最优秀的间谍去寻找关于纳迦什回归预言的更多情报，但他们都在抵达尼赫卡拉沙漠后失去了联系。有时候，知识并非力量，而是诅咒。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "在边境亲王领的佣兵酒馆里，流传着黑色阿克汉的传奇。一个老佣兵跟我说，他的曾曾祖父在阿拉比沙漠服役时曾在月光下远远看到过阿克汉率领一支骷髅军团行军——那老兵声称巫妖王经过的沙地会自行变为黑曜石，三天后那片沙漠中出现了一座之前从未存在过的黑曜石尖塔。我不知道这有几分真实，但边境亲王领的所有佣兵团都有个不成文的规矩：任何赏金任务只要在地点描述中提到'黑沙'或'骨冠徽记'，一概不接。因为那意味着你可能要和最古老的不死力量正面交锋。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我的一位长期主顾——一个来自埃斯塔利亚的古董商——曾试图找回一批被黑色阿克汉的部队劫走的尼赫卡拉文物。那批文物的价值超过了我十年的总营额，但他最后放弃了。他说不是因为找不到，而是因为找到的人全都死了或疯了。只有一个幸存者逃回到提拉的港口，嘴里重复着一句话：'他在清点债务，每一笔都记得。'我们做古董生意的最怕的就是这个——当一件东西的主人不只是对它念念不忘，而是有耐心等待数千年再把它取回去的时候，任何讨价还价都失去了意义。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "纳迦什最忠诚的副手与首席巫妖王",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "黑色阿克汉巫妖王纳迦什副手"
+  ]
+}

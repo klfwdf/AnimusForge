@@ -1,0 +1,94 @@
+﻿{
+  "Id": "rule_西岚达克",
+  "Keywords": [
+    "西岚达克",
+    "埃博半岛"
+  ],
+  "RagShortTexts": [
+    "西岚达克村庄位于埃博半岛高山脚下"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "西岚达克是蒂尔比堡附近的一座村庄，坐落于埃博半岛的高山脚下，山势稍微阻挡了自西北方刮来的刺骨寒风。这里最初是淘银者在山洞溪流中寻觅银矿的地方，但银矿资源早已枯竭，现在主要出口粘土供当地陶工使用。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "西岚达克以前出过银子，山洞溪流里能淘到银砂，风光过一阵。后来银挖光了，淘银的人走了，留下的是满山的矿洞。现在村里人挖粘土卖钱，供陶工烧罐子、烧瓦片。埃博半岛那些矿工和渔民用的陶器，一多半底上印着西岚达克的标记。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "townsfolk"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "西岚达克的粘土粘性好，烧出来的陶罐不裂。以前那地方靠银矿，现在靠粘土，虽然赚得少多了，但胜在稳当。蒂尔比堡那边修房子用的瓦，不少也是从西岚达克烧出来的。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "我在西岚达克见过那些老矿洞，黑漆漆的，没人敢进。村里孩子说里面有鬼——那是淘银人留下的魂。现在淘银的人没了，挖粘土的人每天早上扛着铲子进山，把一车一车好泥巴运出来。日子不如从前风光，但踏实。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "西岚达克",
+      "Kind": "bound_settlement_name",
+      "TargetId": "__bound_settlement__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": "蒂尔比堡",
+      "Kind": "bound_settlement_name",
+      "TargetId": "__bound_settlement__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}

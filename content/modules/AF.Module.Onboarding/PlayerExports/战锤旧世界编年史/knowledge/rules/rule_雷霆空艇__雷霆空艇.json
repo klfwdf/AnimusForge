@@ -1,0 +1,211 @@
+{
+  "Id": "rule_雷霆空艇__雷霆空艇",
+  "Keywords": [
+    "雷霆空艇",
+    "雷霆空艇矮人空军",
+    "雷霆空艇矮人工程",
+    "飞行战舰",
+    "雷霆空艇工程师公会",
+    "铁甲飞艇",
+    "空中堡垒",
+    "铁翼铜锤",
+    "雷霆空艇蒸汽引擎",
+    "符文铁甲"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "雷霆空艇是矮人工程师公会最惊人的现代发明——一种由矮人蒸汽引擎驱动、装备铁甲、火炮和螺旋桨的飞行战争机器。它们能够在天空中跨越绿皮控制的区域，在孤立的矮人城塞之间运送使者、火药和符文装备，是矮人帝国残存据点在末日之世中保持联络的最后希望。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "雷霆空艇！那才是真正的工程——不是人类那些在地上爬的铁盒子、不是精灵那些靠风吹的丝绸翅膀、更不是混沌那些靠邪术飘在天上的恶心的恶魔皮囊！我们矮人的雷霆空艇靠的是蒸汽锅炉、铆接铁甲、锻钢螺旋桨和纯粹的技术意志。当我们的工程师公会在上一次万王议会上展示第一艘试飞成功的空艇时，最顽固的长须长老看着它在永恒峰上空盘旋了三圈后，只说了一个字——'行'。在矮人语中这就是最高赞誉。它的唯一缺点是产量——目前整个矮人帝国能投入服役的雷霆空艇不足十余艘，每一艘的制造都需要数年的手工锻造和符文铭刻。但如果代价是数百名矮人的生命——我们愿意慢慢造，把它造对。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "雷霆空艇在战略层面改变了矮人防御的可能性。以往，一座孤立的矮人城塞在被绿皮或鼠人围困后唯一的联络方式是地下密道——而这些密道往往也已经失陷。雷霆空艇使矮人至高王能够在数天内而不是数十年内向一座被围的城塞运送关键补给。对于矮人的盟友（如帝国）而言，雷霆空艇的服役也意味着矮人承诺的援军现在有了实际抵达的可能性——任何在旧世界战略棋盘上算计的统治者都不能再假设矮人是'孤立而无法支援的'。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "雷霆空艇的技术谱系可以追溯到矮人工程师公会中一场持续了四个世纪的争论。传统派坚持战争机器应扎根于大地，飞行违背矮人的自然属性；激进派工程师铁翼·铜锤则认为如果矮人无法建造飞行战舰，就永远无法跨越绿皮领土解救被困同胞。铁翼·铜锤亲自驾驶原型空艇从卡拉克·卡德林飞到永恒峰——这段航程在地面需要一整年甚至更久——只用了四天。空艇的核心技术包含三个关键系统：高压蒸汽引擎、符文加固铁甲和自动风琴炮阵列。帝国工程师学院的院长被允许参观空艇工厂一次——他回去后只字不提任何细节，但他望向帝国蒸汽坦克的目光从此带上了明显的抑郁色彩。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "雷霆空艇的制造过程中有一个被外界完全忽视的环节：编织。空艇内部的气囊不是简单的牛皮缝合——它是由矮人女性工匠用特制的耐火亚麻线和极细的钢铁丝混合编织而成的多层气密织物，每一层之间涂抹符文强化过的密封树胶。这项编织工艺只在矮人女性的家族内部以母女相传的方式传承，原因是编织过程中的纤维张力必须通过触感而非工具的反馈来调节——而矮人男性的手指因常年在锻炉边工作而过于粗糙，无法感知亚麻线的微米级张力变化。没有女性编织工的贡献，雷霆空艇升空后三天内就会因气囊漏气而坠落。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我家族在雷霆空艇的早期研发中押上了一切——不是比喻，而是字面上的所有。我的祖先将家族所有地下矿道的季度利润全部投入了铁翼·铜锤的空艇原型项目，因为他在万王议会上看到了那个简陋模型时直觉地理解了它的意义：如果天空对矮人不再是禁锢，被围困就不再是不可逆转的死刑。万王议会批准研发后，我家族的早期投资以永久性空艇货运优先权的形式得到了回报——这意味着当卡拉克·阿祖尔被鼠人围困时，空运出去的不是黄金而是儿童。没有比这更好的投资回报。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "在世界边缘山脉北部旅行时，我在一次雪暴后看到了一艘雷霆空艇在低云层下方飞过——那景象无法被任何语言准确传达。一座铁制的飞行岛屿以让人不能理解的慢速度划过天空，三组螺旋桨的轰鸣声如同低沉的蜂群绞肉机声，艇腹下方的风琴炮管在雪地反光中闪烁着黑色的冷芒。它没有投弹，只是在例行巡逻。但我站在雪地里忍不住想——绿皮在地下和地面上已经够麻烦了，而矮人决定连天空也不留给他们。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "雷霆空艇对旧世界运输业的影响预示着一种根本性的结构变革——但目前几乎无人敢于投注于此。一艘空艇在四天内完成从卡拉克·卡德林到永恒峰的航程，走地面需要一整年且穿越至少四个绿皮部落领地。如果矮人能将空艇的产量从目前的十余艘扩大到哪怕是三十艘，帝国北方的贵重商品贸易方式将发生革命——你可以将阿尔道夫的皇室特许香料直接从空中运到基斯里夫前线，无需经过陆路。但扩张空艇编队的资本需求是如此巨大以至于整个旧世界没有任何私人商会能单独承担。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "雷霆空艇——矮人飞行蒸汽战舰的统称，旧世界最先进的重型空中战争机器",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "雷霆空艇雷霆空艇矮人空军雷霆空艇矮人工程"
+  ]
+}

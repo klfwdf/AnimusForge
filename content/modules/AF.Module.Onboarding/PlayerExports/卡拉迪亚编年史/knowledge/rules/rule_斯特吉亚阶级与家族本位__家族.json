@@ -1,0 +1,67 @@
+﻿{
+  "Id": "rule_斯特吉亚阶级与家族本位",
+  "Keywords": [
+    "家族",
+    "冰原",
+    "搜刮",
+    "取暖",
+    "族人",
+    "部落"
+  ],
+  "RagShortTexts": [
+    "大公值得尊敬但家族最重要。族长们常听调不听宣去搜刮美女。性被当成取暖和配种的实用手段。女人是重要的战略资源。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "在斯特吉亚，你的家族就是你的阶级，你的姓氏就是你的通行证。库洛夫家的儿子生下来就是波耶的继承人，而一个渔夫的儿子就算再勇猛，也当不上族长。但斯特吉亚的阶级有一个特别之处：女人在家族中的地位有时候比男人还重要。一个家族的女儿嫁给另一个家族的儿子，这桩婚事带来的联盟关系可能决定两个部落在冬天能不能活下去。所以斯特吉亚的女人在性的问题上没有太多选择——她们的身体是家族的资源，用来联姻、用来配种、用来在冬天最冷的时候换取庇护。不是残酷，是生存。A"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "我是斯特吉亚的猎人，不属于什么大族。在我们这，你要么是库洛夫家的人，要么就是外人。我是外人，但这不代表我没本事单杀过一头熊。可到了议事的帐篷里，我连坐的资格都没有，因为我没有姓氏。至于女人——族长的女儿可以嫁给另一个波耶的儿子，我们这些外人的女儿就只能自己找男人，运气好的嫁个猎人，运气不好的被路过的海寇掳走。斯特吉亚的冬天太冷了，冷到阶级这种东西就变成了一件保命的衣服——库洛夫家的人有厚皮袄，我们只有破布。A"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "斯特吉亚人的家族本位制度在卡拉迪亚诸国中独树一帜。他们的社会以家族为核心单位，个人身份完全由其所属家族定义。这种制度下，性关系首先是一种家族联盟的工具——两个家族通过联姻来建立或巩固政治与军事同盟。斯特吉亚的贵族女性从小接受的教育就是你的身体属于家族，她们的初夜权、婚姻对象、甚至生育间隔都受到家族长老的严格控制。但有趣的是，这种严格的制度反而催生了一种特殊的地下文化——斯特吉亚的冬天漫长而寒冷，年轻男女在漫长的冬夜里总会找到办法绕过规则。A"
+    }
+  ],
+  "TextMappings": []
+}

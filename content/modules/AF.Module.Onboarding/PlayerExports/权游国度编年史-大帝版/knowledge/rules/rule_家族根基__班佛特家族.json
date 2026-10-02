@@ -1,0 +1,152 @@
+{
+  "Id": "rule_家族根基__班佛特家族",
+  "Keywords": [
+    "班佛特家族"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "班佛特家族以祸垒为席位，是西境海岸的古老贵族，效忠凯岩城。征服战争以前，这一带曾由被称为“兜帽王”的先民诸王统治；黑兜帽人形是家徽中最醒目的图案。祸垒面向日落之海，家族历史长期受铁民劫掠与海岸警戒塑造。城墙、烽火、渔港和通往内陆的道路共同构成其根基，沿海领主的声誉首先取决于敌帆出现时能否及时保护属民。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "西境领主把祸垒视作海岸上的旧哨。班佛特没有凯岩城的财富，却替内陆承受最先抵岸的风暴和铁民；烽火若迟点一夜，损失便会沿道路蔓延。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "sailor",
+          "artisan"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "祸垒附近的渔户既靠海吃饭，也怕海上来人。班佛特若维护灯火、给遇袭村庄留下重建口粮，兜帽旗就是庇护；若只在收税时出现，它便只是另一层阴影。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "sailor",
+          "soldier",
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "铁民老船长记得西境海岸每一处可登陆的滩口，也知道祸垒不是毫无准备的肥羊。对他们而言，班佛特既是潜在战利品，也是必须在潮汐和烽火点燃前解决的障碍。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待班佛特家族，会先看它的土地、婚盟、血脉和债务。班佛特家族据守西境海岸的祸垒，其历史与“兜帽王”传说、铁民侵袭和沿海防务紧密相连。家徽是门面，能否保护封地、兑现婚约并在危机中召集人马，才是家族真正的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起班佛特家族时，记得的是谁在营火边分过粮、谁把他们留在城外、谁在败局里仍站在旗旁。班佛特家族据守西境海岸的祸垒，其历史与“兜帽王”传说、铁民侵袭和沿海防务紧密相连。家族名声最终要落到具体的人和具体的命令上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意班佛特家族留下的仪式、墓地和传承。班佛特家族据守西境海岸的祸垒，其历史与“兜帽王”传说、铁民侵袭和沿海防务紧密相连。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见班佛特家族。班佛特家族据守西境海岸的祸垒，其历史与“兜帽王”传说、铁民侵袭和沿海防务紧密相连。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "班佛特家族：班佛特家族据守西境海岸的祸垒，其历史与“兜帽王”传说、铁民侵袭和沿海防务紧密相连。"
+  ]
+}

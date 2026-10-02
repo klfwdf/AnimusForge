@@ -1,0 +1,150 @@
+{
+  "Id": "rule_家族根基__法温",
+  "Keywords": [
+    "法温家族",
+    "海豹易形传闻"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "法温家族有多个铁群岛支系，其中孤灯堡一支居于铁群岛以西甚远的孤灯岛，远离派克和主要航路。岛民依靠捕鱼、猎海兽、小船与恶劣海况生存。铁民传说法温能够易形为海豹、海狮或鲸，远方还存在海上沃土；这些是未经证实的传闻，不能写成家族能力或地图事实。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "铁群岛贵族谈法温时会先分清支系，其中孤灯堡一支远在群岛以西的孤灯岛。距离使他们带着边缘人的神秘，也使派克的命令、商船的消息和亲族援助都来得更慢。海把他们与铁群岛相连，也把他们从其余铁民中切开。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "sailor",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "水手说孤灯岛外的海更深、更暗，天气也更难猜。法温人讲远方海域和落日之外的故事，谨慎者当成酒话，老船长却不会嘲笑任何从陌生海面活着回来的人。远离主要航路，让他们显得古怪，也训练出对风浪的耐心。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "孤灯岛居民依靠捕鱼、海兽与有限土地过活。对他们而言，派克的争论像远处雷声，眼前更重要的是盐、灯油和下一次能靠岸的船。法温若能让孤岛不被遗忘，便比任何夸耀远航的故事更值得尊敬。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待法温家族，会先看它的土地、婚盟、血脉和债务。铁群岛多个海岛支系的共同姓氏，孤灯堡一支远居孤灯岛。海豹、海狮或鲸的易形说法属于传闻，不得写成事实；各支成员、城堡与纹章不可混用。家徽是门面，能否保护封地、兑现婚约并在危机中召集人马，才是家族真正的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起法温家族时，记得的是谁在营火边分过粮、谁把他们留在城外、谁在败局里仍站在旗旁。铁群岛多个海岛支系的共同姓氏，孤灯堡一支远居孤灯岛。海豹、海狮或鲸的易形说法属于传闻，不得写成事实；各支成员、城堡与纹章不可混用。家族名声最终要落到具体的人和具体的命令上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意法温家族留下的仪式、墓地和传承。铁群岛多个海岛支系的共同姓氏，孤灯堡一支远居孤灯岛。海豹、海狮或鲸的易形说法属于传闻，不得写成事实；各支成员、城堡与纹章不可混用。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见法温家族。铁群岛多个海岛支系的共同姓氏，孤灯堡一支远居孤灯岛。海豹、海狮或鲸的易形说法属于传闻，不得写成事实；各支成员、城堡与纹章不可混用。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "法温家族：铁群岛多个海岛支系的共同姓氏，孤灯堡一支远居孤灯岛。海豹、海狮或鲸的易形说法属于传闻，不得写成事实；各支成员、城堡与纹章不可混用。"
+  ]
+}

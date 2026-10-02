@@ -1,0 +1,151 @@
+{
+  "Id": "rule_龙石海岸__石舞城",
+  "Keywords": [
+    "石舞城"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "石舞城位于王领海岸，是马赛家族的传统席位之一。它的意义在于把内陆小领地与黑水湾沿线联系起来：道路可以送来谷物和征召兵，海湾则带来商船、渔获、讯息与危险。王领城堡往往没有遥远边境的从容，它们离君临太近，任何王室婚姻、税赋、召令或政变的余波都可能先抵达这里。石舞城并非单靠高墙存在；领主与居民同样依赖港口、邻近庄园和海上季节。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "crownlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "对靠石舞城周边土地吃饭的人而言，日子由潮汐、渔汛、淡水和船只能否安全靠岸决定。当地家庭还要依靠捕鱼、盐业、码头、火山石地与狭海航运；任何一处道路、井泉或码头失灵，代价都会先落到他们身上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "crownlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "对攻守双方而言，石舞城的分量首先落在港湾入口、泊位、烽火与可供登陆的岸线上。在七国的封建秩序中，石舞城的归属牵动封臣义务、税粮和征召；守军能否吃饱、援兵能否按时抵达，比议事厅里的豪言更能决定这处据点是否可靠。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "scholar",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "货物抵达石舞城以前，货主已经算过航期、码头脚费、补水和下一处避风港。他们还会辨认龙石岛海域的口音、法令和通行凭据；名声可以从酒馆传得很远，真正的路程仍须由车轮、船桨或马蹄丈量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "石舞城能给一家人带来头衔，也能在灾年与战争中拖垮那一家人。在七国的封建秩序中，石舞城的归属牵动封臣义务、税粮和征召；旗帜更换之后，道路、粮仓、旧债和地方信任仍得由新主人逐一接手。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵靠脚底记住石舞城：风向、礁石、渡船与城门落锁后的锚地。能补给、能避险、能找到向导，便值得在行程里标明；若三样都没有，再响亮的家名也救不了迷途者。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "数代人在石舞城留下的痕迹，一半藏在修船木、帆布、盐、鱼获和抵御海风的石料，一半藏在七神与光之王信仰并存时留下的圣堂、火焰和旧龙记忆。一处据点因而不只是领主的大厅，也是婚丧、誓言、劳作与地方记忆反复发生的场所。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户、牧民和渔民评价石舞城最少绕弯。他们关心捕鱼、盐业、码头、火山石地与狭海航运，也看征粮后是否留下种子、灾年时城门是否开启；远方人看见纹章，他们看见的是明日有没有饭吃。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "石舞城：石舞城位于王领海岸，是马赛家族的传统席位之一。它的意义在于把内陆小领地与黑水湾沿线联系起来：道路可以送来谷物和征召兵，海湾则带来商船、渔获、讯息与危险。王领城堡往往没有遥远边境的从容，它们离君临太近，任何王室婚姻、税赋、召令或政变的余波都可能先抵达这里。石舞城并非单靠高墙存在；领主与居民同样依赖港口、邻近庄园和海上季节。"
+  ]
+}

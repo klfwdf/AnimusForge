@@ -1,0 +1,129 @@
+{
+  "Id": "rule_地理档案__鹰巢城",
+  "Keywords": [
+    "鹰巢城",
+    "艾林",
+    "月门堡",
+    "血门"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "鹰巢城位于谷地明月山脉的巨人之枪上，是艾林家族的祖传城堡和谷地政治权威的最高象征。来客须先经过山下的月门堡，再沿险峻山道穿过危岩堡、雪山堡与长天堡，最后才能抵达山巅的白色小堡；陡坡与高差使大军难以展开，也使补给和冬季居住格外困难。鹰巢城在温暖季节近乎不可强攻，但艾林家的实际统治仍离不开月门堡、海鸥镇、谷地农田与诸侯骑士，而不能只靠云端上的石墙。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vale"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "谷地骑士以能登上鹰巢城为荣：那是家名、礼法和安达尔传统被山势托高的地方。可真正负责补给的人知道，光荣也要靠骡子、绳索和月门堡的储粮。山峰能使来客低头，却不能替任何家族解决冬天、继承或谷地内部的争执。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "hilltribesmen",
+          "battania",
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "山地氏族不会把鹰巢城当作美景；他们看见的是贵族用关堡、道路和誓言锁住山谷。北境来客会嫌那里太高太精巧，铁民则会说一座没有海的城再安全也不自由。所有人却都承认，若没有熟路人带领，鹰巢城本身就是一场漫长的攀登。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "在领主和商人眼中，鹰巢城首先是地图上的一处要害。巨人之枪上的艾林山巅城堡，经月门堡与石、雪、天三座关堡抵达。它凭险道、谷地骑士传统和威望自守，冬季却依赖山下的月门堡。他们关心水源、道路、税关和守军，知道地名背后往往连着一条能让城堡活下去的粮道。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈到鹰巢城时，记住的不是边界线，而是风向、坡度、渡口和能否在天黑前找到避难处。巨人之枪上的艾林山巅城堡，经月门堡与石、雪、天三座关堡抵达。它凭险道、谷地骑士传统和威望自守，冬季却依赖山下的月门堡。一处地形的名声，常由死在那里的人的数量决定。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者会从另一面理解鹰巢城。巨人之枪上的艾林山巅城堡，经月门堡与石、雪、天三座关堡抵达。它凭险道、谷地骑士传统和威望自守，冬季却依赖山下的月门堡。石头、林木、河流或山口既能成为谋生之所，也可能被赋予圣洁、禁忌和祖先记忆，因而不能只用金钱衡量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民对鹰巢城的看法最实际。巨人之枪上的艾林山巅城堡，经月门堡与石、雪、天三座关堡抵达。它凭险道、谷地骑士传统和威望自守，冬季却依赖山下的月门堡。他们先看这里能否取水、耕作、放牧和躲过兵灾；地图上的一行字，落到村里便是柴薪、井绳和过冬的粮。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "鹰巢城：鹰巢城位于谷地明月山脉的巨人之枪上，是艾林家族的祖传城堡和谷地政治权威的最高象征。来客须先经过山下的月门堡，再沿险峻山道穿过危岩堡、雪山堡与长天堡，最后才能抵达山巅的白色小堡；陡坡与高差使大军难以展开，也使补给和冬季居住格外困难。鹰巢城在温暖季节近乎不可强攻，但艾林家的实际统治仍离不开月门堡、海鸥镇、谷地农田与诸侯骑士，而不能只靠云端上的石墙。"
+  ]
+}

@@ -1,0 +1,207 @@
+{
+  "Id": "rule_巴托尼亚总称__巴托尼亚总称",
+  "Keywords": [
+    "巴托尼亚王国",
+    "巴托尼亚正式国名",
+    "湖神圣国",
+    "十四公爵领",
+    "圣杯王庭",
+    "库罗纳王座"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "巴托尼亚——正式名称为「巴托尼亚王国」或「湖神庇护下的巴托尼亚」——是旧世界西部的封建骑士王国，由湖之女神选中的初代国王吉勒斯·勒·布雷顿建立。王国由十四个公爵领组成，国王在库罗纳的王座上通过湖神圣杯教会的授权统治全国。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我们的王国只有一个名字——巴托尼亚，湖之女神神圣受膏的土地。我们的国王不是被金钱和选票挑选出来的帝国式皇帝——他是女神亲自选中的人，在圣杯之湖中饮过神水，在库罗纳大教堂中被费伊女巫亲手加冕。十四个公爵领——从北方的库罗纳到南方的阿奎坦，从东方的吉隆到西方的波尔德罗——每一个都拥有自己古老的家族纹章和千年传承。我们不是帝国那种用商业合同和议会投票拼凑起来的杂合体——我们是女神以骑士道为纽带编织的一张家族网络，每一个公爵都是王室家族的远亲，每一个骑士都是国王的剑。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "巴托尼亚的国体在国际法中的定位是一个以湖神圣杯教会为精神权威的封建君主国。与帝国的选举君主制不同，巴托尼亚的王位继承必须同时满足两个条件：公爵议会的多数认可和费伊女巫代表女神的神谕确认。巴托尼亚是旧世界唯一一个神权可以直接废黜世俗君主的国家——费伊女巫拥有宣布国王「失去女神眷顾」的终极权力，而一旦这种宣布被发出，所有骑士的效忠誓言自动解除。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "巴托尼亚王国的正式外交称号在历史上有过多次变更。吉勒斯时代最初使用「吉勒斯及其战友的部落联盟」，但在巴托尼亚纪年100年前后正式确定为「湖神圣杯庇护下的巴托尼亚王国」。在国际条约中巴托尼亚国王的正式签名格式为「巴托尼亚国王、库罗纳公爵、湖神最高卫士XX」——这个头衔序列反映了巴托尼亚王权的三层支柱：王国的统一主权（国王）、核心领地（库罗纳公爵）和神权合法性（湖神最高卫士）。十四公爵领的制度在吉勒斯死后由十二位最初的圣杯骑士各领一地并增入库罗纳（王领）和穆西隆（后废）而形成。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "巴托尼亚的官方称号中完全没有女性的身影——但巴托尼亚真正的外交力量往往在宴会厅和比武场观众席上被女性所掌控。湖神圣杯教会中的修女和先知们拥有对王位继承和战争宣言的巨大幕后影响力，而这种影响力从未在任何官方称号中被承认。一位巴托尼亚贵妇人在比武大会上抛出的手帕可能是当天最重要的外交举动——但它永远不会出现在王国的编年史中。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "巴托尼亚的称号结构对我家族的政治定位至关重要。作为十四公爵之一，我们在王国的正式称号排位中占据一个固定位置——而这个位置决定了在王室典礼、骑士比武和外国使节接待中的优先次序。公爵排位的升降是巴托尼亚政治中最微妙的变化——它通常发生在两代人的跨度之后，由多次比武大会的累积战绩和战争贡献逐步改变。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "在巴托尼亚乡村旅行时你很快会发现，农奴对自己国家的称呼和贵族完全不同。贵族说「王国」或「巴托尼亚」；农奴说「这片土地」或「领主的领地」。大多数农奴终其一生不知道王国的边界在哪里——他们只知道从自己的村庄到最近的城堡之间的距离。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "巴托尼亚的国名在旧世界贸易中具有独特的商业价值。「巴托尼亚酿造」的标签在帝国的高端葡萄酒和烈酒市场中代表着远超同等品质帝国产品的溢价——不是因为质量真的更高而是因为帝国贵族愿意为巴托尼亚的骑士文化氛围支付额外费用。但这种名称溢价也会在战争时期反过来伤害贸易——当巴托尼亚与帝国之间的外交关系紧张时，巴托尼亚商品在帝国市场上会被爱国消费者抵制。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "巴托尼亚王国——湖神庇护下的封建骑士王国，旧世界最强重骑兵国家",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "巴托尼亚的正式称谓与政治地位"
+  ]
+}

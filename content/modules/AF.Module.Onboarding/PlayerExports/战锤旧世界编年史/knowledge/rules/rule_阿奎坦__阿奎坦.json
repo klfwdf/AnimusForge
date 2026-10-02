@@ -1,0 +1,17 @@
+{
+  "Id": "rule_阿奎坦__阿奎坦",
+  "Keywords": ["阿奎坦公国_AQ", "阿奎坦公爵领_AQ", "阿奎坦领地_AQ", "阿奎坦海岸_AQ", "阿奎坦公爵_AQ", "阿奎坦南疆_AQ"],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":null,"IsFemale":null,"IsClanLeader":null,"SkillMin":null},"Content":"阿奎坦公国位于巴托尼亚南部海滨，由阿尔芒·德·阿奎坦公爵统治。此地气候温暖，风景宜人，以优美的海滨庄园和温和的贵族文化著称。阿奎坦是巴托尼亚诗歌与音乐的发源地之一，吟游诗人的传统在此最为兴盛。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":["vlandia"],"KingdomIds":null,"SettlementIds":null,"Roles":null,"IsFemale":null,"IsClanLeader":null,"SkillMin":null},"Content":"阿奎坦——温柔乡也是骑士心的试炼场！阿尔芒公爵的书房里收藏着巴托尼亚最丰富的诗歌手稿。我们阿奎坦人相信：真正的骑士不仅要有剑，还要有歌。南方的海风让这里的葡萄更甜，橄榄更香，连骑士的长枪冲刺都似乎带上了几分诗意。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":["lord"],"IsFemale":null,"IsClanLeader":null,"SkillMin":null},"Content":"阿奎坦公国在军事上并非巴托尼亚的强权，但在文化与外交领域举足轻重。阿尔芒公爵的宫廷是南方贵族社交的中心，许多重要联姻与盟约都在阿奎坦的诗会与宴席上敲定。此地的海军虽规模不大，但足以保护沿海商路免受海盗骚扰。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":["lord","notable","wanderer"],"IsFemale":null,"IsClanLeader":null,"SkillMin":{"Steward":120}},"Content":"阿奎坦公国的经济优势在于农业与文化产业的结合。南部海岸的日照与土壤条件非常适合橄榄、柑橘和葡萄等经济作物种植。阿奎坦橄榄油被视为巴托尼亚最上乘的烹饪用油，价格是普通菜籽油的五到八倍。公国还出产一种名为「阿奎坦蓝」的靛蓝染料，提取自海边特有植物，是贵族织物的重要染色原料。吟游诗人学院每年招收来自全巴托尼亚的年轻诗人，学费和赞助金构成了公国特色收入。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":["lord"],"IsFemale":true,"IsClanLeader":null,"SkillMin":null},"Content":"阿奎坦是女性贵族的天堂。在这里，吟游诗人歌颂的不只是骑士的武勇，还有贵妇的智慧与美德。阿尔芒公爵的宫廷聚会上，女眷的见解受到尊重——这种风气在巴托尼亚绝无仅有。我在此地拥有自己的文学沙龙，这是在其他公国无法想象的。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":["lord"],"IsFemale":null,"IsClanLeader":true,"SkillMin":null},"Content":"我们家族在阿奎坦拥有最古老的橄榄庄园。阿尔芒公爵尊重文化传承，因此对我们这样的古老家族格外礼遇。每一代族长都会资助数名吟游诗人——这不仅是品味的表现，更是政治投资。吟游诗人的歌谣能塑造一个家族在巴托尼亚的百年声誉。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":["wanderer"],"IsFemale":null,"IsClanLeader":null,"SkillMin":null},"Content":"阿奎坦的海滨小镇散发着慵懒的气息。白色石墙、蓝色木窗、橄榄树的银绿色叶片在午后阳光下闪闪发光。我在阿奎坦的海边酒馆听过一位老吟游诗人演唱《吉勒斯十二战友》——整整三个小时的弹唱，直到月沉大海才结束。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":["notable"],"IsFemale":null,"IsClanLeader":null,"SkillMin":null},"Content":"阿奎坦的市场不大但利润丰厚。橄榄油和靛蓝染料是两大拳头商品，尤其是靛蓝染料在帝国贵族圈中供不应求。但要注意：阿尔芒公爵对文化产业的保护限制了外商进入吟游诗人学院的经济圈。与当地庄园主合作是最稳妥的经营策略。"}
+  ],
+  "TextMappings": [{"SourceText":"阿奎坦公国位于巴托尼亚南部海滨，以温暖气候、诗歌传统和悠闲文化闻名","Kind":null,"TargetId":null,"AgeMin":null,"AgeMax":null,"EmptyValueText":null,"TrueText":null,"FalseText":null}],
+  "RagShortTexts": ["阿奎坦公国巴托尼亚南部海滨诗与歌之乡"]
+}

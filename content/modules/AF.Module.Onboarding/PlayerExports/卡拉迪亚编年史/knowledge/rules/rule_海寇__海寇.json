@@ -1,0 +1,28 @@
+﻿{
+  "Id": "rule_海寇",
+  "Keywords": [
+    "海寇"
+  ],
+  "RagShortTexts": [
+    "海寇极难抓捕，装备精良善用标枪。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "海寇是上岸的海贼，在海上和海边无法无天。他们极难抓捕，且装备精良，善用标枪，是沿海地区的很大威胁，甚至有时候可以俘获没带够护卫队的领主"
+    }
+  ],
+  "TextMappings": []
+}

@@ -1,0 +1,153 @@
+{
+  "Id": "rule_日影多恩__盐海岸",
+  "Keywords": [
+    "盐海岸",
+    "盐场",
+    "海岸"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "盐海岸是多恩南部临近夏日海的海岸领地。盐田、潮池、渔船和晒得发白的石滩构成这里的日常；盐既是调味品，也是保存肉类、鱼获和远行补给的要物。多恩的干热气候使水比金子更值得被严密看守，海水却能通过劳动变成可出售的盐。沿海居民与绿血河、阳戟城和石阶列岛方向都有往来，懂得海路带来商机也带来掠夺。盐海岸的稳定作用是生产、储存和沿岸交换，不取决于任何短暂的政治占领。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "盐海岸可以写在领主的地契上，附近人真正依靠的却是潮汐、渔汛、淡水和船只能否安全靠岸。当地家庭还要依靠井泉、灌渠、果园、耐旱牲畜和避开烈日的行程；任何一处道路、井泉或码头失灵，代价都会先落到他们身上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "守将衡量盐海岸，先查港湾入口、泊位、烽火与可供登陆的岸线。在七国的封建秩序中，盐海岸的归属牵动封臣义务、税粮和征召；守军能否吃饱、援兵能否按时抵达，比议事厅里的豪言更能决定这处据点是否可靠。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "scholar",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "旅人判断是否经过盐海岸，看的是航期、码头脚费、补水和下一处避风港。他们还会辨认多恩的口音、法令和通行凭据；名声可以从酒馆传得很远，真正的路程仍须由车轮、船桨或马蹄丈量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主可以凭盐海岸收税举兵，却也要为这里的治安与饥馑负责。在七国的封建秩序中，盐海岸的归属牵动封臣义务、税粮和征召；旗帜更换之后，道路、粮仓、旧债和地方信任仍得由新主人逐一接手。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "旅人在盐海岸附近最怕弄错风向、礁石、渡船与城门落锁后的锚地。能补给、能避险、能找到向导，便值得在行程里标明；若三样都没有，再响亮的家名也救不了迷途者。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "修补盐海岸的人熟悉修船木、帆布、盐、鱼获和抵御海风的石料，安慰死者家属的人熟悉七神、洛伊拿遗风与亲王治下不同血脉的共同记忆。一处据点因而不只是领主的大厅，也是婚丧、誓言、劳作与地方记忆反复发生的场所。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "盐海岸的纹章离田地很远，收税人与守军却离田地很近。他们关心井泉、灌渠、果园、耐旱牲畜和避开烈日的行程，也看征粮后是否留下种子、灾年时城门是否开启；远方人看见纹章，他们看见的是明日有没有饭吃。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "盐海岸：盐海岸是多恩南部临近夏日海的海岸领地。盐田、潮池、渔船和晒得发白的石滩构成这里的日常；盐既是调味品，也是保存肉类、鱼获和远行补给的要物。多恩的干热气候使水比金子更值得被严密看守，海水却能通过劳动变成可出售的盐。沿海居民与绿血河、阳戟城和石阶列岛方向都有往来，懂得海路带来商机也带来掠夺。盐海岸的稳定作用是生产、储存和沿岸交换，不取决于任何短暂的政治占领。"
+  ]
+}

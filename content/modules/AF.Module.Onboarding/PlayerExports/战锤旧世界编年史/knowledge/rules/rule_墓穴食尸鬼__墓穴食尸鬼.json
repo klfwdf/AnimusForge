@@ -1,0 +1,213 @@
+{
+  "Id": "rule_墓穴食尸鬼__墓穴食尸鬼",
+  "Keywords": [
+    "墓穴食尸鬼",
+    "吞食遗骸",
+    "扭曲变异",
+    "成群撕咬",
+    "地下生物",
+    "墓穴怪物",
+    "食尸鬼",
+    "墓穴掠食者",
+    "地下恐怖",
+    "群猎",
+    "尸食者",
+    "变异"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "墓穴食尸鬼是潜伏在墓地、废墟和地下墓穴中的扭曲类人生物，长期吞食人类遗骸导致其身心都发生了可怕的变异。它们成群结队地袭击，用尖锐的爪牙撕碎猎物，是亡灵军团中最血腥的炮灰突击兵。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "墓穴食尸鬼——我们亡灵大军中最廉价的生力军！它们曾经是人类——生活在社会最底层的掘墓人、疯子和亡命之徒，因为长期以人类尸体为食而逐渐被黑暗能量扭曲了身体和灵魂。我们的吸血鬼只需要在墓地周围释放特定的引诱咒文，食尸鬼就会像嗅到腐肉的蛆虫一样从地底裂缝中涌出。它们在战斗中没有战术、没有纪律、甚至没有自我保护的意识——但几百只墓穴食尸鬼同时翻越城墙涌入守军阵地的视觉冲击足以让最老练的士兵丧失理智。它们撕咬时发出的那种湿漉漉的碎裂声和食尸时含混不清的呜咽声，能在敌军的噩梦中持续余生。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "墓穴食尸鬼是典型的低成本高数量冲击单位。它们在正面作战中的杀伤效率远不如正规步兵，真正的价值在于制造混乱和拖垮敌军体力。对付食尸鬼的关键在于密集的远程火力和稳固的阵型——不要被它们突破战线，因为一旦它们从侧翼或后方涌入，士兵的个人战斗力在群攻中将难以发挥。另外要特别注意：食尸鬼携带多种腐败疾病，战后必须立即焚烧所有食尸鬼尸体并隔离伤员。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "墓穴食尸鬼在生物分类学上的地位一直是帝国自然哲学家争论的话题。它们不是亡灵（基于有正常的生理代谢和繁殖能力），但也不是正常的自然生物（基于其变异源自黑暗能量而非自然进化）。食尸鬼的转化过程通常历时三至六个月，取决于个体的原始体质和对尸体食物的暴露程度。转化第一阶段为食欲改变（对正常食物失去兴趣），第二阶段为生理变化（体毛脱落、皮肤增厚呈灰白色、牙齿和指甲异常增生），第三阶段为心智退化（语言丧失、社会行为退化、出现嗜尸癖）。一种名为「食尸鬼热疫」的疾病可加速转化过程，该病通过食尸鬼的唾液和爪子传播。一旦进入第二阶段的食尸鬼，帝国法律的处置要求是「立即处死并焚烧」——因为在第二阶段及以上，食尸鬼已被判定不再保有人类灵魂。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "墓穴食尸鬼是人性最极端的堕落——先是失去社会身份和社会联系，然后失去对正常食物的需要，最后失去作为人的心智。我曾经在一次边境巡视中亲眼看到一名被食尸鬼袭击后幸存但被咬伤的农夫——他用那双已经不再属于人类的眼睛看着我，恳求我给他一个干净的死亡。我给了。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我族的领地边缘有三座废弃的矮人矿坑——食尸鬼的巢穴。每隔几年它们的数量增长到开始威胁村庄时，我们不得不组织猎捕队下去清理。每次都有族人在黑暗中再也没有出来。但如果不清理，它们就会在冬季最冷的时候被饥饿驱赶上地面，那时代价更大。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "墓穴食尸鬼有一个让人背后发凉的习性——它们会在进食前对猎物进行一种无法解释的「游戏」：围着将死的猎物缓慢转圈，发出咯咯的笑声。有人说那是残存的人类心智在变异的外壳下试图用扭曲的方式体验快乐。我不知道是否真有心智残存，但那种笑声我会记一辈子。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "墓穴食尸鬼本身没有经济价值——它们不会购买任何东西，也不会交换。但清除食尸鬼巢穴的合同在希尔瓦尼亚边境地区是一个稳定的收入来源。地方领主愿意支付可观的「清理费」，前提是你能活着回来并且带回来证据。证据通常是食尸鬼的左耳——它们耳朵上有某种不会腐化的软骨。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "墓穴食尸鬼是长期食尸导致身心变异的扭曲类人地下生物",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "墓穴食尸鬼吞食遗骸扭曲变异"
+  ]
+}

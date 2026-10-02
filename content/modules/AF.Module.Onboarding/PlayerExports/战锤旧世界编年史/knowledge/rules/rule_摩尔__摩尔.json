@@ -1,0 +1,211 @@
+{
+  "Id": "rule_摩尔__摩尔",
+  "Keywords": [
+    "摩尔",
+    "死亡之神",
+    "梦境之神",
+    "亡灵宿敌",
+    "摩尔花园",
+    "黑玫瑰",
+    "渡鸦之神",
+    "维蕾娜之夫",
+    "玛利亚之父",
+    "葬礼之神"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "摩尔是死亡之神但绝非杀戮之神——他不制造死亡，他只接纳死者。每一位在旧世界离开人世的灵魂最终都会穿过摩尔花园的大门，在那里被摩尔以沉默的目光衡量此生。他手持一柄巨镰和一架天平，在梦境中向凡人传递他们无法在清醒时面对的真理。他的黑玫瑰在每一座摩尔花园的围墙内绽放，从不凋谢。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "摩尔是我们最后见到的那位神。不是西格玛——西格玛只在你活着的时候管你，当你跪在战场上用最后的气力祈求胜利的时候他会在。但当你躺在自家床上、你的子女围绕着你而你感到那不可阻挡的黑暗正在轻轻拽着你的脚踝的时候——那时候进来的不是西格玛，而是摩尔。我们帝国人不喜欢谈论摩尔，因为这意头不好——但每一个家庭都知道摩尔的真实存在。摩尔花园是每一座帝国城市最后一块受到城墙保护的土地：它被高墙围住，墙顶种满了黑玫瑰，那些玫瑰不需要雨水，它们靠埋葬于其中的遗骸散发出的最后一丝生命力而绽放。摩尔祭司是帝国最沉默的一群人——他们不在节日上演讲、不向选帝侯陈情、不讨论权力——但当你家中有人过世时，他们会准时出现在门口，不收钱、不传教、只是安静地完成仪式，然后像渡鸦一样消失在夜幕中。我们对摩尔的承诺只有一条：当我们埋葬死者时必须将他们头朝西、脚朝东——这样当摩尔在终末之日吹响最后的号角时，死者可以笔直地坐起来，面对东方的黎明。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "摩尔信仰对统治者而言是一把双刃剑——它是稳定民心的力量也是限制王权的桎梏。摩尔祭司拥有对任何死者遗体的不可挑战的法律管辖权——这意味着即使是皇帝的尸体也必须经过摩尔教会的丧葬仪式才能进入祖陵。摩尔教会是亡灵法术的最大天敌——在希尔瓦尼亚边界的摩尔祭司是帝国对抗纳迦什遗产的第一道防线，他们的存在使得吸血鬼无法轻易在帝国核心省份中建立亡灵大军。作为统治者，你必须同时尊重摩尔教会的两项要求：一是为每一位阵亡士兵提供正式葬礼——这不仅仅是一笔开销，更是维持军队士气的基本条件；二是保护每一座摩尔花园不受侵犯——若有盗墓者从摩尔花园中偷走了一具遗骸并用于亡灵法术，教会将要求领主交出凶手的首级，否则摩尔祭司将不会为你的领地中的任何死者举行葬礼——没有葬礼意味着死者无法升入摩尔国度，而这在帝国任何一个村里都会引发暴动。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "摩尔在旧世界神学谱系中的位置远比表面看到的要古老和复杂。大地母神是最原始的崇拜对象，她生下了塔尔（代表被驯化的自然）和尤里克（代表未被驯化的暴力）。而维蕾娜（正义与智慧女神）和摩尔（死亡与梦境之神）的婚姻构成了帝国神系中的理性与终结的二元结合——维蕾娜负责在生者社会中建立规则和知识，摩尔则负责在生者社会终结之处为灵魂提供通道。他们的两个女儿——玛利亚（战争策略与名誉女神）和莎莱雅（治愈与慈悲女神）——完美地体现了这一结合的两种产出面向：玛利亚继承了父亲面对死亡的冷峻和母亲制定规则的智性，而莎莱雅继承了母亲对受苦者的关切和父亲对生命终结之必然性的深刻理解。摩尔与亡灵法师纳迦什之间的宿敌关系是理解摩尔教义的最终钥匙——纳迦什试图通过亡灵法术废除死亡本身，让灵魂永久锁在腐朽的肉体中服务于一个独裁的意志，而摩尔的使命则是确保灵魂在死后获得真正的解放与安息。这不是死神与巫王之间的权力之争——这是关于死亡本质的哲学战争。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "摩尔信仰中只有极少数女性祭司——摩尔教会不禁止女性，但女性似乎天然地更愿意侍奉他的妻子维蕾娜或他们的女儿莎莱雅，这是旧世界神职分布中一个少有人讨论但极为稳定的统计规律。原因尚未有系统研究，但从女性贵族圈子中流传的私密说法暗示这或许源于：维蕾娜和莎莱雅提供了与生者社会的有意义互动（教导、治愈），而摩尔祭司的生活本质上是与死者和临终者进行无限的、沉默的交流——这种交流在灵魂层面对女性的要求据说是比维蕾娜和莎莱雅的律文和药草更难长期承受。摩尔花园的黑玫瑰对我的意义不同于教会的标准解读——他们说黑玫瑰代表死者的不朽灵魂，但在我看来黑玫瑰是一个女人在她漫长生命中年复一年在家族墓室中为一具又一具亲人遗体盖上黑玫瑰时，那种无法用语言向任何生者传达的极深极沉的沉默。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我族墓室的入口上方刻着一只闭目的石渡鸦——那是摩尔在我们家族私密宗教语言中的象形符号。在公开场合我们向所有帝国神祇献祭，在私人空间中我们唯独向摩尔和维蕾娜祈祷最多——因为维蕾娜守护契约和律法（没有这些就没有家族），而摩尔守护祖先的安眠。在我们家族的私密传统中，每一代族长在临终前必须独自在墓室中跪一整夜——不是向摩尔祈求延长寿命（摩尔从不回答这种祈求），而是向他呈递这一代家族的所有未完成的承诺和债务。我相信摩尔会将这些信息传递给维蕾娜，而维蕾娜会将一些债务转化为下一代的幸运，将另一些债务扣留在案等待来生清算。这不是官方的摩尔教义——这是我的祖母向我的祖父、我的祖父向我的父亲、我的父亲在我十八岁生日那天向我以耳语传递的家族秘密。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "在我走过旧世界数百座墓地的经历中，摩尔花园永远是城墙之内最安静但也最诚实的一块土地。生者的城市永远在撒谎——商人的招牌吹嘘自己的货品、贵族的旗号炫耀自己的血统、教会的钟声夸大自己的虔诚——但摩尔花园中每一块墓碑都只刻着一个名字和两个日期，中间那一杠横线代表一个人所有的谎言、所有未被完成的计划、所有没说出口的话。我在塔拉贝克领的一座偏远的摩尔花园中见过一个摩尔祭司在黄昏时分为一匹战马举行葬礼——那匹马属于一个在与绿皮战斗中死亡的无名骑士，而祭司说摩尔对马和对人一视同仁，因为死亡面前万物皆为空。流浪者对摩尔的情感比起恐惧更接近一种古怪的亲切——因为我们每天都在路过不同的墓地，我们比定居者更早地明白死亡不是终点而是一个你放弃你的地图并终于开始真正旅行的时刻。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "摩尔花园在黑市材料交易中拥有一个极少被公开讨论但极为可观的间接角色。摩尔花园围墙内种植的黑玫瑰花瓣在旧世界炼金业中的价值远超任何花卉——黑玫瑰干燥后的粉末被认为是某些高级炼金配方中不可替代的催化剂，其效力据称来自花瓣在坟场土壤中吸收的死灵微量残留。摩尔教会对黑玫瑰的采收拥有绝对垄断，而教会下属的三个代理行通过向玛丽恩堡和提利尔的炼金行会出售干燥黑玫瑰粉每年赚取的利润足以维持帝国境内所有摩尔花园的维护费用。精明的人会注意到摩尔教会从未公开宣称黑玫瑰具有任何魔法或炼金特性——他们只说它是圣物，是葬礼用的神圣道具。但教会也不阻止任何人以高价向代理行购买干花瓣。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "摩尔花园——墙内墓园，死者安息之地，黑玫瑰永恒绽放的圣所",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "摩尔死亡之神梦境之神"
+  ]
+}

@@ -1,0 +1,213 @@
+{
+  "Id": "rule_树精__树精",
+  "Keywords": [
+    "树精",
+    "中型灵体",
+    "枝干交织",
+    "物理抗性",
+    "森灵战士",
+    "坚固壁垒",
+    "活体树木",
+    "能量生物",
+    "自然精魂",
+    "移动森林",
+    "坚不可摧",
+    "木质身躯"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "树精是由森林精魂凝结而成的中型灵体战士，它们的身体由古老树枝和藤蔓交织构成，拥有极高的物理抗性，能以坚不可摧的步伐碾碎一切入侵之敌。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "树精并不像外界传闻的那样笨拙。它们的动作缓慢但极为有力，每一步都让大地颤抖。真正让人敬畏的是它们的沉默——树精从不言语，只是静静地站在林地边缘，等待咏咒使的召唤。当战斗开始时，树精会以难以置信的方式与敌人战斗：它们的枝干可以突然伸长缠绕敌人，根系从地下穿出绊倒骑兵。我们视它们为祖先的延伸——每个树精体内都寄宿着一个曾生活在艾索洛伦的古老精灵精魂。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "树精是你阵线中不可或缺的支柱。把它们放在步兵线的核心位置，它们会像活城墙一样吸收冲击。树精对常规武器有极高的抗性——箭矢和刀剑几乎无法穿透它们的木质身躯。但要注意，火攻是它们的克星，务必让咏咒使用水魔法保护它们。与林地守卫形成经典配合：树精在前，弓手在后。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "根据《精魂学》的研究，树精的形成需要至少五百年的古树作为容器，以及一个自愿放弃肉体、融入树干的精灵精魂。学术界将树精分为三个等级：「嫩枝」——形成不足百年的年轻树精；「繁枝」——百年到千年的主力树精；「年轮长者」——千年以上的巨型树精。最著名的年轮长者是「根语者」杜尔坦，据说它的根系遍布艾索洛伦整个地下，能够通过根脉感知森林任何一个角落的威胁。树精的弱点包括火属性攻击和「腐化术」——某种混沌魔法可通过腐蚀木质结构瓦解树精的身体。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我麾下有一批树精战士，它们在战斗中从不退却。看着这些沉默的古老生灵为我而战，我感到无比荣幸，也无比沉重。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "唤醒树精需要咏咒使的协助和一个漫长的仪式。你的氏族中有多少树精可用，取决于你能供养多少咏咒使。树精是稀缺资源，不要轻易将它们投入必死的战斗——每个树精的陨落都是一位先祖精魂的消亡。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "你走进一片看似普通的树林，直到最靠近的那棵「树」缓缓转过头来，用一对空洞的眼睛注视着你。你意识到自己正站在一群沉睡的树精中间。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "树精在上古时代就已存在于艾索洛伦。它们最初是由咏咒使从普通的古树中唤醒的，但后来演变成了一种独立的灵体形态。树精的社会结构极为古老，以「年轮长老」为尊。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "树精——由古树和精灵精魂融合而成的中型灵体战士。",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "树精中型灵体枝干交织"
+  ]
+}

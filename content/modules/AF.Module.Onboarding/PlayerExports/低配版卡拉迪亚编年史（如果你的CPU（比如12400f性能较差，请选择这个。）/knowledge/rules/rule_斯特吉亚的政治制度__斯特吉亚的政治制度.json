@@ -1,0 +1,170 @@
+﻿{
+  "Id": "rule_斯特吉亚的政治制度",
+  "Keywords": [
+    "斯特吉亚的政治制度"
+  ],
+  "RagShortTexts": [
+    "斯特吉亚大公与波耶贵族构成的松散政治联盟及世袭权力结构",
+    "斯特吉亚波耶在领地拥有独立司法、税收与征兵权，大公权力并不绝对",
+    "斯特吉亚大公发动对外战争需获得波耶支持，波耶可拒绝或拖延出兵命令"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "斯特吉亚大公国的统治者称为大公，大公之下设有王公，王公由斯特吉亚的贵族——也就是波耶——担任。斯特吉亚本质上是一个松散的政治联盟，大公的权力并不绝对，波耶们保留着极大的自主权。在自己的领地上，波耶拥有近乎独立于大公的权威，大公要想成事，必须获得波耶们的支持。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "我们斯特吉亚的权力结构很简单：大公坐镇首都，波耶们各自管着自己的领地。波耶不是谁都能当的——那是世袭的头衔，往上数几代都是给斯特吉亚流过血的老家族。我们北方人认的是波耶，不是远在天边的大公。波耶管我们的税、断我们的案、带我们打仗。大公和波耶之间的关系，就像一个大家庭里的大哥和弟弟们——大哥说话，弟弟们听着，但弟弟们自己的院子，大哥不能随便进。大公要想打仗，得先说服波耶们出兵，说服不了，大公的军队就凑不齐。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "我是波耶，我父亲是波耶，我祖父也是波耶。头衔是世袭的，但世袭不代表你能躺着吃饭——你得守住领地，带得动亲兵，在战场上证明自己配得上这个名号。大公需要波耶的支持，波耶也需要大公来协调对外战争，这是互相依存的关系，不是谁比谁高一头。在斯特吉亚，大公的命令不是圣旨，波耶可以拒绝，可以拖延，甚至可以公开反对。我们的权力不是大公给的，是我们的祖先用斧头砍出来的。帝国人喜欢嘲笑我们政治松散，但帝国分裂成三块互相砍的时候，我们斯特吉亚至少还站着"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "波耶大人才是我们真正的主子，大公离我们太远了。每个波耶领地里的规矩都不一样，这个波耶收的税和隔壁波耶收的税可能差一大截。波耶们之间有矛盾是家常便饭，有时候还会动刀子，但一旦外敌打过来，他们就立刻站到一起，像一群平时互相咬的狼突然组团去咬外来的熊。我们斯特吉亚没有帝国那种层层叠叠的官老爷，波耶管着一切——收税是他，断案是他，征兵也是他。简单直接，不用看一堆人的脸色。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "斯特吉亚的政治制度简直就是部落制的残余。大公、王公、波耶——说白了就是大酋长管着小酋长。他们的大公名义上是最高统治者，但底下那些波耶们个个都是土皇帝，大公的命令出了首府就不好使。在帝国，元老院和皇帝之间的权力关系有法律条文写得清清楚楚；在斯特吉亚，大公和波耶之间的关系全凭个人威望和私交。瓦丁斯拉夫活着的时候波耶们都服他，现在的朗瓦德就未必有那个本事了。不过话说回来，他们这套松散联盟硬是撑了一个世纪，还在潘德拉克砍掉了涅雷采斯的脑袋。也许他们有自己的道理。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "斯特吉亚的波耶和我们瓦兰迪亚的男爵听起来差不多，但骨子里是两回事。我们的男爵对国王的效忠是有誓约束缚的，国王有权收回不忠者的领地。斯特吉亚的波耶违抗大公，大公只能忍着，最多下次开会时不给好脸色。这种制度在防御战里好用——每个波耶都拼命守自己的地，帝国人打进来寸步难行。但在进攻战里，想让波耶们带兵离开自己的领地出去远征，那可就难了。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "斯特吉亚的波耶有点像我们巴旦尼亚的伯爵，都是各自氏族的首领。但我们的伯爵是氏族推举的，他们的波耶是世袭的。巴旦尼亚的至高王和斯特吉亚的大公面临的困境是一样的——要团结一群骄傲的领主去对抗共同的敌人，可这些领主们谁都不服谁。区别在于，我们的至高王在平时几乎没有任何权力，而斯特吉亚的大公至少在名义上是最高统治者，还能主持波耶会议，协调内部纠纷。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "斯特吉亚的波耶制度和我们草原上的部落首领制有点像，但他们的波耶是世袭的，我们的那颜是可以被挑战和替代的。蒂亚尔那边的波耶和我们联姻了好几代，他们的权力游戏和我们这边很像——明面上是大公说了算，暗地里全看谁拳头硬。草原上的可汗是绝对权威，所有部落必须服从；波耶们却可以违抗大公而不会被剥夺头衔。这就是为什么斯特吉亚永远没法像库赛特那样在短时间内集结起倾国之兵。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "steward": 150
+        }
+      },
+      "Content": "斯特吉亚的政治制度是一种松散的封建联盟，大公是最高军事领袖，波耶是世袭的地方领主，两者之间以王公为中间层级。大公的权力主要来源于波耶们的集体授权，而非制度化的中央集权，这使得大公的权威高度依赖个人威望。波耶在自己的领地内拥有独立的税收、司法和军事权力，这种高度自治是斯特吉亚部落传统的延续。与帝国的官僚体系相比，斯特吉亚的制度更灵活、更适应北方的地理和气候条件，但也更容易在继承问题和内部矛盾中陷入危机。从历史表现来看，斯特吉亚的松散结构在防御战中表现出色，波耶们能在共同威胁面前迅速团结；但在对外扩张中，这种结构往往导致指挥混乱和兵力分散。"
+    }
+  ],
+  "TextMappings": []
+}

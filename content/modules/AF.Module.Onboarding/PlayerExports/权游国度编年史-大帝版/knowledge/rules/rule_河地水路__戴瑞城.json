@@ -1,0 +1,151 @@
+{
+  "Id": "rule_河地水路__戴瑞城",
+  "Keywords": [
+    "戴瑞城"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "戴瑞城位于河间地东部，靠近国王大道与三叉戟河流域，是戴瑞家族的传统领地。这里离君临与河间地腹心都不算遥远，因此总会承受道路带来的双面影响：商旅、学士和婚讯能更快抵达，王军、逃兵、征税人和劫掠者也一样。戴瑞家的名字与坦格利安王朝时期的忠诚记忆相连，这使家族历史在新王朝之下显得格外敏感；但土地本身仍需要耕作、渡运和地方秩序。戴瑞城不是单一政治立场的化身，而是被大路和旧史反复推到风口的河间地城堡。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "river"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "戴瑞城附近的百姓很少空谈疆界，他们每天应付的是水位、渡口、芦苇地、可耕高地和雨季道路。当地家庭还要依靠河运、渡口、麦田、磨坊和战火来临时的藏身处；任何一处道路、井泉或码头失灵，代价都会先落到他们身上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "river"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "征召令抵达戴瑞城以后，真正决定成败的是桥梁、浅滩、堤道、舟船与不陷入泥沼的粮道。在七国的封建秩序中，戴瑞城的归属牵动封臣义务、税粮和征召；守军能否吃饱、援兵能否按时抵达，比议事厅里的豪言更能决定这处据点是否可靠。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "scholar",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "客栈与码头里的人谈戴瑞城，总绕不开水运、桥税、渡资、磨坊和沿河集市。他们还会辨认河间地的口音、法令和通行凭据；名声可以从酒馆传得很远，真正的路程仍须由车轮、船桨或马蹄丈量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "宫廷会把戴瑞城视作筹码，当地封臣却知道它是一整套义务。在七国的封建秩序中，戴瑞城的归属牵动封臣义务、税粮和征召；旗帜更换之后，道路、粮仓、旧债和地方信任仍得由新主人逐一接手。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "地图在戴瑞城附近最容易隐去的，正是哪处能涉水、哪条堤道不被洪水吞没。能补给、能避险、能找到向导，便值得在行程里标明；若三样都没有，再响亮的家名也救不了迷途者。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人在戴瑞城看见舟船、桥木、磨坊石、渔网与河岸圣堂，神职者守着七神、古老河王传说与反复易手的土地记忆。一处据点因而不只是领主的大厅，也是婚丧、誓言、劳作与地方记忆反复发生的场所。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "戴瑞城在平民眼中不是传奇，而是一年四季的收支。他们关心河运、渡口、麦田、磨坊和战火来临时的藏身处，也看征粮后是否留下种子、灾年时城门是否开启；远方人看见纹章，他们看见的是明日有没有饭吃。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "戴瑞城：戴瑞城位于河间地东部，靠近国王大道与三叉戟河流域，是戴瑞家族的传统领地。这里离君临与河间地腹心都不算遥远，因此总会承受道路带来的双面影响：商旅、学士和婚讯能更快抵达，王军、逃兵、征税人和劫掠者也一样。戴瑞家的名字与坦格利安王朝时期的忠诚记忆相连，这使家族历史在新王朝之下显得格外敏感；但土地本身仍需要耕作、渡运和地方秩序。戴瑞城不是单一政治立场的化身，而是被大路和旧史反复推到风口的河间地城堡。"
+  ]
+}

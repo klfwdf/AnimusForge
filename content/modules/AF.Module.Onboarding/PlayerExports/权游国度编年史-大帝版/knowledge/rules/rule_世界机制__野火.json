@@ -1,0 +1,153 @@
+{
+  "Id": "rule_世界机制__野火",
+  "Keywords": [
+    "野火",
+    "绿色火焰",
+    "火术士"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "野火是炼金术士公会调制的黏稠易燃物，储存在封蜡陶罐中，点燃后呈鲜绿色，能附着在木头、布料和人体上燃烧，水往往无法将其扑灭。它适合守城、焚船与制造恐慌，却对搬运者和己方军队同样危险；陶罐破裂、温度升高或一个疏忽都可能把武器变成灾祸。伊里斯二世晚年曾让火术士在君临多处藏匿野火，留下难以清点的旧罐。任何统治者若想使用它，都必须同时面对秘密、储存、风向和无辜者伤亡。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "crownlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "scholar",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "炼金术士称野火为学识与技艺的结晶，守军则既需要它又怕靠近陶罐。懂行的人会反复检查封蜡、搬运与点火距离，因为勇敢不能扑灭洒在脚边的绿火。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "crownlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "merchant",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "君临百姓对野火的记忆不是胜利颂歌，而是地下可能仍藏着什么。码头人尤其害怕风把一场军用火攻变成整片街区的死刑。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "priest",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "统治者容易被野火以少胜多的诱惑吸引，神职者与老将则会追问代价。把无法控制的毁灭称作威慑，并不会让陶罐更听命令。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人把野火看成可执行的秩序。炼金术士调制的绿色易燃物，能在水面燃烧且极难扑灭，威力与储存风险同样可怕。它是否有效，取决于谁能授予权利、收取代价，并在违约时让判决真正落地。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起野火时，关心它如何影响道路、命令和安全。炼金术士调制的绿色易燃物，能在水面燃烧且极难扑灭，威力与储存风险同样可怕。远方的制度只有在营火、城门和驿站里能被执行，才不是空话。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者会从习惯和象征理解野火。炼金术士调制的绿色易燃物，能在水面燃烧且极难扑灭，威力与储存风险同样可怕。一项规矩若被反复实践，便会进入礼仪、手艺和祈祷；若只靠恐惧维持，危机一来就会露出裂缝。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民感受到野火的方式最小也最准确。炼金术士调制的绿色易燃物，能在水面燃烧且极难扑灭，威力与储存风险同样可怕。他们记得税、粮、劳役、赈济和谁能为他们说话；宏大的名称，最终都要落在一家人的饭锅旁。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "野火：炼金术士调制的绿色易燃物，能在水面燃烧且极难扑灭，威力与储存风险同样可怕。"
+  ]
+}

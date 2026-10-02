@@ -1,0 +1,151 @@
+{
+  "Id": "rule_金脉西境__深穴城",
+  "Keywords": [
+    "深穴城"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "深穴城是西境山谷中的城堡领，与兰尼斯特支系的传统联系紧密。西境的丘陵和矿脉常把领地切割成狭窄谷地，深穴城的价值便在于控制能够通车、运矿、运粮的有限道路。山岩提供防御，也要求更多工夫修桥、凿路和维持水源；若通道被封，一座富有的城堡同样会陷入孤立。它处在凯岩城与东部山口之间的关系网中，既可能受益于金银贸易，也要承担护送与征发。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vale"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "从深穴城望出去，最贴近生活的并非纹章，而是山泉、牧坡、林木、积雪和驮畜能走的窄路。当地家庭还要依靠矿道、牧地、山路、金银流通和凯岩城庇护下的市集；任何一处道路、井泉或码头失灵，代价都会先落到他们身上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vale"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "号角与旗帜之外，深穴城的防务依靠隘口、高坡、瞭望点与翻山所需的粮秣。在七国的封建秩序中，深穴城的归属牵动封臣义务、税粮和征召；守军能否吃饱、援兵能否按时抵达，比议事厅里的豪言更能决定这处据点是否可靠。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "scholar",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "远行者在深穴城停留多久，取决于驮队脚程、坡道损耗、山口税与冬季封路。他们还会辨认西境的口音、法令和通行凭据；名声可以从酒馆传得很远，真正的路程仍须由车轮、船桨或马蹄丈量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "一纸封赐可以决定深穴城的主人，却不能立刻赢得附近人的服从。在七国的封建秩序中，深穴城的归属牵动封臣义务、税粮和征召；旗帜更换之后，道路、粮仓、旧债和地方信任仍得由新主人逐一接手。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "走过深穴城的士兵记得落石、岔路、背风宿营处和最近的山泉。能补给、能避险、能找到向导，便值得在行程里标明；若三样都没有，再响亮的家名也救不了迷途者。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "深穴城的匠人靠采石、伐木、铁件、山羊毛和贴着山势修筑的墙基留下手艺，神职者则用七神、家族墓窖与领主权威留下的石刻解释生死。一处据点因而不只是领主的大厅，也是婚丧、誓言、劳作与地方记忆反复发生的场所。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "住在领地下层的人用灶火和粮袋衡量深穴城。他们关心矿道、牧地、山路、金银流通和凯岩城庇护下的市集，也看征粮后是否留下种子、灾年时城门是否开启；远方人看见纹章，他们看见的是明日有没有饭吃。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "深穴城：深穴城是西境山谷中的城堡领，与兰尼斯特支系的传统联系紧密。西境的丘陵和矿脉常把领地切割成狭窄谷地，深穴城的价值便在于控制能够通车、运矿、运粮的有限道路。山岩提供防御，也要求更多工夫修桥、凿路和维持水源；若通道被封，一座富有的城堡同样会陷入孤立。它处在凯岩城与东部山口之间的关系网中，既可能受益于金银贸易，也要承担护送与征发。"
+  ]
+}

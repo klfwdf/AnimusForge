@@ -1,0 +1,213 @@
+{
+  "Id": "rule_森林巨龙__森林巨龙",
+  "Keywords": [
+    "森林巨龙",
+    "翠绿巨龙",
+    "自然吐息",
+    "藤蔓缠绕",
+    "远古飞行兽",
+    "艾索洛伦龙",
+    "翡翠龙",
+    "毒雾喷吐",
+    "龙鳞硬甲",
+    "龙栖树冠",
+    "森林之王",
+    "长眠龙"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "森林巨龙是艾索洛伦最强大的远古守护者，它们拥有翠绿色的鳞片和巨大的羽翼，能从口中喷吐出蕴含自然之力的魔法吐息，让一切冒犯森林的敌人被藤蔓缠绕直至窒息而亡。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "森林巨龙与艾索洛伦共同存在了无数个千年。它们是龙族中最古老的分支之一，早在精灵踏足旧世界之前就已在此栖息。我们从不「驯服」森林巨龙——那是不可能的。我们与它们结盟，以森林的存续为共同目标。当森林巨龙从树上展开双翼时，那种景象会让任何木精灵热血沸腾。它们的吐息不是火焰，而是「生命之风」的具象化——被喷中的敌人身上会瞬间长出藤蔓和荆棘，将血肉绞碎。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "森林巨龙是战场的终极兵器。它能飞越敌军阵线，直接用吐息摧毁敌人的核心力量。但巨龙嗜睡——你不能指望它随时待命。部署巨龙时要选择开阔地带，避免密林阻挡它的翼展。最佳战术：用巨龙清扫敌方远程单位，然后再对付敌方主力。小心敌人的巨弩和恶魔——这些是少数能真正威胁巨龙的武器。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "据《龙类谱系》记载，艾索洛伦中现存七条森林巨龙，每条都有专属名称：最古老的「霜叶」已守护森林超过八千年；最年轻的「新芽」仅两千岁。森林巨龙的吐息武器在学术界被称为「自然吞噬」——是一种混合了生命之风和木系魔法的独特攻击，可同时造成物理缠绕和魔法侵蚀双重伤害。它们的龙鳞具有独特属性，会随着季节改变颜色：春季翠绿、夏季深青、秋季金黄、冬季灰白。由于长期栖息在艾索洛伦的高浓度魔法环境中，森林巨龙的血脉已发生变异，无法离开艾索洛伦太久，否则魔力会逐渐流失。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "只有少数精灵领主能与森林巨龙建立联结，而我有幸是其中之一。当我在龙背上俯瞰艾索洛伦时，整个世界都在我的翼下。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "如果你的氏族领土上有巨龙巢穴，那是极大的荣耀，也是极大的责任。你需要提供足够的贡品——主要是纯净的生命原质——来维持巨龙的保护意愿。记住，巨龙的耐心有限，不要因为琐事而惊扰它们的沉睡。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "远处传来一声低沉的咆哮，你想这应该是雷声。然后你抬头，看到一条翠绿色的巨龙从云层中探出修长的脖颈。它的眼睛像两个绿色的太阳。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "森林巨龙被视为艾索洛伦最高等级的守护者。它们的地位高于一切精灵贵族，甚至被称为「森林之王」。每个世纪只有寥寥几只森林巨龙从沉睡中苏醒参与战斗，但每一次苏醒都会改写历史。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "森林巨龙——艾索洛伦最强大的远古飞行守护者，翠绿鳞甲。",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "森林巨龙的地理位置与战略意义"
+  ]
+}

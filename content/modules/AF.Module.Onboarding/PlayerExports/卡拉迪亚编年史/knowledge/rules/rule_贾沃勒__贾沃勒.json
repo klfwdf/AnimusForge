@@ -1,0 +1,154 @@
+﻿{
+  "Id": "rule_贾沃勒",
+  "Keywords": [
+    "贾沃勒",
+    "贾瓦勒"
+  ],
+  "RagShortTexts": [
+    "贾瓦勒是纳哈撒沙漠的游牧联盟，向商队征收保护费。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "steward": 40
+        }
+      },
+      "Content": "贾瓦勒，又名“漫游者”，是纳哈撒沙漠中一支主要的贝都因游牧联盟。其成员在高地与低地的牧场之间随季节迁徙，宣称大片沙漠为其“领地”，并向途经的商队征收保护费。\n\n该联盟以自诩的诗歌传统著称，成员惯于将自己的事迹编为诗歌传唱。他们公开嘲笑巴努·阿塞拉的其他部族，指责后者放弃了象征游牧自由的黑羊毛帐篷，迁入绿洲中的石砌定居房屋。其他部族视其为自吹自擂的厌物，然而也不得不承认——贾瓦勒确实比大多数部族更固执地维持着阿塞莱的古老传统。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": [
+          "char:jawwal_tier_1",
+          "char:jawwal_tier_2",
+          "char:jawwal_tier_3"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "我们贾瓦勒是真正的阿塞莱人。我们睡在黑羊毛帐篷里，想去哪儿就去哪儿。那些住在绿洲石头房子里的人算什么？屋顶替他们挡住了星星，也挡住了自由。商队从我们的地盘过，交保护费是天经地义——沙漠养了我们，我们也守着沙漠。我们的诗人把这些事编成歌，一代一代唱下去。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "jawwal"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "沙漠是贾瓦勒的。这句话外人听着刺耳，但事实如此。我们在这片沙子里生了多少代，帐篷扎过的地方就是我们的。商队交保护费不是勒索，是交易——他们花钱买平安，我们拿平安换给养。至于别的部族怎么看我们，随他们去。他们坐在石墙后面嘲笑我们自吹自擂，可逢到大节大祭，谁又记得到底怎么弄。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "贾瓦勒啊，自吹自擂的讨厌鬼。每次赶集碰见他们的人，三句话不离“我们贾瓦勒如何如何”。可你要说他们骗人吧，也不全是。他们确实还住帐篷，确实还在沙漠里来回走，确实还记得那些老掉牙的诗歌和仪式。我们嘴上骂，心里多少有几分说不出口的服气。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "贾瓦勒就是一群自封的沙漠诗人。每次路过他们的地盘都要听他们吹嘘祖上如何如何。但说实话，他们收保护费归收保护费，路是确实保得住，商队在他们的地面上不容易出事。而且有些老规矩、老仪式，全阿塞莱就他们还守得认真。烦归烦，留着有用。"
+    },
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "贾瓦勒？沙漠里骑骆驼的。听说会唱歌，还会抢东西——哦不，收保护费。反正别招惹他们就行。跑商的人说起他们都一摊手，说交了钱倒确实没事。具体搞什么，离我们太远，不清楚。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "纳哈撒沙漠里那个贾瓦勒联盟，听说过。据说是些游牧的贝都因人，常年住帐篷，会唱诗，也收保护费。跟他们打交道不多，但经由沙漠的商路若想走得顺，他们的名字总会被提到。谈不上敬意，但也不会轻视——能在那种地方活下来还站住脚，总有几分本事。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "beni_zilal",
+          "brotherhood_of_woods",
+          "company_of_the_boar",
+          "embers_of_flame",
+          "forest_people",
+          "ghilman",
+          "hidden_hand",
+          "karakhuzaits",
+          "lakepike",
+          "legion_of_the_betrayed",
+          "wolfskins"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "贾瓦勒？沙漠里的同行。他们收保护费，我们收佣金，差不多。不过他们那套做派我们受不了——打个仗之前先唱诗，唱半天不动手。但他们占着地盘，商队过沙漠得找他们，我们接护送活儿有时候还得跟他们点头招呼。各吃各的饭，井水不犯河水。"
+    }
+  ],
+  "TextMappings": []
+}

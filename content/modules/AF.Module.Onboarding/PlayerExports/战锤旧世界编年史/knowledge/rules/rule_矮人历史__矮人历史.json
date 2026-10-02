@@ -1,0 +1,210 @@
+{
+  "Id": "rule_矮人历史__矮人历史",
+  "Keywords": [
+    "矮人历史",
+    "达维由来",
+    "矮人历史黄金时代",
+    "矮人衰落",
+    "矮人历史长须之战",
+    "卡拉克失陷",
+    "三纪元",
+    "安塞斯特尔",
+    "西格玛盟约"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "矮人文明曾经覆盖整条世界边缘山脉的地下——从北方的卡拉克·龙岩到南方的卡拉克·八峰——但在数千年的连续战争中，半数以上的城塞已经失陷或失去联系。矮人的历史是一部辉煌开篇后持续收缩的悲壮史诗。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我们的历史是由我们自己的手挖进石头里的。黄金时代——那是我们最强盛的时期，每一座山上都燃着卡拉克的锻炉，地下道路网络从北到南畅通无阻，矮人商队在人类和精灵之间交换货物。然后——由于精灵的背叛——长须之战爆发了。我们打赢了那场战争，但代价太大，人口损失太多。就在我们还在舔伤口时，绿皮从地下涌出来，鼠人从更深处咬出来，火山和地震封锁了我们的道路。现在我们的城塞不过是曾经的影子，但我们仍然在这里，仍然在锻造，仍然在守护《仇恨之书》。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "长须之战是所有矮人外交决策的原始创伤。当高等精灵使节剃掉了矮人使者的胡须——对矮人来说这是宣战级别的侮辱——精灵方面拒绝交出肇事者，矮人至高王宣布了战争。这场战争持续了数百年，最终以矮人占领部分精灵殖民地为结果。但矮人为此付出的代价——整整一代矮人战死、国内经济停滞、外来防御被忽视——为后来的绿皮和鼠人大举入侵创造了条件。从长须之战开始，矮人帝国进入了一个持续至今的防御性消耗阶段。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "矮人历史的时间线被分为三个纪元。第一纪元（黄金时代）：从矮人先祖安塞斯特尔带领族人定居世界边缘山脉开始，期间矮人建立了完整的地下城塞网络，发明了符文锻造技术，与高等精灵签署了最初的贸易和互助盟约。第二纪元（长须之战与衰退时期）：始于高等精灵使节对矮人使者的剃须之辱，持续约五百年，以矮人的表面胜利结束但实际开启了持续至今的衰退。第三纪元（孤立与防御时期）：矮人帝国面积持续缩小，卡拉克八峰、瓦恩等相继失陷。与帝国缔结对混沌的共同防御条约是少数几个仍然有效的矮人对外承诺之一。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "矮人历史中一个被忽视的层面是女性在人口危机中的核心应对角色。长须之战后的矮人人口崩溃不仅仅是因为战场伤亡——更是因为战争夺走了整代男性之后，卡拉克社会中大量的氏族贸易、盟约管理和跨城塞联络工作落到了女性肩上。帝国学者喜欢讲矮人男性的战争故事，但让我们清醒地面对事实：如果没有矮人女性在战后数百年间维持氏族间的婚姻网络以最大化繁衍效率、管理残余领地上的粮食储备、以及与人类商人建立替代性的外贸关系——矮人种族可能在进入第三纪元前就因孤立和内耗而无声消亡。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我家族保存着一份长达三千七百年的氏族编年史——不是写在羊皮纸上，而是刻在十二块花岗岩板上，存放在家族最深处的地下档案室。这些石板记录了每一次绿皮Waaagh！、每一支鼠人部落的入侵、每一次与人类帝国的贸易盟约续签。其中有一块石板让我每读到那里都心情沉重：记载着长须之战后连续三代人中我家族没有一个男婴活过五十岁——不是因为诅咒，而是因为战后矮人男婴的夭折率因母亲营养不足而急剧攀升。矮人历史的'衰退'不是抽象的概念——它在每一页家族谱系中都能看到精确的死亡年龄和夭折原因记录。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "在穿越矮人废弃的旧时地下道路时，我发现了矮人历史最直观的证据——墙壁上的刻度。每当一个矮人氏族因为战争或饥荒而撤离一段矿道，他们会在出口的石壁上刻下撤离日期和撤离原因。我追踪了世界边缘山脉中一条被废弃的贸易矿道，沿墙壁上的数字逆向推演，看到了黄金时代宽阔的矿道逐渐变窄、墙壁上的照明符文逐渐减少直到完全消失、最后一段的记录写着'卡拉克·瓦恩沦陷后第二年，鼠人，无援。'矮人历史的悲壮感不需要史诗来描述——它在这些墙壁上就够了。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "矮人黄金时代的陨落对旧世界贸易体系的影响是结构性的而非暂时的。在黄金时代，贯穿世界边缘山脉的地下矮人商路是旧世界南北贸易的主要动脉——从北方的基斯里夫雪原到南方的恶地边缘，货物可以在安全的、有照明的矮人隧道中通行。这些隧道的陆续失陷迫使旧世界的长途贸易转向更危险的地面路线，导致运输成本激增和许多内陆贸易中心的衰败。帝国瑞克河水运体系在矮人隧道关闭后重要性急剧上升——不是因为水运更便宜，而是因为它成为唯一不受绿皮袭击影响的南北通道。任何研究旧世界经济史的人都会发现一个清晰的规律：每一次矮人城塞的失陷都对应着帝国某个内陆贸易城市的经济崩溃。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "黄金时代——矮人文明的第一纪元，城塞网络全覆盖，符文锻造技术发明",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "半数以上的城塞已经失陷或失去联系"
+  ]
+}

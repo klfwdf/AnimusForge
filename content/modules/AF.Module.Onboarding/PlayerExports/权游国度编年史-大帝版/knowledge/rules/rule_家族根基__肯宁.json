@@ -1,0 +1,153 @@
+{
+  "Id": "rule_家族根基__肯宁",
+  "Keywords": [
+    "肯宁",
+    "肯宁家族"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "肯宁家族以凯切镇为根基，是西境贵族，却保留着一段铁群岛起源。赫洛克·肯宁曾利用号角为信号，令人从内部打开凯切镇的边门，替凯岩王夺取此地，由此建立西境支系。这个出身让肯宁同时带着海上掠夺者的机敏与西境封臣的秩序。如今家业依靠城镇、道路、税赋和对凯岩城的义务，不再只是一次传奇奇袭。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "西境领主承认肯宁的功业，也会拿那场开门奇袭提醒彼此：城墙的强弱有时取决于城内的人心。肯宁若想被视作真正的西境家门，就要持续守约而非只靠祖先的机巧。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "artisan",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "凯切镇的商人和工匠对古代号角故事津津乐道，却更关心城门今日收多少税。只要道路安全、度量公道，祖先来自海岛还是山地并不妨碍生意。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "sailor",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "铁民听说凯切的肯宁，常说他们换了石屋、金钱和陆上主子。有人讥讽他们忘记古道，也有人承认赫洛克凭胆量夺城，本就是铁民会敬重的本事。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待肯宁，会先看它的土地、婚盟、血脉和债务。肯宁家族统治凯切镇，源出铁民赫洛克·肯宁夺城归附兰尼斯特的历史，是西境化的铁民支系。家徽是门面，能否保护封地、兑现婚约并在危机中召集人马，才是家族真正的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起肯宁时，记得的是谁在营火边分过粮、谁把他们留在城外、谁在败局里仍站在旗旁。肯宁家族统治凯切镇，源出铁民赫洛克·肯宁夺城归附兰尼斯特的历史，是西境化的铁民支系。家族名声最终要落到具体的人和具体的命令上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意肯宁留下的仪式、墓地和传承。肯宁家族统治凯切镇，源出铁民赫洛克·肯宁夺城归附兰尼斯特的历史，是西境化的铁民支系。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见肯宁。肯宁家族统治凯切镇，源出铁民赫洛克·肯宁夺城归附兰尼斯特的历史，是西境化的铁民支系。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "肯宁：肯宁家族统治凯切镇，源出铁民赫洛克·肯宁夺城归附兰尼斯特的历史，是西境化的铁民支系。"
+  ]
+}

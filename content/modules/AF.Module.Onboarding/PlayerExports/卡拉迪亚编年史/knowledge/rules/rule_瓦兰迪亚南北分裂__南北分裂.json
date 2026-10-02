@@ -1,0 +1,553 @@
+﻿{
+  "Id": "rule_瓦兰迪亚南北分裂",
+  "Keywords": [
+    "南北分裂",
+    "瓦兰迪亚分裂",
+    "北方南方",
+    "纯血",
+    "卡拉德化",
+    "骑士领",
+    "城市自治",
+    "南北矛盾",
+    "南北内战"
+  ],
+  "RagShortTexts": [
+    "瓦兰迪亚南北矛盾：北方骑士与南方商人"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "瓦兰迪亚看似统一，实则南北之间的裂痕由来已久。北方以奥斯蒂港为中心，是瓦兰迪亚本位文化的堡垒，贵族们重视纯血传统，保持着古老的航海与骑士习俗。南方则以沙拉斯为中心，那里是卡拉德人最早登陆的地方，数百年帝国统治和通婚融合留下了深深的印记。南方人说着混合方言，沿袭着卡拉德式的法律和城市自治传统，被北方人讥讽为“被卡拉德污染”的同时，也自诩比北方蛮子更文明。两边同属一国，却像两个世界。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "瓦兰迪亚从来不是一个整体。北方是瓦兰迪亚的根，奥斯蒂港那边的人说的古瓦兰迪亚语、行的骑士礼，那才是正统。南方那帮人呢？他们在沙拉斯跟卡拉德人混了几百年，说话夹着卡拉德词儿，行事学帝国那套，还搞什么城市自治。北方人觉得南方脏了血脉，南方人觉得北方粗鄙不堪。这些年南方出的税是王国的七成，心里早就不服了。北方贵族觉得那是理所应当——南边地好港口多，你不出钱谁出？"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": [
+          "town_V7"
+        ],
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "北方是我们瓦兰迪亚的根。奥斯蒂港那片地，祖辈就是从那里上岸的，我们保留着最纯的古瓦兰迪亚语，行的是正宗的骑士礼。南方那帮人算什么？他们跟卡拉德人混了几百年，血统早就不干净了。如今还学帝国人搞什么咨议会、城市自治，简直忘了自己姓什么。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": [
+          "town_EN5"
+        ],
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "北方那些家伙总以正统自居，说我们脏了血脉。可他们忘了，沙拉斯才是卡拉德人最早登上这片海岸的地方。我们继承了卡拉德的律法、制度、商业传统，这些才是文明的根基。北方那些骑士除了骑马冲锋和互相厮杀还会什么？我们的城市自己管理自己，市民手里有选举市政官的权利，这在北方连想都不敢想。他们管这叫混乱，我们管这叫自由。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "瓦兰迪亚南北之间的裂痕比你看到的要深得多。北方领主靠骑兵和封建采邑制过日子，土地和军役绑得死死的，农户被拴在土地上连挪个窝都不行。南方那边被卡拉德人影响了几百年，市民手里有钱，有些城市甚至花钱买到了自治权。这在我们北方人看来简直是笑话——一群商人自己管自己，还学帝国人搞什么咨议会。但你要知道，南方承担着王国七成的税，他们觉得自己养着整个瓦兰迪亚，自然想要更多话语权。这就是火药桶，早晚要点燃。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "townsfolk"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "南方商人比北方同行的日子好过。加仑、沙拉斯的港口，商船跑遍西海岸，跟阿塞莱做香料生意，跟帝国做丝绸生意。赚来的钱，一部分交给城市，一部分交给国王。但北方领主抽的税太重了，七成税赋从南方出去，换来的却是北方骑兵的趾高气扬。凭什么？就凭他们祖上是铁臂奥斯里克的近卫？北方那些老爷们靠养马和卖皮毛过日子，手底下的农民被拴在土地上。我们可不一样——橄榄、小麦、葡萄，还有港口的贸易，钱是自己挣来的。可挣来的钱呢？北方老爷们说这叫理所应当，我们可不这么想。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": [
+          "town_V7"
+        ],
+        "Roles": [
+          "merchant",
+          "townsfolk"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "北方的日子不好过。地薄，种不了什么值钱的庄稼，只能养马、卖皮毛。领主把农户拴得死死的，想换个地方干活都不行。南方的商人赚得盆满钵满，我们这边冬天连肉都吃不上几顿。但北方人有骨气，我们不用卡拉德人留下的规矩过日子。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "warrior"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "南北军的打法完全对不上。北方骑士要的是冲锋决胜，排成一线，长枪一夹，碾过去就完了。南方步兵讲的是阵型——弩手在前，长矛手在后，剑盾手收尾。这两种路子合在一起本来能互补，但两边互相看不起。骑士说弩是懦夫的武器，弩手说骑士冲锋是送死。战场上谁听谁的？打完仗功劳怎么分？每次都要吵。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": [
+          "town_V7"
+        ],
+        "Roles": [
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "北方人日子过得苦，但骨头硬。领主把土地管得死死的，农户一辈子拴在地头上，佃租重，自由少。在奥斯蒂港附近，你可以看到那种瘦削、沉默、但眼神里带着倔劲的人——那是被寒风和苦日子磨出来的。他们看南方人，就跟看外国人差不多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": [
+          "town_EN5"
+        ],
+        "Roles": [
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "沙拉斯街头走一圈，你能听见混合口音的瓦兰迪亚语，夹着卡拉德词儿。商贩用帝国的度量衡标价，市政官的布告贴在公共广场上——这在北方简直不可想象。南方人有钱，也敢说话。他们觉得自己比北方人文明，老把“北边那些蛮子”挂在嘴边。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "我在瓦兰迪亚南北都待过，两边的差别大了去了。北方人说话硬邦邦的，酒桌上动不动就拔剑；南方人说话软和些，但算账精得很。北方领主能把你的命攥在手里，南方那边只要你有钱，还能跟市政官讨价还价。南北之间的那条线在哪里？没人画过地图，但住在这儿的人都知道。一条看不见的线从埃博半岛南边穿过特朗河谷。线北边讲古瓦兰迪亚语，线南边讲混合方言；线北边信骑士荣誉，线南边信合同条款。说到底，这国家是两块拼在一起的，拼缝的地方一直在渗血。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "瓦兰迪亚人内部的分裂，对帝国来说既是好事也是教训。北方那群骑士和南方那些卡拉德化遗民之间的矛盾，跟我们帝国的内战有相似之处。但瓦兰迪亚人更蠢——他们连统一的文化都没有，北方人讲的古瓦兰迪亚语和南方人的混合方言都快成两种话了。一个国家连说话都不统一，迟早要出大事。如果瓦兰迪亚真的分裂了，帝国或许能趁机夺回沙拉斯，那个曾经属于我们的港口。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "沙拉斯是最早的帝国殖民地之一。虽然我们把它丢给了瓦兰迪亚人，但卡拉德的痕迹并没被抹去。瓦兰迪亚南方的人口里流着卡拉德的血，他们也知道自己祖上曾是帝国子民。将来帝国要统一，也许不该先打，而该先拉拢那些对北方的蛮横早已不满的南方领主。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "瓦兰迪亚南北分裂的根源可以追溯到卡拉狄乌斯大帝时代殖民地与蛮族移民之间的历史断层。沙拉斯作为最早的殖民点，在帝国统治下数百年，已形成深厚的卡拉德文化土壤。瓦兰迪亚人以雇佣兵和入侵者身份到来后，并未能彻底抹去这些影响，反而在南方形成了一个文化上双重认同的混合社会。北方则以奥斯蒂港为中心，保持了较纯粹的移民文化。从帝国的角度看，这种原始差异在统一王国的框架下从未被真正弥合——他们是在两张不同的地基上盖了同一座房子。瓦兰迪亚人正在重蹈我们内战的覆辙。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "瓦兰迪亚人自己窝里斗，对我们巴旦尼亚来说求之不得。他们南方那些城市，有些在卡拉德人统治时期跟我们做过生意。北方那些骑兵倒是没什么来往，他们太野了，跟我们的关系就是打来打去。让他们吵吧，吵得越凶越好——瓦兰迪亚人忙着内斗，就没空来烧我们的森林了。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "瓦兰迪亚的裂痕不是一天形成的。他们的北方人像当年的征服者，南方人像被征服者。征服者和被征服者捏在一起过日子，迟早要出问题。无论他们将来是战是分，巴旦尼亚都要做好准备——北方的骑兵随时可能来烧我们的树林。但眼下，森林之灵给了我们喘息的机会。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "瓦兰迪亚南北的矛盾，我们阿塞莱商人看得最清。北方领主古板顽固，做生意全靠口头约定，动辄拔剑。南方商人精明，合同条款写得清，付钱也痛快。两边内部的争端迟早会烧成明火。我们只需要保持灵活——哪边赢了就跟哪边做生意，哪边势弱就提高点价格。一个团结的瓦兰迪亚更难对付。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "跟瓦兰迪亚人做生意，你得搞清楚南北。南方港口是真正的商业中心，和沙拉斯、加仑的商人打交道像和阿塞莱商人打交道一样顺畅。北方则不同，皮毛和马匹生意被领主控制着，不按市场规矩来。沙拉斯和加仑港的贸易线是瓦兰迪亚的命脉，而这两座城都在南方手里。如果有一天，南方决定不再给北方掏钱，他们能靠自己的港口和商业实力活得很好。到那时，谁更需要谁？"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "瓦兰迪亚人的南北内讧，在我们北方人看来不是什么新鲜事。北边的瓦兰迪亚人跟我们斯特吉亚人有点像——靠骑兵和刀剑说话，领主攥着大权。但南边那些人，被卡拉德人养成了商贩和市民，他们搞的那套城市自治，学的是帝国，不是瓦兰迪亚的老规矩。朗瓦德大公那边一直关注着瓦兰迪亚的内斗，如果哪天他们真分裂了，我们的长船可不会错过机会。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "瓦兰迪亚北方和我们斯特吉亚在某种程度上是同类——我们都相信刀剑和血统。但他们南方那些被卡拉德化的人，跟帝国人一样狡猾。一旦南北彻底闹掰，北方失去了南方的港口和商路，骑兵再能打也缺钱。到时候我们的长船可以从海上压过去。瓦兰迪亚的骑士和斯特吉亚的波耶并肩作战，如何？不过前提是他们别再自诩什么纯血了。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "瓦兰迪亚南北之间的内讧，在我们库赛特人看来就是部落之间的事。北方的骑士像那些靠祖辈威名过活的旧贵族，南方的弩手和商人像那些靠本事出头的新锐。旧贵族看不起新锐，新锐不服旧贵族，这在草原上也常有。区别在于——我们会通过那达慕大会分胜负，他们却只会嘴上吵。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer",
+          "mercenary"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "在瓦兰迪亚当雇佣兵，你得弄清楚南北。北方雇主给的价钱不高，但打仗痛快，跟着冲锋就是了。南方雇主付钱爽快，但要求多，阵型、纪律、配合，少一样就扣钱。有人说让他们之间打仗——北方骑兵对南方步兵，谁赢？我赌南方。南方有钱，仗打到最后看的是第纳尔，不是血统。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "sailor",
+          "seafarer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "跑船的人最清楚瓦兰迪亚的南北差异。北方的港口大多是小渔港，风浪大，停不了大船。南方呢？加仑、沙拉斯，天然良港，通帝国的商路，通阿塞莱的航路。王国的海上力量一多半靠南方撑。北方的老爷们想打仗，得先问南方船老大愿不愿意运兵。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "南北之间的差异，从一个铁匠的炉子边都能看出来。北方领主订的货是长枪和骑兵板甲，南方订的是弩机和步兵锁子甲。北方要的是单打独斗的家伙，南方要的是阵战用的器械。两边连打仗想的东西都不一样，你怎么让他们在同一个军队里并肩作战？"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "瓦兰迪亚的南北矛盾对女性来说还有另一层意味。北方是铁打的男人世界，讲血统，讲武力，女人在继承权上毫无地位。南方稍微好一些——至少在那些有自治权的城市里，有财产的寡妇和有产业的女性商人不算罕见。这是卡拉德制度的遗产，北方人对此深恶痛绝。卡拉蒂尔德女男爵能在南方立足，不是偶然的。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "steward": 150
+        }
+      },
+      "Content": "瓦兰迪亚南北分裂是一个典型的复合型内部矛盾案例。经济层面，南方承担王国约七成税负却感觉财富被用于北方开销，税负不公是最直接的矛盾触发点。政治层面，北方实行严格的封建采邑制，司法与征税权集中于领主，农户依附关系牢固；南方则在卡拉德遗风影响下，市民阶层活跃，部分城市通过赎买获得自治权，形成咨议传统，封建依附程度明显弱于北方。文化层面，北方以“纯血”自居，南方以“文明”自居，语言、习俗和民族认同的根本差异使两个区域缺乏统一的文化纽带。军事层面，北方重骑兵与南方步兵-弩兵方阵的战术不兼容，加剧了双方的互不信任。这四点叠加，使得瓦兰迪亚的统一极其脆弱。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "leadership": 150
+        }
+      },
+      "Content": "瓦兰迪亚南北分裂最致命的问题在于军事上的不兼容。北方以重骑兵为核心，实行骑士领制度——每骑士领供养一名重骑兵及辅助兵力，战术围绕冲锋展开，强调个人勇武与骑士荣誉。南方则继承卡拉德军团传统，依赖弩手和长矛手组成的步战方阵，强调纪律与配合。这两种战术体系在战场上本应互补，但因南北贵族互相轻视——北方讥讽弩是“懦夫武器”，南方嘲讽骑士冲锋为“送死”——导致协同不畅、战功争议不断。如果瓦兰迪亚爆发内战，这将是决定胜负的关键因素：谁能更好地整合骑兵和步兵，谁就能占据优势。但讽刺的是，这正是瓦兰迪亚人最做不到的事。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "瓦兰迪亚",
+      "Kind": "bound_kingdom_name",
+      "TargetId": "__bound_kingdom__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": "奥斯蒂港",
+      "Kind": "bound_settlement_name",
+      "TargetId": "__bound_settlement__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": "沙拉斯",
+      "Kind": "bound_settlement_name",
+      "TargetId": "__bound_settlement__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": "加仑",
+      "Kind": "bound_settlement_name",
+      "TargetId": "__bound_settlement__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}

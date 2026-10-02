@@ -1,0 +1,148 @@
+{
+  "Id": "rule_王领地志__君临",
+  "Keywords": [
+    "君临",
+    "君临城",
+    "跳蚤窝"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "君临坐落于黑水湾北岸的三座山丘之间，是铁王座的首都，也是七国最大、最拥挤的城市。红堡居于伊耿高丘；贝勒大圣堂曾立于维桑尼亚丘；龙穴的遗址伏在雷妮丝丘。港口、跳蚤窝、丝绸街、钢铁街、面粉街、圣堂、行会与贫民巷在丘陵和城墙之间层层挤压。它没有足够的腹地养活自己，必须依赖王领、河间地与河湾地送来的谷物、肉、柴薪和船只；港口带来的税收、鱼获、外国货与流言同样不可或缺。君临的旗帜、城主和宫廷会变，城市本身却始终把王权、信仰、金钱与饥饿的百姓困在同一片狭窄土地上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "对领主和朝臣而言，君临首先是一张会说话的座椅：谁能出入红堡，谁能使金袍子开门，谁的船能靠进港口，谁就比远方领地上的封臣更接近王权。可他们也明白这座城的危险。饥饿、宗教热情和拥挤的人群不会因为一纸诏令安静；宫门以内的阴谋，常常要靠宫门外的粮价来收场。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "artisan",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "商人与匠人不把君临只当作国王的城。这里有全七国最密集的买主、最任性的税吏和最快的消息。船一靠岸，香料、羊毛、密尔镜片和河湾粮食都会被重新标价；一场宫廷婚约、一则战争传闻或一支断粮的军队，也足以让面包和铁钉在一天里变得比金子更值钱。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "对初来君临的人，城先以气味迎接：黑水湾的潮腥、马粪、炉灰、鱼油、汗和烤面包混在一起。北境人嫌它吵闹肮脏，西境人嫌它不守体面，多恩商人嫌它的关税太多；可对许多无地者而言，君临仍是一处能找到活计、残羹和匿名之处。它会吞掉人，也会让人以为自己终于离世界中心很近。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "在领主和商人眼中，君临首先是地图上的一处要害。黑水湾北岸、三丘之间的铁王座首都。红堡、港口、市场、圣堂、行会与跳蚤窝挤在一座依赖外来粮食和贸易的巨城里；朝臣看见权力，商人看见市场，平民看见活路与饥饿。他们关心水源、道路、税关和守军，知道地名背后往往连着一条能让城堡活下去的粮道。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈到君临时，记住的不是边界线，而是风向、坡度、渡口和能否在天黑前找到避难处。黑水湾北岸、三丘之间的铁王座首都。红堡、港口、市场、圣堂、行会与跳蚤窝挤在一座依赖外来粮食和贸易的巨城里；朝臣看见权力，商人看见市场，平民看见活路与饥饿。一处地形的名声，常由死在那里的人的数量决定。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者会从另一面理解君临。黑水湾北岸、三丘之间的铁王座首都。红堡、港口、市场、圣堂、行会与跳蚤窝挤在一座依赖外来粮食和贸易的巨城里；朝臣看见权力，商人看见市场，平民看见活路与饥饿。石头、林木、河流或山口既能成为谋生之所，也可能被赋予圣洁、禁忌和祖先记忆，因而不能只用金钱衡量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民对君临的看法最实际。黑水湾北岸、三丘之间的铁王座首都。红堡、港口、市场、圣堂、行会与跳蚤窝挤在一座依赖外来粮食和贸易的巨城里；朝臣看见权力，商人看见市场，平民看见活路与饥饿。他们先看这里能否取水、耕作、放牧和躲过兵灾；地图上的一行字，落到村里便是柴薪、井绳和过冬的粮。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "君临：黑水湾北岸、三丘之间的铁王座首都。红堡、港口、市场、圣堂、行会与跳蚤窝挤在一座依赖外来粮食和贸易的巨城里；朝臣看见权力，商人看见市场，平民看见活路与饥饿。"
+  ]
+}

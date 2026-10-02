@@ -1,0 +1,151 @@
+{
+  "Id": "rule_人间风俗__城镇行会",
+  "Keywords": [
+    "城镇行会",
+    "手工业行会",
+    "学徒",
+    "师傅",
+    "市场准入"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "人口较多的城镇中，面包师、铁匠、织工、皮匠、船主或商人会以行会和兄弟组织协调价格、质量、学徒训练、节庆捐献与对官府的交涉。学徒多年服侍师傅，学成后可能成为帮工，再以作品、费用和人脉争取独立开业。行会能阻止劣货败坏整个行业，也可能由富裕师傅垄断摊位、压低帮工工资并排斥乡下新来者。领主需要行会税赋与供应，行会则需要司法保护。双方合作能使城市繁荣，任一方过度索取都会催生黑市和秘密作坊。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "merchant",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "师傅把行规称作手艺保障，帮工则会问何时轮到自己开店。行会既是一张保护网，也可能是一扇由既得者守住的门。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "统治者希望行会稳定供货、缴税并在战争时完成军需。逼得太紧会让匠人逃走，放任垄断又会让市民怨恨。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "wanderer",
+          "slave"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "乡下人进城后常发现自由谋生仍需担保、费用和师傅认可。没有关系的人只能从最脏、最便宜的活开始。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人把城镇行会看成可执行的秩序。同行工匠和商人以规则、学徒制与共同议价保护手艺，也通过门槛限制外来者和穷人竞争。它是否有效，取决于谁能授予权利、收取代价，并在违约时让判决真正落地。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起城镇行会时，关心它如何影响道路、命令和安全。同行工匠和商人以规则、学徒制与共同议价保护手艺，也通过门槛限制外来者和穷人竞争。远方的制度只有在营火、城门和驿站里能被执行，才不是空话。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者会从习惯和象征理解城镇行会。同行工匠和商人以规则、学徒制与共同议价保护手艺，也通过门槛限制外来者和穷人竞争。一项规矩若被反复实践，便会进入礼仪、手艺和祈祷；若只靠恐惧维持，危机一来就会露出裂缝。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民感受到城镇行会的方式最小也最准确。同行工匠和商人以规则、学徒制与共同议价保护手艺，也通过门槛限制外来者和穷人竞争。他们记得税、粮、劳役、赈济和谁能为他们说话；宏大的名称，最终都要落在一家人的饭锅旁。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "城镇行会：同行工匠和商人以规则、学徒制与共同议价保护手艺，也通过门槛限制外来者和穷人竞争。"
+  ]
+}

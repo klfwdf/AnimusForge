@@ -1,0 +1,111 @@
+{
+  "Id": "rule_家族根基__风吹团",
+  "Keywords": [
+    "风吹团"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "风吹团是一支由骑兵与步卒组成的厄斯索斯佣兵团，成员来自许多城市和民族。团长“破烂亲王”原是潘托斯贵族，年轻时被选为亲王，却不愿成为按传统被献祭的华丽囚徒，于是逃亡；他把不同颜色布条缝成披风，团员也以此为标志。风吹团的核心不是共同故乡，而是流亡经验、军纪、契约与团长长期积累的权威。杂色披风看似破旧，却提醒人们：每一块布都来自一段已经舍弃或无法回去的生活。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "雇主认为风吹团经验丰富，尤其适合边境、围城和反复易手的争议之地。但破烂亲王有自己的长期目标，任何契约都可能被他放进更大的账本里衡量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "佣兵看杂色披风，看到的是许多失去故乡的人被缝进同一支军团。团内口音和信仰各异，真正统一他们的是号令、饷银，以及身边那个人在冲锋时会不会逃。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "pentoshi"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "潘托斯人对破烂亲王的故事格外敏感。有人把他看作逃避神圣职责的叛徒，有人则认为，让一名年轻贵族享尽荣华后再割喉献城，本就是披着传统外衣的谋杀。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意风吹团留下的仪式、墓地和传承。风吹团由“破烂亲王”统领，成员来自多地，以杂色披风、流亡经验和严密契约在争议之地作战。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见风吹团。风吹团由“破烂亲王”统领，成员来自多地，以杂色披风、流亡经验和严密契约在争议之地作战。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "风吹团：风吹团由“破烂亲王”统领，成员来自多地，以杂色披风、流亡经验和严密契约在争议之地作战。"
+  ]
+}

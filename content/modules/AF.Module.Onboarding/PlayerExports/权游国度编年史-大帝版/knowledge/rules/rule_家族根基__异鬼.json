@@ -1,0 +1,150 @@
+{
+  "Id": "rule_家族根基__异鬼",
+  "Keywords": [
+    "异鬼"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "异鬼是极北传说中的冰冷存在，身形近似人类，却有苍白皮肤、深蓝眼睛和能在雪地无声移动的优雅。他们使用仿佛由寒冰凝成的利刃，所到之处伴随异常严寒，并能让死者以尸鬼形态重新行动。黑曜石能够杀死异鬼，火则能有效对付尸鬼；这些知识长期被当作老妪故事，却已由亲历者用鲜血重新发现。异鬼没有可供谈判的家谱、封地或王位主张，他们让活人的战争显得短促，也让守夜人最古老的使命重新获得意义。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "freefolk"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "自由民不会把异鬼当作学士争论。失踪的猎队、会走的死人和从黑暗里逼近的蓝眼睛已经进入他们的亲身记忆；南下不是争夺王座，而是活人逃离死亡。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "nightswatch"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "lord",
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "守夜人中仍有人怀疑，却有游骑兵见过尸体睁眼。对黑衣兄弟而言，最危险的不是不知道敌人有多少，而是南方诸侯仍把长城只当流放罪犯的地方。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "scholar",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "学士习惯要求证据，这份谨慎能阻止恐慌，也可能让人错过准备时间。黑曜石、古代记录与幸存者证词若彼此印证，理性并不要求继续嘲笑，而要求重新检验旧结论。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待异鬼，会先看它的土地、婚盟、血脉和债务。异鬼是来自极北寒冷与黑暗中的非人存在，能驱使死者，其出现动摇学城怀疑与长城两侧的旧有秩序。家徽是门面，能否保护封地、兑现婚约并在危机中召集人马，才是家族真正的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起异鬼时，记得的是谁在营火边分过粮、谁把他们留在城外、谁在败局里仍站在旗旁。异鬼是来自极北寒冷与黑暗中的非人存在，能驱使死者，其出现动摇学城怀疑与长城两侧的旧有秩序。家族名声最终要落到具体的人和具体的命令上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意异鬼留下的仪式、墓地和传承。异鬼是来自极北寒冷与黑暗中的非人存在，能驱使死者，其出现动摇学城怀疑与长城两侧的旧有秩序。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见异鬼。异鬼是来自极北寒冷与黑暗中的非人存在，能驱使死者，其出现动摇学城怀疑与长城两侧的旧有秩序。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "异鬼：异鬼是来自极北寒冷与黑暗中的非人存在，能驱使死者，其出现动摇学城怀疑与长城两侧的旧有秩序。"
+  ]
+}

@@ -1,0 +1,132 @@
+{
+  "Id": "rule_人间风俗__守夜人的日常纪律",
+  "Keywords": [
+    "守夜人的日常纪律"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "黑衣人的生活由操练、巡逻、修墙、守夜和稀薄的伙食组成。南方人常把他们想成传奇，真正穿黑衣的人更熟悉冻僵的手、坏掉的靴子与永远填不满的空缺；誓言每天都要在琐碎里重新兑现。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "贵族在守夜人的日常纪律里辨认血脉与体面，乡绅在意邻里是否守规矩，祭司则提醒人们礼节背后的禁忌；身份与礼数使习惯变成可以传下去的秩序。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "谈到守夜人的日常纪律，农户、工匠和商人不总能负担完整的礼数，却会保留最要紧的部分：称呼、座次、赠礼和道歉；失礼有时比少一袋粮更快招来麻烦。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵与旅人穿过不同地域时，最容易在守夜人的日常纪律上犯错；懂得先观察再开口的人，往往比自称见多识广的人更快取得信任。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人把守夜人的日常纪律看成可执行的秩序。黑衣人的生活由操练、巡逻、修墙、守夜和稀薄的伙食组成。南方人常把他们想成传奇，真正穿黑衣的人更熟悉冻僵的手、坏掉的靴子与永远填不满的空缺；誓言每天都要在琐碎里重。它是否有效，取决于谁能授予权利、收取代价，并在违约时让判决真正落地。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者会从习惯和象征理解守夜人的日常纪律。黑衣人的生活由操练、巡逻、修墙、守夜和稀薄的伙食组成。南方人常把他们想成传奇，真正穿黑衣的人更熟悉冻僵的手、坏掉的靴子与永远填不满的空缺；誓言每天都要在琐碎里重。一项规矩若被反复实践，便会进入礼仪、手艺和祈祷；若只靠恐惧维持，危机一来就会露出裂缝。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民感受到守夜人的日常纪律的方式最小也最准确。黑衣人的生活由操练、巡逻、修墙、守夜和稀薄的伙食组成。南方人常把他们想成传奇，真正穿黑衣的人更熟悉冻僵的手、坏掉的靴子与永远填不满的空缺；誓言每天都要在琐碎里重。他们记得税、粮、劳役、赈济和谁能为他们说话；宏大的名称，最终都要落在一家人的饭锅旁。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "守夜人的日常纪律：黑衣人的生活由操练、巡逻、修墙、守夜和稀薄的伙食组成。南方人常把他们想成传奇，真正穿黑衣的人更熟悉冻僵的手、坏掉的靴子与永远填不满的空缺；誓言每天都要在琐碎里重"
+  ]
+}

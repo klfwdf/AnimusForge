@@ -1,0 +1,151 @@
+{
+  "Id": "rule_家族根基__森林",
+  "Keywords": [
+    "森林",
+    "森林家族"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "森林氏族据守铁树堡，效忠深林堡的葛洛佛家族，家言为“铁铸于冰”。他们掌握北境面积广阔的铁木林，家业与这种坚硬、长寿的珍贵木材紧密相连。格雷果·森林以公正、谨慎和守土闻名，家中子女则各自背负继承、婚盟与旧怨。白山家族声称铁树堡本应属于他们，两家的争执早已不只是边界问题；艾许·森林与葛温·白山的感情又使仇恨中生出一条危险的和解之路。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "北境领主看重森林氏族守护铁木林的本领。铁木可造长矛、盾牌和坚固门闩，铁树堡的安危因此不只关系一家荣辱，也关系北境漫长冬季里的军备与生计。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "铁树堡附近的樵夫知道，一棵铁木长成要许多年，一场家族争斗却能在一夜间烧掉整片林场。他们敬重肯守规矩的领主，也最怕贵族旧怨落到自己的屋顶和粮仓上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "森林氏族的士兵把铁树堡视作祖辈留下的责任。白山的挑战令他们愤怒，可有人也明白，若两家年轻人的情意真能止住流血，北境少埋几个儿子比多赢一次械斗更有价值。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待森林，会先看它的土地、婚盟、血脉和债务。森林氏族以铁树堡和北境铁木为根基，与白山家族的旧怨牵连着领地、继承与两家年轻人的命运。家徽是门面，能否保护封地、兑现婚约并在危机中召集人马，才是家族真正的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起森林时，记得的是谁在营火边分过粮、谁把他们留在城外、谁在败局里仍站在旗旁。森林氏族以铁树堡和北境铁木为根基，与白山家族的旧怨牵连着领地、继承与两家年轻人的命运。家族名声最终要落到具体的人和具体的命令上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意森林留下的仪式、墓地和传承。森林氏族以铁树堡和北境铁木为根基，与白山家族的旧怨牵连着领地、继承与两家年轻人的命运。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见森林。森林氏族以铁树堡和北境铁木为根基，与白山家族的旧怨牵连着领地、继承与两家年轻人的命运。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "森林：森林氏族以铁树堡和北境铁木为根基，与白山家族的旧怨牵连着领地、继承与两家年轻人的命运。"
+  ]
+}

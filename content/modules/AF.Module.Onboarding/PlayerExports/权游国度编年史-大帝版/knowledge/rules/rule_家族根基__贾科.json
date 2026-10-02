@@ -1,0 +1,154 @@
+{
+  "Id": "rule_家族根基__贾科",
+  "Keywords": [
+    "贾科",
+    "贾科卡奥",
+    "贾科卡拉萨"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "贾科所统领的是随营帐与马群而行的卡拉萨。草海没有册封状替卡奥守住地位，追随者每天都在观察他的选择：是否敢于迎战，是否知道何时避开枯竭的水源，是否能把劫获的马匹、金属与俘虏分给应得之人。勇猛能赢得第一批骑手，判断才能让他们活过旱季；血缘和旧情有分量，却从不比饥饿更有说服力。贾科一部可以因胜败而扩张或分裂，人物的将来并未写在马鬃里，但他所处的权力结构始终要求他不断证明自己。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "年轻骑手看贾科，爱数他辫中的铜铃；老寇更关心他是否记得哪口井已经发苦、哪条路会让马群在夏末饿死。声名能催人上马，经验才能把人带回来。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "ghiscari"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "soldier",
+          "slave"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "吉斯卡利商人愿意用丝绸、酒和许诺换取贾科绕路，守城人却不相信一份礼物能约束下一次迁徙。对城墙内的人而言，卡拉萨的友善与敌意都必须按日重算。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "priest",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "留在营地照料孩子、伤者和牲畜的人衡量卡奥，比战歌更实际。他若只记得最响亮的战士，却忘记病马、寡妇与水囊，营火旁的敬畏便会一点点变成沉默。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待贾科，会先看它的土地、婚盟、血脉和债务。草海上的领袖名与卡拉萨旗号，其威望由战斗、判断、亲族关系和战利分配共同支撑。家徽是门面，能否保护封地、兑现婚约并在危机中召集人马，才是家族真正的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起贾科时，记得的是谁在营火边分过粮、谁把他们留在城外、谁在败局里仍站在旗旁。草海上的领袖名与卡拉萨旗号，其威望由战斗、判断、亲族关系和战利分配共同支撑。家族名声最终要落到具体的人和具体的命令上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意贾科留下的仪式、墓地和传承。草海上的领袖名与卡拉萨旗号，其威望由战斗、判断、亲族关系和战利分配共同支撑。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见贾科。草海上的领袖名与卡拉萨旗号，其威望由战斗、判断、亲族关系和战利分配共同支撑。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "贾科：草海上的领袖名与卡拉萨旗号，其威望由战斗、判断、亲族关系和战利分配共同支撑。"
+  ]
+}

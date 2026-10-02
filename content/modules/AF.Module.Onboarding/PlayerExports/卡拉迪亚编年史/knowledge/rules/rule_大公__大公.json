@@ -1,0 +1,68 @@
+﻿{
+  "Id": "rule_大公",
+  "Keywords": [
+    "大公"
+  ],
+  "RagShortTexts": [
+    "斯特吉亚大公由贵族选举产生，非世袭。名义统御广袤领土，实权受制于家族平衡。需应对瓦兰迪亚与库塞特两线压力，在议会中斡旋。领主骁勇却固执，历代大公皆为此困扰。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "sturgia"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "斯特吉亚大公是斯特吉亚王国的最高统治者，头衔由多位贵族领主共同选举产生，而非单纯世袭。大公名义上统御着从冰冻海岸到东境森林的广袤领土，实际权力受限于各大家族的势力平衡。斯特吉亚长期面临两线压力：西线抗击瓦兰迪亚扩张，东线抵御库塞特劫掠。大公需在贵族议会中斡旋，维系以重装步兵和圆盾战士为核心的军事传统。斯特吉亚的领主们以骁勇善战著称，但也以固执己见闻名，历代大公无不为此困扰。\n目前斯特吉亚的大公是a"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai",
+          "battania",
+          "darshi",
+          "empire",
+          "khuzait",
+          "nord",
+          "sturgia",
+          "vakken",
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "大公是斯特吉亚统治者的称呼。目前的大公是a"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "a",
+      "Kind": "kingdom_leader_name",
+      "TargetId": "sturgia",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}

@@ -1,0 +1,210 @@
+﻿{
+  "Id": "rule_西帝国的政治",
+  "Keywords": [
+    "西帝国的政治",
+    "军头政治"
+  ],
+  "RagShortTexts": [
+    "西帝国政治决策链短，军令执行力在战时高效。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "西边那套也叫政治制度？A把元老院当什么了——他的盖章作坊。我们在北帝国开会，提案要辩论三轮，元老们可以拍桌子骂皇帝，骂完了B皇帝还得笑眯眯地回应。西边呢？A需要元老院的时候就让它开会，不需要的时候连通知都懒得发。他们的元老还坐在贾尔马律斯那间老议事厅里，椅子没少一把，但谁都知道那椅子后面站着兵。卢孔元老说过一句很刻薄的话——他说加里俄斯对共和传统的尊重，就像一个嫖客对妓院老板娘献殷勤，进门鞠躬，上床不付钱。当然，他年纪大了才会这么公开讲。我们底下的人没那么刻薄，但也觉得西边那套就是个笑话。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "西帝国的政治制度就是加里俄斯一个人说了算，只不过他用兵营集会和元老院橡皮图章把这件事包装得好看一点。C对此的评价是：A是个诚实的军人，但他不懂政治。政治不是把兵拉进会场喊口号，是把不同利益的人按在同一张桌子上，让他们吵完还能坐下来吃饭。我们南帝国的城邦各有各的脾气，城主们跟C讨价还价是日常，C不会派兵来堵我们的嘴。但西边不一样——阿庇斯那种大商人能混得开，是因为他跪得快。那些跪不快的，要么去北边投B，要么闭嘴。不过话说回来，西帝国那套虽然粗暴，效率倒是不低。他们打仗的粮草从来不断，军令下去没人敢顶。我们南边的效率差一截，因为得先吵三天。各有各的命。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire_w"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "我们的制度？简单。加里俄斯是皇帝，因为他带我们打赢了。我们在潘德拉克之后是他从死人堆里把我们捡回来的。元老院那帮人当年在哪儿？在后方写信，讨论战败是谁的责任。后来加里俄斯当了皇帝，把元老院留下了。有人觉得这是装样子。但样子的意思就是秩序还在。共和国需要元老院，就像军团需要军旗。军旗不一定砍人，但你得扛着。我们这些带兵的人务实。制度好不好，不看条文看效果：西帝国征兵征得上来，粮草运得到前线，老兵有地分，军功有人认。元老院盖章快慢跟我们没关系，反正战报我们不送元老院，我们直接送加里俄斯。有人说我们这是军事独裁。独裁就独裁吧。帝国裂成三块，独裁能打赢内战，共和不能。等帝国统一了再谈共和。\n\n现在的皇帝是A"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "西帝国的政治制度本质上是一种军事僭主政体，其外壳保留了帝国的共和装饰——元老院、人民集会、法律程序，但内核是赤裸裸的兵营权力。加里俄斯及其继任者的合法性不来自血统或元老院授权，而来自士兵的直接效忠。这套制度在战时运转高效：决策链条短，军令执行力强，资源调拨服从军事逻辑而非政治妥协。瓦兰迪亚和斯特吉亚的贵族中有不少人私下研究过加里俄斯的模式，结论是难以复制——他本人及其继任者就是权力的唯一支点，一旦他们倒下，整个结构缺乏自动继替的机制。南帝国有明确的继承顺位，北帝国至少还有元老院可以开会选下一个，西帝国在A之后会怎样，谁也不敢说。这种制度适合一位年轻的军头，但不适合长久的王朝。A还有时间，但他愿不愿意用时间去解决制度化的难题，是所有人都在看的事。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_w"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "政治制度？你问的是那些大头兵开会的事吧。加里俄斯当了皇帝以后，老规矩没废，元老院还在，该开会开会，该立法立法。但说实话，我们老百姓不在乎谁开会谁盖章。我们在乎的是两样：粮食和地。加里俄斯给老兵分地，这点大家都知道。士兵退伍，可以领块地，不大，但够种。所以我们这儿的百姓对他没怨言。至于那些城里穿袍子的元老，他们以前说了算，现在说不算了，他们不高兴。老百姓才懒得念旧呢。以前元老院当政，税一样交，地不见得多给。现在税一样交，但地能分。你去中原乡下拉个人问谁当皇帝好，他会说：“谁分地谁好。”加里俄斯分地，加里俄斯好。政治制度什么的，不懂。\n\n现在的皇帝是A"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "西边？A那边。听说他们那边当兵的说了算。我们这边的队伍不一样，C和城里的老爷们商量着来，当兵的不太掺和政事，老爷们说税多少就是多少，吵半天才定。西边简单，不用吵，一锤定音。商人们说那边路上兵多，安全倒是安全，就是当兵的横，你得对他们点头。我们这边当兵的没那个架子。C管不住所有人，但她至少不拿兵压人。各有各的活法。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "西边让兵当皇帝。卢孔老爷子在元老院天天骂他们，说他们把共和的脸丢尽了。元老院还在，却只是装门面，皇帝自己就是个大兵头。那边的那位皇帝身体是好，但死得晚不如死得早——他死了谁接？这些我们老百姓不懂，但我们知道元老院的老爷们是真骂，不是演的。南边C——好人，就是太惯着城里的商人。我们北边穷是穷点，但元老院说话还算数，这个在西边和南边都不多见。不过说真的，西边那个兵营政治打仗是真能打，这点我们认。北边打仗不太行，卢孔老爷子不擅长这个。我们现在的皇帝是B。西帝国的皇帝是A"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "西帝国那头谁说了算？好像是个叫A的。听说他是当兵的推上去的，推上去还是按当兵的规矩办：分地，发钱，老兵说话有人听。他们也有议会，但不开会时皇帝就不听它的，整天开大会喊口号，跟打仗似的。不像我们这儿，老爷们就算坏至少还坐屋里商量。不过人家的日子大概也照样过。当兵的分地，种地的交粮，做买卖的交税。谁当皇帝都一样。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_w"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "我们的制度？就这么回事——我拿盾，长官拿令旗，A坐上面。元老院不懂我们，分地的时候他们管不着。别的兵退伍回去没人管，我们回去有地种。这就叫制度。谁要是觉得我们的皇帝不好，行，冲我这面盾牌说。我们听的是兵营里的鼓，不是元老院的钟。加里俄斯还年轻，皇帝壮实，将来儿子还能接着干下去——我们也踏实。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "A",
+      "Kind": "kingdom_leader_name",
+      "TargetId": "empire_w",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": "B",
+      "Kind": "kingdom_leader_name",
+      "TargetId": "empire",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": "C",
+      "Kind": "kingdom_leader_name",
+      "TargetId": "empire_s",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}

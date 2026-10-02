@@ -1,0 +1,213 @@
+{
+  "Id": "rule_遗弃者__遗弃者",
+  "Keywords": [
+    "遗弃者",
+    "遗弃者失去理智",
+    "变异狂暴",
+    "利爪触手",
+    "混沌失败者",
+    "扭曲步兵",
+    "恩赐失败者",
+    "混沌化过度",
+    "疯狂战士",
+    "自我丧失",
+    "变异牺牲品",
+    "混沌悲歌"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "遗弃者是那些在荣耀之路上失败的混沌勇士——他们接受了过多的混沌恩赐，超越了身体与精神的可承载极限，最终丧失了全部理智，沦为只知道杀戮的扭曲怪物，是混沌力量最残酷讽刺的证明。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "chaos_culture"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "遗弃者……我不想谈论他们，但每个混沌战士都必须知道他们的存在。（沉默片刻后）他们曾是跟我们一样的人——勇猛的掠夺者、光荣的混沌勇士，有些甚至曾是领主。但他们太贪婪了，或者太无知了，或者是运气太差了——他们接受了超过身体能承受的恩赐。你不会错过那一刻：他们的眼睛会在某个瞬间突然变得空洞，就像里面的人已经死了。然后他们的身体开始不受控制地变异——触手、利爪、翻涌的肉块——但他们没有死去，只是原来的那个「人」消失了。我们会把他们放到战场最前线，让他们在被彻底毁灭之前用狂暴杀死尽可能多的敌人。这……算是给他们最后的荣耀吧。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "遗弃者是你的自杀式冲锋单位。他们没有任何恐惧感，冲入敌阵后将疯狂攻击，直到被完全消灭。把他们部署在所有部队的最前方，用他们的牺牲打乱敌人阵型。但不能让遗弃者靠近你自己的主力部队——他们的狂暴无差别，会攻击任何接近的生物。理想的使用方式是：遗弃者打头阵干扰敌人，你在两翼用正规部队合围。不要指望他们活着回来。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "根据帝国病理学院的临床研究，遗弃化过程分为四个阶段：第一阶段「征兆期」——个体开始表现出夸张的情绪波动和行为不协调，持续约一周；第二阶段「崩溃期」——个体经历剧烈痉挛和幻觉，声称「听到了神的声音」或「看到了不可形容的颜色」，持续约三天；第三阶段「暴变期」——身体在数分钟内经历剧烈的生理变态，原有的骨骼和器官被混沌能量重组成新的、不可预知的结构，这是最痛苦的阶段；第四阶段即为遗弃者状态——个体永久丧失了自我意识，凭纯粹的杀戮本能行动。病理学实验表明遗弃者的脑组织已完全液化为混沌能量浆，这意味着他们的「灵魂」已不复存在，只是被封存为一个混沌能量驱动的暴力机器。远古传说中提到，曾有一位遗弃者在接受了色孽的特别恩赐后「逆向遗弃化」——重新恢复了自我意识，这在历史上仅有一次记录。但此事的真实性备受争议。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我曾见过一位好姐妹变成遗弃者。上一刻她还在笑，下一刻她的笑容就固定在脸上，然后她的手臂炸开变成了四条触手。我亲手终结了她——这是我能给她的最后的姐妹情谊。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "遗弃化是你族中最令人恐惧的命运。作为首领，你有责任监控那些接受了过多恩赐的族人的精神状态。一旦确认某人即将「失格」，你必须组织一场「永别仪式」——在战场上给予他们最后的荣誉和结局。任何人不得私下处决即将变异的族人，这会被视为谋杀，玷污你的首领身份。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "你在废土边缘看到一群扭曲的东西在游荡——它们曾是人类吗？那些伸出来的触手、那些多出来的肢体、那些空洞的眼睛似乎还在流泪。你的胃翻腾起来。这不是你想象中的荣耀。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "遗弃者的存在是混沌荣耀体系中最黑暗的一页。他们提醒着所有人——混沌的「礼物」不是免费的，而它的代价可能是你的一切。有些部落将遗弃者视为「被测试者」——认为他们之所以失败是因为神明判定他们并不值得真正的恩宠。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "遗弃者——因恩赐过多丧失全部理智的失败混沌勇士，扭曲的杀戮机器。",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "遗弃者遗弃者失去理智变异狂暴"
+  ]
+}

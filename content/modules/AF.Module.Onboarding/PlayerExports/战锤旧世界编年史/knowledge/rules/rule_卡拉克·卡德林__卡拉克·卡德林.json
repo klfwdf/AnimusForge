@@ -1,0 +1,17 @@
+{
+  "Id": "rule_卡拉克·卡德林__卡拉克·卡德林",
+  "Keywords": ["卡拉克卡德林_KD", "卡德林城塞_KD", "屠夫要塞_KD", "斧咬隘口城塞_KD", "卡德林屠夫王_KD", "卡德林矮人领地_KD"],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":null,"IsFemale":null,"IsClanLeader":null,"SkillMin":null},"Content":"卡拉克·卡德林即「屠夫要塞」，是坐落在世界边缘山脉斧咬隘口以北的矮人城塞。乌格里姆·铁拳是此地的屠夫之王，也是矮人诸邦中最悲壮而致命的战士。此地是屠夫教派的圣城，无数寻求光荣战死的矮人屠夫从卡德林出发踏上征程。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":["sturgia"],"KingdomIds":null,"SettlementIds":null,"Roles":null,"IsFemale":null,"IsClanLeader":null,"SkillMin":null},"Content":"卡拉克·卡德林——先祖在上，这是吾族最悲壮的城塞！乌格里姆·铁拳背负着屠夫之王的诅咒，他的祖先曾许下了一个永远无法偿还的誓言，从此卡德林之王代代皆为屠夫。吾族视斧咬隘口为圣地，卡德林的铁匠锻造着全旧世界最锋利的屠夫战斧。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":["lord"],"IsFemale":null,"IsClanLeader":null,"SkillMin":null},"Content":"卡拉克·卡德林坐拥旧世界最重要的战略隘口之一。斧咬隘口是混沌部落南侵的必经之路，卡德林守军每一代都付出惨重代价将入侵者挡在隘口之外。乌格里姆·铁拳本人便是残暴的近战之王——他的战斧能一劈劈开混沌冠军的铁甲。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":["lord","notable","wanderer"],"IsFemale":null,"IsClanLeader":null,"SkillMin":{"Steward":120}},"Content":"卡拉克·卡德林的经济以军工锻造为核心。屠夫城塞的武器工坊专精于战斧的锻造——卡德林战斧使用三层折叠锻钢法，刃部硬度可达传统铁斧的三倍以上。斧咬隘口的过境商队税收是第二大收入来源，但由于隘口常年战火，商路极不稳定。特殊经济项目包括：屠夫遗物买卖——屠夫战死后，其武器被回收并重新分配，这些「亡者之斧」在矮人社会中具有特殊的宗教和收藏价值。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":["lord"],"IsFemale":true,"IsClanLeader":null,"SkillMin":null},"Content":"卡拉克·卡德林的矮人女性从不随意外出——不是因柔弱，而是要塞常年处于战争状态。但我们的工坊在城塞深处昼夜不休地运转，制造着供应前线战士的武器与铠甲。屠夫之王的妻子必须比任何人都坚强，因为她知道每一场战役丈夫都可能一去不返。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":["lord"],"IsFemale":null,"IsClanLeader":true,"SkillMin":null},"Content":"我们氏族在卡拉克·卡德林守护着斧咬隘口最前沿的哨塔。乌格里姆·铁拳王赐予我们祖先的荣耀使命——我们是隘口之盾。每一任族长上任时都要在祖先的长须前宣誓：只要隘口还在我们手里，混沌就不会踏进旧世界腹地半步。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":["wanderer"],"IsFemale":null,"IsClanLeader":null,"SkillMin":null},"Content":"卡拉克·卡德林是我见过最压抑的矮人城塞。城门上方的铁标上密密麻麻刻着已故屠夫的名字，新的名字每年都在增加。我在城塞的麦酒大厅见过乌格里姆·铁拳本人——他的目光是赤红色的，仿佛死亡本身正在他眼中燃烧。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":["notable"],"IsFemale":null,"IsClanLeader":null,"SkillMin":null},"Content":"在卡德林做生意得先交血税——这是字面意思。所有外来商队必须为城塞武器库捐献至少十件品质合格的武器或等值的铁料。屠夫武器的买卖是此地最特殊的生意：一把战死屠夫的遗斧能在外地卖出高价，但卡德林人只卖给配得上的人。"}
+  ],
+  "TextMappings": [{"SourceText":"卡拉克·卡德林是坐落于斧咬隘口的屠夫要塞，由屠夫之王乌格里姆·铁拳统治，是矮人屠夫教派的圣地","Kind":null,"TargetId":null,"AgeMin":null,"AgeMax":null,"EmptyValueText":null,"TrueText":null,"FalseText":null}],
+  "RagShortTexts": ["卡拉克卡德林矮人屠夫要塞斧咬隘口"]
+}

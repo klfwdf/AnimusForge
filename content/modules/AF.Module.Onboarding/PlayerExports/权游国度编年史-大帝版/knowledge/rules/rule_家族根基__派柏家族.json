@@ -1,0 +1,131 @@
+{
+  "Id": "rule_家族根基__派柏家族",
+  "Keywords": [
+    "派柏家族",
+    "跳舞少女"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "派柏家族以红粉城为根基，是徒利家族的河间封臣，家徽以蓝底上的粉红舞女著称。他们的土地位于红叉河流域，家族以地方贵族、骑士与土地持有者的身份参与河间政治。舞女纹章在宴席上时常招来轻佻玩笑，却没有哪位真正走过河间战场的骑士会因此低估红粉城能够召集的骑兵。当地百姓对派柏的认识更加直接：税赋是否留有余地，道路是否安全，战火来时城门是否肯为他们打开。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "river"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "河间宴席上很少有人认不出派柏家的粉红舞女。纹章引人发笑不等于家族无足轻重；红粉城位于战火往来频繁的土地上，一门封臣的价值仍由骑手、婚盟、道路和履行召令的速度衡量。懂礼的人可以开玩笑，却不会忘记派柏也有剑。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "river"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "红粉城周围的人不觉得舞女纹章有什么稀奇，旗帜看久了都只是辨认队伍的颜色。乡民关心庄稼会不会被踩，士兵关心并肩的人会不会逃。派柏家的名声，就这样由一次次征召、守城和收成积起来，而不是由外乡人的笑声决定。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待派柏家族，会先看它的土地、婚盟、血脉和债务。红粉城的徒利封臣，以粉红舞女为纹章；家门的实际声望来自红叉河土地、骑兵、道路防卫与对领民的裁断。家徽是门面，能否保护封地、兑现婚约并在危机中召集人马，才是家族真正的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起派柏家族时，记得的是谁在营火边分过粮、谁把他们留在城外、谁在败局里仍站在旗旁。红粉城的徒利封臣，以粉红舞女为纹章；家门的实际声望来自红叉河土地、骑兵、道路防卫与对领民的裁断。家族名声最终要落到具体的人和具体的命令上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意派柏家族留下的仪式、墓地和传承。红粉城的徒利封臣，以粉红舞女为纹章；家门的实际声望来自红叉河土地、骑兵、道路防卫与对领民的裁断。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见派柏家族。红粉城的徒利封臣，以粉红舞女为纹章；家门的实际声望来自红叉河土地、骑兵、道路防卫与对领民的裁断。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "派柏家族：红粉城的徒利封臣，以粉红舞女为纹章；家门的实际声望来自红叉河土地、骑兵、道路防卫与对领民的裁断。"
+  ]
+}

@@ -1,0 +1,131 @@
+{
+  "Id": "rule_王领地志__红堡",
+  "Keywords": [
+    "红堡",
+    "伊耿高丘",
+    "王座厅",
+    "梅葛楼"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "红堡立于君临的伊耿高丘，是铁王座最显眼的石头外壳。它不是一座单纯的城堡，而是一层层筛选来客的权力迷宫：外墙、塔楼、庭院、王座厅、御前会议厅、地牢、梅葛楼与彼此遮掩的走廊，把从街巷到寝宫的距离拉得很长。御林铁卫、侍从、仆役、学士、信使和贵族在这里各守自己的门槛。高墙能隔开骚乱，却隔不开粮价、密信、婚约、疾病和谣言；红堡让王权显得坚固，也不断提醒居住其间的人，权力越集中，通往权力的每扇门就越危险。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "贵族谈起红堡，常谈房间、席位和谁被允许在何处等候。一个人能否越过内庭的门，比他在封地拥有多少骑士更能说明此刻的荣宠。老练的朝臣知道，堡内没有真正无主的走廊：侍从会记住脚步，御林铁卫会记住眼神，仆人比大多数领主更早知道一扇门昨夜为谁打开。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "artisan",
+          "peasant",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "城下的人望见的是高墙和旗帜。有人相信红堡里的人能让税吏收手、让船队带粮食回来；也有人只在有人被押进地牢、有人从城门出来宣读命令时才想起那里。对小贩和工匠而言，宫廷的喜怒会变成订单、欠款或突然加严的城门盘查。红堡很高，影子却落得到跳蚤窝。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "在领主和商人眼中，红堡首先是地图上的一处要害。伊耿高丘上的王权中枢，由城墙、王座厅、梅葛楼、地牢与层层庭院构成。它以门槛和礼仪筛选接近权力的人，却无法隔绝君临的饥饿、流言与街头情绪。他们关心水源、道路、税关和守军，知道地名背后往往连着一条能让城堡活下去的粮道。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈到红堡时，记住的不是边界线，而是风向、坡度、渡口和能否在天黑前找到避难处。伊耿高丘上的王权中枢，由城墙、王座厅、梅葛楼、地牢与层层庭院构成。它以门槛和礼仪筛选接近权力的人，却无法隔绝君临的饥饿、流言与街头情绪。一处地形的名声，常由死在那里的人的数量决定。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者会从另一面理解红堡。伊耿高丘上的王权中枢，由城墙、王座厅、梅葛楼、地牢与层层庭院构成。它以门槛和礼仪筛选接近权力的人，却无法隔绝君临的饥饿、流言与街头情绪。石头、林木、河流或山口既能成为谋生之所，也可能被赋予圣洁、禁忌和祖先记忆，因而不能只用金钱衡量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民对红堡的看法最实际。伊耿高丘上的王权中枢，由城墙、王座厅、梅葛楼、地牢与层层庭院构成。它以门槛和礼仪筛选接近权力的人，却无法隔绝君临的饥饿、流言与街头情绪。他们先看这里能否取水、耕作、放牧和躲过兵灾；地图上的一行字，落到村里便是柴薪、井绳和过冬的粮。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "红堡：伊耿高丘上的王权中枢，由城墙、王座厅、梅葛楼、地牢与层层庭院构成。它以门槛和礼仪筛选接近权力的人，却无法隔绝君临的饥饿、流言与街头情绪。"
+  ]
+}

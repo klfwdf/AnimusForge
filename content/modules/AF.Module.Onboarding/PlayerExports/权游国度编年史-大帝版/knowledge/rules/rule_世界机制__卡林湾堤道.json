@@ -1,0 +1,157 @@
+{
+  "Id": "rule_世界机制__卡林湾堤道",
+  "Keywords": [
+    "卡林湾",
+    "颈泽堤道",
+    "北境门户",
+    "废塔"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "卡林湾坐落在颈泽北缘，古堡大部已成废墟，仍有少数塔楼控制贯穿沼泽的堤道。颈泽两侧遍布泥潭、芦苇、毒虫、病气和难以辨认的水路，重骑兵与辎重车若离开坚实路面便会陷入困境；因此少量熟悉地形的守军也能拖住远多于己的南来军队。卡林湾的力量不只来自石墙，而来自堤道狭窄、侧翼无法展开和补给线漫长。占据城塔不等于征服颈泽，忽视泽地民向导更会把胜利变成失踪。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "北境人把卡林湾视作南门。塔楼可以残破，只要堤道仍窄、守军仍有箭和粮，南方大军就得一列列走进早已瞄准的道路。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "river",
+          "crownlands",
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "南来将领最怕的不是看得见的墙，而是道路两侧无处落脚的湿地。甲越重、车越多，卡林湾便越像一只缓慢合拢的手。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "wanderer",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "泽地民知道堤道不是颈泽本身。他们从芦苇、鸟声和水色认路，也明白外人夺下一座塔后，仍可能在十步之外的雾里迷失。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人把卡林湾看成可执行的秩序。卡林湾堤道：颈泽中少数可供大军通行的坚实道路，由古老废塔扼守，是北境南门与补给瓶颈。它是否有效，取决于谁能授予权利、收取代价，并在违约时让判决真正落地。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起卡林湾时，关心它如何影响道路、命令和安全。卡林湾堤道：颈泽中少数可供大军通行的坚实道路，由古老废塔扼守，是北境南门与补给瓶颈。远方的制度只有在营火、城门和驿站里能被执行，才不是空话。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者会从习惯和象征理解卡林湾。卡林湾堤道：颈泽中少数可供大军通行的坚实道路，由古老废塔扼守，是北境南门与补给瓶颈。一项规矩若被反复实践，便会进入礼仪、手艺和祈祷；若只靠恐惧维持，危机一来就会露出裂缝。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民感受到卡林湾的方式最小也最准确。卡林湾堤道：颈泽中少数可供大军通行的坚实道路，由古老废塔扼守，是北境南门与补给瓶颈。他们记得税、粮、劳役、赈济和谁能为他们说话；宏大的名称，最终都要落在一家人的饭锅旁。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "卡林湾堤道：颈泽中少数可供大军通行的坚实道路，由古老废塔扼守，是北境南门与补给瓶颈。"
+  ]
+}

@@ -1,0 +1,212 @@
+{
+  "Id": "rule_黑岩堡__黑岩堡",
+  "Keywords": [
+    "黑岩堡",
+    "绿皮要塞",
+    "曾为矮人城塞",
+    "Waaagh集结地",
+    "恶地堡垒",
+    "卡拉克·八峰",
+    "黑岩",
+    "兽人首都",
+    "黑岩堡恶地",
+    "哥巴德铁爪",
+    "绿皮王座"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "黑岩堡是恶地最大、最臭名昭著的绿皮要塞，它原为矮人的宏伟城塞卡拉克·黑岩，被兽人战将哥巴德·铁爪攻陷后彻底沦为绿皮军力的集结枢纽。从它燃烧着黑烟的高塔望出去，无数支Waaagh在此招兵买马而后向旧世界各地席卷而去。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "黑岩堡！那是俺们绿皮最硬的地盘！以前是矮子们修的石头壳子——说实话矮子们修东西是有一手，那城墙厚得连搞毛二哥来了都得咂个嘴——但俺们老大铁爪哥带着全恶地的小子们冲进去把矮子全剁了之后，这地方就归俺们了！黑岩堡里头可大了，深不见底的那种地底大厅里聚着多少小子谁也数不清。每次有哪个老大想拉一支Waaagh，就得先到黑岩堡喊一嗓子，谁能把最多的绿皮小子从那些黑洞洞的大厅里吼出来跟着他走，谁就是新老大。最带劲的是城堡顶上的铁王座——老大坐在上面往下瞅，整个恶地的绿皮都在他脚底下聒噪，那场面能让任何绿皮小子兴奋得把自己的门牙都咬碎了！"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "黑岩堡在军事地理上的地位不可替代。它坐落在恶地与死亡通道的交汇点上，扼守着从东方荒原进入旧世界腹地的唯一可通行大军团的路线。任何试图通过武力清剿黑岩堡的尝试都面临三重困境：其一，恶地本身就是天然防御——缺水、暴晒、巨型蝎群的威胁使得补给线寸步难行；其二，黑岩堡地底坑道网（原矮人矿道）延绵数百里，绿皮可随时从任意方向出击；其三，一旦你开始围攻黑岩堡，整个恶地的绿皮部落会将你的军队视为「最好玩的干架」，从四面八方赶来加入守城的一方。应对黑岩堡的正确战略不是围攻它，而是用快袭切断其通往你的领地的路线，然后接受它作为一种永久的恶邻存在。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "黑岩堡的考古地层学揭示了一段被矮人史书删节的复杂历史。矮人纪元中，卡拉克·黑岩由矮人国王洛根·铁胡须于公元前约4100年奠基，作为卡拉克·八峰山的卫星要塞与矿石精炼中心。至公元前约1500年的「大灾变」时期，卡拉克·黑岩在绿皮大迁徙中首当其冲被围困，据矮人残存铭文记载「黑岩于公元前1498年深冬之第十三日沦陷」，但近年来边境亲王领地的考古队在黑岩堡外围发现的人类与矮人混葬坑的骨龄测定表明，黑岩堡的抵抗可能持续到了公元前约1460年——矮人史书将沦陷日期提前了近四十年，可能是为了减轻矮人至高王未派援军的责任。哥巴德·铁爪——这位有史以来最伟大的兽人战将——于帝国历前15年至帝国历前12年间彻底摧毁了黑岩堡周边的所有人类定居点，并在黑岩堡废墟上建立了绿皮王朝式统治，这一制度运转维持了近两千年至今。黑岩堡地底坑道的总长度据矮人工程图纸推算约为四百八十哩，其中约六成至今未被任何绿皮以外的生物探索过。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "黑岩堡让我想起一个令人不安的问题：你是否曾经在一个地方停留太久？兽人在黑岩堡扎根已有数百年，比我家族的任何一座城堡的历史都要长。那座熔岩色的黑塔立在地平线上就像一个没有眼皮的眼睛，日夜注视着旧世界。据说从阿尔道夫的魔法学院塔顶用最强力的远望镜，能在最清澈的冬日早晨看到黑岩堡塔尖——我不知道是不是真的，但我希望不是。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我族谱中有一位先祖，在大约帝国历1700年率领一支矮人-人类联合远征军去收复黑岩堡。他们打到了黑岩堡的外墙下，在城墙上架起了攻门锤。然后兽人打开了城门——不是投降，而是城内涌出了如此之多的绿皮，像蚁穴中喷出的蚁群。先祖的军队在十一天内从攻城变成了被追杀，残部逃回边境亲王领地时只有出发时的两成。军旗至今还插在黑岩堡的城墙上，被兽人当成尿靶。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我跟一队边境亲王领地的斥候远远眺过黑岩堡一次——就一次，而且我再也不想去第二次。在恶地那种无遮无拦的荒原上，你从三十里外就能感到它的存在：空气中有一股烤肉与铁锈混合的臭味，地平线上那团永不消散的黑烟把天空染成暗红色。队长说那烟是绿皮们烧矮人矿渣当炉火冒出来的，已经烧了两百年没断过。我们刚看完就撤了，因为远处有一队骑着野猪的黑兽人巡逻队朝我们方向转过来了。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "黑岩堡让恶地周边的商队路线价格年年攀升。通过恶地的贸易路线有两条：北线从巴拉克·瓦尔沿边缘山脉走，南线从港口城市米尔米迪亚绕道阿拉比海岸。没有任何正规商队敢直接从恶地腹地穿过——黑岩堡的绿皮能在三小时内集结五千名轻装狼骑兵把你的货物和人全部吞干净。我经手的保险契约在这方面写得特别详细：第五条第十三款，「凡在黑岩堡方圆一百五十哩内丧失之货物，不予理赔」。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "原矮人卡拉克·黑岩城塞，公元前1498年被绿皮攻陷后成为兽人最大要塞",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "黑岩堡的地理位置与战略意义"
+  ]
+}

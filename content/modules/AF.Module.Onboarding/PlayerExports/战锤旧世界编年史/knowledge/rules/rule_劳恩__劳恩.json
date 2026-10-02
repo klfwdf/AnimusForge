@@ -1,0 +1,213 @@
+{
+  "Id": "rule_劳恩__劳恩",
+  "Keywords": [
+    "劳恩",
+    "劳恩·列奥康沃尔",
+    "国王",
+    "狮心",
+    "圣杯国王",
+    "库罗纳王族",
+    "巴托尼亚君主",
+    "列奥康沃尔家族",
+    "狮心王",
+    "比武冠军",
+    "圣杯试炼",
+    "骑士国王"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "劳恩·列奥康沃尔是巴托尼亚的现任国王，一位真正饮过圣杯的战士君主，因其在战场上的雄狮般勇猛和在宫殿中的公正裁决而被尊称为狮心王。他骑乘自己的纯血巴托尼亚战马在战场上如同金色风暴，他的加冕仪式被圣杯修女会认定为近三百年来最受女神恩宠的一次。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "劳恩国王——狮心王——我们的国王，是女神赐予巴托尼亚的最伟大的礼物。他不是靠世袭坐上王位的软蛋，他是用长枪和圣杯赢得王冠的战士。劳恩出身于库罗纳公爵家族，年轻时便显示出与其他贵族子弟截然不同的气质——他不屑于宫廷的阴谋与奉承，而是独自策马穿越了整个巴托尼亚，在每一个公爵领的比武大会上挑战最强的骑士。据传他在拉什瓦克斯公爵领的比武决赛中，顶住了当地冠军连续十二次长枪冲击，最后在第十三次自己的长枪碎裂时拔剑跳到了对方马背上并将对方掀翻在地——从而赢得了狮心之名。但他真正的伟大不在于比武场的胜利，而在于圣杯之探：他独自一人在荒野中流浪了整整一年寻找圣杯，女神在鲍尔德洛山巅的一处悬崖边缘向他显圣，授予他圣杯之饮。他成为国王后做的第一件事不是加强自己的库罗纳封地，而是召集公爵议会宣布了一系列改革：他降低了农奴的部分赋税以平息边境村庄的骚动，他增加了王国的骑兵编制并要求每个公爵每年向国王提供更多的骑士名额，他恢复了与帝国的正式外交关系——但这一切的前提都是他本人作为圣杯骑士的无上威望。劳恩不是一个完美的国王——他太信任自己的骑士、有时会低估绿皮的兵力、偶尔在愤怒中做出过于严厉的判决——但他是一个真正的国王，而真正的国王在旧世界越来越稀缺。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "在巴托尼亚的权力格局中理解劳恩国王意味着理解这样一个悖论：他是王国中的最强者，但他的强大建立在自我约束之上。任何一个公爵都知道，如果劳恩决定带领他的王家骑士团扫平一个不服从的公爵领，他有能力做到——他是圣杯骑士而大多数公爵不是。但劳恩从未这样做，因为他比任何人都清楚一旦国王用武力对付自己的封臣，骑士道的誓言之链就断了。劳恩的治国策略是以身作则而非以力压人：他在战场上总是冲在队列最前方，不是为了逞能而是为了告诉其他公爵——我会让你们的士兵先为你而死，我不会躲在军队的后面。他在公爵议会上从不打断别人发言，即使反对者在说一些愚不可及的胡话，他等对方说完后才用平静的声音逐一反驳——这种风度让反对者觉得自己像个被老师纠正的顽皮学童。对于想要在巴托尼亚政治中有所作为的领主来说，研究劳恩国王如何用人是一门必修课：他会在一个公爵最擅长的领域委任他——鲍尔德洛公爵掌管山地防务、吉伦特公爵负责海军建设、阿奎坦公爵负责王国文艺事务——这既利用了他们的专长又通过赋予荣誉来降低了他们反抗的动机。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 100
+        },
+        "IdentityIds": null
+      },
+      "Content": "劳恩·列奥康沃尔的统治代表了巴托尼亚王权在近数百年来的一次重要进化。从历史政治学角度看，劳恩的登基恰逢巴托尼亚面临三重结构性危机：第一，王国东部边境的绿皮活动频率达到了沃格特时代以来的新高，灰色山脉隘口的防御体系急需全面翻新；第二，帝国在卡尔·弗兰兹治下的复兴形成了一种隐性的地缘压力——一个过于强大的帝国让某些巴托尼亚公爵开始质疑传统的不结盟政策；第三，王国内部出现了改革派贵族，以帕拉冯公爵为代表的一批年轻公爵认为巴托尼亚的军事体系过度依赖骑士冲锋。劳恩的应对体现了他的政治智慧：关于绿皮问题他选择了积极防御，关于帝国问题他选择了尊严的亲近，关于改革派贵族他没有公开否决改革而是亲自带领他们去鲍尔德洛隘口前线亲眼看到骑士冲锋的决定性优势。这种领导风格被巴托尼亚史学家称为狮心式领导术。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "劳恩国王在对待巴托尼亚女性贵族的问题上展现出一种近乎令人困惑的正直——他从未利用圣杯骑士地位强迫任何贵族女性接受政治婚姻，这在巴托尼亚历代国王中极为罕见。我在库罗纳宫廷中以遗孀身份被接待时，劳恩从不通过管家传达问候而是当面向我询问领地情况，这在巴托尼亚宫廷中极为罕见，因为大多数男性国王会本能地将目光转向贵族遗孀身后的男性代理人。劳恩的教养来自更深层——他是在圣杯试炼中独自与湖之女神进行灵性交流后回来的。一个曾与女神沉默对望过的男人重返凡间后对待凡间女性的态度中留有无法言说但确实存在的灵性痕迹——这就是为什么劳恩对于贵妇和修女们有一种自然而然的理解力，而这是巴托尼亚男性统治者中绝无仅有的。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "列奥康沃尔家族的传统中有一个被外界很少理解的核心教条——王族不是高人一等的血脉，而是做仆人的血脉。劳恩在传递家族训示时反复强调：王冠不是装饰，是你向女神借来的一把终身服务巴托尼亚的长剑。我们家族及其他公爵家族从列奥康沃尔家族的统治中学到的最大教训是：在巴托尼亚，真正持久的家族权威不能靠威吓来建立，因为威吓会在威吓者表现出一丝脆弱时被成倍反弹——只能通过持续的、每一代人都以更高标准践行的服务来累积。劳恩之所以能成为三百年来最受拥戴的国王，不是因为打赢了某场光照史册的战役，而是因为他在和平时期每个冬天都在公爵领之间骑行巡视，在春天组织跨公爵领的修路工程，在农奴村庄因瘟疫绝产时从王室粮仓中拨出救济。这些琐碎的行政细节从未进入编年史，但在世代口述的农奴民谣中被反复传唱，构成了列奥康沃尔王族比加冕仪典更牢固的民意基础。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "劳恩国王在流浪者的传闻中是一个少有的被正面描述而非被嘲弄的统治者。我们这些在公爵领地之间的无主道路上讨生活的人对于王权的评价一向刻薄——但关于劳恩的口碑一致是：他不欠军饷。巴托尼亚国王直属的骑士团是旧世界西部唯一一支在过去二十年中从未拖欠过武士俸禄的军队，而在巴托尼亚拖欠军饷是所有公爵的默认习惯。我在阿拉比圣战老兵中听过一个关于劳恩的故事：他在圣杯试炼期间流浪时与一个无名农奴同宿了一个雨夜，农奴不知道他的身份，在篝火边抱怨说'那些宫殿里的王公们永远不会知道农奴的收成在秋雨中被毁意味着什么'——劳恩没有暴露身份，但他记住了那个农奴的名字和村庄，在加冕后第二周以国王名义减免了三年赋税。这个传闻真假我不知道，但我见过那个村庄的农奴在国王途经时主动把母鸡举过头顶奉献的样子——那种表情不是恐惧下的献媚，而是真正的感激，这在旧世界是最稀罕的景观。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "劳恩国王的经济政策是我们在巴托尼亚经商的人不可忽略的关键变量。劳恩不是那种试图用王室权力直接干预市场的君主——他太清楚巴托尼亚贵族会抵制任何增加王室经济控制权的举措——但他的间接经济影响力通过圣杯修女会的特许商贸证制度和圣湖朝圣经济圈发挥着极大作用。劳恩在降低农奴赋税的同时提高了对公爵领地中公有林地开发的特许费用——这实际上是在不刺激贵族反弹的前提下把王国财政收入从农奴税向生态资源税转移，是一种精巧的财政重组。王家商队在劳恩治下获得了在十四个公爵领中一律免收通行费的特权——这不是以法律手段实现的，而是劳恩分别与每个公爵在私人狩猎或比武场合中口头敲定的君子协定。对于做跨公爵领贸易的商人来说，跟紧王家商队的车队意味着全境免费通行，这笔特权的价值远超任何贸易许可费。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "列奥康沃尔——巴托尼亚王室家族，劳恩国王出身的库罗纳公爵家族",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "劳恩劳恩·列奥康沃尔国王"
+  ]
+}

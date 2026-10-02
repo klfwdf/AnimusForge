@@ -1,0 +1,152 @@
+{
+  "Id": "rule_北地界碑__灰水望",
+  "Keywords": [
+    "灰水望",
+    "浮动城堡"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "灰水望是黎德家族在颈泽深处的移动式居所。外来者习惯把城堡理解为固定石墙，灰水望却建立在浮岛、木构与水网之上；它会随水道、季节与安全需要改变位置，因而最难被不熟悉沼泽的人找到。颈泽的芦苇、黑水、泥潭和蚊虫比许多骑士更可靠地守护着当地人。黎德人是北境封臣，却拥有与南方截然不同的生活方式：小船、长矛、陷阱和对水路的记忆比重甲和大马更有用。其稳定意义正是颈泽地形与泽地民知识的结合。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "对靠灰水望周边土地吃饭的人而言，日子由水位、渡口、芦苇地、可耕高地和雨季道路决定。当地家庭还要依靠柴薪、猎场、泥炭、盐鱼与能否撑过长冬的粮仓；任何一处道路、井泉或码头失灵，代价都会先落到他们身上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "对攻守双方而言，灰水望的分量首先落在桥梁、浅滩、堤道、舟船与不陷入泥沼的粮道上。在七国的封建秩序中，灰水望的归属牵动封臣义务、税粮和征召；守军能否吃饱、援兵能否按时抵达，比议事厅里的豪言更能决定这处据点是否可靠。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "scholar",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "货物抵达灰水望以前，货主已经算过水运、桥税、渡资、磨坊和沿河集市。他们还会辨认北境的口音、法令和通行凭据；名声可以从酒馆传得很远，真正的路程仍须由车轮、船桨或马蹄丈量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "灰水望能给一家人带来头衔，也能在灾年与战争中拖垮那一家人。在七国的封建秩序中，灰水望的归属牵动封臣义务、税粮和征召；旗帜更换之后，道路、粮仓、旧债和地方信任仍得由新主人逐一接手。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵靠脚底记住灰水望：哪处能涉水、哪条堤道不被洪水吞没。能补给、能避险、能找到向导，便值得在行程里标明；若三样都没有，再响亮的家名也救不了迷途者。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "数代人在灰水望留下的痕迹，一半藏在舟船、桥木、磨坊石、渔网与河岸圣堂，一半藏在旧神、鱼梁木与祖先留下的墓地。一处据点因而不只是领主的大厅，也是婚丧、誓言、劳作与地方记忆反复发生的场所。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户、牧民和渔民评价灰水望最少绕弯。他们关心柴薪、猎场、泥炭、盐鱼与能否撑过长冬的粮仓，也看征粮后是否留下种子、灾年时城门是否开启；远方人看见纹章，他们看见的是明日有没有饭吃。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "灰水望：灰水望是黎德家族在颈泽深处的移动式居所。外来者习惯把城堡理解为固定石墙，灰水望却建立在浮岛、木构与水网之上；它会随水道、季节与安全需要改变位置，因而最难被不熟悉沼泽的人找到。颈泽的芦苇、黑水、泥潭和蚊虫比许多骑士更可靠地守护着当地人。黎德人是北境封臣，却拥有与南方截然不同的生活方式：小船、长矛、陷阱和对水路的记忆比重甲和大马更有用。其稳定意义正是颈泽地形与泽地民知识的结合。"
+  ]
+}

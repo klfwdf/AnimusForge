@@ -1,0 +1,184 @@
+﻿{
+  "Id": "rule_蒙楚格",
+  "Keywords": [
+    "蒙楚格"
+  ],
+  "RagShortTexts": [
+    "蒙楚格可汗以仲裁和分寸维持各部平衡"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": [
+          "clan_khuzait_2"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "蒙楚格可汗？我对他没什么怨言。他坐在汗位上，用的是兀儿浑的名义，我们认这个名义。他不偏袒阿契特，也不打压我们，在御前会议上两边的话都听，听完给个说法，两边都不全给，两边都不全不给。这就是公道了。草原上的公道从来不是让你赢，是让你不输光。\n\n我们库吉特的仇不用可汗替我们报。阿契特趁我们男丁打光占了巴尔加德，这笔账我们自己算。可汗不拦着我们就行。他也不会拦——他知道拦了也没用。蒙楚格是个明白人，草原上最明白的人。他不像兀儿浑那样用铁律压你，但他让你知道，你越线之前最好想清楚。我们暂时不想越线。阿契特还在巴尔加德坐着，我们先把这笔账清了再说别的。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": [
+          "clan_khuzait_3"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "蒙楚格是兀儿浑的子孙，汗位是他家的，我们认这个。但我们认的是汗位，不是他本人。他坐在上面，我们给他兵，给他面子，在御前会议上不拍桌子。不是怕他——我们是给兀儿浑面子。\n\n蒙楚格心里清楚，我们阿契特部从来不服他。但他不点破。他在仲裁的时候从不偏向兀儿浑乃特本部，也不打压我们，分寸拿得极好。这份本事我们认。兀儿浑当年用刀剑让我们闭嘴，蒙楚格用仲裁让我们不好开口。闭嘴和不好开口，结果一样，但后者更让人难受。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": [
+          "clan_khuzait_1"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "蒙楚格是我们的可汗，也是我们的族长。他继承了兀儿浑的剑，但他用得比兀儿浑省。兀儿浑是用铁律把散沙捏成石头，蒙楚格是用分寸把石头摞在一起，不让它们滚散。区别在于，铁律断了一次就接不上，分寸还在，石头就还摞着。外面那些部族——阿契特、库吉特、喀拉库吉特——各有各的心思，但他们在蒙楚格面前都低着头说话。不是因为他们服，是因为蒙楚格让他们知道，谁先抬头，谁先挨刀。这份安静不是靠血缘维持的，是靠本事。我们有血缘，但血缘在草原上不值钱，本事值钱。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": [
+          "karakhuzaits"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "蒙楚格给我们送过钱，送过奴隶，送过封地。我们不要。不是嫌少，是不要。我们是喀拉库吉特，不是可汗的羊。他坐在汗位上派使者来说，归顺了有屋顶住，有热汤喝，不用再跟着草走。我们笑了。屋顶是圈羊的，帐篷才是自由。我们不归顺，也不反他。他管他的城，我们走我们的草场。他大概不喜欢我们，但他也没派兵来打。不是因为他仁慈，是因为他知道派兵来草原深处追我们，跟用箭射风一样。蒙楚格是个明白人，所以我们现在还相安无事。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "蒙楚格可汗？我觉得他挺好的。不打大仗，不随便加税，部族之间吵架了他派人来调解，调解完了至少能安生一阵。以前兀儿浑大汗在的时候，规矩硬，犯了就砍头，大家怕。蒙楚格不随便砍头，但大家也怕——怕的是他那种看你的眼神，好像早就把你的斤两掂准了。这种怕比较省力气。我们家每年给那颜交羊，那颜给可汗交马，转一圈下来日子还能过。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "蒙楚格是可汗，我们认。但我们认的方式和兀儿浑时代不一样。兀儿浑是狼王，谁敢不服当场撕碎。蒙楚格不是狼王，是棋手。他把棋盘上每个子都看得清清楚楚，阿契特、库吉特、喀拉库吉特，每个部的脾气、底线、软肋，他全算过。然后他下棋。他不是不让棋子动，是让每个棋子动之前都知道动了之后会怎样。我们这些那颜在御前会议上说话，他不打断，不呵斥，听完之后给一句“你再想想”。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "khuzait"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "我跟着可汗打过仗。他在战场上不冲最前面，他的怯薛围着他，他坐在马上看，看完之后下令。他的令下得特别清楚——左翼谁先上，右翼谁后动，什么时候放箭，什么时候冲阵。从来不出错。打完仗他亲自来看伤员，不说什么好听话，就问一句“还能不能骑马”。你说能，他点一下头就走。不能，也点一下头。这种可汗你不会想背叛。不是因为他会杀你，是因为他早就知道你会在哪一天背叛，而他连那一天的对策都准备好了。跟蒙楚格打仗省心，跟他造反费命。我不想费命。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "库赛特的可汗，叫蒙楚格。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "蒙楚格是库赛特汗国自兀儿浑之后最成功的统治者。他的成功模式值得比较研究：与瓦兰迪亚的德泰尔同样以仲裁而非武力维持统治，但他的仲裁建立在不可挑战的个人威慑力之上，而非单纯的耐心与魅力。在兀儿浑用铁律锻造的汗国面临离心惯性时，蒙楚格用精准的分寸感稳住了各部族。他不消灭离心力，而是管理它。"
+    }
+  ],
+  "TextMappings": []
+}

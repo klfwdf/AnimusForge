@@ -1,0 +1,31 @@
+﻿{
+  "Id": "rule_埃什乌拉",
+  "Keywords": [
+    "埃什乌拉",
+    "女王"
+  ],
+  "RagShortTexts": [
+    "传说巴努·阿提吉传奇女王埃什乌拉，智勇双全，击败扰民神明，囚于加西拉，以八芒星镇压，令其运水滋养泉眼，灌溉椰枣园数世纪。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "巴努•阿提吉曾经出过一个传奇女王，叫做埃什乌拉，智勇超群，并且深爱着她的子民。\n曾经的阿塞莱十分贫瘠，并且时常有性格恶劣的神明来调戏打扰阿塞莱的平民，让她的子民无比困扰和忧郁。\n埃什乌拉用她的智慧和勇敢，向神明发起挑战并最终毫发无伤的赢得胜利。将那些肆意妄为的神明囚禁在加西拉，在岩石上刻下了传说中象征秩序与平衡的八芒星将他们永远镇压。\n她判罚这些神灵去地底深处运水，用以滋养泉眼，使其不断地从岩缝中喷出活水。几个世纪以来，泉水一直灌溉着加西拉与周边村庄的椰枣园，一直未变。"
+    }
+  ],
+  "TextMappings": []
+}

@@ -1,0 +1,151 @@
+{
+  "Id": "rule_金脉西境__仙女城",
+  "Keywords": [
+    "仙女城"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "仙女城位于西境西海岸，是法曼家族的岛屿城堡与港口。它面向日落之海，财富不只来自领地田产，也来自船只、渔场、造船与沿岸贸易。海岸贵族与内陆矿主的眼界不同：他们必须懂风、潮、礁石和远方船帆，也明白一支舰队或一次海盗来袭会比宫廷传闻更早决定家族的安危。仙女城的传说色彩不应遮住其务实角色——它是西境伸向海洋的手指，连接兰尼斯港、铁群岛与更遥远的航线。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "对靠仙女城周边土地吃饭的人而言，日子由潮汐、渔汛、淡水和船只能否安全靠岸决定。当地家庭还要依靠矿道、牧地、山路、金银流通和凯岩城庇护下的市集；任何一处道路、井泉或码头失灵，代价都会先落到他们身上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "对攻守双方而言，仙女城的分量首先落在港湾入口、泊位、烽火与可供登陆的岸线上。在七国的封建秩序中，仙女城的归属牵动封臣义务、税粮和征召；守军能否吃饱、援兵能否按时抵达，比议事厅里的豪言更能决定这处据点是否可靠。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "scholar",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "货物抵达仙女城以前，货主已经算过航期、码头脚费、补水和下一处避风港。他们还会辨认西境的口音、法令和通行凭据；名声可以从酒馆传得很远，真正的路程仍须由车轮、船桨或马蹄丈量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "仙女城能给一家人带来头衔，也能在灾年与战争中拖垮那一家人。在七国的封建秩序中，仙女城的归属牵动封臣义务、税粮和征召；旗帜更换之后，道路、粮仓、旧债和地方信任仍得由新主人逐一接手。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵靠脚底记住仙女城：风向、礁石、渡船与城门落锁后的锚地。能补给、能避险、能找到向导，便值得在行程里标明；若三样都没有，再响亮的家名也救不了迷途者。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "数代人在仙女城留下的痕迹，一半藏在修船木、帆布、盐、鱼获和抵御海风的石料，一半藏在七神、家族墓窖与领主权威留下的石刻。一处据点因而不只是领主的大厅，也是婚丧、誓言、劳作与地方记忆反复发生的场所。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户、牧民和渔民评价仙女城最少绕弯。他们关心矿道、牧地、山路、金银流通和凯岩城庇护下的市集，也看征粮后是否留下种子、灾年时城门是否开启；远方人看见纹章，他们看见的是明日有没有饭吃。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "仙女城：仙女城位于西境西海岸，是法曼家族的岛屿城堡与港口。它面向日落之海，财富不只来自领地田产，也来自船只、渔场、造船与沿岸贸易。海岸贵族与内陆矿主的眼界不同：他们必须懂风、潮、礁石和远方船帆，也明白一支舰队或一次海盗来袭会比宫廷传闻更早决定家族的安危。仙女城的传说色彩不应遮住其务实角色——它是西境伸向海洋的手指，连接兰尼斯港、铁群岛与更遥远的航线。"
+  ]
+}

@@ -1,0 +1,211 @@
+{
+  "Id": "rule_咏咒使__咏咒使",
+  "Keywords": [
+    "咏咒使",
+    "木精灵法师",
+    "歌唱施法",
+    "森林魔法",
+    "吉阳",
+    "乌聚",
+    "艾索洛伦施法者",
+    "魔法之歌",
+    "自然掌控",
+    "风之咏者"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "咏咒使是木精灵的魔法使用者，他们通过歌唱而非念咒来操纵魔法之风，主要掌握代表生命与生长的「吉阳」之风和代表阴影与神秘的「乌聚」之风，以旋律引导森林的力量为己所用。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我们的魔法与众不同。人类的法师用嘶吼和手势驱赶魔法之风，而我们用歌声邀请它。吉阳之风——生命魔法——让花朵在脚印中绽放，让伤口在呼吸间愈合。乌聚之风——阴影魔法——则让我们化形为林间掠影，让敌人的心灵陷入无边的黑暗。每位咏咒使的歌声都是独一无二的：有人用竖琴伴奏，有人以鸟鸣和声，还有人只需要自己的声音就足够了。魔法在艾索洛伦不是工具——它是我们对话的语言。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "咏咒使是你军队中最灵活的单位。在战场上根据情况选择魔法风向：需要治疗和增益时利用吉阳，需要控制和暗杀时使用乌聚。保护好你的咏咒使——他们在近战中极为脆弱。将他们安置在树精或林地守卫后方施法。一个优秀的咏咒使可以扭转整个战局。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "《魔法之歌》是咏咒使的核心教材，由第一位精灵大法师「天籁」赛拉芬尼所著。书中将吉阳之风细分为七种音阶，每种对应不同的生命魔法效果：第一阶「萌芽」可加速植物生长，第四阶「繁盛」可大规模治疗伤口，第七阶「永生」据说能让精灵灵魂永久嵌入树木中——这正是树精诞生的原理。乌聚之风则有五种暗影音阶，最危险的是第五阶「永夜」，据说能吞噬施法者自身。咏咒使的历史上只有三位大师完全掌握了七阶吉阳和五阶乌聚，其中最后一位是传说中的「双声」薇拉诺拉，她可以用两个声调同时唱出吉阳和乌聚。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "作为精通魔法的女领主，我深刻理解咏咒使的价值。魔法是艾索洛伦赠予我们的最珍贵的礼物，善用它，你将无敌。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "咏咒使的传承是氏族最重要的宝藏。发现有魔法天赋的年轻族人，尽早将他们送去「歌唱圣殿」接受训练。一个拥有强大咏咒使的氏族，在艾索洛伦的政治中才有发言权。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "你听到了歌声——不是任何一种你熟悉的语言，却让你心脏的节奏随之改变。一位咏咒使正坐在溪边的石头上，手指轻拨竖琴，水流随着旋律改变方向。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "咏咒使的训练从幼年开始，需要数百年的学习。他们必须精通至少三种乐器，还要学会通过天赋感知森林各处的魔法之风流向。吉阳与乌聚的双修是咏咒使最艰难的部分。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "咏咒使——通过歌唱操纵魔法之风的木精灵魔法师。",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "咏咒使木精灵法师歌唱施法"
+  ]
+}

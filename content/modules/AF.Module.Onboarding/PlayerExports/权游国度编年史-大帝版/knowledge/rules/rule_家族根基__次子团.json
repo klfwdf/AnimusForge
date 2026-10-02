@@ -1,0 +1,109 @@
+{
+  "Id": "rule_家族根基__次子团",
+  "Keywords": [
+    "次子团"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "次子团是厄斯索斯历史悠久的佣兵团，名字来自一个常见事实：长子继承土地，次子和更后的儿子便要自己寻找剑、财富与位置。成员并不全是贵族次子，逃亡者、私生子、老兵和冒险者同样会加入。军团以契约、军饷、共同营地和战利品维系，曾为不同城邦与雇主作战。它的忠诚不是神圣血缘，而是写在条款、欠饷和指挥官信誉上的买卖；这并不等于毫无规矩，反而要求所有人清楚背约会付出什么代价。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "贵族雇主喜欢次子团能迅速提供老练兵力，又永远担心对手开出更高价。聪明人会按时付饷、写清战利品分配，并让佣兵相信完成契约比背叛更划算。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "普通士兵看次子团，既羡慕可能赚到的银子，也知道佣兵伤残后没有封地养老。军团里的兄弟情是真实的，但它建立在共同挨饿、行军和活着领到钱上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "平民不太在乎军团契约写给谁，只看经过村庄时是否付钱。对农户而言，守约的佣兵比劫掠的王军更体面，欠饷的佣兵却往往是最危险的客人。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意次子团留下的仪式、墓地和传承。次子团是历史悠久的佣兵团，以契约、军饷和战利品维系，接纳被继承秩序排到家门之外的人。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见次子团。次子团是历史悠久的佣兵团，以契约、军饷和战利品维系，接纳被继承秩序排到家门之外的人。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "次子团：次子团是历史悠久的佣兵团，以契约、军饷和战利品维系，接纳被继承秩序排到家门之外的人。"
+  ]
+}

@@ -1,0 +1,45 @@
+﻿{
+  "Id": "rule_沙漠强盗",
+  "Keywords": [
+    "沙漠强盗"
+  ],
+  "RagShortTexts": [
+    "哈拉米原意“扈从”，后变为“强盗”。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "steward": 50
+        }
+      },
+      "Content": "哈拉米这个词在阿塞莱古语中的本义是“扈从”，指追随法里斯的侍从骑兵。哈拉米落草的根源是土地与荣誉的双重破产。这些失去土地和主人的扈从便面临一个简单的选择：卖身给另一个部落当马穆鲁克，或带着武器和坐骑消失在沙漠里。前者意味着从自由人降为奴隶，后者则保留自由但被习惯法视为法外之徒。选择后者的人，便被冠以哈拉米之名——这个词从“扈从”变成了“强盗”。\n\n哈拉米他们经历过正规骑兵训练，具备法里斯级别的个人武艺和马术，却不受部落义务和习惯法的约束。这种高技能、低束缚的组合使他们成为沙漠中最危险的武装团体之一。但哈拉米的弱点同样明显：缺乏稳定的后勤补给和兵员补充渠道，装备损耗无法系统更新，组织规模难以突破部落武装的水平。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "他们不是普通的土匪。普通土匪是活不下去才去抢的——庄稼旱死了，欠了债，犯了事跑路。哈拉米不一样，他们以前是正经的扈从，骑好马，穿铜甲，在部落里有人叫得出他们名字。他们不愿意低下头去给人当奴隶兵，就骑着马进了沙丘。从此以后，他们的名字就从部落的名册上划掉了，变成了沙子里的一阵风。\n\n有人恨他们，也有人暗地里羡慕他们。恨他们的人说他们是贼羡慕他们的人不多，——那些在绿洲边缘种地种不出名堂的年轻人，看哈拉米骑着马、扛着枪、不用给任何人交税，心里难免动过念头。但想归想，真走上那条路的是少数。"
+    }
+  ],
+  "TextMappings": []
+}

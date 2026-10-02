@@ -1,0 +1,211 @@
+{
+  "Id": "rule_旧世界__旧世界",
+  "Keywords": [
+    "旧世界",
+    "战锤世界",
+    "旧大陆",
+    "旧世界帝国",
+    "旧世界巴托尼亚",
+    "基斯里夫",
+    "旧世界世界边缘山脉",
+    "旧世界恶地",
+    "旧世界艾索洛伦",
+    "旧世界希尔瓦尼亚"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "旧世界是一片被黑暗、战争和古老仇恨所撕裂的大陆，人类帝国在钢铁与信仰的火光中坚守文明最后的堡垒，而北方的混沌荒原从未停止向南扩张。这里没有真正的和平——只有战争的间隙，和等待下一场风暴的喘息。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "旧世界是我们的家园，也是我们的坟墓。从诺斯卡海岸到恶地荒漠，从灰色山脉到世界边缘山脉，这片大陆上的每一寸土地都浸透了血。但正是在这片被恐惧和死亡包围的土地上，西格玛的后裔建起了帝国、锻造了钢铁、点燃了火药、驯服了魔法之风。我们不是旧世界最古老的种族，也不是最强大的，但我们是唯一一个在混沌面前从不转身逃跑的文明。只要阿尔道夫的钟声还在敲响，旧世界就还没有灭亡。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "旧世界的权力版图由七支主要力量划分：帝国的人类、巴托尼亚的骑士、希尔瓦尼亚的亡灵、艾索洛伦的木精灵、北方荒原的混沌勇士、恶地的绿皮部落以及世界边缘山脉中的矮人城邦。这七者之间的冲突与偶发的联盟共同织成了旧世界政治最根本的经纬线。任何一位统治者都必须理解这个多极格局——与谁暂时和平，与谁永不妥协，在何处筑墙，从何处出击。选错一个方向，代价就不仅仅是领土丧失，而是文明的彻底终结。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 100
+        },
+        "IdentityIds": null
+      },
+      "Content": "旧世界的地理中心是帝国——它位于瑞克河、塔拉贝克河与斯提尔河三大水系交汇的温带黑森林地带，北界利爪海，南抵黑色山脉，西至灰色山脉，东达世界边缘山脉。帝国以西是巴托尼亚的肥沃平原和湿地，以南是艾索洛伦的魔法森林，以东是希尔瓦尼亚的暗土和世界边缘山脉，以北则是基斯里夫雪原和终年被变异扭曲的混沌荒原。大陆南方的恶地是一片由兽人和地精部落主导的干旱荒原。旧世界的经济以帝国为中心运转，货币标准为金克朗、银先令和铜便士。大陆交通依赖帝国大道、瑞克河水运、矮人矿道和沿海航线，这些命脉在和平时期承载商业，在战争时期决定军队能否在敌人抵达之前完成集结。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "作为一位统治着帝国边境省份的女性领主，旧世界的地图在我眼中不是彩色色块而是一张由粮食库存、冬季燃料储备和难民潮峰值估算数据组成的压力图。男性将军们画战役箭头，我们女性统治者画的是每一个被箭头穿过的村庄的过冬存活率。旧世界的所有军事冲突最终被消化在女性的日常管理工作中——当一支骑士中队在战场上驰骋时，确保他们的马匹在上个冬天没有饿死的是我；当城墙上一门臼炮开火时，确保炮手的家人没有被漏列在粮食配给名单上的也是我。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "作为古老的帝国贵族家族的族长，旧世界的兴衰对我而言是刻在家族档案室石板上的、可以用精确数字来衡量的事物。在帝国黄金纪元的繁荣高峰期，我家族领地上一亩麦田的净产出足以养活三个不从事农业生产的人。在混沌大入侵后的黑暗年代，同一亩麦田的产出因为连续的春季霜冻和混沌之风的污染，只够养活零点七个人。这些数字决定了帝国城堡的规模、帝国军队的规模以及帝国能够承受的外交让步的幅度。政治家们高谈伟略，而我们是站在泥地里用算盘计算每一次战争到底死得起多少人的人。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "流浪多年后我可以告诉你：旧世界没有统一的地图。帝国地图上将巴托尼亚标注为'野蛮但信神的国家'，巴托尼亚地图上将帝国标注为'傲慢的异端商贩聚集地'，矮人地图上所有人类领地只是'非达维居民区'的粗略标记，而绿皮的地图——如果你能称之为地图——是在一张刮过的兽皮上用烧焦的棍子画出的战将脸部轮廓，他们认为这就是整个世界的尽头。旧世界的真相在于你从谁的餐桌上听到的故事。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "从帝国商业总会的角度看，旧世界不是一个政治实体网络——它是一个由商品流转速度定义的经济引力场。瑞克河每小时的货运吨位、冬季冰冻后玛丽恩堡港口损失的关税收入、以及矮人矿道关闭导致的一吨盖罗米尔铁锭绕行恶地路线后增加的成本——这些数字在帝国商会档案中比任何选帝侯会议的会议记录都更真实地描绘了旧世界的健康状况。当帝国的商品流转指数连续三个季度下跌时，战争已经在路上，无论政治人物在阿尔道夫互相保证了什么。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "旧世界——战锤故事发生的核心大陆，七支主要势力共存于永恒的战争状态",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "旧世界战锤世界旧大陆"
+  ]
+}

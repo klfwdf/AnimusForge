@@ -1,0 +1,29 @@
+﻿{
+  "Id": "rule_贵族武器",
+  "Keywords": [
+    "贵族武器",
+    "顶级武器"
+  ],
+  "RagShortTexts": [
+    "贵族武器价格高昂"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "贵族武器是顶尖武器的别称，是最厉害的武器——当然，价格也十分高昂"
+    }
+  ],
+  "TextMappings": []
+}

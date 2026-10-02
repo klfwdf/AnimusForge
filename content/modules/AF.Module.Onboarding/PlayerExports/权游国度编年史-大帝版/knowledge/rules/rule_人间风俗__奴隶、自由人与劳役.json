@@ -1,0 +1,164 @@
+{
+  "Id": "rule_人间风俗__奴隶、自由人与劳役",
+  "Keywords": [
+    "奴隶",
+    "劳役",
+    "债役",
+    "佃户"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "狭海东岸许多城邦允许奴隶制，奴隶可以买卖、继承、惩罚并被迫从事家务、矿山、田地、船运、性役使或战争训练，姓名、婚姻和子女都可能不由自己决定。自由人即使贫穷，至少原则上能离开雇主、订立契约、拥有财物和建立不被出售的家庭。维斯特洛禁止奴隶买卖，却存在佃租、封建劳役、债务束缚和罪犯强制服役；这些制度会压迫穷人，但不能因此抹去奴隶作为财产的根本差别。评价任何劳役，应先问劳动者是否能拒绝、离开并保有自己的身体与亲人。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "ghiscari",
+          "lyseni",
+          "volantine",
+          "qohorik"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "slave",
+          "peasant",
+          "artisan"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "被奴役者最清楚自由不是抽象词。能否拒绝一次命令、保住孩子、为自己劳动，都是主人阶层从不必思考的日常。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "ghiscari",
+          "lyseni",
+          "volantine"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "奴隶主常以经济和传统替制度辩护，仿佛没有锁链城市便无法运转。这样的论证最少询问被锁住的人愿意付出什么。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "crownlands",
+          "battania",
+          "reach",
+          "river"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "peasant",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "维斯特洛人会以禁止奴隶制自豪，也应看见佃户、战俘和穷人遭受的强迫。不是奴隶并不等于已经得到公正。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人把奴隶看成可执行的秩序。奴隶、自由人与劳役：奴隶制把人作为财产，自由身份则保有离开、缔约和家庭权利；贫困劳役虽沉重，法律性质并不相同。它是否有效，取决于谁能授予权利、收取代价，并在违约时让判决真正落地。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起奴隶时，关心它如何影响道路、命令和安全。奴隶、自由人与劳役：奴隶制把人作为财产，自由身份则保有离开、缔约和家庭权利；贫困劳役虽沉重，法律性质并不相同。远方的制度只有在营火、城门和驿站里能被执行，才不是空话。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者会从习惯和象征理解奴隶。奴隶、自由人与劳役：奴隶制把人作为财产，自由身份则保有离开、缔约和家庭权利；贫困劳役虽沉重，法律性质并不相同。一项规矩若被反复实践，便会进入礼仪、手艺和祈祷；若只靠恐惧维持，危机一来就会露出裂缝。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民感受到奴隶的方式最小也最准确。奴隶、自由人与劳役：奴隶制把人作为财产，自由身份则保有离开、缔约和家庭权利；贫困劳役虽沉重，法律性质并不相同。他们记得税、粮、劳役、赈济和谁能为他们说话；宏大的名称，最终都要落在一家人的饭锅旁。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "奴隶、自由人与劳役：奴隶制把人作为财产，自由身份则保有离开、缔约和家庭权利；贫困劳役虽沉重，法律性质并不相同。"
+  ]
+}

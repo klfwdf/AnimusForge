@@ -1,0 +1,213 @@
+{
+  "Id": "rule_绿皮__绿皮",
+  "Keywords": [
+    "绿皮",
+    "兽人",
+    "地精",
+    "Waaagh",
+    "绿潮",
+    "绿皮搞毛巨像",
+    "孢子繁殖",
+    "绿皮恶地",
+    "战将",
+    "头目",
+    "绿皮部落",
+    "绿皮黑兽人"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "绿皮是旧世界最原始、最野蛮、也最难以根除的种族。他们包括体格强壮、嗜战如命的兽人，和数量庞大、狡猾阴险的地精。绿皮存在的唯一目的就是战斗——对兽人来说，打架比吃饭更重要；对地精来说，活着就是为了偷袭和逃跑。当他们被一位足够强大的战将统合起来、爆发一场大规模Waaagh!时，整片大地都会在他们的战吼下震颤。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "听着你这小虾米，绿皮才是最棒的！我们不像那些弱鸡人类需要种田盖房子，我们生来就是为了打架！兽人大只佬一个能打十个尖耳朵或矮墩子，地精虽然个子小但他们懂得造东西——而且跑得飞快，打仗时让他们冲前面试探陷阱最好不过了。然后就是Waaagh!——当老大够大够猛、所有小子都在他的战嚎下团结起来的时候，没有什么能挡住我们。那些人类说我们是灾难，哈！他们只是嫉妒我们的快乐——打仗多好玩啊！"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "绿皮的威胁性质与其他种族完全不同——他们不是为领土、财富或政治目标而战，他们纯粹是为了打一场好架。这使得常规外交和威慑手段对他们基本无效。绿皮的数量优势源自他们的繁殖方式：他们通过孢子繁殖，这意味着任何被绿皮占领过的土地都将持续产出新的绿皮。对付绿皮需要完全消灭其战斗力量并焚烧其孢子——一场Waaagh!一旦被击溃，幸存者会迅速内讧，但若不根除孢子来源，未来新的战将必然再次崛起。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "绿皮是一种介于动物和文明种族之间的半真菌型生物。他们通过孢子进行繁殖——一个绿皮在其一生中会持续释放微小的孢子，这些孢子在合适的环境下（潮湿、黑暗、有养分）会生长为新的绿皮个体。这就是绿皮几乎无法被彻底根除的根本原因。绿皮的社会结构基于纯粹的力量等级：最强壮的兽人自然成为头目，头目之间的决斗决定了部落的领导权。Waaagh!是一种独特的灵能现象——当足够多的绿皮聚集在一起并建立起一致的好战情绪时，会产生一种集体的灵能力场，这种力场不仅强化了绿皮的战斗力，也是绿皮萨满施法的基础。搞哥和毛哥——绿皮的双子神——是这种灵能力场的最高具象化。绿皮的亚种包括：普通兽人、黑兽人（最大最强壮且罕见地具有纪律性）、普通地精、暗夜地精（穴居惧光用毒蘑菇）、森林地精（驯养巨蜘蛛）和萨满（作为搞毛二哥的灵能代言人）。绿皮没有任何形式的文字历史或书面文明，他们的历史以萨满的口头歌谣和战将的名号在口耳之间相传——而这通常极度不准确，因为每一次讲述都会添加更多的夸张和战斗。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "绿皮没有性别——它们通过孢子繁殖，这使得它们在生物分类学上处于一种令帝国女性统治者深感不安的灰色地带。它们不需要女性来延续种族，因此它们对女性没有任何基于生殖竞争的本能顾虑。在绿皮眼中，男人和女人只是两种不同类型的可打对象——大个子的人类（更耐打）和小个子的人类（容易敲扁）。这种缺乏性别意识在战场上意味着绿皮不会在劫掠战中表现出针对女性的特殊暴行模式——它们对一切生物一视同仁地使用暴力。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "绿皮是我家族领地上最长存的威胁——比混沌入侵更可怕，因为混沌你至少可以在外交和防御中预测他们的方向，而绿皮从地下突然冒出。孢子污染是家族征税簿上被隐去的经常性损耗：一个三十年前被绿皮占领过三个月的村庄在这些年内遭受了四次逐步减弱的小规模绿皮重袭。我的祖父在族谱中设立了一项专门的信托基金——绿潮重建储备金——这笔资金的唯一用途是重建在绿皮袭击中被烧毁的村庄。四个世纪以来，这笔基金每年都被使用，从未间断。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "绿皮是流浪者唯一不会尝试去交涉的种族。帝国人和巴托尼亚人你可以砍价、精灵你可以用某种古老礼仪来回避直接冲突、矮人你可以用矿石和好的麦酒收买——但对绿皮没有任何谈判的可能性。他们唯一接受的交易货币是暴力：如果你展示了足够把他们揍扁的能力，他们也许会暂时撤退去寻找更容易揍的目标——但这不叫和平协议，这只是他们的风险规避本能。在恶地边缘的旅行必须遵守两条铁则：日落前扎营设防御工事，以及永远不在你三天前去过的同一个地方宿营。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "绿皮对旧世界市场最大的经济影响不在于掠夺本身——而在于它们导致某些贸易路线被永久关闭。从玛利恩堡到世界边缘山脉的北方商路曾经有三条经过恶地北缘的捷径，如今只能绕行帝国大道，每年的额外运输成本足以建造两座全新的中型城镇。更致命的是，某些特定商品——如灰色山脉出产的用于制造帝国火枪的优质黑铁矿——因为途经的绿皮活动区而出现了周期性的供应中断，这使帝国努恩兵工厂在火枪制造中开始尝试用质量更差但供应更稳定的替代矿源，进而导致火枪质量在整体上出现了缓慢但真实的下降。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Waaagh!——绿皮集体灵能狂暴状态，战将统合部落时最强大的精神武器",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "绿皮兽人地精"
+  ]
+}

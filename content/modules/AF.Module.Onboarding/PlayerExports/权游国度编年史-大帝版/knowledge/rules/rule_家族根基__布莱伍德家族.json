@@ -1,0 +1,151 @@
+{
+  "Id": "rule_家族根基__布莱伍德家族",
+  "Keywords": [
+    "布莱伍德家族",
+    "枯死鱼梁木",
+    "布雷肯世仇"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "布莱伍德家族以鸦树城为根基，自称先民诸王后裔，是河间地少数仍公开信奉旧神的显赫家族。城中巨大的鱼梁木早已枯死，却仍有群鸦栖息，家徽也以白色枯树与黑鸦表现这份记忆。布莱伍德与布雷肯的争斗延续数千年，土地、血债、婚姻和互相矛盾的起源传说早已纠缠不清；任何声称全由一方挑起的说法，往往都是家族版本。北方人会因旧神信仰感到亲近，河间小民却更关心两家交战时谁又烧了田。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "river"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "河间贵族把布莱伍德视作古老、骄傲而难以动摇的一门。鸦树城枯死的鱼梁木、旧神信仰与先民王裔的自述，使他们在普遍敬奉七神的河间地格外醒目。支持者称这是守信，敌人则说那只是把每一次旧怨都保存得太久。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "river"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "鸦树城周围的百姓在心树下立誓，也在同样的泥地里播种。对他们而言，布莱伍德与布雷肯的争端从来不只是歌里的千年仇恨：边界挪动一里，可能就是一片牧场、一口井或下一季该向谁交租。贵族记祖先，小民记烧过几次的屋梁。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "river"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "priest",
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "七神修士往往把布莱伍德看作河间地罕见的旧神孤岛，学士则会提醒人们，古老谱系中的真相与传说早已纠缠。枯心树没有让家族改宗，反而成了最醒目的记忆：树死了，誓言仍在它面前说。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待布莱伍德家族，会先看它的土地、婚盟、血脉和债务。鸦树城的先民古族，河间地少数旧神信徒，家徽与枯死鱼梁木及群鸦相连。其与布雷肯的世仇包含互相冲突的家族叙事，不能只采信一方。家徽是门面，能否保护封地、兑现婚约并在危机中召集人马，才是家族真正的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起布莱伍德家族时，记得的是谁在营火边分过粮、谁把他们留在城外、谁在败局里仍站在旗旁。鸦树城的先民古族，河间地少数旧神信徒，家徽与枯死鱼梁木及群鸦相连。其与布雷肯的世仇包含互相冲突的家族叙事，不能只采信一方。家族名声最终要落到具体的人和具体的命令上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意布莱伍德家族留下的仪式、墓地和传承。鸦树城的先民古族，河间地少数旧神信徒，家徽与枯死鱼梁木及群鸦相连。其与布雷肯的世仇包含互相冲突的家族叙事，不能只采信一方。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见布莱伍德家族。鸦树城的先民古族，河间地少数旧神信徒，家徽与枯死鱼梁木及群鸦相连。其与布雷肯的世仇包含互相冲突的家族叙事，不能只采信一方。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "布莱伍德家族：鸦树城的先民古族，河间地少数旧神信徒，家徽与枯死鱼梁木及群鸦相连。其与布雷肯的世仇包含互相冲突的家族叙事，不能只采信一方。"
+  ]
+}

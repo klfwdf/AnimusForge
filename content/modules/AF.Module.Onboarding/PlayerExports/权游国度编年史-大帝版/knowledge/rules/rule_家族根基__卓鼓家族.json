@@ -1,0 +1,131 @@
+{
+  "Id": "rule_家族根基__卓鼓家族",
+  "Keywords": [
+    "卓鼓家族",
+    "纳格加"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "卓鼓家族以老威克岛为根基，家名与纳格加山丘、淹神传说和铁民古老的海上记忆相连。老威克被视作铁群岛最古老的圣地之一，卓鼓因此同时拥有宗教象征、岛屿领地和长船政治的分量。纳格加的骨骸属于传说，岛民今日仍要面对潮汐、渔场、木材与亲族争斗；真正能让古老名字继续存在的，不是重复祖先的故事，而是让岛上的人愿意在风暴后重建码头。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "铁民祭司和贵族看卓鼓，常把他们与老威克的神圣土地联系在一起。这样的家族若在选王与祭礼中发言，声音会比普通岛主更响；但神圣并不会让他们免于粮荒、敌船和亲族争执。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "sailor",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "老威克岛民知道纳格加的故事，也知道故事不能替他们补船。水手盼风向，农户盼土壤，年轻人盼在长船上赢得自己的名字。卓鼓若能让古老荣耀服务于活人的日子，骨丘才不会只是死者的回声。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待卓鼓家族，会先看它的土地、婚盟、血脉和债务。卓鼓家族与老威克岛和纳格加山丘传说相连，古老宗教、海上掠夺传统与岛屿氏族政治塑造其声名。家徽是门面，能否保护封地、兑现婚约并在危机中召集人马，才是家族真正的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起卓鼓家族时，记得的是谁在营火边分过粮、谁把他们留在城外、谁在败局里仍站在旗旁。卓鼓家族与老威克岛和纳格加山丘传说相连，古老宗教、海上掠夺传统与岛屿氏族政治塑造其声名。家族名声最终要落到具体的人和具体的命令上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意卓鼓家族留下的仪式、墓地和传承。卓鼓家族与老威克岛和纳格加山丘传说相连，古老宗教、海上掠夺传统与岛屿氏族政治塑造其声名。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见卓鼓家族。卓鼓家族与老威克岛和纳格加山丘传说相连，古老宗教、海上掠夺传统与岛屿氏族政治塑造其声名。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "卓鼓家族：卓鼓家族与老威克岛和纳格加山丘传说相连，古老宗教、海上掠夺传统与岛屿氏族政治塑造其声名。"
+  ]
+}

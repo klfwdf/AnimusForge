@@ -1,0 +1,213 @@
+{
+  "Id": "rule_女神的赐福__女神的赐福",
+  "Keywords": [
+    "女神的赐福",
+    "湖之女神庇佑",
+    "魔法护盾",
+    "战前祈祷",
+    "远程防护",
+    "圣杯之力",
+    "女神祝福",
+    "圣光屏障",
+    "祈祷仪式",
+    "信仰之力",
+    "神圣防护",
+    "奇迹"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "女神的赐福是湖之女神对虔诚巴托尼亚骑士的神圣加护，在战场上形成无形的魔法屏障，尤其擅长抵御远程攻击。骑士在战斗前通过祈祷获得这一恩典，信仰越深则防护越强。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "女神的赐福！没有什么比战场上感受到女神温暖的光芒笼罩全身更令人心安的了。每次出征前，我们都会在圣杯礼拜堂中彻夜祈祷，以清水洗去罪孽，以香火净化灵魂。真正虔诚的骑士可以感受到一层肉眼难辨的光晕包裹全身，敌人的箭矢在触及时仿佛撞上了一堵看不见的叹息之墙，纷纷偏移轨迹。这绝非迷信——我亲眼见过混沌矮人的铅弹在离我三寸处凭空转向，在胸甲上只留下浅浅的划痕。女神护佑虔诚者，背弃者将在箭雨中如裸体般无助。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "女神的赐福在战术层面改变了巴托尼亚军队的作战方式。由于远程防护极为可靠，我们可以在敌军弓箭手射击下从容整队，让骑士发动更精准的冲锋。但必须警惕——赐福的强度与骑士的虔诚直接相关，而虔诚在战场上可能因恐惧或动摇而衰减。此外，赐福对近战伤害的防护远不如远程，这意味着一旦进入白刃战，骑士将失去这一优势。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "女神的赐福在神学上被归类为「群体防护型神圣奇迹」，其运作机制与帝国西格玛教会的战祷有本质区别。湖之女神的赐福并非由祭司主动施放，而是通过骑士自身的虔诚与祈祷「被动触发」——这意味着理论上每一位骑士都是自身信仰的祭司。赐福的防护效果呈梯度递减：对箭矢飞镖等轻质远程攻击防护最强，对弩炮巨石等重型投掷物次之，对魔法飞弹为零，对近战伤害几乎无效。神学院的研究表明，赐福的强度与骑士战前祈祷的时长与真诚度呈正相关。历史上记载的最强赐福发生在赎罪之战的圣杯骑士纪尧姆身上——他顶着上千支暗夜地精的毒箭冲锋，事后盔甲上嵌了三百枚箭镞，本人毫发无伤。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "女神的赐福不只是战场护盾那么简单。它代表了湖之女神对女性的尊重——女神本人就是女性神祇，她赐予我们超越世俗枷锁的精神力量。虔诚的女人即便不持剑，也能用祈祷的力量守护她的骑士与子民。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我族世代信奉湖之女神，从未断绝。我们的祖辈在远征中靠着女神的恩典穿越了箭雨如蝗的战场。族中长者常说：赐福不是白得的——你必须先用行动证明自己的价值，女神才会垂青于你。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我不信神，但不得不承认女神的赐福是真实存在的。我见过骑士顶着箭雨冲锋而不挂分毫，那绝非盔甲之功。也许这片土地上真有什么古老的力量在挑选着值得护佑的人——只不过被人类冠以了「女神」之名。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "女神的赐福确实影响了武器市场。既然远程武器对虔诚骑士效果不佳，聪明的买家会把钱花在近战武器上。矛、剑、钉头锤的销量远高于弓弩。有些投机商人试过卖「受过赐福」的箭矢——全是骗子，但生意不错。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "女神的赐福是湖之女神对虔诚骑士的神圣魔法防护，尤善抵御远程攻击",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "女神的赐福的神学属性与信仰体系"
+  ]
+}

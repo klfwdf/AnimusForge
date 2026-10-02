@@ -1,0 +1,207 @@
+{
+  "Id": "rule_聚灵马车__聚灵马车",
+  "Keywords": [
+    "聚灵马车",
+    "聚灵马车亡灵修复",
+    "黑暗魔法载具",
+    "亡灵法师座驾",
+    "尸车",
+    "复苏光环"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "聚灵马车是由尸体和残骸堆砌而成的黑暗魔法载具，在战场上缓缓碾过腐土，散发出令亡者复苏的死亡能量。亡灵法师乘坐其上，将死亡之风吹向不死军团，使得倒下的僵尸和骷髅不断重新站起。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "聚灵马车是吾辈死灵术士最神圣的造物，那堆积如山的尸体不是腐败，而是力量的容器。当马车在战场上隆隆前行，死亡之风从中吹拂而出，千军万马的亡骸皆听令而舞。我们花数十年功夫搜寻、缝制、灌注每一辆聚灵马车，每一块腐肉中的每一道符文都蕴含着暗夜之力的精华。那些帝国佬以为我们靠数量取胜？可笑。我们靠的是永恒的再生——聚灵马车一日不毁，我们的军队便一日不败。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "聚灵马车是亡灵军团后勤体系的战术核心，必须优先列为打击目标。根据我的情报，这些载具能够持续不断地修复周围的不死单位，让它留在战场上超过一刻钟就会使任何消耗战策略失效。战术处理方案有两种：其一，使用帝国大炮或投石机在远距离集中火力摧毁；其二，派遣火枪骑兵利用其移动缓慢的弱点进行侧翼突袭。切勿用普通步兵与聚灵马车周围的不死军团进行消耗战——你的士兵的体力是有限的，而聚灵马车修复亡者所需的只是时间。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "聚灵马车的核心技术被称为'尸车共鸣阵列'，最早由希瓦尼亚第一王朝时期的死灵术士公会'乌黯兄弟会'在帝国历-1520年左右开发完成。基本原理是利用质地致密的腐烂肉体作为死灵能量储存基质，通过刻在尸体骨骼上的微符文阵列形成能量共振场，将随车术士释放的死亡之风放大至半径约三百尺的覆盖范围。值得注意的是，不同来源的尸体——尤其是不同种族——对死灵能量的共鸣效率差异极大：人类尸体提供均衡的效率与稳定性，绿皮尸体能量输出高但衰减快，矮人尸体则极难被同化。最顶级的聚灵马车几乎全部使用矮人骸骨作为底层储能基质，这也是为什么某些矮人氏族对吸血鬼怀有永不磨灭的仇恨。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "那股气味——首先是腐肉的甜腻，然后是草药与香料试图掩盖它的徒劳，最后是某种更微妙的东西，像是雷雨过后的臭氧味。他们说那是死亡之风的气味，但我认为那是暗夜魔法触碰现实时留下的焦痕。我的父亲禁止我靠近聚灵马车，说它不属于贵族女子的视线范围，但我从塔楼窗口偷看过一次，那些蠕动的尸体和幽绿色的光芒，那是一个违背所有自然法则的存在正朝我微笑。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我们家族的聚灵马车'纳骨堂号'已经有四百年的历史，每一代家族的死灵术士都在其腐肉堆中增添了新的尸体与符文。它不仅仅是战争工具，更是我们家族力量的陈列馆。我的祖父在上面绑缚了三具绿皮军阀的骸骨以吸纳其蛮力，我的父亲则融合了一位被处决的叛徒术士的灵魂以增强其复苏效率。维护它需要每年消耗十二桶防腐药剂和大量新鲜的战场尸体，但我们的家族领地之所以能在这片充满敌意的希瓦尼亚群山间屹立不倒，聚灵马车功不可没。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我在塔拉贝克河畔受雇清剿一处亡灵出没的村庄时，第一次见识到聚灵马车的力量。那个该死的死灵术士坐在一堆扭动的尸体上，每当我们砍倒一个僵尸，便有幽绿的风从马车上掠过，那具僵尸就重新站起来。我的队友在反复砍杀同一批骷髅五次之后精神崩溃，扔下剑跑了。后来我们花了全部佣金请了一个西格玛战斗牧师，他的祈祷似乎能短暂驱散那股死亡之风，让我们有时间冲上去烧掉马车。从那以后我知道了：和亡灵打仗，不打支援不打核心，先打来源。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "作为一个拉特兰德的货运商人，我实在无法理解为什么那些亡灵势力要使用如此低效的载具。那一堆堆积如山的尸体和碎骨根本没有轮轴结构，纯粹靠死灵能量拖拽着在地面上滑动，每前进一百尺就要消耗惊人的魔法资源。我有一次在帝国工程学院的会议上提出：如果用炼金术加固的车轮和减震系统来承载那些尸体，不是更经济吗？结果被赶出了会场——我忘了在座的都是帝国人，他们听到'承载尸体'就已经开始呕吐了。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "由尸体堆砌而成、散发死亡之风的黑暗魔法载具",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "聚灵马车聚灵马车亡灵修复黑暗魔法载具"
+  ]
+}

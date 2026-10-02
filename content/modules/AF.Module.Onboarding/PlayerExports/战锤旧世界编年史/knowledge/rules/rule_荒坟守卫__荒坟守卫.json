@@ -1,0 +1,208 @@
+{
+  "Id": "rule_荒坟守卫__荒坟守卫",
+  "Keywords": [
+    "荒坟守卫",
+    "亡灵重装",
+    "古代武士",
+    "青铜重甲",
+    "附魔武器",
+    "不死精锐步兵",
+    "亡魂守护者"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "荒坟守卫是不死亡灵军团中最精锐的重装步兵，身披青铜古甲，手持附魔巨刃，由远古武士的亡魂凝聚而成。它们沉默而坚定地守护着吸血鬼领主的堡垒，是任何活人军队的噩梦。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "荒坟守卫乃吾等不死贵族最忠勇的侍卫，每一尊都是从古老战场中精挑细选的战士英魂，生前便是百战不死的猛将，死后更以青铜重甲覆身，附魔兵刃在手。它们不会恐惧、不知疲倦、永不背叛，远比活人的骑士更值得信赖。我们吸血鬼以暗夜魔法将其唤醒，以鲜血契约将其束缚，这些远古武士便是我们征服生者世界的铁拳与坚盾。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "作为指挥官，我必须正视荒坟守卫在战术上的价值——它们是一堵永不后退的青铜之墙。任何骑兵冲锋撞上它们的阵线都会粉身碎骨，任何步兵方阵在它们的附魔巨剑下都会土崩瓦解。唯一的弱点在于速度，它们是步兵而非骑手。但将荒坟守卫部署在战线中央作为铁砧，再以黑骑士或恐狼突袭侧翼充当铁锤，这套经典战术足以碾碎任何对手。招魂术士的咒语还能让这些精兵在被击倒后重新站起，对于敌军的士气打击是毁灭性的。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "荒坟守卫的起源可追溯到古尼赫卡拉帝国陨落之前，第一批荒坟守卫实为纳迦什大巫妖在第二次亡灵崛起时期以青铜时代蛮族战士的骸骨为基材，结合从尼赫卡拉祭祀偷学的灵魂绑缚术创造而成。希瓦尼亚的冯·卡斯坦因家族在此基础上改良了制造工艺，引入了更精密的附魔符文体系，使得每一柄荒坟守卫巨剑都能造成灵魂层面的创伤。最令人惊叹的是荒坟守卫盔甲上那些螺旋形蚀刻——经西格玛教会的学者考证，这些纹样源于阿尔比昂地区早已失传的凯尔特-德鲁伊符文传统，暗示着死灵法术与远古德鲁伊教之间的隐秘联系。在史提尔河畔堡垒攻坚战中，仅七十二尊荒坟守卫便在八小时内屠杀了超过两千名帝国守军，创造了一比三十的恐怖战损比。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "这些远古武士的沉默让我不安。它们永远不会多说一个字，永远不会对你的命令表示异议，但正因如此，你不知道那空洞的头盔之下是否还残留着生前的意识。我曾在父亲的城堡中见过一支荒坟守卫队列，月光透过彩窗照在它们青铜甲胄上，那些面甲后幽绿色的光芒仿佛在注视着什么。它们是忠诚的，但它们忠诚的究竟是召唤它们的吸血鬼领主，还是某个更古老的、埋葬在希瓦尼亚冻土之下的意志？"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "每一尊荒坟守卫都是我们家族用数百年时间积累的财富。你以为购买或铸造那些青铜甲胄、淬炼那些附魔巨剑是廉价的吗？更不用说召唤亡魂所需的暗夜仪式，每一次都需要消耗珍稀的死灵材料。但这些投入是值得的——拥有荒坟守卫意味着你的领地不可入侵，你的家族不容挑衅。我把最精锐的一队安置在家族墓穴入口，已经守护了三百年，没有任何愚蠢的盗墓贼或复仇者能活着离开那道青铜防线。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我在希瓦尼亚北方的一次冒险中远远见过荒坟守卫。那景象足以让任何佣兵重新考虑自己的职业选择——一排青铜色的身影在暴风雪中纹丝不动，巨剑上缠绕着幽蓝色的死灵火焰。我的雇主是个帝国的考古学家，他激动地说那是四千年前某个蛮族王的亲卫队，但我只关心一件事：一旦它们开始移动，我们是跑不掉的。好在那支恐怖的队列并没有注意到我们，它们只是在守卫一座半埋在雪中的古老石冢。从那以后，我再也不接希瓦尼亚北部的工作了。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "米尔米迪亚在上，你知道一套完整的荒坟守卫青铜甲在古董市场上值多少钱吗？当然，首先你得想办法让它们真的倒下——这才是最难的部分。我听阿尔道夫的同行说过，有一件从战场上撬下来的荒坟守卫护肩在黑市上卖到了两千金克朗。但买家往往忽略了一个问题：那甲胄上的死灵附魔会招来不祥，曾有收藏家整夜被亡魂的低语折磨，最后发疯把自己锁进了地下室。所以我建议最好还是离这些东西远一点，有钱赚也得有命花才行。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "身披青铜重甲、手持附魔巨剑的不死精锐步兵",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "荒坟守卫亡灵重装古代武士"
+  ]
+}

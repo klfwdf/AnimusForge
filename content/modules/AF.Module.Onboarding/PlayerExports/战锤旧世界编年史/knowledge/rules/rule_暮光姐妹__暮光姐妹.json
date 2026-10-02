@@ -1,0 +1,208 @@
+{
+  "Id": "rule_暮光姐妹__暮光姐妹",
+  "Keywords": [
+    "暮光姐妹",
+    "阿莱儿使者",
+    "暮光姐妹森林巨龙",
+    "生死双生",
+    "龙骑射手",
+    "暮光双子",
+    "命运编织者"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "暮光姐妹是木精灵女王阿莱儿最神秘的双子使者，一人骑乘森林巨龙，一人掌控生死之箭，两人同生于一根命运之线。她们穿梭于艾索洛伦的暮光之间，既是生命的守护者，也是死亡的代行者——两只精灵、一条巨龙、一个灵魂。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "暮光姐妹是我们木精灵的宿命之镜——娜埃丝代表暮色中的新生，阿莱丝坦代表曙光前的终结。她们同骑在我们神圣的森林巨龙'夕翼'之上，一支弓射出的是治愈的藤蔓，另一支弓射出的是蚀骨的凋零。她们是阿莱儿女王在凡间的命运选择了的象征：所有生命终将走向死亡，而所有死亡终将孕育新生。当暮光姐妹在龙背上掠过战场，我们的战士抬头便能看见艾索洛伦的整个轮回在天空中翱翔，这比任何战鼓和号角都更能激起我们的战意。她们从来不是将领而是神谕——暮光姐妹飞过的土地，就是艾索洛伦的意志已经降临的土地。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "暮光姐妹是空中战场的终极噩梦——她们不仅具备超远距离的精灵弓箭压制力，还拥有森林巨龙在空中肉搏中的绝对统治力。任何试图以狮鹫或飞马骑士对位她们的决策都是致命的：森林巨龙的扑击足以一次击落所有帝国制式飞行单位。唯一的战术窗口是趁森林巨龙俯冲攻击时，用集中火炮进行覆盖射击，但这也只是赌博——巨龙的速度难以捕捉。如果情报确认暮光姐妹将在战场上出现，我唯一的建议是：不要让任何空中单位起飞，用重装盾兵掩护所有帐篷，并祈祷因暴风雨的到来使飞行条件恶化。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "暮光姐妹——娜埃丝与阿莱丝坦——并非血亲双胞胎，而是由木精灵女王阿莱儿在'命运之池'中从两枚落自世界根须的晨露中孵育而生的神话般的存在。精灵古卷《晨曦与夕光经书》记载，这两位少女在诞生时各自持有不同的命运碎片：娜埃丝掌握'春之箭'，可让箭矢射中的土地长出新的植被并治愈盟友；阿莱丝坦则持有'冬之箭'，击中之处草木枯萎、生命凋谢。她们所骑乘的森林巨龙'夕翼'是已知的最后一条自然交配而非魔法孵化诞生的巨龙，年龄估计超三千岁。关于暮光姐妹最轰动的战史记载是帝国历2150年的'灰峰之战'——两姐妹从巨龙背上轮番射出二十四支箭，每一支都精准地射杀了一名混沌冠军，在七分钟内瓦解了整个北境混沌战帮的指挥体系，直接扭转了那场几乎已经败北的关键战役。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "暮光姐妹的故事让我着迷的不仅是她们的力量，更是她们之间的关系——两个灵魂共享一条命运之线。精灵歌谣中说，如果其中一位姐妹在战斗中死去，另一位也会在同一瞬间消亡，因为她们并非两个人，而是同一个存在的两个相位。我不禁想，这到底是一种怎样的联结？姐妹之间可以如此亲密，但也可以如此窒息——毕竟你永远无法摆脱一个与你共享灵魂的存在。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我们家族曾有一位远房亲戚——一个痴迷精灵学的没落贵族——花费三十年搜集所有关于暮光姐妹的情报，希望从中找到一种可以让家族'永远团结'的秘密。他写了一部著作，结论却令人沮丧：暮光姐妹的双子灵魂绑定不是一种仪式，而是一种诞生前的命运安排，任何后天尝试模仿都只会导致精神分裂。讽刺的是，这位亲戚在著作完成后的第二天去森林散步，再也没有回来。家族中流传的说法是阿莱儿女王亲自带走了他，理由是'偷窥不该看的命运'。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我在艾索洛伦边缘的一处高地上扎营时，曾在暮光时分望见一条森林巨龙从西边山脉的余晖中飞过，龙背上隐约有两个纤细的精灵身影。那景象仿佛是从壁毯上走出的神话，持续了不到十息，但在我脑海中盘桓了数日无法驱散。营地里的一个年长骑兵说我是'被暮光触碰了'——精灵们相信如果你看到了不该看的神圣事物，你会永远渴求再次看到它们。说实话，从那之后的每一次日落，我都会不自觉地望向洛伦方向。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我曾受委托为米登海姆的一位贵族订制一件模仿暮光姐妹双重箭矢设计的首饰——少女吊坠以箭矢为形、以龙翼为底座。那位贵族女士后来在社交场合遭到嫉妒者的诋毁，被指控'崇拜异端精灵偶像'。我作为珠宝商倒是没被追究，但这事让我学到了：在帝国做任何生意，只要沾上'精灵'二字，就得准备好面对西格玛教会的调查。我后来改了设计稿，将那对箭矢改成了天使的翅膀，销量立刻好转——可见帝国人只是害怕自己不熟悉的美。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "阿莱儿女王的双子使者，共骑森林巨龙夕翼",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "暮光姐妹阿莱儿使者暮光姐妹森林巨龙"
+  ]
+}

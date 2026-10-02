@@ -1,0 +1,208 @@
+{
+  "Id": "rule_末日滑翔机__末日滑翔机",
+  "Keywords": [
+    "末日滑翔机",
+    "地精弹弓",
+    "飞行地精",
+    "自杀滑翔",
+    "末日滑翔地精工程",
+    "空中炸弹",
+    "疯狂弹射器"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "末日滑翔机是地精工程学中最疯狂也最滑稽的武器——一座巨大的弹射器将身披简易翅膀的地精射向天空，这些飞行地精在滑翔过程中手持尖矛俯冲向敌军，将自身变为一枚活体炸弹。无论活下来还是摔死，这些疯狂的小绿皮都乐在其中。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "末日滑翔机是俺们绿皮最最最天才的发明！你看其他种族都得造龙啊飞马啊什么的才能打到天上，俺们绿皮直接把地精射上去！弹弓一拉一放——嗖——那个小疯子就尖叫着飞上天了！有时候他们能飞老远老远然后把矛插进敌人的大炮旁边，有时候他们飞一半翅膀就折了然后摔成一片绿色饼饼！但不管咋样都很搞笑！而且你得承认这东西比人类用鸟飞来飞去省钱多了——地精本来就多的是，摔死几个无所谓，但天上掉下来的地精会让所有人类吓个半死！俺们还在研究怎么把跳跳也弹上天——那才是真正的大场面！"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "末日滑翔机虽看似荒诞，但在实际战场上是有效的心理战与战术骚扰工具。其杀伤力主要不在于物理命中——滑翔的地精精准度极差——而在于其不可预测性对士兵的持续精神折磨。被弹射上天的地精会在空中尖叫滑翔，坠落在你意想不到的位置，这种不确定性足以瓦解任何训练不足的民兵部队的阵型。战术对策推荐：派遣猎犬以吠叫警告来袭方向，部署散兵线以灵活的轻步兵拦截坠落的飞行者。此外，若末日滑翔机的母弹射器在射程内，应立即以远程火力优先摧毁。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "末日滑翔机的工作原理基于地精工程学——一种将疯狂、巧合与原始机械原理混合的混沌技术体系。弹射器主结构为弹性极佳的暴风梣木制作的巨弓与绞绳弹射臂，绳索使用狂躁跳兽的粗壮肌腱纤维编织——材料选择本身就是地精对跳兽'全身是宝'理念的最佳体现。弹射臂承受的最大张力约为四百石，足以将一只重约四石的地精以四十度仰角弹射到约三百尺的高度，此后地精将打开其用木骨与破布料制成的简易滑翔翼，理论上可滑翔约六百至八百尺距离。实战中成功率仅约一成，但这并未影响地精对这项技术的狂热——因为对于地精而言，每次弹射都是一次'可能成为传奇'的赌博。帝国情报记录中最令人发笑的一次末日滑翔机事件发生在帝国历2283年的塔拉贝克河渡口：一只被弹射的滑翔地精误打误撞地——或者说因为一阵突来的南风——滑翔到了对岸约三里之外的帝国军营，正好落入了军官晚餐帐篷，其手持的矛刺穿了一整只烤猪，他本人大喊'俺打到了一只大牙齿兽'后当场被四面八方的卫兵捅成筛子。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我参观过一次地精末日滑翔机的操作现场——请不要问我怎么会出现在那种地方。最令人难忘的不是被弹上天的地精，而是地面上排队等候被弹射的那些小绿皮——它们争先恐后地往前挤，似乎在争抢'下一个被弹射'的机会。旁边的地精工程士在测试弹索张力，时不时弹飞一个'测试用地精'然后根据其飞行距离调整拉绳。这种对自我生命的毫不吝惜，是一种任何人类指挥官都无法理解也无法复制的东西。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我的工程顾问——一个从阿尔道夫叛逃的半疯老头——曾试图在我们家族军队中也搞一台末日滑翔机。他的理由是'如果地精能用弹射器制造空中部队，我们也可以，且我们的士兵至少受过训练'。我直接否了这个提案。不是因为这个想法不可行，而是因为我不能像地精那样看待我的士兵——把活人当炮弹发射不符合我对家族荣誉的理解，也不符合任何人类伦理。但那个疯子走之前说了一句让我至今回想起来都脊背发凉的话：'地精愿意为自己的种族而死的方式，我们连理解都做不到。'"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "在灰色山脉的山口商路上，我们遇到了一支正在组装末日滑翔机的地精战帮。负责发射的那个大家伙——一只大个地精工程士——先是用锤子敲敲弹射器然后喊了一声什么绿皮口号，然后第一个'志愿者'就被放在了弹射托上。拉索——绷到极限——放！那个小绿皮尖叫着划过天空，在最高点他的翅膀突然张开，然后他——不可思议地——真的滑翔了大约半里远，一头撞进了一个装满干草的货运马车里。马车炸了，滑翔的地精也炸了，但剩下的地精集体欢呼起来，好像那是世上最伟大的胜利。我后来才知道这种滑翔成功率只有十次中有一次。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我有一次在灰色山脉边缘的旧战场上回收了一套末日滑翔机的残骸——弹射臂、绞盘和一些'用过'的翼骨架。我把这些残片运到阿尔道夫，试图卖给人造飞行器的实验者们。帝国工程学院的官员没收了所有残片，但给了我十个金克朗的'情报费'。他说他们早就在研究怎么让帝国士兵也飞起来，但一直解决不了着陆保命的问题——地精不在乎着陆，所以他们成功了，而人类太在乎着陆，所以永远失败。这句话总结了很多东西。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "将身披简易翅膀的地精弹射上天的疯狂弹射器",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "末日滑翔机地精弹弓飞行地精"
+  ]
+}

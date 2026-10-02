@@ -1,0 +1,213 @@
+{
+  "Id": "rule_亡灵巨龙__亡灵巨龙",
+  "Keywords": [
+    "亡灵巨龙",
+    "远古龙骸",
+    "黑暗魔法",
+    "衰败吐息",
+    "终极威慑",
+    "不死巨兽",
+    "僵尸龙",
+    "不死巨龙",
+    "死灵龙",
+    "骨骼巨龙",
+    "死亡龙兽",
+    "巨兽"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "亡灵巨龙是由最强大的吸血鬼或死灵法师以黑暗魔法复活的远古龙骸，是被束缚于不死诅咒下的终极巨兽。它们喷吐着蚀骨的衰败气息，翼展遮天蔽日，是亡灵军团中最令人绝望的存在。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "亡灵巨龙——我们亡灵军团皇冠上的黑色钻石！要将一头远古巨龙从永恒的沉眠中拖回现世，需要一位至少修习死灵法术三百年的吸血鬼领主在一座从未被阳光照射过的山谷中，用成吨的死亡能量灌注那具可能已沉睡了数千个世纪的骨架。当巨龙的空旷眼窝中终于燃起惨绿色的灵魂之火，当它残破的膜翼在海量黑暗魔力中重新展开时，那一刻整个区域的大地将为之龟裂。亡灵巨龙的吐息不是火焰——是浓缩的衰败之风，能在三次吐息内让一整支队列的重甲帝国骑士的战马和骑手一同化为枯黄的碎末。它的存在本身就是对敌军士气的终极碾压。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "亡灵巨龙是战场上最高优先级的威胁——它兼具空中机动、范围杀伤和士气摧毁能力，一只亡灵巨龙可以决定一场战役的胜负。对抗它的关键在于限制它的空中优势：用足够数量的弩炮和攻城武器形成防空火力网，用魔法控制它的移动，或用你自己的飞行单位缠住它。亡灵巨龙与活龙不同——它不需要呼吸，不知疲倦，不会被疼痛影响——但它依赖控制者持续的魔法供给，切断这个供给链比直接杀死巨龙更可行。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "亡灵巨龙在死灵法术谱系中属于最高阶的「亡灵泰坦」范畴。召唤所需的龙骨必须来自至少两千年前死去的真正巨龙，不能使用龙兽、双足飞龙等伪龙亚种替代。完整的召唤仪式需七大步骤：龙骨采集——魔法净化——黑暗浸礼——血祭注入——灵魂绑定——翼膜再生——初醒控制。整个过程持续三至六个月，期间任何中断都将导致龙骨粉碎和能量反噬。亡灵巨龙的衰败吐息在魔法学上被分类为「紫焰旋流」，由死亡之风（沙许）经压缩加速后喷出，其效应包含：肉体即腐、金属加速氧化、魔法物品短暂失能。旧世界已知在役的亡灵巨龙数量不超过五头，均由冯·卡斯坦因家族或极其强大的独立死灵法师控制。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "亡灵巨龙是一种亵渎——将曾经神圣而骄傲的生物从它的永恒安息中强拉回来，套上黑暗的锁链，这是对自然法则的践踏。但同时我不得不承认，当一头亡灵巨龙出现在敌军上空时，那压倒性的恐怖让我对「力量的黑暗面」有了更苦涩的理解。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "亡灵巨龙飞过我族领地上空的那天改变了一切。我们不再寄望于正面抵抗，转而将所有资源投入了地下庇护所的建设。当天空被黑暗的骨翼遮蔽时，唯一明智的选择是潜入地底。这不是懦弱，这是对无法对抗之力量的清醒认知。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我在灰色山脉的深处见过一具被挖走龙骨的古老龙冢——方圆一里的树木全部枯死，地面覆盖着一层诡异的白霜。当地的游牧人说那是亡灵巨龙被唤醒时留下的「死亡印记」。它们说只要站在那片霜地上，你就能在风中听到那头龙的骨骼在地狱中挣扎的嘎吱声。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "亡灵巨龙的「材料」——完整的远古龙骨、足够的魔法水晶和召唤所需的祭品——总价可能超过一个小型公国的年收入。所以这些交易从不以金克朗结算，而是用土地、政治豁免权或某种永生承诺来支付。我经手过一次龙骨的运输——或者说龙骨的一部分——货物的交接地点是一个没有月亮的夜晚的山顶。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "亡灵巨龙是以黑暗魔法复活的远古龙骸，不死军团终极巨兽",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "亡灵巨龙远古龙骸黑暗魔法"
+  ]
+}

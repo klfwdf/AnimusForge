@@ -1,0 +1,94 @@
+﻿{
+  "Id": "rule_拉尔纳克",
+  "Keywords": [
+    "拉尔纳克",
+    "黑麦"
+  ],
+  "RagShortTexts": [
+    "拉尔纳克村庄位于特朗河谷下游"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "拉尔纳克是帕拉汶德附近的一座村庄，坐落于特朗河谷下游的平缓山丘上。村民们种植黑麦、大麦和小麦，出产的粮食主要供应给帕拉汶德附近的城镇居民。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "拉尔纳克是帕拉汶德的粮仓。特朗河谷下游那些平缓的山丘，土肥水足，种出来的小麦磨成面粉做面包，又白又香。首都那么多人能吃饱饭，拉尔纳克出大力了。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "townsfolk"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "帕拉汶德的面包价格涨不涨，看拉尔纳克的收成就知道了。特朗河谷的好土，风调雨顺的话一季能打不少麦子。要是拉尔纳克遭了灾，首都的粮价立马就跳。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "拉尔纳克的麦田在特朗河谷的山丘上铺开来，夏天金黄一片，风吹过去跟海浪似的。那里的农民老实本分，一年到头在地里忙活，收下来的粮食大部分都拉去了帕拉汶德。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "拉尔纳克",
+      "Kind": "bound_settlement_name",
+      "TargetId": "__bound_settlement__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": "帕拉汶德",
+      "Kind": "bound_settlement_name",
+      "TargetId": "__bound_settlement__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}

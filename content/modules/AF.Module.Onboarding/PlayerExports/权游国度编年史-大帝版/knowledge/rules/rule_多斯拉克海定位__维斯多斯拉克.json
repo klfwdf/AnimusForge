@@ -1,0 +1,147 @@
+{
+  "Id": "rule_多斯拉克海定位__维斯多斯拉克",
+  "Keywords": [
+    "维斯·多斯拉克",
+    "母山",
+    "多什卡琳"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "维斯·多斯拉克位于母山脚下，是多斯拉克海最神圣、也最重要的聚落。各卡拉萨可以在此休战、贸易、祭祀、交换消息，并向多什卡琳致敬；外来者进入时须遵守严格礼仪。它不是某一位卡奥的永久首都，而是众多马背部族共同承认的圣地。母山上的两座巨马像与山脚市场提醒来客：这里的权威并不来自城墙或账簿，而来自部族记忆、马群、声望和神圣禁忌。部族强弱可以改变，维斯·多斯拉克作为会面、停战与评判名誉之地的意义不变。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "多斯拉克人不会因为这里有市场便把它当作普通城镇。维斯·多斯拉克让敌对的卡拉萨暂时放下刀，给寡妇以神圣的地位，也让年轻战士知道自己的名声会被比自己骑得更远的人听见。一个卡奥可以有自己的维斯，一个人却很难声称母山只属于自己。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "sailor",
+          "wanderer",
+          "artisan"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "商队在这里看见的是难得的安全与难得的买主：马、皮革、乳酪、武器、奴隶和来自西方的奢侈品都可能易手。可聪明的外乡人知道，钱不能替代礼法。谁把圣地当成能随意讨价还价的集市，谁就会发现多斯拉克人对侮辱的记忆比对银币的记忆更长。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire",
+          "pentoshi"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "西方人常因维斯·多斯拉克没有高墙和石头王座而误判它的力量。对习惯城市的人而言，那里像一座随时会散去的营地；对了解草原的人而言，能让许多卡拉萨自愿止战的地方，比许多石城更难冒犯。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "在领主和商人眼中，维斯·多斯拉克首先是地图上的一处要害。母山脚下的多斯拉克圣地。各卡拉萨在此休战、贸易、祭祀并拜访多什卡琳；它不是任何单一卡奥的首都，而是草原共同记忆与礼法的中心。他们关心水源、道路、税关和守军，知道地名背后往往连着一条能让城堡活下去的粮道。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈到维斯·多斯拉克时，记住的不是边界线，而是风向、坡度、渡口和能否在天黑前找到避难处。母山脚下的多斯拉克圣地。各卡拉萨在此休战、贸易、祭祀并拜访多什卡琳；它不是任何单一卡奥的首都，而是草原共同记忆与礼法的中心。一处地形的名声，常由死在那里的人的数量决定。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者会从另一面理解维斯·多斯拉克。母山脚下的多斯拉克圣地。各卡拉萨在此休战、贸易、祭祀并拜访多什卡琳；它不是任何单一卡奥的首都，而是草原共同记忆与礼法的中心。石头、林木、河流或山口既能成为谋生之所，也可能被赋予圣洁、禁忌和祖先记忆，因而不能只用金钱衡量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民对维斯·多斯拉克的看法最实际。母山脚下的多斯拉克圣地。各卡拉萨在此休战、贸易、祭祀并拜访多什卡琳；它不是任何单一卡奥的首都，而是草原共同记忆与礼法的中心。他们先看这里能否取水、耕作、放牧和躲过兵灾；地图上的一行字，落到村里便是柴薪、井绳和过冬的粮。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "维斯·多斯拉克：母山脚下的多斯拉克圣地。各卡拉萨在此休战、贸易、祭祀并拜访多什卡琳；它不是任何单一卡奥的首都，而是草原共同记忆与礼法的中心。"
+  ]
+}

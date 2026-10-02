@@ -1,0 +1,156 @@
+{
+  "Id": "rule_世界机制__金牙山口",
+  "Keywords": [
+    "金牙山口",
+    "西境门户",
+    "河间地通道"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "金牙山口穿过西境东部山地，是河间地通往西境腹地的重要道路，金牙城控制其险要位置。陡坡和狭路限制军队展开，守军可以依靠城墙、落石、弓弩与预设障碍拖延来敌；进攻者还要把粮车和攻城器械沿同一条路送上山。和平时期，矿产、牲畜、盐和商货也从此经过，关税与护路构成稳定收入。山口像一把锁，却只有在守军、粮仓和后方道路都可靠时才真正锁得住。绕行虽难，并非世界上不存在别的道路。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "西境人把金牙城视作东门，认为山口失守便会让河间军队看见富庶腹地。守门荣耀很高，长期备粮和修路却比荣耀更重要。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "river"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "河间军人知道正面攻山口代价巨大，会寻找向导、虚张声势或切断补给。再硬的牙也需要血肉供养。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia",
+          "river"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "peasant",
+          "artisan"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "商旅希望山口安全，又厌恶层层过路费。战争一来，最先消失的是普通车队，随后两边市集才明白门户关闭也会饿到自己。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人把金牙山口看成可执行的秩序。西境与河间地之间的狭窄陆路门户，金牙城扼守山道、车队和入侵方向。它是否有效，取决于谁能授予权利、收取代价，并在违约时让判决真正落地。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起金牙山口时，关心它如何影响道路、命令和安全。西境与河间地之间的狭窄陆路门户，金牙城扼守山道、车队和入侵方向。远方的制度只有在营火、城门和驿站里能被执行，才不是空话。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者会从习惯和象征理解金牙山口。西境与河间地之间的狭窄陆路门户，金牙城扼守山道、车队和入侵方向。一项规矩若被反复实践，便会进入礼仪、手艺和祈祷；若只靠恐惧维持，危机一来就会露出裂缝。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民感受到金牙山口的方式最小也最准确。西境与河间地之间的狭窄陆路门户，金牙城扼守山道、车队和入侵方向。他们记得税、粮、劳役、赈济和谁能为他们说话；宏大的名称，最终都要落在一家人的饭锅旁。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "金牙山口：西境与河间地之间的狭窄陆路门户，金牙城扼守山道、车队和入侵方向。"
+  ]
+}

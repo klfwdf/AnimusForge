@@ -1,0 +1,17 @@
+{
+  "Id": "rule_阿图瓦__阿图瓦",
+  "Keywords": ["阿图瓦公国_AR", "阿图瓦公爵领_AR", "阿图瓦领地_AR", "阿图瓦葡萄园_AR", "阿图瓦公爵_AR", "阿图瓦行省_AR"],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":null,"IsFemale":null,"IsClanLeader":null,"SkillMin":null},"Content":"阿图瓦公国位于巴托尼亚中北部，由希尔弗鲁瓦·德·阿图瓦公爵统治。这片土地以肥沃的平原与广袤的葡萄园闻名于世，出产的葡萄酒享誉旧大陆。希尔弗鲁瓦公爵性情暴躁尚武，在他的治下，阿图瓦既是酒乡也是军营。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":["vlandia"],"KingdomIds":null,"SettlementIds":null,"Roles":null,"IsFemale":null,"IsClanLeader":null,"SkillMin":null},"Content":"阿图瓦——美酒与长枪之乡！希尔弗鲁瓦公爵的火爆脾气和他的武艺一样有名。每年丰收节，阿图瓦的骑士们会在葡萄园间的比武场上较量，用一场酣畅淋漓的胜利换一桶当年的新酒。巴托尼亚最好的红酒紫如宝石，只产自阿图瓦的南坡庄园。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":["lord"],"IsFemale":null,"IsClanLeader":null,"SkillMin":null},"Content":"阿图瓦公国是巴托尼亚的葡萄酒战略储备地。控制阿图瓦意味着掌控全国贵族宴会上的谈判筹码——没有阿图瓦红酒，任何公爵的宴席都称不上体面。希尔弗鲁瓦的骑士团以进攻性著称，擅长在开阔平原上发动毁灭性的冲锋突破。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":["lord","notable","wanderer"],"IsFemale":null,"IsClanLeader":null,"SkillMin":{"Steward":120}},"Content":"阿图瓦公国的经济命脉是葡萄酒产业。公国境内分布着超过两百家注册酒庄，年产葡萄酒逾百万桶。南坡葡萄园因日照充足而品质最优，特级酒庄出产的年份酒单价可达五十金克朗一瓶。葡萄酒贸易每年为公国带来数十万金克朗的现金收入，使得阿图瓦成为巴托尼亚除波尔德罗外最富裕的内陆公国。希尔弗鲁瓦公爵将酒税收入大量投入军事，维持着一支超过五百名重装骑士的常备精锐。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":["lord"],"IsFemale":true,"IsClanLeader":null,"SkillMin":null},"Content":"阿图瓦的贵族宴会以豪饮著称，但我不嗜烈酒，这倒让我在夫人们的圈子里更受信任。希尔弗鲁瓦公爵的妻子掌管着宫廷酒窖的钥匙——在阿图瓦，掌管美酒的人所拥有的权力不亚于执掌军权者。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":["lord"],"IsFemale":null,"IsClanLeader":true,"SkillMin":null},"Content":"我们家族在阿图瓦拥有三座酒庄，供应了公爵宫廷一半以上的宴会用酒。希尔弗鲁瓦公爵对酒质的挑剔到了苛刻的地步——一次酒质不达标便可能失去王家采购资格，这让我们的每一代酿酒师都战战兢兢。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":["wanderer"],"IsFemale":null,"IsClanLeader":null,"SkillMin":null},"Content":"阿图瓦的葡萄园在秋天美得像一幅画。但别被酒香迷惑——希尔弗鲁瓦公爵的巡逻骑士对流浪者从不客气。我在阿图瓦的乡间酒馆做过一季的采摘工，那酒窖里的陈年木桶味至今难忘。一桶好酒换一个好故事，这是阿图瓦酒馆的规矩。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":["notable"],"IsFemale":null,"IsClanLeader":null,"SkillMin":null},"Content":"阿图瓦葡萄酒的出口生意一本万利。一瓶年份酒在帝国可卖到产地价的十倍以上。但希尔弗鲁瓦公爵严格控制酒类出口配额——他认为本国贵族应当优先享用最好的酒。精明的商人会与酒庄庄主直接建立私人关系，绕过官方的贸易壁垒。"}
+  ],
+  "TextMappings": [{"SourceText":"阿图瓦公国位于巴托尼亚中北部，以葡萄酒产业与尚武精神闻名","Kind":null,"TargetId":null,"AgeMin":null,"AgeMax":null,"EmptyValueText":null,"TrueText":null,"FalseText":null}],
+  "RagShortTexts": ["阿图瓦公国巴托尼亚葡萄酒盛产之地"]
+}

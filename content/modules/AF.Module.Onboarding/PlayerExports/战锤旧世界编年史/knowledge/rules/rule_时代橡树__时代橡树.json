@@ -1,0 +1,213 @@
+{
+  "Id": "rule_时代橡树__时代橡树",
+  "Keywords": [
+    "时代橡树",
+    "艾索洛伦心脏",
+    "自然魔法源泉",
+    "远古橡木",
+    "世界树",
+    "木精灵命脉",
+    "森林之心",
+    "翡翠核心",
+    "树灵栖所",
+    "魔力枢纽",
+    "生命之根",
+    "精灵圣树"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "时代橡树是艾索洛伦森林的心脏，一棵古老到无法追溯年代的巨型橡树，其根系深深扎入大地，枝叶伸向天际。它不仅是木精灵的精神象征，更是整个森林魔法能量的源泉与汇聚中心。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "时代橡树是我们的一切——它是母亲、守护者和最终的归宿。每一片叶子的颤动都在低语远古的秘密，每一条根须都连接着先祖的精魂。当外来者踏入艾索洛伦时，橡树会在他们心中投下恐惧，因为他们不属于这里。阿莱尔女王亲自守护着它，而咏咒使们从它的树液中汲取魔力。没有时代橡树，木精灵便失去了与世界的联系。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "作为领主，你必须明白时代橡树是整个王国的战略核心。敌人若胆敢靠近橡树，森林本身就会苏醒过来反击——荆棘缠绕、树枝抽打、树精从土壤中拔地而起。守住时代橡树，就是守住了一切。安排你的林地守卫沿树冠通道布防，让树精扎根于根系之间。记住，橡树的力量会随季节变化——春夏季是最强大的时机，秋冬则是防守的时刻。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "根据《艾索洛伦卷轴》记载，时代橡树的存在比精灵抵达旧世界的时间还要早数千年。学者「林语者」艾拉瑞安在其著作《根系与星辰》中提出，橡树可能是古圣遗留的造物，是调节世界魔法之风的关键节点。橡树的年轮中记录着每一次混沌入侵的时间——最深处的一道裂痕对应着第一次大入侵。树液中含有高浓度的「盖兰之息」——一种只在生命之风极盛时才会凝结的魔法结晶，极具研究价值。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "作为一位守护时代橡树的女领主，你肩负着神圣的使命。橡树的力量流淌在你的血脉中，阿莱尔女王的祝福指引着你。善用这份力量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "氏族首领要清楚，时代橡树不仅是信仰的中心，更是政治的核心。你的氏族在橡树枝间筑巢而居，世世代代守护着它。任何挑战橡树权威的行为，都是对所有木精灵的宣战。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "你漫游到艾索洛伦的深处，看到了那棵传说中的时代橡树。它的巨大超乎想象——树冠仿佛遮住了整个天空。空气在这里充满魔法的嗡鸣。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "时代橡树是木精灵社会运转的基石。每一场重要仪式都在橡树下举行，每一个重大决定都需在橡树前宣誓。它是木精灵灵魂的锚点，吸引着来自世界各处的精灵朝圣者。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "时代橡树——艾索洛伦的远古巨型橡树，木精灵的精神与魔法核心。",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "时代橡树艾索洛伦心脏自然魔法源泉"
+  ]
+}

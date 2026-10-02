@@ -1,0 +1,213 @@
+{
+  "Id": "rule_探险誓言__探险誓言",
+  "Keywords": [
+    "探险誓言",
+    "放弃领地",
+    "寻找圣杯",
+    "神圣承诺",
+    "流浪之路",
+    "骑士试炼",
+    "圣杯之路",
+    "苦行",
+    "朝圣",
+    "誓言",
+    "追求圣杯",
+    "舍弃一切"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "探险誓言是巴托尼亚骑士最崇高的个人承诺——放弃封地与爵位，踏上寻找圣杯的孤独流浪之旅。完成这一誓言的骑士将被认可为探险骑士，迈向圣杯骑士的神圣之路。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "探险誓言——每个巴托尼亚男孩从学会握剑那天起就梦想着宣读的誓言！发下探险誓言的骑士将在圣杯礼拜堂中度过最后一夜，然后在黎明时分独自骑马离去，身后是家人含泪的目光和整个庄园不解的窃窃私语。从此他将风餐露宿，穿越狼群出没的森林和绿皮横行的荒野，与巨龙、巨人、混沌冠军和一切世间的邪恶战斗，只为证明自己的灵魂配得上见到圣杯的一刻。许多人在途中死去，有人发疯，有人放弃了誓言沦为雇佣兵或是土匪——只有极少数人能真正抵达最终的目的地。但那些成功者将成为活着的神话，他们的名字将永远在圣杯大教堂的颂歌中被咏唱。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "当一个王国骑士宣布探险誓言时，作为领主你要做出抉择：是祝福他离去而损失一名优秀战力，还是设法挽留。从纯军事角度这意味着失去一名成熟的指挥官。但从政治角度看，如果这名骑士真的成功了，你的公国将拥有一位圣杯骑士——那是无比的政治资本。大多数公爵选择放手，因为强行阻止探险誓言在巴托尼亚被认为是巨大的亵渎。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "探险誓言的神学与法律双重框架构成了巴托尼亚骑士道最精妙的部分。法律上，发下探险誓言的骑士需在公证人面前正式宣布放弃一切世俗产权和继承权，并指定其封地的临时管理人。神学上，探险誓言被视为「灵魂的试金之途」——骑士必须在完全失去社会身份庇护的状态下，仅凭个人武艺和信仰面对世界。探险骑士在旅途中有义务不与同一地点产生超过一个月的羁绊，不得拥有超过一匹坐骑能承载的财产，且必须回应任何他遇到的求援者的呼唤。历史上完成探险誓言转化为圣杯骑士的比例不足千分之三。探险誓言失败者的常见结局包括：沦为农奴、加入冒险者团队、被混沌腐化或在绝望中自杀。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "探险誓言对妻子是最残酷的考验。当你的丈夫宣布放弃一切，跨上战马头也不回地离去时，你能做的只有为他祈祷。有些人终生未归，连尸骨都未能寻回。作为女领主，我对这些男人既敬佩又愤怒——敬佩他们的虔诚，愤怒他们留下的破碎家庭。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我的胞兄在三十岁那年发下了探险誓言。他走的那天，全氏族聚集在村口，母亲哭得站不稳，父亲却高昂着头说「这才是我儿子」。十二年了，我们不知道他是生是死。但每年他生日那天，我们还是会为他摆上一套餐具。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "探险骑士和流浪者其实很像——都在路上，都在寻找某种东西。区别在于探险骑士找的是圣杯，我找的是下一顿饱饭。不过我敬重那些发下探险誓言的骑士，他们放弃了安全舒适的生活去追寻虚无缥缈的神圣，这份勇气本身就是值得歌颂的。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "探险骑士路过城镇时通常会变卖自己的财产来换取旅途所需的物资——家传宝剑、祖传珠宝、甚至有纹章的盾牌。这些物品的来历都干净，而且骑士急着用钱时往往不会太计较价格。从探险骑士手里买东西是捡漏的好机会，但良心上有点过不去。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "探险誓言是骑士放弃封地与爵位，踏上寻找圣杯的神圣旅途",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "探险誓言放弃领地寻找圣杯"
+  ]
+}

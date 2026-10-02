@@ -1,0 +1,211 @@
+{
+  "Id": "rule_尤里克__尤里克",
+  "Keywords": [
+    "尤里克",
+    "白狼神",
+    "战争之神",
+    "冬季之神",
+    "狼神",
+    "米登海姆主神",
+    "尤里克教会",
+    "阿尔尤里克",
+    "帝国北方信仰",
+    "战神圣地"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "尤里克是旧世界最古老的战神——他是冬季、野狼、战争与生存意志的具象化存在。在人类部落尚未学会耕作和铸造青铜之前，尤里克就已经是北方荒原上每一堆篝火旁被低声祈求的名字。他是塔尔之兄、大地母神的长子，也是西格玛本人作为凡人时的守护神。尤里克不关心文明、礼仪或城邦法律——他只关心一具血肉之躯在面对寒冬的夜晚、敌族的斧刃和饥饿狼群时是否能凭自己的意志生出火焰来。米登海姆的白色火焰自建城以来从未熄灭，那是阿尔尤里克以生命守卫的永恒神迹。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "尤里克是帝国真正的老祖宗神——远在西格玛从一颗彗星中带走我们的祖先之前，是尤里克的白狼教会引导着十二部落在与绿皮和野兽争夺生存空间的漫长黑夜里一路走到了黎明。我们米登海姆人是尤里克的亲儿子——我们的城市建在法斯城堡的峭壁上，北风常年呼啸，白色巨狼在城下的荒原上游荡，而火焰神殿中的白焰被阿尔尤里克本人看护着。尤里克是一把斧头、一张狼皮和一道穿透暴风雪的目光——他厌恶懦弱、拒绝诡计、唾弃火药武器，因为他认为真正的勇士应该以自己的力量和勇气面对敌人，而不是在一百步外靠一根冒烟的管子杀人。这与你那些用硫磺和铅弹武装的瑞克佬形成鲜明对比——你们的西格玛可以接受火药，尤里克则不，这就是为什么北方军团至今仍以重甲斧兵作为精锐。尤里克和西格玛教会之间的裂痕从来不只是神学的差异——它是一场关于人类灵魂本质的辩论：是通过纪律和秩序来征服世界，还是通过原始的、不受驯化的勇气来抵抗一切想要奴役我们的力量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "尤里克教会是帝国政治版图中唯一能与西格玛教会正面抗衡的宗教力量——阿尔尤里克在选帝侯会议中手握一张选票，他的决定可以直接改变帝国的皇位继承。米登海姆公爵与阿尔尤里克之间的关系是一种极为微妙的共生：公爵需要教会的宗教权威来获得对北方诸省的精神支配力，而教会需要公爵的刀剑来阻止南方西格玛教会的扩张。尤里克教会反对火药武器的主张在军事上绝非迂腐——由于米登海姆是帝国最大的铁矿石产地，拒绝火药意味着将工业资源转向重步兵甲具和冷兵器的研发，这使得白狼骑士团的板甲和双手战斧在冷兵器对抗中处于帝国顶尖水平。任何试图以纯军事逻辑推翻尤里克教会反火药传统的人，都低估了这项教条背后的经济与政治网络——火药需要硫磺和硝石，而这两者在帝国北境几乎完全依赖进口，反火药教条确保米登海姆的军事工业不会被对南方供应链的依赖所绑架。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "尤里克信仰的神学谱系可以追溯到前帝国时代的人类部落宗教系统。大地母神信仰是旧世界已知最古老的宗教层——她被视为一切生命的原始母亲，而她的两个儿子塔尔与尤里克则分别代表了自然界中被驯化与未被驯化的两面。塔尔是森林和已驯化自然的王者，而尤里克则代表了自然中不受任何法则约束的暴力维度——冬寒、狼群、战争中野蛮猛击的瞬间。这种二元性在人类文明的发展过程中引发了一种深刻的神学紧张：当帝国从游牧部落走向城邦农业社会时，塔尔信仰适应了农耕节奏并获得了一种更为温和的定位，而尤里克信仰顽强地保留了游牧生存崇拜中的所有原始元素——包括对女性的严格排斥和战斗仪式的绝对中心地位。尤里克教会与西格玛教会之间的'北南之争'在神学上可以用一种轴心转移模型来理解：南方的农耕文明需要一个能够体现法律、秩序和文明征服的至高神（西格玛），而北方的荒原生存需要的则是一个在暴风雪中只凭自己体温活命的冷硬神明。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "尤里克教会对女性的排斥是公开的、系统的和神学上被合法化的——女性不被允许进入白狼骑士团，不被允许靠近火焰神殿的内殿，甚至不被允许参加尤里克最核心的冬祭仪式。这种排斥的官方理由是'尤里克的神力只流向那些在战场上以自身血肉直接承受敌军冲击的人'——而教会认为只有男性才具备这种'直接承受'的灵能资格。但如果你在米登海姆贵族女性的圈子中住上一年，你会发现一种完全不同的真相：北方的贵族女性在管理领地、控制贸易和培养下一代军事领袖的过程中拥有极其实际的、不亚于任何男性的权力，而这些权力正是在教会的公开语言将她们排除后，通过非正式的家族网络、婚姻联盟和遗产信托机制建立起来的。白狼教会的'女性禁令'是一个被北方贵族男女共同默契地维持的公开谎言——它让教会保持了表面上的教义纯洁，同时让贵族女性在完全不惊动神学卫道士的情况下控制了米登海姆经济生活中约四成的关键节点。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我们的家族从一开始就是白狼的仆人。家族墓穴中安葬着三位曾经担任阿尔尤里克直属随从的祖先——其中一位在帝国历一二二一年的'狼之战'中亲手将一把浸过白焰圣油的斧头砍进了西格玛教会南侵部队首席裁判官的胸甲。尤里克对于家族的意义远超于任何公开庆典能够表达的范围：每一年冬至，本族所有男性成员——从十二岁开始——必须赤膊站在领地内最高的山岩上，面对北风背诵《白狼圣约》的序章。只有完成这一仪式的男性才有资格在家族会议上发言。这种家族内部的尤里克私人崇拜与公开的大教堂仪式之间的区别就像是河底的暗流与河面的波纹——公开的尤里克崇拜是有礼貌的、政治化的、与其他教会保持着体面的外交距离的，而私下的尤里克崇拜则保留着两千年前部落战争时代的全部狰狞。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "在北境流浪多年后，我对尤里克的理解与任何教士都不同。我在一个暴风雪之夜被困在米登海姆以北六十里的一座废弃神庙中——庙里除了一尊被风蚀得面目模糊的尤里克石像外一无所有，但我整夜坐在那座石像脚下，听着外面的狼嚎声，忽然明白了尤里克为什么讨厌火药：不是因为火药不'英勇'——那种解释是教士给农民听的——而是因为火药的声音可以掩盖掉战场上人类濒死前发出的最真实的声音，而尤里克从来不是一个让你免于死亡的神，他是一个迫使你在临死前直视自己灵魂每一个角落的神。那个夜晚石像的眼睛中反射着风雪的微光，我对他说了一句我在任何大教堂中都不会说出的话。第二天我活着走出了暴风雪——不是因为我得到了某种魔法的加护，而是因为我整夜没有合眼、用我最后的气力砸碎庙里的旧木长椅生火，而尤里克从不需要你做任何超越这点的事情。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "尤里克信仰的经济影响集中在帝国北部的毛皮、铁矿石和雇佣兵贸易线上。白狼教会是米登海姆最大的土地持有机构之一——教会的森林地产覆盖了从米登海姆到诺德领边界的广袤区域，这些森林既是白狼兽群的栖息地也是北方最高品质橡木的来源。白狼骑士团作为一支独立军事力量，其装备采购对当地的铁匠、甲具师和皮革加工行业的拉动效应相当于一个中等公爵领的年度军费支出——而教会的采购合同从不招标，只通过几个古老家族控制的代理行进行。任何希望与尤里克教会建立商业关系的商人必须首先理解这一点：尤里克教会看重忠诚超过价格，一份从祖父辈开始为教会供应炭薪的平凡家族永远优先于一位出价更低但缺少三代供应历史的陌生商人。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "阿尔尤里克——白狼教会的至高祭司，手握选帝侯会议的一票",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "尤里克白狼神战争之神"
+  ]
+}

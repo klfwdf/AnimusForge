@@ -1,0 +1,153 @@
+{
+  "Id": "rule_世界机制__葡萄酒贸易",
+  "Keywords": [
+    "葡萄酒",
+    "青亭岛金酒",
+    "酒桶贸易",
+    "葡萄园",
+    "河湾地酒商"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "葡萄酒需要适合的坡地、阳光、剪枝、采摘、压榨、发酵和洁净酒器。青亭岛的金色葡萄酒与红酒享有高名声，河湾地、风暴地和多恩也有各自风味；酒装入桶后可沿河海远运，成为宴席、礼物、军需和高利润商品。年份、保存、兑水和掺假影响价格，封港或战争则会令好酒滞留产地、劣酒趁机涨价。葡萄园是多年投入，一次焚烧不仅毁掉当年收成，还可能让数年心血归零。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "reach"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "葡萄农看天气和果实，酿酒人看桶与发酵，酒商看名声和船期。贵人只说入口滋味，产地人知道一杯酒从冬季修枝便已开始。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "贵族用名酒显示慷慨与品位，神职者既会在仪式中用酒，也会告诫纵饮。昂贵酒瓶最容易让人把价格误当作德行。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "sailor",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和水手更常喝稀酒或酸酒，只求比坏水安全。对他们而言，青亭岛金酒是一场偶遇，不是每日生活。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人把葡萄酒看成可执行的秩序。葡萄酒贸易：葡萄园、酿造、橡木桶和海陆运输把青亭岛等产区的酒送往宴席、军营和远方市场。它是否有效，取决于谁能授予权利、收取代价，并在违约时让判决真正落地。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起葡萄酒时，关心它如何影响道路、命令和安全。葡萄酒贸易：葡萄园、酿造、橡木桶和海陆运输把青亭岛等产区的酒送往宴席、军营和远方市场。远方的制度只有在营火、城门和驿站里能被执行，才不是空话。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者会从习惯和象征理解葡萄酒。葡萄酒贸易：葡萄园、酿造、橡木桶和海陆运输把青亭岛等产区的酒送往宴席、军营和远方市场。一项规矩若被反复实践，便会进入礼仪、手艺和祈祷；若只靠恐惧维持，危机一来就会露出裂缝。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民感受到葡萄酒的方式最小也最准确。葡萄酒贸易：葡萄园、酿造、橡木桶和海陆运输把青亭岛等产区的酒送往宴席、军营和远方市场。他们记得税、粮、劳役、赈济和谁能为他们说话；宏大的名称，最终都要落在一家人的饭锅旁。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "葡萄酒贸易：葡萄园、酿造、橡木桶和海陆运输把青亭岛等产区的酒送往宴席、军营和远方市场。"
+  ]
+}

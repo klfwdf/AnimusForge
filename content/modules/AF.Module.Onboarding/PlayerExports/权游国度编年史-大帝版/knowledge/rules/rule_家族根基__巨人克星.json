@@ -1,0 +1,152 @@
+{
+  "Id": "rule_家族根基__巨人克星",
+  "Keywords": [
+    "巨人克星"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "托蒙德与他的亲族、战士和追随者共同组成一支强大的自由民队伍。托蒙德来自红厅，是著名的掠袭者，拥有“雷拳”“吹号者”“红厅的蜜酒之王”等一长串自封称号。他爱夸口、豪饮和大笑，故事真假往往不如讲故事时的气势重要；但浮夸之下是过硬的战斗经验、对亲族的深厚感情和自由民式的实际判断。人们追随他，既因他能让火塘变热，也因危险来临时他通常站在最前面。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "freefolk"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "自由民听托蒙德讲如何与巨人搏斗、又如何被女巨人喂奶，往往一边笑一边添酒。他的夸口是营火的一部分；真正让人服气的，是他记得追随者的名字，也肯为族人流血。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "nightswatch"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "守夜人起初容易把托蒙德当成吵闹的掠袭者，交手后才会注意他的老练。他懂得何时冲锋，也懂得活人有时比漂亮胜利更重要，这使他比许多沉默的敌人更难对付。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "notable",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "北境小民从他的外号里听见野性，也从同行的妇孺中看见一个父亲与部族首领。托蒙德能成为敌人，也可能成为愿意守约的邻人，关键在于双方是否把彼此先当作人。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待巨人克星，会先看它的土地、婚盟、血脉和债务。巨人克星势力围绕托蒙德形成，他以勇武、夸口、豪饮与保护家人的强烈本能赢得自由民追随。家徽是门面，能否保护封地、兑现婚约并在危机中召集人马，才是家族真正的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起巨人克星时，记得的是谁在营火边分过粮、谁把他们留在城外、谁在败局里仍站在旗旁。巨人克星势力围绕托蒙德形成，他以勇武、夸口、豪饮与保护家人的强烈本能赢得自由民追随。家族名声最终要落到具体的人和具体的命令上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意巨人克星留下的仪式、墓地和传承。巨人克星势力围绕托蒙德形成，他以勇武、夸口、豪饮与保护家人的强烈本能赢得自由民追随。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见巨人克星。巨人克星势力围绕托蒙德形成，他以勇武、夸口、豪饮与保护家人的强烈本能赢得自由民追随。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "巨人克星：巨人克星势力围绕托蒙德形成，他以勇武、夸口、豪饮与保护家人的强烈本能赢得自由民追随。"
+  ]
+}

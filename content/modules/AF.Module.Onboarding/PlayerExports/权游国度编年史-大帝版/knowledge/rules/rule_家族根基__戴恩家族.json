@@ -1,0 +1,153 @@
+{
+  "Id": "rule_家族根基__戴恩家族",
+  "Keywords": [
+    "戴恩家族",
+    "拂晓神剑",
+    "流星"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "戴恩家族以星坠城为根基，是多恩乃至维斯特洛最古老的家族之一。传说始祖追随坠落的流星来到岛上，以陨星之心铸成乳白巨剑“黎明”。家徽为紫底上一柄剑与坠落白星；黎明不像普通家传剑按长子继承，只有被家族认定足够配得上的骑士才能获得“拂晓神剑”称号并持剑。戴恩成员偶有银发紫眼，却属于先民血统而非坦格利安旁支。亚夏拉的命运与琼恩身世相关说法仍是传闻和推测，不能写入家族固定事实。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "多恩诸侯对戴恩的敬意跨过许多旧争端。星坠城古老，陨星传说与“黎明”使家族拥有近乎神话的光环；但真正赢得尊重的，是只有被认定配得上的骑士才能成为“拂晓神剑”。这份荣誉不按长子继承，因而比普通头衔更苛刻。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "多恩剑士谈“黎明”时，会说它颜色如乳白玻璃、锋利可比瓦雷利亚钢，也会立刻争论哪一位拂晓神剑最配得上它。名剑使人仰望，戴恩家真正沉重的地方却在于：每一代持剑者都要面对死者留下的尺度。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania",
+          "crownlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "多恩以外的人未必熟悉星坠城的土地，却多半听过亚瑟·戴恩与拂晓神剑。这样的名声让戴恩超出地方家族的范围，也让每个族人都活在一位传奇骑士投下的长影里。敬意会跨越敌我，传闻也会把真实的人磨成过亮的雕像。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待戴恩家族，会先看它的土地、婚盟、血脉和债务。星坠城的多恩先民古族，家徽为紫底剑与坠星，拥有陨石巨剑黎明；只有获认可者才能成为拂晓神剑。箴言未知，亚夏拉与琼恩身世说法不得当作事实。家徽是门面，能否保护封地、兑现婚约并在危机中召集人马，才是家族真正的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起戴恩家族时，记得的是谁在营火边分过粮、谁把他们留在城外、谁在败局里仍站在旗旁。星坠城的多恩先民古族，家徽为紫底剑与坠星，拥有陨石巨剑黎明；只有获认可者才能成为拂晓神剑。箴言未知，亚夏拉与琼恩身世说法不得当作事实。家族名声最终要落到具体的人和具体的命令上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意戴恩家族留下的仪式、墓地和传承。星坠城的多恩先民古族，家徽为紫底剑与坠星，拥有陨石巨剑黎明；只有获认可者才能成为拂晓神剑。箴言未知，亚夏拉与琼恩身世说法不得当作事实。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见戴恩家族。星坠城的多恩先民古族，家徽为紫底剑与坠星，拥有陨石巨剑黎明；只有获认可者才能成为拂晓神剑。箴言未知，亚夏拉与琼恩身世说法不得当作事实。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "戴恩家族：星坠城的多恩先民古族，家徽为紫底剑与坠星，拥有陨石巨剑黎明；只有获认可者才能成为拂晓神剑。箴言未知，亚夏拉与琼恩身世说法不得当作事实。"
+  ]
+}

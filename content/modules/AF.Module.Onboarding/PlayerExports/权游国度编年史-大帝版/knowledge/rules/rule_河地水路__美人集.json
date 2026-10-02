@@ -1,0 +1,153 @@
+{
+  "Id": "rule_河地水路__美人集",
+  "Keywords": [
+    "美人集",
+    "河间地",
+    "河流"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "美人集是河间地西部的市镇，名字带着民间传说的柔和色彩，实际却建立在河流、道路和市场这些朴素条件之上。这里的商人收购谷物、羊毛、皮革和河鲜，工匠修理车轮、马蹄与农具，周边农户则把一季收成带到集日换成盐、铁和布料。河间地没有坚固的自然边界，市镇因此既是财富流动的地方，也会在战时成为征粮、安置难民或掠夺的目标。美人集不需要被写成命中注定的废墟或繁荣地；它首先是一群人反复尝试把河岸农业变成生活的地方。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "river"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "季节一变，美人集周围的人首先检查水位、渡口、芦苇地、可耕高地和雨季道路。当地家庭还要依靠河运、渡口、麦田、磨坊和战火来临时的藏身处；任何一处道路、井泉或码头失灵，代价都会先落到他们身上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "river"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "把美人集守在手里，需要算清桥梁、浅滩、堤道、舟船与不陷入泥沼的粮道。在七国的封建秩序中，美人集的归属牵动封臣义务、税粮和征召；守军能否吃饱、援兵能否按时抵达，比议事厅里的豪言更能决定这处据点是否可靠。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "scholar",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "美人集在商路上的轻重，可以从水运、桥税、渡资、磨坊和沿河集市看出来。他们还会辨认河间地的口音、法令和通行凭据；名声可以从酒馆传得很远，真正的路程仍须由车轮、船桨或马蹄丈量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "对封臣而言，美人集既是一份权利，也是一笔必须偿还的责任。在七国的封建秩序中，美人集的归属牵动封臣义务、税粮和征召；旗帜更换之后，道路、粮仓、旧债和地方信任仍得由新主人逐一接手。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "对赶在天黑前投宿的人来说，美人集意味着哪处能涉水、哪条堤道不被洪水吞没。能补给、能避险、能找到向导，便值得在行程里标明；若三样都没有，再响亮的家名也救不了迷途者。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "石木会朽，美人集仍靠匠人照料舟船、桥木、磨坊石、渔网与河岸圣堂，靠神职者保存七神、古老河王传说与反复易手的土地记忆。一处据点因而不只是领主的大厅，也是婚丧、誓言、劳作与地方记忆反复发生的场所。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "百姓不靠族谱判断美人集好坏，他们看收成和征税。他们关心河运、渡口、麦田、磨坊和战火来临时的藏身处，也看征粮后是否留下种子、灾年时城门是否开启；远方人看见纹章，他们看见的是明日有没有饭吃。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "美人集：美人集是河间地西部的市镇，名字带着民间传说的柔和色彩，实际却建立在河流、道路和市场这些朴素条件之上。这里的商人收购谷物、羊毛、皮革和河鲜，工匠修理车轮、马蹄与农具，周边农户则把一季收成带到集日换成盐、铁和布料。河间地没有坚固的自然边界，市镇因此既是财富流动的地方，也会在战时成为征粮、安置难民或掠夺的目标。美人集不需要被写成命中注定的废墟或繁荣地；它首先是一群人反复尝试把河岸农业变成生活的地方。"
+  ]
+}

@@ -1,0 +1,152 @@
+{
+  "Id": "rule_家族根基__曼德勒家族",
+  "Keywords": [
+    "曼德勒家族",
+    "狼穴",
+    "人鱼"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "曼德勒家族原是河湾地曼德河一带的古老家族，被逐出南方后获史塔克庇护，在白刃河口建立白港势力。家徽为蓝绿色底上的白色人鱼，手持三叉戟；曼德勒信奉七神、保留骑士与城市礼仪，却已在北境生活近千年。白港的船坞、鱼市、铸币与贸易使他们比多数北境封臣富裕，也让南方人容易误以为他们“不够北方”；北境人则知道，收留流亡者所结下的旧恩与冬日里能送出的粮船，同样可以成为忠诚的根。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "北境旧族知道曼德勒并非生于北方，却也记得是谁接纳了被逐者，又是谁把白港经营成北境的海门。有人嫌他们信七神、穿丝绸、礼节太像南方人；但当北境需要铸币、船只、税银和通往狭海的窗口时，很少有人还能把白港当作外客。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "artisan"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "对白港商人、行会师傅和码头账房而言，曼德勒的威望不只在美人鱼纹章，也在秤砣、仓单、城墙和港规里。北方的毛皮、木材与白银从这里出海，南方的盐、酒和精细货物从这里上岸；一位领主若能让货栈少失火、道路少盗匪，便比宴席上的长篇谱系更受欢迎。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "渔夫称白港是能把寒风换成铜币的地方，乡民则觉得那里的石墙、人群和七神钟声都太南方。可一条船失踪时，岛礁上的灯火属于谁并不重要；粮价上涨时，人们也只盼港里的仓门肯开。曼德勒在人们心中既是肥胖富贵的海商领主，也是守着北境唯一大港的人。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待曼德勒家族，会先看它的土地、婚盟、血脉和债务。由河湾流亡至北境、受史塔克庇护后扎根白港的家族。蓝绿底白色人鱼象征海港根基；七神、骑士礼仪、船运与旧恩共同塑造其北境身份。家徽是门面，能否保护封地、兑现婚约并在危机中召集人马，才是家族真正的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起曼德勒家族时，记得的是谁在营火边分过粮、谁把他们留在城外、谁在败局里仍站在旗旁。由河湾流亡至北境、受史塔克庇护后扎根白港的家族。蓝绿底白色人鱼象征海港根基；七神、骑士礼仪、船运与旧恩共同塑造其北境身份。家族名声最终要落到具体的人和具体的命令上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意曼德勒家族留下的仪式、墓地和传承。由河湾流亡至北境、受史塔克庇护后扎根白港的家族。蓝绿底白色人鱼象征海港根基；七神、骑士礼仪、船运与旧恩共同塑造其北境身份。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见曼德勒家族。由河湾流亡至北境、受史塔克庇护后扎根白港的家族。蓝绿底白色人鱼象征海港根基；七神、骑士礼仪、船运与旧恩共同塑造其北境身份。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "曼德勒家族：由河湾流亡至北境、受史塔克庇护后扎根白港的家族。蓝绿底白色人鱼象征海港根基；七神、骑士礼仪、船运与旧恩共同塑造其北境身份。"
+  ]
+}

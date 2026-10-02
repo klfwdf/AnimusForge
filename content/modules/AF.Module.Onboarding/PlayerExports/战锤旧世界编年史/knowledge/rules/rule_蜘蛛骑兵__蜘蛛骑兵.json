@@ -1,0 +1,213 @@
+{
+  "Id": "rule_蜘蛛骑兵__蜘蛛骑兵",
+  "Keywords": [
+    "蜘蛛骑兵",
+    "森林地精",
+    "巨型毒蛛",
+    "丛林穿梭",
+    "无视地形",
+    "蛛网战术",
+    "蜘蛛骑",
+    "毒液",
+    "地精蜘蛛",
+    "丛林伏击",
+    "巨型蜘蛛",
+    "八条腿"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "蜘蛛骑兵是居住在旧世界各密林深处的森林地精部落的王牌部队——骑手与胯下巨型毒蛛共同在密林树冠间穿梭，利用蛛丝在树冠间滑荡、从上方将敌人拖进树丛中。在密林地带，任何骑兵都不能追上蜘蛛骑兵。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "蜘蛛小子们是俺觉得最邪门的绿皮！俺是大块头兽人，喜欢敞亮的地方干架——但蜘蛛骑兵们就爱呆在黑漆漆的林子里，骑那种毛茸茸的大蜘蛛，八条腿，肚腩比你脑袋还大！地精和蜘蛛怎么混到一块儿的？听说森林地精是跟蜘蛛崽子泡一个窝长大的——这些小地精会用蛛网喂蜘蛛，把蜘蛛当自己妈养然后蜘蛛把地精当自己娃护——这比狼骑兵还黏糊，听着就起鸡皮疙瘩。最吓人的是蜘蛛骑兵在林子里打仗：你以为面前就两棵树一片蕨——突然从天顶上扑下来一队蜘蛛骑兵，蜘蛛腿叉着你的肩膀把蛛丝缠在你脖子上然后把你拎上去——上去之后你就只在树冠里头能找着你了，一团蛛丝裹着像块鸟巢。俺们兽人在林子里打仗不能没有蜘蛛骑兵——他们走在前面，把那些躲在树上的人类弓箭手一个个薅下来，俺们才能安全地冲进去把其他人剁了。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "蜘蛛骑兵是已知世界中最有效的地形适应性轻骑兵，其在密林与沼泽地带的无视地形移动能力令常规骑兵和步兵的防御半径概念完全失效。绿皮蜘蛛骑兵遵循一种被称为「上-下决战」的垂直战术模板：战斗初期以树冠伏击清除敌军侦察与高价值单位，中期以短距蛛丝滑荡制造全方位骚扰分散指挥注意力，最后与地面兽人主力形成夹击——此时敌军已同时受到来自身后密林和上方的三重压力。防御蜘蛛骑兵需要火和开阔视野——在密林中你两者都没有。唯一对蜘蛛有效的非特殊措施是焚林：有计划地沿行军路线烧毁密林边缘以剥夺蜘蛛骑兵的树冠通道。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "森林地精蜘蛛骑兵的蜱-蛛共生系统可能是旧世界陆地生物界中最复杂的跨物种社会组织之一。森林地精——生物学上为'绿皮目·地精科·林栖亚种'——与巨型毒蛛之间建立了两种非寻常生物纽带：巢群同育（地精初生子与蛛卵在同一发酵菌巢中孵化，以确保地精皮肤上终生覆盖一层不被蜘蛛攻击的共生菌膜）、以及菌糖交换（地精以唾液中的甜味霉菌糖浆交换蜘蛛颚腺分泌的毒液用于武器淬毒）。其巨蛛坐骑在分类学上属于'蛛形纲·狼蛛亚目·巨蛛科'——成年体腿展可达十二至十六尺、体重可达三百五十磅，毒液含有一种名为'蛛酶A7'的溶组织酸，注入猎物后可在四至八小时内将猎物体内所有软组织半液化，之后蜘蛛以吮吸方式进食——这就是那个被吸入蜘蛛体内的倒霉东西的命运。树冠间的丝网滑荡经过帝国工程学家的分析——蛛丝的抗拉强度约为同等直径钢丝的四倍，这解释了为什么一只三百五十磅重的巨蛛可在手脚间释放多股蛛丝单束承载后在林冠中高速移动。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我的领地毗邻一大片古老密林，每年入秋后我们都会在林地周围的村落发现被蛛丝悬挂在树上的家畜——有时是死物，有时是被注入毒液后还活着的、缓慢消化中的羊。猎人说这是蜘蛛骑兵在「贮藏食物」。我下令沿着领地的森林边缘立起了四十座哨火塔，每夜举火以逼迫蜘蛛后退——这事花了将近七年和整半个领地的税务收入。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我曾派两支斥候队进入密林测绘蜘蛛骑兵的活动范围。第一队没回来。第二队回来了一具——一个斥候，颈部下方被蛛丝裹成一个吊床形状拖了回来，他的马刺还穿着，但两条腿已经被毒液腐蚀到了骨。他死前的口讯刻在马鞍上：「树在动」。后来我下令永久放弃那片林地。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "在艾索洛伦的边境外围，我和一队斥候遭到过蜘蛛骑兵的伏击。那是在黄昏——我们刚从一条溪谷里爬上来，忽然四周全是沙沙声，不是地面，是头顶。我抬头，上面大约七八只蛛背上的地精直勾勾盯着我们，蜘蛛的八只黑眼在灯光下反射着红光。然后他们突然一起朝我们吐丝——不是射丝，是像渔夫撒网一样把一团蛛网从上面罩下来。我们四个人被罩住三个，我割网割了大概十拍——十拍在那个环境下像一天一夜那样长。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "你知道森林地精的蛛丝在黑市上值多少钱吗？一捆高品质蛛丝——指的是从活的蜘蛛骑兵的坐骑身上新鲜抽取的——在阿尔道夫的纺织公会上能卖到每盎司四十金克朗，因为那是制防切割长袍的顶级基底材料。问题是怎么从一只活的巨型蜘蛛身上抽丝呢？答案是你别去试——每一个试过的人现在都在那蜘蛛腹中的某个茧里。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "森林地精与巨型毒蛛的巢群同育共生体，皮肤共生菌膜解除蜘蛛攻击本能",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "利用蛛丝在树冠间滑荡、从上方将敌人拖进树丛中"
+  ]
+}

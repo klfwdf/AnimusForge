@@ -1,0 +1,59 @@
+﻿{
+  "Id": "rule_吕西卡",
+  "Keywords": [
+    "吕西卡",
+    "克洛托耳元帅的妻子"
+  ],
+  "RagShortTexts": [
+    "吕西卡是克洛托耳元帅之妻兼女将军"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "吕西卡？她是著名的女将军呀，她和丈夫克洛托耳世代驻守帝国西疆（现在由A家族统治着），战功赫赫。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire_w"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "狄俄尼科斯太太（吕西卡）是我们的元帅克洛托耳的妻子，她不仅是丈夫的贤内助，还是一个极好的女将军，可以说，没有她，我们克大帅就无法在前线安心作战"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "A",
+      "Kind": "settlement_owner_clan_name",
+      "TargetId": "town_EW1",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}

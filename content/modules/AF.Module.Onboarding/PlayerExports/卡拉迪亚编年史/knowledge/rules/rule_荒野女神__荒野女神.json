@@ -1,0 +1,189 @@
+﻿{
+  "Id": "rule_荒野女神",
+  "Keywords": [
+    "荒野女神",
+    "伊克斯伦德",
+    "圣林",
+    "诺德神祇"
+  ],
+  "RagShortTexts": [
+    "荒野女神是伊克斯伦德诺德人的古老神祇。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "荒野女神是诺德人在伊克斯伦德地区最北部供奉的一位古老神祇。最早的定居者围绕一片供奉她的圣林建立了村落，每年举行祭祀，祈求获得她的恩准才能在附近的森林中狩猎。她不设神庙，不立雕像，只以森林本身为圣所。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "nord"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "荒野女神是伊克斯伦德森林真正的主人。那片圣林北方佬谁都不敢乱闯——树都是她的头发，地上的苔藓是她的皮肤，溪水是她的声音。你可以在厄尔辛的祭坛上放块肉，求他帮你的箭找对方向，但进伊克斯伦德的森林之前，你得先求荒野女神答应。她不答应，你连林子边上的兔子都别想逮着。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "nord"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "伊克斯伦德的荒野女神是最古老的神祇之一，比厄尔辛还要久远，比我们诺德人来到这里还要早。她不用石头砌祭坛，不用木头雕神像——整片圣林就是她的殿堂。每年的祭祀是伊克斯伦德最庄重的日子，所有人都要到圣林边上献祭，跪求她允许我们继续在这片森林里打猎。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "nord"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "townsfolk",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "伊克斯伦德那边的人对荒野女神敬得很。每年祭祀那天，全村人都得去圣林磕头，谁家要是砍了不该砍的树，或者打了不该打的猎物，全村都会跟着遭殃。她可不像厄尔辛那么好说话，厄尔辛只要你一块肉，荒野女神要的是你的敬畏。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "nord"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "伊克斯伦德那边的老猎人跟我说过，荒野女神生气的时候，整片森林都会静下来——鸟不叫，风不吹，连溪水的声音都听不见。这时候你就该放下弓箭，退出林子，因为今天她不想让你在它的地盘上狩猎。那些不信邪的猎人，后来都成了林子里的骨头。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "诺德人信的那个荒野女神，我们斯特吉亚北方有些老部落也有类似的信仰。森林本身是有灵的，你进去狩猎之前要跟她打招呼。诺德人每年搞祭祀求她恩准，我们这边是每次进山前自己低声念叨几句，意思差不多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "诺德人的荒野女神，跟我们的森林之灵很像。但他们每年只去圣林祭祀一次，祈求被她允许进入森林狩猎。而我们巴旦尼亚人每天都在跟森林说话——每砍一棵树都要请求宽恕，每射一头鹿都要感谢它的灵魂。诺德人对森林的敬畏，比我们还是差了点。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "荒野女神的崇拜形式在卡拉迪亚诸信仰体系中极为特殊。她代表了最原始的“神圣自然”信仰——不以人为的庙宇或塑像为媒介，而以纯天然的自然物（圣林、苔藓、溪水）为神性的载体。诺德人在伊克斯伦德的定居者围绕圣林建村，每年举行祭祀请求女神的许可，这种“人向自然请求许可”的仪式结构，在整个卡拉迪亚都非常罕见。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "有一次我在伊克斯伦德迷了路，走到了一片看起来古老的林子边上。正要往里走，被一个当地的老人拽住了。他说那是荒野女神的圣林，外人不能进去，进去了就出不来。他指给我看林子边上一棵树上系着的一束束枯草和鹿角，那是每年祭祀留下的印记。他说，这林子已经站了不知多少代人了，比诺德王国本身还要久远。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "荒野女神",
+      "Kind": "bound_deity_name",
+      "TargetId": "__bound_deity__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": "伊克斯伦德",
+      "Kind": "bound_settlement_name",
+      "TargetId": "__bound_settlement__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}

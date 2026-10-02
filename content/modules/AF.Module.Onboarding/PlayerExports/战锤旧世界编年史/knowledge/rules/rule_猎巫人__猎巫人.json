@@ -1,0 +1,210 @@
+{
+  "Id": "rule_猎巫人__猎巫人",
+  "Keywords": [
+    "猎巫人",
+    "异端审判官",
+    "猎巫人西格玛教会",
+    "混沌猎人",
+    "吸血鬼猎人",
+    "宽檐帽",
+    "刺剑火枪",
+    "圣殿骑士团",
+    "女巫猎人"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "猎巫人是西格玛教会授权的地下执法者，他们戴着标志性的宽檐帽，手提银剑和火铳，穿行在帝国的城镇和荒野中，猎杀隐藏在凡人中间的混沌信徒、死灵法师和变异者。他们拥有教会的审判豁免权——在调查过程中可以无视地方领主的司法权，这使他们在帝国社会中既是恐惧的象征也是秩序的守护者。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "猎巫人——我们帝国人提到这个名字时肌肉会不自主地绷紧。他们是我们的第一道防线，也是最后一道防线，是站在黑暗与文明之间那道越来越薄的墙上的哨兵。猎巫人属于神圣西格玛圣殿骑士团的分支，这是一个直接听命于西格玛大主教的秘密组织，不隶属于任何选帝侯或帝国将领。每一位猎巫人都带着他师父传给他的「猎巫之印」——一枚刻有西格玛彗星标记的银质徽章，这枚徽章可以在任何帝国法庭上将猎巫人的指控作为合法证据。他们搜寻混沌崇拜的蛛丝马迹——祭坛上新鲜的人血、地下室里刻印的变异符文、市场上不自然的老鼠聚集——然后用他们独有的粗暴方法来处理问题：审问、火刑、鞭笞，必要时一把火烧掉整座村庄以确保邪教不会扩散。没有人欢迎猎巫人来到自己的城镇——当你看到那个宽檐帽的身影出现在广场上，意味着整个镇子都在被怀疑——但你永远感激他们在天亮之前烧死那个总是半夜出门的老磨坊主并在他家里发现了一个混沌祭坛。猎巫人的悲剧在于：他们的工作是必须被做的，但做了之后他们就成为人们避之唯恐不及的怪物。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "猎巫人在帝国权力系统中处于一种令人不安的模糊地带。作为领主，你无法直接控制他们——他们拒绝服从任何世俗长官的命令，声称只对西格玛本人负责——但你又不得不依赖他们的专业知识来清理领地中潜藏的混沌污染。聪明的领主会与猎巫人维持一种不写于纸面上的合作关系：你为他们提供人力和补给，他们在公开场合表现得仿佛是为你服务，实际上双方都清楚这场表演的剧本。但猎巫人也是双刃剑：一旦某个猎巫人认定你的宫廷中存在邪教分子——这种判定不需要世俗证据，只需要「西格玛的启示」——他有权力对你的任意家臣甚至家族成员实施逮捕、审讯甚至处决。帝国历史上至少三位选帝侯曾经试图通过立法限制猎巫人的审判权，但每次西格玛大主教都会以「禁止迫害神的仆人将引来混沌之祸」为由威胁绝罚，选帝侯们只能悻悻退让。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "猎巫人组织的制度历史是帝国反混沌体系的核心支柱之一。西格玛神圣检定庭——猎巫人的正式教法机关——最早成立于帝国历1111年，在「黑色瘟疫」大流行期间作为灭绝纳垢崇拜组织的临时法庭，此后逐渐演变为常设机构。其组织结构以分级保密为原则：基层猎巫人是公众可见的面孔，但他们的上级——「内廷法官」——身份永远不会公开，据称内廷法官中可能有相当一部分本身就是选帝侯或主教。猎巫人使用的经典武器组合——施蒂尔兰产刺剑加短管火枪——并非随意选择：刺剑用于在审讯中精确损害混沌变异而非立即杀死（因为猎巫人需要活口获取情报），火枪是经过西格玛祷言加持的特殊武器，弹药由融化后的教堂圣钟金属铸造而成。最令人学界不安的是猎巫人内部使用的「混沌检测手稿」——一本据称只是手抄本却是猎巫人唯一参照的判定手册——没有印刷版本，每一个见习猎巫人只能从师父手中手抄一份，这种知识传递方式的封闭性导致了猎巫人判定的极端不一致：一个在米登领被火刑的罪行可能在瑞克领被视为无害的民间习俗。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "猎巫人对贵族女性来说是格外令人胆寒的存在——不是因为他们会伤害我们本人，而是因为每当他们进入宫殿，最先被审视的就是宫廷中的贵妇圈子和孩子们的交往对象。我听说过太多故事：某个男爵夫人因为夜晚在花园里收集奇怪的草药而被猎巫人审讯了整整一个月，最后虽然无罪释放但她的名誉已经毁于一旦。在猎巫人的眼里，任何不符合严格正统的行为都可能是混沌的种子。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "猎巫人是帝国世族政治中一种可以暗中利用的武器。如果你希望摧毁一个竞争对手家族的政治影响力，但又不能公开出兵或发起决斗——那太引人注目了——你可以通过间接方式让某个猎巫人「发现」对方家族中与死灵法术有关的蛛丝马迹。一旦猎巫人开始公开调查某个家族，那个家族在没有正式定罪之前就已经在政治上死亡了。但这种方法必须极其谨慎地使用。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "猎巫人是雇佣兵最不能惹的存在。我们在旅店喝酒时经常听到这样的告诫：如果你在驿路上看到一个戴宽檐帽、佩银剑的独行人，立刻假装你信仰虔诚、咒骂周围那些不祈祷的人，然后尽快消失在他视线之外。因为他们会把任何独来独往的武装游民默认为潜在的混沌变异者或死灵法师——而我们这些流浪佣兵恰好符合那个描述。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "猎巫人的装备采购是一笔不对外公开的特殊生意。他们的银剑由米登领的白银矿专门供应——这种银矿必须由西格玛神父祝福过才能在冶金过程中避免被混沌污染；他们的火枪来自努恩武器大师的定制坊间，使用了特殊的枪管钢以防止战斗中被敌人的魔法扭曲。每一家有幸获得猎巫人装备订单的商会都对外严守秘密，因为公开承认自己向猎巫人供货会引来混沌信徒的报复。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "西格玛神圣圣殿骑士团——猎巫人的母组织，直接隶属于西格玛大主教",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "猎巫人异端审判官猎巫人西格玛教会"
+  ]
+}

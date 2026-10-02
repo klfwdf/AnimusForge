@@ -1,0 +1,176 @@
+﻿{
+  "Id": "rule_戴·提哈",
+  "Keywords": [
+    "戴·提哈"
+  ],
+  "RagShortTexts": [
+    "戴·提哈祖先提哈是奥斯里克小儿子，获封帕拉汶德"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "戴·提哈家？帕拉汶德的大老爷。我们这边种地的，谁不知道他们家？老话说，特朗河的水往哪边流，帕拉汶德的税就往哪边收。他们家在北岸，国王在南岸，我们夹在中间。他们家那个老祖宗提哈，听说是开国老王的亲儿子，封地的时候把帝国旧都给占了。这么大的来头，你说他们家能服现在的国王吗？我爷爷讲，提哈家的人从来不正眼看萨哥特城，觉得那地方是暴发户住的，帕拉汶德才是真王都。现在的家主叫阿尔德里克，听说是个狠人，面子上跟德泰尔国王喝酒，桌子底下脚早就踹开了。不过说实话，我们老百姓不在乎谁当王，在乎的是税怎么收。提哈家收税不轻，但他们在北边把商路护得挺好，土匪少，货能走，日子勉强过得去。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "戴·提哈家是我们这些人里最不该存在的那个，偏偏存在得最硬。我这么说，不是恨他们，是实话。开国老王奥斯里克分封的时候，把帝国旧都帕拉汶德给了小儿子提哈，这事在当时就叫大家心里都不舒服。那是帝国西海岸最大的城，最厚的墙，最富的商路。你给了你儿子，我们这些小宗帮你打的仗，分到的就是几块烂地和一片沼泽。但没办法，人家是王族。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": [
+          "clan_vlandia_3"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "戴·提哈家是我们最不愿意面对的话题。我们戴·阿罗曼克家支持德泰尔国王，这是公开的立场，不是投机。我们相信瓦兰迪亚需要一位愿意用仲裁代替刀剑的国王，而不是又一轮军阀争霸。但阿尔德里克·戴·提哈让我们的立场变得极其尴尬。\n\n他不开战，不逼宫，不给你任何废黜他的借口。他只是坐在帕拉汶德，安静地看着你，然后你在御前会议上发现，支持国王的男爵越来越少，不是因为阿尔德里克拉拢了他们，而是他们怕。怕北边的商路被卡，怕帕拉汶德的兵，怕自己成了第一个被戴·提哈家盯上的靶子。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": [
+          "clan_vlandia_4"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "阿尔德里克是我们最敬佩的人，也是我们最烦的人。敬佩是因为他有血统、有地盘、有脑子，是唯一一个能让德泰尔那软骨头坐在王座上还睡不踏实的人。烦是因为他太慢。他不像我们，我烦德泰尔就直接骂，我骂他懦夫，骂他辜负了瓦兰迪亚，我在御前会议上拍桌子。阿尔德里克不拍桌子，他微笑，他敬酒，他说“国王陛下的考量也有道理”。然后出了会场，他的兵比我们多，他的地比我们广，他的话比我们管用十倍。\n\n我们戴·科尔坦历来是小族，需要戴·提哈家的支持，所以，我们戴·科尔坦和戴·提哈是一路人"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": [
+          "clan_vlandia_1"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "戴·提哈现在的族长是阿尔德里克，他的先祖提哈是奥斯里克最偏爱的小儿子，打下了帕拉汶德。这份功劳和这份偏爱，一代一代传下来，变成了阿尔德里克看我们的眼神。他不是逆贼，从来没有起兵反过。但他每次从北岸来萨哥特赴会，随从比我们王家卫队还多；他在御前会议上说一句“国王陛下的考量也有道理”，全场男爵就跟着点头。这不是封臣，这是另一个王。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "戴·提哈家族是瓦兰迪亚封建格局中最具分析价值的家族样本。从地缘角度看，他们掌控着特朗河北岸的帕拉汶德及其周边城镇，形成了独立于王城萨哥特的经济与军事网络。开国王室的血统赋予他们宣称的法理基础——他们的祖先提哈是奥斯里克的儿子，在血统上他们与戴·梅罗克家是对等的。现任族长阿尔德里克是个令人生畏的政治对手：他不在公开场合挑战王权，却通过经济影响力和封臣网络在体制内蚕食王室的权威。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "帕拉汶德那边的领主，姓戴·提哈，听说来头特别大。跑商的讲过，他们家老祖宗是开国国王的小儿子，封地的时候把帝国旧都拿走了。后来他们家世世代代在北边当家，国王在南边管他们不动。现在的家主是个老头还是半大老头？反正说挺有本事的，不怎么出面，但北边的商路全是他家的人罩着。我听过一个笑话，说你在瓦兰迪亚北边问谁是你的王，老百姓说阿尔德里克；南边问谁是你的王，老百姓说德泰尔。那到底谁是王？都挺疼的。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": [
+          "clan_vlandia_2"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "我们是提哈的后代。这句话在帕拉汶德说出来，不用多加一个字。梅罗克家的金冠是皇帝送的，提哈家的帕拉汶德是刀剑拿的。我们的祖先是奥斯里克最小的儿子，也是他最敢用的儿子。帝国旧都巴拉维诺斯，在帝国手里是统治中心，在我们手里还是统治中心。从提哈到阿尔德里克，我们每一代人做一件事：守着这座城，不让它降格为任何人的附庸。\n\n德泰尔是我们认的国王。我们认他，不是服他。我们认的是瓦兰迪亚。这个王国是奥斯里克建的，提哈是建国的第二块砖。第一块是王座，第二块是帕拉汶德。没有第二块，第一块站不稳。现任家主阿尔德里克知道这个道理，所以他不急。他有的是时间和耐心。他在御前会议上对国王微笑，不是因为谄媚，是因为体面。我们戴·提哈家永远保持体面，这是我们与因加泰尔家最大的区别。但体面不等于没脾气。我们的小女儿是唯一的例外——她好得不像提哈家的人，也许她能让这个家族换一种活法。但眼下，提哈家的剑还挂在墙上，没有入鞘。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "阿尔德里克",
+      "Kind": "clan_leader_name",
+      "TargetId": "clan_vlandia_2",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}

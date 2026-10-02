@@ -1,0 +1,244 @@
+﻿{
+  "Id": "rule_温都勒",
+  "Keywords": [
+    "温都勒"
+  ],
+  "RagShortTexts": [
+    "温都勒是阿契特部首领，遭斯特吉亚盾女西加夜袭刺杀"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": [
+          "clan_khuzait_3"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": [
+          "hero:lord_6_5"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "温都勒是我叔叔，也是我父亲库由格死后阿契特部的顶梁柱。他接手部落的时候，我们刚从库吉特人手里抢回巴尔加德，元气还没恢复，周围全是敌人——库吉特人恨我们，兀儿浑乃特家盯着我们。他想走另一条路，跟斯特吉亚人联姻，用婚姻换和平。我当时觉得这主意不算差，至少比四面树敌强。结果他被那个女人杀了。西加。盾女。她潜入他的城堡，在夜里捅了他。一个战士，死在女人的刀下，连剑都没来得及拔。这不是我叔叔该有的死法。更让我咽不下这口气的是朗瓦德——他砍了瓦尔拉的头送来，说是交代。一条人命，一颗头，就算交代了？温都勒欠我一条命，他的仇我来报。我在父亲墓前立过誓，要割断西加的喉咙祭他。这个誓言到今天还没兑现，但它不会过期。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": [
+          "hero:lord_2_4"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "onehanded": 100,
+          "twohanded": 100
+        }
+      },
+      "Content": "温都勒是我杀的。我不否认，不后悔，也不指望阿契特人原谅。他以为娶了我妹妹就能把斯特吉亚的血拴在阿契特的马桩上。瓦尔拉不是牲口，不是朗瓦德拿去喂草原野狼的肉骨头。她比那老狗小31岁！！我的妹妹不应该这么过一辈子！我潜入他的城堡那天夜里，他正在看地图，手边搁着一杯酒。他看到我的时候愣了一下，然后伸手去拔剑。他的剑没拔出来。我捅了他三刀，刀刀在胸口。他是个战士，我承认。但战士不该以为联姻能代替战争。他死在我刀下，这是公平的，至少比他把瓦尔拉从家里带走时公平。阿契特人要找我报仇，让他们来。我杀了温都勒，这条命随时等人来取。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": [
+          "clan_sturgia_2"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": [
+          "hero:lord_2_3"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "温都勒差点成了我的妹夫。这话现在说起来有点反胃，但当时我确实这么认。朗瓦德把瓦尔拉许配给他，说是为了斯特吉亚的北境屏障。我不赞成这门婚事，但也不会拦着妹妹出嫁。西加不这么想，她认为这是朗瓦德把她亲妹妹拿去喂草原野狼。她杀了温都勒。我不怪西加，她做了她想做的事。我恨的是朗瓦德——他为了平息阿契特部的怒火，砍了瓦尔拉的头送过去，好像一颗人头就能把账本抹平。温都勒的死是西加动的手，但瓦尔拉是朗瓦德杀的。温都勒死在战场上不丢人，但他死在了一场政治婚姻的烂泥里。他的死是斯特吉亚的耻辱，不是阿契特的。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": [
+          "clan_sturgia_1"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": [
+          "hero:lord_2_1"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "温都勒。我把他当成北境屏障的一枚钉子，他死了。这枚钉子是我亲手钉进去的，也是我亲手拔出来的。我把瓦尔拉嫁给他，是为了让阿契特部替我们挡着库赛特人的东线压力。这笔买卖本来划算——一个不听话家族的妹妹，换一道东线屏障。但西加毁了这一切。温都勒死后，阿契特部要血。我不能让他们把矛头转向斯特吉亚，所以我砍了瓦尔拉的头送去。那是报复，也是止损。温都勒是损失，瓦尔拉也是损失。两笔损失记在同一本账上，抵掉就完了。但他那个侄子突剌格不这么想，他要西加偿命。我不会把西加交出去——不是因为我护着她，是因为我逮不着她，我要是逮到她，我就会把她送出去，哈哈哈哈哈"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "温都勒是个悲剧，但这场悲剧从头到尾都带着斯特吉亚式的粗糙。朗瓦德大公把瓦尔拉当联姻工具嫁出去，这本就不是什么光彩事；西加一刀捅死了新郎，更把这场婚姻变成了闹剧；最后大公砍了瓦尔拉的头送去阿契特部当交代。从头到尾，斯特吉亚没少流血，脸也丢尽了。但说到底，我们介意这件事不是因为温都勒死得冤，而是因为奥列克和西加还在朝堂上站着。朗瓦德大公在这件事上得罪了库洛夫家，这是随时可能被翻出来清算的政治账单。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "温都勒是阿契特部短暂复兴中的短暂首领。他在巴尔加德站稳脚跟后试图通过联姻解决东线压力，本意是稳固地盘，结果被一个女人夜袭杀死。这在草原上是一种极其窝囊的死法。但换个角度看，温都勒的死也让阿契特部与斯特吉亚彻底撕破了脸，突剌格至今不忘血仇，这对阿契特部的战略方向是个长久的制约。温都勒在草原政治中被记住的不是他的功绩，而是他死得有多惨。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": [
+          "clan_khuzait_2"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": [
+          "hero:lord_6_4"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "温都勒是库由格的弟弟，阿契特部在潘德拉克之后趁库吉特男丁几乎打光时占了我们的巴尔加德，库由格死了，温都勒接着占，这群母狼的子孙就没一个好东西。他后来被斯特吉亚女人捅死在城堡里，我听到这消息的时候，说实话，笑了。不是幸灾乐祸，是觉得他活该。一个靠偷别人城镇起家的部族，想靠联姻洗白自己，结果被联姻坑死，这叫报应。但我笑完之后又有点不甘心——温都勒应该死在库吉特人的箭下，而不是斯特吉亚女人的刀下。阿契特部欠库吉特的债，温都勒活着的时候没还，死了也还不了。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": [
+          "clan_khuzait_1"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": [
+          "hero:lord_6_1"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "温都勒是个不走运的首领。他在巴尔加德站稳脚跟后试图与斯特吉亚联姻，这个思路本身没有问题。阿契特部东有库吉特仇敌，西有斯特吉亚边境压力，南边是我的汗庭，他的战略空间很窄，联姻是打破困局的办法。但联姻对象选错了，斯特吉亚人的内部矛盾比我们草原人的联盟更不可靠。他的死对汗国而言不是坏事——阿契特部越是被外部仇恨缠住，就越没有精力在草原内部搞事。突剌格至今还在记恨斯特吉亚人，这对我是好事。但我不会公开说什么，让阿契特部继续记他们的仇，库吉特部继续记他们的仇，两边的仇恨互相消耗，汗庭就安稳。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "温都勒是库赛特汗国内部阿契特部族的一名短命首领。他在部族复兴的关键阶段试图以政治联姻换取外部稳定，这个策略本身符合游牧政权常见的扩张-巩固逻辑，但执行过程中因盟友背刺而失败，并引发了后续一系列连锁反应。从外部视角看，温都勒的死对阿契特部的打击不仅仅是失去了一个首领，更重要的是中断了他们与斯特吉亚之间的战略缓和进程。这一中断让阿契特部重新回到了四面树敌的状态，短期内难以再次尝试类似的对外结盟。突剌格继位后转向内部复仇叙事，这有利于保持部族凝聚力，但不利于拓展外交空间。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "温都勒？谁？哦，那个被女人捅死的草原头领。跑商的讲过这事，说斯特吉亚那边有个盾女夜里摸进他的城堡把他杀了，因为他娶了她妹妹，她不愿意。这女人真够狠的，我们这儿也有抢亲的事，但从没听说抢亲抢到把新郎捅了的。后来新娘的哥还是谁又把新娘砍了头，送回去给草原人谢罪。这一家子真够乱的，新娘死了，新郎死了，杀新郎的是新娘的姐姐，杀新娘的是新娘的哥。这种故事在酒馆里能卖不少酒。至于那个温都勒本人，跑商的没说他有什么特别的，就是个倒霉的新郎。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "温都勒？就是那个被我们盾女杀了的草原头领。老一辈说起这事都竖大拇指——西加这女人够劲，为了救妹妹敢一个人闯草原城堡，把人家新郎官直接捅了。朗瓦德大公后来砍了瓦尔拉的头送去赔罪，这事老一辈说起来就不吭声了。为自己人出手是本事，杀自己人赔罪算什么？不过说来说去，这事跟我们老百姓没直接关系。朗瓦德大公和波耶们搞联姻搞砸了，我们交的税又不会少。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "温都勒是阿契特部的首领，库由格那颜的弟弟。我知道他，他在巴尔加德管了没多久就被斯特吉亚人杀了。草原上的人说起这事都觉得丢脸——被女人捅死在城堡里，连剑都没拔出来。我们草原上的男人要么死在马背上，要么死在战场上，死在女人刀下算怎么回事？阿契特部的人现在还在为这事记仇，突剌格那颜说要报仇。我们觉得该报，不光是为温都勒，也是为草原人的脸面。不过这事说到底跟我们普通牧民没多大关系，阿契特部和斯特吉亚人互相捅刀子，我们的羊还是照样吃草。"
+    }
+  ],
+  "TextMappings": []
+}

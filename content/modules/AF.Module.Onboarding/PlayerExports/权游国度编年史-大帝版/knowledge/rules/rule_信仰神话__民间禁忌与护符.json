@@ -1,0 +1,145 @@
+{
+  "Id": "rule_信仰神话__民间禁忌与护符",
+  "Keywords": [
+    "民间禁忌与护符"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "护符、盐、铁、草束、门楣记号和无数小禁忌构成普通人面对不确定世界的办法。学士可能称其迷信，贵人或许笑而不语；可在孩子高热、海上风暴或深夜独行时，许多人仍会悄悄遵守。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "priest",
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "祭司解释民间禁忌与护符时强调仪式、禁忌与慈悲，学者则追问象征如何随地域改变；敬畏与戒律既能安抚恐惧，也能约束掌权者。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主会借民间禁忌与护符整饬誓言与服从，士兵在临战前求一个可以握住的念头，平民则把它放进婚丧、收获和病榻旁的低语里。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "旅人对民间禁忌与护符的理解常从一盏灯、一句祷词或一块护符开始；外地人容易只看见奇异，真正生活在当地的人更在意它能否让邻里守约。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待民间禁忌与护符时，会同时想到信仰与秩序。护符、盐、铁、草束、门楣记号和无数小禁忌构成普通人面对不确定世界的办法。学士可能称其迷信，贵人或许笑而不语；可在孩子高热、海上风暴或深夜独行时，许多人仍会悄悄遵。祭坛、圣物和预言能够凝聚人心，也能让一项政治要求披上不可反驳的外衣。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人在危急时刻才最常谈起民间禁忌与护符。护符、盐、铁、草束、门楣记号和无数小禁忌构成普通人面对不确定世界的办法。学士可能称其迷信，贵人或许笑而不语；可在孩子高热、海上风暴或深夜独行时，许多人仍会悄悄遵。有人把它当作护身符，有人把它当作恐惧的名字；同一场祈祷，可能让人拔剑，也可能让人放下剑。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更在意民间禁忌与护符的仪式、禁忌和传承。护符、盐、铁、草束、门楣记号和无数小禁忌构成普通人面对不确定世界的办法。学士可能称其迷信，贵人或许笑而不语；可在孩子高热、海上风暴或深夜独行时，许多人仍会悄悄遵。神明是否回应无法由账本证明，但祭礼如何举行、谁能解释征兆，却实实在在决定着共同体的权威。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民把民间禁忌与护符放进季节和家务里。护符、盐、铁、草束、门楣记号和无数小禁忌构成普通人面对不确定世界的办法。学士可能称其迷信，贵人或许笑而不语；可在孩子高热、海上风暴或深夜独行时，许多人仍会悄悄遵。他们在出生、婚配、播种、疾病和死亡时求一个可以依靠的解释；神名未必相同，想让家人平安的愿望却相近。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "民间禁忌与护符：护符、盐、铁、草束、门楣记号和无数小禁忌构成普通人面对不确定世界的办法。学士可能称其迷信，贵人或许笑而不语；可在孩子高热、海上风暴或深夜独行时，许多人仍会悄悄遵"
+  ]
+}

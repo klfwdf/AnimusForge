@@ -1,0 +1,168 @@
+﻿{
+  "Id": "rule_法里斯",
+  "Keywords": [
+    "法里斯"
+  ],
+  "RagShortTexts": [
+    "法里斯是阿塞莱贵族骑兵，装备铜甲和破甲标枪。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": [
+          "char:aserai_faris",
+          "char:aserai_vanguard_faris",
+          "char:aserai_veteran_faris"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "我是法里斯。我的铜甲在烈日下闪光，我的阿斯凯尔马蹄子踏在沙子上没有声音。我的标枪袋里装着三支标枪，每一支都有倒刺，扎进肉里拔不出来。冲阵前我把标枪投出去，然后夹枪冲锋，枪尖刺穿盾墙，拔剑，近战，杀完，拨马。这就是我的战争。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": [
+          "char:aserai_mameluke_axeman",
+          "char:aserai_mameluke_cavalry",
+          "char:aserai_mameluke_guard",
+          "char:aserai_mameluke_heavy_cavalry",
+          "char:aserai_mameluke_regular",
+          "char:aserai_mameluke_soldier",
+          "char:mamluke_palace_guard"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "说实话，法里斯的标枪确实厉害。重骑兵追不上他们的快马，弩手来不及上弦他们就已经投出标枪了。但法里斯纪律不行。他们冲锋的时候各冲各的，有时候一个法里斯冲进去被围了，别的法里斯不知道在哪。我们不一样，我们跟着号令，说要冲就全部冲，说要撤就全部撤，没有一个人掉队。法里斯看我们是奴隶，我们看他们是散沙。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "法里斯是我们阿塞莱的刀刃。我们养一个法里斯，要从他祖父那一辈开始养——给他祖父分地，给他父亲分马，给他自己买甲买枪，那柄进口钢剑的钱够买三个马穆鲁克。为什么还养？因为值。他们的标枪是大陆上最被低估的武器。那些帝国佬和瓦兰迪亚佬仗着铁甲厚，从来不觉得标枪能破甲。等他们的重骑兵被我们的法里斯钉在马上的时候，他们才反应过来，但已经晚了。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "法里斯？老爷们啊。你看见他们骑着马从集市边上过，马蹄子扬起来的沙子都能眯你的眼。他们身上那套铜甲亮闪闪的，太阳底下眼睛都睁不开。法里斯路过的时候普通人最好让开，不是说他们会故意欺负你，而是万一你挡了马，被踩了腿，老爷是不会下马道歉的。他们腰间挂的标枪我们都不敢多看一眼——那东西比我们胳膊还粗，带倒刺的，扎进去拔不出来。不过打仗还是靠他们。那些大部落的埃米尔们养法里斯，我们小老百姓的儿子顶多在步兵队里。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "法里斯是阿塞莱军事体系中最具部落特色的兵种。从装备看，他们的重型铜甲和进口钢剑体现了阿塞莱贸易网络的覆盖力，而标枪的破甲性能接近大陆顶尖水平，流线型结构和倒刺设计在骑兵对冲中极难防御。他们的机动性介于重骑兵和轻骑兵之间，能投能冲，战术适应性在开阔地形中相当出色。\n\n但法里斯的弱点同样明确。第一，纪律松散是部落骑兵的共性，法里斯尤甚，战术执行度受个人荣誉感干扰严重，难以在大规模会战中维持协同。第二，他们对远程火力几乎没有防护能力，杏仁形小盾形同虚设，铜甲的防箭性能也不如帝国铁甲。第三，成本太高，一个法里斯的养成周期太长，阿塞莱的铜甲和进口钢剑依赖商路，一旦商路被掐断，法里斯的装备补充链条就要出问题。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "阿塞莱那边的贵族骑兵，叫法里斯。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": [
+          "char:imperial_cataphract",
+          "char:imperial_elite_cataphract"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "法里斯？就是那些骑着小马的阿塞莱铜人。说实话，我们吃亏——他们的标枪投得比我们的骑枪远，马比我们的快，我们冲过去他们已投了两轮标枪。标枪有倒刺，扎进马铠和马胸甲之间的缝隙里拔不出来。马一疼就人立起来，人被甩下去，没法继续冲锋。\n\n但他们也就这点本事了。一旦我们没有在第一轮冲锋时被标枪打乱阵型，真正撞到一起的时候，他们就不是我们的对手。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": [
+          "char:vlandian_banner_knight",
+          "char:vlandian_champion",
+          "char:vlandian_knight"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "法里斯？我们听说过，但没打过。\n\n从我们听说的情况看，法里斯打法跟我们不一样。他们的马快，标枪投得远而且法里斯的倒刺标枪一旦扎进马铠和甲片之间的缝隙，拔不出来，马疼了就疯了，没法继续冲锋。方旗骑士的阵型比帝国具装骑兵还密，标枪砸过来都不用瞄准。\n\n不过他们肯定也有弱点。我们瓦兰迪亚弩手不是摆设。法里斯要投标枪，就得进入弩手的射程。弩箭不认倒刺。一个法里斯冲过来的时候先得被我们的弩手筛一遍。冲过弩手阵活下来的，再被我们的骑墙怼回去。他们的铜甲和那面小盾扛不住弩箭，我们甚至不需要用方旗骑士去对换——弩手加侍从骑士就能把他们消耗掉大半。"
+    }
+  ],
+  "TextMappings": []
+}

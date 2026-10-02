@@ -1,0 +1,147 @@
+{
+  "Id": "rule_航海远行__渔船",
+  "Keywords": [
+    "渔船"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "渔船多在近岸、河口和浅海作业，船体小、吃水浅，依靠网、钩、笼与对鱼汛的经验。它们为港镇提供日常食物，也最先感到风暴、战争封锁和海盗活动对普通家庭的影响。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "水手与沿岸居民谈起渔船时，先看风、潮和船况。渔船多在近岸、河口和浅海作业，船体小、吃水浅，依靠网、钩、笼与对鱼汛的经验。它们为港镇提供日常食物，也最先感到风暴、战争封锁和海盗活动对普通家庭的影响。海上的规矩最终都要经得住湿绳、坏水和突然转向的天气。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主与士兵把渔船放在舰队、补给和港口防务中衡量。渔船多在近岸、河口和浅海作业，船体小、吃水浅，依靠网、钩、笼与对鱼汛的经验。它们为港镇提供日常食物，也最先感到风暴、战争封锁和海盗活动对普通家庭的影响。任何海上计划若忽略船员体力与返航条件，胜利也可能变成漂流。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "scholar",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "商人、学士和旅人关心渔船如何改变航程、价格与消息速度。渔船多在近岸、河口和浅海作业，船体小、吃水浅，依靠网、钩、笼与对鱼汛的经验。它们为港镇提供日常食物，也最先感到风暴、战争封锁和海盗活动对普通家庭的影响。一次判断失误会同时损失货物、信用和性命。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人愿意为可靠的渔船投入金钱，因为海路能在陆路断绝时继续搬运粮食与军队。渔船多在近岸、河口和浅海作业，船体小、吃水浅，依靠网、钩、笼与对鱼汛的经验。它们为港镇提供日常食物，也最先感到风暴、战争封锁和海盗活动对普通家庭的影响。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵与远行者更在意渔船能否让人活着抵港。渔船多在近岸、河口和浅海作业，船体小、吃水浅，依靠网、钩、笼与对鱼汛的经验。它们为港镇提供日常食物，也最先感到风暴、战争封锁和海盗活动对普通家庭的影响。船上没有多余道路可供绕行，错误往往只能由整船人共同承担。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者从修船、誓言和海葬中理解渔船。渔船多在近岸、河口和浅海作业，船体小、吃水浅，依靠网、钩、笼与对鱼汛的经验。它们为港镇提供日常食物，也最先感到风暴、战争封锁和海盗活动对普通家庭的影响。木料与绳结维持船体，信仰则帮助人面对无法控制的海。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "普通港民通过鱼价、失踪船只和码头工作认识渔船。渔船多在近岸、河口和浅海作业，船体小、吃水浅，依靠网、钩、笼与对鱼汛的经验。它们为港镇提供日常食物，也最先感到风暴、战争封锁和海盗活动对普通家庭的影响。远方海面上的变化，常会在第二天变成市场里的空摊位。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "渔船：渔船多在近岸、河口和浅海作业，船体小、吃水浅，依靠网、钩、笼与对鱼汛的经验。它们为港镇提供日常食物，也最先感到风暴、战争封锁和海盗活动对普通家庭的影响。"
+  ]
+}

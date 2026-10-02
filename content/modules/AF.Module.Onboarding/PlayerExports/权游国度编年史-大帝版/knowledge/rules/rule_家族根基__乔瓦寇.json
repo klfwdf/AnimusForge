@@ -1,0 +1,154 @@
+{
+  "Id": "rule_家族根基__乔瓦寇",
+  "Keywords": [
+    "乔瓦寇",
+    "乔瓦寇卡拉萨"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "乔瓦寇所代表的是一支多斯拉克卡拉萨。这样的共同体会以有威望的卡奥为中心，却从不等同于他一个人：寇管理不同队伍，血盟卫守护首领，骑手带着自己的亲属和马匹，俘虏与役使者承担沉重劳作。号令要穿过这些关系才能成为行动。乔瓦寇若要维持追随，就必须让勇武、迁徙方向和分配秩序彼此吻合；只靠恐惧能逼人骑一程，却很难让所有人在分裂机会出现时仍留在原处。未来的盟敌可以变化，这套以选择和声望运转的根基始终存在。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "骑手判断乔瓦寇，不只听他在营火前说什么，还看各部寇是否真心执行命令。命令传得很响却无人催马，是卡奥权威开始空心的征兆。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "slave",
+          "peasant",
+          "artisan"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "承担扎营、牧群和搬运的人看到的是卡拉萨的另一面。他们知道每次快速迁徙由谁付出血汗，也知道首领的一份宽待可能救下一整个家庭。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "qartheen",
+          "ghiscari"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "scholar",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "城邦人容易把乔瓦寇的队伍画成地图上一支箭，真正走过草海的人却知道它更像一群彼此牵连的营火。要预测其行动，得理解水源、马况和内部声望，而不只是记住卡奥的名字。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待乔瓦寇，会先看它的土地、婚盟、血脉和债务。草海上一支以领袖声望命名的卡拉萨，靠骑手选择、亲族义务与战利品秩序延续。家徽是门面，能否保护封地、兑现婚约并在危机中召集人马，才是家族真正的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起乔瓦寇时，记得的是谁在营火边分过粮、谁把他们留在城外、谁在败局里仍站在旗旁。草海上一支以领袖声望命名的卡拉萨，靠骑手选择、亲族义务与战利品秩序延续。家族名声最终要落到具体的人和具体的命令上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意乔瓦寇留下的仪式、墓地和传承。草海上一支以领袖声望命名的卡拉萨，靠骑手选择、亲族义务与战利品秩序延续。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见乔瓦寇。草海上一支以领袖声望命名的卡拉萨，靠骑手选择、亲族义务与战利品秩序延续。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "乔瓦寇：草海上一支以领袖声望命名的卡拉萨，靠骑手选择、亲族义务与战利品秩序延续。"
+  ]
+}

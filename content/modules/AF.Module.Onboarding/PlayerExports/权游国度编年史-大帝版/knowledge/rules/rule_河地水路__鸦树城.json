@@ -1,0 +1,151 @@
+{
+  "Id": "rule_河地水路__鸦树城",
+  "Keywords": [
+    "鸦树城"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "鸦树城是布莱伍德家族的古老席位，位于河间地红叉河一带。布莱伍德家保留旧神信仰，在以七神为主的河间地贵族中显得格外醒目；城堡中的鱼梁木与乌鸦传说让这份差异有了可见的形状。它与石篱城布雷肯家的世仇同样久远，双方对土地、名誉和旧案的记忆比地图上的距离更难跨越。鸦树城不是只有仇恨：它也有农田、河道、佃农、婚约和必须按时收割的庄稼。旧神、旧债与河间地的开放地形共同使这里成为一处有深厚记忆、却难以脱离现实政治的领地。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "river"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "鸦树城附近的百姓很少空谈疆界，他们每天应付的是井泉、田租、磨坊、林地和危急时能否进堡。当地家庭还要依靠河运、渡口、麦田、磨坊和战火来临时的藏身处；任何一处道路、井泉或码头失灵，代价都会先落到他们身上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "river"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "征召令抵达鸦树城以后，真正决定成败的是外墙、塔楼、水井、粮仓与最近的援军道路。在七国的封建秩序中，鸦树城的归属牵动封臣义务、税粮和征召；守军能否吃饱、援兵能否按时抵达，比议事厅里的豪言更能决定这处据点是否可靠。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "scholar",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "客栈与码头里的人谈鸦树城，总绕不开领地税、庄园产物、驮队路程和堡下形成的小市集。他们还会辨认河间地的口音、法令和通行凭据；名声可以从酒馆传得很远，真正的路程仍须由车轮、船桨或马蹄丈量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "宫廷会把鸦树城视作筹码，当地封臣却知道它是一整套义务。在七国的封建秩序中，鸦树城的归属牵动封臣义务、税粮和征召；旗帜更换之后，道路、粮仓、旧债和地方信任仍得由新主人逐一接手。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "地图在鸦树城附近最容易隐去的，正是坡势、城门、饮水与守军盘查外人的规矩。能补给、能避险、能找到向导，便值得在行程里标明；若三样都没有，再响亮的家名也救不了迷途者。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人在鸦树城看见石墙、木梁、铁门、墓窖和代代修补留下的接缝，神职者守着七神、古老河王传说与反复易手的土地记忆。一处据点因而不只是领主的大厅，也是婚丧、誓言、劳作与地方记忆反复发生的场所。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "鸦树城在平民眼中不是传奇，而是一年四季的收支。他们关心河运、渡口、麦田、磨坊和战火来临时的藏身处，也看征粮后是否留下种子、灾年时城门是否开启；远方人看见纹章，他们看见的是明日有没有饭吃。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "鸦树城：鸦树城是布莱伍德家族的古老席位，位于河间地红叉河一带。布莱伍德家保留旧神信仰，在以七神为主的河间地贵族中显得格外醒目；城堡中的鱼梁木与乌鸦传说让这份差异有了可见的形状。它与石篱城布雷肯家的世仇同样久远，双方对土地、名誉和旧案的记忆比地图上的距离更难跨越。鸦树城不是只有仇恨：它也有农田、河道、佃农、婚约和必须按时收割的庄稼。旧神、旧债与河间地的开放地形共同使这里成为一处有深厚记忆、却难以脱离现实政治的领地。"
+  ]
+}

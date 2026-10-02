@@ -1,0 +1,148 @@
+{
+  "Id": "rule_荒野生存__饮水辨别",
+  "Keywords": [
+    "饮水辨别",
+    "自然"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "清澈并不等于安全，死水、尸体上游和矿地渗水都可能致病。流动水源通常优于浅坑，煮沸和过滤能够降低风险；在盐碱地与海岸，误饮咸水只会让脱水更快。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "猎人、农户和旅人谈起饮水辨别，通常来自亲身吃过的亏。清澈并不等于安全，死水、尸体上游和矿地渗水都可能致病。流动水源通常优于浅坑，煮沸和过滤能够降低风险；在盐碱地与海岸，误饮咸水只会让脱水更快。荒野不会因为身份高贵而减轻寒冷、饥饿或迷路的后果。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主与士兵把饮水辨别视作行军和领地治理的一部分。清澈并不等于安全，死水、尸体上游和矿地渗水都可能致病。流动水源通常优于浅坑，煮沸和过滤能够降低风险；在盐碱地与海岸，误饮咸水只会让脱水更快。准备不足时，天气与地形杀死的人可能比敌军更多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "scholar",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "商人、学士和远行者会记录饮水辨别出现的征兆与应对方法。清澈并不等于安全，死水、尸体上游和矿地渗水都可能致病。流动水源通常优于浅坑，煮沸和过滤能够降低风险；在盐碱地与海岸，误饮咸水只会让脱水更快。可靠经验必须能够重复验证，而不能只靠酒馆里的夸张故事。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人关心饮水辨别会怎样影响道路、收成、牲畜和物价。清澈并不等于安全，死水、尸体上游和矿地渗水都可能致病。流动水源通常优于浅坑，煮沸和过滤能够降低风险；在盐碱地与海岸，误饮咸水只会让脱水更快。一次灾害若切断运输，远方城市也会感到后果。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵与旅人面对饮水辨别时，先保护火种、水、脚和同伴。清澈并不等于安全，死水、尸体上游和矿地渗水都可能致病。流动水源通常优于浅坑，煮沸和过滤能够降低风险；在盐碱地与海岸，误饮咸水只会让脱水更快。荒野里最昂贵的装备，也替代不了正确的停步时机。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者会用工具、药草、仪式和共同体记忆应对饮水辨别。清澈并不等于安全，死水、尸体上游和矿地渗水都可能致病。流动水源通常优于浅坑，煮沸和过滤能够降低风险；在盐碱地与海岸，误饮咸水只会让脱水更快。有人解释灾害为何到来，有人负责让受难者撑过今晚。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民对饮水辨别的判断最现实。清澈并不等于安全，死水、尸体上游和矿地渗水都可能致病。流动水源通常优于浅坑，煮沸和过滤能够降低风险；在盐碱地与海岸，误饮咸水只会让脱水更快。他们看的是地里还剩多少粮、牲畜能否活过冬，以及领主是否愿意承担保护责任。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "饮水辨别：清澈并不等于安全，死水、尸体上游和矿地渗水都可能致病。流动水源通常优于浅坑，煮沸和过滤能够降低风险；在盐碱地与海岸，误饮咸水只会让脱水更快。"
+  ]
+}

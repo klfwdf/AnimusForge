@@ -15,6 +15,9 @@ import xml.etree.ElementTree as ET
 ROOT = Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(ROOT / "tests"))
 from output_isolation import new_run_root, minimal_test_environment
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from test_builtin_worldbooks import expected_entries, verify_builtin_worldbooks
+BUILTIN_WORLDBOOK_EXPECTED = expected_entries()
 DEFAULT_RUN_ROOT = ROOT / "artifacts" / "j15-content" / ("j15-contracts-" + uuid.uuid4().hex)
 J15B_BASELINE_REVISION = "f54a812757699f108371b6bfd1c37de0222d9adb"
 
@@ -568,7 +571,8 @@ COURIER_THEME_EXPECTED = {
     "GUI/SpriteParts/af_courier/af_courier_button_band.png": {"owner": "AF.Module.Conversation", "source": "content/modules/AF.Module.Conversation/GUI/SpriteParts/af_courier/af_courier_button_band.png", "sha256": "C1368261A84CAB434DCEEDA27421B34019CB51CDE361078E3AA2E171BBC965A9"},
 }
 EXPECTED = {**J15A_EXPECTED, **J15B_EXPECTED, **J15C_EXPECTED, **F4A_EXPECTED, **INTEGRATION_EXPECTED,
-            **WORLD_BULLETIN_EXPECTED, **TERMINAL_MAPBAR_EXPECTED, **COURIER_THEME_EXPECTED}
+            **WORLD_BULLETIN_EXPECTED, **TERMINAL_MAPBAR_EXPECTED, **COURIER_THEME_EXPECTED,
+            **BUILTIN_WORLDBOOK_EXPECTED}
 # ada9894a edited these J15b-migrated sources (SceneActions postprocess rule, Vengeance language
 # index entries, DialogueUI history/terminal prefabs, Xihai action sets). They must equal the J15b
 # baseline at the integration parent and the reviewed SHA-256 of the checked-out bytes now.
@@ -660,6 +664,7 @@ def verify_approved_remote_content(source: Path, before_digest: str, after_lf_di
 
 
 def verify_map_and_resources() -> None:
+    verify_builtin_worldbooks()
     map_path = ROOT / "content" / "content-map.json"
     payload = json.loads(map_path.read_text(encoding="utf-8"))
     check(payload.get("schemaVersion") == 1, "content map schemaVersion")

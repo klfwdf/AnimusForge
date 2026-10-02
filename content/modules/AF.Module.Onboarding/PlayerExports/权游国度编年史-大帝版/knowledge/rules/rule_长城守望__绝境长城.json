@@ -1,0 +1,143 @@
+{
+  "Id": "rule_长城守望__绝境长城",
+  "Keywords": [
+    "绝境长城",
+    "长城"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "绝境长城横贯维斯特洛北端，从西侧峡谷延伸到东海望海岸，是一条约三百里格长、最高处约七百尺的巨大冰墙。守夜人在长城南侧修建十九座城堡，以升降笼、冰道、隧门、烽火、巡逻和赠地补给维持防线；多数城堡已经空置，黑城堡、影子塔与东海望承担主要驻防。长城既隔开七国与塞外，也是守夜人誓言、古老魔法传说、自由民生存和南方人恐惧交汇之处；它的宏伟从不意味着防务可以脱离粮食、人手与警觉。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "nightswatch"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "黑衣兄弟不会把长城说成奇观。墙顶的风会割开脸，冰阶会吞掉脚，升降梯的绳索会在最坏的时候打结。可他们也知道，这堵墙让巡逻有了起点，让孤零零的城堡有了彼此呼应的线。对他们而言，长城不是传说，是每天必须上去的地方。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "freefolk"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "自由民不会把长城叫作王国的盾。它是南方诸王用冰和石画下的界线，把猎场、迁徙路和许多人的亲缘切成两半。有人憎恨它，有人只想绕过它，也有人承认墙下的黑衣人比南方大多数领主更清楚北方的寒冷。墙本身没有偏见，墙两边的人有。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "在南方领主的账簿上，长城常常只是一项遥远的开销：几车木料、几袋谷物、几个判了罪的年轻人。真正到过墙根的人才会明白，七百尺的冰并不等于七百尺的安全；城堡需要人，马需要燕麦，渡鸦需要能飞的天气。王国对长城的敬畏，往往大于它对守墙者的耐心。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "普通旅人第一次看见长城，多半会先沉默。它遮住北方天空，连风声都像从更高处落下。士兵会下意识估量垛口和坡道，商人会盘算哪座城堡还能换马，北境农人则只会想：墙在那里，冬天总该先撞上它。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人把绝境长城看成可执行的秩序。约三百英里的冰墙防线，由巡逻道、冰门、十九座城堡、赠地与补给网络组成；黑衣兄弟、自由民、南方领主与普通旅人对它有截然不同的理解。它是否有效，取决于谁能授予权利、收取代价，并在违约时让判决真正落地。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者会从习惯和象征理解绝境长城。约三百英里的冰墙防线，由巡逻道、冰门、十九座城堡、赠地与补给网络组成；黑衣兄弟、自由民、南方领主与普通旅人对它有截然不同的理解。一项规矩若被反复实践，便会进入礼仪、手艺和祈祷；若只靠恐惧维持，危机一来就会露出裂缝。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民感受到绝境长城的方式最小也最准确。约三百英里的冰墙防线，由巡逻道、冰门、十九座城堡、赠地与补给网络组成；黑衣兄弟、自由民、南方领主与普通旅人对它有截然不同的理解。他们记得税、粮、劳役、赈济和谁能为他们说话；宏大的名称，最终都要落在一家人的饭锅旁。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "绝境长城：绝境长城横贯维斯特洛北端，从西侧峡谷延伸到东海望海岸，是一条约三百里格长、最高处约七百尺的巨大冰墙。守夜人在长城南侧修建十九座城堡，以升降笼、冰道、隧门、烽火、巡逻和赠地补给维持防线；多数城堡已经空置，黑城堡、影子塔与东海望承担主要驻防。长城既隔开七国与塞外，也是守夜人誓言、古老魔法传说、自由民生存和南方人恐惧交汇之处；它的宏伟从不意味着防务可以脱离粮食、人手与警觉。"
+  ]
+}

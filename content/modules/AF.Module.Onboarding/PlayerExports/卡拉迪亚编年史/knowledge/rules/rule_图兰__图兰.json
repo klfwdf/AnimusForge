@@ -1,0 +1,32 @@
+﻿{
+  "Id": "rule_图兰",
+  "Keywords": [
+    "图兰",
+    "图兰王"
+  ],
+  "RagShortTexts": [
+    "图兰王是阿塞莱传说中达西族的残暴统治者"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai",
+          "darshi"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "图兰是阿塞莱口传历史中一个近乎无从考证的达西族暴君，其事迹仅见于巴努·吉勒德等部落的古老歌谣与代代相传的诅咒。他的形象早已被时间磨去了清晰的轮廓，残存的部分则被仇恨反复涂抹——在阿塞莱的传说中，他是堕落与残暴的化身，是每一个听众在篝火边咬牙切齿的名字。\n\n唯一可以确定的口传核心是他曾奴役了一位阿塞莱族长的家人。这件事的起因、过程与具体人物均已湮没，但复仇的结局被保留了下来：那位族长杀死了图兰，终结了他的统治。内陆城市胡比亚据说便建立在图兰的一处狩猎小屋遗址之上，这是他奢华过往的唯一物质残迹。也是巴努·吉勒德至今牢牢掌控着胡比亚，厌恶一切轻浮事物的遥远注脚。"
+    }
+  ],
+  "TextMappings": []
+}

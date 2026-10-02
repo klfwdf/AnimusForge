@@ -1,0 +1,17 @@
+{
+  "Id": "rule_布里翁__布里翁",
+  "Keywords": ["布里翁公国_BR", "布里翁公爵领_BR", "布里翁领地_BR", "布里翁河桥_BR", "布里翁公爵_BR", "布里翁行省_BR"],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":null,"IsFemale":null,"IsClanLeader":null,"SkillMin":null},"Content":"布里翁公国位于巴托尼亚中部的布里恩河畔，由西奥多里克·德·布里翁公爵统治。这条大河是巴托尼亚最重要的内陆水道，而布里翁公爵控制着河上最关键的几座石桥。桥梁与渡口赋予了此地远超其面积的政治与经济地位。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":["vlandia"],"KingdomIds":null,"SettlementIds":null,"Roles":null,"IsFemale":null,"IsClanLeader":null,"SkillMin":null},"Content":"布里翁——大河之上的锁钥！西奥多里克公爵是巴托尼亚最好的外交调解人。布里恩河上的石桥连接了南北公国，谁控制了桥，谁就控制了王国的交通。每当中部各公国发生纠纷，公爵的宴会厅就变成了调解庭。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":["lord"],"IsFemale":null,"IsClanLeader":null,"SkillMin":null},"Content":"布里翁公国的战略意义在于交通枢纽地位。布里恩河横贯巴托尼亚中部，南北两岸的军队调动、商队运输无不依赖此地的桥梁。控制布里翁意味着在战时能切断敌方的补给线，在和平时能收取全巴托尼亚最丰厚的过桥税。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":["lord","notable","wanderer"],"IsFemale":null,"IsClanLeader":null,"SkillMin":{"Steward":120}},"Content":"布里翁公国的经济以交通税收和河运贸易为核心。布里恩河上的石桥共七座，每座桥日均通行商队数以百计，过桥税收是公国最大的财政来源。河运方面，布里翁拥有巴托尼亚内河最大的木材转运码头——灰色山脉的木材经布里恩河浮运至各公国。公国还因其交通便利而成为巴托尼亚中部最大的集市所在地，春秋两季的布里翁集市吸引全国商贾聚集。西奥多里克公爵将部分过桥税用于桥梁维护和河道疏浚，确保了商路全年畅通。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":["lord"],"IsFemale":true,"IsClanLeader":null,"SkillMin":null},"Content":"在布里翁的宫廷中，信息的价值高于武力。西奥多里克公爵每天都接见来自全国各地的使者和商人，而作为女贵族，我有机会在宴会和茶席上听到许多男人们在公开场合不会说的私密消息。布里翁的女性是现代巴托尼亚最灵通的消息源之一。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":["lord"],"IsFemale":null,"IsClanLeader":true,"SkillMin":null},"Content":"我们家族的庄园占据了布里恩河南岸最肥沃的一片河湾地。西奥多里克公爵对我们家族信任有加——因为我们掌管着其中一座最重要的石桥的维护和收费权。这份特权自曾祖父时由公爵亲自授予，是家族最珍贵的无形资产。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":["wanderer"],"IsFemale":null,"IsClanLeader":null,"SkillMin":null},"Content":"布里翁的石桥是巴托尼亚最繁忙的地方。赶骡的商贩、巡游的骑士、前往圣地的朝圣者都汇集在这些桥上。我在桥头的客栈做过一季的伙计，听过来自全国各地的旅行者讲述数百个不同的故事。河水流淌的声音是布里翁永恒的背景乐。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":["notable"],"IsFemale":null,"IsClanLeader":null,"SkillMin":null},"Content":"布里翁的商业机会来自交通。这里什么都不产但什么都卖——因为全国的商品都流经此地。在布里翁集市上你能买到卡尔卡松的橄榄油、巴斯通的龙鳞饰品、阿图瓦的葡萄酒。聪明的商人不在布里翁长驻，而是利用集市期做短期高利润的倒手买卖。"}
+  ],
+  "TextMappings": [{"SourceText":"布里翁公国位于巴托尼亚中部的布里恩河畔，以关键的河桥和交通枢纽地位闻名","Kind":null,"TargetId":null,"AgeMin":null,"AgeMax":null,"EmptyValueText":null,"TrueText":null,"FalseText":null}],
+  "RagShortTexts": ["布里翁公国巴托尼亚中部河桥交通枢纽"]
+}

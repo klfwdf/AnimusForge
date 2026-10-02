@@ -1,0 +1,210 @@
+{
+  "Id": "rule_木精灵历史__木精灵历史",
+  "Keywords": [
+    "木精灵历史",
+    "阿斯莱起源",
+    "木精灵历精灵分裂",
+    "长须之战",
+    "殖民时代",
+    "精灵大分裂",
+    "高等精灵决裂",
+    "森林同化",
+    "旧世界殖民"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "木精灵的祖先是最早在旧世界建立殖民地的精灵探险者，他们在漫长的岁月中逐渐与母国奥苏安断绝了联系。当矮人与精灵爆发长须之战争夺旧世界霸权时，这些森林中的精灵袖手旁观，拒绝支援任何一方。战后他们退回艾索洛伦的深处，在魔法森林的庇护下演化成了一个与高等精灵截然不同的独立文明。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我们的历史是从背弃中开始的光荣。当凤凰王的使者在长须之战中来到艾索洛伦请求我们加入对矮人的战争时，我们的先祖拒绝了——他们早已看穿，这场战争仅仅是为了凤凰王的傲慢和矮人高王的顽固，与森林毫无关系。在表面上这是一种逃避，但在更深层意义上这是一种觉醒：我们不再效忠于任何遥远的宝座，我们只效忠于脚下这片活着的土地。自那时起，我们与奥苏安的高等精灵之间只剩下冷淡的礼节性往来——他们视我们为堕落的表亲，我们视他们为傲慢的旧主人。然而真正的历史不仅仅关于政治分裂，更是关于艾索洛伦对我们的改造：森林接纳了我们，将我们的血肉与树根编织在一起，使我们从精灵殖民地居民蜕变为真正的阿斯莱。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "木精灵的历史告诉每一位军事家一个重要的教训：不要将强大力量的中立误认为软弱。在长须之战的数百年间，许多矮人和精灵指挥官都曾试图利用或攻击艾索洛伦周边领地，每一次都以惨败告终。木精灵不加入战争不是因为害怕，而是因为他们认为不值得。任何侵犯其边界的行为都会被一种令人生畏的效率加以报复，而森林本身让追击变成自杀。在战略上，聪明的领袖会保持与艾索洛伦的距离——尊重它的边界，不对其森林进行任何形式的军事渗透。木精灵极少主动发起征服战争，但那些惹怒了他们的人会发现自己永远生活在密林中射出的冷箭阴影之下。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 100
+        },
+        "IdentityIds": null
+      },
+      "Content": "精灵殖民者在旧世界的历史可追溯至约公元前4500年，当时奥苏安的凤凰王贝尔·沙纳尔派遣探险船队前往世界各地建立贸易据点。旧世界沿海和主要河流沿岸出现了多个精灵定居点，其中规模最大的几个位于今日的布雷顿尼亚海岸和艾索洛伦区域。这些殖民地最初与当地矮人王国维持着脆弱的贸易关系。转折点发生在公元前约2000年的长须之战——矮人与精灵之间的全面战争。当凤凰王卡兰多二世下令所有殖民者返回奥苏安支援战争时，艾索洛伦的精灵拒绝服从，从而导致了事实上的分裂。战后，那些决定留在旧世界的精灵聚集在艾索洛伦周围，逐渐被森林的魔力同化。至公元前约1500年，他们已基本完成了从高等精灵殖民者到阿斯莱的转型，建立了以奥莱恩与阿莉尔为共同统治者的林中王廷。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "阿斯莱历史的书写者往往只关注奥莱恩的狩猎与战争，但女性视角下的木精灵历史有着全然不同的肌理。长须之战期间，当男人们在王廷中争论是否支援凤凰王时，是阿莉尔和她的女祭司们首先与森林精魂达成了那项决定性协议——放弃精灵众神的直接庇佑，转而托庇于艾索洛伦本身。这项协议的本质是一次史无前例的灵魂迁徙：将整个族群的命运从奥苏安的精灵文明体系中永远剥离，植入一片有意识的魔法森林的根脉深处。阿里尔的远见拯救了我们——当高等精灵在奥苏安的王廷中内斗不休时，阿斯莱已经在旧世界最深处扎下了无法被撼动的根。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "十二家族的历史各自独立而又彼此纠缠，如同一棵古树的十二根主干分支。我们星叶家族的历史可追溯至第一艘抵达旧世界西海岸的高等精灵殖民船——'晨星号'——的指挥官伊萨里昂，他在艾索洛伦的边缘建立了最初的木材供应站，用以修理远航船队。伊萨里昂在长须之战期间做出了一个令所有高等精灵震惊的决定：他将船烧毁，宣布殖民者将永远留在这片森林中。自那以来的六千年里，星叶家族的血脉从未离开过艾索洛伦，而我们与柳树精魂之间的契约也从未断裂。每一个家族族长都必须在接任仪式上重新宣读始祖当年立下的誓言——那些词语用古精灵语说出时，森林会以低沉的树根震动作为回应。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我在旧世界各地流浪时发现了一个奇怪的现象：几乎每个种族都有自己的'木精灵起源故事'，但相互之间矛盾得令人发笑。帝国学者坚称阿斯莱是堕落精灵的后裔——被混沌污染后逃入森林的变种。矮人的仇恨铭文声称木精灵本质上是长须之战时的叛徒和逃兵。巴托尼亚的民间传说则浪漫地描述木精灵是湖中女神的失落子民，因某种古老的罪孽被罚永远困在凡间森林中。只有当你真正踏入艾索洛伦——如果你有幸活着出来——你才会明白所有这些故事都遗漏了核心要点：木精灵不是因为被迫而留在森林里，他们选择成为森林本身。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "从贸易记录的角度来看，木精灵的历史进程对旧世界商业格局产生了深远却常被忽视的影响。长须之战之前，精灵殖民地曾是旧世界沿海贸易的枢纽节点——矮人矿石和精灵工艺品在这些港口集散。战争之后，艾索洛伦的贸易断绝导致了一条完整的商品链断裂，直接推动了人类自行发展冶金和造船技术以填补空白。帝国瑞克领的早期铁器工业在很大程度上是被'精灵商品真空'逼迫出来的产物。更有趣的是，某些矮人符文物品在拍卖市场上能获得天价的原因之一，是它们使用了在精灵贸易断绝之前获得的精灵魔法合金——这种材料现在已无法从任何渠道取得，使其成为旧世界最稀有的商品之一。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "长须之战——矮人与精灵之间的全面战争，导致精灵殖民者与奥苏安永久决裂",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "木精灵的祖先是最早在旧世界建立殖民地的精灵探险者"
+  ]
+}

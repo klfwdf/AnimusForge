@@ -1,0 +1,97 @@
+﻿{
+  "Id": "rule_罗德里",
+  "Keywords": [
+    "罗德里",
+    "莱恩诺丘陵",
+    "铁矿",
+    "红土"
+  ],
+  "RagShortTexts": [
+    "罗德里村庄因莱恩诺丘陵富铁红土壤得名。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "罗德里是塔利维尔堡附近的一座村庄，其名字来源于莱恩诺丘陵富含铁的红土壤。这里的矿山为瓦兰迪亚王国的许多锻造厂供给铁矿石，打造出的武器和盔甲遍布整个王国。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "罗德里那地方，地是红的，土里全是铁。莱恩诺丘陵的矿坑挖出来的矿石品质好，瓦兰迪亚不知道多少刀剑盔甲，料子都是从这儿刨出来的。塔利维尔堡的驻军守着这一带的矿，这可是国家的命脉。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "townsfolk"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "罗德里的铁矿石供着瓦兰迪亚好些锻造厂。帕拉汶德的武器商人，每次大战前都要往罗德里跑，矿主们坐地起价他们也认。没办法，莱恩诺的红土里刨出来的铁，打刀剑就是比别处的好。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "blacksmith"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "我打了一辈子铁，罗德里的矿石入了炉我就认得出。莱恩诺丘陵那种红土里出的铁，杂质少，打出来的剑刃又硬又韧。瓦兰迪亚的方旗骑士身上穿的板甲，很多料子都是从罗德里那些红土坑里挖出来的。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "罗德里",
+      "Kind": "bound_settlement_name",
+      "TargetId": "__bound_settlement__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": "塔利维尔堡",
+      "Kind": "bound_settlement_name",
+      "TargetId": "__bound_settlement__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}

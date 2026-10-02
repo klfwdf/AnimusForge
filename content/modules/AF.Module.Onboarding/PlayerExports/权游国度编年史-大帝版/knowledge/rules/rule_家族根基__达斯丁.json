@@ -1,0 +1,133 @@
+{
+  "Id": "rule_家族根基__达斯丁",
+  "Keywords": [
+    "达斯丁家族",
+    "荒冢地",
+    "荒冢王",
+    "黑冠双斧"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "达斯丁家族以荒冢屯和周围荒冢地为根基，自称承继古代荒冢王的血脉。家徽为黄底、黑冠之下交叉的长斧；荒冢、先民传说和西南北境的道路使这个家族拥有比许多封臣更古老的地方认同。当地人会尊重临冬城，也会记得荒冢地曾有自己的王与死者；对达斯丁而言，效忠史塔克并不等于抹去旧王血统、婚姻损失或战争带走的亲人。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "北境旧族谈达斯丁时，会把荒冢地的坟丘与古代荒冢王连在一起。这样的血统未必能替人赢得今日的争端，却能让一张宴席上的座次变得敏感。荒冢屯控制西部道路和富饶土地，达斯丁的沉默从来不是无足轻重。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "荒冢地的人在古坟旁放牧、耕作，也听惯了夜里不要惊扰死者的告诫。他们看达斯丁，不只看黑冠与长斧，还看道路是否安全、谷仓是否撑得过长冬。祖先的王冠埋在土下，活人的税粮却要一袋袋扛进城。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待达斯丁家族，会先看它的土地、婚盟、血脉和债务。荒冢屯与荒冢地的北境古族，自称荒冢王后裔，家徽为黄底黑冠与交叉长斧。旧墓丘、先民王权和地方记忆塑造其身份；箴言未知。家徽是门面，能否保护封地、兑现婚约并在危机中召集人马，才是家族真正的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起达斯丁家族时，记得的是谁在营火边分过粮、谁把他们留在城外、谁在败局里仍站在旗旁。荒冢屯与荒冢地的北境古族，自称荒冢王后裔，家徽为黄底黑冠与交叉长斧。旧墓丘、先民王权和地方记忆塑造其身份；箴言未知。家族名声最终要落到具体的人和具体的命令上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意达斯丁家族留下的仪式、墓地和传承。荒冢屯与荒冢地的北境古族，自称荒冢王后裔，家徽为黄底黑冠与交叉长斧。旧墓丘、先民王权和地方记忆塑造其身份；箴言未知。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见达斯丁家族。荒冢屯与荒冢地的北境古族，自称荒冢王后裔，家徽为黄底黑冠与交叉长斧。旧墓丘、先民王权和地方记忆塑造其身份；箴言未知。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "达斯丁家族：荒冢屯与荒冢地的北境古族，自称荒冢王后裔，家徽为黄底黑冠与交叉长斧。旧墓丘、先民王权和地方记忆塑造其身份；箴言未知。"
+  ]
+}

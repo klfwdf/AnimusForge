@@ -1,0 +1,211 @@
+{
+  "Id": "rule_纪伦翠风__纪伦翠风",
+  "Keywords": [
+    "纪伦翠风",
+    "生命之风",
+    "翡翠学院",
+    "治愈魔法",
+    "LoreOfLife",
+    "自然之力",
+    "水之魔法",
+    "森林复苏",
+    "生命能量",
+    "翠绿之风"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "纪伦——翠风——是生命、生长与治愈之风。春天发芽的第一片叶子、婴儿在母体内的第一次心跳、雨水渗入干裂土地的第一滴——所有这些都携带着纪伦的脉动。纪伦是八风中最仁慈的一支但绝不软弱：在战场上翡翠学院的法师能让交缠的荆棘在敌军阵线中狂野生长，能令伤口在战斗期间愈合，能将一池死水变为吞没敌人的不沉之地。纪伦的力量在靠近河流和森林时倍增，在冬季干燥凛冽的风中衰弱。阿瓦隆的女王艾拉瑞尔是翠风在世间的至高掌控者——她对纪伦的驾驭已经超越了法术的范畴而进入了一种神圣的共生。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "纪伦翠风是我们帝国军队的生命线——在每一场大规模战役中，翡翠学院的德鲁伊式的战斗法师以他们的治愈法术将数以百计的伤兵从休克中拉回。帝国军医能做的只有清创和截肢，而当你的一位重装步兵被兽人的巨斧在胸膛上刨开一道裂缝还能再站起来重新拿起长戟的时候，那是纪伦在通过一位翡翠法师的手将骨头、肌腱和血管一针一线地重新编织在一起。但纪伦的战斗面远不止于治愈。见过翡翠法师正式释放'荆棘风暴'的人才知道翠风的可怕——他不需要你发任何信号，只是安静地站在阵列后方，双手以极缓慢的速度向两侧张开，然后敌军脚下的每一块草地在一瞬间开始向上疯狂缠绕，荆棘以肉眼可见的速度刺穿皮靴、钩碎小腿肌腱并在十几秒内将整排敌军步兵牢牢钉死在原地——这不是摧毁，这是困锁，而困锁对于骑兵冲锋的指挥官来说比摧毁更值钱。纪伦的唯一致命弱点是冬天——在十二月到二月之间的任何野外作战中，翡翠法师的能力至少降低三分之一的输出，因此帝国军队的冬战序列中翡翠学院成员的数量通常故意减少，换以能在寒冷中保持全力输出的其他学院法师。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "翡翠学院对任何统治者而言都是领地上最为实用的魔法资源——不是因为它的战斗力，而是因为它的农业应用潜力。一个被正确部署的翡翠法师——不需要是高级职称——可以在播种季节通过一系列低级纪伦法术提高封地内三成以上的作物产量。这听起来不是军事上的重要问题，但当你需要在一场远征前在六个月内调动两万人的粮食储备时，翡翠法师的农业增产效应可以决定你是否能按时出发。然而翡翠学院法师的调动受到严格的帝国魔法部管制——学院的官方理由是防止纪伦能量被私人领主滥用为变相的经济扩张手段而非魔法防卫资源。德鲁伊式纪伦法师的另一项核心能力——水之操控——在攻城战中具有无法替代的战术价值：一名翡翠法师可以将护城河的水位瞬间抬高齐胸，阻断敌军的攻城塔移动；可以抽干被围城堡的井水，使守军在一周内投降；可以在沙漠行军途中从地下六十尺处提取地下水份，挽救整支军团。这些都是不产生漂亮火焰和不震撼天空的魔法，但任何在实战中吃过缺水和粮草断绝的亏的指挥官都清楚这三项能力在战略上超越了任何火球。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "纪伦翠风的灵能哲学在所有八风中最接近精灵的思维模式——它不将魔法视为一种可被'调用'的工具，而是将其视为一种可被'请求'的生命共鸣。翡翠学院的最高级学者——少数被称为'深翠贤者'的古老法师——拒绝使用'施法'这个词汇：他们将自己与纪伦之间的互动描述为'请求纪伦之流以特定形式在物质世界中显现'。这种语言不是修辞，它反映了纪伦与其他风之间的根本差异：红风的火是你燃烧甲具引发的、蓝风的闪电是你从天空中拽下来的——但翠风的荆棘生长是你向已经存在于那颗种子中的生长本质发出一个加速请求后，种子自身的生命力作出的自我回应。这决定了翡翠法师无法凭空创造生命——他们只能加速、重定向或抑制已经存在的生命过程。因此纪伦在沙漠和荒原中几乎无用的原因不是风不在，而是缺乏足够的可被放大的生命实体使得纪伦的共鸣无法发生。精灵的艾拉瑞尔女王被认为可以绕过这一限制——传说她可以在寸草不生的死地中让鲜花直接绽开，但这说法至今没有被任何一位帝国翡翠法师以实证方式向学院委员会证明。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "纪伦翠风在八风之中是女性学员比例最高的（约占五成，是所有学院中唯一性别比例大致平衡的学院），也是唯一一个高级导师中有超过三成女性的风。翡翠学院内部的文化——与火焰学院或黄金学院的男性至上氛围截然不同——在私下被认为更接近于一座由女性长者和男性弟子共修的修道院而非军事学院。女性翡翠法师在治愈法术上的专注度在统计上显著高于男性——这一差异是否是生理性的、心理性的还是学院文化塑造的结果至今没有定论。我个人倾向于第三种解释：翡翠学院的内部评审体系对女性法师的治愈法术给予不成比例的高评价（因为治愈是纪伦最可见、最安全、也最受公众欢迎的应用），而对女性法师的攻击性纪伦法术给予不成比例的低资源支持——这导致了一种自我实现的循环：女性学员在被鼓励治愈的过程中变得擅长治愈，在被忽视攻击训练的过程中变得不擅长攻击，然后学院以'女性更擅长治愈'作为统计证据来合理化当初的资源分配偏差。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我的家族领地的正中央有一棵被我们称为'祖母榛'的榛子树——它的树龄在我的族谱开始被记录之前就已经不可追溯。根据家族秘密传统，这棵榛子树是翡翠学院设立之前就已经存在的一个微弱的纪伦地脉节点——它不是一条河、一个湖泊、一片大森林——仅仅是一棵被无数代祖先以沉默的低级纪伦式护理（浇水、修枝、在满月之夜以家族私传咒语与根脉对话）生生不息地养了可能超过一千年的树。翡翠学院的某位不愿公开姓名的深翠贤者曾秘密到访考察过祖母榛，他告诉我这棵树是一个'生命负债'——它的存在本身在消耗周围方圆二十里土地中的微量纪伦精华，而如果有一天它死了，这二十里土地将陷入长达数年的减产。但祖母榛还活着，每一个春天它仍然结出数量刚好够家族冬季食用的榛子——不多不少——好像它在计算每一个孩子的嘴。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "纪伦在流浪者中最珍贵的应用不是治愈和荆棘——而是一杯水。一名接受过哪怕最基础翡翠训练的旅人——不一定需要是学院认可的法师——可以在任何不是完全干燥的环境中每天从空气中、地下的岩层缝隙中或任何植物的根块中蒸馏出大约一品脱的饮用水。这个能力的价值在穿越边境亲王领的碱性荒原或灰山南段的夏季碎岩地带时无法用任何金币衡量——一品脱水在你脱水到开始看到不存在的东西的时候，就是生死的分界线。我在陶本海姆领地遇到过一个被翡翠学院驱逐的无证女法师——她可以把手放在一棵枯树树皮上、闭眼半刻后告诉你这棵树还有多久会彻底死亡、哪一根根须还在汲取地下水、以及地下水的深度。她的收费是一顿饭。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "翡翠学院在帝国农业经济中扮演着一个被刻意淡化的但极其基础的角色。纪伦法师——特别是那些被分配到帝国农村地区的低阶翡翠使者——每年在播种和收割季为帝国主要粮食产区提供所谓的'翠巡'服务，其增产效应在帝国农业部内部的不公开备忘录中被量化为约占帝国全年谷物总产的百分之七到十四。如果考虑到纪伦对帝国主要葡萄酒产区的霜冻预防效应——翡翠法师可以在春霜期间以微弱纪伦气流维持葡萄园正上方十尺气温高出周围两度——这个经济贡献足以让帝国酒业每年节省大约对应八万金克朗的霜害损失。但翡翠学院从不对这些服务收费——学院章程禁止任何翡翠法师以商业目的出售纪伦服务——这使得翡翠学院在帝国政治中保持了一种独特的道德高地：任何人都不能批评翡翠学院的法师拿钱不办事，因为他们一分钱也没拿。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "纪伦翠风——生命、生长与治愈的八风之一，在春天和近水处力量最强",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "纪伦翠风的魔法属性与能量来源"
+  ]
+}

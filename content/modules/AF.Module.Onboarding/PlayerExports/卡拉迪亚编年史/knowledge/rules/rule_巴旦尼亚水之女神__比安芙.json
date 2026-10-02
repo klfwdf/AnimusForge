@@ -1,0 +1,143 @@
+﻿{
+  "Id": "rule_巴旦尼亚水之女神",
+  "Keywords": [
+    "比安芙",
+    "水之女神",
+    "巴旦尼亚水神"
+  ],
+  "RagShortTexts": [
+    "比安芙是巴旦尼亚信仰中掌管河流、泉水和湖泊的水之女神，居于水面之下，既是生命的给予者也是死亡的引诱者。",
+    "比安芙不庇护任何特定部落或人群，对所有踏入水域的生灵一视同仁，人们在渡河前会投掷面包、蜂蜜酒或铜币以求她不要注意自己。",
+    "比安芙的信仰主要表现为敬畏而非崇拜，德鲁伊将她归类为'边境之神'，守护生者与亡者、陆地与水下的界限。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "在巴旦尼亚的信仰中，水之女神比安芙掌管着世间一切流动的水——河流、泉水、瀑布，以及山岩之下那些幽深不见底的暗池。她居于水面之下，既是生命的给予者，也是死亡的引诱者。与巴旦尼亚其他神灵不同，比安芙并不庇护某个特定的部落或人群。她对所有人都一视同仁，无论是巴旦尼亚人还是外来者，在她面前都只是踏入水域的生灵。人们在渡河前会向水中投掷一小块面包、几滴蜂蜜酒或一枚铜币，不是为了祈求她的眷顾，而是为了让她不要注意到自己。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "比安芙是水的主宰。每一处湍急的河流、每一座幽深的暗池，都是她的眼睛。渔民下水前要在岸边放一块面包，船夫撑篙前要往河里滴几滴蜂蜜酒——不是给她上供，是求她别在今天收人。她从不偏袒谁，巴旦尼亚人也好，帝国人也好，掉进她的水里都是一样地沉下去。彭·坎诺克的人最懂这个。那座城蹲在高山顶上，脚下就是特朗河，河边的暗礁和急流每年都要带走几条人命。城里的老人说，那些暗礁下面有比安芙的宫殿，被带走的人不是淹死的，是被她请去做客了。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "townsfolk"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "我们城下的山岩间有一个暗池，那是比安芙住的地方。小时候大人就警告我们，别靠近那个池子，连往里看都不要看，因为她的脸会从水底浮上来，看一眼魂就被她带走了。但也有人说，比安芙不光会杀人。她有时候会爱上一个英雄，给他赐福，让他平安渡河，帮他在河边打赢仗。哪些英雄得过她的青睐？吟游诗人们吵了几百年也没吵出个结果。每个人都说自己村出的那个英雄是被比安芙亲过的，谁也拿不出证据。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "巴旦尼亚人信的那个水之女神，名字叫比安芙。我们帝国人不太理解这种信仰——往河里扔面包和铜币，只求她别害人？这听起来更像是贿赂而不是敬拜。但彭·坎诺克那地方确实邪门，山岩下的暗池黑得跟墨一样，盯久了感觉水底下确实有什么东西在看你。也许巴旦尼亚人不是迷信，只是比我们更早发现了那些水里确实住着什么东西。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "巴旦尼亚人的水之女神和我们北方的荒野女神有点像——都不好惹，都不跟你讲道理，都住在人迹罕至的地方。区别在于，我们的荒野女神管的是整片森林和雪原，他们的比安芙只管水。但管水有管水的可怕之处。北方人冻死至少有具尸体，被水拖下去的连尸首都找不到。彭·坎诺克脚下那个暗池，我路过的时候往里面扔过一颗石子，石子沉下去连个泡都没冒。我转身就走了。那是比安芙的地盘，不是我的。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "巴旦尼亚人信的水之女神，在我们瓦兰迪亚人听来就是水妖。我们的渔民也信类似的东西——水底下有东西在看着你，你倒霉的时候它会来收命。但巴旦尼亚人把她供成了一个有名字的神，叫比安芙，还给她编了一整套爱情故事。说她在某些时候会爱上英雄，给他赐福。这倒是比我们那边单纯怕水妖的传统要浪漫一点。不过说实话，不管你是管她叫比安芙还是叫水妖，从滑石上踩错一步掉进急流里，结果都是一样的。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "巴旦尼亚人信的水神在我们看来很奇特。草原上也有水神，但我们的水神是河流本身，不是住在水底下的一个女神。他们的比安芙待在水里，等活人靠近，然后把喜欢的人拉下去。巴旦尼亚人往水里扔东西，不是求她帮忙，是求她别杀人。草原上没有这种害怕水的传统，我们的马能泅渡过最急的河，不需要给水神交过路费。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "steward": 150
+        }
+      },
+      "Content": "比安芙在巴旦尼亚多神信仰中占据着一个特殊的位置。她是掌管河流、泉水和湖泊的水之女神，与其他巴旦尼亚神灵不同，她并不庇护特定的部落或人群，对所有踏入水域的生灵一视同仁。这种'非排他性'的神格特征在整个卡拉迪亚的宗教体系中非常罕见。在宗教实践层面，比安芙的信仰主要表现为敬畏而非崇拜，这与巴旦尼亚人对森林之灵的主动祈祷形成鲜明对比。巴旦尼亚德鲁伊将比安芙归类为'边境之神'——守护生者与亡者、陆地与水下的界限，冒犯者被拖入水中，眷顾者则能平安渡河。关于比安芙与英雄相爱的传说，在彭·坎诺克一带尤为盛行，这反映了水之女神信仰中一个独特的二元性：她既是死亡的引诱者，也是胜利的赐予者，两者之间的转换毫无规律可言，正如湍急的河水本身。"
+    }
+  ],
+  "TextMappings": []
+}
