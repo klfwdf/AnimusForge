@@ -1,3 +1,20 @@
+<a id="release-15-20261002"></a>
+## 当前交付：AnimusForge 1.5 一键发布包与玩家公告（2026-10-02）
+
+**范围与状态：PACKAGED / OFFLINE_VERIFIED。** 按本次授权修改统一源 XML 为 `v1.5.0`，使用原 `一键编译覆盖推送/一键打包AnimusForge.bat -Version v1.5.0 -PackageLabel release` 生成完整单模块发布包，并编写[玩家更新说明](releases/AnimusForge_1.5_玩家更新说明.md)。本次没有额外 push、游戏覆盖、全局安装或玩法改动；此前全会话代码已推送/部署的事实保持，不能把本轮 1.5 版本号误称为已推送/已安装。
+
+**公告基线：** main first-parent 在北京时间 `2026-09-06T00:00:00+08:00` 之前的最后状态为 `bfe07190ff9c04f055537e496a87c1d0b0749a77`（2026-09-05 20:47:49 +0800）。使用该树到当前完整产品的实际差异，不仅按提交日期筛选；包含其他会话最新内战/政变/生图/处决源码。与已发布 `d6e859c3` 对照产品源码/正式资源无差异，仅本轮版本 XML 与公告新增；战争统计等基线已有能力只写改进。
+
+**修改/代码导航：** `AnimusForge/SubModule.xml:4` 的 Version 从 `v1.3.7.2` 改为 `v1.5.0`，Id/Name/Bootstrap 和程序集身份未改；原打包入口及 `scripts/build/build_single_module.ps1`、`package_mod.ps1`、`content_layout.ps1` 均未修改。公告涵盖公开处决完整流程/遗言/现场下令/实际记录、政变/大厅/忠王派/胜利处置、玩家内战派系、新对话 UI、AI画卷、快报周报及三渠道修复。已有能力的生产 owner/consumer 导航仍见下方 `latest-session-integration-20261002` 条目，本轮不迁移责任或新增执行入口。
+
+**实际验证：** 原入口保持 Debug 配置，1.3（参考 v1.3.15.110062）、1.4（参考 v1.4.6.115628）与 Bootstrap 三构建 0 error，既有编译警告保留；统一 Stage 成功；一键完整日志含 `Package Result: success` 与最终 `[SUCCESS]`，进程 exit0。最初子进程 PATH/PSModulePath 异常与 `-File` 模式 exit-1 未判通过；仅在本地 artifacts 启动器中修复环境，最终由原 BAT 调用同一原打包脚本，以经成功验证的 Windows PowerShell `-Command`/trace 运行打包，未改构建逻辑。独立 zipfile CRC/唯一根/Bootstrap-only/三标记与 DLL hash/无原版 DLL 或个人数据检查 PASS；238 文件逐项与当前 clean Stage SHA256 全相同；冻结 20221 项源码/资源 raw hash 0 mismatch。PDB 属于原 Debug Stage 的必需文件，保留；包不包含 ONNX 模型、Logs、PlayerExports、Recovery 或个人工作目录，ONNX runtime DLL 属正常依赖。
+
+**最终产物：** `一键编译覆盖推送/packages/AnimusForge_v1.5.0_release_20261002_190334_995.zip`，77781310 bytes，SHA256 `0e048b4f2357827dee4881dbc3c50650dc9039803e9dbe7adb3f67c0e26f37ca`。packages 同目录保存校验文件与公告 `.md`/UTF-8 `.txt`，不事后修改 ZIP。命令、完整日志、冻结清单、全包哈希、内容复核和最终收据集中在本地 `artifacts/release-1.5-20261002/`；本地临时 host 与失败诊断 ZIP 不是发布入口，不分发。公告文件未打入 ZIP，以保持原脚本 Stage 精确相等规则。
+
+**NOT_RUN / 回滚：** 未启动游戏，未新增真实旧档、实际 UI/场景、真实 API/provider/TTS 或帧率验收；不把此前定向离线回归或本轮包检查升级为全游戏通过。检查点 `aa8593e5`，XML 原件 `artifacts/release-1.5-20261002/SubModule.before.xml`；共享文档前态保存在同目录 `*.before`。采用聚焦逆向提交回退，不 hard reset，不覆盖原有 dirty 文档或其他作者文件。
+
+---
+
 ## 当前交付：所有会话最新产品统一推送并部署（2026-10-02）
 
 <a id="latest-session-integration-20261002"></a>
