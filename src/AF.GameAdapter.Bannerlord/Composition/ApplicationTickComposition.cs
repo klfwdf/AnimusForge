@@ -73,7 +73,7 @@ internal static class ApplicationTickComposition
 		AnimusForgeTerminalBehavior.Instance?.OnEngineTick();
 		CustomPolicyBehavior.Instance?.OnEngineTick();
 		NpcRulerPolicyBehavior.Instance?.OnEngineTick();
-		WorldDiplomacyBehavior.Instance?.OnEngineTick();
+		DiplomacyModuleServices.World.OnEngineTick();
 		PolicySystemUi.OnApplicationTick();
 		NobleGatheringBehavior.Instance?.OnEngineTick();
 		VassalageBehavior.Instance?.OnEngineTick();
@@ -115,7 +115,7 @@ internal static class ApplicationTickComposition
 			RunWatchedTickPhase("SubModule.AnimusForgeTerminalBehavior.OnEngineTick", () => AnimusForgeTerminalBehavior.Instance?.OnEngineTick());
 			RunWatchedTickPhase("SubModule.CustomPolicyBehavior.OnEngineTick", () => CustomPolicyBehavior.Instance?.OnEngineTick());
 			RunWatchedTickPhase("SubModule.NpcRulerPolicyBehavior.OnEngineTick", () => NpcRulerPolicyBehavior.Instance?.OnEngineTick());
-			RunWatchedTickPhase("SubModule.WorldDiplomacyBehavior.OnEngineTick", () => WorldDiplomacyBehavior.Instance?.OnEngineTick());
+			RunWatchedTickPhase("SubModule.WorldDiplomacyBehavior.OnEngineTick", () => DiplomacyModuleServices.World.OnEngineTick());
 			RunWatchedTickPhase("SubModule.PolicySystemUi.OnApplicationTick", () => PolicySystemUi.OnApplicationTick());
 			RunWatchedTickPhase("SubModule.NobleGatheringBehavior.OnEngineTick", () => NobleGatheringBehavior.Instance?.OnEngineTick());
 			RunWatchedTickPhase("SubModule.VassalageBehavior.OnEngineTick", () => VassalageBehavior.Instance?.OnEngineTick());

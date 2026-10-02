@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using AnimusForge.Refactor.Contracts;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Actions;
 using TaleWorlds.Library;
@@ -17,7 +18,7 @@ internal static class DiplomacyPeaceTermsService
 		}
 		if (token.Equals("auto", StringComparison.OrdinalIgnoreCase))
 		{
-			return DiplomacyBehavior.TryBuildTributePowerContext(payer, receiver, out AfTributePowerContext context)
+			return DiplomacyConversationBridge.TryBuildTributePowerContext(payer, receiver, out AfTributePowerContext context)
 				? context.CalculatedTribute
 				: 0;
 		}
@@ -49,41 +50,45 @@ internal static class DiplomacyPeaceTermsService
 			: (hasTribute ? 100 : 0);
 	}
 
-	public static bool TryApplyPeace(
-		Kingdom payer,
-		Kingdom receiver,
-		int requestedDailyTribute,
-		int requestedDurationDays,
-		string source,
-		out int appliedDailyTribute,
-		out int appliedDurationDays,
-		out string failureReason)
-	{
-		appliedDailyTribute = 0;
-		appliedDurationDays = 0;
-		failureReason = "";
-		if (payer == null || receiver == null || payer == receiver || payer.IsEliminated || receiver.IsEliminated)
-		{
-			failureReason = "王国目标无效";
-			return false;
-		}
-		if (!FactionManager.IsAtWarAgainstFaction(payer, receiver))
-		{
-			failureReason = "双方已不处于战争状态";
-			return false;
-		}
-		if (requestedDailyTribute < 0)
-		{
-			failureReason = "每日贡金不能为负数";
-			return false;
-		}
-		appliedDailyTribute = requestedDailyTribute;
-		appliedDurationDays = ResolveDurationDays(requestedDurationDays.ToString(), appliedDailyTribute > 0);
-		int tributeForAction = appliedDailyTribute;
-		int durationForAction = appliedDurationDays;
-		MeetingBattleRuntime.RunWithDiplomaticSideEffectsUnlocked(source ?? "diplomacy_make_peace", () =>
-			MakePeaceAction.ApplyByKingdomDecision(payer, receiver, tributeForAction, durationForAction));
-		DiplomacyRecentPeaceGuard.RegisterPeace(payer, receiver, source ?? "diplomacy_make_peace");
-		return true;
-	}
+	internal static DiplomacyPeaceEffectReceipt ApplyPeace(
+        Kingdom payer, Kingdom receiver, int requestedDailyTribute, int requestedDurationDays, string source)
+    {
+        if (payer == null || receiver == null || payer == receiver || payer.IsEliminated || receiver.IsEliminated)
+            return new(false, false, false, 0, 0, false, "王国目标无效");
+        if (!FactionManager.IsAtWarAgainstFaction(payer, receiver))
+            return new(true, false, false, 0, 0, false, "双方已不处于战争状态");
+        if (requestedDailyTribute < 0)
+            return new(true, false, false, 0, 0, false, "每日贡金不能为负数");
+        int days = ResolveDurationDays(requestedDurationDays.ToString(), requestedDailyTribute > 0);
+        string diagnostic = "";
+        try
+        {
+            MeetingBattleRuntime.RunWithDiplomaticSideEffectsUnlocked(source ?? "diplomacy_make_peace", () =>
+                MakePeaceAction.ApplyByKingdomDecision(payer, receiver, requestedDailyTribute, days));
+        }
+        catch (Exception ex) { diagnostic = ex.Message; }
+        return ConfirmPeace(payer, receiver, requestedDailyTribute, days, source, diagnostic);
+    }
+
+    internal static DiplomacyPeaceEffectReceipt ConfirmPeace(Kingdom payer, Kingdom receiver,
+        int requestedDailyTribute, int requestedDurationDays, string source, string diagnostic = "")
+    {
+        bool peace;
+        try { peace = payer != null && receiver != null && !FactionManager.IsAtWarAgainstFaction(payer, receiver); }
+        catch (Exception ex) { return new(false, false, false, 0, 0, false, diagnostic + " | peace readback: " + ex.Message); }
+        if (!peace) return new(true, false, false, 0, 0, false, diagnostic + " 和平动作未生效");
+        // Registration is an ancillary guard; its failure cannot erase confirmed peace.
+        try { DiplomacyRecentPeaceBridge.RegisterPeace(payer, receiver, source ?? "diplomacy_make_peace"); }
+        catch (Exception ex) { diagnostic += " | peace guard: " + ex.Message; }
+        try
+        {
+            StanceLink stance = payer.GetStanceWith(receiver);
+            int tribute = stance.GetDailyTributeToPay(payer);
+            int days = stance.DailyTributeInstallments;
+            int requestedDays = ResolveDurationDays(requestedDurationDays.ToString(), requestedDailyTribute > 0);
+            return new(true, true, true, tribute, days,
+                tribute == requestedDailyTribute && days == requestedDays, diagnostic);
+        }
+        catch (Exception ex) { return new(true, true, false, 0, 0, false, diagnostic + " | tribute readback: " + ex.Message); }
+    }
 }

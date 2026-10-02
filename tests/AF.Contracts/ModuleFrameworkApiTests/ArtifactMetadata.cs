@@ -24,6 +24,8 @@ internal static class Program
         Check(reader.GetString(reader.GetAssemblyDefinition().Name) == (legacyV1 ? "NativeModuleUnderTest" : "AnimusForge"), "implementation or explicit legacy fixture assembly identity");
         var provider = new Names(); var lines = new List<string>();
         var api = new HashSet<string>(); var internalTypes = new HashSet<string>();
+        var diplomacyTypes = new HashSet<string>();
+        string[] expectedDiplomacy = { "IDiplomacyConversationPort", "IWorldDiplomacyModulePort", "IDiplomacyPolicyObservationPort", "DiplomacyModuleServices", "DiplomacyConversationBridge", "DiplomacyConversationModuleAdapter", "WorldDiplomacyModuleAdapter", "DiplomacyModuleComposition", "DiplomacyIdentityResolver", "WorldDiplomacyPolicySignalSnapshot" };
         bool foundMemoryOwner = false, foundCourierOwner = false;
         var lifecycleTypes = new HashSet<string>(); var retirementOwners = new HashSet<string>();
         foreach (TypeDefinitionHandle handle in reader.TypeDefinitions)
@@ -46,6 +48,11 @@ internal static class Program
                     Check((retirement.Attributes & MethodAttributes.MemberAccessMask) == MethodAttributes.Assembly
                         && (retirement.Attributes & MethodAttributes.Static) == 0, "retirement is internal instance-only");
                 }
+            if (ns == "AnimusForge" && expectedDiplomacy.Contains(name))
+            {
+                diplomacyTypes.Add(name);
+                Check((type.Attributes & TypeAttributes.VisibilityMask) == TypeAttributes.NotPublic, name + " diplomacy port stays internal");
+            }
             if (ns == "AnimusForge.Refactor.Modules")
             {
                 Check((type.Attributes & TypeAttributes.VisibilityMask) == TypeAttributes.NotPublic,
@@ -130,6 +137,7 @@ internal static class Program
         else
         {
         Check(lifecycleTypes.Count == 3 && retirementOwners.Count == 3, "all core lifetime types and retirement bindings exist in actual DLL");
+        Check(diplomacyTypes.SetEquals(expectedDiplomacy), "all internal diplomacy ports present in actual DLL");
         Check(foundMemoryOwner, "actual DLL includes legacy memory owner");
         Check(foundCourierOwner, "actual DLL includes original Courier owner");
         Check(api.SetEquals(expected), "exact additive Native, Scene and Courier V1 type surface");

@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="../../../../src/AF.Contracts/Internal/WorldDiplomacyTimelineQueryContracts.cs" Link="WorldDiplomacyTimelineQueryContracts.cs" />
+    <Compile Include="../../../../src/AF.Contracts/Internal/WorldDiplomacyTimelineDocumentQueryContracts.cs" Link="WorldDiplomacyTimelineDocumentQueryContracts.cs" />
+    <Compile Include="../../../../src/AF.Contracts/Internal/WorldDiplomacyDocumentReadCommandContracts.cs" Link="WorldDiplomacyDocumentReadCommandContracts.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Adapters/Facades/WorldDiplomacyTimelineRevisionFacade.cs" Link="WorldDiplomacyTimelineRevisionFacade.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyTimelineRevisionApplication.cs" Link="WorldDiplomacyTimelineRevisionApplication.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Adapters/Facades/WorldDiplomacyTimelineDocumentQueryFacade.cs" Link="WorldDiplomacyTimelineDocumentQueryFacade.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Adapters/Facades/WorldDiplomacyDocumentReadCommandFacade.cs" Link="WorldDiplomacyDocumentReadCommandFacade.cs" />
+  </ItemGroup>
+</Project>

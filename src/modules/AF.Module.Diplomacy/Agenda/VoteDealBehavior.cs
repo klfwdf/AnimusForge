@@ -1853,7 +1853,7 @@ namespace AnimusForge
 					case BilateralDiplomacyKind.Peace:
 						MeetingBattleRuntime.RunWithDiplomaticSideEffectsUnlocked("bilateral_diplomacy_peace", () =>
 							MakePeaceAction.ApplyByKingdomDecision(first, second, record.TributeFromFirstToSecond, record.TributeDurationDays));
-						DiplomacyRecentPeaceGuard.RegisterPeace(first, second, "bilateral_diplomacy_peace");
+						DiplomacyRecentPeaceBridge.RegisterPeace(first, second, "bilateral_diplomacy_peace");
 						return true;
 					case BilateralDiplomacyKind.Alliance:
 					{

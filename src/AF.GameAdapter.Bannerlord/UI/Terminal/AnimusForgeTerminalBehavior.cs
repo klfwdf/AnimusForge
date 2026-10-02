@@ -134,7 +134,7 @@ public class AnimusForgeTerminalBehavior : CampaignBehaviorBase
 			_wasTerminalKeyDown = false;
 			return;
 		}
-		if (CourierLetterInputPopup.IsOpen || CourierLetterReplyPopup.IsOpen || WorldDiplomacyComposePopup.IsOpen)
+		if (CourierLetterInputPopup.IsOpen || CourierLetterReplyPopup.IsOpen || DiplomacyPresentationBridge.IsOpen)
 		{
 			LogHotkeyBlocked("modal_text_input_ui", configuredTerminalKey);
 			_wasTerminalKeyDown = true;
@@ -434,7 +434,7 @@ public class AnimusForgeTerminalBehavior : CampaignBehaviorBase
 
 		case "diplomatic_document":
 			CloseTerminal();
-			if (!WorldDiplomacyBehavior.OpenComposeFromTerminal())
+			if (!DiplomacyPresentationBridge.OpenComposeFromTerminal())
 			{
 				InformationManager.DisplayMessage(new InformationMessage("打开外交宣言撰写界面失败。"));
 			}
@@ -447,7 +447,7 @@ public class AnimusForgeTerminalBehavior : CampaignBehaviorBase
 
 		case "world_policies":
 			CloseTerminal();
-			if (!WorldDiplomacyBehavior.ShowRoyalAnnouncementArchive(OpenCustomPolicyManagementView))
+			if (!DiplomacyPresentationBridge.ShowRoyalAnnouncementArchive(OpenCustomPolicyManagementView))
 			{
 				InformationManager.DisplayMessage(new InformationMessage("打开王国公告界面失败。"));
 			}
@@ -949,7 +949,7 @@ public class AnimusForgeTerminalBehavior : CampaignBehaviorBase
 		if (PlayerRpForgePopup.IsOpen
 			|| CourierLetterInputPopup.IsOpen
 			|| CourierLetterReplyPopup.IsOpen
-			|| WorldDiplomacyComposePopup.IsOpen)
+			|| DiplomacyPresentationBridge.IsOpen)
 		{
 			return false;
 		}

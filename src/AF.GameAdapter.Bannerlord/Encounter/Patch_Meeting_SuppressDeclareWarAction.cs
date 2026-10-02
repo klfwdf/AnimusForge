@@ -25,7 +25,7 @@ public static class Patch_Meeting_SuppressDeclareWarAction
 			bypassMeetingGuard = true;
 		}
 		if (!bypassMeetingGuard
-			&& DiplomacyRecentPeaceGuard.ShouldBlockDeclareWar(faction1, faction2, declareWarDetail, "DeclareWarAction.ApplyInternal"))
+			&& DiplomacyRecentPeaceBridge.ShouldBlockDeclareWar(faction1, faction2, declareWarDetail, "DeclareWarAction.ApplyInternal"))
 		{
 			return false;
 		}

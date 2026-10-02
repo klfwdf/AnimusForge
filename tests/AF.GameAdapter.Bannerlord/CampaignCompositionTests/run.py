@@ -19,7 +19,7 @@ SOURCES = ['src/AF.GameAdapter.Bannerlord/Composition/CampaignComposition.cs', '
             'src/AF.Foundation.Runtime/ModuleDirectory/ModuleDirectoryLifecycleOwner.cs',
             'src/AF.Foundation.Runtime/ModuleDirectory/InternalModuleDirectory.cs', 'src/AF.Contracts/Internal/FeatureBridgeContracts.cs',
             'src/modules/AF.Module.PublicApi/V1/AfApi.cs', 'src/AF.Contracts/PublicApi/V1/AfApiContracts.cs',
-            'src/AF.Foundation.Runtime/ModuleDirectory/ModuleFrameworkSnapshot.cs', 'src/modules/AF.Module.PublicApi/Internal/AfV1SnapshotProjection.cs', 'src/AF.Foundation.Runtime/ModuleDirectory/HostedExtensionCatalog.cs']
+            'src/AF.Foundation.Runtime/ModuleDirectory/ModuleFrameworkSnapshot.cs', 'src/modules/AF.Module.PublicApi/Internal/AfV1SnapshotProjection.cs', 'src/modules/AF.Module.Diplomacy/Adapters/DiplomacyModuleComposition.cs', 'src/AF.Foundation.Runtime/ModuleDirectory/HostedExtensionCatalog.cs']
 
 def load(name, path):
     spec = importlib.util.spec_from_file_location(name, ROOT / path)
@@ -63,6 +63,10 @@ def verify_source():
     current = extract(campaign,'internal static void Register(')
     body = current[current.index('{'):].replace('CampaignModelComposition.Register(campaignGameStarter);',
             '\n'.join(name+'(campaignGameStarter);' for name in METHODS))
+    composition = read('src/modules/AF.Module.Diplomacy/Adapters/DiplomacyModuleComposition.cs')
+    registration = extract(composition, 'internal static void Register(')
+    assert compact(registration[registration.index('{'):]) == compact('{ starter.AddBehavior(new WorldDiplomacyBehavior()); starter.AddBehavior(new DiplomacyBehavior()); }')
+    body = body.replace('DiplomacyModuleServices.Register(campaignGameStarter);', 'campaignGameStarter.AddBehavior(new WorldDiplomacyBehavior()); campaignGameStarter.AddBehavior(new DiplomacyBehavior());')
     assert compact(body) == compact(original_body), 'Changed behavior construction/order'
     register = extract(models,'internal static void Register(')
     expected = '{'+''.join(name+'(campaignGameStarter);' for name in METHODS)+'}'
@@ -80,6 +84,10 @@ def verify_source():
     create = extract(team,'internal static InternalModuleDirectory CreateDirectory(')
     assert create.count('HostedExtensionCatalog.Register(directory);') == 1, 'Hosted catalog registration is not unique'
     create = create.replace('        HostedExtensionCatalog.Register(directory);\n', '')
+    # The new module's exact capabilities/gates are exercised by ModuleFrameworkApiTests.
+    start100 = create.index('        if (DiplomacyModuleServices.Conversation')
+    end100 = create.index('        return directory;', start100)
+    create = create[:start100] + create[end100:]
     assert compact(create[create.index('{'):]) == compact('{'+old_registration+'return directory;}'), 'Changed typed registration list'
     before = before[:start]+'                var directory = TeamModuleRegistration.CreateDirectory();'+before[end:]
     before = before.replace('    private const int InternalContractVersion = 1;\n','')
@@ -125,15 +133,12 @@ def main():
     behaviors=''
     for n in names:
         ns='AFWarStatsTerminal.Behaviors' if n=='AfWarStatsBehavior' else 'AnimusForge'
-        behaviors+='namespace '+ns+' { internal class '+n+' : TaleWorlds.CampaignSystem.CampaignBehaviorBase { } }\n'
+        extra = ' public static void RegisterHarmonyPatches(HarmonyLib.Harmony harmony) { } ' if n == 'WorldDiplomacyBehavior' else ''
+        behaviors+='namespace '+ns+' { internal class '+n+' : TaleWorlds.CampaignSystem.CampaignBehaviorBase { '+extra+'} }\n'
     (out/'Behaviors.cs').write_text(behaviors,encoding='utf-8')
-    api_stubs=read('tests/AF.Contracts/ModuleFrameworkApiTests/HostStubs.cs').split('// API tests cover assembly-directory state only;')[0]
-    # This suite creates a real constructor-probed Courier behavior. The API suite's
-    # newer static Courier admission double would duplicate that type and pull in
-    # CoreDialogueOperation, which Campaign composition does not exercise.
-    courier_start=api_stubs.index('// Directory/Native/Scene suites do not pretend to exercise the Courier transport owner.')
-    runtime_start=api_stubs.index('namespace AnimusForge.Refactor.Runtime',courier_start)
-    api_stubs=api_stubs[:courier_start]+api_stubs[runtime_start:]
+    api_stubs=read('tools/ModuleFrameworkApiTests/HostStubs.cs').split('// API tests cover assembly-directory state only;')[0]
+    api_stubs=api_stubs.replace('        internal static object Conversation { get; }',
+        '        internal static void Register(TaleWorlds.CampaignSystem.CampaignGameStarter starter) => DiplomacyModuleComposition.Register(starter);\n        internal static object Conversation { get; }')
     (out/'ApiHostStubs.cs').write_text(api_stubs,encoding='utf-8')
     common=[HERE/'HostStubs.cs',HERE/'Program.cs',current_hosts,out/'Behaviors.cs',out/'ApiHostStubs.cs']
     sources=[ROOT/s for s in SOURCES]

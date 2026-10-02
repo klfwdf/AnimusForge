@@ -2115,7 +2115,7 @@ public sealed partial class ProactiveNpcRequestBehavior
 	{
 		candidate = null;
 		if (source?.Hero == null
-			|| !WorldDiplomacyBehavior.TryBuildProactiveDiscussionForExternal(source.Hero, out string discussionKey, out string discussionFact, out float urgency)
+			|| !DiplomacyConversationBridge.TryBuildProactiveDiscussionForExternal(source.Hero, out string discussionKey, out string discussionFact, out float urgency)
 			|| string.IsNullOrWhiteSpace(discussionKey)
 			|| _cooldownOwner.IsDiscussionOnCooldown(discussionKey, NowDays()))
 			return false;

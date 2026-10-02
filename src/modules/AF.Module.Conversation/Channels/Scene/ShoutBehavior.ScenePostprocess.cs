@@ -244,7 +244,7 @@ internal sealed partial class SceneConversationSessionRuntime
 							bool royalPostprocessSelected = AIConfigHandler.CanUseAuxiliaryActionPostprocess()
 								&& AIConfigHandler.IsRoyalAbdicationPostprocessTargetForExternal(speakingHero ?? npcCharacter?.HeroObject);
 							bool independentClanPeaceResident = replyIsDirectPlayerResponse
-								&& DiplomacyBehavior.CanUseIndependentClanPeaceForExternal(speakingHero, npcCharacter);
+								&& DiplomacyConversationBridge.CanUseIndependentClanPeaceForExternal(speakingHero, npcCharacter);
 							diplomacyRuleInjected = diplomacyRuleInjected || independentClanPeaceResident;
 							if (!HasPreprocessRuleHit(preprocessRuleSnapshot, PublicExecutionOrderPolicy.RuleId) && !duelRuleInjected && !rewardRuleInjected && !loanRuleInjected && !persistentAdpDebtRuleInjected && !kingdomServiceRuleInjected && !kingdomVassalageRuleInjected && !kingdomAnnexationRuleInjected && !lordsHallRuleInjected && !meetingReleaseRuleInjected && !vanillaIssueRuleInjected && !heroJoinPartyRuleInjected && !sceneMechanismRuleInjected && !partyTransferRuleInjected && !voteDealRuleInjected && !customPolicyAgendaRuleInjected && !diplomacyRuleInjected && !worldMapPartyCommandRuleInjected && !nobleGatheringRuleInjected && !proposeAgendaRuleInjected && !marriageRuleInjected && !siegeInterventionRuleInjected && !relayRuleInjected && !npcSurrenderPostprocessSelected && !royalPostprocessSelected)
 							{

@@ -40,9 +40,11 @@ internal static class Program
             "src", "modules", "AF.Module.Diplomacy", "World", "WorldDiplomacyBehavior.cs"));
         string jobRuntime = ReadRepositoryFile(Path.Combine(
             "src", "modules", "AF.Module.Diplomacy", "World", "WorldDiplomacyBehavior.JobRuntime.cs"));
-        int jobRuntimeInsertion = behavior.IndexOf("private bool EnsureRequestFitsInputBudget(", StringComparison.Ordinal);
-        Test.True(jobRuntimeInsertion >= 0, "world diplomacy job runtime insertion marker must exist");
-        behavior = behavior.Insert(jobRuntimeInsertion, jobRuntime + Environment.NewLine);
+        string orchestration = ReadRepositoryFile(Path.Combine(
+            "src", "modules", "AF.Module.Diplomacy", "Application", "WorldDiplomacyOrchestration.cs"));
+        Test.True(orchestration.Contains("public void CommitFailedJob(WorldDiplomacyJob job, string error)", StringComparison.Ordinal),
+            "job commit ownership must stay in the application orchestration");
+        behavior = behavior + Environment.NewLine + jobRuntime + Environment.NewLine + orchestration;
         string client = ReadRepositoryFile("src/modules/AF.Module.Diplomacy/World/WorldDiplomacyLlmClient.cs");
 
         VerifyDefaultsAndRanges(settings);
@@ -119,14 +121,23 @@ internal static class Program
                   && rangeHelper.Contains("DuelSettings.DefaultWorldDiplomacyDeclarationMaxCharacters", StringComparison.Ordinal),
             "declaration range must fall back to the selected defaults when settings are unavailable");
 
+        string promptRules = ReadRepositoryFile(Path.Combine("src", "modules", "AF.Module.Diplomacy", "Domain", "WorldDiplomacyPromptContractRules.cs"));
         string writingContract = ExtractSection(
-            behavior,
-            "private static void AppendDiplomaticDeclarationWritingContract(StringBuilder sb)",
-            "private static string BuildDiplomaticDeclarationModeContract()");
-        Test.True(writingContract.Contains(
-                "GetDiplomaticDeclarationCharacterRange(out int minimumCharacters, out int maximumCharacters);",
-                StringComparison.Ordinal),
-            "the declaration writing contract must resolve the live MCM character range");
+            promptRules,
+            "public static void AppendDiplomaticDeclarationWritingContract(StringBuilder sb, int minimumCharacters, int maximumCharacters)",
+            "public static string BuildDiplomaticDeclarationModeContract()");
+        string lifecycleRules = ReadRepositoryFile(Path.Combine("src", "modules", "AF.Module.Diplomacy", "Domain", "WorldDiplomacyRoundLifecycleRules.cs"));
+        string generationTask = ReadRepositoryFile(Path.Combine(
+            "src", "modules", "AF.Module.Diplomacy", "Application", "WorldDiplomacyJobPreparationApplication.cs"));
+        Test.True(writingContract.Contains("minimumCharacters", StringComparison.Ordinal)
+                && writingContract.Contains("maximumCharacters", StringComparison.Ordinal)
+                && behavior.Contains(
+                    "GetDiplomaticDeclarationCharacterRange(out int minimum, out int maximum);",
+                    StringComparison.Ordinal)
+                && generationTask.Contains(
+                    "WorldDiplomacyPromptContractRules.BuildGenerationSystemPrompt(commonContract, minimumCharacters, maximumCharacters)",
+                    StringComparison.Ordinal),
+            "the declaration writing contract must consume the live MCM character range resolved by the host");
         Test.True(writingContract.Contains("正文必须最少", StringComparison.Ordinal)
                   && writingContract.Contains("个中文字符（标点计入）", StringComparison.Ordinal),
             "the declaration writing contract must state the dynamic Chinese-character range including punctuation");
@@ -332,21 +343,22 @@ internal static class Program
 
     private static void VerifyStaticModeContractsAndPromptMigration(string behavior)
     {
+        string promptRules = ReadRepositoryFile(Path.Combine("src", "modules", "AF.Module.Diplomacy", "Domain", "WorldDiplomacyPromptContractRules.cs"));
 		Test.Equal(28, ReadIntConstant(behavior, "DiplomacyPromptContractVersion"),
 			"the exact own-reputation contract must advance the prompt contract version");
-		Test.Equal("diplomacy-history:v28", ReadStringConstant(behavior, "CanonicalHistoryCacheAffinityKey"),
+		Test.Equal("diplomacy-history:v28", ReadStringConstant(promptRules, "CanonicalHistoryCacheAffinityKey"),
 			"the exact own-reputation prompt must advance canonical-history cache affinity");
-        Test.Equal("【AI外交固定任务MODE分派】", ReadStringConstant(behavior, "DiplomacyModeDispatchContractMarker"),
+        Test.Equal("【AI外交固定任务MODE分派】", ReadStringConstant(promptRules, "DiplomacyModeDispatchContractMarker"),
             "the static system prefix must expose an explicit mode dispatcher");
-        Test.Equal("【MODE=DECLARE 固定任务合同】", ReadStringConstant(behavior, "DiplomaticDeclarationModeContractMarker"),
+        Test.Equal("【MODE=DECLARE 固定任务合同】", ReadStringConstant(promptRules, "DiplomaticDeclarationModeContractMarker"),
             "the declaration task must have a stable system marker");
-        Test.Equal("【MODE=COMPACT 固定任务合同】", ReadStringConstant(behavior, "CanonicalHistoryCompressionModeContractMarker"),
+        Test.Equal("【MODE=COMPACT 固定任务合同】", ReadStringConstant(promptRules, "CanonicalHistoryCompressionModeContractMarker"),
             "the compression task must have a stable system marker");
 
         string declarationContract = ExtractSection(
-            behavior,
-            "private static string BuildDiplomaticDeclarationModeContract()",
-            "private static string BuildCanonicalHistoryCompressionModeContract()");
+            promptRules,
+            "public static string BuildDiplomaticDeclarationModeContract()",
+            "public static string BuildCanonicalHistoryCompressionModeContract()");
         Test.True(declarationContract.Contains("【统一任务：公开外交宣言】", StringComparison.Ordinal),
             "the unified public-declaration task must live in the fixed declaration contract");
 		Test.True(declarationContract.Contains("\\\"actions\\\":[{", StringComparison.Ordinal)
@@ -363,9 +375,9 @@ internal static class Program
 			"the fixed DECLARE JSON must stay short and must not restore the retired singular or global-list contracts");
 
         string compressionContract = ExtractSection(
-            behavior,
-            "private static string BuildCanonicalHistoryCompressionModeContract()",
-            "private static string BuildGenerationSystemPrompt(string commonContract)");
+            promptRules,
+            "public static string BuildCanonicalHistoryCompressionModeContract()",
+            "public static string BuildCanonicalHistorySystemPrompt(string commonContract, int minimumCharacters, int maximumCharacters)");
         Test.True(compressionContract.Contains("合并旧快照与增量", StringComparison.Ordinal),
             "the full compression rules must live in the fixed compression contract");
         Test.True(compressionContract.Contains("covered_through_sequence", StringComparison.Ordinal)
@@ -382,12 +394,12 @@ internal static class Program
         VerifySchemaMutations(declarationSchema, compressionSchema);
 
         string canonicalSystem = ExtractSection(
-            behavior,
-            "private static string BuildCanonicalHistorySystemPrompt(string commonContract)",
-            "private static string BuildDeclareModePrompt(string dynamicPrompt)");
+            promptRules,
+            "public static string BuildCanonicalHistorySystemPrompt(string commonContract, int minimumCharacters, int maximumCharacters)",
+            "public static string BuildGenerationSystemPrompt(string commonContract, int minimumCharacters, int maximumCharacters)");
         string[] stableSystemComponents =
         {
-            "AppendDiplomaticDeclarationWritingContract(sb)",
+            "AppendDiplomaticDeclarationWritingContract(sb, minimumCharacters, maximumCharacters)",
             "sb.AppendLine(DiplomacyModeDispatchContractMarker)",
             "sb.AppendLine(DiplomaticDeclarationModeContractMarker)",
             "sb.AppendLine(BuildDiplomaticDeclarationModeContract())",
@@ -409,37 +421,35 @@ internal static class Program
             "system mode dispatch must prevent DECLARE and COMPACT output contracts from interfering");
 
         string generationSystem = ExtractSection(
-            behavior,
-            "private static string BuildGenerationSystemPrompt(string commonContract)",
-            "private static string BuildCanonicalHistorySystemPrompt(string commonContract)");
+            promptRules,
+            "public static string BuildGenerationSystemPrompt(string commonContract, int minimumCharacters, int maximumCharacters)",
+            "public static string BuildRelayGenerationSystemPrompt(string commonContract, int minimumCharacters, int maximumCharacters)");
         string relaySystem = ExtractSection(
-            behavior,
-            "private static string BuildRelayGenerationSystemPrompt(string commonContract)",
-            "private string BuildRelayConversationTurnPrompt(");
-        string compressionEnqueue = ExtractSection(
-            behavior,
-            "private void EnqueueCompressionJob(long throughSequence, long tokenCount, int targetTokens)",
-            "private void EnqueueJob(WorldDiplomacyJob job)");
-        Test.True(generationSystem.Contains("return BuildCanonicalHistorySystemPrompt(commonContract)", StringComparison.Ordinal),
+            promptRules,
+            "public static string BuildRelayGenerationSystemPrompt(string commonContract, int minimumCharacters, int maximumCharacters)",
+            "public static string BuildDeclareModePrompt(string dynamicPrompt)");
+        string compressionEnqueue = ReadRepositoryFile(
+            Path.Combine("src", "modules", "AF.Module.Diplomacy", "Application", "WorldDiplomacyHistoryCompressionApplication.cs"));
+        Test.True(generationSystem.Contains("return BuildCanonicalHistorySystemPrompt(commonContract, minimumCharacters, maximumCharacters)", StringComparison.Ordinal),
             "ordinary declaration generation must use the shared first system message");
-        Test.True(relaySystem.Contains("return BuildCanonicalHistorySystemPrompt(commonContract)", StringComparison.Ordinal),
+        Test.True(relaySystem.Contains("return BuildCanonicalHistorySystemPrompt(commonContract, minimumCharacters, maximumCharacters)", StringComparison.Ordinal),
             "relay declaration generation must use the shared first system message");
         Test.True(compressionEnqueue.Contains(
-                "string systemPrompt = BuildCanonicalHistorySystemPrompt(BuildCommonDiplomacySystemPrefix())",
+                "string systemPrompt = WorldDiplomacyPromptContractRules.BuildCanonicalHistorySystemPrompt(commonSystemPrefix(), minimumCharacters, maximumCharacters)",
                 StringComparison.Ordinal),
             "compression must use the same shared first system-message renderer");
-        Test.True(compressionEnqueue.Contains("CacheAffinityKey = CanonicalHistoryCacheAffinityKey", StringComparison.Ordinal),
+        Test.True(compressionEnqueue.Contains("CacheAffinityKey = WorldDiplomacyPromptContractRules.CanonicalHistoryCacheAffinityKey", StringComparison.Ordinal),
             "compression and declaration jobs must share canonical-history cache affinity");
 
         string messageRenderer = ExtractSection(
-            behavior,
-            "private List<WorldDiplomacyLlmMessage> BuildLlmMessagesForJob(WorldDiplomacyJob job)",
-            "private static bool IsValidSemanticRepairMessageChain(WorldDiplomacyJob job)");
+            File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyLlmMessageApplication.cs")),
+            "public static List<WorldDiplomacyLlmMessage> BuildLlmMessagesForJob(WorldDiplomacyJob job,",
+            "public static JArray BuildLlmMessageArray(WorldDiplomacyJob job,");
         int firstSystemIndex = messageRenderer.IndexOf(
             "new WorldDiplomacyLlmMessage { Role = \"system\", Content = job?.SystemPrompt ?? \"\" }",
             StringComparison.Ordinal);
         int historySystemIndex = messageRenderer.IndexOf(
-            "Content = BuildCanonicalHistoryBlock(job?.HistoryThroughSequence ?? long.MaxValue)",
+            "Content = buildCanonicalHistoryBlock(job?.HistoryThroughSequence ?? long.MaxValue)",
             StringComparison.Ordinal);
         int userTailIndex = messageRenderer.IndexOf(
             "source.Add(new WorldDiplomacyLlmMessage { Role = \"user\", Content = job?.UserPrompt ?? \"\" })",
@@ -448,9 +458,9 @@ internal static class Program
             "both modes must render as fixed system, canonical history, then dynamic mode tail");
 
         string declarationTail = ExtractSection(
-            behavior,
-            "private static string BuildDeclareModePrompt(string dynamicPrompt)",
-            "private void AppendDiplomaticThreatDynamicContext(");
+            promptRules,
+            "public static string BuildDeclareModePrompt(string dynamicPrompt)",
+            "public static void AppendRoundSubstantiveProgressRequirement(");
         Test.True(declarationTail.Contains("【MODE=DECLARE】", StringComparison.Ordinal)
                   && declarationTail.Contains("第一条system消息", StringComparison.Ordinal),
             "the declaration tail must only activate the fixed DECLARE system contract");
@@ -469,9 +479,9 @@ internal static class Program
         }
 
         string compressionTail = ExtractSection(
-            behavior,
-            "private static string BuildTokenCompressionPrompt(string batchId, long throughSequence, long tokenCount, int summaryTargetTokens, long protectedTokens)",
-            "private string BuildFallbackAnalysisJson(WorldDiplomacyJob job)");
+            promptRules,
+            "public static string BuildTokenCompressionPrompt(string batchId, long throughSequence, long tokenCount, int summaryTargetTokens, long protectedTokens)",
+            "public static string BuildRoundCompressionSystemPrompt()");
         Test.True(compressionTail.Contains("【本次压缩参数】", StringComparison.Ordinal)
                   && compressionTail.Contains("覆盖截止seq=", StringComparison.Ordinal)
                   && compressionTail.Contains("summary目标上限tokens=", StringComparison.Ordinal)
@@ -493,9 +503,9 @@ internal static class Program
         }
 
         string currentContractGuard = ExtractSection(
-            behavior,
-            "private static bool HasCurrentCanonicalPromptContract(WorldDiplomacyJob job)",
-            "private bool EnsureCurrentCanonicalPromptContractBeforeSend(WorldDiplomacyJob job)");
+            promptRules,
+            "public static bool HasCurrentCanonicalPromptContract(WorldDiplomacyJob job)",
+            "public static bool TryExtractCommonContractFromJob(WorldDiplomacyJob job, out string contract)");
         foreach (string systemMarker in new[]
         {
             "DiplomaticDeclarationWritingContractMarker",
@@ -524,26 +534,30 @@ internal static class Program
                 "send-time guard must reject a tail containing fixed system marker: " + tailMarker);
         }
 
+        string storageMigration = ReadRepositoryFile(Path.Combine("src", "modules", "AF.Module.Diplomacy", "Persistence", "WorldDiplomacyStorageMigration.cs"));
         string migration = ExtractSection(
-            behavior,
-            "private void MigrateDiplomacyPromptContractIfNeeded()",
-            "private bool TryRebuildPendingWorldDiplomacyJob(WorldDiplomacyJob job)");
+            storageMigration,
+            "public static void MigrateDiplomacyPromptContractIfNeeded(",
+            "public static void MigrateAutonomousDecisionArchitectureIfNeeded(");
+        Test.True(ReadRepositoryFile(Path.Combine("src", "modules", "AF.Module.Diplomacy", "Application", "WorldDiplomacyStorageNormalizationApplication.cs"))
+                .Contains("WorldDiplomacyStorageMigration.MigrateDiplomacyPromptContractIfNeeded(", StringComparison.Ordinal),
+            "the normalization Application must delegate prompt-contract migration to persistence");
         Test.True(migration.Contains(
-                "_storage.PromptContractVersion >= DiplomacyPromptContractVersion",
+                "storage.PromptContractVersion >= targetVersion",
                 StringComparison.Ordinal),
             "prompt migration must recognize old storage versions");
         Test.True(migration.Contains("job.LlmMessages?.Clear()", StringComparison.Ordinal)
                   && migration.Contains("job.SemanticRepairAttempts = 0", StringComparison.Ordinal)
                   && migration.Contains("job.HistoryPrefixHash = \"\"", StringComparison.Ordinal),
             "old canonical jobs must discard stale request bodies and repair chains");
-        Test.True(migration.Contains("TryRebuildPendingWorldDiplomacyJob(job)", StringComparison.Ordinal),
+        Test.True(migration.Contains("tryRebuildPendingJob?.Invoke(job)", StringComparison.Ordinal),
             "old declaration jobs must be semantically rebuilt under the new static system contract");
-        Test.True(migration.Contains("string.Equals(job.Kind, \"compress\"", StringComparison.Ordinal)
-                  && migration.Contains("_storage.DiplomacyCompressionPending = true", StringComparison.Ordinal),
+        Test.True(migration.Contains("WorldDiplomacyRoundLifecycleRules.IsJobOfKind(job, \"compress\")", StringComparison.Ordinal)
+                  && migration.Contains("storage.DiplomacyCompressionPending = true", StringComparison.Ordinal),
             "old compression jobs must be retired and requeued under the new contract");
-        int rebuildIndex = migration.IndexOf("TryRebuildPendingWorldDiplomacyJob(job)", StringComparison.Ordinal);
+        int rebuildIndex = migration.IndexOf("tryRebuildPendingJob?.Invoke(job)", StringComparison.Ordinal);
         int versionCommitIndex = migration.IndexOf(
-            "_storage.PromptContractVersion = DiplomacyPromptContractVersion",
+            "storage.PromptContractVersion = targetVersion",
             StringComparison.Ordinal);
         Test.True(rebuildIndex >= 0 && versionCommitIndex > rebuildIndex,
             "prompt migration version must commit only after old jobs are rebuilt or retired");
@@ -554,65 +568,85 @@ internal static class Program
         Test.Equal(1000, ReadIntConstant(behavior, "CompressionJobPriority"),
             "compression jobs must outrank ordinary diplomacy jobs");
 
-        string enqueue = ExtractSection(
-            behavior,
-            "private void EnqueueCompressionJob(long throughSequence, long tokenCount, int targetTokens)",
-            "private void EnqueueJob(WorldDiplomacyJob job)");
-        Test.True(enqueue.Contains("Priority = CompressionJobPriority", StringComparison.Ordinal),
+        string enqueue = ReadRepositoryFile(Path.Combine("src", "modules", "AF.Module.Diplomacy", "Application", "WorldDiplomacyHistoryCompressionApplication.cs"));
+        Test.True(enqueue.Contains("Priority = compressionJobPriority", StringComparison.Ordinal),
             "queued compression jobs must use the dedicated high priority");
 
         string queue = ExtractSection(
-            behavior,
-            "private void EnqueueJob(WorldDiplomacyJob job)",
-            "private static string ResolveCacheAffinityKey(WorldDiplomacyJob job)");
-        Test.True(queue.Contains("int queueCapacity = MaxPendingJobs +", StringComparison.Ordinal)
-                  && queue.Contains("string.Equals(x.Kind, \"compress\"", StringComparison.Ordinal),
+            ReadRepositoryFile(Path.Combine("src", "modules", "AF.Module.Diplomacy", "Domain", "WorldDiplomacyRoundLifecycleRules.cs")),
+            "public static void EnqueueJob(",
+            "public static void CommitLocalRoundSummary(");
+        Test.True(queue.Contains("int queueCapacity = maxPendingJobs +", StringComparison.Ordinal)
+                  && queue.Contains("IsJobOfKind(x, \"compress\")", StringComparison.Ordinal),
             "a queued compression job must open one dedicated maintenance slot");
         Test.True(queue.Contains(".Take(queueCapacity)", StringComparison.Ordinal),
             "queue trimming must honor the compression maintenance slot");
 
         string scheduler = ExtractSection(
-            behavior,
-            "private void TryScheduleTokenCompression()",
-            "private void CommitCompression(WorldDiplomacyJob job, string raw)");
-        Test.True(scheduler.Contains("GetHistoryCompressionTriggerTokens()", StringComparison.Ordinal),
+            ReadRepositoryFile(Path.Combine("src", "modules", "AF.Module.Diplomacy", "Application", "WorldDiplomacyHistoryCompressionApplication.cs")),
+            "public static void TryScheduleTokenCompression(",
+            "public static void EnqueueCompressionJob(");
+        Test.True(scheduler.Contains("compressionTriggerTokens", StringComparison.Ordinal),
             "scheduler must compare history size with the independent trigger");
-        Test.True(scheduler.Contains("x.AwaitingHistoryCompression", StringComparison.Ordinal),
+        Test.True(scheduler.Contains("jobs.HasAwaiting(storage)", StringComparison.Ordinal),
             "total-input pressure must schedule compression even when history alone is below the trigger");
-        Test.True(scheduler.Contains("string.Equals(x.Kind, \"compress\"", StringComparison.Ordinal),
+        Test.True(scheduler.Contains("jobs.HasCompression(storage)", StringComparison.Ordinal),
             "the only queued-job guard must detect an existing compression job");
         Test.True(!scheduler.Contains("_llmRequestRunning", StringComparison.Ordinal),
             "an active ordinary request must not starve the high-priority compression queue");
-        Test.True(scheduler.Contains("EnqueueCompressionJob(", StringComparison.Ordinal),
+        Test.True(scheduler.Contains("enqueueCompressionJob(", StringComparison.Ordinal),
             "scheduler must enqueue compression after the threshold and duplicate guard pass");
     }
 
     private static void VerifyFrozenOverallTarget(string behavior)
     {
-        string enqueue = ExtractSection(
-            behavior,
-            "private void EnqueueCompressionJob(long throughSequence, long tokenCount, int targetTokens)",
-            "private void EnqueueJob(WorldDiplomacyJob job)");
+        string enqueue = ReadRepositoryFile(
+            Path.Combine("src", "modules", "AF.Module.Diplomacy", "Application", "WorldDiplomacyHistoryCompressionApplication.cs"));
         Test.True(enqueue.Contains("int overallTargetTokens = Math.Max(1, targetTokens)", StringComparison.Ordinal),
             "queue time must freeze the selected overall target");
         Test.True(enqueue.Contains("CompressionOverallTargetTokens = overallTargetTokens", StringComparison.Ordinal),
             "frozen overall target must be stored on the job");
 
-        string commit = ExtractSection(
-            behavior,
-            "private void CommitCompression(WorldDiplomacyJob job, string raw)",
-            "private static int ParseCompressionSequence(string batchId)");
+        string commit = ReadRepositoryFile(
+            Path.Combine("src", "modules", "AF.Module.Diplomacy", "Application", "WorldDiplomacyHistoryCompressionApplication.cs"));
         Test.True(commit.Contains("job.CompressionOverallTargetTokens > 0", StringComparison.Ordinal)
                   && commit.Contains("? job.CompressionOverallTargetTokens", StringComparison.Ordinal),
             "commit must prefer the job's frozen overall target over live MCM state");
 
-        string jobDto = ExtractSection(
-            behavior,
-            "public sealed class WorldDiplomacyJob",
-            "public sealed class WorldDiplomacyCanonicalHistoryState");
+        string jobDto = ReadRepositoryFile(
+            Path.Combine("src", "modules", "AF.Module.Diplomacy", "Persistence", "WorldDiplomacyWorkRecords.cs"));
         Test.True(jobDto.Contains("[JsonProperty(\"compressionOverallTargetTokens\")]", StringComparison.Ordinal)
                   && jobDto.Contains("public int CompressionOverallTargetTokens { get; set; }", StringComparison.Ordinal),
             "the frozen 48k overall target must survive save/load serialization");
+        Test.True(!behavior.Contains("public sealed class WorldDiplomacyExchange", StringComparison.Ordinal)
+                  && !behavior.Contains("public sealed class WorldDiplomacyJob", StringComparison.Ordinal)
+                  && jobDto.Contains("namespace AnimusForge;", StringComparison.Ordinal)
+                  && jobDto.Contains("public sealed class WorldDiplomacyExchange", StringComparison.Ordinal)
+                  && jobDto.Contains("public sealed class WorldDiplomacyJob", StringComparison.Ordinal)
+                  && !jobDto.Contains("TaleWorlds", StringComparison.Ordinal),
+            "exchange and job persistence records must retain their AnimusForge identities without game dependencies");
+
+        string canonicalRecords = ReadRepositoryFile(
+            Path.Combine("src", "modules", "AF.Module.Diplomacy", "Persistence", "WorldDiplomacyCanonicalHistoryRecords.cs"));
+        Test.True(!behavior.Contains("public sealed class WorldDiplomacyCanonicalHistoryState", StringComparison.Ordinal)
+                  && canonicalRecords.Contains("namespace AnimusForge;", StringComparison.Ordinal)
+                  && canonicalRecords.Contains("public sealed class WorldDiplomacyCanonicalHistoryState", StringComparison.Ordinal)
+                  && canonicalRecords.Contains("public sealed class WorldDiplomacyCanonicalHistorySnapshot", StringComparison.Ordinal)
+                  && canonicalRecords.Contains("public sealed class WorldDiplomacyCanonicalProtectedFact", StringComparison.Ordinal)
+                  && canonicalRecords.Contains("public sealed class WorldDiplomacyCanonicalHistoryEntry", StringComparison.Ordinal)
+                  && !canonicalRecords.Contains("TaleWorlds", StringComparison.Ordinal),
+            "canonical history persistence records must retain their AnimusForge identities without game dependencies");
+
+        string summaryRecords = ReadRepositoryFile(
+            Path.Combine("src", "modules", "AF.Module.Diplomacy", "Persistence", "WorldDiplomacySummaryRecords.cs"));
+        Test.True(!behavior.Contains("public sealed class WorldDiplomacyRoundSummary", StringComparison.Ordinal)
+                  && summaryRecords.Contains("namespace AnimusForge;", StringComparison.Ordinal)
+                  && summaryRecords.Contains("public sealed class WorldDiplomacyRoundSummary", StringComparison.Ordinal)
+                  && summaryRecords.Contains("public sealed class WorldDiplomacyRoundFact", StringComparison.Ordinal)
+                  && summaryRecords.Contains("public sealed class WorldDiplomacyPolicySignal", StringComparison.Ordinal)
+                  && summaryRecords.Contains("public sealed class WorldDiplomacyCompressionSummary", StringComparison.Ordinal)
+                  && !summaryRecords.Contains("TaleWorlds", StringComparison.Ordinal),
+            "summary persistence records must retain their AnimusForge identities without game dependencies");
     }
 
     private static void VerifyRouteOutputCap(string settings, string behavior, string client)
@@ -640,11 +674,9 @@ internal static class Program
         Test.True(callOnce.Contains("BuildRequestBody(modelName, messages, effectiveMaxTokens", StringComparison.Ordinal),
             "the capped value, not the requested value, must enter the request body");
 
-        string enqueue = ExtractSection(
-            behavior,
-            "private void EnqueueCompressionJob(long throughSequence, long tokenCount, int targetTokens)",
-            "private void EnqueueJob(WorldDiplomacyJob job)");
-        Test.True(enqueue.Contains("WorldDiplomacyLlmClient.GetConfiguredOutputTokenLimit()", StringComparison.Ordinal),
+        string enqueue = ReadRepositoryFile(
+            Path.Combine("src", "modules", "AF.Module.Diplomacy", "Application", "WorldDiplomacyHistoryCompressionApplication.cs"));
+        Test.True(enqueue.Contains("resolveOutputTokenLimit()", StringComparison.Ordinal),
             "compression target construction must account for the current route output cap");
         Test.True(enqueue.Contains(
                 "MaxTokens = Math.Min(configuredOutputTokenLimit, summaryTargetTokens + outputTokenReserve)",
@@ -693,16 +725,16 @@ internal static class Program
     {
         Test.Equal(480_000, ReadIntConstant(settings, "LlmRequestTimeoutMilliseconds"),
             "long-context compression timeout must be eight minutes");
-        string dispatch = ExtractSection(
-            behavior,
-            "private void TryStartNextLlmJob()",
-            "private void ProcessCompletedJobs()");
-        Test.True(dispatch.Contains("string.Equals(job.Kind, \"compress\"", StringComparison.Ordinal)
-                  && dispatch.Contains("? DuelSettings.LlmRequestTimeoutMilliseconds", StringComparison.Ordinal)
-                  && dispatch.Contains(": DefaultApiTimeoutMilliseconds", StringComparison.Ordinal),
+        string dispatch = File.ReadAllText(FindRepositoryFile(Path.Combine("src", "modules", "AF.Module.Diplomacy", "Application", "WorldDiplomacyLlmDispatchApplication.cs")));
+        string source = File.ReadAllText(FindRepositoryFile(Path.Combine("src", "modules", "AF.Module.Diplomacy", "World", "WorldDiplomacyBehavior.LlmDispatchSource.cs")));
+        Test.True(dispatch.Contains("WorldDiplomacyRoundLifecycleRules.IsJobOfKind(job, \"compress\")", StringComparison.Ordinal)
+                  && dispatch.Contains("? source.CompressionTimeoutMilliseconds", StringComparison.Ordinal)
+                  && dispatch.Contains(": source.DefaultApiTimeoutMilliseconds", StringComparison.Ordinal)
+                  && source.Contains("CompressionTimeoutMilliseconds => DuelSettings.LlmRequestTimeoutMilliseconds", StringComparison.Ordinal),
             "only compression requests must receive the long 480000ms timeout");
-        Test.True(dispatch.Contains("requestTimeoutMilliseconds,", StringComparison.Ordinal),
-            "the selected timeout must be passed to the API client");
+        Test.True(dispatch.Contains("job.MaxTokens, timeout, out WorldDiplomacyRequestSnapshot request", StringComparison.Ordinal)
+                  && dispatch.Contains("source.StartRequest(request, requestMessages)", StringComparison.Ordinal),
+            "the selected timeout must be captured in the request lease passed to dispatch");
     }
 
     private static void VerifyTokenStatsDiagnosticTruncation(string client)
@@ -743,23 +775,25 @@ internal static class Program
 
     private static void VerifySegmentedHashing(string behavior)
     {
+        string promptRules = ReadRepositoryFile(Path.Combine("src", "modules", "AF.Module.Diplomacy", "Domain", "WorldDiplomacyPromptContractRules.cs"));
         string hashMethods = ExtractSection(
-            behavior,
-            "private static string StablePromptHash(string text)",
-            "private static List<WorldDiplomacyLlmMessage> CloneLlmMessages");
-        Test.True(hashMethods.Contains("private static string StablePromptHashPair", StringComparison.Ordinal)
-                  && hashMethods.Contains("private static string StablePromptHashMessagePrefix", StringComparison.Ordinal)
-                  && hashMethods.Contains("private static ulong AppendStablePromptHash", StringComparison.Ordinal),
+            promptRules,
+            "public static string StablePromptHash(string text)",
+            "public static bool IsValidSemanticRepairMessageChain(WorldDiplomacyJob job)");
+        Test.True(hashMethods.Contains("public static string StablePromptHashPair", StringComparison.Ordinal)
+                  && hashMethods.Contains("public static string StablePromptHashMessagePrefix", StringComparison.Ordinal)
+                  && hashMethods.Contains("public static ulong AppendStablePromptHash", StringComparison.Ordinal),
             "large stable prefixes must have allocation-free segmented hash helpers");
         Test.True(hashMethods.Contains("AppendStablePromptHash(1469598103934665603UL, first)", StringComparison.Ordinal)
                   && hashMethods.Contains("hash = AppendStablePromptHash(hash, \"\\n\")", StringComparison.Ordinal)
                   && hashMethods.Contains("hash = AppendStablePromptHash(hash, second)", StringComparison.Ordinal),
             "pair hashing must append segments and the exact historical newline separator");
-        Test.True(behavior.Contains(
-                "job.HistoryPrefixHash = StablePromptHashPair(job.SystemPrompt, historyBlock)",
+        Test.True(ReadRepositoryFile(
+                Path.Combine("src", "modules", "AF.Module.Diplomacy", "Domain", "WorldDiplomacyCanonicalHistoryRules.cs")).Contains(
+                "job.HistoryPrefixHash = WorldDiplomacyPromptContractRules.StablePromptHashPair(job.SystemPrompt, historyBlock)",
                 StringComparison.Ordinal),
             "history capture must hash system/history segments without building one huge string");
-        Test.True(behavior.Contains("StablePromptHashMessagePrefix(messages, expectedCachedMessageCount)", StringComparison.Ordinal),
+        Test.True(behavior.Contains("WorldDiplomacyPromptContractRules.StablePromptHashMessagePrefix(messages, expectedCachedMessageCount)", StringComparison.Ordinal),
             "cache-prefix diagnostics must hash messages incrementally");
         Test.True(!behavior.Contains(
                 "StablePromptHash(job.SystemPrompt + \"\\n\" + historyBlock)",
