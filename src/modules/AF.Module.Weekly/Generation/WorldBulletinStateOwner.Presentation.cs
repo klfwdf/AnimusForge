@@ -40,6 +40,20 @@ internal void RecordWorldBulletinLayout(string eventId, WorldBulletinSelection s
 			state.Layouts.RemoveRange(0, state.Layouts.Count - WorldBulletinMaxLayouts);
 		}
 	}
+// Legacy issues have no record-level association field. Build this bounded snapshot
+// only when an archive opens; do not touch current facts or mutate the save.
+internal IReadOnlyDictionary<string, List<string>> SnapshotLegacyBulletinKingdomAssociations()
+{
+    var index = new Dictionary<string, List<string>>(StringComparer.OrdinalIgnoreCase);
+    foreach (var layout in State?.Layouts ?? new List<WorldBulletinLayout>())
+    {
+        string id = (layout?.EventId ?? "").Trim();
+        if (id.Length > 0 && WeeklyReportArchivePolicy.IsBulletin(id))
+            index[id] = WeeklyReportArchivePolicy.NormalizeKingdomIds(layout.KingdomIds);
+    }
+    return index;
+}
+
 internal WorldBulletinLayout FindWorldBulletinLayout(string eventId)
 	{
 		List<WorldBulletinLayout> layouts = State?.Layouts;

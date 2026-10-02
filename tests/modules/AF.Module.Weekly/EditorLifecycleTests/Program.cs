@@ -68,3 +68,20 @@ ui.CancelWeeklyReportManualRetryAndReturn();ui.OpenWeeklyReportApiRepairFlow();C
 ui.ReopenAfterApiConfigUtcTicks=0;ui.ProcessWeeklyReportUiResume();Check(!ui.ReopenAfterApiConfig&&ui.UiStage==WeeklyReportUiStage.Failure,"tick resumes failure only after inquiry delay");
 ui.ShowWeeklyReportFailurePopup(true);var replaced=TaleWorlds.Library.InformationManager.Inquiry;ui.ShowWeeklyReportFailurePopup(true);replaced.Cancel();Check(repair==1,"replaced dialog callback cannot reopen API config");
 Console.WriteLine($"PASS: {n} production Weekly editor/panel lifecycle assertions (game/render/record declarations fixture; no data commits).");
+
+// Real controller wiring: both live and vanished related nations need archive tabs.
+int archiveStart=n,snapshots=0;
+records.Add(new(){EventId="weekly_report:world:bulletin:8:30",EventKind="world",ScopeKingdomId="",Title="bulletin",Summary="current issue body",CreatedDay=30,WeekIndex=4,BulletinKingdomIds=new(){"k","minor-only","vanished"}});
+records.Add(new(){EventId="weekly_report:world:bulletin:7:29",EventKind="world",ScopeKingdomId="",Title="legacy bulletin",Summary="legacy body",CreatedDay=29,WeekIndex=4});
+port.BulletinKingdomAssociations=()=>{snapshots++;return new Dictionary<string,List<string>>(StringComparer.OrdinalIgnoreCase){{"weekly_report:world:bulletin:7:29",new(){"legacy-vanished","k"}}};};
+port.GetDevEditableKingdoms=()=>new(){new(){StringId="k"},new(){StringId="unrelated"}};
+var archive=ui.GetTerminalWeeklyReportBrowserCountries();
+Check(snapshots==1,"legacy layout snapshot built once per archive open");
+Check(archive.Count(x=>x.CountryId=="k")==1,"live and recorded kingdom tabs do not duplicate");
+Check(archive.Single(x=>x.CountryId=="k").Reports.First().BodyText=="current issue body","controller wires latest related bulletin to kingdom");
+Check(archive.Single(x=>x.CountryId=="minor-only").Reports.Count==1,"minor-only kingdom archive discovered");
+Check(archive.Single(x=>x.CountryId=="vanished").Reports.Count==1,"vanished kingdom retained by durable metadata");
+Check(archive.Single(x=>x.CountryId=="legacy-vanished").Reports.Count==1,"old layout-only vanished kingdom discovered");
+Check(archive.Single(x=>x.CountryId=="unrelated").Reports.Count==0,"unrelated live kingdom not contaminated");
+Check(archive[0].IsWorld&&archive[0].Reports.First().BodyText=="current issue body","world canonical archive stays first and current");
+Console.WriteLine($"PASS: {n-archiveStart} production controller bulletin association assertions, {n} total editor assertions.");

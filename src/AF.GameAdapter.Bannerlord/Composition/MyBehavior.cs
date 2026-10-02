@@ -362,6 +362,11 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 		public string CreatedDate;
 
+		// Optional additive JSON metadata; old saves deserialize an empty list.
+		// Stored with the issue itself so trimming the 48-layout visual cache cannot
+		// remove historical country associations. Native save keys stay unchanged.
+		public List<string> BulletinKingdomIds = new List<string>();
+
 		public List<EventMaterialReference> Materials = new List<EventMaterialReference>();
 	}
 

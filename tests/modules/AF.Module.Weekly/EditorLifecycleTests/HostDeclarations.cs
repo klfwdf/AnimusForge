@@ -27,6 +27,8 @@ public partial class MyBehavior
 
 		public string CreatedDate;
 
+        public List<string> BulletinKingdomIds = new List<string>();
+
 		public List<EventMaterialReference> Materials = new List<EventMaterialReference>();
 	}
 

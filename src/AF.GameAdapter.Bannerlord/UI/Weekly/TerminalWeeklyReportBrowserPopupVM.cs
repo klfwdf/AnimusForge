@@ -236,11 +236,11 @@ public sealed class TerminalWeeklyReportBrowserPopupVM : ViewModel
 		_countries = (countries ?? new List<MyBehavior.WeeklyReportBrowserCountryData>()).Where((MyBehavior.WeeklyReportBrowserCountryData x) => x != null).ToList();
 		_selectedCountryId = (selectedCountryId ?? "").Trim();
 		TitleText = "历史档案馆";
-		SubtitleText = "左侧选择国家，右侧查看该国家全部周报。";
-		CountryPanelTitleText = "国家列表";
+		SubtitleText = "左侧选择世界档案或王国；王国页包含相关即时快报、局势提要与历史周报。";
+		CountryPanelTitleText = "档案 / 王国";
 		SelectedCountryNameText = "未选择";
 		SelectedCountryMetaText = "";
-		EmptyStateText = "暂无周报。";
+		EmptyStateText = "暂无快报或周报档案。";
 		CloseText = "关闭";
 		HasReportItems = false;
 		ShowEmptyState = true;
@@ -250,7 +250,10 @@ public sealed class TerminalWeeklyReportBrowserPopupVM : ViewModel
 		{
 			CountryItems.Add(new TerminalWeeklyReportCountryItemVM(country, SelectCountry));
 		}
-		string text = _countries.FirstOrDefault((MyBehavior.WeeklyReportBrowserCountryData x) => !x.IsWorld && (x.Reports?.Count ?? 0) > 0)?.CountryId;
+		string text = MyBehavior.IsWorldBulletinEnabled()
+            ? _countries.FirstOrDefault(x => x.IsWorld && x.Reports?.Any(report => WeeklyReportArchivePolicy.IsBulletin(report?.EventId)) == true)?.CountryId
+            : null;
+        text ??= _countries.FirstOrDefault(x => !x.IsWorld && (x.Reports?.Count ?? 0) > 0)?.CountryId;
 		if (string.IsNullOrWhiteSpace(text))
 		{
 			text = _countries.FirstOrDefault((MyBehavior.WeeklyReportBrowserCountryData x) => (x.Reports?.Count ?? 0) > 0)?.CountryId;
@@ -357,7 +360,7 @@ public sealed class TerminalWeeklyReportBrowserPopupVM : ViewModel
 		{
 			SelectedCountryNameText = "未选择";
 			SelectedCountryMetaText = "";
-			EmptyStateText = "暂无周报。";
+			EmptyStateText = "暂无快报或周报档案。";
 			ReportItems = mBBindingList;
 			HasReportItems = false;
 			ShowEmptyState = true;
@@ -365,15 +368,15 @@ public sealed class TerminalWeeklyReportBrowserPopupVM : ViewModel
 		}
 		SelectedCountryNameText = (weeklyReportBrowserCountryData.DisplayName ?? "").Trim();
 		var reports = (weeklyReportBrowserCountryData.Reports ?? new List<MyBehavior.WeeklyReportBrowserEntryData>()).Where(report => report != null).ToList();
-		SelectedCountryMetaText = reports.Count > 0 ? "共 " + reports.Count + " 期周报 · 最新在前" : "这个条目当前还没有周报记录";
-		foreach (MyBehavior.WeeklyReportBrowserEntryData report in reports.OrderByDescending(x => x.WeekIndex).ThenByDescending(x => x.CreatedDay).ThenByDescending(x => x.Title ?? "", StringComparer.OrdinalIgnoreCase))
+		SelectedCountryMetaText = reports.Count > 0 ? "共 " + reports.Count + " 条快报 / 提要 / 周报 · 最新在前" : "这个条目当前没有快报或周报档案";
+		foreach (MyBehavior.WeeklyReportBrowserEntryData report in reports.OrderByDescending(x => x.CreatedDay).ThenByDescending(x => x.WeekIndex).ThenByDescending(x => WeeklyReportArchivePolicy.IssueNumber(x.EventId)).ThenByDescending(x => x.Title ?? "", StringComparer.OrdinalIgnoreCase))
 		{
 			mBBindingList.Add(new TerminalWeeklyReportEntryItemVM(report, RequestViewFullReport));
 		}
 		ReportItems = mBBindingList;
 		HasReportItems = ReportItems.Count > 0;
 		ShowEmptyState = !HasReportItems;
-		EmptyStateText = (HasReportItems ? "" : "这个国家当前还没有周报记录。");
+		EmptyStateText = (HasReportItems ? "" : "这个王国当前没有相关快报、局势提要或周报档案。");
 	}
 	private void ReloadFromGameState(string selectedCountryId)
 	{
@@ -730,7 +733,7 @@ public sealed class TerminalWeeklyReportEntryItemVM : ViewModel
 	public TerminalWeeklyReportEntryItemVM(MyBehavior.WeeklyReportBrowserEntryData entry)
 	{
 		TitleText = (entry?.Title ?? "").Trim();
-		WeekText = "第 " + Math.Max(0, entry?.WeekIndex ?? 0) + " 周";
+		WeekText = WeeklyReportArchivePolicy.PeriodLabel(entry?.EventId, entry?.WeekIndex ?? 0);
 		DateText = (entry?.CreatedDate ?? "").Trim();
 		BodyText = FormatDisplayBodyText(entry?.BodyText);
 		TagText = BuildDisplayTagText(entry?.TagText, out int tagKind);

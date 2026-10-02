@@ -665,7 +665,7 @@ public sealed class AnimusForgeTerminalPopupVM : ViewModel
 		_returnToView = ReturnToMenu;
 		WeeklyReportVm?.OnFinalize();
 		WeeklyReportVm = new TerminalWeeklyReportBrowserPopupVM(countries ?? new List<MyBehavior.WeeklyReportBrowserCountryData>(), null, ExecuteBack);
-		BreadcrumbText = "终端 / " + _selectedTab + " / 查看周报";
+		BreadcrumbText = "终端 / " + _selectedTab + " / 快报与周报档案";
 		SetViewMode(TerminalViewMode.WeeklyReports);
 	}
 
