@@ -1,19 +1,19 @@
 <Prefab>
-  <!-- Layout mirrors pencil-new.pen frame sAH0C (新快报面板 v3｜列国邸报 · 铜版雕刻做旧): 1026x814 sheet, widened for a 16:9 illustration. -->
+  <!-- Layout mirrors pencil-new.pen frame sAH0C (1920×1080 新快报面板 v3｜列国邸报 · 铜版雕刻做旧): 1280x814 sheet on the 1730x1100 wide plate (ornaments kept at native ratio). -->
   <Window>
     <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent">
       <Children>
-        <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="1026" SuggestedHeight="814" HorizontalAlignment="Center" VerticalAlignment="Center">
+        <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="1280" SuggestedHeight="814" HorizontalAlignment="Center" VerticalAlignment="Center">
           <Children>
             <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="af_world_bulletin\af_world_bulletin_parchment" DoNotAcceptEvents="true" />
 
             <!-- Masthead: title sits on the engraved ribbon baked into the parchment -->
-            <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="600" SuggestedHeight="19" MarginLeft="213" MarginTop="102" Brush="AFCourierLetter.Meta.Text" Brush.FontSize="13" Brush.FontColor="#9B2A1EFF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" Text="@MastheadText" DoNotAcceptEvents="true" />
-            <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="400" SuggestedHeight="63" MarginLeft="313" MarginTop="131" Brush="AFCourierLetter.Title.Text" Brush.FontSize="44" Brush.FontColor="#2B1C10FF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" Text="@TitleText" DoNotAcceptEvents="true" />
-            <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="300" SuggestedHeight="16" MarginLeft="363" MarginTop="216" Brush="AnimusForge.EntityLink.PopupTitle.Text" Brush.FontSize="15" Brush.FontColor="#5A4028FF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" Text="Chronica  Regnorum" DoNotAcceptEvents="true" />
+            <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="600" SuggestedHeight="19" MarginLeft="340" MarginTop="102" Brush="AFCourierLetter.Meta.Text" Brush.FontSize="13" Brush.FontColor="#9B2A1EFF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" Text="@MastheadText" DoNotAcceptEvents="true" />
+            <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="400" SuggestedHeight="63" MarginLeft="440" MarginTop="131" Brush="AFCourierLetter.Title.Text" Brush.FontSize="44" Brush.FontColor="#2B1C10FF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" Text="@TitleText" DoNotAcceptEvents="true" />
+            <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="300" SuggestedHeight="16" MarginLeft="490" MarginTop="216" Brush="AnimusForge.EntityLink.PopupTitle.Text" Brush.FontSize="15" Brush.FontColor="#5A4028FF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" Text="Chronica  Regnorum" DoNotAcceptEvents="true" />
 
             <!-- Main row: optional illustration column + lead story -->
-            <ListPanel WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="824" SuggestedHeight="318" MarginLeft="94" MarginTop="247" LayoutImp.LayoutMethod="HorizontalLeftToRight">
+            <ListPanel WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="1078" SuggestedHeight="318" MarginLeft="94" MarginTop="247" LayoutImp.LayoutMethod="HorizontalLeftToRight">
               <Children>
                 <Widget DataSource="{Illustration}" IsVisible="@IsAvailable" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="428" SuggestedHeight="318">
                   <Children>
@@ -24,7 +24,7 @@
                         <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="8" MarginRight="8" MarginTop="8" MarginBottom="8" Sprite="BlankWhiteSquare_9" Color="#7E2418FF" DoNotAcceptEvents="true" />
                         <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="14" MarginRight="14" MarginTop="14" MarginBottom="14" Sprite="BlankWhiteSquare_9" Color="#C9A456FF" DoNotAcceptEvents="true" />
                         <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="16" MarginRight="16" MarginTop="16" MarginBottom="16" Sprite="BlankWhiteSquare_9" Color="#3A2616FF" DoNotAcceptEvents="true" />
-                        <Widget IsVisible="@HasIllustration" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="@ImageWidth" SuggestedHeight="@ImageHeight" HorizontalAlignment="Center" VerticalAlignment="Center" Sprite="@SpriteName" DoNotAcceptEvents="true" />
+                        <Widget IsVisible="@HasIllustration" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="16" MarginRight="16" MarginTop="16" MarginBottom="16" Sprite="@SpriteName" ImageFit.Type="Contain" DoNotAcceptEvents="true" />
                         <Widget IsVisible="@ShowPlaceholder" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="17" MarginRight="17" MarginTop="17" MarginBottom="17" DoNotAcceptEvents="true">
                           <Children>
                             <RichTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" HorizontalAlignment="Center" VerticalAlignment="Center" MarginLeft="20" MarginRight="20" Brush="AFCourierLetter.Meta.Text" Brush.FontSize="14" Brush.FontColor="#E8D6B0FF" Brush.TextHorizontalAlignment="Center" Text="@StatusText" DoNotAcceptEvents="true" />
@@ -119,10 +119,10 @@
             </ListPanel>
 
             <!-- Other news: title sits on the small ribbon baked into the parchment -->
-            <Widget IsVisible="@HasMinors" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="576" SuggestedHeight="125" MarginLeft="170" MarginTop="596" DoNotAcceptEvents="false">
+            <Widget IsVisible="@HasMinors" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="914" SuggestedHeight="125" MarginLeft="98" MarginTop="596" DoNotAcceptEvents="false">
               <Children>
-                <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="219" SuggestedHeight="24" MarginLeft="217" Brush="AFCourierLetter.Title.Text" Brush.FontSize="16" Brush.FontColor="#2B1C10FF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" Text="其 余 消 息" DoNotAcceptEvents="true" />
-                <ListPanel DataSource="{LeftMinors}" WidthSizePolicy="Fixed" HeightSizePolicy="CoverChildren" SuggestedWidth="278" MarginTop="37" LayoutImp.LayoutMethod="VerticalTopToBottom">
+                <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="219" SuggestedHeight="24" MarginLeft="425" Brush="AFCourierLetter.Title.Text" Brush.FontSize="16" Brush.FontColor="#2B1C10FF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" Text="其 余 消 息" DoNotAcceptEvents="true" />
+                <ListPanel DataSource="{LeftMinors}" WidthSizePolicy="Fixed" HeightSizePolicy="CoverChildren" SuggestedWidth="447" MarginTop="37" LayoutImp.LayoutMethod="VerticalTopToBottom">
                   <ItemTemplate>
                     <ListPanel WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MarginBottom="4" LayoutImp.LayoutMethod="HorizontalLeftToRight">
                       <Children>
@@ -132,7 +132,7 @@
                     </ListPanel>
                   </ItemTemplate>
                 </ListPanel>
-                <ListPanel DataSource="{RightMinors}" WidthSizePolicy="Fixed" HeightSizePolicy="CoverChildren" SuggestedWidth="278" MarginLeft="298" MarginTop="37" LayoutImp.LayoutMethod="VerticalTopToBottom">
+                <ListPanel DataSource="{RightMinors}" WidthSizePolicy="Fixed" HeightSizePolicy="CoverChildren" SuggestedWidth="447" MarginLeft="467" MarginTop="37" LayoutImp.LayoutMethod="VerticalTopToBottom">
                   <ItemTemplate>
                     <ListPanel WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MarginBottom="4" LayoutImp.LayoutMethod="HorizontalLeftToRight">
                       <Children>
@@ -146,8 +146,8 @@
             </Widget>
 
             <!-- Footer -->
-            <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="300" SuggestedHeight="16" MarginLeft="100" MarginTop="726" Brush="AFCourierLetter.Meta.Text" Brush.FontSize="11" Brush.FontColor="#7A5A3AFF" Brush.TextVerticalAlignment="Center" Text="@FooterHintText" DoNotAcceptEvents="true" />
-            <ButtonWidget Id="ArchiveBulletinButton" IsVisible="@ShowCloseButton" DoNotPassEventsToChildren="true" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="154" SuggestedHeight="38" MarginLeft="770" MarginTop="700" Brush="AFWorldBulletin.Archive.Button" Command.Click="ExecuteClose" UpdateChildrenStates="true">
+            <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="300" SuggestedHeight="16" MarginLeft="116" MarginTop="704" Brush="AFCourierLetter.Meta.Text" Brush.FontSize="11" Brush.FontColor="#7A5A3AFF" Brush.TextVerticalAlignment="Center" Text="@FooterHintText" DoNotAcceptEvents="true" />
+            <ButtonWidget Id="ArchiveBulletinButton" IsVisible="@ShowCloseButton" DoNotPassEventsToChildren="true" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="154" SuggestedHeight="38" MarginLeft="1022" MarginTop="700" Brush="AFWorldBulletin.Archive.Button" Command.Click="ExecuteClose" UpdateChildrenStates="true">
               <Children>
                 <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="AFCourierLetter.Button.Text" Brush.FontSize="16" Brush.FontColor="#4A2E1CFF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" Text="@CloseText" DoNotAcceptEvents="true" />
                 <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="18" MarginLeft="4" Brush="AFCourierLetter.Meta.Text" Brush.FontSize="9" Brush.FontColor="#87633CFF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" Text="◆" DoNotAcceptEvents="true" />

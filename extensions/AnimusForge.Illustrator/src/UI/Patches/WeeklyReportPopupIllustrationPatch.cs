@@ -208,6 +208,7 @@ namespace AnimusForge.Illustrator.UI.Patches
                 global::AnimusForge.WorldBulletinPanelIllustrationBridge.PrepareIssue = BulletinIllustrationPreloader.Prepare;
                 global::AnimusForge.WorldBulletinPanelIllustrationBridge.PrepareSelection = BulletinIllustrationPreloader.PrepareSelection;
                 global::AnimusForge.WorldBulletinPanelIllustrationBridge.CancelSelection = BulletinIllustrationPreloader.CancelSelection;
+                global::AnimusForge.WorldBulletinPanelIllustrationBridge.AwaitSelection = BulletinIllustrationPreloader.AwaitSelection;
                 BulletinIllustrationPreloader.Updated = RefreshPreparedBulletin;
 
                 MethodInfo closeMethod = AccessTools.Method(targetType, "Close");
@@ -586,8 +587,6 @@ namespace AnimusForge.Illustrator.UI.Patches
             if (sprite == null) return false;
             _activeSpriteName = spriteName;
             _activeItem = item;
-            // Providers may ignore requested dimensions. Fit their actual output without stretching.
-            _bulletinSlot?.FitImage(sprite.Width, sprite.Height);
             if (!string.IsNullOrWhiteSpace(item?.Title)) _sink.TitleText = item.Title;
             _sink.SpriteName = spriteName;
             _sink.PromptText = prompt;

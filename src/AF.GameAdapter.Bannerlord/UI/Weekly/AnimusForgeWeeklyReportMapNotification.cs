@@ -78,7 +78,7 @@ internal static class AnimusForgeWeeklyReportUiSprites
 	// (file stem, fallback width, fallback height) for the instant-bulletin panel sheet.
 	private static readonly (string Stem, int Width, int Height)[] BulletinSprites =
 	{
-		("af_world_bulletin_parchment", 1192, 1100),
+		("af_world_bulletin_parchment", 1730, 1100),
 		("af_world_bulletin_seal", 126, 132),
 		("af_world_bulletin_rule_l", 300, 18),
 		("af_world_bulletin_rule_r", 300, 18)

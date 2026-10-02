@@ -4,7 +4,65 @@ internal static class Program {
  static int n;static void Check(bool ok,string label){if(!ok)throw new Exception(label);n++;}
  static string Body(string title="title")=>"[TITLE]"+title+"[SHORT]summary[REPORT]report[TAGS]STAB_FLAT";
  static string Block(string id,string body,string extra="")=>"[REPORT_BLOCK_BEGIN]\nreport_id="+id+"\n"+extra+body+"\n[REPORT_BLOCK_END]";
- static async Task Main(){var rules=new WeeklyGenerationRules(x=>x.Replace("{player}","Alice"));var world=new WeeklyEventMaterialPreviewGroup{GroupKind="world"};var king=new WeeklyEventMaterialPreviewGroup{GroupKind="kingdom",KingdomId="k"};var batch=new WeeklyReportBatchRequest{Groups=new(){world,king},SystemPrompt="sys",UserPrompt="usr",PromptPreview="preview"};
+ static void TestBulletinNoticeRecovery()
+ {
+     var notices = new WeeklyNoticeStateOwner();
+     var records = new Dictionary<string, EventRecordEntry>();
+     var owner = new WorldBulletinStateOwner();
+     var callbacks = new List<Action>();
+     var port = new WorldBulletinPort {
+         CurrentDay=()=>10, FindRecord=id=>records.TryGetValue(id,out var e)?e:null,
+         QueueNotice=id=>notices.Queue(id), Log=(a,b)=>{},
+         AwaitIllustration=(plan,release)=>{callbacks.Add(release);return true;}
+     };
+     owner.Bind(port); owner.EnsureWorldBulletinState();
+     string id="weekly_report:world:bulletin:1:10";
+     records[id]=new(){EventId=id,EventKind="world"};
+     owner.QueueNoticeAfterIllustration(id,new(){Identity="first"});
+     Check(notices.Unread.Count==0 && owner.State.PendingNoticeEventIds.SequenceEqual(new[]{id}),"pending illustration notice is persisted before release");
+     string saved=owner.ExportJson();
+     var loaded=new WorldBulletinStateOwner(); loaded.Bind(port);
+     SaveRuntimeGuard.AdvanceGeneration("load_notice_test");
+     loaded.ImportJson(saved); loaded.ResetTransient();
+     callbacks[0]();
+     Check(notices.Unread.Count==0 && loaded.State.PendingNoticeEventIds.Count==1,"old generation callback cannot publish into loaded campaign");
+     loaded.ResetTransient();
+     Check(loaded.MainThreadActions.Count==1,"repeated load reset rebuilds recovery without duplicates");
+     loaded.ProcessWorldBulletinMainThreadActions();
+     Check(notices.Unread.SequenceEqual(new[]{id}) && loaded.State.PendingNoticeEventIds.Count==0,"load transfers saved pending notice to durable unread queue");
+     loaded.ResetTransient(); loaded.ProcessWorldBulletinMainThreadActions();
+     Check(notices.Unread.Count==1,"repeated recovery cannot duplicate unread");
+     // Existing unread notice survives another load even after its pending marker is removed.
+     var unreadSaved=notices.Unread.ToList(); notices=new(){Unread=unreadSaved};
+     loaded.ImportJson(loaded.ExportJson());loaded.ResetTransient();loaded.ProcessWorldBulletinMainThreadActions();
+     Check(notices.Unread.SequenceEqual(new[]{id}),"subsequent save restores unread without pending marker");
+     notices.MarkRead(id); loaded.ResetTransient();loaded.ProcessWorldBulletinMainThreadActions();
+     Check(notices.Unread.Count==0,"read notice is not resurrected");
+     callbacks.Clear();owner.QueueNoticeAfterIllustration(id,new()); callbacks[0]();callbacks[0]();
+     Check(notices.Unread.Count==1&&owner.State.PendingNoticeEventIds.Count==0,"live release transfers once and removes marker");
+     notices.MarkRead(id);
+     port.AwaitIllustration=(plan,release)=>false;owner.QueueNoticeAfterIllustration(id,new());
+     Check(notices.Unread.Count==1&&owner.State.PendingNoticeEventIds.Count==0,"no pending artwork queues immediately");
+     notices.MarkRead(id);port.AwaitIllustration=(plan,release)=>throw new Exception("bridge");owner.QueueNoticeAfterIllustration(id,new());
+     Check(notices.Unread.Count==1&&owner.State.PendingNoticeEventIds.Count==0,"bridge failure falls back to immediate notice");
+     notices.MarkRead(id);port.QueueNotice=x=>throw new Exception("queue");
+     try{owner.QueueNoticeAfterIllustration(id,null);}catch(Exception){}
+     Check(owner.State.PendingNoticeEventIds.Contains(id),"queue exception preserves recovery marker");
+     port.QueueNotice=x=>notices.Queue(x);owner.ResetTransient();owner.ProcessWorldBulletinMainThreadActions();
+     Check(notices.Unread.Count==1&&owner.State.PendingNoticeEventIds.Count==0,"next reset can recover a failed queue transfer");
+     notices.MarkRead(id);owner.State.PendingNoticeEventIds.Add(id);records.Remove(id);owner.ResetTransient();owner.ProcessWorldBulletinMainThreadActions();
+     Check(notices.Unread.Count==0&&owner.State.PendingNoticeEventIds.Count==0,"deleted record clears pending marker without notification");
+     owner.ImportJson("{\"World\":{\"Sequence\":1}}"); owner.ResetTransient();owner.EnsureWorldBulletinState();
+     Check(owner.State.PendingNoticeEventIds.Count==0&&owner.MainThreadActions.IsEmpty,"old save with no pending field loads without replaying archive");
+     for(int i=0;i<7;i++){string next=id+i;records[next]=new(){EventId=next};owner.State.PendingNoticeEventIds.Add(next);}
+     owner.ResetTransient();owner.ProcessWorldBulletinMainThreadActions();
+     Check(notices.Unread.Count==4&&owner.State.PendingNoticeEventIds.Count==3,"recovery shares four action per tick budget");
+     owner.ProcessWorldBulletinMainThreadActions();
+     Check(notices.Unread.Count==7&&owner.State.PendingNoticeEventIds.Count==0,"remaining recoveries drain next tick");
+     notices=new(); owner.State.PendingNoticeEventIds.Add(id);owner.ResetRuntime("new_game_created");owner.ProcessWorldBulletinMainThreadActions();
+     Check(owner.State==null&&notices.Unread.Count==0&&owner.MainThreadActions.IsEmpty,"new game does not recover prior campaign notices");
+ }
+ static async Task Main(){TestBulletinNoticeRecovery();var rules=new WeeklyGenerationRules(x=>x.Replace("{player}","Alice"));var world=new WeeklyEventMaterialPreviewGroup{GroupKind="world"};var king=new WeeklyEventMaterialPreviewGroup{GroupKind="kingdom",KingdomId="k"};var batch=new WeeklyReportBatchRequest{Groups=new(){world,king},SystemPrompt="sys",UserPrompt="usr",PromptPreview="preview"};
  Check(rules.TryParseWeeklyBatchResponse(Block("world",Body()),batch,out var blocks,out var missing,out var error)&&missing.SequenceEqual(new[]{"kingdom:k"}),"partial block retains missing");
  Check(rules.TryParseWeeklyBatchResponse(Block("world","invalid")+Block("world",Body())+Block("kingdom:k",Body()),batch,out blocks,out missing,out error)&&missing.Count==0&&blocks.Count==3,"valid duplicate wins expected identity");
  Check(!rules.TryParseWeeklyBatchResponse(Block("unknown",Body()),batch,out blocks,out missing,out error)&&missing.Count==2,"unexpected identity not accepted");

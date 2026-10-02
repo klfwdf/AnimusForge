@@ -95,6 +95,7 @@ internal sealed class CivilWarTuning
 	internal float Randomness = 1f;
 	internal float Floor = 0.05f;
 	internal int DiscontentThreshold = 35;
+	internal int PlayerDetonationStrengthPercent = 20;
 	internal int UltimatumDelayWeeks = 2;
 	internal int MinWarWeeks = 3;
 	internal int MaxWarWeeks = 12;

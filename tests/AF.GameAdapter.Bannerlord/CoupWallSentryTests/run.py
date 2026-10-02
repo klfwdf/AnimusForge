@@ -52,7 +52,7 @@ enum SetsSettlementSceneKind {Town,Castle,Village}
 static class SettlementEntryTroopSelectionLog {public static void Log(string message) {}}
 class Program:BaseLogic {
  const int ArmedCoupSpawnMaxAnchors=48;
- bool _armedCoup=true;SetsSettlementSceneKind _sceneKind=SetsSettlementSceneKind.Town;
+ bool IsCoupHall=false;bool _armedCoup=true;SetsSettlementSceneKind _sceneKind=SetsSettlementSceneKind.Town;
  List<Vec3> _armedCoupWallPositions;string _settlementId="test";
  Dictionary<int,float> _armedCoupWallSentryHealth=new Dictionary<int,float>();
  static int checks;static void Check(bool value,string name){if(!value)throw new Exception(name);checks++;}

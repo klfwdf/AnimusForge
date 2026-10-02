@@ -26,7 +26,7 @@ internal sealed class CoupMissionBehavior : MissionLogic
     private Agent _player, _king;
     private MatrixFrame _gateFrame;
     private float _nextObjectiveCheck, _nextDoorPrompt;
-    private bool _initialized, _exiting, _cleaned, _doorReady, _victoryAwaitingChoice, _victoryPromptRequested;
+    private bool _initialized, _exiting, _cleaned, _doorReady, _victoryAwaitingChoice, _victoryPromptRequested, _streetReinforcementsStopped;
 
     internal CoupMissionBehavior(CoupSession session, Settlement settlement)
     {
@@ -197,6 +197,12 @@ internal sealed class CoupMissionBehavior : MissionLogic
         // The door opens only when every gate-guard record has actually fallen, not merely when
         // none is spawned yet; the live count covers agents whose removal is still in flight.
         _doorReady = _session.IsGateCleared && SettlementEntryTroopSelectionBehavior.CountCoupRole(Mission, "GateGuard") == 0;
+        if (_doorReady && !_streetReinforcementsStopped)
+        {
+            SettlementEntryTroopSelectionBehavior.StopStreetReinforcements(Mission);
+            _streetReinforcementsStopped = true;
+            InformationManager.DisplayMessage(new InformationMessage("【宣权篡位】大厅入口已突破，后续街道增援已停止；已在场敌兵仍会战斗。抵达门口按 F 攻入大厅。"));
+        }
         if (_doorReady && _player.Position.DistanceSquared(_gateFrame.origin) <= 36f && Mission.CurrentTime >= _nextDoorPrompt)
         {
             _nextDoorPrompt = Mission.CurrentTime + 5f;
@@ -319,8 +325,7 @@ internal sealed class CoupMissionBehavior : MissionLogic
             _exiting = true;
             // A verified hall victory survives an external closure; map recovery asks for the
             // still-undecided disposition instead of turning an established victory into defeat.
-            if (!_victoryAwaitingChoice || (_session.Phase != CoupPhase.AwaitingResolution
-                && !(_session.Phase == CoupPhase.Suspended && _session.ResumePhase == CoupPhase.AwaitingResolution)))
+            if (_session.Phase != CoupPhase.Suspended && (!_victoryAwaitingChoice || _session.Phase != CoupPhase.AwaitingResolution))
                 CoupCampaignBehavior.NotifyDefeat(Mission, "政变战斗已提前结束。");
         }
         Mission.IsAgentInteractionAllowed_AdditionalCondition -= DenyNativeInteraction;
