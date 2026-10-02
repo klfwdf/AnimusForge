@@ -1,3 +1,10 @@
+# 当前交付：后台画卷、单人物单立绘与拖拽修复（2026-10-03）
+
+- 产品 `a596ea6c`：关闭面板继续生成；素材采集完成后离开会面不丢HTTP结果；保存成功左下角提示、画廊延后刷新、重开同目标接回任务，不强弹面板。读档/换战役仍取消旧任务。
+- 每人物只采集/上传一张完整立绘，保留旧形状兼容。弹窗拖拽按实际CustomScale、当前输入和同帧布局修复，不改一键构建流程。
+- 双API+Bootstrap0错误、两DLL共22审查入口通过；拖拽fixture28项、快报preloader56项。状态OFFLINE_VERIFIED，实机手感/HUD/GPU/真provider/旧档未验；未push/覆盖游戏/打包。保留其他会话dirty及提交。
+- [唯一主台账与源码坐标](docs/animusforge-refactoring-and-repository-reorganization-plan.md#illustrator-background-single-portrait-drag)、[玩家可见行为与排查指南](docs/illustrator_pipeline_diagnostics.md#6-关闭面板继续生成完成通知与拖拽)；本地证据 `artifacts/illustrator-background-generation-20261003/receipt.json`。下方单图/双图与部署报告属相应历史候选，不能替代本轮实机验证。
+
 # 生图收尾补验：完整当前树也已通过
 
 - 另一会话UI修复提交完成后，`5a1eb668`完整树双API+Bootstrap构建0error；两实际DLL的九套审查各PASS，共18入口，18553源输入hash零变化。早期并行半成品失败/隔离结果保留，未把实机升级为PASS。
