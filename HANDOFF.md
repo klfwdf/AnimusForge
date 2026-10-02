@@ -1,3 +1,8 @@
+# 生图收尾补验：完整当前树也已通过
+
+- 另一会话UI修复提交完成后，`5a1eb668`完整树双API+Bootstrap构建0error；两实际DLL的九套审查各PASS，共18入口，18553源输入hash零变化。早期并行半成品失败/隔离结果保留，未把实机升级为PASS。
+- 详细证据仍见[同一主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#illustrator-chain-review-20261002)和本地receipt的fullWorkspace字段。生图产品只本地提交，未部署/推送；需新日志匹配玩家的同次请求。
+
 # 当前交付：生图全链路审查与详细诊断
 
 - 立绘等待/高FPS帧截止、百科离屏开关、edits/query路径及缓存类别优先级已修；保持必需人物失败停止、原生串行与安全退休。有图默认实际发images/edits，单数非精确路径本地报错。

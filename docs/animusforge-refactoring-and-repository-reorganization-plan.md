@@ -1,3 +1,7 @@
+### 生图同轮收尾补验：完整工作树验收覆盖
+
+此补验替代下方“最终仅隔离候选、当前组合未编译通过”的限制，**不改写早期失败事实，也不扩大到实机**。另一会话完成`4149c2e2`/`dca0e536`对话/上手UI提交后，生图本地产品`5a1eb668`完整树按原脚本无Stage/Deploy再构建Debug双API+Bootstrap exit0/0error，并对完整树两实际实现DLL重复端点174/诊断65/双视图37/NoDraw16/prompt194/导演45/颜色47/参考64/缓存72九套入口，各18组exit0。18553源码输入raw hash与构建前一致；DLL实际SHA与marker核验通过。测试首轮赶在生成目录生命周期中读到缺DLL，保留该轮环境失败；确认构建进程完成、重验DLL hash后最终重跑全部通过，不将缺文件当成产品断言失败。full-workspace-final-build.log、current-final-audit-results.json、full-final-manifest.json及同一receipt.fullWorkspace字段绑定证据。原GPU/现场失败/真实provider/旧档及组合UI实机仍NOT_RUN，无发布/部署/打包。
+
 <a id="illustrator-chain-review-20261002"></a>
 ## 当前任务交付：生图全链路诊断、立绘与端点/耗时审查
 
