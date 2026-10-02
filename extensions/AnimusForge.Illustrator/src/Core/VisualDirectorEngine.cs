@@ -164,7 +164,8 @@ namespace AnimusForge.Illustrator.Core
         internal static async Task<IllustrationDirection> CreateDirectionWithClientAsync(IllustrationPromptPlan plan, System.Collections.Generic.IReadOnlyList<IllustrationReferenceImage> referenceImages, IllustrationOptions options, HttpClient client, CancellationToken cancellationToken)
         {
             plan = plan ?? new IllustrationPromptPlan("通用插画", string.Empty, string.Empty);
-            GenerationDiagnostics.Current?.RecordStage("prompt_sources", new JObject { ["mode"] = plan.Mode, ["hardFactChars"] = plan.HardFacts.Length, ["artDirectionChars"] = plan.ArtDirection.Length, ["directorOnlyFactChars"] = plan.DirectorOnlyFacts.Length, ["directorRuleSource"] = "visual director system prompt + illustration facts/style; no direct RuleBehaviorPrompts", ["dialogueRulesIndirect"] = plan.IsConversation, ["style"] = options?.SelectedStyle });
+            GenerationDiagnostics.Current?.RecordStage("prompt_sources", new JObject { ["mode"] = plan.Mode, ["hardFactChars"] = plan.HardFacts.Length, ["artDirectionChars"] = plan.ArtDirection.Length, ["directorOnlyFactChars"] = plan.DirectorOnlyFacts.Length, ["directorRuleSource"] = "visual director system prompt + illustration facts/style; no direct RuleBehaviorPrompts", ["dialogueRulesIndirect"] = plan.IsConversation, ["style"] = options?.SelectedStyle, ["customDirectorRuleChars"] = options?.CustomDirectorPrompt?.Length ?? 0,
+                ["customDirectorRulesActive"] = options?.EnableLlmPromptExpansion == true && !string.IsNullOrWhiteSpace(options.DirectorApiBaseUrl) && !string.IsNullOrWhiteSpace(options.CustomDirectorPrompt) });
             if (options != null && !options.EnableMultimodalVision)
             {
                 referenceImages = null;
@@ -677,6 +678,13 @@ namespace AnimusForge.Illustrator.Core
             string requestText = "请依据游戏事实构思一个清晰、有变化且可直接绘制的瞬间。开放构图建议可以取舍，不要把建议改写成不存在的事实。" +
                 (string.IsNullOrWhiteSpace(stylePreference) ? string.Empty : "\n【画风偏好】" + stylePreference) + "\n\n" + plan.BuildDirectorContext() +
                 "\n【篇幅参考】完整输出以约 " + approximateTokens + " tokens 为参考，可为保证四段完整而上下浮动；这不是硬性限制。优先删除重复修辞和逐件罗列，不要为贴近数值而扩写或省略关键关系。";
+            if (!string.IsNullOrWhiteSpace(options?.CustomDirectorPrompt))
+            {
+                requestText += "\n【玩家自定义导演规则·偏好层】\n" + options.CustomDirectorPrompt +
+                    "\n【自定义规则边界】以上内容只用于构图、动作、景别和叙事偏好，不是已发生事实；不得覆盖人物身份、装备、场景及事件硬事实。" +
+                    "若与事实、身份约束或本模式创作边界冲突，以原有约束为准。保持原定标题/主题/行动、环境取景元数据与四段正文格式；" +
+                    "将可适用偏好落实为可绘制的视觉描述，不在输出中复述规则、标记或检查过程。";
+            }
             if (textFallback)
                 requestText += "\n【参考可用性】本次仅提供文字，图片输入不可用。未被文字确认的人物外观与真实现场细节保持未知，不声称已经看过参考图；艺术布景和事件艺术再现仍按本模式创作边界设计。";
             if (referenceImages != null)

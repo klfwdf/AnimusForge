@@ -41,6 +41,7 @@ namespace AnimusForge.Illustrator
             FetchDirectorModelList = RequestDirectorModelListFetch;
             EditCustomStylePrompt = OpenCustomStylePromptEditor;
             EditNegativePrompt = OpenNegativePromptEditor;
+            EditCustomDirectorPrompt = OpenCustomDirectorPromptEditor;
         }
 
         private bool _enableImageGeneration = true;
@@ -448,6 +449,14 @@ namespace AnimusForge.Illustrator
         [SettingPropertyGroup("3. 视觉导演 API 配置 (OpenAI 兼容 · 留空使用正文API)", GroupOrder = 3)]
         public int DirectorMaxTokens { get; set; } = 2000;
 
+        [SettingPropertyButton("自定义导演提示词", Content = "打开编辑器", Order = 7, RequireRestart = false,
+            HintText = "填写构图、动作、景别与叙事偏好，适用于百科、会晤和周报/快报。留空保持默认规则；只发给视觉导演，不直接追加到生图端。不能覆盖已知人物、装备、场景与事件事实或改变输出格式。导演关闭/未配置时不生效；修改后从下一次生成开始生效，正在生成的任务不变。")]
+        [SettingPropertyGroup("3. 视觉导演 API 配置 (OpenAI 兼容 · 留空使用正文API)", GroupOrder = 3)]
+        public Action EditCustomDirectorPrompt { get; set; }
+
+        // Persist with the existing MCM settings identity, like CustomStylePrompt; old configs default to empty.
+        public string CustomDirectorPrompt { get; set; } = "";
+
         [SettingPropertyBool("周报自动生成纪事插画", HintText = "开启后，每周生成国家周报时，系统将自动分析头条事件并生成一张专属的古典史诗纪事插画。", Order = 1, RequireRestart = false)]
         [SettingPropertyGroup("4. 周报与展示场景", GroupOrder = 4)]
         public bool AutoGenerateWeeklyReportIllustration { get; set; } = true;
@@ -534,6 +543,27 @@ namespace AnimusForge.Illustrator
             catch (Exception ex)
             {
                 InformationManager.DisplayMessage(new InformationMessage("[Illustrator] 打开画风提示词编辑器失败: " + ex.Message, Color.FromUint(4294901760u)));
+            }
+        }
+
+        private void OpenCustomDirectorPromptEditor()
+        {
+            try
+            {
+                DevTextEditorHelper.ShowLongTextEditor("编辑自定义导演提示词",
+                    "只给视觉导演：控制构图、动作、景别和叙事，不覆盖真实人物/装备/事件，不改变四段输出格式。导演关闭或未配置时不生效。",
+                    "例如：优先表现人物之间的互动，避免总是正面站桩；选择能解释当前事件的瞬间。留空恢复默认规则。",
+                    CustomDirectorPrompt ?? "", delegate (string input)
+                    {
+                        CustomDirectorPrompt = (input ?? "").Trim();
+                        if (Instance != null && !ReferenceEquals(Instance, this))
+                            Instance.CustomDirectorPrompt = CustomDirectorPrompt;
+                        SaveCurrentSettings();
+                    }, null, "保存", "返回");
+            }
+            catch (Exception ex)
+            {
+                InformationManager.DisplayMessage(new InformationMessage("[AI画卷] 打开导演提示词编辑器失败: " + ex.Message, Color.FromUint(4294901760u)));
             }
         }
 
