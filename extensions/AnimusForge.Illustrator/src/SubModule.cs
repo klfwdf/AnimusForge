@@ -27,7 +27,9 @@ namespace AnimusForge.Illustrator
             Start();
         }
 
-        internal static void Start()
+        internal static void Start() => TryStart();
+
+        internal static bool TryStart()
         {
             try
             {
@@ -39,10 +41,12 @@ namespace AnimusForge.Illustrator
 
                 Debug.Print("[AnimusForge.Illustrator] SubModule and all illustration patches loaded successfully. implementationMvid=" +
                     typeof(SubModule).Module.ModuleVersionId + ", sceneCapture=isolated-panorama-30m+map-presented, characterReferences=full-body+head-detail-no-screen-draw");
+                return true;
             }
             catch (Exception ex)
             {
                 Debug.Print($"[AnimusForge.Illustrator] Failed to load SubModule: {ex.Message}");
+                return false;
             }
         }
 

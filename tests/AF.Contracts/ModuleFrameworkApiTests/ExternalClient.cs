@@ -92,9 +92,9 @@ static class Program
         Check(HostControl.ServiceInitializations == 1, "services constructed once");
         AfFrameworkSnapshot ready = AfApi.GetSnapshot();
         Check(ready.State == AfFrameworkState.Ready && ready.ReasonCode == "framework.adapters_bound", "ready means adapter binding only");
-        Check(ready.Modules.Count == 3, "three composed team modules");
-        Check(ready.Modules.Select(x => x.Id).Order().SequenceEqual(new[] { "af.team.gathering", "af.team.policy", "af.team.siege" }), "stable module identities");
-        foreach (AfModuleInfo module in ready.Modules)
+        Check(ready.Modules.Count == 7, "three team ports plus four hosted extensions");
+        Check(ready.Modules.Where(x => x.Id.StartsWith("af.team.")).Select(x => x.Id).Order().SequenceEqual(new[] { "af.team.gathering", "af.team.policy", "af.team.siege" }), "stable module identities");
+        foreach (AfModuleInfo module in ready.Modules.Where(x => x.Id.StartsWith("af.team.")))
         {
             Check(module.ContractVersion == 1 && module.Capabilities.Count == 1, "module version and selected seam only");
             Check(module.Capabilities[0].Id == module.Id + ".dialogue", "stable capability identity");
@@ -102,9 +102,18 @@ static class Program
             Check(!module.Capabilities[0].IsExternallyCallable, "internal port not public executor");
             Immutable(module.Capabilities, "module capabilities");
         }
+        string[] extensionIds = { "af.extension.coup", "af.extension.dialogue_ui", "af.extension.illustrator", "af.extension.vengeance" };
+        Check(ready.Modules.Where(x => x.Id.StartsWith("af.extension.")).Select(x => x.Id).Order().SequenceEqual(extensionIds), "four stable hosted module identities");
+        foreach (string id in extensionIds)
+        {
+            AfModuleCapabilityInfo capability = Capability(ready, id);
+            Check(capability.Id == id + ".host" && capability.ContractVersion == 1, "host capability identity " + id);
+            Check(capability.State == AfModuleCapabilityState.NotInitialized, "directory alone does not initialize host " + id);
+            Check(!capability.IsExternallyCallable, "host metadata not public execution " + id);
+        }
         Immutable(ready.Modules, "ready module list");
         Check(HostControl.Initialize(), "duplicate load is idempotent");
-        Check(AfApi.GetSnapshot().Modules.Count == 3 && HostControl.ServiceInitializations == 1, "no duplicate registrations");
+        Check(AfApi.GetSnapshot().Modules.Count == 7 && HostControl.ServiceInitializations == 1, "no duplicate registrations");
         HostControl.SetGates(true, true);
         AfFrameworkSnapshot gated = AfApi.GetSnapshot();
         Check(Capability(gated, "af.team.siege").State == AfModuleCapabilityState.Unavailable, "disabled siege bridge unavailable");
@@ -118,8 +127,8 @@ static class Program
         Parallel.For(0, 256, _ =>
         {
             AfFrameworkSnapshot snapshot = AfApi.GetSnapshot();
-            if (snapshot.State != AfFrameworkState.Ready || snapshot.Modules.Count != 3
-                || snapshot.Modules.Any(m => m.Capabilities[0].State != AfModuleCapabilityState.Available))
+            if (snapshot.State != AfFrameworkState.Ready || snapshot.Modules.Count != 7
+                || snapshot.Modules.Any(m => m.Capabilities[0].State != (m.Id.StartsWith("af.extension.") ? AfModuleCapabilityState.NotInitialized : AfModuleCapabilityState.Available)))
                 throw new Exception("concurrent query corrupted snapshot");
         });
         checks++;
@@ -127,7 +136,7 @@ static class Program
         HostControl.Shutdown(); HostControl.Shutdown();
         AfFrameworkSnapshot stopped = AfApi.GetSnapshot();
         Check(stopped.State == AfFrameworkState.Stopped && stopped.ReasonCode == "framework.stopped", "shutdown idempotent");
-        Check(stopped.Modules.Count == 3 && stopped.Modules.All(m => m.Capabilities.All(c =>
+        Check(stopped.Modules.Count == 7 && stopped.Modules.All(m => m.Capabilities.All(c =>
             c.State == AfModuleCapabilityState.Unavailable && c.ReasonCode == "framework.stopped")), "stopped retains descriptions not availability");
         int gateCalls = HostControl.GateCalls;
         AfApi.GetSnapshot();
@@ -135,7 +144,7 @@ static class Program
         Check(before.State == AfFrameworkState.NotInitialized && before.Modules.Count == 0, "old pre-init snapshot unchanged");
         Check(ready.State == AfFrameworkState.Ready, "old ready snapshot unchanged after shutdown");
         Check(HostControl.Initialize(), "reload supported");
-        Check(AfApi.GetSnapshot().Modules.Count == 3 && HostControl.ServiceInitializations == 1, "reload uses same stateless adapters");
+        Check(AfApi.GetSnapshot().Modules.Count == 7 && HostControl.ServiceInitializations == 1, "reload uses same stateless adapters");
         Check(stopped.State == AfFrameworkState.Stopped, "old stopped snapshot unchanged on reload");
 
         HostControl.Shutdown(); HostControl.SetPolicyAdapterPresent(false);

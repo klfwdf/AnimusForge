@@ -15,9 +15,60 @@ declaration=m.declaration
 def old(path):
     return subprocess.check_output(['git','show',BASELINE+':'+path],cwd=ROOT).decode('utf-8-sig').replace('\r\n','\n')
 
+
+# Explicitly approved functionality delta: four event-driven hosted catalog entries.
+# This keeps the original complete lifecycle oracle; new behavior is exercised by
+# HostedExtensionCatalogTests, not hidden by refreshing the historical source hash.
+HOSTED_BASELINE = '917ea758'
+def restore_hosted_delta(owner, current):
+    prior_owner = subprocess.check_output(['git','show',HOSTED_BASELINE+':src/AF.Foundation.Runtime/ModuleDirectory/ModuleDirectoryLifecycleOwner.cs'],cwd=ROOT).decode('utf-8-sig').replace('\r\n','\n')
+    prior_runtime = subprocess.check_output(['git','show',HOSTED_BASELINE+':src/AF.GameAdapter.Bannerlord/Composition/ModuleFrameworkRuntime.cs'],cwd=ROOT).decode('utf-8-sig').replace('\r\n','\n')
+    old_loop = '                    foreach (InternalModuleStatus module in directory.GetSnapshot())\n                        directory.UpdateRuntimeState(module.Definition.Id, InternalModuleRuntimeState.Ready,\n                            "module.adapter_bound");'
+    new_loop = '''                    foreach (InternalModuleStatus module in directory.GetSnapshot())
+                    {
+                        // Hosted features report their real startup/installation result later.
+                        if (!HostedExtensionCatalog.RequiresHostConfirmation(module.Definition.Id))
+                            directory.UpdateRuntimeState(module.Definition.Id, InternalModuleRuntimeState.Ready,
+                                "module.adapter_bound");
+                    }'''
+    event_method = '''    // Event-driven, bounded to four known hosts. A stale unload/campaign callback cannot
+    // resurrect a stopped directory, and campaign success cannot hide startup failure.
+    internal static bool UpdateHostedRuntimeState(string moduleId, InternalModuleRuntimeState state,
+        string reasonCode, bool requireStarted = false)
+    {
+        if (!HostedExtensionCatalog.RequiresHostConfirmation(moduleId)) return false;
+        lock (Sync)
+        {
+            if (_state != ModuleFrameworkLifecycleState.Ready || _directory == null) return false;
+            if (requireStarted)
+            {
+                InternalCapabilityStatus current = _directory.GetCapabilityStatus(moduleId + ".host", 1);
+                if (!current.IsAvailable && current.ReasonCode != "module.campaign_registration_failed")
+                    return false;
+            }
+            return _directory.UpdateRuntimeState(moduleId, state, reasonCode);
+        }
+    }
+
+'''
+    facade_method = '''    internal static bool ReportHostedExtensionState(string moduleId, InternalModuleRuntimeState state,
+        string reasonCode, bool requireStarted = false)
+    {
+        return ModuleDirectoryLifecycleOwner.UpdateHostedRuntimeState(moduleId, state, reasonCode, requireStarted);
+    }
+
+'''
+    assert prior_owner.count(old_loop)==1
+    expected_owner=prior_owner.replace(old_loop,new_loop).replace('    internal static void Shutdown()',event_method+'    internal static void Shutdown()')
+    expected_runtime=prior_runtime.replace('    internal static void Shutdown()',facade_method+'    internal static void Shutdown()')
+    assert owner==expected_owner, 'Unreviewed hosted lifecycle delta'
+    assert current==expected_runtime, 'Unreviewed hosted composition facade delta'
+    return prior_owner, prior_runtime
+
 def restore_j02_runtime(current):
     prior = subprocess.check_output(['git','show',J02_BASELINE+':Refactor/Modules/ModuleFrameworkRuntime.cs'],cwd=ROOT).decode('utf-8-sig').replace('\r\n','\n')
     owner = FOUNDATION_OWNER.read_text(encoding='utf-8-sig')
+    owner, current = restore_hosted_delta(owner, current)
     fields = prior[prior.index('    private static readonly object Sync'):prior.index('    internal static bool Initialize(')]
     old_initialize = declaration(prior,'internal static bool Initialize(out string reasonCode)')
     owner_initialize = old_initialize.replace('Initialize(out string reasonCode)', 'Initialize(Func<InternalModuleDirectory> createDirectory, out string reasonCode)').replace('TeamModuleRegistration.CreateDirectory()', 'createDirectory()')

@@ -23,6 +23,7 @@ internal static class TeamModuleRegistration
         RegisterAdapter(directory, "af.team.siege", "af.team.siege.dialogue",
             TeamModuleServices.Siege != null, FeatureBridgeIds.ConversationSiege);
 
+        HostedExtensionCatalog.Register(directory);
         return directory;
     }
 
