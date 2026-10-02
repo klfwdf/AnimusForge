@@ -1282,3 +1282,10 @@ Roslyn `ClassDeclarationSyntax.Members` 直接语法声明（不是 semantic uni
 ### 验证层边界
 
 当前 owner/headless game-capability 生命周期、固定 historical protocol/UI oracle、精确 inverse/漂移负控、真实 DLL replay 分开报告。Debug/Release API1.3/API1.4/Bootstrap 同一 1337 raw inputs 六构建 exit0；总门禁进行中，不能提前称通过。完整当前 Courier PromptSchedule 与 ModuleNativeSubmission 执行仍没有 whole-consumer direct runner；纯 routing/关键迟到与 effect owner 实测、实际编译/接线不能替代这两个整体覆盖。LIVE、真实旧档、真实网络/TTS/帧性能 NOT_RUN。Weekly 原 512 terminal/64 pending 淘汰边界保持；证书全局影响归因 UNKNOWN，未擅自回滚。
+
+
+### 2026-10-02 最终离线收口
+
+最终产品dd6f45bf后1337 raw输入绑定新双配置/双API/Bootstrap六构建；完整原runner `final-gates-55eb`：355入口343 PASS、0 FAIL、3 PREEXISTING_FAIL、5 NEEDS_INPUT、3 SUPERSEDED、1 ENV_STATE，exit0。411actualbindings/163boundedinverse及4漂移负控PASS；838地图recorded/working-tree均PASS。唯一详细责任/影响/证据入口为主台账“P1–P8最终源码/离线出口”，收据为 `artifacts/af2-host-terminal-closeout/final-receipt.json`。保存键修复以新DEAA/AACC DLL为准，旧F040不复用该边界验收。
+
+这些是currentactual owner、显式historicaloracle、sourceinverse与realDLL replay分层结果，不是全当前runtime/live验收。3既有失败与5需输入/3替代/1环境状态不被隐藏。整体CourierSchedule/ModuleNativeSubmission/NativeWait、实机/真实旧档/网络/TTS/帧性能NOT_RUN；证书副作用归因UNKNOWN，512/64原receipt淘汰边界与所有保护/禁止路径不变。没有新增永久过渡partial或为了行数继续扩领域玩法。

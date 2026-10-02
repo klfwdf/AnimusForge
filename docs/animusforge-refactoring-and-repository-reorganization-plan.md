@@ -5953,3 +5953,50 @@ R2计划交付门槛：已给固定技术路线、真实来源与目标、写入
 - 正式 `current-gates-7c5c/results.json`：40受影响入口25PASS/15FAIL、aggregate exit1。实际新DLL完整OptIn（MemoryRecovery3561、CourierReservation18、CourierInbound115等）及PhaseEight全部原序列回放PASS；NativeWaitAudioBoundary当前7原子+wholeAudio真实25检查PASS。不是整体当前runtime/game/live验收，也不把旧266PASS拼新版完整354。
 - 剩余15：Courier3与Composition当前LlmContracts编译闭包；NativeCompletion/Admission/MainReply三个mutation子进程timeout（正常入口通过，不算mutation拒绝）；Duel当前normalizer helper internal签名；CivilWar MSBuild Python实际路径；J17 net10工具/fixture依赖；Memory旧copy比较；NativeFinal/Knowledge/Shared capture实际源位置；mandatoryPersistence typedref解析。仅有限测试/工具引用与异常输出修正，生产仍冻结。SDK10.0.400已核实际存在，进程内显式选本机dotnet；未安装/全局配置。
 - 838原代码图ID保持，仅3个已批准PhaseEight测试坐标/hash更新；真实owner规模、P1–P8映射/单状态/影响分析沿既有完整收据，数字不冒语义完成。LIVE/旧档/真实网络音频/帧性能NOT_RUN与证书归因UNKNOWN保持；原rawdirty/tools/NuGet不stage、不清理，未push/Stage/部署。
+
+
+<a id="af2-host-terminal-final-offline-20261002"></a>
+
+### P1–P8 最终源码/离线出口（2026-10-02，OFFLINE_VERIFIED_WITH_LIMITS）
+
+本最终条目supersede本轮较早ACTIVE/VERIFY/门禁进行中状态；旧结果仍历史保留，实机与未验层不被升级。
+
+唯一完整验证收据：`artifacts/af2-host-terminal-closeout/final-receipt.json`。产品候选 `dd6f45bf` 后1337 raw输入与当前/Debug/Release逐SHA相同；后续提交仅测试/只读工具/文档。新两配置 API1.3/API1.4/Bootstrap 六构建 exit0；实际Release1.4 `DEAA0BE7FDE9E4C88AA2169A86CD7A7E5368B4697B5367F2EC9F305DA9D6D521`，1.3 `AACC654B0F4FAE2F824CA457CC23F627A49054EFFC0DE08375CF510775B795DC`。不得将旧F040保存边界当本轮验收。
+
+**最终完整原runner命令**：`python artifacts/af2-host-terminal-closeout/integration/run-final-gates.py --debug-source artifacts/af2-host-terminal-closeout/integration/builds/debug-b67c7b0cc63f/source --release-source artifacts/af2-host-terminal-closeout/integration/builds/frozen-release-f0bd0f0c6496/source --out artifacts/af2-host-terminal-closeout/final-gates-55eb --jobs 4`。无`--ids`：355入口，**343 PASS/0 FAIL/3 PREEXISTING_FAIL/5 NEEDS_INPUT/3 SUPERSEDED_BY_RUNNER/1 ENV_STATE，aggregate exit0**。不是“355测试全通过”，更不是全当前产品/实机通过。
+
+- PREEXISTING_FAIL：`TeamModulePortParityTests/run.py`、纯 `WorldDiplomacyIntentBoundary.SmokeTests.csproj`、原完整 `MemorySummaryMainThreadBoundaryTests/test_source_parity.py`。最后一项保原15测试/28失败信号，不能拿其旧oracle完全漂移负控当当前通过。
+- NEEDS_INPUT：PhaseEight readiness业务工具、af2_migrate、vanilla text export及两研究生成工具；未擅自提供真实输入运行。
+- SUPERSEDED：raw OwnerJsonStorageCodec、PlayerExports、KnowledgeIndex csproj；其原编译信号仍存，使用既有具名runner不抹原日志。
+- ENV_STATE：LiveHostReadinessAudit，保环境审计状态而非游戏验收。
+- 原完整354的71 FAIL、新旧69的37 FAIL、40的15 FAIL、fixed11的1 FAIL以及前次完整355的1 FAIL，在最终355**独立实跑**均为PASS；这是逐入口差异对照，不是将旧成绩拼成最终结果。原run全部保留，`final-gates-6f0e6394`仍CANCELLED_PARTIAL。
+- 最后一项ActionProtocol超时仅入口catch：samecompiledinputs除Program捕获外raw一致，原`ASSERT overflow-rejected-before-owner`秒级exit1；最终原五compiledmutants全部拒绝，120s阈值不变。没有据“无输出”推断产品死锁，也没有断言已观察到Windows WER。
+
+#### 逐责任包出口、单权威状态与代表性影响
+
+下表收既有切片，不扩未列玩法；详细符号/消费者/修订与规模以当前838-ID代码图及各line receipt的owner_map/source_map为唯一导航。
+
+| 包 / 原具名职责 | 真实owner与生产消费者 | 单状态/lifecycle与代表性规则影响 |
+| --- | --- | --- |
+| P1 MarkWeeklyMemoryMaterialTriggerInternal、TryPublishWeeklyActionOutcome、GenerateWeeklyReportsMinuteBurstAsyncInternal、ProcessPendingWeeklyReportCommitContext | MemoryBusinessStateOwner pending/draft窄操作、Weekly material/value/political policies、WeeklyActionOutcomePublicationOwner、WeeklyReportRuntimeOwner；MyBehavior.WeeklyMaterials/WeeklyRuntime真消费 | 原draft/trigger、ledger、commit/prompt queues与revision引用不复制；原20000边界/checked溢出/four-kind估值及prompt逐字保持。Probe先于capture；开发清空只pending→Unknown且原ImportConfirmed真才重绑新generation，原512淘汰边界不扩。 |
+| P2 memory query/candidate/context与完整多意图history recall | MemoryRecallContextOwner、HistoryArchiveRecallOwner，MyBehavior.MemoryRecall/HistoryArchiveRecall窄捕获消费 | 原MemoryBusinessStateOwner的history/draft/block权威不变；ONNX失败仍blocking无静默降级，rerank/预算/role选择保持。Recovery可见journal清空同实例与storage，旧disabled reason不被Import空治好，Actions去重receipt不清。 |
+| P3 party/settlement transfer与ApplyShoutGiveTransfer | Economy Authorization/Projection/Execution/EffectObserver + PartyAssetTransferBannerlordAdapter；Scene/Native真实Action与AFEF消费者 | 原roster/volunteer/dungeon/固定资产为真值，无第二库存；source已扣而target写失败仍汇source-only事实，不以false丢效应，不回滚/重试；原public int兼容门面保持。 |
+| P4 CapturePromptSections、BuildStrictSceneMessagesForNpc、draft/session消息、三人物intro、公开external135 | PromptContextCaptureBannerlordAdapter、MainPrompt/SceneHistory/Uncompressed message owners、PersonaIntro composer+live capture、SceneExternalPromptCaptureAdapter；三渠道真实Prompt阶段消费 | 游戏读取留主线程，脱离标量后台；Trust→Duel.consume→triggered-rule次序保持，AFEF不计入会话cap，self/observer角色与metadata原规则保持。SceneConversationHistoryOwner持private唯一stores+原gate，写保身份、读脱离，Presentation fingerprint O(1)。 |
+| P5 Native/Scene fullchains、RunSpeechQueueWorker、EnqueueSystemNpcShout287与effects/history/TTS/completion | NativeConversationTurn/GameEffectsRuntime、SceneConversationSessionRuntime、SceneSpeechExecutionRuntime/EffectController/SystemNpcShoutRuntime；原公开hook/薄host和真实worker消费 | 同PendingOperationRegistry/dispatchclaim/TCS/lifetime，不新任务gate。mission/savegeneration/epoch/session/Agent引用检查先于迟到effects；重复exit与旧effect-before-epoch缺口已最小修。已开始部分effect沿原receipt，不重试世界效果。 |
+| P6 summon/guide/follow/return/ghost整簇 | SceneMovementController，Native/Scene actions与Audio completion具名消费 | 原19motion字段唯一、Agent/LocationCharacter节点不换裸坐标；165方法/14types/52state-rule声明inverse、actual19及4变异。新增callback mission+generation/取消一次性守卫，reset不用旧proxyIndex清新mission，无新全Agent热扫描。 |
+| P7 TTS订阅/资源/清理、Presentation及ShowNpcSpeechOutput151 | SceneAudioLipSyncController、ScenePresentationController，SceneAudio薄组合与实际发言提交消费 | 单资源/requestidentity/5订阅与呈现session状态。54/46实际owner检查，保留Native七原子→wholeAudio25实际接受门及token/active编译负控；旧waiter/旧cancel/duplicate finish不清新TCS/pause/Sound。不是完整NativeWait/真实音频验收。 |
+| P8 编辑/跨域package/reload、Memory131+45队列run、ClearAll/SyncData组合 | Memory/Persona/Weekly/Event/Root/Package/Import controllers、原领域edit/import owner、DatabaseReloadController/Preflight、MemorySummaryQueueRunRuntime及Campaign persistence adapters；真实菜单/保存入口消费 | 单DeveloperEditorSession与原权威dict/storage；非事务import保持原领域顺序/部分成功，reload保持独立rollback。two-wave/60s/来源重验/接受顺序不变。明确dev-clear退役旧输入且新请求可用，不伪game_loaded；原8notice literal恢复44真实legacy键断言与坏键负控。未执行真实清空。 |
+
+#### 验证层，不混称产品全验收
+
+1. **Current actual**：完整新owner/typed factory/消费者、线程与claims、取消/强yield/迟到/部分effects；有限game/UI/network叶替身边界在原receipt逐项列。最后三个core为system15+effects11、external69+intro111、presentation54+46；完整Scene22/continuation5/group31、Native112/effects10等证据绑定本轮真实源，不用旧body替代。
+2. **Historical protocol/UI oracle**：显式historical_source只在具名旧读取点；原断言/旧review hash/负控保持，不渗入当前owner compile、runtime或真实DLL。Shared→Courier/Native最终16case bytes-equality通过；旧metadata人工stub恢复固定77a真实三helper，当前assembler不被替换。旧oracle不证明whole当前submit协议。
+3. **Source inverse/negative**：411actualbindings/163boundedpaths固定55ebec7f，4body/neighbor/extra/dependency漂移负控PASS；32/165/633/287/151等具名body inverse证据分token、normalized-text、raw-byte如实记录，不泛称字节相等。
+4. **Real current DLL replay**：最终完整runner新DEAA/AACC实际回放：OptIn Memory3561/Courier18+115、PhaseEight原全回放、Duel双API35、实际Composition等；offline Campaign membership叶替身与RuntimeHelpers省ctor需真实readonlyowner初始化的夹具边界保留，不冒活Campaign。
+5. **Identity audit**：原mandatory d57e9be基线（intent已同样指定）current178/baseline178 keys+types、42/42 behaviors、module/bootstrap PASS；工具DEFAULT旧d4cb95键语义未改。bounded Roslyn仅unresolved/dotted affected源+唯一声明closure，参数/局部/成员按真实声明，不拿Save类型猜Load；原7contract+新Loadbool/unknown/literal/methodscope case共8PASS。A fullsnapshot三负控与原失败日志保留。只新增必要只读支持文件；unsupported alias/inheritance仍UNRESOLVED/明确ambiguity FAIL，不当全语义编译器。
+
+#### 规模、保留职责及最终限制
+
+真正类型统计：MyBehavior48 partial/2408 direct syntax declarations/34642 own-member span lines，主29836 physical lines；ShoutBehavior29/1352/22219，主21301。本轮197个实际owner class声明及逐owner规模/修订在JSON；这些不是semantic unique方法数或复杂度。838原ID recorded/working-tree均PASS。具名保留为engine/game-thread叶捕获、兼容ABI/publichook、保存/生命周期顺序组合、原Actions factory、原具体provider/nativewait/交易或未列领域玩法，不以整partial/“实时”为完整context业务豁免。
+
+**NOT_RUN**：实机/真实旧档/真实网络和TTS/帧性能，完整current CourierSchedule、ModuleNativeSubmission与NativeWait whole-consumer。当前关键原子接受门与owner实测不替代这些整体层。SDK首次certificate stdout可能副作用的实际归因仍UNKNOWN，未读私钥/回滚系统。Weekly512terminal/64pending原边界（512Applied+64取消pending→448Applied+64Unknown）保留，不造576特例ledger。原SessionTransport rawdirty及tools/NuGet/user计划保护，未push/Stage/deploy/清理真实玩家资料或改一键覆盖语义。唯一额外写授权仍只精确合成TEMP根的新隔离子树。
