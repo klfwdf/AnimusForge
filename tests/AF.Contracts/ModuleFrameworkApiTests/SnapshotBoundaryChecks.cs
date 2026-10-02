@@ -15,8 +15,14 @@ internal static class SnapshotBoundaryChecks
         IReadOnlyList<AfCapabilityInfo> publicCaps = AfApi.GetSnapshot().PublicCapabilities;
         void Same(string state)
         {
-            var before = OriginalFrameworkRuntime.GetSnapshot(publicCaps);
-            var actual = AfApi.GetSnapshot();
+            var original = OriginalFrameworkRuntime.GetSnapshot(publicCaps);
+            var before = new AfFrameworkSnapshot(original.State, original.ReasonCode, original.PublicCapabilities,
+                original.Modules.Where(m => !m.Id.StartsWith("af.extension.", StringComparison.Ordinal)));
+            var live = AfApi.GetSnapshot();
+            // Approved additive hosted entries are checked by the host lifecycle suite.
+            // Retain exact full DTO equality for every original team port and root state.
+            var actual = new AfFrameworkSnapshot(live.State, live.ReasonCode, live.PublicCapabilities,
+                live.Modules.Where(m => !m.Id.StartsWith("af.extension.", StringComparison.Ordinal)));
             Check(JsonSerializer.Serialize(before) == JsonSerializer.Serialize(actual), "old/new complete DTO " + state);
         }
         OriginalFrameworkRuntime.Shutdown(); ModuleFrameworkRuntime.Shutdown();

@@ -24,6 +24,12 @@ internal static class ModuleFrameworkRuntime
         CampaignComposition.Register(starterObject);
     }
 
+    internal static bool ReportHostedExtensionState(string moduleId, InternalModuleRuntimeState state,
+        string reasonCode, bool requireStarted = false)
+    {
+        return ModuleDirectoryLifecycleOwner.UpdateHostedRuntimeState(moduleId, state, reasonCode, requireStarted);
+    }
+
     internal static void Shutdown()
     {
         ModuleDirectoryLifecycleOwner.Shutdown();

@@ -26,6 +26,7 @@ SOURCES = ["src/modules/AF.Module.PublicApi/V1/AfApi.cs", "src/AF.Contracts/Publ
     "src/modules/AF.Module.Conversation/Internal/CoreDialogueServices.cs", "tests/AF.Contracts/ModuleFrameworkApiTests/NativeOwnerStub.cs",
     "src/AF.Foundation.Runtime/ModuleDirectory/InternalModuleDirectory.cs", "src/AF.GameAdapter.Bannerlord/Composition/ModuleFrameworkRuntime.cs",
     "src/AF.Foundation.Runtime/ModuleDirectory/ModuleDirectoryLifecycleOwner.cs",
+    "src/AF.Foundation.Runtime/ModuleDirectory/HostedExtensionCatalog.cs",
     "src/AF.Contracts/Internal/FeatureBridgeContracts.cs", "src/AF.GameAdapter.Bannerlord/Composition/TeamModuleRegistration.cs",
     "src/AF.Foundation.Runtime/ModuleDirectory/ModuleFrameworkSnapshot.cs", "src/modules/AF.Module.PublicApi/Internal/AfV1SnapshotProjection.cs"]
 assert API_SOURCES <= set(SOURCES)

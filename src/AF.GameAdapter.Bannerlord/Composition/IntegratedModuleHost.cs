@@ -1,4 +1,5 @@
 using System;
+using AnimusForge.Refactor.Modules;
 using TaleWorlds.Core;
 
 namespace AnimusForge;
@@ -18,20 +19,24 @@ public static class IntegratedModuleHost
 
 	public static void Start()
 	{
-		Try("Illustrator", global::AnimusForge.Illustrator.SubModule.Start);
-		Try("DialogueUI", global::AnimusForge.DialogueUI.SubModule.Start);
-		Try("Coup", global::AnimusForge.Coup.SubModule.Start);
+		TryStart("Illustrator", HostedExtensionCatalog.Illustrator, global::AnimusForge.Illustrator.SubModule.TryStart);
+		TryStart("DialogueUI", HostedExtensionCatalog.DialogueUi, global::AnimusForge.DialogueUI.SubModule.TryStart, awaitingPresentation: true);
+		TryStart("Coup", HostedExtensionCatalog.Coup, global::AnimusForge.Coup.SubModule.TryStart);
 	}
 
 	public static void InstallDialoguePresentation()
 	{
-		Try("DialogueUI", global::AnimusForge.DialogueUI.SubModule.InstallPresentation);
+		TryStart("DialogueUI", HostedExtensionCatalog.DialogueUi, global::AnimusForge.DialogueUI.SubModule.TryInstallPresentation);
 	}
 
 	public static void RegisterCampaign(IGameStarter starterObject)
 	{
-		Try("Illustrator", () => global::AnimusForge.Illustrator.SubModule.RegisterCampaign(starterObject));
-		Try("Coup", () => global::AnimusForge.Coup.SubModule.RegisterCampaign(starterObject));
+		TryCampaign("Illustrator", HostedExtensionCatalog.Illustrator,
+            () => global::AnimusForge.Illustrator.SubModule.RegisterCampaign(starterObject),
+            starterObject is TaleWorlds.CampaignSystem.CampaignGameStarter);
+		TryCampaign("Coup", HostedExtensionCatalog.Coup,
+            () => global::AnimusForge.Coup.SubModule.RegisterCampaign(starterObject),
+            starterObject is TaleWorlds.CampaignSystem.CampaignGameStarter);
 	}
 
 	public static void Tick(float dt)
@@ -43,26 +48,62 @@ public static class IntegratedModuleHost
 
 	public static void Shutdown()
 	{
-		Try("DialogueUI", global::AnimusForge.DialogueUI.SubModule.Shutdown);
-		Try("Illustrator", global::AnimusForge.Illustrator.SubModule.Shutdown);
-		Try("Coup", global::AnimusForge.Coup.SubModule.Shutdown);
+		TryShutdown("DialogueUI", HostedExtensionCatalog.DialogueUi, global::AnimusForge.DialogueUI.SubModule.Shutdown);
+		TryShutdown("Illustrator", HostedExtensionCatalog.Illustrator, global::AnimusForge.Illustrator.SubModule.Shutdown);
+		TryShutdown("Coup", HostedExtensionCatalog.Coup, global::AnimusForge.Coup.SubModule.Shutdown);
 	}
 
-	private static void Try(string name, Action action)
-	{
-		try
-		{
-			action();
-		}
-		catch (Exception ex)
-		{
-			try
-			{
-				Logger.Log(name, "Integrated module call failed: " + ex);
-			}
-			catch
-			{
-			}
-		}
-	}
+    private static void TryStart(string name, string moduleId, Func<bool> start, bool awaitingPresentation = false)
+    {
+        try
+        {
+            bool success = start();
+            ModuleFrameworkRuntime.ReportHostedExtensionState(moduleId,
+                success ? (awaitingPresentation ? InternalModuleRuntimeState.NotInitialized : InternalModuleRuntimeState.Ready)
+                    : InternalModuleRuntimeState.Unavailable,
+                success ? (awaitingPresentation ? "module.awaiting_presentation" : "module.host_started")
+                    : "module.host_unavailable");
+        }
+        catch (Exception ex)
+        {
+            ModuleFrameworkRuntime.ReportHostedExtensionState(moduleId, InternalModuleRuntimeState.Failed,
+                "module.host_start_failed");
+            LogFailure(name, ex);
+        }
+    }
+
+    private static void TryCampaign(string name, string moduleId, Action register, bool isCampaign)
+    {
+        try
+        {
+            register(); // Preserve the original owner and callback order, including non-campaign no-ops.
+            if (isCampaign)
+                ModuleFrameworkRuntime.ReportHostedExtensionState(moduleId, InternalModuleRuntimeState.Ready,
+                    "module.campaign_registered", requireStarted: true);
+        }
+        catch (Exception ex)
+        {
+            ModuleFrameworkRuntime.ReportHostedExtensionState(moduleId, InternalModuleRuntimeState.Failed,
+                "module.campaign_registration_failed", requireStarted: true);
+            LogFailure(name, ex);
+        }
+    }
+
+    private static void TryShutdown(string name, string moduleId, Action shutdown)
+    {
+        try { shutdown(); }
+        catch (Exception ex) { LogFailure(name, ex); }
+        finally
+        {
+            ModuleFrameworkRuntime.ReportHostedExtensionState(moduleId, InternalModuleRuntimeState.Unavailable,
+                "module.host_stopped");
+        }
+    }
+
+    private static void LogFailure(string name, Exception ex)
+    {
+        try { Logger.Log(name, "Integrated module call failed: " + ex); }
+        catch { }
+    }
+
 }
