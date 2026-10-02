@@ -16,7 +16,7 @@ if a.mutate:
  assert text.count(old)==1
  owner=out/'MutatedOwner.cs';owner.write_text(text.replace(old,new,1),encoding='utf-8')
 (out/'SceneCallSites.cs').write_text(scene_layout_review.callsite_harness(),encoding='utf-8')
-files=[out/'SceneCallSites.cs',owner,ROOT/'src/AF.Contracts/Internal/InteractionContracts.cs',ROOT/'src/modules/AF.Module.Conversation/Internal/History/ConversationMessage.cs',ROOT/'src/modules/AF.Module.Prompt/Composition/ConversationRoleClassificationOwner.cs',Path(__file__).with_name('MessageAssemblyChecks.cs')]
+files=[out/'SceneCallSites.cs',owner,ROOT/'src/AF.Contracts/Internal/InteractionContracts.cs',ROOT/'src/AF.Contracts/Internal/LlmContracts.cs',ROOT/'src/modules/AF.Module.Conversation/Internal/History/ConversationMessage.cs',ROOT/'src/modules/AF.Module.Prompt/Composition/ConversationRoleClassificationOwner.cs',Path(__file__).with_name('MessageAssemblyChecks.cs')]
 xml='<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><EnableDefaultCompileItems>false</EnableDefaultCompileItems><UseAppHost>false</UseAppHost><NuGetAudit>false</NuGetAudit></PropertyGroup><ItemGroup>'+''.join('<Compile Include="'+str(f)+'"/>' for f in files)+'</ItemGroup></Project>'
 (out/'Checks.csproj').write_text(xml);(out/'NuGet.Config').write_text('<configuration><packageSources><clear/></packageSources></configuration>')
 dotnet=resolve_dotnet(ROOT)

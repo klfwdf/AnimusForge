@@ -65,8 +65,36 @@ namespace AnimusForge
         internal ShoutPromptContext CompleteSharedPromptBuild(PromptBuildPhases phases, TaleWorlds.CampaignSystem.Hero hero,
             TaleWorlds.CampaignSystem.CharacterObject character, WeeklyPromptSnapshot weekly) { Probe.MainOnly(); Probe.Completes++; return new ShoutPromptContext(); }
     }
-    public partial class ShoutBehavior
+    internal sealed class SharedPromptRoutingWork { internal PromptBuildPhases Phases = new PromptBuildPhases(); }
+    // Boundary fixture: routing output is synthetic; the current five-step orchestration is executed verbatim.
+    internal static class SharedPromptRoutingRuntime { internal static void Run(SharedPromptRoutingWork work) => MyBehavior.Instance.RunSharedPromptRouting(work.Phases); }
+    internal sealed class NativePromptCaptureRequest
     {
+        internal NativePromptCaptureRequest(TaleWorlds.CampaignSystem.Hero hero, TaleWorlds.CampaignSystem.CharacterObject character,
+            string input, string fact, string culture, bool anyHero, int agent, List<string> excluded) { }
+    }
+    internal sealed partial class NativeConversationTurnRuntime
+    {
+        private readonly TestNativePromptPorts _ports = new TestNativePromptPorts();
+        private sealed class TestNativePromptPorts
+        {
+            internal TestPromptDispatcher PromptDispatcher = new TestPromptDispatcher();
+            internal bool IsPromptOwnerAvailable() { Probe.MainOnly(); return MyBehavior.Instance != null; }
+            internal bool IsNativeConversationAdmissionCurrent(NativeConversationAdmission admission, out string reason)
+            { Probe.MainOnly(); reason = null; return admission.Current; }
+            internal SharedPromptRoutingWork CapturePromptRoutingWork(NativePromptCaptureRequest request)
+            { Probe.MainOnly(); return new SharedPromptRoutingWork(); }
+            internal PromptKnowledgeWorkInput CapturePromptKnowledge(PromptBuildPhases phases, TaleWorlds.CampaignSystem.Hero hero)
+            { MyBehavior.Instance.CaptureSharedKnowledgeSnapshot(phases, hero); return MyBehavior.CreateSharedKnowledgeWorkInput(phases); }
+            internal MyBehavior.ShoutPromptContext CompletePromptCapture(PromptBuildPhases phases, TaleWorlds.CampaignSystem.Hero hero,
+                TaleWorlds.CampaignSystem.CharacterObject character, MyBehavior.WeeklyPromptSnapshot weekly)
+                => MyBehavior.Instance.CompleteSharedPromptBuild(phases, hero, character, weekly);
+        }
+        private sealed class TestPromptDispatcher
+        {
+            internal Task<T> RunAsync<T>(string label, string target, int agent, Func<T> action, T fallback)
+                => RunNativeConversationMainThreadFuncAsync(label, target, agent, action, fallback);
+        }
         private static MyBehavior.ShoutPromptContext CreateEmptyNativeConversationPromptContext() => new MyBehavior.ShoutPromptContext();
         private static bool IsNativeConversationAdmissionCurrent(NativeConversationAdmission admission, out string reason) { reason = null; return admission.Current; }
         private static Task<T> RunNativeConversationMainThreadFuncAsync<T>(string label, string target, int agent, Func<T> action, T fallback)
@@ -103,7 +131,7 @@ namespace AnimusForge
             var admission = new NativeConversationAdmission();
             if (scenario != "normal" && scenario != "error") { Probe.BlockKnowledge = true; Probe.KnowledgeRelease.Reset(); }
             Probe.ThrowKnowledge = scenario == "error";
-            Task<MyBehavior.ShoutPromptContext> task = new ShoutBehavior().Run(admission, 1);
+            Task<MyBehavior.ShoutPromptContext> task = new NativeConversationTurnRuntime().Run(admission, 1);
             if (Probe.BlockKnowledge)
             {
                 PumpUntil(() => Probe.KnowledgeEntered.IsSet);

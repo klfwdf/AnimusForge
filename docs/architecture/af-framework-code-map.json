@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "sourceRevision": "cf059766a87b8193d052ab50ba8104b4bbd3c88a",
+  "sourceRevision": "7c5c7cd1ad58cf7fae0d34ace0e067a525b2f624",
   "remoteBaseline": "10defeb4976f3ffa096a77e847fba254308f6aba",
   "meaning": "Navigation only, not whole-file completion or a permanent feature allowlist. Refresh the current map when symbols change.",
   "anchors": [
@@ -5758,13 +5758,13 @@
     {
       "id": "weekly.queue.retired-host-replay",
       "path": "tests/replay/PhaseEightParityReplayTests/WeeklyReportCommitQueueReplay.cs",
-      "start": 212,
-      "end": 212,
+      "start": 213,
+      "end": 213,
       "symbol": "private static void RunRetiredQueueAdmissionReplay(",
       "match": "contains",
       "status": "wired-j13a2-wave-admission-slice-offline-verified",
       "note": "真实宿主的准备和 commit 入口拒绝旧 owner/代，无需后续 tick、不报假成功。",
-      "fileSha256": "485f86d8afba1cc8f22d74689898f06f691a9763d7cf8b62d8330d78f0e7f37c"
+      "fileSha256": "8ad035e0a3d42e679da1e5ed3c73b7950c22d32ce0bc9bb38150611e97a80be2"
     },
     {
       "id": "weekly.recovery.combined",
@@ -5775,7 +5775,7 @@
       "match": "contains",
       "status": "wired-j13a-offline-verified",
       "note": "真实 Inquiry 回调、失败分组重采、生产提交和 publication revision；固定响应边界、非实机。",
-      "fileSha256": "15ec1a80924ff05cf1f4dc460d69540e9e9c00144d0e61c91b4f648757829138"
+      "fileSha256": "ebfa78cb0be3810b69a25873843f9947cd78ac15cd4c65b6fc58084ef02b6cda"
     },
     {
       "id": "weekly.receipts.ledger",
@@ -6611,7 +6611,7 @@
       "match": "contains",
       "status": "wired-j13d2-offline-verified",
       "note": "Aggregate source wiring; not live Quest evidence",
-      "fileSha256": "41beba54bc2204fe82310da00873bec5914f46d2de276d54f54b336a4aedf323"
+      "fileSha256": "cb5245c7e7adfa3efde388bdf1629f433f803830bcd9f1ef2ed8502fa14ae58e"
     },
     {
       "id": "world.inbox.behavior",

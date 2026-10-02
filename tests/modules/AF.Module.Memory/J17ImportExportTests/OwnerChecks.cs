@@ -85,3 +85,7 @@ internal static class Program
         Console.WriteLine($"PASS {checks}");
     }
 }
+
+// Signature-only dependency for the unrelated new history import method; not replayed by these 29 checks.
+internal sealed class MemoryBusinessStateOwner { internal Dictionary<string, List<MyBehavior.DialogueDay>> History; }
+internal sealed class MyBehavior { internal sealed class DialogueDay { } }

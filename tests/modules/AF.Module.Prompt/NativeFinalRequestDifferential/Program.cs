@@ -13,7 +13,8 @@ namespace AnimusForge
  @@TRANSPORT_LIFETIME@@
  }
 
-    internal sealed class ConversationMessage
+    #if !CURRENT
+internal sealed class ConversationMessage
     {
         internal string Role, Content;
         internal string GameDate, Scene;
@@ -24,6 +25,7 @@ namespace AnimusForge
         internal int SpeakerAgentIndex, TargetAgentIndex;
         internal float PlayerDistanceMeters;
     }
+#endif
     internal static class DuelSettings { internal static bool IsBuiltInSceneReplyFormatPromptDisabled() => true; }
     internal static class TroopInspectionPrisonerSlaughterProfile { internal const string ActionTag = "[PRISONER_SLAUGHTER]"; }
     internal static class NoblePrisonerEscortBehavior { internal const string ExecuteActionTag = "[EXECUTE_PRISONER]"; }
@@ -35,6 +37,7 @@ namespace AnimusForge
     internal static class FreezeWatchdog { internal static void Mark(string key, string message, bool immediate = false) { } }
     internal static class LlmVisibleReplyNormalizer
     {
+        internal static string NormalizeComplete(string text) => text;
         internal sealed class StreamFilter
         {
             internal string NormalizedText = "";
@@ -60,8 +63,16 @@ namespace AnimusForge
             return Task.CompletedTask;
         }
     }
+#if CURRENT
+    internal static class ShoutUtils { internal static string StripConversationMetadataPrefix(string text) => text; internal static string StripNamePrefixedLineSafely(string text, int maximum = 30) => text; }
+    internal static class ConversationActionPostprocessOwner { internal static string StripActionTagsForSceneSpeech(string text) => text; }
+#endif
     public partial class ShoutBehavior
     {
+#if CURRENT
+        private static SceneHistoryMessageContext CaptureSceneHistoryMessageContext(int agent, bool distance) => new SceneHistoryMessageContext { ViewerAgentIndex = agent, ViewerHeroId = "npc_1", PlayerName = "Player", GameDate = "", GameHour = 0, Scene = "", UseDistanceLabels = distance, SpeechTextOptions = new ConversationSpeechTextOptions(false, false) };
+#endif
+
         private const int NativeConversationMainReplyTimeoutMs = 180000;
         private static string BuildNativeConversationStreamingVisibleText(string text) => text;
         private static string BuildPlayerCustomPromptRuleBlock() => "";
