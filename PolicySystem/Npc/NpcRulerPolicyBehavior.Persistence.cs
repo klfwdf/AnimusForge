@@ -1497,7 +1497,9 @@ public sealed partial class NpcRulerPolicyBehavior
 	{
 		try
 		{
-			string policies = string.Join("、", kingdom.ActivePolicies.Where(p => p != null).Select(p => p.Name?.ToString()).Where(x => !string.IsNullOrWhiteSpace(x)).Distinct());
+			string policies = string.Join("、", kingdom.ActivePolicies
+				.Where(p => p != null && !(p.StringId ?? string.Empty).StartsWith("af_policy:", StringComparison.OrdinalIgnoreCase))
+				.Select(p => p.Name?.ToString()).Where(x => !string.IsNullOrWhiteSpace(x)).Distinct());
 			return string.IsNullOrWhiteSpace(policies) ? "无" : Limit(policies, 180);
 		}
 		catch
@@ -1731,6 +1733,8 @@ public sealed partial class NpcRulerPolicyBehavior
 
 	private sealed class NpcRulerPolicyBatchContext
 	{
+		public int PolicyRecentActiveCount = 2;
+		public int PolicyRelatedActiveCount = 3;
 		public string BatchId;
 		public int Day;
 		public int Hour;
@@ -1778,13 +1782,13 @@ public sealed partial class NpcRulerPolicyBehavior
 		public int BackgroundChars;
 		public string CurrentWorldFacts;
 		public string KingdomStrategicProfile;
-		public string PolicyMemory;
-		public string EnemyPolicyMemory;
+		public string PolicyMemory = string.Empty;
+		public string EnemyPolicyMemory = string.Empty;
 		public List<PolicyEnemyKingdomSnapshot> EnemyKingdoms = new List<PolicyEnemyKingdomSnapshot>();
 		public string RecentWorldPhenomenon;
 		public string ForeignDirectPressure;
 		public string MechanicalFacts;
-		public int PolicyMemoryCount;
+		public int PolicyMemoryCount = 0;
 		public int RecentWorldPhenomenonCount;
 		public int ForeignDirectPressureCount;
 		public List<NpcRulerPolicyAllowedEffectTarget> AllowedEffectTargets = new List<NpcRulerPolicyAllowedEffectTarget>();

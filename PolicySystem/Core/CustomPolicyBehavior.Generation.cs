@@ -2030,9 +2030,8 @@ public sealed partial class CustomPolicyBehavior
 			PolicyHistoryRetrievalResult history = request.PolicyHistoryRetrieval;
 			PolicySystemLog.Write("Player", "historyRetrieved",
 				BuildPolicyRequestLogPrefix(request)
-				+ " current=" + (history?.RelatedCurrentPolicies?.Count ?? 0).ToString(CultureInfo.InvariantCulture)
-				+ " historical=" + (history?.RelatedHistoricalPolicies?.Count ?? 0).ToString(CultureInfo.InvariantCulture)
-				+ " enemies=" + (history?.EnemyWithPolicyCount ?? 0).ToString(CultureInfo.InvariantCulture));
+				+ " recent=" + (history?.RecentActivePolicies?.Count ?? 0).ToString(CultureInfo.InvariantCulture)
+				+ " related=" + (history?.RelatedActivePolicies?.Count ?? 0).ToString(CultureInfo.InvariantCulture));
 
 			List<object> mainMessages = BuildMainMessages(request, result.KnowledgeContext);
 			string mainPromptText = SerializePolicyPromptForHash(mainMessages);
@@ -4481,7 +4480,7 @@ public sealed partial class CustomPolicyBehavior
 		sb.AppendLine("王国：" + GetKingdomName(kingdom) + " | ID=" + kingdom.StringId + " | 文化=" + cultureText + " | 领袖=" + (kingdom.Leader?.Name?.ToString() ?? "未知") + " | AF稳定度=" + MyBehavior.GetKingdomStabilityValueForExternal(kingdom).ToString(CultureInfo.InvariantCulture) + "/100");
 		try
 		{
-			string policies = string.Join("、", kingdom.ActivePolicies.Where(p => p != null).Select(p => p.Name?.ToString()).Where(x => !string.IsNullOrWhiteSpace(x)).Distinct());
+			string policies = string.Join("、", kingdom.ActivePolicies.Where(p => p != null && !IsDynamicPolicyId(p.StringId)).Select(p => p.Name?.ToString()).Where(x => !string.IsNullOrWhiteSpace(x)).Distinct());
 			sb.AppendLine("当前原版生效政策：" + (string.IsNullOrWhiteSpace(policies) ? "无" : policies));
 		}
 		catch
@@ -5391,38 +5390,10 @@ public sealed partial class CustomPolicyBehavior
 				+ " error=" + (historyError ?? string.Empty));
 		}
 		request.PolicyHistoryEntries = historyEntries ?? new List<NpcPolicyHistoryEntry>();
-		request.EnemyKingdoms = PolicyHistoryRetrievalService.CaptureEnemyKingdoms(anchorKingdom);
+		request.EnemyKingdoms = new List<PolicyEnemyKingdomSnapshot>();
 		PolicyDebugLog("policy-history-snapshot", BuildPolicyRequestLogPrefix(request)
 			+ " entries=" + request.PolicyHistoryEntries.Count.ToString(CultureInfo.InvariantCulture)
 			+ " enemies=" + request.EnemyKingdoms.Count.ToString(CultureInfo.InvariantCulture));
-	}
-
-	private static void RetrieveUnifiedPolicyHistoryForRequest(
-		PolicyDraftRequest request,
-		float[] queryVector,
-		string queryText,
-		long runtimeGeneration)
-	{
-		if (request == null)
-		{
-			return;
-		}
-		request.PolicyHistoryRetrieval = PolicyHistoryRetrievalService.Retrieve(
-			queryVector,
-			queryText,
-			request.PolicyHistoryEntries,
-			request.EnemyKingdoms,
-			request.PlayerKingdomId,
-			runtimeGeneration);
-		PolicyHistoryRetrievalResult retrieval = request.PolicyHistoryRetrieval;
-		PolicyDebugLog("policy-history-retrieved", BuildPolicyRequestLogPrefix(request)
-			+ " enemyCount=" + (retrieval?.EnemyCount ?? 0).ToString(CultureInfo.InvariantCulture)
-			+ " enemyWithPolicy=" + (retrieval?.EnemyWithPolicyCount ?? 0).ToString(CultureInfo.InvariantCulture)
-			+ " current=" + (retrieval?.RelatedCurrentPolicies?.Count ?? 0).ToString(CultureInfo.InvariantCulture)
-			+ " historical=" + (retrieval?.RelatedHistoricalPolicies?.Count ?? 0).ToString(CultureInfo.InvariantCulture)
-			+ " cacheHits=" + (retrieval?.DocumentVectorCacheHits ?? 0).ToString(CultureInfo.InvariantCulture)
-			+ " cacheMisses=" + (retrieval?.DocumentVectorCacheMisses ?? 0).ToString(CultureInfo.InvariantCulture)
-			+ " promptChars=" + (retrieval?.CombinedPrompt?.Length ?? 0).ToString(CultureInfo.InvariantCulture));
 	}
 
 	private static void RetrieveUnifiedPolicyHistoryForRequest(
@@ -5435,12 +5406,13 @@ public sealed partial class CustomPolicyBehavior
 		{
 			return;
 		}
-		request.PolicyHistoryRetrieval = PolicyHistoryRetrievalService.Retrieve(
+		request.PolicyHistoryRetrieval = PolicyHistoryRetrievalService.RetrieveForEvaluation(
 			embeddingSession,
 			queryText,
 			request.PolicyHistoryEntries,
-			request.EnemyKingdoms,
 			request.PlayerKingdomId,
+			request.GenerationSettings.PolicyRecentActiveCount,
+			request.GenerationSettings.PolicyRelatedActiveCount,
 			runtimeGeneration);
 	}
 

@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Adapters/BannerlordWorldDiplomacyDeclareWarGameActionPort.cs" Link="BannerlordWorldDiplomacyDeclareWarGameActionPort.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Direct/DirectDiplomacyWarGuard.cs" Link="DirectDiplomacyWarGuard.cs" />
+    <Compile Include="../../../../src/AF.Contracts/Internal/WorldDiplomacyDeclareWarContracts.cs" Link="WorldDiplomacyDeclareWarContracts.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Domain/WorldDiplomacyOralDeclareWarRules.cs" Link="WorldDiplomacyOralDeclareWarRules.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Adapters/Facades/WorldDiplomacyDeclareWarCommandFacade.cs" Link="WorldDiplomacyDeclareWarCommandFacade.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Application/DiplomacyOralDeclareWarApplication.cs" Link="DiplomacyOralDeclareWarApplication.cs" />
+  </ItemGroup>
+</Project>

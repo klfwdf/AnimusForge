@@ -73,6 +73,10 @@ public sealed partial class CustomPolicyBehavior
 
 	private sealed class PolicyGenerationSettingsSnapshot
 	{
+		public int PolicyRecentActiveCount = 2;
+
+		public int PolicyRelatedActiveCount = 3;
+
 		[JsonIgnore]
 		public PolicyApiExecutionProfile ApiProfile;
 

@@ -647,6 +647,8 @@ public sealed partial class CustomPolicyBehavior
 			out _);
 		PolicyGenerationSettingsSnapshot snapshot = new PolicyGenerationSettingsSnapshot
 		{
+			PolicyRecentActiveCount = DuelSettings.GetPolicyRecentActiveCount(),
+			PolicyRelatedActiveCount = DuelSettings.GetPolicyRelatedActiveCount(),
 			ApiProfile = apiProfile.Clone(),
 			RuntimeGeneration = SaveRuntimeGuard.CaptureGeneration(),
 			ScopeKind = request.ScopeKind ?? PolicyScopeKingdom,

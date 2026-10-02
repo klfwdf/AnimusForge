@@ -1,0 +1,133 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyLlmMessageApplication.cs" Link="WorldDiplomacyLlmMessageApplication.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyResultSlotApplication.cs" Link="WorldDiplomacyResultSlotApplication.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOfferCooldownApplication.cs" Link="WorldDiplomacyOfferCooldownApplication.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyMemoryApplication.cs" Link="WorldDiplomacyMemoryApplication.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Application/DiplomacyPostprocessContextApplication.cs" Link="DiplomacyPostprocessContextApplication.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Application/DiplomacyConversationEligibilityApplication.cs" Link="DiplomacyConversationEligibilityApplication.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Application/DiplomacyPromptApplication.cs" Link="DiplomacyPromptApplication.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyThreatHistoryApplication.cs" Link="WorldDiplomacyThreatHistoryApplication.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyHistoryPublicationApplication.cs" Link="WorldDiplomacyHistoryPublicationApplication.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyHistoryCompressionApplication.cs" Link="WorldDiplomacyHistoryCompressionApplication.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Domain/WorldDiplomacyAuthorityRules.cs" Link="WorldDiplomacyAuthorityRules.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOrchestration.cs" Link="WorldDiplomacyOrchestration.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyStateStore.cs" Link="WorldDiplomacyStateStore.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyStorageNormalizationApplication.cs" Link="WorldDiplomacyStorageNormalizationApplication.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Persistence/WorldDiplomacyStorageShapeNormalizer.cs" Link="WorldDiplomacyStorageShapeNormalizer.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Persistence/WorldDiplomacyNotificationStateMigration.cs" Link="WorldDiplomacyNotificationStateMigration.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyCanonicalHistoryMigrationApplication.cs" Link="WorldDiplomacyCanonicalHistoryMigrationApplication.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyPeaceAdmissionApplication.cs" Link="WorldDiplomacyPeaceAdmissionApplication.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyAnalysisApplication.cs" Link="WorldDiplomacyAnalysisApplication.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyJobPreparationApplication.cs" Link="WorldDiplomacyJobPreparationApplication.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyActionSelectionApplication.cs" Link="WorldDiplomacyActionSelectionApplication.cs" />
+    <Compile Include="../../../../src/AF.Contracts/Internal/WorldDiplomacyPolicySignalSnapshot.cs" Link="WorldDiplomacyPolicySignalSnapshot.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyNoActionApplication.cs" Link="WorldDiplomacyNoActionApplication.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyThreatBindingApplication.cs" Link="WorldDiplomacyThreatBindingApplication.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyHistoryCaptureApplication.cs" Link="WorldDiplomacyHistoryCaptureApplication.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyCampaignApplication.cs" Link="WorldDiplomacyCampaignApplication.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyInitialPeaceApplication.cs" Link="WorldDiplomacyInitialPeaceApplication.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyPrestigeApplication.cs" Link="WorldDiplomacyPrestigeApplication.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyThreatSettlementApplication.cs" Link="WorldDiplomacyThreatSettlementApplication.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Application/IWorldDiplomacyThreatSettlementPort.cs" Link="IWorldDiplomacyThreatSettlementPort.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyWarAdmissionApplication.cs" Link="WorldDiplomacyWarAdmissionApplication.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyImmediateActionApplication.cs" Link="WorldDiplomacyImmediateActionApplication.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Application/IWorldDiplomacyPublicationPort.cs" Link="IWorldDiplomacyPublicationPort.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyPublicationRoutingApplication.cs" Link="WorldDiplomacyPublicationRoutingApplication.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyDocumentPublicationApplication.cs" Link="WorldDiplomacyDocumentPublicationApplication.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Application/IWorldDiplomacyDocumentExecutionPort.cs" Link="IWorldDiplomacyDocumentExecutionPort.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyDocumentExecutionApplication.cs" Link="WorldDiplomacyDocumentExecutionApplication.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyLlmDispatchApplication.cs" Link="WorldDiplomacyLlmDispatchApplication.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyCompletionApplication.cs" Link="WorldDiplomacyCompletionApplication.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyRoundCompressionApplication.cs" Link="WorldDiplomacyRoundCompressionApplication.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyFailureApplication.cs" Link="WorldDiplomacyFailureApplication.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyRoundPlanApplication.cs" Link="WorldDiplomacyRoundPlanApplication.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyRoundProgressApplication.cs" Link="WorldDiplomacyRoundProgressApplication.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyTurnSchedulingApplication.cs" Link="WorldDiplomacyTurnSchedulingApplication.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyGenerationTaskApplication.cs" Link="WorldDiplomacyGenerationTaskApplication.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyGeneratedCompletionApplication.cs" Link="WorldDiplomacyGeneratedCompletionApplication.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyLlmResult.cs" Link="WorldDiplomacyLlmResult.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/World/WorldDiplomacyJobRuntimeCoordinator.cs" Link="WorldDiplomacyJobRuntimeCoordinator.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/World/WorldDiplomacyRequestLeaseCoordinator.cs" Link="WorldDiplomacyRequestLeaseCoordinator.cs" />
+
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyPresentationQueries.cs" Link="WorldDiplomacyPresentationQueries.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyTimelineApplication.cs" Link="WorldDiplomacyTimelineApplication.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyProactiveDiscussionApplication.cs" Link="WorldDiplomacyProactiveDiscussionApplication.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Domain/WorldDiplomacyProactiveSpeakerEligibilityRules.cs" Link="WorldDiplomacyProactiveSpeakerEligibilityRules.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Domain/WorldDiplomacyProactiveDocumentSelectionRules.cs" Link="WorldDiplomacyProactiveDocumentSelectionRules.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyPlayerApplication.cs" Link="WorldDiplomacyPlayerApplication.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyNotificationApplication.cs" Link="WorldDiplomacyNotificationApplication.cs" />
+    <Compile Include="../../../../src/AF.Contracts/Internal/WorldDiplomacyPresentationContracts.cs" Link="WorldDiplomacyPresentationContracts.cs" />
+    <Compile Include="../../../../src/AF.Contracts/Internal/WorldDiplomacyTimelineDocumentQueryContracts.cs" Link="WorldDiplomacyTimelineDocumentQueryContracts.cs" />
+
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Application/IWorldDiplomacyDraftRepairWorld.cs" Link="IWorldDiplomacyDraftRepairWorld.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyDraftRepairApplication.cs" Link="WorldDiplomacyDraftRepairApplication.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Application/IWorldDiplomacyPromptWorld.cs" Link="IWorldDiplomacyPromptWorld.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyPromptComposer.cs" Link="WorldDiplomacyPromptComposer.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyPropagationApplication.cs" Link="WorldDiplomacyPropagationApplication.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOfferApplication.cs" Link="WorldDiplomacyOfferApplication.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyCourtResponseApplication.cs" Link="WorldDiplomacyCourtResponseApplication.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyDocumentApplication.cs" Link="WorldDiplomacyDocumentApplication.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyThreatApplication.cs" Link="WorldDiplomacyThreatApplication.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyRoundApplication.cs" Link="WorldDiplomacyRoundApplication.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyPolicyRoundApplication.cs" Link="WorldDiplomacyPolicyRoundApplication.cs" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="../../../../src/AF.Contracts/Internal/WorldDiplomacyRoundLifecycleContracts.cs" Link="WorldDiplomacyRoundLifecycleContracts.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Domain/WorldDiplomacyIntentVocabulary.cs" Link="WorldDiplomacyIntentVocabulary.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Domain/WorldDiplomacyRoundLifecycleRules.cs" Link="WorldDiplomacyRoundLifecycleRules.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Domain/WorldDiplomacyEnvelopeJsonRules.cs" Link="WorldDiplomacyEnvelopeJsonRules.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Domain/WorldDiplomacyTextRules.cs" Link="WorldDiplomacyTextRules.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Domain/WorldDiplomacyReputationRules.cs" Link="WorldDiplomacyReputationRules.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Domain/WorldDiplomacyOfferContractRules.cs" Link="WorldDiplomacyOfferContractRules.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Domain/WorldDiplomacyPromptContractRules.cs" Link="WorldDiplomacyPromptContractRules.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Domain/WorldDiplomacyStructureRules.cs" Link="Refactor\Domain\WorldDiplomacyStructureRules.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Domain/WorldDiplomacyDocumentFactRules.cs" Link="Refactor\Domain\WorldDiplomacyDocumentFactRules.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Domain/WorldDiplomacyCanonicalRenderRules.cs" Link="Refactor\Domain\WorldDiplomacyCanonicalRenderRules.cs" />
+<Compile Include="../../../../src/modules/AF.Module.Diplomacy/Domain/WorldDiplomacyCanonicalHistoryRules.cs" Link="Refactor\Domain\WorldDiplomacyCanonicalHistoryRules.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Persistence/WorldDiplomacyActivityRecords.cs" Link="WorldDiplomacyActivityRecords.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Persistence/WorldDiplomacyCanonicalHistoryRecords.cs" Link="WorldDiplomacyCanonicalHistoryRecords.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Persistence/WorldDiplomacyDocumentRecords.cs" Link="WorldDiplomacyDocumentRecords.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Persistence/WorldDiplomacyRoundRecords.cs" Link="WorldDiplomacyRoundRecords.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Persistence/WorldDiplomacySummaryRecords.cs" Link="WorldDiplomacySummaryRecords.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Persistence/WorldDiplomacyPropagationRecords.cs" Link="WorldDiplomacyPropagationRecords.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Persistence/WorldDiplomacyStorageRecord.cs" Link="WorldDiplomacyStorageRecord.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Persistence/WorldDiplomacyOfferCooldownRecord.cs" Link="WorldDiplomacyOfferCooldownRecord.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Persistence/WorldDiplomacyOfferCooldownStorageNormalizer.cs" Link="WorldDiplomacyOfferCooldownStorageNormalizer.cs" />
+<Compile Include="../../../../src/modules/AF.Module.Diplomacy/Persistence/WorldDiplomacyThreatStorageMigration.cs" Link="WorldDiplomacyThreatStorageMigration.cs" />
+<Compile Include="../../../../src/modules/AF.Module.Diplomacy/Persistence/WorldDiplomacyStorageMigration.cs" Link="WorldDiplomacyStorageMigration.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Rules/WorldDiplomacyPolicyHistoryRules.cs" Link="WorldDiplomacyPolicyHistoryRules.cs" />
+<Compile Include="../../../../src/modules/AF.Module.Diplomacy/Domain/WorldDiplomacyGenerationValidationRules.cs" Link="WorldDiplomacyGenerationValidationRules.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Rules/WorldDiplomacyThreatStateRules.cs" Link="WorldDiplomacyThreatStateRules.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Persistence/WorldDiplomacyThreatRecords.cs" Link="WorldDiplomacyThreatRecords.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Persistence/WorldDiplomacyWarPeaceRecords.cs" Link="WorldDiplomacyWarPeaceRecords.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Persistence/WorldDiplomacyWarSnapshotRecords.cs" Link="WorldDiplomacyWarSnapshotRecords.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Persistence/WorldDiplomacyWorkRecords.cs" Link="WorldDiplomacyWorkRecords.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Rules/WorldDiplomacyResultSettlementRules.cs" Link="WorldDiplomacyResultSettlementRules.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Rules/WorldDiplomacyOfferCooldownRules.cs" Link="WorldDiplomacyOfferCooldownRules.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Domain/WorldDiplomacyWarPressureRules.cs" Link="WorldDiplomacyWarPressureRules.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="../../../../src/AF.Contracts/Internal/WorldDiplomacyRelationEffectReceipt.cs" Link="WorldDiplomacyRelationEffectReceipt.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="../../../../src/AF.Contracts/Internal/WorldDiplomacyCessionReceipt.cs" Link="WorldDiplomacyCessionReceipt.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOfferActionPort.cs" Link="WorldDiplomacyOfferActionPort.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Domain/WorldDiplomacyWorldProfileRules.cs" Link="WorldDiplomacyWorldProfileRules.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyLifecycleApplication.cs" Link="WorldDiplomacyLifecycleApplication.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="../../../../src/AF.Contracts/Internal/WorldDiplomacyLifecycleEvent.cs" Link="WorldDiplomacyLifecycleEvent.cs" />
+  </ItemGroup>
+<ItemGroup><Compile Include="../../../../src/modules/AF.Module.Diplomacy/Domain/WorldDiplomacyEventRules.cs" /><Compile Include="../../../../src/modules/AF.Module.Diplomacy/Domain/WorldDiplomacyGeographyRules.cs" /><Compile Include="../../../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyNativeDecisionApplication.cs" /><Compile Include="../../../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyBattleApplication.cs" /><Compile Include="../../../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyGeographyApplication.cs" /></ItemGroup><ItemGroup><Compile Include="../../../../src/AF.Contracts/Internal/WorldDiplomacyDocumentReadCommandContracts.cs" /></ItemGroup></Project>

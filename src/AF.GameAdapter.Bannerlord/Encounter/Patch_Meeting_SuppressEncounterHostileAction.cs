@@ -9,7 +9,7 @@ public static class Patch_Meeting_SuppressEncounterHostileAction
 {
 	public static bool Prefix(PartyBase attackerParty, PartyBase defenderParty)
 	{
-		if (DiplomacyRecentPeaceGuard.ShouldBlockEncounterHostility(attackerParty, defenderParty, "BeHostileAction.ApplyEncounterHostileAction"))
+		if (DiplomacyRecentPeaceBridge.ShouldBlockEncounterHostility(attackerParty, defenderParty, "BeHostileAction.ApplyEncounterHostileAction"))
 		{
 			return false;
 		}

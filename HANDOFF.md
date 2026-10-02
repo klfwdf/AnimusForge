@@ -1,3 +1,10 @@
+# 当前交付：远端 main 外交/政策已融合（2026-10-02）
+
+- 合入远端 `720d8449`（10月2日21:27:56，北京时间），保留本地1.5版本/公告与各会话最新功能；四扩展与外交模块注册并存，共八目录项。
+- Debug双API+Bootstrap、外交端口/架构、两实际DLL政策定向回归通过。原历史源码oracle仍FAIL；独立当前API/Campaign行为与负控通过，不称完整测试全绿/实机通过。
+- [唯一主台账证据](docs/animusforge-refactoring-and-repository-reorganization-plan.md#remote-main-fusion-20261002)与本地`artifacts/remote-main-fusion-20261002/`记录冲突处理、失败/通过层、备份及恢复。原两文档未提交改动恢复保留，不上传私有历史。
+- 本轮未push/部署/Stage/重新打包。下方1.5 ZIP是融合前候选，不含本次外交/政策代码；以新源码重建包需另行授权。
+
 # 当前交付：1.5 发布包与玩家更新说明（2026-10-02）
 
 - 已由原一键打包入口完成 Debug 双 API + Bootstrap、Stage、ZIP，最终 exit0；238 包文件与 Stage hash 全一致，源/Stage/ZIP 为 `v1.5.0`，保持单模块/Bootstrap-only。
@@ -5,6 +12,20 @@
 - [主台账详细证据](docs/animusforge-refactoring-and-repository-reorganization-plan.md#release-15-20261002)绑定最终 ZIP、hash、原入口日志与本地收据。本轮只打包/说明/本地提交，未另推送或部署 1.5；实机、旧档与真实 provider 尚未验。
 - 下方此前各会话最新产品已推送/部署的历史继续有效，但不能据此宣称本轮新版本号已发布到远端或安装进游戏。
 
+
+# 当前交接：地方政策修复与最新 main 合并（2026-10-02）
+
+用户明确授权推送 main；合并保留 `d6e859c3` 全部远端更新及地方政策修复，仅交接文档冲突并保留双方记录。合并工作树双 API + Bootstrap 和政策三套回归通过，原 SessionTransport dirty 未提交。普通推送结果以远端核对为准，不强推、不再次覆盖游戏；实机未验。详见[本次唯一主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#local-policy-jurisdiction-20261002)。
+
+# 最新操作：地方政策修复已打包并覆盖游戏（2026-10-02）
+
+用户已授权覆盖及 Recovery 备份、指定生成目录重建。当前工作树 Debug 双 API + Bootstrap 构建成功；原脚本部署更新 156 文件，安装的 238 个清单文件 hash 与 Stage 一致，单模块 v1.3.7.2 ZIP 已生成。此前“未覆盖”仅为当时状态；实机仍 NOT_RUN、无 push。完整路径、收据及旧 Stage 拒绝/重建经过见[主台账本次条目](docs/animusforge-refactoring-and-repository-reorganization-plan.md#local-policy-jurisdiction-20261002)。
+
+# 当前交接：地方政策无王国修复（2026-10-02，离线已验证）
+
+- 本次最新授权仅地方政策管辖最小重构：检查点 `0d7e9e43`、产品及测试 `208ce554`。统一按所选封地/发布家族及合法关联授权，王国政策展示、费用、公开 API 和存档格式未改。
+- Debug 两 API + Bootstrap 构建通过；两 API 各管辖 62、模块 1457（18 modules）、TargetPlan 765 断言通过，非唯一合计。实机、真实旧档与完整延长交互仍 NOT_RUN；未 push/部署/覆盖游戏，原 SessionTransport dirty 与其他作者文件保留。
+- 唯一详细证据、源码坐标及失败/未验见[主台账本次条目](docs/animusforge-refactoring-and-repository-reorganization-plan.md#local-policy-jurisdiction-20261002)；[既有框架代码图](docs/architecture/af-framework-code-scope.md)仅作导航。下方保留既有交付历史，不构成本次发布授权。
 # 当前完整交付：各会话最新代码已统一推送并部署（2026-10-02）
 
 - 产品 `416e00aa` 覆盖内战最新玩家控制/P2、政变大厅/增援/驻防/胜利、周报/生图、处决发言、主API流式/YJ等74正式文件，含5新增源码/测试；不再仅发布四扩展接入。

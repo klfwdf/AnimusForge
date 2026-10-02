@@ -2092,6 +2092,14 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 	[SettingPropertyGroup("16. 政策系统", GroupOrder = 0)]
 	public Action ManagePolicyEffectModules { get; set; }
 
+	[SettingPropertyInteger("本国最近生效政策条数", 0, 10, "0", Order = 2, RequireRestart = false, HintText = "玩家评议和 NPC 政策生成读取本国最近现行政策的上限，默认 2；不区分发布者。0 关闭，数量不足不补位；不影响普通对话。")]
+	[SettingPropertyGroup("16. 政策系统", GroupOrder = 0)]
+	public int PolicyRecentActiveCount { get; set; } = 2;
+
+	[SettingPropertyInteger("额外相关生效政策条数", 0, 10, "0", Order = 3, RequireRestart = false, HintText = "从所有国家的其他现行政策中按相关度读取，默认 3；排除已读最近项，不设最低相似度门槛。0 关闭，候选不足不凑数；不影响普通对话。")]
+	[SettingPropertyGroup("16. 政策系统", GroupOrder = 0)]
+	public int PolicyRelatedActiveCount { get; set; } = 3;
+
 	[SettingPropertyButton("自定义提示词JSON文件夹", -1, true, "", Content = "打开文件夹", Order = 9, RequireRestart = false, HintText = "打开 CustomPrompts 文件夹，可直接编辑各套提示词 JSON。")]
 	[SettingPropertyGroup("9. 提示词扩展")]
 	public Action OpenCustomPromptTextStoreFolderAction { get; set; }
@@ -2787,6 +2795,18 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 		{
 			return DefaultPlayerPolicyEffectPostprocessMaxTokens;
 		}
+	}
+
+	internal static int GetPolicyRecentActiveCount()
+	{
+		try { return PolicyHistoryRetrievalService.NormalizeEvaluationReferenceCount(GetSettings()?.PolicyRecentActiveCount ?? 2); }
+		catch { return 2; }
+	}
+
+	internal static int GetPolicyRelatedActiveCount()
+	{
+		try { return PolicyHistoryRetrievalService.NormalizeEvaluationReferenceCount(GetSettings()?.PolicyRelatedActiveCount ?? 3); }
+		catch { return 3; }
 	}
 
 	public static int GetPlayerPolicyEffectModuleDetailCountForExternal()

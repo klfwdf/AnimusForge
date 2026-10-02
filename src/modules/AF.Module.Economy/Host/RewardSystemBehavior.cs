@@ -16251,11 +16251,11 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 				}
 				return string.Empty;
 			});
-			if (DiplomacyCrossDomainActionOwner.ApplyVassalageRewardTags(giver, receiver, ref responseText, giverFacts, receiverFacts))
+			if (DiplomacyConversationBridge.ApplyVassalageRewardTags(giver, receiver, ref responseText, giverFacts, receiverFacts))
 			{
 				anyVassalageApplied = true;
 			}
-			if (DiplomacyCrossDomainActionOwner.ApplyKingdomAnnexationRewardTags(giver, receiver, ref responseText, giverFacts, receiverFacts))
+			if (DiplomacyConversationBridge.ApplyKingdomAnnexationRewardTags(giver, receiver, ref responseText, giverFacts, receiverFacts))
 			{
 				anyKingdomAnnexationApplied = true;
 			}

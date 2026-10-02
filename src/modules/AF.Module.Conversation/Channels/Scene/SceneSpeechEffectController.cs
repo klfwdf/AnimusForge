@@ -170,7 +170,7 @@ internal void Publish(SceneSpeechQueueItem item)
 								{
 									TryProcessCustomPolicyAgendaActionTag(characterObject.HeroObject, ResolveScenePostprocessChainName(), playerDirectedActionText, ref content, playerDirectedNpcReplyText);
 									VoteDealBehavior.ProcessAgendaTagsDispatch(characterObject.HeroObject, ref content);
-									DiplomacyBehavior.ProcessDiplomacyTagsDispatch(characterObject.HeroObject, ref content);
+									DiplomacyConversationBridge.ProcessDiplomacyTagsDispatch(characterObject.HeroObject, ref content);
 									worldMapResult = WorldMapPartyCommandBehavior.ProcessWorldMapOrderTagsDispatch(characterObject.HeroObject, ref content);
 									DuelBehavior.TryCacheDuelAfterLinesFromText(characterObject.HeroObject, ref content);
 									DuelBehavior.TryCacheDuelStakeFromText(characterObject.HeroObject, ref content);

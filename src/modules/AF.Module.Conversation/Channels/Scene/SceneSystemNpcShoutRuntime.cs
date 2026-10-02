@@ -88,7 +88,7 @@ internal sealed class SceneSystemNpcShoutRuntime
 							{
 								MyBehavior.ApplyPatienceFromSceneHeroResponseExternal(characterObject.HeroObject, ref aiResponse);
 								VoteDealBehavior.ProcessAgendaTagsDispatch(characterObject.HeroObject, ref aiResponse);
-									DiplomacyBehavior.ProcessDiplomacyTagsDispatch(characterObject.HeroObject, ref aiResponse);
+									DiplomacyConversationBridge.ProcessDiplomacyTagsDispatch(characterObject.HeroObject, ref aiResponse);
 								worldMapResult = WorldMapPartyCommandBehavior.ProcessWorldMapOrderTagsDispatch(characterObject.HeroObject, ref aiResponse);
 								DuelBehavior.TryCacheDuelAfterLinesFromText(characterObject.HeroObject, ref aiResponse);
 								DuelBehavior.TryCacheDuelStakeFromText(characterObject.HeroObject, ref aiResponse);

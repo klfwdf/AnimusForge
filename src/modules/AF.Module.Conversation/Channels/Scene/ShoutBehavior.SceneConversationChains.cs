@@ -915,10 +915,10 @@ internal sealed partial class SceneConversationSessionRuntime
 					bool replyIsDirectPlayerResponse = firstTurn;
 					bool customPolicyAgendaPostprocessSelected = replyIsDirectPlayerResponse && (customPolicyAgendaRuleInjected || HasPreprocessRuleHit(postprocessPreprocessHits, CustomPolicyAgendaPostprocessRuleId));
 					bool independentClanPeaceResident = replyIsDirectPlayerResponse
-						&& DiplomacyBehavior.CanUseIndependentClanPeaceForExternal(speakingHero, npcCharacter);
+						&& DiplomacyConversationBridge.CanUseIndependentClanPeaceForExternal(speakingHero, npcCharacter);
 					bool diplomacyPostprocessSelected = independentClanPeaceResident
 						|| ((diplomacyRuleInjected || HasPreprocessRuleHit(postprocessPreprocessHits, "diplomacy"))
-							&& DiplomacyBehavior.CanUseDiplomacyActionPostprocessForExternal(speakingHero, npcCharacter));
+							&& DiplomacyConversationBridge.CanUseDiplomacyActionPostprocessForExternal(speakingHero, npcCharacter));
 					bool worldMapPartyCommandPostprocessSelected = worldMapPartyCommandRuleInjected || HasPreprocessRuleHit(postprocessPreprocessHits, "worldmap_party_command");
 					bool nobleGatheringPostprocessSelected = HasPreprocessRuleHit(postprocessPreprocessHits, "noble_gathering");
 					bool marriagePostprocessSelected = HasPreprocessRuleHit(postprocessPreprocessHits, "marriage");
