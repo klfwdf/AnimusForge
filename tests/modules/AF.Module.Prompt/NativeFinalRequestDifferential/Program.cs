@@ -67,6 +67,11 @@ internal sealed class ConversationMessage
     internal static class ShoutUtils { internal static string StripConversationMetadataPrefix(string text) => text; internal static string StripNamePrefixedLineSafely(string text, int maximum = 30) => text; }
     internal static class ConversationActionPostprocessOwner { internal static string StripActionTagsForSceneSpeech(string text) => text; }
 #endif
+#if !CURRENT
+    // Match the current fixture's empty date/scene and zero hour captures, without replacing any formatting rule.
+    internal static class CampaignTime { internal readonly struct Time { public override string ToString() => ""; } internal static Time Now => new Time(); }
+    internal static class MyBehavior { internal static int GetCurrentMemoryGameHourForExternal() => 0; internal static string ResolveCurrentMemorySceneLabelForExternal() => ""; }
+#endif
     public partial class ShoutBehavior
     {
 #if CURRENT
@@ -89,7 +94,9 @@ internal sealed class ConversationMessage
         private static bool TryNormalizeAfefFactLineForPrompt(string text, out string fact) { fact = text ?? ""; return text?.StartsWith("[AFEF", StringComparison.Ordinal) == true; }
         private static string NormalizeStrictSceneAssistantContent(string text, string speaker) => text;
         private static bool IsSameSceneHeroId(string a, string b) => !string.IsNullOrWhiteSpace(a) && string.Equals(a, b, StringComparison.Ordinal);
+#if CURRENT
         private static string PrefixConversationMessageForPrompt(ConversationMessage message, string speaker, string content) => "[" + speaker + "] " + content;
+#endif
         private static string BuildScopedAfefFactLineForPrompt(string fact, bool current) => (current ? "【当下行为】" : "【过往行为】") + fact;
         private static string FormatScenePlayerDirectSpeechLabel(string player, float distance) => player + "对你说";
         private static ConversationMessage StampConversationMessageWithCurrentMemoryContext(ConversationMessage message) => message;

@@ -47,7 +47,9 @@ for revision in ("old", "current"):
     else:
         source = (ROOT / "src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.cs").read_text(encoding="utf-8-sig")
     if revision == "old":
-        methods = "\n".join(extract.declaration(source, marker) for marker in markers)
+        # Execute the fixed original metadata helpers, not the prior abbreviated [speaker] fixture stub.
+        metadata_markers = ("private static string PrefixConversationMessageForPrompt(", "private static string BuildConversationMessageMetadataPrefix(", "private static int ClampMemoryPromptHour(")
+        methods = "\n".join(extract.declaration(source, marker) for marker in markers + metadata_markers)
     else:
         # Current capture + detached real assembly owners; never use a historical projection here.
         current_markers = ('internal static object CreateChatMessage(', 'private static string BuildStrictSceneMessagesSystemPrompt(', 'private static void AppendStrictSceneUserSections(', 'internal static string BuildSceneCompositeUserBlock(', 'internal static string StripScenePersonaBlocks(', 'internal static string ExtractTrustPromptBlock(', 'private static bool IsSceneWeeklyFullReportHeader(', 'private static string FormatSceneRuleSection(', 'private static string FormatSceneKnowledgeSection(', 'internal static void SplitSceneExtraSections(', 'internal static string BuildSceneSystemRuleBlock(', 'internal static async Task<string> CallNativeConversationApiAsync(')
