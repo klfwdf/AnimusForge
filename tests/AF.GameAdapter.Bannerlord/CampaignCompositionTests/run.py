@@ -19,7 +19,7 @@ SOURCES = ['src/AF.GameAdapter.Bannerlord/Composition/CampaignComposition.cs', '
             'src/AF.Foundation.Runtime/ModuleDirectory/ModuleDirectoryLifecycleOwner.cs',
             'src/AF.Foundation.Runtime/ModuleDirectory/InternalModuleDirectory.cs', 'src/AF.Contracts/Internal/FeatureBridgeContracts.cs',
             'src/modules/AF.Module.PublicApi/V1/AfApi.cs', 'src/AF.Contracts/PublicApi/V1/AfApiContracts.cs',
-            'src/AF.Foundation.Runtime/ModuleDirectory/ModuleFrameworkSnapshot.cs', 'src/modules/AF.Module.PublicApi/Internal/AfV1SnapshotProjection.cs']
+            'src/AF.Foundation.Runtime/ModuleDirectory/ModuleFrameworkSnapshot.cs', 'src/modules/AF.Module.PublicApi/Internal/AfV1SnapshotProjection.cs', 'src/AF.Foundation.Runtime/ModuleDirectory/HostedExtensionCatalog.cs']
 
 def load(name, path):
     spec = importlib.util.spec_from_file_location(name, ROOT / path)
@@ -78,6 +78,8 @@ def verify_source():
     end = before.index('\n                InternalModuleValidationResult',start)
     old_registration = before[start:end]
     create = extract(team,'internal static InternalModuleDirectory CreateDirectory(')
+    assert create.count('HostedExtensionCatalog.Register(directory);') == 1, 'Hosted catalog registration is not unique'
+    create = create.replace('        HostedExtensionCatalog.Register(directory);\n', '')
     assert compact(create[create.index('{'):]) == compact('{'+old_registration+'return directory;}'), 'Changed typed registration list'
     before = before[:start]+'                var directory = TeamModuleRegistration.CreateDirectory();'+before[end:]
     before = before.replace('    private const int InternalContractVersion = 1;\n','')

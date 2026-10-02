@@ -20,7 +20,9 @@ namespace AnimusForge.DialogueUI
             Start();
         }
 
-        internal static void Start()
+        internal static void Start() => TryStart();
+
+        internal static bool TryStart()
         {
             try { DialogueUiRuntime.Initialize(); }
             catch (Exception ex)
@@ -28,6 +30,7 @@ namespace AnimusForge.DialogueUI
                 DialogueUiRuntime.Disable();
                 DialogueUiRuntime.Log("UI integration unavailable; original interfaces retained: " + ex);
             }
+            return DialogueUiRuntime.Enabled;
         }
 
         // Patching must wait until native action types/sets are loaded (after Module.Initialize).
@@ -43,9 +46,12 @@ namespace AnimusForge.DialogueUI
             InstallPresentation();
         }
 
-        internal static void InstallPresentation()
+        internal static void InstallPresentation() => TryInstallPresentation();
+
+        internal static bool TryInstallPresentation()
         {
-            if (_harmony != null || !DialogueUiRuntime.Enabled) return;
+            if (_harmony != null || !DialogueUiRuntime.Enabled)
+                return _harmony != null && DialogueUiRuntime.Enabled;
             try
             {
                 _harmony = new Harmony(HarmonyId);
@@ -63,6 +69,7 @@ namespace AnimusForge.DialogueUI
                 _harmony = null;
                 DialogueUiRuntime.Log("UI integration unavailable; original interfaces retained: " + ex);
             }
+            return _harmony != null && DialogueUiRuntime.Enabled;
         }
 
         // Wheel + persistent session are optional: on failure the host keeps its original T/Y flow.
