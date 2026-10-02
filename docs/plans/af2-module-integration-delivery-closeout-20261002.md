@@ -1,6 +1,6 @@
 # AF 2.0 收尾交付计划
 
-状态：IMPLEMENTATION_AUTHORIZED
+状态：INTEGRATION_HANDOFF_READY（仅候选/接入/离线；v1.3.5、v1.4.5 的 U1–U9 实机仍未签收）
 
 ## 1. 目标与范围
 

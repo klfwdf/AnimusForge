@@ -4,6 +4,39 @@
 
 状态：`ACTIVE`。按[收尾交付计划](plans/af2-module-integration-delivery-closeout-20261002.md)执行 R0–R3；先交付使用，旧宿主治理后置，历史未完成项不改标 DONE。起始 HEAD `261a3be3a8935e9e313f8de057c462012d3a7f13`，分支 `codex/af-main-refactor-continuation-20260831`；保护既有 SessionTransport dirty、tools/NuGet 和其他作者改动。仅在具名阻塞时修改产品；未授权 push、Stage、打包、部署、仓外写入或真实玩家数据操作。
 
+### R0 开测前冻结（2026-10-02）
+
+所有 B/U 卡的执行负责人均为本轮交付执行者；实机操作需要有权使用**测试战役和代表性旧档副本**的人员，不使用玩家原档。共同候选是源码 `dd6f45bf4f74e8e9722e155c1765011b16c53efb` 的冻结 1337 raw 输入（manifest SHA256 `1898f2032c04972b2a3f1340e9ce1afd278a2da53300b62278cdd9fd17204543`），Debug `debug-b67c7b0cc63f` 与 Release `frozen-release-f0bd0f0c6496`。目标游戏精确版本分别冻结为 **v1.3.5**、**v1.4.5**；前者为仓内 1.3 参考线，后者为 1.4 源码差异基线，实际安装版本必须在实机前核对，不匹配则该版本卡不执行/不签收，不能推定其他补丁版本适用。所有 U 卡按版本各记结果。六 DLL 的完整 hash、输入与命令以 `artifacts/af2-host-terminal-closeout/final-receipt.json` 和两个 build receipt 为准；使用候选整套文件，不混 Debug/Release 或 1.3/1.4 实现。`SessionTransport.cs` 当前 raw SHA256 `a393a98b42c1f2d37150578d5d5ede170540be8eb4874751fbc2821eb9cfe23e`，冻结 Debug 源文件同 hash；仍保护工作树 dirty 标记，不把冻结 DLL 称为纯 main 产物。旧 `final-gates-55eb` 为 355 项中 343 PASS、3 PREEXISTING_FAIL、5 NEEDS_INPUT、3 SUPERSEDED_BY_RUNNER、1 ENV_STATE，非全 PASS。
+
+| 卡 | 冻结入口、前置、输入/样本与预期 | 冻结证据/操作（不改预期） |
+| --- | --- | --- |
+| B0 | 以上完整源码/配置/资源与六 DLL；逐 raw hash、构建源、产物 hash 一致，dirty 归属明确。 | 对 `source-manifest.json` 1337 项、两个 build receipt 与 DLL 重新 SHA256；`final-receipt.json` 是原始对照。 |
+| B1 | 同候选内部制作组与独立 V1 两套指南；逐签名、线程、结果/取消、限制、示例、链接符合当前源码。 | `CoreDialogueClient`、`AfApi`、`AfDialogueClient`、`TeamModuleServices`、`TeamModuleRegistration`、三 port 与当前生产消费者逐项对照；只验文档和链接。 |
+| B2 | 两 API × Debug/Release + Bootstrap，同源输入；唯一模块/唯一实现加载合同、API/保存身份不回归。 | 两 build receipt 六项 exit0 与 hash；原身份/Bootstrap 审计收据可复用，实机加载不能由此替代。 |
+| B3 | Native、Scene、Courier 同一服务的提交/回执；重复、开始前取消、旧 owner/generation、迟到、部分/未知效果、唯一 AFEF/历史；内部 Policy/Gathering/Siege port 的参数、返回与异常语义。 | 生产符号 `CoreDialogueClient.Submit/SubmitForContext`、`CoreDialogueOperation.TryBegin/MarkOwnerAdmitted/RecordOwnerCompletion/Finish/Cancel`、`ShoutBehavior.SubmitModuleNativeDialogue/SubmitModuleSceneDialogue`、`CourierDeliveryBehavior.SubmitModuleCourierDialogue`、`TeamModuleServices`、`ConversationActionPostprocessOwner`；runner ID 固定 `tests/modules/AF.Module.Conversation/NativeModuleSubmissionTests/run.py`、`tests/modules/AF.Module.Conversation/SceneGroupReceiptTests/run.py`、`tests/modules/AF.Module.Conversation/ScenePostprocessParityTests/run.py`、`tests/modules/AF.Module.Conversation/CourierSessionCreationTests/run_admission.py`、`tests/modules/AF.Module.Conversation/CourierOwnerPhaseTests/run.py`、`tests/modules/AF.Module.Conversation/CourierInboundCompletionContractTests/CourierInboundCompletionContractTests.csproj`、`tests/modules/AF.Module.Conversation/CourierDeliveryLifetimeTests/run_cancellation.py`、`tests/bridges/TeamModulePortParityTests/run_adapters.py`。逐入口查原结果和替身边界，缺口不由 355 总退出码填平。 |
+| U1 | 测试战役启动/读入；对应版本 Bootstrap 仅选一个实现，资源、启用入口可用且无阻断加载错误。 | 逐版本游戏日志、模块 DLL hash、启动/加载操作记录；无游戏/安装权限则 NOT_RUN。 |
+| U2 | 当前 Native 可交谈 NPC，一句“你好，近来如何？”；目标/回复/历史 user-assistant/记忆正确，无串人、重复事实或内部标签。 | 一次正常对话及原渠道日志/测试档前后记录；离线 runner 只补反例。 |
+| U3 | 同一场景选择两名 NPC，玩家一句“请分别说说现在的情况”；两名参与者、顺序、历史、事实归属正确，玩家输入只写一次。 | Scene UI/日志与测试档前后记录。 |
+| U4 | 原 UI 选定一位有效收件人、模式/附件并寄出正文“请回信确认近况”；派出前不提交，送达/回信/运输收尾、历史与记忆一致且无重复。 | Courier 派出至实际回信/回执日志与测试档记录。 |
+| U5 | 共同动作固定为既有 Gathering `TryApplyNobleGatheringTagsForExternal` 接缝；在各适用 Native/Scene/Courier 渠道各一次合法成功与资格拒绝。成功须真实效果+对应事实，拒绝不得有效果/成功事实；渠道合法资格差异事先记录，不换标签凑通过。 | 同一测试档前后状态、后处理规则/输出、执行与 AFEF/历史日志；若当前版本无可达宴会场景，保留 NOT_RUN，不改 N/A。 |
+| U6 | 每渠道一份重复、取消/旧 owner/generation/迟到、部分未知效果离线反例；实机再离场/关窗一次。未开始无执行，已开始不伪称回滚，旧结果不污染新会话/二次执行。 | B3 具名 runner 与源代码回执逐反例；实机步骤单独记录，不以离线代替。 |
+| U7 | 当前测试档保存/读取一次，另取一份代表性旧档**副本**；冻结状态/记录一致，无相关损坏/重复效果。 | 前后状态、游戏日志和副本来源/版本；缺旧档则旧档部分 NOT_RUN。 |
+| U8 | 固定 AF 接缝名单：Policy `IsEligibleTargetForExternal`/`BuildRuntimePostprocessRulesForExternal`/`TryProcessAcceptedAgendaTag`/`BuildActivePolicyDialogueContextForExternal`；Gathering `BuildRuntimePostprocessRulesForExternal`/`BuildPostprocessContextForExternal`/`NormalizeNobleGatheringPostprocessTagsForExternal`/`BuildFeastAttendanceContext`/`TryApplyNobleGatheringTagsForExternal`；Siege `BuildPostprocessRules`/`BuildPostprocessContext`/`NormalizePostprocessTags`/`TryProcessActionTags`。每项一条现有生产路径，参数/结果/退出符合原合同，不重验全部玩法。独立 DLL 消费者未纳入本轮实机承诺，不得以内部调用代替其加载。 | `af-team-module-seam-matrix.md` 13 方法/原 31 调用作为导航，当前 `TeamModuleServices`/消费者与 `TeamModulePortParityTests` 作为离线证据；实机逐接缝记录。 |
+| U9 | 随 U1–U8 观察网络/索引/资源和异常；若 TTS 已启用，听一次输出及退出。无阻断卡死、持续重复任务或明显残留。 | 同次游戏日志、UI/声音观察；不额外压力测试，不触碰真实凭据。 |
+
+U1–U9 的命令/日志模板是测试人员在合法测试环境逐版本填写，不存在的实机证据不能由目录、离线 fixture 或构建代替。`USE_ACCEPTED` 必须等声明版本所有适用 U 卡实际通过；未提供实机环境时本轮仍交候选与接入资料，保留 NOT_RUN。
+
+### R1–R3 执行与签收（同日）
+
+- **B0 PASS（本轮直验）**：`debug-b67c7b0cc63f/source-manifest.json` 共 1337 项；Debug 冻结源、Release 冻结源和当前仓库 raw 文件逐项 SHA256 均 0 mismatch；manifest 自身 SHA256 `1898f2032c04972b2a3f1340e9ce1afd278a2da53300b62278cdd9fd17204543`。六 DLL 逐个重算 SHA256 与 `final-receipt.json` 完全一致。SessionTransport 工作树/Debug 冻结源 raw hash 都是 `a393a98b42c1f2d37150578d5d5ede170540be8eb4874751fbc2821eb9cfe23e`；该文件仍是受保护 Git dirty 标记（当前 `git diff` 无文本差），不纳入本轮提交。只读 `git ls-remote origin refs/heads/main` 为 `261a3be3a8935e9e313f8de057c462012d3a7f13`；没有 fetch/push 或改 refs。源码候选是 `dd6f45bf` 的冻结 raw 集，不误称为纯远端 main 构建。
+- **B1 PASS（本轮文档验证）**：修复[内部指南](architecture/af-internal-module-guide-v1.md)外机绝对旧路径及“Scene/Courier 仍待”的过时说法，按当前 `CoreDialogueClient` / `CoreDialogueServices`、`TeamModuleServices`、三 port 和公共 `AfApi` / `AfDialogueClient` 核实内外入口、票据、取消、结果、线程、限制和示例；[公开指南](architecture/af-public-api-guide-v1.md)显式绑定本轮冻结候选和独立 DLL/同 DLL 边界。四份受影响文档的相对链接检查均 0 missing，`git diff --check` 无错误；仅文档修改，未无谓重构/重跑产品构建。
+- **B2 REUSED_PASS（原六构建，本轮 hash 回读）**：原 `final-receipt.json` 中 Debug/Release × 1.3/1.4 + Bootstrap 六构建 exit0，同一 1337 raw 输入；六产物 SHA256 本轮逐项重算吻合。原保存/API/Bootstrap 身份审计在 P1–P8 收据/主台账最终条目，适用源码不变；这不等于游戏加载、1.3/1.4 实机或旧档。未 Stage/打包/部署。
+- **B3 REUSED_PASS（固定八入口，离线范围）**：原 `final-gates-55eb/results.json` SHA256 `f3fc8a84ca2cae6683885122d1a2f35320080565aeb958ad90f4cb5812a25ca0`，冻结表的 8 个具名 runner 各 `PASS/exit0`；其中 Native 为真实准入/动作/必要记忆收尾配 fixture provider/游戏对象，Scene 为生产群组/后处理回执配游戏替身，Courier 为原 session/owner 选择、claim/迟到/部分效果配运输与底层游戏替身，Team port 为真实 13 typed adapter/消费者及负控。它们覆盖表列边界且 1337 输入不变，不声称真实网络、实机、整体 CourierSchedule/ModuleNativeSubmission/NativeWait 端到端已验。`TeamModulePortParityTests/run.py` 在原 355 中仍为 `PREEXISTING_FAIL`（历史 whole-file oracle），没有重分类为通过；选定 `run_adapters.py` 是当前 13 port 行为与接线证据，不抹去旧失败。原 355 总体仍是 343 PASS / 12 非 PASS，不能称全绿。
+- **R2 无产品修复**：指南旧路径/过时状态是文档问题；冻结范围内未复现具名加载、接入、错误目标/重复效果、数据/生命周期或严重卡顿产品阻塞。源码/测试/构建脚本均未修改，旧宿主拆分不作为本轮出口。
+- **U1–U5、U7、U9：v1.3.5 与 v1.4.5 均 NOT_RUN**；**U6、U8：仅上述离线反例/13 port 接缝 REUSED_PASS，所需实机离场/关窗与逐接缝操作仍 NOT_RUN**。本轮没有合法测试战役/代表性旧档副本/对应精确版本的实机操作记录；不得从既有游戏目录或 fixture 推导使用接受。若实际安装版本不是冻结 v1.3.5/v1.4.5，应重新明确适用版本和候选，不把未测补丁版外推。
+
+**交付状态：`INTEGRATION_HANDOFF_READY`（仅候选与制作组接入/离线层），`USE_ACCEPTED` 未达成。** 制作组可按两份指南在同 DLL typed ports 与 V1 public 入口开始集成，但不得称游戏或独立子 MOD 已实测。最小下一步：获有权测试人员在 v1.3.5、v1.4.5 的测试环境分别按冻结 U1–U9 执行并附日志/测试档状态/旧档副本证据；仅对声明通过的版本签收。恢复使用保留的同一整套冻结候选与测试档副本，勿混用不同实现 DLL、勿覆盖玩家原档。发布/部署另需独立授权和依赖/许可/隐私检查。本轮达到离线交接出口即停，不加宿主治理或常驻门禁。
+
 - 当前工作区/分支不变；本会话已直接查询远端 main 为 `261a3be3a8935e9e313f8de057c462012d3a7f13`，与本地 HEAD 一致。新计划及导航仍本地未提交；SessionTransport 原产品 dirty 另行保护。后续交付必须核对已有产物/1337 输入证据是否包含 dirty，不把工作树构建直接冒充纯 main 构建；本次没有判定或改写其归属。
 - 已有能力仍复用：CoreDialogueClient:27–55 三渠道和上下文票据；AfApi:18–28 三渠道 Available、另外三项 NotSupported；TeamModuleRegistration.CreateDirectory:16 与 Postprocess owner:393–418 的 typed 接线。内部指南:11、65–73 的旧路径/状态应修正文档，不重做 J。
 - 已读到的 DialogueUI 展示 hook/历史读取、Illustrator 兼容反射及 IntegratedModuleHost 生命周期入口，不再预设为必迁项。只有实际使用/当前接入失败或相关安全/兼容证据才触发最小修复，不重写模块业务，不以“更干净”继续扩包。
