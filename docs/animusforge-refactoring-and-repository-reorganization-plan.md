@@ -6089,3 +6089,18 @@ R2计划交付门槛：已给固定技术路线、真实来源与目标、写入
 - 失败如实保留：首轮新 runner 输出等于 bin 根被现有目录边界拒绝，已修为 bin/Release/net8.0 子目录，不弱化 guard；扩展 stale fixture 首轮反射误用旧 namespace，已按实际 `AnimusForge.SaveRuntimeGuard` 修复并15项复验。失败日志未删除，均非已隐藏的产品 PASS。
 - 性能/存档：每次正文请求读取一次模式；沿用现有 SSE 解析/累积，仅随已有 JSON chunk 检查终止字段，不新增 Tick 扫描、轮询、锁、游戏对象状态或存档键。新增设置走已有 MCM 全局配置，旧配置缺字段按默认关闭。
 - 未验：真实游戏 MCM/Gauntlet 显示/持久化、三渠道实机动作、TTS、旧档、YJ 真实 SSE、全仓全量测试及 Release 候选；合成网络/真实DLL回放不等于实机验收。本任务未追加付费调用、未 push/覆盖游戏。恢复用本任务提交的 focused inverse/revert，不能 reset 或改写并行作者历史。
+
+
+## 复仇刑场气泡恢复（2026-10-02） {#execution-bubble-repair-20261002}
+
+**状态：OFFLINE_VERIFIED_WITH_LIMITS。** 基线 `2b953e26`，本轮只修复 AF 内置复仇的发言接线，不改刑罚、死亡结算、模型开关默认值、部署或一键流程。2026-10-02 15:28:18.121 与 15:29:21.499 的真实 Vengeance.log 均记录 `Execution address kept its silence: a streamed line already started`；同机 LocalAppData/AnimusForge/Logs/Mod_Logic.txt 在 15:27:57 与 15:29:08 记录 FloatingText UI 初始化成功且镇民气泡仍显示。
+
+- 主 API 流式开关默认 false；ShoutNetwork.CallApiWithMessagesStream 的非流式分支只调用 onComplete(fullText)。原 ExecutionAddressLlm 完成回调丢弃全文，仅 Flush 空 parser，刑场无法读取台词。
+- 新 `src/bridges/Vengeance/Host/ExecutionSpeechResponseReceiver.cs:9–29` 的 OnChunk/OnComplete 统一接收分片或完成全文，完成全文仅在无非空分片时追加，保留尾行、不重复流式台词；真实消费者 `ExecutionAddressLlm.RunAsync:547–563`。
+- `Vengeance/Source/Scene/Speech/ExecutionSpeechPlayback.cs:76–126` 的 HasStarted 只在 sink.TryStart 成功后置 true，空流/UI 就绪不能阻断 ExecutionSpeechDirector.TryFallbackToLocal:89–119。
+- `ExecutionSpeechBubbleBridge.cs:13–16`、`ExecutionSpeechDirector.cs:256`、`TownExecutionMissionBehavior.cs:1183–1205` 与 `ExecutionAddressLlm.cs:415,426,491–502` 接通真实 AF 气泡就绪状态，替代只等未注入旧 overlay 的路径，并禁止未初始化 UI 虚报展示成功。
+- 频率：接收器每请求一个，完成回调一次；沿用有界分片解析和主线程播放队列。就绪判断只查当前 Mission 的行为，不扫描 Agents/英雄/世界，也不增加网络请求、任务或空转轮询；不引入外部 API/存档身份变化。
+
+**验证**：107 项 production-linked 执行记忆/命令契约（新增 9 项：非流式完整正文、流式去重、完成-only 兜底、空回复、空流、UI 未就绪/恢复、展示失败）；原 speech parser PASS；仓库原 build_single_module.ps1 Debug 1.3（实际引用 v1.3.15.110062）、1.4（实际引用 v1.4.6.115628）与 Bootstrap 均 success；独立 RichExecutions 工程快照以配置目标 1.4.8、本机游戏引用在本工作区输出编译成功（16 warning/0 error），不等同对应补丁版本实机验收。日志与快照集中 `artifacts/execution-bubble-repair-20261002/`。
+
+**未验证**：未部署/未 push/未进游戏；真实模型措辞、流式/非流式两种游戏内气泡、仪式各阶段、旧档与帧耗时仍 NOT_RUN。独立模块只验证共享源码编译，不声明其自身气泡宿主接线已经恢复。根因接线通过源码与离线回归确认，不把测试 sink 成功当成屏幕实际渲染。回滚用本次修复提交的 focused inverse commit，或 evidence 目录 task.patch；不回退其他作者 dirty。

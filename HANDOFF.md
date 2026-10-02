@@ -855,3 +855,10 @@ LIVE/真实旧档/网络/TTS/帧性能NOT_RUN；证书全局影响归因UNKNOWN�
 - **O2 编辑器完整 smoke PASS（离线合成数据）**：远端作者未推送的 `--isolated-full` 改动不可得，已在 `tools/PlayerExportsEditor/tests/PlayerExportsEditor.SmokeTests/Program.cs` 重新实现：要求合成根预先存在、无 reparse，且 `ANIMUSFORGE_DATA_ROOT`/`TEMP`/`TMP` 全在其内，否则写入前拒绝；覆盖建包、知识规则新建/编辑+备份、人设新建/编辑+备份、原始 JSON 编辑、坏 JSON 保留、从备份恢复、包列表新旧排序、单文件/数据类型/整包软删除、4 类越界写入拒绝、最终加载校验与条件目录，并比对真实 `%LOCALAPPDATA%\AnimusForge\UserData\PlayerExports` 前后不变；不清理，保留证据。旧删除 fixture 改为 `<root>/UserData/PlayerExports` 规范路径（旧写法在当前拒写校验下必然失败）。
 - 证据：用户批准的全新根 `E:\AF-J15-editor-smoke-20260927-a\`（运行前确认不存在），`smoke.log` 为 `steps=9 real_root_unchanged=1`，退出 0；所有写入仅在其 `data/` 下。SDK：系统 dotnet 无 SDK，新装官方 10.0.400 到仓外 `G:\AFMOD\.dotnet-sdk10\`；Release 构建 0 警告 0 错误；`--path-contract`、`--path-contract-invalid` 回归 PASS；缺根、TEMP 越界两个反例在写入前拒绝。
 - 仍然：只证明独立编辑器冷路径，不是游戏内导入导出或真实玩家库验收；F4-A 来源/再分发权与实机视觉、F4-U 六项 GUI + 三张 atlas HOLD、F5 两版本实机/旧档仍 NOT-RUN；J15 不标完成。未部署、未推送。
+
+
+# 当前局部修复：复仇刑场气泡接线（2026-10-02）
+
+- 修复非流式主 API 完成全文被刑场丢弃、空流误标已发言导致本地兜底被拒绝，以及刑场等待旧 overlay/AF UI 未就绪虚报成功。默认流式开关、刑罚和死亡结算不变。
+- 107 项处决契约、speech parser、AF Debug 1.3/1.4/Bootstrap PASS；独立工程共享源码本地隔离编译 PASS。实机气泡/模型/旧档/性能未验，未部署/push。
+- [主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#execution-bubble-repair-20261002)记录源码职责与证据；局部回滚及日志 `artifacts/execution-bubble-repair-20261002/`。保留现有其他作者改动。

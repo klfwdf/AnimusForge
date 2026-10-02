@@ -11,7 +11,8 @@ internal static class Program
     private static SpeechCue Cue(string text, bool last = true) => new(SpeechSpeaker.Victim, -1, text, "", 3, isLastStatement: last);
     private sealed class Sink : ISpeechPlaybackSink
     {
-        public bool IsReady => true;
+        public bool Ready = true;
+        public bool IsReady => Ready;
         public bool HasFailed => false;
         public bool Available = true;
         public bool DisplayWorks = true;
@@ -23,7 +24,7 @@ internal static class Program
     }
     private static void Main()
     {
-        Parser(); Playback(); Archive(); Orders(); MemoryBridge();
+        Parser(); ResponseReceiver(); Playback(); Archive(); Orders(); MemoryBridge();
         Console.WriteLine($"PASS execution memory/order contracts: {_checks} assertions");
     }
     private static void Parser()
@@ -53,8 +54,48 @@ internal static class Program
         var legacy = new ExecutionSpeechLineParser().Append("死刑犯: legacy\n");
         Check(legacy.Count == 1 && !legacy[0].IsLastStatement, "legacy still parses without inventing last-word label");
     }
+    private static void ResponseReceiver()
+    {
+        const string full = "[开场]\n刽子手: 宣读判决。\n[最后陈述]\n死刑犯: 保重。";
+        var nonstream = new List<ExecutionSpeechLine>();
+        var receiver = new ExecutionSpeechResponseReceiver(lines => nonstream.AddRange(lines));
+        receiver.OnComplete(full);
+        Check(nonstream.Count == 2 && nonstream[1].IsLastStatement, "nonstream completed reply parses full text and tail");
+        var streamed = new List<ExecutionSpeechLine>();
+        receiver = new ExecutionSpeechResponseReceiver(lines => streamed.AddRange(lines));
+        receiver.OnChunk(full.Substring(0, 13)); receiver.OnChunk(full.Substring(13));
+        receiver.OnComplete(full);
+        Check(streamed.Count == 2 && streamed.Select(x => x.Text).SequenceEqual(nonstream.Select(x => x.Text)), "stream completion never duplicates deltas");
+        var fallback = new List<ExecutionSpeechLine>();
+        receiver = new ExecutionSpeechResponseReceiver(lines => fallback.AddRange(lines));
+        receiver.OnChunk(""); receiver.OnComplete(full);
+        Check(fallback.Count == 2, "empty chunk preserves completed-only transport fallback");
+        var empty = new List<ExecutionSpeechLine>();
+        receiver = new ExecutionSpeechResponseReceiver(lines => empty.AddRange(lines));
+        receiver.OnComplete("");
+        Check(empty.Count == 0, "empty completed reply invents no speech");
+    }
     private static void Playback()
     {
+        var emptyStream = new ExecutionSpeechPlayback(true);
+        var waitingSink = new Sink();
+        emptyStream.Tick(.1f, waitingSink);
+        emptyStream.Tick(10f, waitingSink);
+        Check(!emptyStream.HasStarted && emptyStream.IsBusy, "empty ready stream preserves local fallback");
+        emptyStream.Complete();
+        emptyStream.Tick(.1f, waitingSink);
+        Check(!emptyStream.HasStarted && !emptyStream.IsBusy, "empty completed stream was never spoken");
+        var pending = new ExecutionSpeechPlayback(true);
+        var delayedSink = new Sink { Ready = false };
+        pending.TryAppend(Cue("等待气泡初始化"));
+        pending.Tick(10f, delayedSink);
+        Check(!pending.HasStarted && delayedSink.Shown.Count == 0 && pending.IsBusy, "UI not ready waits without consuming line");
+        delayedSink.Ready = true;
+        pending.Tick(.1f, delayedSink);
+        Check(pending.HasStarted && delayedSink.Shown.Count == 1, "UI readiness resumes actual first line");
+        var rejected = new ExecutionSpeechPlayback(new SpeechPlan(new[] { Cue("显示失败") }));
+        rejected.Tick(.1f, new Sink { DisplayWorks = false });
+        Check(!rejected.HasStarted && rejected.WasAborted, "rejected display never marks speech started");
         var sink = new Sink();
         var playback = new ExecutionSpeechPlayback(new SpeechPlan(new[] { Cue("已显示"), Cue("未显示") }));
         playback.Tick(.1f, sink);
