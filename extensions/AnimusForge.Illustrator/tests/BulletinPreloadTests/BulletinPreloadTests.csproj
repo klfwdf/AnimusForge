@@ -2,6 +2,7 @@
   <PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><EnableDefaultCompileItems>false</EnableDefaultCompileItems></PropertyGroup>
   <ItemGroup>
     <Compile Include="Program.cs" />
+    <Using Include="BulletinTestTask" Alias="Task" />
     <Compile Include="../../src/Core/BulletinIllustrationPreloader.cs" Link="BulletinIllustrationPreloader.cs" />
   </ItemGroup>
 </Project>

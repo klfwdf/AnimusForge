@@ -42,7 +42,7 @@ internal sealed partial class KingdomCivilWarOwner
 		var state = Find(kingdom);
 		foreach (var demand in CivilWarCatalog.ValidDemands)
 		{
-			if (CivilWarWorld.FortificationCount(actor) < demand.MinFortifications || state?.Factions.Any(x => x.DemandId == demand.Id) == true) continue;
+			if (CivilWarWorld.FortificationCount(actor) < demand.MinFortifications || actor != Clan.PlayerClan && state?.Factions.Any(x => x.DemandId == demand.Id) == true) continue;
 			if (demand.Target == CivilWarDemandTarget.None) result.Add(new CivilWarFoundingOption { DemandId = demand.Id, Text = demand.Text });
 			else if (demand.Target == CivilWarDemandTarget.ImposedPolicy)
 			{
@@ -71,6 +71,8 @@ internal sealed partial class KingdomCivilWarOwner
 		{
 			if (f?.PendingResponse == null || f.LeaderClanId != actor.StringId || f.PendingResponse.LeaderClanId != actor.StringId) q.Reason = "没有需要本家族回应的事项。";
 			else if (IsPreWar(f) && !PoliticalClan(actor, k) || f.Stage == KingdomCivilWarStage.OpenWar && actor.Kingdom?.StringId != f.RebelKingdomId) q.Reason = "家族归属已变化，不能回应原协议。";
+			else if (f.PendingResponse.Accepted) q.Reason = "协议已接受并进入结算，不能重复答复或撤回；等待安全重试。";
+			else if (r.Accept == false && f.PendingResponse.Dissolve && actor == Clan.PlayerClan && r.OperationId != f.PendingResponse.OperationId + ":timeout" && !PlayerDetonationAllowed(k, actor, out string responseReason)) q.Reason = responseReason;
 			else if (CivilWarWorld.CurrentDay() > f.PendingResponse.DeadlineDay && (r.Accept || r.OperationId != f.PendingResponse.OperationId + ":timeout")) q.Reason = "回应期限已过。";
 			q.Consequence = f?.PendingResponse?.Dissolve == true ? "服从将解散派系；抗命将起兵。" : "接受补偿将撤回诉求并解散派系。";
 		}
@@ -109,6 +111,29 @@ internal sealed partial class KingdomCivilWarOwner
 			if (!PoliticalClan(actor, k)) q.Reason = "必须是本国正式封臣。";
 			else if (actor == k.RulingClan) q.Reason = "国王不能自行加入、退出或建立反对派。";
 			else if (own?.Stage == KingdomCivilWarStage.OpenWar || (r.Action != CivilWarAction.Detonate && s?.Factions.Any(x => x.Stage == KingdomCivilWarStage.OpenWar) == true)) q.Reason = "建国请求或内战期间，成员管理已锁定。";
+			else if (own?.ResolutionNeedsReview == true) q.Reason = "已有派系操作结果待核查，暂不能改变成员或派系。";
+			else if (r.Action == CivilWarAction.ChangeDemand)
+			{
+				if (actor != Clan.PlayerClan || f == null || f != own || f.LeaderClanId != actor.StringId || !IsPreWar(f)) q.Reason = "只能更改自己领导的战前派系诉求。";
+				else if (f.PendingResponse != null || !string.IsNullOrEmpty(f.PendingConcessionOperationId)) q.Reason = "王室交涉或协议结算中，暂不能更改诉求。";
+				else if (f.DemandId == r.DemandId && f.TargetId == r.TargetId) q.Reason = "诉求及目标未改变，无需重新评估成员。";
+				else if (!GetFoundingOptions(k.StringId, actor).Any(x => x.DemandId == r.DemandId && x.TargetId == r.TargetId)) q.Reason = "新诉求或目标不合法，或缺少所需领地。";
+				q.Consequence = "更改自己派系的诉求，并立即重评每个其他成员是否继续参与；退出者回到中立，不额外扣关系，不招募外部家族，不触发起兵。";
+			}
+			else if (r.Action == CivilWarAction.DissolveOwn)
+			{
+				if (actor != Clan.PlayerClan || f == null || f != own || f.LeaderClanId != actor.StringId || !IsPreWar(f)) q.Reason = "只能主动解散自己领导的战前派系。";
+				else if (f.PendingResponse?.Accepted == true || !string.IsNullOrEmpty(f.PendingConcessionOperationId)) q.Reason = "已接受的协议仍在结算，不能解散。";
+				q.Consequence = "解散自己领导的派系，与每个其他成员家族关系−10；保留不满，不延长已有王国冷却。";
+			}
+			else if (r.Action == CivilWarAction.Found && actor == Clan.PlayerClan)
+			{
+				int until = Math.Max(s?.CooldownUntilDay ?? 0, (s?.CooldownUntilWeek ?? 0) * 7);
+				if (CivilWarWorld.CurrentDay() < until) { q.CooldownUntilDay = until; q.Reason = "王国战后冷却至第 " + until + " 天，玩家创建派系也须等待。"; }
+				else if (own?.PendingResponse?.Accepted == true || !string.IsNullOrEmpty(own?.PendingConcessionOperationId)) q.Reason = "已有协议正在结算，不能改建派系。";
+				else if (!GetFoundingOptions(k.StringId, actor).Any(x => x.DemandId == r.DemandId && x.TargetId == r.TargetId)) q.Reason = "诉求或目标不合法，或缺少所需领地。";
+				q.Consequence = "创建派系，与统治者关系−10；若已有阵营，先退出并承担成员关系损失，自己的旧派系会解散。玩家领袖只会手动起兵。";
+			}
 			else if (r.Action == CivilWarAction.Leave)
 			{
 				if (member == null || member.Side == KingdomCivilWarSide.Middle) q.Reason = "当前已是中立。";
@@ -118,6 +143,7 @@ internal sealed partial class KingdomCivilWarOwner
 			{
 				if (f == null || own != f || !IsPreWar(f)) q.Reason = "只能要求自己的战前派系起兵。";
 				else if (!CanStartPoliticalWar(k, s, f)) q.Reason = "战争限制或叛乱免疫阻止起兵。";
+				else if (actor == Clan.PlayerClan && !PlayerDetonationAllowed(k, actor, out string strengthReason)) q.Reason = strengthReason;
 				else if (f.LeaderClanId != actor.StringId && CivilWarWorld.CurrentDay() < f.ProposalUntilDay) q.Reason = "起兵建议被拒后须等待7天。";
 				q.Consequence = f?.LeaderClanId == actor.StringId ? "立即进入起兵建国流程。" : "向领袖提议；拒绝后7天内不能再次建议。";
 			}
@@ -155,15 +181,18 @@ internal sealed partial class KingdomCivilWarOwner
 		Kingdom k = CivilWarWorld.FindKingdom(r.KingdomId);
 		var s = GetOrCreate(k, CivilWarWorld.CurrentWeek());
 		var f = ActionFaction(r, s, actor);
+		// Only Found can leave/dissolve an old side before creating a different faction. This list is action-local,
+		// filled by the existing relation loops; it never becomes persistent faction membership or tick work.
+		List<Hero> affectedParticipants = r.Action == CivilWarAction.Found ? new List<Hero>() : null;
 		CivilWarActionResult result;
 		try
 		{
-			result = ExecutePoliticalAction(r, actor, k, s, f, quote, leaderAgreed);
+			result = ExecutePoliticalAction(r, actor, k, s, f, quote, leaderAgreed, affectedParticipants);
 			receipt.Status = (int)result.Status; receipt.Message = result.Message; receipt.FactionId = result.FactionId;
 			receipt.InProgress = false;
 			if (result.Status == CivilWarActionStatus.Applied)
 			{
-				PublishPoliticalResult(k, s, f, actor, r.OperationId, result.Message);
+				PublishPoliticalResult(k, s, f, actor, r.OperationId, result.Message, affectedParticipants);
 				receipt.FactsWritten = true;
 			}
 		}
@@ -184,12 +213,12 @@ internal sealed partial class KingdomCivilWarOwner
 		if (f != null) f.Version++;
 		SaveSummary(s);
 		if (r.Action == CivilWarAction.Suppress) NotifyPoliticalChange(k, "royal_suppression");
-		if (result.Status == CivilWarActionStatus.Applied && (r.Action == CivilWarAction.JoinCrown || r.Action == CivilWarAction.JoinOpposition || r.Action == CivilWarAction.Leave || r.Action == CivilWarAction.Found)) NotifyPoliticalChange(k, "membership");
+		if (result.Status == CivilWarActionStatus.Applied && (r.Action == CivilWarAction.JoinCrown || r.Action == CivilWarAction.JoinOpposition || r.Action == CivilWarAction.Leave || r.Action == CivilWarAction.Found || r.Action == CivilWarAction.DissolveOwn || r.Action == CivilWarAction.ChangeDemand)) NotifyPoliticalChange(k, "membership");
 		Revision++;
 		return result;
 	}
 
-	private CivilWarActionResult ExecutePoliticalAction(CivilWarActionRequest r, Clan actor, Kingdom k, KingdomCivilWarKingdomState s, KingdomCivilWarFactionState f, CivilWarActionQuote q, bool leaderAgreed)
+	private CivilWarActionResult ExecutePoliticalAction(CivilWarActionRequest r, Clan actor, Kingdom k, KingdomCivilWarKingdomState s, KingdomCivilWarFactionState f, CivilWarActionQuote q, bool leaderAgreed, ICollection<Hero> affectedParticipants = null)
 	{
 		int day = CivilWarWorld.CurrentDay(), week = CivilWarWorld.CurrentWeek();
 		var tuning = DuelSettings.BuildCivilWarTuning();
@@ -205,20 +234,23 @@ internal sealed partial class KingdomCivilWarOwner
 		}
 		else if (r.Action == CivilWarAction.Leave)
 		{
-			f = FactionOfClan(s, actor);
-			var old = f == null ? s.Clans.Values.Where(x => x.Side == KingdomCivilWarSide.Crown) : Members(s, f);
-			var others = old.Select(x => CivilWarWorld.FindClan(x.ClanId)).Where(x => x != null && x != actor).ToList();
-			Clan leader = f == null ? k.RulingClan : CivilWarWorld.FindClan(f.LeaderClanId);
-			if (leader != null && leader != actor && !others.Contains(leader)) others.Add(leader);
-			foreach (var other in others) ChangeRelationAction.ApplyRelationChangeBetweenHeroes(actor.Leader, other.Leader, other == leader ? -CivilWarPoliticalRules.ExitLeaderRelationLoss : -CivilWarPoliticalRules.ExitMemberRelationLoss, false);
-			member.Side = KingdomCivilWarSide.Middle; member.FactionId = ""; member.SideSinceWeek = week; member.SideSinceDay = CivilWarWorld.CurrentDay();
-			_storage.ClanExitUntilDay[actor.StringId] = day + CivilWarPoliticalRules.ExitDays;
-			if (actor == Clan.PlayerClan) s.PlayerSide = "";
-			if (f?.LeaderClanId == actor.StringId) EnsurePoliticalLeader(k, s, f);
+			DetachPoliticalSide(k, s, actor, member, week, day);
 			result.Message = CivilWarWorld.ClanName(actor) + "退出阵营，七天内保持中立。";
 		}
 		else if (r.Action == CivilWarAction.Found)
 		{
+			var previous = FactionOfClan(s, actor);
+			string departure = "";
+			if (previous?.LeaderClanId == actor.StringId && actor == Clan.PlayerClan)
+			{
+				departure = "解散" + FactionName(previous, CivilWarCatalog.FindDemand(previous.DemandId)) + "后，";
+				DissolvePlayerFaction(k, s, previous, actor, week, tuning, affectedParticipants);
+			}
+			else if (member.Side != KingdomCivilWarSide.Middle)
+			{
+				departure = "退出" + (previous == null ? "王室阵营" : FactionName(previous, CivilWarCatalog.FindDemand(previous.DemandId))) + "后，";
+				DetachPoliticalSide(k, s, actor, member, week, day, affectedParticipants);
+			}
 			var demand = CivilWarCatalog.FindDemand(r.DemandId);
 			f = new KingdomCivilWarFactionState { Id = FactionPrefix + k.StringId + "-" + (++s.FactionSerial), DemandId = demand.Id, TargetId = r.TargetId,
 				TargetName = demand.Target == CivilWarDemandTarget.EnemyKingdom ? CivilWarWorld.KingdomName(CivilWarWorld.FindKingdom(r.TargetId)) : k.ActivePolicies.FirstOrDefault(x => x.StringId == r.TargetId)?.Name?.ToString() ?? "",
@@ -226,7 +258,17 @@ internal sealed partial class KingdomCivilWarOwner
 				UltimatumDay = day + tuning.UltimatumDelayWeeks * 7, LastDemandDay = day, WarGoal = (int)CivilWarCatalog.EffectiveWarGoal(demand), Grievance = TotalGrievance(member) };
 			s.Factions.Add(f); member.Side = KingdomCivilWarSide.Opposition; member.FactionId = f.Id; member.SideSinceWeek = week; member.SideSinceDay = CivilWarWorld.CurrentDay();
 			if (actor == Clan.PlayerClan) s.PlayerSide = "opposition";
-			result.FactionId = f.Id; result.Message = CivilWarWorld.ClanName(actor) + "建立派系，诉求：" + FormatDemand(demand, f.TargetName) + "。";
+			ApplyFoundingRelationLoss(k, actor);
+			result.FactionId = f.Id; result.Message = CivilWarWorld.ClanName(actor) + departure + "建立派系，诉求：" + FormatDemand(demand, f.TargetName) + "。";
+		}
+		else if (r.Action == CivilWarAction.ChangeDemand)
+		{
+			result.Message = ChangePlayerFactionDemand(k, s, f, r, week, tuning);
+		}
+		else if (r.Action == CivilWarAction.DissolveOwn)
+		{
+			DissolvePlayerFaction(k, s, f, actor, week, tuning);
+			result.Message = "你解散了自己的派系，与其他成员家族关系−10；不满与已有王国冷却保留。";
 		}
 		else if (r.Action == CivilWarAction.Detonate)
 		{
@@ -236,7 +278,7 @@ internal sealed partial class KingdomCivilWarOwner
 				f.ProposalUntilDay = day + CivilWarPoliticalRules.ActionDays; result.Status = CivilWarActionStatus.Rejected; result.Message = "领袖拒绝起兵建议，七天后可再提议。"; return result;
 			}
 			f.RebellionOperationId = r.OperationId;
-			OpenWar(k, s, f, leader, week, tuning, HostStability);
+			OpenWar(k, s, f, leader, week, tuning, HostStability, playerAuthorized: actor == Clan.PlayerClan);
 			result.Status = CivilWarActionStatus.AwaitingKingdom; result.Message = "起兵命令已受理，等待叛军建国。";
 		}
 		else if (r.Action == CivilWarAction.Suppress)
@@ -262,7 +304,7 @@ internal sealed partial class KingdomCivilWarOwner
 			var pending = f.PendingResponse;
 			pending.ResponseOperationId = r.OperationId;
 			if (k.RulingClan?.StringId != pending.RulerClanId) { f.PendingResponse = null; result.Status = CivilWarActionStatus.Rejected; result.Message = "统治家族已更换，原提议失效。"; return result; }
-			return CompletePoliticalResponse(k, s, f, pending, r.Accept);
+			return CompletePoliticalResponse(k, s, f, pending, r.Accept, playerAuthorized: actor == Clan.PlayerClan && r.OperationId != pending.OperationId + ":timeout");
 		}
 		else if (r.Action == CivilWarAction.Negotiate || r.Action == CivilWarAction.ForceDissolve)
 		{
@@ -309,7 +351,7 @@ internal sealed partial class KingdomCivilWarOwner
 			* (demand?.EscalationScale ?? 1) * CivilWarAftermathRules.EscalationFactor(CurrentAftermath(s, CivilWarWorld.CurrentWeek())), DuelSettings.BuildCivilWarTuning());
 	}
 
-	private CivilWarActionResult CompletePoliticalResponse(Kingdom k, KingdomCivilWarKingdomState s, KingdomCivilWarFactionState f, CivilWarPendingResponse p, bool accept)
+	private CivilWarActionResult CompletePoliticalResponse(Kingdom k, KingdomCivilWarKingdomState s, KingdomCivilWarFactionState f, CivilWarPendingResponse p, bool accept, bool playerAuthorized = false)
 	{
 		var result = new CivilWarActionResult { FactionId = f.Id, Status = CivilWarActionStatus.Applied };
 		var crown = CivilWarWorld.FindClan(p.RulerClanId); var leader = CivilWarWorld.FindClan(p.LeaderClanId);
@@ -318,7 +360,8 @@ internal sealed partial class KingdomCivilWarOwner
 		{
 			f.PendingResponse = null;
 			if (p.Dissolve && !CanStartPoliticalWar(k, s, f)) { result.Status = CivilWarActionStatus.Rejected; result.Message = "战争资格已变化，原解散命令失效，派系保留。"; }
-			else if (p.Dissolve) { OpenWar(k, s, f, leader, CivilWarWorld.CurrentWeek(), DuelSettings.BuildCivilWarTuning(), HostStability); result.Status = CivilWarActionStatus.AwaitingKingdom; result.Message = "派系抗命，进入起兵流程。"; }
+			else if (p.Dissolve && IsPlayerLed(f) && !playerAuthorized) { RefuseAndReschedule(f, CivilWarWorld.CurrentWeek(), DuelSettings.BuildCivilWarTuning()); result.Status = CivilWarActionStatus.Rejected; result.Message = "解散令超时，派系保留；玩家领袖须手动决定起兵。"; }
+			else if (p.Dissolve) { OpenWar(k, s, f, leader, CivilWarWorld.CurrentWeek(), DuelSettings.BuildCivilWarTuning(), HostStability, playerAuthorized); result.Status = CivilWarActionStatus.AwaitingKingdom; result.Message = "派系抗命，进入起兵流程。"; }
 			else { result.Status = CivilWarActionStatus.Rejected; result.Message = "派系拒绝补偿，未扣除资源。"; }
 			return result;
 		}
@@ -339,22 +382,24 @@ internal sealed partial class KingdomCivilWarOwner
 		return result;
 	}
 
-	private void EnsurePoliticalLeader(Kingdom k, KingdomCivilWarKingdomState s, KingdomCivilWarFactionState f)
+	private void EnsurePoliticalLeader(Kingdom k, KingdomCivilWarKingdomState s, KingdomCivilWarFactionState f, bool startCooldown = true)
 	{
 		if (!IsPreWar(f)) return;
 		var leader = CivilWarWorld.FindClan(f.LeaderClanId);
 		if (PoliticalClan(leader, k) && leader != k.RulingClan && FactionOfClan(s, leader) == f) return;
 		var next = Members(s, f).Select(x => CivilWarWorld.FindClan(x.ClanId)).Where(x => PoliticalClan(x, k) && x != k.RulingClan)
 			.OrderByDescending(CivilWarWorld.Strength).ThenBy(x => x.StringId, StringComparer.Ordinal).FirstOrDefault();
-		if (next == null) Dissolve(k, s, f, CivilWarWorld.CurrentWeek(), DuelSettings.BuildCivilWarTuning(), "派系无合格继任者，解散。");
+		if (next == null) Dissolve(k, s, f, CivilWarWorld.CurrentWeek(), DuelSettings.BuildCivilWarTuning(), "派系无合格继任者，解散。", startCooldown);
 		else { f.LeaderClanId = next.StringId; f.Version++; AddHistory(s, CivilWarWorld.CurrentWeek(), CivilWarWorld.ClanName(next) + "继任派系领袖。"); }
 	}
 
-	private void PublishPoliticalResult(Kingdom k, KingdomCivilWarKingdomState s, KingdomCivilWarFactionState f, Clan actor, string operationId, string text)
+	private void PublishPoliticalResult(Kingdom k, KingdomCivilWarKingdomState s, KingdomCivilWarFactionState f, Clan actor, string operationId, string text, IEnumerable<Hero> affectedParticipants = null)
 	{
 		AddHistory(s, CivilWarWorld.CurrentWeek(), text);
 		MyBehavior.RecordCivilWarPoliticalResult(k, "civil_war:result:" + operationId, text, f != null || operationId.Contains(":war:"));
 		var heroes = new HashSet<Hero>();
+		if (affectedParticipants != null)
+			foreach (Hero hero in affectedParticipants) if (hero != null) heroes.Add(hero);
 		if (actor?.Leader != null) heroes.Add(actor.Leader);
 		if (k.Leader != null) heroes.Add(k.Leader);
 		var leader = CivilWarWorld.FindClan(f?.LeaderClanId); if (leader?.Leader != null) heroes.Add(leader.Leader);

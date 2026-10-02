@@ -39,7 +39,13 @@ namespace AnimusForge.Illustrator.Engine
                 using (var graphics = Graphics.FromImage(bitmap))
                 using (var output = new MemoryStream())
                 {
-                    graphics.DrawImageUnscaled(image, 0, 0);
+                    // DrawImageUnscaled(image, x, y) still uses the image's physical DPI size:
+                    // e.g. 240 DPI -> 96 DPI shrinks content to 40%, leaving transparent margins.
+                    // Explicit pixel source/destination rectangles preserve every pixel and ignore DPI.
+                    graphics.CompositingMode = System.Drawing.Drawing2D.CompositingMode.SourceCopy;
+                    graphics.PageUnit = GraphicsUnit.Pixel;
+                    var pixels = new Rectangle(0, 0, image.Width, image.Height);
+                    graphics.DrawImage(image, pixels, 0, 0, image.Width, image.Height, GraphicsUnit.Pixel);
                     bitmap.Save(output, ImageFormat.Png);
                     if (output.Length > MaxBytes) throw new InvalidDataException("规范化图片超过24 MiB限制。");
                     return output.ToArray();

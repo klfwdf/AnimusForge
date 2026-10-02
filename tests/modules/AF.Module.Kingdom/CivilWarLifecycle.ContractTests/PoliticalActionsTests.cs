@@ -91,7 +91,7 @@ internal static class PoliticalActionsTests
         Check(f.Owner.Execute(offer, crown).Status == CivilWarActionStatus.AwaitingPlayer, "player decides force order response");
         Check(crown.Influence == 300, "force order has upfront cost");
         CampaignTime.Day = 703; f.Owner.NotifyPoliticalChange(f.Home, "daily"); Drain(f.Owner);
-        Check(f.Faction.Stage == KingdomCivilWarStage.OpenWar, "force order timeout is defiance without second roll");
+        Check(f.Faction.Stage != KingdomCivilWarStage.OpenWar && f.Faction.PendingResponse == null, "player leader timeout never automatically detonates");
 
         f = Prewar(); crown = f.Home.RulingClan;
         var stale = Request(f, CivilWarAction.Suppress); stale.Version = 100;

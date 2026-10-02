@@ -10,6 +10,8 @@ namespace RichExecutions.Scene;
 /// </summary>
 internal static class ExecutionSpeechBubbleBridge
 {
+    internal static Func<bool> Ready { get; set; }
+    internal static bool IsReady => Ready?.Invoke() == true;
     internal static Func<Agent, string, float, bool> Show { get; set; }
     internal static Action ClearShown { get; set; }
 

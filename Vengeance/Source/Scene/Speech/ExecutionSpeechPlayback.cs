@@ -85,7 +85,6 @@ internal sealed class ExecutionSpeechPlayback
                     return;
                 }
                 _ready = true;
-                HasStarted = true;
             }
             else if (!sink.IsReady)
             {
@@ -120,6 +119,8 @@ internal sealed class ExecutionSpeechPlayback
                         // Do not flash several lines if a loading hitch supplied a large dt.
                         if (lineStartedThisTick) return;
                         if (!sink.TryStart(cue)) { Abort(sink); return; }
+                        // Readiness and an empty stream are not evidence of a visible line.
+                        HasStarted = true;
                         lineStartedThisTick = true;
                         // A new label has not had a render tick yet. Do not charge
                         // a loading hitch from the previous cue against its reading time.

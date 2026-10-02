@@ -36,8 +36,12 @@ internal static class ModuleDirectoryLifecycleOwner
                 {
                     // 这里只报告 typed adapter 已构造，绝不表示新存档/旧存档或完整模块已验收。
                     foreach (InternalModuleStatus module in directory.GetSnapshot())
-                        directory.UpdateRuntimeState(module.Definition.Id, InternalModuleRuntimeState.Ready,
-                            "module.adapter_bound");
+                    {
+                        // Hosted features report their real startup/installation result later.
+                        if (!HostedExtensionCatalog.RequiresHostConfirmation(module.Definition.Id))
+                            directory.UpdateRuntimeState(module.Definition.Id, InternalModuleRuntimeState.Ready,
+                                "module.adapter_bound");
+                    }
                     _state = ModuleFrameworkLifecycleState.Ready;
                     _reason = "framework.adapters_bound";
                 }
@@ -52,6 +56,25 @@ internal static class ModuleDirectoryLifecycleOwner
             }
             reasonCode = _reason;
             return _state == ModuleFrameworkLifecycleState.Ready;
+        }
+    }
+
+    // Event-driven, bounded to four known hosts. A stale unload/campaign callback cannot
+    // resurrect a stopped directory, and campaign success cannot hide startup failure.
+    internal static bool UpdateHostedRuntimeState(string moduleId, InternalModuleRuntimeState state,
+        string reasonCode, bool requireStarted = false)
+    {
+        if (!HostedExtensionCatalog.RequiresHostConfirmation(moduleId)) return false;
+        lock (Sync)
+        {
+            if (_state != ModuleFrameworkLifecycleState.Ready || _directory == null) return false;
+            if (requireStarted)
+            {
+                InternalCapabilityStatus current = _directory.GetCapabilityStatus(moduleId + ".host", 1);
+                if (!current.IsAvailable && current.ReasonCode != "module.campaign_registration_failed")
+                    return false;
+            }
+            return _directory.UpdateRuntimeState(moduleId, state, reasonCode);
         }
     }
 

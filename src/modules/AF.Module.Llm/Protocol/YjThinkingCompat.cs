@@ -9,7 +9,8 @@ namespace AnimusForge;
 /// </summary>
 internal static class YjThinkingCompat
 {
-	private const string YjHost = "yjapi.manqiaotechnology.com";
+	private const string YjHost = "www.shenlanqaq.com";
+	private const string LegacyYjHost = "yjapi.manqiaotechnology.com";
 	private const string Gemini37FlashHighModelPrefix = "gemini-3.7-flash-high";
 
 	public static bool IsYjGeminiEndpoint(string apiUrl, string modelName)
@@ -22,7 +23,8 @@ internal static class YjThinkingCompat
 		{
 			if (Uri.TryCreate((apiUrl ?? string.Empty).Trim(), UriKind.Absolute, out Uri uri))
 			{
-				return string.Equals(uri.Host, YjHost, StringComparison.OrdinalIgnoreCase);
+				return string.Equals(uri.Host, YjHost, StringComparison.OrdinalIgnoreCase)
+					|| string.Equals(uri.Host, LegacyYjHost, StringComparison.OrdinalIgnoreCase);
 			}
 		}
 		catch

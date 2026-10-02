@@ -28,6 +28,7 @@ internal sealed class LlmStreamingResponse
     internal int? RetryAfterSeconds { get; set; }
     internal bool ParseFailure { get; set; }
     internal bool Discarded { get; set; }
+    internal bool Completed { get; set; }
     internal bool IsSuccessStatusCode => (int)StatusCode >= 200 && (int)StatusCode <= 299;
 }
 
@@ -61,6 +62,7 @@ internal static class LlmStreamingTransport
         StringBuilder content = new StringBuilder();
         StringBuilder reasoning = new StringBuilder();
         bool parseFailure = false;
+        bool completed = false;
         int contentSequence = 0;
         using (HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, endpoint))
         {
@@ -106,12 +108,16 @@ internal static class LlmStreamingTransport
                             string trimmed = line.Trim();
                             if (string.IsNullOrEmpty(trimmed) || !trimmed.StartsWith("data:", StringComparison.OrdinalIgnoreCase)) continue;
                             string data = trimmed.Substring(5).Trim();
-                            if (string.Equals(data, "[DONE]", StringComparison.OrdinalIgnoreCase)) break;
+                            if (string.Equals(data, "[DONE]", StringComparison.OrdinalIgnoreCase)) { completed = true; break; }
                             if (string.IsNullOrWhiteSpace(data)) continue;
                             AppendRaw(raw, includeDataPrefix ? "data: " + data : data, rawSampleMaxChars);
                             try
                             {
                                 JObject json = JObject.Parse(data);
+                                if (string.Equals(json["type"]?.ToString(), "message_stop", StringComparison.Ordinal)
+                                    || json.SelectToken("choices[0].finish_reason") is JToken finishReason
+                                        && finishReason.Type != JTokenType.Null && !string.IsNullOrEmpty(finishReason.ToString()))
+                                    completed = true;
                                 string reasoningDelta = LlmApiCompat.ExtractStreamReasoningText(json) ?? "";
                                 string contentDelta = LlmApiCompat.ExtractStreamDeltaText(json) ?? "";
                                 if (!string.IsNullOrEmpty(reasoningDelta)) reasoning.Append(reasoningDelta);
@@ -145,7 +151,7 @@ internal static class LlmStreamingTransport
                             }
                         }
                     }
-                    return Snapshot(response.StatusCode, raw, content, reasoning, parseFailure, discarded: false);
+                    return Snapshot(response.StatusCode, raw, content, reasoning, parseFailure, discarded: false, completed: completed);
                 }
             }
             catch (Exception error)
@@ -161,7 +167,7 @@ internal static class LlmStreamingTransport
     }
 
     private static LlmStreamingResponse Snapshot(HttpStatusCode statusCode, StringBuilder raw,
-        StringBuilder content, StringBuilder reasoning, bool parseFailure, bool discarded)
+        StringBuilder content, StringBuilder reasoning, bool parseFailure, bool discarded, bool completed = false)
     {
         return new LlmStreamingResponse
         {
@@ -170,7 +176,8 @@ internal static class LlmStreamingTransport
             Content = content.ToString(),
             Reasoning = reasoning.ToString(),
             ParseFailure = parseFailure,
-            Discarded = discarded
+            Discarded = discarded,
+            Completed = completed
         };
     }
 

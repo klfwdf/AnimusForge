@@ -1,3 +1,35 @@
+## 当前交付：所有会话最新产品统一推送并部署（2026-10-02）
+
+<a id="latest-session-integration-20261002"></a>
+
+**范围替代：** 用户明确要求所有最新会话改动一起提交推送，并追加部署游戏；本条替代此前仅四扩展接入的发布范围。当前产品提交 `416e00aa`，本地产品提交 `944e0fc4`；从已发布main只追加当前产品树，不上传本地检查点/私有交接历史。冻结并纳入74个正式源码、资源与测试文件，包括5个原未跟踪的新文件，不上传素材草稿、outputs/work、NuGet、缓存、日志和构建DLL。
+
+**实际纳入：** 最新内战玩家创建/解散/改诉求/手动起兵与两项P2修复；政变大厅部署、街道增援停止、驻防、防贴脸、胜利处置/原版登基/战报；周报通知恢复、快报宽版UI和配图预加载/DPI；公开处决非流式/空流发言恢复和阶段长回复；主API共享流式MCM与YJ协议/地址修复。新增内战Owner和PlayerFactionControl/ReviewFix测试均已入库，不再依赖未跟踪文件。
+
+**验证：** 同一完整候选按原统一脚本Debug 1.3/1.4+Bootstrap及Stage成功/0错误（实际引用v1.3.15/v1.4.6，既有警告保留）。内战294（玩家控制56+审查33）、政变144/大厅36/胜利52/防贴脸13/驻防24、处决116、生图预加载56/DPI12、周报49/快报宿主16、NonStreaming240、真实实现DLL流式15、四扩展宿主97均PASS；YJ协议/URL/auth合成回归PASS。初跑Python裸命令9009及非流式fixture硬编码SDK序列化器路径缺失已用实际Python/现有8.0.425运行时参数修复重验，未削弱断言或修改构建脚本。不是全仓355/真实provider/实机通过。
+
+**部署实证：** 原`deploy_module.ps1`把已验证统一Stage部署到既有Modules/AnimusForge，更新26受管文件。安装238个Stage hash一致，5364清单外文件保持，三原版DLL抽检hash不变；Id/Name仍AnimusForge且XML仅Bootstrap。私有Recovery `deploy-42bf5b0fdd6b484f8f57339da005aad9` complete及26份旧文件hash已复核；未启动游戏、未操作存档。Release、实机UI/原生动画/真实旧档/provider/TTS/帧性能仍NOT_RUN。
+
+**来源/职责导航：** 全74文件SHA与新旧身份见本地`artifacts/latest-session-integration-20261002/manifest.json`，不是永久功能白名单。关键入口：`src/modules/AF.Module.Kingdom/CivilWar/KingdomCivilWarOwner.PlayerControl.cs:64` ChangePlayerFactionDemand；`src/AF.GameAdapter.Bannerlord/SettlementEntry/SettlementEntryTroopSelectionBehavior.cs:6954` ObserveCoupHallDeployment；`src/bridges/Vengeance/Host/ExecutionSpeechResponseReceiver.cs:8`；`src/modules/AF.Module.Weekly/Generation/WorldBulletinStateOwner.cs:3`；`extensions/AnimusForge.Illustrator/src/Core/BulletinIllustrationPreloader.cs:14`、`src/Engine/ImagePayload.cs:11`（同扩展）；`src/modules/AF.Module.Llm/Protocol/LlmApiCompat.cs:11`/YjThinkingCompat.cs:10。坐标绑定本产品提交，实际consumer仍各原渠道/Owner，不声明整个宿主已薄壳化或本次新增玩法算法。
+
+**回滚/结果：** Git产品局部revert本提交，不hard reset；安装恢复用上述私有Recovery整套旧文件，保留玩家配置/清单外文件。命令、测试、构建、push ack、安装/备份SHA及最终收据在本地`artifacts/latest-session-integration-20261002/`。已收到产品push成功确认；最终文档push和远端读回以收据记录为准。历史各会话“未提交/未push/未部署”仅在本条包含的范围内被替代，不升级实机状态。
+
+## 当前功能接入：四扩展宿主目录（2026-10-02）
+
+<a id="four-hosted-extension-catalog-20261002"></a>
+
+**状态：OFFLINE_VERIFIED_WITH_LIMITS。** 用户授权接入 Illustrator、DialogueUI、Coup、Vengeance，并要求政变最后；待“修复政变城门刷兵位置”会话完成后才修改 Coup SubModule。后续明确授权本任务提交推送到 main；只发布此切片，不夹带本地其他未发布提交/交接。无 Stage/部署/玩法重写。发布源码提交 `c20bb69f`，本地切片 `f7314d34`，本地意图检查点 `f72ff5ef`；实际推送结果见本地收据及远端 ref，不以本条授权冒充推送完成。
+
+**真实接入：** `TeamModuleRegistration` 在原三组 typed port 后登记四个 `.host` 能力，目录共七模块。初始化不再自动把四扩展置 Ready；生图原初始化结果、UI 实际延迟安装、政变原 Start 与已有三兼容探针、处决 embedded claim/订阅/战役注册分别回报。目录状态唯一归 `ModuleDirectoryLifecycleOwner`，`ModuleFrameworkRuntime` 无状态转接；战役成功不覆盖启动失败，战役单次失败可由后续真实注册成功恢复，停止目录拒绝迟到报告。UI 可选轮盘回退仍保持；Ready/Available 仅宿主接缝，不是开关、资源全集、provider、玩法资格、实机或旧档验收。
+
+**边界与性能：** 原 Start/RegisterCampaign/Tick/Shutdown 次序、独立扩展防重复宿主、处决原清理/异常语义保留；原 Tick 方法文本完全相同。报告只在加载/安装/注册/卸载事件发生，固定四 ID、一次小目录更新，无每帧扫描/反射/轮询；目录仅保存字符串/枚举，不持游戏对象。不改 DLL/模块身份、SyncData/Saveable/默认交互入口、构建脚本、三渠道动作/记忆权威，也不登记内战、不开放 public ActionExecute/MemoryWrite/ExtensionRegister。
+
+**验证：** 真实工作区四扩展生命周期 97 checks PASS（引擎/资源/patch 叶为替身；处决只源码链接三个原生命周期方法）；隔离“远端基线+本包” API 171/快照36 checks、256/128并发查询、5编译变异与 CS0122 外部拒绝 PASS，Campaign 46 checks+6编译变异 PASS。工作区原脚本 Debug 双 API（实际引用 v1.3.15 / v1.4.6）+Bootstrap 0错误；其两实际实现 DLL 元数据760 checks PASS。发布候选的单独构建/验证另记录在本地收据，不能把工作区含其他 dirty 的 DLL 冒充纯发布提交产物。Release/实机/旧档/provider/TTS/渲染/帧性能及独立 MOD 游戏内加载 NOT_RUN。
+
+**失败诊断与保护：** 原工作区的历史 API 守卫被既有 WorldBulletin dirty 的全局指纹挡住；未刷新无关 hash，用隔离基线复验。首次 fixture 缺 GameMenus、误用公开 Available 原因码、旧 DTO 比较包含新增条目及 SDK10 所需8.0.30离线包的问题均保留日志并修正；原团队/公开签名/异常断言保留。源码导航仅见[本包13锚点](architecture/af-hosted-extension-code-map.json)（源码路径、一基行号、符号、revision、覆盖/未覆盖）；既有838地图仍保留冻结历史，不重绑其他作者 dirty。
+
+**证据与回滚：** `artifacts/four-extension-catalog-20261002/` 保存 before、原文档副本、保护核对、测试/构建日志、原工作区/发布候选 DLL marker/hash 及最终收据；这些是本地证据，不假定已上传。原30个非文档 dirty SHA与733原未跟踪路径保留。回滚对本包产品/文档提交定向 revert，不 hard reset，不回滚其他会话政变/内战/快报修改。发布工作树位于仓内 `.tmp/publish-four-extension-catalog-20261002`，从 origin/main 建立，只含本包。
+
 ## 当前方向：AF 2.0 使用交付收尾（先使用、后拆分，2026-10-02，已授权执行）
 
 <a id="af2-module-integration-delivery-plan-20261002"></a>
@@ -6095,3 +6127,10 @@ R2计划交付门槛：已给固定技术路线、真实来源与目标、写入
 - `package_mod.ps1 -ModuleDir <本仓/bin/Debug/single_module_stage/AnimusForge> -NoBump -ExcludeOnnx` 成功，版本保持 v1.3.7.2。ZIP：`一键编译覆盖推送/packages/AnimusForge_v1.3.7.2_20261002_165453_006.zip`，SHA256 `6f08d1db7671af43b56704c638d62caaf108dd92ba96834ff8fac8d31a1fb914`。
 - 238 个 Stage 文件与安装目录逐文件 SHA256 一致；ZIP 文件集合一致、非 XML 条目 hash 与 Stage 一致，XML 经原脚本验证；3221 个安装目录清单外文件大小及 mtime 保持（包含 ONNX，不冒充全部内容 hash）；原 SessionTransport hash 保持。Recovery 完成记录 `C:/Users/PC/AppData/Local/AnimusForge/Recovery/deploy/deploy-5597c726fd444a64a0531eacf0a0ecfe` 已确认。
 - 本地收据 `artifacts/local-policy-deploy-20261002/`：build-deploy.log（初次失败保留）、deploy-retry.log、package.log、verified.json。真实游戏启动、地方政策行为和旧档仍 NOT_RUN；无推送。
+
+
+### 地方政策修复合入远端 main（2026-10-02）
+
+用户先授权普通推送当前分支，已核对远端同名分支为 `7c32132d917e65f324a971bc64918f263ef6eba7`；随后明确改为推送 main。fresh fetch 后双方各4提交，共同祖先 `917ea758`，远端 main `d6e859c3`。本地意图检查点 `bb59058c` 后普通合并 main，产品无冲突，仅 HANDOFF 顶部冲突，双方历史全文保留；不改写提交或强推。历史 `ae8e6b89` 已属目标远端祖先，不是新增出站材料；本次不纳入任何被忽略交接/未跟踪数据。
+
+合并工作树 Debug 双API+Bootstrap 构建 exit 0（`artifacts/local-policy-main-20261002/builds/build-8f8be4ec3dd242aa9bba86f5e9d0f853`）；两 API 分别运行政策管辖62、18模块1457、TargetPlan765断言全部 PASS（各套重叠不相加）。SessionTransport 原 dirty raw SHA256 `a393a98b42c1f2d37150578d5d5ede170540be8eb4874751fbc2821eb9cfe23e` 保持且未暂存；构建为含该原 dirty 的工作树验证，不冒充远端纯提交源码重建。无产品文件手工改写，无游戏重部署；实机未验。普通推送前再核对 main 祖先，结果以 git push 和 ls-remote 实际回执为准。

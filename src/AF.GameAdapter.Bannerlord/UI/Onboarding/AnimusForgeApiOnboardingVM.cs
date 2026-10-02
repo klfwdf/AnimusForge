@@ -690,7 +690,7 @@ public sealed class AnimusForgeApiOnboardingVM : ViewModel
 				ShowToast("API Key 不能为空");
 				return;
 			}
-			string yjUrl = "https://yjapi.manqiaotechnology.com/v1";
+			string yjUrl = "https://www.shenlanqaq.com/v1";
 			PrimaryUrl = yjUrl;
 			AuxiliaryUrl = yjUrl;
 			PostprocessUrl = yjUrl;
@@ -712,7 +712,7 @@ public sealed class AnimusForgeApiOnboardingVM : ViewModel
 	public void ExecuteYjMultiGroup()
 	{
 		_isCustomMode = false;
-		string yjUrl = "https://yjapi.manqiaotechnology.com/v1";
+		string yjUrl = "https://www.shenlanqaq.com/v1";
 		PrimaryUrl = yjUrl;
 		AuxiliaryUrl = yjUrl;
 		PostprocessUrl = yjUrl;

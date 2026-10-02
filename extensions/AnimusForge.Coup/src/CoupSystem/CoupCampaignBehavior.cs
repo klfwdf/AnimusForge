@@ -30,6 +30,8 @@ internal sealed class CoupCampaignBehavior : CampaignBehaviorBase
     private bool _processing;
     private bool _dispositionOpen;
     private bool _retryBlocked;
+    private bool _reportOpen, _coronationOpen;
+    private long _dispositionGeneration, _reportGeneration;
     private float _nextCheck;
     private long _runtimeToken;
     private string _saveJson;
@@ -95,7 +97,9 @@ internal sealed class CoupCampaignBehavior : CampaignBehaviorBase
         _campaign = Campaign.Current;
         _mission = _endingMission = null;
         _requeuePending = false;
-        _selectionOpen = _processing = _dispositionOpen = _retryBlocked = false;
+        _selectionOpen = _processing = _dispositionOpen = _retryBlocked = _reportOpen = _coronationOpen = false;
+        _dispositionGeneration++;
+        _reportGeneration++;
         _nextCheck = 0f;
     }
 
@@ -109,15 +113,12 @@ internal sealed class CoupCampaignBehavior : CampaignBehaviorBase
         }, _ => CoupRebellionBridge.Instance?.RetryPendingWarRegistration(), false, -1);
         starter.AddGameMenuOption("town", "af_coup_enter_street", "率领政变突击队攻入城镇", args => SceneEntryCondition(args, CoupPhase.Street), _ => EnterSelectedScene(), false, -1);
         starter.AddGameMenuOption("town", "af_coup_enter_hall", "率领政变突击队攻入领主大厅", args => SceneEntryCondition(args, CoupPhase.Hall), _ => EnterSelectedScene(), false, -1);
-        starter.AddGameMenuOption("town", "af_coup_aftermath", "进入政变胜利处置", args =>
+        starter.AddGameMenuOption("town", "af_coup_result", "查看政变登基战报", args =>
         {
-            if (_session?.Phase != CoupPhase.Completed || !_session.AftermathPending
-                || (Settlement.CurrentSettlement ?? MobileParty.MainParty?.CurrentSettlement)?.StringId != _session.SettlementId) return false;
-            args.optionLeaveType = GameMenuOption.LeaveType.Submenu;
-            args.IsEnabled = Mission.Current == null && !InformationManager.IsAnyInquiryActive();
-            args.Tooltip = new TextObject("王位与城镇归属已经结算；进入原版胜利处置菜单，可选择 GCCZ 攻城处置。");
-            return true;
-        }, _ => { _retryBlocked = false; TryOpenAftermath(); }, false, -1);
+            args.optionLeaveType = GameMenuOption.LeaveType.Continue;
+            return _session?.NeedsVictoryFeedback == true && Mission.Current == null
+                && (Settlement.CurrentSettlement ?? MobileParty.MainParty?.CurrentSettlement)?.StringId == _session.SettlementId;
+        }, _ => { _retryBlocked = false; _nextCheck = 0f; }, false, -1);
         starter.AddGameMenuOption("town", "af_coup_resume", "重试政变结算", args =>
         {
             args.optionLeaveType = GameMenuOption.LeaveType.Continue;
@@ -133,7 +134,7 @@ internal sealed class CoupCampaignBehavior : CampaignBehaviorBase
 
     private bool MenuCondition(MenuCallbackArgs args)
     {
-        if (_session != null && (!_session.IsSettled || _session.AftermathPending)) return false;
+        if (_session != null && (!_session.IsSettled || _session.NeedsVictoryFeedback)) return false;
         if (!CoupSettings.IsEnabled) return false;
         Settlement town = Settlement.CurrentSettlement ?? MobileParty.MainParty?.CurrentSettlement;
         Kingdom kingdom = Clan.PlayerClan?.Kingdom;
@@ -204,7 +205,7 @@ internal sealed class CoupCampaignBehavior : CampaignBehaviorBase
         else if (!_saveValid) reason = "政变存档记录异常，请先处理日志中的错误。";
         else if (!CoupGuards.MissionProtectionAvailable) reason = "政变场景兼容保护未能注册，请检查日志与游戏版本。";
         else if (!SettlementEntryTroopSelectionBehavior.IsAvailable || !CoupRebellionBridge.IsAvailable) reason = "当前 AF 版本的政变接缝不可用，请检查日志。";
-        else if (_session != null && (!_session.IsSettled || _session.AftermathPending)) reason = "还有一场政变或胜利处置尚未完成。";
+        else if (_session != null && (!_session.IsSettled || _session.NeedsVictoryFeedback)) reason = "还有一场政变或登基战报尚未确认。";
         else if (clan == null || kingdom == null || clan.Leader != Hero.MainHero || clan.IsUnderMercenaryService || clan.IsClanTypeMercenary || kingdom.RulingClan == clan)
             reason = "仅本国正式封臣的家族族长能够发动政变。";
         else if (town?.IsTown != true || town.MapFaction != kingdom) reason = "必须位于本国城镇。";
@@ -230,6 +231,7 @@ internal sealed class CoupCampaignBehavior : CampaignBehaviorBase
         Kingdom kingdom = Clan.PlayerClan.Kingdom;
         _session = new CoupSession
         {
+            VictoryReportAcknowledged = false, CoronationRequested = false,
             BattleOptions = CoupSettings.CaptureForNewCoup(),
             EntryRequirements = CoupSettings.CaptureAdmissionForNewCoup(),
             SettlementId = town.StringId, KingdomId = kingdom.StringId, KingId = kingdom.Leader.StringId,
@@ -391,6 +393,8 @@ internal sealed class CoupCampaignBehavior : CampaignBehaviorBase
         if (!ReferenceEquals(_mission, mission)) return;
         _endingMission = _mission;
         _mission = null;
+        _dispositionOpen = false;
+        _dispositionGeneration++; // Any scene-owned popup callback is stale after closure.
         SettlementEntryTroopSelectionBehavior.ClearArmedCoup();
         if (_session?.IsCombatPhase == true) SetFailure("主动撤退或战斗被中断。");
     }
@@ -454,7 +458,7 @@ internal sealed class CoupCampaignBehavior : CampaignBehaviorBase
         Instance._session.FailureReason = reason;
         SettlementEntryTroopSelectionBehavior.ClearArmedCoup();
         Instance.Log("suspended: " + reason);
-        Show("政变暂时中止：" + reason + (Instance._session.HasPoliticalCommit
+        Show((Instance._session.ResumePhase == CoupPhase.AwaitingResolution ? "政变结算尚未完成：" : "政变暂时中止：") + reason + (Instance._session.HasPoliticalCommit
             ? " 已发生的战役变化已保留；可在城镇菜单重试剩余结算。" : " 已有伤亡保留，未授予胜利或叛离惩罚。"));
     }
     private void SetFailure(string reason)
@@ -468,16 +472,24 @@ internal sealed class CoupCampaignBehavior : CampaignBehaviorBase
     // application tick, using real time and an O(1) idle gate rather than Campaign.Tick.
     internal void OnEngineTick(float dt)
     {
-        if (Campaign.Current != _campaign || _session == null || (_session.IsSettled && !_session.AftermathPending) || _processing || _selectionOpen || _dispositionOpen || _retryBlocked
+        if (Campaign.Current != _campaign || _session == null || (_session.IsSettled && !_session.NeedsVictoryFeedback) || _processing || _selectionOpen || _dispositionOpen || _retryBlocked || _reportOpen || _coronationOpen
             || (_session.Phase == CoupPhase.Suspended && _session.CasualtiesCommitted && !_session.IsResumable)) return;
         _nextCheck -= dt;
         if (_nextCheck > 0f) return;
         _nextCheck = 0.25f;
         if (Mission.Current != null || !(Game.Current?.GameStateManager?.ActiveState is MapState)) return;
         _endingMission = null;
-        if (_session.Phase == CoupPhase.Completed && _session.AftermathPending)
+        if (_session.Phase == CoupPhase.Completed)
         {
-            if (!InformationManager.IsAnyInquiryActive()) TryOpenAftermath();
+            if (InformationManager.IsAnyInquiryActive() || MBInformationManager.GetIsAnySceneNotificationActive() == true) return;
+            try { PresentVictoryFeedback(); }
+            catch (Exception ex)
+            {
+                _reportOpen = _coronationOpen = false;
+                _retryBlocked = true;
+                Log("victory_feedback_deferred: " + ex.Message);
+                Show("登基结果已经结算，战报暂未打开。可在目标城镇点击“查看政变登基战报”重试。");
+            }
             return;
         }
         // Walking to the next scene needs no time control; leaving town is handled as retreat.
@@ -486,6 +498,7 @@ internal sealed class CoupCampaignBehavior : CampaignBehaviorBase
             if (_requeuePending) { _requeuePending = false; QueueCurrentScene(); }
             return;
         }
+        if (InformationManager.IsAnyInquiryActive() || MBInformationManager.GetIsAnySceneNotificationActive() == true) return;
         _processing = true;
         try
         {
@@ -547,26 +560,88 @@ internal sealed class CoupCampaignBehavior : CampaignBehaviorBase
         });
     }
 
-    private void OpenDisposition()
+    internal static bool TryOpenHallDisposition(Mission mission)
+    {
+        CoupCampaignBehavior owner = Instance;
+        if (owner == null || !ReferenceEquals(owner._mission, mission) || Mission.Current != mission
+            || owner._session?.NeedsHallDisposition != true) return false;
+        if (owner._dispositionOpen) return true;
+        if (InformationManager.IsAnyInquiryActive() || MBInformationManager.GetIsAnySceneNotificationActive() == true) return false;
+        owner.OpenDisposition(mission);
+        return true;
+    }
+
+    private void OpenDisposition(Mission mission = null)
     {
         string id = _session.Id;
         long token = _runtimeToken;
+        long generation = ++_dispositionGeneration;
         _dispositionOpen = true;
         bool canCapture = CoupGuards.CaptivityProtectionAvailable;
-        InformationManager.ShowInquiry(new InquiryData("政变胜利：处置旧王", "你已控制领主大厅。接下来将接管王国及本城。\n释放旧王后，其家族可能参与叛乱；扣押会排除其家族的本次叛乱资格。"
-            + (canCapture ? "" : "\n当前版本拘押保护不可用，只能释放旧王。"), true, canCapture, "逼其退位并释放", "扣押旧王",
-            () => SelectDisposition(id, token, CoupKingDisposition.Release), () => SelectDisposition(id, token, CoupKingDisposition.Capture)), true);
+        var choices = new List<InquiryElement>
+        {
+            new InquiryElement(CoupKingDisposition.Release, "逼其退位并释放", null),
+            new InquiryElement(CoupKingDisposition.Capture, "扣押旧王", null, canCapture,
+                canCapture ? "扣押将排除旧王家族的本次叛乱资格。" : "当前版本拘押保护不可用，只能释放旧王。")
+        };
+        string name = FindKing()?.Name?.ToString() ?? "旧王";
+        var data = new MultiSelectionInquiryData("政变胜利：处置旧王",
+            "国王" + name + "已被制服，大厅已控制。\n请选择旧王处置；确认后离场，随后结算王位及本城归属。"
+            + "\n释放后，旧王家族可能参与叛乱；扣押会排除其家族的本次叛乱资格。",
+            choices, true, 1, 1, "确认处置并离场", "稍后决定",
+            selected => SelectDisposition(id, token, generation, mission, selected),
+            _ =>
+            {
+                if (!IsDispositionUiCurrent(id, token, generation, mission)) return;
+                _dispositionOpen = false;
+                _dispositionGeneration++;
+                if (mission != null) Show("旧王处置尚未确认；仍留在大厅，按退出战斗键或使用出口可再次选择。");
+            });
+        try { MBInformationManager.ShowMultiSelectionInquiry(data, true); }
+        catch { _dispositionOpen = false; _dispositionGeneration++; throw; }
     }
-    private void SelectDisposition(string id, long token, CoupKingDisposition disposition)
+
+    private bool IsDispositionUiCurrent(string id, long token, long generation, Mission mission)
     {
-        if (!IsCurrentUi(id, token, CoupPhase.AwaitingResolution)) return;
+        return _dispositionOpen && generation == _dispositionGeneration
+            && IsCurrentUi(id, token, CoupPhase.AwaitingResolution) && _session.NeedsHallDisposition
+            && (mission == null ? Mission.Current == null
+                : ReferenceEquals(_mission, mission) && Mission.Current == mission && !mission.IsMissionEnding);
+    }
+
+    private void SelectDisposition(string id, long token, long generation, Mission mission, List<InquiryElement> selected)
+    {
+        if (!IsDispositionUiCurrent(id, token, generation, mission)) return;
+        // The negative/escape callback only dismisses; it is never a Capture shortcut.
+        if (selected == null || selected.Count != 1 || !selected[0].IsEnabled
+            || !(selected[0].Identifier is CoupKingDisposition disposition)
+            || (disposition != CoupKingDisposition.Release && disposition != CoupKingDisposition.Capture)
+            || (disposition == CoupKingDisposition.Capture && !CoupGuards.CaptivityProtectionAvailable))
+        {
+            _dispositionOpen = false;
+            _dispositionGeneration++;
+            return;
+        }
         _dispositionOpen = false;
+        _dispositionGeneration++;
         _session.Disposition = disposition;
+        if (mission == null) return; // Legacy/map recovery: political effects remain on the map tick.
+        try
+        {
+            var logic = mission.GetMissionBehavior<CoupMissionBehavior>();
+            if (logic == null || !logic.CompleteVictoryAndLeave())
+                throw new InvalidOperationException("胜利离场入口尚未就绪。");
+        }
+        catch (Exception ex)
+        {
+            NotifyTechnicalFailure(mission, "处置已确认，但离场尚未完成：" + ex.Message);
+            mission.EndMission();
+        }
     }
 
     private void CommitVictory()
     {
-        if (!_session.IsValid() || !_session.Started || !_session.KingSubdued) throw new InvalidOperationException("政变胜利状态不完整，禁止政治结算。");
+        if (!_session.IsValid() || !_session.Started || !_session.KingSubdued || _session.Disposition == CoupKingDisposition.Undecided) throw new InvalidOperationException("政变胜利状态或旧王处置不完整，禁止政治结算。");
         Settlement town = Settlement.Find(_session.SettlementId);
         Kingdom kingdom = Clan.PlayerClan?.Kingdom;
         Hero king = FindKing();
@@ -615,47 +690,95 @@ internal sealed class CoupCampaignBehavior : CampaignBehaviorBase
             Show(message);
         }
         _session.Phase = CoupPhase.Completed;
-        _session.AftermathPending = !_session.AftermathOpened;
+        _session.AftermathPending = false; // This coup flow intentionally does not enter siege aftermath.
+        _session.VictoryReportAcknowledged ??= false;
+        _session.CoronationRequested ??= false;
         Log("completed");
-        Show("宣权篡位成功：你已成为" + kingdom.Name + "的统治者，" + town.Name + "归属你的家族。");
+        Show("政治结算已完成，即将展示登基动画与战报。");
     }
 
-    private void TryOpenAftermath()
+    private void PresentVictoryFeedback()
     {
-        if (_processing || _session?.Phase != CoupPhase.Completed || !_session.AftermathPending || _session.AftermathOpened) return;
-        _processing = true;
+        if (!_session.NeedsVictoryFeedback || !_session.HasConfirmedVictory || !_session.IsValid()) return;
+        Campaign.Current.TimeControlMode = CampaignTimeControlMode.Stop;
+        if (_session.CoronationRequested == false)
+        {
+            // Consume before enqueue: retries/save-load must never submit the same animation twice.
+            _session.CoronationRequested = true;
+            Kingdom kingdom = Kingdom.All.FirstOrDefault(k => k.StringId == _session.KingdomId);
+            if (kingdom?.Leader == Hero.MainHero && Hero.MainHero?.IsAlive == true
+                && MBInformationManager.GetIsAnySceneNotificationActive().HasValue)
+            {
+                string id = _session.Id;
+                long token = _runtimeToken;
+                _coronationOpen = true;
+                try
+                {
+                    MBInformationManager.ShowSceneNotification(new CoupBecomeKingSceneNotification(Hero.MainHero, () =>
+                    {
+                        if (!IsCurrentUi(id, token, CoupPhase.Completed)) return;
+                        _coronationOpen = false;
+                        _nextCheck = 0f; // Report opens on the next safe map tick, never inside the cutscene callback.
+                        Log("coronation_closed");
+                    }));
+                    Log("coronation_requested");
+                    return;
+                }
+                catch (Exception ex)
+                {
+                    _coronationOpen = false;
+                    Log("coronation_unavailable: " + ex.Message);
+                    Show("原版登基动画暂不可用，已保留登基结果，继续展示战报。");
+                }
+            }
+            else Log("coronation_skipped: ruler changed or scene notification UI unavailable");
+        }
+        ShowVictoryReport();
+    }
+
+    private void ShowVictoryReport()
+    {
+        if (_reportOpen || !_session.NeedsVictoryFeedback || !_session.HasConfirmedVictory) return;
+        string id = _session.Id;
+        long token = _runtimeToken;
+        long generation = ++_reportGeneration;
+        Kingdom kingdom = Kingdom.All.FirstOrDefault(k => k.StringId == _session.KingdomId);
+        Settlement town = Settlement.Find(_session.SettlementId);
+        Hero king = FindKing();
+        string report = CoupOutcomeReport.BuildPlayerVictory(_session,
+            kingdom?.Name?.ToString() ?? _session.OriginalKingdomName ?? "原王国",
+            kingdom?.Leader?.Name?.ToString() ?? "当前统治者未知",
+            town?.Name?.ToString() ?? "目标城镇", town?.OwnerClan?.Name?.ToString() ?? "当前归属未知",
+            king?.Name?.ToString() ?? "旧王", king?.IsPrisoner == true && king.PartyBelongedToAsPrisoner == MobileParty.MainParty?.Party);
+        _reportOpen = true;
         try
         {
-            if (!_session.IsValid() || !_session.TownCommitted || !_session.RulingClanCommitted)
-                throw new InvalidOperationException("政变归属结算尚未确认。");
-            Settlement town = Settlement.Find(_session.SettlementId);
-            if (town == null || town.OwnerClan != Clan.PlayerClan)
-            {
-                _session.AftermathPending = false;
-                Log("aftermath_cancelled: town ownership changed");
-                Show("政变目标城镇归属已变化，本次胜利处置不再打开。");
-                return;
-            }
-            var survivors = TroopRoster.CreateDummyTroopRoster();
-            foreach (var troop in _session.Troops)
-                if (troop.Role == CoupTroopRole.Ally && !troop.Removed)
+            InformationManager.ShowInquiry(new InquiryData("宣权篡位成功", report, true, false,
+                "确认并返回城镇", "", () =>
                 {
-                    CharacterObject character = CharacterObject.Find(troop.CharacterId);
-                    if (character != null) survivors.AddToCounts(character, 1);
-                }
-            if (!SettlementEntryTroopSelectionBehavior.TryOpenCoupAftermath(town.StringId, survivors, "coup_victory:" + _session.Id))
-                throw new InvalidOperationException("当前场景或城镇遭遇尚未就绪。");
-            _session.AftermathOpened = true;
-            _session.AftermathPending = false;
-            Log("aftermath_opened");
+                    if (!_reportOpen || generation != _reportGeneration || !IsCurrentUi(id, token, CoupPhase.Completed)) return;
+                    _reportOpen = false;
+                    _reportGeneration++;
+                    _session.VictoryReportAcknowledged = true;
+                    Log("victory_report_acknowledged");
+                    // Do not teleport or hijack an unrelated encounter if the player has since moved.
+                    if (Mission.Current == null && !PlayerEncounterCompat.HasEncounterBattleContext()
+                        && (Settlement.CurrentSettlement ?? MobileParty.MainParty?.CurrentSettlement)?.StringId == _session.SettlementId)
+                    {
+                        try { GameMenu.SwitchToMenu("town"); }
+                        catch (Exception ex) { Log("return_to_town_deferred: " + ex.Message); }
+                    }
+                }, () =>
+                {
+                    if (_reportOpen && generation == _reportGeneration && IsCurrentUi(id, token, CoupPhase.Completed))
+                    {
+                        _reportOpen = false;
+                        _reportGeneration++;
+                    }
+                }), true);
+            Log("victory_report_opened");
         }
-        catch (Exception ex)
-        {
-            _retryBlocked = true;
-            Log("aftermath_deferred: " + ex.Message);
-            Show("夺位已成功，处置菜单暂未打开。可返回目标城镇，点击“进入政变胜利处置”重试。");
-        }
-        finally { _processing = false; }
+        catch { _reportOpen = false; throw; }
     }
 
     private void CommitFailure()
