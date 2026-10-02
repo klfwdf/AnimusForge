@@ -465,6 +465,10 @@ internal sealed class PolicyEnemyLatestPolicy
 
 internal sealed class PolicyHistoryRetrievalResult
 {
+	internal List<NpcPolicyHistoryEntry> RecentActivePolicies { get; set; } = new List<NpcPolicyHistoryEntry>();
+
+	internal List<NpcPolicyHistoryEntry> RelatedActivePolicies { get; set; } = new List<NpcPolicyHistoryEntry>();
+
 	internal List<NpcPolicyHistoryEntry> RelatedCurrentPolicies { get; set; } = new List<NpcPolicyHistoryEntry>();
 
 	internal List<NpcPolicyHistoryEntry> RelatedHistoricalPolicies { get; set; } = new List<NpcPolicyHistoryEntry>();

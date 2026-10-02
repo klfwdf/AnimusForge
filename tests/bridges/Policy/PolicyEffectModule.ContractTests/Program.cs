@@ -154,12 +154,19 @@ internal static partial class Program
 					+ " elapsedMs=" + stopwatch.ElapsedMilliseconds.ToString(CultureInfo.InvariantCulture));
 				return 0;
 			}
+			if ((args ?? Array.Empty<string>()).Any(value => string.Equals(value, "--policy-evaluation-references-only", StringComparison.OrdinalIgnoreCase)))
+			{
+				TestPolicyEvaluationReferenceContracts();
+				Console.WriteLine("PASS policyEvaluationReferenceAssertions=" + _assertionCount.ToString(CultureInfo.InvariantCulture));
+				return 0;
+			}
 			if ((args ?? Array.Empty<string>()).Any(value => string.Equals(value, "--policy-history-only", StringComparison.OrdinalIgnoreCase)))
 			{
 				Type behavior = SutType("AnimusForge.NpcRulerPolicyBehavior");
 				TestNpcPolicyHistoryGlobalAccessContracts(behavior);
 				TestUnifiedPolicyHistoryContracts();
 				TestDialoguePolicyHistoryContracts();
+				TestPolicyEvaluationReferenceContracts();
 				TestNpcPolicyHistoryBaselineContracts(behavior);
 				Console.WriteLine("PASS policyHistoryAssertions=" + _assertionCount.ToString(CultureInfo.InvariantCulture)
 					+ " elapsedMs=" + stopwatch.ElapsedMilliseconds.ToString(CultureInfo.InvariantCulture));
@@ -490,6 +497,7 @@ internal static partial class Program
 			TestNpcUnifiedMultiTargetCanonicalization();
 			TestNpcPlannedSnapshotDistributionContract();
 			TestNpcSingleKingdomTwoStageContracts();
+			TestPolicyEvaluationReferenceContracts();
 			TestStructuredUnknownModuleRoundTripIsInert();
 			TestPolicyEffectPlanSaveAndLifecycleContracts();
 			TestSaveCodecLimitsAndTypeSafety();
@@ -15564,7 +15572,7 @@ internal static partial class Program
 			&& !draftPromptText.Contains("effectPlanVersion")
 			&& !draftPromptText.Contains("P:npc:")
 			&& !draftPromptText.Contains("allCurrentClans")
-			&& draftPromptText.Contains("NPC_ENEMY_HISTORY_PROMPT_MARKER"),
+			&& !draftPromptText.Contains("NPC_ENEMY_HISTORY_PROMPT_MARKER"),
 			"NPC stage one must freeze one policy draft without module, target, semantic-ledger, or EffectPlan authority.");
 		Check(draftPromptText.Contains("政策正文是后续效果规划的最高语义权威")
 			&& draftPromptText.Contains("与玩家政策共用的独立效果规划阶段")
@@ -16808,6 +16816,8 @@ internal static partial class Program
 				1);
 		};
 		embeddingOverrideField.SetValue(null, queryEmbedding);
+		PolicyEffectModuleRetrievalSettings.SetStorageDirectoryOverrideForContractTests(
+			Path.Combine(Path.GetTempPath(), "af-npc-two-stage-read-only-settings-" + Guid.NewGuid().ToString("N")));
 		try
 		{
 			Type jobType = behavior.GetNestedType("NpcPolicyGenerationJob", BindingFlags.NonPublic);
@@ -16829,6 +16839,7 @@ internal static partial class Program
 		{
 			overrideField.SetValue(null, null);
 			embeddingOverrideField.SetValue(null, null);
+			PolicyEffectModuleRetrievalSettings.SetStorageDirectoryOverrideForContractTests(null);
 		}
 		bool completedBothSemanticRepairStages = sources.SequenceEqual(new[]
 		{
@@ -16861,7 +16872,7 @@ internal static partial class Program
 		Check(queryEmbeddingCount == expectedQueryEmbeddingCount
 			&& queryEmbeddingCount >= 1
 			&& queryEmbeddingCount <= PolicyEffectModuleRouter.QueryIntentLimit,
-			"One NPC draft must create one whole-policy embedding plus at most four effect sub-intent embeddings, while mechanism and history reuse the whole-policy vector."
+			"An NPC draft without policy candidates must add no reference embedding, and effect routing must keep its existing whole-policy/sub-intent embedding budget."
 			+ " expected=" + expectedQueryEmbeddingCount.ToString(CultureInfo.InvariantCulture)
 			+ " actual=" + queryEmbeddingCount.ToString(CultureInfo.InvariantCulture));
 		Check(prompts.Skip(2).All(prompt => !prompt.Contains("kingdom_east")),
