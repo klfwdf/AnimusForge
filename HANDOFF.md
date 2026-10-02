@@ -2,9 +2,11 @@
 
 本轮授权替代“仅计划/不启动”；唯一主台账末尾“最后三个原闭包与同候选验证进度”和当前代码范围图收集证据。最后三个 original core 已实际迁 owner（D9eb43b6d/B355acce0/C581faa44），保持公共入口/保存/程序集身份。
 
-当前保存兼容候选为 `dd6f45bf` 后同一1337 raw输入：Debug/Release双API+Bootstrap六构建exit0（debug-b67c7b0cc63f/frozen-release-f0bd0f0c6496）；ReadingXp原8个SyncData literal已恢复并真实legacy键回放44断言及坏键负控通过。新1.4 Release DLL SHA `DEAA0BE7FDE9E4C88AA2169A86CD7A7E5368B4697B5367F2EC9F305DA9D6D521`。`7c5c7cd1` 测试逆投影397bindings/149paths、4漂移负控PASS。正式40受影响入口 `current-gates-7c5c` 已结束：25 PASS/15 FAIL（exit1），其中两完整真实DLL回放与Native晚wait→Audio实际25断言通过；剩余准确测试引用/异常退出/typedref审计失败正在收口，仍VERIFY。
+**P1–P8源码/离线出口：OFFLINE_VERIFIED_WITH_LIMITS。** 唯一详细主台账见[P1–P8最终源码/离线出口](docs/animusforge-refactoring-and-repository-reorganization-plan.md#af2-host-terminal-final-offline-20261002)，完整收据 `artifacts/af2-host-terminal-closeout/final-receipt.json`；838-ID代码图与真正partial/owner规模保持。
 
-原354入口266 PASS/71 FAIL与旧69入口32 PASS/37 FAIL均保留，不能与新候选局部成绩拼成完整通过。最终仍须新同候选完整runner。旧run明确CANCELLED_PARTIAL。当前owner实测、历史protocol/UIoracle、sourceinverse、实际DLLreplay分层；整体Courier/ModuleNative/NativeWait未直测不隐藏。
+保存兼容产品候选 `dd6f45bf`，current/Debug/Release同1337 raw输入；两配置双API+Bootstrap六构建exit0（debug-b67c7b0cc63f/frozen-release-f0bd0f0c6496）。ReadingXp原8literal恢复，真实legacy键44断言与坏键负控PASS；新Release1.4 SHA `DEAA0BE7FDE9E4C88AA2169A86CD7A7E5368B4697B5367F2EC9F305DA9D6D521`。原mandatory d57身份审计178键/类型、42行为与模块/Bootstrap PASS，不等于真实旧档已验。
+
+最终原runner `final-gates-55eb` 完整355入口，**343 PASS/0 FAIL/3 PREEXISTING_FAIL/5 NEEDS_INPUT/3 SUPERSEDED_BY_RUNNER/1 ENV_STATE，exit0**。411actualbindings/163boundedpaths与4漂移负控PASS。当前owner、历史protocol/UIoracle、sourceinverse、真实DLLreplay分层，不称“355测试全通过/全当前产品验收”。原354、69、40和前完整355的失败日志保留逐项对照，不拼局部成绩；旧取消run仍CANCELLED_PARTIAL。整体CourierSchedule/ModuleNativeSubmission/NativeWait未直测仍列NOT_RUN，关键late-wait→Audio原子25实测另外成立。
 
 LIVE/真实旧档/网络/TTS/帧性能NOT_RUN；证书全局影响归因UNKNOWN；512terminal原淘汰边界保持。保护原SessionTransport raw dirty及tools/NuGet，不push/部署/清理。下方旧交付均历史，不授权本轮推送。
 

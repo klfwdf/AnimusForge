@@ -9502,9 +9502,21 @@
   "terminalScope": {
     "baseline": "16a6ce67",
     "plan": "docs/plans/af2-host-terminal-closeout-20261002.md",
-    "mainResponsibilityStatus": "P1-P8 production owners/consumers frozen; final gates pending",
+    "mainResponsibilityStatus": "P1-P8 source/offline closeout verified with explicit non-PASS categories and NOT_RUN live/whole-channel limits",
     "liveGame": "NOT_RUN",
-    "oldAnchorIdsPreserved": true
+    "oldAnchorIdsPreserved": true,
+    "finalGate": {
+      "run": "artifacts/af2-host-terminal-closeout/final-gates-55eb",
+      "entries": 355,
+      "PASS": 343,
+      "FAIL": 0,
+      "PREEXISTING_FAIL": 3,
+      "NEEDS_INPUT": 5,
+      "SUPERSEDED_BY_RUNNER": 3,
+      "ENV_STATE": 1,
+      "exit": 0,
+      "productCandidate": "dd6f45bf"
+    }
   },
   "hostTypeInventory": {
     "basis": "Roslyn CSharpSyntaxTree (syntactic declarations, not semantic unique symbols)",
@@ -10533,7 +10545,8 @@
       "real TTS/provider",
       "frame performance",
       "whole current Courier PromptSchedule execution",
-      "whole current ModuleNativeSubmission execution"
+      "whole current ModuleNativeSubmission execution",
+      "whole current NativeWait execution"
     ]
   },
   "ownerTypeInventory": [
