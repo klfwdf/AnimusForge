@@ -6010,3 +6010,17 @@ R2计划交付门槛：已给固定技术路线、真实来源与目标、写入
 - 候选产物：`bin/Debug/single_module_artifacts/versions/1.3/AnimusForge.dll` SHA256 `91E34E1D36C6312EABD8BB607BF0985B0ACDC9E314452240979A37C5B208C15D`；1.4同名路径 SHA256 `8C05BD9A678E5364FB62514CEB4BD3C8EC0B9C795837FBED06CD8048C41D55FB`。候选基于当前含其他WIP的工作树，不是仅本修复的独立发布包。
 - NOT-RUN/限制：完整生产DLL反射调用先遇私有方法delegate访问限制，改MethodInfo.Invoke后因模块初始化缺TaleWorlds.CampaignSystem退出，未计PASS；最终回归为真实生产源链接测试。未实机、未重新请求上游、未恢复旧坏缓存、未覆盖游戏或推送。原响应图在诊断日志中被省略，无法直接比较服务原始字节。旧坏图的透明区域已丢失图像内容，应在授权部署修复后重绘，不自动裁边以免损害正常透明素材。
 - 回滚：聚焦逆向提交 `git revert 3c7acac4`，不hard reset，不回滚既有WIP。短交接见 `docs/handoffs/2026-09-14-animusforge-illustrator-handoff.md` 的2026-10-02补充。
+
+
+## YJ 预设地址与 API 设置/请求头检查（2026-10-02）
+<a id="yj-api-settings-audit-20261002"></a>
+
+- 范围：用户要求确认终端与 MCM 同步，将 YJ Base URL 改为 `https://www.shenlanqaq.com/v1`，并检查 API 设置/参数/请求头。起点意图 `fd749ec`；未接管其他作者 dirty 或其他任务的并行提交。
+- 修改：新版面板 `src/AF.GameAdapter.Bannerlord/UI/Onboarding/AnimusForgeApiOnboardingVM.cs:693–719` 和旧引导 `src/modules/AF.Module.Onboarding/Host/ModOnboardingBehavior.cs:116` 的预设；`src/modules/AF.Module.Llm/Protocol/YjThinkingCompat.cs:12–27` 精确识别新旧域名。`src/modules/AF.Module.Llm/Protocol/LlmApiCompat.cs:50–87,447–469` 修复 query 拼进 chat 路径以及代理前缀模型目录丢失 `/v1`；不改 Key/购买页面、已有用户配置、提示词和一键构建入口。
+- 设置证据：TerminalSettingDef setter 修改 `DuelSettings.GetSettings()`（MCM Instance/provider 优先）；终端手动保存与关闭 dirty 自动保存走 `DuelSettings.SaveCurrentSettings()` → `BaseSettingsProvider.SaveSettings`。API 面板 `ExecuteSaveAndFinish:989–1012` 写四组 URL/Key/模型后持久化，编辑中的面板字段并非即时写回。
+- 请求证据：共享 `ApplyAuthenticationHeaders:149–170`：OpenAI/YJ Bearer；Anthropic 官方 x-api-key + anthropic-version 2023-06-01，中转额外 Bearer。非流/流式生产 transport 均在发送边界调用该 helper，并使用 UTF-8 application/json；模型目录 GET 复用认证。Key 不在合成 payload 中；未读取真实 Key。
+- 验证：新增 `tests/modules/AF.Module.Llm/YjThinkingCompatTests` 直接链接两份生产协议源，仅 stub reasoning 常量；新旧域名、思考开关、认证、模型路径、query/fragment、负域名及 payload 转换 PASS。URL 修复前测试真实执行失败（query must remain outside chat path），修复后 PASS。既有 Protocol runner 13 个具名用例 PASS。日志 `artifacts/yj-preset-20261002/api-audit-tests.log`、`url-regressions-before.log`、`protocol-tests.log`；完整 Protocol 产物 `artifacts/tests/llm-protocol/yj-api-audit-b2037145cdbc477aa46ebd16dc1c7b9f-c9f375f04d564c0387ad9a14886a0489`。
+- 最终构建：现有统一脚本仅在进程内替换成精确新 output/intermediate、拒绝覆盖旧目录并禁 prune，磁盘脚本不变、无 Stage/Deploy。`artifacts/yj-preset-20261002/final-build-75baf59a327d4cbca264ecc5216cfa69/build.log` 为 Debug 1.3 + 1.4 + Bootstrap 全 PASS/0 errors；实际引用 1.3.15.110062 与 1.4.6.115628，不是 1.4.5 实机。build marker/SHA 与产物同目录，保留既有编译警告。
+- 检查保留项（不冒充已修）：`ValidateApiTargetAsync:1926–1940` 没有 max_tokens；Anthropic 转换默认 1024，`ApplyAnthropicThinking:535–560` 在 <2048 时省略思考，合成请求实证。因此握手不覆盖真实生成 Token 上限/思考组合；MCM 某些独立测试也使用较低限额。新 YJ 面板未调用旧引导 `ApplyYjGeminiPresetThinkingDefaults:669–698`，沿用现有 MCM 思考值，不把旧预设默认值迁移当作已授权功能更改。`TryPersistMcmSettings:3447–3474` 保存失败只记 WARN，新面板缺少失败反馈，实机持久化仍 NOT_RUN。
+- 性能：URL 解析仅每次构建请求/拉模型目录运行，常量域名匹配，不加 Tick 扫描、反射、缓存轮询或新锁。
+- 未验证：真实 API/SSE、完整实际传输发送、MCM/Gauntlet 实机刷新、保存失败恢复、旧档；未 push/部署/覆盖游戏。回滚使用本任务代码提交的 focused inverse/revert，不 reset 或改写其他任务历史。
