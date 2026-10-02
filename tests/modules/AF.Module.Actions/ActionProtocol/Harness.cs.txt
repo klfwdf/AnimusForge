@@ -17,7 +17,8 @@ internal static class Program
     private static PostprocessContext Context(params string[] allowed)
         => new PostprocessContext(Array.Empty<string>(), allowed, new CapabilitySet(new[] { "action.parse" }));
 
-    private static void Main()
+    private static int Main() { try { Run(); return 0; } catch(Exception error) { Console.Error.WriteLine(error); return 1; } }
+    private static void Run()
     {
         var parser = new LegacyActionTagParser(64);
         string raw = "[ACTION:GIVE_ASSET:[ROT]佛雷甲:2][ADP:debt-1]";
