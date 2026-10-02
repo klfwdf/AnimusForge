@@ -1,3 +1,9 @@
+# Additive hosted extension catalog (2026-10-02)
+
+Four `.host` entries are added alongside the original three team ports. They remain NotInitialized until their real host reports startup/installation; merely constructing the directory is not proof of availability. The external client checks all four stable identities, deferred state, stopped projection and the unchanged public execution boundary.
+
+The snapshot differential still compares the **entire original three-port DTO and root state** against the pinned original implementation, excluding only the four deliberately added entries. `source_boundary.py` checks the exact approved event-method/initialization delta against checkpoint `917ea758` before applying the original reviewed inverse. Dedicated `HostedExtensionCatalogTests` runs the actual new host callbacks and their failures. No old assertion or unrelated production fingerprint is weakened.
+
 # Snapshot boundary extraction (2026-09-15)
 
 The suite compiles the real internal snapshot capture and the API-side V1 projector. An additional CoreOnly library compiles all selected framework sources **without any API source/reference**. The existing internal/public assemblies and rejection checks remain.

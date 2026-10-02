@@ -1,4 +1,5 @@
 using System;
+using AnimusForge.Refactor.Modules;
 using System.Collections.Generic;
 using RichExecutions.Campaign;
 using RichExecutions.Core;
@@ -24,6 +25,9 @@ internal static class VengeanceRuntimeBridge
         if (!VengeanceIntegration.TryClaimEmbeddedHost())
         {
             Logger.Log("Vengeance", "Embedded Vengeance was not claimed; standalone registration remains unchanged.");
+            if (!VengeanceIntegration.IsEmbeddedHostActive)
+                ModuleFrameworkRuntime.ReportHostedExtensionState(HostedExtensionCatalog.Vengeance,
+                    InternalModuleRuntimeState.Unavailable, "module.host_unavailable");
             return;
         }
 
@@ -33,12 +37,16 @@ internal static class VengeanceRuntimeBridge
             ExecutionAddressLlm.Register();
             SubscribeExecutionMemoryFacts();
             RexLog.Info("Vengeance claimed the AnimusForge-hosted feature.");
+            ModuleFrameworkRuntime.ReportHostedExtensionState(HostedExtensionCatalog.Vengeance,
+                InternalModuleRuntimeState.Ready, "module.host_started");
         }
         catch
         {
             UnsubscribeExecutionMemoryFacts();
             ExecutionContinuation.EscortedHeroesProvider = null;
             VengeanceIntegration.ReleaseEmbeddedHost();
+            ModuleFrameworkRuntime.ReportHostedExtensionState(HostedExtensionCatalog.Vengeance,
+                InternalModuleRuntimeState.Failed, "module.host_start_failed");
             throw;
         }
     }
@@ -168,6 +176,8 @@ internal static class VengeanceRuntimeBridge
         {
             RexLog.Error("Embedded Vengeance setup failed; the feature stays off for this campaign.", exception);
             Logger.Log("Vengeance", "Embedded Vengeance setup failed; campaign continues without it: " + exception);
+            ModuleFrameworkRuntime.ReportHostedExtensionState(HostedExtensionCatalog.Vengeance,
+                InternalModuleRuntimeState.Failed, "module.campaign_registration_failed", requireStarted: true);
             return;
         }
 
@@ -179,16 +189,22 @@ internal static class VengeanceRuntimeBridge
                 RichExecutionApi.Methods,
                 RichExecutionApi.Charges));
             RexLog.Info("Registered embedded Vengeance campaign behavior.");
+            ModuleFrameworkRuntime.ReportHostedExtensionState(HostedExtensionCatalog.Vengeance,
+                InternalModuleRuntimeState.Ready, "module.campaign_registered", requireStarted: true);
         }
         catch (Exception exception)
         {
             RexLog.Error("Embedded Vengeance campaign registration failed.", exception);
             Logger.Log("Vengeance", "Embedded Vengeance campaign registration failed: " + exception);
+            ModuleFrameworkRuntime.ReportHostedExtensionState(HostedExtensionCatalog.Vengeance,
+                InternalModuleRuntimeState.Failed, "module.campaign_registration_failed", requireStarted: true);
         }
     }
 
     internal static void Shutdown()
     {
+        ModuleFrameworkRuntime.ReportHostedExtensionState(HostedExtensionCatalog.Vengeance,
+            InternalModuleRuntimeState.Unavailable, "module.host_stopped");
         if (!VengeanceIntegration.IsEmbeddedHostActive)
         {
             return;
