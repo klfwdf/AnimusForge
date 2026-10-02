@@ -24,6 +24,7 @@ namespace AnimusForge.Illustrator.Core
         internal const int MaxRecords = 12;
         internal const int MaxReferenceBytes = 15 * 1024 * 1024;
         internal const int MaxMetadataBytes = 512 * 1024;
+        internal const int MaxEvents = 96;
         private const int MaxSceneInventoryBytes = 2 * 1024 * 1024;
         private static readonly AsyncLocal<GenerationDiagnostics> Ambient = new AsyncLocal<GenerationDiagnostics>();
         private static readonly object StorageLock = new object();
@@ -36,6 +37,8 @@ namespace AnimusForge.Illustrator.Core
         private readonly JObject _document;
         private readonly string _directory;
         private int _referenceBytes;
+        private int _stepLogBytes;
+        private const int MaxStepLogBytes = 128 * 1024;
         private int _captureEvidenceBytes;
         private bool _disposed;
         private readonly JArray _events = new JArray();
@@ -63,14 +66,14 @@ namespace AnimusForge.Illustrator.Core
             try { Flush(); }
             catch { lock (StorageLock) Active.Remove(_directory); throw; }
             Ambient.Value = this;
-            TaleWorlds.Library.Debug.Print("[Illustrator] Diagnostic record id=" + Id);
+            RecordStage("pipeline_begin", new JObject { ["category"] = category, ["diagnosticDirectory"] = _directory });
         }
 
         internal static GenerationDiagnostics Begin(string campaign, string category)
         {
             if (category != "encyclopedia" && category != "conversation" && category != "weekly_report") return null;
             try { return new GenerationDiagnostics(campaign, category, Path.Combine(DiskImageCacheManager.CacheRoot, "Diagnostics")); }
-            catch (Exception ex) { TaleWorlds.Library.Debug.Print("[Illustrator] Diagnostics unavailable: " + ex.GetType().Name); return null; }
+            catch (Exception ex) { WriteDelivery(null, "diagnostics_unavailable", ex.GetType().Name); return null; }
         }
 
         internal void RegisterSecret(string value)
@@ -251,6 +254,8 @@ namespace AnimusForge.Illustrator.Core
             Safe(() =>
             {
                 _document["outcome"] = result.Success ? "success" : "failed";
+                if (result.Success) { _document.Remove("failedStage"); _document.Remove("failureCode"); }
+                if (!result.Success && _document["failedStage"] == null) _document["failedStage"] = _document["lastStage"]?.DeepClone();
                 AddEvent("image_result", new JObject { ["success"] = result.Success, ["error"] = CleanText(result.ErrorMessage),
                     ["elapsedMs"] = result.ElapsedMilliseconds, ["sentPrompt"] = CleanText(result.ResolvedPrompt), ["imageBytes"] = result.ImageBytes?.Length ?? 0 });
             });
@@ -263,7 +268,10 @@ namespace AnimusForge.Illustrator.Core
                 if ((string)_document["outcome"] == "running" || outcome == "cancelled" || outcome == "failed") _document["outcome"] = outcome;
                 _document["elapsedMs"] = _clock.ElapsedMilliseconds;
                 if (!string.IsNullOrWhiteSpace(error)) _document["error"] = CleanText(error);
-                Flush();
+                if ((outcome == "failed" || outcome == "cancelled") && _document["failedStage"] == null)
+                    _document["failedStage"] = _document["lastStage"]?.DeepClone();
+                AddEvent("pipeline_finish", new JObject { ["outcome"] = _document["outcome"]?.DeepClone(),
+                    ["error"] = CleanText(error), ["failedStage"] = _document["failedStage"]?.DeepClone(), ["elapsedMs"] = _clock.ElapsedMilliseconds });
             });
         }
 
@@ -322,18 +330,66 @@ namespace AnimusForge.Illustrator.Core
 
         private void AddEvent(string stage, JObject data)
         {
-            if (_events.Count >= 48) { _document["eventsOmitted"] = true; Flush(); return; }
+            if (_events.Count >= MaxEvents)
+            {
+                _events.RemoveAt(0); // Always retain the newest error/result, not just the first capture events.
+                _document["eventsOmitted"] = true;
+                _document["eventsOmittedCount"] = ((int?)_document["eventsOmittedCount"] ?? 0) + 1;
+            }
             data["stage"] = CleanText(stage);
             data["requestElapsedMs"] = _clock.ElapsedMilliseconds;
+            _document["lastStage"] = CleanText(stage);
+            if (_document["failedStage"] == null && data["failureCode"] != null && !string.IsNullOrWhiteSpace((string)data["failureCode"]))
+            {
+                _document["failedStage"] = CleanText(stage);
+                _document["failureCode"] = data["failureCode"].DeepClone();
+            }
+            if (data["httpStatus"] != null) _document["lastHttpStatus"] = data["httpStatus"].DeepClone();
             _events.Add(data);
             Flush();
+            WriteStepSummary(stage, data);
+        }
+
+        // Small summaries only: request bodies/prompts/base64 stay in bounded private trace.json.
+        // No tick polling or extra file scan; one line per accepted diagnostic event.
+        private void WriteStepSummary(string stage, JObject data)
+        {
+            if (stage.StartsWith("panorama_face", StringComparison.Ordinal) || stage == "panorama_native_evidence") return;
+            var summary = new JObject();
+            foreach (string key in new[] { "category", "status", "outcome", "failedStage", "failureCode", "reason", "error", "endpoint", "protocol", "model", "httpStatus", "referenceCount", "requestedRefs", "actualRefs", "success", "elapsedMs", "timeoutMs", "applicationTicks", "saveRequested", "delivered", "bytes", "view", "mode", "portrait", "directorRuleSource", "customStyleActive", "customNegativeActive" })
+                if (data[key] != null) summary[key] = data[key].DeepClone();
+            string line = "id=" + Id + " step=" + CleanText(stage) + " elapsedMs=" + _clock.ElapsedMilliseconds + " " + CleanText(summary.ToString(Formatting.None));
+            if (line.Length > 2048) line = line.Substring(0, 2048) + " [truncated]";
+            try
+            {
+                string path = Path.Combine(_directory, "steps.log");
+                string entry = line + Environment.NewLine;
+                int bytes = Encoding.UTF8.GetByteCount(entry);
+                if (_stepLogBytes + bytes > MaxStepLogBytes)
+                {
+                    File.Copy(path, Path.Combine(_directory, "steps.previous.log"), true);
+                    File.WriteAllText(path, entry, new UTF8Encoding(false));
+                    _stepLogBytes = bytes;
+                }
+                else { File.AppendAllText(path, entry, new UTF8Encoding(false)); _stepLogBytes += bytes; }
+            }
+            catch { /* trace errors never break generation */ }
+            WriteDelivery(Id, stage, line);
+        }
+
+        internal static void WriteDelivery(string id, string stage, string message)
+        {
+            string safe = SensitiveLogText.Redact(message);
+            if (safe.Length > 2048) safe = safe.Substring(0, 2048) + " [truncated]";
+            try { if (IllustratorRuntime.IsHostRunning) global::AnimusForge.Logger.Log("Illustrator", "id=" + (id ?? "unavailable") + " step=" + stage + " " + safe); } catch { }
+            TaleWorlds.Library.Debug.Print("[Illustrator] id=" + (id ?? "unavailable") + " step=" + stage + " " + safe);
         }
 
         private string CleanText(string value)
         {
             value = value ?? string.Empty;
             lock (_gate)
-                foreach (string secret in _secrets) value = value.Replace(secret, "[redacted]");
+                foreach (string secret in _secrets) value = SensitiveLogText.Redact(value, secret);
             value = SensitiveLogText.Redact(value);
             return value.Length > 65536 ? value.Substring(0, 65536) + " [truncated]" : value;
         }
@@ -358,7 +414,7 @@ namespace AnimusForge.Illustrator.Core
                 for (int i = 0; i < _events.Count && Encoding.UTF8.GetByteCount(json) > MaxMetadataBytes; i++)
                 {
                     var summary = new JObject { ["omitted"] = "metadata storage budget" };
-                    foreach (string key in new[] { "stage", "elapsedMs", "requestElapsedMs", "endpoint", "protocol", "model", "status", "httpStatus", "success" })
+                    foreach (string key in new[] { "stage", "elapsedMs", "requestElapsedMs", "endpoint", "protocol", "model", "status", "httpStatus", "success", "failureCode", "failedStage", "error", "outcome" })
                     {
                         JToken value = _events[i][key];
                         if (value == null) continue;

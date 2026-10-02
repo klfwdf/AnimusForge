@@ -164,6 +164,7 @@ namespace AnimusForge.Illustrator.Core
         internal static async Task<IllustrationDirection> CreateDirectionWithClientAsync(IllustrationPromptPlan plan, System.Collections.Generic.IReadOnlyList<IllustrationReferenceImage> referenceImages, IllustrationOptions options, HttpClient client, CancellationToken cancellationToken)
         {
             plan = plan ?? new IllustrationPromptPlan("通用插画", string.Empty, string.Empty);
+            GenerationDiagnostics.Current?.RecordStage("prompt_sources", new JObject { ["mode"] = plan.Mode, ["hardFactChars"] = plan.HardFacts.Length, ["artDirectionChars"] = plan.ArtDirection.Length, ["directorOnlyFactChars"] = plan.DirectorOnlyFacts.Length, ["directorRuleSource"] = "visual director system prompt + illustration facts/style; no direct RuleBehaviorPrompts", ["dialogueRulesIndirect"] = plan.IsConversation, ["style"] = options?.SelectedStyle });
             if (options != null && !options.EnableMultimodalVision)
             {
                 referenceImages = null;
@@ -185,6 +186,7 @@ namespace AnimusForge.Illustrator.Core
                 if (options != null && options.EnableLlmPromptExpansion && !string.IsNullOrWhiteSpace(options.DirectorApiBaseUrl))
                 {
                     requestedDirector = true;
+                    GenerationDiagnostics.Current?.RecordStage("director_begin", new JObject { ["model"] = options.DirectorModelName, ["referenceCount"] = referenceImages?.Count ?? 0 });
                     reply = await CallLlmDirectorResponseAsync(plan, options, referenceImages, client, cancellationToken).ConfigureAwait(false);
                     if (string.IsNullOrWhiteSpace(reply.FailureReason))
                     {
@@ -220,6 +222,7 @@ namespace AnimusForge.Illustrator.Core
                 ApplyResponseMetadata(direction, reply);
                 direction.DirectionStatus = "failed";
                 RecordDirection(direction);
+                GenerationDiagnostics.Current?.RecordStage("director_failed", new JObject { ["failureCode"] = "director.output_unusable", ["error"] = direction.StatusText });
                 throw new InvalidOperationException(direction.StatusText);
             }
 
@@ -773,8 +776,10 @@ namespace AnimusForge.Illustrator.Core
                             if (!string.IsNullOrWhiteSpace(options.DirectorApiKey))
                                 request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", options.DirectorApiKey);
                             TaleWorlds.Library.Debug.Print($"[VisualDirector] Sending request (model={options.DirectorModelName}, refImages={referenceImages?.Count ?? 0}, attempt={attempt + 1})...");
+                            GenerationDiagnostics.Current?.RecordStage("director_http_begin", new JObject { ["endpoint"] = SensitiveLogText.SafeUrl(endpoint), ["referenceCount"] = referenceImages?.Count ?? 0, ["attempt"] = attempt + 1 });
                             using (var response = await client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, deadline.Token).ConfigureAwait(false))
                             {
+                                GenerationDiagnostics.Current?.RecordStage("director_http_headers", new JObject { ["httpStatus"] = (int)response.StatusCode });
                                 string responseBody = Encoding.UTF8.GetString(await ImagePayload.ReadBoundedAsync(response.Content, 1048576, deadline.Token).ConfigureAwait(false));
                                 if (!response.IsSuccessStatusCode)
                                 {

@@ -131,17 +131,13 @@ namespace AnimusForge.Illustrator.Engine
                     foreach (var cat in categories)
                     {
                         if (!_cachedLookup.TryGetValue(cat, out var subjects) || !subjects.TryGetValue(subjectKey, out var candidates)) continue;
-                        foreach (var item in candidates)
+                        // Sort only the indexed matches inside this category; retain category priority.
+                        foreach (var item in candidates.OrderByDescending(item => item.IsDefault).ThenByDescending(item => item.CreatedTime))
                         {
                             if (File.Exists(item.FilePath)) candidatesToRead.Add(item.CopyMetadata());
                         }
                     }
-                    // Prefer the explicit default, then the newest generated history. A corrupt
-                    // default must not hide a valid newer image from the same subject.
-                    candidatesToRead = candidatesToRead
-                        .OrderByDescending(item => item.IsDefault)
-                        .ThenByDescending(item => item.CreatedTime)
-                        .ToList();
+                    // A corrupt default still falls through to later files, then the next category.
                 }
                 // Do not hold the metadata lock while reading or decoding up to 24 MiB.
                 foreach (var candidate in candidatesToRead)
@@ -182,10 +178,12 @@ namespace AnimusForge.Illustrator.Engine
         public static CachedIllustrationItem SaveImage(string subjectKey, byte[] bytes, string prompt, string title, string category, string campaignKey, int maxCacheCount, bool makeDefault = false, bool allowImplicitDefault = true, string theme = null, string actionSummary = null, string diagnosticId = null, string directorStatus = null, string directorStatusText = null, string directorFallbackReason = null, string styleFingerprint = null)
         {
             try { bytes = ImagePayload.Normalize(bytes); }
-            catch (Exception ex) { Debug.Print("[Illustrator] Rejected cache image: " + ex.Message); return null; }
+            catch (Exception ex) { Core.GenerationDiagnostics.Current?.RecordStage("cache_image_invalid", new Newtonsoft.Json.Linq.JObject { ["failureCode"] = "cache.invalid_image", ["error"] = ex.Message }); Core.GenerationDiagnostics.Current?.Finish("failed", ex.Message); return null; }
             lock (CacheLock)
             {
-            if (string.IsNullOrWhiteSpace(subjectKey) || string.IsNullOrWhiteSpace(campaignKey) || bytes == null || bytes.Length == 0) return null;
+            if (string.IsNullOrWhiteSpace(subjectKey) || string.IsNullOrWhiteSpace(campaignKey) || bytes == null || bytes.Length == 0)
+            { Core.GenerationDiagnostics.Current?.RecordStage("cache_save_rejected", new Newtonsoft.Json.Linq.JObject { ["failureCode"] = "cache.missing_identity_or_image" }); Core.GenerationDiagnostics.Current?.Finish("failed", "cache identity/image missing"); return null; }
+            Core.GenerationDiagnostics.Current?.RecordStage("cache_save_begin", new Newtonsoft.Json.Linq.JObject { ["bytes"] = bytes.Length, ["category"] = category });
             try
             {
                 string categoryDir = SafeDirectory(Path.Combine(CampaignDirectory(campaignKey), ValidCategory(category)));
@@ -218,10 +216,13 @@ namespace AnimusForge.Illustrator.Engine
                 InvalidateCache();
                 if (item.IsDefault) SetDefault(item, campaignKey);
                 EnforceLimit(campaignKey, maxCacheCount);
+                Core.GenerationDiagnostics.Current?.RecordStage("cache_save_complete", new Newtonsoft.Json.Linq.JObject { ["bytes"] = bytes.Length, ["fileName"] = Path.GetFileName(filePath) });
                 return item;
             }
             catch (Exception ex)
             {
+                Core.GenerationDiagnostics.Current?.RecordStage("cache_save_failed", new Newtonsoft.Json.Linq.JObject { ["failureCode"] = "cache.write_failed", ["error"] = ex.GetType().Name + ": " + ex.Message });
+                Core.GenerationDiagnostics.Current?.Finish("failed", ex.Message);
                 Debug.Print($"[Illustrator] Failed to save image cache: {ex.Message}");
                 return null;
             }

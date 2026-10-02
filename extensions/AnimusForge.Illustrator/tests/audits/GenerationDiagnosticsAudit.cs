@@ -34,7 +34,22 @@ public static class GenerationDiagnosticsAudit
         }
     }
     private static object Call(object target, string name, params object[] args)
-    { return diagnostics.GetMethod(name, All).Invoke(target, args); }
+    {
+        MethodInfo method = diagnostics.GetMethod(name, All);
+        ParameterInfo[] parameters = method.GetParameters();
+        if (args.Length < parameters.Length)
+        {
+            var complete = new object[parameters.Length];
+            Array.Copy(args, complete, args.Length);
+            for (int i = args.Length; i < complete.Length; i++)
+            {
+                if (!parameters[i].IsOptional) throw new ArgumentException("Missing required audit argument: " + name);
+                complete[i] = parameters[i].DefaultValue;
+            }
+            args = complete;
+        }
+        return method.Invoke(target, args);
+    }
     private static object Current()
     { return diagnostics.GetProperty("Current", All).GetValue(null, null); }
     private static string Id(object record)
@@ -173,7 +188,7 @@ public static class GenerationDiagnosticsAudit
                     Check(object.ReferenceEquals(Current(), record), "ambient generation survives await for job " + index);
                     Stage(Current(), "after", new JObject { { "job", index } });
                     JArray events = (JArray)Trace(record)["events"];
-                    Check(events.Count == 2 && events.All(x => (int)x["job"] == index), "concurrent generation events stay isolated for job " + index);
+                    Check(events.Count == 3 && events.Count(x => (string)x["stage"] == "pipeline_begin") == 1 && events.Where(x => (string)x["stage"] != "pipeline_begin").All(x => (int)x["job"] == index), "concurrent generation events stay isolated for job " + index);
                 }
                 finally { Close(record); }
                 Check(object.ReferenceEquals(Current(), parent), "worker restores inherited parent after child disposal " + index);
@@ -244,9 +259,9 @@ public static class GenerationDiagnosticsAudit
             JObject trace = Trace(record);
             Check(new FileInfo(TraceFor(record)).Length <= maxMetadata, "metadata hard limit also covers late subject and failure text");
             Check((bool?)trace["metadataTruncated"] == true && (string)trace["outcome"] == "failed" && (string)trace["id"] == Id(record), "bounded metadata retains outcome and identity with explicit truncation marker");
-            for (int index = 0; index < 60; index++) Stage(record, "many-" + index, new JObject { { "number", index } });
+            for (int index = 0; index < (int)diagnostics.GetField("MaxEvents", All).GetRawConstantValue() + 5; index++) Stage(record, "many-" + index, new JObject { { "number", index } });
             trace = Trace(record);
-            Check(((JArray)trace["events"]).Count <= 48 && (bool?)trace["eventsOmitted"] == true, "event-count cap is explicit and bounded");
+            Check(((JArray)trace["events"]).Count <= (int)diagnostics.GetField("MaxEvents", All).GetRawConstantValue() && (bool?)trace["eventsOmitted"] == true, "event-count cap is explicit and bounded");
         }
         finally { Close(record); }
 
@@ -294,6 +309,23 @@ public static class GenerationDiagnosticsAudit
         AuditIsolation().GetAwaiter().GetResult();
         AuditOutcomes();
         AuditBudgets();
+        object tail = New(Path.Combine(root, "tail"), "late-failure");
+        try
+        {
+            Call(tail, "RegisterSecret", Secret);
+            for (int i = 0; i < 140; i++) Stage(tail, "capture_noise", new JObject { { "index", i } });
+            Stage(tail, "portrait_decode", new JObject { { "failureCode", "portrait.png_decode_failed" }, { "error", "bad png " + Secret } });
+            Stage(tail, "portrait_full_body_result", new JObject { { "failureCode", "portrait.full_body_unavailable" } });
+            Call(tail, "Finish", "failed", "bad png " + Secret);
+            JObject end = Trace(tail);
+            Check((string)end["failedStage"] == "portrait_decode", "most specific failure survives later generic portrait error");
+            Check(((JArray)end["events"]).Any(x => (string)x["stage"] == "pipeline_finish") && ((JArray)end["events"]).Any(x => (string)x["stage"] == "portrait_decode"), "late failure and finish survive event retention overflow");
+            string steps = File.ReadAllText(Path.Combine(DirectoryFor(tail), "steps.log"));
+            Check(steps.Contains("portrait.png_decode_failed") && !steps.Contains(Secret), "readable step log persists precise failure and redacts secrets");
+            Check(!end.ToString().Contains(Secret), "terminal JSON redacts secret from failure and summary");
+        }
+        finally { Close(tail); }
+
         Check(Current() == null, "all tests leave no ambient generation behind");
         Console.WriteLine("RESULT: " + passed + " PASS / " + failed + " FAIL");
         if (failed > 0) throw new Exception("Generation diagnostics audit failed: " + failed);

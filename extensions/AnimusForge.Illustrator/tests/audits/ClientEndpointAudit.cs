@@ -390,6 +390,19 @@ public static class ClientEndpointAudit
                 var pinnedGeneration = Generate(Options("http://offline.invalid/v1/images/generations?fixed=1", true, "audit", "classic-oil"), references);
                 Check(!Property<bool>(pinnedGeneration, "Success") && handler.Requests.Count == 0, "exact Generations rejects references locally rather than dropping them");
 
+                handler.Reset(Success());
+                var queryEdit = Generate(Options("http://offline.invalid/v1?route=a%2Fb&fixed=1", false, "audit", "classic-oil"), references);
+                Check(Property<bool>(queryEdit, "Success") && handler.Requests.Count == 1, "automatic reference generation succeeds with query routing");
+                Check(handler.Requests[0].Url.Contains("/v1/images/edits?") && handler.Requests[0].Url.Contains("fixed=1") && handler.Requests[0].Images == 3, "default route sends edits multipart and preserves query, not a generations request");
+                handler.Reset();
+                var noEditInput = Generate(Options("http://offline.invalid/v1/images/edits", false, "audit", "classic-oil"), null);
+                Check(!Property<bool>(noEditInput, "Success") && handler.Requests.Count == 0, "configured edits without a reference never falls through to text-to-image");
+                Check((string)Call(client, "ResolveEndpointUrl", "http://offline.invalid/v1/images/edits?fixed=1", true, false) == "http://offline.invalid/v1/chat/completions?fixed=1", "auto protocol switch derives sibling endpoint without double v1 or suffix");
+                Check(!(bool)Call(client, "IsChatCompletionProtocol", "audit", "http://offline.invalid/v1?route=/chat/completions", false), "query text does not select the chat request schema");
+                Check((string)Call(client, "ResolveEndpointUrl", "http://offline.invalid/v2/images/edits?fixed=1", true, false) == "http://offline.invalid/v2/chat/completions?fixed=1", "complete provider prefix stays unchanged across protocol switch");
+                handler.Reset();
+                var singular = Generate(Options("http://offline.invalid/v1/image/edits", false, "audit", "classic-oil"), references);
+                Check(!Property<bool>(singular, "Success") && handler.Requests.Count == 0 && Property<string>(singular, "ErrorMessage").Contains("/images/edits"), "singular image/edits typo is rejected locally with correct plural path");
                 CheckStyles(assembly, handler);
             }
             finally { httpField.SetValue(null, original); }

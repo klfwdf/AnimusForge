@@ -583,8 +583,10 @@ namespace AnimusForge.Illustrator.UI.Patches
             }
             string spriteName = (item?.Key ?? "weekly_" + Guid.NewGuid().ToString("N")) + "_weekly";
             var bytes = imageBytes ?? item.ImageData;
+            var publishClock = System.Diagnostics.Stopwatch.StartNew();
+            GenerationDiagnostics.WriteDelivery(item?.DiagnosticId, "weekly_ui_texture_begin", "bytes=" + (bytes?.Length ?? 0));
             var sprite = GauntletTextureLoader.LoadOrRegisterPngBytes(spriteName, bytes);
-            if (sprite == null) return false;
+            if (sprite == null) { GenerationDiagnostics.WriteDelivery(item?.DiagnosticId, "weekly_ui_texture_failed", "bytes=" + (bytes?.Length ?? 0)); return false; }
             _activeSpriteName = spriteName;
             _activeItem = item;
             if (!string.IsNullOrWhiteSpace(item?.Title)) _sink.TitleText = item.Title;
@@ -592,6 +594,7 @@ namespace AnimusForge.Illustrator.UI.Patches
             _sink.PromptText = prompt;
             _sink.HasIllustration = true;
             _sink.IsLoading = false;
+            GenerationDiagnostics.WriteDelivery(item?.DiagnosticId, "weekly_ui_publish_complete", "sprite=" + spriteName + "; bytes=" + (bytes?.Length ?? 0) + "; publishMs=" + publishClock.ElapsedMilliseconds);
             return true;
         }
 

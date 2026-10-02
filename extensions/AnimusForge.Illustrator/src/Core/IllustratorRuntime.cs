@@ -7,6 +7,7 @@ using TaleWorlds.CampaignSystem;
 using TaleWorlds.Library;
 using TaleWorlds.ScreenSystem;
 using AnimusForge.Illustrator.Engine;
+using Newtonsoft.Json.Linq;
 
 namespace AnimusForge.Illustrator.Core
 {
@@ -126,6 +127,7 @@ namespace AnimusForge.Illustrator.Core
         private static int _workers;
         private static bool _running;
         public static string CampaignKey { get; private set; }
+        internal static bool IsHostRunning => _running && _mainThread != 0;
         public static bool IsMainThread => _mainThread != 0 && Environment.CurrentManagedThreadId == _mainThread;
 
         public static void Initialize()
@@ -303,6 +305,7 @@ namespace AnimusForge.Illustrator.Core
             if (!IsCurrent)
             {
                 Debug.Print($"[Illustrator] Run rejected: scope not current (closed={_closed}, topScreenMismatch={!ReferenceEquals(_screen, ScreenManager.TopScreen)}, finalized={_screen?.IsFinalized}).");
+                GenerationDiagnostics.WriteDelivery(null, "scope_rejected", "scope stale/closed/screen changed; category=" + _category);
                 fail("生图上下文已失效（界面已切换或弹窗已关闭），请重新打开。");
                 return false;
             }
@@ -311,22 +314,30 @@ namespace AnimusForge.Illustrator.Core
             var token = source.Token;
             long revision = ++_revision;
             _request = source;
+            string diagnosticId = null;
+            var deliveryClock = System.Diagnostics.Stopwatch.StartNew();
+            long workerCompletedMs = 0;
             bool started = IllustratorRuntime.Start(async () =>
             {
                 using (var diagnostics = GenerationDiagnostics.Begin(CampaignKey, _category))
                 {
+                    diagnosticId = diagnostics?.Id;
+                    diagnostics?.RecordStage("worker_started", new JObject { ["elapsedMs"] = deliveryClock.ElapsedMilliseconds });
                     try
                     {
                         var value = await work(token).ConfigureAwait(false);
                         token.ThrowIfCancellationRequested();
+                        diagnostics?.RecordStage("worker_complete", new JObject { ["elapsedMs"] = deliveryClock.ElapsedMilliseconds });
                         diagnostics?.Finish("completed");
                         return value;
                     }
                     catch (OperationCanceledException) { diagnostics?.Finish("cancelled"); throw; }
                     catch (Exception ex) { diagnostics?.Finish("failed", ex.Message); throw; }
+                    finally { workerCompletedMs = deliveryClock.ElapsedMilliseconds; }
                 }
             }, (result, error) =>
             {
+                GenerationDiagnostics.WriteDelivery(diagnosticId, "main_thread_delivery", "totalMs=" + deliveryClock.ElapsedMilliseconds + "; dispatchWaitMs=" + Math.Max(0, deliveryClock.ElapsedMilliseconds - workerCompletedMs));
                 // Capture the caller's cancellation state before cancelling child work for cleanup.
                 // HttpClient/local deadlines can throw TaskCanceledException while this token is live.
                 bool requestCancelled = token.IsCancellationRequested;
@@ -334,11 +345,11 @@ namespace AnimusForge.Illustrator.Core
                 if (ReferenceEquals(_request, source)) _request = null;
                 if (error != null) source.Cancel();
                 source.Dispose();
-                if (!current) return;
+                if (!current) { GenerationDiagnostics.WriteDelivery(diagnosticId, "ui_delivery_dropped", "closed/stale/cancelled; late result not applied"); return; }
                 if (error == null)
                 {
                     try { complete(result); }
-                    catch (Exception ex) { fail(ex.Message); }
+                    catch (Exception ex) { GenerationDiagnostics.WriteDelivery(diagnosticId, "ui_callback_failed", ex.GetType().Name); fail(ex.Message); }
                 }
                 else if (!(error is OperationCanceledException)) fail(error.Message);
                 else if (requestCancelled) fail("生图请求已取消（界面已切换或发起了新请求）。");
@@ -352,6 +363,7 @@ namespace AnimusForge.Illustrator.Core
             {
                 _request = null;
                 source.Dispose();
+                GenerationDiagnostics.WriteDelivery(null, "worker_admission_rejected", "four-worker capacity or host unavailable");
                 fail("生图任务繁忙，请等待已有任务完成后重试。");
             }
             return started;

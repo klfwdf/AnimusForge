@@ -63,6 +63,7 @@ namespace AnimusForge.Illustrator.Core
             IllustrationOptions options = null,
             CancellationToken cancellationToken = default)
         {
+            CancellationToken callerToken = cancellationToken;
             using (var deadline = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken))
             {
                 deadline.CancelAfter(GenerationBudget);
@@ -119,17 +120,22 @@ namespace AnimusForge.Illustrator.Core
                 else if (string.IsNullOrWhiteSpace(userNegative)) negativePrompt = presetNegative;
                 else negativePrompt = presetNegative + ", " + userNegative;
                 int requestedRefImages = referenceImages?.Count ?? 0;
+                GenerationDiagnostics.Current?.RecordStage("image_prompt_sources", new JObject { ["customStyleActive"] = isCustomPreset, ["customNegativeActive"] = isCustomPreset && !string.IsNullOrWhiteSpace(settings.NegativePrompt), ["directorRuleSource"] = "isolated visual rules; no direct RuleBehaviorPrompts", ["promptChars"] = prompt?.Length ?? 0 });
 
-                bool exactEditsEndpoint = settings.UseExactEndpointUrl && IsImagesEditsEndpointUrl(baseUrl);
-                bool isChatProtocol = !exactEditsEndpoint && (IsChatCompletionProtocol(model, baseUrl, settings.UseExactEndpointUrl)
+                bool configuredEditsEndpoint = IsImagesEditsEndpointUrl(baseUrl);
+                bool exactEditsEndpoint = settings.UseExactEndpointUrl && configuredEditsEndpoint;
+                bool isChatProtocol = !configuredEditsEndpoint && (IsChatCompletionProtocol(model, baseUrl, settings.UseExactEndpointUrl)
                     || (settings.PreferChatImageProtocol && !settings.UseExactEndpointUrl));
                 string endpointUrl = ResolveEndpointUrl(baseUrl, isChatProtocol, settings.UseExactEndpointUrl);
                 var composed = ComposeImagePrompt(prompt, size, quality, style, customStyleHint, negativePrompt, isChatProtocol, settings.Randomness,
                     ResolvePromptProfile(model, isChatProtocol));
                 string effectivePrompt = composed.Text;
-                if (exactEditsEndpoint && requestedRefImages == 0)
+                string route = isChatProtocol ? "Chat" : configuredEditsEndpoint || (requestedRefImages > 0 && !settings.UseExactEndpointUrl) ? "ImagesEdits" : "Images";
+                GenerationDiagnostics.Current?.RecordStage("image_route", new JObject { ["protocol"] = route, ["endpoint"] = SensitiveLogText.SafeUrl(route == "ImagesEdits" ? ResolveEditsEndpointUrl(baseUrl) : endpointUrl), ["requestedRefs"] = requestedRefImages, ["reason"] = settings.UseExactEndpointUrl ? "explicit exact endpoint" : isChatProtocol ? "model or chat preference" : requestedRefImages > 0 ? "references present: edits first; no text-only reference fallback" : configuredEditsEndpoint ? "edit endpoint requires image" : "no references: text-to-image", ["referenceGenerationEnabled"] = settings.EnableReferenceImageForGeneration });
+                if (configuredEditsEndpoint && requestedRefImages == 0)
                 {
-                    result.ErrorMessage = "精确 images/edits 端点需要可用的参考图；请开启参考图并取得人物或场景参考后再生成。未发送请求。";
+                    result.ErrorMessage = "images/edits 端点需要可用的参考图；请开启参考图并取得人物或场景参考后再生成。未发送请求。";
+                    GenerationDiagnostics.Current?.RecordStage("image_route_rejected", new JObject { ["failureCode"] = "image.edit_reference_missing", ["error"] = result.ErrorMessage });
                     return result;
                 }
                 if (settings.UseExactEndpointUrl && !exactEditsEndpoint && !isChatProtocol && requestedRefImages > 0)
@@ -138,6 +144,7 @@ namespace AnimusForge.Illustrator.Core
                     // text-only generation as if the caller's identity/scene references were
                     // honored when an exact images/generations URL explicitly selected that endpoint.
                     result.ErrorMessage = "精确 images/generations 端点不能携带参考图；请改用 /images/edits 或开启对话多模态生图通道。未发送请求。";
+                    GenerationDiagnostics.Current?.RecordStage("image_route_rejected", new JObject { ["failureCode"] = "image.generations_cannot_carry_references", ["error"] = result.ErrorMessage });
                     return result;
                 }
 
@@ -220,15 +227,18 @@ namespace AnimusForge.Illustrator.Core
             }
             catch (OperationCanceledException)
             {
-                result.ErrorMessage = "生图请求已超时或被取消";
+                result.ErrorMessage = callerToken.IsCancellationRequested ? "生图请求已取消" : "生图请求超过240秒总预算";
+                GenerationDiagnostics.Current?.RecordStage("image_transport_cancelled", new JObject { ["failureCode"] = callerToken.IsCancellationRequested ? "image.cancelled" : "image.timeout", ["error"] = result.ErrorMessage });
             }
             catch (InvalidDataException ex)
             {
                 result.ErrorMessage = ex.Message;
+                GenerationDiagnostics.Current?.RecordStage("image_payload_invalid", new JObject { ["failureCode"] = "image.invalid_payload", ["error"] = ex.Message });
             }
             catch (Exception ex)
             {
                 result.ErrorMessage = "生图通信异常: " + ex.Message;
+                GenerationDiagnostics.Current?.RecordStage("image_transport_exception", new JObject { ["failureCode"] = "image.communication_exception", ["error"] = ex.GetType().Name + ": " + ex.Message });
                 Log($"[Illustrator] Exception during generation: {ex.GetType().Name}");
             }
             finally
@@ -237,7 +247,7 @@ namespace AnimusForge.Illustrator.Core
                 result.ErrorMessage = SensitiveLogText.Redact(result.ErrorMessage, apiKey);
                 result.ElapsedMilliseconds = stopwatch.ElapsedMilliseconds;
                 GenerationDiagnostics.Current?.RecordImageResult(result);
-                Log($"[Illustrator] Generation completed in {result.ElapsedMilliseconds}ms. Success={result.Success}");
+                Log($"[Illustrator] Generation completed in {result.ElapsedMilliseconds}ms. Success={result.Success}; error={result.ErrorMessage}", apiKey);
 
                 // 临时产物由各提取任务在消费完毕后按自身路径清理，不能在此全局扫描删除。
             }
@@ -258,7 +268,7 @@ namespace AnimusForge.Illustrator.Core
                 if (useExactUrl && (path.EndsWith("/images/generations", StringComparison.OrdinalIgnoreCase) ||
                     path.EndsWith("/images/edits", StringComparison.OrdinalIgnoreCase))) return false;
             }
-            if (!string.IsNullOrWhiteSpace(baseUrl) && baseUrl.IndexOf("/chat/completions", StringComparison.OrdinalIgnoreCase) >= 0)
+            if (!Uri.TryCreate(baseUrl, UriKind.Absolute, out _) && !string.IsNullOrWhiteSpace(baseUrl) && baseUrl.IndexOf("/chat/completions", StringComparison.OrdinalIgnoreCase) >= 0)
             {
                 return true;
             }
@@ -277,44 +287,25 @@ namespace AnimusForge.Illustrator.Core
         public static string ResolveEndpointUrl(string baseUrl, bool isChatCompletion, bool useExactUrl)
         {
             string url = (baseUrl ?? string.Empty).Trim();
-            if (useExactUrl)
-            {
-                return url;
-            }
-            url = url.TrimEnd('/');
+            return useExactUrl ? url : ResolveImageEndpoint(url, isChatCompletion ? "/chat/completions" : "/images/generations");
+        }
 
-            if (isChatCompletion)
-            {
-                if (url.EndsWith("/chat/completions", StringComparison.OrdinalIgnoreCase))
-                {
-                    return url;
-                }
-                if (url.EndsWith("/images/generations", StringComparison.OrdinalIgnoreCase))
-                {
-                    url = url.Substring(0, url.Length - "/images/generations".Length).TrimEnd('/');
-                }
-                if (url.EndsWith("/v1", StringComparison.OrdinalIgnoreCase))
-                {
-                    return url + "/chat/completions";
-                }
-                return url + "/v1/chat/completions";
-            }
-            else
-            {
-                if (url.EndsWith("/images/generations", StringComparison.OrdinalIgnoreCase))
-                {
-                    return url;
-                }
-                if (url.EndsWith("/chat/completions", StringComparison.OrdinalIgnoreCase))
-                {
-                    url = url.Substring(0, url.Length - "/chat/completions".Length).TrimEnd('/');
-                }
-                if (url.EndsWith("/v1", StringComparison.OrdinalIgnoreCase))
-                {
-                    return url + "/images/generations";
-                }
-                return url + "/v1/images/generations";
-            }
+        private static string ResolveImageEndpoint(string baseUrl, string suffix)
+        {
+            if (!Uri.TryCreate(baseUrl, UriKind.Absolute, out var uri) ||
+                (uri.Scheme != Uri.UriSchemeHttps && uri.Scheme != Uri.UriSchemeHttp))
+                throw new ArgumentException("生图端点必须是完整的 HTTP/HTTPS URL。");
+            string path = uri.AbsolutePath.TrimEnd('/');
+            if (path.EndsWith("/image/edits", StringComparison.OrdinalIgnoreCase))
+                throw new ArgumentException("标准生图编辑端点是 /images/edits（images复数），不是 /image/edits；特殊服务路径请使用完整URL模式。");
+            bool completeEndpoint = false;
+            foreach (string known in new[] { "/images/generations", "/images/edits", "/chat/completions" })
+                if (path.EndsWith(known, StringComparison.OrdinalIgnoreCase))
+                { path = path.Substring(0, path.Length - known.Length).TrimEnd('/'); completeEndpoint = true; break; }
+            if (!completeEndpoint && !path.EndsWith("/v1", StringComparison.OrdinalIgnoreCase)) path += "/v1";
+            // Query is routing data, not part of the endpoint path; only logs remove it.
+            var builder = new UriBuilder(uri) { Path = path + suffix, Fragment = string.Empty };
+            return builder.Uri.AbsoluteUri;
         }
 
         /// <summary>
@@ -501,15 +492,8 @@ namespace AnimusForge.Illustrator.Core
         private static string ResolveEditsEndpointUrl(string baseUrl)
         {
             string url = (baseUrl ?? string.Empty).Trim();
-            // A complete edit URL may carry routing/authentication query parameters. Preserve it verbatim.
             if (IsImagesEditsEndpointUrl(url)) return url;
-            url = url.TrimEnd('/');
-            if (url.EndsWith("/images/generations", StringComparison.OrdinalIgnoreCase))
-            {
-                return url.Substring(0, url.Length - "/images/generations".Length).TrimEnd('/') + "/images/edits";
-            }
-            if (url.EndsWith("/v1", StringComparison.OrdinalIgnoreCase)) return url + "/images/edits";
-            return url + "/v1/images/edits";
+            return ResolveImageEndpoint(url, "/images/edits");
         }
 
         private static bool IsImagesEditsEndpointUrl(string url)
@@ -582,19 +566,24 @@ namespace AnimusForge.Illustrator.Core
                         }
                         Log($"[Illustrator] Requesting image edit from {SensitiveLogText.SafeUrl(editsUrl)} (model={model}, protocol=ImagesEdits, ActualRefImages={sent})...", apiKey);
                         if (GenerationDiagnostics.Current != null) await GenerationDiagnostics.Current.RecordImageRequestAsync(request, "ImagesEdits").ConfigureAwait(false);
+                        GenerationDiagnostics.Current?.RecordStage("image_http_begin", new JObject { ["endpoint"] = SensitiveLogText.SafeUrl(editsUrl), ["actualRefs"] = sent });
                         using (var response = await HttpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false))
                         {
+                            GenerationDiagnostics.Current?.RecordStage("image_http_headers", new JObject { ["httpStatus"] = (int)response.StatusCode });
                             string responseText = Encoding.UTF8.GetString(await ImagePayload.ReadBoundedAsync(response.Content, ImagePayload.MaxResponseBytes, cancellationToken).ConfigureAwait(false));
                             GenerationDiagnostics.Current?.RecordImageResponse(responseText, (int)response.StatusCode);
                             if (!response.IsSuccessStatusCode)
                             {
+                                GenerationDiagnostics.Current?.RecordStage("image_http_rejected", new JObject { ["failureCode"] = "image.http_error", ["httpStatus"] = (int)response.StatusCode, ["error"] = ExtractErrorMessage(responseText, (int)response.StatusCode) });
                                 return (false, null, null, ExtractErrorMessage(responseText, (int)response.StatusCode), IsUnsupportedEditEndpoint((int)response.StatusCode, responseText), sentPrompt);
                             }
+                            GenerationDiagnostics.Current?.RecordStage("image_response_extract_begin");
                             var extracted = await ExtractImageAsync(responseText, cancellationToken).ConfigureAwait(false);
                             if (extracted != null && extracted.Bytes != null && extracted.Bytes.Length > 0)
                             {
                                 return (true, extracted.Bytes, extracted.Url, null, false, sentPrompt);
                             }
+                            GenerationDiagnostics.Current?.RecordStage("image_response_no_image", new JObject { ["failureCode"] = "image.response_has_no_image", ["error"] = DescribeMissingImageResponse(responseText) });
                             return (false, null, null, DescribeMissingImageResponse(responseText), false, sentPrompt);
                         }
                     }
@@ -606,6 +595,7 @@ namespace AnimusForge.Illustrator.Core
             }
             catch (Exception ex)
             {
+                GenerationDiagnostics.Current?.RecordStage("image_edit_exception", new JObject { ["failureCode"] = "image.edit_exception", ["error"] = ex.GetType().Name + ": " + ex.Message });
                 return (false, null, null, "images/edits request failed: " + ex.Message, false, sentPrompt);
             }
         }
@@ -816,9 +806,11 @@ namespace AnimusForge.Illustrator.Core
                 Log($"[Illustrator] Requesting image generation from {SensitiveLogText.SafeUrl(endpointUrl)} (model={model}, protocol={(isChatProtocol ? "Chat" : "Images")}, refImages={referenceImages?.Count ?? 0}, ActualRefImages={actualRefImages})...", apiKey);
                 if (GenerationDiagnostics.Current != null) await GenerationDiagnostics.Current.RecordImageRequestAsync(request, isChatProtocol ? "Chat" : "Images").ConfigureAwait(false);
 
+                GenerationDiagnostics.Current?.RecordStage("image_http_begin", new JObject { ["endpoint"] = SensitiveLogText.SafeUrl(endpointUrl), ["actualRefs"] = actualRefImages });
                 using (var response = await HttpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false))
                 {
-                        string responseText = Encoding.UTF8.GetString(await ImagePayload.ReadBoundedAsync(response.Content, ImagePayload.MaxResponseBytes, cancellationToken).ConfigureAwait(false));
+                        GenerationDiagnostics.Current?.RecordStage("image_http_headers", new JObject { ["httpStatus"] = (int)response.StatusCode });
+                            string responseText = Encoding.UTF8.GetString(await ImagePayload.ReadBoundedAsync(response.Content, ImagePayload.MaxResponseBytes, cancellationToken).ConfigureAwait(false));
                         GenerationDiagnostics.Current?.RecordImageResponse(responseText, (int)response.StatusCode);
 
                         if (!response.IsSuccessStatusCode)
@@ -835,16 +827,19 @@ namespace AnimusForge.Illustrator.Core
                                 fallback = true;
                             }
 
+                            GenerationDiagnostics.Current?.RecordStage("image_http_rejected", new JObject { ["failureCode"] = "image.http_error", ["httpStatus"] = (int)response.StatusCode, ["error"] = errorMsg });
                             return (false, null, null, errorMsg, fallback, sentPrompt);
                         }
 
-                        var extracted = await ExtractImageAsync(responseText, cancellationToken).ConfigureAwait(false);
+                        GenerationDiagnostics.Current?.RecordStage("image_response_extract_begin");
+                            var extracted = await ExtractImageAsync(responseText, cancellationToken).ConfigureAwait(false);
                         if (extracted != null && extracted.Bytes != null && extracted.Bytes.Length > 0)
                         {
                             return (true, extracted.Bytes, extracted.Url, null, false, sentPrompt);
                         }
 
-                        return (false, null, null, DescribeMissingImageResponse(responseText), false, sentPrompt);
+                        GenerationDiagnostics.Current?.RecordStage("image_response_no_image", new JObject { ["failureCode"] = "image.response_has_no_image", ["error"] = DescribeMissingImageResponse(responseText) });
+                            return (false, null, null, DescribeMissingImageResponse(responseText), false, sentPrompt);
                     }
             }
         }
@@ -1049,10 +1044,12 @@ namespace AnimusForge.Illustrator.Core
                 if (!Uri.TryCreate(url, UriKind.Absolute, out Uri current) ||
                     !await IsSafeImageDownloadUriAsync(current, cancellationToken).ConfigureAwait(false))
                 {
+                    GenerationDiagnostics.Current?.RecordStage("image_download_rejected", new JObject { ["failureCode"] = "image.unsafe_download_url" });
                     Log($"[Illustrator] Refused unsafe generated-image URL: {SensitiveLogText.SafeUrl(url)}");
                     return null;
                 }
 
+                GenerationDiagnostics.Current?.RecordStage("image_download_begin", new JObject { ["endpoint"] = SensitiveLogText.SafeUrl(url) });
                 // The URL comes from a provider response rather than the user's configured API
                 // endpoint. Disable the process proxy and automatic redirects so a provider cannot
                 // turn an apparently public image URL into a request to a local or private target.
@@ -1091,8 +1088,11 @@ namespace AnimusForge.Illustrator.Core
                                 continue;
                             }
 
+                            GenerationDiagnostics.Current?.RecordStage("image_download_headers", new JObject { ["httpStatus"] = (int)response.StatusCode });
                             response.EnsureSuccessStatusCode();
-                            return ImagePayload.Normalize(await ImagePayload.ReadBoundedAsync(response.Content, ImagePayload.MaxBytes, cancellationToken).ConfigureAwait(false));
+                            byte[] bytes = ImagePayload.Normalize(await ImagePayload.ReadBoundedAsync(response.Content, ImagePayload.MaxBytes, cancellationToken).ConfigureAwait(false));
+                            GenerationDiagnostics.Current?.RecordStage("image_download_complete", new JObject { ["bytes"] = bytes.Length });
+                            return bytes;
                         }
                     }
                     return null;
@@ -1101,6 +1101,7 @@ namespace AnimusForge.Illustrator.Core
             catch (OperationCanceledException) { throw; }
             catch (Exception ex)
             {
+                GenerationDiagnostics.Current?.RecordStage("image_download_failed", new JObject { ["failureCode"] = "image.download_failed", ["error"] = ex.GetType().Name + ": " + ex.Message });
                 Log($"[Illustrator] Failed to download generated image from {SensitiveLogText.SafeUrl(url)}: {ex.GetType().Name}");
                 return null;
             }
@@ -1295,7 +1296,7 @@ namespace AnimusForge.Illustrator.Core
 
         private static void Log(string message, string secret = null)
         {
-            TaleWorlds.Library.Debug.Print(SensitiveLogText.Redact(message, secret));
+            GenerationDiagnostics.WriteDelivery(GenerationDiagnostics.Current?.Id, "image_client", SensitiveLogText.Redact(message, secret));
         }
     }
 }

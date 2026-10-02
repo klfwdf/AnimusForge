@@ -1,3 +1,10 @@
+# 当前交付：生图全链路审查与详细诊断
+
+- 立绘等待/高FPS帧截止、百科离屏开关、edits/query路径及缓存类别优先级已修；保持必需人物失败停止、原生串行与安全退休。有图默认实际发images/edits，单数非精确路径本地报错。
+- 新日志按同ID串起人物/provider/落盘、提示词来源、导演HTTP、图片HTTP/下载/解码、缓存、主线程dispatchWaitMs与UI publishMs，晚期失败不丢；密钥/URL敏感部分脱敏。正文自定义规则不直接注入视觉导演，实际对白可间接影响构图。
+- 隔离候选双API+Bootstrap/18实际DLL审查通过；完整当前树另有并行UI缺类型失败，未改他人代码/未声称组合实机通过。[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#illustrator-chain-review-20261002)、[日志指南](docs/illustrator_pipeline_diagnostics.md)与本地收据集中证据。
+- 未push/部署/Stage/重打包；玩家具体失败与一分钟/三分钟反馈需部署后同次请求的trace/Mod_Logic时间戳，未凭本机成功记录推断其根因。之前1.5ZIP仍旧候选。
+
 # 当前交接：对话输入 / 新档向导 / 普通选项修复（离线已验证）
 
 - 检查点 `445c877d`、产品/测试 `4149c2e2`：F 开场输入隔离、MCM 自动 AI 开关、同层 URL 编辑与 ESC 关闭、使用现有 API、新档世界书/人物背景续接、每轮超时提示、ONNX 新档触发/弹窗调度、长/多普通选项限高滚动与专用模板。
