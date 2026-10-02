@@ -133,6 +133,16 @@ public static class LegacyNativePromptParity
     public static DetachedInteractionPromptSections BuildAtomicBundle(params object[] a) => new();
 }
 public static class Logger { public static void Log(string category,string message) => F.Record("log",category,message); }
+public static class DiplomacyConversationBridge
+{
+    public static bool CanUseDiplomacyActionPostprocessForExternal(Hero h, CharacterObject c = null) => F.Current.Royal;
+    public static bool CanUseFullDiplomacyActionPostprocessForExternal(Hero h, CharacterObject c = null) => F.Current.Royal;
+    public static bool CanUseNpcSovereignDeclareWarPostprocessForExternal(Hero h, CharacterObject c = null) => F.Current.Royal;
+    public static bool CanUseIndependentClanPeaceForExternal(Hero h, CharacterObject c = null) => F.Current.IndependentPeace;
+    public static bool IsIndependentClanPeacePostprocessTag(string tag) => tag?.Contains("INDEPENDENT_CLAN_PEACE") == true;
+    public static string BuildDiplomacyPostprocessContext(Hero h) => F.Value("diplomacy-context",h);
+    public static void ProcessDiplomacyTagsDispatch(Hero h, ref string text) { F.Record("diplomacy-tags",h); }
+}
 public static class VassalageDiagnosticLog
 {
     public static void Event(string name,Dictionary<string,object> values) => F.Record(name,values);

@@ -88,4 +88,19 @@ internal static class WorldDiplomacyPolicyHistoryRules
 		}
 		return retained;
 	}
+
+	internal static bool TryBuildPublishedPolicySignature(
+		PublishedPolicyArtifactLedgerEntry policy,
+		out string signatureKey,
+		out string fingerprint)
+	{
+		signatureKey = "";
+		fingerprint = "";
+		string eventKind = (policy?.EventKind ?? "").Trim().ToLowerInvariant();
+		if (policy == null || policy.Revision <= 0L || string.IsNullOrWhiteSpace(policy.PolicyId)
+			|| (eventKind != "policy_published" && eventKind != "policy_snapshot")) return false;
+		signatureKey = policy.PolicyId.Trim();
+		fingerprint = policy.ContentHash;
+		return true;
+	}
 }

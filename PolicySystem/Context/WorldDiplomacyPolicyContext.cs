@@ -9,57 +9,6 @@ using Newtonsoft.Json;
 
 namespace AnimusForge;
 
-/// <summary>
-/// One immutable observation in the bounded unified-policy snapshot. The diplomacy
-/// consumer owns durable event revisions; snapshot positions are not event identities.
-/// </summary>
-internal sealed class PublishedPolicyArtifactLedgerEntry
-{
-	internal PublishedPolicyArtifactLedgerEntry(
-		long sequence,
-		long revision,
-		string policyId,
-		string eventKind,
-		int occurredDay,
-		string gameDate,
-		long createdUtcTicks,
-		string scopeKind,
-		string kingdomId,
-		string kingdomName,
-		string policyName,
-		string publishedText,
-		string contentHash)
-	{
-		Sequence = sequence;
-		Revision = revision;
-		PolicyId = policyId ?? string.Empty;
-		EventKind = eventKind ?? string.Empty;
-		OccurredDay = occurredDay;
-		GameDate = gameDate ?? string.Empty;
-		CreatedUtcTicks = createdUtcTicks;
-		ScopeKind = scopeKind ?? string.Empty;
-		KingdomId = kingdomId ?? string.Empty;
-		KingdomName = kingdomName ?? string.Empty;
-		PolicyName = policyName ?? string.Empty;
-		PublishedText = publishedText ?? string.Empty;
-		ContentHash = contentHash ?? string.Empty;
-	}
-
-	public long Sequence { get; }
-	public long Revision { get; }
-	public string PolicyId { get; }
-	public string EventKind { get; }
-	public int OccurredDay { get; }
-	public string GameDate { get; }
-	public long CreatedUtcTicks { get; }
-	public string ScopeKind { get; }
-	public string KingdomId { get; }
-	public string KingdomName { get; }
-	public string PolicyName { get; }
-	public string PublishedText { get; }
-	public string ContentHash { get; }
-}
-
 internal static class WorldDiplomacyPolicyContext
 {
 	private const int MaxPolicyRecords = 200;
@@ -124,20 +73,19 @@ internal static class WorldDiplomacyPolicyContext
 					.OrderBy(id => id, StringComparer.OrdinalIgnoreCase))
 				{
 					NpcRulerPolicyEffectDto metadata = FindEffectMetadata(record, targetId);
-					result.Add(new WorldDiplomacyPolicySignalSnapshot
-					{
-						SignalKey = "policy:" + record.PolicyId.Trim() + ":" + targetId,
-						PolicyId = record.PolicyId.Trim(),
-						PolicyKind = string.IsNullOrWhiteSpace(record.PolicyKind) ? PolicyEffectScopes.Kingdom : record.PolicyKind.Trim(),
-						PolicyName = Limit(FirstNonEmpty(record.PolicyName, "未命名政策"), 80),
-						PolicySummary = Limit(FirstNonEmpty(record.PolicyDigest, record.PolicyContent), 260),
-						IssuerKingdomId = issuerId,
-						IssuerKingdomName = Limit(FirstNonEmpty(record.KingdomName, issuerId), 60),
-						TargetKingdomId = targetId,
-						TargetKingdomName = Limit(FirstNonEmpty(metadata?.TargetKingdomName, targetId), 60),
-						DirectEffect = Limit(BuildEffectSummary(record, targetId), 180),
-						PublishedDay = Math.Max(0, record.Day)
-					});
+					result.Add(new WorldDiplomacyPolicySignalSnapshot(
+						"policy:" + record.PolicyId.Trim() + ":" + targetId,
+						record.PolicyId.Trim(),
+						string.IsNullOrWhiteSpace(record.PolicyKind) ? PolicyEffectScopes.Kingdom : record.PolicyKind.Trim(),
+						Limit(FirstNonEmpty(record.PolicyName, "未命名政策"), 80),
+						Limit(FirstNonEmpty(record.PolicyDigest, record.PolicyContent), 260),
+						issuerId,
+						Limit(FirstNonEmpty(record.KingdomName, issuerId), 60),
+						targetId,
+						Limit(FirstNonEmpty(metadata?.TargetKingdomName, targetId), 60),
+						Limit(BuildEffectSummary(record, targetId), 180),
+						Math.Max(0, record.Day)
+					));
 				}
 			}
 			return result.OrderBy(item => item.PublishedDay).ThenBy(item => item.SignalKey, StringComparer.OrdinalIgnoreCase).ToList();
@@ -696,19 +644,4 @@ internal static class WorldDiplomacyPolicyContext
 		string text = (value ?? "").Trim();
 		return text.Length <= maxChars ? text : text.Substring(0, Math.Max(0, maxChars));
 	}
-}
-
-internal sealed class WorldDiplomacyPolicySignalSnapshot
-{
-	public string SignalKey { get; set; } = "";
-	public string PolicyId { get; set; } = "";
-	public string PolicyKind { get; set; } = PolicyEffectScopes.Kingdom;
-	public string PolicyName { get; set; } = "";
-	public string PolicySummary { get; set; } = "";
-	public string IssuerKingdomId { get; set; } = "";
-	public string IssuerKingdomName { get; set; } = "";
-	public string TargetKingdomId { get; set; } = "";
-	public string TargetKingdomName { get; set; } = "";
-	public string DirectEffect { get; set; } = "";
-	public int PublishedDay { get; set; }
 }

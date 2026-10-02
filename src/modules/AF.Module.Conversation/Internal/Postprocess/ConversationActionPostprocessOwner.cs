@@ -267,8 +267,8 @@ internal static readonly Regex CustomPolicyAgendaActionTagRegex = new Regex(Rege
 		kingdomVassalageRuleInjected = kingdomVassalageRuleInjected || kingdomVassalagePreprocessHit;
 		bool royalPostprocessEligible = AIConfigHandler.IsRoyalAbdicationPostprocessTargetForExternal(targetHero ?? targetCharacter?.HeroObject);
 		bool royalDiplomacyRequested = diplomacyRuleInjected || kingdomAnnexationRuleInjected || HasPreprocessRuleHit(preprocessRuleHits, "diplomacy");
-		bool royalDiplomacyRuleInjected = royalDiplomacyRequested && DiplomacyBehavior.CanUseDiplomacyActionPostprocessForExternal(targetHero, targetCharacter);
-		bool independentClanPeaceResident = replyIsDirectPlayerResponse && DiplomacyBehavior.CanUseIndependentClanPeaceForExternal(targetHero, targetCharacter);
+		bool royalDiplomacyRuleInjected = royalDiplomacyRequested && DiplomacyConversationBridge.CanUseDiplomacyActionPostprocessForExternal(targetHero, targetCharacter);
+		bool independentClanPeaceResident = replyIsDirectPlayerResponse && DiplomacyConversationBridge.CanUseIndependentClanPeaceForExternal(targetHero, targetCharacter);
 		diplomacyRuleInjected = royalDiplomacyRuleInjected || independentClanPeaceResident;
 		kingdomAnnexationRuleInjected = false;
 		ApplyStageQualifications(targetAgentIndex, ref duelRuleInjected, ref rewardRuleInjected, ref loanRuleInjected, ref persistentAdpDebtRuleInjected, ref kingdomServiceRuleInjected, ref kingdomVassalageRuleInjected, ref lordsHallRuleInjected, ref meetingReleaseRuleInjected, ref vanillaIssueRuleInjected, ref heroJoinPartyRuleInjected, ref sceneMechanismRuleInjected, ref partyTransferRuleInjected, ref voteDealRuleInjected, ref customPolicyAgendaRuleInjected, ref diplomacyRuleInjected, ref worldMapPartyCommandRuleInjected, ref nobleGatheringRuleInjected, ref marriageRuleInjected);
@@ -664,7 +664,7 @@ internal static readonly Regex CustomPolicyAgendaActionTagRegex = new Regex(Rege
 		}
 		if (diplomacyRuleInjected)
 		{
-			runtimeContext = AppendPostprocessContextBlockForScene(runtimeContext, DiplomacyBehavior.BuildDiplomacyPostprocessContext(targetHero ?? targetCharacter?.HeroObject));
+			runtimeContext = AppendPostprocessContextBlockForScene(runtimeContext, DiplomacyConversationBridge.BuildDiplomacyPostprocessContext(targetHero ?? targetCharacter?.HeroObject));
 		}
 		if (marriageRuleInjected && RomanceSystemBehavior.Instance != null)
 		{
@@ -832,8 +832,8 @@ internal static bool TryPrepareCourierActionPostprocessForExternal(Hero targetHe
 			voteDealRuleInjected = voteDealRuleInjected || HasPreprocessRuleHit(preprocessRuleHits, "kingdom_agenda");
 			bool royalPostprocessEligible = AIConfigHandler.IsRoyalAbdicationPostprocessTargetForExternal(targetHero ?? targetCharacter?.HeroObject);
 			bool royalDiplomacyRequested = diplomacyRuleInjected || kingdomAnnexationRuleInjected || HasPreprocessRuleHit(preprocessRuleHits, "diplomacy");
-			bool royalDiplomacyRuleInjected = royalDiplomacyRequested && DiplomacyBehavior.CanUseDiplomacyActionPostprocessForExternal(targetHero, targetCharacter);
-			bool independentClanPeaceResident = latestReplyHasPlayerInput && DiplomacyBehavior.CanUseIndependentClanPeaceForExternal(targetHero, targetCharacter);
+			bool royalDiplomacyRuleInjected = royalDiplomacyRequested && DiplomacyConversationBridge.CanUseDiplomacyActionPostprocessForExternal(targetHero, targetCharacter);
+			bool independentClanPeaceResident = latestReplyHasPlayerInput && DiplomacyConversationBridge.CanUseIndependentClanPeaceForExternal(targetHero, targetCharacter);
 			diplomacyRuleInjected = royalDiplomacyRuleInjected || independentClanPeaceResident;
 			kingdomAnnexationRuleInjected = false;
 			worldMapPartyCommandRuleInjected = worldMapPartyCommandRuleInjected || HasPreprocessRuleHit(preprocessRuleHits, "worldmap_party_command");
@@ -1186,7 +1186,7 @@ internal static bool TryPrepareCourierActionPostprocessForExternal(Hero targetHe
 			}
 			if (diplomacyRuleInjected)
 			{
-				runtimeContext = AppendPostprocessContextBlockForScene(runtimeContext, DiplomacyBehavior.BuildDiplomacyPostprocessContext(targetHero ?? targetCharacter?.HeroObject));
+				runtimeContext = AppendPostprocessContextBlockForScene(runtimeContext, DiplomacyConversationBridge.BuildDiplomacyPostprocessContext(targetHero ?? targetCharacter?.HeroObject));
 			}
 			if (siegeInterventionRuleInjected)
 			{
@@ -1654,9 +1654,9 @@ internal static string BuildRewardPostprocessItemListForScene(List<RewardSystemB
 
 internal static List<PostprocessRuleEntry> BuildRuntimeDiplomacyPostprocessRulesForScene(Hero targetHero, CharacterObject targetCharacter)
 	{
-		bool allowRoyalDiplomacy = DiplomacyBehavior.CanUseFullDiplomacyActionPostprocessForExternal(targetHero, targetCharacter);
-		bool allowNpcDeclareWar = DiplomacyBehavior.CanUseNpcSovereignDeclareWarPostprocessForExternal(targetHero, targetCharacter);
-		bool allowIndependentClanPeace = DiplomacyBehavior.CanUseIndependentClanPeaceForExternal(targetHero, targetCharacter);
+		bool allowRoyalDiplomacy = DiplomacyConversationBridge.CanUseFullDiplomacyActionPostprocessForExternal(targetHero, targetCharacter);
+		bool allowNpcDeclareWar = DiplomacyConversationBridge.CanUseNpcSovereignDeclareWarPostprocessForExternal(targetHero, targetCharacter);
+		bool allowIndependentClanPeace = DiplomacyConversationBridge.CanUseIndependentClanPeaceForExternal(targetHero, targetCharacter);
 		List<PostprocessRuleEntry> diplomacyRules = (AIConfigHandler.GetGuardrailRulePostprocessRules("diplomacy") ?? new List<PostprocessRuleEntry>())
 			.Where((PostprocessRuleEntry rule) =>
 			{
@@ -1669,7 +1669,7 @@ internal static List<PostprocessRuleEntry> BuildRuntimeDiplomacyPostprocessRules
 				{
 					return allowRoyalDiplomacy || allowNpcDeclareWar;
 				}
-				return DiplomacyBehavior.IsIndependentClanPeacePostprocessTag(tag)
+				return DiplomacyConversationBridge.IsIndependentClanPeacePostprocessTag(tag)
 					? allowIndependentClanPeace
 					: allowRoyalDiplomacy;
 			})

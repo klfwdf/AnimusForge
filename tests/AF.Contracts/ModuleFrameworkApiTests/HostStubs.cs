@@ -56,6 +56,17 @@ namespace AnimusForge.Refactor.Runtime
     }
 }
 
+// Metadata composition stubs only; the diplomacy port suite executes the actual adapters.
+namespace AnimusForge
+{
+    internal static class DiplomacyModuleServices
+    {
+        internal static object Conversation { get; } = new object();
+        internal static object World { get; } = new object();
+        internal static object Policy { get; } = new object();
+    }
+}
+
 // API tests cover assembly-directory state only; CampaignCompositionTests executes real registration.
 namespace TaleWorlds.Core
 {

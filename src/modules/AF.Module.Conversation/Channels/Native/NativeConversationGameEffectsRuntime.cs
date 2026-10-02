@@ -131,7 +131,7 @@ internal sealed partial class NativeConversationGameEffectsRuntime
 				LogNativeActionStep("hero_dispatch_before", targetHero, targetCharacter, content);
 				TryProcessCustomPolicyAgendaActionTag(targetHero, actionChainName ?? ResolveNativeConversationPostprocessChainName(), latestPlayerText, ref content, npcReplyTextOverride);
 				VoteDealBehavior.ProcessAgendaTagsDispatch(targetHero, ref content);
-				DiplomacyBehavior.ProcessDiplomacyTagsDispatch(targetHero, ref content);
+				DiplomacyConversationBridge.ProcessDiplomacyTagsDispatch(targetHero, ref content);
 				worldMapResult = WorldMapPartyCommandBehavior.ProcessWorldMapOrderTagsDispatch(targetHero, ref content);
 				DuelBehavior.TryCacheDuelAfterLinesFromText(targetHero, ref content);
 				DuelBehavior.TryCacheDuelStakeFromText(targetHero, ref content);

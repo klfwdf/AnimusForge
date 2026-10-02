@@ -46,21 +46,7 @@ internal static class Program
 
 	private static void TestWorldDiplomacyJobRuntime()
 	{
-		WorldDiplomacyJobQueueItem[] jobs =
-		{
-			new WorldDiplomacyJobQueueItem { JobId = "running", Priority = 99, CreatedDay = 1, IsRunning = true },
-			new WorldDiplomacyJobQueueItem { JobId = "waiting", Priority = 90, CreatedDay = 1, AwaitingHistoryCompression = true },
-			new WorldDiplomacyJobQueueItem { JobId = "older", Priority = 80, CreatedDay = 2, CacheAffinityKey = "other" },
-			new WorldDiplomacyJobQueueItem { JobId = "affinity", Priority = 80, CreatedDay = 5, CacheAffinityKey = "cache-a" },
-			new WorldDiplomacyJobQueueItem { JobId = "alphabetical", Priority = 80, CreatedDay = 2, CacheAffinityKey = "other" }
-		};
-
-		Expect(WorldDiplomacyJobRuntimeCoordinator.SelectNextJobId(jobs, false, "cache-a") == "affinity",
-			"cache affinity wins within highest runnable priority");
-		Expect(WorldDiplomacyJobRuntimeCoordinator.SelectNextJobId(jobs, true, "cache-a") == "waiting",
-			"compression-ready higher priority job becomes runnable");
-		Expect(WorldDiplomacyJobRuntimeCoordinator.SelectNextJobId(Array.Empty<WorldDiplomacyJobQueueItem>(), true, "") == "",
-			"empty queue has no selection");
+		// Selection assertions now exercise SelectAndPrepareLlmJob in WorldDiplomacyRoundLifecycle.SmokeTests.
 		Expect(WorldDiplomacyJobRuntimeCoordinator.IsCurrentCompletion("job", 8L, 8L, false),
 			"matching runtime completion is current");
 		Expect(!WorldDiplomacyJobRuntimeCoordinator.IsCurrentCompletion("job", 7L, 8L, false),

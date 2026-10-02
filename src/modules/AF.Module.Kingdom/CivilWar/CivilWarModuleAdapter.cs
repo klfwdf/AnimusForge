@@ -73,7 +73,7 @@ internal sealed class CivilWarModuleAdapter : ICivilWarModulePort
 	public void ApplyPrestigeDelta(string kingdomId, int delta, string reason)
 	{
 		if (string.IsNullOrWhiteSpace(kingdomId) || delta == 0) return;
-		WorldDiplomacyBehavior.ApplyExternalPrestigeDelta(kingdomId, delta, reason ?? "内战");
+		DiplomacyConversationBridge.ApplyExternalPrestigeDelta(kingdomId, delta, reason ?? "内战");
 	}
 
 	public CivilWarPanelKingdom GetPlayerKingdomPanel() => _owner.BuildPlayerKingdomPanel();

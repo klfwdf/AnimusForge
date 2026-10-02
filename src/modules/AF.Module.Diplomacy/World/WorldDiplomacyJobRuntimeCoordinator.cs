@@ -1,6 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace AnimusForge;
 
@@ -14,52 +12,13 @@ internal enum WorldDiplomacyJobRoute
 	RoundCompress = 5
 }
 
-internal sealed class WorldDiplomacyJobQueueItem
-{
-	internal string JobId { get; set; } = "";
-	internal int Priority { get; set; }
-	internal int CreatedDay { get; set; }
-	internal string CacheAffinityKey { get; set; } = "";
-	internal bool IsRunning { get; set; }
-	internal bool AwaitingHistoryCompression { get; set; }
-}
-
 /// <summary>
-/// Pure scheduling and completion-routing rules for world-diplomacy jobs.
-/// The Campaign host projects persisted jobs into detached queue items and keeps
+/// Completion identity and routing for world-diplomacy jobs.
+/// Selection is owned by WorldDiplomacyRoundLifecycleRules; the Campaign host keeps
 /// all TaleWorlds reads and final game mutations on the owning game thread.
 /// </summary>
 internal static class WorldDiplomacyJobRuntimeCoordinator
 {
-	internal static string SelectNextJobId(
-		IEnumerable<WorldDiplomacyJobQueueItem> candidates,
-		bool compressionRetryReady,
-		string lastCacheAffinityKey)
-	{
-		List<WorldDiplomacyJobQueueItem> runnable = (candidates ?? Enumerable.Empty<WorldDiplomacyJobQueueItem>())
-			.Where(item => item != null
-				&& !string.IsNullOrWhiteSpace(item.JobId)
-				&& !item.IsRunning
-				&& (!item.AwaitingHistoryCompression || compressionRetryReady))
-			.ToList();
-		if (runnable.Count == 0)
-		{
-			return "";
-		}
-
-		int highestPriority = runnable.Max(item => item.Priority);
-		return runnable
-			.Where(item => item.Priority == highestPriority)
-			.OrderByDescending(item => string.Equals(
-				(item.CacheAffinityKey ?? "").Trim(),
-				(lastCacheAffinityKey ?? "").Trim(),
-				StringComparison.OrdinalIgnoreCase))
-			.ThenBy(item => item.CreatedDay)
-			.ThenBy(item => item.JobId, StringComparer.OrdinalIgnoreCase)
-			.Select(item => item.JobId)
-			.FirstOrDefault() ?? "";
-	}
-
 	internal static bool IsCurrentCompletion(
 		string jobId,
 		long completionRuntimeGeneration,

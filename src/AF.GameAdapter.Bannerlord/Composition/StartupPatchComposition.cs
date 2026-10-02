@@ -491,7 +491,7 @@ internal static class StartupPatchComposition
 			}
 			try
 			{
-				WorldDiplomacyBehavior.RegisterHarmonyPatches(harmony);
+				DiplomacyModuleServices.RegisterPatches(harmony);
 			}
 			catch (Exception worldDiplomacyPatchEx)
 			{
