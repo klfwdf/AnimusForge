@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using TaleWorlds.Core;
 using TaleWorlds.Engine.GauntletUI;
 using TaleWorlds.InputSystem;
@@ -77,6 +77,14 @@ public sealed class AnimusForgeApiOnboardingPopup
 			return;
 		}
 
+        var active = _activePopup;
+        if (active._layer.Input.IsKeyReleased(InputKey.Escape))
+        {
+            if (active._dataSource.IsKeyPromptVisible) active._dataSource.ExecuteCancelPromptKey();
+            else if (active._dataSource.IsSupportModalVisible) active._dataSource.ExecuteCloseSupportModal();
+            else if (active._dataSource.IsTestingViewVisible) active._dataSource.ExecuteCancelTest();
+            else active.HandleCancelledRequested();
+        }
 		_activePopup._dataSource?.OnTick();
 
 		if (_activePopup._pendingAction == PendingAction.None)

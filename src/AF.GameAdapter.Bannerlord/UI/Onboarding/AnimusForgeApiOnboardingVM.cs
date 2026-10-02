@@ -33,6 +33,8 @@ public sealed class AnimusForgeApiOnboardingVM : ViewModel
 
 	private OnboardingView _currentView = OnboardingView.Main;
 	private bool _isCustomMode = true;
+    private bool _usingExistingConfig;
+    private bool _testSucceeded;
 
 	// View Visibilities
 	[DataSourceProperty]
@@ -453,21 +455,21 @@ public sealed class AnimusForgeApiOnboardingVM : ViewModel
 		DuelSettings settings = DuelSettings.GetSettings();
 		if (settings == null) return;
 
-		if (!string.IsNullOrWhiteSpace(settings.ApiUrl)) _primaryUrl = settings.ApiUrl;
-		if (!string.IsNullOrWhiteSpace(settings.ApiKey)) _primaryKey = settings.ApiKey;
-		if (!string.IsNullOrWhiteSpace(settings.ModelName)) _primaryModel = settings.ModelName;
+		_primaryUrl = settings.ApiUrl ?? "";
+		_primaryKey = settings.ApiKey ?? "";
+		_primaryModel = settings.ModelName ?? "";
 
-		if (!string.IsNullOrWhiteSpace(settings.AuxiliaryApiUrl)) _auxiliaryUrl = settings.AuxiliaryApiUrl;
-		if (!string.IsNullOrWhiteSpace(settings.AuxiliaryApiKey)) _auxiliaryKey = settings.AuxiliaryApiKey;
-		if (!string.IsNullOrWhiteSpace(settings.AuxiliaryModelName)) _auxiliaryModel = settings.AuxiliaryModelName;
+		_auxiliaryUrl = settings.AuxiliaryApiUrl ?? "";
+		_auxiliaryKey = settings.AuxiliaryApiKey ?? "";
+		_auxiliaryModel = settings.AuxiliaryModelName ?? "";
 
-		if (!string.IsNullOrWhiteSpace(settings.ActionPostprocessApiUrl)) _postprocessUrl = settings.ActionPostprocessApiUrl;
-		if (!string.IsNullOrWhiteSpace(settings.ActionPostprocessApiKey)) _postprocessKey = settings.ActionPostprocessApiKey;
-		if (!string.IsNullOrWhiteSpace(settings.ActionPostprocessModelName)) _postprocessModel = settings.ActionPostprocessModelName;
+		_postprocessUrl = settings.ActionPostprocessApiUrl ?? "";
+		_postprocessKey = settings.ActionPostprocessApiKey ?? "";
+		_postprocessModel = settings.ActionPostprocessModelName ?? "";
 
-		if (!string.IsNullOrWhiteSpace(settings.EventAndRebellionApiUrl)) _eventUrl = settings.EventAndRebellionApiUrl;
-		if (!string.IsNullOrWhiteSpace(settings.EventAndRebellionApiKey)) _eventKey = settings.EventAndRebellionApiKey;
-		if (!string.IsNullOrWhiteSpace(settings.EventAndRebellionModelName)) _eventModel = settings.EventAndRebellionModelName;
+		_eventUrl = settings.EventAndRebellionApiUrl ?? "";
+		_eventKey = settings.EventAndRebellionApiKey ?? "";
+		_eventModel = settings.EventAndRebellionModelName ?? "";
 	}
 
 	private void InitSelectors()
@@ -483,6 +485,9 @@ public sealed class AnimusForgeApiOnboardingVM : ViewModel
 			"claude-3-5-sonnet",
 			"gemini-2.5-flash"
 		};
+
+        foreach (string model in new[] { _primaryModel, _auxiliaryModel, _postprocessModel, _eventModel })
+            if (!string.IsNullOrWhiteSpace(model) && !defaultOptions.Contains(model)) defaultOptions.Add(model);
 
 		PrimaryModelSelector = CreateSelector(defaultOptions, _primaryModel, i =>
 		{
@@ -511,8 +516,11 @@ public sealed class AnimusForgeApiOnboardingVM : ViewModel
 		{
 			options = new List<string> { "deepseek-chat", "deepseek-reasoner" };
 		}
-		int selectedIndex = options.IndexOf(selectedValue);
-		if (selectedIndex < 0) selectedIndex = 0;
+        // Never silently replace custom/persisted models with the first built-in preset.
+        if (!string.IsNullOrWhiteSpace(selectedValue) && !options.Contains(selectedValue))
+            options.Add(selectedValue);
+        int selectedIndex = options.IndexOf(selectedValue);
+        if (selectedIndex < 0) selectedIndex = 0;
 
 		return new SelectorVM<SelectorItemVM>(options, selectedIndex, s =>
 		{
@@ -565,11 +573,13 @@ public sealed class AnimusForgeApiOnboardingVM : ViewModel
 	// ================= Actions: Main Cards =================
 	public void ExecuteSelectYj()
 	{
+        _usingExistingConfig = false;
 		SwitchView(OnboardingView.YjMenu);
 	}
 
 	public void ExecuteSelectDeepSeekFlash()
 	{
+        _usingExistingConfig = false;
 		OpenKeyPrompt("DeepSeek Flash 极速推荐", "请输入你的 DeepSeek 官方 API Key (sk-...)：", key =>
 		{
 			if (string.IsNullOrWhiteSpace(key))
@@ -622,6 +632,7 @@ public sealed class AnimusForgeApiOnboardingVM : ViewModel
 
 	public void ExecuteSelectDeepSeekPro()
 	{
+        _usingExistingConfig = false;
 		OpenKeyPrompt("DeepSeek Pro 深度智谋", "请输入你的 DeepSeek 官方 API Key (sk-...)：", key =>
 		{
 			if (string.IsNullOrWhiteSpace(key))
@@ -674,6 +685,7 @@ public sealed class AnimusForgeApiOnboardingVM : ViewModel
 
 	public void ExecuteSelectCustom()
 	{
+        _usingExistingConfig = false;
 		_isCustomMode = true;
 		MultiApiModeTag = "完全自定义";
 		MultiApiModeNotice = "在一个面板中集中设置 4 条 API 的 Base URL、Key 与绑定模型";
@@ -850,6 +862,14 @@ public sealed class AnimusForgeApiOnboardingVM : ViewModel
 	}
 
 	// ================= Actions: Testing Sequence =================
+    public void ExecuteUseExistingConfig()
+    {
+        LoadSettingsFromMcm();
+        _usingExistingConfig = true;
+        _isCustomMode = true;
+        ExecuteStartCombinedTest();
+    }
+
 	public void ExecuteStartCombinedTest()
 	{
 		if (string.IsNullOrWhiteSpace(PrimaryKey) || string.IsNullOrWhiteSpace(PrimaryUrl))
@@ -858,8 +878,9 @@ public sealed class AnimusForgeApiOnboardingVM : ViewModel
 			return;
 		}
 
+		_testSucceeded = false;
 		SwitchView(OnboardingView.Testing);
-		TestOverallNotice = "正在并行向 4 条管线发送握手测试请求...";
+		TestOverallNotice = "正在准备 API 连通性测试...";
 		CanCancelTest = true;
 
 		PrimaryStatusText = "正在握手...";
@@ -895,6 +916,13 @@ public sealed class AnimusForgeApiOnboardingVM : ViewModel
 			new ModOnboardingBehavior.ApiValidationTargetInfo { Target = ModOnboardingBehavior.ApiSetupTarget.EventAndRebellion, DisplayName = "每日与周报 API", ApiUrl = EventUrl.Trim(), ApiKey = EventKey.Trim(), ModelName = EventModel.Trim() }
 		};
 
+        if (_usingExistingConfig && (string.IsNullOrWhiteSpace(EventUrl) || string.IsNullOrWhiteSpace(EventKey) || string.IsNullOrWhiteSpace(EventModel)))
+        {
+            targets.RemoveAt(targets.Count - 1);
+            EventStatusText = "未配置，跳过可选周报 API";
+        }
+        int targetCount = targets.Count;
+        TestOverallNotice = "正在并行测试 " + targetCount + " 条 API...";
 		Task.Run(async () =>
 		{
 			var tasks = targets.Select(t => TestSingleTargetAsync(t, token, generation)).ToArray();
@@ -917,7 +945,11 @@ public sealed class AnimusForgeApiOnboardingVM : ViewModel
 			bool allPassed = results.All(r => r != null && r.Success);
 			if (allPassed)
 			{
-				_uiDispatch.PostTest(generation, () => TestOverallNotice = "✔ 4 条 API 全部握手成功！即将进入确认界面...");
+                _uiDispatch.PostTest(generation, () =>
+                {
+                    _testSucceeded = true;
+                    TestOverallNotice = "✔ " + targetCount + " 条 API 握手成功！即将进入确认界面...";
+                });
 				try
 				{
 					await Task.Delay(600, token);
@@ -982,14 +1014,22 @@ public sealed class AnimusForgeApiOnboardingVM : ViewModel
 	{
 		_uiDispatch.CancelTest();
 		_testCts?.Cancel();
-		SwitchView(_currentView == OnboardingView.Testing ? (_isCustomMode ? OnboardingView.MultiApi : OnboardingView.YjModels) : OnboardingView.Main);
+        bool usedExistingConfig = _usingExistingConfig;
+        _usingExistingConfig = false;
+        SwitchView(usedExistingConfig ? OnboardingView.Main
+            : _currentView == OnboardingView.Testing ? (_isCustomMode ? OnboardingView.MultiApi : OnboardingView.YjModels) : OnboardingView.Main);
 	}
 
 	// ================= Actions: Save & Finish =================
 	public void ExecuteSaveAndFinish()
 	{
+        if (!_testSucceeded || _currentView != OnboardingView.Success)
+        {
+            ShowToast("请先完成 API 连通性测试。");
+            return;
+        }
 		DuelSettings settings = DuelSettings.GetSettings();
-		if (settings != null)
+		if (settings != null && !_usingExistingConfig)
 		{
 			settings.ApiUrl = PrimaryUrl.Trim();
 			settings.ApiKey = PrimaryKey.Trim();
@@ -1017,6 +1057,7 @@ public sealed class AnimusForgeApiOnboardingVM : ViewModel
 	// ================= Actions: Navigation & Dialogs =================
 	public void ExecuteBackToMain()
 	{
+		_usingExistingConfig = false;
 		SwitchView(OnboardingView.Main);
 	}
 
@@ -1032,6 +1073,8 @@ public sealed class AnimusForgeApiOnboardingVM : ViewModel
 
 	public void ExecuteClose()
 	{
+		_uiDispatch.CancelTest();
+		_testCts?.Cancel();
 		_onCancelled?.Invoke();
 	}
 
@@ -1082,14 +1125,16 @@ public sealed class AnimusForgeApiOnboardingVM : ViewModel
 	public void ExecuteEditPostprocessKey() => OpenTextInquiryForField("编辑后处理 Key", PostprocessKey, v => PostprocessKey = v);
 	public void ExecuteEditEventUrl() => OpenTextInquiryForField("编辑周报 API Base URL", EventUrl, v => EventUrl = v);
 	public void ExecuteEditEventKey() => OpenTextInquiryForField("编辑周报 Key", EventKey, v => EventKey = v);
-	public void ExecuteEditPromptKey() => OpenTextInquiryForField("填写 API Key", PromptKeyInput, v => PromptKeyInput = v);
+	public void ExecuteEditPromptKey() => PromptKeyInput = TaleWorlds.InputSystem.Input.GetClipboardText() ?? PromptKeyInput;
 
 	private void OpenTextInquiryForField(string title, string initialText, Action<string> onConfirmed)
 	{
-		InformationManager.ShowTextInquiry(new TextInquiryData(title, "请输入或粘贴内容：", true, true, "确定", "取消", v =>
-		{
-			if (v != null) onConfirmed?.Invoke(v.Trim());
-		}, null, false, null, initialText ?? ""));
+        // Keep field editing inside the owning 4000-layer popup: vanilla inquiries sit below it.
+        KeyPromptTitle = title;
+        KeyPromptHint = "请输入或粘贴内容（Ctrl+V），确定保存，取消保留原值。";
+        PromptKeyInput = initialText ?? "";
+        _keyPromptConfirmAction = onConfirmed;
+        IsKeyPromptVisible = true;
 	}
 
 	public void ShowToast(string message)

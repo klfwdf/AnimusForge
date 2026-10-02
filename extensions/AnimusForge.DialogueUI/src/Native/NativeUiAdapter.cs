@@ -39,6 +39,7 @@ public static class NativeUiAdapter
         var finalize = AccessTools.Method(typeof(MissionConversationVM), nameof(MissionConversationVM.OnFinalize));
         var dataSource = AccessTools.Field(typeof(AnimusForgeNativeConversationOverlay), "_dataSource");
         var restrictions = AccessTools.Method(typeof(AnimusForgeNativeConversationOverlay), "UpdateButtonsOnlyInputRestrictions");
+        var pendingNpcOpening = AccessTools.Method(typeof(AnimusForgeNativeConversationOverlay), "TryStartPendingNpcOpening");
         var focusInput = AccessTools.Method(typeof(AnimusForgeNativeConversationOverlay), "FocusInputIfVisible");
         var restoreOrdinary = AccessTools.Method(typeof(AnimusForgeNativeConversationOverlay), "RestoreNativeConversationInputAfterOrdinaryMode");
         _overlayLayerField = AccessTools.Field(typeof(AnimusForgeNativeConversationOverlay), "_layer");
@@ -47,13 +48,14 @@ public static class NativeUiAdapter
         _activeOverlayField = AccessTools.Field(typeof(AnimusForgeNativeConversationOverlay), "_activeOverlay");
         _temporaryUiField = AccessTools.Field(typeof(AnimusForgeNativeConversationOverlay), "_temporarySystemUiActive");
         if (hit == null || close == null || finalize == null || dataSource?.FieldType != typeof(AnimusForgeNativeConversationOverlayVM)
-            || restrictions == null || focusInput == null || restoreOrdinary == null || _activeOverlayField == null || _temporaryUiField == null
+            || restrictions == null || pendingNpcOpening == null || focusInput == null || restoreOrdinary == null || _activeOverlayField == null || _temporaryUiField == null
             || _overlayLayerField?.FieldType != typeof(GauntletLayer) || _overlaySubmittingField?.FieldType != typeof(bool))
             throw new MissingMemberException("DialogueUI native lifecycle contract is unavailable.");
         harmony.Patch(hit, prefix: new HarmonyMethod(typeof(NativeUiAdapter), nameof(MouseHitPrefix)));
         harmony.Patch(close, postfix: new HarmonyMethod(typeof(NativeUiAdapter), nameof(OverlayClosed)));
         harmony.Patch(finalize, prefix: new HarmonyMethod(typeof(NativeUiAdapter), nameof(NativeFinalizing)));
         harmony.Patch(restrictions, prefix: new HarmonyMethod(typeof(NativeUiAdapter), nameof(UpdateRestrictionsPrefix)));
+        harmony.Patch(pendingNpcOpening, prefix: new HarmonyMethod(typeof(NativeUiAdapter), nameof(NpcOpeningPrefix)));
         harmony.Patch(focusInput,
             prefix: new HarmonyMethod(typeof(NativeUiAdapter), nameof(AuxiliaryFocusPrefix)));
         harmony.Patch(restoreOrdinary, prefix: new HarmonyMethod(typeof(NativeUiAdapter), nameof(AuxiliaryRestorePrefix)));
@@ -74,15 +76,19 @@ public static class NativeUiAdapter
             vm = new NativeOverlayVM(af);
             Wrappers.Add(af, vm);
         }
-        // The sub-module contract is AI-first.  Apply this while the overlay VM is
-        // being created so the native answer list is suppressed before its first
-        // visible frame; waiting for the application tick leaves the vanilla list
-        // on screen and makes the toolbar appear to be missing.
-        if (!af.IsCustomAnswerVisible)
+        // Capture once at movie creation; AI-first remains the default, but MCM can
+        // keep ordinary options visible until an explicit switch. No delayed force-switch.
+        if (vm.AutoEnterAiMode && !af.IsCustomAnswerVisible)
             af.SwitchTalk();
         wrapper = vm;
         return true;
     }
+
+    // A queued NPC opening may begin after the movie load. Respect the captured setting
+    // until the player explicitly enters AI; no per-frame MCM reads or mission scans.
+    private static bool NpcOpeningPrefix(AnimusForgeNativeConversationOverlayVM ____dataSource)
+        => !_installed || !DialogueUiRuntime.Enabled || ____dataSource.IsCustomAnswerVisible
+            || !Wrappers.TryGetValue(____dataSource, out var wrapper) || wrapper.AutoEnterAiMode;
 
     public static void OnMovieLoaded(string movieName, Widget root, IViewModel datasource)
     {
@@ -374,7 +380,6 @@ public static class NativeUiAdapter
         private int _styledVersion = -1;
         private int _stylePasses;
         internal readonly Widget InputEditor;
-        private bool _defaultModeApplied;
         private bool _disposed;
 
         internal OverlayLayout(Widget root, AnimusForgeNativeConversationOverlayVM original, bool isMapConversation)
@@ -408,11 +413,6 @@ public static class NativeUiAdapter
                 if (_styledVersion != _wrapper.Auxiliary.LayoutVersion)
                 { _styledVersion = _wrapper.Auxiliary.LayoutVersion; _stylePasses = 2; }
                 if (_stylePasses > 0) { _stylePasses--; StyleAuxiliary(_auxiliary); }
-            }
-            if (!_defaultModeApplied && tick > 1)
-            {
-                _defaultModeApplied = true;
-                if (!Original.IsCustomAnswerVisible) Original.SwitchTalk();
             }
             // The host asks for input focus by bumping InputFocusVersion (its own prefab binds that to
             // the editor's FocusRequestId). DevMultilineEditableTextWidget only has a one-shot AutoFocus,

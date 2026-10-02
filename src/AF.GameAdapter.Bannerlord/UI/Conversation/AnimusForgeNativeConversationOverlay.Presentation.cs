@@ -60,8 +60,8 @@ public sealed partial class AnimusForgeNativeConversationOverlay
             RetireStaleSubmissionPresentation(generation);
             return false;
         }
-        StopWaitingDotsAnimation(generation);
         _isSubmitting = false;
+        StopWaitingDotsAnimation(generation);
         _dataSource.SetBusy(false);
         ConversationHelper.EndStreaming();
         _submitPresentationScope = null;

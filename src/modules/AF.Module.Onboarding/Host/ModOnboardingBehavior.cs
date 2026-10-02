@@ -208,6 +208,10 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 
 	public static ModOnboardingBehavior Instance { get; private set; }
 
+    internal bool IsSetupUiActive => _welcomeInProgress || _activeOnboardingStage != OnboardingUiStage.None
+        || AnimusForgeApiOnboardingPopup.IsOpen;
+
+
 	public ModOnboardingBehavior()
 	{
 		Instance = this;
@@ -307,6 +311,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 			{
 				ShowStartupNotice();
 			}
+			if (MyBehavior.Instance?.IsMissingOnnxGateActive == true) return;
 			if (_onboardingSession.TryClaimWelcome(DateTime.UtcNow.Ticks, Campaign.Current != null && Campaign.Current.GameStarted, _setupDone))
 			{
 				ShowSetupModeChoicePopup(fromGate: false);
@@ -1111,7 +1116,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 				return false;
 			}
 			ResetYjApiSetup();
-			_apiOnlySetupFlowActive = true;
+			_apiOnlySetupFlowActive = _setupDone;
 			_onboardingSession.CancelWelcome();
 			_pendingReturnToWelcome = false;
 			_dismissalOwner.Reset();
@@ -1238,7 +1243,6 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 				}
 				else
 				{
-					_setupDone = true;
 					ShowImportSetupPopup(fromGate: true, ignoreSuppress: true);
 				}
 			}, delegate
@@ -1250,7 +1254,12 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 				}
 				else
 				{
-					ShowSetupModeChoicePopup(fromGate: true, ignoreSuppress: true);
+					// Explicit close is a dismissal, not a failed popup to reopen next tick.
+					_activeOnboardingStage = OnboardingUiStage.None;
+					_dismissalOwner.Reset();
+					_pendingReturnToWelcome = false;
+					_onboardingSession.CancelWelcome();
+					InformationManager.DisplayMessage(new InformationMessage("已关闭首次配置，可从终端重新打开；AI 功能仍需完成引导。"));
 				}
 			}))
 			{

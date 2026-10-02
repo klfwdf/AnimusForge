@@ -65,11 +65,7 @@ public sealed partial class AnimusForgeNativeConversationOverlay
 
 	private long _nextWaitingDotsUpdateUtcTicks;
 
-	private long _waitingForReplyStartedUtcTicks;
-
-	private bool _longWaitEscapeUnlockAvailable;
-
-	private bool _longWaitEscapeNoticeShown;
+    private readonly ConversationReplyWaitOwner _replyWait = new ConversationReplyWaitOwner();
 
 	private readonly object _postprocessNoticeLock = new object();
 
@@ -281,7 +277,13 @@ public sealed partial class AnimusForgeNativeConversationOverlay
 		{
 			if (!isVisible)
 			{
-				StopWaitingDotsAnimation();
+                // Retire this UI generation; late callbacks must not lock the next AI entry.
+                _isSubmitting = false;
+                StopWaitingDotsAnimation();
+                _submitPresentationScope = null;
+                _npcOpeningAutoStarted = false;
+                _dataSource.SetBusy(false);
+                ConversationHelper.EndStreaming();
 				ClearPendingPostprocessNotice();
 				_submitGeneration++;
 			}
@@ -1375,9 +1377,7 @@ public sealed partial class AnimusForgeNativeConversationOverlay
 		_waitingDotsGeneration = generation;
 		_waitingDotsPhase = 0;
 		_nextWaitingDotsUpdateUtcTicks = 0L;
-		_waitingForReplyStartedUtcTicks = DateTime.UtcNow.Ticks;
-		_longWaitEscapeUnlockAvailable = false;
-		_longWaitEscapeNoticeShown = false;
+        _replyWait.Start(generation, DateTime.UtcNow.Ticks);
 		_waitingDotsActive = true;
 		UpdateWaitingDotsAnimation(force: true);
 	}
@@ -1394,9 +1394,8 @@ public sealed partial class AnimusForgeNativeConversationOverlay
 	{
 		_waitingDotsActive = false;
 		_nextWaitingDotsUpdateUtcTicks = 0L;
-		_waitingForReplyStartedUtcTicks = 0L;
-		_longWaitEscapeUnlockAvailable = false;
-		_longWaitEscapeNoticeShown = false;
+        // Partial streaming stops dots but must not disarm escape for a later stalled reply.
+        if (!_isSubmitting || _isClosed) _replyWait.Stop();
 	}
 
 	private void UpdateWaitingDotsAnimation(bool force = false)
@@ -1440,26 +1439,15 @@ public sealed partial class AnimusForgeNativeConversationOverlay
 
 	private void TickLongWaitEscapeUnlock()
 	{
-		if (!_isSubmitting || !_waitingDotsActive || _waitingDotsGeneration != _submitGeneration || !_dataSource.IsCustomAnswerVisible)
-		{
-			_longWaitEscapeUnlockAvailable = false;
-			return;
-		}
-		long startedTicks = _waitingForReplyStartedUtcTicks;
-		if (startedTicks <= 0L)
-		{
-			return;
-		}
-		if (!_longWaitEscapeNoticeShown && DateTime.UtcNow.Ticks - startedTicks >= LongNpcReplyUnlockDelay.Ticks)
-		{
-			_longWaitEscapeNoticeShown = true;
-			_longWaitEscapeUnlockAvailable = true;
-			ShowLongWaitEscapeNotice();
-		}
-		if (_longWaitEscapeUnlockAvailable && ShouldUnlockLongWaitForEscapeKey())
-		{
-			ReleaseLongWaitUiLock();
-		}
+        if (!_isSubmitting || !_dataSource.IsCustomAnswerVisible)
+        {
+            _replyWait.Stop();
+            return;
+        }
+        if (_replyWait.TryOfferEscape(_submitGeneration, DateTime.UtcNow.Ticks, LongNpcReplyUnlockDelay.Ticks))
+            ShowLongWaitEscapeNotice();
+        if (_replyWait.CanEscape && ShouldUnlockLongWaitForEscapeKey())
+            ReleaseLongWaitUiLock();
 	}
 
 	private bool ShouldUnlockLongWaitForEscapeKey()
@@ -1486,12 +1474,11 @@ public sealed partial class AnimusForgeNativeConversationOverlay
 
 	private void ReleaseLongWaitUiLock()
 	{
-		if (_isClosed || !_longWaitEscapeUnlockAvailable)
+		if (_isClosed || !_replyWait.CanEscape)
 		{
 			return;
 		}
-		_longWaitEscapeUnlockAvailable = false;
-		_longWaitEscapeNoticeShown = false;
+        _replyWait.Stop();
 		Logger.Log("NativeConversationOverlay", "Long NPC reply wait unlocked by ESC. Generation=" + _submitGeneration);
 		SetInputVisible(false);
 		try
@@ -1508,7 +1495,7 @@ public sealed partial class AnimusForgeNativeConversationOverlay
 	{
 		try
 		{
-			InformationManager.DisplayMessage(new InformationMessage("NPC长时间未回复，现在可以按ESC解除UI锁定限制。", new Color(1f, 0.95f, 0.25f)));
+			InformationManager.DisplayMessage(new InformationMessage("NPC回复等待较久，现在可以按 ESC 退出 AI 模式，恢复普通对话。", new Color(1f, 0.95f, 0.25f)));
 		}
 		catch (Exception ex)
 		{

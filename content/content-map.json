@@ -721,6 +721,11 @@
     },
     {
       "owner": "AnimusForge.DialogueUI",
+      "source": "extensions/AnimusForge.DialogueUI/GUI/Prefabs/AFDialogueConversationItem.xml",
+      "target": "GUI/Prefabs/AFDialogueConversationItem.xml"
+    },
+    {
+      "owner": "AnimusForge.DialogueUI",
       "source": "extensions/AnimusForge.DialogueUI/GUI/Prefabs/AFDialogueMapConversation.xml",
       "target": "GUI/Prefabs/AFDialogueMapConversation.xml"
     },

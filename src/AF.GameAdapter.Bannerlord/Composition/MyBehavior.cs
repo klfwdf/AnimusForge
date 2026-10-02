@@ -1412,6 +1412,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 	private long _weeklyReportReopenAfterApiConfigUtcTicks { get => WeeklyEditor.ReopenAfterApiConfigUtcTicks; set => WeeklyEditor.ReopenAfterApiConfigUtcTicks = value; }
 
 	private bool _missingOnnxGateActive;
+    internal bool IsMissingOnnxGateActive => _missingOnnxGateActive;
 
 	private long _missingOnnxGateResumeAfterUtcTicks;
 
@@ -1776,6 +1777,8 @@ public partial class MyBehavior : CampaignBehaviorBase
 	private void OnNewGameCreated(CampaignGameStarter starter)
 	{
 		ResetRuntimeForLoadedSave("new_game_created");
+        // New campaigns do not necessarily raise the loaded-save completion event.
+        QueueMissingOnnxGateCheck(TimeSpan.Zero);
 		// The civil-war owner is process-wide; only save loading replaces it, so a new campaign must clear it.
 		_civilWarJsonStorage = "";
 		TeamModuleServices.CivilWar.Load("");
@@ -15848,10 +15851,10 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 	{
 		try
 		{
-			ProcessMemorySummaryMainThreadActions();
-			ProcessPendingMemoryFailureNotice();
 			ProcessPendingMissingOnnxGateCheck();
 			ProcessMissingOnnxGateUiResume();
+			ProcessMemorySummaryMainThreadActions();
+			ProcessPendingMemoryFailureNotice();
 			ProcessPendingWeeklyReportManualRetryResult();
 			ProcessWeeklyReportUiResume();
 			TryPublishUnreadWeeklyReportMapNotifications();
@@ -15988,6 +15991,9 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 		{
 			return;
 		}
+        if (InformationManager.IsAnyInquiryActive() || AnimusForgeApiOnboardingPopup.IsOpen
+            || ModOnboardingBehavior.Instance?.IsSetupUiActive == true)
+            return; // Keep the one-shot check pending until the owning onboarding UI completes.
 		_pendingMissingOnnxGateCheck = false;
 		_pendingMissingOnnxGateCheckAfterUtcTicks = 0L;
 		EvaluateMissingOnnxGate();
@@ -16039,7 +16045,7 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 		{
 			return;
 		}
-		if (InformationManager.IsAnyInquiryActive())
+		if (InformationManager.IsAnyInquiryActive() || AnimusForgeApiOnboardingPopup.IsOpen || ModOnboardingBehavior.Instance?.IsSetupUiActive == true)
 		{
 			return;
 		}
@@ -16079,8 +16085,9 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 			AnimusForgeModelStore.ResolveEmbedding();
 			return OnnxEmbeddingEngine.Instance.IsAvailable;
 		}
-		catch
+		catch (Exception ex)
 		{
+            Logger.Log("OnnxGate", "Required ONNX file validation failed: " + ex.Message);
 			return false;
 		}
 	}

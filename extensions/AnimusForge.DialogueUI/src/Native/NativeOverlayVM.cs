@@ -41,6 +41,7 @@ public sealed class NativeOverlayVM : ViewModel
         }
     }
     [DataSourceProperty] public bool IsInputEmpty => string.IsNullOrWhiteSpace(_inputText);
+    internal bool AutoEnterAiMode { get; } = DialogueUiOptions.AutoEnterAiMode;
     [DataSourceProperty] public string SwitchTitle => Original.SwitchTitle;
     [DataSourceProperty] public string AIChatHistoryButtonText => Original.AIChatHistoryButtonText;
     [DataSourceProperty] public string GiveShowButtonText => Original.GiveShowButtonText;

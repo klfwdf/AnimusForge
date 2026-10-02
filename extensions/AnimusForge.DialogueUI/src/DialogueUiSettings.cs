@@ -32,6 +32,11 @@ namespace AnimusForge.DialogueUI
         public Dropdown<string> ShoutPanelStyleDropdown { get; set; } =
             new Dropdown<string>(new[] { "原样", "卷轴式", "右侧手札" }, 0);
 
+        [SettingPropertyBool("自动进入 AI 模式", Order = 3, RequireRestart = false,
+            HintText = "开启时，每次打开场景或地图对话自动进入 AI 输入模式；关闭时先显示普通对话选项，仍可手动切换 AI。下次打开对话生效。")]
+        [SettingPropertyGroup("1. 界面", GroupOrder = 1)]
+        public bool AutoEnterAiMode { get; set; } = true;
+
         [SettingPropertyBool("对话历史显示删除按钮", Order = 2, RequireRestart = false,
             HintText = "开启后，对话历史面板的每条持久记录旁显示删除按钮。删除会同时移除该条可见历史与当日尚未压缩的记忆草稿；已压缩进记忆块的内容不受影响。")]
         [SettingPropertyGroup("1. 界面", GroupOrder = 1)]
@@ -46,6 +51,7 @@ namespace AnimusForge.DialogueUI
     {
         private static bool _unavailable;
 
+        internal static bool AutoEnterAiMode => Read(ReadAutoEnterAiMode, true);
         internal static bool SkinEnabled => Read(ReadSkin, true);
         internal static bool ShowHistoryDelete => Read(ReadHistoryDelete, true);
 
@@ -72,6 +78,9 @@ namespace AnimusForge.DialogueUI
                 return fallback;
             }
         }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private static bool ReadAutoEnterAiMode() => DialogueUiSettings.Instance?.AutoEnterAiMode ?? true;
 
         [MethodImpl(MethodImplOptions.NoInlining)]
         private static bool ReadSkin() => DialogueUiSettings.Instance?.EnableSkin ?? true;
