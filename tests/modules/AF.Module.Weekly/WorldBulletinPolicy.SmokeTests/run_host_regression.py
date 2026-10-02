@@ -58,17 +58,17 @@ owner=(ROOT/'src/modules/AF.Module.Weekly/Generation/WorldBulletinStateOwner.cs'
 presentation=(ROOT/'src/modules/AF.Module.Weekly/Generation/WorldBulletinStateOwner.Presentation.cs').read_text(encoding='utf-8-sig')
 owner_fields=owner[owner.index('internal sealed partial class WorldBulletinStateOwner {'):owner.index('internal WorldBulletinSaveState EnsureWorldBulletinState()')]
 cache_fields=presentation[presentation.index('internal List<EventRecordEntry> CachedRecords;'):presentation.index('private const int WorldBulletinMaxLayouts')]
-actual_methods=[method(owner,n) for n in ['EnsureWorldBulletinState','IsWorldBulletinEventId','ResetTransient','ResetRuntime','ExportJson','ImportJson']]+[method(presentation,n) for n in ['FindLatestWorldBulletinRecord','GetWorldBulletinRecordSequence']]
+actual_methods=[method(owner,n) for n in ['EnsureWorldBulletinState','IsWorldBulletinEventId','ReleasePendingWorldBulletinNotice','ResetTransient','ResetRuntime','ExportJson','ImportJson']]+[method(presentation,n) for n in ['FindLatestWorldBulletinRecord','GetWorldBulletinRecordSequence']]
 owned='using System;using System.Linq;using System.Globalization;using System.Collections.Generic;using System.Collections.Concurrent;using static AnimusForge.MyBehavior;namespace AnimusForge;'+owner_fields+cache_fields+'\n'.join(actual_methods)+'}'
 # Only calendar, storage/game records and logging are fixture facts; all state/cache/save algorithms above are actual spans.
-owned+='internal sealed class WorldBulletinPort {internal Func<int> CurrentDay;internal Func<List<EventRecordEntry>> Records;internal Action<string,string> Log;}'
+owned+='internal sealed class WorldBulletinPort {internal Func<int> CurrentDay;internal Func<List<EventRecordEntry>> Records;internal Action<string,string> Log;internal Func<string,MyBehavior.EventRecordEntry> FindRecord;internal Action<string> QueueNotice;}'
 generated=generated.replace('public partial class MyBehavior\n{','public partial class MyBehavior\n{ private readonly WorldBulletinStateOwner _worldBulletinOwner=new();private WorldBulletinStateOwner WorldBulletinState {get { _worldBulletinOwner.Bind(new(){CurrentDay=GetCurrentGameDayIndexSafe,Records=()=>_eventRecordEntries,Log=Logger.Log});return _worldBulletinOwner;}}',1)
 run = new_run_root(ROOT, "world-bulletin-review", args.run_root)
 (run / "Host.cs").write_text(generated, encoding="utf-8")
 (run / "Owner.cs").write_text(owned,encoding='utf-8')
 (run / "Replay.cs").write_text((HERE/'HostRegression.cs').read_text(encoding='utf-8-sig').replace('private sealed class EventRecordEntry','internal sealed class EventRecordEntry'),encoding='utf-8')
 (run / "source-manifest.json").write_text(json.dumps(inventory,indent=2),encoding='utf-8')
-links = [ HERE / "LayoutStub.cs", ROOT / "src/modules/AF.Module.Weekly/Bulletin/WorldBulletinPolicy.cs"]
+links = [ HERE / "LayoutStub.cs", ROOT / "src/modules/AF.Module.Weekly/Bulletin/WorldBulletinPolicy.cs", ROOT / "src/AF.Foundation.Runtime/Lifecycle/SaveRuntimeGuard.cs"]
 project = '<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><LangVersion>10</LangVersion></PropertyGroup><ItemGroup>'
 project += "".join('<Compile Include="' + escape(str(p), {'"': '&quot;'}) + '" />' for p in links)
 project += '<Reference Include="Newtonsoft.Json"><HintPath>' + escape(str(newtonsoft)) + '</HintPath></Reference></ItemGroup></Project>'

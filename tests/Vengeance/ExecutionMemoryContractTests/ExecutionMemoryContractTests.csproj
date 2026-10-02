@@ -5,6 +5,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="../../../src/modules/AF.Module.Memory/Records/ExecutionTranscriptStore.cs" Link="Production/ExecutionTranscriptStore.cs" />
+    <Compile Include="../../../src/bridges/Vengeance/Host/ExecutionSpeechResponseReceiver.cs" Link="Production/ExecutionSpeechResponseReceiver.cs" />
     <Compile Include="../../../src/bridges/Vengeance/Host/ExecutionAddressContextPolicy.cs" Link="Production/ExecutionAddressContextPolicy.cs" />
     <Compile Include="../../../src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.ExecutionMemory.cs" Link="Production/MyBehavior.ExecutionMemory.cs" />
     <Compile Include="../../../src/bridges/Vengeance/Host/PublicExecutionOrderPolicy.cs" Link="Production/PublicExecutionOrderPolicy.cs" />

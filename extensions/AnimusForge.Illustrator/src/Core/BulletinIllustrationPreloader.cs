@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Linq;
 using System.Text;
+using TaleWorlds.Library;
 using AnimusForge.Illustrator.Context;
 using AnimusForge.Illustrator.Engine;
 using AnimusForge.Illustrator.UI.Patches;
@@ -20,7 +21,11 @@ namespace AnimusForge.Illustrator.Core
             internal bool Ready;
             internal int Attempt;
             internal string Status = "本期配图正在提前生成…";
+            // Main-thread only; each waiter runs exactly once when the job settles, is cancelled or times out.
+            internal List<Action> Waiters;
         }
+
+        private const int NoticeWaitTimeoutMs = 90000;
 
         private static readonly Dictionary<string, Job> Jobs = new Dictionary<string, Job>(StringComparer.Ordinal);
         internal static Action<string, WeeklyReportPopupIllustrationPatch.GenerationResult> Updated;
@@ -68,7 +73,41 @@ namespace AnimusForge.Illustrator.Core
             job.Ready = false;
             job.Status = "本期事件已作废。";
             job.Scope?.Close();
+            ReleaseWaiters(job);
             Updated?.Invoke(job.Key, null);
+        }
+
+        // Lets the bulletin hold its map notice until the selected illustration is ready.
+        // Returns false when nothing is generating, so the caller notifies immediately.
+        internal static bool AwaitSelection(global::AnimusForge.WorldBulletinIllustrationPlan plan, Action release)
+        {
+            if (plan == null || release == null) return false;
+            IllustratorRuntime.AssertMainThread();
+            var job = Find(KeyFor(plan));
+            if (job == null || !job.Pending) return false;
+            bool done = false;
+            Action once = () => { if (done) return; done = true; release(); };
+            (job.Waiters ?? (job.Waiters = new List<Action>())).Add(once);
+            // Real time, not campaign time: the map may be paused while the image is generating.
+            Task.Delay(NoticeWaitTimeoutMs).ContinueWith(_ => IllustratorRuntime.PostCritical(() =>
+            {
+                if (done) return;
+                Debug.Print("[Illustrator] Bulletin notice released by timeout: " + job.Key);
+                once();
+            }));
+            return true;
+        }
+
+        private static void ReleaseWaiters(Job job)
+        {
+            var waiters = job.Waiters;
+            job.Waiters = null;
+            if (waiters == null) return;
+            foreach (var waiter in waiters)
+            {
+                try { waiter(); }
+                catch (Exception ex) { Debug.Print("[Illustrator] Bulletin notice release failed: " + ex.Message); }
+            }
         }
 
         internal static Job Find(string key) => key != null && Jobs.TryGetValue(key, out var job) ? job : null;
@@ -142,6 +181,7 @@ namespace AnimusForge.Illustrator.Core
             job.Status = status;
             job.Scope?.Close();
             Updated?.Invoke(job.Key, result);
+            ReleaseWaiters(job);
         }
 
         internal static void MarkDeleted(string key)
@@ -154,8 +194,14 @@ namespace AnimusForge.Illustrator.Core
 
         internal static void Reset()
         {
-            foreach (Job job in Jobs.Values) job.Scope?.Close();
+            var jobs = Jobs.Values.ToList();
             Jobs.Clear();
+            foreach (Job job in jobs)
+            {
+                job.Scope?.Close();
+                // The host's save-generation guard turns releases from a finished campaign into no-ops.
+                ReleaseWaiters(job);
+            }
         }
     }
 }

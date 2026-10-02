@@ -105,8 +105,44 @@ internal static class Program
         BulletinIllustrationPreloader.CancelSelection(plan);
         Check(!BulletinIllustrationPreloader.Find(selectedKey).Ready, "Invalidation also clears already-completed selection");
         BulletinIllustrationPreloader.Reset();
+        TestNoticeWaits(context);
         Console.WriteLine("PASS " + checks + " production preloader checks with fake scope, disk and generator; no game/network.");
     }
+    private static void TestNoticeWaits(WeeklyReportVisualContext context)
+    {
+        foreach (string outcome in new[] { "success", "failure", "cancel", "timeout", "reset" })
+        {
+            BulletinIllustrationPreloader.Reset();
+            var plan = new AnimusForge.WorldBulletinIllustrationPlan { Identity = "notice:" + outcome, Facts = "fact" };
+            Check(!BulletinIllustrationPreloader.AwaitSelection(plan, () => { throw new Exception("no job"); }), "No job releases immediately: " + outcome);
+            BulletinIllustrationPreloader.PrepareSelection(plan);
+            var callback = WeeklyReportPopupIllustrationPatch.Requests[WeeklyReportPopupIllustrationPatch.Requests.Count - 1];
+            int released = 0;
+            Check(BulletinIllustrationPreloader.AwaitSelection(plan, () => released++), "Pending job registers waiter: " + outcome);
+            Check(released == 0, "Waiter not released early: " + outcome);
+            if (outcome == "success") callback(WeeklyReportPopupIllustrationPatch.Success());
+            else if (outcome == "failure") callback(new WeeklyReportPopupIllustrationPatch.GenerationResult { Result = new ImageGenerationResult { ErrorMessage = "failure" } });
+            else if (outcome == "cancel") BulletinIllustrationPreloader.CancelSelection(plan);
+            else if (outcome == "reset") BulletinIllustrationPreloader.Reset();
+            else BulletinTestTask.Expire();
+            Check(released == 1, "One release after " + outcome);
+            callback(WeeklyReportPopupIllustrationPatch.Success());
+            BulletinTestTask.Expire();
+            Check(released == 1, "Late completion and timeout cannot duplicate " + outcome);
+        }
+        BulletinIllustrationPreloader.Reset();
+        var multi = new AnimusForge.WorldBulletinIllustrationPlan { Identity = "multi", Facts = "fact" };
+        BulletinIllustrationPreloader.PrepareSelection(multi);
+        int a = 0, b = 0;
+        BulletinIllustrationPreloader.AwaitSelection(multi, () => a++);
+        BulletinIllustrationPreloader.AwaitSelection(multi, () => b++);
+        BulletinTestTask.Expire();
+        WeeklyReportPopupIllustrationPatch.Requests[WeeklyReportPopupIllustrationPatch.Requests.Count - 1](WeeklyReportPopupIllustrationPatch.Success());
+        Check(a == 1 && b == 1, "Independent waiters each release once");
+        Check(!BulletinIllustrationPreloader.AwaitSelection(multi, () => a++), "Completed job never registers another timer");
+        BulletinIllustrationPreloader.Reset();
+    }
+
 }
 namespace AnimusForge.Illustrator.Context
 {
@@ -123,7 +159,7 @@ namespace AnimusForge
 }
 namespace AnimusForge.Illustrator.Core
 {
-    internal static class IllustratorRuntime { internal static bool Enabled = true; internal static void AssertMainThread() { } internal static bool IsEnabled(string c) => Enabled; }
+    internal static class IllustratorRuntime { internal static bool Enabled = true; internal static void AssertMainThread() { } internal static bool IsEnabled(string c) => Enabled; internal static readonly Queue<Action> Critical = new(); internal static void PostCritical(Action action) { lock (Critical) Critical.Enqueue(action); } internal static void Drain() { while (true) { Action action; lock (Critical) { if (Critical.Count == 0) return; action = Critical.Dequeue(); } action(); } } }
     internal sealed class IllustrationScope
     {
         internal bool Closed, CampaignOwned;
@@ -154,5 +190,30 @@ namespace AnimusForge.Illustrator.UI.Patches
         internal static bool StartGeneration(IllustrationScope scope, WeeklyReportVisualContext context, string key, bool bulletin, int attempt,
             Action<GenerationResult> complete, Action<string> fail, Action<string> status) { Requests.Add(complete); return true; }
         internal static GenerationResult Success() => new GenerationResult { Saved = new CachedIllustrationItem { ImageData = new byte[] { 1 } }, Result = new ImageGenerationResult { Success = true, ImageBytes = new byte[] { 1 } }, Prompt = "prompt" };
+    }
+}
+
+namespace TaleWorlds.Library
+{
+    internal static class Debug { internal static void Print(string text) { } }
+}
+// Manual clock: only the production preloader's Task.Delay is replaced; Task<T> workers stay real.
+internal static class BulletinTestTask
+{
+    private static readonly List<TaskCompletionSource<bool>> Timers = new();
+    internal static System.Threading.Tasks.Task Delay(int milliseconds)
+    {
+        if (milliseconds != 90000) throw new Exception("unexpected notice timeout");
+        var done = new TaskCompletionSource<bool>(); Timers.Add(done); return done.Task;
+    }
+    internal static System.Threading.Tasks.Task<T> Run<T>(Func<T> work, CancellationToken token)
+        => System.Threading.Tasks.Task.Run(work, token);
+    internal static void Expire()
+    {
+        var timers = Timers.ToArray(); Timers.Clear();
+        foreach (var timer in timers) timer.SetResult(true);
+        if (!SpinWait.SpinUntil(() => { lock (IllustratorRuntime.Critical) return IllustratorRuntime.Critical.Count >= timers.Length; }, 5000))
+            throw new Exception("timeout continuation did not reach fake main thread");
+        IllustratorRuntime.Drain();
     }
 }

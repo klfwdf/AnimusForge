@@ -246,7 +246,7 @@ internal sealed partial class KingdomCivilWarOwner
 			if (f.Stage == KingdomCivilWarStage.OpenWar) AdvanceOpenWar(k, s, f, week, tuning, HostStability);
 			else
 			{
-				if (!f.PlayerFounded && !f.DemandLocked && day >= f.LastDemandDay + 7 && sources.Any(x => x != "daily" && x != "weekly")) RefreshPoliticalDemand(k, s, f, day);
+				if (!IsPlayerLed(f) && !f.PlayerFounded && !f.DemandLocked && day >= f.LastDemandDay + 7 && sources.Any(x => x != "daily" && x != "weekly")) RefreshPoliticalDemand(k, s, f, day);
 				bool trigger = f.EscalationPending;
 				if (trigger && (f.LastEscalationDay < 0 || day >= f.LastEscalationDay + 7) && CanStartPoliticalWar(k, s, f))
 				{

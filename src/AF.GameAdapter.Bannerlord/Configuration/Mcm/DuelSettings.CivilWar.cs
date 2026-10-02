@@ -44,6 +44,10 @@ public partial class DuelSettings
 	[SettingPropertyGroup(CivilWarGroup, GroupOrder = 125)]
 	public bool CivilWarAllowConcurrentWars { get; set; } = false;
 
+	[SettingPropertyInteger("玩家手动起兵实力占比（%）", 0, 100, "0", Order = 9, RequireRestart = false, HintText = "玩家家族军力须达到所属王国正式政治家族总军力的此百分比，才能手动起兵或向派系领袖提议起兵。0 表示关闭实力门槛；默认 20%。玩家担任派系领袖时不会自动起兵，拒绝解散令也须满足此门槛。")]
+	[SettingPropertyGroup(CivilWarGroup, GroupOrder = 125)]
+	public int CivilWarPlayerDetonationStrengthPercent { get; set; } = 20;
+
 	public static bool IsCivilWarFactionsEnabled()
 	{
 		try { return IsKingdomStabilityAndRebellionEnabled() && (GetSettings()?.EnableCivilWarFactions ?? true); }
@@ -68,6 +72,7 @@ public partial class DuelSettings
 			tuning.AllowConcurrentWars = settings.CivilWarAllowConcurrentWars;
 			tuning.Randomness = CivilWarRules.Clamp(settings.CivilWarRandomness, 0f, 1f);
 			tuning.DiscontentThreshold = System.Math.Max(10, settings.CivilWarDiscontentThreshold);
+			tuning.PlayerDetonationStrengthPercent = System.Math.Max(0, System.Math.Min(100, settings.CivilWarPlayerDetonationStrengthPercent));
 			tuning.UltimatumDelayWeeks = System.Math.Max(1, settings.CivilWarUltimatumDelayWeeks);
 			tuning.MaxWarWeeks = System.Math.Min(30, System.Math.Max(tuning.MinWarWeeks + 1, settings.CivilWarMaxWarWeeks));
 			tuning.CooldownWeeks = System.Math.Max(0, settings.CivilWarCooldownWeeks);

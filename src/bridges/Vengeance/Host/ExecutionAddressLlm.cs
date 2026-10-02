@@ -412,6 +412,7 @@ internal static class ExecutionAddressLlm
         ExecutionAddressLlmBridge.OnTick = Tick;
         ExecutionAddressLlmBridge.OnCancel = Cancel;
         ExecutionAddressLlmBridge.OnPlay = Play;
+        ExecutionSpeechBubbleBridge.Ready = IsHostBubbleReady;
         ExecutionSpeechBubbleBridge.Show = ShowOnHostBubble;
         ExecutionSpeechBubbleBridge.ClearShown = ClearHostBubbles;
     }
@@ -422,6 +423,7 @@ internal static class ExecutionAddressLlm
         if (ExecutionAddressLlmBridge.OnTick == Tick) ExecutionAddressLlmBridge.OnTick = null;
         if (ExecutionAddressLlmBridge.OnCancel == Cancel) ExecutionAddressLlmBridge.OnCancel = null;
         if (ExecutionAddressLlmBridge.OnPlay == Play) ExecutionAddressLlmBridge.OnPlay = null;
+        if (ExecutionSpeechBubbleBridge.Ready == IsHostBubbleReady) ExecutionSpeechBubbleBridge.Ready = null;
         if (ExecutionSpeechBubbleBridge.Show == ShowOnHostBubble) ExecutionSpeechBubbleBridge.Show = null;
         if (ExecutionSpeechBubbleBridge.ClearShown == ClearHostBubbles) ExecutionSpeechBubbleBridge.ClearShown = null;
         foreach (var playback in Active.Values) playback.CancelRequest();
@@ -486,11 +488,14 @@ internal static class ExecutionAddressLlm
         _shownMission = mission;
     }
 
+    private static bool IsHostBubbleReady() =>
+        Mission.Current?.GetMissionBehavior<FloatingTextMissionView>()?.IsBubbleReady() == true;
+
     private static bool ShowOnHostBubble(Agent speaker, string text, float durationSeconds)
     {
         var mission = Mission.Current;
         var view = mission?.GetMissionBehavior<FloatingTextMissionView>();
-        if (view == null || speaker == null || string.IsNullOrWhiteSpace(text)) return false;
+        if (view == null || !view.IsBubbleReady() || speaker == null || !speaker.IsActive() || string.IsNullOrWhiteSpace(text)) return false;
         ForgetSpeakersFromOtherMission(mission);
         view.AddOrUpdateText(speaker, text, isAppend: false, Math.Max(0.5f, durationSeconds));
         ShownSpeakers.Add(speaker);
@@ -539,7 +544,7 @@ internal static class ExecutionAddressLlm
         // Timeout and ceremony cancellation share one token, so a finished
         // scene stops the request instead of holding the single slot.
         var token = playback.RequestToken;
-        var parser = new ExecutionSpeechLineParser();
+        var receiver = new ExecutionSpeechResponseReceiver(playback.Accept);
         try
         {
             // Recall uses the existing detached snapshot, never live Heroes on a worker.
@@ -553,8 +558,8 @@ internal static class ExecutionAddressLlm
             await LegacyShoutNetworkGateway.SendLegacyMessagesStreamAsync(
                 messages,
                 RequestMaxTokens,
-                chunk => playback.Accept(parser.Append(chunk)),
-                _ => playback.Accept(parser.Flush()),
+                receiver.OnChunk,
+                receiver.OnComplete,
                 error => playback.Fail(error),
                 token,
                 promptRetryOnError: false).ConfigureAwait(false);

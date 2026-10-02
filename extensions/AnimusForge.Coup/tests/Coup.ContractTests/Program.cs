@@ -118,6 +118,7 @@ internal static class Program
         session.CasualtiesCommitted = false;
         Assert(!session.IsSettled, "technical stop waits for casualty commit");
         CheckBulletinReport();
+        VictoryFeedbackRegression();
         Console.WriteLine("Coup contracts: " + _assertions + " PASS");
     }
 
@@ -262,6 +263,53 @@ internal static class Program
         next.StreetAllyLimit = 99;
         Assert(session.BattleOptions.StreetAllyLimit == 1 && restored.BattleOptions.StreetAllyLimit == 60,
             "sessions do not share options with future coups");
+    }
+
+    private static void VictoryFeedbackRegression()
+    {
+        var session = NewSession();
+        session.Phase = CoupPhase.AwaitingResolution;
+        session.KingSubdued = true;
+        Assert(session.NeedsHallDisposition, "verified hall victory waits for explicit disposition");
+        session.Disposition = CoupKingDisposition.Release;
+        Assert(!session.NeedsHallDisposition, "selected disposition cannot open twice");
+        Assert(!session.HasConfirmedVictory, "hall choice is not political success");
+        session.Phase = CoupPhase.Completed;
+        session.CasualtiesCommitted = session.RulingClanCommitted = session.TownCommitted
+            = session.CustodyCommitted = session.FactsCommitted = session.RebellionQueued = true;
+        Assert(session.HasConfirmedVictory && !session.NeedsVictoryFeedback, "legacy completed session does not replay feedback");
+        session.AftermathPending = true;
+        Assert(session.IsValid() && !session.NeedsVictoryFeedback, "historical aftermath flag does not request new UI");
+        session.AftermathPending = false;
+        session.VictoryReportAcknowledged = session.CoronationRequested = false;
+        Assert(session.NeedsVictoryFeedback && session.HasConfirmedVictory, "new victory has pending presentation");
+        session.Troops.Add(new CoupTroopRecord { Id = "ally_k", CharacterId = "s", SourcePartyId = "p", Role = CoupTroopRole.Ally, Killed = true, Removed = true });
+        session.Troops.Add(new CoupTroopRecord { Id = "guard_w", CharacterId = "s", SourcePartyId = "p", Role = CoupTroopRole.HallGuard, Wounded = true, Removed = true });
+        string report = CoupOutcomeReport.BuildPlayerVictory(session, "王国", "新王", "城镇", "玩家家族", "旧王", false);
+        Assert(report.Contains("当前统治者：新王") && report.Contains("城镇当前归属：玩家家族"), "report uses current authoritative names");
+        Assert(report.Contains("本次选择不扣押") && report.Contains("突击队：阵亡 1，负伤 0") && report.Contains("守军：阵亡 0，负伤 1"), "release and recorded casualties shown");
+        Assert(report.Contains("是否实际起兵以之后的战役结果为准") && !report.Contains("叛乱已经发生"), "queue receipt never claims actual rebellion");
+        session.Disposition = CoupKingDisposition.Capture;
+        Assert(CoupOutcomeReport.BuildPlayerVictory(session, "k", "r", "t", "o", "king", true).Contains("当前仍由你的部队保管"), "actual held king shown");
+        Assert(CoupOutcomeReport.BuildPlayerVictory(session, "k", "r", "t", "o", "king", false).Contains("目前已不在你的部队保管"), "later escape does not invent continuing custody");
+        session.FactsCommitted = false;
+        bool refused = false;
+        try { CoupOutcomeReport.BuildPlayerVictory(session, "k", "r", "t", "o", "king", true); }
+        catch (InvalidOperationException) { refused = true; }
+        Assert(refused && !session.HasConfirmedVictory, "partial settlement cannot show final victory");
+        session.FactsCommitted = true;
+        session.CoronationRequested = true;
+        string json = Newtonsoft.Json.JsonConvert.SerializeObject(session);
+        var restored = Newtonsoft.Json.JsonConvert.DeserializeObject<CoupSession>(json);
+        Assert(restored.IsValid() && restored.NeedsVictoryFeedback && restored.CoronationRequested == true, "save after animation submission retains report without resubmitting animation");
+        restored.VictoryReportAcknowledged = true;
+        restored = Newtonsoft.Json.JsonConvert.DeserializeObject<CoupSession>(Newtonsoft.Json.JsonConvert.SerializeObject(restored));
+        Assert(!restored.NeedsVictoryFeedback, "acknowledged report survives save-load");
+        var legacy = Newtonsoft.Json.Linq.JObject.Parse(json);
+        legacy.Remove("VictoryReportAcknowledged"); legacy.Remove("CoronationRequested");
+        restored = legacy.ToObject<CoupSession>();
+        Assert(restored.VictoryReportAcknowledged == null && restored.CoronationRequested == null && !restored.NeedsVictoryFeedback, "missing nullable markers preserve legacy semantics");
+        Assert((int)CoupPhase.Hall == 3 && (int)CoupPhase.AwaitingResolution == 4 && (int)CoupPhase.Completed == 5, "phase enum identities unchanged");
     }
 
     private static void CheckBulletinReport()

@@ -135,6 +135,15 @@ internal sealed class CoupSession
     // Old completed sessions do not replay disposition or political effects after update.
     public bool AftermathPending;
     public bool AftermathOpened;
+    // Nullable fields distinguish historical completed sessions from newly pending feedback.
+    public bool? VictoryReportAcknowledged;
+    public bool? CoronationRequested;
+    public bool NeedsVictoryFeedback => Phase == CoupPhase.Completed && VictoryReportAcknowledged == false;
+    public bool HasConfirmedVictory => Phase == CoupPhase.Completed && Started && KingSubdued
+        && Disposition != CoupKingDisposition.Undecided && CasualtiesCommitted && RulingClanCommitted
+        && TownCommitted && CustodyCommitted && FactsCommitted && RebellionQueued;
+    public bool NeedsHallDisposition => Phase == CoupPhase.AwaitingResolution && Started && KingSubdued
+        && Disposition == CoupKingDisposition.Undecided;
     public bool DefectionCommitted;
     public bool WithdrawalCommitted;
     public bool PoliticalCommitStarted;

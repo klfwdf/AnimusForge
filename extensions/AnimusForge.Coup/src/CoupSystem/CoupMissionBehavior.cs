@@ -26,7 +26,7 @@ internal sealed class CoupMissionBehavior : MissionLogic
     private Agent _player, _king;
     private MatrixFrame _gateFrame;
     private float _nextObjectiveCheck, _nextDoorPrompt;
-    private bool _initialized, _exiting, _cleaned, _doorReady;
+    private bool _initialized, _exiting, _cleaned, _doorReady, _victoryAwaitingChoice, _victoryPromptRequested, _streetReinforcementsStopped;
 
     internal CoupMissionBehavior(CoupSession session, Settlement settlement)
     {
@@ -67,6 +67,11 @@ internal sealed class CoupMissionBehavior : MissionLogic
             }
             if (Mission.CurrentTime < _nextObjectiveCheck) return;
             _nextObjectiveCheck = Mission.CurrentTime + 1f;
+            if (_victoryAwaitingChoice)
+            {
+                if (!_victoryPromptRequested) _victoryPromptRequested = CoupCampaignBehavior.TryOpenHallDisposition(Mission);
+                return;
+            }
             CheckObjectives();
         }
         catch (Exception ex)
@@ -83,6 +88,11 @@ internal sealed class CoupMissionBehavior : MissionLogic
             || !CoupCampaignBehavior.IsMissionActive(Mission)) return;
         try
         {
+            if (TryEstablishHallVictory())
+            {
+                RequestVictoryDisposition();
+                return;
+            }
             if (!_player.IsActive()) return;
             if (passage.IsMissionExit) { ExitDefeat("从场景出口撤出了政变战斗。"); return; }
             if (_hall || _session.Phase != CoupPhase.Street || passage.ToLocation?.StringId != "lordshall")
@@ -181,17 +191,18 @@ internal sealed class CoupMissionBehavior : MissionLogic
                 _king.SetMorale(100f);
                 if (_king.IsRetreating()) _king.StopRetreating();
             }
-            if (_session.KingSubdued && CoupCampaignBehavior.IsHallObjectiveComplete())
-            {
-                _exiting = true;
-                CoupCampaignBehavior.NotifyVictory(Mission);
-                EndScene();
-            }
+            TryEstablishHallVictory();
             return;
         }
         // The door opens only when every gate-guard record has actually fallen, not merely when
         // none is spawned yet; the live count covers agents whose removal is still in flight.
         _doorReady = _session.IsGateCleared && SettlementEntryTroopSelectionBehavior.CountCoupRole(Mission, "GateGuard") == 0;
+        if (_doorReady && !_streetReinforcementsStopped)
+        {
+            SettlementEntryTroopSelectionBehavior.StopStreetReinforcements(Mission);
+            _streetReinforcementsStopped = true;
+            InformationManager.DisplayMessage(new InformationMessage("【宣权篡位】大厅入口已突破，后续街道增援已停止；已在场敌兵仍会战斗。抵达门口按 F 攻入大厅。"));
+        }
         if (_doorReady && _player.Position.DistanceSquared(_gateFrame.origin) <= 36f && Mission.CurrentTime >= _nextDoorPrompt)
         {
             _nextDoorPrompt = Mission.CurrentTime + 5f;
@@ -212,6 +223,11 @@ internal sealed class CoupMissionBehavior : MissionLogic
             SettlementEntryTroopSelectionBehavior.CancelAgentSpeech(affectedAgent.Index);
         if (!_initialized || _exiting || affectedAgent == null) return;
         bool casualty = agentState == AgentState.Killed || agentState == AgentState.Unconscious;
+        if (_victoryAwaitingChoice)
+        {
+            if (affectedAgent == _player && casualty) _session.PlayerHealth = 1f;
+            return;
+        }
         if (affectedAgent == _player && casualty)
         {
             _session.PlayerHealth = 1f;
@@ -227,10 +243,47 @@ internal sealed class CoupMissionBehavior : MissionLogic
 
     public override InquiryData OnEndMissionRequest(out bool canPlayerLeave)
     {
+        if (!_exiting && TryEstablishHallVictory())
+        {
+            canPlayerLeave = false;
+            RequestVictoryDisposition();
+            return null;
+        }
         canPlayerLeave = true;
         // Native OnEndMissionRequest is polled while Tab is held and may still be cancelled;
         // commit withdrawal only in OnEndMission when the mission actually closes.
         return null;
+    }
+
+    private bool TryEstablishHallVictory()
+    {
+        if (_victoryAwaitingChoice) return true;
+        if (!_initialized || !_hall || _exiting || _player?.IsActive() != true || !_session.KingSubdued
+            || !CoupCampaignBehavior.IsHallObjectiveComplete()
+            || SettlementEntryTroopSelectionBehavior.CountCoupRole(Mission, "HallGuard") != 0) return false;
+        SaveHealth();
+        CoupCampaignBehavior.NotifyVictory(Mission);
+        if (_session.Phase != CoupPhase.AwaitingResolution) return false;
+        _victoryAwaitingChoice = true;
+        InformationManager.DisplayMessage(new InformationMessage("【宣权篡位】国王已被制服，大厅已控制。请确认旧王处置，之后离场结算。"));
+        RequestVictoryDisposition();
+        return true;
+    }
+
+    private void RequestVictoryDisposition()
+    {
+        if (!_exiting) _victoryPromptRequested = CoupCampaignBehavior.TryOpenHallDisposition(Mission);
+    }
+
+    internal bool CompleteVictoryAndLeave()
+    {
+        if (_exiting || !_victoryAwaitingChoice || !CoupCampaignBehavior.IsMissionActive(Mission)
+            || _session.Phase != CoupPhase.AwaitingResolution || !_session.KingSubdued
+            || _session.Disposition == CoupKingDisposition.Undecided) return false;
+        SaveHealth();
+        _exiting = true;
+        EndScene();
+        return true;
     }
 
     private void SaveHealth()
@@ -270,7 +323,10 @@ internal sealed class CoupMissionBehavior : MissionLogic
         if (!_exiting)
         {
             _exiting = true;
-            CoupCampaignBehavior.NotifyDefeat(Mission, "政变战斗已提前结束。");
+            // A verified hall victory survives an external closure; map recovery asks for the
+            // still-undecided disposition instead of turning an established victory into defeat.
+            if (_session.Phase != CoupPhase.Suspended && (!_victoryAwaitingChoice || _session.Phase != CoupPhase.AwaitingResolution))
+                CoupCampaignBehavior.NotifyDefeat(Mission, "政变战斗已提前结束。");
         }
         Mission.IsAgentInteractionAllowed_AdditionalCondition -= DenyNativeInteraction;
         base.OnEndMission();

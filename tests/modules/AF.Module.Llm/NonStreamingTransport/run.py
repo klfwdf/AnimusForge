@@ -18,7 +18,11 @@ for consumer in ['PolicySystem/Npc/PolicyLlmClient.cs','WorldDiplomacyLlmClient.
  for duplicate in ['new HttpRequestMessage(HttpMethod.Post','response.Content.ReadAsStringAsync(']:
   assert duplicate not in domain, consumer+' still owns duplicate chat transport: '+duplicate
 s=read('ShoutNetwork.cs');review=json.loads((HERE/'primary-source-review.json').read_text(encoding='utf-8-sig'))
-current=ex.declaration(s,'public static async Task<string> CallApiWithMessages(')
+# The streaming option adds a dispatch wrapper; this parity suite still executes
+# the unchanged non-stream core. Exact inverse names preserve the pinned review
+# hash; dispatch itself is covered by actual-DLL PrimaryStreamingOptionReplayTests.
+current=ex.declaration(s,'private static async Task<string> CallApiWithMessagesNonStreamingCore(')
+current=current.replace('private static async Task<string>', 'public static async Task<string>', 1).replace('CallApiWithMessagesNonStreamingCore(', 'CallApiWithMessages(')
 # J17 B6 additive owner cancellation scope; exact inverse preserves the reviewed
 # J01 baseline instead of refreshing its hash or weakening the behavior comparison.
 owner_scope='\n\t\tusing CancellationTokenSource ownerCancellation = LlmNonStreamingTransport.LinkOwnerCancellation(cancellationToken);\n\t\tif (ownerCancellation != null) cancellationToken = ownerCancellation.Token;\n\t\tcancellationToken.ThrowIfCancellationRequested();'
