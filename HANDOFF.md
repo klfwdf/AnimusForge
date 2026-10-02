@@ -1,3 +1,9 @@
+# 当前完整交付：各会话最新代码已统一推送并部署（2026-10-02）
+
+- 产品 `416e00aa` 覆盖内战最新玩家控制/P2、政变大厅/增援/驻防/胜利、周报/生图、处决发言、主API流式/YJ等74正式文件，含5新增源码/测试；不再仅发布四扩展接入。
+- Debug双API+Bootstrap/Stage和各功能定向回归通过；实际部署更新26文件，238 Stage hash一致、5364清单外文件与三原版DLL保持。Recovery complete/备份hash通过，游戏未启动/真实旧档与实机仍未验。
+- [主台账统一交付](docs/animusforge-refactoring-and-repository-reorganization-plan.md#latest-session-integration-20261002)与本地`artifacts/latest-session-integration-20261002/receipt.json`集中命令、源码/结果/恢复。此条替代下方本批功能“仍未推送/部署”和此前仅四扩展范围，不上传私有历史。
+
 # 当前接入：四扩展宿主目录（2026-10-02）
 
 - 生图、对话UI、政变、公开处决的 `.host` 声明和真实启动/安装/注册/停止状态已接到原目录；不自动 Ready、不新增公开执行接口。政变按要求等待另一会话结束后最后接入。

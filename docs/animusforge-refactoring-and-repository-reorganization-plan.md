@@ -1,3 +1,19 @@
+## 当前交付：所有会话最新产品统一推送并部署（2026-10-02）
+
+<a id="latest-session-integration-20261002"></a>
+
+**范围替代：** 用户明确要求所有最新会话改动一起提交推送，并追加部署游戏；本条替代此前仅四扩展接入的发布范围。当前产品提交 `416e00aa`，本地产品提交 `944e0fc4`；从已发布main只追加当前产品树，不上传本地检查点/私有交接历史。冻结并纳入74个正式源码、资源与测试文件，包括5个原未跟踪的新文件，不上传素材草稿、outputs/work、NuGet、缓存、日志和构建DLL。
+
+**实际纳入：** 最新内战玩家创建/解散/改诉求/手动起兵与两项P2修复；政变大厅部署、街道增援停止、驻防、防贴脸、胜利处置/原版登基/战报；周报通知恢复、快报宽版UI和配图预加载/DPI；公开处决非流式/空流发言恢复和阶段长回复；主API共享流式MCM与YJ协议/地址修复。新增内战Owner和PlayerFactionControl/ReviewFix测试均已入库，不再依赖未跟踪文件。
+
+**验证：** 同一完整候选按原统一脚本Debug 1.3/1.4+Bootstrap及Stage成功/0错误（实际引用v1.3.15/v1.4.6，既有警告保留）。内战294（玩家控制56+审查33）、政变144/大厅36/胜利52/防贴脸13/驻防24、处决116、生图预加载56/DPI12、周报49/快报宿主16、NonStreaming240、真实实现DLL流式15、四扩展宿主97均PASS；YJ协议/URL/auth合成回归PASS。初跑Python裸命令9009及非流式fixture硬编码SDK序列化器路径缺失已用实际Python/现有8.0.425运行时参数修复重验，未削弱断言或修改构建脚本。不是全仓355/真实provider/实机通过。
+
+**部署实证：** 原`deploy_module.ps1`把已验证统一Stage部署到既有Modules/AnimusForge，更新26受管文件。安装238个Stage hash一致，5364清单外文件保持，三原版DLL抽检hash不变；Id/Name仍AnimusForge且XML仅Bootstrap。私有Recovery `deploy-42bf5b0fdd6b484f8f57339da005aad9` complete及26份旧文件hash已复核；未启动游戏、未操作存档。Release、实机UI/原生动画/真实旧档/provider/TTS/帧性能仍NOT_RUN。
+
+**来源/职责导航：** 全74文件SHA与新旧身份见本地`artifacts/latest-session-integration-20261002/manifest.json`，不是永久功能白名单。关键入口：`src/modules/AF.Module.Kingdom/CivilWar/KingdomCivilWarOwner.PlayerControl.cs:64` ChangePlayerFactionDemand；`src/AF.GameAdapter.Bannerlord/SettlementEntry/SettlementEntryTroopSelectionBehavior.cs:6954` ObserveCoupHallDeployment；`src/bridges/Vengeance/Host/ExecutionSpeechResponseReceiver.cs:8`；`src/modules/AF.Module.Weekly/Generation/WorldBulletinStateOwner.cs:3`；`extensions/AnimusForge.Illustrator/src/Core/BulletinIllustrationPreloader.cs:14`、`src/Engine/ImagePayload.cs:11`（同扩展）；`src/modules/AF.Module.Llm/Protocol/LlmApiCompat.cs:11`/YjThinkingCompat.cs:10。坐标绑定本产品提交，实际consumer仍各原渠道/Owner，不声明整个宿主已薄壳化或本次新增玩法算法。
+
+**回滚/结果：** Git产品局部revert本提交，不hard reset；安装恢复用上述私有Recovery整套旧文件，保留玩家配置/清单外文件。命令、测试、构建、push ack、安装/备份SHA及最终收据在本地`artifacts/latest-session-integration-20261002/`。已收到产品push成功确认；最终文档push和远端读回以收据记录为准。历史各会话“未提交/未push/未部署”仅在本条包含的范围内被替代，不升级实机状态。
+
 ## 当前功能接入：四扩展宿主目录（2026-10-02）
 
 <a id="four-hosted-extension-catalog-20261002"></a>
