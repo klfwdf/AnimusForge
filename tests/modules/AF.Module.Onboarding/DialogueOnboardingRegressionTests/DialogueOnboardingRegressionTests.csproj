@@ -8,5 +8,8 @@
     <Compile Include="../../../../src/AF.GameAdapter.Bannerlord/UI/Conversation/ConversationReplyWaitOwner.cs" Link="ConversationReplyWaitOwner.cs" />
     <Compile Include="../../../../src/AF.Persistence/AnimusForgeModelStore.cs" Link="AnimusForgeModelStore.cs" />
     <Reference Include="Newtonsoft.Json"><HintPath>$(MSBuildSDKsPath)/../Newtonsoft.Json.dll</HintPath></Reference>
+    <Compile Include="../../../../src/AF.GameAdapter.Bannerlord/UI/Conversation/ConversationModeTextOwner.cs" Link="ConversationModeTextOwner.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Encounter/NativeDialogueReturnPolicy.cs" Link="NativeDialogueReturnPolicy.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Encounter/EncounterPendingReturnOwner.cs" Link="EncounterPendingReturnOwner.cs" />
   </ItemGroup>
 </Project>
