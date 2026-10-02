@@ -6322,3 +6322,25 @@ R2计划交付门槛：已给固定技术路线、真实来源与目标、写入
 - 初始输入门测试发现完成后还能重置，已修为一次性；现有配置空字段测试发现旧临时值未被清除，已修为读取真实原值；旧 fixture 完整 DataPaths 测试在工作区内数据根被安全保护拒绝，未改其保护、未改外部用户目录，改用实际 ModelStore 生产源码做本地缺失/损坏配置/外部数据文件契约。失败日志保留。
 - 直接 DLL owner runtime 回放在 module initializer 缺 TaleWorlds 依赖时失败（`regression-actual-1.3.log` / `regression-actual-1.4.log`），不计 PASS、不规避/改 module initializer；最终候选检查明确 metadata-only，NOT_RUN 实机、旧档、真实 HTTP、真实 ONNX 推理及 Stage/ZIP/发布。离线完成不替代玩家实际验收。
 - 性能：输入门/等待 O(1) 无热路径新扫描；MCM 只在 movie/VM 初始化读取；向导请求沿既有 generation/main-thread dispatch 有界32回调；模型文件检查沿一次性 pending gate。回滚用针对产品 `4149c2e2` 的 inverse commit；不能 reset 到检查点或回滚别人的 dirty。
+
+
+<a id="civilwar-eligibility-dialogue-return-20261003"></a>
+## 正式封臣 / 强推不满 / 对话正文与拦截返回（2026-10-03，OFFLINE_VERIFIED）
+
+范围由当前玩家反馈及追加两问题决定，不执行历史重构/发布。检查点 `22c8189d`、`ed3507e3`；第一代码切片 `50a5a4fa`，第二 `0e4634ed`。保留 Illustrator/两主交接文档原 dirty 和并行提交，未 push/Stage/部署/打包；一键入口、存档键、原叛乱概率/冷却参数均未改。
+
+| 确认责任与代码坐标（第一切片 `50a5a4fa`；第二 `0e4634ed`） | 修复 / 保留边界 | 未验 |
+| --- | --- | --- |
+| `src/modules/AF.Module.Kingdom/CivilWar/CivilWarWorld.cs:66-84`；`KingdomCivilWarOwner.Actions.cs:16-17`；`KingdomCivilWarOwner.cs:1505` | 原版 `spclans.xml` 玩家初始 `IsMinorFaction=true`；统一资格入口对玩家原始小势力/类型标签例外，但不豁免现行佣兵契约、匪徒、已灭亡、活领袖和当前王国归属。修复面板“非正式封臣”、动作报价/执行、政治军力和事件计入；NPC小势力仍排除，不改原版 flags | 玩家真实档/API/UI |
+| `CivilWarCampaignBehavior.cs:129-149,188-231`（上述 CivilWar目录） | 原普通投票宣战/议和/政策对封臣加“强推”不满；改在原版决策结论已记录 `SupportStatusOfFinalDecision.Minority`、且行动实际生效后单次计入；多数/平票不算强推；raw宣战/议和事件不提前重复计入。封地落选、直接非投票王室命令、背诺/处决/损地等既有规则保留，所有概率/阈值/冷却不改 | 玩家“叛变过多”具体存档归因，真实多国长期频率；未自动清历史累积不满 |
+| `src/AF.GameAdapter.Bannerlord/UI/Conversation/ConversationModeTextOwner.cs:5-25`；`AnimusForgeNativeConversationOverlay.cs:54-57,278-331,1643-1650`；`src/modules/AF.Module.Conversation/Channels/Native/ShoutBehavior.NativeAdmission.cs:227-248` | 开关时保存独立AI/普通正文，再入AI恢复，等待点不覆盖旧AI；以NPC/token/scene/save identity校验，不把请求展示revision误用为整个会话寿命；重复开关幂等，换人/对话推进失效清理。新增只读文本scope方法不降低实际提交/动作严格门禁，不改历史/AFEF | 真Gauntlet/TTS/快速切换；不是动作取消能力 |
+| `src/modules/AF.Module.Encounter/NativeDialogueReturnPolicy.cs:4-9`；`src/AF.GameAdapter.Bannerlord/Encounter/LordEncounterBehavior.cs:138-148,365-389,3593-3601,3745-3856,8581-8705` | 自定义菜单开原版对话的one-shot end hook绑定原manager/encounter/party/save。仅被拦截、未授权释放、无真实战斗/俘虏/攻击/投降/原版特殊活动，且hard suppression属于此次native_dialogue_handoff才解除，并走既有pending return；map/mission恢复后再次重验，engine tick也驱动；不获准免费逃离，不覆盖真战斗结算/海上/攻城/掠夺，主动接触原版流程不强改 | 真实敌方拦截、普通/AI离开、SetMeetingDone/native encounter Update事件顺序、1.3/1.4军团海上/旧档 |
+
+证据集中 `artifacts/civilwar-eligibility-grievance-20261003/`：
+- 原入口 Debug 双 API (`1.3.15.110062` / `1.4.6.115628`) + Bootstrap success / 0 errors，`dual-build.log`（第一切片）和 `dual-build-dialogue-encounter.log`（两切片与当前并行生图组合）。既有警告保留，未改构建脚本。
+- 现有 CivilWar lifecycle 链接真实owner/effects/catalog/adapter、提取原campaign event方法正文 + fake游戏动作：330断言通过，含新增36身份/多数平票少数/生效/非投票矩阵；原回归仍保留，原“强推政策撤回支持”的测试现显式少数支持。`lifecycle-regression-corrected.log`。原规则smoke原net6框架通过，`rules-regression-original-tfm.log`。fake默认玩家IsMinorFaction=false曾漏原版初始化元数据，新增用例显式为true。
+- 扩展已存在 `DialogueOnboardingRegressionTests` 链接真实ModeTextOwner/return policy/EncounterPendingReturnOwner：93生产源码行为/XML/source契约；两实际候选元数据各另9，共每API102，`dialogue-encounter-regression.log` / `dialogue-metadata-1.3.log` / `dialogue-metadata-1.4.log`。这不是运行整个LordEncounterBehavior或游戏的回放，source绑定/策略测试不能证明native menu事件实机顺序。
+- 初期 MSBuild python PATH失败9009通过显式已有 `E:/PYTHON/python.exe` 重试；已有fixture缺远端合入后的DiplomacyConversationBridge，用测试fake接缝补齐，不改生产桥；旧普通政策oracle按获准新语义显式minority并保留多数/平票负控。net8覆写原net6 smoke还原不匹配失败后使用原框架，未改项目或删断言。失败日志全部保留。
+- 已只读本地游戏日志发现 `civil_war_outbreak`、多个派系成立与 native_dialogue_handoff 抑制；本机日志不能代表反馈玩家存档，不称玩家高频具体原因已实机证实。BannerlordSage本地源码核对玩家初始XML、Clan.PlayerClan及原版投票结论时序，不用猜API。
+- 性能：资格O(1)、事件结论每次决策一次、沿既有受影响王国封臣列表；模式正文只切换时O(1)/缓存字符串，无每帧重写/扫描；return owner按pending状态O(1)identity检查，沿既有返回pump，实际副作用主线程并重验。
+- 实机/真实旧档/反馈玩家复现/自然游戏频率/真实网络与Gauntlet接受均NOT_RUN；代码已离线完成，不能称玩家实机完全修复。后续验证需新候选覆盖授权；本轮没有。源码manifest、实际候选hash、命令结果在receipt。回滚分别以`50a5a4fa`、`0e4634ed`的focused inverse commits，禁止hard reset/回滚并行生图或旧dirty。

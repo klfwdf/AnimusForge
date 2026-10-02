@@ -1,3 +1,10 @@
+# 当前交接：正式封臣 / 对话正文 / 拦截原版返回修复（2026-10-03，离线）
+
+- `50a5a4fa` 修复玩家初始小势力标签误拒正式封臣，投票“强推”不满只计实际执行的逆多数决策；概率/冷却未改，不称反馈玩家高频已实机归因。
+- `0e4634ed` 分离AI/普通正文恢复，修正请求revision与会话身份界限；同一次未释放、无真实战斗的被拦截原版对话退出返回自定义面板，保留释放/攻击/投降/原版特殊流程。
+- 两API+Bootstrap通过；内战生命周期330、新矩阵36包含其中；规则smoke通过；对话93行为/source/XML + 两候选各9元数据（每API102）。真实LordEncounter菜单事件顺序/玩家档/实机未验；未push/部署/Stage/打包。并行生图与原两文档dirty保留。
+- [唯一主台账、源码坐标与未验](docs/animusforge-refactoring-and-repository-reorganization-plan.md#civilwar-eligibility-dialogue-return-20261003)；本地 `artifacts/civilwar-eligibility-grievance-20261003/receipt.json`。仅本轮具名修复，不延续历史发布授权。
+
 # 当前交付：后台画卷、单人物单立绘与拖拽修复（2026-10-03）
 
 - 产品 `a596ea6c`：关闭面板继续生成；素材采集完成后离开会面不丢HTTP结果；保存成功左下角提示、画廊延后刷新、重开同目标接回任务，不强弹面板。读档/换战役仍取消旧任务。
