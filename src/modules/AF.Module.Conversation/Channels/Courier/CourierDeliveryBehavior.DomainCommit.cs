@@ -77,7 +77,7 @@ public sealed partial class CourierDeliveryBehavior
 		try
 		{
 			VoteDealBehavior.ProcessAgendaTagsDispatch(recipient, ref text);
-			DiplomacyBehavior.ProcessDiplomacyTagsDispatch(recipient, ref text);
+			DiplomacyConversationBridge.ProcessDiplomacyTagsDispatch(recipient, ref text);
 		}
 		catch (Exception ex)
 		{

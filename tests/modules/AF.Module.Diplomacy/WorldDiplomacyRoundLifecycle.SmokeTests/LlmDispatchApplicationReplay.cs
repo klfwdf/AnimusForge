@@ -1,0 +1,143 @@
+using AnimusForge;
+using Newtonsoft.Json.Linq;
+using AnimusForge.Refactor.Domain;
+
+internal static class LlmDispatchApplicationReplay
+{
+    private sealed class State
+    {
+        internal readonly WorldDiplomacyStorage Storage = new();
+        internal readonly WorldDiplomacyRequestLeaseCoordinator Lease = new();
+        internal readonly List<string> Events = new();
+        internal bool Enabled = true, Fits = true, Budget = true, Claim = true;
+        internal long Generation = 7;
+        internal string Affinity = "", ConfigError;
+        internal WorldDiplomacyRequestSnapshot Request;
+    }
+    private readonly struct Source : IWorldDiplomacyLlmDispatchSource
+    {
+        private readonly State s;
+        internal Source(State state) => s = state;
+        public bool IsEnabled => s.Enabled;
+        public bool IsRequestRunning => s.Lease.IsRunning;
+        public WorldDiplomacyStorage Storage => s.Storage;
+        public int CurrentHour => 100;
+        public string LastCacheAffinityKey => s.Affinity;
+        public void SetLastCacheAffinityKey(string value) { s.Affinity = value; s.Events.Add("affinity"); }
+        public string GetAuthorBlockReason(WorldDiplomacyJob job) => null;
+        public string GetLlmConfigError() => s.ConfigError;
+        public bool TryConsumeRequestBudget(bool consume) { s.Events.Add(consume ? "consume" : "budget?"); return s.Budget; }
+        public JArray BuildMessageArray(WorldDiplomacyJob job) { s.Events.Add("messages"); return new JArray(); }
+        public long InputTokenLimit => s.Fits ? long.MaxValue : -1L;
+        public int HistoryCompressionTargetTokens => 200;
+        public int EstimateTokens(string text) => 0;
+        public void RemoveJob(string jobId) => s.Storage.Jobs.RemoveAll(j => j.JobId == jobId);
+        public void Log(string message) => s.Events.Add("log:" + message);
+        public bool TryClaim(string id, long generation, int maxTokens, int timeout, out WorldDiplomacyRequestSnapshot request)
+        { s.Events.Add("claim"); request = null; return s.Claim && s.Lease.TryClaim(id, generation, maxTokens, timeout, out request); }
+        public void MarkRunning(WorldDiplomacyJob job, string key) { job.IsRunning = true; job.CacheAffinityKey = key; s.Events.Add("running"); }
+        public void LogPromptCacheShape(WorldDiplomacyJob job) => s.Events.Add("shape");
+        public void StartRequest(WorldDiplomacyRequestSnapshot request, JArray messages) { s.Request = request; s.Events.Add("start"); }
+        public long RuntimeGeneration => s.Generation;
+        public int DefaultApiTimeoutMilliseconds => 90000;
+        public int CompressionTimeoutMilliseconds => 200000;
+    }
+    private static State New(string kind = "analyze")
+    {
+        var state = new State();
+        state.Storage.Jobs.Add(new WorldDiplomacyJob { JobId = "j", Kind = kind, SystemPrompt = "sys", UserPrompt = "u", MaxTokens = 1000,
+            LlmMessages = new List<WorldDiplomacyLlmMessage>() });
+        if (kind == "compress")
+        {
+            var job = state.Storage.Jobs[0];
+            job.CacheAffinityKey = WorldDiplomacyPromptContractRules.CanonicalHistoryCacheAffinityKey;
+            job.SystemPrompt = string.Join("\n", WorldDiplomacyPromptContractRules.DiplomaticDeclarationWritingContractMarker,
+                WorldDiplomacyPromptContractRules.DiplomacyModeDispatchContractMarker,
+                WorldDiplomacyPromptContractRules.DiplomaticDeclarationModeContractMarker,
+                WorldDiplomacyPromptContractRules.CanonicalHistoryCompressionModeContractMarker,
+                WorldDiplomacyPromptContractRules.CanonicalHistoryContractMarker);
+            job.UserPrompt = "【MODE=COMPACT】";
+        }
+        return state;
+    }
+    private sealed class Orch : FakeOrchestration
+    {
+        private readonly State s;
+        internal Orch(State state) => s = state;
+        public override bool RefreshDiplomaticThreatPresentationAndPrompt(WorldDiplomacyJob job) => true;
+        public override bool RefreshDiplomaticActionPresentationAndPrompt(WorldDiplomacyJob job) => true;
+        public override bool TryRebuildPendingJob(WorldDiplomacyJob job) => true;
+        public override void AbandonRejectedGeneration(WorldDiplomacyJob job, string authorId, string targetId, string reason) => s.Events.Add("abandon");
+        public override bool EnsureGenerationJobHasKingdomStrategicProfile(WorldDiplomacyJob job) => true;
+        public override void CaptureCanonicalHistoryForJob(WorldDiplomacyJob job, bool syncSources, long throughSequence) => s.Events.Add("history");
+        public override string BuildCanonicalHistoryBlock(long throughSequence) => "";
+        public override void TryScheduleTokenCompression() => s.Events.Add("compress");
+        public override void CommitFailedJob(WorldDiplomacyJob job, string error) => s.Events.Add("failed:" + error);
+    }
+    private static void Run(State state) { var source = new Source(state); var orch = new Orch(state); WorldDiplomacyLlmDispatchApplication.Run(ref source, orch); }
+    internal static void Run()
+    {
+        var viewStorage = new WorldDiplomacyStorage();
+        var first = new WorldDiplomacyJob { JobId = "first", Priority = 1, CreatedDay = 2 };
+        var second = new WorldDiplomacyJob { JobId = "second", Priority = 2, CreatedDay = 1 };
+        viewStorage.Jobs.Add(first);
+        viewStorage.Jobs.Add(second);
+        var view = WorldDiplomacyJobSelectionView.For(viewStorage);
+        Test.True(ReferenceEquals(view.Select(viewStorage, 100, ""), second), "queue view selects current highest priority");
+        int rebuilds = view.RebuildCount;
+        bool stableSelection = true;
+        for (int i = 0; i < 100000; i++)
+            stableSelection &= ReferenceEquals(view.Select(viewStorage, 100, ""), second);
+        Test.True(stableSelection, "unchanged ticks reuse selected job");
+        Test.True(view.RebuildCount == rebuilds, "unchanged ticks do not scan the job queue");
+        first.Priority = 3;
+        Test.True(ReferenceEquals(view.Select(viewStorage, 100, ""), first), "priority mutation invalidates queue view");
+        first.AwaitingHistoryCompression = true;
+        viewStorage.CompressionRetryAfterHour = 101;
+        Test.True(ReferenceEquals(view.Select(viewStorage, 100, ""), second), "compression wait excludes candidate until retry hour");
+        Test.True(ReferenceEquals(view.Select(viewStorage, 101, ""), first), "retry hour admits waiting candidate");
+        first.IsRunning = true;
+        Test.True(ReferenceEquals(view.Select(viewStorage, 101, ""), second), "running mutation invalidates queue view");
+        Test.True(view.HasAwaiting(viewStorage), "compression summary tracks waiting jobs");
+        Test.True(view.MinimumAwaitingTarget(viewStorage, 200) == 200, "missing target uses configured fallback");
+        first.InputBudgetHistoryTargetTokens = 120;
+        Test.True(view.MinimumAwaitingTarget(viewStorage, 200) == 120, "target mutation invalidates compression summary");
+        viewStorage.Jobs.Clear();
+        Test.True(view.Select(viewStorage, 101, "") == null, "list removal invalidates queue view");
+        string savedJob = Newtonsoft.Json.JsonConvert.SerializeObject(first);
+        Test.True(!savedJob.Contains("SelectionChanged", StringComparison.Ordinal)
+            && (savedJob.Contains("\"priority\":3", StringComparison.Ordinal)
+                || savedJob.Contains("\"Priority\":3", StringComparison.Ordinal))
+            && (savedJob.Contains("\"awaitingHistoryCompression\":true", StringComparison.Ordinal)
+                || savedJob.Contains("\"AwaitingHistoryCompression\":true", StringComparison.Ordinal)),
+            "queue invalidation callback does not alter persisted job fields");
+
+        foreach (string kind in new[] { "analyze", "compress" })
+        {
+            var s = New(kind); Run(s);
+            Test.True(s.Events.SequenceEqual(new[] { "budget?", "messages", "consume", "claim", "running", "affinity", "shape", "start" })
+                && s.Request.JobId == "j" && s.Request.RuntimeGeneration == 7
+                && s.Request.MaxTokens == 1000 && s.Request.TimeoutMilliseconds == (kind == "compress" ? 200000 : 90000),
+                "launch keeps budget/claim/cache/start order and timeout selection: " + string.Join(",", s.Events));
+            int count = s.Events.Count; Run(s);
+            Test.True(s.Events.Count == count, "single active lease prevents repeated launch");
+        }
+        var empty = new State(); Run(empty); Test.True(empty.Events.Count == 0, "empty queue has no preflight effects");
+        var disabled = New(); disabled.Enabled = false; Run(disabled); Test.True(disabled.Events.Count == 0, "disabled launch has no effects");
+        var cooldown = New(); cooldown.Storage.ServiceCooldownUntilHour = 101; Run(cooldown); Test.True(cooldown.Events.Count == 0, "service cooldown blocks preflight");
+        foreach (bool budget in new[] { false, true })
+        {
+            var s = New(); s.Budget = budget; s.Fits = false; Run(s);
+            Test.True(!s.Lease.IsRunning && !s.Storage.Jobs[0].IsRunning && s.Request == null && !s.Events.Contains("consume"),
+                "budget/input rejection cannot claim or start a request");
+        }
+        var config = New(); config.ConfigError = "missing"; Run(config);
+        Test.True(config.Events.SequenceEqual(new[] { "failed:api not configured: missing" }), "configuration failure precedes request budget");
+        foreach (long generation in new[] { 7L, 0L })
+        {
+            var s = New(); s.Generation = generation; s.Claim = generation == 0L; Run(s);
+            Test.True(!s.Storage.Jobs[0].IsRunning && s.Events.Contains("consume") && s.Events.Any(e => e.StartsWith("log:")) && s.Request == null,
+                "claim rejection clears selection flag without refunding already consumed budget");
+        }
+    }
+}

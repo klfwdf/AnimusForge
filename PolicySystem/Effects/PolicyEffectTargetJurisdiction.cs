@@ -20,7 +20,8 @@ internal static class PolicyEffectTargetJurisdiction
 		bool preserveLegacyCrossKingdoms,
 		bool failOnUnauthorized,
 		out PolicyEffectCanonicalTargetSet targetSet,
-		out string error)
+		out string error,
+		PolicyEffectJurisdictionContext context = null)
 	{
 		return TryApply(
 			source,
@@ -32,7 +33,8 @@ internal static class PolicyEffectTargetJurisdiction
 			failOnUnauthorized,
 			ownerKingdomResolver: null,
 			out targetSet,
-			out error);
+			out error,
+			context);
 	}
 
 	internal static bool TryApply(
@@ -45,13 +47,20 @@ internal static class PolicyEffectTargetJurisdiction
 		bool failOnUnauthorized,
 		PolicyEffectOwnerKingdomResolver ownerKingdomResolver,
 		out PolicyEffectCanonicalTargetSet targetSet,
-		out string error)
+		out string error,
+		PolicyEffectJurisdictionContext context = null)
 	{
 		targetSet = Normalize(source);
 		error = string.Empty;
 		if (source == null || module?.Descriptor == null)
 		{
 			return true;
+		}
+		if (string.Equals(context?.Scope, PolicyEffectScopes.Local, StringComparison.OrdinalIgnoreCase))
+		{
+			return TryApplyLocal(targetSet, module, context, targetKingdomId, issuerKingdomId,
+				authorizedCrossKingdomIds, preserveLegacyCrossKingdoms, failOnUnauthorized,
+				ownerKingdomResolver, out targetSet, out error);
 		}
 
 		string homeKingdomId = ResolveHomeKingdomId(module, targetKingdomId, issuerKingdomId);
@@ -163,6 +172,104 @@ internal static class PolicyEffectTargetJurisdiction
 			return false;
 		}
 		return true;
+	}
+
+	private static bool TryApplyLocal(
+		PolicyEffectCanonicalTargetSet targets, IPolicyEffectModule module,
+		PolicyEffectJurisdictionContext context, string targetKingdomId, string issuerKingdomId,
+		IReadOnlyCollection<string> authorizedCrossKingdomIds, bool preserveLegacyCrossKingdoms,
+		bool failOnUnauthorized, PolicyEffectOwnerKingdomResolver ownerKingdomResolver,
+		out PolicyEffectCanonicalTargetSet targetSet, out string error)
+	{
+		targetSet = targets;
+		error = string.Empty;
+		string home = ResolveHomeKingdomId(module, targetKingdomId, issuerKingdomId);
+		var cross = new HashSet<string>(NormalizeIds(authorizedCrossKingdomIds), StringComparer.OrdinalIgnoreCase);
+		if (preserveLegacyCrossKingdoms && targets.JurisdictionKind == PolicyEffectTargetJurisdictionKind.LegacyCompiled
+			&& module.Descriptor.AllowCrossKingdomTargets && home.Length > 0)
+		{
+			cross.UnionWith(CollectReferencedForeignKingdomIds(targets, home, ownerKingdomResolver));
+		}
+		bool AllowsKingdom(string id) => !string.IsNullOrWhiteSpace(id)
+			&& ((home.Length > 0 && SameId(home, id)) || (module.Descriptor.AllowCrossKingdomTargets && cross.Contains(id)));
+
+		// S means exactly the selected publication fiefs. Other handles/plans have
+		// already passed request authorization; persisted expressions retain that identity.
+		bool explicitTargets = targets.TargetPlans.Count > 0 || targets.SelectorHandles.Count == 0
+			|| targets.SelectorHandles.Any(handle => !SameId(handle, "S"));
+		var parents = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+		var settlements = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+		var villages = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+		var clans = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+		var leaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+		var usedCross = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+		var selected = new HashSet<string>(context.SourceSettlementIds, StringComparer.OrdinalIgnoreCase);
+		bool localModule = PolicyEffectModuleCatalog.IsAllowedForScope(module, PolicyEffectScopes.Local);
+		foreach (string parentId in NormalizeIds(targets.ParentSettlementIds.Concat(context.SourceSettlementIds)))
+		{
+			PolicyEffectJurisdictionFief fief = context.ResolveFief(parentId);
+			if (!localModule || fief == null || !SameId(fief.Id, parentId) || string.IsNullOrWhiteSpace(fief.OwnerClanId)) continue;
+			bool owned = context.ProposerClanId.Length > 0 && SameId(fief.OwnerClanId, context.ProposerClanId);
+			bool publication = selected.Contains(parentId) && owned;
+			bool mentioned = explicitTargets && targets.ParentSettlementIds.Contains(parentId, StringComparer.OrdinalIgnoreCase)
+				&& (owned || AllowsKingdom(fief.OwnerKingdomId));
+			if (!publication && !mentioned) continue;
+			parents.Add(parentId);
+			settlements.Add(parentId);
+			villages.UnionWith(NormalizeIds(fief.VillageIds));
+			clans.Add(fief.OwnerClanId);
+			if (!string.IsNullOrWhiteSpace(fief.OwnerLeaderId)) leaders.Add(fief.OwnerLeaderId);
+			if (!publication && !owned && !SameId(fief.OwnerKingdomId, home)
+				&& !string.IsNullOrWhiteSpace(fief.OwnerKingdomId)) usedCross.Add(fief.OwnerKingdomId);
+		}
+		settlements.UnionWith(villages);
+		var rejected = new List<string>();
+		bool AllowsExplicit(PolicyEffectTargetKind kind, string id)
+		{
+			if (!localModule || !explicitTargets) return false;
+			string kingdomId = ResolveOwnerKingdomId(kind, id, ownerKingdomResolver);
+			if (kind == PolicyEffectTargetKind.Clan && kingdomId.Length == 0
+				&& module.Descriptor.AllowIndependentClanTargets) return true;
+			if (!AllowsKingdom(kingdomId)) return false;
+			if (!SameId(kingdomId, home)) usedCross.Add(kingdomId);
+			return true;
+		}
+		List<string> Filter(IEnumerable<string> ids, PolicyEffectTargetKind kind, Func<string, bool> allowed)
+		{
+			var result = new List<string>();
+			foreach (string id in NormalizeIds(ids))
+			{
+				if (allowed(id)) result.Add(id);
+				else rejected.Add(kind + ":" + id);
+			}
+			return result;
+		}
+		targets.ParentSettlementIds = Filter(targets.ParentSettlementIds, PolicyEffectTargetKind.Settlement, parents.Contains);
+		targets.SettlementIds = Filter(targets.SettlementIds, PolicyEffectTargetKind.Settlement, settlements.Contains);
+		targets.TownIds = Filter(targets.TownIds, PolicyEffectTargetKind.Town, parents.Contains);
+		targets.VillageIds = Filter(targets.VillageIds, PolicyEffectTargetKind.Village, villages.Contains);
+		targets.ClanIds = Filter(targets.ClanIds, PolicyEffectTargetKind.Clan,
+			id => clans.Contains(id) || AllowsExplicit(PolicyEffectTargetKind.Clan, id));
+		targets.HeroIds = Filter(targets.HeroIds, PolicyEffectTargetKind.Hero,
+			id => (module.Descriptor.TargetProjection == PolicyEffectTargetProjectionKind.SettlementOwnerClanLeader && leaders.Contains(id))
+				|| AllowsExplicit(PolicyEffectTargetKind.Hero, id));
+		targets.KingdomIds = Filter(targets.KingdomIds, PolicyEffectTargetKind.Kingdom,
+			id => AllowsExplicit(PolicyEffectTargetKind.Kingdom, id));
+		targets.JurisdictionKind = usedCross.Count > 0 ? PolicyEffectTargetJurisdictionKind.CrossKingdom : PolicyEffectTargetJurisdictionKind.Domestic;
+		targets.AuthorizedCrossKingdomIds = NormalizeIds(usedCross);
+		if (failOnUnauthorized && rejected.Count > 0)
+		{
+			targetSet = null;
+			error = "政策效果目标越过地方封地及明确授权目标边界：" + string.Join(", ", rejected.Take(6));
+			return false;
+		}
+		return true;
+	}
+
+	internal static bool CanProjectSettlementOwnerClan(IPolicyEffectModule module, string scope)
+	{
+		return string.Equals(scope, PolicyEffectScopes.Local, StringComparison.OrdinalIgnoreCase)
+			|| module?.Descriptor?.AllowIndependentClanTargets == true;
 	}
 
 	internal static bool IsExplicitKingdomTargetSetAuthorized(

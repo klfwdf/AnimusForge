@@ -8,6 +8,6 @@ public static class Patch_Diplomacy_GuardFactionManagerDeclareWar
 {
 	public static bool Prefix(IFaction faction1, IFaction faction2)
 	{
-		return !DiplomacyRecentPeaceGuard.ShouldBlockDeclareWar(faction1, faction2, "FactionManager.DeclareWar");
+		return !DiplomacyRecentPeaceBridge.ShouldBlockDeclareWar(faction1, faction2, "FactionManager.DeclareWar");
 	}
 }

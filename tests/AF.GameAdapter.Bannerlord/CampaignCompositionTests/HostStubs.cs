@@ -127,3 +127,5 @@ namespace AnimusForge.Refactor.Modules
         internal static object CreateClient() => throw new InvalidOperationException("composition.native_api_not_executed");
     }
 }
+
+namespace HarmonyLib { internal class Harmony { } }

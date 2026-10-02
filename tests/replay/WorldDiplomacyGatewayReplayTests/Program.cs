@@ -4,6 +4,8 @@ using System.IO;
 using System.Net;
 using System.Net.Sockets;
 using System.Reflection;
+using System.Security.Cryptography;
+using System.Text.Json;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -67,13 +69,18 @@ object BuildRequest(string endpoint, int timeoutMilliseconds)
     return Activator.CreateInstance(requestType, trace, provider, prompt, mainReply);
 }
 
-async Task<(string Status, string ErrorCode)> InvokeAsync(string endpoint, int timeoutMilliseconds, CancellationToken token)
+async Task<object> InvokeResultAsync(string endpoint, int timeoutMilliseconds, CancellationToken token)
 {
     object gateway = Activator.CreateInstance(gatewayType);
     MethodInfo method = gatewayType.GetMethod("GenerateAsync");
     Task task = (Task)method.Invoke(gateway, new[] { BuildRequest(endpoint, timeoutMilliseconds), token });
     await task.ConfigureAwait(false);
-    object result = task.GetType().GetProperty("Result").GetValue(task, null);
+    return task.GetType().GetProperty("Result").GetValue(task, null);
+}
+
+async Task<(string Status, string ErrorCode)> InvokeAsync(string endpoint, int timeoutMilliseconds, CancellationToken token)
+{
+    object result = await InvokeResultAsync(endpoint, timeoutMilliseconds, token);
     Type resultType = result.GetType();
     return (
         resultType.GetProperty("Status").GetValue(result, null).ToString(),
@@ -104,13 +111,45 @@ using (ReplayServer timedOut = ReplayServer.Start(ReplayResponse.Delay(5000, 200
     AssertTrue(status == "RetryableFailure" && errorCode == "world_diplomacy_domain_failure", "World Diplomacy hard timeout semantics changed");
 }
 
-Console.WriteLine("PASS worldDiplomacyGatewayReplay callerCancellation=1 retryDelayCancellation=1 timeoutIsolation=1 noCredentialLeak=1");
+object Property(object value, string name) => value.GetType().GetProperty(name).GetValue(value);
+using (ReplayServer success = ReplayServer.Start(ReplayResponse.Json(200,
+    "{\"choices\":[{\"message\":{\"content\":\"confirmed text\"},\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":100,\"completion_tokens\":11,\"prompt_cache_hit_tokens\":80,\"prompt_cache_miss_tokens\":20}}")))
+{
+    Configure(success.Url);
+    object result = await InvokeResultAsync(success.Url, 5000, CancellationToken.None);
+    AssertTrue(Property(result, "Status").ToString() == "Succeeded" && (string)Property(result, "RawText") == "confirmed text", "successful content mapping");
+    AssertTrue((int)Property(result, "PromptTokens") == 100 && (int)Property(result, "CompletionTokens") == 11, "token accounting");
+    object metadata = Property(result, "Metadata");
+    AssertTrue((int)Property(metadata, "PromptCacheHitTokens") == 80 && (int)Property(metadata, "PromptCacheMissTokens") == 20, "cache accounting");
+    AssertTrue(success.RequestCount == 1 && success.LastRequestBody.Contains("world replay system")
+        && !success.LastRequestBody.Contains("world-replay-secret"), "single send and credential boundary");
+}
+using (ReplayServer auth = ReplayServer.Start(ReplayResponse.Json(401, "{\"error\":{\"message\":\"invalid api key\"}}")))
+{
+    Configure(auth.Url);
+    var result = await InvokeAsync(auth.Url, 5000, CancellationToken.None);
+    AssertTrue(result.Status == "NonRetryableFailure" && auth.RequestCount == 1, "auth failure must not retry");
+}
+using (ReplayServer malformed = ReplayServer.Start(ReplayResponse.Json(200, "malformed-json")))
+{
+    Configure(malformed.Url);
+    var result = await InvokeAsync(malformed.Url, 5000, CancellationToken.None);
+    AssertTrue(result.Status == "NonRetryableFailure" && malformed.RequestCount == 2, "malformed JSON bounded retry");
+}
+using (ReplayServer limited = ReplayServer.Start(ReplayResponse.Json(429, "{\"error\":{\"message\":\"rate limit\"}}")))
+{
+    Configure(limited.Url);
+    var result = await InvokeAsync(limited.Url, 5000, CancellationToken.None);
+    AssertTrue(result.Status == "RetryableFailure" && limited.RequestCount == 2, "rate limit bounded retry");
+}
+Console.WriteLine("PASS worldDiplomacyGatewayReplay cancellation/backoff/timeout/success/cache/auth/malformed/rateLimit/credentialBoundary");
 
 internal sealed class ReplayResponse
 {
     public int StatusCode { get; private init; }
     public int DelayMilliseconds { get; private init; }
     public string Body { get; private init; }
+    public static ReplayResponse Json(int statusCode, string body) => new() { StatusCode = statusCode, Body = body };
     public static ReplayResponse Delay(int delayMilliseconds, int statusCode) => new() { DelayMilliseconds = delayMilliseconds, StatusCode = statusCode, Body = "{}" };
     public static ReplayResponse Status(int statusCode, int delayMilliseconds) => new() { StatusCode = statusCode, DelayMilliseconds = delayMilliseconds, Body = "{}" };
 }
@@ -132,6 +171,7 @@ internal sealed class ReplayServer : IDisposable
     }
 
     public string Url { get; }
+    public string LastRequestBody { get; private set; } = "";
     public int RequestCount => Volatile.Read(ref _requestCount);
 
     public static ReplayServer Start(ReplayResponse response)
@@ -162,9 +202,27 @@ internal sealed class ReplayServer : IDisposable
             Interlocked.Increment(ref _requestCount);
             using NetworkStream stream = client.GetStream();
             byte[] buffer = new byte[4096];
-            int read;
-            do { read = await stream.ReadAsync(buffer).ConfigureAwait(false); }
-            while (read > 0 && Encoding.UTF8.GetString(buffer, 0, read).IndexOf("\r\n\r\n", StringComparison.Ordinal) < 0);
+            using var received = new MemoryStream();
+            int headerEnd = -1, expectedBytes = int.MaxValue;
+            while (received.Length < expectedBytes)
+            {
+                int read = await stream.ReadAsync(buffer).ConfigureAwait(false);
+                if (read <= 0) return;
+                received.Write(buffer, 0, read);
+                if (headerEnd < 0)
+                {
+                    string text = Encoding.UTF8.GetString(received.ToArray());
+                    headerEnd = text.IndexOf("\r\n\r\n", StringComparison.Ordinal);
+                    if (headerEnd >= 0)
+                    {
+                        int contentLength = 0;
+                        foreach (string line in text.Substring(0, headerEnd).Split("\r\n"))
+                            if (line.StartsWith("Content-Length:", StringComparison.OrdinalIgnoreCase)) contentLength = int.Parse(line.Substring(15).Trim());
+                        expectedBytes = headerEnd + 4 + contentLength;
+                    }
+                }
+            }
+            LastRequestBody = Encoding.UTF8.GetString(received.ToArray(), headerEnd + 4, expectedBytes - headerEnd - 4);
             if (_response.DelayMilliseconds > 0)
             {
                 try { await Task.Delay(_response.DelayMilliseconds, _stop.Token).ConfigureAwait(false); }

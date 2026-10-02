@@ -74,8 +74,9 @@ string root = Path.GetFullPath(Environment.GetEnvironmentVariable("AF_REPLAY_REP
     ?? Path.Combine(AppContext.BaseDirectory, "../../../../../../.."));
 Check(File.Exists(Path.Combine(root, "AnimusForge.csproj")), "explicit repository root must contain the current project");
 string behavior = File.ReadAllText(Path.Combine(root, "src", "modules", "AF.Module.Diplomacy", "World", "WorldDiplomacyBehavior.cs"));
+behavior += File.ReadAllText(Path.Combine(root, "src", "modules", "AF.Module.Diplomacy", "Application", "WorldDiplomacyOrchestration.cs"));
 string jobRuntime = File.ReadAllText(Path.Combine(root, "src", "modules", "AF.Module.Diplomacy", "World", "WorldDiplomacyBehavior.JobRuntime.cs"));
-int jobRuntimeInsertion = behavior.IndexOf("private bool EnsureRequestFitsInputBudget(", StringComparison.Ordinal);
+int jobRuntimeInsertion = behavior.IndexOf("public void CommitFailedJob(WorldDiplomacyJob job, string error)", StringComparison.Ordinal);
 Check(jobRuntimeInsertion >= 0, "world diplomacy job runtime insertion marker must exist");
 behavior = behavior.Insert(jobRuntimeInsertion, jobRuntime + Environment.NewLine);
 string context = File.ReadAllText(Path.Combine(root, "PolicySystem/Context/WorldDiplomacyPolicyContext.cs"));
@@ -84,13 +85,20 @@ Check(export.Contains("BuildPolicyRecordEffectSummary(history, includeRemainingD
 Check(context.Contains("entry?.DiplomacyImpactSummary ?? entry?.ImpactSummary"), "archive must consume stable impact");
 Check(context.Contains("_publishedHistoryLedgerId = UnifiedPolicyHistoryLedgerId;"), "ledger identity must be independent of content revision");
 Check(context.Contains("AppendHash(ref contentSignature, entry.DiplomacyRevisionKey)"), "renewal/application identity must participate in semantic revision");
-Check(behavior.Contains("fingerprint = policy.ContentHash;"), "consumer must honor the complete semantic revision");
-Check(behavior.Contains("WorldDiplomacyPolicyHistoryRules.NextEventRevision("), "consumer must use tested durable revision logic");
-int budgetGuard = behavior.IndexOf("if (!EnsureRequestFitsInputBudget(job, requestMessages)) return;", StringComparison.Ordinal);
-Check(budgetGuard >= 0 && budgetGuard < behavior.IndexOf("job.IsRunning = true;", budgetGuard, StringComparison.Ordinal), "input budget must be checked before network dispatch");
-Check(behavior.Contains("CaptureCanonicalHistoryForJob(job, syncSources: false, throughSequence: throughSequence)"), "compression request must match its frozen commit cutoff");
-Check(behavior.Contains("pending.AwaitingHistoryCompression = false;"), "successful compression must release waiting generation instead of scheduling an endless compaction loop");
-Check(behavior.Contains("TryConsumeDiplomacyLlmRequestBudget(consume: false)"), "exhausted daily budgets must exit before assembling large prompts");
+string historyRules = File.ReadAllText(Path.Combine(root, "src/modules/AF.Module.Diplomacy/Rules/WorldDiplomacyPolicyHistoryRules.cs"));
+Check(historyRules.Contains("fingerprint = policy.ContentHash;"), "consumer must honor the complete semantic revision");
+string canonicalHistoryRules = File.ReadAllText(Path.Combine(root, "src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyHistoryPublicationApplication.cs"));
+Check(canonicalHistoryRules.Contains("WorldDiplomacyPolicyHistoryRules.TryBuildPublishedPolicySignature("), "consumer must delegate policy signatures to the tested rules");
+Check(canonicalHistoryRules.Contains("WorldDiplomacyPolicyHistoryRules.NextEventRevision("), "consumer must use tested durable revision logic");
+string compressionApplication = File.ReadAllText(Path.Combine(root, "src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyHistoryCompressionApplication.cs"));
+string lifecycleRules = File.ReadAllText(Path.Combine(root, "src/modules/AF.Module.Diplomacy/Domain/WorldDiplomacyRoundLifecycleRules.cs"));
+string llmDispatch = File.ReadAllText(Path.Combine(root, "src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyLlmDispatchApplication.cs"));
+int budgetGuard = llmDispatch.IndexOf("EnsureRequestFitsInputBudget(job, requestMessages", StringComparison.Ordinal);
+Check(budgetGuard >= 0 && budgetGuard < llmDispatch.IndexOf("job.IsRunning = true;", budgetGuard, StringComparison.Ordinal), "input budget must be checked before network dispatch");
+Check(behavior.Contains("CaptureCanonicalHistoryForJob(job, syncSources: false, throughSequence: seq)")
+    && compressionApplication.Contains("captureHistory(job, throughSequence);"), "compression request must match its frozen commit cutoff");
+Check(compressionApplication.Contains("pending.AwaitingHistoryCompression = false;"), "successful compression must release waiting generation instead of scheduling an endless compaction loop");
+Check(llmDispatch.Contains("tryConsumeRequestBudget?.Invoke(false)") && File.ReadAllText(Path.Combine(root, "src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.LlmDispatchSource.cs")).Contains("_owner.TryConsumeDiplomacyLlmRequestBudget(consume)"), "exhausted daily budgets must exit before assembling large prompts");
 
 if (args.Length > 0)
 {
@@ -145,6 +153,52 @@ if (args.Length > 1)
     Check(((string)adapter.Invoke(null, new[] { entry })).Contains("政策状态=abolished"), "compiled adapter must preserve abolition");
     Console.WriteLine("Compiled adapter replay passed: 60 daily changes, expiry and abolition.");
 }
+
+Check(!WorldDiplomacyPolicyHistoryRules.TryBuildPublishedPolicySignature(null, out _, out _),
+    "null policy artifact must not produce a signature");
+Check(!WorldDiplomacyPolicyHistoryRules.TryBuildPublishedPolicySignature(
+        new PublishedPolicyArtifactLedgerEntry { Revision = 0, PolicyId = "p", EventKind = "policy_published", ContentHash = "h" },
+        out _, out _),
+    "non-positive revisions must not produce a signature");
+Check(!WorldDiplomacyPolicyHistoryRules.TryBuildPublishedPolicySignature(
+        new PublishedPolicyArtifactLedgerEntry { Revision = 2, PolicyId = " ", EventKind = "policy_published", ContentHash = "h" },
+        out _, out _),
+    "blank policy ids must not produce a signature");
+Check(!WorldDiplomacyPolicyHistoryRules.TryBuildPublishedPolicySignature(
+        new PublishedPolicyArtifactLedgerEntry { Revision = 2, PolicyId = "p", EventKind = "policy_draft", ContentHash = "h" },
+        out _, out _),
+    "non-publish event kinds must not produce a signature");
+Check(WorldDiplomacyPolicyHistoryRules.TryBuildPublishedPolicySignature(
+        new PublishedPolicyArtifactLedgerEntry { Revision = 3, PolicyId = "  p9 ", EventKind = "POLICY_PUBLISHED", ContentHash = "fp" },
+        out string sigKey, out string sigFp)
+    && sigKey == "p9" && sigFp == "fp",
+    "published events sign with the trimmed policy id and the raw content hash");
+Check(WorldDiplomacyPolicyHistoryRules.TryBuildPublishedPolicySignature(
+        new PublishedPolicyArtifactLedgerEntry { Revision = 1, PolicyId = "p", EventKind = "policy_snapshot", ContentHash = "h2" },
+        out _, out _),
+    "snapshots must also produce signatures");
+
 Console.WriteLine($"Policy history regression checks passed: {checks}");
 
 record Entry(long Sequence, string Kind, string Source, string Date, string Text);
+
+// Minimal mirror of the ledger record owned by PolicySystem/Context/WorldDiplomacyPolicyContext.cs.
+namespace AnimusForge
+{
+internal sealed class PublishedPolicyArtifactLedgerEntry
+{
+    public long Sequence { get; set; }
+    public long Revision { get; set; }
+    public string PolicyId { get; set; }
+    public string EventKind { get; set; }
+    public int OccurredDay { get; set; }
+    public string GameDate { get; set; }
+    public long CreatedUtcTicks { get; set; }
+    public string ScopeKind { get; set; }
+    public string KingdomId { get; set; }
+    public string KingdomName { get; set; }
+    public string PolicyName { get; set; }
+    public string PublishedText { get; set; }
+    public string ContentHash { get; set; }
+}
+}

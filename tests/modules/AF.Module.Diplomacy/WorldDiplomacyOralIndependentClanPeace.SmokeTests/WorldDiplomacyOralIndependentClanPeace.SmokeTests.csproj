@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="../../../../src/AF.Contracts/Internal/WorldDiplomacyIndependentClanPeaceContracts.cs" Link="WorldDiplomacyIndependentClanPeaceContracts.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Domain/WorldDiplomacyOralIndependentClanPeaceRules.cs" Link="WorldDiplomacyOralIndependentClanPeaceRules.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Adapters/Facades/WorldDiplomacyIndependentClanPeaceCommandFacade.cs" Link="WorldDiplomacyIndependentClanPeaceCommandFacade.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Application/DiplomacyOralIndependentPeaceApplication.cs" Link="DiplomacyOralIndependentPeaceApplication.cs" />
+  </ItemGroup>
+</Project>

@@ -1,3 +1,18 @@
+<a id="remote-main-fusion-20261002"></a>
+## 当前交付：远端 main 外交/政策融合（2026-10-02）
+
+**状态：MERGED / OFFLINE_VERIFIED_WITH_LIMITS。** 当前授权仅“拉取融合/继续”；将远端 `720d8449a5b9dead2239562e278e3ac8898f23fd` 合入本地当前分支，保留本地 `v1.5.0`、玩家公告、四扩展及此前各会话最新产品。远端最新提交 2026-10-02 21:27:56 +0800，复核 ls-remote 未再变化。只本地提交；未 push、Stage、部署或重新打包。此前 1.5 ZIP 仍为融合前候选，不包含本次政策/外交更新，不能复用它的全包检查声称当前源码已打包。
+
+**内容与冲突：** 远端新增政策封地辖区、政策发布引用边界与 DPL-222 世界/口头外交模块；生产源码采用已整合最新 main 的实现，不回退内战/政变/处决/生图。五处冲突为 HANDOFF、主台账、`src/AF.GameAdapter.Bannerlord/Composition/TeamModuleRegistration.cs:26–36` CreateDirectory，以及 ExternalClient/CampaignCompositionTests 测试；保留 HostedExtensionCatalog 四扩展，加入外交三 capability，目录共八项。两文档保留双方完整记录，由本入口明确新旧状态。生产 C#/csproj 与远端 main 无差异。唯一新增测试修复为 `tests/AF.GameAdapter.Bannerlord/CampaignCompositionTests/run.py:139–144` 对 API-only Courier stub 的精确删除：Campaign 另有 behavior-shaped 同名替身，远端扩展 API stub 后旧 marker 截取把它重复纳入，导致 CS0101/CS0713；不改生产类、不删除断言或变异。
+
+**构建与离线证据：** 原 `scripts/build/build_single_module.ps1` Debug、无 Stage/Deploy，1.3（v1.3.15.110062）、1.4（v1.4.6.115628）与 Bootstrap exit0/0 error，既有 warnings 保留。外交端口原 runner 355 assertions +4行为变异 PASS；外交架构原 runner 3457 assertions +8依赖变异 PASS，157 pure source 双预处理变体/1557生产文件检查。真实1.3/1.4 DLL政策各辖区62、发布引用717、TargetPlan765 PASS，测试输出候选 DLL hash 与本次构建一致。
+
+**分层而非全绿：** ModuleFrameworkApiTests/CampaignCompositionTests 原完整 runner 被历史 terminal inverse 的既有 MyBehavior.WorldBulletin raw 绑定漂移阻断，保持 FAILED，未刷新历史哈希。独立本地 bounded driver仅跳过该旧源码 oracle、仍编译当前生产源码并保留原完整运行断言：API181+snapshot36/并发256/128、5变异、内部访问拒绝、真实双DLL804 metadata PASS；Campaign46/原新行为比较+6变异 PASS。不是原完整 runner PASS。首轮错误选系统 .NET10 的8.0 ref/Roslyn不匹配；改用本地目录实际 SDK8.0.421/runtime8.0.27重跑（目录名8.0.425不当真实版本）。政策测试最初缺装载依赖且1.4引用镜像含旧AnimusForge，均未判通过；仅填隔离测试依赖并重放正确候选后上述最终6组exit0，保留失败日志。`git -c core.whitespace=cr-at-eol diff --cached --check` PASS：接受仓库既有CRLF，不批量改写远端文件。
+
+**NOT_RUN / 原改动 / 恢复：** 未真实游戏、旧档、真实provider、发布或全仓测试；本次不改一键构建/默认交互或扩展公开能力。证据/原始dirty patch/两文档备份/stash标识/冲突记录/测试日志/源码清单集中本地 `artifacts/remote-main-fusion-20261002/`。合并前检查点 `c570c228`，前候选 `2cbd7643`；两份原未提交文档48/129新增在合并完成后恢复，不夹入合并产品。备份stash保留；回退用聚焦逆向或 merge revert（先保护dirty），不hard reset，不覆盖其他作者/未跟踪文件。
+
+---
+
 <a id="release-15-20261002"></a>
 ## 当前交付：AnimusForge 1.5 一键发布包与玩家公告（2026-10-02）
 
@@ -6167,3 +6182,56 @@ R2计划交付门槛：已给固定技术路线、真实来源与目标、写入
 **验证**：116处决记忆/命令契约PASS；既有speech parser PASS；原 build_single_module.ps1 Debug 1.3（v1.3.15.110062）、1.4（v1.4.6.115628）及Bootstrap success；git diff check通过；主索引最终与HEAD同步。证据 `artifacts/execution-bubble-review-fix-20261002/`。本轮无共享Vengeance源码修改，独立模块编译沿用上轮证据，不新增声明实机支持版本。
 
 **边界**：未部署/未push/未进游戏，真实模型输出、气泡屏幕渲染、各刑罚现场时序、旧档与帧性能未验证。执行期间检测到Weekly/Illustrator另外4个并行变化路径，未修改或回退，也不夹带提交；不能声称整仓dirty字节完全不变。产品回滚仅逆向本次接收器/测试切片，禁止恢复旧 main-index 引回已确认的反向暂存；原证据与rollback.patch保留。
+
+
+<a id="local-policy-jurisdiction-20261002"></a>
+## 地方政策无王国失效：最小管辖职责重构（2026-10-02）
+
+- 最新授权仅修地方政策，不处理王国政策展示。起点 `917ea758`，本地意图检查点 `0d7e9e43`，已验证产品与回归切片 `208ce554`。原 SessionTransport dirty、旧 tools/NuGet 未纳入提交、不清理；没有 push、Stage、游戏覆盖、仓外写入或构建脚本修改。本条替代旧交接中本次地方政策状态，不撤销其他功能历史结论。
+- 根因：目标管辖统一要求发布王国，独立家族合法封地因此被拒绝；语义快照也只收录王国封地。现在统一入口按 scope 选择授权依据，地方按所选且仍属于发布家族的封地及合法村庄/家族/领袖关联确定边界，明确其他目标仍受既有授权约束。无证据失败关闭，不扩展为世界目标。王国/跨国授权、国家对象模块限制、费用、UI、持久化身份及公开 API 不改。
+
+### 本切片源码责任证据（revision `208ce554`；一基行号）
+
+| 源码 | 符号 / 范围 | 覆盖与保留边界 |
+| --- | --- | --- |
+| `PolicySystem/Effects/PolicyEffectJurisdictionContext.cs:10–80` | `PolicyEffectJurisdictionContext`, `FromSnapshot`, `CaptureFief` | 每调用一次上下文，缓存按封地 ID 查找；编译用脱离游戏对象的请求快照，注册/刷新用当前归属。不是存档字段。 |
+| `PolicySystem/Effects/PolicyEffectTargetJurisdiction.cs:20–274` | `TryApply`, `TryApplyLocal`, `CanProjectSettlementOwnerClan` | 唯一作用域授权入口；S 限所选封地，显式目标和跨国规则保留；严格拒绝或运行时裁剪失效对象。 |
+| `PolicySystem/Core/CustomPolicyBehavior.Effects.cs:146–270,2609–3140,6631–6700,6912–6990,7394–7465` | `TryRegisterPolicyEffectBundleInternal`, `RefreshActivePolicyEffectCanonicalTargets`, TargetPlan materialization/refresh, `CreatePlayerPolicyEffectTargetResolver`, `AddPolicyEffectPrimaryTargetForModule` | 编译、注册、运行时、延长所复用的刷新入口消费同一管辖；删除地方路径重复王国筛选；保留五参数投影接口。延长费用/UI流程未改。 |
+| `PolicySystem/Targets/PolicyTargetSemanticRouter.cs:87–92,561–754` | `BuildWorldSnapshot`, `CapturePrimaryFief` | 现有缓存快照附带管辖证据，额外只捕获独立玩家家族的封地，不扫描所有独立对象。 |
+| `tests/bridges/Policy/PolicyEffectModule.ContractTests/LocalJurisdictionTests.cs:15–216` | `TestKingdomlessLocalJurisdiction`, `TestLocalJurisdictionRegistration` | 合成目标矩阵和真实注册/刷新入口；仅临时替换 Settlement.Find 的合成查找，finally 撤销。 |
+
+频率：在既有快照失效重建、目标解析、注册和刷新时工作，不新增逐帧任务；上下文缓存封地证据，各效果按 ID 集合检查。快照已有归属/领袖/王国变更失效机制沿用。框架导航仍见 `docs/architecture/af-framework-code-scope.md`，其旧全框架验证不等于本次游戏验收。
+
+### 验证与失败记录
+
+本地证据根：`artifacts/local-policy-jurisdiction-20261002/`（构建产物不提交）。
+
+- RED：`red-test.log` 用改前 DLL 复现 `政策效果目标缺少发布地王国边界。`。首次测试构建重复 assembly attributes，原因是重定向 obj 后旧 obj 被默认 glob 收录；仅构建调用排除 bin/obj/local/artifacts 后成功，未清理旧文件。
+- 初次产品构建遗漏 Targets.cs 对 resolver 的调用参数，报 CS7036；将默认上下文构造收敛到 resolver 后修复。最后产品构建 `builds/build-6c9e92610f054fd7a6aefa0fedbfe326/results.json` exit 0，之后只追加测试，无产品修改。
+- 使用现有非破坏包装：`python -B docs/handoffs/j17-offline-build-gate.py --configuration Debug --output-parent E:/AnimusForge-refactor-continuation-20260831/artifacts/local-policy-jurisdiction-20261002/builds`。Debug `BannerlordApi=1.3`、`BannerlordApi=1.4` 与 Bootstrap 均成功；统一脚本验证输出 marker。实际引用版本 1.3.15.110062 / 1.4.7.117484。产品存在原有警告，不声称零警告。
+- 测试项目 `tests/bridges/Policy/PolicyEffectModule.ContractTests/PolicyEffectModule.ContractTests.csproj` 分别引用最终两 API DLL 构建，均零错误零警告。日志 `final-test-build.log`、`final14-test-build.log`；输出与 obj 独立放本证据根。
+- 两 API 各执行：`--policy-target-jurisdiction-only` PASS 62；`--policy-all-modules-contract-only` PASS 1457 / 18 modules；`--policy-target-plan-only` PASS 765。日志分别 `final-*.log` 和 `final14-*.log`。计数有重叠，不相加称唯一覆盖。
+- 覆盖独立及已入国发布家族、村庄/家族/领袖投影、非法目标、登记前失地拒绝、运行中失地清除、序列化后刷新、地方显式跨国授权与国家限制；全国既有断言未放宽。注册/刷新入口使用合成游戏对象，中央授权逻辑未 mock。
+- `git diff --check` / staged diff 检查通过。未修改一键输出语义、公开 API 或存档类型。
+
+### 明确未验
+
+真实游戏发布/评议期间失地时序、完整延长效果交互及费用扣除、代表性真实旧档加载、实机 1.3/1.4、帧耗时仍 **NOT_RUN**。离线 JSON 往返与延长共用刷新入口不等于真实读档/延长端到端验收；不声称全仓测试通过。没有部署或推送授权。
+
+
+### 地方政策修复后：本次授权构建、打包及游戏覆盖（2026-10-02）
+
+用户随后明确授权覆盖 `D:/steam/steamapps/common/Mount & Blade II Bannerlord/Modules/AnimusForge`，并分别批准 AppData Recovery 备份和工作区 Debug artifact/obj/Stage 生成目录重建；这取代本条上方本次“未部署”状态，不授权 push 或实机验收。
+
+- 在 `b7e3c8fa` + 原受保护 SessionTransport dirty 工作树执行现有 `scripts/build/build_single_module.ps1 -Configuration Debug -Deploy`（显式本仓 1.3/1.4 引用），两实现 + Bootstrap 构建成功。未改脚本或源代码。
+- 首次部署前拒绝旧 Stage 与现 content map 不一致（AFCourierLetterBrushes.xml 等历史资源）；尚未写游戏。核实目录在本仓、无 reparse point 后，按已获授权删除该精确生成目录，再用同一构建产物运行原 `deploy_module.ps1` 成功，更新 156 个清单文件。不是跳过校验或更改锁。
+- `package_mod.ps1 -ModuleDir <本仓/bin/Debug/single_module_stage/AnimusForge> -NoBump -ExcludeOnnx` 成功，版本保持 v1.3.7.2。ZIP：`一键编译覆盖推送/packages/AnimusForge_v1.3.7.2_20261002_165453_006.zip`，SHA256 `6f08d1db7671af43b56704c638d62caaf108dd92ba96834ff8fac8d31a1fb914`。
+- 238 个 Stage 文件与安装目录逐文件 SHA256 一致；ZIP 文件集合一致、非 XML 条目 hash 与 Stage 一致，XML 经原脚本验证；3221 个安装目录清单外文件大小及 mtime 保持（包含 ONNX，不冒充全部内容 hash）；原 SessionTransport hash 保持。Recovery 完成记录 `C:/Users/PC/AppData/Local/AnimusForge/Recovery/deploy/deploy-5597c726fd444a64a0531eacf0a0ecfe` 已确认。
+- 本地收据 `artifacts/local-policy-deploy-20261002/`：build-deploy.log（初次失败保留）、deploy-retry.log、package.log、verified.json。真实游戏启动、地方政策行为和旧档仍 NOT_RUN；无推送。
+
+
+### 地方政策修复合入远端 main（2026-10-02）
+
+用户先授权普通推送当前分支，已核对远端同名分支为 `7c32132d917e65f324a971bc64918f263ef6eba7`；随后明确改为推送 main。fresh fetch 后双方各4提交，共同祖先 `917ea758`，远端 main `d6e859c3`。本地意图检查点 `bb59058c` 后普通合并 main，产品无冲突，仅 HANDOFF 顶部冲突，双方历史全文保留；不改写提交或强推。历史 `ae8e6b89` 已属目标远端祖先，不是新增出站材料；本次不纳入任何被忽略交接/未跟踪数据。
+
+合并工作树 Debug 双API+Bootstrap 构建 exit 0（`artifacts/local-policy-main-20261002/builds/build-8f8be4ec3dd242aa9bba86f5e9d0f853`）；两 API 分别运行政策管辖62、18模块1457、TargetPlan765断言全部 PASS（各套重叠不相加）。SessionTransport 原 dirty raw SHA256 `a393a98b42c1f2d37150578d5d5ede170540be8eb4874751fbc2821eb9cfe23e` 保持且未暂存；构建为含该原 dirty 的工作树验证，不冒充远端纯提交源码重建。无产品文件手工改写，无游戏重部署；实机未验。普通推送前再核对 main 祖先，结果以 git push 和 ls-remote 实际回执为准。

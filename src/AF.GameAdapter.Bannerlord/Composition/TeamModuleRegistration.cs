@@ -24,6 +24,16 @@ internal static class TeamModuleRegistration
             TeamModuleServices.Siege != null, FeatureBridgeIds.ConversationSiege);
 
         HostedExtensionCatalog.Register(directory);
+        if (DiplomacyModuleServices.Conversation == null || DiplomacyModuleServices.World == null || DiplomacyModuleServices.Policy == null)
+            throw new InvalidOperationException("module.adapter_missing");
+        var diplomacy = new InternalModuleDefinition("af.team.diplomacy", InternalContractVersion,
+            new[] {
+                new InternalCapabilityDefinition("af.team.diplomacy.dialogue", InternalContractVersion, new string[0]),
+                new InternalCapabilityDefinition("af.team.diplomacy.world", InternalContractVersion, new string[0]),
+                new InternalCapabilityDefinition("af.team.diplomacy.policy", InternalContractVersion, new[] { FeatureBridgeIds.PolicyWorldDiplomacy })
+            });
+        if (!directory.TryRegister(diplomacy, out string diplomacyReason))
+            throw new InvalidOperationException(diplomacyReason);
         return directory;
     }
 

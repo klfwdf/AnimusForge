@@ -181,6 +181,7 @@ public sealed partial class CustomPolicyBehavior
 		List<PolicyEffectInstanceSaveData> normalizedInstances = new List<PolicyEffectInstanceSaveData>(sourceInstances.Count);
 		int totalPayloadBytes = 0;
 		PolicyTargetWorldSnapshot registrationTargetPlanSnapshot = null;
+		var jurisdiction = new PolicyEffectJurisdictionContext(scope, registration.ProposerClanId, registration.TargetFiefIds);
 		for (int index = 0; index < sourceInstances.Count; index++)
 		{
 			PolicyEffectInstanceSaveData source = sourceInstances[index];
@@ -242,7 +243,7 @@ public sealed partial class CustomPolicyBehavior
 					NormalizeIdList(registration.TargetFiefIds),
 					ref registrationTargetPlanSnapshot,
 					out targetSet,
-					out string targetPlanError))
+					out string targetPlanError, jurisdiction))
 			{
 				failureReason = "policy effect bundle TargetPlan materialization failed: "
 					+ module.Id + " / " + targetPlanError;
@@ -257,7 +258,7 @@ public sealed partial class CustomPolicyBehavior
 				preserveLegacyCrossKingdoms: false,
 				failOnUnauthorized: true,
 				out targetSet,
-				out string targetJurisdictionError))
+				out string targetJurisdictionError, jurisdiction))
 			{
 				failureReason = "policy effect bundle target jurisdiction failed: "
 					+ module.Id + " / " + targetJurisdictionError;
@@ -2632,6 +2633,7 @@ public sealed partial class CustomPolicyBehavior
 			.Where(settlement => settlement != null)
 			.Select(settlement => settlement.StringId));
 		PolicyTargetWorldSnapshot targetPlanSnapshot = null;
+		var jurisdiction = new PolicyEffectJurisdictionContext(PolicyEffectScopes.Local, activeEffect.ProposerClanId, sourcePrimaryIds);
 		bool changed = false;
 		foreach (PolicyEffectInstanceSaveData instance in activeEffect.ModuleEffects ?? new List<PolicyEffectInstanceSaveData>())
 		{
@@ -2672,7 +2674,7 @@ public sealed partial class CustomPolicyBehavior
 					sourcePrimaryIds,
 					ref targetPlanSnapshot,
 					out PolicyEffectCanonicalTargetSet planTargetSet,
-					out bool planStateChanged))
+					out bool planStateChanged, jurisdiction))
 				{
 					changed |= planStateChanged;
 					if (!AreSamePolicyEffectCanonicalTargetSets(current, planTargetSet))
@@ -2760,8 +2762,7 @@ public sealed partial class CustomPolicyBehavior
 				foreach (string parentId in parentIds)
 				{
 					Settlement primary = ResolvePrimaryPolicyFief(ResolvePolicyEffectSettlementById(parentId));
-					if (primary != null
-						&& (targetKingdom == null || primary.OwnerClan?.Kingdom == targetKingdom))
+					if (primary != null)
 					{
 						resolved.AddRange(ExpandLocalPolicySettlements(new[] { primary }));
 					}
@@ -2781,8 +2782,7 @@ public sealed partial class CustomPolicyBehavior
 				foreach (string clanId in NormalizeIdList(instanceExplicitClanIds))
 				{
 					Clan clan = ResolveClanById(clanId);
-					if (clan == null || clan.IsEliminated || clan.Kingdom == null
-						|| (targetKingdom != null && clan.Kingdom != targetKingdom))
+					if (clan == null || clan.IsEliminated)
 					{
 						continue;
 					}
@@ -2858,7 +2858,7 @@ public sealed partial class CustomPolicyBehavior
 					primary,
 					refreshModule,
 					ResolvePolicyEffectPrimaryTargetOrigin(current),
-					out _))
+					out _, PolicyEffectScopes.Local))
 				{
 					projectionFailed = true;
 				}
@@ -2877,7 +2877,7 @@ public sealed partial class CustomPolicyBehavior
 				preserveLegacyCrossKingdoms: true,
 				failOnUnauthorized: false,
 				out refreshed,
-				out _);
+				out _, jurisdiction);
 			bool instanceChanged = !AreSamePolicyEffectCanonicalTargetSets(current, refreshed);
 			if (instanceChanged)
 			{
@@ -2913,7 +2913,8 @@ public sealed partial class CustomPolicyBehavior
 		IReadOnlyCollection<string> sourcePrimarySettlementIds,
 		ref PolicyTargetWorldSnapshot snapshot,
 		out PolicyEffectCanonicalTargetSet materialized,
-		out string error)
+		out string error,
+		PolicyEffectJurisdictionContext jurisdiction)
 	{
 		materialized = null;
 		error = string.Empty;
@@ -2974,7 +2975,7 @@ public sealed partial class CustomPolicyBehavior
 					primary,
 					module,
 					PolicyEffectPrimaryTargetOrigin.TargetPlanPrimarySettlement,
-					out error))
+					out error, scope))
 				{
 					materialized = null;
 					return false;
@@ -2991,7 +2992,7 @@ public sealed partial class CustomPolicyBehavior
 			preserveLegacyCrossKingdoms: false,
 			failOnUnauthorized: true,
 			out materialized,
-			out error))
+			out error, jurisdiction))
 		{
 			return false;
 		}
@@ -3020,8 +3021,10 @@ public sealed partial class CustomPolicyBehavior
 		IReadOnlyCollection<string> sourcePrimarySettlementIds,
 		ref PolicyTargetWorldSnapshot snapshot,
 		out PolicyEffectCanonicalTargetSet refreshed,
-		out bool lifecycleChanged)
+		out bool lifecycleChanged,
+		PolicyEffectJurisdictionContext jurisdiction = null)
 	{
+		jurisdiction ??= new PolicyEffectJurisdictionContext(activeEffect?.ScopeKind, activeEffect?.ProposerClanId, sourcePrimarySettlementIds);
 		refreshed = current;
 		lifecycleChanged = false;
 		if (instance == null || current == null)
@@ -3105,7 +3108,7 @@ public sealed partial class CustomPolicyBehavior
 						primary,
 						module,
 						PolicyEffectPrimaryTargetOrigin.TargetPlanPrimarySettlement,
-						out _))
+						out _, context.Scope))
 					{
 						projectionFailed = true;
 					}
@@ -3126,7 +3129,7 @@ public sealed partial class CustomPolicyBehavior
 				preserveLegacyCrossKingdoms: true,
 				failOnUnauthorized: false,
 				out refreshed,
-				out _))
+				out _, jurisdiction))
 			{
 				refreshed = NormalizePolicyEffectCanonicalTargetSet(materialized);
 			}
@@ -6627,8 +6630,11 @@ public sealed partial class CustomPolicyBehavior
 
 	private static PolicyEffectTargetResolver CreatePlayerPolicyEffectTargetResolver(
 		PolicyDraftRequest request,
-		IDictionary<string, PolicyTargetHandleSaveData> handleByKey)
+		IDictionary<string, PolicyTargetHandleSaveData> handleByKey,
+		PolicyEffectJurisdictionContext jurisdiction = null)
 	{
+		jurisdiction ??= PolicyEffectJurisdictionContext.FromSnapshot(request?.ScopeKind, request?.ProposerClanId,
+			request?.SelectedFiefIds, request?.SemanticTargetSnapshot);
 		return delegate(
 			string targetHandle,
 			IPolicyEffectModule module,
@@ -6670,7 +6676,7 @@ public sealed partial class CustomPolicyBehavior
 					targetKind,
 					targetId),
 				out canonicalTargetSet,
-				out targetError))
+				out targetError, jurisdiction))
 			{
 				return false;
 			}
@@ -6906,7 +6912,9 @@ public sealed partial class CustomPolicyBehavior
 			MaxPayloadBytes = MaxPolicyEffectPayloadBytes,
 			MaxTotalPayloadBytes = MaxPolicyEffectPayloadTotalBytes
 		};
-		PolicyEffectTargetResolver targetResolver = CreatePlayerPolicyEffectTargetResolver(request, handleByKey);
+		var jurisdiction = PolicyEffectJurisdictionContext.FromSnapshot(request?.ScopeKind, actorClanId,
+			request?.SelectedFiefIds, request?.SemanticTargetSnapshot);
+		PolicyEffectTargetResolver targetResolver = CreatePlayerPolicyEffectTargetResolver(request, handleByKey, jurisdiction);
 		PolicyEffectInstanceIdFactory instanceIdFactory = (ordinal, moduleId, targetSet) =>
 			FirstNonEmpty(policyId, "policy-" + Math.Max(0, request?.SubmittedDay ?? 0).ToString(CultureInfo.InvariantCulture))
 			+ ":effect:" + ordinal.ToString(CultureInfo.InvariantCulture);
@@ -6966,7 +6974,7 @@ public sealed partial class CustomPolicyBehavior
 						targetKind,
 						targetId),
 					out shellTargetSet,
-					out shellTargetError))
+					out shellTargetError, jurisdiction))
 				{
 					error = shellTargetError;
 					return false;
@@ -7376,7 +7384,7 @@ public sealed partial class CustomPolicyBehavior
 					settlement,
 					module,
 					ResolvePolicyEffectPrimaryTargetOrigin(target),
-					out error))
+					out error, request?.ScopeKind))
 				{
 					return NormalizePolicyEffectCanonicalTargetSet(result);
 				}
@@ -7391,6 +7399,17 @@ public sealed partial class CustomPolicyBehavior
 		IPolicyEffectModule module,
 		PolicyEffectPrimaryTargetOrigin origin,
 		out string error)
+	{
+		return AddPolicyEffectPrimaryTargetForModule(targetSet, primary, module, origin, out error, PolicyEffectScopes.Kingdom);
+	}
+
+	private static bool AddPolicyEffectPrimaryTargetForModule(
+		PolicyEffectCanonicalTargetSet targetSet,
+		Settlement primary,
+		IPolicyEffectModule module,
+		PolicyEffectPrimaryTargetOrigin origin,
+		out string error,
+		string scope)
 	{
 		error = string.Empty;
 		if (targetSet == null || primary == null || !(primary.IsTown || primary.IsCastle))
@@ -7436,7 +7455,7 @@ public sealed partial class CustomPolicyBehavior
 			&& primary.OwnerClan != null
 			&& !primary.OwnerClan.IsEliminated
 			&& (primary.OwnerClan.Kingdom != null
-				|| module?.Descriptor?.AllowIndependentClanTargets == true))
+				|| PolicyEffectTargetJurisdiction.CanProjectSettlementOwnerClan(module, scope)))
 		{
 			AddUniquePolicyEffectId(targetSet.ClanIds, primary.OwnerClan.StringId);
 		}
