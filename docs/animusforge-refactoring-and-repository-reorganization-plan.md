@@ -6275,6 +6275,7 @@ R2计划交付门槛：已给固定技术路线、真实来源与目标、写入
 
 - 原入口 `scripts/build/build_single_module.ps1`、Debug、无 Stage/Deploy：1.3 引用 `1.3.15.110062`、1.4 引用 `1.4.6.115628` 与 Bootstrap 均 exit0，日志 `dual-build-final-bound.log`；既有警告保留，不宣称全仓无警告。
 - `tests/modules/AF.Module.Onboarding/DialogueOnboardingRegressionTests/DialogueOnboardingRegressionTests.csproj` 链接实际 VM、设置、输入门、等待 owner、UI dispatch 与模型文件 resolver；网络/设置宿主/引擎依赖用 stub。64 项行为/XML/源码契约 + 9 项候选 DLL 元数据，两 API 各73通过；两个 API 复用同一测试逻辑，不相加成独立用例。最终结果见 `regression-final.log` 与 `regression-metadata-1.3.log` / `regression-metadata-1.4.log`。
+- 后续其他会话提交生图后，对最新组合工作树再次复核：首次因共享 `obj/single_module` 的 SourceLink 文件被进程占用失败；占用结束后原入口重试双 API + Bootstrap exit0，`dual-build-combined-retry.log` 及两 `regression-combined-1.3.log` / `regression-combined-1.4.log` 每轮73通过。失败日志保留，不改构建脚本或其他会话代码；候选 hash/当时 HEAD 在收据单独记录，不冒充旧候选 hash。
 - 原 `extensions/AnimusForge.DialogueUI/tests/auxiliary-tests/AuxiliaryTests.csproj` 使用真实 Harmony：55断言通过，见 `auxiliary-regression-corrected.log`。清单只读调用 `Get-AnimusForgeContentLayout`：223项、新模板唯一映射通过，未投影或部署。
 - 初始输入门测试发现完成后还能重置，已修为一次性；现有配置空字段测试发现旧临时值未被清除，已修为读取真实原值；旧 fixture 完整 DataPaths 测试在工作区内数据根被安全保护拒绝，未改其保护、未改外部用户目录，改用实际 ModelStore 生产源码做本地缺失/损坏配置/外部数据文件契约。失败日志保留。
 - 直接 DLL owner runtime 回放在 module initializer 缺 TaleWorlds 依赖时失败（`regression-actual-1.3.log` / `regression-actual-1.4.log`），不计 PASS、不规避/改 module initializer；最终候选检查明确 metadata-only，NOT_RUN 实机、旧档、真实 HTTP、真实 ONNX 推理及 Stage/ZIP/发布。离线完成不替代玩家实际验收。
