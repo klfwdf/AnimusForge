@@ -1,4 +1,18 @@
-## AF2 host terminal closeout implementation 20261002
+## 当前方向：AF 2.0 使用交付收尾（先使用、后拆分，2026-10-02，已授权执行）
+
+<a id="af2-module-integration-delivery-plan-20261002"></a>
+
+状态：`ACTIVE`。按[收尾交付计划](plans/af2-module-integration-delivery-closeout-20261002.md)执行 R0–R3；先交付使用，旧宿主治理后置，历史未完成项不改标 DONE。起始 HEAD `261a3be3a8935e9e313f8de057c462012d3a7f13`，分支 `codex/af-main-refactor-continuation-20260831`；保护既有 SessionTransport dirty、tools/NuGet 和其他作者改动。仅在具名阻塞时修改产品；未授权 push、Stage、打包、部署、仓外写入或真实玩家数据操作。
+
+- 当前工作区/分支不变；本会话已直接查询远端 main 为 `261a3be3a8935e9e313f8de057c462012d3a7f13`，与本地 HEAD 一致。新计划及导航仍本地未提交；SessionTransport 原产品 dirty 另行保护。后续交付必须核对已有产物/1337 输入证据是否包含 dirty，不把工作树构建直接冒充纯 main 构建；本次没有判定或改写其归属。
+- 已有能力仍复用：CoreDialogueClient:27–55 三渠道和上下文票据；AfApi:18–28 三渠道 Available、另外三项 NotSupported；TeamModuleRegistration.CreateDirectory:16 与 Postprocess owner:393–418 的 typed 接线。内部指南:11、65–73 的旧路径/状态应修正文档，不重做 J。
+- 已读到的 DialogueUI 展示 hook/历史读取、Illustrator 兼容反射及 IntegratedModuleHost 生命周期入口，不再预设为必迁项。只有实际使用/当前接入失败或相关安全/兼容证据才触发最小修复，不重写模块业务，不以“更干净”继续扩包。
+- 下一步 R0 候选与有效证据绑定、R1 接入说明、R2 仅修具名阻塞、R3 有限使用验收/交付；无阻塞即跳过产品修改。INTEGRATION_HANDOFF_READY、USE_ACCEPTED、实际发布/部署分别记录；无实机条件可交候选与资料但保留 NOT_RUN，不称已实测可用。
+- 验收按计划第 3–5 节：固定 B0–B3、U1–U9；R0 冻结版本、样本、预期、生产证据及命令；B 全通过才可交接，声明版本的适用 U 卡全通过才记 USE_ACCEPTED。证据层级、失败分类和增项条件不变，出口成立即停止。
+- 后续轻总控 + 交付执行者为默认，真实阻塞出现再加修复者；主控不重复全审，不预设多条重构线。原宿主职责、接口/目录优化留正常使用后的渐进维护，不阻断制作组开始集成。
+- 调度前只更新模型配置与本轮授权，未修改或测试产品；保护历史正文、原 SessionTransport dirty、tools/NuGet 和其他作者工作。用户执行授权不扩展为推送、Stage、打包、部署、仓外写入、真实玩家数据、批量清理或全局配置许可。
+
+## 历史：AF2 host terminal closeout implementation 20261002
 
 <a id="af2-host-terminal-closeout-implementation-20261002"></a>
 
