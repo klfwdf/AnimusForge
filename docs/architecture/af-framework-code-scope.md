@@ -1,3 +1,10 @@
+<a id="four-hosted-extension-catalog-20261002"></a>
+### 四扩展宿主目录：本包当前导航（2026-10-02）
+
+本包的声明/状态/真实生命周期入口以[13锚点补充图](af-hosted-extension-code-map.json)及[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#four-hosted-extension-catalog-20261002)为准。它覆盖 Illustrator、DialogueUI、Coup、Vengeance 宿主接缝到 `TeamModuleRegistration`/目录状态/public只读投影，不覆盖各玩法算法、存档、所有Harmony补丁/provider/实时MCM资格或实机。公开V1 shape及原三制作组port不变；没有新增动态插件loader或全部模块双向调用。
+
+以下838锚点仍是各自冻结修订的历史导航；本包改变的宿主目录符号由上述补充图定位，不通过全局刷新其他作者dirty的hash冒充整树签收。
+
 <a id="af2-final-responsibility-closeout-20261001"></a>
 ### AF2 最终冻结职责与维护影响（2026-10-01）
 

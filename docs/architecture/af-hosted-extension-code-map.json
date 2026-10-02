@@ -1,0 +1,150 @@
+{
+  "schemaVersion": 1,
+  "sourceRevision": "c20bb69ff7e04a474770f57ae59c1087ec0c90d5",
+  "meaning": "Task-scoped supplement to the existing frozen 838-anchor map. Host metadata/lifecycle only; not gameplay or current full-worktree acceptance.",
+  "anchors": [
+    {
+      "id": "hosted.catalog",
+      "path": "src/AF.Foundation.Runtime/ModuleDirectory/HostedExtensionCatalog.cs",
+      "start": 6,
+      "end": 6,
+      "symbol": "internal static class HostedExtensionCatalog",
+      "match": "exact",
+      "status": "wired-host-lifecycle-offline-verified",
+      "note": "四扩展固定声明，非插件发现/执行器",
+      "fileSha256": "8d90d2d5aea9c12a1201f68eb02c7a3d7ed025e03f2301f6f2c4dda215a2cf27"
+    },
+    {
+      "id": "hosted.registration",
+      "path": "src/AF.GameAdapter.Bannerlord/Composition/TeamModuleRegistration.cs",
+      "start": 26,
+      "end": 26,
+      "symbol": "HostedExtensionCatalog.Register(directory);",
+      "match": "exact",
+      "status": "wired-host-lifecycle-offline-verified",
+      "note": "实际冷启动目录消费者",
+      "fileSha256": "e82762cad9d41d20f97b7a305483cab2e597cc8ee44ed95f35c653e073d10859"
+    },
+    {
+      "id": "hosted.state",
+      "path": "src/AF.Foundation.Runtime/ModuleDirectory/ModuleDirectoryLifecycleOwner.cs",
+      "start": 64,
+      "end": 64,
+      "symbol": "internal static bool UpdateHostedRuntimeState(string moduleId, InternalModuleRuntimeState state,",
+      "match": "exact",
+      "status": "wired-host-lifecycle-offline-verified",
+      "note": "唯一目录状态；拒绝 stopped/未知模块及启动失败被战役成功覆盖",
+      "fileSha256": "2d1c2b59c783c6095cf9a3cbea9b0a65522ee4cd25aafdb64cfc13d39a1a2df2"
+    },
+    {
+      "id": "hosted.facade",
+      "path": "src/AF.GameAdapter.Bannerlord/Composition/ModuleFrameworkRuntime.cs",
+      "start": 27,
+      "end": 27,
+      "symbol": "internal static bool ReportHostedExtensionState(string moduleId, InternalModuleRuntimeState state,",
+      "match": "exact",
+      "status": "wired-host-lifecycle-offline-verified",
+      "note": "无状态报告门面，不增加游戏执行权威",
+      "fileSha256": "4c7b3b6a8a7a135cfb9fb809cfcf0fa2efaac3f2f0e28c26e78e038c576d23a0"
+    },
+    {
+      "id": "hosted.start",
+      "path": "src/AF.GameAdapter.Bannerlord/Composition/IntegratedModuleHost.cs",
+      "start": 56,
+      "end": 56,
+      "symbol": "private static void TryStart(string name, string moduleId, Func<bool> start, bool awaitingPresentation = false)",
+      "match": "exact",
+      "status": "wired-host-lifecycle-offline-verified",
+      "note": "真实初始化结果到元数据，保留失败隔离",
+      "fileSha256": "96fb7036dbf09fc953b05f48d9b88675a2e6d313197ee4d31c059025fc0d5817"
+    },
+    {
+      "id": "hosted.campaign",
+      "path": "src/AF.GameAdapter.Bannerlord/Composition/IntegratedModuleHost.cs",
+      "start": 75,
+      "end": 75,
+      "symbol": "private static void TryCampaign(string name, string moduleId, Action register, bool isCampaign)",
+      "match": "exact",
+      "status": "wired-host-lifecycle-offline-verified",
+      "note": "保留原注册 owner/顺序，反映失败与后续真实恢复",
+      "fileSha256": "96fb7036dbf09fc953b05f48d9b88675a2e6d313197ee4d31c059025fc0d5817"
+    },
+    {
+      "id": "hosted.stop",
+      "path": "src/AF.GameAdapter.Bannerlord/Composition/IntegratedModuleHost.cs",
+      "start": 92,
+      "end": 92,
+      "symbol": "private static void TryShutdown(string name, string moduleId, Action shutdown)",
+      "match": "exact",
+      "status": "wired-host-lifecycle-offline-verified",
+      "note": "清理失败后不伪造可用",
+      "fileSha256": "96fb7036dbf09fc953b05f48d9b88675a2e6d313197ee4d31c059025fc0d5817"
+    },
+    {
+      "id": "hosted.illustrator",
+      "path": "extensions/AnimusForge.Illustrator/src/SubModule.cs",
+      "start": 32,
+      "end": 32,
+      "symbol": "internal static bool TryStart()",
+      "match": "exact",
+      "status": "wired-host-lifecycle-offline-verified",
+      "note": "原生图初始化结果；不代表 provider/MCM/全部图像功能通过",
+      "fileSha256": "813b431ee005b2772243cbad7774b36e99ff3b25a123dc5e1537be5bcf635660"
+    },
+    {
+      "id": "hosted.dialogue-ui",
+      "path": "extensions/AnimusForge.DialogueUI/src/SubModule.cs",
+      "start": 51,
+      "end": 51,
+      "symbol": "internal static bool TryInstallPresentation()",
+      "match": "exact",
+      "status": "wired-host-lifecycle-offline-verified",
+      "note": "延迟安装完成后才可用；可选轮盘失败保留原回退",
+      "fileSha256": "9b1a97ea79b545d817a755af4182e47948ea2eead3f88b2979e8f64aeae773fd"
+    },
+    {
+      "id": "hosted.coup",
+      "path": "extensions/AnimusForge.Coup/src/SubModule.cs",
+      "start": 44,
+      "end": 44,
+      "symbol": "internal static bool TryStart()",
+      "match": "exact",
+      "status": "wired-host-lifecycle-offline-verified",
+      "note": "原 Start 加既有三个兼容探针；无任务/战斗规则改动",
+      "fileSha256": "b930576423624d9730c6c9e8771bc520ba1406c6fd10146167f7993ce77793e2"
+    },
+    {
+      "id": "hosted.vengeance-start",
+      "path": "src/bridges/Vengeance/Host/VengeanceRuntimeBridge.cs",
+      "start": 23,
+      "end": 23,
+      "symbol": "internal static void Initialize()",
+      "match": "exact",
+      "status": "wired-host-lifecycle-offline-verified",
+      "note": "认领/订阅原宿主；失败保持原清理和抛出",
+      "fileSha256": "181ebbb3e2370cda3a79486518d10332e802523cc7b75b8066e069bcb5ffe617"
+    },
+    {
+      "id": "hosted.vengeance-campaign",
+      "path": "src/bridges/Vengeance/Host/VengeanceRuntimeBridge.cs",
+      "start": 160,
+      "end": 160,
+      "symbol": "internal static void RegisterCampaign(IGameStarter starterObject)",
+      "match": "exact",
+      "status": "wired-host-lifecycle-offline-verified",
+      "note": "原预设准备及模型/行为注册成功或失败回报",
+      "fileSha256": "181ebbb3e2370cda3a79486518d10332e802523cc7b75b8066e069bcb5ffe617"
+    },
+    {
+      "id": "hosted.vengeance-stop",
+      "path": "src/bridges/Vengeance/Host/VengeanceRuntimeBridge.cs",
+      "start": 204,
+      "end": 204,
+      "symbol": "internal static void Shutdown()",
+      "match": "exact",
+      "status": "wired-host-lifecycle-offline-verified",
+      "note": "原退役清理及目录不可用",
+      "fileSha256": "181ebbb3e2370cda3a79486518d10332e802523cc7b75b8066e069bcb5ffe617"
+    }
+  ]
+}
