@@ -101,6 +101,10 @@ internal sealed class WorldBulletinSaveState
 	public int TrackingStartDay = -1;
 
 	public List<WorldBulletinLayout> Layouts = new List<WorldBulletinLayout>();
+
+	// Only notices waiting for illustration release; cleared after the durable unread queue accepts them.
+	// Optional field in the existing JSON save, so old saves need no migration.
+	public List<string> PendingNoticeEventIds = new List<string>();
 }
 
 internal sealed class WorldBulletinSelection

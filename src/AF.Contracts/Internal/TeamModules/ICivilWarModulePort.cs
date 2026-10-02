@@ -5,7 +5,7 @@ using TaleWorlds.CampaignSystem.Settlements;
 
 namespace AnimusForge.Refactor.Modules;
 
-internal enum CivilWarAction { JoinCrown, JoinOpposition, Leave, Found, Detonate, Suppress, Negotiate, Concede, ForceDissolve, Respond }
+internal enum CivilWarAction { JoinCrown, JoinOpposition, Leave, Found, Detonate, Suppress, Negotiate, Concede, ForceDissolve, Respond, DissolveOwn, ChangeDemand }
 internal enum CivilWarActionStatus { Applied, Rejected, AwaitingPlayer, AwaitingKingdom, PartialFailure }
 internal sealed class CoupCivilWarRegistration
 {
@@ -55,31 +55,79 @@ internal sealed class CivilWarFoundingOption
 	public string Text = "";
 }
 
-// One clan row in the faction panel.
+// Who the player is in their own kingdom's politics; picks the panel's action set.
+internal enum CivilWarPanelRole { None, King, Crown, Middle, Member, Leader }
+
+// One clan row in the faction panel (faction members, crown side, undecided, or the grievance ledger).
 internal sealed class CivilWarPanelClan
 {
 	public string Name = "";
-	public string Info = "";
+	public string Stance = "";
+	public string Reason = "";
 	public int Grievance;
+	// Unrounded total grievance (0..100), shown with one decimal in the ledger.
+	public float GrievanceValue;
+	public int RelationToKing;
+	public string RelationText = "";
+	// Share of the kingdom's political strength, 0..100.
+	public int PowerPercent;
 	public bool IsLeader;
+	public bool IsPlayer;
 }
 
-// One faction column: each faction has its own demand, stage and grievance.
+// Four-step demand progress: 0 = not reached, 1 = done, 2 = current.
+internal sealed class CivilWarPanelStep
+{
+	public string Name = "";
+	public string Note = "";
+	public int State;
+}
+
+// Formation condition shown while the kingdom has no faction.
+internal sealed class CivilWarPanelCondition
+{
+	public string Name = "";
+	public string Value = "";
+	public bool Met;
+}
+
+// One faction dossier: each faction has its own demand, stage and grievance.
 internal sealed class CivilWarPanelFaction
 {
 	public string Id = "";
 	public string Tag = "";
+	public string DemandTag = "";
+	public string DemandId = "";
+	public string TargetId = "";
 	public string Name = "";
+	public string ShortName = "";
 	public string Color = "#8C1E1EFF";
+	// Full stage line (kept for logs and tests).
 	public string Stage = "";
-	public string Leader = "";
-	public string Demand = "";
-	public string Goal = "";
-	public string Power = "";
-	public string Refusal = "";
+	public string LeaderLine = "";
+	public string DemandTitle = "";
+	public string Note = "";
 	public int Grievance;
-	// Total member count; Members may be trimmed for display.
+	public int PowerPercent;
+	public int Fortifications;
+	public int Refusals;
+	public string RefusalUnit = "";
+	// Right-hand deadline block of the dossier header.
+	public string DeadlineLabel = "";
+	public string DeadlineValue = "";
+	public string DeadlineUnit = "";
+	public string DeadlineNote = "";
+	public bool DeadlineUrgent;
+	public List<CivilWarPanelStep> Steps = new List<CivilWarPanelStep>();
+	public bool IsPlayerFaction;
+	public bool IsPlayerLeader;
+	// Royal reply addressed to this faction's leader (player-led factions answer from the panel).
+	public bool HasPendingResponse;
+	public bool PendingDissolve;
+	public int PendingGold;
+	public int PendingInfluence;
 	public int MemberCount;
+	// All members: leader first, then the player, then by grievance. The panel pages them.
 	public List<CivilWarPanelClan> Members = new List<CivilWarPanelClan>();
 }
 
@@ -95,10 +143,28 @@ internal sealed class CivilWarPanelKingdom
 	public string StageText = "";
 	public int Stability;
 	public string StabilityTier = "";
+	public CivilWarPanelRole Role;
+	public string PlayerClanName = "";
+	public string PlayerFactionId = "";
+	public int PlayerGrievance;
+	public int PlayerRelationToKing;
+	public int PlayerRelationToLeader;
+	public string ActionHint = "";
 	public int OppositionCount;
 	public int CrownCount;
 	public int MiddleCount;
+	public int CrownPowerPercent;
+	public int MiddlePowerPercent;
+	// Formation threshold view (most aggrieved eligible vassal outside any faction).
+	public float TopGrievance;
+	public string TopGrievanceClan = "";
+	public int Threshold;
+	public int MaxFactions;
+	public List<CivilWarPanelCondition> Conditions = new List<CivilWarPanelCondition>();
+	// Newest first, already prefixed with the week.
+	public List<string> Chronicle = new List<string>();
 	public List<CivilWarPanelFaction> Factions = new List<CivilWarPanelFaction>();
+	// Full lists (not trimmed); the panel pages them.
 	public List<CivilWarPanelClan> Crown = new List<CivilWarPanelClan>();
 	public List<CivilWarPanelClan> Middle = new List<CivilWarPanelClan>();
 }

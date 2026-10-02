@@ -533,7 +533,7 @@ INTEGRATION_EXPECTED = {
 # registers the af_world_bulletin sprite category.
 WORLD_BULLETIN_EXPECTED = {
     "GUI/Prefabs/WorldBulletinPanel.xml": {"owner": "AF.Module.Weekly", "source": "content/modules/AF.Module.Weekly/GUI/Prefabs/WorldBulletinPanel.xml", "sha256": "E29638ACEE4B442273D4F4112FF3664F801BA6C0C13FD60DE63FEFA1BD5A2EEA"},
-    "GUI/SpriteParts/af_world_bulletin/af_world_bulletin_parchment.png": {"owner": "AF.Module.Weekly", "source": "content/modules/AF.Module.Weekly/GUI/SpriteParts/af_world_bulletin/af_world_bulletin_parchment.png", "sha256": "EDEA0C8F25950F509118FCA13682404B0FC9372F3AAFDC53DFAE9EA18A9C1EDF"},
+    "GUI/SpriteParts/af_world_bulletin/af_world_bulletin_parchment.png": {"owner": "AF.Module.Weekly", "source": "content/modules/AF.Module.Weekly/GUI/SpriteParts/af_world_bulletin/af_world_bulletin_parchment.png", "sha256": "BBEE0AC2454E6EF10B45F20D363556602EA2169A7D980DE0715EA92C7DAE020F"},
     "GUI/SpriteParts/af_world_bulletin/af_world_bulletin_seal.png": {"owner": "AF.Module.Weekly", "source": "content/modules/AF.Module.Weekly/GUI/SpriteParts/af_world_bulletin/af_world_bulletin_seal.png", "sha256": "9EC2745C0EC13BFF5A830E63A50083D13E0A52A89E14BFBC52F3F9BAAB82A067"},
     "GUI/SpriteParts/af_world_bulletin/af_world_bulletin_rule_l.png": {"owner": "AF.Module.Weekly", "source": "content/modules/AF.Module.Weekly/GUI/SpriteParts/af_world_bulletin/af_world_bulletin_rule_l.png", "sha256": "F82E84F61B924BBFE0F550401D318BD9E7F9F35D3DC47A941EA24765ABD726E3"},
     "GUI/SpriteParts/af_world_bulletin/af_world_bulletin_rule_r.png": {"owner": "AF.Module.Weekly", "source": "content/modules/AF.Module.Weekly/GUI/SpriteParts/af_world_bulletin/af_world_bulletin_rule_r.png", "sha256": "3DBCD9AC0C13AED014FA1F672261DC2FF5CCCD0EE76B6B57C78C9C3F97F24E3D"},
@@ -638,8 +638,12 @@ def git_worktree_blob(revision: str, path: str) -> bytes:
     )
 
 
-def verify_approved_remote_content(source: Path, before_digest: str, after_lf_digest: str) -> None:
-    """Admit only the approved remote bytes, preserving the historical digest."""
+def verify_approved_remote_content(source: Path, before_digest: str, after_lf_digest: str,
+                                   current_lf_digest: str | None = None) -> None:
+    """Admit only the approved remote bytes, preserving the historical digest.
+
+    current_lf_digest admits a later reviewed edit on top of the approved remote bytes.
+    """
     relative = source.relative_to(ROOT).as_posix()
     before = subprocess.check_output(["git", "show", "8f3903e2:" + relative], cwd=ROOT).replace(b"\r\n", b"\n")
     after = subprocess.check_output(["git", "show", "982a5861:" + relative], cwd=ROOT).replace(b"\r\n", b"\n")
@@ -647,7 +651,12 @@ def verify_approved_remote_content(source: Path, before_digest: str, after_lf_di
                    hashlib.sha256(before.replace(b"\n", b"\r\n")).hexdigest().upper()}
     check(before_digest in old_digests, f"historical content review changed: {relative}")
     check(hashlib.sha256(after).hexdigest().upper() == after_lf_digest, f"approved remote review changed: {relative}")
-    check(source.read_bytes().replace(b"\r\n", b"\n") == after, f"unreviewed current content delta: {relative}")
+    current = source.read_bytes().replace(b"\r\n", b"\n")
+    if current_lf_digest is None:
+        check(current == after, f"unreviewed current content delta: {relative}")
+    else:
+        check(hashlib.sha256(current).hexdigest().upper() == current_lf_digest,
+              f"unreviewed current content delta: {relative}")
 
 
 def verify_map_and_resources() -> None:
@@ -750,8 +759,10 @@ def verify_map_and_resources() -> None:
         source = ROOT / expected["source"]
         check(source.is_file(), f"missing world bulletin source: {source}")
         if target == "GUI/Prefabs/WorldBulletinPanel.xml":
+            # bulletin-wide-sheet-20261002: wide 1280 sheet + Contain-fit illustration, reviewed on top of the 982a5861 bytes.
             verify_approved_remote_content(source, expected["sha256"],
-                "527432BFC5DED1A0F0A2012C9A3948740C542BDE6C42F8220CD02BE592FE6ABF")
+                "527432BFC5DED1A0F0A2012C9A3948740C542BDE6C42F8220CD02BE592FE6ABF",
+                current_lf_digest="9F6B9902AFE5BA4AFF33762F440E4E167F6FF74AC94B3E27814BC93E9C33F9B6")
         else:
             check(expected["sha256"] in source_digests(source), f"source hash drift: {target}")
         check(not (ROOT / "AnimusForge" / target).exists(), f"world bulletin duplicated in legacy root: {target}")

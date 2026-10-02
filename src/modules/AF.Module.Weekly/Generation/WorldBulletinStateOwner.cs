@@ -21,6 +21,7 @@ internal WorldBulletinSaveState EnsureWorldBulletinState()
 		State.World ??= new WorldBulletinScopeState();
 		State.Player ??= new WorldBulletinScopeState();
 		State.WeeklyStability ??= new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+		State.PendingNoticeEventIds ??= new List<string>();
 		return State;
 	}
 internal static bool IsWorldBulletinEventId(string eventId)
@@ -250,8 +251,28 @@ internal void PublishWorldBulletin(WorldBulletinScopeState scope, WorldBulletinS
 		if (publishedLayout != null) publishedLayout.IllustrationPlan = illustrationPlan;
         try { if (illustrationPlan == null) _port.PrepareIssue(eventId); }
         catch (Exception ex) { _port.Log("WorldBulletin", "[Illustration] preparation failed: " + ex.Message); }
-		_port.QueueNotice(eventId);
+		QueueNoticeAfterIllustration(eventId, illustrationPlan);
 		_port.Log("WorldBulletin", "[Publish] id=" + eventId + " llm=" + (generated != null) + " major=" + selection.Major.Key + " majorFacts=" + selection.MajorFacts.Count + " minors=" + polishedMinors + "/" + selection.Minors.Count + " majorChars=" + (text.Major ?? "").Length);
+	}
+// The record is already saved; only the map notice waits so the player opens the issue with its art.
+	// One callback per issue, no polling. A load/new campaign in between makes the release a no-op.
+	internal void QueueNoticeAfterIllustration(string eventId, WorldBulletinIllustrationPlan illustrationPlan)
+	{
+		WorldBulletinSaveState state = EnsureWorldBulletinState();
+		if (!state.PendingNoticeEventIds.Contains(eventId)) state.PendingNoticeEventIds.Add(eventId);
+		long generation = SaveRuntimeGuard.CaptureGeneration();
+		bool released = false;
+		void Release()
+		{
+			if (released || SaveRuntimeGuard.IsStale(generation, "world_bulletin_notice") || !ReferenceEquals(State, state)) return;
+			ReleasePendingWorldBulletinNotice(state, eventId);
+			released = true;
+		}
+		bool waiting = false;
+		try { waiting = illustrationPlan != null && _port.AwaitIllustration != null && _port.AwaitIllustration(illustrationPlan, Release); }
+		catch (Exception ex) { _port.Log("WorldBulletin", "[Illustration] notice wait failed, notifying now: " + ex.Message); }
+		if (waiting) _port.Log("WorldBulletin", "[Notice] id=" + eventId + " waiting for illustration");
+		else Release();
 	}
 internal void UpsertWorldBulletinRecord(string eventId, string eventKind, string scopeKingdomId, string title, string shortSummary, string summary, int day)
 	{
@@ -340,8 +361,33 @@ internal void OnWorldBulletinHourlyTick()
 		}
 	}
 internal void ApplyStability(string kingdomId,int delta,int day,int currentValue,Action<int> applyValue) { var state=EnsureWorldBulletinState();string key=(day/7).ToString(CultureInfo.InvariantCulture)+"|"+kingdomId;state.WeeklyStability.TryGetValue(key,out int currentTotal);int applied=WorldBulletinPolicy.ClampWeeklyStability(currentTotal,delta,out int newTotal);if(applied==0)return;state.WeeklyStability[key]=newTotal;applyValue(currentValue+applied);}
- internal void ResetTransient(){InFlight=false;LastPruneDay=-1;LatestEventId="";CachedRecords=null;CachedRecordCount=-1;CachedRecordIndex=-1;while(MainThreadActions.TryDequeue(out _)){} }
- internal void ResetRuntime(string reason){ResetTransient();if(string.Equals(reason,"new_game_created",StringComparison.Ordinal)){State=null;CorruptRaw=null;}}
+ // Queue transfers only run on the existing main-thread drain, after save records/notices have loaded.
+ // Reset clears stale work before rebuilding; no archive scan or tick polling is added.
+ private void ReleasePendingWorldBulletinNotice(WorldBulletinSaveState state, string eventId)
+ {
+     if (!state.PendingNoticeEventIds.Contains(eventId)) return;
+     if (_port.FindRecord(eventId) != null) _port.QueueNotice(eventId);
+     state.PendingNoticeEventIds.Remove(eventId);
+ }
+ internal void ResetTransient()
+ {
+     InFlight=false;LastPruneDay=-1;LatestEventId="";CachedRecords=null;CachedRecordCount=-1;CachedRecordIndex=-1;
+     while(MainThreadActions.TryDequeue(out _)){}
+     var state = State;
+     if (state?.PendingNoticeEventIds == null || state.PendingNoticeEventIds.Count == 0) return;
+     long generation = SaveRuntimeGuard.CaptureGeneration();
+     foreach (string eventId in state.PendingNoticeEventIds.Distinct(StringComparer.Ordinal).ToArray())
+         MainThreadActions.Enqueue(() =>
+         {
+             if (SaveRuntimeGuard.IsStale(generation, "world_bulletin_notice_recovery") || !ReferenceEquals(State, state)) return;
+             ReleasePendingWorldBulletinNotice(state, eventId);
+         });
+ }
+ internal void ResetRuntime(string reason)
+ {
+     if(string.Equals(reason,"new_game_created",StringComparison.Ordinal)){State=null;CorruptRaw=null;}
+     ResetTransient();
+ }
 
 internal bool TryRecordCoupOutcomeForBulletin(string coupId, bool success, string sentence, string detail, string kingdomId, string actorKingdomId)
 	{
@@ -371,6 +417,7 @@ internal sealed class WorldBulletinPort {
  internal Func<bool> Enabled,PublishingEnabled;internal Func<int> CurrentDay;internal Func<double> CurrentHour;internal Func<string> CurrentDate;internal Func<WorldBulletinFocus> Focus;internal Func<string,string> Render;
  internal Func<WorldBulletinSelection,WorldBulletinFocus,WorldBulletinPromptFacts> CapturePromptFacts;
  internal Action<WorldBulletinIllustrationPlan> PrepareSelection,CancelIllustration;internal Action<string> PrepareIssue,QueueNotice;
+ internal Func<WorldBulletinIllustrationPlan,Action,bool> AwaitIllustration;
  internal Func<List<EventRecordEntry>> Records;internal Func<string,EventRecordEntry> FindRecord;internal Func<EventRecordEntry,string> ProductState;internal Action<string,EventRecordEntry> NotifyProductChanged;internal Action NotifyTimeline;
  internal Func<List<KeyValuePair<string,string>>> EligibleKingdoms;internal Func<string,string,Task<ApiCallResult>> CallApi;internal Action<string,string> Log;
 }

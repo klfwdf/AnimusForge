@@ -22,6 +22,7 @@ internal static class SettlementEntryTroopSelectionBehavior
     private static Action<Team, Agent> _bindOrderController;
     private static Action<Formation, Agent> _markCommandable;
     private static Action<int, string> _interruptSpeech, _cancelSpeech;
+    private static Action<Mission> _stopStreetReinforcements;
     private static Func<bool> _hasBlockingFlow;
     private static Func<string, TroopRoster, string, bool> _openAftermath;
     private static MethodInfo _queueCoup, _clearCoup, _spawnKing, _countRole, _isArmedLogic;
@@ -38,6 +39,7 @@ internal static class SettlementEntryTroopSelectionBehavior
         _bindOrderController = null;
         _markCommandable = null;
         _interruptSpeech = _cancelSpeech = null;
+        _stopStreetReinforcements = null;
         _hasBlockingFlow = null;
         _openAftermath = null;
         _queueCoup = _clearCoup = _spawnKing = _countRole = _isArmedLogic = null;
@@ -52,6 +54,7 @@ internal static class SettlementEntryTroopSelectionBehavior
         {
             Type host = AccessTools.TypeByName("AnimusForge.SettlementEntryTroopSelectionBehavior")
                 ?? throw new MissingMemberException("AF SETS owner is unavailable");
+            _stopStreetReinforcements = Bind<Action<Mission>>(host, "StopArmedCoupStreetReinforcements");
             _buildSelectable = Bind<Func<TroopRoster, TroopRoster>>(host, "BuildConfigSelectableRoster");
             _formationClass = Bind<Func<CharacterObject, FormationClass>>(host, "ResolveSetsFollowerFormationClass");
             _assignFormation = Bind<Action<Agent, Team, FormationClass>>(host, "AssignSetsAgentToPlayerFormation");
@@ -156,6 +159,8 @@ internal static class SettlementEntryTroopSelectionBehavior
     }
 
     internal static void ClearArmedCoup() => _clearCoup?.Invoke(null, null);
+
+    internal static void StopStreetReinforcements(Mission mission) => _stopStreetReinforcements?.Invoke(mission);
 
     internal static bool TryOpenCoupAftermath(string settlementId, TroopRoster survivors, string source)
         => IsAvailable && _openAftermath != null && _openAftermath(settlementId, survivors, source);

@@ -58,6 +58,9 @@ internal static class WorldBulletinPanelIllustrationBridge
 	public static Action<string, string, string, string> PrepareIssue;
 	public static Action<WorldBulletinIllustrationPlan> PrepareSelection;
 	public static Action<WorldBulletinIllustrationPlan> CancelSelection;
+	// (plan, release) -> true when release will be invoked once, on the main thread, after the selected
+	// illustration settles or times out; false means nothing is pending and the caller proceeds now.
+	public static Func<WorldBulletinIllustrationPlan, Action, bool> AwaitSelection;
 }
 
 public sealed class WorldBulletinMinorItemVM : ViewModel
@@ -85,25 +88,6 @@ public sealed class WorldBulletinMinorItemVM : ViewModel
 
 public sealed class WorldBulletinIllustrationVM : ViewModel, IWeeklyIllustrationSink
 {
-	private float _imageWidth = 368f;
-	private float _imageHeight = 207f;
-
-	[DataSourceProperty]
-	public float ImageWidth => _imageWidth;
-
-	[DataSourceProperty]
-	public float ImageHeight => _imageHeight;
-
-	// One constant-time update per publication; no Tick, texture copy or image resampling.
-	public void FitImage(int width, int height)
-	{
-		float scale = Math.Min(368f / Math.Max(1, width), 207f / Math.Max(1, height));
-		_imageWidth = Math.Max(1, width) * scale;
-		_imageHeight = Math.Max(1, height) * scale;
-		OnPropertyChangedWithValue(_imageWidth, nameof(ImageWidth));
-		OnPropertyChangedWithValue(_imageHeight, nameof(ImageHeight));
-	}
-
 	private bool _isAvailable;
 
 	private string _spriteName = "";
@@ -318,7 +302,7 @@ public sealed class WorldBulletinPanelVM : ViewModel
 		KindText = Sanitize(data.KindText);
 		HeadlineText = Sanitize(data.HeadlineText);
 		MetaText = Sanitize(data.MetaText);
-		BodyFontSize = Math.Max(14, Math.Min(18, bodyFontSize - 1));
+		BodyFontSize = Math.Max(14, Math.Min(18, bodyFontSize));
 		EncyclopediaEntityLinkFormatter.DisplaySession links = EncyclopediaEntityLinkFormatter.CreateDisplaySession();
 		string body = (data.BodyText ?? "").Replace("\r\n", "\n").Replace('\r', '\n').Trim();
 		if (body.Length == 0)
