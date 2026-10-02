@@ -1,3 +1,17 @@
+<a id="publish-all-latest-20261003"></a>
+# 本次授权发布范围：各会话最新代码与交接（2026-10-03）
+
+用户明确要求“提交并推送”。远端基线 `016baa7a`，本地核实至 `9ee66b68`；当前分支 `codex/af-main-refactor-continuation-20260831`，发布目标 **origin/main**。不只交付本会话生图代码，也包含其他会话已完成的最新改动。此条记录发布候选；实际网络ack与独立远端ref读回集中在本地 `artifacts/publish-all-latest-20261003/receipt.json`，不能把本地commit当push成功。
+
+- 远端更新已包含于本地祖先，可正常快进，无需rebase/reset/force。发布前58个本地待上传提交，净89文件差异；提交剩余HANDOFF/主台账的全部既有作者补充后再推，不丢内战/政变/对话/快报/RAG工具的已提交成果。
+- 包含v1.5版本与公告、导演输入 `1ed96cb5`、后台/单立绘/拖拽 `a596ea6c`、链路诊断 `5a1eb668`、对话向导 `4149c2e2`、内战 `50a5a4fa`、对话返回 `0e4634ed`、快报归档 `c3e59a4f`，以及独立测试工具 `9ee66b68`。四套世界书已经在origin/main，保留其 `016baa7a`；不重复或回退远端资料。
+- RAG CPU/CUDA工具是独立benchmark，**没有把CUDA接入游戏或改生产默认CPU**。原模型/依赖、测试报告、profiler、原生DLL、ONNX、用户导出、临时目录与生图输出不随此次提交上传。
+- 152个待上传历史blob检查未发现明显token/private-key模式；outgoing历史无artifacts/local/bin/obj/临时输出或明确被保护的本地专用交接文件。主台账中已有的纯文本保护清单保留，未建立缺失专用文件的必需链接，不因文件当前缺失取消保护。
+- 最新快报归档完整树Debug双API+Bootstrap的源文件和三个DLL SHA256仍与原收据一致；源回放48、编辑器41、状态16及其他策略/导入定向结果沿用原收据。RAG工具8项自检本轮再次通过；生图和新档已验证矩阵见前条。本轮只Git交付，未为push重新编译/部署/打包，实机与旧档仍未验，历史总内容oracle失败不改写成全绿。
+- 既有tracked改动此时仅两份交接文档，本轮将其reviewed全部补充提交；未跟踪材料保留本地，不做git add-all、不删除他人文件。Git状态、候选范围、保护/凭据扫描、预推备份、最终commit和远端readback均在本地证据目录。
+
+回滚：本次仅增补文档并推现有历史；源码回退用对应产品的focused inverse提交，不重写远端历史、不hard reset。本轮发布前本地HEAD `9ee66b68d9836283e9d434fd625e460306c4a58b`、远端 `016baa7a8c62708f91fa8b1a39a01822a98f469e`，两dirty文档原字节与patch保留于本地证据；下方各次“未推送”是历史候选状态，当前发布是否完成以收据为准。游戏仍是此前实际部署候选，最新快报修复/独立工具上传不自动部署游戏。
+
 <a id="bulletin-kingdom-archive-fix"></a>
 # 当前修复：终端王国档案关联最新快报（OFFLINE_VERIFIED）
 
@@ -640,6 +654,14 @@ Debug/Release各记录实际HEAD/工作树diff及原构建脚本hash；测试提
 - D实机/旧档/真实provider网络/音频/性能仍NOT-RUN；TPAC来源/发布HOLD与旧凭据轮换风险未闭。没有push、Stage、部署、下载/安装、外仓扩写、全局配置或一键行为变更；合成TEMP仅沿此前精确许可 `E:/tmp/af-j17-20260930`，最小env不继承凭据。没有清理旧产物或真实资料。
 
 ---
+
+<a id="bulletin-wide-sheet-20261002"></a>
+
+### 快报宽版纸面同步 pen 设计稿（2026-10-02，SOURCE_ONLY / 未编译 / 实机 VERIFY）
+
+用户在 pen（`pencil-new.pen` 画板 `sAH0C`/`ZDlZa`，现为1920×1080画布）把列国邸报拉宽并要求游戏内同步。底图 `af_world_bulletin_parchment.png` 由 1192×1100 换为 1730×1100 宽版：由原 warm 底图（md5 与旧游戏贴图一致）离线合成，火盆、纹章、侧盾、小绶带、底部纹章保持原比例平移，仅横绶带/横线/旗矛/纯纸拉伸并回填原生纸纹；旧版 1026 纸面是把 1192 宽原图非等比拉伸所得。`WorldBulletinPanel.xml` 纸面 1026→1280（高814不变），刊头/标题/拉丁副题居中 640，主栏 824→1078（16:9配图框400×239不变，右栏≈650），其余消息分节对准绶带、两栏 278→447，页脚 (100,726)→(116,704) 避开左下角花，封存按钮 770→1022；按钮与小事件栏不再横向重叠。`WorldBulletinPanelVM.BodyFontSize` 去掉 `-1`，默认设置18即正文18号（仍夹在14–18）；Gauntlet 无行高属性，pen 中1.65行高不同步。`AnimusForgeWeeklyReportMapNotification.BulletinSprites` 回退尺寸改为1730×1100（实际取引擎纹理尺寸）。
+
+J15 `WORLD_BULLETIN_EXPECTED` 重钉 prefab 与底图 SHA-256；prefab 旧钉值自 `5d0969b8` 起已过期。离线运行 J15 五个纯 Python verify 段（未跑 pwsh/dotnet 段）：快报相关0失败；另有5项与本改动无关的既有漂移（GcczTownPrompt、RuleBehaviorPrompts、AFCourierLetterBrushes、IllustratorGalleryPopup、EmbeddedResource LogicalName）。按 prefab 坐标在宽底图上叠图核对对位。未编译双API/Bootstrap、未Stage/部署；18号字下首字下沉方块（54×54、缩进62）与实际字体渲染需实机确认。回滚：`git checkout` 上述五个文件。
 
 <a id="merged-deployment-verified-20261001"></a>
 
@@ -6282,6 +6304,19 @@ R2计划交付门槛：已给固定技术路线、真实来源与目标、写入
 
 **NOT_RUN**：实机/真实旧档/真实网络和TTS/帧性能，完整current CourierSchedule、ModuleNativeSubmission与NativeWait whole-consumer。当前关键原子接受门与owner实测不替代这些整体层。SDK首次certificate stdout可能副作用的实际归因仍UNKNOWN，未读私钥/回滚系统。Weekly512terminal/64pending原边界（512Applied+64取消pending→448Applied+64Unknown）保留，不造576特例ledger。原SessionTransport rawdirty及tools/NuGet/user计划保护，未push/Stage/deploy/清理真实玩家资料或改一键覆盖语义。唯一额外写授权仍只精确合成TEMP根的新隔离子树。
 
+
+## 政变刷兵最终落点防贴脸（2026-10-02）
+
+- 用户任务：定位政变城门刷兵贴玩家脸的问题并局部修复。工作区 F:/AnimusForge-main，分支 codex/af-main-refactor-continuation-20260831，起点 261a3be3，本地意图检查点 973d43a0。
+- 既有 dirty：SettlementEntryTroopSelectionBehavior.cs 已有隐蔽锚点/距离门禁等 204+/11- 修改；CoupRebellionBridge.cs 与其他作者内容保留，不纳入本次修改范围。
+- 原因：门口/玩家附近生成旧逻辑；现有 dirty 修复检查锚点，后续网格偏移、导航投影与随机兜底所得最终士兵落点缺少安全复验。未读到实际游戏复现日志，属于源码路径确认，不称实机复现。
+- 当前源码坐标：src/AF.GameAdapter.Bannerlord/SettlementEntry/SettlementEntryTroopSelectionBehavior.cs 的 IsArmedCoupSpawnPositionSafe（5999–6007）和 SpawnAgentsNearPlayer 最终落点检查（6615–6621）。新增水平距离门禁（街道25m/大厅12m，沿用既有参数）、可见性和异常拒绝；仅政变敌兵，位置落地后、SpawnAgent前检查。未生成记录不进入 spawnedDefenderEntries，原调用者仅移除成功记录，失败保留重试，不削减兵数或提前清门。
+- 频率：每实际刷兵尝试/每候选士兵一次距离检查，通过后一次视线检测；不新增每帧扫描/反射/线程/锁，沿用原波次重试及锚点缓存。
+- 验证：python tests/AF.GameAdapter.Bannerlord/CoupSpawnSafetyTests/run.py：13 production guard checks + consumer wiring PASS（真实生产方法提取、Scene/Vec3 测试替身，不等于真实导航验证）；dotnet run --project extensions/AnimusForge.Coup/tests/Coup.ContractTests/Coup.ContractTests.csproj：128 PASS。
+- 原统一脚本无 Stage/Deploy：powershell -NoProfile -ExecutionPolicy Bypass -File scripts/build/build_single_module.ps1 -ProjectRoot F:/AnimusForge-main -BannerlordRoot "F:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord"；1.3.15 与本地1.4.6引用、双实现+Bootstrap三构建 success/0 errors，保留原warnings。未修改构建入口、未覆盖游戏、未push。
+- NOT_RUN：各城实际场景/狭小大厅无可用隐蔽点/真实游戏视线和导航投影/帧性能/玩家旧档。无安全位置时会延迟刷兵，仍需实机验证不会长时间阻塞目标。
+- 回滚：artifacts/coup-spawn-safety-20261002/task-only.patch 只含本轮20行新增，可 git apply -R；before.cs 是原 dirty 快照，不能整文件覆盖后续作者改动。build.log 保存构建证据。产品源码与本次修改重叠既有未提交工作且依赖它，避免夹带提交，保留 working tree + 精确差异；检查点提交不含既有产品dirty。
+
 ### 2026-10-02 Illustrator DPI 图片缩小修复（OFFLINE_VERIFIED）
 
 - 当前任务：修复快报/生图画面只占左上角；不改布局、不部署、不裁剪/重写玩家缓存。代码提交 `3c7acac4`；修改前意图检查点 `b82b678`。保留开工时全部其他未提交改动。
@@ -6291,6 +6326,20 @@ R2计划交付门槛：已给固定技术路线、真实来源与目标、写入
 - 候选产物：`bin/Debug/single_module_artifacts/versions/1.3/AnimusForge.dll` SHA256 `91E34E1D36C6312EABD8BB607BF0985B0ACDC9E314452240979A37C5B208C15D`；1.4同名路径 SHA256 `8C05BD9A678E5364FB62514CEB4BD3C8EC0B9C795837FBED06CD8048C41D55FB`。候选基于当前含其他WIP的工作树，不是仅本修复的独立发布包。
 - NOT-RUN/限制：完整生产DLL反射调用先遇私有方法delegate访问限制，改MethodInfo.Invoke后因模块初始化缺TaleWorlds.CampaignSystem退出，未计PASS；最终回归为真实生产源链接测试。未实机、未重新请求上游、未恢复旧坏缓存、未覆盖游戏或推送。原响应图在诊断日志中被省略，无法直接比较服务原始字节。旧坏图的透明区域已丢失图像内容，应在授权部署修复后重绘，不自动裁边以免损害正常透明素材。
 - 回滚：聚焦逆向提交 `git revert 3c7acac4`，不hard reset，不回滚既有WIP。短交接见 `docs/handoffs/2026-09-14-animusforge-illustrator-handoff.md` 的2026-10-02补充。
+
+
+## 政变城墙远程驻防局部修复（2026-10-02）
+
+- 用户续报：政变城墙没有站人。起点 ad54e26d，本地意图检查点 9655aeb，回归测试提交 da9df154。工作区/分支同上；原脏源码和上一轮防贴脸修改完整保留。当前条目追加城墙分配，未否定上一轮验证；本轮源码坐标取代其历史坐标用于当前导航。
+- 源码原因：现有政变仅建立 GateGuard/StreetDefender/HallGuard 记录并走统一增援，没有高处岗位分配；MarkEnemyAgent/AssignEnemyAgentCombatTarget/MaintainEnemyAgentNativeCombat 将敌军统一加入步兵冲锋。仅从源码定位，未取得真实城镇复现日志。
+- owner/实际消费者均为 src/AF.GameAdapter.Bannerlord/SettlementEntry/SettlementEntryTroopSelectionBehavior.cs 内 SettlementEntryTroopSelectionMissionLogic：GetArmedCoupWallPositions（4974–5011）读取真实 sp_guard/sp_guard_with_spear/sp_guard_patrol 标记；仅 Town 政变、比进场玩家高至少3m的点，导航投影距原点<=1.5m且可步行到玩家；不随机造墙点。此为高处守卫岗位启发式，不是所有文化城墙的语义识别或完整覆盖保证。
+- IsArmedCoupWallTroopEligible（4937–4940）仅允许 StreetDefender 远程兵，不增兵、不改变原兵源/胜利角色；SpawnAgentsNearPlayer（6639–6786）在既有波次内优先使用未占用的安全岗位，落点保留高度，仍在 SpawnAgent 前执行25m/视线外门禁；仅生成成功的真实记录进入既有移除/伤亡链。没有岗位/远程兵则保持街道逻辑；原版已有高处远程守卫在 MarkEnemyAgent（3858–3869）接管驻防，已占用点不重叠生成。
+- RegisterArmedCoupWallSentry/TryMaintainArmedCoupWallSentry（4947–4970）设置远程编队、移动速度上限0但不暂停AI/不改控制器，保留自动目标选择；命中掉血或玩家实际三维距离<=6m时永久释放速度上限，再交既有冲锋逻辑。Assign/maintain 在仍驻防时提前返回，避免步兵重归类及墙体脱困把哨兵拉走。既有 AgentRemoved 分支只清临时索引，不新增伤害回调；OnEndMission（3544–3549）解除活跃哨兵速度限制并清空状态。不新增存档字段/键或外部API。
+- 性能：场景岗位发现一次缓存，最多检查48个实体/保留12个点；每波最多12个岗位的距离/视线筛选，单个哨兵维护字典查询O(1)并复用既有敌军检查。非政变/非城镇不执行岗位搜索，不为其新增波次列表分配。未作帧性能实测。
+- 验证：CoupWallSentryTests/run.py 24个真实生产方法提取执行检查+consumer接线断言PASS；CoupSpawnSafetyTests 13 PASS；原 Coup.ContractTests 128 PASS（本轮未修改其被编译产品源）。Scene/Vec3/Navmesh为测试替身，非真实游戏AI/路径验证。
+- 原 scripts/build/build_single_module.ps1，无Stage/Deploy，双版本1.3.15/1.4.6与Bootstrap三构建 success/0 errors；日志 artifacts/coup-wall-sentries-20261002/build.log，三个test日志同目录。构建产物 bin/Debug/single_module_artifacts，仅项目本地，未推送/未覆盖游戏。
+- NOT_RUN：不同文化/墙等级和坡地的真实高处标记匹配、48点上限是否截掉有用岗位、城墙弓兵能否实际射击、受伤/靠近后的寻路、真实帧性能/旧档。门禁会拒绝玩家可见或过近的新增墙兵；没有有效岗位/远程兵的场景不保证城墙有人。这些限制不能以编译或替身测试通过替代实机验收。
+- 回滚：artifacts/coup-wall-sentries-20261002/task-only.patch 为仅本轮产品差异，已 git apply --reverse --check 成功；before.cs 保存本轮开始时含上一轮及用户原dirty的快照，不应用整文件覆盖其他作者后续改动。由于产品文件依赖并重叠已有未提交隐蔽选点修复，本轮保留产品working-tree差异，未夹带提交既有dirty；测试单独本地提交 da9df154。
 
 
 ## YJ 预设地址与 API 设置/请求头检查（2026-10-02）
@@ -6307,6 +6356,45 @@ R2计划交付门槛：已给固定技术路线、真实来源与目标、写入
 - 未验证：真实 API/SSE、完整实际传输发送、MCM/Gauntlet 实机刷新、保存失败恢复、旧档；未 push/部署/覆盖游戏。回滚使用本任务代码提交的 focused inverse/revert，不 reset 或改写其他任务历史。
 
 
+<a id="player-civilwar-control-20261002"></a>
+## 内战玩家派系控制与诉求重评（2026-10-02）
+
+状态：**OFFLINE_VERIFIED_WITH_LIMITS**。本轮最新用户授权为：玩家可手动创建/解散派系，所有创建降低与统治者关系，解散/退出降低成员关系；手动起兵使用 MCM 实力门槛，玩家领袖不自动起兵；用户补充明确仍受战后冷却；玩家领袖可改变诉求并重评成员参与。只覆盖这一功能切片，不 supersede 其他全仓重构或作者交付。本工作区/分支由 Git 核实为 `F:/AnimusForge-main` / `codex/af-main-refactor-continuation-20260831`，意图检查点 `b8060304`；既有 Owner/UI/契约 dirty 已保留，未把其他会话的暂存变更纳入本轮提交。
+
+### 行为与证据
+
+- `src/modules/AF.Module.Kingdom/CivilWar/KingdomCivilWarOwner.PlayerControl.cs:12–104`：真实主线程玩家控制实现，`IsPlayerLed`、`PlayerDetonationAllowed`、`DetachPoliticalSide`、`ChangePlayerFactionDemand`、`DissolvePlayerFaction`。默认起兵门槛为玩家家族占本王国正式政治家族总军力 20%，MCM 0–100% 可调；0 关闭实力门槛。Quote 与确认执行均重验，不用显示四舍五入值放行；对话引爆仍走同一 Execute/Quote，不能绕过。
+- `src/AF.GameAdapter.Bannerlord/Configuration/Mcm/DuelSettings.CivilWar.cs:47–49,75`：新增同组 MCM 实力项及读取。只在动作/面板/战役工作边界读取，不新增空转轮询。
+- `src/modules/AF.Module.Kingdom/CivilWar/KingdomCivilWarOwner.Actions.cs:109–164,233–295,342–357`：玩家手动成派不受 NPC 不满/派系名额、退出冷却限制；仍要求正式封臣、合法诉求/目标及领地资格，保留国王不能建立自身反对派、战中成员锁定及王国冷却。所有派系创建（含 NPC 自动成派）与统治者关系 −10；退出维持领袖 −20/其他成员 −10。领袖主动战前解散与其他成员 −10，释放成员并保留不满，不擦除或延长已有王国冷却。追加 `DissolveOwn`/`ChangeDemand`，旧 `CivilWarAction.Respond=9` 不变，新值 10/11，不改存档键及类型身份。
+- `src/modules/AF.Module.Kingdom/CivilWar/KingdomCivilWarOwner.cs:395–445` 与 `KingdomCivilWarOwner.Events.cs`：自动拒绝升级、旧等待起兵状态、解散令超时均不能自动引爆玩家领袖；明确手动引爆/明确抗命才允许，并受实力和冷却限制。NPC 自动成派/起兵保持，玩家领袖诉求不被自动改写。
+- 更改诉求保留派系 ID/创建日期，重置旧通牒及拒绝进度。只对现有其他成员立即重评：既有离派模型 × 新旧诉求对该成员不满的亲和度，再用既有随机度整形；领袖不掷骰退出，离开者回中立，不额外招募外部家族。不满、去留与新诉求可读档恢复；离开成员也收到权威事实。每次显式修改做一次成员快照/两次本王国缓存更新，无新增每帧全世界扫描。
+- `src/AF.GameAdapter.Bannerlord/UI/Kingdom/KingdomFactionTab.Actions.cs`：接入“解散派系”“更改诉求”及合法选择/重新报价确认；Owner 面板投影提供原始诉求/目标 ID 与“手动起兵”进程，沿用既有页签/分页。发现并修复成派账册将王室成员当中立候选的问题，以及已接受部分结算可再次拒绝并清空协议的问题。
+
+### 验证与边界
+
+- 生命周期 Release：`dotnet run --project tests/modules/AF.Module.Kingdom/CivilWarLifecycle.ContractTests/CivilWarLifecycle.ContractTests.csproj --configuration Release --no-restore -p:PythonExecutable=E:/PYTHON/python.exe -p:WarningLevel=0`，**261 checks PASS**，新增 `PlayerFactionControlTests` 56 checks。实际 Owner/规则/效果 + 假 TaleWorlds/Host；覆盖冷却日边界、不延长冷却、关系扣减/重复回执、实力精确边界/动态重验、对话一致、玩家自动升级阻断/NPC 保持、诉求亲和去留、缓存/AFEF/读档。旧“玩家解散令超时自动起兵”断言按明确新授权改为保留派系；未用刷新 hash 冒充行为保持。
+- `CivilWarRules.SmokeTests` Release PASS；其 net6.0 有 EOL 提示，不改框架/安装依赖来消除提示。
+- 仓库原 `scripts/build/build_single_module.ps1 -ProjectRoot F:\AnimusForge-main -BannerlordRoot 'F:\SteamLibrary\steamapps\common\Mount & Blade II Bannerlord' -Configuration Debug` 最终出口 PASS，真实参考 **v1.3.15.110062 / v1.4.6.115628** + Bootstrap，三构建 0 errors（实现仍有 warnings）。没有 `-Stage`/`-Deploy`，不改构建入口，不覆盖游戏。保留首轮与最终构建日志；最终涉及源码 hash 及三产物 marker/SHA 均核验，两个实现 hash 不同。
+- 全证据与本轮局部 checkpoint/补丁：`artifacts/player-civilwar-control-20261002/receipt.json`、`final-source.json`、`lifecycle.log`、`smoke.log`、`build-debug-initial.log`、`build-debug.log`、`baseline/`、`task.patch`。使用隔离临时 Git index 建本轮局部 checkpoint，不改变其他作者暂存区或切换当前分支。恢复只能按此任务差分作 focused inverse，不能把 baseline 整目录覆盖或 hard reset。
+- **NOT_RUN**：实机 Gauntlet 点击/缩放布局、实际 MCM 菜单保存/读取、真实游戏存档、帧性能、正式 Release 双实现、Stage/部署/网络命名。离线 tests 使用假的 Campaign 行为，不称实机兼容或已发布。没有修改政变独立桥接命名路径，也没有顺带改 GCCZ/外部工作区/全局技能。
+
+
+## 政变大厅处置、原版登基动画与结果战报（2026-10-02）
+
+- 最新授权：用户批准完整胜利交互计划，并补充“接进来”授权复用原版新统治者上台动画。范围只含政变结果链路；不接入城镇战后处置，不改原攻城/SETS/GCCZ行为。工作区 F:/AnimusForge-main，分支 codex/af-main-refactor-continuation-20260831，调查起点 b8060304；意图检查点 cccc94c，验证产品切片 2563248be192ad828175e156a58ffd43510b9348。没有借历史交付授权部署或push。
+- 实际流程：大厅目标真实成立后保留Mission→原版单选处置确认→保存选择/生命值并正常离场→Map主线程原幂等政治结算→原版BecomeKingSceneNotificationItem动画→关闭回调后下一个安全Map tick显示战报→确认返回目标城镇。取消/Escape只是稍后决定；Tab/出口重开选择，不能隐式释放或扣押。大厅最后一个守卫移除后立即Tab也先建立已验证胜利；外部关闭保留待结算状态，原地图处置用于恢复，不改成败。拘押资格在选项和确认入口均重验。
+- 实际owner与代码证据：extensions/AnimusForge.Coup/src/CoupSystem/CoupMissionBehavior.cs：OnEndMissionRequest/ TryEstablishHallVictory/CompleteVictoryAndLeave（238–282）、OnEndMission（313–331），是大厅等待/正常退出/异常关闭归属；CoupCampaignBehavior.cs：OnEngineTick（473–522）、TryOpenHallDisposition/OpenDisposition/SelectDisposition（563–639）、CommitVictory（642–698）、PresentVictoryFeedback/ShowVictoryReport（700–790），是窗口代次、地图结算和反馈owner；CoupSession.cs（136–147）nullable反馈标记和O(1)资格；CoupOutcomeReport.cs BuildPlayerVictory（13–39）实际归属/旧王状态/伤亡文本；CoupBecomeKingSceneNotification.cs（8–22）仅复用原版场景与Map通知、一次性关闭回调，不伪造选举或二次转移王权。
+- 兼容与恢复：现有CoupPhase值、类型/程序集与_afCoupSession_v1键不变。新事件显式将VictoryReportAcknowledged/CoronationRequested设false，旧已完成事件缺字段为null不追溯播放；历史待结算事件完成后启用新反馈。动画尝试在提交前持久标记；关闭/跳过后再战报，重载已提交动画的未确认事件只补战报。通知UI缺失/提交异常会降级战报，不撤销王权。处置与战报分别有运行token/窗口代次，旧回调不能关闭或确认新窗口。未确认战报可在目标城镇“查看政变登基战报”重试。
+- 不接入战后处置：删除政变af_coup_aftermath菜单注册和TryOpenAftermath推进；保留旧AftermathPending/Opened JSON字段可读，新成功写Pending=false，旧完成Pending不作为轮询或新政变阻塞条件。宿主SettlementEntryTroopSelectionBehavior.cs仅更正政变专用胜利提示（7410），其刷兵/城墙驻防及其他作者dirty原样保留；兼容桥的通用战后处置API未删，不影响其他消费者。
+- 性能：复用0.25秒Map检查与1秒Mission目标检查；窗口/动画打开时O(1)提前退出，空闲或已确认事件不轮询。仅实际反馈生成时查一次王国/国王并扫描伤亡记录，缓存标记避免重复构造；不新增线程、锁、每帧全场景扫描或热路径反射。
+- 测试：原Coup.ContractTests由128增加到144 PASS（nullable字段新旧JSON、已提交未确认/确认恢复、实际战报/部分结算拒绝/阶段枚举）；Coup.VictoryFlowTests 51个当前生产回调/生命周期检查+接线断言PASS（取消/Tab、popup代次、禁用拘押、重复/过期点击、场景改变/关闭、地图恢复、动画先后/提交失败/通知缺失、结果当前归属、战报代次和异地不劫持）；前两轮SpawnSafety13、WallSentry24全部PASS。引擎/UI/政治动作计数使用测试替身，真实Session/Report/Notification代码直接编译，Campaign/Mission方法从当前生产源码提取；不称真实政治动作或动画资产已验。
+- 首次新harness因CoupSession的既有Newtonsoft属性缺包引用编译失败，已增加与原测试一致的Newtonsoft.Json13.0.3引用并重跑通过；失败不是跳过测试。首轮/中间/最终构建日志均保留，最终以build-verified.log为准。
+- 最终原统一脚本：powershell -NoProfile -ExecutionPolicy Bypass -File scripts/build/build_single_module.ps1 -ProjectRoot F:/AnimusForge-main -BannerlordRoot "F:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord"，无Stage/Deploy；真实1.3.15/1.4.6双实现与Bootstrap三构建success/0 errors，保留既有warnings。source-final.json验证政变源码和宿主在最终构建前后sha不变，receipt.json记录三DLL的marker/sha与两实现不同hash。构建验证候选是含保护dirty的当前工作树，不冒充独立纯HEAD全仓候选。
+- 交付保护：隔离Git index提交本任务10个所属文件以及宿主一条字符串；其他作者真实暂存diff在交付前后字节完全一致，CoupRebellionBridge、原宿主刷兵/驻防dirty均未纳入。主台账/HANDOFF以当前内容追加，本轮不夹带它们已有的其他作者暂存/未暂存更新。
+- NOT_RUN：实机原版动画素材/演员与文化差异、Gauntlet暂停和Escape/Tab输入、真实政治动作/拘押、实际遭遇返回城镇、真实旧玩家档、帧性能、Release双实现、Stage/部署。原版场景API双版本编译通过不等于游戏资产播放验收；本轮不覆盖游戏、不push、不写外仓或全局配置。
+- 回滚：focused inverse commit 2563248b，或 artifacts/coup-victory-feedback-20261002/task.patch 精确反向应用（已--reverse --check成功）；before/仅作起点证据，不整文件覆盖后续用户变更。完整证据在该目录receipt.json、source-final.json、build-verified.log、flow-tests.log、contracts.log、spawn-safety.log、wall-sentry.log；原暂存patch前后快照均保留。
+
+
 ## 主 API 正文流式 MCM 开关（2026-10-02）
 <a id="primary-api-streaming-option-20261002"></a>
 
@@ -6321,6 +6409,18 @@ R2计划交付门槛：已给固定技术路线、真实来源与目标、写入
 - 失败如实保留：首轮新 runner 输出等于 bin 根被现有目录边界拒绝，已修为 bin/Release/net8.0 子目录，不弱化 guard；扩展 stale fixture 首轮反射误用旧 namespace，已按实际 `AnimusForge.SaveRuntimeGuard` 修复并15项复验。失败日志未删除，均非已隐藏的产品 PASS。
 - 性能/存档：每次正文请求读取一次模式；沿用现有 SSE 解析/累积，仅随已有 JSON chunk 检查终止字段，不新增 Tick 扫描、轮询、锁、游戏对象状态或存档键。新增设置走已有 MCM 全局配置，旧配置缺字段按默认关闭。
 - 未验：真实游戏 MCM/Gauntlet 显示/持久化、三渠道实机动作、TTS、旧档、YJ 真实 SSE、全仓全量测试及 Release 候选；合成网络/真实DLL回放不等于实机验收。本任务未追加付费调用、未 push/覆盖游戏。恢复用本任务提交的 focused inverse/revert，不能 reset 或改写并行作者历史。
+
+
+## 用户授权编译并部署政变修复（2026-10-02）
+
+- 用户最新明确授权“编译部署”，替代本次政变结果交付的未部署状态；不授权push、启动游戏、修改构建脚本、外仓同步或安装全局内容。工作区/实际分支沿用Git核验；本次源码HEAD d9d0e31d64dcf5348c7f9d60bea25808e2f81dab，包含原工作树保留的刷兵防贴脸与城墙驻防dirty以及已提交的大厅处置/原版登基动画/战报。
+- 使用仓库原入口：scripts/build/build_single_module.ps1 -ProjectRoot F:/AnimusForge-main -BannerlordRoot "F:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord" -Configuration Debug，双实现1.3.15/1.4.6+Bootstrap success/0 errors；构建完成后以明确的三个产物参数调用原scripts/build/deploy_module.ps1，没有改脚本、没有重新设计覆盖流程。构建前后及部署后17875个tracked产品/构建文件hash一致。此为当前含dirty工作树候选，不宣称全是纯HEAD。
+- 四组原回归重新实际执行：生产胜利回调51、政变契约144、防贴脸13、城墙驻防24均PASS。原版场景播放/战役动作/帧性能仍不在离线替身验收范围。
+- 实际部署目录：F:\SteamLibrary\steamapps\common\Mount & Blade II Bannerlord\Modules\AnimusForge。原Stage-managed事务更新9个文件；238个Stage文件部署后逐文件SHA-256完全一致，双实现及Bootstrap与本次构建产物/marker一致，两个实现hash不同。SubModule Id/Name均AnimusForge，DLL声明只有AnimusForge.Bootstrap.dll。
+- 原安装目录5364个未列入Stage的文件逐文件hash保持不变；抽检游戏bin中的TaleWorlds.CampaignSystem/Core/MountAndBlade三原版DLL hash不变，脚本写入边界仅AnimusForge模块与私有Recovery。部署前未发现游戏/启动器进程，没有停止进程或启动游戏。
+- 自动回滚备份：C:\Users\29310\AppData\Local\AnimusForge\Recovery\deploy\deploy-847327aa908247cb84a922e3443b8227；manifest列9项，本次complete标记存在，每个原有文件的备份SHA与oldSha256核对通过。若需要恢复，仅按该manifest逐项回滚并验证，不能整目录镜像/删除未知文件。
+- 完整部署证据：artifacts/coup-deploy-20261002/receipt.json、source-before.json、source-check.json、installed-before.json、build.log、deploy.log及四测试日志。状态DEPLOYED_VERIFIED_FILES_NOT_LIVE_TESTED。
+- NOT_RUN：实机大厅弹窗/暂停输入、城门刷兵与城墙射击、原版登基素材/动画、真实王权/拘押与遭遇返回、真实旧档、帧性能。部署完成不等于这些已通过；旧已完成政变不会追溯重播，建议从制服国王前的存档验收新流程。
 
 
 ## 复仇刑场气泡恢复（2026-10-02） {#execution-bubble-repair-20261002}
@@ -6350,6 +6450,49 @@ R2计划交付门槛：已给固定技术路线、真实来源与目标、写入
 **验证**：116处决记忆/命令契约PASS；既有speech parser PASS；原 build_single_module.ps1 Debug 1.3（v1.3.15.110062）、1.4（v1.4.6.115628）及Bootstrap success；git diff check通过；主索引最终与HEAD同步。证据 `artifacts/execution-bubble-review-fix-20261002/`。本轮无共享Vengeance源码修改，独立模块编译沿用上轮证据，不新增声明实机支持版本。
 
 **边界**：未部署/未push/未进游戏，真实模型输出、气泡屏幕渲染、各刑罚现场时序、旧档与帧性能未验证。执行期间检测到Weekly/Illustrator另外4个并行变化路径，未修改或回退，也不夹带提交；不能声称整仓dirty字节完全不变。产品回滚仅逆向本次接收器/测试切片，禁止恢复旧 main-index 引回已确认的反向暂存；原证据与rollback.patch保留。
+
+### 快报通知读档恢复与预加载回归修复（2026-10-02，OFFLINE_VERIFIED）
+
+- 用户本轮授权修复上次审查的两个问题；实际工作区 F:/AnimusForge-main，实际分支 codex/af-main-refactor-continuation-20260831。意图检查点69debe6f；仅预加载测试切片提交5286fe3a。原WorldBulletinStateOwner等待插画功能和其他dirty/staged内容保留；产品修复依赖原未提交等待功能，保留working-tree，不夹带他人改动。未部署/Stage/push。
+- 改动职责：WorldBulletinPolicy.cs:105–108，WorldBulletinSaveState.PendingNoticeEventIds为原_af_worldBulletin_v1 JSON的可选字段；旧键/旧程序集/旧有效状态不变。WorldBulletinStateOwner.cs的QueueNoticeAfterIllustration先登记待通知，ReleasePendingWorldBulletinNotice向原持久化未读队列转交成功后删除标记；ResetTransient只对待通知列表安排现有主线程动作，读档完成后每次最多4个回写，旧generation及旧State引用不提交；ResetRuntime先清新局状态，防止跨存档补发。无新Tick扫描/历史扫描/网络请求，内存重复回调由原once及持久化标记去重。
+- 测试：BulletinPreloadTests/Program.cs补Debug/PostCritical替身，csproj仅测试内Task.Delay替换为手动时钟（生产90秒超时不变），56项PASS，新增27项涵盖完成/失败/取消/超时/reset/迟到/重复/多等待者；游戏scope/磁盘/生图为替身。F4GenerationOwnerTests/Program.cs直接链接真实Owner/DTO/SaveRuntimeGuard，49项PASS（新增17）：待通知JSON保存、generation失效、读档补发、重复reset、持久化未读/已读、bridge异常、queue异常保留、缺记录、老字段兼容、4项分批、新局隔离；游戏/存储边界为替身。现有WorldBulletinPolicy 46项与HostRegression 16项PASS；后者runner补齐新helper与真实generation guard的链接，不改生产方法语义。
+- 负控：新F4测试编译链接修复前Owner，明确失败“pending illustration notice is persisted before release”；修复前预加载测试CS0246保留。完整日志/源码前后hash/候选build markers在artifacts/bulletin-notice-fix-20261002/receipt.json及同目录日志。命令python tests/modules/AF.Module.Weekly/F4GenerationOwnerTests/run.py，python tests/modules/AF.Module.Weekly/WorldBulletinPolicy.SmokeTests/run_host_regression.py，以及local/dotnet/8.0.425/dotnet.exe run --project各SmokeTests/PreloadTests；退出码0，负控预期非0。
+- 构建：原scripts/build/build_single_module.ps1 -ProjectRoot F:/AnimusForge-main -BannerlordRoot "F:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord" -Configuration Debug（无Stage/Deploy），两实现+Bootstrap success。实际引用v1.3.15.110062和v1.4.6.115628；两实现各341警告/0错误，Bootstrap0/0。本轮build marker已捕获在receipt.json；尝试保存候选时共享bin/Debug/single_module_artifacts输出已不存在，DLL备份失败，未将空candidate目录算作交付产物。已完成构建对应1.3 SHA256 D40C898AD8AB98E33A87A6CE8E0E3C8DF3FE53C205A6909442A3AF5C19F43307，1.4 E1DA230F114FEE560713B977BCED6CCDAB8E101672009C661C989C3B1236173E。候选来自含其他WIP的当前工作树，不是仅本修复的独立发布包。
+- NOT_RUN：真实Bannerlord读档/地图UI、真实生图/上游、旧坏缓存恢复与性能实测；不声称实机DONE。本修复恢复带新待通知字段的保存状态；此前旧版本已经漏发且无标记的历史期刊无法安全区分已读/漏报，不自动全历史补发。
+- 回滚：artifacts/bulletin-notice-fix-20261002/task.patch仅包含本轮产品/测试差异，git apply --reverse --check已PASS；按补丁聚焦逆向，不覆盖整个before文件、不hard reset。预加载测试若选择git revert 5286fe3a，则不要再对该切片重复逆向补丁。根HANDOFF只链接本节。
+
+
+<a id="player-civilwar-review-fixes-20261002"></a>
+## 内战玩家控制审查两项 P2 修复（2026-10-02）
+
+状态：**OFFLINE_VERIFIED_WITH_LIMITS**。最新用户“修复”只授权关闭刚审查出的两项：最后成员退出误启动 56 天长期冷却，以及从旧派系另建派系遗漏旧成员事实。此条仅 supersede [原玩家控制切片](#player-civilwar-control-20261002)中这两条具体缺陷，不替代其他重构/发布/部署状态。Git 根与工作分支保持 `F:/AnimusForge-main` / `codex/af-main-refactor-continuation-20260831`；初始 HEAD `6d3959da`，意图/前置源码隔离检查点 `516d4d97`。并行作者已推进 HEAD，本轮五个受影响源码/测试输入 hash 无漂移；不把切片证据当全仓冻结候选。保留旧 Owner/helper/测试 dirty 与其他作者暂存内容，临时 Git index 不触碰真实暂存区。
+
+### 修改范围及行为
+
+- `src/modules/AF.Module.Kingdom/CivilWar/KingdomCivilWarOwner.PlayerControl.cs:43–61` / `KingdomCivilWarOwner.Actions.cs:385–393` / `KingdomCivilWarOwner.cs:743–746`：将 `startCooldown` 沿 `DetachPoliticalSide → EnsurePoliticalLeader → Dissolve → FinishFaction` 显式传递。仅玩家主动战前退出传 false；无继任者时释放派系，不再把第 700 天变成第 756 天冷却。已有冷却期限原样保留，七天重新加入限制保留；NPC 默认解散/真实战争结算仍使用原长期冷却。未删除 MCM 冷却设置或绕过真实战后冷却。
+- `KingdomCivilWarOwner.PlayerControl.cs:50–56,101–114` 与 `KingdomCivilWarOwner.Actions.cs:184–195,240–262,396–407`：只有 `Found` 创建调用局部受影响 Hero 集合；现有退出/解散关系循环在回调前收集实际目标，最终交给同一个 `PublishPoliticalResult` 合并去重。旧派系领袖/成员、旧王室成员与玩家/国王均收到权威退出/解散并建立新派系事实；不会因国王同时承受退出与创建两次关系变化而写两份同键事实。集合不进存档/派系成员表，不污染后续新派系事实。仅显式创建动作 O(旧成员数) 收集，沿用既有循环，不增加每帧/全世界扫描或并行游戏对象操作。
+- 新测试 `tests/modules/AF.Module.Kingdom/CivilWarLifecycle.ContractTests/PlayerFactionReviewFixTests.cs`；`Program.cs` 只接入该测试入口。原 MCM 实力门槛、玩家领袖不自动起兵、诉求重评、枚举/存档键/程序集身份及三渠道共享动作入口不改。
+
+### 红绿证据与验证
+
+1. **修复前负例成立**：新 `RunCooldown` 在“last player exit does not invent war cooldown”失败；单独 `RunFacts` 在“former leader and member receive affected-party fact”失败。保留 `red-cooldown.log` / `red-facts.log`，不是先改断言来制造 PASS。
+2. 修复后原生命周期入口 Release **294 checks PASS**（原 261 + 新 33）。实际生产 Owner/效果/规则 + 假 TaleWorlds/Host；覆盖零冷却退出、已有冷却保留/读档/精确到期、七天加入门槛、NPC 冷却及真实战争结算冷却、旧反对派/王室/解散重建目标事实、国王去重、未受影响家族排除、重复和读档回执、不把旧成员带入未来操作。
+3. 命令：`dotnet run --project tests/modules/AF.Module.Kingdom/CivilWarLifecycle.ContractTests/CivilWarLifecycle.ContractTests.csproj --configuration Release --no-restore -p:PythonExecutable=E:/PYTHON/python.exe -p:WarningLevel=0`；`CivilWarRules.SmokeTests` Release PASS（保留 net6.0 EOL 提示）。源差分与 UTF-8 内容检查 PASS。
+4. 原 `scripts/build/build_single_module.ps1` **Debug 双实现 + Bootstrap PASS**，实际参考 **v1.3.15.110062 / v1.4.6.115628**，三出口 0 errors，实现仍有 warnings。未改原脚本；没有 Stage/部署参数，没有覆盖游戏或原版 DLL。原托管构建产物已另存到本轮 `previous-build-artifacts/`，最终三 marker/SHA 一致且两实现 SHA 不同。
+5. 完整证据：`artifacts/player-civilwar-review-fixes-20261002/{receipt.json,baseline.json,final-source.json,build-markers.json,lifecycle.log,smoke.log,build-debug.log,red-cooldown.log,red-facts.log,baseline/,task.patch}`。局部源码检查点及 verified slice 见 receipt；回滚只能对本轮差分作 focused inverse（先 `git apply -R --check`），不可整文件覆盖旧 backup 或 hard reset，也不可推送含其他作者本地-only 基线的检查点历史。
+
+**NOT_RUN**：实机 UI/MCM、真实玩家存档、真实三渠道 LLM/记忆对话、帧性能、正式 Release 双实现、Stage/部署。fake action 里的 war completion 是生产状态机/效果的离线验证，不冒充实际游戏战争或旧档验收。没有改政变桥接命名路径、GCCZ、外部工作区、全局技能或自动化。
+
+
+## 政变大厅四项修复最终构建与本地Stage（2026-10-02）
+
+- 用户最新授权仅“构建”。按实际Git工作区 F:/AnimusForge-main、分支 codex/af-main-refactor-continuation-20260831，HEAD f72ff5ef，构建当前工作树（含未提交修复）；不部署、不推送、不改变构建入口或游戏目录。
+- 本次补齐此前中止留下的最终构建验证：原 scripts/build/build_single_module.ps1 -ProjectRoot F:/AnimusForge-main -BannerlordRoot "F:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord" -Configuration Debug -Stage。真实参考 v1.3.15.110062 / v1.4.6.115628，双实现与Bootstrap三构建均成功/0 errors；保留原warnings。原Stage组装/布局/当前产物验证success。
+- 相关最新源码已含大厅独立可达落点、紧凑随行兵站位/失败前缀重试、有限护卫同批部署，以及门口目标完成后停止新增街道增援。门口停止不删除活跃敌兵或未参战记录，大厅胜利仍须实际清空护卫与制服国王；不可达部署15秒明确技术中止，不授予假胜利。此为源码和离线验证说明，不称实机已修好。
+- 重新执行：CoupHallDeploymentTests 36、Coup.VictoryFlowTests 52、Coup.ContractTests 144、CoupSpawnSafetyTests 13、CoupWallSentryTests 24均PASS。大厅测试执行当前生产落点算法与实际批次/波次消费方法，Navmesh/SpawnAgent/UI仍使用确定性替身，不替代真实场景测试。
+- 19个政变/宿主/构建文件SHA在最终构建前后相同；Stage三DLL与本次构建产物SHA匹配，两API实现SHA不同，SubModule Id/Name均AnimusForge且只声明Bootstrap。没有声称捕获全仓所有Compile输入，验证候选为当前含保护dirty的工作树，不是纯HEAD。
+- 本地可部署Stage：F:/AnimusForge-main/bin/Debug/single_module_stage/AnimusForge。收据 artifacts/coup-hall-final-build-20261002/receipt.json，源码指纹source-before.json、build.log与五组测试日志同目录。构建会更新项目bin/obj/Stage，不更改产品源码；修复源仍未正式收尾提交，原有作者/staged差异保留。
+- NOT_RUN：部署、实机大厅空间/导航与实际士兵坐标、打完后的处置/动画/战报、真实旧档、帧性能、Release。用户还未授权本轮覆盖游戏，因此不能把本地新DLL当成已生效游戏版本；恢复旧部署可用既有私有Recovery，本轮没有新游戏回滚事务。
 
 
 <a id="local-policy-jurisdiction-20261002"></a>
@@ -6451,3 +6594,16 @@ R2计划交付门槛：已给固定技术路线、真实来源与目标、写入
 - 已只读本地游戏日志发现 `civil_war_outbreak`、多个派系成立与 native_dialogue_handoff 抑制；本机日志不能代表反馈玩家存档，不称玩家高频具体原因已实机证实。BannerlordSage本地源码核对玩家初始XML、Clan.PlayerClan及原版投票结论时序，不用猜API。
 - 性能：资格O(1)、事件结论每次决策一次、沿既有受影响王国封臣列表；模式正文只切换时O(1)/缓存字符串，无每帧重写/扫描；return owner按pending状态O(1)identity检查，沿既有返回pump，实际副作用主线程并重验。
 - 实机/真实旧档/反馈玩家复现/自然游戏频率/真实网络与Gauntlet接受均NOT_RUN；代码已离线完成，不能称玩家实机完全修复。后续验证需新候选覆盖授权；本轮没有。源码manifest、实际候选hash、命令结果在receipt。回滚分别以`50a5a4fa`、`0e4634ed`的focused inverse commits，禁止hard reset/回滚并行生图或旧dirty。
+
+
+<a id="rag-reranker-cpu-cuda-20261003"></a>
+## 2026-10-03：独立重排序模型 CPU / CUDA 对照（不接入正式模组）
+
+- 最新请求仅授权独立对照测试：不改正式模组、模型或检索规则，不覆盖游戏，不推送。状态 `OFFLINE_BENCHMARK_VERIFIED`，不是产品接入或 RTX 5060 / 实机验收。工具检查点 `313a8d33`，验证后工具提交 `9ee66b68`；当前工作树由实际 Git 决定，未改并行作者的产品文件。
+- 本机为 i5-13500HX / 20 逻辑线程 / 15.78 GiB RAM、RTX 4060 Laptop 8GB，驱动 616.56，不是用户目标 RTX 5060。复用原 FP32 模型与生产分词/512 截断/padding/Sigmoid/缓存/批处理及回退代码；生成副本只插入 SessionOptions hook，移除 hook 后与原源码逐字节相同，原模型 resolver 原样编译。TF32 关闭，不量化，不用 FP16，不改变候选规则。空 TaleWorlds.Engine marker 只满足未使用的 using，不替代游戏 API。
+- 实测分开列出部署原 native ORT 1.18 CPU 与匹配 ORT 1.22 CPU/CUDA，避免把升级收益算成显卡收益。6 场景 × 3 进程轮次，1/4/8/16 batch、短/中/512-token 长文本，共 1080 次计时调用；每组每场景 30 次缓存未命中与 30 次命中。顺序轮换、另开 profiling 进程，所有调用均未触发逐条回退。两 net472/x64 独立构建通过，8 条工具自检通过。
+- 本机热态 CUDA P50 对同版 CPU 为 5.75–11.96x；额外显存采样峰值 2626 MiB（约 2.56 GiB，设备级 200ms 采样，非精确进程分配）。原 CPU 与同版新 CPU 分数一致；CPU/CUDA 最大绝对差 5.21e-7，三轮全部 Top1 / Top2 集合 / 完整排序一致，轮内重复漂移 0。profile 10830 CUDA、240 CPU kernel 事件；MatMul/LayerNormalization 等主要计算在 CUDA，CPU 输入仅 int64/bool 形状控制。不是普通对话必然慢几秒：512 长文本为专门压力 fixture。
+- 初始化/首次调用代价、P95、逐场景延迟与显存、全部分数/排序/采样、依赖包 URL/hash 及失败重试集中在本地 `artifacts/reranker-cpu-cuda-20261003/REPORT.md` / `summary.json` / `receipt.json`，不在台账重复完整表格。首次缺 cuFFT 的真实失败与初次独立构建缺 unused namespace 的日志保留；只在隔离目录补依赖，未安装系统 CUDA/驱动。
+- 已验证代码地图（工具修订 `9ee66b68`）：`tools/RerankerCpuCudaBenchmark/Runner.cs:12-38` `BenchmarkHooks.Configure` 负责测试后端、TF32与 profiling；`:60-81` `TimedCall/GetTokenLengths` 负责缓存条件、时钟和原分词长度；`:82-158` `Main` 执行原生产 batch；`benchmark.py:54-101` `protected/build` 负责原文件保护与 source-derived 构建；`:121-142` `run_one` 独立进程/采样；`:144-213` `compare_scores/aggregate` 负责误差、排序、全部轮次和 provider 证据；`prepare_dependencies.py:8-56` 负责 workspace-only pinned DLL 解压。覆盖的是重排序调用，未覆盖知识召回/规则资格/真实世界书、三个对话渠道、实机帧时间、并发、读档、native DLL 与其他模组共进程加载。
+- 17 个保护关键源/脚本/模型/配置/原依赖 SHA256 前后相同；游戏、产品入口无写入。建议继续评估**可选 CUDA 重排序**，不默认开启，不把向量模型一并 GPU 化；先在目标 5060 复测，再另行授权正式接入与实机验证。报告不替代任何既有产品交付/部署状态。
+- 回滚仅涉及本次 tools 子目录（可对工具提交做 focused inverse）和独立 artifacts 输出；不 hard reset，不覆盖游戏。共享台账/HANDOFF 原先 dirty，当前只追加具名段落并保留其他作者内容，不将混合改动提交进工具修订。
