@@ -1,0 +1,155 @@
+{
+  "Id": "rule_世界机制__船材与造船",
+  "Keywords": [
+    "造船",
+    "船材",
+    "橡木龙骨",
+    "帆索",
+    "船坞"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "一艘船从选木开始。坚实长木适合作龙骨，弯曲木料成为肋骨，木板要干燥、拼接并用麻絮和松脂填缝；铁钉、锚链、绳索、帆布、桅杆与舵又来自不同匠人和产地。长船、商船与战舰对速度、载重和吃水要求不同，无法靠同一份图样随意替代。领主可以下令造舰，却不能凭命令缩短木材生长和工匠训练；维护旧船同样消耗巨大。真正的舰队是森林、矿山、作坊、银钱和多年经验共同累积的结果。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia",
+          "crownlands",
+          "reach",
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "sailor",
+          "artisan"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "船匠先看木纹和接缝，水手再用风浪检验。涂得再漂亮的船，若龙骨扭曲或填缝偷工，也只是一副昂贵棺材。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主喜欢数新船，海军将领更关心船员、维修和补给。没有熟练水手的舰队，只是一排等待被风分散的木壳。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "merchant",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "林民看见好树被砍，商人看见订单，沿岸人看见工作与征役。造舰荣耀常由远离海岸的人先付出木材和劳力。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人把造船看成可执行的秩序。船材与造船：龙骨木、肋材、铁钉、松脂、绳索、帆布和熟练船匠共同决定舰队能否真正下水。它是否有效，取决于谁能授予权利、收取代价，并在违约时让判决真正落地。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起造船时，关心它如何影响道路、命令和安全。船材与造船：龙骨木、肋材、铁钉、松脂、绳索、帆布和熟练船匠共同决定舰队能否真正下水。远方的制度只有在营火、城门和驿站里能被执行，才不是空话。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者会从习惯和象征理解造船。船材与造船：龙骨木、肋材、铁钉、松脂、绳索、帆布和熟练船匠共同决定舰队能否真正下水。一项规矩若被反复实践，便会进入礼仪、手艺和祈祷；若只靠恐惧维持，危机一来就会露出裂缝。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民感受到造船的方式最小也最准确。船材与造船：龙骨木、肋材、铁钉、松脂、绳索、帆布和熟练船匠共同决定舰队能否真正下水。他们记得税、粮、劳役、赈济和谁能为他们说话；宏大的名称，最终都要落在一家人的饭锅旁。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "船材与造船：龙骨木、肋材、铁钉、松脂、绳索、帆布和熟练船匠共同决定舰队能否真正下水。"
+  ]
+}

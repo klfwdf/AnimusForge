@@ -1,0 +1,131 @@
+{
+  "Id": "rule_家族根基__乔戴恩",
+  "Keywords": [
+    "乔戴恩家族",
+    "金色羽笔"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "乔戴恩家族以托尔城为根基，是马泰尔麾下的多恩贵族，家徽以深浅绿色方格上的金色羽笔为核心。他们作为多恩东部的土地封臣参与婚姻、地方裁判和亲王召令。金色羽笔很容易让宴席上的人谈起文字与机智，托尔城百姓却从水井、道路、税赋和领主保护认识乔戴恩。离多恩遥远的普通人很少有理由知道这个家名，这也使乔戴恩的声望更牢地扎在自己的土地上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "多恩贵族认得托尔城乔戴恩的金色羽笔，却不会仅凭一支笔便把全家说成学者。对马泰尔而言，乔戴恩的价值在于守好自己的土地、参与婚盟、裁断地方争端并在召令到来时履行封臣义务。纹章可以引出机智话，责任却写在更沉重的账上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "托尔城周围的人从水源、道路、集市和税吏认识乔戴恩。羽笔在旗上是贵族标记，在账房里则可能决定一户人欠多少、一名商旅能否通行。百姓盼那支笔用来记住承诺，而不只是写下新的征取。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待乔戴恩家族，会先看它的土地、婚盟、血脉和债务。托尔城的多恩封臣，以绿方格上的金色羽笔为家徽；当地人从水源、道路、裁判、税赋与保护认识他们。家徽是门面，能否保护封地、兑现婚约并在危机中召集人马，才是家族真正的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起乔戴恩家族时，记得的是谁在营火边分过粮、谁把他们留在城外、谁在败局里仍站在旗旁。托尔城的多恩封臣，以绿方格上的金色羽笔为家徽；当地人从水源、道路、裁判、税赋与保护认识他们。家族名声最终要落到具体的人和具体的命令上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意乔戴恩家族留下的仪式、墓地和传承。托尔城的多恩封臣，以绿方格上的金色羽笔为家徽；当地人从水源、道路、裁判、税赋与保护认识他们。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见乔戴恩家族。托尔城的多恩封臣，以绿方格上的金色羽笔为家徽；当地人从水源、道路、裁判、税赋与保护认识他们。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "乔戴恩家族：托尔城的多恩封臣，以绿方格上的金色羽笔为家徽；当地人从水源、道路、裁判、税赋与保护认识他们。"
+  ]
+}

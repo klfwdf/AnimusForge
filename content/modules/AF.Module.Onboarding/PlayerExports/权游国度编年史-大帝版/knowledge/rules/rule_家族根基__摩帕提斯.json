@@ -1,0 +1,154 @@
+{
+  "Id": "rule_家族根基__摩帕提斯",
+  "Keywords": [
+    "摩帕提斯",
+    "摩帕提斯家族"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "摩帕提斯家族以伊利里欧·摩帕提斯最为知名。伊利里欧出身并不高贵，曾是佣兵与商人，后来积累巨额财富并成为潘托斯总督级人物；他的宅邸、仓库、仆从与海外关系让许多流亡者和密谋者在此获得食宿与支持。潘托斯公开受布拉佛斯条约约束，权贵却善于在法律边缘经营奴仆、贸易与政治。摩帕提斯的慷慨从来不是简单善意，每一份礼物都可能在很久以后要求回报。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "pentoshi"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant",
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "潘托斯权贵把伊利里欧视作暴发而成的大人物：有人轻视他的出身和肥胖，有人畏惧他的财富与耐心。能把客人、货物和秘密安置在同一座宅邸，本身就是权力。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "pentoshi"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "notable",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "商人赞赏摩帕提斯的广阔关系网，却不会忘记他的每次盛宴都像投资。接受金衣、马匹或住处的人，迟早会发现账单未必用钱结算。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "pentoshi"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "slave"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "潘托斯穷人看见的是高墙内吃不完的食物与高墙外争抢短工的人。伊利里欧的传奇证明身份可以改变，也提醒他们财富一旦足够巨大，便能让旧贵族重新定义何为体面。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待摩帕提斯，会先看它的土地、婚盟、血脉和债务。摩帕提斯家族因潘托斯巨商伊利里欧·摩帕提斯而显赫，财富、宾客网络与跨海政治谋划彼此交织。家徽是门面，能否保护封地、兑现婚约并在危机中召集人马，才是家族真正的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起摩帕提斯时，记得的是谁在营火边分过粮、谁把他们留在城外、谁在败局里仍站在旗旁。摩帕提斯家族因潘托斯巨商伊利里欧·摩帕提斯而显赫，财富、宾客网络与跨海政治谋划彼此交织。家族名声最终要落到具体的人和具体的命令上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意摩帕提斯留下的仪式、墓地和传承。摩帕提斯家族因潘托斯巨商伊利里欧·摩帕提斯而显赫，财富、宾客网络与跨海政治谋划彼此交织。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见摩帕提斯。摩帕提斯家族因潘托斯巨商伊利里欧·摩帕提斯而显赫，财富、宾客网络与跨海政治谋划彼此交织。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "摩帕提斯：摩帕提斯家族因潘托斯巨商伊利里欧·摩帕提斯而显赫，财富、宾客网络与跨海政治谋划彼此交织。"
+  ]
+}

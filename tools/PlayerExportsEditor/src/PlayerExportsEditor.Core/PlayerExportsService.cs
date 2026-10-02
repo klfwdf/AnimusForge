@@ -1,7 +1,5 @@
 using System.Text.Json.Nodes;
 using System.Text.Json;
-using System.Security.Cryptography;
-using System.Text;
 using AnimusForge;
 
 namespace PlayerExportsEditor.Core;
@@ -15,8 +13,6 @@ public sealed class PlayerExportsService
         // Kept for editor callers; the current directory is never a data-root fallback.
         var dataRoot = AnimusForgeDataPaths.GetCurrentRoot();
         var exports = AnimusForgeDataPaths.GetPlayerExportsDirectory(dataRoot);
-        if (string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable(AnimusForgeDataPaths.OverrideEnvironmentVariable)))
-            AssertNearbyLegacyMigrationReady(startDirectory, dataRoot);
         return exports;
     }
 
@@ -228,57 +224,7 @@ public sealed class PlayerExportsService
         var expected = AnimusForgeDataPaths.GetPlayerExportsDirectory(parent.Parent.FullName);
         if (!string.Equals(full, expected, StringComparison.OrdinalIgnoreCase))
             throw new InvalidOperationException("Editable PlayerExports root is not canonical.");
-        var defaultRoot = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "AnimusForge");
-        if (string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable(AnimusForgeDataPaths.OverrideEnvironmentVariable))
-            && string.Equals(parent.Parent.FullName, defaultRoot, StringComparison.OrdinalIgnoreCase))
-            AssertNearbyLegacyMigrationReady(AppContext.BaseDirectory, parent.Parent.FullName);
         return expected;
-    }
-
-    private static void AssertNearbyLegacyMigrationReady(string startDirectory, string dataRoot)
-    {
-        for (DirectoryInfo? directory = new DirectoryInfo(Path.GetFullPath(startDirectory)); directory != null; directory = directory.Parent)
-        {
-            var moduleRoot = File.Exists(Path.Combine(directory.FullName, "SubModule.xml"))
-                ? directory.FullName : Path.Combine(directory.FullName, "AnimusForge");
-            if (!File.Exists(Path.Combine(moduleRoot, "SubModule.xml"))) continue;
-            var legacy = Path.Combine(moduleRoot, "PlayerExports");
-            if (!Directory.Exists(legacy)) continue;
-            AssertNoReparse(legacy);
-            if (!Directory.EnumerateFileSystemEntries(legacy).Any()) continue;
-            VerifyNearbyMigrationRecord(moduleRoot, dataRoot);
-            return;
-        }
-    }
-
-    private static void VerifyNearbyMigrationRecord(string moduleRoot, string dataRoot)
-    {
-        var marker = Path.Combine(dataRoot, "UserData", ".player-exports-ready.json");
-        if (!File.Exists(marker))
-            throw new InvalidOperationException("Legacy PlayerExports awaits verified migration; editing the new root is blocked.");
-        try
-        {
-            AssertNoReparse(marker);
-            var normalized = Path.GetFullPath(moduleRoot).TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar).ToUpperInvariant();
-            var key = Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(normalized))).ToLowerInvariant();
-            using var ready = JsonDocument.Parse(File.ReadAllText(marker, Encoding.UTF8));
-            if (ready.RootElement.GetProperty("schema").GetInt32() != 1
-                || !ready.RootElement.GetProperty("sources").TryGetProperty(key, out var manifest))
-                throw new InvalidOperationException("Legacy PlayerExports migration record does not match this module.");
-            var hash = manifest.GetString();
-            if (hash == null || hash.Length != 64 || !hash.All(Uri.IsHexDigit))
-                throw new InvalidOperationException("Legacy PlayerExports migration record is invalid.");
-            var completed = Path.Combine(dataRoot, "Recovery", "player-exports-" + hash[..24], "completed.json");
-            AssertNoReparse(completed);
-            using var completion = JsonDocument.Parse(File.ReadAllText(completed, Encoding.UTF8));
-            if (completion.RootElement.GetProperty("schema").GetInt32() != 1
-                || completion.RootElement.GetProperty("manifestSha256").GetString() != hash)
-                throw new InvalidOperationException("Legacy PlayerExports migration completion record is inconsistent.");
-        }
-        catch (Exception ex) when (ex is not InvalidOperationException)
-        {
-            throw new InvalidOperationException("Legacy PlayerExports migration record is invalid; no old-path fallback is allowed.", ex);
-        }
     }
 
     private static string ValidateEditablePackageRoot(string packageRoot)

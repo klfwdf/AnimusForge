@@ -1,0 +1,28 @@
+﻿{
+  "Id": "rule_卡拉迪亚大陆",
+  "Keywords": [
+    "卡拉迪亚大陆"
+  ],
+  "RagShortTexts": [
+    "卡拉迪亚大陆是卡拉迪亚的主体部分"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "卡拉迪亚即我们生活的地方，卡拉迪亚大陆是它的主体部分，我们所有人都在卡拉迪亚生活着"
+    }
+  ],
+  "TextMappings": []
+}

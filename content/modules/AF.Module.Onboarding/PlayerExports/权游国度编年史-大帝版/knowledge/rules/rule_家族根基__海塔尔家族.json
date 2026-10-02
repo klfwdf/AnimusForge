@@ -1,0 +1,153 @@
+{
+  "Id": "rule_家族根基__海塔尔家族",
+  "Keywords": [
+    "海塔尔家族",
+    "参天塔",
+    "照亮前程"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "海塔尔家族以旧镇蜜酒河口的参天塔为根基，是维斯特洛最古老、最富有的家族之一，历史可能早于安达尔人到来。家徽为烟灰底白色高塔，塔顶燃烧火焰，箴言“照亮前程”。旧镇港口、学城、繁星圣堂的旧日地位与广阔城市人口，使海塔尔的力量同时来自贸易、知识、信仰和土地，而不只是骑士数量。河湾贵族尊重其古老与财富，也会警惕一支坐拥大城、能同学士与教会长期来往的封臣。普通旧镇人更可能通过港口规矩、粮价、治安和高塔灯火认识他们。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "reach"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "河湾贵族谈海塔尔，语气里常混着敬意与戒心。高庭统御广阔良田，参天塔却守着旧镇、学城、信仰中心与繁忙海港；海塔尔不必每次站到王座旁，也能让学士、修士、商船和婚盟替他们延伸影响。越古老的家族，越懂得有时不出声比宣誓更有力量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "reach"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "旧镇的商人、工匠与船主看海塔尔，首先看塔顶火光、港口秩序和蜜酒河上的货船。参天塔是七国都听过的奇观，对码头人却也是航标与权力的影子。税若公道、河道安全，古老血统便显得可敬；若货物烂在仓里，再悠久的谱系也换不回本钱。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "reach"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "priest",
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "学城与繁星圣堂都在旧镇生长，却各自服从不同的传统。学士看海塔尔是保护知识与城市秩序的世俗大族，修士则记得信仰曾从这里向七国发声。两者都明白，参天塔没有直接统领每一本书或每一声祈祷，但它的阴影长久落在两者之间。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待海塔尔家族，会先看它的土地、婚盟、血脉和债务。旧镇参天塔的古老强族，家徽为烟灰底燃火白塔，箴言“照亮前程”。港口、学城、教会传统、城市人口和土地共同构成其独特权力。家徽是门面，能否保护封地、兑现婚约并在危机中召集人马，才是家族真正的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起海塔尔家族时，记得的是谁在营火边分过粮、谁把他们留在城外、谁在败局里仍站在旗旁。旧镇参天塔的古老强族，家徽为烟灰底燃火白塔，箴言“照亮前程”。港口、学城、教会传统、城市人口和土地共同构成其独特权力。家族名声最终要落到具体的人和具体的命令上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意海塔尔家族留下的仪式、墓地和传承。旧镇参天塔的古老强族，家徽为烟灰底燃火白塔，箴言“照亮前程”。港口、学城、教会传统、城市人口和土地共同构成其独特权力。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见海塔尔家族。旧镇参天塔的古老强族，家徽为烟灰底燃火白塔，箴言“照亮前程”。港口、学城、教会传统、城市人口和土地共同构成其独特权力。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "海塔尔家族：旧镇参天塔的古老强族，家徽为烟灰底燃火白塔，箴言“照亮前程”。港口、学城、教会传统、城市人口和土地共同构成其独特权力。"
+  ]
+}

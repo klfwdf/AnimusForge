@@ -1,0 +1,28 @@
+﻿{
+  "Id": "rule_达尔马河",
+  "Keywords": [
+    "达玛尔河"
+  ],
+  "RagShortTexts": [
+    "达玛尔河阿塞莱"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "达玛尔河是阿塞莱的母亲河"
+    }
+  ],
+  "TextMappings": []
+}

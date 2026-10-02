@@ -3670,27 +3670,12 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 				{
 				};
 			}
-			string playerExportsRootPath = PlayerExportsStore.GetPlayerExportsRootPath();
-			if (!Directory.Exists(playerExportsRootPath))
-			{
-				InformationManager.DisplayMessage(new InformationMessage("找不到导出目录：" + playerExportsRootPath));
-				onReturn();
-				return;
-			}
-			List<string> list = (from d in new DirectoryInfo(playerExportsRootPath).GetDirectories()
-				where !d.Name.StartsWith(".", StringComparison.Ordinal)
-				orderby d.LastWriteTimeUtc descending
-				select d.Name).ToList();
 			List<InquiryElement> list2 = new List<InquiryElement>();
-			list2.Add(new InquiryElement("__manual__", "手动输入文件夹名", null));
-			foreach (string item in list)
-			{
-				if (!string.IsNullOrWhiteSpace(item))
-				{
-					list2.Add(new InquiryElement(item, item, null));
-				}
-			}
-			MultiSelectionInquiryData data = new MultiSelectionInquiryData("选择导入文件夹", "请选择 PlayerExports 下的导出文件夹：", list2, isExitShown: true, 0, 1, "导入", "返回", delegate(List<InquiryElement> selected)
+			list2.Add(new InquiryElement("__manual__", "手动输入文件夹名/路径", null));
+			list2.Add(new InquiryElement("__latest__", "使用最新玩家导出（自动）", null));
+			foreach (var folder in PlayerExportsStore.GetImportFolders())
+				list2.Add(new InquiryElement(folder.FullPath, folder.Name + "  [" + folder.SourceLabel + "]", null));
+			MultiSelectionInquiryData data = new MultiSelectionInquiryData("选择导入文件夹", "请选择模组目录或玩家导出的世界书：", list2, isExitShown: true, 0, 1, "导入", "返回", delegate(List<InquiryElement> selected)
 			{
 				if (selected == null || selected.Count == 0)
 				{
@@ -3701,15 +3686,9 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 					string text = selected[0].Identifier as string;
 					if (text == "__manual__")
 					{
-						InformationManager.ShowTextInquiry(new TextInquiryData("手动输入文件夹名", "请输入 PlayerExports 下的文件夹名：", isAffirmativeOptionShown: true, isNegativeOptionShown: true, "确定", "取消", delegate(string input)
+						InformationManager.ShowTextInquiry(new TextInquiryData("手动输入文件夹名/路径", "名称优先查找模组目录，再查找玩家导出；留空=最新玩家导出。", isAffirmativeOptionShown: true, isNegativeOptionShown: true, "确定", "取消", delegate(string input)
 						{
 							string folderName2 = (input ?? "").Trim();
-							if (string.IsNullOrWhiteSpace(folderName2))
-							{
-								InformationManager.DisplayMessage(new InformationMessage("请输入导入文件夹名，或从列表中选择一个文件夹。"));
-								OpenImportFolderPicker(onReturn);
-								return;
-							}
 							TryImportRequiredSetAndUnlock(folderName2, onReturn);
 						}, delegate
 						{
@@ -3718,7 +3697,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 					}
 					else
 					{
-						TryImportRequiredSetAndUnlock(text ?? "", onReturn);
+						TryImportRequiredSetAndUnlock(text == "__latest__" ? "" : text ?? "", onReturn);
 					}
 				}
 			}, delegate
@@ -3738,12 +3717,6 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			if (string.IsNullOrWhiteSpace(folderName))
-			{
-				InformationManager.DisplayMessage(new InformationMessage("请选择要导入的 PlayerExports 文件夹。"));
-				OpenImportFolderPicker(onReturn);
-				return;
-			}
 			string text = ResolveImportFolderPath(folderName);
 			if (string.IsNullOrWhiteSpace(text) || !Directory.Exists(text))
 			{
@@ -3838,27 +3811,27 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 				InformationManager.DisplayMessage(new InformationMessage("导入失败：MyBehavior 未初始化。"));
 				OpenImportFolderPicker(onReturn);
 			}
-			else if (!InvokePrivateImport(myBehavior, "ImportPersonaData", folderName))
+			else if (!InvokePrivateImport(myBehavior, "ImportPersonaData", text))
 			{
 				InformationManager.DisplayMessage(new InformationMessage("导入失败：无法执行 Hero 个性/背景导入。"));
 				OpenImportFolderPicker(onReturn);
 			}
-			else if (!InvokePrivateImport(myBehavior, "ImportUnnamedPersonaData", folderName))
+			else if (!InvokePrivateImport(myBehavior, "ImportUnnamedPersonaData", text))
 			{
 				InformationManager.DisplayMessage(new InformationMessage("导入失败：无法执行 非Hero 描述导入。"));
 				OpenImportFolderPicker(onReturn);
 			}
-			else if (!InvokePrivateImport(myBehavior, "ImportKnowledgeData", folderName))
+			else if (!InvokePrivateImport(myBehavior, "ImportKnowledgeData", text))
 			{
 				InformationManager.DisplayMessage(new InformationMessage("导入失败：无法执行 知识导入。"));
 				OpenImportFolderPicker(onReturn);
 			}
-			else if (!InvokePrivateImport(myBehavior, "ImportVoiceMappingData", folderName))
+			else if (!InvokePrivateImport(myBehavior, "ImportVoiceMappingData", text))
 			{
 				InformationManager.DisplayMessage(new InformationMessage("导入失败：无法执行 声音映射导入。"));
 				OpenImportFolderPicker(onReturn);
 			}
-			else if (!InvokePrivateImport(myBehavior, "ImportEventData", folderName))
+			else if (!InvokePrivateImport(myBehavior, "ImportEventData", text))
 			{
 				InformationManager.DisplayMessage(new InformationMessage("导入失败：无法执行 事件库导入。"));
 				OpenImportFolderPicker(onReturn);
@@ -3944,12 +3917,6 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 
 	private static string ResolveImportFolderPath(string folderName)
 	{
-		string playerExportsRootPath = PlayerExportsStore.GetPlayerExportsRootPath();
-		string text = PlayerExportsStore.SanitizeFolderName(folderName);
-		if (string.IsNullOrEmpty(text))
-		{
-			return null;
-		}
-		return Path.Combine(playerExportsRootPath, text);
+		return PlayerExportsStore.ResolveImportFolderPath(folderName);
 	}
 }

@@ -1,0 +1,131 @@
+{
+  "Id": "rule_家族根基__布尔威",
+  "Keywords": [
+    "布尔威",
+    "布尔威家族"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "布尔威家族以黑冠城为席位，身处旧镇与河湾南部诸势力交错的土地。家族曾通过婚姻与提利尔旁支相连，继承也可能落到女儿手中；这提醒人们，封建家门的延续不只靠长子的剑，也靠婚约、母系血缘与获得承认的合法继承。黑冠城的责任包括守护庄园、道路和向上级领主提供兵役。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "reach"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "河湾贵族关注布尔威的婚约与继承，因为小家族的一次婚姻也可能改变土地归属。只要继承获得承认、封臣义务照常履行，女领主同样能使黑冠城秩序稳固。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "reach"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "黑冠城周围的人对族谱争论耐心有限。他们要看新领主能否让磨坊转动、道路少些强盗，并约束征召队别把自家牲口全牵走。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待布尔威，会先看它的土地、婚盟、血脉和债务。布尔威家族据有黑冠城，与提利尔支系有婚姻联系，是旧镇一带河湾秩序的一部分。家徽是门面，能否保护封地、兑现婚约并在危机中召集人马，才是家族真正的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起布尔威时，记得的是谁在营火边分过粮、谁把他们留在城外、谁在败局里仍站在旗旁。布尔威家族据有黑冠城，与提利尔支系有婚姻联系，是旧镇一带河湾秩序的一部分。家族名声最终要落到具体的人和具体的命令上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意布尔威留下的仪式、墓地和传承。布尔威家族据有黑冠城，与提利尔支系有婚姻联系，是旧镇一带河湾秩序的一部分。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见布尔威。布尔威家族据有黑冠城，与提利尔支系有婚姻联系，是旧镇一带河湾秩序的一部分。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "布尔威：布尔威家族据有黑冠城，与提利尔支系有婚姻联系，是旧镇一带河湾秩序的一部分。"
+  ]
+}

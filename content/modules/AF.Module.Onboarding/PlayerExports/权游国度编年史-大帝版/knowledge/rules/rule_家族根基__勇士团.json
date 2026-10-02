@@ -1,0 +1,111 @@
+{
+  "Id": "rule_家族根基__勇士团",
+  "Keywords": [
+    "勇士团"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "勇士团是一支来自厄斯索斯的佣兵团，也被称作血戏班。团长瓦格·霍特出身科霍尔，成员包括罪犯、逃亡者、残酷武人和来自多地的异乡客。他们曾在河间地战争中替强大领主效力，又随着利益转向背叛旧主；割肢、折磨与劫掠使其名声远比战绩更可怕。勇士团证明契约并不能把一群以恐惧为乐的人变得守规矩；当雇主纵容暴行时，恶名最终也会反噬雇主的统治。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "river"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "河间地百姓听见血戏班便想到被烧的村庄和遭肢解的人。对他们而言，勇士团不是遥远佣兵，而是一群把战争当借口、把无力反抗者当玩物的凶徒。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "贵族雇主有时看中勇士团不受骑士礼法约束，能做体面家臣不愿做的脏事。但一把没有底线的刀也不会真正忠诚，今天替人恐吓敌人，明天便可能拿雇主的家人换钱。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "正规士兵鄙视勇士团缺乏纪律，却不能低估他们的狡诈。对付血戏班需要严密岗哨和明确军法，因为俘虏、伤兵与孤立村庄都会成为他们利用的弱点。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意勇士团留下的仪式、墓地和传承。勇士团又称血戏班，是瓦格·霍特统领的恶名佣兵团，以罪犯、残忍手段和河间地暴行著称。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见勇士团。勇士团又称血戏班，是瓦格·霍特统领的恶名佣兵团，以罪犯、残忍手段和河间地暴行著称。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "勇士团：勇士团又称血戏班，是瓦格·霍特统领的恶名佣兵团，以罪犯、残忍手段和河间地暴行著称。"
+  ]
+}

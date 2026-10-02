@@ -1,0 +1,154 @@
+{
+  "Id": "rule_世界机制__玻璃蜡烛",
+  "Keywords": [
+    "玻璃蜡烛",
+    "黑曜石蜡烛",
+    "瓦雷利亚遗物",
+    "学城秘藏"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "玻璃蜡烛是瓦雷利亚留下的黑曜石造物，形如扭曲锋利的高烛。学城保存数支，学徒守夜曾被要求尝试点燃它，以此明白世上有些知识仍不可及。关于其效用的传说包括无需灯芯便燃烧、让人看见远方、通过梦境传递影像，甚至使使用者在不同地点彼此交谈；烛光据说异常明亮，颜色也不似普通火焰。大多数人无从验证这些能力。玻璃蜡烛的意义不仅在能做什么，也在它迫使自信的学者承认，曾被判定不可能的事或许会重新发生。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "reach"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "scholar",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "学城中的怀疑者把玻璃蜡烛当作训练谦逊的死物，少数人则研究它是否真的苏醒。真正令学者不安的不是一支蜡烛，而是旧理论可能需要重写。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "valyrian",
+          "dragonstone"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "scholar",
+          "lord",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "瓦雷利亚后裔更愿把它视作失落技艺的一角。若黑曜石能携带视线与梦，末日浩劫毁掉的知识便远不只是锻钢和驭龙。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "wanderer",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "外人容易把玻璃蜡烛当成无价奇物，却很难判断自己买到的是遗物、骗局还是会反过来窥视持有者的东西。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人把玻璃蜡烛看成可执行的秩序。瓦雷利亚黑曜石遗物，传说能无火自燃、跨距观看并进入梦境，是学城怀疑与魔法复苏的交界。它是否有效，取决于谁能授予权利、收取代价，并在违约时让判决真正落地。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起玻璃蜡烛时，关心它如何影响道路、命令和安全。瓦雷利亚黑曜石遗物，传说能无火自燃、跨距观看并进入梦境，是学城怀疑与魔法复苏的交界。远方的制度只有在营火、城门和驿站里能被执行，才不是空话。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者会从习惯和象征理解玻璃蜡烛。瓦雷利亚黑曜石遗物，传说能无火自燃、跨距观看并进入梦境，是学城怀疑与魔法复苏的交界。一项规矩若被反复实践，便会进入礼仪、手艺和祈祷；若只靠恐惧维持，危机一来就会露出裂缝。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民感受到玻璃蜡烛的方式最小也最准确。瓦雷利亚黑曜石遗物，传说能无火自燃、跨距观看并进入梦境，是学城怀疑与魔法复苏的交界。他们记得税、粮、劳役、赈济和谁能为他们说话；宏大的名称，最终都要落在一家人的饭锅旁。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "玻璃蜡烛：瓦雷利亚黑曜石遗物，传说能无火自燃、跨距观看并进入梦境，是学城怀疑与魔法复苏的交界。"
+  ]
+}

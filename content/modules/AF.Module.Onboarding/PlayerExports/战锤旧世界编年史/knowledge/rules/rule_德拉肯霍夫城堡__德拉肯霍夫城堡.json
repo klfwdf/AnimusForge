@@ -1,0 +1,209 @@
+{
+  "Id": "rule_德拉肯霍夫城堡__德拉肯霍夫城堡",
+  "Keywords": [
+    "德拉肯霍夫城堡",
+    "冯·卡斯坦因权力中心",
+    "亡灵集结地",
+    "黑暗要塞",
+    "吸血鬼王座",
+    "希尔瓦尼亚心脏",
+    "暗夜王庭",
+    "不死堡垒"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "德拉肯霍夫城堡是希尔瓦尼亚的黑暗心脏，冯·卡斯坦因家族的永恒王座。这座耸立在死地上的黑色城堡是所有亡灵大军的最终集结地，无数骷髅、僵尸和更可怕的暗夜生物从城堡周围的墓地中不断苏醒。没有人能活着进入德拉肯霍夫并活着离开——因为城堡的主人不需要活着的访客。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "德拉肯霍夫——我们的家，我们的堡垒，我们永恒的不死王座。它的黑色塔尖刺穿了希尔瓦尼亚永远阴霾的天空，它的地下墓穴延伸得比任何人类矿井都更深——那里沉睡着我们最古老的祖先和他们最强大的亡灵奴仆。德拉肯霍夫的城墙不是用石头建成的——是用恐惧建成的。城堡的每一个窗户都朝北，永不迎接阳光；每一个大厅中都回响着数千年来冯·卡斯坦因子嗣的低语和谋划。当帝国的人类在阿尔道夫为选帝侯的席位争吵时，我们在这里——在德拉肯霍夫——以世纪为单位策划着对整个旧世界的收割。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "德拉肯霍夫城堡在任何针对希尔瓦尼亚的军事行动中都是最终目标——也是最大的陷阱。城堡周围数十英里的所有村庄和墓园都处在吸血鬼的亡灵魔法覆盖范围内，任何围城军队在面对城堡本身的防御之前首先要应对包围圈内不断苏醒的死者。历史上围攻德拉肯霍夫的尝试——包括帝国历2000年代的第一次亡灵战争——都因为围城军发现自己被自己阵亡士兵的尸体从背后攻击而失败。进攻德拉肯霍夫的唯一可能窗口是在冬季白昼最短的时段——此时亡灵的活跃度最低——但即便如此，成功的概率也被认为是接近于零。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "德拉肯霍夫城堡的建筑历史可以追溯到帝国历前约500年，最初的德拉肯霍夫只是一座控制希尔瓦尼亚东部隘口的边境石堡，由早期帝国定居者建造。帝国历约1100年，弗拉德·冯·卡斯坦因——当时刚刚以人类贵族身份渗透入希尔瓦尼亚——利用他的黑暗影响力获得了德拉肯霍夫及其周围领地。在接下来的三个世纪中，弗拉德用亡灵劳工对城堡进行了大规模的地下扩建，增加了总计十二层的地下墓穴系统、一座能够容纳整支亡灵军团集结的巨型中庭以及一条通向希尔瓦尼亚各地墓园的秘密地道网络。帝国历1797年弗拉德对帝国发动第一次亡灵战争时，德拉肯霍夫已经是一座在规模上仅次于阿尔道夫皇宫的建筑群。如今城堡的防御依靠三重体系：外围亡灵迷雾（使闯入者迷失方向）、中层城墙上安装的黑暗魔法炮台（由束缚在炮身中的怨灵供能）以及最深处的血族密殿——只有冯·卡斯坦因血脉才能安全进入的城堡核心区。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "德拉肯霍夫城堡对我来说代表着旧世界政治中最根本的噩梦——一个你可以用任何军事力量攻击但永远无法从地图上抹除的敌人。我在斯提尔领边境治理领地时学到的最重要教训是：你不需要攻破德拉肯霍夫来防御吸血鬼的威胁。你只需要确保你的领地上的每一个墓园在冬季都经过至少三次祝圣仪式、每一个村庄都有一个能够分辨亡灵苏醒迹象的老人、以及每一位牧师都知道如何在发现第一具活动的尸体时立刻点燃烽火。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "德拉肯霍夫对旧世界的威胁不仅来自于它直接控制的亡灵军团——更来自于它代表的家族渗透模式。冯·卡斯坦因家族从德拉肯霍夫向外派出血仆和转化的午夜显贵潜入帝国各省的贵族圈已达数个世纪。我家族在议会的每一次会议中都必须问自己：在座者中有没有一位的生命线已经延伸到了德拉肯霍夫的暗夜王庭？这种不确定性本身就是一件武器——而且它是完全免费的。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "如果你做佣兵做到需要在希尔瓦尼亚找庇护所——我的建议是：继续骑马，不要停。德拉肯霍夫城堡周边没有任何村庄会接纳外来者——不是因为不友好，而是因为他们不敢。一个村民如果被发现藏匿了城堡的敌人，他的全家会被亡灵直接拖进城堡地牢。但希尔瓦尼亚的走私路线——那些被亡灵的巡逻队定期巡查但仍有人在使用的隐秘山道——是旧世界最昂贵的捷径。如果你愿意支付足够的金克朗，沉默的走私向导会在深夜带你穿过距离德拉肯霍夫仅三英里的一条河谷。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "德拉肯霍夫的存在对斯提尔领和奥斯特马克的商业造成了永久性的方向扭曲。从塔拉贝克海姆到世界边缘山脉的商路本应是一条直线——但这条路偏偏要穿过距离德拉肯霍夫不到五十英里的地带。结果就是：我商会的所有运输合同都绕道向北通过诺德领的沿海商路——额外增加了每车货物百分之四十的运输费用。没有保险公司会承保任何靠近德拉肯霍夫周界百英里以内的商队险，而这意味着希尔瓦尼亚是旧世界历史上最大的人为经济死区。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "德拉肯霍夫城堡——冯·卡斯坦因家族的黑暗王座，希尔瓦尼亚的亡灵统治中心",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "德拉肯霍夫城堡的地理位置与战略意义"
+  ]
+}

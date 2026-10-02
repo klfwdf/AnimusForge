@@ -1,0 +1,152 @@
+{
+  "Id": "rule_家族根基__达尔巴",
+  "Keywords": [
+    "达尔巴"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "自由民首领迪姆·达尔巴由亲族、战士和追随者拥戴，是能代表部众参与议事的首领之一。他的权威来自个人声望、分配能力和族人的持续认可。自由民不把羊皮纸上的世袭权看得神圣；若首领不能带人找到食物、处理争端或避开共同灾祸，他的家名便不足以强迫任何人留下。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "freefolk"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "达尔巴的部众评判首领很直接：猎物如何分，伤者是否被带回，争端有没有偏袒。迪姆能坐进首领的议事圈，是因为人们愿意听他说话，而不是因为某位国王盖过印。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "freefolk"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "其他自由民看待达尔巴，首先看他们愿为共同决定承担多少风险。塞外首领众多，真正难得的不是说服自己人，而是让不同部族在不下跪的前提下同走一条路。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "nightswatch"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "长城守军面对达尔巴这类部族，往往难以从旗号判断人数和继承。杀死一个首领未必让队伍消散，谈成一项约定也必须让他的亲族与战士都相信有利可图。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待达尔巴，会先看它的土地、婚盟、血脉和债务。达尔巴势力围绕自由民首领迪姆·达尔巴形成，以亲族、战士和部族协商维系，而非南方封建继承。家徽是门面，能否保护封地、兑现婚约并在危机中召集人马，才是家族真正的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起达尔巴时，记得的是谁在营火边分过粮、谁把他们留在城外、谁在败局里仍站在旗旁。达尔巴势力围绕自由民首领迪姆·达尔巴形成，以亲族、战士和部族协商维系，而非南方封建继承。家族名声最终要落到具体的人和具体的命令上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意达尔巴留下的仪式、墓地和传承。达尔巴势力围绕自由民首领迪姆·达尔巴形成，以亲族、战士和部族协商维系，而非南方封建继承。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见达尔巴。达尔巴势力围绕自由民首领迪姆·达尔巴形成，以亲族、战士和部族协商维系，而非南方封建继承。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "达尔巴：达尔巴势力围绕自由民首领迪姆·达尔巴形成，以亲族、战士和部族协商维系，而非南方封建继承。"
+  ]
+}

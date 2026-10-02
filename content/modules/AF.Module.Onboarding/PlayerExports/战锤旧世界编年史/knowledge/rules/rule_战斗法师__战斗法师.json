@@ -1,0 +1,211 @@
+{
+  "Id": "rule_战斗法师__战斗法师",
+  "Keywords": [
+    "帝国魔法",
+    "战斗法师魔法学院",
+    "八风",
+    "许可法师",
+    "光明学院",
+    "战斗法师天堂学院",
+    "泰格里斯",
+    "魔力反噬",
+    "战斗法师魔法之风",
+    "帝国战斗法师"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "战斗法师是帝国经过严格训练和许可的军事施法者，他们在阿尔道夫的八所魔法学院中学习驾驭魔法之风的单一一种，然后在战场上为帝国军队提供魔法支援。每一位战斗法师都必须随身携带许可文书，随时接受西格玛教会和猎巫人的检查。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "战斗法师是我们帝国独有的武器——精灵有他们的术法，混沌有他们的邪术，亡灵有他们的黑暗法术，但只有我们建立了一整套系统性的魔法军事学院。泰克里斯大师在一百年前帮助帝国建立了八风学院体系：光明学院、火焰学院、金属学院、生命学院、天堂学院、死亡学院、阴影学院和野兽学院。每一位学徒在确认能与某个单一魔法之风共鸣后，将在对应学院中接受五到十年的训练，学习不借助混沌之力就能引导魔法的纪律。他们是我们对付那些不讲理的东西——亡灵、恶魔、变异怪物——最有效的武器之一，但我们从来不敢完全信任他们，因为在每一个法师的眼睛后面都有混沌的倒影。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "战斗法师在战术部署中是双刃剑。一名天堂法师可以在进攻前用连锁闪电瓦解敌军最密集的方阵，一名金属法师可以将敌方重甲加热成烤箱，一名火焰法师则提供直接的毁灭性火力。但同时，战场上过度的魔法使用会造成魔力反噬——最轻微的是法师本人被自己的魔法灼伤，最严重的是无意中打开了通向非物质界的临时裂口导致恶魔涌入战场。因此每一位指挥官都必须与随军法师在战前就魔法使用强度和时机达成明确约定。战斗法师不是炮台，他们是受控的武器——控制失当了，他们在友军这边的伤害不会比在敌军那边小。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "帝国魔法学院体系的建立是旧世界魔法史上的分水岭事件。在泰克里斯改革之前，人类施法者要么在荒野中自行摸索魔法——这意味着他们迟早会被混沌吞噬——要么被猎巫人逮捕并处决。泰克里斯（高等精灵最伟大的法师之一）在帝国历2304年获得帝国皇帝授权，在阿尔道夫建立了八所相互隔离的魔法学院，每一所只教授一种魔法之风。他设计了一个完整的检测、招募、训练、许可和监控制度：具有魔法天赋的儿童被识别后从家庭中带离送入学院，学徒在学院中接受严格的纪律训练和魔法教育，毕业后获得许可文书成为注册战斗法师，终其一生接受教会和帝国魔法学院的监督。这套制度并未完全消灭混沌侵蚀的风险——每年仍有法师因为过度施法或心理薄弱而被混沌渗透，魔法学院内部对此的处理速度和处理方式对外保密——但它将人类社会的魔法死亡率从极高降低到了可接受的水平。目前帝国在役的战斗法师总数不超过数百人，每一次重大战役最多只能配属个位数法师，这使得每一位战斗法师都是不可替代的稀缺战略资产。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "帝国的魔法学院对女性施法者的接纳是旧世界少数真正超越了性别偏见的地方——讽刺的是，这并非出于进步思想，而是因为在魔法之风面前性别是无关变量。艾茜魔法之风——即生命之风盖安的亲和者——中女性的比例高得不成比例，而金属之风恰恩则几乎全为男性所亲和，这个现象至今没有学院能给出令所有人满意的解释。作为一个曾经在帝国与女战斗法师共事过的贵族女性，我可以告诉你，这些女人在军事体系中所遭受的排挤比任何男性法师都更加深刻——男法师至少被定义为'不可靠的工具'，而女法师则常常被视作'危险的武器化疯女'。我曾经在自己的部队中征募了一名被她的原所属军团以'精神状态不稳定'为由退回的地狱风暴女战斗法师，而我很快发现她并没有精神不稳定——她只是指出原军团在战术部署中存在严重错误后被人以'歇斯底里'为由强制调离了作战岗位。她后来在我的部队中用一道精准的连锁闪电击溃了混沌骑士的编队，战役结束后那个指控她歇斯底里的军团指挥官通过信使向我委婉表示'希望将这名优秀的法师调回原编制'——我以'精神状态仍待进一步观察'为由礼貌地拒绝了。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "魔法天赋在我们的家族中是一份被诅咒的祝福——每一代人中都有大约一名儿童显示出魔法亲和力，而家族对此的反应已演变为一套精细的处置流程。我们从不隐藏魔法天赋的儿童——那只会让猎巫人盯上整个家族——而是主动将他们以'家族赞助'的方式送入阿尔道夫的魔法学院，并确保全程有家族代表在场监督他们的训练。一个毕业于黄金学院的家族成员虽然在族谱中不再与家族有正式的法律联系，但他对家族的私下忠诚——以及通过魔法手段提供的安全保障——是任何城堡守军都无法替代的非对称武器。我们在魔法学院中有一笔不公开的年度捐赠，用于资助来自家族领地中贫困家庭的魔法天赋儿童——在学院看来这是慈善，对我们而言这是一项长期人才投资。那些在二十年后的战场上站在我们这一边的战斗法师中，总有几个会记得当初是谁在没有人愿意送一个农家女孩去阿尔道夫学魔法时替她付了第一年的学费。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "战斗法师在雇佣兵圈子里是一个由恐惧和需求混合构成的话题。我见过一个火焰法师在战场上把一整个野兽人编队烧成了灰——那种火焰的颜色不是自然界的橙红色，而是一种近乎白色的沸腾金芒。但我也见过同一个法师在战役结束后的半夜，在她的帐篷外被四个自己的士兵按住，因为她差点在梦境中无意召唤了一道火焰风暴——随军牧师把那场事故归结为'潜在的混沌渗透'，但实际上只是因为她连续战斗了十二天没有得到任何睡眠。战斗法师在帝国军队中是最大的精英也是最大的贱民：他们被从家庭中带走、被剥去了正常人的身份、被塞进学院与世隔绝地训练十年，然后被派去战场在双重监督下——敌人和友军——冒着生命危险释放魔法。我从一个退伍的随军警卫那里听到过一句帝国军队中的俗话：'战斗法师的靴子下是三个坟墓——敌人的、他自己的、以及他身边最靠近的那个战友的。'帝国军队感谢他们但从不接近他们，而在流浪者的世界中，前战斗法师通常是所有叛逃者中最孤独的那一种——他们无法回到平民社会，因为杀过人的法师在帝国法律中需要终身监禁。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "魔法学院是帝国经济中一个被完全忽视的巨大消费市场——每一所学院每年采购的魔法材料、实验器材和生活物资都是一笔可观的商业订单。光明学院消耗的上等羊皮纸和银粉数量足够养活威森领一半的纸料作坊，金属学院采购的稀有矿石每年为矮人王国贡献了一笔稳定的对外贸易收入。而魔法学院最为隐秘的商业价值在于它的防护魔咒和炼金制品——虽然魔法学院明文禁止出售未经授权的魔法物品，但每个帝国商人都知道只要通过恰当的中间人和恰当的捐赠渠道，你可以让你的货船获得一个'非正式但有效'的防护祝福、让你的商会在三伏天能储存鲜肉而无需购买昂贵的冰从北方运来。帝国的魔法体制是一种高度制度化的产业——泰克里斯也许在建立八风学院时想的是精灵式的高等术法，但他创造的实质上是一套具有完整经济循环的魔法工业体系，而在这套体系中流动的商业利益远远超过任何皇帝敢于公开承认的数字。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "八风学院——阿尔道夫八所相互隔离的魔法学院，分别教授一种魔法之风",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "战斗法师是帝国经过严格训练和许可的军事施法者"
+  ]
+}

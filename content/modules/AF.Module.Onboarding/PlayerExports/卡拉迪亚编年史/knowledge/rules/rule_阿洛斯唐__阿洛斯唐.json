@@ -1,0 +1,94 @@
+﻿{
+  "Id": "rule_阿洛斯唐",
+  "Keywords": [
+    "阿洛斯唐",
+    "比斯坎山"
+  ],
+  "RagShortTexts": [
+    "阿洛斯唐村庄位于比斯坎山脚巨岩，俯瞰海洋。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "阿洛斯唐是杰屈朗附近的一座村庄，坐落于比斯坎山脚下一块可以俯瞰海洋的巨岩上。这片瓦兰迪亚南部的温暖土地非常适合种植橄榄，山坡上到处都是橄榄园。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "阿洛斯唐那村子，站在巨岩上能看到海。山脚下全是一排一排的橄榄树，海风吹过来，树叶哗啦啦地响。杰屈朗这边的橄榄产区里，阿洛斯唐的风景是最好的。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "townsfolk"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "阿洛斯唐的橄榄长在能看海的坡上。当地人说海风里带着盐分，能让橄榄油多一点特别的味道。是真是假不知道，但他们的油确实有股独特的清新劲儿。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "阿洛斯唐的巨岩是个看日落的绝佳位置。站在上面，一边是山，一边是海，脚下是橄榄园。我走了这么多地方，能跟这儿的景色比的没几个。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "阿洛斯唐",
+      "Kind": "bound_settlement_name",
+      "TargetId": "__bound_settlement__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": "杰屈朗",
+      "Kind": "bound_settlement_name",
+      "TargetId": "__bound_settlement__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}

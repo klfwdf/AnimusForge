@@ -1,0 +1,151 @@
+{
+  "Id": "rule_吉斯海岸定位__拉札西",
+  "Keywords": [
+    "拉札西"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "它应被理解为连接吉斯卡利城市、内陆农地和奴隶贸易航线的定位节点；具体城主、军队和战事不属于固定知识。奴隶湾的炎热、干旱季节、石砌城市和阶层制度会影响任何人在此生活的方式，商人、奴隶、士兵与农户对同一座城的称呼也不会相同。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "ghiscari"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "外乡人记得拉札西的名字，本地人记得的却是井泉、田租、磨坊、林地和危急时能否进堡。当地家庭还要依靠灌溉地、砖窑、港市、商队和奴隶湾沿岸航运；任何一处道路、井泉或码头失灵，代价都会先落到他们身上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "ghiscari"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主在厅堂里谈拉札西，经验老到的士兵却只问外墙、塔楼、水井、粮仓与最近的援军道路。拉札西处在吉斯海岸的权力与贸易网络中，城门内外的规矩由当地秩序决定；守军能否吃饱、援兵能否按时抵达，比议事厅里的豪言更能决定这处据点是否可靠。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "scholar",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "关于拉札西的消息传到远方，往往伴着领地税、庄园产物、驮队路程和堡下形成的小市集。他们还会辨认吉斯海岸的口音、法令和通行凭据；名声可以从酒馆传得很远，真正的路程仍须由车轮、船桨或马蹄丈量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "谁在拉札西升起旗帜，谁就继承这里的旧债、旧臣与边界争端。拉札西处在吉斯海岸的权力与贸易网络中，城门内外的规矩由当地秩序决定；旗帜更换之后，道路、粮仓、旧债和地方信任仍得由新主人逐一接手。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "向导描述拉札西，总从坡势、城门、饮水与守军盘查外人的规矩讲起。能补给、能避险、能找到向导，便值得在行程里标明；若三样都没有，再响亮的家名也救不了迷途者。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "工匠用双手丈量拉札西的石墙、木梁、铁门、墓窖和代代修补留下的接缝，祭司用仪式延续吉斯诸神、阶梯金字塔与古老城邦的等级秩序。一处据点因而不只是领主的大厅，也是婚丧、誓言、劳作与地方记忆反复发生的场所。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "平民记住拉札西的方式，是哪一年开仓、哪一年征走最后一头牛。他们关心灌溉地、砖窑、港市、商队和奴隶湾沿岸航运，也看征粮后是否留下种子、灾年时城门是否开启；远方人看见纹章，他们看见的是明日有没有饭吃。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "拉札西：它应被理解为连接吉斯卡利城市、内陆农地和奴隶贸易航线的定位节点；具体城主、军队和战事不属于固定知识。奴隶湾的炎热、干旱季节、石砌城市和阶层制度会影响任何人在此生活的方式，商人、奴隶、士兵与农户对同一座城的称呼也不会相同。"
+  ]
+}

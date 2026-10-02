@@ -1,0 +1,212 @@
+{
+  "Id": "rule_帝国外交__帝国外交",
+  "Keywords": [
+    "帝国外交",
+    "帝国盟约",
+    "帝国对外",
+    "矮人盟约",
+    "基斯里夫同盟",
+    "巴托尼亚关系",
+    "希尔瓦尼亚威胁",
+    "诺斯卡掠袭",
+    "永恒盟约",
+    "帝国谍报",
+    "边境政策"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "帝国的外交处境是旧世界中最复杂的——北方面对混沌荒原与诺斯卡掠袭者的无休止侵袭，东方与基斯里夫结盟对抗混沌，南方警惕吸血鬼伯爵的希尔瓦尼亚，西方与巴托尼亚维持着脆弱的和平，而矮人王国是帝国最古老也最可靠的盟友。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我们在旧世界没有真正的朋友——只有共同的敌人和暂时的利益。矮人是唯一的例外：西格玛曾拯救矮人至高王库尔干·铁胡子的性命，作为回报矮人赠送了盖尔·马拉兹——那把神锤至今仍是皇权的象征。这份古老的盟约写在了永不磨损的石头上，而不是可以撕毁的羊皮纸上。基斯里夫是我们的北方盾牌，女沙皇的熊骑兵在冰雪中对抗混沌部落，但他们也防着我们——帝国曾不止一次想将基斯里夫收为自己的北方行省。巴托尼亚的骑士老爷们在灰色山脉的那一边俯视我们，他们的农奴军队无法与帝国火枪抗衡，但他们的圣杯骑士可能是旧世界最好的重骑兵，我们对他们保持礼貌的距离。提利尔的商业城邦向帝国出口佣兵与奢侈品，但他们随时可能因为更高的出价而背叛。至于希尔瓦尼亚——那里是我们的耻辱，吸血鬼伯爵至今未被彻底根除，因为选帝侯们总是在最关键的时刻为边境上一座无关紧要的城堡争执不休。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "帝国的外交战略可以用四个字概括：以守为攻。我们不是在扩张疆域——我们是在收缩防线。与矮人的盟约不仅是军事上的，更是经济上的——矮人控制着世界边缘山脉的矿石和贵金属，帝国则用粮食、木材和纺织品作为交换。诺德领的帝国舰队常年与诺斯卡长船在北海交战，维持与基斯里夫的贸易航线畅通——没有这条航线，基斯里夫的经济将在两个冬天内崩溃，而一个崩溃的基斯里夫意味着帝国北部边境将直接暴露在混沌面前。对巴托尼亚的外交要诀在于：永远提醒他们混沌才是真正的敌人，同时确保灰色山脉的隘口有帝国驻军，以防那些骑士老爷'为了女神'发动圣战。对边境亲王领和南方公国，帝国采取放任但有底线的态度——任何想要在那儿建立势力的人都要记住，那是一片连西格玛本人都没能彻底征服的土地。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 100
+        },
+        "IdentityIds": null
+      },
+      "Content": "帝国的外交史是一部在生存与扩张之间反复摇摆的漫长编年录。与矮人的'永恒盟约'缔结于帝国历前一年——矮人至高王库尔干·铁胡子被西格玛从绿皮伏击中救出，作为报偿他锻造了战锤盖尔·马拉兹并承诺矮人王国将与帝国永世为盟。这是旧世界持续时间最长的同盟条约，至今矮人工程师仍在帝国炮术学院中工作，而帝国军团曾多次支援被围困的矮人要塞。与巴托尼亚的关系则复杂得多：两国之间名义上维持和平，但灰色山脉的边境摩擦从未停止，巴托尼亚骑士将帝国人视为缺乏荣誉感的商人战士，帝国人则将巴托尼亚人视为傲慢的封建老古董。与基斯里夫的关系以'北方之盾'共识为基础——帝国向基斯里夫提供金币和火枪，基斯里夫用哥萨克的鲜血挡住混沌部落，双方心照不宣地维持着这种以利益为基础的军事同盟。希尔瓦尼亚问题则是帝国外交最失败的案例：吸血鬼战争之后，选帝侯们选择了妥协而非彻底消灭吸血鬼伯爵，将希尔瓦尼亚保留为一个有名无实的行省，实际上听任冯·卡斯坦因家族在阴影中继续壮大。这种短视的绥靖政策被后来的历史学家反复批判，却在现实政治的压力下一次次重演。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "帝国与诸国之间的外交场合中，女人往往比男人更适合扮演真正的外交角色——不是因为什么柔美的魅力，而是因为那些自以为是的驻外大使们在面对一位女性公爵时总是低估她的情报网络。在我的行省里，我建立了一支由女商人和修女使节组成的'隐形外交团'，她们在巴托尼亚宫廷中以布施圣物的名义出入贵妇人的客厅，在矮人要塞中以购买工艺品为掩护交换军用情报，在基斯里夫的东正教修道院中与女修士们建立了不涉政治但极为可靠的信息传递通道。帝国外交在书面上是使节、文书和条约，但在实际中——至少在我这里——是一位贵族遗孀以慈善为名穿越灰色山脉的隘口，在马车中带回关于边境摩擦的真实报告。帝国议会上的男人们从不公开承认这些，但他们每次在讨论与巴托尼亚边界问题时都会托人来打听我的修女们从山那边带回了什么消息。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "家族之间的跨国联姻是帝国外交最持久、最隐蔽的工具。我们家族在最近三百年中通过精心的婚姻布局在巴托尼亚、提利尔和基斯里夫的贵族阶层中编织了一张无声的血脉网络——我的一位姑祖母嫁给了巴托尼亚阿奎坦公爵领的一名男爵，她的三个儿子中有两个在巴托尼亚宫廷中担任中等职位，每次帝国外交部想要了解巴托尼亚公爵议会的内部氛围时，他们会通过我向阿奎坦方向寄出一封措辞平淡的家书。帝国的永恒盟约是写在矮人的石头上的，但家族的外交盟约是写在血肉中的——你可以收买一个大使，但你不可以收买一个与你共享祖母血脉的表亲。每一个选帝侯家族都在帝国境外拥有自己的'血脉派驻点'，这是一种远在帝国历史长河中的智慧——当皇帝与外国交战时，各大家族通过自己的私人外交渠道避免了全面战争的爆发，因为战争可能会让一个家族的另一半血脉相残。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "帝国的外交在雇佣兵眼里就是一场精心编排的戏剧——台上的使节们互相鞠躬敬酒许下永恒友谊，台下的我们则在边境上的那些'意外冲突'中替他们写剧本。我在诺德领舰队里当过两年私掠船员，我们的船挂着帝国旗在北海拦截诺斯卡长船——但偶尔也在能见度不佳的夜晚'不小心'截下几艘巴托尼亚商船，帝国海军部对外否认但船长拿到的赏金是按时发放的。在灰色山脉隘口，帝国的守军会在巴托尼亚巡逻骑兵经过时'试射'几发加农炮，炮弹总是'偏得很远'落在他们前方的山坡上——这在外交措辞中叫做'常规演习'，但我认识的那个炮手亲口告诉我他的瞄准是经过精确计算的，就是要让炮弹落在恰好能让对方感到侮辱而又不至于引发战争的精准距离上。帝国与诸国之间的和平不是靠条约维持的，是靠这些每天都在发生的、从未出现在任何正式记录中的、分寸感把握得极好的挑衅和反挑衅在维持的。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "帝国商人阶层在外交事务中的角色被严重低估了——我们不是外交政策的执行者，我们往往是外交关系的创造者。帝国与矮人之间最稳固的纽带不是《永恒盟约》，而是双方之间从不间断的矿石-粮食交换贸易流：两百年来，没有任何一届帝国议会敢于做出可能破坏这一贸易流的决议，因为其后果将是瑞克河沿线一连串城镇的经济崩溃。基斯里夫对帝国的政治依赖被大大夸大了，真正将他们绑在帝国战车上的是他们的皮毛和琥珀出口——基斯里夫宫廷三分之一的财政收入来自与帝国商人的皮毛贸易，而帝国商人们在基斯里夫的大贵族中几乎人人都有私人信贷关系。巴托尼亚骑士可以嘲笑我们是商人，但当一个巴托尼亚公爵需要用明年的葡萄酒产量抵押来换取一支防御绿皮入侵的佣兵团时，他找的不是帝国的皇帝——他找的是我们商会。经济渗透是最不可逆也是最低调的外交手段，它不会出现在任何条约文本中，但它在现实中比任何军事同盟都更深刻地将诸国绑在了一起。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "永恒盟约——西格玛与矮人至高王缔结的永久军事与贸易同盟",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "帝国的对外关系与盟友体系"
+  ]
+}

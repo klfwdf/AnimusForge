@@ -1,0 +1,152 @@
+{
+  "Id": "rule_盐铁群岛__橡岛",
+  "Keywords": [
+    "橡岛",
+    "奥克伍德家族"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "橡岛是铁群岛的一座小岛，与奥克伍德家族及岛上的林木资源相关。铁群岛难得的橡木比许多贵金属更实际：它能成为龙骨、桨、甲板、房梁和修补港湾的材料。岛民知道一片树林并不能永远供给无尽舰队，因此砍伐、造船、捕鱼与守护水源都需要精细的地方规则。橡岛在大岛之间的航线中提供停靠与补给，也容易被卷入更大海上势力的往来。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "在橡岛的墙影与道路旁生活的人，先看潮汐、渔汛、淡水和船只能否安全靠岸。当地家庭还要依靠盐鱼、矿石、贫瘠田地、避风锚地与长船归航；任何一处道路、井泉或码头失灵，代价都会先落到他们身上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "军队接近橡岛时，地图很快让位给港湾入口、泊位、烽火与可供登陆的岸线。在七国的封建秩序中，橡岛的归属牵动封臣义务、税粮和征召；守军能否吃饱、援兵能否按时抵达，比议事厅里的豪言更能决定这处据点是否可靠。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "scholar",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "学士能记下橡岛的沿革，商人更先打听航期、码头脚费、补水和下一处避风港。他们还会辨认铁群岛的口音、法令和通行凭据；名声可以从酒馆传得很远，真正的路程仍须由车轮、船桨或马蹄丈量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "贵族谈论橡岛时常先说家名，土地本身却要求道路、粮仓与守备。在七国的封建秩序中，橡岛的归属牵动封臣义务、税粮和征召；旗帜更换之后，道路、粮仓、旧债和地方信任仍得由新主人逐一接手。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "一支疲惫队伍接近橡岛时，人人关心风向、礁石、渡船与城门落锁后的锚地。能补给、能避险、能找到向导，便值得在行程里标明；若三样都没有，再响亮的家名也救不了迷途者。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "橡岛并非只有城主大厅；修船木、帆布、盐、鱼获和抵御海风的石料与淹神、海石之位和岛上先民留下的歌谣同样塑造这里。一处据点因而不只是领主的大厅，也是婚丧、誓言、劳作与地方记忆反复发生的场所。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "市井与村舍谈起橡岛，先问今年还能留下多少粮。他们关心盐鱼、矿石、贫瘠田地、避风锚地与长船归航，也看征粮后是否留下种子、灾年时城门是否开启；远方人看见纹章，他们看见的是明日有没有饭吃。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "橡岛：橡岛是铁群岛的一座小岛，与奥克伍德家族及岛上的林木资源相关。铁群岛难得的橡木比许多贵金属更实际：它能成为龙骨、桨、甲板、房梁和修补港湾的材料。岛民知道一片树林并不能永远供给无尽舰队，因此砍伐、造船、捕鱼与守护水源都需要精细的地方规则。橡岛在大岛之间的航线中提供停靠与补给，也容易被卷入更大海上势力的往来。"
+  ]
+}

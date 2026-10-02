@@ -1,0 +1,17 @@
+{
+  "Id": "rule_卡拉克·赫恩__卡拉克·赫恩",
+  "Keywords": ["卡拉克赫恩_KH", "赫恩城塞_KH", "黑山赫恩要塞_KH", "赫恩商路要塞_KH", "赫恩矮人领地_KH", "赫恩国王_KH"],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":null,"IsFemale":null,"IsClanLeader":null,"SkillMin":null},"Content":"卡拉克·赫恩是黑色山脉中的一座矮人商业城塞，由奥里克·拉努夫森国王统治。此地控扼帝国与巴托尼亚之间的主要陆路商道，是矮人城塞中最开放的贸易中枢。南来北往的商队在此交汇，使赫恩的集市成为旧世界最繁忙的内陆市场之一。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":["sturgia"],"KingdomIds":null,"SettlementIds":null,"Roles":null,"IsFemale":null,"IsClanLeader":null,"SkillMin":null},"Content":"卡拉克·赫恩——吾族商路的十字路口！奥里克·拉努夫森王的名号在帝国选帝侯和巴托尼亚公爵中一样响亮，因为他控制着他们都需要的东西：安全穿越黑色山脉的唯一大道。赫恩的集市可以用十四种语言标价，这在整个矮人城塞联盟中绝无仅有。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":["lord"],"IsFemale":null,"IsClanLeader":null,"SkillMin":null},"Content":"卡拉克·赫恩控制着旧世界最重要的内陆贸易通道。黑色山脉将帝国与巴托尼亚分隔开来，而赫恩城塞恰好位于最容易翻越的山口。奥里克国王的过境税收和商业贸易佣金使赫恩成为矮人城塞中最富庶的之一。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":["lord","notable","wanderer"],"IsFemale":null,"IsClanLeader":null,"SkillMin":{"Steward":120}},"Content":"卡拉克·赫恩的经济完全围绕商业服务运转。赫恩过境商路年均商队通行量超过三千支，涵盖帝国的金属制品与火药、巴托尼亚的葡萄酒与纺织品、矮人城塞的武器与工具以及提利亚的奢侈品。城塞的商旅服务系统极其发达——拥有旧世界最大的山洞旅店群落，可同时容纳千人以上的商队人员及其牲畜。奥里克国王还发行了赫恩商业信票，可在赫恩集市上兑换等值的黄金或白银，是旧世界最早的商贸票据之一。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":["lord"],"IsFemale":true,"IsClanLeader":null,"SkillMin":null},"Content":"赫恩是矮人城塞中最适合女性施展商业才干的地方。奥里克国王非常务实——只要你能源源不断地创造商业利润，他不在乎你是男是女。我管理着城塞最大的旅店联盟，帝国选帝侯的商队管家和巴托尼亚公爵的酒商都认识我的名字。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":["lord"],"IsFemale":null,"IsClanLeader":true,"SkillMin":null},"Content":"我们家族世代为奥里克国王管理商路安全——这不是锻造也不是采掘，而是在山路上护送商队。家族出过十七位死于山道伏击的勇士。赫恩的商业繁荣背后是我族用血铺成的安全商道，这是外人看不到的代价。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":["wanderer"],"IsFemale":null,"IsClanLeader":null,"SkillMin":null},"Content":"赫恩的集市是我见过最嘈杂而有序的地方。不同国家的商人在此争论价格，矮人记账员在石板上飞快地刻录每一笔交易。我在集市的麦酒摊上同时听到了帝国官话、巴托尼亚法语和三种不同的矮人方言——这个地方似乎属于所有人，又不完全属于任何人。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":["notable"],"IsFemale":null,"IsClanLeader":null,"SkillMin":null},"Content":"赫恩的商业机会在于中转贸易。你不需要自己生产任何东西——帝国北方的毛皮在巴托尼亚供不应求，巴托尼亚的美酒又在帝国售出高价，买卖双方都需要在赫恩的集市上碰头。赚取中间差价是赫恩商人的看家本领。"}
+  ],
+  "TextMappings": [{"SourceText":"卡拉克·赫恩是黑色山脉中控扼帝国与巴托尼亚之间商路的矮人贸易城塞，由奥里克·拉努夫森国王统治","Kind":null,"TargetId":null,"AgeMin":null,"AgeMax":null,"EmptyValueText":null,"TrueText":null,"FalseText":null}],
+  "RagShortTexts": ["卡拉克赫恩黑山矮人贸易城塞商路枢纽"]
+}

@@ -1,0 +1,17 @@
+{
+  "Id": "rule_巴斯通__巴斯通",
+  "Keywords": ["巴斯通公国_BA", "巴斯通公爵领_BA", "巴斯通领地_BA", "巴斯通巨兽猎场_BA", "巴斯通公爵_BA", "巴斯通行省_BA"],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":null,"IsFemale":null,"IsClanLeader":null,"SkillMin":null},"Content":"巴斯通公国位于巴托尼亚南部与艾索洛伦森林交界处，由波希蒙德·屠兽者公爵统治。这位公爵被认为是当代巴托尼亚最强大的骑士之一，曾单人斩杀巨龙、蝎尾狮和双足飞龙。巴斯通因他而被称为「屠兽之乡」。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":["vlandia"],"KingdomIds":null,"SettlementIds":null,"Roles":null,"IsFemale":null,"IsClanLeader":null,"SkillMin":null},"Content":"巴斯通——英雄的摇篮！波希蒙德公爵是我们巴托尼亚的活传奇，他用一把巨剑斩下过三头巨龙的头颅。巴斯通的每一个男孩都梦想着追随公爵狩猎巨兽，我们的城堡大厅里悬挂着的不是挂毯，而是从怪物身上剥下的头骨和皮囊。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":["lord"],"IsFemale":null,"IsClanLeader":null,"SkillMin":null},"Content":"巴斯通公国的军事价值在于其精锐的巨兽猎杀部队。波希蒙德公爵的屠兽骑士团是巴托尼亚独一无二的兵种——他们装备特制重矛和陷阱装置，专门猎杀大型怪物。在战场上，这些骑士能粉碎敌方的巨兽冲锋，对绿皮巨人、混沌卵和亡灵惊惧兽都具有致命克制力。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":["lord","notable","wanderer"],"IsFemale":null,"IsClanLeader":null,"SkillMin":{"Steward":120}},"Content":"巴斯通公国的经济很大程度上依赖巨兽狩猎产业。公国境内分布着十余处大型猎场，出产的龙鳞、蝎尾狮毒针、双足飞龙皮革等材料在旧世界市场上极为稀缺。一块完整的龙鳞甲片可售至五百金克朗以上，而精炼的飞龙毒液是炼金术士和药剂师梦寐以求的原料。公国边界的伊拉纳山脉蕴藏着银矿脉，开采收入为波希蒙德公爵的军事行动提供了稳定的财政支持。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":["lord"],"IsFemale":true,"IsClanLeader":null,"SkillMin":null},"Content":"巴斯通的女性贵族不会待在高塔里等待骑士归来。这里的女人懂得处理猎物的皮毛、熬制兽骨药剂和照料受伤的猎手。波希蒙德公爵的妻子便以精通解剖学和创伤外科闻名，她编纂的《猎兽创伤救治手册》在每个巴斯通城堡的医室中都有一本。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":["lord"],"IsFemale":null,"IsClanLeader":true,"SkillMin":null},"Content":"我们家族以培养屠兽猎手而自豪。每一代族长必须亲手猎杀一头成年巨兽，这是成为家族领袖的硬性条件。波希蒙德公爵看重我们家族的猎杀技艺，将公国最好的猎场交给我们管理。猎手世家之间的比拼有时比宫廷较量还激烈。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":["wanderer"],"IsFemale":null,"IsClanLeader":null,"SkillMin":null},"Content":"巴斯通的野性之美令人震撼。森林边缘能听到远处艾索洛伦传来的未知鸣叫，山间能发现巨大的兽类足迹。我在巴斯通的乡间旅店遇到过波希蒙德公爵本人——他坐在角落里，巨剑横在膝上，正用一块粗布擦拭剑刃上的血渍。那一幕至今让我脊背发凉。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":["notable"],"IsFemale":null,"IsClanLeader":null,"SkillMin":null},"Content":"巴斯通的巨兽材料贸易利润惊人但充满变数。一次成功的狩猎可能带来价值数千金克朗的龙鳞或飞龙毒囊，但狩猎队伍也可能在深山中全军覆没。精明的商人通常与多个狩猎团队同时签约，分摊风险。帝国北方军队是巴斯通龙鳞甲的最大买家。"}
+  ],
+  "TextMappings": [{"SourceText":"巴斯通公国位于巴托尼亚南部艾索洛伦边缘，以巨兽猎杀传统和波希蒙德公爵的传奇闻名","Kind":null,"TargetId":null,"AgeMin":null,"AgeMax":null,"EmptyValueText":null,"TrueText":null,"FalseText":null}],
+  "RagShortTexts": ["巴斯通公国巨兽猎杀屠兽之乡"]
+}

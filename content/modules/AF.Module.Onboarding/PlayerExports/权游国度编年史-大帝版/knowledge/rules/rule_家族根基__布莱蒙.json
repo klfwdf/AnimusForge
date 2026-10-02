@@ -1,0 +1,131 @@
+{
+  "Id": "rule_家族根基__布莱蒙",
+  "Keywords": [
+    "布莱蒙",
+    "布莱蒙家族"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "布莱蒙家族以布莱蒙城为席位，是多恩的贵族家门。劳拉·布莱蒙夫人执掌家业，其女乔妮莎是继承人，儿子彭罗斯则走上侍从与骑士训练之路。这样的安排在多恩并不反常：长子长女依出生次序继承，女性无需因性别退让。家族的稳定取决于继承获得承认、庄园得到照料，以及子女各自在婚盟与武艺上的选择。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "多恩贵族不会因布莱蒙由女人统治便感到稀奇。他们更关心领主是否守约、继承人是否能承担裁断与防务；能力和出生次序比南方人的偏见重要。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "布莱蒙城的百姓评判夫人与继承人，看的仍是井水、税赋和巡路。若法令清楚、强人不敢随意夺田，掌印的是男人还是女人并不会改变一袋粮的重量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待布莱蒙，会先看它的土地、婚盟、血脉和债务。布莱蒙家族据有布莱蒙城，继承由母女血脉延续，是多恩允许女性承袭传统的地方体现。家徽是门面，能否保护封地、兑现婚约并在危机中召集人马，才是家族真正的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起布莱蒙时，记得的是谁在营火边分过粮、谁把他们留在城外、谁在败局里仍站在旗旁。布莱蒙家族据有布莱蒙城，继承由母女血脉延续，是多恩允许女性承袭传统的地方体现。家族名声最终要落到具体的人和具体的命令上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意布莱蒙留下的仪式、墓地和传承。布莱蒙家族据有布莱蒙城，继承由母女血脉延续，是多恩允许女性承袭传统的地方体现。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见布莱蒙。布莱蒙家族据有布莱蒙城，继承由母女血脉延续，是多恩允许女性承袭传统的地方体现。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "布莱蒙：布莱蒙家族据有布莱蒙城，继承由母女血脉延续，是多恩允许女性承袭传统的地方体现。"
+  ]
+}

@@ -1,0 +1,208 @@
+{
+  "Id": "rule_阿拉克纳瑞巨蛛__阿拉克纳瑞巨蛛",
+  "Keywords": [
+    "阿拉克纳瑞巨蛛",
+    "远古巨蛛",
+    "移动堡垒",
+    "阿拉克纳森林地精",
+    "蜘蛛崇拜",
+    "战争平台",
+    "巨型节肢兽"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "阿拉克纳瑞巨蛛是旧世界已知最庞大的蜘蛛生物——它的八条巨腿每一条都堪比一棵百年大树，其背部甚至足以承载一座小型堡垒。森林地精部落将这种远古巨型蜘蛛作为战争平台与移动圣殿，在其背上搭建箭塔、投石阵地和宗教图腾，在战场上碾碎一切挡路的敌人。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "阿拉克纳瑞是俺们见过最大的蜘蛛！大到可以把她称呼为'她'因为每一只都是蜘蛛女王！森林地精那群疯子甚至建了个祭坛在她背壳上，整天唱歌跳舞对着蜘蛛磕头当她是神仙——但这招确实管用，你尊重蜘蛛女王她就让你骑她，你不尊重她就一口吞掉你然后再在壳上搭你的骨头当装饰！俺有一次跟着一只阿拉克纳瑞去打矮子要塞，那巨蛛走路的时候地面都在抖，矮子的城墙在她的八条腿下面就像饼干一样碎掉了。骑在阿拉克纳瑞背上砍矮子的感觉真是爽爆了——所有绿皮都应该体验一次！"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "阿拉克纳瑞巨蛛是至今为止在战场上遇到过的最难对付的非魔法生物——它的体积使其无法被常规的骑兵或步兵围攻，其单腿踩踏即足以碾碎整列士兵，其背上的战争平台更是提供了持续的火力压制。唯一的已知弱点有三：其一，腿部关节——蜘蛛腿部的外骨骼在关节处有明显缝隙，精准的弩炮或火炮射击可以击碎关节使其丧失移动能力；其二，眼睛——巨蛛有八只大眼，但外侧四只的防护相对薄弱；其三，森林地精的士气——如能击杀足够多的地精骑乘者，剩下的可能会放弃战斗。但前提是你的军队能在它的巨腿下存活足够长时间来执行这些策略。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "阿拉克纳瑞巨蛛的起源神话在木精灵与地精的文化记载中有着惊人的重叠——两者均将其归为'远古之母'的后代。根据木精灵《艾索洛伦圣祠碑文》与地精萨满口述传统的交叉考证，阿拉克纳瑞的祖先可能是在古圣时代从另一个维度被引入这颗星球的巨型蛛形纲生物学标本，用于维持早期丛林生态系统的昆虫平衡。在古圣消失后，这些巨蛛退化去了大部分外部形态的可变性，但保留了地精萨满称为'大母神记忆'的超常感知力。最系统的学术观测来自帝国历2320年布拉克·冯·施泰因教授的《蛛纲巨兽形态学》——他偷偷追踪一只阿拉克纳瑞长达十八个月，记录了它的完整生命周期：每年蜕皮一次，每次蜕皮后体型增大约一成，寿命预计可达一千五百年左右。最骇人的结论是他记录了巨蛛的交配行为——两只阿拉克纳瑞在灰色山脉最高峰上演了持续四昼夜的撕咬交缠，下山后整片森林被夷平了超过六平方英里。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "阿拉克纳瑞巨蛛给我留下最深刻的记忆不是它的可怕，而是森林地精在它背上吟唱的那种奇怪的哀歌。我的斥候截获了一段歌词，大意是：'大母神一步一步走过森林，每落一脚就是一个死去的孩子——我们送上敌人的血肉填满她的肚子，她就不会再吃掉我们的孩子。'我读到这段歌词时突然意识到，森林地精崇拜巨蛛不是因为疯狂，而是因为恐惧。对某种比自己庞大万倍的生物的绝对恐惧，折磨着他们从疯狂中诞生了宗教。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我祖父在一次边境战役中差点被一只阿拉克纳瑞巨蛛踩扁——他的战马被蜘蛛的腿毛擦过就当场骨碎，而他本人被卫兵从蜘蛛腿下拖着救出。此后祖父倾尽家族财力研发了一种专门对付巨蛛的武器——定制打造的攻城巨弩，放置在可旋转的八轮战车上，射出的箭矢是足足十五尺长的精钢锥。但更讽刺的是，这种武器唯一的实际使用是在他死后十年——当另一只阿拉克纳瑞侵入领地时，我们发射了两支巨箭都未能击穿其头胸甲。巨蛛走了，继续朝南方的矮人王国方向去了，看都没看我们一眼。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "在灰色山脉南麓的一处废弃的森林地精营地里，我见过一只死去的阿拉克纳瑞巨蛛的蜕壳——光是蜕下的空壳就占了半座山头。那八条腿中的一条被我们处理成了临时过夜的桥梁，足足能容一辆货车通过。队友中有人说要设法把那壳子拖到集市卖掉，但队长指着远方林线处亮起的八只红眼说：'活的那只还在这附近。'我们第二天清早以最快的速度离开了那个区域。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "你知道阿拉克纳瑞巨蛛的蛛丝有多贵吗？一根蛛线的韧性是同等粗细钢索的五倍，重量仅为其十分之一。但采集蛛丝几乎是不可能的——首先你得找到活体巨蛛，然后你得避开背上的数百个森林地精，接着你要想办法切一段丝下来而不被蜘蛛回身一口吃掉。帝国工程学院的悬赏令上开出了五万金克朗收购十尺长的完整巨蛛丝段，已经张贴了四十年，至今无人领取。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "旧世界已知最大的蜘蛛，八腿如百年大树",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "阿拉克纳瑞巨蛛远古巨蛛移动堡垒"
+  ]
+}

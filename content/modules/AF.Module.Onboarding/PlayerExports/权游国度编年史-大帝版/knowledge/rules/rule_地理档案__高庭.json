@@ -1,0 +1,129 @@
+{
+  "Id": "rule_地理档案__高庭",
+  "Keywords": [
+    "高庭",
+    "提利尔",
+    "园丁王",
+    "河湾"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "高庭坐落在河湾地曼德河畔，是园丁王朝的旧都、提利尔家族受封后的主城，也是河湾诸侯名义上的政治中心。城堡周围河网、果园、花田、葡萄园和广阔粮田构成维斯特洛最富饶的腹地，曼德河航运与玫瑰大道又把旧镇、君临及各封臣领地连接起来。高庭以园林、礼仪、诗歌和骑士竞技展示繁荣，却也必须处理园丁王血统、古老家族门第与提利尔统治资格之间从未完全消失的张力。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "reach"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "河湾贵族在高庭学会用花、席位、婚约和比武说话。有人真心爱它的慷慨与繁盛，有人则记得园丁王的血已断绝，任何一张精致的餐桌都压不住继承的旧议论。高庭的力量在于它能让许多人从繁荣中得益，也在于每个得益者都想知道自己该坐得多近。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "merchant",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农人从高庭得到的印象不是喷泉，而是谷价、收成和征粮；商人看见曼德河上的船与仓库；士兵则知道河湾地富足，所以需要更长的粮道和更多的人来保护。对他们来说，高庭的美丽若不能变成稳定的秤、面包和道路，便只是远处领主花园里的颜色。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "在领主和商人眼中，高庭首先是地图上的一处要害。曼德河畔的河湾中心，园丁王旧座、提利尔受封之地。园林与富饶农田体现河湾的水网、粮食、婚盟、礼仪和封臣网络，也保留继承血统的旧争论。他们关心水源、道路、税关和守军，知道地名背后往往连着一条能让城堡活下去的粮道。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈到高庭时，记住的不是边界线，而是风向、坡度、渡口和能否在天黑前找到避难处。曼德河畔的河湾中心，园丁王旧座、提利尔受封之地。园林与富饶农田体现河湾的水网、粮食、婚盟、礼仪和封臣网络，也保留继承血统的旧争论。一处地形的名声，常由死在那里的人的数量决定。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者会从另一面理解高庭。曼德河畔的河湾中心，园丁王旧座、提利尔受封之地。园林与富饶农田体现河湾的水网、粮食、婚盟、礼仪和封臣网络，也保留继承血统的旧争论。石头、林木、河流或山口既能成为谋生之所，也可能被赋予圣洁、禁忌和祖先记忆，因而不能只用金钱衡量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民对高庭的看法最实际。曼德河畔的河湾中心，园丁王旧座、提利尔受封之地。园林与富饶农田体现河湾的水网、粮食、婚盟、礼仪和封臣网络，也保留继承血统的旧争论。他们先看这里能否取水、耕作、放牧和躲过兵灾；地图上的一行字，落到村里便是柴薪、井绳和过冬的粮。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "高庭：高庭坐落在河湾地曼德河畔，是园丁王朝的旧都、提利尔家族受封后的主城，也是河湾诸侯名义上的政治中心。城堡周围河网、果园、花田、葡萄园和广阔粮田构成维斯特洛最富饶的腹地，曼德河航运与玫瑰大道又把旧镇、君临及各封臣领地连接起来。高庭以园林、礼仪、诗歌和骑士竞技展示繁荣，却也必须处理园丁王血统、古老家族门第与提利尔统治资格之间从未完全消失的张力。"
+  ]
+}

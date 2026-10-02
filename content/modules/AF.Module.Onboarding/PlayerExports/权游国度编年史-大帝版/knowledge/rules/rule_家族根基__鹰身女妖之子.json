@@ -1,0 +1,154 @@
+{
+  "Id": "rule_家族根基__鹰身女妖之子",
+  "Keywords": [
+    "鹰身女妖之子",
+    "组织根基"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "鹰身女妖之子是奴隶湾旧奴隶主阶层支持的地下武装。他们戴金色鹰身女妖面具，在夜色、巷道和熟悉的宅邸网络中行动，袭击获得自由的人、巡逻者和新秩序的支持者。这个名字借用古吉斯的象征，把失去特权包装成祖先荣耀；其真正力量则来自财富、家族关系、仆从耳目和城市中仍依赖旧制度的人。对奴隶湾之主而言，他们不只是几个刺客，而是被废奴触动的整套利益在暗处反扑。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "ghiscari"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "旧奴隶主把鹰身女妖之子说成传统的守护者，因为公开承认自己只想夺回奴隶和鞭子并不体面。金面具既遮住身份，也让富裕家门能一面赴宴，一面资助夜里的刀。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "ghiscari"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "slave",
+          "peasant",
+          "artisan"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "获释者听见金面具便想到门后的脚步和清晨的尸体。对他们而言，这不是抽象政治，而是旧主人试图证明自由随时可以被收回。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "ghiscari"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "lord",
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵知道城市叛乱与会战不同。敌人白天可能是商人、仆役或沉默的邻居，夜里才戴上面具；若守军把每个市民都当敌人，只会替鹰身女妖之子招来更多藏身之处。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待鹰身女妖之子，会先看它的土地、婚盟、血脉和债务。鹰身女妖之子是奴隶湾旧奴隶主阶层的地下武装，以金色面具、夜袭和恐惧反抗废奴新秩序。家徽是门面，能否保护封地、兑现婚约并在危机中召集人马，才是家族真正的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起鹰身女妖之子时，记得的是谁在营火边分过粮、谁把他们留在城外、谁在败局里仍站在旗旁。鹰身女妖之子是奴隶湾旧奴隶主阶层的地下武装，以金色面具、夜袭和恐惧反抗废奴新秩序。家族名声最终要落到具体的人和具体的命令上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意鹰身女妖之子留下的仪式、墓地和传承。鹰身女妖之子是奴隶湾旧奴隶主阶层的地下武装，以金色面具、夜袭和恐惧反抗废奴新秩序。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见鹰身女妖之子。鹰身女妖之子是奴隶湾旧奴隶主阶层的地下武装，以金色面具、夜袭和恐惧反抗废奴新秩序。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "鹰身女妖之子：鹰身女妖之子是奴隶湾旧奴隶主阶层的地下武装，以金色面具、夜袭和恐惧反抗废奴新秩序。"
+  ]
+}

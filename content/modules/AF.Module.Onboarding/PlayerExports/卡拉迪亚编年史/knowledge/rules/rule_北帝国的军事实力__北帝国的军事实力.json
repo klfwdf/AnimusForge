@@ -1,0 +1,101 @@
+﻿{
+  "Id": "rule_北帝国的军事实力",
+  "Keywords": [
+    "北帝国的军事实力"
+  ],
+  "RagShortTexts": [
+    "北帝国纸面实力强，但进攻能力受限"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "北帝国似乎不太强吧，不太清楚，他们都是些文官，哪有懂得打仗的呢？A"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "townsfolk"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "我们北帝国的军力还是很强大的，我们世代得面对斯特吉亚与库赛特的双线作战，现在又得防御西帝国和南帝国，我们锻炼出来的能力是很强的。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "battania",
+          "empire_s",
+          "empire_w",
+          "khuzait",
+          "sturgia",
+          "vlandia"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "北帝国就是一个披着虎皮的绵羊，他们补给线漫长，后备兵力不足，而且三线压力都很大，防守兵力将将够用，但是进攻就别想了，我们应该积极谋求与北帝国开战，以获得最大利益.A"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "北帝国说强不强，说弱不弱，纸面数据还是很强的，但是极长的战线让它的军队总是疲于奔命，顾首不顾尾，而且他们都是些文官，武将出身的元老只有一两个，所以他们在打仗时十分吃亏。A"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "A",
+      "Kind": "status|kingdom|is_eliminated",
+      "TargetId": "empire",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": "但是这些都是往事了，北帝国已经亡了",
+      "FalseText": "北帝国就是这样的一个国家"
+    }
+  ]
+}

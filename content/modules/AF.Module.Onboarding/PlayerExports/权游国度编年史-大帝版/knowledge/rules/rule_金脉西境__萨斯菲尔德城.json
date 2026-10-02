@@ -1,0 +1,153 @@
+{
+  "Id": "rule_金脉西境__萨斯菲尔德城",
+  "Keywords": [
+    "萨斯菲尔德城",
+    "山丘",
+    "矿业"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "萨斯菲尔德城位于西境丘陵地带，是连接矿业领地与农牧腹地的城堡中心。西境的财富从来不是自动流入凯岩城：矿道要维护，牲口要驮运，车队要经过领主许可，商人还要承担山贼与道路崩塌的风险。萨斯菲尔德这类地方城堡承担的正是把地下资源、地上田产和道路秩序拧在一起的工作。它的居民未必与王都阴谋有什么直接关系，却能从金价、战争征用和货币短缺中立刻感到远方政治。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "从萨斯菲尔德城望出去，最贴近生活的并非纹章，而是井泉、田租、磨坊、林地和危急时能否进堡。当地家庭还要依靠矿道、牧地、山路、金银流通和凯岩城庇护下的市集；任何一处道路、井泉或码头失灵，代价都会先落到他们身上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "号角与旗帜之外，萨斯菲尔德城的防务依靠外墙、塔楼、水井、粮仓与最近的援军道路。在七国的封建秩序中，萨斯菲尔德城的归属牵动封臣义务、税粮和征召；守军能否吃饱、援兵能否按时抵达，比议事厅里的豪言更能决定这处据点是否可靠。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "scholar",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "远行者在萨斯菲尔德城停留多久，取决于领地税、庄园产物、驮队路程和堡下形成的小市集。他们还会辨认西境的口音、法令和通行凭据；名声可以从酒馆传得很远，真正的路程仍须由车轮、船桨或马蹄丈量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "一纸封赐可以决定萨斯菲尔德城的主人，却不能立刻赢得附近人的服从。在七国的封建秩序中，萨斯菲尔德城的归属牵动封臣义务、税粮和征召；旗帜更换之后，道路、粮仓、旧债和地方信任仍得由新主人逐一接手。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "走过萨斯菲尔德城的士兵记得坡势、城门、饮水与守军盘查外人的规矩。能补给、能避险、能找到向导，便值得在行程里标明；若三样都没有，再响亮的家名也救不了迷途者。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "萨斯菲尔德城的匠人靠石墙、木梁、铁门、墓窖和代代修补留下的接缝留下手艺，神职者则用七神、家族墓窖与领主权威留下的石刻解释生死。一处据点因而不只是领主的大厅，也是婚丧、誓言、劳作与地方记忆反复发生的场所。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "住在领地下层的人用灶火和粮袋衡量萨斯菲尔德城。他们关心矿道、牧地、山路、金银流通和凯岩城庇护下的市集，也看征粮后是否留下种子、灾年时城门是否开启；远方人看见纹章，他们看见的是明日有没有饭吃。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "萨斯菲尔德城：萨斯菲尔德城位于西境丘陵地带，是连接矿业领地与农牧腹地的城堡中心。西境的财富从来不是自动流入凯岩城：矿道要维护，牲口要驮运，车队要经过领主许可，商人还要承担山贼与道路崩塌的风险。萨斯菲尔德这类地方城堡承担的正是把地下资源、地上田产和道路秩序拧在一起的工作。它的居民未必与王都阴谋有什么直接关系，却能从金价、战争征用和货币短缺中立刻感到远方政治。"
+  ]
+}

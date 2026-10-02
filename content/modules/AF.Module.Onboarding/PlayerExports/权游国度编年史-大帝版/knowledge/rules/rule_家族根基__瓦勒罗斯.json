@@ -1,0 +1,150 @@
+{
+  "Id": "rule_家族根基__瓦勒罗斯",
+  "Keywords": [
+    "瓦勒罗斯",
+    "瓦勒罗斯家族"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "瓦勒罗斯家族属于瓦兰提斯古老的瓦雷利亚后裔，家名与黑墙内旧血阶层相连。这样的家门把银金头发、紫色眼睛和祖源当作政治资本，也依靠城外庄园、商路、奴隶和亲族婚盟维持现实财富。瓦兰提斯的旧血并非统一整体：虎党与象党、扩张与贸易、个人野心与家族安全会不断撕扯选择。瓦勒罗斯要维持影响，必须在祖先荣光与城邦当下利益之间找到位置。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "volantine"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "旧血贵族会从婚姻纯度、家产和政治盟友衡量瓦勒罗斯。对黑墙内的人而言，家族晚宴和选举交易同样重要，一次不合适的婚约可能比一次生意亏损更难挽回。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "volantine"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "artisan",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "瓦兰提斯自由民对旧血的美貌与傲慢早已习惯。瓦勒罗斯若只在选举季施舍食物，支持便和面包一样很快吃完；能维持工作与低粮价才会留下更久。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "来自其他自由城邦的商人不会因瓦勒罗斯祖先高贵就少算一枚钱币。他们承认黑墙关系网有用，却只相信盖印合同、担保和能够兑现的船货。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待瓦勒罗斯，会先看它的土地、婚盟、血脉和债务。瓦勒罗斯是瓦兰提斯旧血家门，以黑墙内身份、瓦雷利亚祖源与城邦商业政治维系地位。家徽是门面，能否保护封地、兑现婚约并在危机中召集人马，才是家族真正的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起瓦勒罗斯时，记得的是谁在营火边分过粮、谁把他们留在城外、谁在败局里仍站在旗旁。瓦勒罗斯是瓦兰提斯旧血家门，以黑墙内身份、瓦雷利亚祖源与城邦商业政治维系地位。家族名声最终要落到具体的人和具体的命令上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意瓦勒罗斯留下的仪式、墓地和传承。瓦勒罗斯是瓦兰提斯旧血家门，以黑墙内身份、瓦雷利亚祖源与城邦商业政治维系地位。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见瓦勒罗斯。瓦勒罗斯是瓦兰提斯旧血家门，以黑墙内身份、瓦雷利亚祖源与城邦商业政治维系地位。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "瓦勒罗斯：瓦勒罗斯是瓦兰提斯旧血家门，以黑墙内身份、瓦雷利亚祖源与城邦商业政治维系地位。"
+  ]
+}

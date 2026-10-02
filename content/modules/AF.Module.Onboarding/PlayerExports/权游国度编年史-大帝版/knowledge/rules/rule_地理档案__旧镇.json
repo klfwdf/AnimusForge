@@ -1,0 +1,152 @@
+{
+  "Id": "rule_地理档案__旧镇",
+  "Keywords": [
+    "旧镇",
+    "蜜酒河",
+    "学城",
+    "繁星圣堂",
+    "海塔尔",
+    "高塔"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "旧镇位于河湾地西南、蜜酒河入低语湾之处，是维斯特洛最古老、最大也最富庶的城市之一。海塔尔家族从战岛上的参天塔俯瞰港口与河道，学城在城中训练学士，繁星圣堂保留七神信仰昔日的最高权威；码头、船坞、市场、作坊和通往河湾腹地的道路又让知识与信仰落在实际财富之上。旧镇属于高庭统辖的河湾地，却凭海塔尔家的古老门第、远洋贸易和学城网络拥有远超普通封臣领地的独立分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "scholar",
+          "priest",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "学士与教士会争论旧镇究竟属于知识还是信仰。学城相信链条代表求证与克制，圣堂相信人的灵魂不能只靠羊皮纸衡量。两边都离不开同一座城的繁荣，也都知道旧镇的古老给他们的声音添了分量。对许多南方人而言，来自旧镇的信比来自战场的信更像“真相”。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "sailor",
+          "artisan"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "水手看见的旧镇是灯塔、河口、仓库和可避风的泊位。纸商、酿酒商、书贩、制链匠和船主则知道，城的名声本身就是货物：学城需要书，朝圣者需要住处，远洋船需要修补。旧镇人说话不必总抬高嗓门，因为他们习惯让契约、潮水和一代代积下的信誉替自己说话。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania",
+          "sturgia",
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "北境客人会觉得旧镇暖得近乎不真实；铁民会先估量它的港口和富裕；多恩人则熟悉它的商路，却未必信任它的南方教会。对外来者而言，旧镇最可怕的并非高塔，而是它似乎总记得太多：谁家的血统、哪条旧约、哪一页书里曾写过相似的麻烦。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "在领主和商人眼中，旧镇首先是地图上的一处要害。蜜酒河河口的古老大城。海塔尔高塔、学城、繁星圣堂与远洋港口并立，使知识、信仰、贸易和贵族权威互相支撑。他们关心水源、道路、税关和守军，知道地名背后往往连着一条能让城堡活下去的粮道。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈到旧镇时，记住的不是边界线，而是风向、坡度、渡口和能否在天黑前找到避难处。蜜酒河河口的古老大城。海塔尔高塔、学城、繁星圣堂与远洋港口并立，使知识、信仰、贸易和贵族权威互相支撑。一处地形的名声，常由死在那里的人的数量决定。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者会从另一面理解旧镇。蜜酒河河口的古老大城。海塔尔高塔、学城、繁星圣堂与远洋港口并立，使知识、信仰、贸易和贵族权威互相支撑。石头、林木、河流或山口既能成为谋生之所，也可能被赋予圣洁、禁忌和祖先记忆，因而不能只用金钱衡量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民对旧镇的看法最实际。蜜酒河河口的古老大城。海塔尔高塔、学城、繁星圣堂与远洋港口并立，使知识、信仰、贸易和贵族权威互相支撑。他们先看这里能否取水、耕作、放牧和躲过兵灾；地图上的一行字，落到村里便是柴薪、井绳和过冬的粮。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "旧镇：旧镇位于河湾地西南、蜜酒河入低语湾之处，是维斯特洛最古老、最大也最富庶的城市之一。海塔尔家族从战岛上的参天塔俯瞰港口与河道，学城在城中训练学士，繁星圣堂保留七神信仰昔日的最高权威；码头、船坞、市场、作坊和通往河湾腹地的道路又让知识与信仰落在实际财富之上。旧镇属于高庭统辖的河湾地，却凭海塔尔家的古老门第、远洋贸易和学城网络拥有远超普通封臣领地的独立分量。"
+  ]
+}

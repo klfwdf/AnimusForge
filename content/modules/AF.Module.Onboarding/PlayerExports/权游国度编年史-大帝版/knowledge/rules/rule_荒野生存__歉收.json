@@ -1,0 +1,147 @@
+{
+  "Id": "rule_荒野生存__歉收",
+  "Keywords": [
+    "歉收"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "歉收来自霜冻、虫害、洪水、战乱或单纯的坏运气，最先表现为谷物变少、价格变高。领主可以把它说成天意，母亲必须把一锅粥分得更稀；饥荒从不突然开始，它总有许多被忽略的前兆。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户最早从谷穗、果实和牲畜膘情看出歉收。他们会缩减口粮、保住种子、延后婚事，并盼望领主少征一点；灾荒不是学士纸上的数字，而是一家人每天少舀一勺粥。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主面对歉收，必须清点粮仓、磨坊、道路和能够护送粮车的兵力。若仍按丰年征税，饥民便会逃亡或反抗；若开仓太迟，金银也买不回已经死去的耕牛与劳力。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "scholar",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "商人从粮价、运费和市集空摊看见歉收，学士则记录霜冻、虫害、洪水与疫病。有人能靠运粮获利，但道路一旦被战争切断，再高的价格也不能让麦子自己走进城。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "贵族会把歉收视作统治能力的试金石：谁有储粮，谁便能养兵、赈民并争取忠诚。宴会照旧而村庄断炊，会比一场败仗更快损害家名。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人遇上歉收，会发现每一处客栈都更贵、每一座村庄都更警惕。军队取走的羊和麦子不会凭空回来，所谓就地补给，对沿途家庭常意味着冬天少一个活人。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "修士、修女、医者与匠人会照料因歉收而聚集的病弱者，修补粮车和水井，也主持越来越频繁的葬礼。祈祷能给人忍耐，却不能代替干净的水、可食的粮和公平配给。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "对平民而言，歉收从来不是突然降临的一天，而是一连串越来越小的饭块、越来越瘦的牲畜和越来越空的村舍。能否留下种粮、守住水井并彼此照应，决定来年还有没有人耕地。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "歉收：歉收来自霜冻、虫害、洪水、战乱或单纯的坏运气，最先表现为谷物变少、价格变高。领主可以把它说成天意，母亲必须把一锅粥分得更稀；饥荒从不突然开始，它总有许多被忽略的前兆。"
+  ]
+}

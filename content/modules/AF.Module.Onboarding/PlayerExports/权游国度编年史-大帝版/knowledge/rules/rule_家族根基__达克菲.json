@@ -1,0 +1,130 @@
+{
+  "Id": "rule_家族根基__达克菲",
+  "Keywords": [
+    "达克菲",
+    "达克菲家族",
+    "罗利·达克菲",
+    "达克"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "罗利·达克菲爵士，人称“达克”，是青年格里芬身边的护卫、武艺教头与可信赖的随行者。他并不以古老家族或世袭城堡闻名，达克菲这个名字来自一个具体的人如何在流亡队伍中获得位置：他教年轻人持剑，守近身安全，在陌生港口和军营里辨认危险，也在长途航行中维持日常秩序。伊耿的宣称需要这样的实际支持者，而不只是高贵谱系；达克的价值正来自他把王子的训练、生活与安全一件件接在自己肩上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "artisan"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "跟随格里芬的士兵看达克，先看他是否能把少年训练成在压力下仍握稳剑的人。教头的本事不只在招式，也在知道什么时候让年轻人挨饿、受累、服从或休息。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer",
+          "merchant",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "流亡者、商人和船员更容易记住达克在陌生地方处理琐事的能力。一个没有固定城堡的队伍若要活下去，必须有人看住货物、路线、船舱与秘密；达克的名声从这些小事里长出来。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待达克菲，会先看它的土地、婚盟、血脉和债务。罗利·达克菲爵士“达克”是青年格里芬的护卫与武艺教头；他的分量来自训练、近身保护和流亡队伍中日复一日的可靠。家徽是门面，能否保护封地、兑现婚约并在危机中召集人马，才是家族真正的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起达克菲时，记得的是谁在营火边分过粮、谁把他们留在城外、谁在败局里仍站在旗旁。罗利·达克菲爵士“达克”是青年格里芬的护卫与武艺教头；他的分量来自训练、近身保护和流亡队伍中日复一日的可靠。家族名声最终要落到具体的人和具体的命令上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意达克菲留下的仪式、墓地和传承。罗利·达克菲爵士“达克”是青年格里芬的护卫与武艺教头；他的分量来自训练、近身保护和流亡队伍中日复一日的可靠。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见达克菲。罗利·达克菲爵士“达克”是青年格里芬的护卫与武艺教头；他的分量来自训练、近身保护和流亡队伍中日复一日的可靠。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "罗利·达克菲爵士“达克”是青年格里芬的护卫与武艺教头；他的分量来自训练、近身保护和流亡队伍中日复一日的可靠。"
+  ]
+}

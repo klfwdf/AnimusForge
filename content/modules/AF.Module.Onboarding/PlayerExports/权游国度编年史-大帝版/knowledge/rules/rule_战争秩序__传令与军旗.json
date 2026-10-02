@@ -1,0 +1,151 @@
+{
+  "Id": "rule_战争秩序__传令与军旗",
+  "Keywords": [
+    "传令与军旗",
+    "传令",
+    "号角",
+    "战场指挥"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "传令与军旗：维斯特洛的军队没有能跨越战场的神奇耳目。尘土、雨幕、树线与山坡都会吞掉命令，军旗、号角、鼓点、骑手和各家纹章便成了将领仅能倚赖的语言。贵族从高处看见的是队列能否依令转向；步卒看见的却往往只是本家旗帜还在不在。旗倒了，未必代表主将已死，却足以使一翼军队怀疑自己被抛下。谨慎的指挥会预备副旗、熟识地形的传令骑手与可重复的号令；聪明的敌人则会利用烟火、伪旗、截杀信使和战场谣言，让一支尚未被击败的军队先失去彼此。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "在传令与军旗面前，领主谈权利，书记官谈程序，普通人谈能否安全回家；命令与执行决定一纸命令究竟是约束，还是另一场讨价还价的开始。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵执行传令与军旗时只看旗帜、口令和补给，贵族却要计算盟誓与声望的余波；命令传得越远，地方上的解释往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "wanderer",
+          "priest",
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "商人和旅人从传令与军旗中感受到的是关卡、赎金与消息价格，祭司和学者关注它如何塑造正当性；同一项决定，在不同阶层眼中很少有同一种重量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人谈起传令与军旗，先想到军费、粮道和盟约。传令与军旗：维斯特洛的军队没有能跨越战场的神奇耳目。尘土、雨幕、树线与山坡都会吞掉命令，军旗、号角、鼓点、骑手和各家纹章便成了将领仅能倚赖的语言。贵族从高处看见。战场上的胜负固然重要，但谁能让军队在第二个月仍有马料和银币，往往更能决定战争的长短。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人对传令与军旗的判断最直接。传令与军旗：维斯特洛的军队没有能跨越战场的神奇耳目。尘土、雨幕、树线与山坡都会吞掉命令，军旗、号角、鼓点、骑手和各家纹章便成了将领仅能倚赖的语言。贵族从高处看见。他们看旗帜是否在前方、命令是否清楚、伤员是否有人收回；一条漂亮的战略，若不能让人活着回营，就不值得歌唱。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者从后方看传令与军旗。传令与军旗：维斯特洛的军队没有能跨越战场的神奇耳目。尘土、雨幕、树线与山坡都会吞掉命令，军旗、号角、鼓点、骑手和各家纹章便成了将领仅能倚赖的语言。贵族从高处看见。铁匠要把断剑重新烧红，神职者要为死者守夜；战争离开战场后，仍会在铁砧、墓地和空掉的座位上继续。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民承担传令与军旗最沉的部分。传令与军旗：维斯特洛的军队没有能跨越战场的神奇耳目。尘土、雨幕、树线与山坡都会吞掉命令，军旗、号角、鼓点、骑手和各家纹章便成了将领仅能倚赖的语言。贵族从高处看见。征发会带走马、粮和儿子，旗帜换了几次，他们仍要修屋、埋人和等下一场冬天；他们判断胜负，只看村子是否还在。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "传令与军旗：传令与军旗：维斯特洛的军队没有能跨越战场的神奇耳目。尘土、雨幕、树线与山坡都会吞掉命令，军旗、号角、鼓点、骑手和各家纹章便成了将领仅能倚赖的语言。贵族从高处看见"
+  ]
+}

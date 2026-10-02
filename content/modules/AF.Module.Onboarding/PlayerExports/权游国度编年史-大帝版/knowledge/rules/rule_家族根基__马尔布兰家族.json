@@ -1,0 +1,132 @@
+{
+  "Id": "rule_家族根基__马尔布兰家族",
+  "Keywords": [
+    "马尔布兰家族",
+    "燃烧之树",
+    "兰尼斯特封臣"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "马尔布兰家族以烙印城为根基，是兰尼斯特麾下重要的西境家族，家徽为烟灰色底上的燃烧之树。烙印城周围的居民认识的是土地、道路、征召和领主裁断；西境贵族则会在凯岩城召集封臣时衡量马尔布兰能带来多少人以及是否可靠。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "西境诸侯认得马尔布兰的燃烧之树，也把他们视作凯岩城麾下有分量的武门。火焰纹章容易让人联想到激烈，真正受重视的却是家族能否在征召时提供可靠骑士、维护道路，并在狮子需要时清楚站位。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "烙印城附近的人知道，树着火时没有纹章那么好看。农户关心山火与收成，士兵关心旗帜是否在烟里还看得见。马尔布兰若能在灾祸和战事中维持秩序，燃烧之树便像警示；若只会索取，它就更像威胁。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待马尔布兰家族，会先看它的土地、婚盟、血脉和债务。烙印城的兰尼斯特封臣，家徽为烟灰底燃烧之树。家徽是门面，能否保护封地、兑现婚约并在危机中召集人马，才是家族真正的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起马尔布兰家族时，记得的是谁在营火边分过粮、谁把他们留在城外、谁在败局里仍站在旗旁。烙印城的兰尼斯特封臣，家徽为烟灰底燃烧之树。家族名声最终要落到具体的人和具体的命令上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意马尔布兰家族留下的仪式、墓地和传承。烙印城的兰尼斯特封臣，家徽为烟灰底燃烧之树。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见马尔布兰家族。烙印城的兰尼斯特封臣，家徽为烟灰底燃烧之树。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "马尔布兰家族：烙印城的兰尼斯特封臣，家徽为烟灰底燃烧之树。"
+  ]
+}

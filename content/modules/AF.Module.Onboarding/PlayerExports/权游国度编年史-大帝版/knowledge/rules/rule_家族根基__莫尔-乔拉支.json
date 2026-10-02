@@ -1,0 +1,155 @@
+{
+  "Id": "rule_家族根基__莫尔-乔拉支",
+  "Keywords": [
+    "莫尔-乔拉支",
+    "莫尔蒙-乔拉支",
+    "乔拉·莫尔蒙",
+    "熊岛莫尔蒙家族",
+    "流亡骑士"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "乔拉·莫尔蒙是杰奥·莫尔蒙之子，曾继承贫瘠的熊岛。一次耀眼的比武胜利和一场远超熊岛财力的婚姻，使他拼命追逐自己供养不起的生活；当债务逼近时，他把盗猎者卖给奴隶贩子，触犯北境法律，在奈德·史塔克前来裁断前逃往厄索斯。流亡使他成为雇佣骑士、向导与在陌生宫廷中寻找位置的人。他后来靠近丹妮莉丝·坦格利安，对她的忠诚、爱慕、隐瞒与渴望被宽恕纠缠在一起。乔拉身上背着熊岛、父亲和失去荣誉的重量，但这些选择只属于他，不代表莫尔蒙主家离开北境。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "北境人很难忘记乔拉贩卖盗猎者的罪。熊岛贫穷可以解释他的困境，爱情与债务却不能改变奴隶贸易触犯了什么。有人仍记得他曾有勇武，有人只记得他逃过了奈德的剑；两种记忆都让黑熊家名背上一道伤。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "ghiscari"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "厄索斯人看乔拉，更像看一个熟悉多种语言、道路和雇主的流亡骑士。他懂维斯特洛，也懂失去归属后如何活下去。这样的向导很有用，却总让人怀疑：一个迫切想被某人需要的人，会隐瞒多少不愿失去对方的真相。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "ghiscari"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "slave"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "奴隶与获释者若知道乔拉曾把人卖作奴隶，很难只把他看成女王身边忠诚的骑士。一个人可以后悔、可以救人，也仍要背负做过的事。对他们而言，真正的赎罪不是说自己爱谁，而是面对曾被自己当作货物的人。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待莫尔-乔拉支，会先看它的土地、婚盟、血脉和债务。乔拉·莫尔蒙因贩卖盗猎者为奴而流亡，在厄索斯成为骑士、向导与丹妮莉丝的追随者；忠诚、爱慕、隐瞒和赎罪在他身上彼此纠缠。家徽是门面，能否保护封地、兑现婚约并在危机中召集人马，才是家族真正的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起莫尔-乔拉支时，记得的是谁在营火边分过粮、谁把他们留在城外、谁在败局里仍站在旗旁。乔拉·莫尔蒙因贩卖盗猎者为奴而流亡，在厄索斯成为骑士、向导与丹妮莉丝的追随者；忠诚、爱慕、隐瞒和赎罪在他身上彼此纠缠。家族名声最终要落到具体的人和具体的命令上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意莫尔-乔拉支留下的仪式、墓地和传承。乔拉·莫尔蒙因贩卖盗猎者为奴而流亡，在厄索斯成为骑士、向导与丹妮莉丝的追随者；忠诚、爱慕、隐瞒和赎罪在他身上彼此纠缠。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见莫尔-乔拉支。乔拉·莫尔蒙因贩卖盗猎者为奴而流亡，在厄索斯成为骑士、向导与丹妮莉丝的追随者；忠诚、爱慕、隐瞒和赎罪在他身上彼此纠缠。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "乔拉·莫尔蒙因贩卖盗猎者为奴而流亡，在厄索斯成为骑士、向导与丹妮莉丝的追随者；忠诚、爱慕、隐瞒和赎罪在他身上彼此纠缠。"
+  ]
+}

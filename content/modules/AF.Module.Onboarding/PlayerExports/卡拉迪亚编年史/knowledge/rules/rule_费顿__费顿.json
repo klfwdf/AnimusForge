@@ -1,0 +1,94 @@
+﻿{
+  "Id": "rule_费顿",
+  "Keywords": [
+    "费顿",
+    "比斯坎丘陵"
+  ],
+  "RagShortTexts": [
+    "费顿橄榄园在特朗河畔，近比斯坎丘陵山口。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "费顿是翁加尔堡附近的一座村庄，位于蜿蜒曲折的特朗河的一个拐角处，离通往比斯坎丘陵的山口不远。村民们在温暖、干燥的一侧山坡上种植橄榄，橄榄油是他们的主要产出。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "费顿窝在特朗河的拐角上，山挡着风，太阳晒得足，种橄榄再合适不过。河对岸是麦田，这边坡上是橄榄园，两个村子隔河相望，各过各的营生。翁加尔堡的守军两边都护着，毕竟粮食和油缺一不可。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "townsfolk"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "费顿的橄榄长在向阳的坡上，光照足，果子榨出来的油香气浓。特朗河拐弯那一带的好几片橄榄园，就数费顿的出油率高。比斯坎丘陵的山口近，商人进出也方便。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "费顿在特朗河一个大拐弯上，河岸这边晒得暖烘烘的。坡上的橄榄树一排一排，风从比斯坎丘陵那边吹过来，带着草香。过河不远就是往山里的山口，这条路曾是帝国的老商道。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "费顿",
+      "Kind": "bound_settlement_name",
+      "TargetId": "__bound_settlement__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": "翁加尔堡",
+      "Kind": "bound_settlement_name",
+      "TargetId": "__bound_settlement__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}

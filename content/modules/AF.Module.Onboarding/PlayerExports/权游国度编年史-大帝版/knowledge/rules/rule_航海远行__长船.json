@@ -1,0 +1,148 @@
+{
+  "Id": "rule_航海远行__长船",
+  "Keywords": [
+    "长船",
+    "旅行"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "长船船体狭长、吃水浅，可用风帆与船桨推进，适合铁群岛和北方海岸的快速航行、登陆与撤离。它载货不如宽腹商船，却能驶入浅滩和河口；船员既是桨手也是战士。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "水手与沿岸居民谈起长船时，先看风、潮和船况。长船船体狭长、吃水浅，可用风帆与船桨推进，适合铁群岛和北方海岸的快速航行、登陆与撤离。它载货不如宽腹商船，却能驶入浅滩和河口；船员既是桨手也是战士。海上的规矩最终都要经得住湿绳、坏水和突然转向的天气。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主与士兵把长船放在舰队、补给和港口防务中衡量。长船船体狭长、吃水浅，可用风帆与船桨推进，适合铁群岛和北方海岸的快速航行、登陆与撤离。它载货不如宽腹商船，却能驶入浅滩和河口；船员既是桨手也是战士。任何海上计划若忽略船员体力与返航条件，胜利也可能变成漂流。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "scholar",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "商人、学士和旅人关心长船如何改变航程、价格与消息速度。长船船体狭长、吃水浅，可用风帆与船桨推进，适合铁群岛和北方海岸的快速航行、登陆与撤离。它载货不如宽腹商船，却能驶入浅滩和河口；船员既是桨手也是战士。一次判断失误会同时损失货物、信用和性命。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人愿意为可靠的长船投入金钱，因为海路能在陆路断绝时继续搬运粮食与军队。长船船体狭长、吃水浅，可用风帆与船桨推进，适合铁群岛和北方海岸的快速航行、登陆与撤离。它载货不如宽腹商船，却能驶入浅滩和河口；船员既是桨手也是战士。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵与远行者更在意长船能否让人活着抵港。长船船体狭长、吃水浅，可用风帆与船桨推进，适合铁群岛和北方海岸的快速航行、登陆与撤离。它载货不如宽腹商船，却能驶入浅滩和河口；船员既是桨手也是战士。船上没有多余道路可供绕行，错误往往只能由整船人共同承担。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者从修船、誓言和海葬中理解长船。长船船体狭长、吃水浅，可用风帆与船桨推进，适合铁群岛和北方海岸的快速航行、登陆与撤离。它载货不如宽腹商船，却能驶入浅滩和河口；船员既是桨手也是战士。木料与绳结维持船体，信仰则帮助人面对无法控制的海。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "普通港民通过鱼价、失踪船只和码头工作认识长船。长船船体狭长、吃水浅，可用风帆与船桨推进，适合铁群岛和北方海岸的快速航行、登陆与撤离。它载货不如宽腹商船，却能驶入浅滩和河口；船员既是桨手也是战士。远方海面上的变化，常会在第二天变成市场里的空摊位。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "长船：长船船体狭长、吃水浅，可用风帆与船桨推进，适合铁群岛和北方海岸的快速航行、登陆与撤离。它载货不如宽腹商船，却能驶入浅滩和河口；船员既是桨手也是战士。"
+  ]
+}

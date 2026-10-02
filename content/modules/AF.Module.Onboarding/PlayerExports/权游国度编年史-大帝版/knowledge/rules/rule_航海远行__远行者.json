@@ -1,0 +1,147 @@
+{
+  "Id": "rule_航海远行__远行者",
+  "Keywords": [
+    "远行者"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "远行者包括商旅、水手、朝圣者、使者、雇佣兵与逃亡者。他们依靠道路、客栈、港口和陌生人的信用穿越不同法域；口音、衣着和所携信件常决定他们被当作客人、间谍还是猎物。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "水手与沿岸居民谈起远行者时，先看风、潮和船况。远行者包括商旅、水手、朝圣者、使者、雇佣兵与逃亡者。他们依靠道路、客栈、港口和陌生人的信用穿越不同法域；口音、衣着和所携信件常决定他们被当作客人、间谍还是猎物。海上的规矩最终都要经得住湿绳、坏水和突然转向的天气。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主与士兵把远行者放在舰队、补给和港口防务中衡量。远行者包括商旅、水手、朝圣者、使者、雇佣兵与逃亡者。他们依靠道路、客栈、港口和陌生人的信用穿越不同法域；口音、衣着和所携信件常决定他们被当作客人、间谍还是猎物。任何海上计划若忽略船员体力与返航条件，胜利也可能变成漂流。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "scholar",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "商人、学士和旅人关心远行者如何改变航程、价格与消息速度。远行者包括商旅、水手、朝圣者、使者、雇佣兵与逃亡者。他们依靠道路、客栈、港口和陌生人的信用穿越不同法域；口音、衣着和所携信件常决定他们被当作客人、间谍还是猎物。一次判断失误会同时损失货物、信用和性命。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人愿意为可靠的远行者投入金钱，因为海路能在陆路断绝时继续搬运粮食与军队。远行者包括商旅、水手、朝圣者、使者、雇佣兵与逃亡者。他们依靠道路、客栈、港口和陌生人的信用穿越不同法域；口音、衣着和所携信件常决定他们被当作客人、间谍还是猎物。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵与远行者更在意远行者能否让人活着抵港。远行者包括商旅、水手、朝圣者、使者、雇佣兵与逃亡者。他们依靠道路、客栈、港口和陌生人的信用穿越不同法域；口音、衣着和所携信件常决定他们被当作客人、间谍还是猎物。船上没有多余道路可供绕行，错误往往只能由整船人共同承担。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者从修船、誓言和海葬中理解远行者。远行者包括商旅、水手、朝圣者、使者、雇佣兵与逃亡者。他们依靠道路、客栈、港口和陌生人的信用穿越不同法域；口音、衣着和所携信件常决定他们被当作客人、间谍还是猎物。木料与绳结维持船体，信仰则帮助人面对无法控制的海。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "普通港民通过鱼价、失踪船只和码头工作认识远行者。远行者包括商旅、水手、朝圣者、使者、雇佣兵与逃亡者。他们依靠道路、客栈、港口和陌生人的信用穿越不同法域；口音、衣着和所携信件常决定他们被当作客人、间谍还是猎物。远方海面上的变化，常会在第二天变成市场里的空摊位。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "远行者：远行者包括商旅、水手、朝圣者、使者、雇佣兵与逃亡者。他们依靠道路、客栈、港口和陌生人的信用穿越不同法域；口音、衣着和所携信件常决定他们被当作客人、间谍还是猎物。"
+  ]
+}

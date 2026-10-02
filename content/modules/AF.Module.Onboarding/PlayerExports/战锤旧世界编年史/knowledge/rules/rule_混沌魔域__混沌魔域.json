@@ -1,0 +1,212 @@
+{
+  "Id": "rule_混沌魔域__混沌魔域",
+  "Keywords": [
+    "混沌魔域",
+    "亚空间",
+    "邪神居所",
+    "混沌魔域非物质界",
+    "纯粹能量",
+    "星门之外",
+    "北方废土",
+    "四神领地",
+    "永恒战争",
+    "灵魂归宿",
+    "疯狂之域"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "混沌魔域是凡人世界之外的亚空间领域，由纯粹的混沌能量构成，四大邪神在此盘踞争夺，是一切黑暗力量、变异和疯狂的本源所在，也是混沌勇士灵魂最终的归宿。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "chaos_culture"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "混沌魔域不是寓言不是神话——它是真实存在的。我们中的许多人都在梦中见过它：血红色的天空、不断变换的地貌、从地面冒出的惨叫。那是力量的本源之地。凡人的规则在那里失效，时间像融化的蜡烛一样扭曲。大部分人穿越星门后会被疯狂吞噬，但那些存活下来的——他们回来时眼中燃烧着混沌之火，身上带着魔域的「祝福」。你无法用语言描述那个地方，因为语言在魔域中没有意义。只有成为足够强大的战士才能在那里行走，而强者将在那里获得超越凡人想象的奖赏。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "混沌魔域是你力量的最终来源，也是你最大的威胁。向你的追随者许诺魔域的奖赏——他们会为此而战，为此而死。但你自己必须亲自踏入魔域并存活归来，才能真正被认可为混沌领主。在战斗中，你可以通过仪式短暂打开魔域裂缝，召唤恶魔援军。但记住：魔域的力量永远不会免费，它索取的回报可能超过你的想象。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "根据《亚空间论》的学术分析，混沌魔域并非一个单一空间，而是一个由无限层次构成的非物质维度，其「地理」随情感和信仰而变化。四大邪神各自拥有独立领域：恐虐的「鲜血王座」是一片永恒的战争平原，流着无尽的鲜血；纳垢的「瘟疫花园」是一座腐烂而生机勃勃的沼泽丛林；色孽的「六重欢愉之环」是六层交织的极限感官体验空间；奸奇的「水晶迷宫」是一座不断重组的无限图书馆。通往魔域的最大入口位于北方废土的「混沌废都」中央，即所谓的「极北星门」。历史上仅有十二位凡人有明确记录进入魔域并成功带出珍贵情报后返回，其中最著名的是帝国学者「盲眼」海因里希，他的记录《混沌观察录》至今仍是研究魔域的唯一可靠文本——尽管他本人回来后不久就完全疯狂并吃掉了自己的手指。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "作为女性，在混沌魔域中你需要比男性更加坚韧。邪神不在乎性别，只在乎力量。我所走过的那条路，比任何男性同僚走过的都更加艰难——但这只证明了我的价值。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "作为部族首领，魔域是你的族人最害怕也最渴望的地方。你需要定期派遣最勇猛的战士穿过星门去接受考验，那些带着「恩赐」回归的人将成为你的得力干将，那些「失败」的人——你最好不要追问他们的下落。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "远远的北方天际线上，你看到了它——星门。一道紫红色的裂缝悬浮在半空中，四周的土地被扭曲成了不可思议的形状。你感到一股无形的力量在拉扯你的灵魂。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "混沌魔域的存在是旧世界所有种族共同恐惧的根源。学者们争论魔域是独立存在的维度还是集体意识的产物，但北方部落的萨满们毫不怀疑——他们夜夜在火堆旁讲述魔域的故事，既是警告也是诱惑。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "混沌魔域——凡人世界之外的亚空间领域，四大邪神的居所和混沌力量本源。",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "混沌魔域亚空间邪神居所"
+  ]
+}

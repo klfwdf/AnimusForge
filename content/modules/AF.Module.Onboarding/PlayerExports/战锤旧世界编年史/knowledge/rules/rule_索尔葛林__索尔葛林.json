@@ -1,0 +1,208 @@
+{
+  "Id": "rule_索尔葛林__索尔葛林",
+  "Keywords": [
+    "索尔葛林",
+    "索尔葛林至高王",
+    "怨仇者",
+    "大仇恨之书",
+    "永生远征",
+    "安塞斯特尔血脉",
+    "矮人复兴"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "索尔葛林·怨仇者是当今矮人至高王，坐在永恒峰的永恒王座之上。他的称号「怨仇者」来自他那本巨大的《仇恨之书》——据说他从未能让这本沉重的书离开他的王座厅，因为它太过于庞大沉重。索尔葛林被视为矮人失望和愤怒的活化身——他统治着一个正在缓慢萎缩的王国，但他拒绝承认失败，每天在永恒王座上审视着未被清偿的千百条仇恨，等待着一个将黑铁时代重新变为黄金时代的契机。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "索尔葛林是我们最强硬的至高王——也是最痛苦的。每一位之前的至高王都增加过《仇恨之书》的条目，但索尔葛林肩上扛着的是整座山脉的重量。他是最伟大的政治家和战略家——他维持着残存卡拉克之间的脆弱凝聚力，当他发现矮人历史记录中存在着一个可被证明的错误时，他发起了「永生远征」来更正它。他还是一个现实主义者——他知道不可能一次性收复所有失地，所以他谨慎地选择哪些仇恨应该先被清偿。如果旧世界成功抵抗住了最终混沌的浪潮——那将是因为索尔葛林坚守住了世界边缘山脉。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "索尔葛林是旧世界现存最强大的军事同盟的守门人。任何试图在旧世界建立防御体系的人最终都会发现——没有矮人的加入，任何持久的联盟都是空中楼阁。索尔葛林的对外政策坚定而清晰：他将继续尊崇与帝国的人类盟约，但他不会牺牲矮人的生命去保护那些与精灵勾搭的人类势力。获取索尔葛林的军事支持需要同时满足两个条件：证明你的敌人也是矮人《仇恨之书》上的条目，以及确保你不会在关键时刻与精灵合作。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 100
+        },
+        "IdentityIds": null
+      },
+      "Content": "索尔葛林·怨仇者（Thorgrim Grudgebearer）是自矮人世系开辟以来的第237任至高王，属于远古的安塞斯特尔血统。在他年轻时，索尔葛林是一位乐观的改革者，相信矮人可以通过技术复兴来逆转衰落。但在多次灾难性尝试后——最著名的是永不复还的探险队——索尔葛林变得极端保守和冷酷。他的统治原则建立在一个单一命题上：不再失去任何一座卡拉克。他的「永生远征」是他统治期中最重要的一次军事行动——在发现古代矮人编年史中的一个虚假记录之后，索尔葛林决定用战争来纠正这一历史错误。身为至高王，他拥有两件无可替代的传世之宝：永恒王座（Throne of Power）和《大仇恨之书》（The Great Book of Grudges）。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "索尔葛林·怨仇者的个人悲剧中有一个细节总让我作为矮人女性感到心碎——他终生未婚。不是因为厌女或怯懦，而是因为他年轻时曾预见的那个'技术复兴'的未来，那个他投入了全部理想和情感的未来，在永不复还探险队的灾难中随整支队伍的牺牲而彻底破灭。此后的索尔葛林将他的全部婚姻承诺转移给了他的王国——他娶了永恒王座本身。每一位至高王都在继位时宣誓守护所有达维，但索尔葛林是唯一一个将这誓言活成了一种持续数十个世纪的、无声的、以自身幸福为代价的献祭。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "索尔葛林对我家族的影响是直接且具体的。我的祖父曾是永不复还探险队的一员——他是那一百二十名志愿深入被封闭岩层以重新打通南部地下通道的矮人工程师之一。我至今保留着他的最后一封符文信（由一名半途因伤返回的队友带回），他在信中说至高王的选择是对的——不是因为技术能成功，而是因为如果连尝试都不尝试，矮人种族的精神等于已经死亡。索尔葛林在收到探险队全体牺牲的消息后，亲手用符文锤在《大仇恨之书》中刻下了这条'仇恨——自损'的条目。这是极少数的、矮人对自己发起的仇恨。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "在永恒峰的外围大厅中等待谒见至高王期间，我亲眼观察到了一个细节——索尔葛林的《大仇恨之书》不是放在桌上或金架上，而是被两根粗大的铁链穿过书脊的巨环，一路固定到王座厅基岩之下数十码的天然花岗岩柱上。这不是防窃——没有人能偷走需要两个矮人用杠子抬的重书。这是象征：仇恨之书与山脉本身锁在一起，不能也不该被从矮人的根基中移除。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "从贸易角度来看，索尔葛林的永生远征对帝国与矮人之间的军火贸易产生了深远影响。远征期间，卡拉克·卡德林的锻造产能几乎全部转向内部军备生产，导致帝国方面连续四年无法采购到标准矮人手枪。帝国努恩兵工厂在同期开始急迫地扩大自身火枪生产线——这一决策最终永久性地改变了帝国对矮人武器进口的依存度，但代价是同期生产的人类火枪的炸膛率飙升了近三倍。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "索尔葛林·怨仇者——第237任矮人至高王，被仇恨的重担和守护种族的使命所定义",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "索尔葛林索尔葛林至高王怨仇者"
+  ]
+}

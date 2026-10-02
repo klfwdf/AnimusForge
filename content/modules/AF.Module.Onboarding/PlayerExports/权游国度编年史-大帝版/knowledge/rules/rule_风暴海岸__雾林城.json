@@ -1,0 +1,152 @@
+{
+  "Id": "rule_风暴海岸__雾林城",
+  "Keywords": [
+    "雾林城",
+    "雾林"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "雾林城位于风暴地东南部的林地边缘。雾林并非一片容易被道路驯服的森林：潮湿、雾气、树根、猎径和突如其来的风雨使行军与传讯都比地图上看起来困难。城堡与周边聚落依靠伐木、狩猎、小片耕地和海岸交换维生，也承担着看守通往破船湾与多恩边疆方向道路的责任。对当地人来说，熟悉的雾可掩护归途；对外来者来说，雾会吞掉方向与时间。雾林城的主人或旗号可以更换，但它作为湿润林地节点、而非开阔平原重镇的特性不会变。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "stormlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "雾林城可以写在领主的地契上，附近人真正依靠的却是潮汐、渔汛、淡水和船只能否安全靠岸。当地家庭还要依靠雨林木材、猎物、瘠薄农田、渔获和躲避风暴的屋顶；任何一处道路、井泉或码头失灵，代价都会先落到他们身上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "stormlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "守将衡量雾林城，先查港湾入口、泊位、烽火与可供登陆的岸线。在七国的封建秩序中，雾林城的归属牵动封臣义务、税粮和征召；守军能否吃饱、援兵能否按时抵达，比议事厅里的豪言更能决定这处据点是否可靠。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "scholar",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "旅人判断是否经过雾林城，看的是航期、码头脚费、补水和下一处避风港。他们还会辨认风暴地的口音、法令和通行凭据；名声可以从酒馆传得很远，真正的路程仍须由车轮、船桨或马蹄丈量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主可以凭雾林城收税举兵，却也要为这里的治安与饥馑负责。在七国的封建秩序中，雾林城的归属牵动封臣义务、税粮和征召；旗帜更换之后，道路、粮仓、旧债和地方信任仍得由新主人逐一接手。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "旅人在雾林城附近最怕弄错风向、礁石、渡船与城门落锁后的锚地。能补给、能避险、能找到向导，便值得在行程里标明；若三样都没有，再响亮的家名也救不了迷途者。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "修补雾林城的人熟悉修船木、帆布、盐、鱼获和抵御海风的石料，安慰死者家属的人熟悉七神、风暴王旧史与抵御海风的厚重石墙。一处据点因而不只是领主的大厅，也是婚丧、誓言、劳作与地方记忆反复发生的场所。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "雾林城的纹章离田地很远，收税人与守军却离田地很近。他们关心雨林木材、猎物、瘠薄农田、渔获和躲避风暴的屋顶，也看征粮后是否留下种子、灾年时城门是否开启；远方人看见纹章，他们看见的是明日有没有饭吃。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "雾林城：雾林城位于风暴地东南部的林地边缘。雾林并非一片容易被道路驯服的森林：潮湿、雾气、树根、猎径和突如其来的风雨使行军与传讯都比地图上看起来困难。城堡与周边聚落依靠伐木、狩猎、小片耕地和海岸交换维生，也承担着看守通往破船湾与多恩边疆方向道路的责任。对当地人来说，熟悉的雾可掩护归途；对外来者来说，雾会吞掉方向与时间。雾林城的主人或旗号可以更换，但它作为湿润林地节点、而非开阔平原重镇的特性不会变。"
+  ]
+}

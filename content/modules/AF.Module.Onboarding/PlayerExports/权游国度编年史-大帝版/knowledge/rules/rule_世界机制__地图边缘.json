@@ -1,0 +1,150 @@
+{
+  "Id": "rule_世界机制__地图边缘",
+  "Keywords": [
+    "索斯罗斯",
+    "乌尔特斯",
+    "远方海图",
+    "未知大陆"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "学士与航海家绘制的世界并不完整。索斯罗斯以辽阔热带海岸、密林、疾病、巨兽和废弃据点进入商旅记忆，探险者很少深入到能够确定其南端；乌尔特斯更遥远，连它究竟多大、与何处相连都缺乏可靠共识。地图边缘常被填上怪物、黄金与失落王国，因为没有归来的证人最容易被想象替代。谨慎的水手会区分亲眼见过的海岸、从别人处抄来的航迹与酒馆夸谈，不把空白误作可以随意占有的土地。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "scholar",
+          "sailor",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "学者希望比较多份海图，老水手则更信潮流、星位和船底留下的伤。两者都知道，写在羊皮纸上的海岸线可能来自一个只靠近过一次的人。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "富商与领主容易从地图空白看见香料、矿藏和名望，真正筹备远航时才会发现淡水、疾病与返程风向比梦想更昂贵。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "priest",
+          "artisan"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "普通人从歌手和码头听说地图尽头，既愿意相信奇迹，也把那里当作永远不会抵达的恐怖。远方传闻常映出讲述者自己的欲望，而不只是远方本身。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人把索斯罗斯看成可执行的秩序。地图边缘：索斯罗斯、乌尔特斯与更远海域只留下残缺航迹和互相矛盾的传闻，未知不等于可以任意断言。它是否有效，取决于谁能授予权利、收取代价，并在违约时让判决真正落地。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起索斯罗斯时，关心它如何影响道路、命令和安全。地图边缘：索斯罗斯、乌尔特斯与更远海域只留下残缺航迹和互相矛盾的传闻，未知不等于可以任意断言。远方的制度只有在营火、城门和驿站里能被执行，才不是空话。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者会从习惯和象征理解索斯罗斯。地图边缘：索斯罗斯、乌尔特斯与更远海域只留下残缺航迹和互相矛盾的传闻，未知不等于可以任意断言。一项规矩若被反复实践，便会进入礼仪、手艺和祈祷；若只靠恐惧维持，危机一来就会露出裂缝。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民感受到索斯罗斯的方式最小也最准确。地图边缘：索斯罗斯、乌尔特斯与更远海域只留下残缺航迹和互相矛盾的传闻，未知不等于可以任意断言。他们记得税、粮、劳役、赈济和谁能为他们说话；宏大的名称，最终都要落在一家人的饭锅旁。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "地图边缘：索斯罗斯、乌尔特斯与更远海域只留下残缺航迹和互相矛盾的传闻，未知不等于可以任意断言。"
+  ]
+}

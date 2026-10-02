@@ -14,8 +14,89 @@ internal static class Program
     private static void Main()
     {
         NpcFileNames();
+        ImportSources();
+        InstalledWorldbooks();
         Store();
         Console.WriteLine("PASS player-exports checks=" + _checks);
+    }
+
+    private static void ImportSources()
+    {
+        string fixture = Path.Combine(Environment.GetEnvironmentVariable("AF_PLAYER_EXPORTS_TEST_TEMP") ?? Path.GetTempPath(), "imports-" + Guid.NewGuid().ToString("N"));
+        string module = Path.Combine(fixture, "AnimusForge");
+        string installed = Path.Combine(module, "PlayerExports");
+        string user = Path.Combine(fixture, "UserData", "PlayerExports");
+        string builtin = Path.Combine(installed, "same-name");
+        Directory.CreateDirectory(builtin);
+        File.WriteAllText(Path.Combine(module, "SubModule.xml"), "<Module />");
+        File.WriteAllText(Path.Combine(builtin, "rule.json"), "{\"source\":\"installed\"}");
+        string exportRoot = PlayerExportsStore.GetPlayerExportsRootPath();
+        string cwd = Directory.GetCurrentDirectory();
+        string configuredRoot = Environment.GetEnvironmentVariable(AnimusForgeDataPaths.OverrideEnvironmentVariable);
+        try
+        {
+            Directory.SetCurrentDirectory(module);
+            // Clear the override after resolving the path-only root to exercise the former gate.
+            Environment.SetEnvironmentVariable(AnimusForgeDataPaths.OverrideEnvironmentVariable, null);
+            Check(PlayerExportsStore.GetPlayerExportsRootPath() == exportRoot, "installed data never gates the user export destination on a migration receipt");
+            var menuFolders = PlayerExportsStore.GetImportFolders();
+            Check(menuFolders.Count == 1 && menuFolders[0].FullPath == builtin, "production menu discovery works without migration credentials");
+        }
+        finally
+        {
+            Directory.SetCurrentDirectory(cwd);
+            Environment.SetEnvironmentVariable(AnimusForgeDataPaths.OverrideEnvironmentVariable, configuredRoot);
+        }
+        var folders = PlayerExportsStore.GetImportFolders(module, user);
+        Check(folders.Count == 1 && folders[0].FullPath == builtin, "fresh install works with missing user root and no migration receipt");
+        Check(!Directory.Exists(user), "listing builtins never creates or migrates user data");
+        Check(PlayerExportsStore.ResolveImportFolderPath("same-name", module, user) == builtin, "named import reads installed worldbook first");
+        Check(PlayerExportsStore.ResolveImportFolderPath("", module, user) == null, "blank import never falls back to a builtin");
+        string player = Path.Combine(user, "same-name");
+        string newest = Path.Combine(user, "newest");
+        Directory.CreateDirectory(player);
+        Directory.CreateDirectory(newest);
+        Directory.CreateDirectory(Path.Combine(user, ".af-export-candidate.hidden"));
+        Directory.CreateDirectory(Path.Combine(installed, ".hidden"));
+        Directory.SetLastWriteTimeUtc(player, new DateTime(2020, 1, 1));
+        Directory.SetLastWriteTimeUtc(newest, new DateTime(2021, 1, 1));
+        folders = PlayerExportsStore.GetImportFolders(module, user);
+        Check(folders.Count == 3, "both roots listed; hidden candidates excluded");
+        Check(folders[0].Name == folders[2].Name && folders[0].SourceLabel != folders[2].SourceLabel, "same names retain distinct source labels");
+        Check(PlayerExportsStore.ResolveImportFolderPath(folders[2].FullPath, module, user) == player, "selected user path cannot switch to same-name builtin");
+        Check(PlayerExportsStore.ResolveImportFolderPath("same-name", module, user) == builtin, "installed source has priority over same-name user export");
+        Check(PlayerExportsStore.ResolveImportFolderPath("newest", module, user) == newest, "user-only name still resolves");
+        Check(PlayerExportsStore.ResolveImportFolderPath(null, module, user) == newest, "blank input retains newest-user-export semantics");
+        Check(PlayerExportsStore.GetImportFolders(module, installed).Count == 1, "identical roots are not listed twice");
+        string missing = Path.Combine(fixture, "does-not-exist");
+        Check(PlayerExportsStore.ResolveImportFolderPath(missing, module, user) == missing, "missing absolute source is not reinterpreted as a relative package");
+        bool rejected = false;
+        try { PlayerExportsStore.ResolveImportFolderPath("..", module, user); }
+        catch (ArgumentException) { rejected = true; }
+        Check(rejected, "relative traversal cannot select a parent or latest export");
+        File.WriteAllText(Path.Combine(builtin, "rule.json"), "{\"source\":\"old-player-copy\"}");
+        string selected = PlayerExportsStore.ResolveImportFolderPath("same-name", module, user);
+        Check(File.ReadAllText(Path.Combine(selected, "rule.json")).Contains("old-player-copy"), "manual old-worldbook overwrite is read as-is");
+        Check(!File.Exists(Path.Combine(module, "UserData", ".player-exports-ready.json")), "import never creates migration credentials");
+    }
+
+    private static void InstalledWorldbooks()
+    {
+        // The runner starts at the repository root; use the actual reviewed shipped files.
+        string module = Path.Combine(Directory.GetCurrentDirectory(), "content", "modules", "AF.Module.Onboarding");
+        string missingUser = Path.Combine(Environment.GetEnvironmentVariable("AF_PLAYER_EXPORTS_TEST_TEMP"), "absent-user-exports");
+        var folders = PlayerExportsStore.GetImportFolders(module, missingUser);
+        Check(folders.Count == 4, "fresh install lists all four complete real worldbooks");
+        foreach (var folder in folders)
+        {
+            Check(PlayerExportsStore.ResolveImportFolderPath(folder.Name, module, missingUser) == folder.FullPath, "real worldbook name resolves to its shipped path");
+            Check(Directory.GetFiles(Path.Combine(folder.FullPath, "knowledge", "rules"), "*.json").Length > 0, "real worldbook has knowledge rules");
+            Check(Directory.GetFiles(Path.Combine(folder.FullPath, "personality_background"), "*.json").Length > 0, "real worldbook has Hero personas");
+            Check(Directory.GetFiles(Path.Combine(folder.FullPath, "unnamed_persona"), "*.json").Length > 0, "real worldbook has non-Hero personas");
+            foreach (string relative in new[] { "kingdom_profiles/KingdomProfiles.json", "voice_mapping/VoiceMapping.json", "event_data/WorldOpeningSummary.json", "event_data/KingdomOpeningSummaries.json" })
+                Check(PlayerExportsStore.ReadJson<Newtonsoft.Json.Linq.JToken>(Path.Combine(folder.FullPath, relative)) != null, "real worldbook required JSON is readable: " + relative);
+        }
+        Check(!Directory.Exists(missingUser), "real library enumeration leaves absent user data untouched");
     }
 
     private static void NpcFileNames()
@@ -73,7 +154,7 @@ internal static class Program
         }
         finally
         {
-            try { Directory.Delete(temp, true); } catch { }
+            // Keep the uniquely named synthetic fixtures with this run's evidence.
         }
     }
 }

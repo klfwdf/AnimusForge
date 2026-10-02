@@ -1,0 +1,212 @@
+{
+  "Id": "rule_西格玛__西格玛",
+  "Keywords": [
+    "西格玛",
+    "神皇",
+    "帝国主神",
+    "西格玛双尾彗星",
+    "乌贝斯瑞克",
+    "西格玛盖尔马拉兹",
+    "西格玛西格玛教会",
+    "西格玛法典",
+    "神格化",
+    "西格玛帝国信仰",
+    "战斗祭司"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "西格玛是帝国的创立者与至高主神，在成为神祇之前他曾是一位凡人——乌贝斯瑞克部落的酋长之子，以战锤'盖尔·马拉兹'在黑火隘口击溃了十万绿皮大军，统一了散布在旧世界中部的诸人族部落。他在位五十年后独自前往东方，从此升格为神，而他的战锤至今仍被每一位帝国皇帝握在手中，作为皇权与神恩的最高象征。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "西格玛是我们的父、我们的神、我们存在于此的理由。他不是那种从虚无中诞生、高不可攀的遥远神祇——西格玛曾是一个生命终将死去的人！他出生时一道双尾彗星撕裂了夜空，乌贝斯瑞克部落的萨满预言这个婴儿将成就伟大的事业。他少年时独自一人杀死了一头肆虐部落的巨型野猪，青年时在黑火隘口召集了十二部落的酋长，挥舞矮人馈赠的战锤盖尔·马拉兹——那把锤子能击碎任何凡间的兵器——将所有胆敢抵抗的兽人与地精将领的头颅敲碎在他们的军队面前。在那一天之后，再也没有人敢质疑他的权威。他统一了帝国、制定了《西格玛法典》、建立了选帝侯制度，在天下太平之后独自离开——他不像一个贪恋权力的老国王那样坐在宝座上腐烂，而是走向东方，去寻找新的挑战与最终的答案。他升格为神是理所当然的，任何见过他挥锤的人都不会怀疑这一点。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "西格玛的遗产对于帝国统治者而言既是力量的来源也是沉重的束缚。每一位皇帝都必须通过西格玛教会的授权仪式才能获得完全的合法性——大主教将盖尔·马拉兹交到新皇帝手中，这个动作在神学意义上代表西格玛本人认可了这位继承者。但这也意味着皇帝永远生活在西格玛的阴影之下：你的每一个决定都被拿来和神皇的功绩相比较，你的每一次失败都是对神皇遗产的玷污。在军事传统中，西格玛的战斗方式——以重装步兵为核心、以雷霆万钧的冲锋击溃敌军——至今仍是帝国战术的基石。在治国方面，《西格玛法典》的十二条原则——正义、勇武、忠诚、团结、智慧、勤勉、慈悲、节俭、荣誉、纪律、信仰与守望——被刻在每一座帝国法庭的墙壁上。任何想要统治帝国的领主都应该好好研究西格玛的生平：他不是靠神格来征服的——他是靠人格。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 100
+        },
+        "IdentityIds": null
+      },
+      "Content": "西格玛从凡人到神祇的转变过程是旧世界宗教史上最引人入胜的研究课题之一。学术界普遍认为，西格玛的神格化经历了三个阶段：第一阶段是'在世神化'——帝国历第一世纪的史书已经开始将西格玛描绘为超越凡人的存在，其战无不胜的军事记录被归因于某种神圣命运的眷顾；第二阶段是'升格叙事'——西格玛退位后独自东行的旅程被神学化，他并非死亡，而是以肉身进入天堂，在凡人不可触及的领域继续与混沌作战；第三阶段是'制度化崇拜'——西格玛教会建立后，西格玛逐渐从部落英雄转变为帝国的保护神，其神学体系吸收了乌贝斯瑞克部落的古老信仰元素，与尤里克教会的'北南之争'也在这个时期定型。西格玛教会的核心教义认为：西格玛不仅代表战争与胜利，更代表文明的秩序与人类的团结——这解释了他的标志为何是双尾彗星与战锤的结合，彗星象征来自天界的启示，战锤则代表通过暴力建立秩序的人间手段。盖尔·马拉兹本身是矮人锻造技艺的最高杰作，以陨铁铸成，传说中只有被西格玛选中的人才能举起它——而卡尔·弗兰兹皇帝是继马格努斯之后唯一能自如使用这把神锤的皇帝。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "西格玛信仰中关于女性的叙述少得令人痛心——十二位最初的圣杯骑士式的随从全部是男性，西格玛教会的高阶神职至今仍由男性把持，而官方神学中几乎找不到任何关于西格玛与女性关系的记载。但任何一个在帝国贵族女性小圈子中长大的女人都从母亲和祖母口中听过另一个版本的西格玛传说——那些被官方神学删去的碎片。在我的家族中流传着一个古老的说法：西格玛在前往东方的途中曾在一座无名湖畔遇见一位女贤者，她预言了他的神格化，并在他离去后以他的名字建立了第一座修道院——这个版本的传说在西格玛教会的官方文献中不存在，但在至少五个古老贵族家族的女性阁楼藏书室中以几乎相同的版本被保存。我不认为这是历史事实，但我认为这反映了帝国女性在官方叙事中长期被边缘化后发展出的一种集体补偿性叙事。西格玛对于帝国男性的意义是战斗与胜利——对于帝国女性而言，他更像是一个象征：一个能够超越自己出身局限、在众人质疑中证明自己的存在。这一点至少是所有帝国女性的共同体验。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "西格玛在作为家族信仰时展现出与作为帝国国教截然不同的面貌。我们的家族教堂中有一面传承了十七代的西格玛圣壁——但在这面圣壁后面的夹层中保存着一部与我们家族相关的、教会从未批准的《族传西格玛经》。它的内容与官方正典有着微妙但根本性的差异：官方正典中西格玛十二使徒的名字与我们家族传本中记载的有三处不同，这并非抄写错误，而是反映了早期帝国建立时不同部落势力对西格玛遗产的竞争性叙事的遗留痕迹。每个选帝侯家族几乎都有自己的一本'家族版西格玛经'——它们各自强调着西格玛传说中与自己家族祖先有关的部分而淡化了其他部落的参与。这种家族化的宗教信仰在表面上臣服于阿尔道夫大主教堂的正统权威，但在精神和仪式层面，古老家族们对外展示的信仰和在自家小教堂里实践的信仰之间存在着一道微妙而不可弥合的裂缝。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我对西格玛的感受是复杂的——他的锤子救过我的命至少在帝国军队的宣传中是这么说的，但他教会的人在奥斯特马克烧死了一个我认识的草医老妇，理由是她用草药治疗的方式被认为是'未经教会授权的非正统医术'。从流浪者的视角看，西格玛在帝国不同阶层意味着截然不同的东西：对选帝侯他是皇权的神圣背书，对战斗祭司他是劈开混沌恶魔脑袋的神力来源，对阿尔道夫街头的普通市民他是帝国存在的理由——但对边境上的穷人来说，西格玛的名字往往伴随着审判官的皮靴和火刑柱的烟味。我曾在一个斯蒂尔领的偏远村庄中遇到一位瞎眼的老修士，他在废弃的教堂废墟中独自守护着一尊被遗弃的西格玛石雕——他告诉我真正的西格玛不在于教会的仪式和法则，而在于一个男人面对绝境时依然选择挥锤的那一瞬间。我不知道哪一个是真正的西格玛，但我知道在那座被遗忘的破庙中，那个老修士眼中映着的锤光比我在阿尔道夫大教堂中见到的任何金箔更接近神圣。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "西格玛信仰的商业价值是任何一个帝国商人都心知肚明但绝不在公开场合谈论的话题。西格玛教会是帝国最大的土地所有者之一，拥有遍布各行的修道院地产、田庄、葡萄园和矿权——而这些财产的管理在现实中是由像我们这样的商会代理人以教会无法直接操作的方式进行市场经营的。西格玛大教堂每年的圣物展示——包括据称是西格玛曾用过的剑鞘碎片和彗星陨落之夜的陨石残片——吸引了来自整个旧世界的朝圣者，这些朝圣者直接推动了阿尔道夫酒旅行业的全年三分之一收入。西格玛教会的象征资本在金融市场上一样可兑换：一份由西格玛教会背书的中和仲裁协议在帝国任何一所法庭中都会获得比普通商业合同高得多的执行力。而西格玛驻外传教团实际上兼具了帝国商会的半官方海外代表功能——他们在基斯里夫和矮人王国中传播信仰的同时，也为帝国商人打开了当地市场的第一道门。信仰是信仰，商业是商业——但在帝国，这两者之间的界线在每天的实践中被一只巨大的无形之手反复涂抹。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "盖尔·马拉兹——矮人赠予西格玛的陨铁神锤，帝国皇权的最高象征",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "西格玛神皇帝国主神"
+  ]
+}

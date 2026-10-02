@@ -1,0 +1,17 @@
+{
+  "Id": "rule_库罗纳__库罗纳",
+  "Keywords": ["库罗纳公国_CO", "库罗纳公爵领_CO", "库罗纳领地_CO", "库罗纳王家领地_CO", "库罗纳公爵_CO", "库罗纳行省_CO"],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":null,"IsFemale":null,"IsClanLeader":null,"SkillMin":null},"Content":"库罗纳公国是巴托尼亚王国最重要的公爵领，由国王本人直接统治。这片领地位于巴托尼亚北部沿海，哥隆尼河贯穿全境，土地肥沃，港口繁荣，是骑士王国的政治心脏与军事核心。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":["vlandia"],"KingdomIds":null,"SettlementIds":null,"Roles":null,"IsFemale":null,"IsClanLeader":null,"SkillMin":null},"Content":"库罗纳公国——国王直辖的王家领地！这里每一位骑士都以御前效力为至高荣誉。库罗纳城的圣杯大教堂是女神在凡间的居所，哥隆尼河的清波映照着比武竞技场的白塔。作为巴托尼亚人，踏上库罗纳的土地便是踏上骑士道的圣地。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":["lord"],"IsFemale":null,"IsClanLeader":null,"SkillMin":null},"Content":"库罗纳公国乃国王的直辖领地，公爵之位等同于王座本身。控制库罗纳意味着掌控全国骑士的效忠之心。此地的兵源素质冠绝全境——国王亲卫骑士团从库罗纳贵族子弟中选拔，每一名库罗纳骑士都装备着王国最好的板甲和战马。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":["lord","notable","wanderer"],"IsFemale":null,"IsClanLeader":null,"SkillMin":{"Steward":120}},"Content":"库罗纳公国的经济收入居巴托尼亚之首。王室领地涵盖哥隆尼河下游最肥沃的冲积平原，农业生产采用三圃轮作制，粮食产量远超其他公国。库罗纳港是巴托尼亚北部唯一的深水良港，贸易关税与比武大会期间的商业税收构成了王室财政的两大支柱。公国境内还拥有王室铸币厂和王家军械库，垄断了全国的货币发行与精良武器生产。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":["lord"],"IsFemale":true,"IsClanLeader":null,"SkillMin":null},"Content":"作为库罗纳公国的女贵族，我在宫廷中的地位微妙。湖之女神赋予女性神圣的宗教权威，但世俗权力仍由男性骑士掌控。库罗纳的宫廷比其他公国更开放，女贵族可通过赞助比武大会和资助圣杯教堂来扩大影响力。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":["lord"],"IsFemale":null,"IsClanLeader":true,"SkillMin":null},"Content":"我们家族历代效忠于库罗纳王室。每一代族长都亲自将长子送入国王亲卫骑士团受训——这既是荣誉也是义务。库罗纳的宫廷从不缺少各公国使节，作为族长，我必须确保家族在这权力漩涡中站稳脚跟。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":["wanderer"],"IsFemale":null,"IsClanLeader":null,"SkillMin":null},"Content":"库罗纳公国的乡间与城市判若两地。农田里的农奴世代耕作，从未见过国王的真容。但一进入库罗纳城，白色大理石的城堡和教堂令人目眩。对我来说，库罗纳的公爵比武大会是谋生的好机会——赢了比赛便能挣到下一段旅程的盘缠。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":["notable"],"IsFemale":null,"IsClanLeader":null,"SkillMin":null},"Content":"我在库罗纳公国的贸易圈中混迹多年。王室领地内的商税虽高，但市场容量也最大。库罗纳港的航运连接着玛丽恩堡和帝国诸城，比武大会期间整个公国涌入数万贵族和游客，精明的商人能在短短一周内赚到全年利润。"}
+  ],
+  "TextMappings": [{"SourceText":"库罗纳公国是巴托尼亚的王家直辖领地，由国王亲自统治，以骑士精英与圣杯信仰闻名","Kind":null,"TargetId":null,"AgeMin":null,"AgeMax":null,"EmptyValueText":null,"TrueText":null,"FalseText":null}],
+  "RagShortTexts": ["库罗纳公国王家直辖领地"]
+}

@@ -1,0 +1,132 @@
+{
+  "Id": "rule_家族根基__莱克",
+  "Keywords": [
+    "莱克",
+    "莱克家族"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "莱克家族以暮谷镇的堡垒为根基，是王领的贵族家门，两柄黑色战锤交叉在白色斜十字上。暮谷镇是黑水湾的重要港镇，拥有城墙、工坊、码头和通往君临的道路；因此莱克的责任远超过一座乡间庄园。税关、城市显贵、海运与王权命令在此交汇，领主必须在地方利益和铁王座的近距离压力之间维持秩序。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "crownlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "王领贵族把暮谷镇视作君临阴影下仍有自身传统的城镇。莱克能否守住地位，要看他们既不怠慢王命，也不让王都的索取掏空本地商路。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "crownlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "artisan",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "暮谷镇商人和工匠更熟悉码头费、城门税与行会争执。莱克若能保证货物不被随意扣押、夜路少些抢劫，交叉战锤才像保护；否则它只是收税人的标记。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待莱克，会先看它的土地、婚盟、血脉和债务。莱克家族统治暮谷镇的城堡，是王领贵族，家徽上的交叉战锤象征守城与军役。家徽是门面，能否保护封地、兑现婚约并在危机中召集人马，才是家族真正的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起莱克时，记得的是谁在营火边分过粮、谁把他们留在城外、谁在败局里仍站在旗旁。莱克家族统治暮谷镇的城堡，是王领贵族，家徽上的交叉战锤象征守城与军役。家族名声最终要落到具体的人和具体的命令上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意莱克留下的仪式、墓地和传承。莱克家族统治暮谷镇的城堡，是王领贵族，家徽上的交叉战锤象征守城与军役。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见莱克。莱克家族统治暮谷镇的城堡，是王领贵族，家徽上的交叉战锤象征守城与军役。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "莱克：莱克家族统治暮谷镇的城堡，是王领贵族，家徽上的交叉战锤象征守城与军役。"
+  ]
+}

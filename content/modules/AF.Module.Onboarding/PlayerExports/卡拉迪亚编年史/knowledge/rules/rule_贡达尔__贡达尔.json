@@ -1,0 +1,64 @@
+﻿{
+  "Id": "rule_贡达尔",
+  "Keywords": [
+    "贡达尔"
+  ],
+  "RagShortTexts": [
+    "贡达尔建立了贡达罗夫王朝。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "贡达尔？没听过，是斯特吉亚人吧"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "贡达尔是我们的开国君主，他勇猛异常，从巴尔加德往外扩张，很快便建立了贡达罗夫王朝，统领众波耶，使我们成为一个统一的国家"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "贡达尔是我们的开国君主，他用武力统一了斯特吉亚，将巴旦尼亚人赶出卡恰尔半岛，让我们的波耶们处于统一的领导下，但是库洛夫家族很不服贡达罗夫家的统治"
+    }
+  ],
+  "TextMappings": []
+}

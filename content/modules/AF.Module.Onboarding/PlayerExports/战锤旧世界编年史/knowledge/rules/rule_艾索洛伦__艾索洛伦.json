@@ -1,0 +1,209 @@
+{
+  "Id": "rule_艾索洛伦__艾索洛伦",
+  "Keywords": [
+    "艾索洛伦",
+    "森林灵魂",
+    "时流嵌套",
+    "四大领域",
+    "翠绿林地",
+    "魔法漩涡",
+    "野性林地",
+    "暮光林地"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "艾索洛伦是一片活着的、有意识的魔法森林，位于布雷顿尼亚和帝国边境之间。这里的树木会移动、道路会在行人身后消失、时间流逝的速度在森林的不同区域完全不同。木精灵的林中王廷就坐落在这片密林的深处，那里有宏伟的活树大厅和以魔法照亮的永恒暮光。任何进入艾索洛伦的人都会感到一种被无数双眼睛注视的强烈不安，仿佛整片森林正在审视你的灵魂。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "艾索洛伦不是一片普通的森林——它是母亲、是家园、是神祇、是武器。每一个阿斯莱从出生起就与这座森林的灵魂相连，我们能在树根的呢喃中听到森林的警告，能在风中嗅到入侵者的气味。林中王廷——我们的核心圣地——是由千年古树自然生长而成的宏伟殿堂，比任何矮人石厅或人类城堡都更加壮丽，因为它是有生命的建筑。艾索洛伦的时间流动不是线性的：在森林深处的一百年可能只相当于外界的一年，或者相反。这种时间的诡谲使得外人永远无法真正理解我们的节奏。还有森林灵魂——那些居住在古树、溪流和石阵中的精魂实体——它们比我们的种族更加古老，是先于精灵甚至先于古贤者降临前就已经存在于这片土地上的原始意识。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "艾索洛伦是旧世界最令人生畏的自然要塞。从军事角度看，这片森林提供了几乎完美的防御屏障：密林遮挡视线和远程火力、崎岖地形严重阻碍大规模部队运动、魔法时间扭曲效应可能使一支军队在森林中困上数月而补给在几天内耗尽。历史上有记录的军事力量试图深入艾索洛伦的案例无一不以灾难告终——最著名的是某位布雷顿尼亚国王率军进入森林后音信全无，数百年后他的后代在森林边缘发现了那些骑士的骨骸，盔甲崭新如初仿佛仅仅死去了数日。任何穿越艾索洛伦的商贸或军事路线都必须严格沿着森林外围——精灵偶尔会允许指定的通道保持开放，但这些特权随时可能被撤回。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 100
+        },
+        "IdentityIds": null
+      },
+      "Content": "艾索洛伦的魔法地理学是旧世界最复杂的超自然现象之一。这片森林是数个远古魔法漩涡之一——类似于奥苏安大漩涡但规模较小——天然的魔力汇流点。这种魔力浓度维持了森林的'意识场'，使得树木、岩石甚至空气本身都具有某种程度的知觉和意图。森林的时间扭曲效应在学理上被称为'时流嵌套'，据推测是由于极高浓度的生命之风格赫兰与阴影之风乌尔古之间形成了不稳定的共振区域。艾索洛伦不同的区域展现出迥异的微型气候和生态系统，最显著的是分为四大领域：翠绿林地（温和且相对安全的中心区域）、野性林地（原始而危险的外围）、暮光林地（半永久暮色笼罩的神秘地带）以及黯影林地——后者是森林中最黑暗最险恶的区域，据说被某种远古的腐败力量所玷污，连木精灵自己也避之不及。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "艾索洛伦对于那些能听到她声音的女性来说，是一种永远不会被误解的存在。我们的母亲森林不是一个沉默的背景——她用花粉的重量、树液的甜度、藤蔓的紧绷程度和夜间风穿过特定树冠时产生的音调来与我们沟通。我曾在黯影林地的边缘守卫了四百年，那片被远古腐败玷污的区域散发出的不仅是死亡的气息，还有一种更令人不安的东西——记忆的创伤。森林在那里反复重演着数千年前某场悲剧的最后时刻：如果你在特定的月光角度下进入那片区域，你会看到半透明的树精在无声地尖叫，它们的形体扭曲但声音被一种古老的诅咒封缄。阿莉尔禁止任何人深入黯影林地，不是因为怕我们被腐化，而是因为她不想让更多阿斯莱看到我们的森林母亲曾经受过的伤害。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "作为林地议会的十二族长之一，我的重要职责之一是维护艾索洛伦内部领地边界的稳定性。外人以为森林是一整块统一的领域，但事实上四大领域之间存在着需要持续调和的深层张力。翠绿林地的精魂温和但脆弱——一次混沌入侵的余波就可能导致整片翠绿区枯萎变色。野性林地的精魂则好战而饥饿，它们不断试图扩张自己的领地范围，有时甚至会吞噬翠绿林地的边缘地带。议会必须每隔一世纪举行一次'界树巡礼'——全体十二族长在各自精魂的陪同下沿四大领域的边界行走，用根系和咒语重新确认并加固每一道边界。如果界树巡礼被中断——比如被外部战争打断——森林可能在数百年内自行发生不可预测的领域偏移。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我在旧世界各地走过许多危险的荒野，但没有任何地方的诡异程度能与艾索洛伦相比。有一次我在灰色山脉脚下的帝国一侧打猎，追逐一头受伤的鹿意外进入了森林外围——前后不过几百步的距离——当我回头时，来时的猎径已经消失了。不是被草木覆盖，而是彻底不存在了，仿佛从未有过那条路。我在森林边缘困了整整两天，靠啃野蘑菇维生，直到一个面无表情的木精灵林地守卫出现在十步外——他没有说话，只是用弓指向一个方向，然后在我眨眼时消失了。我顺着那个方向走了不到半刻钟就回到了帝国大道上。从那以后我再也不在艾索洛伦附近打猎。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "从矿业与资源勘探的角度来看，艾索洛伦是旧世界最大的未开发资源禁地。地质勘测表明这片森林下方极有可能蕴藏着矮人山脉延伸过来的盖罗米尔矿脉和大量宝石矿床，但任何试图申请勘探权的行为都等于自杀声明。帝国矿业公会有一份非正式的黑名单——'不可触及地区'——艾索洛伦排在第一位。我知道有位努恩的钢铁大亨曾试图通过贿赂布雷顿尼亚边境领主获取一片'不在森林内只是靠近'的林地进行秘密钻探，结果不仅钻井设备在第一个晚上全部被藤蔓吞噬，他本人的庄园在三个晚上后被密密麻麻的荆棘包围，花了一个月才被清理出来。这被视为一次非常温和的警告——木精灵显然心情不错。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "艾索洛伦——位于布雷顿尼亚与帝国之间的魔法森林，木精灵的家园",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "艾索洛伦森林灵魂时流嵌套"
+  ]
+}

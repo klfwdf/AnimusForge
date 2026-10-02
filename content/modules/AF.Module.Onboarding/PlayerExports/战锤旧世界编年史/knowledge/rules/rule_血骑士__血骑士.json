@@ -1,0 +1,208 @@
+{
+  "Id": "rule_血骑士__血骑士",
+  "Keywords": [
+    "血骑士",
+    "吸血鬼重骑兵",
+    "武术大师",
+    "血龙骑士团",
+    "亡灵冲锋",
+    "暗夜骑士",
+    "不朽骑手"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "血骑士是旧世界最恐怖的重装骑兵，他们是吸血鬼中最精湛的武术大师，身披暗红板甲，骑乘巨大的骷髅战马，以千年磨砺的剑术发起毁灭性的冲锋。任何活人骑士团在遭遇血骑士时都将面对压倒性的武力差距。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "血骑士乃吾族最璀璨的荣光——他们是放弃了政治与阴谋的吸血鬼，选择以纯粹的武力追求不朽的武道巅峰。血龙骑士团的成员每一个都经历了数百年甚至上千年的剑术修炼，他们骑乘最凶悍的梦魇战马，在黑夜中冲锋时宛如血色的彗星撞击大地。我们将其视为活着的传奇，因为他们用自身证明：吸血鬼不必沉沦于对鲜血的病态渴望，而可以将永生投入到武艺的至高追求中。当红甲骑手掠过平原，即便是不死军团中最低贱的僵尸也会仰头致以默然敬意。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "与血骑士交锋是任何指挥官的噩梦。他们集结了重骑兵的全部优势——速度、冲击力、装甲强度——同时消除了重骑兵的一切弱点——疲劳、士气、恐惧。你能做的只能是用长矛兵的纵深阵列拖延他们的冲锋，同时希望你的法师能够在交战前给他们造成足够伤害。值得注意的一个利用点是：血骑士通常极度傲慢，他们会拒绝与'不值得'的对手交战，这一性格缺陷可以转化为诱敌陷阱。但请不要误会，一旦血骑士认定了目标，没有任何力量能够阻止他们将其撕成碎片。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "血骑士的起源可追溯到帝国历前约四百年——当时莱弥亚血族精英战士艾博拉什·血龙在饮用了被封印于银山峰的远古巨龙之血后，克服了吸血鬼对鲜血的渴求，转而以武道追求来驯服体内的黑暗本能。艾博拉什创立了血龙骑士团，立下铁律：每一位成员必须以剑术击败他们想饮血的对手，只吸取最强者的鲜血。这使得血骑士的选拔机制成为旧世界最残酷的淘汰体系——任何有志加入者必须在单挑中击败一名现任骑士。随着骑士团在千年间的扩散，血骑士也逐渐分裂为不同派系，有的仍旧追随艾博拉什的武道哲学，有的则沦为纯粹的杀戮者。其中最著名的分支当属'血心兄弟会'，他们在帝国历2017年的赫姆加特围城战中曾以一敌百，于三十分钟内全歼了一支大剑圣步兵团。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "血骑士中的某些成员让我想起那些在比武场上叱咤风云的布列塔尼亚冠军——同样的骄傲，同样的从血液中渗出的暴力美学。但区别在于，布列塔尼亚骑士终将老去，而血骑士只会越战越强。我在一次晚宴上遇见过一位血龙骑士团成员，他虽然饮血但姿态优雅，言谈间满是战士的荣誉感。他说他寻找能杀死自己的对手已经找了六百年，至今未能如愿。这句话让我不寒而栗——不是因为他可怕，而是因为他语气中那种平静的绝望。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "获得血骑士的效忠从来不是靠封地或金币能解决的——他们不是雇佣兵，而是武道僧侣。我们家族花费了整整三代人的时间才赢得一支五骑血骑士的侍奉，代价是提供了曾祖父在血龙骑士团创始人艾博拉什麾下作战的证明，以及承诺每年提供十二场值得一战的对手。这使得我们每年都必须精心安排边境冲突以'喂养'他们的战斗欲望，开销巨大，但族中但凡有人提出异议，都会被血骑士的名号吓退——有他们在，就是有不败的保障。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我曾在灰色山脉的隘口帮一支布列塔尼亚游侠队埋过他们的战友——一整队十二名受过祝福的圣杯朝圣者骑士，被一名血骑士在不到一杯酒的时间里全部斩杀。幸存的老游侠说，那个血骑士在冲锋前甚至还鞠了一躬，像在比武场一样彬彬有礼。然后就是一道红光掠过，十二颗头颅同时落地。从那以后，任何雇佣合同里只要提到'吸血鬼骑兵'这几个字，我立刻要求三倍酬金，外加预付。活人打血骑士？那不是在战斗，那是在给人家当靶子练习。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "你知道一套完整的血骑士板甲在黑市上能卖多少吗？别做梦了，根本就没有完整的。每次血骑士被击败，他们的甲胄——如果有碎片留下的话——会立刻被西格玛教会没收并熔毁。但我在塔拉贝克河捞到过一片，只有巴掌大，由红铜色的金属制成，轻得出奇，但火枪弹都打不穿。我把它送到阿尔道夫的帝国工程学院鉴定，那边的炼金师说这东西根本不是铁，而是一种混合了龙血与暗影魔法的锻造产物，配方早就失传了。这个发现让我沉思良久——你面对的敌人，连盔甲的秘密你都无从知晓。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "吸血鬼武术大师组成的恐怖重装骑兵",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "血骑士是旧世界最恐怖的重装骑兵"
+  ]
+}

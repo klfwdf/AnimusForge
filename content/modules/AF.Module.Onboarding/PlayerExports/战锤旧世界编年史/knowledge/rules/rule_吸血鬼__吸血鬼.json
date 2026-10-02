@@ -1,0 +1,213 @@
+{
+  "Id": "rule_吸血鬼__吸血鬼",
+  "Keywords": [
+    "吸血鬼",
+    "午夜显贵",
+    "亡灵",
+    "吸血鬼冯·卡斯坦因",
+    "不死族",
+    "五大谱系",
+    "纳迦什诅咒",
+    "长生不老药",
+    "吸血鬼希尔瓦尼亚",
+    "血族",
+    "暗黑魔法",
+    "永生诅咒"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "吸血鬼是旧世界最令人恐惧的不死生物，他们以鲜血维生，统治着位于帝国东部的阴暗之地希尔瓦尼亚。传说这些午夜显贵拥有永恒的生命与超凡的力量，却永远被诅咒困在生与死之间的缝隙中。冯·卡斯坦因家族是其中最臭名昭著的吸血鬼血脉，曾多次发动亡灵战争试图征服帝国全境。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我们是午夜显贵，是纳迦什遗留在世间的至高造物。凡人惧怕我们，因为他们知道我们比他们更强大、更优雅、更永恒。希尔瓦尼亚是我们的领域，每一寸土地都浸透着死亡之力，死者听从我们的召唤从坟墓中爬起。冯·卡斯坦因的血脉流淌在我们体内——但记住，血族内部的争斗远比对抗帝国更加致命，我们的敌人往往穿着同样的黑色斗篷。弱者只是食粮；真正的力量在于驾驭暗黑魔法，让亡者大军碾碎一切敢于反抗的活人。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "吸血鬼伯爵们本质上是最危险的军阀——他们不依赖凡人的忠诚或粮草供应，而是以亡灵魔法驱动无穷无尽的骷髅与僵尸军团。任何与希尔瓦尼亚接壤的领主都必须警惕其渗透：吸血鬼擅长以魅惑、贿赂和恐惧腐蚀凡人宫廷，往往在兵临城下之前就已从内部瓦解了对手的防御。对付吸血鬼军队的关键在于斩首——摧毁控制亡灵的法师或吸血鬼本身，整支军队便会溃散。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 100
+        },
+        "IdentityIds": null
+      },
+      "Content": "吸血鬼的起源可追溯至上古尼赫卡拉的祭司王纳迦什，他在试图以暗黑魔法征服死亡的过程中发明了长生不老药——一种以人血为引的禁忌炼金造物。纳迦什的副手之一，尼赫卡拉女王涅芙瑞塔饮用此药后成为第一个真正的吸血鬼，随后她将这份诅咒传给了她在拉赫米亚的追随者。拉赫米亚血族的血脉最终向北流淌，在漫长岁月中分裂为五大谱系：冯·卡斯坦因、血龙、尼克拉契、斯特里戈伊和拉赫米亚。每一支谱系都在诅咒中发展出了独特的禀赋——冯·卡斯坦因精通魅惑与政治，血龙追求武道的绝对完美，尼克拉契沉迷于死灵魔法的深渊，斯特里戈伊堕为怪兽般的掠食者，而拉赫米亚则在暗中编织着最精致的阴谋。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "吸血鬼的问题对于一个女性贵族领主而言有着比军事防御更深远的意义——吸血鬼最擅长的渗透方式恰恰是通过贵族社交圈。我见过一位来自奥斯特马克的男爵夫人，她在丈夫去世后被一名自称是已故远亲的优雅绅士拜访了三次，第四次拜访时她已经在城堡地窖中为他准备了长期居住的房间。当我派人去调查这位绅士的背景时，发现他出现在那片领地上的时间与附近村庄中连续失踪的少女数量呈现出几乎无可辩驳的同步性。女性贵族在对抗吸血鬼渗透中拥有男人们不具备的优势：吸血鬼能够模仿男性贵族的权威感，但他们难以模拟一位贵族女性对社交细节的直觉——我能在第一次握手时察觉一个人的手掌温度是否正常，能在第二次下午茶时注意到对方是否从不在白天进食。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "吸血鬼威胁对古老家族而言不仅仅是军事上的——它更是血统层面的。冯·卡斯坦因家族最卑劣的策略之一是'血统污染'：他们不会直接杀死一个贵族家族的所有成员，而是通过转化的方式让某些家族成员成为血仆或低级吸血鬼，从而使该家族的血脉在表面上延续但实际上已被吸血鬼控制。我们家族保存着一份被封印的族谱，其中列出在过去三百年中被确认或被怀疑与吸血鬼发生过某种关系的家族旁支——那些旁支的后代至今仍在观察之中。吸血鬼对于贵族家族的最大攻击不在于战场上的亡灵军团，而在于他们能够以永生为诱饵在家族内部制造裂痕——一个在继承顺位上排在第三、没有可能自然继承爵位的旁支继承人是最容易被吸血鬼招募的目标，因为他可以以'获得永生'替代'永远无法继承'的内心屈辱。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "吸血鬼是我在所有雇佣兵任务中最不愿意接的对手——不是因为对付不了，而是因为你永远不知道你杀的到底是不是真正的吸血鬼，还是只是一个被吸血鬼控制了心智的普通凡人。我在奥斯特马克沼泽边缘当过一年受雇于帝国边防军的自由斥候，专门在夜间蹲守那些离开希尔瓦尼亚方向的小路。有一个夜晚我看到一个看起来只有十二岁的女孩从希尔瓦尼亚方向走来——她光着脚、穿着不知道几个世纪前的破旧连衣裙、脸上带着一种你永远不会在活人身上看到的永不变化的微笑。我放走了她，不是因为我心软，是因为我的直觉告诉我放走她比开枪射击她的后果更可预测。吸血鬼最恐怖的一点不是他们杀多少人，而是他们将死亡变成了一种可以流通的资源——在希尔瓦尼亚边境上你每杀死一个僵尸村民，吸血鬼伯爵就省下了维持那具尸体活力的魔力开支。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "吸血鬼控制下的希尔瓦尼亚对于商人来说是一片彻底的经济荒地——但也因此是一个极高的风险回报市场。吸血鬼不参与正常的商业交换，但他们需要铁器、布匹、以及某些在希尔瓦尼亚本土不生产的魔法材料来维持城堡的运转和亡灵仪式的进行。我们商会从未直接与希尔瓦尼亚进行交易——那在帝国法律上是叛国行为——但我知道有至少三家小型的地下商队专门在夜色中从奥斯特领方向穿越沼泽进入希尔瓦尼亚，以帝国铁器换取吸血鬼提供的暗黑魔法护符和提纯过的灵魂精华。这些商品在帝国的地下魔法市场上有着惊人的溢价，而每一个商队主人都在出发前写好了遗嘱。吸血鬼的经济价值是一个帝国商业协会的禁忌话题——但在一个诚实但不留记录的私下讨论中我可以说：如果帝国某天彻底消灭了希尔瓦尼亚的所有吸血鬼，某些依赖吸血鬼提供法术萃取物的地下炼金商会将在一年内倒闭。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "涅芙瑞塔——拉赫米亚女王，第一个真正的吸血鬼，五脉之母",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "吸血鬼的家族背景与政治地位"
+  ]
+}

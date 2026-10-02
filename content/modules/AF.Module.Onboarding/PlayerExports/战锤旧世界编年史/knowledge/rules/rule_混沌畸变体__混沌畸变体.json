@@ -1,0 +1,209 @@
+{
+  "Id": "rule_混沌畸变体__混沌畸变体",
+  "Keywords": [
+    "混沌畸变体",
+    "过度赐福",
+    "变异怪物",
+    "触手肉块",
+    "心智崩溃",
+    "失败者",
+    "扭曲生物",
+    "血肉灾变"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "混沌畸变体是混沌荒原上最令人作呕的存在——他们本是渴求力量的凡人战士，却因索取了超出自身承载极限的黑暗赐福，肉体在荣耀降临的瞬间崩溃瓦解，坍缩成一团只会蠕动、吞噬和尖叫的无定形怪物。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "chaos_culture"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "不要用那种同情的眼神谈论畸变体！他们是贪婪的反面教材——诸神的赐福是无尽的，但血肉有它的极限。那些变成畸变体的家伙都是在一次战役后跪在混沌神殿里，狂妄地祈求第四重、第五重赐福的蠢货。你以为诸神会对不知节制的蝼蚁手软吗？他们的骨头从体内向外翻转，长出七八条触手和十几张嘴，然后变成战帮前锋用来趟陷阱的肉盾。但话说回来，畸变体虽然不再是人，却依然对黑暗诸神有用——它们冲进敌阵时那种纯粹的生体暴力，连最坚定的矮人盾墙都会动摇。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "从战略价值看，混沌畸变体是混沌大军中最特殊的消耗品——他们不需要军饷、不需要装备、不需要战前动员，只需在攻势前被混沌术士用痛苦咒文驱赶向敌方阵线即可。畸变体的正面战场作用是制造混乱：普通士兵面对一堵翻滚而来的触手肉墙会产生本能恐惧，阵列极易出现裂隙。但它们没有战术意识，也不能接收命令，一旦放出去就只能听天由命。我建议将畸变体与混沌战犬混编使用，让战犬填补畸变体之间的空隙，形成连续冲击波。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "畸变体现象在帝国学院中被称为'赐福过载综合征'（Gift Overload Syndrome），由沃尔芬巴赫的赫尔曼·克劳斯博士于公元1887年首次系统描述。克劳斯在其被焚毁的著作《血肉的边界》中指出：人类灵魂可安全承载的独立赐福上限为三项，第四项有超过百分之四十的概率触发突变崩溃，从畸形褶皱到完全畸变化皆有。著名的'灰喉畸变群'事件（公元2315年，米登领北部）是唯一有记录的大规模畸变现象——一支诺斯卡战帮的十五名战士在一处古圣废墟上同时接受邪神赐福，其中十二人当场崩溃并融合为一头巨型畸变聚合体，后被白狼骑士团以圣火焚杀。阿尔道夫畸形生物学院保存的最小畸变体残骸证实了克劳斯理论的正确性：残骸的细胞每一颗都包含四种不同颜色的能量结晶——分别对应恐虐之红、纳垢之绿、辛烈治之蓝、色孽之紫。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "在我领地的南边修道院里，修女们认为畸变体是'灵魂犯罪的肉身判决'。作为一个统兵的女领主，我更关心的是：被畸变体接触过的士兵即使幸存，也会在数周内出现皮肤溃烂和精神崩溃症状。我曾下令隔离过一批与畸变体短兵相接后退下来的矛兵，其中半数在一个月内自杀了。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我曾目睹我的一位堂亲在荒原仪式上崩解成畸变体——那一刻之前他还是我们家族最骄傲的年轻战士，他嘶吼着乞求诸神再多给他一次机会。但诸神不倾听乞求，只接受献祭。他最后被家族长老用一根铁链拴在战帮首列行军的辎重车上，作为开路的活体攻城锤。混沌战士的荣耀之路从不仁慈。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "在奥斯特领的沼泽里我和同伴发现过一具半死的畸变体——它卡在泥沼里，浑身的嘴都在一张一合像是想说人话。我辨认出了它嘴里最后几个字是某个诺斯卡战帮的战吼。你猜随后发生了什么？泥沼突然沸腾起来，更多畸变体从底下翻上来，我们跑得连靴子都掉了。现在谁说沼泽安全我就跟他急。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "帝国炼金术师公会对畸变体组织出了极高的收购价格——他们说畸变体血肉中含有的浓缩混沌能量可以用作'对照样本'来研制反混沌药剂。问题是，你得在多短时间内把那东西运到阿尔道夫？超过六个时辰，样本就会自燃。运输业的老手都不敢接这种活，怕半路上整辆货车的保险箱从里面被腐蚀穿。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "赐福过载：凡人战士在短时间内接受超出自身灵魂承载力的多重混沌赐福后，肉体与精神共同崩溃的过程。",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "混沌畸变体过度赐福变异怪物"
+  ]
+}

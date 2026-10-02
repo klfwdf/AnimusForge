@@ -1,0 +1,133 @@
+{
+  "Id": "rule_家族根基__伊斯蒙家族",
+  "Keywords": [
+    "伊斯蒙家族",
+    "艾斯蒙岛",
+    "海龟",
+    "拜拉席恩封臣"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "伊斯蒙家族以艾斯蒙岛上的绿石堡为根基，是拜拉席恩麾下的风暴地海岛家族，家徽为浅绿色底上的深绿海龟。岛屿靠近破船湾与多恩海，生活离不开渔业、船只、潮汐和风暴；缓慢的海龟纹章不代表全族迟钝。外地领主少有理由熟悉伊斯蒙，风暴地水手却会在坏天气中认真对待绿石堡的港湾与海况经验。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "stormlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "风暴地贵族把伊斯蒙看作绿石岛上可靠却不喧闹的海岛封臣。海龟纹章不如雄鹿或闪电威猛，却很适合一门必须在礁石、海盗与破船湾坏天气之间长久生存的家族：甲壳、耐心和知道何时缩回安全水域，都是力量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "stormlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "岛民评价伊斯蒙，先看港口能否避风、海盗来时谁组织守岸、歉收时有没有船带回粮食。陆上贵族可能拿海龟开玩笑，绿石岛的人却知道，活得久比冲得快重要。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待伊斯蒙家族，会先看它的土地、婚盟、血脉和债务。艾斯蒙岛绿石堡的风暴地海岛封臣，家徽为浅绿底深绿海龟。渔业、船只、风暴与拜拉席恩婚姻联系构成其根基；箴言未知。家徽是门面，能否保护封地、兑现婚约并在危机中召集人马，才是家族真正的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起伊斯蒙家族时，记得的是谁在营火边分过粮、谁把他们留在城外、谁在败局里仍站在旗旁。艾斯蒙岛绿石堡的风暴地海岛封臣，家徽为浅绿底深绿海龟。渔业、船只、风暴与拜拉席恩婚姻联系构成其根基；箴言未知。家族名声最终要落到具体的人和具体的命令上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意伊斯蒙家族留下的仪式、墓地和传承。艾斯蒙岛绿石堡的风暴地海岛封臣，家徽为浅绿底深绿海龟。渔业、船只、风暴与拜拉席恩婚姻联系构成其根基；箴言未知。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见伊斯蒙家族。艾斯蒙岛绿石堡的风暴地海岛封臣，家徽为浅绿底深绿海龟。渔业、船只、风暴与拜拉席恩婚姻联系构成其根基；箴言未知。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "伊斯蒙家族：艾斯蒙岛绿石堡的风暴地海岛封臣，家徽为浅绿底深绿海龟。渔业、船只、风暴与拜拉席恩婚姻联系构成其根基；箴言未知。"
+  ]
+}

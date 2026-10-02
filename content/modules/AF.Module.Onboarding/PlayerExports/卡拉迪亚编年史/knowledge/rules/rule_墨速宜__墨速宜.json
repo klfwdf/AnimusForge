@@ -1,0 +1,77 @@
+﻿{
+  "Id": "rule_墨速宜",
+  "Keywords": [
+    "墨速宜"
+  ],
+  "RagShortTexts": [
+    "墨速宜是库吉特家族的族长，丈夫等男丁尽数战死于潘德拉克战役。家族未获应有回报，反因男丁凋零而遭阿契特等家族觊觎。她不满蒙楚格坐视不管，但深知唯有依附强者才能延续这个血统不高贵也不富裕的家族。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": [
+          "town_k1"
+        ],
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "墨速宜是库塞特国库吉特家族的族长，她的丈夫和她的两个兄弟以及家庭中的其他男丁全部死于潘德拉克战役，而库吉特家族却没有得到应有的回报，反而因为家族男丁的遭遇遭到其他库塞特家族尤其是阿契特家族的觊觎。墨速宜对蒙楚格的坐视不管感到不满，但是她明白只能靠依附一个强大的可汗才能让自己血统并不高贵且并不富裕的家族得以延续。\n家族目前统治的定居点是a"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "khuzait"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "墨速宜是库吉特家族的女族长，\n墨速宜所面临的处境是草原部落政治的典型缩影。潘德拉克战役后，国库吉特家族男丁尽失，实力大损，只能由墨速宜承担族长之责。\n未获可汗应有封赏，反而成为阿契特等强族觊觎的对象。墨速宜虽对蒙楚格的坐视心存不满，但深谙草原法则：血统不显、家底不厚的部族，唯有依附强权可汗方能自保。其选择无关个人忠诚，而是部族存续的现实考量\n家族目前统治的定居点是a"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": [
+          "town_k1"
+        ],
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "墨速宜，库吉特部大那颜，胆大且诚实，对待敌人尤其是帝国人十分残忍，经常为小部落受到不公待遇而打抱不平。虽然她的武力平平，但是她的智慧与行事经验十分出色。墨速宜有着出色的统御能力，得益于此，他才能在丈夫岁仑那颤牺牲后迅速揽过权力，并在其他部落的发难中保住库吉特的半壁江山。她还有着不弱的经商天赋，首府迁移到巴尔塔罕后与北方蛮荒之地加深贸易，这才让损失惨重的库吉特拥有了在卡拉迪亚最东北苦寒之地生存的本钱，然而这些并不是她最擅长的。每个与她相识的人都会赞叹她为人处世的技巧，她尤其擅长和其他女贵族搞好关系，通过熟络其他领主的妻女，这让她可以间接影响目标领主本人的决策。她还十分擅长组织与管理，不管是城镇的建设还是军队的部署都井井有条。她的女儿雅那继承了她在统御部族和管理各种事物上的天赋，甚至部族元老们一致认为，未来她的女儿坐在大那颜这个位置上会比她统御的更好。\n她的女儿雅那也觉得自己各方面都和母亲很像，就连脸上也都有类似母亲的伤疤。她本该很祟拜母亲的，如果最近50岁高龄的母亲没有给她新找了个继父的话"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "a",
+      "Kind": "clan_all_settlements",
+      "TargetId": "clan_khuzait_2",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}

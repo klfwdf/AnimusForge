@@ -1,0 +1,213 @@
+{
+  "Id": "rule_侠义远征__侠义远征",
+  "Keywords": [
+    "侠义远征",
+    "圣战号召",
+    "骑士集结",
+    "十字军",
+    "全国动员",
+    "国王宣令",
+    "远征",
+    "圣战",
+    "骑士集结令",
+    "全国征召",
+    "神圣战争",
+    "王国动员"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "侠义远征是巴托尼亚国王宣布的神圣军事行动，号召全国骑士集结讨伐王国的外敌。这是全国性的战争动员，波及所有公国，每一位持有纹章的骑士都有参战义务。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "侠义远征！当国王的信使骑着快马穿越公国边疆，在城堡广场上宣读那卷盖有王家印章的羊皮纸时，整个巴托尼亚都将沸腾！我参加过两次侠义远征——一次征讨艾索洛伦边境的野兽人战群，另一次南下烧毁绿皮在恶地的巢穴。数以万计的骑士汇聚成银色的洪流，田野被马蹄踏成泥泞，空气中弥漫着钢铁和皮革的气味。每个人的眼中都燃烧着同样的火焰：为女神而战，为国王而战，为写入史诗的那一页而战！没有任何巴托尼亚人能在侠义远征的号角声中保持冷静——那是刻在我们血液里的声音。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "侠义远征是国王手中最强大的政治工具，也是一场豪赌。成功则国王的权威达到顶峰，各公国团结一致；失败则王室威信扫地，公爵们可能开始质疑国王的领导能力。发动侠义远征需要充足的粮食储备、沿途补给线规划和各公国的协调配合——后勤压力往往比正面敌人更致命。历史上因后勤崩溃而失败的侠义远征远比战败的多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "巴托尼亚的侠义远征制度在法律上依据《国王宣令法》与《骑士服役条例》。国王需在宣战前获得至少七位公爵的联署支持，并正式在库罗纳圣杯大教堂举行祈福仪式。远征期间，所有骑士的领地将受到王室的「战时保护令」庇护——任何趁机侵犯友军领地者将被处以剥夺纹章和流放的惩罚。历史上规模最大的侠义远征是征服者纪元的「阿拉比十字军」，参战骑士逾五万人，历时十二年，最终攻陷了阿拉比苏丹的首都。后勤方面，标准的远征军需每人配备三匹备用马、六十日口粮和充足箭矢，沿途需提前设置粮秣站。远征军的惩罚纪律极为严苛：擅离行伍者处鞭刑，劫掠友方村庄者绞。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "侠义远征是男人离家远行的时刻，而我们女人必须承担起管理领地、维持生产的一切责任。许多贵族夫人在丈夫远征期间展现出惊人的治国才能。远征是男人的考验，留守是女人的考验——女神赋予我们的担子从不比他们的轻。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "侠义远征的号召让我族面临艰难抉择：留下足够人手守护领地，还是倾全族之力追随国王换取无上荣耀？我们通常折中——送出一半战士，留一半防守。这是氏族生存的智慧，也是我们活到今天的原因。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "侠义远征是我这样的流浪者获取合法身份的最佳机会。只要追随远征军，砍下足够多的敌人首级，运气好的话会有哪位骑士或领主愿意收你为随从。当然，更多时候你只会变成路边无名无姓的白骨。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "侠义远征是军需商人的狂欢节。粮草、马具、武器、盔甲、医疗用品——需求量是平时的百倍，价格可以翻到天上去。但风险也高：如果远征失败，国王可能拒绝支付尾款，商人的破产往往和远征军的战败同时发生。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "侠义远征是国王宣布的全国神圣军事行动，所有骑士有义务参战",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "侠义远征圣战号召骑士集结"
+  ]
+}

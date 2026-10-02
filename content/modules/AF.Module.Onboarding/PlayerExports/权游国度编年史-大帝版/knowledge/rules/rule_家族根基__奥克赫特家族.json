@@ -1,0 +1,133 @@
+{
+  "Id": "rule_家族根基__奥克赫特家族",
+  "Keywords": [
+    "奥克赫特家族",
+    "橡叶",
+    "根深蒂固",
+    "多恩边疆"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "奥克赫特家族以古橡城为根基，是河湾地最古老的家族之一，家徽以金底橡叶为核心，箴言“根深蒂固”。家族历史与园丁王时代以及河湾—多恩边疆的长期战争相连，旧歌中也保存着奥克赫特与多恩人的血仇记忆。古老并不意味着每一代都必须重复祖先的仇恨；对当地人而言，橡树真正的价值在于遮荫、木材和扎进土地的根。贵族用“根深”谈血统，农民则用它衡量一座城能否熬过战争与歉收。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "reach"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "古橡城的奥克赫特被河湾诸侯视作真正的老树。“根深蒂固”既是箴言，也是他们对自身地位的解释：王朝可以更替，婚盟可以改写，橡树仍以年轮证明谁在这里活得更久。古老带来尊敬，也容易让家族把改变误认成背叛。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "reach"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "林农、木匠和果农对橡树的理解比歌手更实际：好木要等很多年，砍倒却只需片刻。奥克赫特若肯像老树一样遮风，领民会以家族长久为荣；若根系只顾争夺水土，附近的人也会盼雷劈下来。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待奥克赫特家族，会先看它的土地、婚盟、血脉和债务。古橡城的河湾古族，家徽为金底橡叶，箴言“根深蒂固”。园丁时代、边疆战争与古老血统塑造其名声，也留下河湾—多恩旧仇。家徽是门面，能否保护封地、兑现婚约并在危机中召集人马，才是家族真正的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起奥克赫特家族时，记得的是谁在营火边分过粮、谁把他们留在城外、谁在败局里仍站在旗旁。古橡城的河湾古族，家徽为金底橡叶，箴言“根深蒂固”。园丁时代、边疆战争与古老血统塑造其名声，也留下河湾—多恩旧仇。家族名声最终要落到具体的人和具体的命令上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意奥克赫特家族留下的仪式、墓地和传承。古橡城的河湾古族，家徽为金底橡叶，箴言“根深蒂固”。园丁时代、边疆战争与古老血统塑造其名声，也留下河湾—多恩旧仇。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见奥克赫特家族。古橡城的河湾古族，家徽为金底橡叶，箴言“根深蒂固”。园丁时代、边疆战争与古老血统塑造其名声，也留下河湾—多恩旧仇。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "奥克赫特家族：古橡城的河湾古族，家徽为金底橡叶，箴言“根深蒂固”。园丁时代、边疆战争与古老血统塑造其名声，也留下河湾—多恩旧仇。"
+  ]
+}

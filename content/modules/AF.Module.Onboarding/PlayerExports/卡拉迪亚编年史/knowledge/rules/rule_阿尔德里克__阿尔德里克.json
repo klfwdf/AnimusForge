@@ -1,0 +1,281 @@
+﻿{
+  "Id": "rule_阿尔德里克",
+  "Keywords": [
+    "阿尔德里克"
+  ],
+  "RagShortTexts": [
+    "阿尔德里克与德泰尔国王路线对立，寻求更多战争与征服。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": [
+          "vlandia"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": [
+          "hero:lord_4_1"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "阿尔德里克是我最不想打交道的人，但我必须对他微笑。他是开国者的后裔，坐拥帕拉汶德，北瓦兰迪亚的领主们听他的比听我的多。这些我都知道。他以为我不知道他在背后串联那些不满的男爵？我知道。但瓦兰迪亚经不起国王和提哈家族的公开决裂，那等于把王国沿着特朗河撕成两半。所以我忍。他也知道我在忍。我们之间的体面是一层薄冰，谁都不想先踩破。潘德拉克之后他怪我，他没说出口，但我懂他的眼神——他觉得换了他领军，结果会不一样。也许吧。但我不一样。我不想把瓦兰迪亚变成一个巨大的军营，而他想要的就是那个。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": [
+          "clan_vlandia_1"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": false,
+        "SkillMin": null
+      },
+      "Content": "阿尔德里克·戴·提哈。这个名字在家族聚会上提起来，餐桌上的酒杯就端不稳了。他凭什么？就凭祖上是奥斯里克的小儿子？我们的祖上是奥斯里克本人，金冠戴在我们头上。帕拉汶德是我们祖上打下来的，封给他们是恩典，不是他们应得的。现在倒好，他们用我们给的封地把半个王国攥在手里，还摆出一副“我比你更瓦兰迪亚”的嘴脸。德泰尔忍他，我们理解，但忍让也有个限度。尤其是他那个大儿子费恩哈尔，跟他爹一个模子刻出来的，再过几年这父子俩怕是连面子都不给了。他们家唯独那个小女儿还算个人物——可惜生错了家。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": [
+          "clan_vlandia_3"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "阿尔德里克是个现实问题，我们不会假装他不存在。他在北瓦兰迪亚的影响力是实打实的，帕拉汶德的商路和兵源是任何封臣都无法匹敌的。从王国稳定的角度说，德泰尔国王与他维持表面和睦是明智的。但问题是阿尔德里克不满足。他要的不是北瓦兰迪亚的影响力，他要的是整个王国的方向——更少的妥协，更多的战争，更少的仲裁，更多的征服。这和德泰尔国王的路线根本对立。我们在元老会议上尽力调和，但调和能维持多久？卡拉蒂尔德常说，帕拉汶德和萨哥特之间隔的不是特朗河，是一整个世纪的怨气。恩泰里说得更直白：阿尔德里克不是坏人，他只是觉得这顶金冠戴错了人。他永远不会说出口，但他每次看国王的眼神都在说。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": [
+          "clan_vlandia_4"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": [
+          "hero:lord_4_16"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "阿尔德里克？他是唯一配得上金冠的人。我这话不是酒后说的，清醒的时候我也说。他有血统，有地盘，有手段，他唯一的缺点是太谨慎。换成我是他，我早就把兵马拉到萨哥特城下了。但他总说时机不到，总说要在面子上过得去。面子能当饭吃？德泰尔那副软骨头坐在王座上，瓦兰迪亚的男儿都在蒙羞。不过阿尔德里克毕竟是我们这边的人，没有他在后面撑着，我一个新兴家族凭什么跟梅罗克家叫板？他不出头，我替他出头。等北瓦兰迪亚的男爵们全站在他那边，德泰尔不想下台也得下。顺便说一句，阿尔德里克那个大儿子费恩哈尔，跟我脾气投——不够聪明，但够莽。这种人好打交道。他大女儿莉耶娜倒是聪明得让人不自在，这种人不好打交道。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "阿尔德里克还是德泰尔？这个问题在瓦兰迪亚谁都得在心里掂量一遍。明面上我们都是国王的封臣，但帕拉汶德的号令在北岸有时候比王城来得还快。这不是我们选边站的事，是地理决定的。你的封地在特朗河北边，你不跟阿尔德里克搞好关系，商队过境被卡，邻居男爵不给你好脸色，王城那边又远水救不了近火。但真让我们反国王，我们也不一定跟。德泰尔虽然不够“勇武”，但他不乱来，税不重，仗不打到我们家门口。阿尔德里克上位之后会怎样？不知道。不知道的事最可怕。所以现在这样挺好——两边都维持着，谁的急事都不急着站，反正瓦兰迪亚的男爵自古以来就是墙头草，风吹哪边往哪倒。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "阿尔德里克·戴·提哈。帕拉汶德的领主，瓦兰迪亚开国王室后裔，北瓦兰迪亚实际上的影子国王。帝国那边对他感情复杂——帕拉汶德就是前帝国旧都巴拉维诺斯，每次提到这个名字，帝国元老院里有人牙痒。但他们也不得不承认，阿尔德里克比德泰尔更危险：德泰尔满足于守成，阿尔德里克要的是扩张。斯特吉亚和巴旦尼亚跟瓦兰迪亚北境接壤，跟阿尔德里克的势力圈直接打交道，他们得出的结论一致：这人不好惹，但跟他做交易比跟德泰尔痛快——他开价高，但说一不二。库赛特隔得远，不太关心。阿塞莱的埃米尔们听说帕拉汶德控制着通往西海岸的商路，对他比对德泰尔更感兴趣。至于加里俄斯，据说私下说过一句：德泰尔是个能谈判的对手，阿尔德里克不是。这句评语在两边的军营里都传开了。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "阿尔德里克老爷？北边的人说他才是真主子。帕拉汶德那个热闹，商船从海边过来，集市上的货堆得跟山似的，都说老爷管得好。南边的人不太熟，只知道他是提哈家的，祖上老厉害了。不过老百姓私底下也嘀咕——国王在南边，阿尔德里奇在北边，这王国到底听谁的？以前特朗河发大水，南北两岸的船好几天不通，大家就说这河是把王国分开了。现在不用发大水，都觉得是分着的。有人说阿尔德里奇要是当国王就好了，马上被旁边的人捂住嘴：你不要命了。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "阿尔德里克？帕拉汶德的大老爷。跑商的人说他比瓦兰迪亚国王还管用，北边的路他罩着，交了过路费没人敢劫。我们这边跟瓦兰迪亚做买卖的商人都知道他的名字。有人说他是瓦兰迪亚最能打的领主，就是太凶了。也有人说他祖宗是他们最老最老的那个国王的小儿子，那他现在不就是现在国王的亲戚？国王的亲戚跟国王对着干，这不就是他们家祖传的毛病吗。不管怎样，瓦兰迪亚的事跟我们隔着一道海一道山，谁当他们的国王都一样交税挨抢。他们自己折腾去吧。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": [
+          "hero:lord_4_3"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "你以为我想取代德泰尔？你不懂。我不是觊觎王位，我是看不下去。奥斯里克的子孙坐在金冠下仲裁纠纷，把瓦兰迪亚男儿的热血耗在调解土地纠纷上。仲裁。和谈。妥协。这些词不属于瓦兰迪亚。我们的祖先是拿剑说话的，现在我们的国王拿鹅毛笔说话。帕拉汶德是我祖先用命换来的，不是调解出来的。我守着这座城，是要提醒所有人——瓦兰迪亚以前是什么样。北瓦兰迪亚的领主们听我的，不是因为我威胁他们，是因为他们跟我一样，还记得冲锋的号角是什么声音。我不急着撕破脸，不是因为怕德泰尔，是因为瓦兰迪亚还没烂透。等哪天它烂透了，我会的。至于我的孩子——费恩哈尔太冲动，这点随我，但勇武有余脑子不够。梅根赫尔达像她母亲，是个好人，好人管不了帕拉汶德。唯独那个小女儿，她什么都好，就是太好了，好得不像我的种。她将来会怎样，我说不好。也许她会把我这辈子攒下的仇人都变成朋友，也许她会让提哈家族换一个活法。我不干涉她。铁和铁打不出好东西，也许钢和丝绸能。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": [
+          "vlandia"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": [
+          "hero:lord_4_8"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "我是父亲的继承人，这一点没人敢说半个不字。北瓦兰迪亚的下一个主人是谁？我。有人说我能力不如父亲——那是因为我还没坐上去。等我坐上去，他们就知道我的手段了。德泰尔那边的人希望我软弱，做梦。因加泰尔觉得我好哄，他也做梦。我不需要别人指手画脚。至于我那个大妹莉耶娜，父亲太纵容她了。一个女孩骑马射箭读兵书，以后嫁到别家去，全便宜了外姓人。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": [
+          "vlandia"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": [
+          "hero:lord_4_3_1"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "父亲常年在外，家中的内务多半是母亲和我在打理。我对政治和战争知道得不多，也不想多嘴。哥哥是个急性子，母亲总叹气，我只能在中间劝。姐姐莉耶娜是家里的光，她做什么都出彩，我替她高兴。瓦兰迪亚的贵族们总盯着帕拉汶德，我不懂那些算计，我只想家里人平平安安的。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": [
+          "vlandia"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": [
+          "hero:lord_4_11"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "外人看我父亲是个冷硬的领主，我看他不全是那样。他每次出征回来，会先到马厩看他的老马还在不在。他对敌人冷酷是真的，但他对自己人也护得紧，帕拉汶德的人过得比别处好，这也是真的。大哥觉得我太好说话，太好说话不是软弱。父亲教会我，仁慈和强硬可以并存——他只是做不到而已，但我想试试。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": [
+          "vlandia"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": [
+          "hero:lord_4_4"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "阿尔德里克一辈子在跟人较劲，跟国王较劲，跟自己的血统较劲。我劝过他，劝不动，就不劝了。儿子越来越像他年轻时候的样子，我不喜欢这样。小女儿是个省心的孩子，但也不出众。大女儿是我最后的安慰——她身上有提哈家的勇气，但没有那股戾气。有时候我想，如果当年阿尔德里克也像她这样长大，瓦兰迪亚会不会不一样。不过这只是一个老妇人的瞎想罢了。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "clan_vlandia_2"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "说实话，我对阿尔德里克没什么意见。他做事虽然硬，但对自家人不差。他记着我父亲的旧情，每年冬宴我也坐得不算远，他切完肉第二个招呼我。这够意思了。要说我对他有什么不满，那就是他太能压事——他在的时候，提哈家上上下下全听他的，旁支没有出头的可能。但这话不能说，说出来就是忘恩负义。"
+    }
+  ],
+  "TextMappings": []
+}

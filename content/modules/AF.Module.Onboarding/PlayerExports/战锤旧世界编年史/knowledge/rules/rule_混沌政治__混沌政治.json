@@ -1,0 +1,210 @@
+{
+  "Id": "rule_混沌政治__混沌政治",
+  "Keywords": [
+    "混沌政治",
+    "邪神竞争",
+    "部落统合",
+    "神选冠军",
+    "混沌政治永世神选",
+    "力量法则",
+    "冠军决斗",
+    "混沌术士",
+    "神恩积攒"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "混沌诸部落的政治建立在永恒的竞争之上——强者统治，弱者臣服或消亡。诺斯卡和混沌荒原的数百个部落彼此征战不休，每位酋长都渴望用战功获得邪神的瞩目。在这种残酷的秩序中，只有最强大的战士才能统合部落、成为战争之王。而当一位神选冠军被四大邪神共同认可，加冕为永世神选时，所有的内斗都会暂时停止，所有的战斧都将一致指向南方。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "chaos_culture"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "混沌的「政治」只有一个法则——力量的法则。诸神之间的竞争正是我们力量的来源：恐虐要求我们以鲜血证明忠诚，纳垢考验我们承受痛苦和腐朽的极限，辛烈治在我们的谋略和阴谋中编织命运之网，色孽则鞭策我们追求极致的完美与狂喜。部落的统合不是靠外交辞令，而是靠砍下前酋长的头颅、焚烧他的旗帜、将他的女人和土地据为己有。当永世神选崛起时，任何拒绝臣服的酋长都将被碾碎——因为神选者不是靠说服来领导的，他的存在本身就是四神的终极裁决。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "混沌政治的分裂本质是文明世界最有效的防御武器。四大邪神彼此憎恨——恐虐和色孽、纳垢和辛烈治之间的关系尤为恶劣——这意味着混沌联军永远处于脆弱的平衡中。聪明的统帅可以利用这一点：煽动部落间的世仇、散布某位酋长获得更多神恩的谣言、或是在战场上先消灭特定邪神的冠军以动摇对应战帮的士气。但也需警惕，当一位足够强大的神选冠军出现时，所有内部矛盾都会被暂时搁置。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 100
+        },
+        "IdentityIds": null
+      },
+      "Content": "混沌部落的权力结构是一种基于「神恩竞争」的极端达尔文主义体系。部落酋长（Jarl）通过挑战前酋长而获得权力，但权力本身并不稳固——任何有实力的战士都可以在任何时候发起挑战。混沌冠军是更高一级的存在，他们已获得某个邪神的特殊标记，这使得其他部落战士不敢轻易挑战。神选冠军是获得邪神「神选」标记的存在，通常掌握某种神赐之力。四大邪神之间的竞争反映了宇宙级别的哲学冲突：恐虐代表纯粹的暴力与战争，纳垢代表绝望中的坚韧与腐败中的新生，辛烈治代表命运的不可知性和知识的危险，色孽代表感官的极致与灵魂的沦陷。混沌术士作为邪神的祭司和法术使用者，在政治中扮演着独特的角色——他们既是酋长的顾问，也常常是幕后的真正操纵者，因为只有他们能够解读诸神的意志。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "在诺斯卡的权力政治中有一条不成文的规律：最危险的酋长通常由最沉默的女性辅佐。诺斯卡的盾女和女预言家虽然极少公开争夺酋长之位——因为那需要在公开决斗中杀死前任——但她们以另一种方式行使权力：通过控制长屋的炉火，也就控制了夜晚的叙事。谁的故事被讲述、谁的耻辱被遗忘、谁的名字被从战歌中删去——这一切都取决于长屋内那位最年长的女性。我曾见过一个不可一世的恐虐冠军在他的老母亲走进长屋时立即停下了狂言——不是因为惧怕暴力，而是因为只有她知道他真正的名字，而这个名字中蕴含着他从不敢公开的脆弱。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "混沌部落氏族政治的复杂性远超南方人的想象。一个诺斯卡氏族不仅是血缘单位，更是一个灵能契约网络——每一位氏族成员在出生时就被绑定于氏族特定的'图腾精魂'——通常是某种被击败的强大存在的灵魂残余。我的氏族图腾是一只远古白霜巨龙的精魂，它在第一代族长用符文长矛将其钉死在冰崖上之后成为我们的守护者。氏族内部的一切政治决策——从发动劫掠到选定继承者——都必须先进行'图腾梦祭'：氏族全体在长屋内吸食致幻蘑菇烟雾，直到作为集体的梦境中图腾精魂显现并给出指引。这个体系的弱点在于：如果两个氏族合并（这在战败后被强制发生），图腾精魂之间可能会爆发灵魂层面的战争，导致合并氏族的成员在接下来的一整年中每晚都在噩梦中自相残杀。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "混迹于诺斯卡人之间的这些年让我明白，他们的政治中最容易被南方的外交官低估的一点是——诺斯卡人极其认真地看待'言语'本身。当一个诺斯卡战士说他将'在你的火炉边过冬'，这不只是一句客套，而是一个包含了庇护权、食物分享和联盟义务的完整承诺。我见过两个部落因为一个酋长在醉酒后说了一句'你母亲是个好女人'而爆发了一场持续三代的血仇——因为他说这话的时候正盯着那位酋长的母亲，这在他们的规则中等同于宣示婚姻权。在与北方人交谈时，每一个词都可能是一个政治行为。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "混沌部落的政治经济逻辑与南方完全不同。南方人以为北方酋长通过劫掠积累财富——这在表面上是正确的，但这忽略了一个关键点：诺斯卡酋长的真正'资本'不是黄金，而是名字承诺。每一次劫掠成功后的战利品分配中，酋长故意放弃自己应有的最大份额，将其分给年轻战士——这不是慷慨，而是投资。每一个接受额外份额的年轻战士都欠下了对酋长的'名字债务'，这份债务将在下一次劫掠中以更高的战斗热情偿还，或在酋长被挑战时以忠诚的形式清算。这是一种将暴力转化为政治资本、再将政治资本重新投资于未来暴力的精妙循环。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "力量法则——混沌部落政治的唯一准则：强者统治，弱者臣服或死亡",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "混沌的权力结构与决策机制"
+  ]
+}

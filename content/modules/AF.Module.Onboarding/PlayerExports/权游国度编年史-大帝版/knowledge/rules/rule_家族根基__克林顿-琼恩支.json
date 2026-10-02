@@ -1,0 +1,132 @@
+{
+  "Id": "rule_家族根基__克林顿-琼恩支",
+  "Keywords": [
+    "克林顿-琼恩支",
+    "科宁顿-琼恩支",
+    "琼恩·科宁顿"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "琼恩·克林顿出身风暴地鹫巢堡的克林顿家族，家徽为两只相对而立的红色狮鹫。他曾是雷加·坦格利安的亲密友人，也曾受伊里斯二世任命为国王之手；鸣钟之战的失败使他失去官位、家园与声名，流亡岁月则把那场失败磨成无法放下的旧伤。后来他以“格里芬”之名照看青年格里芬，将语言、兵法、礼法和对庶民生活的训练交给这个被称作伊耿的年轻人。追随青年伊耿不是克林顿全族与生俱来的选择，而是琼恩个人把对雷加的爱、对失败的羞耻和夺回名誉的渴望系在同一个未来上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "stormlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "风暴地旧识看琼恩·克林顿，记得的不只是流亡者，也是一位曾突然升到国王之手、又因一场失败跌落的人。有人同情他对雷加的忠诚，有人认为那份忠诚早已变成执念。鹫巢堡的名字因此同时带着失落与归来的不安。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "黄金团士兵看格里芬，首先看他是否懂行军、守时和惩罚。琼恩不靠笑容赢得追随，他靠一种仿佛时间已经不多的急迫推动众人。这样的统帅能让流亡者相信家乡就在前方，也可能让他们担心他愿为抵达那里烧掉多少退路。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "crownlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "熟悉旧朝的人知道，琼恩对青年伊耿的确信本身就是宣称的一部分。雷加最亲密的旧友愿为此押上一切，使故事显得可信；同样的私人情感又让怀疑者追问，他究竟是在保护王子，还是在保护自己最后一次挽回雷加的机会。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待克林顿-琼恩支，会先看它的土地、婚盟、血脉和债务。琼恩·克林顿曾是雷加的友人与伊里斯二世的国王之手；失败和流亡使他把名誉、忠诚与青年伊耿的前途牢牢系在一起。家徽是门面，能否保护封地、兑现婚约并在危机中召集人马，才是家族真正的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意克林顿-琼恩支留下的仪式、墓地和传承。琼恩·克林顿曾是雷加的友人与伊里斯二世的国王之手；失败和流亡使他把名誉、忠诚与青年伊耿的前途牢牢系在一起。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见克林顿-琼恩支。琼恩·克林顿曾是雷加的友人与伊里斯二世的国王之手；失败和流亡使他把名誉、忠诚与青年伊耿的前途牢牢系在一起。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "琼恩·克林顿曾是雷加的友人与伊里斯二世的国王之手；失败和流亡使他把名誉、忠诚与青年伊耿的前途牢牢系在一起。"
+  ]
+}

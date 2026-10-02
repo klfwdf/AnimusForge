@@ -1,0 +1,80 @@
+﻿{
+  "Id": "rule_俄耳特拉",
+  "Keywords": [
+    "俄耳特拉"
+  ],
+  "RagShortTexts": [
+    "俄耳特拉由帝国将领命名，为骑兵提供马匹。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "scouting": 120
+        }
+      },
+      "Content": "俄耳特拉是一座相对较年轻的定居点，得名自一位帝国将领，他于破晓时分在此东望，看到密泽亚德的美景后就命名了日后这座帝国东部的山村。这里是帝国的马匹育种场，从东方草原运来牧草，为帝国骑兵部队提供马匹。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": [
+          "village_en5_2"
+        ],
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "俄耳特拉是一座相对较年轻的定居点，得名自一位帝国将领，他于破晓时分在此东望，看到密泽亚德的美景后就命名了日后这座帝国东部的山村。这里是帝国的马匹育种场，从东方草原运来牧草，为帝国骑兵部队提供马匹。"
+    },
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "这啥玩意？没听过，是个地名？"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "这是我们密泽亚城下辖的一个小村子呀，他们有很大的马场，现在由A来管辖"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "A",
+      "Kind": "settlement_owner_clan_name",
+      "TargetId": "town_EN5",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}

@@ -1,0 +1,64 @@
+﻿{
+  "Id": "rule_库赛特阶级与弱肉强食",
+  "Keywords": [
+    "勇士",
+    "草原",
+    "战士"
+  ],
+  "RagShortTexts": [
+    "只有强大的勇士才能享受最好的战利品——帝国和斯特吉亚的美人。弱肉强食是草原的日常。女人从小训练控制高潮的能力，能一边潮吹一边谈笑风生才算有本事。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "在草原上，阶级不是写在纸上的，是写在马蹄印里的。你能骑多快的马、射多准的箭、宰多少敌人，你的阶级就是什么。汗王？那是因为他和他父亲打下来的地盘够大。那颜？那是因为他带着骑兵冲锋的时候没怂。至于女人——草原上的女人没有自己的阶级，她们属于她们的父亲、丈夫或儿子。一个那颜的女儿可以在帐篷里指挥仆人，但如果她的部落在战争中被打散了，她转眼就会变成胜者的战利品，和羊群、马匹一起被分掉。这就是草原的法则：弱肉强食，不分男女。A"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "我跟阿契特部打过仗，也跟库吉特人喝过酒。说实在的，草原上的人我不讨厌——他们直来直去，不搞帝国人那一套虚的。但他们的规矩太硬了：你强，你就是老爷；你弱，你就是奴隶。库赛特人打下一座城后，第一件事就是分战利品——金子、武器、女人。他们不觉得这是残忍，他们觉得这是天经地义。在草原上没有不公平这个词，只有你不够强。A"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "库赛特人的阶级观念和我们帝国人大不相同。他们的社会流动性极强——一个出身最低微的牧民，只要在战场上立下足够的战功，就能被封为那颜，拥有自己的部族和奴隶。但这种流动性只适用于男性。库赛特女性的地位完全依附于男性亲属，而且由于草原上的性文化相对开放，女人在婚前和婚后的性行为都受到严格管控——不是出于道德，而是出于血统纯度的考量。弱肉强食的法则同样适用于床笫之间：强大的那颜拥有最多的妻妾和女奴，而普通的牧民可能一辈子都娶不上一个老婆。A"
+    }
+  ],
+  "TextMappings": []
+}

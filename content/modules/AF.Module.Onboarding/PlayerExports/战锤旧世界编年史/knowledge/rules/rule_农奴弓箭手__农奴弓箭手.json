@@ -1,0 +1,213 @@
+{
+  "Id": "rule_农奴弓箭手__农奴弓箭手",
+  "Keywords": [
+    "农奴弓箭手",
+    "底层远程",
+    "长弓农兵",
+    "远程压制",
+    "廉价射手",
+    "巴托尼亚火力",
+    "弓箭手",
+    "农奴射手",
+    "长弓手",
+    "远程步兵",
+    "箭雨",
+    "平民射手"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "农奴弓箭手是巴托尼亚为数不多的远程部队，由被征召的农奴中善射者组成，使用廉价但威力的长弓。他们为冲锋前的骑士提供远程掩护，是王国军队中唯一合法的平民远程力量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "农奴弓箭手——我们巴托尼亚的「廉价之箭」！法律规定农奴不得使用弩，因为弩是贵族的武器，所以这些健壮的庄稼汉只能用长弓。他们的装备寒酸至极：一把紫杉木长弓、二十支粗制箭矢、一件勉强护胸的厚皮背心。但别小看他们！每年秋季的射箭比赛中，最好的农奴弓手能在两百步外射穿野猪头骨。战场上，他们站成松散的横列，在军官「拉弓——放」的号令下向敌军倾泻箭雨。虽然箭矢的铁头常常缺斤少两，虽然弓弦在潮湿天气中容易松弛，但当成千上万支箭一同升空，遮天蔽日地落向敌人时，就连最狂傲的混沌战士也不得不举起盾牌。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "农奴弓箭手是性价比最高的远程压制单位——征募成本极低，弹药可自行制作，阵亡无需抚恤。在防御战中，将农奴弓箭手部署在堡墙上或军士阵地之后，可以持续削弱进攻敌军的士气与数量。他们的弱点是近战能力几乎为零且极易溃散，必须在他们前方布置可靠的保护兵力。面对重甲敌军时，农奴弓箭手的杀伤力显著下降，应以扰乱和阻滞为主要目的而非杀伤。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "巴托尼亚农奴弓箭手的法律地位在《军役编成令》中有明确规定。法律严格禁止农奴持有或使用弩——弩被定义为「贵族武器」，违者处砍手之刑。农奴弓箭手的标准长弓拉力在八十至一百二十磅之间，有效射程约二百五十码，最大射程可达四百码。箭矢分为三种：普通箭（狩猎与训练用）、穿甲箭（铁头加粗，对付轻甲单位）、火箭（浸油麻絮，用于点燃建筑或惊吓骑兵马匹）。征募比例通常为每十户农奴出一名弓箭手。长期服役的优秀弓箭手可能获得「自由弓手」身份——免去一半的庄稼税，但仍非自由人。历史上最著名的农奴弓箭手是「千箭之战」中的吉约姆，他在城堡被围时独自射杀了围攻军的三名攻城工程师，为援军抵达赢得了关键的一天。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "农奴弓箭手大多是年轻力壮的小伙子，从田间被直接拉到校场。我见过他们第一次拉弓时手掌磨出血泡的样子。作为女领主，我要求军需官给他们配备护手——这些小投入能换来更好的表现和更少的不满。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我族领地靠近森林，打猎是我们的传统。所以我们的农奴弓箭手比别家的更准——从小射兔子练出来的手艺。在上一场边境冲突中，我们五十个弓手射退了两百个兽人小子，氏族的名声因此大振。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "农奴弓箭手的薪资低得可笑——每月几个铜板和双份燕麦粥。但他们比我还惨：我至少能选择去哪，他们却被绑在领主的土地上直到死。有时候我路过村庄，看到男孩们拿着树枝当弓练习射靶，就知道下一批箭灰即将诞生。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "农奴弓箭手装备是最容易赚钱的政府订单——大批量生产、质量要求低、交货期固定。紫杉木长弓的成本不到王国骑士一把剑的十分之一。我每个月能往各地驻军营地送出两百张弓和两万支箭，利润稳定得令人安心。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "农奴弓箭手是巴托尼亚唯一合法的平民远程部队，使用长弓",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "农奴弓箭手底层远程长弓农兵"
+  ]
+}

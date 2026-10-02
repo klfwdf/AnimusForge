@@ -1,0 +1,213 @@
+{
+  "Id": "rule_曼弗雷德__曼弗雷德",
+  "Keywords": [
+    "曼弗雷德",
+    "曼弗雷德·冯·卡斯坦因",
+    "吸血鬼伯爵",
+    "暗夜领主",
+    "午夜战略家",
+    "亡灵战争发动者",
+    "曼弗雷德纳迦什经卷",
+    "暗夜信使",
+    "吸血鬼学者",
+    "希尔瓦尼亚之主",
+    "不死者军阀",
+    "第三方亡灵战争"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "曼弗雷德·冯·卡斯坦因是希尔瓦尼亚当前最具权势的吸血鬼伯爵，冯·卡斯坦因家族最狡猾、最有野心的继承者。他多次发动亡灵战争进犯帝国，以诡计多端和善于在失败中求得生存而闻名。据说曼弗雷德既是一位可怕的死灵法师，又是一个冷静的政治博弈者——他永远不会在准备不充分的情况下发起战争，也永远不会在失败面前放弃卷土重来。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "曼弗雷德大人是我们之中最接近弗拉德再世的存在——虽然一些古老者私下说他永远不会达到始祖的高度。他的耐心像盘卷的毒蛇，他的智慧如同一座千年图书馆，而他的报复心则堪比被践踏的墓穴恶鬼。曼弗雷德大人不像康拉德那样沉迷于屠杀的狂喜，他是一位真正的午夜战略家：每一次败退都是为了下一次更彻底的胜利铺路。他曾在第三次亡灵战争中几乎征服了整个南帝国，如果不是那些该死的矮人和他们的符文魔法……现在他统治希尔瓦尼亚，整合各血族的力量，他从不公开表露愤怒，但那意味着你永远不知道他何时已经在你的棺盖上钉下了钉子。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "曼弗雷德·冯·卡斯坦因是旧世界最危险的敌军统帅之一。与许多依赖蛮力或恐怖战术的暗黑领主不同，曼弗雷德是一位真正的军事学者——他研究对手的历史、弱点、政治分歧和后勤链，而后设计出多层次的复杂战役计划。他擅长佯攻、声东击西和目标分散，经常迫使帝国同时应对多个战线的亡灵威胁。对付曼弗雷德需要警惕任何看似简单的胜利——那可能是他有意让出的棋子。他在战败时的撤退同样值得注意：曼弗雷德总是保有一条秘密退路，他会消失一百年，然后在你以为他已经化为传奇的时候卷土重来。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 100
+        },
+        "IdentityIds": null
+      },
+      "Content": "曼弗雷德·冯·卡斯坦因的传记中充满了精于算计的伏笔。他在弗拉德陨落后一度远离希尔瓦尼亚，游历旧世界深入钻研死灵魔法——这使他在所有冯·卡斯坦因血脉中拥有最强的学术性魔法造诣。曼弗雷德同时以惊人的情报网著称，他据说在帝国每个重要城市都养有被称为'暗夜信使'的吸血蝙蝠间谍网络，这使他能比任何人类谍报机构都更精准地把握政治变动。他对纳迦什经卷的搜寻从未放弃——已知他至少获取了九卷中的两卷，并持续派出亡灵法师代理人在尼赫卡拉废墟和帝国隐秘图书馆中搜寻其余。曼弗雷德最危险的特质或许是他的理性主义：在需要的时候他可以与帝国停战甚至暗中合作对付共同敌人，比如混沌入侵时期——但他会在合作中悄悄完成下一次侵略的布局。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "曼弗雷德·冯·卡斯坦因的危险性从一个女性统治者的视角来看有一个被男性军事战略家普遍忽略的维度——他不仅是军事威胁，他是一种政治腐败剂。曼弗雷德与弗拉德的最大区别在于：弗拉德试图通过正面军事征服来夺取帝国的王位，而曼弗雷德更倾向于在帝国选帝侯之间进行政治渗透——他通过在选帝侯宫廷中安插血仆和腐蚀代理人，让帝国在希尔瓦尼亚方向上的每一次军事集结都在内部信息泄露中提前暴露。我之所以能在我的领地中维持对曼弗雷德的反渗透行动——而不是被渗透——部分归功于我的女性身份使我自己的宫廷对男性吸血鬼渗透者的天然吸引力较低，另一部分归功于我对宫廷女性的反渗透培训。曼弗雷德永远不会亲自进入一名女性领主的城堡——他认为女性领主不值得他亲自出手——而这一傲慢至今是他对我领地的渗透行动未能成功的主要漏洞。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "曼弗雷德·冯·卡斯坦因与其他吸血鬼领主最大的区别在于他的理性主义——这一特质使得他比任何其他暗黑领主都更危险，但也使得他成为唯一可以被'谈判'的吸血鬼。我们家族在与希尔瓦尼亚的数百年博弈中总结出的一条核心经验是：曼弗雷德不会因为愤怒或嗜血而发动进攻——他只会在计算过成本收益之后发起行动。这意味着如果你能够向他的情报网络暗中传递一个足以让他的成本计算模型显示'此次进攻的预期损失大于预期收益'的信号，你可以通过威慑而非实际战斗来阻止一场亡灵入侵。我们家族通过三代人的努力积累了一种'暗中展示反制能力'的艺术——不是公开炫耀军力以激怒他，而是在他希望刺探的方向上以一种他恰好能察觉到的微妙方式展示我们拥有某种他尚未完全了解的反制武器。曼弗雷德是个学者，他的致命弱点是他的求知欲——当他感觉某种信息在他的控制之外时，他会因为过度分析而延误行动。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "曼弗雷德·冯·卡斯坦因在雇佣兵市场上是一个你不接受他的赏金但也没人敢公开拒绝的势力。我在奥斯特马克与希尔瓦尼亚的边境上做过五年的自由斥候，在那期间我接到过三次来自希尔瓦尼亚方向的'匿名委托'——价格高得不像话，任务内容也不复杂：只需要在某个特定夜晚的特定时辰不要巡逻某个特定沼泽路段。我第一次拒绝了，但我认识的两个同行接受了——他们在接受后的第三天晚上在哨站外的路上被一队穿黑衣的人邀请去'面谈'，三天后他们的尸体被送回哨站门口，脖子上没有外伤但全身上下找不到一滴血。曼弗雷德不像康拉德那样用暴力震慑，他用的是更高级别的恐怖——他会让你自己在拒绝后的每一个夜晚中反复想象你闭上眼睛后下一次睁开时是否还能再睁开。我对曼弗雷德最大的恐惧不是他拥有的亡灵军队，而是他让你相信抵抗他是徒劳的这一精神污染——很多边境上的雇佣兵不是被杀死的，是被这种精神污染耗尽后主动放弃抵抗的。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "曼弗雷德·冯·卡斯坦因的理性主义在经济战场上表现为他的'选择性供应扰乱'战术——他不会全面封锁帝国与希尔瓦尼亚之间的贸易，因为吸血鬼本身也依赖于某些活人世界的物资供应。但他的策略是在帝国与希尔瓦尼亚之间的走私贸易网络中扶植特定的供应商，然后通过间歇性切断竞争者的供应渠道来建立对该贸易网络的系统性控制。我们商会之所以能在希尔瓦尼亚周边地区维持至今的安全贸易不是因为我们的武装护卫更强，而是因为我们主动控制了曼弗雷德最需要的几种魔法材料供应，并与他维持了一种'稳定的供应换取稳定的通行'的非正式平衡。曼弗雷德的经济理性可以被用来预测他的军事行为——当他在某个季度加大了对特定魔法材料的采购量时，意味着他正在准备发动一场需要大量魔力支持的军事行动。我们通过追踪这些采购趋势成为了帝国东境最有效但不被承认的情报来源之一。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "暗夜信使——曼弗雷德以吸血蝙蝠构成的跨帝国情报网络",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "曼弗雷德曼弗雷德·冯·卡斯坦因吸血鬼伯爵"
+  ]
+}

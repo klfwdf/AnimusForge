@@ -1,0 +1,206 @@
+{
+  "Id": "rule_亡灵法师__亡灵法师",
+  "Keywords": [
+    "亡灵法师",
+    "死灵术",
+    "纳迦什经卷",
+    "唤死者",
+    "战锤"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "亡灵法师是研习禁忌死灵术的凡人施法者，他们通过操纵死亡之风莎亚来唤醒和号令死者。在帝国法律中，死灵术是最恶劣的异端魔法，任何被发现的亡灵法师将被西格玛教会的猎巫人立即处决。然而这些唤死者往往选择投靠希尔瓦尼亚的吸血鬼领主，以换取庇护和进一步钻研禁忌知识的自由。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "亡灵法师是我们最有用的仆人——他们拥有我们没有的专注力，能够钻研那些连我们都会感到枯燥的死灵法术深层奥秘。每一个吸血鬼领主身边都至少有一名忠诚的亡灵法师充当军团指挥官，在战场上以自己的魔力维持骷髅和僵尸战线的运转，从而让我们可以专注于更高层次的目标。不要轻视这些凡人唤死者，他们选择投靠我们往往经过了漫长的黑暗朝圣——他们遗弃了自己的家庭、烧毁了自己的身份、冒着火刑柱的风险穿越半个帝国只为到达希尔瓦尼亚。这种决绝使他们成为危险的盟友，但也成为同样危险的工具；一个过于强大的亡灵法师可能会觊觎你地盘下的纳迦什碎片。给予他们尊重，给予他们尸体，但永远不要给予他们信任。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "亡灵法师是吸血鬼军队架构中不可忽视的一环。在正面战场上，吸血鬼领主本人通常会亲临前线指挥精锐部队，而亡灵法师则在后方维持大规模骷髅僵尸单位的魔力供给。这意味着如果能够准确识别并消灭或驱散敌方的亡灵法师群，吸血鬼军队的基础步兵线将在短时间内崩溃。然而亡灵法师往往被黑骑士或其他伏兵保护，他们在战场上通常会选择隐蔽位置并用暗黑迷雾笼罩自身。对抗亡者军队时，法师猎手小队比额外的重装步兵更有价值。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 100
+        },
+        "IdentityIds": null
+      },
+      "Content": "死灵术的理论基础可追溯至纳迦什九经——这九卷禁忌文书构成了一切亡灵魔法的哲学和技艺根基。纳迦什经卷的内容涵盖了从最基础的尸骸活化咒语到理论上能让施法者自身转化为永生不死的巫妖的高等仪式。亡灵法师的知识体系与光明学院和翡翠学院的魔法理论截然对立：前者本质上是莎亚之风的扭曲应用，通过向死亡能源中注入意志来'伪造'灵魂。高等死灵术甚至涉及灵魂的捕获和囚禁——亡灵法师可以将近期死者的灵魂强行锁入其尸体或特制的法器，从而创造出比普通僵尸更具战斗能力的缚魂亡灵。长期修习死灵术对人体有显著的腐朽效应——高级亡灵法师的身体会逐渐枯槁、肤色变为灰白、眼睛呈现出不自然的磷光。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "作为斯提尔领边境的女性统治者，亡灵法师是我们领地上最现实也最被回避的威胁。男性领主们在战场上与亡灵大军正面交锋，但他们从不考虑这些亡灵大军的来源——每一个僵尸、每一具骷髅都曾经是一个被亡灵法师从墓穴中唤醒的凡人。在我的领地上，我每年拨款为每一个村庄的墓地进行西格玛祝圣仪式——这比扩军更能抵御亡灵法师的渗透。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "亡灵法师中的家族谱系不同于任何凡人家庭——他们的传承不是通过血缘而是通过纳迦什经卷和黑暗导师的选择。我们冯·卡斯坦因家族与最强大的亡灵法师之间有着复杂的共生关系：他们需要我们的政治庇护和黑暗典籍，我们需要他们的死灵魔法来维持亡灵军团的纪律和数量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "在希尔瓦尼亚边缘当雇佣兵时我见过太多被亡灵法师诱惑的人——他们通常不是邪恶之人，只是绝望之人。一个失去了全家在瘟疫中的农夫在一位穿着黑斗篷的旅人提供复生逝者的希望时几乎无法拒绝。亡灵法师猎取的不是力量——是悲伤。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "亡灵法师对旧世界的经济影响极为奇特：希尔瓦尼亚周边地区的丧葬保险业完全无法运作——没有一个理性的保险商愿意承保一份可能在投保人死亡后被某个亡灵法师篡改的墓穴契约。同时，专业的墓地守护和祝圣服务在边境省份成为了一项利润丰厚的行业，从业者通常是退役的猎巫人或西格玛退伍牧师。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "亡灵法师——战锤旧世界核心概念条目",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "亡灵法师是研习禁忌死灵术的凡人施法者"
+  ]
+}

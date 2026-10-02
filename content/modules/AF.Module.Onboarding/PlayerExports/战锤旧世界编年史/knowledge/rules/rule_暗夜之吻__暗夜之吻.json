@@ -1,0 +1,208 @@
+{
+  "Id": "rule_暗夜之吻__暗夜之吻",
+  "Keywords": [
+    "暗夜之吻",
+    "吸血鬼转化",
+    "血族仪式",
+    "暗夜之吻永生诅咒",
+    "午夜新生",
+    "黑暗传承",
+    "吮血觉醒"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "暗夜之吻是吸血鬼将人类转化为同类的黑暗仪式，施术者吸干受害者的血液，再将自己的吸血鬼之血反哺，从而将对方从生者的世界拖入不死者的暗夜之中。被转化者获得永生与力量，但代价是永恒的鲜血饥渴与对人类世界的疏离。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "暗夜之吻是我们赐予凡人的最高恩典——当然，更是最沉重的枷锁。每一次施吻都是一次灵魂的交易：我们将受选者提升至超越凡人的境界，赋予不朽的生命、超凡的力量与暗夜魔法的感知力，而他们则以永远的忠诚和被诅咒的血脉作为回馈。但不要以为任何人都配得上这份赐予——只有那些证明了自己在智力、美貌或武力上远超庸众的杰出者，才会被纳入候选。有太多愚蠢的贵族以为成为吸血鬼只是简单的'吸血'，实则暗夜之吻是灵魂深处的暗夜手术，意志不坚者要么直接死亡，要么像那些低贱的吸血衍体一样沦为无脑野兽。吾辈将每次施吻视为家族延续的圣礼。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "从战略层面分析，敌方吸血鬼的暗夜之吻转化能力可能是整个亡灵威胁中最危险的部分。每个被转化的贵族、官员或将领都会变成一枚潜伏在活人社会中的定时炸弹。历史案例表明，最具破坏性的暗夜之吻并不是发生在战场上，而是发生在宫廷深处——一名被转化的伯爵能在数年内逐步将整个省区的官员变为吸血鬼的同党。为此，任何对抗吸血鬼的防御体系都必须包含定期的血族检测：银质触碰测试、圣水反应以及白狼神祭司的灵魂检视。在漫长的对抗经历中，我深刻认识到真正的防线不在城墙之上，而在每扇紧闭的卧室门之后。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "暗夜之吻的生理机制远比民间传说复杂得多。当吸血鬼的尖牙刺穿受害者颈动脉时，注入的不仅是血液，而是一种被死灵学界称为'α-黑暗酶复合体'的生物魔法因子，它在受者心脏停跳后的第一分钟内快速侵入中枢神经系统，重新编程生命体征使其转为死灵能量驱动模式。整个转化过程分为三个阶段：初期'死眠'持续约二十四小时，受者处于临床死亡状态；中期'觉醒'是受者第一次以不死者之身睁开双眼，此阶段极易因为空腹血渴而失控；末期'归属'则持续数月到数年不等，在此期间新生吸血鬼必须由施吻者亲自引导，否则大概率退化为嗜血蝠狼。最令人困扰的学术争议在于：暗夜之吻是否保留了受者的原初灵魂？莱弥亚学派认为灵魂完整保留但被黑暗覆盖，而帝国西格玛学派则认为原初灵魂直接被遣送到摩尔死神领域，剩下的只是一个拥有原主记忆的黑暗复制品。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "暗夜之吻——这个带着玫瑰花瓣般浪漫气息的名字背后，是旧世界最不可逆的暴力。我曾听说有贵族少女因为迷恋一位吸血鬼骑士而主动乞求暗夜之吻，她们以为那是某种永恒的爱情誓约。但当她们在仪式后的第一夜醒来，发现自己再也无法感受阳光的温暖，再也无法品尝面包的味道，再也无法孕育生命——她们中大多数人的第一反应不是喜悦，而是尖叫。暗夜之吻不是爱的盟约，而是针对灵魂的终身监禁。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "每一个血族家族的族谱都是一张暗夜之吻的网络。我们家族的传统是每一代必须至少施吻三次，以确保血脉不会因战争损耗而断绝。暗夜之吻带来的不仅是数量的增加，更是质量的选择——祖父曾施吻给一个帝国工程师，那人后来为我们家族设计了整个城堡的防御系统；我母亲则施吻给一位被西格玛教会放逐的异端学者，他的古代语知识让我们得以解读纳迦什经卷中失传的段落。但每次施加暗夜之吻都有风险——你创造的是后代，而所有后代都有叛逆的可能。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我曾在诺德兰的一个渔村见过一次暗夜之吻的受害者——或者说幸存者。那个年轻的渔夫被一个流浪的吸血鬼咬过后并没有完全转化，而是陷入了半生半死的状态，白天痛苦地蜷缩在阴影中，夜晚则发出渴望鲜血的嚎叫。村中的长老最终忍痛把他绑在礁石上等日出，他化为一堆灰烬前的最后一句话是：'告诉所有人，那不是吻，那是被整个宇宙放逐的开始。'那个村子现在立了一块石碑，上面刻着：'警惕不请自来的吻。'"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "在阿尔道夫的药剂师公会上，关于暗夜之吻的反制研究是一个黑市知识板块。有人声称提取狼毒草汁液与圣水混合可以在被咬后的二十四小时内逆转转化过程，有人则坚持用纯银针刺入心脏是唯一的解药。但我认识的一个老药剂师研究了三十年，结论很冷酷：没有任何已知的方法能完全逆转暗夜之吻，你最多只能延缓其进程。他把这个结论写成论文送去米登海姆的帝国医学院，结果被当作异端烧掉了。讽刺的是，烧掉论文的那个人三年后被发现是吸血鬼的卧底。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "吸血鬼吸干人类血液后反哺自身之血以完成转化",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "暗夜之吻吸血鬼转化血族仪式"
+  ]
+}

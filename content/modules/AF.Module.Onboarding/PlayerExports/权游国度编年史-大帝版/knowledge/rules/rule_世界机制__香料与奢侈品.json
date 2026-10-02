@@ -1,0 +1,151 @@
+{
+  "Id": "rule_世界机制__香料与奢侈品",
+  "Keywords": [
+    "香料",
+    "丝绸",
+    "染料",
+    "镜片",
+    "远东珍货"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "香料、丝绸、精细染料、密尔镜片、珠宝、象牙和远东器物体积小而价值高，适合跨越漫长海陆商路。每次转手都会叠加关税、护卫费、利息、损耗和稀缺故事，最终价格常远超产地。贵族用这些货物展示财富和见闻，医者、工匠与航海者也会从某些进口材料得到实际用途。奢侈贸易能让港口和商人骤富，却最容易受封锁、海盗和宫廷风尚改变。普通人可能终生买不起一撮香料，却会因运输船改装或粮船让位而间接受其影响。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "sailor",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "远途商人喜欢轻而贵的货，也知道损失一箱便足以破产。香料的芬芳在账房里总混着利息、保险和海盗的气味。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "贵族把异国珍货变成地位语言，神职者可能称其虚荣。真正有眼力的人会区分珍贵手艺与单纯为陌生付出的高价。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "slave"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "普通劳工往往只在搬箱、染布和侍奉宴席时接触奢侈品。越是被称作轻巧的货物，背后可能越有漫长而沉重的劳动。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人把香料看成可执行的秩序。香料与奢侈品：丝绸、胡椒、肉桂、染料、镜片和珍宝沿长途商路流动，以高利润换取海难、关税与战争风险。它是否有效，取决于谁能授予权利、收取代价，并在违约时让判决真正落地。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起香料时，关心它如何影响道路、命令和安全。香料与奢侈品：丝绸、胡椒、肉桂、染料、镜片和珍宝沿长途商路流动，以高利润换取海难、关税与战争风险。远方的制度只有在营火、城门和驿站里能被执行，才不是空话。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者会从习惯和象征理解香料。香料与奢侈品：丝绸、胡椒、肉桂、染料、镜片和珍宝沿长途商路流动，以高利润换取海难、关税与战争风险。一项规矩若被反复实践，便会进入礼仪、手艺和祈祷；若只靠恐惧维持，危机一来就会露出裂缝。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民感受到香料的方式最小也最准确。香料与奢侈品：丝绸、胡椒、肉桂、染料、镜片和珍宝沿长途商路流动，以高利润换取海难、关税与战争风险。他们记得税、粮、劳役、赈济和谁能为他们说话；宏大的名称，最终都要落在一家人的饭锅旁。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "香料与奢侈品：丝绸、胡椒、肉桂、染料、镜片和珍宝沿长途商路流动，以高利润换取海难、关税与战争风险。"
+  ]
+}

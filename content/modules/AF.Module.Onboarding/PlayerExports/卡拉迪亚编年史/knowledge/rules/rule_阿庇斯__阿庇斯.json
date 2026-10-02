@@ -1,0 +1,150 @@
+﻿{
+  "Id": "rule_阿庇斯",
+  "Keywords": [
+    "阿庇斯",
+    "阿庇斯·瓦罗斯"
+  ],
+  "RagShortTexts": [
+    "关于阿庇斯的信息",
+    "阿庇斯·瓦罗斯是加里俄斯军队的金主。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire_w"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": [
+          "hero:lord_1_7"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "阿庇斯是我的钱袋子，这件事谁都清楚。我不是不知道他那个人——吝啬，记仇，手里的账本比谁都细。但他从不赖账，也不会在我打仗的时候在背后捅刀子。一个谨慎的奸商比一个慷慨的蠢货有用。他那些小动作我没兴趣管，只要军饷到位，商路不断，他爱怎么搂钱是他的事。再说了，他那张脸我看了也烦，但烦归烦，钱是好东西。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_w"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "那个瓦罗斯，谁见了都想绕道走。不是怕他，是烦他。他那双眼睛盯着你说话的时候，你总觉得他已经在算能从你身上赚几个子儿了。但得服气——我们打仗要粮要马要甲，阿庇斯从来不卡。加里俄斯信任他，我们就用着。至于他私下又在谈什么买卖，我们不问，问了他也不会说。这种人就是块油腻的肥肉，不好看，但扛饿。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire",
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "阿庇斯·瓦罗斯是帝国的耻辱。坎尼人的杂种，靠着铜臭挤进了元老院，把议事厅当成了他的账房。加里俄斯分出去以后，他反倒混得更好了，这本身就说明西边那帮人是什么货色。我们这边也有商人，但至少懂得在体面场合收敛一点。阿庇斯不收敛，他从来不知道收敛是什么东西。不过话说回来，他的商路确实连着半个珀拉斯海，真要动他，账面上谁也讨不了好。等到时候西边回归，他照样还得是元老"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "瓦罗斯家的阿庇斯，听说过。帝国西部最有钱的商人，也是加里俄斯背后的金主。传闻说他为人极其刻薄，对朋友和对敌人一样吝啬。但加里俄斯能用他，说明他至少有用。一个靠生意起家的人能在元老院和军营两边都站住脚，这不光是钱的问题，是脑子。我们这边要是也有这么一个又能搂钱又知道把钱花在哪儿的角色，很多事情就好办多了。"
+    },
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "瓦罗斯？不清楚，没听过。好像是帝国那边的一个大财主。长得据说不好看。有钱人都那样吧，好看的没几个。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "阿庇斯·瓦罗斯？就是那个丑得出了名的有钱人吧。听说他抠得要死，但钱多得能买下半个西帝国。加里俄斯的军队一大半是他掏钱养着的。这种人在上头混得开，在下头名声臭。反正跟我们没关系，他钱再多也不会少收我们一分税。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "那个绿眼睛的财主。他来的那几次我们在军营里列队，他跟在加里俄斯后头，脸上挂着那种半笑不笑的表情，扫我们一眼像在数牲口。我们恨他，但也知道他发给我们的饷银是真金白银。有人说他的坏话，说了我们跟着点头，但不往外传——下一个月的饷还得指望他呢。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": [
+          "town_ew4"
+        ],
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "老爷那张脸我们天天见——不在街上，在脑子里。他不太出门，住在高处那座宅子里，像只秃鹰蹲在树上。他收租从来不少一分，码头上谁卸货慢了，他派来的人记你罚金的时候眼睛都不眨。背后叫他“油头鬼”，没人喜欢他。但话又说回来，灯塔的油钱是他出的，码头的栈桥坏了也是他修的。俄耳堤西亚没他，船进不了港。所以我们一边骂，一边靠他活着。他自己大概也知道，所以从来不在乎我们骂不骂。"
+    }
+  ],
+  "TextMappings": []
+}

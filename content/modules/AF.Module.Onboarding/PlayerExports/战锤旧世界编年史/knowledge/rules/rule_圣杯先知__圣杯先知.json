@@ -1,0 +1,213 @@
+{
+  "Id": "rule_圣杯先知__圣杯先知",
+  "Keywords": [
+    "圣杯先知",
+    "高阶祭司",
+    "生命魔法",
+    "天堂魔法",
+    "魔法顾问",
+    "湖之女神侍女",
+    "女祭司",
+    "先知",
+    "魔法导师",
+    "神谕者",
+    "预言",
+    "神圣魔法"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "圣杯先知是湖之女神教会中最高阶的女性祭司，拥有预言未来和施展生命与天堂魔法的能力。她们通常是国王和公爵最重要的魔法顾问，在巴托尼亚贵族社会中地位崇高。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "圣杯先知——女神在凡间的代言人！这些圣洁的女性从幼年起便被接入圣杯大教堂，在封闭的修道院中研习神谕与魔法，终身不婚，将全部生命奉献给女神的事业。她们能治愈垂死的伤员、召唤滋养万物的生命之泉、预知敌军在战场上的动向。每一位公爵都渴望自己的宫廷中有一位圣杯先知坐镇——她们的话语在某种程度上甚至比公爵本人的命令更有分量。当圣杯先知凝视着圣杯池中变幻的水纹，低声说出女神的启示时，整个议事厅都会陷入虔诚的沉默。她们是巴托尼亚在黑暗世界中最明亮的光。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "拥有一位圣杯先知作为顾问是任何巴托尼亚领主的巨大优势。她们的生命魔法可以显著降低军队行军途中的疾病减员，天堂魔法能够预测天气以便选择最佳进攻时机，而预知能力更是战场上的无价之宝。但必须注意：圣杯先知首先忠于女神，其次才是领主。当世俗命令与神谕冲突时，她们会毫不犹豫地选择神的旨意。另外，圣杯先知极为稀有，全巴托尼亚在世的可能只有不到二十位。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "圣杯先知的神学与魔法体系在旧世界独一无二。她们并非普通法师——圣杯先知的力量来源是湖之女神的神谕恩典而非魔法八风。这一区别极为重要：因为她们使用的是「神圣魔法」而非「奥术魔法」，故不受魔法之风波动的影响，也不会面临混沌腐化的风险。圣杯先知的培养自五至七岁开始，在遍布巴托尼亚的十余座森林修道院中进行，全程约需二十年。她们掌握生命之风（吉安）和天堂之风（艾吉尔）两个领域的法术，同时精通占卜、治愈和解除诅咒。每位先知都与一座圣杯池绑定，通过池水的变幻接收女神的神谕。圣杯先知死后，她的灵魂据说会沉入圣杯池中，成为下一任先知的指引。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "圣杯先知是巴托尼亚唯一能让女人掌握真正权力的道路。她们不受任何男人的管束，只对女神负责。我年轻时也曾梦想被选中成为圣杯先知——但女神另有安排，我嫁入了世俗权力之中。如今我仍然尊敬她们，偶尔也嫉妒她们的自由。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "圣杯先知曾预言我族将面临三次灾难——前两次已经应验，我们因此得以提前准备，避免了灭族之祸。如今第三次尚未到来，全族都在女神的注视下谨慎度日。圣杯先知的话不是儿戏，必须用生命去敬畏。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我在一座偏僻的森林修道院外见过圣杯先知，她站在那里一言不发地看着我，眼神像是能看穿我的所有秘密。我不喜欢那种感觉——像是被审判又被原谅了，虽然她什么都没说。后来那天晚上我躲过了一场土匪埋伏，也许真是她的预知救了我。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "圣杯先知修道院采购物资时从不讨价还价——她们认为金钱是世俗的堕落之物。所以和她们做生意需要额外小心：价格定得太高会被视为贪婪，定得太低又会让她们起疑。最好的策略是报一个合理的价格然后说「请按女神的心意来支付」，通常她们会付双倍。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "圣杯先知是湖之女神教会最高阶女祭司，精通预言及生命与天堂魔法",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "圣杯先知高阶祭司生命魔法"
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "Id": "rule_穆西隆__穆西隆",
+  "Keywords": ["穆西隆公国_MU", "穆西隆公爵领_MU", "穆西隆领地_MU", "穆西隆诅咒_MU", "穆西隆公爵_MU", "穆西隆行省_MU"],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":null,"IsFemale":null,"IsClanLeader":null,"SkillMin":null},"Content":"穆西隆公国位于巴托尼亚西部沼泽地带，由马洛博德公爵统治。这是巴托尼亚最为人不齿的公爵领——曾因红公爵叛乱和吸血鬼渗透而声名狼藉。其他公国提起穆西隆时往往压低声音，仿佛名字本身就带着诅咒。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":["mousillon"],"KingdomIds":null,"SettlementIds":null,"Roles":null,"IsFemale":null,"IsClanLeader":null,"SkillMin":null},"Content":"穆西隆——我们是被诅咒者的后裔，但也是巴托尼亚最坚韧的幸存者。当其他公国在阳光下比武宴饮时，我们在沼泽中与亡灵和不死之物作战。马洛博德公爵背负着先辈的罪孽，但他依然握紧骑枪。穆西隆的骑士也许名声黯淡，但他们的武艺丝毫不逊于任何库罗纳的宠儿。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":["lord"],"IsFemale":null,"IsClanLeader":null,"SkillMin":null},"Content":"穆西隆公国是巴托尼亚政治版图上最复杂的棋子。表面上，此地贫瘠且名声败坏，但其沼泽深处埋藏着未被发现的资源——古老战场上的武器、被遗忘的精灵遗迹和丰厚的泥炭资源。穆西隆的骑士因长期与吸血鬼和不死族作战而积累了独特的黑夜战斗经验。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":["lord","notable","wanderer"],"IsFemale":null,"IsClanLeader":null,"SkillMin":{"Steward":120}},"Content":"穆西隆公国的经济看似凋敝但内藏机遇。沼泽泥炭是旧世界最优质的燃料之一，燃烧时间长、热量稳定，在帝国北方需求旺盛。公国境内散布着数个被遗忘的古代战场遗址，挖掘出的残破武器经修缮后可销往收藏家市场。沼泽中生长着一种名为「夜光菇」的稀有菌类，是制作炼金药剂的珍贵原料。然而，穆西隆的对外贸易受到周边公国的隐性封锁——巴士通和布里翁很少允许穆西隆商队自由通过其领地，迫使穆西隆商人只能绕道海岸走水路。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":["lord"],"IsFemale":true,"IsClanLeader":null,"SkillMin":null},"Content":"在穆西隆做女贵族是一份孤独的使命。其他公国的贵妇避我如瘟，仿佛我的裙摆上带着腐沼的诅咒。但我从母亲那里继承了一份秘密地图——标着穆西隆沼泽中每一处安全通道。在巴托尼亚的光鲜宫廷中，没有人在意沼泽的秘密；但我们知道，真正的力量往往隐藏在被遗忘的角落。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":["lord"],"IsFemale":null,"IsClanLeader":true,"SkillMin":null},"Content":"我们家族没有选择离开穆西隆。当红公爵叛乱后这里被诅咒、被遗弃时，我们留了下来。马洛博德公爵需要每一个还愿意效忠于他的世家。其他公国也许瞧不起我们，但当吸血鬼从沼泽中爬出的夜晚，只有穆西隆的刀剑挡在它们和巴托尼亚之间。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":["wanderer"],"IsFemale":null,"IsClanLeader":null,"SkillMin":null},"Content":"穆西隆的沼泽散发着腐烂与死亡的气息。迷雾中隐约可见歪斜的废弃塔楼，树根缠绕着锈蚀的盔甲残片。我在此地见过最不可思议的事——一个没有月亮的夜晚，沼泽中走出一整队半透明的骑士，他们面无表情地穿过一片空地，然后消失在另一侧的雾中。没人相信我的经历。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":["notable"],"IsFemale":null,"IsClanLeader":null,"SkillMin":null},"Content":"穆西隆的生意是胆大者的游戏。其他公国封锁穆西隆的陆上商路，但水路走私一直在暗中进行。泥炭是最稳定的收入来源——帝国北方不管穆西隆的名声多臭，他们需要燃料。夜光菇的市场极小但利润奇高，一袋品质好的夜光菇能卖到一百金克朗以上。"}
+  ],
+  "TextMappings": [{"SourceText":"穆西隆公国位于巴托尼亚西部沼泽地带，因红公爵叛乱和吸血鬼渗透而声名狼藉，是巴托尼亚的黑暗角落","Kind":null,"TargetId":null,"AgeMin":null,"AgeMax":null,"EmptyValueText":null,"TrueText":null,"FalseText":null}],
+  "RagShortTexts": ["穆西隆公国诅咒沼泽黑暗领地名声狼藉"]
+}

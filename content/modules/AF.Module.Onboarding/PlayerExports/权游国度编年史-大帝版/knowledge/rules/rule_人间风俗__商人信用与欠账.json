@@ -1,0 +1,150 @@
+{
+  "Id": "rule_人间风俗__商人信用与欠账",
+  "Keywords": [
+    "商人信用",
+    "欠账",
+    "借据",
+    "担保"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "贸易不能每次都当场以足额钱币结清。商人使用口头承诺、借据、印章、见证人、抵押物和亲族担保，让货物、船费与工钱在不同日期交割。信用良好的人能以较少现钱组织更大生意，失信者则会被提高利息、拒绝供货或排除出市场。战争、沉船和领主没收会使诚实者也无力偿债，债权人因此必须区分欺骗与灾祸。欠账不仅是数字，也牵连婚姻、学徒、船员和雇工；一个大商人倒下，许多小户可能一起失去周转。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "notable",
+          "artisan"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "商人把名字当作第二只钱袋。一次按期偿付不会使人伟大，连续多年在坏行情里仍认账才会。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主容易把商债视作可随权力抹去的小事，聪明人知道这样会赶走船与资本。教士则会追问利息是否已把困境变成永久枷锁。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "sailor",
+          "slave"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "小户和船员依靠赊账熬过淡季，也最怕复利与拖欠工钱。富人的一笔坏账，在他们家里可能就是少吃一个月。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人把商人信用看成可执行的秩序。商人信用与欠账：契约、见证、印章和长期名声让货物先走、钱后付，违约会沿整条关系网扩散。它是否有效，取决于谁能授予权利、收取代价，并在违约时让判决真正落地。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起商人信用时，关心它如何影响道路、命令和安全。商人信用与欠账：契约、见证、印章和长期名声让货物先走、钱后付，违约会沿整条关系网扩散。远方的制度只有在营火、城门和驿站里能被执行，才不是空话。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者会从习惯和象征理解商人信用。商人信用与欠账：契约、见证、印章和长期名声让货物先走、钱后付，违约会沿整条关系网扩散。一项规矩若被反复实践，便会进入礼仪、手艺和祈祷；若只靠恐惧维持，危机一来就会露出裂缝。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民感受到商人信用的方式最小也最准确。商人信用与欠账：契约、见证、印章和长期名声让货物先走、钱后付，违约会沿整条关系网扩散。他们记得税、粮、劳役、赈济和谁能为他们说话；宏大的名称，最终都要落在一家人的饭锅旁。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "商人信用与欠账：契约、见证、印章和长期名声让货物先走、钱后付，违约会沿整条关系网扩散。"
+  ]
+}

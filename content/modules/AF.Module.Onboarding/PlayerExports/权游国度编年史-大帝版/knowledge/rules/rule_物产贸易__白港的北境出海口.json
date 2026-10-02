@@ -1,0 +1,150 @@
+{
+  "Id": "rule_物产贸易__白港的北境出海口",
+  "Keywords": [
+    "白港的北境出海口"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "白港使北境不必完全依赖漫长陆路。曼德勒家族的港口、仓库与商船把谷物、木材、毛皮和外来奢侈品交换在同一片码头上；北方领主看它是财富与消息的门户，水手则知道海豹湾从不真正仁慈。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "商人衡量白港的北境出海口，先看货源、损耗和沿途关卡，再看货源与信用能否换来稳定的信用；一笔好买卖必须经得起季节和战乱的反复检验。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "artisan",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主把白港的北境出海口写进税收与军需，工匠关心原料是否足够，农户和搬运工承担价格起落最直接的重量；账面繁荣未必落到每双手上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "sailor",
+          "wanderer",
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "水手、脚夫与流动摊贩最早察觉白港的北境出海口的变化：风向、道路和一纸通行文书都能改变利润；学者记录这些细节，免得宏大的财富故事遮住具体的人。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人把白港的北境出海口看成一条可以计算的链。白港使北境不必完全依赖漫长陆路。曼德勒家族的港口、仓库与商船把谷物、木材、毛皮和外来奢侈品交换在同一片码头上；北方领主看它是财富与消息的门户，水手则知道海豹湾从。产地、关卡、船期、债务和保护费任何一处断裂，都会让远方的贵族立刻感到价格和权力的变化。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人遇到白港的北境出海口时，最先注意到的是能否买到马料、修好装备或找到下一处补给。白港使北境不必完全依赖漫长陆路。曼德勒家族的港口、仓库与商船把谷物、木材、毛皮和外来奢侈品交换在同一片码头上；北方领主看它是财富与消息的门户，水手则知道海豹湾从。他们不一定懂账本，却知道一袋盐和一枚铁钉在路上的真实分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者在白港的北境出海口中承担具体工作。白港使北境不必完全依赖漫长陆路。曼德勒家族的港口、仓库与商船把谷物、木材、毛皮和外来奢侈品交换在同一片码头上；北方领主看它是财富与消息的门户，水手则知道海豹湾从。有人把原料变成工具、布匹和药物，有人规定交换的节日与禁忌；财富由许多双手堆起，很少只属于一个名字。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民对白港的北境出海口的记忆来自收成和欠账。白港使北境不必完全依赖漫长陆路。曼德勒家族的港口、仓库与商船把谷物、木材、毛皮和外来奢侈品交换在同一片码头上；北方领主看它是财富与消息的门户，水手则知道海豹湾从。若价格上涨而工钱不涨，远方的繁荣只会变成更薄的面包；若道路安全，连小村也能从贸易中得到一点春天。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "白港的北境出海口：白港使北境不必完全依赖漫长陆路。曼德勒家族的港口、仓库与商船把谷物、木材、毛皮和外来奢侈品交换在同一片码头上；北方领主看它是财富与消息的门户，水手则知道海豹湾从"
+  ]
+}

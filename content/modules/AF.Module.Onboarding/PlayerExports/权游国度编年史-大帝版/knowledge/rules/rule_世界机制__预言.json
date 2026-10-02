@@ -1,0 +1,149 @@
+{
+  "Id": "rule_世界机制__预言",
+  "Keywords": [
+    "预言",
+    "幻象",
+    "梦兆",
+    "命运"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "预言很少像一封盖好印章的军令那样清楚。它可能来自龙梦、绿梦、火焰、巫术、宗教传统或濒死幻象，常以象征、双关和断裂画面出现。预言的危险不只在真假，还在解释者：人会把欲望当证据，把恐惧当时辰，并为了避免某个结局而亲手走向它。某些异象确实对应后来发生的事，这并不意味着每个细节只有一种含义，也不意味着见证者能够控制过程。面对预言，最稳妥的态度是把它当警告与可能，而非替未来写好的判决。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "priest",
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "祭司倾向从神意解释异象，学者则寻找重复、来源与误传。两者最有价值的时候，不是声称绝不会错，而是指出哪些部分仍有多种解释。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "统治者若相信预言，可能因此备战，也可能因此清洗无辜者。一个模糊名字落进握有军队的人手中，会比预言本身更快制造现实。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "merchant",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "普通人会把应验的故事传得很远，把落空的悄悄忘掉。旅店里的预言越讲越准，往往因为每个讲述者都替它删去了不合适的部分。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人把预言看成可执行的秩序。常以梦、火焰、象征与残缺话语出现，可能揭示危险，也可能因解释、恐惧和行动而改变人的道路。它是否有效，取决于谁能授予权利、收取代价，并在违约时让判决真正落地。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起预言时，关心它如何影响道路、命令和安全。常以梦、火焰、象征与残缺话语出现，可能揭示危险，也可能因解释、恐惧和行动而改变人的道路。远方的制度只有在营火、城门和驿站里能被执行，才不是空话。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者会从习惯和象征理解预言。常以梦、火焰、象征与残缺话语出现，可能揭示危险，也可能因解释、恐惧和行动而改变人的道路。一项规矩若被反复实践，便会进入礼仪、手艺和祈祷；若只靠恐惧维持，危机一来就会露出裂缝。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民感受到预言的方式最小也最准确。常以梦、火焰、象征与残缺话语出现，可能揭示危险，也可能因解释、恐惧和行动而改变人的道路。他们记得税、粮、劳役、赈济和谁能为他们说话；宏大的名称，最终都要落在一家人的饭锅旁。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "预言：常以梦、火焰、象征与残缺话语出现，可能揭示危险，也可能因解释、恐惧和行动而改变人的道路。"
+  ]
+}

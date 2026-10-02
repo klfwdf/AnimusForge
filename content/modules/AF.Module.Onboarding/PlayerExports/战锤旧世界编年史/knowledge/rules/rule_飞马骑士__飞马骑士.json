@@ -1,0 +1,210 @@
+{
+  "Id": "rule_飞马骑士__飞马骑士",
+  "Keywords": [
+    "飞马骑士",
+    "巴托尼亚飞马",
+    "空中骑兵",
+    "骑枪俯冲",
+    "纯种飞马",
+    "天空精英",
+    "飞骑",
+    "天马骑士",
+    "巴托尼亚天空"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "飞马骑士是巴托尼亚最罕见的精英骑兵——只有纯血贵族骑士才有资格骑乘这些从灰白山脉高峰上捕获的纯种飞马。飞马骑士从天空中俯冲而下，在阳光下闪烁的骑士枪尖宛如流星降落，以绝对的突然性和毁灭性的冲击力瓦解敌军的任何阵型。他们的存在使巴托尼亚成为旧世界继精灵之后唯一拥有组织化空中骑兵的人类王国。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "飞马不是你在巴托尼亚平原上随便能看到的东西——它们是湖之女神赠予我们最神圣的骑士群体的天赐坐骑。飞马的自然栖息地是灰白山脉中海拔三千米以上的高寒岩壁，它们拥有纯白的皮毛、翼展可达二十英尺的巨翼和足以看穿云层的锐利鹰眼。每年在春末雪融时节，巴托尼亚最优秀的骑士们组成狩猎队前往灰白山脉——不是去猎杀飞马，而是去向它们请求盟约。这个过程被称为「天降之约」：一个骑士必须独自攀爬到飞马栖息的岩壁，不带任何武装，躺在光秃的岩石上等待三天三夜——如果飞马在第三天从高空中降落并收拢翅膀站在他身边，那么这个骑士被女神选定并终生拥有了独一无二的飞马伙伴。一只飞马终其一生只容许一位骑士骑乘——如果骑士战死，飞马不会再接受任何其他骑手，它通常会飞回灰白山脉并在那里孤独地度过余生。整个巴托尼亚现存的飞马骑士总数永远浮动在三十骑至四十骑之间——不是因为我们缺骑士，而是因为飞马的选择不受人的控制。当飞马骑士升空时，从地面上仰望的步兵看到的是神兵天降——从天空中倾泻而下的骑枪打击可以击穿巨兽的头盖骨，然后骑士立刻拉起飞马升回天空以准备下一轮俯冲。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "飞马骑士在战场上的战略用途集中在一个字上：侦察，以及在此基础上的一击摧毁。飞马的视力远胜于任何望远镜——一队飞马骑士在一千英尺的高空飞行时，可以看清地面骑兵编队的两翼展开宽度、敌军炮兵阵地的精确位置以及预备队隐藏在树林后的具体规模。飞马骑士的俯冲突击不是用来对抗正规步兵方阵的——俯冲速度太快，骑枪在命中瞬间就会折断，骑士本人如果不及时拉起飞马也会摔死——而是用来猎杀敌方指挥官、法师和巨型怪物。一名飞马骑士从五百英尺高空瞄准一只巨兽的头部俯冲射击时，骑枪的冲击力度加飞马自身的速度和重力，在实战中相当于一支从高空落下的攻城弩箭——穿透力足以刺穿成年龙的鳞片。但飞马骑士也是极其脆弱的——他们不可能穿戴板甲——太重了飞马无法起飞——只能穿戴经过强化的皮甲或轻板骨架甲，在地面弓箭手的齐射面前毫无防御能力。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "飞马骑士的起源传说和军事史是巴托尼亚骑士文化中最浪漫也最不可证伪的学术领域。根据巴托尼亚王国编年史《吉勒斯圣典》的记载，第一位飞马骑士出现在巴托尼亚建国之初——吉勒斯·勒·布列塔尼在统一巴托尼亚各部族的战争中，他的堂弟朗塔尔爵士在灰白山脉的永冬峰上被一匹白色的飞马主动载负回来，湖之女神在随后的显圣中宣布飞马只对内心纯净的巴托尼亚人予以恩许。但学术界——主要集中在帝国的比较军事史学界——认为飞马作为一种物种在灰白山脉的分布远早于人类到达巴托尼亚时，飞马的驯化更可能是巴托尼亚某位古代骑士偶然在山中捕获了幼年飞马并建立了训练方法，而后被湖之女神的神话体系吸纳。飞马骑士的顶级战术——被称为「神鹰俯冲」——需要骑士在俯冲过程中精确控制飞马翅膀的后掠角度来抑制急坠的气流震颤，这项技术据信由飞马骑士大师艾蒂安·德·蒙特福特在巴托尼亚历十三世纪首次完善并记录在一本未公开的手稿中。截止最近一次飞马编队总点名——在帝国历2521年卡尔·弗兰兹皇帝对巴托尼亚的国事访问期间——巴托尼亚王国军中有登记的成年战飞马共三十七匹，其中十六匹被编入了王室飞马禁卫中队，其余分布在各大公爵的私人卫队中。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "飞马骑士在巴托尼亚贵族女性的社交圈中激发出一种与众不同的浪漫想象力。他是天空中的人——不是泥土中的人在泥浆中挣扎如普通骑士——飞马上的他就像神话中的存在。但这也是他的诅咒：他与尘世渐行渐远，他的灵魂早已有一部分飞到了云的上面。嫁给飞马骑士意味着在每次他升空执行任务时你都准备好收到一封信——或者是他在天上坠下来的遗体。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "飞马骑士在巴托尼亚家族谱系中几乎是一种超越血脉的存在——一个家族中出了一位飞马骑士，那意味着女神通过这个家族进行了直接干预。这个头衔不能世袭，飞马也不会为你选择你的儿子——它只选择它认为配得上的人——这使得出过飞马骑士的家族在贵族继承权中的话语权远高于他们的地产面积本该赋予他们的影响力。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "从地面上仰望飞马骑士是我们这些没有高贵出身的战士能享受到的最纯粹的战争美学。我在巴托尼亚边境当佣兵的那个夏天里，曾有一次看到一队飞马骑士从夕阳中俯冲下来，落日镶在他们白马的轮廓上，一瞬之间我甚至忘了我正在阵地上——只想跪下来祈祷。然后他们射下来时骑枪爆裂的声音把这种神圣感也粉碎了。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "飞马骑士的装备保养供应链完全封闭于巴托尼亚纯血贵族内部——没有任何平民工坊被允许触摸飞马的鞍具或蹄铁。飞马的蹄铁由位于巴斯通涅的银匠家族独家提供——是纯银的马蹄铁，被湖之女神的修女在圣湖中浸泡过——据说这种祝福马蹄铁能赋予飞马从任何高度降落的绝对安全。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "纯种飞马——只栖息在灰白山脉高海拔岩壁中的纯白飞行战马，巴托尼亚最神圣的军事资源",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "飞马骑士是巴托尼亚最罕见的精英骑兵——只有纯血贵族骑士才有资"
+  ]
+}

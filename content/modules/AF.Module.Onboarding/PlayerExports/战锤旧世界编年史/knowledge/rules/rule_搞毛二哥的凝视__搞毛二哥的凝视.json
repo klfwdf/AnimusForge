@@ -1,0 +1,208 @@
+{
+  "Id": "rule_搞毛二哥的凝视__搞毛二哥的凝视",
+  "Keywords": [
+    "搞毛二哥的凝视",
+    "绿皮魔法",
+    "Waaagh法术",
+    "能量光束",
+    "虚影巨足",
+    "搞哥毛哥之力",
+    "灵能践踏"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "搞毛二哥的凝视是绿皮萨满所能释放的最恐怖的Waaagh!魔法之一——施术者召唤搞哥与毛二哥的双重神力，天空中浮现两只巨大的绿色兽人虚影，其巨足从天而降踩踏敌军，或者从眼中射出毁灭性的绿色能量光束将整个阵线蒸发。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "搞毛二哥的凝视是世界上最他娘的魔法！这是俺们的大萨满在最关键时刻才能借到的神力——当所有绿皮们集体进入Waaagh狂怒状态时，搞哥和毛二哥就会在天上睁开他们的眼睛！你知道那有多厉害吗？一只绿色的巨脚从云里踩下来轰隆一声把一整座矮子炮台踩成泥巴，然后一柱绿光从他们眼睛里射出来，把人类那些排得整整齐齐的阵线烧出一排大窟窿！这不像人类那种小声念咒语的娘娘腔魔法——这是俺们绿皮用所有小子们一起呐喊召唤出来的真神之力！"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "搞毛二哥的凝视在战术层面是无解的灾难级法术——一旦被成功施放，它会同时对前线造成巨力践踏破坏队型并对纵深关键节点施以能量扫射。这一法术的独特危险在于其释放条件与绿皮军队的Waaagh!状态直接相关：绿皮军队的整体士气越高、参战数量越大，该法术的威力越强。因此，对抗策略实际上不是在法术开始后的应对——而是在法术施放前的预防：持续压制绿皮的总体士气、尽早狙杀绿皮大萨满、以及优先击垮绿皮军队的主力兽人核心以切断Waaagh!能量的积聚。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "搞毛二哥的凝视是绿皮'Waaagh!魔法'系统中最具毁灭性的顶端法术，其理论基础完全不同于精灵的高等魔法或人类的西格玛赐福——它基于一个被称为'集体心灵场'的独特机制。当绿皮数量达到临界阈值（据帝国魔法学院估测约为三千至四千以上）且集体战斗力进入高潮时，绿皮之间的心灵共鸣会在空间中聚集形成一种半意识化的灵能能量场，绿皮大萨满通过特殊的'Waaagh!咒歌'——实际上是经过基因记忆传承的特定吼叫频率——将这股能量场导向天空，形成两只巨眼与巨足的虚影。这一法术的首次有记载的历史出现在帝国历前约500年尼赫卡拉沙漠的绿皮大迁徙中——尼赫卡拉祭司在一份名为《绿色天灾碑文》的石刻中记载了'天降绿足踏碎三座金字塔'的事件。最引人震撼的是该法术并非萨满个人能力的体现，而是整个绿皮种族集体潜意识的表达——这意味着只要绿皮这个种族存在且聚集，这一法术理论上是永远无法禁绝的。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我曾从一位幸存的帝国炮兵军官那里听说搞毛二哥的凝视降临战场时的描述——首先天空变暗，一种像是从世界另一端传来的低沉吟唱开始在所有士兵脑海中回响，然后天空中出现两只眼睛，绿色的、巨大的、极端冰冷的。他说最恐怖的不是被绿光直接击中，而是魔法释放前的那个瞬间——当所有绿皮都同时停止吼叫，同时抬头，同时咧嘴微笑的时候。那一秒你知道你即将见到大地自己都无法承受的东西。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我的曾祖父在位期间曾抵御过一次由搞毛二哥的凝视加持的绿皮大侵略。当时我们调动了全部军事储备——帝国炮兵团、矮人盟军、甚至是雇佣的食人魔佣兵——在最艰难的时刻，当那双绿光巨眼出现在战场上方的云层中时，所有人都愣住了。我们家族编年史中的记载是：曾祖父本人骑上战马冲入溃散的军队中，亲手斩杀了两名转身逃跑的军官以制止撤退，然后用最大的声音呐喊出家族的家训——'死者无言，生者不退'。不知是他的勇气真的起了作用，还是绿皮萨满在关键时刻被己方大只佬的流矢误伤了——总之巨眼消散了，我们惨胜。但这仍然是家族历史上最接近覆灭的一次。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "在灰色山脉一次对抗绿皮大型Waaagh!的战役中，我作为雇佣骑兵团的一员亲眼见证了搞毛二哥的凝视。先说一句——不管你有多少钱，黄金买不回从你身边被绿色光束蒸发掉的队友。那个绿皮萨满站在一座废墟矮子要塞的塔楼上，全身发光像一盏绿色的灯笼，他吼出一个所有人血液都冻住的叫声，然后天上就多了两只绿眼睛。那一刻所有的森林都安静了，所有的鸟都掉下来了，然后大地一震。我记得我身边至少有二十个骑兵连人带马被踩成了一摊铁和肉。打完那仗后，我膝盖以下的所有东西都还是完整的，但膝盖以上的脑子告诉我：再也不要和一个能召唤活神在天空中俯视你的敌人打仗了。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "阿尔道夫大学魔法学系对搞毛二哥的凝视有一套完整的理论分析——尽管他们被禁止实践绿皮魔法。他们称这种现象为'集体-灵能-具象化的巅峰范例'：成千上万个绿皮同时产生的狂怒心灵能量在萨满的引导下凝聚为可观测的实体现象。但理论是一回事，实际影响是另一回事。我的保险商行长期承接帝国的战争保单，每次情报中心确认绿皮大军中有大萨满随行——这通过绿皮留下的营火痕迹和特定祭祀符号可以判断——我们的风险评估模型会自动将保险金提高三成，且不保证对魔法伤害进行赔付。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "绿皮萨满引导集体Waaagh!能量释放的顶端毁灭法术",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "搞毛二哥的凝视绿皮魔法法术"
+  ]
+}

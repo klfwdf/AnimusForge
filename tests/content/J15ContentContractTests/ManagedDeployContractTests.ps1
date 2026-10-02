@@ -156,6 +156,18 @@ Invoke-ManagedStageDeployment -StageModuleDir $stage -TargetModuleDir $newTarget
 if ((Get-FileHash -LiteralPath (Join-Path $newTarget 'ModuleData\FeatureBridges.json') -Algorithm SHA256).Hash -ne
     (Get-FileHash -LiteralPath $stageConfig -Algorithm SHA256).Hash) { throw 'New install did not receive the default.' }
 
+$builtinRelative = 'PlayerExports\worldbook\knowledge\rule.json'
+$builtinStage = Join-Path $stage $builtinRelative
+$builtinTarget = Join-Path $target $builtinRelative
+New-Item -ItemType Directory -Path (Split-Path -Parent $builtinStage),(Split-Path -Parent $builtinTarget) -Force | Out-Null
+[System.IO.File]::WriteAllText($builtinStage, 'new-default-worldbook')
+[System.IO.File]::WriteAllText($builtinTarget, 'player-modified-worldbook')
+Invoke-ManagedStageDeployment -StageModuleDir $stage -TargetModuleDir $target -ModulesDir $modules
+if ([System.IO.File]::ReadAllText($builtinTarget) -ne 'new-default-worldbook') {
+    throw 'Ordinary overwrite was blocked for a built-in worldbook.'
+}
+Assert-UnmanagedUnchanged
+
 $interrupted = Join-Path $recovery 'deploy-interrupted-fixture'
 New-Item -ItemType Directory -Path $interrupted | Out-Null
 [System.IO.File]::WriteAllText((Join-Path $interrupted 'manifest.json'), (@{schemaVersion=1; target=$target; files=@()} | ConvertTo-Json))
@@ -165,4 +177,4 @@ catch {
     if (-not $_.Exception.Message.Contains('interrupted deployment')) { throw }
 }
 Assert-UnmanagedUnchanged
-Write-Output 'managedDeployContract rollback=1 recovery=1 success=1 noop=1 interruption=1 unmanaged=7 featureBridges=known-old,new-install,hand-edit,bad-json PASS'
+Write-Output 'managedDeployContract rollback=1 recovery=1 success=1 noop=1 interruption=1 unmanaged=7 worldbookOverwrite=1 featureBridges=known-old,new-install,hand-edit,bad-json PASS'

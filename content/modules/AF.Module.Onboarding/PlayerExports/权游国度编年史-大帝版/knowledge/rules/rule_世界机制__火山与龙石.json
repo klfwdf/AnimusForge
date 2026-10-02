@@ -1,0 +1,159 @@
+{
+  "Id": "rule_世界机制__火山与龙石",
+  "Keywords": [
+    "龙石岛火山",
+    "龙蒙山",
+    "火山岩",
+    "龙晶矿藏",
+    "温热地层"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "龙石岛是一座火山岛，龙蒙山的热气、硫味、黑色岩层与地下龙晶矿藏构成独特环境。坦格利安先祖在此建立龙石堡，以瓦雷利亚工艺塑成石龙、烟雾般塔楼和有机曲线，使城堡仿佛从火山岩中长出。贫瘠土地限制农业，岛上生活依赖渔业、少量耕作和海运补给；火山港与黑水湾位置又赋予它远超面积的战略价值。地热可以被看作龙族故土的余温，也可能只是提醒居民脚下的大地从未真正安静。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "dragonstone"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "岛民熟悉硫味、黑石和温热裂缝，对外人称奇的景象早已是日常。他们更关心薄土收成与补给船是否按季抵达。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "dragonstone",
+          "valyrian"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "scholar",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "瓦雷利亚后裔容易从火山看见龙与血统的象征，学者则研究岩层和龙晶。无论如何解释，龙石堡的形状都会让访客感到这里遵循另一套建筑记忆。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "crownlands",
+          "stormlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "merchant",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "黑水湾周边势力更实际地看待龙石岛：它守住海路入口，也需要持续补粮。火山让城堡可怕，海运才让守军能长期留下。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人把龙石岛火山看成可执行的秩序。火山与龙石：龙石岛由活跃火山环境塑造，黑岩、蒸汽、龙晶与瓦雷利亚式城堡共同决定岛屿面貌。它是否有效，取决于谁能授予权利、收取代价，并在违约时让判决真正落地。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起龙石岛火山时，关心它如何影响道路、命令和安全。火山与龙石：龙石岛由活跃火山环境塑造，黑岩、蒸汽、龙晶与瓦雷利亚式城堡共同决定岛屿面貌。远方的制度只有在营火、城门和驿站里能被执行，才不是空话。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者会从习惯和象征理解龙石岛火山。火山与龙石：龙石岛由活跃火山环境塑造，黑岩、蒸汽、龙晶与瓦雷利亚式城堡共同决定岛屿面貌。一项规矩若被反复实践，便会进入礼仪、手艺和祈祷；若只靠恐惧维持，危机一来就会露出裂缝。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民感受到龙石岛火山的方式最小也最准确。火山与龙石：龙石岛由活跃火山环境塑造，黑岩、蒸汽、龙晶与瓦雷利亚式城堡共同决定岛屿面貌。他们记得税、粮、劳役、赈济和谁能为他们说话；宏大的名称，最终都要落在一家人的饭锅旁。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "火山与龙石：龙石岛由活跃火山环境塑造，黑岩、蒸汽、龙晶与瓦雷利亚式城堡共同决定岛屿面貌。"
+  ]
+}

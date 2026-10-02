@@ -1,0 +1,213 @@
+{
+  "Id": "rule_冯·卡斯坦因家族__冯·卡斯坦因家族",
+  "Keywords": [
+    "冯·卡斯坦因家族",
+    "正统吸血鬼",
+    "亡灵军团",
+    "暗夜王朝",
+    "希尔瓦尼亚统治者",
+    "弗拉德血脉",
+    "冯·卡斯坦因",
+    "吸血鬼王族",
+    "血族领袖",
+    "不死王朝",
+    "暗夜贵族",
+    "弗拉德"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "冯·卡斯坦因家族是旧世界最强大、最具统治力的吸血鬼血脉，自封为希尔瓦尼亚的不死之王。他们以德拉肯霍夫为根基，发动过多次旨在征服帝国的吸血鬼战争，是活人世界最致命的血族威胁。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "冯·卡斯坦因——我们的名字就是旧世界暗夜中最响亮的雷霆！从伟大的先祖弗拉德开始，我们就在希尔瓦尼亚建起了不朽的王朝。冯·卡斯坦因家族不同于其他血脉：我们不躲在黑暗中苟活，我们明目张胆地君临整个省份。帝国的懦夫们发动了三场吸血鬼战争想将我们铲除，每一场他们都宣称取得了「胜利」，但请看——德拉肯霍夫依然矗立，吸血鬼伯爵依然统治着希尔瓦尼亚的夜晚。弗拉德、康拉德、曼弗雷德——这些名字将被铭刻在旧世界的历史上，无论是活人还是亡者，听到这些名字时都会颤抖。这就是冯·卡斯坦因的方式：堂堂正正地征服，而不是像莱弥亚那样在墙角下窃窃私语，也不是像血龙那样只顾着磨自己的剑。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "冯·卡斯坦因家族代表了一种与普通军事威胁完全不同的挑战。他们不是单纯的敌军——他们是瓦解整片领土的力量。希尔瓦尼亚在他们的控制下已经从一个正常的帝国省份变成了亡者与生者共存的畸形国度。对抗冯·卡斯坦因需要常规军事力量与宗教、魔法和情报手段的全面配合。最关键的是要理解：杀死吸血鬼个体是不够的，只要德拉肯霍夫还在，只要任何一个冯·卡斯坦因后裔还活着，他们就总能卷土重来。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "冯·卡斯坦因家族的血脉起源可追溯至约公元前两千年纳迦什大巫师升神之后的「第一批后裔」时代。弗拉德·冯·卡斯坦因的真名被认为是瓦沙纳什，他是最早接受血吻的十二位吸血鬼始祖之一。冯·卡斯坦因家族的统治模式并非纯粹的恐怖压制——他们聪明地结合了黑暗宗教（对被统治者的精神控制）、封建式的土地制度（农民仍保有土地但需交血税和劳役）与亡灵军事威慑。三次吸血鬼战争中，冯·卡斯坦因家族均差点成功——弗拉德的第一场战争因他的复活戒指被窃取导致他真正死亡而失败，康拉德·冯·卡斯坦因的第二次战争因他本人的疯狂而被击溃，曼弗雷德·冯·卡斯坦因的第三次战争则因各方势力的联合干涉受挫。目前希尔瓦尼亚名义上的统治者是曼弗雷德，但各冯·卡斯坦因子嗣间的暗斗从未停歇。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "冯·卡斯坦因家族中有一个女性的故事常被忽略——伊莎贝拉·冯·卡斯坦因，弗拉德的配偶。她本是位人类贵妇，因爱而选择了永生黑暗。她提醒着我们，吸血鬼的诱惑有时不来自利爪和尖牙，而来自某种扭曲的「爱情」。作为女人，这个故事比任何恐吓都更令我警惕。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "冯·卡斯坦因家族曾派使者到我族的领土要求「贡品」——实际上就是定期提供一批活人作为「血税」。我们拒绝了。那一年的冬天，亡灵军团在我们的边境集结了三个月，我们几乎每一晚都在防御中度过。最后我们迁移到了更深的内陆。战争不是每一次都要赢——但要确保氏族活下来。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "希尔瓦尼亚的农民有种奇怪的认命态度。提起冯·卡斯坦因家族，他们不像外地人那样惊恐——他们像谈论房东一样谈论吸血鬼伯爵。「今年血税又涨了」，他们叹气，然后继续种麦子。几个世纪的统治已经让希尔瓦尼亚的活人适应了在吸血鬼的阴影下生存，这种常态化的恐怖比恐怖本身更令人不安。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "冯·卡斯坦因家族是最大的不稳定经济因素——他们控制的希尔瓦尼亚理论上仍然是帝国的一部分，但实际上已经独立于帝国的货币体系之外。金克朗在希尔瓦尼亚流通得极少——整个省份实行的是以物易物和「血税劳役」的混合制度。和冯·卡斯坦因领地做贸易意味着你会陷入帝国法律的灰色地带。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "冯·卡斯坦因家族是旧世界最强大的吸血鬼血脉，统治希尔瓦尼亚",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "冯·卡斯坦因家族的家族背景与政治地位"
+  ]
+}

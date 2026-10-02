@@ -1,0 +1,158 @@
+{
+  "Id": "rule_世界机制__颈泽水网",
+  "Keywords": [
+    "颈泽",
+    "泽地民",
+    "沼泽水路",
+    "浮岛"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "颈泽是一片广阔湿地，泥潭、芦苇、浅湖、林岛和不断改变的水道使固定地图很快过时。南北大路被压缩到堤道附近，离路的重骑兵、车队和陌生人容易陷入泥水、毒虫与病气。黎德家族和泽地民使用小船、长矛、弓箭、网具与地方知识生活，灰水望据说会随浮岛和水路移动，使外人难以找到。颈泽的力量不在开阔决战，而在隐藏、误导、消耗和选择何时出现。试图统治这里的人若得不到本地合作，只能占住少数干地。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "sailor",
+          "peasant",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "泽地民从蛙声、水草和泥色辨路，外人嘲笑他们矮小隐蔽，他们则看着高大骑士一步步陷进不懂的土地。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "北境领主把颈泽当作天然护城河，也必须尊重黎德家的独立习惯。命令若不适合湿地，泽地民会用沉默让它消失。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "river",
+          "vlandia",
+          "crownlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "merchant",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "南来者最怕看不见的敌人和没有边的泥水。盔甲、金钱与地图在颈泽都不如一名可信向导有用。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人把颈泽看成可执行的秩序。颈泽水网：沼泽、芦苇、浮岛和暗水构成北境南部屏障，泽地民依靠隐秘水路生活与作战。它是否有效，取决于谁能授予权利、收取代价，并在违约时让判决真正落地。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起颈泽时，关心它如何影响道路、命令和安全。颈泽水网：沼泽、芦苇、浮岛和暗水构成北境南部屏障，泽地民依靠隐秘水路生活与作战。远方的制度只有在营火、城门和驿站里能被执行，才不是空话。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者会从习惯和象征理解颈泽。颈泽水网：沼泽、芦苇、浮岛和暗水构成北境南部屏障，泽地民依靠隐秘水路生活与作战。一项规矩若被反复实践，便会进入礼仪、手艺和祈祷；若只靠恐惧维持，危机一来就会露出裂缝。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民感受到颈泽的方式最小也最准确。颈泽水网：沼泽、芦苇、浮岛和暗水构成北境南部屏障，泽地民依靠隐秘水路生活与作战。他们记得税、粮、劳役、赈济和谁能为他们说话；宏大的名称，最终都要落在一家人的饭锅旁。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "颈泽水网：沼泽、芦苇、浮岛和暗水构成北境南部屏障，泽地民依靠隐秘水路生活与作战。"
+  ]
+}

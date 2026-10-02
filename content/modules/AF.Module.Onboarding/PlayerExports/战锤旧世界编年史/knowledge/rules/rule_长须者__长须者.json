@@ -1,0 +1,213 @@
+{
+  "Id": "rule_长须者__长须者",
+  "Keywords": [
+    "长须者",
+    "老兵",
+    "胡子智慧",
+    "精神支柱",
+    "矮人长老",
+    "战场镇定",
+    "长须老兵",
+    "矮人精锐",
+    "久经沙场",
+    "矮人核心",
+    "永不溃退",
+    "祖宗之兵"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "长须者是矮人军队的核心——这群胡须拖地的老战士已经在无数场坑道战、山巅守城战和荒野行军中活了过来，他们见过了一切，所以他们不慌。年轻矮人会怒、会暴冲、会犯浑——长须者只用一句咕哝与一柄旧斧将阵线稳稳扎在地上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "长须者！当你提到他们的名字的时候，把你的舌头放恭敬些，人类——这些老兵每一根胡须上都沾过至少二十次坑道决战的血。你知不知道一个矮人要活多少年才能被称为长须者？两百岁，人类！两百年在黑洞洞的矿道里、在绿皮的臭味中、在山崩一样的冲锋下！年轻的小崽子们胡子刚过下巴就觉得天大地大老子最大——长须者们就站在后排看着他们犯傻，然后在小崽子快把自己蠢死的时候上去把斧子插进绿皮脑袋里然后把他拽回来——一句话不说。他们知道什么时候该稳，什么时候该狠，因为他们见过太多了：地精的诡计、鼠人的粪坑、混沌矮人的黑熔炉——长须者的脑子里存着一整座卡拉克的战争记忆。战场上一个满编的长须者方阵站在那里不动的时候，整个矮人军队从上到下都安心——他们就是那种你打不死也打不动的铁砧。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "长须者构成了矮人步兵战术的绝对核心——不是因为他们杀伤力最强，而是因为他们在任何情况下永远不会溃退。在已知世界中，没有任何人类军队可以声称自己的核心步兵在面临超过百分之五十伤亡时不溃——长须者可以。这一能力的基础是矮人「长者意志」——一种通过两百余年不间断战斗磨砺出的心理免疫。战术上，长须者应被投入战阵的最吃紧的环节——城门、桥口、山隙——并且你的作战计划的其余部分应当围绕「长须者钉在该位置且永远不撤」这个假设来设计。如果你的计划里出现了「如果长须者战线被突破」这个句子——你已经部署他们错了。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "长须者的社会学内涵在矮人宗族体系中占据核心地位。在矮人文化架构中，胡须长度不仅是年龄的标志更是权利与话语的量化外显——「长须议会」即每个卡拉克的实质决策机构，由宗族中最年长的长须者组成，其决议权重与胡须总长度呈比例关系（一本被帝国人类学家从卡拉克·卡德林抄录的议事规则草案表明，每队长须者在议会上占据的投票权等于其胡须长度的三分之一，以寸计）。军事史上最著名的长须者事迹为公元前1523年「八峰山之守」中将三百碎铁勇士钉在地表中的六名长须者队长——此六人在场不仅是作战，更重要的是以他们的「战场镇定」光环维持住了碎铁勇士在连续六十六天的消耗中不崩溃的理智。矮人行为学家将这种现象称为「长者镇定视差」：年轻矮人在目视长须者坚守不退时的恐惧感知阈值会自发上调约三倍——这一效果被认为是通过胡须信息素释放的一种非语言性群体镇定信号。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "作为一名统帅，我学到的最残酷的一课是：你无法用人类的勇气标准去衡量矮人长须者。我曾有一个人类老卫队长——为我的家族战斗了四十年，身经上百场战斗，我视他为不可动摇的磐石。直到在一个隘口中他面对一整队夜地精时他的手抖了。人是人會怕。矮人长须者不怕——这不是赞美，而是一种深沉的悲哀：他们活得太久了、见了太多了，以至于恐惧这种情感在他们身上已经磨损殆尽了。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我祖父是一名长须者。他一百四十岁那年从卡拉克·卡德林的长须者军团退役，回了老家开了个符文鉴定铺子。他话少得可怕——我跟他说半天他可能回我一个「嗯」，但我家族里每个人都知道：如果你在打仗之前让祖父去阵地上走一圈，他不会给任何战术，他只会告诉你哪块地站得稳哪块地迟早要塌。他说的东西在后来的每次战斗里都全中。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "在雇佣兵行业里有个不成文的规矩：如果你的对手是矮人且你看见了一阵灰白色的胡子——我指的是一排把腰带当围巾用、把胡子梢踩在脚底的矮人——那你就该在交战之前重新谈价，因为你的兵今天会死得比平时多一倍。我一个老佣兵搭档叫格鲁尼的就是干过一回没在一处长须者阵前跑掉的事——他躺在北境的一个野坟里至今。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "巴拉克·瓦尔的商业公会有一次尝试用高薪引诱几个退休的长须者为商会当武装押运——他们在合同草案里写下了「预计年伤亡不超过5%」。矮人谈判代表端起合同只看了一行然后就放下了，说「长须者的伤亡率从来不由合同决定，由对面有多少蠢货决定」——然后就走了。从此那条合同模板在行会内部被列为「一例不该存在的样本」。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "年龄两百岁以上、历经无数战役不死的老兵，胡须长度与作战经验成正比",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "长须者老兵胡子智慧"
+  ]
+}

@@ -1,0 +1,155 @@
+{
+  "Id": "rule_世界机制__易形者",
+  "Keywords": [
+    "易形者",
+    "狼灵",
+    "换皮者",
+    "第二次生命"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "易形者能够把意识伸入动物，感受它的嗅觉、听觉、奔跑和饥饿；与狼结合者常被称为狼灵，但鹰、熊、野猫、狗和其他动物也可能成为伙伴。能力通常先在梦境、情绪或无意识共享中显现，练习能增强控制，也会让人与兽的本能彼此渗透。自由民传统警告三项深重禁忌：进入人的身体、在动物体内与动物交配、以及用动物身体食人。易形者死后可能把一部分意识留在伙伴体内，获得有限的第二次生命，但最终仍会逐渐被兽性吞没。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "freefolk"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "priest",
+          "wanderer",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "自由民较愿意承认易形天赋，也不会因此把每个换皮者当圣人。他们看重是否尊重伙伴与禁忌，因为力量越亲密，越容易越过不该越过的边界。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania",
+          "skagosi"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "priest",
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "北境故事常把狼梦与旧神联系起来。有人敬畏，有人怕孩子被兽夺走；大多数人宁愿在火边低声谈论，也不愿当面指认邻居。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "统治者可能把易形者视为无可替代的斥候，也可能因无法监禁一双借动物观看的眼睛而恐惧。把这种人当工具使用，常会忽略他与伙伴有自己的意志。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人把易形者看成可执行的秩序。能将意识伸入动物并共享其感官的人；狼灵只是其中一类，这份天赋伴随亲密、诱惑与禁忌。它是否有效，取决于谁能授予权利、收取代价，并在违约时让判决真正落地。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起易形者时，关心它如何影响道路、命令和安全。能将意识伸入动物并共享其感官的人；狼灵只是其中一类，这份天赋伴随亲密、诱惑与禁忌。远方的制度只有在营火、城门和驿站里能被执行，才不是空话。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者会从习惯和象征理解易形者。能将意识伸入动物并共享其感官的人；狼灵只是其中一类，这份天赋伴随亲密、诱惑与禁忌。一项规矩若被反复实践，便会进入礼仪、手艺和祈祷；若只靠恐惧维持，危机一来就会露出裂缝。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民感受到易形者的方式最小也最准确。能将意识伸入动物并共享其感官的人；狼灵只是其中一类，这份天赋伴随亲密、诱惑与禁忌。他们记得税、粮、劳役、赈济和谁能为他们说话；宏大的名称，最终都要落在一家人的饭锅旁。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "易形者：能将意识伸入动物并共享其感官的人；狼灵只是其中一类，这份天赋伴随亲密、诱惑与禁忌。"
+  ]
+}

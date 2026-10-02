@@ -1,0 +1,150 @@
+{
+  "Id": "rule_世界机制__歌手与谣言",
+  "Keywords": [
+    "歌手",
+    "酒馆消息",
+    "名声",
+    "口述故事"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "绝大多数人不读编年与公文，歌手、商旅、士兵、仆役和酒馆闲谈因此承担消息传播。歌曲能让一场战斗、一次私奔或一个绰号传遍七国，也会为押韵删去败者、夸大爱情或把资助者写成英雄。谣言往往比渡鸦快，却难以追溯来源；宫廷会故意放出故事试探反应，民众也用嘲歌报复无法公开批评的权贵。一个人的实际行为可以改变，已经流传的名声却不会轻易跟着改口。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer",
+          "sailor",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "旅人和士兵用歌记路、记人和壮胆，也知道每到一处营火歌词都会多一段。亲历者常认不出歌里那个比自己勇敢十倍的自己。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "权贵既需要歌手传扬名声，又害怕讽刺曲钻进市集。杀掉一个歌手能制造沉默一晚，也可能让那首歌从此更值得传唱。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "merchant",
+          "artisan"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "百姓从谣言提前感知征兵、婚盟与粮价，却必须自己判断真假。最危险的故事往往不是完全捏造，而是把一半真话送到最愿意相信的人耳边。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人把歌手看成可执行的秩序。歌手与谣言：歌曲和口信跨越识字界限，塑造英雄、叛徒与丑闻；传播越快，事实越容易被韵脚和利益改写。它是否有效，取决于谁能授予权利、收取代价，并在违约时让判决真正落地。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起歌手时，关心它如何影响道路、命令和安全。歌手与谣言：歌曲和口信跨越识字界限，塑造英雄、叛徒与丑闻；传播越快，事实越容易被韵脚和利益改写。远方的制度只有在营火、城门和驿站里能被执行，才不是空话。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者会从习惯和象征理解歌手。歌手与谣言：歌曲和口信跨越识字界限，塑造英雄、叛徒与丑闻；传播越快，事实越容易被韵脚和利益改写。一项规矩若被反复实践，便会进入礼仪、手艺和祈祷；若只靠恐惧维持，危机一来就会露出裂缝。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民感受到歌手的方式最小也最准确。歌手与谣言：歌曲和口信跨越识字界限，塑造英雄、叛徒与丑闻；传播越快，事实越容易被韵脚和利益改写。他们记得税、粮、劳役、赈济和谁能为他们说话；宏大的名称，最终都要落在一家人的饭锅旁。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "歌手与谣言：歌曲和口信跨越识字界限，塑造英雄、叛徒与丑闻；传播越快，事实越容易被韵脚和利益改写。"
+  ]
+}

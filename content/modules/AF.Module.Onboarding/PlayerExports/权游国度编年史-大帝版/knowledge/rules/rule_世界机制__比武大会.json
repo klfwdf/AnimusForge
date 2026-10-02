@@ -1,0 +1,153 @@
+{
+  "Id": "rule_世界机制__比武大会",
+  "Keywords": [
+    "比武大会",
+    "长枪比武",
+    "团体近战",
+    "竞技"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "比武大会通常包含长枪比武、团体近战、射箭及宴饮，各地主办方式有所不同。骑士凭盔甲、战马、侍从和训练入场，胜者可得奖金、名声，有时还能按惯例赎取败者的马甲；穷骑士则可能为一次参赛押上全部家当。大会也是公开展示家徽、安排婚姻、结识资助者和试探政治立场的场所，座次与授予爱与美的王后都可能传递超出竞技的讯息。场外还有商贩、赌局、妓女、乐师和大量被征来供给盛会的百姓。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "reach",
+          "stormlands",
+          "vale"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "骑士把大会视为赢得声名、赎金和主君注目的捷径。老兵却知道长枪折断时同样会死人，擅长赛场礼法也不等于擅长泥地战争。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "artisan",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "商贩和匠人喜欢大会带来的人潮：甲片要修，马要喂，酒和布匹卖得飞快。他们也知道主办者拖欠一次货款，庆典留下的债会比彩旗挂得更久。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "priest",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "百姓能从大会得到热闹和零钱，也可能被征粮、占地和醉酒骑士所苦。歌手记住冠军，农户记住的是哪片麦田被营帐踩平。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人把比武大会看成可执行的秩序。兼具武艺、炫耀、婚盟、赌博与政治的贵族盛会，荣耀和债务常在同一片赛场产生。它是否有效，取决于谁能授予权利、收取代价，并在违约时让判决真正落地。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起比武大会时，关心它如何影响道路、命令和安全。兼具武艺、炫耀、婚盟、赌博与政治的贵族盛会，荣耀和债务常在同一片赛场产生。远方的制度只有在营火、城门和驿站里能被执行，才不是空话。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者会从习惯和象征理解比武大会。兼具武艺、炫耀、婚盟、赌博与政治的贵族盛会，荣耀和债务常在同一片赛场产生。一项规矩若被反复实践，便会进入礼仪、手艺和祈祷；若只靠恐惧维持，危机一来就会露出裂缝。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民感受到比武大会的方式最小也最准确。兼具武艺、炫耀、婚盟、赌博与政治的贵族盛会，荣耀和债务常在同一片赛场产生。他们记得税、粮、劳役、赈济和谁能为他们说话；宏大的名称，最终都要落在一家人的饭锅旁。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "比武大会：兼具武艺、炫耀、婚盟、赌博与政治的贵族盛会，荣耀和债务常在同一片赛场产生。"
+  ]
+}

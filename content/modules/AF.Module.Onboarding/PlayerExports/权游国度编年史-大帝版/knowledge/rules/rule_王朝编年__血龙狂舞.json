@@ -1,0 +1,147 @@
+{
+  "Id": "rule_王朝编年__血龙狂舞",
+  "Keywords": [
+    "血龙狂舞",
+    "龙之舞",
+    "坦格利安内战"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "血龙狂舞是坦格利安王朝围绕继承权爆发的内战，黑党与绿党各自拥立不同王位主张，龙、城堡、家族婚盟和民众被卷入同一场撕裂。战争证明龙可以决定战场，却不能让继承争端自动消失；龙火烧毁城镇，龙骑士彼此杀戮，龙穴暴动又显示平民并非永远沉默。后世贵族从中争论长子、长女、王命与传统谁更有分量，普通人则记得空中火焰落在屋顶的代价。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "scholar",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "学者和祭司谈到血龙狂舞，争论的从来不只是哪一年发生了什么，也包括谁有资格记住、谁被迫沉默；名分与记忆在不同厅堂里会有不同的名字。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "贵族把血龙狂舞当作法统与债务的账本，士兵记得其中的饥饿和尸骨，农户只在税册、旧堡垛和家中传下的忌讳里感到它的重量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "商旅与旅人很少掌握血龙狂舞的全貌，却会在酒馆、渡口和集市重复其中最能解释眼前利害的片段；传闻会变形，留下的影响却很少凭空消失。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人把血龙狂舞当作仍在生效的旧账。血龙狂舞是坦格利安王朝围绕继承权爆发的内战，黑党与绿党各自拥立不同王位主张，龙、城堡、家族婚盟和民众被卷入同一场撕裂。战争证明龙可以决定战场，却不能让继承争端自。一场过去的战争或一次王朝更替，会决定今日的税率、盟约、道路与谁有资格在大厅里先开口。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人记住血龙狂舞的方式不同于史官。血龙狂舞是坦格利安王朝围绕继承权爆发的内战，黑党与绿党各自拥立不同王位主张，龙、城堡、家族婚盟和民众被卷入同一场撕裂。战争证明龙可以决定战场，却不能让继承争端自。他们记得哪面旗倒下、哪座桥被烧、谁在雪里分过最后一口水；对他们来说，历史首先是身体留下的记忆。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者谈及血龙狂舞时，常把事实与寓意放在一起。血龙狂舞是坦格利安王朝围绕继承权爆发的内战，黑党与绿党各自拥立不同王位主张，龙、城堡、家族婚盟和民众被卷入同一场撕裂。战争证明龙可以决定战场，却不能让继承争端自。胜者会把它写成秩序的证明，败者会把它留作警告，而普通人只记得那一年粮价和墓地增加了多少。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民很少说出血龙狂舞的完整名字。血龙狂舞是坦格利安王朝围绕继承权爆发的内战，黑党与绿党各自拥立不同王位主张，龙、城堡、家族婚盟和民众被卷入同一场撕裂。战争证明龙可以决定战场，却不能让继承争端自。他们通过旧屋、家谱、墓碑和老人讲过的禁忌认识过去；只要某件往事还影响收税、征兵或婚姻，它就没有真正结束。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "血龙狂舞：血龙狂舞是坦格利安王朝围绕继承权爆发的内战，黑党与绿党各自拥立不同王位主张，龙、城堡、家族婚盟和民众被卷入同一场撕裂。战争证明龙可以决定战场，却不能让继承争端自"
+  ]
+}

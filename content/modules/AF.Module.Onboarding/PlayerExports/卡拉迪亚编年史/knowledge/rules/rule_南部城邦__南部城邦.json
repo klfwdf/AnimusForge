@@ -1,0 +1,75 @@
+﻿{
+  "Id": "rule_南部城邦",
+  "Keywords": [
+    "南部城邦"
+  ],
+  "RagShortTexts": [
+    "南部城邦控制珀拉斯海与大草原商路，人口富庶"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "南部城邦？就是南帝国的核心组成部分呀，包括费卡翁，波罗斯，沃斯特鲁姆，达努斯提卡，俄尼拉，这里经济富庶，文化繁荣，但是独立性强，城主世袭，但是对百姓都还可以，不会滥杀无辜，也挺尊重百姓的财产的，不会无缘无故的与民争利"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "哈哈哈，南部城邦说的就是我们的领地呀，古时候，我们这都是些独立的城邦，后来，帝国扩张到这里来了，我们的先祖和卡拉德人通婚，逐渐和卡拉德人同化了，我们现在就是卡拉德人，你要说我们是帕拉人我们反倒跟你急，我们世代统治着我们的城邦，效忠于皇帝，但是奇怪的是，那些顽固的帝国人总想在我们死后就收回我们的土地，这是完全不正确的，我们城邦里的一草一木，，每颗粮食，每块石砖，都是我们的，我们死后也有权传给下一代，正好，A陛下上台了，他/她是我们的人，不会剥夺我们的城邦，所以我们支持他/她，甘愿为她出兵作战，缴纳赋税，只要皇帝保证我们的独立地位。至于元老院以及他们的傀儡皇帝以及西边的那位军痞皇帝？不过是土鸡瓦狗罢了。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "steward": 60
+        }
+      },
+      "Content": "现今属于南帝国的广袤之地，曾一度由骄傲独立的诸城邦统治，它们控制着通往珀拉斯海和大草原的商贸路线。这些城邦邀请帝国介入内部纷争，结果后者诉诸条约与武力，接连将其吞并。卡拉德贵族们和当地的商业巨子以及游牧酋长们通婚——他们中的很多人称自己为国王、传奇勇士甚至东方传说中半神的后裔。最近几十年，随着这些城镇逐渐成为整片大陆人口最多且最富裕的地区，许多其他地区的元老院家族纷纷开始疑忌，惧怕这些南方人某天会推举他们中的一员建立世袭君主国。南方贵族们支持拉盖娅，她是一位对世系传承绝不动摇的提倡者，也乐于将这种顾虑付诸现实。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "A",
+      "Kind": "kingdom_leader_name",
+      "TargetId": "empire_s",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}

@@ -1,0 +1,156 @@
+{
+  "Id": "rule_家族根基__夸格兹",
+  "Keywords": [
+    "夸格兹",
+    "夸格兹家族",
+    "吉斯卡利"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "夸格兹是带有吉斯卡利根基的家门。吉斯古城传统重视金字塔宅邸、复杂等级、商业契约与书吏管理，也让奴隶制深深嵌入财富来源；离开奴隶湾以后，这类家门仍会携带语言、账目、亲族与旧日人脉，却未必还能依靠原有土地和地位。夸格兹的现实力量来自能否把这些技能转化为使节、翻译、军需、财务和跨海贸易服务。它可能为不同领袖效力，家门根基却不等于任何一次暂时投靠，更不该由未来胜负倒推。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "ghiscari"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant",
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "吉斯卡利上层看夸格兹，会分辨它的口音、礼法和亲族来路，也会估量它离开旧城后还剩多少真实关系。流亡者最爱谈从前，精明人只问今日能兑现什么。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "ghiscari"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "slave",
+          "artisan",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "曾受奴役的人不会因夸格兹失去旧宅便自动同情它。他们更关心这个家门是否仍把人当作账册上的财物，还是学会用薪酬和契约获得劳动。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "valyrian",
+          "crownlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "流亡军队与复辟者重视夸格兹熟悉东方港口和军需，却也会警惕它的忠诚究竟系于事业、报酬还是自保。对无根家门而言，能力既是通行证，也是永远被审视的理由。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待夸格兹，会先看它的土地、婚盟、血脉和债务。带有吉斯卡利城市根基的家门，以商贸、书记与跨文化服务维持自身，不由暂时阵营定义。家徽是门面，能否保护封地、兑现婚约并在危机中召集人马，才是家族真正的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起夸格兹时，记得的是谁在营火边分过粮、谁把他们留在城外、谁在败局里仍站在旗旁。带有吉斯卡利城市根基的家门，以商贸、书记与跨文化服务维持自身，不由暂时阵营定义。家族名声最终要落到具体的人和具体的命令上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意夸格兹留下的仪式、墓地和传承。带有吉斯卡利城市根基的家门，以商贸、书记与跨文化服务维持自身，不由暂时阵营定义。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见夸格兹。带有吉斯卡利城市根基的家门，以商贸、书记与跨文化服务维持自身，不由暂时阵营定义。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "夸格兹：带有吉斯卡利城市根基的家门，以商贸、书记与跨文化服务维持自身，不由暂时阵营定义。"
+  ]
+}

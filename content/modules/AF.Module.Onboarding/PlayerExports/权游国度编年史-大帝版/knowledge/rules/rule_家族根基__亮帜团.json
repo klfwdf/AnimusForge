@@ -1,0 +1,109 @@
+{
+  "Id": "rule_家族根基__亮帜团",
+  "Keywords": [
+    "亮帜团"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "亮帜团是活跃于厄斯索斯自由城邦与争议之地的佣兵团。鲜明旗号便于战场辨认，也是一种生意招牌：雇主购买的不只是刀剑，还包括一支能按号令集结、守营和兑现战果的现成部队。成员来自不同城市，团结他们的是契约、军饷、战利品规则和共同经历。亮丽旗帜不能遮住佣兵生活的脆弱；欠饷、补给断绝或团长失信，都可能比敌军更快瓦解军团。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "自由城邦的富商和执政者愿意雇亮帜团，因为临时购得的兵力比长期养军便宜；他们也害怕合同到期后，这群全副武装的人仍站在城门外。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "佣兵看一面旗是否值得追随，不只看颜色，还看饷银是否足额、伤者是否被抛弃。亮帜团的名声若能换来下一份好契约，每个老兵都有理由维护它。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "乡民只在乎亮帜团经过时会不会付钱。雇主口中的合法战争若以夺粮和烧屋落到村庄头上，再漂亮的旗帜也只是强盗到来的告示。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意亮帜团留下的仪式、墓地和传承。亮帜团是活跃于自由城邦的佣兵团，以醒目标志、契约、军饷和团长信誉维持队伍。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见亮帜团。亮帜团是活跃于自由城邦的佣兵团，以醒目标志、契约、军饷和团长信誉维持队伍。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "亮帜团：亮帜团是活跃于自由城邦的佣兵团，以醒目标志、契约、军饷和团长信誉维持队伍。"
+  ]
+}

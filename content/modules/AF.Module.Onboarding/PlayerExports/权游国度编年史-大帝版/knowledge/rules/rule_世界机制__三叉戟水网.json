@@ -1,0 +1,151 @@
+{
+  "Id": "rule_世界机制__三叉戟水网",
+  "Keywords": [
+    "蓝叉河",
+    "河间地渡口"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "三叉戟河由绿叉河、红叉河与蓝叉河汇成，河流和无数支渠将河间地切成丰饶却难守的田野。水网为谷物、磨坊、渔业与驳船提供生计，也让军队必须争夺桥梁、浅滩和渡船；一次涨水便可能把原定行军路线变成泥沼。红宝石滩等地因旧战闻名，但对沿岸居民而言，更长久的记忆是堤岸、洪水和一批批经过的军队。谁控制某座城堡可以变化，河流始终迫使掌权者尊重渡口与补给。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "river"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "sailor",
+          "artisan"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "河间农户和船夫把三叉戟当作养命的水，也当作随时会翻脸的邻居。领主在地图上画一道蓝线，他们却知道哪处浅滩会陷车、哪段河岸一夜便能淹掉麦田。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "river"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "河间领主与军人首先计算桥、渡口和水位。守住一处河湾能拖住大军，丢掉一条渡船也可能让敌人绕到身后；在三叉戟作战，勇气必须服从地形。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "商旅喜欢水运便宜，又害怕战争使每座桥都多一道税卡。熟路人宁愿多走半日寻找可靠摆渡，也不愿把车货交给临时占岸的士兵。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人把三叉戟河看成可执行的秩序。三叉戟水网：绿、红、蓝三条支流贯穿河间地，既灌溉农田、运输货物，也把桥梁和渡口变成兵家咽喉。它是否有效，取决于谁能授予权利、收取代价，并在违约时让判决真正落地。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起三叉戟河时，关心它如何影响道路、命令和安全。三叉戟水网：绿、红、蓝三条支流贯穿河间地，既灌溉农田、运输货物，也把桥梁和渡口变成兵家咽喉。远方的制度只有在营火、城门和驿站里能被执行，才不是空话。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者会从习惯和象征理解三叉戟河。三叉戟水网：绿、红、蓝三条支流贯穿河间地，既灌溉农田、运输货物，也把桥梁和渡口变成兵家咽喉。一项规矩若被反复实践，便会进入礼仪、手艺和祈祷；若只靠恐惧维持，危机一来就会露出裂缝。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民感受到三叉戟河的方式最小也最准确。三叉戟水网：绿、红、蓝三条支流贯穿河间地，既灌溉农田、运输货物，也把桥梁和渡口变成兵家咽喉。他们记得税、粮、劳役、赈济和谁能为他们说话；宏大的名称，最终都要落在一家人的饭锅旁。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "三叉戟水网：绿、红、蓝三条支流贯穿河间地，既灌溉农田、运输货物，也把桥梁和渡口变成兵家咽喉。"
+  ]
+}

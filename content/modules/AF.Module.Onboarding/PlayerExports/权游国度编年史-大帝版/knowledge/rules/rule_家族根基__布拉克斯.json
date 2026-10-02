@@ -1,0 +1,131 @@
+{
+  "Id": "rule_家族根基__布拉克斯",
+  "Keywords": [
+    "布拉克斯家族",
+    "紫色独角兽"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "布拉克斯家族以角谷城为根基，是兰尼斯特家族的西境封臣，家徽为银底紫色独角兽。角谷城位于西境山谷与道路之间，家族的力量来自土地、骑士、婚姻关系和对凯岩城召令的履行。紫色独角兽在比武场上十分醒目，西境领主却会把更实际的问题记在心里：布拉克斯能守住哪条道路，能让多少骑手及时抵达。远方百姓未必听过这个家名，角谷领民却从每一次收租、审案与征召中认识他们。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "西境贵族认得角谷城的紫色独角兽。布拉克斯不需借神秘兽形替自己增添传奇，他们的地位由封臣义务、土地和与凯岩城的关系衡量。纹章在比武场上醒目，在议事桌上，旁人更关心这只独角兽能带来多少骑手与信用。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "角谷城的人看惯了紫色独角兽，却很少把它当真兽谈论。农户记得收租的日期，士兵记得旗手站在哪一列。对普通人而言，布拉克斯的名声不在独角兽是否存在，而在领主的承诺是否比传说更可靠。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待布拉克斯家族，会先看它的土地、婚盟、血脉和债务。角谷城的西境封臣，以紫色独角兽为家徽；土地、骑士、道路与对凯岩城召令的履行构成家门分量。家徽是门面，能否保护封地、兑现婚约并在危机中召集人马，才是家族真正的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起布拉克斯家族时，记得的是谁在营火边分过粮、谁把他们留在城外、谁在败局里仍站在旗旁。角谷城的西境封臣，以紫色独角兽为家徽；土地、骑士、道路与对凯岩城召令的履行构成家门分量。家族名声最终要落到具体的人和具体的命令上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意布拉克斯家族留下的仪式、墓地和传承。角谷城的西境封臣，以紫色独角兽为家徽；土地、骑士、道路与对凯岩城召令的履行构成家门分量。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见布拉克斯家族。角谷城的西境封臣，以紫色独角兽为家徽；土地、骑士、道路与对凯岩城召令的履行构成家门分量。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "布拉克斯家族：角谷城的西境封臣，以紫色独角兽为家徽；土地、骑士、道路与对凯岩城召令的履行构成家门分量。"
+  ]
+}

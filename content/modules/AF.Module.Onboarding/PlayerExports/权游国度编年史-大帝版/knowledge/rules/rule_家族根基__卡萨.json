@@ -1,0 +1,152 @@
+{
+  "Id": "rule_家族根基__卡萨",
+  "Keywords": [
+    "卡萨",
+    "卡萨家族"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "卡萨是伊班权力秩序中的核心家门。伊班岛的生活受寒海、短暂生长季、捕鲸和远航贸易支配，统治者若只占据大厅而无法协调船主、猎鲸人、毛皮商与储粮者，权威便会迅速空洞。卡萨的根基在于把港口收入、船队经验与亲族网络转化为公共秩序：决定何时出航、如何分担损船、如何让鲸油和粮食度过寒季。具体掌权者可能改变，这个家门在本地人眼中的合法性始终要经受海况与冬粮的检验。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "ibbenese"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "伊班的权贵把卡萨当作议事与港口利益的枢纽，也防着它把共同决策变成自家命令。寒海不会因一个姓氏而平静，出航判断错一次便可能动摇多年威望。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "ibbenese"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "sailor",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "捕鲸人与船员只服真正懂海的人。卡萨若在岸上催促冒险，却不替遇难家庭承担损失，下一次征召便只会得到沉默和借口。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "ibbenese"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "岛民以鲸油价格、冬粮储备和修船木料衡量卡萨。统治的分量，在漫长寒夜里往往就是一盏灯还能烧多久。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待卡萨，会先看它的土地、婚盟、血脉和债务。伊班权力核心中的家门，地位系于港口议事、捕鲸经济与寒海共同体的供养能力。家徽是门面，能否保护封地、兑现婚约并在危机中召集人马，才是家族真正的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起卡萨时，记得的是谁在营火边分过粮、谁把他们留在城外、谁在败局里仍站在旗旁。伊班权力核心中的家门，地位系于港口议事、捕鲸经济与寒海共同体的供养能力。家族名声最终要落到具体的人和具体的命令上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意卡萨留下的仪式、墓地和传承。伊班权力核心中的家门，地位系于港口议事、捕鲸经济与寒海共同体的供养能力。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见卡萨。伊班权力核心中的家门，地位系于港口议事、捕鲸经济与寒海共同体的供养能力。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "卡萨：伊班权力核心中的家门，地位系于港口议事、捕鲸经济与寒海共同体的供养能力。"
+  ]
+}

@@ -1,0 +1,151 @@
+{
+  "Id": "rule_家族根基__佛雷家族",
+  "Keywords": [
+    "佛雷家族",
+    "双塔石桥",
+    "过桥费"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "佛雷家族以绿叉河上的孪河城为根基。两座相对城堡和连接其间的石桥，使佛雷能向商旅、军队和贵族收取过桥费，并在数百年间由新兴家族积累成河间地最富有、人口最庞大的封臣之一。家徽表现相连的双塔；古老家族常讥讽佛雷门第浅薄、子孙过多，佛雷则明白祖先的桥比许多古老歌谣更能迫使人停下谈判。当地百姓对他们的认识更直接：桥能救路，也能收费，守桥者的尊严往往与价码同时出现。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "river"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "河间贵族常轻视佛雷家族暴富得太晚，却无法轻视孪河城那座桥。古老血统能决定宴席上的敬意，渡口却能决定军队何时到达。佛雷最令人不安之处，正是他们把地理变成了谈判：别人谈荣誉时，他们会先问谁要过河、愿付什么。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "river"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "商旅和农户对佛雷的看法比贵族简单。桥若开放，车轮少陷几日泥，货物便能安全过绿叉河；桥税若重，一年的利润就留在了城门下。人们咒骂收费，也害怕没有这座桥时的洪水与绕路，怨气和依赖因此拴在同一根铁链上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "river"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵看孪河城，先看两岸箭塔、吊桥和狭窄桥面。那是一处很难靠勇气硬闯的地方，也是任何统帅都想提前谈妥的关口。佛雷旗帜未必让人心生爱戴，却能让整支军队停下来等一句答复。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待佛雷家族，会先看它的土地、婚盟、血脉和债务。绿叉河孪河城的守桥家族，凭双堡、石桥、通行费与庞大后裔崛起。古族轻视其门第，军队和商旅却无法轻视渡口。家徽是门面，能否保护封地、兑现婚约并在危机中召集人马，才是家族真正的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起佛雷家族时，记得的是谁在营火边分过粮、谁把他们留在城外、谁在败局里仍站在旗旁。绿叉河孪河城的守桥家族，凭双堡、石桥、通行费与庞大后裔崛起。古族轻视其门第，军队和商旅却无法轻视渡口。家族名声最终要落到具体的人和具体的命令上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意佛雷家族留下的仪式、墓地和传承。绿叉河孪河城的守桥家族，凭双堡、石桥、通行费与庞大后裔崛起。古族轻视其门第，军队和商旅却无法轻视渡口。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见佛雷家族。绿叉河孪河城的守桥家族，凭双堡、石桥、通行费与庞大后裔崛起。古族轻视其门第，军队和商旅却无法轻视渡口。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "佛雷家族：绿叉河孪河城的守桥家族，凭双堡、石桥、通行费与庞大后裔崛起。古族轻视其门第，军队和商旅却无法轻视渡口；"
+  ]
+}

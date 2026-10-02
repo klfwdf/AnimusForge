@@ -1,0 +1,153 @@
+{
+  "Id": "rule_艾维领__艾维领",
+  "Keywords": [
+    "艾维领",
+    "艾维领行省_AV",
+    "艾维领选帝侯_AV",
+    "艾维领大剑士_AV",
+    "黑火隘口_AV",
+    "艾维领骑兵_AV",
+    "阿费尔海姆_AV",
+    "艾维领牛群_AV",
+    "马里乌斯·莱特多夫_AV",
+    "疯伯爵_AV"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "艾维领是帝国南疆最富庶的农业行省，肥沃的上瑞克平原滋养了旧世界最庞大的牛群与最雄壮的战马。首府阿费尔海姆坐落在艾维河畔，以白墙与铜顶塔楼闻名于世。黑火隘口横亘于行省南端与世界边缘山脉之间，是帝国抵御绿皮入侵的第一道战略防线——西格玛本人正是在此隘口赢得了奠定帝国基业的决定性战役。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": ["empire"],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "艾维领——帝国人提起这个名字，脑子里首先蹦出的不是选帝侯的名字，而是牛排和战马。这个行省的牛群漫山遍野，艾维领牛排是阿尔道夫最贵餐馆里的招牌菜。他们的骑兵是帝国最好的，比瑞克卫队还要傲慢，骑的马比塔拉贝克领的贵族轿车还值钱。不过说实话，他们的选帝侯马里乌斯·莱特多夫是个彻头彻尾的疯子——一方面他确实是军事天才，在黑火隘口打退过至少三次大规模绿皮入侵；另一方面你永远不知道他明天会不会穿着睡衣出席帝国议会。但艾维领人自己倒不在乎，他们说自己宁愿要一个疯天才也不要一个清醒的庸人。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": ["lord"],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "艾维领的战略价值不在于它的选帝侯有多英明——事实上马里乌斯的精神状况已成为整个帝国政治的不可控变量——而在于它控制着旧世界最重要的陆地贸易走廊。黑火隘口是连接帝国与南方边境亲王领、乃至遥远东方商路的唯一安全通道。任何一个想要削弱帝国经济的人，只需要在黑火隘口布置一支兵力，就能掐断帝国与矮人城邦之间七成以上的贸易。然而艾维领的骑兵力量也是帝国各行省中最不可预测的因素：他们的重骑兵冲锋足以撕碎任何兽人部落的阵线，但调动这些骑兵的前提是你得先让那位疯伯爵同意——而说服他可能需要你用剑尖在地上画一只独角兽，或者陪他辩论三小时关于奶酪与政治哲学的隐喻关系。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": ["lord", "notable", "wanderer"],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {"Steward": 120},
+        "IdentityIds": null
+      },
+      "Content": "艾维领的治理模式是帝国农业经济的教科书级案例。该行省以三圃轮作制为基础，将上瑞克平原的冲积土壤产能发挥到极致，其牛群总数据帝国税务署保守估计超过十二万头，为整个南帝国提供了稳定的肉类与皮革供应。艾维领骑兵部队的马匹繁育体系同样值得深入研究——阿费尔海姆附近的皇家马场采用血统登记制度已逾两百年，每一匹战马的血系可追溯五代以上，这在旧世界堪称绝无仅有。然而行省财政过度依赖农牧业出口，使其在帝国贸易体系中处于被动地位：当瑞克河航运因战争或匪患中断时，艾维领的牛群运不出去，行省收入将在一季之内骤降四成。马里乌斯·莱特多夫的个人财政管理更是灾难性的——他曾在同一年内为行省订购了三套完全不兼容的税收账册体系，只因他确信数字在不同颜色的纸上会呈现不同的计算结果。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": ["lord"],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "作为艾维领贵族女性，你必须面对一个独一无二的困境：这个行省的所有权力结构都建立在男性气概的炫耀之上——从骑兵竞技到议会辩论，从剑术决斗到牛市议价。女人在艾维领的政治空间被压缩到一个极度狭窄的缝隙里，但并非没有可趁之机。马里乌斯的疯病意味着真正掌控行省日常政务的是阿费尔海姆的枢密院，而那里面坐着一大半是伯爵不在场时替他签署文件的老年贵族。一个聪明的女人可以通过管理庄园经济——艾维领真正的命脉——积累远超过男性的实际影响力。当男人们在议会大厅里为黑火隘口的巡逻预算吵得面红耳赤时，他们的妻子早已在账簿上决定了谁来为那支巡逻队提供战马。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": ["lord"],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "每一个经营艾维领的家族族长都会告诉你同一个教训：在这个行省，家族最大的资产不是土地也不是黄金——是牛群的血统和骑兵队的名册。艾维领的老牌贵族家族世代经营着各自的牛群血系和骑兵连队，一个家族的兴衰直接取决于它的牧场在去年产下了多少健康的牛犊、它的骑兵队在黑火隘口上一次战役中折损了多少战马。莱特多夫家族之所以能稳住选帝侯之位，不在于马里乌斯的治国才能——众所周知他可以和一面墙吵三小时关于墙的颜色是否正确——而在于莱特多夫家族掌控着艾维领最大的骑兵编制和血统最纯正的战马繁育权。你要在艾维领建立家族地位，最好的办法不是贿赂选帝侯，而是培育一匹能在阿尔道夫皇家阅兵式上获得皇帝亲口赞赏的冠军战马。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": ["wanderer"],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我在艾维领跑了四年佣兵差事，干过牧场警卫、商队押运和黑火隘口的巡逻兵。这个行省对雇佣兵来说是块肥肉——牧场主们有钱但缺人手，绿皮每年都从山口南下，隘口要塞的驻军永远在招人。疯伯爵本人虽然脑子不太正常，但他给的军饷从不拖欠，而且他偶尔会在阅兵时随机赏赐一笔金币给表演最出色的骑兵连。不过艾维领最危险的不是绿皮——是牛市。艾维领人在牛市上赌起钱来比赌场庄家还疯狂，一笔牛群期货交易能在三天内让你从一个有马的骑兵变成只能徒步的穷光蛋。记住我的话：在艾维领拿剑赚的钱，别拿到牛市上去输。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": ["notable"],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "艾维领的商会行事有自己的一套逻辑——这里的商业不是靠河流，而是靠蹄子。每一笔大宗交易到最后都会牵扯到牛群：皮革商需要牧场主，军需官需要骑兵队，屠夫行会需要稳定的肉源，就连魔法学院每年都得从艾维领订购几十头公牛用于炼金实验（别问我他们拿牛做什么，我不想知道）。艾维领商会最大的筹码是黑火隘口的过境贸易税——从矮人王国运往帝国内陆的每一车矿石、每一箱符文工艺品，都得从隘口经过，而隘口两边的仓库和驿站全由艾维领商会控制。矮人们对这笔过路费一直心怀不满，但他们更明白没有隘口就没有安全的商路。不过最近牛瘟在东部牧场蔓延，商会高层急得焦头烂额——如果疫情扩散到皇家马场，明年帝国骑兵的战马供应就要出大问题。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "艾维领——旧世界最富庶的农业行省，帝国粮仓与战马之乡",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "艾维领帝国行省农牧业黑火隘口"
+  ]
+}

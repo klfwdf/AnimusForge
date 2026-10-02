@@ -1,0 +1,209 @@
+{
+  "Id": "rule_搞毛巨像__搞毛巨像",
+  "Keywords": [
+    "搞毛巨像",
+    "搞哥",
+    "毛哥",
+    "绿皮神祇",
+    "搞哥毛哥",
+    "Waaagh能量",
+    "双子神",
+    "绿皮宗教"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "搞毛巨像是绿皮种族仅有的两位神祇——搞哥和毛哥——的统称。搞哥是狡猾而残忍的，毛哥是残忍而狡猾的，两位双子神代表了绿皮世界观的完整光谱：一切行为的最终目标不是在战斗中获胜，而是享受战斗本身。绿皮萨满通过引导Waaagh!能量来呼唤搞毛二哥的注视，当注视降临时，天空中会出现绿色的灵能异象——从巨型能量光束到从天而降的绿色虚影巨足。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "搞哥和毛哥！他们是最棒的神！比人类的那个坐在黄金椅子上的老骨头和尖耳朵的那个软绵绵的月亮女神都棒！搞哥教我们怎么用脑子打架——比如从高处砸石头下来而不用自己爬上去打；毛哥教我们怎么用力气打架——比如一拳把敌人的脑袋锤进胸口里去！他们两个本身就是最大的两个兽人——在非物质界里天天互殴，谁也打不赢谁，因为搞哥更狡猾但毛哥更壮！当萨满在战场上呼唤搞毛二哥的注意时，天上的云会变成绿色，然后搞哥或毛哥会亲自往下看——他们的视线就是一道绿光，把敌人的阵线砸成碎渣！"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "搞毛巨像崇拜在军事上最直接的影响在于绿皮的Waaagh!能量场。当绿皮萨满呼叫搞毛二哥的注视时，这种灵能现象不需要任何施法训练或魔法天赋——它完全取决于周围绿皮的数量和兴奋程度。这意味着你永远无法通过消灭绿皮中的特定个体来阻止这种超自然攻击——只要战场上的绿皮够多够兴奋，注视就会出现。对抗它的唯一方式是阻止绿皮在战场上集结到足够的密度。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "搞毛巨像崇拜是旧世界宗教体系中最纯粹的神力具象化现象。与其他通过教义、仪式和文本传播的宗教不同，搞毛信仰完全通过绿皮的集体灵能场——即Waaagh!能量——来维系和传递。搞哥和毛哥在非物质界的存在实际上是由所有绿皮的集体战斗欲望所构建和维持的——他们既是Waaagh!能量的来源，也是Waaagh!能量的产物。这种神性与信徒之间的循环关系是旧世界宗教学中被研究最少的课题，因为任何试图进入活跃Waaagh!区域进行实地观察的学者都很难生还。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "搞毛巨像崇拜对女性没有任何特殊规定——这在旧世界诸神中极为罕见。帝国的西格玛教会有严格的女性宗教等级限制，巴托尼亚的湖之女神将女性限定为唯一合法的施法者，但搞哥和毛哥根本不在乎你是男是女——他们只在乎你能不能打。这种粗犷的平等主义偶尔被帝国巫师用来论证搞毛崇拜在某种程度上的纯粹性。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "搞毛巨像对我家族领地的实际影响是周期性的——每当恶地上的绿皮部落中出现了一位新的强力萨满，接下来几年内周边地区的Waaagh!凝视现象就会显著增加。我们家族在过去的二百年间已经学会了如何通过绿皮萨满的活动频率来预测注视事件——这不是精确的科学，但在边境存活了二百年教会了你如何在缺少数据的情况下做出最佳判断。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "在恶地附近流浪的佣兵之间流传着一个说法：如果你见过一次搞毛二哥的注视，你的头发会在那之后慢慢变绿——不是被染色，而是被Waaagh!残留的灵能沾染。我认得的三个声称见过注视的退伍老兵中有一个确实在十年后长出了隐约绿色的头发。其他两个在头发变色前就死在了战场上。可能是巧合，但我从那以后再也不接任何让我直面绿皮Waaagh!的合同。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "搞毛巨像信仰对边境贸易有一种特殊的经济影响：许多边境商人在面对可能遭遇绿皮Waaagh!的风险时，会向路过的地精商人购买一种据称刻有搞哥或毛哥脸部图案的粗糙护身符——据说持有这种护身符的人在遭遇绿皮时可以自称搞毛二哥的崇拜者以换取活命。这种东西的真伪无法被验证——但你可以在恶地边境的每一个商队营地里找到兜售这种护身符的地精小贩。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "搞哥——绿皮双子神之一，代表狡猾的暴力，用脑子打败更强大的敌人",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "搞毛巨像搞哥毛哥"
+  ]
+}

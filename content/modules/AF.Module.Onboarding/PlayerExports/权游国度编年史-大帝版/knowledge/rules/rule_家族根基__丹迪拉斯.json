@@ -1,0 +1,133 @@
+{
+  "Id": "rule_家族根基__丹迪拉斯",
+  "Keywords": [
+    "丹迪拉斯",
+    "丹迪拉斯家族"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "丹迪拉斯家族属于科霍尔的地方精英。外人把这里称作法师之城，谈论血魔法、死灵术和重铸瓦雷利亚钢；丹迪拉斯日常面对的却仍是仓储、木料、工钱、祭礼和商队季节。传闻能增加敬畏，维持家业还得靠可重复的秩序。 科霍尔位于大森林边缘，以能够重铸瓦雷利亚钢、为金属着色的铁匠和黑山羊信仰闻名。城中财富来自林木、工坊、商队与奴隶劳动，宗教献祭和行业秘密共同塑造其阴郁声名。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "qohorik"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "科霍尔商人与祭司看丹迪拉斯，会权衡它对工坊、森林货物和黑山羊神庙的贡献。一个家门若触怒行业秘密或宗教权威，再多钱也可能失去城市中的立足处。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "qohorik"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "slave",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "科霍尔铁匠、烧炭工与奴隶评价丹迪拉斯，看的是木炭、矿料、工钱和惩罚。外人赞叹彩色钢铁时，很少想到炉火旁有多少人终年吸入烟尘。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待丹迪拉斯，会先看它的土地、婚盟、血脉和债务。丹迪拉斯是科霍尔地方家门，在法师之城的黑山羊信仰、工坊秘密和森林贸易中立足。家徽是门面，能否保护封地、兑现婚约并在危机中召集人马，才是家族真正的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起丹迪拉斯时，记得的是谁在营火边分过粮、谁把他们留在城外、谁在败局里仍站在旗旁。丹迪拉斯是科霍尔地方家门，在法师之城的黑山羊信仰、工坊秘密和森林贸易中立足。家族名声最终要落到具体的人和具体的命令上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意丹迪拉斯留下的仪式、墓地和传承。丹迪拉斯是科霍尔地方家门，在法师之城的黑山羊信仰、工坊秘密和森林贸易中立足。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见丹迪拉斯。丹迪拉斯是科霍尔地方家门，在法师之城的黑山羊信仰、工坊秘密和森林贸易中立足。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "丹迪拉斯：丹迪拉斯是科霍尔地方家门，在法师之城的黑山羊信仰、工坊秘密和森林贸易中立足。"
+  ]
+}

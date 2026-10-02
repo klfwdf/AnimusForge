@@ -1,0 +1,211 @@
+{
+  "Id": "rule_矮人__矮人",
+  "Keywords": [
+    "矮人",
+    "达维",
+    "矮人卡拉克",
+    "城塞",
+    "山地民族",
+    "Dwarfs",
+    "矮人仇恨之书",
+    "工程师公会",
+    "氏族",
+    "矮人长须者"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "矮人——自称达维——是旧世界最古老的种族之一，居住在世界边缘山脉和灰色山脉的地下城塞中。他们是世间最出色的矿工、铁匠和符文工匠，也是最顽固、最记仇的种族——矮人永远不会忘记任何一笔未清偿的债务或任何一个未被报复的侮辱。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我们是达维！山脉深处最坚硬的种族！当精灵还在树梢上跳来跳去、人类还在泥地里打滚时，我们的祖先已经用锻锤和符文凿开了世界边缘山脉的骨头，在黑色的岩石中建起了卡拉克。人类说我们顽固——对，顽固到足以让我们的城塞在绿皮和鼠人的包围中独立坚守五千年。人类说我们记仇——对，我们有一本《仇恨之书》，每一个条目都会被清偿，不论需要一天还是一千年。别误解了我们。我们不像精灵那样狡猾，不像人类那样善变，但我们所有的盟约都是永恒的，我们所有的武器都不会折断，我们所有的誓言都会被守住。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "矮人的军事价值在于他们的不可动摇和恐怖火力。矮人重装步兵——铁锤勇士和碎铁者——构成了旧世界最坚韧的盾墙，矮人手枪兵和风琴炮是防守隘口和坑道的理想武器，雷霆空艇则提供稀缺的空中侦察和垂直打击。矮人的弱点是数量——他们的人口从未恢复过来，每一次战役的伤亡都需要数十年才能补充。因此矮人战术天然倾向于防御和消耗战，任何试图用矮人作为进攻主力——用他们去冲破而不是守住——的指挥官都是在浪费旧世界最不可替代的军事资源。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 100
+        },
+        "IdentityIds": null
+      },
+      "Content": "矮人社会建立在四个核心支柱上：氏族、行会、卡拉克和仇恨。氏族是血缘单位的最高组织形式，每个矮人的名字中包含父系和氏族信息。行会——尤其是工程师公会和符文铁匠公会——控制了矮人的技术传承和武器制造，公会的内部等级以技能测试和年资为基础，晋升速度以世纪为单位。卡拉克是城塞的意思，每一座卡拉克是一个独立政治实体，有自己的王、自己的氏族组合和自己的仇恨列表，至高王在卡拉扎-阿-卡拉克的权威来自他是所有卡拉克王中最强大、最古老、承担最多仇恨的那个。仇恨——dawri——是矮人社会的情感货币，它运行的方式简单而致命：一个矮人受了侮辱→他记下仇恨→他的家族继承这笔仇恨→他的整个氏族最终分担这笔仇恨→如果这笔仇恨涉及不同卡拉克之间的矮人，可能升级为一场矮人内战→如果这笔仇恨指向非矮人——如精灵、兽人或鼠人——它最终会以战争方式清偿。一套无法被人类理解的公正体系，但它是矮人文明的骨架。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "作为一位在灰色山脉边境治理领地三十年的矮人氏族女性，矮人种族对我而言不是地图上的政治边界而是血脉的图谱。外族人往往以为矮人女性深居城塞内部不参与公共事务——他们错了。在每一个卡拉克中，女性管理着氏族的贸易网络、家族记忆和跨卡拉克联姻关系。当男人们在战场上守着盾墙的时候，是女性维持着整个矮人文明不被绿皮和鼠人从内部分解。我的三个儿子都在碎铁者军团服役，他们每个人都有一套由我亲手监督制作的符文加固板甲——这不仅是母爱，这是氏族的经济调动能力。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我们家族在世界边缘山脉中拥有三个已被封堵的矿道入口——那是我们自长须战争以来就一直在维护的秘密补给线。作为家族的第十三代族长，我的第一要务不是扩张领地或积累财富——而是确保当下一场Waaagh！或鼠人部落从地下涌出时，我们的氏族成员有路可退。谁控制了山脉的主要隘口谁就控制了从帝国到恶地的所有贸易，而我家族在最近十代人中一直在帝国和矮人至高王之间充当山隘控制权的外交掮客。这份工作的报酬不是黄金而是信任——黄金会花完，但信任刻在石头上比文字更持久。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "在世界边缘山脉的各个矮人城塞之间流浪多年后我学到了一件事：不要用人类的规则去判断矮人。人类说矮人'顽固'——但如果你在同一个卡拉克里被绿皮围攻了四千七百年而你的盟友中有一半已经失联，你也会'顽固'。矮人说他们'从不遗忘'——这不是吹嘘，我亲眼见过一个矮人旅馆老板因为三百年前某个帝国商人的祖先少付了一枚铜币而拒绝让他的后代入住。如果你能在矮人城塞中取得他们的信任——这需要你支付所有的过往债务、赞美他们的石工技艺、并且永远不碰他们的胡须——你会获得旧世界最坚定的盟友。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "从商业角度来看，矮人是旧世界最可靠也最难打交道的贸易伙伴。可靠是因为他们从不违约——一个矮人承诺的货物会在约定的精确日期送达，质量会精确地符合规格。难打交道是因为他们的定价从不议价——矮人开出的价格就是'正确的价格'，任何试图压价的行为都可能被记录为一条格鲁吉（仇恨）并损害你的信用。我所在的商会与卡拉克·卡德林的符文铁匠公会维持了超过两百年的独家铁锭供应合同——这份合同的价值不在于利润率，而在于它成为我商会在整个帝国范围内最无可辩驳的信誉凭证。在帝国，'与矮人有合同'本身就是一个比金克朗更有价值的流通资产。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "达维——矮人的自称，意为'山脉的子民'",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "矮人达维矮人卡拉克"
+  ]
+}

@@ -1,0 +1,194 @@
+﻿{
+  "Id": "rule_德泰尔",
+  "Keywords": [
+    "德泰尔"
+  ],
+  "RagShortTexts": [
+    "德泰尔国王的软弱性格与仲裁执政方式"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": [
+          "clan_vlandia_4"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": [
+          "hero:lord_4_16"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "德泰尔是我见过最软弱的男人，偏偏他戴着金冠。我在潘德拉克冲阵的时候他在哪儿？在山上。骑士在前面流血，他在后面看地图。打完了，男爵们怪他，他说开战是我们的主意——这话倒不假，但一个国王把责任推给封臣，丢人。他这辈子最大的本事就是让一群互相看不顺眼的人坐下来聊天，聊完了各回各家继续看不顺眼。他说野狗争骨头，可他从来没想过把骨头夺过来，他只会在骨头旁边当裁判。瓦兰迪亚要的不是裁判，是王。我不是不认他是国王，我只是觉得他不像。他要是能有他祖先奥斯里克一根指头的狠劲，帝国西部早插满我们的旗了。但他没有。他心里装着对帝国的誓言，装着他那套仲裁的念想，装不下瓦兰迪亚。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": [
+          "clan_vlandia_2"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": [
+          "hero:lord_4_3"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "德泰尔是个好人。这是我能给他的最高评价，也是最致命的。好人在瓦兰迪亚当不了好国王。我跟他没有私仇，面子上我们互相敬酒，私下里他清楚北瓦兰迪亚听谁的，我也清楚金冠在他头上。但问题就在这儿——他知道我在北边的影响力，却从没真正对我动过手。是不敢？还是觉得没必要？我到现在也摸不透。他在潘德拉克之后说君王只能领导他人而不能追随他人，这话说得对，他自己做到了吗？他被男爵们裹挟着参战，又被涅雷采斯一封骂信激得转向，这哪里是领导，是被人牵着走。不过我得承认，他这些年把瓦兰迪亚摁住了。不是打服的，是劝服的。劝服能管多久？等他儿子继位，那些他劝住的仇怨全得翻出来。我不急。我等得起。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": [
+          "clan_vlandia_3"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "德泰尔国王是我们愿意追随的君主，不是因为他的剑快——他的剑不快——而是因为他不轻易拔剑。恩泰里常说，在瓦兰迪亚当国王，最难的不是打赢一场仗，是不打不该打的仗。德泰尔在潘德拉克之后悟出的那条教训，我们亲眼看他咽下去的。他本可以跟那些男爵们翻脸，他没有。他本可以把战败的责任全推给因加泰尔他们，他没有。他把苦水吞了，回头继续坐在那张谈判桌上，把骂他的人一个一个拉回来说话。这需要一种勇气，只是这种勇气不像冲阵那样好懂。\n\n卡拉蒂尔德私下里说起过，说她担心德泰尔太累。仲裁不是举剑，是举杯子，杯子不重，但一天举到晚比什么都沉。我们戴·阿罗曼克家不图从王冠下多分一块地，我们只希望能替他分担一点重量。可我们也清楚，有些重量别人替不了。他坐在金冠下，不是享受权力，是忍受权力。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "德泰尔国王？说实话我一年见不了他几回。我的封地就几个城堡，王城那边的消息得靠路过商队带。听说他不太爱打仗，喜欢劝和。这对我这种人反而是好事——我这点家底经不起大折腾，因加泰尔他们天天叫着要打要杀，打完了他们抢功抢地，我们小男爵跟在后面吃灰。德泰尔不打大仗，税就没那么重。但他劝和也有个毛病：他劝和的都是大男爵，我们小男爵跟谁有纠纷，他那边听不见。我得自己找人撑腰，找因加泰尔，或者找阿尔德里克。德泰尔太远，大男爵太近。国王的仲裁是给大人物的，小人物只能自己想办法。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "德泰尔·戴·梅罗克是个异数。瓦兰迪亚以铁血立国，他却以仲裁执政。帝国那边对他感情复杂——他年轻时主张遵守与帝国的盟约，涅雷采斯却不领情，用侮辱把他推到了对面。现在帝国裂了，谁也顾不上复盘这笔旧账，但元老院里有人提过一句：如果当年涅雷采斯没写那封信，潘德拉克的瓦兰迪亚人可能站在帝国这边。斯特吉亚人跟他合作过一回，结论是这人太软，打不了硬仗。巴旦尼亚人不关心，反正瓦兰迪亚不打他们就行。库赛特和阿塞莱太远，对他没概念。\n\n我们这些盯着瓦兰迪亚的人倒是有个共识：德泰尔是把瓦兰迪亚的内斗摁住了，但没解决。他靠个人耐心和手腕维持平衡，这种平衡在他死后很难延续。他的继承人要么比他硬十倍，要么瓦兰迪亚回到野狗争骨头的状态。加里俄斯有过一句评价，说德泰尔是个可以谈判的对手。但接着又补了半句：可以谈判，不必害怕。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "国王老爷？德泰尔。听说他不喜欢打仗，喜欢坐下来劝架。我家人去年被征去当兵，在边境上蹲了半年，没打什么大仗，回来人还是完整的。就冲这个我不骂他。隔壁村的人被征去跟帝国人打，去了没回来一半，那边的人一提德泰尔就咬牙，说国王不够狠，打完仗退得太快，没占到便宜。但我不一样，我家人回来了。我管他狠不狠。\n\n不过他头上那顶金冠的事，老辈人提起来就摇头。说是帝国送的，不吉利。拿了帝国的东西就得替帝国挡灾，结果挡来挡去自己人打自己人。德泰尔自己说那是骨头，扔在狗群里狗就不停地咬。一个国王管自己手底下的贵族叫野狗——那他自己是什么。我不懂这些，我只管家里米缸满不满。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "德泰尔·戴·梅罗克是瓦兰迪亚最不像瓦兰迪亚国王的国王。我们元老院对他有过系统的评判：他主张守约，这是稀罕品质，可惜被涅雷采斯糟蹋了。他在潘德拉克之后转向仲裁统治，把一群军阀约束在谈判桌旁，这件事的难度我们自己管元老院的人最懂——一屋子贵族尚且天天吵翻，他管的是半个大陆的男爵。有人笑他懦弱，我们不笑。懦弱的人坐不稳那个位子这么多年。\n\n但他不是帝国的朋友。他只是帝国的旧债。我们帝国裂成三块之后，西边A跟他有商路往来，北边B对他没兴趣，南边C偶尔派人去打探一下他的身体近况。不是关心，是评估。德泰尔在位一天，瓦兰迪亚的内压就多一天。他要是哪天不在了，那根骨头到底归谁还不知道。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "瓦兰迪亚的国王叫德泰尔？名字听着不像蛮子。他们说他不怎么打仗，在位好些年了，不像以前那些瓦兰迪亚王个个骑马打仗。他喜欢劝架——说是把那些男爵老爷们叫到一个屋里谈，谈完了摔门走，改天再谈。跑商的人说他是瓦兰迪亚少有的讲道理的人。但讲道理有什么用？他手底下的人不讲。跑商的人每次交过路费都骂：你国王不是劝和吗，怎么这里还设卡收钱？我们也听不懂什么誓言之类的东西，只盼他们国王管住手下，少收两道过路钱。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "A",
+      "Kind": "kingdom_leader_name",
+      "TargetId": "empire_w",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": "B",
+      "Kind": "kingdom_leader_name",
+      "TargetId": "empire",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": "C",
+      "Kind": "kingdom_leader_name",
+      "TargetId": "empire_s",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}

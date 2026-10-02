@@ -1,0 +1,146 @@
+{
+  "Id": "rule_历史节点__高个邓肯",
+  "Keywords": [
+    "高个邓肯",
+    "邓肯爵士"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "高个邓肯留下的影响，藏在家族记忆、旧誓言、城墙和税册里。后来的人未必同意先人的判断，却无法绕开已经形成的债与名声。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "scholar",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "学者和祭司谈到高个邓肯，争论的从来不只是哪一年发生了什么，也包括谁有资格记住、谁被迫沉默；名分与记忆在不同厅堂里会有不同的名字。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "贵族把高个邓肯当作法统与债务的账本，士兵记得其中的饥饿和尸骨，农户只在税册、旧堡垛和家中传下的忌讳里感到它的重量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "商旅与旅人很少掌握高个邓肯的全貌，却会在酒馆、渡口和集市重复其中最能解释眼前利害的片段；传闻会变形，留下的影响却很少凭空消失。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人把高个邓肯当作仍在生效的旧账。高个邓肯留下的影响，藏在家族记忆、旧誓言、城墙和税册里。后来的人未必同意先人的判断，却无法绕开已经形成的债与名声。一场过去的战争或一次王朝更替，会决定今日的税率、盟约、道路与谁有资格在大厅里先开口。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人记住高个邓肯的方式不同于史官。高个邓肯留下的影响，藏在家族记忆、旧誓言、城墙和税册里。后来的人未必同意先人的判断，却无法绕开已经形成的债与名声。他们记得哪面旗倒下、哪座桥被烧、谁在雪里分过最后一口水；对他们来说，历史首先是身体留下的记忆。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者谈及高个邓肯时，常把事实与寓意放在一起。高个邓肯留下的影响，藏在家族记忆、旧誓言、城墙和税册里。后来的人未必同意先人的判断，却无法绕开已经形成的债与名声。胜者会把它写成秩序的证明，败者会把它留作警告，而普通人只记得那一年粮价和墓地增加了多少。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民很少说出高个邓肯的完整名字。高个邓肯留下的影响，藏在家族记忆、旧誓言、城墙和税册里。后来的人未必同意先人的判断，却无法绕开已经形成的债与名声。他们通过旧屋、家谱、墓碑和老人讲过的禁忌认识过去；只要某件往事还影响收税、征兵或婚姻，它就没有真正结束。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "高个邓肯：高个邓肯留下的影响，藏在家族记忆、旧誓言、城墙和税册里。后来的人未必同意先人的判断，却无法绕开已经形成的债与名声。"
+  ]
+}

@@ -1,0 +1,131 @@
+{
+  "Id": "rule_家族根基__杭特",
+  "Keywords": [
+    "杭特家族",
+    "银箭"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "杭特家族以长弓厅为根基，是艾林家族的谷地封臣，家徽以棕底银箭为主要图案。长弓厅所处的谷地腹地使家族更关心农田、山路、骑士召集与邻家婚约。当地人认识杭特，是因为他们负责裁断、收税和保护道路；外地人通常只会把它视为白鹰麾下众多古老骑士家族之一。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vale"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "谷地贵族认识长弓厅的杭特家，银箭纹章使人想到山林狩猎与弓手，却不会有人仅凭纹章替他们编出显赫王统。杭特的实际分量来自领地、亲族与能否响应谷地召令；在封臣众多的山谷里，可靠往往比传奇更有价值。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vale"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "长弓厅附近的猎户看箭羽是否平直，士兵看弓弦在湿冷天气里是否还能拉开。他们对杭特家的评价也如此实际：林地纠纷是否裁得清，盗匪是否有人追，征来的弓手是否被白白丢在不合适的战场。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待杭特家族，会先看它的土地、婚盟、血脉和债务。谷地长弓厅的艾林封臣，家徽以银箭为主要图案。家徽是门面，能否保护封地、兑现婚约并在危机中召集人马，才是家族真正的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起杭特家族时，记得的是谁在营火边分过粮、谁把他们留在城外、谁在败局里仍站在旗旁。谷地长弓厅的艾林封臣，家徽以银箭为主要图案。家族名声最终要落到具体的人和具体的命令上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意杭特家族留下的仪式、墓地和传承。谷地长弓厅的艾林封臣，家徽以银箭为主要图案。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见杭特家族。谷地长弓厅的艾林封臣，家徽以银箭为主要图案。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "杭特家族：谷地长弓厅的艾林封臣，家徽以银箭为主要图案。"
+  ]
+}

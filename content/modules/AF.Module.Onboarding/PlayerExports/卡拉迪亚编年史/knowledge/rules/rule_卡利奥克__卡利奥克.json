@@ -1,0 +1,93 @@
+﻿{
+  "Id": "rule_卡利奥克",
+  "Keywords": [
+    "卡利奥克"
+  ],
+  "RagShortTexts": [
+    "卡利奥克是萨哥特附近村庄，位于纳尔谷。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "卡利奥克是萨哥特附近的一座村庄，坐落于纳尔谷，即埃皮尔丘陵与比斯坎山之间的谷地。这里的居民在湿润的谷底种植亚麻，亚麻布是当地最主要的产品。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "卡利奥克的亚麻在萨哥特一带很受欢迎。纳尔谷的谷底湿度刚好，种出来的亚麻纤维长、韧劲足，织成布耐穿得很。萨哥特的驻军身上穿的衬衣，不少料子就是从卡利奥克拉过来的。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "townsfolk"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "卡利奥克的亚麻布厚实耐用，北边那些矿区和军营里用得多。价钱不算贵，胜在结实。萨哥特的市场上，卡利奥克产的布匹一直都走得快。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "卡利奥克在纳尔谷的谷底，两边是埃皮尔丘陵和比斯坎山，风不大，水汽重。地里全是一排排亚麻，长得比人还高。村里人一年到头都在跟亚麻打交道——种麻、沤麻、打麻、纺线、织布，手里没闲过。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "卡利奥克",
+      "Kind": "bound_settlement_name",
+      "TargetId": "__bound_settlement__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": "萨哥特",
+      "Kind": "bound_settlement_name",
+      "TargetId": "__bound_settlement__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}

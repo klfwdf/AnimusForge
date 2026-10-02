@@ -1,0 +1,94 @@
+﻿{
+  "Id": "rule_翁加尔",
+  "Keywords": [
+    "翁加尔",
+    "帝国腹地"
+  ],
+  "RagShortTexts": [
+    "翁加尔曾是帝国腹地，现为瓦兰迪亚中心。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "翁加尔是翁加尔堡附近的一座村庄，坐落于蜿蜒的特朗河附近的温暖林地中。这片盛产小麦的土地曾是帝国的腹地，如今成了瓦兰迪亚王国的中心地带。肥沃的土壤年复一年地产出优质小麦，供应着周围的人口。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "翁加尔的地肥得流油。特朗河拐过弯来，冲出了这片好土，种小麦收成特别好。以前这儿的麦子是运到帝国那边去的，如今进了我们瓦兰迪亚人的口袋。翁加尔堡就守在上头，谁敢打这粮仓的主意，先得过城堡那一关。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "townsfolk"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "翁加尔的小麦粉磨出来格外白，特朗河的水养出来的麦子就是不一样。这村子在瓦兰迪亚腹地，周围不打仗，种地的人踏踏实实。每年收完麦子，翁加尔堡的守军和附近城镇的商人都会来抢货。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "翁加尔那地方，麦田铺到天边。特朗河在旁边弯弯绕绕地流过，林子挡着风，地里麦浪一层一层地翻。老农告诉我，这里以前是帝国的粮仓，现在换了主人，但地还是那块地，每年照旧产好麦子。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "翁加尔",
+      "Kind": "bound_settlement_name",
+      "TargetId": "__bound_settlement__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": "翁加尔堡",
+      "Kind": "bound_settlement_name",
+      "TargetId": "__bound_settlement__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}

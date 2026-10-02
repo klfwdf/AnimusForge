@@ -1,0 +1,213 @@
+{
+  "Id": "rule_蛮荒兽人__蛮荒兽人",
+  "Keywords": [
+    "蛮荒兽人",
+    "原始兽人",
+    "魔法战纹",
+    "拒绝金属",
+    "纯粹野性",
+    "裸身战士",
+    "原始绿皮",
+    "蛮荒",
+    "战纹",
+    "蛮荒兽人荒野",
+    "野蛮",
+    "骨制武器"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "蛮荒兽人是绿皮中最原始的分支——他们拒绝任何金属武器与盔甲，全身赤裸仅以魔法战纹覆盖，却凭借纯粹的野性狂暴在战场上横冲直撞。这些来自大陆最荒蛮角落的原始战士相信铁器会切断与搞哥毛二哥的灵魂连接。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "蛮荒小子们是真的疯！你知道别的绿皮——包括俺——都爱死了重铁甲和大砍刀吧？但蛮荒兽人觉得铁是脏东西！他们说自己身上的蓝白战纹能挡住刀枪比铁甲还管用，俺以前觉得是放屁——后来亲眼看见一个蛮荒老大被三枝弩箭射中胸口他硬是不倒，浑身战纹发出一种蓝绿蓝绿的光像搞哥毛二哥亲自把鼻涕抹他身上了！他们用的家伙也都是从巨兽骨头上扒下来的——大牙棒、骨刀、巨蜥头骨当盾牌——那骨头在蛮荒兽人手里比俺的铁斧还利！但蛮荒小子们就是太直脑筋了，打仗光知道往前冲，不像俺们会偷偷绕到背后砸黑棍。不过你要是把一群蛮荒小子放在Waaagh最前头当冲锋排头兵——那他们就值回全身的牙了，因为没有任何东西能挡住一个发了疯的蛮荒兽人！"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "蛮荒兽人在战术评估中是一把双刃剑。其核心优势是冲锋阶段的无匹冲击力——魔法战纹在战意高昂时确实会激活某种原始防护场，使得蛮荒兽人在前两次冲锋接触中的生存率比所有轻步兵兵种高出约三倍。但他们的劣势同样致命：一旦冲锋未能击溃敌军阵线，缺乏护甲的蛮荒兽人对持续格斗——尤其是长矛方阵和弩箭集中射击——的抵抗力近乎为零。战术要点有三：第一，必须将蛮荒兽人投入战斗的决定性时刻与方向精准到英尺级别；第二，他们的侧翼必须由重装单位保护；第三，在蛮荒兽人冲锋前必须以大量远程射击削弱敌军的士气——蛮荒兽人最大的武器不是他们的骨棒，而是对手看到一群浑身画满幽光战纹的裸体巨兽尖叫着冲过来时产生的恐惧。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "蛮荒兽人的技术禁忌——拒绝一切金属——并非源自任何教义文本（绿皮无文字），而是一种通过血脉记忆传递的远古生态适应。在绿皮孢子生态学框架下，蛮荒兽人的孢子谱系被认为是所有绿皮亚种中最古老的一支，其基因记忆中保留了早于「铁器时代绿皮」的原始战斗形态编码。当他们接触到金属时，体表的共生菌落——即所谓「魔法战纹」的生物学真相——会产生电化学应激反应，导致兽人个体的剧烈不适与攻击性飙升——这就是蛮荒兽人将铁器视为「脏东西」并倾向于将其毁灭的生物本能根源，而非抽象信仰。其战纹的防护效果已被帝国魔法学院初步证实：战纹颜料中的发光物质是一种稀有的荧光真菌提取物，在被兽人肾上腺素激活后会产生微量以太力场，其防护效力强度与蛮荒兽人的战意（生理兴奋度）呈线性相关。这也是为什么一只冷静的蛮荒兽人可以被普通箭矢射杀，而一只狂怒中的蛮荒兽人却在短时间内拥有近乎铁甲的防御力。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我对蛮荒兽人的战纹一直有一种病态的好奇。我读过一位帝国探险家在南部荒野带回的一份记录：他说蛮荒兽人的战纹不是画上去的——是由部落巫师将搞毛二哥的「精华」——一种发光的绿色黏液——直接注入兽人的血管，然后颜料沿血管蔓延至体表。这意味着每一道战纹下面就是一条静脉，战纹图案实际上是一幅活体经脉地图。这种既崇拜又破坏自己身体的信仰让我着迷，也让我恐惧。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我家族在南境打防御战时遇到过一个蛮荒兽人部落——他们是从南方荒野迁徙过来的，完全不认识任何文明造物。我们的守军射倒了一只蛮荒兽人后，竟发现他的骨刀上刻着我家族族徽的图案——那是一只七十年前出去远征后再也没有回来的矮人探险队队长的巨蜥骨刀。一个蛮荒兽人拿着我曾祖父时代的遗物当武器，这个事实让我好几个晚上睡不着。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "在南方荒野里我撞见了一个蛮荒兽人的祭坛——是一座巨大的巨兽头骨堆成的山，目测有二三十尺高，每个头骨上都涂着蓝白色的战纹。我记得最清楚的是那个气味：不是腐臭，而是一种辛辣的植物燃烧后的烟味，混合着新鲜的土腥。我们在那里只待了不到一刻钟就撤了，因为远处传来鼓声——蛮荒兽人的鼓声，极低极沉，像地底下有什么巨大的东西在翻动身子。那种鼓声能让你的心跳跟着它走，我们不得不捂住耳朵奔跑。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我是边境亲王领地里的铁矿石商，我的生意最大的敌人不是竞争对手，而是蛮荒兽人。他们不知道矿石值钱——他们就是单纯地恨铁器。蛮荒兽人的部落会不停袭击我们的运输车队，不是抢铁，是把铁扔进沼泽里或者埋掉。其他兽人偷铁去打盔甲，蛮荒兽人是偷铁去消灭铁。这使我们的运输成本涨了将近三倍，因为每趟车队至少得雇两队佣兵护驾。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "绿皮最古老的亚种之一，基因记忆中保留前铁器时代的原始战斗形态",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "蛮荒兽人原始兽人魔法战纹"
+  ]
+}

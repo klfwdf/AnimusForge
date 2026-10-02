@@ -1,0 +1,93 @@
+﻿{
+  "Id": "rule_马林",
+  "Keywords": [
+    "马林"
+  ],
+  "RagShortTexts": [
+    "马林葡萄酒有清爽果香，奥克斯湖水汽滋养，军官常购。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "马林是韦雷克桑堡附近的一座村庄，位于奥克斯湖以西的缓坡上。向南的洋流让薄雾笼罩的清晨格外凉爽，温暖的下午又让当地的葡萄茁壮生长。这里的葡萄酒在整个奥克斯湖地区都小有名气。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "马林的葡萄园在奥克斯湖西边的缓坡上，早上湖雾罩着，下午太阳晒着，葡萄的甜度长得恰到好处。韦雷克桑堡那边的军官们，聚餐时桌上摆的酒不少是从马林买的。这儿的酒不算贵，但味儿正。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "townsfolk"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "马林的葡萄酒有一种清爽的果香，奥克斯湖的水汽养出来的。上午湖雾，下午暖阳，葡萄在这种冷热交替里攒足糖分。产量不大，卖得快，想要得早点去订。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "马林是个适合喝酒晒太阳的地方。坐在缓坡上的葡萄园边，看着奥克斯湖的雾气在早晨慢慢散开，下午太阳暖得人犯困。我喝过一杯当地的葡萄酒，酸中带甜，比橡木桶里闷久了的陈酒清爽得多。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "马林",
+      "Kind": "bound_settlement_name",
+      "TargetId": "__bound_settlement__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": "韦雷克桑堡",
+      "Kind": "bound_settlement_name",
+      "TargetId": "__bound_settlement__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}

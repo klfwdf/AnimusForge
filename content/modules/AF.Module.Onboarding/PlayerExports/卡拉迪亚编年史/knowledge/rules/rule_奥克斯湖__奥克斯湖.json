@@ -1,0 +1,47 @@
+﻿{
+  "Id": "rule_奥克斯湖",
+  "Keywords": [
+    "奥克斯湖",
+    "莫德里斯湖"
+  ],
+  "RagShortTexts": [
+    "奥克斯湖原名林·莫德里斯，原为沼泽池塘，传说中莫德里斯湖坐落于火山口，是一道巨人的足印。巴旦尼亚神灵水灵女王在此建造宫廷，当地人曾向她献祭。",
+    "瓦兰迪亚军阀奥卡征服此地后，抽干沼泽开垦农田，并在高地建造宏伟大厅。巴旦尼亚部落被迫越过雷诺德河向内陆迁移，带走了他们的传说。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "以林·莫德里斯为中心——据说这是一个沼泽池塘，以莫德里斯湖为中心——这座湖泊位于火山口，传说是一道巨人的足印。后被巴丹尼亚的神灵水灵女王建成宫廷，当地人曾向她献祭。然而，这片土地最终被瓦兰迪亚军阀奥卡亵渎。他将沼泽池塘抽干开垦为农田，并在高地上建造了自己的宏伟大厅。巴旦尼亚部落被迫向内陆迁移，越过雷诺德河，并将他们的传说一同带走了。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "奥克斯湖，或者在巴丹尼亚人眼中，原名为林·莫德里斯湖——这座湖泊位于火山口，传说是一道巨人的足印。这里后来被瓦兰迪亚的一位军阀奥克征服，奥克斯湖也是以他的名字命名。他将沼泽池塘抽干开垦为农田，并在高地上建造了自己的宏伟大厅。也就有了后续的城镇奥克斯·霍尔的雏形。"
+    }
+  ],
+  "TextMappings": []
+}

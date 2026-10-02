@@ -1,0 +1,103 @@
+﻿{
+  "Id": "rule_萨万特",
+  "Keywords": [
+    "萨万特"
+  ],
+  "RagShortTexts": [
+    "萨万特村庄位于沙拉斯湾北边草原，是瓦兰迪亚优质马场。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "萨万特是沙拉斯附近的一座村庄，坐落于沙拉斯湾以北温暖的草原上。这片土地是瓦兰迪亚公认的优质马场，出产的马匹在整个王国都有名气。沙拉斯统治家族的骑兵，很多坐骑都来自这里。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "萨万特的马场是瓦兰迪亚最好的牧场之一。沙拉斯湾北边那片草原，草肥水美，马儿在上面跑上几个月，腿劲足，耐力好。控制沙拉斯的那家贵族，精锐骑兵的坐骑多半是从萨万特挑的。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "townsfolk"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "萨万特的马好是好，但贵也是真贵。沙拉斯那边的贵族老爷把最好的马都挑走了，剩下的才轮到我们这些商人买。不过话说回来，就算是他们挑剩的，也比别处的马强一截。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "我在萨万特待过一阵子，帮马场主训马。那片草原上的马从小就撒开蹄子跑，性子野，但驯好了就是一等一的战马。每次沙拉斯那边出兵打仗前，统治家族的人都会来这儿挑马。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "萨万特",
+      "Kind": "bound_settlement_name",
+      "TargetId": "__bound_settlement__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": "沙拉斯",
+      "Kind": "bound_settlement_name",
+      "TargetId": "__bound_settlement__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": "戴·科尔坦",
+      "Kind": "bound_clan_name",
+      "TargetId": "__bound_clan__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}

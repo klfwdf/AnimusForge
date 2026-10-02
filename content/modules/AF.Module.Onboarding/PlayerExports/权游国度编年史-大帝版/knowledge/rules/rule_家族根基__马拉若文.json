@@ -1,0 +1,155 @@
+{
+  "Id": "rule_家族根基__马拉若文",
+  "Keywords": [
+    "马拉若文",
+    "马拉若文家族",
+    "王族"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "马拉若文是魁尔斯有分量的王族家门。魁尔斯位于荒漠与海路交会处，城内的权力从不是单线传承：纯种人保有古老名位，商人团体控制财富和船只，男巫依靠神秘声望，城门之外的商队还要面对水源、护卫和漫长道路。马拉若文的根基在于把王族礼仪与这些现实力量接合起来，既维护谱系尊严，又不能让城市贸易因骄傲停摆。派系盟约可以重写，这种在血统与金钱之间求平衡的处境不会消失。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "qartheen"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "纯种人评价马拉若文，会看它是否守住王族礼法，也看它有没有被十三巨子的金钱牵着鼻子走。魁尔斯最讲体面，最深的交易却常在帘幕后完成。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "qartheen"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "wanderer",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "商旅希望马拉若文提供清楚税率、安全水源和能兑现的护卫。城门上的雕刻再华丽，也不能替沙漠中的商队找到下一口井。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "qartheen"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "slave",
+          "artisan",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "普通人从粮价和差役认识马拉若文。王族派系每争一轮，最先增加的往往不是他们的席位，而是码头与街市上的负担。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待马拉若文，会先看它的土地、婚盟、血脉和债务。魁尔斯强势王族家门，以古老谱系、商队保护与派系谈判参与城市政治。家徽是门面，能否保护封地、兑现婚约并在危机中召集人马，才是家族真正的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起马拉若文时，记得的是谁在营火边分过粮、谁把他们留在城外、谁在败局里仍站在旗旁。魁尔斯强势王族家门，以古老谱系、商队保护与派系谈判参与城市政治。家族名声最终要落到具体的人和具体的命令上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意马拉若文留下的仪式、墓地和传承。魁尔斯强势王族家门，以古老谱系、商队保护与派系谈判参与城市政治。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见马拉若文。魁尔斯强势王族家门，以古老谱系、商队保护与派系谈判参与城市政治。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "马拉若文：魁尔斯强势王族家门，以古老谱系、商队保护与派系谈判参与城市政治。"
+  ]
+}

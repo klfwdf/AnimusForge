@@ -1,0 +1,153 @@
+{
+  "Id": "rule_家族根基__格拉夫森家族",
+  "Keywords": [
+    "格拉夫森家族",
+    "海鸥镇",
+    "燃烧高塔",
+    "谷地港口"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "格拉夫森家族以海鸥镇为根基，是谷地最重要的港口贵族。家徽为火焰中的高塔，祖先在安达尔人进入谷地的战争中取得海鸥镇。与居于山地城堡的封臣不同，格拉夫森的权力离不开码头、关税、船主、工匠和来自狭海的消息。谷地骑士会衡量他们的封臣义务，商人更在乎秤是否公正、港口是否安全。海鸥镇的商业与战略位置已足以解释其长期影响。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vale"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "内陆谷地贵族离不开海鸥镇，却也常对港口家族的财富保持戒心。格拉夫森掌握的不是高山绝壁，而是码头、关税、仓栈和来自狭海的消息；他们听见价格变化，往往比鹰巢城听见更早。火焰高塔既是家徽，也像港口权力的写照。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vale"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "海鸥镇的商人和工匠评价格拉夫森，先看港规是否稳定、税率是否让人活得下去、外来船只是否敢靠岸。港主若只会摆贵族架子，船会去别处；若能让秤砣可信、夜巡勤快，异乡商人也会替他的名字说好话。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vale"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "谷地农户把羊毛、谷物和木料送到海鸥镇，再换回盐、铁器与硬币。他们未必见过格拉夫森本人，却会从城门等待多久、市场有没有人欺秤来判断这家领主。港口政治到了乡下，最后总变成一车货能卖多少钱。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待格拉夫森家族，会先看它的土地、婚盟、血脉和债务。海鸥镇的谷地港口贵族，家徽为燃烧高塔。其力量来自码头、关税、船主与狭海贸易，是谷地连接外部世界的重要家族；箴言未知。家徽是门面，能否保护封地、兑现婚约并在危机中召集人马，才是家族真正的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起格拉夫森家族时，记得的是谁在营火边分过粮、谁把他们留在城外、谁在败局里仍站在旗旁。海鸥镇的谷地港口贵族，家徽为燃烧高塔。其力量来自码头、关税、船主与狭海贸易，是谷地连接外部世界的重要家族；箴言未知。家族名声最终要落到具体的人和具体的命令上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意格拉夫森家族留下的仪式、墓地和传承。海鸥镇的谷地港口贵族，家徽为燃烧高塔。其力量来自码头、关税、船主与狭海贸易，是谷地连接外部世界的重要家族；箴言未知。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见格拉夫森家族。海鸥镇的谷地港口贵族，家徽为燃烧高塔。其力量来自码头、关税、船主与狭海贸易，是谷地连接外部世界的重要家族；箴言未知。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "格拉夫森家族：海鸥镇的谷地港口贵族，家徽为燃烧高塔。其力量来自码头、关税、船主与狭海贸易，是谷地连接外部世界的重要家族；箴言未知。"
+  ]
+}

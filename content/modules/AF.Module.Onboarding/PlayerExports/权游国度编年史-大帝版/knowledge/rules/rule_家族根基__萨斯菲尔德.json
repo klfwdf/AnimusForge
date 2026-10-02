@@ -1,0 +1,132 @@
+{
+  "Id": "rule_家族根基__萨斯菲尔德",
+  "Keywords": [
+    "萨斯菲尔德",
+    "萨斯菲尔德家族"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "萨斯菲尔德家族是西境的贵族家门，家徽是红底白色斜带上的绿色箭矢。关于他们的宏大传说不多，因而真正可见的根基更值得重视：领地、婚姻、对凯岩城的义务，以及保护耕地免受盗匪和军队侵扰的能力。一个小家门的荣耀通常不是征服天下，而是世代守住土地、履行承诺并不让自己的名字消失。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "西境贵族知道萨斯菲尔德不是最富的封臣，却能提供弓手与骑手。只要他们按时应召、守住庄园，绿色箭矢便有自己的位置。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "wanderer",
+          "artisan"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "林地猎户和农人关心的是捕猎规矩是否给穷人留活路。领主若把偷一只兔子判得比抢一块田更重，绿色猎手便只会让村民害怕。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待萨斯菲尔德，会先看它的土地、婚盟、血脉和债务。萨斯菲尔德家族是西境贵族，红底白色斜带上的绿色箭矢是其家徽。家徽是门面，能否保护封地、兑现婚约并在危机中召集人马，才是家族真正的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起萨斯菲尔德时，记得的是谁在营火边分过粮、谁把他们留在城外、谁在败局里仍站在旗旁。萨斯菲尔德家族是西境贵族，红底白色斜带上的绿色箭矢是其家徽。家族名声最终要落到具体的人和具体的命令上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意萨斯菲尔德留下的仪式、墓地和传承。萨斯菲尔德家族是西境贵族，红底白色斜带上的绿色箭矢是其家徽。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见萨斯菲尔德。萨斯菲尔德家族是西境贵族，红底白色斜带上的绿色箭矢是其家徽。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "萨斯菲尔德：萨斯菲尔德家族是西境贵族，红底白色斜带上的绿色箭矢是其家徽。"
+  ]
+}

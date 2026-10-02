@@ -1,0 +1,57 @@
+﻿{
+  "Id": "rule_北帝国的政治",
+  "Keywords": [
+    "北帝国的政治",
+    "贵族共和制",
+    "共和制",
+    "元老制"
+  ],
+  "RagShortTexts": [
+    "北帝国政治为贵族元老院共和制"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "北帝国？他们似乎是共和制，不过都是贵族老爷们的游戏罢了，他们共和和我们小民有什么关系？？"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "我们北帝国遵循传统，依旧实行元老院共和制度，保障我们这些元老以及元老家属的利益。我们在元老院上畅所欲言，政策都有我们制定，没有独裁的君主，我们的皇帝是我们选举产生的，自然是元老院的仆人，我们认为这种制度能让我们集思广益，制定出符合我们切身利益的国策。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "北帝国的元老共和就是笑话，所谓的共和只不过是他们谋求自身利益的幌子，他们的皇帝说是没权力，但是他们的政策，哪个不是他们的皇帝拍板的？就算是选举，那也是操纵选举，要么选上去的是有钱的，要么就是有实力的，反正没有一个是因为他们自身品行优良而被选上去的。"
+    }
+  ],
+  "TextMappings": []
+}

@@ -1,0 +1,133 @@
+{
+  "Id": "rule_家族根基__科格尔",
+  "Keywords": [
+    "科格尔家族",
+    "黑色蝎子",
+    "沙地多恩",
+    "马泰尔封臣"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "科格尔家族以沙石城为根基，是多恩沙漠中的沙地诸侯，家徽为红底三只黑色蝎子。蝎子生于当地酷热、缺水而遍布石缝的环境，远方人看见旗帜时往往先想到毒刺与阴险；沙石城居民想到的却是如何在穿靴前抖出蝎子，以及谁负责保护水井、绿洲与商路。科格尔作为马泰尔封臣掌握沙地领土，他们的权威因此落在每一口井和每一支穿越旱地的队伍上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "多恩贵族认得沙石城科格尔的三只黑蝎。蝎子说明这片土地危险、干热而不可轻慢，却不能替整个家族规定性情。科格尔的地位依靠沙地领土、马泰尔体系中的封臣责任，以及对水源和道路的掌握。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "沙地人睡前会抖靴子，旅人伸手进石缝前会先看一眼。对他们来说，蝎子不是贵族诗意，而是日常危险。科格尔若能维护井水与商道，蝎旗就是保护；若领主的手也像蝎尾只会向下蜇人，百姓自然躲得更远。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待科格尔家族，会先看它的土地、婚盟、血脉和债务。沙石城的多恩沙地诸侯，以三只黑蝎为家徽；他们的权威扎在水井、绿洲、商路与旱地领土上。家徽是门面，能否保护封地、兑现婚约并在危机中召集人马，才是家族真正的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起科格尔家族时，记得的是谁在营火边分过粮、谁把他们留在城外、谁在败局里仍站在旗旁。沙石城的多恩沙地诸侯，以三只黑蝎为家徽；他们的权威扎在水井、绿洲、商路与旱地领土上。家族名声最终要落到具体的人和具体的命令上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意科格尔家族留下的仪式、墓地和传承。沙石城的多恩沙地诸侯，以三只黑蝎为家徽；他们的权威扎在水井、绿洲、商路与旱地领土上。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见科格尔家族。沙石城的多恩沙地诸侯，以三只黑蝎为家徽；他们的权威扎在水井、绿洲、商路与旱地领土上。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "科格尔家族：沙石城的多恩沙地诸侯，以三只黑蝎为家徽；他们的权威扎在水井、绿洲、商路与旱地领土上。"
+  ]
+}

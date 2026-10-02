@@ -1,0 +1,17 @@
+{
+  "Id": "rule_卡拉克·诺恩__卡拉克·诺恩",
+  "Keywords": ["卡拉克诺恩_KN", "诺恩城塞_KN", "铁镐要塞_KN", "诺恩铁矿_KN", "诺恩矮人领地_KN", "诺恩国王_KN"],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":null,"IsFemale":null,"IsClanLeader":null,"SkillMin":null},"Content":"卡拉克·诺恩是灰色山脉中最古老的矮人城塞之一，由布罗克·铁镐国王统治。此地的历史可以追溯到矮人黄金时代之初，以铁矿开采和传统铁匠工艺闻名。诺恩的矮人以保守和恪守传统著称，但其锻造的铁器质量依然是旧世界的标杆。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":["sturgia"],"KingdomIds":null,"SettlementIds":null,"Roles":null,"IsFemale":null,"IsClanLeader":null,"SkillMin":null},"Content":"卡拉克·诺恩——吾族在灰色山脉的古老根基！布罗克王的铁镐不是普通的矿镐，它镐柄上刻着诺恩创始先祖的完整世系。诺恩的铁矿石带有一种独特的蓝灰色纹理，用此铁锻造的剑刃在月光下会泛出冰蓝色的光泽。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":["lord"],"IsFemale":null,"IsClanLeader":null,"SkillMin":null},"Content":"卡拉克·诺恩凭借悠久的历史在矮人诸邦中享有崇高的政治地位。布罗克·铁镐国王在矮人重大决策中拥有举足轻重的否决权——这是黄金时代延续至今的特权。诺恩还为巴托尼亚蒙福特公国提供铁矿石和技术顾问援助。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":["lord","notable","wanderer"],"IsFemale":null,"IsClanLeader":null,"SkillMin":{"Steward":120}},"Content":"卡拉克·诺恩的经济建立在铁矿开采与铁器锻造两大支柱上。诺恩铁矿脉的独特之处在于矿石中含微量钛元素——这一特性使诺恩铁器在硬度和韧性之间达到了罕见的平衡。年产精铁约五千吨，主要供应巴托尼亚武器市场和帝国东部诸州。诺恩的铁匠行会是矮人诸邦中最古老的行业协会之一，新入行铁匠需经过长达五十年的学徒考核才能获准独立开炉。此外，诺恩还与蒙福特公国建立了紧密的经济同盟——蒙福特提供防御保护，诺恩提供优质铁器和矿业技术支持。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":["lord"],"IsFemale":true,"IsClanLeader":null,"SkillMin":null},"Content":"诺恩的传统观念最根深蒂固。女性矮人被视为家族传统延续的核心——我们是氏族编年史的记录者。我自学了矮人古文，负责将城塞每一年的大事刻在氏族石板上。布罗克国王曾说：刻在石头上的历史比刀剑更经得起时间考验。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":["lord"],"IsFemale":null,"IsClanLeader":true,"SkillMin":null},"Content":"我们家族在诺恩就是老派的化身——每一代族长都在诺恩议事厅拥有发言权，这是黄金时代先祖赐予的权利。布罗克国王信赖我们不是因为财富或者兵力，而是因为家族七百年来没有一次背弃过诺恩城塞的利益。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":["wanderer"],"IsFemale":null,"IsClanLeader":null,"SkillMin":null},"Content":"卡拉克·诺恩的麦酒大厅是我见过最庄严的矮人厅堂。墙壁上刻满了矮人符文，每一块石板记载着城塞的一百年历史。大厅最深处的墙壁上则刻着长须之战的全过程——矮人先祖与精灵的世纪大战在石壁上凝固成了永恒的画面。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":["notable"],"IsFemale":null,"IsClanLeader":null,"SkillMin":null},"Content":"诺恩铁器贸易规模虽不如祖夫巴，但品质优势明显。诺恩特有的蓝灰铁料锻造出的武器在贵族收藏市场中溢价极高。但诺恩矮人异常保守，他们只与有数十年合作历史的商号维持贸易关系。新入行的商人需要找一个诺恩矮人认可的中间人引荐才行。"}
+  ],
+  "TextMappings": [{"SourceText":"卡拉克·诺恩是灰色山脉中最古老的传统矮人城塞之一，以优质铁矿石和保守文化闻名，由布罗克·铁镐国王统治","Kind":null,"TargetId":null,"AgeMin":null,"AgeMax":null,"EmptyValueText":null,"TrueText":null,"FalseText":null}],
+  "RagShortTexts": ["卡拉克诺恩灰色山脉最古老矮人铁器城塞"]
+}

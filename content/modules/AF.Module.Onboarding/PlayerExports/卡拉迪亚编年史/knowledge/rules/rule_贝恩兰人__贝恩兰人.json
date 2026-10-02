@@ -1,0 +1,30 @@
+﻿{
+  "Id": "rule_贝恩兰人",
+  "Keywords": [
+    "贝恩兰人"
+  ],
+  "RagShortTexts": [
+    "贝恩兰人是贝恩兰岛上的原住民"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "steward": 120
+        }
+      },
+      "Content": "贝恩兰人是居住在贝恩兰岛上的原住民，他们因为风暴，极寒而灭绝了，只留下了大量的骸骨和遗迹"
+    }
+  ],
+  "TextMappings": []
+}

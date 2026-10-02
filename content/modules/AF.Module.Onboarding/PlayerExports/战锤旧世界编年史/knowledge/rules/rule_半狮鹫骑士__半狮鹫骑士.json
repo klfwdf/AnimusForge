@@ -1,0 +1,210 @@
+{
+  "Id": "rule_半狮鹫骑士__半狮鹫骑士",
+  "Keywords": [
+    "半狮鹫骑士",
+    "半狮鹫",
+    "帝国精锐骑兵",
+    "猛禽战骑",
+    "撕裂冲锋",
+    "怪物骑兵",
+    "内环骑士",
+    "狮鹫兽",
+    "帝国猛禽"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "半狮鹫骑士是帝国骑士团的终极精锐——只有各大骑士团中最资深的「内环骑士」才能获得驾驭半狮鹫的资格。半狮鹫是一种兼具狮子的凶悍与鹰隼的迅猛的恐怖猛禽战兽，它的利爪可以撕裂板甲、它的喙足以咬碎战马的头骨，当一整队半狮鹫骑士发动冲锋时，地面上留下的只有断骨和残肢。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "半狮鹫是帝国骑士所能达到的最高荣誉之一——不是每个骑士都能驾驭它们，事实上，只有大约十分之一的内环骑士能与半狮鹫成功建立骑乘纽带。这种生物不是被驯服的马，你必须去赢得它的尊重。半狮鹫的性情介于最暴躁的狮子和最精明的猎鹰之间：它对你温顺的时候会像一只巨大的猫一样蹭你的脸，但当你受伤倒地时它不会像战马那样站在原地等你，而是会先扑上去撕碎那个把你从鞍上打下来的敌人，然后再回来查看你的伤势——这只是我们的推测，因为很少有骑士亲眼见过自己坠落后半狮鹫的反应。这些猛禽战兽在瑞克森林的东部山区中被捕捉——但只能在幼年捕捉，成年半狮鹫是无论如何都无法被驯化的——然后骑手从半狮鹫满一岁时开始与它结伴，用三年的时间建立起超越主人与野兽的情感纽带。帝国四大骑士团——瑞克禁卫、白狼骑士团、炎阳骑士团和黑玫瑰骑士团——都拥有各自的内环半狮鹫骑队，但总数不超过八十头，使得每一头半狮鹫的阵亡都是帝国无法弥补的损失。半狮鹫在战场上以跳跃冲锋著称：它们不会像战马那样直线冲刺，而是会在接近敌军时突然腾空而起从上方俯冲——这种攻击角度的变化让敌方长枪兵根本来不及调整刺向的方位。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "半狮鹫骑士在战术机动上占据了一个独特的生态位：他们兼具重骑兵的冲击力和轻骑兵的速度，并且在穿越崎岖地形方面远超常规骑兵——半狮鹫的利爪使它们能够攀爬陡坡和穿梭于密林。正确使用半狮鹫骑士的方法是将其定位为「怪物猎杀单位」：当战场上出现敌方巨型怪物——巨魔、巨人、混沌巨蝎或亡灵巨兽——时，发射半狮鹫骑兵冲击这些目标的侧翼或后方，半狮鹫的喙和爪对大型生物的肉质伤害远超长枪的穿刺。但要避免将半狮鹫骑兵用于正规重骑兵对抗——虽然他们能够碾压普通步兵，但数量上的绝对劣势意味着一旦被拖入消耗战就会全军覆没。半狮鹫的另一个致命弱点是它们对炮火和爆炸的极度敏感：这些生物野性的感知力使它们在炮击面前比战马更容易受惊失控，一个心软或缺乏经验的半狮鹫指挥官会把整个骑队带到己方火炮的射击线上去——而你自己就是那个炮击的目标。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "半狮鹫的生物志和军事使用史是帝国自然哲学和军事科学交叉的稀有研究领域。从分类学的角度，半狮鹫被帝国自然学会归入「混合猛禽属，狮鹫亚科」——与真正的狮鹫属于同一族系但在体型和行为上存在显著差异。一只成年雄性半狮鹫的肩高约为五至六英尺，体重可达半吨，前肢的鹰爪能击碎两英寸厚的钢板，其头骨咬合力经阿尔道夫工程学院的机械模拟测定约为一千五百磅。内环骑士的半狮鹫训练体系是一套不公开的口授传统——从未有人将完整的驯服方法写成书籍——但学者们通过各骑士团的档案记录拼凑出了大致流程：幼年半狮鹫被捕获后，未来的骑手需要在前三个月每天与它共处至少八小时，期间不允许任何其他人接近，以此建立单向的社会纽带；第二阶段的训练涉及骑乘本身，骑手需要每天在驭架中静坐二至三个时辰，让半狮鹫习惯背上的重量，这项训练通常持续半年至一年。半狮鹫在帝国军事史上的第一次大规模运用记录出现在帝国历2420年的塔拉贝克森林净化战役中，当时三支内环半狮鹫骑队共十四骑被投入攻击一只野兽人战争部落，取得了全歼敌方巨兽且自身仅阵亡一骑的惊人战绩。目前帝国骑士团共有活跃半狮鹫不超过八十头，其中约五十头集中在四大骑士团，其余分布在地方贵族的内环骑兵部队中。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "半狮鹫骑士在我们帝国贵族女性眼中是骑士中最迷人的群体，也是最危险的情人。一个骑乘半狮鹫的内环骑士在宫廷中拥有超越普通骑士的社交魅力——能与一头猛兽建立纽带的男人自然是出色的——但他的职业风险同样是最大的：半狮鹫在战斗中阵亡不像是战马，它的骑士几乎必定会同时死亡。嫁给他，意味着你有一半的概率会在下次战争中成为寡妇。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "拥有家族成员成为半狮鹫骑士是所有帝国贵族世族追求的至高荣誉标志。这个头衔意味着你的家族在帝国骑士等级中处于顶层——不是每个贵族都能生出一个被内环骑士承认的人。家族图谱上带有「半狮鹫御手」称号的祖先能为后代在骑士圈里带来几代人的光环效应，因为这被视为一种血统优异的证明：半狮鹫不会将骑乘权授予弱者。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "作为走南闯北的佣兵，我见过帝国大多数军队的战斗方式——你不需要懂打仗就能理解长戟兵怎么操作、骑士怎么冲锋——但半狮鹫不是你能通过观察学会的东西。我曾在塔拉贝克边境远远看到一队半狮鹫骑士从山坡上跳下，说实话我甚至不确定那是一队骑兵还是一群从地狱飞出来的东西。如果你碰巧是敌方的步兵而对面有半狮鹫——赶快跑进你最近的树林，然后祈祷它不是一只有耐心的半狮鹫。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "半狮鹫装备供应链是帝国军火和皮革行业中获利最丰、门槛最高的细分市场。一头成年半狮鹫的皮质鞍具制作成本远超一副骑士板甲，因为它的身体形态不固定——每头半狮鹫的肩胛宽度和背脊弧度都不同，这要求匠人必须为每一头单独的半狮鹫量身打造鞍具，不能批量生产。而且半狮鹫的爪子需要定期由专人打磨和嵌钢——那项技能全国只有不到十个匠人拥有。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "半狮鹫分类——帝国自然学会将其归入混合猛禽属，兼具狮子和鹰鹰的特征",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "半狮鹫骑士是帝国骑士团的终极精锐——只有各大骑士团中最资深的"
+  ]
+}

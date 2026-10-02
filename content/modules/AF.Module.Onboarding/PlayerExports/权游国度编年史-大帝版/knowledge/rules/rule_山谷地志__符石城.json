@@ -1,0 +1,152 @@
+{
+  "Id": "rule_山谷地志__符石城",
+  "Keywords": [
+    "符石城",
+    "青铜铠甲"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "符石城位于谷地，是罗伊斯家族的古老席位。罗伊斯家的历史比安达尔征服更早，他们保留青铜铠甲、符文与先民血统的骄傲，却也早已融入谷地的骑士和封臣秩序。符石城因此像一块没有被完全磨平的旧石：厅堂里可以听见七神时代的礼法，家族记忆里仍有先民的痕迹。它与高路、海鸥镇和谷地内陆相连，既享受平原产出，也受山口与狭海消息影响。符石城不是单纯的古迹，它是旧传统在现实政治中继续发挥作用的领地。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vale"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "符石城可以写在领主的地契上，附近人真正依靠的却是山泉、牧坡、林木、积雪和驮畜能走的窄路。当地家庭还要依靠山羊、薄田、果园以及翻越明月山脉的驮队；任何一处道路、井泉或码头失灵，代价都会先落到他们身上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vale"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "守将衡量符石城，先查隘口、高坡、瞭望点与翻山所需的粮秣。在七国的封建秩序中，符石城的归属牵动封臣义务、税粮和征召；守军能否吃饱、援兵能否按时抵达，比议事厅里的豪言更能决定这处据点是否可靠。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "scholar",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "旅人判断是否经过符石城，看的是驮队脚程、坡道损耗、山口税与冬季封路。他们还会辨认谷地的口音、法令和通行凭据；名声可以从酒馆传得很远，真正的路程仍须由车轮、船桨或马蹄丈量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主可以凭符石城收税举兵，却也要为这里的治安与饥馑负责。在七国的封建秩序中，符石城的归属牵动封臣义务、税粮和征召；旗帜更换之后，道路、粮仓、旧债和地方信任仍得由新主人逐一接手。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "旅人在符石城附近最怕弄错落石、岔路、背风宿营处和最近的山泉。能补给、能避险、能找到向导，便值得在行程里标明；若三样都没有，再响亮的家名也救不了迷途者。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "修补符石城的人熟悉采石、伐木、铁件、山羊毛和贴着山势修筑的墙基，安慰死者家属的人熟悉七神礼拜堂、山民威胁与安达尔骑士传统。一处据点因而不只是领主的大厅，也是婚丧、誓言、劳作与地方记忆反复发生的场所。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "符石城的纹章离田地很远，收税人与守军却离田地很近。他们关心山羊、薄田、果园以及翻越明月山脉的驮队，也看征粮后是否留下种子、灾年时城门是否开启；远方人看见纹章，他们看见的是明日有没有饭吃。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "符石城：符石城位于谷地，是罗伊斯家族的古老席位。罗伊斯家的历史比安达尔征服更早，他们保留青铜铠甲、符文与先民血统的骄傲，却也早已融入谷地的骑士和封臣秩序。符石城因此像一块没有被完全磨平的旧石：厅堂里可以听见七神时代的礼法，家族记忆里仍有先民的痕迹。它与高路、海鸥镇和谷地内陆相连，既享受平原产出，也受山口与狭海消息影响。符石城不是单纯的古迹，它是旧传统在现实政治中继续发挥作用的领地。"
+  ]
+}

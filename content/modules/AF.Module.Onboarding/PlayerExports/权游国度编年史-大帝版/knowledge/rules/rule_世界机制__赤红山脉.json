@@ -1,0 +1,157 @@
+{
+  "Id": "rule_世界机制__赤红山脉",
+  "Keywords": [
+    "赤红山脉",
+    "边疆地"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "赤红山脉构成多恩北部天然屏障，将沙地与河湾、风暴地分开。岩石、峡谷、缺水和烈日使大军难以自由穿越，骨路与亲王隘口等少数通道因此长期由边疆家族争守。山地城堡、烽哨和熟悉隐径的骑手可以用较少兵力拖住强敌，补水点比开阔平原上的阵形更重要。数百年多恩战争让山两侧积累婚姻、贸易、袭击与复仇，所谓边界从来不是一条安静线，而是一片居民必须同时懂得战斗和往来的生活区。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "多恩人把赤红山脉视作盾牌，也知道盾牌需要有人守井、带路和传讯。外敌看见荒山，本地斥候看见几十条可以消失的路径。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "reach",
+          "stormlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "边疆骑士从山口看见荣耀与旧仇。真正打过山地战的人更敬畏缺水和高处箭矢，不会把多恩撤退误认成已经失败。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai",
+          "reach",
+          "stormlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "merchant",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "牧人、商旅和修士仍要穿越这片被战歌占满的山地。他们知道敌对家族之间也需要交换盐、牲畜和消息，生活不会等和平条约才开始。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人把赤红山脉看成可执行的秩序。横隔多恩与河湾、风暴地的炎热山系，骨路和亲王隘口把大军压进少数险道。它是否有效，取决于谁能授予权利、收取代价，并在违约时让判决真正落地。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起赤红山脉时，关心它如何影响道路、命令和安全。横隔多恩与河湾、风暴地的炎热山系，骨路和亲王隘口把大军压进少数险道。远方的制度只有在营火、城门和驿站里能被执行，才不是空话。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者会从习惯和象征理解赤红山脉。横隔多恩与河湾、风暴地的炎热山系，骨路和亲王隘口把大军压进少数险道。一项规矩若被反复实践，便会进入礼仪、手艺和祈祷；若只靠恐惧维持，危机一来就会露出裂缝。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民感受到赤红山脉的方式最小也最准确。横隔多恩与河湾、风暴地的炎热山系，骨路和亲王隘口把大军压进少数险道。他们记得税、粮、劳役、赈济和谁能为他们说话；宏大的名称，最终都要落在一家人的饭锅旁。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "赤红山脉：横隔多恩与河湾、风暴地的炎热山系，骨路和亲王隘口把大军压进少数险道。"
+  ]
+}

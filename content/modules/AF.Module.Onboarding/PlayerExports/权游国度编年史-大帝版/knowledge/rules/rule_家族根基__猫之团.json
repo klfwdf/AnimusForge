@@ -1,0 +1,131 @@
+{
+  "Id": "rule_家族根基__猫之团",
+  "Keywords": [
+    "猫之团"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "猫之团是厄斯索斯众多佣兵公司之一，成员以军饷与战利品为生，曾在奴隶湾诸城的战争中寻找雇主。被称作“血胡子”的魁梧佣兵与这支队伍关系密切，他的凶悍形象也塑造外界对猫之团的印象。猫会在有利处落脚，也会在陷阱合拢前跃走；佣兵团的选择同样取决于欠饷、胜算、退路和团长威望。所谓忠诚并非没有边界，而是边界被清楚写在银钱与共同利益上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "ghiscari"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "奴隶湾权贵把猫之团视作可购买的利爪，希望它抓向敌人，又担心利爪转身。按时付钱、提供粮草并让军团有退路，比在宴会上要求忠诚更实际。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "佣兵敬畏血胡子式的强人，却不会只因嗓门大就赴死。能判断战局、分配战利品并在败势中保住队伍的团长，才真正配得上猫之团的追随。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "ghiscari"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "slave",
+          "artisan",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "获释者和市民对猫之团的评价取决于它站在哪一边。守住城门时是援军，闯入街巷时便是灾祸；佣兵的同一把剑能因契约不同得到完全相反的名字。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待猫之团，会先看它的土地、婚盟、血脉和债务。猫之团是厄斯索斯佣兵公司，以血胡子等强悍首领、灵活投契和凶猛战力闻名。家徽是门面，能否保护封地、兑现婚约并在危机中召集人马，才是家族真正的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意猫之团留下的仪式、墓地和传承。猫之团是厄斯索斯佣兵公司，以血胡子等强悍首领、灵活投契和凶猛战力闻名。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见猫之团。猫之团是厄斯索斯佣兵公司，以血胡子等强悍首领、灵活投契和凶猛战力闻名。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "猫之团：猫之团是厄斯索斯佣兵公司，以血胡子等强悍首领、灵活投契和凶猛战力闻名。"
+  ]
+}

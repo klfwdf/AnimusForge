@@ -1,0 +1,151 @@
+{
+  "Id": "rule_世界机制__矿产与铸币",
+  "Keywords": [
+    "矿产",
+    "铸币",
+    "西境矿山"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "维斯特洛的金、银、铜、铁和铅来自不同矿区，西境金矿尤其支撑兰尼斯特财富。矿石必须由矿工开采、排水、提升，再经熔炉与匠人提纯，最后通过有守卫的道路运往铸币处或市场。常见王家钱币包括金龙、银鹿与铜星，其价值既依赖金属重量，也依赖人们相信铸造者不会任意掺假。战争会增加铁和铜需求，也会让矿工被征走、运输中断。拥有矿山不等于立刻拥有可用军费；没有劳力、燃料、车队和信用，地下财富只是不能吃的石头。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "西境权贵以矿脉和金库衡量力量，却明白产量与账面传闻并非一回事。矿井越深，排水、木撑和事故的代价越高。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "slave"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "矿工与冶炼工看到的是黑尘、塌方和灼热炉口。贵族说山在生金，真正流血的是把矿石从黑暗里背出来的人。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "商人与士兵关心钱币能买多少粮、是否足重。王冠可以改换头像，却不能长期命令人们把掺假的银当成好银。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人把矿产看成可执行的秩序。矿产与铸币：矿脉、冶炼、运输和王家信用共同把金银铜变成钱币，财富并不等于山下埋着金属。它是否有效，取决于谁能授予权利、收取代价，并在违约时让判决真正落地。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起矿产时，关心它如何影响道路、命令和安全。矿产与铸币：矿脉、冶炼、运输和王家信用共同把金银铜变成钱币，财富并不等于山下埋着金属。远方的制度只有在营火、城门和驿站里能被执行，才不是空话。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者会从习惯和象征理解矿产。矿产与铸币：矿脉、冶炼、运输和王家信用共同把金银铜变成钱币，财富并不等于山下埋着金属。一项规矩若被反复实践，便会进入礼仪、手艺和祈祷；若只靠恐惧维持，危机一来就会露出裂缝。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民感受到矿产的方式最小也最准确。矿产与铸币：矿脉、冶炼、运输和王家信用共同把金银铜变成钱币，财富并不等于山下埋着金属。他们记得税、粮、劳役、赈济和谁能为他们说话；宏大的名称，最终都要落在一家人的饭锅旁。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "矿产与铸币：矿脉、冶炼、运输和王家信用共同把金银铜变成钱币，财富并不等于山下埋着金属。"
+  ]
+}

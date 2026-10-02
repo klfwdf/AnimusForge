@@ -1,0 +1,213 @@
+{
+  "Id": "rule_混沌文化喜好__混沌文化喜好",
+  "Keywords": [
+    "混沌文化",
+    "混沌喜好",
+    "力量征服",
+    "神明赐福",
+    "混沌文化荣耀之路",
+    "变异美学",
+    "感官极致",
+    "强者统治",
+    "混沌文化混沌荒原",
+    "诺斯卡",
+    "混沌邪神",
+    "混沌文化升魔"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "混沌文化的核心驱动力是对力量的无限渴求和对文明秩序的彻底否定。在混沌荒原和诺斯卡的部落社会中，人们崇拜混沌四神并以此为人生最高目标：他们热爱用纯粹的暴力粉碎敌人的防线，将摧毁南方的城池和神庙视为献给诸神的最佳祭品。他们渴望诸神的赐福——哪怕这赐福意味着肉体的变异，鳞片、犄角、额外的肢体会被视为神恩的标志而炫耀展示。每一个混沌战士都在行走荣耀之路，不断挑战更强大的怪物和英雄，希望有朝一日能摆脱凡人之躯、升格为恶魔亲王。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "chaos_culture"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "南方人用软弱这个词来形容我们，但他们根本不懂——我们选择的是诸神之路，是唯一真实的生存法则！在我们之中，恐虐的信徒热爱武器碰撞的轰鸣和杀戮的纯粹狂怒，奸奇的信徒沉迷于编织复杂的阴谋和搜集被禁的秘识，纳垢的追随者在绝望中重生、用最坚韧的腐躯展示何为不朽，色孽的宠儿则将武艺淬炼至极致、在痛与乐的边界品尝凡人所不能理解的感官巅峰。我们的肉体在变异中变得更强——鳞片挡刀、犄角破甲、第三条手臂可以在敌人以为自己安全的时候从背后捅穿他的心脏！每一次挑战更强大的对手都是一次对诸神的献祭，每一次胜利都让我们离升魔更近一步。在南方人躲在城墙后瑟瑟发抖的时候，我们已经赤手空拳将混沌荒原的变异巨兽剥皮献给了神座。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "混沌部落的作战偏好决定了他们的战术特性——这是理解北方威胁的关键。混沌军团不喜欢防御战或持久消耗，他们狂热地追求突袭、突破和碾压：用混沌骑士的重装冲锋撕开战线，用混沌巨兽践踏敌方核心，用强大的混沌冠军在单挑中斩首敌方指挥官。这种偏好意味着混沌军队在士气高涨时锐不可当，但一旦攻势受挫、先锋被阻，内部不同战帮之间的竞争就可能引发内讧。诺斯卡的龙船突袭更是将这种偏好延伸至海上——他们不占领土地，只收割战利品、荣誉和献给诸神的头颅。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "混沌社会的偏好体系可以按照四神分野进行精密解析。恐虐追随者崇尚最简单也最纯粹的力量美学——他们厌恶魔法和诡计，只尊重在正面战斗中流血的胜利，每一个颅骨都是献给黄铜王座的阶梯；其社会结构完全军事化，每一支战帮的内部等级依据击杀数而非出身来排定。奸奇信徒的喜好则位于另一端——他们热爱知识与诡计的结合体，认为一场精心策划的阴谋比一百场正面战斗更有价值，变异在他们的语境中常表现为额外的眼睛或扭曲的思维器官，用于洞察凡人无法理解的因果链。纳垢追随者将疾病和腐烂视为神爱与生命循环的证明——他们偏爱缓慢而不可阻挡的推进风格，用瘟疫消耗敌方的补给线，用自身不可摧毁的耐久力拖垮所有试图抵抗的对手，在混沌四军中最重视群体凝聚力。色孽信徒追求的是感官与技艺的绝对极致——无论是剑术的完美弧度还是痛苦与狂喜交织的体验，他们将军队中的每一个动作都视为一项艺术表演，变异在他们的审美中被精心排列成对称而令人迷醉的图案。整个混沌社会的底层法则达尔文式优胜劣汰——弱者不配生存，仁慈即背叛，妥协即死亡。这种法则的残酷性也正是混沌军队永不休止地南下的内在驱动力：只有在永恒的征服中，强者才能证明自己的价值。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "混沌部落中的女性角色与南方贵族女性的想象截然不同。诺斯卡的盾女——那些证明了自己在战斗中不逊于任何男性的女战士——享有与男性战士同等的荣耀之路资格。混沌也不以性别而是以力量来衡量一切：是的，一名女性如果在决斗中杀死了一名混沌冠军，她就能取走他的盔甲、他的武器、他的战帮和他的诸神印记。在我管辖的边境领地上，我亲眼见过诺斯卡的女劫掠者在滩头战斗中的凶悍——她们砍人的速度不亚于任何男性，因为在混沌的评判体系中没有男女只有强弱。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "作为世世代代守护基斯里夫边境的氏族族长，我对混沌文化的理解不是来自书本而是来自伤疤和族谱上被划掉的名字。混沌部落对力量的崇拜意味着他们内部从不稳定——一位足够强大的混沌冠军今天可能统领三千人，但明天如果他输了一场决斗，这三千人就会追随新的胜者。我们氏族利用这一点已有百年：通过在混沌战帮之间传递假情报、故意让某个强者感到被另一个强者侮辱，我们至少成功地让四个原本要联合南下的大军团在出发前就内讧解散。这不是阴谋，这是生存。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我在诺斯卡半岛流浪的三年里，学到的最重要的一课是：混沌崇拜不是愚昧，它是那片土地上唯一合理的生存哲学。当你的庄稼每三年被混沌之风吹枯萎一次、当你周围的一切生命都可能随时发生不可预测的变异，你也会开始相信只有力量能保护你——因为法律的纸页挡不住变异猛犸的獠牙，城墙的地基可能在一次土地做梦之后就变成流沙。南方的文明人之所以能奢侈地谈论道德与仁慈，只是因为他们从未在混沌荒原边缘熬过一个冬天。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "从旧世界北方贸易路线的商业情报来看，混沌部落的喜好深刻影响了从基斯里夫到帝国的整个边境市场。诺斯卡劫掠者对特定的南方商品有狂热需求——尤其是帝国精炼钢和矮人锻造武器——因为他们虽然崇尚纯粹的暴力，却完全理解好武器等于更强的暴力。在和平的年份，基斯里夫的贸易商会在边境关口与诺斯卡氏族进行以物易物；在劫掠的年份，这些相同的氏族会用他们在南方抢到的金银换取北方的扭曲铁和变异战兽。这形成了一个悖论市场：在混沌与文明之间，战争和贸易从来不是互斥选项，而是一枚硬币的两面。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "混沌四神——恐虐(暴力/战争)、奸奇(阴谋/变化)、纳垢(瘟疫/坚韧)、色孽(感官/极致)的统称",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "混沌的社会习俗与文化传统"
+  ]
+}

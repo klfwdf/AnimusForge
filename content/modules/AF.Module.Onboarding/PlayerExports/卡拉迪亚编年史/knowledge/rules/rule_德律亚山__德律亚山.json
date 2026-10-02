@@ -1,0 +1,30 @@
+﻿{
+  "Id": "rule_德律亚山",
+  "Keywords": [
+    "德律亚山"
+  ],
+  "RagShortTexts": [
+    "德律亚山西起弥戎河东至阿耳戈隆形成天然屏障"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "scouting": 50
+        }
+      },
+      "Content": "德律亚山是帝国北方的一组高大山脉，山体呈红色，因富含铁矿脉而得名，与曾居于此地的德律亚人共享同一个古老名称。它西起弥戎河，东抵阿耳戈隆，横亘于帝国北部的西北部与其他地区之间，构成一道天然的地理屏障。山脉两侧交通受阻，气候与植被迥异，帝国北部的行政与军事区划长期以这道山脊为界。山中的铁矿是帝国北方最重要的金属产地之一，德律亚山出产的铁料支撑了周边行省的武器与农具供应。"
+    }
+  ],
+  "TextMappings": []
+}

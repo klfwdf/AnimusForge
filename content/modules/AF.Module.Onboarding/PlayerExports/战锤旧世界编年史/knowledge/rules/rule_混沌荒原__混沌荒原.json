@@ -1,0 +1,210 @@
+{
+  "Id": "rule_混沌荒原__混沌荒原",
+  "Keywords": [
+    "混沌荒原",
+    "混沌荒原诺斯卡",
+    "极地",
+    "变异之地",
+    "北方",
+    "三环地带",
+    "混沌废都",
+    "冻土",
+    "峡湾"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "混沌荒原是位于世界极北的一片被诅咒的广袤冻土。在那里，现实的结构已被混沌之风撕裂，大地和天空都处于永恒的异变之中。诺斯卡半岛是南方文明与混沌荒原之间的最后缓冲地带，那里的蛮族既忍受着荒原的侵蚀，又成为混沌入侵南方的第一批先锋。传说越深入荒原，自然法则就越发失效——山峦会移动，河流会逆流，死者的声音会在风中低语。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "chaos_culture"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "你们南方人叫它「被诅咒的荒原」，而我们称它为神选之地。混沌荒原不是废土——它是唯一真实的世界，是剥离了虚伪文明外衣后的大地本貌。诺斯卡的战士在荒原边缘长大，从小就学会在变异野兽的利爪下生存、在混沌之风的低语中辨识诸神的旨意。那变幻不定的天空和不服从物理法则的大地不是诅咒，而是自由——是诸神应许给强者的自由。南方的农田和城墙不过是懦夫的囚笼。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "混沌荒原的地理特征对军事行动具有决定性影响。诺斯卡沿海的峡湾是混沌舰队天然的集结地，他们的龙船可以从这里袭击帝国的北部海岸线和基斯里夫的河流网络。但真正的威胁在于：荒原本体并非不可逾越——混沌大军必须穿越诺斯卡和基斯里夫的走廊才能抵达南方富庶之地。这意味着基斯里夫的地理位置使其成为旧世界的盾牌，而控制这条走廊是任何对旧世界防御战略的核心。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 100
+        },
+        "IdentityIds": null
+      },
+      "Content": "混沌荒原并非均质的地理区域，根据混沌之风浓度可分为三个环形地带：最外围的诺斯卡次大陆，虽受混沌影响但仍有相对稳定的生态环境和人类社会，诺斯卡人以部落形式在此定居、建造龙船并崇拜混沌诸神；中间地带的混沌荒原本体，物理法则开始崩溃，时间流速不一，地貌随魔法之风而改变，变异野兽和混沌战帮在此游荡；最深处是直接连接极地星门的混沌领域，凡人进入此地将迅速变异或发疯，只有最强大的混沌冠军才能在此存活并接受诸神直接的面谕。混沌废都——据称存在于荒原深处的一座黑暗城市——据说是永世神选的加冕之地，也是混沌术士朝圣的终极目标。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "在诺斯卡边境成长的过程中，我学到的最重要的生存技能来自我的母亲——她教会我如何从风中嗅出'变味'。混沌荒原的风不是普通的冷风，它携带着一种人类鼻子可以学会辨识的、微甜腐臭的金属气息——那是星门泄漏的原初能量与大气水汽发生反应后产生的超自然化合物。当变味开始从北方飘来时，所有母亲会立即将孩子赶入地窖，不是因为害怕风本身，而是因为随变味而来的通常还有'夜啼兽'——一种只在魔法之风浓度达到阈值时才会从亚空间渗透入现实的非实体狩猎者。这种知识永远不会被记录在任何南方人的书中，但在诺斯卡，每个母亲都教给女儿。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "作为氏族族长，我对混沌荒原的理解与每个普通诺斯卡战士都不同——他们只看到狩猎场，而我看到的是领地边界的不可靠性。在南方，你一旦确定了你的领地边界，它基本上稳定——但在荒原边缘，一条河流可能在一次魔法风暴后改道、一座可以作为天然屏障的山脊可能因为地下混沌能量爆发而崩塌。这意味着氏族领地的定义不能依赖任何永久性的地理标志。我的氏族使用'游标'——用符文标记过的猛犸象牙锤入地面，它们会持续发出微弱的震动，当这些震动被荒原的混沌能量干扰时会改变频率，提醒我们边界可能已遭到扭曲。维护游标是氏族最神秘也最危险的职责之一。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我曾受雇于一位帝国学者为他护送探险队进入混沌荒原中环地带——那是旧世界最蠢的委托，也可能是利润最高的。我们在进入中环的第三天看到了一座山在移动——不是山体滑坡，而是整座山像一条正在翻身的大狗一样缓慢地改变了它的坡度，原本的南坡变成了西坡。我们的基斯里夫向导说这种现象叫'土地做梦'——当混沌之风的浓度足够高时，无机物也会获得某种程度的意识。他们在那种状态下可能会回应你的话——如果你不小心说错，一座刚刚醒来的山可能决定不喜欢你的味道。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "混沌荒原深处出产的'扭曲铁'——一种在黑光下呈现紫色冷芒的黑色锻钢——在旧世界武器黑市上的价格已经超过了等重量黄金的七倍。这种铁只有在荒原中环的地质压力区才能形成，它嵌入地下的方式不是矿脉而是孤立的金属'果实'——仿佛是从某个更深的金属生命中脱落出来的。诺斯卡氏族垄断了扭曲铁的采集路线，他们用驯服的变异猛犸驮着铁果到南方边境交换武器。帝国的武器工匠在公开场合诅咒这些交易，但在私下，每一位想铸造传奇武器的铁匠都在试图获取哪怕一小块扭曲铁——因为它锻造出来的刀刃可以切穿混沌恶魔的物质形态，就像切黄油一样。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "诺斯卡——位于混沌荒原与文明世界之间的北方半岛，混沌蛮族的家园",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "混沌荒原的地理位置与战略意义"
+  ]
+}
