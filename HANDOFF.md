@@ -1,4 +1,10 @@
-# 本轮当前交接：P1–P8 host terminal closeout（2026-10-02）
+# 当前交接：AF 2.0 收尾交付（2026-10-02，已授权执行）
+
+[执行计划](docs/plans/af2-module-integration-delivery-closeout-20261002.md)：用户已授权新对话执行 R0–R3；主控 GPT-6 Astra / medium，交付及修复执行者 GPT-6 Sol / medium。B0–B3 验交付/离线，U1–U9 验声明版本的实际使用；先定预期、按证据签收、达到出口即停止。旧宿主拆分后置。
+
+交接 HEAD/已核查远端 main：`261a3be3`。计划与导航未提交，原 SessionTransport dirty 保留；先核对构建是否包含 dirty 输入。仓内包内修改、测试和本地提交已授权；无新增推送/Stage/打包/部署/仓外或真实数据操作授权。状态与详细证据见[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#af2-module-integration-delivery-plan-20261002)，源码见[代码范围图](docs/architecture/af-framework-code-scope.md)。
+
+# 历史交接：P1–P8 host terminal closeout（2026-10-02）
 
 本轮授权替代“仅计划/不启动”；唯一主台账末尾“最后三个原闭包与同候选验证进度”和当前代码范围图收集证据。最后三个 original core 已实际迁 owner（D9eb43b6d/B355acce0/C581faa44），保持公共入口/保存/程序集身份。
 
