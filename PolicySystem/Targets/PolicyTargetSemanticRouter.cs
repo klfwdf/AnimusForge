@@ -87,6 +87,8 @@ internal sealed class PolicyTargetKingdomSnapshot
 
 internal sealed class PolicyTargetWorldSnapshot
 {
+	internal IReadOnlyDictionary<string, PolicyEffectJurisdictionFief> JurisdictionFiefs { get; set; }
+
 	internal long StableVersion { get; set; }
 
 	internal long DynamicVersion { get; set; }
@@ -568,6 +570,7 @@ internal static class PolicyTargetSemanticRouter
 			StringComparer.OrdinalIgnoreCase);
 		Dictionary<string, PolicyTargetKingdomSnapshot> kingdomSnapshots = new Dictionary<string, PolicyTargetKingdomSnapshot>(StringComparer.OrdinalIgnoreCase);
 		List<PolicyTargetEntitySnapshot> entities = new List<PolicyTargetEntitySnapshot>();
+		var fiefSnapshots = new Dictionary<string, PolicyEffectJurisdictionFief>(StringComparer.OrdinalIgnoreCase);
 		foreach (Kingdom kingdom in kingdoms)
 		{
 			List<Settlement> settlements = settlementsByKingdom[kingdom.StringId];
@@ -662,39 +665,21 @@ internal static class PolicyTargetSemanticRouter
 			}
 			foreach (Settlement settlement in settlements)
 			{
-				Vec2 position = settlement.GetPosition2D;
-				string settlementName = SafeText(settlement.Name, settlement.StringId);
-				string ownerClanId = settlement.OwnerClan?.StringId ?? "";
-				string typeText = settlement.IsCastle ? "城堡" : "城市";
-				IReadOnlyList<string> mentionAliases = BuildPrimaryFiefMentionAliases(
-					settlement,
-					settlementName,
-					out float? averageHearth);
-				float militia = settlement.Militia;
-				entities.Add(new PolicyTargetEntitySnapshot
-				{
-					DocumentId = "settlement:" + settlement.StringId,
-					Kind = PolicyTargetEntityKinds.Settlement,
-					EntityId = settlement.StringId,
-					OwnerClanId = ownerClanId,
-					OwnerKingdomId = kingdom.StringId,
-					DisplayName = settlementName,
-					RetrievalText = "定居点 " + typeText + " 领地 " + settlementName + " ID " + settlement.StringId + " 所属氏族 " + SafeText(settlement.OwnerClan?.Name, "") + " 所属国家 " + kingdomName + " 文化 " + SafeText(settlement.Culture?.Name, cultureName),
-					MentionAliases = mentionAliases,
-					IsCity = settlement.IsTown,
-					IsCastle = settlement.IsCastle,
-					IsBorder = IsBorderSettlement(settlement, kingdom),
-					HasPosition = true,
-					PositionX = position.X,
-					PositionY = position.Y,
-					Food = settlement.Town?.FoodStocks ?? 0f,
-					Prosperity = settlement.Town?.Prosperity ?? 0f,
-					Loyalty = settlement.Town?.Loyalty ?? 0f,
-					Security = settlement.Town?.Security ?? 0f,
-					Hearth = averageHearth,
-					Militia = float.IsNaN(militia) || float.IsInfinity(militia) ? (float?)null : militia,
-					CurrentSettlementCount = 1
-				});
+				entities.Add(CapturePrimaryFief(settlement, kingdom, kingdomName, cultureName));
+				fiefSnapshots[settlement.StringId] = PolicyEffectJurisdictionContext.CaptureFief(settlement);
+			}
+		}
+		// Local publication also exists before the player joins or founds a kingdom.
+		// Capture that clan's bounded holdings, not every independent world entity.
+		Clan playerClan = Clan.PlayerClan;
+		if (playerClan != null && !playerClan.IsEliminated && playerClan.Kingdom == null)
+		{
+			foreach (Settlement settlement in (playerClan.Settlements ?? Enumerable.Empty<Settlement>())
+				.Where(IsPrimaryPolicyFief).Where(settlement => settlement.OwnerClan == playerClan))
+			{
+				if (fiefSnapshots.ContainsKey(settlement.StringId)) continue;
+				entities.Add(CapturePrimaryFief(settlement, null, string.Empty, string.Empty));
+				fiefSnapshots[settlement.StringId] = PolicyEffectJurisdictionContext.CaptureFief(settlement);
 			}
 		}
 		HashSet<string> wars = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
@@ -719,9 +704,48 @@ internal static class PolicyTargetSemanticRouter
 			StableVersion = stableVersion,
 			DynamicVersion = dynamicVersion,
 			Entities = entities.ToArray(),
+			JurisdictionFiefs = fiefSnapshots,
 			Kingdoms = kingdomSnapshots,
 			WarPairs = wars.ToArray(),
 			AlliancePairs = alliances.ToArray()
+		};
+	}
+
+	private static PolicyTargetEntitySnapshot CapturePrimaryFief(Settlement settlement, Kingdom kingdom,
+		string kingdomName, string cultureName)
+	{
+		Vec2 position = settlement.GetPosition2D;
+		string settlementName = SafeText(settlement.Name, settlement.StringId);
+		string ownerClanId = settlement.OwnerClan?.StringId ?? "";
+		string typeText = settlement.IsCastle ? "城堡" : "城市";
+		IReadOnlyList<string> mentionAliases = BuildPrimaryFiefMentionAliases(
+			settlement,
+			settlementName,
+			out float? averageHearth);
+		float militia = settlement.Militia;
+		return new PolicyTargetEntitySnapshot
+		{
+			DocumentId = "settlement:" + settlement.StringId,
+			Kind = PolicyTargetEntityKinds.Settlement,
+			EntityId = settlement.StringId,
+			OwnerClanId = ownerClanId,
+			OwnerKingdomId = kingdom?.StringId ?? string.Empty,
+			DisplayName = settlementName,
+			RetrievalText = "定居点 " + typeText + " 领地 " + settlementName + " ID " + settlement.StringId + " 所属氏族 " + SafeText(settlement.OwnerClan?.Name, "") + " 所属国家 " + kingdomName + " 文化 " + SafeText(settlement.Culture?.Name, cultureName),
+			MentionAliases = mentionAliases,
+			IsCity = settlement.IsTown,
+			IsCastle = settlement.IsCastle,
+			IsBorder = kingdom != null && IsBorderSettlement(settlement, kingdom),
+			HasPosition = true,
+			PositionX = position.X,
+			PositionY = position.Y,
+			Food = settlement.Town?.FoodStocks ?? 0f,
+			Prosperity = settlement.Town?.Prosperity ?? 0f,
+			Loyalty = settlement.Town?.Loyalty ?? 0f,
+			Security = settlement.Town?.Security ?? 0f,
+			Hearth = averageHearth,
+			Militia = float.IsNaN(militia) || float.IsInfinity(militia) ? (float?)null : militia,
+			CurrentSettlementCount = 1
 		};
 	}
 

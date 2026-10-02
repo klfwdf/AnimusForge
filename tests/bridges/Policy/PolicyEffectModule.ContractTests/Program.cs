@@ -7433,6 +7433,7 @@ internal static partial class Program
 
 	private static void TestPolicyEffectTargetJurisdictionContracts()
 	{
+		TestKingdomlessLocalJurisdiction();
 		JurisdictionDummyModule domesticModule = new JurisdictionDummyModule(
 			"contractDummy.jurisdiction.domestic",
 			allowCrossKingdomTargets: false);
