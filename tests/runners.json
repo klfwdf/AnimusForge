@@ -643,6 +643,14 @@
     "{ROOT}/artifacts/af2-host-terminal-closeout/final/{RUN}/system-shout-run_mutations"
    ],
    "note": "Actual current system speech owner, same registry and dispatcher; headless lifecycle and compiled assertion mutations, not live-game acceptance."
+  },
+  "tests/modules/AF.Module.Conversation/NativeWaitAudioBoundaryTests/run.py": {
+   "expect": "PASS",
+   "args": [
+    "--run-root",
+    "{ROOT}/artifacts/af2-host-terminal-closeout/{RUN}/native-wait-audio"
+   ],
+   "note": "Current seven retained Native atoms plus actual Audio/Presentation owners: late token/cancel/replacement/load/mission/exit do not change new pause/resources. Offline engine sinks; whole NativeWait/live audio NOT_RUN."
   }
  }
 }

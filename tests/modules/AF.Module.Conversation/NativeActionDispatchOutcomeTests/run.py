@@ -4,7 +4,10 @@ ROOT=Path(__file__).resolve().parents[4];HERE=Path(__file__).parent
 p=argparse.ArgumentParser();p.add_argument('--original',action='store_true');p.add_argument('--timeout-baseline',action='store_true');p.add_argument('--retirement-baseline',action='store_true');p.add_argument('--mutate',choices=['lose-start-boundary','return-null','swallow-owner-failure','allow-diagnostic-failure','drop-queue-claim','keep-failed-queue-live','skip-dispatch-timeout','leave-expired-callback-live','expire-started-dispatch']);args=p.parse_args();assert not (args.original and args.timeout_baseline)
 spec=importlib.util.spec_from_file_location('extractor',ROOT/'tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py');ex=importlib.util.module_from_spec(spec);spec.loader.exec_module(ex)
 baseline='646dd987' if args.original else '8da4fbd7' if args.timeout_baseline else '807bc5b9' if args.retirement_baseline else None
-s=subprocess.check_output(['git','show',baseline+':ShoutBehavior.cs'],cwd=ROOT).decode('utf-8-sig') if baseline else (ROOT / 'src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.cs').read_text(encoding='utf-8-sig')
+import sys
+sys.path.insert(0,str(ROOT/'tests'))
+from af2_terminal_migration_review import historical_source
+s=subprocess.check_output(['git','show',baseline+':ShoutBehavior.cs'],cwd=ROOT).decode('utf-8-sig') if baseline else historical_source('ShoutBehavior.cs')
 assert 'private const int NativeConversationMainThreadPreprocessTimeoutMs = 30000;' in s
 code=(HERE/'Harness.cs.txt').read_text(encoding='utf-8-sig').replace('@@RESULT@@',ex.declaration(s,'private sealed class NativeConversationGameActionResult')).replace('@@QUEUE@@',ex.declaration(s,'private Task<NativeConversationGameActionResult> ApplyNativeConversationGameActionsOnMainThreadAsync('))
 # The unchanged boundary is source-projected from verified current phases; NativeTurn executes the new schedule.

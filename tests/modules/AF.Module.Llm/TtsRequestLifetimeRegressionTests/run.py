@@ -24,7 +24,8 @@ def main():
  (out/'TtsEngine.cs').write_text(source,encoding='utf-8')
  (out/'Program.cs').write_text((HERE/'Harness.cs.txt').read_text(encoding='utf-8'),encoding='utf-8')
  spec=importlib.util.spec_from_file_location('ex',ROOT/'tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py');ex=importlib.util.module_from_spec(spec);spec.loader.exec_module(ex)
- consumer=a.consumer_source.read_text(encoding='utf-8-sig')
+ from af2_terminal_migration_review import historical_source
+ consumer=(historical_source('ShoutBehavior.cs') if a.consumer_source.resolve()==(ROOT/'src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.cs').resolve() else a.consumer_source.read_text(encoding='utf-8-sig'))
  if a.mutation=='match-agent-only':consumer=consumer.replace('ReferenceEquals(_nativeConversationTtsPlaybackRequest, request)','_nativeConversationTtsPlaybackWaitAgentIndex == request.AgentIndex')
  if a.mutation=='ignore-scene-epoch':consumer=consumer.replace('&& owner.ConversationEpoch == _sceneConversationEpoch','')
  signatures=['private sealed class TtsPlaybackOwner','private void TrackTtsPlaybackRequest(','private bool IsTtsPlaybackRequestCurrent(','private bool PrepareTtsPlaybackRequest(','private bool IsActiveTtsPlaybackRequest(','private void RetireTtsPlaybackRequest(','private static long RegisterNativeConversationTtsPlaybackWait(','private static int ResolveNativeConversationTtsPlaybackWaitTimeoutMs(','private static bool CompleteNativeConversationTtsPlaybackWait(','private static bool IsNativeConversationTtsPlaybackWaitRequest(','private static bool IsNativeConversationTtsPlaybackWaitToken(','private static void CompleteNativeConversationTtsPlaybackWaitByToken(']

@@ -103,6 +103,12 @@ static class Program
     static LlmGenerateRequest Request(int timeout=5000)=>new(new TraceContext("test",1,1,"test","1.4"),new LlmProviderSnapshot("test","https://fixture.invalid/v1/chat/completions","model",timeout,96),new PromptPackage(new[]{new PromptMessage("user","hello")},96,"model"));
     static async Task Main()
     {
+        try { await RunBody(); }
+        catch (Exception error) { Console.Error.WriteLine(error); Environment.ExitCode = 1; }
+    }
+
+    static async Task RunBody()
+    {
         foreach(string scenario in new[]{"success","thinking","400","500","empty-once","empty-always","bad-json","transport-failure","missing-key","missing-model","stale-header","stale-body","stale-retry-header","stale-retry-body","manual-retry"})
         {
             var before=await Primary(scenario,true);var after=await Primary(scenario,false);

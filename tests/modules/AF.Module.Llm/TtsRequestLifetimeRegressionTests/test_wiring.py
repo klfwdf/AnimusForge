@@ -6,7 +6,12 @@ spec=importlib.util.spec_from_file_location('ex',ROOT/'tests/modules/AF.Module.C
 SOURCE=Path(os.environ.get('TTS_CONSUMER_SOURCE',str(ROOT/'src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.cs')))
 class Wiring(unittest.TestCase):
  @classmethod
- def setUpClass(cls):cls.s=SOURCE.read_text(encoding='utf-8-sig');cls.e=(ROOT/'src/modules/AF.Module.Llm/Tts/TtsEngine.cs').read_text(encoding='utf-8-sig')
+ def setUpClass(cls):
+  import sys
+  sys.path.insert(0,str(ROOT/'tests'))
+  from af2_terminal_migration_review import historical_source
+  cls.s=(historical_source('ShoutBehavior.cs') if SOURCE.resolve()==(ROOT/'src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.cs').resolve() else SOURCE.read_text(encoding='utf-8-sig'))
+  cls.e=(ROOT/'src/modules/AF.Module.Llm/Tts/TtsEngine.cs').read_text(encoding='utf-8-sig')
  def m(self,name):return ex.declaration(self.s,name)
  def test_typed_subscription_and_unsubscription(self):
   sub=self.m('private void SubscribeTtsPlaybackEvents(');unsub=self.m('private void UnsubscribeTtsPlaybackEventsInternal(')

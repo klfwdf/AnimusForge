@@ -1,0 +1,44 @@
+[
+  {
+    "symbol": "RegisterNativeConversationTtsPlaybackWait",
+    "path": "src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.cs",
+    "sourceSha256": "95d71938fa037e8e842b441a4d9187c1f4c40a763afbdebb70f72117b67ea0f0",
+    "bodySha256": "f7c0abcc15856c13e49ba7a0565daed620a83523291c02e61b69e08262029e3d"
+  },
+  {
+    "symbol": "ResolveNativeConversationTtsPlaybackWaitTimeoutMs",
+    "path": "src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.cs",
+    "sourceSha256": "95d71938fa037e8e842b441a4d9187c1f4c40a763afbdebb70f72117b67ea0f0",
+    "bodySha256": "5da30385e6829679944ad2a0170028cba61764c1b9c96890ac1fa9ea569bf03d"
+  },
+  {
+    "symbol": "CompleteNativeConversationTtsPlaybackWait",
+    "path": "src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.cs",
+    "sourceSha256": "95d71938fa037e8e842b441a4d9187c1f4c40a763afbdebb70f72117b67ea0f0",
+    "bodySha256": "ecc9ab3d6c5681237e9e1567276d8dda703d46a3ab78339232284c46d153cdb2"
+  },
+  {
+    "symbol": "CompleteNativeConversationTtsPlaybackWaitByToken",
+    "path": "src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.cs",
+    "sourceSha256": "95d71938fa037e8e842b441a4d9187c1f4c40a763afbdebb70f72117b67ea0f0",
+    "bodySha256": "49b7375572245401855d4e66790bbe60850d380f51ace5d4b46b03764befa564"
+  },
+  {
+    "symbol": "IsNativeConversationTtsPlaybackWaitRequest",
+    "path": "src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.cs",
+    "sourceSha256": "95d71938fa037e8e842b441a4d9187c1f4c40a763afbdebb70f72117b67ea0f0",
+    "bodySha256": "bd460a7a2762454a84fa5b4db47299393089287e5f190e3fd67154e0458316bb"
+  },
+  {
+    "symbol": "ResumeTtsForNativeConversationReply",
+    "path": "src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.cs",
+    "sourceSha256": "95d71938fa037e8e842b441a4d9187c1f4c40a763afbdebb70f72117b67ea0f0",
+    "bodySha256": "c84cc4af5413a34af477fea0bf63c99405d9d10f3770d54b385991fed7a21b58"
+  },
+  {
+    "symbol": "HandleTtsPlaybackCancelled",
+    "path": "src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.SceneAudio.cs",
+    "sourceSha256": "632feaa14fa5644692dd46d6755db6bec8d9bac6503466a433ac8d8db53cb99b",
+    "bodySha256": "a732a1479a9882a774ee3e075abeedf304bdb837109b5d8050596ba8bf1196fd"
+  }
+]

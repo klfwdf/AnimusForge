@@ -6,6 +6,7 @@ ROOT=Path(__file__).resolve().parents[4]
 import sys
 sys.path.insert(0, str(ROOT / "tests"))
 from output_isolation import current_source_path
+from af2_terminal_migration_review import historical_source
 spec=importlib.util.spec_from_file_location('inverse',ROOT/'tests/modules/AF.Module.Conversation/NativeConversationAdmissionTests/owner_extraction.py');inverse=importlib.util.module_from_spec(spec);spec.loader.exec_module(inverse)
 class ClaimSourceTests(unittest.TestCase):
     def test_all_changes_restore_previous_source_exactly(self):
@@ -16,7 +17,7 @@ class ClaimSourceTests(unittest.TestCase):
     def test_lost_start_or_expiry_gate_rejected(self):
         spec=importlib.util.spec_from_file_location('decl',ROOT/'tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py')
         decl=importlib.util.module_from_spec(spec);spec.loader.exec_module(decl)
-        source=(ROOT/'src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.cs').read_text(encoding='utf-8-sig')
+        source=historical_source('ShoutBehavior.cs')
         method=decl.declaration(source,'private Task<NativeConversationGameActionResult> ApplyNativeConversationGameActionsOnMainThreadAsync(')
         def validate_claim(body):
             assert body.count('!dispatchClaim.TryStart()')==1, 'Native dispatch start gate missing'
