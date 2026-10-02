@@ -1,3 +1,9 @@
+# 本次授权交付：所有会话已完成的最新改动（2026-10-03）
+
+- 目标origin/main，包含最新生图/导演输入/后台/拖拽、内战、对话、快报归档与独立RAG测试工具，不是只推当前会话。剩余两份作者交接补充也提交；不上传本地模型、生成图片、日志/测试结果或明确受保护的私有交接。
+- 最新完整树双API+Bootstrap收据源码/DLL hash核对通过，RAG工具8项自检通过；真实游戏/旧档/真实provider未重新验。本轮不再部署、不打包、不把独立CUDA测试当作游戏接入。
+- [唯一主台账范围与边界](docs/animusforge-refactoring-and-repository-reorganization-plan.md#publish-all-latest-20261003)；网络成功、候选commit与独立远端readback以本地 `artifacts/publish-all-latest-20261003/receipt.json` 为准。本条是提交候选范围，下面的未push/未部署结论按各历史修订阅读。
+
 # 当前修复：终端王国档案显示相关最新快报（离线已验证）
 
 - 产品/测试 `c3e59a4f`，检查点 `5b9af04d`：补单份快报的持久国家关联，王国页包含相关快报且保留历史周报/提要；期号/日期排序和分类明确，世界消息按 ID 去重并合并国家筛选。
@@ -84,17 +90,59 @@
 - 本包离线：97生命周期、API171/快照36、Campaign46及5+6变异 PASS；工作区 Debug双API+Bootstrap与两DLL760元数据 PASS。发布候选验证以本地收据为准；Release/实机/旧档仍未验。
 - [主台账唯一条目](docs/animusforge-refactoring-and-repository-reorganization-plan.md#four-hosted-extension-catalog-20261002)与[本包源码导航](docs/architecture/af-hosted-extension-code-map.json)说明范围、候选/证据/回滚。已获提交推送授权，仅发布本包到main，不带其他本地历史；未Stage/部署。实际远端结果见收据。
 
+# 当前构建交付：政变大厅修复本地Stage（2026-10-02）
+
+- 用户仅授权“构建”；原统一脚本Debug双API+Bootstrap三构建及本地Stage success/0 errors。最新工作树的四项大厅/街道修复已编译进产物；源码未正式收尾提交，未部署或push。
+- 大厅36/胜利回调52/契约144/街道防贴脸13/城墙24回归PASS。19个相关源码指纹稳定，Stage三DLL匹配构建、XML仅Bootstrap；真实导航/兵员生成/胜利动画/旧档/性能仍NOT_RUN。
+- [唯一主台账构建条目](docs/animusforge-refactoring-and-repository-reorganization-plan.md#政变大厅四项修复最终构建与本地stage2026-10-02)；证据 artifacts/coup-hall-final-build-20261002/receipt.json。本地输出 F:/AnimusForge-main/bin/Debug/single_module_stage/AnimusForge，不等于游戏目录已更新。
+
+# 当前功能修复：内战玩家控制审查两项 P2（2026-10-02）
+
+- 两项已关闭：最后玩家成员战前退出不新增长期冷却（已有冷却/七天加入限制/NPC及战争冷却保持）；从旧派系或王室另建派系时，实际旧参与者收到退出/解散并创建的权威事实，去重且不污染未来事实。
+- **OFFLINE_VERIFIED_WITH_LIMITS**：原失败负例保留，294 生命周期 checks（新增33）+ smoke PASS；原脚本 Debug 1.3.15 / 1.4.6 + Bootstrap PASS。无 Stage/部署，实机/真实存档/三渠道实际对话/帧性能及正式 Release NOT_RUN。
+- 唯一详细证据见[主台账修复条目](docs/animusforge-refactoring-and-repository-reorganization-plan.md#player-civilwar-review-fixes-20261002)和 `artifacts/player-civilwar-review-fixes-20261002/receipt.json`。沿用真实 Owner 与共享事实发布，不改内部端口/存档身份；隔离 index 建局部检查点，保护并行作者 dirty/暂存，不 push。
+
+# 当前部署交付：政变修复统一模块（2026-10-02）
+
+- 用户明确授权“编译部署”；沿用原统一脚本，Debug双API+Bootstrap构建成功，随后Stage-managed部署至 F:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord/Modules/AnimusForge，更新9文件。
+- 238个Stage文件SHA一致、5364个清单外安装文件保持、三原版DLL抽检hash不变；模块只声明Bootstrap。原回归51/144/13/24 PASS；游戏未启动，实际登基动画/对话输入/驻防与旧档仍NOT_RUN。
+- [唯一主台账部署条目](docs/animusforge-refactoring-and-repository-reorganization-plan.md#用户授权编译并部署政变修复2026-10-02)记录授权、命令、保护和恢复；证据 artifacts/coup-deploy-20261002/receipt.json。私有Recovery deploy-847327aa908247cb84a922e3443b8227已complete且备份hash核验，无push/脚本变更/额外进程操作。
+
 # 当前交接：主 API 正文流式 MCM 选项（2026-10-02）
 
 - 新增主 API“开启流式传输”，默认关闭、无需重启，终端/MCM 共用 `MainApiStreamingEnabled`；共享正文入口按开关走 JSON/SSE，有回调则预览，无回调则完整汇总后返回。native 原有 callback-selected stream 也统一受控，非正文 API 配置/发送入口不改。
 - 保留温度/Token/思考参数和有限重试；缺正常结束标记、坏 chunk、断流、取消、stale 均不把半句提交为完整业务回复。后处理仍在正文完成后处理，不按分片执行动作。
 - 最终隔离 Debug 双API+Bootstrap PASS；真实 DLL 15项新回放及既有 Primary 回放 PASS，transport17/gateway40/non-stream240 checks PASS。未部署/push、未真实 API 或游戏验收；保留并行 dirty。详细范围/源码坐标/修订与失败记录见[主台账条目](docs/animusforge-refactoring-and-repository-reorganization-plan.md#primary-api-streaming-option-20261002)。
 
+# 当前局部交付：政变大厅处置、原版登基动画与战报（2026-10-02）
+
+- 用户批准结果交互计划并授权接入原版上台动画；大厅单选确认后才离场，地图完成政治结算后播放原版登基通知，关闭/跳过后展示战报，确认返回城镇。取消不替玩家选择；不接入/不自动打开城镇战后处置。
+- 产品切片2563248b；政变契约144、生产回调离线51、前轮防贴脸13/城墙24 PASS；最终1.3/1.4/Bootstrap三构建success。引擎/UI/政治动作测试替身，真实游戏动画/输入/政治动作/旧档/性能未验；未部署或push。
+- [主台账本次入口](docs/animusforge-refactoring-and-repository-reorganization-plan.md#政变大厅处置原版登基动画与结果战报2026-10-02)集中源码坐标、状态/恢复与验证边界。证据/精确回滚：artifacts/coup-victory-feedback-20261002/receipt.json与task.patch。隔离index提交，只提交宿主一条提示；原刷兵/驻防、桥接dirty和其他作者暂存diff完整保留。
+
+# 当前功能切片：内战玩家控制与诉求重评（2026-10-02）
+
+- 玩家战前创建/解散、关系代价、MCM 实力门槛与玩家领袖手动起兵已接入真实 Owner；最新补充的**战后冷却仍生效**。玩家领袖可更改合法诉求，并立即重评现有其他成员，不自动招募/起兵；去留与诉求保存保持。
+- **OFFLINE_VERIFIED_WITH_LIMITS**：261 生命周期 checks（新增 56 玩家控制）+ smoke PASS；原脚本 Debug 1.3.15 / 1.4.6 + Bootstrap PASS，无 Stage/部署。实机 UI/MCM/真实旧档/帧性能及正式 Release NOT_RUN。
+- 详细范围、源码坐标、命令、保留项与局部回滚仅见[主台账本轮条目](docs/animusforge-refactoring-and-repository-reorganization-plan.md#player-civilwar-control-20261002)及 `artifacts/player-civilwar-control-20261002/receipt.json`。真实新增实现为 `src/modules/AF.Module.Kingdom/CivilWar/KingdomCivilWarOwner.PlayerControl.cs`；既有其他作者 dirty/暂存均保持，不 push/覆盖游戏。
+
 # 当前交接：YJ URL 与 API 设置/请求头检查（2026-10-02）
 
 - 新旧引导 YJ Base URL 改为 `https://www.shenlanqaq.com/v1`；Gemini 兼容保留旧域名；修复共享 query-chat 拼接和代理前缀 models 丢 `/v1`。终端/MCM 共用设置对象，终端手动/关闭 dirty 保存；API 面板在保存完成时写回。
 - 新增真实协议源回归与既有 Protocol 13项 PASS，最终隔离 Debug 双API+Bootstrap PASS/0错误。不是实机/真实 API 验收；未部署/push，保留其他 dirty。
 - 握手不覆盖实际生成 tokens/Anthropic thinking，新旧 YJ 思考默认值不一致和 API 面板保存失败反馈不足均明确保留。详细证据与代码坐标见[主台账本次条目](docs/animusforge-refactoring-and-repository-reorganization-plan.md#yj-api-settings-audit-20261002)。本条仅交付本次配置/协议小修，不替代其他并行任务状态。
+
+# 当前局部修复：政变高处远程驻防（2026-10-02）
+
+- 增加真实可达高处守卫点的远程驻防分配，最多12岗位，使用原StreetDefender记录；已有高处远程守卫不再被统一冲锋拉走。保留前轮25m/视线外安全门禁，掉血或玩家靠近6m解除驻防。
+- 新24项岗位/驻防生命周期检查、原13项防贴脸和128政变契约PASS；双API+Bootstrap构建成功。真实标记覆盖/射击和释放寻路/帧性能未验，没有有效岗位或远程兵不保证有人。
+- [唯一主台账当前条目](docs/animusforge-refactoring-and-repository-reorganization-plan.md#政变城墙远程驻防局部修复2026-10-02)记录源码坐标/职责和验证边界；精确回滚与日志 artifacts/coup-wall-sentries-20261002。测试本地提交da9df154，产品保留working-tree避免夹带原dirty，无部署/push。
+
+# 当前局部修复：政变刷兵最终落点防贴脸（2026-10-02）
+
+- 保留当前已有隐蔽锚点 dirty 修复，补充每个政变敌兵最终落点的水平距离/视线检查；不安全时保留记录重试，不减少兵数。
+- 13生产门禁离线检查、128政变契约、1.3/1.4/Bootstrap三构建通过；未部署，真实城镇/大厅导航与视线效果未验。
+- 详细证据见[主台账当前条目](docs/animusforge-refactoring-and-repository-reorganization-plan.md#政变刷兵最终落点防贴脸2026-10-02)。原dirty保护、回滚差异与build.log见 artifacts/coup-spawn-safety-20261002；本轮不夹带提交原产品dirty。
 
 # 当前交接：AF 2.0 收尾交付（2026-10-02，离线接入已就绪）
 
@@ -955,3 +1003,16 @@ LIVE/真实旧档/网络/TTS/帧性能NOT_RUN；证书全局影响归因UNKNOWN�
 - 修复长全文被2000字符pending缓冲裁切：分片/全文统一按512字符喂入，保留开场、遗言、阶段及原24条上限。上一轮主索引反向暂存已精确同步，本次通过主索引正常提交。
 - 新9项回归先失败后通过，总116契约PASS；审查2290字符复现两模式均15条、遗言/阶段正确；原Debug双API+Bootstrap success。未实机/部署/push，保留其他作者与并行任务改动。
 - [主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#execution-bubble-review-fix-20261002)及 `artifacts/execution-bubble-review-fix-20261002/` 保存索引恢复、回归、构建与局部回滚证据。
+
+# 当前局部修复：快报通知读档恢复（2026-10-02）
+
+- 等待插画时先保存待通知标记；读档后使用现有主线程队列分批转交未读通知，旧回调/重复reset不重复通知，旧已读记录不复活。旧存档无新字段正常兼容，不全历史重放。
+- 预加载56、生成/通知49、策略46、宿主存档16项PASS；旧Owner负控准确失败。Debug双API+Bootstrap success；游戏/生图/实档未验，无部署/push。
+- 预加载测试提交5286fe3a；通知产品保留working-tree以避免夹带原有等待功能dirty。详细代码范围/兼容/候选hash与聚焦回滚见[主台账快报恢复条目](docs/animusforge-refactoring-and-repository-reorganization-plan.md#快报通知读档恢复与预加载回归修复2026-10-02offline_verified)及artifacts/bulletin-notice-fix-20261002/receipt.json、task.patch。
+
+
+# 独立测试：重排序 CPU / CUDA（2026-10-03，不接入正式模组）
+
+- 工具 `9ee66b68`，检查点 `313a8d33`；本机 RTX 4060 Laptop，不是 5060。三组/三轮独立 net472 对照 + profile，1080 计时调用和 8 自检通过；原模型/分词/截断/打分/缓存/规则未改，未覆盖游戏或 push。
+- 热态 CUDA 对同版 CPU 5.75–11.96x；设备采样显存增量峰值约 2.56 GiB。分数最大差 5.21e-7，测试集 Top1/Top2/全序一致；冷启动/首次调用有代价。建议可选重排序 CUDA，不默认开启，先复测目标 5060；实机/并发/native 共享加载未验。
+- [唯一主台账与工具代码地图](docs/animusforge-refactoring-and-repository-reorganization-plan.md#rag-reranker-cpu-cuda-20261003)；本地 `artifacts/reranker-cpu-cuda-20261003/REPORT.md` / `receipt.json` 保存完整数据、界限和回滚。此测试记录不取代其他产品交付，原共享文档 dirty 保留。
