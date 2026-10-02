@@ -25,6 +25,7 @@ namespace AnimusForge.Illustrator.Core
         public string SelectedQuality { get; }
         public string SelectedStyle { get; }
         public string CustomStylePrompt { get; }
+        public string CustomDirectorPrompt { get; }
         public string StyleFingerprint { get; }
         public bool UseExactEndpointUrl { get; }
         public bool EnableReferenceImageForGeneration { get; }
@@ -75,6 +76,7 @@ namespace AnimusForge.Illustrator.Core
             SelectedQuality = settings.SelectedQuality;
             SelectedStyle = settings.SelectedStyle;
             CustomStylePrompt = settings.CustomStylePrompt;
+            CustomDirectorPrompt = (settings.CustomDirectorPrompt ?? string.Empty).Trim();
             var resolvedStyle = IllustrationStylePresets.Resolve(SelectedStyle, CustomStylePrompt);
             StyleFingerprint = DiskImageCacheManager.ComputeHash(
                 (settings.SelectedStyle ?? string.Empty) + "\n" +
@@ -82,7 +84,7 @@ namespace AnimusForge.Illustrator.Core
                 (settings.NegativePrompt ?? string.Empty) + "\n" +
                 (resolvedStyle.ImagePrompt ?? string.Empty) + "\n" +
                 (resolvedStyle.NegativePrompt ?? string.Empty) + "\n" +
-                (resolvedStyle.ApiStyle ?? string.Empty));
+                (resolvedStyle.ApiStyle ?? string.Empty) + (string.IsNullOrEmpty(CustomDirectorPrompt) ? string.Empty : "\n" + CustomDirectorPrompt));
             UseExactEndpointUrl = settings.UseExactEndpointUrl;
             EnableReferenceImageForGeneration = settings.EnableReferenceImageForGeneration;
             AutoCleanTempFiles = settings.AutoCleanTempFiles;

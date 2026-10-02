@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Runtime.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Linq;
 using System.Web.Script.Serialization;
 
 // Invokes the shipped typed director path with an in-memory HTTP handler.
@@ -96,6 +97,65 @@ public static class DirectorStatusAudit
         }
         throw new Exception("FAIL " + reason + ": expected director failure");
     }
+    private static void RunCustomDirectorChecks(Type director, Assembly assembly)
+    {
+        const string Sentinel = "CUSTOM_DIRECTOR_RULE_SENTINEL";
+        const BindingFlags Instance = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance;
+        var settingsType = assembly.GetType("AnimusForge.Illustrator.IllustratorSettings", true);
+        object settings = Activator.CreateInstance(settingsType);
+        Check((string)settingsType.GetProperty("CustomDirectorPrompt").GetValue(settings, null) == string.Empty,
+            "old settings default to empty director customization");
+        Check(settingsType.GetProperty("EditCustomDirectorPrompt").GetValue(settings, null) is Action &&
+            settingsType.GetProperty("EditCustomDirectorPrompt").GetCustomAttributesData().Any(a => a.AttributeType.Name == "SettingPropertyButtonAttribute"),
+            "MCM exposes a wired long-text director editor button");
+        settingsType.GetProperty("CustomDirectorPrompt").SetValue(settings, "  " + Sentinel + "  ", null);
+        var ctor = optionsType.GetConstructors(Instance).Single(c => c.GetParameters().Length == 4);
+        object frozen = ctor.Invoke(new object[] { settings, "http://offline.invalid/v1", "fixture", "director" });
+        Check(Property<string>(frozen, "CustomDirectorPrompt") == Sentinel, "game-thread options freeze and trim director rules");
+        settingsType.GetProperty("CustomDirectorPrompt").SetValue(settings, "CHANGED_AFTER_START", null);
+        Check(Property<string>(frozen, "CustomDirectorPrompt") == Sentinel, "editing settings cannot mutate an in-flight generation snapshot");
+        object modified = ctor.Invoke(new object[] { settings, "http://offline.invalid/v1", "fixture", "director" });
+        Check(Property<string>(frozen, "StyleFingerprint") != Property<string>(modified, "StyleFingerprint"),
+            "director rule changes invalidate cached-settings fingerprint");
+        settingsType.GetProperty("CustomDirectorPrompt").SetValue(settings, "", null);
+        object empty = ctor.Invoke(new object[] { settings, "http://offline.invalid/v1", "fixture", "director" });
+        settingsType.GetProperty("CustomDirectorPrompt").SetValue(settings, "  ", null);
+        object whitespace = ctor.Invoke(new object[] { settings, "http://offline.invalid/v1", "fixture", "director" });
+        Check(Property<string>(empty, "StyleFingerprint") == Property<string>(whitespace, "StyleFingerprint"), "blank rules preserve default cache identity");
+
+        object options = Options();
+        var build = director.GetMethod("BuildDirectorPayload", Static);
+        var planType = plan.GetType();
+        foreach (string mode in new[] { "人物百科纪事", "最近2条对话联动的场景插画", "周报历史纪事插画", "通用插画" })
+        {
+            object modePlan = Activator.CreateInstance(planType, new object[] { mode, "HARD_FACT_SENTINEL", "", "" });
+            string blank = build.Invoke(null, new object[] { modePlan, options, null, false }).ToString();
+            SetOption(options, "CustomDirectorPrompt", "  ");
+            Check(build.Invoke(null, new object[] { modePlan, options, null, false }).ToString() == blank,
+                mode + " empty rules leave entire request payload unchanged");
+            SetOption(options, "CustomDirectorPrompt", Sentinel);
+            foreach (bool textOnly in new[] { false, true })
+            {
+                string payload = build.Invoke(null, new object[] { modePlan, options, textOnly ? null : References(), textOnly }).ToString();
+                Check(payload.Contains(Sentinel) && payload.Split(new[] { Sentinel }, StringSplitOptions.None).Length == 2 && payload.Contains("HARD_FACT_SENTINEL"),
+                    mode + " director receives custom rule once alongside facts; textOnly=" + textOnly);
+                Check(payload.Contains("自定义规则边界") && payload.Contains("不是已发生事实") && payload.Contains("四段正文格式"),
+                    mode + " rules retain factual and output-format precedence; textOnly=" + textOnly);
+            }
+            SetOption(options, "CustomDirectorPrompt", null);
+        }
+        SetOption(options, "CustomDirectorPrompt", Sentinel);
+        var handler = new MemoryHandler();
+        handler.Add(HttpStatusCode.OK, Reply("stop", NamedBody, null));
+        object result = Generate(handler, options, References());
+        Check(handler.Bodies.Count == 1 && handler.Bodies[0].Contains(Sentinel) && !Property<string>(result, "Prompt").Contains(Sentinel),
+            "real HTTP director receives rule but image prompt does not append the raw rule");
+        SetOption(options, "EnableLlmPromptExpansion", false);
+        handler = new MemoryHandler(); result = Generate(handler, options, References());
+        Check(handler.Bodies.Count == 0 && !Property<string>(result, "Prompt").Contains(Sentinel),
+            "disabled director neither sends rule nor leaks it into local image fallback");
+    }
+
     public static void Run(string dllPath)
     {
         checks = 0;
@@ -108,6 +168,8 @@ public static class DirectorStatusAudit
         create = director.GetMethod("CreateDirectionWithClientAsync", Static);
         plan = Activator.CreateInstance(assembly.GetType(core + "IllustrationPromptPlan", true), new object[] { "人物百科纪事", "现有布衣和手中文书。", "", "" });
         Check(director.GetMethod("CallLlmDirectorAsync", Static).ReturnType == typeof(Task<string>), "legacy private string method remains compatible");
+
+        RunCustomDirectorChecks(director, assembly);
 
         var handler = new MemoryHandler();
         handler.Add(HttpStatusCode.OK, Reply("stop", NamedBody, null));
