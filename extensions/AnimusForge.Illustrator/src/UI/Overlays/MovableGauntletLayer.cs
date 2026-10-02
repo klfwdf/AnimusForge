@@ -17,6 +17,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
         private bool _isDragging;
         private bool _isResizing;
         private TaleWorlds.Library.Vec2 _lastMousePixel;
+        private float _dragStartX, _dragStartY;
 
         public MovableGauntletLayer(string name, int localOrder, bool shouldClear = false)
             : base(name, localOrder, shouldClear)
@@ -68,8 +69,6 @@ namespace AnimusForge.Illustrator.UI.Overlays
 
         protected override void Tick(float dt)
         {
-            base.Tick(dt);
-
             if (_fractionPanel != null && UIContext?.EventManager != null)
             {
                 float scale = UIContext.CustomScale > 0.001f ? UIContext.CustomScale : 1f;
@@ -80,6 +79,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
 
             if (_panelWidget == null)
             {
+                base.Tick(dt);
                 return;
             }
 
@@ -89,7 +89,11 @@ namespace AnimusForge.Illustrator.UI.Overlays
             }
             catch
             {
+                _isDragging = false;
+                _isResizing = false;
             }
+            // Offsets must be applied before Gauntlet's layout/update, not one frame later.
+            base.Tick(dt);
         }
 
         private void HandleDrag()
@@ -108,7 +112,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
                 TaleWorlds.Library.Vec2 mousePixel = input.GetMousePositionPixel();
                 TaleWorlds.Library.Vec2 delta = mousePixel - _lastMousePixel;
                 _lastMousePixel = mousePixel;
-                float scale = UIContext?.ScaleModifier ?? 1f;
+                float scale = UIContext?.CustomScale ?? 1f;
                 if (scale <= 0.001f) scale = 1f;
                 _panelWidget.SuggestedWidth = MathF.Clamp(_panelWidget.SuggestedWidth + delta.X / scale, 320f, 1600f);
                 _panelWidget.SuggestedHeight = MathF.Clamp(_panelWidget.SuggestedHeight + delta.Y / scale, 360f, 1100f);
@@ -125,16 +129,12 @@ namespace AnimusForge.Illustrator.UI.Overlays
 
                 TaleWorlds.Library.Vec2 mousePixel = input.GetMousePositionPixel();
                 TaleWorlds.Library.Vec2 delta = mousePixel - _lastMousePixel;
-                _lastMousePixel = mousePixel;
 
-                if (MathF.Abs(delta.X) > 0.001f || MathF.Abs(delta.Y) > 0.001f)
-                {
-                    float scale = UIContext?.ScaleModifier ?? 1f;
-                    if (scale <= 0.001f) scale = 1f;
-
-                    _panelWidget.PositionXOffset += delta.X / scale;
-                    _panelWidget.PositionYOffset += delta.Y / scale;
-                }
+                float scale = UIContext?.CustomScale ?? 1f;
+                if (scale <= 0.001f) scale = 1f;
+                // Absolute press anchor also restores the exact starting position when delta returns to zero.
+                _panelWidget.PositionXOffset = _dragStartX + delta.X / scale;
+                _panelWidget.PositionYOffset = _dragStartY + delta.Y / scale;
             }
             else if (input.IsKeyPressed(InputKey.LeftMouseButton))
             {
@@ -147,6 +147,8 @@ namespace AnimusForge.Illustrator.UI.Overlays
                 {
                     _isDragging = true;
                     _lastMousePixel = input.GetMousePositionPixel();
+                    _dragStartX = _panelWidget.PositionXOffset;
+                    _dragStartY = _panelWidget.PositionYOffset;
                 }
             }
         }
@@ -155,7 +157,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
         {
             if (_panelWidget == null || UIContext?.EventManager == null) return false;
             if (_panelWidget.WidthSizePolicy != SizePolicy.Fixed || _panelWidget.HeightSizePolicy != SizePolicy.Fixed) return false;
-            var mousePos = UIContext.EventManager.MousePosition;
+            var mousePos = Input.GetMousePositionPixel();
             var globalPos = _panelWidget.GlobalPosition;
             var size = _panelWidget.Size;
             const float resizeGrip = 24f;
@@ -181,17 +183,23 @@ namespace AnimusForge.Illustrator.UI.Overlays
         private bool IsMouseInsideWidget(Widget widget)
         {
             if (widget == null || UIContext?.EventManager == null) return false;
-            return widget.IsPointInsideMeasuredArea(UIContext.EventManager.MousePosition);
+            var mouse = Input.GetMousePositionPixel();
+            // Infer the game's Vector2 type: the 1.3 reference overlay also contains
+            // a Numerics compatibility assembly, so explicitly naming it is ambiguous.
+            var point = UIContext.EventManager.MousePosition;
+            point.X = mouse.X;
+            point.Y = mouse.Y;
+            return widget.IsPointInsideMeasuredArea(point);
         }
 
         private bool IsMouseInPanelHeader(Widget panel, float headerHeight)
         {
             if (panel == null || UIContext?.EventManager == null) return false;
-            var mousePos = UIContext.EventManager.MousePosition;
+            var mousePos = Input.GetMousePositionPixel();
             var globalPos = panel.GlobalPosition;
             var size = panel.Size;
 
-            float scaledHeader = headerHeight * (UIContext.ScaleModifier > 0.001f ? UIContext.ScaleModifier : 1f);
+            float scaledHeader = headerHeight * (UIContext.CustomScale > 0.001f ? UIContext.CustomScale : 1f);
 
             return mousePos.X >= globalPos.X && mousePos.X <= globalPos.X + size.X &&
                    mousePos.Y >= globalPos.Y && mousePos.Y <= globalPos.Y + scaledHeader;

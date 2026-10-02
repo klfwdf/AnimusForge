@@ -64,7 +64,7 @@ public static class SceneCaptureAudit
     {
         var result = Instructions(MoveNext(capture)).ToList();
         var pending = new Queue<MethodBase>(result.Select(i => i.Item2).OfType<MethodBase>()
-            .Where(m => m.Module == capture.Module && m.Name.Contains("<CaptureConversationSceneReferencesAsync>")));
+            .Where(m => m.Module == capture.Module && m.Name.Contains("<CaptureMissionSceneReferencesAsync>")));
         var visited = new HashSet<MethodBase>();
         while (pending.Count > 0)
         {
@@ -84,7 +84,13 @@ public static class SceneCaptureAudit
         var assembly = Assembly.LoadFrom(dllPath);
         var helper = assembly.GetType("AnimusForge.Illustrator.Engine.ScreenCaptureHelper", true);
         var capture = helper.GetMethod("CaptureConversationSceneReferencesAsync", All);
-        var code = CaptureInstructions(capture);
+        // The public router now selects map or mission capture. Follow the actual mission
+        // implementation and its generated lambdas, not unrelated partial-class helpers.
+        var missionCapture = helper.GetMethod("CaptureMissionSceneReferencesAsync", All);
+        Check(Calls(MoveNext(capture), "CaptureMissionSceneReferencesAsync") &&
+            Calls(MoveNext(capture), "CaptureMapConversationSceneReferencesAsync") &&
+            Calls(MoveNext(capture), "EnsureCurrentAsync"), "real router validates source and selects mission/map implementations");
+        var code = CaptureInstructions(missionCapture);
         var calls = code.Select(i => i.Item2).OfType<MethodBase>().ToList();
         var renderer = assembly.GetType("AnimusForge.Illustrator.Engine.IsolatedPanoramaRenderer", true);
         var projection = assembly.GetType("AnimusForge.Illustrator.Engine.PanoramaProjection", true);
@@ -95,7 +101,7 @@ public static class SceneCaptureAudit
             "compiled generation builds camera frames and iterates six exports");
         Check(new[] { "SelectFace", "get_IsReady", "RequestExport", "StopExport" }.All(name => calls.Any(m => m.DeclaringType == renderer && m.Name == name)),
             "real generation selects each face, waits for readiness, requests export and stops it");
-        Check(calls.Any(m => m.Name == "ReadPanoramaFaceAsync") && calls.Any(m => m.DeclaringType == projection && m.Name == "Compose"),
+        Check(calls.Any(m => m.Name == "ReadPanoramaFaceAsync") && calls.Any(m => m.DeclaringType == projection && m.Name == "ComposeWithCancellation"),
             "completed face files flow into the production panorama compositor");
         Check(!calls.Any(m => m.Name == "set_CustomCamera" || m.Name == "SetCameraFrame" || m.Name == "set_Frame" || m.Name == "set_IsVisible" || m.Name == "AddLayer" || m.Name == "RemoveLayer"),
             "orchestration does not move live cameras or hide or move interface layers");
@@ -140,7 +146,7 @@ public static class SceneCaptureAudit
         using (var cancelled = new CancellationTokenSource())
         {
             cancelled.Cancel();
-            var task = (Task)capture.Invoke(null, new object[] { cancelled.Token });
+            var task = (Task)missionCapture.Invoke(null, new object[] { null, cancelled.Token, null });
             bool stopped = false;
             try { task.GetAwaiter().GetResult(); } catch (OperationCanceledException) { stopped = true; }
             Check(stopped && sceneLock.CurrentCount == sceneCount && stageLock.CurrentCount == stageCount,
@@ -153,7 +159,7 @@ public static class SceneCaptureAudit
         {
             using (var queued = new CancellationTokenSource())
             {
-                var task = (Task)capture.Invoke(null, new object[] { queued.Token });
+                var task = (Task)missionCapture.Invoke(null, new object[] { null, queued.Token, null });
                 Check(!task.IsCompleted, "another capture waits on the scene gate before reading live context");
                 queued.Cancel();
                 bool stopped = false;

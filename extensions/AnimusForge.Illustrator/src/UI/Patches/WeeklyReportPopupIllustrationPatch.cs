@@ -284,7 +284,8 @@ namespace AnimusForge.Illustrator.UI.Patches
             _overlayLayer = layer;
             topScreen.AddLayer(_overlayLayer);
 
-            BeginCachedLoad("点击【生成纪事插画】绘制本周大事件");
+            IllustratorRuntime.GenerationUpdated += OnGenerationUpdated;
+            if (!JoinPendingGeneration()) BeginCachedLoad("点击【生成纪事插画】绘制本周大事件");
         }
 
         private static bool AttachWorldBulletinSlot(global::AnimusForge.WorldBulletinIllustrationVM slot, string eventId, string title, string subtitleText, string bodyText, global::AnimusForge.WorldBulletinIllustrationPlan plan)
@@ -441,6 +442,32 @@ namespace AnimusForge.Illustrator.UI.Patches
             }
         }
 
+        private static IllustrationScope _joinedGeneration;
+
+        private static bool JoinPendingGeneration()
+        {
+            if (_scope == null || _sink == null || _bulletinSlot != null) return false;
+            var pending = IllustratorRuntime.FindGenerating("weekly_report", _currentEventKey);
+            if (pending == null) return false;
+            _joinedGeneration = pending;
+            ++_redrawCount; // invalidate older asynchronous cache callbacks
+            _sink.IsLoading = true;
+            _sink.StatusText = "画卷正在后台生成，完成后会通知并更新画廊。";
+            return true;
+        }
+
+        private static void OnGenerationUpdated(IllustrationGenerationUpdate update)
+        {
+            if (_scope == null || !_scope.IsCurrent || _sink == null || _bulletinSlot != null ||
+                !ReferenceEquals(update.Source, _joinedGeneration) || update.CampaignKey != _scope.CampaignKey ||
+                update.SubjectKey != _currentEventKey || update.Category != "weekly_report") return;
+            _joinedGeneration = null;
+            if (ReferenceEquals(update.Source, _scope)) return;
+            _sink.IsLoading = false;
+            if (update.Saved != null && Publish(update.Saved, update.Saved.Prompt)) _sink.StatusText = update.Saved.DisplayStatusText;
+            else _sink.StatusText = "绘制失败：" + (update.Error ?? "面板图像加载失败；可在画廊查看。");
+        }
+
         internal sealed class GenerationResult
         {
             internal ImageGenerationResult Result;
@@ -458,6 +485,7 @@ namespace AnimusForge.Illustrator.UI.Patches
                 RefreshPreparedBulletin(_currentEventKey, null);
                 return;
             }
+            if (JoinPendingGeneration()) return;
             _sink.IsLoading = true;
             _sink.HasIllustration = false;
             _sink.StatusText = "正在构思本周纪事插画...";
@@ -496,7 +524,7 @@ namespace AnimusForge.Illustrator.UI.Patches
             // All names, roles, banners and appearance snapshots were captured on the game thread.
             var people = context.Characters.Take(4).ToArray();
 
-            return generationScope.Run(async token =>
+            return generationScope.RunGeneration(eventKey, null, async token =>
             {
                 Debug.Print("[Illustrator] Weekly generation task started.");
                 GenerationDiagnostics.Current?.SetSubject(eventKey);
@@ -556,7 +584,7 @@ namespace AnimusForge.Illustrator.UI.Patches
                     if (saved != null) DiskImageCacheManager.PromoteDefaultIfNewest(saved, campaignKey);
                 }
                 return new GenerationResult { Result = result, Saved = saved, Prompt = effectivePrompt };
-            }, complete, fail);
+            }, complete, fail, result => result.Saved, result => result.Result?.ErrorMessage ?? "未能保存图像");
         }
 
         /// <summary>周报纪事画的随机构图变体——同一事件每次生成应有不同取景。</summary>
@@ -609,7 +637,9 @@ namespace AnimusForge.Illustrator.UI.Patches
             _closing = true;
             try
             {
-                _scope?.Close();
+                IllustratorRuntime.GenerationUpdated -= OnGenerationUpdated;
+                _joinedGeneration = null;
+                if (_scope != null && !_scope.DetachWindowIfGenerating()) _scope.Close();
                 if (!string.IsNullOrEmpty(_activeSpriteName))
                 {
                     GauntletTextureLoader.ReleaseSprite(_activeSpriteName);

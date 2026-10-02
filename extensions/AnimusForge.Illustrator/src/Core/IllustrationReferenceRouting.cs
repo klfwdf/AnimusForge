@@ -37,14 +37,15 @@ namespace AnimusForge.Illustrator.Core
             { IsIdleStanceFullBody = true };
             director.Add(full);
             if (image != null && !ReferenceEquals(director, image)) image.Add(full);
-            if (string.IsNullOrWhiteSpace(portraits.HeadDetail)) return;
-            var head = new IllustrationReferenceImage(portraits.HeadDetail,
-                "人物【" + name + "】头肩细节：与同名全身图是同一个人，不是新增人物。" +
-                "仅补充可见五官、须发与头部装备，保留装备遮挡；不指定姿态、取景或照明。" +
-                (eventReference ? "仅在所选事件涉及此人时使用。" : string.Empty),
-                eventReference ? IllustrationReferenceKind.EventCharacter : IllustrationReferenceKind.CharacterDetail);
-            director.Add(head);
-            if (image != null && !ReferenceEquals(director, image)) image.Add(head);
+            // Ignore legacy HeadDetail values as well: both model stages now receive one
+            // complete portrait per character, with no redundant close-up image.
+        }
+
+        // Session snapshots may contain older head-detail references; do not re-upload them on redraw.
+        internal static IEnumerable<IllustrationReferenceImage> SinglePortraitSessionReferences(IReadOnlyList<IllustrationReferenceImage> references)
+        {
+            return references == null ? Enumerable.Empty<IllustrationReferenceImage>()
+                : references.Where(r => r != null && r.Kind != IllustrationReferenceKind.CharacterDetail);
         }
 
         internal static IllustrationReferenceImage SelectSceneAnchor(IReadOnlyList<IllustrationReferenceImage> scenes)

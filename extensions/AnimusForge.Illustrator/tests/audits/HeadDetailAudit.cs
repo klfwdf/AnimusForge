@@ -52,63 +52,44 @@ public static class HeadDetailAudit
             "full-body camera preserves the existing native stance");
 
         var bodyDone = new TaskCompletionSource<string>(TaskCreationOptions.RunContinuationsAsynchronously);
-        var headDone = new TaskCompletionSource<string>(TaskCreationOptions.RunContinuationsAsynchronously);
-        var headStarted = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
         var calls = new List<bool>();
-        Task paired = Collect(helper, (head, token) =>
+        Task single = Collect(helper, (head, token) =>
         {
             lock (calls) calls.Add(head);
-            if (head) { headStarted.TrySetResult(true); return headDone.Task; }
+            if (head) throw new Exception("FAIL redundant head capture was invoked");
             return bodyDone.Task;
         }, CancellationToken.None);
-        Check(calls.Count == 1 && !calls[0] && !headStarted.Task.IsCompleted,
-            "head stage waits for the complete full-body export");
+        Check(calls.Count == 1 && !calls[0] && !single.IsCompleted, "single-reference collection waits for the full-body export");
         bodyDone.SetResult("full-native-jpeg");
-        Check(headStarted.Task.Wait(3000), "head stage starts after full-body export completes");
-        Check(!paired.IsCompleted, "reference collection waits for head export");
-        headDone.SetResult("head-native-jpeg");
-        var pair = Complete(paired);
-        Check(Text(pair, "FullBody") == "full-native-jpeg" && Text(pair, "HeadDetail") == "head-native-jpeg",
-            "two independent images are preserved in their distinct roles");
-        Check(calls.SequenceEqual(new[] { false, true }), "each camera is rendered exactly once in order");
+        var pair = Complete(single);
+        Check(Text(pair, "FullBody") == "full-native-jpeg" && Text(pair, "HeadDetail") == null, "automatic reference returns full-body only while preserving legacy DTO shape");
+        Check(calls.SequenceEqual(new[] { false }), "exactly one native camera is rendered per character");
 
         int failedBodyCalls = 0;
         pair = Complete(Collect(helper, (head, token) => { failedBodyCalls++; return Task.FromResult<string>(null); }, CancellationToken.None));
-        Check(failedBodyCalls == 1 && Text(pair, "FullBody") == null && Text(pair, "HeadDetail") == null,
-            "failed full-body export does not launch another native stage");
-        pair = Complete(Collect(helper, (head, token) => Task.FromResult(head ? null : "full"), CancellationToken.None));
-        Check(Text(pair, "FullBody") == "full" && Text(pair, "HeadDetail") == null,
-            "missing head image retains the successful full-body reference");
-        pair = Complete(Collect(helper, (head, token) =>
-        {
-            if (head) throw new InvalidOperationException("offline head-stage failure");
-            return Task.FromResult("full");
-        }, CancellationToken.None));
-        Check(Text(pair, "FullBody") == "full" && Text(pair, "HeadDetail") == null,
-            "head-stage exception is isolated from the successful full-body image");
+        Check(failedBodyCalls == 1 && Text(pair, "FullBody") == null && Text(pair, "HeadDetail") == null, "failed full-body export does not launch another native stage");
+        pair = Complete(Collect(helper, (head, token) => { if (head) throw new Exception("head must not run"); return Task.FromResult("full"); }, CancellationToken.None));
+        Check(Text(pair, "FullBody") == "full" && Text(pair, "HeadDetail") == null, "obsolete head work cannot delay or fail a successful full-body capture");
+        bool bodyError = false;
+        try { Complete(Collect(helper, (head, token) => { throw new InvalidOperationException("offline body failure"); }, CancellationToken.None)); }
+        catch (InvalidOperationException) { bodyError = true; }
+        Check(bodyError, "required full-body failure is not turned into a successful reference");
 
         using (var cancelled = new CancellationTokenSource())
         {
             cancelled.Cancel(); int starts = 0;
-            ExpectCancelled(Collect(helper, (head, token) => { starts++; return Task.FromResult("unused"); }, cancelled.Token),
-                "pre-cancellation stops reference collection");
+            ExpectCancelled(Collect(helper, (head, token) => { starts++; return Task.FromResult("unused"); }, cancelled.Token), "pre-cancellation stops reference collection");
             Check(starts == 0, "pre-cancelled request creates no stages");
         }
-        using (var between = new CancellationTokenSource())
+        using (var afterBody = new CancellationTokenSource())
         {
             int starts = 0;
-            ExpectCancelled(Collect(helper, (head, token) =>
-            { starts++; between.Cancel(); return Task.FromResult("full"); }, between.Token),
-                "cancellation between cameras propagates");
-            Check(starts == 1, "cancellation after full-body capture never starts head capture");
+            ExpectCancelled(Collect(helper, (head, token) => { starts++; afterBody.Cancel(); return Task.FromResult("full"); }, afterBody.Token), "cancellation after body capture rejects late delivery");
+            Check(starts == 1, "cancelled capture never starts a second view");
         }
         using (var during = new CancellationTokenSource())
         {
-            ExpectCancelled(Collect(helper, (head, token) =>
-            {
-                if (head) { during.Cancel(); token.ThrowIfCancellationRequested(); }
-                return Task.FromResult("full");
-            }, during.Token), "head-stage cancellation is never converted into a successful reference pair");
+            ExpectCancelled(Collect(helper, (head, token) => { during.Cancel(); token.ThrowIfCancellationRequested(); return Task.FromResult("unused"); }, during.Token), "native capture cancellation is never converted into success");
         }
 
         var snapshotType = assembly.GetType("AnimusForge.Illustrator.Context.CharacterAppearanceSnapshot", true);
@@ -128,11 +109,11 @@ public static class HeadDetailAudit
             var oldApi = helper.GetMethod("Extract" + subject + "PortraitOffscreenAsync", Static);
             var newApi = helper.GetMethod("Extract" + subject + "PortraitReferencesAsync", Static);
             Check(oldApi.ReturnType == typeof(Task<string>), subject + " legacy string API remains available");
-            Check(newApi.ReturnType.GetGenericArguments().Single() == references, subject + " typed API returns both roles");
+            Check(newApi.ReturnType.GetGenericArguments().Single() == references, subject + " typed API retains the compatible reference DTO");
             Check(oldApi.GetParameters().Select(p => p.Name + ":" + p.ParameterType.FullName)
                 .SequenceEqual(newApi.GetParameters().Select(p => p.Name + ":" + p.ParameterType.FullName)),
                 subject + " typed API retains original parameter contract");
         }
-        Console.WriteLine("HEAD DETAIL AUDIT: " + checks + " PASS / 0 FAIL (no GPU/live-game acceptance)");
+        Console.WriteLine("SINGLE PORTRAIT / LEGACY SHAPE AUDIT: " + checks + " PASS / 0 FAIL (no GPU/live-game acceptance)");
     }
 }

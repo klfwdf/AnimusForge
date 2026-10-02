@@ -37,6 +37,8 @@ namespace AnimusForge.Illustrator.UI.Overlays
         private bool _closed;
         private int _generationCount;
         private int _cacheLoadVersion;
+        private IllustrationScope _joinedGeneration;
+        private string _joinedSubjectKey, _joinedSessionKey;
         private bool _autoRedrawPending;
         private bool _autoReplyArmed;
         private bool _autoReplyRequested;
@@ -141,6 +143,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
             layer.InputRestrictions.SetInputRestrictions(true, InputUsageMask.MouseButtons);
             _layer = layer;
             _scope = new IllustrationScope(screen, category, Close);
+            IllustratorRuntime.GenerationUpdated += OnGenerationUpdated;
 
             try
             {
@@ -151,6 +154,36 @@ namespace AnimusForge.Illustrator.UI.Overlays
             }
             }
             catch { Close(); throw; }
+        }
+
+        private bool JoinPendingGeneration(string subjectKey, string sessionKey = null)
+        {
+            var pending = IllustratorRuntime.FindGenerating(_category, subjectKey, sessionKey);
+            if (pending == null) return false;
+            _joinedGeneration = pending;
+            _joinedSubjectKey = subjectKey;
+            _joinedSessionKey = sessionKey;
+            ++_cacheLoadVersion; // invalidate a cache read that may otherwise overwrite the new result
+            _dataSource.SetLoading("画卷正在后台生成，可关闭面板，完成后会通知并更新画廊。");
+            return true;
+        }
+
+        private void OnGenerationUpdated(IllustrationGenerationUpdate update)
+        {
+            if (_closed || !_scope.IsCurrent || !ReferenceEquals(_activeInstance, this) ||
+                !ReferenceEquals(update.Source, _joinedGeneration) || update.CampaignKey != _scope.CampaignKey ||
+                update.Category != _category || update.SubjectKey != _joinedSubjectKey || update.SessionKey != _joinedSessionKey) return;
+            _joinedGeneration = null;
+            if (ReferenceEquals(update.Source, _scope)) return; // attached owner's callback already published it
+            ++_cacheLoadVersion;
+            if (_category == "conversation" && !(_joinedSessionKey ?? "").StartsWith(ConversationSessionOwnerKey() + "|", StringComparison.Ordinal))
+            {
+                _dataSource.SetReady("原会话画卷已存入画廊，当前会话已变化。");
+                return;
+            }
+            if (update.Saved != null && PublishImage(update.Saved))
+                _dataSource.SetReady(update.Saved.DisplayStatusText);
+            else _dataSource.SetReady("绘制失败：" + (update.Error ?? "面板图像加载失败；可在画廊查看。"));
         }
 
         private static bool StartCachedImageLoad(IllustrationCardPopup popup, string key, string campaignKey, string category, Action<CachedIllustrationItem, Exception> completed)
@@ -211,6 +244,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
                 _activeInstance = popup;
 
                 string key = $"Hero_{hero.StringId}";
+                if (popup.JoinPendingGeneration(key)) return;
                 popup._dataSource.SetLoading("正在读取缓存画卷…");
                 if (!StartCachedImageLoad(popup, key, popup._scope.CampaignKey, "encyclopedia", (cached, error) =>
                 {
@@ -339,6 +373,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
 
                 string partnerId = convContext.InterlocutorHero?.StringId ?? convContext.InterlocutorCharacter?.StringId ?? "NPC";
                 string key = $"Conv_{partnerId}";
+                if (popup.JoinPendingGeneration(key, conversationSessionKey)) return;
                 if (!forceGenerate)
                 {
                     popup._dataSource.SetLoading("正在读取缓存画卷…");
@@ -381,6 +416,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
 
         private void ExecuteEncyclopediaGenerationCore(Hero hero, Widget tableauWidget)
         {
+            if (JoinPendingGeneration($"Hero_{hero.StringId}")) return;
             ++_cacheLoadVersion;
             _dataSource.SetLoading("AI画师正在细致描摹人物面相骨相与专属构图...");
 
@@ -417,7 +453,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
                 return;
             }
 
-            _scope.Run(async token =>
+            _scope.RunGeneration(key, null, async token =>
             {
                 GenerationDiagnostics.Current?.SetSubject(key);
                 // Metadata enumeration can scan a large campaign cache. Keep it on the
@@ -508,7 +544,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
             }, error =>
             {
                 _dataSource.SetReady($"生成异常: {error}");
-            });
+            }, completion => completion.SavedItem, completion => completion.Result?.ErrorMessage ?? "未能保存图像");
         }
 
         private void QueuePendingAutoRedraw()
@@ -665,6 +701,8 @@ namespace AnimusForge.Illustrator.UI.Overlays
 
         private void ExecuteConversationGenerationCore(ConversationVisualContext convContext, string preCapturedBase64 = null, List<EmblemSpec> emblemSpecs = null, bool automatic = false)
         {
+            string pendingKey = "Conv_" + (convContext.InterlocutorHero?.StringId ?? convContext.InterlocutorCharacter?.StringId ?? "NPC");
+            if (JoinPendingGeneration(pendingKey, ConversationSessionKey(convContext))) return;
             ++_cacheLoadVersion;
             _dataSource.SetLoading("AI画师正在分析现场交谈与肢体姿势...");
 
@@ -719,7 +757,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
                     ConversationSessionKey(convContext, sceneSource.SessionOwnerKey));
             string campaignKey = _scope.CampaignKey;
 
-            _scope.Run(async token =>
+            _scope.RunGeneration(key, conversationSessionKey, async token =>
             {
                 GenerationDiagnostics.Current?.SetSubject(key);
                 GenerationDiagnostics.Current?.RecordStage("conversation_generation_trigger", new JObject
@@ -767,9 +805,9 @@ namespace AnimusForge.Illustrator.UI.Overlays
                 if (session != null)
                 {
                     directorRefs.AddRange(session.SceneReferences ?? Array.Empty<IllustrationReferenceImage>());
-                    directorRefs.AddRange(session.CharacterReferences ?? Array.Empty<IllustrationReferenceImage>());
+                    directorRefs.AddRange(IllustrationReferenceRouting.SinglePortraitSessionReferences(session.CharacterReferences));
                     directorRefs.AddRange(session.EmblemReferences ?? Array.Empty<IllustrationReferenceImage>());
-                    genRefs.AddRange(session.GenerationCharacterReferences ?? Array.Empty<IllustrationReferenceImage>());
+                    genRefs.AddRange(IllustrationReferenceRouting.SinglePortraitSessionReferences(session.GenerationCharacterReferences));
                     genRefs.AddRange(session.GenerationEmblemReferences ?? Array.Empty<IllustrationReferenceImage>());
                     scenePromptPlan = BuildConversationSessionPlan(promptPlan, session);
                 }
@@ -801,14 +839,14 @@ namespace AnimusForge.Illustrator.UI.Overlays
                         var portraits = await playerStage().ConfigureAwait(false);
                         if (string.IsNullOrWhiteSpace(portraits.FullBody)) throw new InvalidOperationException("玩家完整装备离屏立绘失败，已停止生成。");
                         IllustrationReferenceRouting.AddCharacter(characterRefs, generationCharacterRefs, portraits, playerName,
-                            $"【玩家：{playerName}】全身身份与实际穿戴；与头肩图为同一人。行动和位置按现场事实及导演正文。");
+                            $"【玩家：{playerName}】单张完整立绘：身份与实际穿戴。行动和位置按现场事实及导演正文。");
                     }
                     if (partnerStage != null)
                     {
                         var portraits = await partnerStage().ConfigureAwait(false);
                         if (string.IsNullOrWhiteSpace(portraits.FullBody)) throw new InvalidOperationException("对方完整装备离屏立绘失败，已停止生成。");
                         IllustrationReferenceRouting.AddCharacter(characterRefs, generationCharacterRefs, portraits, partnerName,
-                            $"【对话对象：{partnerName}】全身身份与实际穿戴；与头肩图为同一人，不与玩家混淆。行动和位置按现场事实及导演正文。");
+                            $"【对话对象：{partnerName}】单张完整立绘：身份与实际穿戴，不与玩家混淆。行动和位置按现场事实及导演正文。");
                     }
                     directorRefs.AddRange(characterRefs);
                     genRefs.AddRange(generationCharacterRefs);
@@ -857,9 +895,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
                     IllustrationReferenceRouting.AddSceneReferences(genRefs, sceneCapture?.References ?? session?.SceneReferences, direction, token);
                 IllustratorRuntime.Post(() => { if (!_closed && !token.IsCancellationRequested) _dataSource.StatusText = sceneStatus + "；" + direction.StatusText + "，正在绘制画卷..."; });
                 var finalGenRefs = options?.EnableReferenceImageForGeneration == false ? null : (System.Collections.Generic.IReadOnlyList<IllustrationReferenceImage>)genRefs;
-                if (sceneSource != null) await sceneSource.EnsureCurrentAsync(token).ConfigureAwait(false);
                 var result = await UniversalOpenAiImageClient.GenerateImageAsync(detailedPrompt, finalGenRefs, options, token).ConfigureAwait(false);
-                if (sceneSource != null) await sceneSource.EnsureCurrentAsync(token).ConfigureAwait(false);
                 string effectivePrompt = string.IsNullOrWhiteSpace(result.ResolvedPrompt) ? detailedPrompt : result.ResolvedPrompt;
                 CachedIllustrationItem saved = null;
                 if (result.Success && result.ImageBytes != null)
@@ -871,7 +907,6 @@ namespace AnimusForge.Illustrator.UI.Overlays
                 return new GenerationCompletion(result, saved, effectivePrompt);
             }, completion =>
             {
-                if (sceneSource != null) sceneSource.EnsureCurrent(System.Threading.CancellationToken.None);
                 // Every successful redraw is the newest conversation image. Promote it
                 // before publishing so closing and reopening the card cannot resurrect an
                 // older default while an automatic reply redraw is in flight.
@@ -895,7 +930,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
             {
                 _dataSource.SetReady($"生成异常: {error}");
                 QueuePendingAutoRedraw();
-            });
+            }, completion => completion.SavedItem, completion => completion.Result?.ErrorMessage ?? "未能保存图像");
         }
 
         private bool PublishImage(CachedIllustrationItem item)
@@ -1004,7 +1039,9 @@ namespace AnimusForge.Illustrator.UI.Overlays
             _latestAutoReplyText = null;
             try
             {
-                _scope?.Close();
+                IllustratorRuntime.GenerationUpdated -= OnGenerationUpdated;
+                _joinedGeneration = null;
+                if (_scope != null && !_scope.DetachWindowIfGenerating()) _scope.Close();
             }
             catch
             {

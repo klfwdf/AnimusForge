@@ -8,7 +8,7 @@ using TaleWorlds.MountAndBlade.GauntletUI.Widgets;
 
 namespace AnimusForge.Illustrator.Engine
 {
-    /// <summary>Two independently rendered views of one immutable appearance; values are encoded JPEG base64.</summary>
+    /// <summary>One full-body identity reference. HeadDetail remains readable for older callers but automatic captures no longer populate it.</summary>
     public sealed class CharacterPortraitReferences
     {
         public string FullBody { get; }
@@ -72,31 +72,21 @@ namespace AnimusForge.Illustrator.Engine
             }
         }
 
-        // One extra capture per requested character, never a tick/update hot path. Both operations
-        // use the existing stage lock and wait for native retirement before another stage starts.
+        // One native capture per requested character, never a tick/update hot path.
+        // Keep the existing DTO/API shape for compatibility; do not render the redundant head view.
         internal static async Task<CharacterPortraitReferences> CollectCharacterPortraitReferencesAsync(Func<bool, CancellationToken, Task<string>> capture, CancellationToken token)
         {
             token.ThrowIfCancellationRequested();
             Core.GenerationDiagnostics.Current?.RecordStage("portrait_full_body_begin");
             string fullBody = await capture(false, token).ConfigureAwait(false);
-            Core.GenerationDiagnostics.Current?.RecordStage("portrait_full_body_result", new Newtonsoft.Json.Linq.JObject { ["success"] = !string.IsNullOrWhiteSpace(fullBody), ["failureCode"] = string.IsNullOrWhiteSpace(fullBody) ? "portrait.full_body_unavailable" : null });
             token.ThrowIfCancellationRequested();
-            if (string.IsNullOrWhiteSpace(fullBody)) return new CharacterPortraitReferences(null, null);
-
-            string headDetail = null;
-            try
+            Core.GenerationDiagnostics.Current?.RecordStage("portrait_full_body_result", new Newtonsoft.Json.Linq.JObject
             {
-                Core.GenerationDiagnostics.Current?.RecordStage("portrait_head_detail_begin");
-                headDetail = await capture(true, token).ConfigureAwait(false);
-                Core.GenerationDiagnostics.Current?.RecordStage("portrait_head_detail_result", new Newtonsoft.Json.Linq.JObject { ["success"] = !string.IsNullOrWhiteSpace(headDetail), ["reason"] = string.IsNullOrWhiteSpace(headDetail) ? "optional head detail unavailable; full body retained" : null });
-                token.ThrowIfCancellationRequested();
-            }
-            catch (OperationCanceledException) { throw; }
-            catch (Exception ex)
-            {
-                TaleWorlds.Library.Debug.Print("[OffscreenRenderer] Head detail unavailable; retaining full-body reference: " + ex.Message);
-            }
-            return new CharacterPortraitReferences(fullBody, string.IsNullOrWhiteSpace(headDetail) ? null : headDetail);
+                ["success"] = !string.IsNullOrWhiteSpace(fullBody),
+                ["failureCode"] = string.IsNullOrWhiteSpace(fullBody) ? "portrait.full_body_unavailable" : null,
+                ["automaticViewsPerCharacter"] = 1
+            });
+            return new CharacterPortraitReferences(string.IsNullOrWhiteSpace(fullBody) ? null : fullBody, null);
         }
 
         private static Task<CharacterAppearanceSnapshot> PrepareHeroPortraitAppearanceAsync(Hero hero, bool useCivilian, string equipmentCodeOverride, CharacterAppearanceSnapshot appearance, CancellationToken token)
