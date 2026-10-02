@@ -569,3 +569,7 @@ Modules\AnimusForge_Illustrator\GUI\Prefabs\*.xml
 `extensions/AnimusForge.Illustrator/src/Engine/NativeBannerExportWidget.cs:43–88` 的 `OnUpdate / BindExportPaintHandler / PrepareExportFrame` 只给生图自己的 RenderTargetComponent 加一个排在原版之后的回调，初始化完整 postfx/shadow 渲染路径，保留原版图案几何；关闭额外艺术效果并固定曝光。`ScreenCaptureHelper.cs:913–918` 至少两个准备 callback 后才请求保存，`1186–1196` 增加完整 PNG 读取日志。标准 PNG 继续经现有缓存/参考图接口发送，没有禁用纹章，也没有全局 Harmony 修改原版旗帜或写原生 DLL。
 
 双 API 构建 0 警告/0 错误，通用 180 / 0、两目标专项各 39 / 0；直接测最终部署 DLL 178 / 0、39 / 0。06:21:10 部署 hash `A910DD3C9F9A8E89EC78E224266E03227D7CE0CDC2962E2A0F0BF62E930AAF90`，部署时未见游戏进程。实机无崩溃、纹章颜色/方向/发送及模型遵循仍待验收。源码和部署重新对齐。源码坐标、反汇编工具与证据、性能及回滚备份见 [初始化修正报告](../audits/2026-09-16-illustrator-native-export-initialization.md)。
+
+### 2026-10-02 补充：快报图片仅占左上角（离线修复，未部署）
+
+`3c7acac4` 修复 ImagePayload.Normalize 的 DPI 缩小：像素矩形复制代替 DrawImageUnscaled，保留颜色及RGBA透明图原字节透传。12项真实生产源链接回归PASS，1.3/1.4/Bootstrap构建PASS；实机与旧坏缓存恢复未验，未覆盖游戏。完整生产DLL离线调用受模块初始化依赖阻塞，不计行为PASS。具体源码坐标、实际引用版本、警告、产物hash与回滚见[主台账2026-10-02 DPI修复节](../animusforge-refactoring-and-repository-reorganization-plan.md#2026-10-02-illustrator-dpi-图片缩小修复offline_verified)。历史部署记录不构成本次部署授权。

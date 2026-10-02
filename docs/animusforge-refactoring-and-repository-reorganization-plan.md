@@ -6000,3 +6000,13 @@ R2计划交付门槛：已给固定技术路线、真实来源与目标、写入
 真正类型统计：MyBehavior48 partial/2408 direct syntax declarations/34642 own-member span lines，主29836 physical lines；ShoutBehavior29/1352/22219，主21301。本轮197个实际owner class声明及逐owner规模/修订在JSON；这些不是semantic unique方法数或复杂度。838原ID recorded/working-tree均PASS。具名保留为engine/game-thread叶捕获、兼容ABI/publichook、保存/生命周期顺序组合、原Actions factory、原具体provider/nativewait/交易或未列领域玩法，不以整partial/“实时”为完整context业务豁免。
 
 **NOT_RUN**：实机/真实旧档/真实网络和TTS/帧性能，完整current CourierSchedule、ModuleNativeSubmission与NativeWait whole-consumer。当前关键原子接受门与owner实测不替代这些整体层。SDK首次certificate stdout可能副作用的实际归因仍UNKNOWN，未读私钥/回滚系统。Weekly512terminal/64pending原边界（512Applied+64取消pending→448Applied+64Unknown）保留，不造576特例ledger。原SessionTransport rawdirty及tools/NuGet/user计划保护，未push/Stage/deploy/清理真实玩家资料或改一键覆盖语义。唯一额外写授权仍只精确合成TEMP根的新隔离子树。
+
+### 2026-10-02 Illustrator DPI 图片缩小修复（OFFLINE_VERIFIED）
+
+- 当前任务：修复快报/生图画面只占左上角；不改布局、不部署、不裁剪/重写玩家缓存。代码提交 `3c7acac4`；修改前意图检查点 `b82b678`。保留开工时全部其他未提交改动。
+- 根因与范围：`extensions/AnimusForge.Illustrator/src/Engine/ImagePayload.cs:39–51` 的 `Normalize` 在 RGB PNG/JPEG 重编码时使用受物理 DPI 影响的 `DrawImageUnscaled`。改为 SourceCopy + Pixel 单位 + 完整源/目标矩形。RGBA8 非隔行 PNG 原字节透传、颜色通道、尺寸/字节上限均不变。每次现有转换一次绘制，无 Tick 扫描、额外网络请求或缓存遍历。
+- 行为证据：`extensions/AnimusForge.Illustrator/tests/ImagePayloadTests/Program.cs:9–80` 直接链接真实 ImagePayload 生产源，在 net472 上逐像素对比；旧代码在72 DPI RGB PNG即失败，修复后12项PASS（PNG/JPEG各72/96/120/240/300 DPI；240×120非对称DPI；RGBA半透明图原字节透传）。命令：`dotnet build extensions/AnimusForge.Illustrator/tests/ImagePayloadTests/ImagePayloadTests.csproj -c Release`，然后运行其 `bin/Release/net472/ImagePayloadTests.exe`；退出码0，测试构建0警告/0错误。
+- 双版本证据：现有 `scripts/build/build_single_module.ps1 -ProjectRoot F:\AnimusForge-main -BannerlordRoot "F:\SteamLibrary\steamapps\common\Mount & Blade II Bannerlord" -Configuration Debug`（无Stage/Deploy），退出码0；实际引用1.3.15.110062与1.4.6.115628，不泛称已验1.4.5实机。两实现各341警告/0错误，Bootstrap 0警告/0错误。日志 `artifacts/illustrator-dpi-build-20261002.log`。
+- 候选产物：`bin/Debug/single_module_artifacts/versions/1.3/AnimusForge.dll` SHA256 `91E34E1D36C6312EABD8BB607BF0985B0ACDC9E314452240979A37C5B208C15D`；1.4同名路径 SHA256 `8C05BD9A678E5364FB62514CEB4BD3C8EC0B9C795837FBED06CD8048C41D55FB`。候选基于当前含其他WIP的工作树，不是仅本修复的独立发布包。
+- NOT-RUN/限制：完整生产DLL反射调用先遇私有方法delegate访问限制，改MethodInfo.Invoke后因模块初始化缺TaleWorlds.CampaignSystem退出，未计PASS；最终回归为真实生产源链接测试。未实机、未重新请求上游、未恢复旧坏缓存、未覆盖游戏或推送。原响应图在诊断日志中被省略，无法直接比较服务原始字节。旧坏图的透明区域已丢失图像内容，应在授权部署修复后重绘，不自动裁边以免损害正常透明素材。
+- 回滚：聚焦逆向提交 `git revert 3c7acac4`，不hard reset，不回滚既有WIP。短交接见 `docs/handoffs/2026-09-14-animusforge-illustrator-handoff.md` 的2026-10-02补充。
