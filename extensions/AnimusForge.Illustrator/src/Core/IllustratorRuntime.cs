@@ -218,11 +218,37 @@ namespace AnimusForge.Illustrator.Core
             ScreenCaptureHelper.TickOffscreenStage();
         }
 
+        // Event-driven, at most eight scopes. Never scan the disk cache or game world per frame.
+        internal static event Action<IllustrationGenerationUpdate> GenerationUpdated;
+
+        internal static IllustrationScope FindGenerating(string category, string subjectKey, string sessionKey = null)
+        {
+            AssertMainThread();
+            foreach (var scope in Scopes)
+                if (scope.MatchesGeneration(category, subjectKey, sessionKey)) return scope;
+            return null;
+        }
+
+        internal static void PublishGeneration(IllustrationGenerationUpdate update)
+        {
+            AssertMainThread();
+            if (update.Saved != null)
+                InformationManager.DisplayMessage(new InformationMessage("[AI画卷] " + update.Saved.Title + " 绘制完成，已更新到画廊。"));
+            else
+                InformationManager.DisplayMessage(new InformationMessage("[AI画卷] 绘制失败：" + update.Error));
+            var listeners = GenerationUpdated;
+            if (listeners == null) return;
+            foreach (Action<IllustrationGenerationUpdate> listener in listeners.GetInvocationList())
+                try { listener(update); }
+                catch (Exception ex) { Debug.Print("[Illustrator] Generation subscriber failed: " + ex.GetType().Name); }
+        }
+
         private static void TickScopes()
         {
             for (int i = Scopes.Count - 1; i >= 0; i--)
             {
                 var scope = Scopes[i];
+                scope.DetachChangedWindow();
                 if (!scope.IsCurrent)
                 {
                     Scopes.RemoveAt(i);
@@ -270,6 +296,13 @@ namespace AnimusForge.Illustrator.Core
         }
     }
 
+    internal sealed class IllustrationGenerationUpdate
+    {
+        internal IllustrationScope Source;
+        internal string CampaignKey, Category, SubjectKey, SessionKey, Error;
+        internal CachedIllustrationItem Saved;
+    }
+
     internal sealed class IllustrationScope
     {
         private readonly Campaign _campaign;
@@ -279,8 +312,11 @@ namespace AnimusForge.Illustrator.Core
         private readonly bool _campaignOwned;
         private CancellationTokenSource _request;
         private bool _closed;
-        private bool _disposed;
         private long _revision;
+        private bool _windowDetached;
+        private bool _windowCleaned;
+        private string _subjectKey, _sessionKey;
+        private bool _backgroundGeneration;
         public string CampaignKey { get; }
 
         public IllustrationScope(ScreenBase screen, string category, Action onClose, bool campaignOwned = false)
@@ -297,9 +333,36 @@ namespace AnimusForge.Illustrator.Core
 
         public bool IsCurrent => !_closed && _campaign != null && ReferenceEquals(_campaign, Campaign.Current) &&
             !string.IsNullOrEmpty(CampaignKey) && CampaignKey == IllustratorRuntime.CampaignKey &&
-            (_campaignOwned || (ReferenceEquals(_screen, ScreenManager.TopScreen) && _screen != null && !_screen.IsFinalized)) && IllustratorRuntime.IsEnabled(_category);
+            (_campaignOwned || (_backgroundGeneration && _request != null) || (ReferenceEquals(_screen, ScreenManager.TopScreen) && _screen != null && !_screen.IsFinalized)) && IllustratorRuntime.IsEnabled(_category);
 
-        public bool Run<T>(Func<CancellationToken, Task<T>> work, Action<T> complete, Action<string> fail)
+        internal bool MatchesGeneration(string category, string subjectKey, string sessionKey) =>
+            IsCurrent && _request != null && _backgroundGeneration && _category == category &&
+            _subjectKey == subjectKey && string.Equals(_sessionKey, sessionKey, StringComparison.Ordinal);
+
+        internal bool DetachWindowIfGenerating()
+        {
+            IllustratorRuntime.AssertMainThread();
+            if (_closed || !_backgroundGeneration || _request == null || _campaignOwned) return false;
+            _windowDetached = true;
+            return true;
+        }
+
+        internal void DetachChangedWindow()
+        {
+            if (!_campaignOwned && !_windowDetached &&
+                (_screen == null || _screen.IsFinalized || !ReferenceEquals(_screen, ScreenManager.TopScreen)) &&
+                DetachWindowIfGenerating()) CleanWindow();
+        }
+
+        internal bool RunGeneration<T>(string subjectKey, string sessionKey, Func<CancellationToken, Task<T>> work,
+            Action<T> complete, Action<string> fail, Func<T, CachedIllustrationItem> saved,
+            Func<T, string> error) => RunCore(work, complete, fail, subjectKey, sessionKey, saved, error);
+
+        public bool Run<T>(Func<CancellationToken, Task<T>> work, Action<T> complete, Action<string> fail) =>
+            RunCore(work, complete, fail, null, null, null, null);
+
+        private bool RunCore<T>(Func<CancellationToken, Task<T>> work, Action<T> complete, Action<string> fail,
+            string subjectKey, string sessionKey, Func<T, CachedIllustrationItem> saved, Func<T, string> resultError)
         {
             IllustratorRuntime.AssertMainThread();
             if (!IsCurrent)
@@ -314,6 +377,9 @@ namespace AnimusForge.Illustrator.Core
             var token = source.Token;
             long revision = ++_revision;
             _request = source;
+            _backgroundGeneration = saved != null;
+            _subjectKey = subjectKey;
+            _sessionKey = sessionKey;
             string diagnosticId = null;
             var deliveryClock = System.Diagnostics.Stopwatch.StartNew();
             long workerCompletedMs = 0;
@@ -346,18 +412,36 @@ namespace AnimusForge.Illustrator.Core
                 if (error != null) source.Cancel();
                 source.Dispose();
                 if (!current) { GenerationDiagnostics.WriteDelivery(diagnosticId, "ui_delivery_dropped", "closed/stale/cancelled; late result not applied"); return; }
-                if (error == null)
+                // Snapshot acceptance before UI callbacks: bulletin completion legitimately closes its scope.
+                IllustrationGenerationUpdate update = null;
+                if (saved != null)
                 {
-                    try { complete(result); }
-                    catch (Exception ex) { GenerationDiagnostics.WriteDelivery(diagnosticId, "ui_callback_failed", ex.GetType().Name); fail(ex.Message); }
+                    var item = error == null ? saved(result) : null;
+                    bool valid = item != null && item.CampaignKey == CampaignKey && item.Category == _category && item.SubjectKey == subjectKey;
+                    update = new IllustrationGenerationUpdate { Source = this, CampaignKey = CampaignKey, Category = _category,
+                        SubjectKey = subjectKey, SessionKey = sessionKey, Saved = valid ? item : null,
+                        Error = error?.Message ?? (valid ? null : resultError?.Invoke(result) ?? "未能保存图像") };
                 }
-                else if (!(error is OperationCanceledException)) fail(error.Message);
-                else if (requestCancelled) fail("生图请求已取消（界面已切换或发起了新请求）。");
-                else
+                try
                 {
-                    Debug.Print($"[Illustrator] Request timed out waiting for upstream ({error.GetType().Name}).");
-                    fail("生成请求超时：上游模型在限定时间内无响应，请稍后重试。");
+                    if (!_windowDetached)
+                    {
+                        if (error == null)
+                        {
+                            try { complete(result); }
+                            catch (Exception ex) { GenerationDiagnostics.WriteDelivery(diagnosticId, "ui_callback_failed", ex.GetType().Name); fail(ex.Message); }
+                        }
+                        else if (!(error is OperationCanceledException)) fail(error.Message);
+                        else fail("生成请求超时：上游模型在限定时间内无响应，请稍后重试。");
+                    }
+                    if (update != null)
+                    {
+                        GenerationDiagnostics.WriteDelivery(diagnosticId, "generation_published", "background=" + _windowDetached + "; saved=" + (update.Saved != null));
+                        IllustratorRuntime.PublishGeneration(update);
+                    }
                 }
+                finally { if (_windowDetached) Close(); }
+
             });
             if (!started)
             {
@@ -381,8 +465,13 @@ namespace AnimusForge.Illustrator.Core
         internal void FinishClose()
         {
             Close();
-            if (_disposed) return;
-            _disposed = true;
+            CleanWindow();
+        }
+
+        private void CleanWindow()
+        {
+            if (_windowCleaned) return;
+            _windowCleaned = true;
             try { _onClose(); }
             catch (Exception ex) { Debug.Print("[Illustrator] Window cleanup failed: " + ex.GetType().Name); }
         }

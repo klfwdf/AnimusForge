@@ -1,0 +1,4 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><EnableDefaultCompileItems>false</EnableDefaultCompileItems></PropertyGroup>
+  <ItemGroup><Using Include="TaleWorlds.Library.MathF" Alias="MathF" /><Compile Include="Program.cs" /><Compile Include="../../src/UI/Overlays/MovableGauntletLayer.cs" Link="MovableGauntletLayer.cs" /></ItemGroup>
+</Project>

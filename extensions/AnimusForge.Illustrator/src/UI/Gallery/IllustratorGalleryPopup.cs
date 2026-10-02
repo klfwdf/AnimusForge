@@ -16,6 +16,7 @@ namespace AnimusForge.Illustrator.UI.Gallery
         private readonly IllustratorGalleryPopupVM _dataSource;
         private readonly IllustrationScope _scope;
         private bool _closed;
+        private bool _refreshQueued;
 
         private IllustratorGalleryPopup(ScreenBase screen)
         {
@@ -30,6 +31,7 @@ namespace AnimusForge.Illustrator.UI.Gallery
             layer.AutoAttachMovable(movieIdentifier?.Movie, "MainPanel", "TitleBar");
             layer.InputRestrictions.SetInputRestrictions(true, InputUsageMask.All);
             _layer = layer;
+            IllustratorRuntime.GenerationUpdated += OnGenerationUpdated;
 
             try
             {
@@ -74,12 +76,25 @@ namespace AnimusForge.Illustrator.UI.Gallery
             }
         }
 
+        private void OnGenerationUpdated(IllustrationGenerationUpdate update)
+        {
+            if (_closed || update.Saved == null || update.CampaignKey != _scope.CampaignKey || _refreshQueued) return;
+            _refreshQueued = true;
+            // Coalesce completions, and release the generation worker before admitting a gallery refresh.
+            IllustratorRuntime.PostCritical(() =>
+            {
+                _refreshQueued = false;
+                if (!_closed && _scope.IsCurrent) _dataSource.RefreshItems();
+            });
+        }
+
         public void Close()
         {
             if (_closed) return;
             _closed = true;
             try
             {
+                IllustratorRuntime.GenerationUpdated -= OnGenerationUpdated;
                 _scope?.Close();
                 _dataSource?.DisposeVisuals();
                 if (_screen != null && _layer != null)

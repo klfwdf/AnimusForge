@@ -8,6 +8,8 @@ using System.Runtime.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
+using System.Linq;
+using System.Linq.Expressions;
 
 // Production managed methods with synthetic campaign/screen identities and MCM eligibility.
 // No native rendering, game launch, player data writes, HTTP requests or model charges.
@@ -59,7 +61,7 @@ public static class ModuleReviewAudit
     }
     private static object NewScope(Action closed)
     {
-        return Activator.CreateInstance(scopeType, All, null, new object[] { screen, null, closed }, null);
+        return Activator.CreateInstance(scopeType, All, null, new object[] { screen, null, closed, false }, null);
     }
     private static bool RunScope(object scope, Func<CancellationToken, Task<int>> work, Action<int> complete, Action<string> fail)
     {
@@ -68,6 +70,197 @@ public static class ModuleReviewAudit
     }
     private static void DrainWorkers()
     { PumpUntil(() => (int)runtime.GetField("_workers", All).GetValue(null) == 0); }
+
+    private static Type savedType;
+    private static int notices, updates, successes;
+    private static object lastUpdate;
+    public static bool RecordNotice(object __0) { notices++; return false; }
+    public static void RecordUpdate(object update)
+    {
+        updates++; lastUpdate = update;
+        if (update.GetType().GetField("Saved", All).GetValue(update) != null) successes++;
+        Check(Environment.CurrentManagedThreadId == (int)runtime.GetField("_mainThread", All).GetValue(null), "background delivery runs on game thread");
+    }
+    public static object SavedFor(int value)
+    {
+        if (value == 0) return null;
+        object saved = Activator.CreateInstance(savedType);
+        SetProperty(savedType, "CampaignKey", saved, value < 0 ? "another-save" : "module-audit");
+        SetProperty(savedType, "Category", saved, "encyclopedia");
+        SetProperty(savedType, "SubjectKey", saved, "Hero_fixture");
+        SetProperty(savedType, "Title", saved, "fixture");
+        return saved;
+    }
+    private static object NewBackgroundScope(Action closed)
+    {
+        return Activator.CreateInstance(scopeType, All, null, new object[] { screen, "encyclopedia", closed, false }, null);
+    }
+    private static bool RunBackground(object scope, Func<CancellationToken, Task<int>> work, Action<int> complete, Action<string> fail)
+    {
+        var parameter = Expression.Parameter(typeof(int), "value");
+        var factory = Expression.Call(typeof(ModuleReviewAudit).GetMethod("SavedFor"), parameter);
+        Delegate saved = Expression.Lambda(typeof(Func<,>).MakeGenericType(typeof(int), savedType),
+            Expression.Convert(factory, savedType), parameter).Compile();
+        return (bool)scopeType.GetMethod("RunGeneration", All).MakeGenericMethod(typeof(int))
+            .Invoke(scope, new object[] { "Hero_fixture", "session-one", work, complete, fail, saved, (Func<int, string>)(value => "fixture generation/save failed") });
+    }
+    private static int imagePublishes, galleryRefreshes;
+    public static bool RecordImage(ref bool __result) { imagePublishes++; __result = true; return false; }
+    public static bool RecordGalleryRefresh()
+    {
+        Check((int)runtime.GetField("_workers", All).GetValue(null) < 4, "gallery refresh is dispatched after generation worker releases capacity");
+        galleryRefreshes++; return false;
+    }
+    private static void BackgroundConsumerTests(Assembly module, EventInfo evt)
+    {
+        Type card = module.GetType("AnimusForge.Illustrator.UI.Overlays.IllustrationCardPopup", true);
+        Type cardVm = module.GetType("AnimusForge.Illustrator.UI.Overlays.IllustrationCardVM", true);
+        Type gallery = module.GetType("AnimusForge.Illustrator.UI.Gallery.IllustratorGalleryPopup", true);
+        Type galleryVm = module.GetType("AnimusForge.Illustrator.UI.Gallery.IllustratorGalleryPopupVM", true);
+        Prefix(card.GetMethod("PublishImage", All, null, new[] { savedType }, null), "RecordImage");
+        Prefix(galleryVm.GetMethod("RefreshItems", All, null, Type.EmptyTypes, null), "RecordGalleryRefresh");
+        object popup = FormatterServices.GetUninitializedObject(card);
+        object galleryPopup = FormatterServices.GetUninitializedObject(gallery);
+        object owner = NewBackgroundScope(() => { });
+        object reopened = NewBackgroundScope(() => { });
+        object galleryScope = NewScope(() => { });
+        object vm = Activator.CreateInstance(cardVm, new object[] { (Action)(() => { }), (Action)(() => { }), null });
+        SetField(card, "_scope", popup, reopened); SetField(card, "_category", popup, "encyclopedia");
+        SetField(card, "_dataSource", popup, vm); SetField(card, "_activeInstance", null, popup);
+        SetField(gallery, "_scope", galleryPopup, galleryScope);
+        SetField(gallery, "_dataSource", galleryPopup, FormatterServices.GetUninitializedObject(galleryVm));
+        Delegate cardListener = Delegate.CreateDelegate(evt.EventHandlerType, popup, card.GetMethod("OnGenerationUpdated", All));
+        Delegate galleryListener = Delegate.CreateDelegate(evt.EventHandlerType, galleryPopup, gallery.GetMethod("OnGenerationUpdated", All));
+        evt.GetAddMethod(true).Invoke(null, new object[] { cardListener });
+        evt.GetAddMethod(true).Invoke(null, new object[] { galleryListener });
+        imagePublishes = galleryRefreshes = 0;
+        int retiredUi = 0;
+        var pending = new TaskCompletionSource<int>(TaskCreationOptions.RunContinuationsAsynchronously);
+        try
+        {
+            RunBackground(owner, token => pending.Task, value => retiredUi++, error => retiredUi++);
+            Call(scopeType, "DetachWindowIfGenerating", owner);
+            Check((bool)Call(card, "JoinPendingGeneration", popup, "Hero_fixture", "session-one") &&
+                (bool)cardVm.GetProperty("IsLoading").GetValue(vm, null), "real reopened card joins background request and displays loading");
+            Check(!((bool)Call(card, "JoinPendingGeneration", popup, "Hero_fixture", "another-session")), "real card never joins another conversation generation");
+            pending.SetResult(1); DrainWorkers(); Call(runtime, "Tick", null);
+            Check(retiredUi == 0 && imagePublishes == 1 && !(bool)cardVm.GetProperty("IsLoading").GetValue(vm, null), "real reopened card receives saved result once, retired card receives none");
+            Check(galleryRefreshes == 1, "real gallery completion handler requests one deferred refresh");
+        }
+        finally
+        {
+            evt.GetRemoveMethod(true).Invoke(null, new object[] { cardListener });
+            evt.GetRemoveMethod(true).Invoke(null, new object[] { galleryListener });
+            Call(card, "Close", popup); Call(gallery, "Close", galleryPopup);
+            Call(scopeType, "Close", owner); Call(scopeType, "Close", reopened); Call(scopeType, "Close", galleryScope);
+            Call(runtime, "Tick", null);
+        }
+    }
+
+    private static void BackgroundTests(Assembly module, Type campaign, Type screenManager)
+    {
+        savedType = module.GetType("AnimusForge.Illustrator.Engine.CachedIllustrationItem", true);
+        Type info = screenType.Assembly.GetReferencedAssemblies().Any(a => a.Name == "TaleWorlds.Library")
+            ? Assembly.Load("TaleWorlds.Library").GetType("TaleWorlds.Library.InformationManager", true)
+            : module.GetType("TaleWorlds.Library.InformationManager", false);
+        if (info == null) info = Assembly.Load("TaleWorlds.Library").GetType("TaleWorlds.Library.InformationManager", true);
+        Prefix(info.GetMethods(All).First(m => m.Name == "DisplayMessage" && m.GetParameters().Length >= 1), "RecordNotice");
+        EventInfo evt = runtime.GetEvent("GenerationUpdated", All);
+        var arg = Expression.Parameter(evt.EventHandlerType.GetGenericArguments()[0], "update");
+        Delegate observer = Expression.Lambda(evt.EventHandlerType,
+            Expression.Call(typeof(ModuleReviewAudit).GetMethod("RecordUpdate"), Expression.Convert(arg, typeof(object))), arg).Compile();
+        evt.GetAddMethod(true).Invoke(null, new object[] { observer });
+        object originalCampaign = campaign.GetProperty("Current", All).GetValue(null, null);
+        int ui = 0, failures = 0, closes = 0;
+        try
+        {
+            notices = updates = successes = 0;
+            var pending = new TaskCompletionSource<int>(TaskCreationOptions.RunContinuationsAsynchronously);
+            var started = new ManualResetEventSlim();
+            CancellationToken token = CancellationToken.None;
+            object scope = NewBackgroundScope(() => closes++);
+            Check(RunBackground(scope, t => { token = t; started.Set(); return pending.Task; }, value => ui++, error => failures++), "background generation admitted");
+            Check(started.Wait(3000), "background worker genuinely yielded");
+            Check((bool)Call(scopeType, "DetachWindowIfGenerating", scope) && !token.IsCancellationRequested, "closing panel detaches without cancelling request");
+            Check(ReferenceEquals(Call(runtime, "FindGenerating", null, "encyclopedia", "Hero_fixture", "session-one"), scope), "reopen finds the same paid request");
+            Check(Call(runtime, "FindGenerating", null, "encyclopedia", "Hero_fixture", "different-session") == null &&
+                Call(runtime, "FindGenerating", null, "conversation", "Hero_fixture", "session-one") == null, "request identity isolates category and conversation session");
+            pending.SetResult(1); DrainWorkers(); Call(runtime, "Tick", null);
+            Check(ui == 0 && failures == 0 && updates == 1 && successes == 1 && notices == 1, "detached success notifies once without calling closed panel");
+            Check(Call(runtime, "FindGenerating", null, "encyclopedia", "Hero_fixture", "session-one") == null &&
+                ((System.Collections.ICollection)runtime.GetField("Scopes", All).GetValue(null)).Count == 0, "finished detached scope releases bounded registry slot");
+
+            pending = new TaskCompletionSource<int>(TaskCreationOptions.RunContinuationsAsynchronously); started.Reset();
+            scope = NewBackgroundScope(() => closes++);
+            RunBackground(scope, t => { token = t; started.Set(); return pending.Task; }, value => ui++, error => failures++);
+            Check(started.Wait(3000), "screen-transition worker started");
+            SetProperty(screenManager, "TopScreen", null, null); Call(runtime, "Tick", null);
+            Check(!token.IsCancellationRequested && closes == 2, "screen change cleans panel but preserves generation");
+            SetProperty(screenManager, "TopScreen", null, screen);
+            pending.SetResult(1); DrainWorkers(); Call(runtime, "Tick", null);
+            Check(ui == 0 && updates == 2 && successes == 2 && notices == 2, "screen-transition result saves and publishes without retired UI");
+
+            scope = NewBackgroundScope(() => closes++);
+            object ownedScope = scope;
+            RunBackground(scope, t => Task.FromResult(1), value => { ui++; Call(scopeType, "Close", ownedScope); }, error => failures++);
+            DrainWorkers(); Call(runtime, "Tick", null);
+            Check(ui == 1 && updates == 3 && successes == 3, "completion callback closing scope does not suppress bulletin/gallery publication");
+
+            pending = new TaskCompletionSource<int>(TaskCreationOptions.RunContinuationsAsynchronously); started.Reset();
+            scope = NewBackgroundScope(() => closes++);
+            RunBackground(scope, t => { token = t; started.Set(); return pending.Task; }, value => ui++, error => failures++);
+            Check(started.Wait(3000), "reset fixture worker started");
+            Call(scopeType, "DetachWindowIfGenerating", scope);
+            Call(runtime, "Reset", null);
+            Check(token.IsCancellationRequested, "campaign reset hard-cancels detached request");
+            SetProperty(runtime, "CampaignKey", null, "module-audit");
+            pending.SetResult(1); DrainWorkers();
+            Check(ui == 1 && updates == 3 && notices == 3, "late reset result cannot notify or update next campaign");
+
+            pending = new TaskCompletionSource<int>(TaskCreationOptions.RunContinuationsAsynchronously); started.Reset();
+            scope = NewBackgroundScope(() => closes++);
+            RunBackground(scope, t => { token = t; started.Set(); return pending.Task; }, value => ui++, error => failures++);
+            Check(started.Wait(3000), "same-key replacement worker started");
+            Call(scopeType, "DetachWindowIfGenerating", scope);
+            SetProperty(campaign, "Current", null, FormatterServices.GetUninitializedObject(campaign));
+            Call(runtime, "Tick", null);
+            Check(token.IsCancellationRequested, "campaign object change cancels even with same save key");
+            SetProperty(campaign, "Current", null, originalCampaign);
+            pending.SetResult(1); DrainWorkers();
+            Check(updates == 3 && notices == 3, "same-key old campaign result rejected");
+
+            pending = new TaskCompletionSource<int>(TaskCreationOptions.RunContinuationsAsynchronously); started.Reset();
+            scope = NewBackgroundScope(() => closes++);
+            RunBackground(scope, t => { token = t; started.Set(); return pending.Task; }, value => ui++, error => failures++);
+            Check(started.Wait(3000), "revision fixture worker started");
+            RunBackground(scope, t => Task.FromResult(1), value => ui++, error => failures++);
+            Check(token.IsCancellationRequested, "superseding request cancels old revision");
+            pending.SetResult(1); DrainWorkers(); Call(scopeType, "Close", scope); Call(runtime, "Tick", null);
+            Check(ui == 2 && updates == 4 && successes == 4 && notices == 4, "only newest revision publishes once");
+
+            scope = NewBackgroundScope(() => closes++);
+            RunBackground(scope, t => Task.FromResult(0), value => ui++, error => failures++);
+            Call(scopeType, "DetachWindowIfGenerating", scope); DrainWorkers(); Call(runtime, "Tick", null);
+            Check(ui == 2 && updates == 5 && successes == 4 && notices == 5 &&
+                ((string)lastUpdate.GetType().GetField("Error", All).GetValue(lastUpdate)).Contains("failed"), "unsaved/failed generation reports failure rather than completion");
+            scope = NewBackgroundScope(() => closes++);
+            RunBackground(scope, t => Task.FromResult(-1), value => ui++, error => failures++);
+            Call(scopeType, "DetachWindowIfGenerating", scope); DrainWorkers(); Call(runtime, "Tick", null);
+            Check(updates == 6 && successes == 4, "cross-save saved metadata cannot report success");
+            scope = NewBackgroundScope(() => closes++);
+            RunBackground(scope, t => Task.FromException<int>(new Exception("fixture HTTP failed")), value => ui++, error => failures++);
+            Call(scopeType, "DetachWindowIfGenerating", scope); DrainWorkers(); Call(runtime, "Tick", null);
+            Check(updates == 7 && successes == 4 && ui == 2 && failures == 0, "detached exception reports globally without touching closed UI");
+            BackgroundConsumerTests(module, evt);
+        }
+        finally
+        {
+            evt.GetRemoveMethod(true).Invoke(null, new object[] { observer });
+            SetProperty(campaign, "Current", null, originalCampaign);
+            SetProperty(screenManager, "TopScreen", null, screen);
+            SetProperty(runtime, "CampaignKey", null, "module-audit");
+        }
+    }
 
     public static void Run(string dllPath, string repoRoot)
     {
@@ -136,6 +329,8 @@ public static class ModuleReviewAudit
             DrainWorkers();
             Check(lateSuccess == 0 && lateFailure == 0 && closedCount == 1,
                 "late success after scope.Close cannot update retired UI");
+
+            BackgroundTests(module, campaign, screenManager);
 
             Type weekly = module.GetType("AnimusForge.Illustrator.UI.Patches.WeeklyReportIllustrationOverlayVM", true);
             int redraws = 0;

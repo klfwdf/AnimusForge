@@ -149,13 +149,13 @@ public static class ReferenceRoutingAudit
         var report = Workflow(assembly, weekly, "StartGeneration");
         foreach (var workflow in new[] { encyclopedia, conversation, report })
         {
-            Check(workflow.Any(i => IsCall(i, "AddCharacter")), "compiled workflow uses paired character-reference routing");
+            Check(workflow.Any(i => IsCall(i, "AddCharacter")), "compiled workflow uses single character-reference routing");
             Check(workflow.Any(i => IsCall(i, "CreateDirectionAsync")) && workflow.Any(i => IsCall(i, "GenerateImageAsync")),
                 "compiled workflow routes references through both director and image client");
             Check(workflow.Any(i => IsCall(i, "ComposeToBase64Async")), "compiled workflow retains its real native emblem export path");
         }
         Check(encyclopedia.Any(i => IsCall(i, "ExtractHeroPortraitReferencesAsync")) && report.Any(i => IsCall(i, "ExtractHeroPortraitReferencesAsync")),
-            "encyclopedia and weekly report request the new paired native captures");
+            "encyclopedia and weekly report use the compatible single-capture entry");
         Check(conversation.Any(i => IsCall(i, "CaptureConversationSceneReferencesAsync")) && conversation.Any(i => IsCall(i, "AddRange")) && conversation.Any(i => IsCall(i, "AddSceneReferences")),
             "conversation sends captured references to the director and routes panorama plus current view to the image client");
         var capture = Workflow(assembly, "AnimusForge.Illustrator.Engine.ScreenCaptureHelper", "CaptureMissionSceneReferencesAsync");
@@ -213,24 +213,24 @@ public static class ReferenceRoutingAudit
         optionsType = assembly.GetType("AnimusForge.Illustrator.Core.IllustrationOptions", true);
         var directorRefs = Refs(); var imageRefs = Refs();
         Character(directorRefs, imageRefs, "full", "head", "测试人物");
-        Check(directorRefs.Count == 2 && imageRefs.Count == 2 && ReferenceEquals(directorRefs[0], imageRefs[0]) && ReferenceEquals(directorRefs[1], imageRefs[1]),
-            "both endpoints receive the same full-body and head-detail identities");
-        Check(Text(imageRefs[1], "Label").Contains("同一个人") && Text(imageRefs[1], "Label").Contains("保留装备遮挡") && Text(imageRefs[1], "Label").Contains("不是新增人物"),
-            "head detail has explicit same-person and equipment-cover instructions");
-        Check(Text(imageRefs[1], "Label").Length <= 90, "head detail shares the full-body identity without repeating a long appearance contract");
-        Check(imageRefs[0].GetType().GetProperty("Kind").GetValue(imageRefs[0]).ToString() == "Character" &&
-            imageRefs[1].GetType().GetProperty("Kind").GetValue(imageRefs[1]).ToString() == "CharacterDetail",
-            "head detail uses its own role and never increments full-body person count");
+        Check(directorRefs.Count == 1 && imageRefs.Count == 1 && ReferenceEquals(directorRefs[0], imageRefs[0]), "both model stages receive exactly one full-body identity even if legacy HeadDetail is supplied");
+        Check(Text(imageRefs[0], "Base64Image") == "full" && Text(imageRefs[0], "Label").Contains("全身身份参考"), "one reference keeps full equipment and the correct character label");
+        Check(!directorRefs.Cast<object>().Concat(imageRefs.Cast<object>()).Any(x => Text(x, "Base64Image") == "head"), "legacy head image is never forwarded by the default character router");
+        Check(imageRefs[0].GetType().GetProperty("Kind").GetValue(imageRefs[0]).ToString() == "Character", "single portrait retains the original full-body reference role");
         Check(new[] { "Unspecified", "Character", "Emblem", "Scene", "CharacterDetail", "ScenePanorama" }
             .Select(name => Convert.ToInt32(Enum.Parse(kind, name))).SequenceEqual(new[] { 0, 1, 2, 3, 4, 5 }),
             "ScenePanorama is appended as value five without changing any recorded reference-kind values");
         var shared = Refs(); Character(shared, shared, "full", "head", "人物");
-        Check(shared.Count == 2, "aliased destination lists never duplicate either reference");
+        Check(shared.Count == 1, "aliased destination lists never duplicate the single portrait");
         var missing = Refs(); Character(missing, null, null, "orphan head", "人物");
         Check(missing.Count == 0, "orphaned head image is not introduced as another person");
         Character(missing, null, "full", null, "人物"); Check(missing.Count == 1, "full-body-only fallback stays usable");
         Check(Call(routing, "SelectSceneAnchor", new object[] { null }) == null && Call(routing, "SelectSceneAnchor", Refs()) == null,
             "unavailable scene does not invent an anchor");
+        var oldSession = Refs(); oldSession.Add(Ref("full", "人物", "Character")); oldSession.Add(Ref("legacy head", "头肩", "CharacterDetail")); oldSession.Add(null);
+        var filteredSession = ((IEnumerable)Call(routing, "SinglePortraitSessionReferences", oldSession)).Cast<object>().ToArray();
+        Check(filteredSession.Length == 1 && Text(filteredSession[0], "Base64Image") == "full" && oldSession.Count == 3, "cached redraw drops legacy detail references without mutating the old snapshot");
+        Check(!((IEnumerable)Call(routing, "SinglePortraitSessionReferences", new object[] { null })).Cast<object>().Any(), "missing cached references do not invent identity images");
         var projection = assembly.GetType("AnimusForge.Illustrator.Engine.PanoramaProjection", true);
         byte[][] faces = Enumerable.Range(1, 6).Select(i => Convert.FromBase64String(Png(i))).ToArray();
         string panoramaData = Convert.ToBase64String((byte[])Call(projection, "Compose", faces, 64, 32));
@@ -265,8 +265,8 @@ public static class ReferenceRoutingAudit
         Character(directorRefs, imageRefs, Png(6), Png(7), "玩家");
         Character(directorRefs, imageRefs, Png(8), Png(9), "对话对象");
         directorRefs.Add(Ref(Png(10), "双方已确认载体的纹章", "Emblem")); imageRefs.Add(directorRefs[directorRefs.Count - 1]);
-        Check(directorRefs.Count == 7 && imageRefs.Count == 7,
-            "image generation receives two perspectives, four identity views and one emblem");
+        Check(directorRefs.Count == 5 && imageRefs.Count == 5,
+            "image generation receives two perspectives, two single portraits and one emblem");
 
         var options = FormatterServices.GetUninitializedObject(optionsType);
         Option(options, "EnableImageGeneration", true); Option(options, "EnableReferenceImageForGeneration", true);
@@ -283,10 +283,11 @@ public static class ReferenceRoutingAudit
         var directorParts = ChatParts(directorPayloadJson, 1);
         var directorImages = ChatImages(directorParts);
         Check(directorSystem.Contains("会话现场插画导演") && !directorSystem.Contains("百科创作空间"), "conversation payload selects the channel-specific system prompt");
-        Check(directorImages.Count == 7 && directorImages.Distinct().Count() == 7, "actual director payload keeps panorama, calibration and identities exactly once");
+        Check(directorImages.Count == 5 && directorImages.Distinct().Count() == 5 && !directorImages.Any(x => x.EndsWith(Png(7)) || x.EndsWith(Png(9))), "actual director payload keeps scene references and one portrait per person, without head images");
         Check(ChatText(directorParts).Contains("不是六个房间") && ChatText(directorParts).Contains("当前玩家视角") &&
-            ChatText(directorParts).Contains("同一个人") && !ChatText(directorParts).Contains("ENVIRONMENT_VIEW_5"),
-            "director receives the production panorama role, current-view calibration and same-person head labels");
+            ChatText(directorParts).Contains("玩家") && ChatText(directorParts).Contains("对话对象") &&
+            !ChatText(directorParts).Contains("头肩") && !ChatText(directorParts).Contains("ENVIRONMENT_VIEW_5"),
+            "director keeps panorama role, current-view calibration and two distinct single-portrait identities without legacy head labels");
         Check(ChatText(directorParts).Contains("【环境辅助取景】") && ChatText(directorParts).Contains("不附带完整全景") &&
             ChatText(directorParts).Contains("正文背景必须属于主视角的视野"),
             "one director payload asks for two views while keeping prose within the primary frame");
@@ -309,34 +310,34 @@ public static class ReferenceRoutingAudit
                     if (route.StartsWith("chat"))
                     {
                         var parts = ChatParts(handler.JsonBody, 0); var images = ChatImages(parts); var prompt = ChatText(parts);
-                        Check(images.Count == 7 && images.Distinct().Count() == 7, "Chat sends two perspectives, four character views and one emblem once");
+                        Check(images.Count == 5 && images.Distinct().Count() == 5, "Chat sends two perspectives, two complete character portraits and one emblem once");
                         Check(images.Any(x => x.EndsWith(perspectiveData)) && images.Any(x => x.EndsWith(auxiliaryData)) && !images.Any(x => x.EndsWith(panoramaData)) && !images.Any(x => x.EndsWith(Png(1))) &&
                             !images.Any(x => x.EndsWith(Png(5))) && !images.Any(x => x.EndsWith(Png(11))),
                             "Chat preserves both projected images while excluding panorama, calibration and excess scenes");
-                        Check(prompt.Contains("同一个人") && prompt.Contains("保留装备遮挡") && prompt.Contains("普通透视"), "Chat keeps identity pairing and perspective-scene labels");
+                        Check(prompt.Contains("人物【玩家】") && prompt.Contains("人物【对话对象】") && prompt.Contains("普通透视"), "Chat keeps separate character identities and perspective-scene labels");
                         Check(!prompt.Contains("环境全景参考") && prompt.Contains("环境主视角") && prompt.Contains("环境辅助视角") &&
                             prompt.Contains("不拼接两张背景") && prompt.Contains("高于导演文字中的概括与补充"),
                             "Chat gives both views bounded roles and preserves geometry over conflicting prose");
                         Check(prompt.Contains("【人物身份参考图 1】") && prompt.Contains("【人物身份参考图 2】") && !prompt.Contains("【人物身份参考图 3】") &&
-                            prompt.Split(new[] { "【同名人物头肩细节补充，不增加人物数量】" }, StringSplitOptions.None).Length - 1 == 2,
-                            "Chat identifies exactly two people and labels their two detail images separately");
+                            !prompt.Contains("【同名人物头肩细节补充，不增加人物数量】") && !images.Any(x => x.EndsWith(Png(7)) || x.EndsWith(Png(9))),
+                            "Chat identifies exactly two people without head-detail parts or labels");
                     }
                     else
                     {
-                        Check(handler.Images.Count == 7, "Edits uploads two perspectives among seven routed image parts");
+                        Check(handler.Images.Count == 5, "Edits uploads two perspectives, two complete portraits and one emblem");
                         Check(handler.Images.Select(Convert.ToBase64String).SequenceEqual(IdleLastOrder(imageRefs).Select(x => Text(x, "Base64Image"))),
                             "Edits uploads exactly the routed bytes with idle-stance full-body renders last");
                         Check(Convert.ToBase64String(handler.Images[0]) == perspectiveData &&
                             Convert.ToBase64String(handler.Images[handler.Images.Count - 1]) == Png(8) &&
                             Convert.ToBase64String(handler.Images[handler.Images.Count - 2]) == Png(6),
                             "Edits first image is never an idle-stance full-body render");
-                        Check(handler.Prompt.Contains("同一个人") && handler.Prompt.Contains("普通透视") && !handler.Prompt.Contains("ENVIRONMENT_VIEW_5"),
+                        Check(handler.Prompt.Contains("人物【玩家】") && handler.Prompt.Contains("人物【对话对象】") && handler.Prompt.Contains("普通透视") && !handler.Prompt.Contains("ENVIRONMENT_VIEW_5"),
                             "Edits keeps identity pairing and filters excess scene inputs");
                         Check(!handler.Prompt.Contains("环境全景参考") && handler.Prompt.Contains("环境主视角") && handler.Prompt.Contains("环境辅助视角") &&
                             handler.Prompt.Contains("不拼接两张背景") && handler.Prompt.Contains("高于导演文字中的概括与补充") && !handler.Prompt.Contains("EXTRA_PANORAMA_MUST_NOT_SEND"),
                             "Edits receives both environment views and the same geometry precedence");
-                        Check(handler.Prompt.Split(new[] { "同名人物头肩细节补充，不增加画面人物数量。" }, StringSplitOptions.None).Length - 1 == 2,
-                            "Edits gives both head images a detail role without introducing new people");
+                        Check(!handler.Prompt.Contains("同名人物头肩细节补充，不增加画面人物数量") && !handler.Images.Select(Convert.ToBase64String).Any(x => x == Png(7) || x == Png(9)),
+                            "Edits sends no redundant head-detail images or role instructions");
                     }
                 }
             }
