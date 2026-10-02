@@ -206,8 +206,12 @@ public class DevMultilineEditableTextWidget : BrushWidget
 		MarkLayoutDirty();
 	}
 
+    private readonly OpeningInteractionInputGuard _openingInputGuard = new OpeningInteractionInputGuard();
+    public bool SuppressOpeningInteractionKey { get; set; }
+
 	public override void HandleInput(IReadOnlyList<int> lastKeysPressed)
 	{
+        if (SuppressOpeningInteractionKey && _openingInputGuard.IsPending) return;
 		if (IsDisabled)
 		{
 			return;
@@ -309,6 +313,8 @@ public class DevMultilineEditableTextWidget : BrushWidget
 
 	protected override void OnLateUpdate(float dt)
 	{
+        if (SuppressOpeningInteractionKey && _openingInputGuard.IsPending)
+            _openingInputGuard.Tick(Input.IsKeyDown(InputKey.F) || Input.IsKeyPressed(InputKey.F));
 		base.OnLateUpdate(dt);
 #if BANNERLORD_1_4_OR_GREATER
 		if (_mouseSelecting && Input.IsKeyReleased(InputKey.LeftMouseButton))

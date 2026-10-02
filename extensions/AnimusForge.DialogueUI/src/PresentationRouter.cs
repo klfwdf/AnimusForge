@@ -66,6 +66,8 @@ namespace AnimusForge.DialogueUI
             IGauntletMovie loaded = null;
             try
             {
+                if ((movieName == "SPConversation" || movieName == "MapConversation")
+                    && !PreparePrefab(widgetFactory, "AFDialogueConversationItem")) return true;
                 if (movieName == "MapConversation" && !PreparePrefab(widgetFactory, "AFDialogueConversation")) return true;
                 if (!PreparePrefab(widgetFactory, replacement) || !DialogueUiSprites.EnsureLoaded()) return true;
                 bool wrapped = movieName == "ShoutTextInputPopup"

@@ -36,7 +36,7 @@
                           <Children>
 
                             <!-- 卡片 1: YJ API 官方中转专线 -->
-                            <ButtonWidget DoNotPassEventsToChildren="true" Command.Click="ExecuteSelectYj" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="106" MarginBottom="8" Brush="Popup.Cancel.Button" UpdateChildrenStates="true">
+                            <ButtonWidget DoNotPassEventsToChildren="true" Command.Click="ExecuteSelectYj" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="84" MarginBottom="8" Brush="Popup.Cancel.Button" UpdateChildrenStates="true">
                               <Children>
                                 <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#181410FF" AlphaFactor="0.65" IsEnabled="false" />
                                 <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="frame_9" ExtendLeft="4" ExtendTop="4" ExtendRight="4" ExtendBottom="4" Color="#8D7041FF" AlphaFactor="0.55" IsEnabled="false" />
@@ -64,7 +64,7 @@
                             </ButtonWidget>
 
                             <!-- 卡片 2: DeepSeek Flash 极速推荐 -->
-                            <ButtonWidget DoNotPassEventsToChildren="true" Command.Click="ExecuteSelectDeepSeekFlash" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="106" MarginBottom="8" Brush="Popup.Cancel.Button" UpdateChildrenStates="true">
+                            <ButtonWidget DoNotPassEventsToChildren="true" Command.Click="ExecuteSelectDeepSeekFlash" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="84" MarginBottom="8" Brush="Popup.Cancel.Button" UpdateChildrenStates="true">
                               <Children>
                                 <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#181410FF" AlphaFactor="0.65" IsEnabled="false" />
                                 <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="frame_9" ExtendLeft="4" ExtendTop="4" ExtendRight="4" ExtendBottom="4" Color="#8D7041FF" AlphaFactor="0.55" IsEnabled="false" />
@@ -92,7 +92,7 @@
                             </ButtonWidget>
 
                             <!-- 卡片 3: DeepSeek Pro 深度智谋 -->
-                            <ButtonWidget DoNotPassEventsToChildren="true" Command.Click="ExecuteSelectDeepSeekPro" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="106" MarginBottom="8" Brush="Popup.Cancel.Button" UpdateChildrenStates="true">
+                            <ButtonWidget DoNotPassEventsToChildren="true" Command.Click="ExecuteSelectDeepSeekPro" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="84" MarginBottom="8" Brush="Popup.Cancel.Button" UpdateChildrenStates="true">
                               <Children>
                                 <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#181410FF" AlphaFactor="0.65" IsEnabled="false" />
                                 <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="frame_9" ExtendLeft="4" ExtendTop="4" ExtendRight="4" ExtendBottom="4" Color="#8D7041FF" AlphaFactor="0.55" IsEnabled="false" />
@@ -120,7 +120,7 @@
                             </ButtonWidget>
 
                             <!-- 卡片 4: 完全自定义 API 配置 -->
-                            <ButtonWidget DoNotPassEventsToChildren="true" Command.Click="ExecuteSelectCustom" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="106" MarginBottom="4" Brush="Popup.Cancel.Button" UpdateChildrenStates="true">
+                            <ButtonWidget DoNotPassEventsToChildren="true" Command.Click="ExecuteSelectCustom" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="84" MarginBottom="4" Brush="Popup.Cancel.Button" UpdateChildrenStates="true">
                               <Children>
                                 <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#181410FF" AlphaFactor="0.65" IsEnabled="false" />
                                 <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="frame_9" ExtendLeft="4" ExtendTop="4" ExtendRight="4" ExtendBottom="4" Color="#8D7041FF" AlphaFactor="0.55" IsEnabled="false" />
@@ -144,6 +144,11 @@
                                     <TextWidget Text="➔" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="24" SuggestedHeight="24" HorizontalAlignment="Right" VerticalAlignment="Center" Brush="Popup.Tuple.Text" Brush.FontSize="20" Brush.FontColor="#C5A878FF" />
                                   </Children>
                                 </Widget>
+                              </Children>
+                            </ButtonWidget>
+                            <ButtonWidget DoNotPassEventsToChildren="true" Command.Click="ExecuteUseExistingConfig" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="54" MarginTop="4" Brush="Popup.Done.Button" UpdateChildrenStates="true">
+                              <Children>
+                                <TextWidget Text="使用现有 API 配置（测试当前 MCM 设置）" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="Popup.Button.Text" Brush.FontSize="16" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" DoNotAcceptEvents="true" />
                               </Children>
                             </ButtonWidget>
 
@@ -305,7 +310,7 @@
                                                       <Children>
                                                         <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#0B0805FF" AlphaFactor="0.95" IsEnabled="false" />
                                                         <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="frame_9" Color="#6E563BFF" AlphaFactor="0.5" IsEnabled="false" />
-                                                        <EditableTextWidget Text="@PrimaryUrl" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="8" MarginRight="32" VerticalAlignment="Center" Brush="Popup.Tuple.Text" Brush.FontSize="13" Brush.FontColor="#F5E8D0FF" MaxLength="200" />
+                                                        <EditableTextWidget Text="@PrimaryUrl" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="8" MarginRight="32" VerticalAlignment="Center" Brush="Popup.Tuple.Text" Brush.FontSize="13" Brush.FontColor="#F5E8D0FF" MaxLength="4096" />
                                                         <ButtonWidget DoNotPassEventsToChildren="true" Command.Click="ExecuteEditPrimaryUrl" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="24" SuggestedHeight="24" HorizontalAlignment="Right" VerticalAlignment="Center" MarginRight="4" Brush="Popup.Cancel.Button" UpdateChildrenStates="true">
                                                           <Children><TextWidget Text="✎" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="Popup.Button.Text" Brush.FontSize="12" Brush.FontColor="#C5A878FF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" /></Children>
                                                         </ButtonWidget>
@@ -320,7 +325,7 @@
                                                       <Children>
                                                         <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#0B0805FF" AlphaFactor="0.95" IsEnabled="false" />
                                                         <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="frame_9" Color="#6E563BFF" AlphaFactor="0.5" IsEnabled="false" />
-                                                        <EditableTextWidget Text="@PrimaryKey" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="8" MarginRight="32" VerticalAlignment="Center" Brush="Popup.Tuple.Text" Brush.FontSize="13" Brush.FontColor="#F5E8D0FF" MaxLength="200" />
+                                                        <EditableTextWidget Text="@PrimaryKey" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="8" MarginRight="32" VerticalAlignment="Center" Brush="Popup.Tuple.Text" Brush.FontSize="13" Brush.FontColor="#F5E8D0FF" MaxLength="4096" />
                                                         <ButtonWidget DoNotPassEventsToChildren="true" Command.Click="ExecuteEditPrimaryKey" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="24" SuggestedHeight="24" HorizontalAlignment="Right" VerticalAlignment="Center" MarginRight="4" Brush="Popup.Cancel.Button" UpdateChildrenStates="true">
                                                           <Children><TextWidget Text="✎" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="Popup.Button.Text" Brush.FontSize="12" Brush.FontColor="#C5A878FF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" /></Children>
                                                         </ButtonWidget>
@@ -363,7 +368,7 @@
                                                       <Children>
                                                         <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#0B0805FF" AlphaFactor="0.95" IsEnabled="false" />
                                                         <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="frame_9" Color="#6E563BFF" AlphaFactor="0.5" IsEnabled="false" />
-                                                        <EditableTextWidget Text="@AuxiliaryUrl" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="8" MarginRight="32" VerticalAlignment="Center" Brush="Popup.Tuple.Text" Brush.FontSize="13" Brush.FontColor="#F5E8D0FF" MaxLength="200" />
+                                                        <EditableTextWidget Text="@AuxiliaryUrl" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="8" MarginRight="32" VerticalAlignment="Center" Brush="Popup.Tuple.Text" Brush.FontSize="13" Brush.FontColor="#F5E8D0FF" MaxLength="4096" />
                                                         <ButtonWidget DoNotPassEventsToChildren="true" Command.Click="ExecuteEditAuxiliaryUrl" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="24" SuggestedHeight="24" HorizontalAlignment="Right" VerticalAlignment="Center" MarginRight="4" Brush="Popup.Cancel.Button" UpdateChildrenStates="true">
                                                           <Children><TextWidget Text="✎" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="Popup.Button.Text" Brush.FontSize="12" Brush.FontColor="#C5A878FF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" /></Children>
                                                         </ButtonWidget>
@@ -378,7 +383,7 @@
                                                       <Children>
                                                         <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#0B0805FF" AlphaFactor="0.95" IsEnabled="false" />
                                                         <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="frame_9" Color="#6E563BFF" AlphaFactor="0.5" IsEnabled="false" />
-                                                        <EditableTextWidget Text="@AuxiliaryKey" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="8" MarginRight="32" VerticalAlignment="Center" Brush="Popup.Tuple.Text" Brush.FontSize="13" Brush.FontColor="#F5E8D0FF" MaxLength="200" />
+                                                        <EditableTextWidget Text="@AuxiliaryKey" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="8" MarginRight="32" VerticalAlignment="Center" Brush="Popup.Tuple.Text" Brush.FontSize="13" Brush.FontColor="#F5E8D0FF" MaxLength="4096" />
                                                         <ButtonWidget DoNotPassEventsToChildren="true" Command.Click="ExecuteEditAuxiliaryKey" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="24" SuggestedHeight="24" HorizontalAlignment="Right" VerticalAlignment="Center" MarginRight="4" Brush="Popup.Cancel.Button" UpdateChildrenStates="true">
                                                           <Children><TextWidget Text="✎" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="Popup.Button.Text" Brush.FontSize="12" Brush.FontColor="#C5A878FF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" /></Children>
                                                         </ButtonWidget>
@@ -421,7 +426,7 @@
                                                       <Children>
                                                         <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#0B0805FF" AlphaFactor="0.95" IsEnabled="false" />
                                                         <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="frame_9" Color="#6E563BFF" AlphaFactor="0.5" IsEnabled="false" />
-                                                        <EditableTextWidget Text="@PostprocessUrl" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="8" MarginRight="32" VerticalAlignment="Center" Brush="Popup.Tuple.Text" Brush.FontSize="13" Brush.FontColor="#F5E8D0FF" MaxLength="200" />
+                                                        <EditableTextWidget Text="@PostprocessUrl" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="8" MarginRight="32" VerticalAlignment="Center" Brush="Popup.Tuple.Text" Brush.FontSize="13" Brush.FontColor="#F5E8D0FF" MaxLength="4096" />
                                                         <ButtonWidget DoNotPassEventsToChildren="true" Command.Click="ExecuteEditPostprocessUrl" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="24" SuggestedHeight="24" HorizontalAlignment="Right" VerticalAlignment="Center" MarginRight="4" Brush="Popup.Cancel.Button" UpdateChildrenStates="true">
                                                           <Children><TextWidget Text="✎" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="Popup.Button.Text" Brush.FontSize="12" Brush.FontColor="#C5A878FF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" /></Children>
                                                         </ButtonWidget>
@@ -436,7 +441,7 @@
                                                       <Children>
                                                         <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#0B0805FF" AlphaFactor="0.95" IsEnabled="false" />
                                                         <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="frame_9" Color="#6E563BFF" AlphaFactor="0.5" IsEnabled="false" />
-                                                        <EditableTextWidget Text="@PostprocessKey" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="8" MarginRight="32" VerticalAlignment="Center" Brush="Popup.Tuple.Text" Brush.FontSize="13" Brush.FontColor="#F5E8D0FF" MaxLength="200" />
+                                                        <EditableTextWidget Text="@PostprocessKey" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="8" MarginRight="32" VerticalAlignment="Center" Brush="Popup.Tuple.Text" Brush.FontSize="13" Brush.FontColor="#F5E8D0FF" MaxLength="4096" />
                                                         <ButtonWidget DoNotPassEventsToChildren="true" Command.Click="ExecuteEditPostprocessKey" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="24" SuggestedHeight="24" HorizontalAlignment="Right" VerticalAlignment="Center" MarginRight="4" Brush="Popup.Cancel.Button" UpdateChildrenStates="true">
                                                           <Children><TextWidget Text="✎" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="Popup.Button.Text" Brush.FontSize="12" Brush.FontColor="#C5A878FF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" /></Children>
                                                         </ButtonWidget>
@@ -479,7 +484,7 @@
                                                       <Children>
                                                         <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#0B0805FF" AlphaFactor="0.95" IsEnabled="false" />
                                                         <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="frame_9" Color="#6E563BFF" AlphaFactor="0.5" IsEnabled="false" />
-                                                        <EditableTextWidget Text="@EventUrl" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="8" MarginRight="32" VerticalAlignment="Center" Brush="Popup.Tuple.Text" Brush.FontSize="13" Brush.FontColor="#F5E8D0FF" MaxLength="200" />
+                                                        <EditableTextWidget Text="@EventUrl" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="8" MarginRight="32" VerticalAlignment="Center" Brush="Popup.Tuple.Text" Brush.FontSize="13" Brush.FontColor="#F5E8D0FF" MaxLength="4096" />
                                                         <ButtonWidget DoNotPassEventsToChildren="true" Command.Click="ExecuteEditEventUrl" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="24" SuggestedHeight="24" HorizontalAlignment="Right" VerticalAlignment="Center" MarginRight="4" Brush="Popup.Cancel.Button" UpdateChildrenStates="true">
                                                           <Children><TextWidget Text="✎" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="Popup.Button.Text" Brush.FontSize="12" Brush.FontColor="#C5A878FF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" /></Children>
                                                         </ButtonWidget>
@@ -494,7 +499,7 @@
                                                       <Children>
                                                         <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#0B0805FF" AlphaFactor="0.95" IsEnabled="false" />
                                                         <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="frame_9" Color="#6E563BFF" AlphaFactor="0.5" IsEnabled="false" />
-                                                        <EditableTextWidget Text="@EventKey" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="8" MarginRight="32" VerticalAlignment="Center" Brush="Popup.Tuple.Text" Brush.FontSize="13" Brush.FontColor="#F5E8D0FF" MaxLength="200" />
+                                                        <EditableTextWidget Text="@EventKey" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="8" MarginRight="32" VerticalAlignment="Center" Brush="Popup.Tuple.Text" Brush.FontSize="13" Brush.FontColor="#F5E8D0FF" MaxLength="4096" />
                                                         <ButtonWidget DoNotPassEventsToChildren="true" Command.Click="ExecuteEditEventKey" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="24" SuggestedHeight="24" HorizontalAlignment="Right" VerticalAlignment="Center" MarginRight="4" Brush="Popup.Cancel.Button" UpdateChildrenStates="true">
                                                           <Children><TextWidget Text="✎" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="Popup.Button.Text" Brush.FontSize="12" Brush.FontColor="#C5A878FF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" /></Children>
                                                         </ButtonWidget>
@@ -776,7 +781,7 @@
                               </Children>
                             </Widget>
 
-                            <RichTextWidget Text="点击下方【保存设置并进入卡拉迪亚】，全部配置将即时写入 MCM，并立即返回游戏开启沉浸式 AI 对话！" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" Brush="Popup.Description.Text" Brush.FontSize="13" Brush.FontColor="#C5A878FF" Brush.TextHorizontalAlignment="Center" />
+                            <RichTextWidget Text="点击下方保存设置；新档将继续世界书导入与人物背景配置，已完成引导的存档将返回游戏。" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" Brush="Popup.Description.Text" Brush.FontSize="13" Brush.FontColor="#C5A878FF" Brush.TextHorizontalAlignment="Center" />
                           </Children>
                         </ListPanel>
                       </Children>
@@ -877,9 +882,9 @@
                           <Children>
                             <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#0B0805FF" AlphaFactor="0.95" IsEnabled="false" />
                             <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="frame_9" Color="#6E563BFF" AlphaFactor="0.5" IsEnabled="false" />
-                            <EditableTextWidget Text="@PromptKeyInput" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="10" MarginRight="36" VerticalAlignment="Center" Brush="Popup.Tuple.Text" Brush.FontSize="14" Brush.FontColor="#F5E8D0FF" MaxLength="200" />
+                            <EditableTextWidget Text="@PromptKeyInput" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="10" MarginRight="36" VerticalAlignment="Center" Brush="Popup.Tuple.Text" Brush.FontSize="14" Brush.FontColor="#F5E8D0FF" MaxLength="4096" />
                             <ButtonWidget DoNotPassEventsToChildren="true" Command.Click="ExecuteEditPromptKey" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="28" SuggestedHeight="28" HorizontalAlignment="Right" VerticalAlignment="Center" MarginRight="4" Brush="Popup.Cancel.Button" UpdateChildrenStates="true">
-                              <Children><TextWidget Text="✎" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="Popup.Button.Text" Brush.FontSize="13" Brush.FontColor="#C5A878FF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" /></Children>
+                              <Children><TextWidget Text="贴" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="Popup.Button.Text" Brush.FontSize="13" Brush.FontColor="#C5A878FF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" /></Children>
                             </ButtonWidget>
                           </Children>
                         </Widget>

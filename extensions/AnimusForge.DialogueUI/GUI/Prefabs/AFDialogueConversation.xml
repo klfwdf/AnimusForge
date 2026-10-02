@@ -8,7 +8,7 @@
     -->
     <ConversationScreenButtonWidget Id="AFDialogueConversationRoot"
         DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
-        AnswerList="AFDialogueConsoleFrame\VerticalContainer\BottomPanelsContainer\AnswerListContainer\AnswerList"
+        AnswerList="AFDialogueConsoleFrame\VerticalContainer\BottomPanelsContainer\AnswerListContainer\AFDialogueAnswerScroll\AFDialogueAnswerClip\AnswerList"
         ContinueButton="ContinueButton" Command.OnFinalSelection="ExecuteFinalizeSelection"
         IsPersuasionActive="@IsPersuading" FrictionEnabled="false">
       <Children>
@@ -99,16 +99,29 @@
                     </Widget>
                     <NavigationScopeTargeter ScopeID="SPConversationItemsScope" ScopeParent="..\AnswerListContainer"
                         ScopeMovements="Vertical" HasCircularMovement="true" IsDefaultNavigationScope="true" />
-                    <!-- CoverChildren, as in native SPConversation: EventManager only descends into a child whose
-                         measured area contains the cursor, so a fixed 188px box left the 6th answer (overflowing
-                         above it) unclickable. Grows upward from the bottom; empty when there are no answers. -->
-                    <Widget Id="AnswerListContainer" WidthSizePolicy="Fixed" HeightSizePolicy="CoverChildren" SuggestedWidth="305"
+                    <!-- A bounded scroll viewport stays inside the 283px event ancestry. Long text
+                         wraps to the answer panel; overflowing options are reached by scrolling. -->
+                    <Widget Id="AnswerListContainer" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="305" SuggestedHeight="190"
                         HorizontalAlignment="Right" VerticalAlignment="Bottom" MarginRight="21" DoNotAcceptEvents="true">
                       <Children>
-                        <NavigatableListPanel Id="AnswerList" DataSource="{AnswerList}" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren"
-                            HorizontalAlignment="Center" VerticalAlignment="Bottom" StackLayout.LayoutMethod="VerticalTopToBottom">
-                          <ItemTemplate><ConversationItem /></ItemTemplate>
-                        </NavigatableListPanel>
+                        <ScrollablePanel Id="AFDialogueAnswerScroll" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
+                            MarginRight="10" ClipRect="AFDialogueAnswerClip" InnerPanel="AFDialogueAnswerClip\AnswerList"
+                            VerticalScrollbar="..\AFDialogueAnswerScrollbar" AutoHideScrollBars="true" MouseScrollAxis="Vertical">
+                          <Children>
+                            <Widget Id="AFDialogueAnswerClip" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" ClipContents="true">
+                              <Children>
+                                <NavigatableListPanel Id="AnswerList" DataSource="{AnswerList}" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren"
+                                    HorizontalAlignment="Center" VerticalAlignment="Top" StackLayout.LayoutMethod="VerticalTopToBottom">
+                                  <ItemTemplate><AFDialogueConversationItem /></ItemTemplate>
+                                </NavigatableListPanel>
+                              </Children>
+                            </Widget>
+                          </Children>
+                        </ScrollablePanel>
+                        <ScrollbarWidget Id="AFDialogueAnswerScrollbar" WidthSizePolicy="Fixed" SuggestedWidth="5" HeightSizePolicy="StretchToParent"
+                            HorizontalAlignment="Right" AlignmentAxis="Vertical" Handle="AFDialogueAnswerHandle" MinValue="0" MaxValue="100">
+                          <Children><Widget Id="AFDialogueAnswerHandle" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="26" Sprite="afdui_scroll_handle" /></Children>
+                        </ScrollbarWidget>
                       </Children>
                     </Widget>
                   </Children>
