@@ -1,8 +1,8 @@
-# 当前交接：AF 2.0 收尾交付（2026-10-02，已授权执行）
+# 当前交接：AF 2.0 收尾交付（2026-10-02，离线接入已就绪）
 
-[执行计划](docs/plans/af2-module-integration-delivery-closeout-20261002.md)：用户已授权新对话执行 R0–R3；主控 GPT-6 Astra / medium，交付及修复执行者 GPT-6 Sol / medium。B0–B3 验交付/离线，U1–U9 验声明版本的实际使用；先定预期、按证据签收、达到出口即停止。旧宿主拆分后置。
+[执行计划](docs/plans/af2-module-integration-delivery-closeout-20261002.md) R0–R3 已执行到 **INTEGRATION_HANDOFF_READY**：B0/B1 本轮直验 PASS，B2/B3 同源证据 REUSED_PASS；只修改接入/交接文档，无具名产品阻塞和产品改动。制作组可按[内部指南](docs/architecture/af-internal-module-guide-v1.md)及[公开 V1 指南](docs/architecture/af-public-api-guide-v1.md)接入。旧宿主拆分后置。
 
-交接 HEAD/已核查远端 main：`261a3be3`。计划与导航未提交，原 SessionTransport dirty 保留；先核对构建是否包含 dirty 输入。仓内包内修改、测试和本地提交已授权；无新增推送/Stage/打包/部署/仓外或真实数据操作授权。状态与详细证据见[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#af2-module-integration-delivery-plan-20261002)，源码见[代码范围图](docs/architecture/af-framework-code-scope.md)。
+冻结源码 `dd6f45bf` 的 1337 raw 输入与 Debug/Release 六 DLL hash 已复核；SessionTransport raw hash `a393a98b…` 在冻结源中，受保护 dirty 未暂存。远端 main 只读核对仍为 `261a3be3`。v1.3.5/v1.4.5 的 U1–U9 实机、代表性旧档和独立子 MOD 加载仍 **NOT_RUN**，故不是 USE_ACCEPTED 或发布；原 355 runner 非全 PASS。详细状态/下一步见[主台账本次条目](docs/animusforge-refactoring-and-repository-reorganization-plan.md#af2-module-integration-delivery-plan-20261002)，源码责任见[代码范围图](docs/architecture/af-framework-code-scope.md)。未 push、Stage、打包、部署或触碰真实玩家数据。
 
 # 历史交接：P1–P8 host terminal closeout（2026-10-02）
 

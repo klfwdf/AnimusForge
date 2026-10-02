@@ -4,6 +4,8 @@
 
 **目录查询及 Native、Scene、Courier 提交/结果/开始前取消已接线；J14 同候选最终离线验收已完成（`J14_OFFLINE_VERIFIED`）。**
 
+本轮 AF 2.0 收尾交付以[冻结验收卡](../animusforge-refactoring-and-repository-reorganization-plan.md#af2-module-integration-delivery-plan-20261002)为准：源码候选 `dd6f45bf`，Debug `debug-b67c7b0cc63f` / Release `frozen-release-f0bd0f0c6496`，实际 DLL hash 见 `artifacts/af2-host-terminal-closeout/final-receipt.json`。这些是离线候选，不是已安装的子 MOD 或实机接受；游戏 v1.3.5、v1.4.5 使用卡仍须逐版本执行。下述 J14 证据是能力来源，不替代本轮 B/U 签收。
+
 J14b3 在原草稿准入与运输 owner 上开放 Courier 公共接口，返回只读阶段回执。完成需要必要动作/历史接受、回信实际入库及运输收尾确认，预生成/consumed/Completed 标志不单独判成功。开放前独立消费者、内部枚举重排及 Debug 双版本/Bootstrap/元数据已验证；最终六构建、四 DLL 元数据、旧 Native 二进制 ABI、三渠道/记忆回读及当前 DLL 回放均通过，详细证据见主台账；不能以此宣称实机或发布完成。
 
 当前物理分区：纯 V1 契约位于 `src/AF.Contracts/PublicApi/V1/AfApiContracts.cs`；同一 `AnimusForge.dll` 内的入口/客户端在 `src/modules/AF.Module.PublicApi/V1/{AfApi,AfDialogueClient}.cs`，快照/对话投影在 `src/modules/AF.Module.PublicApi/Internal/{AfV1SnapshotProjection,AfV1DialogueProjection}.cs`。上述分区不改变 `AnimusForge.Api.V1` namespace 或程序集身份；本轮方法/DTO 是保留旧 ABI 的兼容性扩展。
@@ -17,6 +19,8 @@ J14b3 在原草稿准入与运输 owner 上开放 Courier 公共接口，返回�
 | `ActionExecute` / `MemoryWrite` / `ExtensionRegister` | NotSupported | 不提供任意动作、事实写入或第三方 provider 注册 |
 
 `Available` 是 API 契约存在，不是当前游戏/目标可执行，更不是实机验收通过。框架快照的 `Ready` 也仅代表装配。
+
+制作组同 DLL 调用应使用 `AnimusForge.Refactor.Modules.CoreDialogueServices.CreateClient()` 和 typed internal ports（见[内部指南](af-internal-module-guide-v1.md)）；独立 DLL 子 MOD 才使用本页 `AnimusForge.Api.V1`。两者共享真实渠道 owner，不允许子 MOD 用反射访问 internal port 或复制一套动作/记忆提交。
 
 ## 最小调用方式
 
