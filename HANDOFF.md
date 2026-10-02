@@ -1,3 +1,9 @@
+# 当前接入：四扩展宿主目录（2026-10-02）
+
+- 生图、对话UI、政变、公开处决的 `.host` 声明和真实启动/安装/注册/停止状态已接到原目录；不自动 Ready、不新增公开执行接口。政变按要求等待另一会话结束后最后接入。
+- 本包离线：97生命周期、API171/快照36、Campaign46及5+6变异 PASS；工作区 Debug双API+Bootstrap与两DLL760元数据 PASS。发布候选验证以本地收据为准；Release/实机/旧档仍未验。
+- [主台账唯一条目](docs/animusforge-refactoring-and-repository-reorganization-plan.md#four-hosted-extension-catalog-20261002)与[本包源码导航](docs/architecture/af-hosted-extension-code-map.json)说明范围、候选/证据/回滚。已获提交推送授权，仅发布本包到main，不带其他本地历史；未Stage/部署。实际远端结果见收据。
+
 # 当前交接：主 API 正文流式 MCM 选项（2026-10-02）
 
 - 新增主 API“开启流式传输”，默认关闭、无需重启，终端/MCM 共用 `MainApiStreamingEnabled`；共享正文入口按开关走 JSON/SSE，有回调则预览，无回调则完整汇总后返回。native 原有 callback-selected stream 也统一受控，非正文 API 配置/发送入口不改。

@@ -1,3 +1,19 @@
+## 当前功能接入：四扩展宿主目录（2026-10-02）
+
+<a id="four-hosted-extension-catalog-20261002"></a>
+
+**状态：OFFLINE_VERIFIED_WITH_LIMITS。** 用户授权接入 Illustrator、DialogueUI、Coup、Vengeance，并要求政变最后；待“修复政变城门刷兵位置”会话完成后才修改 Coup SubModule。后续明确授权本任务提交推送到 main；只发布此切片，不夹带本地其他未发布提交/交接。无 Stage/部署/玩法重写。发布源码提交 `c20bb69f`，本地切片 `f7314d34`，本地意图检查点 `f72ff5ef`；实际推送结果见本地收据及远端 ref，不以本条授权冒充推送完成。
+
+**真实接入：** `TeamModuleRegistration` 在原三组 typed port 后登记四个 `.host` 能力，目录共七模块。初始化不再自动把四扩展置 Ready；生图原初始化结果、UI 实际延迟安装、政变原 Start 与已有三兼容探针、处决 embedded claim/订阅/战役注册分别回报。目录状态唯一归 `ModuleDirectoryLifecycleOwner`，`ModuleFrameworkRuntime` 无状态转接；战役成功不覆盖启动失败，战役单次失败可由后续真实注册成功恢复，停止目录拒绝迟到报告。UI 可选轮盘回退仍保持；Ready/Available 仅宿主接缝，不是开关、资源全集、provider、玩法资格、实机或旧档验收。
+
+**边界与性能：** 原 Start/RegisterCampaign/Tick/Shutdown 次序、独立扩展防重复宿主、处决原清理/异常语义保留；原 Tick 方法文本完全相同。报告只在加载/安装/注册/卸载事件发生，固定四 ID、一次小目录更新，无每帧扫描/反射/轮询；目录仅保存字符串/枚举，不持游戏对象。不改 DLL/模块身份、SyncData/Saveable/默认交互入口、构建脚本、三渠道动作/记忆权威，也不登记内战、不开放 public ActionExecute/MemoryWrite/ExtensionRegister。
+
+**验证：** 真实工作区四扩展生命周期 97 checks PASS（引擎/资源/patch 叶为替身；处决只源码链接三个原生命周期方法）；隔离“远端基线+本包” API 171/快照36 checks、256/128并发查询、5编译变异与 CS0122 外部拒绝 PASS，Campaign 46 checks+6编译变异 PASS。工作区原脚本 Debug 双 API（实际引用 v1.3.15 / v1.4.6）+Bootstrap 0错误；其两实际实现 DLL 元数据760 checks PASS。发布候选的单独构建/验证另记录在本地收据，不能把工作区含其他 dirty 的 DLL 冒充纯发布提交产物。Release/实机/旧档/provider/TTS/渲染/帧性能及独立 MOD 游戏内加载 NOT_RUN。
+
+**失败诊断与保护：** 原工作区的历史 API 守卫被既有 WorldBulletin dirty 的全局指纹挡住；未刷新无关 hash，用隔离基线复验。首次 fixture 缺 GameMenus、误用公开 Available 原因码、旧 DTO 比较包含新增条目及 SDK10 所需8.0.30离线包的问题均保留日志并修正；原团队/公开签名/异常断言保留。源码导航仅见[本包13锚点](architecture/af-hosted-extension-code-map.json)（源码路径、一基行号、符号、revision、覆盖/未覆盖）；既有838地图仍保留冻结历史，不重绑其他作者 dirty。
+
+**证据与回滚：** `artifacts/four-extension-catalog-20261002/` 保存 before、原文档副本、保护核对、测试/构建日志、原工作区/发布候选 DLL marker/hash 及最终收据；这些是本地证据，不假定已上传。原30个非文档 dirty SHA与733原未跟踪路径保留。回滚对本包产品/文档提交定向 revert，不 hard reset，不回滚其他会话政变/内战/快报修改。发布工作树位于仓内 `.tmp/publish-four-extension-catalog-20261002`，从 origin/main 建立，只含本包。
+
 ## 当前方向：AF 2.0 使用交付收尾（先使用、后拆分，2026-10-02，已授权执行）
 
 <a id="af2-module-integration-delivery-plan-20261002"></a>
