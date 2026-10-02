@@ -1502,7 +1502,7 @@ internal sealed partial class KingdomCivilWarOwner
 			if (string.Equals(mark.Value, factionId, StringComparison.OrdinalIgnoreCase)) _oppositionMarkFaction.Remove(mark.Key);
 	}
 
-	private static bool IsPoliticalClan(Clan clan) { return clan != null && !clan.IsEliminated && !clan.IsBanditFaction && !clan.IsMinorFaction && !clan.IsUnderMercenaryService && !clan.IsClanTypeMercenary; }
+	private static bool IsPoliticalClan(Clan clan) => CivilWarWorld.IsPoliticalClan(clan);
 	private static float RandomFloat() { return MBRandom.RandomFloat; }
 
 	// Also migrates v2 saves: the single `Faction` becomes the first entry of `Factions`, and its opposition clans join it.

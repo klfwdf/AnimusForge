@@ -110,7 +110,10 @@ internal sealed class CivilWarCampaignBehavior : CampaignBehaviorBase
 		if (kingdom == null) return;
 		TeamModuleServices.CivilWar.RecordGrievance(kingdom, source, clans, points, Week(), text);
 	}
-	private static IEnumerable<Clan> Vassals(Kingdom kingdom) { return CivilWarWorld.Vassals(kingdom).ToList(); }
+	private static IEnumerable<Clan> Vassals(Kingdom kingdom)
+	{
+		return CivilWarWorld.Vassals(kingdom).ToList();
+	}
 
 	private void OnHeroKilled(Hero victim, Hero killer, KillCharacterAction.KillCharacterActionDetail detail, bool showNotification)
 	{
@@ -125,7 +128,9 @@ internal sealed class CivilWarCampaignBehavior : CampaignBehaviorBase
 	// Only wars the crown chose; rebellions, kingdom creation and crime-driven wars are not imposed on the vassals.
 	private void OnWarDeclared(IFaction first, IFaction second, DeclareWarAction.DeclareWarDetail detail)
 	{
-		if (detail != DeclareWarAction.DeclareWarDetail.Default && detail != DeclareWarAction.DeclareWarDetail.CausedByKingdomDecision) return;
+        // The war event is raised before the election publishes its final support status.
+        // Decision wars are qualified once at conclusion; keep non-vote crown orders unchanged.
+		if (detail != DeclareWarAction.DeclareWarDetail.Default) return;
 		if (first is Kingdom kingdom && second is Kingdom && !IsCivilWarPair(kingdom, second)) Add(kingdom, "war_imposed", Vassals(kingdom), 8f, "王国被迫开战");
 	}
 
@@ -133,7 +138,7 @@ internal sealed class CivilWarCampaignBehavior : CampaignBehaviorBase
 	{
 		TeamModuleServices.CivilWar.NotifyPoliticalChange(first as Kingdom, "peace");
 		TeamModuleServices.CivilWar.NotifyPoliticalChange(second as Kingdom, "peace");
-		if (first is Kingdom k1 && second is Kingdom k2 && !IsCivilWarPair(k1, k2))
+		if (detail != MakePeaceAction.MakePeaceDetail.ByKingdomDecision && first is Kingdom k1 && second is Kingdom k2 && !IsCivilWarPair(k1, k2))
 		{
 			Add(k1, "peace_imposed", Vassals(k1), 7f, "王国被迫议和");
 			Add(k2, "peace_imposed", Vassals(k2), 7f, "王国被迫议和");
@@ -190,6 +195,24 @@ internal sealed class CivilWarCampaignBehavior : CampaignBehaviorBase
 			RecordFiefDenied(kingdom, claimant, outcome as SettlementClaimantDecision.ClanAsDecisionOutcome);
 			return;
 		}
+        // Minority means the ruler overrode council opposition. Majority/equal votes
+        // are ordinary governance, not a kingdom-wide imposed-decision grievance.
+        // This status is assigned AFTER ApplyChosenOutcome and before this event.
+        if (decision.SupportStatusOfFinalDecision != KingdomDecision.SupportStatus.Minority) return;
+        if (decision is DeclareWarDecision && outcome is DeclareWarDecision.DeclareWarDecisionOutcome war)
+        {
+            if (war.Kingdom == kingdom && war.ShouldWarBeDeclared && war.FactionToDeclareWarOn is Kingdom target
+                && kingdom.IsAtWarWith(target) && !IsCivilWarPair(kingdom, target))
+                Add(kingdom, "war_imposed", Vassals(kingdom), 8f, "国王逆议会多数意见强行开战");
+            return;
+        }
+        if (decision is MakePeaceKingdomDecision && outcome is MakePeaceKingdomDecision.MakePeaceDecisionOutcome peace)
+        {
+            if (peace.Kingdom == kingdom && peace.ShouldPeaceBeDeclared && peace.FactionToMakePeaceWith is Kingdom target
+                && !kingdom.IsAtWarWith(target) && !IsCivilWarPair(kingdom, target))
+                Add(kingdom, "peace_imposed", Vassals(kingdom), 7f, "国王逆议会多数意见强行议和");
+            return;
+        }
 		// Conclusion runs after ApplyChosenOutcome. Approved repeal also sets ShouldDecisionBeEnforced;
 		// only a policy still active can be recorded as imposed. War/peace has separate event sources.
 		KingdomPolicyDecision policyDecision = decision as KingdomPolicyDecision;

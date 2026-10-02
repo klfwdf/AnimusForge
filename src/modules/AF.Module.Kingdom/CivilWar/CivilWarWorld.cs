@@ -64,11 +64,17 @@ internal static class CivilWarWorld
 		return player != null && kingdom.RulingClan == player || Hero.MainHero != null && kingdom.Leader == Hero.MainHero;
 	}
 
-	// Clans that can take part in kingdom politics (not mercenaries, bandits or minor factions).
+    // The native player_faction XML is a minor faction. That origin flag does not
+    // mean the player is still a mercenary after swearing vassalage. Never rewrite
+    // native flags: only current service/bandit/elimination status is authoritative here.
+    internal static bool IsPoliticalClan(Clan clan) => clan != null && !clan.IsEliminated
+        && !clan.IsBanditFaction && !clan.IsUnderMercenaryService
+        && (clan == Clan.PlayerClan || !clan.IsMinorFaction && !clan.IsClanTypeMercenary);
+
+	// Clans that can take part in kingdom politics (not contracted mercenaries or NPC minor factions).
 	internal static IEnumerable<Clan> LandedClans(Kingdom kingdom)
 	{
-		return (kingdom?.Clans ?? Enumerable.Empty<Clan>()).Where(x => x != null && !x.IsEliminated && !x.IsBanditFaction && !x.IsMinorFaction
-			&& !x.IsUnderMercenaryService && !x.IsClanTypeMercenary && x.Leader != null && x.Leader.IsAlive);
+		return (kingdom?.Clans ?? Enumerable.Empty<Clan>()).Where(x => IsPoliticalClan(x) && x.Leader != null && x.Leader.IsAlive);
 	}
 
 	// Politically active clans other than the ruling clan and the player clan.
