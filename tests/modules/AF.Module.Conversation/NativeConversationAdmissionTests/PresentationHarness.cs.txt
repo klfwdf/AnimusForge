@@ -84,7 +84,8 @@
         }
         static void QueueStream(AnimusForgeNativeConversationOverlay ui, bool opening = false)
             => Task.Run(() => ui.Stream("reply for A", opening)).GetAwaiter().GetResult();
-        static void Main()
+        static int Main() { try { Run(); return 0; } catch(Exception error) { Console.Error.WriteLine("FAIL " + error); return 1; } }
+        static void Run()
         {
             Host.Reset(); ConversationHelper.Reset(); var scope = Scope();
             Check(!ShoutBehavior.CurrentInstance.SlotExists && scope.IsCurrent(), "observation survives backend completion without retaining execution slot");
