@@ -1,3 +1,7 @@
+# 当前交接：地方政策修复与最新 main 合并（2026-10-02）
+
+用户明确授权推送 main；合并保留 `d6e859c3` 全部远端更新及地方政策修复，仅交接文档冲突并保留双方记录。合并工作树双 API + Bootstrap 和政策三套回归通过，原 SessionTransport dirty 未提交。普通推送结果以远端核对为准，不强推、不再次覆盖游戏；实机未验。详见[本次唯一主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#local-policy-jurisdiction-20261002)。
+
 # 最新操作：地方政策修复已打包并覆盖游戏（2026-10-02）
 
 用户已授权覆盖及 Recovery 备份、指定生成目录重建。当前工作树 Debug 双 API + Bootstrap 构建成功；原脚本部署更新 156 文件，安装的 238 个清单文件 hash 与 Stage 一致，单模块 v1.3.7.2 ZIP 已生成。此前“未覆盖”仅为当时状态；实机仍 NOT_RUN、无 push。完整路径、收据及旧 Stage 拒绝/重建经过见[主台账本次条目](docs/animusforge-refactoring-and-repository-reorganization-plan.md#local-policy-jurisdiction-20261002)。
@@ -7,6 +11,17 @@
 - 本次最新授权仅地方政策管辖最小重构：检查点 `0d7e9e43`、产品及测试 `208ce554`。统一按所选封地/发布家族及合法关联授权，王国政策展示、费用、公开 API 和存档格式未改。
 - Debug 两 API + Bootstrap 构建通过；两 API 各管辖 62、模块 1457（18 modules）、TargetPlan 765 断言通过，非唯一合计。实机、真实旧档与完整延长交互仍 NOT_RUN；未 push/部署/覆盖游戏，原 SessionTransport dirty 与其他作者文件保留。
 - 唯一详细证据、源码坐标及失败/未验见[主台账本次条目](docs/animusforge-refactoring-and-repository-reorganization-plan.md#local-policy-jurisdiction-20261002)；[既有框架代码图](docs/architecture/af-framework-code-scope.md)仅作导航。下方保留既有交付历史，不构成本次发布授权。
+# 当前完整交付：各会话最新代码已统一推送并部署（2026-10-02）
+
+- 产品 `416e00aa` 覆盖内战最新玩家控制/P2、政变大厅/增援/驻防/胜利、周报/生图、处决发言、主API流式/YJ等74正式文件，含5新增源码/测试；不再仅发布四扩展接入。
+- Debug双API+Bootstrap/Stage和各功能定向回归通过；实际部署更新26文件，238 Stage hash一致、5364清单外文件与三原版DLL保持。Recovery complete/备份hash通过，游戏未启动/真实旧档与实机仍未验。
+- [主台账统一交付](docs/animusforge-refactoring-and-repository-reorganization-plan.md#latest-session-integration-20261002)与本地`artifacts/latest-session-integration-20261002/receipt.json`集中命令、源码/结果/恢复。此条替代下方本批功能“仍未推送/部署”和此前仅四扩展范围，不上传私有历史。
+
+# 当前接入：四扩展宿主目录（2026-10-02）
+
+- 生图、对话UI、政变、公开处决的 `.host` 声明和真实启动/安装/注册/停止状态已接到原目录；不自动 Ready、不新增公开执行接口。政变按要求等待另一会话结束后最后接入。
+- 本包离线：97生命周期、API171/快照36、Campaign46及5+6变异 PASS；工作区 Debug双API+Bootstrap与两DLL760元数据 PASS。发布候选验证以本地收据为准；Release/实机/旧档仍未验。
+- [主台账唯一条目](docs/animusforge-refactoring-and-repository-reorganization-plan.md#four-hosted-extension-catalog-20261002)与[本包源码导航](docs/architecture/af-hosted-extension-code-map.json)说明范围、候选/证据/回滚。已获提交推送授权，仅发布本包到main，不带其他本地历史；未Stage/部署。实际远端结果见收据。
 
 # 当前交接：AF 2.0 收尾交付（2026-10-02，离线接入已就绪）
 

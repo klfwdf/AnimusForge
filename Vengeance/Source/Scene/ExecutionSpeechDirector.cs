@@ -253,7 +253,7 @@ internal sealed class ExecutionSpeechDirector : ISpeechPlaybackSink
         _crowd.Clear();
     }
 
-    bool ISpeechPlaybackSink.IsReady => true;
+    bool ISpeechPlaybackSink.IsReady => ExecutionSpeechBubbleBridge.IsReady;
     bool ISpeechPlaybackSink.HasFailed => false;
     bool ISpeechPlaybackSink.IsSpeakerAvailable(SpeechSpeaker speaker, int crowdIndex) =>
         IsActive(ResolveSpeaker(speaker, crowdIndex)) &&

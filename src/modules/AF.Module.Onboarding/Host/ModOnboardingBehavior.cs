@@ -113,7 +113,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 
 	private const string DeepSeekApiKeysUrl = "https://platform.deepseek.com/api_keys";
 
-	private const string YjApiBaseUrl = "https://yjapi.manqiaotechnology.com/v1";
+	private const string YjApiBaseUrl = "https://www.shenlanqaq.com/v1";
 
 	private const string YjApiKeysUrl = "https://yjapi.manqiaotechnology.com/keys";
 

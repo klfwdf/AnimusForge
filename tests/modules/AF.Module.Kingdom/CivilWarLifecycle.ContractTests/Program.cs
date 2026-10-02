@@ -311,6 +311,8 @@ for (int day = 702; day < 802; day++) f.AdvanceDay(day);
 timer.Stop();
 Console.WriteLine($"Daily decay probe: 100 clans x {CivilWarCatalog.Sources.Count} sources, 100 daily events, total {timer.Elapsed.TotalMilliseconds:F2} ms; mean {timer.Elapsed.TotalMilliseconds / 100:F4} ms/event (fake game context).");
 checks += PoliticalActionsTests.Run();
+checks += PlayerFactionControlTests.Run();
+checks += PlayerFactionReviewFixTests.Run();
 Console.WriteLine($"CivilWar lifecycle contracts passed: {checks} checks (fake game actions, real owner/effects and extracted entry bodies).");
 
 sealed class Fixture
@@ -323,10 +325,10 @@ sealed class Fixture
     public KingdomCivilWarFactionState Faction => State.Factions.Single();
     public Fixture()
     {
-        CampaignTime.Day = 700;
+        CampaignTime.Day = 700; TaleWorlds.Core.MBRandom.Value = 0.99f; ChangeRelationAction.Changes.Clear();
 		PlayerKingdomRebellionImmunity.Protected = false;
 		MyBehavior.FactKeys.Clear(); MyBehavior.PoliticalResults.Clear(); MyBehavior.MemoryFacts.Clear();
-        DuelSettings.DiscontentThreshold = 35; CivilWarCampaignBehavior.MaterialWrites = 0;
+        DuelSettings.DiscontentThreshold = 35; DuelSettings.PlayerDetonationStrengthPercent = 20; CivilWarCampaignBehavior.MaterialWrites = 0;
         Clan.All.Clear(); Kingdom.All.Clear(); Hero.All.Clear(); MakePeaceAction.Fail = false; ChangeKingdomAction.FailClan = null; ChangeKingdomAction.Moves = 0;
         GiveGoldAction.Calls = 0; GiveGoldAction.ThrowAfterApply = false; ChangeRelationAction.Calls = 0;
         MyBehavior.StabilityChanges = 0; MyBehavior.CleanupAllowed = true; DuelSettings.Enabled = true; DuelSettings.PlayerFactionsAllowed = true;

@@ -157,6 +157,7 @@ using (IDisposable cancellationScope = (IDisposable)pushMethod.Invoke(null, new 
     AssertTrue(cancelled, "primary Gateway caller cancellation was not propagated");
 }
 
+settingsType.GetProperty("MainApiStreamingEnabled").SetValue(settings, true, null);
 List<string> streamBodies = new List<string>();
 int streamRequests = 0;
 Func<HttpRequestMessage, CancellationToken, Task<HttpResponseMessage>> streamSender = async (request, token) =>
@@ -221,8 +222,8 @@ using (IDisposable partialScope = (IDisposable)pushStreamMethod.Invoke(null, new
         new Action<string>(text => failure = text), CancellationToken.None, false
     });
     await task.ConfigureAwait(false);
-    AssertTrue(completed == "部分" && failure == null,
-        "published partial stream was replayed or discarded completed=" + completed + " failure=" + failure);
+    AssertTrue(completed == null && failure != null && failure.StartsWith("（API请求失败:", StringComparison.Ordinal),
+        "partial stream must remain preview-only, never an authoritative completed reply completed=" + completed + " failure=" + failure);
 }
 
 using (IDisposable streamCancelScope = (IDisposable)pushStreamMethod.Invoke(null, new object[]
@@ -244,7 +245,9 @@ using (IDisposable streamCancelScope = (IDisposable)pushStreamMethod.Invoke(null
         5000, new Action<string>(_ => { }), new Action<string>(text => completed = text),
         new Action<string>(text => failure = text), cancellation.Token, false
     });
-    await task.ConfigureAwait(false);
+    bool streamCancelled = false;
+    try { await task.ConfigureAwait(false); } catch (OperationCanceledException) { streamCancelled = true; }
+    AssertTrue(streamCancelled, "caller cancellation must propagate without committing partial reply");
     cancelWatch.Stop();
     // J17 B6 request-lifetime contract (aa3539ca, kept by cb045840 P2): a caller-cancelled stream
     // publishes nothing; the old onComplete("") is now guarded by

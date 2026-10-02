@@ -11,7 +11,8 @@ internal static class Program
     private static SpeechCue Cue(string text, bool last = true) => new(SpeechSpeaker.Victim, -1, text, "", 3, isLastStatement: last);
     private sealed class Sink : ISpeechPlaybackSink
     {
-        public bool IsReady => true;
+        public bool Ready = true;
+        public bool IsReady => Ready;
         public bool HasFailed => false;
         public bool Available = true;
         public bool DisplayWorks = true;
@@ -23,7 +24,7 @@ internal static class Program
     }
     private static void Main()
     {
-        Parser(); Playback(); Archive(); Orders(); MemoryBridge();
+        Parser(); ResponseReceiver(); Playback(); Archive(); Orders(); MemoryBridge();
         Console.WriteLine($"PASS execution memory/order contracts: {_checks} assertions");
     }
     private static void Parser()
@@ -53,8 +54,79 @@ internal static class Program
         var legacy = new ExecutionSpeechLineParser().Append("死刑犯: legacy\n");
         Check(legacy.Count == 1 && !legacy[0].IsLastStatement, "legacy still parses without inventing last-word label");
     }
+    private static void ResponseReceiver()
+    {
+        const string full = "[开场]\n刽子手: 宣读判决。\n[最后陈述]\n死刑犯: 保重。";
+        var nonstream = new List<ExecutionSpeechLine>();
+        var receiver = new ExecutionSpeechResponseReceiver(lines => nonstream.AddRange(lines));
+        receiver.OnComplete(full);
+        Check(nonstream.Count == 2 && nonstream[1].IsLastStatement, "nonstream completed reply parses full text and tail");
+        var streamed = new List<ExecutionSpeechLine>();
+        receiver = new ExecutionSpeechResponseReceiver(lines => streamed.AddRange(lines));
+        receiver.OnChunk(full.Substring(0, 13)); receiver.OnChunk(full.Substring(13));
+        receiver.OnComplete(full);
+        Check(streamed.Count == 2 && streamed.Select(x => x.Text).SequenceEqual(nonstream.Select(x => x.Text)), "stream completion never duplicates deltas");
+        var fallback = new List<ExecutionSpeechLine>();
+        receiver = new ExecutionSpeechResponseReceiver(lines => fallback.AddRange(lines));
+        receiver.OnChunk(""); receiver.OnComplete(full);
+        Check(fallback.Count == 2, "empty chunk preserves completed-only transport fallback");
+        var empty = new List<ExecutionSpeechLine>();
+        receiver = new ExecutionSpeechResponseReceiver(lines => empty.AddRange(lines));
+        receiver.OnComplete("");
+        Check(empty.Count == 0, "empty completed reply invents no speech");
+        string longReply = "[开场]\n刽子手: FIRST\n[最后陈述]\n死刑犯: LAST\n[行刑中]\n" +
+            string.Concat(Enumerable.Range(0, 12).Select(i => "围观: " + i + new string('x', 180) + "\n")) +
+            "[结束后]\n刽子手: AFTER\n";
+        var longCompleted = new List<ExecutionSpeechLine>();
+        receiver = new ExecutionSpeechResponseReceiver(lines => longCompleted.AddRange(lines));
+        receiver.OnComplete(longReply);
+        Check(longReply.Length > 2000 && longCompleted.Count == 15, "long completed reply retains every valid line");
+        Check(longCompleted[0].Text == "FIRST" && longCompleted[0].Phase == ExecutionSpeechPhase.Opening, "long completed reply preserves opening declaration");
+        Check(longCompleted[1].Text == "LAST" && longCompleted[1].IsLastStatement, "long completed reply preserves last statement");
+        Check(longCompleted.Skip(2).Take(12).All(x => x.Phase == ExecutionSpeechPhase.During), "long completed reply preserves during phase");
+        Check(longCompleted.Last().Text == "AFTER" && longCompleted.Last().Phase == ExecutionSpeechPhase.Aftermath, "long completed reply preserves aftermath phase");
+        var longStreamed = new List<ExecutionSpeechLine>();
+        receiver = new ExecutionSpeechResponseReceiver(lines => longStreamed.AddRange(lines));
+        for (int offset = 0; offset < longReply.Length; offset += 80)
+            receiver.OnChunk(longReply.Substring(offset, Math.Min(80, longReply.Length - offset)));
+        receiver.OnComplete(longReply);
+        Check(longStreamed.Count == longCompleted.Count && longStreamed.Zip(longCompleted, (a, b) =>
+            a.Text == b.Text && a.Role == b.Role && a.Phase == b.Phase && a.IsLastStatement == b.IsLastStatement).All(x => x), "long stream and completed reply are identical without duplicates");
+        var largeDelta = new List<ExecutionSpeechLine>();
+        receiver = new ExecutionSpeechResponseReceiver(lines => largeDelta.AddRange(lines));
+        receiver.OnChunk(longReply); receiver.OnComplete(longReply);
+        Check(largeDelta.Count == 15 && largeDelta[1].IsLastStatement && largeDelta[2].Phase == ExecutionSpeechPhase.During, "large single delta preserves phases without duplicate completion");
+        var limited = new List<ExecutionSpeechLine>();
+        receiver = new ExecutionSpeechResponseReceiver(lines => limited.AddRange(lines));
+        receiver.OnComplete(string.Concat(Enumerable.Range(0, 30).Select(i => "刽子手: " + i + new string('x', 200) + "\n")));
+        Check(limited.Count == ExecutionSpeechLineParser.MaximumLines && limited[0].Text.StartsWith("0") && limited.Last().Text.StartsWith("23"), "long full reply retains original 24-line limit and earliest lines");
+        var boundary = new List<ExecutionSpeechLine>();
+        receiver = new ExecutionSpeechResponseReceiver(lines => boundary.AddRange(lines));
+        receiver.OnComplete(new string(' ', 507) + "\n[最后陈述]\n死刑犯: 跨界遗言。");
+        Check(boundary.Count == 1 && boundary[0].IsLastStatement && boundary[0].Text == "跨界遗言。", "batch boundary preserves partial marker and final tail");
+
+    }
     private static void Playback()
     {
+        var emptyStream = new ExecutionSpeechPlayback(true);
+        var waitingSink = new Sink();
+        emptyStream.Tick(.1f, waitingSink);
+        emptyStream.Tick(10f, waitingSink);
+        Check(!emptyStream.HasStarted && emptyStream.IsBusy, "empty ready stream preserves local fallback");
+        emptyStream.Complete();
+        emptyStream.Tick(.1f, waitingSink);
+        Check(!emptyStream.HasStarted && !emptyStream.IsBusy, "empty completed stream was never spoken");
+        var pending = new ExecutionSpeechPlayback(true);
+        var delayedSink = new Sink { Ready = false };
+        pending.TryAppend(Cue("等待气泡初始化"));
+        pending.Tick(10f, delayedSink);
+        Check(!pending.HasStarted && delayedSink.Shown.Count == 0 && pending.IsBusy, "UI not ready waits without consuming line");
+        delayedSink.Ready = true;
+        pending.Tick(.1f, delayedSink);
+        Check(pending.HasStarted && delayedSink.Shown.Count == 1, "UI readiness resumes actual first line");
+        var rejected = new ExecutionSpeechPlayback(new SpeechPlan(new[] { Cue("显示失败") }));
+        rejected.Tick(.1f, new Sink { DisplayWorks = false });
+        Check(!rejected.HasStarted && rejected.WasAborted, "rejected display never marks speech started");
         var sink = new Sink();
         var playback = new ExecutionSpeechPlayback(new SpeechPlan(new[] { Cue("已显示"), Cue("未显示") }));
         playback.Tick(.1f, sink);

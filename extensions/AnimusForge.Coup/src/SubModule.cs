@@ -41,6 +41,13 @@ public sealed class SubModule : MBSubModuleBase
         }
     }
 
+    internal static bool TryStart()
+    {
+        Start();
+        return _harmony != null && CoupGuards.MissionProtectionAvailable
+            && CoupSystem.SettlementEntryTroopSelectionBehavior.IsAvailable && CoupRebellionBridge.IsAvailable;
+    }
+
     protected override void InitializeGameStarter(Game game, IGameStarter starterObject)
     {
         base.InitializeGameStarter(game, starterObject);
