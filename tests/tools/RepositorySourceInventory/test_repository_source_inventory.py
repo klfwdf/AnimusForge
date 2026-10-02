@@ -53,6 +53,7 @@ class RepositorySourceInventoryTests(unittest.TestCase):
             "content/modules/AF.Module.Kingdom/CustomPrompts/default.json": "content",
             "tests/AF.Contracts/ModuleFrameworkApiTests/Program.cs": "tests",
             "tools/PlayerExportsEditor/src/Program.cs": "tools",
+            "tools/PersistenceTypedRef.cs": "tools",
             "tools/test_repository_source_inventory.py": "tests",
             "一键编译覆盖推送/build.ps1": "scripts",
             "scripts/build/build_single_module.ps1": "scripts",
@@ -64,6 +65,7 @@ class RepositorySourceInventoryTests(unittest.TestCase):
         for path, expected in examples.items():
             self.assertEqual(inventory.classify_path(path), expected, path)
         self.assertIsNone(inventory.classify_path("unknown/new.bin"))
+        self.assertIsNone(inventory.classify_path("tools/UnknownHelper.cs"))
         self.assertIsNone(inventory.classify_path("content/modules/Unknown.Owner/GUI/Prefabs/Panel.xml"))
         self.assertIsNone(inventory.classify_path("content/foundation/Unknown.Foundation/Languages/strings.xml"))
         self.assertEqual(inventory.classify_path("Mystery.cs"), "source")  # transitional, not verified business owner

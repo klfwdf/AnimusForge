@@ -121,6 +121,9 @@ def classify_path(path: str) -> str | None:
         return "content" if path.startswith(owned_roots) else None
     if top == "tests":
         return "tests"
+    if path == "tools/PersistenceTypedRef.cs":
+        return "tools"  # Standalone Roslyn support for the read-only persistence audit.
+
     if top == "tools":
         if len(parts) == 2:
             if name.endswith("Tests.py") or (name.startswith("test_") and suffix == ".py"):
