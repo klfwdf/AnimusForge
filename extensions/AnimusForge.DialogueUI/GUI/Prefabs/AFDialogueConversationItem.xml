@@ -33,7 +33,7 @@
 
         <PersuasionResultChanceContainerListPanel DataSource="{PersuasionItem}" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" VerticalAlignment="Center" CritFailWidget="CritFailParent" FailWidget="FailParent" SuccessWidget="SuccessParent" CritSuccessWidget="CritSuccessParent" Command.OnReadyToContinue="ExecuteReadyToContinue" IsResultReady="@IsPersuasionResultReady" ResultIndex="@PersuasionResultIndex" StayTime="2.5" MarginLeft="5" Brush="ConversationItem.Persuasion.SoundBrush" >
           <Children>
-						
+
             <!--Crit Fail-->
             <Widget Id="CritFailParent" DataSource="{CritFailHint}" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" Command.HoverBegin="ExecuteBeginHint" Command.HoverEnd="ExecuteEndHint"  DoNotPassEventsToChildren="true" HorizontalAlignment="Left" VerticalAlignment="Center" >
               <Children>

@@ -1,3 +1,9 @@
+# 当前交接：对话输入 / 新档向导 / 普通选项修复（离线已验证）
+
+- 检查点 `445c877d`、产品/测试 `4149c2e2`：F 开场输入隔离、MCM 自动 AI 开关、同层 URL 编辑与 ESC 关闭、使用现有 API、新档世界书/人物背景续接、每轮超时提示、ONNX 新档触发/弹窗调度、长/多普通选项限高滚动与专用模板。
+- Debug 双 API + Bootstrap 通过；定向每 API 73项（64行为/源码/XML契约 + 9 DLL元数据）、既有给予桥55断言、223资源清单通过。直接 DLL运行回放因游戏依赖未通过，不计 PASS；实机/旧档/真HTTP/ONNX推理/打包部署均未验。
+- [唯一主台账与源码坐标](docs/animusforge-refactoring-and-repository-reorganization-plan.md#dialogue-onboarding-fixes-20261002)与本地 `artifacts/dialogue-onboarding-fixes-20261002/` 保存失败、验证与回滚证据。原 Illustrator 和两文档 dirty 保留；本轮未 push/Stage/覆盖游戏，不把下方历史部署授权延续至本轮。
+
 # 当前交付：远端 main 外交/政策已融合（2026-10-02）
 
 - 合入远端 `720d8449`（10月2日21:27:56，北京时间），保留本地1.5版本/公告与各会话最新功能；四扩展与外交模块注册并存，共八目录项。
