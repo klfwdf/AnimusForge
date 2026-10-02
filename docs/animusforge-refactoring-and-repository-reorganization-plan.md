@@ -6084,3 +6084,14 @@ R2计划交付门槛：已给固定技术路线、真实来源与目标、写入
 ### 明确未验
 
 真实游戏发布/评议期间失地时序、完整延长效果交互及费用扣除、代表性真实旧档加载、实机 1.3/1.4、帧耗时仍 **NOT_RUN**。离线 JSON 往返与延长共用刷新入口不等于真实读档/延长端到端验收；不声称全仓测试通过。没有部署或推送授权。
+
+
+### 地方政策修复后：本次授权构建、打包及游戏覆盖（2026-10-02）
+
+用户随后明确授权覆盖 `D:/steam/steamapps/common/Mount & Blade II Bannerlord/Modules/AnimusForge`，并分别批准 AppData Recovery 备份和工作区 Debug artifact/obj/Stage 生成目录重建；这取代本条上方本次“未部署”状态，不授权 push 或实机验收。
+
+- 在 `b7e3c8fa` + 原受保护 SessionTransport dirty 工作树执行现有 `scripts/build/build_single_module.ps1 -Configuration Debug -Deploy`（显式本仓 1.3/1.4 引用），两实现 + Bootstrap 构建成功。未改脚本或源代码。
+- 首次部署前拒绝旧 Stage 与现 content map 不一致（AFCourierLetterBrushes.xml 等历史资源）；尚未写游戏。核实目录在本仓、无 reparse point 后，按已获授权删除该精确生成目录，再用同一构建产物运行原 `deploy_module.ps1` 成功，更新 156 个清单文件。不是跳过校验或更改锁。
+- `package_mod.ps1 -ModuleDir <本仓/bin/Debug/single_module_stage/AnimusForge> -NoBump -ExcludeOnnx` 成功，版本保持 v1.3.7.2。ZIP：`一键编译覆盖推送/packages/AnimusForge_v1.3.7.2_20261002_165453_006.zip`，SHA256 `6f08d1db7671af43b56704c638d62caaf108dd92ba96834ff8fac8d31a1fb914`。
+- 238 个 Stage 文件与安装目录逐文件 SHA256 一致；ZIP 文件集合一致、非 XML 条目 hash 与 Stage 一致，XML 经原脚本验证；3221 个安装目录清单外文件大小及 mtime 保持（包含 ONNX，不冒充全部内容 hash）；原 SessionTransport hash 保持。Recovery 完成记录 `C:/Users/PC/AppData/Local/AnimusForge/Recovery/deploy/deploy-5597c726fd444a64a0531eacf0a0ecfe` 已确认。
+- 本地收据 `artifacts/local-policy-deploy-20261002/`：build-deploy.log（初次失败保留）、deploy-retry.log、package.log、verified.json。真实游戏启动、地方政策行为和旧档仍 NOT_RUN；无推送。

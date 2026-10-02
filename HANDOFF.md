@@ -1,3 +1,7 @@
+# 最新操作：地方政策修复已打包并覆盖游戏（2026-10-02）
+
+用户已授权覆盖及 Recovery 备份、指定生成目录重建。当前工作树 Debug 双 API + Bootstrap 构建成功；原脚本部署更新 156 文件，安装的 238 个清单文件 hash 与 Stage 一致，单模块 v1.3.7.2 ZIP 已生成。此前“未覆盖”仅为当时状态；实机仍 NOT_RUN、无 push。完整路径、收据及旧 Stage 拒绝/重建经过见[主台账本次条目](docs/animusforge-refactoring-and-repository-reorganization-plan.md#local-policy-jurisdiction-20261002)。
+
 # 当前交接：地方政策无王国修复（2026-10-02，离线已验证）
 
 - 本次最新授权仅地方政策管辖最小重构：检查点 `0d7e9e43`、产品及测试 `208ce554`。统一按所选封地/发布家族及合法关联授权，王国政策展示、费用、公开 API 和存档格式未改。
