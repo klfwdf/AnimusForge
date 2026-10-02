@@ -87,8 +87,10 @@ namespace TaleWorlds.ObjectSystem
 }
 namespace TaleWorlds.CampaignSystem.Actions
 {
+    public static class DeclareWarAction { public enum DeclareWarDetail { Default, CausedByKingdomDecision, CausedByCrime } }
     public static class MakePeaceAction
     {
+        public enum MakePeaceDetail { Default, ByKingdomDecision }
         public static bool Fail;
         public static void Apply(IFaction first, IFaction second)
         {
@@ -126,7 +128,16 @@ namespace TaleWorlds.CampaignSystem.Actions
 namespace TaleWorlds.CampaignSystem.Election
 {
     public class DecisionOutcome { }
-    public class KingdomDecision { public Kingdom Kingdom; }
+    public class KingdomDecision {
+        public enum SupportStatus { Equal, Majority, Minority }
+        public Kingdom Kingdom; public SupportStatus SupportStatusOfFinalDecision;
+    }
+    public class DeclareWarDecision : KingdomDecision {
+        public class DeclareWarDecisionOutcome : DecisionOutcome {public bool ShouldWarBeDeclared; public Kingdom Kingdom; public IFaction FactionToDeclareWarOn;}
+    }
+    public class MakePeaceKingdomDecision : KingdomDecision {
+        public class MakePeaceDecisionOutcome : DecisionOutcome {public bool ShouldPeaceBeDeclared; public Kingdom Kingdom; public IFaction FactionToMakePeaceWith;}
+    }
     public class SettlementClaimantDecision : KingdomDecision { public class ClanAsDecisionOutcome : DecisionOutcome { } }
     public class KingdomPolicyDecision : KingdomDecision
     {
@@ -153,6 +164,7 @@ namespace AnimusForge
         internal static CivilWarTuning BuildCivilWarTuning() => new() { DiscontentThreshold = DiscontentThreshold, PlayerDetonationStrengthPercent = PlayerDetonationStrengthPercent };
     }
     internal static class PlayerKingdomRebellionImmunity { internal static bool Protected; internal static bool ShouldProtectKingdom(Kingdom k) => Protected; }
+    internal static class DiplomacyConversationBridge { internal static void ApplyExternalPrestigeDelta(string id,int delta,string reason) { } }
     internal static class WorldDiplomacyBehavior { internal static void ApplyExternalPrestigeDelta(string id, int delta, string reason) { } }
     internal partial class CivilWarCampaignBehavior
     {

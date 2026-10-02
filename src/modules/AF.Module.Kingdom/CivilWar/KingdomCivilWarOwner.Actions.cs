@@ -13,8 +13,8 @@ internal sealed partial class KingdomCivilWarOwner
 	private bool _hasPoliticalResponse;
 	internal event Action StateChanged;
 	internal long Revision { get => _revision; private set { _revision = value; StateChanged?.Invoke(); } }
-	private static bool PoliticalClan(Clan c, Kingdom k) => c != null && c.Kingdom == k && !c.IsEliminated && !c.IsBanditFaction
-		&& !c.IsMinorFaction && !c.IsUnderMercenaryService && !c.IsClanTypeMercenary && c.Leader != null && c.Leader.IsAlive;
+	private static bool PoliticalClan(Clan c, Kingdom k) => k != null && CivilWarWorld.IsPoliticalClan(c)
+        && c.Kingdom == k && c.Leader != null && c.Leader.IsAlive;
 	private static bool IsGovernance(CivilWarAction a) => a == CivilWarAction.Suppress || a == CivilWarAction.Negotiate || a == CivilWarAction.Concede || a == CivilWarAction.ForceDissolve;
 	private static KingdomCivilWarFactionState ActionFaction(CivilWarActionRequest r, KingdomCivilWarKingdomState s, Clan actor)
 		=> r.Action == CivilWarAction.Leave ? FactionOfClan(s, actor) : r.Action == CivilWarAction.JoinCrown || r.Action == CivilWarAction.Found ? null : s?.Factions.FirstOrDefault(x => x.Id == r.FactionId);
