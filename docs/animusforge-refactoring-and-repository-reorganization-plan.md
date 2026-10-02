@@ -6104,3 +6104,17 @@ R2计划交付门槛：已给固定技术路线、真实来源与目标、写入
 **验证**：107 项 production-linked 执行记忆/命令契约（新增 9 项：非流式完整正文、流式去重、完成-only 兜底、空回复、空流、UI 未就绪/恢复、展示失败）；原 speech parser PASS；仓库原 build_single_module.ps1 Debug 1.3（实际引用 v1.3.15.110062）、1.4（实际引用 v1.4.6.115628）与 Bootstrap 均 success；独立 RichExecutions 工程快照以配置目标 1.4.8、本机游戏引用在本工作区输出编译成功（16 warning/0 error），不等同对应补丁版本实机验收。日志与快照集中 `artifacts/execution-bubble-repair-20261002/`。
 
 **未验证**：未部署/未 push/未进游戏；真实模型措辞、流式/非流式两种游戏内气泡、仪式各阶段、旧档与帧耗时仍 NOT_RUN。独立模块只验证共享源码编译，不声明其自身气泡宿主接线已经恢复。根因接线通过源码与离线回归确认，不把测试 sink 成功当成屏幕实际渲染。回滚用本次修复提交的 focused inverse commit，或 evidence 目录 task.patch；不回退其他作者 dirty。
+
+
+## 复仇刑场气泡审查修复（2026-10-02） {#execution-bubble-review-fix-20261002}
+
+**状态：OFFLINE_VERIFIED_WITH_LIMITS。** 接续 `6d3959da`，本次 intent 检查点 `90b40759`；仅修复审查确认的长非流式全文截断及上一轮隔离索引提交后的主索引滞后。
+
+- 索引恢复前逐项核实上一轮10个提交文件的主索引恰好等于 `6d3959da^`，且主暂存区无其他路径；保存原 main-index 与 binary patch 后，仅 restore 这些文件的 staged 到 HEAD。没有修改产品工作文件，没有回退其他作者 dirty；恢复后主暂存区为空。
+- `src/bridges/Vengeance/Host/ExecutionSpeechResponseReceiver.cs:10–45`：OnChunk/OnComplete 共用 Feed，按512字符有界批次喂入既有 parser；不再让完整正文先被2000字符 pending 缓冲裁掉开场/遗言/阶段。短分片沿用原字符串；完成全文不重复分片；原24条/240字符、阶段单调与死亡后禁言规则不变，未修改共享 Vengeance parser。
+- `tests/Vengeance/ExecutionMemoryContractTests/Program.cs:76–106`：新增9项长全文回归，包括2290字符15条台词、开场/遗言/行刑中/结束后、两模式字段全等、大单分片、最早24条保留与跨批次marker/尾行；production-linked测试先RED后GREEN（总116项）。审查原复现改作隔离修复确认，同一正文从11条/丢遗言/10条错阶段变成两模式15条、保留遗言、0条错阶段。
+- 性能：每个接收回调分批处理，无新增任务、网络请求、Mission Tick或世界/Agent扫描；达到24条后停止解析后续正文。保留既有后台解析→有界主线程播放队列，不触碰游戏对象/存档/刑罚/死亡结算/默认流式配置。
+
+**验证**：116处决记忆/命令契约PASS；既有speech parser PASS；原 build_single_module.ps1 Debug 1.3（v1.3.15.110062）、1.4（v1.4.6.115628）及Bootstrap success；git diff check通过；主索引最终与HEAD同步。证据 `artifacts/execution-bubble-review-fix-20261002/`。本轮无共享Vengeance源码修改，独立模块编译沿用上轮证据，不新增声明实机支持版本。
+
+**边界**：未部署/未push/未进游戏，真实模型输出、气泡屏幕渲染、各刑罚现场时序、旧档与帧性能未验证。执行期间检测到Weekly/Illustrator另外4个并行变化路径，未修改或回退，也不夹带提交；不能声称整仓dirty字节完全不变。产品回滚仅逆向本次接收器/测试切片，禁止恢复旧 main-index 引回已确认的反向暂存；原证据与rollback.patch保留。

@@ -74,6 +74,37 @@ internal static class Program
         receiver = new ExecutionSpeechResponseReceiver(lines => empty.AddRange(lines));
         receiver.OnComplete("");
         Check(empty.Count == 0, "empty completed reply invents no speech");
+        string longReply = "[开场]\n刽子手: FIRST\n[最后陈述]\n死刑犯: LAST\n[行刑中]\n" +
+            string.Concat(Enumerable.Range(0, 12).Select(i => "围观: " + i + new string('x', 180) + "\n")) +
+            "[结束后]\n刽子手: AFTER\n";
+        var longCompleted = new List<ExecutionSpeechLine>();
+        receiver = new ExecutionSpeechResponseReceiver(lines => longCompleted.AddRange(lines));
+        receiver.OnComplete(longReply);
+        Check(longReply.Length > 2000 && longCompleted.Count == 15, "long completed reply retains every valid line");
+        Check(longCompleted[0].Text == "FIRST" && longCompleted[0].Phase == ExecutionSpeechPhase.Opening, "long completed reply preserves opening declaration");
+        Check(longCompleted[1].Text == "LAST" && longCompleted[1].IsLastStatement, "long completed reply preserves last statement");
+        Check(longCompleted.Skip(2).Take(12).All(x => x.Phase == ExecutionSpeechPhase.During), "long completed reply preserves during phase");
+        Check(longCompleted.Last().Text == "AFTER" && longCompleted.Last().Phase == ExecutionSpeechPhase.Aftermath, "long completed reply preserves aftermath phase");
+        var longStreamed = new List<ExecutionSpeechLine>();
+        receiver = new ExecutionSpeechResponseReceiver(lines => longStreamed.AddRange(lines));
+        for (int offset = 0; offset < longReply.Length; offset += 80)
+            receiver.OnChunk(longReply.Substring(offset, Math.Min(80, longReply.Length - offset)));
+        receiver.OnComplete(longReply);
+        Check(longStreamed.Count == longCompleted.Count && longStreamed.Zip(longCompleted, (a, b) =>
+            a.Text == b.Text && a.Role == b.Role && a.Phase == b.Phase && a.IsLastStatement == b.IsLastStatement).All(x => x), "long stream and completed reply are identical without duplicates");
+        var largeDelta = new List<ExecutionSpeechLine>();
+        receiver = new ExecutionSpeechResponseReceiver(lines => largeDelta.AddRange(lines));
+        receiver.OnChunk(longReply); receiver.OnComplete(longReply);
+        Check(largeDelta.Count == 15 && largeDelta[1].IsLastStatement && largeDelta[2].Phase == ExecutionSpeechPhase.During, "large single delta preserves phases without duplicate completion");
+        var limited = new List<ExecutionSpeechLine>();
+        receiver = new ExecutionSpeechResponseReceiver(lines => limited.AddRange(lines));
+        receiver.OnComplete(string.Concat(Enumerable.Range(0, 30).Select(i => "刽子手: " + i + new string('x', 200) + "\n")));
+        Check(limited.Count == ExecutionSpeechLineParser.MaximumLines && limited[0].Text.StartsWith("0") && limited.Last().Text.StartsWith("23"), "long full reply retains original 24-line limit and earliest lines");
+        var boundary = new List<ExecutionSpeechLine>();
+        receiver = new ExecutionSpeechResponseReceiver(lines => boundary.AddRange(lines));
+        receiver.OnComplete(new string(' ', 507) + "\n[最后陈述]\n死刑犯: 跨界遗言。");
+        Check(boundary.Count == 1 && boundary[0].IsLastStatement && boundary[0].Text == "跨界遗言。", "batch boundary preserves partial marker and final tail");
+
     }
     private static void Playback()
     {
