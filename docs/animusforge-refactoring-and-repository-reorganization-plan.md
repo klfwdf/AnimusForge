@@ -1,3 +1,41 @@
+<a id="illustrator-background-single-portrait-drag"></a>
+# 本地交付：单人物单立绘、后台生图与弹窗跟手（2026-10-03）
+
+状态 **OFFLINE_VERIFIED**。产品提交 `a596ea6c`；检查点 `59861994`（单图）、`7b492d23`（后台/拖拽）。按本轮玩家反馈实现，不扩大到其他模块、不继承历史推送/部署授权。原两共享文档和并行内战/对话作者内容保留。
+
+## 行为与边界
+
+- 每人物原生只采集一次全身立绘，导演/生图只发一张；旧 HeadDetail DTO、接口/枚举保持兼容，复用旧会话时过滤头图，不删除玩家旧画卷。
+- 百科、会晤和普通周报真实生图请求显式获得后台生命周期。面板关闭/屏幕切换 detach 显示，读档/换战役/关闭模组仍硬取消；旧 revision、战役对象或取消 token 不得发布。
+- 参考采集阶段仍验证真实来源；参考冻结后不再让导演/HTTP返回结果依赖原场景存活。采集尚未完成就离开场景仍可能明确失败；不保证生成永远成功。
+- 保存结果按 CampaignKey/Category/SubjectKey 验真后，主线程发左下角成功提示和完成事件。错误/无缓存/跨存档 metadata 只报失败；不强制弹出关闭面板。
+- 重开同一目标加入原任务，不重复付费请求。会晤附带 scene-session 身份，另一场同人物会面不强行接受旧结果。原面板 callback 与重开订阅分离；清理监听，detached 完成释放八 scope 上限。
+- 画廊只在完成事件后合并延后刷新，避免当前生图占满四 worker 时直接刷新失败。现有快报 campaignOwned job 收尾/等待者语义保留。
+- 共用 MovableGauntletLayer 用 CustomScale 做真实像素换算、按下锚点绝对位移、当前鼠标命中，并在 base.Tick 布局前应用；拖拽/缩放每帧 O(1)，不增加反射、磁盘或网络扫描。
+
+## 核实的源码坐标（均绑定产品提交 a596ea6c）
+
+| 源文件（仓库根目录下） | 一基行范围 / 符号 / 实际消费者 | 已覆盖与未覆盖 |
+|---|---|---|
+| `extensions/AnimusForge.Illustrator/src/Engine/CharacterPortraitReferences.cs` | 77–95 `CollectCharacterPortraitReferencesAsync`，英雄/角色原生采集入口消费 | 只 capture(false) 一次；取消/全身失败保留；原生 GPU未验 |
+| `extensions/AnimusForge.Illustrator/src/Core/IllustrationReferenceRouting.cs` | 32–49 `AddCharacter` / `SinglePortraitSessionReferences`；Card与周报消费 | 两模型输入与旧缓存头图过滤，真实 Chat/Edits请求 fixture；真provider未验 |
+| `extensions/AnimusForge.Illustrator/src/Core/IllustratorRuntime.cs` | 221–260 `GenerationUpdated` / `FindGenerating` / `PublishGeneration` / `TickScopes`；299–480 `IllustrationScope.RunGeneration/RunCore/DetachWindowIfGenerating/FinishClose` | 最多八scope、四worker、完成接受/硬取消/晚结果/一次发布；HUD实机未验 |
+| `extensions/AnimusForge.Illustrator/src/UI/Overlays/IllustrationCardPopup.cs` | 159–188 join/update；247/376 open接入；456/760两个真实RunGeneration；约890冻结后的HTTP返回；1042–1044 close detach | 真编译Card消费者以UI纹理prefix隔离：重开/失败/旧UI保护；原生面板渲染未验 |
+| `extensions/AnimusForge.Illustrator/src/UI/Patches/WeeklyReportPopupIllustrationPatch.cs` | 287–288 open；445–471 join/update；527–588 shared generation；640–642 close | 普通周报后台、快报共享管线保留；实机快报未验 |
+| `extensions/AnimusForge.Illustrator/src/UI/Gallery/IllustratorGalleryPopup.cs` | 79–101 OnGenerationUpdated/Close | 真消费者延后刷新和监听释放，实际图库目录回归；原生贴图未验 |
+| `extensions/AnimusForge.Illustrator/src/UI/Overlays/MovableGauntletLayer.cs` | 70–206 Tick/HandleDrag/命中 | 生产源码原样链接fixture，0.5/0.75/1/1.5/2缩放、回原点/松手/同帧布局/当前输入/缩放；实机帧节奏未验 |
+
+## 验证与证据
+
+- 未修改原 `scripts/build/build_single_module.ps1`；Debug 1.3、1.4、Bootstrap均0错误，参考来源分别 **v1.3.15.110062 / v1.4.6.115628**。Bootstrap仍单模块入口。341个既有项目 warning不算0警告。
+- 两实际 DLL各11套审查，共22入口exit0：module_review（每API71项，含后台与真Card/Gallery消费者）、head_detail（有意单图变化）、reference_routing（66项）、client_endpoint、generation_diagnostics、portrait_no_draw、cache_gallery、scene_capture（28项）、prompt_routing、director_status、native_portrait_color。
+- 生产共用拖拽层fixture 28/0；生产快报preloader+假scope/disk/generator 56/0。假MCM、合成Campaign/Screen、UI纹理prefix隔离，不冒充完整游戏。
+- 保留失败与修复：ReferenceRouting旧断言仍要求头图说明，替换为两个人物单图/无头图并保留环境身份断言；SceneCapture旧审查未跟随已存在的map/mission router及ComposeWithCancellation，沿真实mission路径更新，原取消/私有场景/六面/导出/磁盘断言保留。拖拽测试host MathF歧义修别名；1.3双Numerics类型冲突用真实类型推断解决，不改构建引用。
+- 所有原日志和最终收据在本地 `artifacts/illustrator-background-generation-20261003/receipt.json`，记录提交、源码SHA256、DLL marker/hash、22审查命令日志与未验项；单图初次证据保留 `artifacts/illustrator-single-portrait-20261003/`。最终构建后仅恢复tracked文件原BOM约定，未变C# token/逻辑。并行会话后续改动不自动获得本次构建验收。
+- 未运行实机、GPU、真实provider/延迟、旧存档；**未Stage/部署/打包/推送**，旧1.5 ZIP不含本轮代码。指南 `docs/illustrator_pipeline_diagnostics.md` 第6节说明用户可见行为和采集失败边界。
+
+回滚用产品提交 `a596ea6c` 的具名 inverse/revert，禁止hard reset回检查点；可保留其他作者并行提交。下一步仅在获授权后覆盖候选并实机验收：关面板/离开会面、重开同会话、图库打开、读档取消、1080p/1440p/4K拖拽与左下角通知。
+
 ### 生图同轮收尾补验：完整工作树验收覆盖
 
 此补验替代下方“最终仅隔离候选、当前组合未编译通过”的限制，**不改写早期失败事实，也不扩大到实机**。另一会话完成`4149c2e2`/`dca0e536`对话/上手UI提交后，生图本地产品`5a1eb668`完整树按原脚本无Stage/Deploy再构建Debug双API+Bootstrap exit0/0error，并对完整树两实际实现DLL重复端点174/诊断65/双视图37/NoDraw16/prompt194/导演45/颜色47/参考64/缓存72九套入口，各18组exit0。18553源码输入raw hash与构建前一致；DLL实际SHA与marker核验通过。测试首轮赶在生成目录生命周期中读到缺DLL，保留该轮环境失败；确认构建进程完成、重验DLL hash后最终重跑全部通过，不将缺文件当成产品断言失败。full-workspace-final-build.log、current-final-audit-results.json、full-final-manifest.json及同一receipt.fullWorkspace字段绑定证据。原GPU/现场失败/真实provider/旧档及组合UI实机仍NOT_RUN，无发布/部署/打包。
