@@ -1,0 +1,151 @@
+{
+  "Id": "rule_吉斯海岸定位__赫西",
+  "Keywords": [
+    "赫西"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "赫西（Hesh）位于厄斯索斯南岸的奴隶湾与吉斯海岸，政治上处在吉斯卡利诸城及其腹地之内。它是一座城堡，主要承担地方守备、征税和庇护附近人口的职责。城墙与道路把周边人口、仓储和守备系在这里；旗帜纵然更换，这处据点仍会影响附近人如何纳税、贸易与寻求庇护。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "ghiscari"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "对靠赫西周边土地吃饭的人而言，日子由潮汐、渔汛、淡水和船只能否安全靠岸决定。当地家庭还要依靠灌溉地、砖窑、港市、商队和奴隶湾沿岸航运；任何一处道路、井泉或码头失灵，代价都会先落到他们身上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "ghiscari"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "对攻守双方而言，赫西的分量首先落在港湾入口、泊位、烽火与可供登陆的岸线上。赫西处在吉斯海岸的权力与贸易网络中，城门内外的规矩由当地秩序决定；守军能否吃饱、援兵能否按时抵达，比议事厅里的豪言更能决定这处据点是否可靠。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "scholar",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "货物抵达赫西以前，货主已经算过航期、码头脚费、补水和下一处避风港。他们还会辨认吉斯海岸的口音、法令和通行凭据；名声可以从酒馆传得很远，真正的路程仍须由车轮、船桨或马蹄丈量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "赫西能给一家人带来头衔，也能在灾年与战争中拖垮那一家人。赫西处在吉斯海岸的权力与贸易网络中，城门内外的规矩由当地秩序决定；旗帜更换之后，道路、粮仓、旧债和地方信任仍得由新主人逐一接手。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵靠脚底记住赫西：风向、礁石、渡船与城门落锁后的锚地。能补给、能避险、能找到向导，便值得在行程里标明；若三样都没有，再响亮的家名也救不了迷途者。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "数代人在赫西留下的痕迹，一半藏在修船木、帆布、盐、鱼获和抵御海风的石料，一半藏在吉斯诸神、阶梯金字塔与古老城邦的等级秩序。一处据点因而不只是领主的大厅，也是婚丧、誓言、劳作与地方记忆反复发生的场所。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户、牧民和渔民评价赫西最少绕弯。他们关心灌溉地、砖窑、港市、商队和奴隶湾沿岸航运，也看征粮后是否留下种子、灾年时城门是否开启；远方人看见纹章，他们看见的是明日有没有饭吃。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "赫西：赫西（Hesh）位于厄斯索斯南岸的奴隶湾与吉斯海岸，政治上处在吉斯卡利诸城及其腹地之内。它是一座城堡，主要承担地方守备、征税和庇护附近人口的职责。城墙与道路把周边人口、仓储和守备系在这里；旗帜纵然更换，这处据点仍会影响附近人如何纳税、贸易与寻求庇护。"
+  ]
+}

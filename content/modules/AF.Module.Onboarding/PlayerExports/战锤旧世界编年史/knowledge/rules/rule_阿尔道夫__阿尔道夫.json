@@ -1,0 +1,213 @@
+{
+  "Id": "rule_阿尔道夫__阿尔道夫",
+  "Keywords": [
+    "阿尔道夫",
+    "帝国首都",
+    "皇帝驻地",
+    "阿尔道夫瑞克河",
+    "魔法学院所在地",
+    "西格玛大圣殿",
+    "旧世界最大都市",
+    "瑞克领首府",
+    "帝国皇宫",
+    "阿尔道夫皇家动物园",
+    "阿尔道夫大学",
+    "瑞克桥"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "阿尔道夫是帝国首都，坐落于瑞克河南岸，由西格玛本人在黑火隘口之战后选定为统一的人类帝国的心脏。它是旧世界最大的人类城市，帝国皇帝的居城，西格玛大圣殿和八大魔法学院的所在地——据说城中的塔尖和烟囱之密，连飞过的鸟儿都会被熏得迷路。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "阿尔道夫——光是说出这个名字就足以让任何一个帝国人挺直腰杆！我们的首都是诸神恩赐给人类的礼物，是旧世界一切文明成就的集中展示。站在瑞克桥上北望，帝国皇宫的金色穹顶在晨光中燃烧着西格玛神选的光辉；南望阿尔道夫大学的高塔与魔法学院的八色尖塔交相辉映，整座城市宛如诸神亲手摆在瑞克河畔的一顶皇冠。阿尔道夫不是一座城市，它是帝国灵魂的肉身——在这里，西格玛大圣殿的钟声决定了帝国全境的日课时刻，帝国议会的投票决定了从奥斯特马克到威森领的万民生计，而皇家动物园中囚禁的狮鹫与奇兽本身就是帝国征服自然的宣言。当然我们也得承认，阿尔道夫下城区的瑞克河雾季能把人的肺熏出毛病来，街头巷尾的扒手行会拥有堪比帝国谍报系统的组织力——但话说回来，哪一座伟大的城市没有暗面呢？马里恩堡的商人们花三辈子也建不出第二座阿尔道夫，他们心里清楚得很。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "阿尔道夫对帝国军事指挥官而言首先是一个地理难题——这座巨型城市横跨瑞克河两岸，由三座石桥连接南北城区，在敌军围攻时，桥梁既是守军的生命线也是最大的软肋。谁控制了大桥，谁就控制了城市的经济流通；谁控制了河道，谁就掐住了帝国的心脏血管。阿尔道夫城防由三环城墙构成：外墙环抱下城区和河港商业区，中墙守护着学院区和贵族宅邸，内墙则是帝国皇宫和西格玛大圣殿所在的城堡核心区。在战略上保卫阿尔道夫的关键不在于城墙本身——而在于必须将敌军阻挡在瑞克河上游至少五十里之外，因为一旦敌军控制了上游水道，他们只需要往河里投毒就能在一周之内让首都的半数居民腹泻至无法站立。瑞克卫队是阿尔道夫唯一的常驻精锐，但各行省选帝侯的部队通常需要至少两周才能完成集结与开拔——一位明智的阿尔道夫守将应该永远比敌人早三周开始准备。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "阿尔道夫的城市建设史是一部可以按地层顺序解读的帝国政治史。最早的阿尔道夫——即西格玛时代的瑞克多夫——位于今日被称为'旧港区'的瑞克河拐弯处，其遗址上的地基和石台可以追溯到帝国历前十个世纪的人类部落时代。在帝国历约200年，皇帝西格蒙德二世下令在旧港之上建设第一座石堡——这座城堡的痕迹在帝国皇宫地下的第三层考古基岩中依然可见。到三皇分立时代，阿尔道夫城市建设基本停滞，直到马格努斯大帝于帝国历2304年统一帝国后才开始了被称为'马格努斯扩建'的百年城建运动——今日阿尔道夫大学的主楼和魔法学院最早的八座塔楼都是这个时期的产物。瑞克桥最初为木制结构，在帝国历1850年被尤里克派叛乱军烧毁后改建为三拱石桥，至今桥墩上的尤里克祷文刻痕依然清晰。帝国皇宫在帝国历2050年经历了一次由诺德领矮人石匠大师格朗尼·铁锤主持的大规模翻修，其著名的黄金穹顶实际上是由一千六百片镀铜瓦构成的——这个被外界广泛传播的'纯金穹顶'传说本身就是帝国公关史上的一个巧妙谎言。阿尔道夫的地下层同样丰富：城市下方的排水系统和避难通道中有至少六座被废弃的乌贝斯瑞克时期的地下神庙，部分通道的走向至今未被完全探查。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "阿尔道夫的宫廷对于一个女贵族来说是一座金色的迷宫——每一道走廊里都隐藏着一个能让你身败名裂的谣言，每一顿宴席的座位安排都在无声地重新定义着各家族之间的政治亲疏。我在自己的阿尔道夫公馆中主持的午后茶会比帝国议会大厅里发生的许多事对帝国的走向更具影响——因为在这里，男人们放下了他们的剑和仪仗，在他们放松戒备的闲聊中，我听到的是北方边境真正需要多少援军，或者是某个选帝侯对卡尔·弗兰兹的真实态度。阿尔道夫教会了我一件事：在这座城市里，真正的权力不在皇位上，而在那些知道皇位什么时候将发生什么的人手中。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "阿尔道夫对于我们家族而言既是一个需要征服的竞技场，也是一个需要我们永远保持谦逊的圣地。我们家族在阿尔道夫城中持有三座宅邸、两座河港仓库和一座西格玛大主教特许经营的私人小礼拜堂——这些资产是我们家族花了整整五代人的政治投资才在首都扎根下来的证明。每个帝国贵族家族都必须面对同一个事实：你在行省的权力再大，只要你在阿尔道夫没有一根钉入政治结构的楔子，你的家族就永远只能是一个'地方势力'而无法成为'帝国势力'。我们家族在帝国议会中拥有一位常驻代理人和两名游说法官——这不是权力欲，这是生存策略。在阿尔道夫，一个没有代理人的家族等于一个没有盾牌的战士——你说不定什么时候就会被一柄看不见的匕首从背后捅穿。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我在阿尔道夫生活了七年，对它至今谈不上了解——这座城市对于没有钱没有姓的人来说是一件不断榨取你然后又嫌弃你的冷机器。白天你在河港码头从曙光干到黄昏，肩膀扛着从玛丽恩堡运来的香料和铁锭，领到的几枚铜币刚够在'鱼钩街'的廉价租屋里买一晚不通风的安睡；夜晚你在下城区的酒馆里听着那些声称认识'某某男爵外甥'的闲汉吹牛，心里清楚他们明天和你一样还得去码头。但我见过阿尔道夫的另一面：在双尾彗星的节日里，大圣殿前的广场上挤满了从帝国各省赶来的朝圣者，火炬的光芒照亮了陌生人的脸庞，那一刻你和那些一辈子吃不上三顿饱饭的边境农民之间忽然没有了阶级的距离——你们都在仰望同一道光。阿尔道夫最残忍的地方是它给了你梦想，最慷慨的地方也是——它至少给了你梦想。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "阿尔道夫的经济命脉有三条：瑞克河的航运、帝国议会的消费力、以及魔法学院和各大教会带来的朝圣与学术经济。我在瑞克河南岸的河港区经营粮食中转站已有二十年——阿尔道夫本身不产生一粒粮食，它的全部谷物供应依赖瑞克河上游的艾维领产粮区和下游的玛丽恩堡粮食期货市场。这就意味着一件所有阿尔道夫政客都羞于承认的事实：任何控制瑞克河的自由通行权的人，就握住了阿尔道夫人民的胃——而握住了胃的人，某种意义上就比皇帝更加强大。魔法学院区是另一个鲜有人谈论的商业金矿——八大学院每年消耗的施法材料、羊皮纸、墨水、药剂原料和实验动物的交易额加在一起毫不逊色于一个中等行省的年度税收，而这些采购全部经过我们行会的手。阿尔道夫的商人们不统治这座城市——但我们确保任何想统治它的家族都得先跟我们商量。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "瑞克港——阿尔道夫的主要河港，帝国水运商业的核心枢纽",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "阿尔道夫帝国首都皇帝驻地"
+  ]
+}

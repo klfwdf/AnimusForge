@@ -1,0 +1,66 @@
+﻿{
+  "Id": "rule_弩砲",
+  "Keywords": [
+    "弩砲",
+    "弩炮"
+  ],
+  "RagShortTexts": [
+    "弩砲箭矢能穿透多人，但射程有限无法摧毁冲车。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "弩炮？见过，城头上那种大弓架子。攻城的时候守城的一方从垛口后面往外射，箭跟人胳膊那么粗，嗖一下过来，木盾根本挡不住。我们村有个去守城的回来说，那东西一箭能穿透三个人，第一个人直接钉在地上，第二第三个穿在箭杆子上，跟串鱼似的。听着就瘆人。不过他说那东西射完了也就射完了，箭飞不远，打到后面就没劲了，想靠它把对面的冲车打烂是不行的——箭扎在木头上拔都拔不出来，车还是照样往前推。我们老百姓不懂什么扭力什么结构，我们就知道那东西吓人，但指望它救命不一定好使。真正把城守住还得靠人往上填。弩炮打完了还得有人站城头。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "弩炮是围城战中最务实的器械选择。我从军需官那里看过账目：一架弩炮的铁件用量不到投石机的三分之一，木料就地几小时就能装好一架。攻城时前锋刚扎下营寨，弩炮阵地已经可以开始压制城头了。但我也清楚它的局限。弩炮的火力密度不够，杀伤效率比不上弓箭手齐射，对攻城器械的结构破坏更是可以忽略不计——弩箭钉进冲车的橡木板里拔不出来，但它不会让那辆车停下。想摧毁冲车还是得靠火或者靠人冲出城去烧。弩炮最大的价值在于压制城头的弓箭手，给己方步兵登城争取窗口。它便宜，好用，但指望它单打独斗是不行的。围城战到最后还是靠人。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "engineering": 50
+        }
+      },
+      "Content": "弩炮是最经济的扭力投射武器。结构上就三部分：扭力束、箭槽、扳机。扭力束用畜力筋腱或发绳绞紧，蓄能效率稳定，扳机释放结构简单可靠。优点是制造门槛低，损耗部件可现场替换——扭力束断了用备用的绞绳重上一遍就行，箭槽开裂找块硬木刨平了接着用。缺点是弹道衰减快，弩箭虽然初速高但质量太大，一百五十米后动能断崖式下跌，打到第四个人基本就停在地上了，效率不如排弩齐射。对建筑结构的破坏也有限，箭矢动能主要转化为贯穿而非冲击，打中木梁就是插进去，不会造成结构断裂。战场上弩炮该退的时候就要退，它不是决定性武器，但它是围城里不可或缺的一部分。"
+    }
+  ],
+  "TextMappings": []
+}

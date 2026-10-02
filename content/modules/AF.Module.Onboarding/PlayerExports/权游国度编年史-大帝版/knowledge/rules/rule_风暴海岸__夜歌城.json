@@ -1,0 +1,151 @@
+{
+  "Id": "rule_风暴海岸__夜歌城",
+  "Keywords": [
+    "夜歌城"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "夜歌城位于风暴地西南的多恩边疆地，是卡伦家族的古老席位。这里的夜色、山路与边境歌谣不是装饰，而是历史留下的习惯：多恩山隘另一边的敌意、劫掠与报复曾使边地领主长期把瞭望、骑马和迅速集结当作日常。夜歌城与河湾地、风暴地腹地及多恩通道都有关联，因此其领主既要向上效忠，也必须与邻人维持能活下去的关系。边境的和平从来不是忘记旧仇，而是暂时没人拔剑。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "reach"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "夜歌城可以写在领主的地契上，附近人真正依靠的却是井泉、田租、磨坊、林地和危急时能否进堡。当地家庭还要依靠雨林木材、猎物、瘠薄农田、渔获和躲避风暴的屋顶；任何一处道路、井泉或码头失灵，代价都会先落到他们身上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "reach"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "守将衡量夜歌城，先查外墙、塔楼、水井、粮仓与最近的援军道路。在七国的封建秩序中，夜歌城的归属牵动封臣义务、税粮和征召；守军能否吃饱、援兵能否按时抵达，比议事厅里的豪言更能决定这处据点是否可靠。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "scholar",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "旅人判断是否经过夜歌城，看的是领地税、庄园产物、驮队路程和堡下形成的小市集。他们还会辨认风暴地的口音、法令和通行凭据；名声可以从酒馆传得很远，真正的路程仍须由车轮、船桨或马蹄丈量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主可以凭夜歌城收税举兵，却也要为这里的治安与饥馑负责。在七国的封建秩序中，夜歌城的归属牵动封臣义务、税粮和征召；旗帜更换之后，道路、粮仓、旧债和地方信任仍得由新主人逐一接手。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "旅人在夜歌城附近最怕弄错坡势、城门、饮水与守军盘查外人的规矩。能补给、能避险、能找到向导，便值得在行程里标明；若三样都没有，再响亮的家名也救不了迷途者。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "修补夜歌城的人熟悉石墙、木梁、铁门、墓窖和代代修补留下的接缝，安慰死者家属的人熟悉七神、风暴王旧史与抵御海风的厚重石墙。一处据点因而不只是领主的大厅，也是婚丧、誓言、劳作与地方记忆反复发生的场所。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "夜歌城的纹章离田地很远，收税人与守军却离田地很近。他们关心雨林木材、猎物、瘠薄农田、渔获和躲避风暴的屋顶，也看征粮后是否留下种子、灾年时城门是否开启；远方人看见纹章，他们看见的是明日有没有饭吃。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "夜歌城：夜歌城位于风暴地西南的多恩边疆地，是卡伦家族的古老席位。这里的夜色、山路与边境歌谣不是装饰，而是历史留下的习惯：多恩山隘另一边的敌意、劫掠与报复曾使边地领主长期把瞭望、骑马和迅速集结当作日常。夜歌城与河湾地、风暴地腹地及多恩通道都有关联，因此其领主既要向上效忠，也必须与邻人维持能活下去的关系。边境的和平从来不是忘记旧仇，而是暂时没人拔剑。"
+  ]
+}

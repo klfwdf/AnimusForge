@@ -1,0 +1,131 @@
+{
+  "Id": "rule_家族根基__赛文",
+  "Keywords": [
+    "赛文",
+    "赛文家族"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "赛文家族以赛文城为根基，是北境史塔克的封臣，家徽为银底黑色战斧。城堡位于临冬城以南、靠近国王大道与白刃河交通的区域，使这家门比极北领主更常接触来往军队、商旅和临冬城召令。战斧纹章适合北境武门，却没有替所有族人规定同一种脾气；赛文的实际声望来自守路、出兵、管理周边田林以及与临冬城保持近距离关系。对当地人而言，城堡是否及时处理盗匪与冬储，比家徽看起来多么锋利更重要。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "北境贵族把赛文看作临冬城近旁的可靠封臣。距离带来荣誉，也带来更频繁的召令与审视；离狼主越近，越难用路远雪深解释迟到。战斧旗的价值在于需要时能迅速出现在大道上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "赛文城附近的人熟悉大道上的马蹄和陌生队伍。商旅带来消息，军队也会带走粮草。百姓希望赛文的战斧砍向盗匪与来敌，而不是只在征税时显得锋利。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待赛文，会先看它的土地、婚盟、血脉和债务。赛文的家名系于血缘、婚盟、旧债与地方记忆；效忠的对象、持有的城堡和家中掌权者都可能改变，但家名累积的荣辱往往比一场战争活得更久。家徽是门面，能否保护封地、兑现婚约并在危机中召集人马，才是家族真正的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起赛文时，记得的是谁在营火边分过粮、谁把他们留在城外、谁在败局里仍站在旗旁。赛文的家名系于血缘、婚盟、旧债与地方记忆；效忠的对象、持有的城堡和家中掌权者都可能改变，但家名累积的荣辱往往比一场战争活得更久。家族名声最终要落到具体的人和具体的命令上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意赛文留下的仪式、墓地和传承。赛文的家名系于血缘、婚盟、旧债与地方记忆；效忠的对象、持有的城堡和家中掌权者都可能改变，但家名累积的荣辱往往比一场战争活得更久。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见赛文。赛文的家名系于血缘、婚盟、旧债与地方记忆；效忠的对象、持有的城堡和家中掌权者都可能改变，但家名累积的荣辱往往比一场战争活得更久。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "赛文：赛文的家名系于血缘、婚盟、旧债与地方记忆；效忠的对象、持有的城堡和家中掌权者都可能改变，但家名累积的荣辱往往比一场战争活得更久。"
+  ]
+}

@@ -1,0 +1,208 @@
+{
+  "Id": "rule_战舞者__战舞者",
+  "Keywords": [
+    "战舞者",
+    "洛克信徒",
+    "战舞步法",
+    "双刃舞者",
+    "无甲战士",
+    "欺诈之神",
+    "死亡之舞"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "战舞者是木精灵中最令人惊叹的战士——他们不穿盔甲，仅持双刃，以欺诈之神洛克传授的神秘战舞步伐在敌阵中穿行如风，在舞姿流转间完成致命的斩杀。观看一名战舞者在战场上翩跹，既如同欣赏一场最华丽的祭祀舞蹈，又如同目睹一场无可逃脱的死亡仪式。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "战舞者是欺诈之神洛克意志的肉身显现，是艾索洛伦永远跳动着的艺术心脏。我们的战舞者将搏杀升华为神圣戏剧——每一次旋转、每一记跳跃、每一道刀光都是对洛克神话的重新演绎。他们在战场上不依赖金属护甲，因为洛克的战舞步法本身就是最完美的防御：刀锋将至，舞步已转。每年春分与秋分的洛克圣祭中，战舞者们会在金色林地之间上演长达三昼夜不息的战舞仪式，以鲜血与汗水喂养森林的灵流。人类那些笨拙的骑士和僵硬的步兵在遇到战舞者时，往往还没搞清楚状况就已经倒地——他们死于艺术。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "战舞者在战术上是一个最令指挥官头疼的不确定因素。他们不受传统步兵交战逻辑的约束——没有阵型、没有防线、没有纪律，完全以不可预测的灵动步法在战场上自由穿梭。重装步兵对他们无效，因为笨拙的重剑根本碰不到他们的衣角；骑兵冲锋也收效有限，因为战舞者能在一匹马冲刺的过程中完成五次精准斩击。对抗战舞者最有效的策略是远程饱和射击——他们的无甲肉体经不起密集的箭雨或火枪齐射。这也是木精灵极少让战舞者单独现身的原因：他们需要其他兵种吸收投射火力。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "战舞者的宗教与军事传统源于洛克——木精灵神话中掌管诡计、欺诈、欢笑与黑暗幽默的次级神祇。在艾索洛伦的神系中，洛克并非主神，但他的信仰在战舞者群体中被奉为至高。战舞者所使用的基础步法有九套，每一套对应洛克神话中的一段叙事：'劫掠者之跃'用于在面对多重攻击时连续闪避；'命运编织者之旋'用于在狭小空间内最大化攻击密度；'笑声终结''则是最恐怖的一式——执行者会假装被击中倒地，在对手放松警惕的瞬间从地面发动致命的致命一击。最引人入胜的历史文献是阿尔道夫禁书库中收藏的《精灵战舞论稿》，由一位曾在艾索洛伦作为战舞者学徒生活了五十年的布列塔尼亚精灵后裔撰写，他在书中详细记录了战舞者在'欢愉之刃'圣日中以舞蹈切断二十个活人俘虏的头颅作为洛克献祭的完整过程。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我有幸在一次外交仪式上观赏过战舞者的表演——八名精灵舞者在月光林地中随着无形的鼓点起舞，他们的刀刃在夜空下画出一道道旋转的银环。其中一位女舞者径直舞到我面前，将刀锋停在我的喉咙前一寸处，微笑、行礼、然后旋离。我旁边的侍卫全部拔出了剑，但我制止了他们——我知道那不是在威胁，而是在问候。战舞者的刀刃不会杀死你，除非她们的舞蹈需要你这一部分来完成洛克叙事中的某一幕。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "每十年我们家族会向艾索洛伦进贡一批精炼秘银以换取森林的和平。上一轮的仪式中，与我们交接的精灵护卫中有一名战舞者，他全程没有说一句话，但以舞蹈来'谈判'——每一步舞姿都在表达某种立场、某种不容侵犯的边界。我的老管家——一生与精灵打交道的老人——翻译给我听：那舞步传达的信息是'你们的金银对我们毫无意义，但你们的诚意——我们记住'。从那一天起我知道了一个道理：与木精灵对话，你得学会解读沉默和刀锋的语言。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "在艾索洛伦边缘的一个精灵过路客栈里，我见过三个战舞者跟一个矮人屠夫决斗。别问我为什么一个矮人屠夫要挑战精灵——大概是喝了太多巴格曼啤酒的缘故。关键是那场战斗根本不像战斗，矮人的斧头每次挥出，战舞者就已经旋到了他身后的位置，用刀面轻拍他的头盔，像是在玩一场优雅的游戏。三分钟后矮人气喘吁吁地倒在地上，毫发无伤但颜面尽失，而战舞者们已经重新坐回吧台，继续喝她们的月光蜜酒，就好像什么都没发生。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我在塔拉贝克河市集上从一个退役的老佣兵手里收到过一把据说是战舞者所用双刃中的一把——剑身极轻、弹性惊人，在灯光下呈现出某种不属于任何已知金属的淡绿色光晕。请阿尔道夫金匠公会鉴定后，他们给出的结论是：这种合金中掺入了一种未知的植物纤维素材质，使得剑身在高速挥舞时产生微弱的空气动力学颤音，既能扰乱对手的听觉判断，又能在夜间呈现出迷惑性的光影幻觉。换句话说，这把剑不只是武器，它是一件被锻造出来的戏剧道具。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "崇拜洛克欺诈之神的无甲双刃战舞精灵",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "战舞者洛克信徒战舞步法"
+  ]
+}

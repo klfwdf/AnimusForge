@@ -1,0 +1,56 @@
+﻿{
+  "Id": "rule_埃里尔王",
+  "Keywords": [
+    "埃里尔王",
+    "埃里尔"
+  ],
+  "RagShortTexts": [
+    "先王埃里尔·芬·乌瑟莱恩，巴丹尼亚仁慈的至高王，在位数十年主动维护与帝国和平。潘德拉克战役前于狩猎中失踪。其养子卡拉多格继位，失踪真相众说纷纭。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "先王埃里尔的全名为埃里尔·芬·乌瑟莱恩，是巴丹尼亚少有的仁慈的至高王，在他领导巴丹尼亚的几十年里，他一直主动维护与帝国的和平局势。在潘德拉克战役开始前，先王埃里尔在狩猎中意外不知所踪。埃里尔曾收留一名养子，也就是继他之后的新任至高王卡拉多格。关于先王埃里尔的失踪众说纷纭，甚至有人将矛头指向卡拉多格，怀疑是他刺杀了自己的养父，夺取了至高王之位。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable",
+          "soldier",
+          "townsfolk",
+          "villager",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "先王埃里尔·芬·乌瑟莱恩是位仁慈的至高王，掌政几十年一直主动维护与帝国的和平。潘德拉克战役前，他在狩猎中意外失踪。卡拉多格继位。关于失踪的事，民间说什么的都有。"
+    }
+  ],
+  "TextMappings": []
+}

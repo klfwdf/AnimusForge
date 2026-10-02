@@ -1,0 +1,148 @@
+{
+  "Id": "rule_王冠秩序__废黜",
+  "Keywords": [
+    "废黜"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "废黜主张某位统治者已失去继续统治的资格，是最危险的政治语言之一。它可能来自法理、战争或集体转向；一旦被说出口，所有人都必须重新回答自己效忠的是人、王冠还是秩序。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "在废黜面前，领主谈权利，书记官谈程序，普通人谈能否安全回家；命令与执行决定一纸命令究竟是约束，还是另一场讨价还价的开始。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵执行废黜时只看旗帜、口令和补给，贵族却要计算盟誓与声望的余波；命令传得越远，地方上的解释往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "wanderer",
+          "priest",
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "商人和旅人从废黜中感受到的是关卡、赎金与消息价格，祭司和学者关注它如何塑造正当性；同一项决定，在不同阶层眼中很少有同一种重量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "在领主和商人眼中，废黜不是挂在墙上的名词，而是每天要付出代价的秩序。废黜主张某位统治者已失去继续统治的资格，是最危险的政治语言之一。它可能来自法理、战争或集体转向；一旦被说出口，所有人都必须重新回答自己效忠的是人、王冠还是秩序。他们会先问谁承担义务、谁得到保护，以及违约之后由谁来主持公道。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起废黜时，通常不会从冠冕和仪式说起。废黜主张某位统治者已失去继续统治的资格，是最危险的政治语言之一。它可能来自法理、战争或集体转向；一旦被说出口，所有人都必须重新回答自己效忠的是人、王冠还是秩序。对他们而言，真正重要的是命令能否抵达、道路是否安全、粮食和报酬能否按时到手。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者对废黜的看法各不相同，却都明白一件事：废黜主张某位统治者已失去继续统治的资格，是最危险的政治语言之一。它可能来自法理、战争或集体转向；一旦被说出口，所有人都必须重新回答自己效忠的是人、王冠还是秩序。漂亮的誓言若没有土地、兵力或神圣传统支撑，很快就会被下一场危机重新解释。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "在市镇和村庄里，废黜往往以很小的方式出现。废黜主张某位统治者已失去继续统治的资格，是最危险的政治语言之一。它可能来自法理、战争或集体转向；一旦被说出口，所有人都必须重新回答自己效忠的是人、王冠还是秩序。人们记住的不是谁在大厅里说得最响，而是哪一条规矩让家人免于饥饿、征召或无休止的争斗。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "废黜：废黜主张某位统治者已失去继续统治的资格，是最危险的政治语言之一。它可能来自法理、战争或集体转向；一旦被说出口，所有人都必须重新回答自己效忠的是人、王冠还是秩序。"
+  ]
+}

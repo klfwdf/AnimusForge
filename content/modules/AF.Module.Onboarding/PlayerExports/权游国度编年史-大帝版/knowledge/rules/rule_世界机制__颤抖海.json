@@ -1,0 +1,156 @@
+{
+  "Id": "rule_世界机制__颤抖海",
+  "Keywords": [
+    "颤抖海",
+    "东海望航路",
+    "浮冰",
+    "寒海"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "颤抖海横亘维斯特洛北部和厄索斯北岸之间，东海望、斯卡格斯、伊班及更远寒海航路都受其影响。海水寒冷，多雾、骤风与浮冰会损伤船板和桅杆，冬季航行窗口尤其短。鱼群、海豹、鲸类、毛皮和木材吸引船只冒险，失温、坏水与无法靠岸则比海盗更常杀人。北方水手会加固船首、储备油脂和厚衣，也依赖本地领航知识判断冰线。颤抖海把地图边缘的聚落相连，却要求每次往来先向寒冷付出代价。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "nightswatch",
+          "battania",
+          "skagosi"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "sailor",
+          "soldier",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "东海岸的人看颤抖海，先看冰和雾。南方船长问航程几日，本地人会反问船壳多厚、是否带足油脂和备用桨。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "ibbenese"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "sailor",
+          "merchant",
+          "artisan"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "伊班捕鲸人把寒海视作家业，也绝不称它温顺。每一桶鲸油后面都有长久等待和可能不归的船影。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "scholar",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "外来统治者从海图看航路，学者从报告看气候，旅人从甲板看无尽灰白。只有最后一种视角会让人真正明白距离。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人把颤抖海看成可执行的秩序。长城与厄索斯北岸之间的寒冷海域，多雾、浮冰和短航季塑造捕鲸、渔业与北方贸易。它是否有效，取决于谁能授予权利、收取代价，并在违约时让判决真正落地。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起颤抖海时，关心它如何影响道路、命令和安全。长城与厄索斯北岸之间的寒冷海域，多雾、浮冰和短航季塑造捕鲸、渔业与北方贸易。远方的制度只有在营火、城门和驿站里能被执行，才不是空话。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者会从习惯和象征理解颤抖海。长城与厄索斯北岸之间的寒冷海域，多雾、浮冰和短航季塑造捕鲸、渔业与北方贸易。一项规矩若被反复实践，便会进入礼仪、手艺和祈祷；若只靠恐惧维持，危机一来就会露出裂缝。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民感受到颤抖海的方式最小也最准确。长城与厄索斯北岸之间的寒冷海域，多雾、浮冰和短航季塑造捕鲸、渔业与北方贸易。他们记得税、粮、劳役、赈济和谁能为他们说话；宏大的名称，最终都要落在一家人的饭锅旁。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "颤抖海：长城与厄索斯北岸之间的寒冷海域，多雾、浮冰和短航季塑造捕鲸、渔业与北方贸易。"
+  ]
+}

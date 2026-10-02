@@ -1,0 +1,132 @@
+{
+  "Id": "rule_家族根基__达哈尔",
+  "Keywords": [
+    "达哈尔",
+    "达哈尔家族"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "达哈尔家族因克拉哈斯·达哈尔而在狭海历史中留下名字。克拉哈斯曾代表三女儿王国在石阶列岛打击海盗，后来以残酷处置俘虏和征收重税获得“喂蟹人”恶名，并在列岛战争中败亡。那段往事说明密尔家门的财富与海峡航运紧密相连，也说明保护商路与掠夺商路有时只隔着税额和武力。 密尔以精巧工艺和贸易闻名，透镜、蕾丝、地毯、染料与密尔式十字弓都需要熟练工匠和进口原料。城市由富裕商人、总督与行业利益支配，奴隶劳动与自由工匠的技术共同支撑财富。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "myrish"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "密尔商人与总督看达哈尔，首先计算它掌握哪些工坊、航线和债权。精美货物利润丰厚，原料断供或一步错误外交却足以让整片作坊停工。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "myrish"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "slave",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "密尔工匠评价达哈尔，更在意学徒待遇、原料质量与货款能否按时结清。贵族能把蕾丝卖到万里之外，真正让针线不出差错的仍是窗边熬坏眼睛的人。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待达哈尔，会先看它的土地、婚盟、血脉和债务。达哈尔是密尔家门，历史记忆中“喂蟹人”克拉哈斯·达哈尔曾以海军力量控制石阶列岛。家徽是门面，能否保护封地、兑现婚约并在危机中召集人马，才是家族真正的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起达哈尔时，记得的是谁在营火边分过粮、谁把他们留在城外、谁在败局里仍站在旗旁。达哈尔是密尔家门，历史记忆中“喂蟹人”克拉哈斯·达哈尔曾以海军力量控制石阶列岛。家族名声最终要落到具体的人和具体的命令上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意达哈尔留下的仪式、墓地和传承。达哈尔是密尔家门，历史记忆中“喂蟹人”克拉哈斯·达哈尔曾以海军力量控制石阶列岛。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见达哈尔。达哈尔是密尔家门，历史记忆中“喂蟹人”克拉哈斯·达哈尔曾以海军力量控制石阶列岛。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "达哈尔：达哈尔是密尔家门，历史记忆中“喂蟹人”克拉哈斯·达哈尔曾以海军力量控制石阶列岛。"
+  ]
+}

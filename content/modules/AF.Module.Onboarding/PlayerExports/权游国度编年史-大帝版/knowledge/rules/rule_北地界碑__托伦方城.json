@@ -1,0 +1,153 @@
+{
+  "Id": "rule_北地界碑__托伦方城",
+  "Keywords": [
+    "托伦方城",
+    "方城",
+    "西部道路"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "托伦方城是北境西部的方形城堡，传统上与史塔克家有关。它并非临冬城那样的王座中心，而是北境广阔领土中一枚务实的钉子：控制附近道路，集结地方兵员，在动荡时为商旅和农户提供石墙后的秩序。北境的距离常使次要城堡显得格外重要——两座城之间可能隔着数日雪路、森林或荒原，消息来得慢，援军更慢。托伦方城的方正布局和西部位置，使它在地方防御网络中具有稳定价值。谁暂时掌管城门可以变化，北境西部需要道路、补给和避难所的事实不会变化。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "在托伦方城的墙影与道路旁生活的人，先看井泉、田租、磨坊、林地和危急时能否进堡。当地家庭还要依靠柴薪、猎场、泥炭、盐鱼与能否撑过长冬的粮仓；任何一处道路、井泉或码头失灵，代价都会先落到他们身上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "军队接近托伦方城时，地图很快让位给外墙、塔楼、水井、粮仓与最近的援军道路。在七国的封建秩序中，托伦方城的归属牵动封臣义务、税粮和征召；守军能否吃饱、援兵能否按时抵达，比议事厅里的豪言更能决定这处据点是否可靠。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "scholar",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "学士能记下托伦方城的沿革，商人更先打听领地税、庄园产物、驮队路程和堡下形成的小市集。他们还会辨认北境的口音、法令和通行凭据；名声可以从酒馆传得很远，真正的路程仍须由车轮、船桨或马蹄丈量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "贵族谈论托伦方城时常先说家名，土地本身却要求道路、粮仓与守备。在七国的封建秩序中，托伦方城的归属牵动封臣义务、税粮和征召；旗帜更换之后，道路、粮仓、旧债和地方信任仍得由新主人逐一接手。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "一支疲惫队伍接近托伦方城时，人人关心坡势、城门、饮水与守军盘查外人的规矩。能补给、能避险、能找到向导，便值得在行程里标明；若三样都没有，再响亮的家名也救不了迷途者。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "托伦方城并非只有城主大厅；石墙、木梁、铁门、墓窖和代代修补留下的接缝与旧神、鱼梁木与祖先留下的墓地同样塑造这里。一处据点因而不只是领主的大厅，也是婚丧、誓言、劳作与地方记忆反复发生的场所。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "市井与村舍谈起托伦方城，先问今年还能留下多少粮。他们关心柴薪、猎场、泥炭、盐鱼与能否撑过长冬的粮仓，也看征粮后是否留下种子、灾年时城门是否开启；远方人看见纹章，他们看见的是明日有没有饭吃。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "托伦方城：托伦方城是北境西部的方形城堡，传统上与史塔克家有关。它并非临冬城那样的王座中心，而是北境广阔领土中一枚务实的钉子：控制附近道路，集结地方兵员，在动荡时为商旅和农户提供石墙后的秩序。北境的距离常使次要城堡显得格外重要——两座城之间可能隔着数日雪路、森林或荒原，消息来得慢，援军更慢。托伦方城的方正布局和西部位置，使它在地方防御网络中具有稳定价值。谁暂时掌管城门可以变化，北境西部需要道路、补给和避难所的事实不会变化。"
+  ]
+}

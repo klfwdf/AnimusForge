@@ -1,0 +1,152 @@
+{
+  "Id": "rule_家族根基__慕顿",
+  "Keywords": [
+    "慕顿",
+    "慕顿家族"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "慕顿家族以女泉城为根基，是河间地重要的城镇贵族，家徽以红色鲑鱼为标志。女泉城位于螯足半岛西侧海湾，拥有港口、道路、渔业、盐业和因琼琪泉传说而来的朝圣与游历名声。城镇财富使慕顿不同于只依靠乡间庄园的封臣：他们必须同时处理商人、船主、手工业者、圣堂、城墙与周边农地。女泉城靠近王领与狭海航路，也因此容易被王朝战争、行军和舰船波及。慕顿的旗帜会随封臣义务进入战争，城中百姓却始终希望领主先记得一座繁荣城镇经不起反复洗劫。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "river"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "河间诸侯看慕顿，既把他们当作徒利体系中的封臣，也看重女泉城带来的港税、城墙和王领方向消息。一座富裕城镇能提供钱粮，也比普通城堡更容易成为敌军目标；慕顿的每次站队都带着整座城的风险。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "river"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "女泉城商人与船主评价慕顿，先看港口规矩、市场秤砣和夜间巡逻。贵族可以为荣誉出兵，商户却知道一次围城会烧掉多少年积蓄。红鲑若能让水路保持畅通，才真正配得上这座城。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "river"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "朝圣者记得琼琪泉，农户记得城外田地。慕顿若能保护泉水、圣堂与收成，女泉城的美名便不只属于歌手；若军队反复从这里经过，再圣洁的水也洗不掉百姓对征发的怨恨。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待慕顿，会先看它的土地、婚盟、血脉和债务。慕顿的家名系于血缘、婚盟、旧债与地方记忆；效忠的对象、持有的城堡和家中掌权者都可能改变，但家名累积的荣辱往往比一场战争活得更久。家徽是门面，能否保护封地、兑现婚约并在危机中召集人马，才是家族真正的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起慕顿时，记得的是谁在营火边分过粮、谁把他们留在城外、谁在败局里仍站在旗旁。慕顿的家名系于血缘、婚盟、旧债与地方记忆；效忠的对象、持有的城堡和家中掌权者都可能改变，但家名累积的荣辱往往比一场战争活得更久。家族名声最终要落到具体的人和具体的命令上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意慕顿留下的仪式、墓地和传承。慕顿的家名系于血缘、婚盟、旧债与地方记忆；效忠的对象、持有的城堡和家中掌权者都可能改变，但家名累积的荣辱往往比一场战争活得更久。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见慕顿。慕顿的家名系于血缘、婚盟、旧债与地方记忆；效忠的对象、持有的城堡和家中掌权者都可能改变，但家名累积的荣辱往往比一场战争活得更久。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "慕顿：慕顿的家名系于血缘、婚盟、旧债与地方记忆；效忠的对象、持有的城堡和家中掌权者都可能改变，但家名累积的荣辱往往比一场战争活得更久。"
+  ]
+}

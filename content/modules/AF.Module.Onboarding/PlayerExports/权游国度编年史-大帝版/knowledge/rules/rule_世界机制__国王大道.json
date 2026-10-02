@@ -1,0 +1,149 @@
+{
+  "Id": "rule_世界机制__国王大道",
+  "Keywords": [
+    "国王大道",
+    "长城至君临",
+    "王家道路",
+    "驿路"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "国王大道纵贯维斯特洛东部，从长城方向经过临冬城、颈泽与河间地通往君临，是王家道路体系最醒目的主干。杰赫里斯一世时代大修道路，使信使、商队和军队比旧日更易跨越诸境；但大道并非处处铺石，雨季泥泞、桥梁损坏、盗匪和战乱都会拖慢行程。它把遥远地区拉近，也把征税、疫病和战争更快带到沿线村庄。谁声称统治道路，谁就要回答巡逻、过桥、驿马和修缮由谁承担。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "wanderer",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "商旅把国王大道当作最容易问路的路线，却从不把容易辨认等同于安全。每到一处桥梁和客栈，他们都会重新打听前方是谁收税、哪里有逃兵。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主与军队依靠大道快速集结，也会发现敌人同样如此。道路缩短距离，却不能替辎重车寻找粮草，沿线民心一旦耗尽，大军便会饿在王家路上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "路边居民从车轮声判断生意或灾难将至。商队带来铜币，军队带走粮马；同一条大道，在客栈主人眼里是机会，在贫农眼里可能是一道永远关不住的门。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人把国王大道看成可执行的秩序。连接长城、临冬城、河间地与君临的南北干道，承载王令、商旅、军队和沿途征敛。它是否有效，取决于谁能授予权利、收取代价，并在违约时让判决真正落地。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起国王大道时，关心它如何影响道路、命令和安全。连接长城、临冬城、河间地与君临的南北干道，承载王令、商旅、军队和沿途征敛。远方的制度只有在营火、城门和驿站里能被执行，才不是空话。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者会从习惯和象征理解国王大道。连接长城、临冬城、河间地与君临的南北干道，承载王令、商旅、军队和沿途征敛。一项规矩若被反复实践，便会进入礼仪、手艺和祈祷；若只靠恐惧维持，危机一来就会露出裂缝。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民感受到国王大道的方式最小也最准确。连接长城、临冬城、河间地与君临的南北干道，承载王令、商旅、军队和沿途征敛。他们记得税、粮、劳役、赈济和谁能为他们说话；宏大的名称，最终都要落在一家人的饭锅旁。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "国王大道：连接长城、临冬城、河间地与君临的南北干道，承载王令、商旅、军队和沿途征敛。"
+  ]
+}

@@ -1,0 +1,211 @@
+{
+  "Id": "rule_矮人风土__矮人风土",
+  "Keywords": [
+    "矮人风土",
+    "达维社会",
+    "锻造工艺",
+    "矮人习俗",
+    "矮人风土屠夫",
+    "麦酒文化",
+    "胡须传统",
+    "祖先崇拜",
+    "氏族生活",
+    "矮人风土长须者"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "矮人社会围绕着三大核心运转：氏族、锻造和仇恨。矮人一生大部分时间生活在地下城塞中——他们不喜欢开阔的天空，坚信头顶上应该有坚固的岩石。矮人最神圣的事情莫过于喝啤酒、唱先祖颂歌、以及在锻炉前捶打金属直到兵器完美成型。社会中最悲惨的一群人被称为「屠夫」——那些因无法清偿的个人耻辱而选择将姓名从氏族谱系中抹去、赤膊用双斧在战斗中寻找光荣死亡的矮人。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "让我告诉你什么是真正的达维生活。我每天早上醒来第一件事就是检查锻炉的温度——冰冷的锻炉是懒惰的象征。然后喝一杯麦酒——祖先教导我们好啤酒就是液体面包。工作——在熔炉边的每一锤都不仅是在打铁，更是在延续数千年未曾中断的工艺传统。晚上我们在长桌边喝更多的啤酒，那声音大到能让人类聋掉，但这就是达维——我们不窃窃私语，我们唱歌、吼叫、捶桌子。至于屠夫——不要用怜悯的眼神看他们。屠夫的命运是自我选择的，他们在赤膊冲向巨龙时感受到的是解脱和自由，而非恐惧。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "理解矮人社会对于与矮人有效合作至关重要。矮人的时间观与人类完全不同——他们衡量时间以世纪为单位，因此「紧急」这个词对矮人来说意味着另一回事。矮人极度重视礼仪：在进入矮人城塞时永远要赞美石工的质量，在与矮人交易时永远不要试图讨价还价（矮人开出的价格就是他们计算出的精确价值），永远不要触摸矮人的胡须（这是极大的侮辱）。如果你想赢得矮人的尊重，最好的方法不是送礼——而是还清你欠的任何一笔债，无论多么微小。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 100
+        },
+        "IdentityIds": null
+      },
+      "Content": "矮人社会结构在六大核心方面体现了高度系统性。一、氏族制度：所有矮人属于特定氏族（Clan），氏族的祖先是古代英雄或著名工匠。二、锻造文化：矮人的日常生活以锻炉为中心——不只是经济来源，更是精神修行的场所。三、饮酒文化：矮人麦酒（Bugman's Ale为代表）不仅是饮品更是文化符号，酿酒技艺与锻造技艺被同等尊重。四、屠夫制度：屠夫（Troll Slayer → Giant Slayer → Dragon Slayer → Daemon Slayer 的进阶体系）是矮人社会中独特的宣泄机制——无法清偿仇恨的矮人可以选择屠夫之道，以死亡赎回荣誉。五、胡须文化：胡须对矮人而言如同人类的姓名和头衔——剃掉矮人的胡须是最不可宽恕的侮辱（这正是长须之战的导火索之一）。六、祖先崇拜：矮人宗教不是崇拜抽象的神祇，而是崇拜先祖。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "作为矮人氏族中的女性成员，我可以告诉你——矮人女性不编织胡须，但我们编织氏族。外界对矮人女性的印象是她们几乎不出现在公共场合，这有部分是事实——但那是因为我们在幕后运行着整个卡拉克的社会机器。每一个矮人婴儿的氏族归属不是自动来自血缘，而是由母亲在婴儿出生后的第三个满月之夜在氏族石上刻下婴儿的全名和前六代祖先名——这个仪式的执行者永远是女性，因为只有女性掌握氏族的完整谱系记忆。当我的丈夫在战场上持盾时，我在城塞内部维持着食物配给、派遣信鸦、与相邻卡拉克协调难民转运。这不是辅助角色——在持续数千年的被围困状态中，这是种族的救生系统。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "作为氏族族长，屠夫制度对我来说不是民俗故事——它是家族的现实伤痛。我的三弟在三十年前那场与鼠人的交锋后成为了屠夫——不是因为他战败了，而是因为他指挥的哨站被鼠人从地下绕过防线，导致我家族失去了两位年幼的表亲和矿井。这严格来说是战略层面的失败，但三弟无法接受。我看着他剃掉了胡须和头发、在全身纹上格鲁吉的红色符文、拿起双斧、从此不再用族姓。每当我在战场上看到他与绿皮巨人搏斗时，我心里知道他在寻找的不是死亡——他寻找的是一场够分量的死亡。这是矮人文化中最残酷也最真实的层面。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "在矮人城塞中做客的最大生存技巧：永远不要拒绝一杯麦酒。不管这是你今天的第几杯，不管你是在早餐时间被请喝酒。拒绝矮人的麦酒——哪怕是出于好意——意味着你认为提供者的酒不够好，或是你轻视他的招待，两者都可以被记录为一条格鲁吉。其次，永远不要在矮人谈论先祖的时候插嘴提供你的人类观点——人类口中的'神话'往往是矮人写实的族谱记录。最后，如果你不小心碰到了矮人的胡须——立即后退三步、深深鞠躬、报上你本人的全名和你父亲的姓名。这不会消除冒犯，但至少表明你承认错误了。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "矮人麦酒的价值在旧世界黑市上被严重低估——一瓶经矮人符文桶陈酿超过百年的麦酒在阿尔道夫能卖到等重量白银的价格。问题在于麦酒在矮人文化中不是商品——它是文化载体。要求一个矮人出售他地窖中的百年麦酒就像要求一个帝国贵族出售他家族的族徽。我所在的酒商公会花了六十年培养与卡拉克·卡德林一个次要氏族的信任关系，才获得了每年购买三桶矮人麦酒的特权。关键不是'买'——矮人不卖给客户，他们只在信任的基础上分享给朋友。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "屠夫之道——矮人因无法清偿的耻辱而选择以赤膊战斗寻求光荣死亡的制度",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "矮人的社会习俗与文化传统"
+  ]
+}

@@ -1,0 +1,212 @@
+{
+  "Id": "rule_帝国地理__帝国地理",
+  "Keywords": [
+    "帝国地理",
+    "帝国行省",
+    "帝国版图",
+    "瑞克河",
+    "帝国地理灰色山脉",
+    "帝国地理世界边缘山脉",
+    "帝国道路",
+    "帝国森林",
+    "帝国贸易路线",
+    "奥斯特马克沼泽",
+    "帝国疆域"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "帝国的疆域从西部的灰色山脉一直延伸到东部的世界边缘山脉，从北海波涛到艾维河畔，分为十三个行省。最核心的瑞克领坐拥瑞克河航道与帝国首都阿尔道夫，米登领以尤里克圣火信仰和狼之都米登海姆闻名，努恩领则是帝国工业的心脏和炮兵的总部。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "帝国的每一寸土地都是先祖用剑与犁开拓出来的。瑞克领是我们的心脏——阿尔道夫横跨瑞克河两岸，大教堂的尖顶刺破云霄，帝国议会大厅里悬挂着历代皇帝的旗帜。米登领是尤里克的国度，白狼之城米登海姆建在兀立平原的巨岩之上，那里的汉子比南边的人更粗犷也更豪爽。努恩领属于军工匠人，努恩城的大炮日夜轰鸣测试，全帝国的火枪十支有七支出自这里的铁匠之手。奥斯特领和奥斯特马克领是东北边疆，那里的农夫农忙时种麦子、农闲时砍兽人，土地贫瘠但人心如铁。塔拉贝克领拥有帝国最大的森林，塔拉贝克河贯穿全境，塔拉贝克海姆城是南北商路的命门。斯蒂尔领的骑兵冠绝帝国，战马在开阔平原上驰骋。威森领南接边境亲王领，是通往南方诸邦的门户。诺德领守卫着北海海岸线，诺德人与诺斯卡蛮族之间只有一线之隔——那条线叫做帝国舰队。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "控制帝国的关键在地理上可以用一句话概括：谁控制了瑞克河，谁就控制了贸易；谁控制了贸易，谁就控制了帝国。阿尔道夫之所以无可替代，不仅因为它是首都，更因为瑞克河在此处汇入大海，是帝国最繁忙的内河港口。米登海姆的战略价值在于其不可攻陷性——它建在三百多米的陡峭岩山之上，围城部队几乎不可能切断其补给。努恩的火药厂和炮术学院是帝国最重要的军事资源，任何军队若失去了努恩的弹药供应，其火枪和火炮便是一堆废铁。东部诸领——奥斯特领、奥斯特马克领以及部分被毁的索尔领——是抵御吸血伯爵希尔瓦尼亚的第一道防线，也是混沌部落南下的必经之路，驻守此地的将领需要有钢铁般的神经和永不枯竭的警觉。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 100
+        },
+        "IdentityIds": null
+      },
+      "Content": "帝国的十三个行省各自拥有独特的地理特征和历史命运。瑞克领（大省）是帝国的政治与经济中心，瑞克河带来的贸易使阿尔道夫成为旧世界最大的城市之一。米登领是帝国面积最大的行省，覆盖着幽深的德拉肯瓦尔德森林——这片森林不仅是木材和毛皮的来源，也藏匿着野兽人部落与混沌变异体。诺德领濒临北海，诺德人长期与诺斯卡掠袭者交战，发展出了极强的海战传统和对外来者的天然警惕。奥斯特领是帝国人口最少的选举省，其荒凉的沼泽与冻土锻造出了帝国最坚韧的边民。塔拉贝克领的塔拉贝克海姆被称为「林木之都」，控制着沿塔拉贝克河通往基斯里夫的贸易要道。斯蒂尔领是帝国骑兵的摇篮，辽阔的草原适宜放牧优质的帝国战马。艾薇领得名于艾维河，拥有帝国最美的葡萄园与最肥沃的耕地。遗失的索尔领和德里巴领是帝国历史上一道未愈的伤疤——前者毁于混沌入侵，后者在政治阴谋中丧失了选举权。威森领的边境亲王领地带是冒险者的乐园和无法无天的边疆。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "帝国的山川河流不会因为你是女人而更温柔地对待你，但它们会教会你男人在宫殿里学不到的生存智慧。我成年后第一次穿越奥斯特马克沼泽时正是春天解冻期，向导说这个季节连军队都不会走这条路——我看着沼泽中浸泡着的半截牛车残骸和被遗弃的板甲碎片，理解了帝国东部边境为什么在每个世纪都吞噬了至少三位选帝侯继承人的生命。帝国的地理不是纸上画出的行省分界线，而是真实得令人窒息的泥泞、寒风与深渊——米登领的德拉肯瓦尔德森林在冬季时树木会发出类似于婴儿啼哭的风鸣声，斯蒂尔领的草原在盛夏时会热到连战马都拒绝吃草，而北海的诺德沿岸在风暴季节拍岸的浪头能直接冲垮木石混筑的防波堤。作为女人，我无法像男人那样骑马冲入战场证明对行省的控制力，但我学会用另一种方式征服这片土地——我确保我的行省中每一条驿道都有避风歇脚的驿站，每一个边境村庄都在仲夏之前备足了过冬的柴火，而这些都是男爵们从不关注的细节。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "帝国的十三个行省就像十三个性格迥异的家族——要维持这份脆弱的团结，你必须了解每一片土地背后的家族地理学。我们家族自黑暗时代起就在斯蒂尔领拥有世袭封地，但家族真正的权力基础是横跨三个行省的联姻网络：我祖母来自米登领的沃尔夫加德家族旁支，我的妹夫是塔拉贝克领一名伯爵的次子，我的妻兄在艾薇领拥有一座富裕的葡萄庄园。帝国的地图在家族首领眼里不是行省边界而是血亲网络——你在哪里拥有封地不重要，重要的是你在哪些省份中拥有可以用家族徽章敲开的门。每一个古老家族都在多个行省中战略性地播撒了自己的血脉支系，这不仅仅是为了安全备份——更因为在帝国政治中，当你需要在议会上推动一项决议时，一个在米登海姆拥有远方表亲的斯蒂尔领选侯比一个只有本地封臣支持的选侯多出了不可估量的无形资本。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "帝国的地图在我的脚底和刀尖上刻下了比任何羊皮纸上都更真实的印记。从阿尔道夫到米登海姆的帝国大道号称是旧世界最安全的公共道路——实际上每隔五十里你就能在路边看到被剥光了盔甲的旅行者尸骸，帝国税务官称之为'自然损耗'。灰色山脉的隘口在夏天是商队的热门通道，在冬天则是我这样的雇佣兵最不情愿的差事——那种风能透过三层皮甲直接冻伤你的肺。世界边缘山脉脚下散布着一串早已被帝国放弃的采矿村庄，你可以在残破的矿坑里找到第一代帝国移民与矮人合作采掘的痕迹。帝国最令我着迷的地方是边境亲王领——那片帝国版图以外的无主荒野充满了不信命的亡命徒，在那里一个人可以在一夜之间从一无所有的逃兵变成拥有三十个枪兵的强盗头子，然后在下一夜之间被另一个比他更狠的人砍掉脑袋。这些地方从未出现在帝国议会的讨论中，但它们才是帝国真正的边疆——不是地图上画的线，而是文明与混乱之间的那道灰色地带。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "帝国的地理对商人而言无非是一张成本收益网——每条道路和每条河流都有它的价格。瑞克河是帝国商业的主动脉，从阿尔道夫沿河上溯可以把一车努恩火枪在十七天内运到塔拉贝克海姆，而走陆路需要四十二天外加至少三次应付强盗的护镖费。米登海姆的兀立巨岩给这座城市带来了不可攻陷的名声，但从商人的角度看这意味着每一桶麦酒、每一捆布匹都要靠骡车盘绕三百米高的山路上运，运费是平原城市的三倍——这就是北方的物价比南方贵出三成的唯一原因。世界边缘山脉的矮人贸易通道被帝国历代皇帝视为金矿——矮人以最公平的价格提供最优质的矿石和金属制品，而帝国商人要付出的只是耐心，因为矮人的一次合同谈判可能持续三代人。我手头有一份家族三代传承的矮人贸易合约的原稿副本，我的祖父在第二十七页的注释中提到'矮人朋友认为还需再讨论二十年以达成完整共识'——他们最终还是签了，而我们家族靠这份合约积累了足以匹敌一个小选帝侯领的财富。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "瑞克河——贯穿帝国心脏的大河，帝国贸易与政治的命脉水道",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "帝国的地形气候与区位特征"
+  ]
+}

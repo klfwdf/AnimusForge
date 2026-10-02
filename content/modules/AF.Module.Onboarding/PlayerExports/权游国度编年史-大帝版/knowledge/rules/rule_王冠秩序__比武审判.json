@@ -1,0 +1,150 @@
+{
+  "Id": "rule_王冠秩序__比武审判",
+  "Keywords": [
+    "比武审判",
+    "神明审判",
+    "冠军"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "比武审判把法律争议交给武器、勇气与神意的公开较量。控方与被告各自指定冠军，胜者的生死被视作七神裁决；没有能力亲自持剑的人可以寻找骑士、佣兵或亲友代战。贵族把它看作荣誉与神判，平民既会被仪式震撼，也清楚胜负可能取决于盔甲、体力和谁愿意替人送命。制度承认神意，却无法消除操纵、恐惧与不平等。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "在比武审判面前，领主谈权利，书记官谈程序，普通人谈能否安全回家；命令与执行决定一纸命令究竟是约束，还是另一场讨价还价的开始。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵执行比武审判时只看旗帜、口令和补给，贵族却要计算盟誓与声望的余波；命令传得越远，地方上的解释往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "wanderer",
+          "priest",
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "商人和旅人从比武审判中感受到的是关卡、赎金与消息价格，祭司和学者关注它如何塑造正当性；同一项决定，在不同阶层眼中很少有同一种重量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "在领主和商人眼中，比武审判不是挂在墙上的名词，而是每天要付出代价的秩序。比武审判把法律争议交给武器、勇气与神意的公开较量。控方与被告各自指定冠军，胜者的生死被视作七神裁决；没有能力亲自持剑的人可以寻找骑士、佣兵或亲友代战。贵族把它看。他们会先问谁承担义务、谁得到保护，以及违约之后由谁来主持公道。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起比武审判时，通常不会从冠冕和仪式说起。比武审判把法律争议交给武器、勇气与神意的公开较量。控方与被告各自指定冠军，胜者的生死被视作七神裁决；没有能力亲自持剑的人可以寻找骑士、佣兵或亲友代战。贵族把它看。对他们而言，真正重要的是命令能否抵达、道路是否安全、粮食和报酬能否按时到手。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者对比武审判的看法各不相同，却都明白一件事：比武审判把法律争议交给武器、勇气与神意的公开较量。控方与被告各自指定冠军，胜者的生死被视作七神裁决；没有能力亲自持剑的人可以寻找骑士、佣兵或亲友代战。贵族把它看。漂亮的誓言若没有土地、兵力或神圣传统支撑，很快就会被下一场危机重新解释。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "在市镇和村庄里，比武审判往往以很小的方式出现。比武审判把法律争议交给武器、勇气与神意的公开较量。控方与被告各自指定冠军，胜者的生死被视作七神裁决；没有能力亲自持剑的人可以寻找骑士、佣兵或亲友代战。贵族把它看。人们记住的不是谁在大厅里说得最响，而是哪一条规矩让家人免于饥饿、征召或无休止的争斗。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "比武审判：比武审判把法律争议交给武器、勇气与神意的公开较量。控方与被告各自指定冠军，胜者的生死被视作七神裁决；没有能力亲自持剑的人可以寻找骑士、佣兵或亲友代战。贵族把它看"
+  ]
+}

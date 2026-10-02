@@ -3,6 +3,34 @@ using PlayerExportsEditor.Core;
 var service = new PlayerExportsService();
 var validator = new PlayerExportsValidator();
 
+if (args.Length == 2 && args[0] == "--installed-library-contract")
+{
+    var installedLibraryFixture = Path.GetFullPath(args[1]);
+    var workspace = Directory.GetCurrentDirectory();
+    if (!installedLibraryFixture.StartsWith(workspace + Path.DirectorySeparatorChar, StringComparison.OrdinalIgnoreCase)
+        || Directory.Exists(installedLibraryFixture) || File.Exists(installedLibraryFixture))
+        throw new InvalidOperationException("Installed library contract requires a new workspace fixture.");
+    Environment.SetEnvironmentVariable("ANIMUSFORGE_DATA_ROOT", null);
+    var module = Path.Combine(installedLibraryFixture, "AnimusForge");
+    var exports = Path.Combine(module, "PlayerExports");
+    var package = Path.Combine(exports, "worldbook");
+    Directory.CreateDirectory(package);
+    File.WriteAllText(Path.Combine(module, "SubModule.xml"), "<Module />");
+    var source = Path.Combine(package, "data.json");
+    File.WriteAllText(source, "{\"playerModified\":true}");
+    var expected = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+        "AnimusForge", "UserData", "PlayerExports");
+    if (service.FindDefaultPlayerExportsRoot(module) != expected
+        || service.ListPackages(exports).Single().FullPath != package)
+        throw new InvalidOperationException("Installed library must not require a migration receipt.");
+    RejectWrite(() => service.CreatePackage(exports, "new"));
+    RejectWrite(() => service.SaveJsonDocument(package, source, "{}"));
+    if (File.ReadAllText(source) != "{\"playerModified\":true}")
+        throw new InvalidOperationException("Reading the installed library changed player files.");
+    Console.WriteLine("PASS installed library contract: no migration gate, user destination, module writes rejected");
+    return 0;
+}
+
 if (args.Length == 2 && args[0] == "--backup-contract")
 {
     var id = args[1];

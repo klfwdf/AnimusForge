@@ -1,0 +1,209 @@
+{
+  "Id": "rule_地狱炮__地狱炮",
+  "Keywords": [
+    "地狱炮",
+    "混沌矮人",
+    "恶魔火炮",
+    "灵魂火球",
+    "被缚恶魔",
+    "毁灭炮击",
+    "扭曲战争机器",
+    "混沌炮兵"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "地狱炮是混沌矮人制造的疯狂战争机器——他们将活生生的次元恶魔封入青铜与黑铁的炮体中，每次发射时被缚恶魔的狂怒被转化为燃烧着灵魂之火的地狱炮弹，落地即爆炸，没有任何城墙能承受其连续轰击。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "chaos_culture"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "地狱炮——混沌矮人那些戴面具的小个子虽然长得丑，但他们造的东西真叫一个绝！你见过被缚魔在炮膛里挣扎时炮管上的符文全亮起来的场面吗？那光是绿色的，绿得让你的牙齿发酸，然后炮弹出膛时拖着一道撕开空气的火焰尾迹，命中城墙的瞬间不是炸开——是把城墙的那一部分从世上抹掉。混沌矮人炮手会用铁链把自己的腿锁在地上，因为地狱炮的后坐力能把人震飞到半空。他们从不说话，只用一个恶魔之眼铜号来传令开火和校准。诸神特别钟爱那些死在恶魔火炮轰击下的魂灵，那是最惨烈的献祭。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "围城作战中，地狱炮是混沌军队的终极攻城王牌——它的炮弹不仅是物理冲击，更携带着缚魔的情感狂怒，会对城墙后的守军造成严重士气打击。战术上，地狱炮需要至少三名混沌矮人炮手操作，装填间隔约为十分钟，射程约四分之三里格。最佳运用方式是在攻城锤部队准备冲锋前先对同一段城墙进行三轮集中轰击。但致命的弱点在于：如果缚魔的力量在一次战役中被过度抽取，地狱炮可能提前耗尽弹药，且被缚魔的狂怒有时会让炮弹偏离目标。务必用混沌勇士编队守护炮位。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "地狱炮的设计原理根植于混沌矮人特有的恶魔熔铸术（Daemon-binding Metallurgy），这一技术流派由古混沌矮人巫师-铁匠佐尔坦·黑火于公元前约2000年创立。制造一台地狱炮需经过三个阶段：第一阶段为'捕获'，混沌矮人术士在亚空间裂隙处勾引并束缚一只次级或中级次元魔；第二阶段为'锁链锻造'，将缚魔用黑铁锁链固定在炮膛核心，每根锁链上都雕刻着折磨咒文以持续激怒缚魔；第三阶段为'炮体铸造'，将整个缚魔-锁链系统封入青铜与陨铁混合铸造的外壳。经典战役案例包括达瓦尔屠城战（公元1682年，四台地狱炮将整座基斯里夫城市从地图上抹去）和黑火隘口保卫战（公元2341年，帝国工程师缴获一台未引爆的地狱炮弹，发现其核心是一颗仍在跳动的恶魔之心）。值得关注的是，阿尔道夫魔法学院禁止系曾有一篇名为《缚魔能量衰减曲线》的危险论文，指出长期使用的地狱炮会因缚魔被耗竭而失去威力，此时混沌矮人炮手需将炮管拆开重新捕获恶魔——论文作者沃尔夫拉姆博士于发表次日失踪。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我在围城日志中读到过地狱炮的恐怖记录——赫姆加特围城战中，三台地狱炮在两天内将整个北城墙化为齑粉，守军描述说炮弹落在城中时会发出婴儿般的尖叫。作为女性领主，我更在意的是这种武器背后的象征意义：它是一种将活物——哪怕是恶魔——囚禁为战争工具的逻辑，与混沌的本质完美契合。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "你应该知道混沌矮人从不白送他们的造物吧？地狱炮的代价不是黄金，是奴隶。每交付一台地狱炮，北方战帮要向扎尔-纳格朗德输送五百名活人——用于矿井、熔炉和缚魔仪式。我家族的史卷里记载过，有个战帮送了三批奴隶去换一台地狱炮，结果炮到了战场上打的第一炮就把自己的营地炸了，因为缚魔认出了战帮旗号曾是抓捕他的猎手。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "在边境亲王领见过一台被遗弃的地狱炮残骸——那玩意儿的炮管里还有东西在喘气，发着绿光，像心跳一样一明一暗。我认识的一个阿拉比盗贼想把炮管上的铜饰撬下来卖钱，手刚碰到炮管就惨叫起来，整条胳膊瞬间烧成了灰白色，从此再也没恢复过知觉。那东西不是金属造物，是恶魔的牢房。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "卡拉克·赫恩的矮人工程师居然开了个赏格：缴获一台完整的地狱炮，赏一整套符文护甲外加三袋誓言之金。矮人说他们要'逆向研究那该死的缚魔技术'——当然，谁都知道矮人和混沌矮人之间的仇恨有多深。努恩火炮行会的态度就实用多了：他们高价收购地狱炮弹残片，声称从残片的金属结构中可以反推出混沌矮人的合金配方。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "缚魔：混沌矮人的核心战争技术，将次元恶魔强行束缚于战争机器之中充当能量来源，恶魔的狂怒即为武器的杀伤力。",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "地狱炮混沌矮人恶魔火炮"
+  ]
+}

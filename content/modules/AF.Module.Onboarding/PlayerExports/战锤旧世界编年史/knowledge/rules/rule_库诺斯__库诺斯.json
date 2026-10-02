@@ -1,0 +1,213 @@
+{
+  "Id": "rule_库诺斯__库诺斯",
+  "Keywords": [
+    "库诺斯",
+    "狩猎之神",
+    "自然野性",
+    "掠食本能",
+    "狂野狩猎化身",
+    "精灵神祇",
+    "野猎之王",
+    "角冠之神",
+    "狩猎圣角",
+    "荒野之主",
+    "狂猎",
+    "精灵万神殿"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "库诺斯是木精灵的狩猎之神与自然野性之神，象征着掠食本能和狂野力量，他领导下界的「狂野狩猎」是艾索洛伦最古老、最神圣的传统，在每个狩猎之季席卷整片森林。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "库诺斯不是那种坐在王座上接受跪拜的神——他在森林中奔跑，他的角冠在月下闪烁，他的长矛从不落空。我们的孩子从小就学会了向库诺斯祈祷，不是祈求庇护，而是祈求成为更优秀的猎手。当「狂野狩猎」号角吹响时，所有木精灵，无论贵族还是平民，都将放下一切，加入这场神圣的追逐。在狩猎中，我们能感受到库诺斯的呼吸——那是掠食者与被掠食者之间的纯粹关系。他是我们内心最原始的野性的化身，那是文明无法驯服的部分。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "库诺斯的祝福是你军队中最强大的进攻性增益。举行「狂野狩猎」仪式后，你的所有部队获得一段时间的暴击率加成和移动速度提升。时机至关重要——在你准备发动致命一击前激活这项祝福。但要注意，「狂野狩猎」会削弱防御：你的部队会变得狂野而难以控制队形。最好与伊莎的祝福交替使用——库诺斯用于进攻，伊莎用于防御。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "库诺斯的崇拜起源于精灵尚未到达旧世界之前的远古时期，其最早的记载见于石碑「猎神纪」。在艾索洛伦，库诺斯的神庙位于「獠牙林」最深处，被称为「永恒狩猎场」——一座没有墙壁、没有屋顶的开放式神殿，由一圈巨大的猛犸象牙围成。狂野狩猎的具体规则记载于《狩猎圣典》中：狩猎开始于每季的第三个满月之夜，持续三天三夜；参与狩猎者须放弃所有盔甲，仅携带一件武器；被猎杀的猎物血液和兽皮必须全部用于森林的滋养或精灵的生存，不得浪费分毫；若猎手在狩猎中死亡，同伴不得停下救治，而是继续追击——这被认为是库诺斯召唤了那位猎手。亵渎狩猎规矩的惩罚是「永恒放逐」，被逐出者的灵魂将永远在森林中徘徊，无法进入先祖之地。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "作为女性，我对库诺斯的信仰与男性不同。他不只是狩猎之神——他也是生命循环中野性的体现。我向库诺斯献上猎物的第一滴血，而非整个猎物的头颅。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "氏族首领必须亲自点燃「狩猎圣火」来开启狂野狩猎季。这是你不能委托给他人的职责。如果你的氏族中有人捕获了当年的「首猎巨兽」，这份荣耀将提升整个氏族的威望。记住，狩猎结束后必须向库诺斯献上最好的部分。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "你身处林中，忽然听到号角声——古老而低沉，仿佛大地本身在咆哮。然后是无数奔跑的蹄声从四面八方传来。狂野狩猎已经开始了，你最好别挡在路上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "库诺斯在精灵万神殿中的地位独特——他不像阿苏延那样威严，也不像伊莎那样慈悲。他是纯粹的、原始的、不可驯服的自然化身。木精灵相信，当你死得英勇时，库诺斯会亲自将你的灵魂护送到永恒的狩猎之地。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "库诺斯——木精灵的狩猎之神，象征掠食本能与不可驯服的野性。",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "库诺斯狩猎之神自然野性"
+  ]
+}

@@ -1,0 +1,213 @@
+{
+  "Id": "rule_骑士道__骑士道",
+  "Keywords": [
+    "骑士道",
+    "骑士道骑士精神",
+    "骑士道骑士誓言",
+    "骑士戒律",
+    "五德",
+    "比武规则",
+    "侍从训练",
+    "骑士道探险骑士",
+    "骑士道圣杯试炼",
+    "骑士荣誉",
+    "骑士道吉勒斯法典",
+    "骑士守夜"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "骑士道是巴托尼亚立国的精神基础——一套规范骑士从武艺到品德、从战场到卧室全部行为的严格戒律。骑士道的核心戒律包括：不可在战斗中退缩、不可对弱者施暴、不可背弃誓言、不可敛财吝啬、永远对湖之女神虔诚。这套戒律既是一种道德准则，也是一种战争法则，更是一种社会秩序。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "骑士道——这不是一本法律书，这是巴托尼亚骑士的血液和灵魂。从你还是一个七岁的侍从时开始，你的骑士师父就会在每一次训练结束后反复地背诵给你听：不退缩——即使敌人有十只手你也要用剩下的一只手持剑冲锋；不施暴——一个放下武器的敌人不是敌人而是一个需要被保护的人，骑士的职责不是杀戮而是守护；不背誓——你宣誓过的每一个承诺都要用生命来维护，一个背弃誓言的骑士在女神眼中比一条蠕动在泥沼中的蛆虫更卑贱；不吝啬——真正的骑士不会紧捂钱袋，你的赏赐应该和你的战功一样慷慨，但财富永远不是追求目标而是荣誉的附带产物；对女神虔诚——这是所有戒律的根基，没有女神的恩赐你什么都不是，你只是另一个手持长矛骑马乱撞的莽夫。帝国人嘲笑我们的骑士道是过时的老古董，但每当混沌大军压境时，是谁的战马最先冲入敌阵？不是那些手持火枪口中念着商业合同的帝国步兵团——是我们的骑士。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "骑士道对于巴托尼亚的统治者来说既是武器也是枷锁。说它是武器，因为骑士道创造了一种人力无法替代的战斗力——一个纯粹的骑士在战场上不会计算生死概率，他只计算荣誉，而荣誉驱动的冲锋能够击穿任何理性的防御计算。说它是枷锁，因为一旦你的行为在骑士道层面站不住脚，你的封臣就有了合法的理由公开反对你——'他不是一个真正的骑士'这句话在巴托尼亚是比刀剑更锋利的武器。在治理领地时你必须时刻拿捏骑士道的平衡：你不能为了税收而过于压榨农奴否则会被指控为'贪财的守财奴'，但你又不能完全减免赋税否则你的城堡和骑兵就要饿肚子。圣杯修女会在骑士道的阐释上拥有实际上的最终话语权——如果修女会公开宣称某个公爵的行为违背了骑士道，这个公爵可能在一周之内变成光杆司令。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 100
+        },
+        "IdentityIds": null
+      },
+      "Content": "骑士道作为一种道德哲学和军事制度，其历史演变经历了三个明确的阶段。第一阶段是吉勒斯原型期：最初的骑士道并非成文戒律而是吉勒斯及其十二圣杯骑士的个人行为准则，他们的行为后来被圣杯修女会编纂为最早的《骑士道论述》。第二阶段是制度化学说期：圣杯修女会建立了系统的骑士道教育体系，每个贵族子弟从七岁开始接受三艺训练——马术与长枪、圣歌与女神祈祷、徽章学与族谱记诵——并在约十八岁时通过守夜礼正式受封为骑士。第三阶段是现实调适期：探险骑士制度的兴起回应了火器时代对传统骑士的挑战——那些不愿意被束缚在封地上的骑士可以选择抛弃领地成为流浪冒险者。骑士道的核心戒律被理论化为五德体系——勇武、正义、忠诚、慷慨与虔诚——这五德之间的关系被学者们比作一只手：五根手指各自独立但不能缺少任何一根。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "骑士道对于女性贵族而言是一个永恒的矛盾体——它歌颂对贵妇人的奉献，却同时将女性完全排斥在骑士身份之外。在比武场上女贵族是荣誉的符号和奖赏——骑士们为了夫人和小姐们的手帕和玫瑰花而战，但获得荣誉的是骑士本人而非那位夫人。我用了很长时间才学会如何在骑士道文化中利用这项悖论而非被它所排斥：我在比武场上作为最高荣誉的授予者出现时，会将第一名的奖章在颁发时对获奖骑士低声说出他对某个边境防御工程的支持可以'获得比我的奖章更高一层的感激'。骑士道给予贵妇人的角色是被动的灵感和圣洁的象征——但如果你懂得如何在比武场颁奖时刻安排恰当的人与恰当的骑士交谈，这个被动的角色可以转化为无形的政治动员力，因为骑士们在被贵妇人凝视时做出的承诺比他们在公爵议会上签订的条约更不可违约。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "骑士道在家族传承中是最核心的教育体系——我们家族的孩子从五岁开始便接受骑士道的五德教育，不是为了让他们都成为圣杯骑士，而是因为骑士道是巴托尼亚贵族阶层内部成功运作的唯一社交操作系统。勇武教育：每一个男孩必须在十二岁之前参加至少三次青少年比武，不是为了夺冠而是为了学会在公众面前被击败后坦然站起来的姿态。正义教育：男性继承人从十四岁开始旁听庄园法庭审判，体会一个判决如何在不损害领主利益的前提下让纠纷双方都感受到公平。忠诚教育是最严厉的一课——向孩子坦白家族历史中某个曾祖父曾经背叛了另一个公爵的信任，而那次背叛在四十年前带来了当下的家族繁荣但在四十年后引发了一个至今仍在偿还的报复循环。骑士道是一个道德系统，但在家族层面它也是一套风险管理系统——遵守骑士道戒律的家族之所以繁荣不是因为女神奖赏善良，而是因为在一个以荣誉为准绳的社会中，失信的代价在长期博弈中远大于短期违规的利益。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "骑士道从流浪者的视角看是一套让你在巴托尼亚的路上不至于被随意宰掉的保护规则——同时也是一套让贵族永远高高在上而你永远跪着的统治工具。我在巴托尼亚旅行时最安全的时候是在沿路有比武大会举办的季节——公爵们会派出额外的巡逻骑士以维持通往比武场的道路安全，不是因为在意农奴，而是因为不允许任何混乱玷污即将举行的盛事。骑士道'不施暴'戒律在实际应用中带有极强的阶级选择性：骑士道的规则在骑士与骑士之间是铁律，在骑士与平民之间是可以根据场合灵活调整的弹性建议。但我也在巴托尼亚见过真正的骑士——一个在暴雨中将马借给一名背着受伤孩子的农家妇女、自己步行跟在马后走了二十里路直到最近的圣杯修道院的王国骑士。他没有任何观众，没有任何比武评委在评分，他在被问及为什么这样做时露出了一种困惑的表情——仿佛这个问题本身的提出就是对某种不言自明的秩序的质疑。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "骑士道作为经济行为规范对商人有着极为直接的影响——巴托尼亚的商业交易不是以书面合同而是以骑士口头承诺为基础，这意味着在你与巴托尼亚骑士做交易时，合同法的保护几乎为零而荣誉法的约束力则是绝对的。一个巴托尼亚贵族在口头上接受了你的报价后不会反悔——不是因为他怕被起诉，而是因为如果他在另一名贵族面前被揭露曾经对一个商人食言，他在比武场上被挑战时将失去一切道德高地。我们商会在巴托尼亚经营时最重要的资产不是流动资金，而是荣誉见证人——每一次与公爵的谈判我们都会确保至少有一名圣杯修女或一位中立骑士在场，不是为了证词的法律效力，而是因为一旦交易在荣誉层面上被见证过，任何一方反悔的成本都将从商业损失升级为骑士荣誉损失，而在巴托尼亚荣誉损失是贵族唯一真正恐惧的货币。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "五德体系——勇武、正义、忠诚、慷慨、虔诚，骑士道的五大核心品德",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "骑士道是巴托尼亚立国的精神基础——一套规范骑士从武艺到品德、"
+  ]
+}

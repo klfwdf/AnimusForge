@@ -1,0 +1,151 @@
+{
+  "Id": "rule_科霍尔森林定位__多戈伊欧堡",
+  "Keywords": [
+    "多戈伊欧堡"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "多戈伊欧堡（Dorgoil）位于科霍尔森林与洛恩河东岸，政治上处在科霍尔城邦控制或影响的林地商路之内。它是一座城堡，主要承担地方守备、征税和庇护附近人口的职责。城墙与道路把周边人口、仓储和守备系在这里；旗帜纵然更换，这处据点仍会影响附近人如何纳税、贸易与寻求庇护。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "qohorik"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "对靠多戈伊欧堡周边土地吃饭的人而言，日子由井泉、田租、磨坊、林地和危急时能否进堡决定。当地家庭还要依靠黑山羊祭祀、林木、铁器、毛皮和穿林商道；任何一处道路、井泉或码头失灵，代价都会先落到他们身上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "qohorik"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "对攻守双方而言，多戈伊欧堡的分量首先落在外墙、塔楼、水井、粮仓与最近的援军道路上。多戈伊欧堡处在科霍尔森林的权力与贸易网络中，城门内外的规矩由当地秩序决定；守军能否吃饱、援兵能否按时抵达，比议事厅里的豪言更能决定这处据点是否可靠。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "scholar",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "货物抵达多戈伊欧堡以前，货主已经算过领地税、庄园产物、驮队路程和堡下形成的小市集。他们还会辨认科霍尔森林的口音、法令和通行凭据；名声可以从酒馆传得很远，真正的路程仍须由车轮、船桨或马蹄丈量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "多戈伊欧堡能给一家人带来头衔，也能在灾年与战争中拖垮那一家人。多戈伊欧堡处在科霍尔森林的权力与贸易网络中，城门内外的规矩由当地秩序决定；旗帜更换之后，道路、粮仓、旧债和地方信任仍得由新主人逐一接手。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵靠脚底记住多戈伊欧堡：坡势、城门、饮水与守军盘查外人的规矩。能补给、能避险、能找到向导，便值得在行程里标明；若三样都没有，再响亮的家名也救不了迷途者。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "数代人在多戈伊欧堡留下的痕迹，一半藏在石墙、木梁、铁门、墓窖和代代修补留下的接缝，一半藏在黑山羊、行会秘艺与森林深处的古老畏惧。一处据点因而不只是领主的大厅，也是婚丧、誓言、劳作与地方记忆反复发生的场所。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户、牧民和渔民评价多戈伊欧堡最少绕弯。他们关心黑山羊祭祀、林木、铁器、毛皮和穿林商道，也看征粮后是否留下种子、灾年时城门是否开启；远方人看见纹章，他们看见的是明日有没有饭吃。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "多戈伊欧堡：多戈伊欧堡（Dorgoil）位于科霍尔森林与洛恩河东岸，政治上处在科霍尔城邦控制或影响的林地商路之内。它是一座城堡，主要承担地方守备、征税和庇护附近人口的职责。城墙与道路把周边人口、仓储和守备系在这里；旗帜纵然更换，这处据点仍会影响附近人如何纳税、贸易与寻求庇护。"
+  ]
+}

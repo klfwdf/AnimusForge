@@ -1,0 +1,153 @@
+{
+  "Id": "rule_家族根基__伊伦伍德家族",
+  "Keywords": [
+    "伊伦伍德家族",
+    "血之贵胄",
+    "骨路守护者",
+    "黑色闸门"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "伊伦伍德家族以伊伦伍德城为根基，是多恩仅次于马泰尔的古老强族之一。祖先曾为多恩东部的至高王，家主保留“血之贵胄”“骨路守护者”等古老头衔；家徽以沙色底上的黑色闸门为核心。洛伊拿人到来后，伊伦伍德与娜梅莉亚—马泰尔联盟长期争战，最终臣服，但旧王血统与骨路军事价值使双方关系始终带着竞争记忆。马泰尔需要他们守住山口，伊伦伍德也不会忘记自己曾戴王冠。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "多恩诸侯知道伊伦伍德曾为东部王者，也知道“血之贵胄”的称号并非空洞装饰。黑龙立于沙地与山口之间，使这家族既是马泰尔的重要支柱，也是任何阳戟城统治者都不能忽视的旧权力。古老的臣服可以很牢，也可能永远保留一条缝。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "守隘士兵与商队把伊伦伍德看作道路本身的一部分。谁控制水源、关口和赤红山脉东面的通路，谁就能决定军队与货物付出多少代价。对他们而言，黑龙的威严不在王裔传说，而在城门何时开、通行要交多少。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "stormlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "风暴地边疆诸侯对伊伦伍德的了解来自山口与旧战争。那不是阳戟城深处的异域名字，而是赤红山脉另一侧能够集结骑手、封锁道路的强邻。敌手可以嘲讽多恩人的方式，却很少会在行军图上漏掉黑龙。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待伊伦伍德家族，会先看它的土地、婚盟、血脉和债务。伊伦伍德城的多恩古老强族，旧称血之贵胄并守卫骨路，家徽为沙底黑色闸门。曾与娜梅莉亚—马泰尔争雄，臣服后仍保留旧王竞争记忆。家徽是门面，能否保护封地、兑现婚约并在危机中召集人马，才是家族真正的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起伊伦伍德家族时，记得的是谁在营火边分过粮、谁把他们留在城外、谁在败局里仍站在旗旁。伊伦伍德城的多恩古老强族，旧称血之贵胄并守卫骨路，家徽为沙底黑色闸门。曾与娜梅莉亚—马泰尔争雄，臣服后仍保留旧王竞争记忆。家族名声最终要落到具体的人和具体的命令上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意伊伦伍德家族留下的仪式、墓地和传承。伊伦伍德城的多恩古老强族，旧称血之贵胄并守卫骨路，家徽为沙底黑色闸门。曾与娜梅莉亚—马泰尔争雄，臣服后仍保留旧王竞争记忆。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见伊伦伍德家族。伊伦伍德城的多恩古老强族，旧称血之贵胄并守卫骨路，家徽为沙底黑色闸门。曾与娜梅莉亚—马泰尔争雄，臣服后仍保留旧王竞争记忆。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "伊伦伍德家族：伊伦伍德城的多恩古老强族，旧称血之贵胄并守卫骨路，家徽为沙底黑色闸门。曾与娜梅莉亚—马泰尔争雄，臣服后仍保留旧王竞争记忆。"
+  ]
+}

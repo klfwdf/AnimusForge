@@ -1,0 +1,92 @@
+﻿{
+  "Id": "rule_贝恩兰岛",
+  "Keywords": [
+    "贝恩兰岛",
+    "瓦尔维克",
+    "西北苦行山~~~~"
+  ],
+  "RagShortTexts": [
+    "贝恩兰岛名称由来与海象象牙有关"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "scouting": 60
+        }
+      },
+      "Content": "贝恩兰岛是北方偏远海域的一座岛屿，诺德人称之为“贝恩兰”，意为“骸骨之地”。岛屿名称的由来存在争议：一说指向吸引早期猎人渡海而来的海象象牙，另一说则指向荒芜砾石海岸上那些埋于浅坟中的人骨——许多人在此留下的唯一痕迹便是散落于石滩的骸骨。\n\n该岛地处寒冷水域，长期以来仅见于捕鲸人的临时棚屋聚落，瓦尔维克是其中最主要的一处。近几代以来，较为温和的冬季与大陆人口的不断增长，促使殖民者陆续渡海前往贝恩兰寻求财富。昔日的捕鲸人棚屋聚集地瓦尔维克，如今已发展为岛上繁荣的港口城镇。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": [
+          "castle_village_n7_1",
+          "town_n1",
+          "village_n1_1"
+        ],
+        "Roles": [
+          "commoner",
+          "notable",
+          "townsfolk",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "我们岛上的人对贝恩兰的看法？“骸骨之地”这名字，打小听惯了。至于为什么叫这个，老辈人自己都吵不清楚。有人说是因为海滩上有海象牙，挖出来能卖钱。有人说是那些死人骨头——早些年跑到岛上来的人，上岸一看啥也没有，饿死了，骨头就埋在浅滩上。我们听着两种说法都觉得差不多。反正现在海滩上贝壳比骨头多，海象也好些年没见了。名字就这么叫着呗，谁还去刨根。\n\n最近几辈人运气好，冬天没那么冷了。大陆上人挤人挤不下了，就跑到我们这儿来。来就来吧，他们管我们这儿叫“寻求财富”。我们听着好笑——财富？在哪儿？反正他们来了，渔船多了，房子多了，瓦尔维克从几间破棚子变成了个像样的镇子。好事。人多了热闹，冬天不用光对着海风发呆。\n\n大陆来的人有时候站在海岸上，对着那些碎石滩和矮灌木抒情，说什么“这片土地有野性的美”。我们蹲在旁边修渔网，心想野性是够野的，美在哪儿？树都长不高，土薄得种什么都不成，一年到头吃鱼。他们陆地上住腻了，跑来看什么都新鲜。\n\n我们只知道一件事：岛在这儿，海在周围，鱼在海里。其他的都是外人替我们想的。骸骨也好，财富也好，都是外人起的名字。我们自己管这儿叫“家”——虽然这个家冬天确实冻死人。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "贝恩兰岛是极西极北之地的一个岛，剩下的不知道"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "nord",
+          "sturgia",
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "贝恩兰岛是北方偏远海域的一座岛屿，诺德人称之为“贝恩兰”，意为“骸骨之地”。岛屿名称的由来存在争议：一说指向吸引早期猎人渡海而来的海象象牙，另一说则指向荒芜砾石海岸上那些埋于浅坟中的人骨——许多人在此留下的唯一痕迹便是散落于石滩的骸骨。\n\n该岛地处寒冷水域，长期以来仅见于捕鲸人的临时棚屋聚落，瓦尔维克是其中最主要的一处。近几代以来，较为温和的冬季与大陆人口的不断增长，促使殖民者陆续渡海前往贝恩兰寻求财富。昔日的捕鲸人棚屋聚集地瓦尔维克，如今已发展为岛上繁荣的港口城镇。"
+    }
+  ],
+  "TextMappings": []
+}

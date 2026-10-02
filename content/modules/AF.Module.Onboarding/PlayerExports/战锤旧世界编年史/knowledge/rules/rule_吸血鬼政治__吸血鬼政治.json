@@ -1,0 +1,213 @@
+{
+  "Id": "rule_吸血鬼政治__吸血鬼政治",
+  "Keywords": [
+    "吸血鬼政治",
+    "吸血鬼政血族谱系",
+    "吸血鬼政午夜显贵",
+    "吸血鬼家族",
+    "诅咒表型分化",
+    "血龙骑士",
+    "尼克拉契",
+    "吸血鬼政拉赫米亚",
+    "斯特里戈伊",
+    "暗夜宫廷",
+    "血族阴谋",
+    "永生者的博弈"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "吸血鬼内部并非铁板一块——他们分裂为多个古老的血族谱系，彼此之间的仇恨与阴谋丝毫不亚于他们对活人的敌意。冯·卡斯坦因家族以政治野心和征服欲望著称，他们是亡灵战争的发动者。除此之外还有追求剑术极致的血龙骑士、沉迷禁忌死灵实验的尼克拉契、以及退化到几乎失去理性的斯特里戈伊等分支。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "五大血族谱系的权力游戏贯穿了我们的整个历史。我们冯·卡斯坦因是最强大、最正统的——但不是唯一觊觎午夜皇冠的。血龙骑士们虽然表面上专注于武道修行，但他们的剑锋随时可能指向我们，只要他们认为那是证明自己至高武力的一战。尼克拉契那帮深居墓穴的学者从不参与公开的宫廷政治，却在地下编织着连我们都难以刺探的黑暗网络。斯特里戈伊已经退化为怪物——他们不配被视为午夜显贵。至于拉赫米亚，那些优雅的毒蛇表面上对我们彬彬有礼，但她们的每一个微笑背后都可能藏着一把匕首。永远不要信任另一个血族，尤其是与你同谱系的。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "吸血鬼的政治分裂是其最大的军事弱点。不同于人类帝国可以结成联盟，吸血鬼谱系之间几乎不可能真正互相信任——它们的结盟永远建立在暂时的利害一致之上，一旦共同敌人被击败，内斗必然爆发。一个精明的指挥官可以利用这一点：分化拉拢次要谱系对抗主导者，例如向血龙提供荣耀对决的机会将它们从主战场上引开。冯·卡斯坦因家族虽然名义上统治希尔瓦尼亚，但对其他谱系的约束力远不如一个人类国王对他的封臣。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 100
+        },
+        "IdentityIds": null
+      },
+      "Content": "吸血鬼血族谱系学揭示了不死诅咒的惊人可塑性。五大谱系源自同一诅咒但分裂为截然不同的表现形态，这一现象在魔法生物学中被称为'诅咒表型分化'。冯·卡斯坦因谱系在魅惑术和阴影操控方面表现最强，其吸血鬼能在一定程度上模仿活人的容貌——这解释了他们在政治渗透方面的成功。血龙谱系将诅咒能量导向了体能和战斗反射的强化，代价是他们的魔法能力相对较弱且对战斗荣耀的执念近乎病态。尼克拉契则走向了相反极端——他们的身体快速腐化，但死灵魔法能力在所有谱系中最为恐怖。斯特里戈伊的退化可能是长期近亲血饲与栖息地魔法环境共同作用的结果。拉赫米亚作为最古老的谱系，其诅咒表现最为均衡也最接近涅芙瑞塔的原始形态。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "吸血鬼的政治体系中有一个被人类军事学者几乎完全忽视的维度——拉赫米亚姐妹会。这个由涅芙瑞塔本人创立的、完全由女性吸血鬼组成的秘密组织在旧世界各大宫廷中运作着最精密的渗透网络。男性吸血鬼的优势在于直接武力征服和公开威慑，而拉赫米亚的女吸血鬼们选择的是一条更为隐蔽但同样致命的路径：她们以亡国贵族的未亡人、来自异域的神秘女继承人、或以资助修道院为名的慈善贵妇的身份进入权力中心，在几十年的时间内将目标家族的血脉与吸血鬼的利益网络不经意间交织在一起。作为帝国边境上的女性领主，我比我的男性同行们更早地注意到了一件事——那些每代都会在家族继承危机时出现并提供关键帮助的'远方表亲'往往有着过于完美的时机把握和过于精致的苍白面容。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "吸血鬼五脉对我们的家族战略而言不是五个区别不大的敌人，而是五种完全不同的威胁需要五套完全不同的防御方案。冯·卡斯坦因的攻击方式是我们最熟悉的——正面军事威胁和直接政治渗透，我们以军事互保联盟和血统审查来防御。血龙的威胁更微妙——他们可能不会直接入侵你的领地，但你的家族中最优秀的剑客继承人可能会在某次去往边境比武大会的路上'巧遇'一位血龙骑士，然后在一场看似自愿的决斗中失去继承权或更糟。尼克拉契是我们最难以判断的威胁——他们从不主动接触我们，但我们完全不知道他们在地下墓穴中进行的实验是否会在某个夜晚不小心召唤出某些无法控制的恐惧。而斯特里戈伊——他们已经退化为荒野掠食者，对于家族而言他们是最简单的威胁：不需要外交不需要分析，只需要在领地边境维持足够的武装巡逻。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "吸血鬼之间的内斗是旧世界最残酷也最不为人知的政治斗争——不是因为不血腥，而是因为大部分目击者都死了。我在奥斯特马克沼泽边缘的一个废弃哨站中曾短暂驻扎过，哨站附近有一片被烧成焦土的林间空地。一位路过的老猎人告诉我五十年前三个不同谱系的吸血鬼曾在那里发生过一场小型内战——不是为了土地或城堡，而是为了一本据说是纳迦什亲笔书写的禁术残卷。战斗持续了一整夜，天亮后焦土上的每一根草都倒向同一个方向——不是风吹的，而是死灵魔法从战斗中心向外辐射的力量留下的痕迹。吸血鬼政治最可怕的地方在于他们永不死亡——所以他们之间的仇恨可以在一两百年中休眠后在一个活人帝国已毫无记忆的古老争执点上重新爆发。他们的政治不是以年为单位，是以世纪为单位的复仇和算计。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "吸血鬼五脉之间的竞争在商业市场上创造了一些奇特而高度投机的机会。血龙谱系对武器的需求是旧世界最特殊的奢侈品市场——他们不需要普通的精钢长剑，他们需要的是由特定矿石在特定月相下锻造的、能承受吸血鬼超凡力量的定制兵器。这类兵器的制造只能由矮人符文铁匠和极少数的帝国秘密武器工匠完成，而每一笔交易都价值连城且完全在帝国法律的黑色区域中进行。冯·卡斯坦因家族对暗黑魔法材料的消耗构成了旧世界地下魔法市场中最大的单一需求端——从特定的墓地土壤到特定死亡方式的尸体器官，这些在希尔瓦尼亚市集上以活人无法理解的价格在吸血鬼之间交易。我对吸血鬼经济的基本判断是：五脉的存续本身就是一个巨大的地下经济生态位，帝国越是在表面上禁绝与希尔瓦尼亚的一切贸易，这一生态位的超额利润就越高。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "五大谱系——冯·卡斯坦因、血龙、尼克拉契、斯特里戈伊、拉赫米亚的诅咒分支",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "吸血鬼的权力结构与决策机制"
+  ]
+}

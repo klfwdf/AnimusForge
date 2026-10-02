@@ -1,0 +1,153 @@
+{
+  "Id": "rule_北地界碑__寡妇望",
+  "Keywords": [
+    "寡妇望",
+    "东海岸",
+    "瞭望"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "寡妇望是北境东部面向海豹湾的海岸据点。它的名字带有海边常见的忧伤：远航者不一定归来，坏天气和敌船往往先被岸上的人看见。瞭望塔、鱼盐、海岸小径和能避风的湾口构成这里的实际价值。北境东岸不像日落之海一侧那样直接面对铁群岛，却同样要与狭海北部的风暴、漂流与偶然来客打交道。对内陆领主而言，寡妇望或许只是地图边缘；对当地居民而言，海面是食物、道路，也是最难预测的边界。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "外乡人记得寡妇望的名字，本地人记得的却是潮汐、渔汛、淡水和船只能否安全靠岸。当地家庭还要依靠柴薪、猎场、泥炭、盐鱼与能否撑过长冬的粮仓；任何一处道路、井泉或码头失灵，代价都会先落到他们身上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主在厅堂里谈寡妇望，经验老到的士兵却只问港湾入口、泊位、烽火与可供登陆的岸线。在七国的封建秩序中，寡妇望的归属牵动封臣义务、税粮和征召；守军能否吃饱、援兵能否按时抵达，比议事厅里的豪言更能决定这处据点是否可靠。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "scholar",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "关于寡妇望的消息传到远方，往往伴着航期、码头脚费、补水和下一处避风港。他们还会辨认北境的口音、法令和通行凭据；名声可以从酒馆传得很远，真正的路程仍须由车轮、船桨或马蹄丈量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "谁在寡妇望升起旗帜，谁就继承这里的旧债、旧臣与边界争端。在七国的封建秩序中，寡妇望的归属牵动封臣义务、税粮和征召；旗帜更换之后，道路、粮仓、旧债和地方信任仍得由新主人逐一接手。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "向导描述寡妇望，总从风向、礁石、渡船与城门落锁后的锚地讲起。能补给、能避险、能找到向导，便值得在行程里标明；若三样都没有，再响亮的家名也救不了迷途者。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "工匠用双手丈量寡妇望的修船木、帆布、盐、鱼获和抵御海风的石料，祭司用仪式延续旧神、鱼梁木与祖先留下的墓地。一处据点因而不只是领主的大厅，也是婚丧、誓言、劳作与地方记忆反复发生的场所。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "平民记住寡妇望的方式，是哪一年开仓、哪一年征走最后一头牛。他们关心柴薪、猎场、泥炭、盐鱼与能否撑过长冬的粮仓，也看征粮后是否留下种子、灾年时城门是否开启；远方人看见纹章，他们看见的是明日有没有饭吃。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "寡妇望：寡妇望是北境东部面向海豹湾的海岸据点。它的名字带有海边常见的忧伤：远航者不一定归来，坏天气和敌船往往先被岸上的人看见。瞭望塔、鱼盐、海岸小径和能避风的湾口构成这里的实际价值。北境东岸不像日落之海一侧那样直接面对铁群岛，却同样要与狭海北部的风暴、漂流与偶然来客打交道。对内陆领主而言，寡妇望或许只是地图边缘；对当地居民而言，海面是食物、道路，也是最难预测的边界。"
+  ]
+}

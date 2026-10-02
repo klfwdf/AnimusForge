@@ -1,0 +1,131 @@
+{
+  "Id": "rule_家族根基__史陶",
+  "Keywords": [
+    "史陶",
+    "史陶家族"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "史陶家族以荒冢屯附近的金芒堡为根基，向达斯丁家族承担封臣义务。这里的权势不来自宏伟宫廷，而来自田地、仓房、道路和能在召集令下披甲的人。海伍德·史陶这样的地方领主必须在上级家族、邻近庄园与本地生计之间周旋；罗纳·史陶等族人随北境军队远行，也让这个小家名进入更广阔的战争记忆。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "荒冢屯一带的贵族把史陶看作达斯丁领地秩序的一枚铆钉。金芒堡不显赫，却能看守道路、收拢粮草并在征召时送出部众，小领主的可靠往往比响亮的族谱更实用。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "当地农户认识的史陶不是宴席上的纹章，而是收租的管事、修桥的命令和冬前打开或关闭的粮仓。领主若能把税赋留在可承受的限度，金芒堡便值得尊敬。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待史陶，会先看它的土地、婚盟、血脉和债务。史陶家族据有荒冢屯附近的金芒堡，是达斯丁家族麾下维系田地、道路与兵役的小领主。家徽是门面，能否保护封地、兑现婚约并在危机中召集人马，才是家族真正的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起史陶时，记得的是谁在营火边分过粮、谁把他们留在城外、谁在败局里仍站在旗旁。史陶家族据有荒冢屯附近的金芒堡，是达斯丁家族麾下维系田地、道路与兵役的小领主。家族名声最终要落到具体的人和具体的命令上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意史陶留下的仪式、墓地和传承。史陶家族据有荒冢屯附近的金芒堡，是达斯丁家族麾下维系田地、道路与兵役的小领主。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见史陶。史陶家族据有荒冢屯附近的金芒堡，是达斯丁家族麾下维系田地、道路与兵役的小领主。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "史陶：史陶家族据有荒冢屯附近的金芒堡，是达斯丁家族麾下维系田地、道路与兵役的小领主。"
+  ]
+}

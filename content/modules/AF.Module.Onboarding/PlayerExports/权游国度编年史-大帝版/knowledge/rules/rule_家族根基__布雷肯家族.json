@@ -1,0 +1,151 @@
+{
+  "Id": "rule_家族根基__布雷肯家族",
+  "Keywords": [
+    "布雷肯家族",
+    "红色战马",
+    "布莱伍德世仇"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "布雷肯家族以石篱城为根基，家徽以金底红色战马为中心，自称古代河间诸王之后，后来接受七神信仰。家族与布莱伍德的世仇贯穿土地、边界、婚约、宗教和彼此矛盾的历史：布雷肯说布莱伍德夺走王位与土地，布莱伍德也提出相反指控，学士无法从家族传说中裁出一个干净开端。布雷肯的骑马传统和开阔领地令其在河间政治中不可忽视；普通佃户则知道，古老荣耀不会替被抢走的牛耕田。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "river"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "河间诸侯承认布雷肯古老、富有马匹，也知道石篱城的每一段家史几乎都能在布莱伍德口中找到相反说法。红色战马象征他们珍视的力量与王裔自尊；在朋友眼中这是直率尚武，在敌手眼中则是易怒和永不认输。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "river"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "石篱城附近的人熟悉马厩、牧地和骑手，也熟悉边界争端带来的征召。贵族说的是祖传土地，牧人想的是牛群能否过河，士兵想的是又要替哪一段旧仇守夜。布雷肯的战马跑得很快，可一场世仇没有终点。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "river"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "敬奉七神的人容易把布雷肯看作河间正统贵族，尤其当他们与仍拜旧神的布莱伍德争执时。但谨慎的修士知道，换一种祈祷方式不会自动使一方更公正；圣堂能听见双方誓言，却很少能让两家的祖坟闭嘴。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待布雷肯家族，会先看它的土地、婚盟、血脉和债务。石篱城的河间古族，家徽为金底红色战马，信奉七神。与布莱伍德的世仇包含无法独立证实的相反起源叙事，应同时呈现家族荣耀与平民代价。家徽是门面，能否保护封地、兑现婚约并在危机中召集人马，才是家族真正的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起布雷肯家族时，记得的是谁在营火边分过粮、谁把他们留在城外、谁在败局里仍站在旗旁。石篱城的河间古族，家徽为金底红色战马，信奉七神。与布莱伍德的世仇包含无法独立证实的相反起源叙事，应同时呈现家族荣耀与平民代价。家族名声最终要落到具体的人和具体的命令上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意布雷肯家族留下的仪式、墓地和传承。石篱城的河间古族，家徽为金底红色战马，信奉七神。与布莱伍德的世仇包含无法独立证实的相反起源叙事，应同时呈现家族荣耀与平民代价。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见布雷肯家族。石篱城的河间古族，家徽为金底红色战马，信奉七神。与布莱伍德的世仇包含无法独立证实的相反起源叙事，应同时呈现家族荣耀与平民代价。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "布雷肯家族：石篱城的河间古族，家徽为金底红色战马，信奉七神。与布莱伍德的世仇包含无法独立证实的相反起源叙事，应同时呈现家族荣耀与平民代价。"
+  ]
+}

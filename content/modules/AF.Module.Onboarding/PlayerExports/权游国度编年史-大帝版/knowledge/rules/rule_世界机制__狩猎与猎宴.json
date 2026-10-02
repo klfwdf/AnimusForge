@@ -1,0 +1,151 @@
+{
+  "Id": "rule_世界机制__狩猎与猎宴",
+  "Keywords": [
+    "狩猎",
+    "猎宴",
+    "贵族猎场",
+    "围猎",
+    "猎物"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "贵族狩猎兼具娱乐、训练和政治。主人邀请谁同行、把最佳猎位让给谁、由谁献上最后一击，都能显示亲近与等级；猎后宴席又为婚盟、请求和私谈提供场所。猎犬、马匹、鹰隼、向导和驱赶猎物的林民让活动成为可能。领主往往宣称对鹿、野猪和林地拥有狩猎权，普通人即使饥饿也可能因偷猎受罚。同一头鹿在贵族眼里是荣耀，在农户眼里可能是毁坏庄稼的兽，也可能是一家人过冬的肉。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "贵族从狩猎判断骑术、胆量和礼数。聪明的宾客知道何时让主人先投矛，也知道一场猎宴中的失礼可能比空手而归更危险。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "wanderer",
+          "artisan"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "林民和农户熟悉兽踪，却未必有权碰猎物。他们把贵族猎场看成一片熟悉土地突然被法律画出的禁区。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "priest",
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "商人供应酒肉与猎具，神职者会提醒节制，学者则观察动物和地形。猎宴在不同人眼里分别是生意、诱惑和一堂没有书本的课。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人把狩猎看成可执行的秩序。狩猎与猎宴：贵族用围猎展示骑术、领地和亲近关系，林民则从同一片森林看见食物、禁令和生存边界。它是否有效，取决于谁能授予权利、收取代价，并在违约时让判决真正落地。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起狩猎时，关心它如何影响道路、命令和安全。狩猎与猎宴：贵族用围猎展示骑术、领地和亲近关系，林民则从同一片森林看见食物、禁令和生存边界。远方的制度只有在营火、城门和驿站里能被执行，才不是空话。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者会从习惯和象征理解狩猎。狩猎与猎宴：贵族用围猎展示骑术、领地和亲近关系，林民则从同一片森林看见食物、禁令和生存边界。一项规矩若被反复实践，便会进入礼仪、手艺和祈祷；若只靠恐惧维持，危机一来就会露出裂缝。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民感受到狩猎的方式最小也最准确。狩猎与猎宴：贵族用围猎展示骑术、领地和亲近关系，林民则从同一片森林看见食物、禁令和生存边界。他们记得税、粮、劳役、赈济和谁能为他们说话；宏大的名称，最终都要落在一家人的饭锅旁。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "狩猎与猎宴：贵族用围猎展示骑术、领地和亲近关系，林民则从同一片森林看见食物、禁令和生存边界。"
+  ]
+}

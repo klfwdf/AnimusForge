@@ -1,0 +1,152 @@
+{
+  "Id": "rule_家族根基__卡伦",
+  "Keywords": [
+    "卡伦家族",
+    "夜莺",
+    "歌声无双"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "卡伦家族以夜歌城为根基，是多恩边疆地最古老、最重要的风暴地边疆贵族之一，家主传统上拥有“边疆地之主”头衔。家徽为黑底金色夜莺，箴言“歌声无双”。柔美纹章与残酷边疆并不矛盾：夜歌城长期守望亲王隘口方向，家族名望来自骑士、烽火、山道和与多恩反复战争留下的记忆。边疆领主会赞美卡伦的武名，平民则希望古老血仇不要让每一代都重新烧毁牧场。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "stormlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "风暴地诸侯把卡伦视作多恩边疆最古老的守门者之一。夜歌城与“边疆地之主”的称号承载着数代战争记忆，歌唱夜莺的纹章则提醒人们，边疆并非只有铁和血，也有被烽火打断的婚宴与歌曲。卡伦的荣耀总带着守望的代价。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "stormlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "夜歌城周围的人从小会分辨号角、马蹄和山口传来的回声。边疆头衔对他们不是宴席上的长称呼，而是意味着谁来修塔、谁领巡骑、敌人越过隘口时谁先挡住。好领主让夜莺在夜里唱，坏领主只让寡妇哭。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "多恩人记得卡伦，是因为赤红山脉两侧的历史从来各有歌法。风暴地称他们为守门人，多恩边民则可能称他们为堵在旧路上的敌手。双方都知道夜歌城不只是一个名字，而是一处必须在行军前认真计算的边疆据点。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待卡伦家族，会先看它的土地、婚盟、血脉和债务。夜歌城的风暴地边疆古族，家徽为黑底金色夜莺，箴言“歌声无双”，家主有边疆地之主传统。其名望来自山道、烽火与多恩边疆战争。家徽是门面，能否保护封地、兑现婚约并在危机中召集人马，才是家族真正的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起卡伦家族时，记得的是谁在营火边分过粮、谁把他们留在城外、谁在败局里仍站在旗旁。夜歌城的风暴地边疆古族，家徽为黑底金色夜莺，箴言“歌声无双”，家主有边疆地之主传统。其名望来自山道、烽火与多恩边疆战争。家族名声最终要落到具体的人和具体的命令上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意卡伦家族留下的仪式、墓地和传承。夜歌城的风暴地边疆古族，家徽为黑底金色夜莺，箴言“歌声无双”，家主有边疆地之主传统。其名望来自山道、烽火与多恩边疆战争。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见卡伦家族。夜歌城的风暴地边疆古族，家徽为黑底金色夜莺，箴言“歌声无双”，家主有边疆地之主传统。其名望来自山道、烽火与多恩边疆战争。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "卡伦家族：夜歌城的风暴地边疆古族，家徽为黑底金色夜莺，箴言“歌声无双”，家主有边疆地之主传统。其名望来自山道、烽火与多恩边疆战争。"
+  ]
+}

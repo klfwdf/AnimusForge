@@ -1,0 +1,157 @@
+{
+  "Id": "rule_人间风俗__七神婚礼",
+  "Keywords": [
+    "七神婚礼",
+    "婚礼斗篷",
+    "七神誓言",
+    "新娘交付"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "七神婚礼通常在圣堂举行，新娘由父亲或代表者引至新郎面前，双方宣读誓言并接受祝福。最具政治意味的仪式是斗篷：新郎取下新娘原家族的保护斗篷，再为她披上象征夫家的斗篷，表示新的庇护与归属。婚宴、宾客名单、嫁妆和座次会进一步展示两家关系。贵族婚姻常承担继承、土地与联盟，平民婚礼更贴近日常劳作和两户结合；无论身份如何，神圣仪式都不能保证婚后温情，也不能消除被迫婚配的痛苦。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "reach",
+          "stormlands",
+          "crownlands",
+          "vale",
+          "river",
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "贵族与教士看重誓言、斗篷和见证人，因为婚姻会影响继承。仪式越庄严，若日后撕毁承诺，羞辱也越公开。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "平民家庭更在意新夫妇住在哪里、带多少工具和牲畜、两家能否互助。婚宴可以简陋，往后的每一顿饭才是真正的共同生活。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer",
+          "slave",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "没有选择婚配的人不会只从圣歌看婚礼。斗篷可以象征保护，也可能象征从一个家门转交到另一个家门。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人把七神婚礼看成可执行的秩序。在圣堂与七神见证下，以交付新娘、披换斗篷和共同誓言确认婚姻与家族归属。它是否有效，取决于谁能授予权利、收取代价，并在违约时让判决真正落地。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起七神婚礼时，关心它如何影响道路、命令和安全。在圣堂与七神见证下，以交付新娘、披换斗篷和共同誓言确认婚姻与家族归属。远方的制度只有在营火、城门和驿站里能被执行，才不是空话。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者会从习惯和象征理解七神婚礼。在圣堂与七神见证下，以交付新娘、披换斗篷和共同誓言确认婚姻与家族归属。一项规矩若被反复实践，便会进入礼仪、手艺和祈祷；若只靠恐惧维持，危机一来就会露出裂缝。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民感受到七神婚礼的方式最小也最准确。在圣堂与七神见证下，以交付新娘、披换斗篷和共同誓言确认婚姻与家族归属。他们记得税、粮、劳役、赈济和谁能为他们说话；宏大的名称，最终都要落在一家人的饭锅旁。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "七神婚礼：在圣堂与七神见证下，以交付新娘、披换斗篷和共同誓言确认婚姻与家族归属。"
+  ]
+}

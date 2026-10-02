@@ -1,0 +1,206 @@
+{
+  "Id": "rule_混沌总称__混沌总称",
+  "Keywords": [
+    "北方部落",
+    "混沌领域",
+    "邪神之地",
+    "诺斯卡联邦",
+    "混沌大军"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "混沌勇士不是一个统一的国家——他们是来自北方混沌荒原、诺斯卡半岛和巨魔国度的数百个独立部落组成的松散武力集合。在平时这些部落互相征战；当一位永世神选被邪神选出并戴上统合之冠时，整个北方世界的部落将在他的旗帜下暂时团结，组成旧世界最可怕的毁灭大军。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "chaos_culture"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我们是北方的子民——不是某个软弱的王国或虚伪的帝国，而是所有在混沌诸神注视下证明了自己价值的部落战士的集合。在南方人的地图上我们的土地被标注为「混沌荒原」——他们以为那是一片无法居住的死亡地带。但我们在那些「不能居住」的峡湾、冻土和黑岩山脉中长大、战斗、繁衍了一万年。我们唯一的统一不是来自某个选帝侯的投票或某个女神的教会——它来自力量的证明。当艾查恩戴上统合之冠时，他不是被选举的——他是北方所有部落中最强的那个，因此他成为了所有人的统帅。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "混沌勇士的政治实体性质是理解北方威胁的最关键变量。其他文明国家可以被威慑、收买或通过外交条约约束——因为他们的国家结构使这些行为有意义。混沌勇士不同：他们没有任何形式的持久中央政府，没有任何可以被攻击的政治首都，没有任何可以被收买的外交官僚。在永世神选出现之前，北方只是上百个互相征战的独立战帮；永世神选一旦陨落，北方立刻回归上百个互相征战的独立战帮。这意味着对混沌的胜利永远不是永久性的——它只是为下一个永世神选的出现购买时间。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "混沌部落的政治地理学可以从三个同心圆来理解。核心层是混沌荒原——极地星门以南的永久性变异区域——这里没有固定的部落定居点，只有被邪神直接驱动的恶魔生物和最强大的混沌冠军在此穿行。中层是诺斯卡半岛和巨魔国度——这是混沌部落最集中的凡世兵源区域——诺斯卡人、库尔干人和匈人等部族在此世代定居，建立了由峡湾、狩猎场和祭祀场所组成的半永久性领地。外层是北方各游牧部落与南方文明之间的接触带——基斯里夫以北、诺斯卡以南的冻土和针叶林带——这里是混沌掠夺者向南发动袭击的出发点，也是帝国北方防御的最前沿。永世神选的出现通常始于核心层中某位混沌冠军完成了六重考验并获得了四神的初步认可，然后他需要数年甚至数十年的时间在中层和外层中通过击败或收服各个部落的混沌冠军来建立自己的战帮联盟。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "混沌部落的社会结构对女性而言是一套与帝国完全不同的规则——在诺斯卡和库尔干部落中女性同样可以成为被诸神认可的混沌冠军。诺斯卡盾女——那些证明了自己战斗力的北方女性——在部落中的地位不逊于任何男性战士。但通往权力的代价是同样的：你必须像男性一样用敌人的颅骨向邪神献祭——混沌不关心你的性别，它只关心你的力量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "混沌部落的政治结构中隐藏着一个对帝国防御而言至关重要的弱点：部落之间的联盟完全依赖于统治者个人的统合能力。当统合的永世神选或混沌冠军被击败时，部落联盟不会像人类国家那样通过继承程序产生新的领导——它们直接崩溃为内讧。这意味着针对混沌的军事战略应该将斩首目标——混沌领袖本人——的优先级放在最高位置。击败艾查恩本人比消灭他的十万大军更重要。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "在诺斯卡当过雇佣兵的人会告诉你一个秘密：北方的多数部落战士并不认为自己是在为「混沌」而战。他们大多数信仰的是一套混合了祖先崇拜、当地自然灵体和已经部分被邪神影响的原始宗教——在诺斯卡猎人看来，他只是在跟随他的酋长去南方抢一些食物和黄金，因为今年冬天峡湾的渔获不好。混沌以最简单的欲望为入口——饥饿、寒冷、对力量的渴望——而南方的神学家们花了太多时间争论邪神的神学本质，却忽视了混沌在地面上是通过最基本的生存需求来招揽信徒的。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "混沌区域的经济形态是旧世界商业史上最大的非市场领域。诺斯卡部落与南方的「贸易」几乎全部以掠夺形式进行——但当部落偶尔需要通过和平方式获取他们无法掠夺的物资时（例如特定类型的魔法金属或用于祭祀的稀有香料），他们会通过基斯里夫的非正式交易网络与南方进行有限的以物易物。这种交易极为稀有但利润惊人——一位敢于带着一船帝国钢铁航行到诺斯卡峡湾的商人可以在归来时获得相当于成本二十倍的北方琥珀和象牙。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "混沌部落——北方荒原上由诺斯卡、库尔干和匈人等族组成的松散战帮联盟",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "混沌的正式称谓与政治地位"
+  ]
+}

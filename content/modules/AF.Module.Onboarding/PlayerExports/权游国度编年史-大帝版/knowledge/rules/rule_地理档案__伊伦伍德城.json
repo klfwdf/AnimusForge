@@ -1,0 +1,154 @@
+{
+  "Id": "rule_地理档案__伊伦伍德城",
+  "Keywords": [
+    "伊伦伍德城",
+    "伊伦伍德城地理",
+    "伊伦伍德城历史",
+    "伊伦伍德城战略"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "伊伦伍德城位于多恩东北部、赤红山脉南麓，靠近骨路通往风暴地的山口，是伊伦伍德家族的古老领地。它属于多恩，却长期拥有近似边疆诸侯的军事实力；控制这里，便能监视北方山道和多恩内陆之间的往来。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "在伊伦伍德城的墙影与道路旁生活的人，先看山泉、牧坡、林木、积雪和驮畜能走的窄路。当地家庭还要依靠井泉、灌渠、果园、耐旱牲畜和避开烈日的行程；任何一处道路、井泉或码头失灵，代价都会先落到他们身上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "军队接近伊伦伍德城时，地图很快让位给隘口、高坡、瞭望点与翻山所需的粮秣。在七国的封建秩序中，伊伦伍德城的归属牵动封臣义务、税粮和征召；守军能否吃饱、援兵能否按时抵达，比议事厅里的豪言更能决定这处据点是否可靠。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "scholar",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "学士能记下伊伦伍德城的沿革，商人更先打听驮队脚程、坡道损耗、山口税与冬季封路。他们还会辨认多恩的口音、法令和通行凭据；名声可以从酒馆传得很远，真正的路程仍须由车轮、船桨或马蹄丈量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "贵族谈论伊伦伍德城时常先说家名，土地本身却要求道路、粮仓与守备。在七国的封建秩序中，伊伦伍德城的归属牵动封臣义务、税粮和征召；旗帜更换之后，道路、粮仓、旧债和地方信任仍得由新主人逐一接手。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "一支疲惫队伍接近伊伦伍德城时，人人关心落石、岔路、背风宿营处和最近的山泉。能补给、能避险、能找到向导，便值得在行程里标明；若三样都没有，再响亮的家名也救不了迷途者。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "伊伦伍德城并非只有城主大厅；采石、伐木、铁件、山羊毛和贴着山势修筑的墙基与七神、洛伊拿遗风与亲王治下不同血脉的共同记忆同样塑造这里。一处据点因而不只是领主的大厅，也是婚丧、誓言、劳作与地方记忆反复发生的场所。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "市井与村舍谈起伊伦伍德城，先问今年还能留下多少粮。他们关心井泉、灌渠、果园、耐旱牲畜和避开烈日的行程，也看征粮后是否留下种子、灾年时城门是否开启；远方人看见纹章，他们看见的是明日有没有饭吃。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "伊伦伍德城：伊伦伍德城位于多恩东北部、赤红山脉南麓，靠近骨路通往风暴地的山口，是伊伦伍德家族的古老领地。它属于多恩，却长期拥有近似边疆诸侯的军事实力；控制这里，便能监视北方山道和多恩内陆之间的往来。"
+  ]
+}

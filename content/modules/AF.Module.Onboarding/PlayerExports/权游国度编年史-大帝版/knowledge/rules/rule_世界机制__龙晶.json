@@ -1,0 +1,152 @@
+{
+  "Id": "rule_世界机制__龙晶",
+  "Keywords": [
+    "龙晶",
+    "火山玻璃"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "龙晶是维斯特洛人对黑曜石的称呼，一种由火山形成、边缘极锋利却容易碎裂的玻璃质石材。森林之子曾用它制作箭头、刀刃与工具，先民时代的遗址也能发现其痕迹。龙石岛地下蕴藏大量龙晶，城堡与火山历史使它同时带有实用和神秘意味。面对钢甲时，龙晶远不如好钢可靠；面对异鬼时，它却能造成普通铁器无法做到的伤害。它的价值因此取决于敌人是谁、持用者是否相信那些来自北方的警告。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "dragonstone"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "peasant",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "龙石岛人把龙晶视作火山脚下并不陌生的黑石。矿工知道它会割手，匠人知道它难以承受猛击；南方贵族忽然高价索求时，本地人首先想到的是谁发现了新的用途。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "nightswatch",
+          "freefolk"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer",
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "守夜人与自由民若亲眼见过异鬼，就不会把龙晶当装饰。对他们而言，一枚粗糙箭头也可能比骑士的精钢长剑更值得用命保存。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "scholar",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "学士会比较古物、火山和战场证词，神职者则倾向从火与黑暗解释它。谨慎的人承认功效，却不会因此声称龙晶能解决所有来自寒冷的危险。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人把龙晶看成可执行的秩序。产于火山的黑曜石，锋利而脆；曾被森林之子使用，也能伤害异鬼，是龙石岛的重要矿藏。它是否有效，取决于谁能授予权利、收取代价，并在违约时让判决真正落地。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起龙晶时，关心它如何影响道路、命令和安全。产于火山的黑曜石，锋利而脆；曾被森林之子使用，也能伤害异鬼，是龙石岛的重要矿藏。远方的制度只有在营火、城门和驿站里能被执行，才不是空话。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者会从习惯和象征理解龙晶。产于火山的黑曜石，锋利而脆；曾被森林之子使用，也能伤害异鬼，是龙石岛的重要矿藏。一项规矩若被反复实践，便会进入礼仪、手艺和祈祷；若只靠恐惧维持，危机一来就会露出裂缝。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民感受到龙晶的方式最小也最准确。产于火山的黑曜石，锋利而脆；曾被森林之子使用，也能伤害异鬼，是龙石岛的重要矿藏。他们记得税、粮、劳役、赈济和谁能为他们说话；宏大的名称，最终都要落在一家人的饭锅旁。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "龙晶：产于火山的黑曜石，锋利而脆；曾被森林之子使用，也能伤害异鬼，是龙石岛的重要矿藏。"
+  ]
+}

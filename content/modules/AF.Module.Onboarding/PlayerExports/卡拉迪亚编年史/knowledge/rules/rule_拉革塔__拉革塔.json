@@ -1,0 +1,130 @@
+﻿{
+  "Id": "rule_拉革塔",
+  "Keywords": [
+    "拉革塔"
+  ],
+  "RagShortTexts": [
+    "拉革塔是西帝国北部边境的军事重镇，卡在帝国、巴旦尼亚和瓦兰迪亚三个势力的交汇点上，历史上反复易手。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "拉革塔是西帝国西部边境上的一座军事重镇，北面紧挨着巴旦尼亚的森林，东边不远处就是瓦兰迪亚的丘陵。正因为卡在三个势力的交汇点上，每次战争爆发，这座城往往第一个易手——今天城头飘着帝国的鹰旗，明天可能就被巴旦尼亚人夺了回去，后天又可能被瓦兰迪亚的男爵占了。这种日子已经持续了不知多少代，城墙修了又补，补了又塌，塌了再修，城里的居民早就习惯了在枪尖下过活。拉革塔周边的土地早已彻底卡拉德化，帝国人在这里经营了几百年，从语言到律法，从集市到神庙，全是帝国的模子。但北边森林里的巴旦尼亚人从不承认这一切。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire_w"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "拉革塔是我们西帝国北边的大门。丢了拉革塔，巴旦尼亚人就能一路南下，瓦兰迪亚人也能从东边抄过来。所以这座城的城墙从来没消停过——今天加里俄斯皇帝派兵来守，明天巴旦尼亚的伯爵们带着弓箭手来攻，后天瓦兰迪亚的男爵又带着他的方旗骑士来抢。但不管城头上换的是哪面旗，城里的老百姓过的还是帝国式的日子：说帝国话，用帝国法，赶帝国式的集市。几百年前我们的祖先用不光彩的手段拿下了这座城，但几百年后，它就是帝国的。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire_w"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "拉革塔的城墙上有三种不同的石头。最底下的石头是当年帕拉人垒的，中间那层是帝国人加固的，最上面那些七拼八补的是这几年被攻破了又补上的。每次巴旦尼亚人打过来，我们就往北墙上堆人；每次瓦兰迪亚人从东边摸过来，我们就往东墙上堆人。说实话，这地方当兵的不容易——你永远不知道明天城头上飘的是谁的旗。但我们已经习惯了。反正不管谁占了拉革塔，北边森林里的巴旦尼亚人永远在看着。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "拉革塔。这个名字在我们巴旦尼亚人嘴里念出来，就是一个警告。当年帝国的商人是怎么拿走那座城的？他谋杀了雇佣他的帕拉人酋长，占了城寨，然后请帝国人进来，把城献给了皇帝。帝国人的元老院嘴上说这是可耻的罪行，然后高高兴兴地把城收了。这就是帝国人的'条约和协定'。每次帝国使节来跟我们谈什么神圣不可侵犯的条约时，我们只需要说一个词：拉革塔。他们就闭嘴了。现在那座城是西帝国的北边要塞，但森林记得它原来是谁的。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "拉革塔的土地早就闻不到帕拉人的味道了，那里现在全是帝国人的气味——他们的语言、他们的律法、他们的集市。但森林还记得。我们的祖先亲眼看着那个被流放的帝国商人杀死帕拉酋长，亲眼看着帝国人把城寨变成殖民地。从那以后，帝国人的条约在我们这里就是废纸。拉革塔教会了我们一件事：帝国人的承诺，是用受害者的骨头写的。现在我们和西帝国在拉革塔一带反复拉锯，每次夺下那座城，我们都会在城墙上站一会儿，看着北边的森林。然后帝国人又会打回来。但没关系，我们可以再夺回来。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "拉革塔是西帝国西边的钉子，也是我们瓦兰迪亚东边的邻居。这座城卡在三个势力的交界点上，谁占了它谁就能威胁另外两家。我们的男爵们偶尔也会去打一下拉革塔的主意——不是为了占住它，是为了不让帝国人舒舒服服地把它当北方的指挥所。至于巴旦尼亚人对这座城有一种近乎偏执的执念，一提拉革塔就咬牙切齿，说什么帝国人的阴谋诡计。几百年前的事了，他们还记着。不过说实话，巴旦尼亚人记仇的本事确实让人佩服。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "steward": 150
+        }
+      },
+      "Content": "拉革塔是帝国北部边境最具争议性的城市之一。它位于西帝国、巴旦尼亚和瓦兰迪亚三个势力的交汇地带，战略位置极其敏感，历史上反复易手。拉革塔周边地区在帝国征服后已彻底卡拉德化，但其归属权的合法性始终被巴旦尼亚人质疑。这座城市的历史负担在于：它时刻提醒着帝国的盟友和敌人，帝国在扩张时期曾使用过何等卑劣的手段。如今拉革塔是西帝国的西部军事要塞，城墙上的不同石层记录了它被反复争夺的漫长岁月。在和平时期它是贸易中转站，在战争时期它是第一个被围攻的目标。"
+    }
+  ],
+  "TextMappings": []
+}

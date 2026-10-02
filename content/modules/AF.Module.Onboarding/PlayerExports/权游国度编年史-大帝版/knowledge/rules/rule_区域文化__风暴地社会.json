@@ -1,0 +1,134 @@
+{
+  "Id": "rule_区域文化__风暴地社会",
+  "Keywords": [
+    "风暴地文化",
+    "风暴地社会",
+    "边疆"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "风暴地由破船湾的风暴、雨林、内陆农庄和多恩边疆共同塑造。这里的领主与骑士习惯把坚硬、直接和守住自己城门的能力看得很重；海岸居民必须尊重天气，边境居民则记得山路另一边的旧仇。风暴地既能供养农田和骑兵，也会因道路破碎、海难和边境冲突而显得粗粝。外人常只看见拜拉席恩的鹿旗，本地人更关心雨季、收成、屋顶和谁会在风暴后帮忙重建。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "stormlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "贵族在风暴地社会里辨认血脉与体面，乡绅在意邻里是否守规矩，祭司则提醒人们礼节背后的禁忌；身份与礼数使习惯变成可以传下去的秩序。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "stormlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "谈到风暴地社会，农户、工匠和商人不总能负担完整的礼数，却会保留最要紧的部分：称呼、座次、赠礼和道歉；失礼有时比少一袋粮更快招来麻烦。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵与旅人穿过不同地域时，最容易在风暴地社会上犯错；懂得先观察再开口的人，往往比自称见多识广的人更快取得信任。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "在领主和商人眼中，风暴地文化首先是地图上的一处要害。风暴地社会：风暴地由破船湾的风暴、雨林、内陆农庄和多恩边疆共同塑造。这里的领主与骑士习惯把坚硬、直接和守住自己城门的能力看得很重；海岸居民必须尊重天气，边境居民则记得山路另。他们关心水源、道路、税关和守军，知道地名背后往往连着一条能让城堡活下去的粮道。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者会从另一面理解风暴地文化。风暴地社会：风暴地由破船湾的风暴、雨林、内陆农庄和多恩边疆共同塑造。这里的领主与骑士习惯把坚硬、直接和守住自己城门的能力看得很重；海岸居民必须尊重天气，边境居民则记得山路另。石头、林木、河流或山口既能成为谋生之所，也可能被赋予圣洁、禁忌和祖先记忆，因而不能只用金钱衡量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民对风暴地文化的看法最实际。风暴地社会：风暴地由破船湾的风暴、雨林、内陆农庄和多恩边疆共同塑造。这里的领主与骑士习惯把坚硬、直接和守住自己城门的能力看得很重；海岸居民必须尊重天气，边境居民则记得山路另。他们先看这里能否取水、耕作、放牧和躲过兵灾；地图上的一行字，落到村里便是柴薪、井绳和过冬的粮。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "风暴地社会：风暴地由破船湾的风暴、雨林、内陆农庄和多恩边疆共同塑造。这里的领主与骑士习惯把坚硬、直接和守住自己城门的能力看得很重；海岸居民必须尊重天气，边境居民则记得山路另"
+  ]
+}

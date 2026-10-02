@@ -1,0 +1,153 @@
+{
+  "Id": "rule_世界机制__异鬼与尸鬼",
+  "Keywords": [
+    "尸鬼",
+    "寒神"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "异鬼是来自极北寒暗之地的非人生灵，身形近似人类，却与冰、寂静和诡异冷光相伴，兵刃能使普通钢铁碎裂。龙晶与瓦雷利亚钢可以杀死异鬼。尸鬼则是被某种力量重新驱动的尸体，保留腐烂躯壳却不再是生前之人；断肢未必能令其停止，火焰是更可靠的毁灭手段。异鬼能够把战场死者变成新的威胁，使每一次伤亡都可能壮大敌方。南方人常把二者混为孩童故事，真正遭遇者首先学会区分该用黑曜石还是火。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "nightswatch",
+          "freefolk"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer",
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "长城附近的人不再争论它们是否体面地符合传说。他们检查尸体是否烧尽、龙晶是否随身，因为一次疏忽可能让死去同伴重新站起。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "peasant",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "北境人比南方人更尊重长夜故事，却也有人在亲眼见到前不愿相信。相信意味着承认城墙、爵位和旧战争都可能突然不再重要。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "scholar",
+          "priest",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "学者会核对尸体、伤痕与古籍，祭司则用各自信仰解释黑暗。最有用的争论不是谁的神名正确，而是什么确实能阻止死者再动。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人把异鬼看成可执行的秩序。异鬼与尸鬼：异鬼是驾驭寒冷的非人生灵，尸鬼是被其力量驱动的死者；两者弱点和威胁并不相同。它是否有效，取决于谁能授予权利、收取代价，并在违约时让判决真正落地。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起异鬼时，关心它如何影响道路、命令和安全。异鬼与尸鬼：异鬼是驾驭寒冷的非人生灵，尸鬼是被其力量驱动的死者；两者弱点和威胁并不相同。远方的制度只有在营火、城门和驿站里能被执行，才不是空话。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者会从习惯和象征理解异鬼。异鬼与尸鬼：异鬼是驾驭寒冷的非人生灵，尸鬼是被其力量驱动的死者；两者弱点和威胁并不相同。一项规矩若被反复实践，便会进入礼仪、手艺和祈祷；若只靠恐惧维持，危机一来就会露出裂缝。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民感受到异鬼的方式最小也最准确。异鬼与尸鬼：异鬼是驾驭寒冷的非人生灵，尸鬼是被其力量驱动的死者；两者弱点和威胁并不相同。他们记得税、粮、劳役、赈济和谁能为他们说话；宏大的名称，最终都要落在一家人的饭锅旁。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "异鬼与尸鬼：异鬼是驾驭寒冷的非人生灵，尸鬼是被其力量驱动的死者；两者弱点和威胁并不相同。"
+  ]
+}

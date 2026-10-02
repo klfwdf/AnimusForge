@@ -1,0 +1,154 @@
+{
+  "Id": "rule_世界机制__破船湾",
+  "Keywords": [
+    "破船湾",
+    "风息堡海岸",
+    "风暴地海难",
+    "暗礁"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "破船湾位于风暴地东岸，风息堡俯瞰其险恶海面。强风、骤雨、暗礁与复杂岸流会把船推向岩岸，许多海难使海湾得名；传说风息堡最早的城主不断加厚城墙，正是为了抵挡诸神怒风。沿岸居民依靠渔业、打捞、灯火和对避风处的熟悉生活，船长则宁愿绕行也不轻视天气。海湾使风息堡拥有控制海岸的视野，也让任何舰队集结都必须先问能否安全停泊。风暴地人的坚硬，不少来自对这片海的长期忍耐。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "stormlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "sailor",
+          "peasant",
+          "artisan"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "沿岸渔户从云底颜色和浪声判断是否出海。外人夸他们勇敢，他们更愿把平安归来称作没有冒犯破船湾。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "stormlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "风暴地领主看重烽火、救难船和海岸守卫。海湾能替城堡消耗敌舰，也会同样吞掉己方补给，风暴从不认旗。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "wanderer",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "外来商人把绕行成本写进价格，旅人把失事故事写进歌谣。神职者在海边为死者祈祷时，最少有人争论究竟是哪位神掀起了浪。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人把破船湾看成可执行的秩序。风息堡外的危险海湾，以狂风、暗礁与海难闻名，塑造风暴地沿岸的警戒、救难和航海传统。它是否有效，取决于谁能授予权利、收取代价，并在违约时让判决真正落地。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起破船湾时，关心它如何影响道路、命令和安全。风息堡外的危险海湾，以狂风、暗礁与海难闻名，塑造风暴地沿岸的警戒、救难和航海传统。远方的制度只有在营火、城门和驿站里能被执行，才不是空话。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者会从习惯和象征理解破船湾。风息堡外的危险海湾，以狂风、暗礁与海难闻名，塑造风暴地沿岸的警戒、救难和航海传统。一项规矩若被反复实践，便会进入礼仪、手艺和祈祷；若只靠恐惧维持，危机一来就会露出裂缝。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民感受到破船湾的方式最小也最准确。风息堡外的危险海湾，以狂风、暗礁与海难闻名，塑造风暴地沿岸的警戒、救难和航海传统。他们记得税、粮、劳役、赈济和谁能为他们说话；宏大的名称，最终都要落在一家人的饭锅旁。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "破船湾：风息堡外的危险海湾，以狂风、暗礁与海难闻名，塑造风暴地沿岸的警戒、救难和航海传统。"
+  ]
+}

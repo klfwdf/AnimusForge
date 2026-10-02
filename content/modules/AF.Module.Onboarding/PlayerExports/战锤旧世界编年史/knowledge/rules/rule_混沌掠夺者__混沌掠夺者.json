@@ -1,0 +1,210 @@
+{
+  "Id": "rule_混沌掠夺者__混沌掠夺者",
+  "Keywords": [
+    "混沌掠夺者",
+    "轻装先锋",
+    "狂热战意",
+    "蛮族战士",
+    "混沌底层",
+    "诺斯卡人",
+    "库尔干人",
+    "混沌掠夺北方蛮族",
+    "低阶勇士"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "混沌掠夺者是混沌军队中最底层的凡人士兵——来自诺斯卡、库尔干和北方蛮荒之地的部落战士。他们穿着杂乱的皮甲和从战场上捡来的铁片，手持战斧、圆盾和短矛，依靠过人的体魄和狂热的战斗意志充当前锋。在混沌勇士和神选者出动之前，掠夺者先以人数和狂怒淹没敌方阵线。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "chaos_culture"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "掠夺者是混沌之路上最年轻、最饥饿的人——他们是我们的学徒、我们的先锋、我们的活体证明。每一个最终成为混沌勇士的神选者都曾经只是一个手持祖父传下来的破斧头的掠夺者。他们在战场上奔跑在最前面不是因为勇气——是因为他们渴望用敌人的颅骨向邪神证明自己值得被注视。掠夺者的死亡率是最高的，但没有掠夺者就没有混沌大军——他们是我们筛选最强者、淘汰弱者的第一道火焰。那些从掠夺者阶段存活下来的人，将在某一个夜晚获得第一次邪神标记——那时他们就不再是掠夺者，而是真正的混沌勇士。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "混沌掠夺者在军事上的最大价值在于他们的数量和不畏死。他们不需要高级补给——掠夺军以战养战，依靠突袭沿海村庄和农场维持自身。但他们也是混沌军队中组织度最低的部队——掠夺者战帮之间经常在开战前就为了争夺第一个冲入敌阵的荣誉而互相打了起来。正确的战术是利用掠夺者作为第一波消耗——让他们冲击敌方阵线制造混乱和疲劳——然后用混沌勇士方阵从同一个缺口跟进形成决定性突破。不要试图用掠夺者执行任何复杂的战术机动——他们不具备那种纪律性。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "混沌掠夺者代表了混沌军事体系中最基础的兵源层。在混沌的社会结构中，每一个北方部落的成年男性本质上都处在从掠夺者向混沌勇士晋升的漫长通道上。掠夺者的装备高度非标准化——他们使用的武器从缴获的帝国长剑到自己锻造的粗糙战斧，甲具从捡来的废弃胸甲到祖上传下来的龙骨护符。掠夺者的社会组织建立在诺斯卡和库尔干的部落制度之上——每一支掠夺者战帮通常来自同一个部落或同一个峡湾，这使得他们拥有基本水平的战斗协调。但掠夺者也是混沌军队中唯一仍保留着人类恐惧本能的兵种——与更高阶的混沌勇士不同，掠夺者可能会在对阵亡灵和恶魔时因恐惧而溃散。这一点在对抗混沌军队时应被充分利用。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "作为诺德领沿海的女性领主，混沌掠夺者的长船是我每年秋收后最恐惧的景象。他们不像混沌勇士那样以目标明确的大规模入侵行动——掠夺者是零散的、随机的、一次可能只来三艘长船，洗劫你的一两个渔村后就撤走。对于一位管理着沿海领地的女性来说，这种不可预测的小规模袭击比任何全面入侵都更难预防——我无法在每一片海滩上安排守军，而每一次成功被洗劫的村庄都会让我的名册上多出十几个需要发放阵亡抚恤金的家庭。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "混沌掠夺者带来的威胁对我的家族来说不是军事上的——是人口上的。每一次诺斯卡掠夺船队袭击沿海村庄，损失的不仅是一季收成，而是那些村庄中能够劳动和生育的年轻男女被掠走。诺斯卡掠夺者俘虏活人以带回北方作为奴隶或——以他们在混沌献祭中的用途来说——更糟的东西。我们家族在诺德领沿海经营的五个渔村在过去两百年中已经被掠夺者袭击了不下三十次。每一次袭击后，我们都需要从内陆村庄迁移新的家庭去沿海填补人口空缺——而每一次迁移都在考验家族的财政储备。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "在利爪海沿岸当过雇佣兵的我可以告诉你：混沌掠夺者是你最不想在海上遇到的东西。他们的长船比帝国任何军舰都更快、更灵活、更擅长在浅滩登陆然后消失。我曾在一艘从诺德领向玛利恩堡运送铁矿石的货船上担任武装护卫，在一次遭遇三艘诺斯卡长船追击的夜晚——我们靠扔下三分之一的货物并祈祷恶海之风转向才甩掉了他们。但真正让我做噩梦的不是掠夺者带着战斧冲上甲板——是他们中的术士。有些掠夺者战帮会携带一名年轻混沌术士，那个术士会在战斗最热的时候引导邪神的低阶法术。在海上那意味着你的船帆可能在无风的情况下燃烧。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "混沌掠夺者对诺德领沿海商业的影响在帝国商会的年度账目中可以被精确量化。从帝国历2490年至当前，诺德领沿海商船的战争保险费率上涨了约百分之二百三十。这一费率上涨的直接原因是掠夺者长船的袭击频率从每个季节约两次增加到每月至少一次。沿海的许多中小鱼港已经实际上停止了独立的海洋贸易——它们的渔船只能在有帝国海军巡逻队护航的日子出海，而这些护航的成本由沿海城镇分摊。我商会在过去两个财务年度中三次向帝国议会提交请愿书要求加强诺斯卡方向的沿海防御——每一次的回复都是需要更多时间审议预算。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "混沌掠夺者——北方部落的轻装凡人战士，混沌大军最底层但数量最多的兵源",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "混沌掠夺者是混沌军队中最底层的凡人士兵——来自诺斯卡、库尔干"
+  ]
+}

@@ -1,0 +1,131 @@
+{
+  "Id": "rule_家族根基__克雷赫家族",
+  "Keywords": [
+    "克雷赫家族",
+    "野猪",
+    "无人可比吾凶猛"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "克雷赫家族以秧鸡厅为根基，是兰尼斯特麾下强壮而尚武的西境家族，家徽为棕底黑白相间的野猪，箴言“无人可比吾凶猛”。家族成员在故事中常以魁梧体格和武人身份出现，但纹章与个别人物不能证明每一位克雷赫都同样鲁莽。领地、骑士和靠近南方道路的位置使其成为凯岩城重要封臣。西境军人会尊重野猪旗的冲击力，当地农人则更希望这种凶猛用于驱逐劫掠者而非践踏田地。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "西境贵族说起克雷赫，常想到秧鸡厅的野猪、强壮体格和直冲上前的武名。“无人可比吾凶猛”让朋友放心，也让谨慎者皱眉：一头野猪能撞穿阵线，也可能冲进猎人的长矛。兰尼斯特需要这样的锋刃，也必须知道如何握住它。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "西境士兵喜欢与克雷赫壮汉并肩冲锋，因为野猪旗通常不会最先后退。他们也知道凶猛不能替代侦察、粮草和号令。活下来的老兵称真正的猛士不是冲得最快的人，而是冲过之后还能把同伴带回来的人。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待克雷赫家族，会先看它的土地、婚盟、血脉和债务。秧鸡厅的西境武门，家徽为棕底黑白野猪，箴言“无人可比吾凶猛”。尚武声誉不应被写成全族统一性格。家徽是门面，能否保护封地、兑现婚约并在危机中召集人马，才是家族真正的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起克雷赫家族时，记得的是谁在营火边分过粮、谁把他们留在城外、谁在败局里仍站在旗旁。秧鸡厅的西境武门，家徽为棕底黑白野猪，箴言“无人可比吾凶猛”。尚武声誉不应被写成全族统一性格。家族名声最终要落到具体的人和具体的命令上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意克雷赫家族留下的仪式、墓地和传承。秧鸡厅的西境武门，家徽为棕底黑白野猪，箴言“无人可比吾凶猛”。尚武声誉不应被写成全族统一性格。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见克雷赫家族。秧鸡厅的西境武门，家徽为棕底黑白野猪，箴言“无人可比吾凶猛”。尚武声誉不应被写成全族统一性格。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "克雷赫家族：秧鸡厅的西境武门，家徽为棕底黑白野猪，箴言“无人可比吾凶猛”。尚武声誉不应被写成全族统一性格。"
+  ]
+}

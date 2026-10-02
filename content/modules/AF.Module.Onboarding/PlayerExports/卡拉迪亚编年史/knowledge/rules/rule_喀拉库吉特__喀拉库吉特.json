@@ -1,0 +1,93 @@
+﻿{
+  "Id": "rule_喀拉库吉特",
+  "Keywords": [
+    "喀拉库吉特",
+    "黑库吉特"
+  ],
+  "RagShortTexts": [
+    "喀拉库吉特是库赛特唯一不定居的游牧部落。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "喀拉库吉特是一群游牧的野蛮人，是库赛特各部里唯一没有定下来的一支，他们死活不定居，尽管库赛特人极力邀请他们。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "喀拉库吉特是一群游牧的野蛮人，是库赛特各部里唯一没有定下来的一支，他们死活不定居，尽管库赛特人极力邀请他们。他们是优良的雇佣兵，现在他们那颜是A"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "khuzait"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "喀拉库吉特是我们的一支同胞，相对于定居，他们更愿意过游牧生活，我们极其不理解。我们的历代可汗都努力尝试过让他们定居下来，甚至许诺给他们土地，牲口，奴隶，但是他们依旧不愿意定居，甚至甘愿与我们敌对而换取他们可怜的自由"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "khuzait"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "喀拉库吉特的那颜A真是泯顽不化，我们许诺了如此多的东西，他们不但不领情，还会定期来劫掠我们，给他国当雇佣兵来与我们作对，真是无法理解。他们死活不定居，其他部落都定居了，就他们搞特殊，他们不愿意过定居的优渥生活，反而愿意在草原和大漠上风吹日晒，追求他们的自由，简直是不可理喻。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "A",
+      "Kind": "clan_leader_name",
+      "TargetId": "karakhuzaits",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}

@@ -1,0 +1,157 @@
+﻿{
+  "Id": "rule_阿塞莱地理",
+  "Keywords": [
+    "阿塞莱地理"
+  ],
+  "RagShortTexts": [
+    "纳哈撒沙漠和杰姆贾赖峭壁是阿塞莱的天然防御屏障。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "阿塞莱地理？那首先得说撒那拉。说实话，我没去过撒那拉，太远了，商队要走好几天。但我听说过——那里的水多得能浇地，椰枣树成排成排的，集市上的货堆得比骆驼还高。我们这儿就不一样了，水金贵，一棵椰枣死了全家心疼。沙漠不是人待的地方，但我们阿塞莱人在这儿活了多少代了，知道怎么活。杰姆贾赖峭壁我见过，就在北边，抬头看跟一堵墙似的，翻不过去。老人们说那墙是神立下保护我们的，不让北边的人随便进来。我觉得也对。帝国人以前老想过来，来了就陷在沙子里。沙漠就是我们的城墙。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": [
+          "town_a6"
+        ],
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "我们撒那拉是全卡拉迪亚最富的城，这话不是我说的，是进港的船长们说的。你站在港口看，船桅杆密得跟芦苇似的，珀拉斯海的风吹过来，带着盐味和香料味。达玛尔河三角洲的土黑得流油，种什么长什么，菜市场早上摆出来的菜叶子还带露水。城里什么都有——帝国的丝绸，库赛特的皮货，瓦兰迪亚的弩，阿塞莱自己的椰枣和铜器。外地人来了都不肯走，说我们这儿不像沙漠，像天堂。但我们也知道，出了城就是沙子。撒那拉是沙海里的一颗珠子，沙子一埋什么都不是。所以我们对达玛尔河感恩，对海感恩，对每一船靠岸的货感恩。富归富，不能忘本。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "阿塞莱的地理决定了我们的一切。纳哈撒沙漠是天然屏障，任何外来军队想穿越它都要付出惨重代价。帝国当年宁愿扶植代理人也不愿派军团进来，就是这个道理。杰姆贾赖峭壁更是一道石墙，南北交通不便，但也让阿塞莱易守难攻。我们的祖先把这地方守了几百年，靠的不是人多，是地形。撒那拉和阿斯凯尔这两座城，一座踞着河口三角洲，一座守着绿洲商路，谁控制它们谁就控制阿塞莱的财富命脉。巴努·胡勒延当年能在撒那拉坐大，不是靠打仗，是靠地理——达玛尔河的粮食、珀拉斯海的商船、沙漠里绿洲之间的驼队，三条线交汇在一个点上，这个点就是撒那拉。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": [
+          "clan_aserai_1"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "撒那拉是我们的。这句话在沙漠里没人敢反驳。我们胡勒延家坐在达玛尔河三角洲上，河是我们的水，海是我们的路，商队来交税，船进港交停泊费，集市上的摊位费每天数一遍。不是我们贪婪，是这座城自己把财富送上门来。温吉德苏丹常说，撒那拉是阿塞莱的馈赠，不是胡勒延的私产。话是这么说，但馈赠也得有人管。我们管了几代人，让商路通畅，让泉水不干，让峭壁对面的帝国佬不敢来。撒那拉富，是因为我们让它富。杰姆贾赖峭壁挡着北边的敌人，达玛尔河养着三角洲的田，珀拉斯海开着南边的门——这三样东西少一样，阿塞莱就不是现在的阿塞莱。我们坐在这个位置上，不全是运气。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "阿塞莱？就是沙漠那边吧。我们这边有人去过一回撒那拉。回来跟我们吹，说那个城比吕卡隆还富，满街都是金器和香料，港口的船挤得跟闹市一样。但他说从船上下来往内陆走，不一会儿就是沙子，一望无际的黄沙，人走在里头没几天就渴死。他说那么富的城周围全是死人沙，想想挺瘆人的。他还说阿塞莱人那边有一道大石墙，叫杰姆贾赖峭壁，挡住了北边的路。我问怎么不绕过去，他说绕不过去，太高太长。反正我们是不会去的，太远了，热死个人。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "阿塞莱的地理位置是元老院的老话题。珀拉斯海隔开了我们和他们的本土，这让我们无法像对待斯特吉亚人或巴旦尼亚人那样直接施加军事压力。纳哈撒沙漠本身就是一个巨大的防御纵深，任何军团穿越它都要面对补给断绝的风险——当年涅雷采斯时代就讨论过远征阿塞莱的事，结论是三分之一的兵会死在路上，另外三分之一会被杰姆贾赖峭壁挡住。峭壁从北到南纵贯阿塞莱，它给了阿塞莱无与伦比的防御纵深，但也造成了极大的内部交通不便，他们的部落之间联系松散与地理隔绝直接相关。撒那拉城是全卡拉迪亚最富裕的城市，这一点我们不得不承认。达玛尔河三角洲的农业产出和撒纳拉港的海运枢纽地位，使其成为东西商路的咽喉。巴努·胡勒延靠着这个位置在阿塞莱部落联盟中取得了苏丹之位，这不全是运气——控制撒那拉就等于掐住了阿塞莱的经济命脉。眼下帝国裂成三块，暂时没人顾得上跨海远征，但任何一统帝国的未来皇帝，都必须面对一个问题：如何让阿塞莱的商路继续向帝国开放。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "阿塞莱在哪？海的对面吧。没去过，太远。听说全是沙子，热死。有个跑船的亲戚说那里有条河，河两边绿油油的，别的地方全是黄的。还有一堵大峭壁，比城墙还高。他们那边最富的城叫撒那拉，港口堆满了货。但富不富跟我们没关系，我们又不去。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "阿塞莱的地理构造为其提供了天然的孤立主义资本。纳哈撒沙漠和杰姆贾赖峭壁构成双重防御屏障，使其免于被卡拉迪亚大陆的战争波及——这不是文明水平的结果，而是地理条件的客观庇护。但同样的地理也限制了阿塞莱向外投射力量的规模。穿越峭壁的隘口有限，撒那拉的海运虽发达，但海上远征的成本高昂。加上部落联盟的政治结构松散，阿塞莱对卡拉迪亚大陆的威胁更多体现在对商路的控制和雇佣兵的输出，而非直接的领土扩张。西帝国与我们隔海相望，目前我们的商队定期往来撒那拉港，关税尚可，航道安全。我们最关心的不是什么苏丹不苏丹，是从加隆托湾到珀拉斯海的商路别断。只要撒纳拉还在，商路就断不了。"
+    }
+  ],
+  "TextMappings": []
+}

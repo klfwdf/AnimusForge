@@ -1,0 +1,214 @@
+{
+  "Id": "rule_魔法学院__魔法学院",
+  "Keywords": [
+    "魔法学院",
+    "八风学院",
+    "阿尔道夫学院",
+    "魔法学院泰格里斯",
+    "魔法学院光明学院",
+    "魔法学院火焰学院",
+    "魔法学院天堂学院",
+    "金属学院",
+    "生命学院",
+    "死亡学院",
+    "阴影学院",
+    "野兽学院",
+    "魔法秩序"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "魔法学院是帝国在阿尔道夫设立的八所合法魔法教育机构，每一所学院对应一种魔法之风，负责训练人类施法者安全地驾驭这些危险的力量。八所学院的存在使帝国成为旧世界中唯一拥有系统化、制度化的魔法军事体系的人类国家——其他任何人类文明要么放任魔法不受约束导致混沌腐化，要么干脆完全禁止一切魔法实践。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "魔法学院——阿尔道夫人提到这八个字时会先左右看看有没有猎巫人。八所学院分布在阿尔道夫的八个不同区域，各自对应一种魔法之风：光明学院占据阿尔道夫最高的尖塔——海希之风在这里被聚焦成净化之光；火焰学院坐落在努恩河边，建筑物周围常年冒烟，那里的法师学徒三天两头把宿舍烧掉——邻居们早已习惯；生命学院在城市的植物园区，一道围墙将其与外界隔离，墙内生长着在帝国任何地方都看不到的奇异植物；天堂学院的天文塔高到能刺破云层，法师们在那里观测星辰轨迹以预言未来；金属学院在锻炉区，终日弥漫着炼金术的黄橙色烟气；死亡学院是一个例外——它位于阿尔道夫城墙以外的墓园区，因为没有人愿意住在它隔壁；阴影学院的大门没有标记——如果你找不到它，说明你不是灰法师；野兽学院在城墙下的旧地窖中，里面豢养的禽鸣和咆哮证明着琥珀法师对原始自然的亲近。学院之间的竞争近乎敌对——火焰学院的法师傲慢地认为他们的法术是最单纯的毁灭力量，天堂学院的占星师则嘲笑火焰法师是「拿着火把的蛮人」；但在对外时，八所学院组成一个无懈可击的联盟——任何针对其中一所学院的攻击都会面临其他七所学院法师的集体反击。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "魔法学院在帝国权力游戏中是一枚至关重要的棋子。八所学院的首席法师——被称为「学院长大法师」——集体构成了帝国最高魔法议会，这个议会在理论上独立于任何选帝侯或教会的直接管辖。作为领主，你无法直接命令魔法学院为你提供战斗法师——你必须向学院提出正式请求并附上战略需要说明，学院会自行决定派遣谁、数量多少。但这其中蕴含的可能性才是真正重要的一环：如果你能通过持续的政治投资——比如为学院提供资金购买魔法材料、在议会中保护它的自治权——来建立与某个特定学院的紧密关系，你就相当程度上拥有了一支不隶属于其他领主的独家魔法力量。然而这种投资的危险在于：一旦你的对手通过选帝侯会议推动限制魔法学院权力的法案，或者更糟——说服西格玛大主教公开质疑某个学院的「信仰纯净性」，你投入的政治资本可能一夜之间灰飞烟灭。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "魔法学院的建立是旧世界魔法制度史中罕见的成功案例。帝国历2304年，在大混沌战争刚刚结束、整个帝国充满了对混沌的恐惧和对魔法更深切的仇恨之时，高等精灵大法师泰克里斯做出了一个在精灵看来近乎荒谬但在人类看来是唯一出路的建议：他请求当时的皇帝马格努斯授予他在阿尔道夫创立八所魔法学院的许可权。泰克里斯的方案极其激进——他将人类的魔法天赋按八风分类：海希（光明）、阿奇（天堂）、昌（金属）、吉兰（生命）、沙许（死亡）、乌尔古（阴影）、阿兹尔（火焰）和格尔（野兽），并为每一种风建立了独立的学院和教学体系。他设计了「同风隔离」制度：每一位学徒只学习与自身亲和的一种魔法之风，禁止接触其他七风——这个设计牺牲了理论上的全能性以换取在实践中的安全性。最关键的创新是「能力上限协议」——每位正式法师在通过考试后必须与学院签署一个魔法誓言，承诺永远不尝试使用超过自身能力的魔法量，这种自我限制在精灵魔法中是没有的，但对人类而言是防止混沌入侵的最后一道防线。八所学院的现任学院长大法师包括：光明学院的王座之光大法师埃利·冯·格里芬、火焰学院的火灵大法师塔莉斯·烈焰歌者（少数女性院长之一）、天堂学院的星辰大法师罗德里克·赫尔姆哈特、金属学院的黄金大法师沃兰德·冯·格朗、生命学院的翠绿大法师诺拉·伊瑟、死亡学院的安魂大法师阿尔弗雷德·骨语、阴影学院的迷雾大法师伊丽莎·暗翼、野兽学院的兽王大法师辛里克·荒爪。据统计，帝国每年新发现的注册魔法学徒不足五十人，在严厉的训练和淘汰之后最终成为正式法师的不到一半。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "魔法学院在我们帝国贵族女性的世界里是一处被禁忌笼罩的存在。母亲们用八风学院来吓唬不听话的女儿——说如果不好好学习缝纫和持家，就会被送到阴影学院当灰法师学徒。但实际上，据说极少数有魔法天赋的贵族女孩会被秘密送入学院——是秘密，因为公开承认自己的女儿有「魔法天赋」等于是承认你的血脉可能已经被混沌触及，这对任何贵族家族的名誉都是毁灭性的。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "魔法学院对于帝国世族来说是最棘手的家族资源。如果你的子嗣中有魔法天赋被检测出来——这几乎总是发生在孩童十岁以前——你有两个选择：立即向学院报告并送走这个孩子，这样他可以获得合法的法师身份但在家族意义上已经死亡了；或者，在家中秘密隐藏这个孩子直到魔法失控引发一场灾难。无论哪种选择都意味着你失去了一个家族成员，区别只在于是否同时连带失去邻居的性命。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "在帝国旅店里，魔法学院的话题永远能引发一轮争论。我们这些流浪的人对法师嗤之以鼻——他们躲在书院里，你无法信任一个你不知道他在想什么的人——但每当在驿路上遇到一头混沌巨兽而恰好有一位光明法师同行，你会立刻忘记自己之前对魔法的一切怀疑。我见过天堂法师召唤雷电劈散了一整片地精集群，那种力量不是任何刀剑可以比拟的。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "八风学院是阿尔道夫最大的消耗性物资买家——魔法材料、香料、金属、水晶、特殊木材的需求量大到足以单独支撑数家商业行会。生命学院的香料采购清单上甚至有远自露斯契亚的植物，这些供货路线由帝国最精明的远洋商人垄断。火焰学院每年从努恩兵工厂购买的火药实验材料量相当于一个小型选帝侯全年军费的物资消耗。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "八风——魔法之风的八种基本分类：海希、阿奇、昌、吉兰、沙许、乌尔古、阿兹尔、格尔",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "魔法学院的神学属性与信仰体系"
+  ]
+}

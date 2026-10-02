@@ -1,0 +1,151 @@
+{
+  "Id": "rule_伊班航路__卡玛伊尔",
+  "Keywords": [
+    "卡玛伊尔"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "卡玛伊尔（Qamayl）位于颤抖海上的伊班岛及其航路，政治上处在伊班人的岛屿与港口体系之内。它是一座城堡，主要承担地方守备、征税和庇护附近人口的职责。城墙与道路把周边人口、仓储和守备系在这里；旗帜纵然更换，这处据点仍会影响附近人如何纳税、贸易与寻求庇护。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "ibbenese"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "一座据点如何落到百姓身上，在卡玛伊尔要从潮汐、渔汛、淡水和船只能否安全靠岸说起。当地家庭还要依靠鲸脂、鱼获、毛皮、硬木与短促航季；任何一处道路、井泉或码头失灵，代价都会先落到他们身上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "ibbenese"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "任何关于卡玛伊尔的军议，最后都会回到港湾入口、泊位、烽火与可供登陆的岸线。卡玛伊尔处在伊班与颤抖海的权力与贸易网络中，城门内外的规矩由当地秩序决定；守军能否吃饱、援兵能否按时抵达，比议事厅里的豪言更能决定这处据点是否可靠。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "scholar",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "商队把卡玛伊尔写进账本时，会核算航期、码头脚费、补水和下一处避风港。他们还会辨认伊班与颤抖海的口音、法令和通行凭据；名声可以从酒馆传得很远，真正的路程仍须由车轮、船桨或马蹄丈量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "婚约、继承与征召令会把贵族的目光引向卡玛伊尔。卡玛伊尔处在伊班与颤抖海的权力与贸易网络中，城门内外的规矩由当地秩序决定；旗帜更换之后，道路、粮仓、旧债和地方信任仍得由新主人逐一接手。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "老兵讲起卡玛伊尔，很少赞美风景，只会提醒别人风向、礁石、渡船与城门落锁后的锚地。能补给、能避险、能找到向导，便值得在行程里标明；若三样都没有，再响亮的家名也救不了迷途者。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "从作坊到圣所，卡玛伊尔把修船木、帆布、盐、鱼获和抵御海风的石料同伊班人的祖灵、海兽传说与严寒港口的共同禁忌并置在一起。一处据点因而不只是领主的大厅，也是婚丧、誓言、劳作与地方记忆反复发生的场所。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "对普通家庭来说，卡玛伊尔的威严要在灾年才见真假。他们关心鲸脂、鱼获、毛皮、硬木与短促航季，也看征粮后是否留下种子、灾年时城门是否开启；远方人看见纹章，他们看见的是明日有没有饭吃。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "卡玛伊尔：卡玛伊尔（Qamayl）位于颤抖海上的伊班岛及其航路，政治上处在伊班人的岛屿与港口体系之内。它是一座城堡，主要承担地方守备、征税和庇护附近人口的职责。城墙与道路把周边人口、仓储和守备系在这里；旗帜纵然更换，这处据点仍会影响附近人如何纳税、贸易与寻求庇护。"
+  ]
+}

@@ -1,0 +1,152 @@
+{
+  "Id": "rule_玫瑰腹地__腾石镇",
+  "Keywords": [
+    "腾石镇",
+    "黑水河"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "腾石镇是河湾地曼德河流域的城镇，拥有连接内陆与河口的水运条件。河流让粮食、木材、酒和石材能够比陆路更快移动，也使码头、仓房和渡口成为权力的焦点。腾石镇在坦格利安内战的历史记忆中曾被反复提及，战争让普通城镇看见龙火与军队如何把繁荣变成灰烬；但事件之外，它仍是一座需要船夫、搬运工、商人和农人的城镇。任何重建都要先从河运和粮食开始。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "reach"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "对靠腾石镇周边土地吃饭的人而言，日子由潮汐、渔汛、淡水和船只能否安全靠岸决定。当地家庭还要依靠谷物、葡萄酒、果园、牧场与曼德河沿线的集市；任何一处道路、井泉或码头失灵，代价都会先落到他们身上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "reach"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "对攻守双方而言，腾石镇的分量首先落在港湾入口、泊位、烽火与可供登陆的岸线上。在七国的封建秩序中，腾石镇的归属牵动封臣义务、税粮和征召；守军能否吃饱、援兵能否按时抵达，比议事厅里的豪言更能决定这处据点是否可靠。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "scholar",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "货物抵达腾石镇以前，货主已经算过航期、码头脚费、补水和下一处避风港。他们还会辨认河湾地的口音、法令和通行凭据；名声可以从酒馆传得很远，真正的路程仍须由车轮、船桨或马蹄丈量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "腾石镇能给一家人带来头衔，也能在灾年与战争中拖垮那一家人。在七国的封建秩序中，腾石镇的归属牵动封臣义务、税粮和征召；旗帜更换之后，道路、粮仓、旧债和地方信任仍得由新主人逐一接手。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵靠脚底记住腾石镇：风向、礁石、渡船与城门落锁后的锚地。能补给、能避险、能找到向导，便值得在行程里标明；若三样都没有，再响亮的家名也救不了迷途者。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "数代人在腾石镇留下的痕迹，一半藏在修船木、帆布、盐、鱼获和抵御海风的石料，一半藏在七神、骑士传奇与园丁王时代留下的门第记忆。一处据点因而不只是领主的大厅，也是婚丧、誓言、劳作与地方记忆反复发生的场所。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户、牧民和渔民评价腾石镇最少绕弯。他们关心谷物、葡萄酒、果园、牧场与曼德河沿线的集市，也看征粮后是否留下种子、灾年时城门是否开启；远方人看见纹章，他们看见的是明日有没有饭吃。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "腾石镇：腾石镇是河湾地曼德河流域的城镇，拥有连接内陆与河口的水运条件。河流让粮食、木材、酒和石材能够比陆路更快移动，也使码头、仓房和渡口成为权力的焦点。腾石镇在坦格利安内战的历史记忆中曾被反复提及，战争让普通城镇看见龙火与军队如何把繁荣变成灰烬；但事件之外，它仍是一座需要船夫、搬运工、商人和农人的城镇。任何重建都要先从河运和粮食开始。"
+  ]
+}

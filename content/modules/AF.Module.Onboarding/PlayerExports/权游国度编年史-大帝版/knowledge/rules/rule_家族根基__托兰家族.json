@@ -1,0 +1,132 @@
+{
+  "Id": "rule_家族根基__托兰家族",
+  "Keywords": [
+    "托兰家族",
+    "衔尾龙",
+    "多恩抗龙"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "托兰家族以幽灵山为根基，是马泰尔麾下的多恩贵族，现用家徽为金底绿色衔尾龙。征服者战争中，托兰领主据说以自己的弄臣充作单挑勇士，拖延伊耿后撤离；家族后来以首尾相衔的龙纪念“龙没有起点也没有终点”以及对征服者的戏弄。这个故事使托兰在多恩的抗龙记忆中带着机智之名，却没有让幽灵山免于旱地、水源和地方防卫等寻常责任。传说属于先祖，每一代托兰仍须用自己的选择赢得评价。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "多恩贵族看托兰的衔尾龙，会想起一个关于替身、欺敌与征服者怒火的旧故事。故事无论被讲了多少遍，都很符合多恩人对抵抗的理解：活下来不一定靠正面撞上巨龙，也可以靠让强敌只抓到一件空壳。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "幽灵山周围的人听惯了衔尾龙与旧领主的传说，却仍把托兰放在水井、牧地和道路中衡量。机智若能护住百姓，便值得传唱；若只让领主在故事里显得聪明，沙地上的人仍要自己面对饥渴。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待托兰家族，会先看它的土地、婚盟、血脉和债务。幽灵山的多恩封臣，以绿色衔尾龙纪念戏弄征服者的旧传说；先祖的机智与今日的地方责任并存。家徽是门面，能否保护封地、兑现婚约并在危机中召集人马，才是家族真正的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起托兰家族时，记得的是谁在营火边分过粮、谁把他们留在城外、谁在败局里仍站在旗旁。幽灵山的多恩封臣，以绿色衔尾龙纪念戏弄征服者的旧传说；先祖的机智与今日的地方责任并存。家族名声最终要落到具体的人和具体的命令上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意托兰家族留下的仪式、墓地和传承。幽灵山的多恩封臣，以绿色衔尾龙纪念戏弄征服者的旧传说；先祖的机智与今日的地方责任并存。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见托兰家族。幽灵山的多恩封臣，以绿色衔尾龙纪念戏弄征服者的旧传说；先祖的机智与今日的地方责任并存。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "托兰家族：幽灵山的多恩封臣，以绿色衔尾龙纪念戏弄征服者的旧传说；先祖的机智与今日的地方责任并存。"
+  ]
+}

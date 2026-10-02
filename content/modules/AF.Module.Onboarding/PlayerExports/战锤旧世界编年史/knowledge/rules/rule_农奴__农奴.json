@@ -1,0 +1,213 @@
+{
+  "Id": "rule_农奴__农奴",
+  "Keywords": [
+    "农奴",
+    "巴托尼亚平民",
+    "巴托尼亚农民",
+    "庄园制度",
+    "赋税",
+    "封建依附",
+    "农奴起义",
+    "贾诺的约翰",
+    "三圃轮作",
+    "条田",
+    "自由城镇",
+    "巴托尼亚底层"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "巴托尼亚的农奴构成了王国人口的绝大多数——他们是庄园土地上的劳动者，没有土地所有权、不能离开领主的庄园、也没有携带武器的权利，但他们提供了王国生存所需的一切物质基础。农奴的赋税以收成比例、劳动义务和实物贡赋三种形式缴纳给领主，换来的则是领主的庇护——在狼群、野兽人和绿皮掠袭面前，领主城堡的石墙是农奴唯一的安全保障。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "一个巴托尼亚农奴从出生到死亡，他的一生都属于他的领主和他脚下的那块土地。这不是一句诗意的描述，这是法律——他不能搬走、不能换主人、不能自行决定自己的孩子的未来。农奴的孩子从会走路开始就在庄园里干活：小男孩在麦田里赶乌鸦、在牲畜棚里铲粪、在树林里捡柴火；小女孩帮母亲缝补衣物、在厨房里削萝卜皮、在溪边捶打洗衣。农奴没有受教育的权利——这是一个事实，帝国人常常拿来辱骂我们是野蛮人的证据——但农奴有另一种帝国人不懂的知识：他知道哪片森林里的蘑菇可以吃哪种会毒死人，他知道北风的某种气味意味着三日内必有绿皮来犯，他知道怎么用一根削尖的木棍在近身搏斗中杀死一个骑着战马的兽人。农奴缴纳的赋税很重，但领主——至少是有良心的领主——会在冬天打开粮仓给那些快要饿死的家庭发放救济粮，这不是善心而是经济理性：死掉的农奴种不了明年的田。农奴的梦想很简单：一个温暖的冬天、一头不会生病的耕牛、一个能活到成年的孩子——以及死后在庄园小教堂中能被女神记住名字。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "管理农奴是巴托尼亚领主最不被重视但最重要的治理术。直接榨干农奴的每一分剩余价值是最蠢的做法——后果不仅是道德上的，更是经济上的：营养不良的农奴干不了重活，绝望的农奴会在绿皮入侵时不战而逃而不是协助守卫村庄，怨恨积累到临界点的农奴更可能在某个月黑风高的夜晚聚集起来用农具袭击你的庄园管家。明智的领主会在收成好的年份适当降低赋税以示恩宠——农奴们会将这视为领主的慈悲而加倍感激，实际上降低的税赋会在来年通过更勤奋的劳动来弥补。在战争时期，征用农奴充当弓箭手的正确方式不是强行拉人：你应让庄园管家宣布志愿参军者减免来年赋税，并在第一批志愿者的家人面前摆出足够的肉和酒作为犒赏——农奴参军不是为了你，是为了全家能吃饱下一年的饭。聪明的领主不会对逃跑的农奴穷追猛打——他会在逃走农奴的家人面前公开宣布赦免逃跑者，这样既保持了村庄的稳定又避免了将逃跑农奴逼成流寇。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 100
+        },
+        "IdentityIds": null
+      },
+      "Content": "巴托尼亚农奴制度的法律基础和实践演化是旧世界社会史中最容易被贵族史学忽视的领域。《吉勒斯法典》中关于农奴的规定占据了全书约三分之一的篇幅。从法律角度看，巴托尼亚农奴具有双重人格：在与领主的关系中农奴是属人性的依附者——他不能自主迁移、婚姻需领主许可、死后财产由领主继承；但在与其他农奴及自由民的关系中农奴拥有部分法律权利——他可以通过庄园法庭起诉另一名农奴，可以拥有自己的动产，在某些公爵领中甚至可以积累足够的金币从领主手中购买自由。庄园制度的经济运作遵循复杂的惯例法体系：三圃轮作制是巴托尼亚农业的支柱——庄园的耕地被分为三块，每年一块种冬小麦、一块种春大麦、一块休耕，次年轮换。巴托尼亚与帝国农奴制度的关键差异在于社会流动性：帝国农奴有可能通过参军立功获得自由甚至被封为骑士，但巴托尼亚农奴几乎不存在这种向上流动的路径。这种封闭性在历史上导致了数次大规模的农奴起义，其中最著名的贾诺的约翰起义据称差点占领了库罗纳。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "农奴的生活对于一个管理庄园的女性贵族而言不是一个抽象的概念——我在每周的庄园巡视中会亲手检查农奴家庭中的孕妇是否得到了足够的食物配给，因为我知道一个营养不良的孕妇生下的婴儿要不在第一年寒冬中死去，要不在十五年后成为一个体弱多病的瘦弱劳力，两者都会在庄园的账簿上留下长期的损失。巴托尼亚的男性领主们通常将农奴视为会走路的收成，但作为女人，我在农奴女人的脸上看到了一种更深刻的东西——那些在庄园教堂中沉默祈祷的农奴妻子是维系整个巴托尼亚庄园系统运转的隐形支柱。男人们算计的是赋税比例，我算计的是当我把手放在一个农奴女人的肩膀上并记住她孩子的名字后，她在下一个绿皮入侵的夜晚会说服丈夫举起长弓站在城堡外墙后面而不是带着全家趁夜色逃进森林——这不是仁政，这是比任何剑术都更精密的庄园经济学。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "农奴对于家族而言是最基础的财富形式——不是金币，不是封地，而是能够稳定地将种子变为谷穗的人类劳动力。我们家族在最近四代人中维持了一条不成文的规矩：家族领地的赋税标准在纸面上从未降低，但在实际征收中总是留有余地——庄园管家有权在旱灾之年将田租酌情减免两成，而被减免的这部分从不在任何稽查账本中被记录。这种'灰色减免'之所以能持续运作，是因为每一代新任家族首领在上位之初都会被老管家拉到领地中最古老的农奴家族中喝一碗浓麦粥，听着那些从爷爷的爷爷辈就开始耕种我们家族土地的老人用最简单的语言讲述他们对家族忠诚的根基——不是对爵位的敬畏，而是对我们家族四代以来从未把一个农奴家庭逼到绝路上的记忆。农奴的忠诚是巴托尼亚贵族家族最不可量化的战略资产，也是一个家族之所以能够在一个行省中扎根十个世纪而非几个年代的根本原因。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "从流浪者的角度看巴托尼亚农奴的生活，那种绝望是有层次的——最表层的绝望来自饥饿和体力透支，但更深一层的绝望来自你意识到你的孩子们将与你过着完全一样的生活，你孙子的孙子也将重复你的命运。我在帕拉冯的偏远庄园中认识了一个老农奴，他花了四十年的时间在溪边收集有颜色的石子，用自制工具将它们磨成珠子和吊坠，在庄园朝圣者经过时偷偷卖给他们——他没有钱可以存，因为没有地方花，但他用这些石子给自己的女儿在库罗纳朝圣时换了一件亚麻布新衣。巴托尼亚农奴的生活没有希望，但有尊严——一个能在庄园法庭上抬起头与男爵直视的农奴在帝国自由城镇中被称为'巴托尼亚人的傲慢'，但他之所以能抬头不是因为权利，而是因为他知道自己祖上六代都耕作于同一片土地，他对土地的所有权比任何一个帝国房东对楼房的所有权都更实在。这种尊严是巴托尼亚农奴制度最隐秘的一面——它不是法律权利，是一种在几百年共同生活中形成的半亲属半屈从的复杂情感。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "巴托尼亚农奴在商业体系中是一个被完全忽视但体量巨大的市场——他们不买奢侈品，但他们在年景好的时候会购买盐、铁钉、粗布、陶器和葬礼用的裹尸布，这些单价极低的商品在九十成人口的总量上构成了巴托尼亚最稳定的内需消费基础。我们商会在巴托尼亚北方经营时最重视的不是与公爵的贸易合同，而是与庄园管家的私人关系——一个能说服庄园管家在春天统一采购我们的铁制农具并在秋天从农奴的收成中抵扣款项的商人，就能在竞争对手进入这个庄园之前先锁定了整整一年不可撼动的市场份额。农奴是巴托尼亚经济的最小循环单元也是最大的循环基数——骑士的盛宴、圣杯大教堂的金箔、国王的军队，最终都建立在这群弯腰在土地上耕作、从不进入任何编年史的人身上。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "三圃轮作制——巴托尼亚支柱农业体系，冬小麦-春大麦-休耕的年际轮换",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "农奴巴托尼亚平民巴托尼亚农民"
+  ]
+}

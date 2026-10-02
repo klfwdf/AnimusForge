@@ -1,0 +1,17 @@
+{
+  "Id": "rule_卡拉克·祖夫巴__卡拉克·祖夫巴",
+  "Keywords": ["卡拉克祖夫巴_KZ", "祖夫巴城塞_KZ", "洪流要塞_KZ", "祖夫巴工程师城_KZ", "祖夫巴矮人领地_KZ", "祖夫巴国王_KZ"],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":null,"IsFemale":null,"IsClanLeader":null,"SkillMin":null},"Content":"卡拉克·祖夫巴即「洪流要塞」，位于世界边缘山脉腹地一座巨型瀑布峡谷之中，由莫格里姆·铁炉国王统治。这是矮人工程学的圣殿——旋翼机、蒸汽引擎和铁甲战舰都在此地诞生。祖夫巴的工程师公会总部设于此城，水力驱动的锻锤日夜不息。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":["sturgia"],"KingdomIds":null,"SettlementIds":null,"Roles":null,"IsFemale":null,"IsClanLeader":null,"SkillMin":null},"Content":"卡拉克·祖夫巴——吾族工程天才的摇篮！莫格里姆王的祖父曾亲手设计了第一台矮人蒸汽引擎。祖夫巴的瀑布落下三百尺，冲击水轮的速度比任何矮人城的都要猛十倍。这里造出来的旋翼机能在最狂暴的山风中稳定飞行，帝国的工程师看了一辈子也仿制不出来。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":["lord"],"IsFemale":null,"IsClanLeader":null,"SkillMin":null},"Content":"卡拉克·祖夫巴是矮人军事科技的心脏。工程师公会在此研发出矮人火炮、风琴炮、旋翼飞行器和蒸汽动力战争机器等一系列决定性军事技术。莫格里姆国王的祖夫巴工程师军团能在战场上部署移动式锻造平台，为前线提供现场维修与弹药补充。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":["lord","notable","wanderer"],"IsFemale":null,"IsClanLeader":null,"SkillMin":{"Steward":120}},"Content":"卡拉克·祖夫巴的经济建立在工程技术优势之上。祖夫巴大瀑布提供了旧世界最充沛的天然水力能源——工程师公会测量过高落差达二百七十八尺，水流冲击力可驱动二十组水力涡轮持续运转。城塞的机械工厂规模在矮人城塞中居首位，生产从蒸汽引擎到精密齿轮的全系列机械产品。祖夫巴旋翼机年产约十二架，单价超过一万金克朗。工程师学院的学费收入虽不构成主要财政来源，但为城塞培养了源源不断的技术人才，确保了技术代际传承的永不断绝。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":["lord"],"IsFemale":true,"IsClanLeader":null,"SkillMin":null},"Content":"祖夫巴的女性矮人虽然极少获准进入工程师公会，但我们在精密部件的质检环节不可或缺。我的工作是检查旋翼机的传动齿轮——每一个齿距误差超过千分之一寸就会被剔除。莫格里姆国王知道，祖夫巴旋翼机从不因机械故障坠毁，其中至少有我们一半的功劳。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":["lord"],"IsFemale":null,"IsClanLeader":true,"SkillMin":null},"Content":"我们家族在祖夫巴工程师公会中拥有罕见的高级会籍——这是曾祖父因发明了蒸汽引擎的调速阀门而获得的特赐荣誉。莫格里姆国王每次审批新武器设计时都会参考我们的家族意见——因为我们家族的记忆中保存着过去两千年每一次工程失败的原因。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":["wanderer"],"IsFemale":null,"IsClanLeader":null,"SkillMin":null},"Content":"祖夫巴的瀑布声在城门处就能听到，像是一头永远不死的巨兽在深谷中咆哮。我在城塞的机械车间里看到过一架正在组装的旋翼机——那复杂的齿轮和连杆结构让我完全看不懂。矮人工程师自豪地告诉我，这架机器的每一个部件都是在这座城塞里制造的。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":["notable"],"IsFemale":null,"IsClanLeader":null,"SkillMin":null},"Content":"与祖夫巴矮人做工程贸易是旧世界最有利可图但最困难的生意。祖夫巴的蒸汽引擎和旋翼机有价无市——全部产量仅供矮人城塞联盟自用，外族极少能获得购买许可。但祖夫巴出产的民用机械产品——例如矿山抽水泵和锻造坊水力锤——是对外贸易的主项。"}
+  ],
+  "TextMappings": [{"SourceText":"卡拉克·祖夫巴即洪流要塞，是世界边缘山脉中矮人工程学的中心，以水力机械和旋翼机闻名，由莫格里姆·铁炉国王统治","Kind":null,"TargetId":null,"AgeMin":null,"AgeMax":null,"EmptyValueText":null,"TrueText":null,"FalseText":null}],
+  "RagShortTexts": ["卡拉克祖夫巴矮人工程学圣地旋翼机蒸汽引擎"]
+}

@@ -1,0 +1,151 @@
+{
+  "Id": "rule_长城守望__东海望",
+  "Keywords": [
+    "东海望"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "东海望位于绝境长城东端、面对颤抖海，是守夜人仍在使用的重要城堡之一。它与黑城堡、影子塔不同：海港让它拥有船只、渔获、东岸补给和通往北方海域的视野。长城在这里直接落入海中，冰、潮水和海风使石墙、码头与船帆共同成为防线的一部分。守夜人可以在此接收来自南方的物资，也能观察塞外海岸和远方船只；然而港口从不意味着安全，坏天气和海冰常比敌人更先切断联系。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "从东海望望出去，最贴近生活的并非纹章，而是潮汐、渔汛、淡水和船只能否安全靠岸。当地家庭还要依靠冻土、柴薪、海豹肉、补给车队和漫长守夜；任何一处道路、井泉或码头失灵，代价都会先落到他们身上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "号角与旗帜之外，东海望的防务依靠港湾入口、泊位、烽火与可供登陆的岸线。东海望首先服从守夜人的誓言与军团秩序，而非南方领主的私产法理；守军能否吃饱、援兵能否按时抵达，比议事厅里的豪言更能决定这处据点是否可靠。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "scholar",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "远行者在东海望停留多久，取决于航期、码头脚费、补水和下一处避风港。他们还会辨认绝境长城的口音、法令和通行凭据；名声可以从酒馆传得很远，真正的路程仍须由车轮、船桨或马蹄丈量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "一纸封赐可以决定东海望的主人，却不能立刻赢得附近人的服从。东海望首先服从守夜人的誓言与军团秩序，而非南方领主的私产法理；旗帜更换之后，道路、粮仓、旧债和地方信任仍得由新主人逐一接手。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "走过东海望的士兵记得风向、礁石、渡船与城门落锁后的锚地。能补给、能避险、能找到向导，便值得在行程里标明；若三样都没有，再响亮的家名也救不了迷途者。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "东海望的匠人靠修船木、帆布、盐、鱼获和抵御海风的石料留下手艺，神职者则用守夜人誓言、旧神与长城阴影下的死者记忆解释生死。一处据点因而不只是领主的大厅，也是婚丧、誓言、劳作与地方记忆反复发生的场所。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "住在领地下层的人用灶火和粮袋衡量东海望。他们关心冻土、柴薪、海豹肉、补给车队和漫长守夜，也看征粮后是否留下种子、灾年时城门是否开启；远方人看见纹章，他们看见的是明日有没有饭吃。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "东海望：东海望位于绝境长城东端、面对颤抖海，是守夜人仍在使用的重要城堡之一。它与黑城堡、影子塔不同：海港让它拥有船只、渔获、东岸补给和通往北方海域的视野。长城在这里直接落入海中，冰、潮水和海风使石墙、码头与船帆共同成为防线的一部分。守夜人可以在此接收来自南方的物资，也能观察塞外海岸和远方船只；然而港口从不意味着安全，坏天气和海冰常比敌人更先切断联系。"
+  ]
+}

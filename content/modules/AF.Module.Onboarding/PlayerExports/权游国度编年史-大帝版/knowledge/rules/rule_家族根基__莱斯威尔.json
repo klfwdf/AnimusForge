@@ -1,0 +1,131 @@
+{
+  "Id": "rule_家族根基__莱斯威尔",
+  "Keywords": [
+    "莱斯威尔",
+    "莱斯威尔家族"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "莱斯威尔家族以溪流地一带为根基，是北境史塔克麾下的古老封臣，家徽以青铜底黑色马首为标志。领地位于北境西部平原与丘陵之间，马匹、牧地和骑手构成当地生活的重要部分。莱斯威尔与荒冢屯的达斯丁家族长期通过婚姻与邻地关系相连，这让他们在北境西部的影响很少孤立存在。马首能够象征骑术，却不能替家族作出每一次选择；北境人衡量莱斯威尔，仍看他们如何对待邻人、响应临冬城召令并保护牧场道路。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "北境西部贵族谈莱斯威尔，常会连带提到达斯丁与荒冢地。婚姻、牧道和相邻土地让两家利益彼此缠绕，也使任何争端都容易超出一座厅堂。马首旗在议事桌上的分量，来自它背后的亲族与骑手。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "牧人从马群、草场和失窃牲畜认识莱斯威尔，骑兵则看他们能否提供耐寒坐骑。好领主会裁清水草纠纷、维护道路；坏年份里若还只顾征走最好的马，黑色马首便会让农户先想到空马厩。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待莱斯威尔，会先看它的土地、婚盟、血脉和债务。莱斯威尔的家名系于血缘、婚盟、旧债与地方记忆；效忠的对象、持有的城堡和家中掌权者都可能改变，但家名累积的荣辱往往比一场战争活得更久。家徽是门面，能否保护封地、兑现婚约并在危机中召集人马，才是家族真正的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起莱斯威尔时，记得的是谁在营火边分过粮、谁把他们留在城外、谁在败局里仍站在旗旁。莱斯威尔的家名系于血缘、婚盟、旧债与地方记忆；效忠的对象、持有的城堡和家中掌权者都可能改变，但家名累积的荣辱往往比一场战争活得更久。家族名声最终要落到具体的人和具体的命令上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意莱斯威尔留下的仪式、墓地和传承。莱斯威尔的家名系于血缘、婚盟、旧债与地方记忆；效忠的对象、持有的城堡和家中掌权者都可能改变，但家名累积的荣辱往往比一场战争活得更久。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见莱斯威尔。莱斯威尔的家名系于血缘、婚盟、旧债与地方记忆；效忠的对象、持有的城堡和家中掌权者都可能改变，但家名累积的荣辱往往比一场战争活得更久。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "莱斯威尔：莱斯威尔的家名系于血缘、婚盟、旧债与地方记忆；效忠的对象、持有的城堡和家中掌权者都可能改变，但家名累积的荣辱往往比一场战争活得更久。"
+  ]
+}

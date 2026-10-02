@@ -1,0 +1,208 @@
+{
+  "Id": "rule_嗜血蝠狼__嗜血蝠狼",
+  "Keywords": [
+    "嗜血蝠狼",
+    "堕落吸血鬼",
+    "暗影野兽",
+    "野蛮猎杀",
+    "失去理智",
+    "午夜怪兽",
+    "血族退化"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "嗜血蝠狼是那些彻底屈服于鲜血渴求的吸血鬼退化而成的怪物，它们抛弃了人形，化身为翼膜巨爪的黑暗野兽，只剩下永无止境的饥饿与杀戮本能。每只嗜血蝠狼都是对吸血鬼贵族们最残酷的警示——失去自我后等待他们的黑暗命运。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "嗜血蝠狼是我们血族最羞于提及的存在——它们是失败者，是那些无法驾驭自身血渴、最终被兽性吞噬的堕徒。每一个沦为此状的吸血鬼都曾是我们的同胞，也许是你的导师，也许是你的后裔。它们如今在暗夜森林中徘徊，以四肢爬行，蜷缩在树影之中，等待撕裂任何靠近的活物。我们并不憎恨它们——某种意义上看，它们是我们自身命运的一个镜像：若有一天我们失去意志的控制，终将落入同样的深渊。有些血族领主将蝠狼当作猎犬豢养，但更多的时候，我们会选择亲手终结它们，以怜悯和杀戮并举。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "嗜血蝠狼在战术上是一种无解的混沌武器——它们无法受训、无法指挥，但可以被释放到敌军阵列后方制造混乱。它们的野蛮力量足以撕碎重甲步兵，飞行能力使其能越过城墙，而其几乎不可控的特质反而成为优势：敌军无法预料它们的攻击路线。我从不将其视为主力部队，而是在战役的转折点上使用——当敌军阵型已出现裂痕，放出巢穴中的蝠狼，它们会本能在最脆弱之处撕开缺口。代价是必须接受一定数量的友军伤亡，因为在那种嗜血状态下，蝠狼分不清敌我。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "嗜血蝠狼的退化现象在吸血鬼生理学中被称为'血渴终末期变态'，其机制涉及死灵能量与活体吸血鬼神经组织的渐进性冲突。当吸血鬼长期处于极度亢奋或极度悲痛的情绪中，大脑皮层中负责高级认知的区域会逐步被死灵能量侵蚀，触发生理学上的返祖退化，骨骼增生翼状附属肢，下颌前突形成撕裂性咬合结构。这种退化的速度因人而异：意志坚定的吸血鬼或许数千年也不会沦丧，而意志薄弱者可能在受创后数日内即完成变态。最轰动学界的一次案例是帝国历2333年的'午夜哀嚎事件'——三名来自同一血系的高阶吸血鬼同时因心理创伤而同步退化，这暗示了血族之血可能存在集体潜意识的情绪共鸣机制。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "城堡地窖最深处有一间铁牢，关着的是我曾经的剑术老师——玛丽安娜女爵士，五十年前因爱人被杀而血渴失控。如今她只是蜷在角落中一团长着翅膀和利爪的黑影，只有喂食时会发出婴儿般的呜咽。我每次路过那扇门都感到彻骨的寒意，不是因为害怕她，而是因为想起她说过的最后一句话：'永远不要让悲伤盖过了你对自己的掌控。'我让侍女每天从那扇门下塞进去一朵新鲜玫瑰，尽管我知道她早已不认识花了。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "每一只嗜血蝠狼都是一个家族耻辱的活证据。我们家族的地下织网中就囚禁着我的三叔——他曾经是我们这一代最有前途的血龙骑士，但在一次对抗绿皮军阀的恶战中因伤势过重而意志崩溃，一周之内就蜕化为蝠狼。父亲拒绝处决他，说他是血亲，有朝一日也许能找到逆转退化的方法。三百年来我们一直在寻找所谓的'复苏之血'，花去的黄金足以建一座城堡。我不相信这种逆转是可能的，但我理解父亲的执念——因为那是他的弟弟。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "在登霍尔姆荒原的一处废弃哨塔中，我和队友发现了一只被铁链锁住的嗜血蝠狼尸体。它似乎是被它的吸血鬼主人刻意困在那里，然后遗忘了。最离奇的是，尸体的爪子里还紧紧握着一枚已经锈蚀的银质婚戒——这暗示着也许，仅仅是也许，在它彻底疯狂之前，曾试图保存某种关于人性的记忆。我们把戒指取下来，交给了最近的一座西格玛神殿的祭司，他为我们做了一整夜的驱邪仪式。回去的路上没人说话，但我知道所有人都在想同一件事：比野兽更可怕的，是曾经为人。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "有人出价雇佣我去希瓦尼亚森林收集嗜血蝠狼的翼膜——据说磨成粉末加入铁水中可以锻造出永不损毁的武器。这生意简直疯了。我和我的商队好不容易雇了一队雇佣兵护卫，结果第三天夜里就被两只蝠狼袭击，死了三个人。更要命的是我们连那种'材料'的买方是谁都不知道，整个交易通过代理人进行，定金用的是古尼赫卡拉金币。我跟你说，任何和吸血鬼相关的生意最终都会反噬，赚多少都不值。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "屈服于鲜血渴望而退化为野兽的堕落吸血鬼",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "嗜血蝠狼的家族背景与政治地位"
+  ]
+}

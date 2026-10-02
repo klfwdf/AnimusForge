@@ -1,0 +1,133 @@
+{
+  "Id": "rule_家族根基__科布瑞家族",
+  "Keywords": [
+    "科布瑞家族",
+    "三只乌鸦",
+    "空寂女士",
+    "瓦雷利亚钢剑"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "科布瑞家族以心宿城为根基，是谷地的安达尔贵族，家徽为三只各衔红心的黑鸦。家族最著名的遗产是瓦雷利亚钢剑“空寂女士”，这把剑既是战力，也是继承、名望与家族内部比较的焦点。科布瑞拥有古老骑士声誉，却不像艾林那样统领全谷，也不像罗伊斯那样以先民王权自居；其影响更多来自个人武名、婚姻和在谷地政治中的位置。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vale"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "谷地贵族谈科布瑞时，家族的实际土地与“空寂女士”的锋刃同样重要。瓦雷利亚钢剑能把一个名字带进无数宴谈，却也会让旁人细看持剑者是否配得上它。科布瑞的骄傲很容易被理解，因为在谷地，武名本来就是政治的一部分。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vale"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "骑士和佣兵听见科布瑞，先问那柄剑是否真的像歌里一样锋利。普通钢剑会折，名剑的故事却不会；它能鼓舞同伴，也能招来挑战者。对跟随者而言，最要紧的仍不是剑叫什么，而是拔剑的人会把他们带向哪里。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待科布瑞家族，会先看它的土地、婚盟、血脉和债务。谷地心宿城的安达尔贵族，家徽为三只衔红心的黑鸦，拥有瓦雷利亚钢剑“空寂女士”。家族声望重在骑士武名与名剑继承；箴言未知。家徽是门面，能否保护封地、兑现婚约并在危机中召集人马，才是家族真正的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起科布瑞家族时，记得的是谁在营火边分过粮、谁把他们留在城外、谁在败局里仍站在旗旁。谷地心宿城的安达尔贵族，家徽为三只衔红心的黑鸦，拥有瓦雷利亚钢剑“空寂女士”。家族声望重在骑士武名与名剑继承；箴言未知。家族名声最终要落到具体的人和具体的命令上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意科布瑞家族留下的仪式、墓地和传承。谷地心宿城的安达尔贵族，家徽为三只衔红心的黑鸦，拥有瓦雷利亚钢剑“空寂女士”。家族声望重在骑士武名与名剑继承；箴言未知。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见科布瑞家族。谷地心宿城的安达尔贵族，家徽为三只衔红心的黑鸦，拥有瓦雷利亚钢剑“空寂女士”。家族声望重在骑士武名与名剑继承；箴言未知。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "科布瑞家族：谷地心宿城的安达尔贵族，家徽为三只衔红心的黑鸦，拥有瓦雷利亚钢剑“空寂女士”。家族声望重在骑士武名与名剑继承；箴言未知。"
+  ]
+}

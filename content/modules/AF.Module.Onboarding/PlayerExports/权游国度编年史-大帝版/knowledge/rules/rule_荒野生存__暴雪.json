@@ -1,0 +1,147 @@
+{
+  "Id": "rule_荒野生存__暴雪",
+  "Keywords": [
+    "暴雪"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "暴雪会在短时间内抹去道路、地标和脚印，使人畜失温并切断补给。结伴、背风扎营、保护火种和避免在白茫中盲目前进，是北方荒野的基本生存法则；再熟悉的道路也可能在一夜之间消失。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "猎人、农户和旅人谈起暴雪，通常来自亲身吃过的亏。暴雪会在短时间内抹去道路、地标和脚印，使人畜失温并切断补给。结伴、背风扎营、保护火种和避免在白茫中盲目前进，是北方荒野的基本生存法则；再熟悉的道路也可能在一夜之间消失。荒野不会因为身份高贵而减轻寒冷、饥饿或迷路的后果。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主与士兵把暴雪视作行军和领地治理的一部分。暴雪会在短时间内抹去道路、地标和脚印，使人畜失温并切断补给。结伴、背风扎营、保护火种和避免在白茫中盲目前进，是北方荒野的基本生存法则；再熟悉的道路也可能在一夜之间消失。准备不足时，天气与地形杀死的人可能比敌军更多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "scholar",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "商人、学士和远行者会记录暴雪出现的征兆与应对方法。暴雪会在短时间内抹去道路、地标和脚印，使人畜失温并切断补给。结伴、背风扎营、保护火种和避免在白茫中盲目前进，是北方荒野的基本生存法则；再熟悉的道路也可能在一夜之间消失。可靠经验必须能够重复验证，而不能只靠酒馆里的夸张故事。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人关心暴雪会怎样影响道路、收成、牲畜和物价。暴雪会在短时间内抹去道路、地标和脚印，使人畜失温并切断补给。结伴、背风扎营、保护火种和避免在白茫中盲目前进，是北方荒野的基本生存法则；再熟悉的道路也可能在一夜之间消失。一次灾害若切断运输，远方城市也会感到后果。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵与旅人面对暴雪时，先保护火种、水、脚和同伴。暴雪会在短时间内抹去道路、地标和脚印，使人畜失温并切断补给。结伴、背风扎营、保护火种和避免在白茫中盲目前进，是北方荒野的基本生存法则；再熟悉的道路也可能在一夜之间消失。荒野里最昂贵的装备，也替代不了正确的停步时机。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者会用工具、药草、仪式和共同体记忆应对暴雪。暴雪会在短时间内抹去道路、地标和脚印，使人畜失温并切断补给。结伴、背风扎营、保护火种和避免在白茫中盲目前进，是北方荒野的基本生存法则；再熟悉的道路也可能在一夜之间消失。有人解释灾害为何到来，有人负责让受难者撑过今晚。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民对暴雪的判断最现实。暴雪会在短时间内抹去道路、地标和脚印，使人畜失温并切断补给。结伴、背风扎营、保护火种和避免在白茫中盲目前进，是北方荒野的基本生存法则；再熟悉的道路也可能在一夜之间消失。他们看的是地里还剩多少粮、牲畜能否活过冬，以及领主是否愿意承担保护责任。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "暴雪：暴雪会在短时间内抹去道路、地标和脚印，使人畜失温并切断补给。结伴、背风扎营、保护火种和避免在白茫中盲目前进，是北方荒野的基本生存法则；再熟悉的道路也可能在一夜之间消失。"
+  ]
+}

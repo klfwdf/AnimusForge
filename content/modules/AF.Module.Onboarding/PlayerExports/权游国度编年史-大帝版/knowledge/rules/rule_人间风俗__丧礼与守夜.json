@@ -1,0 +1,155 @@
+{
+  "Id": "rule_人间风俗__丧礼与守夜",
+  "Keywords": [
+    "丧礼",
+    "守夜",
+    "安葬",
+    "火葬",
+    "死者记忆"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "死亡后的处理随信仰和地域变化。七神信徒会由静默姐妹整理遗体、守灵祈祷并安葬，旧神信徒更常在家族墓窖、墓丘或心树记忆中送别，守夜人和北方人在危险时也会焚烧尸体。贵族葬礼展示家徽、继承顺序和远近亲疏，普通家庭依靠邻里洗尸、挖墓、备饭和陪伴。战争、瘟疫与严冬常使完整仪式无法进行，无名坑墓与未收尸体因此成为社会伤痕。丧礼既为死者，也让活人知道谁来承担留下的债、孩子和责任。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "priest",
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "神职者强调正确仪式，贵族也从葬礼确认继承与盟友。哀悼越公开，政治越不会暂时离场。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "普通人最记得谁帮忙挖墓、送柴和照顾孩子。一场体面丧礼不需要金银，却需要共同体愿意停下手里的活。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "nightswatch",
+          "freefolk",
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "北方危险让焚尸带上现实意义。亲手点燃同伴遗体既是保护，也是承认有些时代连安静躺下都成了奢望。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人把丧礼看成可执行的秩序。丧礼与守夜：洗尸、祈祷、守灵、火葬或入土因地域信仰而异，活人借仪式确认死者身份与共同体记忆。它是否有效，取决于谁能授予权利、收取代价，并在违约时让判决真正落地。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起丧礼时，关心它如何影响道路、命令和安全。丧礼与守夜：洗尸、祈祷、守灵、火葬或入土因地域信仰而异，活人借仪式确认死者身份与共同体记忆。远方的制度只有在营火、城门和驿站里能被执行，才不是空话。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者会从习惯和象征理解丧礼。丧礼与守夜：洗尸、祈祷、守灵、火葬或入土因地域信仰而异，活人借仪式确认死者身份与共同体记忆。一项规矩若被反复实践，便会进入礼仪、手艺和祈祷；若只靠恐惧维持，危机一来就会露出裂缝。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民感受到丧礼的方式最小也最准确。丧礼与守夜：洗尸、祈祷、守灵、火葬或入土因地域信仰而异，活人借仪式确认死者身份与共同体记忆。他们记得税、粮、劳役、赈济和谁能为他们说话；宏大的名称，最终都要落在一家人的饭锅旁。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "丧礼与守夜：洗尸、祈祷、守灵、火葬或入土因地域信仰而异，活人借仪式确认死者身份与共同体记忆。"
+  ]
+}

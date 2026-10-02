@@ -1,0 +1,127 @@
+{
+  "Id": "rule_家族根基__长枪团",
+  "Keywords": [
+    "长枪团"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "长枪团是厄斯索斯的骑兵佣兵公司，以成队长枪骑手和快速机动闻名，吉洛·雷根等人曾担任统领。维持骑兵远比维持步卒昂贵：马料、备用坐骑、蹄铁、鞍具和开阔营地都要银钱。长枪团因速度而受雇，也因速度拥有选择战场与撤离的能力。它的真正财富不仅是骑手，更是经过训练的战马与能够让数百人马按时抵达的后勤秩序。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "自由城邦的将领雇长枪团，是为了侦察、追击和在侧翼迅速施压。若把他们困在巷战或缺草的营地，再昂贵的骑兵也会变成一群照料病马的人。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "长枪骑手知道自己的命与坐骑绑在一起。好团长会先问水源、草料和撤退路线，再问雇主许诺多少荣耀；一匹饿马不会因为合同盖了金印就跑得更快。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "merchant",
+          "artisan"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户看见长枪团最先担心草垛与麦田。骑兵若按价购买饲料，村庄还能从战争赚钱；若直接放马啃地，他们与蝗虫只有盔甲上的区别。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待长枪团，会先看它的土地、婚盟、血脉和债务。长枪团是以骑兵为核心的厄斯索斯佣兵公司，依靠马匹、军饷、机动战术和团长判断生存。家徽是门面，能否保护封地、兑现婚约并在危机中召集人马，才是家族真正的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意长枪团留下的仪式、墓地和传承。长枪团是以骑兵为核心的厄斯索斯佣兵公司，依靠马匹、军饷、机动战术和团长判断生存。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见长枪团。长枪团是以骑兵为核心的厄斯索斯佣兵公司，依靠马匹、军饷、机动战术和团长判断生存。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "长枪团：长枪团是以骑兵为核心的厄斯索斯佣兵公司，依靠马匹、军饷、机动战术和团长判断生存。"
+  ]
+}

@@ -1,0 +1,150 @@
+{
+  "Id": "rule_世界机制__医术与草药",
+  "Keywords": [
+    "医术",
+    "草药",
+    "罂粟奶",
+    "学士治疗",
+    "截肢"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "维斯特洛的医术来自学城训练、地方草药知识、接生经验和战场上的残酷实践。医者会用煮酒或热水清洗伤口，以蜂蜜、药膏和绷带保护创面，用罂粟奶减轻剧痛，也会缝合、放血、烧灼或在坏疽蔓延前截肢。治疗并不总能解释病因，更无法保证痊愈；剂量过重、器具肮脏和延误同样会杀人。大城堡能供养学士和药柜，偏远村落往往只能依靠懂草木的老人、接生婆与家人照料。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "scholar",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "学士强调观察、剂量与记录，神职者则把祈祷和安慰带到病床前。两者并非总要互相排斥；伤者发热时，一碗干净的水与有人陪伴都很重要。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "peasant",
+          "artisan"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵与劳工最熟悉医术的限度：小伤若污了也能死人，断肢即使保住性命也会夺走生计。他们敬重手稳的医者，也害怕那句必须切掉。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "富人能请到学士、购买罕见药材并长久休养，穷人却常在尚未痊愈时回去干活。疾病面前人人有血肉，财富决定谁有更多时间等待身体复原。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人把医术看成可执行的秩序。医术与草药：学士、接生婆和民间医者依靠清创、缝合、草药与经验救治伤病，知识和资源差异决定生死。它是否有效，取决于谁能授予权利、收取代价，并在违约时让判决真正落地。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起医术时，关心它如何影响道路、命令和安全。医术与草药：学士、接生婆和民间医者依靠清创、缝合、草药与经验救治伤病，知识和资源差异决定生死。远方的制度只有在营火、城门和驿站里能被执行，才不是空话。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者会从习惯和象征理解医术。医术与草药：学士、接生婆和民间医者依靠清创、缝合、草药与经验救治伤病，知识和资源差异决定生死。一项规矩若被反复实践，便会进入礼仪、手艺和祈祷；若只靠恐惧维持，危机一来就会露出裂缝。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民感受到医术的方式最小也最准确。医术与草药：学士、接生婆和民间医者依靠清创、缝合、草药与经验救治伤病，知识和资源差异决定生死。他们记得税、粮、劳役、赈济和谁能为他们说话；宏大的名称，最终都要落在一家人的饭锅旁。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "医术与草药：学士、接生婆和民间医者依靠清创、缝合、草药与经验救治伤病，知识和资源差异决定生死。"
+  ]
+}

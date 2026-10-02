@@ -1,0 +1,134 @@
+﻿{
+  "Id": "rule_被弃者军团",
+  "Keywords": [
+    "被弃者军团",
+    "摒弃者军团"
+  ],
+  "RagShortTexts": [
+    "被弃者军团纪律严明，战力可靠，为佣金而战。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": [
+          "char:legion_of_the_betrayed_tier_1",
+          "char:legion_of_the_betrayed_tier_2",
+          "char:legion_of_the_betrayed_tier_3"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "除了打仗我什么都不会。军团解散那年我还年轻，没家，没地，没手艺。被弃者军团收了我。我们给钱就打仗，雇主的旗号换来换去，我们只认军团的规矩。早晨吹号，按时操练，犯了错挨军棍。这些规矩还在，我们就还是一支军团。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "legion_of_the_betrayed"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "在被弃者军团自己看来，这个问题的答案很简单：他们为佣金而战，但他们的魂魄属于那个已经消失的旧日军团。他们活着是为了打仗，打仗是为了活着，而活着的意义，在于不忘记自己曾经是一个真正的军团士兵。\n\n我手下的兵都是旧军团出来的。他们的长处是纪律和战阵，短处是只认自己的规矩，不认雇主的。我们靠合同吃饭，帝国的活接，外国的活也接。只要佣金公道，合同清楚，我们就打。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "被弃者军团战力可靠，远胜大多数执政官私兵。他们的纪律和阵战经验是旧军团留下的底子。但他们也接外国人的合同，不能完全当作自己人看待。用他们是一笔交易：我们出钱，他们出力，仅此而已。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "听说他们是以前军团的人。现在帝国没有常备军了，他们就自己凑在一起当雇佣兵。谁给钱替谁打。看着还是军团的样子，但已经不是帝国的兵了。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "clan_empire_west_1",
+          "clan_empire_west_2",
+          "clan_empire_west_3",
+          "clan_empire_west_4",
+          "clan_empire_west_6",
+          "clan_empire_west_7",
+          "clan_empire_west_8",
+          "clan_empire_west_9"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "被弃者军团？那群抱着旧军团规矩不放的老顽固。我敬他们三分，但不信任他们五分。\n\n敬他们是因为他们能打。西帝国的地盘跟蛮族接壤最多，边境上从来没消停过。我们雇被弃者军团打过几仗，他们的队列推进和阵型转换，现在新招的那些兵练十年都赶不上。老军团的底子不是白给的。战场上有一支被弃者军团顶在正面，你心里踏实。\n\n不信任他们是因为他们心里装的是帝国，不是我们的帝国——是他们记忆里那个早就没了的老帝国。他们不关心卢孔和拉盖娅谁正统，也不关心加里俄斯将军是不是该当皇帝。他们只关心雇主的合同写没写清楚，饷银能不能按时发，打完仗有没有地方让他们按老规矩操练。这样的人，你用得起，但你靠不住。今天你给钱他们替你打，明天别人给更多钱他们就替别人打你。这不是猜测，已经发生过。\n\n说到底，他们是一群没有归属的人。我们这些跟加里俄斯起事的，图的是一份地盘、一个名分、一个将来。他们有吗？他们什么都没有，只有一堆旧规矩和一个“被弃者”的名号。这种人最可怕的地方在于，他们除了打仗什么都不在乎。而我们这些在乎地盘和名分的人，总归要跟他们在乎的事情上互相算计。我们算不过他们，因为我们有想要的东西，他们没有。"
+    },
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "见过他们路过。规矩比别的雇佣兵严，不太祸害百姓，但也跟谁都不亲近。雇主的旗子换得勤，看不出他们到底算哪边的人。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "被弃者军团是一支靠旧军团规矩维持的雇佣兵。他们的战力来自纪律，但他们的归属感不在雇主身上，而在军团本身。这意味着他们只忠于合同，不忠于人。"
+    }
+  ],
+  "TextMappings": []
+}

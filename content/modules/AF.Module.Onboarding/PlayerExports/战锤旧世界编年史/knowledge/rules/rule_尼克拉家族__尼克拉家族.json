@@ -1,0 +1,213 @@
+{
+  "Id": "rule_尼克拉家族__尼克拉家族",
+  "Keywords": [
+    "尼克拉家族",
+    "学者吸血鬼",
+    "亡灵魔法宗师",
+    "黑暗学识",
+    "施法血脉",
+    "尼克拉家纳迦什经卷",
+    "尼克拉",
+    "死灵学者",
+    "魔法血脉",
+    "知识血族",
+    "尼克拉家亡灵法师",
+    "魔法学者"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "尼克拉家族是吸血鬼血脉中最沉迷于魔法学识与死灵法术研究的一支。他们形销骨立的学者外形远非其他血族那般高贵迷人，但他们对亡灵魔法的掌握是精确而深刻的，几乎达到了纳迦什本人留下的理论的极致。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "尼克拉家族——我们血族中最深不可测的书呆子，同时也是最危险的法师！他们不关心王权、不热爱决斗、不对世俗阴谋感兴趣——尼克拉的成员唯一的执念就是获取更多禁忌知识。他们的始祖沃索兰曾是纳迦什本人的学徒，在纳迦什身上学到了足以扭曲冥界法则的咒法。想象一下：一个吸血鬼，独自坐在九重地下书阁中，周围堆满人皮装订的古籍和用血液书写的卷轴，连续两百年不间断地研究复活死者的新法则。当冯·卡斯坦因需要亡灵军团的魔法维持时，当莱弥亚需要某种高级魅惑法术的配方时，他们会去找谁？找尼克拉。而尼克拉会开出价格：不是黄金，不是土地——是失传的纳迦什经卷残篇、精灵死灵学者的研究笔记或者是禁忌之物。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "尼克拉家族在直接军事冲突中极少出现——他们宁愿派出亡灵仆从代为战斗。但他们制造的威胁却是系统性的：你的战场上源源不断的亡灵增援、敌方吸血鬼持有的强力诅咒和防护法术，其幕后往往有尼克拉的身影。从战略角度看，瓦解尼克拉的研究基地比在战场上杀死更多亡灵更有效，但寻找这些基地本身就是一项需要大量魔法侦测和情报的艰巨任务——他们极善于隐藏。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "尼克拉家族的始祖沃索兰是纳迦什大巫师在尼赫喀拉时代挑选的四位直属学徒之一，他是极少数能在纳迦什第一次覆灭后独自保持不死法术传承的个体。尼克拉家族的独特性在于他们将「知识的价值」置于「血液的价值」之上——尼克拉吸血鬼的晋升评估并非看他们吸过多少血液或控制多少亡灵，而是看他们研究出了多少新的死亡魔法、撰写了几本经得起其他尼克拉审阅的论文。尼克拉成员典型的外观特征包括：极度消瘦的身躯（因为长期不用血液维持外表）、焦黄龟裂的指甲（长期接触高危魔法材料的副作用）、以及眼中旋转的微小黑色旋涡（将死亡能量作为视线传导介质的体现）。他们每人拥有一座私人图书馆，藏书的数量和质量是尼克拉社交中最重要的地位标志。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "尼克拉家族让我想起了我年轻时在修道院遇到的那些修士——同样枯槁的面孔，同样被知识吞噬了一切世俗关怀的眼神。只不过尼克拉追求的是禁止的知识，而代价是他们自己灵魂的逐步消散。一个为知识本身而活的怪物，比一个追求权力而活的怪物更令人不安。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我族的一位远祖据说曾用自己的藏书换取了尼克拉家族的一次援助——他用收藏了三代人的稀有古籍换来了尼克拉派遣的亡灵法师帮助防御一整个冬天的亡灵围城。我不知道那本书里到底写了什么值这个价，但从那以后我族禁止未经长老同意的书籍进入领地。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "尼克拉的巢穴据说有一个共同特点：井水在无风时会泛起微微的黑色涟漪，深夜时你如果贴着地面听能听到遥远的诵咒声从地下深处传来。在希尔瓦尼亚的山间废墟附近，一定要注意井水的颜色——那是你距离一位尼克拉学者太近的唯一警告。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "尼克拉家族是黑暗典籍的终极买家——一张真实的尼赫喀拉巫师纸草卷可以换一栋城里的宅子。问题在于鉴定真伪：假卷轴充斥市场，而尼克拉在发现被骗后会派出亡灵仆从来找卖家「对质」。我的策略是不碰，让那些不怕死的同行去接这单。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "尼克拉家族是沉迷死灵魔法研究的学者型吸血鬼血脉",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "尼克拉家族的家族背景与政治地位"
+  ]
+}

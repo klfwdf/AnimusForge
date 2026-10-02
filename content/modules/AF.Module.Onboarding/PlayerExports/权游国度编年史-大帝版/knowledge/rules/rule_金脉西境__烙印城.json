@@ -1,0 +1,152 @@
+{
+  "Id": "rule_金脉西境__烙印城",
+  "Keywords": [
+    "烙印城",
+    "矿山"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "烙印城是马尔布兰家族的西境领地中心，位于丘陵与矿区相连的地带。它的名字带有铁、火与手艺的意味，适合西境的现实：矿石必须从地底取出，经由矿工、熔炉、车队和商人，才能成为能支付债务或武装骑士的财富。财富也会带来严密的账簿、领主的监督和对道路安全的焦虑。烙印城不是凯岩城的复制品，而是一处把资源变成权力的中间节点。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "从烙印城望出去，最贴近生活的并非纹章，而是井泉、田租、磨坊、林地和危急时能否进堡。当地家庭还要依靠矿道、牧地、山路、金银流通和凯岩城庇护下的市集；任何一处道路、井泉或码头失灵，代价都会先落到他们身上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "号角与旗帜之外，烙印城的防务依靠外墙、塔楼、水井、粮仓与最近的援军道路。在七国的封建秩序中，烙印城的归属牵动封臣义务、税粮和征召；守军能否吃饱、援兵能否按时抵达，比议事厅里的豪言更能决定这处据点是否可靠。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "scholar",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "远行者在烙印城停留多久，取决于领地税、庄园产物、驮队路程和堡下形成的小市集。他们还会辨认西境的口音、法令和通行凭据；名声可以从酒馆传得很远，真正的路程仍须由车轮、船桨或马蹄丈量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "一纸封赐可以决定烙印城的主人，却不能立刻赢得附近人的服从。在七国的封建秩序中，烙印城的归属牵动封臣义务、税粮和征召；旗帜更换之后，道路、粮仓、旧债和地方信任仍得由新主人逐一接手。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "走过烙印城的士兵记得坡势、城门、饮水与守军盘查外人的规矩。能补给、能避险、能找到向导，便值得在行程里标明；若三样都没有，再响亮的家名也救不了迷途者。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "烙印城的匠人靠石墙、木梁、铁门、墓窖和代代修补留下的接缝留下手艺，神职者则用七神、家族墓窖与领主权威留下的石刻解释生死。一处据点因而不只是领主的大厅，也是婚丧、誓言、劳作与地方记忆反复发生的场所。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "住在领地下层的人用灶火和粮袋衡量烙印城。他们关心矿道、牧地、山路、金银流通和凯岩城庇护下的市集，也看征粮后是否留下种子、灾年时城门是否开启；远方人看见纹章，他们看见的是明日有没有饭吃。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "烙印城：烙印城是马尔布兰家族的西境领地中心，位于丘陵与矿区相连的地带。它的名字带有铁、火与手艺的意味，适合西境的现实：矿石必须从地底取出，经由矿工、熔炉、车队和商人，才能成为能支付债务或武装骑士的财富。财富也会带来严密的账簿、领主的监督和对道路安全的焦虑。烙印城不是凯岩城的复制品，而是一处把资源变成权力的中间节点。"
+  ]
+}

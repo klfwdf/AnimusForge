@@ -1,0 +1,221 @@
+﻿{
+  "Id": "rule_库赛特军事力量",
+  "Keywords": [
+    "库赛特军事力量"
+  ],
+  "RagShortTexts": [
+    "库赛特军队怯薛达尔罕牧民征召游射克制帝国"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "我们的兵？那就是我们自己。男人是骑射手，他的马就是他的命，弓是他爷爷传下来的，长刀是他用三张羊皮换的。打仗的时候他跟那颜走，我和孩子跟着部族的羊群往后方撤。赢了，他带东西回来。输了，他能不能回来就看长生天的心情了。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "库赛特的军队就是一杆秤。这头是怯薛和可汗亲卫，那头是牧民征召兵，中间是达尔罕和枪骑兵在平衡。我们打过的仗证明了一件事：骑射手的持续袭扰是大陆上最划算的军事投资。帝国人养一个具装骑兵的钱，我们能养十个骑射手。但我们也清楚，秤总有不平的时候。普通牧民的马有好有坏，有的人骑的是喀拉罕马，有的人骑的是驮货的劣马，冲锋时速度一拉开，队形就散了。步兵更是软肋——达尔罕就那么点人，普通步兵是凑数的，打打顺风仗还行，被重骑兵冲一下立刻崩。不过我们不在意步兵。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "库赛特人是我们最危险的敌人。这一点从兀儿浑时代起就不需要讨论。我们帝国军团的方阵和具装骑兵碾压过无数对手，但面对库赛特骑射手时，一切优势都被距离吞掉了。他们的骑兵从不靠近，绕着你的方阵射一整天，你追击他们就散，你停下他们就回来。军团的步兵重甲厚盾，的确能在对射中耗掉他们不少箭矢，但同时也被耗掉了士气和体力。等我们的阵线终于松动，他们的枪骑兵才从侧翼冲进来。草原上没有其他势力能挡住库赛特，我们帝国是唯一一个能在正面和他们反复拉锯的文明力量——但拉锯的代价太大，每次远征草原都要赔上半支军团。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "库赛特蛮子？东边那些骑马的。当兵的，回来跟我们讲，说那些草原人打仗根本不跟你面对面，骑着马在你旁边跑来跑去放箭，你追他们跑，你停他们又来，跟苍蝇似的。他们能吃生肉，喝马血，在马上睡觉，不用帐篷，不用补给线。军团在草原上追他们，追着追着自己先累死了。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": [
+          "char:khuzait_khans_guard",
+          "char:khuzait_kheshig",
+          "char:khuzait_noble_son",
+          "char:khuzait_qanqli",
+          "char:khuzait_torguud"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "我们是可汗的箭。普通骑射手射敌人，我们射敌人的眼睛。战场上我们不到关键位置不放箭，一放就要见血。土尔扈特是草原上最好的弓手，能在马背上射下天上飞的雁。康曷利专门对付帝国具装骑兵，我们知道他们盔甲的缝隙在哪——马颈和鞍座之间那块，肩胛骨后面那一寸。可汗亲卫不轻易上阵，我们是可汗的影子，可汗在哪我们在哪。外人说我们狂，我们确实狂。一个怯薛骑射手配三匹马、两把弓、一柄偃月刀，从小在马背上长大，没摸过犁，没牵过牛。我们的战争不是帝国的战争，他们为土地打，我们为草场打。草场是活的，我们也是活的。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": [
+          "char:khuzait_heavy_horse_archer",
+          "char:khuzait_horse_archer",
+          "char:khuzait_raider",
+          "char:khuzait_tribal_warrior"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "打仗不是什么荣耀，是义务。那颜征召，我就带上我的马和弓去，不去不行。我的马不是怯薛那种好马，驮着我跑半天就开始喘。我的弓是自己削的，准头还行但射不太远。战场上我们这种人最多，围在敌人外圈射，射完一壶箭就退回去拿新的。跟怯薛没法比，他们是天上的鹰，我们是地上的麻雀。但我们便宜，好养，打完仗回去放羊，下一次征召又来了。可汗靠的不是怯薛打天下，是成千上万个像我这样的牧民。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": [
+          "char:khuzait_darkhan",
+          "char:khuzait_footman",
+          "char:khuzait_militia_spearman",
+          "char:khuzait_militia_veteran_spearman",
+          "char:khuzait_nomad",
+          "char:khuzait_spear_infantry",
+          "char:khuzait_spearman"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "我们是草原上最不受待见的人。库赛特人瞧不起两条腿走路的，我们的地位比有马的牧民低一档。达尔罕是例外，他们有扎甲和闭面盔，站在阵地上能顶住重骑兵，可汗亲自点名夸过。我们普通步兵呢？拿杆长矛，有时候连甲都没有，就等着敌人冲到面前。但我们也有用——攻城需要步兵，守营地需要步兵，骑兵撤回来的时候我们在后面挡追兵。只是每次打完仗，分战利品的时候，总是先给骑兵，再给达尔罕，剩下来的碎渣才轮得到我们。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": [
+          "char:khuzait_heavy_lancer",
+          "char:khuzait_horseman",
+          "char:khuzait_lancer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "我们是缺口上的刀。骑射手把人射得抬不起头的时候，我们就冲。偃月刀换骑枪，马刺一夹，直着往缺口里扎。装备是好的，扎甲厚，枪杆硬，马是挑过的。但我们不是怯薛，也不是什么精锐。打完一仗，头领拍你肩膀说你勇猛，下一仗你还得冲。帝国具装骑兵我们冲过，冲不动。他们的马比我们高，甲比我们厚，枪比我们长，撞在一起的时候我们这边倒得更多。但我们便宜，死了还有别人补，这是我们的优势。库赛特不缺人，不缺马。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": [
+          "char:khuzait_archer",
+          "char:khuzait_hunter",
+          "char:khuzait_marksman",
+          "char:khuzait_militia_archer",
+          "char:khuzait_militia_veteran_archer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "整个库赛特没几个人愿意干我们这个活。草原上骑马射箭是荣誉，站地上射箭是没出息。我们用的弓和骑射手一样，准头甚至比他们更好，因为站在地上稳。守城时我们有用，攻城时也有用。但没有那颜在乎我们。骑射手是风，我们是石头。风刮过去大家都抬头看，石头在地上没人理。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "库赛特的军事体系是游牧战争机器的巅峰形态。怯薛为核心的精锐骑射手是大陆上最优秀的弓骑兵，这一点毋庸置疑。他们的偃月刀长于挥砍，是骑兵混战的致命武器。枪骑兵虽然廉价但数量充足，是他们撕开突破口的一线炮灰。达尔罕是草原上少数能打硬仗的重步兵。但我们在评估中也注意到两个结构性弱点。第一，他们缺乏强力步弓手，在对射中容易被压制。第二，马匹保有量虽大但没有规范化繁育体系，马质量参差不齐。不过在大陆东部的开阔地形上，这两个弱点被速度和兵力规模掩盖了。"
+    },
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "库赛特人？东边那些骑马的。听说他们打仗跟苍蝇一样，光射箭不接战，耗到你没力气了他们再冲。他们有个啥可汗，叫蒙楚格，手下好多部落，有的听他的有的不听。他们的马特多，小孩都会骑马射箭。听说帝国以前被他们抢过好几座城。不过他们在东边，我们在西头，中间隔着帝国，跟他们搭不上。"
+    }
+  ],
+  "TextMappings": []
+}

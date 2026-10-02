@@ -1,0 +1,154 @@
+{
+  "Id": "rule_世界机制__盐与保存",
+  "Keywords": [
+    "盐",
+    "腌藏",
+    "咸肉",
+    "腌鱼"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "没有可靠保存，夏秋收获会在冬天前腐败。盐能腌鱼、肉和乳酪，烟熏、风干、蜜渍、醋渍与地窖低温则各自适合不同食物；木桶、干净容器和防鼠仓房同样重要。北境长冬、海上远航和军队行军尤其依赖咸肉、硬面包与腌鱼。盐场和海岸贸易让不起眼的白粒成为战略物资，战乱一旦切断运输，普通汤锅会先变淡，随后肉类无法保存、牲畜被迫提前宰杀。盐税看似稳定，过重时却等于向每个冬天征税。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania",
+          "nightswatch",
+          "skagosi"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "北方人把盐看作冬储的一部分，不会等第一场雪才准备。仓里少一桶腌肉，真正的代价可能在数月后才有人数出来。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "sailor",
+          "merchant",
+          "artisan"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "水手、鱼贩和制桶匠知道盐既保货也吃利润。腌得太轻会坏，太重难入口，最好的手艺是让食物在靠港时仍能卖。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "priest",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主从盐税看见收入，穷人从盐价看见下一锅饭。灾年里打开盐仓与粮仓同样重要，慷慨若来得太晚只能用于保存尸体。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人把盐看成可执行的秩序。盐与保存：腌制、风干、烟熏和窖藏把短暂丰收留到冬季与远航，盐价因而直接关系军队和百姓生存。它是否有效，取决于谁能授予权利、收取代价，并在违约时让判决真正落地。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起盐时，关心它如何影响道路、命令和安全。盐与保存：腌制、风干、烟熏和窖藏把短暂丰收留到冬季与远航，盐价因而直接关系军队和百姓生存。远方的制度只有在营火、城门和驿站里能被执行，才不是空话。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者会从习惯和象征理解盐。盐与保存：腌制、风干、烟熏和窖藏把短暂丰收留到冬季与远航，盐价因而直接关系军队和百姓生存。一项规矩若被反复实践，便会进入礼仪、手艺和祈祷；若只靠恐惧维持，危机一来就会露出裂缝。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民感受到盐的方式最小也最准确。盐与保存：腌制、风干、烟熏和窖藏把短暂丰收留到冬季与远航，盐价因而直接关系军队和百姓生存。他们记得税、粮、劳役、赈济和谁能为他们说话；宏大的名称，最终都要落在一家人的饭锅旁。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "盐与保存：腌制、风干、烟熏和窖藏把短暂丰收留到冬季与远航，盐价因而直接关系军队和百姓生存。"
+  ]
+}

@@ -1,0 +1,152 @@
+{
+  "Id": "rule_日影多恩__万斯城",
+  "Keywords": [
+    "万斯城",
+    "瓦伊斯"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "万斯城位于多恩西部的石地，英文旧名为瓦伊斯。它靠近红山脉的陡峭地形，与星坠城、亲王隘口和多恩内陆之间的道路相互联系。此地的城镇规模与生存方式都受限于山地：适合放牧的坡地、能蓄水的谷地、可通行的隘道比大片良田更宝贵。石地多恩人不必像沙地游牧者那样追逐绿洲，也不像盐岸居民依海而生；他们的坚韧来自石头、山羊、泉眼和对每一条山路的记忆。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vale"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "在万斯城的墙影与道路旁生活的人，先看山泉、牧坡、林木、积雪和驮畜能走的窄路。当地家庭还要依靠井泉、灌渠、果园、耐旱牲畜和避开烈日的行程；任何一处道路、井泉或码头失灵，代价都会先落到他们身上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vale"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "军队接近万斯城时，地图很快让位给隘口、高坡、瞭望点与翻山所需的粮秣。在七国的封建秩序中，万斯城的归属牵动封臣义务、税粮和征召；守军能否吃饱、援兵能否按时抵达，比议事厅里的豪言更能决定这处据点是否可靠。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "scholar",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "学士能记下万斯城的沿革，商人更先打听驮队脚程、坡道损耗、山口税与冬季封路。他们还会辨认多恩的口音、法令和通行凭据；名声可以从酒馆传得很远，真正的路程仍须由车轮、船桨或马蹄丈量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "贵族谈论万斯城时常先说家名，土地本身却要求道路、粮仓与守备。在七国的封建秩序中，万斯城的归属牵动封臣义务、税粮和征召；旗帜更换之后，道路、粮仓、旧债和地方信任仍得由新主人逐一接手。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "一支疲惫队伍接近万斯城时，人人关心落石、岔路、背风宿营处和最近的山泉。能补给、能避险、能找到向导，便值得在行程里标明；若三样都没有，再响亮的家名也救不了迷途者。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "万斯城并非只有城主大厅；采石、伐木、铁件、山羊毛和贴着山势修筑的墙基与七神、洛伊拿遗风与亲王治下不同血脉的共同记忆同样塑造这里。一处据点因而不只是领主的大厅，也是婚丧、誓言、劳作与地方记忆反复发生的场所。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "市井与村舍谈起万斯城，先问今年还能留下多少粮。他们关心井泉、灌渠、果园、耐旱牲畜和避开烈日的行程，也看征粮后是否留下种子、灾年时城门是否开启；远方人看见纹章，他们看见的是明日有没有饭吃。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "万斯城：万斯城位于多恩西部的石地，英文旧名为瓦伊斯。它靠近红山脉的陡峭地形，与星坠城、亲王隘口和多恩内陆之间的道路相互联系。此地的城镇规模与生存方式都受限于山地：适合放牧的坡地、能蓄水的谷地、可通行的隘道比大片良田更宝贵。石地多恩人不必像沙地游牧者那样追逐绿洲，也不像盐岸居民依海而生；他们的坚韧来自石头、山羊、泉眼和对每一条山路的记忆。"
+  ]
+}

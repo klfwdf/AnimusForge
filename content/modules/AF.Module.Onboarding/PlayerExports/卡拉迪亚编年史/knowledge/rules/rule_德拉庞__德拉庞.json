@@ -1,0 +1,95 @@
+﻿{
+  "Id": "rule_德拉庞",
+  "Keywords": [
+    "德拉庞",
+    "法尔海角"
+  ],
+  "RagShortTexts": [
+    "德拉庞是法尔海角的重要航海村落，村民捕鲸。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "德拉庞是德拉庞堡附近的一座村庄，位于特朗河口正南方的法尔海角角尖处。它是这片海岸最重要的航海村落，村民们冒险深入远海捕猎露脊鲸和黑鲸，有时甚至北上远至贝恩兰地区追逐弓头鲸和独角鲸。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "德拉庞的捕鲸人是瓦兰迪亚最不要命的水手。法尔海角那地方风浪大得吓人，但他们照样驾着小船出远海追鲸鱼。一头鲸拖回来够全村吃一冬天，鲸油点灯、鲸骨能做器具。德拉庞堡的守军能常年不缺灯油，全仗着这些敢拿命换鱼的渔民。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "townsfolk"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "德拉庞的鲸油在整个瓦兰迪亚沿海都是抢手货，烧起来烟少火亮。还有鲸须，做弓弦的好料子。不过去那儿做生意得胆子大，法尔海角海浪滔天，当地的捕鲸人一年总要送几条命给海。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "sailor",
+          "seafarer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "我在德拉庞跟捕鲸船出过一次海，那是我这辈子离死亡最近的一次。一头黑鲸被叉中之后拖着船跑了小半个时辰，差点把我们都带进浪里。但拖回去之后，那鲸油炼出来点灯，亮得跟白天似的。德拉庞的捕鲸人，个个都是跟海龙王抢饭吃的。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "德拉庞",
+      "Kind": "bound_settlement_name",
+      "TargetId": "__bound_settlement__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": "德拉庞堡",
+      "Kind": "bound_settlement_name",
+      "TargetId": "__bound_settlement__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}

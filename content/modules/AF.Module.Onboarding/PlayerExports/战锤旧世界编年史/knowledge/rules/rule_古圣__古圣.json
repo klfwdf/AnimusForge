@@ -1,0 +1,211 @@
+{
+  "Id": "rule_古圣__古圣",
+  "Keywords": [
+    "古圣造物主传",
+    "古圣星际旅者录",
+    "古圣星球改造记",
+    "古圣种族创生者",
+    "古圣极地星门建",
+    "古圣蜥蜴人创生",
+    "古圣史兰遗族",
+    "古圣消失之谜题",
+    "古圣远古文明考",
+    "古圣旧日支配者说"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "古圣是旧世界所有文明创世神话中的共同缔造者——他们自星辰深处降临在这颗蛮荒的原始星球上，以不可想像的科技与魔法将地质、气候和生态重塑为适合智能生命繁衍的形态，随后按照各自的完美蓝图创造了精灵、矮人、人类、半身人、食人魔和蜥蜴人。在完成一切之后，他们悄然离去——或者说，被迫离去。旧世界每一个种族的起源故事都从古圣的脚印开始，而他们遗留在极地的星门至今仍在向整个世界输送着毁灭性的混沌能量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "帝国学院中最勇敢的学者敢于承认一个令人不安的事实：我们对古圣的所有认知都只是从残破的蜥蜴人石刻、精灵口传诗篇和矮人地下遗迹中的零星线索拼凑而成的残缺拼图。我们知道他们来了——他们在两极建造了可以贯穿亚空间的传送门，用这些星门作为能量脉络重塑了整个世界。我们知道他们创造了我们——我们的身体骨骼构型、我们的语言脑区潜能、以及我们对混沌的无意识恐惧，这些都被古圣用某种我们无法理解的生物工程学手段刻入了我们的祖先的骨髓之中。但关键问题全都没有答案：古圣来自哪里？他们为何要创造如此多样的智能种族？在那场导致星门崩塌的灾难发生时他们是否尝试了救援——还是说他们将我们遗弃在了坍塌的堤坝后面？而最令人恐惧的问题是：他们还会回来吗？当他们回来时，会是作为造物主来查看失落的实验室，还是作为讨债者来收回被我们的「寿命、自由意志和混沌抗性」这些设计缺陷污染了的实验？"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "古圣遗产对旧世界任何地区的统治者而言都是实用性的——不仅是神学好奇。蜥蜴人——古圣创造的最接近「完美执行者」的种族——至今仍在鲁斯提亚丛林中执行着古圣留下的最后指令，尽管他们可能已经不知道这些指令的目的。他们保管着古圣遗留的圣物——包括某些据说能够重塑星球生物圈的古代装置。这意味着鲁斯提亚以及掌控蜥蜴人的史兰祭司们是旧世界隐形的战略平衡器。另一方面，古圣建造的极地星门至今仍是混沌进入世界的最大入口——这意味着对北方的每一次远征最终失败的根本原因不是兵力不足，而是没有人有能力关闭那个古圣建造的、已经失控的传送装置。理解古圣不是追忆远古神话——它是掌握旧世界根本力量平衡的形而上学钥匙。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "古圣研究的学术史本身就是一个学科。精灵掌握着关于古圣最完整的口头传承——他们称古圣为「先祖」，并声称古圣曾亲自教导最初的精灵掌握魔法的艺术。矮人的传承相对模糊——他们承认自己被古圣「从岩石中唤醒」，但对古圣的态度混合着感激和一种近乎怨恨的不满，似乎矮人先祖有意将他们与古圣准确关系的细节从矮人集体记忆中抹去了。人类的传承最浅薄——在古圣消失后的黑暗年代中，人类退回到了近乎原始的生存状态，因此人类关于古圣的传说大多是在帝历建立后的过去两千年中从精灵和矮人那里重新学习到的二手甚至三手版本。蜥蜴人的传承最准确但也最难获取——他们使用一种由象形文字与星空坐标混合构成的碑刻语言，帝国有能力部分解读这种语言的学者数量不超过五人。古圣遗留在世界边缘山脉和鲁斯提亚丛林中的物理遗迹——包括被地脉网道连接的地质相位共振器和隐藏在丛林深处的生化培育池——是目前旧世界最危险也最具探索价值的考古目标，每一处遗迹都可能藏有足以改写世界格局的古代技术。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "古圣的故事中有一个让所有帝国女性统治者感到熟悉的细节：他们在创世时划分了两性，但他们对性别的设计意图到底是什么？精灵男女平等的文化模式是古圣设计蓝图的原始状态？还是人类社会中男性的统治是古圣失踪后的一种扭曲？没有任何文献能回答这个问题——因为所有种族关于古圣的记录都是不完整的。但一个可观察的事实是：古圣创造蜥蜴人时几乎没有赋予他们性别差异，而创造精灵和人类时赋予了清晰的两性生理结构——这意味着性别差异本身是古圣的设计意图中具有功能性的部分，而非后来突变的附加产物。作为一位统治边境领土的女性，我从中读出的是：古圣设计了一个需要男女共同运作的物种，而我们人类社会后来将其中一半排除在决策圈之外的做法在本质上是对古圣原始蓝图的修改——不是修正，是劣化。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "古圣创造的种族多样性是统治旧世界的家族必须面对的最根本的政治生态现实——它不是意外，它是设计的。每一个种族——精灵、矮人、人类、蜥蜴人，甚至是一些被认为与古圣无直接关系的种族——都被赋予了不同的能力组合，而这些组合在本质上是互补而非竞争的。精灵的长寿和对魔法的敏感让他们成为最完美的知识保管者；矮人的记忆力和对岩石内在结构的直觉让他们成为无法替代的矿工和工程师；人类的繁殖力和适应力让他们成为古圣实验中唯一能在全部气候区域内繁荣的物种；蜥蜴人则被设计为最忠诚的守护者。作为管理着帝国和矮人之间多项代际合同的家族掌门人，我每天在处理实务时都会被迫意识到：人类、矮人、精灵——我们在本质上是一个早已被解散了的团队中被遗忘的子部门，互相之间本应合作但现在只能互相猜疑。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我在鲁斯提亚丛林边缘与蜥蜴人相隔三十步对视的那次经历让我确信——古圣不仅是真实的，而且他们离开的原因比任何学者在图书馆中推断的更加黑暗。那个蜥蜴人战士看到我时不是做出攻击姿态而是进入了某种像是「识别程序」的状态，他的眼球结构在阳光中闪烁出一种非生物性的光芒——像一面太久没人擦拭的镜子。那不是一个智慧生物在判断一个入侵者，那是某个人留下的守门机器在执行一个早已过期的验证流程。古圣创造蜥蜴人时在他们眼中装入了某种辨认装置——也许是为了让他们能识别古圣本人——而那种装置在古圣消失后仍在运作，只是再也认不出任何人了。我认为古圣没有死亡也没有离开——他们是输掉了某场我们无法理解的、让整个亚空间都变成了战场的天体战争，而我们的星球只是这场战争中的一个被废弃的前线哨站。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "古圣遗物在黑市上从来没有被当作商品来定价——它们是作为信仰来定价的。一件据称来自古圣时代的「陨石碎片」——不管它实际上是不是一块普通的含铁岩石——在阿尔道夫的私下收藏家市场中可以换到一整个瑞克河流域庄园的价码。真正的原因不是收藏家们相信这些物品有神力——他们中的多数人冷静而精明——而是一种更世俗的计算：持有「古圣遗物」可以让你在与矮人、精灵或蜥蜴人进行跨种族谈判时获得一种纯粹的象征性优势——因为对方会在潜意识中将你与古圣的权威联系起来。我们商会在过去的三十年中通过鲁斯提亚丛林中的探险回报获得了至少七件真正从蜥蜴人遗迹中流出的古物——这些物品不在任何公开名录中，它们被保存在我们地下金库中特殊用途的编号保险柜里，作为我们下一任商会理事在大陆格局重塑时的最终谈判筹码。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "创世者——古圣将原始星球改造为宜居世界，创造所有现存智能种族",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "古圣造物主传古圣星际旅者录古圣星球改造记"
+  ]
+}

@@ -1,0 +1,152 @@
+{
+  "Id": "rule_北地界碑__铁树堡",
+  "Keywords": [
+    "铁树堡",
+    "铁树"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "铁树堡位于北境林地深处，常被称为铁树堡。它所象征的是北方森林领地的另一种力量：不是金矿和大港，而是能取暖、造屋、修桥、制矛的木材，以及世代熟悉林间道路的人。此地与周边家族、采伐场、猎人和小聚落形成网络，任何领主若忽略这些关系，便很难真正支配森林。北境的林地在和平时供给资源，在战乱时遮蔽行踪、拖慢行军，也会把消息切成零碎片段。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "铁树堡可以写在领主的地契上，附近人真正依靠的却是井泉、田租、磨坊、林地和危急时能否进堡。当地家庭还要依靠柴薪、猎场、泥炭、盐鱼与能否撑过长冬的粮仓；任何一处道路、井泉或码头失灵，代价都会先落到他们身上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "守将衡量铁树堡，先查外墙、塔楼、水井、粮仓与最近的援军道路。在七国的封建秩序中，铁树堡的归属牵动封臣义务、税粮和征召；守军能否吃饱、援兵能否按时抵达，比议事厅里的豪言更能决定这处据点是否可靠。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "scholar",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "旅人判断是否经过铁树堡，看的是领地税、庄园产物、驮队路程和堡下形成的小市集。他们还会辨认北境的口音、法令和通行凭据；名声可以从酒馆传得很远，真正的路程仍须由车轮、船桨或马蹄丈量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主可以凭铁树堡收税举兵，却也要为这里的治安与饥馑负责。在七国的封建秩序中，铁树堡的归属牵动封臣义务、税粮和征召；旗帜更换之后，道路、粮仓、旧债和地方信任仍得由新主人逐一接手。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "旅人在铁树堡附近最怕弄错坡势、城门、饮水与守军盘查外人的规矩。能补给、能避险、能找到向导，便值得在行程里标明；若三样都没有，再响亮的家名也救不了迷途者。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "修补铁树堡的人熟悉石墙、木梁、铁门、墓窖和代代修补留下的接缝，安慰死者家属的人熟悉旧神、鱼梁木与祖先留下的墓地。一处据点因而不只是领主的大厅，也是婚丧、誓言、劳作与地方记忆反复发生的场所。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "铁树堡的纹章离田地很远，收税人与守军却离田地很近。他们关心柴薪、猎场、泥炭、盐鱼与能否撑过长冬的粮仓，也看征粮后是否留下种子、灾年时城门是否开启；远方人看见纹章，他们看见的是明日有没有饭吃。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "铁树堡：铁树堡位于北境林地深处，常被称为铁树堡。它所象征的是北方森林领地的另一种力量：不是金矿和大港，而是能取暖、造屋、修桥、制矛的木材，以及世代熟悉林间道路的人。此地与周边家族、采伐场、猎人和小聚落形成网络，任何领主若忽略这些关系，便很难真正支配森林。北境的林地在和平时供给资源，在战乱时遮蔽行踪、拖慢行军，也会把消息切成零碎片段。"
+  ]
+}

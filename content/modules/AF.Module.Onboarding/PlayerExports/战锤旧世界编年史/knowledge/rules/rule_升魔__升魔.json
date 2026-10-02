@@ -1,0 +1,210 @@
+{
+  "Id": "rule_升魔__升魔",
+  "Keywords": [
+    "升魔",
+    "恶魔亲王",
+    "邪神赐福",
+    "变异赠礼",
+    "混沌卵",
+    "神选标记",
+    "混沌恩宠",
+    "四阶段",
+    "不朽转化"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "升魔是混沌信徒的终极命运——当一位凡人在邪神眼中积累了足够的神恩和荣耀，他可以被转化为恶魔亲王，抛弃凡人的肉体，获得永恒的非物质形态和超自然力量。但这条路是一条两面皆锋的刀刃：每一次邪神赠礼都会带来身体的变异，从角质的皮肤到喷吐火焰的能力，再到不可逆转的精神转变，最终你可能获得永恒的力量，但也可能变成一坨失去理智的混沌卵。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "chaos_culture"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "升魔是我们每一个北方战士的终极梦想。当你在无数场战斗中砍下足够的颅骨，当你的名字在荒原的长屋里被传唱，当你的身体已被诸神的赠礼层层覆盖——那时，邪神将直接注视你。恶魔亲王不是失去人性，而是超越人性——谁愿意只做凡人？谁愿意衰老、虚弱、最终像条狗一样死去？我宁愿在升魔之火中燃烧殆尽，也不愿在病床上苟延残喘。那些变成混沌卵的失败者不值得我们同情——他们只是不够强大，不够坚定，不配承受诸神的全部荣光。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "从军事和战略角度而言，升魔和变异赠礼是混沌军队战斗力膨胀的核心机制。凡人混沌冠军已经相当危险，但升魔后的恶魔亲王拥有超凡的耐久力、魔法能力和令凡人部队士气崩溃的恐惧光环。对于防守者而言，必须理解这一过程的速度：一名成功的混沌冠军可能在一次成功的大规模入侵中快速积累足够的神恩以触发升魔。这使得「拖延战术」对混沌尤为不利——每一次被你放跑的混沌冠军都可能在下一次入侵中以更可怕的面貌归来。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 100
+        },
+        "IdentityIds": null
+      },
+      "Content": "升魔之路遵循一套复杂的神学逻辑。第一阶段是神恩积累：凡人通过战斗、献祭、完成邪神指定的任务或取悦特定邪神的行为来积累混沌恩宠点。第二阶段是变异赠礼：当神恩达到一定阈值，邪神开始赐予「礼物」——这些变异可能是有益的（增强力量、获得天生武器、获得魔法能力）也可能是不利的（精神混乱、外貌怪异以致无法领导他人）。第三阶段是神选标记：某位邪神给予信徒专属标记，使其成为该邪神在人间的代言人。第四阶段是升魔：在极端情况下——通常是完成了一项伟大的征服或献祭——邪神直接将信徒的灵魂提升为恶魔亲王，赐予其非物质形态和一个恶魔领域。但这个过程有一个黑暗的危险区间：如果信徒积累的变异过多而没有获得邪神标记的保护，他可能崩溃为混沌卵——一种失去所有智力和自我意识的变异肉团。这是邪神对贪婪者的惩罚，也是对所有寻求力量者的永恒警告。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "女性在升魔之路上面临的独特挑战在于身体与灵魂之间的张力的本质——邪神的赠礼永远会扭曲接受者的外在形态以反映其内在追求的极致。对于一位追求力量的女性冠军，恐虐的赠礼会使她的肌肉膨胀到超越任何人类男性的程度、皮肤变为坚硬的青铜色、声音变成金属碰撞的轰鸣——她将获得无人能够挑战的战斗力量，但代价是她原本的外在身份的一切特征都会被抹除。我见过一位曾经的诺斯卡盾女升魔为恐虐的恶魔亲王——她的形态变为了一座永远在滴血的黄铜高塔，每发出一次战吼时，声音中会有数十个被她亲手杀死的冠军的颅骨在塔壁上共振哀嚎。她是否还是'她'？诸神从不在意这个问题。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "作为氏族族长，我对升魔的态度是务实的恐惧而非盲目的渴望。每一个向北进入荒原深处追求升魔的氏族年轻人都知道——回不来的概率远大于回来的概率。我的氏族历史上曾出现过两位恶魔亲王，一位属于恐虐、一位属于辛烈治。氏族传统要求在每一位年轻冠军出发追求升魔之前，由氏族最年长的萨满在他的额头上用灰烬画一道'回归线'——这不是咒语，而是契约：如果他成功升魔，他必须以恶魔亲王的身份至少一次回应氏族的召唤。两位成功的先祖都没有违背这个契约。但那些变成混沌卵的——他们不再有名字，不再有故事，氏族长屋的椽柱上会被凿去关于他们的一切刻痕。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "在我穿越混沌荒原边缘的旅程中，有一次我们遭遇了一个混沌卵。它曾经是一个人类——我们只能从它残存的半张脸上辨认出种族——而它现在的形态是一颗滚动的大肉球，表面覆盖着数十张嘴，每张嘴都在不协调地呢喃着不同的东西。最可怕的是，在那些混乱的胡话中，偶尔会飘出一个完整的句子，一个曾经的人类在完全清醒状态下说出的话，然后又被无意义的尖叫吞没。我们的向导——一个老诺斯卡猎人——毫不犹豫地往它身上浇了一罐鲸油并点燃。'这是慈悲，'他说，'这是唯一你还能给他们的东西。'火焰中那颗肉球发出的声音既像是有东西在解脱，又像是有东西在无尽的深渊中坠落。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "从保险精算师的角度来看——我知道这听起来荒谬——升魔是一个'无限收益但概率不可量化'的风险事件。帝国某些地下组织（我不敢说哪些）暗地里为那些与混沌势力交战的佣兵团提供一种非法的'冠军承保'：如果某个被标注为'高风险'的混沌冠军在战场上被杀，承保方支付高额赔偿给杀他的战士；但如果该冠军在战场上成功升魔，承保方不仅不赔，还会用这笔保金雇佣杀手去暗杀那个刚升魔的恶魔亲王——因为恶魔亲王的存在对风险管理模型来说是一个无法被吸收的无限大变量。这种荒谬的业务当然是非法的——但它在玛丽恩堡的阴影中存在，并且利润极高。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "恶魔亲王——凡人升魔为不朽的恶魔形态，混沌信徒的终极目标",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "升魔恶魔亲王邪神赐福"
+  ]
+}

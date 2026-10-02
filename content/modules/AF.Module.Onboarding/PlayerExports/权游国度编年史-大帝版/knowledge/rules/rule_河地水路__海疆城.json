@@ -1,0 +1,152 @@
+{
+  "Id": "rule_河地水路__海疆城",
+  "Keywords": [
+    "海疆城",
+    "铁民湾"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "海疆城位于河间地西北、临近铁民湾，是梅利斯特家族的海岸要塞。河间地多数城镇朝向河流与内陆，海疆城却始终望着日落之海，因此它比许多河间地领地更早感到铁民长船、海盗和西海岸风暴的威胁。城堡、灯火、港湾和沿岸巡逻共同构成防御，而周围村镇仍需要捕鱼、盐、贸易和海路来维持生计。海疆城的名字写明了它的职责：守住河间地通向海的边缘。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "river"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "一座据点如何落到百姓身上，在海疆城要从潮汐、渔汛、淡水和船只能否安全靠岸说起。当地家庭还要依靠河运、渡口、麦田、磨坊和战火来临时的藏身处；任何一处道路、井泉或码头失灵，代价都会先落到他们身上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "river"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "任何关于海疆城的军议，最后都会回到港湾入口、泊位、烽火与可供登陆的岸线。在七国的封建秩序中，海疆城的归属牵动封臣义务、税粮和征召；守军能否吃饱、援兵能否按时抵达，比议事厅里的豪言更能决定这处据点是否可靠。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "scholar",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "商队把海疆城写进账本时，会核算航期、码头脚费、补水和下一处避风港。他们还会辨认河间地的口音、法令和通行凭据；名声可以从酒馆传得很远，真正的路程仍须由车轮、船桨或马蹄丈量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "婚约、继承与征召令会把贵族的目光引向海疆城。在七国的封建秩序中，海疆城的归属牵动封臣义务、税粮和征召；旗帜更换之后，道路、粮仓、旧债和地方信任仍得由新主人逐一接手。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "老兵讲起海疆城，很少赞美风景，只会提醒别人风向、礁石、渡船与城门落锁后的锚地。能补给、能避险、能找到向导，便值得在行程里标明；若三样都没有，再响亮的家名也救不了迷途者。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "从作坊到圣所，海疆城把修船木、帆布、盐、鱼获和抵御海风的石料同七神、古老河王传说与反复易手的土地记忆并置在一起。一处据点因而不只是领主的大厅，也是婚丧、誓言、劳作与地方记忆反复发生的场所。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "对普通家庭来说，海疆城的威严要在灾年才见真假。他们关心河运、渡口、麦田、磨坊和战火来临时的藏身处，也看征粮后是否留下种子、灾年时城门是否开启；远方人看见纹章，他们看见的是明日有没有饭吃。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "海疆城：海疆城位于河间地西北、临近铁民湾，是梅利斯特家族的海岸要塞。河间地多数城镇朝向河流与内陆，海疆城却始终望着日落之海，因此它比许多河间地领地更早感到铁民长船、海盗和西海岸风暴的威胁。城堡、灯火、港湾和沿岸巡逻共同构成防御，而周围村镇仍需要捕鱼、盐、贸易和海路来维持生计。海疆城的名字写明了它的职责：守住河间地通向海的边缘。"
+  ]
+}

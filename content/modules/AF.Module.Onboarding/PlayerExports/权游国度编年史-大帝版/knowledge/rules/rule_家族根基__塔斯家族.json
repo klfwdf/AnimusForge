@@ -1,0 +1,151 @@
+{
+  "Id": "rule_家族根基__塔斯家族",
+  "Keywords": [
+    "塔斯家族",
+    "暮之星",
+    "日月纹章"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "塔斯家族以蓝宝石岛的暮临厅为根基，家主传统上称“暮之星”。家徽由玫瑰色与蓝色四分，分别绘有太阳和新月，保存岛上古王、安达尔血统与风暴地封臣身份交汇的记忆。蓝宝石岛位于破船湾外，名称常让外人想象宝石财富，实际家族力量更依赖港湾、渔业、道路和岛屿防务。贵族会记得暮之星的古老称号，岛民则以船能否安全靠岸、领主能否保护村庄判断太阳与月亮的旗帜。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "stormlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "风暴地贵族把塔斯家视作暮临厅的海岛领主，“暮之星”称号与日月纹章带着古老而温和的光彩。蓝宝石岛的美名容易让人只想到景色，真正维系家族的却是港湾、船只、风暴和对风息堡的封臣责任。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "stormlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "sailor",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "塔斯海峡的船主知道，美丽海水下面同样有暗流和礁石。塔斯家若能维持灯塔、港规与沿岸巡查，暮之星便是归航的象征；若海盗横行，再漂亮的蓝宝石之名也只是卖给外乡人的故事。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "stormlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "岛民白天看太阳，夜里看月亮，家徽上的两者对他们并不遥远。捕鱼、放牧和躲避风暴都要看天色。人们愿意把塔斯称作暮之星，只要那颗星不是高高挂着，而是真能在最黑的时候给港口一点光。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待塔斯家族，会先看它的土地、婚盟、血脉和债务。蓝宝石岛暮临厅的风暴地家族，家主称暮之星，纹章为太阳与新月的四色盾。古王记忆、港湾、渔业和岛防构成其身份；箴言未知。家徽是门面，能否保护封地、兑现婚约并在危机中召集人马，才是家族真正的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起塔斯家族时，记得的是谁在营火边分过粮、谁把他们留在城外、谁在败局里仍站在旗旁。蓝宝石岛暮临厅的风暴地家族，家主称暮之星，纹章为太阳与新月的四色盾。古王记忆、港湾、渔业和岛防构成其身份；箴言未知。家族名声最终要落到具体的人和具体的命令上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意塔斯家族留下的仪式、墓地和传承。蓝宝石岛暮临厅的风暴地家族，家主称暮之星，纹章为太阳与新月的四色盾。古王记忆、港湾、渔业和岛防构成其身份；箴言未知。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见塔斯家族。蓝宝石岛暮临厅的风暴地家族，家主称暮之星，纹章为太阳与新月的四色盾。古王记忆、港湾、渔业和岛防构成其身份；箴言未知。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "塔斯家族：蓝宝石岛暮临厅的风暴地家族，家主称暮之星，纹章为太阳与新月的四色盾。古王记忆、港湾、渔业和岛防构成其身份；箴言未知。"
+  ]
+}

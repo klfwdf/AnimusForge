@@ -27,7 +27,13 @@ $stage = Join-Path $project "bin\Debug\single_module_stage\AnimusForge"
 $source = Join-Path $project "content\modules\Test\ModuleData\one.json"
 New-Item -ItemType Directory -Path (Split-Path -Parent $source) -Force | Out-Null
 [System.IO.File]::WriteAllText($source, "synthetic", [System.Text.UTF8Encoding]::new($false))
-$map = @{ schemaVersion = 1; entries = @(@{ owner = "Test"; source = "content/modules/Test/ModuleData/one.json"; target = "ModuleData/one.json" }) }
+$worldbook = Join-Path $project "content\modules\Test\PlayerExports\worldbook\knowledge\rule.json"
+New-Item -ItemType Directory -Path (Split-Path -Parent $worldbook) -Force | Out-Null
+[System.IO.File]::WriteAllText($worldbook, "default-worldbook", [System.Text.UTF8Encoding]::new($false))
+$map = @{ schemaVersion = 1; entries = @(
+    @{ owner = "Test"; source = "content/modules/Test/ModuleData/one.json"; target = "ModuleData/one.json" },
+    @{ owner = "Test"; source = "content/modules/Test/PlayerExports/worldbook/knowledge/rule.json"; target = "PlayerExports/worldbook/knowledge/rule.json" }
+) }
 [System.IO.File]::WriteAllText((Join-Path $project "content\content-map.json"), ($map | ConvertTo-Json -Depth 5), [System.Text.UTF8Encoding]::new($false))
 New-Item -ItemType Directory -Path $stage -Force | Out-Null
 Invoke-AnimusForgeContentProjection -ProjectRoot $project -DestinationModuleDir $stage | Out-Null
@@ -81,11 +87,17 @@ Assert-AnimusForgeCleanStage -ProjectRoot $project -StageModuleDir $stage
 Copy-Item -LiteralPath (Join-Path $bin "AnimusForge.Bootstrap.pdb") -Destination $staleArtifact -Force
 Assert-AnimusForgeCleanStage -ProjectRoot $project -StageModuleDir $stage -RequireCurrentArtifacts
 $private = Join-Path $stage "PlayerExports\private.json"
-New-Item -ItemType Directory -Path (Split-Path -Parent $private) | Out-Null
 [System.IO.File]::WriteAllText($private, "synthetic")
-MustReject { Assert-AnimusForgeCleanStage -ProjectRoot $project -StageModuleDir $stage } "Stage accepted PlayerExports"
+MustReject { Assert-AnimusForgeCleanStage -ProjectRoot $project -StageModuleDir $stage } "Stage accepted an unlisted personal export"
 Remove-Item -LiteralPath $private
-Remove-Item -LiteralPath (Split-Path -Parent $private)
+Check ([System.IO.File]::ReadAllText((Join-Path $stage "PlayerExports\worldbook\knowledge\rule.json")) -eq "default-worldbook") "Mapped worldbook was not projected"
+
+foreach ($extra in @("PlayerExports\synthetic.log", "PlayerExports\synthetic.onnx")) {
+    $path = Join-Path $stage $extra
+    [System.IO.File]::WriteAllText($path, "synthetic")
+    MustReject { Assert-AnimusForgeCleanStage -ProjectRoot $project -StageModuleDir $stage } "Stage accepted $extra"
+    Remove-Item -LiteralPath $path
+}
 
 $unknown = Join-Path $stage "credential.txt"
 [System.IO.File]::WriteAllText($unknown, "synthetic")

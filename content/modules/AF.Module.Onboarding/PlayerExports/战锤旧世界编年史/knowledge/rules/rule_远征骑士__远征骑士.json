@@ -1,0 +1,210 @@
+{
+  "Id": "rule_远征骑士__远征骑士",
+  "Keywords": [
+    "远征骑士",
+    "侠义探索",
+    "远征骑士双手巨剑",
+    "远征骑士圣杯试炼",
+    "流浪骑士",
+    "放下骑枪",
+    "圣杯远征",
+    "求索骑士",
+    "孤行侠"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "远征骑士是巴托尼亚骑士道中最令人敬畏也最令人悲伤的存在——他们是在某个无法言说的时刻认定自己已经配不上骑士称号的王国骑士，于是放下骑枪和盾牌，拿起一柄双手巨剑，抛弃封地和头衔独自流浪踏上圣杯远征之路的孤独武士。远征骑士不追求任何现世的回报，他们唯一的目标是在这场可能致死都不会有结果的漫漫长路尽头寻找到圣杯的显圣。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "远征骑士——这个称号在我们巴托尼亚人心中唤起的情感之复杂外人永远无法理解。在我们的文化中，远征骑士是活着的神话：他放弃了其他骑士视为终极价值的一切——荣耀、领地、家族、甚至自己的名字——因为他意识到这一切如果只是为了获得圣杯，那就已经变成了负担而非荣誉。远征仪式被称为「罢息之夜」：骑士在城堡的小教堂中跪一整夜，在他的公爵和同袍们面前宣布自己将开始圣杯远征，然后在黎明前永不回头地走出城堡大门——从此他在生者世界中不拥有任何东西。他将骑枪挂在城堡门柱上作为他放弃的宣誓——从此他只用双手巨剑作战，这意味着他放弃了骑兵的冲击优势而选择以更公平也更艰难的方式与敌人交手。远征骑士在路途中没有任何固定的目的地——他跟随湖之女神在他梦中留下的模糊迹象，从一个村庄走到另一个村庄，从一个战场走到另一个战场，斩杀野兽、帮助农奴、参加任何他认为足够高尚的比武大赛。一位远征骑士的旅途可能持续数年，也可能持续一辈子——历史上最年轻的圣杯骑士在远征七年后获得了圣杯显圣，而最年长的远征骑士在八十岁时死在路边客栈中，至死没有见到女神。巴托尼亚人把遇到远征骑士视为吉兆：因为这意味着湖之女神正在通过这位骑士测试这片土地的纯洁性。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "远征骑士在军事指挥层面的价值是不可预知的。你不能在战略部署中将远征骑士当作一个你可以计数的军事单位——他们中的一些人会路过你的领地并主动参与你的战争，但没有人能命令他们参战；另一些远征骑士则可能认为你的战争不符合骑士道而拒绝介入，尽管你的敌人是一个邪恶的兽人战将。但如果你碰巧在某个关键时刻获得了一位远征骑士的主动协助，你获得的不是一个士兵而是一件战略级别的兵器：远征骑士在数年的孤身战斗中已经积累了对几乎所有异常生物种类的最丰富的一对一实战经验——他知道兽人大块头会在发动第三次横扫攻击后露出左肋的破绽；他知道吸血鬼在变身前会有三秒的魔法眩晕期；他知道巨魔的腿部是比头部更快的杀死方式。从领主的立场出发，你应该毫无保留地欢迎和荣耀每一位路过你领地的远征骑士——因为即使他不帮你打仗，他的存在本身就会让你领地中的所有骑士在道义上提升一个档次。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "远征骑士制度作为巴托尼亚骑士道体系中从世俗骑士通往圣杯骑士的唯一法定桥梁，其法律和仪式历史是巴托尼亚制度史中最具神权色彩的研究专题。远征誓约（Voeu de la Quete）的先决条件在法律上仅有一个：即申请远征的骑士必须是已宣誓的王国骑士并且没有未履行的法定服役义务——这意味着如果你欠你的领主一个仍在合同期内的军事服役学期，你不能在法律上开始远征。远征仪式本身包含三个不可省略的环节：申请者在城堡小教堂中跪拜整夜（称为「净夜」）、在黎明时分由领地内的最高阶圣杯修女主持放弃宣誓、以及将你的骑枪挂在城堡门柱上——这根骑枪成为法律的实物证据，证明你在这一日永远的放弃了自己的封地权。双手巨剑成为远征骑士的制式武器有其具体的战术根源：其一，骑枪在一次冲锋后就失去作用而双手巨剑可以持续有效地对抗多种敌人类别；其二，双手巨剑的剑术需要比骑枪更长时间和更精深的训练，它被视为对骑士个人武艺的终极检验；其三，教会内部流传的《圣杯之书》中记载湖之女神本人偏好剑而非枪——当吉勒斯在场时湖之女神赠予他的圣物是一把剑而非一杆枪。据统计学家的保守估计，在任何一个五年周期内巴托尼亚全境约有二十至四十名骑士开始远征誓约——其中最终能走到圣杯显圣的人数始终维持在个位数，而其余的大多数要么阵亡于途中、要么最终放弃远征、要么在从未获得圣杯的情况下年老去世。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "远征骑士在巴托尼亚贵族女性生命中扮演着一个充满悲剧美的角色。许多远征骑士是在失去挚爱的女性之后开始远征的——那个夜晚他在小教堂中跪着的，也许不仅仅是为了圣杯，也是为了忘记那个他无法娶到的女子。作为女人我们看着他们从城堡的窗户中远去，知道这个人可能永远不会出现在任何人的家庭晚餐桌上了——他整个人的存在已经变成了一个修长的背影没入灰白的黎明。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "一个家族中有人成为远征骑士会使这个家族同时获得荣誉和损失。荣誉在于你的血统被证明足够高贵能被女神召唤——这一点比任何联姻或战功更能提升家族的骑士声望。损失在于他放弃了家族的继承权——如果他是长子，那么家族的主系继承将必须转移到次子身上，这在法律上是属于一种预先放弃。历史上许多巴托尼亚大贵族的家族破裂都源于远征骑士离去后的继承真空期。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "在巴托尼亚的驿道上，如果你想找一个能一起喝酒的巴托尼亚人那就去走运了，但如果命运让你在驿道客栈里撞见一个双肩背着一柄巨剑并且眼神看穿你的酒气的陌生人——赶快把那桌的角落让给他。远征骑士是我们佣兵中最令人羡慕也最倒霉的一群——我们卖命换取金克朗，而他们的命已经卖给了女神，但他们自己却没有因此变得腐化，这才是最可怕的。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "远征骑士的经济影响是微小的但持续的——他们的基础设施需求几乎为零：一件斗篷、一把双手剑和足够的干肉块就可以延续数周。但他们经常在村庄中停留并帮助当地农奴完成重体力劳动以换取床榻和食物，这种以劳动换宿的交换对当地小型经济造成一种奇特的公平感——农奴们会开始觉得所有骑士都像远征骑士那样自食其力，而当他们发现事实并非如此时，怨气便开始积攒。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "远征誓约——王国骑士放弃封地、头衔和骑枪的法律宣言，开始圣杯远征的唯一入口",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "抛弃封地和头衔独自流浪踏上圣杯远征之路的孤独武士"
+  ]
+}

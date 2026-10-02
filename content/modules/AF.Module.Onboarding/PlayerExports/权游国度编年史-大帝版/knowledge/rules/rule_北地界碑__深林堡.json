@@ -1,0 +1,151 @@
+{
+  "Id": "rule_北地界碑__深林堡",
+  "Keywords": [
+    "深林堡"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "深林堡坐落于北境西部的狼林边缘，是葛洛佛家族的传统席位。此地真正的城墙并不只有石头，还包括无边的针叶林、难以辨认的猎径和熟悉雪地的人。狼林提供木材、毛皮、猎物与藏身处，也会让大军的补给、传讯和追击变得迟缓。深林堡由此承担看守北境西部道路、联系海岸与内陆的职责。葛洛佛家的封臣义务把它连向临冬城，地方生活却更多由林木、季节和远近村落决定。深林堡作为狼林门户的地理性格不会随之消失。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "深林堡附近的百姓很少空谈疆界，他们每天应付的是潮汐、渔汛、淡水和船只能否安全靠岸。当地家庭还要依靠柴薪、猎场、泥炭、盐鱼与能否撑过长冬的粮仓；任何一处道路、井泉或码头失灵，代价都会先落到他们身上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "征召令抵达深林堡以后，真正决定成败的是港湾入口、泊位、烽火与可供登陆的岸线。在七国的封建秩序中，深林堡的归属牵动封臣义务、税粮和征召；守军能否吃饱、援兵能否按时抵达，比议事厅里的豪言更能决定这处据点是否可靠。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "scholar",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "客栈与码头里的人谈深林堡，总绕不开航期、码头脚费、补水和下一处避风港。他们还会辨认北境的口音、法令和通行凭据；名声可以从酒馆传得很远，真正的路程仍须由车轮、船桨或马蹄丈量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "宫廷会把深林堡视作筹码，当地封臣却知道它是一整套义务。在七国的封建秩序中，深林堡的归属牵动封臣义务、税粮和征召；旗帜更换之后，道路、粮仓、旧债和地方信任仍得由新主人逐一接手。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "地图在深林堡附近最容易隐去的，正是风向、礁石、渡船与城门落锁后的锚地。能补给、能避险、能找到向导，便值得在行程里标明；若三样都没有，再响亮的家名也救不了迷途者。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人在深林堡看见修船木、帆布、盐、鱼获和抵御海风的石料，神职者守着旧神、鱼梁木与祖先留下的墓地。一处据点因而不只是领主的大厅，也是婚丧、誓言、劳作与地方记忆反复发生的场所。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "深林堡在平民眼中不是传奇，而是一年四季的收支。他们关心柴薪、猎场、泥炭、盐鱼与能否撑过长冬的粮仓，也看征粮后是否留下种子、灾年时城门是否开启；远方人看见纹章，他们看见的是明日有没有饭吃。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "深林堡：深林堡坐落于北境西部的狼林边缘，是葛洛佛家族的传统席位。此地真正的城墙并不只有石头，还包括无边的针叶林、难以辨认的猎径和熟悉雪地的人。狼林提供木材、毛皮、猎物与藏身处，也会让大军的补给、传讯和追击变得迟缓。深林堡由此承担看守北境西部道路、联系海岸与内陆的职责。葛洛佛家的封臣义务把它连向临冬城，地方生活却更多由林木、季节和远近村落决定。深林堡作为狼林门户的地理性格不会随之消失。"
+  ]
+}

@@ -1,0 +1,152 @@
+{
+  "Id": "rule_家族根基__派克",
+  "Keywords": [
+    "派克"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "科特·派克出生于铁群岛，是冠以“派克”姓氏的私生子，后来在守夜人中成为东海望司令。他粗鲁、强硬，熟悉船只、海况和沿岸防务；海上经验使他看问题比只会守城墙的人更实际。黑衣给了一个无合法继承权的人凭能力取得位置的道路，也把东海望的船队、港口和兄弟性命压在他的判断上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "nightswatch"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "sailor",
+          "soldier",
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "东海望的黑衣兄弟知道科特脾气坏、话也难听，却承认他懂船。海上命令若迟疑片刻就会死人；在这样的地方，粗声呵斥往往比优雅演说更有用。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "sailor",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "铁民听见“科特·派克”便知道他是海岛私生子。有人认为穿黑衣是穷途末路，有人却会承认，一个私生子能靠本事指挥港口和船只，总好过在亲族厅堂外讨残羹。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "sailor",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "北境商船与渔船把东海望当作长城与海相接的门户。科特若能保持灯火、巡船和码头秩序，船长们便忍得下他的坏脾气。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待派克，会先看它的土地、婚盟、血脉和债务。东海望司令科特·派克出身铁群岛私生子，以海上经验、强硬作风和守夜人资历立足。家徽是门面，能否保护封地、兑现婚约并在危机中召集人马，才是家族真正的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起派克时，记得的是谁在营火边分过粮、谁把他们留在城外、谁在败局里仍站在旗旁。东海望司令科特·派克出身铁群岛私生子，以海上经验、强硬作风和守夜人资历立足。家族名声最终要落到具体的人和具体的命令上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意派克留下的仪式、墓地和传承。东海望司令科特·派克出身铁群岛私生子，以海上经验、强硬作风和守夜人资历立足。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见派克。东海望司令科特·派克出身铁群岛私生子，以海上经验、强硬作风和守夜人资历立足。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "派克：东海望司令科特·派克出身铁群岛私生子，以海上经验、强硬作风和守夜人资历立足。"
+  ]
+}

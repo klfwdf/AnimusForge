@@ -1,0 +1,153 @@
+{
+  "Id": "rule_家族根基__雷德",
+  "Keywords": [
+    "雷德"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "曼斯·雷德的势力是由许多自由民部族结成的联盟。曼斯曾披守夜人黑衣，后来越过长城回到自由民中间；他靠歌声、见识、说服与必要的决斗，让彼此争斗的部族承认同一个方向。自由民不肯下跪，因此他的“王权”不是南方王座赐予的，而是必须不断赢得的追随。曼斯真正的力量在于让人明白：当更寒冷、更古老的威胁逼近时，旧仇若不暂时放下，所有部族都会被雪吞没。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "freefolk"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "自由民追随曼斯，不是因为他有王家血统，而是因为他走过他们的营火、听得懂他们的争吵，也能击败不肯听理的人。他若不能继续证明自己，任何称号都束缚不了不跪之民。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "nightswatch"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "守夜人把曼斯视作最危险的逃兵，因为他既懂黑衣兄弟的城堡与规矩，也懂自由民为何南下。有人只看见背誓，有人则不得不承认，他把数百年未曾真正联合的人聚到了一起。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "notable",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "长城以南的人常把雷德麾下全叫作野人，仿佛他们没有名字和恐惧。北境边民更清楚，那支人潮里有战士，也有抱着孩子、只想逃离寒冷与死亡的家庭。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待雷德，会先看它的土地、婚盟、血脉和债务。雷德势力围绕塞外之王曼斯·雷德形成，他以游说、决斗与共同危机把自由民诸部暂时联合。家徽是门面，能否保护封地、兑现婚约并在危机中召集人马，才是家族真正的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起雷德时，记得的是谁在营火边分过粮、谁把他们留在城外、谁在败局里仍站在旗旁。雷德势力围绕塞外之王曼斯·雷德形成，他以游说、决斗与共同危机把自由民诸部暂时联合。家族名声最终要落到具体的人和具体的命令上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意雷德留下的仪式、墓地和传承。雷德势力围绕塞外之王曼斯·雷德形成，他以游说、决斗与共同危机把自由民诸部暂时联合。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见雷德。雷德势力围绕塞外之王曼斯·雷德形成，他以游说、决斗与共同危机把自由民诸部暂时联合。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "雷德：雷德势力围绕塞外之王曼斯·雷德形成，他以游说、决斗与共同危机把自由民诸部暂时联合。"
+  ]
+}

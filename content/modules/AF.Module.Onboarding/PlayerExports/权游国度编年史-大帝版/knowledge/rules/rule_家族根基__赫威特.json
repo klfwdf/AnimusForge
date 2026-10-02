@@ -1,0 +1,151 @@
+{
+  "Id": "rule_家族根基__赫威特",
+  "Keywords": [
+    "赫威特家族",
+    "橡木盾岛"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "赫威特家族以盾牌列岛中的橡木盾岛为根基，家主传统上拥有“盾牌列岛统领”地位，岛上还有以家名命名的赫威特伯爵镇。盾牌列岛位于曼德河口外，长期承担抵挡铁民、海盗和外敌舰船的第一道海防。岛民判断赫威特，不看高庭宴席上的座位，而看敌帆出现时烽火、船只和岸防是否及时行动。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "reach"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "河湾贵族把赫威特视作盾牌列岛防务中的重要一环。岛上头衔和城镇使家门拥有分量，但真正的荣耀并不在称号，而在长船出现时能否及时点火、集结和封住水道。内陆领主谈海防容易，赫威特却必须年年为它付钱。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "reach"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "sailor",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "盾牌列岛的水手和守军看赫威特，先看船底是否补过、箭塔是否有人、号角能否传到下一座岛。这里的领主不能只会骑马参加比武；潮汐和铁民不会按宫廷日程来。能让岛民在警钟后各就各位，才配得上统领之名。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "sailor",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "铁民航海者把盾牌列岛看作曼德河口前的一排门牙，赫威特则是其中一颗。袭掠者会嘲笑绿地人依赖城墙，却不会忽视岛上的烽火和舰艇。最危险的海岸敌人未必最勇猛，而是最早最早看见来者的那一个。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待赫威特家族，会先看它的土地、婚盟、血脉和债务。橡木盾岛与赫威特伯爵镇的盾牌列岛家族，长期承担曼德河口海防。家徽是门面，能否保护封地、兑现婚约并在危机中召集人马，才是家族真正的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起赫威特家族时，记得的是谁在营火边分过粮、谁把他们留在城外、谁在败局里仍站在旗旁。橡木盾岛与赫威特伯爵镇的盾牌列岛家族，长期承担曼德河口海防。家族名声最终要落到具体的人和具体的命令上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意赫威特家族留下的仪式、墓地和传承。橡木盾岛与赫威特伯爵镇的盾牌列岛家族，长期承担曼德河口海防。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见赫威特家族。橡木盾岛与赫威特伯爵镇的盾牌列岛家族，长期承担曼德河口海防。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "赫威特家族：橡木盾岛与赫威特伯爵镇的盾牌列岛家族，长期承担曼德河口海防。"
+  ]
+}

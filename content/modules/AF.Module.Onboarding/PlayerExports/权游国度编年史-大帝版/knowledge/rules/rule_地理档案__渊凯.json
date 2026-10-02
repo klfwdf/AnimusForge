@@ -1,0 +1,151 @@
+{
+  "Id": "rule_地理档案__渊凯",
+  "Keywords": [
+    "渊凯"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "渊凯位于奴隶湾东岸，在阿斯塔波以北、弥林以南，以黄色砖墙和奴隶贸易闻名。贤主们依靠奴隶庄园、商队和港口积累财富；丹妮莉丝到来后，城中旧秩序与解放力量之间的冲突，使渊凯成为奴隶湾政治中无法绕开的节点。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "ghiscari"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "外乡人记得渊凯的名字，本地人记得的却是潮汐、渔汛、淡水和船只能否安全靠岸。当地家庭还要依靠水源、道路、耕地、牧群和可以交换货物的市场；任何一处道路、井泉或码头失灵，代价都会先落到他们身上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "ghiscari"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主在厅堂里谈渊凯，经验老到的士兵却只问港湾入口、泊位、烽火与可供登陆的岸线。渊凯处在已知世界的权力与贸易网络中，城门内外的规矩由当地秩序决定；守军能否吃饱、援兵能否按时抵达，比议事厅里的豪言更能决定这处据点是否可靠。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "scholar",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "关于渊凯的消息传到远方，往往伴着航期、码头脚费、补水和下一处避风港。他们还会辨认已知世界的口音、法令和通行凭据；名声可以从酒馆传得很远，真正的路程仍须由车轮、船桨或马蹄丈量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "谁在渊凯升起旗帜，谁就继承这里的旧债、旧臣与边界争端。渊凯处在已知世界的权力与贸易网络中，城门内外的规矩由当地秩序决定；旗帜更换之后，道路、粮仓、旧债和地方信任仍得由新主人逐一接手。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "向导描述渊凯，总从风向、礁石、渡船与城门落锁后的锚地讲起。能补给、能避险、能找到向导，便值得在行程里标明；若三样都没有，再响亮的家名也救不了迷途者。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "工匠用双手丈量渊凯的修船木、帆布、盐、鱼获和抵御海风的石料，祭司用仪式延续当地神祇、祖先坟墓与世代相传的禁忌。一处据点因而不只是领主的大厅，也是婚丧、誓言、劳作与地方记忆反复发生的场所。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "平民记住渊凯的方式，是哪一年开仓、哪一年征走最后一头牛。他们关心水源、道路、耕地、牧群和可以交换货物的市场，也看征粮后是否留下种子、灾年时城门是否开启；远方人看见纹章，他们看见的是明日有没有饭吃。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "渊凯：渊凯位于奴隶湾东岸，在阿斯塔波以北、弥林以南，以黄色砖墙和奴隶贸易闻名。贤主们依靠奴隶庄园、商队和港口积累财富；丹妮莉丝到来后，城中旧秩序与解放力量之间的冲突，使渊凯成为奴隶湾政治中无法绕开的节点。"
+  ]
+}

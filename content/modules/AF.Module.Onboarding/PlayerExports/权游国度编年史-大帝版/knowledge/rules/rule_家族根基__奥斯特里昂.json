@@ -1,0 +1,133 @@
+{
+  "Id": "rule_家族根基__奥斯特里昂",
+  "Keywords": [
+    "奥斯特里昂",
+    "奥斯特里昂家族"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "奥斯特里昂家族在科霍尔的地位来自城市关系与资产。炉火需要森林木炭，商队需要护卫，富家需要在神庙祭礼和行业规矩中维持体面。奥斯特里昂若不能约束管事、保护工匠或偿还商债，任何关于古老血缘的自夸都无法让熄灭的炉火重新燃起。 科霍尔位于大森林边缘，以能够重铸瓦雷利亚钢、为金属着色的铁匠和黑山羊信仰闻名。城中财富来自林木、工坊、商队与奴隶劳动，宗教献祭和行业秘密共同塑造其阴郁声名。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "qohorik"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "科霍尔商人与祭司看奥斯特里昂，会权衡它对工坊、森林货物和黑山羊神庙的贡献。一个家门若触怒行业秘密或宗教权威，再多钱也可能失去城市中的立足处。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "qohorik"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "slave",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "科霍尔铁匠、烧炭工与奴隶评价奥斯特里昂，看的是木炭、矿料、工钱和惩罚。外人赞叹彩色钢铁时，很少想到炉火旁有多少人终年吸入烟尘。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待奥斯特里昂，会先看它的土地、婚盟、血脉和债务。奥斯特里昂是科霍尔城市家门，其声望由金属、木炭、契约与神庙关系等现实要素构成。家徽是门面，能否保护封地、兑现婚约并在危机中召集人马，才是家族真正的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起奥斯特里昂时，记得的是谁在营火边分过粮、谁把他们留在城外、谁在败局里仍站在旗旁。奥斯特里昂是科霍尔城市家门，其声望由金属、木炭、契约与神庙关系等现实要素构成。家族名声最终要落到具体的人和具体的命令上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意奥斯特里昂留下的仪式、墓地和传承。奥斯特里昂是科霍尔城市家门，其声望由金属、木炭、契约与神庙关系等现实要素构成。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见奥斯特里昂。奥斯特里昂是科霍尔城市家门，其声望由金属、木炭、契约与神庙关系等现实要素构成。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "奥斯特里昂：奥斯特里昂是科霍尔城市家门，其声望由金属、木炭、契约与神庙关系等现实要素构成。"
+  ]
+}

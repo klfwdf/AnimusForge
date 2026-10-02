@@ -1,0 +1,132 @@
+{
+  "Id": "rule_家族根基__马赛",
+  "Keywords": [
+    "马赛",
+    "马赛家族"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "马赛家族以石舞城为根基，是王领黑水湾沿岸的地方贵族。石舞城连接内陆庄园、沿岸港湾与通往君临的道路，领地财富来自农产、渔获、盐、船只和过路贸易。王领家族离都城近，不能像遥远边疆那样自行解释王命；一次婚姻、税令或舰队调动都可能改变石舞城的日常。马赛的家名因此不是孤立的地方传说，而是黑水湾政治、市场与潮汐交会处的一枚钉子。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "crownlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "王领贵族看马赛，先看石舞城能否把海岸资源和君临需求接起来。近都城意味着机会，也意味着每一位领主都要对自己的忠诚、粮食和船只去向作出解释。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "crownlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "sailor",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "石舞城居民不把宫廷争论说得太玄。商人想要安全道路，水手想要无封锁的港湾，农户想要征粮之后仍有种子。马赛若能让三者都活下去，家名便比王室文书更有分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待马赛，会先看它的土地、婚盟、血脉和债务。马赛的家名系于血缘、婚盟、旧债与地方记忆；效忠的对象、持有的城堡和家中掌权者都可能改变，但家名累积的荣辱往往比一场战争活得更久。家徽是门面，能否保护封地、兑现婚约并在危机中召集人马，才是家族真正的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起马赛时，记得的是谁在营火边分过粮、谁把他们留在城外、谁在败局里仍站在旗旁。马赛的家名系于血缘、婚盟、旧债与地方记忆；效忠的对象、持有的城堡和家中掌权者都可能改变，但家名累积的荣辱往往比一场战争活得更久。家族名声最终要落到具体的人和具体的命令上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意马赛留下的仪式、墓地和传承。马赛的家名系于血缘、婚盟、旧债与地方记忆；效忠的对象、持有的城堡和家中掌权者都可能改变，但家名累积的荣辱往往比一场战争活得更久。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见马赛。马赛的家名系于血缘、婚盟、旧债与地方记忆；效忠的对象、持有的城堡和家中掌权者都可能改变，但家名累积的荣辱往往比一场战争活得更久。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "马赛：马赛的家名系于血缘、婚盟、旧债与地方记忆；效忠的对象、持有的城堡和家中掌权者都可能改变，但家名累积的荣辱往往比一场战争活得更久。"
+  ]
+}

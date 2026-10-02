@@ -1,0 +1,155 @@
+{
+  "Id": "rule_家族根基__坦格利安",
+  "Keywords": [
+    "坦格利安家族",
+    "坦格利安",
+    "三头龙",
+    "血火同源"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "坦格利安家族是瓦雷利亚自由堡垒末日后仍存的龙王家族之一。家族在末日前迁居龙石岛，后来由征服者伊耿及其姐妹以龙火建立七国王朝。黑底红色三头龙、银金色的瓦雷利亚外貌、近亲婚配传统与“血火同源”的箴言，共同构成其最容易被辨认的遗产。对坦格利安而言，龙既是祖先留下的力量，也是王朝把统治说成命运的语言；对许多维斯特洛人而言，三头龙则同时意味着统一、焚城、古老王权与遥远的流亡。家族的成员、财富和实际权势会改变，但瓦雷利亚记忆与征服遗产会一直为其名字招来敬畏、怨恨和希望。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "crownlands",
+          "dragonstone"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "维斯特洛贵族看三头龙，无法只选一种记忆。它既代表统一七国、王家大道与三百年秩序，也代表龙焰、近亲婚姻和某些君主的疯狂。坦格利安的归来对一部分人是复辟，对另一部分人则是旧伤重新发热。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "ghiscari"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "slave",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "奴隶湾的人认识坦格利安，未必从征服者伊耿开始，而从银发女王、龙影和被打碎的旧秩序开始。自由人把她视作希望，旧主人把她视作灾祸，商人则担心每一次解放都会重新定义契约与财富。三头龙在这里不是遥远王徽，而是一种已经改变生活的力量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "valyrian"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "带有瓦雷利亚遗绪的人看坦格利安，常混合亲近、嫉妒与戒惧。龙王血脉使他们成为末日后最耀眼的幸存家门，也让其他古老血统显得像火光旁的微星。血与火能召回失落荣耀，也可能再次提醒世人瓦雷利亚为何令人恐惧。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待坦格利安家族，会先看它的土地、婚盟、血脉和债务。来自瓦雷利亚、先居龙石岛的龙王家族。黑底红色三头龙、银金外貌、近亲婚配传统与“血火同源”连接其征服七国的王朝遗产。家徽是门面，能否保护封地、兑现婚约并在危机中召集人马，才是家族真正的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起坦格利安家族时，记得的是谁在营火边分过粮、谁把他们留在城外、谁在败局里仍站在旗旁。来自瓦雷利亚、先居龙石岛的龙王家族。黑底红色三头龙、银金外貌、近亲婚配传统与“血火同源”连接其征服七国的王朝遗产。家族名声最终要落到具体的人和具体的命令上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意坦格利安家族留下的仪式、墓地和传承。来自瓦雷利亚、先居龙石岛的龙王家族。黑底红色三头龙、银金外貌、近亲婚配传统与“血火同源”连接其征服七国的王朝遗产。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见坦格利安家族。来自瓦雷利亚、先居龙石岛的龙王家族。黑底红色三头龙、银金外貌、近亲婚配传统与“血火同源”连接其征服七国的王朝遗产。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "坦格利安家族：来自瓦雷利亚、先居龙石岛的龙王家族。黑底红色三头龙、银金外貌、近亲婚配传统与“血火同源”连接其征服七国的王朝遗产。"
+  ]
+}

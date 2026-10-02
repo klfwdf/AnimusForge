@@ -1,0 +1,213 @@
+{
+  "Id": "rule_巴托尼亚__巴托尼亚",
+  "Keywords": [
+    "巴托尼亚",
+    "骑士王国",
+    "湖神之国",
+    "圣杯王国",
+    "巴托尼亚库罗纳",
+    "吉勒斯",
+    "骑士精神",
+    "封建制度",
+    "女神庇佑",
+    "旧世界西部",
+    "圣杯骑士团",
+    "巴托尼亚战马"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "巴托尼亚是旧世界西部的一个强大王国，以举世无双的骑士传统和对湖之女神的虔诚信仰著称。这片土地被分为十四个公爵领，由国王统治，骑士们遵循严苛的骑士道戒律奋战沙场——其中最神圣的便是那些饮下圣杯的圣杯骑士，他们是湖之女神在世间的化身意志。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "巴托尼亚——这不是凡人的国家，这是湖之女神在人间的受膏领地。我们的先祖吉勒斯·勒·布列东在女神第一次显圣时被授予圣杯之饮，由此建立了不朽的骑士王朝。每一个巴托尼亚男孩都梦想着成为骑士：从七岁开始担任侍从，在比武场上用钝剑挥洒汗水，在黑夜中跪在圣杯教堂里祈祷女神的指引，直到有一天国王或者公爵将长剑拍在肩头，你便不再是凡人。我们的历代国王从劳恩·列奥康沃尔往上追溯，每一位都承受过圣杯的考验——只有饮下圣杯之人才能戴上王冠，这是帝国那些靠钱买选票的选帝侯们永远无法理解的神圣合法性。农奴们耕种我们的土地、缴纳赋税，这并非剥削而是庇佑——在混沌部落冲破帝国北部防线的夜晚，是巴托尼亚骑士的银甲长城在保护这些无力自保的平民。我们自豪，但不傲慢；我们好战，但从不以战争本身为目的——这就是骑士道。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "统治巴托尼亚的艺术与统治帝国截然不同——这里没有复杂的议会投票和选帝侯联盟，只有骑士的誓言和封建的义务链。国王是最高领主，十四个公爵是国王的封臣，各公爵之下的男爵又是公爵的封臣。这套金字塔看似简单，但它的稳定完全依赖于一个核心信念——骑士必须遵守骑士道。一旦骑士开始质疑誓言的神圣性，整个封建体系就会从根部瓦解。巴托尼亚的外交战略也贯穿着骑士道的逻辑：对帝国保持尊严的距离，对矮人给予古老盟约应有的尊重，对精灵维持谨慎的礼遇——据说湖之女神与精灵诸神之间存在某种古老的渊源，这是一个巴托尼亚公爵绝不敢公开讨论的话题。真正的威胁来自南方：埃斯塔利亚的沙漠掠袭者和边境上的绿皮部落始终在试探我们的南部边境。但巴托尼亚最大的敌人不是外敌，而是傲慢——历史上不止一位国王因为低估了农奴起义的破坏力而丢掉了王国的一半土地。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 100
+        },
+        "IdentityIds": null
+      },
+      "Content": "巴托尼亚的政治神学基础是旧世界独一无二的现象——湖之女神崇拜将王权的合法性完全建立在神恩之上而非世俗权力之上。吉勒斯·勒·布列东在巴托尼亚纪年元年见到的第一次圣杯显圣不仅建立了一个王国，更创造了一整套神权与王权合一的政治哲学。《巴托尼亚编年史》记载，吉勒斯统一十四部落时并非依靠军队规模或财力——当时他是个一无所有的流浪骑士——而是依靠一系列神迹：在每一场决定性的战斗中，湖之女神亲自降临战场，她的威仪让绿皮军队土崩瓦解。十二位最初的圣杯骑士（包括吉勒斯本人）各自宣誓效忠女神并受封公爵，这十二公爵领至今仍是巴托尼亚的基本行政单位。有趣的是，巴托尼亚学者私下承认湖之女神崇拜与精灵文化的某些相似性——但从没有人敢公开论证这一点，因为这可能动摇'女神是巴托尼亚独有之神'的核心教义。封建制度的法律基础是《吉勒斯法典》，它规定了骑士与封君之间的义务、农奴的地位、比武大会的规则——这部法典至今仍由圣杯修女会在湖神大教堂中守护着原始抄本。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "巴托尼亚的贵族女性生活在一种奇特的悖论之中——法律上我们无权继承公爵领、无权在公爵议会上发言、甚至无权在没有丈夫或监护人陪同的情况下签署任何正式文件，然而在现实中，巴托尼亚的城堡在男人们出征圣战时是由女人管理和保卫的。我的祖母曾在鲍尔德洛隘口独自组织了长达三个月的城堡防御——当她的丈夫和两个大儿子都在灰色山脉的另一端为阿拉比圣战而战时，她指挥农奴们将滚油、石块和十字弓弹药搬运到每一个塔楼。巴托尼亚的女人们不是骑士，但她们是骑士的母亲、妻子和遗孀，她们在男人们用长枪追求荣誉时为家族保存着最重要的东西——生存。湖之女神之所以被巴托尼亚的女人独特地理解，是因为我们的圣母本身就是女性——她不需要通过长枪和战马来证明自己的力量，她用恩赐而非征服来统治世界。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "巴托尼亚的公爵家族不是简单的统治者——他们是巴托尼亚编年史中的活着的章节。我们的家族在帕拉冯公爵领中的根基可以追溯到吉勒斯时代的第六位圣杯骑士——卡拉杜克·德·帕拉冯。家族城堡的每一面石墙上都悬着父辈、祖辈以及更古远的先祖们的战旗和破损的盾牌，那些盾牌上嵌入的绿皮箭镞和混沌斧痕是我们家族的族徽档案。巴托尼亚的家族荣誉不是个体荣誉的总和——它是一个连续体，你的行为荣耀或贬损的不是你自己，而是你上面十代人和你下面尚未出生的五代人。正因如此，每次在公爵议会上我们的家族代表站起来发言时，他不是以个人身份在说话——他是以两百年来帕拉冯家族在所积累的每一次冲锋每一次守城每一次拒绝妥协的口吻在说话。巴托尼亚的家族忠诚对象在理论上是国王与女神，但在实际中可以层层过滤：一个男爵对他的公爵的忠诚，往往不如他对本家族荣誉的敬畏来得更加真实。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我在巴托尼亚流浪的那些年见过骑士们的真面目——不是比武场上吟唱抒情诗的银甲英雄，而是农奴村庄里的灰色征粮官，身后跟着一队面无表情的骑从，在秋天收获后的泥泞庄园路上挨家挨户宣布今年的赋税标准。巴托尼亚的骑士在精神层面上是旧世界最崇高的战士，在物质层面上是旧世界最有效率的征收机器。我睡过的巴托尼亚农奴的干草棚里总是弥漫着同一种低度但持续的绝望气息——一种从祖辈继承下来的、已经融入日常生活节奏的认命。但我也在巴托尼亚见过圣杯骑士——那是完全不同的存在。我在一个暴风雨的夜晚在鲍尔德洛的山道上迷了路，一位独自骑行的圣杯骑士在黑暗中出现在我面前，他没有说一句话，只是用他的长枪指向了正确的方向，然后继续消失在雨中。他的沉默中有一种不属于凡人的平静——那不是一个手持武器的人，那是女神的一部分意志穿上了盔甲。巴托尼亚是一个用天堂的承诺来维持地狱的运行体系。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "巴托尼亚的经济是旧世界最被商人们误解的谜题。从外表看，这是一个以自给自足庄园经济为基础的'落后'封建国家——但深入参与其贸易之后你会发现巴托尼亚的葡萄酒、羊毛和骏马出口构成了旧世界西部最稳定、最不受政治干扰的跨国贸易流。阿奎坦的葡萄酒在阿尔道夫和提利尔城邦中卖出的价格几乎是其庄园出口价的三倍——中间的差价养活了整个巴托尼亚南方与帝国的走私商队。巴托尼亚战马是世界上最好的战马——帝国骑兵指挥官私下愿意以任何价格购买纯种的巴托尼亚战驹，尽管他们从不在公开场合承认这个事实以避免'向骑士老爷低头'的政治尴尬。巴托尼亚商人行会的地位虽然低于帝国的同类机构，但并非不存在——在布里奥纳和吉伦特的港口城市中，商人们通过向公爵缴纳高额的贸易特许费来换取封建法下的贸易许可，并在事实上积累了相当的隐形财富。我对巴托尼亚的经济判断是：它的表面贫穷是一种制度性的节俭——骑士不屑于炫富是他们道义上的美德而非财力上的不足。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "吉勒斯·勒·布列东——巴托尼亚的开国之王，第一位饮下圣杯的骑士",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "巴托尼亚骑士王国湖神之国"
+  ]
+}

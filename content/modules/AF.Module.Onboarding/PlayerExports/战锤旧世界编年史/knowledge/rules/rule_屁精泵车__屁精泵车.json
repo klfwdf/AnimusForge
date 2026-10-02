@@ -1,0 +1,213 @@
+{
+  "Id": "rule_屁精泵车__屁精泵车",
+  "Keywords": [
+    "屁精泵车",
+    "废木战车",
+    "踏板动力",
+    "失控冲锋",
+    "地精工程",
+    "搞笑武器",
+    "泵车",
+    "木头战车",
+    "绿皮战车",
+    "疯狂机器",
+    "踏板",
+    "Waaagh战车"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "屁精泵车是绿皮军事史上最——也是最荒唐的——攻城器械之一：它本质上是一辆由屁精在踏板轮上疯狂踩踏驱动、冲锋时完全不可转向的废弃木头堆叠物。一旦冲向敌军阵线，驾驶班和车本身谁能坚持到底都无法预测。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "泵车！俺跟你讲这是绿皮里头最带劲的疯狂东西！那群屁精们平时笨得能把手指头塞进自己耳朵里拔不出来，但你要是把它们放在一个大木头架子上的踏板轮里，这些小家伙就开始蹬！使劲蹬！为什么蹬？不知道！因为前面的地精车夫拎着根棍子敲它们脑袋然后它们就蹬，越敲越快！然后那泵车——轰！轰！轰！——像一颗从炮管里射出来的大屁股一样朝前冲！方向？没有！你问泵车要朝哪走，它自己也不知道！它只知道往前走！有一次在战场上俺看到一个泵车笔直地朝着一棵大树撞过去然后把树撞倒了接着车自己也散架了屁精们从碎片里像爆米花一样飞出来满地滚——俺笑得差点被对面的矮子火枪手爆了脑壳！但你真别站它前头：泵车正面装着各种从废铁堆里搜集的钉子、钩子、断裂的铲子头——全都像豪猪刺一样插在前面——被它撞上的东西不管你是人是马还是矮子铁罐头，都会被戳成筛子！"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "泵车是一种极难在标准战术体系中分类的武器平台。其优势在于成本——零金属、零精制火药、只消耗屁精与废木头——与不可预测性。对抗一支拥有多辆泵车的绿皮军队，你的前线无法预测哪一点会被泵车冲破——因为连泵车自己也不知道。防御泵车的最有效方法是部署「拒马+沟渠」双层障碍：泵车一旦遇到沟渠就会在轮子陷入后原地打转直到自身骨架散架。但真正危险的是泵车与兽人主力冲锋同时发动的协同攻击：敌指挥官在应对兽人重步兵的同时需分兵阻止一群尖叫飞驰的木头刺猬穿透侧翼——分散注意往往造成灾难性的指挥空档。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "泵车的技术考古学溯源为绿皮物质文化研究提供了一个极端案例：泵车的设计并非源于任何工程学思考，而是绿皮集体潜意识——即「搞毛二哥的灵光」——对「移动杀伤」这一概念的混沌映射。从技术建构主义角度看，泵车的传动系统（踏板轮-棘轮-主驱动轴）与帝国的畜力磨坊的传动结构高度相似，但其零部件的公差水平约为帝国相应标准的一百五十倍——这意味着泵车的每一个传动环节都充满随机能量损耗，理论上其效率不应超过百分之八。但正是这种低效和随机性赋予了泵车难以抵御的战场优势：其速度和方向的不可预测性使得防御方无法提前规划应对位置。工程学史学家指出，努恩工程师学院对泵车残骸的铆接分析揭示了一种令人不安的事实——每辆泵车的木钉分布位置都是随机的，没有任何两辆车相同，这意味着每一辆泵车都是一件独立的即兴造物，反映的是制造它的那群屁精当时手边的废料类型与锤子捶下的随机角度。这已不是工程学——这是有组织的偶然。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我的前线指挥官有一次一脸严肃地向我报告，说绿皮投入了「一种前所未见的自驱动战术载具」。我调来侦查兵画的草图看了很久——一辆由屁精蹬踏板驱动的木头车，插满了厨房废铁。我把图纸给了工程师长看，他想了很久说「夫人，我无法在工程学上评判一个本不应存在的东西」。但那辆泵车确实穿透了我们的前卫阵线，并且杀了三个军士。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我家族领地的边界哨站曾在一场夜袭中遭遇过三辆泵车——它们从黑暗中冲出来，没有火光，只有踏板发出的嘎吱嘎吱木头呻吟声。守军在被撞碎两排栅栏后开始射击，射死所有屁精之后——泵车居然还在动，因为被击毙的屁精的尸体还卡在踏板上，惯性让它们的腿继续抽动蹬了两轮。这种荒唐而令人脊背发凉的景象被我的哨站指挥官记录在案，标注为「绿皮的最大不敬——连死者都在继续战斗」。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我参加过一场恶地边缘的小型会战，绿皮那方推出了两辆泵车。第一辆在冲到三分之一路程时轮胎掉了，整辆车像翻了个的蟑螂一样侧倒在地，里面的屁精们继续蹬着空气打转——把周围的人类的佣兵笑得忘了自己在战场上。然后第二辆泵车趁我们都在笑的时候从侧翼直接撞进了我们的弩手阵地，一瞬间十几个人飞了起来。我再也不敢在战场上笑任何东西了。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "努恩的帝国工程师学院曾试图逆向研发泵车——不是制造，而是研究其踏板传动机制是否能用于便携式抽水机。他们花了两千金克朗从边境亲王领地收购了两辆缴获的泵车残骸，拆了十二天，结论是一行字：「此物的机械原理在理论上不成立，但它确实在移动」。负责这项研究的老工程师在研究完成后立即申请退休，理由是「认知受到了不可逆的损伤」。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "绿皮即兴造物：无标准化设计的废木踏板战车，由屁精蹬踏板轮驱动",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "屁精泵车废木战车踏板动力"
+  ]
+}

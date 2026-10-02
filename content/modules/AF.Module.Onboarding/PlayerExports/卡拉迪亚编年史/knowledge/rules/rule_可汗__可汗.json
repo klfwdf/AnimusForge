@@ -1,0 +1,39 @@
+﻿{
+  "Id": "rule_可汗",
+  "Keywords": [
+    "可汗"
+  ],
+  "RagShortTexts": [
+    "可汗是库赛特汗国最高统治者头衔"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "可汗是库赛特汗国的领导人头衔，意思是“国王”，拥有号令库赛特诸部落的权力，一般由势力最大的部族的首领担任，目前的库赛特可汗是A"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "A",
+      "Kind": "kingdom_leader_name",
+      "TargetId": "khuzait",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}

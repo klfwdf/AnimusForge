@@ -1,0 +1,152 @@
+{
+  "Id": "rule_家族根基__六形人",
+  "Keywords": [
+    "六形人"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "六形人势力围绕瓦拉米尔与畏惧、依赖他的追随者形成。瓦拉米尔原名小瘤，身材矮小，却是强大的易形者，能够进入三只狼、雪熊和影子山猫的意识。这样的能力使他在猎食、侦察和战斗中占据可怕优势，也让人与兽的界限不断受到侵蚀。自由民承认易形者的力量，同时保留关于禁忌的古老警告：不可夺取人的身体，不可与兽交合，也不可食人。力量越大，越需要记得自己仍是人。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "freefolk"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "自由民对瓦拉米尔既敬畏又保持距离。有人愿意追随能借狼眼巡山的首领，有人却不肯在他附近安睡，害怕自己的秘密会从乌鸦、狼或猫的眼睛里泄露。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "priest",
+          "scholar",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "旧神信仰深厚的北境人听过易形者传说，不会轻易把它当作醉话。他们知道天赋本身未必邪恶，真正危险的是一个人把别的生命全当作可穿脱的皮囊。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "nightswatch"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "守夜人若与六形人交锋，最怕的不是一头狼，而是不知道哪双眼睛正在观察营地。谨慎的游骑兵会遮蔽行踪、看守马匹，并把不寻常的兽群当作敌方斥候。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待六形人，会先看它的土地、婚盟、血脉和债务。六形人势力围绕易形者瓦拉米尔形成，他能同时支配多只猛兽，力量伴随敬畏、孤独与失控风险。家徽是门面，能否保护封地、兑现婚约并在危机中召集人马，才是家族真正的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起六形人时，记得的是谁在营火边分过粮、谁把他们留在城外、谁在败局里仍站在旗旁。六形人势力围绕易形者瓦拉米尔形成，他能同时支配多只猛兽，力量伴随敬畏、孤独与失控风险。家族名声最终要落到具体的人和具体的命令上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意六形人留下的仪式、墓地和传承。六形人势力围绕易形者瓦拉米尔形成，他能同时支配多只猛兽，力量伴随敬畏、孤独与失控风险。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见六形人。六形人势力围绕易形者瓦拉米尔形成，他能同时支配多只猛兽，力量伴随敬畏、孤独与失控风险。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "六形人：六形人势力围绕易形者瓦拉米尔形成，他能同时支配多只猛兽，力量伴随敬畏、孤独与失控风险。"
+  ]
+}

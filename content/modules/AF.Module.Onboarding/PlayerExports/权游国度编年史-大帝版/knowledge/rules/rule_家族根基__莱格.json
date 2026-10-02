@@ -1,0 +1,132 @@
+{
+  "Id": "rule_家族根基__莱格",
+  "Keywords": [
+    "莱格",
+    "莱格家族"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "莱格家族以柳木城为根基，是河间地的贵族家门。河流、柳林与湿润低地塑造其庄园，也使桥梁、堤岸和舟路成为领主日常责任。莱格族人与徒利家族有封臣和私人交往，个别成员能够成为奔流城继承人的伙伴；然而家族能否延续，仍取决于土地经营、亲族婚姻和每次召集令中的选择。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "river"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "奔流城一带的贵族把莱格视作熟悉本地水路的封臣。私人友谊能打开厅门，却不能代替封臣义务；真正的信任要在洪水、争讼和出征时反复证明。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "river"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "sailor",
+          "artisan"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "柳木城附近的人按水位而不是宫廷日历生活。若莱格能修堤护田、保证渡口，他们便说领主尽责；若只顾宴会，第一场春汛就会揭穿所有体面。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待莱格，会先看它的土地、婚盟、血脉和债务。莱格家族是河间地贵族，家业与柳木城及河流湿地相连，族人常在徒利家族麾下任职。家徽是门面，能否保护封地、兑现婚约并在危机中召集人马，才是家族真正的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起莱格时，记得的是谁在营火边分过粮、谁把他们留在城外、谁在败局里仍站在旗旁。莱格家族是河间地贵族，家业与柳木城及河流湿地相连，族人常在徒利家族麾下任职。家族名声最终要落到具体的人和具体的命令上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意莱格留下的仪式、墓地和传承。莱格家族是河间地贵族，家业与柳木城及河流湿地相连，族人常在徒利家族麾下任职。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见莱格。莱格家族是河间地贵族，家业与柳木城及河流湿地相连，族人常在徒利家族麾下任职。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "莱格：莱格家族是河间地贵族，家业与柳木城及河流湿地相连，族人常在徒利家族麾下任职。"
+  ]
+}

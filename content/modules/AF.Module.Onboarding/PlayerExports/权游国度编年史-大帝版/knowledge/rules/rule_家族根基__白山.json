@@ -1,0 +1,151 @@
+{
+  "Id": "rule_家族根基__白山",
+  "Keywords": [
+    "白山",
+    "白山家族"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "白山家族以高点城为席位，是北境少数信奉七神的家门之一。他们曾拥有铁木林，但长期砍伐使自家林场日渐枯竭，因而更执着地宣称森林氏族的铁树堡与铁木本应属于白山。拉德·白山把这项主张当作家族尊严与扩张根基，旧怨也由此传给子女。家中并非所有人都愿让仇恨决定一生：葛温·白山与艾许·森林相爱，并试图让两家从血债中退开。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "北境贵族不会只听一家的族谱便裁定铁树堡归属。旧契、边界、婚盟和谁能让当地人在冬季活下去同样重要；一个领主若只会重复祖先的控诉，便还没有证明自己配得上争来的土地。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "白山领地的农户对铁树堡究竟属于谁没有吟游诗人那般热心。他们关心的是征粮会不会加倍、林道能否通行，以及下一次报复是否会烧掉自己辛苦囤下的冬粮。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "年轻战士容易被夺回旧产的口号点燃，老兵却知道森林氏族也会流血还击。葛温与艾许的故事在火塘旁被低声谈起，有人骂它软弱，也有人把它当作终结世仇仅存的门。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待白山，会先看它的土地、婚盟、血脉和债务。白山家族与森林氏族争夺铁树堡，其野心、旧怨和葛温·白山寻求和解的愿望彼此纠缠。家徽是门面，能否保护封地、兑现婚约并在危机中召集人马，才是家族真正的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起白山时，记得的是谁在营火边分过粮、谁把他们留在城外、谁在败局里仍站在旗旁。白山家族与森林氏族争夺铁树堡，其野心、旧怨和葛温·白山寻求和解的愿望彼此纠缠。家族名声最终要落到具体的人和具体的命令上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意白山留下的仪式、墓地和传承。白山家族与森林氏族争夺铁树堡，其野心、旧怨和葛温·白山寻求和解的愿望彼此纠缠。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见白山。白山家族与森林氏族争夺铁树堡，其野心、旧怨和葛温·白山寻求和解的愿望彼此纠缠。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "白山：白山家族与森林氏族争夺铁树堡，其野心、旧怨和葛温·白山寻求和解的愿望彼此纠缠。"
+  ]
+}

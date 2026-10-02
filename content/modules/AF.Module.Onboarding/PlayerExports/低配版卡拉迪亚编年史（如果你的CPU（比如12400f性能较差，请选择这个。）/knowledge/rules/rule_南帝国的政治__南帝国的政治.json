@@ -1,0 +1,66 @@
+﻿{
+  "Id": "rule_南帝国的政治",
+  "Keywords": [
+    "南帝国的政治",
+    "世袭君主统治",
+    "世官制"
+  ],
+  "RagShortTexts": [
+    "南帝国政治以世袭君主统治和世官制为核心"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "南帝国的政治制度？我们哪里知道？只不过听别人说他们什么都是世袭的，仅此而已"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "南帝国他们讲究的是一切都世袭，私有财产神圣不可侵犯，所以他们选择了拉盖娅——那个极端的血缘论者做了他们的女皇，这些城邦的城主最怕的就是丢掉他们的领土，财富，以及地位，其它的反而不重要——比如交点税，出点兵，他们根本不在乎其他人怎么样，只想守好自己的一亩三分地"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "我们南帝国的贵族们最怕的就是失去自己家族经营数代的土地，我们兢兢业业，披荆斩棘，总算有了那么一点地盘，而且我们自认为养的很好，谁都别想把它们夺走！元老院不行，军方更不行！我们才是我们自己土地的主人！"
+    }
+  ],
+  "TextMappings": []
+}

@@ -1,0 +1,17 @@
+{
+  "Id": "rule_卡拉克·阿兹加拉兹__卡拉克·阿兹加拉兹",
+  "Keywords": ["卡拉克阿兹加拉兹_KG", "阿兹加拉兹城塞_KG", "阿兹加拉兹獣狩要塞_KG", "阿兹加拉兹矮人领地_KG", "阿兹加拉兹国王_KG", "碎兽者要塞_KG"],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":null,"IsFemale":null,"IsClanLeader":null,"SkillMin":null},"Content":"卡拉克·阿兹加拉兹是灰色山脉中的一座狩猎矮人城塞，由图林加·碎兽者国王统治。此地的矮人以猎杀巨型山地怪兽闻名，其巨兽猎手传统可追溯至矮人远古先祖时代。阿兹加拉兹的城墙上装饰着从巨兽身上取下的头骨与鳞甲。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":["sturgia"],"KingdomIds":null,"SettlementIds":null,"Roles":null,"IsFemale":null,"IsClanLeader":null,"SkillMin":null},"Content":"卡拉克·阿兹加拉兹——吾族的兽猎圣殿！图林加王曾在上一场大雪中用铁锤击碎了一头成年冰原灰熊的头骨。吾族矮人从不畏惧山中的巨物——当巴托尼亚那些长腿骑士在森林里战战兢兢时，阿兹加拉兹的猎手早已将半打蝎尾狮的脑袋挂在腰间。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":["lord"],"IsFemale":null,"IsClanLeader":null,"SkillMin":null},"Content":"卡拉克·阿兹加拉兹在灰色山脉中扮演着巨兽清剿者的角色。大型怪物——如狮鹫、双足飞龙和巨魔——经常威胁山脉两侧的人类定居点。图林加国王的巨兽猎手军团是旧世界唯一专业化的矮人怪物猎杀部队，其战术价值在对抗混沌巨兽时尤为突出。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":["lord","notable","wanderer"],"IsFemale":null,"IsClanLeader":null,"SkillMin":{"Steward":120}},"Content":"卡拉克·阿兹加拉兹的经济以巨兽狩猎副产品为核心。巨兽皮革——尤其是灰熊皮和狮鹫皮——是旧世界最高档的防寒与护甲材料，一件完整的狮鹫皮披风在帝国可售至八百金克朗以上。兽骨是制作武器握柄和装饰品的优质材料，兽牙和兽爪则被矮人符文铁匠用于制作特殊符文材料的载体。此外，阿兹加拉兹猎手还采集高山特有的稀有矿植物——包括只在极高海拔生长的「冰苔」，这种苔藓是制作矮人烈酒的重要原料。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":["lord"],"IsFemale":true,"IsClanLeader":null,"SkillMin":null},"Content":"阿兹加拉兹的矮人女性负责处理猎人带回的猎物——剥皮、腌制兽肉、熬制兽骨胶和缝制皮毛制品。我的手艺是从曾祖母那里学来的，狮鹫皮的处理方法则需要浸泡六种不同的溶液才能完美鞣制。这座城塞没有闲人——每个人都在为下一次狩猎做准备。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":["lord"],"IsFemale":null,"IsClanLeader":true,"SkillMin":null},"Content":"我们家族驾驭着阿兹加拉兹最优秀的猎犬群。经过十几代人的培育，我们的猎犬品种能嗅到半里外的狮鹫气味并在雪中追踪巨魔三昼夜不停。图林加王每次出猎必带我们的猎犬同行——这是我们家族在城塞中的地位基石。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":["wanderer"],"IsFemale":null,"IsClanLeader":null,"SkillMin":null},"Content":"阿兹加拉兹的矮人是我见过最疯狂的猎手。我在城塞大厅亲眼见过一头被整个抬进来的成年双足飞龙尸体——飞龙的毒尾还在地板上无意识地抽搐。矮人们在巨兽尸体旁大吃大喝，庆祝狩猎成功，仿佛那不是一头能撕碎十个人的怪物。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":["notable"],"IsFemale":null,"IsClanLeader":null,"SkillMin":null},"Content":"阿兹加拉兹的巨兽皮革和骨制品在旧世界各国都有市场。帝国的贵族骑士特别钟爱狮鹫皮披风——据说穿着它上战场能让敌人胆寒。但要注意：图林加王对兽类材料出口实行配额制，高品质的皮毛优先供给城塞自己使用。提前签订长期采购合同是唯一的方法。"}
+  ],
+  "TextMappings": [{"SourceText":"卡拉克·阿兹加拉兹是灰色山脉中以巨兽狩猎闻名的矮人城塞，由图林加·碎兽者国王统治","Kind":null,"TargetId":null,"AgeMin":null,"AgeMax":null,"EmptyValueText":null,"TrueText":null,"FalseText":null}],
+  "RagShortTexts": ["卡拉克阿兹加拉兹灰色山脉矮人巨兽狩猎城塞"]
+}

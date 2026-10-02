@@ -1,0 +1,93 @@
+﻿{
+  "Id": "rule_鲁兰德",
+  "Keywords": [
+    "鲁兰德"
+  ],
+  "RagShortTexts": [
+    "鲁兰德村庄位于特朗林谷，靠近帕拉汶德，以橡子喂猪。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "鲁兰德是帕拉汶德附近的一座村庄，位于特朗中部的林谷中。村民们以橡树林地的橡子为饲料来饲养猪，猪肉和熏肉供给帕拉汶德的市场。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "鲁兰德的猪是在橡树林里放养的，吃橡子长大的猪肉有一股特别的香味。帕拉汶德那边王宫里办宴会，烤乳猪有不少就是从鲁兰德运过去的。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "townsfolk"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "鲁兰德的熏肉在帕拉汶德的市场上很受欢迎。林谷里的橡树秋天落一地橡子，猪吃得膘肥体壮，肉又紧又香。价比别处稍贵一点，但值。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "我在鲁兰德歇过脚，那地方在林谷里，安静得很，到处是橡树。秋天的时候，林子地上铺满了橡子，猪在上面拱来拱去，吃得比人还自在。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "鲁兰德",
+      "Kind": "bound_settlement_name",
+      "TargetId": "__bound_settlement__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": "帕拉汶德",
+      "Kind": "bound_settlement_name",
+      "TargetId": "__bound_settlement__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}

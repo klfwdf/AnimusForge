@@ -1,0 +1,152 @@
+{
+  "Id": "rule_家族根基__维萨马",
+  "Keywords": [
+    "维萨马",
+    "维萨马家族"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "维萨马家族属于瓦兰提斯黑墙内的旧血阶层，瓦雷利亚血统赋予其居住和参与精英政治的资格。家族人物与象党路线关系密切，倾向把城市力量建立在洛恩河贸易、港口税收与长期财富上。维萨马的地位并非孤立庄园式领主权，而是由亲族、商业合伙、奴隶产业和选举联盟织成。任何一处账目断裂，都可能让看似坚固的旧血威望出现裂缝。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "volantine"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "黑墙贵族看重维萨马能否在象党内部协调利益。旧血家门彼此通婚，也彼此竞争；同样的银发紫眼并不会消除对执政席位和商路的争夺。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "volantine"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "sailor",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "河上船主和商人评价维萨马，主要看税率、治安和合同能否执行。血统故事适合宴席，货物准时穿过长桥才是真正的政治成绩。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "volantine"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "slave",
+          "artisan"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "奴隶在维萨马宅邸、船仓与田庄中承担看不见的劳动。家族财富越被称作古老，越容易掩盖它每天仍需要多少被刺青的人维持。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待维萨马，会先看它的土地、婚盟、血脉和债务。维萨马是瓦兰提斯黑墙内的旧血家门，家族影响来自血统资格、贸易财富与象党式城市政治。家徽是门面，能否保护封地、兑现婚约并在危机中召集人马，才是家族真正的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起维萨马时，记得的是谁在营火边分过粮、谁把他们留在城外、谁在败局里仍站在旗旁。维萨马是瓦兰提斯黑墙内的旧血家门，家族影响来自血统资格、贸易财富与象党式城市政治。家族名声最终要落到具体的人和具体的命令上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意维萨马留下的仪式、墓地和传承。维萨马是瓦兰提斯黑墙内的旧血家门，家族影响来自血统资格、贸易财富与象党式城市政治。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见维萨马。维萨马是瓦兰提斯黑墙内的旧血家门，家族影响来自血统资格、贸易财富与象党式城市政治。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "维萨马：维萨马是瓦兰提斯黑墙内的旧血家门，家族影响来自血统资格、贸易财富与象党式城市政治。"
+  ]
+}

@@ -1,0 +1,131 @@
+{
+  "Id": "rule_家族根基__菲林特-寡妇望",
+  "Keywords": [
+    "菲林特-寡妇望",
+    "寡妇望菲林特家族"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "寡妇望的菲林特家族是北境多个菲林特支系之一，以北境东海岸的寡妇望为根基。寡妇望临近颤抖海，地方生活自然更关心海况、渔获、沿岸道路和冬季补给；北境人会把这支菲林特视作东岸的旧封臣，却不会因此把山地菲林特或菲林特之指的故事都归到他们名下。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "寡妇望的菲林特属于北境东岸，与西部海岬和群山中的同姓支系不能混作一门。北境贵族在婚书与召令上会分清各支，因为相同的家名并不意味着相同的土地、义务或立场；寡妇望首先面对的是海豹湾的风浪。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "当地人谈菲林特，常与瞭望塔上的火、未归的渔船和海面陌生帆影连在一起。领主若能在坏天气前发出警告、在歉收时管住粮仓，便比远祖是谁更值得记住。寡妇望这个名字已经够悲伤，没人愿意再添一户真正的寡妇。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待菲林特-寡妇望，会先看它的土地、婚盟、血脉和债务。北境菲林特家族的东海岸支系，以寡妇望为根基。家徽是门面，能否保护封地、兑现婚约并在危机中召集人马，才是家族真正的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起菲林特-寡妇望时，记得的是谁在营火边分过粮、谁把他们留在城外、谁在败局里仍站在旗旁。北境菲林特家族的东海岸支系，以寡妇望为根基。家族名声最终要落到具体的人和具体的命令上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意菲林特-寡妇望留下的仪式、墓地和传承。北境菲林特家族的东海岸支系，以寡妇望为根基。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见菲林特-寡妇望。北境菲林特家族的东海岸支系，以寡妇望为根基。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "菲林特-寡妇望：北境菲林特家族的东海岸支系，以寡妇望为根基。"
+  ]
+}

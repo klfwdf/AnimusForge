@@ -1,0 +1,153 @@
+{
+  "Id": "rule_魁尔斯东门__魁卡西",
+  "Keywords": [
+    "魁卡西",
+    "魁尔斯",
+    "商队"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "魁卡西（Qarkash）位于魁尔斯以西及玉海贸易通道，政治上处在魁尔斯商人与吉斯东缘城镇往来的区域之内。它是一座城镇，是周边人口、市场、道路与地方权力汇集的中心。城墙与道路把周边人口、仓储和守备系在这里；旗帜纵然更换，这处据点仍会影响附近人如何纳税、贸易与寻求庇护。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "qartheen"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "外乡人记得魁卡西的名字，本地人记得的却是井水、摊位、粮价、工钱和赶集道路。当地家庭还要依靠水井、骆驼商队、香料和穿越红色荒原的补给；任何一处道路、井泉或码头失灵，代价都会先落到他们身上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "qartheen"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主在厅堂里谈魁卡西，经验老到的士兵却只问城门、街巷、粮仓、守备人数与疏散百姓的出口。魁卡西处在魁尔斯东境的权力与贸易网络中，城门内外的规矩由当地秩序决定；守军能否吃饱、援兵能否按时抵达，比议事厅里的豪言更能决定这处据点是否可靠。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "scholar",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "关于魁卡西的消息传到远方，往往伴着市集日、仓租、关税、钱币成色和邻城路程。他们还会辨认魁尔斯东境的口音、法令和通行凭据；名声可以从酒馆传得很远，真正的路程仍须由车轮、船桨或马蹄丈量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "谁在魁卡西升起旗帜，谁就继承这里的旧债、旧臣与边界争端。魁卡西处在魁尔斯东境的权力与贸易网络中，城门内外的规矩由当地秩序决定；旗帜更换之后，道路、粮仓、旧债和地方信任仍得由新主人逐一接手。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "向导描述魁卡西，总从客栈、马厩、水井和入夜前是否还能进城讲起。能补给、能避险、能找到向导，便值得在行程里标明；若三样都没有，再响亮的家名也救不了迷途者。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "工匠用双手丈量魁卡西的作坊、市场、屋瓦、圣堂钟声与历代扩出的街巷，祭司用仪式延续魁尔斯诸神、商人王记忆与荒原中的葬俗。一处据点因而不只是领主的大厅，也是婚丧、誓言、劳作与地方记忆反复发生的场所。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "平民记住魁卡西的方式，是哪一年开仓、哪一年征走最后一头牛。他们关心水井、骆驼商队、香料和穿越红色荒原的补给，也看征粮后是否留下种子、灾年时城门是否开启；远方人看见纹章，他们看见的是明日有没有饭吃。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "魁卡西：魁卡西（Qarkash）位于魁尔斯以西及玉海贸易通道，政治上处在魁尔斯商人与吉斯东缘城镇往来的区域之内。它是一座城镇，是周边人口、市场、道路与地方权力汇集的中心。城墙与道路把周边人口、仓储和守备系在这里；旗帜纵然更换，这处据点仍会影响附近人如何纳税、贸易与寻求庇护。"
+  ]
+}

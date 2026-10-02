@@ -1,0 +1,151 @@
+{
+  "Id": "rule_人间风俗__农时与节令",
+  "Keywords": [
+    "农时",
+    "播种",
+    "收割",
+    "打谷",
+    "节令",
+    "庄园劳作"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "多数人的生活围绕土地而非王位展开。翻土、播种、除草、修渠、割草、收割、打谷和储粮各有时机，错过数周便可能损失整季；牲畜配种、产仔和准备冬草同样需要安排。漫长且不定的季节让农人必须观察霜、雨、虫害和学士预报，不能只按固定月份行动。领主征召若正逢播种或收割，会让次年军粮也减少；军队踩田、抢畜的后果往往在战役结束后才真正显现。节庆常安排在劳作间隙，因为共同休息也要服从土地。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农人以土温、云和牲畜状态判断时节。城堡号角可以命令他们出发，却不能命令错过的麦子重新成熟。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "明智领主征兵前会问农时，短视者只看眼前兵数。收割季抽空村庄，冬天便要用更昂贵的方式偿还。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "priest",
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "商人从收成预测价格，祭司用节庆安慰劳苦，学士记录天气。三者都依赖农民真的把种子放进土地。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人把农时看成可执行的秩序。农时与节令：播种、除草、收割、打谷和牲畜繁育支配绝大多数人的一年，战争必须从田地夺取时间与粮食。它是否有效，取决于谁能授予权利、收取代价，并在违约时让判决真正落地。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起农时时，关心它如何影响道路、命令和安全。农时与节令：播种、除草、收割、打谷和牲畜繁育支配绝大多数人的一年，战争必须从田地夺取时间与粮食。远方的制度只有在营火、城门和驿站里能被执行，才不是空话。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者会从习惯和象征理解农时。农时与节令：播种、除草、收割、打谷和牲畜繁育支配绝大多数人的一年，战争必须从田地夺取时间与粮食。一项规矩若被反复实践，便会进入礼仪、手艺和祈祷；若只靠恐惧维持，危机一来就会露出裂缝。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民感受到农时的方式最小也最准确。农时与节令：播种、除草、收割、打谷和牲畜繁育支配绝大多数人的一年，战争必须从田地夺取时间与粮食。他们记得税、粮、劳役、赈济和谁能为他们说话；宏大的名称，最终都要落在一家人的饭锅旁。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "农时与节令：播种、除草、收割、打谷和牲畜繁育支配绝大多数人的一年，战争必须从田地夺取时间与粮食。"
+  ]
+}

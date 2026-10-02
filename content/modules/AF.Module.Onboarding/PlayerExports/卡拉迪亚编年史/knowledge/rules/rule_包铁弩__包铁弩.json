@@ -1,0 +1,70 @@
+﻿{
+  "Id": "rule_包铁弩",
+  "Keywords": [
+    "包铁弩"
+  ],
+  "RagShortTexts": [
+    "包铁弩是狙击弩手的标配吗？"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai",
+          "empire",
+          "nord",
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "包铁弩？弩上还能包铁吗？那一定很强了"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania",
+          "darshi",
+          "khuzait",
+          "vakken"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "啥是弩？"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "包铁弩是我们这边杰屈朗产的一种极其强大的弩，这种弩外面包铁，拉力极高，是我们这边狙击弩手的标配，一把也是很贵的，应该可以卖到8000第纳尔左右"
+    }
+  ],
+  "TextMappings": []
+}

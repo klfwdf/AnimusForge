@@ -1,0 +1,154 @@
+{
+  "Id": "rule_家族根基__诺瑞",
+  "Keywords": [
+    "诺瑞",
+    "诺瑞家族"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "诺瑞不是南方城堡式的贵族家门，而是北境山地氏族。族长被称作“诺瑞”，亲族与随从散居在寒冷山谷之间，以畜群、狩猎、山路和共同记忆维系团结。他们敬奉旧神，珍视直接的忠诚，也愿为临冬城的史塔克拔剑。山地人的礼法不靠华丽文书支撑：谁分享过盐与肉、谁在风雪中守过同一条隘路，人们记得清清楚楚。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "北境贵族尊重诺瑞氏族的山路知识和坚韧步卒，却也明白不能用南方宫廷的礼数衡量他们。山地首领说话直，承诺一旦给出便极重，侮辱一旦留下也极难消散。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "山地牧民评判诺瑞不看丝绸和金杯，只看族长是否在暴雪中分粮、是否替受欺的人主持公道。能带大家熬过冬天的人，才配在火塘前坐得最近。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "river",
+          "reach",
+          "crownlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "南方骑士常把山地氏族当作披毛皮的粗人，直到他们在陡坡、雪沟和夜雾里迷路。诺瑞人不擅长比武场上的繁文缛节，却很懂怎样让敌人永远走不出群山。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待诺瑞，会先看它的土地、婚盟、血脉和债务。诺瑞氏族是北境山地部族，以亲族、山路、旧神信仰和对史塔克的古老忠诚维系自身。家徽是门面，能否保护封地、兑现婚约并在危机中召集人马，才是家族真正的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起诺瑞时，记得的是谁在营火边分过粮、谁把他们留在城外、谁在败局里仍站在旗旁。诺瑞氏族是北境山地部族，以亲族、山路、旧神信仰和对史塔克的古老忠诚维系自身。家族名声最终要落到具体的人和具体的命令上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意诺瑞留下的仪式、墓地和传承。诺瑞氏族是北境山地部族，以亲族、山路、旧神信仰和对史塔克的古老忠诚维系自身。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见诺瑞。诺瑞氏族是北境山地部族，以亲族、山路、旧神信仰和对史塔克的古老忠诚维系自身。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "诺瑞：诺瑞氏族是北境山地部族，以亲族、山路、旧神信仰和对史塔克的古老忠诚维系自身。"
+  ]
+}

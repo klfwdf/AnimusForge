@@ -1,0 +1,210 @@
+{
+  "Id": "rule_农奴投石机__农奴投石机",
+  "Keywords": [
+    "农奴投石机",
+    "巴托尼亚攻城武器",
+    "粗制器械",
+    "远程轰击",
+    "农奴工匠",
+    "抛石机",
+    "田间投石机",
+    "巨石抛射",
+    "农奴攻城"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "巴托尼亚投石机是整个旧世界最简陋也最直接的大型攻城武器——它完全由未经精细加工的乡间橡木和粗绳搭建而成，没有任何精密的金属滑轮或锻钢构件，由一群赤脚的农奴曳索曳动、释放、再回收。然而当它的投掷臂猛力甩起的那个瞬间，一颗重达数百磅的粗石就会划过天空坠落城墙之上，其破坏力足以让任何城堡的守卫者在最初的几次轰击后陷入绝望。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "农奴投石机在巴托尼亚的战争画卷上描绘着我们都心知肚明但很少公开谈论的那个事实——骑士的勇气可以攻克任何城墙，前提是城墙上已经有一个被投石机砸开的大缺口。骑士们不屑于谈论它，他们喜欢在吟游诗歌中把攻克城堡的功劳归于自己的长枪和剑——但真正的攻城力量是那些赤脚的、满身汗泥的农奴和他们花了几个星期在战场上用板斧砍倒树木拼装起来的庞然巨木架子。巴托尼亚的军队中没有专门的「工程部队」——那太帝国化了，太……火药思维的——而是由公爵领地的庄园管家事先从各村各庄中挑选最强壮的农奴组成「投石连队」，由一位从圣杯修女会培训出来的修士指挥——修士的职责不是射击，而是确保这堆木头不会在第一次发射时就要了自己人的命。投石机在围攻战中的作用之重要无可替代——巴托尼亚没有火药武器，远程破坏城墙唯一可用的手段就是这堆蠕动的粗木和石头。但投石机的命运也是不光彩的：围城结束后，骑士们骑着马昂首进入城市——投石机的农奴们留在城墙外面拆除他们的破木头架子——从来没有人给他们写过诗。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "农奴投石机在攻城战役计划中的地位无可替代但需要对它有耐心的领主。建造一台可用的投石机需要至少四周的时间，前提是有充足的粗橡木和细绳储备。围城时通常会在城墙外交替部署三至四台投石机进行不间断轰击以达到持续破坏的效果——首要攻击目标是城墙垛口的箭塔，然后是城门上方的墙垒石排，最后才是墙体中央。但投石机的准确性是未知数：即使在无风晴天，石弹的坠落点也可能在目标周围数十英尺范围内随机偏移——这意味着你无法精确打击一个小目标，但你可以用持续不断的大型石弹轰击来物理地消磨敌守军的堡垒。与帝国火炮相比——后者能在两英里外精确射击——农奴投石机的最大射程约为四百码，这意味着在轰击过程中投石机组全体几乎处在敌方守军弓箭的打击范围内。因此投石机前方必须用木排构筑掩护墙来减少农奴的伤亡——但木排也需由农奴自己搭建。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "巴托尼亚投石机的技术原理史为旧世界机械工程史提供了一个研究「逆工业化」现象的典型案例——即一项技术在数世纪之间不进化反而退化的实证领域。与现代帝国火炮——后者从十六世纪起的每一次迭代都增强了射程、精度和安全性——不同，巴托尼亚投石机在至少十个世纪间几乎没有发生原理级别的改进。其基本构型是一种单臂曳力式投石机——即利用数十名农奴同时下拉投掷臂的下端来将投掷臂上端的石兜以高弧线抛出石弹——这种机构在机械效率上远不如帝国的齿轮绞盘投石机或矮人符文加持的弹射器。根据帝国纽伦堡工程学院的《攻城锥图谱》中收录的数据，巴托尼亚标准投石机在十人曳力条件下的最大石弹重约为三百五十磅，发射速率约为每十五分钟一次——这意味着一整天的持续轰击最多只能发射不超过一百枚石头。但目前巴托尼亚学术界对于这种「技术停滞」的解释并非一个纯粹的工程学问题：在巴托尼亚文化中，战争机械由骑士之外的农奴操作本身决定了它不被赋予系统性的研发投资——因为提升农奴的工作效率不属于任何骑士的美德。少数公爵在他们的领地内试图引入帝国的青铜炮来替代投石机，结果引发了教会层面的抵制——理由是爆炸性的火药会玷污土地并可能惊吓到属于女神的战马。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "当一场攻城战在我们的领地附近爆发时，负责给我们送日常物资的农奴全都消失去了战场拖曳投石机的绳索。庄园女主人看着荒芜的麦田——不是被入侵者焚烧的，而是因为所有男人都被征去拉投石机了。我们送给骑在马上的丈夫用丝绸手帕包裹的巧克力，而对那些拉投石机的男人，我们只能默默希望他们在投掷臂意外释放时没有被粗绳崩断的碎片击穿。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "农奴投石机的人力征调是巴托尼亚贵族家族领地管理中一项不得人心的必要恶务。从你的领地中抽取五十个最强壮的农奴去操作投石机意味着他们在接下来的至少三个月内不会从事任何农业生产——而战争通常在秋收前开始。如何欺骗你的邻居公爵让他的农奴比你多抽一倍去干这件坑人的活儿，是巴托尼亚贵族会议上流传的隐秘技巧。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "在旧世界走动这些年里，我见过帝国的大炮、矮人的烟花炮、甚至绿皮的投石机——它们的共同点是你至少知道石头大致会落到哪里。巴托尼亚投石机是唯一的例外——你等到它发射后至少数一下「一、二、三、四、五」，再判断你是该往左跑还是往右跑。我在一场围城战时碰巧在投石机附近宿营——半夜里他们试验了第三发实验弹，那颗石头翻过城墙头落在内城之后又滚动了一英里。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "投石机的粗索供应是巴托尼亚农村中一个不起眼却巨额的商业市场。一台投石机需要四股主曳索——每股由至少四十根编绳再编织而成——总长度超过五百英尺的粗绳。制作这种规格的绳索需要特定类型的麻草，优质者产自巴托尼亚河间地带偏远的沼泽区——那里的几家村庄整个经济的唯一产出就是攻城索，它们甚至没有种粮食，全靠卖索到公爵手下来进口食品。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "曳力投石机——巴托尼亚投石机的基本构型，依靠数十名农奴下拉投掷臂来产生抛射力",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "农奴投石机巴托尼亚攻城武器粗制器械"
+  ]
+}

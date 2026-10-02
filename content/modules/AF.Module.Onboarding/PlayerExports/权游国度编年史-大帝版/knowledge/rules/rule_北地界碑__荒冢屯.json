@@ -1,0 +1,153 @@
+{
+  "Id": "rule_北地界碑__荒冢屯",
+  "Keywords": [
+    "荒冢屯",
+    "荒冢",
+    "北境西部"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "荒冢屯位于北境西部，是达斯丁家族的重要领地中心。周边散布着先民时代留下的荒冢和墓丘，土丘既是传说的容器，也是北境人对血脉、死者与土地联系的直观记忆。荒冢屯所处地区不像白港那样依靠大港，也不像临冬城那样居于政治中央；它更依赖牧场、谷地、地方道路和对漫长冬日的储备。领主的权威必须落在谷仓、马匹、木柴和能在雪中走路的人身上。古墓不替活人做选择，却会让这里的人比南方人更容易把家族的旧债看得沉重。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "从荒冢屯望出去，最贴近生活的并非纹章，而是井水、摊位、粮价、工钱和赶集道路。当地家庭还要依靠柴薪、猎场、泥炭、盐鱼与能否撑过长冬的粮仓；任何一处道路、井泉或码头失灵，代价都会先落到他们身上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "号角与旗帜之外，荒冢屯的防务依靠城门、街巷、粮仓、守备人数与疏散百姓的出口。在七国的封建秩序中，荒冢屯的归属牵动封臣义务、税粮和征召；守军能否吃饱、援兵能否按时抵达，比议事厅里的豪言更能决定这处据点是否可靠。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "scholar",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "远行者在荒冢屯停留多久，取决于市集日、仓租、关税、钱币成色和邻城路程。他们还会辨认北境的口音、法令和通行凭据；名声可以从酒馆传得很远，真正的路程仍须由车轮、船桨或马蹄丈量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "一纸封赐可以决定荒冢屯的主人，却不能立刻赢得附近人的服从。在七国的封建秩序中，荒冢屯的归属牵动封臣义务、税粮和征召；旗帜更换之后，道路、粮仓、旧债和地方信任仍得由新主人逐一接手。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "走过荒冢屯的士兵记得客栈、马厩、水井和入夜前是否还能进城。能补给、能避险、能找到向导，便值得在行程里标明；若三样都没有，再响亮的家名也救不了迷途者。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "荒冢屯的匠人靠作坊、市场、屋瓦、圣堂钟声与历代扩出的街巷留下手艺，神职者则用旧神、鱼梁木与祖先留下的墓地解释生死。一处据点因而不只是领主的大厅，也是婚丧、誓言、劳作与地方记忆反复发生的场所。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "住在领地下层的人用灶火和粮袋衡量荒冢屯。他们关心柴薪、猎场、泥炭、盐鱼与能否撑过长冬的粮仓，也看征粮后是否留下种子、灾年时城门是否开启；远方人看见纹章，他们看见的是明日有没有饭吃。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "荒冢屯：荒冢屯位于北境西部，是达斯丁家族的重要领地中心。周边散布着先民时代留下的荒冢和墓丘，土丘既是传说的容器，也是北境人对血脉、死者与土地联系的直观记忆。荒冢屯所处地区不像白港那样依靠大港，也不像临冬城那样居于政治中央；它更依赖牧场、谷地、地方道路和对漫长冬日的储备。领主的权威必须落在谷仓、马匹、木柴和能在雪中走路的人身上。古墓不替活人做选择，却会让这里的人比南方人更容易把家族的旧债看得沉重。"
+  ]
+}

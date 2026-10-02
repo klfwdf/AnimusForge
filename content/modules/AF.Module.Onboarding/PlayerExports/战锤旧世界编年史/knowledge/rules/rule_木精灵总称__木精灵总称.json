@@ -1,0 +1,206 @@
+{
+  "Id": "rule_木精灵总称__木精灵总称",
+  "Keywords": [
+    "魔法森林",
+    "阿斯莱领地",
+    "林中王廷",
+    "时代橡树领域",
+    "木精灵王国"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "木精灵的国家不是由城墙和道路界定的——它是一整片活着的、拥有自我意识的魔法森林，名为「艾索洛伦」。在人类的地图上艾索洛伦只是一片标注为「不可进入」的森林区域，但在阿斯莱的语言中它意味着整个世界——一片由时代橡树为中心、由世界根须与旧世界各地古老森林连接的活的国土。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我们的国土就叫艾索洛伦——它不是我们拥有的土地，它是与我们共享灵魂的生命体。人类的国王愚蠢地把边界画在河流和山脉上——他们不理解真正的王国边界是用呼吸来衡量的。艾索洛伦的边界随着季节移动，随着魔法之风的潮汐起伏——一片橡树林可能在今天是在森林边界之外的荒野，但在下一个春分时它已经被森林灵魂接纳为领地的一部分。时代橡树是我们的心脏——只要它的根还扎在旧世界的土壤中，艾索洛伦就是一个永不陷落的王国。没有人可以像围攻阿尔道夫那样围攻艾索洛伦，因为当你包围它的时候你会发现自己已经在它之中。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "艾索洛伦在外交和军事意义上是一个旧世界最特殊的政治实体——它没有固定的边境、没有稳定的中央政权、没有可签署条约的统治者。奥莱恩和阿莉尔作为共治者拥有最高的权威，但森林灵魂——尤其是时代橡树和树人族群的意志——在他们的决策过程中拥有不可忽视的否决权。与艾索洛伦的任何外交接触都必须通过一条不成文的规则：你从不被邀请进入艾索洛伦，你只能在它的边界等待它决定是否与你交谈。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "艾索洛伦（Athel Loren）的名称在精灵古语中的最接近翻译为「黄金之森」——但这个「黄金」不指财富而指远古时代精灵文明大分裂前在旧世界大陆上覆盖的原始魔法森林的光辉。艾索洛伦是那个时代的最后遗存——在世界边缘山脉以西唯一一片从未被人类斧头、绿皮火焰或混沌变异大规模污染的古老森林。木精灵的政治结构在学术上被描述为双王共治的森林灵魂协商制——奥莱恩（橡树之王）掌管对外战争和狂野狩猎，阿莉尔（永恒女王）掌管内部魔法平衡和精灵社会事务，而时代橡树和以杜尔苏为首的最古老树人族群则在涉及森林根本存亡的决策中拥有实际上的否决权。艾索洛伦与旧世界其他森林通过世界根须——一种地下魔法根脉网络——相连，这使得木精灵能够在必要时通过根须网络在数日内跨越数百英里在另一片森林中现身。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "艾索洛伦是旧世界唯一一个由女性和男性完全平等地分享最高权力的政治实体。阿莉尔不是奥莱恩的妻子或顾问——她是与他拥有同等治理权的共治者。这一点的象征意义远远超出了木精灵的内部政治——对于在帝国和巴托尼亚的父权体系下运作的女性而言，艾索洛伦的存在本身就是一个沉默的政治论据。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "艾索洛伦在家族战略思维中的独特之处在于它的不可预测性。与混沌或绿皮不同——他们的入侵路径至少在大方向上可以预测——木精灵的狂野狩猎可能在任何方向、任何季节、以任何强度爆发。我们家族在艾索洛伦南缘拥有领地已达三个世纪，我们学到的最重要的教训是：不要在森林边缘建造任何你无法在一个上午内完全放弃并无损失地撤退的设施。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "在艾索洛伦边缘过夜是所有流浪者通用的成年仪式——没有做过这件事的人在谈论木精灵时只是重复书本上的知识。森林在夜晚是不安静的——但与你在帝国森林中听到的虫鸣和鸟啼不同，艾索洛伦的声音是一种更低沉的、从你脚下的土壤深处传来的持续嗡嗡声，仿佛整座森林是一种巨兽在睡眠中发出低沉的呼吸。第一个晚上你会失眠。第二个晚上你会不确定自己是否还清醒。第三个早上你会发现自己已经不在昨晚扎营的位置——不是因为你走动了，而是因为你身下的土地在睡眠中缓慢移动了。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "艾索洛伦对旧世界商业的价值不能用传统的贸易术语衡量——因为木精灵不参与贸易。但艾索洛伦边界上由特定季节的风吹出的紫杉种子、在森林边缘溪流中漂浮的具有自然防腐特性的特殊苔藓、以及偶尔在林界外被发现的被风刮落的鹰羽——这些在帝国的高端炼金材料和珍稀药材市场上的流通价值是一个非正式但异常稳定的收入来源。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "艾索洛伦——木精灵共治的魔法森林王国，旧世界最后一片原始魔法森林",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "木精灵的正式称谓与政治地位"
+  ]
+}

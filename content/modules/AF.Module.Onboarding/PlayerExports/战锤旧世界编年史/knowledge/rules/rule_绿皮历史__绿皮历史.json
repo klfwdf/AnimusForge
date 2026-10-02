@@ -1,0 +1,209 @@
+{
+  "Id": "rule_绿皮历史__绿皮历史",
+  "Keywords": [
+    "绿皮历史",
+    "绿皮历史绿潮",
+    "绿皮历史搞毛巨像",
+    "绿皮起源",
+    "古圣孢子",
+    "葛巴德",
+    "卡拉克陷落",
+    "战将史诗"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "绿皮的历史不是用文字记录而是用战痕书写的。没人确切知道绿皮从何而来——有人说他们是随着古圣的飞船孢子来到这个世界的，也有人说他们是大地在混沌入侵后自己生出的反噬之物。无论起源如何，绿皮从远古时代起就用一次次绿潮席卷过旧世界——其中最可怕的战将如「搞哥之怒」葛巴德·铁爪曾让整个帝国颤抖。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "谁在乎历史？历史是老家伙讲的故事！但我知道那些最厉害的老大——葛巴德·铁爪，他曾经差点打进帝国的首都！还有「绿先知」乌尔扎格，他跟搞哥毛哥直接聊天，走到哪里都能拉出一支Waaagh！历史上最大的Waaagh！是啥时候来着？谁记得住——反正好打仗永远都在发生，从我们出生的那一天起就在打了。不过最让我自豪的是，从来没有谁彻底打败过绿皮——矮墩子缩在山里，尖耳朵躲在海岛上，人类龟缩在城墙后面——但我们绿皮到处都是！"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "绿皮对旧世界历史的影响常被低估。矮人诸城塞的失陷——特别是卡拉克八峰山的陷落——背后都有绿皮绿潮的推手。帝国和巴托尼亚都曾在绿皮大规模入侵下面临覆灭危机。理解绿皮历史的关键在于认识到他们从未真正形成过一个统一的「文明」——他们总是在无可匹敌的战将推动下暂时统合，战将死亡后立即分裂内讧。这使得绿皮在大部分时间处于分裂状态，但每次统合都可能带来足以倾覆国家的毁灭力。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 100
+        },
+        "IdentityIds": null
+      },
+      "Content": "绿皮的历史可以追溯到远古时代。根据最可靠的学术推论，绿皮最初是古圣（Old Ones）在星门崩塌前带到这个世界的——可能作为生物武器，也可能是他们的孢子偶然附着在古圣的飞船上。星门崩塌后，在古圣消失的混乱中，绿皮孢子在世界各地生根发芽，形成了第一批野生绿皮。在混沌统治的长夜纪元中，绿皮因其天生的战斗本能和对魔法的天然抗性而得以幸存。进入文明纪元后，每一次绿潮都会深刻改变旧世界的政治格局：矮人黄金时代的终结部分归因于绿皮对世界边缘山脉的持续压力，帝国无数次的远征和防御战都与绿皮有关，而恶地成为绿皮事实上的中心地带。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "帝国历史文献通常由男性书记官撰写，因此极少关注绿皮入侵中妇女和儿童的命运。我的家族档案中保存着我曾曾祖母的手记——她亲身经历了上一次恶地Waaagh！入侵艾维领的全过程。她记载道，帝国的男性史官总是把绿皮入侵描绘为'军队对冲'——但实际对边境女性来说，绿皮的到来首先意味着你必须立即决定：是带着孩子向南逃亡放弃所有无法驮运的冬季储备粮，还是留守地下室赌一把绿皮会在洗劫完外围后被帝国骑兵赶到另一个方向。她的每一行墨迹中都透着比仇恨更疲倦的东西——一种跨越所有性别的、被重复了无数次的求生记忆。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "作为边境贵族家族的族长，我深知绿皮入侵历史中有一个令人沮丧的模式：每一次人类帝国击败一场Waaagh！后，政治高层和民众都倾向于认为'问题解决了'——他们会削减边境守备预算，将军队调回内地应对更'文明'的政治纠纷。而恶地地下的菌丝网络不会削减它的孢子产量。上一次大规模绿皮入侵我们失掉了半个男爵领的土地（虽然最终夺回了），战争结束后不过二十七年——不到一代人的时间——边境哨兵已经再次报告南方的尘土中有越来越多的绿色身影。家族档案中显示，在过去的八百年中，我们的领地经历了至少十一次大规模绿皮入侵——平均每七十三年一次——这是一个任何防御计划都无法忽视的节奏，然而每次战后重建阶段这个节奏都会被帝国高层集体遗忘。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "在世界边缘山脉和恶地之间流浪时，我从一些被绿皮占领的矮人废墟中收集到了一些奇怪的线索。在卡拉克八峰的外围废墟里，我发现在矮人墙壁铭文与绿皮涂鸦之间有一种不可思议的'对话'——不是友好的对话，而是一种跨越数百年的、用刻痕和颜料进行的相互侮辱。一面矮人墙壁刻着'这里躺着铁盔·铜盾，他死于消灭第一百零三个绿皮害虫'，下面有人——应该说是兽人——用武器粗暴地刻了回应：'哈！那个铁头死的时候我们在他尸体上跳了三天三夜！'最惊人的是这些文字层叠——矮人的、绿皮的、新的矮人远征军回来后的、再一次被绿皮占领后的——层层覆盖了好几百年，形成了一种无文字种族间唯一的历史记录方式。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "从经济史的角度来看，绿皮入侵对旧世界贸易网络的长期影响与战争本身的破坏力不成比例。最短期的冲击当然是运粮路线的暂时中断和边境省份的粮价暴涨——这我们见惯了。但更深层的结构效应是这样的：每次Waaagh！迫使商队绕道世界边缘山脉西部隘口而非东侧的危险平原后，新路线的沿途城镇——比如灰色山脉脚下的某些人类据点——获得了不成比例的商业繁荣，而老路线沿途的城镇则永久地衰败。在商业公会档案中你可以追溯到：恶地边缘至少七个曾经繁华的贸易中心如今只剩下废墟，不是因为被绿皮攻破，而是因为商路永久性地向西移了。这是绿皮对经济地图的隐形重塑。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "葛巴德·铁爪——传说中差点征服帝国全境的绿皮战将",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "绿皮的历史不是用文字记录而是用战痕书写的"
+  ]
+}

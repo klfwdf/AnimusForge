@@ -1,0 +1,28 @@
+﻿{
+  "Id": "rule_湖鼠帮",
+  "Keywords": [
+    "湖鼠帮"
+  ],
+  "RagShortTexts": [
+    "湖鼠帮在北方大湖沿岸沼泽地，用假灯塔引诱船只搁浅"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "湖鼠帮生活在北方大湖沿岸的沼泽地，住在用废船木料建造的棚屋里。他们以“制造船难”为生，也就是用假灯塔和假信标引诱船只搁浅。卡拉迪亚大陆的其他人嘲笑他们——“这些罪犯，闻起来就像沼气、泥浆和烂鱼”一所以他们也对外人嗤之以鼻。虽然大部分是斯特吉亚人，但湖鼠的队伍在逐渐壮大，包括逃亡者、债务人，以及其他任何宁愿遵守盗贼法则，也不愿遵守贵族法律的人。"
+    }
+  ],
+  "TextMappings": []
+}

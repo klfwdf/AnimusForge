@@ -1,0 +1,131 @@
+{
+  "Id": "rule_家族根基__古柏勒家族",
+  "Keywords": [
+    "古柏勒家族"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "古柏勒家族是铁群岛的重要家门，主支以大威克岛的战锤角为根基。岛屿比许多铁民领地更能供养人口，盐、鱼、铁、木材和港湾让古柏勒拥有参与群岛政治的资源。铁民选王与淹神仪式塑造家族的公开身份，真正的权力却仍取决于船队、亲族、战利品分配和能否让岛民相信某位领主配得上追随。大威克的土地并不意味着古柏勒脱离旧道，只说明铁群岛的旧道也需要粮食与工匠。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "铁群岛诸家看古柏勒，既看他们能在大威克养活多少人，也看他们能下水多少条船。财富会让家门更有谈判余地，也会让掠夺者与竞争者更想试探其防线。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "sailor",
+          "artisan",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "大威克岛的船匠、渔民和农户知道长船不是凭空出现的。木材要砍、铁钉要锻、粮食要储；古柏勒若只讲海上荣耀而忘记这些，最勇猛的船也会在离岸前先缺粮。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待古柏勒家族，会先看它的土地、婚盟、血脉和债务。古柏勒家族是铁群岛重要家族之一，和大威克岛、海上传统及铁民选王会文化相连；岛屿资源与长船决定其力量。家徽是门面，能否保护封地、兑现婚约并在危机中召集人马，才是家族真正的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起古柏勒家族时，记得的是谁在营火边分过粮、谁把他们留在城外、谁在败局里仍站在旗旁。古柏勒家族是铁群岛重要家族之一，和大威克岛、海上传统及铁民选王会文化相连；岛屿资源与长船决定其力量。家族名声最终要落到具体的人和具体的命令上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意古柏勒家族留下的仪式、墓地和传承。古柏勒家族是铁群岛重要家族之一，和大威克岛、海上传统及铁民选王会文化相连；岛屿资源与长船决定其力量。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见古柏勒家族。古柏勒家族是铁群岛重要家族之一，和大威克岛、海上传统及铁民选王会文化相连；岛屿资源与长船决定其力量。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "古柏勒家族：古柏勒家族是铁群岛重要家族之一，和大威克岛、海上传统及铁民选王会文化相连；岛屿资源与长船决定其力量。"
+  ]
+}

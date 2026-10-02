@@ -1,0 +1,213 @@
+{
+  "Id": "rule_巨鹰__巨鹰",
+  "Keywords": [
+    "巨鹰",
+    "山巅猛禽",
+    "空中盟友",
+    "俯冲抓取",
+    "木精灵伙伴",
+    "巨型飞禽",
+    "鹰击长空",
+    "空中猎手",
+    "锐利鹰爪",
+    "飞行侦查",
+    "鹰巢山脉",
+    "风之伙伴"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "巨鹰是艾索洛伦中最壮丽的飞行生物，它们栖息在最高峰的山巅，与木精灵结成了古老而深厚的同盟关系，以锐利无比的爪子和精准的俯冲攻击驰骋于战场上空。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "巨鹰不是我们的宠物——它们是我们的伙伴，甚至是我们的老师。远古时代，当精灵还在摸索如何使用弓箭时，巨鹰就已经教会了我们如何观察风向和利用高度优势。它们的眼睛能看到三十里外的一只老鼠，它们的翅膀能载着一个精灵飞行一整天而不疲倦。每一位木精灵骑手都梦想着与巨鹰结为搭档。当巨鹰从高空俯冲而下时，那种速度令人震撼——敌人往往还没反应过来，就已经被鹰爪带上了天空。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "巨鹰为你提供战场制空权和侦察能力。将巨鹰部署在你的侦察线最前端，它们能提前发现埋伏和敌军动向。战斗中利用巨鹰的俯冲攻击瞄准敌方将领或战争机器——一击命中后立即拉升，不要恋战。巨鹰在对抗飞行单位时同样出色。注意保护好你的鹰巢：失去鹰巢会让你无法招募新的巨鹰伙伴。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "根据《羽翼编年史》的记载，巨鹰与精灵的盟约始于「鹰盟之年」——大约距今一万两千年前。当时巨鹰之王「云翼」奥罗达斯与木精灵首领「弓王」拉塞兰在「风暴峰」顶签订盟约。巨鹰的生物学特征极为独特：它们的骨骼中空但硬度超过钢铁，翼展可达十二至十五米；它们的视觉器官含有一个额外的透明眼睑，可以过滤魔法能量，令其在魔法迷雾中亦能清晰视物。已知有十五个活跃的鹰巢分布在艾索洛伦的山峰上，每个鹰巢由一对巨鹰夫妇共同守护，它们每五百年才繁育一次后代。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我的巨鹰伙伴名叫「疾风」，它在暴风雨之夜救过我一命。巨鹰从不按命令行事，它们只会回应请求——这是我学到的最宝贵的一课。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "每个氏族都崇敬某座山峰上的鹰巢，那里的巨鹰世代为你的血脉服务。不要忘了定期送上祭品——最好是新鲜的猎物，巨鹰对腐肉从不屑一顾。与巨鹰保持良好关系是你作为氏族首领的智慧和责任。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "一只巨鹰从空中掠过，翼展宽阔得遮蔽了阳光片刻。你本能地低下头，但巨鹰只是从你头顶滑翔而过，留下一阵狂风。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "巨鹰在木精灵文化中象征着自由和远见。它们被视为天空的使者，每一个重大决策前，精灵领主都会观望鹰的飞行方向来解读征兆。巨鹰一生只与一位精灵骑士结伴，忠诚至死。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "巨鹰——栖息于山巅的巨型猛禽，木精灵千年的空中盟友。",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "巨鹰山巅猛禽空中盟友"
+  ]
+}

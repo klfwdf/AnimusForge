@@ -1,0 +1,152 @@
+{
+  "Id": "rule_金脉西境__凯切镇",
+  "Keywords": [
+    "凯切镇",
+    "凯切"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "凯切镇是西境南部的沿海城镇。它并非兰尼斯港那样的大港，却借由小型码头、渔业、沿岸船运和周边庄园成为西境海上网络的一环。港镇的命运往往由看不见的东西决定：海流是否顺，盐价是否高，远方是否有战船，粮船是否能按季到来。凯切镇的人同时属于西境的金矿与封臣秩序，也属于日落之海的潮汐和海员传闻。对商人而言这里是中转点，对渔民是家，对领主则是税收和海岸警戒。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "凯切镇附近的百姓很少空谈疆界，他们每天应付的是潮汐、渔汛、淡水和船只能否安全靠岸。当地家庭还要依靠矿道、牧地、山路、金银流通和凯岩城庇护下的市集；任何一处道路、井泉或码头失灵，代价都会先落到他们身上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "征召令抵达凯切镇以后，真正决定成败的是港湾入口、泊位、烽火与可供登陆的岸线。在七国的封建秩序中，凯切镇的归属牵动封臣义务、税粮和征召；守军能否吃饱、援兵能否按时抵达，比议事厅里的豪言更能决定这处据点是否可靠。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "scholar",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "客栈与码头里的人谈凯切镇，总绕不开航期、码头脚费、补水和下一处避风港。他们还会辨认西境的口音、法令和通行凭据；名声可以从酒馆传得很远，真正的路程仍须由车轮、船桨或马蹄丈量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "宫廷会把凯切镇视作筹码，当地封臣却知道它是一整套义务。在七国的封建秩序中，凯切镇的归属牵动封臣义务、税粮和征召；旗帜更换之后，道路、粮仓、旧债和地方信任仍得由新主人逐一接手。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "地图在凯切镇附近最容易隐去的，正是风向、礁石、渡船与城门落锁后的锚地。能补给、能避险、能找到向导，便值得在行程里标明；若三样都没有，再响亮的家名也救不了迷途者。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人在凯切镇看见修船木、帆布、盐、鱼获和抵御海风的石料，神职者守着七神、家族墓窖与领主权威留下的石刻。一处据点因而不只是领主的大厅，也是婚丧、誓言、劳作与地方记忆反复发生的场所。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "凯切镇在平民眼中不是传奇，而是一年四季的收支。他们关心矿道、牧地、山路、金银流通和凯岩城庇护下的市集，也看征粮后是否留下种子、灾年时城门是否开启；远方人看见纹章，他们看见的是明日有没有饭吃。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "凯切镇：凯切镇是西境南部的沿海城镇。它并非兰尼斯港那样的大港，却借由小型码头、渔业、沿岸船运和周边庄园成为西境海上网络的一环。港镇的命运往往由看不见的东西决定：海流是否顺，盐价是否高，远方是否有战船，粮船是否能按季到来。凯切镇的人同时属于西境的金矿与封臣秩序，也属于日落之海的潮汐和海员传闻。对商人而言这里是中转点，对渔民是家，对领主则是税收和海岸警戒。"
+  ]
+}

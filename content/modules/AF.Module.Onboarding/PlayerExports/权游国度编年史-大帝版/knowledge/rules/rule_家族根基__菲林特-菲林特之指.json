@@ -1,0 +1,133 @@
+{
+  "Id": "rule_家族根基__菲林特-菲林特之指",
+  "Keywords": [
+    "菲林特-菲林特之指",
+    "菲林特之指菲林特家族",
+    "北境西岸",
+    "菲林特家族"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "菲林特之指的菲林特家族是北境多个菲林特支系之一，根基在北境西岸伸入日落之海的菲林特之指。当地人面对的是风、贫瘠海岸、渔业与铁民来袭的风险；他们对菲林特家名的认识首先来自谁能守望海面、维持小港与保护沿岸居民，而不是南方谱牒。不得把其他菲林特支系的纹章、人物或领地移植到此支。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "北境人知道菲林特不止一家。提到菲林特之指，指的是西岸那支守着狭长海岬、礁岸与小港的菲林特，而非寡妇望或群山里的同姓亲族。共同的姓氏能带来亲缘，也容易让外人把各支承担过的功过混成一笔。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "海岬上的人先认潮水和礁石，再认领主的远亲谱系。对他们来说，菲林特家的用处在于维护烽火、组织渔船、听见铁民风声时让沿岸农户及时躲进墙后。风暴不会因为姓氏古老而转向，海盗也不会。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待菲林特-菲林特之指，会先看它的土地、婚盟、血脉和债务。北境菲林特家族的西海岸支系，以菲林特之指为根基。家徽是门面，能否保护封地、兑现婚约并在危机中召集人马，才是家族真正的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起菲林特-菲林特之指时，记得的是谁在营火边分过粮、谁把他们留在城外、谁在败局里仍站在旗旁。北境菲林特家族的西海岸支系，以菲林特之指为根基。家族名声最终要落到具体的人和具体的命令上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意菲林特-菲林特之指留下的仪式、墓地和传承。北境菲林特家族的西海岸支系，以菲林特之指为根基。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见菲林特-菲林特之指。北境菲林特家族的西海岸支系，以菲林特之指为根基。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "菲林特-菲林特之指：北境菲林特家族的西海岸支系，以菲林特之指为根基。"
+  ]
+}

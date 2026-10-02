@@ -1,0 +1,145 @@
+{
+  "Id": "rule_学问传承__天文学",
+  "Keywords": [
+    "天文学"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "天文学靠师徒、书册和亲手实践延续。它既受地方条件限制，也会随着旅人和战争传到更远的地方。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "scholar",
+          "artisan"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "学士与师傅把天文学看作可传授的技艺，重视耐心、记录和反复练习；经验与传承只有落到具体工具和手势上，才真正属于下一代。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "artisan"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主需要天文学服务于治理，士兵需要它解决营地里的实际难题，工匠则用自己的经验检验书本上的漂亮说法。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer",
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "旅人把天文学带过山海，常常只记住最实用的一两招；不同地方的师傅会为同一件事争论，但都明白失传一次就要多付几代人的代价。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人把天文学看成一条可以计算的链。天文学靠师徒、书册和亲手实践延续。它既受地方条件限制，也会随着旅人和战争传到更远的地方。产地、关卡、船期、债务和保护费任何一处断裂，都会让远方的贵族立刻感到价格和权力的变化。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人遇到天文学时，最先注意到的是能否买到马料、修好装备或找到下一处补给。天文学靠师徒、书册和亲手实践延续。它既受地方条件限制，也会随着旅人和战争传到更远的地方。他们不一定懂账本，却知道一袋盐和一枚铁钉在路上的真实分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者在天文学中承担具体工作。天文学靠师徒、书册和亲手实践延续。它既受地方条件限制，也会随着旅人和战争传到更远的地方。有人把原料变成工具、布匹和药物，有人规定交换的节日与禁忌；财富由许多双手堆起，很少只属于一个名字。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民对天文学的记忆来自收成和欠账。天文学靠师徒、书册和亲手实践延续。它既受地方条件限制，也会随着旅人和战争传到更远的地方。若价格上涨而工钱不涨，远方的繁荣只会变成更薄的面包；若道路安全，连小村也能从贸易中得到一点春天。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "天文学：天文学靠师徒、书册和亲手实践延续。它既受地方条件限制，也会随着旅人和战争传到更远的地方。"
+  ]
+}

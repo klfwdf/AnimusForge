@@ -1,0 +1,213 @@
+{
+  "Id": "rule_大师级符文__大师级符文",
+  "Keywords": [
+    "大师级符文",
+    "符文巅峰",
+    "独一无二",
+    "传奇神器",
+    "至高锻造",
+    "不可复制",
+    "符文大师",
+    "矮人符文",
+    "神级",
+    "至高符文",
+    "唯一",
+    "符文之力"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "大师级符文是矮人符文锻造的最高杰作——任何武器或防具上一旦刻上大师级符文，就意味着这件造物在已知世界中独一无二且不可复制。每件大师级符文造物都代表符文铁匠的最高技艺巅顶与一个不逝的矮人仇怨或盟约。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "大师级符文——小家伙你别听岔了，那不是普通符文铁匠铺子里在锤子上刻个发光印记就完事的玩意儿！那是符文这行业里最巅峰的东西，一个卡拉克可能几百年才出一个符文大师，而一个符文大师整个生涯可能只造两件大师级符文作品——就是他在人生的最后把自己一辈子的技艺、恨和念都锤进一块陨铁里。这就是为啥大师符文无法复制：换一个符文铁匠，哪怕把一模一样的符号刻到一模一样的材料上，出来的东西也不一样——因为前任的心已经死在里头了。你得知道这不是你们人类说「传奇武器」那种传奇——矮人的大师符文神器不会因为隔代就忘掉它的主人——它知道谁拿过它，它也记得当初铸它是为了报谁的仇。如果我碰一把大师符文的斧子，斧子就瞬间知道我跟它不是一伙的，它就变成一块死铁。你问复制——不是不让复制，是复制不了。上一个试图复制大师符文的铁匠把炉子炸了半个锻坊，符文粉碎后回弹进他眼睛里夺了他的视力，余生只能摸铁。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "大师级符文在军事层面上构成了一种无法用常规军力衡量其价值的战斗力倍增器。一名兽人战将手持一把普通大砍刀的威胁可以标准量化——但如果有任何情报显示某件大师级符文造物在敌方手中，你所有防御计划的数学基础必须推倒重来。已知案例中，一把刻有大师级'破魔'符文的战锤在其持有者手中（一名矮人龙绝王）于一日之内击杀了三名混沌术士、击碎了七件魔法造物——这个性价比在任何已知武器数据库中都是异常离群的。你的最佳对抗策略是不对抗——确认大师级符文持有者位置后以炮兵或远程轰炸在其近距交战之前消磨其生命力，绝不要试图用同级别的英雄去单挑它。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "大师级符文的锻造过程在矮人符文铁匠学中被称为「终极振印」。与常规符文（以锤凿刻于武器表面后以声波共振激活）不同，大师级符文的锻造需满足三个不可复现的条件：第一，陨铁基材须在天然陨落四百年至六百年间——此时的矿石内部硫化晶体结构恰好达到符文容纳力的峰值平台；第二，符文大师必须在锻造全过程中连续念诵「回响咒」——一套从未被抄录任何文字载体、仅通过口耳在符文大师之间代代传承的矮人古语律令，且每次念诵时会与当次锻造的具体对象产生唯一性共振频率，此频率被后来的任何铁匠重复吟诵时无法再生——因为矮人认为念咒的人变了，石头里的血脉呼应就不再一致；第三，也是人文上最关键的一点——大师级符文的完成需一名与符文锻造对象结局有先天关联的矮人作为「终血」：即完成锻造的最后一步不是用冷却水缸冷却，而是用此人指定的一滴血浇熄剑刃——这一操作之后符文入铁，此人不可再为任何其他符文提供二重终血。这意味着每件大师级神器消耗的不仅一位符文大师的一世技艺，还有一名终血者的一滴不可重复的血缘印记。已知世界中现存确切登记的大师级符文造物据矮人至高大书记在帝国历2512年的最后一次统计为九十七件——而这个数字在矮人黄金时代的五百余件基础上仅余约不足五分之一。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我见过的最令人不安的武器是一柄矮人大师级符文短剑——陈列在卡拉克·卡德林的王庭客厅里。矮人介绍说这把剑叫「丧亲者」，由一位因失去整个家族而疯狂了五十年的符文大师铸造，剑身上刻的符文内容据说在矮人语中是「不用再去恨了因为恨已经变成铁了」。我伸手靠近它——没碰到——但指尖感觉一阵极冷的空气从剑柄方向流过来，像有什么东西在主动推我的体温。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我们家族最后一任矮人符文盟友在去世前给我留了一件大师级符文护符——一个巴掌大的铜制圆盘，上面只刻了两道矮人文。他不肯告诉我那是什么意思，只说「你家的仇我已经给你记上去了」。我把那个护符戴了二十年，二十年间我领地里没有出现过任何魔法疾病。两年前一个侍童在我洗澡时把它偷走想换钱——护符之后在一家当铺的估价台上被发现自碎成三块。我至今在试着找另一个符文大师修复它，但我可能永远找不到。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "在巴拉克·瓦尔的雇佣兵酒吧里有一把钉在墙上的老斧子——据说原先是矮人符文大师给某代人类国王造的，含大师级符文。你跟酒吧老板问他能把那斧子借给佣兵做任务用吗——他笑了：第一，你拔不下来，钉进墙的那根钉子也是大师符文的；第二，上个试着去拔它的佣兵当场被斧柄上传来的热量烫掉了他整个手掌的皮。他就留着那个空墙头周围的一片焦印当装饰。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "你知道全旧世界多少个国家曾试图用金克朗从矮人手里买下一件大师级符文造物吗？我查到答案是因为我的评估师事务所曾受雇于一位竞选选帝侯的贵族，他想要一件作为镇国神器。我们在档案中找到了十七条购买请求回信——每一条都是矮人用同一句话写的：「符文不是东西，符文是约」。据说后来那个候选人打了退堂鼓，因为矮人告诉他，买大师符文神器不是买一个东西——是继承一笔五百年内必须拿血偿还的仇债。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "矮人符文锻造的顶端杰作，每件代表一个符文大师的毕生技艺与一次不可复现的终血",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "大师级符文符文巅峰独一无二"
+  ]
+}

@@ -1,0 +1,31 @@
+﻿{
+  "Id": "rule_纳尔",
+  "Keywords": [
+    "纳尔",
+    "格纳特"
+  ],
+  "RagShortTexts": [
+    "格纳特·纳尔村传说是纳尔头颅所在"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "格纳特·纳尔是巴旦尼亚传说中决斗之地附近的一座村庄，据传纳尔在此留下了他的头颅。当地村民们以出色的护林人技能而闻名，他们帮助附近悬崖上的卡·班塞斯要塞抵御斯特吉亚人和其他掠夺者的攻击，保护着巴旦尼亚的腹地。"
+    }
+  ],
+  "TextMappings": []
+}

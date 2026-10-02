@@ -1,0 +1,152 @@
+{
+  "Id": "rule_家族根基__唐德利恩家族",
+  "Keywords": [
+    "唐德利恩家族",
+    "紫色闪电",
+    "黑色群星"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "唐德利恩家族以黑港城为根基，是风暴地多恩边疆诸侯。家徽以黑色星空中的紫色分叉闪电为核心；传说家族始祖是杜兰登王的信使，因及时带回多恩进攻警报而受封。这个起源传说恰好说明边疆家族的价值：熟悉道路、及时点燃烽火、让消息比敌军更快抵达。边民衡量黑港城，首先看它是否守住骨路方向。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "stormlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "风暴地贵族认得黑港的紫色分叉闪电，也乐于讲述那道闪电如何为家族命名。唐德利恩的真正分量仍来自边疆封臣的职责：守道路、养骑手、在风息堡召令到来时出兵。传奇使名字更亮，边境责任决定它能亮多久。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "stormlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "黑港人对闪电并不浪漫。雷暴会劈树、惊马，也会在一瞬间照亮山道上的陌生人。百姓评价唐德利恩，便看这面闪电旗是否同样来得及时：盗匪出现时有无骑手，庄稼被毁后法庭是否还照旧收足税。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "多恩边民把唐德利恩看作赤红山脉另一侧的风暴贵族。彼此之间既有贸易小径，也有旧日劫掠与战斗的记忆。黑港的闪电在风暴地是家族传奇，在多恩旅人眼里则是一面提醒自己谨慎穿越边界的旗。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待唐德利恩家族，会先看它的土地、婚盟、血脉和债务。黑港城的多恩边疆诸侯，家徽为黑色群星中的紫色分叉闪电。受封传说与传令示警有关，其根基是骨路方向的烽火、道路和边防；箴言未知。家徽是门面，能否保护封地、兑现婚约并在危机中召集人马，才是家族真正的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起唐德利恩家族时，记得的是谁在营火边分过粮、谁把他们留在城外、谁在败局里仍站在旗旁。黑港城的多恩边疆诸侯，家徽为黑色群星中的紫色分叉闪电。受封传说与传令示警有关，其根基是骨路方向的烽火、道路和边防；箴言未知。家族名声最终要落到具体的人和具体的命令上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意唐德利恩家族留下的仪式、墓地和传承。黑港城的多恩边疆诸侯，家徽为黑色群星中的紫色分叉闪电。受封传说与传令示警有关，其根基是骨路方向的烽火、道路和边防；箴言未知。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见唐德利恩家族。黑港城的多恩边疆诸侯，家徽为黑色群星中的紫色分叉闪电。受封传说与传令示警有关，其根基是骨路方向的烽火、道路和边防；箴言未知。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "唐德利恩家族：黑港城的多恩边疆诸侯，家徽为黑色群星中的紫色分叉闪电。受封传说与传令示警有关，其根基是骨路方向的烽火、道路和边防；箴言未知。"
+  ]
+}

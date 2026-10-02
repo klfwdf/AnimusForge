@@ -1,0 +1,132 @@
+{
+  "Id": "rule_家族根基__佛索威家族",
+  "Keywords": [
+    "佛索威家族",
+    "苹果"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "佛索威家族是河湾地以苹果园与苹果纹章著称的古老家门，最重要的两支分别以红苹果和青苹果相区别。两支分裂的故事与一场比武、一次继承争执和一句未经收回的骄傲有关；从此同姓亲族在宴席上相互礼貌，在纹章与政治上却坚持自己的颜色。佛索威土地肥沃，果园、酒醋、木桶和河湾商路让家族拥有稳定财富。苹果看似温和，家族内部的红与绿却提醒人们：在河湾，最甜的果实也可能藏着最久的旧怨。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "reach"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "河湾贵族不会把红苹果与青苹果混成一面旗。两支同源，却各有厅堂、婚盟和要维护的尊严；在高庭面前他们可能共同举杯，回到自己的果园后仍会争论谁才是更正统的佛索威。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "reach"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "merchant",
+          "artisan"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "果农、酿酒工和桶匠对分支争端有自己的看法：苹果成熟的时节不会因家徽颜色推迟。红支与青支若都能护住果园、河道和市集，领民愿意让贵族继续争论；若争端带来征发，酸味会比酒醋更快传遍村庄。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待佛索威家族，会先看它的土地、婚盟、血脉和债务。佛索威家族有多个支系，以苹果纹章和果园传统著称；支系间的纹章差异也说明河湾地家族分化的细密。家徽是门面，能否保护封地、兑现婚约并在危机中召集人马，才是家族真正的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起佛索威家族时，记得的是谁在营火边分过粮、谁把他们留在城外、谁在败局里仍站在旗旁。佛索威家族有多个支系，以苹果纹章和果园传统著称；支系间的纹章差异也说明河湾地家族分化的细密。家族名声最终要落到具体的人和具体的命令上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意佛索威家族留下的仪式、墓地和传承。佛索威家族有多个支系，以苹果纹章和果园传统著称；支系间的纹章差异也说明河湾地家族分化的细密。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见佛索威家族。佛索威家族有多个支系，以苹果纹章和果园传统著称；支系间的纹章差异也说明河湾地家族分化的细密。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "佛索威家族：佛索威家族有多个支系，以苹果纹章和果园传统著称；支系间的纹章差异也说明河湾地家族分化的细密。"
+  ]
+}

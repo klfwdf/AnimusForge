@@ -1,0 +1,151 @@
+{
+  "Id": "rule_家族根基__潘尼米恩",
+  "Keywords": [
+    "潘尼米恩",
+    "潘尼米恩家族"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "潘尼米恩家族属于瓦兰提斯黑墙内的旧血阶层，能够参与只有纯正瓦雷利亚后裔才可进入的精英政治。家族人物与重视贸易、稳定和财富的象党传统相联。象党并非温和慈善，它维护的是商路、奴隶经济和有产者秩序；与虎党相比，只是更愿用账簿、船队和长期利润衡量城邦政策。潘尼米恩的影响依靠血统，也依靠商业关系和选举经营。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "volantine"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "瓦兰提斯商人通常欢迎潘尼米恩式的谨慎，战争会打断河运、保险与远途契约。只要利润稳定，许多人宁愿看象缓慢行走，也不愿看虎扑向未知战场。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "volantine"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "peasant",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "码头工和手艺人明白繁荣未必公平，却仍怕战争先砸碎饭碗。他们会支持承诺稳定的旧血家门，也会在物价上涨时发现象党的账本从未把穷人的饥饿写得很重。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "volantine"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "slave"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "奴隶不因象党强调贸易便得到自由。潘尼米恩若维护旧秩序，稳定只是锁链不会突然断裂，也不会突然松开的另一种说法。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待潘尼米恩，会先看它的土地、婚盟、血脉和债务。潘尼米恩是瓦兰提斯旧血家门之一，更多与象党的贸易、审慎和城邦财富路线相联系。家徽是门面，能否保护封地、兑现婚约并在危机中召集人马，才是家族真正的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起潘尼米恩时，记得的是谁在营火边分过粮、谁把他们留在城外、谁在败局里仍站在旗旁。潘尼米恩是瓦兰提斯旧血家门之一，更多与象党的贸易、审慎和城邦财富路线相联系。家族名声最终要落到具体的人和具体的命令上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意潘尼米恩留下的仪式、墓地和传承。潘尼米恩是瓦兰提斯旧血家门之一，更多与象党的贸易、审慎和城邦财富路线相联系。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见潘尼米恩。潘尼米恩是瓦兰提斯旧血家门之一，更多与象党的贸易、审慎和城邦财富路线相联系。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "潘尼米恩：潘尼米恩是瓦兰提斯旧血家门之一，更多与象党的贸易、审慎和城邦财富路线相联系。"
+  ]
+}

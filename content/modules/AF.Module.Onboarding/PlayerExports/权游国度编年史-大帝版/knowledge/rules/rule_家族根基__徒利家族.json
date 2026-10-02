@@ -1,0 +1,152 @@
+{
+  "Id": "rule_家族根基__徒利家族",
+  "Keywords": [
+    "徒利家族",
+    "跃鲑",
+    "家族责任荣誉"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "徒利家族以奔流城为根基，崛起于河间地摆脱铁群岛统治的征服时代。伊耿征服时，徒利站在反对赫伦王的一边，因而受封为河间地的至高领主。红蓝相间、银色跃鲑的纹章与“家族、责任、荣誉”的箴言，十分贴合一片被河流切割、却没有天然屏障的土地。徒利必须调停佛雷、布莱伍德、布雷肯等众多古老封臣，也必须在外敌穿过河间地时承担首先被践踏的风险。奔流城的水门能保护家堡，无法保护每座村庄；这让徒利的责任既庄严，又注定带着无力感。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "river"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "河间诸侯接受徒利为宗主，却不会忘记许多封臣的家名比这项宗主权更古老。奔流城必须靠婚姻、调停和共同危机维持众流归一；命令若缺乏人情与说服，绿叉河、红叉河和蓝叉河之间的领主很快便会各自想起自己的旧账。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "river"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "河间百姓听见“家族、责任、荣誉”，会问责任究竟能不能越过城墙。奔流城易守，村庄却总在大道和河渡旁先遭兵火。小民愿意尊敬跃鲑，只要贵族口中的家族不只包括宴席上有姓氏的人。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "river"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "船夫和行商喜欢河流带来的道路，也恨河流带来的关卡与战争。徒利若能让渡口、集市和裁判保持秩序，跃鲑便像顺流而行的好兆头；若诸侯争斗不休，再漂亮的银鱼也只会随着浑水漂走。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待徒利家族，会先看它的土地、婚盟、血脉和债务。奔流城的河间地至高领主，因支持征服者伊耿反对赫伦王而受封。跃鲑纹章与“家族、责任、荣誉”对应河流、封臣调停与无险可守的河间地责任。家徽是门面，能否保护封地、兑现婚约并在危机中召集人马，才是家族真正的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起徒利家族时，记得的是谁在营火边分过粮、谁把他们留在城外、谁在败局里仍站在旗旁。奔流城的河间地至高领主，因支持征服者伊耿反对赫伦王而受封。跃鲑纹章与“家族、责任、荣誉”对应河流、封臣调停与无险可守的河间地责任。家族名声最终要落到具体的人和具体的命令上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意徒利家族留下的仪式、墓地和传承。奔流城的河间地至高领主，因支持征服者伊耿反对赫伦王而受封。跃鲑纹章与“家族、责任、荣誉”对应河流、封臣调停与无险可守的河间地责任。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见徒利家族。奔流城的河间地至高领主，因支持征服者伊耿反对赫伦王而受封。跃鲑纹章与“家族、责任、荣誉”对应河流、封臣调停与无险可守的河间地责任。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "徒利家族：奔流城的河间地至高领主，因支持征服者伊耿反对赫伦王而受封。跃鲑纹章与“家族、责任、荣誉”对应河流、封臣调停与无险可守的河间地责任。"
+  ]
+}

@@ -1,0 +1,209 @@
+{
+  "Id": "rule_神选者__神选者",
+  "Keywords": [
+    "神选者",
+    "混沌精英",
+    "神选者邪神赐福",
+    "混沌重甲",
+    "最强步兵",
+    "黑暗祝福",
+    "毁灭化身",
+    "钢铁屠戮者"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "神选者是混沌荒原深处走出的传说——他们本是凡人之躯，却因邪神的眷顾而超越血肉极限，身披比黑夜更沉的混沌板甲，每一寸钢铁都铭刻着灾厄的符文。传说任何凡人军队遭遇他们便会如麦秆般被收割。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "chaos_culture"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "神选者——那便是我们之中最受诸神宠爱的战士！你见过一个神选者在战场上横扫敌阵的模样吗？他们每一个人都经受了至少三重赐福，肌肉如钢铁，目光如烈焰，混沌板甲与他们的血肉融为一体，刀剑砍上去只会溅起火星。他们不眠不休，不需饮食，每一次杀戮都是献给黑暗诸神的赞美诗。整个北方荒原最强大的战帮里，神选者永远是走在混沌领主身后的核心，他们是诸神意志的化身，是凡世与混沌之间那道不可逾越的墙。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "作为指挥官，你必须认清：神选者是混沌军队的绝对核心，但也是消耗不起的昂贵资产。一支完整的神选者方阵在前线可以正面撕裂矮人碎铁阵线——代价是每个神选者都是历经数十年征战、承受多重赐福才走到这一步的稀世精锐。他们最适合担任突破锤，从侧翼碾压敌军防线，而不是放在中央承受远程火力的无谓消耗。但要注意：赐福越多，他们的心智便越远离凡人逻辑，指挥他们需要的不是命令，而是对诸神意志本身的呼应。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "神选者的起源可追溯至西格玛时代的早期混沌入侵，公元-50年左右，首批接受黑暗诸神多重赐福的凡人战士在混沌荒原出现。根据努恩大学禁书库保存的《混乱之书》残卷，神选者的晋升分为四阶：一阶勇士承受普通赐福（肌肉增强或皮肤硬化），二阶勇士获得一件混沌神器，三阶即为神选者——同时持有至少三项独立赐福且灵魂已绑定邪神。值得注意的案例包括'黑爪'哈肯（公元1802年围攻米登海姆时单人斩杀了七名白狼骑士团长）和'泣血者'瓦尔基娅（少数女性神选者，被恐虐亲自擢升）。近期学者争议的核心问题是：神选者的骨骼中发现的黑色晶体结构究竟是混沌能量沉淀还是亚空间物质入侵？米尔丁堡的被焚档案室中曾有论文称其为'灵魂钻石'。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我曾在边境伯爵领见过一个神选者撕开城门——那是无法用'战士'来形容的存在。作为统治封地的女性，我最恐惧的不是他们的武力，而是他们身上那股消解人性的赐福。凡人军队会叛变、会逃亡，但神选者不会；他们活着的全部目的就是实现邪神的渴望。这让我想起一个可怕的问题：如果我们对抗混沌的代价之一，是我们自己也可能成为他们？"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我的兄长就走上过那条路——他带领部族南下劫掠，为求力量接受血神的赐福，如今他已是北地某个战帮的神选者。我最后一次在战场上见到他时，他完全不再是我认识的那个人，他的声音像是从铁棺里传出的轰鸣，他的剑每一击都带走一整排士兵的性命。神选者的真相是：你的子嗣、你的兄弟、你的族人一旦踏入这条荣光之路，便不再属于你的家族，他属于诸神。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "在基斯里夫边境混饭吃的时候，我跟一支诺斯卡劫掠队撞上过。那帮诺斯卡人虽然凶悍，但连长矛阵都冲不破。后来北风起了，一个独行的神选者从雪幕中走出来——就一个。整个基斯里夫守备队长矛阵被他一个人碾成了碎肉。我没开玩笑，他的斧头砍人跟砍柴似的。从那以后我就只接南边的活了。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "说到神选者，我倒是有笔生意可做——只要有战帮往南走，铁匠公会就得准备翻倍的精炼魔钢去修复他们那些黑乎乎的铠甲。你猜怎么着？混沌板甲看着粗糙，实际锻造工艺复杂得离谱，每一件都嵌着邪神的赐福符文，寻常铁匠别说修理，碰一下都会发疯。不过阿尔道夫的帝国工程师倒是悬赏了一整套神选者铠甲，说要'研究反制手段'，出价够我在努恩买三间铺子了。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "混沌板甲：神选者所穿的黑色全覆式重甲，每一件都由混沌矮人锻造，镶嵌邪神符文，重量惊人却能随穿戴者意志而动。",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "神选者是混沌荒原深处走出的传说——他们本是凡人之躯"
+  ]
+}

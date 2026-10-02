@@ -1,0 +1,153 @@
+{
+  "Id": "rule_世界机制__龙蛋",
+  "Keywords": [
+    "龙蛋",
+    "石化龙蛋",
+    "孵龙",
+    "龙石"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "龙蛋外壳坚硬如石，表面覆有色泽各异的鳞片，触摸时可能显得冰冷，也可能因接近热源而回暖。龙族衰亡后，未孵化的蛋成为极罕见的宝物：富人把它当作无价收藏，坦格利安则曾把龙蛋放入王室婴儿摇篮，使血脉与龙的象征从出生便相连。孵化并没有一套能够由学士重复验证的简单方法；热、血、火、梦与魔法在诸多传说中彼此纠缠。任何持有者都可以尝试解释一枚龙蛋，却不能凭愿望保证蛋中一定有生命。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "valyrian",
+          "dragonstone"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "priest",
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "坦格利安传统会把龙蛋看作血脉延续的象征。有人相信它等待合适主人，有人只看见一块沉睡的石头；两种看法都不敢轻易把它交给外人。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "notable",
+          "artisan"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "商人会为龙蛋估价，又会发现没有正常市场能衡量它。卖掉一枚蛋也许换来城堡般的财富，也可能把足以改写王朝的可能性交到买家手中。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "普通人对龙蛋常同时怀有好奇与恐惧。若它永远不孵化，只是贵人的宝石；若某夜裂开，住在附近的人将比所有学者更早知道传说是真是假。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人把龙蛋看成可执行的秩序。坚硬如石、色泽各异的龙之卵，既是罕见遗物与王朝象征，也蕴含无人能用常理保证的孵化可能。它是否有效，取决于谁能授予权利、收取代价，并在违约时让判决真正落地。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起龙蛋时，关心它如何影响道路、命令和安全。坚硬如石、色泽各异的龙之卵，既是罕见遗物与王朝象征，也蕴含无人能用常理保证的孵化可能。远方的制度只有在营火、城门和驿站里能被执行，才不是空话。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者会从习惯和象征理解龙蛋。坚硬如石、色泽各异的龙之卵，既是罕见遗物与王朝象征，也蕴含无人能用常理保证的孵化可能。一项规矩若被反复实践，便会进入礼仪、手艺和祈祷；若只靠恐惧维持，危机一来就会露出裂缝。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民感受到龙蛋的方式最小也最准确。坚硬如石、色泽各异的龙之卵，既是罕见遗物与王朝象征，也蕴含无人能用常理保证的孵化可能。他们记得税、粮、劳役、赈济和谁能为他们说话；宏大的名称，最终都要落在一家人的饭锅旁。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "龙蛋：坚硬如石、色泽各异的龙之卵，既是罕见遗物与王朝象征，也蕴含无人能用常理保证的孵化可能。"
+  ]
+}

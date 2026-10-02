@@ -1,0 +1,211 @@
+{
+  "Id": "rule_湖之女神__湖之女神",
+  "Keywords": [
+    "湖之女神",
+    "湖神",
+    "圣杯",
+    "女神",
+    "湖之女神费伊女巫",
+    "银塔",
+    "圣杯之湖",
+    "莉莉丝",
+    "失落之子",
+    "湖之女神圣杯显圣"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "湖之女神是巴托尼亚的主神和守护者，她以湖中圣母的形态向世人显现，手中持有黄金圣杯，赐予被选中的骑士以超越凡人的力量。圣杯是女神恩赐的最高象征——只有经历了漫长游历、通过了无数考验并在湖中亲眼见到女神显圣的骑士，才能从她手中接过圣杯一饮而尽。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "湖之女神是我们的圣母，是巴托尼亚存在的唯一理由。她在圣湖的水光中显现——从来不是某种遥远而模糊的神迹，而是清晰、完整、令任何人一眼见到就会双膝跪地的圣洁显现。女神永远不会公开她的真名——那是只有最神圣的圣杯骑士在极少数场合才能听到的天音——但她对我们的要求简单而严苛：守护弱小、不滥用武力、不背叛誓言、不畏惧死亡。圣杯是她赐予凡人最珍贵的礼物：它不只是一个黄金器皿，它是一种试炼也是一份恩赐。那些渴望圣杯的骑士必须抛弃一切——封地、头衔、财富、甚至自己的名字——独自一人在荒野中游历，斩杀混沌怪物、保护无助村庄、在比武场上用长枪证明自己的纯净，直到某一个夜晚，当他跪在某座无名湖边已经筋疲力尽时，湖面上会升起他毕生等待的那道光芒。女神考验的不是骑士的力量，而是他的灵魂——一个怀着私欲追寻圣杯的人永远找不到它。我们从不向帝国人解释这些，因为他们不会懂——一个信仰战斗神的人无法理解为什么我们的神是一位温柔的圣母，而他们的神是一把锤子。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "湖之女神信仰是巴托尼亚的权力体系中不可忽视的一环。圣杯修女会是女神在地上的代言人——她们不是普通的修女，她们中的许多人本身就是圣杯骑士的遗孀或女儿，拥有解读圣杯预言的独门奥秘。如果你想要在巴托尼亚发动一场圣战但公爵们犹豫不决，你需要圣杯修女会公开宣布女神支持这场战争——这比国王的命令更能调动骑士们的热血。但请务必谨慎使用这种宗教影响力：一旦修女会后来发现你在欺骗或夸大了战争的神圣性，她们的诅咒会让你活着进入穆西隆。女神对国王的加冕具有最终仲裁权——一个国王即使在公爵议会上得到了全票支持，如果圣杯大教堂的圣杯修女们拒绝为他举行加冕仪式，他永远无法坐上王位。这种神权对王权的制约是巴托尼亚政治最精妙的设计。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 100
+        },
+        "IdentityIds": null
+      },
+      "Content": "湖之女神信仰的神学本质是旧世界宗教学中一个最迷人也是最危险的课题。与西格玛信仰（一个明确的、以历史人物为基础的英雄崇拜）不同，湖之女神崇拜属于一种更为古老的神话类型——学者们称之为场所性显圣信仰，即神明与特定的自然地点（湖泊）紧密相连，神力通过该场所向选定的人显现。女神的神学属性有几个有待深究的谜题：第一，女神从未被描述为创造者或宇宙统治者——她的职能集中在保护、净化和选拔英雄上；第二，圣杯本身的神性来源不明——在教会版本中圣杯是女神创造的，但某些古老的巴托尼亚民间传说暗示圣杯有着前吉勒斯时代的更古老来源，可能来自精灵或更早的文明；第三，女神与精灵神话的关联是教会最敏感的禁忌——比较宗教学研究揭示湖之女神与艾塞尔·洛伦精灵的女神在属性、仪式甚至神像风格上存在无法忽视的相似之处，但任何公开提出这一关联的学者都可能被指控为异端并被逐出巴托尼亚。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "湖之女神是所有巴托尼亚女性的终极镜像——在一个人间法律将女性置于次等地位的土地上，这个王国的至高神祇却是一位女性。这不是巧合，这是一个沉默但深不可测的神学悖论。我在自己的私人祈祷室内向女神祈祷时从不像男人们那样祈求战斗的胜利或荣誉的加冕——我祈求的是智慧、耐心、以及面对那些在公爵议会上以微笑回应我提议却转头在私下里抹黑我的男人们时仍然能够平静呼吸的力量。女神作为女性神祇对于巴托尼亚女性贵族具有一种男人们无法完全理解的意义——她不需要挥舞战锤来证明自己的权威，她通过慈悲和挑选英雄来塑造世界，而她最强大的工具从来不是武力而是恩赐。费伊女巫作为女神唯一的凡界代言人，在巴托尼亚以威慑而非干预的方式存在——她会沉默地在某个危机节点出现、说出一句模棱两可但足以改变整个王国政治走向的话，然后消失。她的缄默本身就是权力，而女性贵族们比男性公爵们更早地理解了这一点。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "湖之女神信仰在家族层面上的实践与在公共祭祀中展现的截然不同。我们家族保留着一项从十二使徒时代未经中断的私人仪式：每一代新任公爵在加封后的第七夜必须在家族领地的圣湖边独自守夜——不携带武器、不骑马、不与任何随从交谈——这一夜的守夜在大教堂的公开祭典中从不会被提及，因为它是私人的。女神的公共形象在圣杯修女会的守护下保持统一和纯洁，但每一个古老家族都有自己的家族版女神叙事——在我们的版本中，女神在授予先祖圣杯的同时还赐予了一句只有家族直系血脉中历代公爵口头相传的密语。家族与女神之间的这种私人契约关系构成了巴托尼亚封建网络中一条从条文中看不见的精神纬线——国王和教会可以命令骑士们的行为，但无法替代每个家族在自己私密的祈祷中与女神建立的那种独特的、不受任何外部权威审查的内在联系。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "湖之女神在流浪者眼里是旧世界最神秘的神——她的存在不是通过宏伟的大教堂呈现的，而是在无数不起眼的池塘和无名山泉边以极为个人的方式显现。我曾经在帕拉冯森林深处发现了一座被人遗忘的圣杯遗址——一百年前的某位无名骑士在那里竖立过一块手工粗凿的石碑，碑上只雕刻着一只杯和两个字：'她曾来。'碑的周围是堆积的干枯野花，全是路过的农奴和朝圣者不断奉献的——没有人管理这里，没有人收税，没有修女会监督，但这座无名石碑周围空气的质感与别处不同，那种宁静中有一种极为浓烈的在场感。湖之女神对巴托尼亚普通民众而言不是教义和祭祀——她是一种极为具体、偶尔会在极端孤独或危险时刻向一个无名的农奴女人或丢失羊群的牧羊童显现的存在。女神的显现从来不是对权力者说话——她选择在湖边独自哭泣的农奴、迷失在山中的流浪者、跪在废弃石碑前的亡命骑士——而这些人从女神那里获得的不是神谕，是一种比任何语言都更深沉的被看见的感觉。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "湖之女神信仰是巴托尼亚最大的无形经济资产——圣杯朝圣之路和圣湖遗址每年吸引的朝圣者数量远超帝国的西格玛大教堂，而这些朝圣者在巴托尼亚全境的食宿消费构成了农奴家庭最重要的季节性现金收入。圣杯修女会管理着遍布全境的无数修道院和圣湖庄园，据我商会的保守估计修女会的总地产面积可以与两个中等公爵领相媲美——但这些地产在法律上属于女神而非修女会，因此不能被国王征税。修女会通过出售圣湖之水、认证过的圣杯纪念徽章和朝圣者住宿服务获得大量现金流入，这些资金在名义上全部用于女神的事工——包括维护圣杯教堂、资助流浪骑士、以及对饥荒村庄的紧急救济。巴托尼亚的圣杯经济圈是一种奇妙的精神-物质双重循环：女神赐予恩宠，朝圣者用金币回馈，修女会用金币维护圣所和分发救济，而分发救济的行为强化了农奴对女神的信仰。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "银塔——女神在异界的居所，位于某座圣湖水面之下的不可思议领域",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "湖之女神的神学属性与信仰体系"
+  ]
+}

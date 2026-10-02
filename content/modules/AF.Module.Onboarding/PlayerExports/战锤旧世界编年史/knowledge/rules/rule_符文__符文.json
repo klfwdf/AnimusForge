@@ -1,0 +1,211 @@
+{
+  "Id": "rule_符文__符文",
+  "Keywords": [
+    "符文",
+    "符文符文铁匠",
+    "矮人魔法",
+    "符文科技",
+    "远古符文",
+    "盖罗米尔",
+    "符文锻造",
+    "三符文",
+    "符文安塞斯特尔",
+    "统御符文"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "符文是矮人独有的魔法技术——不是通过吟唱咒语引导魔法之风，而是通过将远古符文精确地捶打进金属之中，将魔力永久「封印」在武器、盔甲和建筑里。矮人符文铁匠是旧世界最稀有的工匠，他们的技艺只能通过师徒秘密传承，从未被外族人掌握过。一套精心铭刻的符文可以让一把普通的战斧变得比人类骑士的长剑更锋利、让一块普通的盾牌能够抵御龙息——但这门技艺正在缓慢失传。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "符文不是魔法——魔法是精灵和人类搞的那种花里胡哨的风向变化。符文是真理，是金属中封印的永恒律令。我们的祖先在远古时代从山脉本身学会了第一个符文——那是大地骨骼中蕴含的原始力量之语。符文铁匠不是在「使用」魔法，他们是在与金属的灵魂对话，用锻锤作为媒介将力量「说服」进武器之中。人类会惊讶于一把符文剑永不生锈、永不迟钝——但这不过是符文最基础的能力而已。真正的远古符文——如今几乎无人能锻造的那种——可以将恶魔放逐、可以将巨龙的吐息反弹回去。但我们的先祖把这些秘密带进坟墓里了。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "符文武器是旧世界最有价值的战略资产之一——也是最为稀缺的资源。获取矮人符文装备需要同时满足三个条件：与矮人保持极好的关系、能够支付天文数量的黄金、以及等待数十年甚至数百年的制作周期。在战场上，符文装备可以对对抗超自然敌人产生决定性的差异——例如燃烧符文可以造成对巨魔有效的火焰伤害，而放逐符文可以对恶魔造成真实伤害。任何能够从矮人处获取符文装备的政治实体都应优先追求这一目标。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 100
+        },
+        "IdentityIds": null
+      },
+      "Content": "符文锻造是矮人独有的魔力封存技术，其原理与精灵和人类的施法体系完全不同。魔法之风对于其他种族来说需要引导和释放——但对于矮人，这种引导会导致他们石化为岩石。符文铁匠通过另一种方式与魔法互动：他们用特制的符文锤将魔法之风「捶打」进金属晶格之中，符文作为「锚点」将魔力固定下来。每一件符文武器包含一至三个符文——单符文物品只具有基础效果，双符文可以产生协同效应，三符文是最强大的——但每个符文的铭刻都需要符文铁匠付出一部分生命力。符文锻造之所以正在失传是因为远古符文铁匠将最深的秘密只口头传给直系弟子、现任公会的极度保守、以及稀有魔法金属盖罗米尔矿脉的枯竭。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "符文铁匠公会从不接纳女性——这是公开的、毫不避讳的传统。但矮人女性对符文技术的存续有着不可替代的间接贡献：是女性维持着符文铁匠学徒的选拔和推荐系统。每一位矮人男孩在青春期时如果展示出对金属的敏感度，首先察觉到这一天赋的通常不是他的父亲（父亲在全天在锻炉旁工作），而是他的母亲——她在日常抚养中注意到他能在不触摸锻件的情况下感知其温度变化、能在没有指导的情况下用泥土捏出近似符文的形状。当母亲将一个有天赋的儿子送到符文铁匠公会门口时，公会不会问问题——他们信任母亲的判断，因为整个矮人社会建立在这份信任之上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我家族拥有一柄三符文战斧——它被称为'先祖之怒'——是我氏族中最珍贵的传世之宝，也是我最沉重的负担。这柄战斧已经在我家族中传承了十一个世代，每一位持有者都必须在他/她的继任仪式上用自己的鲜血重新激活斧面上的第三道符文——血契符文。激活仪式要求至少三位符文铁匠同时在场——这意味着我每次继承都需向卡拉克·阿祖尔支付足以让一个人类小贵族破产的黄金费用。我宁愿支付：因为如果我试图在不激活符文的情况下使用这柄斧头，上一任持有者的灵魂会被永远困在斧面中无法安息——这是我家族最基本的责任之一。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "在旧世界各地流浪期间，我见过的最珍贵的商品是一块拇指盖大小的盖罗米尔碎片——在玛利恩堡的地下拍卖会上以相当于一座小型男爵领的价格成交。这种陨铁不仅是矮人符文锻造的必需材料，也是帝国炼金术士的圣杯——他们相信将微量盖罗米尔粉末混合进普通钢水中可以永久性地提升武器的韧性。矮人当然严禁任何盖罗米尔出口——但采矿隧道中吹出来的岩尘中偶尔会含有微不可察的盖罗米尔微粒，人类的'集尘者'在矮人矿场外围用筛网和磁铁收集这种粉尘。这是合法与非法的灰色地带。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "符文武器交易是旧世界奢侈品市场上最神秘也最不透明的细分领域。一件简单的单符文护甲——仅在关键部位刻有防火或抗冲击的单一符文——在帝国黑市上的起拍价大约相当于一个小型男爵领的年收入。但价格不是最大的障碍：问题是你能向谁买？矮人不公开出售符文武器，人类帝国禁止与矮人之外的符文来源交易（这被认为可能涉及混沌符文），而合法获得符文武器的唯一途径要么是你的家族在过去某一场战斗中拯救过某个矮人王，要么你的祖先与某个矮人氏族之间有延续超过五百年的商业互信。换言之，你无法用金钱买到符文——你只能用你的名字历史来换。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "符文锻造——矮人独有的将魔法永恒封存于金属中的锤打技术",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "符文符文符文铁匠矮人魔法"
+  ]
+}

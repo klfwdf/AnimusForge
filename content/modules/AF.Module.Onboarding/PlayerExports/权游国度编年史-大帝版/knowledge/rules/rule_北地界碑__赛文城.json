@@ -1,0 +1,152 @@
+{
+  "Id": "rule_北地界碑__赛文城",
+  "Keywords": [
+    "赛文城",
+    "东部丘陵"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "赛文城是赛文家族在北境的城堡领。它代表北境中数量众多、史书着墨不多却不可缺少的地方据点：城主负责调解土地、征收份额、守护粮仓，在封臣召令到来时交出人马与物资。北境的辽阔让每一座小城堡都承担比南方同类据点更重的孤立感；一场大雪、一条断桥或一支狼群都能让相邻领地的距离变得漫长。赛文城的名称和家族可被领主名册记住，普通居民更记得的是哪口井没有冻住、哪条路还能走。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "从赛文城望出去，最贴近生活的并非纹章，而是井泉、田租、磨坊、林地和危急时能否进堡。当地家庭还要依靠柴薪、猎场、泥炭、盐鱼与能否撑过长冬的粮仓；任何一处道路、井泉或码头失灵，代价都会先落到他们身上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "号角与旗帜之外，赛文城的防务依靠外墙、塔楼、水井、粮仓与最近的援军道路。在七国的封建秩序中，赛文城的归属牵动封臣义务、税粮和征召；守军能否吃饱、援兵能否按时抵达，比议事厅里的豪言更能决定这处据点是否可靠。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "scholar",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "远行者在赛文城停留多久，取决于领地税、庄园产物、驮队路程和堡下形成的小市集。他们还会辨认北境的口音、法令和通行凭据；名声可以从酒馆传得很远，真正的路程仍须由车轮、船桨或马蹄丈量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "一纸封赐可以决定赛文城的主人，却不能立刻赢得附近人的服从。在七国的封建秩序中，赛文城的归属牵动封臣义务、税粮和征召；旗帜更换之后，道路、粮仓、旧债和地方信任仍得由新主人逐一接手。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "走过赛文城的士兵记得坡势、城门、饮水与守军盘查外人的规矩。能补给、能避险、能找到向导，便值得在行程里标明；若三样都没有，再响亮的家名也救不了迷途者。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "赛文城的匠人靠石墙、木梁、铁门、墓窖和代代修补留下的接缝留下手艺，神职者则用旧神、鱼梁木与祖先留下的墓地解释生死。一处据点因而不只是领主的大厅，也是婚丧、誓言、劳作与地方记忆反复发生的场所。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "住在领地下层的人用灶火和粮袋衡量赛文城。他们关心柴薪、猎场、泥炭、盐鱼与能否撑过长冬的粮仓，也看征粮后是否留下种子、灾年时城门是否开启；远方人看见纹章，他们看见的是明日有没有饭吃。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "赛文城：赛文城是赛文家族在北境的城堡领。它代表北境中数量众多、史书着墨不多却不可缺少的地方据点：城主负责调解土地、征收份额、守护粮仓，在封臣召令到来时交出人马与物资。北境的辽阔让每一座小城堡都承担比南方同类据点更重的孤立感；一场大雪、一条断桥或一支狼群都能让相邻领地的距离变得漫长。赛文城的名称和家族可被领主名册记住，普通居民更记得的是哪口井没有冻住、哪条路还能走。"
+  ]
+}

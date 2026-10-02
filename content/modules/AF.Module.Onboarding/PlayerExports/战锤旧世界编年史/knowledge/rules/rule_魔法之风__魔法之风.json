@@ -1,0 +1,207 @@
+{
+  "Id": "rule_魔法之风__魔法之风",
+  "Keywords": [
+    "魔法之风",
+    "魔法之风八风",
+    "魔法之风魔法学院",
+    "魔法之风战斗法师",
+    "施法",
+    "魔法之风阿兹尔蓝风"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "魔法之风是从北方混沌星门不断涌出的不可见能量流，是整个旧世界所有魔法的最终来源。帝国通过八所魔法学院将这股危险的能量分为八种不同颜色的风来驾驭，每一种风对应一种情绪和法术类型。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "魔法之风是力量也是诅咒。泰克里斯大师在帝国创立魔法学院时，将混沌的原始能量分解为八风——赫曦白风的净化与光芒、阿克夏红风的火焰与热力、虔门金风的金属与变形、纪伦翠风的生命与生长、阿兹尔蓝风的天空与闪电、沙许紫风的死亡与时间、乌尔古灰风的阴影与欺骗、艾吉尔黄风的野兽与狂野。每一位战斗法师终生只修习一风，因为试图同时掌握多风的凡人最终都会堕入混沌的诱惑。我们的魔法是危险的，但与精灵和混沌术士不同，我们建立了一整套纪律、检查和许可体系来控制风险——每一位帝国法师都随身携带许可文书，随时接受猎巫人和西格玛教会的检查。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "魔法之风在军事上的应用改变了旧世界战争的形态。一名训练有素的天堂之风战斗法师可以在敌军上空召唤连锁闪电，金属之风的法师能将敌方骑士的甲具加热至通红，火焰之风的法师则直接投出毁灭性的火球。但每一位法师在战场上都是一把双刃剑——过度使用魔法可能引发魔力反噬、意外召唤恶魔或导致区域性魔法风暴。帝国的对手们同样拥有各自的施法者：混沌术士直接调用邪神之力，亡灵法师从纳迦什的遗产中汲取黑暗能量，绿皮萨满利用Waaagh!能量扭曲现实，精灵法师则以其古老的传承安全地操控多种风。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "八风体系是人类理解魔法的一种局限框架——它是对的，但不完整。精灵的凯恩符文术法、矮人的大地符文、亡灵法师的纳迦什黑暗术法和绿皮萨满的搞毛能量，都不完全包含在八风之内。泰克里斯建立学院时选择了八风体系是因为人类的灵魂太容易被混沌直接吸引，需要一个严格、克制、分类明确的系统来管理。高等精灵可以直接从魔法之风中抽取八种或更多颜色的能量而不被混沌侵染，因为他们种族的精神结构经过数千年的魔法适应。矮人则完全走向另一条路——他们天生免疫魔法之风，因此发展出了以符文铭刻来释放大地内部固有能量（而非星门之风）的符文锻造技术。这就是为什么每一次施法都包含风险，每一位法师都在刀锋上行走。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "帝国魔法学院对女性法师的态度是实用主义的——比教会更为开放，但仍有其无声的限制。女性在八风中有明显的倾向分布：翡翠之风纪伦和天堂之风的女性法师比例远高于金属之风的女性，这被认为是女性与生命和天空之间的某种灵能共鸣而非任何制度性歧视。但最令人不安的统计是：女性法师在乌尔古灰风（阴影）学院中的人数极少但失败率极高——那些试图驾驭阴影之风的女性比其他任何学院都更频繁地'失踪'，不是死亡，而只是某天走进了一场大雾中再也没有走出来。灰学院的男性导师们声称这是'灰风的选择性亲和'而不予解释。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我的家族在奥斯特领的领地上建有一座小小的家族礼拜堂，而礼拜堂地下室里隐藏着我家族真正的宝贝——一套由十二代以前的祖先从阿尔道夫魔法学院购买并藏匿于此的风向测量水晶。这些水晶——单独看只是彩色玻璃——但当魔法之风在领地范围内异常涌起时，会在夜间发出对应颜色的荧光。我的祖父使用这套系统在帝国猎巫人到来之前提前疏散了一位隐藏在我封地内的未注册女法师——不是因为同情魔法使用者，而是因为她恰好是我表妹。家族对魔法的态度永远是矛盾的：公开反对，私下保护。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "在帝国各省旅行时你会发现，不同地区的普通人对魔法之风的态度有着天壤之别。在瑞克领——帝国心脏地带，战斗法师受到严格但公开的容忍，人们会在街上对他们侧目但不是尖叫。在斯提尔领——靠近希尔瓦尼亚——任何展示魔法天赋的人都可能在当天晚上被村民绑上火刑架，不是因为教会的教义，而是因为斯提尔人在过去数百年中见过太多从希尔瓦尼亚飘来的、使用黑魔法的吸血鬼和死灵法师了。最安全的地方是天国学院所在的塔拉贝克领——但这也是因为你离红风太近随时可能被意外炸死。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "魔法之风的商业价值是一个帝国官方不愿承认但实际存在的庞大灰色经济。黄金学院（虔门）的炼金术士在炼造过程中生产的副产品——'金渣'——在帝国冶金行业中是一种被严格管制但无法被杜绝的高需求材料。金渣被证实可以少量加入熔钢以提升金属的韧性和淬透性——这是帝国冶金公会愿意付出高出等重量白银三倍价格的原因。理论上所有金渣都必须由黄金学院回收处理；实际上每个黄金学徒都私下出售一些给冶金商会的中间人。帝国教会每次要求清查时，黄金学院都回复说'金渣已全部回收'，然后继续出售。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "赫曦——白风，代表净化、光明与智慧，帝国光明学院",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "魔法之风的神学属性与信仰体系"
+  ]
+}

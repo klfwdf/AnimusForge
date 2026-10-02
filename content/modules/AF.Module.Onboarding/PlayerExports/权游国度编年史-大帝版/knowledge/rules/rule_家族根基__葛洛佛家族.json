@@ -1,0 +1,131 @@
+{
+  "Id": "rule_家族根基__葛洛佛家族",
+  "Keywords": [
+    "葛洛佛家族",
+    "铁拳"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "葛洛佛家族以狼林中的深林堡为根基，家徽为红底银色铁拳。家主传统上称“深林堡主人”而非最显赫的南方头衔，家族的力量来自林地、猎场、木材、山路以及与西海岸威胁长期相处的经验。葛洛佛是史塔克的古老封臣，但领地离临冬城甚远，真正维持统治的是能否召集林地人、保护村落并在铁民或山匪来袭时迅速反应。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "北境封臣把葛洛佛视作狼林西部的守门人。深林堡不以华丽闻名，铁拳纹章却很合当地脾性：林地领主必须抓得住伐木人、猎户、山路和沿海警报。拥有大片森林不等于拥有安稳财富，真正的本事是让分散的人在号角响起时聚起来。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "狼林人认路靠树形、溪声和旧刀痕，不靠南方人的界石。葛洛佛若能护住伐木场和冬粮，他们就是可靠的铁拳；若征召太久、铁民又从海上来，铁拳落不到该落的地方，抱怨便会沿猎径传得比渡鸦还快。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待葛洛佛家族，会先看它的土地、婚盟、血脉和债务。狼林深林堡的史塔克封臣，家徽为红底银色铁拳。木材、林道、西海岸防御与保护林地居民构成其家族根基；箴言未知。家徽是门面，能否保护封地、兑现婚约并在危机中召集人马，才是家族真正的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起葛洛佛家族时，记得的是谁在营火边分过粮、谁把他们留在城外、谁在败局里仍站在旗旁。狼林深林堡的史塔克封臣，家徽为红底银色铁拳。木材、林道、西海岸防御与保护林地居民构成其家族根基；箴言未知。家族名声最终要落到具体的人和具体的命令上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意葛洛佛家族留下的仪式、墓地和传承。狼林深林堡的史塔克封臣，家徽为红底银色铁拳。木材、林道、西海岸防御与保护林地居民构成其家族根基；箴言未知。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见葛洛佛家族。狼林深林堡的史塔克封臣，家徽为红底银色铁拳。木材、林道、西海岸防御与保护林地居民构成其家族根基；箴言未知。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "葛洛佛家族：狼林深林堡的史塔克封臣，家徽为红底银色铁拳。木材、林道、西海岸防御与保护林地居民构成其家族根基；箴言未知。"
+  ]
+}

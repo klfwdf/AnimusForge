@@ -1,0 +1,157 @@
+{
+  "Id": "rule_世界机制__粮食贸易",
+  "Keywords": [
+    "粮食贸易",
+    "谷物",
+    "河湾地粮运",
+    "围城饥荒"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "粮食从田地到餐桌要经过收割、脱粒、磨粉、装袋、仓储和运输。河湾地、河间地等产粮区可以输出谷物，君临、矿区、军营和海岛则更依赖外来供给；道路、河运和港口任何一处中断，都会造成损耗与涨价。领主以谷物缴租、养兵和赈济，商人利用地区价差获利，城中穷人则把面包价格当作政治最直接的尺度。丰年囤粮可能是谨慎，也可能成为歉年牟利；围城时一袋麦子的价值往往超过一件华服。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "reach",
+          "river"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "merchant",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "产粮区的人知道丰收不等于人人吃饱。租税、军队征购和商人车队会先分走谷物，农户仍得计算自家种子能否留到春天。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "crownlands",
+          "dragonstone",
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "依赖输入的城市和岛屿把粮船视作生命线。掌权者若只数金库不看仓容，封锁来临时会发现钱币不能直接煮粥。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "soldier",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵需要口粮，百姓需要面包，神职者面对排队求食的人。饥饿最擅长撕掉礼法，让每一份征发都变成忠诚是否还能维持的考验。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人把粮食贸易看成可执行的秩序。庄园、磨坊、河船、车队和粮仓把收成送进城市与军营，价格会比王令更早暴露战争和歉收。它是否有效，取决于谁能授予权利、收取代价，并在违约时让判决真正落地。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起粮食贸易时，关心它如何影响道路、命令和安全。庄园、磨坊、河船、车队和粮仓把收成送进城市与军营，价格会比王令更早暴露战争和歉收。远方的制度只有在营火、城门和驿站里能被执行，才不是空话。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者会从习惯和象征理解粮食贸易。庄园、磨坊、河船、车队和粮仓把收成送进城市与军营，价格会比王令更早暴露战争和歉收。一项规矩若被反复实践，便会进入礼仪、手艺和祈祷；若只靠恐惧维持，危机一来就会露出裂缝。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民感受到粮食贸易的方式最小也最准确。庄园、磨坊、河船、车队和粮仓把收成送进城市与军营，价格会比王令更早暴露战争和歉收。他们记得税、粮、劳役、赈济和谁能为他们说话；宏大的名称，最终都要落在一家人的饭锅旁。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "粮食贸易：庄园、磨坊、河船、车队和粮仓把收成送进城市与军营，价格会比王令更早暴露战争和歉收。"
+  ]
+}

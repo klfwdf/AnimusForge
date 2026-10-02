@@ -1,0 +1,151 @@
+{
+  "Id": "rule_权力遗产__铁王座",
+  "Keywords": [
+    "铁王座",
+    "贝勒里恩",
+    "七国之王"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "铁王座立于君临红堡王座厅，相传由征服者伊耿命黑死神贝勒里恩熔铸战败者献上的上千把剑而成。它巨大、扭曲、遍布尖刃，绝非舒适座椅；君王被割伤常被解释为王座拒绝不配者，尽管粗心同样足以见血。王座把原本分立的诸王国压进一个共同政治中心，成为法令、税赋、继承与战争正当性的象征。坐上它并不等于真正控制七国：命令仍需渡鸦、道路、封臣和军队执行，铁本身只能让争夺者看见权力的形状。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "crownlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "君临权贵在王座前谈法统与礼序，也清楚厅外的金袍、粮仓和盟军同样重要。谁能坐下是一回事，谁能让命令穿过城门是另一回事。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "scholar",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "各地贵族把铁王座视为统一秩序或征服枷锁，取决于家族记忆。它由降剑铸成这一点，从来既是胜者的荣耀，也是败者没有忘记的屈服。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "merchant",
+          "artisan"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "普通人很少见到王座本身，却会感到以它名义征收的税、铸造的钱和发动的战争。对他们而言，铁王座最真实的部分常是远方决定落到自家门槛上的那一天。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人把铁王座当作仍在生效的旧账。由征服战争降剑熔铸的王权象征，尖刃会割伤坐者，也提醒七国统一始于火与臣服。一场过去的战争或一次王朝更替，会决定今日的税率、盟约、道路与谁有资格在大厅里先开口。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人记住铁王座的方式不同于史官。由征服战争降剑熔铸的王权象征，尖刃会割伤坐者，也提醒七国统一始于火与臣服。他们记得哪面旗倒下、哪座桥被烧、谁在雪里分过最后一口水；对他们来说，历史首先是身体留下的记忆。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者谈及铁王座时，常把事实与寓意放在一起。由征服战争降剑熔铸的王权象征，尖刃会割伤坐者，也提醒七国统一始于火与臣服。胜者会把它写成秩序的证明，败者会把它留作警告，而普通人只记得那一年粮价和墓地增加了多少。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民很少说出铁王座的完整名字。由征服战争降剑熔铸的王权象征，尖刃会割伤坐者，也提醒七国统一始于火与臣服。他们通过旧屋、家谱、墓碑和老人讲过的禁忌认识过去；只要某件往事还影响收税、征兵或婚姻，它就没有真正结束。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "铁王座：由征服战争降剑熔铸的王权象征，尖刃会割伤坐者，也提醒七国统一始于火与臣服。"
+  ]
+}

@@ -1,0 +1,213 @@
+{
+  "Id": "rule_史崔格家族__史崔格家族",
+  "Keywords": [
+    "史崔格家族",
+    "失落血脉",
+    "野兽形态",
+    "墓穴潜伏",
+    "退化吸血鬼",
+    "食尸鬼之王",
+    "史崔格",
+    "退化血族",
+    "墓穴之王",
+    "野性吸血鬼",
+    "失落王朝",
+    "食腐者"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "史崔格家族曾经是吸血鬼血脉中最辉煌的王族，统治着一片失落已久的不死帝国。如今他们已退化为潜伏在墓穴中的食尸鬼之王——外形扭曲、心智堕落，但仍残存着昔日王权的碎片记忆与对复仇的永恒饥渴。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "史崔格家族——我们血族中最悲惨的兄弟！曾经在恶地之南存在过一个被称为「史崔格帝国」的不死王朝，它的王城据说其壮丽程度堪比当今的库罗纳。但为什么我们现在看到的史崔格后裔是那些浑身覆满污秽毛皮、在坟地里啃食死尸的野兽般的怪物？因为其他血脉——包括我们冯·卡斯坦因——在数千年前联合将史崔格王朝摧毁了，原因是他们的统治太过高调，威胁到了所有血族的隐蔽生存。幸存者逃进了最深的墓穴和最荒芜的废墟，在绝对的黑暗中一代代退化至今。他们的心智扭曲了，但深植于血脉中的王之骄傲从未消失——当你看到一个史崔格坐在骷髅堆成的王座上、戴着锈铁的碎裂王冠时，那是他正在重演自己最后一次记得的与「王」有关的记忆。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "史崔格家族在战略评估中通常被视为低优先级的威胁——他们缺乏组织、散居在各处废墟中，很少发起大规模的军事行动。但致命的错误是忽视他们：史崔格的食尸鬼群可以在短时间内撕裂一支落单的巡逻队，而他们的巢穴（通常在古墓或废弃城市的深处）是地狱般的近战场地。清理史崔格巢穴的成本远高于其他类型的地牢扫荡，因为每一条地下通道都可能在下一秒涌出成群的利齿和利爪。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "史崔格家族的衰落是吸血鬼政治史上最具悲剧色彩的篇章之一。史崔格王朝在约公元前一千八百年时达到巅峰，控制的领土囊括今恶地、边境亲王领及部分尼赫喀拉地区。其末代史崔格王乌索兰被一支由冯·卡斯坦因、血龙和莱弥亚三方组成的联军在「骷髅王之乱」中击败。乌索兰的尸体被分割并埋藏于七处不同地点以防止其复活。残存的史崔格后裔在之后的数百年中被迫不断退入更隐秘的角落里，由于无法稳定获取高质量血液、长期在黑暗中近亲繁衍以及持续的生存压力，他们的后代在身体上发生了显著的退化变异——包括体毛增生、面部骨骼前突和爪甲变异——但在纯粹的力量和耐受力方面，一个完全的史崔格王仍然是旧世界最强大的单体吸血鬼之一。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "史崔格家族的悲剧中有某种让我心碎的东西——他们不是自愿变成怪物的，而是被自己的同族背叛并逼入绝境，然后在漫长的黑暗中失去了自我。这种「文明在囚禁中退化为野兽」的叙事让我对权力游戏的终极代价有了更深的恐惧。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我族在迁移途中曾误入一处被史崔格占据的废弃矮人矿坑。最初我们以为里面只有普通食尸鬼——但当我们杀到最深处时，那里坐着一位巨大的史崔格王，它的眼睛中仍然亮着某种古老智慧的光芒。它没有攻击我们，只是用一口令人惊讶的流利帝国语问了一句：「帝国还在吗？」我们无言以对，然后退出了矿坑。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "在希尔瓦尼亚的乡野传说中，人们说如果你在墓园中留下三枚金克朗和一壶烈酒，史崔格家族会在夜里帮你「解决」你的敌人——把尸体和其他东西一起从地上抹除。我不知道这是否真的有效，但我认识几个农民对此深信不疑。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "史崔格家族是唯一不需要货币的吸血鬼——他们不吃不喝人类的食物和饮品，除了鲜血和尸体之外一无所需。这意味着与史崔格的交易模式完全不同于任何活人经济：你需要用某种他们看重的东西来交换他们不杀掉你——通常是古老的王权遗物或失落的史崔格王朝文物。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "史崔格家族曾是不死帝国王族，现退化为墓穴中的食尸鬼之王",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "史崔格家族的家族背景与政治地位"
+  ]
+}

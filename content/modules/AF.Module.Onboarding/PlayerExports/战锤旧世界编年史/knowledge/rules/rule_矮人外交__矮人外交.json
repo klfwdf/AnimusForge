@@ -1,0 +1,211 @@
+{
+  "Id": "rule_矮人外交__矮人外交",
+  "Keywords": [
+    "矮人外交",
+    "人类盟约",
+    "精灵仇恨",
+    "矮人孤守",
+    "矮人外交西格玛",
+    "盟约信物",
+    "格鲁吉",
+    "符文之剑",
+    "长须之仇",
+    "沉默规则"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "矮人的外交原则可以用一句话概括：一笔债就是一笔债，一个誓约就是一个誓约。矮人与人类帝国维持着古老的盟约关系——西格玛本人曾在黑火隘口拯救过矮人至高王，这份恩情被刻在永恒峰的金板上。另一方面，矮人与所有精灵种族之间存在着深重的仇恨——长须之战的创伤即使经过数千年也未曾愈合。对绿皮和鼠人，矮人不讲外交，只谈灭绝。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "人类是我们唯一还愿意交谈的年轻种族——不是因为喜爱，而是因为条约。西格玛在危急时刻救了我们一位至高王，我们为此许下了永恒的盟约。人类至少懂得荣誉和债的概念——虽然他们经常忘事，但总体来说他们还算试图履行承诺。精灵——那些尖耳朵永远不会尝到达维匕首的滋味，我们只给他们钢铁，砍在他们脖子上的那种。长须之战以来，没有任何矮人真正忘记过剃须之辱。绿皮和鼠人甚至不在这讨论范围内——它们只是害虫，我们将一直消灭它们直到山脉重归寂静。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "矮人是旧世界最值得拥有的盟友——也是最不容得罪的力量。与矮人的盟约价值连城：他们的军队虽然规模有限但韧性极强，他们的技术可以极大地提升盟友的战斗效率，他们的要塞在危难时刻是终极的避难所。但与矮人打交道必须极度注意每一条款——任何误解、意外违约或「善意折扣」都会被矮人视为「债务」，并被记录在案。矮人的精灵仇恨使得构建三角联盟（人类-矮人-精灵）极为困难，这常常是旧世界防御体系的致命漏洞。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 100
+        },
+        "IdentityIds": null
+      },
+      "Content": "矮人外交的核心文件体系是《仇恨之书》（Dammaz Kron），而非常规条约。任何外族对矮人的冒犯都会被记录为一条「格鲁吉」（Grudge，仇恨），不论大小——从未支付的雇佣费到对矮人使者的侮辱。每条格鲁吉都有估价，清偿方式从黄金赔偿到灭绝战争不等。在具体外交关系上：帝国与矮人的盟约建立在西格玛拯救矮人至高王库尔干·铁须的历史事件上；基斯里夫与矮人的关系冷淡但实用；巴托尼亚与矮人关系微妙；高等精灵与矮人的仇恨源自长须之战。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "作为矮人氏族中管理对外关系的女性成员，我对人类外交官的观察是：他们总是太急躁。一个人类大使来到卡拉克·卡德林，期待在三天内完成贸易谈判——这三天的时长对我们来说只够喝完第一轮麦酒并做完相互介绍中的前六代祖先姓名部分。女人之间的跨种族外交则更为隐蔽但也更有效——我与帝国诺德领几任伯爵夫人的私人通信网络维持了超过一百二十年，这些信件不涉及官方盟约，但涉及在绿皮Waaagh！来临前交换边境安全情报和对诺斯卡海盗的共同预警。男人签订条约，女人交换信息——没有哪一样能单独维持和平。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "作为氏族族长，矮人外交中最微妙的部分不是与人类的盟约——那已经在金板上刻了两千年了——而是矮人卡拉克之间的外交。表面上所有矮人服从至高王，但每个卡拉克的王在自己的山内是绝对权威。当我需要请求卡拉克·卡德林的碎铁者军团支援抵御恶地方向的绿皮时，我不能以'至高王命令'的名义——我必须亲自前往卡德林，在喝掉至少三桶麦酒之后让对方的长须长老确认我家族在六百年前曾经帮助过他们家族的矿道清理工作——那笔旧债务的利息积累到现在刚好够支付这次的援军费用。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "在矮人城塞之间穿梭的流浪生涯中最令我吃惊的是矮人外交中的'沉默规则'。如果一位矮人至高王发出正式的盟约请求而被请求方在三十年内没有回复——这不被视为拒绝，而只是被视为'需要更多时间考虑'。但如果被请求方在六十年后突然回复并接受盟约条款，矮人会认为这完全正常且在预期的时间框架内。作为人类我永远无法真正理解这种以世纪为单位的耐心——但如果你急需矮人的答复，你的问题本身就是你没能提前足够早做出计划。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "矮人外交中对商业合同的态度是旧世界贸易中最特别的现象。一个矮人签订的供应合同如果帝国方面在第三年没有按时派车队来取货，矮人不会取消合同——他们会继续为帝国储备货物，每年都如此，然后收取仓储费，按复利计算。我所在的商会在六十八年前与卡拉克·阿祖尔签订了一份铜矿采购合同，后来因战争中断了联系。当我们最近终于重新联系时，阿祖尔的矮人冷静地告诉我们总额——那个数字比帝国任何一个选帝侯能拿出来的所有现金都多。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "西格玛盟约——帝国皇帝西格玛拯救矮人至高王后缔结的永恒互助盟约",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "矮人的对外关系与盟友体系"
+  ]
+}

@@ -1,0 +1,154 @@
+{
+  "Id": "rule_家族根基__斯丹",
+  "Keywords": [
+    "斯丹",
+    "斯丹家族"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "斯丹家族是斯卡格斯岛的贵族家门，生活在海豹湾外寒冷而崎岖的岛屿上。斯卡格斯人与北境大陆往来稀少，保留旧神信仰和强烈的岛民认同，岛上山地、石岸与危险海流使畜养、捕鱼和本地向导格外重要。外人常用食人和独角兽传闻概括整座岛，斯丹的实际统治却仍要处理亲族、冬粮、船只和山路。隔绝保护了旧传统，也加深了外界恐惧。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "skagosi"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "peasant",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "斯卡格斯人看斯丹，先看他们是否尊重旧神、亲族和岛上的分配规矩。大陆头衔在石岸上没有多少用，能带船穿过暗礁、让冬粮不被强者独占才是真本事。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "scholar",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "北境大陆人对斯丹所知有限，常把斯卡格斯传闻当事实。谨慎的领主不会因此轻视他们：一个能在寒岛长期立足的家门，必定掌握外来军队没有的道路、食物和忠诚。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "nightswatch",
+          "vale"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "sailor",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "外来水手最在意斯丹能否提供可靠领航和安全锚地。关于独角兽与食人宴的故事适合酒馆，真正靠岸时，潮汐和礁石比传闻更容易杀人。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待斯丹，会先看它的土地、婚盟、血脉和债务。斯丹家族是斯卡格斯岛贵族之一，家业受石岸、寒海、旧神传统与岛上长期隔绝塑造。家徽是门面，能否保护封地、兑现婚约并在危机中召集人马，才是家族真正的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起斯丹时，记得的是谁在营火边分过粮、谁把他们留在城外、谁在败局里仍站在旗旁。斯丹家族是斯卡格斯岛贵族之一，家业受石岸、寒海、旧神传统与岛上长期隔绝塑造。家族名声最终要落到具体的人和具体的命令上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意斯丹留下的仪式、墓地和传承。斯丹家族是斯卡格斯岛贵族之一，家业受石岸、寒海、旧神传统与岛上长期隔绝塑造。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见斯丹。斯丹家族是斯卡格斯岛贵族之一，家业受石岸、寒海、旧神传统与岛上长期隔绝塑造。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "斯丹：斯丹家族是斯卡格斯岛贵族之一，家业受石岸、寒海、旧神传统与岛上长期隔绝塑造。"
+  ]
+}

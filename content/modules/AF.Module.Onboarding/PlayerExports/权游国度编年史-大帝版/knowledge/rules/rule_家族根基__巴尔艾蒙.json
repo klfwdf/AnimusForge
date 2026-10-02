@@ -1,0 +1,134 @@
+{
+  "Id": "rule_家族根基__巴尔艾蒙",
+  "Keywords": [
+    "巴尔艾蒙",
+    "巴尔艾蒙家族"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "巴尔艾蒙家族以龙石岛附近的尖角城为根基，是王领海岸与龙石岛政治之间的古老封臣。家族领地面向黑水湾与狭海，渔业、港口、盐和沿岸道路构成实际财富；它的贵族身份则来自对坦格利安旧王朝与龙石岛传统的长期联系。尖角城并不拥有龙，却必须理解龙石岛、君临与风暴地的每次变化如何影响来船、税赋和征召。巴尔艾蒙的家名因此既有海岸地方性，也有靠近王权所带来的敏感。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "dragonstone",
+          "crownlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "龙石岛与王领贵族把巴尔艾蒙看作连接两片海岸政治的地方家门。它的土地不大，却处在来船必经与王命易达的位置；忠诚、港税和航道安全往往同时被拿来衡量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "dragonstone",
+          "crownlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "sailor",
+          "peasant",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "尖角城百姓从潮汐、鱼市和来往船帆认识巴尔艾蒙。贵族争论谁拥有王权，商人只想知道港口是否开放，渔民只想在风暴前回家。海岸家族的荣耀最终要落到这些具体的安全上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待巴尔艾蒙，会先看它的土地、婚盟、血脉和债务。巴尔艾蒙的家名系于血缘、婚盟、旧债与地方记忆；效忠的对象、持有的城堡和家中掌权者都可能改变，但家名累积的荣辱往往比一场战争活得更久。家徽是门面，能否保护封地、兑现婚约并在危机中召集人马，才是家族真正的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起巴尔艾蒙时，记得的是谁在营火边分过粮、谁把他们留在城外、谁在败局里仍站在旗旁。巴尔艾蒙的家名系于血缘、婚盟、旧债与地方记忆；效忠的对象、持有的城堡和家中掌权者都可能改变，但家名累积的荣辱往往比一场战争活得更久。家族名声最终要落到具体的人和具体的命令上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意巴尔艾蒙留下的仪式、墓地和传承。巴尔艾蒙的家名系于血缘、婚盟、旧债与地方记忆；效忠的对象、持有的城堡和家中掌权者都可能改变，但家名累积的荣辱往往比一场战争活得更久。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见巴尔艾蒙。巴尔艾蒙的家名系于血缘、婚盟、旧债与地方记忆；效忠的对象、持有的城堡和家中掌权者都可能改变，但家名累积的荣辱往往比一场战争活得更久。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "巴尔艾蒙：巴尔艾蒙的家名系于血缘、婚盟、旧债与地方记忆；效忠的对象、持有的城堡和家中掌权者都可能改变，但家名累积的荣辱往往比一场战争活得更久。"
+  ]
+}

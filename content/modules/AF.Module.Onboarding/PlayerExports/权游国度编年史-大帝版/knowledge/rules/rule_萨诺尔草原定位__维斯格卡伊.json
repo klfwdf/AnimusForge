@@ -1,0 +1,148 @@
+{
+  "Id": "rule_萨诺尔草原定位__维斯格卡伊",
+  "Keywords": [
+    "维斯·格卡伊",
+    "维斯格卡伊"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "维斯格卡伊（Mardosh）位于多斯拉克海北缘的萨诺尔旧地，政治上处在萨诺尔遗民、草原部族与残存城镇交错的区域之内。它是一座城堡，主要承担地方守备、征税和庇护附近人口的职责。城墙与道路把周边人口、仓储和守备系在这里；旗帜纵然更换，这处据点仍会影响附近人如何纳税、贸易与寻求庇护。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "季节一变，维斯格卡伊周围的人首先检查井水、摊位、粮价、工钱和赶集道路。当地家庭还要依靠草场、废墟水井、马队、残存田亩与防备卡拉萨；任何一处道路、井泉或码头失灵，代价都会先落到他们身上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "把维斯格卡伊守在手里，需要算清城门、街巷、粮仓、守备人数与疏散百姓的出口。维斯格卡伊处在萨诺尔旧地的权力与贸易网络中，城门内外的规矩由当地秩序决定；守军能否吃饱、援兵能否按时抵达，比议事厅里的豪言更能决定这处据点是否可靠。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "scholar",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "维斯格卡伊在商路上的轻重，可以从市集日、仓租、关税、钱币成色和邻城路程看出来。他们还会辨认萨诺尔旧地的口音、法令和通行凭据；名声可以从酒馆传得很远，真正的路程仍须由车轮、船桨或马蹄丈量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "对封臣而言，维斯格卡伊既是一份权利，也是一笔必须偿还的责任。维斯格卡伊处在萨诺尔旧地的权力与贸易网络中，城门内外的规矩由当地秩序决定；旗帜更换之后，道路、粮仓、旧债和地方信任仍得由新主人逐一接手。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "对赶在天黑前投宿的人来说，维斯格卡伊意味着客栈、马厩、水井和入夜前是否还能进城。能补给、能避险、能找到向导，便值得在行程里标明；若三样都没有，再响亮的家名也救不了迷途者。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "石木会朽，维斯格卡伊仍靠匠人照料作坊、市场、屋瓦、圣堂钟声与历代扩出的街巷，靠神职者保存昔日高王、毁城记忆与被草海吞没的诸神。一处据点因而不只是领主的大厅，也是婚丧、誓言、劳作与地方记忆反复发生的场所。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "百姓不靠族谱判断维斯格卡伊好坏，他们看收成和征税。他们关心草场、废墟水井、马队、残存田亩与防备卡拉萨，也看征粮后是否留下种子、灾年时城门是否开启；远方人看见纹章，他们看见的是明日有没有饭吃。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "维斯格卡伊：维斯格卡伊（Mardosh）位于多斯拉克海北缘的萨诺尔旧地，政治上处在萨诺尔遗民、草原部族与残存城镇交错的区域之内。它是一座城堡，主要承担地方守备、征税和庇护附近人口的职责。城墙与道路把周边人口、仓储和守备系在这里；旗帜纵然更换，这处据点仍会影响附近人如何纳税、贸易与寻求庇护。"
+  ]
+}

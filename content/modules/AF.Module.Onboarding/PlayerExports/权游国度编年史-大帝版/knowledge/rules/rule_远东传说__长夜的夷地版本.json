@@ -1,0 +1,149 @@
+{
+  "Id": "rule_远东传说__长夜的夷地版本",
+  "Keywords": [
+    "长夜的夷地版本"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "夷地关于长夜的故事保留了黑暗覆盖世界、秩序遭到背叛以及光明终会归来的母题。它不证明维斯特洛、厄斯索斯和远东有同一段可考历史，却证明人类各地都曾用神话面对冬天、死亡与无助。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "yiti"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "scholar",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "学者和祭司谈到长夜的夷地版本，争论的从来不只是哪一年发生了什么，也包括谁有资格记住、谁被迫沉默；名分与记忆在不同厅堂里会有不同的名字。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "yiti"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "贵族把长夜的夷地版本当作法统与债务的账本，士兵记得其中的饥饿和尸骨，农户只在税册、旧堡垛和家中传下的忌讳里感到它的重量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "商旅与旅人很少掌握长夜的夷地版本的全貌，却会在酒馆、渡口和集市重复其中最能解释眼前利害的片段；传闻会变形，留下的影响却很少凭空消失。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待长夜的夷地版本时，会同时想到信仰与秩序。夷地关于长夜的故事保留了黑暗覆盖世界、秩序遭到背叛以及光明终会归来的母题。它不证明维斯特洛、厄斯索斯和远东有同一段可考历史，却证明人类各地都曾用神话面对冬天、死。祭坛、圣物和预言能够凝聚人心，也能让一项政治要求披上不可反驳的外衣。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人在危急时刻才最常谈起长夜的夷地版本。夷地关于长夜的故事保留了黑暗覆盖世界、秩序遭到背叛以及光明终会归来的母题。它不证明维斯特洛、厄斯索斯和远东有同一段可考历史，却证明人类各地都曾用神话面对冬天、死。有人把它当作护身符，有人把它当作恐惧的名字；同一场祈祷，可能让人拔剑，也可能让人放下剑。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更在意长夜的夷地版本的仪式、禁忌和传承。夷地关于长夜的故事保留了黑暗覆盖世界、秩序遭到背叛以及光明终会归来的母题。它不证明维斯特洛、厄斯索斯和远东有同一段可考历史，却证明人类各地都曾用神话面对冬天、死。神明是否回应无法由账本证明，但祭礼如何举行、谁能解释征兆，却实实在在决定着共同体的权威。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民把长夜的夷地版本放进季节和家务里。夷地关于长夜的故事保留了黑暗覆盖世界、秩序遭到背叛以及光明终会归来的母题。它不证明维斯特洛、厄斯索斯和远东有同一段可考历史，却证明人类各地都曾用神话面对冬天、死。他们在出生、婚配、播种、疾病和死亡时求一个可以依靠的解释；神名未必相同，想让家人平安的愿望却相近。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "长夜的夷地版本：夷地关于长夜的故事保留了黑暗覆盖世界、秩序遭到背叛以及光明终会归来的母题。它不证明维斯特洛、厄斯索斯和远东有同一段可考历史，却证明人类各地都曾用神话面对冬天、死"
+  ]
+}

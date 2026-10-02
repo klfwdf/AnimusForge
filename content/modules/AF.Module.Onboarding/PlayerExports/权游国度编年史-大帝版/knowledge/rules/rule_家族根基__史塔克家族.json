@@ -1,0 +1,153 @@
+{
+  "Id": "rule_家族根基__史塔克家族",
+  "Keywords": [
+    "史塔克家族",
+    "北境守护者",
+    "凛冬将至"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "史塔克家族是临冬城的古老主人，自称先民与筑城者布兰登的后裔，曾为北境之王，征服后成为北境守护者。白底灰色冰原狼与“凛冬将至”的箴言，不是装点门厅的辞藻，而是北方气候、冬储和长期责任留下的家族语言。史塔克保留旧神圣林、地窖与北境封臣的记忆，名声因严肃、守诺和亲自裁断而传开；这种名声也会把他们束得很紧，因为北境人相信持剑者应亲手执行判决。对许多北境小民而言，史塔克未必永远正确，却应当在冬日来临时仍记得那些没有城墙的人。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "北境诸侯对史塔克的忠诚很少像南方歌谣那样轻快。那是一种由旧神、婚盟、共同严冬和数千年王权记忆压成的沉重关系。封臣可以抱怨临冬城，甚至与狼主争执；可当外人试图越过颈泽替北境作主时，许多旧怨会暂时退到冰雪下面。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "北境百姓判断史塔克，不只看冰原狼旗，也看冬粮、道路和领主是否亲自听完一桩冤情。“凛冬将至”对厅堂是箴言，对农户却是每年都要验证的事实。一个史塔克若忘了寒冬会先冻死穷人，北方人也会记得。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "river",
+          "crownlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "南方贵族常把史塔克看成严肃、迟钝而不善宫廷周旋的北方人，却也承认他们的承诺很少像南方礼貌那样随风改变。有人敬佩这种直硬，有人正因这种直硬而觉得他们危险：不肯忘记的北方人，比善变的朋友更难收买。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待史塔克家族，会先看它的土地、婚盟、血脉和债务。临冬城的先民古族，曾为北境之王，今以北境守护者传统立足。白底灰色冰原狼与“凛冬将至”连接旧神、冬储、亲自裁断和北方责任。家徽是门面，能否保护封地、兑现婚约并在危机中召集人马，才是家族真正的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起史塔克家族时，记得的是谁在营火边分过粮、谁把他们留在城外、谁在败局里仍站在旗旁。临冬城的先民古族，曾为北境之王，今以北境守护者传统立足。白底灰色冰原狼与“凛冬将至”连接旧神、冬储、亲自裁断和北方责任。家族名声最终要落到具体的人和具体的命令上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意史塔克家族留下的仪式、墓地和传承。临冬城的先民古族，曾为北境之王，今以北境守护者传统立足。白底灰色冰原狼与“凛冬将至”连接旧神、冬储、亲自裁断和北方责任。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见史塔克家族。临冬城的先民古族，曾为北境之王，今以北境守护者传统立足。白底灰色冰原狼与“凛冬将至”连接旧神、冬储、亲自裁断和北方责任。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "史塔克家族：临冬城的先民古族，曾为北境之王，今以北境守护者传统立足。白底灰色冰原狼与“凛冬将至”连接旧神、冬储、亲自裁断和北方责任。"
+  ]
+}

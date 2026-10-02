@@ -566,7 +566,7 @@ public sealed partial class KingdomStrategicProfileBehavior
 		}
 		catch (Exception ex)
 		{
-			InformationManager.DisplayMessage(new InformationMessage("PlayerExports 待迁移或路径不可用：" + ex.Message));
+			InformationManager.DisplayMessage(new InformationMessage("PlayerExports 路径不可用：" + ex.Message));
 			if (isExport) { onReturn?.Invoke(); return; }
 		}
 		List<InquiryElement> elements = new List<InquiryElement>
@@ -575,17 +575,21 @@ public sealed partial class KingdomStrategicProfileBehavior
 		};
 		if (!isExport && root != null)
 		{
-			elements.Add(new InquiryElement("__latest__", "使用最新导出（自动）", null));
+			elements.Add(new InquiryElement("__latest__", "使用最新玩家导出（自动）", null));
 		}
-		try
+		if (!isExport)
 		{
-			foreach (DirectoryInfo directory in (root == null ? Array.Empty<DirectoryInfo>() : new DirectoryInfo(root).GetDirectories()).Where(x => !x.Name.StartsWith(".", StringComparison.Ordinal)).OrderByDescending(x => x.LastWriteTimeUtc))
+			foreach (var folder in PlayerExportsStore.GetImportFolders())
+				elements.Add(new InquiryElement(folder.FullPath, folder.Name + "  [" + folder.SourceLabel + "]  (" + folder.LastWriteTime.ToString("yyyy-MM-dd HH:mm") + ")", null));
+		}
+		else
+		{
+			try
 			{
-				elements.Add(new InquiryElement(directory.Name, directory.Name + "  (" + directory.LastWriteTime.ToString("yyyy-MM-dd HH:mm") + ")", null));
+				foreach (DirectoryInfo directory in (root == null ? Array.Empty<DirectoryInfo>() : new DirectoryInfo(root).GetDirectories()).Where(x => !x.Name.StartsWith(".", StringComparison.Ordinal)).OrderByDescending(x => x.LastWriteTimeUtc))
+					elements.Add(new InquiryElement(directory.Name, directory.Name + "  (" + directory.LastWriteTime.ToString("yyyy-MM-dd HH:mm") + ")", null));
 			}
-		}
-		catch
-		{
+			catch { }
 		}
 		MBInformationManager.ShowMultiSelectionInquiry(new MultiSelectionInquiryData(
 			title,
@@ -607,7 +611,7 @@ public sealed partial class KingdomStrategicProfileBehavior
 				{
 					InformationManager.ShowTextInquiry(new TextInquiryData(
 						isExport ? "输入导出文件夹名" : "输入导入文件夹名/路径",
-						isExport ? "留空=自动时间戳；导出始终限制在 PlayerExports 内。" : "留空=最新导出；允许输入只读的绝对目录或 .json 文件。",
+						isExport ? "留空=自动时间戳；导出始终限制在 PlayerExports 内。" : "留空=最新玩家导出；名称优先查找模组目录，也可输入只读绝对目录或 .json 文件。",
 						isAffirmativeOptionShown: true,
 						isNegativeOptionShown: true,
 						"确定",
@@ -681,30 +685,10 @@ public sealed partial class KingdomStrategicProfileBehavior
 				errorMessage = "绝对路径不存在，或不是 JSON 文件。";
 				return false;
 			}
-			string root = Path.GetFullPath(PlayerExportsStore.GetPlayerExportsRootPath());
-			if (string.IsNullOrEmpty(input))
+			string candidate = PlayerExportsStore.ResolveImportFolderPath(input);
+			if (string.IsNullOrWhiteSpace(candidate) || !Directory.Exists(candidate))
 			{
-				DirectoryInfo latest = Directory.Exists(root)
-					? new DirectoryInfo(root).GetDirectories().Where(x => !x.Name.StartsWith(".", StringComparison.Ordinal)).OrderByDescending(x => x.LastWriteTimeUtc).FirstOrDefault()
-					: null;
-				if (latest == null)
-				{
-					errorMessage = "PlayerExports 下没有可导入文件夹。";
-					return false;
-				}
-				importRoot = latest.FullName;
-				return true;
-			}
-			string name = PlayerExportsStore.SanitizeFolderName(input);
-			if (name == "." || name == "..")
-			{
-				errorMessage = "导入文件夹名无效。";
-				return false;
-			}
-			string candidate = Path.GetFullPath(Path.Combine(root, name));
-			if (!IsPathInsideRoot(candidate, root) || !Directory.Exists(candidate))
-			{
-				errorMessage = "找不到 PlayerExports 下的导入文件夹。";
+				errorMessage = string.IsNullOrEmpty(input) ? "玩家导出目录下没有可导入文件夹。" : "找不到模组目录或玩家导出中的文件夹。";
 				return false;
 			}
 			importRoot = candidate;

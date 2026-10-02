@@ -1,0 +1,210 @@
+{
+  "Id": "rule_奥莱恩__奥莱恩",
+  "Keywords": [
+    "奥莱恩",
+    "橡树之王",
+    "狂野狩猎之主",
+    "精灵王",
+    "库诺斯化身",
+    "王者橡树",
+    "重生循环",
+    "猎神",
+    "盛夏重生"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "奥莱恩是木精灵的猎神之王，艾索洛伦的狂野狩猎之主。传说他每年在盛夏最炽热之日从一棵巨大的橡树中重生，以野兽之王的姿态率领阿斯莱战士在森林中驰骋杀戮。奥莱恩手持巨大的猎矛，头戴着巨大的鹿角盔，他的怒吼能够令最勇敢的战士心生恐惧——他是森林之怒的具象化身。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "奥莱恩是我们的王、猎人、神圣的野兽。他是库诺斯——精灵狩猎之神——在凡间的化身，他的身体虽由橡木和血肉编织而成，但他的灵魂是纯粹的神性狂野。每年盛夏他都会在'王者橡树'的树干中重生，撕裂树皮走出来时全身沾满森林的汁液和旧年的血迹。他复活后的第一件事就是吹响狂野狩猎的号角——那声音能穿透整个艾索洛伦，能让最温顺的林地生物瞬间变为猎食者。奥莱恩不属于任何季节，他只属于夏天、属于杀戮、属于无止境的追逐。但我们也知道，盛夏终将逝去——当秋天的第一片枯叶飘落时，奥莱恩的力量会开始衰退，他会在冬季的某个寒冷黎明重新走入那棵橡树中'死去'，直到下一个盛夏到来。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "奥莱恩的季节性出现定义了木精灵的军事活跃周期。夏季是木精灵最危险的时期——在狂野狩猎期间，不仅艾索洛伦内部的警戒程度达到顶峰，奥莱恩很可能会率领狩猎队冲出森林边界，将遇到的任何非精灵生灵视为合法的猎物目标。任何在夏季时期靠近或需要穿越艾索洛伦附近的军事行动都必须将狂野狩猎的风险计算在内。冬季相对安全——奥莱恩处于'休眠'状态，阿莉尔主导王廷，木精灵倾向于退缩回森林深处。然而不要因此掉以轻心——精灵斥候不会因为奥莱恩歇息而停止巡逻。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 100
+        },
+        "IdentityIds": null
+      },
+      "Content": "奥莱恩作为库诺斯化身的神学地位在精灵宗教学中是一个复杂课题。与高等精灵正统的卡达伊众神体系不同，木精灵的王权神学将奥莱恩和阿莉尔——分别对应库诺斯和伊莎——置于宇宙的核心地位。奥莱恩的重生与死亡循环反映了一种'永恒回归'的宇宙论：精灵狩猎之王必须在每个夏季通过暴力杀戮来重新确认森林对混沌与秩序边界的控制，随后在冬季自我牺牲以使森林得以休息。这一循环不仅是宗教仪式，更在魔法层面上起到了定期释放艾索洛伦内部积累的过剩生命能量的作用——如果没有奥莱恩在每个夏季消耗这些狂野的能量，森林可能因内部魔法压力而陷入灾难性的自燃或突变。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "作为侍奉阿莉尔的女性精灵贵族，我对奥莱恩的情感是复杂的——那是一种掺杂着敬畏、恐惧和一丝怜悯的奇特混合。奥莱恩在盛夏重生时固然壮观，但我们这些经历过多个季节轮回的人知道，每位新重生的奥莱恩并非完全相同。每一次重生都会带来细微的性格偏差——有时他更暴躁、有时更忧郁、有时甚至带有一丝疲惫。这让人不禁怀疑：每一次死亡和重生是否真的让奥莱恩完整归来，还是他的灵魂在无数次的橡树轮回中正在某种缓慢地消耗？阿莉尔从不谈论这个话题，但当一个猎神之王在盛夏仍然发出冬季的叹息时，每位在场的女精灵都会交换一个沉默的眼神。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "作为十二家族的族长之一，我对奥莱恩的态度不完全是被统治者对王的尊崇——而是一种实用主义的合作。在狂野狩猎期间我的家族战团需要与奥莱恩的直属狩猎队协同作战，但这种协同从不是单纯的服从命令：奥莱恩是猎人而非将军，他不懂得战略层面的考量。族长们必须在他被杀戮欲完全吞没之前，在林地议会上将理性的战术目标——比如消灭哪支特定的帝国伐木远征队、清除哪片区域的混沌污染野兽——植入他的狩猎路径之中，然后退后一步让他以他的方式——也就是无尽的暴力和鲜血——去完成。这是一种微妙到极点的操纵：不能被奥莱恩察觉，也不能被狩猎的狂热所否定。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "有一年夏天我在布雷顿尼亚的边境旅店过夜时，整个村庄的人在日落时分突然变得极度不安——不是因为看到了什么，而是因为一种远方的、仿佛来自世界底部的低吼持续在空气中震动。店主的祖母跪下来开始祈祷湖中女神，她说那声音是'绿人'——木精灵王的狩猎号角。我们在那晚没有一个人敢点灯，因为旅店的墙壁是木头的——没有人在木精灵王打猎的夜晚想让任何木头建筑显得显眼。到了清早，森林边缘多了十七具帝国偷猎者的尸体，每具尸体上只插着一支箭，箭羽是森林翠绿色。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "从资源管理者的角度来看，奥莱恩的狂野狩猎对边境经济的影响是周期性的但极为剧烈的。每年夏季月份，布雷顿尼亚奎内尔城邦的木材进口价格会暴跌——不是因为供应增加，而是因为所有伐木承包商都不会在这个季节接单作业。精明的商人在春季就提前囤积好一整年所需的建筑木材和柴火，然后在夏秋季以三倍价格卖给那些没有储备的散户。帝国方面，艾索洛伦东侧的贸易税站每年夏季的关税收入会大幅下降，因为所有车队宁可绕道向南通过灰色山脉的隘口也不愿冒险靠近森林——这导致夏季月份的帝国财务官在编制预算草案时总是格外暴躁。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "奥莱恩——木精灵猎神之王，库诺斯的凡间化身",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "奥莱恩橡树之王狂野狩猎之主"
+  ]
+}

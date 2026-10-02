@@ -1,0 +1,132 @@
+{
+  "Id": "rule_家族根基__萨尔道夫",
+  "Keywords": [
+    "萨尔道夫",
+    "萨尔道夫家族"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "萨尔道夫家族属于密尔的城市家门。它的现实根基应从密尔工艺与海贸理解：工坊需要原料和订单，商船需要护航，富裕家庭则通过婚姻、借贷和政治资助保护生意。家名若不能让合伙人相信合同，精美宅邸也只是昂贵外壳。 密尔以精巧工艺和贸易闻名，透镜、蕾丝、地毯、染料与密尔式十字弓都需要熟练工匠和进口原料。城市由富裕商人、总督与行业利益支配，奴隶劳动与自由工匠的技术共同支撑财富。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "myrish"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "密尔商人与总督看萨尔道夫，首先计算它掌握哪些工坊、航线和债权。精美货物利润丰厚，原料断供或一步错误外交却足以让整片作坊停工。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "myrish"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "slave",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "密尔工匠评价萨尔道夫，更在意学徒待遇、原料质量与货款能否按时结清。贵族能把蕾丝卖到万里之外，真正让针线不出差错的仍是窗边熬坏眼睛的人。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待萨尔道夫，会先看它的土地、婚盟、血脉和债务。萨尔道夫是密尔商贸家门，其地位受工坊产品、狭海航运与城市总督政治共同塑造。家徽是门面，能否保护封地、兑现婚约并在危机中召集人马，才是家族真正的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起萨尔道夫时，记得的是谁在营火边分过粮、谁把他们留在城外、谁在败局里仍站在旗旁。萨尔道夫是密尔商贸家门，其地位受工坊产品、狭海航运与城市总督政治共同塑造。家族名声最终要落到具体的人和具体的命令上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意萨尔道夫留下的仪式、墓地和传承。萨尔道夫是密尔商贸家门，其地位受工坊产品、狭海航运与城市总督政治共同塑造。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见萨尔道夫。萨尔道夫是密尔商贸家门，其地位受工坊产品、狭海航运与城市总督政治共同塑造。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "萨尔道夫：萨尔道夫是密尔商贸家门，其地位受工坊产品、狭海航运与城市总督政治共同塑造。"
+  ]
+}

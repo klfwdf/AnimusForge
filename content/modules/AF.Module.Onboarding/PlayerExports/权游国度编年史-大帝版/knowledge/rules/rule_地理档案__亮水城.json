@@ -1,0 +1,154 @@
+{
+  "Id": "rule_地理档案__亮水城",
+  "Keywords": [
+    "亮水城",
+    "亮水城地理",
+    "亮水城历史",
+    "亮水城战略"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "亮水城位于河湾地中南部，是佛罗伦家族的祖传城堡，处在高庭、旧镇与多恩边疆之间的道路网络内。它在七国法理上属于河湾地；佛罗伦家族以园丁王血统自豪，因此这座城既是地方领地中心，也是他们同提利尔家族争论门第时最重要的根基。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "reach"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "外乡人记得亮水城的名字，本地人记得的却是井泉、田租、磨坊、林地和危急时能否进堡。当地家庭还要依靠井泉、灌渠、果园、耐旱牲畜和避开烈日的行程；任何一处道路、井泉或码头失灵，代价都会先落到他们身上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "reach"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主在厅堂里谈亮水城，经验老到的士兵却只问外墙、塔楼、水井、粮仓与最近的援军道路。在七国的封建秩序中，亮水城的归属牵动封臣义务、税粮和征召；守军能否吃饱、援兵能否按时抵达，比议事厅里的豪言更能决定这处据点是否可靠。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "scholar",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "关于亮水城的消息传到远方，往往伴着领地税、庄园产物、驮队路程和堡下形成的小市集。他们还会辨认多恩的口音、法令和通行凭据；名声可以从酒馆传得很远，真正的路程仍须由车轮、船桨或马蹄丈量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "谁在亮水城升起旗帜，谁就继承这里的旧债、旧臣与边界争端。在七国的封建秩序中，亮水城的归属牵动封臣义务、税粮和征召；旗帜更换之后，道路、粮仓、旧债和地方信任仍得由新主人逐一接手。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "向导描述亮水城，总从坡势、城门、饮水与守军盘查外人的规矩讲起。能补给、能避险、能找到向导，便值得在行程里标明；若三样都没有，再响亮的家名也救不了迷途者。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "工匠用双手丈量亮水城的石墙、木梁、铁门、墓窖和代代修补留下的接缝，祭司用仪式延续七神、洛伊拿遗风与亲王治下不同血脉的共同记忆。一处据点因而不只是领主的大厅，也是婚丧、誓言、劳作与地方记忆反复发生的场所。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "平民记住亮水城的方式，是哪一年开仓、哪一年征走最后一头牛。他们关心井泉、灌渠、果园、耐旱牲畜和避开烈日的行程，也看征粮后是否留下种子、灾年时城门是否开启；远方人看见纹章，他们看见的是明日有没有饭吃。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "亮水城：亮水城位于河湾地中南部，是佛罗伦家族的祖传城堡，处在高庭、旧镇与多恩边疆之间的道路网络内。它在七国法理上属于河湾地；佛罗伦家族以园丁王血统自豪，因此这座城既是地方领地中心，也是他们同提利尔家族争论门第时最重要的根基。"
+  ]
+}

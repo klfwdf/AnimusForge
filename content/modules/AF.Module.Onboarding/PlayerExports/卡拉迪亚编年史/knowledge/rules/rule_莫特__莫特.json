@@ -1,0 +1,94 @@
+﻿{
+  "Id": "rule_莫特",
+  "Keywords": [
+    "莫特",
+    "虞美人"
+  ],
+  "RagShortTexts": [
+    "杰屈朗诗人常去莫特，欣赏虞美人花海景色。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "莫特是杰屈朗附近的一座村庄，坐落于穿过比斯坎山脉与埃皮尔山脉的纳尔谷中。这里以春季山坡上盛开的艳丽虞美人花海而闻名，温暖的南方土地也非常适合种植橄榄。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "莫特的春天能让你看花了眼。满山坡的虞美人，红得像火烧了一样。等花谢了，橄榄就该收了。杰屈朗的诗人最爱跑到莫特去，说那儿的景色能给他们的诗添颜色。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "townsfolk"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "莫特的橄榄产量不如阿罗曼克，但油的质量一点不差。而且春天那花海，引得好多贵族专程跑去看，看完顺道就买几罐油回去。虞美人花期短，看的人却多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "我春天路过莫特的时候，还以为自己走错了——满山坡红艳艳的虞美人花，铺天盖地，连空气里都是甜丝丝的味道。当地人就在花田旁边的山坡上种橄榄，花谢了收果子，日子过得挺有诗意。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "莫特",
+      "Kind": "bound_settlement_name",
+      "TargetId": "__bound_settlement__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": "杰屈朗",
+      "Kind": "bound_settlement_name",
+      "TargetId": "__bound_settlement__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}

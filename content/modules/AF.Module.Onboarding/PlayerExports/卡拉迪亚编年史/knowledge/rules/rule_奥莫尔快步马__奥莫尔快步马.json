@@ -1,0 +1,31 @@
+﻿{
+  "Id": "rule_奥莫尔快步马",
+  "Keywords": [
+    "奥莫尔快步马"
+  ],
+  "RagShortTexts": [
+    "奥莫尔快步马产自斯特吉亚奥莫尔地区，体型结实、耐力出众，适应北地寒冷与崎岖地形，是商人长途旅行与领主信使的可靠伙伴，在贵族圈中亦颇受好评"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "奥莫尔快步马产自斯特吉亚的奥莫尔地区，体型结实、耐力出众，适应北地寒冷气候与崎岖地形，是斯特吉亚商人长途旅行和领主信使传信的可靠伙伴，在贵族圈子中也颇受好评。"
+    }
+  ],
+  "TextMappings": []
+}

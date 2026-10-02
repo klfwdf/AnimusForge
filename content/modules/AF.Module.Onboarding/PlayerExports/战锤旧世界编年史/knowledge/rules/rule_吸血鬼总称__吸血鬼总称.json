@@ -1,0 +1,206 @@
+{
+  "Id": "rule_吸血鬼总称__吸血鬼总称",
+  "Keywords": [
+    "吸血鬼正式国名",
+    "午夜显贵领地",
+    "冯·卡斯坦因领地",
+    "不死王国",
+    "亡灵希尔瓦尼亚"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "吸血鬼伯爵们的势力范围在旧世界地图上被标记为「希尔瓦尼亚」——曾经是帝国的一个行省，如今是暗夜王朝的核心领土。从德拉肯霍夫城堡的黑色塔尖到瓦尔登霍夫的浓雾街头，这片土地不再属于生者的世界，而是由冯·卡斯坦因家族及其血族盟友统治的亡灵领地。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我们的土地在凡人的地图上被称为「希尔瓦尼亚」——一个让帝国人听到就会在深夜把门窗关得更紧的名字。但在午夜显贵之间，我们称它为「暗夜王朝」——一个以德拉肯霍夫为中心、以亡灵大军为疆界、以永恒的时间为货币的王国。帝国仍然声称对希尔瓦尼亚拥有主权——但帝国有多少军队敢在希尔瓦尼亚过夜？我们的农民向阿尔道夫交税的唯一原因是我们允许他们这样做——因为这让他们产生了一种仍被帝国保护的舒适幻觉，而这种幻觉使他们更放松地接受我们的收割。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "希尔瓦尼亚在国际法中的地位是一个被有意维持模糊的灰色地带。帝国从未正式承认希尔瓦尼亚的独立，但也从未有能力在那里行使有效统治。冯·卡斯坦因家族对帝国的策略不是宣战而是渗透——他们不追求公开的边境变更，而是通过血仆网络和转化渗透使帝国的每一次对希尔瓦尼亚的干预都在政治和军事上都变得越来越困难。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "希尔瓦尼亚（Sylvania）的名称在帝国行政历史中可追溯到帝国历前约300年，当时帝国定居者在这一地区建立了最早的边境哨站。该名称源自古帝国语中的「森林之地」（Syl-van-ia），因为当时的希尔瓦尼亚覆盖着一片浓密的古老森林。在弗拉德·冯·卡斯坦因于帝国历约1100年代以人类贵族身份渗透并逐渐控制了这片地区后，希尔瓦尼亚开始从帝国行省向实际的亡灵领地转变。在帝国法律中希尔瓦尼亚仍然是一个帝国行省，其「选帝侯」为冯·卡斯坦因家族——但帝国从未正式承认吸血鬼为合法的选帝侯，而吸血鬼也从未要求过帝国的正式认可。这种法律上的模糊性是旧世界政治中最诡异的共存形式。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "希尔瓦尼亚对斯提尔领的女性领主来说不是一块抽象的地图——是一个日复一日的现实威胁。我城堡中最高的塔楼上永远站着一名哨兵朝东方眺望希尔瓦尼亚方向，我的领地墓园中的每一座坟墓在冬季每月被检查一次以确保没有任何新翻动的泥土。希尔瓦尼亚教导我们的不是害怕死亡——是害怕死亡之后的存在。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "希尔瓦尼亚在我家族的战略计算中是一个不可消除的常数。我们不能期望帝国军队攻入德拉肯霍夫——历史上所有类似的尝试都以失败告终——我们只能确保我家族的领地上没有任何可以被亡灵法师利用的资源：墓园被祝圣、坟墓被封印、所有家族成员在死亡后立即被火化而不是土葬。在希尔瓦尼亚的阴影下生活了六代之后，这些防护已经变成了家族的第二天性。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "在旧世界做佣兵的所有路线中，穿越希尔瓦尼亚的边境是最需要直觉的一条。没有明确的门槛——你不会在一条路上突然看到「您现在正进入希尔瓦尼亚」的标志。但你会注意到树木开始变得更扭曲、雾气似乎永远不散、路过的村庄中的村民们在你问路之前就把门关上了。当天空从灰色变成一种更深更沉重的灰——你已经进入了希尔瓦尼亚。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "希尔瓦尼亚在旧世界商业地图上是一个巨大的黑洞——任何经过或邻近希尔瓦尼亚的商路都不被任何帝国保险公司承保。但与表面上的经济死亡形成对比的是，希尔瓦尼亚的黑市——尤其是针对亡灵香料、黑暗魔法原料和吸血鬼酿造用的特殊水晶器皿的地下贸易——在玛利恩堡和阿尔道夫的黑市网络中创造了一条利润极高的暗流。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "希尔瓦尼亚——帝国法律上仍为行省、实际上由吸血鬼伯爵统治的亡灵领地",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "吸血鬼的正式称谓与政治地位"
+  ]
+}

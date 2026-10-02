@@ -1,0 +1,94 @@
+﻿{
+  "Id": "rule_帕利松",
+  "Keywords": [
+    "帕利松",
+    "特朗普河"
+  ],
+  "RagShortTexts": [
+    "帕利松土壤贫瘠，独特气候适宜葡萄生长。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "帕利松是帕拉汶德附近的一座村庄，坐落于特朗普河北部丘陵的一道峡谷谷口处。这一带的土壤虽然贫瘠，但从上游吹来的凉爽海风和温暖的午后气候，为酿酒用葡萄的生长提供了良好条件。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "帕利松这地方，土不肥，种粮食不行，可偏偏长葡萄好。峡谷里的气候，上午凉风从河上游吹过来，下午太阳又晒得足，葡萄的糖分攒得恰到好处。帕拉汶德的贵族们餐桌上不少好酒，瓶子底下印的是帕利松。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "townsfolk"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "帕利松的酒有一种特别的果香，说是峡谷里的风土养出来的。帕拉汶德的酒商每年都去那边拉货，来晚了就没了。王宫里的宴席上，帕利松的酒从来不缺席。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "帕利松那村子卡在峡谷口上，风大得很，白天晒，晚上凉。土看着不怎么样，可葡萄藤从石头缝里长出来，结的果子反而甜。我在村里喝过一杯本地酒，味道确实别致。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "帕利松",
+      "Kind": "bound_settlement_name",
+      "TargetId": "__bound_settlement__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": "帕拉汶德",
+      "Kind": "bound_settlement_name",
+      "TargetId": "__bound_settlement__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}

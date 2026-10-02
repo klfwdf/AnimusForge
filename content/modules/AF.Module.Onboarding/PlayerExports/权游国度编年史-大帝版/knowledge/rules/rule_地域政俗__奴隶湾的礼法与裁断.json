@@ -1,0 +1,151 @@
+{
+  "Id": "rule_地域政俗__奴隶湾的礼法与裁断",
+  "Keywords": [
+    "奴隶湾的礼法与裁断"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "奴隶湾的礼法与裁断有自己的习惯与底线。法律与习俗长久服务于等级结构，因此每一次谈论公正都可能触及既得者最深的恐惧；当一个人被称作“公正”时，当地人未必同意南方宫廷对这个词的解释。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "ghiscari"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "谈到奴隶湾的礼法与裁断，最可靠的判断来自亲身生活其中的人；眼前的利害不是抽象名词，而是每天要作出的取舍。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "ghiscari"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "掌权者、士兵与平民会从各自的位置理解奴隶湾的礼法与裁断，他们的说法可能冲突，却共同决定它在世上留下的形状。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "scholar",
+          "wanderer",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "远方来客对奴隶湾的礼法与裁断的印象往往来自片段消息；真正的分量要等道路、账簿和人的记忆彼此印证之后才显出来。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人把奴隶湾的礼法与裁断看成可执行的秩序。奴隶湾的礼法与裁断有自己的习惯与底线。法律与习俗长久服务于等级结构，因此每一次谈论公正都可能触及既得者最深的恐惧；当一个人被称作“公正”时，当地人未必同意南方宫。它是否有效，取决于谁能授予权利、收取代价，并在违约时让判决真正落地。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起奴隶湾的礼法与裁断时，关心它如何影响道路、命令和安全。奴隶湾的礼法与裁断有自己的习惯与底线。法律与习俗长久服务于等级结构，因此每一次谈论公正都可能触及既得者最深的恐惧；当一个人被称作“公正”时，当地人未必同意南方宫。远方的制度只有在营火、城门和驿站里能被执行，才不是空话。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者会从习惯和象征理解奴隶湾的礼法与裁断。奴隶湾的礼法与裁断有自己的习惯与底线。法律与习俗长久服务于等级结构，因此每一次谈论公正都可能触及既得者最深的恐惧；当一个人被称作“公正”时，当地人未必同意南方宫。一项规矩若被反复实践，便会进入礼仪、手艺和祈祷；若只靠恐惧维持，危机一来就会露出裂缝。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民感受到奴隶湾的礼法与裁断的方式最小也最准确。奴隶湾的礼法与裁断有自己的习惯与底线。法律与习俗长久服务于等级结构，因此每一次谈论公正都可能触及既得者最深的恐惧；当一个人被称作“公正”时，当地人未必同意南方宫。他们记得税、粮、劳役、赈济和谁能为他们说话；宏大的名称，最终都要落在一家人的饭锅旁。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "奴隶湾的礼法与裁断：奴隶湾的礼法与裁断有自己的习惯与底线。法律与习俗长久服务于等级结构，因此每一次谈论公正都可能触及既得者最深的恐惧；当一个人被称作“公正”时，当地人未必同意南方宫"
+  ]
+}

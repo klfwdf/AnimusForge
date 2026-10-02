@@ -1,0 +1,156 @@
+{
+  "Id": "rule_世界机制__狼林",
+  "Keywords": [
+    "狼林",
+    "北境森林",
+    "木材",
+    "猎路"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "狼林是北境最大的森林之一，从临冬城西方延伸至海岸方向，深林堡坐落其间。高大的松木、橡木与密生灌丛提供建筑木材、柴薪、猎物、蜂蜜和藏身处，也让道路难以保持笔直清晰。冬雪会遮住小径，狼群、盗匪或熟悉地形的斥候都能在林中隐去踪迹。领主需要木材造屋修船，村民需要进入森林取食与燃料，狩猎权和砍伐范围因此不断发生摩擦。狼林不是无人荒野，而是许多小社群赖以生存的复杂土地。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "樵夫、猎户和采蜜人认识狼林的声音，知道哪条小径在春融时会消失。外人看见一片树海，本地人看见的是几十种生计与危险。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "北境领主把狼林视作木材储备和天然屏障，也明白大军进林后会失去队形。得到本地向导的信任，比在地图上宣布控制更重要。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "sailor",
+          "soldier",
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "西海袭击者知道狼林能隐藏守军，也能提供掠走的木材和牲畜。深入太远便可能让长船在岸边等不到归来的队伍。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人把狼林看成可执行的秩序。临冬城以西的广阔古林，为北境提供木材、猎物和燃料，也以密林、兽群和隐蔽道路阻隔军队。它是否有效，取决于谁能授予权利、收取代价，并在违约时让判决真正落地。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起狼林时，关心它如何影响道路、命令和安全。临冬城以西的广阔古林，为北境提供木材、猎物和燃料，也以密林、兽群和隐蔽道路阻隔军队。远方的制度只有在营火、城门和驿站里能被执行，才不是空话。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者会从习惯和象征理解狼林。临冬城以西的广阔古林，为北境提供木材、猎物和燃料，也以密林、兽群和隐蔽道路阻隔军队。一项规矩若被反复实践，便会进入礼仪、手艺和祈祷；若只靠恐惧维持，危机一来就会露出裂缝。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民感受到狼林的方式最小也最准确。临冬城以西的广阔古林，为北境提供木材、猎物和燃料，也以密林、兽群和隐蔽道路阻隔军队。他们记得税、粮、劳役、赈济和谁能为他们说话；宏大的名称，最终都要落在一家人的饭锅旁。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "狼林：临冬城以西的广阔古林，为北境提供木材、猎物和燃料，也以密林、兽群和隐蔽道路阻隔军队。"
+  ]
+}

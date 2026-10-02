@@ -1,0 +1,153 @@
+{
+  "Id": "rule_家族根基__石鸦部",
+  "Keywords": [
+    "石鸦部"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "石鸦部生活在谷地明月山脉，以黑色玄武岩乌鸦为部族标志。沙嘎之子沙嘎是最知名的首领之一，体格强壮、性情直接，以战利品和个人勇武赢得追随。山地氏族从外来者处得到钢制武器后，旧有力量平衡会迅速改变；一把好斧不仅提高杀伤，也可能抬高首领声望。石鸦部的根基仍是亲族、共同营地、山路和与邻近氏族时战时和的关系。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "hilltribesmen"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "peasant",
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "石鸦部战士尊敬敢在前面挥斧、也肯公平分肉的首领。沙嘎的粗鲁在南方人耳中可笑，在山民看来却比绕弯子的宫廷话更诚实。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vale"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "wanderer",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "谷地商旅把石鸦部视作山道威胁，宁愿多付护卫钱也不愿在狭谷遇见他们。可有经验的向导知道，礼物、口信和了解氏族禁忌有时比一队盔甲闪亮的骑士更安全。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vale"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "谷地贵族担心钢武器让石鸦部变得更难压制。山民过去缺少装备，并不等于缺少战意；当技术差距缩小时，旧日傲慢便可能换来昂贵代价。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待石鸦部，会先看它的土地、婚盟、血脉和债务。石鸦部是明月山脉的重要氏族，沙嘎等首领以勇武、亲族威望与新武器扩大部族声势。家徽是门面，能否保护封地、兑现婚约并在危机中召集人马，才是家族真正的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起石鸦部时，记得的是谁在营火边分过粮、谁把他们留在城外、谁在败局里仍站在旗旁。石鸦部是明月山脉的重要氏族，沙嘎等首领以勇武、亲族威望与新武器扩大部族声势。家族名声最终要落到具体的人和具体的命令上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意石鸦部留下的仪式、墓地和传承。石鸦部是明月山脉的重要氏族，沙嘎等首领以勇武、亲族威望与新武器扩大部族声势。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见石鸦部。石鸦部是明月山脉的重要氏族，沙嘎等首领以勇武、亲族威望与新武器扩大部族声势。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "石鸦部：石鸦部是明月山脉的重要氏族，沙嘎等首领以勇武、亲族威望与新武器扩大部族声势。"
+  ]
+}

@@ -1,0 +1,94 @@
+﻿{
+  "Id": "rule_阿罗曼克",
+  "Keywords": [
+    "阿罗曼克",
+    "纳尔谷"
+  ],
+  "RagShortTexts": [
+    "阿罗曼克以橄榄树和香草芬芳著称。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "阿罗曼克是杰屈朗附近的一座村庄，坐落于穿过比斯坎山脉与埃皮尔山脉的纳尔谷中。瓦兰迪亚南部温暖的空气里弥漫着鼠尾草、薰衣草和百里香的芬芳，这里的山坡上种满了橄榄树。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "阿罗曼克这地方，光闻味道你就知道到哪儿了。鼠尾草、薰衣草、百里香，漫山遍野的香草混着橄榄树的清香。杰屈朗那边最好的橄榄油，瓶子上标的都是阿罗曼克。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "townsfolk"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "阿罗曼克的橄榄油在整个瓦兰迪亚南部都是有名的。纳尔谷里的气候好，橄榄树长得旺，榨出来的油又清又香。杰屈朗的贵族们做菜只用阿罗曼克产的油。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "走过阿罗曼克的时候我差点不想走了。山谷里全是香味——薰衣草、鼠尾草、百里香，漫山遍野。橄榄树一排排的，在午后的阳光下泛着银绿色的光。那地方，漂亮得跟画似的。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "阿罗曼克",
+      "Kind": "bound_settlement_name",
+      "TargetId": "__bound_settlement__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": "杰屈朗",
+      "Kind": "bound_settlement_name",
+      "TargetId": "__bound_settlement__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}

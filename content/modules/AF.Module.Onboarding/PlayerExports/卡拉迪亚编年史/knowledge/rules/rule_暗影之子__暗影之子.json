@@ -1,0 +1,101 @@
+﻿{
+  "Id": "rule_暗影之子",
+  "Keywords": [
+    "暗影之子",
+    "巴努·奇拉勒"
+  ],
+  "RagShortTexts": [
+    "巴努·奇拉勒又称暗影之子，是阿塞莱沙漠中从事暗杀和收保护费的贵族秘密组织。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": [
+          "beni_zilal"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "我们是巴努·奇拉勒。外人叫我们暗影之子，这个名字在骆驼贩子和绿洲长老的嘴里传了几十年，传成了鬼故事。我们不介意。鬼故事有用，比一百个骑马的埃米尔更让人听话。我们的祖先不是那个传教士，那个传教士的故事是我们讲给外人听的，讲了几遍连我们自己都快信了。但这不重要，重要的是故事能让人怕，致幻草药能让人信，匕首能让人闭嘴。这三样东西加起来，比苏丹的敕令管用。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "暗影之子是我们阿塞莱贵族圈子里最不愿公开讨论的话题。他们和我们一样出身贵族——那词头“巴努”就足以让我们脊背发凉，这是我们引以为傲的血统标志，现在被他们顶在头上干暗杀的勾当。在苏丹的御前会议上，没有人提这个组织的名字，没有人承认自己给暗影之子付过保护费，更没有人承认自己雇过他们当刺客。但我们都知道，隔壁那个和你争水源的埃米尔可能昨天刚请暗影之子喝过茶。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "暗影之子？别在大路上提这个名字。我爷爷说他们住在沙漠最深处的一座老要塞里，那要塞是鬼魂盖的，白天看不见，晚上才冒出来。他们的头领是个不死的传教士，眼睛是紫色的，看谁谁就动不了。他会用毒烟把人熏迷糊，熏完了你连自己亲妈都不认识，就认他当主人。他们杀人的办法也邪门——不是用刀砍，是用毒针，或者在你茶杯里下药，你喝着喝着就趴桌上死了，身上没伤口，脸还是笑的。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "从外部视角看，巴努·奇拉勒是一个极具阿塞莱特色的组织形态。贵族头衔与恐怖手段的糅合，以及致幻草药的宗教化运用，都指向纳哈撒沙漠独特的政治生态。巴努·奇拉勒与传统部落的关系类似于一种寄生——他们从部落和商路身上吸血，但并不摧毁寄主，这使他们与其他地区的叛乱运动有本质区别。他们更像是阿塞莱社会内部一个自发的影子政权，目前没有公开的政治诉求，也没有寻求外部结盟的迹象。综合评估，暗影之子对阿塞莱苏丹国的稳定构成潜在威胁，但短期内不会浮出水面。他们的行事风格强调耐心和渗透，这意味着任何针对他们的清剿行动都必须考虑到他们可能早已在清剿者的阵营里安插了内线。这是一个极难对付的对手，但至少目前，他们的目标不是我们。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "暗影之子？阿塞莱那边一个邪门帮会。跑商的人说他们住在沙漠深处，专搞暗杀和毒药，头领是个不会死的老妖怪。不过他们的保护费收得比别家公道，交了钱绝对保你过他们的地盘，还会护送你一程。我有个跑商的亲戚说过，有一次他的骆驼队被劫了，不是暗影之子劫的，是另一伙土匪。暗影之子收了保护费之后，硬是把那伙土匪从沙丘后面揪出来，把货追回来还给他。他说当时觉得这保护费交得值。不过他说暗影之子的人说话都低声细气的，看着不像土匪，倒像祭司，比祭司瘆人。反正阿塞莱那地方怪事多，沙漠里有这么一帮人也不稀奇。离得远，跟我们没关系。"
+    }
+  ],
+  "TextMappings": []
+}

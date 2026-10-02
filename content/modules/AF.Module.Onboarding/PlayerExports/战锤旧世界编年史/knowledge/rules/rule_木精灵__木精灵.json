@@ -1,0 +1,211 @@
+{
+  "Id": "rule_木精灵__木精灵",
+  "Keywords": [
+    "木精灵",
+    "阿斯莱",
+    "木精灵艾索洛伦",
+    "森林精灵",
+    "精灵种族",
+    "木精灵库诺斯",
+    "伊莎",
+    "狂野狩猎",
+    "森林共生",
+    "精灵分裂"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "木精灵——或称阿斯莱——是一支古老而神秘的精灵种族，居住在旧世界心脏地带那片诡谲莫测的魔法森林艾索洛伦之中。他们与高等精灵和黑暗精灵同源却早已分道扬镳，选择了与森林共生而非征服自然的道路。任何未经允许踏入艾索洛伦的人都会遭到无情射杀，这群森林守护者以对入侵者的残忍而闻名。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我们是阿斯莱——森林之子，古老诸神的选民，艾索洛伦的血肉。那些愚蠢的矮小种族称我们为'木精灵'，仿佛森林只是一顶可以摘下的帽子。我们不是居住在这片森林里；我们就是这片森林。每一块树皮、每一根枝条、每一片在晨光中闪烁的叶片都与我们的灵魂相连。我们曾是高等精灵的一部分——在奥苏安那个傲慢岛屿上，我们与我们的乌苏安表亲一同飘洋过海。但我们选择了留下，我们选择了共生，我们选择了成为比任何以岩石和傲慢建造的帝国都更永恒的力量。外人惧怕我们，这是理所当然的：我们的箭比他们的眼睛更快，我们的愤怒比他们的勇气更深，而我们的森林比他们的记忆更古老。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "木精灵是军事上最令人头痛的对手——他们不像人类或兽人那样与你进行堂堂正正的会战。艾索洛伦本身就是一个无与伦比的防御体系：森林会移动小路会消失，入侵者会被不知不觉地引导至歧途，直到补给耗尽、士气崩溃。木精灵的林地斥候可以在整支军队毫无察觉的情况下消灭侦察小队和补给车队。任何试图进犯艾索洛伦的军事行动本质上都是灾难性的——历史上没有任何外部军队成功征服过这片森林。防御木精灵的进攻则需要坚固的据点而非野战，因为他们习惯在森林边缘发起突袭后迅速撤回密林。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 100
+        },
+        "IdentityIds": null
+      },
+      "Content": "阿斯莱——或木精灵——的起源可追溯至精灵大分裂时期。当凤凰王卡兰多二世召回所有殖民地的精灵返回奥苏安抵御黑暗精灵入侵时，艾索洛伦的精灵殖民者选择了留下。他们切断了对精灵众神的直接崇拜，转而与森林的灵魂和远古自然之力结成了一种前所未有的共生关系。这一选择深刻改变了他们的生理和灵魂：世代居住在艾索洛伦的精灵逐渐发展出了比高等精灵更敏锐的森林感知力，同时也染上了森林本身特有的、反复无常且无情的性格。他们的寿命虽然仍远长于人类，但据说不如高等精灵那般近乎不朽——艾索洛伦以某种方式'吸收'了他们的一部分，但也保护了他们。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "身为艾索洛伦的女领主，我深知我们与其他精灵种族最根本的区别不在于血脉而在于灵魂的归属。高等精灵的女人在奥苏安的塔楼中研习魔法、经营家族的政治联姻，而我从小在森林的怀抱中学到的是另一种力量——不是支配，而是聆听。阿莉尔是我们的榜样，她证明了阿斯莱的女性绝非男性的附庸：我们既是这片森林的守护者也是它的意志执行人。外界那些自大的将军以为木精灵不过是躲在树后的野人，但他们从未见过一位愤怒的阿斯莱女猎手在月光下拉开长弓的姿态——那不仅仅是杀戮的艺术，那是森林本身借我们的手在执行它的审判。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "作为林地议会十二家族之一的族长，我背负着的不仅是家族的荣耀，更是与特定森林精魂之间那份延续了千年的契约。每一支阿斯莱家族都与艾索洛伦的某一类精魂——也许是溪流之灵、也许是古树之魂、也许是月光之精——保持着世代相传的共生纽带，这种纽带比人类最古老的贵族血统更悠久也更沉重。我的职责不在于扩张领土或积累财富——这些是人类和矮人的低级追求——而在于维持家族与森林之间的平衡。当奥莱恩与阿莉尔的意志发生冲突时，十二家族必须在其中做出艰难的抉择，任何判断失误都可能引发林地议会内部的政治风暴。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "作为曾在艾索洛伦边缘生存过的流浪者，我可以告诉你那些书本上永远不会记载的真相。木精灵的箭不是传说——我曾在黑森林中见过一整队武装到牙齿的帝国巡逻兵在一声弓弦响后全部倒地，而他们的弩手甚至还没来得及抬起武器。但木精灵并非没有弱点：他们的行动严重依赖森林的掩护，在开阔平原上他们的优势会大幅削弱。如果你必须在艾索洛伦附近旅行，带上一个懂得精灵古老边界标记的向导比带上二十个雇佣剑士更管用——这些标记通常以特定的树木刻痕或石阵排列显示，外行人根本看不懂。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "从商业角度来看，木精灵是旧世界贸易网络中最令人沮丧也最令人着迷的一道黑洞。他们几乎不参与任何形式的公开贸易——你不会在阿尔道夫或马林堡的市场上见到木精灵商人——但这并不意味着阿斯莱经济不存在。事实上，在布雷顿尼亚的某些边境集镇存在着极其隐秘的'沉默交易'：人类将铁器、布匹和盐放在指定的古树下，次日清晨货物消失而原地留下完美切削的宝石原石、森林草药或工艺精湛到无法仿制的精灵弓弦。这些物品在旧世界黑市上价值连城——一把真正的阿斯莱弓在黑市中足以换得一座小镇的售价，而一剂木精灵配制的疗伤膏药能让濒死的骑士在一夜之间恢复战斗力。任何试图绕过规则强行进入森林寻找贸易机会的商人最终都成为了失踪者名单上的新近条目。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "阿斯莱——木精灵的精灵语自称，意为'森林之子'",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "木精灵阿斯莱木精灵艾索洛伦"
+  ]
+}

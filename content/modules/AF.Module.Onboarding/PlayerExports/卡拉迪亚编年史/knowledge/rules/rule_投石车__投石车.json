@@ -1,0 +1,65 @@
+﻿{
+  "Id": "rule_投石车",
+  "Keywords": [
+    "投石车"
+  ],
+  "RagShortTexts": [
+    "投石车基于扭力蓄能原理抛射装置"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "投石车是围城战中最有价值的重型器械。我从军需册上看过它的造价，不算便宜，但物有所值。弩炮打人有余拆墙不足，火焰弩炮更是隔靴搔痒；投石车不一样，一石球砸在冲车顶盖上，轮轴能直接砸进地里。葡萄弹的战术价值更高——我方步兵推进前，一蓬碎石铺天盖地洒在敌人阵地上，对面挡箭板和散兵坑全不成样子，阵线不等接敌就碎了。但投石车的软肋也明显：运输笨重，几头牛才能拉动一台，调动起来伤筋动骨。而且射速极慢，实战中要靠多台交替射击才能维持火力密度。围城战最后见分晓的是步兵登城，不是投石车。但登城之前谁把城头垛口砸稀烂了，谁的步兵就能少死一半人。这笔账我算得清。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "engineering": 50
+        }
+      },
+      "Content": "投石车是基于扭力蓄能原理的重型抛射装置。核心部件为扭力束与抛射臂，扭力束采用畜力筋腱或发绳绞合，蓄能密度稳定，释放时爆发力强。抛射角度由弹兜释放钩的倾角和绞盘止退棘轮控制，打击同一目标时需反复校准，散布范围可控，精度在扭力器械中属上乘。实心球弹的毁伤逻辑是动能集中释放，穿透建筑结构后造成内部断裂，对攻城塔的轴接点和弩炮的轻型木架有一次性摧毁能力。葡萄弹的毁伤逻辑则是锥形散布，弹片数量多、覆盖面积大，适合清扫敌方工事表层和密集步兵。投石车的主要技术瓶颈在于蓄能周期过长：绞盘需多人协同操作，射速极限无法突破。整机重量与运输难度也是结构性的限制，不适合快速机动作战。综合评估，投石车是目前围城战中拆墙清障的最优解，没有之一。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "投石车？就是攻城的时候用的那种大甩臂，木头架子比房子还高，甩臂抡起来的时候整个架子都在嘎嘎响，听着像老树要断。我们村有个逃难过来的，说他在围城那会儿蹲在城墙根子底下，听见对面投石车甩臂啪的一声响，然后一块比人头还大的石球就砸在垛口上，碎石崩了他一脸。他说那东西吓人，尤其是晚上看不见石头飞哪儿，只听见轰隆一声，墙在抖，心也在抖。不过投石车再吓人也就那么回事，打完一发，对面得捣鼓半天，绞盘嘎吱嘎吱往上拉，够对面喝一壶的。"
+    }
+  ],
+  "TextMappings": []
+}

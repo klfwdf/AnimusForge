@@ -1,0 +1,210 @@
+{
+  "Id": "rule_瑞克禁卫__瑞克禁卫",
+  "Keywords": [
+    "瑞克禁卫",
+    "瑞克禁卫帝国骑士团",
+    "皇帝卫队",
+    "板甲骑士",
+    "阿尔道夫禁卫",
+    "精锐重骑",
+    "瑞克骑士",
+    "禁卫要塞",
+    "瑞克元帅"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "瑞克禁卫是帝国最负盛名的骑士团，是皇帝本人的精锐贴身卫队。他们身着全副哥特式板甲，驾驭帝国最优秀的纯种战马，以长枪和重剑为武器，驻守在阿尔道夫雄伟的瑞克要塞之中——这些全身钢铁包裹的骑士是帝国军事荣耀的化身，他们的誓言是：以皇帝之名，死不后退。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "瑞克禁卫——帝国每一个贵族子弟从学会握剑的那一刻起就梦想加入的骑士团。他们不仅仅是士兵，他们是帝国骑士精神的最高载体。瑞克禁卫的起源可以追溯到帝国历16世纪，第一位瑞克领皇帝建立了这支只效忠于皇冠而非任何选帝侯的骑士团，以此确保皇帝永远有一支不为地方利益所动的铁拳。瑞克要塞是整个阿尔道夫最不可侵犯的军事堡垒——据说它的地下马厩可以容纳八百匹战马，它的演武场大到足以让十队骑士同时冲锋。要成为瑞克禁卫，你必须首先在其他帝国骑士团——比如白狼骑士团或炎阳骑士团——中服役至少五年，然后由至少三名现任瑞克骑士连署推荐，并在一系列骑士试炼中证明自己的剑术、骑术和忠诚。瑞克禁卫的真正力量不在于个人武勇——虽然每一位瑞克骑士都是顶尖的骑士——而在于他们冲锋时的绝对纪律：八百名全副板甲的重装骑士以膝盖对膝盖的密集阵型同时发动冲锋，这种冲击力足以碾碎战场上任何存在。当你在帝国任何城镇看到白袍配瑞克红披风的骑士走过，没有人敢挡他的路——因为他身后站着的是皇帝本人。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "瑞克禁卫在帝国军事体系中的定位既特殊又微妙。从指挥链上而言，他们只服从皇帝本人和瑞克元帅的调遣——这意味着任何选帝侯、帝国将领或战斗主教都无权指挥他们。这一特权在战场上既能构成巨大的战术优势——你有一个不受地方军阀牵制的可靠精锐突击力量——也可能导致协调噩梦：如果瑞克禁卫的指挥官决定按自己的判断行事而不配合整体战术部署，你很难用常规军令体系来约束他。有经验的帝国统帅会在战前与瑞克禁卫指挥官进行单独协商而非使用正式命令——这是一种微妙的军队政治。瑞克禁卫在战场上的传统用法是担任战役预备队，在敌军最疲惫或防线出现裂缝时发动决定性冲锋；但真正使他们在战略上无可替代的，是他们在皇帝遇险时无懈可击的保护——在历史上有至少三次，皇帝在战场上因战马被杀坠地，而瑞克禁卫以自己的身体在皇帝周围组成了人形圆盾，挡住了数百敌军的猛攻直到援军到达。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "瑞克禁卫的制度史是帝国骑士传统的法典化缩影。瑞克领第一骑士团——正式名称是「帝国瑞克禁卫至尊骑士团」——根据《帝国军事年鉴》的确切记载，其建制令由皇帝威廉三世于帝国历1567年签署颁布。但骑士团的真正黄金时代始于马格努斯大帝时期——他在帝国历2302年大混沌战争胜利后将瑞克禁卫从一支几百人的近卫队扩编为拥有完整的骑士团章程、军衔等级和后勤体系的正式骑士团。目前的编制结构包括：瑞克元帅一名，由皇帝亲自任命，历来由帝国最杰出的现役将军担任；骑士队长若干，分别指挥各自的骑士兵连；每个骑士兵连下辖十二名正式瑞克骑士和相应的侍从、马夫和军械匠。瑞克禁卫内部有一个鲜为人知的精英核心——「内环十二人」，他们是骑士团中服役超过二十年的最资深骑士，在皇帝不在场时拥有指挥整个骑士团的权力，并执行只有皇帝和瑞克元帅知晓的特殊任务。骑士团的军械库中最珍贵的藏品是「西格玛之矛」——一柄据传由矮人符文工匠在两千年前锻造的长矛，只有在皇帝本人亲率瑞克禁卫冲锋时才会从圣物箱中取出使用。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "瑞克禁卫在帝国贵族女性的世界里是一个充满矛盾的存在。我们一方面将儿子送入预备骑士学校时满怀骄傲——那意味着家族和皇权有了直接纽带——但另一方面，我们都知道瑞克禁卫的阵亡率远超任何骑士团，因为他们被部署在战场上最危险的位置。作为母亲或妻子，我们深夜祈祷的不是西格玛的胜利，而是自己的孩子或丈夫能完整地从瑞克要塞回来。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "对于一个帝国贵族家族而言，让一名子嗣加入瑞克禁卫是仅次于联姻选帝侯家族的政治投资。他能接触到帝国最高层的军事机密，他的同袍可能未来成为帝国元帅或选帝侯的军事顾问，而他的名字在家族族谱上会带有那令人艳羡的「瑞克骑士」称号。但代价是沉重的——他不再效忠于家族，他的忠诚首先属于皇帝，这意味着在其他家族与皇权发生冲突时，你无法指望他站在家族一边。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "在帝国境内的佣兵圈子里，瑞克禁卫是我们永远无法企及的存在。一个流浪剑客哪怕打败过一百个敌人，在酒馆里吹嘘时只要一提到瑞克禁卫的名号，所有人都会安静下来——因为那些人是真正的骑士，不是我们这种为了金克朗卖命的亡命徒。我曾在努恩郊外见过一队瑞克骑士行军路过，他们甚至不需要拔出剑，仅仅是整齐的铁蹄声就让路边所有的流氓和盗贼像见了猫的老鼠一样消失。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "阿尔道夫的兵器行会视瑞克禁卫为我们的终极客户——每一位瑞克骑士的板甲都是量身定制的，一套完整的瑞克禁卫盔甲在市场上的造价超过一个富农一生的收入。努恩的装甲匠人以自己的标记被烙在瑞克骑士的肩甲内侧为荣，而阿尔道夫的马匹经销商则垄断了纯种战马的供应——这是一种深不可测的特权商业关系，外人永远无法染指。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "瑞克要塞——瑞克禁卫在阿尔道夫的大本营和兵营，位于帝国皇宫东侧的坚不可摧要塞",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "瑞克禁卫是帝国最负盛名的骑士团，是皇帝本人的精锐贴身卫队"
+  ]
+}

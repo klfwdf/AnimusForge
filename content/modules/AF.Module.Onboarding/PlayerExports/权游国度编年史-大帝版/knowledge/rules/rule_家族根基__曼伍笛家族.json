@@ -1,0 +1,131 @@
+{
+  "Id": "rule_家族根基__曼伍笛家族",
+  "Keywords": [
+    "曼伍笛家族",
+    "王冠骷髅"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "曼伍笛家族以赤红山脉中的王冢城为根基，家徽以黑底王冠骷髅为核心。王冠与骷髅保存着山中死去国王的记忆，也使这面旗在多恩诸家之间显得庄严而阴冷。作为多恩石地的领主和马泰尔封臣，曼伍笛熟悉山路、堡垒以及通往河湾与风暴地的边境。王冢城百姓并不终日与亡魂交谈，他们从守路、分水和严冬前能否保住牲畜来衡量今日的领主。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "多恩贵族认得王冢城的王冠骷髅，也知道这个纹章保存着赤红山脉中战死国王的记忆。曼伍笛身处边疆通道，家名的分量来自守墓般的坚忍与山口责任，而不是把每位族人都说成阴郁之人。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "王冢城附近的人从小经过古墓、石道和风化的骨色岩壁。骷髅旗不会使他们终日谈死，他们更关心活人能否守住山口、找回走失牲畜、让商旅别把水源踩成泥。死王属于记忆，今日的责任仍落在今日的人肩上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待曼伍笛家族，会先看它的土地、婚盟、血脉和债务。王冢城的多恩石地领主，以王冠骷髅为家徽；死王记忆、山口防务、水源与牲畜共同塑造当地生活。家徽是门面，能否保护封地、兑现婚约并在危机中召集人马，才是家族真正的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起曼伍笛家族时，记得的是谁在营火边分过粮、谁把他们留在城外、谁在败局里仍站在旗旁。王冢城的多恩石地领主，以王冠骷髅为家徽；死王记忆、山口防务、水源与牲畜共同塑造当地生活。家族名声最终要落到具体的人和具体的命令上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意曼伍笛家族留下的仪式、墓地和传承。王冢城的多恩石地领主，以王冠骷髅为家徽；死王记忆、山口防务、水源与牲畜共同塑造当地生活。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见曼伍笛家族。王冢城的多恩石地领主，以王冠骷髅为家徽；死王记忆、山口防务、水源与牲畜共同塑造当地生活。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "曼伍笛家族：王冢城的多恩石地领主，以王冠骷髅为家徽；死王记忆、山口防务、水源与牲畜共同塑造当地生活。"
+  ]
+}

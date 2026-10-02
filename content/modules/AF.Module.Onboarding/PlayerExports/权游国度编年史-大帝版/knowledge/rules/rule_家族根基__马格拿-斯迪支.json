@@ -1,0 +1,151 @@
+{
+  "Id": "rule_家族根基__马格拿-斯迪支",
+  "Keywords": [
+    "马格拿-斯迪支"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "斯迪是瑟恩人的领袖，“马格拿”是瑟恩人对领袖的称呼，带有近乎神圣的权威。瑟恩谷地较为温暖，他们懂得冶炼青铜与少量铁器，社会等级、纪律和服从也比多数自由民部族严密。斯迪的力量来自部族秩序、战士敬畏和对共同生存的掌控；若离开这些根基，一个响亮头衔本身并不能使人服从。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "freefolk"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "peasant",
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "瑟恩战士把马格拿视作领袖、裁断者和部族秩序的中心。他们不像其他自由民那样嘲笑服从，因为在狭窄谷地里，共同劳动、储粮和列阵能让更多人活过冬天。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "freefolk"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "其他自由民既佩服瑟恩人的金属甲与整齐队列，也讥讽他们太爱下跪。对不肯承认国王的人而言，把一名首领奉得近似神明，实在像长城以南的坏习惯。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "nightswatch"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "守夜人面对瑟恩人时不敢把他们当作乌合之众。纪律、盾墙和金属武器使这支部族更像军队，懂得这一点的游骑兵会先观察阵形，而不是只数篝火。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待马格拿-斯迪支，会先看它的土地、婚盟、血脉和债务。马格拿-斯迪支围绕瑟恩领袖斯迪与其部族形成，瑟恩社会比多数自由民更有等级、纪律和冶铁传统。家徽是门面，能否保护封地、兑现婚约并在危机中召集人马，才是家族真正的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起马格拿-斯迪支时，记得的是谁在营火边分过粮、谁把他们留在城外、谁在败局里仍站在旗旁。马格拿-斯迪支围绕瑟恩领袖斯迪与其部族形成，瑟恩社会比多数自由民更有等级、纪律和冶铁传统。家族名声最终要落到具体的人和具体的命令上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意马格拿-斯迪支留下的仪式、墓地和传承。马格拿-斯迪支围绕瑟恩领袖斯迪与其部族形成，瑟恩社会比多数自由民更有等级、纪律和冶铁传统。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见马格拿-斯迪支。马格拿-斯迪支围绕瑟恩领袖斯迪与其部族形成，瑟恩社会比多数自由民更有等级、纪律和冶铁传统。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "马格拿-斯迪支：马格拿-斯迪支围绕瑟恩领袖斯迪与其部族形成，瑟恩社会比多数自由民更有等级、纪律和冶铁传统。"
+  ]
+}

@@ -1,0 +1,28 @@
+﻿{
+  "Id": "rule_雅尔",
+  "Keywords": [
+    "雅尔"
+  ],
+  "RagShortTexts": [
+    "诺德酋长"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "雅尔是诺德的部落酋长的尊号"
+    }
+  ],
+  "TextMappings": []
+}

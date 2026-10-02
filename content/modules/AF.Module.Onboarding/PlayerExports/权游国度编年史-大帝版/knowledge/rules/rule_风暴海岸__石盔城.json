@@ -1,0 +1,151 @@
+{
+  "Id": "rule_风暴海岸__石盔城",
+  "Keywords": [
+    "石盔城"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "石盔城位于风暴地东南，是史文家族的传统席位。它靠近多恩海和边疆地带，因而兼具海岸据点与陆路关隘的性格：潮湿海风能吹进厅堂，来自山地和南方的陌生消息也会沿道路抵达。史文家族作为风暴地的强大封臣，其威望来自长期维持城堡、庄园、骑士与周边小领主的秩序。石盔一名强调的是石墙与守备，但一座城堡真正的盔甲还包括粮仓、井水、可通行的道路和愿意响应号令的人。主人与军队可变，石盔城所处的海陆交界与边境责任则是固定背景。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "stormlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "一座据点如何落到百姓身上，在石盔城要从潮汐、渔汛、淡水和船只能否安全靠岸说起。当地家庭还要依靠雨林木材、猎物、瘠薄农田、渔获和躲避风暴的屋顶；任何一处道路、井泉或码头失灵，代价都会先落到他们身上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "stormlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "任何关于石盔城的军议，最后都会回到港湾入口、泊位、烽火与可供登陆的岸线。在七国的封建秩序中，石盔城的归属牵动封臣义务、税粮和征召；守军能否吃饱、援兵能否按时抵达，比议事厅里的豪言更能决定这处据点是否可靠。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "scholar",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "商队把石盔城写进账本时，会核算航期、码头脚费、补水和下一处避风港。他们还会辨认风暴地的口音、法令和通行凭据；名声可以从酒馆传得很远，真正的路程仍须由车轮、船桨或马蹄丈量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "婚约、继承与征召令会把贵族的目光引向石盔城。在七国的封建秩序中，石盔城的归属牵动封臣义务、税粮和征召；旗帜更换之后，道路、粮仓、旧债和地方信任仍得由新主人逐一接手。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "老兵讲起石盔城，很少赞美风景，只会提醒别人风向、礁石、渡船与城门落锁后的锚地。能补给、能避险、能找到向导，便值得在行程里标明；若三样都没有，再响亮的家名也救不了迷途者。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "从作坊到圣所，石盔城把修船木、帆布、盐、鱼获和抵御海风的石料同七神、风暴王旧史与抵御海风的厚重石墙并置在一起。一处据点因而不只是领主的大厅，也是婚丧、誓言、劳作与地方记忆反复发生的场所。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "对普通家庭来说，石盔城的威严要在灾年才见真假。他们关心雨林木材、猎物、瘠薄农田、渔获和躲避风暴的屋顶，也看征粮后是否留下种子、灾年时城门是否开启；远方人看见纹章，他们看见的是明日有没有饭吃。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "石盔城：石盔城位于风暴地东南，是史文家族的传统席位。它靠近多恩海和边疆地带，因而兼具海岸据点与陆路关隘的性格：潮湿海风能吹进厅堂，来自山地和南方的陌生消息也会沿道路抵达。史文家族作为风暴地的强大封臣，其威望来自长期维持城堡、庄园、骑士与周边小领主的秩序。石盔一名强调的是石墙与守备，但一座城堡真正的盔甲还包括粮仓、井水、可通行的道路和愿意响应号令的人。主人与军队可变，石盔城所处的海陆交界与边境责任则是固定背景。"
+  ]
+}

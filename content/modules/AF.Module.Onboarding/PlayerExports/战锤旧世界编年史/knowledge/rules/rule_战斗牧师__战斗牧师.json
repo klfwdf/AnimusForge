@@ -1,0 +1,210 @@
+{
+  "Id": "rule_战斗牧师__战斗牧师",
+  "Keywords": [
+    "战斗牧师",
+    "西格玛祷言",
+    "战锤神父",
+    "狂热教士",
+    "战斗牧师信仰之力",
+    "神恩战士",
+    "西格玛勇士",
+    "圣战修士",
+    "战神之仆"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "战斗牧师是西格玛教会中抛弃经卷、拿起战锤的特殊教士——他们身穿厚重的钢铁盔甲站在前线，一边吟诵西格玛的祷文一边用战锤砸碎敌人的头骨。战斗牧师的存在本身就是帝国信仰的实体化：他们相信西格玛的神力能通过虔诚的语言和钢铁的意志转化为真正的战斗力量，在战场上庇护信徒、驱退恶魔。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "战斗牧师——帝国军队不需要动员演讲，因为这个人已经站在那里替你把所有的话都喊出来了。每一位战斗牧师都曾是西格玛教会的神学院学生，但不同于那些留在教堂里为皇帝祈祷的大主教，战斗牧师选择了走入战壕、站在州军士兵之间、把西格玛的愤怒直接施加到敌人身上。他们的训练在「圣战修院」中完成——那不是一个读书的地方，而是一个用铁锤、汗水和不间断的祈祷书背诵来锻炼意志的场所。战斗牧师的武器永远是战锤——因为西格玛本人用的就是一把名为「碎颅者」的战锤——而他们穿戴的盔甲上刻满了西格玛经文，据说光是这些经文的光芒就足以让不死生物退避三舍。战场上的战斗牧师既是指挥官、又是医疗兵、又是精神支柱：他会一边呼喊命令让火枪手排成连续射击阵型，一边双手按在一个被砍掉手臂的士兵伤口上念诵治愈祷文，同时用眼睛盯着远处是否有人在战场上犹豫退缩。帝国士兵们流传着一句话：「当你看到一个战斗牧师被敌人包围却还在大笑的时候——你最好跟着他冲锋，因为西格玛明显站在他那边。」"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "战斗牧师在帝国军事命令体系中的价值远远超过他们的战斗能力本身。一名普通州军士兵在下雨天、浑身湿透、靴子陷在泥里时，看到敌方重骑兵排山倒海般冲锋过来——他唯一可能站住不逃跑的原因是：他旁边的战斗牧师没有逃跑。这就是战斗牧师在大兵团会战中最核心的战略职能——他们是士气的物理锚点。指挥官应当将战斗牧师分配在防线最薄弱的连队中，特别是新兵比例高的部队——老兵不需要太多信仰支持，但新兵需要看到有人在混乱中站立不动。战斗牧师也拥有教会赋予的拒魔能力——他们的祷文可以打断敌方施法者的法术，特别是在对抗亡灵法师时，战斗牧师的西格玛驱灵仪式可以让整排骷髅在冲锋中途崩溃。但作为指挥官必须注意：战斗牧师不是法师，他们的「神迹」是依靠信仰强度维持的，如果一个战斗牧师失去了对西格玛的信念——比如目睹了太多惨剧——他的所有能力会在瞬间消失。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "战斗牧师的制度渊源可追溯至西格玛教会早期的「武装传教」传统。在帝国历最初几个世纪中，西格玛信仰通过武装布道团向边境地区传播——这些传教士既是信仰的传播者也是边境的守护者，他们在皈依异教部落的同时抵御野兽人和兽人的入侵。圣战修院制度在帝国历1350年由大主教瓦尔德马尔一世正式确立，他设立了五所修院分别对应帝国五大区域：阿尔道夫的西格玛之锤修院、米登海姆的白狼修院、塔拉贝克的圣剑修院、努恩的铁砧修院和诺德领的圣海修院。每所修院侧重不同的战斗训导传统：西格玛之锤修院精于近战和反恶魔，白狼修院结合了尤里克教的野性战斗风格，圣剑修院以骑兵作战中的教士战术著称。战斗牧师的神迹并非来自魔法之风，而是来自「集体信仰场」——即战场周围所有信仰西格玛的战士的信念汇聚——这一理论由教会神学家卡斯帕·冯·费尔巴哈在帝国历1901年提出，至今仍是西格玛神学的核心教义之一。但这一理论的军事含义是沉重的：你必须在信徒密度高的区域部署战斗牧师以发挥最大效果，而在孤军深入或陷入伏击时，战斗牧师就如同一名普通的重甲士兵一样无能为力。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "战斗牧师在帝国贵族女性的视角里是一种奇特的存在。他们比普通教堂的修士更有人味，因为他们见过太多死亡——这使他们在面对那些永远躲在安全处的教士时显得更真诚。但另一方面，战斗牧师的狂热也令我们担忧：我们有儿子应征入伍后最大的恐惧不是敌军的刀剑，而是他们的部队被派属了一个过度狂热的战斗牧师——那种牧师会把撤退视为不可容忍的懦弱。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "战斗牧师在帝国世族间的政治角力中具有微妙的家族价值。让家族中的一个次子走战斗牧师道路，既能在荣誉上毫不逊色于加入骑士团的长子，又能确保这条线保持对教会的影响力。当你的家族与另一个家族在帝国议会上争得你死我活时，你家的战斗牧师可以动用教会的威信质疑对方家族「对西格玛信仰不够热忱」，这比雇佣刺客的效果更好且完全合法。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "战斗牧师是我们这些流浪佣兵最羡慕的存在——不是因为他们能施法，而是因为他们不需要担心恐惧。我曾经与一位战斗牧师一起守过一个路口的防御工事，当兽人的夜地精伏兵从暗处涌出来时，我差点握不住剑，而他只是低吼了一句「西格玛，看看这些丑东西」，然后径直冲进了地精群中。那种绝对的、不须质疑的自信，是任何雇佣兵和冒险者训练多少年都无法拥有的。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "战斗牧师的装备定制是帝国手工业中一个特殊的小众产业。他们的每一柄战锤都是定制的——锤柄雕刻西格玛经文，锤头熔铸时混入祝圣银粉，而锤柄底部通常装有一块中空管用于存放一小瓶来自阿尔道夫大主教堂的圣水。阿尔道夫的武器匠人世代以锻造「教士战锤」为营生——这门手艺需要同时掌握铁匠技术和神学知识，不是随便一家兵器铺能接的活。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "圣战修院——战斗牧师的训练机构，在帝国五大区域各设一所",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "战斗牧师西格玛祷言战锤神父"
+  ]
+}

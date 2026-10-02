@@ -1,0 +1,153 @@
+{
+  "Id": "rule_家族根基__洛扎尔",
+  "Keywords": [
+    "洛扎尔",
+    "洛扎尔家族",
+    "河城贵族"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "洛扎尔属于萨洛尔的贵族与商人阶层。萨恩江流域的权力从来离不开河运、渡口、粮仓和借贷：战车与骑兵可以赢下一片原野，只有账目和堤岸能让城中人口熬过下一季。多斯拉克征服留下的废城记忆，使萨洛尔人对繁荣尤其警惕——他们知道一条兴旺商路也可能把掠袭者带来。洛扎尔的根基就在这种矛盾中：既要聚集资本和人口，又要让仓库、护卫与撤离路线跟得上扩张。谁掌权可以改变，河城对谨慎经营的需要不会改变。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sarnor"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "notable",
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "萨洛尔的商人与小王把洛扎尔当作能调动粮食和信用的家门，也因此防着它。借粮救得了一座城，债契同样能在和平时夺走一条街。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sarnor"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "护路人与战士更关心洛扎尔是否愿意为商队安全付出真金，而不是在袭击后追究谁丢了货。没有斥候和备用马，最漂亮的账本也过不了草海边缘。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sarnor"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "河边农户希望粮仓在灾年是储备，不是抬价的牢笼。洛扎尔若只在丰收时买得便宜、饥荒时卖得昂贵，人们会记住那笔账比家门自己更久。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待洛扎尔，会先看它的土地、婚盟、血脉和债务。萨洛尔的河城家门，以仓储、借贷、渡口与重建旧聚落的能力参与地方权力。家徽是门面，能否保护封地、兑现婚约并在危机中召集人马，才是家族真正的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起洛扎尔时，记得的是谁在营火边分过粮、谁把他们留在城外、谁在败局里仍站在旗旁。萨洛尔的河城家门，以仓储、借贷、渡口与重建旧聚落的能力参与地方权力。家族名声最终要落到具体的人和具体的命令上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意洛扎尔留下的仪式、墓地和传承。萨洛尔的河城家门，以仓储、借贷、渡口与重建旧聚落的能力参与地方权力。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见洛扎尔。萨洛尔的河城家门，以仓储、借贷、渡口与重建旧聚落的能力参与地方权力。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "洛扎尔：萨洛尔的河城家门，以仓储、借贷、渡口与重建旧聚落的能力参与地方权力。"
+  ]
+}

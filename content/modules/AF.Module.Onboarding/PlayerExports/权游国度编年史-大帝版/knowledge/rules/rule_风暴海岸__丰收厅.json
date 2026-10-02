@@ -1,0 +1,151 @@
+{
+  "Id": "rule_风暴海岸__丰收厅",
+  "Keywords": [
+    "丰收厅"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "丰收厅位于风暴地内陆，是赛尔弥家族的传统领地。它的名字直白地说明了其根基：不是港湾或险关，而是土地、收成、谷仓和能在战时被征召的农民与骑士。风暴地常因海岸风雨和边境冲突被人想作荒凉之地，但其内陆同样有承担税粮与补给的肥沃庄园。丰收厅与风息堡、王领道路及周边领主网络相连，因而一季歉收或一次征发都能传到更远的地方。当地的家族荣耀来自长期守土与骑士服务，而不取决于某一场可变的战争结果。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "stormlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "从丰收厅望出去，最贴近生活的并非纹章，而是潮汐、渔汛、淡水和船只能否安全靠岸。当地家庭还要依靠雨林木材、猎物、瘠薄农田、渔获和躲避风暴的屋顶；任何一处道路、井泉或码头失灵，代价都会先落到他们身上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "stormlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "号角与旗帜之外，丰收厅的防务依靠港湾入口、泊位、烽火与可供登陆的岸线。在七国的封建秩序中，丰收厅的归属牵动封臣义务、税粮和征召；守军能否吃饱、援兵能否按时抵达，比议事厅里的豪言更能决定这处据点是否可靠。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "scholar",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "远行者在丰收厅停留多久，取决于航期、码头脚费、补水和下一处避风港。他们还会辨认风暴地的口音、法令和通行凭据；名声可以从酒馆传得很远，真正的路程仍须由车轮、船桨或马蹄丈量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "一纸封赐可以决定丰收厅的主人，却不能立刻赢得附近人的服从。在七国的封建秩序中，丰收厅的归属牵动封臣义务、税粮和征召；旗帜更换之后，道路、粮仓、旧债和地方信任仍得由新主人逐一接手。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "走过丰收厅的士兵记得风向、礁石、渡船与城门落锁后的锚地。能补给、能避险、能找到向导，便值得在行程里标明；若三样都没有，再响亮的家名也救不了迷途者。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "丰收厅的匠人靠修船木、帆布、盐、鱼获和抵御海风的石料留下手艺，神职者则用七神、风暴王旧史与抵御海风的厚重石墙解释生死。一处据点因而不只是领主的大厅，也是婚丧、誓言、劳作与地方记忆反复发生的场所。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "住在领地下层的人用灶火和粮袋衡量丰收厅。他们关心雨林木材、猎物、瘠薄农田、渔获和躲避风暴的屋顶，也看征粮后是否留下种子、灾年时城门是否开启；远方人看见纹章，他们看见的是明日有没有饭吃。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "丰收厅：丰收厅位于风暴地内陆，是赛尔弥家族的传统领地。它的名字直白地说明了其根基：不是港湾或险关，而是土地、收成、谷仓和能在战时被征召的农民与骑士。风暴地常因海岸风雨和边境冲突被人想作荒凉之地，但其内陆同样有承担税粮与补给的肥沃庄园。丰收厅与风息堡、王领道路及周边领主网络相连，因而一季歉收或一次征发都能传到更远的地方。当地的家族荣耀来自长期守土与骑士服务，而不取决于某一场可变的战争结果。"
+  ]
+}

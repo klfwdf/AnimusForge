@@ -1,0 +1,153 @@
+{
+  "Id": "rule_世界机制__龙",
+  "Keywords": [
+    "龙",
+    "巨龙",
+    "龙焰",
+    "龙王"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "龙是有血肉、会饥饿、会成长也会受伤的古老生灵，不是任人驱使的攻城器械。它们能飞行，龙焰足以熔毁石木与血肉；年龄通常带来更大的体形、鳞甲和破坏力，但再强大的龙也需要栖息、食物和能够与之建立关系的骑手。瓦雷利亚龙王曾以龙建立自由堡垒，坦格利安又以三条龙征服六国，使“驭龙”同时成为血统、权力与恐惧的语言。龙一旦出现，影响不会只属于拥有它的人：城墙、联盟、信仰和普通人的逃亡方向都会随之改变。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "valyrian",
+          "dragonstone"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "scholar",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "瓦雷利亚后裔容易把龙视为血统与天命的证明，却也知道亲近不等于安全。能骑上一条龙的人仍须学习它的性情，家谱不能阻止火焰反噬。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "soldier",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "普通人很少先想到王朝象征。他们会问屋顶能否挡火、牲畜该往哪里赶、龙影掠过时城门是否还开着；史诗在地面上常是一场无法扑灭的灾难。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "统治者与商人不得不重新计算一切：旧城墙是否还有意义，盟誓是否会因恐惧改写，粮仓和船队要不要分散。龙并不自动赢得政治，却会让拒绝计算它的人付出代价。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人把龙看成可执行的秩序。能够飞行与喷吐龙焰的古老生灵，会成长、受伤并择主，其存在足以改变战争、王权和民众想象。它是否有效，取决于谁能授予权利、收取代价，并在违约时让判决真正落地。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起龙时，关心它如何影响道路、命令和安全。能够飞行与喷吐龙焰的古老生灵，会成长、受伤并择主，其存在足以改变战争、王权和民众想象。远方的制度只有在营火、城门和驿站里能被执行，才不是空话。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者会从习惯和象征理解龙。能够飞行与喷吐龙焰的古老生灵，会成长、受伤并择主，其存在足以改变战争、王权和民众想象。一项规矩若被反复实践，便会进入礼仪、手艺和祈祷；若只靠恐惧维持，危机一来就会露出裂缝。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民感受到龙的方式最小也最准确。能够飞行与喷吐龙焰的古老生灵，会成长、受伤并择主，其存在足以改变战争、王权和民众想象。他们记得税、粮、劳役、赈济和谁能为他们说话；宏大的名称，最终都要落在一家人的饭锅旁。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "龙：能够飞行与喷吐龙焰的古老生灵，会成长、受伤并择主，其存在足以改变战争、王权和民众想象。"
+  ]
+}

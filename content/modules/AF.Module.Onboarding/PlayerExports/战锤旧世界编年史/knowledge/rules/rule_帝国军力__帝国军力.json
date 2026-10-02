@@ -1,0 +1,209 @@
+{
+  "Id": "rule_帝国军力__帝国军力",
+  "Keywords": [
+    "帝国军力",
+    "帝国军队",
+    "帝国兵种",
+    "帝国军事",
+    "帝国步兵",
+    "帝国炮兵",
+    "帝国骑兵",
+    "帝国战争机器"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "帝国军队是旧世界最均衡的军事力量，以训练有素的步兵方阵为核心，辅以重装骑兵、炮兵与战斗法师。帝国的军事传统建立在钢铁、火药与信仰三位一体之上——从手持长戟的州省步兵到身披全身板甲的瑞克卫队内环骑士，从地狱风暴火箭炮的流星火雨到蒸汽坦克的碾碎冲锋，帝国的战争机器以多样化和纪律性著称于世。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我们的军队是文明世界的壁垒，每一个帝国的孩子从小都会唱那首歌——'钢铁、火药与信仰'。长戟兵是州省军团的中坚，他们的长戟可以刺穿混沌骑士的板甲、钩倒巨魔的腿筋、劈开兽人的头骨。巨剑士来自各大骑士团的精英步兵，两米长的双手巨剑在混战中能扫开一整片敌军——他们都是贵族之家的幼子，或是立下战功的平民勇士。弩手与火枪手则给了我们对抗任何敌人的远程火力，火枪弹丸能击穿混沌战士的混沌铠甲，那是在恶魔熔炉中锻造的铁壳。瑞克卫队是皇帝的直属骑士团，他们的冲锋如同山崩；臼炮与加农炮将努恩钢铁厂的愤怒倾泻到敌人的头上；而蒸汽坦克——那是米拉迪亚的天才工程师们打造的凡人奇迹，十辆这样的钢铁巨兽足以碾碎一整支地精军团。别忘了战斗法师，他们在战场上驾驭着毁灭性的魔法之风，金色魔法让战旗燃烧辉光，火焰魔法将敌军化为飞灰。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "帝国的军事体系本质上是封建征召与常备军混合的模式。每个选帝侯都有权维持自己的州省军团，其规模和质量取决于该行省的财力。瑞克领和努恩的军团装备最为精良，而奥斯特领和奥斯特马克领的边民军团则饱经战火淬炼、经验最为丰富。在统帅方面，帝国元帅由皇帝任命，但实际操作中各行省将军往往优先听从自家选帝侯的指令。明智的指挥官会充分利用帝国的兵种协同优势：用长戟兵和矛兵构建正面防线，以火枪手和弩手在阵列间隙中射击，将骑士部署在两翼等待包抄，炮兵则在后列提供持续火力压制。战斗法师是双刃剑——他们的魔法可以扭转战局，但魔法失控的后果同样致命。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 100
+        },
+        "IdentityIds": null
+      },
+      "Content": "帝国军事体系的深层逻辑根植于其独特的政治结构。帝国骑士团——包括瑞克卫队、白狼骑士团、黑豹骑士团、烈日骑士团、莫尔骑士团等——是独立于州省军团的精英组织，各有其内部的晋升体系和效忠对象。火器技术的发展从根本上改变了帝国的军事面貌：努恩的帝国炮术学院自帝国历1999年成立以来，将原本粗陋的手炮发展为制式化的火枪与膛线加农炮，使得帝国成为旧世界唯一能大规模装备火器的国家。蒸汽坦克的研发源于米拉迪亚的传奇工程师莱昂纳多·达·米拉迪亚诺，他利用矮人蒸汽技术与实验性的蒸汽引擎创造了这种令人战栗的战争机器——现存十二辆坦克中的每一辆都有其独特的名称和历史。战斗法师的八个学派各自对应一种魔法之风：光明、金属、生命、天堂、阴影、死亡、火焰与野兽，每位法师在学院中经历严酷的训练与精神考验，只有意志最坚定者才能在战场上驾驭这些毁灭性的力量而不被其吞噬。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "作为在旧世界混乱时代中管理领地事务的女性，我对帝国军力的理解与那些只在战场上考虑问题的男性领主有着本质差异。战争的代价最终由村庄、农田和家庭承担——而这些都是我负责管理的领域。这种视角使我更关注帝国军力的长期影响而非短期战功。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "作为家族之长，帝国军力对我来说不仅是一个军事或政治问题，更是一个血脉延续的问题。每一次我们在帝国军力相关的议题上做的决定，都将在族谱上被记录并被未来数代人检验。家族的生存优先于个人的荣耀——这是我在长老会议上一贯坚持的立场。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "在我的流浪生涯中，我对帝国军力的了解不是来自书本或军事学院，而是来自那些在边境村庄的篝火旁从幸存者口中听来的真实经历。这些经历比任何官方记录都更粗糙但也更诚实——它们不会通过筛选和修饰来保护当权者的面子。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "从商业和手工业的角度看，帝国军力对我这样的行会成员而言意味着一种稳定的市场——无论是军备供应、基础设施建设还是战后的重建合同。但帝国军力也带来了风险：一旦相关区域陷入战火，我们最赚钱的贸易路线就会被切断，库存积压，保险费用飙升。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "帝国军力——战锤旧世界核心概念条目",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "帝国军队是旧世界最均衡的军事力量"
+  ]
+}

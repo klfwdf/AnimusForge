@@ -1,0 +1,212 @@
+{
+  "Id": "rule_双足飞龙__双足飞龙",
+  "Keywords": [
+    "双足飞龙",
+    "飞行爬行兽",
+    "恶地猛兽",
+    "兽人坐骑",
+    "毒尾",
+    "飞龙",
+    "双足飞龙毒刺",
+    "绿皮空军",
+    "恶地捕食者",
+    "巨翼",
+    "兽人战将坐骑"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "双足飞龙是徘徊在恶地和世界边缘山脉上空的巨兽级飞行爬行动物，它的毒刺尾巴能一击瘫痪一头成年食人魔，它的利爪足以撕碎骑士板甲。只有最强悍的兽人战将才能用暴力降伏一只双足飞龙并将其绑为自己的坐骑——而能够骑着飞龙上战场的战将，通常就是下一任Waaagh的领袖。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "双足飞龙！俺这辈子要是能在死之前骑上一只飞龙哪怕就一回俺这口烂牙全给你也行！那玩意儿是天上最横的畜生——比矮子那些嗡嗡转的铁蜻蜓大多了，翅膀扇起来比俺们营地最大的帐篷还宽！每个大老大都梦想有一只飞龙——你想想，你骑着飞龙从天上冲下去，对面的铁罐头们抬头看到你嘴里喷着绿烟的影子盖住整片天，吓得裤裆里倒出水来然后你一爪子把他们的将军从马上薅起来——咔嚓！——像薅兔子一样。但抓飞龙是难到发疯的事：你得先爬到恶地最高的石头山上找到飞龙窝，然后把飞龙崽子的尾巴打个结它就叫唤把那老龙引过来——然后你就跟那老龙干架。你想它一甩尾刺能把你从头到脚扎穿——俺亲眼看着三个来抢飞龙窝的老大一死两残从山顶滚下来。但你要是打赢了把它按地上骑住了——你就是下一个铁爪哥！"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "双足飞龙在战术上构成了一种非对称空中威胁——目前只有矮人直升机和高等精灵的狮鹫骑士可在空对空作战中正面对抗一支飞龙骑手。飞龙的致命性来自三个因素的复合：飞行速度、毒尾攻击范围、以及着陆后转变为地面猛兽的双栖能力——这意味着一旦飞龙骑手被击落，坐骑本身就是一支独立的地面突击战力。防御双足飞龙的标准方案是集中弩炮与火枪方阵的火力——飞龙体积庞大，在俯冲阶段的飞行轨迹可被精准预测，此时是将其击伤的唯一时机。但对任何一个没有空中力量的指挥官而言，一只敌方飞龙的存在即意味着你的指挥部永远在威胁之下。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "双足飞龙——在系统分类学中位置尚存争议：既不完全属于龙科也不属于翼手科——在旧世界自然史手稿中普遍被归入「伪龙目·双翼爬行科」，其基因测序表明与真正的龙族（如卡尔卡松黑龙、星辰龙）的亲缘关系约为七万年前分岔，这意味着它们在进化树上更接近变温爬行动物而非火龙支系。双足飞龙的毒腺位于尾椎末端的骨刺基部，毒素成分经帝国药剂师公会分析含有溶血性蛋白酶和神经节阻断碱——其毒性机制为同时攻击血液携氧能力与神经传导，使得中毒者既窒息又痉挛，致死约在一至三分钟内。关于飞龙驯化：兽人使用的方式被绿皮行为学者称为「制服性印记」——兽人战将需单身前往飞龙巢穴，以纯粹的物理暴力制服飞龙而不杀死它，从而使飞龙产生对特定个体的「力之印记」——一旦印记形成，飞龙会将骑手视为不可挑战的阿尔法个体。但这一过程死亡率极高——据边境亲王领地佣兵公会的操作记录，试图降伏飞龙的兽人老大中约有七成直接死于飞龙巢穴。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我记得父亲——愿莫尔安息他的灵魂——曾在一次战役中面对过一只飞龙。不是兽人骑的那种，而是从世界边缘山脉飞下的一只野生双足飞龙，它在我们的行军队列上空盘旋了整整一天，遮住太阳像一片不祥的乌云。那天晚上它降落在辎重营里，撕碎了四十三匹马然后飞走。第二天我们的骑兵变成了步兵。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我们家族祖先曾在恶地边缘发现过一具双足飞龙的完整骨架——翼展据族谱记载为四十二尺。我的先祖花了三年时间把那具骨骼从恶地运回家族城堡，计划把它立在大厅中央作为家族武勋的象征。但在运送最后一段路程时，一只活的双足飞龙循着骨骸的气味追来了——飞龙不杀同类，但它们会吃同类死者的骨髓。我的先祖被迫烧掉了那具骨架以断绝气味。至今我们家族大廳中央立着的是一堆石雕的假龙骨。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "在恶地边缘巡逻时我们队遇到过一只受伤的飞龙——一条后腿被什么更大的东西咬瘸了，趴在岩石地上嘤嘤叫。队长说要不要上去结果它——那玩意儿死后可以卖不少钱。我们就端着弩上去，走近了才发现那不是飞龙，是一只母飞龙守着一窝蛋。然后山脊上冒出来另一只——公的，翅膀张开遮天蔽日。我们跑得比任何地精都快。后来我们都同意，双足飞龙是旧世界少数几种你看到了最好绕路走而不是往上凑的生物之一。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "你听过恶地猎人圈子里的那个传说没？说有一家专业捕龙队——父子女三人——专门进恶地寻找双足飞龙巢穴窃取飞龙蛋，然后在阿尔道夫的黑市上以一枚蛋八千到一万金克朗的价格卖给出不起正经狮鹫的贵族家族。他们干了十五年，然后突然全家失踪。后来有人在黑岩堡的兽人集市上认出了老猎人的头盖骨——被一个黑兽人老大当酒碗使。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "恶地巨型双足飞行爬行兽，翼展可达四十余尺，兼具空中与地面凶残战力",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "双足飞龙飞行爬行兽恶地猛兽"
+  ]
+}

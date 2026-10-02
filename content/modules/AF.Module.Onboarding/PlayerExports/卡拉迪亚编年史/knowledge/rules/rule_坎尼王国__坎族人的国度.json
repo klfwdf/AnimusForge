@@ -1,0 +1,61 @@
+﻿{
+  "Id": "rule_坎尼王国",
+  "Keywords": [
+    "坎族人的国度",
+    "坎尼共和国",
+    "坎尼人的国度"
+  ],
+  "RagShortTexts": [
+    "坎尼人曾建商业共和国于西帝国与阿塞莱交界，后被双方瓜分，虽居故土但已失话事权。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai",
+          "empire_w"
+        ],
+        "SettlementIds": [
+          "town_a1",
+          "town_ew4"
+        ],
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "steward": 60
+        }
+      },
+      "Content": "坎尼人曾经在西帝国和阿塞莱交界处建立过十分强大的商业共和国，不过因为帝国和阿塞莱的发展，坎尼人的国家最后也被帝国的领主和阿塞莱的商人瓜分了。\n坎尼人虽然仍然继续居住在他们的故土，但不再拥有话事权。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai",
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "坎尼人曾经好像建立过一个国家，不过后来销声匿迹了。"
+    }
+  ],
+  "TextMappings": []
+}

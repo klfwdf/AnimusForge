@@ -1,0 +1,17 @@
+{
+  "Id": "rule_奎内勒斯__奎内勒斯",
+  "Keywords": ["奎内勒斯公国_QU", "奎内勒斯公爵领_QU", "奎内勒斯领地_QU", "奎内勒斯森林_QU", "奎内勒斯公爵_QU", "奎内勒斯林地_QU"],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":null,"IsFemale":null,"IsClanLeader":null,"SkillMin":null},"Content":"奎内勒斯公国位于巴托尼亚东部，与艾索洛伦森林接壤，由坦克雷德二世·德·奎内勒斯公爵统治。此地在巴托尼亚诸公国中与木精灵关系最为密切，双方的古老盟约可追溯至吉勒斯时代。精灵的魔法与骑士的长枪在此地和谐共存。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":["vlandia"],"KingdomIds":null,"SettlementIds":null,"Roles":null,"IsFemale":null,"IsClanLeader":null,"SkillMin":null},"Content":"奎内勒斯——森林边缘的精灵之友！坦克雷德二世公爵延续着与艾索洛伦的古老誓约。我们的城堡塔楼上爬满了常春藤，森林精灵有时会在月光下造访我们的花园。奎内勒斯的骑士比其他公国的骑士更了解森林的秘密，伐木在此地被严格禁止。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":["lord"],"IsFemale":null,"IsClanLeader":null,"SkillMin":null},"Content":"奎内勒斯公国的战略价值在于与木精灵的特殊关系。坦克雷德二世公爵是巴托尼亚唯一可以请求木精灵军事援助的统治者——这种关系在边境冲突中可能改变战局。奎内勒斯还守护着艾索洛伦的东部入口，防止绿皮部落从灰色山脉方向入侵森林。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":["lord","notable","wanderer"],"IsFemale":null,"IsClanLeader":null,"SkillMin":{"Steward":120}},"Content":"奎内勒斯公国的经济呈现独特性。由于禁止大规模伐木，公国不出口木材，反而进口来自帝国和灰色山脉矮人的加工木材。农业以林间小块田地的精细耕作为主，出产草药、蜂蜜和珍稀菌菇。奎内勒斯蜂蜜在旧世界享有盛誉——蜜蜂在艾索洛伦边缘采集花蜜。公国还出产一种名为「精灵草」的药用植物，只生长在艾索洛伦边缘地带，对治疗某些疾病有奇效，价格极其昂贵。与木精灵的禁忌贸易——仅限于公国特许商人——涉及精灵手工艺品和魔法护符，利润极高但风险同样巨大。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":["lord"],"IsFemale":true,"IsClanLeader":null,"SkillMin":null},"Content":"奎内勒斯的女性贵族比任何地方的女性都更接近自然魔力。据说湖之女神最初的显圣之地就在奎内勒斯与艾索洛伦交界处的一汪清泉边。坦克雷德二世公爵的宫廷中设有「森林女官」的职位，专门负责与木精灵的女使者交涉。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":["lord"],"IsFemale":null,"IsClanLeader":true,"SkillMin":null},"Content":"我们家族世代担任奎内勒斯与艾索洛伦之间的「森林信使」。这份职责只能代代相传——精灵不信任陌生人。坦克雷德二世公爵需要我们的家族作为桥梁，因为我们既懂人类的礼法也懂精灵的规矩。一旦失去这种信任，奎内勒斯最珍贵的盟友就将流失。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":["wanderer"],"IsFemale":null,"IsClanLeader":null,"SkillMin":null},"Content":"奎内勒斯的森林有一种令人不安的美丽。树木排列得太过整齐，林间的光影似乎有着自己的意志。我在森林边缘宿营时，曾在晨曦中看到过精灵哨兵在树冠间无声掠过。当地居民告诫我绝不能深入森林——他们说那些进去太深的人回来后再也不说话。"},
+    {"Priority":0,"When":{"HeroIds":null,"Cultures":null,"KingdomIds":null,"SettlementIds":null,"Roles":["notable"],"IsFemale":null,"IsClanLeader":null,"SkillMin":null},"Content":"奎内勒斯的商业机会藏在不起眼的地方。蜂蜜和草药是两样不用太大本钱就能做起的生意——奎内勒斯蜂蜜在帝国可以卖到普通蜂蜜的五倍价格。精灵草更是暴利商品，一捆干燥的精灵草在阿尔道夫药店可以换到等重的白银。但精灵贸易品绝不能赝造——木精灵对商誉的重视超乎人类想象。"}
+  ],
+  "TextMappings": [{"SourceText":"奎内勒斯公国位于巴托尼亚东部艾索洛伦边缘，以与木精灵的古老盟约和森林守护著称","Kind":null,"TargetId":null,"AgeMin":null,"AgeMax":null,"EmptyValueText":null,"TrueText":null,"FalseText":null}],
+  "RagShortTexts": ["奎内勒斯公国艾索洛伦边缘精灵盟友"]
+}

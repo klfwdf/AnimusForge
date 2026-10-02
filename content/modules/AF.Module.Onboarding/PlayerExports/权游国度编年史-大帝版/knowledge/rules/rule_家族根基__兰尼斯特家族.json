@@ -1,0 +1,155 @@
+{
+  "Id": "rule_家族根基__兰尼斯特家族",
+  "Keywords": [
+    "兰尼斯特家族",
+    "金狮",
+    "听我怒吼",
+    "兰尼斯特有债必偿"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "兰尼斯特家族以凯岩城与兰尼斯港为根基，自称源于机智的兰恩从凯斯特利家手中取得巨岩的传说。金底红狮与“听我怒吼”是正式纹章与箴言；“兰尼斯特有债必偿”虽非家族箴言，却因财富、信誉与报复的名声而比箴言更广为人知。西境的矿产、港口、骑士和封臣网络使兰尼斯特很早便学会把金钱当作权力的一种语言：赏赐能收买忠诚，债务能延长影响，体面能遮住裂痕。外人常把他们简化成黄金与傲慢，西境人却明白，一头狮子既要让人畏惧，也要让许多人靠它的账簿吃饭。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "西境诸侯仰望凯岩城时，看见的不只是金矿和狮旗，也看见一套奖赏忠诚、追索债务、维护体面的统治方式。兰尼斯特能让封臣富贵，也能让一个失宠家门发现道路、婚约和钱袋同时向自己关闭。狮子的恩惠与怒火都很少只停在一句话上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "artisan",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "矿工、铸币匠和兰尼斯港商人知道，黄金并非从歌里流出来。它来自黑暗矿道、严密账本、船舱和无数双沾灰的手。兰尼斯特有债必偿，对债主是保证，对欠债者则像一扇慢慢合拢的铁门。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "river",
+          "crownlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "外地人谈兰尼斯特，往往先提黄金，再提报复。他们赞叹凯岩城的财富，也怀疑每一次馈赠背后是否已有价码。金狮最强的地方不是人人都爱它，而是许多人即使厌恶，也不得不计算得罪它需要付出什么。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待兰尼斯特家族，会先看它的土地、婚盟、血脉和债务。凯岩城与兰尼斯港的金狮家族，源于机智的兰恩传说。正式箴言为“听我怒吼”，而“兰尼斯特有债必偿”概括其财富、信誉、体面与报复的社会名声。家徽是门面，能否保护封地、兑现婚约并在危机中召集人马，才是家族真正的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起兰尼斯特家族时，记得的是谁在营火边分过粮、谁把他们留在城外、谁在败局里仍站在旗旁。凯岩城与兰尼斯港的金狮家族，源于机智的兰恩传说。正式箴言为“听我怒吼”，而“兰尼斯特有债必偿”概括其财富、信誉、体面与报复的社会名声。家族名声最终要落到具体的人和具体的命令上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意兰尼斯特家族留下的仪式、墓地和传承。凯岩城与兰尼斯港的金狮家族，源于机智的兰恩传说。正式箴言为“听我怒吼”，而“兰尼斯特有债必偿”概括其财富、信誉、体面与报复的社会名声。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见兰尼斯特家族。凯岩城与兰尼斯港的金狮家族，源于机智的兰恩传说。正式箴言为“听我怒吼”，而“兰尼斯特有债必偿”概括其财富、信誉、体面与报复的社会名声。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "兰尼斯特家族：凯岩城与兰尼斯港的金狮家族，源于机智的兰恩传说。正式箴言为“听我怒吼”，而“兰尼斯特有债必偿”概括其财富、信誉、体面与报复的社会名声。"
+  ]
+}

@@ -1,0 +1,209 @@
+{
+  "Id": "rule_符文铁匠__符文铁匠",
+  "Keywords": [
+    "符文铁匠",
+    "符文铁匠符文锻造",
+    "束缚魔法",
+    "古老技艺",
+    "驱散魔法",
+    "矮人施法替代",
+    "符文铁匠符文之力",
+    "格伦吉尔传承"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "符文铁匠是矮人中最神秘也最受尊敬的职业——他们不释放魔法，而是将魔法的力量用符文之锤砸入金属之中。当人类法师还在念诵咒语时，一位符文铁匠大师已经在武器上完成了永恒的附魔，这种附魔不会消散、不会被反制和驱散。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "符文铁匠——那是我们矮人对抗人类、精灵那些花哨魔法的终极答案。你们那些学院法师的风火雷电，在符文铁匠面前算什么东西？你们念咒，我们打铁；你们的魔法飘忽不定像风中残烛，我们的符文永恒如群山。一位符文铁匠在他一生中可能只锻造十几件作品，但每一件都会活过数个世代，活过无数帝国皇帝的更迭。你听说过格伦吉尔·星锤吗？他是第一个将魔法封印进陨铁中的矮人，他的锤子至今仍被供奉在永恒之峰最深处的符文大殿里。符文铁匠在战场上不是挥舞魔法杖的战斗法师——他们扛着一人多高的符文重锤走上战场，遇到敌方法术就往地上一锤：轰！地面裂开的瞬间，方圆三十尺内的所有魔法效应全部失效。这叫'符文击碎'——不是驱散，是砸碎，用先祖之力把那些人类法师脆弱不堪的魔力结构直接砸成碎片。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "符文铁匠在战场上的战术价值约等于帝国魔法学院的一整个战斗法师编队——区别在于他们不需要魔力之风、不会被驱散、也不会施法失误把自己炸死。在反魔法方面，符文铁匠是已知世界中的第一选择：让一位符文铁匠大师部署在主力步兵编队中，可以有效克制一切依赖魔法支援的敌军。唯一的限制是他们需要时间——符文铁匠在战斗中激活符文阵需要短则三十息长则一刻钟的连续捶打，这段时间内他们必须受到重装步兵的严密保护。进攻端同样重要：战前让符文铁匠为将领的武器和盔甲刻上临时战斗符文，可极大提升个人战斗力。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "符文铁匠这门技艺的基础原理被称为'符文聚合理论'——由矮人博学者托雷克·铁锤于公元-1500年（黄金时代晚期）系统整理成口头传承（从未书于纸面）。核心原理是：魔法能量在自然状态下是游离的、不稳定的'风'，而符文是精确设计的能量容器——将魔法'风'强行推入陨铁的晶格结构中后，符文线条相当于'缚能导管'，使魔法能量在金属内部形成永久的、自持的流动循环。这与人类法师从魔力之风中即时抽取能量施法的原理截然不同。历史上符文铁匠形成独立行会制度于公元前约1200年，由格伦吉尔·星锤的第三门徒建立。值得注意的是，符文铁匠的技艺在绿皮战争和混沌入侵期间遭受了毁灭性损失——据帝国与矮人联合学术调查（公元2300年《符文遗存白皮书》）估算，黄金时代存在约四十个完整的符文谱系，而至今日仅剩七个尚在传承。每个符文铁匠大师的培训周期长达二百至四百年，这使每一名在世的符文铁匠都是不可再生的战略资产。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "矮人不允许女性成为符文铁匠——这让许多贵族女性既尊重又轻视他们的文化。但从军事效率角度我必须承认：他们的符文锻造体系是人类魔法学院无法复制也无力抗衡的。我曾向一位卡拉克·卡德林的符文铁匠大师询问过他们的秘密，他回答说：'不是什么魔法，是耐心。我有六百年时间学会一件事——怎么让怒火在金属里安静地住下来。'"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "符文铁匠的秘密在矮人家族中是世代单传的——父亲教给儿子，师傅教给学徒，从不写下来。每一道符文都是一份遗产。我知道有个家族专门铸造'守护符文'，另一个家族专精'火焰符文'。各族之间的工艺严格保密，甚至在同一座卡拉克里两个符文铁匠家族可能三百年不交谈——这不叫仇恨，叫商业竞争和工艺尊严。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "在巴拉克·瓦尔雇过一个符文铁匠学徒来给我的剑刻符文——他警告我说'只能刻一次，符文不喜欢反复修改'。刻完之后确实不同，我的剑砍混沌野兽时手感明显更顺畅了，像是剑自己知道该往哪砍。但他收了我的全部积蓄——一个学徒！我都不敢想一个大导师的收费是多少。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "帝国魔法学院的院长曾经在私人晚宴上说过一句大实话：'如果让我选帝国魔法学院和矮人符文锻造行会哪一个更重要——我会把魔法学院关了换符文装备。'当然他不会公开这么说，但西格玛教会的人对符文铁匠的态度极为复杂：他们觉得符文不是魔法，却比任何魔法都强大，而教会无法对矮人符文铁匠烧火刑柱。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "符文锻造：矮人独有的附魔技术，将魔法能量通过符文锤敲入金属内部形成永恒的、不可驱散的魔法效应。",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "符文铁匠符文铁匠符文锻造束缚魔法"
+  ]
+}

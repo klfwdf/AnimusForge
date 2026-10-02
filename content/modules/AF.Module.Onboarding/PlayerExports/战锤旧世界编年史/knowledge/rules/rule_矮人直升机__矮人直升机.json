@@ -1,0 +1,213 @@
+{
+  "Id": "rule_矮人直升机__矮人直升机",
+  "Keywords": [
+    "矮人直升机",
+    "旋翼飞行器",
+    "蒸汽枪",
+    "空中骚扰",
+    "矮人空军",
+    "单人飞行",
+    "旋翼机",
+    "侦察飞行",
+    "蒸汽",
+    "空中",
+    "矮人工程",
+    "飞翼"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "矮人直升机——又称旋翼机——是矮人工匠学院将蒸汽动能与航空物理学折叠在一起的奇特造物：一名矮人飞行员坐在轰鸣的蒸汽引擎下方，旋翼桨叶疯狂旋转，从空中朝下方敌军喷射蒸汽枪弹并投掷小型旋叶炸弹。它不优雅，但它是旧世界最可靠的飞行侦察与骚扰器。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "矮人直升机！人类管它叫嗡嗡怪——说它在天上一抖一抖看起来随时要掉下来！呸！你们那些木头帆布做的人工风筝能在空中连飞半天不用下来添油吗？能？不能！我们的直升机用的是压缩蒸汽锅炉——你们是用什么？龙的屁吗？旋翼的声音是吵——老子第一次戴耳塞——但你在战场上听到那种由远而近的「伐木锯加铁锅互相砸」的声音的时候，你就知道上头有双矮人的眼睛把地面上的地精伏击全看扁了，然后蒸汽枪就「嗤——嗤——嗤——」冒着白汽往地精堆里射铁丸子！我们的飞行员得比地下任何兵种都硬——你得在引擎过热的时候用皮裤蹭住那条烧红的铜管子然后一边用木头扳手猛砸卡住的浆轴，一边还抽出腰间那把小手弩往下面飞来的鸟身女妖脸上射！最得意的时候是你从上面飞过去看到下面自家步兵对着你举斧子嗷嗷叫——那就是「兄弟你先歇着那堆绿皮我来替你踢」的意思。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "矮人直升机为指挥官提供的核心能力不是火力而是侦察与战场管制。一架直升机可在持续巡航中对敌军阵地进行连续数小时的俯视监视，使魔兽伏击、林带藏兵或后方预备队的任何移动全部暴露在你的地图上——这在常规战争中是仅靠地面斥候无法达到的情报精度。其蒸汽枪在对付无甲轻装单位——尤其是座狼骑兵和地精集群——时表现良好，但在对抗重装骑兵或空中魔法怪物时只能作为辅助骚扰。决定性战术价值在于「制空权」：一旦你部署了直升机，敌方没有任何飞行单位可在没有空中交战的情况下平安抵达你的补给辎重——这逼使敌方所有空中力量的一举一动都多了一层延迟与消耗。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "矮人直升机的工程学档案揭示了一幅从理论到实践的痛苦进化图。其最早的试飞版本——矮人工程师行会的「旋升计划」——始于帝国历前约170年，由卡拉克·卡德林的蒸汽工程师多林·铜须发起，基于一个将磨坊风力转轴竖置的工程草图演化而来。最初十二架原型机中十架在首次起飞中坠毁，阵亡了七名试飞员——这是矮人工程史上空前的人员损失。但矮人不弃：到帝国历约50年，第四代旋翼机——「旋飞4号」——完成了第一次载人三哩持续飞行，其改进包括双层逆向旋翼（抵消自旋扭矩）、压缩锅炉轻量化（以铜丝网状缠绕的薄铜板替代铸铁锅壁）、以及引入了人类工程师完全无法复制的「嗡嗡铜」桨轴合金——这种铜-锡-镍的三元合金在高热下会产生表面微孔层自动润滑功能，使得桨轴在无油脂润滑的情况下仍可在高转速下连续运转数小时而不咬死。矮人旋翼机队（正式编制名称为「卡拉克旋翼哨戒队」）在整个旧世界据估计共有约一百二十至一百五十架现役机，分散部署于各主要卡拉克的顶层机堡中。帝国历2302年的大混沌入侵中，卡拉克·卡德林的旋翼机群在北极旋风带中坚持飞行了整整四个月，在零下六十度环境下以蒸汽枪射击逼近瓦拉格纳隘口的混沌飞行魔兽——最终在暴雪停止后为矮人与人类联军赢得了隘口南侧壁阵的布阵时间。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我第一次目击矮人直升机是在卡拉克·卡德林的军事演示场上。那架机器的声音——锤打金属调加上持续漏气的嘶嘶声——听起来好像随时会从天上翻下来。但它没翻。在天上做了三个盘旋之后它精准地悬停在靶场上空，用一股雾状蒸汽射出四十多颗铁弹镶在木靶正中央。我身边的帝国工程师张着嘴看了全程，然后低低地说了一句不该说也不该记录的话。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我族裔领地中曾有一位年轻矮人旋翼机师坠落在雪峰上——旋翼撞断、蒸汽锅炉炸裂——但他本人奇迹般地从残骸中爬了出来，瘸着走了一天一夜返回营地。他带回来的情报远比他驾驶的旋翼重要：他发现了一整支绕道从没被标记的冰川古道南下进入我们领地的兽人军队。那支敌军的规模和方向在他的地图上全注得清清楚楚——他落地后在残骸旁用流血的手画了这份图。我据此提前一天部署守军，打赢了那场本来无从防备的伏击战。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我们在世界边缘山脉带商队时有矮人直升机的飞队从头上过——就两架，嗡鸣声从山背面冒上来，震得路边碎石往下滚。它们飞过我们顶上的时候把太阳光劈成了旋转的碎影，然后从大约六十尺高度朝前面半里地的一片灌木丛扫了一整圈蒸汽枪弹。后来我们走过去看那一丛灌木里面倒着六具暗夜地精突袭兵的尸体——都在那里等着伏击我们，被旋翼机从上空看见了。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "帝国工程师学院有专门的小组研究矮人旋翼机的残骸——他们在设法复现那种桨轴传动系统。但矮人使用的一种特殊的轻量减摩铜合金——在矮人语中叫「嗡嗡铜」——的成分人类冶金行会始终分析不全，因为矮人将冶炼过程分为十道步骤，每道步骤在不同的卡拉克完成，没有人知道完整流程。我们的螺旋桨连飞十三分钟后轴承开始变形；矮人的那只能飞一上午不落地。这让我们在交易议会上脸面扫地。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "矮人蒸汽驱动的单人旋翼侦察与骚扰飞行器，旧世界最可靠的空中哨戒平台",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "矮人直升机旋翼飞行器蒸汽枪"
+  ]
+}

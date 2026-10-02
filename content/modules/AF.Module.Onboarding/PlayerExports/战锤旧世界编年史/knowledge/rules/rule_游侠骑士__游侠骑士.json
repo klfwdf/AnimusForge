@@ -1,0 +1,213 @@
+{
+  "Id": "rule_游侠骑士__游侠骑士",
+  "Keywords": [
+    "游侠骑士",
+    "年轻贵族",
+    "渴望证明",
+    "缺乏经验",
+    "初阵骑士",
+    "热血冲动",
+    "骑士学徒",
+    "初出茅庐",
+    "王国骑士候补",
+    "少年骑士",
+    "寻求荣耀",
+    "稚嫩"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "游侠骑士是巴托尼亚骑士阶层中最低但也最充满活力的等级，由年轻贵族子弟组成。他们尚未获得封地，渴望在战斗中证明自己的价值，以博取晋升为王国骑士的资格。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "啊，游侠骑士——每一个巴托尼亚骑士的青春！我还记得自己十八岁那年第一次披上简陋的铠甲，骑着父亲给我的那匹半驯的战马冲向战场。我们这些游侠骑士虽然装备寒酸，但胸膛里燃烧着世界上最炽热的火焰。每年都有成百上千的游侠骑士踏上征程，去寻找值得一战的敌人。有人猎杀野兽，有人追击绿皮掠夺者，还有人单枪匹马冲向混沌战帮——愚蠢，但女神偏爱勇者。活着回来的就是英雄，没能回来的……他们的名字被刻在村口的小礼拜堂里。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "游侠骑士虽然经验不足，但数量庞大且士气高昂，是理想的先锋部队和侧翼骚扰力量。他们渴望荣耀胜过生命，因此可以承担高风险任务。缺点是纪律散漫，容易因热血上头而破坏战术部署。明智的将领应将游侠骑士编入独立小队，交给经验丰富的王国骑士带领，而非让他们独当一面。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "巴托尼亚骑士晋升体系中的游侠骑士制度可追溯至吉勒斯时代。游侠骑士在法律上被定义为「持剑的无地贵族」，享有贵族豁免权但不承担封臣义务。晋升条件包括：在至少一次正式战斗中证明勇气、获得一名王国骑士或更高阶骑士的推荐、并宣誓效忠一位领主。游侠骑士的平均年龄在十六至二十四岁之间，约有四成活不过三年。有趣的是，游侠骑士的纹章使用权受到严格限制——他们只能使用家族纹章的简化变体，且不得佩戴完整的纹章斗篷。这一制度既维护了骑士阶层的等级秩序，也为年轻贵族提供了明确的晋升路径。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我见过太多游侠骑士——那些年轻的男孩们骑着劣马，穿着不合身的盔甲，眼神中满是狂热。作为女贵族，我懂得他们的渴望：他们想要的不只是荣耀，还有封地、妻子和家族的认可。有时我会送几枚金币给这些孩子，一匹好马也许能让他们活着回来。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我族每年要送出五到十名游侠骑士入伍。这是氏族年轻子弟的必经之路——在战场上证明自己，再以王国骑士的身份衣锦还乡。有些人一去不返，但这是必要的代价。一个没有战士的氏族，不配在巴托尼亚立足。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我曾在酒馆里遇到过一群游侠骑士，他们喝得烂醉，吹嘘着即将完成的丰功伟业。第二天清晨，他们银色的盔甲在阳光下闪着光，策马奔向远方。我不知道他们中有几个活过了那个冬天。年轻人的热血既是武器也是诅咒。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "游侠骑士是最好的主顾——年轻、慷慨、不计较价格。他们需要武器、盔甲、马具和干粮，而且从来不讨价还价。不过赊账的风险也高，阵亡的骑士无法偿还债务，而他们的家族往往远在天边。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "游侠骑士是巴托尼亚年轻无地贵族的起始骑士等级",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "游侠骑士是巴托尼亚骑士阶层中最低但也最充满活力的等级"
+  ]
+}

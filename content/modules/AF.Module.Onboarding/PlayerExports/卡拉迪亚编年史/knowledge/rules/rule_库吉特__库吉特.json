@@ -1,0 +1,239 @@
+﻿{
+  "Id": "rule_库吉特",
+  "Keywords": [
+    "库吉特"
+  ],
+  "RagShortTexts": [
+    "库吉特曾为大部族，潘德拉克战役后遭其他部族觊觎。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "库吉特是库赛特汗国内部一个非常重要的部族。他们并非原本就属于库赛特，是在兀儿浑可汗征战的过程中加入的，但这并不妨碍他们完美地融入草原。这个部族向来以悍勇无畏著称，但如今，在潘德拉克战役中失去大量成年男丁后，部族的领导权落入了一位坚韧的女性手中，面临着前所未有的困境。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "库吉特部？他们曾经是草原上数一数二的大部族，仅次于蒙楚格大汗的兀儿浑乃特。可惜，潘德拉克那一仗，他们为了帝国的黄金把家底都打光了。现在他们的领袖是墨速宜，岁仑那颜的遗孀。一个女人当家，其他部族都眼红他们的草场和牲畜，要不是有蒙楚格大汗压着，库吉特部早就被周围的豺狼撕碎了。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "墨速宜女士是我敬重的人。她接过库吉特这个烂摊子的时候，部里的男丁都快死绝了。但她没有屈服，她像母狼一样捍卫着家族的权力，甚至还敢在议事会上为那些被欺负的小部族说话。她说那些小部族为汗国流血流汗，却得不到应有的回报——这话得罪了不少大部落，但也让很多人暗中佩服。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "townsfolk"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "库吉特部现在不比当年了。以前他们的马群能从奥通加德一直跑到巴尔塔罕，现在呢？他们的首领是个寡妇，叫墨速宜，整天提防着别的部落来抢他们的牲口。不过听说这女人很厉害，对敌人毫不留情，做生意也公道。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": [
+          "clan_kujit"
+        ],
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "我们的领袖是墨速宜，岁仑那颜的遗孀。潘德拉克会战夺走了她的丈夫、兄弟，还有无数亲戚。我们不是为了什么荣耀去打仗的，我们是为了帝国的黄金！可仗打完了，瓦兰迪亚人被打退了，但涅雷采斯皇帝被砍了脑袋，没人给我们付钱。更糟的是，阿契特人听说我们的男人都死光了，就来抢我们的牲口、杀我们的族人。蒙楚格大汗几乎无动于衷。这就是我们学到的教训：勇者受死，叛徒发财。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": [
+          "clan_kujit"
+        ],
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "墨速宜族长说得对，我们库吉特人在这场战争中吃尽了苦头。我们失去了太多太多的人。就因为一个女流之辈领导着我们，其他部族就觉得我们弱小，觊觎我们的土地。要不是蒙楚格大汗大权在握，他们早就动手了。对我们这样的部族来说，一位强大的可汗是无上的祝福。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": [
+          "clan_kujit"
+        ],
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "warrior"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "我那时就在潘德拉克。我们跟着岁仑那颜，骑着自己最好的马冲向了瓦兰迪亚人的阵地。没想到瓦兰迪亚人准备了那么多弩手，箭矢像蝗虫一样飞来。但我们还是冲破了他们的阵线，把他们打得溃不成军。可我们赢了吗？岁仑那颜战死了，他的兄弟、儿子也都死了。我们赢得了战斗，却输掉了部族的未来。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "库吉特人是帝国在潘德拉克战役中最得力的雇佣兵，也是最惨的牺牲品。他们拿着帝国的第纳尔，像发了疯一样冲锋，冲垮了瓦兰迪亚人的阵地。可结果呢？涅雷采斯皇帝死了，没人付他们尾款，他们的部落也被仇家趁虚而入。我们帝国欠他们一笔账。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "库吉特人，潘德拉克会战时我们瓦兰迪亚人最凶狠的对手。他们骑着快马冲过来的时候，我们的弩手几乎挡不住。那场仗我们损了不少精锐，他们的损失更大。听说后来他们的部落因为男丁死太多，地盘都被吞了，真是讽刺。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "库吉特人是潘德拉克的亡魂。他们为了帝国的臭钱把命都搭了进去，换来的却是家破人亡。现在他们的寡妇当家，周围没有哪个部落不想咬他们一口。这和我们北方的规矩不一样，我们会照顾好战死兄弟的家人。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer",
+          "mercenary"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "库吉特部的事儿是所有雇佣兵的教训。收了雇主的钱，拼了命去打，打赢了，可雇主死了，尾款没人付。等你带着一身伤回去，发现老窝都被同行端了。他们的首领墨速宜现在还在撑，但谁知道能撑多久？不要把所有鸡蛋都放在一个篮子里。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "steward": 150
+        }
+      },
+      "Content": "库吉特部是库赛特汗国内部权力结构的一个缩影。他们作为被征服后加入的部族，虽深度融入游牧体系，但在政治地位上仍需要不断证明自己的价值。潘德拉克会战是他们的一场豪赌——试图通过为帝国提供雇佣兵来积累财富和声望，以提升在汗国内部的话语权。然而，战场的惨胜和帝国的违约使得这场豪赌血本无归。墨速宜的上位，既是汗国对弱势部族的一种安抚，也标志着库吉特从求扩张到保生存的重大战略转变。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "库吉特",
+      "Kind": "bound_clan_name",
+      "TargetId": "__bound_clan__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": "墨速宜",
+      "Kind": "bound_hero_name",
+      "TargetId": "__bound_hero__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}

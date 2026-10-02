@@ -1,0 +1,147 @@
+{
+  "Id": "rule_荒野生存__荒野的沉默",
+  "Keywords": [
+    "荒野的沉默"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "荒野突然失去鸟鸣、虫声和兽迹，可能意味着风暴将至、大型捕食者靠近或附近有人活动。沉默本身不是魔法证明，却是值得停步观察的信号；经验丰富的猎人会先检查风向和足迹，而不是高声试探。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "猎人、农户和旅人谈起荒野的沉默，通常来自亲身吃过的亏。荒野突然失去鸟鸣、虫声和兽迹，可能意味着风暴将至、大型捕食者靠近或附近有人活动。沉默本身不是魔法证明，却是值得停步观察的信号；经验丰富的猎人会先检查风向和足迹，而不是高声试探。荒野不会因为身份高贵而减轻寒冷、饥饿或迷路的后果。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主与士兵把荒野的沉默视作行军和领地治理的一部分。荒野突然失去鸟鸣、虫声和兽迹，可能意味着风暴将至、大型捕食者靠近或附近有人活动。沉默本身不是魔法证明，却是值得停步观察的信号；经验丰富的猎人会先检查风向和足迹，而不是高声试探。准备不足时，天气与地形杀死的人可能比敌军更多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "scholar",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "商人、学士和远行者会记录荒野的沉默出现的征兆与应对方法。荒野突然失去鸟鸣、虫声和兽迹，可能意味着风暴将至、大型捕食者靠近或附近有人活动。沉默本身不是魔法证明，却是值得停步观察的信号；经验丰富的猎人会先检查风向和足迹，而不是高声试探。可靠经验必须能够重复验证，而不能只靠酒馆里的夸张故事。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人关心荒野的沉默会怎样影响道路、收成、牲畜和物价。荒野突然失去鸟鸣、虫声和兽迹，可能意味着风暴将至、大型捕食者靠近或附近有人活动。沉默本身不是魔法证明，却是值得停步观察的信号；经验丰富的猎人会先检查风向和足迹，而不是高声试探。一次灾害若切断运输，远方城市也会感到后果。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵与旅人面对荒野的沉默时，先保护火种、水、脚和同伴。荒野突然失去鸟鸣、虫声和兽迹，可能意味着风暴将至、大型捕食者靠近或附近有人活动。沉默本身不是魔法证明，却是值得停步观察的信号；经验丰富的猎人会先检查风向和足迹，而不是高声试探。荒野里最昂贵的装备，也替代不了正确的停步时机。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者会用工具、药草、仪式和共同体记忆应对荒野的沉默。荒野突然失去鸟鸣、虫声和兽迹，可能意味着风暴将至、大型捕食者靠近或附近有人活动。沉默本身不是魔法证明，却是值得停步观察的信号；经验丰富的猎人会先检查风向和足迹，而不是高声试探。有人解释灾害为何到来，有人负责让受难者撑过今晚。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民对荒野的沉默的判断最现实。荒野突然失去鸟鸣、虫声和兽迹，可能意味着风暴将至、大型捕食者靠近或附近有人活动。沉默本身不是魔法证明，却是值得停步观察的信号；经验丰富的猎人会先检查风向和足迹，而不是高声试探。他们看的是地里还剩多少粮、牲畜能否活过冬，以及领主是否愿意承担保护责任。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "荒野的沉默：荒野突然失去鸟鸣、虫声和兽迹，可能意味着风暴将至、大型捕食者靠近或附近有人活动。沉默本身不是魔法证明，却是值得停步观察的信号；经验丰富的猎人会先检查风向和足迹，而不是高声试探。"
+  ]
+}

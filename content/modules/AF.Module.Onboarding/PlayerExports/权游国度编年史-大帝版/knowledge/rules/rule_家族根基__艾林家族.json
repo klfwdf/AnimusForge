@@ -1,0 +1,152 @@
+{
+  "Id": "rule_家族根基__艾林家族",
+  "Keywords": [
+    "艾林家族",
+    "白鹰新月",
+    "高如荣誉"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "艾林家族是维斯特洛最古老、最纯正自诩的安达尔贵族之一，以鹰巢城与月门堡为根基，曾为山谷之王，征服后成为谷地守护者与东境守护者。天蓝底上的白色新月与猎鹰、箴言“高如荣誉”，把山巅城堡、骑士理想和血统自信连在一起。鹰巢城难以攻取，却在冬季必须依赖山下；同样，艾林的威望高悬于谷地之上，也必须依赖罗伊斯、科布瑞、韦伍德等强大封臣合作。谷地骑士仰望白鹰，山地氏族则把它看成安达尔人夺走土地的标记。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vale"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "谷地贵族把艾林的荣誉说得像山峰一样洁白，也知道白鹰必须落到月门堡、粮仓和封臣议事桌上。鹰巢城近乎不可攻取，却无法独自耕田或征召整片谷地；艾林真正的权威，是让罗伊斯、科布瑞、韦伍德和港口诸侯都承认那面旗值得集合。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vale"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "山下百姓仰头看不清鹰巢城的窗，只看得见运粮的骡队和月门堡的关卡。商人盼山道开放，农户盼骑士挡住氏族劫掠。对他们而言，“高如荣誉”若不能变成安全道路和公正裁断，就只是从云里飘下来的漂亮话。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "北方人尊重谷地的骑士和险关，却觉得艾林式的荣誉太明亮、太讲究。山巅白城没有经历临冬城那样的漫长风雪，但琼恩·艾林抚养过奈德·史塔克，这段养育之情让白鹰在北境记忆里不只是南方贵族的纹章。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待艾林家族，会先看它的土地、婚盟、血脉和债务。鹰巢城与月门堡的安达尔王族后裔，家徽为天蓝底白色新月与猎鹰，箴言“高如荣誉”。其权威依赖山地险势、骑士传统与谷地强大封臣的合作。家徽是门面，能否保护封地、兑现婚约并在危机中召集人马，才是家族真正的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起艾林家族时，记得的是谁在营火边分过粮、谁把他们留在城外、谁在败局里仍站在旗旁。鹰巢城与月门堡的安达尔王族后裔，家徽为天蓝底白色新月与猎鹰，箴言“高如荣誉”。其权威依赖山地险势、骑士传统与谷地强大封臣的合作。家族名声最终要落到具体的人和具体的命令上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意艾林家族留下的仪式、墓地和传承。鹰巢城与月门堡的安达尔王族后裔，家徽为天蓝底白色新月与猎鹰，箴言“高如荣誉”。其权威依赖山地险势、骑士传统与谷地强大封臣的合作。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见艾林家族。鹰巢城与月门堡的安达尔王族后裔，家徽为天蓝底白色新月与猎鹰，箴言“高如荣誉”。其权威依赖山地险势、骑士传统与谷地强大封臣的合作。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "艾林家族：鹰巢城与月门堡的安达尔王族后裔，家徽为天蓝底白色新月与猎鹰，箴言“高如荣誉”。其权威依赖山地险势、骑士传统与谷地强大封臣的合作。"
+  ]
+}

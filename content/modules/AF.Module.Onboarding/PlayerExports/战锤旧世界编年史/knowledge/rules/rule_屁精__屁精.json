@@ -1,0 +1,213 @@
+{
+  "Id": "rule_屁精__屁精",
+  "Keywords": [
+    "屁精",
+    "微小绿皮",
+    "智力低下",
+    "成群干扰",
+    "生态底层",
+    "搞毛戏耍",
+    "小地精",
+    "绿皮最底层",
+    "群聚生物",
+    "霉菌农场",
+    "骚扰",
+    "绿皮废物"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "屁精——或称为鼻涕精——是绿皮族谱中最微小、最愚笨、最下贱的一层。它们像潮水一样在兽人和地精部落的边缘成群游荡，咬啃一切能咬得动的东西，干着所有其他绿皮不屑干的脏活——然后在交战中被第一批扔出去当作让敌军浪费箭矢的活靶子。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "屁精！哈哈哈笑死俺了——你知道这些小豆丁是俺们绿皮社会里最好玩的东西吧？他们笨到连打架都不会打——不是不会打架，是忘了怎么打架！一只屁精拎着根小木棍朝你冲过来然后冲到一半忘了自己要干啥就开始咬自己的脚丫子！但它们有个妙用：在营地里到处都是屁精，你扔块烂肉在地上他们全涌上去吃，吃完把地上舔得干干净净，比人类的扫帚还好使。打仗的时候更有用——你就把几箩筐屁精往战场上一倒，这些小东西就会满地在敌人脚底下窜，咬人家鞋带、扯人家披风角、钻人家裤衩——不是致命但能把任何军队搞得发疯！俺有一次看见一个铁罐头人类骑士被三只钻进他裤管里的屁精弄得从马上栽下来摔断了脖子——屁精杀的人比它们砍死的都多！但你别把屁精当自己小弟：它们不是，它们是田地里的虫。搞毛二哥造屁精纯粹是为了取乐——想想看，两个神在天上打赌说能不能造一种蠢到令一切生物都无语的东西——那就是屁精。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "屁精在军事上没有任何常规战术价值——这是任何有经验的指挥官在一分钟后都能得出的结论。但它们的非对称价值不容忽视：一大群屁精——一箩筐约两百只——在交战中可被当作活体烟幕投入前线，敌军在挥砍这些几乎无害的小东西时会暴露其阵形间隙并消耗体力。更阴险的用法是污染水源：屁精体内寄生着至少十二种致命的洞穴真菌芽孢，将一群死屁精投入一口井或一条溪流可导致整支驻军在三周内死于消化系统真菌感染——此事在帝国历1890年努恩攻城战中曾被守城方用于对抗绿皮攻城军，结果城中瘟疫反而先于城破杀死了一半市民。对屁精唯一正确的应对是用火——大量焚化，不留残骸。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "屁精的生物学特征代表了绿皮孢子繁殖生态系统的基部。在绿皮生理学框架下，所有绿皮生物均通过持续脱落的孢子进行无性繁殖——屁精是该孢子体系中最微小且最先成熟的产物，其从萌芽到成体的发育周期仅约十一至十四天，远远短于地精（三至四周）与兽人（六至八周）。这种极短的成熟期赋予了屁精一种生态学上的R-策略优势：在任何适宜环境（湿度、腐烂有机物）中，屁精可以在一月内形成密度高达每平方尺三至五只的种群覆盖。其认知能力——经帝国动物行为学院测定——约等于一条两岁大的狗，但行为倾向迥然：屁精的大脑几乎不产生任何与自保相关的神经信号，其恐惧神经回路被认为在孢子阶段即被搞哥毛二哥的造物意志切除。因此屁精持续表现出一种在常规进化框架下难以解释的自灭行为模式——冲进火焰、从悬崖跳下、爬到敌方矛尖上——任何解释学学者最终都只能归因于搞哥毛二哥的黑色幽默。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我不得不承认屁精有一种令我不安的可爱。它们太小了——最高的也就到人的膝盖骨——而且它们对一切事物都怀有一种茫然的愚蠢好奇。我的城堡厨房有一次发现一只屁精钻进了谷物桶里，它在桶里吃了三天三夜直到把自己撑成了一个球，然后从桶里滚出来、滚下台阶、滚出城门——它全程在咯咯地笑。女仆长不肯再进那间储藏室，说那是被邪秽污染了的地方。而我忍不住想：它到底在笑什么？"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我家族在北境的农场曾因屁精潮损失了整个秋季谷物收入。那年夏天的异常降雨让绿皮孢子在所有人麦田里爆发式萌芽，成千上万的屁精像蝗虫一样从土壤里钻出来，吃光了二十个定居点的所有绿色植物——庄稼、野草、树皮——然后相互吃。我们麾下的农户花了两年才恢复耕种，至今每年开春先要在田头立一圈矮人符文石桩以防止孢子再生。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我在野外宿营时最不想遇到的有三样东西，排名不分先后：飞龙、亡灵——还有屁精群。你别笑。屁精成群出现时数量可以上千，而且它们不会杀你。它们做的是爬进你在睡觉时半张的口中试图吃你的舌苔——这事儿在我一个队友身上发生过。他醒过来疯狂呕吐吐出了四只屁精，然后那四只屁精爬起来在篝火旁坐下开始玩他吐出来的早餐。我们后来谁也没吃过那顿早餐。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "不少药剂师公会的低级学徒想利用屁精尸体制作廉价的真菌培养基——每具屁精尸体养的菌可以在两周内长出大约六两食用蘑菇。问题是没人抓得到足够的屁精用来养殖：你伸手抓一只屁精，它会从你手里滑出去，因为它们的皮肤分泌一种比猪油还滑的黏液。我们行业里有句玩笑：屁精是唯一一种能让人类、矮人和精灵都抓不到的生物。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "绿皮孢子繁殖体系的生态最底层，发育周期仅十一至十四天",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "屁精微小绿皮智力低下"
+  ]
+}

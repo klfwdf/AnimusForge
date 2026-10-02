@@ -1,0 +1,206 @@
+{
+  "Id": "rule_仇恨之书__仇恨之书",
+  "Keywords": [
+    "仇恨之书",
+    "达维之仇",
+    "矮人誓言",
+    "复仇",
+    "永不遗忘"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "仇恨之书——达维克语中称为「达玛兹·克戎」——是矮人文明最核心的文献。在这本重到凡人无法轻易搬动的铁皮巨书中，记录着矮人种族自远古以来遭受的每一笔冒犯、每一次背约、每一场侵略。从未支付的啤酒钱到整座被掠夺的城塞，每一件事都被详细记录，并将在矮人的记忆中被永远保存，直到债务被全部清偿。矮人的格言是「永不遗忘，永不原谅」。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "《仇恨之书》不是一本关于复仇的充满愤怒的记录——它是关于正义的记忆。人类说「宽恕是美德」，那是因为他们软弱，他们记性短，他们害怕回报的代价。但我们达维不同——如果我们不记住谁欠了什么，那正义如何存在？每一笔格鲁吉都是给世界的一个承诺：过去不会就这样过去，错误将被纠正，即使纠正需要一千年。绿皮摧毁了卡拉克·八峰的东门？记上一笔。精灵剃掉了我们的使者的胡须？记上一笔——哪怕到今天我们还没有全额清偿。但我们会。这是信誉——你的名字在《仇恨之书》上意味着在达维能信任你之前，你有待清偿的债务。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "《仇恨之书》是矮人政治和外交的核心操作手册。对于外族人来说，理解《仇恨之书》的运作规则是避免与矮人发生灾难性冲突的关键：任何外族对矮人的任何行为——不论是正面还是负面——都可能在矮人的记忆中创建一个「条目」。这个条目可以被清偿——付钱、提供服务、或者在某些极端情况下通过决斗和战争。没有被清偿的条目会随着时间推移「加权」——一个百年未清偿的债务其价值远高于一桩新鲜的小冒犯。因此处理矮人外交的最佳策略是「保持账本干净」——永远不要欠矮人任何东西，如果欠了，第一时间偿还——连利息一起。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 100
+        },
+        "IdentityIds": null
+      },
+      "Content": "《仇恨之书》（Dammaz Kron）的系统深奥复杂，其核心原则可以总结如下：每一条仇恨条目（Grudge/Dammaz）包含五要素——受害者（整个矮人种族/特定卡拉克/特定氏族/特定个人）、冒犯者（外族或个人）、冒犯内容（事件描述）、证据（通常包括多个矮人证人的交叉证词）、以及清偿估价（从黄金重量到鲜血体积，由长者会议评估）。条目分为四个严重级别：琐碎级（啤酒变淡、人类商人短斤少两）——清偿方式通常是付款提供替代商品或正式道歉；普通级（领土侵占、严重违约）——清偿可包括贸易赔偿、正式羞辱冒犯者或军事行动；严重级（卡拉克失陷、大规模屠杀）——清偿只有战争一种方式；不朽级（卡拉克八峰、长须之战）——被认为在当前时间范围内无法清偿，将由所有后代矮人继承直到实现最终清偿之日。至关重要的是，《仇恨之书》不仅记录负面内容——它也记录「正债务」即恩惠：任何帮助过矮人的外族都会被记录在书中，这一正条目可以被未来的冒犯所抵消，也可以在矮人继承的遗产（如盟约）中产生持续的积极影响。这正是人类帝国与矮人之间千年盟约的真正根基——西格玛拯救至高王的正条目至今仍在不断清算帝国在矮人眼中的其他小过失。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "矮人妇女在仇恨之书的运作中扮演着被严重忽视的角色。当一位男性矮人战死时，记录这笔新仇恨的是他的妻子或母亲——她们向氏族长者提供该条目的叙述。许多在仇恨之书中被记录为「背叛」或「侮辱」的条目实际上首先是由矮人妇女识别和报告的——因为她们比男性更敏感地察觉到交易的细微不公平和社会约定被破坏的时刻。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "仇恨之书在矮人家族政治中的功能远远超越了对外敌的仇恨记录。每一个氏族都有自己的本地仇恨之书，而这些书中的条目实际上构成了氏族之间非正式的债务会计系统——一笔未清偿的仇恨就是一笔应收款。我家族与铁砧家族长达六百年的法律纠纷就是通过相互抵消数十条小型仇恨条目而最终解决的——这种纠纷在人类法庭上可能需要数十万字的证词但在矮人体系中被压缩为两行符文。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "如果你在旧世界做雇佣兵且有机会与一位矮人酒馆老板聊上一夜——他会告诉你矮人不记得昨天吃了什么但记得两千年前某个断鼻家族欠他的氏族一根铁钉。仇恨之书不是一本作为象征的巨著——每一座卡拉克的每一个氏族都有一本，至高王的仇恨之书只是所有本地仇恨之书的最终合并版本。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "仇恨之书对旧世界商业的隐性影响在于矮人的贸易不可修复性——如果你作为一个人类商人在与矮人的商业交易中出现任何纠纷且无法在矮人长老会中证明你的清白发誓，一个孤独的条目将被加入仇恨之书，此后你的所有商业代理人将在所有矮人城塞中被视为不受欢迎的人。许多帝国商人在与矮人交易时不清楚这套体系，结果在完全不知情的情况下被整个矮人帝国列入黑名单。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "仇恨之书——战锤旧世界核心概念条目",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "仇恨之书的来历与传说"
+  ]
+}

@@ -1,0 +1,208 @@
+{
+  "Id": "rule_暗夜地精__暗夜地精",
+  "Keywords": [
+    "暗夜地精",
+    "洞穴地精",
+    "淬毒武器",
+    "黑兜帽",
+    "畏光",
+    "地下真菌",
+    "黑暗突袭者"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "暗夜地精是居住在黑暗洞穴深处的地精亚种，它们终身披着黑色兜帽以遮挡光线，使用淬毒武器进行阴险的偷袭。这些邪恶的小生物极其畏光，但在月黑之夜或地下隧道中，它们的毒刃和疯狂伏击足以杀死成百上千的士兵。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "暗夜地精是俺们绿皮中最狡猾最坏的小东西！别的绿皮喜欢大白天的干架，但这些小黑兜帽精们就爱躲在井里、洞里、石头缝里！他们的毒是俺见过最歹毒的东西——从那种发着绿光的蘑菇里挤出来的，抹在小刀上划你一下，你就开始吐泡泡然后倒地抽搐然后他们就一群冲上来把你剁了！但他们也有个好处——这些家伙养狂躁跳兽特别有一套，还把洞穴里的蘑菇种得像农田一样整整齐齐，比任何人类农夫都专业。俺是不太喜欢跟他们挤在地下，太黑太挤，但他们搞出来的毒和埋伏是真的管用！"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "暗夜地精在战术上属于伏击突袭型轻步兵，他们的单兵战力可以忽略不计，但其淬毒武器——尤其是如果毒素含有麻痹成分——对精英单位产生的威胁绝不能低估。这些毒素使得任何高级护甲的防御力大幅降低。对抗暗夜地精的标准行动手册如下：第一，绝对不要在夜间或洞穴中与他们交战；第二，优先以燃烧武器——火把、油罐、火枪——清剿其藏身的黑暗区域；第三，所有被毒刃划伤的战士必须立即撤回后方接受圣水消毒与驱毒祈祷。不遵守这三条，你损失的可能不是几百个士兵，而是整支部队死于地下。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "暗夜地精的生物学特性完全适应了洞穴深处的无光环境。经过进化——或者说魔法变异——它们的视觉神经几乎全部退化为感应热量与震动的触角，而其黑色兜帽表面实际上覆盖着一层共生真菌，这种真菌在遇到日光时会产生光敏毒素引发剧痛，这就是暗夜地精极度畏光的生理原因而非迷信。暗夜地精的淬毒工艺堪称旧世界最发达的原始生化技术——它们驯化并栽培了超过二十四种有毒真菌，其中最致命的是'疯帽菌'，其孢子在干燥研磨后制成涂在刀刃上的蜡状毒素，能引发受害者的神经性麻痹与内脏痉挛。帝国历史中最惨烈的暗夜地精袭击事件是帝国历1812年的'格隆谷矿难'——一支由三千多名矿工、工程师与卫兵组成的帝国采矿队深入灰色山脉，在矿井深处打开了通往暗夜地精真菌王国的入口，一夜之间全军覆没，仅一人在精神失常的状态中爬回地面，口中反复念叨着'蘑菇在看我们'。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我的侦察兵有一次从地下洞穴带上来一件暗夜地精的黑兜帽——是用它们自己培育的巨型蜘蛛的蛛丝织成的。摸起来冰凉而油腻，凑近闻有一股蘑菇与腐烂的混合气味。奇怪的是，这件兜帽被带回日光下一周后，它开始自行碎裂，就好像它只能在黑暗中存在。那个侦察兵后来开始抱怨听到洞穴墙壁中的细语声，我们请了一位西格玛祭司来，他说那是'真菌毒素长期吸入导致的精神幻觉'。但我注意到，他给那个侦察兵做完驱邪之后，悄悄烧掉了那顶兜帽。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我们家族城堡底下的矿道里被封堵着通往一片暗夜地精领地的通道。那座铁门是由矮人工匠铸造的三尺厚精钢，门上的符文据说能让任何穿过它的地精变成灰烬。祖父把钥匙熔成了铁水，说他不想让任何一个后代有机会好奇地去打开那扇门。我对他的做法从不质疑——我们家族档案里有一份记录显示，在一个开挖地下仓库的工程中误开了通往地精洞穴的口子，三夜之内城堡地下层的所有人畜全部失踪，只留下墙上用黑色蘑菇汁液画出的密密麻麻的猥亵图案。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "在世界边缘山脉的废弃矮人要塞里，我们佣兵队遇到过一个暗夜地精的蘑菇农场——成百上千的发光蘑菇在洞穴顶部长成一片幽绿色的穹顶，下面的暗夜地精在菌菇之间像蚂蚁一样密密麻麻地爬动。我们的矮人斥候说这种蘑菇叫'疯帽菌'，暗夜地精吃它长大，它的毒素被地精的血液转化成剧毒的武器涂料。我们本来打算下去消灭它们，但矮人斥候数了一数下面至少有两千只暗夜地精，我们就悄悄退了出来，在洞口放了一把大火，然后跑了三天三夜。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我表兄在塔拉贝克河畔卖草药。有一次有个矮人探险家卖给他一罐暗夜地精毒素的样本——绿油油的粘稠浆液，散发出恶臭。表兄转手把它卖给了阿尔道夫的药剂师公会的毒理研究部，净赚了一年营额的利润。但那个买家半年后被发现死在他的实验室里，全身皮肤变成绿色，嘴里长满了蘑菇。公会说这是'菌毒感染'，但我表兄再也不卖任何和地精相关的材料了——他说那条利润链的尽头总是站着死神。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "洞穴深处进化出的畏光地精亚种",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "暗夜地精洞穴地精淬毒武器"
+  ]
+}

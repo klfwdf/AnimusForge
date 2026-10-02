@@ -1,0 +1,149 @@
+{
+  "Id": "rule_世界机制__宴席与席位",
+  "Keywords": [
+    "宴席",
+    "席位",
+    "敬酒",
+    "宾客礼法"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "贵族宴席既为吃喝，也是公开陈列秩序的场所。主位离谁最近、哪一家坐在高台、谁只能与骑士或侍从同桌，都会被当作尊重或羞辱；菜肴数量、酒的产地、先向谁敬杯也能传递亲近与财力。宴席适合缔结婚约、试探盟友和传播消息，也因宾客权利而带有神圣保护意味。厨房、乐师、仆役和守卫让盛会运转，他们听见的往往比席上贵人以为的更多。一次座次疏忽可以成为旧怨的新名字。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "贵族进入大厅先看座位，再看菜。被安排得离主位远一步，可能只是管家的失误，也可能是主人故意让所有人看见的冷淡。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "商人与手艺人把宴席看成订单和关系：酒、布、银器、香料都能换钱。受邀上桌带来体面，却也可能要求下一日偿还一份人情。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "slave",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "仆役和穷人看见宴席剩菜足够养活多少家庭，神职者则提醒主人宾客礼法与施舍。厅内越奢华，门外的饥饿越难被称作无人知晓。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人把宴席看成可执行的秩序。宴席与席位：座次、菜肴、敬酒和邀请范围公开排列尊卑、亲疏与政治意图，热闹背后处处是观察。它是否有效，取决于谁能授予权利、收取代价，并在违约时让判决真正落地。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起宴席时，关心它如何影响道路、命令和安全。宴席与席位：座次、菜肴、敬酒和邀请范围公开排列尊卑、亲疏与政治意图，热闹背后处处是观察。远方的制度只有在营火、城门和驿站里能被执行，才不是空话。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者会从习惯和象征理解宴席。宴席与席位：座次、菜肴、敬酒和邀请范围公开排列尊卑、亲疏与政治意图，热闹背后处处是观察。一项规矩若被反复实践，便会进入礼仪、手艺和祈祷；若只靠恐惧维持，危机一来就会露出裂缝。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民感受到宴席的方式最小也最准确。宴席与席位：座次、菜肴、敬酒和邀请范围公开排列尊卑、亲疏与政治意图，热闹背后处处是观察。他们记得税、粮、劳役、赈济和谁能为他们说话；宏大的名称，最终都要落在一家人的饭锅旁。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "宴席与席位：座次、菜肴、敬酒和邀请范围公开排列尊卑、亲疏与政治意图，热闹背后处处是观察。"
+  ]
+}

@@ -1,0 +1,154 @@
+{
+  "Id": "rule_人间风俗__冬储的分量",
+  "Keywords": [
+    "粮仓",
+    "柴薪",
+    "盐肉",
+    "漫长冬季"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "冬季可能持续多年，使储备成为北方尤其严肃的责任。谷物必须干燥防鼠，肉鱼要盐腌或烟熏，柴薪需提前砍伐晾干，蜂蜡、灯油、药草、兽皮和来年种子也不能在饥饿初期全部吃掉。城堡会计算人口与仓容，村庄依赖每户小仓和邻里互助；储存过久会腐败，储得太少则无从补救。领主在丰年征收多少、冬日打开多少粮仓，直接决定百姓把他视作保护者还是囤积者。富人能买来远方粮食，暴雪封路后金子也会失去牙齿。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania",
+          "nightswatch",
+          "skagosi"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "peasant",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "北方人不把冬储当胆小。每一桶盐肉、每一垛干柴都是对未来未知长度的回答，浪费在夏日会被视作对家人的背叛。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "sailor",
+          "artisan"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "商人从寒潮看见价格，制桶人与船主看见需求。囤积能带来利润，也会在饥民知道仓库仍满时带来愤怒。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "priest",
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "祭司鼓励共享，士兵守仓，旅人请求一碗热汤。冬天让慷慨变得昂贵，也因此让真正的慷慨更容易被记住。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人把冬储看成可执行的秩序。冬储的分量：谷物、盐肉、柴薪、油脂、药草与种子决定漫长寒季能否存活，储备也是领主治理最直接的考验。它是否有效，取决于谁能授予权利、收取代价，并在违约时让判决真正落地。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起冬储时，关心它如何影响道路、命令和安全。冬储的分量：谷物、盐肉、柴薪、油脂、药草与种子决定漫长寒季能否存活，储备也是领主治理最直接的考验。远方的制度只有在营火、城门和驿站里能被执行，才不是空话。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者会从习惯和象征理解冬储。冬储的分量：谷物、盐肉、柴薪、油脂、药草与种子决定漫长寒季能否存活，储备也是领主治理最直接的考验。一项规矩若被反复实践，便会进入礼仪、手艺和祈祷；若只靠恐惧维持，危机一来就会露出裂缝。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民感受到冬储的方式最小也最准确。冬储的分量：谷物、盐肉、柴薪、油脂、药草与种子决定漫长寒季能否存活，储备也是领主治理最直接的考验。他们记得税、粮、劳役、赈济和谁能为他们说话；宏大的名称，最终都要落在一家人的饭锅旁。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "冬储的分量：谷物、盐肉、柴薪、油脂、药草与种子决定漫长寒季能否存活，储备也是领主治理最直接的考验。"
+  ]
+}

@@ -1,0 +1,153 @@
+{
+  "Id": "rule_自由城邦图谱__罗拉斯",
+  "Keywords": [
+    "罗拉斯",
+    "迷宫城",
+    "海岛"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "罗拉斯是狭海北部的岛屿城邦，以迷宫般的街巷、古老遗迹和独特的地方风俗闻名。城市规模不如布拉佛斯或瓦兰提斯，却因岛屿港口和接近石阶列岛航线而保持分量。罗拉斯人生活在石墙、海雾、渔船和来自各地的海员故事之间，对外人既好奇又谨慎；岛上的迷宫传统提醒人们，城市并非总以宽阔大道展示自身。它的财富来自停泊、修船、渔业、关税和海上中转，而不是大块耕地。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "谈到罗拉斯，最可靠的判断来自亲身生活其中的人；眼前的利害不是抽象名词，而是每天要作出的取舍。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "掌权者、士兵与平民会从各自的位置理解罗拉斯，他们的说法可能冲突，却共同决定它在世上留下的形状。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "scholar",
+          "wanderer",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "远方来客对罗拉斯的印象往往来自片段消息；真正的分量要等道路、账簿和人的记忆彼此印证之后才显出来。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "在领主和商人眼中，罗拉斯首先是地图上的一处要害。罗拉斯是狭海北部的岛屿城邦，以迷宫般的街巷、古老遗迹和独特的地方风俗闻名。城市规模不如布拉佛斯或瓦兰提斯，却因岛屿港口和接近石阶列岛航线而保持分量。罗拉斯人生活。他们关心水源、道路、税关和守军，知道地名背后往往连着一条能让城堡活下去的粮道。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈到罗拉斯时，记住的不是边界线，而是风向、坡度、渡口和能否在天黑前找到避难处。罗拉斯是狭海北部的岛屿城邦，以迷宫般的街巷、古老遗迹和独特的地方风俗闻名。城市规模不如布拉佛斯或瓦兰提斯，却因岛屿港口和接近石阶列岛航线而保持分量。罗拉斯人生活。一处地形的名声，常由死在那里的人的数量决定。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者会从另一面理解罗拉斯。罗拉斯是狭海北部的岛屿城邦，以迷宫般的街巷、古老遗迹和独特的地方风俗闻名。城市规模不如布拉佛斯或瓦兰提斯，却因岛屿港口和接近石阶列岛航线而保持分量。罗拉斯人生活。石头、林木、河流或山口既能成为谋生之所，也可能被赋予圣洁、禁忌和祖先记忆，因而不能只用金钱衡量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民对罗拉斯的看法最实际。罗拉斯是狭海北部的岛屿城邦，以迷宫般的街巷、古老遗迹和独特的地方风俗闻名。城市规模不如布拉佛斯或瓦兰提斯，却因岛屿港口和接近石阶列岛航线而保持分量。罗拉斯人生活。他们先看这里能否取水、耕作、放牧和躲过兵灾；地图上的一行字，落到村里便是柴薪、井绳和过冬的粮。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "罗拉斯：罗拉斯是狭海北部的岛屿城邦，以迷宫般的街巷、古老遗迹和独特的地方风俗闻名。城市规模不如布拉佛斯或瓦兰提斯，却因岛屿港口和接近石阶列岛航线而保持分量。罗拉斯人生活"
+  ]
+}

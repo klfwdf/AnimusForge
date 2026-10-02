@@ -1,0 +1,61 @@
+﻿{
+  "Id": "rule_坎尼人",
+  "Keywords": [
+    "坎尼人",
+    "坎族人"
+  ],
+  "RagShortTexts": [
+    "坎尼人是帕拉人分支，曾建立主导西海与珀拉斯海贸易的商业共和国，主要居住在俄尔堤西亚和古亚兹。其语言与阿塞莱纳哈撒语相似，现仅古亚兹少数人还在使用。"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai",
+          "empire_w"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "坎尼人是帕拉人的分支之一，存在的时间很长，曾经建立起过一个主导西海和珀拉斯海贸易的商业共和国，坎尼人主要居住在俄尔堤西亚和古亚兹的范围内。\n坎尼人使用一种和阿塞莱人的纳哈撒语相似的语言。\n随着帝国的和阿塞莱的侵蚀，坎尼人的概念正在消失，只剩下古亚兹还剩下少数人仍在坚持使用坎族人的语言。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "aserai",
+          "empire_w"
+        ],
+        "SettlementIds": [
+          "town_a1",
+          "town_ew4"
+        ],
+        "Roles": [
+          "commoner",
+          "notable",
+          "soldier",
+          "townsfolk",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "坎尼人是曾经生活在这座城市的一份子，据说曾经也是十分繁盛和强大的，不过后期变得衰落开始销声匿迹了。\n坎尼人会说一种属于自己的古老语言，和阿塞莱的语言有些类似。\n坎尼人仍然有少量人生活于古亚兹和俄耳堤西亚，但是他们逐渐开始不称呼自己为坎尼人了。"
+    }
+  ],
+  "TextMappings": []
+}

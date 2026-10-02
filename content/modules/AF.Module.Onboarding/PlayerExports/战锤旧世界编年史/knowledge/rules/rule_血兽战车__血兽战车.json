@@ -1,0 +1,213 @@
+{
+  "Id": "rule_血兽战车__血兽战车",
+  "Keywords": [
+    "血兽战车",
+    "变异重兽",
+    "粉碎步兵",
+    "混沌战车",
+    "重型冲撞",
+    "血兽牵引",
+    "战车凶猛",
+    "钢铁巨轮",
+    "碾压之力",
+    "混沌铁甲",
+    "冲锋突破",
+    "战场碾碎者"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "血兽战车是由被混沌能量扭曲变异的巨型猛兽牵引的重型钢铁战车，以其冲撞与碾压力粉碎步兵阵型，在战场上如同一道不可阻挡的铁血洪流，是混沌大军中最具突破力的地面单位。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "chaos_culture"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "你是否听过血兽战车从远处逼近的声音？那是钢轮碾碎骨头和链条拖地的刺耳交响。血兽本身——你知道它们曾经是什么吗？它们是北方的巨型野猪和山地巨熊，在接受了太多的混沌恩赐后失去了原来的形态。它们的肌肉从皮肤下爆裂出来，口中长出的獠牙比剑还长，眼睛里只有纯粹的愤怒。你不可能「驾驶」血兽——你只能像驾驭一场风暴一样，在它被前方敌人的气味激怒时，尽可能地将车头对准敌人。一旦它开始冲锋，唯一安全的地方就是车上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "血兽战车是你打破敌人阵线的终极武器。它们对密集步兵有极高的冲撞伤害，一轮冲锋就能将整个方阵冲垮。但血兽战车的弱点在于灵活性低和起步慢——需要足够的加速距离才能达到致命速度。将它们部署在侧翼，沿敌人阵线平行方向冲锋效果最佳。搭配混沌战犬清扫逃兵，让战车的战果最大化。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "根据《混沌战争兵器鉴》的记载，血兽战车的设计源自矮人混沌矮人「熔炉领主」巴尔-扎哈克，他将矮人战车技术与混沌献祭结合创造了首批十二辆血兽战车。每辆战车由一至三头血兽牵引：单兽战车速度快，适合侧翼突袭；双兽战车是标准配置，兼顾速度和冲击力；三兽战车极为罕见，需三名驭手协同操控，但在平地上的冲锋力量足以撞倒城墙。血兽的饲育是一个专门的黑暗技艺——饲育者必须每日用鲜血（人血或兽血）混合粉碎的黑曜石粉末喂食血兽，否则血兽会转而攻击自己的主人。最著名的战车是恐虐旗下的「血碾者」——据说它的轮轴中永久插着一条恶魔的脊椎骨。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "我的血兽战车由我亲手驯化的母兽「怒角」牵引。驾驭这种狂暴生物需要智慧而非蛮力——这正是女性驾驭者的优势。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "建造血兽战车需要三样东西：一头足够强壮的变异兽、一座供奉邪神的铸造台，以及——最关键的部分——一名自愿成为车上驭手的勇士。这名驭手将在战车每一次冲锋中与血兽建立精神联系，久而久之他们的神智会与血兽融合成一体。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "地面开始震动，你以为是地震——然后你看到了它。一辆巨大的铁制战车由一头扭曲畸形的巨兽牵引着冲来，它的鼻孔喷出黑色的蒸汽。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "血兽战车是混沌军械中最令人生畏的武器之一。它的制造工艺融合了矮人锻造术和混沌魔法，车轮上刻有持续发光的符文。战车本身往往由战死的勇士的盔甲碎片熔铸而成，被认为蕴含着这些战士的复仇意志。"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "血兽战车——由混沌变异巨兽牵引的重型钢铁战车，粉碎步兵阵线。",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "血兽战车的家族背景与政治地位"
+  ]
+}

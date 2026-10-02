@@ -1,0 +1,152 @@
+{
+  "Id": "rule_家族根基__葛雷乔伊家族",
+  "Keywords": [
+    "葛雷乔伊家族",
+    "金海怪",
+    "强取胜于苦耕"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "葛雷乔伊家族以派克与海石座为根基，是铁群岛最显赫的旧族之一。黑底金海怪、箴言“强取胜于苦耕”以及对淹神和旧道的尊崇，把铁民对海、掠夺、长船和死亡的看法系在同一面旗上。铁群岛土地贫瘠，难以支撑河湾那样的丰收，因而“铁价”曾被许多人视作比“金价”更有尊严的获取方式；但岛上并非只有劫掠者，也有渔民、造船匠、盐商、读书人和懂得贸易的领主。葛雷乔伊的家名之所以复杂，正因为它必须在祖先的海盗荣耀、七国的现实秩序与岛民的生计之间不断选择。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "铁群岛诸家承认葛雷乔伊坐上海石之位，却不会像绿地封臣那样自然接受层层屈膝。每位船长都习惯在自己的甲板上称王，派克因此必须用血统、分赃、婚盟和对旧道的解释维持权威。金海怪可以号召群岛，也总要提防触手各自伸向不同方向。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "sailor",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "长船上的铁民敬重敢亲自踏上敌岸的人。他们会为葛雷乔伊的海怪欢呼，也会嘲笑躲在石厅里只会讲旧道的领主。铁价不是一句装饰，谁要求别人用血付款，谁最好也准备让自己的血落在甲板上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "渔民、矿工、造船匠和在薄土上劳作的人知道，群岛不可能只靠劫掠过每一个冬天。葛雷乔伊谈强取时，他们仍要补网、炼铁、种大麦。旧道能给人骄傲，却不能让空仓自己长出粮食。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待葛雷乔伊家族，会先看它的土地、婚盟、血脉和债务。派克与海石座的金海怪家族，箴言“强取胜于苦耕”。它连接淹神、旧道、铁价和长船传统，也承受铁群岛贫瘠现实与贸易生计的矛盾。家徽是门面，能否保护封地、兑现婚约并在危机中召集人马，才是家族真正的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起葛雷乔伊家族时，记得的是谁在营火边分过粮、谁把他们留在城外、谁在败局里仍站在旗旁。派克与海石座的金海怪家族，箴言“强取胜于苦耕”。它连接淹神、旧道、铁价和长船传统，也承受铁群岛贫瘠现实与贸易生计的矛盾。家族名声最终要落到具体的人和具体的命令上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意葛雷乔伊家族留下的仪式、墓地和传承。派克与海石座的金海怪家族，箴言“强取胜于苦耕”。它连接淹神、旧道、铁价和长船传统，也承受铁群岛贫瘠现实与贸易生计的矛盾。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见葛雷乔伊家族。派克与海石座的金海怪家族，箴言“强取胜于苦耕”。它连接淹神、旧道、铁价和长船传统，也承受铁群岛贫瘠现实与贸易生计的矛盾。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "葛雷乔伊家族：派克与海石座的金海怪家族，箴言“强取胜于苦耕”。它连接淹神、旧道、铁价和长船传统，也承受铁群岛贫瘠现实与贸易生计的矛盾。"
+  ]
+}

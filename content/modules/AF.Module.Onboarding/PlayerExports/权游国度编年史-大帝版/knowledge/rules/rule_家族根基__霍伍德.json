@@ -1,0 +1,131 @@
+{
+  "Id": "rule_家族根基__霍伍德",
+  "Keywords": [
+    "霍伍德家族",
+    "角林",
+    "驼鹿"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "霍伍德家族是史塔克的北境封臣，以霍伍德城及周边森林、溪谷和农地为根基，家徽为橙底棕色驼鹿。其领地夹在曼德勒、波顿等更强邻居之间，家族的重要性不来自宏大的王族传说，而来自土地、继承与道路位置。北境贵族知道，一支看似普通的中等家族一旦继承不明，婚约、监护和邻家野心便会立刻把私事变成地区政治。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "北境诸侯看霍伍德领，先看到的往往不是驼鹿纹章，而是它夹在数个强邻之间的位置。森林、溪谷和农地足以养活一支体面的家族，也足以招来婚姻、监护与继承上的盘算。霍伍德能否守住自己的名字，常取决于亲族关系是否比邻人的胃口更牢。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "霍伍德领的农户熟悉驼鹿踩倒篱笆的麻烦，也熟悉大人物争论继承时，小人物先担心谁来收下一季租。对他们而言，家徽换不换主人远不如林权、磨坊和冬粮归谁重要；可只要霍伍德的旗还在，旧习惯便还有一个能说得清的名字。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待霍伍德家族，会先看它的土地、婚盟、血脉和债务。霍伍德城及北境东部林地的史塔克封臣，家徽为橙底棕色驼鹿。其意义集中于土地、继承与强邻之间的平衡。家徽是门面，能否保护封地、兑现婚约并在危机中召集人马，才是家族真正的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起霍伍德家族时，记得的是谁在营火边分过粮、谁把他们留在城外、谁在败局里仍站在旗旁。霍伍德城及北境东部林地的史塔克封臣，家徽为橙底棕色驼鹿。其意义集中于土地、继承与强邻之间的平衡。家族名声最终要落到具体的人和具体的命令上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意霍伍德家族留下的仪式、墓地和传承。霍伍德城及北境东部林地的史塔克封臣，家徽为橙底棕色驼鹿。其意义集中于土地、继承与强邻之间的平衡。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见霍伍德家族。霍伍德城及北境东部林地的史塔克封臣，家徽为橙底棕色驼鹿。其意义集中于土地、继承与强邻之间的平衡。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "霍伍德家族：霍伍德城及北境东部林地的史塔克封臣，家徽为橙底棕色驼鹿。其意义集中于土地、继承与强邻之间的平衡；"
+  ]
+}

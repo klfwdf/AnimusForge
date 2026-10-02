@@ -1,0 +1,147 @@
+{
+  "Id": "rule_航海远行__船长",
+  "Keywords": [
+    "船长"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "船长负责航线、纪律、货物与战斗决定，权威来自船主委任、个人经验或船员拥戴。海上危机迫使命令集中，但船长若长期克扣报酬、隐瞒风险或分配不公，也可能面对哗变。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "水手与沿岸居民谈起船长时，先看风、潮和船况。船长负责航线、纪律、货物与战斗决定，权威来自船主委任、个人经验或船员拥戴。海上危机迫使命令集中，但船长若长期克扣报酬、隐瞒风险或分配不公，也可能面对哗变。海上的规矩最终都要经得住湿绳、坏水和突然转向的天气。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主与士兵把船长放在舰队、补给和港口防务中衡量。船长负责航线、纪律、货物与战斗决定，权威来自船主委任、个人经验或船员拥戴。海上危机迫使命令集中，但船长若长期克扣报酬、隐瞒风险或分配不公，也可能面对哗变。任何海上计划若忽略船员体力与返航条件，胜利也可能变成漂流。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "scholar",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "商人、学士和旅人关心船长如何改变航程、价格与消息速度。船长负责航线、纪律、货物与战斗决定，权威来自船主委任、个人经验或船员拥戴。海上危机迫使命令集中，但船长若长期克扣报酬、隐瞒风险或分配不公，也可能面对哗变。一次判断失误会同时损失货物、信用和性命。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人愿意为可靠的船长投入金钱，因为海路能在陆路断绝时继续搬运粮食与军队。船长负责航线、纪律、货物与战斗决定，权威来自船主委任、个人经验或船员拥戴。海上危机迫使命令集中，但船长若长期克扣报酬、隐瞒风险或分配不公，也可能面对哗变。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵与远行者更在意船长能否让人活着抵港。船长负责航线、纪律、货物与战斗决定，权威来自船主委任、个人经验或船员拥戴。海上危机迫使命令集中，但船长若长期克扣报酬、隐瞒风险或分配不公，也可能面对哗变。船上没有多余道路可供绕行，错误往往只能由整船人共同承担。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者从修船、誓言和海葬中理解船长。船长负责航线、纪律、货物与战斗决定，权威来自船主委任、个人经验或船员拥戴。海上危机迫使命令集中，但船长若长期克扣报酬、隐瞒风险或分配不公，也可能面对哗变。木料与绳结维持船体，信仰则帮助人面对无法控制的海。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "普通港民通过鱼价、失踪船只和码头工作认识船长。船长负责航线、纪律、货物与战斗决定，权威来自船主委任、个人经验或船员拥戴。海上危机迫使命令集中，但船长若长期克扣报酬、隐瞒风险或分配不公，也可能面对哗变。远方海面上的变化，常会在第二天变成市场里的空摊位。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "船长：船长负责航线、纪律、货物与战斗决定，权威来自船主委任、个人经验或船员拥戴。海上危机迫使命令集中，但船长若长期克扣报酬、隐瞒风险或分配不公，也可能面对哗变。"
+  ]
+}

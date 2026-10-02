@@ -1,0 +1,132 @@
+{
+  "Id": "rule_家族根基__洛克",
+  "Keywords": [
+    "洛克",
+    "洛克家族"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "洛克家族统治北境东岸的老城，是北境历史悠久的贵族之一。海风、渔场和沿岸道路构成其日常权力，家族也通过婚姻与其他北境家门相连。洛克家的地位不只写在族谱上：岸边瞭望、船只补给、地方裁断和响应北境征召，才是老城领主必须年复一年履行的责任。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "北境领主把洛克视作东岸不可忽视的旧家。老城未必能与白港争富，却守着海岸与道路；当海上有帆影、陆上有征召时，洛克的判断会直接影响邻近领地。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "sailor",
+          "merchant",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "老城附近的渔民和商贩更在意码头是否安全、盐价是否公道。对他们而言，能约束士兵、不让风暴后的孤舟再受劫掠，便是一个沿海家族最实在的体面。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "领主和商人看待洛克，会先看它的土地、婚盟、血脉和债务。洛克家族以北境东岸的老城为席位，靠海路、古老血缘与对北境的封臣责任立足。家徽是门面，能否保护封地、兑现婚约并在危机中召集人马，才是家族真正的分量。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "士兵和旅人谈起洛克时，记得的是谁在营火边分过粮、谁把他们留在城外、谁在败局里仍站在旗旁。洛克家族以北境东岸的老城为席位，靠海路、古老血缘与对北境的封臣责任立足。家族名声最终要落到具体的人和具体的命令上。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "匠人与神职者更注意洛克留下的仪式、墓地和传承。洛克家族以北境东岸的老城为席位，靠海路、古老血缘与对北境的封臣责任立足。家族的祖先可以被歌颂，也可以成为后人的枷锁；血脉越古老，要求继承者承担的旧账往往越多。"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "农户与村民只在领主收税、征兵、修路或赈济时真正遇见洛克。洛克家族以北境东岸的老城为席位，靠海路、古老血缘与对北境的封臣责任立足。他们未必记得完整家谱，却记得哪一家在冬天开过粮仓，哪一家把逃难者赶回雪里。"
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "洛克：洛克家族以北境东岸的老城为席位，靠海路、古老血缘与对北境的封臣责任立足。"
+  ]
+}
