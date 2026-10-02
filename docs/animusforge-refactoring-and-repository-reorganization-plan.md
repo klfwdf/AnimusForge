@@ -6235,3 +6235,28 @@ R2计划交付门槛：已给固定技术路线、真实来源与目标、写入
 用户先授权普通推送当前分支，已核对远端同名分支为 `7c32132d917e65f324a971bc64918f263ef6eba7`；随后明确改为推送 main。fresh fetch 后双方各4提交，共同祖先 `917ea758`，远端 main `d6e859c3`。本地意图检查点 `bb59058c` 后普通合并 main，产品无冲突，仅 HANDOFF 顶部冲突，双方历史全文保留；不改写提交或强推。历史 `ae8e6b89` 已属目标远端祖先，不是新增出站材料；本次不纳入任何被忽略交接/未跟踪数据。
 
 合并工作树 Debug 双API+Bootstrap 构建 exit 0（`artifacts/local-policy-main-20261002/builds/build-8f8be4ec3dd242aa9bba86f5e9d0f853`）；两 API 分别运行政策管辖62、18模块1457、TargetPlan765断言全部 PASS（各套重叠不相加）。SessionTransport 原 dirty raw SHA256 `a393a98b42c1f2d37150578d5d5ede170540be8eb4874751fbc2821eb9cfe23e` 保持且未暂存；构建为含该原 dirty 的工作树验证，不冒充远端纯提交源码重建。无产品文件手工改写，无游戏重部署；实机未验。普通推送前再核对 main 祖先，结果以 git push 和 ls-remote 实际回执为准。
+
+
+<a id="dialogue-onboarding-fixes-20261002"></a>
+## 对话输入 / 新档向导 / 普通选项修复（2026-10-02，OFFLINE_VERIFIED）
+
+- 范围：F 打开对话输入污染、MCM 自动进入 AI、新档 URL 关闭与现有 API、世界书/人物背景续接、重复超时 ESC、ONNX 提示和长/多普通选项。检查点 `445c877d`；产品与测试 `4149c2e2`，后续证据提交只补文档和新 prefab 原版空白清理。
+- 保留其他作者 Illustrator 与两交接文档原 dirty；不 push/部署/Stage/打包、不改一键流程、公开 API 或存档键。源码范围、SHA256 与本地候选收据在 `artifacts/dialogue-onboarding-fixes-20261002/`。
+
+| 责任与消费者（源码坐标绑定产品 `4149c2e2`） | 批准变化 / 已覆盖 | 未覆盖 |
+| --- | --- | --- |
+| `src/AF.GameAdapter.Bannerlord/UI/Common/OpeningInteractionInputGuard.cs:5-15`；`DevMultilineEditableTextWidget.cs:209-215,314-318`；`UI/Conversation/AnimusForgeNativeConversationEditableTextWidget.cs:37-43,57-61`；两个对话 prefab | 只在对话编辑器隔离开场 F 及释放帧，之后 F 正常；每帧 O(1)，不清空玩家正文、不影响其他编辑器 | 实机两版本输入/IME |
+| `extensions/AnimusForge.DialogueUI/src/DialogueUiSettings.cs:34-38,54,82-83`；`Native/NativeOverlayVM.cs:44`；`Native/NativeUiAdapter.cs:68-91` | MCM 默认 true 保留旧行为；movie/VM 创建时捕获，删除晚帧强制切换，并拦住普通模式下的排队 NPC 主动开口；无逐帧 MCM 读取 | 实机开关/主动 NPC 会话 |
+| `src/AF.GameAdapter.Bannerlord/UI/Onboarding/AnimusForgeApiOnboardingVM.cs:453-476,523-540,865-1011,1013-1058,1120-1140`；`AnimusForgeApiOnboardingPopup.cs:78-124`；`src/modules/AF.Module.Onboarding/Host/ModOnboardingBehavior.cs:1119,1210-1270,3248-3347` | URL/Key 编辑复用同层 modal；ESC 逐层取消/关闭；现有 API 原值测试、不重写，可跳过未完整周报配置；模型选择保留自定义项；新档终端仍走首次引导；API 完成不抢设 setup-done，续接世界书导入与玩家背景 | 真 provider、Gauntlet 焦点、旧档此前错误完成标记的自动迁移 |
+| `UI/Conversation/ConversationReplyWaitOwner.cs:4-25`；`AnimusForgeNativeConversationOverlay.cs:274-311,1375-1399,1440-1451,1475-1493`；`.Presentation.cs:51-56`（均在 `src/AF.GameAdapter.Bannerlord`） | 超时计时独立于等待点/流式局部回复；每轮重置，ESC 清 busy/scope 并递增 UI generation，旧回调不得锁住新轮；每帧 O(1) | 真实两次网络超时/TTS；退出 UI 不承诺取消已发出的后台权威动作 |
+| `src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.cs:1777-1781,15854-15855,15980-16093`；`ModOnboardingBehavior.cs:211-212,314-315` | 新档排队 ONNX 检查，暂停战役时仍由 engine tick 驱动；保留 pending 等前台向导释放，不被它遮挡；真正文件缺失写诊断，保留 active-module resolver 和原缺失后保存退出规则；解析/初始化一次性，不逐帧读模型 | 真实模型损坏/推理、真实退出保存 |
+| `extensions/AnimusForge.DialogueUI/GUI/Prefabs/AFDialogueConversation.xml:10-12,102-131`；`AFDialogueConversationItem.xml:1-111`；`src/PresentationRouter.cs:68-72`；`content/content-map.json:722-726` | 限高190滚动 viewport + 完整 clip/inner/scrollbar 与 AnswerList 路径；选项按真实宽度自动增长，保留原版点击/说服/禁用/hint；新 prefab 单模块清单唯一列入 | 不同分辨率 UI 外观、滚轮/键盘导航、实际长/多选项点击 |
+
+**验证**
+
+- 原入口 `scripts/build/build_single_module.ps1`、Debug、无 Stage/Deploy：1.3 引用 `1.3.15.110062`、1.4 引用 `1.4.6.115628` 与 Bootstrap 均 exit0，日志 `dual-build-final-bound.log`；既有警告保留，不宣称全仓无警告。
+- `tests/modules/AF.Module.Onboarding/DialogueOnboardingRegressionTests/DialogueOnboardingRegressionTests.csproj` 链接实际 VM、设置、输入门、等待 owner、UI dispatch 与模型文件 resolver；网络/设置宿主/引擎依赖用 stub。64 项行为/XML/源码契约 + 9 项候选 DLL 元数据，两 API 各73通过；两个 API 复用同一测试逻辑，不相加成独立用例。最终结果见 `regression-final.log` 与 `regression-metadata-1.3.log` / `regression-metadata-1.4.log`。
+- 原 `extensions/AnimusForge.DialogueUI/tests/auxiliary-tests/AuxiliaryTests.csproj` 使用真实 Harmony：55断言通过，见 `auxiliary-regression-corrected.log`。清单只读调用 `Get-AnimusForgeContentLayout`：223项、新模板唯一映射通过，未投影或部署。
+- 初始输入门测试发现完成后还能重置，已修为一次性；现有配置空字段测试发现旧临时值未被清除，已修为读取真实原值；旧 fixture 完整 DataPaths 测试在工作区内数据根被安全保护拒绝，未改其保护、未改外部用户目录，改用实际 ModelStore 生产源码做本地缺失/损坏配置/外部数据文件契约。失败日志保留。
+- 直接 DLL owner runtime 回放在 module initializer 缺 TaleWorlds 依赖时失败（`regression-actual-1.3.log` / `regression-actual-1.4.log`），不计 PASS、不规避/改 module initializer；最终候选检查明确 metadata-only，NOT_RUN 实机、旧档、真实 HTTP、真实 ONNX 推理及 Stage/ZIP/发布。离线完成不替代玩家实际验收。
+- 性能：输入门/等待 O(1) 无热路径新扫描；MCM 只在 movie/VM 初始化读取；向导请求沿既有 generation/main-thread dispatch 有界32回调；模型文件检查沿一次性 pending gate。回滚用针对产品 `4149c2e2` 的 inverse commit；不能 reset 到检查点或回滚别人的 dirty。
