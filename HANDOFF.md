@@ -862,3 +862,10 @@ LIVE/真实旧档/网络/TTS/帧性能NOT_RUN；证书全局影响归因UNKNOWN�
 - 修复非流式主 API 完成全文被刑场丢弃、空流误标已发言导致本地兜底被拒绝，以及刑场等待旧 overlay/AF UI 未就绪虚报成功。默认流式开关、刑罚和死亡结算不变。
 - 107 项处决契约、speech parser、AF Debug 1.3/1.4/Bootstrap PASS；独立工程共享源码本地隔离编译 PASS。实机气泡/模型/旧档/性能未验，未部署/push。
 - [主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#execution-bubble-repair-20261002)记录源码职责与证据；局部回滚及日志 `artifacts/execution-bubble-repair-20261002/`。保留现有其他作者改动。
+
+
+# 当前局部修复：复仇气泡审查收尾（2026-10-02）
+
+- 修复长全文被2000字符pending缓冲裁切：分片/全文统一按512字符喂入，保留开场、遗言、阶段及原24条上限。上一轮主索引反向暂存已精确同步，本次通过主索引正常提交。
+- 新9项回归先失败后通过，总116契约PASS；审查2290字符复现两模式均15条、遗言/阶段正确；原Debug双API+Bootstrap success。未实机/部署/push，保留其他作者与并行任务改动。
+- [主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#execution-bubble-review-fix-20261002)及 `artifacts/execution-bubble-review-fix-20261002/` 保存索引恢复、回归、构建与局部回滚证据。
