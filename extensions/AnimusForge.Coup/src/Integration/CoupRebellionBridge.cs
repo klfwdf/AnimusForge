@@ -91,11 +91,13 @@ internal sealed class CoupRebellionBridge : CampaignBehaviorBase
         internal readonly MethodInfo Resolve = Method("ResolveKingdomRebellion", 4);
         internal readonly MethodInfo CanTrackCoupWar = Method("CanTrackCoupCivilWar", 1);
         internal readonly MethodInfo RegisterCoupWar = Method("TryRegisterCoupCivilWar", 9);
-        internal readonly MethodInfo BuildPrompt = Method("BuildRebelKingdomNamingRequest", 6);
-        internal readonly MethodInfo Generate = Method("GenerateRebelKingdomNamingFromPrompts", 4);
+        // These four gained one trailing optional argument (existing names / captured clan facts).
+        // The bridge always passes null, which is the host's own default and keeps the old behaviour.
+        internal readonly MethodInfo BuildPrompt = Method("BuildRebelKingdomNamingRequest", 7);
+        internal readonly MethodInfo Generate = Method("GenerateRebelKingdomNamingFromPrompts", 5);
         internal readonly MethodInfo Execute = Method("TryExecuteKingdomRebellionWithNaming", 10);
-        internal readonly MethodInfo ValidateClan = Method("TryValidateClanForKingdomRebellion", 7);
-        internal readonly MethodInfo ValidateFollower = Method("TryValidateClanForRebelFollower", 9);
+        internal readonly MethodInfo ValidateClan = Method("TryValidateClanForKingdomRebellion", 8);
+        internal readonly MethodInfo ValidateFollower = Method("TryValidateClanForRebelFollower", 10);
         internal readonly MethodInfo FollowerEligible = Method("IsEligibleRebelFollowerByStandardRules", 3);
         internal readonly MethodInfo NamingSucceeded = Method("IsRebelKingdomNamingSuccess", 1);
         internal readonly MethodInfo Weekly = Method("RecordEventSourceMaterial", 12);
@@ -126,11 +128,22 @@ internal sealed class CoupRebellionBridge : CampaignBehaviorBase
             Require(CanTrackCoupWar, typeof(bool), false, typeof(Kingdom));
             Require(RegisterCoupWar, typeof(bool), false, typeof(string), typeof(Kingdom), typeof(Kingdom), typeof(Clan), typeof(Hero), typeof(bool), typeof(string), typeof(string), byRefString);
             Require(Resolve, SelectedClan.DeclaringType, false, typeof(Kingdom), typeof(int), typeof(bool), typeof(bool));
-            Require(BuildPrompt, typeof(void), false, typeof(Clan), typeof(Kingdom), typeof(int), typeof(IEnumerable<Clan>), byRefString, byRefString);
-            Require(Generate, NamingType, false, typeof(string), typeof(string), typeof(string), typeof(int));
+            // RebellionClanFacts is internal to AF; resolve it by name so the standalone build compiles too.
+            Type capturedFacts = typeof(Dictionary<,>).MakeGenericType(typeof(Clan),
+                typeof(MyBehavior).Assembly.GetType("AnimusForge.RebellionClanFacts")
+                    ?? throw new MissingMemberException("AF RebellionClanFacts"));
+            Require(BuildPrompt, typeof(void), false, typeof(Clan), typeof(Kingdom), typeof(int), typeof(IEnumerable<Clan>), byRefString, byRefString, typeof(IReadOnlyCollection<string>));
+            Require(Generate, NamingType, false, typeof(string), typeof(string), typeof(string), typeof(int), typeof(IReadOnlyCollection<string>));
             Require(Execute, typeof(bool), false, typeof(Clan), typeof(Kingdom), typeof(int), typeof(bool), typeof(int), typeof(int), typeof(int), NamingType, typeof(List<Clan>), byRefString);
-            Require(ValidateClan, typeof(bool), false, typeof(Clan), typeof(Kingdom), typeof(bool), byRefString, byRefInt, byRefInt, byRefInt);
-            Require(ValidateFollower, typeof(bool), false, typeof(Clan), typeof(Kingdom), typeof(Clan), typeof(bool), byRefString, byRefInt, byRefInt, byRefInt, byRefInt);
+            Require(ValidateClan, typeof(bool), false, typeof(Clan), typeof(Kingdom), typeof(bool), byRefString, byRefInt, byRefInt, byRefInt, capturedFacts);
+            Require(ValidateFollower, typeof(bool), false, typeof(Clan), typeof(Kingdom), typeof(Clan), typeof(bool), byRefString, byRefInt, byRefInt, byRefInt, byRefInt, capturedFacts);
+            // Passing null for the new trailing argument is only equivalent to the old call while it stays an optional null default.
+            foreach (MethodInfo appended in new[] { BuildPrompt, Generate, ValidateClan, ValidateFollower })
+            {
+                ParameterInfo last = appended.GetParameters().Last();
+                if (!last.IsOptional || last.DefaultValue != null)
+                    throw new MissingMethodException("AF optional trailing argument changed: " + appended.Name);
+            }
             Require(FollowerEligible, typeof(bool), true, typeof(int), typeof(int), typeof(float));
             Require(NamingSucceeded, typeof(bool), true, NamingType);
             Require(Weekly, typeof(void), false, typeof(string), typeof(string), typeof(string), typeof(string), typeof(string), typeof(string), typeof(bool), typeof(bool), typeof(string), typeof(string), typeof(int), typeof(string));
@@ -324,7 +337,7 @@ internal sealed class CoupRebellionBridge : CampaignBehaviorBase
             throw new InvalidOperationException("政变前后统治者身份缺失，不能判定支持关系。");
         foreach (Clan candidate in kingdom.Clans)
         {
-            object[] args = { candidate, kingdom, true, null, 0, 0, 0 };
+            object[] args = { candidate, kingdom, true, null, 0, 0, 0, null };
             bool eligible = (bool)_af.ValidateClan.Invoke(owner, args);
             int oldRelation = 0, newRelation = (int)args[4];
             bool formerFamily = candidate?.StringId == formerClanId;
@@ -373,7 +386,7 @@ internal sealed class CoupRebellionBridge : CampaignBehaviorBase
             || kingdom.RulingClan?.StringId != request.RulingClanId || kingdom.Leader?.StringId != request.RulerId
             || clan?.Leader?.StringId != request.ClanLeaderId)
         { message = "王国、统治者或原候选族长已变化，本次结束，不重选家族。"; return false; }
-        object[] args = { clan, kingdom, request.LoyalistSelection, null, 0, 0, 0 };
+        object[] args = { clan, kingdom, request.LoyalistSelection, null, 0, 0, 0, null };
         if (!(bool)_af.ValidateClan.Invoke(owner, args)) { message = "原候选家族不再符合 AF 规则：" + args[3] + " 本次结束。"; return false; }
         if (request.LoyalistSelection && !StillSupportsFormerKing(request, clan, kingdom))
         { message = "原候选家族已改变对新旧国王的支持，本次不再起兵。"; return false; }
@@ -386,7 +399,7 @@ internal sealed class CoupRebellionBridge : CampaignBehaviorBase
         {
             Clan follower = MBObjectManager.Instance.GetObject<Clan>(id);
             if (request.TrackCivilWar && !request.RestoreDynasty && id == request.FormerRulingClanId) continue;
-            object[] followerArgs = { follower, kingdom, clan, false, null, 0, 0, 0, 0 };
+            object[] followerArgs = { follower, kingdom, clan, false, null, 0, 0, 0, 0, null };
             if ((bool)_af.ValidateFollower.Invoke(owner, followerArgs)
                 && (request.LoyalistSelection ? StillSupportsFormerKing(request, follower, kingdom)
                     : (bool)_af.FollowerEligible.Invoke(null, new object[] { followerArgs[5], followerArgs[6], 0f }))) followers.Add(follower);
@@ -516,7 +529,7 @@ internal sealed class CoupRebellionBridge : CampaignBehaviorBase
 
     private void StartNaming(Request request, MyBehavior owner, Kingdom kingdom, Clan clan, List<Clan> followers)
     {
-        object[] args = { clan, kingdom, request.Week, followers, null, null };
+        object[] args = { clan, kingdom, request.Week, followers, null, null, null };
         _af.BuildPrompt.Invoke(owner, args);
         string system = (string)args[4], user = (string)args[5];
         if (request.LoyalistSelection)
@@ -538,7 +551,7 @@ internal sealed class CoupRebellionBridge : CampaignBehaviorBase
             try
             {
                 // Exactly the existing AF naming algorithm/gateway; no new request body or provider.
-                object naming = _af.Generate.Invoke(owner, new object[] { system, user, logTarget, attempts });
+                object naming = _af.Generate.Invoke(owner, new object[] { system, user, logTarget, attempts, null });
                 result.Json = JsonConvert.SerializeObject(naming);
             }
             catch (Exception ex) { result.Error = Error(ex); }

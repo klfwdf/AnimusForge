@@ -662,7 +662,46 @@ public static class ShoutNetwork
 		}
 	}
 
-	public static async Task<string> CallApiWithMessages(List<object> messages, int maxTokens, bool recordTokenStats = true, int? overrideMaxTokens = null, bool forceDisableThinking = false, bool promptRetryOnError = false, CancellationToken cancellationToken = default(CancellationToken), float? overrideTemperature = null)
+	// Capture the transport choice once per request; retries/fallbacks keep their selected core.
+	public static Task<string> CallApiWithMessages(List<object> messages, int maxTokens, bool recordTokenStats = true, int? overrideMaxTokens = null, bool forceDisableThinking = false, bool promptRetryOnError = false, CancellationToken cancellationToken = default(CancellationToken), float? overrideTemperature = null)
+	{
+		return DuelSettings.GetSettings()?.MainApiStreamingEnabled == true
+			? CollectPrimaryStreamReplyAsync(messages, maxTokens, recordTokenStats, overrideMaxTokens, forceDisableThinking, promptRetryOnError, cancellationToken, overrideTemperature)
+			: CallApiWithMessagesNonStreamingCore(messages, maxTokens, recordTokenStats, overrideMaxTokens, forceDisableThinking, promptRetryOnError, cancellationToken, overrideTemperature);
+	}
+
+	public static async Task CallApiWithMessagesStream(List<object> messages, int maxTokens, Action<string> onChunk, Action<string> onComplete, Action<string> onError, CancellationToken cancellationToken = default(CancellationToken), bool promptRetryOnError = true)
+	{
+		if (DuelSettings.GetSettings()?.MainApiStreamingEnabled == true)
+		{
+			await CallApiWithMessagesStreamCore(messages, maxTokens, onChunk, onComplete, onError, cancellationToken, promptRetryOnError, true, null, false, null, requireCompleteReply: true);
+			return;
+		}
+		long runtimeGeneration = SaveRuntimeGuard.CaptureGeneration();
+		string result = await CallApiWithMessagesNonStreamingCore(messages, maxTokens, promptRetryOnError: promptRetryOnError, cancellationToken: cancellationToken);
+		cancellationToken.ThrowIfCancellationRequested();
+		if (SaveRuntimeGuard.IsStale(runtimeGeneration, "primary_chat_non_stream_callback") || string.IsNullOrWhiteSpace(result)) return;
+		if (result.StartsWith("（错误", StringComparison.Ordinal) || LlmRetryPrompt.IsRetryableLlmError(result))
+			onError?.Invoke(result);
+		else
+			onComplete?.Invoke(result);
+	}
+
+	private static async Task<string> CollectPrimaryStreamReplyAsync(List<object> messages, int maxTokens, bool recordTokenStats, int? overrideMaxTokens, bool forceDisableThinking, bool promptRetryOnError, CancellationToken cancellationToken, float? overrideTemperature)
+	{
+		// Channels without a preview callback still receive exactly one complete business reply.
+		using CancellationTokenSource ownerCancellation = LlmNonStreamingTransport.LinkOwnerCancellation(cancellationToken);
+		if (ownerCancellation != null) cancellationToken = ownerCancellation.Token;
+		long runtimeGeneration = SaveRuntimeGuard.CaptureGeneration();
+		string completed = "";
+		string failure = "";
+		await CallApiWithMessagesStreamCore(messages, maxTokens, null, text => completed = text ?? "", error => failure = error ?? "", cancellationToken, promptRetryOnError, recordTokenStats, overrideMaxTokens, forceDisableThinking, overrideTemperature, requireCompleteReply: true);
+		cancellationToken.ThrowIfCancellationRequested();
+		if (SaveRuntimeGuard.IsStale(runtimeGeneration, "primary_chat_stream_collected")) return SaveRuntimeGuard.BuildStaleRequestErrorText();
+		return string.IsNullOrEmpty(failure) ? completed : failure;
+	}
+
+	private static async Task<string> CallApiWithMessagesNonStreamingCore(List<object> messages, int maxTokens, bool recordTokenStats = true, int? overrideMaxTokens = null, bool forceDisableThinking = false, bool promptRetryOnError = false, CancellationToken cancellationToken = default(CancellationToken), float? overrideTemperature = null)
 	{
 		using CancellationTokenSource ownerCancellation = LlmNonStreamingTransport.LinkOwnerCancellation(cancellationToken);
 		if (ownerCancellation != null) cancellationToken = ownerCancellation.Token;
@@ -698,7 +737,7 @@ public static class ShoutNetwork
 				string configError = LlmRetryPrompt.BuildFailureDetail("（错误：未配置 API Key）", "");
 				if (promptRetryOnError && await LlmRetryPrompt.PromptRetryAsync("正文生成", configError))
 				{
-					return await CallApiWithMessages(messages, maxTokens, recordTokenStats, overrideMaxTokens, forceDisableThinking, promptRetryOnError, cancellationToken, overrideTemperature);
+					return await CallApiWithMessagesNonStreamingCore(messages, maxTokens, recordTokenStats, overrideMaxTokens, forceDisableThinking, promptRetryOnError, cancellationToken, overrideTemperature);
 				}
 				return configError;
 			}
@@ -717,7 +756,7 @@ public static class ShoutNetwork
 				string configError = LlmRetryPrompt.BuildFailureDetail("（错误：未配置模型名称）", "");
 				if (promptRetryOnError && await LlmRetryPrompt.PromptRetryAsync("正文生成", configError))
 				{
-					return await CallApiWithMessages(messages, maxTokens, recordTokenStats, overrideMaxTokens, forceDisableThinking, promptRetryOnError, cancellationToken, overrideTemperature);
+					return await CallApiWithMessagesNonStreamingCore(messages, maxTokens, recordTokenStats, overrideMaxTokens, forceDisableThinking, promptRetryOnError, cancellationToken, overrideTemperature);
 				}
 				return configError;
 			}
@@ -784,7 +823,7 @@ public static class ShoutNetwork
 								{
 									return SaveRuntimeGuard.BuildStaleRequestErrorText();
 								}
-								string retryContent = await CallApiWithMessages(PrimaryChatMessagePolicy.BuildEmptyResponseRetryMessages(messages), maxTokens, recordTokenStats, overrideMaxTokens, forceDisableThinking: true, promptRetryOnError, cancellationToken, overrideTemperature);
+								string retryContent = await CallApiWithMessagesNonStreamingCore(PrimaryChatMessagePolicy.BuildEmptyResponseRetryMessages(messages), maxTokens, recordTokenStats, overrideMaxTokens, forceDisableThinking: true, promptRetryOnError, cancellationToken, overrideTemperature);
 								if (SaveRuntimeGuard.IsStale(runtimeGeneration, "primary_chat_non_stream_empty_retry_complete"))
 								{
 									return SaveRuntimeGuard.BuildStaleRequestErrorText();
@@ -794,7 +833,7 @@ public static class ShoutNetwork
 							string emptyError = LlmRetryPrompt.BuildFailureDetail("（API响应格式错误: 模型回复为空）", "", str);
 							if (promptRetryOnError && await LlmRetryPrompt.PromptRetryAsync("正文生成", emptyError))
 							{
-								return await CallApiWithMessages(messages, maxTokens, recordTokenStats, overrideMaxTokens, forceDisableThinking, promptRetryOnError, cancellationToken, overrideTemperature);
+								return await CallApiWithMessagesNonStreamingCore(messages, maxTokens, recordTokenStats, overrideMaxTokens, forceDisableThinking, promptRetryOnError, cancellationToken, overrideTemperature);
 							}
 							return emptyError;
 						}
@@ -837,7 +876,7 @@ public static class ShoutNetwork
 						FreezeWatchdog.Mark("PrimaryChat.non_stream.parse_error", "elapsedMs=" + Math.Round(sw.Elapsed.TotalMilliseconds, 2), immediate: true);
 						if (promptRetryOnError && await LlmRetryPrompt.PromptRetryAsync("正文生成", parseError))
 						{
-							return await CallApiWithMessages(messages, maxTokens, recordTokenStats, overrideMaxTokens, forceDisableThinking, promptRetryOnError, cancellationToken, overrideTemperature);
+							return await CallApiWithMessagesNonStreamingCore(messages, maxTokens, recordTokenStats, overrideMaxTokens, forceDisableThinking, promptRetryOnError, cancellationToken, overrideTemperature);
 						}
 						return parseError;
 					}
@@ -856,7 +895,7 @@ public static class ShoutNetwork
 				FreezeWatchdog.Mark("PrimaryChat.non_stream.http_error", "status=" + (int)response.StatusCode + " elapsedMs=" + Math.Round(sw.Elapsed.TotalMilliseconds, 2), immediate: true);
 				if (promptRetryOnError && await LlmRetryPrompt.PromptRetryAsync("正文生成", httpError))
 				{
-					return await CallApiWithMessages(messages, maxTokens, recordTokenStats, overrideMaxTokens, forceDisableThinking, promptRetryOnError, cancellationToken, overrideTemperature);
+					return await CallApiWithMessagesNonStreamingCore(messages, maxTokens, recordTokenStats, overrideMaxTokens, forceDisableThinking, promptRetryOnError, cancellationToken, overrideTemperature);
 				}
 				return httpError;
 			}
@@ -880,13 +919,13 @@ public static class ShoutNetwork
 			FreezeWatchdog.Mark("PrimaryChat.non_stream.exception", ex.GetType().Name + ": " + ex.Message + " elapsedMs=" + Math.Round(sw.Elapsed.TotalMilliseconds, 2), immediate: true);
 			if (promptRetryOnError && await LlmRetryPrompt.PromptRetryAsync("正文生成", exceptionError))
 			{
-				return await CallApiWithMessages(messages, maxTokens, recordTokenStats, overrideMaxTokens, forceDisableThinking, promptRetryOnError, cancellationToken, overrideTemperature);
+				return await CallApiWithMessagesNonStreamingCore(messages, maxTokens, recordTokenStats, overrideMaxTokens, forceDisableThinking, promptRetryOnError, cancellationToken, overrideTemperature);
 			}
 			return exceptionError;
 		}
 	}
 
-	public static async Task CallApiWithMessagesStream(List<object> messages, int maxTokens, Action<string> onChunk, Action<string> onComplete, Action<string> onError, CancellationToken cancellationToken = default(CancellationToken), bool promptRetryOnError = true)
+	private static async Task CallApiWithMessagesStreamCore(List<object> messages, int maxTokens, Action<string> onChunk, Action<string> onComplete, Action<string> onError, CancellationToken cancellationToken, bool promptRetryOnError, bool recordTokenStats, int? overrideMaxTokens, bool forceDisableThinking, float? overrideTemperature, bool requireCompleteReply)
 	{
 		using CancellationTokenSource ownerCancellation = LlmNonStreamingTransport.LinkOwnerCancellation(cancellationToken);
 		if (ownerCancellation != null) cancellationToken = ownerCancellation.Token;
@@ -929,7 +968,7 @@ public static class ShoutNetwork
 				string configError = LlmRetryPrompt.BuildFailureDetail("（错误：未配置 API Key）", "");
 				if (promptRetryOnError && await LlmRetryPrompt.PromptRetryAsync("正文生成", configError))
 				{
-					await CallApiWithMessagesStream(messages, maxTokens, onChunk, onComplete, onError, cancellationToken, promptRetryOnError);
+					await CallApiWithMessagesStreamCore(messages, maxTokens, onChunk, onComplete, onError, cancellationToken, promptRetryOnError, recordTokenStats, overrideMaxTokens, forceDisableThinking, overrideTemperature, requireCompleteReply);
 					return;
 				}
 				onError?.Invoke(configError);
@@ -950,18 +989,20 @@ public static class ShoutNetwork
 				string configError = LlmRetryPrompt.BuildFailureDetail("（错误：未配置模型名称）", "");
 				if (promptRetryOnError && await LlmRetryPrompt.PromptRetryAsync("正文生成", configError))
 				{
-					await CallApiWithMessagesStream(messages, maxTokens, onChunk, onComplete, onError, cancellationToken, promptRetryOnError);
+					await CallApiWithMessagesStreamCore(messages, maxTokens, onChunk, onComplete, onError, cancellationToken, promptRetryOnError, recordTokenStats, overrideMaxTokens, forceDisableThinking, overrideTemperature, requireCompleteReply);
 					return;
 				}
 				onError?.Invoke(configError);
 				return;
 			}
 			string effectiveApiUrl = DuelSettings.GetEffectiveApiUrl(settings.ApiUrl);
-			int actualMaxTokens = ResolvePrimaryMaxTokens(settings);
-			JObject payload = BuildPrimaryChatPayload(messages, settings, effectiveApiUrl, effectiveModelName, actualMaxTokens, stream: true, out var thinkingMode);
+			int configuredMaxTokens = ResolvePrimaryMaxTokens(settings);
+			int actualMaxTokens = overrideMaxTokens.HasValue ? Math.Max(16, DuelSettings.ClampApiMaxTokens(overrideMaxTokens.Value, configuredMaxTokens)) : configuredMaxTokens;
+			JObject payload = BuildPrimaryChatPayload(messages, settings, effectiveApiUrl, effectiveModelName, actualMaxTokens, stream: true, out var thinkingMode, forceDisableThinking);
+			if (overrideTemperature.HasValue) payload["temperature"] = DuelSettings.ClampApiTemperature(overrideTemperature.Value);
 			string jsonBody = LlmApiCompat.PrepareChatRequestJson(effectiveApiUrl, payload);
 			requestBodyForTokenStats = jsonBody;
-			Logger.RecordTokenStats(
+			if (recordTokenStats) Logger.RecordTokenStats(
 				inputTokens,
 				0,
 				messages,
@@ -1033,7 +1074,7 @@ public static class ShoutNetwork
                         },
                         onParseError: (message, data) => LogPrimaryRawResponse("stream_chunk_parse_error", message + "\n" + data),
                         connectionClose: true,
-                        throwOnCancellationBeforeRead: false,
+                        throwOnCancellationBeforeRead: requireCompleteReply,
                         rawSampleMaxChars: -1,
                         includeDataPrefix: false).ConfigureAwait(false);
                     if (streamResult.Discarded) return;
@@ -1050,6 +1091,7 @@ public static class ShoutNetwork
                         {
                             Logger.Log("ShoutNetwork", "[PrimaryChat] stream thinking payload rejected; retrying without thinking controls.");
                             JObject retryPayload = BuildPrimaryChatPayload(messages, settings, effectiveApiUrl, effectiveModelName, actualMaxTokens, stream: true, out var _);
+                            if (overrideTemperature.HasValue) retryPayload["temperature"] = DuelSettings.ClampApiTemperature(overrideTemperature.Value);
                             DuelSettings.RemoveThinkingControls(retryPayload);
                             jsonBody = LlmApiCompat.PrepareChatRequestJson(effectiveApiUrl, retryPayload);
                             requestBodyForTokenStats = jsonBody;
@@ -1071,12 +1113,14 @@ public static class ShoutNetwork
                         FreezeWatchdog.Mark("PrimaryChat.stream.http_error", "attempt=" + attempt + " status=" + (int)streamResult.StatusCode + " elapsedMs=" + Math.Round(sw.Elapsed.TotalMilliseconds, 2), immediate: true);
                         if (promptRetryOnError && await LlmRetryPrompt.PromptRetryAsync("正文生成", httpError))
                         {
-                            await CallApiWithMessagesStream(messages, maxTokens, onChunk, onComplete, onError, cancellationToken, promptRetryOnError);
+                            await CallApiWithMessagesStreamCore(messages, maxTokens, onChunk, onComplete, onError, cancellationToken, promptRetryOnError, recordTokenStats, overrideMaxTokens, forceDisableThinking, overrideTemperature, requireCompleteReply);
                             return;
                         }
                         onError?.Invoke(httpError);
                         return;
                     }
+                    if (requireCompleteReply && (!streamResult.Completed || streamResult.ParseFailure))
+                        throw new System.IO.IOException("正文流式响应未正常结束或包含无法解析的数据，未提交后处理。");
 					string text3 = outputFilter.Flush();
 					if (!string.IsNullOrEmpty(text3))
 					{
@@ -1108,6 +1152,12 @@ public static class ShoutNetwork
 			}
 			if (!streamSucceeded)
 			{
+                cancellationToken.ThrowIfCancellationRequested();
+                if (requireCompleteReply && fullText.Length > 0)
+                {
+                    onError?.Invoke(LlmRetryPrompt.BuildFailureDetail("（API请求失败: 正文流式传输中断，未提交后处理）", "", rawStreamResponse.ToString()));
+                    return;
+                }
 				if (fullText.Length > 0)
 				{
 					string text4 = outputFilter.Flush();
@@ -1129,7 +1179,7 @@ public static class ShoutNetwork
 					});
 					Logger.Metric("network.stream", ok: true, sw.Elapsed.TotalMilliseconds);
 					string outputContent3 = BuildTokenStatsOutputContent(fullText.ToString(), fullReasoning.ToString());
-					Logger.RecordTokenStats(inputTokens, Logger.EstimateTokens(outputContent3), messages, outputContent3, "stream_partial", requestBodyForTokenStats);
+					if (recordTokenStats) Logger.RecordTokenStats(inputTokens, Logger.EstimateTokens(outputContent3), messages, outputContent3, "stream_partial", requestBodyForTokenStats);
 					FreezeWatchdog.Mark("PrimaryChat.stream.partial_complete", "resultLen=" + fullText.Length + " elapsedMs=" + Math.Round(sw.Elapsed.TotalMilliseconds, 2), immediate: true);
 					if (!cancellationToken.IsCancellationRequested && !SaveRuntimeGuard.IsStale(runtimeGeneration, "primary_chat_stream_partial_complete"))
 					{
@@ -1138,7 +1188,7 @@ public static class ShoutNetwork
 					return;
 				}
 				cancellationToken.ThrowIfCancellationRequested();
-				string fallback = await CallApiWithMessages(messages, maxTokens, recordTokenStats: false, promptRetryOnError: false, cancellationToken: cancellationToken);
+				string fallback = await CallApiWithMessagesNonStreamingCore(messages, maxTokens, recordTokenStats: false, overrideMaxTokens: overrideMaxTokens, forceDisableThinking: forceDisableThinking, promptRetryOnError: false, cancellationToken: cancellationToken, overrideTemperature: overrideTemperature);
 				if (SaveRuntimeGuard.IsStale(runtimeGeneration, "primary_chat_stream_fallback"))
 				{
 					return;
@@ -1157,7 +1207,7 @@ public static class ShoutNetwork
 						["resultLen"] = fallback.Length
 					});
 					Logger.Metric("network.stream", ok: true, sw.Elapsed.TotalMilliseconds);
-					Logger.RecordTokenStats(inputTokens, Logger.EstimateTokens(fallback), messages, BuildTokenStatsOutputContent(fallback), "stream_fallback", requestBodyForTokenStats);
+					if (recordTokenStats) Logger.RecordTokenStats(inputTokens, Logger.EstimateTokens(fallback), messages, BuildTokenStatsOutputContent(fallback), "stream_fallback", requestBodyForTokenStats);
 					FreezeWatchdog.Mark("PrimaryChat.stream.fallback_complete", "resultLen=" + fallback.Length + " elapsedMs=" + Math.Round(sw.Elapsed.TotalMilliseconds, 2), immediate: true);
 					if (!cancellationToken.IsCancellationRequested && !SaveRuntimeGuard.IsStale(runtimeGeneration, "primary_chat_stream_fallback_complete"))
 					{
@@ -1182,7 +1232,7 @@ public static class ShoutNetwork
 					FreezeWatchdog.Mark("PrimaryChat.stream.exception_no_content", lastStreamException.GetType().Name + ": " + lastStreamException.Message + " elapsedMs=" + Math.Round(sw.Elapsed.TotalMilliseconds, 2), immediate: true);
 					if (promptRetryOnError && await LlmRetryPrompt.PromptRetryAsync("正文生成", streamError))
 					{
-						await CallApiWithMessagesStream(messages, maxTokens, onChunk, onComplete, onError, cancellationToken, promptRetryOnError);
+						await CallApiWithMessagesStreamCore(messages, maxTokens, onChunk, onComplete, onError, cancellationToken, promptRetryOnError, recordTokenStats, overrideMaxTokens, forceDisableThinking, overrideTemperature, requireCompleteReply);
 						return;
 					}
 					onError?.Invoke(streamError);
@@ -1199,7 +1249,7 @@ public static class ShoutNetwork
 				{
 					Logger.Log("ShoutNetwork", "[PrimaryChat] empty stream final; retrying once with explicit non-empty instruction and thinking disabled.");
 					cancellationToken.ThrowIfCancellationRequested();
-					string retry = await CallApiWithMessages(PrimaryChatMessagePolicy.BuildEmptyResponseRetryMessages(messages), maxTokens, recordTokenStats: false, forceDisableThinking: true, promptRetryOnError: false, cancellationToken: cancellationToken);
+					string retry = await CallApiWithMessagesNonStreamingCore(PrimaryChatMessagePolicy.BuildEmptyResponseRetryMessages(messages), maxTokens, recordTokenStats: false, overrideMaxTokens: overrideMaxTokens, forceDisableThinking: true, promptRetryOnError: false, cancellationToken: cancellationToken, overrideTemperature: overrideTemperature);
 					if (SaveRuntimeGuard.IsStale(runtimeGeneration, "primary_chat_stream_empty_retry"))
 					{
 						return;
@@ -1222,7 +1272,7 @@ public static class ShoutNetwork
 				string emptyStreamError = LlmRetryPrompt.BuildFailureDetail("（API响应格式错误: 流式响应没有可解析的模型回复）", "", rawAttempts);
 				if (promptRetryOnError && await LlmRetryPrompt.PromptRetryAsync("正文生成", emptyStreamError))
 				{
-					await CallApiWithMessagesStream(messages, maxTokens, onChunk, onComplete, onError, cancellationToken, promptRetryOnError);
+					await CallApiWithMessagesStreamCore(messages, maxTokens, onChunk, onComplete, onError, cancellationToken, promptRetryOnError, recordTokenStats, overrideMaxTokens, forceDisableThinking, overrideTemperature, requireCompleteReply);
 					return;
 				}
 				onError?.Invoke(emptyStreamError);
@@ -1241,7 +1291,7 @@ public static class ShoutNetwork
 			});
 			Logger.Metric("network.stream", ok: true, sw.Elapsed.TotalMilliseconds);
 			string outputContent2 = BuildTokenStatsOutputContent(finalText, fullReasoning.ToString());
-			Logger.RecordTokenStats(inputTokens, Logger.EstimateTokens(outputContent2), messages, outputContent2, "stream", requestBodyForTokenStats);
+			if (recordTokenStats) Logger.RecordTokenStats(inputTokens, Logger.EstimateTokens(outputContent2), messages, outputContent2, "stream", requestBodyForTokenStats);
 			FreezeWatchdog.Mark("PrimaryChat.stream.complete", "resultLen=" + finalText.Length + " chunks=" + chunkCount + " elapsedMs=" + Math.Round(sw.Elapsed.TotalMilliseconds, 2), immediate: true);
 			if (!cancellationToken.IsCancellationRequested && !SaveRuntimeGuard.IsStale(runtimeGeneration, "primary_chat_stream_complete"))
 			{
@@ -1252,6 +1302,7 @@ public static class ShoutNetwork
 		}
 		catch (OperationCanceledException)
 		{
+            if (requireCompleteReply) throw;
 			sw.Stop();
 			Logger.Obs("Network", "request_cancelled", new Dictionary<string, object>
 			{
@@ -1261,13 +1312,18 @@ public static class ShoutNetwork
 			});
 			Logger.Metric("network.stream", ok: true, sw.Elapsed.TotalMilliseconds);
 			string outputContent4 = BuildTokenStatsOutputContent(fullText.ToString(), fullReasoning.ToString());
-			Logger.RecordTokenStats(inputTokens, Logger.EstimateTokens(outputContent4), messages, outputContent4, "stream_cancelled", requestBodyForTokenStats);
+			if (recordTokenStats) Logger.RecordTokenStats(inputTokens, Logger.EstimateTokens(outputContent4), messages, outputContent4, "stream_cancelled", requestBodyForTokenStats);
 			FreezeWatchdog.Mark("PrimaryChat.stream.cancelled", "partialLen=" + fullText.Length + " elapsedMs=" + Math.Round(sw.Elapsed.TotalMilliseconds, 2), immediate: true);
 			if (!cancellationToken.IsCancellationRequested && !SaveRuntimeGuard.IsStale(runtimeGeneration, "primary_chat_stream_cancelled_complete"))
 				onComplete?.Invoke(ApplyPlayerDynamicNameToMainText(fullText.ToString()).Trim());
 		}
 		catch (Exception ex3)
 		{
+            if (requireCompleteReply && fullText.Length > 0)
+            {
+                onError?.Invoke(LlmRetryPrompt.BuildFailureDetail("（API请求失败: 正文流式传输中断，未提交后处理）", "", rawStreamResponse.ToString()));
+                return;
+            }
 			string partial = ApplyPlayerDynamicNameToMainText(fullText.ToString()).Trim();
 			if (!string.IsNullOrEmpty(partial))
 			{
@@ -1284,7 +1340,7 @@ public static class ShoutNetwork
 				});
 				Logger.Metric("network.stream", ok: true, sw.Elapsed.TotalMilliseconds);
 				string outputContent5 = BuildTokenStatsOutputContent(partial, fullReasoning.ToString());
-				Logger.RecordTokenStats(inputTokens, Logger.EstimateTokens(outputContent5), messages, outputContent5, "stream_exception_partial", requestBodyForTokenStats);
+				if (recordTokenStats) Logger.RecordTokenStats(inputTokens, Logger.EstimateTokens(outputContent5), messages, outputContent5, "stream_exception_partial", requestBodyForTokenStats);
 				FreezeWatchdog.Mark("PrimaryChat.stream.exception_partial", ex3.GetType().Name + ": " + ex3.Message + " partialLen=" + partial.Length + " elapsedMs=" + Math.Round(sw.Elapsed.TotalMilliseconds, 2), immediate: true);
 				if (!cancellationToken.IsCancellationRequested && !SaveRuntimeGuard.IsStale(runtimeGeneration, "primary_chat_stream_exception_partial_complete"))
 					onComplete?.Invoke(partial);
@@ -1304,7 +1360,7 @@ public static class ShoutNetwork
 				FreezeWatchdog.Mark("PrimaryChat.stream.exception", ex3.GetType().Name + ": " + ex3.Message + " elapsedMs=" + Math.Round(sw.Elapsed.TotalMilliseconds, 2), immediate: true);
 				if (promptRetryOnError && await LlmRetryPrompt.PromptRetryAsync("正文生成", streamError))
 				{
-					await CallApiWithMessagesStream(messages, maxTokens, onChunk, onComplete, onError, cancellationToken, promptRetryOnError);
+					await CallApiWithMessagesStreamCore(messages, maxTokens, onChunk, onComplete, onError, cancellationToken, promptRetryOnError, recordTokenStats, overrideMaxTokens, forceDisableThinking, overrideTemperature, requireCompleteReply);
 					return;
 				}
 				onError?.Invoke(streamError);

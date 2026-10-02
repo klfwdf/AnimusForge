@@ -73,7 +73,7 @@ namespace TaleWorlds.CampaignSystem.CharacterDevelopment
         public static TraitObject Mercy = new(), Authoritarian = new(), Egalitarian = new(), Valor = new(), Generosity = new(), Honor = new(), Calculating = new();
     }
 }
-namespace TaleWorlds.Core { public static class MBRandom { public static float RandomFloat => 0.99f; } }
+namespace TaleWorlds.Core { public static class MBRandom { public static float Value = 0.99f; public static float RandomFloat => Value; } }
 namespace TaleWorlds.ObjectSystem
 {
     public class MBObjectManager
@@ -109,7 +109,7 @@ namespace TaleWorlds.CampaignSystem.Actions
         public static void ApplyByJoinToKingdom(Clan clan, Kingdom target, CampaignTime time, bool showNotification) => Move(clan, target);
         public static void ApplyByLeaveKingdom(Clan clan, bool showNotification) => Move(clan, null);
     }
-    public static class ChangeRelationAction { public static int Calls; public static void ApplyRelationChangeBetweenHeroes(Hero a, Hero b, int delta, bool show) { Calls++; } }
+    public static class ChangeRelationAction { public static int Calls; public static readonly List<(Hero First, Hero Second, int Delta)> Changes = new(); public static void ApplyRelationChangeBetweenHeroes(Hero a, Hero b, int delta, bool show) { Calls++; Changes.Add((a, b, delta)); } }
     public static class ChangeClanInfluenceAction { public static void Apply(Clan clan, float delta) { clan.Influence += delta; } }
     public static class ChangeRulingClanAction { public static void Apply(Kingdom kingdom, Clan clan) { kingdom.RulingClan = clan; } }
     public static class GiveGoldAction
@@ -146,10 +146,11 @@ namespace AnimusForge
     {
         internal static bool Enabled = true;
         internal static int DiscontentThreshold = 35;
+        internal static int PlayerDetonationStrengthPercent = 20;
         internal static bool IsCivilWarFactionsEnabled() => Enabled;
         internal static bool PlayerFactionsAllowed = true;
         internal static bool IsCivilWarPlayerKingdomFactionsAllowed() => PlayerFactionsAllowed;
-        internal static CivilWarTuning BuildCivilWarTuning() => new() { DiscontentThreshold = DiscontentThreshold };
+        internal static CivilWarTuning BuildCivilWarTuning() => new() { DiscontentThreshold = DiscontentThreshold, PlayerDetonationStrengthPercent = PlayerDetonationStrengthPercent };
     }
     internal static class PlayerKingdomRebellionImmunity { internal static bool Protected; internal static bool ShouldProtectKingdom(Kingdom k) => Protected; }
     internal static class WorldDiplomacyBehavior { internal static void ApplyExternalPrestigeDelta(string id, int delta, string reason) { } }

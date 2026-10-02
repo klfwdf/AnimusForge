@@ -70,12 +70,15 @@ public static class LlmApiCompat
 			{
 				return text;
 			}
-			if (normalizedPath.EndsWith("/v1", StringComparison.Ordinal))
+			string chatPath = path.TrimEnd('/') + (normalizedPath.EndsWith("/v1", StringComparison.Ordinal)
+				? "/chat/completions" : "/v1/chat/completions");
+			// Append to the URI path, not after a query string or fragment.
+			UriBuilder builder = new UriBuilder(result)
 			{
-				return text.TrimEnd('/') + "/chat/completions";
-			}
-			string suffix = text.EndsWith("/", StringComparison.Ordinal) ? "v1/chat/completions" : "/v1/chat/completions";
-			return text + suffix;
+				Path = chatPath,
+				Fragment = ""
+			};
+			return builder.Uri.ToString();
 		}
 		catch
 		{
@@ -444,10 +447,6 @@ public static class LlmApiCompat
 	private static string StripKnownChatSuffix(string path)
 	{
 		string text = (path ?? "").TrimEnd('/');
-		if (text.EndsWith("/v1/chat/completions", StringComparison.OrdinalIgnoreCase))
-		{
-			return text.Substring(0, text.Length - "/v1/chat/completions".Length);
-		}
 		if (text.EndsWith("/chat/completions", StringComparison.OrdinalIgnoreCase))
 		{
 			return text.Substring(0, text.Length - "/chat/completions".Length);

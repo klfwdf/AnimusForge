@@ -1184,7 +1184,7 @@ public sealed partial class TownExecutionMissionBehavior : MissionLogic, IExecut
         if (!_speechPlanned && State == ExecutionSessionState.WaitingForPlayer)
         {
             var overlay = Mission.GetMissionBehavior<ExecutionSpeechBubbleMissionView>();
-            if (overlay?.IsBubbleReady() == true)
+            if (ExecutionSpeechBubbleBridge.IsReady || overlay?.IsBubbleReady() == true)
             {
                 TryPrepareCeremonySpeech();
             }

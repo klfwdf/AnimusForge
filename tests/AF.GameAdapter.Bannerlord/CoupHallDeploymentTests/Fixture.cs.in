@@ -1,0 +1,142 @@
+using System;using System.Collections.Generic;using System.Linq;
+namespace AnimusForge {
+struct Vec3 {
+ public float x,y,z;public Vec3(float x,float y,float z=0){this.x=x;this.y=y;this.z=z;}
+ public static Vec3 operator +(Vec3 a,Vec3 b)=>new Vec3(a.x+b.x,a.y+b.y,a.z+b.z);
+ public float DistanceSquared(Vec3 b){float dx=x-b.x,dy=y-b.y,dz=z-b.z;return dx*dx+dy*dy+dz*dz;}
+}
+struct MatrixFrame {public Vec3 origin;}
+class GameEntity {public Vec3 Position;public GameEntity(Vec3 p){Position=p;}public MatrixFrame GetGlobalFrame()=>new MatrixFrame{origin=Position};}
+class Scene {
+ public bool NavReady=true,Reachable=true,ThrowPath,ThrowTags;public Vec3 Projection;
+ public int Paths,MarkerReads,SightCalls;public bool Disconnected;
+ public bool Contains(Vec3 p)=>NavReady&&p.x>=-.25f&&p.x<=12&&Math.Abs(p.y)<=4;
+ public IEnumerable<GameEntity> FindEntitiesWithTag(string tag){MarkerReads++;if(ThrowTags)throw new Exception("scene warming");return tag=="sp_throne"?new[]{new GameEntity(new Vec3(9,0))}:Array.Empty<GameEntity>();}
+ public bool GetPathDistanceBetweenPositions(ref WorldPosition a,ref WorldPosition b,float radius,out float distance){Paths++;distance=(float)Math.Sqrt(a.Position.DistanceSquared(b.Position));if(ThrowPath)throw new Exception("nav warming");return Reachable&&(!Disconnected||a.Position.x<=5);}
+ public bool CheckPointCanSeePoint(Vec3 a,Vec3 b,float d){SightCalls++;return true;} // An entirely open, visible room: old hidden logic cannot deploy anyone.
+}
+struct WorldPosition {
+ Scene scene;public Vec3 Position;public WorldPosition(Scene s,Vec3 p){scene=s;Position=p;}
+ public UIntPtr GetNearestNavMesh()=>scene.Contains(Position)?(UIntPtr)1:UIntPtr.Zero;
+ public Vec3 GetNavMeshVec3()=>Position+scene.Projection;
+}
+class Agent {public static Agent Main;public int Index;public bool IsHuman=true,Active=true;public Vec3 Position;public bool IsActive()=>Active;}
+class Mission {public Scene Scene;public Agent MainAgent;public float CurrentTime;public List<Agent> Agents=new List<Agent>();public int Ends;public void EndMission(){Ends++;}}
+class BaseLogic {public Mission Mission;}
+class Team {}
+class CharacterObject {public string Id;public CharacterObject(string id){Id=id;}}
+class TroopRoster {public List<CharacterObject> Troops=new List<CharacterObject>();public int TotalManCount=>Troops.Count;}
+enum SetsSettlementSceneKind {Town,Castle,Village}
+struct Color {public static Color FromUint(uint c)=>new Color();}
+class InformationMessage {public string Text;public InformationMessage(string s,Color c){Text=s;}}
+static class InformationManager {public static string Last;public static void DisplayMessage(InformationMessage m){Last=m.Text;}}
+static class SettlementEntryTroopSelectionLog {public static List<string> Messages=new List<string>();public static void Log(string s){Messages.Add(s);}public static void LogVerbose(string s){}}
+static class SetsSettlementEntryProfile {public static string BuildReserveWaveMessage(SetsSettlementSceneKind s,string p,int wave,int cap)=>"native wave";}
+class DefenderReserveEntry {public CharacterObject Character;public string ArmedCoupRole="HallGuard";}
+class Owner:BaseLogic {
+ const string LordHallLocationId="lordshall";const int ArmedCoupSpawnMaxAnchors=48,AlliedSpawnBatchSize=10;
+ const float ArmedCoupHallSpawnSpacing=.8f,ArmedCoupHallEnemyMinDistance=3f,ArmedCoupHallDeploymentTimeout=15f,AlliedSpawnInitialDelaySeconds=.75f,AlliedSpawnBatchIntervalSeconds=.15f;
+ const uint InfoColor=0,WarningColor=0;
+ public bool _armedCoup=true;public string _entryLocationId="lordshall";
+ bool IsCoupHall=>_armedCoup&&string.Equals(_entryLocationId,LordHallLocationId,StringComparison.OrdinalIgnoreCase);
+ public string _settlementId="town";public SetsSettlementSceneKind _sceneKind=SetsSettlementSceneKind.Town;
+ public List<Vec3> _coupHallSpawnCandidates;public List<Vec3> _coupHallOccupiedSpawns=new List<Vec3>();
+ public bool _coupStreetReinforcementsStopped,_coupHallDeploymentFailed,_spawnedAllies,_alliedSpawnPrepared,_publicExecutionEscortsHeld,_isOwnSettlement;
+ public float _coupHallAllyBlockedSince=-1,_coupHallDefenderBlockedSince=-1,_nextArmedCoupSpawnDeferLogTime;
+ public Team _playerTeam=new Team(),_enemyTeam=new Team();public TroopRoster _selectedRoster=new TroopRoster();public int _limit=40;
+ public List<CharacterObject> _pendingAlliedSpawnTroops;public int _nextAlliedSpawnIndex,_spawnedAlliedCount;public float _nextAlliedSpawnBatchTime;
+ bool _defenderConflictEnabled=true;
+ public List<DefenderReserveEntry> _remainingDefenderReserve=new List<DefenderReserveEntry>();
+ public int _defenderWaveSize=30,_defenderReserveWaveIndex,_defenderReserveDeferLogged=-1,_maxActiveDefenderWaves=4;
+ public float _nextDefenderReserveWaveTime,_defenderWaveIntervalSeconds=30;
+ public Dictionary<int,Agent> _enemyAgentsByIndex=new Dictionary<int,Agent>();public Dictionary<int,int> _defenderReserveAgentWaveNumbers=new Dictionary<int,int>();public Dictionary<int,string> _armedCoupAgentRoles=new Dictionary<int,string>();
+ public Action<Mission,string> _coupTechnicalFailure;public int TechnicalFailures,SpawnCalls;public bool FailAlliesOnce,FailDefendersAfter13;public List<(bool Enemy,string Id,Vec3 Position)> Created=new List<(bool,string,Vec3)>();
+ public Owner(){var a=new Agent{Index=0,Position=new Vec3(0,0)};Agent.Main=a;Mission=new Mission{MainAgent=a,Scene=new Scene()};Mission.Agents.Add(a);Mission.Agents.Add(new Agent{Index=1,Position=new Vec3(9,0)});_coupTechnicalFailure=(m,reason)=>TechnicalFailures++;}
+ public void Allies(int n){_selectedRoster.Troops=Enumerable.Range(0,n).Select(i=>new CharacterObject("ally_"+i)).ToList();}
+ public void Guards(int n){_remainingDefenderReserve=Enumerable.Range(0,n).Select(i=>new DefenderReserveEntry{Character=new CharacterObject("guard_"+i)}).ToList();}
+ public void TryAllies()=>TrySpawnSelectedAllies("test");public void SpawnWave()=>SpawnDefenderReserveWave();public void Timed()=>TrySpawnTimedDefenderReserveWave();public void Stop()=>StopCoupStreetReinforcements();
+ public List<Vec3> Slots()=>GetCoupHallSpawnCandidates(Mission,Mission.MainAgent);
+ public static bool Project(Scene scene,Vec3 player,Vec3 point,out Vec3 result)=>TryProjectCoupHallSpawnPosition(scene,player,point,out result);
+ void EnsurePlayerTeam(Mission m,Agent a,bool requireCommandTeam){}void EnsureEnemyTeam(Mission m){}
+ static List<CharacterObject> ExpandRoster(TroopRoster r,int limit)=>r.Troops.Take(limit).ToList();static void SetSetsSelectedFollowerState(Mission m,bool active,string source){}
+ bool TryHoldAlliesForPublicExecution()=>false;void TrySetFollowerFormationFollowOrder(Mission m,Agent a,bool ensurePlayerCommandable){}void EnsureSetsCommandUiReadyForExternal(Mission m,string s,bool force,bool preserveSelection){}
+ bool HasRemainingDefenderReserve()=>_remainingDefenderReserve.Count>0;bool IsLiveTrackedEnemy(Agent a)=>a?.IsActive()==true;
+ string GetCurrentDefenderReservePhaseKind()=>_remainingDefenderReserve.Count>0?"garrison":null;
+ List<DefenderReserveEntry> PeekDefenderReserve(int n,string phase)=>_remainingDefenderReserve.Take(n).ToList();static List<CharacterObject> ExtractCharacters(List<DefenderReserveEntry> entries)=>entries.Select(e=>e.Character).ToList();
+ void RefreshSetsUsableProtectionState(string s){}int CountLiveTrackedEnemies()=>_enemyAgentsByIndex.Values.Count(a=>a.IsActive());void ResetDefenderReserveProgress(int c,string s){}void RefreshEnemyNativeCombatOrders(){}
+ // Engine creation double. Real slot selection + real consuming callers are compiled above.
+ int SpawnAgentsNearPlayer(List<CharacterObject> troops,Team team,bool asEnemy,string source,List<CharacterObject> spawnedCharacters=null,List<DefenderReserveEntry> defenderEntries=null,int defenderReserveWaveNumber=-1,List<DefenderReserveEntry> spawnedDefenderEntries=null,int spawnStartIndex=0,int spawnCount=-1,int totalFormationSpawnCount=-1){
+  SpawnCalls++;int count=0,last=spawnCount<0?troops.Count:Math.Min(troops.Count,spawnStartIndex+spawnCount);
+  for(int i=spawnStartIndex;i<last;i++){
+   if((!asEnemy&&FailAlliesOnce&&i==3)||(asEnemy&&FailDefendersAfter13&&int.Parse(troops[i].Id.Split('_')[1])>=13)){
+    if(!asEnemy&&IsCoupHall){FailAlliesOnce=false;break;}continue;
+   }
+   Vec3 point=Mission.MainAgent.Position;
+   if(IsCoupHall&&!TryGetCoupHallSpawnPosition(Mission,Mission.MainAgent,asEnemy,out point)){if(!asEnemy)break;continue;}
+   if(IsCoupHall)_coupHallOccupiedSpawns.Add(point);
+   var agent=new Agent{Index=Mission.Agents.Count,Position=point};Mission.Agents.Add(agent);Created.Add((asEnemy,troops[i].Id,point));count++;
+   if(asEnemy){_enemyAgentsByIndex[agent.Index]=agent;_defenderReserveAgentWaveNumbers[agent.Index]=defenderReserveWaveNumber;_armedCoupAgentRoles[agent.Index]=defenderEntries[i].ArmedCoupRole;spawnedDefenderEntries.Add(defenderEntries[i]);}
+  }
+  return count;
+ }
+__METHODS__
+}
+static class Program {
+ static int Checks;static void Check(bool v,string message){if(!v)throw new Exception(message);Checks++;}
+ static void CompleteAllies(Owner o){o.TryAllies();for(int i=0;i<10&&!o._spawnedAllies;i++){o.Mission.CurrentTime+=1.1f;o.TryAllies();}}
+ static void Main(){
+  var o=new Owner();o.Allies(20);o.Guards(20);CompleteAllies(o);
+  Check(o._spawnedAllies&&o._spawnedAlliedCount==20,"20 hall allies truly allocated before complete flag");
+  Check(o.Created.Where(x=>!x.Enemy).Select(x=>x.Id).Distinct().Count()==20,"all requested allies once");
+  Check(o.Created.Where(x=>!x.Enemy).All(x=>o.Mission.Scene.Contains(x.Position)&&x.Position.DistanceSquared(o.Mission.MainAgent.Position)<=25),"compact, in-room ally locations instead of 8m outdoor grid");
+  int paths=o.Mission.Scene.Paths;o.SpawnWave();
+  Check(o.Created.Count(x=>x.Enemy)==20&&o._remainingDefenderReserve.Count==0,"open visible hall deploys all 20 guards without hidden-anchor deadlock");
+  Check(o.Mission.Scene.SightCalls==0,"indoor deployment never requires LOS occlusion");
+  Check(o.Created.Where(x=>x.Enemy).All(x=>x.Position.DistanceSquared(o.Mission.MainAgent.Position)>=9),"defenders retain 3m safety margin");
+  Check(o.Mission.Scene.Paths==paths,"shared navmesh candidates cached across both teams");
+  Check(o.CountArmedCoupRole("HallGuard")==20,"spawned guards remain real objectives, not automatically defeated");
+  foreach(var a in o._enemyAgentsByIndex.Values)a.Active=false;
+  Check(o.CountArmedCoupRole("HallGuard")==0,"role clears only after live guards fall");
+  Check(o.Mission.Scene.Paths<=192&&o.Slots().Count<=160,"bounded discovery work and cache size");
+  Check(o.Created.All(x=>Math.Abs(x.Position.z)<=.001),"navigation mesh floor height retained");
+  Check(o.TechnicalFailures==0&&o.Mission.Ends==0,"successful placement does not neutral-stop mission");
+  o=new Owner();o.Allies(20);o.FailAlliesOnce=true;o.TryAllies();o.Mission.CurrentTime=1;o.TryAllies();
+  Check(o._nextAlliedSpawnIndex==3&&o._spawnedAlliedCount==3&&!o._spawnedAllies,"failed ally does not consume remaining seven in batch");
+  for(int i=0;i<6&&!o._spawnedAllies;i++){o.Mission.CurrentTime+=1.1f;o.TryAllies();}
+  Check(o._spawnedAlliedCount==20&&o.Created.Select(x=>x.Id).Distinct().Count()==20,"prefix retries finish all 20 without duplicate agents");
+  o=new Owner();o.Allies(20);o.Mission.Scene.NavReady=false;o.TryAllies();o.Mission.CurrentTime=1;o.TryAllies();
+  Check(o._nextAlliedSpawnIndex==0&&!o._spawnedAllies&&o._coupHallSpawnCandidates==null,"missing initial navigation keeps allies pending and no empty cache");
+  o.Mission.CurrentTime=3;o.Mission.Scene.NavReady=true;o.TryAllies();o.Mission.CurrentTime=4;o.TryAllies();
+  Check(o._spawnedAlliedCount==20&&o.TechnicalFailures==0,"navigation warming recovers without dropping soldiers");
+  o=new Owner();o.Guards(20);o._defenderWaveSize=1;o._maxActiveDefenderWaves=1;o.FailDefendersAfter13=true;o.SpawnWave();
+  Check(o.Created.Count==13&&o._remainingDefenderReserve.Count==7&&o.CountArmedCoupRole("HallGuard")==20,"13 plus 7 pending reproduces live trace without awarding victory");
+  Check(o._defenderReserveWaveIndex==1,"initial hall deployment is a single cohort independent of street wave size");
+  o.FailDefendersAfter13=false;o.Mission.CurrentTime=1.1f;o.Timed();
+  Check(o._remainingDefenderReserve.Count==0&&o.Created.Count==20,"seven pending retry even with one active-wave cap");
+  Check(o._defenderReserveWaveIndex==1&&o._defenderReserveAgentWaveNumbers.Values.All(n=>n==1),"retry is not a new endless reinforcement wave");
+  Check(InformationManager.Last.Contains("大厅护卫部署")&&!InformationManager.Last.Contains("工坊"),"hall progress uses truthful indoor message");
+  o=new Owner();o.Allies(20);o.Mission.Scene.NavReady=false;o.TryAllies();
+  for(int i=1;i<=16;i++){o.Mission.CurrentTime=i;o.TryAllies();}
+  Check(o.TechnicalFailures==1&&o.Mission.Ends==1&&o._coupHallDeploymentFailed,"15-second zero-progress fallback ends explicit technical failure instead of hanging");
+  Check(!o._spawnedAllies&&o._nextAlliedSpawnIndex==0,"unspawned allies never reported as complete");
+  o.Mission.CurrentTime=20;o.TryAllies();Check(o.TechnicalFailures==1&&o.Mission.Ends==1,"technical stop once only");
+  o=new Owner();o.Guards(20);o.Mission.Scene.NavReady=false;
+  for(int i=0;i<=15;i++){o.Mission.CurrentTime=i;o.SpawnWave();}
+  Check(o.TechnicalFailures==1&&o._remainingDefenderReserve.Count==20,"failed defender deployment preserves every real objective record");
+  Vec3 projected;var scene=new Scene();
+  Check(!Owner.Project(scene,new Vec3(0,0),new Vec3(100,0),out projected),"no outside-room navmesh accepted");
+  scene.Disconnected=true;Check(!Owner.Project(scene,new Vec3(0,0),new Vec3(8,0),out projected),"disconnected candidate rejected");
+  scene.Disconnected=false;scene.Projection=new Vec3(0,0,3);Check(!Owner.Project(scene,new Vec3(0,0),new Vec3(8,0),out projected),"large projection/different floor rejected");
+  scene.Projection=new Vec3(0,0,.5f);Check(Owner.Project(scene,new Vec3(0,0),new Vec3(8,0),out projected)&&projected.z==.5f,"small nav-floor projection preserved");
+  scene.ThrowPath=true;Check(!Owner.Project(scene,new Vec3(0,0),new Vec3(8,0),out projected),"navmesh exception safely defers");
+  o=new Owner();o.Allies(20);o.Mission.Scene.ThrowTags=true;CompleteAllies(o);Check(o._nextAlliedSpawnIndex==0&&!o._spawnedAllies,"marker exception cannot falsely finish ally batch");
+  o=new Owner();o._entryLocationId="center";o.Guards(632);o._defenderWaveSize=30;o.SpawnWave();int live=o.Created.Count,remaining=o._remainingDefenderReserve.Count,calls=o.SpawnCalls;o.Stop();o.Mission.CurrentTime=60;o.Timed();
+  Check(o._coupStreetReinforcementsStopped&&o.SpawnCalls==calls,"gate completion prevents future street spawn attempts");
+  Check(o.Created.Count==live&&o._remainingDefenderReserve.Count==remaining,"cutoff neither deletes live enemies nor invents casualties");
+  o.Stop();Check(o._coupStreetReinforcementsStopped,"street cutoff idempotent");
+  o=new Owner();o.Stop();Check(!o._coupStreetReinforcementsStopped,"hall ignores street cutoff");
+  o=new Owner();o._armedCoup=false;o._entryLocationId="center";o.Stop();Check(!o._coupStreetReinforcementsStopped,"ordinary SETS ignores coup cutoff");
+  Console.WriteLine("PASS: "+Checks+" production hall placement/batch retry/cohort/cutoff checks + consumer wiring");
+ }
+}
+}
