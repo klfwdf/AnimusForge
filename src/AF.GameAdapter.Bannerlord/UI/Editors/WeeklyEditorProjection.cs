@@ -50,7 +50,7 @@ internal static class WeeklyEditorProjection
 		return (group.Title ?? "未命名分组") + " [" + text3 + " | " + text2 + "]" + (string.IsNullOrWhiteSpace(text) ? "" : (" " + text));
 	}
 
-	internal static WeeklyReportBrowserCountryData BuildWeeklyReportBrowserCountryData(WeeklyEditorDisplayPort port, string eventKind, string scopeKingdomId, string displayName, bool isWorld, List<EventRecordEntry> source)
+	internal static WeeklyReportBrowserCountryData BuildWeeklyReportBrowserCountryData(WeeklyEditorDisplayPort port, string eventKind, string scopeKingdomId, string displayName, bool isWorld, List<EventRecordEntry> source, IReadOnlyDictionary<string, List<string>> bulletinAssociations = null)
 	{
 		string text = (scopeKingdomId ?? "").Trim();
 		string text3 = (isWorld ? "world" : text);
@@ -64,15 +64,18 @@ internal static class WeeklyEditorProjection
 			CountryId = text3,
 			DisplayName = text2,
 			IsWorld = isWorld,
-			Reports = BuildWeeklyReportBrowserEntries(port, source, eventKind, text)
+			Reports = BuildWeeklyReportBrowserEntries(port, source, eventKind, text, bulletinAssociations)
 		};
 	}
 
-	internal static List<WeeklyReportBrowserEntryData> BuildWeeklyReportBrowserEntries(WeeklyEditorDisplayPort port, List<EventRecordEntry> source, string eventKind, string scopeKingdomId)
+	internal static List<WeeklyReportBrowserEntryData> BuildWeeklyReportBrowserEntries(WeeklyEditorDisplayPort port, List<EventRecordEntry> source, string eventKind, string scopeKingdomId, IReadOnlyDictionary<string, List<string>> bulletinAssociations = null)
 	{
 		string text = (eventKind ?? "").Trim();
 		string text2 = (scopeKingdomId ?? "").Trim();
-		return (source ?? new List<EventRecordEntry>()).Where((EventRecordEntry x) => x != null && string.Equals((x.EventKind ?? "").Trim(), text, StringComparison.OrdinalIgnoreCase) && string.Equals((x.ScopeKingdomId ?? "").Trim(), text2, StringComparison.OrdinalIgnoreCase)).OrderByDescending((EventRecordEntry x) => x.WeekIndex).ThenByDescending((EventRecordEntry x) => x.CreatedDay).ThenByDescending((EventRecordEntry x) => x.Title ?? "", StringComparer.OrdinalIgnoreCase).Select(delegate(EventRecordEntry x)
+		return (source ?? new List<EventRecordEntry>()).Where(x => WeeklyReportArchivePolicy.Matches(x, text, text2, bulletinAssociations))
+            .OrderByDescending(x => x.CreatedDay).ThenByDescending(x => x.WeekIndex)
+            .ThenByDescending(x => WeeklyReportArchivePolicy.IssueNumber(x.EventId))
+            .ThenByDescending(x => x.Title ?? "", StringComparer.OrdinalIgnoreCase).Select(delegate(EventRecordEntry x)
 		{
 			string text3 = (x.Title ?? "").Trim();
 			if (string.IsNullOrWhiteSpace(text3))

@@ -178,6 +178,7 @@ public static class WorldMessageTimelineUi
 		try
 		{
 			List<WorldMessageTimelineEntryData> weeklyEntries = new List<WorldMessageTimelineEntryData>();
+            var entriesByReportId = new Dictionary<string, WorldMessageTimelineEntryData>(StringComparer.OrdinalIgnoreCase);
 			IEnumerable<MyBehavior.WeeklyReportBrowserCountryData> countries = MyBehavior.Instance?.GetTerminalWeeklyReportBrowserCountries()
 				?? Enumerable.Empty<MyBehavior.WeeklyReportBrowserCountryData>();
 			foreach (MyBehavior.WeeklyReportBrowserCountryData country in countries)
@@ -188,7 +189,7 @@ public static class WorldMessageTimelineUi
 				}
 				bool isWorld = country.IsWorld;
 				string countryId = isWorld ? WorldWeeklyCountryId : FirstNonEmpty(country.CountryId, UnknownCountryId);
-				string countryName = isWorld ? "世界周报" : FirstNonEmpty(country.DisplayName, country.CountryId, "未知国家");
+				string countryName = isWorld ? "快报与周报档案" : FirstNonEmpty(country.DisplayName, country.CountryId, "未知国家");
 				foreach (MyBehavior.WeeklyReportBrowserEntryData report in country.Reports ?? new List<MyBehavior.WeeklyReportBrowserEntryData>())
 				{
 					if (report == null)
@@ -202,22 +203,30 @@ public static class WorldMessageTimelineUi
 					}
 					string reportId = FirstNonEmpty(report.EventId,
 						countryId + ":week:" + Math.Max(0, report.WeekIndex).ToString(CultureInfo.InvariantCulture) + ":day:" + day.ToString(CultureInfo.InvariantCulture));
+                    // A world issue also appears in each related country's archive, but the
+                    // shared timeline must keep one canonical row and union its country filters.
+                    if (entriesByReportId.TryGetValue(reportId, out var existing))
+                    {
+                        AddCountry(existing, countryId, countryName, isWorld);
+                        continue;
+                    }
+                    string kindLabel = WeeklyReportArchivePolicy.KindLabel(report.EventId);
 					string tagText = (report.TagText ?? "").Trim();
 					WorldMessageTimelineEntryData entry = new WorldMessageTimelineEntryData
 					{
 						EntryId = "weekly:" + reportId,
 						CategoryId = WeeklyCategoryId,
-						CategoryLabel = isWorld ? "世界周报" : "王国周报",
+						CategoryLabel = kindLabel,
 						TitleText = FirstNonEmpty(report.Title, countryName + "周报"),
 						DateText = FirstNonEmpty(report.CreatedDate, FormatDay(day)),
-						MetaText = FirstNonEmpty(report.CreatedDate, FormatDay(day)) + "  ·  " + (isWorld ? "世界周报" : "王国周报") + "  ·  " + countryName,
-						BodySectionTitleText = "周报正文",
+						MetaText = FirstNonEmpty(report.CreatedDate, FormatDay(day)) + "  ·  " + WeeklyReportArchivePolicy.PeriodLabel(report.EventId, report.WeekIndex) + "  ·  " + countryName,
+						BodySectionTitleText = kindLabel + "正文",
 						BodyText = LimitMultiline(report.BodyText, DetailCharacterLimit, DetailLineLimit, "（本期周报尚无正文）"),
 						ImpactSectionTitleText = string.IsNullOrWhiteSpace(tagText) ? "" : "周报标签",
 						ImpactText = tagText,
 						Day = day,
 						CreatedUtcTicks = 0L,
-					Sequence = Math.Max(0, report.WeekIndex),
+					Sequence = WeeklyReportArchivePolicy.IsBulletin(report.EventId) ? WeeklyReportArchivePolicy.IssueNumber(report.EventId) : Math.Max(0, report.WeekIndex),
 					IsUnread = false,
 					CanMarkRead = false,
 					CanGenerateFullWeeklyReport = !report.HasFullReport && !string.IsNullOrWhiteSpace(report.EventId),
@@ -225,6 +234,7 @@ public static class WorldMessageTimelineUi
 				};
 					AddCountry(entry, countryId, countryName, isWorld);
 					weeklyEntries.Add(entry);
+                    entriesByReportId.Add(reportId, entry);
 				}
 			}
 			target.AddRange(weeklyEntries
@@ -296,7 +306,7 @@ public static class WorldMessageTimelineUi
 			[WorldWeeklyCountryId] = new WorldMessageTimelineCountryData
 			{
 				CountryId = WorldWeeklyCountryId,
-				CountryName = "世界周报",
+				CountryName = "快报与周报档案",
 				IsWorldWeekly = true
 			}
 		};
@@ -309,7 +319,7 @@ public static class WorldMessageTimelineUi
 					continue;
 				}
 				string id = FirstNonEmpty(country.CountryId, UnknownCountryId);
-				string name = FirstNonEmpty(country.CountryName, id == WorldWeeklyCountryId ? "世界周报" : "未知国家");
+				string name = FirstNonEmpty(country.CountryName, id == WorldWeeklyCountryId ? "快报与周报档案" : "未知国家");
 				if (!byId.TryGetValue(id, out WorldMessageTimelineCountryData known))
 				{
 					byId[id] = new WorldMessageTimelineCountryData
@@ -338,7 +348,7 @@ public static class WorldMessageTimelineUi
 			return;
 		}
 		string id = isWorldWeekly ? WorldWeeklyCountryId : FirstNonEmpty(countryId, UnknownCountryId);
-		string name = isWorldWeekly ? "世界周报" : FirstNonEmpty(countryName, countryId, "未知国家");
+		string name = isWorldWeekly ? "快报与周报档案" : FirstNonEmpty(countryName, countryId, "未知国家");
 		if (entry.Countries.Any(x => x != null && string.Equals(x.CountryId, id, StringComparison.OrdinalIgnoreCase)))
 		{
 			return;
@@ -1008,7 +1018,7 @@ public sealed class WorldMessageTimelinePopupVM : ViewModel
 	[DataSourceProperty]
 	public string PolicyFilterText => BuildCategoryFilterText("政策", WorldMessageTimelineUi.PolicyCategoryId);
 	[DataSourceProperty]
-	public string WeeklyFilterText => BuildCategoryFilterText("周报", WorldMessageTimelineUi.WeeklyCategoryId);
+	public string WeeklyFilterText => BuildCategoryFilterText("快报 / 周报", WorldMessageTimelineUi.WeeklyCategoryId);
 	[DataSourceProperty]
 	public MBBindingList<WorldMessageTimelineCountryItemVM> CountryItems { get => _countryItems; set { if (value != _countryItems) { _countryItems = value; OnPropertyChangedWithValue(value, nameof(CountryItems)); } } }
 	[DataSourceProperty]
@@ -1511,7 +1521,7 @@ public sealed class WorldMessageTimelinePopupVM : ViewModel
 		List<string> labels = new List<string>(3);
 		if (_selectedCategoryIds.Contains(WorldMessageTimelineUi.DiplomacyCategoryId)) labels.Add("外交");
 		if (_selectedCategoryIds.Contains(WorldMessageTimelineUi.PolicyCategoryId)) labels.Add("政策");
-		if (_selectedCategoryIds.Contains(WorldMessageTimelineUi.WeeklyCategoryId)) labels.Add("周报");
+		if (_selectedCategoryIds.Contains(WorldMessageTimelineUi.WeeklyCategoryId)) labels.Add("快报 / 周报");
 		return labels.Count == 0 ? "全部消息" : string.Join("、", labels);
 	}
 

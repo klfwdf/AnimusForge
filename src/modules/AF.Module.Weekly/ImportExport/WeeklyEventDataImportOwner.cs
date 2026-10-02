@@ -122,6 +122,7 @@ internal static class WeeklyEventDataImportOwner
 				WeekIndex = Math.Max(0, item.WeekIndex),
 				EventKind = (item.EventKind ?? "").Trim(),
 				ScopeKingdomId = (item.ScopeKingdomId ?? "").Trim(),
+				BulletinKingdomIds = WeeklyReportArchivePolicy.NormalizeKingdomIds(item.BulletinKingdomIds),
 				Title = flag ? neutralize(text2) : text2,
 				ShortSummary = shortSummary(item.ShortSummary),
 				Summary = flag ? neutralize(item.Summary) : (item.Summary ?? "").Trim(),
@@ -296,6 +297,7 @@ internal static class WeeklyEventDataImportOwner
 			eventRecordEntry.WeekIndex = Math.Max(0, eventRecordEntry.WeekIndex);
 			eventRecordEntry.EventKind = (eventRecordEntry.EventKind ?? "").Trim();
 			eventRecordEntry.ScopeKingdomId = (eventRecordEntry.ScopeKingdomId ?? "").Trim();
+			eventRecordEntry.BulletinKingdomIds = WeeklyReportArchivePolicy.NormalizeKingdomIds(eventRecordEntry.BulletinKingdomIds);
 			eventRecordEntry.Title = flag ? neutralize(text2) : text2;
 			eventRecordEntry.ShortSummary = shortSummary(eventRecordEntry.ShortSummary);
 			eventRecordEntry.Summary = flag ? neutralize(eventRecordEntry.Summary) : (eventRecordEntry.Summary ?? "").Trim();

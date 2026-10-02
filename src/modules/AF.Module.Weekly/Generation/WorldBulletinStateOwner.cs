@@ -244,7 +244,7 @@ internal void PublishWorldBulletin(WorldBulletinScopeState scope, WorldBulletinS
 		string seq = scope.Sequence.ToString(CultureInfo.InvariantCulture);
 		// The single bulletin: world-kind record (diplomacy history and the NPC "world" layer read it), and it pops.
 		string eventId = "weekly_report:world" + WorldBulletinBulletinIdMarker + seq + ":" + day;
-		UpsertWorldBulletinRecord(eventId, "world", "", title, shortText, body, day);
+		UpsertWorldBulletinRecord(eventId, "world", "", title, shortText, body, day, WeeklyReportArchivePolicy.CaptureKingdomIds(selection));
 		LatestEventId = eventId;
 		RecordWorldBulletinLayout(eventId, selection);
 		WorldBulletinLayout publishedLayout = FindWorldBulletinLayout(eventId);
@@ -274,7 +274,7 @@ internal void PublishWorldBulletin(WorldBulletinScopeState scope, WorldBulletinS
 		if (waiting) _port.Log("WorldBulletin", "[Notice] id=" + eventId + " waiting for illustration");
 		else Release();
 	}
-internal void UpsertWorldBulletinRecord(string eventId, string eventKind, string scopeKingdomId, string title, string shortSummary, string summary, int day)
+internal void UpsertWorldBulletinRecord(string eventId, string eventKind, string scopeKingdomId, string title, string shortSummary, string summary, int day, List<string> bulletinKingdomIds = null)
 	{
 		List<EventRecordEntry> records = _port.Records();
 		EventRecordEntry entry = _port.FindRecord(eventId);
@@ -286,6 +286,7 @@ internal void UpsertWorldBulletinRecord(string eventId, string eventKind, string
 		}
 		entry.EventKind = eventKind;
 		entry.ScopeKingdomId = scopeKingdomId ?? "";
+        if (bulletinKingdomIds != null) entry.BulletinKingdomIds = bulletinKingdomIds;
 		entry.WeekIndex = Math.Max(0, day / 7);
 		entry.Title = WeeklyGenerationRules.NeutralizeWeeklyReportScenarioName(title);
 		entry.Summary = WeeklyGenerationRules.NeutralizeWeeklyReportScenarioName(summary);

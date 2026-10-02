@@ -20,6 +20,7 @@ internal sealed class WeeklyEditorPort : WeeklyEditorDisplayPort
  internal Func<bool> OpenApiRepairFlow;
  internal Action ExitCurrentGameFromWeeklyReportGate;
  internal Func<bool> IsMainThreadAndHostCurrent;
+ internal Func<IReadOnlyDictionary<string, List<string>>> BulletinKingdomAssociations;
  internal Func<int, int, List<WeeklyEventMaterialPreviewGroup>> CollectFreshMaterials;
  internal Func<WeeklyReportRetryContext, List<WeeklyEventMaterialPreviewGroup>, WeeklyReportRetryContext> CreateFreshRetryContext;
  internal Func<List<WeeklyEventMaterialPreviewGroup>, Dictionary<string, WeeklyEventMaterialPreviewGroup>> BuildGroupMap;
@@ -255,9 +256,10 @@ internal sealed class WeeklyReportEditorController
 		{
 		}
 		List<EventRecordEntry> list = _port.SanitizeEventRecordEntries(_port.EventRecords());
+        var bulletinAssociations = _port.BulletinKingdomAssociations?.Invoke();
 		List<WeeklyReportBrowserCountryData> list2 = new List<WeeklyReportBrowserCountryData>();
 		HashSet<string> hashSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-		WeeklyReportBrowserCountryData item = BuildWeeklyReportBrowserCountryData("world", "", "\u4e16\u754c\u5468\u62a5", isWorld: true, list);
+		WeeklyReportBrowserCountryData item = BuildWeeklyReportBrowserCountryData("world", "", "快报与周报档案", isWorld: true, list, bulletinAssociations);
 		list2.Add(item);
 		hashSet.Add("world:");
 		foreach (Kingdom item2 in _port.GetDevEditableKingdoms().OrderBy((Kingdom x) => _port.ResolveKingdomDisplay(x?.StringId), StringComparer.OrdinalIgnoreCase))
@@ -265,14 +267,18 @@ internal sealed class WeeklyReportEditorController
 			string text = (item2?.StringId ?? "").Trim();
 			if (!string.IsNullOrWhiteSpace(text) && hashSet.Add("kingdom:" + text))
 			{
-				list2.Add(BuildWeeklyReportBrowserCountryData("kingdom", text, _port.ResolveKingdomDisplay(text), isWorld: false, list));
+				list2.Add(BuildWeeklyReportBrowserCountryData("kingdom", text, _port.ResolveKingdomDisplay(text), isWorld: false, list, bulletinAssociations));
 			}
 		}
-		foreach (string item3 in list.Where((EventRecordEntry x) => x != null && string.Equals((x.EventKind ?? "").Trim(), "kingdom", StringComparison.OrdinalIgnoreCase) && !string.IsNullOrWhiteSpace(x.ScopeKingdomId)).Select((EventRecordEntry x) => (x.ScopeKingdomId ?? "").Trim()).Distinct(StringComparer.OrdinalIgnoreCase).OrderBy((string x) => _port.ResolveKingdomDisplay(x), StringComparer.OrdinalIgnoreCase))
+		foreach (string item3 in list.Where(x => x != null).SelectMany(x =>
+            (string.Equals((x.EventKind ?? "").Trim(), "kingdom", StringComparison.OrdinalIgnoreCase)
+                && !string.IsNullOrWhiteSpace(x.ScopeKingdomId) ? new[] { x.ScopeKingdomId.Trim() } : Array.Empty<string>())
+            .Concat(WeeklyReportArchivePolicy.RelatedKingdomIds(x, bulletinAssociations)))
+            .Where(id => !string.IsNullOrWhiteSpace(id)).Distinct(StringComparer.OrdinalIgnoreCase).OrderBy((string x) => _port.ResolveKingdomDisplay(x), StringComparer.OrdinalIgnoreCase))
 		{
 			if (hashSet.Add("kingdom:" + item3))
 			{
-				list2.Add(BuildWeeklyReportBrowserCountryData("kingdom", item3, _port.ResolveKingdomDisplay(item3), isWorld: false, list));
+				list2.Add(BuildWeeklyReportBrowserCountryData("kingdom", item3, _port.ResolveKingdomDisplay(item3), isWorld: false, list, bulletinAssociations));
 			}
 		}
 		return list2;
@@ -628,8 +634,8 @@ internal sealed class WeeklyReportEditorController
 	private string BuildWeeklyEventMaterialPreviewGroupLabel(WeeklyEventMaterialPreviewGroup group)
 		=> WeeklyEditorProjection.BuildWeeklyEventMaterialPreviewGroupLabel(_port, group);
 
-	private WeeklyReportBrowserCountryData BuildWeeklyReportBrowserCountryData(string eventKind, string scopeKingdomId, string displayName, bool isWorld, List<EventRecordEntry> source)
-		=> WeeklyEditorProjection.BuildWeeklyReportBrowserCountryData(_port, eventKind, scopeKingdomId, displayName, isWorld, source);
+	private WeeklyReportBrowserCountryData BuildWeeklyReportBrowserCountryData(string eventKind, string scopeKingdomId, string displayName, bool isWorld, List<EventRecordEntry> source, IReadOnlyDictionary<string, List<string>> bulletinAssociations = null)
+		=> WeeklyEditorProjection.BuildWeeklyReportBrowserCountryData(_port, eventKind, scopeKingdomId, displayName, isWorld, source, bulletinAssociations);
 
 	private List<WeeklyReportBrowserEntryData> BuildWeeklyReportBrowserEntries(List<EventRecordEntry> source, string eventKind, string scopeKingdomId)
 		=> WeeklyEditorProjection.BuildWeeklyReportBrowserEntries(_port, source, eventKind, scopeKingdomId);
