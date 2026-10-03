@@ -65,8 +65,10 @@ public static class Patch_ConversationManager_SetupAndStartMapConversation
 				Logger.LogTrace("Conversation_Intercept", "Native hostile settlement request meeting detected; allow native SetupAndStartMapConversation.");
 				return true;
 			}
-			if (LordEncounterBehavior.IsCustomEncounterMenuDisabledForCurrentEncounter())
+			if (LordEncounterBehavior.TryGetCustomEncounterMenuDisableReason(out string disableReason))
 			{
+				Hero disabledTarget = EncounterConversationTargetResolver.TryResolveLordFromArgumentsThenEncounterLeader(__instance, __args);
+				LordEncounterBehavior.LogEncounterDiagnostic("SetupAndStartMapConversation", disableReason, null, disabledTarget);
 				Logger.LogTrace("Conversation_Intercept", "Custom encounter menu is disabled for current encounter; allow native SetupAndStartMapConversation.");
 				return true;
 			}
