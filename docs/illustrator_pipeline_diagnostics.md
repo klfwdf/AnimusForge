@@ -135,3 +135,14 @@ JSON 根包含 `outcome`、`lastStage`、`failedStage`、`failureCode` 与最近
 > 优先表现人物之间的互动，根据最近对话选择自然动作，避免总是正面站桩。景别服务于当前事件，不为构图编造人物、装备或已经发生的事情。
 
 本轮源码 `1ed96cb5`，两API+Bootstrap及两DLL导演实际请求fixture各73项通过。实际 MCM 输入焦点、配置跨进程重载与真实服务遵循程度仍未实机验收；部署结论以最新主台账为准。
+
+## 8. 部队界面对话不采集全景
+
+原版部队界面点击 NPC“交谈”会通过 `OpenConversationMission` 打开临时人物谈话任务。它虽然使用 `MissionScreen`，却不是玩家进入城镇、酒馆、大厅或实际野外场景后发起的现场对话；不能仅凭屏幕类型要求采集全景。
+
+- 大地图对话与上述临时谈话：不截图、不重建环境、不采全景，只用地貌 / 季节 / 天气事实及双方离屏立绘继续生成。该跳过不是采集失败；人物立绘失败仍按原规则停止。
+- 真实场景内对话：仍走30米静态副本与六方向全景，失败仍明确停止，不把缺面 / 超时静默当作场景外处理。不能仅凭 `MissionMode.Conversation` 跳过，因为真实场景交谈也会切到该模式。
+- `scene_capture_route.route` 区分 `map-conversation`、`mission-conversation-terrain`、`mission-panorama-30m`，并记录 `requiresPanorama`。前两者的 `scene_capture_end` 为 `terrain-facts-only`、`environmentReferences=0`、`panorama=false`，属于正常路径；开面板日志为 `skipped_non_scene_terrain_facts`。
+- 会话来源校验与取消仍生效；开场截图和手动全景试采仅在真实场景启用。任务类型识别在主线程实际采集校验时缓存到本次来源对象；每帧会话标识检查不增加行为列表查询。
+
+本地修复 `171bed81`，生产来源 / 路由加引擎替身回归31项通过，旧分流负控12项预期失败；双API+Bootstrap构建通过。[主台账](animusforge-refactoring-and-repository-reorganization-plan.md#illustrator-party-conversation-route-20261003)记录来源坐标、证据与回滚。本轮尚未部署 / 推送 / 打包，玩家具体错误日志、GPU、玩家旧档和真实生图服务未验。

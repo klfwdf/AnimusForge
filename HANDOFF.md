@@ -1,4 +1,17 @@
-# 当前授权交付：最新修复推送 / 部署 / 1.5 包（2026-10-03）
+# 当前修复：普通模式继续点击 / Hero 自动进入 AI（2026-10-03，离线已验证）
+
+- 产品 / 测试 `4be40f03` + `a7c0a0fd`，检查点 `380c85d`：空白正文与答案滚动区域不吞继续点击；切模式 / 百科返回的恢复不再让空答案容器接事件。真实选项、正文链接、滚轮 / 滚动条与工具保留原路径，不全局转发点击。
+- 按用户最新要求改成两项：保留原“自动进入 AI 模式”及存储键，新增“仅 Hero 自动进入 AI 模式”可关闭过滤。两项默认 true；关闭总开关均普通，开启总开关 / 关闭过滤恢复不限对象自动AI，两项开启只对 `IsHero` 为 true 的目标自动AI。手动切回普通后，延迟 NPC 开场不自动拉回 AI。
+- 两版原生命中排序回归各47 PASS，旧代码对照17 FAIL；真实包装 / 开场 gate / 两开关组合 / 重载生命周期95 PASS，新两DLL对话各105 PASS。原入口Debug双API + Bootstrap 0错误，各实现341既有警告。上一项插画31项回归继续PASS。
+- [唯一主台账与源码坐标](docs/animusforge-refactoring-and-repository-reorganization-plan.md#dialogue-continue-hero-auto-20261003)、本地 `artifacts/dialogue-continue-hit-test-20261003/receipt.json` 集中证据。实机点击 / 滚动手感 / 旧档未验，本轮未push / 部署 / Stage / 打包；游戏与ZIP仍是上一发布候选。完整本轮回滚先 `git revert a7c0a0fd` 再 `git revert 4be40f03`，不重置其他作者内容。
+
+# 上一项修复：野外部队界面 NPC 谈话不采全景（2026-10-03，离线已验证）
+
+- 本地 `171bed81`，检查点 `7d8761b`：原版部队“交谈”创建带 `ConversationMissionLogic` 的临时展示任务，旧代码只看 MissionScreen 误进全景。现同大地图对话只用地形事实与立绘，排除开场截图 / 全景试采；真实场景内对话继续采全景，来源失效与原失败停止规则保持。
+- 生产来源 / 分流加引擎替身31项PASS，恢复旧分流负控12项预期FAIL；原入口Debug双API+Bootstrap0错误，三个marker hash通过。类型分类主线程按本次来源缓存，每帧owner key不新增行为查询；未改构建流程。
+- [唯一主台账与源码坐标](docs/animusforge-refactoring-and-repository-reorganization-plan.md#illustrator-party-conversation-route-20261003)、[诊断第8节](docs/illustrator_pipeline_diagnostics.md#8-部队界面对话不采集全景)及本地 `artifacts/illustrator-party-conversation-route-20261003/receipt.json` 集中证据 / 回滚。玩家准确错误日志、实机 / GPU / 旧档 / 真实provider未验；本轮未push / 部署 / Stage / 打包，下方游戏与ZIP仍为上一已发布候选。
+
+# 上一轮授权交付：最新修复推送 / 部署 / 1.5 包（2026-10-03）
 
 - 用户明确授权三项交付，发布 origin/main；源码候选 `c118227f` 含 `6211ec3c` / `a3a3f7d2` 及已融合的各会话成果。远端基线 `ae10e7f5` 是本地祖先，文档提交后普通快进推送，实际 ack / 最终提交 / 独立远端 readback 以本地收据为准，不推旧重构分支。
 - 原一键入口 Debug 双 API + Bootstrap / Stage 通过；原 Windows PowerShell ZIP 步骤 exit-1 后，PowerShell 7 重跑未修改的原打包脚本成功。源 / Stage / 安装 / ZIP 均 `v1.5.0`、单模块 / Bootstrap-only，原流程文件未改。
