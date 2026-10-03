@@ -1,3 +1,9 @@
+# 最新部署：被拦截不弹会面修正版已安装（2026-10-04，DEPLOY_VERIFIED）
+
+- 用户本轮授权部署，产品a4b2dbb5 / 候选5f5b32d4；三源码/产物/marker hash未变，复用原Debug双API/Bootstrap验证，经原部署入口更新9文件。3379 Stage/安装一致，2291非受管文件及原版DLL/一键脚本保持，版本v1.5.0/Bootstrap-only。
+- 已安装劫村意图排除修正及旧攻击锁scope修复；真正Raid/force事件、村庄现场、raid重启、攻城/结果保护保留。完整候选包含另一会话RAG已提交内容，未漏其他作者改动。安装两DLL交接各13、模式各16、桥接/演讲各3组离线通过；138/raid14源回归绑定不变产物。
+- 唯一Recovery deploy-fde375a5bd354e1cb69702bcb16185b7（complete/旧新hash已验），上一诊断Recovery验证后已删，无额外旧Stage。未启动游戏/push/打包，实机拦截与去攻击烧村队伍仍待验。
+- [唯一台账、安装hash/边界与回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#deploy-intercepted-meeting-fix-20261004)，本地`artifacts/deploy-intercepted-meeting-fix-20261004/receipt.json`、retention.json。本条替代下方“未部署”及旧诊断安装状态，不延续新授权。
 # 当前修复：被拦截不弹会面两处过宽保护（2026-10-04，OFFLINE_VERIFIED，未部署）
 
 - 产品a4b2dbb5，意图检查点74f4dce3。劫村AI意图/远端LastAttacker不再当当前现场；实际raid/force事件及当前烧村现场、原版raid重启、攻城/海战等保护保留。攻击锁复用既有Encounter/Party/generation owner，新无战斗遭遇不继承旧锁，原战斗/结果保护及地图2秒等待保留。

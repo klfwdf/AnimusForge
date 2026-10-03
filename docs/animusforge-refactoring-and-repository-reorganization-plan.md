@@ -7048,3 +7048,17 @@ R2计划交付门槛：已给固定技术路线、真实来源与目标、写入
 - 性能：保护owner仅事件时O(1)认领；原tick/菜单条件保持false快速返回，活跃旧锁时增加一次有界引用/generation比较，不扫描队伍/反射查方法、不增加分配/锁/轮询。劫村检查反而移除三条意图/远端分支，真实规则保留。
 - NOT_RUN：本候选Stage/部署/push/打包、玩家档实机拦截及真实烧村袭击；安装仍诊断1.4 SHA256 C821599A5DF8261F9A3E19BA209D5CFE17E9FC61B47123EC2A96CAA8BE848405，无外部游戏文件写入。下一步新部署需用户明确授权，不延续上条诊断版部署授权。
 - 本地`artifacts/intercepted-meeting-guards-fix-20261004/receipt.json`绑定源码/产物，lifecycle/run.log、negative-hard/raid.log、active-raid-recheck/run.log、candidate-1.3/1.4-handoff.log、build.log保留正负证据。源码回滚git revert a4b2dbb5；安装仍使用[上条诊断部署](#deploy-meeting-diagnostics-20261004)唯一Recovery，本轮未新增备份。
+
+<a id="deploy-intercepted-meeting-fix-20261004"></a>
+## 被拦截会面与真实劫村边界修正版已部署（2026-10-04，DEPLOY_VERIFIED）
+
+用户本轮明确授权“部署”，产品a4b2dbb5、交付候选5f5b32d4；本轮沿用上一轮原Debug双API/Bootstrap成功产物，三源码/三个DLL/marker hash均与修复收据一致，138边界及raid14/旧源码两种期望失败证据仍对应本候选，无需重复编译。完整候选也包含另一会话已提交b940bf24 RAG内容，未挑掉他人改动；安装不等于该功能实机验收。
+
+- 原deploy_module.ps1重建干净项目Stage并事务覆盖`F:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord/Modules/AnimusForge`，9受管文件更新，3379 Stage/安装hash一致；2291非受管文件hash/大小/mtime保持，3原版DLL与原构建/部署/内容脚本hash保持，版本v1.5.0，XML仅Bootstrap。没有新构建脚本或额外旧Stage备份。
+- 安装两实现各13实际DLL交接owner/callback/cleanup、16模式锁及3组桥接/演讲scope离线PASS；安装两实现/Bootstrap与已验证产物及marker一致。修复内容已安装：劫村AI意图不再误当现场、新普通拦截不继承上一攻击锁，真实raid/force事件及当前烧村现场/原版raid重启等保护保持。
+- 安装hash：1.3 `30A3489930568D288F7CA018A64A99F5FCDEA614FC0B022A436E716D3ABCD6AE`；1.4 `73DF5246D2ED0CC401F88230F7C48B1D20AB667022B96F0A27141C81E5230E8D`；Bootstrap `492BABAD3BD3F1921B2F0A819FE8053359DFFCB4B363E7D21AA4EFD34A5BB851`。
+- 只保留最新Recovery `C:/Users/29310/AppData/Local/AnimusForge/Recovery/deploy/deploy-fde375a5bd354e1cb69702bcb16185b7`；complete/manifest、旧备份/新安装hash已验，安装与六组离线probe全部通过后，依既有“历史也删/只留最近一个”约束删除上一诊断Recovery deploy-2d7a2fee7f714958843474fa027a2970。无其他删除/玩家文件覆盖。
+- NOT_RUN：启动游戏、真实被敌方领主拦截、袭击正在烧村的队伍、玩家旧档、真AI/TTS；未push/打包。请实测两个场景，再以新Mod_Logic具体stage/reason验收，不把部署一致性称为游戏恢复证明。
+- 本地`artifacts/deploy-intercepted-meeting-fix-20261004/receipt.json`、before.json、source-hashes.json、build-bindings.json、deployment-verification.log、installed-offline-verification.log及retention.json。源码回滚git revert a4b2dbb5；安装回滚仅按上述唯一Recovery manifest/files及目标旧新hash定点恢复。
+
+本条替代[修复候选](#intercepted-meeting-guards-fix-20261004)的“未部署”状态，不替代其实机NOT_RUN；也替代[前诊断部署](#deploy-meeting-diagnostics-20261004)的当前安装/Recovery状态。旧记录保留其当时证据，不发出后续部署或推送权限。
