@@ -191,11 +191,14 @@ static class Program
         Check(uiBusy.Contains("IsNativeConversationContextStampCurrent(admission)")&&uiBusy.Contains("Owns(admission)")&&uiBusy.Contains("IsCancellationRequested")&&!uiBusy.Contains("IsNativeConversationAdmissionCurrent("),"UI busy excludes full target scan but preserves owner/stamp/cancellation");
         Check(admission.Contains("HasCurrentConversationContext()")&&admission.Contains("HasCurrentContext() && _owner.IsNativeConversationContextCurrent"),"display scope seam does not weaken existing submission guard");
         var encounterHost=Read(root,"src/AF.GameAdapter.Bannerlord/Encounter/LordEncounterBehavior.cs");
-        Check(encounterHost.Contains("RegisterNativeDialogueHandoff(target);")&&encounterHost.Contains("manager.ConversationEndOneShot += OnNativeDialogueHandoffEnded"),"real native conversation entry wires end hook");
-        Check(encounterHost.Contains("_nativeDialogueHandoffManager.ConversationEndOneShot -= OnNativeDialogueHandoffEnded"),"captured manager hook cleaned after close/session change");
+        Check(encounterHost.Contains("RegisterNativeDialogueHandoff(target);")&&encounterHost.Contains("manager.ConversationEndOneShot += _nativeDialogueHandoffEndHandler"),"real native conversation entry wires captured end hook");
+        Check(encounterHost.Contains("_nativeDialogueHandoffManager.ConversationEndOneShot -= _nativeDialogueHandoffEndHandler"),"captured manager hook cleaned after close/session change");
         Check(encounterHost.Contains("_nativeDialogueHandoffOwner.IsCurrent(PlayerEncounter.Current")&&encounterHost.Contains("NativeDialogueReturnPolicy.ShouldReturn"),"real end callback consumes encounter identity and return policy");
         Check(encounterHost.Contains("CanReturnFromNativeDialogueHandoff(_nativeDialogueReturnHero, true)"),"queued return rechecks release/combat/native activity before menu mutation");
-        Check(encounterHost.Contains("string.Equals(_suppressCustomEncounterMenuReason, \"native_dialogue_handoff\""),"handoff never clears another mechanism's suppression");
+        var handoff=encounterHost.Substring(encounterHost.IndexOf("private static void ClearNativeDialogueHandoff("));
+        handoff=handoff.Substring(0,handoff.IndexOf("private static void EnsureEncounterBattlePrepared("));
+        Check(!handoff.Contains("SuppressCustomEncounterMenuUntilBackOnMap(")&&!handoff.Contains("ClearCustomEncounterMenuHardSuppression("),"native handoff neither owns nor clears another mechanism's battle-wide suppression");
+        Check(handoff.Contains("revision != _nativeDialogueHandoffRevision")&&handoff.Contains("IsNativeDialogueHandoffSuppressedForCurrentEncounter()"),"captured native callback and suppression stay scoped");
         var host=Read(root,"src/modules/AF.Module.Onboarding/Host/ModOnboardingBehavior.cs");
         var popup=host.Substring(host.IndexOf("if (AnimusForgeApiOnboardingPopup.Show("));popup=popup.Substring(0,popup.IndexOf("List<InquiryElement> list"));
         Check(!popup.Contains("_setupDone = true;")&&popup.Contains("ShowImportSetupPopup"),"completion enters import before setup-done gate");

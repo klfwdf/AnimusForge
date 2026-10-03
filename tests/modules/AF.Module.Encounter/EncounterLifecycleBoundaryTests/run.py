@@ -23,6 +23,15 @@ def main():
         parser.error(f"dotnet executable not found: {dotnet}")
     template = Path(__file__).with_name("Harness.cs.txt").read_text(encoding="utf-8")
     source = (ROOT / "src/AF.GameAdapter.Bannerlord/Encounter/LordEncounterBehavior.cs").read_text(encoding="utf-8-sig")
+    handoff_signatures = [
+        "private static void ClearNativeDialogueHandoff(",
+        "private static void RegisterNativeDialogueHandoff(",
+        "private static bool IsNativeDialogueHandoffSuppressedForCurrentEncounter(",
+        "private static bool CanReturnFromNativeDialogueHandoff(",
+        "private static void OnNativeDialogueHandoffEnded(",
+    ]
+    template = template.replace("@@HANDOFF_METHODS@@", "\n".join(
+        EXTRACTOR.declaration(source, signature) for signature in handoff_signatures))
     signatures = [
         "private sealed class MeetingPlayerReleaseRequest",
         "private static MeetingPlayerReleaseRequest CaptureMeetingPlayerReleaseRequest(",
@@ -43,7 +52,7 @@ def main():
     assert "@@" not in template
     output = new_run_root(ROOT, "encounter-lifecycle-boundary", args.run_root)
     (output / "Program.cs").write_text(template, encoding="utf-8")
-    (output / "Boundary.csproj").write_text(f'<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><ImplicitUsings>disable</ImplicitUsings><Nullable>disable</Nullable><NoWarn>CS0649;CS0414</NoWarn></PropertyGroup><ItemGroup><Compile Include="{ROOT.as_posix()}/src/modules/AF.Module.Encounter/EncounterTargetOwner.cs" Link="EncounterTargetOwner.cs" /><Compile Include="{ROOT.as_posix()}/src/modules/AF.Module.Encounter/EncounterConversationTargetOwner.cs" Link="EncounterConversationTargetOwner.cs" /><Compile Include="{ROOT.as_posix()}/src/modules/AF.Module.Encounter/EncounterReleaseOwner.cs" Link="EncounterReleaseOwner.cs" /><Compile Include="{ROOT.as_posix()}/src/modules/AF.Module.Encounter/EncounterPendingReturnOwner.cs" Link="EncounterPendingReturnOwner.cs" /></ItemGroup></Project>', encoding="utf-8")
+    (output / "Boundary.csproj").write_text(f'<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><ImplicitUsings>disable</ImplicitUsings><Nullable>disable</Nullable><NoWarn>CS0649;CS0414</NoWarn></PropertyGroup><ItemGroup><Compile Include="{ROOT.as_posix()}/src/modules/AF.Module.Encounter/EncounterTargetOwner.cs" Link="EncounterTargetOwner.cs" /><Compile Include="{ROOT.as_posix()}/src/modules/AF.Module.Encounter/EncounterConversationTargetOwner.cs" Link="EncounterConversationTargetOwner.cs" /><Compile Include="{ROOT.as_posix()}/src/modules/AF.Module.Encounter/EncounterReleaseOwner.cs" Link="EncounterReleaseOwner.cs" /><Compile Include="{ROOT.as_posix()}/src/modules/AF.Module.Encounter/EncounterPendingReturnOwner.cs" Link="EncounterPendingReturnOwner.cs" /><Compile Include="{ROOT.as_posix()}/src/modules/AF.Module.Encounter/NativeDialogueReturnPolicy.cs" Link="NativeDialogueReturnPolicy.cs" /></ItemGroup></Project>', encoding="utf-8")
     (output / "NuGet.Config").write_text('<configuration><packageSources><clear /></packageSources></configuration>', encoding="utf-8")
     env = minimal_test_environment(dotnet, output)
     result = subprocess.run([str(dotnet), "run", "--project", str(output / "Boundary.csproj"), "-c", "Release"], cwd=output, env=env, capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=120)

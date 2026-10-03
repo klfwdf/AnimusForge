@@ -17,11 +17,140 @@ internal static class Program
         TargetAudit.Run();
         ConversationTargetAudit.Run();
         ReturnAudit.Run();
+        NativeHandoffAudit.Run();
         DuelAudit.Run();
         InteractionComponentSafePatch.Run();
         Console.WriteLine("PASS: " + _assertions + " extracted production boundary assertions.");
     }
 }
+internal static class NativeHandoffAudit
+{
+    private sealed class Manager
+    {
+        public event Action ConversationEndOneShot;
+        public Action Snapshot() => ConversationEndOneShot;
+        public int Listeners => ConversationEndOneShot?.GetInvocationList().Length ?? 0;
+        public void End() => ConversationEndOneShot?.Invoke();
+    }
+    private sealed class CampaignState { public Manager ConversationManager; }
+    private static class Campaign { public static CampaignState Current = new CampaignState(); }
+    private static class PlayerEncounter
+    {
+        public static object Current;
+        public static bool PlayerIsAttacker, LeaveEncounter;
+    }
+    private static class SaveRuntimeGuard { public static long Generation = 1; public static long CaptureGeneration() => Generation; }
+    private static class PlayerEncounterCompat
+    {
+        public static bool Battle, Result, PostResult;
+        public static bool HasEncounterBattleContext() => Battle;
+        public static bool HasCampaignBattleResult() => Result;
+        public static bool IsInPostBattleResultFlow() => PostResult;
+    }
+    private static class MeetingBattleRuntime { public static bool IsCombatEscalated; }
+    private static class MapSeaContextGuard { public static bool AtSea; public static bool IsCurrentPlayerEncounterAtSea(Hero target) => AtSea; }
+    private static class Logger { public static void Log(string source, string text) { } }
+    private static void LogEncounterDiagnostic(string stage, string reason, string menu = null, Hero target = null) { }
+    private static readonly EncounterPendingReturnOwner<object, PartyBase> _nativeDialogueHandoffOwner = new();
+    private static readonly EncounterPendingReturnOwner<object, PartyBase> _pendingReturnOwner = new();
+    private static Manager _nativeDialogueHandoffManager;
+    private static Hero _nativeDialogueHandoffHero, _nativeDialogueReturnHero;
+    private static bool _nativeDialogueHandoffIntercepted, _nativeDialogueHandoffSuppressionActive, _nativeDialogueReturnPending;
+    private static int _nativeDialogueHandoffRevision;
+    private static Action _nativeDialogueHandoffEndHandler;
+    private static object _pendingNativeConversationMeetingRelease;
+    private static bool _pendingNativeConversationNpcSurrender, _pendingMeetingReleaseSafePassageFinalReapply;
+    private static bool Attack, MeetingResult, Captivity, BattleMenu, NativeActivity;
+    private static PartyBase Party;
+    private static PartyBase GetCurrentEncounterPartySafe() => Party;
+    private static bool HasPendingForceNativeEncounterAttack() => Attack;
+    private static bool HasPendingMeetingBattleNativeResult() => MeetingResult;
+    private static bool HasPendingForceNativeDefeatCaptivityMenu() => Captivity;
+    private static bool HasPendingForceNativeEncounterBattleMenu() => BattleMenu;
+    private static bool IsNativeEncounterActivityContext(Hero target) => NativeActivity;
+    private static void ClearPendingReturnToEncounterMenuAfterUnauthorizedMeetingExit(string reason)
+    { _pendingReturnOwner.Clear(); _nativeDialogueReturnPending = false; _nativeDialogueReturnHero = null; }
+    private static void MarkPendingReturnToEncounterMenuAfterUnauthorizedMeetingExit(string reason)
+    { _pendingReturnOwner.Mark(PlayerEncounter.Current, Party, SaveRuntimeGuard.Generation); }
+    @@HANDOFF_METHODS@@
+    private static Manager Begin(bool attacker)
+    {
+        ClearNativeDialogueHandoff();
+        ClearPendingReturnToEncounterMenuAfterUnauthorizedMeetingExit("test");
+        PlayerEncounter.Current = new object(); Party = new PartyBase();
+        PlayerEncounter.PlayerIsAttacker = attacker; PlayerEncounter.LeaveEncounter = false;
+        Attack = MeetingResult = Captivity = BattleMenu = NativeActivity = false;
+        PlayerEncounterCompat.Battle = PlayerEncounterCompat.Result = PlayerEncounterCompat.PostResult = false;
+        MapSeaContextGuard.AtSea = MeetingBattleRuntime.IsCombatEscalated = false;
+        _pendingNativeConversationMeetingRelease = null;
+        _pendingNativeConversationNpcSurrender = _pendingMeetingReleaseSafePassageFinalReapply = false;
+        var manager = new Manager(); Campaign.Current.ConversationManager = manager;
+        RegisterNativeDialogueHandoff(Party.LeaderHero);
+        return manager;
+    }
+    public static void Run()
+    {
+        var manager = Begin(true);
+        Program.Check(manager.Listeners == 1 && IsNativeDialogueHandoffSuppressedForCurrentEncounter(), "player-initiated handoff installs its own cleanup and suppresses recursive redirect");
+        Action old = manager.Snapshot(); manager.End();
+        Program.Check(!IsNativeDialogueHandoffSuppressedForCurrentEncounter() && manager.Listeners == 0, "player-initiated native end immediately releases suppression without waiting for map");
+        Program.Check(!_nativeDialogueReturnPending, "player-initiated handoff does not gain intercepted-player forced return");
+        old(); Program.Check(!IsNativeDialogueHandoffSuppressedForCurrentEncounter(), "duplicate end callback stays harmless");
+
+        manager = Begin(false); manager.End();
+        Program.Check(_nativeDialogueReturnPending && _pendingReturnOwner.IsCurrent(PlayerEncounter.Current, Party, SaveRuntimeGuard.Generation), "safe intercepted native dialogue queues its original menu return");
+        Program.Check(!IsNativeDialogueHandoffSuppressedForCurrentEncounter() && manager.Listeners == 0, "intercepted return is not blocked by its own handoff suppression");
+
+        manager = Begin(true); old = manager.Snapshot();
+        PlayerEncounter.Current = new object(); Party = new PartyBase();
+        Program.Check(!IsNativeDialogueHandoffSuppressedForCurrentEncounter() && manager.Listeners == 0, "new encounter is never blocked by the previous native dialogue");
+        RegisterNativeDialogueHandoff(Party.LeaderHero); int revision = _nativeDialogueHandoffRevision;
+        old(); Program.Check(_nativeDialogueHandoffRevision == revision && IsNativeDialogueHandoffSuppressedForCurrentEncounter(), "previous encounter callback cannot release a newly captured handoff");
+        manager.End();
+
+        manager = Begin(true); SaveRuntimeGuard.Generation++;
+        Program.Check(!IsNativeDialogueHandoffSuppressedForCurrentEncounter() && manager.Listeners == 0, "save generation change expires and unhooks native handoff");
+        manager = Begin(true); Party = new PartyBase();
+        Program.Check(!IsNativeDialogueHandoffSuppressedForCurrentEncounter(), "party change expires native handoff");
+        manager = Begin(false); Campaign.Current.ConversationManager = new Manager();
+        manager.End(); Program.Check(!_nativeDialogueReturnPending && !_nativeDialogueHandoffSuppressionActive, "foreign manager cannot queue old menu return");
+        manager = Begin(true); Campaign.Current.ConversationManager = new Manager();
+        Program.Check(!IsNativeDialogueHandoffSuppressedForCurrentEncounter() && manager.Listeners == 0, "manager replacement expires native handoff");
+
+        foreach (string danger in new[] { "release", "scheduled_release", "surrender", "safe_passage", "attack", "result", "captivity", "battle_menu", "battle", "campaign_result", "post_result", "escalated", "native", "sea" })
+        {
+            manager = Begin(false);
+            switch (danger)
+            {
+                case "release": PlayerEncounter.LeaveEncounter = true; break;
+                case "scheduled_release": _pendingNativeConversationMeetingRelease = new object(); break;
+                case "surrender": _pendingNativeConversationNpcSurrender = true; break;
+                case "safe_passage": _pendingMeetingReleaseSafePassageFinalReapply = true; break;
+                case "attack": Attack = true; break;
+                case "result": MeetingResult = true; break;
+                case "captivity": Captivity = true; break;
+                case "battle_menu": BattleMenu = true; break;
+                case "battle": PlayerEncounterCompat.Battle = true; break;
+                case "campaign_result": PlayerEncounterCompat.Result = true; break;
+                case "post_result": PlayerEncounterCompat.PostResult = true; break;
+                case "escalated": MeetingBattleRuntime.IsCombatEscalated = true; break;
+                case "native": NativeActivity = true; break;
+                case "sea": MapSeaContextGuard.AtSea = true; break;
+            }
+            manager.End();
+            Program.Check(!_nativeDialogueReturnPending && !_nativeDialogueHandoffSuppressionActive && manager.Listeners == 0, "native flow remains authoritative after handoff end: " + danger);
+        }
+        manager = Begin(true); old = manager.Snapshot(); ClearNativeDialogueHandoff();
+        RegisterNativeDialogueHandoff(Party.LeaderHero); revision = _nativeDialogueHandoffRevision;
+        old(); Program.Check(_nativeDialogueHandoffRevision == revision && manager.Listeners == 1, "same encounter and manager reopened dialogue rejects an older revision callback");
+        manager.End();
+        manager = Begin(true); ClearNativeDialogueHandoff(); ClearNativeDialogueHandoff();
+        Program.Check(manager.Listeners == 0 && !_nativeDialogueHandoffSuppressionActive, "session cleanup remains idempotent");
+        PlayerEncounter.Current = null; RegisterNativeDialogueHandoff(new Hero());
+        Program.Check(!_nativeDialogueHandoffSuppressionActive, "missing encounter cannot create an unowned global lock");
+    }
+}
+
 internal sealed class Hero { }
 internal sealed class PartyBase { public Hero LeaderHero = new Hero(); public bool IsNonHero; }
 internal static class TargetAudit
