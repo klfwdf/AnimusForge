@@ -20,6 +20,9 @@ namespace TaleWorlds.CampaignSystem.Conversation
     public sealed class ConversationManager
     {
         public event Action ConversationEndOneShot;
+        public int EndCalls;
+        public bool DeferEnd;
+        public void EndConversation() { EndCalls++; if (!DeferEnd) End(); }
         public void End() => ConversationEndOneShot?.Invoke();
     }
 }

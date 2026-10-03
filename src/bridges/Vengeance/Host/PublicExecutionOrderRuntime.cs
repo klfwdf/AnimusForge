@@ -86,7 +86,11 @@ internal static class PublicExecutionOrderRuntime
                 _manager = manager;
                 _handler = () => { ClearConversation(); Start(permit); };
                 manager.ConversationEndOneShot += _handler;
-                Log("armed until conversation closes session=" + permit.Session);
+                Log("accepted order; closing executioner conversation session=" + permit.Session);
+                // The confirmed order is an execution command, not a promise
+                // requiring a second click on Leave. The one-shot callback
+                // starts only this bound ceremony while native dialogue unwinds.
+                manager.EndConversation();
             }
             else Start(permit);
         }

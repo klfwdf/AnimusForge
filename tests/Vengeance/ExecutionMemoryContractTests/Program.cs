@@ -205,9 +205,10 @@ internal static class Program
         c = Setup(); tag = PublicExecutionOrderRuntime.Normalize(Capture(), PublicExecutionOrderPolicy.Tag); c.AcceptStart = false; PublicExecutionOrderRuntime.Consume(7, ref tag);
         Check(c.Starts == 0 && ShoutBehavior.Facts == 0, "controller failure no success memory");
         c = Setup(); tag = PublicExecutionOrderRuntime.Normalize(Capture(true, "native_conversation"), PublicExecutionOrderPolicy.Tag); PublicExecutionOrderRuntime.Consume(7, ref tag);
-        Check(c.Starts == 0, "native waits conversation close"); Campaign.Current.ConversationManager.End();
-        Check(c.Starts == 1 && ShoutBehavior.Facts == 1, "native close starts same execution");
-        c = Setup(); tag = PublicExecutionOrderRuntime.Normalize(Capture(true, "native_conversation"), PublicExecutionOrderPolicy.Tag); PublicExecutionOrderRuntime.Consume(7, ref tag);
+        Check(c.Starts == 1 && ShoutBehavior.Facts == 1 && Campaign.Current.ConversationManager.EndCalls == 1, "confirmed native order closes conversation and starts execution without another player click");
+        Campaign.Current.ConversationManager.End(); Check(c.Starts == 1, "late native close cannot duplicate the execution");
+        c = Setup(); Campaign.Current.ConversationManager.DeferEnd = true;
+        tag = PublicExecutionOrderRuntime.Normalize(Capture(true, "native_conversation"), PublicExecutionOrderPolicy.Tag); PublicExecutionOrderRuntime.Consume(7, ref tag);
         var manager = Campaign.Current.ConversationManager; PublicExecutionOrderRuntime.Reset(); manager.End();
         Check(c.Starts == 0, "retirement removes pending close handler");
     }
