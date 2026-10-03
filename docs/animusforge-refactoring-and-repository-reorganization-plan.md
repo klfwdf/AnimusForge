@@ -1,3 +1,30 @@
+<a id="publish-deploy-dialogue-illustrator-20261003"></a>
+# 本次授权交付：对话 / 插画修复推送与部署（2026-10-03）
+
+用户明确要求“提交推送部署”。当前工作区 `F:/AnimusForge-main`、分支 `codex/af-main-refactor-continuation-20260831`，源码候选 `5968763931ef973f091a68ebf43afe754214ed51`，远端目标 **origin/main**。fetch后远端 `302e93afe9a875b2a56334554fe297bd34bddb97` 为本地祖先，本地领先11提交 / 净36文件；没有tracked dirty，不强推、不重写历史、不add-all未跟踪材料。
+
+## 实际范围
+
+- 全部11个本地已完成提交均在本次候选中，含 `171bed81` 部队界面对话不采全景、`4be40f03` 普通继续点击、`a7c0a0fd` 自动AI双开关、`30147300` 玩家本次提示词重绘、`dfc5a6bd` 导演无法处理输入时停止、`6588eed3` 快报编辑层 / Esc隔离及检查点 / 交接。保留远端既有内战、政变、NPC赠品市场出售等已融合代码，未只挑最后一次生图修改。
+- 产品源码坐标与边界沿[部队界面分流](#illustrator-party-conversation-route-20261003)、[普通继续 / 自动AI](#dialogue-continue-hero-auto-20261003)、[带提示词重绘](#illustrator-player-redraw-20261003)各自真实生产代码图，不重复整表。本条只改变交付状态，不声称新增实机验收。
+- 初次发布检查扫描待推历史50 blob，无被排除的artifacts / local / bin / obj / 临时素材 / 私有交接路径或明显token / private-key模式。29个任务源文件与前轮收据哈希一致；未上传本地模型、测试结果、临时文件、生成图片或其他作者未跟踪材料。最终文档提交后再扫描新增出站对象，数量 / push ack / 最终候选和独立远端ref读回集中在本地收据，不能把本地commit当推送成功。
+
+## 构建与部署
+
+- 复用原 `scripts/build/build_single_module.ps1 -ProjectRoot F:/AnimusForge-main -BannerlordRoot 'F:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord' -Configuration Debug -Stage`。首次两API+Bootstrap全部0错误，但Stage重置的旧目录校验因 `GUI/Prefabs/AFDialogueConversation.xml` 仍是上一版而拒绝，游戏尚未被写入；失败日志 `build-stage.log` 保留。
+- 旧Stage3379文件先完整复制并核验于本地 `artifacts/publish-deploy-20261003-dialogue-illustrator/before-stage`；再次确认原Stage文件集 / hash未变、真实绝对路径和无reparse point后，以原生PowerShell `Move-Item -LiteralPath` 另存 `before-stage-original`，不删除旧数据、不绕过验证或修改原脚本。用同一原入口重跑成功，最终 `build-stage-retry.log` 两API+Bootstrap **0 error**、各实现341既有warning、Bootstrap0warning，Stage PASS。
+- 引用为 `v1.3.15.110062` / `v1.4.6.115628`；三个DLL实际SHA256与marker一致。构建 / 覆盖 `.bat` 与 `scripts/build` 12个既有入口 / helper的发布前hash保持，不改原一键流程。项目本地取证wrapper仅编排原命令与记录日志，不参与产品或push。
+- 通过原 `scripts/build/deploy_module.ps1`，显式传捕获的两实现 / Bootstrap / 私有runtime路径，部署 **`F:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord/Modules/AnimusForge`**，更新 **15** 个受管文件。单模块 / Bootstrap-only，版本 **v1.5.0**；3379 Stage / 安装文件哈希全部一致，部署前后Stage哈希不变。
+- **2280** 个非Stage受管安装文件的SHA256 / 长度 / mtime全部不变，含实际安装模型与玩家保留内容；抽检游戏本体3个原版DLL哈希不变。不镜像删未知安装文件，不覆盖TaleWorlds原版DLL。没有运行启动游戏的BAT分支。
+- Recovery **`C:/Users/29310/AppData/Local/AnimusForge/Recovery/deploy/deploy-c21e6a0c9eaa4709bee24fa5af69aad3`**，`complete`存在，15项旧文件备份hash与manifest一致、新安装hash与manifest一致。部署前保护清单 `before-deploy.json`、部署日志 `deploy.log`、最终 `receipt.json` 保留本地。
+
+## 最终验证与发布
+
+- 实际候选新两DLL导演请求各 **110 PASS**、对话回归各 **105 PASS**；两版原生命中排序 / 真实恢复＋替身几何各 **47 PASS**；本次编辑器 / VM / XML与快报Esc定向 **35 PASS**；会话场景分流 **31 PASS**；AI双开关 / 生命周期 **95 PASS**；快报预载 **59 PASS**；后台完成 / 画廊管理路径 **71 PASS**。日志绑定同次构建，不复用旧发布DLL。HTTP为内存handler，原生渲染 / 引擎 / 几何为替身，不冒充真实服务和实机。
+- 部署后的交付HANDOFF / 台账单独精确提交；再次fetch / 检查祖先后，普通 `git push origin HEAD:refs/heads/main`，不推旧重构分支名、不强推。发布脚本要求自构建候选以来只有这两份文档差异，校验新DLL / 已安装DLL / 回归日志 / 原脚本hash，并对待推历史再次做排除路径与明显凭据检查。**实际网络ack、最终提交、最终出站提交数与 `git ls-remote --heads origin main` 独立读回以本地收据为准**。
+- **LIVE_GAME / PLAYER_SAVE / REAL_PROVIDER / NEW_PACKAGE = NOT_RUN**。未启动游戏，未加载玩家档，未真实付费生图，未制作新ZIP；旧v1.5.0发布包不含本次新修复，不因部署完成改称包已更新。本条部署状态明确替代下方三项历史“未deploy / Stage / push”，实机缺口仍保留。
+- 游戏文件回滚点为上述Recovery旧文件；旧统一Stage两份目录均完整保留。源码按各任务定向revert（本次生图 `6588eed3`→`dfc5a6bd`→`30147300`；对话 `a7c0a0fd`→`4be40f03`；场景分流 `171bed81`），随后原入口重建 / 部署；不hard reset、不改写已发布历史或撤其他作者成果。
+
 <a id="illustrator-player-redraw-20261003"></a>
 # 当前功能：玩家本次提示词给导演后重绘（2026-10-03，OFFLINE_VERIFIED）
 
