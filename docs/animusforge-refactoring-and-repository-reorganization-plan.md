@@ -6942,3 +6942,10 @@ R2计划交付门槛：已给固定技术路线、真实来源与目标、写入
 - 性能：仅声明式布局及常量偏移；复用原生按尺寸比较显隐、编辑器dirty换行与有界光标跟随，无新增扫描/反射/轮询。原生1.3/1.4 ScrollablePanel实现已核对：溢出显示；缩短后归零偏移并隐藏。未以源码核对冒充实机行为测试。
 - 验证：既有DialogueOnboardingRegressionTests扩展真实XML路径/字号布局相关契约，134 PASS（引擎与网络stub）；3模板唯一content-map映射和XML解析PASS；原统一脚本Debug双API 1.3.15.110062 / 1.4.6.115628 + Bootstrap exit0，两实际DLL与marker hash一致。构建后仅调整普通条目XML内边距/滚动条位置及测试描述并重跑134，未改C#。
 - NOT_RUN：实机长正文、输入长文→删除显隐、滚轮/拖拽/选项点击/说服及各分辨率。离线接入不等于覆盖游戏或验收完成。回滚用本轮具名产品提交的inverse commit；不reset。日志/源码hash见本地`artifacts/dialogue-pen-integration-20261004/receipt.json`。
+# 最新交付：会面交接锁、对话模式锁与 Pen 布局编译部署（2026-10-04，DEPLOY_VERIFIED）
+
+- 用户授权“编译部署”；候选 `0218ca82491c0a0fb5b85236b805e1863c82d02d`。本次重新编译并安装完整候选，包含 `9555ff5c` 会面交接锁修复、`954a1551` 对话处理中模式锁和 `0218ca82` Pen 对话布局；不推送、不打包、不启动游戏。
+- 原统一入口 Debug 双 API + Bootstrap 构建成功，1.3 / 1.4 实现各0错误（既有341警告），marker 与实际 DLL hash 一致；DialogueOnboardingRegressionTests **134 PASS**，EncounterLifecycleBoundaryTests **84 PASS**。两 API 的新 DLL 和安装 DLL 均通过会面13、模式16、epoch桥接2组离线探针。
+- 统一 Stage **3379** 文件，安装实际更新 **13** 个受管文件；安装 hash 与 Stage 一致，版本 `v1.5.0`，XML 仅声明 Bootstrap；**2298** 个非受管文件、原版 DLL 和构建/部署脚本保持不变。
+- 部署验证收据：`artifacts/deploy-meeting-mode-pen-20261004/receipt.json`；回滚点：`C:/Users/29310/AppData/Local/AnimusForge/Recovery/deploy/deploy-863e5975dda1478cb5959ef9d515f1f6`。历史部署 Recovery、旧 Stage 和明确部署备份已删除并核对只剩该回滚点。
+- `LIVE_GAME / REAL_AI_TTS / PLAYER_SAVE / PUSH / PACKAGE = NOT_RUN`。安装 DLL 的离线探针不等于实机验收；源码与玩家数据未改。
