@@ -1,4 +1,11 @@
-# 当前修复：对话 UI / 内战 / 政变 / NPC 赠品出售（2026-10-03，OFFLINE_VERIFIED）
+# 当前授权交付：最新修复推送 / 部署 / 1.5 包（2026-10-03）
+
+- 用户明确授权三项交付，发布 origin/main；源码候选 `c118227f` 含 `6211ec3c` / `a3a3f7d2` 及已融合的各会话成果。远端基线 `ae10e7f5` 是本地祖先，文档提交后普通快进推送，实际 ack / 最终提交 / 独立远端 readback 以本地收据为准，不推旧重构分支。
+- 原一键入口 Debug 双 API + Bootstrap / Stage 通过；原 Windows PowerShell ZIP 步骤 exit-1 后，PowerShell 7 重跑未修改的原打包脚本成功。源 / Stage / 安装 / ZIP 均 `v1.5.0`、单模块 / Bootstrap-only，原流程文件未改。
+- 已部署游戏 `Modules/AnimusForge`，更新10受管文件，3379个 Stage / 安装 / ZIP 文件 hash 一致；2293非受管文件 hash / 长度 / mtime 与3抽检原版 DLL 不变，Recovery complete与备份hash通过。新DLL对话各102、赠品交易26再次通过，实机 / 玩家旧档 / 真实provider仍未验。
+- [唯一主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#review-fixes-publish-deploy-package-20261003)集中 ZIP 路径 / SHA256、Recovery / 旧Stage回滚位置、失败与通过证据；本地 `artifacts/publish-deploy-package-20261003-review-fixes/receipt.json` 绑定实际交付。下方本批“未push / 部署 / 打包”是历史候选状态，已由本条替代；临时材料未add-all / 删除。
+
+# 上一轮修复：对话 UI / 内战 / 政变 / NPC 赠品出售（2026-10-03，OFFLINE_VERIFIED）
 
 - 本地产品 `6211ec3c`：喊话 epoch 属性适配、UI 重载保留草稿与模式、百科返回绑定 / 节点可见状态恢复、长输入裁剪滚动；内战关闭暂停政治任务但维护衰减时钟；政变失败重试只撤原目标，不结束新遭遇。
 - 本地产品 `a3a3f7d2`：分离随机经济隔离与市场封禁，NPC 赠品可以按原版交易，出售后不被市场清理删除；旧身份兼容、记录复制 / 合并保留权限。信件 / 画廊 / 玩家 RP 制作保护及随机生产隔离不变。
