@@ -209,6 +209,9 @@ namespace AnimusForge.Illustrator.UI.Patches
                 global::AnimusForge.WorldBulletinPanelIllustrationBridge.PrepareSelection = BulletinIllustrationPreloader.PrepareSelection;
                 global::AnimusForge.WorldBulletinPanelIllustrationBridge.CancelSelection = BulletinIllustrationPreloader.CancelSelection;
                 global::AnimusForge.WorldBulletinPanelIllustrationBridge.AwaitSelection = BulletinIllustrationPreloader.AwaitSelection;
+                global::AnimusForge.WorldBulletinPanelIllustrationBridge.ShouldPreloadSelection =
+                    () => IllustratorRuntime.IsEnabled("weekly_report") &&
+                        IllustratorSettings.Instance?.AutoGenerateWeeklyReportIllustration == true;
                 BulletinIllustrationPreloader.Updated = RefreshPreparedBulletin;
 
                 MethodInfo closeMethod = AccessTools.Method(targetType, "Close");
@@ -319,7 +322,8 @@ namespace AnimusForge.Illustrator.UI.Patches
                 slot.IsAvailable = true;
                 slot.NotifyHandlersChanged();
                 Debug.Print($"[Illustrator] World bulletin panel slot attached: '{title}' context={(_currentContext != null)}");
-                BulletinIllustrationPreloader.Ensure(_currentEventKey, _currentContext);
+                BulletinIllustrationPreloader.Ensure(_currentEventKey, _currentContext,
+                    generateOnCacheMiss: IllustratorSettings.Instance?.AutoGenerateWeeklyReportIllustration == true);
                 RefreshPreparedBulletin(_currentEventKey, null);
                 return true;
             }
@@ -398,7 +402,8 @@ namespace AnimusForge.Illustrator.UI.Patches
             string campaignKey = _scope.CampaignKey;
             string cachedEventKey = _currentEventKey;
             IllustrationScope openedScope = _scope;
-            bool autoGenerate = IllustratorSettings.Instance.AutoGenerateWeeklyReportIllustration;
+            bool autoGenerate = IllustratorRuntime.IsEnabled("weekly_report") &&
+                IllustratorSettings.Instance?.AutoGenerateWeeklyReportIllustration == true;
             _sink.IsLoading = true;
             bool cacheLoadStarted = IllustratorRuntime.Start(
                 () => Task.Run(() => DiskImageCacheManager.LoadImage(cachedEventKey, campaignKey, "weekly_report")),

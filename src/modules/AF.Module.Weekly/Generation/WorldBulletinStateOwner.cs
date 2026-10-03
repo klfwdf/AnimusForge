@@ -141,7 +141,14 @@ internal void AdvanceWorldBulletinScope(WorldBulletinSaveState state, double now
 		_port.Log("WorldBulletin", "[Select] home=" + focus.PlayerKingdomId + " majorFacts=" + selection.MajorFacts.Count + " minors=" + selection.Minors.Count + " minorEvents=" + selection.Minors.Sum(x => x.Events.Count));
 		// Set last: if anything above throws, the flag stays clear and the next tick retries instead of blocking forever.
 		InFlight = true;
-		try { _port.PrepareSelection(illustrationPlan); }
+		try
+		{
+			if (WorldBulletinPanelIllustrationBridge.ShouldPreloadSelection == null ||
+				WorldBulletinPanelIllustrationBridge.ShouldPreloadSelection())
+			{
+				_port.PrepareSelection(illustrationPlan);
+			}
+		}
 		catch (Exception ex) { _port.Log("WorldBulletin", "[Illustration] selected-event preparation failed: " + ex.Message); }
 		_ = RunWorldBulletinRequestAsync(scope.WindowEndHour, generation, selection, template, systemPrompt, userPrompt, illustrationPlan);
 	}

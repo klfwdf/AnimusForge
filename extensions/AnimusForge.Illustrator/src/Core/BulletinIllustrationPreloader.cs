@@ -119,7 +119,8 @@ namespace AnimusForge.Illustrator.Core
             if (context != null) Ensure(KeyFor(eventId, title, subtitle, body), context, published: true);
         }
 
-        internal static Job Ensure(string key, WeeklyReportVisualContext context, bool redraw = false, bool published = false)
+        internal static Job Ensure(string key, WeeklyReportVisualContext context, bool redraw = false, bool published = false,
+            bool generateOnCacheMiss = true)
         {
             IllustratorRuntime.AssertMainThread();
             Job previous = Find(key);
@@ -143,7 +144,12 @@ namespace AnimusForge.Illustrator.Core
                 else
                     job.Scope.Run(token => Task.Run(() => DiskImageCacheManager.LoadImage(key, job.Scope.CampaignKey, "weekly_report"), token), cached =>
                     {
-                        if (cached == null) { Generate(job, context); return; }
+                        if (cached == null)
+                        {
+                            if (generateOnCacheMiss) Generate(job, context);
+                            else Finish(job, "暂无已生成插画，可点击重绘。", null);
+                            return;
+                        }
                         var result = new WeeklyReportPopupIllustrationPatch.GenerationResult
                         {
                             Saved = cached, Prompt = cached.Prompt,

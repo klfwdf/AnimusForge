@@ -58,6 +58,9 @@ internal static class WorldBulletinPanelIllustrationBridge
 	public static Action<string, string, string, string> PrepareIssue;
 	public static Action<WorldBulletinIllustrationPlan> PrepareSelection;
 	public static Action<WorldBulletinIllustrationPlan> CancelSelection;
+	// Main-thread query: true only when the configured fast path should start an image
+	// while the bulletin is being prepared rather than when its panel opens.
+	public static Func<bool> ShouldPreloadSelection;
 	// (plan, release) -> true when release will be invoked once, on the main thread, after the selected
 	// illustration settles or times out; false means nothing is pending and the caller proceeds now.
 	public static Func<WorldBulletinIllustrationPlan, Action, bool> AwaitSelection;

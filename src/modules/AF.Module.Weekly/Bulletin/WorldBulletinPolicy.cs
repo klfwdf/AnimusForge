@@ -213,6 +213,23 @@ internal static class WorldBulletinPolicy
 
 	private static readonly Regex IndexedMinorTag = new Regex("^\\[M(\\d{1,2})\\]\\s*(.*)$", RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
+	private const string ChineseNumeralDigits = "零〇○一二两三四五六七八九壹贰叁肆伍陆柒捌玖";
+	private const string ChineseNumeralUnits = "十百千万亿兆拾佰仟萬億";
+	private const string NumericMeasureCharacters = "人名位个队军城座村镇日天月年次起件场战门支艘户";
+	private static readonly Dictionary<char, int> ChineseNumeralDigitValues = new Dictionary<char, int>
+	{
+		['零'] = 0, ['〇'] = 0, ['○'] = 0, ['一'] = 1, ['二'] = 2, ['两'] = 2, ['三'] = 3,
+		['四'] = 4, ['五'] = 5, ['六'] = 6, ['七'] = 7, ['八'] = 8, ['九'] = 9,
+		['壹'] = 1, ['贰'] = 2, ['叁'] = 3, ['肆'] = 4, ['伍'] = 5, ['陆'] = 6,
+		['柒'] = 7, ['捌'] = 8, ['玖'] = 9
+	};
+	private static readonly Dictionary<char, long> ChineseNumeralUnitValues = new Dictionary<char, long>
+	{
+		['十'] = 10, ['百'] = 100, ['千'] = 1000, ['万'] = 10000, ['亿'] = 100000000,
+		['兆'] = 1000000000000L, ['拾'] = 10, ['佰'] = 100, ['仟'] = 1000,
+		['萬'] = 10000, ['億'] = 100000000
+	};
+
 	public static bool InvolvesKingdom(WorldBulletinEvent e, string kingdomId)
 	{
 		string id = (kingdomId ?? "").Trim();
@@ -637,6 +654,7 @@ internal static class WorldBulletinPolicy
 		StringBuilder sb = new StringBuilder();
 		sb.AppendLine("你为一个中世纪世界撰写即时快报。只能使用给出的事实与背景，不得添加其中没有的人物、地点、结果或伤亡数字；推测影响时只能用“或将”“恐怕”这类审慎措辞。");
 		sb.AppendLine("以“交易/买卖”“王国决议”等方式移交、写明并非攻城的领地，不得写成攻陷或夺城。不要使用原版默认大陆名，需要指代大范围时只写“大陆”或具体王国名。");
+		sb.AppendLine("标记为出城战的事实只涉及本次出城交战的参战部队：只能写该部队被击退、击败或伤亡，不得扩大为围城军、守军或整支军团覆灭；除非事实明确确认整支军团被消灭，否则禁止写“击败全军”“击溃军团”等结论。");
 		if (majorFactCount > 1)
 		{
 			sb.AppendLine("【大事件】给出的" + majorFactCount + "条事实必须合写成同一篇纪要：以第1条为主线，其余事实写明与主线的关联（同一人所为、同一战事、同一王国的连锁反应）；确实无关时用“与此同时”并入，不得分成几篇，也不得遗漏任何一条。");
@@ -744,6 +762,8 @@ internal static class WorldBulletinPolicy
 		case "battle":
 		case "siege_battle":
 			return "战场急报";
+		case "sally_out_battle":
+			return "出城战报";
 		case "ruler_killed":
 			return "君王陨落";
 		case "lord_killed":

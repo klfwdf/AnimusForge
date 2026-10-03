@@ -133,6 +133,11 @@ internal static class Program
 		Check(user.Contains("1. 甲被玩家处决") && user.Contains("M1. ") && user.Contains("【相关王国现状】"), "user prompt lists facts, context and M1");
 		string sys = WorldBulletinPolicy.BuildSystemPrompt(s.MajorFacts.Count, s.Minors.Count);
 		Check(sys.Contains("合写成同一篇") && sys.Contains("[M1]"), "system prompt asks for merged story and indexed minors");
+		string sallySentence = WorldBulletinCampaignMaterialPolicy.BattleSentence("某城", true, true, "甲军", "瓦兰迪亚", "乙军", "南帝国", 120);
+		string sallyDetail = WorldBulletinCampaignMaterialPolicy.BattleDetail(80, "伤亡10人", 40, "伤亡30人", true, true, "瓦兰迪亚伯爵", true, "南帝国伯爵");
+		Check(sallySentence.Contains("出城战") && sallySentence.Contains("本次参战部队"), "sally-out material labels only the engaged troops");
+		Check(sallyDetail.Contains("仅记录本场交战") && sallyDetail.Contains("不代表围城军或守军整支军团覆灭"), "sally-out detail preserves the force boundary");
+		Check(WorldBulletinPolicy.TitleForKind("sally_out_battle") == "出城战报" && sys.Contains("击败全军"), "sally-out title and anti-exaggeration prompt are explicit");
 		WorldBulletinText template = WorldBulletinPolicy.BuildTemplate(s);
 		Check(template.Major.Contains("甲被玩家处决") && template.Major.Contains("乙被玩家处决"), "template major keeps all merged facts");
 

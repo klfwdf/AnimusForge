@@ -6621,3 +6621,13 @@ R2计划交付门槛：已给固定技术路线、真实来源与目标、写入
 - 定向 `tests/content/BulletinCourierLayoutTests/run.py` 13项PASS；XML内容/命令逆向比对原基线、原生双API滚动绑定、尺寸/链接/图片alpha与局部性验证通过。原内容布局contract valid=1 real=3362 invalid=8 PASS。旧J15总oracle仍FAIL：预修改map与现map均3362，旧预期3361，保留失败证据，不刷新旧oracle。
 - 原 `scripts/build/build_single_module.ps1` Debug无Stage构建1.3/1.4/Bootstrap exit0，见 build-dual.log；构建包含当时并行工作树，不声称隔离产品树或最新全部并行源码通过。之后仅修PNG与离线工具，无C#变动。
 - NOT_RUN：真实Gauntlet滚轮/拖拽/链接点击、游戏不同分辨率及旧档。Pen为静态预览，不证明真实滚动。回滚用本轮产品提交的定向inverse commit，不reset、不回滚并行代码。
+
+<a id="bulletin-image-dialogue-publish-20261003"></a>
+## 快报 / 生图开关 / 喊话 / 新档与原版继续提交（2026-10-03）
+
+- 当前用户授权“提交推送”；Git根`F:/AnimusForge-main`、分支`codex/af-main-refactor-continuation-20260831`，原HEAD`822dfa73`。包含当前14份相关源码/测试和此前两份UI提交；不暂存大量未跟踪临时文件、生成图、模型或测试日志。fetch后main=`1acf1ae6`，双方各2份独有提交，已请求融合确认；确认前仅提交本地，不强推或上传旧分支全部历史。
+- 出城战素材：`MyBehavior.WorldBulletin.cs`的战斗采集与`WorldBulletinCampaignMaterialPolicy.BattleSentence/BattleDetail`区分出城战，仅描述本场参战部队；`WorldBulletinPolicy.BuildSystemPrompt/TitleForKind`补充禁止夸大为全军覆灭的规则和标题。新增3项smoke断言。
+- 生图：`IllustratorSettings`仅保留总开关、自动生图及NPC回复后自动生图等有效MCM入口，两个注入与优先多模态选项不再展示，旧属性保留兼容；`IllustratorRuntime.IsEnabled`以总开关控制类别。`WorldBulletinStateOwner.AdvanceWorldBulletinScope`、面板桥`ShouldPreloadSelection`及`BulletinIllustrationPreloader.Ensure(generateOnCacheMiss)`按当前配置控制提前请求与缓存未命中生成。本次提交不宣称额外的独立提前开关或数量数字转换已完成，旧数字常量不是转换功能验收。
+- 输入/新档：`ShoutBehavior.ResetPassiveStareTracking/UpdatePassiveStareLogic`在喊话按键、蓄力与输入框期间重置被动凝视，既有0.2秒调度保持；`NativeUiAdapter.HitTest:443-468`移除辅助面板整块抢点击；`ModOnboardingBehavior.RegisterEvents/OnNewGameCreated/OnGameLoaded:220-260`分离新档与读档，新档重置setup位及welcome状态，故事模式既有跳过逻辑保留。不改存档键或构建流程。
+- 验证：前轮原`build_single_module.ps1 -Configuration Debug/Release -Stage`两配置各双API(`1.3.15.110062`/`1.4.6.115628`)+Bootstrap以及统一本地Stage均成功，0错误、既有警告保留。本轮快报smoke49项PASS、DialogueOnboardingRegressionTests指定仓库路径93项PASS；首次未传root导致fixture路径解析为`F:/extensions`失败，补参数重跑通过，不改测试绕过。`git diff --check`通过。
+- 性能：出城识别每次战斗结算O(1)；prompt按快报请求构建；开关在请求/面板入口查询，缓存加载复用原任务owner；凝视沿现有0.2秒调度O(1)，无新增全量扫描/反射/空转。实际帧性能、真实Gauntlet/新档/旧档/上游生图NOT_RUN，未部署、未打包。回滚只用本次提交的focused inverse，禁止回滚其他作者或清理整个工作树。
