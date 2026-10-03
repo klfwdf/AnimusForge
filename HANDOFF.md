@@ -1,3 +1,11 @@
+# 最新交付：会面交接锁、对话模式锁与 Pen 布局已编译部署（2026-10-04，DEPLOY_VERIFIED）
+
+- 用户授权“编译部署”；候选 `0218ca82491c0a0fb5b85236b805e1863c82d02d`，包含会面交接锁 `9555ff5c`、处理中禁止切普通模式 `954a1551` 和另一会话完成的 Pen 对话布局 `0218ca82`。未推送、未打包、未启动游戏。
+- 原双版本入口重新编译成功：Bannerlord 1.3 / 1.4 实现各0错误（既有341警告）、Bootstrap 0错误；marker 与 DLL SHA256一致。对话/UI回归134 PASS，会面边界84 PASS；新产物和安装两份 DLL 的交接、模式锁、epoch桥接离线探针均通过。
+- 统一 Stage 3379文件，实际安装更新13个受管文件；安装核对通过，模块版本v1.5.0、`SubModule.xml`仅声明`AnimusForge.Bootstrap.dll`。未受管安装文件2298项保持，原版 DLL 与构建/部署脚本未改。
+- Recovery仅保留本次有效回滚点：`C:/Users/29310/AppData/Local/AnimusForge/Recovery/deploy/deploy-863e5975dda1478cb5959ef9d515f1f6`。历史部署 Recovery、旧 Stage 和明确的部署备份已清理；源码、测试、玩家数据未动。
+- 本地证据：`artifacts/deploy-meeting-mode-pen-20261004/receipt.json`、`verification.log`、`installed-verification.log`、`cleanup-receipt.json`。实机对话、真实AI/TTS、玩家存档仍未验证。
+
 # 当前UI接入：Pen新对话布局（2026-10-04，离线已验证）
 
 - qk678最新1619×326布局已接代码；正文24/输入22/姓名20，五控件按输入框上沿对齐，普通选项全宽345与输入框一致；正文/输入/普通选项滚动条使用原生自动显隐，输入光标跟随保留。
