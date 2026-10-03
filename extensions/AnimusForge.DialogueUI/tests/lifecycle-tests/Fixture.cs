@@ -68,7 +68,7 @@ namespace AnimusForge
 }
 namespace AnimusForge.DialogueUI
 {
-    public static class DialogueUiOptions { public static bool AutoEnterAiMode = true; }
+    public static class DialogueUiOptions { public static bool AutoEnterAiMode = true, AutoEnterAiModeHeroOnly = true; }
     public static class DialogueUiRuntime { public static bool Enabled = true; public static List<string> Logs = new(); public static void Log(string text) => Logs.Add(text); }
     public interface IGauntletMovie { }
     internal static partial class PresentationRouter

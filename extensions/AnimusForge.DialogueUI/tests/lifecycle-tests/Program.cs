@@ -54,17 +54,19 @@ Check(NativeUiAdapter.TryWrap(host, out reloaded) && !ReferenceEquals(vm, reload
 NativeUiAdapter.Closed(host);
 
 foreach (bool enabled in new[] { true, false })
+foreach (bool heroOnly in new[] { true, false })
 {
     DialogueUiOptions.AutoEnterAiMode = enabled;
+    DialogueUiOptions.AutoEnterAiModeHeroOnly = heroOnly;
     foreach (CharacterObject target in new[] { new CharacterObject { IsHero = true }, new CharacterObject { IsHero = false }, null })
     {
         Campaign.Current.ConversationManager.OneToOneConversationCharacter = target;
         int automaticSwitches = 0;
         AnimusForgeNativeConversationOverlayVM next = null;
         next = new(_ => { }, () => { automaticSwitches++; next.SetInputVisible(!next.IsCustomAnswerVisible); }, null, null, null, null);
-        bool expected = enabled && target?.IsHero == true;
+        bool expected = enabled && (!heroOnly || target?.IsHero == true);
         Check(NativeUiAdapter.TryWrap(next, out var nextWrapper), "mode rule wraps current conversation");
-        Check(next.IsCustomAnswerVisible == expected && automaticSwitches == (expected ? 1 : 0), "auto entry requires enabled setting and Hero target");
+        Check(next.IsCustomAnswerVisible == expected && automaticSwitches == (expected ? 1 : 0), "auto entry respects master switch and optional Hero filter");
         Check(NativeUiAdapter.AllowPendingOpening(next) == expected, "queued opening follows current mode, not unrestricted default");
         next.SetInputVisible(false);
         Check(!NativeUiAdapter.AllowPendingOpening(next), "ordinary mode remains ordinary after pending opening");
@@ -75,6 +77,7 @@ foreach (bool enabled in new[] { true, false })
     }
 }
 DialogueUiOptions.AutoEnterAiMode = true;
+DialogueUiOptions.AutoEnterAiModeHeroOnly = true;
 
 Campaign.Current.ConversationManager.IsConversationInProgress = false;
 var harmony = new HarmonyLib.Harmony();
