@@ -7,6 +7,7 @@ using AnimusForge.Illustrator.UI.Patches;
 using AnimusForge.Illustrator.UI.Gallery;
 using TaleWorlds.InputSystem;
 using TaleWorlds.Library;
+using TaleWorlds.Engine.GauntletUI;
 
 static class Program
 {
@@ -59,6 +60,13 @@ static class Program
         Check(guided == 3 && !bulletin.CanRegenerateWithPrompt, "inline guided command respects loading");
         bulletin.OnRegenerateWithPrompt = null; bulletin.IsLoading = false;
         Check(!bulletin.CanRegenerateWithPrompt, "retired inline handler disables button");
+        var bulletinHost = new BulletinHostProbe();
+        bulletinHost.SetEditing(true);
+        Check(!bulletinHost.RootVisible && !bulletinHost.Escape(), "editing hides same-order bulletin and blocks underlying Esc close");
+        bulletinHost.SetEditing(false);
+        Check(bulletinHost.RootVisible && bulletinHost.Escape(), "cancel restores bulletin and original Esc behavior");
+        bulletinHost.Closed = true; bulletinHost.SetEditing(true);
+        Check(bulletinHost.RootVisible, "late editor callback cannot mutate closed bulletin");
 
         string root = args[0];
         foreach (string name in new[] { "EncyclopediaIllustrationOverlay", "ConversationIllustrationOverlay", "ConversationIllustrationFullscreenOverlay", "WeeklyReportIllustrationOverlay" })
@@ -92,7 +100,27 @@ namespace TaleWorlds.Library
     public class InformationMessage { public InformationMessage(string message) { } }
     public static class InformationManager { public static void DisplayMessage(InformationMessage message) { } }
 }
-namespace TaleWorlds.InputSystem { public static class Input { public static void SetClipboardText(string text) { } } }
+namespace TaleWorlds.InputSystem { public enum InputKey { Escape } public static class Input { public static void SetClipboardText(string text) { } public static bool IsKeyReleased(InputKey key) => true; } }
+namespace TaleWorlds.Engine.GauntletUI
+{
+    public class GauntletLayer { public FakeContext UIContext = new(); public FakeInput Input = new(); }
+    public class FakeContext { public FakeRoot Root = new(); }
+    public class FakeRoot { public bool IsVisible = true; }
+    public class FakeInput { public bool IsHotKeyReleased(string key) => true; public bool IsKeyReleased(InputKey key) => true; }
+}
+class BulletinHostProbe
+{
+    class Session { public bool IsClosed, IsSuspended; public bool CanHandleEscape(DateTime time) => true; }
+    Session _session = new();
+    GauntletLayer _layer = new();
+    bool _illustrationPromptEditing;
+    public bool RootVisible => _layer.UIContext.Root.IsVisible;
+    public bool Closed { set => _session.IsClosed = value; }
+    public void SetEditing(bool editing) => SetIllustrationPromptEditing(editing);
+    public bool Escape() => ShouldCloseForEscapeKey();
+    __SET_EDITING__
+    __ESCAPE_GUARD__
+}
 namespace AnimusForge
 {
     public interface IWeeklyIllustrationSink { string SpriteName { get; set; } bool HasIllustration { get; set; } bool IsLoading { get; set; } string StatusText { get; set; } string TitleText { get; set; } string PromptText { get; set; } }

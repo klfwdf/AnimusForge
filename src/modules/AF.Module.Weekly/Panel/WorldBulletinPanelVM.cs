@@ -111,6 +111,8 @@ public sealed class WorldBulletinIllustrationVM : ViewModel, IWeeklyIllustration
 
 	public Action OnRegenerateWithPrompt;
 
+	internal Action<bool> SetPromptEditing;
+
 	public Action OnDelete;
 
 	public Action OnOpenGallery;

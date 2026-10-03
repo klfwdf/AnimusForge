@@ -30,6 +30,8 @@ public sealed class DevWeeklyReportPopup
 
 	private bool _pauseRequestRegistered;
 
+	private bool _illustrationPromptEditing;
+
 	private DevWeeklyReportPopup(ScreenBase screen, string titleText, string subtitleText, string bodyText, Action onClose, string closeText, bool useChronicleColumns, bool useShortReportLayout, bool showCloseButton, double minimumDwellSeconds, Action onMinimumDwellMet)
 	{
 		_screen = screen;
@@ -51,6 +53,14 @@ public sealed class DevWeeklyReportPopup
 		_dataSource = _bulletinPanel;
 		_movieName = "WorldBulletinPanel";
 		_layer = new GauntletLayer("DevWeeklyReportPopup", 4000, false);
+		_bulletinPanel.Illustration.SetPromptEditing = SetIllustrationPromptEditing;
+	}
+
+	private void SetIllustrationPromptEditing(bool editing)
+	{
+		if (_session.IsClosed || _session.IsSuspended) return;
+		_illustrationPromptEditing = editing;
+		if (_layer?.UIContext?.Root != null) _layer.UIContext.Root.IsVisible = !editing;
 	}
 
 	// Separate name from Show so name-based Harmony hooks on Show keep resolving to the weekly-report overload only.
@@ -178,6 +188,7 @@ public sealed class DevWeeklyReportPopup
 
 	private bool ShouldCloseForEscapeKey()
 	{
+		if (_illustrationPromptEditing) return false;
 		if (!_session.CanHandleEscape(DateTime.UtcNow))
 		{
 			return false;

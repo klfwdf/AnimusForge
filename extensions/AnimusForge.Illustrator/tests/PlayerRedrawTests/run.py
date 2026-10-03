@@ -28,11 +28,14 @@ def main():
     weekly = ROOT / "extensions/AnimusForge.Illustrator/src/UI/Patches/WeeklyReportPopupIllustrationPatch.cs"
     host = ROOT / "src/modules/AF.Module.Weekly/Panel/WorldBulletinPanelVM.cs"
     director = ROOT / "extensions/AnimusForge.Illustrator/src/Core/VisualDirectorEngine.cs"
+    popup = ROOT / "src/AF.GameAdapter.Bannerlord/UI/Weekly/DevWeeklyReportPopup.cs"
     fixture = (HERE / "Fixture.cs.in").read_text(encoding="utf-8-sig")
     for token, path, signature in [
         ("__WEEKLY_VM__", weekly, "public sealed class WeeklyReportIllustrationOverlayVM"),
         ("__BULLETIN_VM__", host, "public sealed class WorldBulletinIllustrationVM"),
-        ("__DIRECTOR_GUARD__", director, "internal static void RequirePlayerRedrawDirector(")]:
+        ("__DIRECTOR_GUARD__", director, "internal static void RequirePlayerRedrawDirector("),
+        ("__SET_EDITING__", popup, "private void SetIllustrationPromptEditing("),
+        ("__ESCAPE_GUARD__", popup, "private bool ShouldCloseForEscapeKey()")]:
         fixture = fixture.replace(token, extract.declaration(path.read_text(encoding="utf-8-sig"), signature))
     (output / "Program.cs").write_text(fixture, encoding="utf-8")
     project = ET.Element("Project", Sdk="Microsoft.NET.Sdk")
@@ -49,7 +52,7 @@ def main():
     dotnet = resolve_dotnet(ROOT)
     result = subprocess.run([str(dotnet), "run", "--project", str(output / "RedrawTests.csproj"), "--", str(ROOT)],
         cwd=output, env=minimal_test_environment(dotnet, output), capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=120)
-    log = "".join(str(path.relative_to(ROOT)) + " sha256=" + hashlib.sha256(path.read_bytes()).hexdigest() + "\n" for path in (card, editor, weekly, host, director))
+    log = "".join(str(path.relative_to(ROOT)) + " sha256=" + hashlib.sha256(path.read_bytes()).hexdigest() + "\n" for path in (card, editor, weekly, host, director, popup))
     log += result.stdout + result.stderr
     (output / "run.log").write_text(log, encoding="utf-8")
     print(str(output))
