@@ -940,7 +940,7 @@ namespace AnimusForge.XihaiAction
             }
         }
 
-        private static bool TryCaptureReplyPromptSnapshot(
+        internal static bool TryCaptureReplyPromptSnapshot(
             string npcName,
             out BattleSpeechReplyPromptSnapshotV2 snapshot)
         {

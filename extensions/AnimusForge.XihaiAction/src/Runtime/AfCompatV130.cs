@@ -889,6 +889,16 @@ namespace AnimusForge.XihaiAction
                            mission,
                            speaker.Index))
                 {
+                    // AF now awaits asynchronous preprocessing before composing the
+                    // reply prompt. Freeze the request's claim BEFORE entering AF;
+                    // its child execution context keeps this snapshot across awaits.
+                    if (!BattleSpeechRuntimeHost.TryCaptureReplyPromptSnapshot(
+                            speaker.Name,
+                            out BattleSpeechReplyPromptSnapshotV2 promptSnapshot))
+                    {
+                        error = "Dedicated NPC speech session could not claim its prompt.";
+                        return false;
+                    }
                     object rawTask = _passiveNpcResponseMethod.Invoke(
                         behavior,
                         new object[]
@@ -904,12 +914,6 @@ namespace AnimusForge.XihaiAction
                     if (responseTask == null)
                     {
                         error = "AF returned an unexpected NPC speech task.";
-                        return false;
-                    }
-                    if (!BattleSpeechRuntimeHost.TryGetActiveReplyPromptSnapshot(
-                            out BattleSpeechReplyPromptSnapshotV2 promptSnapshot))
-                    {
-                        error = "Dedicated NPC speech prompt was not claimed by the speech scope.";
                         return false;
                     }
                     request = new DedicatedNpcSpeechSnapshotV1

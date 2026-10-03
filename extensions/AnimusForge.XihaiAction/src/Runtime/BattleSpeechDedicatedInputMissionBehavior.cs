@@ -50,6 +50,7 @@ namespace AnimusForge.XihaiAction
                     "BATTLE_SPEECH_INPUT",
                     "Dedicated NPC speech request failed closed before AF network wait. Session=" +
                     sessionId.ToString("N") + " Reason=" + (requestError ?? "unknown"));
+                CancelActive("NPC speech request could not start: " + (requestError ?? "unknown"));
                 return;
             }
 
