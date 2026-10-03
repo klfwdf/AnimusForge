@@ -109,6 +109,8 @@ public sealed class WorldBulletinIllustrationVM : ViewModel, IWeeklyIllustration
 
 	public Action OnRegenerate;
 
+	public Action OnRegenerateWithPrompt;
+
 	public Action OnDelete;
 
 	public Action OnOpenGallery;
@@ -179,10 +181,14 @@ public sealed class WorldBulletinIllustrationVM : ViewModel, IWeeklyIllustration
 	[DataSourceProperty]
 	public bool CanRegenerate => !_isLoading && OnRegenerate != null;
 
+	[DataSourceProperty]
+	public bool CanRegenerateWithPrompt => !_isLoading && OnRegenerateWithPrompt != null;
+
 	private void RefreshDerived()
 	{
 		OnPropertyChangedWithValue(ShowPlaceholder, nameof(ShowPlaceholder));
 		OnPropertyChangedWithValue(CanRegenerate, nameof(CanRegenerate));
+		OnPropertyChangedWithValue(CanRegenerateWithPrompt, nameof(CanRegenerateWithPrompt));
 	}
 
 	public void NotifyHandlersChanged()
@@ -208,6 +214,11 @@ public sealed class WorldBulletinIllustrationVM : ViewModel, IWeeklyIllustration
 			return;
 		}
 		ShowPrompt = !ShowPrompt;
+	}
+
+	public void ExecuteRegenerateWithPrompt()
+	{
+		if (CanRegenerateWithPrompt) OnRegenerateWithPrompt.Invoke();
 	}
 
 	public void ExecuteCopyPrompt()

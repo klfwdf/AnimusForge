@@ -1,0 +1,125 @@
+using System.Xml.Linq;
+using AnimusForge;
+using AnimusForge.Illustrator;
+using AnimusForge.Illustrator.Core;
+using AnimusForge.Illustrator.UI.Overlays;
+using AnimusForge.Illustrator.UI.Patches;
+using AnimusForge.Illustrator.UI.Gallery;
+using TaleWorlds.InputSystem;
+using TaleWorlds.Library;
+
+static class Program
+{
+    static int checks;
+    static void Check(bool condition, string label) { checks++; if (!condition) throw new Exception("FAIL " + label); }
+    static void Main(string[] args)
+    {
+        bool current = true, editing = false;
+        int redraws = 0;
+        string received = null, status = "";
+        Action show = () => IllustrationRedrawPromptEditor.Show("draft", () => current,
+            p => { received = p; redraws++; }, s => status = s, e => editing = e);
+        show(); Check(editing && DevTextEditorHelper.Initial == "draft", "opening hides upper controls and preserves draft");
+        DevTextEditorHelper.Cancel(); Check(!editing && redraws == 0, "cancel restores controls without generation");
+        DevTextEditorHelper.Save("after cancel"); Check(redraws == 0, "late save after cancel cannot generate");
+        show(); DevTextEditorHelper.Save(" \n "); Check(!editing && redraws == 0 && status.Contains("未开始"), "empty prompt never generates");
+        show(); DevTextEditorHelper.Save("  第一行\n第二行  ");
+        Check(received == "第一行\n第二行" && redraws == 1 && !editing, "submit carries trimmed multiline prompt once");
+        DevTextEditorHelper.Save("duplicate"); Check(redraws == 1, "duplicate confirm cannot generate twice");
+        show(); current = false; DevTextEditorHelper.Save("stale");
+        Check(!editing && redraws == 1, "owner/subject/session change retires editor submission");
+        current = true;
+        show(); IllustratorRuntime.Options.EnableLlmPromptExpansion = false; DevTextEditorHelper.Save("disabled after opening");
+        Check(!editing && redraws == 1 && status.Contains("导演"), "director changed while editing stops before redraw");
+        int opens = DevTextEditorHelper.Opens;
+        show(); Check(DevTextEditorHelper.Opens == opens && !editing, "disabled director does not even open editor");
+        IllustratorRuntime.Options.EnableLlmPromptExpansion = true;
+        IllustratorRuntime.Options.DirectorApiBaseUrl = "";
+        show(); Check(DevTextEditorHelper.Opens == opens && redraws == 1, "unconfigured director cannot generate");
+        IllustratorRuntime.Options.DirectorApiBaseUrl = "offline";
+        DevTextEditorHelper.Throw = true;
+        show(); Check(!editing && status.Contains("失败"), "editor failure restores upper controls");
+        DevTextEditorHelper.Throw = false;
+        current = false;
+        show(); Check(DevTextEditorHelper.Opens == opens && redraws == 1, "stale owner cannot open editor");
+
+        int normal = 0, guided = 0;
+        var card = new IllustrationCardVM(null, () => normal++, null, () => guided++);
+        Check(card.CanRegenerateWithPrompt, "card exposes guided button capability");
+        card.ExecuteRegenerateWithPrompt(); card.ExecuteRegenerate();
+        Check(guided == 1 && normal == 1, "normal and guided redraw invoke separate callbacks");
+        card.SetLoading("busy"); card.ExecuteRegenerateWithPrompt(); card.ExecuteRegenerate();
+        Check(!card.CanRegenerateWithPrompt && normal == 1 && guided == 1, "loading blocks both card actions");
+        Check(!new IllustrationCardVM(null, null).CanRegenerateWithPrompt, "unwired card cannot show active guided command");
+        var weekly = new WeeklyReportIllustrationOverlayVM("title", () => normal++, () => guided++);
+        weekly.ExecuteRegenerateWithPrompt(); weekly.IsLoading = true; weekly.ExecuteRegenerateWithPrompt();
+        Check(guided == 2 && !weekly.CanRegenerateWithPrompt, "weekly guided command respects loading");
+        var bulletin = new WorldBulletinIllustrationVM { OnRegenerateWithPrompt = () => guided++ };
+        bulletin.ExecuteRegenerateWithPrompt(); bulletin.IsLoading = true; bulletin.ExecuteRegenerateWithPrompt();
+        Check(guided == 3 && !bulletin.CanRegenerateWithPrompt, "inline guided command respects loading");
+        bulletin.OnRegenerateWithPrompt = null; bulletin.IsLoading = false;
+        Check(!bulletin.CanRegenerateWithPrompt, "retired inline handler disables button");
+
+        string root = args[0];
+        foreach (string name in new[] { "EncyclopediaIllustrationOverlay", "ConversationIllustrationOverlay", "ConversationIllustrationFullscreenOverlay", "WeeklyReportIllustrationOverlay" })
+        {
+            var doc = XDocument.Load(Path.Combine(root, "extensions/AnimusForge.Illustrator/GUI/Prefabs", name + ".xml"));
+            var button = doc.Descendants("ButtonWidget").Single(x => (string)x.Attribute("Command.Click") == "ExecuteRegenerateWithPrompt");
+            var label = button.Descendants("TextWidget").Single();
+            Check((string)label.Attribute("Text") == "重绘（带提示词）" && (string)label.Attribute("DoNotAcceptEvents") == "true" &&
+                (string)button.Attribute("IsEnabled") == "@CanRegenerateWithPrompt", name + " wires real guided command and loading guard");
+            Check((int)button.Attribute("SuggestedWidth") >= 8 * (int)label.Attribute("Brush.FontSize") + 12, name + " label has stable width and padding");
+            var panel = doc.Descendants().FirstOrDefault(x => (string)x.Attribute("Id") == "CardPanel");
+            if (panel != null)
+            {
+                var row = button.Parent.Elements("ButtonWidget");
+                Check(row.Sum(x => (int)x.Attribute("SuggestedWidth") + ((int?)x.Attribute("MarginRight") ?? 0)) <= (int)panel.Attribute("SuggestedWidth") - 10,
+                    name + " entire toolbar fits card width");
+            }
+        }
+        var inline = XDocument.Load(Path.Combine(root, "content/modules/AF.Module.Weekly/GUI/Prefabs/WorldBulletinPanel.xml"));
+        var guidedButton = inline.Descendants("ButtonWidget").Single(x => (string)x.Attribute("Command.Click") == "ExecuteRegenerateWithPrompt");
+        Check(guidedButton.Descendants("TextWidget").Single().Attribute("Text").Value == "重绘（带提示词）", "inline bulletin uses same command label");
+        var caption = inline.Descendants("TextWidget").Single(x => (string)x.Attribute("Text") == "@CaptionText");
+        Check((int)guidedButton.Parent.Parent.Attribute("MarginTop") >= (int)caption.Attribute("MarginTop") + (int)caption.Attribute("SuggestedHeight"), "inline controls no longer overlap long caption");
+        Console.WriteLine($"PASS: {checks} production editor/VM and XML assertions; engine, editor UI and geometry are doubles, not live-game acceptance.");
+    }
+}
+namespace TaleWorlds.Library
+{
+    [AttributeUsage(AttributeTargets.Property)] public class DataSourcePropertyAttribute : Attribute { }
+    public class ViewModel { public void OnPropertyChanged(string name) { } public void OnPropertyChangedWithValue<T>(T value, string name) { } }
+    public class InformationMessage { public InformationMessage(string message) { } }
+    public static class InformationManager { public static void DisplayMessage(InformationMessage message) { } }
+}
+namespace TaleWorlds.InputSystem { public static class Input { public static void SetClipboardText(string text) { } } }
+namespace AnimusForge
+{
+    public interface IWeeklyIllustrationSink { string SpriteName { get; set; } bool HasIllustration { get; set; } bool IsLoading { get; set; } string StatusText { get; set; } string TitleText { get; set; } string PromptText { get; set; } }
+    public static class Logger { public static void Log(string category, string message) { } }
+    public static class DevTextEditorHelper
+    {
+        public static string Initial;
+        public static int Opens;
+        public static bool Throw;
+        public static Action<string> Save;
+        public static Action Cancel;
+        public static void ShowLongTextEditor(string title, string subtitle, string hint, string initial, Action<string> save, Action cancel, string saveText, string cancelText)
+        { if (Throw) throw new Exception("fixture"); Initial = initial; Opens++; Save = save; Cancel = cancel; }
+    }
+    __BULLETIN_VM__
+}
+namespace AnimusForge.Illustrator.UI.Gallery { public static class IllustratorGalleryPopup { public static void Show(string key = null) { } } }
+namespace AnimusForge.Illustrator.UI.Patches
+{
+    public static class WeeklyReportPopupIllustrationPatch { public static void CloseOverlay() { } }
+    __WEEKLY_VM__
+}
+namespace AnimusForge.Illustrator.Core
+{
+    using Newtonsoft.Json.Linq;
+    public class IllustrationOptions { public bool EnableLlmPromptExpansion = true; public string DirectorApiBaseUrl = "offline"; }
+    public class GenerationDiagnostics { public static GenerationDiagnostics Current; public void RecordStage(string stage, JObject details) { } }
+    public static class VisualDirectorEngine { __DIRECTOR_GUARD__ }
+}
+namespace AnimusForge.Illustrator { public static class IllustratorRuntime { public static IllustrationOptions Options = new(); public static IllustrationOptions CaptureOptions() => Options; } }

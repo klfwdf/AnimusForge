@@ -24,6 +24,7 @@ namespace AnimusForge.Illustrator.Core
         public string ArtDirection { get; }
         /// <summary>只给导演看的事实（如台词原文/对话历史）——不进最终生图提示词，避免被画成画面文字。</summary>
         public string DirectorOnlyFacts { get; }
+        public string PlayerRedrawPrompt { get; }
 
         public IllustrationPromptPlan(string mode, string hardFacts, string artDirection)
             : this(mode, hardFacts, artDirection, null)
@@ -31,11 +32,17 @@ namespace AnimusForge.Illustrator.Core
         }
 
         public IllustrationPromptPlan(string mode, string hardFacts, string artDirection, string directorOnlyFacts)
+            : this(mode, hardFacts, artDirection, directorOnlyFacts, null)
+        {
+        }
+
+        public IllustrationPromptPlan(string mode, string hardFacts, string artDirection, string directorOnlyFacts, string playerRedrawPrompt)
         {
             Mode = (mode ?? string.Empty).Trim();
             HardFacts = (hardFacts ?? string.Empty).Trim();
             ArtDirection = (artDirection ?? string.Empty).Trim();
             DirectorOnlyFacts = (directorOnlyFacts ?? string.Empty).Trim();
+            PlayerRedrawPrompt = (playerRedrawPrompt ?? string.Empty).Trim();
         }
 
         public string BuildDirectorContext()
@@ -56,6 +63,12 @@ namespace AnimusForge.Illustrator.Core
                 sb.AppendLine("<open_art_direction>");
                 sb.AppendLine(ArtDirection);
                 sb.AppendLine("</open_art_direction>");
+            }
+            if (!string.IsNullOrWhiteSpace(PlayerRedrawPrompt))
+            {
+                sb.AppendLine("【玩家本次重绘要求·仅供导演】");
+                sb.AppendLine(PlayerRedrawPrompt);
+                sb.AppendLine("将本次要求落实为确定的动作、构图与视觉描述，不复述原始提示词或把它画成文字。要求不是已发生事实，不覆盖人物身份、装备、真实场景及事件结果；遵守本模式创作边界和原定输出格式。");
             }
             return sb.ToString().TrimEnd();
         }
@@ -165,7 +178,9 @@ namespace AnimusForge.Illustrator.Core
         {
             plan = plan ?? new IllustrationPromptPlan("通用插画", string.Empty, string.Empty);
             GenerationDiagnostics.Current?.RecordStage("prompt_sources", new JObject { ["mode"] = plan.Mode, ["hardFactChars"] = plan.HardFacts.Length, ["artDirectionChars"] = plan.ArtDirection.Length, ["directorOnlyFactChars"] = plan.DirectorOnlyFacts.Length, ["directorRuleSource"] = "visual director system prompt + illustration facts/style; no direct RuleBehaviorPrompts", ["dialogueRulesIndirect"] = plan.IsConversation, ["style"] = options?.SelectedStyle, ["customDirectorRuleChars"] = options?.CustomDirectorPrompt?.Length ?? 0,
-                ["customDirectorRulesActive"] = options?.EnableLlmPromptExpansion == true && !string.IsNullOrWhiteSpace(options.DirectorApiBaseUrl) && !string.IsNullOrWhiteSpace(options.CustomDirectorPrompt) });
+                ["customDirectorRulesActive"] = options?.EnableLlmPromptExpansion == true && !string.IsNullOrWhiteSpace(options.DirectorApiBaseUrl) && !string.IsNullOrWhiteSpace(options.CustomDirectorPrompt),
+                ["playerRedrawPromptChars"] = plan.PlayerRedrawPrompt.Length });
+            RequirePlayerRedrawDirector(plan.PlayerRedrawPrompt, options);
             if (options != null && !options.EnableMultimodalVision)
             {
                 referenceImages = null;
@@ -247,6 +262,14 @@ namespace AnimusForge.Illustrator.Core
             TaleWorlds.Library.Debug.Print($"[VisualDirector] {direction.StatusText}; status={direction.DirectionStatus}, finish_reason={direction.FinishReason}, reason={direction.FallbackReason}, tokens={direction.TotalTokens}; prompt={direction.Prompt.Length} chars.");
             GenerationDiagnostics.Current?.RecordDirection(direction);
             return direction;
+        }
+
+        internal static void RequirePlayerRedrawDirector(string playerRedrawPrompt, IllustrationOptions options)
+        {
+            if (string.IsNullOrWhiteSpace(playerRedrawPrompt) ||
+                (options?.EnableLlmPromptExpansion == true && !string.IsNullOrWhiteSpace(options.DirectorApiBaseUrl))) return;
+            GenerationDiagnostics.Current?.RecordStage("director_failed", new JObject { ["failureCode"] = "director.player_redraw_unavailable" });
+            throw new InvalidOperationException("导演未启用或接口未配置，未开始带提示词重绘。");
         }
 
         private static void ApplyResponseMetadata(IllustrationDirection direction, DirectorResponse reply)

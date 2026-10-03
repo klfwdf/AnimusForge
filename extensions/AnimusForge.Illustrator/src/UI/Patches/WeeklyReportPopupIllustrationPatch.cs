@@ -29,11 +29,18 @@ namespace AnimusForge.Illustrator.UI.Patches
         private string _promptText = string.Empty;
         private bool _showPrompt;
         private readonly Action _onRegenerate;
+        private readonly Action _onRegenerateWithPrompt;
 
         public WeeklyReportIllustrationOverlayVM(string title, Action onRegenerate)
+            : this(title, onRegenerate, null)
+        {
+        }
+
+        public WeeklyReportIllustrationOverlayVM(string title, Action onRegenerate, Action onRegenerateWithPrompt)
         {
             _titleText = title ?? "帝国纪事油画";
             _onRegenerate = onRegenerate;
+            _onRegenerateWithPrompt = onRegenerateWithPrompt;
         }
 
         [DataSourceProperty]
@@ -74,6 +81,7 @@ namespace AnimusForge.Illustrator.UI.Patches
                 {
                     _isLoading = value;
                     OnPropertyChangedWithValue(value, nameof(IsLoading));
+                    OnPropertyChanged(nameof(CanRegenerateWithPrompt));
                 }
             }
         }
@@ -145,6 +153,14 @@ namespace AnimusForge.Illustrator.UI.Patches
             ShowPrompt = !ShowPrompt;
         }
 
+        [DataSourceProperty]
+        public bool CanRegenerateWithPrompt => !IsLoading && _onRegenerateWithPrompt != null;
+
+        public void ExecuteRegenerateWithPrompt()
+        {
+            if (CanRegenerateWithPrompt) _onRegenerateWithPrompt.Invoke();
+        }
+
         public void ExecuteCopyPrompt()
         {
             if (string.IsNullOrWhiteSpace(PromptText)) return;
@@ -183,6 +199,8 @@ namespace AnimusForge.Illustrator.UI.Patches
         private static WeeklyReportVisualContext _currentContext;
         private static IllustrationScope _scope;
         private static ScreenBase _ownerScreen;
+        private static string _playerRedrawDraft = string.Empty;
+        private static bool _editingRedrawPrompt;
         private static string _activeSpriteName;
         private static bool _closing;
         private static int _redrawCount;
@@ -277,7 +295,7 @@ namespace AnimusForge.Illustrator.UI.Patches
             _redrawCount = 0;
             Debug.Print($"[Illustrator] Weekly report popup opened: '{title}' context={(_currentContext != null)}");
 
-            _overlayVm = new WeeklyReportIllustrationOverlayVM(title, TriggerRegenerate);
+            _overlayVm = new WeeklyReportIllustrationOverlayVM(title, TriggerRegenerate, OpenRedrawPromptEditor);
             _sink = _overlayVm;
             var layer = new MovableGauntletLayer("WeeklyReportIllustrationOverlay", 4010, false);
             _overlayLayer = layer;
@@ -317,6 +335,7 @@ namespace AnimusForge.Illustrator.UI.Patches
                 slot.TitleText = title ?? "";
                 slot.StatusText = "正在为本期快报绘制新插画...";
                 slot.OnRegenerate = TriggerRegenerate;
+                slot.OnRegenerateWithPrompt = () => { if (ReferenceEquals(ownerScope, _scope)) OpenRedrawPromptEditor(); };
                 slot.OnOpenGallery = () => IllustratorGalleryPopup.Show();
                 slot.OnDelete = DeleteCurrentBulletinIllustration;
                 slot.IsAvailable = true;
@@ -440,11 +459,35 @@ namespace AnimusForge.Illustrator.UI.Patches
 
         private static void TriggerRegenerate()
         {
-            try { TriggerRegenerateCore(); }
+            TriggerRegenerate(null);
+        }
+
+        private static void TriggerRegenerate(string playerRedrawPrompt)
+        {
+            try { TriggerRegenerateCore(playerRedrawPrompt); }
             catch (Exception ex)
             {
                 if (_sink != null) { _sink.IsLoading = false; _sink.StatusText = "生成准备失败：" + ex.Message; }
             }
+        }
+
+        private static void OpenRedrawPromptEditor()
+        {
+            if (_editingRedrawPrompt || _scope == null || _sink == null) return;
+            var owner = _scope;
+            var sink = _sink;
+            var context = _currentContext;
+            IllustrationRedrawPromptEditor.Show(_playerRedrawDraft,
+                () => ReferenceEquals(owner, _scope) && owner.IsCurrent && ReferenceEquals(sink, _sink) &&
+                    ReferenceEquals(context, _currentContext) && context != null && !sink.IsLoading,
+                prompt => { _playerRedrawDraft = prompt; TriggerRegenerate(prompt); },
+                status => sink.StatusText = status,
+                editing =>
+                {
+                    if (!ReferenceEquals(owner, _scope)) return;
+                    _editingRedrawPrompt = editing;
+                    if (_overlayLayer?.UIContext?.Root != null) _overlayLayer.UIContext.Root.IsVisible = !editing;
+                });
         }
 
         private static IllustrationScope _joinedGeneration;
@@ -480,13 +523,13 @@ namespace AnimusForge.Illustrator.UI.Patches
             internal string Prompt;
         }
 
-        private static void TriggerRegenerateCore()
+        private static void TriggerRegenerateCore(string playerRedrawPrompt = null)
         {
             if (_sink == null || _currentContext == null || _scope == null) return;
             if (_bulletinSlot != null)
             {
                 _sink.HasIllustration = false;
-                BulletinIllustrationPreloader.Ensure(_currentEventKey, _currentContext, true);
+                BulletinIllustrationPreloader.Ensure(_currentEventKey, _currentContext, true, playerRedrawPrompt: playerRedrawPrompt);
                 RefreshPreparedBulletin(_currentEventKey, null);
                 return;
             }
@@ -503,12 +546,12 @@ namespace AnimusForge.Illustrator.UI.Patches
                         _sink.StatusText = result.Saved?.DisplayStatusText ?? "本周纪事已绘制完成";
                     else { _sink.IsLoading = false; _sink.StatusText = "绘制未成功：" + result.Result?.ErrorMessage; }
                 }, error => { if (ReferenceEquals(owner, _scope) && _sink != null) { _sink.IsLoading = false; _sink.StatusText = error; } },
-                status => { if (ReferenceEquals(owner, _scope) && _sink != null) _sink.StatusText = status; });
+                status => { if (ReferenceEquals(owner, _scope) && _sink != null) _sink.StatusText = status; }, playerRedrawPrompt);
         }
 
         // One shared generation pipeline for the weekly popup and campaign-owned bulletin jobs.
         internal static bool StartGeneration(IllustrationScope generationScope, WeeklyReportVisualContext context,
-            string eventKey, bool bulletin, int redrawCount, Action<GenerationResult> complete, Action<string> fail, Action<string> status)
+            string eventKey, bool bulletin, int redrawCount, Action<GenerationResult> complete, Action<string> fail, Action<string> status, string playerRedrawPrompt = null)
         {
             string artDirection = context.BuildArtDirection();
             string variation = GenerateWeeklyVariation();
@@ -517,6 +560,7 @@ namespace AnimusForge.Illustrator.UI.Patches
             string hardFacts = context.BuildHardFacts();
             string directorFacts = context.BuildDirectorOnlyFacts();
             var options = IllustratorRuntime.CaptureOptions();
+            VisualDirectorEngine.RequirePlayerRedrawDirector(playerRedrawPrompt, options);
             if (bulletin)
             {
                 options = options?.WithSceneImageSize();
@@ -542,7 +586,7 @@ namespace AnimusForge.Illustrator.UI.Patches
                 catch (Exception ex) { Debug.Print("[Illustrator] Weekly action history read failed: " + ex.Message); }
                 string workerArtDirection = artDirection;
                 if (!string.IsNullOrWhiteSpace(actionHistory)) workerArtDirection += "\n" + actionHistory;
-                var promptPlan = new IllustrationPromptPlan("周报历史纪事插画", hardFacts, workerArtDirection, directorFacts);
+                var promptPlan = new IllustrationPromptPlan("周报历史纪事插画", hardFacts, workerArtDirection, directorFacts, playerRedrawPrompt);
                 var refs = new List<IllustrationReferenceImage>();
                 var banners = new HashSet<string>(StringComparer.Ordinal);
                 // Sequential native stages keep GPU work bounded. No per-frame scan or parallel tableau allocation.
@@ -660,6 +704,9 @@ namespace AnimusForge.Illustrator.UI.Patches
             }
             finally
             {
+                if (_bulletinSlot != null) _bulletinSlot.OnRegenerateWithPrompt = null;
+                _playerRedrawDraft = string.Empty;
+                _editingRedrawPrompt = false;
                 _overlayLayer = null;
                 _overlayVm = null;
                 _sink = null;
