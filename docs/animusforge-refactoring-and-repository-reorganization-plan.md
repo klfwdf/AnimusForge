@@ -6829,3 +6829,12 @@ R2计划交付门槛：已给固定技术路线、真实来源与目标、写入
 - 最终3379份Stage文件SHA256逐份与安装目录相同，全部2293非受管文件hash/长度/mtime保持，包含ONNX模型和原安装玩家文件；游戏bin的TaleWorlds.CampaignSystem/Core/MountAndBlade三DLL hash保持。安装XML仅声明Bootstrap；源码HEAD/已跟踪状态在构建、部署、核验结束时保持同候选。
 - Recovery为`C:/Users/29310/AppData/Local/AnimusForge/Recovery/deploy/deploy-5fd5f1fc9a204cc697c26fd706de7624`，complete存在，manifest内旧文件备份SHA256全匹配oldSha256、安装新文件全匹配newSha256；恢复必须按该manifest定向处理，不覆盖玩家文件或硬重置源码。
 - 本地证据`artifacts/deploy-main-20261003-173232/`：build-stage.log、before.json、deploy.log、receipt.json和before-stage；记录状态DEPLOY_VERIFIED。未启动游戏/真实Gauntlet/新档与旧档/LLM或生图provider/帧性能，未新ZIP、未再次push。交接记录仅本地提交，不把安装文件一致性升级为实机验收；上轮完整Debug/Release构建与相关回归证据仍见fusion条目。
+<a id="sceneactions-epoch-bridge-fix-20261004"></a>
+# 当前修复：SceneActions / 阵前演讲会话轮次桥接（2026-10-04，ACTIVE）
+
+- 用户授权本地修复；基线 `320baed84f0ea668c7c75c482223a97e22902cd4`，当前分支 `codex/af-main-refactor-continuation-20260831`。不延续历史推送 / 部署 / 打包授权。
+- 已读取游戏日志，已部署 1.3 / 1.4 DLL 的实际 `AfCompatV130.TryInstall` 都返回 `conversation epoch field is missing`：`ShoutBehavior._sceneConversationEpoch` 已是转发属性，旧桥接只接受字段。
+- 范围：修兼容读取并统一四处 epoch 消费者，安装时缓存 / 卸载清理；不回退真实 session owner、不改动作语法 / 同意规则 / MCM / 三渠道提示词 / 存档 / 一键流程。
+- 完成条件：真实字段 / 转发属性 / 非法成员读取契约、真实新两DLL安装与卸载和监听归属、原核心回归及原入口双API + Bootstrap构建。实机 AI / TTS / 站位 / 动作效果另验。
+- 用户反馈自然语言动作似乎正常；本包只认定所审查 DLL 的集成启动断点，不把所有时段 / 渠道 / 其他机制的动作一概判为失效。修后保留这一验证边界。
+
