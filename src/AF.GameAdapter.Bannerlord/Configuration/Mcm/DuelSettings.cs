@@ -2092,15 +2092,15 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 	[SettingPropertyGroup("16. 政策系统", GroupOrder = 0)]
 	public Action ManagePolicyEffectModules { get; set; }
 
-	[SettingPropertyButton("繁荣／户数／民兵上限及粮仓容量", -1, true, "", Content = "调整上限与容量", Order = 4, RequireRestart = false, HintText = "打开独立窗口，分别设置城市／城堡繁荣度、村庄户数、城市／城堡／村庄民兵人数，以及城市／城堡共用粮仓容量。适用于玩家和 NPC 的所有定居点，不要求先发布政策。\n限制的是总量，不是每日增益。每日按原版＋政策的净变化结算：正数最多加到上限，零或负数不受限制。例：上限 10000，9999＋100只到10000；已有12000不削减，正增长暂停，负增长正常。\n默认仅粮仓容量开启，城市和城堡最终容量均为1000，不叠加城堡或建筑加成；其余六项默认关闭。繁荣度耗粮始终取消，不受这些开关影响。\n各项可单独开关，支持整数滑条和数值输入。保存后生效；取消或 Esc 丢弃修改；恢复默认后需保存。")]
+	[SettingPropertyButton("政策相关数值上限调整", -1, true, "", Content = "调整上限与容量", Order = 4, RequireRestart = false, HintText = "打开独立窗口，分别设置城市／城堡繁荣度、村庄户数、城市／城堡／村庄民兵人数，以及城市／城堡共用粮仓容量。适用于玩家和 NPC 的所有定居点，不要求先发布政策。\n限制的是总量，不是每日增益。每日按原版＋政策的净变化结算：正数最多加到上限，零或负数不受限制。例：上限 10000，9999＋100只到10000；已有12000不削减，正增长暂停，负增长正常。\n默认仅粮仓容量开启，城市和城堡最终容量均为1000，不叠加城堡或建筑加成；其余六项默认关闭。繁荣度耗粮始终取消，不受这些开关影响。\n各项可单独开关，支持整数滑条和数值输入。保存后生效；取消或 Esc 丢弃修改；恢复默认后需保存。")]
 	[SettingPropertyGroup("16. 政策系统", GroupOrder = 0)]
 	public Action EditSettlementBalance { get; set; }
 
-	[SettingPropertyInteger("AI参考本国最新政策条数", 0, 10, "0", Order = 2, RequireRestart = false, HintText = "玩家政策评议和 NPC 新政策生成时，AI 最多参考多少条本国最新的现行政策。按新到旧读取，不区分玩家或 NPC 发布，默认2条。用于判断重复、冲突和延续，不是可生效政策的数量上限，也不改变已有政策效果。0只关闭这组参考，政策不足不补位；不影响普通对话。")]
+	[SettingPropertyInteger("AI评议参考本国最新政策条数", 0, 10, "0", Order = 2, RequireRestart = false, HintText = "玩家政策评议和 NPC 新政策生成时，AI 最多参考多少条本国最新的现行政策。按新到旧读取，不区分玩家或 NPC 发布，默认2条。用于判断重复、冲突和延续，不是可生效政策的数量上限，也不改变已有政策效果。0只关闭这组参考，政策不足不补位；不影响普通对话。")]
 	[SettingPropertyGroup("16. 政策系统", GroupOrder = 0)]
 	public int PolicyRecentActiveCount { get; set; } = 2;
 
-	[SettingPropertyInteger("AI参考全球相关政策条数", 0, 10, "0", Order = 3, RequireRestart = false, HintText = "在上面的本国最新政策之外，玩家政策评议和 NPC 新政策生成时，AI 最多额外参考多少条与当前政策内容相关的现行政策。候选来自所有国家（含本国），排除上面已选的政策，按相关度选取，默认3条，不设最低相似度门槛。两组默认最多参考2＋3＝5条，但不是可生效政策的数量上限。0只关闭这组参考，候选不足不凑数；不影响普通对话或已有政策效果。")]
+	[SettingPropertyInteger("AI评议参考世界相关政策条数", 0, 10, "0", Order = 3, RequireRestart = false, HintText = "在上面的本国最新政策之外，玩家政策评议和 NPC 新政策生成时，AI 最多额外参考多少条与当前政策内容相关的现行政策。候选来自所有国家（含本国），排除上面已选的政策，按相关度选取，默认3条，不设最低相似度门槛。两组默认最多参考2＋3＝5条，但不是可生效政策的数量上限。0只关闭这组参考，候选不足不凑数；不影响普通对话或已有政策效果。")]
 	[SettingPropertyGroup("16. 政策系统", GroupOrder = 0)]
 	public int PolicyRelatedActiveCount { get; set; } = 3;
 

@@ -62,7 +62,7 @@ internal static class Program
         int saves = 0, cancels = 0;
         var vm = new SettlementBalanceEditorVM(settings, () => saves++, () => cancels++);
         Check(vm.Rows.Count == 7, "seven editor rows");
-        Check(vm.TitleText == "繁荣／户数／民兵上限及粮仓容量", "editor title names the adjustable values");
+        Check(vm.TitleText == "政策相关数值上限调整", "editor title matches requested policy settings label");
         Check(vm.DescriptionText.Contains("原版＋政策的净变化") && vm.DescriptionText.Contains("负数照常扣除") && vm.DescriptionText.Contains("超额旧存量不削减"), "editor explains net settlement and existing stocks");
         Check(vm.FoodRuleText.Contains("玩家和 NPC") && vm.FoodRuleText.Contains("默认仅开启") && vm.FoodRuleText.Contains("1000") && vm.FoodRuleText.Contains("其余六项默认关闭") && vm.FoodRuleText.Contains("不叠加城堡、建筑加成"), "editor explains scope, defaults and final capacity");
         Check(vm.FoodRuleText.Contains("繁荣度耗粮始终取消") && vm.FoodRuleText.Contains("不受这些开关影响"), "editor separates prosperity food rule from optional caps");
@@ -324,8 +324,8 @@ internal static class Program
     private static void PopupBindingTests(string root)
     {
         string mcm = File.ReadAllText(Path.Combine(root, "src/AF.GameAdapter.Bannerlord/Configuration/Mcm/DuelSettings.cs"));
-        Check(mcm.Contains("SettingPropertyButton(\"繁荣／户数／民兵上限及粮仓容量\"") && mcm.Contains("Content = \"调整上限与容量\""), "MCM button names the adjustable values");
-        Check(mcm.Contains("SettingPropertyInteger(\"AI参考本国最新政策条数\"") && mcm.Contains("SettingPropertyInteger(\"AI参考全球相关政策条数\"") && mcm.Contains("不是可生效政策的数量上限"), "MCM distinguishes AI reference counts from policy limits");
+        Check(mcm.Contains("SettingPropertyButton(\"政策相关数值上限调整\"") && mcm.Contains("Content = \"调整上限与容量\""), "MCM button matches requested policy settings label");
+        Check(mcm.Contains("SettingPropertyInteger(\"AI评议参考本国最新政策条数\"") && mcm.Contains("SettingPropertyInteger(\"AI评议参考世界相关政策条数\"") && mcm.Contains("不是可生效政策的数量上限"), "MCM distinguishes AI reference counts from policy limits");
         var xml = XDocument.Load(Path.Combine(root, "content/modules/PolicySystem/GUI/Prefabs/SettlementBalancePopup.xml"));
         var slider = xml.Descendants("SliderWidget").Single();
         Check((string)slider.Attribute("ValueInt") == "@ValueInt" && (string)slider.Attribute("DiscreteIncrementInterval") == "1", "integer slider prefab bindings");

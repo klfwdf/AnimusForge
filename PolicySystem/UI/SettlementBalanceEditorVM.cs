@@ -18,7 +18,7 @@ internal sealed class SettlementBalanceEditorVM : ViewModel
 			Rows.Add(new SettlementBalanceRowVM(definition, snapshot.Get(definition.Metric), RefreshStatus));
 		RefreshStatus();
 	}
-	[DataSourceProperty] public string TitleText => "繁荣／户数／民兵上限及粮仓容量";
+	[DataSourceProperty] public string TitleText => "政策相关数值上限调整";
 	[DataSourceProperty] public string DescriptionText => "每日按原版＋政策的净变化结算：正数最多加到总量上限；负数照常扣除，超额旧存量不削减。";
 	[DataSourceProperty] public string FoodRuleText => "玩家和 NPC 全部适用。默认仅开启城市／城堡粮仓容量1000，其余六项默认关闭；粮仓不叠加城堡、建筑加成。\n繁荣度耗粮始终取消，不受这些开关影响；驻军耗粮、围城、供粮和政策粮食变化保留。";
 	[DataSourceProperty] public string RestoreDefaultsText => "恢复默认";
