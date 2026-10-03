@@ -456,6 +456,8 @@ internal sealed class LocalPolicyHistoryRecordData
 {
 	public string ScopeKind { get; set; }
 	public string RecordId { get; set; }
+	public string HistoryKey { get; set; }
+	public bool CanDelete { get; set; }
 	public string DateText { get; set; }
 	public string PolicyNameText { get; set; }
 	public string StatusText { get; set; }
@@ -480,21 +482,23 @@ internal sealed class LocalPolicyHistoryPopup
 	private readonly LocalPolicyHistoryPopupVM _dataSource;
 	private readonly Action _onClose;
 	private bool _isClosed;
-	private LocalPolicyHistoryPopup(ScreenBase screen, LocalPolicyHistoryData data, Action<string> onRenew, Action<string> onAbolish, Action<string> onReReview, Action onClose)
+	private LocalPolicyHistoryPopup(ScreenBase screen, LocalPolicyHistoryData data, Action<string> onRenew, Action<string> onAbolish, Action<string> onReReview, Action onClose, Action<string> onDelete)
 	{
 		_screen = screen;
 		_onClose = onClose;
-		_dataSource = new LocalPolicyHistoryPopupVM(data, id => { Close(true); onRenew?.Invoke(id); }, id => { Close(true); onAbolish?.Invoke(id); }, id => { Close(true); onReReview?.Invoke(id); }, HandleClose);
+		_dataSource = new LocalPolicyHistoryPopupVM(data, id => { Close(true); onRenew?.Invoke(id); }, id => { Close(true); onAbolish?.Invoke(id); }, id => { Close(true); onReReview?.Invoke(id); }, HandleClose, key => { Close(true); onDelete?.Invoke(key); });
 		_layer = new GauntletLayer("LocalPolicyHistoryPopup", 4110, false);
 	}
 	public static bool Show(LocalPolicyHistoryData data, Action<string> onRenew, Action<string> onAbolish, Action<string> onReReview, Action onClose)
+		=> Show(data, onRenew, onAbolish, onReReview, onClose, null);
+	public static bool Show(LocalPolicyHistoryData data, Action<string> onRenew, Action<string> onAbolish, Action<string> onReReview, Action onClose, Action<string> onDelete)
 	{
 		ScreenBase screen = ScreenManager.TopScreen;
 		if (screen == null) return false;
 		try
 		{
 			_activePopup?.Close(true);
-			LocalPolicyHistoryPopup popup = new LocalPolicyHistoryPopup(screen, data ?? new LocalPolicyHistoryData(), onRenew, onAbolish, onReReview, onClose);
+			LocalPolicyHistoryPopup popup = new LocalPolicyHistoryPopup(screen, data ?? new LocalPolicyHistoryData(), onRenew, onAbolish, onReReview, onClose, onDelete);
 			popup.Open();
 			_activePopup = popup;
 			return true;
@@ -529,6 +533,7 @@ internal sealed class LocalPolicyHistoryPopup
 
 internal sealed class LocalPolicyHistoryPopupVM : ViewModel
 {
+	private readonly Action<string> _onDelete;
 	private readonly Action<string> _onRenew;
 	private readonly Action<string> _onAbolish;
 	private readonly Action<string> _onReReview;
@@ -554,8 +559,10 @@ internal sealed class LocalPolicyHistoryPopupVM : ViewModel
 	private string _cycleText = "";
 	private string _renewalText = "";
 	public LocalPolicyHistoryPopupVM(LocalPolicyHistoryData data, Action<string> onRenew, Action<string> onAbolish, Action<string> onReReview, Action onClose)
+		: this(data, onRenew, onAbolish, onReReview, onClose, null) { }
+	public LocalPolicyHistoryPopupVM(LocalPolicyHistoryData data, Action<string> onRenew, Action<string> onAbolish, Action<string> onReReview, Action onClose, Action<string> onDelete)
 	{
-		_onRenew = onRenew; _onAbolish = onAbolish; _onReReview = onReReview; _onClose = onClose;
+		_onDelete = onDelete; _onRenew = onRenew; _onAbolish = onAbolish; _onReReview = onReReview; _onClose = onClose;
 		_allRecords = (data?.Records ?? new List<LocalPolicyHistoryRecordData>()).Where(x => x != null).ToList();
 		RecordItems = new MBBindingList<LocalPolicyHistoryRecordItemVM>();
 		TitleText = "政策记录";
@@ -575,6 +582,8 @@ internal sealed class LocalPolicyHistoryPopupVM : ViewModel
 	[DataSourceProperty] public string EmptyStateText { get => _emptyStateText; set { _emptyStateText = value; OnPropertyChangedWithValue(value, nameof(EmptyStateText)); } }
 	[DataSourceProperty] public string LocalTabText { get; set; }
 	[DataSourceProperty] public string VassalTabText { get; set; }
+	[DataSourceProperty] public string DeleteText => "删除记录";
+	[DataSourceProperty] public bool CanDelete { get; private set; }
 	[DataSourceProperty] public string RenewText { get; set; }
 	[DataSourceProperty] public string AbolishText { get; set; }
 	[DataSourceProperty] public string ReReviewText { get; set; }
@@ -605,6 +614,7 @@ internal sealed class LocalPolicyHistoryPopupVM : ViewModel
 		item.IsSelected = true;
 		PolicyNameText = item.PolicyNameText; StatusText = item.StatusText; TargetText = item.TargetText; RemainingText = item.RemainingText;
 		ContentText = item.ContentText; FeedbackText = item.FeedbackText; EffectText = item.EffectText; CostText = item.CostText; CycleText = item.CycleText; RenewalText = item.RenewalText;
+		CanDelete = item.CanDelete; OnPropertyChangedWithValue(CanDelete, nameof(CanDelete));
 		CanRenew = item.CanRenew; CanAbolish = item.CanAbolish; CanReReview = item.CanReReview;
 	}
 	private void ShowScope(bool showVassal)
@@ -629,11 +639,13 @@ internal sealed class LocalPolicyHistoryPopupVM : ViewModel
 		{
 			PolicyNameText = ""; StatusText = ""; TargetText = ""; RemainingText = "";
 			ContentText = ""; FeedbackText = ""; EffectText = ""; CostText = ""; CycleText = ""; RenewalText = "";
+			CanDelete = false; OnPropertyChangedWithValue(CanDelete, nameof(CanDelete));
 			CanRenew = false; CanAbolish = false; CanReReview = false;
 		}
 	}
 	public void ExecuteShowLocalPolicies() => ShowScope(false);
 	public void ExecuteShowVassalPolicies() => ShowScope(true);
+	public void ExecuteDelete() { if (CanDelete && _selected != null) _onDelete?.Invoke(_selected.HistoryKey); }
 	public void ExecuteRenew() { if (CanRenew && _selected != null) _onRenew?.Invoke(_selected.RecordId); }
 	public void ExecuteAbolish() { if (CanAbolish && _selected != null) _onAbolish?.Invoke(_selected.RecordId); }
 	public void ExecuteReReview() { if (CanReReview && _selected != null) _onReReview?.Invoke(_selected.RecordId); }
@@ -646,10 +658,13 @@ internal sealed class LocalPolicyHistoryRecordItemVM : ViewModel
 	private bool _isSelected;
 	public LocalPolicyHistoryRecordItemVM(LocalPolicyHistoryRecordData data, Action<LocalPolicyHistoryRecordItemVM> onSelect)
 	{
+		HistoryKey = data?.HistoryKey ?? ""; CanDelete = data?.CanDelete == true;
 		_onSelect = onSelect; ScopeKind = data?.ScopeKind ?? "local"; RecordId = data?.RecordId ?? ""; DateText = data?.DateText ?? ""; PolicyNameText = data?.PolicyNameText ?? ""; StatusText = data?.StatusText ?? "";
 		TargetText = data?.TargetText ?? ""; RemainingText = data?.RemainingText ?? ""; ContentText = data?.ContentText ?? ""; FeedbackText = data?.FeedbackText ?? "";
 		EffectText = data?.EffectText ?? ""; CostText = data?.CostText ?? ""; CycleText = data?.CycleText ?? ""; RenewalText = data?.RenewalText ?? ""; CanRenew = data?.CanRenew == true; CanAbolish = data?.CanAbolish == true; CanReReview = data?.CanReReview == true;
 	}
+	public string HistoryKey { get; }
+	public bool CanDelete { get; }
 	[DataSourceProperty] public string ScopeKind { get; set; }
 	[DataSourceProperty] public string RecordId { get; set; }
 	[DataSourceProperty] public string DateText { get; set; }

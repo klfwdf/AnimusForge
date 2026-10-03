@@ -159,6 +159,11 @@
       "target": "GUI/Prefabs/PolicyEffectModuleManagerPopup.xml"
     },
     {
+      "owner": "PolicySystem",
+      "source": "content/modules/PolicySystem/GUI/Prefabs/SettlementBalancePopup.xml",
+      "target": "GUI/Prefabs/SettlementBalancePopup.xml"
+    },
+    {
       "owner": "AF.Module.Conversation",
       "source": "content/modules/AF.Module.Conversation/GUI/Prefabs/ShoutTextInputPopup.xml",
       "target": "GUI/Prefabs/ShoutTextInputPopup.xml"

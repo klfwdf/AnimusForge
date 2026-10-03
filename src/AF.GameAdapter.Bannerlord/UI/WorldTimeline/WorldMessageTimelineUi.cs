@@ -115,7 +115,7 @@ public static class WorldMessageTimelineUi
 		// Each source exposes a monotonic revision, avoiding an allocation-heavy source enumeration on ordinary UI ticks.
 		return new WorldMessageTimelineSourceVersion
 		{
-			PolicySequence = CustomPolicyBehavior.GetPublishedPolicyArtifactCurrentSequenceForExternal(),
+			PolicySequence = CustomPolicyBehavior.GetPolicyRecordPresentationRevision(),
 			WeeklyRevision = MyBehavior.GetWorldMessageWeeklyTimelineRevisionForExternal(),
 			DiplomacyRevision = DiplomacyPresentationBridge.GetRevisionOrZero()
 		};
@@ -129,37 +129,27 @@ public static class WorldMessageTimelineUi
 		}
 		try
 		{
-			long currentSequence = WorldDiplomacyPolicyContext.GetPublishedPolicyHistoryCurrentSequence();
-			long afterSequence = Math.Max(0L, currentSequence - MaxPolicySourceEntries);
-			IReadOnlyList<PublishedPolicyArtifactLedgerEntry> source = WorldDiplomacyPolicyContext.GetPublishedPolicyHistoryArtifacts(afterSequence, MaxPolicySourceEntries);
-			foreach (PublishedPolicyArtifactLedgerEntry artifact in source ?? Array.Empty<PublishedPolicyArtifactLedgerEntry>())
+			foreach (PolicyRecordPresentationData policy in CustomPolicyBehavior.GetPolicyRecordPresentationSnapshot().Take(MaxPolicySourceEntries))
 			{
-				if (artifact == null)
-				{
-					continue;
-				}
-				bool isPublished = string.Equals(artifact.EventKind, "policy_published", StringComparison.OrdinalIgnoreCase);
-				string policyName = FirstNonEmpty(artifact.PolicyName, "未命名政策");
-				string kindLabel = isPublished ? "政策发布" : "政策动态";
 				WorldMessageTimelineEntryData entry = new WorldMessageTimelineEntryData
 				{
-					EntryId = "policy:" + FirstNonEmpty(artifact.PolicyId, artifact.Sequence.ToString(CultureInfo.InvariantCulture)) + ":" + artifact.Sequence.ToString(CultureInfo.InvariantCulture),
+					EntryId = "policy:" + policy.HistoryKey,
 					CategoryId = PolicyCategoryId,
-					CategoryLabel = kindLabel,
-					TitleText = isPublished ? "《" + policyName + "》" : "《" + policyName + "》·政策动态",
-					DateText = FirstNonEmpty(artifact.GameDate, FormatDay(artifact.OccurredDay)),
-					MetaText = BuildPolicyMetaText(artifact, kindLabel),
-					BodySectionTitleText = isPublished ? "政策公告" : "政策动态",
-					BodyText = LimitMultiline(artifact.PublishedText, DetailCharacterLimit, DetailLineLimit, "（无政策详情）"),
-					ImpactSectionTitleText = "",
-					ImpactText = "",
-					Day = Math.Max(0, artifact.OccurredDay),
-					CreatedUtcTicks = artifact.CreatedUtcTicks,
-					Sequence = artifact.Sequence,
+					CategoryLabel = "政策记录",
+					TitleText = policy.TitleText,
+					DateText = policy.DateText,
+					MetaText = policy.DateText + "  ·  " + policy.StatusText + "  ·  " + PolicyScopeLabel(policy.ScopeKind) + "  ·  " + policy.KingdomName,
+					BodySectionTitleText = "政策记录",
+					BodyText = policy.BodyText,
+					ImpactSectionTitleText = "政策影响效果",
+					ImpactText = policy.ImpactText,
+					Day = Math.Max(0, policy.Day),
+					CreatedUtcTicks = policy.CreatedUtcTicks,
+					Sequence = 0,
 					IsUnread = false,
 					CanMarkRead = false
 				};
-				AddCountry(entry, artifact.KingdomId, artifact.KingdomName);
+				AddCountry(entry, policy.KingdomId, policy.KingdomName);
 				target.Add(entry);
 			}
 		}

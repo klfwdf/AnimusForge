@@ -1,0 +1,47 @@
+ static void LoreCases()
+ {
+  foreach(var kind in new[]{"hit","empty","disabled","absent","version","query_failure","mapping_failure","settings","edit","target","reset","owner","generation"})
+  {
+   Probe.OffThread=0;AnimusForge.SaveRuntimeGuard.Generation=1;
+   AnimusForge.KnowledgeLibraryBehavior.Reset();AnimusForge.DuelSettings.Requirements="captured-requirements";
+   AnimusForge.KnowledgeLibraryBehavior.Instance=kind=="absent"?null:new();
+   AnimusForge.KnowledgeLibraryBehavior.Enabled=kind!="disabled";
+   AnimusForge.KnowledgeLibraryBehavior.ThrowQuery=kind=="query_failure";
+   AnimusForge.KnowledgeLibraryBehavior.ThrowRender=kind=="mapping_failure";
+   if(kind=="empty")AnimusForge.KnowledgeLibraryBehavior.Content="";
+   bool query=kind!="disabled"&&kind!="absent";
+   AnimusForge.KnowledgeLibraryBehavior.Gate=new(!query);
+   var hero=new Hero("hero");var owner=new AnimusForge.MyBehavior();owner.Seed("oldP","oldB");
+   AnimusForge.MyBehavior.Instance=owner;AnimusForge.MyBehavior.RegisteredHero=hero;
+   var task=Task.Run(()=>owner.Generate(hero,true));
+   Pump(owner,()=>AnimusForge.KnowledgeLibraryBehavior.Started||owner.Calls>0||task.IsCompleted);
+   if(query)
+   {
+    Check(AnimusForge.KnowledgeLibraryBehavior.Started&&owner.Calls==0,kind+" query precedes HTTP");
+    Check(AnimusForge.KnowledgeLibraryBehavior.Query=="NPC",kind+" only captured name queried");
+    if(kind=="version")AnimusForge.KnowledgeLibraryBehavior.Version++;
+    if(kind=="settings")AnimusForge.DuelSettings.Requirements="changed-requirements";
+    if(kind=="edit")owner.Seed("editedP","editedB");
+    if(kind=="target")AnimusForge.MyBehavior.RegisteredHero=new Hero("hero");
+    if(kind=="reset")owner.ResetGenerationState();
+    if(kind=="owner")AnimusForge.MyBehavior.Instance=new();
+    if(kind=="generation")AnimusForge.SaveRuntimeGuard.Generation++;
+    AnimusForge.KnowledgeLibraryBehavior.Gate.Set();
+   }
+   Pump(owner,()=>owner.Calls>0||task.IsCompleted);
+   bool stale=kind is "edit" or "target" or "reset" or "owner" or "generation";
+   Check(owner.Calls==(stale?0:1),kind+" stale request cannot start HTTP");
+   if(owner.Calls>0)
+   {
+    Check(owner.SentUser.Contains("worldbook-body")== (kind=="hit"||kind=="settings"),kind+" optional lore injection");
+    Check(owner.SentSystem.EndsWith("captured-requirements"),kind+" writing requirements captured once");
+    owner.Release();
+   }
+   Pump(owner,()=>task.IsCompleted);task.GetAwaiter().GetResult();
+   Check(owner.Saves==(stale?0:1),kind+" persona save result");
+   Check(Probe.OffThread==0,kind+" capture/render/provider/save remain on main thread");
+   Check(!owner.Active("hero"),kind+" reservation released");
+   if(stale)Check(!owner.Cooling("hero"),kind+" retired request does not impose failure cooldown");
+  }
+  AnimusForge.KnowledgeLibraryBehavior.Reset();AnimusForge.DuelSettings.Requirements="custom-requirements";
+ }

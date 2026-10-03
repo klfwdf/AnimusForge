@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -5435,6 +5435,7 @@ public sealed partial class CustomPolicyBehavior
 			{
 				EntryId = recordId,
 				SourceKind = "player_kingdom",
+				IsHistoryDeleted = IsPolicyHistoryDeleted("player_kingdom", recordId),
 				ScopeKind = PolicyScopeKingdom,
 				OwnerKingdomId = FirstNonEmpty(policy.OwnerKingdomId, history?.PlayerKingdomId),
 				OwnerKingdomName = history?.PlayerKingdomName ?? string.Empty,
@@ -5488,6 +5489,8 @@ public sealed partial class CustomPolicyBehavior
 			{
 				EntryId = policy.RecordId ?? string.Empty,
 				SourceKind = isVassal ? "player_vassal" : "player_local",
+				IsHistoryDeleted = IsPolicyHistoryDeleted(isVassal ? "player_vassal" : "player_local", policy.RecordId),
+				IsDeclarationOnly = !policy.Effects.Any(effect => effect?.ModuleEffects?.Count > 0),
 				ScopeKind = isVassal ? PolicyScopeVassal : PolicyScopeLocal,
 				OwnerKingdomId = FirstNonEmpty(policy.TargetKingdomId, policy.IssuerKingdomId),
 				OwnerKingdomName = FirstNonEmpty(policy.TargetKingdomName, policy.IssuerKingdomName),
@@ -5677,7 +5680,7 @@ public sealed partial class CustomPolicyBehavior
 
 	private static bool IsUsablePolicyHistoryEntry(NpcPolicyHistoryEntry entry)
 	{
-		return PolicyHistoryRetrievalService.IsUsableEntry(entry);
+		return PolicyHistoryRetrievalService.IsValidEntry(entry);
 	}
 
 }

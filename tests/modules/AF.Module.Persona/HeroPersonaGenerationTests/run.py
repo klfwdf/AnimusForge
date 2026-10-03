@@ -3,7 +3,7 @@ import sys as _legacy_sys
 from pathlib import Path as _LegacyPath
 _legacy_sys.path.insert(0, str(_LegacyPath(__file__).resolve().parents[4] / "tests"))
 from af2_terminal_migration_review import historical_source
-AF2_FIXTURE_METADATA = {"sourceClass": "legacy-oracle-extraction", "currentOwnerReplayProjected": False}
+AF2_FIXTURE_METADATA = {"sourceClass": "current-owner-replay-with-explicit-legacy-option", "currentOwnerReplayProjected": False}
 import sys as _relocation_sys
 _relocation_sys.path.insert(0, str(Path(__file__).resolve().parents[4] / "tests"))
 from output_isolation import current_source_path
@@ -19,12 +19,14 @@ if a.original:
  code=code.replace('@@GENERATOR@@','\n'.join(ex.declaration(s,sig) for sig in ['private async Task<string> GenerateNpcPersonaAsync(','private async Task EnsureNpcPersonaGeneratedAsync(','public static async Task EnsureNpcPersonaGeneratedForExternalAsync('])).replace('@@RESET@@','_npcPersonaAutoGenInFlight.Clear();_npcPersonaAutoGenRetryAfterUtcTicks.Clear()').replace('@@ACTIVE@@','return _npcPersonaAutoGenInFlight.Contains(id);').replace('@@COOLING@@','return _npcPersonaAutoGenRetryAfterUtcTicks.ContainsKey(id);')
 else:
  code=code.replace('@@GENERATOR@@','').replace('@@RESET@@','_npcPersonaGeneration.Reset()').replace('@@ACTIVE@@','_npcPersonaGeneration.GetState(id,out bool active,out _);return active;').replace('@@COOLING@@','_npcPersonaGeneration.GetState(id,out _,out bool cooling);return cooling;')
-ui_source=s if a.original else historical_source('MyBehavior.cs')
-code=code.replace('@@REROLL_UI@@',ex.declaration(ui_source,'private async Task RunHeroPersonaRerollAsync('))
+ui_source=s if a.original else (ROOT/'src/AF.GameAdapter.Bannerlord/UI/Editors/PersonaEditorController.cs').read_text(encoding='utf-8-sig')
+ui_marker='private async Task RunHeroPersonaRerollAsync(' if a.original else 'internal async Task RunHeroPersonaRerollAsync('
+code=code.replace('@@REROLL_UI@@',ex.declaration(ui_source,ui_marker))
 code=code.replace('@@PROMOTED_RESPONSE@@', 'return response.Task;' if a.original else 'SkillCalls++;return skillResponse.Task;')
 code=code.replace('@@PROMOTED_HELPERS@@', '' if a.original else (HERE/'PromotedHelpers.cs.txt').read_text(encoding='utf-8')).replace('@@PROMOTED_TESTS@@', '' if a.original else (HERE/'PromotedTests.cs.txt').read_text(encoding='utf-8')).replace('@@RUN_PROMOTED@@', '' if a.original else 'PromotedCases();')
 code=code.replace('@@RESERVATION_TESTS@@','' if a.original else (HERE/'Reservations.cs.txt').read_text(encoding='utf-8'))
 code=code.replace('@@TEXT_RULE_CASES@@','' if a.original else (HERE/'TextRules.cs.txt').read_text(encoding='utf-8')).replace('@@RUN_TEXT_RULES@@','' if a.original else 'TextRuleCases();')
+code=code.replace('@@LORE_TESTS@@','' if a.original else (HERE/'LoreTests.cs.txt').read_text(encoding='utf-8')).replace('@@RUN_LORE@@','' if a.original else 'LoreCases();')
 out=util.new_run_root(ROOT,'HeroPersonaGenerationTests',a.run_root)
 (out/'Program.cs').write_text(code,encoding='utf-8');(out/'NuGet.Config').write_text('<configuration><packageSources><clear/></packageSources></configuration>')
 files=[out/'Program.cs',ROOT/'src/modules/AF.Module.Memory/Summary/MemorySummaryDispatcher.cs',ROOT/'src/modules/AF.Module.Memory/Summary/IMemorySummaryDispatchHost.cs']

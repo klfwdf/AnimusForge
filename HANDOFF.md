@@ -1,3 +1,9 @@
+# 当前融合交付：保留远端政策与人物设定，发布本地最新修复（2026-10-03）
+
+- 用户已确认融合并授权推送main；将`1acf1ae6`合入本地`9019b27e`，无冲突，保留双方内容。待普通快进推送，最终结果以远端readback为准；不改旧远端重构分支、不部署游戏。
+- 融合完整树Debug/Release双API+Bootstrap六构建0错误及六marker hash通过；快报49、对话93、平衡规则58、UI13、人设413、世界书/设置29通过，平衡运行时每API71通过。补修测试Release内联setter绕过Harmony的问题，未修改游戏逻辑；实机/旧档未验，旧Stage与ZIP不代表本次融合版本。
+- [唯一主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#bulletin-image-dialogue-fusion-20261003)，本地证据`artifacts/fusion-push-20261003-171851/`。融合前回滚点`9019b27e`，原远端基线`1acf1ae6`；恢复用定向反向提交，不硬重置。
+
 # 当前提交：快报 / 生图开关 / 喊话 / 新档与原版继续（2026-10-03）
 
 - 用户授权提交推送，范围包含当前14份相关源码/测试及此前已完成的UI提交，不包含临时文件、模型、日志或生成图片。Debug/Release双API+Bootstrap和本地Stage已通过，快报49项、对话93项回归通过；未实机、未部署。
