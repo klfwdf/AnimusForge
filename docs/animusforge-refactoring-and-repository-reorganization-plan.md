@@ -1,3 +1,11 @@
+<a id="dialogue-processing-mode-lock-20261004"></a>
+# 当前修改：对话处理期间禁止切回普通模式（2026-10-04，ACTIVE）
+
+- 用户新增明确要求；基线 `82631efb`。只修改普通对话UI的模式切换保护，不改LLM、后处理执行与动作规则；会面仍为只读审查，不把上轮部署授权延续到新产品。
+- 范围：宿主Overlay / VM、DialogueUI包装、两套prefab、原生对话admission的只读轻量busy观察及既有回归测试。按钮禁用与执行入口双重保护；成功 / 失败解锁，重载时观察现有后台owner，不复制request状态。
+- 热路径仅在原UI Tick比较现有owner / epoch / token / generation等O(1)身份，不用带目标解析与agent查找的提交busy验证每帧扫描。长等待Esc仍可退出整段对话，但不能偷切普通模式；不阻止关闭或真实ConversationEnded清理。
+- 验收：请求 / streaming / 后处理时拒绝普通模式；完成 / 失败 / stale后恢复，冷重载后台busy与旧回调不误解锁；原点击继续 / Hero双设置回归保持，双API+Bootstrap通过。实机 / 真服务 / 旧档另验，不push / Stage / 部署 / 打包。
+
 <a id="deploy-epoch-bridge-20261004"></a>
 # 当前部署：会话轮次桥接修复覆盖游戏（2026-10-04，DEPLOY_VERIFIED）
 
