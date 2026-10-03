@@ -44,7 +44,7 @@
                     <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Text="场景插画" Brush="Popup.Button.Text" Brush.FontSize="15" Brush.FontColor="#3B281BFF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" DoNotAcceptEvents="true" />
                   </Children>
                 </ButtonWidget>
-                <ButtonWidget Id="AFDialogueSwitch" WidthSizePolicy="Fixed" SuggestedWidth="63" HeightSizePolicy="Fixed" SuggestedHeight="28" MarginLeft="2" Command.Click="SwitchTalk" IsEnabled="@IsInteractionEnabled" DoNotPassEventsToChildren="true">
+                <ButtonWidget Id="AFDialogueSwitch" WidthSizePolicy="Fixed" SuggestedWidth="63" HeightSizePolicy="Fixed" SuggestedHeight="28" MarginLeft="2" Command.Click="SwitchTalk" IsEnabled="@CanSwitchTalk" DoNotPassEventsToChildren="true">
                   <Children>
                     <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Text="@SwitchTitle" Brush="Popup.Button.Text" Brush.FontSize="15" Brush.FontColor="#3B281BFF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" DoNotAcceptEvents="true" />
                   </Children>
