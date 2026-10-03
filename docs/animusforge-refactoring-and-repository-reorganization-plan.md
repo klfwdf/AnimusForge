@@ -1,3 +1,14 @@
+<a id="deploy-player-ui-runtime-20261004"></a>
+# 玩家UI与运行链路修复部署（2026-10-04，DEPLOY_VERIFIED）
+
+- 用户明确请求“部署”；工作区/分支按真实Git确认，候选`b616dd5d54525b109e1c8550d54e3a8dc3d16277`，完整产品`f4c1fc6b`。20源码/测试hash及三Debug产物hash与前轮收据一致，候选之间仅交付文档差异，复用已经双API/Bootstrap编译与回归验证的产物，不重复构建、不改一键入口。
+- 游戏已关闭；先核验3379个旧生成Stage文件均属于上次已验证库存，通过原content projection更新资源，再由未修改`deploy_module.ps1`按原Stage重建/验证及事务覆盖流程安装。没有额外保留旧Stage副本；首次含直接旧Stage清理的复合命令被工具策略拒绝、没有执行，未以删除未知文件或修改校验器绕过原Stage规则。
+- 安装`F:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord/Modules/AnimusForge`更新 **12受管文件**；**3379 Stage文件SHA256与安装一致**，**2304非受管文件hash/长度/mtime保持**，抽检3原版DLL及3原构建/部署脚本保持。版本`v1.5.0`、单模块、XML仅声明`AnimusForge.Bootstrap.dll`；两实现及Bootstrap均与前轮候选marker hash一致。
+- 实际安装1.3/1.4 DLL各运行会面交接13、模式锁16、桥接/演讲scope3组离线检查，全部通过；后者保留强制yield、外层scope清理后子任务持有冻结快照的回归。数据根指向本地offline-data，不发真provider请求；前轮源码/fixture回归148对话/102会面/116处刑等仍按其原限定复用，不冒充实机行为。
+- 最新且唯一回滚点`C:/Users/29310/AppData/Local/AnimusForge/Recovery/deploy/deploy-761befc6cbac41e7928d420c4c20cf7b`：complete存在、manifest旧文件备份oldSha256/新安装newSha256逐项通过。按用户“历史的也删”和仅留最近一份的明确偏好，成功核验后删除上一份完成记录`deploy-863e5975dda1478cb5959ef9d515f1f6`，最终Recovery仅1份。回滚按该manifest定向恢复受管旧文件，不镜像/删除玩家数据；源码逆向提交见下方产品条目。
+- 本地`artifacts/deploy-player-ui-runtime-20261004/`保存intent、build-bindings、before、verification/deploy日志、安装各探针日志、receipt及retention；私密完整快照只在ignored artifacts。此条替代下方本轮STAGE/DEPLOY未执行的历史状态，不改产品坐标和前轮失败证据。
+- **LIVE_GAME / REAL_AI_TTS / PLAYER_SAVE / PUSH / PACKAGE = NOT_RUN**；没有启动游戏、载入存档、制作ZIP或推送，用户需实机复验截图布局、地图离开、阵前演讲与行刑。部署是安装一致验收，不是实机玩法完成。
+
 <a id="player-ui-runtime-repairs-20261004"></a>
 # 玩家截图与运行日志修复（2026-10-04，OFFLINE_VERIFIED）
 
