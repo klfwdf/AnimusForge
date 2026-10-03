@@ -156,8 +156,32 @@ static class Program
         XElement Id(string id)=>xml.Descendants().Single(x=>(string)x.Attribute("Id")==id);
         XElement Resolve(XElement node,string path){foreach(string part in path.Split('\\')) node=node.Element("Children").Elements().Single(x=>(string)x.Attribute("Id")==part);return node;}
         var rootNode=Id("AFDialogueConversationRoot");Check(Resolve(rootNode,(string)rootNode.Attribute("AnswerList"))==Id("AnswerList"),"native AnswerList binding resolves through actual scroll/clip hierarchy");
-        Check((string)Id("AnswerListContainer").Attribute("HeightSizePolicy")=="Fixed"&&(int)Id("AnswerListContainer").Attribute("SuggestedHeight")==190,"answers bounded inside console parent");
+        Check((string)Id("AnswerListContainer").Attribute("HeightSizePolicy")=="Fixed"&&(int)Id("AnswerListContainer").Attribute("SuggestedHeight")==211,"answers bounded inside console parent");
         Check((string)Id("AFDialogueAnswerClip").Attribute("ClipContents")=="true","overflow clipped not unclickable outside ancestors");
+        var inputXml=XDocument.Load(Path.Combine(root,"extensions/AnimusForge.DialogueUI/GUI/Prefabs/AFDialogueNativeOverlay.xml"));
+        XElement InputId(string id)=>inputXml.Descendants().Single(x=>(string)x.Attribute("Id")==id);
+        Check((int)Id("AnswerListContainer").Attribute("SuggestedWidth")==345 && (int)InputId("AFDialogueInput").Attribute("SuggestedWidth")==345,"ordinary answers and AI input share full 345 width");
+        Check((int)Id("AnswerListContainer").Attribute("MarginRight")== (int)InputId("AFDialogueRightColumn").Attribute("MarginRight"),"ordinary and AI region right edges align");
+        Check((int)Id("AFDialogueAnswerScroll").Attribute("MarginRight")==0,"native option row retains full input width with scrollbar inside reserved text gutter");
+        foreach(var pair in new[]{(Id("AFDialogueConsoleFrame"),InputId("AFDialogueConsoleOverlayFrame"))})
+            foreach(string attr in new[]{"SuggestedWidth","SuggestedHeight","MarginBottom","PositionXOffset"})
+                Check((string)pair.Item1.Attribute(attr)==(string)pair.Item2.Attribute(attr),"overlay and native frame agree: "+attr);
+        foreach(var panel in new[]{Id("AFDialogueTextScroll"),Id("AFDialogueAnswerScroll"),InputId("AFDialogueInputScroll")}) {
+            Check((string)panel.Attribute("AutoHideScrollBars")=="true"&&(string)panel.Attribute("UpdateScrollbarVisibility")=="true","native auto-hide enabled: "+panel.Attribute("Id"));
+            var inner=Resolve(panel,(string)panel.Attribute("InnerPanel"));
+            Check((string)inner.Attribute("HeightSizePolicy")=="CoverChildren","scroll content grows and shrinks: "+panel.Attribute("Id"));
+            var barId=((string)panel.Attribute("VerticalScrollbar")).Split('\\').Last();
+            var bar=panel.Parent.Elements().Single(x=>(string)x.Attribute("Id")==barId);
+            Check(Resolve(bar,(string)bar.Attribute("Handle"))!=null,"scroll handle binding resolves: "+barId);
+        }
+        int inputViewport=(int)InputId("AFDialogueInput").Attribute("SuggestedHeight")-(int)InputId("AFDialogueInputScroll").Attribute("MarginTop")-(int)InputId("AFDialogueInputScroll").Attribute("MarginBottom");
+        Check((int)InputId("AFDialogueInputEditor").Attribute("MinHeight")<=inputViewport,"empty input cannot force a permanently visible scrollbar");
+        Check((string)InputId("AFDialogueInputEditor").Attribute("AutoScrollToCaret")=="true","typing follows caret using existing editor");
+        Check((int)InputId("AFDialogueInputHint").Attribute("MarginTop")>inputViewport+(int)InputId("AFDialogueInputScroll").Attribute("MarginTop"),"keyboard hint stays outside scrolling text");
+        var buttons=InputId("AFDialogueToolbar").Element("Children").Elements().ToArray();
+        Check(buttons.Length==5 && buttons.Sum(x=>(int)x.Attribute("SuggestedWidth")+(int?)x.Attribute("MarginLeft")??0)==345,"five buttons fit input width including gaps");
+        Check(buttons.All(x=>(int)x.Attribute("SuggestedHeight")==32),"toolbar has uniform 32 height");
+
         Check(Resolve(Id("AFDialogueAnswerScroll"),(string)Id("AFDialogueAnswerScroll").Attribute("InnerPanel"))==Id("AnswerList"),"scroll inner panel resolves");
         Check(Id("AnswerList").Element("ItemTemplate").Elements().Single().Name.LocalName=="AFDialogueConversationItem","scoped answer template consumed");
         var item=XDocument.Load(Path.Combine(root,"extensions/AnimusForge.DialogueUI/GUI/Prefabs/AFDialogueConversationItem.xml"));

@@ -6928,3 +6928,17 @@ R2计划交付门槛：已给固定技术路线、真实来源与目标、写入
 - 最终3379份Stage文件SHA256逐份与安装目录相同，全部2293非受管文件hash/长度/mtime保持，包含ONNX模型和原安装玩家文件；游戏bin的TaleWorlds.CampaignSystem/Core/MountAndBlade三DLL hash保持。安装XML仅声明Bootstrap；源码HEAD/已跟踪状态在构建、部署、核验结束时保持同候选。
 - Recovery为`C:/Users/29310/AppData/Local/AnimusForge/Recovery/deploy/deploy-5fd5f1fc9a204cc697c26fd706de7624`，complete存在，manifest内旧文件备份SHA256全匹配oldSha256、安装新文件全匹配newSha256；恢复必须按该manifest定向处理，不覆盖玩家文件或硬重置源码。
 - 本地证据`artifacts/deploy-main-20261003-173232/`：build-stage.log、before.json、deploy.log、receipt.json和before-stage；记录状态DEPLOY_VERIFIED。未启动游戏/真实Gauntlet/新档与旧档/LLM或生图provider/帧性能，未新ZIP、未再次push。交接记录仅本地提交，不把安装文件一致性升级为实机验收；上轮完整Debug/Release构建与相关回归证据仍见fusion条目。
+
+
+<a id="dialogue-pen-integration-20261004"></a>
+## Pen新对话尺寸接入与滚动条自动显隐（2026-10-04，OFFLINE_VERIFIED）
+
+基线9555ff5c，意图检查点0cb053c3。仅接入用户当前Pen qk678，不部署/Stage/打包/push。
+
+- `extensions/AnimusForge.DialogueUI/GUI/Prefabs/AFDialogueConversation.xml:27`：主框1619×326、1080参考坐标x138/y754，正文718×214、字号24；头像/姓名框匹配放大布局，姓名20。正文Scroll的Clip/Inner/Bar保持真实绑定，明确AutoHideScrollBars/UpdateScrollbarVisibility/AutoAdjustScrollbarHandleSize，初始隐藏。
+- 同文件AnswerListContainer/AFDialogueAnswerScroll及`AFDialogueConversationItem.xml:10`：普通选项容器与AI输入同为345×211、右距36；条目StretchToParent全宽345，文字22，右内边距24避让框内滚动条。保留ExecuteAction、禁用、提示、说服及导航绑定。
+- `extensions/AnimusForge.DialogueUI/GUI/Prefabs/AFDialogueNativeOverlay.xml:5`：同一主框坐标；输入22号、300宽文本区、153高viewport，Editor MinHeight153不强制溢出；原生滚动自动显示/隐藏，继续使用既有AutoScrollToCaret/SubmitOnEnter/打开键隔离。快捷键提示固定在滚动区下方。五按钮总宽345、高32、字号14、间距6，采用用户最新Pen x1378/y793。
+- `extensions/AnimusForge.DialogueUI/src/Native/NativeOverlayVM.cs:55`：取消普通模式旧-323/-14工具栏偏移，两模式同位置；不改变忙碌/辅助面板/命令门禁。
+- 性能：仅声明式布局及常量偏移；复用原生按尺寸比较显隐、编辑器dirty换行与有界光标跟随，无新增扫描/反射/轮询。原生1.3/1.4 ScrollablePanel实现已核对：溢出显示；缩短后归零偏移并隐藏。未以源码核对冒充实机行为测试。
+- 验证：既有DialogueOnboardingRegressionTests扩展真实XML路径/字号布局相关契约，134 PASS（引擎与网络stub）；3模板唯一content-map映射和XML解析PASS；原统一脚本Debug双API 1.3.15.110062 / 1.4.6.115628 + Bootstrap exit0，两实际DLL与marker hash一致。构建后仅调整普通条目XML内边距/滚动条位置及测试描述并重跑134，未改C#。
+- NOT_RUN：实机长正文、输入长文→删除显隐、滚轮/拖拽/选项点击/说服及各分辨率。离线接入不等于覆盖游戏或验收完成。回滚用本轮具名产品提交的inverse commit；不reset。日志/源码hash见本地`artifacts/dialogue-pen-integration-20261004/receipt.json`。

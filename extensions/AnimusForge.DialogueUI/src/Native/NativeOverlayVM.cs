@@ -52,13 +52,9 @@ public sealed class NativeOverlayVM : ViewModel
     [DataSourceProperty] public bool IsCustomAnswerVisible => Original.IsCustomAnswerVisible && !Auxiliary.IsOpen;
     [DataSourceProperty] public bool IsOrdinaryMode => !Original.IsCustomAnswerVisible && !Auxiliary.IsOpen;
     [DataSourceProperty] public bool IsToolbarVisible => !Auxiliary.IsOpen;
-    // Ordinary mode: the native answer list fills the right frame, so the toolbar moves onto the
-    // center frame's top border with its right edge at the answer frame's left gold edge (console
-    // x=1087, measured from the console art). AI mode keeps the Pen position (x=1105).
-    [DataSourceProperty] public float ToolbarOffsetX => IsOrdinaryMode ? -323f : 0f;
-    // The center text sheet starts higher than the AI input editor (text y=64 vs editor y=84), so the
-    // 28px toolbar at y=46 overlapped the first line; lift it onto the frame border (y=32..60).
-    [DataSourceProperty] public float ToolbarOffsetY => IsOrdinaryMode ? -14f : 0f;
+    // Both modes share the latest Pen right-hand region; the toolbar sits above either viewport.
+    [DataSourceProperty] public float ToolbarOffsetX => 0f;
+    [DataSourceProperty] public float ToolbarOffsetY => 0f;
     [DataSourceProperty] public bool IsInputEnabled => Original.IsInputEnabled;
     [DataSourceProperty] public bool IsInteractionEnabled => !_disposed && !Auxiliary.IsOpen;
     [DataSourceProperty] public bool CanSwitchTalk => IsInteractionEnabled && Original.CanSwitchTalk;

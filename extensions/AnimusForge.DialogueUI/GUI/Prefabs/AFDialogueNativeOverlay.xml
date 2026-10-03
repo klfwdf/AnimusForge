@@ -2,56 +2,57 @@
   <Window>
     <Widget Id="AFDialogueNativeOverlay" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" DoNotAcceptEvents="true" DoNotPassEventsToChildren="false">
       <Children>
-        <Widget Id="AFDialogueConsoleOverlayFrame" WidthSizePolicy="Fixed" SuggestedWidth="1440" HeightSizePolicy="Fixed" SuggestedHeight="283" HorizontalAlignment="Center" VerticalAlignment="Bottom" MarginBottom="43" DoNotAcceptEvents="true" DoNotPassEventsToChildren="false">
+        <Widget Id="AFDialogueConsoleOverlayFrame" WidthSizePolicy="Fixed" SuggestedWidth="1619" HeightSizePolicy="Fixed" SuggestedHeight="326" HorizontalAlignment="Center" VerticalAlignment="Bottom" MarginBottom="0" DoNotAcceptEvents="true" DoNotPassEventsToChildren="false" PositionXOffset="-12.5">
           <Children>
-            <Widget Id="AFDialogueRightColumn" WidthSizePolicy="Fixed" SuggestedWidth="305" HeightSizePolicy="Fixed" SuggestedHeight="217" HorizontalAlignment="Right" VerticalAlignment="Bottom" MarginRight="21" MarginBottom="20" DoNotAcceptEvents="true" DoNotPassEventsToChildren="false">
+            <Widget Id="AFDialogueRightColumn" WidthSizePolicy="Fixed" SuggestedWidth="345" HeightSizePolicy="Fixed" SuggestedHeight="211" HorizontalAlignment="Right" VerticalAlignment="Bottom" MarginRight="36" MarginBottom="42" DoNotAcceptEvents="true" DoNotPassEventsToChildren="false">
               <Children>
-                <Widget Id="AFDialogueInput" WidthSizePolicy="Fixed" SuggestedWidth="305" HeightSizePolicy="Fixed" SuggestedHeight="188" HorizontalAlignment="Right" VerticalAlignment="Bottom" IsVisible="@IsCustomAnswerVisible" DoNotPassEventsToChildren="false">
+                <Widget Id="AFDialogueInput" WidthSizePolicy="Fixed" SuggestedWidth="345" HeightSizePolicy="Fixed" SuggestedHeight="211" HorizontalAlignment="Right" VerticalAlignment="Bottom" IsVisible="@IsCustomAnswerVisible" DoNotPassEventsToChildren="false">
                   <Children>
-                    <ScrollablePanel Id="AFDialogueInputScroll" MarginLeft="3" MarginRight="14" MarginTop="9" MarginBottom="9" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" ClipRect="AFDialogueInputClip" InnerPanel="AFDialogueInputClip\AFDialogueInputEditor" MouseScrollAxis="Vertical" VerticalScrollbar="..\AFDialogueInputBar" AutoHideScrollBars="true">
+                    <ScrollablePanel Id="AFDialogueInputScroll" MarginLeft="10" MarginRight="35" MarginTop="10" MarginBottom="48" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" ClipRect="AFDialogueInputClip" InnerPanel="AFDialogueInputClip\AFDialogueInputEditor" MouseScrollAxis="Vertical" VerticalScrollbar="..\AFDialogueInputBar" AutoHideScrollBars="true" UpdateScrollbarVisibility="true" AutoAdjustScrollbarHandleSize="true">
                       <Children>
                         <Widget Id="AFDialogueInputClip" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" ClipContents="true">
                           <Children>
-                            <DevMultilineEditableTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MinHeight="170" VerticalAlignment="Top" Command.TextEntered="ExecuteSubmit" Command.FocusGained="StartTyping" Command.FocusLost="StopTyping" Brush="ConversationItem.Text" Brush.FontSize="16" Brush.FontColor="#3B281BFF" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Top" EditorFontSize="16" RealText="@InputText" AutoFocus="true" AutoScrollToCaret="true" SuppressOpeningInteractionKey="true" SubmitOnEnter="true" UseBlackCaret="true" MaxLength="6000" IsEnabled="@IsInputEnabled" Id="AFDialogueInputEditor" />
+                            <DevMultilineEditableTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MinHeight="153" VerticalAlignment="Top" Command.TextEntered="ExecuteSubmit" Command.FocusGained="StartTyping" Command.FocusLost="StopTyping" Brush="ConversationItem.Text" Brush.FontSize="22" Brush.FontColor="#3B281BFF" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Top" EditorFontSize="22" RealText="@InputText" AutoFocus="true" AutoScrollToCaret="true" SuppressOpeningInteractionKey="true" SubmitOnEnter="true" UseBlackCaret="true" MaxLength="6000" IsEnabled="@IsInputEnabled" Id="AFDialogueInputEditor" />
                           </Children>
                         </Widget>
                       </Children>
                     </ScrollablePanel>
-                    <ScrollbarWidget Id="AFDialogueInputBar" WidthSizePolicy="Fixed" SuggestedWidth="6" HeightSizePolicy="StretchToParent" HorizontalAlignment="Right" MarginRight="3" MarginTop="9" MarginBottom="9" AlignmentAxis="Vertical" Handle="AFDialogueInputHandle" MinValue="0" MaxValue="100" Sprite="BlankWhiteSquare_9" Color="#6B4A2840">
+                    <ScrollbarWidget Id="AFDialogueInputBar" WidthSizePolicy="Fixed" SuggestedWidth="6" HeightSizePolicy="StretchToParent" HorizontalAlignment="Right" MarginRight="10" MarginTop="10" MarginBottom="48" AlignmentAxis="Vertical" Handle="AFDialogueInputHandle" MinValue="0" MaxValue="100" Sprite="BlankWhiteSquare_9" Color="#6B4A2840" IsVisible="false">
                       <Children>
-                        <Widget Id="AFDialogueInputHandle" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="28" MinHeight="18" Sprite="BlankWhiteSquare_9" Color="#6B4A28B8" />
+                        <Widget Id="AFDialogueInputHandle" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="28" MinHeight="18" Sprite="afdui_scroll_handle" />
                       </Children>
                     </ScrollbarWidget>
-                    <TextWidget Id="AFDialogueInputPlaceholder" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="3" MarginRight="3" MarginTop="9" MarginBottom="9" Text="输入你要说的话……&#10;Enter 发送 · Shift+Enter 换行" Brush="ConversationItem.Text" Brush.FontSize="16" Brush.FontColor="#6B4A28B8" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Top" IsVisible="@IsInputEmpty" DoNotAcceptEvents="true" />
+                    <TextWidget Id="AFDialogueInputPlaceholder" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="10" MarginRight="35" MarginTop="10" MarginBottom="48" Text="输入你要说的话……" Brush="ConversationItem.Text" Brush.FontSize="22" Brush.FontColor="#6B4A28B8" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Top" IsVisible="@IsInputEmpty" DoNotAcceptEvents="true" />
+                    <TextWidget Id="AFDialogueInputHint" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="26" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="10" MarginRight="15" MarginTop="178" Text="Enter 发送 · Shift+Enter 换行" Brush="ConversationItem.Text" Brush.FontSize="17" Brush.FontColor="#72563BFF" DoNotAcceptEvents="true" />
                   </Children>
                 </Widget>
               </Children>
             </Widget>
-            <ListPanel Id="AFDialogueToolbar" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedHeight="28" HorizontalAlignment="Left" VerticalAlignment="Top" StackLayout.LayoutMethod="HorizontalLeftToRight" IsVisible="@IsToolbarVisible" DoNotAcceptEvents="true" DoNotPassEventsToChildren="false" SuggestedWidth="305" MarginLeft="1105" MarginTop="46" PositionXOffset="@ToolbarOffsetX" PositionYOffset="@ToolbarOffsetY">
+            <ListPanel Id="AFDialogueToolbar" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedHeight="32" HorizontalAlignment="Left" VerticalAlignment="Top" StackLayout.LayoutMethod="HorizontalLeftToRight" IsVisible="@IsToolbarVisible" DoNotAcceptEvents="true" DoNotPassEventsToChildren="false" SuggestedWidth="345" MarginLeft="1240" MarginTop="39" PositionXOffset="@ToolbarOffsetX" PositionYOffset="@ToolbarOffsetY">
               <Children>
-                <ButtonWidget Id="AFDialogueHistory" WidthSizePolicy="Fixed" SuggestedWidth="63" HeightSizePolicy="Fixed" SuggestedHeight="28" Command.Click="ShowLogView" DoNotPassEventsToChildren="true">
+                <ButtonWidget Id="AFDialogueHistory" WidthSizePolicy="Fixed" SuggestedWidth="66" HeightSizePolicy="Fixed" SuggestedHeight="32" Command.Click="ShowLogView" DoNotPassEventsToChildren="true" MarginLeft="0">
                   <Children>
-                    <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Text="对话历史" Brush="Popup.Button.Text" Brush.FontSize="15" Brush.FontColor="#3B281BFF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" DoNotAcceptEvents="true" />
+                    <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Text="对话历史" Brush="Popup.Button.Text" Brush.FontSize="14" Brush.FontColor="#3B281BFF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" DoNotAcceptEvents="true" />
                   </Children>
                 </ButtonWidget>
-                <ButtonWidget Id="AFDialogueGift" WidthSizePolicy="Fixed" SuggestedWidth="69" HeightSizePolicy="Fixed" SuggestedHeight="28" MarginLeft="2" Command.Click="ShowGiveShowMenu" DoNotPassEventsToChildren="true">
+                <ButtonWidget Id="AFDialogueGift" WidthSizePolicy="Fixed" SuggestedWidth="74" HeightSizePolicy="Fixed" SuggestedHeight="32" MarginLeft="6" Command.Click="ShowGiveShowMenu" DoNotPassEventsToChildren="true">
                   <Children>
-                    <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Text="给予/展示" Brush="Popup.Button.Text" Brush.FontSize="15" Brush.FontColor="#3B281BFF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" DoNotAcceptEvents="true" />
+                    <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Text="给予/展示" Brush="Popup.Button.Text" Brush.FontSize="14" Brush.FontColor="#3B281BFF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" DoNotAcceptEvents="true" />
                   </Children>
                 </ButtonWidget>
-                <ButtonWidget Id="AnimusForgeConversationIllustrateButton" WidthSizePolicy="Fixed" SuggestedWidth="63" HeightSizePolicy="Fixed" SuggestedHeight="28" MarginLeft="2" Command.Click="ShowIllustration" IsVisible="@IsIllustrationAvailable" DoNotPassEventsToChildren="true">
+                <ButtonWidget Id="AnimusForgeConversationIllustrateButton" WidthSizePolicy="Fixed" SuggestedWidth="66" HeightSizePolicy="Fixed" SuggestedHeight="32" MarginLeft="6" Command.Click="ShowIllustration" IsVisible="@IsIllustrationAvailable" DoNotPassEventsToChildren="true">
                   <Children>
-                    <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Text="场景插画" Brush="Popup.Button.Text" Brush.FontSize="15" Brush.FontColor="#3B281BFF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" DoNotAcceptEvents="true" />
+                    <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Text="场景插画" Brush="Popup.Button.Text" Brush.FontSize="14" Brush.FontColor="#3B281BFF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" DoNotAcceptEvents="true" />
                   </Children>
                 </ButtonWidget>
-                <ButtonWidget Id="AFDialogueSwitch" WidthSizePolicy="Fixed" SuggestedWidth="63" HeightSizePolicy="Fixed" SuggestedHeight="28" MarginLeft="2" Command.Click="SwitchTalk" IsEnabled="@CanSwitchTalk" DoNotPassEventsToChildren="true">
+                <ButtonWidget Id="AFDialogueSwitch" WidthSizePolicy="Fixed" SuggestedWidth="66" HeightSizePolicy="Fixed" SuggestedHeight="32" MarginLeft="6" Command.Click="SwitchTalk" IsEnabled="@CanSwitchTalk" DoNotPassEventsToChildren="true">
                   <Children>
-                    <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Text="@SwitchTitle" Brush="Popup.Button.Text" Brush.FontSize="15" Brush.FontColor="#3B281BFF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" DoNotAcceptEvents="true" />
+                    <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Text="@SwitchTitle" Brush="Popup.Button.Text" Brush.FontSize="14" Brush.FontColor="#3B281BFF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" DoNotAcceptEvents="true" />
                   </Children>
                 </ButtonWidget>
-                <ButtonWidget Id="AFDialogueLeave" WidthSizePolicy="Fixed" SuggestedWidth="39" HeightSizePolicy="Fixed" SuggestedHeight="28" MarginLeft="2" Command.Click="LeaveConversation" IsEnabled="@CanLeave" DoNotPassEventsToChildren="true">
+                <ButtonWidget Id="AFDialogueLeave" WidthSizePolicy="Fixed" SuggestedWidth="49" HeightSizePolicy="Fixed" SuggestedHeight="32" MarginLeft="6" Command.Click="LeaveConversation" IsEnabled="@CanLeave" DoNotPassEventsToChildren="true">
                   <Children>
-                    <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Text="离开" Brush="Popup.Button.Text" Brush.FontSize="15" Brush.FontColor="#3B281BFF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" DoNotAcceptEvents="true" />
+                    <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Text="离开" Brush="Popup.Button.Text" Brush.FontSize="14" Brush.FontColor="#3B281BFF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" DoNotAcceptEvents="true" />
                   </Children>
                 </ButtonWidget>
               </Children>
