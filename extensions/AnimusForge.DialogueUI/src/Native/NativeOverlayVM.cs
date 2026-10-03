@@ -80,6 +80,7 @@ public sealed class NativeOverlayVM : ViewModel
         if (_disposed) return;
         try
         {
+            LordEncounterBehavior.PreparePlayerRequestedNativeConversationLeave();
             AnimusForgeNativeConversationOverlay.CloseActive();
             Campaign.Current?.ConversationManager?.EndConversation();
         }

@@ -18,9 +18,75 @@ internal static class Program
         ConversationTargetAudit.Run();
         ReturnAudit.Run();
         NativeHandoffAudit.Run();
+        PlayerLeaveAudit.Run();
         DuelAudit.Run();
         InteractionComponentSafePatch.Run();
         Console.WriteLine("PASS: " + _assertions + " extracted production boundary assertions.");
+    }
+}
+internal static class PlayerLeaveAudit
+{
+    enum ConversationContext { Default, PartyEncounter }
+    enum PlayerEncounterState { Begin, Wait, Battle }
+    sealed class State { internal PlayerEncounterState EncounterState; internal bool IsPlayerWaiting = true; }
+    sealed class CampaignState { internal ConversationContext CurrentConversationContext; }
+    static class Campaign { internal static CampaignState Current = new CampaignState(); }
+    static class Mission { internal static object Current; }
+    static class PlayerEncounter { internal static State Current; internal static bool LeaveEncounter, PlayerSurrender; }
+    static class PlayerEncounterCompat {
+        internal static bool Battle, Result, PostResult;
+        internal static bool HasEncounterBattleContext() => Battle;
+        internal static bool HasCampaignBattleResult() => Result;
+        internal static bool IsInPostBattleResultFlow() => PostResult;
+    }
+    static class MeetingBattleRuntime { internal static bool IsCombatEscalated; }
+    static class MapSeaContextGuard { internal static bool Sea; internal static bool IsCurrentPlayerEncounterAtSea(Hero hero) => Sea; }
+    static bool Attack, MeetingResult, Captivity, BattleMenu, Native, HostileInterception;
+    static bool HasPendingForceNativeEncounterAttack() => Attack;
+    static bool HasPendingMeetingBattleNativeResult() => MeetingResult;
+    static bool HasPendingForceNativeDefeatCaptivityMenu() => Captivity;
+    static bool HasPendingForceNativeEncounterBattleMenu() => BattleMenu;
+    static bool IsNativeEncounterActivityContext(Hero target) => Native;
+    static bool IsHostileEncounterInitiatedByOpponent() => HostileInterception;
+    static Hero GetCurrentEncounterLeaderSafe() => null; // caravans/non-Hero targets must also be able to leave
+    static void LogEncounterDiagnostic(string stage, string reason, string menu, Hero target) { }
+    @@PLAYER_LEAVE_METHOD@@
+    static void Setup() {
+        PlayerEncounter.Current = new State(); PlayerEncounter.LeaveEncounter = PlayerEncounter.PlayerSurrender = false;
+        Campaign.Current.CurrentConversationContext = ConversationContext.PartyEncounter; Mission.Current = null;
+        Attack = MeetingResult = Captivity = BattleMenu = Native = HostileInterception = false;
+        PlayerEncounterCompat.Battle = PlayerEncounterCompat.Result = PlayerEncounterCompat.PostResult = false;
+        MeetingBattleRuntime.IsCombatEscalated = MapSeaContextGuard.Sea = false;
+    }
+    internal static void Run() {
+        Setup(); PreparePlayerRequestedNativeConversationLeave();
+        Program.Check(PlayerEncounter.LeaveEncounter && !PlayerEncounter.Current.IsPlayerWaiting, "toolbar farewell leaves an ordinary map encounter, including a caravan without a lord");
+        Setup(); PlayerEncounter.Current.EncounterState = PlayerEncounterState.Wait; PreparePlayerRequestedNativeConversationLeave();
+        Program.Check(PlayerEncounter.LeaveEncounter, "waiting map conversation has the same farewell consequence");
+        foreach (var danger in new[] { "mission", "context", "state", "attack", "meeting_result", "captivity", "battle_menu", "battle", "result", "post_result", "escalation", "surrender", "activity", "sea", "intercepted" }) {
+            Setup();
+            switch (danger) {
+                case "mission": Mission.Current = new object(); break;
+                case "context": Campaign.Current.CurrentConversationContext = ConversationContext.Default; break;
+                case "state": PlayerEncounter.Current.EncounterState = PlayerEncounterState.Battle; break;
+                case "attack": Attack = true; break;
+                case "meeting_result": MeetingResult = true; break;
+                case "captivity": Captivity = true; break;
+                case "battle_menu": BattleMenu = true; break;
+                case "battle": PlayerEncounterCompat.Battle = true; break;
+                case "result": PlayerEncounterCompat.Result = true; break;
+                case "post_result": PlayerEncounterCompat.PostResult = true; break;
+                case "escalation": MeetingBattleRuntime.IsCombatEscalated = true; break;
+                case "surrender": PlayerEncounter.PlayerSurrender = true; break;
+                case "activity": Native = true; break;
+                case "sea": MapSeaContextGuard.Sea = true; break;
+                case "intercepted": HostileInterception = true; break;
+            }
+            PreparePlayerRequestedNativeConversationLeave();
+            Program.Check(!PlayerEncounter.LeaveEncounter && PlayerEncounter.Current.IsPlayerWaiting, "toolbar leave does not bypass native encounter rules: " + danger);
+        }
+        Setup(); PlayerEncounter.Current = null; PreparePlayerRequestedNativeConversationLeave();
+        Program.Check(!PlayerEncounter.LeaveEncounter, "scene conversation without an encounter does not create a farewell flag");
     }
 }
 internal static class NativeHandoffAudit

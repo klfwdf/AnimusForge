@@ -177,7 +177,16 @@ static class Program
         int inputViewport=(int)InputId("AFDialogueInput").Attribute("SuggestedHeight")-(int)InputId("AFDialogueInputScroll").Attribute("MarginTop")-(int)InputId("AFDialogueInputScroll").Attribute("MarginBottom");
         Check((int)InputId("AFDialogueInputEditor").Attribute("MinHeight")<=inputViewport,"empty input cannot force a permanently visible scrollbar");
         Check((string)InputId("AFDialogueInputEditor").Attribute("AutoScrollToCaret")=="true","typing follows caret using existing editor");
-        Check((int)InputId("AFDialogueInputHint").Attribute("MarginTop")>inputViewport+(int)InputId("AFDialogueInputScroll").Attribute("MarginTop"),"keyboard hint stays outside scrolling text");
+        Check((string)InputId("AFDialogueInputHint").Attribute("IsVisible")=="@IsInputEmpty","keyboard hint is only an empty-input prompt, not a fixed footer");
+        Check((int)InputId("AFDialogueInputScroll").Attribute("MarginBottom")==10,"typing uses full input height without a reserved hint footer");
+        Check(Id("BottomPanelsContainer").Name.LocalName=="Widget" && (int)Id("BottomPanelsContainer").Attribute("SuggestedHeight")==214,"body and ordinary options are independently anchored, not horizontally stacked");
+        foreach(var bar in new[]{Id("AFDialogueTextScrollbar"),Id("AFDialogueAnswerScrollbar"),InputId("AFDialogueInputBar")})
+            Check(bar.Attribute("Sprite")==null && bar.Attribute("Color")==null,"scrollbar has no white track: "+bar.Attribute("Id"));
+        var scrollXml=XDocument.Load(Path.Combine(root,"extensions/AnimusForge.DialogueUI/GUI/Prefabs/AFSceneSessionScroll.xml"));
+        foreach(string label in new[]{"历史记录","赠送物品","人物图鉴","退出交谈"}) {
+            var text=scrollXml.Descendants().Single(x=>(string)x.Attribute("Text")==label);
+            Check((int)text.Attribute("Brush.FontSize")>=17 && (string)text.Attribute("Brush.FontColor")=="#FFF1D6FF","scroll chrome uses readable high-contrast label: "+label);
+        }
         var buttons=InputId("AFDialogueToolbar").Element("Children").Elements().ToArray();
         Check(buttons.Length==5 && buttons.Sum(x=>(int)x.Attribute("SuggestedWidth")+(int?)x.Attribute("MarginLeft")??0)==345,"five buttons fit input width including gaps");
         Check(buttons.All(x=>(int)x.Attribute("SuggestedHeight")==32),"toolbar has uniform 32 height");
@@ -204,6 +213,13 @@ static class Program
         foreach(string path in new[]{"extensions/AnimusForge.DialogueUI/GUI/Prefabs/AFDialogueNativeOverlay.xml","content/modules/AF.Module.Conversation/GUI/Prefabs/AnimusForgeNativeConversationOverlay.xml"})
             Check(XDocument.Load(Path.Combine(root,path)).Descendants().Any(x=>(string)x.Attribute("Command.Click")=="SwitchTalk"&&(string)x.Attribute("IsEnabled")=="@CanSwitchTalk"),"mode lock bound in "+path);
         var wrapper=Read(root,"extensions/AnimusForge.DialogueUI/src/Native/NativeOverlayVM.cs");
+        Check(wrapper.Contains("PreparePlayerRequestedNativeConversationLeave();") && wrapper.IndexOf("PreparePlayerRequestedNativeConversationLeave();")<wrapper.IndexOf("AnimusForgeNativeConversationOverlay.CloseActive();"),"toolbar leave prepares native farewell before closing overlay");
+        var shout=Read(root,"src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.cs");
+        var stare=shout.Substring(shout.IndexOf("public void UpdatePassiveStareLogic("));
+        stare=stare.Substring(0,stare.IndexOf("private static float GetPassiveStareTriggerTime("));
+        foreach(string owner in new[]{"IsScenePresentationActiveForExternal","AnimusForgeNativeConversationOverlay.IsOpen","Campaign.Current?.ConversationManager?.IsConversationInProgress == true"})
+            Check(stare.Contains(owner) && stare.IndexOf(owner)<stare.IndexOf("ShoutUtils.GetClosestFacingAgent"),"active dialogue suppresses idle stare before any target scan: "+owner);
+        Check(stare.Contains("ResetPassiveStareTracking();"),"opening dialogue clears accumulated stare, not just pauses the timer");
         Check(wrapper.Contains("CanSwitchTalk => IsInteractionEnabled && Original.CanSwitchTalk")&&wrapper.Contains("if (!CanSwitchTalk) return;"),"replacement wrapper forwards and respects actual host mode lock");
         var set=overlay.Substring(overlay.IndexOf("private void SetInputVisible("));set=set.Substring(0,set.IndexOf("private void SetLayerForButtonsOnly("));
         Check(set.Contains("_isSubmitting = false;")&&set.Contains("_dataSource.SetBusy(false);")&&set.Contains("_submitGeneration++;"),"escape route clears busy and invalidates stale callbacks");

@@ -242,7 +242,10 @@ public static class NativeConversationAnswerAreaController
 			_answerList = Root.FindChild("AnswerList", includeAllChildren: true);
 			_lastAnswerChildCount = -1;
 			_answerRefreshCountdown = 0;
-			AddState(_answerList, preserveLayout: true);
+            AddState(_answerList, preserveLayout: true);
+            // The replacement answer viewport also owns a sibling scrollbar.
+            // Hiding only its rows leaves that scrollbar visible behind AI input.
+            AddState(Root.FindChild("AnswerListContainer", includeAllChildren: true), preserveLayout: false);
 			AddState(Root.FindChild("ContinueButton", includeAllChildren: true), preserveLayout: false);
 			_hasStoredState = true;
 		}

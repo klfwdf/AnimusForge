@@ -32,6 +32,8 @@ def main():
     ]
     template = template.replace("@@HANDOFF_METHODS@@", "\n".join(
         EXTRACTOR.declaration(source, signature) for signature in handoff_signatures))
+    template = template.replace("@@PLAYER_LEAVE_METHOD@@", EXTRACTOR.declaration(
+        source, "internal static void PreparePlayerRequestedNativeConversationLeave("))
     signatures = [
         "private sealed class MeetingPlayerReleaseRequest",
         "private static MeetingPlayerReleaseRequest CaptureMeetingPlayerReleaseRequest(",

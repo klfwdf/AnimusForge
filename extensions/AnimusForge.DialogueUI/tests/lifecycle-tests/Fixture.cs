@@ -65,6 +65,7 @@ namespace AnimusForge
     public class ShoutTextInputPopup { private object _dataSource; private void Close(bool silent) { } }
     public class ShoutTextInputPopupVM : TaleWorlds.Library.ViewModel { public string SubtitleText => ""; public void ExecuteSubmit() { } public void ExecuteCancel() { } }
     public static class AnimusForgeNativeConversationOverlay { public static void CloseActive() { } }
+    public static class LordEncounterBehavior { public static void PreparePlayerRequestedNativeConversationLeave() { } }
 }
 namespace AnimusForge.DialogueUI
 {

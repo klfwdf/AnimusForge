@@ -7774,7 +7774,9 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		{
 			return;
 		}
-		if (_shoutHotkeyChargeActive || ShoutTextInputPopup.IsOpen)
+        if (_shoutHotkeyChargeActive || ShoutTextInputPopup.IsOpen ||
+            IsScenePresentationActiveForExternal || AnimusForgeNativeConversationOverlay.IsOpen ||
+            Campaign.Current?.ConversationManager?.IsConversationInProgress == true)
 		{
 			ResetPassiveStareTracking();
 			return;

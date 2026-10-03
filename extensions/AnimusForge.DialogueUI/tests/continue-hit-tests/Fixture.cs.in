@@ -38,9 +38,11 @@ static class Program
         Blank("initial");
         NativeConversationAnswerAreaController.LoadMoviePostfix("SPConversation", new GauntletMovieIdentifier { Movie = new FakeMovie { RootWidget = root } });
         NativeConversationAnswerAreaController.SetSuppressed(true);
+        Check(!Id("AnswerListContainer").IsVisible, "AI hides the ordinary answer viewport including its scrollbar");
         Check(Hit(1200, 300) != button, "AI suppression prevents native continue");
         NativeConversationAnswerAreaController.SetSuppressed(false);
         NativeConversationAnswerAreaController.ForceRestoreAll();
+        Check(Id("AnswerListContainer").IsVisible, "ordinary mode restores its answer viewport");
         Blank("AI -> ordinary");
         for (int i = 0; i < 8; i++) NativeConversationAnswerAreaController.ForceRestoreAll();
         Blank("eight restore retries / encyclopedia return");

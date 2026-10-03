@@ -59,7 +59,7 @@
             <ListPanel Id="VerticalContainer" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren"
                 StackLayout.LayoutMethod="VerticalBottomToTop" HorizontalAlignment="Center" VerticalAlignment="Bottom" DoNotAcceptEvents="true">
               <Children>
-                <ListPanel Id="BottomPanelsContainer" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren"
+                <Widget Id="BottomPanelsContainer" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="214"
                     HorizontalAlignment="Center" VerticalAlignment="Bottom" MarginBottom="42" DoNotAcceptEvents="true">
                   <Children>
                     <!-- Central text sheet follows the Pen frame: 718x214 at the widened center panel. -->
@@ -90,7 +90,7 @@
                             </AFDialogueClickThroughScrollPanel>
                             <ScrollbarWidget Id="AFDialogueTextScrollbar" WidthSizePolicy="Fixed" SuggestedWidth="6" HeightSizePolicy="StretchToParent"
                                 HorizontalAlignment="Right" MarginRight="14" MarginTop="10" MarginBottom="10" AlignmentAxis="Vertical"
-                                Handle="AFDialogueTextHandle" MinValue="0" MaxValue="100" IsVisible="false" Sprite="BlankWhiteSquare_9" Color="#3A251844">
+                                Handle="AFDialogueTextHandle" MinValue="0" MaxValue="100" IsVisible="false">
                               <Children><Widget Id="AFDialogueTextHandle" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="26" Sprite="afdui_scroll_handle" /></Children>
                             </ScrollbarWidget>
                           </Children>
@@ -119,13 +119,13 @@
                           </Children>
                         </AFDialogueClickThroughScrollPanel>
                         <ScrollbarWidget Id="AFDialogueAnswerScrollbar" WidthSizePolicy="Fixed" SuggestedWidth="6" HeightSizePolicy="StretchToParent"
-                            HorizontalAlignment="Right" AlignmentAxis="Vertical" Handle="AFDialogueAnswerHandle" MinValue="0" MaxValue="100" MarginRight="10" IsVisible="false" Sprite="BlankWhiteSquare_9" Color="#3A251844">
+                            HorizontalAlignment="Right" AlignmentAxis="Vertical" Handle="AFDialogueAnswerHandle" MinValue="0" MaxValue="100" MarginRight="10" IsVisible="false">
                           <Children><Widget Id="AFDialogueAnswerHandle" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="26" Sprite="afdui_scroll_handle" /></Children>
                         </ScrollbarWidget>
                       </Children>
                     </Widget>
                   </Children>
-                </ListPanel>
+                </Widget>
                 <ListPanel Id="PersuationExtensionListPanel" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" DoNotAcceptEvents="true">
                   <Children>
                     <Widget Id="PersuationExtensionParent" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren"

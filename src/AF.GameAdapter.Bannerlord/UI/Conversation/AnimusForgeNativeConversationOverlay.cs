@@ -1515,9 +1515,10 @@ public sealed partial class AnimusForgeNativeConversationOverlay
 		{
 			// Escape remains available, but ends this conversation rather than
 			// exposing native choices while its AI/action request is still running.
-			var manager = Campaign.Current?.ConversationManager;
-			Logger.Log("NativeConversationOverlay", "Long NPC reply wait ended by ESC. Generation=" + _submitGeneration);
-			Close(silent: true);
+            var manager = Campaign.Current?.ConversationManager;
+            Logger.Log("NativeConversationOverlay", "Long NPC reply wait ended by ESC. Generation=" + _submitGeneration);
+            LordEncounterBehavior.PreparePlayerRequestedNativeConversationLeave();
+            Close(silent: true);
 			manager?.EndConversation();
 			InformationManager.DisplayMessage(new InformationMessage("已退出当前对话。", new Color(0.35f, 1f, 0.35f)));
 		}
