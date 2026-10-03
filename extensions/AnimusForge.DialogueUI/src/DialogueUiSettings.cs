@@ -32,10 +32,15 @@ namespace AnimusForge.DialogueUI
         public Dropdown<string> ShoutPanelStyleDropdown { get; set; } =
             new Dropdown<string>(new[] { "原样", "卷轴式", "右侧手札" }, 0);
 
-        [SettingPropertyBool("Hero 对话自动进入 AI 模式", Order = 3, RequireRestart = false,
-            HintText = "开启时，仅与 Hero（领主、同伴、要人等有独立身份的人物）对话自动进入 AI 模式；普通劫匪、逃兵、士兵等非 Hero 保持普通模式。关闭时所有对话先用普通模式；均可手动切换。下次打开对话生效。")]
+        [SettingPropertyBool("自动进入 AI 模式", Order = 3, RequireRestart = false,
+            HintText = "开启时，打开场景或地图对话自动进入 AI 输入模式；可配合「仅 Hero 自动进入 AI 模式」限制对象。关闭时先显示普通对话选项，仍可手动切换 AI。下次打开对话生效。")]
         [SettingPropertyGroup("1. 界面", GroupOrder = 1)]
         public bool AutoEnterAiMode { get; set; } = true;
+
+        [SettingPropertyBool("仅 Hero 自动进入 AI 模式", Order = 4, RequireRestart = false,
+            HintText = "仅在「自动进入 AI 模式」开启时生效。开启后，只对 Hero（领主、同伴、要人等有独立身份的人物）自动进入 AI；普通劫匪、逃兵、士兵等非 Hero 保持普通模式。关闭后不限制对象，恢复原来的自动切换。均可手动切换，下次打开对话生效。")]
+        [SettingPropertyGroup("1. 界面", GroupOrder = 1)]
+        public bool AutoEnterAiModeHeroOnly { get; set; } = true;
 
         [SettingPropertyBool("对话历史显示删除按钮", Order = 2, RequireRestart = false,
             HintText = "开启后，对话历史面板的每条持久记录旁显示删除按钮。删除会同时移除该条可见历史与当日尚未压缩的记忆草稿；已压缩进记忆块的内容不受影响。")]
@@ -52,6 +57,7 @@ namespace AnimusForge.DialogueUI
         private static bool _unavailable;
 
         internal static bool AutoEnterAiMode => Read(ReadAutoEnterAiMode, true);
+        internal static bool AutoEnterAiModeHeroOnly => Read(ReadAutoEnterAiModeHeroOnly, true);
         internal static bool SkinEnabled => Read(ReadSkin, true);
         internal static bool ShowHistoryDelete => Read(ReadHistoryDelete, true);
 
@@ -81,6 +87,9 @@ namespace AnimusForge.DialogueUI
 
         [MethodImpl(MethodImplOptions.NoInlining)]
         private static bool ReadAutoEnterAiMode() => DialogueUiSettings.Instance?.AutoEnterAiMode ?? true;
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private static bool ReadAutoEnterAiModeHeroOnly() => DialogueUiSettings.Instance?.AutoEnterAiModeHeroOnly ?? true;
 
         [MethodImpl(MethodImplOptions.NoInlining)]
         private static bool ReadSkin() => DialogueUiSettings.Instance?.EnableSkin ?? true;

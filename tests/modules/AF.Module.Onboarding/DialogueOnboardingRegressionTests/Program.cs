@@ -74,6 +74,11 @@ static class Program
         Check(options.AutoEnterAiMode&&DialogueUiOptions.AutoEnterAiMode,"AI-first default preserved");
         options.AutoEnterAiMode=false;Check(!DialogueUiOptions.AutoEnterAiMode,"MCM false reaches actual option reader");
         options.AutoEnterAiMode=true;Check(DialogueUiOptions.AutoEnterAiMode,"MCM change requires no restart");
+        Check(options.AutoEnterAiModeHeroOnly && DialogueUiOptions.AutoEnterAiModeHeroOnly,"Hero-only filter is a separate enabled-by-default setting");
+        options.AutoEnterAiModeHeroOnly=false;Check(!DialogueUiOptions.AutoEnterAiModeHeroOnly && DialogueUiOptions.AutoEnterAiMode,"Hero filter can be disabled without disabling original auto entry");
+        options.AutoEnterAiMode=false;options.AutoEnterAiModeHeroOnly=true;
+        Check(!DialogueUiOptions.AutoEnterAiMode && DialogueUiOptions.AutoEnterAiModeHeroOnly,"Hero filter does not implicitly enable master auto entry");
+        options.AutoEnterAiMode=true;
 
         DuelSettings.Current=new();var settings=DuelSettings.Current;int completed=0,cancelled=0;
         var vm=new AnimusForgeApiOnboardingVM(false,()=>completed++,()=>cancelled++);
