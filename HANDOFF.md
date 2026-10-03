@@ -1,3 +1,11 @@
+# 当前修复：对话 UI / 内战 / 政变 / NPC 赠品出售（2026-10-03，OFFLINE_VERIFIED）
+
+- 本地产品 `6211ec3c`：喊话 epoch 属性适配、UI 重载保留草稿与模式、百科返回绑定 / 节点可见状态恢复、长输入裁剪滚动；内战关闭暂停政治任务但维护衰减时钟；政变失败重试只撤原目标，不结束新遭遇。
+- 本地产品 `a3a3f7d2`：分离随机经济隔离与市场封禁，NPC 赠品可以按原版交易，出售后不被市场清理删除；旧身份兼容、记录复制 / 合并保留权限。信件 / 画廊 / 玩家 RP 制作保护及随机生产隔离不变。
+- 原入口 Debug 双 API + Bootstrap 最终 0 error；赠品 26 + 两负控、资产 67 / stress 80565、内战 338、政变 144 / 61、UI 22 / 给予桥55、最终 DLL 对话各102通过。实机 / 玩家旧档 / 原版金额结算未验，百科五控件实际表现仍待实测，不把 fixture 当成实机完成。
+- [唯一主台账与13个源码入口](docs/animusforge-refactoring-and-repository-reorganization-plan.md#dialogue-civilwar-coup-review-fixes-20261003)集中范围 / 性能 / 失败与通过证据；本地 `artifacts/three-module-review-20261003/receipt.json` 绑定最终20文件与三个DLL marker。回滚使用对应产品的 focused revert。
+- 本轮未 push / 部署 / Stage / 打包；下方部署为旧候选，不能当成已经安装本次修复。其他作者材料保留，未 add-all 或清理。
+
 # 当前部署：已发布融合源码更新游戏（2026-10-03）
 
 - 用户明确授权部署；产品源码`ae10e7f5`，原入口Debug双API+Bootstrap重新构建0错误、最新统一Stage通过，部署到`F:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord/Modules/AnimusForge`，更新17受管文件。
