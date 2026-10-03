@@ -168,6 +168,7 @@ public sealed partial class NpcRulerPolicyBehavior : CampaignBehaviorBase
 			if (record != null && !string.IsNullOrWhiteSpace(record.PolicyId))
 			{
 				_policyRecords[record.PolicyId] = JsonConvert.SerializeObject(record);
+				CustomPolicyBehavior.InvalidatePolicyRecordPresentation();
 			}
 		}
 		LogNpcPolicyLoadNormalizationSummary(normalizationSummary);
@@ -282,6 +283,34 @@ public sealed partial class NpcRulerPolicyBehavior : CampaignBehaviorBase
 			Log("player-policy-snapshot-failed policy=" + (policyId ?? "") + " error=" + ex.Message);
 			return false;
 		}
+	}
+
+	internal static bool TryGetPolicyRecordForPresentation(string policyId, out NpcRulerPolicyRecord record)
+	{
+		record = null;
+		if (Instance == null || !Instance._policyRecords.TryGetValue((policyId ?? string.Empty).Trim(), out string raw)) return false;
+		record = DeserializeRecord(raw);
+		return record != null;
+	}
+
+	internal static IReadOnlyList<NpcRulerPolicyRecord> GetPolicyRecordsForPresentation()
+		=> Instance?._policyRecords.Values.Select(DeserializeRecord)
+			.Where(record => record != null && TryMapNpcPolicyHistoryStatus(record.AgendaStatus, out _))
+			.OrderByDescending(record => record.Day).ThenByDescending(record => record.CreatedUtcTicks).Take(480).ToArray()
+			?? Array.Empty<NpcRulerPolicyRecord>();
+
+	internal static string BuildPolicyEffectSummaryForPresentation(NpcRulerPolicyRecord record)
+	{
+		List<string> lines = new List<string>();
+		foreach (NpcRulerPolicyEffectDto effect in record.Effects ?? new List<NpcRulerPolicyEffectDto>())
+		{
+			if (effect == null) continue;
+			lines.AddRange(CustomPolicyBehavior.BuildPlayerVisibleEffectLinesForExternal(
+				FirstNonEmpty(effect.TargetKingdomName, "目标王国"), effect.ModuleEffects, -1));
+			lines.Add(effect.IsEnded || (effect.DurationDays > 0 && effect.RemainingDays <= 0) || string.Equals(record.AgendaStatus, AgendaStatusAbolished, StringComparison.OrdinalIgnoreCase)
+				? "持续效果已结束" : effect.DurationDays == 0 ? "持续效果：永久" : "效果剩余 " + Math.Max(0, effect.RemainingDays).ToString(CultureInfo.InvariantCulture) + " 天");
+		}
+		return lines.Count == 0 ? "无持续效果" : string.Join("\n", lines);
 	}
 
 	// Read-only view of an NPC policy's module effects for vote-interest scoring. Cold path: the
@@ -507,6 +536,7 @@ public sealed partial class NpcRulerPolicyBehavior : CampaignBehaviorBase
 		record.AgendaStatus = pendingStatus;
 		record.ApprovalCommitIsRenewal = isRenewal;
 		_policyRecords[id] = JsonConvert.SerializeObject(record);
+		CustomPolicyBehavior.InvalidatePolicyRecordPresentation();
 		EnqueueApprovedAgendaCommit(record, isRenewal);
 		PolicySystemLog.Lifecycle("Npc", "agenda-approved", "pending-commit", new PolicyLogContext
 		{
@@ -607,6 +637,7 @@ public sealed partial class NpcRulerPolicyBehavior : CampaignBehaviorBase
 		record.ApprovalFailureFinalizationPending = false;
 		record.EffectBundleRollbackPending = false;
 		_policyRecords[id] = JsonConvert.SerializeObject(record);
+		CustomPolicyBehavior.InvalidatePolicyRecordPresentation();
 		PolicySystemLog.Write("Npc", "policy-agenda-suspended-rollback-complete",
 			"policyId=" + id + " renewal=" + isRenewal.ToString(CultureInfo.InvariantCulture));
 		return true;
@@ -655,6 +686,7 @@ public sealed partial class NpcRulerPolicyBehavior : CampaignBehaviorBase
 			effect.IsEnded = true;
 		}
 		_policyRecords[id] = JsonConvert.SerializeObject(record);
+		CustomPolicyBehavior.InvalidatePolicyRecordPresentation();
 		PolicySystemLog.Lifecycle("Npc", "agenda-rejected", "rejected", new PolicyLogContext
 		{
 			GenerationId = record.BatchId,
@@ -683,6 +715,7 @@ public sealed partial class NpcRulerPolicyBehavior : CampaignBehaviorBase
 		}
 		record.AgendaStatus = string.IsNullOrWhiteSpace(status) ? record.AgendaStatus : status.Trim();
 		_policyRecords[id] = JsonConvert.SerializeObject(record);
+		CustomPolicyBehavior.InvalidatePolicyRecordPresentation();
 	}
 
 	private void EnqueueApprovedAgendaCommit(NpcRulerPolicyRecord record, bool isRenewal)
@@ -854,6 +887,7 @@ public sealed partial class NpcRulerPolicyBehavior : CampaignBehaviorBase
 			}
 		}
 		_policyRecords[record.PolicyId] = JsonConvert.SerializeObject(record);
+		CustomPolicyBehavior.InvalidatePolicyRecordPresentation();
 		TrimPolicyRecords();
 		Log("player-policy-ledger-registered policy=" + record.PolicyId + " kingdom=" + record.KingdomId);
 		return true;
@@ -896,6 +930,7 @@ public sealed partial class NpcRulerPolicyBehavior : CampaignBehaviorBase
 				}
 				record.ApprovalAnnouncementPublished = true;
 				_policyRecords[id] = JsonConvert.SerializeObject(record);
+				CustomPolicyBehavior.InvalidatePolicyRecordPresentation();
 			}
 			catch (Exception ex)
 			{
@@ -913,6 +948,7 @@ public sealed partial class NpcRulerPolicyBehavior : CampaignBehaviorBase
 				}
 				record.ApprovalPolicyEventPublished = true;
 				_policyRecords[id] = JsonConvert.SerializeObject(record);
+				CustomPolicyBehavior.InvalidatePolicyRecordPresentation();
 			}
 			catch (Exception ex)
 			{
@@ -936,6 +972,7 @@ public sealed partial class NpcRulerPolicyBehavior : CampaignBehaviorBase
 				}
 				record.ApprovalPublicFeedbackPublished = true;
 				_policyRecords[id] = JsonConvert.SerializeObject(record);
+				CustomPolicyBehavior.InvalidatePolicyRecordPresentation();
 			}
 			catch (Exception ex)
 			{
@@ -950,6 +987,7 @@ public sealed partial class NpcRulerPolicyBehavior : CampaignBehaviorBase
 				RecordUnifiedPolicyWeeklyMaterial(record);
 				record.ApprovalWeeklyMaterialRecorded = true;
 				_policyRecords[id] = JsonConvert.SerializeObject(record);
+				CustomPolicyBehavior.InvalidatePolicyRecordPresentation();
 			}
 			catch (Exception ex)
 			{
@@ -1051,6 +1089,7 @@ public sealed partial class NpcRulerPolicyBehavior : CampaignBehaviorBase
 		}
 		record.ReReviewReplacementCommitted = true;
 		_policyRecords[id] = JsonConvert.SerializeObject(record);
+		CustomPolicyBehavior.InvalidatePolicyRecordPresentation();
 		return true;
 	}
 
@@ -1068,6 +1107,7 @@ public sealed partial class NpcRulerPolicyBehavior : CampaignBehaviorBase
 		}
 		record.PolicyCooldownDay = Math.Max(Math.Max(record.Day, record.PolicyCooldownDay), Math.Max(0, day));
 		_policyRecords[id] = JsonConvert.SerializeObject(record);
+		CustomPolicyBehavior.InvalidatePolicyRecordPresentation();
 		Log("player-policy-cooldown-touched policy=" + id + " kingdom=" + (record.KingdomId ?? "") + " day=" + record.PolicyCooldownDay.ToString(CultureInfo.InvariantCulture));
 		return true;
 	}
@@ -1111,6 +1151,7 @@ public sealed partial class NpcRulerPolicyBehavior : CampaignBehaviorBase
 		}
 		SynchronizeNpcPolicyEffectShell(effect);
 		_policyRecords[id] = JsonConvert.SerializeObject(record);
+		CustomPolicyBehavior.InvalidatePolicyRecordPresentation();
 	}
 
 	private void OnDailyTick()
@@ -1193,6 +1234,7 @@ public sealed partial class NpcRulerPolicyBehavior : CampaignBehaviorBase
 			if (stateChanged)
 			{
 				_policyRecords[record.PolicyId] = JsonConvert.SerializeObject(record);
+				CustomPolicyBehavior.InvalidatePolicyRecordPresentation();
 			}
 			EnqueueApprovedAgendaCommit(record, record.ApprovalCommitIsRenewal);
 			if (stateChanged || logDeferredRollbackOwner)
@@ -1265,6 +1307,7 @@ public sealed partial class NpcRulerPolicyBehavior : CampaignBehaviorBase
 			return false;
 		}
 		_policyRecords[id] = JsonConvert.SerializeObject(record);
+		CustomPolicyBehavior.InvalidatePolicyRecordPresentation();
 		return true;
 	}
 
@@ -1334,6 +1377,7 @@ public sealed partial class NpcRulerPolicyBehavior : CampaignBehaviorBase
 				record.PublicFeedbackNoticeShown = true;
 				record.PublicFeedbackNoticeDueHour = -1;
 				_policyRecords[policyId] = JsonConvert.SerializeObject(record);
+				CustomPolicyBehavior.InvalidatePolicyRecordPresentation();
 				displayedCount++;
 			}
 			else

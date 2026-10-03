@@ -6631,3 +6631,13 @@ R2计划交付门槛：已给固定技术路线、真实来源与目标、写入
 - 输入/新档：`ShoutBehavior.ResetPassiveStareTracking/UpdatePassiveStareLogic`在喊话按键、蓄力与输入框期间重置被动凝视，既有0.2秒调度保持；`NativeUiAdapter.HitTest:443-468`移除辅助面板整块抢点击；`ModOnboardingBehavior.RegisterEvents/OnNewGameCreated/OnGameLoaded:220-260`分离新档与读档，新档重置setup位及welcome状态，故事模式既有跳过逻辑保留。不改存档键或构建流程。
 - 验证：前轮原`build_single_module.ps1 -Configuration Debug/Release -Stage`两配置各双API(`1.3.15.110062`/`1.4.6.115628`)+Bootstrap以及统一本地Stage均成功，0错误、既有警告保留。本轮快报smoke49项PASS、DialogueOnboardingRegressionTests指定仓库路径93项PASS；首次未传root导致fixture路径解析为`F:/extensions`失败，补参数重跑通过，不改测试绕过。`git diff --check`通过。
 - 性能：出城识别每次战斗结算O(1)；prompt按快报请求构建；开关在请求/面板入口查询，缓存加载复用原任务owner；凝视沿现有0.2秒调度O(1)，无新增全量扫描/反射/空转。实际帧性能、真实Gauntlet/新档/旧档/上游生图NOT_RUN，未部署、未打包。回滚只用本次提交的focused inverse，禁止回滚其他作者或清理整个工作树。
+
+<a id="bulletin-image-dialogue-fusion-20261003"></a>
+## 用户确认融合并继续推送main（2026-10-03，OFFLINE_VERIFIED）
+
+- 本条替代上一条“融合待确认”：最新用户明确“融合”，承接“提交推送”。原本地`9019b27e`、原远端`1acf1ae6`，`git merge --no-commit --no-ff origin/main`自动合并无冲突。45份远端政策/定居点平衡/人物设定产品与测试文件保留，本地生图/快报/喊话/新档/UI三个提交也保留；不是以本地旧树覆盖main，不上传旧远端重构分支未发布历史。
+- 原`build_single_module.ps1`无Stage/Deploy，Debug/Release各1.3(`1.3.15.110062`)、1.4(`1.4.6.115628`)、Bootstrap六构建exit0，0error，既有warning保留。六DLL marker SHA256均与实际文件一致；源码未改后仅补测试/记录。本地旧Stage、旧ZIP及当前游戏安装不代表本次融合候选。
+- 当前生产链接回归：WorldBulletinPolicy49、DialogueOnboarding93、SettlementBalance规则/设置58、BulletinCourierLayout13、人设生成413/0failure、persona lore/settings29均PASS。平衡runtime/editor在Debug及最终Release每API71PASS；不是整个政策测试全通过或真实Campaign/Gauntlet验收。
+- 补验首次Release 1.3在真实setter跨上限断言FAIL；Debug两API均PASS。定位`tests/bridges/Policy/SettlementBalance.RuntimeTests/Program.cs:229-243`的`NativeAdapterTests`在同方法安装Harmony后直接调用setter，Release JIT可提前内联绕过补丁。仅将这三次测试调用改为`MethodInfo.Invoke`，保留原跨上限/原版最小值断言；最终Release两API各71PASS。生产`SettlementBalanceRuntime`完全不改，不新增运行时反射。原失败日志保留，不伪称初次全通过。
+- 发布门禁：`git diff --check`与cached检查无错误，零未解决冲突；待发布三个本地提交的历史文件仅具名源码/产品资源/测试/公开台账，不含artifacts/.tmp/local/PlayerExports或本地专用交接。提交合并后普通`HEAD:refs/heads/main`推送，独立`ls-remote`核对最终candidate，禁止强推；网络结果记录在本地`artifacts/fusion-push-20261003-171851/`。
+- NOT_RUN：真实游戏输入/新档弹窗/旧档/LLM与图像provider/性能；未Stage、打包、部署或启动游戏，未清理其他作者未跟踪文件。融合前检查点`9019b27e`、远端保留基线`1acf1ae6`；仅定向inverse恢复，不能hard reset或撤销其他会话改动。

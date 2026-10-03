@@ -97,12 +97,12 @@ public sealed class AnimusForgeWorldEventInboxPopup
 	private readonly Action<string> _onReReview;
 	private bool _isClosed;
 
-	private AnimusForgeWorldEventInboxPopup(ScreenBase screen, WorldEventInboxPopupData data, Action<string> onReReview, Action onClose)
+	private AnimusForgeWorldEventInboxPopup(ScreenBase screen, WorldEventInboxPopupData data, Action<string> onReReview, Action onClose, Action<string> onDelete = null)
 	{
 		_screen = screen;
 		_onClose = onClose;
 		_onReReview = onReReview;
-		_dataSource = new AnimusForgeWorldEventInboxPopupVM(data, HandleReReviewRequested, HandleCloseRequested);
+		_dataSource = new AnimusForgeWorldEventInboxPopupVM(data, HandleReReviewRequested, HandleCloseRequested, key => { Close(true); onDelete?.Invoke(key); });
 		_layer = new GauntletLayer("AnimusForgeWorldEventInboxPopup", 4100, false);
 	}
 
@@ -114,6 +114,9 @@ public sealed class AnimusForgeWorldEventInboxPopup
 	}
 
 	public static bool Show(WorldEventInboxPopupData data, Action<string> onReReview, Action onClose)
+		=> Show(data, onReReview, onClose, null);
+
+	internal static bool Show(WorldEventInboxPopupData data, Action<string> onReReview, Action onClose, Action<string> onDelete)
 	{
 		ScreenBase topScreen = ScreenManager.TopScreen;
 		if (topScreen == null)
@@ -123,7 +126,7 @@ public sealed class AnimusForgeWorldEventInboxPopup
 		try
 		{
 			_activePopup?.Close(silent: true);
-			AnimusForgeWorldEventInboxPopup popup = new AnimusForgeWorldEventInboxPopup(topScreen, data ?? new WorldEventInboxPopupData(), onReReview, onClose);
+			AnimusForgeWorldEventInboxPopup popup = new AnimusForgeWorldEventInboxPopup(topScreen, data ?? new WorldEventInboxPopupData(), onReReview, onClose, onDelete);
 			popup.Open();
 			_activePopup = popup;
 			return true;
@@ -240,6 +243,11 @@ public sealed class AnimusForgeWorldEventInboxPopup
 public sealed class AnimusForgeWorldEventInboxPopupVM : ViewModel
 {
 	private readonly Action _onClose;
+	private readonly Action<string> _onDelete;
+	private string _selectedPolicyHistoryKey;
+	[DataSourceProperty] public bool ShowDeleteSelectedRecord { get; private set; }
+	[DataSourceProperty] public bool CanDeleteSelectedRecord { get; private set; }
+	[DataSourceProperty] public string DeleteText => "删除记录";
 	private readonly Action<string> _onReReview;
 	private string _titleText;
 	private string _subtitleText;
@@ -276,8 +284,12 @@ public sealed class AnimusForgeWorldEventInboxPopupVM : ViewModel
 	private MBBindingList<WorldEventRecordItemVM> _recordItems;
 
 	public AnimusForgeWorldEventInboxPopupVM(WorldEventInboxPopupData data, Action<string> onReReview, Action onClose)
+		: this(data, onReReview, onClose, null) { }
+
+	internal AnimusForgeWorldEventInboxPopupVM(WorldEventInboxPopupData data, Action<string> onReReview, Action onClose, Action<string> onDelete)
 	{
 		_onClose = onClose;
+		_onDelete = onDelete;
 		_onReReview = onReReview;
 		WorldEventInboxPopupData source = data ?? new WorldEventInboxPopupData();
 		TitleText = string.IsNullOrWhiteSpace(source.TitleText) ? "世界事件" : source.TitleText.Trim();
@@ -442,6 +454,11 @@ public sealed class AnimusForgeWorldEventInboxPopupVM : ViewModel
 			selected.MarkRead();
 			CountryItems?.FirstOrDefault(x => x != null && x.IsSelected)?.RefreshUnreadCountFromRecords();
 		}
+		_selectedPolicyHistoryKey = selected.HistoryKey;
+		ShowDeleteSelectedRecord = !string.IsNullOrWhiteSpace(selected.HistoryKey);
+		CanDeleteSelectedRecord = selected.CanDelete;
+		OnPropertyChangedWithValue(ShowDeleteSelectedRecord, nameof(ShowDeleteSelectedRecord));
+		OnPropertyChangedWithValue(CanDeleteSelectedRecord, nameof(CanDeleteSelectedRecord));
 		SelectedRecordTitleText = selected.TitleText;
 		UpdateSelectedRecordHeaderLayout(selected.TitleText);
 		SelectedRecordKindLabel = selected.HeaderRightText;
@@ -466,6 +483,10 @@ public sealed class AnimusForgeWorldEventInboxPopupVM : ViewModel
 
 	private void ClearSelectedRecord()
 	{
+		_selectedPolicyHistoryKey = string.Empty;
+		ShowDeleteSelectedRecord = false; CanDeleteSelectedRecord = false;
+		OnPropertyChangedWithValue(false, nameof(ShowDeleteSelectedRecord));
+		OnPropertyChangedWithValue(false, nameof(CanDeleteSelectedRecord));
 		SelectedRecordTitleText = "";
 		SelectedRecordKindLabel = "";
 		SelectedRecordMetaText = "";
@@ -496,6 +517,8 @@ public sealed class AnimusForgeWorldEventInboxPopupVM : ViewModel
 		SelectedRecordDetailTop = usesTwoLines ? 154f : 124f;
 		SelectedRecordScrollbarTop = usesTwoLines ? 156f : 126f;
 	}
+
+	public void ExecuteDelete() { if (CanDeleteSelectedRecord) _onDelete?.Invoke(_selectedPolicyHistoryKey); }
 
 	public void ExecuteClose()
 	{
@@ -596,6 +619,7 @@ public sealed class WorldEventRecordItemVM : ViewModel
 	{
 		WorldEventRecordData data = source ?? new WorldEventRecordData();
 		_source = data;
+		HistoryKey = data.HistoryKey; CanDelete = data.CanDelete;
 		EventId = data.EventId ?? "";
 		Index = index;
 		_select = select;
@@ -622,6 +646,8 @@ public sealed class WorldEventRecordItemVM : ViewModel
 		ReReviewDisabledReasonText = data.ReReviewDisabledReasonText ?? "";
 	}
 
+	public string HistoryKey { get; }
+	public bool CanDelete { get; }
 	public int Index { get; }
 	public string EventId { get; }
 	[DataSourceProperty]
@@ -731,6 +757,8 @@ public sealed class WorldEventCountryData
 
 public sealed class WorldEventRecordData
 {
+	public string HistoryKey = "";
+	public bool CanDelete;
 	public string EventId = "";
 	public string KindLabel = "";
 	public string HeaderRightText = "";

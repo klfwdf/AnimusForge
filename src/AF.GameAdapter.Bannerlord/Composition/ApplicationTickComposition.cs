@@ -50,6 +50,7 @@ internal static class ApplicationTickComposition
 		PlayerRpForgePopup.ProcessDeferredCloseIfNeeded();
 		AnimusForgeApiOnboardingPopup.ProcessDeferredCloseIfNeeded();
 		PolicyEffectModuleManagerPopup.ProcessDeferredCloseIfNeeded();
+		SettlementBalancePopup.ProcessDeferredCloseIfNeeded();
 		AnimusForgeConversationHistoryLogPopup.OnApplicationTick();
 		AnimusForgeNativeConversationOverlay.OnApplicationTick();
 		AiErrorAnalysisInquiry.OnApplicationTick();
@@ -92,6 +93,7 @@ internal static class ApplicationTickComposition
 			RunWatchedTickPhase("SubModule.PlayerRpForgePopup.ProcessDeferredCloseIfNeeded", () => PlayerRpForgePopup.ProcessDeferredCloseIfNeeded());
 			RunWatchedTickPhase("SubModule.AnimusForgeApiOnboardingPopup.ProcessDeferredCloseIfNeeded", () => AnimusForgeApiOnboardingPopup.ProcessDeferredCloseIfNeeded());
 			RunWatchedTickPhase("SubModule.PolicyEffectModuleManagerPopup.ProcessDeferredCloseIfNeeded", () => PolicyEffectModuleManagerPopup.ProcessDeferredCloseIfNeeded());
+			RunWatchedTickPhase("SubModule.SettlementBalancePopup.ProcessDeferredCloseIfNeeded", () => SettlementBalancePopup.ProcessDeferredCloseIfNeeded());
 			RunWatchedTickPhase("SubModule.AnimusForgeConversationHistoryLogPopup.OnApplicationTick", () => AnimusForgeConversationHistoryLogPopup.OnApplicationTick());
 			RunWatchedTickPhase("SubModule.AnimusForgeNativeConversationOverlay.OnApplicationTick", () => AnimusForgeNativeConversationOverlay.OnApplicationTick());
 			RunWatchedTickPhase("SubModule.AiErrorAnalysisInquiry.OnApplicationTick", () => AiErrorAnalysisInquiry.OnApplicationTick());
