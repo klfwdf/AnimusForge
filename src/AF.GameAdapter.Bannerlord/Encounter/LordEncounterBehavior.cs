@@ -171,6 +171,8 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 
 	private static bool _suppressCustomEncounterMenuUntilBackOnMap;
 
+	private static readonly EncounterPendingReturnOwner<PlayerEncounter, PartyBase> _hardSuppressionOwner = new EncounterPendingReturnOwner<PlayerEncounter, PartyBase>();
+
 	private static float _suppressCustomEncounterMenuStartedAtTime = -1f;
 
 	private static float _suppressCustomEncounterMenuBackOnMapSinceTime = -1f;
@@ -413,6 +415,7 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 	private void OnSessionLaunched(CampaignGameStarter starter)
 	{
         ClearNativeDialogueHandoff();
+		ClearCustomEncounterMenuHardSuppression("session_launched");
 		ClearNativeSettlementRequestMeetingContext("session_launched");
 		AddGameMenus(starter);
 		AddConversationOptions(starter);
@@ -1112,6 +1115,7 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 
 	private static void SuppressCustomEncounterMenuUntilBackOnMap(string reason)
 	{
+		_hardSuppressionOwner.Mark(PlayerEncounter.Current, GetCurrentEncounterPartySafe(), SaveRuntimeGuard.CaptureGeneration());
 		if (_suppressCustomEncounterMenuUntilBackOnMap)
 		{
 			_disableCustomEncounterMenuForCurrentEncounter = true;
@@ -1194,7 +1198,21 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 		{
 			flag5 = false;
 		}
-		if (flag || !flag2 || flag3 || flag4 || flag5 || IsNativeBattleResultConversationActive() || HasPendingForceNativeDefeatCaptivityMenu())
+		bool resultConversation = IsNativeBattleResultConversationActive();
+		bool defeatCaptivity = HasPendingForceNativeDefeatCaptivityMenu();
+		// A new peaceful encounter is not the previous battle's cleanup. Keep real
+		// mission/result protection, but never carry that lock into another meeting.
+		if (flag2 && !flag && flag3 && !flag4 && !flag5 && !resultConversation && !defeatCaptivity
+			&& !MeetingBattleRuntime.IsMeetingActive && _hardSuppressionOwner.IsPending)
+		{
+			PartyBase party = GetCurrentEncounterPartySafe();
+			if (party != null && !_hardSuppressionOwner.IsCurrent(PlayerEncounter.Current, party, SaveRuntimeGuard.CaptureGeneration()))
+			{
+				ClearCustomEncounterMenuHardSuppression("new_encounter_scope");
+				return false;
+			}
+		}
+		if (flag || !flag2 || flag3 || flag4 || flag5 || resultConversation || defeatCaptivity)
 		{
 			_suppressCustomEncounterMenuBackOnMapSinceTime = -1f;
 			return true;
@@ -1223,6 +1241,7 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 
 	private static void ClearCustomEncounterMenuHardSuppression(string reason)
 	{
+		_hardSuppressionOwner.Clear();
 		if (!_suppressCustomEncounterMenuUntilBackOnMap)
 		{
 			return;
@@ -2426,17 +2445,6 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 		}
 		try
 		{
-			Settlement targetSettlement = party.TargetSettlement;
-			if (IsActiveVillageRaidSettlement(targetSettlement) && targetSettlement.LastAttackerParty == party)
-			{
-				return true;
-			}
-		}
-		catch
-		{
-		}
-		try
-		{
 			Settlement currentSettlement = party.CurrentSettlement;
 			if (IsActiveVillageRaidSettlement(currentSettlement) && currentSettlement.LastAttackerParty == party)
 			{
@@ -2446,39 +2454,10 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 		catch
 		{
 		}
-		try
-		{
-			if (party.DefaultBehavior == AiBehavior.RaidSettlement && IsVillageSettlement(party.TargetSettlement))
-			{
-				return true;
-			}
-		}
-		catch
-		{
-		}
-		try
-		{
-			if (party.ShortTermBehavior == AiBehavior.RaidSettlement && IsVillageSettlement(party.ShortTermTargetSettlement))
-			{
-				return true;
-			}
-		}
-		catch
-		{
-		}
+		// Raid orders/targets describe intent, not the current encounter context.
+		// An interrupted raider may now be chasing the player in an ordinary field
+		// encounter; only its actual raid event or current village qualifies above.
 		return false;
-	}
-
-	private static bool IsVillageSettlement(Settlement settlement)
-	{
-		try
-		{
-			return settlement != null && settlement.IsVillage;
-		}
-		catch
-		{
-			return false;
-		}
 	}
 
 	private static bool IsVillageRaidHeroParty(Hero hero)

@@ -11,6 +11,13 @@ exit, duplicate completion, expired authorization, encounter/party/Mission/save 
 reentrant conversation callbacks, non-Hero parties, the duel deadline in both scene modes,
 and unconditional one-time FocusTick safety installation.
 
+The intercepted-meeting cases also replay the actual hard-suppression and village-activity
+predicates: a new encounter cannot inherit an old attack lock, native battle/result/mission
+cleanup remains protected, and raid AI orders alone do not exclude a field meeting.
+Actual raid/supplies/volunteers events and the current raided village remain protected.
+Use `--source-file <historical LordEncounterBehavior.cs> --audit hard` or `--audit raid`
+to reproduce each old-source semantic failure independently.
+
 This is control-flow evidence, not a Bannerlord Campaign/Mission playthrough or proof
 that native encounter cleanup has the same event order on every supported game version.
 No game files, save files, LLM service, or shared scene-postprocess source is touched.
