@@ -1,3 +1,52 @@
+<a id="dialogue-civilwar-coup-review-fixes-20261003"></a>
+# 当前修复：对话 UI / 内战开关 / 政变撤出 / NPC 赠品出售（OFFLINE_VERIFIED）
+
+用户在三模块审查后明确要求“修复”，随后追加“通过 NPC 对话得到的物品在市场出售会显示 RP 物品无法出售”。工作区 `F:/AnimusForge-main`、分支 `codex/af-main-refactor-continuation-20260831`；检查点 `ed1dec6`，此前 UI 修改起点 `4811b36b`。产品提交 `6211ec3c`（三模块 / UI，16 文件）和 `a3a3f7d2`（赠品出售，4 文件）。不延续历史 push、部署、Stage 或打包授权，不修改一键流程、存档键或公开 API。
+
+- 对话 UI：喊话适配器改读重构后的会话编号属性；资源重载不销毁仍存活的包装层草稿 / 辅助面板，也不重复套用默认 AI 模式。真正关闭才释放。百科等原版临时 UI 返回时重发派生绑定并恢复缓存节点的可见状态，不无条件打开辅助面板内隐藏的五个工具控件。
+- 输入区：固定高度内增加裁剪和垂直滚动条，内容高度随行数扩展；光标移动 / 输入 / 宽度变化后跟随光标，稳定后不覆盖玩家手动滚动。通用 widget 新开关默认 false，仅该输入区 opt-in；保持既有发送正文净化契约。
+- 内战：关闭时暂停现有政治 iterator 和队列，保留已处理进度；不停止原有衰减时钟维护，关闭期间不改变不满、不在开启时补算关闭天数。重新开启继续处理，不重复转国。
+- 政变：失败结算入口先挡住新战斗，再执行伤亡 / 政治步骤；撤出只操作原目标城和遭遇。玩家已离开原目标时记录原目标撤出完成，不退出新城 / 新地图遭遇；原目标尚未真正退出则保留重试。
+- NPC 赠品：原 `IsGeneratedRewardMarketExcludedItem` 同时承担随机经济隔离与交易封禁，误阻止普通可交易模板生成的对话赠品。新增独立交易判定和存档 JSON 可选布尔字段 `NpcGiftMarketTradeAllowed`；共享 Hero / Party / Merchant 的 `GenerateRpAssetToPlayer` 在实际交付后写入，独立于异步介绍是否成功。重新注册复制和 manifest 合并保留此字段。
+- 市场：单条 / 批量转移、party sale、商队 / 村民暂存、市场开关 / 每日 / 读档清理统一使用交易判定，保留可交易赠品和 modifier；定价 / 金钱由原版处理。随机经济池、作坊产出、藏身点随机战利品、RP 模板缓存仍排除全部生成物品，没有放开随机生产。
+- 旧赠品兼容：旧 JSON 无字段时按原确定性的“显示名 + 模板”生成 ID 或已有 NPC 介绍来源识别；信件和画廊原本使用不同 identity key。玩家 RP 制作 / pending / 未知记录 / 非商品 / 多人专用 / 缺分类仍阻止。旧记录没有完整来源，已改模板且既无权限又无 NPC 介绍的身份无法可靠推断，仍保守阻止；不伪称全部玩家旧档已恢复。
+- 性能：喊话 getter 安装时编译缓存；内战待办批次每 tick 只增加 O(1) 开关判断，保持 32 记录 / 1ms 限制；政变判断只在低频结算。输入区挂接时一次缓存父滚动控件，稳定帧仅常量比较，无每帧父节点扫描。交易新判定只查当前存档字典，不新增 roster 全量搜索 / 反射 / 锁；兼容 hash 在已有记录规范化路径执行，许可确认后不重复计算。经济池继续沿原缓存，清理 / 保存扫描频率不变。
+
+## 源码坐标与责任
+
+下表绑定产品修订 `a3a3f7d240324933d87dffa4c8eab8f819eed79b`，符号定位为一基行范围；全文件 hash、13 个精确入口和 recorded / working-tree 校验在本地 `artifacts/three-module-review-20261003/delivery-code-map.json`。只记录本次改动责任，不表示整个宿主或扩展重写。
+
+| 源码路径（相对仓库） | 一基行范围 / 符号 | 实际消费者与覆盖边界 |
+| --- | --- | --- |
+| `extensions/AnimusForge.DialogueUI/src/Shout/ShoutUiAdapter.cs` | 55–55，epoch PropertyReader | 喊话入口读取；fixture 验真实 getter 编译与旧 epoch 失效，不是实机按键 |
+| `extensions/AnimusForge.DialogueUI/src/Native/NativeUiAdapter.cs` | 73–73，TryWrap；232–232，OverlayRestored | 真实包装生命周期与临时 UI 返回；Gauntlet dispatch / 节点渲染仍需实机 |
+| `extensions/AnimusForge.DialogueUI/src/Native/NativeOverlayVM.cs` | 100–100，RefreshAfterSystemUi | 派生绑定刷新；已有辅助面板隐藏规则保持 |
+| `extensions/AnimusForge.DialogueUI/src/PresentationRouter.cs` | 217–217，ReleaseOwned | movie 退休只清所有权，true close 清 wrapper |
+| `extensions/AnimusForge.DialogueUI/GUI/Prefabs/AFDialogueNativeOverlay.xml` | 11–11，AFDialogueInputScroll | 固定输入区 loader 资源；XML 引用路径有验证，视觉未验 |
+| `src/AF.GameAdapter.Bannerlord/UI/Common/DevMultilineEditableTextWidget.cs` | 324–324，OnConnectedToRoot | 挂接缓存滚动父节点；真实 widget 双版本编译，不是 GPU / caret 手感验收 |
+| `src/modules/AF.Module.Kingdom/CivilWar/KingdomCivilWarOwner.Events.cs` | 63–63，ProcessPending | 原 tick 分批政治 / 衰减 owner；真实算法 + 替身游戏动作 |
+| `extensions/AnimusForge.Coup/src/CoupSystem/CoupCampaignBehavior.cs` | 784–784，CommitFailure；813–813，CommitWithdrawal | 失败 / 重试目标归属；抽取真实方法 + engine doubles |
+| `src/modules/AF.Module.Economy/Host/RewardSystemBehavior.cs` | 11518–11518，IsGeneratedRewardMarketTransferBlockedItem；11535–11535，RestoreLegacyNpcGiftMarketTradePermission；15668–15668，GenerateRpAssetToPlayer | 赠品许可写入、旧记录识别、所有交易 / 清理消费者；保存和经济池真实算法，原版价格 / Harmony 交易执行未实机 |
+
+## 验证与产物
+
+- 原入口命令：`powershell -NoProfile -ExecutionPolicy Bypass -File scripts/build/build_single_module.ps1 -ProjectRoot F:/AnimusForge-main -BannerlordRoot 'F:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord' -Configuration Debug`。最终 `build-delivery-final.log` 三构建 success / 0 error；1.3 引用 `v1.3.15.110062`，1.4 引用 `v1.4.6.115628`，两个实现各 341 既有警告，Bootstrap 0 警告。不称零警告。
+- 产物 `bin/Debug/single_module_artifacts/versions/{1.3,1.4}/AnimusForge.dll` 与 `bootstrap/AnimusForge.Bootstrap.dll`；三个实际 SHA256 与 build marker 一致，详见本地 `receipt.json`。最终 MVID：1.3 `732393cb-c311-41c1-8121-4309090ec9e1`，1.4 `fa6e9e1e-b3e6-4253-ad30-5d0b1ced4e1b`。
+- `python -B tests/modules/AF.Module.Economy/NpcGiftMarketTradeTests/run.py`：**26 PASS**，抽取真实记录 / 规范化 / 许可合并、单条 / 批量市场判定、party sale、市场清理、商队 / 村民隐藏恢复、经济池 / 作坊 / 模板排除、玩家 roster 保存捕获 / 恢复；Newtonsoft 真实 JSON 旧字段 / 新字段回放。生成许可和重新注册复制为源码接线断言；引擎 / craft normalization / 实际生成 / 日志为替身，不冒充完整存档或金钱交易验收。
+- 同一最终源负控 `--mutate old-guard`：预期 exit1 / 10 FAIL；`--mutate old-cleanup`：预期 exit1 / 1 FAIL。未删除旧保护断言。保存 / 读回复归覆盖卖完和部分出售，不会由玩家 roster 修复凭空再生。
+- `dotnet run --project tests/modules/AF.Module.Economy/GiveAssetTagCodec.StressTests/GiveAssetTagCodec.StressTests.csproj`：**80565 断言 PASS**（含 20000 fuzz / 25000 pressure tags，保留 generated 不入 RP 模板缓存）；`HeroAssetScopeRegressionTests/run.py --output-name market-fix-20261003`：**67 PASS**，原 Hero / Party / Merchant / notable-market / modifier / ALL / unknown 契约保留。
+- 内战 `CivilWarLifecycle.ContractTests`：**338 PASS**，新增开关中途关闭 / 恢复和待办队列 8 断言；运行带 `-p:PythonExecutable=E:/PYTHON/python.exe`。政变 `Coup.ContractTests` **144 PASS**、`Coup.VictoryFlowTests/run.py` **61 PASS**，新增别城 / 新地图遭遇 / 战斗拦截 / 原目标 / 重复 / 失败退出重试覆盖。
+- 对话 `LifecycleTests.csproj -- F:/AnimusForge-main`：**22 PASS**；给予桥 AuxiliaryTests.exe **55 PASS**（真实 Harmony，游戏转移 / 绘制替身）；`DialogueOnboardingRegressionTests` 对最终两个 DLL 各 **102 PASS**（生产方法 / XML 契约 + DLL 元数据，不是 module-init / 实机验收）。
+- `git diff --check` PASS；13 精确入口代码地图 recorded-revision / working-tree 均 PASS。本地 `receipt.json` 绑定 20 个任务源文件、13 结果日志和三个 build marker；其他作者公告 / 生图输出 / 临时文件未暂存或删除。
+- 失败证据保留：早期在入口直接暂停内战使原衰减时钟回归失败，已改为只暂停政治；政变初次误引用宿主同名 compat helper 导致编译失败，改为扩展自身兼容边界已有的 `PlayerEncounter.EncounteredParty`。最终调用前另有 stress `--no-restore` 缺 assets 和 UI runner 漏 root 参数失败，补齐调用后通过。负控失败是预期，不把上述初次失败抹成“一遍全绿”。
+
+## 未验证与回滚
+
+- **LIVE / PLAYER_SAVE / PUSH / DEPLOY / STAGE / PACKAGE = NOT_RUN**。未启动游戏，未覆盖 `Modules/AnimusForge`，未重做发布包；已安装的上一候选不含本次本地修复。
+- 百科返回五控件的实际焦点 / 绑定行为、长输入滚动手感和 caret 可见性、真实内战政治动作、政变撤出及原版市场金钱 / 价格结算仍需两个游戏版本实测。旧格式 JSON fixture 通过不等于玩家旧存档已验；百科问题已补强恢复路径，不能宣称已实机确认全部根因。
+- 获准部署后的定向验收：对话留多行草稿 → 百科 → 返回；长输入滚动 / 编辑；NPC 对话领可交易赠品 → 单卖 / 批量卖 / 买回 → 保存读档；内战结算中关闭 / 开启；政变失败离开原城后在新城补结算，确认新遭遇不被结束。
+- 局部回滚：赠品 `git revert a3a3f7d2`；三模块 / UI `git revert 6211ec3c`。检查点仅定位，使用定向反向提交、不 hard reset / 改写历史。原前轮 UI 修改及本轮相关修复一并保存；日志 / 源 hash / code map 在本地 `artifacts/three-module-review-20261003/`。
+
 <a id="publish-all-latest-20261003"></a>
 # 本次授权发布范围：各会话最新代码与交接（2026-10-03）
 
