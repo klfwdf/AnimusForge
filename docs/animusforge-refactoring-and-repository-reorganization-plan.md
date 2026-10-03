@@ -6642,3 +6642,13 @@ R2计划交付门槛：已给固定技术路线、真实来源与目标、写入
 - 发布门禁：`git diff --check`与cached检查无错误，零未解决冲突；待发布三个本地提交的历史文件仅具名源码/产品资源/测试/公开台账，不含artifacts/.tmp/local/PlayerExports或本地专用交接。提交合并后普通`HEAD:refs/heads/main`推送，独立`ls-remote`核对最终candidate，禁止强推；网络结果记录在本地`artifacts/fusion-push-20261003-171851/`。
 - NOT_RUN：真实游戏输入/新档弹窗/旧档/LLM与图像provider/性能；未Stage、打包、部署或启动游戏，未清理其他作者未跟踪文件。融合前检查点`9019b27e`、远端保留基线`1acf1ae6`；仅定向inverse恢复，不能hard reset或撤销其他会话改动。
 - 推送竞争记录：第一合并提交`29759433`普通push被fetch-first拒绝，无远端覆盖。重新fetch发现`2deda4f7`、`51a0d9bf`，仅平衡编辑器/MCM文案与对应测试3文件；在本次融合授权内无冲突合入，保留本地反内联测试修复。最新runtime每API78PASS、persona lore/settings29PASS；对最终产品树重新执行Debug/Release双API+Bootstrap。第二次合并前检查点`29759433`，最新远端保留基线`51a0d9bf`，仍不强推。
+
+<a id="deploy-fused-main-20261003"></a>
+## 用户授权部署已发布融合源码（2026-10-03，DEPLOY_VERIFIED）
+
+- 本轮最新请求“部署”，源码`ae10e7f540874c43a0aed3f0e3a191a73807831d`、分支`codex/af-main-refactor-continuation-20260831`；开工时已跟踪源码无dirty、游戏/启动器未运行。上轮main普通push及独立readback已验证，不在本轮额外fetch/融合新版本、推送或打包。
+- 旧`bin/Debug/single_module_stage/AnimusForge`是融合前产物并含PlayerExports残留；复核仓内绝对路径和无reparse后整体Move到`artifacts/deploy-main-20261003-173232/before-stage`，保留原数据、不递归清理工作区。原`build_single_module.ps1 -Configuration Debug -Stage`重建1.3(`1.3.15.110062`)/1.4(`1.4.6.115628`)/Bootstrap，三构建及统一Stage成功，0错误、既有警告保留，不改一键流程。
+- 本地核验脚本仅在ignored artifacts：记录新Stage路径集合、安装中全部2293非受管文件SHA256/长度/mtime和3原版DLL hash；调用原`deploy_module.ps1`的受管事务入口，复用刚构建的双实现/Bootstrap及安装的私有runtime目录。原脚本重新投影/核验当前Stage后更新17文件，不镜像删除非受管文件。
+- 最终3379份Stage文件SHA256逐份与安装目录相同，全部2293非受管文件hash/长度/mtime保持，包含ONNX模型和原安装玩家文件；游戏bin的TaleWorlds.CampaignSystem/Core/MountAndBlade三DLL hash保持。安装XML仅声明Bootstrap；源码HEAD/已跟踪状态在构建、部署、核验结束时保持同候选。
+- Recovery为`C:/Users/29310/AppData/Local/AnimusForge/Recovery/deploy/deploy-5fd5f1fc9a204cc697c26fd706de7624`，complete存在，manifest内旧文件备份SHA256全匹配oldSha256、安装新文件全匹配newSha256；恢复必须按该manifest定向处理，不覆盖玩家文件或硬重置源码。
+- 本地证据`artifacts/deploy-main-20261003-173232/`：build-stage.log、before.json、deploy.log、receipt.json和before-stage；记录状态DEPLOY_VERIFIED。未启动游戏/真实Gauntlet/新档与旧档/LLM或生图provider/帧性能，未新ZIP、未再次push。交接记录仅本地提交，不把安装文件一致性升级为实机验收；上轮完整Debug/Release构建与相关回归证据仍见fusion条目。

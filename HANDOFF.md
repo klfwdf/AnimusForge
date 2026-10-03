@@ -1,3 +1,9 @@
+# 当前部署：已发布融合源码更新游戏（2026-10-03）
+
+- 用户明确授权部署；产品源码`ae10e7f5`，原入口Debug双API+Bootstrap重新构建0错误、最新统一Stage通过，部署到`F:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord/Modules/AnimusForge`，更新17受管文件。
+- 3379份Stage文件SHA256与安装一致；2293非受管文件内容/大小/mtime不变，抽检3原版DLL不变，XML只加载Bootstrap。Recovery `deploy-5fd5f1fc9a204cc697c26fd706de7624` complete且备份hash核验通过；旧Debug Stage保留在本地证据目录。
+- [唯一主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#deploy-fused-main-20261003)与本地`artifacts/deploy-main-20261003-173232/receipt.json`记录版本/恢复；未启动游戏、实机/旧档/真实provider未验，未重打包或再次推送。下方未部署结论为对应历史候选状态。
+
 # 当前融合交付：保留远端政策与人物设定，发布本地最新修复（2026-10-03）
 
 - 用户已确认融合并授权推送main；将`1acf1ae6`合入本地`9019b27e`，无冲突，保留双方内容。第一次推送因远端新增两份同模块文案修复被拒，再融合`51a0d9bf`也无冲突；最终普通快进推送结果以远端readback为准，不改旧远端重构分支、不部署游戏。
