@@ -487,6 +487,7 @@ namespace AnimusForge.Illustrator.UI.Patches
                     if (!ReferenceEquals(owner, _scope)) return;
                     _editingRedrawPrompt = editing;
                     if (_overlayLayer?.UIContext?.Root != null) _overlayLayer.UIContext.Root.IsVisible = !editing;
+                    _bulletinSlot?.SetPromptEditing?.Invoke(editing);
                 });
         }
 
