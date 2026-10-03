@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net472</TargetFramework>
+    <LangVersion>10.0</LangVersion>
+    <PlatformTarget>x64</PlatformTarget>
+    <NoWarn>$(NoWarn);MSB3277</NoWarn>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="../../../../PolicySystem/Balance/*.cs" Link="Production/%(Filename)%(Extension)" />
+    <Compile Include="../../../../PolicySystem/UI/SettlementBalanceEditorVM.cs" Link="Production/SettlementBalanceEditorVM.cs" />
+    <Reference Include="$(BalanceReferenceDir)/TaleWorlds.*.dll"><Private>true</Private></Reference>
+    <Reference Include="TaleWorlds.SaveSystem"><HintPath>$(BalanceSharedReferenceDir)/TaleWorlds.SaveSystem.dll</HintPath></Reference>
+    <Reference Include="Newtonsoft.Json"><HintPath>../../../../_deps_auto/Newtonsoft.Json.dll</HintPath></Reference>
+    <Reference Include="0Harmony"><HintPath>$(BalanceHarmonyDir)/0Harmony.dll</HintPath></Reference>
+    <None Include="$(BalanceHarmonyDir)/*.dll" Link="%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+  <Target Name="RequireVerifiedInputs" BeforeTargets="PrepareForBuild">
+    <Error Condition="'$(BalanceReferenceDir)' == '' Or !Exists('$(BalanceReferenceDir)/TaleWorlds.CampaignSystem.dll')" Text="Pass an explicit verified BalanceReferenceDir." />
+    <Error Condition="'$(BalanceHarmonyDir)' == '' Or !Exists('$(BalanceHarmonyDir)/0Harmony.dll')" Text="Pass an explicit BalanceHarmonyDir." />
+  </Target>
+</Project>

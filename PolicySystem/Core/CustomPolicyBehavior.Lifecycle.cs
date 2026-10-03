@@ -476,6 +476,7 @@ public sealed partial class CustomPolicyBehavior
 	{
 		PolicyTargetSemanticRouter.MarkStructureDirty();
 		ApplyPolicySettlementModelPatchesOnce();
+		SettlementBalanceRuntime.Install();
 		ApplyPolicyFinanceModelPatchesOnce();
 		ApplyPolicyClanPoliticsModelPatchesOnce();
 		ApplyPolicyArmyFormationPatchesOnce();
@@ -905,6 +906,7 @@ public sealed partial class CustomPolicyBehavior
 	{
 		PolicyTargetSemanticRouter.MarkStructureDirty();
 		ApplyPolicySettlementModelPatchesOnce();
+		SettlementBalanceRuntime.Install();
 		ApplyPolicyFinanceModelPatchesOnce();
 		ApplyPolicyClanPoliticsModelPatchesOnce();
 		ApplyPolicyArmyFormationPatchesOnce();
@@ -3597,6 +3599,7 @@ public sealed partial class CustomPolicyBehavior
 			return;
 		}
 		_dynamicPolicyRegistry[data.PolicyObjectId] = JsonConvert.SerializeObject(data);
+		InvalidatePolicyRecordPresentation();
 		_quarantinedDynamicPolicyIds.Remove(data.PolicyObjectId);
 	}
 
@@ -3736,6 +3739,8 @@ public sealed partial class CustomPolicyBehavior
 		}
 		if (dataStore.IsSaving)
 		{
+			Dictionary<string, string> deletedHistoryStore = CampaignSaveChunkHelper.FlattenStringDictionary(_deletedPolicyHistory, SaveKeyDeletedPolicyHistory, "DeletedPolicyHistory");
+			dataStore.SyncData(SaveKeyDeletedPolicyHistory, ref deletedHistoryStore);
 			TrimPolicyRecordHistory();
 			Dictionary<string, string> historyStore = CampaignSaveChunkHelper.FlattenStringDictionary(_policyRecordHistory, SaveKeyPolicyRecordHistory, "CustomPolicyHistory");
 			dataStore.SyncData(SaveKeyPolicyRecordHistory, ref historyStore);
@@ -3760,6 +3765,15 @@ public sealed partial class CustomPolicyBehavior
 			return;
 		}
 		ResetTransientPolicyGenerationStateAfterLoad();
+		_deletedPolicyHistory.Clear();
+		Dictionary<string, string> storedDeletedHistory = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+		dataStore.SyncData(SaveKeyDeletedPolicyHistory, ref storedDeletedHistory);
+		foreach (KeyValuePair<string, string> item in CampaignSaveChunkHelper.RestoreStringDictionary(storedDeletedHistory, "DeletedPolicyHistory"))
+		{
+			if (!string.IsNullOrWhiteSpace(item.Key)) _deletedPolicyHistory[item.Key] = item.Value;
+		}
+		_policyRecordPresentationCache = null;
+		InvalidatePolicyRecordPresentation();
 		_policyRecordHistory.Clear();
 		_localPolicyRecords.Clear();
 		_activePolicyEffects.Clear();

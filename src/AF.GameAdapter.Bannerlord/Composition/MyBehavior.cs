@@ -15628,7 +15628,11 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 		try
 		{
 			Hero clanLeader = hero.Clan?.Leader;
-			if (clanLeader != null)
+			if (clanLeader == hero)
+			{
+				stringBuilder.AppendLine("家族族长背景: 族长即本人，参见人物百科背景。");
+			}
+			else if (clanLeader != null)
 			{
 				string leaderBackground = GetHeroEncyclopediaBackgroundForPersonaPrompt(clanLeader, 1200);
 				if (string.IsNullOrWhiteSpace(leaderBackground))

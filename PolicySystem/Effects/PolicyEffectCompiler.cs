@@ -102,10 +102,38 @@ internal static class PlayerPolicyMaintenancePlanner
 		}
 		return funded;
 	}
+}
 
-	internal static bool IsSettlementGoldDeltaConfirmed(int beforeGold, int afterGold, int expectedDelta)
+internal sealed class PlayerPolicyMaintenancePaymentReceipt
+{
+	internal PlayerPolicyMaintenancePaymentReceipt(int requestedDelta)
 	{
-		return (long)afterGold - beforeGold == expectedDelta;
+		RequestedDelta = requestedDelta;
+	}
+
+	internal int RequestedDelta { get; }
+	internal int BeforeGold { get; private set; }
+	internal int AfterGold { get; private set; }
+	internal bool WriteStarted { get; private set; }
+	internal bool WriteObserved { get; private set; }
+	internal bool Confirmed { get; private set; }
+
+	internal void BeginWrite(int beforeGold, int actualDelta)
+	{
+		if (WriteStarted || WriteObserved || actualDelta != RequestedDelta) return;
+		BeforeGold = beforeGold;
+		WriteStarted = true;
+	}
+
+	internal void CompleteWrite(int afterGold)
+	{
+		if (!WriteStarted || WriteObserved) return;
+		AfterGold = afterGold;
+		WriteObserved = true;
+		long expectedGold = (long)BeforeGold + RequestedDelta;
+		// A positive native settlement may saturate at the game's gold ceiling;
+		// a negative settlement must never count a partial, zero-clamped payment.
+		Confirmed = expectedGold >= 0 && afterGold == Math.Min(int.MaxValue, expectedGold);
 	}
 }
 

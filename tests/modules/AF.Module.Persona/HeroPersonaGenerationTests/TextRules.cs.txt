@@ -7,11 +7,18 @@ static void TextRuleCases()
   Check(AnimusForge.NpcPersonaTextRules.TryParsePersonaJson("{\"personality\":\"unterminated",out p,out b)&&p=="unterminated", "real persona truncated loose fallback");
   Check(!AnimusForge.NpcPersonaTextRules.TryParsePersonaJson("unusable",out p,out b)&&p==""&&b=="", "real persona malformed rejects");
   var native=AnimusForge.NpcPersonaTextRules.BuildNative("detached-facts", "old\r\nP", "oldB",true," 长篇\r\n要求 ");
-  Check(native.System.EndsWith("【玩家自定义生成要求】\n长篇\n要求")&&native.User.Contains("detached-facts")&&native.User.Contains("old P")&&native.User.Contains("旧背景（仅用于避重）：oldB"),"real native prompt detached and reroll requirements");
+  Check(native.System.EndsWith("【玩家自定义生成要求】\n长篇\n要求")&&native.User.Contains("detached-facts")&&native.User.Contains("old P")&&native.User.Contains("旧背景（旧版参考）：oldB"),"real native prompt detached and reroll requirements");
   var normal=AnimusForge.NpcPersonaTextRules.BuildNative("facts","old","oldB",false,"");
   Check(!normal.User.Contains("旧个性")&&!normal.System.Contains("【玩家自定义生成要求】"),"real native ordinary prompt unchanged");
   var promoted=AnimusForge.NpcPersonaTextRules.BuildPromoted("name","full","troop","id","culture","scene","join","history","equipment","facts","custom");
   Check(promoted.System.EndsWith("custom")&&promoted.User.Contains("history")&&promoted.User.Contains("facts")&&promoted.User.Contains("不要把玩家家族身份写成原生出身"),"real promoted facts and requirements");
+  var barePromoted=AnimusForge.NpcPersonaTextRules.BuildPromoted("n","f","t","id","c","s","join","history","eq","facts","");
+  foreach(var bare in new[]{normal,barePromoted,AnimusForge.NpcPersonaTextRules.BuildNative("facts","oldP","oldB",true,"")})
+  {
+   foreach(var hidden in new[]{"300","完整句子","必须综合","不要复制","文风","写作风格","不要照搬","不同但","谨慎而合理的动机","背景必须解释"})
+    Check(!(bare.System+bare.User).Contains(hidden),"no hidden writing requirement: "+hidden);
+   Check(bare.System.Contains("严格 JSON")&&bare.System.Contains("事实"),"protocol and facts remain built-in");
+  }
   Check(AnimusForge.NpcPersonaTextRules.BuildFallbackPersonality(new string('n',600),"t","j","f","s","h").Length==420,"promoted personality fallback 420");
   Check(AnimusForge.NpcPersonaTextRules.BuildFallbackBackground("n","t","j","f","s",new string('h',400)).EndsWith(new string('h',240)),"promoted fallback history 240");
   Check(AnimusForge.NpcPersonaTextRules.BuildFallbackBackground("n","t",new string('j',600),"f","s","h").Length==520,"promoted background fallback 520");

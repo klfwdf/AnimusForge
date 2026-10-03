@@ -231,6 +231,7 @@ internal static class PolicyHistoryRetrievalService
 		if (recentLimit == 0 && relatedLimit == 0) return result;
 		List<NpcPolicyHistoryEntry> current = (entries ?? Enumerable.Empty<NpcPolicyHistoryEntry>())
 			.Where(entry => IsUsableEntry(entry)
+				&& (entry.IsDeclarationOnly || !string.Equals(entry.EffectStatus, "expired", StringComparison.OrdinalIgnoreCase))
 				&& string.Equals(ResolveHistoryBucketFromStatus(FirstNonEmpty(entry.RawPolicyStatus, entry.PolicyStatus)),
 					CurrentBucket, StringComparison.Ordinal))
 			.GroupBy(BuildEntryKey, StringComparer.OrdinalIgnoreCase)
@@ -589,6 +590,10 @@ internal static class PolicyHistoryRetrievalService
 	}
 
 	internal static bool IsUsableEntry(NpcPolicyHistoryEntry entry)
+		=> entry?.IsHistoryDeleted != true && IsValidEntry(entry);
+
+	// Neutral snapshots also feed immutable diplomatic facts; tombstones only affect dedicated retrieval.
+	internal static bool IsValidEntry(NpcPolicyHistoryEntry entry)
 	{
 		return entry != null
 			&& !string.IsNullOrWhiteSpace(entry.EntryId)

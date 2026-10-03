@@ -1121,12 +1121,15 @@ public sealed partial class CustomPolicyBehavior
 		};
 		foreach (PolicyRecordSaveData record in records)
 		{
+			if (IsPolicyHistoryDeleted("player_kingdom", record.RecordId)) continue;
 			string effectSummary = BuildPolicyRecordEffectSummary(record);
 			string runtimeStatus = BuildPolicyRuntimeStatusText(record?.RecordId, activeEffectsByRecordId);
 			bool canReReview = TryBuildPolicyReReviewContext(record?.RecordId, out _, out _);
 			data.Records.Add(new PolicyHistoryRecordData
 			{
 				RecordId = record.RecordId,
+				HistoryKey = BuildPolicyHistoryKey("player_kingdom", record.RecordId),
+				CanDelete = CanDeletePolicyHistoryRecord(BuildPolicyHistoryKey("player_kingdom", record.RecordId), out _),
 				CanReReview = canReReview,
 				ReReviewText = "重新评议",
 				DateText = string.IsNullOrWhiteSpace(record.DateText) ? "未知日期" : record.DateText.Trim(),
@@ -1150,6 +1153,7 @@ public sealed partial class CustomPolicyBehavior
 				&& string.Equals(record.Source, "player", StringComparison.OrdinalIgnoreCase)
 				&& !string.IsNullOrWhiteSpace(record.RecordId)
 				&& !string.IsNullOrWhiteSpace(record.PolicyContent)
+				&& !IsPolicyHistoryDeleted("player_kingdom", record.RecordId)
 				&& !representedRecordIds.Contains(record.RecordId))
 			.OrderByDescending(record => record.CreatedUtcTicks)
 			.Take(Math.Max(0, MaxPolicyRecordHistoryCount - data.Records.Count)))
@@ -1158,6 +1162,8 @@ public sealed partial class CustomPolicyBehavior
 			data.Records.Add(new PolicyHistoryRecordData
 			{
 				RecordId = dynamic.RecordId,
+				HistoryKey = BuildPolicyHistoryKey("player_kingdom", dynamic.RecordId),
+				CanDelete = CanDeletePolicyHistoryRecord(BuildPolicyHistoryKey("player_kingdom", dynamic.RecordId), out _),
 				CanReReview = TryBuildPolicyReReviewContext(dynamic.RecordId, out _, out _),
 				ReReviewText = "重新评议",
 				DateText = FirstNonEmpty(unified?.GameDate, "旧存档日期未记录"),
@@ -2018,6 +2024,15 @@ public sealed partial class CustomPolicyBehavior
 				? LocalPolicyStatusActive
 				: LocalPolicyStatusExpired;
 		}
+		if (string.Equals(record.Status, LocalPolicyStatusActive, StringComparison.OrdinalIgnoreCase)
+			&& CanDeletePolicyHistoryState(record.EffectStatus, false, false)
+			&& record.RemainingDays == 0
+			&& record.Effects.Any(effect => effect.ModuleEffects.Count > 0)
+			&& record.Effects.All(effect => effect.IsEnded && effect.RemainingDays == 0))
+		{
+			record.Status = record.EffectStatus;
+		}
+		if (CanDeletePolicyHistoryState(record.Status, false, false)) record.EffectStatus = record.Status;
 		return record;
 	}
 
@@ -2078,6 +2093,7 @@ public sealed partial class CustomPolicyBehavior
 		Dictionary<string, List<ActivePolicyEffectSaveData>> activeEffectsByRecordId = BuildActivePolicyEffectHistoryIndex();
 		foreach (LocalPolicyRecordSaveData record in LoadLocalPolicyRecords())
 		{
+			if (IsPolicyHistoryDeleted(LocalPolicyHistorySource(record), record.RecordId)) continue;
 			if (string.Equals(record.ScopeKind, PolicyScopeVassal, StringComparison.OrdinalIgnoreCase))
 			{
 				data.Records.Add(BuildVassalPolicyHistoryRecordData(record, activeEffectsByRecordId));
@@ -2130,7 +2146,7 @@ public sealed partial class CustomPolicyBehavior
 					currentMentioned);
 			}
 			string statusText = GetLocalPolicyStatusText(record.Status);
-			string effectStatusText = GetLocalPolicyStatusText(record.EffectStatus);
+			string effectStatusText = !record.Effects.Any(effect => effect.ModuleEffects.Count > 0) ? "无持续数值效果" : GetLocalPolicyStatusText(record.EffectStatus);
 			string renewalHistory = record.Renewals.Count <= 0
 				? "延长效果历史：无"
 				: "延长效果历史：\n" + string.Join("\n", record.Renewals.Select(x => "- " + (x.DateText ?? "未知日期") + "：增加 " + x.AddedDays.ToString(CultureInfo.InvariantCulture) + " 天"));
@@ -2142,9 +2158,7 @@ public sealed partial class CustomPolicyBehavior
 				PolicyNameText = string.IsNullOrWhiteSpace(record.PolicyName) ? "未命名地方政策" : record.PolicyName,
 				StatusText = statusText,
 				TargetText = targetText,
-				RemainingText = record.IsPermanentEffect
-					? "数值效果：永久"
-					: "效果剩余 " + record.RemainingDays.ToString(CultureInfo.InvariantCulture) + " 天；原始效果周期 " + record.OriginalDurationDays.ToString(CultureInfo.InvariantCulture) + " 天",
+				RemainingText = BuildLocalPolicyRemainingText(record),
 				ContentText = record.PolicyContent ?? "",
 				FeedbackText = string.IsNullOrWhiteSpace(record.PublicFeedback) ? "未记录民众反馈。" : record.PublicFeedback,
 				EffectText = BuildLocalPolicyEffectText(record),
@@ -2158,9 +2172,9 @@ public sealed partial class CustomPolicyBehavior
 					+ "；延长次数 " + record.RenewalCount.ToString(CultureInfo.InvariantCulture)
 					+ BuildPolicyRuntimeStatusSuffix(record.RecordId, activeEffectsByRecordId),
 				RenewalText = renewalHistory,
-				CanRenew = !record.IsPermanentEffect
-					&& string.Equals(record.Status, LocalPolicyStatusActive, StringComparison.OrdinalIgnoreCase)
-					&& record.TargetFiefIds.Count > 0,
+				CanRenew = true,
+				HistoryKey = BuildPolicyHistoryKey(LocalPolicyHistorySource(record), record.RecordId),
+				CanDelete = CanDeletePolicyHistoryRecord(BuildPolicyHistoryKey(LocalPolicyHistorySource(record), record.RecordId), out _),
 				CanAbolish = string.Equals(record.Status, LocalPolicyStatusActive, StringComparison.OrdinalIgnoreCase)
 				,
 				CanReReview = !string.IsNullOrWhiteSpace(record.PolicyContent)
@@ -2208,8 +2222,6 @@ public sealed partial class CustomPolicyBehavior
 				+ " + " + x.IndependenceCost.ToString(CultureInfo.InvariantCulture)
 				+ " = " + x.IndependenceAfter.ToString(CultureInfo.InvariantCulture)
 				+ "，增加 " + x.AddedDays.ToString(CultureInfo.InvariantCulture) + " 天"));
-		bool renewableStatus = string.Equals(record.Status, LocalPolicyStatusActive, StringComparison.OrdinalIgnoreCase)
-			|| string.Equals(record.Status, LocalPolicyStatusExpired, StringComparison.OrdinalIgnoreCase);
 		return new LocalPolicyHistoryRecordData
 		{
 			ScopeKind = PolicyScopeVassal,
@@ -2218,9 +2230,7 @@ public sealed partial class CustomPolicyBehavior
 			PolicyNameText = string.IsNullOrWhiteSpace(record.PolicyName) ? "未命名附庸国政策" : record.PolicyName,
 			StatusText = statusText,
 			TargetText = targetText,
-			RemainingText = record.IsPermanentEffect
-				? "数值效果：永久"
-				: "剩余 " + record.RemainingDays.ToString(CultureInfo.InvariantCulture) + " 天；原始周期 " + record.OriginalDurationDays.ToString(CultureInfo.InvariantCulture) + " 天",
+			RemainingText = BuildLocalPolicyRemainingText(record),
 			ContentText = record.PolicyContent ?? "",
 			FeedbackText = string.IsNullOrWhiteSpace(record.PublicFeedback) ? "未记录政策反馈。" : record.PublicFeedback,
 			EffectText = BuildLocalPolicyEffectText(record),
@@ -2229,7 +2239,9 @@ public sealed partial class CustomPolicyBehavior
 				+ "；续约次数 " + record.RenewalCount.ToString(CultureInfo.InvariantCulture)
 				+ BuildPolicyRuntimeStatusSuffix(record.RecordId, activeEffectsByRecordId),
 			RenewalText = renewalHistory,
-			CanRenew = !record.IsPermanentEffect && renewableStatus && relationValid && IsPlayerRuler(GetPlayerKingdom()),
+			CanRenew = true,
+			HistoryKey = BuildPolicyHistoryKey("player_vassal", record.RecordId),
+			CanDelete = CanDeletePolicyHistoryRecord(BuildPolicyHistoryKey("player_vassal", record.RecordId), out _),
 			CanAbolish = string.Equals(record.Status, LocalPolicyStatusActive, StringComparison.OrdinalIgnoreCase)
 			,
 			CanReReview = !string.IsNullOrWhiteSpace(record.PolicyContent)
@@ -2264,6 +2276,15 @@ public sealed partial class CustomPolicyBehavior
 			}
 		}
 		return lines.Count <= 0 ? "无模块效果" : string.Join("\n", lines);
+	}
+
+	private static string BuildLocalPolicyRemainingText(LocalPolicyRecordSaveData record)
+	{
+		if (CanDeletePolicyHistoryState(record.Status, false, false)) return "持续效果已结束";
+		if (!record.Effects.Any(effect => effect.ModuleEffects.Count > 0)) return "无持续数值效果";
+		return record.IsPermanentEffect ? "数值效果：永久"
+			: "效果剩余 " + record.RemainingDays.ToString(CultureInfo.InvariantCulture)
+				+ " 天；原始效果周期 " + record.OriginalDurationDays.ToString(CultureInfo.InvariantCulture) + " 天";
 	}
 
 	private static string GetLocalPolicyStatusText(string status)
@@ -2582,7 +2603,8 @@ public sealed partial class CustomPolicyBehavior
 	private void OpenRecordHistoryPopup(Action onClose)
 	{
 		PolicyHistoryData data = BuildPolicyHistoryData();
-		if (!CustomPolicyHistoryPopup.Show(data, recordId => OpenPolicyReReviewFromHistory(recordId, onClose), onClose))
+		if (!CustomPolicyHistoryPopup.Show(data, recordId => OpenPolicyReReviewFromHistory(recordId, onClose), onClose,
+			key => RequestDeletePolicyHistoryRecord(key, () => OpenRecordHistoryPopup(onClose))))
 		{
 			InformationManager.ShowInquiry(new InquiryData(data.TitleText ?? "政策记录", BuildPolicyHistoryFallbackText(data), true, false, "返回", "", onClose, null), pauseGameActiveState: true, prioritize: false);
 		}
@@ -2596,7 +2618,8 @@ public sealed partial class CustomPolicyBehavior
 			recordId => RequestRenewLocalPolicy(recordId, onClose),
 			recordId => RequestAbolishLocalPolicy(recordId, onClose),
 			recordId => OpenPolicyReReviewFromHistory(recordId, onClose),
-			onClose))
+			onClose,
+			key => RequestDeletePolicyHistoryRecord(key, () => OpenLocalPolicyHistoryPopup(onClose))))
 		{
 			InformationManager.ShowInquiry(new InquiryData("地方政策记录", "打开地方政策记录界面失败。", true, false, "返回", "", onClose, null), pauseGameActiveState: true);
 		}
@@ -2622,21 +2645,16 @@ public sealed partial class CustomPolicyBehavior
 			RequestRenewVassalPolicy(record, onClose);
 			return;
 		}
-		if (!string.Equals(record.Status, LocalPolicyStatusActive, StringComparison.OrdinalIgnoreCase))
+		if (!CanAttemptPolicyRenewal(record, out string renewalError))
 		{
-			InformationManager.DisplayMessage(new InformationMessage("已被玩家废除的地方政策不能再延长效果。", Colors.Yellow));
+			InformationManager.DisplayMessage(new InformationMessage(renewalError, Colors.Yellow));
 			OpenLocalPolicyHistoryPopup(onClose);
 			return;
 		}
-		List<Settlement> ownedTargets = ResolveOwnedLocalPolicyFiefs(record.TargetFiefIds);
+		List<Settlement> ownedTargets = ResolveOwnedLocalPolicyFiefs(GetLocalPolicyRenewalTargetIds(record));
 		if (ownedTargets.Count <= 0)
 		{
-			record.EffectStatus = LocalPolicyStatusTargetsLost;
-			record.EndReason = "延长效果时已无任何原目标归玩家所有";
-			record.TargetFiefIds.Clear();
-			record.RemainingDays = 0;
-			_localPolicyRecords[record.RecordId] = JsonConvert.SerializeObject(record);
-			InformationManager.ShowInquiry(new InquiryData("无法延长效果", "原目标封地已经全部失去，数值效果无法恢复；政策记录仍会保留，可由玩家主动废除。", true, false, "知道了", "", () => OpenLocalPolicyHistoryPopup(onClose), null), pauseGameActiveState: true);
+			InformationManager.ShowInquiry(new InquiryData("无法延长效果", "当前没有归玩家所有的原目标封地，无法续期；收复原目标后可再次尝试。", true, false, "知道了", "", () => OpenLocalPolicyHistoryPopup(onClose), null), pauseGameActiveState: true);
 			return;
 		}
 		InformationManager.ShowInquiry(new InquiryData("延长地方政策效果", "是否为《" + record.PolicyName + "》增加一个完整效果周期（" + record.OriginalDurationDays.ToString(CultureInfo.InvariantCulture) + " 天）？\n\n延长效果不再次收取启动费，不重新调用智能服务，也不会重放一次性效果或再次发布民众反馈。", true, true, "确认延长", "取消",
@@ -2663,12 +2681,12 @@ public sealed partial class CustomPolicyBehavior
 			if (record == null) throw new InvalidOperationException("地方政策记录不存在。");
 			if (string.Equals(record.ScopeKind, PolicyScopeVassal, StringComparison.OrdinalIgnoreCase)
 				|| record.IsPermanentEffect
-				|| !string.Equals(record.Status, LocalPolicyStatusActive, StringComparison.OrdinalIgnoreCase))
+				|| !CanAttemptPolicyRenewal(record, out _))
 			{
 				throw new InvalidOperationException("该地方政策当前不能延长效果。");
 			}
 			oldActiveRaw = SnapshotPolicyEffectRawByRecordId(record.RecordId, PolicyScopeLocal);
-			List<Settlement> ownedTargets = ResolveOwnedLocalPolicyFiefs(record.TargetFiefIds);
+			List<Settlement> ownedTargets = ResolveOwnedLocalPolicyFiefs(GetLocalPolicyRenewalTargetIds(record));
 			if (ownedTargets.Count <= 0) throw new InvalidOperationException("原目标封地已经全部失去。");
 			const int charge = 0;
 			List<ActivePolicyEffectSaveData> activeEffects = LoadActiveLocalPolicyEffectsByRecordId(record.RecordId);
@@ -2726,6 +2744,8 @@ public sealed partial class CustomPolicyBehavior
 					effectRecord.ModuleEffects.Select(instance => instance?.ExecutionReceipt));
 				effectRecord.ActiveEffectId = string.Empty;
 				effectRecord.RemainingDays = renewedRemainingDays;
+				effectRecord.IsEnded = false;
+				effectRecord.EndReason = string.Empty;
 				renewedShellEffects.Add(active);
 				renewedShellRecords.Add(effectRecord);
 			}
@@ -2908,7 +2928,9 @@ public sealed partial class CustomPolicyBehavior
 		{
 			effect.ActiveEffectId = "";
 			effect.RemainingDays = 0;
+			effect.IsEnded = true;
 		}
+		InvalidatePolicyRecordPresentation();
 		record.Status = LocalPolicyStatusAbolished;
 		record.EffectStatus = LocalPolicyStatusAbolished;
 		record.EndReason = string.IsNullOrWhiteSpace(reason) ? (isVassalPolicy ? "玩家主动停止" : "玩家主动废除") : reason;
@@ -3113,20 +3135,21 @@ public sealed partial class CustomPolicyBehavior
 
 	private void RequestRenewVassalPolicy(LocalPolicyRecordSaveData record, Action onClose)
 	{
-		if (record == null
-			|| (!string.Equals(record.Status, LocalPolicyStatusActive, StringComparison.OrdinalIgnoreCase)
-				&& !string.Equals(record.Status, LocalPolicyStatusExpired, StringComparison.OrdinalIgnoreCase)))
+		if (!CanAttemptPolicyRenewal(record, out string renewalError))
 		{
-			InformationManager.DisplayMessage(new InformationMessage("关系终止或玩家停止的附庸国政策不能续约。", Colors.Yellow));
+			InformationManager.DisplayMessage(new InformationMessage(renewalError, Colors.Yellow));
 			OpenLocalPolicyHistoryPopup(onClose);
 			return;
 		}
 		Kingdom playerKingdom = GetPlayerKingdom();
 		Kingdom targetKingdom = ResolveKingdomByIdOrName(record.TargetKingdomId, record.TargetKingdomName);
 		if (!IsPlayerRuler(playerKingdom)
-			|| !string.Equals(playerKingdom?.StringId ?? "", record.IssuerKingdomId ?? "", StringComparison.OrdinalIgnoreCase)
-			|| targetKingdom == null
-			|| targetKingdom.IsEliminated
+			|| !string.Equals(playerKingdom?.StringId ?? "", record.IssuerKingdomId ?? "", StringComparison.OrdinalIgnoreCase))
+		{
+			InformationManager.ShowInquiry(new InquiryData("无法续约", "当前没有原发布王国的统治者权限，未修改政策。", true, false, "知道了", "", () => OpenLocalPolicyHistoryPopup(onClose), null), pauseGameActiveState: true);
+			return;
+		}
+		if (targetKingdom == null || targetKingdom.IsEliminated
 			|| !VassalageBehavior.TryGetDirectVassalIndependenceStatusForExternal(record.TargetKingdomId, out int currentIndependence, out int breakawayThreshold, out int rulerRelation, out string rulerName))
 		{
 			OnVassalRelationshipEndedInternal(record.TargetKingdomId, "续约时目标已不再是直属附庸国");
@@ -3161,8 +3184,7 @@ public sealed partial class CustomPolicyBehavior
 			{
 				throw new InvalidOperationException("附庸国政策记录不存在。");
 			}
-			if (!string.Equals(record.Status, LocalPolicyStatusActive, StringComparison.OrdinalIgnoreCase)
-				&& !string.Equals(record.Status, LocalPolicyStatusExpired, StringComparison.OrdinalIgnoreCase))
+			if (record.IsPermanentEffect || !CanAttemptPolicyRenewal(record, out _))
 			{
 				throw new InvalidOperationException("该政策当前不能续约。");
 			}
@@ -3170,9 +3192,11 @@ public sealed partial class CustomPolicyBehavior
 			Kingdom playerKingdom = GetPlayerKingdom();
 			Kingdom targetKingdom = ResolveKingdomByIdOrName(record.TargetKingdomId, record.TargetKingdomName);
 			if (!IsPlayerRuler(playerKingdom)
-				|| !string.Equals(playerKingdom?.StringId ?? "", record.IssuerKingdomId ?? "", StringComparison.OrdinalIgnoreCase)
-				|| targetKingdom == null
-				|| targetKingdom.IsEliminated
+				|| !string.Equals(playerKingdom?.StringId ?? "", record.IssuerKingdomId ?? "", StringComparison.OrdinalIgnoreCase))
+			{
+				throw new InvalidOperationException("当前没有原发布王国的统治者权限。");
+			}
+			if (targetKingdom == null || targetKingdom.IsEliminated
 				|| !VassalageBehavior.TryGetDirectVassalIndependenceStatusForExternal(record.TargetKingdomId, out int independenceBefore, out int breakawayThreshold, out int rulerRelation, out string rulerName))
 			{
 				OnVassalRelationshipEndedInternal(record.TargetKingdomId, "确认续约时目标已不再是直属附庸国");
@@ -3231,6 +3255,8 @@ public sealed partial class CustomPolicyBehavior
 					effectRecord.ModuleEffects.Select(instance => instance?.ExecutionReceipt));
 				effectRecord.ActiveEffectId = string.Empty;
 				effectRecord.RemainingDays = renewedRemainingDays;
+				effectRecord.IsEnded = false;
+				effectRecord.EndReason = string.Empty;
 				renewedShellEffects.Add(active);
 				renewedShellRecords.Add(effectRecord);
 			}
@@ -3255,6 +3281,7 @@ public sealed partial class CustomPolicyBehavior
 			record.Status = LocalPolicyStatusActive;
 			record.EndReason = "";
 			record.RemainingDays = renewedRemainingDays;
+			record.EffectStatus = LocalPolicyStatusActive;
 			record.RenewalCount++;
 			record.TotalIndependenceCost = checked(record.TotalIndependenceCost + independenceCost);
 			record.IndependenceBefore = independenceBefore;
@@ -4052,6 +4079,7 @@ public sealed partial class CustomPolicyBehavior
 				};
 			}
 			_localPolicyRecords[normalizedRecordId] = newRecordRaw;
+			InvalidatePolicyRecordPresentation();
 			_activePolicyEffectModelCache.Clear();
 			RebuildActivePolicyEffectRuntimeIndex();
 		}
@@ -4346,7 +4374,9 @@ public sealed partial class CustomPolicyBehavior
 		IEnumerable<PolicyEffectInstanceSaveData> recordedInstances,
 		IEnumerable<PolicyEffectExecutionReceipt> availableReceipts,
 		int addedDurationDays,
-		int renewedTotalDurationDays)
+		int renewedTotalDurationDays,
+		float renewalDay,
+		int renewedRemainingDays)
 	{
 		List<PolicyEffectInstanceSaveData> renewed = ClonePolicyEffectSaveDataList(recordedInstances);
 		List<PolicyEffectExecutionReceipt> authoritativeReceipts = SelectPolicyEffectExecutionReceiptsForInstances(
@@ -4384,9 +4414,15 @@ public sealed partial class CustomPolicyBehavior
 			int addedDays = Math.Max(0, addedDurationDays);
 			if (addedDays > 0)
 			{
-				instance.EndDay = instance.EndDay > instance.StartDay
-					? instance.EndDay + addedDays
-					: instance.StartDay + Math.Max(1, renewedTotalDurationDays);
+				if (renewedTotalDurationDays > addedDurationDays && instance.EndDay > renewalDay)
+				{
+					instance.EndDay += addedDays;
+				}
+				else
+				{
+					instance.StartDay = renewalDay;
+					instance.EndDay = renewalDay + Math.Max(1, renewedRemainingDays);
+				}
 			}
 		}
 		return renewed;
@@ -4431,7 +4467,9 @@ public sealed partial class CustomPolicyBehavior
 			effectRecord?.ModuleEffects,
 			availableReceipts,
 			record?.OriginalDurationDays ?? 0,
-			totalDurationDays);
+			totalDurationDays,
+			GetCurrentCampaignDay(),
+			remainingDays);
 		ActivePolicyEffectSaveData active = new ActivePolicyEffectSaveData
 		{
 			Version = 8,
@@ -4500,7 +4538,9 @@ public sealed partial class CustomPolicyBehavior
 			effectRecord.ModuleEffects,
 			availableReceipts,
 			record.OriginalDurationDays,
-			totalDurationDays);
+			totalDurationDays,
+			GetCurrentCampaignDay(),
+			remainingDays);
 		ActivePolicyEffectSaveData active = new ActivePolicyEffectSaveData
 		{
 			Version = 8,

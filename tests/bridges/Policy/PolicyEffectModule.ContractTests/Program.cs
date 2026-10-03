@@ -7,6 +7,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Runtime.Remoting.Messaging;
 using System.Runtime.Remoting.Proxies;
@@ -115,6 +116,12 @@ internal static partial class Program
 			ConfigureOnnxRuntimeSearchPath();
 			LoadAssemblies(args);
 			ConfigureOnnxModuleRootOverride(args);
+			if (args.Any(value => value == "--policy-record-management-only"))
+			{
+				TestPolicyRecordManagementContracts();
+				Console.WriteLine("PASS policyRecordManagementAssertions=" + _assertionCount);
+				return 0;
+			}
 			if (args.Any(value => value == "--policy-personality-only"))
 			{
 				TestPolicyVotePersonalityContracts();
@@ -409,11 +416,18 @@ internal static partial class Program
 					+ " elapsedMs=" + stopwatch.ElapsedMilliseconds.ToString(CultureInfo.InvariantCulture));
 				return 0;
 			}
+			if ((args ?? Array.Empty<string>()).Any(value => string.Equals(value, "--player-policy-maintenance-only", StringComparison.OrdinalIgnoreCase)))
+			{
+				TestPlayerPolicyMaintenanceAllocationContract();
+				Console.WriteLine("PASS policyMaintenanceAssertions=" + _assertionCount.ToString(CultureInfo.InvariantCulture));
+				return 0;
+			}
 			if ((args ?? Array.Empty<string>()).Any(value => string.Equals(value, "--player-policy-ui-contracts-only", StringComparison.OrdinalIgnoreCase)))
 			{
 				TestNpcLegacyMigrations();
 				TestPolicyReReviewContracts();
 				TestPlayerPolicyPermanentDurationContract();
+				TestPolicyRecordManagementContracts();
 				TestPolicyResultRetryPopupContract();
 				TestNpcSuggestedPolicyAgendaFlowContracts();
 				TestPlayerVassalPolicyAttributionContracts();
@@ -485,6 +499,7 @@ internal static partial class Program
 			TestFundingStrategies();
 			TestPlayerPolicyPermanentDurationContract();
 			TestPolicyReReviewContracts();
+			TestPolicyRecordManagementContracts();
 			TestPolicyResultRetryPopupContract();
 			TestNpcSuggestedPolicyAgendaFlowContracts();
 			TestPlayerVassalPolicyAttributionContracts();
@@ -14186,6 +14201,294 @@ internal static partial class Program
 			"NPC expiry agendas must retain their existing lifecycle.");
 	}
 
+	private static void TestPolicyRecordManagementContracts()
+	{
+		Type behavior = SutType("AnimusForge.CustomPolicyBehavior");
+		Type recordType = behavior.GetNestedType("LocalPolicyRecordSaveData", All);
+		foreach (string endedStatus in new[] { "expired", "targets_lost", "relationship_ended", "abolished" })
+		{
+			object record = JsonConvert.DeserializeObject("{\"RecordId\":\"ended\",\"Status\":\"active\",\"EffectStatus\":\"" + endedStatus
+				+ "\",\"RemainingDays\":0,\"Effects\":[{\"IsEnded\":true,\"RemainingDays\":0,\"ModuleEffects\":[{\"ModuleId\":\"clanInfluencePerDay\",\"instanceId\":\"legacy\",\"payloadSchemaVersion\":1,\"payload\":{},\"targetSet\":{},\"lifecycleState\":\"Completed\"}]}]}", recordType);
+			InvokeStatic(behavior, "NormalizeLocalPolicyRecord", new[] { record }, 1);
+			Check((string)Property(recordType, record, "Status") == endedStatus,
+				"Legacy ended effects must repair the policy status: " + endedStatus);
+			InvokeStatic(behavior, "NormalizeLocalPolicyRecord", new[] { record }, 1);
+			Check((string)Property(recordType, record, "Status") == endedStatus, "Status repair must be idempotent.");
+			Check((bool)InvokeStatic(behavior, "CanDeletePolicyHistoryState", new object[] { endedStatus, false, false }, 3),
+				"Every completed terminal status must be deletable: " + endedStatus);
+			Check(!(bool)InvokeStatic(behavior, "CanDeletePolicyHistoryState", new object[] { endedStatus, true, false }, 3), "A live effect must block deletion.");
+			Check(!(bool)InvokeStatic(behavior, "CanDeletePolicyHistoryState", new object[] { endedStatus, false, true }, 3), "Pending recovery must block deletion.");
+		}
+		foreach (string json in new[] {
+			"{\"Status\":\"active\",\"EffectStatus\":\"expired\",\"Effects\":[]}",
+			"{\"Status\":\"active\",\"EffectStatus\":\"active\",\"MaintenanceFunded\":false,\"RemainingDays\":5}",
+			"{\"Status\":\"active\",\"EffectStatus\":\"expired\",\"Effects\":[{\"IsEnded\":true},{\"RemainingDays\":4}]}",
+			"{\"Status\":\"active\",\"EffectStatus\":\"active\",\"IsPermanentEffect\":true}" })
+		{
+			object record = JsonConvert.DeserializeObject(json, recordType);
+			InvokeStatic(behavior, "NormalizeLocalPolicyRecord", new[] { record }, 1);
+			Check((string)Property(recordType, record, "Status") == "active", "Declarations, partial effects, pauses and permanent policies must remain active.");
+		}
+		foreach (string status in new[] { "active", "pending", "expiry_vote_pending", "rejected", "unknown", "" })
+			Check(!(bool)InvokeStatic(behavior, "CanDeletePolicyHistoryState", new object[] { status, false, false }, 3), "Non-terminal or unknown state must fail closed: " + status);
+		Check((string)InvokeStatic(behavior, "GetPolicyHistoryStatusText", new object[] { "pending" }, 1) == "待表决", "A pending policy must not be presented as ended.");
+		Check((string)InvokeStatic(behavior, "GetPolicyHistoryStatusText", new object[] { "unknown" }, 1) == "状态未确认", "Unknown status must not be invented as a lifecycle terminal state.");
+		string key = (string)InvokeStatic(behavior, "BuildPolicyHistoryKey", new object[] { "player_local", "record:1" }, 2);
+		Check(key == "player_local:record:1", "Deletion identity must preserve the full record ID.");
+		Check(key != (string)InvokeStatic(behavior, "BuildPolicyHistoryKey", new object[] { "npc", "record:1" }, 2), "Different policy sources must never share deletion identity.");
+		List<PolicyEffectInstanceSaveData> instances = new List<PolicyEffectInstanceSaveData> {
+			new PolicyEffectInstanceSaveData { InstanceId = "ongoing", ModuleId = "clanInfluencePerDay", StartDay = 10, EndDay = 15, LifecycleState = PolicyEffectLifecycleState.Completed },
+			new PolicyEffectInstanceSaveData { InstanceId = "once", ModuleId = "kingdomStabilityOnce", StartDay = 10, EndDay = 15, LifecycleState = PolicyEffectLifecycleState.Completed }
+		};
+		IList renewed = (IList)InvokeStatic(behavior, "CreateRenewedPolicyEffectInstances", new object[] { instances, null, 5, 5, 40f, 5 }, 6);
+		PolicyEffectInstanceSaveData restored = (PolicyEffectInstanceSaveData)renewed[0];
+		Check(restored.StartDay == 40 && restored.EndDay == 45 && restored.LifecycleState == PolicyEffectLifecycleState.Active, "Expired renewal must rebase its clock to today.");
+		Check(((PolicyEffectInstanceSaveData)renewed[1]).LifecycleState == PolicyEffectLifecycleState.Completed, "Renewal must not replay a settled one-shot.");
+		instances[0].EndDay = 45;
+		renewed = (IList)InvokeStatic(behavior, "CreateRenewedPolicyEffectInstances", new object[] { instances, null, 5, 10, 40f, 10 }, 6);
+		Check(((PolicyEffectInstanceSaveData)renewed[0]).EndDay == 50, "A live renewal must extend its existing deadline.");
+
+		object owner = Activator.CreateInstance(behavior);
+		IDictionary records = (IDictionary)behavior.GetField("_localPolicyRecords", All).GetValue(owner);
+		records["record:1"] = "{\"RecordId\":\"record:1\",\"Status\":\"expired\",\"EffectStatus\":\"expired\",\"Effects\":[]}";
+		object[] deleteArgs = { key, null };
+		Check((bool)InvokeInstance(behavior, owner, "TryDeletePolicyHistoryRecord", deleteArgs, 2), "A completed local record must delete successfully.");
+		Check(records.Contains("record:1"), "Deleting history must retain lifecycle and lineage metadata.");
+		Check((bool)InvokeStatic(behavior, "IsPolicyHistoryDeleted", new object[] { "player_local", "record:1" }, 2), "The tombstone must hide the exact record.");
+		Check(!(bool)InvokeStatic(behavior, "IsPolicyHistoryDeleted", new object[] { "npc", "record:1" }, 2), "An unrelated NPC record must remain visible.");
+		Dictionary<string, string> persisted = new Dictionary<string, string>(StringComparer.Ordinal);
+		Type storeType = RequireType("TaleWorlds.CampaignSystem.IDataStore, TaleWorlds.CampaignSystem");
+		InvokeInstance(behavior, owner, "SyncData", new[] { new ContractDataStoreProxy(storeType, persisted, true).GetTransparentProxy() }, 1);
+		object reloaded = Activator.CreateInstance(behavior);
+		InvokeInstance(behavior, reloaded, "SyncData", new[] { new ContractDataStoreProxy(storeType, persisted, false).GetTransparentProxy() }, 1);
+		Check((bool)InvokeStatic(behavior, "IsPolicyHistoryDeleted", new object[] { "player_local", "record:1" }, 2), "Deletion must survive save/load.");
+		Check(!(bool)InvokeInstance(behavior, reloaded, "TryDeletePolicyHistoryRecord", new object[] { key, null }, 2), "Repeated deletion must not commit again.");
+		TestPolicyRecordManagementOwnerBoundaries();
+	}
+
+	private static void TestPolicyRecordManagementOwnerBoundaries()
+	{
+		Type behavior = SutType("AnimusForge.CustomPolicyBehavior");
+		Type localType = behavior.GetNestedType("LocalPolicyRecordSaveData", All);
+		Type activeType = behavior.GetNestedType("ActivePolicyEffectSaveData", All);
+		object owner = Activator.CreateInstance(behavior);
+		IDictionary records = (IDictionary)behavior.GetField("_localPolicyRecords", All).GetValue(owner);
+		IDictionary effects = (IDictionary)behavior.GetField("_activePolicyEffects", All).GetValue(owner);
+		foreach (string status in new[] { "active", "expired", "targets_lost", "relationship_ended", "abolished" })
+		{
+			object local = JsonConvert.DeserializeObject("{\"RecordId\":\"renew-" + status + "\",\"Status\":\"" + status + "\"}", localType);
+			InvokeStatic(behavior, "NormalizeLocalPolicyRecord", new[] { local }, 1);
+			Check((bool)InvokeInstance(behavior, owner, "CanAttemptPolicyRenewal", new object[] { local, null }, 2), "Renewal eligibility must not depend on policy status: " + status);
+		}
+		object declaration = JsonConvert.DeserializeObject("{\"Status\":\"active\",\"EffectStatus\":\"expired\",\"Effects\":[{\"IsEnded\":true}]}", localType);
+		InvokeStatic(behavior, "NormalizeLocalPolicyRecord", new[] { declaration }, 1);
+		Check((string)Property(localType, declaration, "Status") == "active", "An empty declaration shell is not proof of natural expiry.");
+		Check((string)InvokeStatic(behavior, "BuildLocalPolicyRemainingText", new[] { declaration }, 1) == "无持续数值效果", "A declaration must not show a misleading zero-day countdown.");
+		object permanentEnded = JsonConvert.DeserializeObject("{\"Status\":\"abolished\",\"IsPermanentEffect\":true}", localType);
+		InvokeStatic(behavior, "NormalizeLocalPolicyRecord", new[] { permanentEnded }, 1);
+		Check((string)InvokeStatic(behavior, "BuildLocalPolicyRemainingText", new[] { permanentEnded }, 1) == "持续效果已结束", "An abolished permanent effect must not be displayed as running forever.");
+		object lost = JsonConvert.DeserializeObject("{\"OriginalTargetFiefIds\":[\"old\",\"lost\"],\"TargetFiefIds\":[\"old\"]}", localType);
+		Check(Items(InvokeStatic(behavior, "GetLocalPolicyRenewalTargetIds", new[] { lost }, 1)).Cast<string>().SequenceEqual(new[] { "old", "lost" }), "Renewal must recover original targets, not only the surviving target list.");
+		List<PolicyEffectInstanceSaveData> manual = new List<PolicyEffectInstanceSaveData> {
+			new PolicyEffectInstanceSaveData { ModuleId = "clanInfluencePerDay", StartDay = 10, EndDay = 80, LifecycleState = PolicyEffectLifecycleState.Completed },
+			new PolicyEffectInstanceSaveData { ModuleId = "kingdomStabilityNextDayOnce", LifecycleState = PolicyEffectLifecycleState.Completed }
+		};
+		IList restored = (IList)InvokeStatic(behavior, "CreateRenewedPolicyEffectInstances", new object[] { manual, null, 5, 5, 40f, 5 }, 6);
+		Check(((PolicyEffectInstanceSaveData)restored[0]).StartDay == 40 && ((PolicyEffectInstanceSaveData)restored[0]).EndDay == 45, "Manual abolition before the old deadline must restart from today.");
+		Check(((PolicyEffectInstanceSaveData)restored[1]).LifecycleState == PolicyEffectLifecycleState.Completed, "Scheduled one-shot modules must not replay on renewal.");
+
+		records["guard"] = "{\"RecordId\":\"guard\",\"Status\":\"expired\",\"EffectStatus\":\"expired\"}";
+		Check((bool)InvokeInstance(behavior, owner, "CanDeletePolicyHistoryRecord", new object[] { "player_local:guard", null }, 2), "The initial terminal record is deletable before confirmation.");
+		object live = CreateExceptionalActiveEffect(activeType, "guard-live", "", null);
+		SetProperty(activeType, live, "RecordId", "guard");
+		SetProperty(activeType, live, "ScopeKind", "local");
+		SetProperty(activeType, live, "Ended", false);
+		SetProperty(activeType, live, "RemainingDays", 5);
+		effects["guard-live"] = JsonConvert.SerializeObject(live);
+		Check(!(bool)InvokeInstance(behavior, owner, "TryDeletePolicyHistoryRecord", new object[] { "player_local:guard", null }, 2), "Confirmation must recheck effects added while the confirmation was open.");
+		Check(!(bool)InvokeStatic(behavior, "IsPolicyHistoryDeleted", new object[] { "player_local", "guard" }, 2), "A refused confirmation must not create a tombstone.");
+		effects.Clear();
+		foreach ((string Reason, string Compensation) state in new[] { ("rollbackPending:contract", (string)null), ("", "daily"), ("", "scheduledOnce") })
+		{
+			object pending = CreateExceptionalActiveEffect(activeType, "pending", state.Reason, state.Compensation);
+			SetProperty(activeType, pending, "RecordId", "guard");
+			effects["pending"] = JsonConvert.SerializeObject(pending);
+			Check(!(bool)InvokeInstance(behavior, owner, "TryDeletePolicyHistoryRecord", new object[] { "player_local:guard", null }, 2), "Rollback or compensation must block deletion: " + state.Reason + state.Compensation);
+			effects.Clear();
+		}
+		foreach (string commitState in new[] { "externalCommitPending", "compensationPending", "quarantinedBlocked", "commitPending" })
+		{
+			records["guard"] = JsonConvert.SerializeObject(new { RecordId = "guard", Status = "expired", ExternalCommitState = commitState });
+			Check(!(bool)InvokeInstance(behavior, owner, "TryDeletePolicyHistoryRecord", new object[] { "player_local:guard", null }, 2), "An unfinished external transaction must block deletion: " + commitState);
+		}
+		records.Clear();
+
+		Type npcType = SutType("AnimusForge.NpcRulerPolicyBehavior");
+		object npcOwner = Activator.CreateInstance(npcType);
+		IDictionary npcRecords = (IDictionary)npcType.GetField("_policyRecords", All).GetValue(npcOwner);
+		NpcRulerPolicyRecord npc = new NpcRulerPolicyRecord {
+			PolicyId = "npc-ended", AgendaStatus = "abolished", KingdomId = "k1", KingdomName = "测试王国",
+			PolicyName = "已结束 NPC 政策", PolicyContent = "测试正文", PublicFeedback = "测试反馈", GameDate = "测试日期", Day = 10
+		};
+		npcRecords[npc.PolicyId] = JsonConvert.SerializeObject(npc);
+		IList projected = new ArrayList(Items(InvokeStatic(behavior, "GetPolicyRecordPresentationSnapshot", Array.Empty<object>(), 0)).ToArray());
+		Check(projected.Count == 1, "The shared presentation must contain the NPC record exactly once.");
+		Type projectionType = SutType("AnimusForge.PolicyRecordPresentationData");
+		object projection = projected[0];
+		string body = (string)projectionType.GetField("BodyText", All).GetValue(projection);
+		string impact = (string)projectionType.GetField("ImpactText", All).GetValue(projection);
+		object archive = InvokeStatic(SutType("AnimusForge.WorldDiplomacyPresentation"), "BuildRoyalAnnouncementArchiveData", Array.Empty<object>(), 0);
+		object archiveRow = Items(archive.GetType().GetField("Countries", All).GetValue(archive)).SelectMany(country => Items(country.GetType().GetField("Records", All).GetValue(country)))
+			.Single(row => (string)row.GetType().GetField("HistoryKey", All).GetValue(row) == "npc:npc-ended");
+		Type timelineEntryType = SutType("AnimusForge.WorldMessageTimelineEntryData");
+		IList timeline = (IList)Activator.CreateInstance(typeof(List<>).MakeGenericType(timelineEntryType));
+		InvokeStatic(SutType("AnimusForge.WorldMessageTimelineUi"), "AppendPolicyEntries", new object[] { timeline }, 1);
+		Check(timeline.Count == 1, "Rumors must project one entry for the same policy.");
+		foreach (object row in new[] { archiveRow, timeline[0] })
+		{
+			Check((string)row.GetType().GetField("BodyText", All).GetValue(row) == body, "U-key and rumor bodies must use the shared human presentation.");
+			Check((string)row.GetType().GetField("ImpactText", All).GetValue(row) == impact, "U-key and rumor effects must agree.");
+			Check((string)row.GetType().GetField("DateText", All).GetValue(row) == "测试日期", "U-key and rumor dates must agree.");
+		}
+		npc.EffectBundleRollbackPending = true;
+		npcRecords[npc.PolicyId] = JsonConvert.SerializeObject(npc);
+		Check(!(bool)InvokeInstance(behavior, owner, "TryDeletePolicyHistoryRecord", new object[] { "npc:npc-ended", null }, 2), "NPC rollback must block deletion.");
+		npc.EffectBundleRollbackPending = false;
+		npc.ApprovalFailureFinalizationPending = true;
+		npcRecords[npc.PolicyId] = JsonConvert.SerializeObject(npc);
+		Check(!(bool)InvokeInstance(behavior, owner, "TryDeletePolicyHistoryRecord", new object[] { "npc:npc-ended", null }, 2), "NPC finalization must block deletion.");
+		npc.ApprovalFailureFinalizationPending = false;
+		npc.AgendaStatus = "expiry_vote_pending";
+		npcRecords[npc.PolicyId] = JsonConvert.SerializeObject(npc);
+		Check(!(bool)InvokeInstance(behavior, owner, "TryDeletePolicyHistoryRecord", new object[] { "npc:npc-ended", null }, 2), "The original NPC expiry vote must not be bypassed.");
+		npc.AgendaStatus = "abolished";
+		npcRecords[npc.PolicyId] = JsonConvert.SerializeObject(npc);
+		Type context = SutType("AnimusForge.WorldDiplomacyPolicyContext");
+		context.GetField("_publishedHistoryNextRefreshTimestamp", All).SetValue(null, 0L);
+		long diplomaticRevision = (long)InvokeStatic(context, "GetPublishedPolicyHistoryCurrentRevision", Array.Empty<object>(), 0);
+		Check((bool)InvokeInstance(behavior, owner, "TryDeletePolicyHistoryRecord", new object[] { "npc:npc-ended", null }, 2), "A completed NPC policy must delete successfully.");
+		Check(npcRecords.Contains(npc.PolicyId), "NPC owner metadata must be retained after deleting history.");
+		object[] captureArgs = { null, null };
+		Check((bool)InvokeStatic(npcType, "TryCaptureUnifiedPolicyHistorySnapshotForExternal", captureArgs, 2), "The neutral lifecycle snapshot must remain available after deletion.");
+		object deletedNpc = Items(captureArgs[0]).Single(entry => (string)Property(entry.GetType(), entry, "EntryId") == npc.PolicyId);
+		Check((bool)Property(deletedNpc.GetType(), deletedNpc, "IsHistoryDeleted"), "The neutral snapshot must retain deleted facts while tagging them for retrieval exclusion.");
+		context.GetField("_publishedHistoryNextRefreshTimestamp", All).SetValue(null, 0L);
+		Check((long)InvokeStatic(context, "GetPublishedPolicyHistoryCurrentRevision", Array.Empty<object>(), 0) == diplomaticRevision, "Deleting presentation must not change the diplomatic artifact fingerprint.");
+		Check(!Items(InvokeStatic(behavior, "GetPolicyRecordPresentationSnapshot", Array.Empty<object>(), 0)).Any(), "Deletion must invalidate and empty the shared presentation.");
+		timeline.Clear();
+		InvokeStatic(SutType("AnimusForge.WorldMessageTimelineUi"), "AppendPolicyEntries", new object[] { timeline }, 1);
+		Check(timeline.Count == 0, "Deleted NPC records must disappear from rumors.");
+
+		Type dynamicType = behavior.GetNestedType("DynamicPolicySaveData", All);
+		object national = JsonConvert.DeserializeObject("{\"PolicyObjectId\":\"af_policy:national-ended\",\"RecordId\":\"national-ended\",\"Source\":\"player\",\"Status\":\"abolished\",\"CommitState\":\"ended\"}", dynamicType);
+		InvokeInstance(behavior, owner, "StoreDynamicPolicy", new[] { national }, 1);
+		Check((bool)InvokeInstance(behavior, owner, "TryDeletePolicyHistoryRecord", new object[] { "player_kingdom:national-ended", null }, 2), "A completed player national record must delete successfully.");
+		Check(!(bool)InvokeStatic(behavior, "IsPolicyHistoryDeleted", new object[] { "npc", "national-ended" }, 2), "National deletion must not match NPC records with the same ID.");
+		Dictionary<string, string> persisted = new Dictionary<string, string>(StringComparer.Ordinal);
+		Type storeType = RequireType("TaleWorlds.CampaignSystem.IDataStore, TaleWorlds.CampaignSystem");
+		InvokeInstance(behavior, owner, "SyncData", new[] { new ContractDataStoreProxy(storeType, persisted, true).GetTransparentProxy() }, 1);
+		object reloaded = Activator.CreateInstance(behavior);
+		InvokeInstance(behavior, reloaded, "SyncData", new[] { new ContractDataStoreProxy(storeType, persisted, false).GetTransparentProxy() }, 1);
+		Check((bool)InvokeStatic(behavior, "IsPolicyHistoryDeleted", new object[] { "npc", "npc-ended" }, 2), "The NPC deletion marker must survive save/load.");
+		Check((bool)InvokeStatic(behavior, "IsPolicyHistoryDeleted", new object[] { "player_kingdom", "national-ended" }, 2), "The national deletion marker must survive save/load.");
+		Check(!Items(InvokeStatic(behavior, "GetPolicyRecordPresentationSnapshot", Array.Empty<object>(), 0)).Any(), "Reload and registry fallback must not resurrect deleted policy presentations.");
+
+		Type service = SutType("AnimusForge.PolicyHistoryRetrievalService");
+		Type entryType = SutType("AnimusForge.NpcPolicyHistoryEntry");
+		object deletedEntry = BuildNpcPolicyHistoryEntry(entryType, "deleted", "k1", "active", "active", 1, 20);
+		SetProperty(entryType, deletedEntry, "IsHistoryDeleted", true);
+		Check(!(bool)InvokeStatic(service, "IsUsableEntry", new[] { deletedEntry }, 1), "Deleted policy retrieval must fail before embedding.");
+		IList entries = (IList)Activator.CreateInstance(typeof(List<>).MakeGenericType(entryType));
+		entries.Add(deletedEntry);
+		object endedEntry = BuildNpcPolicyHistoryEntry(entryType, "ended-effect", "k1", "active", "expired", 1, 20);
+		entries.Add(endedEntry);
+		object currentEntry = BuildNpcPolicyHistoryEntry(entryType, "current", "k1", "active", "active", 1, 10);
+		entries.Add(currentEntry);
+		int embeddingCalls = 0;
+		PolicyTextEmbeddingSession session = new PolicyTextEmbeddingSession(text => { embeddingCalls++; return new[] { 1f, 0f }; }, "history-delete-contract");
+		object evaluation = InvokeStatic(service, "RetrieveForEvaluation", new object[] { session, "测试", entries, "k1", 2, 1, 1L }, 7);
+		Check(Items(Property(evaluation.GetType(), evaluation, "RecentActivePolicies")).Count() == 1, "Publishing references must exclude deleted records and expired effects.");
+		Check(embeddingCalls == 0, "Excluded policy records must not trigger embeddings.");
+		object currentDeclaration = BuildNpcPolicyHistoryEntry(entryType, "declaration", "k1", "active", "expired", 1, 15);
+		SetProperty(entryType, currentDeclaration, "IsDeclarationOnly", true);
+		entries.Add(currentDeclaration);
+		evaluation = InvokeStatic(service, "RetrieveForEvaluation", new object[] { session, "测试", entries, "k1", 2, 0, 1L }, 7);
+		Check(Items(Property(evaluation.GetType(), evaluation, "RecentActivePolicies")).Count() == 2, "A current pure declaration remains a publishing reference despite having no mechanical countdown.");
+		Check(!(bool)InvokeInstance(behavior, owner, "CanAttemptPolicyRenewal", new object[] { declaration, null }, 2), "A renewal callback captured before save/owner replacement must be rejected.");
+		TestPolicyRecordManagementLifecycleAndUi();
+	}
+
+	private static void TestPolicyRecordManagementLifecycleAndUi()
+	{
+		Type behavior = SutType("AnimusForge.CustomPolicyBehavior");
+		Type activeType = behavior.GetNestedType("ActivePolicyEffectSaveData", All);
+		object owner = Activator.CreateInstance(behavior);
+		IDictionary records = (IDictionary)behavior.GetField("_localPolicyRecords", All).GetValue(owner);
+		records["partial"] = "{\"RecordId\":\"partial\",\"Status\":\"active\",\"Effects\":[]}";
+		object ending = CreateExceptionalActiveEffect(activeType, "ending", "", null);
+		SetProperty(activeType, ending, "ScopeKind", "local");
+		SetProperty(activeType, ending, "RecordId", "partial");
+		object remaining = CreateExceptionalActiveEffect(activeType, "remaining", "", null);
+		SetProperty(activeType, remaining, "ScopeKind", "local");
+		SetProperty(activeType, remaining, "RecordId", "partial");
+		SetProperty(activeType, remaining, "LocalTargetScope", "mentioned");
+		SetProperty(activeType, remaining, "Ended", false);
+		SetProperty(activeType, remaining, "IsPermanentEffect", true);
+		InvokeInstance(behavior, owner, "PersistActivePolicyEffect", new object[] { "remaining", remaining, false }, 3);
+		InvokeInstance(behavior, owner, "MarkPlayerLocalPolicyEffectEnded", new object[] { ending, "expired", "自然到期" }, 3);
+		Check(JObject.Parse((string)records["partial"]).Value<string>("Status") == "active", "Expiry of one shell must retain a still-live permanent shell.");
+		Check(!(bool)InvokeInstance(behavior, owner, "TryDeletePolicyHistoryRecord", new object[] { "player_local:partial", null }, 2), "Partial expiry must not permit deletion.");
+		InvokeInstance(behavior, owner, "RemoveActivePolicyEffect", new object[] { "remaining" }, 1);
+		InvokeInstance(behavior, owner, "MarkPlayerLocalPolicyEffectEnded", new object[] { remaining, "targets_lost", "目标封地全部失去" }, 3);
+		JObject endedRecord = JObject.Parse((string)records["partial"]);
+		Check(endedRecord.Value<string>("Status") == "targets_lost" && endedRecord.Value<string>("EffectStatus") == "targets_lost", "Ending the last shell must synchronize policy and effect terminal states.");
+		records["vassal"] = "{\"RecordId\":\"vassal\",\"ScopeKind\":\"vassal\",\"Status\":\"active\",\"TargetKingdomId\":\"k1\",\"Effects\":[{}]}";
+		InvokeInstance(behavior, owner, "OnVassalRelationshipEndedInternal", new object[] { "k1", "臣属关系终止" }, 2);
+		JObject vassal = JObject.Parse((string)records["vassal"]);
+		Check(vassal.Value<string>("Status") == "relationship_ended" && vassal.Value<string>("EffectStatus") == "relationship_ended", "Relationship termination must synchronize both persisted statuses.");
+		Check(vassal["Effects"][0].Value<bool>("IsEnded"), "Relationship termination must mark recorded shells ended.");
+		Type npcType = SutType("AnimusForge.NpcRulerPolicyBehavior");
+		object npcOwner = Activator.CreateInstance(npcType);
+		IDictionary npcRecords = (IDictionary)npcType.GetField("_policyRecords", All).GetValue(npcOwner);
+		npcRecords["vassal"] = JsonConvert.SerializeObject(new NpcRulerPolicyRecord { PolicyId = "vassal", PolicyKind = "vassal", IsPlayerPolicy = true, AgendaStatus = "abolished" });
+		Check((bool)InvokeInstance(behavior, owner, "TryDeletePolicyHistoryRecord", new object[] { "player_vassal:vassal", null }, 2), "An ended vassal record must be deletable.");
+		records.Remove("vassal"); // Simulate the pre-existing bounded history trim, not physical lifecycle deletion.
+		AnimusForgeWorldEventInboxEntry fallback = new AnimusForgeWorldEventInboxEntry { EventId = "npc_ruler_policy:vassal", IsPlayerPolicy = true, PolicyRecordId = "vassal" };
+		Check((string)InvokeStatic(behavior, "GetPolicyAnnouncementHistoryKey", new object[] { fallback }, 1) == "player_vassal:vassal", "NPC registry fallback must preserve vassal source identity after local history trimming.");
+		Check((bool)InvokeStatic(behavior, "IsPolicyAnnouncementDeleted", new object[] { fallback }, 1), "A trimmed vassal record must not resurrect through its announcement.");
+
+		string requestedKey = null;
+		Action<string> request = key => requestedKey = key;
+		CustomPolicyHistoryRecordItemVM national = new CustomPolicyHistoryRecordItemVM(new PolicyHistoryRecordData {
+			HistoryKey = "player_kingdom:n1", CanDelete = true
+		}, null, request);
+		national.ExecuteDelete();
+		Check(requestedKey == "player_kingdom:n1", "National delete commands must pass the source-specific identity.");
+		requestedKey = null;
+		new CustomPolicyHistoryRecordItemVM(new PolicyHistoryRecordData { HistoryKey = "player_kingdom:active", CanDelete = false }, null, request).ExecuteDelete();
+		Check(requestedKey == null, "Non-terminal national UI records must not dispatch deletion.");
+		LocalPolicyHistoryPopupVM local = new LocalPolicyHistoryPopupVM(new LocalPolicyHistoryData { Records = new List<LocalPolicyHistoryRecordData> {
+			new LocalPolicyHistoryRecordData { ScopeKind = "local", RecordId = "l1", HistoryKey = "player_local:l1", CanDelete = true, CanRenew = true }
+		}}, null, null, null, null, request);
+		Check(local.CanRenew && local.CanDelete, "An ended local record must expose renewal and deletion independently.");
+		local.ExecuteDelete();
+		Check(requestedKey == "player_local:l1", "Local delete commands must retain the exact source-specific identity.");
+		local.ExecuteShowVassalPolicies();
+		Check(local.ShowEmptyState && !local.CanDelete && !local.CanRenew, "An empty filtered tab must reset stale action flags.");
+		WorldEventInboxPopupData data = new WorldEventInboxPopupData { Countries = new List<WorldEventCountryData> {
+			new WorldEventCountryData { Records = new List<WorldEventRecordData> { new WorldEventRecordData { HistoryKey = "npc:n1", CanDelete = true } } }
+		}};
+		AnimusForgeWorldEventInboxPopupVM inbox = new AnimusForgeWorldEventInboxPopupVM(data, null, null, request);
+		Check(inbox.ShowDeleteSelectedRecord && inbox.CanDeleteSelectedRecord, "The U-key archive must expose deletion for ended NPC policies.");
+		inbox.ExecuteDelete();
+		Check(requestedKey == "npc:n1", "U-key deletion must not be misrouted as a player policy.");
+		requestedKey = null;
+		// Dispatching to a confirmation is not itself a delete; a cancelled inquiry does not invoke the commit owner.
+		Check(!(bool)InvokeStatic(behavior, "IsPolicyHistoryDeleted", new object[] { "npc", "n1" }, 2), "Opening or cancelling a confirmation must not create a tombstone.");
+		AnimusForgeWorldEventInboxPopupVM empty = new AnimusForgeWorldEventInboxPopupVM(new WorldEventInboxPopupData(), null, null, request);
+		Check(empty.ShowEmptyState && !empty.ShowDeleteSelectedRecord && !empty.CanDeleteSelectedRecord, "Empty archives must not retain actionable policy selection.");
+	}
+
 	private static void TestPolicyResultRetryPopupContract()
 	{
 		int closeCount = 0;
@@ -14409,6 +14712,8 @@ internal static partial class Program
 
 	private static void TestPlayerPolicyMaintenanceAllocationContract()
 	{
+		TestPlayerPolicyMaintenancePaymentReceiptContract();
+		TestPlayerPolicyMaintenancePreparationContract();
 		Type planner = SutType("AnimusForge.PolicyEffects.PlayerPolicyMaintenancePlanner");
 		Check(!(bool)InvokeStatic(planner, "IsSettlementDue", new object[] { 20, 19, 20 }, 3),
 			"The activation day must be covered by the startup payment.");
@@ -14428,10 +14733,8 @@ internal static partial class Program
 		bool[] zeroCosts = (bool[])InvokeStatic(planner, "AllocateStrictOldestPrefix", new object[] { new[] { 7, 0, 1, 0 }, 6 }, 2);
 		Check(zeroCosts.SequenceEqual(new[] { false, true, false, true }),
 			"Zero-maintenance policies must remain funded even after the charged prefix is blocked.");
-		Check((bool)InvokeStatic(planner, "IsSettlementGoldDeltaConfirmed", new object[] { 100, 90, -10 }, 3),
-			"Maintenance settlement must confirm the exact player-gold delta after GiveGoldAction.");
-		Check(!(bool)InvokeStatic(planner, "IsSettlementGoldDeltaConfirmed", new object[] { 100, 91, -10 }, 3),
-			"A mismatched player-gold delta must not be persisted as funded or paid.");
+		Check(planner.GetMethod("IsSettlementGoldDeltaConfirmed", All) == null,
+			"Whole-day gold-delta reconciliation must no longer gate maintenance payment.");
 
 		Type behavior = SutType("AnimusForge.CustomPolicyBehavior");
 		MethodInfo goldChangePatch = behavior.GetMethod("Patch_PolicyClanGoldChange_Postfix", All);
@@ -14546,6 +14849,287 @@ internal static partial class Program
 		Check(Math.Abs(maintenanceResult + 10f) <= 0.0001f
 			&& maintenanceExplanations.Split(new[] { "自定义政策维护费" }, StringSplitOptions.None).Length == 2,
 			"All due player policy maintenance must enter vanilla finance as one aggregated negative line.");
+	}
+
+	private static void TestPlayerPolicyMaintenancePreparationContract()
+	{
+		Type behavior = SutType("AnimusForge.CustomPolicyBehavior");
+		Type contextType = behavior.GetNestedType("PlayerPolicyMaintenanceSettlementContext", All);
+		FieldInfo contextField = behavior.GetField("_playerPolicyMaintenanceSettlementContext", All);
+		FieldInfo[] readyFields = new[] { "_policyFinanceModelPatchesApplied", "_policyMaintenanceDailyAdapterReady", "_policyMaintenanceGoldWriteAdapterReady" }
+			.Select(name => behavior.GetField(name, All)).ToArray();
+		object previous = contextField.GetValue(null);
+		object[] readiness = readyFields.Select(field => field.GetValue(null)).ToArray();
+		try
+		{
+			foreach (FieldInfo field in readyFields) field.SetValue(null, true);
+			int day = (int)InvokeStatic(behavior, "GetCurrentCampaignDay", Array.Empty<object>(), 0);
+			foreach (int[] values in new[]
+			{
+				new[] { 10, 0, 6, 5, 1, 6 }, new[] { 10, 0, 4, 6, 0, 10 },
+				new[] { 0, 20, 4, 6, 0, 10 }, new[] { 0, 10, 4, 6, 0, 10 }, new[] { 3, 0, 4, 0, 0, 0 }
+			})
+			{
+				object owner = Activator.CreateInstance(behavior);
+				TaleWorlds.CampaignSystem.Hero hero = CreateUninitializedPolicyOwnerHero("prepare");
+				hero.Gold = values[0];
+				TaleWorlds.CampaignSystem.Clan clan = CreateUninitializedPolicyOwnerClan("prepare-clan", hero);
+				for (int i = 2; i >= 0; i--)
+				{
+					CustomPolicyBehavior.ActivePolicyEffectSaveData effect = new CustomPolicyBehavior.ActivePolicyEffectSaveData
+					{
+						EffectId = "prepare-" + i, PolicyName = "prepare-" + i, SubmittedDay = day - 3 + i,
+						LastMaintenanceSettlementDay = day - 1, IsPermanentEffect = true,
+						MaintenanceChargeEnabled = true, DailyMaintenanceGoldCost = values[i + 2]
+					};
+					InvokeInstance(behavior, owner, "RefreshPlayerPolicyMaintenanceRuntimeIndex", new object[] { effect }, 1);
+				}
+				object context = Activator.CreateInstance(contextType, true);
+				SetField(contextType, context, "Behavior", owner);
+				SetField(contextType, context, "Clan", clan);
+				SetField(contextType, context, "Day", day);
+				contextField.SetValue(null, context);
+				object[] arguments = { clan, false, false, Activator.CreateInstance(typeof(TaleWorlds.CampaignSystem.ExplainedNumber), new object[] { (float)values[1], false, null }) };
+				InvokeInstance(behavior, owner, "PreparePlayerPolicyMaintenanceSettlement", arguments, 4);
+				Check((int)contextType.GetField("PaidMaintenanceGold", All).GetValue(context) == values[5]
+					&& ((TaleWorlds.CampaignSystem.ExplainedNumber)arguments[3]).ResultNumber == values[1] - values[5]
+					&& hero.Gold == values[0], "Preparation must reserve only the full oldest affordable prefix, including tax-covered positive/zero net, without a second debit.");
+				bool[] funded = (bool[])contextType.GetField("Funded", All).GetValue(context);
+				Check(funded.SequenceEqual(values[2] == 6 ? new[] { true, false, false } : values[5] > 0 ? new[] { true, true } : new[] { false }),
+					"The cached oldest-first ordering must ignore insertion order and block later charged policies; free policies stay outside the charge list.");
+				InvokeInstance(behavior, owner, "PreparePlayerPolicyMaintenanceSettlement", arguments, 4);
+				Check(((TaleWorlds.CampaignSystem.ExplainedNumber)arguments[3]).ResultNumber == values[1] - values[5], "Repeated preparation must not inject the maintenance twice.");
+				foreach (FieldInfo field in readyFields)
+				{
+					SetField(contextType, context, "IntentPrepared", false);
+					field.SetValue(null, false);
+					object[] unavailable = { clan, false, false, Activator.CreateInstance(typeof(TaleWorlds.CampaignSystem.ExplainedNumber), new object[] { (float)values[1], false, null }) };
+					InvokeInstance(behavior, owner, "PreparePlayerPolicyMaintenanceSettlement", unavailable, 4);
+					Check(((TaleWorlds.CampaignSystem.ExplainedNumber)unavailable[3]).ResultNumber == values[1], "Unavailable native observation must fail closed without injecting an unconfirmable fee.");
+					field.SetValue(null, true);
+				}
+			}
+		}
+		finally
+		{
+			contextField.SetValue(null, previous);
+			for (int i = 0; i < readyFields.Length; i++) readyFields[i].SetValue(null, readiness[i]);
+		}
+	}
+
+	private static void TestPlayerPolicyMaintenancePaymentReceiptContract()
+	{
+		Type receiptType = SutType("AnimusForge.PolicyEffects.PlayerPolicyMaintenancePaymentReceipt");
+		foreach (int[] values in new[]
+		{
+			new[] { 1000, -200, 800 }, new[] { 200, -200, 0 },
+			new[] { 1000, 400, 1400 }, new[] { int.MaxValue - 10, 20, int.MaxValue }
+		})
+		{
+			object receipt = Activator.CreateInstance(receiptType, All, null, new object[] { values[1] }, null);
+			InvokeInstance(receiptType, receipt, "BeginWrite", new object[] { values[0], values[1] }, 2);
+			InvokeInstance(receiptType, receipt, "CompleteWrite", new object[] { values[2] }, 1);
+			Check((bool)Property(receiptType, receipt, "Confirmed"),
+				"The actual native write must confirm sufficient, exact-to-zero, positive-net and capped-positive settlements.");
+			InvokeInstance(receiptType, receipt, "BeginWrite", new object[] { 7, values[1] }, 2);
+			InvokeInstance(receiptType, receipt, "CompleteWrite", new object[] { 7 }, 1);
+			Check((bool)Property(receiptType, receipt, "Confirmed"), "A receipt must not be overwritten by subsequent gold changes.");
+		}
+		foreach (int[] values in new[] { new[] { 100, -200, 0 }, new[] { 1000, -200, 999 } })
+		{
+			object receipt = Activator.CreateInstance(receiptType, All, null, new object[] { values[1] }, null);
+			InvokeInstance(receiptType, receipt, "BeginWrite", new object[] { values[0], values[1] }, 2);
+			InvokeInstance(receiptType, receipt, "CompleteWrite", new object[] { values[2] }, 1);
+			Check(!(bool)Property(receiptType, receipt, "Confirmed"), "A partial or blocked write must not confirm payment.");
+		}
+		object missing = Activator.CreateInstance(receiptType, All, null, new object[] { -200 }, null);
+		Check(!(bool)Property(receiptType, missing, "Confirmed"), "An unexecuted write cannot produce a payment receipt.");
+		TestPlayerPolicyMaintenanceNativeWriteAdapter(receiptType);
+	}
+
+	private static TaleWorlds.CampaignSystem.Hero _maintenanceProbeHero;
+	private static TaleWorlds.CampaignSystem.CampaignEventDispatcher _maintenanceProbeDispatcher;
+	private static int _maintenanceProbeCallbackGold;
+	private static bool _maintenanceProbeCallbackThrows;
+	private static bool _maintenanceProbeInTradeEvent;
+
+	[MethodImpl(MethodImplOptions.NoInlining)]
+	private static void MaintenanceNativeDailyGoldProbe(TaleWorlds.CampaignSystem.Hero hero, int amount)
+	{
+		TaleWorlds.CampaignSystem.Actions.GiveGoldAction.ApplyBetweenCharacters(null, hero, amount, true);
+	}
+
+	private static bool MaintenanceDispatcherProbe(ref TaleWorlds.CampaignSystem.CampaignEventDispatcher __result)
+	{
+		__result = _maintenanceProbeDispatcher;
+		return false;
+	}
+
+	private static bool MaintenanceTradeEventProbe()
+	{
+		_maintenanceProbeInTradeEvent = true;
+		try
+		{
+			if (_maintenanceProbeCallbackGold != 0) _maintenanceProbeHero.ChangeHeroGold(_maintenanceProbeCallbackGold);
+			if (_maintenanceProbeCallbackThrows) throw new InvalidOperationException("maintenance callback probe");
+			return false;
+		}
+		finally { _maintenanceProbeInTradeEvent = false; }
+	}
+
+	private static bool MaintenanceSkipWriteProbe() => _maintenanceProbeInTradeEvent;
+
+	private static void TestPlayerPolicyMaintenanceNativeWriteAdapter(Type receiptType)
+	{
+		Type behavior = SutType("AnimusForge.CustomPolicyBehavior");
+		Type contextType = behavior.GetNestedType("PlayerPolicyMaintenanceSettlementContext", All);
+		FieldInfo contextField = behavior.GetField("_playerPolicyMaintenanceSettlementContext", All);
+		object previous = contextField.GetValue(null);
+		PropertyInfo instanceProperty = behavior.GetProperty("Instance", All);
+		object previousInstance = instanceProperty.GetValue(null);
+		Type harmonyType = Type.GetType("HarmonyLib.Harmony, 0Harmony", true);
+		Type harmonyMethodType = Type.GetType("HarmonyLib.HarmonyMethod, 0Harmony", true);
+		const string owner = "AnimusForge.PolicyEffectModule.ContractTests.MaintenanceReceipt";
+		object harmony = Activator.CreateInstance(harmonyType, owner);
+		MethodInfo patch = harmonyType.GetMethods(All).Single(method => method.Name == "Patch" && method.GetParameters().Length == 5);
+		Action<MethodInfo, MethodInfo, MethodInfo> install = (target, prefix, transpiler) => patch.Invoke(harmony, new object[]
+		{
+			target, prefix == null ? null : Activator.CreateInstance(harmonyMethodType, prefix), null,
+			transpiler == null ? null : Activator.CreateInstance(harmonyMethodType, transpiler), null
+		});
+		MethodInfo changeGold = typeof(TaleWorlds.CampaignSystem.Hero).GetMethod("ChangeHeroGold", All);
+		try
+		{
+			patch.Invoke(harmony, new object[]
+			{
+				changeGold, null, null,
+				Activator.CreateInstance(harmonyMethodType, behavior.GetMethod("Patch_PolicyHeroGoldWrite_Transpiler", All)),
+				Activator.CreateInstance(harmonyMethodType, behavior.GetMethod("Patch_PolicyHeroGoldWrite_Finalizer", All))
+			});
+			patch.Invoke(harmony, new object[]
+			{
+				typeof(TaleWorlds.CampaignSystem.CampaignBehaviors.ClanVariablesCampaignBehavior).GetMethod("DailyTickClan", All),
+				Activator.CreateInstance(harmonyMethodType, behavior.GetMethod("Patch_PolicyClanDailyTick_Prefix", All)),
+				Activator.CreateInstance(harmonyMethodType, behavior.GetMethod("Patch_PolicyClanDailyTick_Postfix", All)),
+				Activator.CreateInstance(harmonyMethodType, behavior.GetMethod("Patch_PolicyClanDailyGoldCall_Transpiler", All)),
+				Activator.CreateInstance(harmonyMethodType, behavior.GetMethod("Patch_PolicyClanDailyTick_Finalizer", All))
+			});
+			install(typeof(Program).GetMethod(nameof(MaintenanceNativeDailyGoldProbe), All),
+				null, behavior.GetMethod("Patch_PolicyClanDailyGoldCall_Transpiler", All));
+			install(typeof(TaleWorlds.CampaignSystem.CampaignEventDispatcher).GetProperty("Instance", All).GetGetMethod(true),
+				typeof(Program).GetMethod(nameof(MaintenanceDispatcherProbe), All), null);
+			install(typeof(TaleWorlds.CampaignSystem.CampaignEventDispatcher).GetMethod("OnHeroOrPartyTradedGold", All),
+				typeof(Program).GetMethod(nameof(MaintenanceTradeEventProbe), All), null);
+			_maintenanceProbeDispatcher = (TaleWorlds.CampaignSystem.CampaignEventDispatcher)
+				System.Runtime.Serialization.FormatterServices.GetUninitializedObject(typeof(TaleWorlds.CampaignSystem.CampaignEventDispatcher));
+			foreach (int[] values in new[]
+			{
+				new[] { 1000000, -300, 17, 0 }, new[] { 200, -200, 0, 0 },
+				new[] { 1000, 400, -31, 0 }, new[] { 1000, 0, 0, 0 }, new[] { 1000, -200, 50, 1 }
+			})
+			{
+				_maintenanceProbeHero = CreateUninitializedPolicyOwnerHero("maintenance-native");
+				_maintenanceProbeHero.Gold = values[0];
+				object context = Activator.CreateInstance(contextType, true);
+				SetField(contextType, context, "Clan", CreateUninitializedPolicyOwnerClan("maintenance-clan", _maintenanceProbeHero));
+				SetField(contextType, context, "IntentPrepared", true);
+				SetField(contextType, context, "Day", (int)InvokeStatic(behavior, "GetCurrentCampaignDay", Array.Empty<object>(), 0));
+				contextField.SetValue(null, context);
+				instanceProperty.SetValue(null, Activator.CreateInstance(behavior));
+				object[] nestedTick = { contextType.GetField("Clan", All).GetValue(context), null };
+				InvokeStatic(behavior, "Patch_PolicyClanDailyTick_Prefix", nestedTick, 2);
+				Check(nestedTick[1] == null && ReferenceEquals(contextField.GetValue(null), context), "A nested same-clan/day tick must reuse the in-flight intent, not allocate and debit the policies again.");
+				_maintenanceProbeCallbackGold = values[2];
+				_maintenanceProbeCallbackThrows = values[3] != 0;
+				int directGold = values[0] == 1000000 ? 11 : 0;
+				_maintenanceProbeHero.Gold += directGold;
+				bool callbackFailed = false;
+				try { MaintenanceNativeDailyGoldProbe(_maintenanceProbeHero, values[1]); }
+				catch (InvalidOperationException) { callbackFailed = true; }
+				Check(callbackFailed == _maintenanceProbeCallbackThrows, "Only the injected downstream failure is expected.");
+				object receipt = contextType.GetField("PaymentReceipt", All).GetValue(context);
+				Check(receipt != null && (bool)Property(receiptType, receipt, "Confirmed"),
+					"Real native writes must be observed before trade listeners mutate gold or throw.");
+				Check(_maintenanceProbeHero.Gold == values[0] + directGold + values[1] + values[2], "Direct gold changes and trade listeners must not invalidate the native receipt.");
+				int settledGold = _maintenanceProbeHero.Gold;
+				MaintenanceNativeDailyGoldProbe(_maintenanceProbeHero, values[1]);
+				Check(_maintenanceProbeHero.Gold == settledGold, "A repeated settlement call must neither debit again nor dispatch listeners again.");
+				AssertMaintenanceReceiptCommit(behavior, contextType, context, true, callbackFailed);
+			}
+			install(changeGold, typeof(Program).GetMethod(nameof(MaintenanceSkipWriteProbe), All), null);
+			_maintenanceProbeCallbackGold = -200;
+			_maintenanceProbeCallbackThrows = false;
+			object skippedContext = Activator.CreateInstance(contextType, true);
+			SetField(skippedContext.GetType(), skippedContext, "Clan", CreateUninitializedPolicyOwnerClan("skipped", _maintenanceProbeHero));
+			SetField(skippedContext.GetType(), skippedContext, "IntentPrepared", true);
+			contextField.SetValue(null, skippedContext);
+			int before = _maintenanceProbeHero.Gold;
+			MaintenanceNativeDailyGoldProbe(_maintenanceProbeHero, -200);
+			object skipped = contextType.GetField("PaymentReceipt", All).GetValue(skippedContext);
+			Check(!(bool)Property(receiptType, skipped, "Confirmed") && _maintenanceProbeHero.Gold == before - 200,
+				"A skipped native write cannot borrow a same-amount trade-listener write as its payment receipt.");
+			AssertMaintenanceReceiptCommit(behavior, contextType, skippedContext, false, false);
+			object missingContext = Activator.CreateInstance(contextType, true);
+			SetField(contextType, missingContext, "IntentPrepared", true);
+			contextField.SetValue(null, missingContext);
+			AssertMaintenanceReceiptCommit(behavior, contextType, missingContext, false, false);
+		}
+		finally
+		{
+			contextField.SetValue(null, previous);
+			instanceProperty.SetValue(null, previousInstance);
+			_maintenanceProbeHero = null;
+			_maintenanceProbeDispatcher = null;
+			_maintenanceProbeCallbackGold = 0;
+			_maintenanceProbeCallbackThrows = false;
+			_maintenanceProbeInTradeEvent = false;
+			harmonyType.GetMethod("UnpatchAll", All).Invoke(harmony, new object[] { owner });
+		}
+	}
+
+	private static void AssertMaintenanceReceiptCommit(Type behavior, Type contextType, object context, bool paid, bool callbackFailed)
+	{
+		object owner = Activator.CreateInstance(behavior);
+		CustomPolicyBehavior.ActivePolicyEffectSaveData effect = new CustomPolicyBehavior.ActivePolicyEffectSaveData
+		{
+			EffectId = "maintenance-commit", PolicyName = "receipt probe", IsPermanentEffect = true,
+			MaintenanceChargeEnabled = true, DailyMaintenanceGoldCost = 200, MaintenanceFunded = !paid
+		};
+		Type entryType = behavior.GetNestedType("PlayerPolicyMaintenanceRuntimeEntry", All);
+		object entry = Activator.CreateInstance(entryType, true);
+		SetField(entryType, entry, "Effect", effect);
+		SetField(entryType, entry, "DailyCost", 200);
+		Array due = Array.CreateInstance(entryType, 1);
+		due.SetValue(entry, 0);
+		SetField(contextType, context, "Behavior", owner);
+		SetField(contextType, context, "DueEntries", due);
+		SetField(contextType, context, "Funded", new[] { true });
+		SetField(contextType, context, "PaidMaintenanceGold", 200);
+		SetField(contextType, context, "Day", 1);
+		Exception downstream = callbackFailed ? new InvalidOperationException("downstream") : null;
+		InvokeStatic(behavior, "ReconcilePlayerPolicyMaintenanceSettlement", new object[] { context, downstream }, 2);
+		Check(effect.MaintenanceFunded == paid && effect.TotalMaintenancePaidGold == (paid ? 200 : 0)
+			&& effect.LastMaintenanceSettlementDay == 1,
+			"Persisted funding/cost must follow only the native receipt, including after a downstream exception.");
+		InvokeStatic(behavior, "ReconcilePlayerPolicyMaintenanceSettlement", new object[] { context, downstream }, 2);
+		Check(effect.TotalMaintenancePaidGold == (paid ? 200 : 0), "Postfix/finalizer reconciliation must commit only once.");
+		IDictionary saved = (IDictionary)behavior.GetField("_activePolicyEffects", All).GetValue(owner);
+		CustomPolicyBehavior.ActivePolicyEffectSaveData loaded = JsonConvert.DeserializeObject<CustomPolicyBehavior.ActivePolicyEffectSaveData>((string)saved[effect.EffectId]);
+		Check(loaded.MaintenanceFunded == paid && loaded.TotalMaintenancePaidGold == effect.TotalMaintenancePaidGold
+			&& loaded.LastMaintenanceSettlementDay == 1, "Reload must preserve funding and the same-day no-retry marker without new save fields.");
+		if (!paid)
+		{
+			Type receiptType = SutType("AnimusForge.PolicyEffects.PlayerPolicyMaintenancePaymentReceipt");
+			object receipt = Activator.CreateInstance(receiptType, All, null, new object[] { -200 }, null);
+			InvokeInstance(receiptType, receipt, "BeginWrite", new object[] { 1000, -200 }, 2);
+			InvokeInstance(receiptType, receipt, "CompleteWrite", new object[] { 800 }, 1);
+			SetField(contextType, context, "Day", 2);
+			SetField(contextType, context, "Committed", false);
+			SetField(contextType, context, "PaymentReceipt", receipt);
+			InvokeStatic(behavior, "ReconcilePlayerPolicyMaintenanceSettlement", new object[] { context, null }, 2);
+			Check(effect.MaintenanceFunded && effect.TotalMaintenancePaidGold == 200 && effect.LastMaintenanceSettlementDay == 2,
+				"A paused policy must recover on the next day only after a confirmed full native payment.");
+		}
 	}
 
 	private static void TestVersionedModuleContractsAndHookCapabilities()

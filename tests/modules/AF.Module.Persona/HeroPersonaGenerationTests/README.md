@@ -1,5 +1,18 @@
 # Hero 人设生成生命周期回归
 
+## 2026-10-03 当前生成优化回归（替代下方旧 Prompt 保留结论）
+
+```powershell
+python -X utf8 -B tests/modules/AF.Module.Persona/HeroPersonaGenerationTests/run.py
+python -X utf8 -B tests/modules/AF.Module.Persona/HeroPersonaGenerationTests/verify_lore_and_settings.py
+```
+
+当前 runner 直接编译生产生成器、预约 owner、dispatcher、文本规则，提取当前 `PersonaEditorController.RunHeroPersonaRerollAsync` 放入带实际 port 形状的 fixture；不再以旧 MyBehavior UI 投影冒充当前 UI。engine、网络、Hero 和 profile 是替身，不证明实机。新增阻塞检索回放验证人物名独立查询、捕获后的 MCM 文案不变、正文可选及查询/映射失败回退、开始 HTTP 前的 owner/generation/lease/target/编辑保护；原正常补全、重生 VoiceId、冷却和提交保护继续运行。
+
+`verify_lore_and_settings.py` 编译生产单条选择/正文方法、真实索引/召回/重排算法、版本条件与文本映射方法，以及真实分层 JSON 读写方法。复用既有 Lore game-leaf fixture 和 fake ONNX/reranker ports；磁盘往返仅在全新仓内 artifacts，验证默认/自定义替换/显式空值重读、其他提示词删除覆盖的原语义和损坏原件保护。故障反例 `--mutate empty-resets-default|take-last|ignore-variant-conditions` 必须编译后因行为断言失败，不接受编译失败作为负控成功。
+
+旧 source parity、旧 review hashes 与历史逆变换保留不刷新。它们绑定历史“原 Prompt 不变”假设，且此前已被无关 WorldBulletin 依赖漂移阻塞；本轮获准的提示词变化以新行为回归为准，不把历史校验写成通过。默认 SDK 为仓内 `local/dotnet/8.0.425`。本轮不证明真实 MCM 点击/游戏重启、存档加载、LLM 文风质量或实机性能。
+
 验证正常 Hero 自动补全、原公开外部入口和编辑器重生请求的捕获/生成/提交。升格同伴生成及 Native/Courier 状态轮询不在本包冒充完成。
 
 ## 运行
