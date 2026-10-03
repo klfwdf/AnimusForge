@@ -1,3 +1,32 @@
+<a id="review-fixes-publish-deploy-package-20261003"></a>
+# 本次授权交付：最新修复推送 / 部署 / 1.5 发布包（2026-10-03）
+
+用户最新明确要求“推送并部署并打包”。工作区 `F:/AnimusForge-main`、分支 `codex/af-main-refactor-continuation-20260831`，发布目标 **origin/main**。源码候选 `c118227f6f441b6108cf0a2e51e5bf98df9ea164`，保留已融合的其他会话成果，新增产品 `6211ec3c`（对话 UI / 内战 / 政变）与 `a3a3f7d2`（NPC 赠品出售）；[上一轮范围与13个源码入口](#dialogue-civilwar-coup-review-fixes-20261003)继续作为产品证据。
+
+状态：**DEPLOYED / PACKAGED / OFFLINE_VERIFIED**。文档提交后普通快进推送 main，实际网络 ack / 最终提交 / 独立远端 readback 以本地 `artifacts/publish-deploy-package-20261003-review-fixes/receipt.json` 为准，不把本地提交当作网络成功。本条明确替代下方本批修复“未 Stage / 部署 / 打包 / push”的历史候选状态；实机验收仍未完成。
+
+## 构建与发布范围
+
+- fetch / 独立 `ls-remote` 核实远端基线 `ae10e7f540874c43a0aed3f0e3a191a73807831d`，是本地祖先；文档更新前待推6提交、净22文件，无需融合或改写历史。最终推送前再次 fetch 和出站历史扫描，不推旧同名重构分支、不 force、不 add-all。
+- 调用仓库原 `一键编译覆盖推送/一键打包AnimusForge.bat -NoBump -PackageLabel fixes-20261003`：Debug 双 API + Bootstrap 0 error；两个实现各341个既有警告，Bootstrap 0 warning。引用版本分别 `v1.3.15.110062` / `v1.4.6.115628`，三个新 marker 与 DLL SHA256 一致。保持单模块、XML 仅加载 Bootstrap、源码 / Stage / 安装 / ZIP 全为 `v1.5.0`。
+- 原一键流程的 build / Stage 成功，但 Windows PowerShell 的 ZIP 步骤无诊断退出 `-1`；直接同宿主重试也未成功。随后用 PowerShell 7 执行**未修改的原** `scripts/build/package_mod.ps1`，同样 `-ExcludeOnnx -NoBump -PackageLabel fixes-20261003`，最终 exit0 / `Package Result: success`。原 Stage、DLL allowlist、marker、ZIP 内容校验全部保留，未手工拼 ZIP / 绕过门禁；Windows PowerShell 退出原因未定位，不宣称原一键全流程 exit0。
+- 环境首次缺 `chcp` 实际由8712字符 PATH 超过 cmd 限制导致；仅本地编排子进程改用系统 / Git / dotnet / Python 短 PATH。原 `.bat` 和 `scripts/build` 文件没有修改。
+- 初始旧 Stage 含修复前 UI 资源，被锁定源码校验拒绝；在仓内完整归档到本地 `artifacts/publish-deploy-package-20261003-review-fixes/before-stage`，3379文件 hash 核验后原入口重建。没有删除原备份或非任务材料。
+
+## 包与游戏部署证据
+
+- ZIP：`F:/AnimusForge-main/一键编译覆盖推送/packages/AnimusForge_v1.5.0_fixes-20261003_20261003_193942_721.zip`，**85372032 bytes**；SHA256 `444F94DD430A904AB84C20EE972E5F87A5E94454349DF985815A975A21ED806D`。只有 `AnimusForge/` 根，不含 ONNX / 玩家私有配置；原打包脚本验证通过，另逐文件核对3379个 ZIP / Stage 内容 hash 一致。
+- 原 `scripts/build/deploy_module.ps1` 部署到 `F:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord/Modules/AnimusForge`，更新**10个受管文件**；全部3379个 Stage / 安装文件 SHA256 一致。
+- **2293个非受管文件**部署前后 SHA256 / 长度 / mtime 全一致，包括既有 ONNX、缓存等；抽检 `TaleWorlds.CampaignSystem.dll` / `TaleWorlds.Core.dll` / `TaleWorlds.MountAndBlade.dll` 三个原版 DLL hash 不变。无镜像删除、无游戏启动。
+- 原生 Recovery：`C:/Users/29310/AppData/Local/AnimusForge/Recovery/deploy/deploy-e40978be3e514c1596dcc3ae687d8158`，`complete` 存在，manifest 的原文件备份 hash / 新安装 hash 全通过。详细本地 `before-deploy.json`、`deploy.log`、`receipt.json` 保留，证据 / 包 / 日志不提交远端。
+
+## 验证边界与恢复
+
+- 本次新 DLL 对话回归每 API **102 PASS**，MVID 分别 `5d65dc85-6c29-4525-b0bb-34f5d47aa6de` / `84d17034-cde7-49e1-a66a-30ef0e8add97`；NPC 赠品市场测试再跑 **26 PASS**。这是生产关联方法 / XML / 源码契约与 DLL 元数据检查，不是 module-init / 真实游戏验收。
+- 上轮完整行为验证继续有效：20任务文件当前 hash 与原收据一致；内战338、政变144 / 61、UI22、给予桥55、资产67、stress80565、两负控结果参见[原详细证据](#dialogue-civilwar-coup-review-fixes-20261003)，不把旧 DLL 的 MVID 当作新产物。
+- **LIVE / PLAYER_SAVE / REAL_PROVIDER = NOT_RUN**：百科返回五控件、长输入滚动 / 光标、真实内战与政变动作、NPC 赠品价格 / 金钱结算和玩家旧档需实机验收。没有创建 GitHub Release 或上传 ZIP。
+- 游戏文件恢复使用上方 Recovery 的原生 manifest / 备份；仓内旧 Stage 完整保留。源码局部回滚仍为 `git revert a3a3f7d2` / `git revert 6211ec3c`，恢复后重新双版本构建 / 授权部署，不硬重置或改写共享历史。
+
 <a id="dialogue-civilwar-coup-review-fixes-20261003"></a>
 # 当前修复：对话 UI / 内战开关 / 政变撤出 / NPC 赠品出售（OFFLINE_VERIFIED）
 
