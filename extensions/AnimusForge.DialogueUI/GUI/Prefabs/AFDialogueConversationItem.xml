@@ -16,7 +16,7 @@
               <Children>
                 <ConversationItemImageWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MarginTop="2.5" MarginBottom="2.5" NormalBrush="ConversationItemBrush" SpecialBrush="ConversationItem.SpecialBrush" UpdateChildrenStates="true" IsSpecial="@IsSpecial">
                   <Children>
-                    <RichTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MarginTop="5" MarginBottom="5" MarginLeft="14" MarginRight="12" Brush="ConversationItem.Text" Brush.FontSize="17" IsEnabled="@IsEnabled" Text="@ItemText" />
+                    <RichTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MarginTop="5" MarginBottom="5" MarginLeft="14" MarginRight="24" Brush="ConversationItem.Text" Brush.FontSize="22" IsEnabled="@IsEnabled" Text="@ItemText" />
                     <ImageWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="39" SuggestedHeight="20" HorizontalAlignment="Left" VerticalAlignment="Center" PositionXOffset="-15" Brush="ConversationItem.HoverIndicator" />
                   </Children>
                 </ConversationItemImageWidget>

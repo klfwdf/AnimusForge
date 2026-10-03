@@ -1,3 +1,9 @@
+# 当前UI接入：Pen新对话布局（2026-10-04，离线已验证）
+
+- qk678最新1619×326布局已接代码；正文24/输入22/姓名20，五控件按输入框上沿对齐，普通选项全宽345与输入框一致；正文/输入/普通选项滚动条使用原生自动显隐，输入光标跟随保留。
+- 134回归PASS、三个模板映射与双API+Bootstrap通过；未实机验证长文→删除显隐、拖拽/滚轮/说服。未Stage、覆盖游戏、打包或push。
+- [主台账及源码坐标](docs/animusforge-refactoring-and-repository-reorganization-plan.md#dialogue-pen-integration-20261004)，本地证据`artifacts/dialogue-pen-integration-20261004/`，检查点0cb053c3。历史部署状态不包含本轮。
+
 # 当前修复：原版对话交接导致会面锁跨遭遇残留（2026-10-04，OFFLINE_VERIFIED）
 
 - 用户新Trace已确认：05:17:42德泰尔自定义菜单正常，05:17:43 `native_dialogue_handoff`设锁，05:19:03离开仍保留原版encounter，随后连续新遭遇被disabled放行，05:20:36才清。主动遭遇方没注册结束清理却共用“回地图无遭遇2秒”的全局硬锁；这次不是未挂StartConversation入口造成的，前轮未定判断被此证据替代。

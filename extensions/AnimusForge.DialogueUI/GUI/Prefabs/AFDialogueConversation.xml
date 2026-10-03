@@ -23,31 +23,31 @@
           </Children>
         </ButtonWidget>
 
-        <!-- Generated artwork is a background only. Main container follows the current Pen layout: 1440x283 centered, floating 43px above the bottom edge. -->
-        <Widget Id="AFDialogueConsoleFrame" WidthSizePolicy="Fixed" SuggestedWidth="1440" HeightSizePolicy="Fixed" SuggestedHeight="283"
-            HorizontalAlignment="Center" VerticalAlignment="Bottom" MarginBottom="43" DoNotAcceptEvents="true" DoNotPassEventsToChildren="false">
+        <!-- Generated artwork is a background only. Main container follows the current Pen layout: 1619x326 at Pen x=138/y=754 on the 1920x1080 reference canvas. -->
+        <Widget Id="AFDialogueConsoleFrame" WidthSizePolicy="Fixed" SuggestedWidth="1619" HeightSizePolicy="Fixed" SuggestedHeight="326"
+            HorizontalAlignment="Center" VerticalAlignment="Bottom" MarginBottom="0" DoNotAcceptEvents="true" DoNotPassEventsToChildren="false" PositionXOffset="-12.5">
           <Children>
             <!-- Fitted to the artwork's oval opening, with overlap UNDER the gold rim. -->
             <Widget Id="AFDialoguePortraitBackground" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed"
-                SuggestedWidth="166.125194" SuggestedHeight="177.992105" HorizontalAlignment="Left" VerticalAlignment="Top"
-                MarginLeft="125.152612" MarginTop="40.960526" Sprite="afdui_portrait_background"
+                SuggestedWidth="190" SuggestedHeight="195" HorizontalAlignment="Left" VerticalAlignment="Top"
+                MarginLeft="139.414" MarginTop="52.239" Sprite="afdui_portrait_background"
                 DoNotAcceptEvents="true" DoNotPassEventsToChildren="true" />
             <!-- Native 3D speaker tableau is inserted here by NativeSession. -->
-            <Widget Id="AFDialoguePortraitSlot" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="169" SuggestedHeight="212"
-                HorizontalAlignment="Left" VerticalAlignment="Bottom" MarginLeft="124" MarginBottom="28" ClipContents="true" DoNotAcceptEvents="true">
+            <Widget Id="AFDialoguePortraitSlot" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="190" SuggestedHeight="244"
+                HorizontalAlignment="Left" VerticalAlignment="Bottom" MarginLeft="139" MarginBottom="32" ClipContents="true" DoNotAcceptEvents="true">
               <Children>
                 <!-- Overscan beneath the foreground gold rim; preserve the aperture center. -->
-                <Widget Id="AFDialoguePortraitViewport" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="169" SuggestedHeight="169"
-                    HorizontalAlignment="Left" VerticalAlignment="Top" MarginTop="2" CircularClipEnabled="true" CircularClipRadius="89"
+                <Widget Id="AFDialoguePortraitViewport" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="190" SuggestedHeight="195"
+                    HorizontalAlignment="Left" VerticalAlignment="Top" MarginTop="2" CircularClipEnabled="true" CircularClipRadius="100"
                     CircularClipSmoothingRadius="1" DoNotAcceptEvents="true">
                   <Children>
                     <CharacterTableauWidget Id="AFDialogueLiveSpeakerPortrait" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed"
-                        SuggestedWidth="507" SuggestedHeight="630" HorizontalAlignment="Left" VerticalAlignment="Top" PositionXOffset="-169" PositionYOffset="-134"
+                        SuggestedWidth="570" SuggestedHeight="726" HorizontalAlignment="Left" VerticalAlignment="Top" PositionXOffset="-190" PositionYOffset="-154"
                         StanceIndex="1" CustomRenderScale="1.35" IsVisible="false" DoNotAcceptEvents="true" />
                   </Children>
                 </Widget>
                 <!-- A narrow wood nameplate sits above the lower frame edge and masks the tableau torso. -->
-                <Widget Id="AFDialoguePortraitBottomMask" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="169" SuggestedHeight="23"
+                <Widget Id="AFDialoguePortraitBottomMask" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="190" SuggestedHeight="26"
                     HorizontalAlignment="Left" VerticalAlignment="Bottom" Sprite="afdui_nameplate" DoNotAcceptEvents="true" />
               </Children>
             </Widget>
@@ -60,26 +60,26 @@
                 StackLayout.LayoutMethod="VerticalBottomToTop" HorizontalAlignment="Center" VerticalAlignment="Bottom" DoNotAcceptEvents="true">
               <Children>
                 <ListPanel Id="BottomPanelsContainer" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren"
-                    HorizontalAlignment="Center" VerticalAlignment="Bottom" MarginBottom="20" DoNotAcceptEvents="true">
+                    HorizontalAlignment="Center" VerticalAlignment="Bottom" MarginBottom="42" DoNotAcceptEvents="true">
                   <Children>
-                    <!-- Central text sheet follows the Pen frame: 650x209 at the widened center panel. -->
-                    <Widget Id="DialogueContainer" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="650" SuggestedHeight="209"
-                        HorizontalAlignment="Left" VerticalAlignment="Bottom" MarginLeft="420" MarginBottom="0" DoNotAcceptEvents="true">
+                    <!-- Central text sheet follows the Pen frame: 718x214 at the widened center panel. -->
+                    <Widget Id="DialogueContainer" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="718" SuggestedHeight="214"
+                        HorizontalAlignment="Left" VerticalAlignment="Bottom" MarginLeft="472" MarginBottom="2" DoNotAcceptEvents="true">
                       <Children>
                         <Widget Id="AFDialogueTextPanel" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
                             HorizontalAlignment="Center" VerticalAlignment="Center"
                             DoNotAcceptEvents="true">
                           <Children>
                             <AFDialogueClickThroughScrollPanel Id="AFDialogueTextScroll" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
-                                MarginLeft="12" MarginRight="15" MarginTop="10" MarginBottom="10" ClipRect="AFDialogueTextClip"
-                                InnerPanel="AFDialogueTextClip\AFDialogueTextContent" AutoHideScrollBars="true" VerticalScrollbar="..\AFDialogueTextScrollbar" MouseScrollAxis="Vertical">
+                                MarginLeft="14" MarginRight="38" MarginTop="8" MarginBottom="10" ClipRect="AFDialogueTextClip"
+                                InnerPanel="AFDialogueTextClip\AFDialogueTextContent" AutoHideScrollBars="true" VerticalScrollbar="..\AFDialogueTextScrollbar" MouseScrollAxis="Vertical" UpdateScrollbarVisibility="true" AutoAdjustScrollbarHandleSize="true">
                               <Children>
                                 <Widget Id="AFDialogueTextClip" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" ClipContents="true" DoNotAcceptEvents="true">
                                   <Children>
                                     <Widget Id="AFDialogueTextContent" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" DoNotAcceptEvents="true">
                                       <Children>
                                         <RichTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" VerticalAlignment="Top"
-                                            Brush="Conversation.ConversedPartyLine.Text" Brush.FontSize="18" Brush.FontColor="#3B281BFF"
+                                            Brush="Conversation.ConversedPartyLine.Text" Brush.FontSize="24" Brush.FontColor="#3B281BFF"
                                             Command.LinkAlternateClick="ExecuteLink" Command.LinkClick="ExecuteLink"
                                             Text="@DialogText" />
                                       </Children>
@@ -88,9 +88,9 @@
                                 </Widget>
                               </Children>
                             </AFDialogueClickThroughScrollPanel>
-                            <ScrollbarWidget Id="AFDialogueTextScrollbar" WidthSizePolicy="Fixed" SuggestedWidth="5" HeightSizePolicy="StretchToParent"
-                                HorizontalAlignment="Right" MarginRight="3" MarginTop="10" MarginBottom="10" AlignmentAxis="Vertical"
-                                Handle="AFDialogueTextHandle" MinValue="0" MaxValue="100">
+                            <ScrollbarWidget Id="AFDialogueTextScrollbar" WidthSizePolicy="Fixed" SuggestedWidth="6" HeightSizePolicy="StretchToParent"
+                                HorizontalAlignment="Right" MarginRight="14" MarginTop="10" MarginBottom="10" AlignmentAxis="Vertical"
+                                Handle="AFDialogueTextHandle" MinValue="0" MaxValue="100" IsVisible="false" Sprite="BlankWhiteSquare_9" Color="#3A251844">
                               <Children><Widget Id="AFDialogueTextHandle" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="26" Sprite="afdui_scroll_handle" /></Children>
                             </ScrollbarWidget>
                           </Children>
@@ -99,14 +99,14 @@
                     </Widget>
                     <NavigationScopeTargeter ScopeID="SPConversationItemsScope" ScopeParent="..\AnswerListContainer"
                         ScopeMovements="Vertical" HasCircularMovement="true" IsDefaultNavigationScope="true" />
-                    <!-- A bounded scroll viewport stays inside the 283px event ancestry. Long text
+                    <!-- A bounded scroll viewport stays inside the 326px event ancestry. Long text
                          wraps to the answer panel; overflowing options are reached by scrolling. -->
-                    <Widget Id="AnswerListContainer" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="305" SuggestedHeight="190"
-                        HorizontalAlignment="Right" VerticalAlignment="Bottom" MarginRight="21" DoNotAcceptEvents="true">
+                    <Widget Id="AnswerListContainer" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="345" SuggestedHeight="211"
+                        HorizontalAlignment="Right" VerticalAlignment="Bottom" MarginRight="36" DoNotAcceptEvents="true">
                       <Children>
                         <AFDialogueClickThroughScrollPanel Id="AFDialogueAnswerScroll" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
-                            MarginRight="10" ClipRect="AFDialogueAnswerClip" InnerPanel="AFDialogueAnswerClip\AnswerList"
-                            VerticalScrollbar="..\AFDialogueAnswerScrollbar" AutoHideScrollBars="true" MouseScrollAxis="Vertical">
+                            MarginRight="0" ClipRect="AFDialogueAnswerClip" InnerPanel="AFDialogueAnswerClip\AnswerList"
+                            VerticalScrollbar="..\AFDialogueAnswerScrollbar" AutoHideScrollBars="true" MouseScrollAxis="Vertical" UpdateScrollbarVisibility="true" AutoAdjustScrollbarHandleSize="true">
                           <Children>
                             <Widget Id="AFDialogueAnswerClip" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" ClipContents="true" DoNotAcceptEvents="true">
                               <Children>
@@ -118,8 +118,8 @@
                             </Widget>
                           </Children>
                         </AFDialogueClickThroughScrollPanel>
-                        <ScrollbarWidget Id="AFDialogueAnswerScrollbar" WidthSizePolicy="Fixed" SuggestedWidth="5" HeightSizePolicy="StretchToParent"
-                            HorizontalAlignment="Right" AlignmentAxis="Vertical" Handle="AFDialogueAnswerHandle" MinValue="0" MaxValue="100">
+                        <ScrollbarWidget Id="AFDialogueAnswerScrollbar" WidthSizePolicy="Fixed" SuggestedWidth="6" HeightSizePolicy="StretchToParent"
+                            HorizontalAlignment="Right" AlignmentAxis="Vertical" Handle="AFDialogueAnswerHandle" MinValue="0" MaxValue="100" MarginRight="10" IsVisible="false" Sprite="BlankWhiteSquare_9" Color="#3A251844">
                           <Children><Widget Id="AFDialogueAnswerHandle" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="26" Sprite="afdui_scroll_handle" /></Children>
                         </ScrollbarWidget>
                       </Children>
@@ -157,7 +157,7 @@
             </ListPanel>
 
             <Widget Id="AFDialogueSpeakerInfo" DoNotAcceptEvents="true" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed"
-                SuggestedWidth="224" SuggestedHeight="32" VerticalAlignment="Bottom" HorizontalAlignment="Left" MarginLeft="100" MarginBottom="31">
+                SuggestedWidth="252" SuggestedHeight="37" VerticalAlignment="Bottom" HorizontalAlignment="Left" MarginLeft="112.431" MarginBottom="35.691">
               <Children>
                 <Widget Id="CharacterNameContainer" DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
                     VerticalAlignment="Center" Sprite="afdui_nameplate">
@@ -168,7 +168,7 @@
                         IsEnabled="@IsCurrentCharacterValidInEncyclopedia">
                       <Children>
                         <TextWidget WidthSizePolicy="StretchToParent" DoNotAcceptEvents="true" HeightSizePolicy="StretchToParent"
-                            MarginLeft="35" MarginRight="6" Brush="Conversation.HeaderText" Brush.FontSize="17" Brush.FontColor="#D7A343FF"
+                            MarginLeft="35" MarginRight="6" Brush="Conversation.HeaderText" Brush.FontSize="20" Brush.FontColor="#D7A343FF"
                             Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Center"
                             Text="@CurrentCharacterNameLbl" HoveredCursorState="RightClickLink" ExtendCursorAreaTop="-20" ExtendCursorAreaBottom="-20" GamepadNavigationIndex="0" />
                       </Children>
