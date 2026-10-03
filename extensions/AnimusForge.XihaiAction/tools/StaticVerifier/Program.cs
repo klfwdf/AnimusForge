@@ -53,6 +53,7 @@ internal static class Program
             Run("AF epoch accessor accepts fields and forwarding properties, rejects invalid contracts",
                 VerifyConversationEpochAccessor);
             Run("AF Harmony observers install and uninstall offline", VerifyCompatPatchInstallation);
+            Run("speech prompt admission survives asynchronous preprocessing", VerifySpeechPromptAdmissionAfterYield);
             Console.WriteLine($"Bridge verifier: {_passed} passed, {_failed} failed.");
             return _failed == 0 ? 0 : 1;
         }
@@ -2786,6 +2787,67 @@ internal static class Program
                 shownParameters[4].ParameterType == typeof(bool) &&
                 shownParameters[5].ParameterType == typeof(bool),
             "shown NPC reply publication signature drifted");
+    }
+
+    private static void VerifySpeechPromptAdmissionAfterYield()
+    {
+        const BindingFlags statics = BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic;
+        const BindingFlags instances = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
+        Type host = _moduleAssembly.GetType("AnimusForge.XihaiAction.BattleSpeechRuntimeHost", true);
+        Type bridge = _moduleAssembly.GetType("AnimusForge.XihaiAction.AfCompatV130", true);
+        MethodInfo capture = host.GetMethod("TryCaptureReplyPromptSnapshot", statics);
+        MethodInfo start = bridge.GetMethod("TryStartDedicatedNpcSpeechRequest", statics);
+        Require(capture != null && MethodBodyReferences(start, capture), "dedicated speech must capture its prompt before AF asynchronous preprocessing");
+        Require(!MethodBodyReferences(start, host.GetMethod("TryGetActiveReplyPromptSnapshot", statics)), "dedicated speech must not demand immediate completion of async prompt composition");
+
+        FieldInfo initialized = host.GetField("_initialized", statics);
+        FieldInfo claimField = host.GetField("_replyClaim", statics);
+        PropertyInfo stageSettings = host.GetProperty("StageSettings", statics);
+        object oldInitialized = initialized.GetValue(null), oldClaim = claimField.GetValue(null), oldSettings = stageSettings.GetValue(null);
+        IDisposable lease = null;
+        try
+        {
+            Type claimType = claimField.FieldType;
+            FieldInfo missionField = claimType.GetField("Mission", instances);
+            object mission = System.Runtime.Serialization.FormatterServices.GetUninitializedObject(missionField.FieldType);
+            object claim = Activator.CreateInstance(claimType, true);
+            Guid session = Guid.NewGuid();
+            claimType.GetField("SessionId", instances).SetValue(claim, session);
+            missionField.SetValue(claim, mission);
+            claimType.GetField("SpeakerAgentIndex", instances).SetValue(claim, 32);
+            claimType.GetField("SpeakerName", instances).SetValue(claim, "offline speech speaker");
+            FieldInfo promptField = claimType.GetField("PromptSnapshot", instances);
+            object snapshot = System.Runtime.Serialization.FormatterServices.GetUninitializedObject(promptField.FieldType);
+            promptField.SetValue(claim, snapshot);
+            initialized.SetValue(null, true);
+            stageSettings.SetValue(null, Activator.CreateInstance(stageSettings.PropertyType));
+            claimField.SetValue(null, claim);
+            MethodInfo begin = host.GetMethod("BeginNpcSpeechPromptScope", statics);
+            lease = (IDisposable)begin.Invoke(null, new object[] { session, mission, 32 });
+            object[] args = { "offline speech speaker", null };
+            Require((bool)capture.Invoke(null, args) && ReferenceEquals(args[1], snapshot), "request captures the already-frozen session prompt");
+            var ready = new System.Threading.Tasks.TaskCompletionSource<bool>(System.Threading.Tasks.TaskCreationOptions.RunContinuationsAsynchronously);
+            var task = System.Threading.Tasks.Task.Run(async () =>
+            {
+                await ready.Task.ConfigureAwait(false);
+                object[] resumed = { "offline speech speaker", null };
+                return (bool)capture.Invoke(null, resumed) && ReferenceEquals(resumed[1], snapshot);
+            });
+            lease.Dispose(); lease = null;
+            claimField.SetValue(null, null);
+            ready.SetResult(true);
+            Require(task.GetAwaiter().GetResult(), "frozen speech claim survives forced yield, caller scope disposal and global claim retirement");
+            lease = (IDisposable)begin.Invoke(null, new object[] { Guid.NewGuid(), mission, 33 });
+            args = new object[] { "offline speech speaker", null };
+            Require(!(bool)capture.Invoke(null, args), "a new session or speaker cannot borrow the retired prompt");
+        }
+        finally
+        {
+            lease?.Dispose();
+            initialized.SetValue(null, oldInitialized);
+            claimField.SetValue(null, oldClaim);
+            stageSettings.SetValue(null, oldSettings);
+        }
     }
 
     private static void VerifyConversationEpochAccessor()
