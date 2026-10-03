@@ -1,3 +1,9 @@
+# 当前调查：野外领主会面跳过，诊断已编译（2026-10-04，VERIFY，未修复/部署）
+
+- 用户确认野外正常行军塔洛斯，亦反馈商队/劫匪直接对话。06:54:26领主两真实map入口命中总disabled；商队06:54:04/16未命中，同现象不能合并根因。当前及前版贵族资格排除非Hero；不盲目放宽。
+- 检查点92880baa，诊断556472a4：记录实际命中子原因/活动来源、原参数目标与遭遇快照，保留原规则与顺序。102边界/4控制流保持检查及原Debug双API+Bootstrap0错误，三个产物marker hash一致；首次assets缺失重试原命令成功，未改一键流程。
+- 根因未证实、未恢复会面、未Stage/部署/push/打包；需用户另行授权安装诊断版后复现，其他会话未提交配置/reranker保留。安装仍上条部署hash，未新增Recovery。
+- [唯一台账、源码坐标及证据限定](docs/animusforge-refactoring-and-repository-reorganization-plan.md#meeting-menu-skip-diagnostics-20261004)，本地`artifacts/meeting-menu-skip-diagnostics-20261004/receipt.json`。源码回滚`git revert 556472a4`。下方部署记录不授予本轮新部署权限。
 # 最新部署：玩家UI、会面离开、演讲与处刑命令已安装（2026-10-04，DEPLOY_VERIFIED）
 
 - 用户授权“部署”，候选`b616dd5d` / 产品`f4c1fc6b`；源码与上一轮收据hash一致，复用已验证Debug双API/Bootstrap，经原部署入口覆盖完整候选，包括普通选项位置、滚动条/提示、卷轴清晰度与凝视保护、会面离开、演讲异步认领及刽子手自动开始。

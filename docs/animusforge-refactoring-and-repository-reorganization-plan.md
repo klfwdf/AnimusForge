@@ -6995,3 +6995,12 @@ R2计划交付门槛：已给固定技术路线、真实来源与目标、写入
 用户反馈野外正常行军领主没有自定义会面面板。06:54:26塔洛斯的两个map conversation入口均主动走总disabled分支；已核对实际加载最新部署1.4 DLL，非旧安装。Start postfix当时队伍尚未初始化，不能据此判目标非法。现日志缺少disabled子原因，未证实是战斗锁或活动上下文误判。
 
 本包先仅修改LordEncounterBehavior及两个map conversation Prefix的诊断：在已命中的判断记录原因、目标及真实上下文；保留原判断顺序、军团选中目标规则及战斗/攻城保护。不改构建脚本、不部署/push/Stage/打包，不纳入其他会话的配置/reranker改动。完成门：检查诊断无额外tick日志/扫描、会面边界回归及原双API/Bootstrap构建；实机复现仍待另行授权安装并重测，不能标根因修复。
+
+### 入口诊断离线完成（替代上方ACTIVE，状态VERIFY：根因未证实）
+
+- 检查点92880baa；诊断产品556472a4。`src/AF.GameAdapter.Bannerlord/Encounter/LordEncounterBehavior.cs:1291-1472`保留原bool入口，TryGetCustomEncounterMenuDisableReason从原命中的分支返回原因；`:1879-2036`活动判断细分为menu/force/restart/playerSiege/mapEvent/party/settlement/conversationHero等14来源。两个map Prefix的`:65-71` / `:68-74`仅在disabled已命中后写Mod_Logic EncounterDiag并附原参数解析目标与遭遇快照，不依赖深度追踪开关。
+- 性能：事件入口新增一次快照；tick/menu原谓词仅赋静态原因常量，无新增日志、扫描、轮询、反射或状态锁。4项源码控制流保持检查PASS（去掉reason赋值及等价块括号后与检查点一致），非原生引擎模拟；102项既有提取生产边界PASS。第一版保持检查因原单行if改成有括号的等价块而产生假阴性，修正比较器后PASS，没有修改原断言/产品条件来凑结果。
+- 原双API/Bootstrap入口首次NETSDK1004（中间assets文件不可用），未改脚本；重试原命令成功，两实现各341既有警告/0错误，Bootstrap0警告/0错误。引用1.3.15.110062 / 1.4.6.115628，三个marker与DLL hash一致，收据绑定当前工作树构建（包含另一会话已有未提交配置/reranker源码，未将其纳入本任务提交）。
+- 用户补充：野外正常行军塔洛斯，商队/劫匪也直接进原版。06:54:04/16商队的两个入口未命中disabled，与06:54:26领主不同；当前IsEligibleCustomLordEncounterTarget要求非空Hero且IsLord，前版0e4634ed也如此。本次没有贸然放宽资格，没有据此宣称商队/劫匪会面是正常或从来未实现；全仓现有源码/记录未查到独立接管入口。此预期与领主disabled需分别处理。
+- NOT_RUN：新诊断安装与实机复现、确定disabled具体原因、实际修复恢复会面。未Stage/部署/push/打包，安装1.4 hash仍47A8B479A5FFB45018423688ABD2DC6FD8EA2D6E92501207EABB9DA1FA1379B4，未触碰玩家档/配置和原版DLL。下一步需用户授权安装诊断候选并复现一次；不能把本条称为会面已修复。
+- 本地证据`artifacts/meeting-menu-skip-diagnostics-20261004/receipt.json`、build.log、build-retry.log、predicate-preservation.json及lifecycle/run.log。源码回滚`git revert 556472a4`；部署Recovery仍沿用上条且本轮未新增。
