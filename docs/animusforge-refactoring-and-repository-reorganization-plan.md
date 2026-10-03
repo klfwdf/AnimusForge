@@ -1,3 +1,33 @@
+<a id="sceneactions-epoch-bridge-fix-20261004"></a>
+# 当前修复：SceneActions / 阵前演讲会话轮次桥接（2026-10-04，OFFLINE_VERIFIED）
+
+用户授权“修”。工作区 `F:/AnimusForge-main`，分支 `codex/af-main-refactor-continuation-20260831`；基线 `320baed84f0ea668c7c75c482223a97e22902cd4`，意图检查点 `38fabe97`，产品 / 测试提交 `0c8f34cd40800a721c870918295b7703224bc2ca`。本条替代检查点的 ACTIVE 状态；不延续历史推送 / 部署 / 打包授权。
+
+## 已确认断点与修复边界
+
+- 原安装两DLL的实际 `AfCompatV130.TryInstall` 返回 `conversation epoch field is missing`，本机 `SceneActions.log` 最新相关启动记录同样失败；`ShoutBehavior._sceneConversationEpoch` 已是转发属性，旧桥接只接受字段。
+- 新桥接安装时缓存合法 int 字段 / 可读无索引 int 属性；四处消费者统一读取实际 session owner 的当前值，未知 accessor 明确失败，不伪造0、不复制第二份轮次状态。卸载清理两种元数据。安装成功诊断新增 `conversation epoch=property/field`。
+- 保持 SceneActions 的动作解析、资格、同意规则、后处理标签、MCM独立开关、演讲/普通动作仲裁及去重原实现；不改提示词、三渠道对话、存档或一键构建流程。成员查找只在安装时发生，读取只在原喊话 / 回复事件；无新增每帧扫描、轮询或全场景遍历。
+- **纠正审查范围**：用户反馈自然语言动作似乎正常，本机也有更早的动作提交日志。只确认本次审查 DLL 的桥接启动回归，不断言所有时段 / 渠道 / 其他动作机制均失效，也不把提交成功日志当成实际动画播放成功。
+
+## 代码证据（产品修订 `0c8f34cd`）
+
+| 源码 / 一基行号 | 符号、实际消费者与覆盖 | 未覆盖 |
+| --- | --- | --- |
+| `extensions/AnimusForge.XihaiAction/src/Runtime/AfCompatV130.cs:147-151,438-443,514-515,532-566` | `TryInstall` / `TryBindConversationEpochAccessor` / `ReadConversationEpoch` / `Uninstall`：安装缓存、字段/属性兼容、真实值读取、失败与清理 | 游戏内实际启动 / 其他 MOD 补丁冲突 |
+| 同文件 `616,685,1192-1194,1229-1231` | `ObserveRecordedPlayerMessage` / `ObserveAcceptedPlayerShout` / `ObserveShownNpcReply` / `DeferBattleSpeechReply` 全部消费共享读取；保留原 null 实例边界，不以成员缺失回退0 | 真实 Mission / AI / TTS / 演讲站位与动画 |
+| `src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.SceneSessionComposition.cs:53,58-59`（未改） | 转发到 `SceneConversationSessionRuntime.ConversationEpoch` 的权威 owner；fixture 验证 owner 推进及替换能即时被桥接读取 | 实机战场切换和玩家档 |
+| `extensions/AnimusForge.XihaiAction/tools/StaticVerifier/Program.cs:31-59,2791-2888,2897-2991` | 新增 `--bridge-only` 定向模式，默认全验证入口保留；生产读取器契约、四消费者与玩家/NPC动作提交IL引用、真实Harmony六监听安装/卸载及分类器注册/清理 | IL引用不是游戏动作执行；不虚构完整 LLM / 帧耗时验收 |
+
+## 验证与交付状态
+
+- 原 `scripts/build/build_single_module.ps1 -ProjectRoot . -BannerlordRoot '<本机游戏根>' -Configuration Debug` 与 Release，**不传 Stage / Deploy**。Debug / Release 两API + Bootstrap共六构建0错误；实现各341既有warning、Bootstrap0warning。引用为 `v1.3.15.110062` / `v1.4.6.115628`，六个marker SHA256逐一与实际DLL一致。
+- 最终检查器对四份实际新DLL各 **2组通过、0失败**。字段旧形状、转发属性、真实owner更新 / 替换、缺失 / 错类型 / write-only / static / indexer拒绝、无假0、卸载元数据清理均过；四消费者与动作提交引用保持。实际 Harmony 六监听归属、动作 / 同意分类器注册及卸载清理均过；不是只测方法存在。
+- 同一最终检查器对已安装旧1.3 / 1.4 DLL各 **0通过、2失败，exit=1（预期）**，保留原桥接安装错误的负控。现有纯核心测试 **89通过、0失败**，包括演讲 V1/V2、绑定、动作/同意、幂等与预算。
+- 本地 `artifacts/sceneactions-epoch-fix-20261004/receipt.json` 绑定源码、六产物与marker、四正控 / 两负控退出码；日志为 `build-debug.log`、`build-release.log`、`after-*.log`、`before-*.log`、`core-tests.log`。检查器在独立CLR进程工作，不启动游戏、不调用真provider；数据根限定到本地证据目录。
+- **LIVE_GAME / REAL_AI_TTS / PLAYER_SAVE / STAGE / DEPLOY / PUSH / PACKAGE = NOT_RUN**。游戏安装两DLL hash仍与修前一致，游戏与旧ZIP不包含此修复；未覆盖原版DLL。当前只有本地源码与构建验证，不宣称已恢复用户游戏内表现。
+- 产品回滚：`git revert 0c8f34cd`，不hard reset、不撤其他作者成果。产品源码仅改桥接一个文件，测试仅改既有StaticVerifier；其他未跟踪素材保留，不add-all。
+
 <a id="publish-deploy-dialogue-illustrator-20261003"></a>
 # 本次授权交付：对话 / 插画修复推送与部署（2026-10-03）
 
@@ -6829,12 +6859,3 @@ R2计划交付门槛：已给固定技术路线、真实来源与目标、写入
 - 最终3379份Stage文件SHA256逐份与安装目录相同，全部2293非受管文件hash/长度/mtime保持，包含ONNX模型和原安装玩家文件；游戏bin的TaleWorlds.CampaignSystem/Core/MountAndBlade三DLL hash保持。安装XML仅声明Bootstrap；源码HEAD/已跟踪状态在构建、部署、核验结束时保持同候选。
 - Recovery为`C:/Users/29310/AppData/Local/AnimusForge/Recovery/deploy/deploy-5fd5f1fc9a204cc697c26fd706de7624`，complete存在，manifest内旧文件备份SHA256全匹配oldSha256、安装新文件全匹配newSha256；恢复必须按该manifest定向处理，不覆盖玩家文件或硬重置源码。
 - 本地证据`artifacts/deploy-main-20261003-173232/`：build-stage.log、before.json、deploy.log、receipt.json和before-stage；记录状态DEPLOY_VERIFIED。未启动游戏/真实Gauntlet/新档与旧档/LLM或生图provider/帧性能，未新ZIP、未再次push。交接记录仅本地提交，不把安装文件一致性升级为实机验收；上轮完整Debug/Release构建与相关回归证据仍见fusion条目。
-<a id="sceneactions-epoch-bridge-fix-20261004"></a>
-# 当前修复：SceneActions / 阵前演讲会话轮次桥接（2026-10-04，ACTIVE）
-
-- 用户授权本地修复；基线 `320baed84f0ea668c7c75c482223a97e22902cd4`，当前分支 `codex/af-main-refactor-continuation-20260831`。不延续历史推送 / 部署 / 打包授权。
-- 已读取游戏日志，已部署 1.3 / 1.4 DLL 的实际 `AfCompatV130.TryInstall` 都返回 `conversation epoch field is missing`：`ShoutBehavior._sceneConversationEpoch` 已是转发属性，旧桥接只接受字段。
-- 范围：修兼容读取并统一四处 epoch 消费者，安装时缓存 / 卸载清理；不回退真实 session owner、不改动作语法 / 同意规则 / MCM / 三渠道提示词 / 存档 / 一键流程。
-- 完成条件：真实字段 / 转发属性 / 非法成员读取契约、真实新两DLL安装与卸载和监听归属、原核心回归及原入口双API + Bootstrap构建。实机 AI / TTS / 站位 / 动作效果另验。
-- 用户反馈自然语言动作似乎正常；本包只认定所审查 DLL 的集成启动断点，不把所有时段 / 渠道 / 其他机制的动作一概判为失效。修后保留这一验证边界。
-
