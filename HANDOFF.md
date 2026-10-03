@@ -1,4 +1,11 @@
-# 本次授权交付：对话与插画修复提交 / 推送 / 部署（2026-10-03）
+# 当前修复：自然语言动作 / 阵前演讲共享桥接（2026-10-04，OFFLINE_VERIFIED）
+
+- 用户授权本地“修”；检查点 `38fabe97`，产品 / 测试 `0c8f34cd`。共享桥接从只找epoch字段改为缓存字段 / 转发属性，四消费者读取真实session owner，卸载清理；保留动作语法、同意规则、MCM、去重、三渠道提示词和演讲状态机。
+- 原入口Debug / Release双API+Bootstrap共六构建0错误、六marker hash通过。四新DLL各2组桥接回归通过，实际六Harmony监听与动作 / 同意分类器安装 / 卸载确认；旧安装两DLL同测均复现原报错，核心89项通过。
+- 用户反馈部分自然语言动作似乎正常：本轮只修已确认的启动回归，不把所有动作 / 渠道判为失效，也不冒充实机恢复。实机、真AI/TTS、玩家档未验；**未Stage / push / 部署 / 打包**，游戏安装DLL保持旧hash。
+- [唯一主台账与源码坐标 / 回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#sceneactions-epoch-bridge-fix-20261004)，本地 `artifacts/sceneactions-epoch-fix-20261004/receipt.json` 绑定产物 / 正负控证据。产品回滚 `git revert 0c8f34cd`。下一步实机验证需先另行授权部署；下方为历史交付，不发出本轮发布指令。
+
+# 上一项授权交付：对话与插画修复提交 / 推送 / 部署（2026-10-03）
 
 - 用户明确授权三项交付。源码候选 `59687639`，远端基线 `302e93af` 是本地祖先，含11个已完成提交：场景外谈话不采全景、普通继续点击、自动AI双开关与本次提示词重绘。产品无待提交改动，不add-all或遗漏已完成源码；交付文档另精确提交，main普通快进推送的最终提交与远端readback以本地收据为准。
 - 原入口Debug双API + Bootstrap0错误、统一Stage通过，原部署脚本更新游戏 `F:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord/Modules/AnimusForge` 15个受管文件。3379 Stage / 安装哈希一致，2280非受管文件hash / 大小 / mtime不变，3原版DLL不变；Recovery `deploy-c21e6a0c9eaa4709bee24fa5af69aad3` complete且备份hash通过，版本保持v1.5.0。
