@@ -7034,3 +7034,17 @@ R2计划交付门槛：已给固定技术路线、真实来源与目标、写入
 - 原独立Benchmark保持一个可逆session hook，补runtime stub/协议源码链接，8自检及legacy/matched生成项目编译通过，未重跑旧完整倍率矩阵。原入口最终Debug双API1.3.15/1.4.6+Bootstrap exit0（既有警告保留），两实际DLL MCM属性/标题/重启/group/get-set与GPU宿主类型metadata核对通过。
 - 性能：初始化一次；缓存命中零IPC；未命中才启动一次Task完成阻塞pipe交换；worker每次单批次、不额外全量扫描/轮询。父进程监控为阻塞内核等待。游戏实机显存竞争/帧时间、UI保存重启与大规模世界书仍NOT_RUN；没有用离线时延推断游戏FPS。源码/模块model与原CPU DLL保护hash均保留本地receipt。
 - 使用与复测说明：`tools/RerankerCudaWorker/README.md`、`tests/modules/AF.Module.Knowledge/RerankerDeviceTests/README.md`；详细证据 `artifacts/reranker-cuda-integration-20261004/receipt.json`，完整最终测试在verified-integration。回滚以本轮具名产品提交inverse commit，不reset并行会面工作；本轮未部署无需游戏回滚。
+
+<a id="intercepted-meeting-guards-fix-20261004"></a>
+## 野外被拦截会面两处误拦修复（2026-10-04，OFFLINE_VERIFIED，未部署）
+
+根据已部署诊断的实机日志：07:17:16新拉塔戈斯特遭遇没有battle/result却继承07:16:45攻击锁；07:18:27敌方崔斯坦尼娅拦截成功打开菜单，证明不是敌方角色设计排除；07:19:27锁已清，而07:20:27/56塔洛斯被native_activity_encounter_party_compat排除，长期RaidSettlement/短期EngageParty、CurrentSettlement及全部MapEvent为null。用户反复要求定位被拦截不弹面板，本包修这两处具体条件，不把07:21:38退出收尾当根因，也不改商队/非Hero资格。
+
+- 意图检查点74f4dce3，产品a4b2dbb5。`src/AF.GameAdapter.Bannerlord/Encounter/LordEncounterBehavior.cs:174,1116-1260`复用已有EncounterPendingReturnOwner，在攻击/结果保护设置时绑定Encounter/Party/save generation；新已初始化Map遭遇在无Mission/battle/result/pending attack/meeting result/captivity/result conversation/active meeting时解除旧scope。相同原遭遇保留锁；正常地图仍保留2秒结果退出等待。session_launched清理owner和旧锁，不增加超时兜底或全局强制Finish。
+- 同文件`:2419-2461` IsVillageRaidMobileParty去掉DefaultBehavior/ShortTermBehavior及远端TargetSettlement/LastAttacker的意图排除，删无消费者IsVillageSettlement helper；保留真实raid/supplies/volunteers/曾looting的当前MapEvent，以及CurrentSettlement正在被此party劫掠的现场。原活动menu、force/restartedRaid、玩家攻城、海战、战斗结果与军团目标规则均未改变。
+- 用户追问“敌方正在烧村、我去攻击是否误触会面”：当前源码仍以真实raid事件/村庄现场与原版raid重启标记保留原版处理；本包只移除路上意图判断，不把已经实际劫掠的事件导入自定义会面。实机去打正在烧村队伍仍NOT_RUN，不把fixture升级成实机保证。
+- 验证：既有生产提取harness扩展36项，共138 PASS；针对raid14项重跑PASS，覆盖追击但长期劫村计划、远端LastAttacker残留、短期意图、当前村庄、真正Raid/force supplies/volunteers/looting事件与PartyBase fallback。hard覆盖新不同/同party遭遇、save generation、早期空队伍/初始化后、实际mission/result等仍保护、重新攻击认领及session清理。用检查点旧源码分别--audit hard/raid均在期望业务断言失败，新源码全通过，未改原断言凑成功。
+- 原Debug双API+Bootstrap入口成功，两实现各341既有警告/0错误，Bootstrap0警告/0错误；引用v1.3.15.110062 / v1.4.6.115628，三个marker/hash一致，两个实际DLL既有交接owner/callback/cleanup各13项通过（无原生初始化）。构建期间另一会话完成b940bf24 RAG提交，未回滚或纳入本包四文件提交；本产物基于该工作树组合，不声称RAG功能本包验收。
+- 性能：保护owner仅事件时O(1)认领；原tick/菜单条件保持false快速返回，活跃旧锁时增加一次有界引用/generation比较，不扫描队伍/反射查方法、不增加分配/锁/轮询。劫村检查反而移除三条意图/远端分支，真实规则保留。
+- NOT_RUN：本候选Stage/部署/push/打包、玩家档实机拦截及真实烧村袭击；安装仍诊断1.4 SHA256 C821599A5DF8261F9A3E19BA209D5CFE17E9FC61B47123EC2A96CAA8BE848405，无外部游戏文件写入。下一步新部署需用户明确授权，不延续上条诊断版部署授权。
+- 本地`artifacts/intercepted-meeting-guards-fix-20261004/receipt.json`绑定源码/产物，lifecycle/run.log、negative-hard/raid.log、active-raid-recheck/run.log、candidate-1.3/1.4-handoff.log、build.log保留正负证据。源码回滚git revert a4b2dbb5；安装仍使用[上条诊断部署](#deploy-meeting-diagnostics-20261004)唯一Recovery，本轮未新增备份。
