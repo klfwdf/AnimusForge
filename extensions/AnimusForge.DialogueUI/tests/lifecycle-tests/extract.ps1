@@ -19,7 +19,7 @@ function Extract([string]$Path, [string]$Signature) {
     return $source.Substring($start, $end - $start)
 }
 $adapter = Join-Path $module 'src/Native/NativeUiAdapter.cs'
-$methods = @('public static bool TryWrap(', 'public static void Release(', 'private static void ReleaseOverlay(', 'private static void OverlayClosed(', 'private static void OverlayRestored(')
+$methods = @('public static bool TryWrap(', 'private static bool NpcOpeningPrefix(', 'public static void Release(', 'private static void ReleaseOverlay(', 'private static void OverlayClosed(', 'private static void OverlayRestored(')
 $native = ($methods | ForEach-Object { Extract $adapter $_ }) -join "`n"
 $router = Extract (Join-Path $module 'src/PresentationRouter.cs') 'private static void ReleaseOwned('
 $generated = "using System; using TaleWorlds.Library; using TaleWorlds.CampaignSystem; using TaleWorlds.MountAndBlade; namespace AnimusForge.DialogueUI.Native { public static partial class NativeUiAdapter { $native } } namespace AnimusForge.DialogueUI { internal static partial class PresentationRouter { $router } }"

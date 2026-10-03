@@ -25,7 +25,8 @@ namespace TaleWorlds.Library
 namespace TaleWorlds.CampaignSystem
 {
     public class Campaign { public static Campaign Current = new(); public ConversationManager ConversationManager = new(); }
-    public class ConversationManager { public bool IsConversationInProgress; public void EndConversation() { IsConversationInProgress = false; } }
+    public class CharacterObject { public bool IsHero; }
+    public class ConversationManager { public bool IsConversationInProgress; public CharacterObject OneToOneConversationCharacter; public void EndConversation() { IsConversationInProgress = false; } }
 }
 namespace TaleWorlds.MountAndBlade
 {
@@ -100,5 +101,6 @@ namespace AnimusForge.DialogueUI.Native
         internal static void AuxiliaryStateChanged(NativeOverlayVM vm) { Transitions++; }
         public static void Closed(AnimusForgeNativeConversationOverlayVM host) => OverlayClosed(host);
         public static void Restored(AnimusForgeNativeConversationOverlayVM host, bool temporary = false, bool closed = false) => OverlayRestored(host, temporary, closed);
+        public static bool AllowPendingOpening(AnimusForgeNativeConversationOverlayVM host) => NpcOpeningPrefix(host);
     }
 }

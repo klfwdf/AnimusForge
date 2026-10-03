@@ -12,6 +12,7 @@ int checks = 0;
 void Check(bool pass, string label) { checks++; if (!pass) throw new Exception(label); }
 Campaign.Current = new Campaign();
 Campaign.Current.ConversationManager.IsConversationInProgress = true;
+Campaign.Current.ConversationManager.OneToOneConversationCharacter = new CharacterObject { IsHero = true };
 Mission.Current = new Mission();
 int switches = 0, submissions = 0;
 string submitted = null;
@@ -39,6 +40,7 @@ NativeUiAdapter.Restored(host);
 Check(vm.IsToolbarVisible && vm.IsCustomAnswerVisible && NativeUiAdapter.Transitions == transitions + 2, "drawer closed restore refreshes toolbar and input");
 host.SetInputVisible(false);
 Check(NativeUiAdapter.TryWrap(host, out reloaded) && switches == 1 && !host.IsCustomAnswerVisible, "manual ordinary mode not overridden on reload");
+Check(!NativeUiAdapter.AllowPendingOpening(host), "queued Hero opening cannot override manual ordinary mode");
 host.SetInputVisible(true);
 vm.InputText = "send\nmultiline";
 vm.ExecuteSubmit();
@@ -50,6 +52,29 @@ vm.InputText = "late"; vm.ExecuteSubmit();
 Check(submissions == 1 && vm.InputText != "late", "disposed wrapper cannot mutate or submit");
 Check(NativeUiAdapter.TryWrap(host, out reloaded) && !ReferenceEquals(vm, reloaded), "closed wrapper retired from dictionary");
 NativeUiAdapter.Closed(host);
+
+foreach (bool enabled in new[] { true, false })
+{
+    DialogueUiOptions.AutoEnterAiMode = enabled;
+    foreach (CharacterObject target in new[] { new CharacterObject { IsHero = true }, new CharacterObject { IsHero = false }, null })
+    {
+        Campaign.Current.ConversationManager.OneToOneConversationCharacter = target;
+        int automaticSwitches = 0;
+        AnimusForgeNativeConversationOverlayVM next = null;
+        next = new(_ => { }, () => { automaticSwitches++; next.SetInputVisible(!next.IsCustomAnswerVisible); }, null, null, null, null);
+        bool expected = enabled && target?.IsHero == true;
+        Check(NativeUiAdapter.TryWrap(next, out var nextWrapper), "mode rule wraps current conversation");
+        Check(next.IsCustomAnswerVisible == expected && automaticSwitches == (expected ? 1 : 0), "auto entry requires enabled setting and Hero target");
+        Check(NativeUiAdapter.AllowPendingOpening(next) == expected, "queued opening follows current mode, not unrestricted default");
+        next.SetInputVisible(false);
+        Check(!NativeUiAdapter.AllowPendingOpening(next), "ordinary mode remains ordinary after pending opening");
+        next.SetInputVisible(true);
+        Check(NativeUiAdapter.AllowPendingOpening(next), "manual AI works for Hero/non-Hero even with auto entry off");
+        Check(NativeUiAdapter.TryWrap(next, out var nextReload) && ReferenceEquals(nextWrapper, nextReload) && automaticSwitches == (expected ? 1 : 0), "resource reload does not reapply default mode");
+        NativeUiAdapter.Closed(next);
+    }
+}
+DialogueUiOptions.AutoEnterAiMode = true;
 
 Campaign.Current.ConversationManager.IsConversationInProgress = false;
 var harmony = new HarmonyLib.Harmony();

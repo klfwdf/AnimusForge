@@ -331,6 +331,9 @@ public static class NativeConversationAnswerAreaController
 			Widget continueButton = Root.FindChild("ContinueButton", includeAllChildren: true);
 			ReleaseContainer(answerListContainer, makeVisible: true);
 			ReleaseContainer(answerList, makeVisible: true);
+			// Restoring native answers must not turn their empty layout area into a mouse blocker.
+			if (answerListContainer != null) answerListContainer.DoNotAcceptEvents = true;
+			if (answerList != null) answerList.DoNotAcceptEvents = true;
 			ReleaseAnswerDescendants(answerList);
 			if (continueButton != null)
 			{
