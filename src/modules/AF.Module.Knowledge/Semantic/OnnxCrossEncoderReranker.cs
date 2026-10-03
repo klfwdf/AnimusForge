@@ -391,13 +391,17 @@ public sealed class OnnxCrossEncoderReranker
 
 	private readonly object _cacheLock = new object();
 
-	private bool _initialized;
+	private volatile bool _initialized;
 
 	private bool _available;
 
 	private string _lastError = "";
 
-	private InferenceSession _session;
+	private volatile InferenceSession _session;
+
+	private IRerankerEncodedBackend _encodedBackend;
+
+	private string _modelPath;
 
 	private SentencePieceUnigramTokenizerLite _tokenizer;
 
@@ -550,7 +554,6 @@ public sealed class OnnxCrossEncoderReranker
 			{
 				return;
 			}
-			_initialized = true;
 			try
 			{
 				AnimusForgeModelStore.ModelFiles files = AnimusForgeModelStore.ResolveReranker();
@@ -568,24 +571,9 @@ public sealed class OnnxCrossEncoderReranker
 					_lastError = "reranker tokenizer 解析失败。";
 					return;
 				}
-				SessionOptions sessionOptions = new SessionOptions();
-				sessionOptions.GraphOptimizationLevel = GraphOptimizationLevel.ORT_ENABLE_EXTENDED;
-				_session = new InferenceSession(text, sessionOptions);
-				_inputIdsName = GuessInputName(_session.InputMetadata, "input_ids", "input_ids");
-				_inputMaskName = GuessInputName(_session.InputMetadata, "attention_mask", "attention_mask");
-				_inputTypeName = GuessInputName(_session.InputMetadata, "token_type_ids", "token_type");
-				_outputName = GuessOutputName(_session.OutputMetadata);
-				try
-				{
-					if (_session.InputMetadata.TryGetValue(_inputIdsName, out var value))
-					{
-						_useInt64Input = value != null && value.ElementType == typeof(long);
-					}
-				}
-				catch
-				{
-					_useInt64Input = true;
-				}
+                _modelPath = text;
+                _encodedBackend = RerankerDeviceRuntime.CreateBackend();
+                if (_encodedBackend == null) EnsureLocalSession();
 				_available = true;
 				_lastError = "";
 				try
@@ -608,8 +596,35 @@ public sealed class OnnxCrossEncoderReranker
 				{
 				}
 			}
+            finally { _initialized = true; }
 		}
 	}
+
+    private void EnsureLocalSession()
+    {
+        if (_session != null) return;
+        lock (_initLock)
+        {
+            if (_session != null) return;
+            using (var sessionOptions = new SessionOptions())
+            {
+                sessionOptions.GraphOptimizationLevel = GraphOptimizationLevel.ORT_ENABLE_EXTENDED;
+                var session = RerankerDeviceRuntime.CreateLocalSession(_modelPath, sessionOptions);
+                try
+                {
+                    _inputIdsName = GuessInputName(session.InputMetadata, "input_ids", "input_ids");
+                    _inputMaskName = GuessInputName(session.InputMetadata, "attention_mask", "attention_mask");
+                    _inputTypeName = GuessInputName(session.InputMetadata, "token_type_ids", "token_type");
+                    _outputName = GuessOutputName(session.OutputMetadata);
+                    if (session.InputMetadata.TryGetValue(_inputIdsName, out var value))
+                        _useInt64Input = value != null && value.ElementType == typeof(long);
+                    // Publish only after metadata is ready; concurrent fallback requests cannot see a half-built session.
+                    _session = session;
+                }
+                catch { session.Dispose(); throw; }
+            }
+        }
+    }
 
 	private int GetEffectiveMaxLength()
 	{
@@ -667,15 +682,21 @@ public sealed class OnnxCrossEncoderReranker
 		return count;
 	}
 
-	private bool TryRunBatchEncoded(List<List<long>> tokenRows, List<int[]> maskRows, out List<float> scores)
+	internal bool TryRunBatchEncoded(List<List<long>> tokenRows, List<int[]> maskRows, out List<float> scores)
 	{
 		scores = new List<float>();
 		try
 		{
-			if (tokenRows == null || maskRows == null || tokenRows.Count <= 0 || tokenRows.Count != maskRows.Count || _session == null || _tokenizer == null)
+			if (tokenRows == null || maskRows == null || tokenRows.Count <= 0 || tokenRows.Count != maskRows.Count || _tokenizer == null)
 			{
 				return false;
 			}
+            if (_encodedBackend != null && _encodedBackend.TryScore(tokenRows, maskRows, out var backendScores))
+            {
+                scores = backendScores;
+                return true;
+            }
+            EnsureLocalSession();
 			int num = tokenRows.Count;
 			int num2 = 0;
 			for (int i = 0; i < tokenRows.Count; i++)
@@ -825,7 +846,7 @@ public sealed class OnnxCrossEncoderReranker
 			scores.Add(0f);
 		}
 		EnsureInitialized();
-		if (!_available || _session == null || _tokenizer == null)
+		if (!_available || (_session == null && _encodedBackend == null) || _tokenizer == null)
 		{
 			return false;
 		}
@@ -927,7 +948,7 @@ public sealed class OnnxCrossEncoderReranker
 			return false;
 		}
 		EnsureInitialized();
-		if (!_available || _session == null || _tokenizer == null)
+		if (!_available || (_session == null && _encodedBackend == null) || _tokenizer == null)
 		{
 			return false;
 		}
@@ -948,6 +969,14 @@ public sealed class OnnxCrossEncoderReranker
 			{
 				return false;
 			}
+            if (_encodedBackend != null)
+            {
+                if (!TryRunBatchEncoded(new List<List<long>> { list }, new List<int[]> { attentionMask }, out var gpuScores)) return false;
+                score = gpuScores[0];
+                CacheScore(key, score);
+                Logger.Metric("onnx.rerank", ok: true, stopwatch.Elapsed.TotalMilliseconds);
+                return true;
+            }
 			List<NamedOnnxValue> list2 = new List<NamedOnnxValue>();
 			int count = list.Count;
 			if (_useInt64Input)

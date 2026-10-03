@@ -1,3 +1,9 @@
+# 本次RAG交接：MCM可选CPU/CUDA重排序（2026-10-04，离线已验证，未部署）
+
+- 知识检索组新增CPU/GPU下拉，默认CPU、完整重启生效；GPU仅重排序，向量仍CPU。独立CUDA进程及可选包避免替换游戏CPU库，缺件/故障/超时同请求回退CPU，本次会话不重启循环。
+- 真实生产宿主/worker的CPU/GPU/并发/缺组件/终止进程回退通过，分数最大差3.9e-8、样例排序一致；CUDA算子profile通过。双API+Bootstrap及实际MCM属性metadata通过。仅RTX4060 Laptop离线验证，5060/实机显存FPS/MCM交互/世界书未验。
+- 可选包约1.83GiB，位置与安装说明见[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#reranker-cuda-integration-20261004)及[组件说明](tools/RerankerCudaWorker/README.md)；本地receipt集中源码/hash/ZIP证据，检查点5ebdb847。未安装/推送；下方会面诊断部署不含本次RAG改动。
+
 # 最新部署：会面禁用原因诊断已安装（2026-10-04，DEPLOY_VERIFIED，根因未证实）
 
 - 用户本轮授权部署，诊断556472a4 / 候选20614376，复用hash未变且已过原Debug双API/Bootstrap的三个产物。用原部署入口更新9受管文件，3379 Stage/安装hash一致，2291非受管文件保持，原版DLL/一键脚本未改，版本v1.5.0/Bootstrap-only。
