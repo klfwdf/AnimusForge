@@ -220,8 +220,8 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 
 	public override void RegisterEvents()
 	{
-		CampaignEvents.OnNewGameCreatedEvent.AddNonSerializedListener(this, OnGameStarted);
-		CampaignEvents.OnGameLoadedEvent.AddNonSerializedListener(this, OnGameStarted);
+		CampaignEvents.OnNewGameCreatedEvent.AddNonSerializedListener(this, OnNewGameCreated);
+		CampaignEvents.OnGameLoadedEvent.AddNonSerializedListener(this, OnGameLoaded);
 		CampaignEvents.TickEvent.AddNonSerializedListener(this, OnTick);
 		CampaignEvents.OnSaveOverEvent.AddNonSerializedListener(this, OnSaveOver);
 	}
@@ -235,7 +235,17 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private void OnGameStarted(CampaignGameStarter starter)
+	private void OnNewGameCreated(CampaignGameStarter starter)
+	{
+		// Campaign behaviors can survive a return to the campaign setup flow. A new
+		// sandbox must never inherit the previous campaign's completed onboarding bit.
+		_setupDone = false;
+		_onboardingSession.ResetWelcomeShown();
+		MarkPendingStartupNotice();
+		MarkPendingWelcome();
+	}
+
+	private void OnGameLoaded(CampaignGameStarter starter)
 	{
 		MarkPendingStartupNotice();
 		if (!_setupDone)

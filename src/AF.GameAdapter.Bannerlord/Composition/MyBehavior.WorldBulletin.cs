@@ -427,7 +427,8 @@ public partial class MyBehavior
 				return;
 			}
 			int troops = GetMapEventTroopCount(mapEvent);
-			bool siege = mapEvent.IsSiegeAssault;
+			bool sallyOut = mapEvent.IsSallyOut || mapEvent.IsSiegeOutside;
+			bool siege = mapEvent.IsSiegeAssault || sallyOut;
 			// Raid fights are covered by the raid event; a lord running down villagers or caravans is not news.
 			bool lordVsLord = winnerLord && loserLord;
 			if (!WorldBulletinCampaignMaterialPolicy.ShouldIncludeBattle(involvesPlayer, winnerLord, loserLord, mapEvent.IsRaid, siege, troops, MajorNpcBattleTroopThreshold))
@@ -438,14 +439,14 @@ public partial class MyBehavior
 			string location = GetMapEventLocationLabel(mapEvent);
 			string winnerFaction = GetFactionDisplayName(winner.MapFaction, "一方");
 			string loserFaction = GetFactionDisplayName(loser.MapFaction, "另一方");
-			string sentence = WorldBulletinCampaignMaterialPolicy.BattleSentence(location, siege, GetPrimaryOtherSideLabel(winner), winnerFaction, GetPrimaryOtherSideLabel(loser), loserFaction, troops);
+			string sentence = WorldBulletinCampaignMaterialPolicy.BattleSentence(location, sallyOut, siege, GetPrimaryOtherSideLabel(winner), winnerFaction, GetPrimaryOtherSideLabel(loser), loserFaction, troops);
 			string winnerId = GetKingdomId(winner.MapFaction);
 			string loserId = GetKingdomId(loser.MapFaction);
 			string group = siege && mapEvent.MapEventSettlement != null
 				? "siege:" + GetSettlementId(mapEvent.MapEventSettlement)
 				: "clash:" + GetCurrentGameDayIndexSafe() + ":" + WorldBulletinPairKey(winner.MapFaction, loser.MapFaction);
-			string detailText = WorldBulletinCampaignMaterialPolicy.BattleDetail(GetMapEventSideCommittedTroopCount(winner), BuildMapEventCasualtyText(winner), GetMapEventSideCommittedTroopCount(loser), BuildMapEventCasualtyText(loser), winnerLord, winnerLord ? WorldBulletinHeroTitle(winner.LeaderParty.LeaderHero) : "", loserLord, loserLord ? WorldBulletinHeroTitle(loser.LeaderParty.LeaderHero) : "");
-			if (CaptureWorldBulletinEvent(siege ? "siege_battle" : "battle", "battle:" + BuildMapEventStableKey(mapEvent, location), score, sentence, involvesPlayer, group, detailText, BulletinParticipants((winner.LeaderParty?.LeaderHero, "胜方统帅"), (loser.LeaderParty?.LeaderHero, "败方统帅")), winnerId, loserId))
+			string detailText = WorldBulletinCampaignMaterialPolicy.BattleDetail(GetMapEventSideCommittedTroopCount(winner), BuildMapEventCasualtyText(winner), GetMapEventSideCommittedTroopCount(loser), BuildMapEventCasualtyText(loser), sallyOut, winnerLord, winnerLord ? WorldBulletinHeroTitle(winner.LeaderParty.LeaderHero) : "", loserLord, loserLord ? WorldBulletinHeroTitle(loser.LeaderParty.LeaderHero) : "");
+			if (CaptureWorldBulletinEvent(sallyOut ? "sally_out_battle" : siege ? "siege_battle" : "battle", "battle:" + BuildMapEventStableKey(mapEvent, location), score, sentence, involvesPlayer, group, detailText, BulletinParticipants((winner.LeaderParty?.LeaderHero, "胜方统帅"), (loser.LeaderParty?.LeaderHero, "败方统帅")), winnerId, loserId))
 			{
 				int swing = WorldBulletinCampaignMaterialPolicy.BattleStability(troops, MajorNpcBattleTroopThreshold);
 				ApplyWorldBulletinStability(winnerId, swing);

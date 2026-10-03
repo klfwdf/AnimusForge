@@ -8,5 +8,6 @@
   <ItemGroup>
     <Compile Remove="HostRegression.cs" />
     <Compile Include="../../../../src/modules/AF.Module.Weekly/Bulletin/WorldBulletinPolicy.cs" Link="WorldBulletinPolicy.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Weekly/Materials/WorldBulletinCampaignMaterialPolicy.cs" Link="WorldBulletinCampaignMaterialPolicy.cs" />
   </ItemGroup>
 </Project>

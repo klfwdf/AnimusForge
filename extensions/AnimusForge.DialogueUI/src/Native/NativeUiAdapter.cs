@@ -456,13 +456,6 @@ public static class NativeUiAdapter
                     return true;
             }
 
-            if (_auxiliary != null && _auxiliary.IsRecursivelyVisible())
-            {
-                var ap = _auxiliary.GlobalPosition; var az = _auxiliary.Size;
-                if (mouse.x >= ap.X && mouse.x <= ap.X + az.X && mouse.y >= ap.Y && mouse.y <= ap.Y + az.Y)
-                    return true;
-            }
-
             foreach (var widget in _buttons)
             {
                 if (!widget.IsEnabled || !widget.IsRecursivelyVisible()) continue;

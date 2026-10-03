@@ -148,9 +148,7 @@ namespace AnimusForge.Illustrator.Core
         {
             AssertMainThread();
             var settings = IllustratorSettings.Instance;
-            return _running && settings != null && settings.EnableImageGeneration &&
-                (category != "encyclopedia" || settings.EnableEncyclopediaIllustration) &&
-                (category != "conversation" || settings.EnableConversationIllustration);
+            return _running && settings != null && settings.EnableImageGeneration;
         }
 
         public static IllustrationOptions CaptureOptions()

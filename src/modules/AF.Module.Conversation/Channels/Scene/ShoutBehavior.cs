@@ -405,7 +405,15 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 			_parent._tickTimer += dt;
 			if (!flag && _parent._tickTimer >= 0.2f)
 			{
-				_parent.UpdatePassiveStareLogic(_parent._tickTimer);
+				// Do not let the same key press that opens scene shout win the passive-stare race.
+				if (Input.IsKeyPressed(_shoutKey) || Input.IsKeyPressed(_specialMenuKey))
+				{
+					_parent.ResetPassiveStareTracking();
+				}
+				else
+				{
+					_parent.UpdatePassiveStareLogic(_parent._tickTimer);
+				}
 				_parent._tickTimer = 0f;
 			}
 			else if (flag && _parent._tickTimer >= 0.2f)
@@ -685,6 +693,7 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 		_shoutHotkeyChargeOpenModeMenu = openModeMenu;
 		_shoutHotkeyChargeKey = key;
 		_shoutHotkeyChargeStartedAt = GetApplicationTimeSafe();
+		ResetPassiveStareTracking();
 		_lastRenderedShoutTargetingContext = null;
 		DrawShoutRangePreview(BuildCurrentShoutTargetingContext());
 	}
@@ -2104,7 +2113,10 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 		try
 		{
 			ShoutBehavior currentInstance = CurrentInstance;
-			return currentInstance != null && (currentInstance._isProcessingShout || currentInstance._isWaitingForScenePostprocessGate);
+			return currentInstance != null && (currentInstance._isProcessingShout
+				|| currentInstance._isWaitingForScenePostprocessGate
+				|| currentInstance._shoutHotkeyChargeActive
+				|| ShoutTextInputPopup.IsOpen);
 		}
 		catch
 		{
@@ -7749,10 +7761,22 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		return false;
 	}
 
+	private void ResetPassiveStareTracking()
+	{
+		_stareTimer = 0f;
+		_stareTargetLostGraceTimer = 0f;
+		_currentStareTarget = null;
+	}
+
 	public void UpdatePassiveStareLogic(float dt)
 	{
 		if (Mission.Current == null || Agent.Main == null || !Agent.Main.IsActive() || _isProcessingShout)
 		{
+			return;
+		}
+		if (_shoutHotkeyChargeActive || ShoutTextInputPopup.IsOpen)
+		{
+			ResetPassiveStareTracking();
 			return;
 		}
 		if (IsMultiNpcSceneConversationActive())

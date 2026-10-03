@@ -46,7 +46,7 @@ namespace AnimusForge.Illustrator
 
         private bool _enableImageGeneration = true;
 
-        [SettingPropertyBool("启用 AI 画卷生图系统", HintText = "全局总开关。开启后将在周报、画廊等界面提供 AI 图像生成与插画展示。", Order = 0, RequireRestart = false)]
+        [SettingPropertyBool("生图开启", HintText = "所有生图链路的总开关。关闭后百科、对话、快报、画廊等入口都不会发起生图请求。", Order = 0, RequireRestart = false)]
         [SettingPropertyGroup("1. 基础设置", GroupOrder = 1)]
         public bool EnableImageGeneration
         {
@@ -356,8 +356,8 @@ namespace AnimusForge.Illustrator
         [SettingPropertyGroup("2. 生图 API 配置 (OpenAI 兼容)", GroupOrder = 2)]
         public int Randomness { get; set; } = 50;
 
-        [SettingPropertyBool("优先对话多模态生图通道 (/chat/completions)", HintText = "开启后生图请求走 /chat/completions 多模态通道：参考图随消息发送、整幅画面一次性生成，避免 /images/edits 以参考图为底的姿势与光照锚定。需要模型支持多模态生图（如 gemini-3.1-flash-image）。关闭则按端点与模型自动判定（默认先试 /images/edits）。启用精确端点地址时此项不生效。", Order = 13, RequireRestart = false)]
-        [SettingPropertyGroup("2. 生图 API 配置 (OpenAI 兼容)", GroupOrder = 2)]
+        // Retained for old config/code compatibility; protocol selection is automatic and this
+        // preference is intentionally no longer exposed in MCM.
         public bool PreferChatImageProtocol { get; set; } = false;
 
         private string _directorModelName = "";
@@ -457,15 +457,15 @@ namespace AnimusForge.Illustrator
         // Persist with the existing MCM settings identity, like CustomStylePrompt; old configs default to empty.
         public string CustomDirectorPrompt { get; set; } = "";
 
-        [SettingPropertyBool("周报自动生成纪事插画", HintText = "开启后，每周生成国家周报时，系统将自动分析头条事件并生成一张专属的古典史诗纪事插画。", Order = 1, RequireRestart = false)]
+        [SettingPropertyBool("自动生图", HintText = "仅在“生图开启”开启时生效。开启：快报生成时提前生成插画；关闭：快报右侧面板打开且缓存未命中时再自动生成。", Order = 1, RequireRestart = false)]
         [SettingPropertyGroup("4. 周报与展示场景", GroupOrder = 4)]
         public bool AutoGenerateWeeklyReportIllustration { get; set; } = true;
 
         private bool _enableEncyclopediaIllustration = true;
         private bool _enableConversationIllustration = true;
 
-        [SettingPropertyBool("英雄百科页注入【纪事插画】按钮", HintText = "开启后，在英雄百科页面将注入【纪事插画】按钮，可点击针对该英雄的 3D 模型与身份生平生成史诗级肖像立绘。", Order = 2, RequireRestart = false)]
-        [SettingPropertyGroup("4. 周报与展示场景", GroupOrder = 4)]
+        // Kept as non-MCM compatibility properties so old settings can still deserialize.
+        // Runtime gating is intentionally owned by EnableImageGeneration.
         public bool EnableEncyclopediaIllustration
         {
             get => _enableEncyclopediaIllustration;
@@ -477,8 +477,6 @@ namespace AnimusForge.Illustrator
             }
         }
 
-        [SettingPropertyBool("现场对话界面注入【场景插画】按钮", HintText = "开启后，在地图对话与场景面对面对话时注入【场景插画】按钮，可点击根据现场双方站姿与对话语境生成生动的会晤史诗插画。", Order = 3, RequireRestart = false)]
-        [SettingPropertyGroup("4. 周报与展示场景", GroupOrder = 4)]
         public bool EnableConversationIllustration
         {
             get => _enableConversationIllustration;
