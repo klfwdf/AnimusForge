@@ -1,3 +1,10 @@
+# 最新部署：玩家UI、会面离开、演讲与处刑命令已安装（2026-10-04，DEPLOY_VERIFIED）
+
+- 用户授权“部署”，候选`b616dd5d` / 产品`f4c1fc6b`；源码与上一轮收据hash一致，复用已验证Debug双API/Bootstrap，经原部署入口覆盖完整候选，包括普通选项位置、滚动条/提示、卷轴清晰度与凝视保护、会面离开、演讲异步认领及刽子手自动开始。
+- 更新12受管文件；3379 Stage/安装hash一致，2304非受管文件保持hash/大小/mtime，原版DLL与原构建脚本未改。版本v1.5.0、XML仅加载Bootstrap；安装两DLL会面各13、模式各16、桥接/演讲scope各3组通过，仍非实机验收。
+- 仅保留本次Recovery `deploy-761befc6cbac41e7928d420c4c20cf7b`（complete及旧新文件hash已验）；旧Recovery已删除，没有额外旧Stage副本。未启动游戏/真AI-TTS/玩家档，未push/打包。
+- [主台账与回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#deploy-player-ui-runtime-20261004)，本地`artifacts/deploy-player-ui-runtime-20261004/receipt.json`、`retention.json`。此条替代下方本轮“未部署/Stage”历史状态，实机与发布限定保留。
+
 # 当前修复：玩家UI/会面离开/演讲与处刑命令（2026-10-04，OFFLINE_VERIFIED，未部署）
 
 - 产品候选`f4c1fc6b`，UI/会面`e57f9fc3`、演讲`ad274f77`、处刑`f4c1fc6b`；检查点`8b6d3efa`。已补工具栏/超时Esc原版LeaveEncounter语义，普通选项独立右锚点与AI隐藏多余滚动条，去白轨道/常驻底部提示，卷轴按钮增字号与对比，活跃UI禁止凝视计时。
