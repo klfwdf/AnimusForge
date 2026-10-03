@@ -8632,6 +8632,33 @@ public class LordEncounterBehavior : CampaignBehaviorBase
         return true;
     }
 
+    internal static void PreparePlayerRequestedNativeConversationLeave()
+    {
+        var encounter = PlayerEncounter.Current;
+        if (encounter == null || Mission.Current != null ||
+            Campaign.Current?.CurrentConversationContext != ConversationContext.PartyEncounter ||
+            (encounter.EncounterState != PlayerEncounterState.Begin && encounter.EncounterState != PlayerEncounterState.Wait)) return;
+
+        Hero target = GetCurrentEncounterLeaderSafe();
+        if (HasPendingForceNativeEncounterAttack() || HasPendingMeetingBattleNativeResult() ||
+            HasPendingForceNativeDefeatCaptivityMenu() || HasPendingForceNativeEncounterBattleMenu() ||
+            PlayerEncounterCompat.HasEncounterBattleContext() || PlayerEncounterCompat.HasCampaignBattleResult() ||
+            PlayerEncounterCompat.IsInPostBattleResultFlow() || MeetingBattleRuntime.IsCombatEscalated ||
+            PlayerEncounter.PlayerSurrender || IsNativeEncounterActivityContext(target) ||
+            MapSeaContextGuard.IsCurrentPlayerEncounterAtSea(target) || IsHostileEncounterInitiatedByOpponent())
+        {
+            LogEncounterDiagnostic("PlayerConversationLeave", "native_flow_retained", null, target);
+            return;
+        }
+
+        // The native farewell consequence sets this before EndConversation.
+        // Let the map conversation uninstall and native encounter Update finish;
+        // do not Finish/finalize an encounter while its conversation is installed.
+        PlayerEncounter.LeaveEncounter = true;
+        encounter.IsPlayerWaiting = false;
+        LogEncounterDiagnostic("PlayerConversationLeave", "leave_requested", null, target);
+    }
+
     private static bool CanReturnFromNativeDialogueHandoff(Hero target, bool currentScope)
     {
         bool release = PlayerEncounter.LeaveEncounter || _pendingNativeConversationMeetingRelease != null
