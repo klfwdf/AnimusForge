@@ -1,4 +1,11 @@
-# 当前部署：阵前演讲 / 自然语言动作桥接修复（2026-10-04，DEPLOY_VERIFIED）
+# 当前修改：处理中的对话禁止切回普通模式（2026-10-04，OFFLINE_VERIFIED）
+
+- 用户新增需求；检查点 `247ae704`、产品 / 测试 `954a1551`。两套UI绑定 `CanSwitchTalk`，VM / 宿主命令 / setter拒绝处理中普通模式；完成 / 失败解锁。原UI Tick只读现有后台owner身份、不扫agent；超时Esc结束整段对话而非绕锁切普通，关闭与真实结束清理保留。
+- 生产链接回归112 PASS、两新实际DLL各16 PASS；旧安装DLL同测复现busy仍可切换的负控。原入口Debug双API + Bootstrap0错误、三marker通过；新DLL的epoch桥接各2组与核心89项通过。实机、真provider、后台owner真实重载与Esc引擎副作用未验；本次Release / Stage / push / 部署 / 打包未跑，游戏仍是下方前轮部署版本。
+- [唯一主台账 / 源码坐标 / 回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#dialogue-processing-mode-lock-20261004)；本地 `artifacts/dialogue-processing-mode-lock-20261004/receipt.json`，产品回滚 `git revert 954a1551`。
+- 会面只读审查：用户确认领主 / 劫匪不出菜单；通用入口仅找不存在的StartConversation，确有漏挂，另两个会话入口可安装。Start时队伍空符合初始化阶段；当前贵族菜单排除劫匪。普通领主具体放行条件未取证，**会面尚未修 / 完整根因未确认**；`artifacts/meeting-chain-audit-20261004/report.md` 与主台账记录55项生命周期fixture和边界，需开启深度Trace复现后定位。不延续历史部署授权。
+
+# 上一项部署：阵前演讲 / 自然语言动作桥接修复（2026-10-04，DEPLOY_VERIFIED）
 
 - 用户明确授权“部署”；部署候选 `46ef6403`，产品 `0c8f34cd`。与前轮源码hash / Debug双实现及Bootstrap收据一致，复用已通过六构建的原产物，原 `deploy_module.ps1` 先Stage再事务覆盖，未改构建 / 覆盖流程。
 - 游戏 `F:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord/Modules/AnimusForge` 更新9受管文件；3379 Stage / 安装hash一致，2296非受管文件hash / 大小 / mtime不变，3原版DLL与3构建脚本不变；版本v1.5.0、Bootstrap-only。
