@@ -1,3 +1,10 @@
+# 当前修复：玩家UI/会面离开/演讲与处刑命令（2026-10-04，OFFLINE_VERIFIED，未部署）
+
+- 产品候选`f4c1fc6b`，UI/会面`e57f9fc3`、演讲`ad274f77`、处刑`f4c1fc6b`；检查点`8b6d3efa`。已补工具栏/超时Esc原版LeaveEncounter语义，普通选项独立右锚点与AI隐藏多余滚动条，去白轨道/常驻底部提示，卷轴按钮增字号与对比，活跃UI禁止凝视计时。
+- 演讲从已发布claim先冻结scope快照再进入AF异步前处理，修“到位无字”已确认断点；启动失败立即取消恢复。刽子手可信命令确认后自动关闭原生对话再开始，不再要求第二次离开点击；死亡规则未改。
+- 原双API/Bootstrap0错误，148对话/102会面/116处刑/两API各49点击/95 UI生命周期通过；实际新DLL桥接与异步scope各3组，旧安装负控复现缺少前置冻结。实机/真AI-TTS/玩家档/Stage/部署/推送/打包未跑，游戏仍是下方上一部署版本。
+- [唯一台账、坐标、验证限定与回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#player-ui-runtime-repairs-20261004)，本地证据`artifacts/player-ui-runtime-repairs-20261004/receipt.json`；没有新增历史部署备份，也未修改一键构建流程。
+
 # 最新交付：会面交接锁、对话模式锁与 Pen 布局已编译部署（2026-10-04，DEPLOY_VERIFIED）
 
 - 用户授权“编译部署”；候选 `0218ca82491c0a0fb5b85236b805e1863c82d02d`，包含会面交接锁 `9555ff5c`、处理中禁止切普通模式 `954a1551` 和另一会话完成的 Pen 对话布局 `0218ca82`。未推送、未打包、未启动游戏。
