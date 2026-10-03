@@ -1,10 +1,28 @@
 <a id="meeting-native-handoff-scope-20261004"></a>
-# 当前修复：会面原版对话交接锁跨遭遇残留（2026-10-04，ACTIVE）
+# 当前修复：会面原版对话交接锁跨遭遇残留（2026-10-04，OFFLINE_VERIFIED）
 
-- 用户新深度日志确认间歇复现；基线 `f3e10a4a`，保留已完成未部署的模式处理锁 `954a1551`。05:17:42自定义会面正常、playerAttacker=1；05:17:43 native_dialogue_handoff设全局硬禁用，05:19:03离开后仍保留原版encounter，随后多次被disabled挡住，05:20:36才清锁。
-- 已确认原因：主动遭遇方不注册结束恢复，但原版对话交接仍无条件进入全局“回地图无遭遇稳定2秒”硬锁。该条件会被残留或新遭遇一直阻断；本次不是缺失StartConversation兜底造成的，两个真实Prefix均已命中。
-- 范围：将原版交接改为现有encounter / party / save generation / manager绑定的临时抑制，双方角色均注册结束清理；被拦截玩家的返回菜单政策保留，主动遭遇方只清自身锁不额外强制返回。回调revision隔离旧回调，不清别的战斗/结果/释放保护，不放宽NPC/劫匪资格、不补无关通用入口。
-- 验收：主动方结束清锁、被动方安全返回、连续新遭遇 / 存档 / manager变更和晚回调、战斗/投降/释放/特殊活动保护；生产提取回归、模式锁回归及双API+Bootstrap构建。只本地修复，不push / Stage / 部署 / 打包；实机复验另做。
+- 用户新深度日志确认间歇复现；基线 `f3e10a4a`、检查点 `ee4330a5`、产品 / 测试 `9555ff5c7484a8fc9ef194ee6d41ee138ebd5d78`，保留已完成未部署的模式处理锁 `954a1551`。2026-10-04 05:17:42自定义会面正常、playerAttacker=1；05:17:43 native_dialogue_handoff设全局硬禁用，05:19:03离开后仍保留原版encounter，05:19:12 / 16 / 20再遭遇均被disabled挡住，05:20:36才清锁。日志所示是原版遭遇选项菜单，不据此声称实际自动开战。
+- 已确认原因：主动遭遇方不注册结束恢复，但原版对话交接仍无条件进入全局“回地图无遭遇稳定2秒”硬锁。该条件会被残留或新遭遇一直阻断；本次不是缺失StartConversation兜底造成的，两个真实Prefix均已命中。此新证据替代前轮[只读审查](#dialogue-processing-mode-lock-20261004)的“普通领主放行条件未定位”，旧兜底入口缺口独立保留，不拿它代替本次根因。
+- 原版交接现在用现有encounter / party / save generation / manager绑定的临时抑制，双方角色均注册结束清理；被拦截玩家的返回菜单政策保留，主动遭遇方只清自身锁不额外强制返回。回调revision隔离旧回调，不清别的战斗/结果/释放保护，不放宽NPC/劫匪资格、不补无关通用入口。
+- 频率：角色 / owner捕获和一个revision闭包只在菜单切入原版对话时发生；已有拦截 / 菜单资格调用点读取O(1)身份，变化时解绑一次；结束回调清自身状态，不新增扫描 / 计时轮询。Capture / expired / ended日志沿既有diagnostic服务，每状态变化一次，不打印LLM或凭据。
+
+## 代码证据（产品修订 `9555ff5c`）
+
+| 文件 / 一基行号 / 符号 | 已覆盖 | 未覆盖 |
+| --- | --- | --- |
+| `src/AF.GameAdapter.Bannerlord/Encounter/LordEncounterBehavior.cs:138-145,1110,1293,8585-8633`，`RegisterNativeDialogueHandoff` / `ClearNativeDialogueHandoff` / `IsNativeDialogueHandoffSuppressedForCurrentEncounter` | 双角色捕获 / 注册结束处理、同encounter/party/save/manager临时禁用、变化清理；两处实际菜单资格入口接线；不再调用共享硬锁 | 真实游戏对象事件顺序与Gauntlet显示 |
+| 同文件 `8635-8669,8685-8687`，`CanReturnFromNativeDialogueHandoff` / `OnNativeDialogueHandoffEnded` / `OpenNativeEncounterConversation` | 捕获revision防晚/重复回调；双方都清自身scope；原被拦截方安全返回策略 / 所有原战斗释放资格保留；原版交接不设全局back-on-map锁 | 第三方MOD重入、实机原版退出和再遇领主 |
+| `tests/modules/AF.Module.Encounter/EncounterLifecycleBoundaryTests/run.py` / `Harness.cs.txt`，`NativeHandoffAudit` | 原样提取5个生产方法并链接真实return policy/owner；主动方/被动方、跨遭遇/队伍/存档/manager、同scope重开晚回调、14类释放/战斗/结果/活动拒绝 | 其Campaign/Manager等是替身，不是实际Bannerlord Campaign |
+| `tests/modules/AF.Module.Onboarding/DialogueOnboardingRegressionTests/Program.cs:194-204` | 实际注册/解绑接线、role政策、revision及无共享battle锁清除契约；保留模式处理锁回归 | Source契约本身不证明实机执行 |
+
+## 验证与交付状态
+
+- 原入口 **Debug双API + Bootstrap三构建0错误**，三marker hash与新DLL一致。真实引用 `v1.3.15.110062` / `v1.4.6.115628`；本次Release未跑，不复用旧Release作为新产品证据。
+- Encounter生产边界 **84 PASS**，对话生产链接 / XML / source契约 **113 PASS**。首次fixture缺少NativeDialogueReturnPolicy编译项已补链接后通过，失败日志保留。只在生成fixture恢复原“主动方提前拒绝注册”的条件，首个主动方清理断言按预期失败（非零exit `-532462766`），不是删除安全断言凑PASS。
+- 两份实际新DLL的owner / revision晚回调 / 清理 / native事件解绑 / 保留其他battle硬锁检查各 **13 PASS**（未初始化TW对象避免引擎调用）；模式VM / 包装 / 宿主gate各16 PASS，epoch桥接各2组PASS，保留前两轮成果。这些不声称原生对话已在实机跑完。
+- 本地 `artifacts/meeting-handoff-scope-fix-20261004/receipt.json` 绑定4源文件、3产物、正负控与安装DLL未变；`trace-evidence.txt` / `mod-evidence.txt`保存本次必要日志切片，不上传完整玩家日志；其他日志含 `lifecycle.log`（失败）、`lifecycle-retry.log`、`dialogue-regression.log`、`build-debug.log`及 `dll-*.log`。
+- **LIVE_GAME / REAL_AI_TTS / PLAYER_SAVE / PUSH / STAGE / DEPLOY / PACKAGE = NOT_RUN**。没有修改玩家日志开关、存档或游戏文件；安装DLL仍与前轮部署收据一致，新处理模式锁及此会面修复均未安装。需实机复验“刚读档 → 自定义菜单 → 原版对话 → 离开 → 立即同/不同领主遭遇”，不要把源码回归当实机完成。
+- 产品回滚 `git revert 9555ff5c`，保留模式锁 `954a1551` 与epoch修复；不hard reset、不撤其他作者成果、不改一键流程。
 
 <a id="dialogue-processing-mode-lock-20261004"></a>
 # 当前修改：对话处理期间禁止切回普通模式（2026-10-04，OFFLINE_VERIFIED）
