@@ -7004,3 +7004,17 @@ R2计划交付门槛：已给固定技术路线、真实来源与目标、写入
 - 用户补充：野外正常行军塔洛斯，商队/劫匪也直接进原版。06:54:04/16商队的两个入口未命中disabled，与06:54:26领主不同；当前IsEligibleCustomLordEncounterTarget要求非空Hero且IsLord，前版0e4634ed也如此。本次没有贸然放宽资格，没有据此宣称商队/劫匪会面是正常或从来未实现；全仓现有源码/记录未查到独立接管入口。此预期与领主disabled需分别处理。
 - NOT_RUN：新诊断安装与实机复现、确定disabled具体原因、实际修复恢复会面。未Stage/部署/push/打包，安装1.4 hash仍47A8B479A5FFB45018423688ABD2DC6FD8EA2D6E92501207EABB9DA1FA1379B4，未触碰玩家档/配置和原版DLL。下一步需用户授权安装诊断候选并复现一次；不能把本条称为会面已修复。
 - 本地证据`artifacts/meeting-menu-skip-diagnostics-20261004/receipt.json`、build.log、build-retry.log、predicate-preservation.json及lifecycle/run.log。源码回滚`git revert 556472a4`；部署Recovery仍沿用上条且本轮未新增。
+
+<a id="deploy-meeting-diagnostics-20261004"></a>
+## 会面禁用原因诊断版部署（2026-10-04，DEPLOY_VERIFIED；会面根因仍待实机）
+
+用户本轮明确授权“部署”，沿用诊断产品556472a4 / HEAD候选20614376；三个上轮已验证Debug双API/Bootstrap二进制及marker hash未变，复用原构建证据，没有为部署重复编译或纳入新源码。现有其他会话未提交的配置、reranker及工具差异保留，未提交、覆盖或回滚；本候选DLL包含上轮构建时已存在的未提交源码，不将本次覆盖称为那些功能验收。
+
+- 原`deploy_module.ps1`复用固定产物，现有Stage先按原校验确认干净，再由原流程重建、事务覆盖统一游戏模块。9个受管文件更新，3379 Stage/安装hash一致，2291非受管文件hash/大小/mtime保持，3个原版DLL和原部署/构建/内容脚本hash保持。模块v1.5.0，SubModule.xml仅加载Bootstrap，没有修改一键流程。
+- 安装两DLL离线CLR会面各13项、模式锁各16项、桥接/演讲scope各3组通过；两实现/Bootstrap与构建marker哈希一致。诊断源三文件hash未变，复用102边界/4谓词保持检查。部署核验不证明原生事件顺序和玩家实机行为。
+- 最新唯一Recovery：`C:/Users/29310/AppData/Local/AnimusForge/Recovery/deploy/deploy-2d7a2fee7f714958843474fa027a2970`，complete/manifest和旧新文件hash已验。依用户既有“历史也删/不要越留越多”约束，完成安装验证后删除前一个完整Recovery deploy-761befc6cbac41e7928d420c4c20cf7b，只留此次一个，不复制旧Stage。
+- 安装1.3 hash `8C0B3872732B42E6D9FC29FC01B1D378BD2808B0AC30CD56FBEA98DC0CA25A47`；1.4 `C821599A5DF8261F9A3E19BA209D5CFE17E9FC61B47123EC2A96CAA8BE848405`；Bootstrap `CCAF0C343184BE43CF20BE35F68F70A108B654F6B0DCE27D3B9A313D05875267`。
+- NOT_RUN：启动游戏、实际遇领主/商队/劫匪、确定误拦具体分支和恢复会面，真实AI/TTS/玩家档；未push/打包。下一步用户重现一次，读取`C:/Users/29310/AppData/Local/AnimusForge/Logs/Mod_Logic.txt`的stage=OpenMapConversation / SetupAndStartMapConversation及reason；这是诊断版，不宣称故障已修复。
+- 本地收据`artifacts/deploy-meeting-diagnostics-20261004/receipt.json`、before.json、build-bindings.json、source-hashes.json、deployment-verification.log、installed-offline-verification.log、retention.json。源码回滚git revert 556472a4；安装回滚使用上述唯一Recovery manifest/files，按哈希核对、定点反向恢复，不覆盖其他玩家文件。
+
+本条只替代[入口诊断](#meeting-menu-skip-diagnostics-20261004)的“未部署”状态；调查与实机NOT_RUN仍保留，不延续新发布/部署授权。

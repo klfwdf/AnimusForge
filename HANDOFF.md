@@ -1,3 +1,9 @@
+# 最新部署：会面禁用原因诊断已安装（2026-10-04，DEPLOY_VERIFIED，根因未证实）
+
+- 用户本轮授权部署，诊断556472a4 / 候选20614376，复用hash未变且已过原Debug双API/Bootstrap的三个产物。用原部署入口更新9受管文件，3379 Stage/安装hash一致，2291非受管文件保持，原版DLL/一键脚本未改，版本v1.5.0/Bootstrap-only。
+- 安装两DLL会面各13、模式各16、桥接/演讲scope各3组离线通过；新诊断三源码hash未变。其他会话未提交改动保留；没有重编译或提交其内容，不把部署当实机验收。
+- 唯一Recovery deploy-2d7a2fee7f714958843474fa027a2970（complete/旧新hash已验）；上一Recovery验证后依既有保留约束删除，不复制旧Stage。未启动游戏/push/打包，尚需遇领主再读Mod_Logic具体reason，不能称会面恢复。
+- [唯一台账、产物hash与回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#deploy-meeting-diagnostics-20261004)，本地`artifacts/deploy-meeting-diagnostics-20261004/receipt.json`、retention.json。本条替代下方“未部署”状态，不替代根因/实机限定。
 # 当前调查：野外领主会面跳过，诊断已编译（2026-10-04，VERIFY，未修复/部署）
 
 - 用户确认野外正常行军塔洛斯，亦反馈商队/劫匪直接对话。06:54:26领主两真实map入口命中总disabled；商队06:54:04/16未命中，同现象不能合并根因。当前及前版贵族资格排除非Hero；不盲目放宽。
