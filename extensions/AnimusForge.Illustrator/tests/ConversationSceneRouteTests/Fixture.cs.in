@@ -1,0 +1,186 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using AnimusForge.Illustrator.Core;
+using AnimusForge.Illustrator.Engine;
+using Newtonsoft.Json.Linq;
+using SandBox.Conversation.MissionLogics;
+using SandBox.View.Map;
+using TaleWorlds.MountAndBlade;
+using TaleWorlds.MountAndBlade.View.Screens;
+using TaleWorlds.ScreenSystem;
+
+static class Program
+{
+    static int passed, failed;
+    static void Check(bool value, string label)
+    {
+        if (value) passed++; else failed++;
+        Console.WriteLine((value ? "PASS " : "FAIL ") + label);
+    }
+    static async Task Reject(ScreenCaptureHelper.ConversationSceneCaptureSource source, CancellationToken token, string label)
+    {
+        bool rejected = false;
+        int before = ScreenCaptureHelper.PanoramaCalls;
+        try { await ScreenCaptureHelper.CaptureConversationSceneReferencesAsync(source, token); }
+        catch (InvalidOperationException) { rejected = true; }
+        catch (OperationCanceledException) { rejected = true; }
+        Check(rejected && before == ScreenCaptureHelper.PanoramaCalls, label);
+    }
+    static async Task<int> Main()
+    {
+        foreach (var logic in new ConversationMissionLogic[] { new(), new DerivedConversationLogic() })
+        {
+            var mission = new Mission { Behaviors = new object[] { logic }, Mode = MissionMode.Conversation };
+            var screen = new MissionScreen { Mission = mission };
+            Mission.Current = mission;
+            ScreenManager.TopScreen = screen;
+            var source = ScreenCaptureHelper.GetConversationSceneCaptureSource();
+            _ = source.SessionOwnerKey;
+            Check(mission.BehaviorReads == 0, "owner_key_does_not_scan_behaviors_" + logic.GetType().Name);
+            ScreenCaptureHelper.PanoramaCalls = 0;
+            Check(!source.IsMapConversation && !source.RequiresMissionPanorama, "presentation_mission_is_not_panorama_" + logic.GetType().Name);
+            var result = await ScreenCaptureHelper.CaptureConversationSceneReferencesAsync(source, CancellationToken.None);
+            Check(ScreenCaptureHelper.PanoramaCalls == 0 && result.References.Count == 0, "party_talk_skips_native_capture_" + logic.GetType().Name);
+            Check(result.DirectorNote == ScreenCaptureHelper.MapConversationTerrainNote, "party_talk_keeps_terrain_facts_" + logic.GetType().Name);
+            Check((string)GenerationDiagnostics.Current.Records["scene_capture_route"]["route"] == "mission-conversation-terrain" &&
+                  !(bool)GenerationDiagnostics.Current.Records["scene_capture_route"]["requiresPanorama"], "party_route_logged_" + logic.GetType().Name);
+            Check(GenerationDiagnostics.Current.Records.TryGetValue("scene_capture_end", out var captureEnd) &&
+                  !(bool)captureEnd["panorama"], "intentional_skip_not_capture_failure_" + logic.GetType().Name);
+            await ScreenCaptureHelper.CaptureConversationSceneReferencesAsync(source, CancellationToken.None);
+            Check(mission.BehaviorReads == 1, "classification_cached_per_source_" + logic.GetType().Name);
+            Mission.Current = new Mission();
+            await Reject(source, CancellationToken.None, "replaced_presentation_mission_rejected_" + logic.GetType().Name);
+            Mission.Current = mission;
+            ScreenManager.TopScreen = new ScreenBase();
+            await Reject(source, CancellationToken.None, "replaced_screen_rejected_" + logic.GetType().Name);
+            ScreenManager.TopScreen = screen;
+            mission.CurrentState = Mission.State.EndingNextFrame;
+            await Reject(source, CancellationToken.None, "ending_presentation_mission_rejected_" + logic.GetType().Name);
+            mission.CurrentState = Mission.State.Active;
+            await Reject(source, new CancellationToken(true), "cancelled_presentation_capture_rejected_" + logic.GetType().Name);
+        }
+
+        var realMission = new Mission { Mode = MissionMode.Conversation };
+        Mission.Current = realMission;
+        ScreenManager.TopScreen = new MissionScreen { Mission = realMission };
+        var realSource = ScreenCaptureHelper.GetConversationSceneCaptureSource();
+        ScreenCaptureHelper.PanoramaCalls = 0;
+        var realResult = await ScreenCaptureHelper.CaptureConversationSceneReferencesAsync(realSource, CancellationToken.None);
+        Check(realSource.RequiresMissionPanorama && ScreenCaptureHelper.PanoramaCalls == 1 && realResult.References.Count == 1,
+              "walkable_scene_still_captures_while_conversation_mode");
+        Check((string)GenerationDiagnostics.Current.Records["scene_capture_route"]["route"] == "mission-panorama-30m", "real_scene_route_preserved");
+        ScreenCaptureHelper.FailPanorama = true;
+        bool failedPanorama = false;
+        try { await ScreenCaptureHelper.CaptureConversationSceneReferencesAsync(realSource, CancellationToken.None); }
+        catch (InvalidOperationException) { failedPanorama = true; }
+        Check(failedPanorama, "real_scene_capture_failure_is_not_silently_downgraded");
+        ScreenCaptureHelper.FailPanorama = false;
+
+        var mapMission = new MapConversationView.MapConversationMission { ConversationTableau = new MapConversationTableau() };
+        var view = new MapConversationView { IsConversationActive = true, ConversationMission = mapMission };
+        var map = new MapScreen { View = view };
+        ScreenManager.TopScreen = map;
+        var mapSource = ScreenCaptureHelper.GetConversationSceneCaptureSource();
+        ScreenCaptureHelper.PanoramaCalls = 0;
+        var mapResult = await ScreenCaptureHelper.CaptureConversationSceneReferencesAsync(mapSource, CancellationToken.None);
+        Check(mapSource.IsMapConversation && !mapSource.RequiresMissionPanorama && ScreenCaptureHelper.PanoramaCalls == 0 && mapResult.References.Count == 0,
+              "map_talk_remains_terrain_only_even_with_stale_mission");
+        Check((string)GenerationDiagnostics.Current.Records["scene_capture_route"]["route"] == "map-conversation", "map_route_preserved");
+        view.IsConversationActive = false;
+        await Reject(mapSource, CancellationToken.None, "ended_map_conversation_rejected");
+        view.IsConversationActive = true;
+        mapMission.ConversationTableau = new MapConversationTableau();
+        await Reject(mapSource, CancellationToken.None, "replaced_map_tableau_rejected");
+        var unbound = new MapConversationView.MapConversationMission();
+        view.ConversationMission = unbound;
+        var deferred = ScreenCaptureHelper.GetConversationSceneCaptureSource();
+        unbound.ConversationTableau = new MapConversationTableau();
+        await ScreenCaptureHelper.CaptureConversationSceneReferencesAsync(deferred, CancellationToken.None);
+        Check(deferred.HasMapTableau, "deferred_map_tableau_can_bind_without_panorama");
+        view.ConversationMission = new MapConversationView.MapConversationMission();
+        await Reject(deferred, CancellationToken.None, "replaced_map_mission_rejected");
+        Console.WriteLine($"conversationSceneRoute passed={passed} failed={failed}; engine/rendering are doubles, not live-game acceptance.");
+        return failed == 0 ? 0 : 1;
+    }
+}
+
+namespace AnimusForge.Illustrator
+{
+    static class IllustratorRuntime { public static void AssertMainThread() { } }
+}
+namespace AnimusForge.Illustrator.Core
+{
+    public enum IllustrationReferenceKind { ScenePanorama }
+    public sealed class IllustrationReferenceImage { }
+    public sealed class GenerationDiagnostics
+    {
+        public static GenerationDiagnostics Current { get; } = new();
+        public readonly Dictionary<string, JObject> Records = new();
+        public void RecordStage(string name, JObject data) => Records[name] = data;
+    }
+}
+namespace AnimusForge.Illustrator.Engine
+{
+    public static partial class ScreenCaptureHelper
+    {
+        public static int PanoramaCalls;
+        public static bool FailPanorama;
+        private static Task<T> RunOnGameThreadAsync<T>(Func<T> action, CancellationToken token)
+        { token.ThrowIfCancellationRequested(); return Task.FromResult(action()); }
+        private static Task<ConversationSceneReferenceCapture> CaptureMissionSceneReferencesAsync(
+            ConversationSceneCaptureSource source, CancellationToken token, string preCapturedScene)
+        {
+            PanoramaCalls++;
+            if (FailPanorama) throw new InvalidOperationException("Synthetic rendering failure");
+            return Task.FromResult(new ConversationSceneReferenceCapture(new[] { new IllustrationReferenceImage() }, "", ""));
+        }
+        __DISPATCH__
+    }
+}
+namespace TaleWorlds.ScreenSystem
+{
+    public class ScreenBase { public bool IsFinalized { get; set; } }
+    public static class ScreenManager { public static ScreenBase TopScreen { get; set; } }
+}
+namespace TaleWorlds.MountAndBlade
+{
+    public enum MissionMode { Conversation }
+    public class Mission
+    {
+        public enum State { Active, EndingNextFrame, Over }
+        public static Mission Current { get; set; }
+        public object Scene { get; } = new();
+        public State CurrentState { get; set; }
+        public MissionMode Mode { get; set; }
+        public object[] Behaviors { get; set; } = Array.Empty<object>();
+        public int BehaviorReads;
+        public T GetMissionBehavior<T>() where T : class { BehaviorReads++; return Behaviors.OfType<T>().FirstOrDefault(); }
+    }
+}
+namespace TaleWorlds.MountAndBlade.View.Screens
+{
+    public class MissionScreen : ScreenBase { public Mission Mission { get; set; } }
+}
+namespace SandBox.Conversation.MissionLogics
+{
+    public class ConversationMissionLogic { }
+    public class DerivedConversationLogic : ConversationMissionLogic { }
+}
+namespace SandBox.View.Map
+{
+    public class MapConversationTableau { }
+    public class MapConversationView
+    {
+        public bool IsConversationActive { get; set; }
+        public MapConversationMission ConversationMission { get; set; }
+        public class MapConversationMission { public MapConversationTableau ConversationTableau { get; set; } }
+    }
+    public class MapScreen : ScreenBase
+    {
+        public MapConversationView View { get; set; }
+        public T GetMapView<T>() where T : class => View as T;
+    }
+}

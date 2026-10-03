@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using AnimusForge.Illustrator.Core;
 using Newtonsoft.Json.Linq;
+using SandBox.Conversation.MissionLogics;
 using SandBox.View.Map;
 using TaleWorlds.MountAndBlade;
 using TaleWorlds.MountAndBlade.View.Screens;
@@ -26,8 +27,24 @@ namespace AnimusForge.Illustrator.Engine
             // view is created. Keep this mutable so a source captured at conversation open
             // can bind the real Tableau before the first image generation.
             private MapConversationTableau _tableau;
+            private bool? _requiresMissionPanorama;
 
             internal bool IsMapConversation => _mapView != null;
+            internal bool RequiresMissionPanorama
+            {
+                get
+                {
+                    if (!_requiresMissionPanorama.HasValue)
+                    {
+                        IllustratorRuntime.AssertMainThread();
+                        // Resolve once for capture; owner-key checks must not scan behaviors each tick.
+                        _requiresMissionPanorama = _mission != null && _mission.GetMissionBehavior<ConversationMissionLogic>() == null;
+                    }
+                    return _requiresMissionPanorama.Value;
+                }
+            }
+            internal string CaptureRoute => RequiresMissionPanorama ? "mission-panorama-30m"
+                : IsMapConversation ? "map-conversation" : "mission-conversation-terrain";
             internal bool HasMapTableau => _tableau != null;
             internal Mission Mission => _mission;
             internal MissionScreen MissionScreen => _screen as MissionScreen;
@@ -39,11 +56,15 @@ namespace AnimusForge.Illustrator.Engine
                 : "mission:" + (_mission?.GetHashCode() ?? 0) + ":" + (_mission?.Scene?.GetHashCode() ?? 0);
 
             internal ConversationSceneCaptureSource(MissionScreen screen, Mission mission)
-            { _screen = screen; _mission = mission; }
+            {
+                _screen = screen;
+                _mission = mission;
+            }
 
             internal ConversationSceneCaptureSource(MapScreen screen, MapConversationView view)
             {
                 _screen = screen;
+                _requiresMissionPanorama = false;
                 _mapView = view;
                 _mapMission = view.ConversationMission;
                 _tableau = _mapMission.ConversationTableau;
@@ -67,6 +88,7 @@ namespace AnimusForge.Illustrator.Engine
                         _mission.CurrentState != Mission.State.EndingNextFrame && _mission.CurrentState != Mission.State.Over;
                 if (!current)
                     throw new InvalidOperationException("本次插画对应的对话或场景已结束、切换，请重新打开场景插画。");
+                _ = RequiresMissionPanorama;
             }
 
             internal async Task EnsureCurrentAsync(CancellationToken token)
@@ -102,7 +124,7 @@ namespace AnimusForge.Illustrator.Engine
             throw new InvalidOperationException("当前没有正在显示的任务场景或地图对话，请在会话中重新打开场景插画。");
         }
 
-        // Field conversations send no screenshot: identity comes from the offscreen portraits,
+        // Map and presentation-Mission conversations send no screenshot: identity comes from the offscreen portraits,
         // and the tableau's staged close-up is neither the real terrain nor the real stances.
         internal const string MapConversationTerrainNote =
             "本次是野外地图对话，不提供现场截图：人物外观与穿戴以离屏身份立绘为准，环境依据【地貌类型】【当前季节】【现场天气】等地形事实设计。" +
@@ -116,7 +138,7 @@ namespace AnimusForge.Illustrator.Engine
             token.ThrowIfCancellationRequested();
             GenerationDiagnostics.Current?.RecordStage("scene_capture_end", new JObject
             {
-                ["route"] = "map-conversation", ["coverage"] = "terrain-facts-only",
+                ["route"] = source.CaptureRoute, ["coverage"] = "terrain-facts-only",
                 ["environmentReferences"] = 0, ["sourceMissionViews"] = 0,
                 ["referenceSheet"] = false, ["panorama"] = false, ["totalMs"] = 0
             });

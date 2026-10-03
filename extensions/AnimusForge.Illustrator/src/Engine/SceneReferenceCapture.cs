@@ -52,8 +52,8 @@ namespace AnimusForge.Illustrator.Engine
             if (source == null) throw new ArgumentNullException(nameof(source));
             await source.EnsureCurrentAsync(token).ConfigureAwait(false);
             GenerationDiagnostics.Current?.RecordStage("scene_capture_route", new JObject
-            { ["route"] = source.IsMapConversation ? "map-conversation" : "mission-panorama-30m" });
-            if (source.IsMapConversation)
+            { ["route"] = source.CaptureRoute, ["requiresPanorama"] = source.RequiresMissionPanorama });
+            if (!source.RequiresMissionPanorama)
                 return await CaptureMapConversationSceneReferencesAsync(source, token).ConfigureAwait(false);
             return await CaptureMissionSceneReferencesAsync(source, token, preCapturedScene).ConfigureAwait(false);
         }

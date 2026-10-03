@@ -307,6 +307,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
                     try { probeSource = ScreenCaptureHelper.GetConversationSceneCaptureSource(); }
                     catch (Exception ex) { Debug.Print("[Illustrator] Scene probe unavailable: " + ex.Message); }
                 }
+                if (probeSource?.RequiresMissionPanorama != true) probeSource = null;
                 var previousPopup = _activeInstance;
                 previousPopup?.Close();
                 // Capture the location when the player opens the scene illustration (card or
@@ -318,10 +319,10 @@ namespace AnimusForge.Illustrator.UI.Overlays
                 {
                     Debug.Print("[Illustrator] Conversation scene capture reused from this conversation session.");
                 }
-                else if (!(topScreen is TaleWorlds.MountAndBlade.View.Screens.MissionScreen))
+                else if (probeSource == null)
                 {
                     // Field (map) conversations use terrain facts and offscreen portraits; no screenshot.
-                    Debug.Print("[Illustrator] Conversation scene capture at open: skipped_map_terrain_facts");
+                    Debug.Print("[Illustrator] Conversation scene capture at open: skipped_non_scene_terrain_facts");
                 }
                 else
                 {
@@ -631,7 +632,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
         {
             try
             {
-                if (_closed || _dataSource.IsLoading || source == null || source.IsMapConversation) return;
+                if (_closed || _dataSource.IsLoading || source?.RequiresMissionPanorama != true) return;
                 source.EnsureCurrent(System.Threading.CancellationToken.None);
                 _dataSource.SetLoading("正在重建附近环境并采集完整全景...");
                 _scope.Run(async token =>
@@ -783,7 +784,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
                 string workerArtDirection = baseArtDirection;
                 if (!string.IsNullOrWhiteSpace(actionHistory)) workerArtDirection += "\n" + actionHistory;
                 var promptPlan = new IllustrationPromptPlan("最近2条对话联动的场景插画", hardFacts, workerArtDirection, directorFacts);
-                // 按实际owner分流：Mission用附近30米全景，地图对话只读当前展示画面。
+                // 真实场景采全景；大地图和部队界面临时谈话只用地形事实。
                 var ageEvidence = convContext.InterlocutorAgeSnapshot;
                 if (ageEvidence != null)
                     GenerationDiagnostics.Current?.RecordStage("conversation_npc_age", new JObject
@@ -816,7 +817,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
                     sceneCapture = await ScreenCaptureHelper.CaptureConversationSceneReferencesAsync(sceneSource, token, preCapturedBase64).ConfigureAwait(false);
                     directorRefs.AddRange(sceneCapture.References);
                     sceneDirectorNote = sceneCapture.References == null || sceneCapture.References.Count == 0
-                        ? (sceneSource.IsMapConversation ? "\n【野外环境依据】" : "\n【环境参考不可用】") + sceneCapture.DirectorNote : string.Empty;
+                        ? (!sceneSource.RequiresMissionPanorama ? "\n【野外环境依据】" : "\n【环境参考不可用】") + sceneCapture.DirectorNote : string.Empty;
                     scenePromptPlan = new IllustrationPromptPlan(promptPlan.Mode, promptPlan.HardFacts + sceneCapture.NearbyPropFacts, promptPlan.ArtDirection,
                         promptPlan.DirectorOnlyFacts + sceneDirectorNote);
                     sceneStatus = sceneCapture.StatusText + "，正在整理人物参考...";
