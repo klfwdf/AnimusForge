@@ -29,11 +29,32 @@ internal static class Program
 
     private static int Main(string[] args)
     {
+        bool bridgeOnly = args.Length == 3 &&
+            string.Equals(args[2], "--bridge-only", StringComparison.Ordinal);
         if (args.Length != 2 &&
+            !bridgeOnly &&
             !(args.Length == 3 && string.Equals(args[2], "--preserve-fixtures", StringComparison.Ordinal)))
         {
             Console.Error.WriteLine("Usage: StaticVerifier <module-root> <game-root> [--preserve-fixtures]");
+            Console.Error.WriteLine("       StaticVerifier <implementation-dll> <game-root> --bridge-only");
             return 2;
+        }
+        if (bridgeOnly)
+        {
+            // Independent CLR process per API implementation, without initializing
+            // the game, providers, module logs or MCM. Tests only install/uninstall
+            // reversible observers and inspect the real compiled entry points.
+            string implementation = Path.GetFullPath(args[0]);
+            string implementationDirectory = Path.GetDirectoryName(implementation);
+            ConfigureResolver(implementationDirectory, Path.GetFullPath(args[1]));
+            AddDirectory(implementationDirectory);
+            _moduleAssembly = Assembly.LoadFrom(implementation);
+            Console.WriteLine("Bridge candidate: " + implementation);
+            Run("AF epoch accessor accepts fields and forwarding properties, rejects invalid contracts",
+                VerifyConversationEpochAccessor);
+            Run("AF Harmony observers install and uninstall offline", VerifyCompatPatchInstallation);
+            Console.WriteLine($"Bridge verifier: {_passed} passed, {_failed} failed.");
+            return _failed == 0 ? 0 : 1;
         }
         _preserveFixtures = args.Length == 3;
         string moduleRoot = Path.GetFullPath(args[0]);
@@ -64,6 +85,8 @@ internal static class Program
         Run("AF consent classifier is closed-set and target-blind offline",
             VerifyConsentClassifierProviderOffline);
         Run("AF Harmony observers install and uninstall offline", VerifyCompatPatchInstallation);
+        Run("AF epoch accessor accepts fields and forwarding properties, rejects invalid contracts",
+            VerifyConversationEpochAccessor);
 
         Console.WriteLine($"Static verifier: {_passed} passed, {_failed} failed.");
         return _failed == 0 ? 0 : 1;
@@ -2765,6 +2788,109 @@ internal static class Program
             "shown NPC reply publication signature drifted");
     }
 
+    private static void VerifyConversationEpochAccessor()
+    {
+        Assembly module = GetModuleAssembly();
+        Type compat = module.GetType("AnimusForge.XihaiAction.AfCompatV130", true);
+        const BindingFlags staticFlags = BindingFlags.Static | BindingFlags.NonPublic;
+        const BindingFlags instanceFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
+        MethodInfo bind = compat.GetMethod("TryBindConversationEpochAccessor", staticFlags);
+        MethodInfo read = compat.GetMethod("ReadConversationEpoch", staticFlags);
+        MethodInfo uninstall = compat.GetMethod("Uninstall", staticFlags | BindingFlags.Public);
+        Require(bind != null && read != null, "production epoch accessor is missing");
+        foreach (string consumer in new[] { "ObserveRecordedPlayerMessage", "ObserveAcceptedPlayerShout",
+            "ObserveShownNpcReply", "DeferBattleSpeechReply" })
+        {
+            Require(MethodBodyReferences(compat.GetMethod(consumer, staticFlags), read),
+                "epoch consumer bypassed the shared accessor: " + consumer);
+        }
+        Type actionHost = module.GetType("AnimusForge.XihaiAction.SceneActionsRuntimeHost", true);
+        Require(MethodBodyReferences(compat.GetMethod("ObserveAcceptedPlayerShout", staticFlags),
+                actionHost.GetMethod("SubmitPlayerSceneShout", staticFlags | BindingFlags.Public)),
+            "player natural action submission was disconnected");
+        Require(MethodBodyReferences(compat.GetMethod("ObserveNpcReply", staticFlags),
+                actionHost.GetMethod("SubmitNpcReply", staticFlags | BindingFlags.Public)),
+            "NPC natural action submission was disconnected");
+        try
+        {
+            var legacy = new LegacyEpochFixture();
+            Require((bool)bind.Invoke(null, new object[] { legacy.GetType() }), "legacy int field was rejected");
+            Require((int)read.Invoke(null, new object[] { legacy }) == 17, "legacy field read returned a fake epoch");
+            legacy.Advance();
+            Require((int)read.Invoke(null, new object[] { legacy }) == 18, "legacy field epoch was cached as a value");
+
+            var forwarded = new ForwardingEpochFixture();
+            Require((bool)bind.Invoke(null, new object[] { forwarded.GetType() }), "forwarding int property was rejected");
+            Require((int)read.Invoke(null, new object[] { forwarded }) == 23, "forwarding property was not read");
+            forwarded.Epoch = 29;
+            Require((int)read.Invoke(null, new object[] { forwarded }) == 29, "forwarding owner update was not observed");
+            foreach (Type invalid in new[] {
+                typeof(MissingEpochFixture), typeof(WrongFieldEpochFixture),
+                typeof(WrongPropertyEpochFixture), typeof(WriteOnlyEpochFixture),
+                typeof(StaticEpochFixture), typeof(IndexedEpochFixture) })
+            {
+                Require(!(bool)bind.Invoke(null, new object[] { invalid }), "invalid epoch contract accepted: " + invalid.Name);
+                Require(compat.GetField("_conversationEpochField", staticFlags).GetValue(null) == null &&
+                        compat.GetField("_conversationEpochProperty", staticFlags).GetValue(null) == null,
+                    "invalid rebind retained a previous owner's accessor");
+            }
+            bool rejectedUnbound = false;
+            try { read.Invoke(null, new object[] { forwarded }); }
+            catch (TargetInvocationException ex) { rejectedUnbound = ex.InnerException is InvalidOperationException; }
+            Require(rejectedUnbound, "unbound accessor silently returned a wildcard zero epoch");
+
+            // Read the actual ShoutBehavior forwarding property with its actual
+            // session owner, bypassing game-dependent constructors only in this fixture.
+            Type shout = module.GetType("AnimusForge.ShoutBehavior", true);
+            Type session = module.GetType("AnimusForge.SceneConversationSessionRuntime", true);
+            object behavior = System.Runtime.Serialization.FormatterServices.GetUninitializedObject(shout);
+            object owner = System.Runtime.Serialization.FormatterServices.GetUninitializedObject(session);
+            shout.GetField("_sceneConversationRuntime", instanceFlags).SetValue(behavior, owner);
+            PropertyInfo epoch = session.GetProperty("ConversationEpoch", instanceFlags);
+            epoch.SetValue(owner, 41, null);
+            Require((bool)bind.Invoke(null, new object[] { shout }), "actual ShoutBehavior epoch contract rejected");
+            Require((int)read.Invoke(null, new object[] { behavior }) == 41, "actual authoritative owner was not read");
+            session.GetMethod("AdvanceConversationEpoch", instanceFlags).Invoke(owner, null);
+            Require((int)read.Invoke(null, new object[] { behavior }) == 42, "new player turn was not reflected in bridge epoch");
+            object replacement = System.Runtime.Serialization.FormatterServices.GetUninitializedObject(session);
+            epoch.SetValue(replacement, 53, null);
+            shout.GetField("_sceneConversationRuntime", instanceFlags).SetValue(behavior, replacement);
+            Require((int)read.Invoke(null, new object[] { behavior }) == 53, "bridge retained an obsolete session owner");
+        }
+        finally
+        {
+            uninstall.Invoke(null, null);
+        }
+        Require(compat.GetField("_conversationEpochField", staticFlags).GetValue(null) == null &&
+                compat.GetField("_conversationEpochProperty", staticFlags).GetValue(null) == null,
+            "uninstall retained epoch metadata");
+    }
+
+    private sealed class LegacyEpochFixture
+    {
+        private int _sceneConversationEpoch = 17;
+        internal void Advance() => _sceneConversationEpoch++;
+    }
+    private sealed class ForwardingEpochFixture
+    {
+        internal int Epoch = 23;
+        private int _sceneConversationEpoch => Epoch;
+    }
+    private sealed class MissingEpochFixture { }
+    private sealed class WrongFieldEpochFixture
+    {
+        private readonly string _sceneConversationEpoch = "not an epoch";
+        public override string ToString() => _sceneConversationEpoch;
+    }
+    private sealed class WrongPropertyEpochFixture { private string _sceneConversationEpoch => "not an epoch"; }
+    private sealed class WriteOnlyEpochFixture { private int _sceneConversationEpoch { set { } } }
+    private sealed class StaticEpochFixture { private static int _sceneConversationEpoch => 31; }
+    private sealed class IndexedEpochFixture
+    {
+        [System.Runtime.CompilerServices.IndexerName("_sceneConversationEpoch")]
+        private int this[int index] => index;
+    }
+
     private static void VerifyCompatPatchInstallation()
     {
         Assembly module = GetModuleAssembly();
@@ -2812,10 +2938,27 @@ internal static class Program
             BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
         object[] providerLookup = { "animusforge.main.v130", null };
         object[] consentProviderLookup = { "animusforge.main.v130", null };
+        var observedMethods = new List<MethodBase>();
+        MethodInfo patchInfo = null;
+        const string expectedHarmonyOwner = "animusforge.sceneactions.compat.af130";
         try
         {
             Require((bool)install.Invoke(null, arguments),
                 "AF bridge installation failed: " + (arguments[0] ?? "no reason"));
+            Console.WriteLine("Installed: " + arguments[0]);
+            const BindingFlags flags = BindingFlags.Static | BindingFlags.NonPublic;
+            object harmony = compat.GetField("_harmony", flags).GetValue(null);
+            patchInfo = harmony.GetType().GetMethod("GetPatchInfo", BindingFlags.Static | BindingFlags.Public);
+            foreach (string targetField in new[] { "_patchedMethod", "_recordPlayerMessageMethod",
+                "_queuedNpcReplyMethod", "_shownNpcReplyMethod", "_replyPromptMethod",
+                "_strictSceneMessagesSystemPromptMethod" })
+            {
+                MethodBase target = (MethodBase)compat.GetField(targetField, flags).GetValue(null);
+                observedMethods.Add(target);
+                object patches = patchInfo.Invoke(null, new object[] { target });
+                Require(patches != null && ((IEnumerable)ReadProperty(patches, "Owners")).Cast<string>()
+                        .Contains(expectedHarmonyOwner), "actual observer was not installed: " + target.Name);
+            }
             Require((bool)tryGetClassifier.Invoke(null, providerLookup) &&
                     providerLookup[1] != null &&
                     providerLookup[1].GetType().FullName ==
@@ -2837,6 +2980,14 @@ internal static class Program
         consentProviderLookup = new object[] { "animusforge.main.v130", null };
         Require(!(bool)tryGetConsentClassifier.Invoke(null, consentProviderLookup),
             "AF consent classifier provider remained registered after bridge uninstall");
+        foreach (MethodBase target in observedMethods)
+        {
+            object patches = patchInfo.Invoke(null, new object[] { target });
+            Require(patches == null || !((IEnumerable)ReadProperty(patches, "Owners")).Cast<string>()
+                    .Contains(expectedHarmonyOwner), "bridge observer survived uninstall: " + target.Name);
+        }
+        Require(string.IsNullOrEmpty((string)bridgeHost.GetProperty("ActiveBridgeId").GetValue(null, null)),
+            "bridge host retained an active bridge after uninstall");
     }
 
     private static void VerifyClassifierProviderOffline()
