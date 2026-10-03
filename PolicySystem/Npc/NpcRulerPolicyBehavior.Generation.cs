@@ -2757,6 +2757,7 @@ public sealed partial class NpcRulerPolicyBehavior
 			{
 				EntryId = record.PolicyId ?? string.Empty,
 				SourceKind = "npc",
+				IsHistoryDeleted = CustomPolicyBehavior.IsPolicyHistoryDeleted("npc", record.PolicyId),
 				ScopeKind = PolicyEffectScopes.Kingdom,
 				OwnerKingdomId = FirstNonEmpty(record.KingdomId, record.IssuerKingdomId),
 				OwnerKingdomName = FirstNonEmpty(record.KingdomName, record.IssuerKingdomName),
@@ -2832,7 +2833,7 @@ public sealed partial class NpcRulerPolicyBehavior
 		{
 			return "none";
 		}
-		return effects.Any(effect => !effect.IsEnded && effect.RemainingDays > 0)
+		return effects.Any(effect => !effect.IsEnded && (effect.DurationDays == 0 || effect.RemainingDays > 0))
 			? "active"
 			: "expired";
 	}
@@ -2927,7 +2928,7 @@ public sealed partial class NpcRulerPolicyBehavior
 
 	private static bool IsUsableNpcPolicyHistoryEntry(NpcPolicyHistoryEntry entry)
 	{
-		return PolicyHistoryRetrievalService.IsUsableEntry(entry);
+		return PolicyHistoryRetrievalService.IsValidEntry(entry);
 	}
 
 	private List<string> BuildPolicyMemoryContexts(

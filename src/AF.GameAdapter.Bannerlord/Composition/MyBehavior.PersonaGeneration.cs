@@ -9,11 +9,15 @@ public partial class MyBehavior
 {
     private readonly NpcPersonaGenerationOwner _npcPersonaGeneration = new NpcPersonaGenerationOwner();
 
-    // The request carries copied text and an asynchronous transport, never a Hero/profile object.
+    // The request carries detached retrieval inputs and copied text, never a Hero/profile object.
     private sealed class NpcPersonaGenerationWork
     {
         internal NpcPersonaGenerationOwner.Lease Reservation;
         internal string Id, OriginalPersonality, OriginalBackground, Failure;
+        internal string Facts, Requirements;
+        internal MentionedWorldEntities Mentions;
+        internal PromptLoreSettings LoreSettings;
+        internal long LoreRuleVersion;
         internal Task<ApiCallResult> Response;
     }
 
@@ -60,14 +64,27 @@ public partial class MyBehavior
             ? "该 NPC 的上次生成请求刚刚失败，请稍后再试。" : "该 NPC 的个性与背景正在生成，请等待当前请求完成后再试。" };
         try
         {
-			NpcPersonaPrompt prompt = NpcPersonaTextRules.BuildNative(BuildHeroFactsForPersonaGeneration(hero), personality, background, overwriteExisting, DuelSettings.GetSettings()?.NpcPersonaGenerationRequirements);
-            // This async method snapshots provider settings before its first await. It starts an
-            // asynchronous HTTP operation, never a blocking wait or a Task.Run that reads live settings.
-            return new NpcPersonaGenerationWork
+            var work = new NpcPersonaGenerationWork
             {
                 Id = id, OriginalPersonality = personality, OriginalBackground = background, Reservation = lease,
-                Response = CallAuxiliaryGatewayDetailed(prompt.System, prompt.User, "NpcPersona", 0, forceThinkingDisabled: false)
+                Facts = BuildHeroFactsForPersonaGeneration(hero), Requirements = DuelSettings.GetSettings()?.NpcPersonaGenerationRequirements
             };
+            try
+            {
+                if (KnowledgeLibraryBehavior.Instance != null)
+                {
+                    work.LoreSettings = KnowledgeLibraryBehavior.CapturePromptLoreSettings();
+                    string name = (hero.Name?.ToString() ?? "").Trim();
+                    if (work.LoreSettings?.Enabled == true && !string.IsNullOrWhiteSpace(name))
+                    {
+                        work.Mentions = new MentionedWorldEntities();
+                        work.Mentions.Entities.Add(name);
+                        work.LoreRuleVersion = KnowledgeLibraryBehavior.PreparePromptLoreRetrieval(work.Mentions);
+                    }
+                }
+            }
+            catch (Exception error) { Logger.Log("NpcPersona", "[WARN] Lore capture skipped: " + error.Message); }
+            return work;
         }
         catch { _npcPersonaGeneration.Complete(lease, saved: false); throw; }
     }
@@ -88,6 +105,46 @@ public partial class MyBehavior
             }).ConfigureAwait(false);
             if (!captured || work == null) return overwriteExisting ? "请求已失效，未保存新的人设。" : "";
             if (work.Reservation == null) return work.Failure ?? "";
+            KnowledgeLibraryBehavior.LoreRule loreRule = null;
+            if (work.Mentions != null && work.LoreRuleVersion > 0L)
+            {
+                try
+                {
+                    loreRule = await Task.Run(() => KnowledgeLibraryBehavior.CollectPersonaLoreRule(
+                        work.Mentions, work.LoreRuleVersion, work.LoreSettings)).ConfigureAwait(false);
+                }
+                catch (Exception error) { Logger.Log("NpcPersona", "[WARN] Lore retrieval skipped: " + error.Message); }
+            }
+            bool started = await RunMemorySummaryCompletionAsync(generation, () =>
+            {
+                if (!_npcPersonaGeneration.IsCurrent(work.Reservation) || !ReferenceEquals(FindHeroById(work.Id), hero))
+                {
+                    retired = true;
+                    work.Failure = overwriteExisting ? "请求已因数据清理或人物变更失效，未生成新的人设。" : "";
+                    return true;
+                }
+                if (overwriteExisting)
+                {
+                    GetNpcPersonaStrings(hero, out string currentPersonality, out string currentBackground);
+                    if (!string.Equals(currentPersonality, work.OriginalPersonality, StringComparison.Ordinal)
+                        || !string.Equals(currentBackground, work.OriginalBackground, StringComparison.Ordinal))
+                    {
+                        retired = true;
+                        work.Failure = "生成期间人设已被修改，未覆盖最新的个性与历史背景。请确认后重新生成。";
+                        return true;
+                    }
+                }
+                string loreSource = "";
+                try { loreSource = KnowledgeLibraryBehavior.Instance?.BuildPersonaLoreSource(hero, loreRule, work.LoreRuleVersion) ?? ""; }
+                catch (Exception error) { Logger.Log("NpcPersona", "[WARN] Lore source skipped: " + error.Message); }
+                NpcPersonaPrompt prompt = NpcPersonaTextRules.BuildNative(work.Facts + (string.IsNullOrWhiteSpace(loreSource) ? "" : "\n" + loreSource),
+                    work.OriginalPersonality, work.OriginalBackground, overwriteExisting, work.Requirements);
+                // Capture provider settings on the game thread before the gateway's first await.
+                work.Response = CallAuxiliaryGatewayDetailed(prompt.System, prompt.User, "NpcPersona", 0, forceThinkingDisabled: false);
+                return true;
+            }).ConfigureAwait(false);
+            if (!started) { retired = true; return overwriteExisting ? "请求已失效，未保存新的人设。" : ""; }
+            if (work.Response == null) return work.Failure ?? "";
             ApiCallResult response = await work.Response.ConfigureAwait(false);
             if (!ReferenceEquals(Instance, this) || !SaveRuntimeGuard.IsCurrentGeneration(generation)) return "";
             string resp = response.Content ?? "";

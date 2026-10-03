@@ -94,7 +94,8 @@ internal static class WorldDiplomacyPresentation
             return AnimusForgeWorldEventInboxPopup.Show(
                 BuildRoyalAnnouncementArchiveData(),
                 recordId => CustomPolicyBehavior.OpenKingdomPolicyReReviewFromWorldArchive(recordId, returnToArchive),
-                onClose);
+                onClose,
+                key => CustomPolicyBehavior.RequestDeletePolicyHistoryRecord(key, returnToArchive));
         }
         catch (Exception ex)
         {
@@ -105,12 +106,41 @@ internal static class WorldDiplomacyPresentation
     private static WorldEventInboxPopupData BuildRoyalAnnouncementArchiveData()
     {
         Dictionary<string, WorldEventCountryData> groups = new Dictionary<string, WorldEventCountryData>(StringComparer.OrdinalIgnoreCase);
+        HashSet<string> representedPolicies = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        foreach (PolicyRecordPresentationData policy in CustomPolicyBehavior.GetPolicyRecordPresentationSnapshot())
+        {
+            representedPolicies.Add(policy.HistoryKey);
+            WorldEventCountryData group = GetOrCreateArchiveGroup(groups, policy.KingdomId, policy.KingdomName);
+            group.Records.Add(new WorldEventRecordData
+            {
+                EventId = "policy_history:" + policy.HistoryKey,
+                HistoryKey = policy.HistoryKey,
+                CanDelete = policy.CanDelete,
+                KindLabel = "自定义政策",
+                HeaderRightText = policy.StatusText,
+                DateText = policy.DateText,
+                TitleText = policy.TitleText,
+                MetaText = policy.DateText + "  ·  " + policy.StatusText + "  ·  " + policy.KingdomName,
+                BodySectionTitleText = "政策记录",
+                BodyText = policy.BodyText,
+                ImpactSectionTitleText = "政策影响效果",
+                ImpactText = policy.ImpactText,
+                HasImpact = !string.IsNullOrWhiteSpace(policy.ImpactText),
+                IndexMetaText = policy.DateText + "  ·  " + policy.StatusText,
+                PolicyRecordId = policy.RecordId,
+                ShowReReview = policy.SourceKind == "player_kingdom",
+                CanReReview = policy.CanReReview
+            });
+        }
         foreach (AnimusForgeWorldEventInboxEntry entry in AnimusForgeWorldEventBehavior.GetInboxSnapshotForExternal(160))
         {
             if (entry == null)
             {
                 continue;
             }
+            string historyKey = CustomPolicyBehavior.GetPolicyAnnouncementHistoryKey(entry);
+            if (!string.IsNullOrWhiteSpace(historyKey) && (representedPolicies.Contains(historyKey)
+                || CustomPolicyBehavior.Instance != null && CustomPolicyBehavior.IsPolicyAnnouncementDeleted(entry))) continue;
             string kingdomId = WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(entry.KingdomId, "policy_unknown");
             WorldEventCountryData group = GetOrCreateArchiveGroup(groups, kingdomId, WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(entry.KingdomName, "未知国家"));
             string date = WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(entry.GameDate, entry.Day > 0 ? "第" + entry.Day.ToString(CultureInfo.InvariantCulture) + "天" : "未知日期");
