@@ -1,3 +1,9 @@
+# 当前修复：被拦截不弹会面两处过宽保护（2026-10-04，OFFLINE_VERIFIED，未部署）
+
+- 产品a4b2dbb5，意图检查点74f4dce3。劫村AI意图/远端LastAttacker不再当当前现场；实际raid/force事件及当前烧村现场、原版raid重启、攻城/海战等保护保留。攻击锁复用既有Encounter/Party/generation owner，新无战斗遭遇不继承旧锁，原战斗/结果保护及地图2秒等待保留。
+- 138生产边界PASS（新增36），raid14重跑PASS；旧源码hard/raid分别复现期望失败。原Debug双API+Bootstrap0错误、三个marker hash一致，两实际DLL交接各13项通过。用户关心真正在烧村的敌方仍走原版处理，源码/fixture已验，实机尚未验。
+- 未Stage/部署/push/打包；游戏仍诊断C821599A…，未新增Recovery。另一会话b940bf24 RAG改动保留，本包只提交Encounter及现有回归四文件。不能把源码修复当游戏已恢复。
+- [唯一台账、源码坐标/行为边界/回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#intercepted-meeting-guards-fix-20261004)，本地`artifacts/intercepted-meeting-guards-fix-20261004/receipt.json`。git revert a4b2dbb5可定点回滚；下方诊断部署授权不延续。
 # 本次RAG交接：MCM可选CPU/CUDA重排序（2026-10-04，离线已验证，未部署）
 
 - 知识检索组新增CPU/GPU下拉，默认CPU、完整重启生效；GPU仅重排序，向量仍CPU。独立CUDA进程及可选包避免替换游戏CPU库，缺件/故障/超时同请求回退CPU，本次会话不重启循环。
