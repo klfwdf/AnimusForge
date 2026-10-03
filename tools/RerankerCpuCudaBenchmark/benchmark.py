@@ -70,6 +70,7 @@ def build(root,module):
  (gen/'OnnxCrossEncoderReranker.original.cs').write_bytes(original)
  (gen/'OnnxCrossEncoderReranker.benchmark.cs').write_bytes((b'\xef\xbb\xbf' if original.startswith(b'\xef\xbb\xbf') else b'') + patched.encode('utf-8'))
  (gen/'AnimusForgeModelStore.cs').write_bytes(MODELSTORE.read_bytes())
+ (gen/'RerankerWire.cs').write_bytes((RERANKER.parent/'RerankerWire.cs').read_bytes())
  save(root/'source-derivation.json',{'source':str(RERANKER),'sourceSha256':sha(RERANKER),'generatedSha256':sha(gen/'OnnxCrossEncoderReranker.benchmark.cs'),'onlyChange':'Insert BenchmarkHooks.Configure(sessionOptions) after existing graph-optimization assignment','exactReversionEqualsOriginalText':True,'unusedEngineNamespaceAdapter':'Empty namespace only; no TaleWorlds API is used by this source', 'modelStoreSha256':sha(MODELSTORE)})
  env=os.environ.copy();env.update({'NUGET_PACKAGES':str(root/'deps/nuget'),'DOTNET_CLI_HOME':str(root/'deps/dotnet-home'),'DOTNET_NOLOGO':'1','DOTNET_CLI_TELEMETRY_OPTOUT':'1','DOTNET_SKIP_FIRST_TIME_EXPERIENCE':'1','NUGET_HTTP_CACHE_PATH':str(root/'deps/nuget-http-cache')})
  native=root/'deps/native/ort-1.22.0'
@@ -88,7 +89,7 @@ def build(root,module):
    for name in ['Microsoft.ML.OnnxRuntime','System.Memory','System.Buffers','System.Runtime.CompilerServices.Unsafe']:
     references+=f'<Reference Include="{name}"><HintPath>{xml.escape(str(b/(name+".dll")))}</HintPath><Private>true</Private></Reference>'
    references+='<PackageReference Include="System.Numerics.Vectors" Version="4.5.0" />'
-  project=f'''<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net472</TargetFramework><PlatformTarget>x64</PlatformTarget><LangVersion>10.0</LangVersion><EnableDefaultCompileItems>false</EnableDefaultCompileItems><AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects><GenerateBindingRedirectsOutputType>true</GenerateBindingRedirectsOutputType></PropertyGroup><ItemGroup>{references}<Compile Include="Runner.cs"/><Compile Include="../OnnxCrossEncoderReranker.benchmark.cs"/><Compile Include="../AnimusForgeModelStore.cs"/></ItemGroup></Project>'''
+  project=f'''<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net472</TargetFramework><PlatformTarget>x64</PlatformTarget><LangVersion>10.0</LangVersion><EnableDefaultCompileItems>false</EnableDefaultCompileItems><AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects><GenerateBindingRedirectsOutputType>true</GenerateBindingRedirectsOutputType></PropertyGroup><ItemGroup>{references}<Compile Include="Runner.cs"/><Compile Include="../OnnxCrossEncoderReranker.benchmark.cs"/><Compile Include="../AnimusForgeModelStore.cs"/><Compile Include="../RerankerWire.cs"/></ItemGroup></Project>'''
   csproj=app/'Benchmark.csproj';csproj.write_text(project,encoding='utf-8')
   log=root/f'build-{flavor}.log'
   with log.open('w',encoding='utf-8') as f:

@@ -7018,3 +7018,19 @@ R2计划交付门槛：已给固定技术路线、真实来源与目标、写入
 - 本地收据`artifacts/deploy-meeting-diagnostics-20261004/receipt.json`、before.json、build-bindings.json、source-hashes.json、deployment-verification.log、installed-offline-verification.log、retention.json。源码回滚git revert 556472a4；安装回滚使用上述唯一Recovery manifest/files，按哈希核对、定点反向恢复，不覆盖其他玩家文件。
 
 本条只替代[入口诊断](#meeting-menu-skip-diagnostics-20261004)的“未部署”状态；调查与实机NOT_RUN仍保留，不延续新发布/部署授权。
+
+
+<a id="reranker-cuda-integration-20261004"></a>
+## MCM可选CPU/CUDA重排序（2026-10-04，OFFLINE_VERIFIED）
+
+用户要求MCM可选CPU/GPU，并询问额外组件与混合使用；本轮实现CPU默认、GPU可选、向量CPU+重排序GPU的分工和故障CPU回退，不加入未经测量的短/长任务自动分流。基线42a5eaa1，检查点5ebdb847；保留并行会面诊断提交，未改一键构建/部署/打包脚本，未覆盖游戏或push。
+
+- `src/AF.GameAdapter.Bannerlord/Configuration/Mcm/DuelSettings.cs:1376-1378` 的 RerankerDeviceDropdown：MCM知识检索组，CPU/GPU(CUDA NVIDIA)，默认0、RequireRestart=true。`UI/Terminal/TerminalSettingsRegistry.cs:166` 复用同一配置并显示重启提示；设置缺失/无效选择均CPU。
+- `src/modules/AF.Module.Knowledge/Semantic/OnnxCrossEncoderReranker.cs:394-405,546-629,685-710,971-982`：初始化发布修为完成后volatile标记，避免并发读半初始化；读取一次设备选择；原分词/512截断/输入padding/输出Sigmoid/候选缓存继续复用。CPU会话只在选择CPU或GPU失败时建立，metadata完整后才发布，不双驻留两个模型。GPU单条复用batch=1编码路径。
+- 同目录 `RerankerDeviceRuntime.cs` 拥有配置选择与CPU session factory，`RerankerCudaProcess.cs` 拥有串行管道/120秒启动及30秒请求超时/退役/一次性故障日志；失败后不重启循环，该请求及后续走CPU。`RerankerWire.cs` 为v1本地encoded-only协议，1024行/512token上限、长度/有限分数校验；超大候选批量直接CPU不裁候选。无网络、全局PATH修改或游戏进程ORT替换。
+- `tools/RerankerCudaWorker/Program.cs` 专用net472/x64进程链接正式reranker和ModelStore源码，ORT1.22 FP32 use_tf32=0；CPU库保持原1.18，向量仍CPU。工作进程用内核WaitForExit监控父进程并随游戏退出；stdin EOF正常退出，输出损坏/崩溃/OOM由宿主隔离并回退。模型只读同一个模块ONNX/reranker，未转换或下载模型。
+- `tools/RerankerCudaWorker/build_optional_pack.py` 仅生成仓库artifacts可选组件目录/ZIP，复用校验SHA的固定CUDA12.8/cuDNN9.8/ORT1.22依赖并附许可证/NOTICE、manifest。最终包 `artifacts/reranker-cuda-integration-20261004/optional-pack-final/AnimusForge-Reranker-CUDA-optional.zip` 约1.83GiB；安装目标仅 `Modules/AnimusForge/OptionalRuntimes/RerankerCuda`，CPU用户不需组件。ZIP与清单每文件hash一致、不含模型及bin覆盖文件；没有执行安装。
+- 定向实际生产宿主/worker：故障22项；CPU/invalid/missing各17，GPU19，kill24。并发初始化、单条/批次缓存、GPU串行、512-token长文本、空候选、进程退出后同请求CPU接管及不重复重启通过。初次kill测试发现backend out覆盖CPU空列表，已修复并记录最终成功；初次profile路径发现ORT用默认文件名，已纠正发现逻辑重跑。完整分数排序一致，短样例CPU/GPU最大差3.9e-8；profile记录CUDA1083/CPU24算子事件，CPU少量shape算子如实保留。RTX4060 Laptop/驱动616.56，未声称5060已测。
+- 原独立Benchmark保持一个可逆session hook，补runtime stub/协议源码链接，8自检及legacy/matched生成项目编译通过，未重跑旧完整倍率矩阵。原入口最终Debug双API1.3.15/1.4.6+Bootstrap exit0（既有警告保留），两实际DLL MCM属性/标题/重启/group/get-set与GPU宿主类型metadata核对通过。
+- 性能：初始化一次；缓存命中零IPC；未命中才启动一次Task完成阻塞pipe交换；worker每次单批次、不额外全量扫描/轮询。父进程监控为阻塞内核等待。游戏实机显存竞争/帧时间、UI保存重启与大规模世界书仍NOT_RUN；没有用离线时延推断游戏FPS。源码/模块model与原CPU DLL保护hash均保留本地receipt。
+- 使用与复测说明：`tools/RerankerCudaWorker/README.md`、`tests/modules/AF.Module.Knowledge/RerankerDeviceTests/README.md`；详细证据 `artifacts/reranker-cuda-integration-20261004/receipt.json`，完整最终测试在verified-integration。回滚以本轮具名产品提交inverse commit，不reset并行会面工作；本轮未部署无需游戏回滚。

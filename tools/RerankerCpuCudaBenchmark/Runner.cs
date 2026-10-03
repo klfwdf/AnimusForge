@@ -10,6 +10,11 @@ using Microsoft.ML.OnnxRuntime;
 
 namespace AnimusForge
 {
+    internal static class RerankerDeviceRuntime
+    {
+        internal static IRerankerEncodedBackend CreateBackend() => null;
+        internal static InferenceSession CreateLocalSession(string modelPath, SessionOptions options) => new InferenceSession(modelPath, options);
+    }
     internal static class BenchmarkHooks
     {
         internal static string ModuleRoot;
