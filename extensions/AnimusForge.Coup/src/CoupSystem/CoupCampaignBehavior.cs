@@ -783,6 +783,7 @@ internal sealed class CoupCampaignBehavior : CampaignBehaviorBase
 
     private void CommitFailure()
     {
+        if (PlayerEncounterCompat.HasEncounterBattleContext()) throw new InvalidOperationException("新的战役战斗已开始，不能自动结算旧政变。");
         CommitCasualties();
         _session.PoliticalCommitStarted = true;
         if (!_session.DefectionCommitted)
@@ -797,16 +798,7 @@ internal sealed class CoupCampaignBehavior : CampaignBehaviorBase
             _session.DefectionCommitted = true;
         }
         if (!_session.WithdrawalCommitted)
-        {
-            if (PlayerEncounterCompat.HasEncounterBattleContext()) throw new InvalidOperationException("新的战役战斗已开始，不能自动结束遭遇。");
-            if (PlayerEncounter.LocationEncounter != null && PlayerEncounter.LocationEncounter.Settlement?.StringId != _session.SettlementId)
-                throw new InvalidOperationException("当前遭遇已改变，不能替其他遭遇执行撤出。");
-            if (PlayerEncounter.Current != null) PlayerEncounter.Finish(true);
-            if (MobileParty.MainParty?.CurrentSettlement != null) LeaveSettlementAction.ApplyForParty(MobileParty.MainParty);
-            if (MobileParty.MainParty == null || MobileParty.MainParty.CurrentSettlement != null || PlayerEncounter.LocationEncounter != null)
-                throw new InvalidOperationException("接应队伍尚未完整退出城镇遭遇。");
-            _session.WithdrawalCommitted = true;
-        }
+            CommitWithdrawal();
         if (!_session.FactsCommitted)
         {
             var owner = CoupRebellionBridge.Instance;
@@ -816,6 +808,34 @@ internal sealed class CoupCampaignBehavior : CampaignBehaviorBase
         }
         Log("failure_committed");
         Show("政变失败，留守部队已接应撤出。你的家族保留原有领地，脱离旧王国并开战。");
+    }
+
+    private void CommitWithdrawal()
+    {
+        MobileParty party = MobileParty.MainParty;
+        if (party == null) throw new InvalidOperationException("接应队伍不可用，不能确认撤出。");
+        var location = PlayerEncounter.LocationEncounter;
+        bool inTarget = party.CurrentSettlement?.StringId == _session.SettlementId;
+        bool targetLocation = location?.Settlement?.StringId == _session.SettlementId;
+        // A delayed retry may run in another town or encounter. Leaving the original town
+        // already satisfies withdrawal; never finish or leave the player's new encounter.
+        if (!inTarget && !targetLocation)
+        {
+            _session.WithdrawalCommitted = true;
+            Log("withdrawal_already_left_target; current encounter preserved");
+            return;
+        }
+        var encountered = PlayerEncounter.EncounteredParty;
+        if ((location != null && !targetLocation) || (party.CurrentSettlement != null && !inTarget)
+            || (encountered != null && encountered.Settlement?.StringId != _session.SettlementId)
+            || (PlayerEncounter.Current != null && !targetLocation && encountered?.Settlement?.StringId != _session.SettlementId))
+            throw new InvalidOperationException("当前遭遇已改变，不能替其他遭遇执行撤出。");
+        if (PlayerEncounter.Current != null) PlayerEncounter.Finish(true);
+        if (party.CurrentSettlement?.StringId == _session.SettlementId) LeaveSettlementAction.ApplyForParty(party);
+        if (party.CurrentSettlement?.StringId == _session.SettlementId
+            || PlayerEncounter.LocationEncounter?.Settlement?.StringId == _session.SettlementId)
+            throw new InvalidOperationException("接应队伍尚未完整退出城镇遭遇。");
+        _session.WithdrawalCommitted = true;
     }
 
     private void CommitCasualties()
