@@ -97,6 +97,15 @@ public sealed class NativeOverlayVM : ViewModel
     public void ToggleMore() { if (!_disposed) { _moreVisible = !_moreVisible; OnPropertyChanged(nameof(IsMoreVisible)); } }
 
     private void CloseMore() { _moreVisible = false; OnPropertyChanged(nameof(IsMoreVisible)); }
+    internal void RefreshAfterSystemUi()
+    {
+        if (_disposed) return;
+        // Root.Show alone does not refresh the replacement prefab's derived bindings.
+        OnPropertyChanged(nameof(IsInputEnabled));
+        OnPropertyChanged(nameof(CanLeave));
+        OnPropertyChanged(nameof(IsIllustrationAvailable));
+        AuxiliaryStateChanged();
+    }
     internal void AuxiliaryStateChanged()
     {
         if (_disposed) return;

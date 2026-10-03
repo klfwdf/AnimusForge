@@ -87,6 +87,16 @@ public class DevMultilineEditableTextWidget : BrushWidget
 
 	private bool _repeatActionHasUndoSnapshot;
 
+    private ScrollablePanel _caretScrollPanel;
+    private int _lastScrollCursor = -1;
+    private string _lastScrollText;
+    private int _caretScrollPendingFrames;
+    private float _lastLayoutWidth = -1f;
+    private float _lastLayoutScale = -1f;
+
+    [Editor(false)]
+    public bool AutoScrollToCaret { get; set; }
+
 	[Editor(false)]
 	public int MaxLength { get; set; } = -1;
 
@@ -311,6 +321,26 @@ public class DevMultilineEditableTextWidget : BrushWidget
 		_caretWidget.IsVisible = false;
 	}
 
+    protected override void OnConnectedToRoot()
+    {
+        base.OnConnectedToRoot();
+        _caretScrollPanel = null;
+        if (!AutoScrollToCaret) return;
+        // Resolve only when attached; retain the owning panel instead of scanning every frame.
+        for (Widget parent = ParentWidget; parent != null; parent = parent.ParentWidget)
+        {
+            if (parent is ScrollablePanel panel) { _caretScrollPanel = panel; break; }
+        }
+        _lastScrollCursor = -1;
+    }
+
+    protected override void OnDisconnectedFromRoot()
+    {
+        _caretScrollPanel = null;
+        _caretScrollPendingFrames = 0;
+        base.OnDisconnectedFromRoot();
+    }
+
 	protected override void OnLateUpdate(float dt)
 	{
         if (SuppressOpeningInteractionKey && _openingInputGuard.IsPending)
@@ -329,12 +359,35 @@ public class DevMultilineEditableTextWidget : BrushWidget
 			_caretWidget.IsVisible = true;
 			_autoFocusApplied = true;
 		}
+        float width = Size.X;
+        if (Math.Abs(width - _lastLayoutWidth) > 0.5f || Math.Abs(_scaleToUse - _lastLayoutScale) > 0.001f)
+        {
+            _lastLayoutWidth = width;
+            _lastLayoutScale = _scaleToUse;
+            MarkLayoutDirty();
+        }
+        bool layoutChanged = _layoutDirty;
 		if (_layoutDirty)
 		{
 			RebuildVisualLines();
 		}
 		UpdateSelectionVisuals();
 		UpdateCaretVisual();
+        if (AutoScrollToCaret && _caretScrollPanel != null && EventManager?.FocusedWidget == this && IsRecursivelyVisible())
+        {
+            if (layoutChanged || _lastScrollCursor != _cursorIndex || !ReferenceEquals(_lastScrollText, _realText))
+            {
+                _lastScrollCursor = _cursorIndex;
+                _lastScrollText = _realText;
+                _caretScrollPendingFrames = 3;
+            }
+            // Allow the changed content/caret dimensions to settle, then leave manual scrolling alone.
+            if (_caretScrollPendingFrames > 0)
+            {
+                _caretScrollPendingFrames--;
+                _caretScrollPanel.ScrollToChild(_caretWidget);
+            }
+        }
 	}
 
 	private void ApplyBrushToChildren()

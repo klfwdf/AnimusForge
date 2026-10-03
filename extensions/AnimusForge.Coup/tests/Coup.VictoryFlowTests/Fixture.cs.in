@@ -31,12 +31,19 @@ namespace AnimusForge.CoupSystem {
  class MapState{}
  class GameStateManager {public object ActiveState=new MapState();}
  class Game {public static Game Current=new Game();public GameStateManager GameStateManager=new GameStateManager();}
- class Clan {public string Name="玩家家族";}
- class Kingdom {public static List<Kingdom> All=new List<Kingdom>();public string StringId="kingdom",Name="王国";public Hero Leader;}
+ class Clan {public static Clan PlayerClan=new Clan();public string Name="玩家家族";public Kingdom Kingdom;public bool IsAtWarWith(Kingdom k)=>true;}
+ class Kingdom {public static List<Kingdom> All=new List<Kingdom>();public string StringId="kingdom",Name="王国";public Hero Leader;public bool IsEliminated;}
  class Settlement {public static Settlement CurrentSettlement;public static Settlement Target;public string StringId="town",Name="城镇";public Clan OwnerClan=new Clan();public static Settlement Find(string id)=>Target?.StringId==id?Target:null;}
  class MobileParty {public static MobileParty MainParty=new MobileParty();public object Party=new object();public Settlement CurrentSettlement;}
  static class GameMenu {public static int Switches;public static void SwitchToMenu(string id){Switches++;}}
- static class PlayerEncounterCompat {public static bool Battle;public static bool HasEncounterBattleContext()=>Battle;}
+ class EncounterParty {public Settlement Settlement;}
+ class LocationEncounter {public Settlement Settlement;}
+ static class PlayerEncounter {public static object Current;public static LocationEncounter LocationEncounter;public static EncounterParty EncounteredParty=>PlayerEncounterCompat.Encountered;public static int Finishes;public static void Finish(bool force){Finishes++;Current=null;LocationEncounter=null;}}
+ static class PlayerEncounterCompat {public static bool Battle;public static EncounterParty Encountered;public static bool HasEncounterBattleContext()=>Battle;public static EncounterParty GetEncounteredPartySafe()=>Encountered;}
+ static class LeaveSettlementAction {public static int Calls;public static bool Fail;public static void ApplyForParty(MobileParty p){Calls++;if(!Fail)p.CurrentSettlement=null;}}
+ static class ChangeKingdomAction {public static void ApplyByLeaveWithRebellionAgainstKingdom(Clan c,bool notify){c.Kingdom=null;}}
+ static class DeclareWarAction {public static void ApplyByRebellion(Clan c,Kingdom k){}}
+ class CoupRebellionBridge {public static CoupRebellionBridge Instance=new CoupRebellionBridge();public bool TryRecordCoupOutcome(CoupSession s,Hero king,Settlement town,bool won,bool capture,out string message){message="";return true;}}
  static class CoupGuards {public static bool CaptivityProtectionAvailable=true;}
  static class SettlementEntryTroopSelectionBehavior {public static int HallGuards;public static void ClearArmedCoup(){}public static int CountCoupRole(Mission m,string role)=>HallGuards;}
  static class Logger {public static void Log(string area,string text){}}
@@ -45,13 +52,13 @@ namespace AnimusForge.CoupSystem {
   public CoupSession _session;public Mission _mission,_endingMission;public Campaign _campaign;
   public bool _processing,_selectionOpen,_dispositionOpen,_retryBlocked,_reportOpen,_coronationOpen,_requeuePending;
   public float _nextCheck;public long _runtimeToken=1,_dispositionGeneration,_reportGeneration;
-  public int Commits;public bool ThrowCommit;
+  public int Commits,CasualtyCommits;public bool ThrowCommit;
   public Hero King=new Hero{Name="旧王"};
   public CoupCampaignBehavior(CoupSession s){_session=s;_campaign=Campaign.Current;Instance=this;}
   Hero FindKing()=>King;void Log(string s){}static void Show(string s){}void SetFailure(string s){_session.Phase=CoupPhase.Failed;}
-  void QueueCurrentScene(){}void OpenHallSelection(){}void CommitCasualties(){}void CommitFailure(){}
+  void QueueCurrentScene(){}void OpenHallSelection(){}void CommitCasualties(){CasualtyCommits++;}
   void CommitVictory(){Commits++;if(ThrowCommit)throw new Exception("partial political settlement");_session.Phase=CoupPhase.Completed;_session.CasualtiesCommitted=_session.RulingClanCommitted=_session.TownCommitted=_session.CustodyCommitted=_session.FactsCommitted=_session.RebellionQueued=true;_session.VictoryReportAcknowledged??=false;_session.CoronationRequested??=false;_session.AftermathPending=false;}
-  public void Ended(IMission m)=>OnMissionEnded(m);public void Present()=>PresentVictoryFeedback();
+  public void Ended(IMission m)=>OnMissionEnded(m);public void Present()=>PresentVictoryFeedback();public void Fail()=>CommitFailure();
 __CAMPAIGN__
  }
  class CoupMissionBehavior:MissionLogic {
@@ -65,6 +72,7 @@ __MISSION__
   static int Checks;static void Check(bool v,string name){if(!v)throw new Exception(name);Checks++;}
   static CoupCampaignBehavior Setup(bool complete=false){
    MBInformationManager.Reset();GameMenu.Switches=0;PlayerEncounterCompat.Battle=false;CoupGuards.CaptivityProtectionAvailable=true;SettlementEntryTroopSelectionBehavior.HallGuards=0;
+   PlayerEncounter.Current=null;PlayerEncounter.LocationEncounter=null;PlayerEncounter.Finishes=0;PlayerEncounterCompat.Encountered=null;LeaveSettlementAction.Calls=0;LeaveSettlementAction.Fail=false;Clan.PlayerClan=new Clan();
    Campaign.Current=new Campaign();Hero.MainHero=new Hero();Kingdom.All=new List<Kingdom>{new Kingdom{Leader=Hero.MainHero}};
    Settlement.Target=new Settlement();Settlement.CurrentSettlement=Settlement.Target;MobileParty.MainParty=new MobileParty{CurrentSettlement=Settlement.Target};Game.Current.GameStateManager.ActiveState=new MapState();
    var s=new CoupSession{SettlementId="town",KingdomId="kingdom",KingId="king",OriginalOwnerClanId="owner",OriginalRulingClanId="old",PlayerHealth=80,KingHealth=1,Started=true,KingSubdued=true,Phase=CoupPhase.Hall,VictoryReportAcknowledged=false,CoronationRequested=false};
@@ -129,7 +137,28 @@ __MISSION__
    o=Setup(true);o._session.CoronationRequested=true;Tick(o);var oldReport=InformationManager.Last;InformationManager.Active=false;oldReport.No();Tick(o);report=InformationManager.Last;
    Check(InformationManager.Reports==2&&o._session.VictoryReportAcknowledged==false,"cancelled report stays unacknowledged and reopens safely");
    oldReport.Yes();oldReport.No();Check(o._reportOpen&&o._session.VictoryReportAcknowledged==false,"same-session stale report generation cannot acknowledge or close newer UI");
-   Console.WriteLine("PASS: "+Checks+" production disposition/mission/coronation/report lifecycle checks + wiring assertions");
+   o=Setup(true);o._session.Phase=CoupPhase.Failed;o._session.DefectionCommitted=true;o._session.WithdrawalCommitted=false;
+   var other=new Settlement{StringId="other"};MobileParty.MainParty.CurrentSettlement=other;PlayerEncounter.Current=new object();var unrelated=PlayerEncounter.Current;
+   o.Fail();Check(ReferenceEquals(MobileParty.MainParty.CurrentSettlement,other)&&ReferenceEquals(PlayerEncounter.Current,unrelated)&&PlayerEncounter.Finishes==0&&LeaveSettlementAction.Calls==0,"delayed failure in unrelated town never leaves or finishes new encounter");
+   Check(o._session.WithdrawalCommitted,"already outside target counts as withdrawn");
+   o=Setup(true);o._session.Phase=CoupPhase.Failed;o._session.DefectionCommitted=true;o._session.WithdrawalCommitted=false;
+   MobileParty.MainParty.CurrentSettlement=null;PlayerEncounter.Current=new object();unrelated=PlayerEncounter.Current;
+   o.Fail();Check(ReferenceEquals(PlayerEncounter.Current,unrelated)&&PlayerEncounter.Finishes==0&&LeaveSettlementAction.Calls==0,"unrelated map encounter also preserved");
+   o=Setup(true);o._session.Phase=CoupPhase.Failed;o._session.DefectionCommitted=true;o._session.WithdrawalCommitted=false;
+   PlayerEncounter.Current=new object();PlayerEncounter.LocationEncounter=new LocationEncounter{Settlement=Settlement.Target};PlayerEncounterCompat.Encountered=new EncounterParty{Settlement=Settlement.Target};
+   o.Fail();Check(PlayerEncounter.Finishes==1&&LeaveSettlementAction.Calls==1&&o._session.WithdrawalCommitted,"original town withdrawal still works");
+   o.Fail();Check(PlayerEncounter.Finishes==1&&LeaveSettlementAction.Calls==1,"withdrawal idempotent");
+   o=Setup(true);o._session.Phase=CoupPhase.Failed;o._session.DefectionCommitted=true;o._session.WithdrawalCommitted=false;PlayerEncounterCompat.Battle=true;
+   bool blocked=false;try{o.Fail();}catch(InvalidOperationException){blocked=true;}
+   Check(blocked&&o.CasualtyCommits==0&&LeaveSettlementAction.Calls==0,"new battle blocks old failure before casualties or political actions");
+   o=Setup(true);o._session.Phase=CoupPhase.Failed;o._session.DefectionCommitted=true;o._session.WithdrawalCommitted=false;
+   PlayerEncounter.Current=new object();PlayerEncounterCompat.Encountered=new EncounterParty();blocked=false;try{o.Fail();}catch(InvalidOperationException){blocked=true;}
+   Check(blocked&&PlayerEncounter.Finishes==0&&LeaveSettlementAction.Calls==0,"non-settlement encounter at target is not hijacked");
+   o=Setup(true);o._session.Phase=CoupPhase.Failed;o._session.DefectionCommitted=true;o._session.WithdrawalCommitted=false;LeaveSettlementAction.Fail=true;
+   blocked=false;try{o.Fail();}catch(InvalidOperationException){blocked=true;}
+   Check(blocked&&!o._session.WithdrawalCommitted,"failed departure is not marked complete");
+   LeaveSettlementAction.Fail=false;o.Fail();Check(o._session.WithdrawalCommitted&&LeaveSettlementAction.Calls==2,"failed departure remains safely retryable");
+   Console.WriteLine("PASS: "+Checks+" production disposition/mission/coronation/report/failure lifecycle checks + wiring assertions");
   }
  }
 }

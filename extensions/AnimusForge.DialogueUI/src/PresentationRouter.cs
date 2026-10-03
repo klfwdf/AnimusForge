@@ -216,13 +216,9 @@ namespace AnimusForge.DialogueUI
 
         private static void ReleaseOwned(IGauntletMovie movie)
         {
-            if (movie != null && OwnedMovies.TryGetValue(movie, out IViewModel original))
-            {
-                OwnedMovies.Remove(movie);
-                // Shout's original Popup.Close owns wrapper disposal. Retaining it through a resource
-                // refresh preserves the captured target, record drawer and original draft VM.
-                NativeUiAdapter.Release(original);
-            }
+            // Movie release also occurs during resource refresh. Overlay.Close and Popup.Close
+            // own wrapper disposal; keep their drafts and drawers alive until then.
+            if (movie != null) OwnedMovies.Remove(movie);
         }
 
         internal static void Shutdown()

@@ -52,7 +52,7 @@ namespace AnimusForge.DialogueUI.Shout
                 _tradeAgent = FieldReader<Agent>(behavior, "_shoutTradeTargetAgentSnapshot");
                 _tradeActionOnly = FieldReader<bool>(behavior, "_shoutTradeActionOnly");
                 _targetingContext = FieldReader<object>(behavior, "_activeShoutTargetingContext");
-                _conversationEpoch = FieldReader<int>(behavior, "_sceneConversationEpoch");
+                _conversationEpoch = PropertyReader<int>(behavior, "_sceneConversationEpoch");
                 _popupDataSource = FieldReader<object>(popup, "_dataSource");
                 _sceneSession = (Func<int>)Delegate.CreateDelegate(typeof(Func<int>), RequireMethod(behavior, "GetCurrentSceneHistorySessionIdForExternal"));
                 _history = (Func<int, int, List<string>>)Delegate.CreateDelegate(typeof(Func<int, int, List<string>>),

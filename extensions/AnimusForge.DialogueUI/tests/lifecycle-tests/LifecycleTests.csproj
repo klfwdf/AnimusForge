@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings><NuGetAudit>false</NuGetAudit>
+    <NoWarn>CS0649;CS0067;CS0414</NoWarn>
+    <PowerShellExecutable Condition="'$(PowerShellExecutable)' == '' And '$(OS)' == 'Windows_NT'">$(SystemRoot)/System32/WindowsPowerShell/v1.0/powershell.exe</PowerShellExecutable>
+    <PowerShellExecutable Condition="'$(PowerShellExecutable)' == ''">pwsh</PowerShellExecutable>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="../../src/Native/NativeOverlayVM.cs" />
+    <Compile Include="../../src/Shout/ShoutUiAdapter.cs" />
+    <Compile Include="../../src/Shout/ShoutPresentationVM.cs" />
+    <Compile Include="../../../../src/AF.GameAdapter.Bannerlord/UI/Conversation/AnimusForgeNativeConversationOverlayVM.cs" />
+    <Compile Include="../../../../src/AF.GameAdapter.Bannerlord/UI/Common/AnimusForgeTextInputSanitizer.cs" />
+  </ItemGroup>
+  <Target Name="ExtractProductionLifecycle" BeforeTargets="BeforeCompile">
+    <Exec Command="&quot;$(PowerShellExecutable)&quot; -NoProfile -ExecutionPolicy Bypass -File &quot;$(MSBuildProjectDirectory)/extract.ps1&quot; -Output &quot;$(IntermediateOutputPath)Lifecycle.generated.cs&quot;" />
+    <ItemGroup><Compile Include="$(IntermediateOutputPath)Lifecycle.generated.cs" /></ItemGroup>
+  </Target>
+</Project>

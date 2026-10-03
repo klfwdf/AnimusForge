@@ -314,6 +314,7 @@ checks += PoliticalActionsTests.Run();
 checks += EligibilityAndDecisionTests.Run();
 checks += PlayerFactionControlTests.Run();
 checks += PlayerFactionReviewFixTests.Run();
+checks += WorkToggleTests.Run();
 Console.WriteLine($"CivilWar lifecycle contracts passed: {checks} checks (fake game actions, real owner/effects and extracted entry bodies).");
 
 sealed class Fixture

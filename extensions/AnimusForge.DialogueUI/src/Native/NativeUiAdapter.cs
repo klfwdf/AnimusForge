@@ -42,13 +42,15 @@ public static class NativeUiAdapter
         var pendingNpcOpening = AccessTools.Method(typeof(AnimusForgeNativeConversationOverlay), "TryStartPendingNpcOpening");
         var focusInput = AccessTools.Method(typeof(AnimusForgeNativeConversationOverlay), "FocusInputIfVisible");
         var restoreOrdinary = AccessTools.Method(typeof(AnimusForgeNativeConversationOverlay), "RestoreNativeConversationInputAfterOrdinaryMode");
+        var restoreTemporary = AccessTools.Method(typeof(AnimusForgeNativeConversationOverlay), "RestoreOverlayAfterTemporarySystemUi");
+        var showRoot = AccessTools.Method(typeof(AnimusForgeNativeConversationOverlay), "ShowOverlayRoot");
         _overlayLayerField = AccessTools.Field(typeof(AnimusForgeNativeConversationOverlay), "_layer");
         _overlaySubmittingField = AccessTools.Field(typeof(AnimusForgeNativeConversationOverlay), "_isSubmitting");
         _overlayDataSourceField = dataSource;
         _activeOverlayField = AccessTools.Field(typeof(AnimusForgeNativeConversationOverlay), "_activeOverlay");
         _temporaryUiField = AccessTools.Field(typeof(AnimusForgeNativeConversationOverlay), "_temporarySystemUiActive");
         if (hit == null || close == null || finalize == null || dataSource?.FieldType != typeof(AnimusForgeNativeConversationOverlayVM)
-            || restrictions == null || pendingNpcOpening == null || focusInput == null || restoreOrdinary == null || _activeOverlayField == null || _temporaryUiField == null
+            || restrictions == null || pendingNpcOpening == null || focusInput == null || restoreOrdinary == null || restoreTemporary == null || showRoot == null || _activeOverlayField == null || _temporaryUiField == null
             || _overlayLayerField?.FieldType != typeof(GauntletLayer) || _overlaySubmittingField?.FieldType != typeof(bool))
             throw new MissingMemberException("DialogueUI native lifecycle contract is unavailable.");
         harmony.Patch(hit, prefix: new HarmonyMethod(typeof(NativeUiAdapter), nameof(MouseHitPrefix)));
@@ -59,6 +61,8 @@ public static class NativeUiAdapter
         harmony.Patch(focusInput,
             prefix: new HarmonyMethod(typeof(NativeUiAdapter), nameof(AuxiliaryFocusPrefix)));
         harmony.Patch(restoreOrdinary, prefix: new HarmonyMethod(typeof(NativeUiAdapter), nameof(AuxiliaryRestorePrefix)));
+        harmony.Patch(restoreTemporary, postfix: new HarmonyMethod(typeof(NativeUiAdapter), nameof(OverlayRestored)));
+        harmony.Patch(showRoot, postfix: new HarmonyMethod(typeof(NativeUiAdapter), nameof(OverlayRestored)));
         MapPortraitSource.Install(harmony);
         PortraitCamera.Install(harmony);
         try { InlineTradeBridge.Install(harmony); }
@@ -75,11 +79,10 @@ public static class NativeUiAdapter
         {
             vm = new NativeOverlayVM(af);
             Wrappers.Add(af, vm);
+            // Capture/apply once: a resource reload must not override a manual mode switch.
+            if (vm.AutoEnterAiMode && !af.IsCustomAnswerVisible)
+                af.SwitchTalk();
         }
-        // Capture once at movie creation; AI-first remains the default, but MCM can
-        // keep ordinary options visible until an explicit switch. No delayed force-switch.
-        if (vm.AutoEnterAiMode && !af.IsCustomAnswerVisible)
-            af.SwitchTalk();
         wrapper = vm;
         return true;
     }
@@ -226,6 +229,15 @@ public static class NativeUiAdapter
         return false;
     }
 
+    private static void OverlayRestored(AnimusForgeNativeConversationOverlayVM ____dataSource, bool ____temporarySystemUiActive, bool ____isClosed)
+    {
+        if (____isClosed || ____temporarySystemUiActive || !_installed || !DialogueUiRuntime.Enabled
+            || ____dataSource == null || !Wrappers.TryGetValue(____dataSource, out var vm)) return;
+        vm.RefreshAfterSystemUi();
+        DialogueUiRuntime.Log("Conversation controls restored: mode=" + (____dataSource.IsCustomAnswerVisible ? "AI" : "ordinary")
+            + ", auxiliaryOpen=" + vm.Auxiliary.IsOpen + ", toolbarVisible=" + vm.IsToolbarVisible);
+    }
+
     // Called on panel transitions, not in a frame polling loop. Never steal encyclopedia focus.
     private static void SetAuxiliaryLayerInput(AnimusForgeNativeConversationOverlay host, bool visible)
     {
@@ -249,6 +261,7 @@ public static class NativeUiAdapter
     {
         if (!(_activeOverlayField?.GetValue(null) is AnimusForgeNativeConversationOverlay host)
             || !ReferenceEquals(_overlayDataSourceField.GetValue(host), vm.Original)) return;
+        _overlay?.RefreshVisibility();
         if (_overlay?.Root.EventManager != null)
         {
             _overlay.Root.EventManager.FocusedWidget = null;
@@ -387,6 +400,8 @@ public static class NativeUiAdapter
             Root = root; Original = original; Mission = Mission.Current;
             IsMapConversation = isMapConversation;
             _column = root.FindChild("AFDialogueRightColumn", true);
+            _toolbar = root.FindChild("AFDialogueToolbar", true);
+            _input = root.FindChild("AFDialogueInput", true);
             _auxiliary = root.FindChild("AFDialogueAuxiliaryPanel", true);
             Wrappers.TryGetValue(original, out _wrapper);
             InputEditor = root.FindChild("AFDialogueInputEditor", true);
@@ -401,7 +416,18 @@ public static class NativeUiAdapter
         }
 
         private readonly Widget _column;
+        private readonly Widget _toolbar;
+        private readonly Widget _input;
         private readonly Widget _auxiliary;
+
+        internal void RefreshVisibility()
+        {
+            if (_disposed || _wrapper == null) return;
+            // Reconcile cached nodes on transitions; do not force a hidden child panel open.
+            if (_toolbar != null) _toolbar.IsVisible = _wrapper.IsToolbarVisible;
+            if (_input != null) _input.IsVisible = _wrapper.IsCustomAnswerVisible;
+            if (_auxiliary != null) _auxiliary.IsVisible = _wrapper.Auxiliary.IsVisible;
+        }
 
         internal void Tick(long tick)
         {

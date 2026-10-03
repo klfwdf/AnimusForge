@@ -37,7 +37,8 @@ campaign_methods=['internal static bool IsHallObjectiveComplete(','internal stat
  'internal static void NotifyVictory(','internal static void NotifyDefeat(','internal static void NotifyTechnicalFailure(',
  'private void OnMissionEnded(','internal void OnEngineTick(','internal static bool TryOpenHallDisposition(',
  'private void OpenDisposition(','private bool IsDispositionUiCurrent(','private void SelectDisposition(',
- 'private void PresentVictoryFeedback(','private void ShowVictoryReport(','private bool IsCurrentUi(']
+ 'private void PresentVictoryFeedback(','private void ShowVictoryReport(','private bool IsCurrentUi(',
+ 'private void CommitFailure(','private void CommitWithdrawal(']
 mission_methods=['public override InquiryData OnEndMissionRequest(','private bool TryEstablishHallVictory(',
  'private void RequestVictoryDisposition(','internal bool CompleteVictoryAndLeave(','private void SaveHealth(',
  'private void EndScene(','protected override void OnEndMission(']

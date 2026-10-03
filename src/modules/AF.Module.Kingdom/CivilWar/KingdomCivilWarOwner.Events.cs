@@ -64,6 +64,7 @@ internal sealed partial class KingdomCivilWarOwner
 	{
 		LastBatchRecords = 0;
 		if (_politicalWork == null && _politicalQueue.Count == 0 && _decayWork == null && _decayQueue.Count == 0) return;
+		bool enabled = DuelSettings.IsCivilWarFactionsEnabled();
 		long started = Stopwatch.GetTimestamp();
 		while (LastBatchRecords < 32)
 		{
@@ -80,6 +81,9 @@ internal sealed partial class KingdomCivilWarOwner
 				if ((Stopwatch.GetTimestamp() - started) * 1000d / Stopwatch.Frequency >= 1d) break;
 				continue;
 			}
+			// Disabled decay still advances its clock without changing grievance. Political
+			// iterators and queued events stay suspended until the feature is enabled again.
+			if (!enabled) break;
 			if (_politicalWork == null)
 			{
 				if (_politicalQueue.Count == 0) break;
