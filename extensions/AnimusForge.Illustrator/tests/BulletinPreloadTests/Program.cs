@@ -141,6 +141,15 @@ internal static class Program
         Check(a == 1 && b == 1, "Independent waiters each release once");
         Check(!BulletinIllustrationPreloader.AwaitSelection(multi, () => a++), "Completed job never registers another timer");
         BulletinIllustrationPreloader.Reset();
+        int promptIndex = WeeklyReportPopupIllustrationPatch.Requests.Count;
+        BulletinIllustrationPreloader.Ensure("guided", context, true, playerRedrawPrompt: "PLAYER_REDRAW");
+        Check(WeeklyReportPopupIllustrationPatch.PlayerPrompts[promptIndex] == "PLAYER_REDRAW", "manual bulletin redraw carries prompt into shared generation pipeline");
+        BulletinIllustrationPreloader.Ensure("guided", context, true, playerRedrawPrompt: "NOT_AN_EXTRA_REQUEST");
+        Check(WeeklyReportPopupIllustrationPatch.Requests.Count == promptIndex + 1 && WeeklyReportPopupIllustrationPatch.PlayerPrompts[promptIndex] == "PLAYER_REDRAW", "pending guided job is not overwritten or duplicated");
+        WeeklyReportPopupIllustrationPatch.Requests[promptIndex](WeeklyReportPopupIllustrationPatch.Success());
+        BulletinIllustrationPreloader.Ensure("guided", context, true);
+        Check(WeeklyReportPopupIllustrationPatch.PlayerPrompts[promptIndex + 1] == null, "ordinary redraw does not reuse previous player input");
+        BulletinIllustrationPreloader.Reset();
     }
 
 }
@@ -187,8 +196,9 @@ namespace AnimusForge.Illustrator.UI.Patches
     {
         internal class GenerationResult { internal ImageGenerationResult Result; internal CachedIllustrationItem Saved; internal string Prompt; }
         internal static readonly List<Action<GenerationResult>> Requests = new List<Action<GenerationResult>>();
+        internal static readonly List<string> PlayerPrompts = new List<string>();
         internal static bool StartGeneration(IllustrationScope scope, WeeklyReportVisualContext context, string key, bool bulletin, int attempt,
-            Action<GenerationResult> complete, Action<string> fail, Action<string> status) { Requests.Add(complete); return true; }
+            Action<GenerationResult> complete, Action<string> fail, Action<string> status, string playerRedrawPrompt = null) { Requests.Add(complete); PlayerPrompts.Add(playerRedrawPrompt); return true; }
         internal static GenerationResult Success() => new GenerationResult { Saved = new CachedIllustrationItem { ImageData = new byte[] { 1 } }, Result = new ImageGenerationResult { Success = true, ImageBytes = new byte[] { 1 } }, Prompt = "prompt" };
     }
 }

@@ -10,6 +10,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
         private readonly Action _onClose;
         private readonly Action _onRegenerate;
         private readonly Action _onSceneProbe;
+        private readonly Action _onRegenerateWithPrompt;
         private string _titleText = string.Empty;
         private string _statusText = string.Empty;
         private string _promptText = string.Empty;
@@ -20,10 +21,16 @@ namespace AnimusForge.Illustrator.UI.Overlays
         private bool _showPrompt;
 
         public IllustrationCardVM(Action onClose, Action onRegenerate, Action onSceneProbe = null)
+            : this(onClose, onRegenerate, onSceneProbe, null)
+        {
+        }
+
+        public IllustrationCardVM(Action onClose, Action onRegenerate, Action onSceneProbe, Action onRegenerateWithPrompt)
         {
             _onClose = onClose;
             _onRegenerate = onRegenerate;
             _onSceneProbe = onSceneProbe;
+            _onRegenerateWithPrompt = onRegenerateWithPrompt;
         }
 
         [DataSourceProperty]
@@ -107,6 +114,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
                     _isLoading = value;
                     OnPropertyChangedWithValue(value, nameof(IsLoading));
                     OnPropertyChanged(nameof(CanExecuteSceneProbe));
+                    OnPropertyChanged(nameof(CanRegenerateWithPrompt));
                 }
             }
         }
@@ -116,6 +124,9 @@ namespace AnimusForge.Illustrator.UI.Overlays
 
         [DataSourceProperty]
         public bool CanExecuteSceneProbe => CanProbeScene && !IsLoading;
+
+        [DataSourceProperty]
+        public bool CanRegenerateWithPrompt => !IsLoading && _onRegenerateWithPrompt != null;
 
         [DataSourceProperty]
         public bool ShowPrompt
@@ -175,6 +186,13 @@ namespace AnimusForge.Illustrator.UI.Overlays
         public void ExecuteTogglePrompt()
         {
             ShowPrompt = !ShowPrompt;
+        }
+
+        public void ExecuteRegenerateWithPrompt()
+        {
+            if (!CanRegenerateWithPrompt) return;
+            try { _onRegenerateWithPrompt.Invoke(); }
+            catch (Exception ex) { SetReady("重绘准备失败：" + ex.Message); }
         }
 
         public void ExecuteCopyPrompt()

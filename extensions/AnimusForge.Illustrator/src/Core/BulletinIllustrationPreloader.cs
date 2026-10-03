@@ -120,7 +120,7 @@ namespace AnimusForge.Illustrator.Core
         }
 
         internal static Job Ensure(string key, WeeklyReportVisualContext context, bool redraw = false, bool published = false,
-            bool generateOnCacheMiss = true)
+            bool generateOnCacheMiss = true, string playerRedrawPrompt = null)
         {
             IllustratorRuntime.AssertMainThread();
             Job previous = Find(key);
@@ -140,13 +140,13 @@ namespace AnimusForge.Illustrator.Core
                     if (Find(key) == job && job.Pending) Finish(job, "本期配图已取消，可点击重绘。", null);
                 }, campaignOwned: true);
                 if (published || redraw)
-                    Generate(job, context);
+                    Generate(job, context, playerRedrawPrompt);
                 else
                     job.Scope.Run(token => Task.Run(() => DiskImageCacheManager.LoadImage(key, job.Scope.CampaignKey, "weekly_report"), token), cached =>
                     {
                         if (cached == null)
                         {
-                            if (generateOnCacheMiss) Generate(job, context);
+                            if (generateOnCacheMiss) Generate(job, context, playerRedrawPrompt);
                             else Finish(job, "暂无已生成插画，可点击重绘。", null);
                             return;
                         }
@@ -163,7 +163,7 @@ namespace AnimusForge.Illustrator.Core
             return job;
         }
 
-        private static void Generate(Job job, WeeklyReportVisualContext context)
+        private static void Generate(Job job, WeeklyReportVisualContext context, string playerRedrawPrompt = null)
         {
             WeeklyReportPopupIllustrationPatch.StartGeneration(job.Scope, context, job.Key, true, job.Attempt,
                 result =>
@@ -176,7 +176,7 @@ namespace AnimusForge.Illustrator.Core
                     if (Find(job.Key) != job || !job.Pending) return;
                     job.Status = status;
                     Updated?.Invoke(job.Key, null);
-                });
+                }, playerRedrawPrompt);
         }
 
         private static void Finish(Job job, string status, WeeklyReportPopupIllustrationPatch.GenerationResult result)

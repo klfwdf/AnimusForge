@@ -31,6 +31,9 @@ namespace AnimusForge.Illustrator.UI.Overlays
         private readonly IllustrationCardVM _dataSource;
         private readonly IllustrationScope _scope;
         private readonly string _category;
+        private readonly Action<string> _onRegenerate;
+        private string _playerRedrawDraft = string.Empty;
+        private bool _editingRedrawPrompt;
         private readonly string _instanceId = Guid.NewGuid().ToString("N").Substring(0, 8);
         private readonly bool _autoFullscreen;
         private string _activeSpriteName;
@@ -112,15 +115,16 @@ namespace AnimusForge.Illustrator.UI.Overlays
             string props = !string.IsNullOrWhiteSpace(session.NearbyPropFacts) ? session.NearbyPropFacts : nearbyPropFacts;
             if (!string.IsNullOrWhiteSpace(props)) hardFacts.AppendLine().Append(props.Trim());
             return new IllustrationPromptPlan(current.Mode, hardFacts.ToString(), current.ArtDirection,
-                current.DirectorOnlyFacts + (session.SceneDirectorNote ?? string.Empty));
+                current.DirectorOnlyFacts + (session.SceneDirectorNote ?? string.Empty), current.PlayerRedrawPrompt);
         }
 
-        private IllustrationCardPopup(ScreenBase screen, string movieName, string category, Action onRegenerate, Action onSceneProbe = null, bool autoFullscreen = false)
+        private IllustrationCardPopup(ScreenBase screen, string movieName, string category, Action<string> onRegenerate, Action onSceneProbe = null, bool autoFullscreen = false)
         {
             _screen = screen;
             _category = category;
             _autoFullscreen = autoFullscreen;
-            _dataSource = new IllustrationCardVM(Close, onRegenerate, onSceneProbe);
+            _onRegenerate = onRegenerate;
+            _dataSource = new IllustrationCardVM(Close, () => Regenerate(null), onSceneProbe, OpenRedrawPromptEditor);
             var layer = new MovableGauntletLayer(autoFullscreen ? "IllustrationFullscreenOverlay" : "IllustrationCardOverlay", autoFullscreen ? 4020 : 4015, false);
             _layer = layer;
             try
@@ -166,6 +170,24 @@ namespace AnimusForge.Illustrator.UI.Overlays
             ++_cacheLoadVersion; // invalidate a cache read that may otherwise overwrite the new result
             _dataSource.SetLoading("画卷正在后台生成，可关闭面板，完成后会通知并更新画廊。");
             return true;
+        }
+
+        private void Regenerate(string playerPrompt)
+        {
+            if (_closed || !_scope.IsCurrent || !ReferenceEquals(_activeInstance, this) || _dataSource.IsLoading) return;
+            _onRegenerate?.Invoke(playerPrompt);
+        }
+
+        private void OpenRedrawPromptEditor()
+        {
+            if (_editingRedrawPrompt) return;
+            string ownerKey = _category == "conversation" ? ConversationSessionOwnerKey() : null;
+            IllustrationRedrawPromptEditor.Show(_playerRedrawDraft,
+                () => !_closed && _scope.IsCurrent && ReferenceEquals(_activeInstance, this) && !_dataSource.IsLoading &&
+                    (_category != "conversation" || ownerKey == ConversationSessionOwnerKey()),
+                prompt => { _playerRedrawDraft = prompt; Regenerate(prompt); },
+                status => _dataSource.StatusText = status,
+                editing => { if (!_closed) { _editingRedrawPrompt = editing; _layer.UIContext.Root.IsVisible = !editing; } });
         }
 
         private void OnGenerationUpdated(IllustrationGenerationUpdate update)
@@ -233,9 +255,9 @@ namespace AnimusForge.Illustrator.UI.Overlays
             try
             {
                 _activeInstance?.Close();
-                popup = new IllustrationCardPopup(topScreen, "EncyclopediaIllustrationOverlay", "encyclopedia", () =>
+                popup = new IllustrationCardPopup(topScreen, "EncyclopediaIllustrationOverlay", "encyclopedia", prompt =>
                 {
-                    _activeInstance?.ExecuteEncyclopediaGeneration(hero, tableauWidget);
+                    popup?.ExecuteEncyclopediaGeneration(hero, tableauWidget, prompt);
                 });
 
                 string heroName = hero.Name != null ? hero.Name.ToString() : "英雄";
@@ -348,7 +370,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
                     }
                     Debug.Print("[Illustrator] Conversation scene capture at open: " + (string.IsNullOrWhiteSpace(preCapturedBase64) ? calibrationReason : "captured_before_overlay"));
                 }
-                popup = new IllustrationCardPopup(topScreen, useFullscreen ? "ConversationIllustrationFullscreenOverlay" : "ConversationIllustrationOverlay", "conversation", () =>
+                popup = new IllustrationCardPopup(topScreen, useFullscreen ? "ConversationIllustrationFullscreenOverlay" : "ConversationIllustrationOverlay", "conversation", prompt =>
                 {
                     string redrawBase64 = null;
                     ConversationVisualContext redrawContext = ConversationContextExtractor.ExtractFromCurrentConversation();
@@ -356,7 +378,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
                     var redrawEmblems = new List<EmblemSpec>();
                     AddEmblemSpec(redrawEmblems, current.InterlocutorHero, "对话对方");
                     AddEmblemSpec(redrawEmblems, current.MainHero, "玩家");
-                    _activeInstance?.ExecuteConversationGeneration(current, redrawBase64, redrawEmblems);
+                    popup?.ExecuteConversationGeneration(current, redrawBase64, redrawEmblems, playerRedrawPrompt: prompt);
                 }, probeSource == null ? (Action)null : () => popup?.ExecuteIsolatedSceneProbe(probeSource), useFullscreen);
                 popup._openingSceneBase64 = preCapturedBase64;
                 popup._openingSceneSessionKey = openingSceneSessionKey;
@@ -409,13 +431,13 @@ namespace AnimusForge.Illustrator.UI.Overlays
             }
         }
 
-        private void ExecuteEncyclopediaGeneration(Hero hero, Widget tableauWidget)
+        private void ExecuteEncyclopediaGeneration(Hero hero, Widget tableauWidget, string playerRedrawPrompt = null)
         {
-            try { ExecuteEncyclopediaGenerationCore(hero, tableauWidget); }
+            try { ExecuteEncyclopediaGenerationCore(hero, tableauWidget, playerRedrawPrompt); }
             catch (Exception ex) { _dataSource.SetReady("生成准备失败：" + ex.Message); }
         }
 
-        private void ExecuteEncyclopediaGenerationCore(Hero hero, Widget tableauWidget)
+        private void ExecuteEncyclopediaGenerationCore(Hero hero, Widget tableauWidget, string playerRedrawPrompt = null)
         {
             if (JoinPendingGeneration($"Hero_{hero.StringId}")) return;
             ++_cacheLoadVersion;
@@ -448,6 +470,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
             _generationCount++;
             string baseArtDirection = GenerateDiversePoseDirective();
             var options = IllustratorRuntime.CaptureOptions();
+            VisualDirectorEngine.RequirePlayerRedrawDirector(playerRedrawPrompt, options);
             if (options?.EnableOffscreenRendering != true)
             {
                 _dataSource.SetReady("请先开启离屏渲染；本次生图需要人物完整装备立绘，不使用模板或旧截图替代。");
@@ -488,7 +511,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
                 if (!string.IsNullOrWhiteSpace(recentActions)) artDirection += "\n" + recentActions;
                 if (_generationCount > 1 || priorVersions > 0) artDirection += "\n" + VisualDirectorEngine.BuildRedrawVariationDirective(_generationCount + priorVersions);
                 if (usedMotifs.Count > 0) artDirection += $"\n【已用过的场景母题·须避开】：{string.Join("；", usedMotifs)}——结合本次人物行动选择场景与镜头，不仅更换背景。";
-                var promptPlan = new IllustrationPromptPlan("人物百科纪事", hardFacts, artDirection, directorFacts);
+                var promptPlan = new IllustrationPromptPlan("人物百科纪事", hardFacts, artDirection, directorFacts, playerRedrawPrompt);
                 CharacterPortraitReferences portraits = null;
                 if (options?.EnableOffscreenRendering == true)
                 {
@@ -615,7 +638,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
             specs.Add(new EmblemSpec { Code = code, Owner = owner, PlayerSide = sideLabel == "玩家", InterlocutorSide = sideLabel != "玩家" });
         }
 
-        private void ExecuteConversationGeneration(ConversationVisualContext convContext, string preCapturedBase64 = null, List<EmblemSpec> emblemSpecs = null, bool automatic = false)
+        private void ExecuteConversationGeneration(ConversationVisualContext convContext, string preCapturedBase64 = null, List<EmblemSpec> emblemSpecs = null, bool automatic = false, string playerRedrawPrompt = null)
         {
             if (!automatic)
             {
@@ -624,7 +647,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
                 _latestAutoPlayerText = null;
                 _latestAutoReplyText = null;
             }
-            try { ExecuteConversationGenerationCore(convContext, preCapturedBase64, emblemSpecs, automatic); }
+            try { ExecuteConversationGenerationCore(convContext, preCapturedBase64, emblemSpecs, automatic, playerRedrawPrompt); }
             catch (Exception ex) { _dataSource.SetReady("生成准备失败：" + ex.Message); }
         }
 
@@ -700,7 +723,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
             catch (Exception ex) { Debug.Print("[Illustrator] Scene probe status failed: " + ex.Message); }
         }
 
-        private void ExecuteConversationGenerationCore(ConversationVisualContext convContext, string preCapturedBase64 = null, List<EmblemSpec> emblemSpecs = null, bool automatic = false)
+        private void ExecuteConversationGenerationCore(ConversationVisualContext convContext, string preCapturedBase64 = null, List<EmblemSpec> emblemSpecs = null, bool automatic = false, string playerRedrawPrompt = null)
         {
             string pendingKey = "Conv_" + (convContext.InterlocutorHero?.StringId ?? convContext.InterlocutorCharacter?.StringId ?? "NPC");
             if (JoinPendingGeneration(pendingKey, ConversationSessionKey(convContext))) return;
@@ -734,6 +757,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
                     : "对方");
             // Preserve the selected resolution tier while requesting a 16:9 scene image.
             var options = IllustratorRuntime.CaptureOptions()?.WithSceneImageSize();
+            VisualDirectorEngine.RequirePlayerRedrawDirector(playerRedrawPrompt, options);
             baseArtDirection += "\n【场景插画画幅】使用横向16:9构图，目标分辨率为" + options?.ImageSize + "，保持人物与场景的自然比例，不拉伸方图或竖图。";
             if (options?.EnableOffscreenRendering != true)
             {
@@ -783,7 +807,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
                 catch (Exception ex) { Debug.Print("[Illustrator] Conversation action history read failed: " + ex.Message); }
                 string workerArtDirection = baseArtDirection;
                 if (!string.IsNullOrWhiteSpace(actionHistory)) workerArtDirection += "\n" + actionHistory;
-                var promptPlan = new IllustrationPromptPlan("最近2条对话联动的场景插画", hardFacts, workerArtDirection, directorFacts);
+                var promptPlan = new IllustrationPromptPlan("最近2条对话联动的场景插画", hardFacts, workerArtDirection, directorFacts, playerRedrawPrompt);
                 // 真实场景采全景；大地图和部队界面临时谈话只用地形事实。
                 var ageEvidence = convContext.InterlocutorAgeSnapshot;
                 if (ageEvidence != null)
@@ -819,7 +843,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
                     sceneDirectorNote = sceneCapture.References == null || sceneCapture.References.Count == 0
                         ? (!sceneSource.RequiresMissionPanorama ? "\n【野外环境依据】" : "\n【环境参考不可用】") + sceneCapture.DirectorNote : string.Empty;
                     scenePromptPlan = new IllustrationPromptPlan(promptPlan.Mode, promptPlan.HardFacts + sceneCapture.NearbyPropFacts, promptPlan.ArtDirection,
-                        promptPlan.DirectorOnlyFacts + sceneDirectorNote);
+                        promptPlan.DirectorOnlyFacts + sceneDirectorNote, promptPlan.PlayerRedrawPrompt);
                     sceneStatus = sceneCapture.StatusText + "，正在整理人物参考...";
                 }
                 IllustratorRuntime.Post(() => { if (!_closed && !token.IsCancellationRequested) _dataSource.StatusText = sceneStatus; });

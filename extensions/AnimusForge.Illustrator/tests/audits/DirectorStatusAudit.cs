@@ -156,6 +156,56 @@ public static class DirectorStatusAudit
             "disabled director neither sends rule nor leaks it into local image fallback");
     }
 
+    private static void RunPlayerRedrawChecks(Type director)
+    {
+        const string Sentinel = "PLAYER_REDRAW_REQUEST_SENTINEL";
+        object original = plan;
+        var build = director.GetMethod("BuildDirectorPayload", Static);
+        object options = Options();
+        SetOption(options, "CustomDirectorPrompt", "GLOBAL_RULE_SENTINEL");
+        try
+        {
+            foreach (string mode in new[] { "人物百科纪事", "最近2条对话联动的场景插画", "周报历史纪事插画" })
+            {
+                plan = Activator.CreateInstance(original.GetType(), new object[] { mode, "现有布衣和手中文书。", "OPEN_ART_SENTINEL", "DIRECTOR_FACT_SENTINEL", "  " + Sentinel + "\n第二行要求  " });
+                Check(Property<string>(plan, "PlayerRedrawPrompt") == Sentinel + "\n第二行要求", mode + " per-redraw prompt is trimmed and preserves newlines");
+                foreach (bool textOnly in new[] { false, true })
+                {
+                    string payload = build.Invoke(null, new object[] { plan, options, textOnly ? null : References(), textOnly }).ToString();
+                    Check(payload.Contains(Sentinel) && payload.Split(new[] { Sentinel }, StringSplitOptions.None).Length == 2,
+                        mode + " redraw request reaches director exactly once; textOnly=" + textOnly);
+                    Check(payload.Contains("GLOBAL_RULE_SENTINEL") && payload.Contains("DIRECTOR_FACT_SENTINEL") && payload.Contains("现有布衣"),
+                        mode + " redraw preserves global rules and original facts");
+                    Check(payload.Contains("不是已发生事实") && payload.Contains("不复述原始提示词"), mode + " redraw preserves factual and visual-output boundary");
+                }
+                var handler = new MemoryHandler();
+                handler.Add(HttpStatusCode.OK, Reply("stop", NamedBody, null));
+                object result = Generate(handler, options, References());
+                Check(handler.Bodies.Count == 1 && handler.Bodies[0].Contains(Sentinel) && !Property<string>(result, "Prompt").Contains(Sentinel),
+                    mode + " actual director request uses player prompt, final image prompt does not append raw input");
+                Check(Property<string>(original, "PlayerRedrawPrompt") == string.Empty, "ordinary plan cannot inherit the previous redraw request");
+            }
+            Type popup = director.Assembly.GetType("AnimusForge.Illustrator.UI.Overlays.IllustrationCardPopup", true);
+            Type snapshot = popup.GetNestedType("ConversationIllustrationSessionSnapshot", BindingFlags.NonPublic);
+            object session = Activator.CreateInstance(snapshot, true);
+            snapshot.GetField("StableHardFacts", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(session, "FROZEN_FACT_SENTINEL");
+            snapshot.GetField("SceneDirectorNote", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(session, "SCENE_NOTE_SENTINEL");
+            object sessionPlan = popup.GetMethod("BuildConversationSessionPlan", Static).Invoke(null, new object[] { plan, session, null });
+            Check(Property<string>(sessionPlan, "PlayerRedrawPrompt") == Property<string>(plan, "PlayerRedrawPrompt"), "real conversation session reuse retains this redraw's prompt");
+            Check(Property<string>(sessionPlan, "HardFacts").Contains("FROZEN_FACT_SENTINEL") && Property<string>(sessionPlan, "DirectorOnlyFacts").Contains("SCENE_NOTE_SENTINEL"),
+                "adding redraw prompt does not replace frozen scene facts or director-only scene note");
+            var disabled = Options(); SetOption(disabled, "EnableLlmPromptExpansion", false);
+            var blocked = new MemoryHandler();
+            GenerateFailure(blocked, disabled, References(), "disabled director rejects player redraw");
+            Check(blocked.Bodies.Count == 0, "no paid request or local fallback for unavailable player-directed redraw");
+            disabled = Options(); SetOption(disabled, "DirectorApiBaseUrl", "");
+            blocked = new MemoryHandler();
+            GenerateFailure(blocked, disabled, References(), "missing director rejects player redraw");
+            Check(blocked.Bodies.Count == 0, "unconfigured director never silently drops redraw input");
+        }
+        finally { plan = original; }
+    }
+
     public static void Run(string dllPath)
     {
         checks = 0;
@@ -170,6 +220,7 @@ public static class DirectorStatusAudit
         Check(director.GetMethod("CallLlmDirectorAsync", Static).ReturnType == typeof(Task<string>), "legacy private string method remains compatible");
 
         RunCustomDirectorChecks(director, assembly);
+        RunPlayerRedrawChecks(director);
 
         var handler = new MemoryHandler();
         handler.Add(HttpStatusCode.OK, Reply("stop", NamedBody, null));
