@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Reflection.Emit;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -121,8 +122,12 @@ public sealed partial class CustomPolicyBehavior
 		internal CustomPolicyBehavior Behavior;
 		internal Clan Clan;
 		internal int Day;
-		internal int BeforeGold;
-		internal int ExpectedGoldDelta;
+		internal int PaidMaintenanceGold;
+		internal bool PaymentAttempted;
+		internal bool Committed;
+		internal Hero PaymentRecipient;
+		internal PlayerPolicyMaintenancePaymentReceipt PaymentReceipt;
+		internal PlayerPolicyMaintenanceSettlementContext Parent;
 		internal PlayerPolicyMaintenanceRuntimeEntry[] DueEntries = Array.Empty<PlayerPolicyMaintenanceRuntimeEntry>();
 		internal bool[] Funded = Array.Empty<bool>();
 		internal bool IntentPrepared;
@@ -130,6 +135,12 @@ public sealed partial class CustomPolicyBehavior
 
 	[ThreadStatic]
 	private static PlayerPolicyMaintenanceSettlementContext _playerPolicyMaintenanceSettlementContext;
+
+	[ThreadStatic]
+	private static PlayerPolicyMaintenanceSettlementContext _playerPolicyMaintenanceGoldWriteContext;
+
+	private static bool _policyMaintenanceDailyAdapterReady;
+	private static bool _policyMaintenanceGoldWriteAdapterReady;
 
 	private const string PolicyEffectRollbackPendingPrefix = "rollbackPending:";
 
@@ -545,14 +556,11 @@ public sealed partial class CustomPolicyBehavior
 		{
 			return;
 		}
+		Harmony harmony = new Harmony("com.AnimusForge.custompolicy.clanfinance");
 		try
 		{
-			Harmony harmony = new Harmony("com.AnimusForge.custompolicy.clanfinance");
 			object financeModel = Campaign.Current.Models.ClanFinanceModel;
 			Type[] signature = { typeof(Clan), typeof(bool), typeof(bool), typeof(bool) };
-			PatchPolicySettlementModelMethod(harmony, financeModel, "CalculateClanGoldChange", signature, nameof(Patch_PolicyClanGoldChange_Postfix));
-			PatchPolicySettlementModelMethod(harmony, financeModel, "CalculateClanIncome", signature, nameof(Patch_PolicyClanIncome_Postfix));
-			PatchPolicySettlementModelMethod(harmony, financeModel, "CalculateClanExpenses", signature, nameof(Patch_PolicyClanExpenses_Postfix));
 			System.Reflection.MethodInfo dailyTickClan = AccessTools.Method(
 				typeof(ClanVariablesCampaignBehavior),
 				"DailyTickClan",
@@ -561,16 +569,32 @@ public sealed partial class CustomPolicyBehavior
 			{
 				throw new MissingMethodException(typeof(ClanVariablesCampaignBehavior).FullName, "DailyTickClan(Clan)");
 			}
+			System.Reflection.MethodInfo changeGold = AccessTools.Method(typeof(Hero), nameof(Hero.ChangeHeroGold), new[] { typeof(int) });
+			if (changeGold == null) throw new MissingMethodException(typeof(Hero).FullName, nameof(Hero.ChangeHeroGold));
+			harmony.Patch(changeGold,
+				transpiler: new HarmonyMethod(typeof(CustomPolicyBehavior), nameof(Patch_PolicyHeroGoldWrite_Transpiler)),
+				finalizer: new HarmonyMethod(typeof(CustomPolicyBehavior), nameof(Patch_PolicyHeroGoldWrite_Finalizer)));
 			harmony.Patch(
 				dailyTickClan,
 				prefix: new HarmonyMethod(typeof(CustomPolicyBehavior), nameof(Patch_PolicyClanDailyTick_Prefix)),
 				postfix: new HarmonyMethod(typeof(CustomPolicyBehavior), nameof(Patch_PolicyClanDailyTick_Postfix)),
+				transpiler: new HarmonyMethod(typeof(CustomPolicyBehavior), nameof(Patch_PolicyClanDailyGoldCall_Transpiler)),
 				finalizer: new HarmonyMethod(typeof(CustomPolicyBehavior), nameof(Patch_PolicyClanDailyTick_Finalizer)));
+			if (!_policyMaintenanceDailyAdapterReady || !_policyMaintenanceGoldWriteAdapterReady)
+				throw new InvalidOperationException("native maintenance payment observation is unavailable");
+			PatchPolicySettlementModelMethod(harmony, financeModel, "CalculateClanGoldChange", signature, nameof(Patch_PolicyClanGoldChange_Postfix));
+			PatchPolicySettlementModelMethod(harmony, financeModel, "CalculateClanIncome", signature, nameof(Patch_PolicyClanIncome_Postfix));
+			PatchPolicySettlementModelMethod(harmony, financeModel, "CalculateClanExpenses", signature, nameof(Patch_PolicyClanExpenses_Postfix));
 			_policyFinanceModelPatchesApplied = true;
 			PolicySystemLog.Write("Effect", "clan-finance-patches-applied", "player policy maintenance and positive daily hero gold now participate in vanilla clan finance reporting");
 		}
 		catch (Exception ex)
 		{
+			_policyFinanceModelPatchesApplied = false;
+			_policyMaintenanceDailyAdapterReady = false;
+			_policyMaintenanceGoldWriteAdapterReady = false;
+			try { harmony.UnpatchAll(harmony.Id); }
+			catch (Exception rollbackException) { PolicySystemLog.Write("Effect", "clan-finance-unpatch-failed", rollbackException.ToString()); }
 			PolicySystemLog.Write("Effect", "clan-finance-patches-failed", ex.ToString());
 		}
 	}
@@ -706,50 +730,140 @@ public sealed partial class CustomPolicyBehavior
 		AddPlayerPolicyMaintenanceTotal(total, includeDescriptions, ref result);
 	}
 
-	private static void Patch_PolicyClanDailyTick_Prefix(Clan __0)
+	private static IEnumerable<CodeInstruction> Patch_PolicyClanDailyGoldCall_Transpiler(IEnumerable<CodeInstruction> instructions)
 	{
-		_playerPolicyMaintenanceSettlementContext = null;
+		List<CodeInstruction> codes = instructions.ToList();
+		System.Reflection.MethodInfo native = AccessTools.Method(typeof(GiveGoldAction), nameof(GiveGoldAction.ApplyBetweenCharacters),
+			new[] { typeof(Hero), typeof(Hero), typeof(int), typeof(bool) });
+		CodeInstruction[] calls = codes.Where(code => code.Calls(native)).ToArray();
+		if (calls.Length != 1) throw new InvalidOperationException("expected one native daily clan gold settlement call");
+		calls[0].operand = AccessTools.Method(typeof(CustomPolicyBehavior), nameof(ApplyPlayerPolicyClanDailyGoldChange));
+		_policyMaintenanceDailyAdapterReady = true;
+		return codes;
+	}
+
+	private static IEnumerable<CodeInstruction> Patch_PolicyHeroGoldWrite_Transpiler(IEnumerable<CodeInstruction> instructions)
+	{
+		List<CodeInstruction> codes = instructions.ToList();
+		System.Reflection.MethodInfo setter = AccessTools.PropertySetter(typeof(Hero), nameof(Hero.Gold));
+		if (codes.Count(code => code.Calls(setter)) != 1 || codes.Count(code => code.opcode == OpCodes.Ret) != 1)
+			throw new InvalidOperationException("expected one native hero gold write and return");
+		// Hooks live inside the original body: a Harmony-skipped method produces no
+		// receipt, and trade listeners run only after this body has returned.
+		List<CodeInstruction> result = new List<CodeInstruction>(codes.Count + 5);
+		result.Add(new CodeInstruction(OpCodes.Ldarg_0));
+		result.Add(new CodeInstruction(OpCodes.Ldarg_1));
+		result.Add(new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(CustomPolicyBehavior), nameof(BeginPlayerPolicyNativeGoldWrite))));
+		foreach (CodeInstruction code in codes)
+		{
+			result.Add(code);
+			if (code.Calls(setter))
+			{
+				result.Add(new CodeInstruction(OpCodes.Ldarg_0));
+				result.Add(new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(CustomPolicyBehavior), nameof(CompletePlayerPolicyNativeGoldWrite))));
+			}
+		}
+		_policyMaintenanceGoldWriteAdapterReady = true;
+		return result;
+	}
+
+	private static void BeginPlayerPolicyNativeGoldWrite(Hero hero, int delta)
+	{
+		PlayerPolicyMaintenanceSettlementContext context = _playerPolicyMaintenanceGoldWriteContext;
+		if (context != null && ReferenceEquals(context.PaymentRecipient, hero))
+			context.PaymentReceipt.BeginWrite(hero.Gold, delta);
+	}
+
+	private static void CompletePlayerPolicyNativeGoldWrite(Hero hero)
+	{
+		PlayerPolicyMaintenanceSettlementContext context = _playerPolicyMaintenanceGoldWriteContext;
+		if (context != null && ReferenceEquals(context.PaymentRecipient, hero))
+		{
+			context.PaymentReceipt.CompleteWrite(hero.Gold);
+			_playerPolicyMaintenanceGoldWriteContext = null;
+		}
+	}
+
+	private static Exception Patch_PolicyHeroGoldWrite_Finalizer(Hero __instance, Exception __exception)
+	{
+		// A skipped/failed body must close observation before GiveGoldAction's
+		// trade callbacks; a callback with the same amount is not this payment.
+		if (ReferenceEquals(_playerPolicyMaintenanceGoldWriteContext?.PaymentRecipient, __instance))
+			_playerPolicyMaintenanceGoldWriteContext = null;
+		return __exception;
+	}
+
+	private static void ApplyPlayerPolicyClanDailyGoldChange(Hero giver, Hero recipient, int amount, bool disableNotification)
+	{
+		PlayerPolicyMaintenanceSettlementContext context = _playerPolicyMaintenanceSettlementContext;
+		if (context == null || !context.IntentPrepared || giver != null || recipient == null || recipient != context.Clan?.Leader)
+		{
+			GiveGoldAction.ApplyBetweenCharacters(giver, recipient, amount, disableNotification);
+			return;
+		}
+		if (context.PaymentAttempted) return;
+		context.PaymentAttempted = true;
+		context.PaymentRecipient = recipient;
+		context.PaymentReceipt = new PlayerPolicyMaintenancePaymentReceipt(amount);
+		PlayerPolicyMaintenanceSettlementContext previous = _playerPolicyMaintenanceGoldWriteContext;
+		_playerPolicyMaintenanceGoldWriteContext = context;
+		try
+		{
+			GiveGoldAction.ApplyBetweenCharacters(giver, recipient, amount, disableNotification);
+		}
+		finally
+		{
+			_playerPolicyMaintenanceGoldWriteContext = previous;
+		}
+	}
+
+	private static void Patch_PolicyClanDailyTick_Prefix(Clan __0, out PlayerPolicyMaintenanceSettlementContext __state)
+	{
+		__state = null;
+		PlayerPolicyMaintenanceSettlementContext pending = _playerPolicyMaintenanceSettlementContext;
+		if (pending != null && !pending.Committed && pending.Clan == __0 && pending.Day == GetCurrentCampaignDay()) return;
 		CustomPolicyBehavior behavior = Instance ?? Campaign.Current?.GetCampaignBehavior<CustomPolicyBehavior>();
 		if (behavior == null || __0 == null || __0 != Clan.PlayerClan)
 		{
 			return;
 		}
-		_playerPolicyMaintenanceSettlementContext = new PlayerPolicyMaintenanceSettlementContext
+		__state = new PlayerPolicyMaintenanceSettlementContext
 		{
 			Behavior = behavior,
 			Clan = __0,
 			Day = GetCurrentCampaignDay(),
-			BeforeGold = __0.Gold
+			Parent = _playerPolicyMaintenanceSettlementContext
 		};
+		_playerPolicyMaintenanceSettlementContext = __state;
 	}
 
-	private static void Patch_PolicyClanDailyTick_Postfix(Clan __0)
+	private static void Patch_PolicyClanDailyTick_Postfix(PlayerPolicyMaintenanceSettlementContext __state)
 	{
-		ReconcilePlayerPolicyMaintenanceSettlement(__0, null);
+		ReconcilePlayerPolicyMaintenanceSettlement(__state, null);
 	}
 
-	private static Exception Patch_PolicyClanDailyTick_Finalizer(Clan __0, Exception __exception)
+	private static Exception Patch_PolicyClanDailyTick_Finalizer(PlayerPolicyMaintenanceSettlementContext __state, Exception __exception)
 	{
-		ReconcilePlayerPolicyMaintenanceSettlement(__0, __exception);
+		ReconcilePlayerPolicyMaintenanceSettlement(__state, __exception);
 		return __exception;
 	}
 
-	private static void ReconcilePlayerPolicyMaintenanceSettlement(Clan clan, Exception exception)
+	private static void ReconcilePlayerPolicyMaintenanceSettlement(PlayerPolicyMaintenanceSettlementContext context, Exception exception)
 	{
-		PlayerPolicyMaintenanceSettlementContext context = _playerPolicyMaintenanceSettlementContext;
-		_playerPolicyMaintenanceSettlementContext = null;
-		if (context?.Behavior == null || !context.IntentPrepared || context.Clan != clan)
+		if (context == null || context.Committed) return;
+		context.Committed = true;
+		try
 		{
-			return;
+			if (context.Behavior == null || !context.IntentPrepared) return;
+			bool confirmed = context.PaidMaintenanceGold == 0 || context.PaymentReceipt?.Confirmed == true;
+			context.Behavior.CommitPlayerPolicyMaintenanceSettlement(context, confirmed,
+				exception == null ? string.Empty : exception.GetType().Name + ": " + exception.Message);
 		}
-		bool confirmed = PlayerPolicyMaintenancePlanner.IsSettlementGoldDeltaConfirmed(
-			context.BeforeGold,
-			clan?.Gold ?? context.BeforeGold,
-			context.ExpectedGoldDelta);
-		context.Behavior.CommitPlayerPolicyMaintenanceSettlement(
-			context,
-			confirmed,
-			exception == null ? string.Empty : exception.GetType().Name + ": " + exception.Message);
+		finally
+		{
+			if (ReferenceEquals(_playerPolicyMaintenanceSettlementContext, context))
+				_playerPolicyMaintenanceSettlementContext = context.Parent;
+		}
 	}
 
 	private void PreparePlayerPolicyMaintenanceSettlement(
@@ -758,12 +872,16 @@ public sealed partial class CustomPolicyBehavior
 		bool includeDetails,
 		ref ExplainedNumber result)
 	{
+		if (!_policyFinanceModelPatchesApplied || !_policyMaintenanceDailyAdapterReady || !_policyMaintenanceGoldWriteAdapterReady) return;
+		PlayerPolicyMaintenanceSettlementContext context = _playerPolicyMaintenanceSettlementContext;
+		if (context == null || context.Behavior != this || context.Clan != clan || context.IntentPrepared) return;
 		PlayerPolicyMaintenanceRuntimeEntry[] entries = GetPlayerPolicyMaintenanceSortedSnapshot();
 		if (entries.Length == 0)
 		{
 			return;
 		}
 		int currentDay = GetCurrentCampaignDay();
+		if (context.Day != currentDay) return;
 		List<PlayerPolicyMaintenanceRuntimeEntry> due = new List<PlayerPolicyMaintenanceRuntimeEntry>(entries.Length);
 		for (int index = 0; index < entries.Length; index++)
 		{
@@ -798,14 +916,10 @@ public sealed partial class CustomPolicyBehavior
 			}
 		}
 		AddPlayerPolicyMaintenanceTotal(paidTotal, includeDescriptions, ref result);
-		PlayerPolicyMaintenanceSettlementContext context = _playerPolicyMaintenanceSettlementContext;
-		if (context != null && context.Behavior == this && context.Clan == clan && context.Day == currentDay)
-		{
-			context.DueEntries = due.ToArray();
-			context.Funded = funded;
-			context.ExpectedGoldDelta = MathF.Round(result.ResultNumber);
-			context.IntentPrepared = true;
-		}
+		context.DueEntries = due.ToArray();
+		context.Funded = funded;
+		context.PaidMaintenanceGold = paidTotal;
+		context.IntentPrepared = true;
 	}
 
 	private void CommitPlayerPolicyMaintenanceSettlement(
@@ -835,7 +949,7 @@ public sealed partial class CustomPolicyBehavior
 			UpdatePlayerPolicyMaintenanceRecord(effect);
 			if (wasFunded != isFunded && entry.DailyCost > 0)
 			{
-				NotifyPlayerPolicyMaintenanceStateChanged(effect, isFunded);
+				NotifyPlayerPolicyMaintenanceStateChanged(effect, isFunded, settlementFailed: !debitConfirmed && context.Funded[index]);
 			}
 			if (isFunded)
 			{
@@ -844,11 +958,10 @@ public sealed partial class CustomPolicyBehavior
 		}
 		if (!debitConfirmed)
 		{
-			PolicySystemLog.Failure("Finance", "maintenance-debit-mismatch",
-				"policy maintenance was settled unfunded because the actual clan gold delta did not match the finance intent",
+			PolicySystemLog.Failure("Finance", "maintenance-payment-unconfirmed",
+				"policy maintenance native gold write was not confirmed",
 				"day=" + context.Day.ToString(CultureInfo.InvariantCulture)
-				+ " expectedDelta=" + context.ExpectedGoldDelta.ToString(CultureInfo.InvariantCulture)
-				+ " actualDelta=" + ((context.Clan?.Gold ?? context.BeforeGold) - context.BeforeGold).ToString(CultureInfo.InvariantCulture)
+				+ " plannedMaintenance=" + context.PaidMaintenanceGold.ToString(CultureInfo.InvariantCulture)
 				+ (string.IsNullOrWhiteSpace(exception) ? string.Empty : " exception=" + exception));
 		}
 		PolicySystemLog.Transaction(
@@ -858,10 +971,11 @@ public sealed partial class CustomPolicyBehavior
 			string.Empty,
 			"costCommitted",
 			debitConfirmed ? "success" : "failed",
-			errorKind: debitConfirmed ? string.Empty : "ActualGoldDeltaMismatch",
+			errorKind: debitConfirmed ? string.Empty : "NativeGoldWriteUnconfirmed",
 			targetCount: context.DueEntries.Length,
-			costReceipt: "expectedDelta=" + context.ExpectedGoldDelta.ToString(CultureInfo.InvariantCulture)
-				+ ";actualDelta=" + ((context.Clan?.Gold ?? context.BeforeGold) - context.BeforeGold).ToString(CultureInfo.InvariantCulture),
+			costReceipt: "maintenance=" + context.PaidMaintenanceGold.ToString(CultureInfo.InvariantCulture)
+				+ ";writeObserved=" + (context.PaymentReceipt?.WriteObserved == true)
+				+ ";writeConfirmed=" + (context.PaymentReceipt?.Confirmed == true),
 			stateBefore: "settlementIntent",
 			stateAfter: debitConfirmed ? "funded" : "unfunded");
 	}
@@ -2041,13 +2155,15 @@ public sealed partial class CustomPolicyBehavior
 		}
 	}
 
-	private static void NotifyPlayerPolicyMaintenanceStateChanged(ActivePolicyEffectSaveData effect, bool funded)
+	private static void NotifyPlayerPolicyMaintenanceStateChanged(ActivePolicyEffectSaveData effect, bool funded, bool settlementFailed = false)
 	{
 		string name = string.IsNullOrWhiteSpace(effect?.PolicyName) ? "未命名政策" : effect.PolicyName.Trim();
 		InformationManager.DisplayMessage(new InformationMessage(
 			funded
 				? "《" + name + "》维护费已恢复支付，数值效果恢复生效。"
-				: "《" + name + "》维护费不足，今日数值效果暂停；下一日会自动重试。",
+				: settlementFailed
+					? "《" + name + "》维护费结算异常，今日数值效果暂停；下一日会自动重试。"
+					: "《" + name + "》维护费不足，今日数值效果暂停；下一日会自动重试。",
 			funded ? Colors.Green : Colors.Yellow));
 	}
 
@@ -3667,6 +3783,7 @@ public sealed partial class CustomPolicyBehavior
 		{
 			string raw = JsonConvert.SerializeObject(effect);
 			_activePolicyEffects[effectId] = raw;
+			InvalidatePolicyRecordPresentation();
 			_activePolicyEffectRuntimeCache[effectId] = new ActivePolicyEffectRuntimeEntry
 			{
 				Raw = raw,
@@ -3865,6 +3982,7 @@ public sealed partial class CustomPolicyBehavior
 			return;
 		}
 		_activePolicyEffects.Remove(effectId);
+		InvalidatePolicyRecordPresentation();
 		_activePolicyEffectRuntimeCache.Remove(effectId);
 		_policyTargetStructureDependencyEffectIds.Remove(effectId);
 		_policyTargetRelationDependencyEffectIds.Remove(effectId);
@@ -4092,21 +4210,11 @@ public sealed partial class CustomPolicyBehavior
 				UpdatePolicyRecordEffectProgress(activeEffect);
 				if (IsLocalActivePolicyEffect(activeEffect))
 				{
-					if (!IsMentionedLocalPolicyEffect(activeEffect))
-					{
-						MarkPlayerLocalPolicyEffectEnded(activeEffect, LocalPolicyStatusExpired, "自然到期");
-					}
-					else
-					{
-						UpdatePolicyRecordEffectProgress(activeEffect);
-					}
+					MarkPlayerLocalPolicyEffectEnded(activeEffect, LocalPolicyStatusExpired, "自然到期");
 				}
 				else if (IsVassalActivePolicyEffect(activeEffect))
 				{
-					if (IsSourceVassalPolicyEffect(activeEffect))
-					{
-						MarkLocalPolicyEnded(activeEffect, LocalPolicyStatusExpired, "自然到期");
-					}
+					MarkLocalPolicyEnded(activeEffect, LocalPolicyStatusExpired, "自然到期");
 				}
 				else
 				{
@@ -4172,11 +4280,15 @@ public sealed partial class CustomPolicyBehavior
 						(activeEffect.EffectId ?? key) + ":expired",
 						out _,
 						out _);
-					if (IsLocalActivePolicyEffect(activeEffect) && !IsMentionedLocalPolicyEffect(activeEffect))
+					if (IsLocalActivePolicyEffect(activeEffect))
 					{
 						MarkPlayerLocalPolicyEffectEnded(activeEffect, LocalPolicyStatusExpired, "自然到期");
 					}
-					else if (!IsVassalActivePolicyEffect(activeEffect))
+					else if (IsVassalActivePolicyEffect(activeEffect))
+					{
+						MarkLocalPolicyEnded(activeEffect, LocalPolicyStatusExpired, "自然到期");
+					}
+					else
 					{
 						MarkPolicyRecordEffectEnded(activeEffect, "效果期限结束", queueNaturalExpiry: false);
 					}
@@ -4624,18 +4736,13 @@ public sealed partial class CustomPolicyBehavior
 				RemoveActivePolicyEffect(key);
 				if (isLocalEffect)
 				{
-					if (!IsMentionedLocalPolicyEffect(activeEffect))
-					{
-						MarkPlayerLocalPolicyEffectEnded(activeEffect, LocalPolicyStatusExpired, "自然到期");
+					MarkPlayerLocalPolicyEffectEnded(activeEffect, LocalPolicyStatusExpired, "自然到期");
+					if (IsLocalPolicyRecordEnded(activeEffect.RecordId))
 						InvokeLocalPolicyLifecycleMemoryHook("expired", activeEffect.RecordId, activeEffect.TargetFiefIds);
-					}
 				}
 				else if (IsVassalActivePolicyEffect(activeEffect))
 				{
-					if (IsSourceVassalPolicyEffect(activeEffect))
-					{
-						MarkLocalPolicyEnded(activeEffect, LocalPolicyStatusExpired, "自然到期");
-					}
+					MarkLocalPolicyEnded(activeEffect, LocalPolicyStatusExpired, "自然到期");
 				}
 				else
 				{
@@ -6156,6 +6263,8 @@ public sealed partial class CustomPolicyBehavior
 				continue;
 			}
 			record.Status = LocalPolicyStatusRelationshipEnded;
+			InvalidatePolicyRecordPresentation();
+			record.EffectStatus = LocalPolicyStatusRelationshipEnded;
 			record.EndReason = endReason;
 			record.RemainingDays = 0;
 			record.ActiveEffectId = "";
@@ -6163,6 +6272,8 @@ public sealed partial class CustomPolicyBehavior
 			{
 				effect.ActiveEffectId = "";
 				effect.RemainingDays = 0;
+				effect.IsEnded = true;
+				effect.EndReason = endReason;
 			}
 			_localPolicyRecords[item.Key] = JsonConvert.SerializeObject(record);
 			affectedRecordIds.Add(record.RecordId);
@@ -6454,6 +6565,8 @@ public sealed partial class CustomPolicyBehavior
 		activeEffect.RemainingDays = 0;
 		activeEffect.Ended = true;
 		activeEffect.EndReason = reason ?? "";
+		if (string.Equals(status, LocalPolicyStatusExpired, StringComparison.OrdinalIgnoreCase)
+			&& KeepLocalPolicyActiveIfAnotherEffectRemains(activeEffect)) return;
 		try
 		{
 			if (_localPolicyRecords.TryGetValue(activeEffect.RecordId ?? "", out string raw))
@@ -6462,6 +6575,8 @@ public sealed partial class CustomPolicyBehavior
 				if (record != null)
 				{
 					record.Status = status ?? LocalPolicyStatusExpired;
+					record.EffectStatus = record.Status;
+					InvalidatePolicyRecordPresentation();
 					record.EndReason = reason ?? "";
 					record.RemainingDays = 0;
 					record.ActiveEffectId = "";
@@ -6473,6 +6588,8 @@ public sealed partial class CustomPolicyBehavior
 					{
 						effect.ActiveEffectId = "";
 						effect.RemainingDays = 0;
+						effect.IsEnded = true;
+						effect.EndReason = reason ?? "";
 					}
 					_localPolicyRecords[record.RecordId] = JsonConvert.SerializeObject(record);
 				}
@@ -6503,6 +6620,7 @@ public sealed partial class CustomPolicyBehavior
 		activeEffect.RemainingDays = 0;
 		activeEffect.Ended = true;
 		activeEffect.EndReason = reason ?? string.Empty;
+		if (KeepLocalPolicyActiveIfAnotherEffectRemains(activeEffect)) return;
 		try
 		{
 			if (_localPolicyRecords.TryGetValue(activeEffect.RecordId ?? string.Empty, out string raw))
@@ -6510,7 +6628,8 @@ public sealed partial class CustomPolicyBehavior
 				LocalPolicyRecordSaveData record = NormalizeLocalPolicyRecord(JsonConvert.DeserializeObject<LocalPolicyRecordSaveData>(raw));
 				if (record != null)
 				{
-					record.Status = LocalPolicyStatusActive;
+					record.Status = effectStatus ?? LocalPolicyStatusExpired;
+					InvalidatePolicyRecordPresentation();
 					record.EffectStatus = effectStatus ?? LocalPolicyStatusExpired;
 					record.EndReason = reason ?? string.Empty;
 					record.RemainingDays = 0;
@@ -6539,6 +6658,34 @@ public sealed partial class CustomPolicyBehavior
 			PolicyDebugLog("local-effect-end-update-failed", ex.Message);
 		}
 		_activePolicyEffectModelCache.Clear();
+	}
+
+	private bool IsLocalPolicyRecordEnded(string recordId)
+		=> _localPolicyRecords.TryGetValue(recordId ?? string.Empty, out string raw)
+			&& CanDeletePolicyHistoryState(NormalizeLocalPolicyRecord(JsonConvert.DeserializeObject<LocalPolicyRecordSaveData>(raw))?.Status, false, false);
+
+	private bool KeepLocalPolicyActiveIfAnotherEffectRemains(ActivePolicyEffectSaveData ending)
+	{
+		Dictionary<string, List<ActivePolicyEffectSaveData>> index = BuildActivePolicyEffectHistoryIndex();
+		if (!index.TryGetValue(ending.RecordId ?? string.Empty, out List<ActivePolicyEffectSaveData> effects)) return false;
+		List<ActivePolicyEffectSaveData> remaining = effects.Where(effect => !string.Equals(effect.EffectId, ending.EffectId, StringComparison.OrdinalIgnoreCase)
+			&& IsPolicyEffectWithinDuration(effect)).ToList();
+		if (remaining.Count == 0) return false;
+		UpdateLocalPolicyProgress(ending);
+		if (_localPolicyRecords.TryGetValue(ending.RecordId, out string raw))
+		{
+			LocalPolicyRecordSaveData record = NormalizeLocalPolicyRecord(JsonConvert.DeserializeObject<LocalPolicyRecordSaveData>(raw));
+			if (record != null)
+			{
+				record.Status = record.EffectStatus = LocalPolicyStatusActive;
+				record.EndReason = string.Empty;
+				record.ActiveEffectId = remaining[0].EffectId;
+				record.RemainingDays = remaining.Max(effect => effect.RemainingDays);
+				_localPolicyRecords[record.RecordId] = JsonConvert.SerializeObject(record);
+				InvalidatePolicyRecordPresentation();
+			}
+		}
+		return true;
 	}
 
 	private List<string> GetLocalPolicySourceFiefIds(string recordId)

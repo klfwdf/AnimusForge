@@ -2024,7 +2024,7 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 		set => _npcPersonaGenerationRequirements = NormalizeNpcPersonaGenerationRequirementsText(value);
 	}
 
-	[SettingPropertyButton("NPC个性背景生成要求文案", -1, true, "", Content = "打开编辑器", Order = 3, RequireRestart = false, HintText = "点击这里使用大文本编辑器保存 NPC 个性与历史背景生成的自定义要求。原始人设生成器提示词不会被覆盖，该文案会作为“玩家自定义生成要求”追加在其下方。")]
+	[SettingPropertyButton("NPC个性背景生成要求文案", -1, true, "", Content = "打开编辑器", Order = 3, RequireRestart = false, HintText = "编辑普通 Hero 与升格同伴共用的完整写作要求。默认文案来自模组内容，保存后使用你的文案替换；留空保存表示不注入写作要求，仅保留 JSON 协议与事实约束。")]
 	[SettingPropertyGroup("9. 提示词扩展")]
 	public Action EditNpcPersonaGenerationRequirements { get; set; }
 
@@ -2091,6 +2091,10 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 	[SettingPropertyButton("政策效果模块管理", -1, true, "", Content = "打开管理器", Order = 1, RequireRestart = false, HintText = "分别设置玩家政策、地方政策、NPC 统治者政策和附庸国政策可检索的效果模块。只影响保存后新发起的政策。")]
 	[SettingPropertyGroup("16. 政策系统", GroupOrder = 0)]
 	public Action ManagePolicyEffectModules { get; set; }
+
+	[SettingPropertyButton("总量上限设置", -1, true, "", Content = "打开设置", Order = 4, RequireRestart = false, HintText = "调整繁荣度、户数、民兵和粮仓的总量瓶颈。只限制每日正向增长，不削减超额旧存量。粮仓默认最终容量 1000，其余限制默认关闭。")]
+	[SettingPropertyGroup("16. 政策系统", GroupOrder = 0)]
+	public Action EditSettlementBalance { get; set; }
 
 	[SettingPropertyInteger("本国最近生效政策条数", 0, 10, "0", Order = 2, RequireRestart = false, HintText = "玩家评议和 NPC 政策生成读取本国最近现行政策的上限，默认 2；不区分发布者。0 关闭，数量不足不补位；不影响普通对话。")]
 	[SettingPropertyGroup("16. 政策系统", GroupOrder = 0)]
@@ -3292,7 +3296,7 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 		try
 		{
 			string initialText = NpcPersonaGenerationRequirements ?? "";
-			DevTextEditorHelper.ShowLongTextEditor("编辑NPC个性背景生成要求", "这段内容会追加在人设生成器原始 system prompt 下方，不会覆盖内置 JSON 格式与事实一致性要求。", "建议只写个性、历史背景的侧重点、文风、长度偏好或禁用写法；留空表示不额外注入。", initialText, delegate(string input)
+			DevTextEditorHelper.ShowLongTextEditor("编辑NPC个性背景生成要求", "普通 Hero 与升格同伴共用此处的完整写作要求；内置仅保留生成任务、JSON 协议与事实约束。", "可直接修改篇幅、文风、素材取舍与重生避重要求。保存后替换默认文案；留空保存表示不注入写作要求。", initialText, delegate(string input)
 			{
 				SaveNpcPersonaGenerationRequirementsFromEditor(input);
 			}, null, "保存", "返回");
@@ -4557,7 +4561,8 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 		{
 			throw new InvalidOperationException("已有自定义提示词文件损坏；请先备份或修复原件，未覆盖原件。");
 		}
-		if (string.IsNullOrWhiteSpace(text))
+		if (string.IsNullOrWhiteSpace(text)
+			&& !string.Equals(Path.GetFileName(path), NpcPersonaGenerationRequirementsJsonFileName, StringComparison.OrdinalIgnoreCase))
 		{
 			if (File.Exists(path)) File.Delete(path);
 		}
@@ -6555,6 +6560,7 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 		{
 			PolicyEffectModuleManagerUi.Open();
 		};
+		EditSettlementBalance = SettlementBalancePopup.Open;
 		EditWorldDiplomacyPrompt = delegate
 		{
 			OpenWorldDiplomacyPromptEditor();
