@@ -793,6 +793,8 @@ public sealed class PolicyHistoryData
 public sealed class PolicyHistoryRecordData
 {
 	public string RecordId { get; set; }
+	public string HistoryKey { get; set; }
+	public bool CanDelete { get; set; }
 
 	public bool CanReReview { get; set; }
 
@@ -1174,16 +1176,19 @@ public sealed class CustomPolicyHistoryPopup
 
 	private bool _isClosed;
 
-	private CustomPolicyHistoryPopup(ScreenBase screen, PolicyHistoryData data, Action<string> onReReview, Action onClose)
+	private CustomPolicyHistoryPopup(ScreenBase screen, PolicyHistoryData data, Action<string> onReReview, Action onClose, Action<string> onDelete)
 	{
 		_screen = screen;
 		_onClose = onClose;
 		_onReReview = onReReview;
-		_dataSource = new CustomPolicyHistoryPopupVM(data, HandleReReviewRequested, HandleCloseRequested);
+		_dataSource = new CustomPolicyHistoryPopupVM(data, HandleReReviewRequested, HandleCloseRequested, key => { Close(true); onDelete?.Invoke(key); });
 		_layer = new GauntletLayer("CustomPolicyHistoryPopup", 4100, false);
 	}
 
 	public static bool Show(PolicyHistoryData data, Action<string> onReReview, Action onClose = null)
+		=> Show(data, onReReview, onClose, null);
+
+	internal static bool Show(PolicyHistoryData data, Action<string> onReReview, Action onClose, Action<string> onDelete)
 	{
 		ScreenBase topScreen = ScreenManager.TopScreen;
 		if (topScreen == null)
@@ -1193,7 +1198,7 @@ public sealed class CustomPolicyHistoryPopup
 		try
 		{
 			_activePopup?.Close(silent: true);
-			CustomPolicyHistoryPopup popup = new CustomPolicyHistoryPopup(topScreen, data ?? new PolicyHistoryData(), onReReview, onClose);
+			CustomPolicyHistoryPopup popup = new CustomPolicyHistoryPopup(topScreen, data ?? new PolicyHistoryData(), onReReview, onClose, onDelete);
 			popup.Open();
 			_activePopup = popup;
 			return true;
@@ -1207,7 +1212,7 @@ public sealed class CustomPolicyHistoryPopup
 		}
 	}
 
-	public static bool Show(PolicyHistoryData data, Action onClose = null)
+	public static bool Show(PolicyHistoryData data, Action onClose = null, Action<string> onDelete = null)
 	{
 		return Show(data, null, onClose);
 	}
@@ -1394,6 +1399,9 @@ public sealed class CustomPolicyHistoryPopupVM : ViewModel
 	}
 
 	public CustomPolicyHistoryPopupVM(PolicyHistoryData data, Action<string> onReReview, Action onClose)
+		: this(data, onReReview, onClose, null) { }
+
+	internal CustomPolicyHistoryPopupVM(PolicyHistoryData data, Action<string> onReReview, Action onClose, Action<string> onDelete)
 	{
 		_onReReview = onReReview;
 		_onClose = onClose;
@@ -1409,7 +1417,7 @@ public sealed class CustomPolicyHistoryPopupVM : ViewModel
 			{
 				if (record != null)
 				{
-					RecordItems.Add(new CustomPolicyHistoryRecordItemVM(record, _onReReview));
+					RecordItems.Add(new CustomPolicyHistoryRecordItemVM(record, _onReReview, onDelete));
 				}
 			}
 		}
@@ -1426,6 +1434,10 @@ public sealed class CustomPolicyHistoryPopupVM : ViewModel
 public sealed class CustomPolicyHistoryRecordItemVM : ViewModel
 {
 	private readonly Action<string> _onReReview;
+	private readonly Action<string> _onDelete;
+	public string HistoryKey { get; }
+	[DataSourceProperty] public bool CanDelete { get; }
+	[DataSourceProperty] public string DeleteText => "删除记录";
 
 	[DataSourceProperty] public string RecordId { get; set; }
 
@@ -1578,8 +1590,14 @@ public sealed class CustomPolicyHistoryRecordItemVM : ViewModel
 	}
 
 	public CustomPolicyHistoryRecordItemVM(PolicyHistoryRecordData record, Action<string> onReReview)
+		: this(record, onReReview, null) { }
+
+	internal CustomPolicyHistoryRecordItemVM(PolicyHistoryRecordData record, Action<string> onReReview, Action<string> onDelete)
 	{
 		_onReReview = onReReview;
+		_onDelete = onDelete;
+		HistoryKey = record?.HistoryKey ?? string.Empty;
+		CanDelete = record?.CanDelete == true;
 		RecordId = record?.RecordId ?? string.Empty;
 		CanReReview = record?.CanReReview == true;
 		ReReviewText = string.IsNullOrWhiteSpace(record?.ReReviewText) ? "重新评议" : record.ReReviewText.Trim();
@@ -1593,6 +1611,8 @@ public sealed class CustomPolicyHistoryRecordItemVM : ViewModel
 		ImpactSectionTitleText = string.IsNullOrWhiteSpace(record?.ImpactSectionTitleText) ? "【每日影响】" : record.ImpactSectionTitleText.Trim();
 		ImpactSummaryText = (record?.ImpactSummaryText ?? "").Trim();
 	}
+
+	public void ExecuteDelete() { if (CanDelete) _onDelete?.Invoke(HistoryKey); }
 
 	public void ExecuteReReview()
 	{

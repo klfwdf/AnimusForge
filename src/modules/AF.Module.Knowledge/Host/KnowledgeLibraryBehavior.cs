@@ -639,6 +639,35 @@ public class KnowledgeLibraryBehavior : CampaignBehaviorBase
 
 	public static KnowledgeLibraryBehavior Instance { get; private set; }
 
+	/// <summary>Worker: retain the normal recall/rerank pool, but consume only its first rule.</summary>
+	internal static LoreRule CollectPersonaLoreRule(MentionedWorldEntities mentions, long preparedVersion, PromptLoreSettings settings)
+	{
+		return CollectPromptLoreCandidates(mentions, preparedVersion, settings)?.OrderedRules?.FirstOrDefault();
+	}
+
+	/// <summary>Game thread: render exactly one rule for the target Hero, with no dialogue keyword slots.</summary>
+	internal string BuildPersonaLoreSource(Hero hero, LoreRule rule, long expectedVersion)
+	{
+		if (!ReferenceEquals(Instance, this) || hero == null || rule == null
+			|| expectedVersion <= 0L || Index.Version != expectedVersion || !CanInjectKnowledgeRule(rule, includePlayerPersona: false))
+		{
+			return "";
+		}
+		string heroId = (hero.StringId ?? "").Trim();
+		string cultureId = (hero.Culture?.StringId ?? "neutral").Trim().ToLowerInvariant();
+		string kingdomId = (hero.Clan?.Kingdom?.StringId ?? hero.MapFaction?.StringId ?? "").Trim().ToLowerInvariant();
+		string settlementId = (hero.CurrentSettlement?.StringId ?? "").Trim().ToLowerInvariant();
+		string role = hero.IsLord ? "lord" : hero.IsNotable ? "notable" : RoleFromOccupation(hero.Occupation);
+		LoreVariant variant = PickBestVariant(rule, hero, null, heroId, cultureId, kingdomId, settlementId, role,
+			hero.IsFemale, hero.Clan != null && hero.Clan.Leader == hero);
+		string content = variant == null ? "" : ApplyRuleTextMappings(rule, variant.Content ?? "", hero, null).Trim();
+		Logger.Log("NpcPersona", "lore_source hero=" + heroId + " rule=" + (rule.Id ?? "")
+			+ " version=" + expectedVersion + " result=" + (variant == null ? "variant_miss" : content.Length == 0 ? "content_empty" : "hit"));
+		if (content.Length == 0) return "";
+		string title = rule.Keywords?.FirstOrDefault(keyword => !string.IsNullOrWhiteSpace(keyword))?.Trim() ?? rule.Id ?? "";
+		return "【世界书资料：" + title + "】\n" + content;
+	}
+
 	private static string TrimPreview(string s, int maxChars)
 	{
 		s = (s ?? "").Replace("\r", "").Replace("\n", " ").Trim();

@@ -1,0 +1,104 @@
+using System;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Collections.Generic;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+
+namespace AnimusForge {
+ internal sealed class DuelSettings {
+  private const string NpcPersonaGenerationRequirementsJsonFileName="NpcPersonaGenerationRequirements.json";
+  private const int WorldDiplomacyPromptJsonVersion=1;
+  private static readonly Encoding CustomPromptStrictUtf8Encoding=new UTF8Encoding(false,true),CustomPromptWriteEncoding=new UTF8Encoding(false);
+  private static bool IsCustomPromptTextFileTooLarge(string p)=>new FileInfo(p).Length>1024*1024;
+  private static bool IsWorldDiplomacyPromptPath(string p)=>false;
+  private static string MigrateLegacyWorldDiplomacyPromptText(string t)=>t;
+  private static void LogPlayerCustomPromptRuleWarning(string t){}
+  private static bool IsPolicyPromptFileName(string name)=>false;
+  private static string GetPolicyPromptTextFilePath(string dir,string file)=>Path.Combine(dir,file);
+  private static string GetCustomPromptTextFilePath(string dir,string file)=>Path.Combine(dir,file);
+  internal static void Save(string path,string text)=>PersistCustomPromptTextFileUnlocked(path,text);
+  internal static string Load(string over,string package,string file){if(!TryReadLayeredCustomPromptTextJsonFile(over,package,file,null,"",out var t))throw new Exception("fixture load failed");return t;}
+  @@SETTINGS@@
+ }
+#if PERSONA_LORE
+ internal sealed class PromptLoreSettings {internal bool Enabled=true;internal int SemanticTopK=4;internal float SemanticMinScore=.21f;}
+ internal sealed class FakePorts:IKnowledgeIndexPorts {
+  internal bool Onnx=true,Rerank=true,FailRerank;
+  internal int EmbedCalls,RerankCalls;
+  public bool EmbeddingAvailable=>Onnx;
+  public bool RerankerAvailable=>Rerank;
+  public int SemanticTopK=>4;
+  public float SemanticMinScore=>.21f;
+  public bool TryGetEmbedding(string text,out float[] vector){EmbedCalls++;vector=new[]{1f,0f};return Onnx;}
+  public bool TryScoreBatch(string query,IReadOnlyList<string> docs,out List<float> scores){RerankCalls++;scores=docs.Select(x=>x.Contains("family")?.99f:.6f).ToList();return !FailRerank;}
+  public void Log(string c,string m){}
+ }
+#endif
+}
+
+internal static class Program {
+ static int checks;
+ static void Check(bool ok,string text){checks++;if(!ok)throw new Exception("FAIL "+text);}
+ static void SettingsCases(string root,string packagedSource){
+  string package=Path.Combine(root,"package"),over=Path.Combine(root,"overrides"),name="NpcPersonaGenerationRequirements.json";
+  Directory.CreateDirectory(package);
+  string packaged=File.ReadAllText(packagedSource,Encoding.UTF8);File.WriteAllText(Path.Combine(package,name),packaged,new UTF8Encoding(false));
+  string defaultText=(string)JObject.Parse(packaged)["Text"];
+  Check(!string.IsNullOrWhiteSpace(defaultText)&&defaultText.Contains("300"),"packaged complete editable writing requirements");
+  Check(AnimusForge.DuelSettings.Load(over,package,name)==defaultText&&!Directory.Exists(over),"default read does not materialize overrides");
+  string path=Path.Combine(over,name);AnimusForge.DuelSettings.Save(path,"USER_CUSTOM_ONLY");
+  Check(AnimusForge.DuelSettings.Load(over,package,name)=="USER_CUSTOM_ONLY","custom replaces defaults without concatenation");
+  Check(File.ReadAllText(Path.Combine(package,name),Encoding.UTF8)==packaged,"packaged default remains unchanged");
+  AnimusForge.DuelSettings.Save(path,"");
+  Check(File.Exists(path)&&(string)JObject.Parse(File.ReadAllText(path))["Text"]=="","persona clear persists explicit empty Text");
+  Check(AnimusForge.DuelSettings.Load(over,package,name)==""&&AnimusForge.DuelSettings.Load(over,package,name)=="","fresh disk reload does not restore writing requirements");
+  string empty=File.ReadAllText(path);Check((int)JObject.Parse(empty)["Version"]==1,"existing JSON schema retained");
+  Check(File.ReadAllText(path)==empty,"reading existing empty override does not rewrite it");
+  AnimusForge.DuelSettings.Save(path,"NEXT_CUSTOM");Check(AnimusForge.DuelSettings.Load(over,package,name)=="NEXT_CUSTOM","edit after clearing works");
+  File.WriteAllText(path,"{broken");bool rejected=false;try{AnimusForge.DuelSettings.Save(path,"");}catch(InvalidOperationException){rejected=true;}
+  Check(rejected&&File.ReadAllText(path)=="{broken","corrupt original not overwritten");
+  Check(AnimusForge.DuelSettings.Load(over,package,name)==defaultText,"corrupt override falls back without mutation");
+  foreach(string ordinary in new[]{"PlayerCustomPromptRule.json","WeeklyReportWritingRequirements.json"}){
+   File.WriteAllText(Path.Combine(package,ordinary),"{\"Version\":1,\"Text\":\"ORDINARY_DEFAULT\"}");
+   AnimusForge.DuelSettings.Save(Path.Combine(over,ordinary),"USER");AnimusForge.DuelSettings.Save(Path.Combine(over,ordinary),"");
+   Check(!File.Exists(Path.Combine(over,ordinary))&&AnimusForge.DuelSettings.Load(over,package,ordinary)=="ORDINARY_DEFAULT","other prompt clear behavior unchanged: "+ordinary);
+  }
+  Check(!Directory.EnumerateFiles(over,".afp-*").Any(),"no atomic write candidate leak");
+ }
+#if PERSONA_LORE
+ static void LoreCases(){
+  var hero=new AnimusForge.Hero {StringId="hero",Name=new(){Value="NPC"},Culture=new(){StringId="empire"},Clan=new(){Kingdom=new(){StringId="empire_s"}},CurrentSettlement=new(){StringId="hero_town"},IsLord=true};hero.Clan.Leader=hero;
+  AnimusForge.Settlement.CurrentSettlement=new(){StringId="player_town"};
+  var self=new AnimusForge.KnowledgeLibraryBehavior.LoreRule {Id="self",Keywords=new(){"NPC"},Variants=new(){new(){Content="self-body"}}};
+  var family=new AnimusForge.KnowledgeLibraryBehavior.LoreRule {Id="family",Keywords=new(){"NPC family"},Variants=new(){new(){Content="generic-body"},new(){Content="specific-body",When=new(){HeroIds=new(){"hero"},KingdomIds=new(){"empire_s"},SettlementIds=new(){"hero_town"}}}}};
+  AnimusForge.KnowledgeLibraryBehavior.Ports=new();var owner=new AnimusForge.KnowledgeLibraryBehavior(new(){self,family});
+  long v=owner.GetRuleDataVersionForExternal();var mentions=new AnimusForge.MentionedWorldEntities {Entities=new(){"NPC"}};var settings=new AnimusForge.PromptLoreSettings();
+  var selected=AnimusForge.KnowledgeLibraryBehavior.CollectPersonaLoreRule(mentions,v,settings);
+  Check(ReferenceEquals(selected,family),"reranked top one wins, not forced exact name");
+  string source=owner.BuildPersonaLoreSource(hero,selected,v);
+  Check(source.Contains("specific-body")&&!source.Contains("generic-body")&&!source.Contains("self-body"),"one applicable version using target settlement, not current player scene");
+  Check(!source.Contains("聊天素材")&&!source.Contains("参与互动"),"persona source is not a dialogue prompt");
+  int calls=AnimusForge.KnowledgeLibraryBehavior.Ports.RerankCalls;
+  AnimusForge.KnowledgeLibraryBehavior.CollectPersonaLoreRule(mentions,v,settings);
+  Check(calls==AnimusForge.KnowledgeLibraryBehavior.Ports.RerankCalls,"ranked cache reused");
+  family.Variants=new(){new(){Content="wrong",When=new(){HeroIds=new(){"other"}}}};
+  Check(owner.BuildPersonaLoreSource(hero,selected,v)=="","no matching variant does not bypass conditions or try second rule");
+  family.Variants=new(){new(){Content="   "}};Check(owner.BuildPersonaLoreSource(hero,selected,v)=="","empty body omitted");
+  family.Variants=new(){new(){Content="replace-ME"}};family.TextMappings=new(){new(){SourceText="ME"}};
+  Check(owner.BuildPersonaLoreSource(hero,selected,v).Contains("mapped-value"),"production text mapping applied to body");
+  Check(owner.BuildPersonaLoreSource(null,selected,v)==""&&owner.BuildPersonaLoreSource(hero,null,v)=="","missing target or rule omitted");
+  var player=new AnimusForge.KnowledgeLibraryBehavior.LoreRule{Id="player_persona",Variants=new(){new(){Content="private"}}};
+  Check(owner.BuildPersonaLoreSource(hero,player,v)=="","player persona not injected");
+  settings.Enabled=false;Check(AnimusForge.KnowledgeLibraryBehavior.CollectPersonaLoreRule(mentions,v,settings)==null,"retrieval disabled omits rule");settings.Enabled=true;
+  Check(AnimusForge.KnowledgeLibraryBehavior.CollectPersonaLoreRule(mentions,v+1,settings)==null&&owner.BuildPersonaLoreSource(hero,selected,v+1)=="","stale version rejected before and after retrieval");
+  AnimusForge.KnowledgeLibraryBehavior.TouchForTest();Check(owner.BuildPersonaLoreSource(hero,selected,v)=="","data changed during retrieval omitted");
+  foreach(var ports in new[]{new AnimusForge.FakePorts{Onnx=false,Rerank=false},new AnimusForge.FakePorts{Rerank=false},new AnimusForge.FakePorts{FailRerank=true}}){
+   AnimusForge.KnowledgeLibraryBehavior.Ports=ports;owner=new(new(){self});
+   Check(AnimusForge.KnowledgeLibraryBehavior.CollectPersonaLoreRule(mentions,owner.GetRuleDataVersionForExternal(),settings)?.Id=="self","existing sparse or recall fallback retained");
+  }
+ }
+#endif
+ static int Main(string[] args){try{SettingsCases(args[0],args[1]);@@RUN_LORE@@Console.WriteLine("PASS persona lore/settings checks="+checks);return 0;}catch(Exception e){Console.WriteLine(e);return 1;}}
+}

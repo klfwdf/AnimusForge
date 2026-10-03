@@ -20,7 +20,27 @@ namespace AnimusForge {
  internal static class EncyclopediaHeroPersonaPatch {internal static void QueueRefreshForHero(string id){Probe.Read();InformationManager.Refreshed++;} }
 
  internal static class SaveRuntimeGuard {internal static long Generation=1;internal static long CaptureGeneration()=>Generation;internal static bool IsCurrentGeneration(long g)=>g==Generation;internal static bool IsStale(long g,string s=null)=>!IsCurrentGeneration(g);}
- internal sealed class DuelSettings {internal string NpcPersonaGenerationRequirements="custom-requirements";internal static DuelSettings GetSettings(){Probe.Read();return new DuelSettings();}}
+ internal sealed class DuelSettings {internal static string Requirements="custom-requirements";internal string NpcPersonaGenerationRequirements=Requirements;internal static DuelSettings GetSettings(){Probe.Read();return new DuelSettings();}}
+ internal sealed class MentionedWorldEntities {internal List<string> Entities=new();}
+ internal sealed class PromptLoreSettings {internal bool Enabled;}
+ internal sealed class KnowledgeLibraryBehavior {
+  internal sealed class LoreRule {internal string Content;}
+  internal static KnowledgeLibraryBehavior Instance;
+  internal static long Version=1;
+  internal static bool Enabled=true,ThrowQuery,ThrowRender,Started;
+  internal static string Content="worldbook-body",Query;
+  internal static ManualResetEventSlim Gate=new(true);
+  internal static PromptLoreSettings CapturePromptLoreSettings(){Probe.Read();return new(){Enabled=Enabled};}
+  internal static long PreparePromptLoreRetrieval(MentionedWorldEntities mentions){Probe.Read();Query=string.Join("|",mentions.Entities);return Version;}
+  internal static LoreRule CollectPersonaLoreRule(MentionedWorldEntities mentions,long version,PromptLoreSettings settings){
+   if(TWParallel.IsMainThread())throw new Exception("Lore query ran on the game thread");
+   Started=true;Gate.Wait();if(ThrowQuery)throw new Exception("lore failed");
+   return settings.Enabled&&Version==version?new(){Content=Content}:null;
+  }
+  internal string BuildPersonaLoreSource(Hero h,LoreRule rule,long version){Probe.Read();if(ThrowRender)throw new Exception("mapping failed");return Version==version&&rule!=null&&!string.IsNullOrWhiteSpace(rule.Content)?"【世界书资料】\n"+rule.Content:"";}
+  internal static void Reset(){Instance=null;Enabled=true;Version=1;ThrowQuery=ThrowRender=Started=false;Content="worldbook-body";Query=null;Gate=new(true);}
+ }
+ internal sealed class PersonaEditorPort {internal Func<Hero,Task<string>> GeneratePersona;internal Func<long,Func<bool>,Task<bool>> CompleteOnMainThread;}
  internal static class Logger {internal static void Log(string c,string m){} }
  internal static class LlmRetryPrompt {internal static string BuildFailureDetail(string m,string r,string raw=null)=>m;internal static void ShowFailurePopup(string t,string d){Probe.Read();}}
  public partial class MyBehavior {
@@ -49,6 +69,7 @@ namespace AnimusForge {
   private static bool TryParsePersonaJson(string s,out string p,out string b){var a=(s??"").Split('|');p=a[0];b=a.Length==2?a[1]:"";return a.Length==2;}
   private Task<ApiCallResult> CallAuxiliaryGatewayDetailed(string sys,string user,string source,int n,bool forceThinkingDisabled){Probe.Read();SentSystem=sys;SentUser=user;Calls++;return source=="PromotedCompanionSkills"?GetPromotedSkillsResponse():response.Task;}
   private static void InvokePersonaRerollClosed(Action action){Probe.Read();action?.Invoke();}
+  private PersonaEditorPort _port=>new(){GeneratePersona=h=>GenerateNpcPersonaAsync(h,true,true),CompleteOnMainThread=RunMemorySummaryCompletionAsync};
   internal async Task<string> External(Hero h){await EnsureNpcPersonaGeneratedForExternalAsync(h);return "";}
   internal async Task<string> RerollUi(Hero h){await RunHeroPersonaRerollAsync(h,null);return "";}
   @@REROLL_UI@@
@@ -69,6 +90,7 @@ internal static class Program {
  static void Check(bool b,string s){checks++;if(!b){failures++;Console.WriteLine("FAIL "+s);}}
  static void Pump(AnimusForge.MyBehavior o,Func<bool> done){var start=DateTime.UtcNow;while(!done()){o.Tick();if((DateTime.UtcNow-start).TotalSeconds>8)throw new Exception("fixture timeout");Thread.Sleep(1);} }
  static void Case(string kind) {
+  AnimusForge.KnowledgeLibraryBehavior.Reset();AnimusForge.DuelSettings.Requirements="custom-requirements";
   Probe.OffThread=0;AnimusForge.InformationManager.Refreshed=0;AnimusForge.SaveRuntimeGuard.Generation=1;
   var hero=new Hero("hero");var o=new AnimusForge.MyBehavior();AnimusForge.MyBehavior.Instance=o;AnimusForge.MyBehavior.RegisteredHero=hero;
   bool ui=kind.StartsWith("ui_");bool reroll=kind.StartsWith("reroll")||ui;o.Seed(reroll?"oldP":kind=="partial_p"?"keptP":"",reroll?"oldB":kind=="partial_b"?"keptB":"");
@@ -106,5 +128,6 @@ internal static class Program {
 @@RESERVATION_TESTS@@
  }
  @@TEXT_RULE_CASES@@
- static int Main(){TWParallel.MainId=Environment.CurrentManagedThreadId;try{foreach(var c in new[]{"normal","partial_p","partial_b","one_field","reroll","reroll_voice","normal_edit","reroll_edit","complete","null","parse","http","throw","owner","generation","target","reset","reroll_reset","external_success","external_failure","ui_reroll","ui_edit","ui_reset","ui_failure","ui_reset_before","ui_reset_accept"})Case(c);Reservations();@@RUN_PROMOTED@@@@RUN_TEXT_RULES@@Console.WriteLine($"Hero persona: {checks} checks, {failures} failures; engine/parser/network are fixtures; actual generator + dispatcher.");return failures==0?0:1;}catch(Exception e){Console.WriteLine("FAIL "+e);return 1;}}
+ @@LORE_TESTS@@
+ static int Main(){TWParallel.MainId=Environment.CurrentManagedThreadId;try{foreach(var c in new[]{"normal","partial_p","partial_b","one_field","reroll","reroll_voice","normal_edit","reroll_edit","complete","null","parse","http","throw","owner","generation","target","reset","reroll_reset","external_success","external_failure","ui_reroll","ui_edit","ui_reset","ui_failure","ui_reset_before","ui_reset_accept"})Case(c);Reservations();@@RUN_PROMOTED@@@@RUN_TEXT_RULES@@@@RUN_LORE@@Console.WriteLine($"Hero persona: {checks} checks, {failures} failures; engine/parser/network are fixtures; actual generator + dispatcher.");return failures==0?0:1;}catch(Exception e){Console.WriteLine("FAIL "+e);return 1;}}
 }
