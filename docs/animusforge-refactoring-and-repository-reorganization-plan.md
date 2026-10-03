@@ -6988,3 +6988,10 @@ R2计划交付门槛：已给固定技术路线、真实来源与目标、写入
 - 统一 Stage **3379** 文件，安装实际更新 **13** 个受管文件；安装 hash 与 Stage 一致，版本 `v1.5.0`，XML 仅声明 Bootstrap；**2298** 个非受管文件、原版 DLL 和构建/部署脚本保持不变。
 - 部署验证收据：`artifacts/deploy-meeting-mode-pen-20261004/receipt.json`；回滚点：`C:/Users/29310/AppData/Local/AnimusForge/Recovery/deploy/deploy-863e5975dda1478cb5959ef9d515f1f6`。历史部署 Recovery、旧 Stage 和明确部署备份已删除并核对只剩该回滚点。
 - `LIVE_GAME / REAL_AI_TTS / PLAYER_SAVE / PUSH / PACKAGE = NOT_RUN`。安装 DLL 的离线探针不等于实机验收；源码与玩家数据未改。
+
+<a id="meeting-menu-skip-diagnostics-20261004"></a>
+## 野外领主会面面板缺失：入口诊断（2026-10-04，ACTIVE）
+
+用户反馈野外正常行军领主没有自定义会面面板。06:54:26塔洛斯的两个map conversation入口均主动走总disabled分支；已核对实际加载最新部署1.4 DLL，非旧安装。Start postfix当时队伍尚未初始化，不能据此判目标非法。现日志缺少disabled子原因，未证实是战斗锁或活动上下文误判。
+
+本包先仅修改LordEncounterBehavior及两个map conversation Prefix的诊断：在已命中的判断记录原因、目标及真实上下文；保留原判断顺序、军团选中目标规则及战斗/攻城保护。不改构建脚本、不部署/push/Stage/打包，不纳入其他会话的配置/reranker改动。完成门：检查诊断无额外tick日志/扫描、会面边界回归及原双API/Bootstrap构建；实机复现仍待另行授权安装并重测，不能标根因修复。
