@@ -1,3 +1,49 @@
+<a id="dialogue-continue-hero-auto-20261003"></a>
+# 当前修复：普通模式空白继续点击与 Hero 自动模式（2026-10-03，OFFLINE_VERIFIED）
+
+用户报告切回普通模式后点击空白仍不能继续，并追加自动进入 AI 判断是否为 Hero，让普通劫匪 / 逃兵无需手动切模式。用户最新进一步明确做成两项：保留原自动切换，再加 Hero 过滤开关，替代先前单项强制过滤方案。本地分支 `codex/af-main-refactor-continuation-20260831`，检查点 `380c85d`，产品 / 测试 `4be40f03` + `a7c0a0fd`；保留上一项插画分流 `171bed81` 和其交接。本轮不延续历史 push / 部署 / 打包授权。
+
+## 根因与改动
+
+- 原版1.3 / 1.4 `ConversationScreenButtonWidget.OnUpdate` 按 `AnswerList.ChildCount == 0` 显示 / 启用全屏 ContinueButton；EventManager 从前景子控件开始取第一个接收 PreviewEvent 的节点，不自动把普通 Widget 点击转发给背后的按钮。
+- 自定义固定190高的答案滚动框 / 裁剪节点没有选项时仍接收点击；宿主 `ForceRestoreAll` 还将其外层容器的 `DoNotAcceptEvents` 强制改为 false。之前只改 ContinueText 不能解决这些遮挡，旧代码对照在空白按下 / 松开、反复恢复和有选项到无选项路径失败17项。
+- `extensions/AnimusForge.DialogueUI/src/Native/AFDialogueClickThroughScrollPanel.cs:6-15`，新对话专用滚动控件的四个鼠标按下 / 松开 preview 返回 false；保留原生滚轮 / 手柄滚动和真实子控件。`GUI/Prefabs/AFDialogueConversation.xml:73-120` 将正文 / 答案 scroll 切到此控件，布局 / 裁剪节点不接事件，短正文无溢出时隐藏无用滚动条。正文 RichText 的百科链接、可见滚动条、真实答案 / 五工具按钮保持交互；没有额外全局 ExecuteContinue 或鼠标转发。
+- `src/AF.GameAdapter.Bannerlord/UI/Conversation/NativeConversationAnswerAreaController.cs:325-356`，`ReleaseCurrentNativeAnswerInteraction` 恢复后使外层答案容器与布局列表保持穿透，不阻止子答案事件；空选项恢复继续按钮，有选项仍由原生 widget 关闭继续。既有 suppress / 布局保存 / 恢复与重试边界保留。
+- `extensions/AnimusForge.DialogueUI/src/Native/NativeOverlayVM.cs:44-46` 仅首次创建包装时快照 `AutoEnterAiMode && (!AutoEnterAiModeHeroOnly || OneToOneConversationCharacter.IsHero)`。过滤开启时缺目标按普通模式，不按名字 / 阵营猜测；有身份的 Hero 即便属于敌对阵营仍按 Hero 判断。过滤关闭恢复原不限对象自动进入规则。`src/DialogueUiSettings.cs:35-44` 保留原“自动进入 AI 模式” / `AutoEnterAiMode` 存储键 / 默认 true，新增独立“仅 Hero 自动进入 AI 模式” / `AutoEnterAiModeHeroOnly`（默认 true）。总开关关闭时过滤不能主动进入 AI；手动切换不受两项限制。
+- 同扩展 `src/Native/NativeUiAdapter.cs:73-94` 的 `TryWrap / NpcOpeningPrefix`：默认只在首次包装应用一次，重载不覆盖手动模式；延迟 NPC 开场仅已处于 AI 的包装才允许自动启动，不将非 Hero 或已手动退出 AI 的人再拉回。未替换开场 prompt / 历史 / 网络 / 后处理机制。
+- 性能：Hero / MCM 只在打开新包装时 O(1) 读取一次，后续开场 gate 使用既有字典与模式布尔；新滚动控件仅事件命中时四个常量返回，不增加 tick、全树扫描、反射或分配。恢复沿用原低频路径，只新增两个属性赋值。
+
+## 验证与交付边界
+
+- `python -B extensions/AnimusForge.DialogueUI/tests/continue-hit-tests/run.py --api 1.3` / `--api 1.4`：各 **47 PASS**。编译真实 controller / scroll 控件，读取真实 prefab，抽取两版原生 `CollectEnableWidgetsAt / GetWidgetAtPositionForEvent` 与生产 overlay HitTest。覆盖初始 / AI→普通 / 8次恢复 / 空答案 / 实际答案 / scroll preview / 工具 / 辅助面板 / 隐藏overlay；几何布局、原生按钮状态与绘制 / 滚动移动为替身，不称实机验收。
+- `--baseline 380c85d --api 1.4` 在隔离测试目录读取旧 controller / prefab：预期exit1，**30 PASS / 17 FAIL**，不改工作区。首次fixture缺 Input using 的编译失败保留，补齐后两版通过。
+- `dotnet run --project extensions/AnimusForge.DialogueUI/tests/lifecycle-tests/LifecycleTests.csproj -- F:/AnimusForge-main`：最终 **95 PASS**，包括真实包装 / 开场 gate 在 Hero / 非 Hero / 缺目标、两个开关的所有组合、手动切回 / 进入、重载时的行为；引擎 / Harmony dispatch / drawer 为替身。对话向导fixture对最终两DLL各 **105 PASS**（新增3项真实MCM选项读取）；插画来源分流 **31 PASS**。先前单项方案59 / 102的日志保留，但被本条最终双开关结果替代。
+- 原 `scripts/build/build_single_module.ps1 -ProjectRoot F:/AnimusForge-main -BannerlordRoot 'F:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord' -Configuration Debug` 最终双 API + Bootstrap **0 error**，各实现341既有警告，Bootstrap0警告；引用 `v1.3.15.110062` / `v1.4.6.115628`。本地 `artifacts/dialogue-continue-hit-test-20261003/receipt.json` 绑定12份产品 / 测试、日志、三个DLL / marker hash；最终构建log为 `build-two-settings.log`，原构建 / 部署入口未改。
+- **LIVE / PLAYER_SAVE / PUSH / DEPLOY / STAGE / PACKAGE = NOT_RUN**。已安装游戏 / 旧ZIP不含 `171bed81` / `4be40f03` / `a7c0a0fd`；尚未确认玩家那一局的完整输入焦点情况。获准部署后需实测：Hero自动AI→普通→空白继续；开启过滤时非Hero劫匪 / 逃兵直接普通选项；关闭过滤时不限对象自动AI；关闭总开关全部普通；长选项与长正文滚动；百科返回；手动AI后退出；延迟开场不拉回。
+- 本轮完整定向回滚先 `git revert a7c0a0fd` 再 `git revert 4be40f03`；仅回滚 `a7c0a0fd` 会返回中间的单项强制Hero过滤方案。上一项插画用 `git revert 171bed81` 单独回滚。不 hard reset、不改写历史、不清理其他作者材料。
+
+<a id="illustrator-party-conversation-route-20261003"></a>
+# 当前修复：部队界面 NPC 谈话跳过全景（2026-10-03，OFFLINE_VERIFIED）
+
+用户明确“只有场景里面对话生图才要采集”，补充玩家在野外部队界面与NPC谈话生图因全景无法采集而失败。当前工作区 `F:/AnimusForge-main`、分支 `codex/af-main-refactor-continuation-20260831`，起点 `302e93af`，本地检查点 `7d8761b`、产品 / 测试 `171bed81`。本轮只修分流，不延续上一轮推送 / 部署 / 打包授权；已安装与ZIP仍是上一候选。
+
+## 真实入口与改动
+
+- 原版1.4.5 `TaleWorlds.CampaignSystem.ViewModelCollection/.../Party/PartyVM.cs:3187-3203` 的 `ExecuteOpenConversation` 在没有 Location 时调用 `CampaignMission.OpenConversationMission`；1.3同入口 `PartyVM.cs:1634-1654` 也如此。1.4 `SandBox/Sandbox/SandBoxMissions.cs:983-996` 创建带 `ConversationMissionLogic` 的临时任务，1.3 `SandBox/SandBoxMissions.cs:1047` 同契约。不是大地图 `MapConversationMission`，所以旧 `MissionScreen => panorama` 分流误中此路径。用户报告本身无同次trace，本地旧成功日志不能证明玩家发生在全景的哪个原生步骤。
+- `extensions/AnimusForge.Illustrator/src/Engine/MapConversationSceneCapture.cs:33-47`，`ConversationSceneCaptureSource.RequiresMissionPanorama / CaptureRoute`：临时 `ConversationMissionLogic` 任务走地形事实，实际场景保留全景；不按城镇是否非空、scene名字或 `MissionMode.Conversation` 猜来源。`EnsureCurrent:73-91` 在主线程有效来源校验后冻结分类，再给后台读取；每帧只取 `SessionOwnerKey` 不查询行为列表。
+- `extensions/AnimusForge.Illustrator/src/Engine/SceneReferenceCapture.cs:49-59`，`CaptureConversationSceneReferencesAsync`：保持 owner 校验，按新分类分流，诊断新增 `requiresPanorama`。无原生 Scene / Camera / 快照访问的既有 terrain-only 入口兼用于临时谈话；`MapConversationSceneCapture.cs:139-144` 的 `scene_capture_end` 使用准确 route，而非硬写 map。
+- `extensions/AnimusForge.Illustrator/src/UI/Overlays/IllustrationCardPopup.cs:304-325`，`ShowForConversation`：排除临时谈话的开场截图和独立全景试采；`ExecuteIsolatedSceneProbe:635` 再拦一次；`ExecuteConversationGenerationCore:817-823` 将正常不采集提示纳入野外环境事实，不能误写“环境参考不可用”。人物完整装备 / 立绘、纹章、导演、生图、缓存、后台完成通知均保留原路径。
+- 不改变真实场景六面 / 30米 / 分帧 / 25秒预算 / 颜色 / 参考投影 / 失败停止规则。低频打开或实际采集只查询一次本次 Mission 行为列表，缓存布尔结果；既有每帧会话身份读取不新增全扫描、反射、native复制、轮询或锁。未变更存档 / MCM / 默认互动入口 / 构建脚本。
+
+## 验证与边界
+
+- `python -B extensions/AnimusForge.Illustrator/tests/ConversationSceneRouteTests/run.py --run-root artifacts/illustrator-party-conversation-route-20261003/route-final`：**31 PASS**。编译真实来源文件，抽取真实分流方法；类型/任务/screen/渲染/主线程调度为引擎替身。包括原及派生临时谈话、地图遗留Mission、实际场景仍处Conversation模式、取消/结束/换任务/换screen/换tableau、晚绑定、owner key零行为查询、一次分类缓存。弹窗接线为4项源码断言，不冒充 Gauntlet 实机。
+- 同runner `--mutate mission-screen --run-root .../route-negative-final` 恢复旧判断：预期 exit1 / **19 PASS、12 FAIL**，能检出错误进入全景。早期负控因缺 `scene_capture_end` 中断证据保留，fixture改为安全取缺失键后完整失败，不抹掉旧失败。
+- 原 `scripts/build/build_single_module.ps1 -ProjectRoot F:/AnimusForge-main -BannerlordRoot 'F:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord' -Configuration Debug` 最终两API + Bootstrap **0 error**，两个实现各341既有警告、Bootstrap 0 warning。引用 `v1.3.15.110062` / `v1.4.6.115628`；三个实际DLL / marker hash一致。源码 + 测试五文件、最终正/负控、构建log与marker绑定本地 `artifacts/illustrator-party-conversation-route-20261003/receipt.json`。
+- **LIVE / PLAYER_SAVE / GPU / REAL_PROVIDER / PUSH / DEPLOY / STAGE / PACKAGE = NOT_RUN**。玩家此次准确报错未收到，不能声称玩家全景原生失败步骤已复现；修复的是原版路径和生产误分流。新源码未装进游戏或旧ZIP。
+- 下一实测：大地图打开部队 → NPC交谈 → 插画重绘，日志应为 `mission-conversation-terrain`，不发生 `panorama_face_start`；再进酒馆 / 大厅实际场景交谈重绘，应仍为 `mission-panorama-30m`，并验证开关 / 退出保护。
+- 局部回滚 `git revert 171bed81`；不硬重置、改写历史或删除其他作者材料。诊断指导见[第8节](illustrator_pipeline_diagnostics.md#8-部队界面对话不采集全景)。下方上一轮发布成功仍是对应候选，不表示本轮已发布。
+
 <a id="review-fixes-publish-deploy-package-20261003"></a>
 # 本次授权交付：最新修复推送 / 部署 / 1.5 发布包（2026-10-03）
 
