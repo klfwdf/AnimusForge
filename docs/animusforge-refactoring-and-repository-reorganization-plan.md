@@ -1,3 +1,14 @@
+<a id="deploy-epoch-bridge-20261004"></a>
+# 当前部署：会话轮次桥接修复覆盖游戏（2026-10-04，DEPLOY_VERIFIED）
+
+- 用户明确请求“部署”，候选 `46ef640383f9b31f1b4dc05b5098f05116bd88f8` / 产品 `0c8f34cd`。tracked工作区干净，前轮[修复与六构建](#sceneactions-epoch-bridge-fix-20261004)的源码hash及Debug产物hash逐一通过；没有新产品改动，复用同一候选双API + Bootstrap，不fetch / 推送 / 打包。
+- 原 `scripts/build/deploy_module.ps1` 使用明确捕获的 Debug双实现与Bootstrap，先以 `-StageOnlyOutputDir F:/AnimusForge-main/bin/Debug/single_module_stage/AnimusForge` 投影 / 核验本地Stage，再调用同一未修改脚本执行事务部署。启动器最初存在，未强制结束；实际部署前已经无游戏进程，9待替换文件独占只读打开均成功，无锁占用。
+- 覆盖游戏 `F:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord/Modules/AnimusForge`，**9受管文件更新、3379 Stage文件与安装SHA256一致**；安装前2296非受管文件hash / 长度 / mtime全部保持（含日志 / 模型 / 玩家数据）。3抽检原版DLL和 `deploy_module.ps1` / `build_single_module.ps1` / `content_layout.ps1` hash不变；v1.5.0、单模块、XML只声明Bootstrap。
+- Recovery：`C:/Users/29310/AppData/Local/AnimusForge/Recovery/deploy/deploy-8d5480d5c977479cb2f2c8a7e7dc8df8`，`complete`存在，manifest的9个旧文件备份hash与oldSha256一致，安装新文件与newSha256一致。回滚须按该manifest定向恢复旧文件，不镜像或删除用户文件；源码回滚仍用 `git revert 0c8f34cd` 后原入口重建 / 另行部署，不hard reset。
+- 对**实际安装的1.3 / 1.4 DLL**各运行定向桥接测试，均2组PASS / 0FAIL，实际安装 / 卸载Harmony监听、epoch属性及权威owner推进 / 替换、动作 / 同意分类器注册与清理通过；数据根指向本地证据目录，不发真实网络请求。此为独立CLR离线验证，不是实机Mission验收。
+- 本地 `artifacts/deploy-epoch-bridge-20261004/` 保存 `stage.log`、`before.json`、`deploy.log`、`verification.log`、`installed-bridge-1.3.log` / `1.4.log`及 `receipt.json`。核验脚本只在ignored artifacts，未改产品代码 / 一键脚本，保护其他作者未跟踪素材。
+- **LIVE_GAME / REAL_AI_TTS / PLAYER_SAVE / PUSH / PACKAGE = NOT_RUN**。没有启动游戏、自动加载档或制作ZIP；旧ZIP不含本次修复。此条明确替代下方本次修复的“STAGE / DEPLOY未运行”历史状态，不改变其关于自然语言动作范围与实机缺口的限定。
+
 <a id="sceneactions-epoch-bridge-fix-20261004"></a>
 # 当前修复：SceneActions / 阵前演讲会话轮次桥接（2026-10-04，OFFLINE_VERIFIED）
 
