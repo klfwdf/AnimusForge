@@ -1,3 +1,10 @@
+# 当前部署：阵前演讲 / 自然语言动作桥接修复（2026-10-04，DEPLOY_VERIFIED）
+
+- 用户明确授权“部署”；部署候选 `46ef6403`，产品 `0c8f34cd`。与前轮源码hash / Debug双实现及Bootstrap收据一致，复用已通过六构建的原产物，原 `deploy_module.ps1` 先Stage再事务覆盖，未改构建 / 覆盖流程。
+- 游戏 `F:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord/Modules/AnimusForge` 更新9受管文件；3379 Stage / 安装hash一致，2296非受管文件hash / 大小 / mtime不变，3原版DLL与3构建脚本不变；版本v1.5.0、Bootstrap-only。
+- 已安装两DLL各2组桥接测试通过。Recovery `deploy-8d5480d5c977479cb2f2c8a7e7dc8df8` complete且旧文件备份hash / 新安装hash通过；未启动游戏 / 真AI-TTS / 玩家档，未push / 打包，不把离线安装测试升级为实机演讲或动作验收。
+- [唯一主台账与回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#deploy-epoch-bridge-20261004)，本地 `artifacts/deploy-epoch-bridge-20261004/receipt.json`。此条替代下方本次修复的“未部署”状态，其他历史授权不延续。
+
 # 当前修复：自然语言动作 / 阵前演讲共享桥接（2026-10-04，OFFLINE_VERIFIED）
 
 - 用户授权本地“修”；检查点 `38fabe97`，产品 / 测试 `0c8f34cd`。共享桥接从只找epoch字段改为缓存字段 / 转发属性，四消费者读取真实session owner，卸载清理；保留动作语法、同意规则、MCM、去重、三渠道提示词和演讲状态机。
