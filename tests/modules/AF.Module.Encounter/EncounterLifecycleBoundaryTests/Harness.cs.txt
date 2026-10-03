@@ -11,17 +11,152 @@ internal static class Program
         if (!condition) throw new InvalidOperationException(name);
         _assertions++;
     }
-    public static void Main()
+    public static void Main(string[] args)
     {
+        if (args.Length == 1) {
+            if (args[0] == "hard") HardSuppressionAudit.Run();
+            else if (args[0] == "raid") RaidContextAudit.Run();
+            else throw new ArgumentException("Unknown audit");
+            Console.WriteLine("PASS: " + _assertions + " extracted production boundary assertions.");
+            return;
+        }
         ReleaseAudit.Run();
         TargetAudit.Run();
         ConversationTargetAudit.Run();
         ReturnAudit.Run();
         NativeHandoffAudit.Run();
         PlayerLeaveAudit.Run();
+        HardSuppressionAudit.Run();
+        RaidContextAudit.Run();
         DuelAudit.Run();
         InteractionComponentSafePatch.Run();
         Console.WriteLine("PASS: " + _assertions + " extracted production boundary assertions.");
+    }
+}
+internal static class HardSuppressionAudit
+{
+    private sealed class PartyBase { }
+    private sealed class PlayerEncounter { public static PlayerEncounter Current; }
+    private sealed class MapState { }
+    private sealed class MissionState { }
+    private sealed class StateManager { public object ActiveState = new MapState(); }
+    private sealed class Game { public static Game Current = new Game(); public StateManager GameStateManager = new StateManager(); }
+    private static class Time { public static float ApplicationTime = 10; }
+    private static class SaveRuntimeGuard { public static long Generation = 1; public static long CaptureGeneration() => Generation; }
+    private static class MeetingBattleRuntime { public static bool IsMeetingActive; }
+    private static class PlayerEncounterCompat {
+        public static bool Battle, Result;
+        public static bool HasEncounterBattleContext() => Battle;
+        public static bool HasCampaignBattleResult() => Result;
+    }
+    private static class LordEncounterRedirectGuard { public static void SuppressForSeconds(float seconds) { } }
+    private static class Logger { public static void Log(string channel, string message) { } }
+    private static readonly EncounterPendingReturnOwner<PlayerEncounter, PartyBase> _hardSuppressionOwner = new();
+    private static bool _suppressCustomEncounterMenuUntilBackOnMap, _disableCustomEncounterMenuForCurrentEncounter;
+    private static float _suppressCustomEncounterMenuStartedAtTime, _suppressCustomEncounterMenuBackOnMapSinceTime;
+    private static string _suppressCustomEncounterMenuReason, ClearedReason;
+    private static bool Attack, MeetingResult, Captivity, ResultConversation;
+    private static PartyBase Party;
+    private static PartyBase GetCurrentEncounterPartySafe() => Party;
+    private static bool HasPendingForceNativeEncounterAttack() => Attack;
+    private static bool HasPendingMeetingBattleNativeResult() => MeetingResult;
+    private static bool HasPendingForceNativeDefeatCaptivityMenu() => Captivity;
+    private static bool IsNativeBattleResultConversationActive() => ResultConversation;
+    private static void DisableCustomEncounterMenuForCurrentEncounter(string reason) { _disableCustomEncounterMenuForCurrentEncounter = true; }
+    private static void ClearCustomEncounterMenuDisable(string reason) { _disableCustomEncounterMenuForCurrentEncounter = false; ClearedReason = reason; }
+    @@HARD_SUPPRESSION_METHODS@@
+    private static void Setup() {
+        _suppressCustomEncounterMenuUntilBackOnMap = _disableCustomEncounterMenuForCurrentEncounter = false;
+        _hardSuppressionOwner.Clear(); ClearedReason = null;
+        PlayerEncounter.Current = new PlayerEncounter(); Party = new PartyBase();
+        Game.Current = new Game(); Time.ApplicationTime = 10; SaveRuntimeGuard.Generation = 1;
+        PlayerEncounterCompat.Battle = PlayerEncounterCompat.Result = false;
+        Attack = MeetingResult = Captivity = ResultConversation = MeetingBattleRuntime.IsMeetingActive = false;
+        SuppressCustomEncounterMenuUntilBackOnMap("old_attack");
+    }
+    private static void NewEncounter(bool sameParty = false) {
+        PlayerEncounter.Current = new PlayerEncounter(); if (!sameParty) Party = new PartyBase();
+        Time.ApplicationTime += 0.1f;
+    }
+    internal static void Run() {
+        Setup(); Program.Check(IsCustomEncounterMenuHardSuppressedUntilBackOnMap(), "originating encounter keeps attack cleanup protection");
+        NewEncounter(); Program.Check(!IsCustomEncounterMenuHardSuppressedUntilBackOnMap(), "new intercepted lord does not inherit prior battle lock");
+        Program.Check(!_hardSuppressionOwner.IsPending && !_disableCustomEncounterMenuForCurrentEncounter && ClearedReason.Contains("new_encounter_scope"), "new encounter releases owner and ordinary disable together");
+        Setup(); NewEncounter(true); Program.Check(!IsCustomEncounterMenuHardSuppressedUntilBackOnMap(), "a new encounter with the same party does not inherit old lock");
+        Setup(); SaveRuntimeGuard.Generation++; Program.Check(!IsCustomEncounterMenuHardSuppressedUntilBackOnMap(), "new save generation cannot inherit an old scope");
+        Setup(); PlayerEncounter.Current = null; Party = null;
+        Program.Check(IsCustomEncounterMenuHardSuppressedUntilBackOnMap(), "free map starts ordinary cleanup timer");
+        Time.ApplicationTime += 1.9f; Program.Check(IsCustomEncounterMenuHardSuppressedUntilBackOnMap(), "same cleanup still waits two seconds");
+        Time.ApplicationTime += 0.2f; Program.Check(!IsCustomEncounterMenuHardSuppressedUntilBackOnMap(), "free map completes two-second cleanup");
+        Setup(); PlayerEncounter.Current = null; Party = null; IsCustomEncounterMenuHardSuppressedUntilBackOnMap();
+        NewEncounter(); Program.Check(!IsCustomEncounterMenuHardSuppressedUntilBackOnMap(), "interception before timer completion is a separate scope");
+        foreach (var danger in new[] { "mission", "not_map", "battle", "result", "attack", "meeting_result", "captivity", "result_conversation", "meeting_active" }) {
+            Setup(); NewEncounter();
+            switch (danger) {
+                case "mission": Game.Current.GameStateManager.ActiveState = new MissionState(); break;
+                case "not_map": Game.Current.GameStateManager.ActiveState = new object(); break;
+                case "battle": PlayerEncounterCompat.Battle = true; break;
+                case "result": PlayerEncounterCompat.Result = true; break;
+                case "attack": Attack = true; break;
+                case "meeting_result": MeetingResult = true; break;
+                case "captivity": Captivity = true; break;
+                case "result_conversation": ResultConversation = true; break;
+                case "meeting_active": MeetingBattleRuntime.IsMeetingActive = true; break;
+            }
+            Program.Check(IsCustomEncounterMenuHardSuppressedUntilBackOnMap(), "new scope cannot bypass active native cleanup: " + danger);
+        }
+        Setup(); NewEncounter(); var party = Party; Party = null;
+        Program.Check(IsCustomEncounterMenuHardSuppressedUntilBackOnMap(), "early Start without initialized party does not guess new scope");
+        Party = party; Program.Check(!IsCustomEncounterMenuHardSuppressedUntilBackOnMap(), "initialized conversation entry releases stale scope");
+        Setup(); NewEncounter(); SuppressCustomEncounterMenuUntilBackOnMap("new_attack");
+        Program.Check(IsCustomEncounterMenuHardSuppressedUntilBackOnMap(), "another attack replaces lock ownership instead of clearing its protection");
+        ClearCustomEncounterMenuHardSuppression("session_launched");
+        Program.Check(!_hardSuppressionOwner.IsPending && !_suppressCustomEncounterMenuUntilBackOnMap, "session cleanup removes owner references and lock");
+    }
+}
+internal static class RaidContextAudit
+{
+    private enum AiBehavior { EngageParty, RaidSettlement }
+    private sealed class Settlement { public bool IsVillage = true, IsUnderRaid; public MobileParty LastAttackerParty; }
+    private sealed class MapEvent {
+        public Settlement MapEventSettlement; public bool IsRaid, IsForcingSupplies, IsForcingVolunteers;
+        public bool WasEverInLootingPhase { get; set; }
+    }
+    private sealed class PartyBase { public bool IsMobile, IsSettlement; public MobileParty MobileParty; public Settlement Settlement; public MapEvent MapEvent; }
+    private sealed class MobileParty {
+        public MapEvent MapEvent; public PartyBase Party = new PartyBase();
+        public AiBehavior DefaultBehavior, ShortTermBehavior;
+        public Settlement TargetSettlement, ShortTermTargetSettlement, CurrentSettlement;
+    }
+    // Needed only when replaying the historical source for the negative control.
+    private static bool IsVillageSettlement(Settlement settlement) => settlement != null && settlement.IsVillage;
+    @@RAID_CONTEXT_METHODS@@
+    internal static void Run() {
+        var village = new Settlement();
+        var party = new MobileParty { DefaultBehavior = AiBehavior.RaidSettlement, ShortTermBehavior = AiBehavior.EngageParty, TargetSettlement = village };
+        Program.Check(!IsVillageRaidMobileParty(party), "Talos raid order plus actual chase is not a village activity encounter");
+        var wrapper = new PartyBase { IsMobile = true, MobileParty = party };
+        Program.Check(!IsVillageRaidParty(wrapper), "encounter PartyBase does not reintroduce AI-intent exclusion");
+        village.IsUnderRaid = true; village.LastAttackerParty = party;
+        Program.Check(!IsVillageRaidMobileParty(party), "old target LastAttacker does not turn remote interception into a raid");
+        party.ShortTermBehavior = AiBehavior.RaidSettlement; party.ShortTermTargetSettlement = village;
+        Program.Check(!IsVillageRaidMobileParty(party), "short-term raid intention alone is not an active event");
+        party.CurrentSettlement = village;
+        Program.Check(IsVillageRaidMobileParty(party), "actual current raided village still preserves native activity");
+        village.LastAttackerParty = new MobileParty();
+        Program.Check(!IsVillageRaidMobileParty(party), "another party's raid does not make this party the raider");
+        party.CurrentSettlement = null;
+        foreach (var kind in new[] { "raid", "supplies", "volunteers", "looting" }) {
+            var map = new MapEvent { MapEventSettlement = village, IsRaid = kind == "raid", IsForcingSupplies = kind == "supplies", IsForcingVolunteers = kind == "volunteers", WasEverInLootingPhase = kind == "looting" };
+            party.MapEvent = map;
+            Program.Check(IsVillageRaidMobileParty(party), "actual village event is retained: " + kind);
+        }
+        party.MapEvent = null; party.Party.MapEvent = new MapEvent { MapEventSettlement = village, IsRaid = true };
+        Program.Check(IsVillageRaidMobileParty(party), "PartyBase raid event remains authoritative");
+        party.Party.MapEvent = new MapEvent { MapEventSettlement = village };
+        Program.Check(!IsVillageRaidMobileParty(party), "non-raid event is not promoted by AI raid intent");
+        Program.Check(IsVillageRaidParty(new PartyBase { IsSettlement = true, Settlement = village }), "raided settlement party remains protected");
+        Program.Check(!IsVillageRaidMobileParty(null), "missing mobile party does not qualify as raid");
     }
 }
 internal static class PlayerLeaveAudit
