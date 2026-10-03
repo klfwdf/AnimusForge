@@ -1,4 +1,11 @@
-# 当前修改：处理中的对话禁止切回普通模式（2026-10-04，OFFLINE_VERIFIED）
+# 当前修复：原版对话交接导致会面锁跨遭遇残留（2026-10-04，OFFLINE_VERIFIED）
+
+- 用户新Trace已确认：05:17:42德泰尔自定义菜单正常，05:17:43 `native_dialogue_handoff`设锁，05:19:03离开仍保留原版encounter，随后连续新遭遇被disabled放行，05:20:36才清。主动遭遇方没注册结束清理却共用“回地图无遭遇2秒”的全局硬锁；这次不是未挂StartConversation入口造成的，前轮未定判断被此证据替代。
+- 检查点 `ee4330a5`，产品 / 测试 `9555ff5c`：临时锁绑定encounter/party/save/manager，双方结束都清自身scope；revision阻止晚/重复回调，被动方原返回菜单策略与真实战斗 / 结果 / 释放保护保持，不放宽劫匪资格、不清别的硬锁。
+- 生产边界84 PASS、对话113 PASS、恢复旧主动方条件的生成fixture负控预期失败；原入口Debug双API+Bootstrap0错误 / 三marker通过；实际新两DLL交接清理各13、模式锁各16、epoch桥接各2组通过。实机再遭遇 / 原生事件 / 第三方重入未验；**未push / Stage / 部署 / 打包**，游戏仍是此前epoch部署版本。
+- [主台账 / 代码坐标 / 回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#meeting-native-handoff-scope-20261004)，本地 `artifacts/meeting-handoff-scope-fix-20261004/receipt.json` 与必要日志切片。产品回滚 `git revert 9555ff5c`，保留下方模式锁；不延续历史部署授权。
+
+# 上一项修改：处理中的对话禁止切回普通模式（2026-10-04，OFFLINE_VERIFIED）
 
 - 用户新增需求；检查点 `247ae704`、产品 / 测试 `954a1551`。两套UI绑定 `CanSwitchTalk`，VM / 宿主命令 / setter拒绝处理中普通模式；完成 / 失败解锁。原UI Tick只读现有后台owner身份、不扫agent；超时Esc结束整段对话而非绕锁切普通，关闭与真实结束清理保留。
 - 生产链接回归112 PASS、两新实际DLL各16 PASS；旧安装DLL同测复现busy仍可切换的负控。原入口Debug双API + Bootstrap0错误、三marker通过；新DLL的epoch桥接各2组与核心89项通过。实机、真provider、后台owner真实重载与Esc引擎副作用未验；本次Release / Stage / push / 部署 / 打包未跑，游戏仍是下方前轮部署版本。
