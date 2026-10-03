@@ -209,9 +209,12 @@ namespace AnimusForge.Illustrator.Core
                         direction = ResolveDirection(reply.Content, plan, options);
                         ApplyResponseMetadata(direction, reply);
                         direction.UsedTextOnlyDirector = referenceImages == null || reply.VisionUnsupported;
-                        return RecordDirection(direction);
+                        if (!string.IsNullOrWhiteSpace(plan.PlayerRedrawPrompt) && direction.UsedLocalFallback)
+                            fallbackReason = "带提示词重绘不能使用本地构图：" + direction.FallbackReason;
+                        else
+                            return RecordDirection(direction);
                     }
-                    fallbackReason = reply.FailureReason;
+                    else fallbackReason = reply.FailureReason;
                 }
                 else
                 {

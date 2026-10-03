@@ -194,6 +194,17 @@ public static class DirectorStatusAudit
             Check(Property<string>(sessionPlan, "PlayerRedrawPrompt") == Property<string>(plan, "PlayerRedrawPrompt"), "real conversation session reuse retains this redraw's prompt");
             Check(Property<string>(sessionPlan, "HardFacts").Contains("FROZEN_FACT_SENTINEL") && Property<string>(sessionPlan, "DirectorOnlyFacts").Contains("SCENE_NOTE_SENTINEL"),
                 "adding redraw prompt does not replace frozen scene facts or director-only scene note");
+            var invalid = new MemoryHandler();
+            invalid.Add(HttpStatusCode.OK, Reply("stop", "近景观察人物手势。", null));
+            string invalidFailure = GenerateFailure(invalid, Options(), References(), "unusable player redraw direction");
+            Check(invalidFailure.Contains("本地构图"), "guided redraw stops instead of silently dropping player input in local fallback");
+            Check(invalid.Bodies.Count == 1, "invalid guided output has no automatic paid retry");
+            object guidedPlan = plan;
+            plan = original;
+            invalid = new MemoryHandler(); invalid.Add(HttpStatusCode.OK, Reply("stop", "近景观察人物手势。", null));
+            object ordinaryFallback = Generate(invalid, Options(), References());
+            Check(Property<bool>(ordinaryFallback, "UsedLocalFallback") && invalid.Bodies.Count == 1, "ordinary redraw keeps existing local fallback behavior");
+            plan = guidedPlan;
             var disabled = Options(); SetOption(disabled, "EnableLlmPromptExpansion", false);
             var blocked = new MemoryHandler();
             GenerateFailure(blocked, disabled, References(), "disabled director rejects player redraw");
