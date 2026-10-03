@@ -61,6 +61,7 @@ public sealed class NativeOverlayVM : ViewModel
     [DataSourceProperty] public float ToolbarOffsetY => IsOrdinaryMode ? -14f : 0f;
     [DataSourceProperty] public bool IsInputEnabled => Original.IsInputEnabled;
     [DataSourceProperty] public bool IsInteractionEnabled => !_disposed && !Auxiliary.IsOpen;
+    [DataSourceProperty] public bool CanSwitchTalk => IsInteractionEnabled && Original.CanSwitchTalk;
     [DataSourceProperty] public bool CanLeave => !_disposed;
     [DataSourceProperty] public bool IsPersonaEditVisible => Original.IsPersonaEditVisible;
     [DataSourceProperty] public bool IsTagTestVisible => Original.IsTagTestVisible;
@@ -88,7 +89,7 @@ public sealed class NativeOverlayVM : ViewModel
         }
         catch (Exception ex) { AnimusForge.DialogueUI.DialogueUiRuntime.Log("Leave conversation failed: " + ex.Message); }
     }
-    public void SwitchTalk() { if (_disposed) return; CloseMore(); Original.SwitchTalk(); ModeChanged(); }
+    public void SwitchTalk() { if (!CanSwitchTalk) return; CloseMore(); Original.SwitchTalk(); ModeChanged(); }
     private void ModeChanged() { OnPropertyChanged(nameof(IsOrdinaryMode)); OnPropertyChanged(nameof(ToolbarOffsetX)); OnPropertyChanged(nameof(ToolbarOffsetY)); }
     public void ShowLogView() { if (!_disposed) { CloseMore(); Auxiliary.Open(true); } }
     public void ShowGiveShowMenu() { if (!_disposed) { CloseMore(); Auxiliary.Open(false); } }
@@ -104,6 +105,7 @@ public sealed class NativeOverlayVM : ViewModel
         if (_disposed) return;
         // Root.Show alone does not refresh the replacement prefab's derived bindings.
         OnPropertyChanged(nameof(IsInputEnabled));
+        OnPropertyChanged(nameof(CanSwitchTalk));
         OnPropertyChanged(nameof(CanLeave));
         OnPropertyChanged(nameof(IsIllustrationAvailable));
         AuxiliaryStateChanged();
@@ -115,6 +117,7 @@ public sealed class NativeOverlayVM : ViewModel
         OnPropertyChanged(nameof(IsCustomAnswerVisible));
         ModeChanged();
         OnPropertyChanged(nameof(IsInteractionEnabled));
+        OnPropertyChanged(nameof(CanSwitchTalk));
         NativeUiAdapter.AuxiliaryStateChanged(this);
         if (!Auxiliary.IsOpen && !_disposed) Original.RequestInputFocus();
     }

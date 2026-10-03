@@ -24,6 +24,21 @@ static class Program
     }
     static void Run(string[] args)
     {
+        int modeSwitches=0;
+        var modeVm=new AnimusForgeNativeConversationOverlayVM(null,()=>modeSwitches++,null,null,null,null);
+        Check(modeVm.CanSwitchTalk,"idle mode switch starts enabled");
+        modeVm.SetInputVisible(true);modeVm.InputText="draft";
+        modeVm.SetBusy(true);
+        Check(!modeVm.CanSwitchTalk&&!modeVm.IsInputEnabled,"AI request immediately locks mode and input");
+        modeVm.SwitchTalk();modeVm.SwitchTalk();
+        Check(modeSwitches==0&&modeVm.IsCustomAnswerVisible&&modeVm.InputText=="draft","busy clicks do not switch or clear draft");
+        modeVm.SetBusy(false);modeVm.SwitchTalk();
+        Check(modeSwitches==1&&modeVm.CanSwitchTalk,"completed or failed request unlocks mode command");
+        modeVm.CanSwitchTalk=false; // Rebound UI observing another still-active backend request.
+        Check(modeVm.IsInputEnabled,"backend mode lock does not rewrite local submission state");
+        modeVm.SwitchTalk();Check(modeSwitches==1,"backend-only lock rejects command with locally idle input");
+        modeVm.CanSwitchTalk=true;modeVm.SwitchTalk();Check(modeSwitches==2,"backend release restores command");
+
         var guard=new OpeningInteractionInputGuard();
         Check(guard.IsPending,"new conversation drains its opening frame");
         guard.Tick(true);Check(guard.IsPending,"F press blocked");
@@ -153,11 +168,27 @@ static class Program
         var onboarding=XDocument.Load(Path.Combine(root,"content/modules/AF.Module.Onboarding/GUI/Prefabs/AnimusForgeApiOnboardingPopup.xml"));
         Check(onboarding.Descendants().Any(x=>(string)x.Attribute("Command.Click")=="ExecuteUseExistingConfig"),"existing API action visible");
         var overlay=Read(root,"src/AF.GameAdapter.Bannerlord/UI/Conversation/AnimusForgeNativeConversationOverlay.cs");
+        var modeHandler=overlay.Substring(overlay.IndexOf("private void HandleSwitchTalkRequested("));
+        modeHandler=modeHandler.Substring(0,modeHandler.IndexOf("private void SetLayerForButtonsOnly("));
+        Check(modeHandler.Contains("_isClosed || IsOrdinaryModeSwitchBlocked()")&&modeHandler.Contains("if (!isVisible && IsOrdinaryModeSwitchBlocked()) return;"),"host command and direct setter both reject processing ordinary switch");
+        Check(modeHandler.Contains("_isSubmitting || ShoutBehavior.IsNativeConversationBackendBusy()"),"host uses both local busy and actual backend admission on switch");
+        Check(overlay.Contains("ShoutBehavior.IsNativeConversationBackendBusyForUi()"),"existing UI tick reads cheap backend identity for replacement UI");
+        var longExit=overlay.Substring(overlay.IndexOf("private void ReleaseLongWaitUiLock("));
+        longExit=longExit.Substring(0,longExit.IndexOf("private static void ShowLongWaitEscapeNotice("));
+        Check(longExit.Contains("Close(silent: true)")&&longExit.Contains("manager?.EndConversation()")&&!longExit.Contains("SetInputVisible(false)"),"long wait escape ends conversation rather than bypassing mode lock");
+        Check(overlay.Contains("if (_isClosed) return;"),"tick stops after long-wait close");
+        foreach(string path in new[]{"extensions/AnimusForge.DialogueUI/GUI/Prefabs/AFDialogueNativeOverlay.xml","content/modules/AF.Module.Conversation/GUI/Prefabs/AnimusForgeNativeConversationOverlay.xml"})
+            Check(XDocument.Load(Path.Combine(root,path)).Descendants().Any(x=>(string)x.Attribute("Command.Click")=="SwitchTalk"&&(string)x.Attribute("IsEnabled")=="@CanSwitchTalk"),"mode lock bound in "+path);
+        var wrapper=Read(root,"extensions/AnimusForge.DialogueUI/src/Native/NativeOverlayVM.cs");
+        Check(wrapper.Contains("CanSwitchTalk => IsInteractionEnabled && Original.CanSwitchTalk")&&wrapper.Contains("if (!CanSwitchTalk) return;"),"replacement wrapper forwards and respects actual host mode lock");
         var set=overlay.Substring(overlay.IndexOf("private void SetInputVisible("));set=set.Substring(0,set.IndexOf("private void SetLayerForButtonsOnly("));
         Check(set.Contains("_isSubmitting = false;")&&set.Contains("_dataSource.SetBusy(false);")&&set.Contains("_submitGeneration++;"),"escape route clears busy and invalidates stale callbacks");
         Check(set.Contains("_modeText.EnterAi")&&set.Contains("_modeText.LeaveAi")&&set.Contains("ConversationHelper.UpdateDialogText(restoreText)"),"production mode switch consumes text owner output");
         Check(set.Contains("HasCurrentConversationContext")&&!set.Contains("_modeTextScope.IsCurrent()"),"mode text survives later request revision while retaining conversation identity");
         var admission=Read(root,"src/modules/AF.Module.Conversation/Channels/Native/ShoutBehavior.NativeAdmission.cs");
+        var uiBusy=admission.Substring(admission.IndexOf("internal static bool IsNativeConversationBackendBusyForUi("));
+        uiBusy=uiBusy.Substring(0,uiBusy.IndexOf("internal static void InvalidateNativeConversationAdmissionOnConversationEnd("));
+        Check(uiBusy.Contains("IsNativeConversationContextStampCurrent(admission)")&&uiBusy.Contains("Owns(admission)")&&uiBusy.Contains("IsCancellationRequested")&&!uiBusy.Contains("IsNativeConversationAdmissionCurrent("),"UI busy excludes full target scan but preserves owner/stamp/cancellation");
         Check(admission.Contains("HasCurrentConversationContext()")&&admission.Contains("HasCurrentContext() && _owner.IsNativeConversationContextCurrent"),"display scope seam does not weaken existing submission guard");
         var encounterHost=Read(root,"src/AF.GameAdapter.Bannerlord/Encounter/LordEncounterBehavior.cs");
         Check(encounterHost.Contains("RegisterNativeDialogueHandoff(target);")&&encounterHost.Contains("manager.ConversationEndOneShot += OnNativeDialogueHandoffEnded"),"real native conversation entry wires end hook");

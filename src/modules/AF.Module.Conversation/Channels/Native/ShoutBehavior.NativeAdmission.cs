@@ -50,6 +50,17 @@ public partial class ShoutBehavior
             owner._nativeAdmissionOwner.Current, out _);
     }
 
+    // UI tick observation only. Submission still uses the full target validation
+    // above; never run its target/agent resolution every frame just to grey a button.
+    internal static bool IsNativeConversationBackendBusyForUi()
+    {
+        ShoutBehavior owner = CurrentInstance;
+        NativeConversationAdmission admission = owner?._nativeAdmissionOwner.Current;
+        return admission != null && admission.Lifetime?.Token.IsCancellationRequested != true
+            && owner._nativeAdmissionOwner.Owns(admission)
+            && owner.IsNativeConversationContextStampCurrent(admission);
+    }
+
     // 复用已注册的真实 ConversationEnded 事件，而不是 UI 关闭或可重用的 ActiveToken 推测会话结束。
     internal static void InvalidateNativeConversationAdmissionOnConversationEnd()
     {

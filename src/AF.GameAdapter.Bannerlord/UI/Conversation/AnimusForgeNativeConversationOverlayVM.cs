@@ -33,6 +33,8 @@ public sealed class AnimusForgeNativeConversationOverlayVM : ViewModel
 
 	private bool _isInputEnabled;
 
+	private bool _canSwitchTalk;
+
 	private bool _isPersonaEditVisible;
 
 	private bool _isTagTestVisible;
@@ -156,6 +158,20 @@ public sealed class AnimusForgeNativeConversationOverlayVM : ViewModel
 	}
 
 	[DataSourceProperty]
+	public bool CanSwitchTalk
+	{
+		get => _canSwitchTalk;
+		set
+		{
+			if (value != _canSwitchTalk)
+			{
+				_canSwitchTalk = value;
+				OnPropertyChangedWithValue(value, nameof(CanSwitchTalk));
+			}
+		}
+	}
+
+	[DataSourceProperty]
 	public bool IsPersonaEditVisible
 	{
 		get => _isPersonaEditVisible;
@@ -227,6 +243,7 @@ public sealed class AnimusForgeNativeConversationOverlayVM : ViewModel
 		AIChatHistoryButtonText = "对话历史";
 		GiveShowButtonText = "给予/展示";
 		IsInputEnabled = true;
+		CanSwitchTalk = true;
 		AIChatboxOffset = 0f;
 		InputFocusVersion = 0;
 		RefreshSwitchTitle();
@@ -244,6 +261,7 @@ public sealed class AnimusForgeNativeConversationOverlayVM : ViewModel
 	public void SetBusy(bool isBusy)
 	{
 		IsInputEnabled = !isBusy;
+		CanSwitchTalk = !isBusy;
 	}
 
 	public void SetPersonaEditVisible(bool isVisible)
@@ -272,6 +290,7 @@ public sealed class AnimusForgeNativeConversationOverlayVM : ViewModel
 
 	public void SwitchTalk()
 	{
+		if (!CanSwitchTalk) return;
 		_onSwitchTalk?.Invoke();
 	}
 

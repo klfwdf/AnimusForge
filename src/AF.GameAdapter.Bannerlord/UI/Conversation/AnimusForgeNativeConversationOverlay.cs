@@ -228,6 +228,10 @@ public sealed partial class AnimusForgeNativeConversationOverlay
 		{
 			TickLongWaitEscapeUnlock();
 		}
+		if (_isClosed) return;
+		// The existing UI Tick reads only the admission identity stamp, not agents.
+		_dataSource.CanSwitchTalk = !_dataSource.IsCustomAnswerVisible ||
+			(!_isSubmitting && !ShoutBehavior.IsNativeConversationBackendBusyForUi());
 		bool personaEditVisible;
 		using (FreezeWatchdog.Scope("NativeConversationOverlay.Tick.ResolvePersonaVisibility"))
 		{
@@ -268,15 +272,22 @@ public sealed partial class AnimusForgeNativeConversationOverlay
 
 	private void HandleSwitchTalkRequested()
 	{
-		if (_isClosed)
+		if (_isClosed || IsOrdinaryModeSwitchBlocked())
 		{
 			return;
 		}
 		SetInputVisible(!_dataSource.IsCustomAnswerVisible);
 	}
 
+	private bool IsOrdinaryModeSwitchBlocked()
+	{
+		return _dataSource.IsCustomAnswerVisible &&
+			(_isSubmitting || ShoutBehavior.IsNativeConversationBackendBusy());
+	}
+
 	private void SetInputVisible(bool isVisible)
 	{
+		if (!isVisible && IsOrdinaryModeSwitchBlocked()) return;
 		try
 		{
             // Cache only within this NPC/token/save scope. Native advancement or a changed
@@ -1499,16 +1510,20 @@ public sealed partial class AnimusForgeNativeConversationOverlay
 		{
 			return;
 		}
-        _replyWait.Stop();
-		Logger.Log("NativeConversationOverlay", "Long NPC reply wait unlocked by ESC. Generation=" + _submitGeneration);
-		SetInputVisible(false);
+		_replyWait.Stop();
 		try
 		{
-			InformationManager.DisplayMessage(new InformationMessage("已解除自由对话 UI 锁定。", new Color(0.35f, 1f, 0.35f)));
+			// Escape remains available, but ends this conversation rather than
+			// exposing native choices while its AI/action request is still running.
+			var manager = Campaign.Current?.ConversationManager;
+			Logger.Log("NativeConversationOverlay", "Long NPC reply wait ended by ESC. Generation=" + _submitGeneration);
+			Close(silent: true);
+			manager?.EndConversation();
+			InformationManager.DisplayMessage(new InformationMessage("已退出当前对话。", new Color(0.35f, 1f, 0.35f)));
 		}
 		catch (Exception ex)
 		{
-			Logger.Log("NativeConversationOverlay", "[WARN] Failed to show long-wait unlock message: " + ex.Message);
+			Logger.Log("NativeConversationOverlay", "[WARN] Failed to end long-wait conversation: " + ex.Message);
 		}
 	}
 
@@ -1516,7 +1531,7 @@ public sealed partial class AnimusForgeNativeConversationOverlay
 	{
 		try
 		{
-			InformationManager.DisplayMessage(new InformationMessage("NPC回复等待较久，现在可以按 ESC 退出 AI 模式，恢复普通对话。", new Color(1f, 0.95f, 0.25f)));
+			InformationManager.DisplayMessage(new InformationMessage("NPC回复等待较久，现在可以按 ESC 结束本次对话；处理完成前不能切回普通模式。", new Color(1f, 0.95f, 0.25f)));
 		}
 		catch (Exception ex)
 		{
