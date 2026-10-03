@@ -1290,28 +1290,45 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 
 	internal static bool IsCustomEncounterMenuDisabledForCurrentEncounter()
 	{
-		if (IsNativeDialogueHandoffSuppressedForCurrentEncounter()) return true;
+		return TryGetCustomEncounterMenuDisableReason(out _);
+	}
+
+	// Return the reason from the same evaluation; entry logging must not re-run
+	// cleanup predicates or add logging to the per-tick/menu condition path.
+	internal static bool TryGetCustomEncounterMenuDisableReason(out string reason)
+	{
+		reason = null;
+		if (IsNativeDialogueHandoffSuppressedForCurrentEncounter())
+		{
+			reason = "native_dialogue_handoff";
+			return true;
+		}
 		if (IsNativeSettlementRequestMeetingContext())
 		{
+			reason = "native_settlement_request_meeting";
 			return true;
 		}
 		if (IsCustomEncounterMenuHardSuppressedUntilBackOnMap())
 		{
+			reason = "hard_suppress_until_back_on_map";
 			return true;
 		}
 		if (HasPendingForceNativeEncounterAttack())
 		{
+			reason = "pending_native_attack";
 			return true;
 		}
 		if (HasPendingMeetingBattleNativeResult())
 		{
+			reason = "pending_meeting_battle_result";
 			return true;
 		}
 		if (HasPendingForceNativeDefeatCaptivityMenu())
 		{
+			reason = "pending_defeat_captivity";
 			return true;
 		}
-		if (IsNativeEncounterActivityContext())
+		if (TryGetNativeEncounterActivityReason(null, out reason))
 		{
 			return true;
 		}
@@ -1401,6 +1418,7 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 					ClearCustomEncounterMenuDisable("active_encounter_no_result_context");
 					return false;
 				}
+				reason = "explicit_disable_active_encounter";
 				return true;
 			}
 		}
@@ -1441,6 +1459,7 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 		}
 		if (flag2)
 		{
+			reason = "explicit_disable_defeat_captivity";
 			return true;
 		}
 		if (num2 > 12f)
@@ -1448,6 +1467,7 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 			ClearCustomEncounterMenuDisable("stale_timeout");
 			return false;
 		}
+		reason = "explicit_disable_awaiting_map_cleanup";
 		return true;
 	}
 
@@ -1858,10 +1878,17 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 
 	internal static bool IsNativeEncounterActivityContext(Hero target = null)
 	{
+		return TryGetNativeEncounterActivityReason(target, out _);
+	}
+
+	private static bool TryGetNativeEncounterActivityReason(Hero target, out string reason)
+	{
+		reason = null;
 		try
 		{
 			if (IsNativeActivityMenu(Campaign.Current?.CurrentMenuContext?.GameMenu?.StringId))
 			{
+				reason = "native_activity_menu";
 				return true;
 			}
 		}
@@ -1875,10 +1902,12 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 			{
 				if (current.ForceRaid || current.ForceSallyOut || current.ForceSupplies || current.ForceVolunteers)
 				{
+					reason = "native_activity_force_flags";
 					return true;
 				}
 				if (BannerlordApiCompat.IsPlayerEncounterRestartedForRaid(current))
 				{
+					reason = "native_activity_raid_restart";
 					return true;
 				}
 			}
@@ -1890,6 +1919,7 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 		{
 			if (PlayerSiege.PlayerSiegeEvent != null)
 			{
+				reason = "native_activity_player_siege";
 				return true;
 			}
 		}
@@ -1900,6 +1930,7 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 		{
 			if (IsNativeActivityMapEvent(PlayerEncounterCompat.GetCurrentMapEventSafe()))
 			{
+				reason = "native_activity_current_map_event";
 				return true;
 			}
 		}
@@ -1910,6 +1941,7 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 		{
 			if (IsNativeActivityParty(PlayerEncounterCompat.GetEncounteredPartySafe()))
 			{
+				reason = "native_activity_encounter_party_compat";
 				return true;
 			}
 		}
@@ -1920,6 +1952,7 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 		{
 			if (IsNativeActivityParty(PlayerEncounter.EncounteredParty))
 			{
+				reason = "native_activity_encounter_party_static";
 				return true;
 			}
 		}
@@ -1930,6 +1963,7 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 		{
 			if (IsNativeActivityMobileParty(PlayerEncounter.EncounteredMobileParty))
 			{
+				reason = "native_activity_encounter_mobile";
 				return true;
 			}
 		}
@@ -1940,6 +1974,7 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 		{
 			if (IsNativeActivitySettlement(PlayerEncounter.EncounterSettlement))
 			{
+				reason = "native_activity_encounter_settlement";
 				return true;
 			}
 		}
@@ -1950,6 +1985,7 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 		{
 			if (IsNativeActivitySettlement(Settlement.CurrentSettlement))
 			{
+				reason = "native_activity_current_settlement";
 				return true;
 			}
 		}
@@ -1960,6 +1996,7 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 		{
 			if (IsNativeActivitySettlement(MobileParty.MainParty?.CurrentSettlement))
 			{
+				reason = "native_activity_main_settlement";
 				return true;
 			}
 		}
@@ -1968,12 +2005,14 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 		}
 		if (IsNativeActivityHeroParty(target))
 		{
+			reason = "native_activity_target_party";
 			return true;
 		}
 		try
 		{
 			if (Campaign.Current?.CurrentConversationContext == ConversationContext.PartyEncounter && IsNativeActivityHeroParty(Hero.OneToOneConversationHero))
 			{
+				reason = "native_activity_conversation_hero_party";
 				return true;
 			}
 		}
@@ -1985,6 +2024,7 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 			CharacterObject characterObject = CharacterObject.OneToOneConversationCharacter;
 			if (Campaign.Current?.CurrentConversationContext == ConversationContext.PartyEncounter && IsNativeActivityHeroParty(characterObject?.HeroObject))
 			{
+				reason = "native_activity_conversation_character_party";
 				return true;
 			}
 		}

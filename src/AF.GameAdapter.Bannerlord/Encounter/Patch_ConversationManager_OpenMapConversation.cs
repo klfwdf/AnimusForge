@@ -62,8 +62,10 @@ public static class Patch_ConversationManager_OpenMapConversation
 				Logger.LogTrace("Conversation_Intercept", "Native hostile settlement request meeting detected; allow native OpenMapConversation.");
 				return true;
 			}
-			if (LordEncounterBehavior.IsCustomEncounterMenuDisabledForCurrentEncounter())
+			if (LordEncounterBehavior.TryGetCustomEncounterMenuDisableReason(out string disableReason))
 			{
+				Hero disabledTarget = EncounterConversationTargetResolver.TryResolveLordFromArgumentsThenEncounterLeader(null, __args);
+				LordEncounterBehavior.LogEncounterDiagnostic("OpenMapConversation", disableReason, null, disabledTarget);
 				Logger.LogTrace("Conversation_Intercept", "Custom encounter menu is disabled for current encounter; allow native OpenMapConversation.");
 				return true;
 			}
