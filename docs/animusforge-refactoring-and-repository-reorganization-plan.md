@@ -1,3 +1,11 @@
+<a id="meeting-native-handoff-scope-20261004"></a>
+# 当前修复：会面原版对话交接锁跨遭遇残留（2026-10-04，ACTIVE）
+
+- 用户新深度日志确认间歇复现；基线 `f3e10a4a`，保留已完成未部署的模式处理锁 `954a1551`。05:17:42自定义会面正常、playerAttacker=1；05:17:43 native_dialogue_handoff设全局硬禁用，05:19:03离开后仍保留原版encounter，随后多次被disabled挡住，05:20:36才清锁。
+- 已确认原因：主动遭遇方不注册结束恢复，但原版对话交接仍无条件进入全局“回地图无遭遇稳定2秒”硬锁。该条件会被残留或新遭遇一直阻断；本次不是缺失StartConversation兜底造成的，两个真实Prefix均已命中。
+- 范围：将原版交接改为现有encounter / party / save generation / manager绑定的临时抑制，双方角色均注册结束清理；被拦截玩家的返回菜单政策保留，主动遭遇方只清自身锁不额外强制返回。回调revision隔离旧回调，不清别的战斗/结果/释放保护，不放宽NPC/劫匪资格、不补无关通用入口。
+- 验收：主动方结束清锁、被动方安全返回、连续新遭遇 / 存档 / manager变更和晚回调、战斗/投降/释放/特殊活动保护；生产提取回归、模式锁回归及双API+Bootstrap构建。只本地修复，不push / Stage / 部署 / 打包；实机复验另做。
+
 <a id="dialogue-processing-mode-lock-20261004"></a>
 # 当前修改：对话处理期间禁止切回普通模式（2026-10-04，OFFLINE_VERIFIED）
 
