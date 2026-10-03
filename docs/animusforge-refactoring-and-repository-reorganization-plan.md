@@ -1,10 +1,30 @@
 <a id="player-ui-runtime-repairs-20261004"></a>
-# 玩家截图与运行日志修复（2026-10-04，ACTIVE）
+# 玩家截图与运行日志修复（2026-10-04，OFFLINE_VERIFIED）
 
 - 用户连续反馈：对话滚动条重复/白底、提示常驻、普通选项左偏；大地图工具栏离开保留遭遇；NPC演讲走到位无文字；卷轴按钮难读且误触发凝视；刽子手接令仍等待。
 - 基线 `3ec457e1`，本轮只修上述明确入口；保留其他作者成果、原双版本构建与玩家数据，不推送/部署/打包。修改前建立本地意图检查点。
 - 已有日志定位：06:03:48演讲请求在异步前处理完成前检查scope并拒绝；06:08:15公开处决命令armed至06:08:34对话结束才accepted。工具栏LeaveConversation只EndConversation，未设原版LeaveEncounter。
 - 完成门：修真实入口及XML绑定，相关现有回归+新边界断言，原入口双API/Bootstrap编译；明确实机未验证，不用离线结果冒充玩家验收。运行频率/缓存按现有实现保留，不加热路径扫描或轮询。
+
+## 本轮结果与代码证据
+
+- UI/会面 `e57f9fc3`、演讲 `ad274f77`、处刑命令 `f4c1fc6b`，完整产品候选 `f4c1fc6b`；以下原历史修复与部署记录不包含本轮。之前会面修复只释放交接抑制锁，没有修工具栏的原版离开语义，本轮明确补上，不将此前离线验证说成已证明实机离开。
+
+| 源码 / 一基行号 / 真实入口 | 本轮变化 | 尚未证明 |
+| --- | --- | --- |
+| `src/AF.GameAdapter.Bannerlord/Encounter/LordEncounterBehavior.cs:8635-8660`，`PreparePlayerRequestedNativeConversationLeave`；`extensions/AnimusForge.DialogueUI/src/Native/NativeOverlayVM.cs:78-87`、原Overlay `:1520` | 工具栏及超时Esc在EndConversation前设原版LeaveEncounter；只处理无Mission的PartyEncounter Begin/Wait，保留敌方拦截、战斗/结果/海战/活动规则；不强制Finish或清战斗 | 原生对话弹出后的真实地图更新、其他MOD重入 |
+| `src/AF.GameAdapter.Bannerlord/UI/Conversation/NativeConversationAnswerAreaController.cs:245-249`；`extensions/AnimusForge.DialogueUI/GUI/Prefabs/AFDialogueConversation.xml:62-128` | AI隐藏整个普通选项区（含多余滚动条），普通模式恢复；正文与选项改独立左右锚点，避免ListPanel水平排列挤偏；正文/选项/输入条去掉白色轨道Sprite，保留handle与自动显隐 | 实际Gauntlet布局、拖动/滚轮、说服及分辨率 |
+| `extensions/AnimusForge.DialogueUI/GUI/Prefabs/AFDialogueNativeOverlay.xml:11-26`；`AFSceneSessionScroll.xml:32-60` | 输入底部留白改10、空输入提示随IsInputEmpty隐藏；卷轴四入口字号17、浅色文字加深色描边 | 长文缩短、输入光标及截图视觉验收 |
+| `extensions/AnimusForge.XihaiAction/src/Runtime/AfCompatV130.cs:887-928`、`BattleSpeechRuntimeHost.cs:943-987`、`BattleSpeechDedicatedInputMissionBehavior.cs:47-54` | 演讲调用AF前从已发布claim冻结scope快照；不在异步前处理尚未完成时要求PromptSnapshot已回写；启动失败立即沿已有CancelActive收尾。原提示词替换、角色/会话绑定保留 | 真前处理/LLM/TTS、演讲文字与动作实机 |
+| `src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.cs:7777-7783`，`UpdatePassiveStareLogic` | 卷轴会话、原版/AI对话存在时复用ResetPassiveStareTracking，禁止把输入/对话时间累计为凝视；检查在目标扫描前，仅O(1)状态读取 | 游戏UI开闭与真实被动反应时序 |
+| `src/bridges/Vengeance/Host/PublicExecutionOrderRuntime.cs:78-94`，`Consume` | 可信处刑命令确认后自动EndConversation，原一次性同场景回调开始行刑；不再等待额外点击离开。标签资格、拒绝、token去重、存档/目标绑定及死亡事实边界不变 | 各种处刑方式完整动画/死亡与其他MOD |
+
+- 当前日志：06:03:48演讲在AF网络等待前因snapshot未认领失败，06:03:53到位后无词、06:04:48超时。处刑06:08:15等待关闭、06:08:34才accepted；Vengeance随后有实际点火/火堆蔓延，因此不将该反馈归因于动作标签未注入，也不擅改死亡逻辑。
+- 原Debug双API/Bootstrap最终构建0错误（实现各341既有warning）、三个marker hash通过；实际引用1.3.15.110062 / 1.4.6.115628。只读原content-layout四模板唯一映射/XML解析通过，不组装Stage。
+- 对话/UI **148 PASS**，提取生产会面边界 **102 PASS**，生产链接处刑/记忆 **116 PASS**，原生事件命中排序与恢复两API各 **49 PASS**，UI生命周期 **95 PASS**，场景presentation **46** / 音频与ShowNpcSpeechOutput **54**。后两组使用原有fixture，不算实机。
+- 两份真实新DLL各：桥接/演讲scope **3组PASS**（新增强制yield、外层scope释放、global claim退休后子任务仍持有原快照、新目标拒绝借用）；旧安装1.4 DLL同一新增断言预期exit1，证明旧入口没有前置冻结。会面原交接探针各13、模式锁各16保持通过。
+- 本地 `artifacts/player-ui-runtime-repairs-20261004/receipt.json`绑定20文件hash、候选与三构建产物；日志含build-final、dialogue-final、encounter、execution、continue13/14、ui-lifecycle、scene-presentation、dll-*和旧安装负控，必要演讲/处刑切片分别保存，不上传完整玩家日志。
+- **LIVE_GAME / REAL_AI_TTS / PLAYER_SAVE / RELEASE_BUILD / STAGE / DEPLOY / PUSH / PACKAGE = NOT_RUN**；安装仍是上一部署候选且hash未变，不继续旧部署授权，不增加旧Stage/Recovery。产品回滚使用对应三个具名提交的inverse commit，不hard reset；游戏回滚点仍是上一部署的唯一Recovery。
 
 <a id="meeting-native-handoff-scope-20261004"></a>
 # 当前修复：会面原版对话交接锁跨遭遇残留（2026-10-04，OFFLINE_VERIFIED）
