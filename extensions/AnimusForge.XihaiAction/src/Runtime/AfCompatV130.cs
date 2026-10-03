@@ -40,6 +40,7 @@ namespace AnimusForge.XihaiAction
         private static MethodInfo _sceneDescriptionMethod;
         private static FieldInfo _contextField;
         private static FieldInfo _conversationEpochField;
+        private static PropertyInfo _conversationEpochProperty;
         private static FieldInfo _primaryIndexField;
         private static PropertyInfo _currentInstanceProperty;
         private static Type _npcDataPacketType;
@@ -143,12 +144,9 @@ namespace AnimusForge.XihaiAction
                     reason = "targeting context field is missing";
                     return false;
                 }
-                _conversationEpochField = behaviorType.GetField(
-                    "_sceneConversationEpoch",
-                    instanceFlags);
-                if (_conversationEpochField?.FieldType != typeof(int))
+                if (!TryBindConversationEpochAccessor(behaviorType))
                 {
-                    reason = "conversation epoch field is missing";
+                    reason = "conversation epoch accessor is missing or unreadable";
                     return false;
                 }
                 BindOptionalCapturedPlayerShoutMethods(behaviorType, instanceFlags);
@@ -440,7 +438,8 @@ namespace AnimusForge.XihaiAction
                     _classifierProvider);
                 _installed = true;
                 reason =
-                    "AF player-shout, NPC-reply, deferred speech and classifier structural contracts matched";
+                    "AF player-shout, NPC-reply, deferred speech and classifier structural contracts matched" +
+                    "; conversation epoch=" + (_conversationEpochField != null ? "field" : "property");
                 return true;
             }
             catch (Exception ex)
@@ -513,6 +512,7 @@ namespace AnimusForge.XihaiAction
                 _sceneDescriptionMethod = null;
                 _contextField = null;
                 _conversationEpochField = null;
+                _conversationEpochProperty = null;
                 _primaryIndexField = null;
                 _currentInstanceProperty = null;
                 _npcDataPacketType = null;
@@ -527,6 +527,40 @@ namespace AnimusForge.XihaiAction
                     QueuedReplyObservations.Clear();
                 }
             }
+        }
+
+        // Resolve once at bridge installation, not in Mission ticks or each reply.
+        // The refactored property forwards to the authoritative session owner;
+        // do not replace it with a second epoch field or a constant-zero fallback.
+        private static bool TryBindConversationEpochAccessor(Type behaviorType)
+        {
+            const BindingFlags flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
+            _conversationEpochField = behaviorType.GetField("_sceneConversationEpoch", flags);
+            if (_conversationEpochField?.FieldType != typeof(int))
+            {
+                _conversationEpochField = null;
+            }
+            _conversationEpochProperty = behaviorType.GetProperty("_sceneConversationEpoch", flags);
+            if (_conversationEpochProperty?.PropertyType != typeof(int) ||
+                _conversationEpochProperty.GetGetMethod(true) == null ||
+                _conversationEpochProperty.GetIndexParameters().Length != 0)
+            {
+                _conversationEpochProperty = null;
+            }
+            return _conversationEpochField != null || _conversationEpochProperty != null;
+        }
+
+        private static int ReadConversationEpoch(object behavior)
+        {
+            if (_conversationEpochField != null)
+            {
+                return (int)_conversationEpochField.GetValue(behavior);
+            }
+            if (_conversationEpochProperty != null)
+            {
+                return (int)_conversationEpochProperty.GetValue(behavior, null);
+            }
+            throw new InvalidOperationException("Conversation epoch accessor is not bound.");
         }
 
         private static void ObserveRecordedPlayerMessage(
@@ -579,7 +613,7 @@ namespace AnimusForge.XihaiAction
                 {
                     framed.Insert(0, primary);
                 }
-                int conversationEpoch = (int)_conversationEpochField.GetValue(__instance);
+                int conversationEpoch = ReadConversationEpoch(__instance);
                 BattleSpeechRuntimeHost.SubmitPlayerShout(
                     mission,
                     __0,
@@ -648,9 +682,7 @@ namespace AnimusForge.XihaiAction
                                        (int)_primaryIndexField.GetValue(context);
                     primary = framed.FirstOrDefault(agent => agent.Index == primaryIndex);
                 }
-                int conversationEpoch = _conversationEpochField != null
-                    ? (int)_conversationEpochField.GetValue(__instance)
-                    : 0;
+                int conversationEpoch = ReadConversationEpoch(__instance);
 
                 BattleSpeechTriggerDecisionV2 localDecision =
                     BattleSpeechFrameworkV2.ParsePlayerShout(shoutText);
@@ -1157,8 +1189,8 @@ namespace AnimusForge.XihaiAction
                 Mission mission = Mission.Current;
                 if (mission != null && __1 != null && __1.IsActive())
                 {
-                    int conversationEpoch = _conversationEpochField != null && __instance != null
-                        ? (int)_conversationEpochField.GetValue(__instance)
+                    int conversationEpoch = __instance != null
+                        ? ReadConversationEpoch(__instance)
                         : 0;
                     BattleSpeechRuntimeHost.SubmitShownNpcReply(
                         mission,
@@ -1194,8 +1226,8 @@ namespace AnimusForge.XihaiAction
             }
             try
             {
-                int conversationEpoch = _conversationEpochField != null && __instance != null
-                    ? (int)_conversationEpochField.GetValue(__instance)
+                int conversationEpoch = __instance != null
+                    ? ReadConversationEpoch(__instance)
                     : 0;
                 if (!BattleSpeechRuntimeHost.TryDeferShownNpcReply(
                     __instance,
