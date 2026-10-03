@@ -146,3 +146,15 @@ JSON 根包含 `outcome`、`lastStage`、`failedStage`、`failureCode` 与最近
 - 会话来源校验与取消仍生效；开场截图和手动全景试采仅在真实场景启用。任务类型识别在主线程实际采集校验时缓存到本次来源对象；每帧会话标识检查不增加行为列表查询。
 
 本地修复 `171bed81`，生产来源 / 路由加引擎替身回归31项通过，旧分流负控12项预期失败；双API+Bootstrap构建通过。[主台账](animusforge-refactoring-and-repository-reorganization-plan.md#illustrator-party-conversation-route-20261003)记录来源坐标、证据与回滚。本轮尚未部署 / 推送 / 打包，玩家具体错误日志、GPU、玩家旧档和真实生图服务未验。
+
+## 9. 重绘（带提示词）
+
+百科、会话小面板 / 全屏以及周报 / 快报插画中的“提示词”按钮已改为“重绘（带提示词）”：点击后填写这次希望改变的动作、构图、镜头或氛围，再按“重绘”。内容先给视觉导演，导演结合原人物、装备、场景或事件事实生成新的画面描述，再交给生图模型。
+
+- 只作用于这次请求，不保存到MCM“自定义导演提示词”；原全局导演规则仍生效。普通重绘与自动生图不自动沿用它。
+- 取消、留空或在输入过程中换对象 / 关闭面板不发起生成。已有生成未完成时按钮不可用。
+- 导演关闭、接口未配置或返回不合要求的正文时明确停止，不忽略输入后继续本地构图生图；普通重绘原降级规则不变。
+- 生成开始后仍可关闭面板继续后台生成，完成后通知与更新画廊。查看 / 复制已生成提示词仍可使用复制按钮和画廊。
+- `prompt_sources.playerRedrawPromptChars` 表示本次输入字符数；未配置失败标记 `director.player_redraw_unavailable`，实际导演失败沿 `director_failed` 排查。此字段不是模型确实遵循要求的证明。
+
+本地产品 `30147300` / `dfc5a6bd` / `6588eed3`，[主台账与证据](animusforge-refactoring-and-repository-reorganization-plan.md#illustrator-player-redraw-20261003)记录验证与回滚；尚未部署，实机输入焦点和真实provider视觉结果未验。

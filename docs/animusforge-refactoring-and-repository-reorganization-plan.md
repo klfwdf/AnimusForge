@@ -1,3 +1,29 @@
+<a id="illustrator-player-redraw-20261003"></a>
+# 当前功能：玩家本次提示词给导演后重绘（2026-10-03，OFFLINE_VERIFIED）
+
+用户要求把生图面板“提示词”按钮改成“重绘（带提示词）”，点击后填写本次要求，发给导演再重新生成。工作区 `F:/AnimusForge-main`、分支 `codex/af-main-refactor-continuation-20260831`，检查点 `cd7d0b7`，产品 / 测试 `30147300` + `dfc5a6bd` + `6588eed3`。仅本地功能 / 构建 / 回归；不延续历史 push / 游戏覆盖 / 打包授权。
+
+## 路径与行为
+
+- 五个入口统一：百科卡片、会话卡片、会话全屏、周报浮层、快报插画槽。按钮文本为“重绘（带提示词）”，新 `ExecuteRegenerateWithPrompt` 绑定 `CanRegenerateWithPrompt`，加载中禁用。普通重绘 / 复制 / 画廊保留；旧提示词查看方法保留兼容但不再由该按钮调用，查看仍可在画廊进行。
+- `extensions/AnimusForge.Illustrator/src/UI/Overlays/IllustrationRedrawPromptEditor.cs:8-42`，`Show` 复用 `DevTextEditorHelper.ShowLongTextEditor`；确认 / 取消只能消费一次，空输入不生成。先校验当前owner与导演配置，确认后重新校验；关闭 / 换人物 / 换会话 / 换快报 / 忙碌时不付费请求。输入只在当前弹窗保留最近一次提交草稿，不保存全局配置；普通 / 自动重绘传 null，不继承上次输入。
+- 既有编辑器layer4000低于画卷4010–4020，故卡片 / 浮层编辑时隐藏自有控件root，确认 / 取消后仅恢复原owner；不改层级 / 全局编辑器或玩家相机。快报宿主也为4000，原版同Order排序不能当作编辑器必在上层的保证；`src/AF.GameAdapter.Bannerlord/UI/Weekly/DevWeeklyReportPopup.cs:56-64` 由真实宿主的 `SetIllustrationPromptEditing` 隐藏原快报root，`ShouldCloseForEscapeKey:189-192` 局部阻止编辑中宿主Esc关闭。回调经 `WorldBulletinIllustrationVM.SetPromptEditing` 接入，不影响其他popup。百科输入沿既有 `DevHistoryEditPopup.IsOpen` 快捷键阻断，不另注入百科按钮。
+- `extensions/AnimusForge.Illustrator/src/UI/Overlays/IllustrationCardPopup.cs:175-191`，`Regenerate / OpenRedrawPromptEditor` 冻结owner；`ExecuteEncyclopediaGenerationCore:440-514` 与 `ExecuteConversationGenerationCore:726-845` 将字符串传入本次plan，会话已有冻结素材 / 场景plan重建保留该字段。异步使用同一不可变字符串，人物 / 现场来源与后台保存规则不变。
+- 同扩展 `src/UI/Patches/WeeklyReportPopupIllustrationPatch.cs:474-593`，`OpenRedrawPromptEditor / TriggerRegenerateCore / StartGeneration`，周报与快报共享原生成入口；`src/Core/BulletinIllustrationPreloader.cs:122-184` 将字符串只传本次job，不改变事件key、待办合并或发布自动预载规则。`src/modules/AF.Module.Weekly/Panel/WorldBulletinPanelVM.cs:112-223` 新窄typed回调与VM命令，不改 `IWeeklyIllustrationSink` 既有契约。退役清回调 / 草稿，晚编辑确认不得操作新slot。
+- `extensions/AnimusForge.Illustrator/src/Core/VisualDirectorEngine.cs:27-74`，`IllustrationPromptPlan.PlayerRedrawPrompt / BuildDirectorContext`：独立只给导演偏好字段，原3/4参数构造器保留；标记非已发生事实，须转成可绘制描述，保留身份 / 装备 / 真实场景 / 事件 / 四段输出约束。MCM的全局 `CustomDirectorPrompt` 同时保留，不因单次输入覆盖。`CreateDirectionWithClientAsync:183-220` 记录字符数，导演正文需本地降级时带提示词请求明确停止；`RequirePlayerRedrawDirector:270-277` 阻止未启用 / 未配置时丢输入仍生图。普通生成原本地降级不变，不增加自动付费重试。
+- 资源：`extensions/AnimusForge.Illustrator/GUI/Prefabs/{EncyclopediaIllustrationOverlay,ConversationIllustrationOverlay,ConversationIllustrationFullscreenOverlay,WeeklyReportIllustrationOverlay}.xml` 与 `content/modules/AF.Module.Weekly/GUI/Prefabs/WorldBulletinPanel.xml` 扩按钮宽；卡片缩短邻钮宽，周报普通钮简称“重绘”，整个按钮条在原宽度内；快报控件移到标题下一行避免重叠。所有子文字不抢父点击，原content-map已有路径不新增资源名。
+- 性能：仅低频点击 / 确认时做O(1) owner与配置检查、一次字符串trim / plan追加；没有新tick、扫描、场景采集、反射、请求轮询或第二个模型调用。普通入口 / 采集 / 保存 / 后台完成路径保持。
+
+## 证据与未验
+
+- 原一键入口 build-only Debug双API+Bootstrap **0 error**，各实现341既有警告，Bootstrap0警告；引用 `v1.3.15.110062` / `v1.4.6.115628`，最终log `build-editor-layer-final.log`。三个DLL与marker SHA256在本地收据核验。原编译 / 覆盖 / 打包脚本未改。
+- `PlayerRedrawTests/run.py --run-root artifacts/illustrator-player-redraw-20261003/editor-layer-final`：最终 **35 PASS**，真实editor / card VM、抽取weekly / bulletin VM及director配置guard；取消、空白、重复确认、late save、失效owner、编辑中禁用导演、编辑器失败恢复、加载guard及五处XML绑定 / 按钮宽度。新增抽取真实快报编辑与Esc方法，验证隐藏 / 恢复 / 退役保护。UI / 几何与输入编辑器为替身；初次fixture漏Gallery using编译失败已保留，补齐后通过，先前32项结果由此替代。
+- `run_director_status_audit.ps1 -AssemblyPath .../versions/1.3/AnimusForge.dll` 与1.4：最终各 **110 PASS**，实际DLL生产请求＋内存HTTP。新矩阵覆盖3模式单次要求 / 多行、文字及图片payload、全局规则 / 原事实共存、普通plan不继承、真实HTTP只发一次、最终生图提示词不原样追加输入、真实会话sessionplan保留字段、导演不可用不发HTTP、无用正文带要求停止 / 普通继续既有回退。没有真实服务调用或GPU。
+- 快报预载 **59 PASS**，新增prompt转接、pending不覆盖 / 不重复、下次普通请求null；最终DLL后台 `run_module_review_audit.ps1` **71 PASS**（scope / generation / HUD / gallery managed路径，native为替身）；场景分流 **31 PASS**；对话生命周期 **95 PASS** 保留双开关规则。最终对话与场景owner源码未变，新的editor状态 / Esc方法另有35项定向覆盖。
+- 本地 `artifacts/illustrator-player-redraw-20261003/receipt.json` 绑定17份产品 / 测试、三个build marker、结果日志与源修订。`git diff --check`通过，未add-all、未删除未跟踪材料。
+- **LIVE_GAME / PLAYER_SAVE / REAL_PROVIDER / GPU / PUSH / DEPLOY / STAGE / PACKAGE = NOT_RUN**。长编辑器实机层级 / 焦点与多行输入手感、实际服务遵循玩家要求及最终视觉尚未确认；画幅 / 颜色 / 场景数据规则无意变更。已安装游戏与旧ZIP不含本轮及前轮本地修复。
+- 回滚依次 `git revert 6588eed3`、`git revert dfc5a6bd`、`git revert 30147300`；只撤本次重绘功能、编辑隔离与失败guard，前轮 `4be40f03` / `a7c0a0fd` / `171bed81` 保留。不要hard reset或改写历史。
+
 <a id="dialogue-continue-hero-auto-20261003"></a>
 # 当前修复：普通模式空白继续点击与 Hero 自动模式（2026-10-03，OFFLINE_VERIFIED）
 
