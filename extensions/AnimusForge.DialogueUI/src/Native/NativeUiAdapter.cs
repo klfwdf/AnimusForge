@@ -87,11 +87,11 @@ public static class NativeUiAdapter
         return true;
     }
 
-    // A queued NPC opening may begin after the movie load. Respect the captured setting
-    // until the player explicitly enters AI; no per-frame MCM reads or mission scans.
+    // Default entry already happens at movie load. A queued opening must not pull a
+    // non-Hero or a player who manually returned to ordinary mode back into AI.
     private static bool NpcOpeningPrefix(AnimusForgeNativeConversationOverlayVM ____dataSource)
-        => !_installed || !DialogueUiRuntime.Enabled || ____dataSource.IsCustomAnswerVisible
-            || !Wrappers.TryGetValue(____dataSource, out var wrapper) || wrapper.AutoEnterAiMode;
+        => !_installed || !DialogueUiRuntime.Enabled || ____dataSource == null
+            || !Wrappers.ContainsKey(____dataSource) || ____dataSource.IsCustomAnswerVisible;
 
     public static void OnMovieLoaded(string movieName, Widget root, IViewModel datasource)
     {

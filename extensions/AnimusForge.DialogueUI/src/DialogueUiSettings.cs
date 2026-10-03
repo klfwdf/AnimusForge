@@ -32,8 +32,8 @@ namespace AnimusForge.DialogueUI
         public Dropdown<string> ShoutPanelStyleDropdown { get; set; } =
             new Dropdown<string>(new[] { "原样", "卷轴式", "右侧手札" }, 0);
 
-        [SettingPropertyBool("自动进入 AI 模式", Order = 3, RequireRestart = false,
-            HintText = "开启时，每次打开场景或地图对话自动进入 AI 输入模式；关闭时先显示普通对话选项，仍可手动切换 AI。下次打开对话生效。")]
+        [SettingPropertyBool("Hero 对话自动进入 AI 模式", Order = 3, RequireRestart = false,
+            HintText = "开启时，仅与 Hero（领主、同伴、要人等有独立身份的人物）对话自动进入 AI 模式；普通劫匪、逃兵、士兵等非 Hero 保持普通模式。关闭时所有对话先用普通模式；均可手动切换。下次打开对话生效。")]
         [SettingPropertyGroup("1. 界面", GroupOrder = 1)]
         public bool AutoEnterAiMode { get; set; } = true;
 

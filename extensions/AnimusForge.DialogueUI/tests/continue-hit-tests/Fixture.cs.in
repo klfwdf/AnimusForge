@@ -1,0 +1,224 @@
+using System.Numerics;
+using System.Xml.Linq;
+using AnimusForge;
+using AnimusForge.DialogueUI.Native;
+using TaleWorlds.GauntletUI;
+using TaleWorlds.GauntletUI.BaseTypes;
+using TaleWorlds.Engine.GauntletUI;
+using TaleWorlds.InputSystem;
+
+static class Program
+{
+    static int passed, failed;
+    static void Check(bool condition, string label)
+    {
+        if (condition) passed++; else { failed++; Console.WriteLine("FAIL: " + label); }
+    }
+    static int Main(string[] args)
+    {
+        Widget root = Build(XDocument.Load(args[0]).Root.Element("Window").Elements().Single(), new Rect(0, 0, 1500, 400));
+        Widget Id(string id) => root.FindChild(id, true);
+        var answers = Id("AnswerList");
+        var button = Id("ContinueButton");
+        // Geometry is a deterministic layout double, not Gauntlet visual acceptance.
+        answers.Size = Vector2.Zero;
+        Id("AFDialogueAnswerScrollbar").IsVisible = false;
+        Id("AFDialogueTextScrollbar").IsVisible = false;
+        button.IsVisible = button.IsEnabled = true; // native ConversationScreenButtonWidget's no-answer state
+        var events = new EventManager { Root = root };
+        Widget Hit(float x, float y, GauntletEvent e = GauntletEvent.MousePressed) => events.Select(e, new Vector2(x, y));
+        void Blank(string stage)
+        {
+            Check(Hit(1200, 300) == button, stage + ": blank answer area reaches continue");
+            Check(Hit(1410, 300) == button, stage + ": answer viewport margin reaches continue");
+            Check(Hit(700, 300) == button, stage + ": blank body viewport reaches continue");
+            Check(Hit(80, 200) == button, stage + ": outside console reaches continue");
+            Check(Hit(1200, 300, GauntletEvent.MouseReleased) == button, stage + ": release reaches same button");
+        }
+        Blank("initial");
+        NativeConversationAnswerAreaController.LoadMoviePostfix("SPConversation", new GauntletMovieIdentifier { Movie = new FakeMovie { RootWidget = root } });
+        NativeConversationAnswerAreaController.SetSuppressed(true);
+        Check(Hit(1200, 300) != button, "AI suppression prevents native continue");
+        NativeConversationAnswerAreaController.SetSuppressed(false);
+        NativeConversationAnswerAreaController.ForceRestoreAll();
+        Blank("AI -> ordinary");
+        for (int i = 0; i < 8; i++) NativeConversationAnswerAreaController.ForceRestoreAll();
+        Blank("eight restore retries / encyclopedia return");
+        Check(Id("AnswerListContainer").DoNotAcceptEvents && answers.DoNotAcceptEvents, "restore keeps layout containers transparent");
+        Check(!Id("AnswerListContainer").DoNotPassEventsToChildren, "transparent container still visits real answers");
+        Check(Hit(700, 300, GauntletEvent.MouseScroll) == Id("AFDialogueTextScroll"), "body wheel reaches native scroll implementation");
+        Check(Hit(1200, 300, GauntletEvent.MouseScroll) == Id("AFDialogueAnswerScroll"), "answer wheel reaches native scroll implementation");
+        var answer = new ButtonWidget(new UIContext()) { Id = "NativeAnswer", Position = new(1120, 170), Size = new(290, 50) };
+        answers.Size = new(295, 50);
+        answers.Add(answer);
+        NativeConversationAnswerAreaController.ForceRestoreAll();
+        button.IsVisible = button.IsEnabled = false; // native state once answers are bound
+        Check(Hit(1200, 190) == answer, "real native option remains clickable");
+        Check(Hit(1200, 300) != button, "options-present blank cannot execute continue");
+        NativeConversationAnswerAreaController.SetSuppressed(true);
+        Check(Hit(1200, 190) != answer, "AI suppresses real native answers");
+        NativeConversationAnswerAreaController.SetSuppressed(false);
+        NativeConversationAnswerAreaController.ForceRestoreAll();
+        button.IsVisible = button.IsEnabled = false;
+        Check(Hit(1200, 190) == answer, "option click restored after another mode switch");
+        Check(Hit(1200, 190, GauntletEvent.MouseScroll) == Id("AFDialogueAnswerScroll"), "wheel over option bubbles to scroll");
+        Id("AFDialogueAnswerScrollbar").IsVisible = true;
+        Check(Hit(1417, 260) != button, "visible scrollbar does not execute continue");
+        Check(Hit(500, 190) != button, "native body/link retains original interaction");
+        Check(Hit(220, 340) != button, "hero encyclopedia button remains a real control");
+        answers.Children.Clear(); answers.Size = Vector2.Zero;
+        Id("AFDialogueAnswerScrollbar").IsVisible = false;
+        NativeConversationAnswerAreaController.ForceRestoreAll();
+        Blank("answers -> no answers");
+
+        var scroll = new AFDialogueClickThroughScrollPanel(new UIContext());
+        foreach (var e in new[] { GauntletEvent.MousePressed, GauntletEvent.MouseReleased, GauntletEvent.MouseAlternatePressed, GauntletEvent.MouseAlternateReleased })
+            Check(!scroll.PreviewEvent(e), "scroll viewport passes through " + e);
+        Check(scroll.PreviewEvent(GauntletEvent.MouseScroll), "scroll subclass retains wheel preview");
+
+        var overlay = new OverlayProbe();
+        TaleWorlds.InputSystem.Input.MousePositionPixel = (1200, 300);
+        Check(!overlay.HitTest(), "ordinary overlay does not claim native answer area");
+        overlay.Original.IsCustomAnswerVisible = true;
+        Check(overlay.HitTest(), "AI overlay claims input area");
+        overlay.Original.IsCustomAnswerVisible = false;
+        for (int i = 0; i < 5; i++)
+        {
+            TaleWorlds.InputSystem.Input.MousePositionPixel = (1120 + i * 50, 125);
+            Check(overlay.HitTest(), "tool button remains claimed: " + i);
+        }
+        overlay._wrapper.Auxiliary.IsVisible = true;
+        TaleWorlds.InputSystem.Input.MousePositionPixel = (40, 20);
+        Check(overlay.HitTest(), "auxiliary panel prevents continue");
+        overlay.Root.IsVisible = false;
+        Check(!overlay.HitTest(), "hidden overlay cannot intercept native clicks");
+        Console.WriteLine($"{passed} PASS / {failed} FAIL; production restore, prefab, scroll previews and overlay hit; vanilla hit ordering. Engine/layout/scroll movement are doubles, no live-game acceptance.");
+        return failed == 0 ? 0 : 1;
+    }
+
+    static Widget Build(XElement xml, Rect area)
+    {
+        string id = (string)xml.Attribute("Id") ?? "";
+        area = id switch
+        {
+            "AFDialogueConsoleFrame" => new(0, 100, 1440, 283),
+            "DialogueContainer" => new(420, 150, 650, 209),
+            "AnswerListContainer" => new(1114, 170, 305, 190),
+            "AFDialogueTextContent" => new(420, 150, 650, 40),
+            "AFDialogueTextScrollbar" => new(1062, 160, 5, 180),
+            "AFDialogueAnswerScrollbar" => new(1414, 170, 5, 190),
+            "AFDialogueSpeakerInfo" => new(100, 320, 224, 32),
+            "AFDialoguePortraitSlot" or "AFDialoguePortraitBackground" => new(124, 140, 169, 180),
+            "ConversedHeroBannerHost" => new(106, 324, 24, 24),
+            _ => area
+        };
+        if (xml.Name.LocalName == "NavigationScopeTargeter") area = new(0, 0, 0, 0);
+        Widget widget = xml.Name.LocalName switch
+        {
+            "AFDialogueClickThroughScrollPanel" => new AFDialogueClickThroughScrollPanel(new UIContext()),
+            "ScrollablePanel" => new ScrollablePanel(new UIContext()),
+            "ButtonWidget" => new ButtonWidget(new UIContext()),
+            _ => new Widget(new UIContext())
+        };
+        widget.Id = id; widget.Position = new(area.X, area.Y); widget.Size = new(area.W, area.H);
+        widget.DoNotAcceptEvents = (string)xml.Attribute("DoNotAcceptEvents") == "true";
+        widget.DoNotPassEventsToChildren = (string)xml.Attribute("DoNotPassEventsToChildren") == "true";
+        widget.IsVisible = (string)xml.Attribute("IsVisible") != "false" && (string)xml.Attribute("IsVisible") != "@IsPersuading";
+        widget.IsEnabled = (string)xml.Attribute("IsDisabled") != "true";
+        foreach (var child in xml.Element("Children")?.Elements() ?? Enumerable.Empty<XElement>()) widget.Add(Build(child, area));
+        return widget;
+    }
+    record struct Rect(float X, float Y, float W, float H);
+}
+
+class OverlayProbe
+{
+    internal Widget Root = new(new UIContext());
+    internal Mode Original = new();
+    internal Wrapper _wrapper = new();
+    Widget _column = new(new UIContext()) { Position = new(1114, 100), Size = new(305, 260) };
+    List<Widget> _buttons = Enumerable.Range(0, 5).Select(i => new Widget(new UIContext()) { Position = new(1114 + i * 50, 110), Size = new(40, 30) }).ToList();
+    __OVERLAY_HIT__
+    internal class Mode { internal bool IsCustomAnswerVisible; }
+    internal class Wrapper { internal Drawer Auxiliary = new(); }
+    internal class Drawer { internal bool IsVisible; }
+}
+
+namespace TaleWorlds.GauntletUI
+{
+    public class UIContext { }
+    public enum GauntletEvent { MousePressed, MouseReleased, MouseAlternatePressed, MouseAlternateReleased, MouseScroll }
+    public class EventManager
+    {
+        public Widget Root;
+        public Widget Select(GauntletEvent e, Vector2 position) => GetWidgetAtPositionForEvent(e, position);
+        static bool IsPointInsideMeasuredArea(Widget w, Vector2 p) => p.X >= w.Position.X && p.X < w.Position.X + w.Size.X && p.Y >= w.Position.Y && p.Y < w.Position.Y + w.Size.Y;
+        __SELECT__
+        __COLLECT__
+    }
+}
+namespace TaleWorlds.GauntletUI.BaseTypes
+{
+    public enum SizePolicy { Fixed, CoverChildren, StretchToParent }
+    public class Widget
+    {
+        public Widget(UIContext context) { }
+        public string Id { get; set; }
+        public Vector2 Position, Size, MeasuredSize;
+        public Vector2 GlobalPosition => Position;
+        public bool IsVisible = true, IsEnabled = true, DoNotAcceptEvents, DoNotPassEventsToChildren;
+        public bool IsHidden => !IsVisible;
+        public bool IsDisabled => !IsEnabled;
+        public float AlphaFactor = 1, SuggestedHeight;
+        public SizePolicy HeightSizePolicy;
+        public Widget ParentWidget;
+        public List<Widget> Children = new();
+        public int ChildCount => Children.Count;
+        public Widget GetChild(int i) => Children[i];
+        public void Add(Widget child) { child.ParentWidget = this; Children.Add(child); }
+        public Widget FindChild(string id, bool includeAllChildren) => Children.FirstOrDefault(c => c.Id == id) ?? Children.Select(c => c.FindChild(id, true)).FirstOrDefault(c => c != null);
+        public bool IsRecursivelyVisible() => IsVisible && (ParentWidget?.IsRecursivelyVisible() ?? true);
+        public bool PreviewEvent(GauntletEvent e) => e switch
+        {
+            GauntletEvent.MousePressed => OnPreviewMousePressed(),
+            GauntletEvent.MouseReleased => OnPreviewMouseReleased(),
+            GauntletEvent.MouseAlternatePressed => OnPreviewMouseAlternatePressed(),
+            GauntletEvent.MouseAlternateReleased => OnPreviewMouseAlternateReleased(),
+            _ => OnPreviewMouseScroll()
+        };
+        protected virtual bool OnPreviewMousePressed() => true;
+        protected virtual bool OnPreviewMouseReleased() => true;
+        protected virtual bool OnPreviewMouseAlternatePressed() => true;
+        protected virtual bool OnPreviewMouseAlternateReleased() => true;
+        protected virtual bool OnPreviewMouseScroll() => false;
+    }
+    public class ButtonWidget : Widget { public ButtonWidget(UIContext context) : base(context) { } }
+    public class ScrollablePanel : Widget
+    {
+        public ScrollablePanel(UIContext context) : base(context) { }
+        protected override bool OnPreviewMouseScroll() => true;
+    }
+}
+namespace TaleWorlds.Library { public class ViewModel { } }
+namespace TaleWorlds.InputSystem { public static class Input { public static (float x, float y) MousePositionPixel; } }
+namespace TaleWorlds.Engine.GauntletUI
+{
+    public class FakeMovie { public Widget RootWidget; }
+    public class GauntletMovieIdentifier { public FakeMovie Movie; }
+    public class GauntletLayer { public void LoadMovie(string name, TaleWorlds.Library.ViewModel vm) { } }
+}
+namespace HarmonyLib
+{
+    public class Harmony { public Harmony(string id) { } public void Patch(object method, object postfix) { } }
+    public class HarmonyMethod { public HarmonyMethod(Type type, string name) { } }
+    public static class AccessTools { public static object Method(Type type, string name, Type[] parameters) => null; }
+}
+namespace AnimusForge
+{
+    public static class Logger { public static void Log(string category, string message) { } public static void LogTrace(string category, string message) { } }
+    public static class FreezeWatchdog
+    {
+        public static IDisposable Scope(string name) => new Empty();
+        sealed class Empty : IDisposable { public void Dispose() { } }
+    }
+}
