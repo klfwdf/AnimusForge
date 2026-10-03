@@ -1,10 +1,34 @@
 <a id="dialogue-processing-mode-lock-20261004"></a>
-# 当前修改：对话处理期间禁止切回普通模式（2026-10-04，ACTIVE）
+# 当前修改：对话处理期间禁止切回普通模式（2026-10-04，OFFLINE_VERIFIED）
 
-- 用户新增明确要求；基线 `82631efb`。只修改普通对话UI的模式切换保护，不改LLM、后处理执行与动作规则；会面仍为只读审查，不把上轮部署授权延续到新产品。
-- 范围：宿主Overlay / VM、DialogueUI包装、两套prefab、原生对话admission的只读轻量busy观察及既有回归测试。按钮禁用与执行入口双重保护；成功 / 失败解锁，重载时观察现有后台owner，不复制request状态。
-- 热路径仅在原UI Tick比较现有owner / epoch / token / generation等O(1)身份，不用带目标解析与agent查找的提交busy验证每帧扫描。长等待Esc仍可退出整段对话，但不能偷切普通模式；不阻止关闭或真实ConversationEnded清理。
-- 验收：请求 / streaming / 后处理时拒绝普通模式；完成 / 失败 / stale后恢复，冷重载后台busy与旧回调不误解锁；原点击继续 / Hero双设置回归保持，双API+Bootstrap通过。实机 / 真服务 / 旧档另验，不push / Stage / 部署 / 打包。
+- 用户新增明确要求；基线 `82631efb`、检查点 `247ae704`、产品 / 测试 `954a1551c990017f18091b056e6abc6d0cc907ab`。只修改普通对话UI的模式切换保护，不改LLM、后处理执行与动作规则；会面仍为只读审查，不把上轮部署授权延续到新产品。
+- 宿主Overlay / VM、DialogueUI包装、两套prefab共用 `CanSwitchTalk`：请求 / streaming / 后处理未完成时按钮禁用，VM命令、宿主点击和直接模式setter再次保护。完成 / 失败沿原finally解锁；新的后台busy观察读取原admission owner，不复制request状态，重载UI也可观察有效后台请求。
+- 原UI Tick只比较owner / epoch / token / generation等O(1)身份，不调用含目标解析与agent查找的提交busy验证；实际切换尝试仍做完整backend资格检查。长等待Esc改为关闭Overlay并结束本次Conversation，不偷切普通模式；紧接着停止该Tick，不使用已关闭layer。关闭按钮与真实ConversationEnded清理保留，未改变动作 / 记忆执行器。
+
+## 产品坐标（`954a1551`）
+
+| 文件 / 一基行号 / 符号 | 已覆盖责任 | 未覆盖 |
+| --- | --- | --- |
+| `src/AF.GameAdapter.Bannerlord/UI/Conversation/AnimusForgeNativeConversationOverlay.cs:231-234,273-290,1505-1544`，`Tick` / `HandleSwitchTalkRequested` / `IsOrdinaryModeSwitchBlocked` / `SetInputVisible` / `ReleaseLongWaitUiLock` | 按钮同步、双重命令保护与超时退出；真实DLL验证宿主本地busy但VM显示idle的竞争窗口被拦截 | 真引擎Esc / Conversation.End副作用、后台owner真实重载 |
+| `src/AF.GameAdapter.Bannerlord/UI/Conversation/AnimusForgeNativeConversationOverlayVM.cs:160-173,261-265,291-295` | `CanSwitchTalk`数据绑定、`SetBusy`同步、`SwitchTalk`命令gate | 实际Gauntlet按钮灰显 / 点击感受 |
+| `src/modules/AF.Module.Conversation/Channels/Native/ShoutBehavior.NativeAdmission.cs:53-62`，`IsNativeConversationBackendBusyForUi` | owner、取消、会话stamp只读观察；原完整提交验证不变 | 真Mission / target失效时序 |
+| `extensions/AnimusForge.DialogueUI/src/Native/NativeOverlayVM.cs:64,92,108,120` | 包装权限、转发通知、系统UI返回 / 辅助面板刷新；busy / idle / dispose实际DLL测试 | 百科切换实机与视觉 |
+| `content/modules/AF.Module.Conversation/GUI/Prefabs/AnimusForgeNativeConversationOverlay.xml:5`、`extensions/AnimusForge.DialogueUI/GUI/Prefabs/AFDialogueNativeOverlay.xml:47` | 原UI与替换UI都绑定 `@CanSwitchTalk`，布局、普通继续命中规则不变 | 新版本安装 / 真实movie展示 |
+| `tests/modules/AF.Module.Onboarding/DialogueOnboardingRegressionTests/Program.cs:25-40,170-196` / 同目录csproj | 编译真实VM / sanitizer，正负命令、草稿、backend-only锁、XML及消费者契约；保留既有点击 / 双开关 / 生命周期回归 | stub ViewModel与源码断言不证明真实原生控件行为 |
+
+## 验证与交付
+
+- 生产链接 / XML / 源码回归 **112 PASS**；两份实际新Debug DLL（真实VM / 包装、未初始化宿主以避开原生UI）各 **16 PASS**。旧游戏DLL的同一负控返回exit1：`actual VM allowed switching during request`，保留失败证据。
+- 原入口 Debug双API + Bootstrap最终三构建0错误（实现各341既有警告），三marker hash通过；首次因新增变量类型未引入namespace而失败，改为现有属性类型推断后原入口重跑通过，原失败日志保留。本次UI Release构建未跑，不复用前轮Release当作本次证据。
+- 新两DLL原epoch桥接安装 / 卸载回归各2组PASS，SceneActions核心89 PASS，保持上次演讲 / 动作修复；未改它们的产品文件。按钮与草稿逻辑实际DLL已验，真实后台owner重载 / Esc引擎行为 / UI展示仍需实机。
+- 本地 `artifacts/dialogue-processing-mode-lock-20261004/receipt.json` 绑定8源文件、3新产物、实际DLL检查与日志；`build-debug.log`（失败）/ `build-debug-retry.log`（通过）、`regression-final.log`、`dll-debug-*.log`、`negative-installed.log`集中取证。两份安装DLLhash仍与前轮部署收据一致。
+- **LIVE_GAME / REAL_AI_TTS / PLAYER_SAVE / PUSH / STAGE / DEPLOY / PACKAGE = NOT_RUN**。本次只在本地源码 / 构建，游戏仍是前轮epoch桥接修复版本，新模式限制未安装。回滚产品 `git revert 954a1551`，不hard reset、不撤其他作者改动。
+
+## 同时进行的会面只读审查
+
+- 用户确认普通领主与劫匪均未出现菜单。实际安装DLL + 当前游戏依赖检查：旧通用拦截只选择不存在的 `StartConversation`，Prefix为0；但 `PlayerEncounter.Start`、`GameMenu.ActivateGameMenu`、`OpenMapConversation`、`SetupAndStartMapConversation`可安装。普通领主具体放行分支仍缺Trace取证，不把已确认兜底缺口当成已穷尽根因。
+- `PlayerEncounter.Start`的空队伍日志符合原版Start先创建 / Init再设队伍的时序，不是独立已复现丢队伍错误。当前贵族菜单明确排除无Hero的劫匪；其预期是否曾有另一条会面需另核功能来源，不能盲目放宽贵族资格。
+- 既有Encounter生命周期提取fixture **55 PASS**，不证明实机菜单显示；初次系统SDK因隔离缺引用包失败，改用已存在仓内SDK后通过，未改测试 / 安装依赖。完整只读证据 `artifacts/meeting-chain-audit-20261004/report.md`；未改会面代码或玩家MCM，未开启深度追踪 / 部署，不宣称会面全链路已修。
 
 <a id="deploy-epoch-bridge-20261004"></a>
 # 当前部署：会话轮次桥接修复覆盖游戏（2026-10-04，DEPLOY_VERIFIED）
