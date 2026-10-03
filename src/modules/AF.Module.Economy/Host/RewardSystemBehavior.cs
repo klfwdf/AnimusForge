@@ -543,6 +543,8 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 		public int RpItemIntroductionLastTouchedDay;
 
 		public PlayerRpCraftData PlayerCraft;
+
+		public bool NpcGiftMarketTradeAllowed;
 	}
 
 	private sealed class GeneratedRewardRosterItemRecord
@@ -8674,7 +8676,8 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 				RpItemIntroductionText = existingRecord?.RpItemIntroductionText,
 				RpItemIntroductionSource = existingRecord?.RpItemIntroductionSource,
 				RpItemIntroductionLastTouchedDay = existingRecord?.RpItemIntroductionLastTouchedDay ?? 0,
-				PlayerCraft = existingRecord?.PlayerCraft
+				PlayerCraft = existingRecord?.PlayerCraft,
+				NpcGiftMarketTradeAllowed = existingRecord?.NpcGiftMarketTradeAllowed ?? false
 			};
 			if (record.ObjectId == 0u && TryGetGeneratedRewardItemId(key, templateItem, 0u, out var stableObjectId, logSource ?? "external_prime"))
 			{
@@ -10367,6 +10370,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 			}
 			MergeRpItemIntroductionFromFallback(record, existing);
 			record.PlayerCraft = MergePlayerRpCraftData(record.PlayerCraft, existing.PlayerCraft);
+			record.NpcGiftMarketTradeAllowed |= existing.NpcGiftMarketTradeAllowed;
 			record.LastTouchedDay = Math.Max(record.LastTouchedDay, existing.LastTouchedDay);
 			record = NormalizeGeneratedRewardItemRecord(record.GeneratedStringId, record);
 			if (record == null)
@@ -11511,6 +11515,37 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 		return IsGeneratedRewardItemStringId(item?.StringId);
 	}
 
+	private static bool IsGeneratedRewardMarketTransferBlockedItem(ItemObject item)
+	{
+		if (!IsGeneratedRewardMarketExcludedItem(item))
+		{
+			return false;
+		}
+		GeneratedRewardItemRecord record = Instance?.GetGeneratedRewardItemRecord(item.StringId);
+		return record == null
+			|| !record.NpcGiftMarketTradeAllowed
+			|| record.PlayerCraft != null
+			|| item.StringId.Trim().StartsWith(PlayerRpGeneratedItemPrefix, StringComparison.OrdinalIgnoreCase)
+			|| IsGeneratedRewardPendingItem(item)
+			|| item.NotMerchandise
+			|| item.MultiplayerItem
+			|| item.ItemCategory == null;
+	}
+
+	private static void RestoreLegacyNpcGiftMarketTradePermission(GeneratedRewardItemRecord record)
+	{
+		if (record.NpcGiftMarketTradeAllowed || record.PlayerCraft != null
+			|| record.GeneratedStringId.StartsWith(PlayerRpGeneratedItemPrefix, StringComparison.OrdinalIgnoreCase)
+			|| record.GeneratedStringId.StartsWith("af_generated_reward_pending_", StringComparison.OrdinalIgnoreCase))
+		{
+			return;
+		}
+		// Legacy NPC gifts used name + template identity; letters and gallery items used a separate identity key.
+		record.NpcGiftMarketTradeAllowed = string.Equals(record.RpItemIntroductionSource, "npc", StringComparison.OrdinalIgnoreCase)
+			|| string.Equals(record.GeneratedStringId,
+				BuildGeneratedRewardItemStringId(record.DisplayName, record.TemplateStringId), StringComparison.OrdinalIgnoreCase);
+	}
+
 	private static void CampaignAllItemsGetterPostfix(ref MBReadOnlyList<ItemObject> __result)
 	{
 		try
@@ -11811,7 +11846,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 
 	private static bool SellItemsActionApplyPrefix(PartyBase receiverParty, PartyBase payerParty, ItemRosterElement subject)
 	{
-		if (!IsGeneratedRewardMarketExcludedItem(subject.EquipmentElement.Item))
+		if (!IsGeneratedRewardMarketTransferBlockedItem(subject.EquipmentElement.Item))
 		{
 			return true;
 		}
@@ -11865,7 +11900,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 			for (int i = 0; i < roster.Count; i++)
 			{
 				ItemRosterElement element = roster.GetElementCopyAtIndex(i);
-				if (element.Amount > 0 && IsGeneratedRewardMarketExcludedItem(element.EquipmentElement.Item))
+				if (element.Amount > 0 && IsGeneratedRewardMarketTransferBlockedItem(element.EquipmentElement.Item))
 				{
 					candidates.Add(element);
 				}
@@ -11928,7 +11963,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 				return false;
 			}
 			ItemObject item = command.ElementToTransfer.EquipmentElement.Item;
-			if (!IsGeneratedRewardMarketExcludedItem(item))
+			if (!IsGeneratedRewardMarketTransferBlockedItem(item))
 			{
 				return false;
 			}
@@ -11943,7 +11978,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 			}
 			if (notify)
 			{
-				InformationManager.DisplayMessage(new InformationMessage("RP生成物品不会进入市场交易。"));
+				InformationManager.DisplayMessage(new InformationMessage("该特殊RP物品不能进入市场交易。"));
 			}
 			try
 			{
@@ -11979,7 +12014,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 			for (int i = 0; i < roster.Count; i++)
 			{
 				ItemRosterElement element = roster.GetElementCopyAtIndex(i);
-				if (element.Amount > 0 && IsGeneratedRewardMarketExcludedItem(element.EquipmentElement.Item))
+				if (element.Amount > 0 && IsGeneratedRewardMarketTransferBlockedItem(element.EquipmentElement.Item))
 				{
 					toRemove.Add(element);
 				}
@@ -12106,6 +12141,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 			record.RpItemIntroductionLastTouchedDay = Math.Max(0, record.RpItemIntroductionLastTouchedDay);
 		}
 		record.PlayerCraft = NormalizePlayerRpCraftData(record.PlayerCraft, record);
+		RestoreLegacyNpcGiftMarketTradePermission(record);
 		return record;
 	}
 
@@ -15682,6 +15718,12 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 		Logger.Log("Logic", "[RewardRpLiteral] generated source=" + (logSource ?? "") + " asset=" + requestedName + " requested=" + amount + " actual=" + generated + " generatedId=" + (generatedStringId ?? ""));
 		if (generated > 0 && !string.IsNullOrWhiteSpace(generatedStringId))
 		{
+			GeneratedRewardItemRecord giftRecord = GetGeneratedRewardItemRecord(generatedStringId);
+			if (giftRecord != null)
+			{
+				giftRecord.NpcGiftMarketTradeAllowed = true;
+				RegisterGeneratedRewardManifestRecord(giftRecord);
+			}
 			TryResolveGeneratedRewardItemForStringId(generatedStringId, out item, logSource + "_resolve");
 			RpItemIntroductionContext effectiveIntroductionContext = rpItemIntroductionContext ?? CreateRpItemIntroductionContextForExternal(
 				(giverCharacter as CharacterObject)?.HeroObject,
