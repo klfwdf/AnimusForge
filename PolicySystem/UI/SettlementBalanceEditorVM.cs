@@ -18,9 +18,9 @@ internal sealed class SettlementBalanceEditorVM : ViewModel
 			Rows.Add(new SettlementBalanceRowVM(definition, snapshot.Get(definition.Metric), RefreshStatus));
 		RefreshStatus();
 	}
-	[DataSourceProperty] public string TitleText => "总量上限设置";
-	[DataSourceProperty] public string DescriptionText => "限制每日正向结算后的总量；负向变化正常生效。旧存量超过新上限时不会被削减。";
-	[DataSourceProperty] public string FoodRuleText => "繁荣度不再消耗粮食；驻军、围城、供粮及其他规则保留。粮仓设置为最终容量，不叠加建筑容量加成。";
+	[DataSourceProperty] public string TitleText => "政策相关数值上限调整";
+	[DataSourceProperty] public string DescriptionText => "每日按原版＋政策的净变化结算：正数最多加到总量上限；负数照常扣除，超额旧存量不削减。";
+	[DataSourceProperty] public string FoodRuleText => "玩家和 NPC 全部适用。默认仅开启城市／城堡粮仓容量1000，其余六项默认关闭；粮仓不叠加城堡、建筑加成。\n繁荣度耗粮始终取消，不受这些开关影响；驻军耗粮、围城、供粮和政策粮食变化保留。";
 	[DataSourceProperty] public string RestoreDefaultsText => "恢复默认";
 	[DataSourceProperty] public string CancelText => "取消";
 	[DataSourceProperty] public string SaveText => "保存并关闭";
@@ -35,7 +35,7 @@ internal sealed class SettlementBalanceEditorVM : ViewModel
 	{
 		foreach (var row in Rows)
 			if (!row.IsValid) { StatusText = row.NameText + "：" + row.ValidationError; return; }
-		StatusText = "编辑暂未生效。保存后用于下一次结算；取消或 Esc 丢弃修改。";
+		StatusText = "未开启的预填数值不生效。保存后应用；取消或 Esc 丢弃编辑；恢复默认后需保存。";
 	}
 	internal bool TryCreateSnapshot(out SettlementBalanceSnapshot snapshot, out string error)
 	{
