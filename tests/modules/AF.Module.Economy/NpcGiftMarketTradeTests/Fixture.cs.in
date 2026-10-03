@@ -1,0 +1,204 @@
+using System.Globalization;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+
+public class RewardSystemBehavior
+{
+    __PRODUCTION__
+
+    const string PlayerRpGeneratedItemPrefix = "af_generated_reward_pc_";
+    public static RewardSystemBehavior Instance;
+    Dictionary<string, GeneratedRewardItemRecord> _generatedRewardItemRecords = new(StringComparer.OrdinalIgnoreCase);
+    Dictionary<string, GeneratedRewardRosterItemRecord> _generatedRewardPlayerRosterRecords = new(StringComparer.OrdinalIgnoreCase);
+    static Dictionary<string, GeneratedRewardItemRecord> GeneratedRewardManifestByStringId = new(StringComparer.OrdinalIgnoreCase);
+    static Dictionary<uint, GeneratedRewardItemRecord> GeneratedRewardManifestByObjectId = new();
+    static object GeneratedRewardEconomicPoolCacheLock = new();
+    static MBReadOnlyList<ItemObject> GeneratedRewardEconomicPoolSource, GeneratedRewardEconomicPoolFiltered;
+    static int GeneratedRewardEconomicPoolSourceCount = -1, GeneratedCount, passed, failed;
+    static PlayerRpCraftData NormalizePlayerRpCraftData(PlayerRpCraftData data, GeneratedRewardItemRecord owner) => data;
+    static PlayerRpCraftData MergePlayerRpCraftData(PlayerRpCraftData a, PlayerRpCraftData b) => a ?? b;
+    static void MergeRpItemIntroductionFromFallback(GeneratedRewardItemRecord a, GeneratedRewardItemRecord b) { }
+    static void EnsureGeneratedRewardManifestLoaded() { }
+    void EnsureGeneratedRewardItemData() { }
+    static int GetCampaignDayIndex() => 7;
+    GeneratedRewardItemRecord GetGeneratedRewardItemRecord(string id) => _generatedRewardItemRecords.GetValueOrDefault(id);
+    static bool TryPrimeGeneratedInventoryItemForExternal(string id, string name, string template, uint objectId,
+        out string normalizedId, out string normalizedTemplate, out uint normalizedObjectId, string source)
+    { normalizedId = id; normalizedTemplate = template; normalizedObjectId = objectId; return true; }
+    static int GenerateKnownInventoryItemToRosterForExternal(ItemRoster roster, string id, string name, string template, uint objectId,
+        int amount, out string itemName, out string normalizedId, out string normalizedTemplate, out uint normalizedObjectId, string source)
+    {
+        GeneratedCount += amount; roster.AddToCounts(new EquipmentElement(new ItemObject { StringId = id, Name = name }), amount);
+        itemName = name; normalizedId = id; normalizedTemplate = template; normalizedObjectId = objectId; return amount;
+    }
+    static void Check(bool ok, string message) { if (!ok) throw new Exception(message); }
+    static void Case(string name, Action test)
+    {
+        Instance = new(); GeneratedRewardManifestByStringId.Clear(); GeneratedRewardManifestByObjectId.Clear();
+        InformationManager.Messages.Clear(); GeneratedCount = 0;
+        try { test(); passed++; Console.WriteLine("PASS " + name); }
+        catch (Exception ex) { failed++; Console.WriteLine("FAIL " + name + ": " + ex.Message); }
+    }
+    static ItemObject Gift(string name = "NPC gift", string identity = null, bool explicitPermission = false)
+    {
+        var record = new GeneratedRewardItemRecord { GeneratedStringId = BuildGeneratedRewardItemStringId(identity ?? name, "sword"),
+            DisplayName = name, TemplateStringId = "sword", ObjectId = 17, NpcGiftMarketTradeAllowed = explicitPermission };
+        record = NormalizeGeneratedRewardItemRecord(record.GeneratedStringId, record);
+        Instance._generatedRewardItemRecords[record.GeneratedStringId] = record;
+        return new ItemObject { StringId = record.GeneratedStringId, Name = name, Value = 345, Id = new Id(17) };
+    }
+    static TransferCommand Move(ItemObject item, InventoryLogic.InventorySide from, InventoryLogic.InventorySide to, string modifier = "fine") =>
+        new() { Amount = 2, FromSide = from, ToSide = to, ElementToTransfer = new(new EquipmentElement(item, modifier), 2) };
+
+    public static int Main()
+    {
+        var player = InventoryLogic.InventorySide.PlayerInventory; var market = InventoryLogic.InventorySide.OtherInventory;
+        var equipment = InventoryLogic.InventorySide.Equipment;
+        Case("native_item_does_not_need_reward_owner", () => {
+            Instance = null; Check(!IsGeneratedRewardMarketTransferBlockedItem(new ItemObject { StringId = "sword" }), "native item blocked"); });
+        Case("legacy_gift_without_introduction_is_sellable", () => {
+            var item = Gift(); Check(!IsGeneratedRewardMarketTransferBlockedItem(item), "old gift blocked"); });
+        Case("legacy_json_without_new_field_migrates", () => {
+            var item = Gift(); var json = JObject.FromObject(Instance._generatedRewardItemRecords[item.StringId]);
+            json.Remove("NpcGiftMarketTradeAllowed"); var record = json.ToObject<GeneratedRewardItemRecord>();
+            Check(!record.NpcGiftMarketTradeAllowed, "fixture not legacy");
+            Check(NormalizeGeneratedRewardItemRecord(item.StringId, record).NpcGiftMarketTradeAllowed, "legacy migration failed"); });
+        Case("legacy_retargeted_gift_uses_npc_introduction_source", () => {
+            var item = Gift(identity: "old-template-identity"); var r = Instance._generatedRewardItemRecords[item.StringId];
+            r.RpItemIntroductionText = "gift introduction"; r.RpItemIntroductionSource = "npc";
+            NormalizeGeneratedRewardItemRecord(item.StringId, r);
+            Check(!IsGeneratedRewardMarketTransferBlockedItem(item), "retargeted gift blocked"); });
+        Case("new_explicit_permission_survives_json_and_template_repair", () => {
+            var item = Gift(identity: "retargeted", explicitPermission: true);
+            var r = JsonConvert.DeserializeObject<GeneratedRewardItemRecord>(JsonConvert.SerializeObject(Instance._generatedRewardItemRecords[item.StringId]));
+            r.TemplateStringId = "new-template"; Instance._generatedRewardItemRecords[item.StringId] = NormalizeGeneratedRewardItemRecord(item.StringId, r);
+            Check(!IsGeneratedRewardMarketTransferBlockedItem(item), "permission lost"); });
+        Case("manifest_merge_retains_explicit_permission", () => {
+            var item = Gift(identity: "retargeted", explicitPermission: true);
+            RegisterGeneratedRewardManifestRecordNoLock(Instance._generatedRewardItemRecords[item.StringId]);
+            RegisterGeneratedRewardManifestRecordNoLock(new GeneratedRewardItemRecord { GeneratedStringId = item.StringId, DisplayName = item.Name, TemplateStringId = "new-template" });
+            Check(GeneratedRewardManifestByStringId[item.StringId].NpcGiftMarketTradeAllowed, "merge lost permission"); });
+        foreach (string special in new[] { "courier_letter|session|body", "illustrator_gallery:campaign:key" })
+            Case("special_identity_stays_blocked_" + special.Split(':', '|')[0], () => {
+                Check(IsGeneratedRewardMarketTransferBlockedItem(Gift(identity: special)), "special item allowed"); });
+        foreach (string prefix in new[] { "af_generated_reward_pc_", "af_generated_reward_pending_" })
+            Case("reserved_prefix_stays_blocked_" + prefix, () => {
+                var item = Gift(); var r = Instance._generatedRewardItemRecords[item.StringId]; Instance._generatedRewardItemRecords.Remove(item.StringId);
+                item.StringId = r.GeneratedStringId = prefix + "1234"; r.NpcGiftMarketTradeAllowed = true;
+                Instance._generatedRewardItemRecords[item.StringId] = r; Check(IsGeneratedRewardMarketTransferBlockedItem(item), "reserved item allowed"); });
+        Case("player_craft_metadata_overrides_permission", () => {
+            var item = Gift(); Instance._generatedRewardItemRecords[item.StringId].PlayerCraft = new();
+            Check(IsGeneratedRewardMarketTransferBlockedItem(item), "craft allowed"); });
+        foreach (string invalid in new[] { "unknown", "not-merchandise", "multiplayer", "missing-category" })
+            Case("invalid_generated_item_stays_blocked_" + invalid, () => {
+                var item = Gift(); if (invalid == "unknown") Instance._generatedRewardItemRecords.Clear();
+                if (invalid == "not-merchandise") item.NotMerchandise = true;
+                if (invalid == "multiplayer") item.MultiplayerItem = true;
+                if (invalid == "missing-category") item.ItemCategory = null;
+                Check(IsGeneratedRewardMarketTransferBlockedItem(item), "invalid item allowed"); });
+        foreach (var from in new[] { player, equipment })
+            Case("sale_and_buyback_" + from, () => {
+                var item = Gift(); var logic = new InventoryLogic { IsTrading = true };
+                Check(InventoryLogicAddTransferCommandPrefix(logic, Move(item, from, market)), "sale blocked");
+                Check(InventoryLogicAddTransferCommandPrefix(logic, Move(item, market, from)), "buyback blocked");
+                Check(InformationManager.Messages.Count == 0 && item.Value == 345, "sale changes value or notifies"); });
+        Case("special_item_transfer_without_market_is_unaffected", () => {
+            var item = Gift(identity: "courier_letter|session|body");
+            Check(InventoryLogicAddTransferCommandPrefix(new InventoryLogic(), Move(item, player, market)), "nontrade blocked");
+            Check(InventoryLogicAddTransferCommandPrefix(new InventoryLogic { IsTrading = true }, Move(item, player, equipment)), "equipment blocked"); });
+        Case("mixed_batch_keeps_gifts_native_items_order_modifier_and_one_notice", () => {
+            var logic = new InventoryLogic { IsTrading = true }; var gift = Move(Gift(), player, market);
+            var native = Move(new ItemObject { StringId = "sword" }, player, market);
+            var special = Move(Gift(identity: "courier_letter|session|body"), player, market);
+            Check(!InventoryLogicAddTransferCommandsPrefix(logic, new[] { gift, special, native, special }), "batch not handled");
+            Check(logic.Commands.SequenceEqual(new[] { gift, native }), "order or commands lost");
+            Check(gift.ElementToTransfer.EquipmentElement.Modifier == "fine" && gift.Amount == 2, "modifier or amount changed");
+            Check(InformationManager.Messages.Count == 1, "duplicate notification"); });
+        Case("all_allowed_batch_retains_native_bulk_path", () => {
+            var logic = new InventoryLogic { IsTrading = true };
+            Check(InventoryLogicAddTransferCommandsPrefix(logic, new[] { Move(Gift(), player, market) }), "native bulk skipped");
+            Check(logic.Commands.Count == 0, "duplicated commands"); });
+        Case("party_settlement_sale_allows_gift_but_blocks_special", () => {
+            var settlement = new PartyBase { IsSettlement = true }; var npc = new PartyBase();
+            Check(SellItemsActionApplyPrefix(npc, settlement, Move(Gift(), player, market).ElementToTransfer), "party gift blocked");
+            Check(!SellItemsActionApplyPrefix(npc, settlement, Move(Gift(identity: "courier_letter|session|body"), player, market).ElementToTransfer), "special sale allowed"); });
+        Case("market_open_close_daily_and_load_cleanup_preserve_gift", () => {
+            var gift = Gift(); var special = Gift(identity: "courier_letter|session|body");
+            var roster = new ItemRoster(); roster.AddToCounts(new(gift, "fine"), 3); roster.AddToCounts(new(special), 1);
+            var settlement = new Settlement { StringId = "town", ItemRoster = roster }; Campaign.Current.Settlements = new[] { settlement };
+            int done = 0; Action callback = () => done++;
+            InventoryScreenHelperOpenScreenAsTradePrefix(roster, new SettlementComponent { Settlement = settlement }, ref callback);
+            Check(roster.Amount(gift) == 3 && roster.Amount(special) == 0, "open deletes gift or keeps special");
+            callback(); Instance.OnDailyTickSettlement(settlement); RemoveGeneratedRewardItemsFromMarketRosters("game_load_finished");
+            Check(roster.Amount(gift) == 3 && done == 1, "later cleanup deletes gift or duplicates callback"); });
+        Case("caravan_villager_hide_only_special_and_restore_exact_stack", () => {
+            var gift = Gift(); var special = Gift(identity: "courier_letter|session|body"); var roster = new ItemRoster();
+            roster.AddToCounts(new(gift, "fine"), 3); roster.AddToCounts(new(special, "rusty"), 2);
+            var hidden = TakeGeneratedRewardItemsFromRoster(roster);
+            Check(hidden.Count == 1 && hidden[0].EquipmentElement.Item == special && roster.Amount(gift) == 3, "gift hidden");
+            RestoreGeneratedRewardItemsToRoster(roster, hidden);
+            Check(roster.Amount(special) == 2 && roster.Elements.Single(x => x.EquipmentElement.Item == special).EquipmentElement.Modifier == "rusty", "restore lost stack"); });
+        Case("tradable_gift_remains_out_of_economic_pool_workshop_and_template", () => {
+            var gift = Gift(); var native = new ItemObject { StringId = "sword", Id = new(18) };
+            var pool = new MBReadOnlyList<ItemObject> { gift, native };
+            var filtered = GetGeneratedRewardFilteredEconomicPool(pool);
+            Check(filtered.SequenceEqual(new[] { native }), "gift spawned by economy");
+            Check(ReferenceEquals(filtered, GetGeneratedRewardFilteredEconomicPool(pool)), "pool cache discarded");
+            Check(!IsEligibleNormalWorkshopOutput(gift, gift.ItemCategory), "gift produced by workshop");
+            Check(!IsStableGeneratedRewardTemplateIdentity(gift), "gift used as template"); });
+        foreach (int remaining in new[] { 0, 1 })
+            Case("save_reload_does_not_restore_sold_gift_remaining_" + remaining, () => {
+                var gift = Gift(); var roster = new ItemRoster(); roster.AddToCounts(new(gift), 3);
+                PartyBase.MainParty = new() { ItemRoster = roster }; Instance.CaptureGeneratedRewardPlayerRosterItems("before_sale");
+                roster.AddToCounts(new(gift), remaining - 3); Instance.CaptureGeneratedRewardPlayerRosterItems("sync_data_save");
+                Instance._generatedRewardPlayerRosterRecords = JsonConvert.DeserializeObject<Dictionary<string, GeneratedRewardRosterItemRecord>>(
+                    JsonConvert.SerializeObject(Instance._generatedRewardPlayerRosterRecords));
+                Instance.RestoreGeneratedRewardPlayerRosterItems("game_load_finished");
+                Check(GeneratedCount == 0 && roster.Amount(gift) == remaining, "sold gift regenerated"); });
+        Console.WriteLine($"npcGiftMarketTrade passed={passed} failed={failed}");
+        return failed == 0 ? 0 : 1;
+    }
+}
+
+public class PlayerRpCraftData { }
+public record Id(uint InternalValue);
+public class ItemCategory { }
+public class ItemObject
+{
+    public string StringId, Name; public int Value; public Id Id = new(1);
+    public bool NotMerchandise, MultiplayerItem, IsCraftedByPlayer; public ItemCategory ItemCategory = new();
+}
+public record struct EquipmentElement(ItemObject Item, string Modifier = null) { public string GetModifiedItemName() => Item?.Name; }
+public record struct ItemRosterElement(EquipmentElement EquipmentElement, int Amount);
+public class ItemRoster
+{
+    public List<ItemRosterElement> Elements = new(); public int Count => Elements.Count;
+    public ItemRosterElement GetElementCopyAtIndex(int i) => Elements[i];
+    public int Amount(ItemObject item) => Elements.Where(x => x.EquipmentElement.Item == item).Sum(x => x.Amount);
+    public void AddToCounts(EquipmentElement element, int amount)
+    {
+        int i = Elements.FindIndex(x => x.EquipmentElement == element);
+        if (i < 0) { if (amount > 0) Elements.Add(new(element, amount)); return; }
+        int count = Elements[i].Amount + amount;
+        if (count <= 0) Elements.RemoveAt(i); else Elements[i] = new(element, count);
+    }
+}
+public class PartyBase { public static PartyBase MainParty; public bool IsSettlement; public string Name = "party"; public ItemRoster ItemRoster; }
+public class MobileParty { public static MobileParty MainParty; public ItemRoster ItemRoster; }
+public class Settlement { public string StringId; public ItemRoster ItemRoster; }
+public class SettlementComponent { public Settlement Settlement; }
+public class Campaign { public static Campaign Current = new(); public IEnumerable<Settlement> Settlements = Array.Empty<Settlement>(); }
+public class TransferCommand { public int Amount; public ItemRosterElement ElementToTransfer; public InventoryLogic.InventorySide FromSide, ToSide; }
+public class InventoryLogic
+{
+    public enum InventorySide { PlayerInventory, OtherInventory, Equipment }
+    public bool IsTrading; public List<TransferCommand> Commands = new();
+    public static bool IsEquipmentSide(InventorySide side) => side == InventorySide.Equipment;
+    public void AddTransferCommand(TransferCommand command) => Commands.Add(command);
+}
+public class MBReadOnlyList<T> : List<T> { public MBReadOnlyList() { } public MBReadOnlyList(int count) : base(count) { } }
+public class MBList<T> : MBReadOnlyList<T> { public MBList(int count) : base(count) { } }
+public static class Logger { public static void Log(string category, string message) { } }
+public record InformationMessage(string Text);
+public static class InformationManager { public static List<string> Messages = new(); public static void DisplayMessage(InformationMessage message) => Messages.Add(message.Text); }
+public static class AnimusForgeTextInputSanitizer { public const int MaxCourierLetterChars = 10000; public static string SanitizeMultiline(string text, int max) => text; }
