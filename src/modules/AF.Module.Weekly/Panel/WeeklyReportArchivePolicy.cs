@@ -49,6 +49,19 @@ internal static class WeeklyReportArchivePolicy
         return text.ToString().Trim();
     }
 
+    internal static List<EventMaterialReference> CountryNews(EventRecordEntry entry, string kingdomId)
+        => (entry.Materials ?? new List<EventMaterialReference>()).Where(m => m?.MaterialType == RegionalMaterialType
+            && string.Equals(m.KingdomId, kingdomId, StringComparison.OrdinalIgnoreCase)).ToList();
+
+    internal static string CountryBody(EventRecordEntry entry, string kingdomId)
+    {
+        var news = CountryNews(entry, kingdomId);
+        if (news.Count > 0)
+            return string.Join("\n\n", news.Select(m => (m.SnapshotText ?? "").Trim()));
+        // Only genuinely associated nations without a regional excerpt share the original issue.
+        return (string.IsNullOrWhiteSpace(entry.Summary) ? entry.ShortSummary : entry.Summary) ?? "";
+    }
+
     internal static List<EventRecordEntry> BuildArchiveSnapshot(List<EventRecordEntry> records,
         IReadOnlyDictionary<string, List<string>> legacyAssociations = null)
     {

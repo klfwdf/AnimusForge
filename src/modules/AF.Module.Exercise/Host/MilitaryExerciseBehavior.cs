@@ -4082,12 +4082,7 @@ public static class MilitaryExerciseBehavior
 	{
 		try
 		{
-			string documents = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-			if (string.IsNullOrWhiteSpace(documents))
-			{
-				return;
-			}
-			string dir = Path.Combine(documents, "Mount and Blade II Bannerlord", "Configs", "ModLogs");
+			string dir = AnimusForgeModulePaths.GetLogsDirectory();
 			Directory.CreateDirectory(dir);
 			string path = Path.Combine(dir, "animusforge_military_exercise.log");
 			File.AppendAllText(path, DateTime.Now.ToString("HH:mm:ss.fff ") + line + Environment.NewLine);

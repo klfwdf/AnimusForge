@@ -321,13 +321,12 @@ internal void WriteWorldBulletinKingdomBriefs(WorldBulletinSaveState state, int 
 		EventRecordEntry issue = FindLatestWorldBulletinRecord();
 		if (issue == null || issue.CreatedDay < startDay || issue.CreatedDay > day) return;
 		state.LastKingdomWeek = week;
-		bool fullWindow = state.TrackingStartDay >= 0 && state.TrackingStartDay <= startDay;
 		int written = 0;
 		foreach (KeyValuePair<string,string> kingdom in _port.EligibleKingdoms())
 		{
 			string kingdomId = kingdom.Key;
 			List<WorldBulletinEvent> facts = state.Events.Where(e => e != null && e.Day >= startDay && WorldBulletinPolicy.InvolvesKingdom(e, kingdomId)).ToList();
-			if (facts.Count == 0 && !fullWindow)
+			if (facts.Count == 0)
 			{
 				continue;
 			}

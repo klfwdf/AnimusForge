@@ -152,6 +152,7 @@ public static class GenerationDiagnosticsAudit
             logged = (JObject)Trace(record)["events"].Last(x => (string)x["stage"] == "image_request");
             Check((string)logged["prompt"] == "EXACT EDITS PROMPT" && (string)logged["model"] == "audit-image-model" && (string)logged["protocol"] == "ImagesEdits", "multipart retains exact text fields and protocol");
             Check((string)logged["images"][0]["sha256"] == Hash(secondPng), "multipart reference identity matches the transmitted file");
+            Check(Directory.GetFiles(DirectoryFor(record)).All(path => !Path.GetFileName(path).Contains(Secret)), "reference filenames redact the registered credential");
 
             Call(record, "RecordDirectorResponse", "{\"message\":\"Bearer HEADER_SECRET https://example.test/path?token=QUERY_SECRET\",\"api_key\":\"API_FIELD_SECRET\",\"usage\":{\"total_tokens\":567}}", Secret);
             Call(record, "RecordImageResponse", "{\"data\":[{\"b64_json\":\"SERVER_IMAGE_BASE64\",\"url\":\"https://example.test/result?sig=QUERY_SECRET\"}]}", 200);
@@ -322,6 +323,11 @@ public static class GenerationDiagnosticsAudit
             Check(((JArray)end["events"]).Any(x => (string)x["stage"] == "pipeline_finish") && ((JArray)end["events"]).Any(x => (string)x["stage"] == "portrait_decode"), "late failure and finish survive event retention overflow");
             string steps = File.ReadAllText(Path.Combine(DirectoryFor(tail), "steps.log"));
             Check(steps.Contains("portrait.png_decode_failed") && !steps.Contains(Secret), "readable step log persists precise failure and redacts secrets");
+            Stage(tail, "中文步骤", new JObject { { "error", "人物立绘生成失败" } });
+            Call(tail, "RecordSceneResourceSupplement", new JObject { { "records", new JArray(new JObject { { "name", "场景资源" } }) } });
+            foreach (string file in new[] { "trace.json", "steps.log", "scene-resource-supplement.json" })
+                Check(File.ReadAllBytes(Path.Combine(DirectoryFor(tail), file)).Take(3).SequenceEqual(new byte[] { 239, 187, 191 }), "UTF8 BOM identifies diagnostic text: " + file);
+            Check(File.ReadAllText(Path.Combine(DirectoryFor(tail), "steps.log")).Contains("人物立绘生成失败"), "Chinese diagnostics round-trip without mojibake");
             Check(!end.ToString().Contains(Secret), "terminal JSON redacts secret from failure and summary");
         }
         finally { Close(tail); }

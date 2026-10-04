@@ -29,6 +29,7 @@ constants="\n".join(re.search(r"(?:public|private) const (?:string|int) "+name+r
 generated+="internal static class WorldMessageTimelineUi { "+constants+"internal static List<WorldMessageTimelineEntryData> Replay(){var result=new List<WorldMessageTimelineEntryData>();AppendWeeklyEntries(result);return result;}"+spans(timeline,["private static void AppendWeeklyEntries","private static void AddCountry","private static string FormatDay","private static string LimitMultiline","private static string FirstNonEmpty"])+"}}"
 (out/"Extracted.cs").write_text(generated,encoding="utf-8")
 paths=["src/modules/AF.Module.Weekly/Panel/WeeklyReportArchivePolicy.cs","src/modules/AF.Module.Weekly/Bulletin/WorldBulletinPolicy.cs","src/modules/AF.Module.Weekly/Models/WeeklyLegacyDtos.cs","src/modules/AF.Module.Weekly/ImportExport/WeeklyEventDataImportOwner.cs","src/AF.GameAdapter.Bannerlord/Persistence/CampaignWeeklyRecordPersistenceAdapter.cs","src/AF.Persistence/CampaignSaveChunkHelper.cs","src/AF.Foundation.Runtime/Lifecycle/SaveRuntimeGuard.cs","src/AF.GameAdapter.Bannerlord/UI/Weekly/TerminalWeeklyReportBrowserPopupVM.cs"]
+paths.append("src/modules/AF.Module.Weekly/Panel/WorldBulletinPanelVM.cs")
 for path in paths:read(path)
 ui=ET.fromstring(read("content/modules/AF.Module.UI/GUI/Prefabs/AnimusForgeTerminalPopup.xml"))
 period=next(node for node in ui.iter() if node.attrib.get("Text")=="@WeekText")

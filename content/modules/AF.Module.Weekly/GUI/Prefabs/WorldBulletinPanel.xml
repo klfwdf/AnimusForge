@@ -119,10 +119,27 @@
             </ListPanel>
 
             <!-- Other news: title sits on the small ribbon baked into the parchment -->
-            <Widget IsVisible="@HasMinors" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="1078" SuggestedHeight="125" HorizontalAlignment="Center" MarginTop="596" DoNotAcceptEvents="false">
+            <Widget IsVisible="@HasMinors" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="1078" SuggestedHeight="97" HorizontalAlignment="Center" MarginTop="596" DoNotAcceptEvents="false">
               <Children>
                 <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="219" SuggestedHeight="24" HorizontalAlignment="Center" Brush="AFCourierLetter.Title.Text" Brush.FontSize="16" Brush.FontColor="#2B1C10FF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" Text="其 余 消 息" DoNotAcceptEvents="true" />
-                <ListPanel DataSource="{LeftMinors}" WidthSizePolicy="Fixed" HeightSizePolicy="CoverChildren" SuggestedWidth="529" HorizontalAlignment="Left" MarginTop="37" LayoutImp.LayoutMethod="VerticalTopToBottom">
+                <ListPanel IsVisible="@ShowMinorPagination" WidthSizePolicy="CoverChildren" HeightSizePolicy="Fixed" SuggestedHeight="24" HorizontalAlignment="Right" LayoutImp.LayoutMethod="HorizontalLeftToRight">
+                  <Children>
+                    <ButtonWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="28" SuggestedHeight="24" DoNotPassEventsToChildren="true" IsEnabled="@CanPreviousMinorPage" Command.Click="ExecutePreviousMinorPage" Brush="AFWorldBulletin.Archive.Button">
+                      <Children><TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Text="&lt;" Brush="AFCourierLetter.Button.Text" Brush.FontSize="16" DoNotAcceptEvents="true" /></Children>
+                    </ButtonWidget>
+                    <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="96" Text="@MinorPageText" Brush="AFCourierLetter.Meta.Text" Brush.FontSize="13" Brush.FontColor="#35261AFF" Brush.TextHorizontalAlignment="Center" DoNotAcceptEvents="true" />
+                    <ButtonWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="28" SuggestedHeight="24" DoNotPassEventsToChildren="true" IsEnabled="@CanNextMinorPage" Command.Click="ExecuteNextMinorPage" Brush="AFWorldBulletin.Archive.Button">
+                      <Children><TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Text="&gt;" Brush="AFCourierLetter.Button.Text" Brush.FontSize="16" DoNotAcceptEvents="true" /></Children>
+                    </ButtonWidget>
+                  </Children>
+                </ListPanel>
+                <ScrollablePanel Id="MinorScrollPanel" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="60" MarginTop="37" ClipRect="MinorClip" InnerPanel="MinorClip\MinorInner" VerticalScrollbar="..\MinorScrollbar" AutoHideScrollBars="true" DoNotAcceptEvents="false">
+                  <Children>
+                    <Widget Id="MinorClip" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" ClipContents="true">
+                      <Children>
+                        <Widget Id="MinorInner" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren">
+                          <Children>
+                <ListPanel DataSource="{LeftMinors}" WidthSizePolicy="Fixed" HeightSizePolicy="CoverChildren" SuggestedWidth="529" HorizontalAlignment="Left" LayoutImp.LayoutMethod="VerticalTopToBottom">
                   <ItemTemplate>
                     <ListPanel WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MarginBottom="4" LayoutImp.LayoutMethod="HorizontalLeftToRight">
                       <Children>
@@ -132,7 +149,7 @@
                     </ListPanel>
                   </ItemTemplate>
                 </ListPanel>
-                <ListPanel DataSource="{RightMinors}" WidthSizePolicy="Fixed" HeightSizePolicy="CoverChildren" SuggestedWidth="529" HorizontalAlignment="Right" MarginTop="37" LayoutImp.LayoutMethod="VerticalTopToBottom">
+                <ListPanel DataSource="{RightMinors}" WidthSizePolicy="Fixed" HeightSizePolicy="CoverChildren" SuggestedWidth="529" HorizontalAlignment="Right" LayoutImp.LayoutMethod="VerticalTopToBottom">
                   <ItemTemplate>
                     <ListPanel WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MarginBottom="4" LayoutImp.LayoutMethod="HorizontalLeftToRight">
                       <Children>
@@ -142,6 +159,15 @@
                     </ListPanel>
                   </ItemTemplate>
                 </ListPanel>
+                          </Children>
+                        </Widget>
+                      </Children>
+                    </Widget>
+                  </Children>
+                </ScrollablePanel>
+                <ScrollbarWidget Id="MinorScrollbar" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="4" SuggestedHeight="60" HorizontalAlignment="Right" MarginTop="37" AlignmentAxis="Vertical" Handle="MinorHandle" MinValue="0" MaxValue="100" ValueFloat="@MinorScrollPosition" DoNotAcceptEvents="false">
+                  <Children><Widget Id="MinorHandle" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="18" Sprite="BlankWhiteSquare_9" Color="#87633CFF" DoNotAcceptEvents="false" /></Children>
+                </ScrollbarWidget>
               </Children>
             </Widget>
 

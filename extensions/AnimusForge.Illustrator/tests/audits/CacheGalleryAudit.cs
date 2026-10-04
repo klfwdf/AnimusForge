@@ -195,6 +195,24 @@ public static class CacheGalleryAudit
 
         byte[] rgba = MakeColors(false);
         byte[] rgb = MakeColors(true);
+        object named = Call(_cache, "SaveImage", "readable", rgba, "提示词", "人物立绘：塔洛斯/会面", "encyclopedia", "campaign-readable", 100, true);
+        Check(named != null && Path.GetFileName(PathOf(named)).StartsWith("人物立绘：塔洛斯_会面_"), "Chinese title becomes a readable safe filename");
+        Check(!Path.GetFileNameWithoutExtension(PathOf(named)).StartsWith(Key(named)), "storage filename is independent from stable image key");
+        Check(Key(Load(Key(named), "encyclopedia", "campaign-readable")) == Key(named), "readable filename remains retrievable by stable key");
+        Check(((string)Call(_cache, "ReadableFileLabel", "../" + new string('字', 90))).Length == 48, "filename label is bounded and excludes directory separators");
+        Check((string)Call(_cache, "ReadableFileLabel", "... ") == "illustration", "empty filename after sanitization gets a valid label");
+        string legacyPath = Path.Combine(Path.GetDirectoryName(PathOf(named)), Key(named) + ".png");
+        File.Move(PathOf(named), legacyPath);
+        File.Move(Path.ChangeExtension(PathOf(named), ".json"), Path.ChangeExtension(legacyPath, ".json"));
+        Call(_cache, "InvalidateCache");
+        Check(PathOf(Load(Key(named), "encyclopedia", "campaign-readable")) == legacyPath, "old hash-named image and metadata load without migration");
+        Type paths = assembly.GetType("AnimusForge.AnimusForgeModulePaths", true);
+        string moduleFixture = Path.Combine(fixture, "Modules", "AnimusForge");
+        Directory.CreateDirectory(Path.Combine(moduleFixture, "ModuleData"));
+        File.WriteAllText(Path.Combine(moduleFixture, "SubModule.xml"), "<Module />");
+        foreach (string api in new[] { "1.3", "1.4" })
+            Check((string)Call(paths, "ResolveModuleRootFromAssemblyDir", Path.Combine(moduleFixture, "bin", "Win64_Shipping_Client", "versions", api)) == moduleFixture, "production paths resolve module root from version " + api);
+        Check((string)Call(paths, "GetLogsDirectory") == Path.Combine((string)Call(paths, "GetCurrentModuleRoot"), "logs"), "production log entry is under module logs, not player data");
         Check(rgba[25] == 6 && rgb[25] == 2, "fixture covers both RGBA8 and RGB8 PNG producers");
         _samplePath = Path.Combine(fixture, "preview.png");
         File.WriteAllBytes(_samplePath, rgba);

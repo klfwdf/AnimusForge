@@ -82,7 +82,10 @@ internal static class WeeklyEditorProjection
 			{
 				text3 = BuildWeeklyReportBrowserDefaultTitle(port, text, text2, x.WeekIndex);
 			}
-			string body = WeeklyReportArchivePolicy.BodyWithRegionalNews(x).Trim();
+			bool country = string.Equals(text, "kingdom", StringComparison.OrdinalIgnoreCase);
+			var news = country ? WeeklyReportArchivePolicy.CountryNews(x, text2) : null;
+			if (news?.Count > 0) text3 = news[0].Label ?? text3;
+			string body = (country ? WeeklyReportArchivePolicy.CountryBody(x, text2) : WeeklyReportArchivePolicy.BodyWithRegionalNews(x)).Trim();
 			return new WeeklyReportBrowserEntryData
 			{
 				EventId = (x.EventId ?? "").Trim(),

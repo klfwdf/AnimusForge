@@ -228,7 +228,7 @@
                                                 <ListPanel WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="34" MarginTop="66" LayoutImp.LayoutMethod="HorizontalLeftToRight">
                                                   <Children>
                                                     <TextWidget Text="API Key:" WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="70" Brush="Popup.Description.Text" Brush.FontSize="13" Brush.FontColor="#D1D5DBFF" Brush.TextVerticalAlignment="Center" />
-                                                    <Widget WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="320" MarginRight="10">
+                                                    <Widget WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="200" MarginRight="10">
                                                       <Children>
                                                         <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#0B0805FF" AlphaFactor="0.95" IsEnabled="false" />
                                                         <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="frame_9" Color="#6E563BFF" AlphaFactor="0.5" IsEnabled="false" />
@@ -239,11 +239,11 @@
                                                       </Children>
                                                     </Widget>
                                                     <TextWidget Text="模型:" WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="40" Brush="Popup.Description.Text" Brush.FontSize="13" Brush.FontColor="#D1D5DBFF" Brush.TextVerticalAlignment="Center" />
-                                                    <Widget WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="180" MarginRight="8">
+                                                    <Widget WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="300" MarginRight="8">
                                                       <Children>
                                                         <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#120D08FF" AlphaFactor="0.85" IsEnabled="false" />
                                                         <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="frame_9" ExtendLeft="3" ExtendTop="3" ExtendRight="3" ExtendBottom="3" AlphaFactor="0.45" IsEnabled="false" />
-                                                        <Standard.DropdownWithHorizontalControl WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" HorizontalAlignment="Center" VerticalAlignment="Center" Parameter.IsCustomWidth="true" Parameter.CustomWidth="174" Parameter.IsFlatDesign="false" Parameter.ShowNextAndPrevious="false" Parameter.SelectorDataSource="{PrimaryModelSelector}" />
+                                                        <Standard.DropdownWithHorizontalControl WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" HorizontalAlignment="Center" VerticalAlignment="Center" Parameter.IsCustomWidth="true" Parameter.CustomWidth="294" Parameter.IsFlatDesign="false" Parameter.ShowNextAndPrevious="false" Parameter.SelectorDataSource="{PrimaryModelSelector}" />
                                                       </Children>
                                                     </Widget>
                                                     <ButtonWidget DoNotPassEventsToChildren="true" Command.Click="ExecuteFetchPrimaryModels" WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="72" Brush="Popup.Done.Button" UpdateChildrenStates="true">
@@ -286,7 +286,7 @@
                                                 <ListPanel WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="34" MarginTop="66" LayoutImp.LayoutMethod="HorizontalLeftToRight">
                                                   <Children>
                                                     <TextWidget Text="API Key:" WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="70" Brush="Popup.Description.Text" Brush.FontSize="13" Brush.FontColor="#D1D5DBFF" Brush.TextVerticalAlignment="Center" />
-                                                    <Widget WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="320" MarginRight="10">
+                                                    <Widget WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="200" MarginRight="10">
                                                       <Children>
                                                         <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#0B0805FF" AlphaFactor="0.95" IsEnabled="false" />
                                                         <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="frame_9" Color="#6E563BFF" AlphaFactor="0.5" IsEnabled="false" />
@@ -297,11 +297,11 @@
                                                       </Children>
                                                     </Widget>
                                                     <TextWidget Text="模型:" WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="40" Brush="Popup.Description.Text" Brush.FontSize="13" Brush.FontColor="#D1D5DBFF" Brush.TextVerticalAlignment="Center" />
-                                                    <Widget WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="180" MarginRight="8">
+                                                    <Widget WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="300" MarginRight="8">
                                                       <Children>
                                                         <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#120D08FF" AlphaFactor="0.85" IsEnabled="false" />
                                                         <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="frame_9" ExtendLeft="3" ExtendTop="3" ExtendRight="3" ExtendBottom="3" AlphaFactor="0.45" IsEnabled="false" />
-                                                        <Standard.DropdownWithHorizontalControl WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" HorizontalAlignment="Center" VerticalAlignment="Center" Parameter.IsCustomWidth="true" Parameter.CustomWidth="174" Parameter.IsFlatDesign="false" Parameter.ShowNextAndPrevious="false" Parameter.SelectorDataSource="{AuxiliaryModelSelector}" />
+                                                        <Standard.DropdownWithHorizontalControl WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" HorizontalAlignment="Center" VerticalAlignment="Center" Parameter.IsCustomWidth="true" Parameter.CustomWidth="294" Parameter.IsFlatDesign="false" Parameter.ShowNextAndPrevious="false" Parameter.SelectorDataSource="{AuxiliaryModelSelector}" />
                                                       </Children>
                                                     </Widget>
                                                     <ButtonWidget DoNotPassEventsToChildren="true" Command.Click="ExecuteFetchAuxiliaryModels" WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="72" Brush="Popup.Done.Button" UpdateChildrenStates="true">
@@ -344,7 +344,7 @@
                                                 <ListPanel WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="34" MarginTop="66" LayoutImp.LayoutMethod="HorizontalLeftToRight">
                                                   <Children>
                                                     <TextWidget Text="API Key:" WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="70" Brush="Popup.Description.Text" Brush.FontSize="13" Brush.FontColor="#D1D5DBFF" Brush.TextVerticalAlignment="Center" />
-                                                    <Widget WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="320" MarginRight="10">
+                                                    <Widget WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="200" MarginRight="10">
                                                       <Children>
                                                         <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#0B0805FF" AlphaFactor="0.95" IsEnabled="false" />
                                                         <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="frame_9" Color="#6E563BFF" AlphaFactor="0.5" IsEnabled="false" />
@@ -355,11 +355,11 @@
                                                       </Children>
                                                     </Widget>
                                                     <TextWidget Text="模型:" WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="40" Brush="Popup.Description.Text" Brush.FontSize="13" Brush.FontColor="#D1D5DBFF" Brush.TextVerticalAlignment="Center" />
-                                                    <Widget WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="180" MarginRight="8">
+                                                    <Widget WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="300" MarginRight="8">
                                                       <Children>
                                                         <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#120D08FF" AlphaFactor="0.85" IsEnabled="false" />
                                                         <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="frame_9" ExtendLeft="3" ExtendTop="3" ExtendRight="3" ExtendBottom="3" AlphaFactor="0.45" IsEnabled="false" />
-                                                        <Standard.DropdownWithHorizontalControl WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" HorizontalAlignment="Center" VerticalAlignment="Center" Parameter.IsCustomWidth="true" Parameter.CustomWidth="174" Parameter.IsFlatDesign="false" Parameter.ShowNextAndPrevious="false" Parameter.SelectorDataSource="{PostprocessModelSelector}" />
+                                                        <Standard.DropdownWithHorizontalControl WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" HorizontalAlignment="Center" VerticalAlignment="Center" Parameter.IsCustomWidth="true" Parameter.CustomWidth="294" Parameter.IsFlatDesign="false" Parameter.ShowNextAndPrevious="false" Parameter.SelectorDataSource="{PostprocessModelSelector}" />
                                                       </Children>
                                                     </Widget>
                                                     <ButtonWidget DoNotPassEventsToChildren="true" Command.Click="ExecuteFetchPostprocessModels" WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="72" Brush="Popup.Done.Button" UpdateChildrenStates="true">
@@ -402,7 +402,7 @@
                                                 <ListPanel WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="34" MarginTop="66" LayoutImp.LayoutMethod="HorizontalLeftToRight">
                                                   <Children>
                                                     <TextWidget Text="API Key:" WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="70" Brush="Popup.Description.Text" Brush.FontSize="13" Brush.FontColor="#D1D5DBFF" Brush.TextVerticalAlignment="Center" />
-                                                    <Widget WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="320" MarginRight="10">
+                                                    <Widget WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="200" MarginRight="10">
                                                       <Children>
                                                         <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#0B0805FF" AlphaFactor="0.95" IsEnabled="false" />
                                                         <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="frame_9" Color="#6E563BFF" AlphaFactor="0.5" IsEnabled="false" />
@@ -413,11 +413,11 @@
                                                       </Children>
                                                     </Widget>
                                                     <TextWidget Text="模型:" WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="40" Brush="Popup.Description.Text" Brush.FontSize="13" Brush.FontColor="#D1D5DBFF" Brush.TextVerticalAlignment="Center" />
-                                                    <Widget WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="180" MarginRight="8">
+                                                    <Widget WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="300" MarginRight="8">
                                                       <Children>
                                                         <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#120D08FF" AlphaFactor="0.85" IsEnabled="false" />
                                                         <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="frame_9" ExtendLeft="3" ExtendTop="3" ExtendRight="3" ExtendBottom="3" AlphaFactor="0.45" IsEnabled="false" />
-                                                        <Standard.DropdownWithHorizontalControl WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" HorizontalAlignment="Center" VerticalAlignment="Center" Parameter.IsCustomWidth="true" Parameter.CustomWidth="174" Parameter.IsFlatDesign="false" Parameter.ShowNextAndPrevious="false" Parameter.SelectorDataSource="{EventModelSelector}" />
+                                                        <Standard.DropdownWithHorizontalControl WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" HorizontalAlignment="Center" VerticalAlignment="Center" Parameter.IsCustomWidth="true" Parameter.CustomWidth="294" Parameter.IsFlatDesign="false" Parameter.ShowNextAndPrevious="false" Parameter.SelectorDataSource="{EventModelSelector}" />
                                                       </Children>
                                                     </Widget>
                                                     <ButtonWidget DoNotPassEventsToChildren="true" Command.Click="ExecuteFetchEventModels" WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="72" Brush="Popup.Done.Button" UpdateChildrenStates="true">
