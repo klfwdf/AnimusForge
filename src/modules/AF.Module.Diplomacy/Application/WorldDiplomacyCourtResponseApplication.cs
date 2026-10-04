@@ -34,7 +34,7 @@ internal static class WorldDiplomacyCourtResponseApplication
         if (document.IsPlayerAuthored && hasIndependentAuthority())
         {
             WorldDiplomacyRound round = resolveRound(document.RoundId);
-            bool activeDelivery = round != null && ReferenceEquals(storage.ActiveRound, round)
+            bool activeDelivery = round != null && WorldDiplomacyLiveRoundRules.Contains(storage, round)
                 && WorldDiplomacyRoundLifecycleRules.IsActiveRoundState(round.State);
             if (!activeDelivery) return;
             showPlayerDelivery();

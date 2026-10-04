@@ -34,6 +34,8 @@ internal sealed class WorldDiplomacyActionSelectionApplication
 		List<string> actions = new List<string>();
 		if (first == null || second == null || first == second) return actions;
         WorldDiplomacyPairFacts facts = _port.CapturePair(first, second);
+        if (_port.HasAuthority(first) && _port.HasAuthority(second))
+            actions.AddRange(new[] { "propose_annexation", "propose_tributary", "propose_garrison", "propose_vassal" });
         bool atWar = facts.AtWar;
         bool allied = facts.Allied;
         bool trading = facts.Trading;

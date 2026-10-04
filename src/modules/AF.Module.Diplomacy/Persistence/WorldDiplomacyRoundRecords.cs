@@ -71,6 +71,11 @@ public sealed class WorldDiplomacyRound
 	[JsonProperty("resultSettlementPlayerWaitingSinceDay")] public int ResultSettlementPlayerWaitingSinceDay { get; set; }
 	[JsonProperty("resultSettlementSlots")] public List<WorldDiplomacyResultSettlementSlot> ResultSettlementSlots { get; set; } = new List<WorldDiplomacyResultSettlementSlot>();
 	[JsonProperty("resultSettlementWarDocumentIds")] public List<string> ResultSettlementWarDocumentIds { get; set; } = new List<string>();
+
+    [JsonProperty("conversationRevision")] public int ConversationRevision { get; set; }
+    [JsonProperty("playerResponses")] public List<WorldDiplomacyPlayerResponse> PlayerResponses { get; set; } = new List<WorldDiplomacyPlayerResponse>();
+    [JsonProperty("playerWaitReminderDay")] public int PlayerWaitReminderDay { get; set; } = -1;
+    [JsonProperty("dialogueArrangementId")] public string DialogueArrangementId { get; set; } = "";
 }
 
 public sealed class WorldDiplomacyLlmMessage

@@ -61,7 +61,7 @@ internal static class WorldDiplomacyRoundApplication
         Action<WorldDiplomacyJob, string> commitPlan, Action<string> log)
     {
         if (round == null || root == null || round.RelayPlanned
-            || !ReferenceEquals(storage.ActiveRound, round)
+            || !WorldDiplomacyLiveRoundRules.Contains(storage, round)
             || !WorldDiplomacyRoundLifecycleRules.IsActiveRoundState(round.State)) return;
         List<string> candidates = actionableParticipants(root.AuthorKingdomId, round);
         WorldDiplomacyJob plan = new WorldDiplomacyJob
@@ -89,9 +89,9 @@ internal static class WorldDiplomacyRoundApplication
         Action<int> scheduleNext,
         Action<WorldDiplomacyRound, List<WorldDiplomacyDocument>> commitSummary,
         Action scheduleCompression,
-        Action<string> log)
+        Action<string> log, WorldDiplomacyRound targetRound = null)
     {
-        WorldDiplomacyRound round = storage.ActiveRound;
+        WorldDiplomacyRound round = targetRound ?? storage.ActiveRound;
         if (round == null) return;
         round.State = "closed";
         round.CompletedDay = currentDay();
@@ -113,8 +113,8 @@ internal static class WorldDiplomacyRoundApplication
         round.FinalDocumentId = documents.LastOrDefault()?.DocumentId ?? "";
         WorldDiplomacyRoundLifecycleRules.ClearRoundScopedQueuesAndExpireOpportunities(storage, round);
         storage.CompletedRounds.Add(round);
-        storage.ActiveRound = null;
-        scheduleNext(currentDay());
+        if (ReferenceEquals(storage.ActiveRound, round)) storage.ActiveRound = null;
+        else storage.ConcurrentRounds.Remove(round);
         if (documents.Count > 0) commitSummary(round, documents);
         round.CommonContractSnapshot = "";
         round.CommonContractSnapshotInitialized = false;
@@ -128,11 +128,13 @@ internal static class WorldDiplomacyRoundApplication
     }
     internal static WorldDiplomacyRound EnsureOpen(WorldDiplomacyStorage storage, Func<RoundOpening> resolveOpening)
     {
-        if (storage.ActiveRound != null && WorldDiplomacyRoundLifecycleRules.IsActiveRoundState(storage.ActiveRound.State))
-        {
-            return storage.ActiveRound;
-        }
         RoundOpening input = resolveOpening();
+        if (!input.PlayerInsertion)
+        {
+            var existing = WorldDiplomacyLiveRoundRules.Live(storage).FirstOrDefault(r => WorldDiplomacyLiveRoundRules.Contains(storage, r)
+                && WorldDiplomacyLiveRoundRules.IsOrdinary(r) && string.Equals(r.InitiatorKingdomId, input.InitiatorId, StringComparison.OrdinalIgnoreCase));
+            if (existing != null) return existing;
+        }
         WorldDiplomacyRound round = new WorldDiplomacyRound
         {
             SchemaVersion = input.SchemaVersion,
@@ -146,7 +148,8 @@ internal static class WorldDiplomacyRoundApplication
             RelayPassDurationDays = input.RelayPassDays,
             IsPlayerInsertion = input.PlayerInsertion
         };
-        storage.ActiveRound = round;
+        if (storage.ActiveRound == null) storage.ActiveRound = round;
+        else storage.ConcurrentRounds.Add(round);
         WorldDiplomacyStructureRules.EnsureRoundParticipant(round, input.InitiatorId, "active", mandatoryReply: false);
         if (!string.Equals(input.TargetId, input.InitiatorId, StringComparison.Ordinal))
         {
@@ -166,7 +169,7 @@ internal static class WorldDiplomacyRoundApplication
         Action<int> scheduleNext,
         Action<string> log)
     {
-        if (storage.ActiveRound != null || storage.Jobs.Count > 0 || requestRunning)
+        if (storage.Jobs.Count >= 24)
         {
             return;
         }
@@ -188,7 +191,7 @@ internal static class WorldDiplomacyRoundApplication
         {
             int candidateIndex = (startIndex + offset) % initiators.Count;
             string candidate = initiators[candidateIndex];
-            if (!hasActionableTarget(candidate)) continue;
+            if (WorldDiplomacyLiveRoundRules.HasInitiator(storage, candidate) || !hasActionableTarget(candidate)) continue;
             initiator = candidate;
             selectedIndex = candidateIndex;
             break;
@@ -207,6 +210,7 @@ internal static class WorldDiplomacyRoundApplication
         WorldDiplomacyRound round = openRound(initiator);
         log("autonomous diplomacy opportunity opened round=" + round.RoundId + " initiator=" + initiator);
         enqueue(initiator, round);
+        scheduleNext(day);
     }
     internal static void AdvanceRelay(
         WorldDiplomacyRound round,
@@ -344,9 +348,9 @@ internal static class WorldDiplomacyRoundApplication
         Action<WorldDiplomacyRound> scheduleResultSettlementTurn,
         Action<WorldDiplomacyRound> scheduleRelayHop,
         Action<string> closeActiveRound,
-        Action<string> log)
+        Action<string> log, WorldDiplomacyRound targetRound = null)
     {
-        WorldDiplomacyRound round = storage.ActiveRound;
+        WorldDiplomacyRound round = targetRound ?? storage.ActiveRound;
         if (round == null || !WorldDiplomacyRoundLifecycleRules.IsActiveRoundState(round.State)) return;
         if (round.AutomaticCircuitBreakerTripped)
         {
@@ -435,9 +439,9 @@ internal static class WorldDiplomacyRoundApplication
         Action<WorldDiplomacyRound> scheduleResultSettlementTurn,
         Action<WorldDiplomacyRound> scheduleRelayHopImmediately,
         Action<string> closeActiveRound,
-        Action<string> log)
+        Action<string> log, WorldDiplomacyRound targetRound = null)
     {
-        WorldDiplomacyRound round = storage?.ActiveRound;
+        WorldDiplomacyRound round = targetRound ?? storage?.ActiveRound;
         if (round == null || !WorldDiplomacyRoundLifecycleRules.IsActiveRoundState(round.State)) return;
         if (WorldDiplomacyRoundLifecycleRules.IsHardEndReached(currentDay(), round.HardEndDay))
         {

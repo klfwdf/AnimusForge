@@ -78,7 +78,8 @@ internal static class WorldDiplomacyPolicyRoundApplication
             complete(signal, "same_or_invalid_diplomatic_representative");
             return;
         }
-        WorldDiplomacyRound activeRound = storage.ActiveRound;
+        string author = parties.AffectedIsPlayer ? parties.IssuerId : parties.AffectedId;
+        WorldDiplomacyRound activeRound = WorldDiplomacyLiveRoundRules.Live(storage).FirstOrDefault(r => WorldDiplomacyLiveRoundRules.Contains(storage, r) && WorldDiplomacyLiveRoundRules.IsOrdinary(r) && r.InitiatorKingdomId == author);
         if (activeRound != null)
         {
             if (WorldDiplomacyStructureRules.RoundContainsKingdom(activeRound, parties.IssuerId) || WorldDiplomacyStructureRules.RoundContainsKingdom(activeRound, parties.AffectedId))
@@ -88,14 +89,13 @@ internal static class WorldDiplomacyPolicyRoundApplication
             }
             return;
         }
-        string author = parties.AffectedIsPlayer ? parties.IssuerId : parties.AffectedId;
         if (!hasActionableTarget(author))
         {
             complete(signal, "no_actionable_diplomatic_target");
             scheduleNext(currentDay());
             return;
         }
-        if (storage.Jobs.Count > 0 || requestRunning() || !consumeBudget())
+        if (storage.Jobs.Count >= 24 || !consumeBudget())
         {
             return;
         }

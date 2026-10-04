@@ -78,16 +78,19 @@ internal sealed class WorldDiplomacyModuleAdapter : IWorldDiplomacyModulePort
     }
     public void OnEngineTick()
     {
+        if (WorldDiplomacyBehavior.Instance?.IsLiveCampaign != true) return;
         var source = new WorldDiplomacyBehavior.TickSource(WorldDiplomacyBehavior.Instance);
         WorldDiplomacyTickApplication.Run(ref source, WorldDiplomacyBehavior.Instance?.Orchestration);
     }
     public void OnCampaignTick()
     {
+        if (WorldDiplomacyBehavior.Instance?.IsLiveCampaign != true) return;
         var source = new WorldDiplomacyBehavior.CampaignSource(WorldDiplomacyBehavior.Instance);
         WorldDiplomacyCampaignApplication.CampaignTick(ref source, WorldDiplomacyBehavior.Instance?.Orchestration);
     }
     public void OnDailyTick()
     {
+        if (WorldDiplomacyBehavior.Instance?.IsLiveCampaign != true) return;
         var source = new WorldDiplomacyBehavior.CampaignSource(WorldDiplomacyBehavior.Instance);
         WorldDiplomacyCampaignApplication.DailyTick(ref source, WorldDiplomacyBehavior.Instance?.Orchestration);
     }

@@ -8,7 +8,7 @@ using Newtonsoft.Json;
 
 internal static class PrestigeApplicationReplay
 {
-    private sealed class Port : IWorldDiplomacyPrestigePort
+    internal sealed class Port : IWorldDiplomacyPrestigePort
     {
         internal WorldDiplomacyPrestigeCourt Court = new("k", false, "r", new[] { WorldProfileReplay.Clan("v-clan", leader: "v") });
         internal readonly Dictionary<string, int> Relations = new() { ["v|r"] = 0 };

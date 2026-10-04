@@ -563,6 +563,11 @@ public static class WorldDiplomacyRoundLifecycleRules
                 return !allianceBehaviorAvailable || atWar || alreadyAllied;
             case "propose_trade":
                 return !tradeBehaviorAvailable || atWar || hasTradeAgreement;
+            case "propose_annexation":
+            case "propose_tributary":
+            case "propose_garrison":
+            case "propose_vassal":
+                return false; // Live roles/cycles are validated by the Application owner.
             default:
                 return true;
         }
@@ -3206,6 +3211,7 @@ public static class WorldDiplomacyRoundLifecycleRules
         entry.TargetKingdomIds = NormalizeIdListPreserveOrder(entry.TargetKingdomIds);
         entry.RespondingToOfferDocumentId = (entry.RespondingToOfferDocumentId ?? "").Trim();
         entry.RespondingToThreatDocumentId = (entry.RespondingToThreatDocumentId ?? "").Trim();
+        entry.AnsweredPlayerDocumentIds = NormalizeIdListPreserveOrder(entry.AnsweredPlayerDocumentIds);
         if (entry.ActionFacts != null)
         {
             entry.ActionFacts = NormalizeIdListPreserveOrder(entry.ActionFacts);
@@ -3734,7 +3740,7 @@ public static class WorldDiplomacyRoundLifecycleRules
         return (opportunities ?? new List<WorldDiplomacyPlayerOpportunity>())
             .Where(x => x != null && !string.IsNullOrWhiteSpace(x.RoundId))
             .OrderByDescending(x => x.ArrivedDay)
-            .Take(maxEntries)
+            .Where((x, index) => index < maxEntries || IsPlayerOpportunityOfStatus(x, "open"))
             .ToList();
     }
 
@@ -4729,6 +4735,14 @@ public static class WorldDiplomacyRoundLifecycleRules
                 Commitment = entry.Commitment
             });
         }
+        foreach (string source in entry.AnsweredPlayerDocumentIds ?? new List<string>())
+        {
+            Add(new WorldDiplomacyCanonicalProtectedFact {
+                Kind = "response_link", SourceKey = "player-response:" + entry.SourceId + "->" + source,
+                SourceId = entry.SourceId, RelatedSourceId = source, Sequence = entry.Sequence,
+                Day = entry.Day, GameDate = entry.GameDate, AuthorKingdomId = entry.AuthorKingdomId,
+                TargetKingdomIds = entry.TargetKingdomIds, Intent = entry.Intent, Commitment = entry.Commitment });
+        }
     }
     return WorldDiplomacyRoundLifecycleRules.OrderProtectedFactsBySequence(facts.Values).ToList();
 }
@@ -5136,6 +5150,7 @@ public static class WorldDiplomacyRoundLifecycleRules
                 .Where(x => IsOpenDirectedOffer(x, authorKingdomId, targetKingdomId))
                 .Select(x => WorldDiplomacyIntentVocabulary.NormalizeIntent(x.Intent)), StringComparer.OrdinalIgnoreCase);
             actions.RemoveAll(ownOpenProposalIntents.Contains);
+            if (ownOpenProposalIntents.Count > 0) actions.Add("withdraw_offer");
         }
         AppendOpenOfferResponseIntents(round, authorKingdomId, targetKingdomId, actions);
         return NormalizeIdListPreserveOrder(actions);
@@ -5389,6 +5404,10 @@ List<string> ids = new List<string>();
             AuthorKingdomId = source.AuthorKingdomId ?? "",
             TargetKingdomId = source.TargetKingdomId ?? "",
             SourceDocumentId = source.SourceDocumentId ?? "",
+            PlayerResponseSourceIds = new List<string>(source.PlayerResponseSourceIds ?? new List<string>()),
+            RoundConversationRevision = source.RoundConversationRevision,
+            PersonalMemoryRulerId = source.PersonalMemoryRulerId,
+            RequestLane = source.RequestLane,
             IsResponse = source.IsResponse,
             ForcedIntent = "",
             IsExternalResponseOnly = source.IsExternalResponseOnly,

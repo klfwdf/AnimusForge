@@ -41,17 +41,18 @@ internal static class RoundApplicationReplay
                 () => { worldReads++; return new[] { "a", "b", "c" }; },
                 id => { visited.Add(id); return actionable && id == "c"; },
                 () => { budgets++; return budgetAllowed; },
-                id => { Test.True(id == "c", "rotation must select the first actionable candidate"); return Open(storage); },
+                id => { Test.True(id == "c", "rotation must select the first actionable candidate"); return WorldDiplomacyRoundApplication.EnsureOpen(storage,
+                    () => new WorldDiplomacyRoundApplication.RoundOpening(3, "r", id, "b", 10, 7, 30, 2, false)); },
                 (id, round) => { queued++; Test.True(ReferenceEquals(round, storage.ActiveRound), "generation belongs to the canonical round"); },
                 dayValue => next++, _ => { });
-        Schedule(running: true); Schedule(day: 9);
-        storage.Jobs.Add(new WorldDiplomacyJob { JobId = "pending" }); Schedule(); storage.Jobs.Clear();
-        Test.True(worldReads == 0 && budgets == 0, "busy/not-due scheduling never constructs world candidates");
+        Schedule(running: true, day: 9); Schedule(day: 9);
+        storage.Jobs.AddRange(Enumerable.Range(0, 24).Select(x => new WorldDiplomacyJob { JobId = "pending" + x })); Schedule(); storage.Jobs.Clear();
+        Test.True(worldReads == 0 && budgets == 0, "full queue/not-due scheduling never constructs world candidates");
         Schedule();
         Test.True(visited.SequenceEqual(new[] { "b", "c" }) && storage.RotationIndex == 0
                   && storage.ActiveRound == null && queued == 0, "budget exhaustion preserves original rotation-before-budget order");
         visited.Clear(); budgetAllowed = true; Schedule();
-        Test.True(visited.SequenceEqual(new[] { "a", "b", "c" }) && queued == 1 && next == 0,
+        Test.True(visited.SequenceEqual(new[] { "a", "b", "c" }) && queued == 1 && next == 1,
             "selection scans no more than one candidate cycle");
         WorldDiplomacyRound round = storage.ActiveRound;
         Test.True(round.StartedDay == 10 && round.SoftEndDay == 17 && round.HardEndDay == 40
@@ -59,16 +60,16 @@ internal static class RoundApplicationReplay
         Test.True(round.Participants.Count == 2 && round.Participants[0].State == "active"
                   && round.Participants[1].State == "observer", "opening assigns initiator and observer roles");
         Test.True(ReferenceEquals(WorldDiplomacyRoundApplication.EnsureOpen(storage,
-            () => throw new InvalidOperationException("must not resolve live inputs for an existing round")), round),
-            "active round reuse is lazy and keeps its original identity");
+            () => new WorldDiplomacyRoundApplication.RoundOpening(3, "other", "c", "a", 10, 7, 30, 2, false)), round),
+            "the same NPC initiator reuses its original event identity");
         int readsBefore = worldReads; Schedule();
-        Test.True(worldReads == readsBefore, "an active round prevents all selection work");
+        Test.True(worldReads == readsBefore + 1 && queued == 1, "active initiators are skipped while other nations remain candidates");
         storage.ActiveRound = null; visited.Clear(); Schedule(actionable: false);
-        Test.True(visited.Count == 3 && next == 1 && queued == 1, "no-result selection defers once without generation");
+        Test.True(visited.Count == 3 && next == 3 && queued == 1, "no-result selection defers once without generation");
         WorldDiplomacyRoundApplication.TryScheduleNormal(storage, false, () => 10,
             () => Array.Empty<string>(), _ => throw new Exception(), () => throw new Exception(),
             _ => throw new Exception(), (_, _) => throw new Exception(), _ => next++, _ => { });
-        Test.True(next == 2, "empty candidate set schedules the next normal opportunity");
+        Test.True(next == 4, "empty candidate set schedules the next normal opportunity");
         string[] backlog = Enumerable.Range(0, 4096).Select(i => "kingdom-" + i).ToArray();
         int visits = 0;
         WorldDiplomacyRoundApplication.TryScheduleNormal(storage, false, () => 10, () => backlog,
@@ -123,7 +124,7 @@ internal static class RoundApplicationReplay
             Test.True(storage.Jobs.Count == 2 && storage.Jobs[0].JobId == "mine" && storage.Jobs[1].JobId == "other" && storage.RelayArrivals.Count == 0
                       && storage.PlayerOpportunities[0].Status == "expired", "close clears round propagation queues and preserves jobs for the original completion owner");
             Test.True(!round.CommonContractSnapshotInitialized && round.CommonContractSnapshot == "", "frozen contract is released after summary");
-            string expected = scenario.Item1 == "no_result" ? "cooldown,next,log,compress" : "cooldown,next,summary,log,compress";
+            string expected = scenario.Item1 == "no_result" ? "cooldown,log,compress" : "cooldown,summary,log,compress";
             Test.True(string.Join(",", events) == expected, "closure effects preserve order and no-document summary gate");
             Test.True(round.FinalDocumentId == (scenario.Item1 == "no_result" ? "" : "last"), "final document excludes unpublished drafts");
             int count = events.Count; Close("duplicate");
@@ -195,8 +196,8 @@ internal static class RoundApplicationReplay
             WorldDiplomacyPolicyRoundApplication.TrySchedule(storage, _ => parties, _ => actionable, () => running, () => budget, () => 10,
                 id => { events.Add("open:" + id); return Open(storage); },
                 (_, why) => events.Add(why), _ => events.Add("next"), (_, _) => events.Add("enqueue"));
-        Schedule(running: true); Schedule(budget: false);
-        Test.True(events.Count == 0, "policy waits for the shared request slot and budget");
+        Schedule(running: true, budget: false); Schedule(budget: false);
+        Test.True(events.Count == 0, "policy retains its trigger while generation budget is exhausted");
         Schedule();
         Test.True(string.Join(",", events) == "open:a,next,enqueue,opened_round", "policy chooses AI representative when affected kingdom is player and preserves effect order");
         WorldDiplomacyRound opened = storage.ActiveRound;
@@ -206,8 +207,8 @@ internal static class RoundApplicationReplay
             "policy attach installs observer participants with application-owned player-async flags");
         events.Clear(); Schedule();
         Test.True(string.Join(",", events) == "attached_to_active_round", "matching policy attaches without a second round or generation");
-        events.Clear(); parties = new WorldDiplomacyPolicyRoundApplication.Parties(true, "x", "y", false); Schedule();
-        Test.True(events.Count == 0, "unrelated active round leaves the policy pending");
+        events.Clear(); parties = new WorldDiplomacyPolicyRoundApplication.Parties(true, "x", "y", false); Schedule(budget: false);
+        Test.True(events.Count == 0, "unrelated policy retains its work while shared budget is exhausted");
         storage.ActiveRound = null; Schedule(actionable: false);
         Test.True(string.Join(",", events) == "no_actionable_diplomatic_target,next", "no-result policy is completed and rescheduled without generation");
         events.Clear(); parties = new WorldDiplomacyPolicyRoundApplication.Parties(false, null, null, false); Schedule();

@@ -63,12 +63,12 @@ internal sealed class WorldDiplomacyJobSelectionView
     internal int MinimumAwaitingTarget(WorldDiplomacyStorage storage, int fallback)
     { EnsureSummary(storage); return _minimumAwaitingTarget > 0 ? Math.Min(_minimumAwaitingTarget, fallback) : fallback; }
 
-    internal WorldDiplomacyJob Select(WorldDiplomacyStorage storage, int currentHour, string lastCacheAffinityKey)
+    internal WorldDiplomacyJob Select(WorldDiplomacyStorage storage, int currentHour, string lastCacheAffinityKey, Func<WorldDiplomacyJob, bool> eligible = null, Func<WorldDiplomacyJob, int> priority = null)
     {
         EnsureSummary(storage);
-        if (storage.ServiceCooldownUntilHour > currentHour) return null;
+        if (eligible == null && storage.ServiceCooldownUntilHour > currentHour) return null;
         string affinity = (lastCacheAffinityKey ?? "").Trim();
-        if (_selectionValid && _selectedHour == currentHour
+        if (eligible == null && _selectionValid && _selectedHour == currentHour
             && _selectedRetryHour == storage.CompressionRetryAfterHour
             && string.Equals(_selectedAffinity, affinity, StringComparison.OrdinalIgnoreCase)) return _selected;
         _selectionValid = true;
@@ -82,12 +82,15 @@ internal sealed class WorldDiplomacyJobSelectionView
         {
             if (candidate == null || string.IsNullOrWhiteSpace(candidate.JobId) || candidate.IsRunning
                 || (candidate.AwaitingHistoryCompression && currentHour < storage.CompressionRetryAfterHour)) continue;
+            if (eligible != null && !eligible(candidate)) continue;
+            int candidatePriority = priority?.Invoke(candidate) ?? candidate.Priority;
+            int selectedPriority = _selected == null ? int.MinValue : priority?.Invoke(_selected) ?? _selected.Priority;
             bool affinityMatch = string.Equals(
                 (WorldDiplomacyPromptContractRules.ResolveCacheAffinityKey(candidate) ?? "").Trim(),
                 affinity, StringComparison.OrdinalIgnoreCase);
-            if (_selected == null || candidate.Priority > _selected.Priority
-                || (candidate.Priority == _selected.Priority && affinityMatch && !selectedAffinityMatch)
-                || (candidate.Priority == _selected.Priority && affinityMatch == selectedAffinityMatch
+            if (_selected == null || candidatePriority > selectedPriority
+                || (candidatePriority == selectedPriority && affinityMatch && !selectedAffinityMatch)
+                || (candidatePriority == selectedPriority && affinityMatch == selectedAffinityMatch
                     && (candidate.CreatedDay < _selected.CreatedDay
                         || (candidate.CreatedDay == _selected.CreatedDay
                             && StringComparer.OrdinalIgnoreCase.Compare(candidate.JobId, _selected.JobId) < 0))))
@@ -133,7 +136,9 @@ internal static class WorldDiplomacyLlmDispatchApplication
     internal static void Run<TSource>(ref TSource source, IWorldDiplomacyOrchestration orchestration)
         where TSource : IWorldDiplomacyLlmDispatchSource
     {
-        if (!source.IsEnabled || source.IsRequestRunning || source.Storage?.Jobs?.Count == 0) return;
+        var scheduler = orchestration as WorldDiplomacyOrchestration;
+        if (!source.IsEnabled || (scheduler != null ? scheduler.RequestLeases.IsFull : source.IsRequestRunning) || source.Storage?.Jobs?.Count == 0) return;
+        int selectionDay = source.CurrentHour / 24;
         WorldDiplomacyJob job = SelectAndPrepareLlmJob(
             source.Storage,
             source.CurrentHour,
@@ -146,7 +151,7 @@ internal static class WorldDiplomacyLlmDispatchApplication
             (j, reason) => orchestration.AbandonRejectedGeneration(j, j?.AuthorKingdomId, j?.TargetKingdomId, reason),
             orchestration.EnsureGenerationJobHasKingdomStrategicProfile,
             source.GetLlmConfigError,
-            source.TryConsumeRequestBudget,
+            scheduler == null ? source.TryConsumeRequestBudget : _ => true,
             j => orchestration.CaptureCanonicalHistoryForJob(j, syncSources: true),
             source.BuildMessageArray,
             out JArray requestMessages,
@@ -157,13 +162,21 @@ internal static class WorldDiplomacyLlmDispatchApplication
             orchestration.TryScheduleTokenCompression,
             orchestration.CommitFailedJob,
             source.RemoveJob,
-            source.Log);
+            source.Log,
+            scheduler == null ? null : scheduler.CanDispatchDiplomacyJob,
+            scheduler == null ? null : scheduler.PrepareSharedRequest,
+            scheduler == null ? null : j => j.Kind == "compress" ? j.Priority : scheduler.IsPlayerSchedulingJobForDispatch(j) ? 95
+                : Math.Min(100, j.Priority + Math.Max(0, selectionDay - j.CreatedDay) * 5));
         if (job == null) return;
 
         int timeout = WorldDiplomacyRoundLifecycleRules.IsJobOfKind(job, "compress")
             ? source.CompressionTimeoutMilliseconds
             : source.DefaultApiTimeoutMilliseconds;
-        if (!source.TryClaim(job.JobId, source.RuntimeGeneration, job.MaxTokens, timeout, out WorldDiplomacyRequestSnapshot request))
+        WorldDiplomacyRequestSnapshot request;
+        bool claimed = scheduler != null
+            ? scheduler.RequestLeases.TryClaim(job, source.RuntimeGeneration, job.MaxTokens, timeout, scheduler.IsPlayerSchedulingJobForDispatch(job), out request)
+            : source.TryClaim(job.JobId, source.RuntimeGeneration, job.MaxTokens, timeout, out request);
+        if (!claimed)
         {
             job.IsRunning = false;
             source.Log("world diplomacy request claim rejected job=" + (job.JobId ?? "")
@@ -229,12 +242,12 @@ internal static class WorldDiplomacyLlmDispatchApplication
         Action scheduleTokenCompression,
         Action<WorldDiplomacyJob, string> commitFailedJob,
         Action<string> removeJob,
-        Action<string> log)
+        Action<string> log, Func<WorldDiplomacyJob, bool> eligible = null, Action<WorldDiplomacyJob> prepareShared = null, Func<WorldDiplomacyJob, int> priority = null)
     {
         preparedMessages = null;
         if (storage == null || (storage.Jobs?.Count ?? 0) == 0) return null;
         WorldDiplomacyJob job = WorldDiplomacyJobSelectionView.For(storage)
-            .Select(storage, currentHour, lastCacheAffinityKey);
+            .Select(storage, currentHour, lastCacheAffinityKey, eligible, priority);
         if (job == null) return null;
         if (WorldDiplomacyRoundLifecycleRules.HasStaleThreatPresentation(job, storage?.DiplomaticThreats))
         {
@@ -294,6 +307,9 @@ internal static class WorldDiplomacyLlmDispatchApplication
             removeJob?.Invoke(job.JobId);
             return null;
         }
+        // Refreshing legal actions or repairing a persisted prompt can replace its
+        // tail. Freeze the event/player sources only after those refreshes finish.
+        prepareShared?.Invoke(job);
         if (string.IsNullOrWhiteSpace(job.SystemPrompt))
         {
             commitFailedJob?.Invoke(job, "empty prompt");

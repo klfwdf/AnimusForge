@@ -26,6 +26,13 @@ internal static class Program
 {
     private static int Main(string[] args)
     {
+        AppDomain.CurrentDomain.UnhandledException += (_, e) => { Console.Error.WriteLine(e.ExceptionObject); Environment.Exit(1); };
+        if (args.Length == 1 && args[0] == "--concurrent-oral-migration")
+        {
+            ConcurrentOralMigrationReplay.Run();
+            Console.WriteLine($"Concurrent/oral Application replay passed: {Test.Assertions} assertions.");
+            return 0;
+        }
         if (args.Length == 1 && args[0] == "--r1-round-compression")
         {
             CompletionApplicationReplay.Run();
@@ -251,15 +258,15 @@ RunRepairCorrectionAndJobDecisionTests();
         string app = File.ReadAllText(FindRepositoryFile(
             "src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyRoundCompressionApplication.cs"));
         string behavior = File.ReadAllText(FindRepositoryFile(
-            "src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.cs"));
+            "src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOrchestration.cs"));
         string rules = File.ReadAllText(FindRepositoryFile(
             "src/modules/AF.Module.Diplomacy/Domain/WorldDiplomacyRoundLifecycleRules.cs"));
         string completion = File.ReadAllText(FindRepositoryFile(
-            "src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.CompletionSource.cs"));
+            "src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyCompletionApplication.cs"));
         Test.True(app.Contains("storage.RoundSummaries.RemoveAll(", StringComparison.Ordinal)
             && app.Contains("storage.RoundSummaries.Add(summary)", StringComparison.Ordinal)
-            && behavior.Contains("WorldDiplomacyRoundCompressionApplication.Commit(_storage, job, raw,", StringComparison.Ordinal)
-            && completion.Contains("_owner.CommitRoundCompression(job, content)", StringComparison.Ordinal)
+            && behavior.Contains("WorldDiplomacyRoundCompressionApplication.Commit(Storage, job, raw,", StringComparison.Ordinal)
+            && completion.Contains("orchestration.CommitRoundCompression(job, resultContent)", StringComparison.Ordinal)
             && !rules.Contains("public static void CommitRoundCompression(", StringComparison.Ordinal)
             && !behavior.Contains("WorldDiplomacyRoundLifecycleRules.CommitRoundCompression(", StringComparison.Ordinal),
             "real completion caller reaches one Application archive owner; predecessor has no second algorithm");
@@ -270,7 +277,7 @@ RunRepairCorrectionAndJobDecisionTests();
         string app = File.ReadAllText(FindRepositoryFile(
             "src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyFailureApplication.cs"));
         string behavior = File.ReadAllText(FindRepositoryFile(
-            "src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.cs"));
+            "src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOrchestration.cs"));
         string rules = File.ReadAllText(FindRepositoryFile(
             "src/modules/AF.Module.Diplomacy/Domain/WorldDiplomacyRoundLifecycleRules.cs"));
         Test.True(app.Contains("compressionRetryInitialHours << Math.Max(0", StringComparison.Ordinal)
@@ -286,7 +293,7 @@ RunRepairCorrectionAndJobDecisionTests();
         string app = File.ReadAllText(FindRepositoryFile(
             "src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyRoundPlanApplication.cs"));
         string behavior = File.ReadAllText(FindRepositoryFile(
-            "src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.cs"));
+            "src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOrchestration.cs"));
         string rules = File.ReadAllText(FindRepositoryFile(
             "src/modules/AF.Module.Diplomacy/Domain/WorldDiplomacyRoundLifecycleRules.cs"));
         Test.True(app.Contains("round.RelayRouteKingdomIds = route", StringComparison.Ordinal)
@@ -303,7 +310,7 @@ RunRepairCorrectionAndJobDecisionTests();
         string app = File.ReadAllText(FindRepositoryFile(
             "src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyGeneratedCompletionApplication.cs"));
         string behavior = File.ReadAllText(FindRepositoryFile(
-            "src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.cs"));
+            "src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOrchestration.cs"));
         string rules = File.ReadAllText(FindRepositoryFile(
             "src/modules/AF.Module.Diplomacy/Domain/WorldDiplomacyRoundLifecycleRules.cs"));
         Test.True(app.Contains("stale result-settlement generation discarded", StringComparison.Ordinal)
@@ -320,14 +327,14 @@ RunRepairCorrectionAndJobDecisionTests();
         string app = File.ReadAllText(FindRepositoryFile(
             "src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyLlmDispatchApplication.cs"));
         string behavior = File.ReadAllText(FindRepositoryFile(
-            "src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.JobRuntime.cs"));
+            "src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOrchestration.cs"));
         string rules = File.ReadAllText(FindRepositoryFile(
             "src/modules/AF.Module.Diplomacy/Domain/WorldDiplomacyRoundLifecycleRules.cs"));
         Test.True(app.Contains("WorldDiplomacyJob job = SelectAndPrepareLlmJob(", StringComparison.Ordinal)
             && app.Contains("internal static WorldDiplomacyJob SelectAndPrepareLlmJob(", StringComparison.Ordinal)
             && app.Contains("internal static bool EnsureCurrentCanonicalPromptContractBeforeSend(", StringComparison.Ordinal)
             && app.Contains("tryConsumeRequestBudget?.Invoke(true)", StringComparison.Ordinal)
-            && behavior.Contains("WorldDiplomacyLlmDispatchApplication.Run(ref source)", StringComparison.Ordinal)
+            && behavior.Contains("WorldDiplomacyLlmDispatchApplication.Run(ref source, this)", StringComparison.Ordinal)
             && !rules.Contains("public static WorldDiplomacyJob SelectAndPrepareLlmJob(", StringComparison.Ordinal)
             && !rules.Contains("public static bool EnsureCurrentCanonicalPromptContractBeforeSend(", StringComparison.Ordinal),
             "real launch caller enters Application for selection, preflight, budget and claim");
@@ -338,7 +345,7 @@ RunRepairCorrectionAndJobDecisionTests();
         string app = File.ReadAllText(FindRepositoryFile(
             "src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyRoundProgressApplication.cs"));
         string behavior = File.ReadAllText(FindRepositoryFile(
-            "src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.cs"));
+            "src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOrchestration.cs"));
         string rules = File.ReadAllText(FindRepositoryFile(
             "src/modules/AF.Module.Diplomacy/Domain/WorldDiplomacyRoundLifecycleRules.cs"));
         Test.True(app.Contains("document.RoundAccountingHandled = true", StringComparison.Ordinal)
@@ -354,7 +361,7 @@ RunRepairCorrectionAndJobDecisionTests();
         string app = File.ReadAllText(FindRepositoryFile(
             "src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyTurnSchedulingApplication.cs"));
         string behavior = File.ReadAllText(FindRepositoryFile(
-            "src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.cs"));
+            "src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOrchestration.cs"));
         string rules = File.ReadAllText(FindRepositoryFile(
             "src/modules/AF.Module.Diplomacy/Domain/WorldDiplomacyRoundLifecycleRules.cs"));
         Test.True(app.Contains("storage.RelayArrivals.Add(new WorldDiplomacyRelayArrival", StringComparison.Ordinal)
@@ -371,7 +378,7 @@ RunRepairCorrectionAndJobDecisionTests();
         string app = File.ReadAllText(FindRepositoryFile(
             "src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyGenerationTaskApplication.cs"));
         string behavior = File.ReadAllText(FindRepositoryFile(
-            "src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.cs"));
+            "src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOrchestration.cs"));
         string rules = File.ReadAllText(FindRepositoryFile(
             "src/modules/AF.Module.Diplomacy/Domain/WorldDiplomacyRoundLifecycleRules.cs"));
         Test.True(app.Contains("job.PresentedLegalActionSignature = buildLegalSignature?.Invoke(job)", StringComparison.Ordinal)
@@ -10642,8 +10649,8 @@ RunRepairCorrectionAndJobDecisionTests();
         var filtered = WorldDiplomacyRoundLifecycleRules.BuildLegalDiplomaticActionIntents(
             ownRound, "kA", "kB",
             () => new List<string> { "propose_trade", "propose_peace" }, _ => null);
-        Test.True(filtered.SequenceEqual(new[] { "propose_peace" }),
-            "the author's own open proposal intents must be removed from the option set");
+        Test.True(filtered.SequenceEqual(new[] { "propose_peace", "withdraw_offer" }),
+            "own open proposals cannot be reissued and can be withdrawn through their exact source");
         var none = WorldDiplomacyRoundLifecycleRules.BuildLegalDiplomaticActionIntents(
             null, "kA", "kB", null, _ => null);
         Test.True(none.Count == 0, "null ports must yield an empty option set");
@@ -15366,7 +15373,8 @@ RunRepairCorrectionAndJobDecisionTests();
             FindRepositoryFile(Path.Combine("src", "modules", "AF.Module.Diplomacy", "Domain", "WorldDiplomacyDocumentFactRules.cs")), Encoding.UTF8);
         Test.True(documentFactRules.Contains("WorldDiplomacyRoundLifecycleRules.SelectNewestDocumentsChronologically(", StringComparison.Ordinal),
             "known-round context must delegate newest-first chronological selection to the lifecycle rules");
-        Test.True(documentApplicationSource.Contains("WorldDiplomacyRoundLifecycleRules.SelectRetainedDocuments(", StringComparison.Ordinal)
+        Test.True(documentApplicationSource.Contains("WorldDiplomacyRoundLifecycleRules.OrderDocumentsByRecency(", StringComparison.Ordinal)
+            && documentApplicationSource.Contains("retainedIds.Contains(x.DocumentId)", StringComparison.Ordinal)
             && behaviorSource.Contains("WorldDiplomacyDocumentApplication.Add(", StringComparison.Ordinal),
             "document application must own stored document retention and the host must delegate writes");
         Test.True(applicationSource.Contains("WorldDiplomacyRoundLifecycleRules.SelectPublishedRoundDocuments(", StringComparison.Ordinal),
@@ -16594,7 +16602,7 @@ RunRepairCorrectionAndJobDecisionTests();
             "round lifecycle maintenance must live in the round Application behind ports");
         Test.True(behaviorSource.Contains("WorldDiplomacyRoundApplication.ProcessRoundLifecycle(", StringComparison.Ordinal)
             && behaviorSource.Contains("WorldDiplomacyRoundApplication.ReconcileActiveDiplomacyAfterLoad(", StringComparison.Ordinal)
-            && behaviorSource.Contains("r => ScheduleNextRelayHop(r, scheduleImmediately: true)", StringComparison.Ordinal),
+            && behaviorSource.Contains("r => ScheduleNextRelayHop(r, true)", StringComparison.Ordinal),
             "the host must bind lifecycle maintenance through thin adapters");
         Test.True(!behaviorSource.Contains("relay_all_ai_withdrew", StringComparison.Ordinal)
             && !behaviorSource.Contains("result_settlement_circuit_breaker", StringComparison.Ordinal)
@@ -16648,7 +16656,8 @@ RunRepairCorrectionAndJobDecisionTests();
         Test.True(behaviorSource.Contains("AbandonRejectedGeneration,", StringComparison.Ordinal)
             && behaviorSource.Contains("ScheduleNextResultSettlementTurn,", StringComparison.Ordinal)
             && behaviorSource.Contains("AddDocument,", StringComparison.Ordinal)
-            && behaviorSource.Contains("ProcessAnalyzedDocument,", StringComparison.Ordinal),
+            && behaviorSource.Contains("ProcessAnalyzedDocument(document, intent, commitment, response, tone, confidence)", StringComparison.Ordinal)
+            && behaviorSource.Contains("CommitPlayerResponseCoverage(job, document)", StringComparison.Ordinal),
             "the host must keep binding the generated-document live-state adapters");
 
         // DPL-060DF/R1: post-decision routing; generation abandonment is owned by
@@ -16725,7 +16734,7 @@ RunRepairCorrectionAndJobDecisionTests();
             "transport launch remains a narrow main-thread adapter");
         Test.True(dispatchSource.Contains("ServiceCooldownUntilHour > currentHour", StringComparison.Ordinal)
             && dispatchSource.Contains("WorldDiplomacyJobSelectionView.For(storage)", StringComparison.Ordinal)
-            && dispatchSource.Contains("candidate.Priority > _selected.Priority", StringComparison.Ordinal)
+            && dispatchSource.Contains("candidatePriority > selectedPriority", StringComparison.Ordinal)
             && dispatchSource.Contains("candidate.CreatedDay < _selected.CreatedDay", StringComparison.Ordinal)
             && dispatchSource.Contains("StringComparer.OrdinalIgnoreCase.Compare(candidate.JobId, _selected.JobId)", StringComparison.Ordinal)
             && dispatchSource.Contains("IsValidSemanticRepairMessageChain(job)", StringComparison.Ordinal)
@@ -16779,7 +16788,8 @@ RunRepairCorrectionAndJobDecisionTests();
             && progressSource.Contains("enqueueRelayTurn?.Invoke(arrival.ToKingdomId,", StringComparison.Ordinal)
             && progressSource.Contains("resolveKingdomId?.Invoke(arrival.FromKingdomId) ?? resolveKingdomId?.Invoke(round.InitiatorKingdomId)", StringComparison.Ordinal)
             && documentPublication.Contains("WorldDiplomacyIntentVocabulary.IsExternallyResolvedDiplomaticIntent", StringComparison.Ordinal)
-            && documentPublication.Contains("MarkOpenBilateralOffersAccepted(storage?.ActiveRound", StringComparison.Ordinal)
+            && documentPublication.Contains("foreach (var live in WorldDiplomacyLiveRoundRules.Live(storage))", StringComparison.Ordinal)
+            && documentPublication.Contains("MarkOpenBilateralOffersAccepted(live", StringComparison.Ordinal)
             && documentPublication.Contains("AddOrMergeResultSettlementSlot(round, targetId, \"route\",", StringComparison.Ordinal)
             && documentPublication.Contains("external diplomacy fact kept outside unrelated active round", StringComparison.Ordinal)
             && !rulesSource.Contains("public static void NotifyExternalDiplomacyResolved(", StringComparison.Ordinal),

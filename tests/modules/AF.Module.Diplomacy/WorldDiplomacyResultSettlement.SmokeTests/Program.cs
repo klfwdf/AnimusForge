@@ -398,8 +398,9 @@ internal static class Program
                 Encoding.UTF8),
             "internal static void NotifyExternalDiplomacyResolved(");
         Test.True(externalFactPublication.Contains("fact.AnalysisStatus = \"external_fact\"", StringComparison.Ordinal)
-                  && externalFactPublication.Contains("WorldDiplomacyRound activeRound = storage?.ActiveRound", StringComparison.Ordinal)
-                  && externalFactPublication.Contains("canFactJoinRound?.Invoke(activeRound)", StringComparison.Ordinal)
+                  && externalFactPublication.Contains("WorldDiplomacyLiveRoundRules.Live(storage)", StringComparison.Ordinal)
+                  && externalFactPublication.Contains("canFactJoinRound?.Invoke(x)", StringComparison.Ordinal)
+                  && externalFactPublication.Contains("candidates.Count == 1", StringComparison.Ordinal)
                   && externalFactPublication.Contains("fact.RoundId = round?.RoundId ?? \"\"", StringComparison.Ordinal),
             "an external fact must join an existing active round only through the explicit relevance gate");
         Test.True(externalFactPublication.Contains(
@@ -451,7 +452,8 @@ internal static class Program
             File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyPropagationApplication.cs")),
             "internal static void BeginPublication(",
             "internal static ScheduleResult SchedulePublication(");
-        Test.True(source.Contains("WorldDiplomacyPublicationRoutingApplication.Start(", StringComparison.Ordinal)
+        Test.True(source.Contains("WorldDiplomacyPropagationApplication.BeginPublication(", StringComparison.Ordinal)
+                  && source.Contains("PublishImmediatePublicKnowledge(document)", StringComparison.Ordinal)
                   && File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyPublicationRoutingApplication.cs"))
                       .Contains("WorldDiplomacyPropagationApplication.BeginPublication(", StringComparison.Ordinal)
                   && propagation.Contains("WorldDiplomacyRound round = resolveRound(document.RoundId)", StringComparison.Ordinal)
@@ -470,7 +472,7 @@ internal static class Program
         Test.True(migration.Contains(
                 "storage.ResultSettlementStateSchemaVersion >= targetVersion",
                 StringComparison.Ordinal)
-                  && migration.Contains("storage.ActiveRound", StringComparison.Ordinal)
+                  && migration.Contains("WorldDiplomacyLiveRoundRules.Live(storage)", StringComparison.Ordinal)
                   && migration.Contains("WorldDiplomacyRoundLifecycleRules.IsActiveRoundState(round.State)", StringComparison.Ordinal)
                   && migration.Contains("!round.ResultSettlementPending", StringComparison.Ordinal)
                   && migration.Contains(

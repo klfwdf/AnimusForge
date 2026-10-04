@@ -21,6 +21,8 @@ public sealed class WorldDiplomacyDocumentAction
 	[JsonProperty("mechanicalResult")] public string MechanicalResult { get; set; } = "";
 	[JsonProperty("changedDiplomaticState")] public bool ChangedDiplomaticState { get; set; }
 	[JsonProperty("historyResultRecorded")] public bool HistoryResultRecorded { get; set; }
+
+    [JsonProperty("treatyTerms")] public WorldDiplomacyDialogueTerms TreatyTerms { get; set; }
 }
 
 public sealed class WorldDiplomacyDocument
@@ -253,4 +255,15 @@ public sealed class WorldDiplomacyDocument
 
 	[JsonProperty("isWarResponseNoActionDeclaration")]
 	public bool IsWarResponseNoActionDeclaration { get; set; }
+
+    [JsonProperty("discussionRoundId")] public string DiscussionRoundId { get; set; } = "";
+    [JsonProperty("discussionSourceDocumentId")] public string DiscussionSourceDocumentId { get; set; } = "";
+    [JsonProperty("answeredPlayerDocumentIds")] public List<string> AnsweredPlayerDocumentIds { get; set; } = new List<string>();
+    public string DialogueArrangementId { get; set; } = "";
+    public int DialogueArrangementVersion { get; set; }
+    [JsonProperty("treatyTerms")] public WorldDiplomacyDialogueTerms TreatyTerms { get; set; }
+    [JsonProperty("personalMemoryReceipts")]
+	public List<string> PersonalMemoryReceipts { get; set; } = new List<string>();
+    [JsonProperty("pendingPersonalMemoryRulers")]
+	public Dictionary<string, int> PendingPersonalMemoryRulers { get; set; } = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
 }

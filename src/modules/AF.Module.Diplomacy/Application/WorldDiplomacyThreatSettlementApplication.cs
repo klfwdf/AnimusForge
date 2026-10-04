@@ -202,9 +202,9 @@ internal static class WorldDiplomacyThreatSettlementApplication
 		threat.UpdatedDay = Math.Max(threat.UpdatedDay, threat.PolicyConditionCancellationDay);
 		_storage?.PendingPolicySignals?.RemoveAll(signal => WorldDiplomacyRoundLifecycleRules.IsPolicySignalBoundTo(
 			signal, threat.PolicyConditionPolicyId, threat.PolicyConditionOwnerKingdomId));
-		WorldDiplomacyRoundLifecycleRules.RemoveSettledPolicySignalContextFromActiveRound(
-			_storage?.ActiveRound, threat.PolicyConditionPolicyId,
-			threat.PolicyConditionOwnerKingdomId);
+		foreach (var round in WorldDiplomacyLiveRoundRules.Live(_storage))
+			WorldDiplomacyRoundLifecycleRules.RemoveSettledPolicySignalContextFromActiveRound(
+				round, threat.PolicyConditionPolicyId, threat.PolicyConditionOwnerKingdomId);
 		WorldDiplomacyRoundLifecycleRules.InvalidateOtherThreatsBoundToSettledPolicy(
 			threat, _storage?.DiplomaticThreats, _port.CurrentDay(), _port.Log);
 		_port.Log("diplomatic threat policy cancellation settled threat=" + threat.ThreatId

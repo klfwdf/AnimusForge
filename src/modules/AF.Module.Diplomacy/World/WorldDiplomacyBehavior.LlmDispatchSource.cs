@@ -36,13 +36,20 @@ public sealed partial class WorldDiplomacyBehavior
         public void StartRequest(WorldDiplomacyRequestSnapshot request, JArray messages)
         {
             LlmGenerateRequest detachedRequest = WorldDiplomacyLlmApplication.PrepareRequest(request, messages);
-            ILlmGateway gateway = new LegacyWorldDiplomacyLlmGateway();
+            var budget = _owner._storage.RequestBudget;
+            bool player = request.IsPlayerWork;
+            CancellationToken cancellation = request.Cancellation;
+            ILlmGateway gateway = new LegacyWorldDiplomacyLlmGateway(() => !cancellation.IsCancellationRequested && budget.TryAdmit(player));
             var completedJobs = _owner._completedJobs;
             _ = Task.Run(async delegate
             {
                 LlmJobResult result = await WorldDiplomacyLlmApplication.ExecuteAsync(
-                    request.JobId, detachedRequest, gateway, CancellationToken.None).ConfigureAwait(false);
-                completedJobs.Enqueue(result);
+                    request.JobId, detachedRequest, gateway, cancellation).ConfigureAwait(false);
+                result.RequestAttempt = request.Attempt;
+                result.RoundConversationRevision = request.ConversationRevision;
+                if (!cancellation.IsCancellationRequested
+                    && SaveRuntimeGuard.IsCurrentGeneration(request.RuntimeGeneration))
+                    completedJobs.Enqueue(result);
             });
         }
         public long RuntimeGeneration => _owner._runtimeGeneration;

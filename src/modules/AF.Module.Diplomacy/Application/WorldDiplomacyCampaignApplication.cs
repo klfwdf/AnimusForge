@@ -49,6 +49,7 @@ internal static class WorldDiplomacyCampaignApplication
 		orchestration.NormalizeStorage(allowWorldValidation: true);
 		orchestration.ReconcileAllNationalPrestigeVassalRelations();
 		orchestration.RetryDeferredCanonicalHistoryEntries();
+        (orchestration as WorldDiplomacyOrchestration)?.MaintainDialogueAndMemory();
 		orchestration.RetryDiplomaticThreatDomesticPenalties();
 		orchestration.RetryDiplomaticThreatComplianceConsequences();
 		orchestration.RetryDiplomaticThreatHistoryResults();

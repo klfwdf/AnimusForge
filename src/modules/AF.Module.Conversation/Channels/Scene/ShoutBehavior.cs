@@ -11416,6 +11416,8 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				return InteractionStatus.RejectedByValidation;
 			}
 			string content = actionPlan?.RawPostprocessId ?? "";
+			using var diplomacySource = DiplomacyDialogueSourceScope.Begin(content, "native", snapshot.Identity.SessionId,
+				snapshot.PlayerText, content);
 			NativeConversationGameActionResult actionResult = instance._nativeGameEffects.ApplyNativeConversationGameActionsLegacyCore(
 				targetHero,
 				targetCharacter,
@@ -11776,6 +11778,8 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				return InteractionStatus.RejectedByValidation;
 			}
 			string content = actionPlan.RawPostprocessId ?? string.Empty;
+			using var diplomacySource = DiplomacyDialogueSourceScope.Begin(content, "scene", snapshot.Identity.SessionId,
+				snapshot.PlayerText, content);
 			bool consumed = instance.TryApplyDeferredSceneMoodTag(npc, content);
 			content = StripDeferredSceneMoodTags(content);
 			if (instance.TryApplyDeferredScenePostprocessActionTagsDirectly(

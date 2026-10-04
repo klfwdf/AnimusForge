@@ -66,6 +66,7 @@ internal void Publish(SceneSpeechQueueItem item)
 
 				NpcDataPacket matchedNpc = item.Npc;
 				string content = item.Content;
+				using var diplomacySource = item.DiplomacyOrigin == null ? null : new DiplomacyDialogueSourceScope(item.DiplomacyOrigin);
 				List<NpcDataPacket> allNpcData = item.ContextSnapshot ?? new List<NpcDataPacket>();
 				List<SceneSummonPromptTarget> sceneSummonTargets = item.SceneSummonTargets;
 				List<SceneGuidePromptTarget> sceneGuideTargets = item.SceneGuideTargets;

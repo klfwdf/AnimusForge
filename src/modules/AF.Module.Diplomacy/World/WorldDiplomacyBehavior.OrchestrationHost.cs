@@ -13,7 +13,7 @@ public sealed partial class WorldDiplomacyBehavior
     // Leaf-only host adapter for WorldDiplomacyOrchestration. Every member is a
     // synchronous identity/snapshot/settings/effect capability; no member calls
     // back into an Application or into the orchestration itself.
-    private sealed class OrchestrationHost : IWorldDiplomacyOrchestrationHost
+    private sealed partial class OrchestrationHost : IWorldDiplomacyOrchestrationHost
     {
         private readonly WorldDiplomacyBehavior _owner;
         internal OrchestrationHost(WorldDiplomacyBehavior owner) => _owner = owner;

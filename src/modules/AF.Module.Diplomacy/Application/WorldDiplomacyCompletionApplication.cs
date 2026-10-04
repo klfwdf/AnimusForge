@@ -31,7 +31,8 @@ internal static class WorldDiplomacyCompletionApplication
     {
         while (source.TryDequeue(out LlmJobResult result))
         {
-            source.ReleaseLease(result?.JobId, result?.RuntimeGeneration ?? 0L);
+            if (orchestration is WorldDiplomacyOrchestration liveScheduler) liveScheduler.RequestLeases.TryRelease(result?.JobId, result?.RuntimeGeneration ?? 0L, result?.RequestAttempt ?? 0);
+            else source.ReleaseLease(result?.JobId, result?.RuntimeGeneration ?? 0L);
             // Release only the matching lease; never inspect a reloaded job for a late result.
             bool runtimeIsStale = result != null
                 && result.RuntimeGeneration == source.RuntimeGeneration
@@ -42,6 +43,7 @@ internal static class WorldDiplomacyCompletionApplication
             WorldDiplomacyJob job = source.Storage.Jobs.FirstOrDefault(
                 x => WorldDiplomacyRoundLifecycleRules.HasJobId(x, result.JobId));
             if (job == null) continue;
+            if (orchestration is WorldDiplomacyOrchestration scheduler && !scheduler.AdmitCompletion(job, result)) continue;
             job.IsRunning = false;
             source.LogUsage(job, result);
             Complete(job, result.Content, result.Success, result.IsServiceFailure,

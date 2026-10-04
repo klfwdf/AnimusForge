@@ -30,3 +30,8 @@ internal interface IWorldDiplomacyOfferActionPort
     bool HasTakenEffect(string intent, string proposerId, string targetId);
     void Log(string message);
 }
+
+internal interface IWorldDiplomacyTimedTradePort
+{
+    WorldDiplomacyOfferActionReceipt ExecuteTrade(string proposerId, string targetId, int durationDays);
+}

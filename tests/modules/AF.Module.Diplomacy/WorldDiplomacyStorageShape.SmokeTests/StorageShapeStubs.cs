@@ -4,6 +4,9 @@ namespace AnimusForge;
 
 public sealed class WorldDiplomacyStorage
 {
+    public List<WorldDiplomacyRound> ConcurrentRounds { get; set; }
+    public List<WorldDiplomacyDialogueArrangement> DialogueArrangements { get; set; }
+    public DiplomacyRequestBudget RequestBudget { get; set; }
     public List<WorldDiplomacyOfferCooldown> OfferCooldowns { get; set; }
     public List<WorldDiplomacyThreat> DiplomaticThreats { get; set; }
     public Dictionary<string, int> NationalPrestigeByKingdom { get; set; }
@@ -38,6 +41,8 @@ public sealed class WorldDiplomacyStorage
 }
 
 public sealed class WorldDiplomacyOfferCooldown { }
+public sealed class WorldDiplomacyDialogueArrangement { }
+public sealed class DiplomacyRequestBudget { }
 public sealed class WorldDiplomacyThreat { }
 public sealed class WorldDiplomacyPrestigeRelationModifier { }
 public sealed class WorldDiplomacyCanonicalHistoryState { }

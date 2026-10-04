@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>disable</Nullable>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Domain/Dialogue/*.cs" Link="%(Filename)%(Extension)" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Rules/WorldDiplomacyResultSettlementRules.cs" Link="WorldDiplomacyResultSettlementRules.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Application/DialogueSubmission.cs" Link="DialogueSubmission.cs" />
+  </ItemGroup>
+</Project>

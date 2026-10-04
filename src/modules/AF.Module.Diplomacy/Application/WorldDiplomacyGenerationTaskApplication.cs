@@ -66,7 +66,7 @@ internal static class WorldDiplomacyGenerationTaskApplication
         }
         completeExchange?.Invoke(job.ExchangeId, "technical_generation_rejected");
         if (round != null
-            && ReferenceEquals(storage?.ActiveRound, round)
+            && WorldDiplomacyLiveRoundRules.Contains(storage, round)
             && IsActiveRoundState(round.State)
             && string.IsNullOrWhiteSpace(round.RootDocumentId))
         {

@@ -15,6 +15,10 @@ internal static class AnalysisApplicationReplay
     {
         private readonly DocumentExecutionReplay.Port _effects;
         internal Orch(DocumentExecutionReplay.Port effects) { _effects = effects; }
+        public override void ProcessAnalyzedDocument(WorldDiplomacyDocument document, string intent, string commitment,
+            bool requiresResponse, string tone, float confidence)
+            => WorldDiplomacyDocumentExecutionApplication.ProcessAnalyzedDocument(_effects, this, document,
+                intent, commitment, requiresResponse, tone, confidence);
         public override WorldDiplomacyPeaceTerms ParseAndValidatePeaceTerms(JObject json, string author, string target) => null;
         public override List<string> NormalizeKingdomIdList(IEnumerable<string> values, string excludedId)
             => values.Where(x => !string.IsNullOrWhiteSpace(x) && x != excludedId).Distinct(StringComparer.OrdinalIgnoreCase).ToList();

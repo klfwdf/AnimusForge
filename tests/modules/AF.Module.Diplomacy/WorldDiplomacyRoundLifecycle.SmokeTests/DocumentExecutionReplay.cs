@@ -8,6 +8,7 @@ internal static class DocumentExecutionReplay
         internal readonly List<string> Events = new();
         internal readonly List<string> Legal = new() { "declare_war", "statement" };
         internal WorldDiplomacyRound Round;
+        internal WorldDiplomacyOrchestration Owner;
         internal WorldDiplomacyDocument StoredDocument;
         internal bool AuthorAllowed = true, NoAction, ThrowEffect, ThrowHistory, AfterFirstEffect;
         internal bool UnknownImmediate, UnknownOffer;
@@ -27,8 +28,8 @@ internal static class DocumentExecutionReplay
         }
         public bool IsEliminated(string id) { return false; }
         public WorldDiplomacyAuthoritySnapshot CaptureAuthority(string id) => new(id, id != null, false, id == "vassal", "suzerain", !AuthorAllowed, true);
-        public WorldDiplomacyRound ResolveRound(string id) { return Round; }
-        public WorldDiplomacyDocument ResolveDocument(string id) { return StoredDocument?.DocumentId == id ? StoredDocument : null; }
+        public WorldDiplomacyRound ResolveRound(string id) { return Owner?.ResolveRound(id) ?? Round; }
+        public WorldDiplomacyDocument ResolveDocument(string id) { return Owner?.ResolveDocument(id) ?? (StoredDocument?.DocumentId == id ? StoredDocument : null); }
         public WorldDiplomacyRoundOffer FindRequiredPeaceOfferResponse(WorldDiplomacyRound round, string author, string slot, bool external, string sourceId, bool requireAnyOpenPeaceOffer) { return null; }
         public bool IsAtWar(string author, string target) { return true; }
         public bool IsPlayerKingdom(string id) { return false; }

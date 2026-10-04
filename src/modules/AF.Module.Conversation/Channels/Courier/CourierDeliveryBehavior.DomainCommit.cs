@@ -49,6 +49,8 @@ public sealed partial class CourierDeliveryBehavior
 			return false;
 		}
 		string text = session.ReplyPostprocessedText ?? session.ReplyText ?? "";
+		using var diplomacySource = DiplomacyDialogueSourceScope.Begin(text, "courier", session.Id,
+			session.LetterText, session.ReplyText, session.Id);
 		if (recipient == null || recipient.IsDead)
 		{
 			FailModuleCourierSession(session, "courier.recipient_unavailable");

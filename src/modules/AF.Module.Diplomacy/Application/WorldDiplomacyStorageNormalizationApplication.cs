@@ -137,7 +137,7 @@ internal static class WorldDiplomacyStorageNormalizationApplication
             WorldDiplomacyRoundLifecycleRules.NormalizeJobRecord(job);
         }
         Dictionary<string, WorldDiplomacyDocument> normalizedDocumentsById = WorldDiplomacyDocumentFactRules.BuildDocumentIndex(storage.Documents);
-        foreach (WorldDiplomacyRound round in storage.CompletedRounds.Concat(storage.ActiveRound == null ? Enumerable.Empty<WorldDiplomacyRound>() : new[] { storage.ActiveRound }).Where(x => x != null))
+        foreach (WorldDiplomacyRound round in storage.CompletedRounds.Concat(WorldDiplomacyLiveRoundRules.Live(storage)).Where(x => x != null))
         {
             WorldDiplomacyStorageMigration.NormalizeStoredRoundRecord(
                 round, storage, normalizedDocumentsById, allowWorldValidation,

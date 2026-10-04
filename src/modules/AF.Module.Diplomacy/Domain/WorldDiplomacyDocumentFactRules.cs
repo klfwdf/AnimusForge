@@ -102,6 +102,7 @@ namespace AnimusForge.Refactor.Domain
 		document.HiddenCommitment = document.Commitment;
 		document.PeaceTerms = action.PeaceTerms;
 		document.RespondingToOfferDocumentId = action.RespondingToOfferDocumentId ?? "";
+		document.TreatyTerms = action.TreatyTerms;
 		document.RespondingToOfferActionId = action.RespondingToOfferActionId ?? "";
 		document.RespondingToThreatDocumentId = action.RespondingToThreatDocumentId ?? "";
 		document.RespondingToThreatActionId = action.RespondingToThreatActionId ?? "";

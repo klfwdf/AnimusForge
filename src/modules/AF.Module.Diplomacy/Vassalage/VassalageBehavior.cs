@@ -51,6 +51,8 @@ internal sealed class VassalageAgreement
 
 	public bool EstablishedNoticeShown { get; set; }
 
+	public bool FormalInitialSynchronizationPending { get; set; }
+
 	[JsonIgnore]
 	public string AgreementId => BuildAgreementId(SuzerainKingdomId, VassalKingdomId);
 
@@ -797,7 +799,7 @@ internal static class AnimusForgeVassalageUiSprites
 	}
 }
 
-internal sealed class VassalageBehavior : CampaignBehaviorBase
+internal sealed partial class VassalageBehavior : CampaignBehaviorBase
 {
 	private const string SaveKeyAgreements = "_afVassalageAgreements_v1";
 	private const string SaveKeyPendingInfoNotice = "_afVassalagePendingInfoNotice_v1";
@@ -870,6 +872,12 @@ internal sealed class VassalageBehavior : CampaignBehaviorBase
 	}
 
 	public static VassalageBehavior Instance { get; private set; }
+	private readonly Campaign _owningCampaign = Campaign.Current;
+	internal void RetireCampaignRuntime(string reason)
+	{
+		if (ReferenceEquals(Instance, this)) Instance = null;
+		_pendingDiplomacySyncs.Clear();
+	}
 
 	private readonly Dictionary<string, VassalageAgreement> _agreementsByVassalId = new Dictionary<string, VassalageAgreement>(StringComparer.OrdinalIgnoreCase);
 	private readonly Dictionary<string, string> _agreementStorage = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
@@ -999,6 +1007,7 @@ internal sealed class VassalageBehavior : CampaignBehaviorBase
 
 	public void OnEngineTick()
 	{
+		if (!ReferenceEquals(Instance, this) || !CampaignRuntimeGuard.IsLiveCampaign(_owningCampaign)) return;
 		if (!HasPendingNoticeForMap() && _pendingDiplomacySyncs.Count == 0)
 		{
 			return;
@@ -1273,7 +1282,12 @@ internal sealed class VassalageBehavior : CampaignBehaviorBase
 			["targetKingdom"] = VassalageDiagnosticLog.DescribeKingdom(targetKingdom),
 			["negotiatedWith"] = VassalageDiagnosticLog.DescribeHero(negotiatedWith)
 		});
-		bool result = TryCreatePlayerVassalage(negotiatedWith, targetKingdom, type, out statusText);
+		string actionName = NormalizeVassalageType(type) == AfVassalageType.Tributary ? "Tributary"
+			: NormalizeVassalageType(type) == AfVassalageType.Garrison ? "Garrison" : "Vassal";
+		statusText = WorldDiplomacyBehavior.SubmitOralDiplomaticCommitment(negotiatedWith,
+			"action=" + actionName + ";move=NewMatter;target=" + GetPlayerKingdom()?.StringId
+			+ ";receiving=" + GetPlayerKingdom()?.StringId + ";joining=" + targetKingdom?.StringId);
+		bool result = statusText.StartsWith("正式宣言") || statusText.StartsWith("约定已登记");
 		VassalageDiagnosticLog.Event("action.apply.done", new Dictionary<string, object>
 		{
 			["ok"] = result,
@@ -1909,6 +1923,8 @@ internal sealed class VassalageBehavior : CampaignBehaviorBase
 		bool declaringIsPlayer = IsPlayerFactionForDiplomacy(faction1, declaringKingdom, playerKingdom);
 		bool targetIsPlayer = IsPlayerFactionForDiplomacy(faction2, targetKingdom, playerKingdom);
 		VassalageAgreement targetAgreement = GetPlayerVassalAgreement(targetKingdom);
+		bool? generalWar = ShouldAllowGeneralSubjectWar(declaringKingdom, targetKingdom, detail);
+		if (generalWar.HasValue) return generalWar.Value;
 		VassalageAgreement declaringAgreement = GetPlayerVassalAgreement(declaringKingdom);
 		VassalageAgreement targetAnyAgreement = GetAnyVassalAgreement(targetKingdom);
 		VassalageAgreement declaringAnyAgreement = GetAnyVassalAgreement(declaringKingdom);
@@ -2205,6 +2221,8 @@ internal sealed class VassalageBehavior : CampaignBehaviorBase
 			});
 			return true;
 		}
+		bool? generalPeace = ShouldAllowGeneralSubjectPeace(kingdom1, kingdom2);
+		if (generalPeace.HasValue) return generalPeace.Value;
 		VassalageAgreement agreement1 = GetPlayerVassalAgreement(kingdom1);
 		VassalageAgreement agreement2 = GetPlayerVassalAgreement(kingdom2);
 		VassalageAgreement vassalAgreement = agreement1 ?? agreement2;
@@ -2342,16 +2360,7 @@ internal sealed class VassalageBehavior : CampaignBehaviorBase
 
 	public static bool CanInjectVassalageRuleForExternal(Hero targetHero, CharacterObject targetCharacter = null)
 	{
-		bool result = TryBuildVassalageRuntimeState(targetHero ?? targetCharacter?.HeroObject, out var playerKingdom, out var targetKingdom, out var speaker);
-		VassalageDiagnosticLog.Event("runtime.can_inject", new Dictionary<string, object>
-		{
-			["ok"] = result,
-			["speaker"] = VassalageDiagnosticLog.DescribeHero(speaker),
-			["playerKingdom"] = VassalageDiagnosticLog.DescribeKingdom(playerKingdom),
-			["targetKingdom"] = VassalageDiagnosticLog.DescribeKingdom(targetKingdom),
-			["targetCharacterId"] = targetCharacter?.StringId ?? ""
-		});
-		return result;
+		return DiplomacyBehavior.CanInjectDiplomacyRuleForExternal(targetHero, targetCharacter);
 	}
 
 	// J06 capture runs for every prompt, not only when this topic is evaluated.
@@ -2363,83 +2372,30 @@ internal sealed class VassalageBehavior : CampaignBehaviorBase
 
 	public static string BuildRuntimeVassalageInstructionForExternal(Hero targetHero, CharacterObject targetCharacter = null)
 	{
-		if (!TryBuildVassalageRuntimeState(targetHero ?? targetCharacter?.HeroObject, out var playerKingdom, out var targetKingdom, out var speaker))
-		{
-			VassalageDiagnosticLog.Event("runtime.instruction", new Dictionary<string, object>
-			{
-				["ok"] = false,
-				["targetHero"] = VassalageDiagnosticLog.DescribeHero(targetHero),
-				["targetCharacterId"] = targetCharacter?.StringId ?? ""
-			});
-			return "";
-		}
-		VassalageDiagnosticLog.Event("runtime.instruction", new Dictionary<string, object>
-		{
-			["ok"] = true,
-			["speaker"] = VassalageDiagnosticLog.DescribeHero(speaker),
-			["playerKingdom"] = VassalageDiagnosticLog.DescribeKingdom(playerKingdom),
-			["targetKingdom"] = VassalageDiagnosticLog.DescribeKingdom(targetKingdom)
-		});
-		return "【AF臣属国谈判事实】\n"
-			+ "玩家当前是" + GetKingdomDisplayName(playerKingdom, "玩家王国") + "的国王。\n"
-			+ GetHeroDisplayName(speaker, "对话对象") + "当前是" + GetKingdomDisplayName(targetKingdom, "目标王国") + "的国王。\n"
-			+ "本轮只允许谈判“" + GetKingdomDisplayName(targetKingdom, "目标王国") + "向玩家王国臣服”，不得让玩家加入或臣服于对方。\n"
-			+ "目标王国ID必须写作：" + (targetKingdom.StringId ?? "") + "。\n"
-			+ "第二版臣属国分三类：TRIBUTARY=朝贡国，交钱买保护但不出兵，保留军事自主权；GARRISON=卫戍国，军事臣属，出兵，不交钱，没有军事自主权，并使用0-100忠诚度；VASSAL=附庸国，也就是傀儡国，出钱、出兵，外交军事受宗主控制。\n"
-			+ "注意：“附庸国”这个词只表示VASSAL傀儡国，不要写成完全附庸国。若只泛称臣属、称臣、归顺或承认宗主地位但没有明确朝贡/卫戍/附庸，应追随语义：交钱求保护=TRIBUTARY；军事臣属/卫戍/出兵=GARRISON；傀儡、附庸国、外交军事由宗主控制=VASSAL。\n"
-			+ "若目标王国已经是玩家臣属，本轮仍可由当前国王同意改订为另一种臣属类型；后处理继续输出对应的新类型标签。";
+		Hero speaker = targetHero ?? targetCharacter?.HeroObject;
+		if (!CanInjectVassalageRuleForExternal(speaker)) return "";
+		return "【臣属与并入谈判事实】\n你代表的王国ID=" + speaker.Clan.Kingdom.StringId
+			+ "；玩家王国ID=" + (Clan.PlayerClan?.Kingdom?.StringId ?? "无")
+			+ "。任何玩家可劝说，但签约方必须有国家权限；可谈合法的任一国家方向。明确接收/宗主国与并入/臣属国，口头答应先发布正式提案，须对方正式接受。玩家自己发文。\n"
+			+ string.Join("\n", Kingdom.All.Where(x => x != null && !x.IsEliminated).Select(x => x.StringId + "=" + x.Name))
+			+ "\n" + WorldDiplomacyBehavior.BuildOralArrangementContext(speaker);
 	}
 
 	public static string BuildRuntimeVassalageConstraintHintForExternal(Hero targetHero, CharacterObject targetCharacter = null)
 	{
-		if (!TryBuildVassalageRuntimeState(targetHero ?? targetCharacter?.HeroObject, out var _, out var targetKingdom, out var _))
-		{
-			return "";
-		}
-		return "臣属国标签只可在对方国王明确接受臣属条约后使用，kingdomId 必须为 " + (targetKingdom.StringId ?? "") + "。三类为 TRIBUTARY 朝贡国、GARRISON 卫戍国、VASSAL 附庸国/傀儡国；“附庸国”只对应 VASSAL。";
+		return CanInjectVassalageRuleForExternal(targetHero, targetCharacter)
+			? "只有当前NPC统治者明确最终答应才提交；新条件另开事件，回应旧案准确绑定来源，歧义先澄清。臣属与并入均先正式发文，不能代玩家接受。" : "";
 	}
 
 	public static List<PostprocessRuleEntry> BuildRuntimeVassalagePostprocessRulesForExternal(Hero targetHero, CharacterObject targetCharacter = null)
 	{
-		List<PostprocessRuleEntry> result = new List<PostprocessRuleEntry>();
-		if (!TryBuildVassalageRuntimeState(targetHero ?? targetCharacter?.HeroObject, out var _, out var targetKingdom, out var _))
-		{
-			VassalageDiagnosticLog.Event("postprocess.rules.build", new Dictionary<string, object>
-			{
-				["ok"] = false,
-				["targetHero"] = VassalageDiagnosticLog.DescribeHero(targetHero),
-				["targetCharacterId"] = targetCharacter?.StringId ?? ""
-			});
-			return result;
-		}
-		string kingdomId = (targetKingdom.StringId ?? "").Trim();
-		if (string.IsNullOrWhiteSpace(kingdomId))
-		{
-			return result;
-		}
-		foreach (PostprocessRuleEntry rule in AIConfigHandler.GetGuardrailRulePostprocessRules("kingdom_vassalage") ?? new List<PostprocessRuleEntry>())
-		{
-			string tag = (rule?.Tag ?? "").Trim();
-			if (string.IsNullOrWhiteSpace(tag))
-			{
-				continue;
-			}
-			tag = tag.Replace("{kingdomId}", kingdomId).Replace("{targetKingdomId}", kingdomId);
-			result.Add(new PostprocessRuleEntry
-			{
-				Tag = tag,
-				Description = (rule.Description ?? "").Replace("{kingdomId}", kingdomId).Replace("{targetKingdomId}", kingdomId)
-			});
-		}
-		VassalageDiagnosticLog.Event("postprocess.rules.build", new Dictionary<string, object>
-		{
-			["ok"] = result.Count > 0,
-			["targetKingdom"] = VassalageDiagnosticLog.DescribeKingdom(targetKingdom),
-			["kingdomId"] = kingdomId,
-			["ruleCount"] = result.Count,
-			["tags"] = result.Select((PostprocessRuleEntry x) => x?.Tag ?? "").ToList()
-		});
-		return result;
+		if (!CanInjectVassalageRuleForExternal(targetHero, targetCharacter)) return new List<PostprocessRuleEntry>();
+		string context = DiplomacyBehavior.BuildDiplomacyPostprocessContext(targetHero ?? targetCharacter?.HeroObject);
+		return (AIConfigHandler.GetGuardrailRulePostprocessRules("kingdom_vassalage") ?? new List<PostprocessRuleEntry>())
+			.Select((rule, index) => new PostprocessRuleEntry { Tag = rule.Tag,
+				Description = rule.Description + (index == 0 ? "\n" + context : ""),
+				SingleFramedNpcDescription = rule.SingleFramedNpcDescription,
+				RuntimeAllowedParameterValues = rule.RuntimeAllowedParameterValues }).ToList();
 	}
 
 	private void OnSessionLaunched(CampaignGameStarter starter)
@@ -2494,6 +2450,7 @@ internal sealed class VassalageBehavior : CampaignBehaviorBase
 
 	private void OnDailyTick()
 	{
+		MaintainGeneralFormalAgreements();
 		ProcessTributaryPayments();
 	}
 
@@ -3413,6 +3370,7 @@ internal sealed class VassalageBehavior : CampaignBehaviorBase
 
 	private void OnWarDeclared(IFaction faction1, IFaction faction2, DeclareWarAction.DeclareWarDetail detail)
 	{
+		MaintainGeneralFormalAgreements(ResolveFactionKingdom(faction1), ResolveFactionKingdom(faction2));
 		bool isApplyingVassalageDiplomacy = _isApplyingVassalageDiplomacy;
 		Kingdom playerKingdom = GetPlayerKingdom();
 		Kingdom kingdom1 = ResolveFactionKingdom(faction1, playerKingdom);
@@ -3674,6 +3632,7 @@ internal sealed class VassalageBehavior : CampaignBehaviorBase
 
 	private void OnMakePeace(IFaction faction1, IFaction faction2, MakePeaceAction.MakePeaceDetail detail)
 	{
+		SynchronizeGeneralSubjectPeace(ResolveFactionKingdom(faction1), ResolveFactionKingdom(faction2));
 		if (_isApplyingVassalageDiplomacy)
 		{
 			return;
@@ -4951,7 +4910,7 @@ internal sealed class VassalageBehavior : CampaignBehaviorBase
 		queuedWarSyncCount = 0;
 		int attemptedWarSyncCount = 0;
 		int existingSubjectConflictPeaceCount = 0;
-		VassalageAgreement targetAgreement = GetPlayerVassalAgreement(targetKingdom);
+		VassalageAgreement targetAgreement = GetAnyVassalAgreement(targetKingdom);
 		AfVassalageType targetType = NormalizeVassalageType(targetAgreement?.Type ?? AfVassalageType.Tributary);
 		if (targetType == AfVassalageType.Tributary)
 		{
@@ -4961,7 +4920,7 @@ internal sealed class VassalageBehavior : CampaignBehaviorBase
 				{
 					continue;
 				}
-				if (IsPlayerVassalKingdom(enemy))
+				if (GetAnyVassalAgreement(enemy)?.ResolveSuzerain() == playerKingdom)
 				{
 					if (MakePeaceIfNeeded(targetKingdom, enemy, "tributary_treaty_existing_subject_conflict", forceQueue))
 					{
@@ -5027,7 +4986,7 @@ internal sealed class VassalageBehavior : CampaignBehaviorBase
 		}
 		foreach (Kingdom enemy in playerEnemies ?? new List<Kingdom>())
 		{
-			if (!IsValidKingdom(enemy) || enemy == targetKingdom || enemy == playerKingdom || IsPlayerVassalKingdom(enemy))
+			if (!IsValidKingdom(enemy) || enemy == targetKingdom || enemy == playerKingdom || GetAnyVassalAgreement(enemy)?.ResolveSuzerain() == playerKingdom)
 			{
 				continue;
 			}
@@ -5065,7 +5024,7 @@ internal sealed class VassalageBehavior : CampaignBehaviorBase
 			{
 				continue;
 			}
-			if (IsPlayerVassalKingdom(enemy))
+			if (GetAnyVassalAgreement(enemy)?.ResolveSuzerain() == playerKingdom)
 			{
 				if (MakePeaceIfNeeded(targetKingdom, enemy, "agreement_sync_existing_subject_conflict", forceQueue))
 				{
@@ -5515,7 +5474,7 @@ internal sealed class VassalageBehavior : CampaignBehaviorBase
 		breakawayThreshold = CalculateSubjectBreakawayThreshold(0);
 		rulerRelation = 0;
 		rulerName = "无有效统治者";
-		Kingdom playerKingdom = GetPlayerKingdom();
+		Kingdom playerKingdom = agreement?.ResolveSuzerain();
 		Kingdom vassal = agreement?.ResolveVassal();
 		if (agreement == null
 			|| !agreement.IsValid()
@@ -5527,7 +5486,7 @@ internal sealed class VassalageBehavior : CampaignBehaviorBase
 			return false;
 		}
 		Hero ruler = GetCurrentKingdomRuler(vassal);
-		rulerRelation = GetRulerRelationToPlayer(ruler);
+		rulerRelation = ruler == null || playerKingdom?.RulingClan?.Leader == null ? 0 : (int)ruler.GetRelation(playerKingdom.RulingClan.Leader);
 		breakawayThreshold = CalculateSubjectBreakawayThreshold(rulerRelation);
 		rulerName = GetHeroDisplayName(ruler, "无有效统治者");
 		independence = IndependenceFromSubjectObedience(EnsureGarrisonObedience(agreement));

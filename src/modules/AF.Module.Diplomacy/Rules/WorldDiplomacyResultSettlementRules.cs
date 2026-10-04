@@ -192,7 +192,8 @@ public static class WorldDiplomacyResultSettlementRules
 		string kind;
 		if (normalizedIntent == "propose_peace"
 			|| normalizedIntent == "propose_alliance"
-			|| normalizedIntent == "propose_trade")
+			|| normalizedIntent == "propose_trade" || normalizedIntent == "propose_annexation"
+			|| normalizedIntent == "propose_tributary" || normalizedIntent == "propose_garrison" || normalizedIntent == "propose_vassal")
 		{
 			kind = OfferResponseSlotKind;
 		}
@@ -441,12 +442,14 @@ public static class WorldDiplomacyResultSettlementRules
 
 	private static bool IsAcceptIntent(string intent)
 	{
-		return intent == "accept_peace" || intent == "accept_alliance" || intent == "accept_trade";
+		return intent == "accept_peace" || intent == "accept_alliance" || intent == "accept_trade"
+			|| intent == "accept_annexation" || intent == "accept_tributary" || intent == "accept_garrison" || intent == "accept_vassal";
 	}
 
 	private static bool IsRejectIntent(string intent)
 	{
-		return intent == "reject_peace" || intent == "reject_alliance" || intent == "reject_trade";
+		return intent == "reject_peace" || intent == "reject_alliance" || intent == "reject_trade"
+			|| intent == "reject_annexation" || intent == "reject_tributary" || intent == "reject_garrison" || intent == "reject_vassal";
 	}
 
 	private static bool IsImmediateStateChangeIntent(string intent)

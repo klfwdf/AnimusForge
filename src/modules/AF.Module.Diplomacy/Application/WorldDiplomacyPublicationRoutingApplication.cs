@@ -45,7 +45,7 @@ internal static class WorldDiplomacyPublicationRoutingApplication
     {
         if (document?.IsPlayerAuthored != true) return;
         WorldDiplomacyRound round = port.ResolveRound(document.RoundId);
-        if (round == null || !ReferenceEquals(port.Storage.ActiveRound, round)
+        if (round == null || !WorldDiplomacyLiveRoundRules.Contains(port.Storage, round)
             || !WorldDiplomacyRoundLifecycleRules.IsActiveRoundState(round.State)) return;
         foreach (string kingdomId in WorldDiplomacyDocumentFactRules.GetKnownKingdomIdsForDocument(port.Storage.KingdomKnowledge, document.DocumentId))
         {

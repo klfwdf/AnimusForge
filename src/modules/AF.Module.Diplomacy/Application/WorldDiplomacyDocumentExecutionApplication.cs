@@ -39,6 +39,7 @@ internal sealed class WorldDiplomacyDocumentExecutionCommand
         internal readonly string RespondingToThreatDocumentId;
         internal readonly string RespondingToThreatActionId;
         internal readonly bool RequiresResponse;
+        internal readonly WorldDiplomacyDialogueTerms TreatyTerms;
         internal readonly bool HasPeaceTerms;
         internal readonly string TributePayerKingdomId;
         internal readonly string TributeReceiverKingdomId;
@@ -64,6 +65,7 @@ internal sealed class WorldDiplomacyDocumentExecutionCommand
             RespondingToThreatDocumentId = action?.RespondingToThreatDocumentId;
             RespondingToThreatActionId = action?.RespondingToThreatActionId;
             RequiresResponse = action?.RequiresResponse == true;
+            TreatyTerms = action?.TreatyTerms == null ? null : WorldDiplomacyDialogueTerms.From(action.TreatyTerms.ToTerms());
             HasPeaceTerms = action?.PeaceTerms != null;
             TributePayerKingdomId = action?.PeaceTerms?.TributePayerKingdomId;
             TributeReceiverKingdomId = action?.PeaceTerms?.TributeReceiverKingdomId;
@@ -90,6 +92,7 @@ internal sealed class WorldDiplomacyDocumentExecutionCommand
             RespondingToThreatDocumentId = RespondingToThreatDocumentId,
             RespondingToThreatActionId = RespondingToThreatActionId,
             RequiresResponse = RequiresResponse,
+            TreatyTerms = TreatyTerms == null ? null : WorldDiplomacyDialogueTerms.From(TreatyTerms.ToTerms()),
             PeaceTerms = !HasPeaceTerms ? null : new WorldDiplomacyPeaceTerms
             {
                 TributePayerKingdomId = TributePayerKingdomId,
@@ -158,7 +161,7 @@ internal static class WorldDiplomacyDocumentExecutionApplication
                 TargetKingdomId = document.TargetKingdomId, TargetKingdomName = document.TargetKingdomName,
                 Intent = WorldDiplomacyIntentVocabulary.NormalizeIntent(intent), Commitment = commitment,
                 NegotiationMove = document.NegotiationMove, RequiresResponse = requiresResponse,
-                PeaceTerms = document.PeaceTerms, RespondingToOfferDocumentId = document.RespondingToOfferDocumentId,
+                TreatyTerms = document.TreatyTerms, PeaceTerms = document.PeaceTerms, RespondingToOfferDocumentId = document.RespondingToOfferDocumentId,
                 RespondingToOfferActionId = document.RespondingToOfferActionId,
                 RespondingToThreatDocumentId = document.RespondingToThreatDocumentId,
                 RespondingToThreatActionId = document.RespondingToThreatActionId } }
@@ -230,6 +233,10 @@ internal static class WorldDiplomacyDocumentExecutionApplication
                 return;
             }
             if (publicStatement) { targets.Add(target); continue; }
+            if (orchestration is WorldDiplomacyOrchestration owner
+                && !owner.ValidateFormalTreatyDeclaration(document, intent, input.Materialize().TreatyTerms,
+                    author, target, input.RespondingToOfferDocumentId, input.RespondingToOfferActionId, out string treatyReason))
+            { orchestration.SuppressInvalidDocumentBeforePropagation(document, treatyReason); return; }
             if (!input.Exists || target == null || target == author || port.IsEliminated(target)
                 || !WorldDiplomacyAuthorityRules.HasIndependentAuthority(port.CaptureAuthority(target)) || !uniqueTargets.Add(target))
             {

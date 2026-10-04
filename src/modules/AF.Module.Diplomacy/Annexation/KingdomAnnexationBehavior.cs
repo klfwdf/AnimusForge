@@ -43,6 +43,18 @@ public sealed class KingdomAnnexationBehavior : CampaignBehaviorBase
 
 	public bool TryAnnexKingdom(Kingdom playerKingdom, Kingdom targetKingdom, Hero conversationHero, out string statusText)
 	{
+		statusText = WorldDiplomacyBehavior.SubmitOralDiplomaticCommitment(conversationHero,
+			"action=Annexation;move=NewMatter;target=" + playerKingdom?.StringId + ";receiving=" + playerKingdom?.StringId + ";joining=" + targetKingdom?.StringId);
+		return statusText.StartsWith("正式宣言") || statusText.StartsWith("约定已登记");
+	}
+
+	internal bool TryExecuteFormalAnnexation(Kingdom receiving, Kingdom joining, out string statusText)
+	{
+		return ExecuteFormalAnnexationCore(receiving, joining, joining?.RulingClan?.Leader, out statusText);
+	}
+
+	private bool ExecuteFormalAnnexationCore(Kingdom playerKingdom, Kingdom targetKingdom, Hero conversationHero, out string statusText)
+	{
 		statusText = "";
 		Stopwatch stopwatch = Stopwatch.StartNew();
 		if (!ValidateAnnexationRequest(playerKingdom, targetKingdom, conversationHero, out statusText))
@@ -182,9 +194,9 @@ public sealed class KingdomAnnexationBehavior : CampaignBehaviorBase
 			+ "玩家当前是" + GetKingdomDisplayName(playerKingdom, "玩家王国") + "的国王。\n"
 			+ GetHeroDisplayName(speaker, "对话对象") + "当前是" + GetKingdomDisplayName(targetKingdom, "目标王国") + "的国王。\n"
 			+ "目标王国ID必须写作：" + targetKingdomId + "。\n"
-			+ "本规则只处理“整个国家并入玩家王国”：目标王国放弃独立王权，所有家族归入玩家王国，原家族保留其领地归属并成为玩家王国臣民。\n"
+			+ "玩家作为接收国时的并入条款：目标王国放弃独立王权，所有家族归入玩家王国，原家族保留其领地归属并成为玩家王国臣民。\n"
 			+ "正文只能自然谈判，不要写动作标签；如果只是求和、结盟、停战、赔款、朝贡、臣属、附庸、保护国或普通归顺，都不是国家吞并。\n"
-			+ "只有当对方国王明确最终接受整个国家并入玩家王国、放弃独立王权、所有家族转入玩家王国时，才算形成吞并共识；若仍在谈条件、索要保证、犹豫、拒绝或只是尊重玩家，不算同意。";
+			+ "只有当对方国王明确最终接受整个国家并入玩家王国、放弃独立王权、所有家族转入玩家王国时，才算形成发文约定；先正式提出，再等待另一方自行正式接受，不立即吞并。其他合法方向须明确接收国与并入国，走同一正式宣言链路。若仍在谈条件、索要保证、犹豫、拒绝或只是尊重玩家，不算同意。";
 	}
 
 	public static string BuildRuntimeAnnexationConstraintHintForExternal(Hero targetHero, CharacterObject targetCharacter = null)
@@ -193,7 +205,7 @@ public sealed class KingdomAnnexationBehavior : CampaignBehaviorBase
 		{
 			return "";
 		}
-		return "国家吞并后处理只可在对方国王明确接受整个王国并入玩家王国、放弃独立王权、所有家族归入玩家王国后使用；target_kingdom_id 必须为 " + (targetKingdom.StringId ?? "") + "。求和、结盟、停战、赔款、朝贡、臣属、附庸、保护国不得视为吞并。";
+		return "旧KINGDOM_ANNEX标签用于玩家接收方向，明确承诺只提交正式提案。其他合法方向使用DIPLOMACY:COMMIT并明确receiving/joining。旧标签的target_kingdom_id 必须为 " + (targetKingdom.StringId ?? "") + "。求和、结盟、停战、赔款、朝贡、臣属、附庸、保护国不得视为吞并。";
 	}
 
 	public static List<PostprocessRuleEntry> BuildRuntimeAnnexationPostprocessRulesForExternal(Hero targetHero, CharacterObject targetCharacter = null)
@@ -236,7 +248,7 @@ public sealed class KingdomAnnexationBehavior : CampaignBehaviorBase
 
 	private static bool ValidateAnnexationRequest(Kingdom playerKingdom, Kingdom targetKingdom, Hero conversationHero, out string statusText)
 	{
-		if (!IsValidKingdom(playerKingdom) || !IsPlayerRuler(playerKingdom))
+		if (!IsValidKingdom(playerKingdom) || playerKingdom.RulingClan?.Leader?.IsAlive != true)
 		{
 			statusText = "吞并未成立：你必须是自己王国的国王。";
 			return false;

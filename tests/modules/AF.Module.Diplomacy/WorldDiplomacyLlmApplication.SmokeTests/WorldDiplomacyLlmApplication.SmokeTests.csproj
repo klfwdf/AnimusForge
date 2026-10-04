@@ -8,7 +8,7 @@
     <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyLlmApplication.cs" Link="WorldDiplomacyLlmApplication.cs" />
     <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyLlmBudget.cs" Link="WorldDiplomacyLlmBudget.cs" />
     <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyLlmResult.cs" Link="WorldDiplomacyLlmResult.cs" />
-    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/World/WorldDiplomacyRequestLeaseCoordinator.cs" Link="WorldDiplomacyRequestLeaseCoordinator.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyRequestLeaseCoordinator.cs" Link="WorldDiplomacyRequestLeaseCoordinator.cs" />
     <Compile Include="../../../../src/modules/AF.Module.Diplomacy/World/WorldDiplomacyJobRuntimeCoordinator.cs" Link="WorldDiplomacyJobRuntimeCoordinator.cs" />
   </ItemGroup>
 </Project>

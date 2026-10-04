@@ -732,7 +732,8 @@ internal static class Program
                   && dispatch.Contains(": source.DefaultApiTimeoutMilliseconds", StringComparison.Ordinal)
                   && source.Contains("CompressionTimeoutMilliseconds => DuelSettings.LlmRequestTimeoutMilliseconds", StringComparison.Ordinal),
             "only compression requests must receive the long 480000ms timeout");
-        Test.True(dispatch.Contains("job.MaxTokens, timeout, out WorldDiplomacyRequestSnapshot request", StringComparison.Ordinal)
+        Test.True(dispatch.Contains("job.MaxTokens, timeout, out request", StringComparison.Ordinal)
+                  && dispatch.Contains("scheduler.RequestLeases.TryClaim(job", StringComparison.Ordinal)
                   && dispatch.Contains("source.StartRequest(request, requestMessages)", StringComparison.Ordinal),
             "the selected timeout must be captured in the request lease passed to dispatch");
     }

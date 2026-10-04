@@ -116,7 +116,7 @@ internal static class WorldDiplomacyRoundProgressApplication
             {
                 commitEmbeddedRoundPlan(round, document);
             }
-            if (!ReferenceEquals(storage.ActiveRound, round)
+            if (!WorldDiplomacyLiveRoundRules.Contains(storage, round)
                 || !WorldDiplomacyRoundLifecycleRules.IsActiveRoundState(round.State))
             {
                 document.RoundProgressHandled = true;
@@ -315,9 +315,9 @@ internal static class WorldDiplomacyRoundProgressApplication
         }
     }
 
-    internal static void RetryDeferredRoundProgress(WorldDiplomacyStorage storage, Action<WorldDiplomacyDocument> processDocument, Action<string> log)
+    internal static void RetryDeferredRoundProgress(WorldDiplomacyStorage storage, Action<WorldDiplomacyDocument> processDocument, Action<string> log, WorldDiplomacyRound targetRound = null)
     {
-        WorldDiplomacyRound round = storage?.ActiveRound;
+        WorldDiplomacyRound round = targetRound ?? storage?.ActiveRound;
         if (round == null || !WorldDiplomacyRoundLifecycleRules.IsActiveRoundState(round.State)) return;
         foreach (WorldDiplomacyDocument document in WorldDiplomacyRoundLifecycleRules.OrderDocumentsChronologically((storage.Documents ?? new List<WorldDiplomacyDocument>())
             .Where(x => x != null && x.IsReadyForPublication && !x.RoundProgressHandled

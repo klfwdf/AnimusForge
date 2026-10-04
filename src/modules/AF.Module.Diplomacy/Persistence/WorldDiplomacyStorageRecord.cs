@@ -185,4 +185,10 @@ public sealed class WorldDiplomacyStorage
 
 	[JsonProperty("consecutiveServiceFailures")]
 	public int ConsecutiveServiceFailures { get; set; }
+
+    [JsonProperty("roundSchedulingSchemaVersion")] public int RoundSchedulingSchemaVersion { get; set; }
+    [JsonProperty("requestBudget")] public DiplomacyRequestBudget RequestBudget { get; set; } = new DiplomacyRequestBudget();
+    [JsonProperty("serviceRetryAfterUtcTicks")] public long ServiceRetryAfterUtcTicks { get; set; }
+    [JsonProperty("concurrentRounds")] public List<WorldDiplomacyRound> ConcurrentRounds { get; set; } = new List<WorldDiplomacyRound>();
+    [JsonProperty("dialogueArrangements")] public List<WorldDiplomacyDialogueArrangement> DialogueArrangements { get; set; } = new List<WorldDiplomacyDialogueArrangement>();
 }

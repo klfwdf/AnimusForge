@@ -10,7 +10,7 @@ namespace AnimusForge;
 
 public sealed partial class WorldDiplomacyBehavior
 {
-    private sealed class OfferActionPort : IWorldDiplomacyOfferActionPort
+    private sealed class OfferActionPort : IWorldDiplomacyOfferActionPort, IWorldDiplomacyTimedTradePort
     {
         private readonly WorldDiplomacyBehavior _owner;
         internal OfferActionPort(WorldDiplomacyBehavior owner) => _owner = owner;
@@ -80,6 +80,9 @@ public sealed partial class WorldDiplomacyBehavior
         }
 
         public WorldDiplomacyOfferActionReceipt ExecuteTrade(string proposerId, string targetId)
+            => ExecuteTrade(proposerId, targetId, 0);
+
+        public WorldDiplomacyOfferActionReceipt ExecuteTrade(string proposerId, string targetId, int durationDays)
         {
             Kingdom proposer = ResolveKingdom(proposerId);
             Kingdom target = ResolveKingdom(targetId);
@@ -89,7 +92,8 @@ public sealed partial class WorldDiplomacyBehavior
             if (!BannerlordApiCompat.TryGetTradeAgreementState(trade, proposer, target, out bool trading))
                 return new(false, "贸易协定未执行：当前状态无法确认", known: false);
             if (trading) return new(false, "贸易协定未执行：双方已经有贸易协定");
-            CampaignTime duration = Campaign.Current.Models.TradeAgreementModel.GetTradeAgreementDurationInYears(proposer, target);
+            CampaignTime duration = durationDays > 0 ? CampaignTime.Days(durationDays)
+                : Campaign.Current.Models.TradeAgreementModel.GetTradeAgreementDurationInYears(proposer, target);
             DiplomacyEffectReadback result = DiplomacyEffectReadback.Execute(
                 () => WorldDiplomacyBehavior.RunDiplomaticAction("world_diplomacy_trade", () => trade.MakeTradeAgreement(proposer, target, duration)),
                 () => BannerlordApiCompat.TryGetTradeAgreementState(trade, proposer, target, out bool active)

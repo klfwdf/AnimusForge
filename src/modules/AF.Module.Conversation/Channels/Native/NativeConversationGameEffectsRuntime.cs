@@ -72,6 +72,8 @@ internal sealed partial class NativeConversationGameEffectsRuntime
 		DetachedDuelDispatchContext duelDispatchContext = null)
 	{
 		WorldMapPartyCommandBehavior.WorldMapOrderApplyResult worldMapResult = new WorldMapPartyCommandBehavior.WorldMapOrderApplyResult();
+		using var diplomacySource = DiplomacyDialogueSourceScope.Begin(content, "native",
+			expectedConversationToken.ToString(), latestPlayerText, npcReplyTextOverride ?? content);
 		if (string.IsNullOrWhiteSpace(content))
 		{
 			return worldMapResult;

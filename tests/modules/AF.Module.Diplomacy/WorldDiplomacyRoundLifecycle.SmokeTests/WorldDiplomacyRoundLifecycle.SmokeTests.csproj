@@ -6,6 +6,9 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="../../../../src/AF.Contracts/Internal/InteractionContracts.cs" Link="InteractionContracts.cs" />
+    <Compile Include="../../../../src/AF.Contracts/Internal/LlmContracts.cs" Link="LlmContracts.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOrchestration.Recovery.cs" />
     <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyLlmMessageApplication.cs" Link="WorldDiplomacyLlmMessageApplication.cs" />
     <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyResultSlotApplication.cs" Link="WorldDiplomacyResultSlotApplication.cs" />
     <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOfferCooldownApplication.cs" Link="WorldDiplomacyOfferCooldownApplication.cs" />
@@ -54,7 +57,7 @@
     <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyGeneratedCompletionApplication.cs" Link="WorldDiplomacyGeneratedCompletionApplication.cs" />
     <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyLlmResult.cs" Link="WorldDiplomacyLlmResult.cs" />
     <Compile Include="../../../../src/modules/AF.Module.Diplomacy/World/WorldDiplomacyJobRuntimeCoordinator.cs" Link="WorldDiplomacyJobRuntimeCoordinator.cs" />
-    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/World/WorldDiplomacyRequestLeaseCoordinator.cs" Link="WorldDiplomacyRequestLeaseCoordinator.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyRequestLeaseCoordinator.cs" Link="WorldDiplomacyRequestLeaseCoordinator.cs" />
 
     <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyPresentationQueries.cs" Link="WorldDiplomacyPresentationQueries.cs" />
     <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyTimelineApplication.cs" Link="WorldDiplomacyTimelineApplication.cs" />
@@ -130,4 +133,27 @@
   <ItemGroup>
     <Compile Include="../../../../src/AF.Contracts/Internal/WorldDiplomacyLifecycleEvent.cs" Link="WorldDiplomacyLifecycleEvent.cs" />
   </ItemGroup>
-<ItemGroup><Compile Include="../../../../src/modules/AF.Module.Diplomacy/Domain/WorldDiplomacyEventRules.cs" /><Compile Include="../../../../src/modules/AF.Module.Diplomacy/Domain/WorldDiplomacyGeographyRules.cs" /><Compile Include="../../../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyNativeDecisionApplication.cs" /><Compile Include="../../../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyBattleApplication.cs" /><Compile Include="../../../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyGeographyApplication.cs" /></ItemGroup><ItemGroup><Compile Include="../../../../src/AF.Contracts/Internal/WorldDiplomacyDocumentReadCommandContracts.cs" /></ItemGroup></Project>
+<ItemGroup><Compile Include="../../../../src/modules/AF.Module.Diplomacy/Domain/WorldDiplomacyEventRules.cs" /><Compile Include="../../../../src/modules/AF.Module.Diplomacy/Domain/WorldDiplomacyGeographyRules.cs" /><Compile Include="../../../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyNativeDecisionApplication.cs" /><Compile Include="../../../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyBattleApplication.cs" /><Compile Include="../../../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyGeographyApplication.cs" /></ItemGroup><ItemGroup><Compile Include="../../../../src/AF.Contracts/Internal/WorldDiplomacyDocumentReadCommandContracts.cs" /></ItemGroup><ItemGroup>
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOrchestration.Dialogue.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOrchestration.DialogueControl.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOrchestration.DialogueIndex.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOrchestration.DialogueMemory.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOrchestration.DialogueRevision.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOrchestration.Dispatch.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOrchestration.LegacyOral.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOrchestration.PersonalMemory.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOrchestration.Scheduling.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOrchestration.Treaties.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyDialogueHost.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Application/DialogueSubmission.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Domain/Dialogue/DialogueContracts.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Domain/Dialogue/DialogueInteractionOrigin.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Domain/Dialogue/DialogueRoutingRules.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Domain/Dialogue/DialogueTagPayload.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Domain/Dialogue/DialogueTermsValidation.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Domain/Rounds/DiplomacyRequestBudget.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Domain/Rounds/DiplomacyRoundWorkRules.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Domain/WorldDiplomacyLiveRoundRules.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Persistence/WorldDiplomacyDialogueRecords.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Persistence/WorldDiplomacyPlayerResponse.cs" />
+</ItemGroup></Project>

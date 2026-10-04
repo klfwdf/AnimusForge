@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>disable</Nullable>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="../../../../src/modules/AF.Module.Memory/Domain/DiplomacyMemoryMaterial.cs" Link="DiplomacyMemoryMaterial.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Conversation/Internal/History/ConversationMessage.cs" Link="ConversationMessage.cs" />
+  </ItemGroup>
+</Project>

@@ -33,6 +33,8 @@ namespace AnimusForge.Refactor.Domain
         {
             sb.Append("|actions=").Append(string.Join(",", entry.ActionFacts));
         }
+        if (entry.AnsweredPlayerDocumentIds?.Count > 0)
+            sb.Append("|answered_player=").Append(string.Join(",", entry.AnsweredPlayerDocumentIds));
         sb.Append("|author=").Append(entry.AuthorKingdomId ?? "")
             .Append("|targets=").Append(string.Join(",", entry.TargetKingdomIds ?? new List<string>()))
             .Append("|intent=").Append(entry.Intent ?? "")

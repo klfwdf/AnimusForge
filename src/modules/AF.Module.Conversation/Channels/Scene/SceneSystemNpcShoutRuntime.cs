@@ -76,6 +76,7 @@ internal sealed class SceneSystemNpcShoutRuntime
 				try
 				{
 					string aiResponse = safeContent;
+					using var diplomacySource = DiplomacyDialogueSourceScope.Begin(aiResponse, "scene", sessionId.ToString(), "", safeContent);
 					bool meetingTauntEscalated = false;
 					bool meetingReleaseTriggered = false;
 					bool sceneTauntActionHandled = false;

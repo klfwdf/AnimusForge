@@ -240,7 +240,7 @@ public static void PrepareRoundPlanJob(
         Action<string> closeActiveRound)
 {
 	if (round == null || root == null || round.RelayPlanned
-		|| !ReferenceEquals(storage?.ActiveRound, round)
+		|| !WorldDiplomacyLiveRoundRules.Contains(storage, round)
 		|| !IsActiveRoundState(round.State)
 		|| storage.Jobs.Any(x => IsJobOfKind(x, "round_plan")
 			&& IsRecordInRound(x.RoundId, round.RoundId))) return;

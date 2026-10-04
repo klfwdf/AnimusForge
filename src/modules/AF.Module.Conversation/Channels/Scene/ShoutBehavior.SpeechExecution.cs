@@ -86,6 +86,8 @@ public partial class ShoutBehavior
             RuntimeGeneration = SaveRuntimeGuard.CaptureGeneration(),
             Npc = value,
 			Content = content,
+			DiplomacyOrigin = DiplomacyDialogueSourceScope.Capture(content, "scene", _sceneHistorySessionId.ToString(),
+				playerDirectedActionText, playerDirectedNpcReplyText ?? StripActionTagsForSceneSpeech(content)),
 			ContextSnapshot = value2,
 			SceneSummonTargets = SceneMovementController.CloneSceneSummonPromptTargets(sceneSummonTargets),
 			SceneGuideTargets = SceneMovementController.CloneSceneGuidePromptTargets(sceneGuideTargets),
@@ -112,6 +114,7 @@ public partial class ShoutBehavior
         public NpcDataPacket Npc;
 
 		public string Content;
+		public AnimusForge.DiplomacyDialogue.DialogueInteractionOrigin DiplomacyOrigin;
 
 		public List<NpcDataPacket> ContextSnapshot;
 

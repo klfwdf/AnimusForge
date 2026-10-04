@@ -16,6 +16,9 @@ internal static class WorldDiplomacyStorageShapeNormalizer
             new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
         storage.NationalPrestigeRelationModifiers ??= new List<WorldDiplomacyPrestigeRelationModifier>();
         storage.CanonicalHistory ??= new WorldDiplomacyCanonicalHistoryState();
+        storage.ConcurrentRounds ??= new List<WorldDiplomacyRound>();
+        storage.DialogueArrangements ??= new List<WorldDiplomacyDialogueArrangement>();
+        storage.RequestBudget ??= new DiplomacyRequestBudget();
         storage.CompletedRounds ??= new List<WorldDiplomacyRound>();
         storage.PropagationArrivals ??= new List<WorldDiplomacyPropagationArrival>();
         storage.SettlementKnowledge ??= new List<WorldDiplomacySettlementKnowledge>();

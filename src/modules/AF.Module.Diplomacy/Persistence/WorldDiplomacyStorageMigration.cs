@@ -53,7 +53,7 @@ public static class WorldDiplomacyStorageMigration
         storage.CompressionRetryAttempts = 0;
     }
     foreach (WorldDiplomacyRound round in (storage.CompletedRounds ?? new List<WorldDiplomacyRound>())
-        .Concat(storage.ActiveRound == null ? Enumerable.Empty<WorldDiplomacyRound>() : new[] { storage.ActiveRound })
+        .Concat(WorldDiplomacyLiveRoundRules.Live(storage))
         .Where(x => x != null))
     {
         round.LlmTranscript?.Clear();
@@ -287,7 +287,8 @@ public static class WorldDiplomacyStorageMigration
 
     if (storage == null
         || storage.ResultSettlementStateSchemaVersion >= targetVersion) return;
-    WorldDiplomacyRound round = storage.ActiveRound;
+    foreach (WorldDiplomacyRound round in WorldDiplomacyLiveRoundRules.Live(storage).ToList())
+    {
     if (round != null && WorldDiplomacyRoundLifecycleRules.IsActiveRoundState(round.State)
         && !round.ResultSettlementPending)
     {
@@ -302,10 +303,11 @@ public static class WorldDiplomacyStorageMigration
         }
         WorldDiplomacyRoundLifecycleRules.RemoveAnsweredWarResponseSlots(round, published);
     }
+    }
     storage.ResultSettlementStateSchemaVersion = targetVersion;
     log?.Invoke("round result-settlement state migrated version="
         + targetVersion.ToString(CultureInfo.InvariantCulture)
-        + " active=" + (round?.ResultSettlementPending == true).ToString());
+        + " active=" + WorldDiplomacyLiveRoundRules.Live(storage).Any(x => x.ResultSettlementPending).ToString());
 }
 
     public static void NormalizeCanonicalHistoryState(
@@ -467,9 +469,7 @@ public static class WorldDiplomacyStorageMigration
     }
     if (migrateLegacyPropagationState && document.IsReadyForPublication)
     {
-        bool belongsToActiveRound = storage.ActiveRound != null
-            && WorldDiplomacyRoundLifecycleRules.IsRecordInRound(storage.ActiveRound.RoundId, document.RoundId)
-            && WorldDiplomacyRoundLifecycleRules.IsActiveRoundState(storage.ActiveRound.State);
+        bool belongsToActiveRound = WorldDiplomacyLiveRoundRules.Live(storage).Any(x => WorldDiplomacyRoundLifecycleRules.IsRecordInRound(x.RoundId, document.RoundId));
         bool stillRelevant = belongsToActiveRound || document.Day >= currentDay - legacyPropagationRecoveryWindow;
         if (!document.PropagationStarted && string.IsNullOrWhiteSpace(document.OriginSettlementId))
         {
@@ -528,7 +528,7 @@ public static class WorldDiplomacyStorageMigration
             + " count=" + normalizedOfferSourceBindings.ToString(CultureInfo.InvariantCulture));
     }
     if (allowWorldValidation
-        && ReferenceEquals(round, storage.ActiveRound)
+        && WorldDiplomacyLiveRoundRules.Contains(storage, round)
         && storage.DecisionArchitectureVersion >= decisionArchitectureVersion) pruneInvalidOffers?.Invoke(round);
     WorldDiplomacyRoundLifecycleRules.NormalizeRoundAttemptCount(round);
     int storedTargetDurationDays = WorldDiplomacyRoundLifecycleRules.ResolveStoredRoundDurationDays(
@@ -548,7 +548,7 @@ public static class WorldDiplomacyStorageMigration
             storage.Documents, round.RoundId);
     }
     if (allowWorldValidation
-        && ReferenceEquals(round, storage.ActiveRound)
+        && WorldDiplomacyLiveRoundRules.Contains(storage, round)
         && storage.DecisionArchitectureVersion >= decisionArchitectureVersion
         && round.SchemaVersion < relaySchemaVersion)
     {

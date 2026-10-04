@@ -90,9 +90,33 @@ internal static class WorldDiplomacyDocumentApplication
         storage.Documents.RemoveAll(x => x != null
             && WorldDiplomacyRoundLifecycleRules.MatchesDocumentId(x.DocumentId, document.DocumentId));
         storage.Documents.Add(document);
-        // Pending canonical history append keeps its publication artifact.
-        storage.Documents = WorldDiplomacyRoundLifecycleRules.SelectRetainedDocuments(
-            storage.Documents, WorldDiplomacyStructureRules.NeedsCanonicalHistoryRetry, maximumStored);
+        // Cold publication boundary: display retention must not destroy pending
+        // player sources, open offers, or unfinished oral publication artifacts.
+        var retainedIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { document.DocumentId };
+        foreach (var round in WorldDiplomacyLiveRoundRules.Live(storage))
+        {
+            retainedIds.Add(round.RootDocumentId ?? "");
+            foreach (var response in round.PlayerResponses ?? new List<WorldDiplomacyPlayerResponse>())
+                if (response != null && response.Status == "pending") retainedIds.Add(response.SourceDocumentId ?? "");
+            foreach (var offer in round.PendingOffers ?? new List<WorldDiplomacyRoundOffer>())
+                if (offer != null && WorldDiplomacyRoundLifecycleRules.IsOpenLifecycleStatus(offer.Status)) retainedIds.Add(offer.SourceDocumentId ?? "");
+        }
+        foreach (var job in storage.Jobs ?? new List<WorldDiplomacyJob>())
+        {
+            if (job == null) continue;
+            retainedIds.Add(job.DocumentId ?? ""); retainedIds.Add(job.SourceDocumentId ?? "");
+            foreach (string id in job.PlayerResponseSourceIds ?? new List<string>()) retainedIds.Add(id);
+        }
+        foreach (var oral in storage.DialogueArrangements ?? new List<WorldDiplomacyDialogueArrangement>())
+            if (oral != null && (oral.Status == "accepted" || oral.Status == "deferred"))
+            { retainedIds.Add(oral.DocumentId ?? ""); retainedIds.Add(oral.SourceDocumentId ?? ""); }
+        var protectedDocuments = storage.Documents.Where(x => x != null && (retainedIds.Contains(x.DocumentId)
+            || WorldDiplomacyStructureRules.NeedsCanonicalHistoryRetry(x))).ToList();
+        var protectedSet = new HashSet<WorldDiplomacyDocument>(protectedDocuments);
+        var ordinary = WorldDiplomacyRoundLifecycleRules.OrderDocumentsByRecency(
+                storage.Documents.Where(x => x != null && !protectedSet.Contains(x)))
+            .Take(Math.Max(0, maximumStored - protectedDocuments.Count));
+        storage.Documents = WorldDiplomacyRoundLifecycleRules.OrderDocumentsChronologically(protectedDocuments.Concat(ordinary)).ToList();
         advanceTimelineRevision();
     }
 
@@ -112,6 +136,8 @@ internal static class WorldDiplomacyDocumentApplication
         action.ChangedDiplomaticState = receipt.Applied;
         action.MechanicalResult = receipt.Message;
         action.PeaceTerms = document.PeaceTerms;
+        action.TreatyTerms = document.TreatyTerms == null ? null
+            : WorldDiplomacyDialogueTerms.From(document.TreatyTerms.ToTerms());
     }
 
     internal static void SealActions(WorldDiplomacyDocument document, List<string> addressedKingdomIds,

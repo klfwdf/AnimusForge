@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using AnimusForge.Refactor.Domain;
 using static AnimusForge.Refactor.Domain.WorldDiplomacyRoundLifecycleRules;
@@ -152,7 +153,7 @@ internal static class WorldDiplomacyDocumentPublicationApplication
                     + initiatorId + " target=" + targetId);
                 return;
             }
-            MarkOpenBilateralOffersAccepted(storage?.ActiveRound, initiatorId, targetId, WorldDiplomacyOfferDomain.Trade);
+            foreach (var live in WorldDiplomacyLiveRoundRules.Live(storage)) MarkOpenBilateralOffersAccepted(live, initiatorId, targetId, WorldDiplomacyOfferDomain.Trade);
             clearBilateralCooldowns?.Invoke(WorldDiplomacyOfferDomain.Trade);
         }
         else if (string.Equals(normalizedAction, "accept_alliance", StringComparison.OrdinalIgnoreCase))
@@ -163,7 +164,7 @@ internal static class WorldDiplomacyDocumentPublicationApplication
                     + initiatorId + " target=" + targetId);
                 return;
             }
-            MarkOpenBilateralOffersAccepted(storage?.ActiveRound, initiatorId, targetId, WorldDiplomacyOfferDomain.Alliance);
+            foreach (var live in WorldDiplomacyLiveRoundRules.Live(storage)) MarkOpenBilateralOffersAccepted(live, initiatorId, targetId, WorldDiplomacyOfferDomain.Alliance);
             clearBilateralCooldowns?.Invoke(WorldDiplomacyOfferDomain.Alliance);
         }
         WorldDiplomacyDocument fact = createDocument?.Invoke(
@@ -178,12 +179,10 @@ internal static class WorldDiplomacyDocumentPublicationApplication
         fact.MechanicalResult = string.IsNullOrWhiteSpace(fact.Body) ? "已由口头外交执行" : fact.Body;
         fact.ChangedDiplomaticState = true;
         fact.HistoryDeclarationRecorded = true;
-        WorldDiplomacyRound activeRound = storage?.ActiveRound;
-        WorldDiplomacyRound round = activeRound == null
-            ? ensureActiveRound?.Invoke(initiatorIsPlayer)
-            : canFactJoinRound?.Invoke(activeRound) == true
-                ? activeRound
-                : null;
+        var candidates = WorldDiplomacyLiveRoundRules.Live(storage).Where(x => canFactJoinRound?.Invoke(x) == true).Take(2).ToList();
+        WorldDiplomacyRound activeRound = candidates.Count == 1 ? candidates[0] : null;
+        WorldDiplomacyRound round = activeRound ?? (WorldDiplomacyLiveRoundRules.Live(storage).Any()
+            ? null : ensureActiveRound?.Invoke(initiatorIsPlayer));
         bool appendedExternalSettlementTarget = round?.ResultSettlementPending == true
             && !WorldDiplomacyStructureRules.RoundRouteContainsKingdom(round, targetId);
         if (appendedExternalSettlementTarget

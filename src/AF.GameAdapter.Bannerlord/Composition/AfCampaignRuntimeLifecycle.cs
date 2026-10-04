@@ -27,12 +27,15 @@ internal static class AfCampaignRuntimeLifecycle
         // Capture actual registered instances once, including a partially completed registration.
         // Game.Current/Campaign.Current may already be gone when OnGameEnd is delivered.
         foreach (CampaignBehaviorBase behavior in starter.CampaignBehaviors)
-            if ((behavior is MyBehavior || behavior is ShoutBehavior || behavior is CourierDeliveryBehavior)
+            if ((behavior is MyBehavior || behavior is ShoutBehavior || behavior is CourierDeliveryBehavior
+                    || behavior is WorldDiplomacyBehavior || behavior is VassalageBehavior)
                 && !Owners.Contains(behavior)) Owners.Add(behavior);
-        // Constructors publish these two legacy singleton references before AddBehavior returns.
+        // Constructors publish singleton references before AddBehavior returns.
         // Include them when registration failed after construction, while this Game is still current.
         if (MyBehavior.Instance != null && !Owners.Contains(MyBehavior.Instance)) Owners.Add(MyBehavior.Instance);
         if (CourierDeliveryBehavior.Instance != null && !Owners.Contains(CourierDeliveryBehavior.Instance)) Owners.Add(CourierDeliveryBehavior.Instance);
+        if (WorldDiplomacyBehavior.Instance != null && !Owners.Contains(WorldDiplomacyBehavior.Instance)) Owners.Add(WorldDiplomacyBehavior.Instance);
+        if (VassalageBehavior.Instance != null && !Owners.Contains(VassalageBehavior.Instance)) Owners.Add(VassalageBehavior.Instance);
     }
 
     internal static void End(Game game) { RequireMainThread(); Lifetime.End(game); }
@@ -49,6 +52,8 @@ internal static class AfCampaignRuntimeLifecycle
                 if (owner is MyBehavior memory) memory.RetireCampaignRuntime(reason);
                 else if (owner is ShoutBehavior shout) shout.RetireCampaignRuntime(reason);
                 else if (owner is CourierDeliveryBehavior courier) courier.RetireCampaignRuntime(reason);
+                else if (owner is WorldDiplomacyBehavior diplomacy) diplomacy.RetireCampaignRuntime(reason);
+                else if (owner is VassalageBehavior vassalage) vassalage.RetireCampaignRuntime(reason);
             }
             catch (Exception error)
             {

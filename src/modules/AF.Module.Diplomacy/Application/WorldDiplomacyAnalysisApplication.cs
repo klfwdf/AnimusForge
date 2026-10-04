@@ -22,8 +22,7 @@ internal static class WorldDiplomacyAnalysisApplication
             execution.ResolveDocument, execution.ResolveRound, execution.ResolveKingdomId, port.KingdomName,
             orchestration.ParseAndValidatePeaceTerms, orchestration.NormalizeKingdomIdList,
             (doc, reason) => Suppress(port, orchestration, doc, reason),
-            (doc, intent, commitment, response, tone, confidence) => WorldDiplomacyDocumentExecutionApplication
-                .ProcessAnalyzedDocument(execution, orchestration, doc, intent, commitment, response, tone, confidence),
+            orchestration.ProcessAnalyzedDocument,
             execution.Log);
     }
     internal static void Suppress(IWorldDiplomacyAnalysisPort port, IWorldDiplomacyOrchestration orchestration,
@@ -34,7 +33,10 @@ internal static class WorldDiplomacyAnalysisApplication
             execution.ResolveKingdomId, () => execution.CurrentDay,
             (doc, why) => PreservePublishedPlayerDocumentAfterRejectedMechanic(execution, orchestration, doc, why),
             orchestration.ScheduleNextResultSettlementTurn, round => orchestration.AdvanceRelay(round),
-            orchestration.CompleteExchange, orchestration.CloseActiveRound, execution.Log);
+            orchestration.CompleteExchange, reason => {
+                if (orchestration is WorldDiplomacyOrchestration owner) owner.CloseRound(reason, orchestration.ResolveRound(document.RoundId));
+                else orchestration.CloseActiveRound(reason);
+            }, execution.Log);
     }
 
     public static void CommitAnalysis(
@@ -58,6 +60,11 @@ internal static class WorldDiplomacyAnalysisApplication
                 return;
             }
             JObject json = WorldDiplomacyEnvelopeJsonRules.ParseJsonObject(raw);
+            if (document.IsPlayerAuthored)
+            {
+                document.DiscussionRoundId = WorldDiplomacyEnvelopeJsonRules.ReadString(json, "related_round_id");
+                document.DiscussionSourceDocumentId = WorldDiplomacyEnvelopeJsonRules.ReadString(json, "related_public_document_id");
+            }
             string status = WorldDiplomacyIntentVocabulary.NormalizeToken(WorldDiplomacyEnvelopeJsonRules.ReadString(json, "status"));
             string intent = WorldDiplomacyIntentVocabulary.NormalizeIntent(WorldDiplomacyEnvelopeJsonRules.ReadString(json, "intent", "diplomatic_intent"));
             string titleSummary = WorldDiplomacyEnvelopeJsonRules.ReadString(json, "title_summary", "summary_title");
@@ -173,6 +180,20 @@ internal static class WorldDiplomacyAnalysisApplication
                 document.SourceDocumentId = document.RespondingToThreatDocumentId;
                 document.IsResponse = true;
             }
+            if (json?["treaty_terms"] is JObject treaty)
+                document.TreatyTerms = new WorldDiplomacyDialogueTerms {
+                    ReceivingKingdomId = WorldDiplomacyEnvelopeJsonRules.ReadString(treaty, "receiving_kingdom_id"),
+                    JoiningKingdomId = WorldDiplomacyEnvelopeJsonRules.ReadString(treaty, "joining_kingdom_id"),
+                    DailyTribute = WorldDiplomacyEnvelopeJsonRules.ReadInteger(treaty, "daily_tribute"),
+                    DurationDays = WorldDiplomacyEnvelopeJsonRules.ReadInteger(treaty, "duration_days"),
+                    CessionSettlementId = WorldDiplomacyEnvelopeJsonRules.ReadString(treaty, "cession_settlement_id") };
+            if (WorldDiplomacyIntentVocabulary.IsFormalTreatyIntent(intent) && document.TreatyTerms != null
+                && json?["peace_terms"] is JObject incompatiblePeace)
+            {
+                if (WorldDiplomacyEnvelopeJsonRules.TryReadInteger(incompatiblePeace, "daily_tribute", out int formalTribute)) document.TreatyTerms.DailyTribute = formalTribute;
+                if (WorldDiplomacyEnvelopeJsonRules.TryReadInteger(incompatiblePeace, "duration_days", out int formalDays)) document.TreatyTerms.DurationDays = formalDays;
+                if (incompatiblePeace["cession_settlement_id"] != null) document.TreatyTerms.CessionSettlementId = WorldDiplomacyEnvelopeJsonRules.ReadString(incompatiblePeace, "cession_settlement_id");
+            }
             document.Tone = tone;
             document.Confidence = confidence;
             document.RequiresResponse = WorldDiplomacyIntentVocabulary.ResolveValidatedResponseObligation(document, intent, requiresResponse, maxAutomaticReplyDepth);
@@ -250,7 +271,7 @@ internal static class WorldDiplomacyAnalysisApplication
         }
         completeExchange(document.ExchangeId, "technical_invalid_document_suppressed");
         if (WorldDiplomacyRoundLifecycleRules.ShouldCloseRoundAfterInvalidSuppression(
-            storage.ActiveRound, round, storage.Documents, storage.Jobs, document.DocumentId))
+            WorldDiplomacyLiveRoundRules.Contains(storage, round) ? round : null, round, storage.Documents, storage.Jobs, document.DocumentId))
         {
             closeActiveRound(document.IsPlayerAuthored
                 ? "player_declaration_rejected"
