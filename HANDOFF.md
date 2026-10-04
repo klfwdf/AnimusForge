@@ -1,3 +1,10 @@
+﻿# 当前交付：快报落选分流与档案卡片（2026-10-04，OFFLINE_VERIFIED）
+
+- 产品 `7312fbfe`、检查点 `9713c5b7`：1主新闻＋最多4短讯；窗口落选事实即刻按国家/周分流近况、跨国分别保存、无国归其他，不另调AI/弹通知/生图。组内未实际写进短讯的素材保留到近况；同小时生成期间新增事实留下一窗口。
+- 终端档案紧凑国栏＋12条卡片分页、四类型、2行摘要；近况/周报独立阅读、快报原ID打开卷轴，返回恢复列表位置。旧摘要/附属材料读取归并，原档不删，历史来源标注；取消快报短讯分页及附属近况正文。
+- 回归309项PASS，原Debug 1.3/1.4＋Bootstrap0错误；其他会话reranker既有dirty原样保留且不提交，实际构建输入单独绑定。游戏内排版/滚动/百科焦点、玩家旧档/provider未验，不能用安装hash替代实机验收。
+- [唯一主台账与源码范围证据](docs/animusforge-refactoring-and-repository-reorganization-plan.md#bulletin-residual-archive-20261004)，本地 `artifacts/bulletin-residual-archive-20261004/receipt.json`。授权提交推送部署，后续安装/回滚以部署结案记录为准；源码回滚 `git revert 7312fbfe`。
+
 # 最新部署：快报分页、国家正文、模型宽度与日志已安装（2026-10-04，DEPLOY_VERIFIED）
 
 - 用户明确授权部署；候选 `ae7792f3` / 产品 `20cf9627`，18任务文件、其他会话输入及三产物hash核对一致，复用刚通过的原Debug双API+Bootstrap构建，原部署入口更新11受管文件；版本v1.5.0，Bootstrap-only。
