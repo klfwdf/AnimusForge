@@ -1,3 +1,10 @@
+# 最新部署：引导控件与U键快报档案已安装（2026-10-04，DEPLOY_VERIFIED）
+
+- 用户授权部署；候选`cacab601`/产品`a1346a76`，源码及三产物hash与前轮收据一致，复用原Debug双API/Bootstrap验证，经原部署脚本更新12文件。引导简化、U键重开原篇、国家摘要并入对应篇一并安装；版本v1.5.0，Bootstrap-only。
+- 3379 Stage/安装hash一致，2321非受管文件保持，原版DLL/构建脚本不变；安装两DLL交接各13、模式各16、桥接/演讲各3组离线通过。其他会话reranker dirty保留、未提交，其构建输入已绑定收据。
+- 唯一Recovery `deploy-62f0dfd8603e411d95ee46eced9a1baa`已验complete/旧新hash；历史4份完成备份已删，无额外旧Stage。未实机/玩家档/provider/push/打包，需实机验引导及档案重开焦点。
+- [唯一台账、安装证据与回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#deploy-onboarding-bulletin-20261004)，本地`artifacts/deploy-onboarding-bulletin-20261004/receipt.json`及`retention.json`。本条替代下方未部署及历史回滚状态。
+
 # 当前修复：引导控件与U键快报档案（2026-10-04，OFFLINE_VERIFIED，未部署）
 
 - 产品/测试`a1346a76`，检查点`54423659`：引导首页五个单标题按钮，去描述/小字及YJ“官方”；U键档案按原ID重开原快报/周报，不重新生成或重复奖励。
