@@ -63,6 +63,7 @@ internal bool CaptureWorldBulletinEvent(string kind, string key, int score, stri
 			Hour = now,
 			Score = score,
 			Sentence = text,
+			GameDate = _port.CurrentDate?.Invoke() ?? "",
 			Group = (group ?? "").Trim(),
 			Detail = kind == "execution_last_words" ? (detail ?? "") : WorldBulletinPolicy.Truncate((_port.Render(detail) ?? "").Replace("\r", " ").Replace("\n", " "), 220),
 			InvolvesPlayer = involvesPlayer,
@@ -235,6 +236,7 @@ internal void CompleteWorldBulletin(double windowEndHour, long generation, World
 	}
 internal void PublishWorldBulletin(WorldBulletinScopeState scope, WorldBulletinSelection selection, WorldBulletinText template, WorldBulletinText generated, WorldBulletinIllustrationPlan illustrationPlan)
 	{
+		if (scope.WindowEndHour < 0 || (selection.WindowEndHour >= 0 && Math.Abs(scope.WindowEndHour - selection.WindowEndHour) > 0.001)) return;
 		WorldBulletinText text = generated ?? template;
 		string title = string.IsNullOrWhiteSpace(text.Title) ? template.Title : text.Title;
 		int polishedMinors = 0;
@@ -246,12 +248,22 @@ internal void PublishWorldBulletin(WorldBulletinScopeState scope, WorldBulletinS
 		string body = WorldBulletinPolicy.BuildBody(text.Major, minors);
 		string shortText = !string.IsNullOrWhiteSpace(text.Short) ? WorldBulletinPolicy.Truncate(text.Short, 140) : template.Short;
 		double now = _port.CurrentHour();
-		WorldBulletinPolicy.CompletePublish(scope, now, selection.Major.Key);
 		int day = _port.CurrentDay();
-		string seq = scope.Sequence.ToString(CultureInfo.InvariantCulture);
+		string seq = (scope.Sequence + 1).ToString(CultureInfo.InvariantCulture);
+		var regional = BuildRegionalPublication(selection);
 		// The single bulletin: world-kind record (diplomacy history and the NPC "world" layer read it), and it pops.
 		string eventId = "weekly_report:world" + WorldBulletinBulletinIdMarker + seq + ":" + day;
-		UpsertWorldBulletinRecord(eventId, "world", "", title, shortText, body, day, WeeklyReportArchivePolicy.CaptureKingdomIds(selection));
+		UpsertWorldBulletinRecord(eventId, "world", "", title, shortText, body, day, WeeklyReportArchivePolicy.CaptureKingdomIds(selection), notify: false);
+		var issue = _port.FindRecord(eventId);
+		issue.Materials = selection.MajorFacts.Concat(selection.Minors.SelectMany(m => m.Events))
+			.Select(f => WeeklyReportArchivePolicy.FactMaterial(f, "", WeeklyReportArchivePolicy.ReportedMaterialType)).ToList();
+		CommitRegionalPublication(regional);
+		var snapshotKeys = new HashSet<string>(selection.WindowFacts.Select(f => f.Key),StringComparer.Ordinal);
+		var previousDeferred = new HashSet<string>(scope.DeferredFactKeys ?? new List<string>(),StringComparer.Ordinal);
+		scope.DeferredFactKeys = EnsureWorldBulletinState().Events
+			.Where(f => f != null && (f.Hour > scope.CutoffHour || previousDeferred.Contains(f.Key)) && f.Hour <= scope.WindowEndHour && !snapshotKeys.Contains(f.Key) && f.Hour >= now - WorldBulletinPolicy.RetentionDays * 24.0)
+			.Select(f => f.Key).Distinct(StringComparer.Ordinal).ToList();
+		WorldBulletinPolicy.CompletePublish(scope, now, selection.Major.Key);
 		LatestEventId = eventId;
 		RecordWorldBulletinLayout(eventId, selection);
 		WorldBulletinLayout publishedLayout = FindWorldBulletinLayout(eventId);
@@ -259,6 +271,8 @@ internal void PublishWorldBulletin(WorldBulletinScopeState scope, WorldBulletinS
         try { if (illustrationPlan == null) _port.PrepareIssue(eventId); }
         catch (Exception ex) { _port.Log("WorldBulletin", "[Illustration] preparation failed: " + ex.Message); }
 		QueueNoticeAfterIllustration(eventId, illustrationPlan);
+		_port.NotifyProductChanged("", issue);
+		_port.NotifyTimeline();
 		_port.Log("WorldBulletin", "[Publish] id=" + eventId + " llm=" + (generated != null) + " major=" + selection.Major.Key + " majorFacts=" + selection.MajorFacts.Count + " minors=" + polishedMinors + "/" + selection.Minors.Count + " majorChars=" + (text.Major ?? "").Length);
 	}
 // The record is already saved; only the map notice waits so the player opens the issue with its art.
@@ -281,7 +295,7 @@ internal void PublishWorldBulletin(WorldBulletinScopeState scope, WorldBulletinS
 		if (waiting) _port.Log("WorldBulletin", "[Notice] id=" + eventId + " waiting for illustration");
 		else Release();
 	}
-internal void UpsertWorldBulletinRecord(string eventId, string eventKind, string scopeKingdomId, string title, string shortSummary, string summary, int day, List<string> bulletinKingdomIds = null)
+internal void UpsertWorldBulletinRecord(string eventId, string eventKind, string scopeKingdomId, string title, string shortSummary, string summary, int day, List<string> bulletinKingdomIds = null, bool notify = true)
 	{
 		List<EventRecordEntry> records = _port.Records();
 		EventRecordEntry entry = _port.FindRecord(eventId);
@@ -307,39 +321,7 @@ internal void UpsertWorldBulletinRecord(string eventId, string eventKind, string
 		entry.CreatedDay = day;
 		entry.CreatedDate = _port.CurrentDate();
 		entry.Materials = new List<EventMaterialReference>();
-		_port.NotifyProductChanged(previous, entry);
-		_port.NotifyTimeline();
-	}
-internal void WriteWorldBulletinKingdomBriefs(WorldBulletinSaveState state, int day)
-	{
-		int week = day / 7;
-		if (week < 1 || week <= state.LastKingdomWeek)
-		{
-			return;
-		}
-		int startDay = week * 7 - 7;
-		EventRecordEntry issue = FindLatestWorldBulletinRecord();
-		if (issue == null || issue.CreatedDay < startDay || issue.CreatedDay > day) return;
-		state.LastKingdomWeek = week;
-		int written = 0;
-		foreach (KeyValuePair<string,string> kingdom in _port.EligibleKingdoms())
-		{
-			string kingdomId = kingdom.Key;
-			List<WorldBulletinEvent> facts = state.Events.Where(e => e != null && e.Day >= startDay && WorldBulletinPolicy.InvolvesKingdom(e, kingdomId)).ToList();
-			if (facts.Count == 0)
-			{
-				continue;
-			}
-			string name = kingdom.Value;
-			string template = WorldBulletinPolicy.BuildKingdomTemplate(name, facts);
-			string eventId = "weekly_report:kingdom:" + week + ":" + kingdomId + ":brief";
-			WeeklyReportArchivePolicy.AttachRegionalNews(issue, WeeklyReportArchivePolicy.RegionalMaterial(new EventRecordEntry {
-				EventId = eventId, ScopeKingdomId = kingdomId, Title = name + "第" + week + "周近况", Summary = template, CreatedDay = day
-			}));
-			written++;
-		}
-		if (written > 0) _port.NotifyTimeline();
-		_port.Log("WorldBulletin", "[KingdomBrief] week=" + week + " attached=" + written + " issue=" + issue.EventId);
+		if (notify) { _port.NotifyProductChanged(previous, entry); _port.NotifyTimeline(); }
 	}
 internal void OnWorldBulletinHourlyTick()
 	{
@@ -365,7 +347,6 @@ internal void OnWorldBulletinHourlyTick()
 				return;
 			}
 			AdvanceWorldBulletinScope(state, _port.CurrentHour());
-			WriteWorldBulletinKingdomBriefs(state, day);
 		}
 		catch (Exception ex)
 		{

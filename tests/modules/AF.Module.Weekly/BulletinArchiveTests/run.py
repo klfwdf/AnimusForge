@@ -16,30 +16,34 @@ host=read("src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.cs")
 records=read("src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.CampaignMaterialRecords.cs")
 editor=read("src/AF.GameAdapter.Bannerlord/UI/Editors/WeeklyEditorProjection.cs")
 owner=read("src/modules/AF.Module.Weekly/Generation/WorldBulletinStateOwner.cs")
-assert "day, WeeklyReportArchivePolicy.CaptureKingdomIds(selection))" in owner, "Publish must persist selected kingdoms"
+assert "day, WeeklyReportArchivePolicy.CaptureKingdomIds(selection), notify: false)" in owner, "Publish must persist selected kingdoms before notifying"
 presentation=read("src/modules/AF.Module.Weekly/Generation/WorldBulletinStateOwner.Presentation.cs")
 timeline=read("src/AF.GameAdapter.Bannerlord/UI/WorldTimeline/WorldMessageTimelineUi.cs")
 # Exact declarations and exact contiguous production methods, no body substitutions.
-generated="using System;using System.Linq;using System.Collections.Generic;using System.Globalization;using System.Text;using System.Threading.Tasks;using static AnimusForge.MyBehavior;namespace AnimusForge {public partial class MyBehavior {"
+generated="using System;using System.Linq;using System.Collections.Generic;using System.Globalization;using System.Text;using System.Threading.Tasks;using TaleWorlds.CampaignSystem;using static AnimusForge.MyBehavior;namespace AnimusForge {public partial class MyBehavior {"
 generated+=spans(host,["internal sealed class EventRecordEntry","public sealed class WeeklyReportBrowserEntryData","public sealed class WeeklyReportBrowserCountryData"])+extract.declaration(records,"internal sealed class EventImportPayload")+"}"
 generated+=extract.declaration(editor,"internal class WeeklyEditorDisplayPort")+"internal static class WeeklyEditorProjection {"+spans(editor,["internal static WeeklyReportBrowserCountryData BuildWeeklyReportBrowserCountryData","internal static List<WeeklyReportBrowserEntryData> BuildWeeklyReportBrowserEntries","internal static string BuildWeeklyReportBrowserDefaultTitle"])+"}"
 generated+="internal sealed class WorldBulletinStateOwner { internal WorldBulletinSaveState State; internal WorldBulletinPort _port;"+spans(owner,["internal void UpsertWorldBulletinRecord"])+spans(presentation,["internal IReadOnlyDictionary<string, List<string>> SnapshotLegacyBulletinKingdomAssociations"])+"}"
 generated+=spans(timeline,["public sealed class WorldMessageTimelineEntryData","public sealed class WorldMessageTimelineCountryReference"])
 constants="\n".join(re.search(r"(?:public|private) const (?:string|int) "+name+r" = [^;]+;",timeline).group() for name in ["WeeklyCategoryId","WorldWeeklyCountryId","UnknownCountryId","MaxWeeklySourceEntries","DetailCharacterLimit","DetailLineLimit"])
 generated+="internal static class WorldMessageTimelineUi { "+constants+"internal static List<WorldMessageTimelineEntryData> Replay(){var result=new List<WorldMessageTimelineEntryData>();AppendWeeklyEntries(result);return result;}"+spans(timeline,["private static void AppendWeeklyEntries","private static void AddCountry","private static string FormatDay","private static string LimitMultiline","private static string FirstNonEmpty"])+"}}"
+navigation=read("src/AF.GameAdapter.Bannerlord/UI/Common/EncyclopediaEntityLinkNavigationCoordinator.cs")
+# Deferred request/admission code is real; native encyclopedia and its observation lifecycle are fixture boundaries.
+generated+='namespace AnimusForge { internal static class EncyclopediaEntityLinkNavigationCoordinator { private static string _pendingLink; private static Action _pendingSuspend,_pendingResume,_activeResume; private static Func<bool> _pendingIsCurrent; private static long _processSequence; private static void ProcessActiveNavigation(){} private static void PrepareActiveNavigation(Action resume){_activeResume=resume;} private static void ResumeActiveNavigation(){var r=_activeResume;_activeResume=null;r?.Invoke();}'+spans(navigation,["internal static void Request","internal static void ProcessPending"])+"}}"
 (out/"Extracted.cs").write_text(generated,encoding="utf-8")
 paths=["src/modules/AF.Module.Weekly/Panel/WeeklyReportArchivePolicy.cs","src/modules/AF.Module.Weekly/Bulletin/WorldBulletinPolicy.cs","src/modules/AF.Module.Weekly/Models/WeeklyLegacyDtos.cs","src/modules/AF.Module.Weekly/ImportExport/WeeklyEventDataImportOwner.cs","src/AF.GameAdapter.Bannerlord/Persistence/CampaignWeeklyRecordPersistenceAdapter.cs","src/AF.Persistence/CampaignSaveChunkHelper.cs","src/AF.Foundation.Runtime/Lifecycle/SaveRuntimeGuard.cs","src/AF.GameAdapter.Bannerlord/UI/Weekly/TerminalWeeklyReportBrowserPopupVM.cs"]
 paths.append("src/modules/AF.Module.Weekly/Panel/WorldBulletinPanelVM.cs")
+paths.append("src/AF.GameAdapter.Bannerlord/UI/Weekly/TerminalWeeklyReportBrowserPopupVM.Archive.cs")
 for path in paths:read(path)
 ui=ET.fromstring(read("content/modules/AF.Module.UI/GUI/Prefabs/AnimusForgeTerminalPopup.xml"))
 period=next(node for node in ui.iter() if node.attrib.get("Text")=="@WeekText")
 assert period.attrib.get("WidthSizePolicy")=="StretchToParent", "Issue/category labels need available row width"
 country_list=next(node for node in ui.iter() if node.attrib.get("DataSource")=="{CountryItems}")
 assert any(node.attrib.get("Command.Click")=="ExecuteSelect" for node in country_list.iter()), "Country select binding missing"
-assert any(node.attrib.get("Text")=="@BodyText" for node in ui.iter()), "Report body binding missing"
-open_button=next(node for node in ui.iter() if node.attrib.get("Command.Click")=="ExecuteOpenReport")
-assert open_button.attrib.get("IsVisible")=="@ShowOpenReport"
-assert any(node.attrib.get("Text")=="@OpenReportText" and node.attrib.get("DoNotAcceptEvents")=="true" for node in open_button.iter())
+assert any(node.attrib.get("Text")=="@ReaderBodyText" for node in ui.iter()), "Independent reader binding missing"
+open_button=next(node for node in country_list.iter() if node.attrib.get("Command.Click")=="ExecuteSelect")
+assert open_button.attrib.get("DoNotPassEventsToChildren")=="true"
+assert any(node.attrib.get("Text")=="@PreviewText" for node in ui.iter()), "Card preview missing"
 print("PASS existing XML period width, country select and report body bindings (not rendering)")
 newtonsoft=ROOT/"local/dotnet/8.0.425/sdk/8.0.425/Newtonsoft.Json.dll"
 if not newtonsoft.is_file():raise RuntimeError("Missing local Newtonsoft.Json reference")

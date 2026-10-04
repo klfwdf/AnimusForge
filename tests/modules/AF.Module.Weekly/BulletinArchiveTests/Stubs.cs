@@ -1,5 +1,9 @@
 // Only external/game/render/settings boundaries are fakes; production algorithms are linked/extracted.
-namespace TaleWorlds.CampaignSystem { public interface IDataStore { bool SyncData<T>(string key, ref T data); } }
+namespace TaleWorlds.CampaignSystem {
+ public interface IDataStore { bool SyncData<T>(string key, ref T data); }
+ public class Campaign { public static Campaign Current=new(); public EncyclopediaManager EncyclopediaManager=new(); }
+ public class EncyclopediaManager { public int Opens; public string Link; public void GoToLink(string link){Opens++;Link=link;} }
+}
 namespace TaleWorlds.Library {
  public class InformationMessage { public InformationMessage(string text){} }
  public static class InformationManager { public static void DisplayMessage(InformationMessage message){} }
@@ -22,7 +26,8 @@ namespace AnimusForge {
   public static bool IsWorldBulletinEnabled()=>BulletinEnabled;
   public System.Collections.Generic.List<WeeklyReportBrowserCountryData> Countries=new();
   public System.Collections.Generic.List<WeeklyReportBrowserCountryData> GetTerminalWeeklyReportBrowserCountries()=>Countries;
-  public System.Threading.Tasks.Task<bool> GenerateWeeklyReportFullByEventIdAsync(string id)=>System.Threading.Tasks.Task.FromResult(false);
+  public System.Func<string,System.Threading.Tasks.Task<bool>> FullReport;
+  public System.Threading.Tasks.Task<bool> GenerateWeeklyReportFullByEventIdAsync(string id)=>FullReport?.Invoke(id)??System.Threading.Tasks.Task.FromResult(false);
   public string OpenedId; public int Opens;
   internal bool OpenArchivedWeeklyReport(string id){OpenedId=id;Opens++;return true;}
  }

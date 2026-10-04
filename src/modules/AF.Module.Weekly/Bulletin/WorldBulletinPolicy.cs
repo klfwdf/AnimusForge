@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -38,6 +38,8 @@ internal sealed class WorldBulletinEvent
 
 	public string Sentence = "";
 
+	public string GameDate = "";
+
 	// Facts that belong to one story (same executioner, same siege, same clash) share a group.
 	public string Group = "";
 
@@ -76,6 +78,8 @@ internal sealed class WorldBulletinScopeState
 
 	// A trigger arrived while cooling down; the hourly tick reopens a window once the cooldown ends.
 	public bool PendingTrigger;
+	// Facts captured after selection at the same game hour must remain eligible for the next window.
+	public List<string> DeferredFactKeys = new List<string>();
 }
 
 // Everything the bulletin system persists, saved as one JSON chunk.
@@ -109,6 +113,10 @@ internal sealed class WorldBulletinSaveState
 
 internal sealed class WorldBulletinSelection
 {
+	// Detached publication window, including facts below the front-page score threshold.
+	public List<WorldBulletinEvent> WindowFacts = new List<WorldBulletinEvent>();
+	public double WindowEndHour = -1;
+	public HashSet<string> ReportedKeys = new HashSet<string>(StringComparer.Ordinal);
 	// Lead fact; its key marks the bulletin.
 	public WorldBulletinEvent Major;
 
@@ -204,7 +212,6 @@ internal static class WorldBulletinPolicy
 
 	public const int WeeklyStabilityCap = 15;
 
-	public const int MaxKingdomTemplateFacts = 4;
 
 	private static readonly Regex MinorPrefix = new Regex("^[\\s·•\\-\\*、\\d\\.\\)）]+", RegexOptions.Compiled);
 
@@ -322,10 +329,11 @@ internal static class WorldBulletinPolicy
 			return -1;
 		}
 		double minHour = Math.Max(scope.CutoffHour, nowHour - RetentionDays * 24.0);
+		var deferred = new HashSet<string>(scope.DeferredFactKeys ?? new List<string>(),StringComparer.Ordinal);
 		double best = -1;
 		foreach (WorldBulletinEvent e in events)
 		{
-			if (e != null && e.Hour > minHour && e.Hour <= nowHour && IsTrigger(e, focus) && (best < 0 || e.Hour < best))
+			if (e != null && (e.Hour > minHour || (deferred.Contains(e.Key) && e.Hour > nowHour - RetentionDays * 24.0)) && e.Hour <= nowHour && IsTrigger(e, focus) && (best < 0 || e.Hour < best))
 			{
 				best = e.Hour;
 			}
@@ -344,8 +352,15 @@ internal static class WorldBulletinPolicy
 		}
 		double minHour = Math.Max(scope.CutoffHour, nowHour - RetentionDays * 24.0);
 		HashSet<string> seenSentences = new HashSet<string>(StringComparer.Ordinal);
-		List<WorldBulletinEvent> candidates = events
-			.Where(e => e != null && e.Hour > minHour && e.Hour <= scope.WindowEndHour && InScope(e, focus) && !string.IsNullOrWhiteSpace(e.Sentence))
+		var deferred = new HashSet<string>(scope.DeferredFactKeys ?? new List<string>(),StringComparer.Ordinal);
+		List<WorldBulletinEvent> window = events
+			.Where(e => e != null && (e.Hour > minHour || (deferred.Contains(e.Key) && e.Hour > nowHour - RetentionDays * 24.0)) && e.Hour <= scope.WindowEndHour && !string.IsNullOrWhiteSpace(e.Sentence))
+			.Select(e => new WorldBulletinEvent { Key=e.Key, Kind=e.Kind, Day=e.Day, Hour=e.Hour,
+				Score=e.Score, Sentence=e.Sentence, GameDate=e.GameDate, Group=e.Group, Detail=e.Detail,
+				InvolvesPlayer=e.InvolvesPlayer, KingdomIds=new List<string>(e.KingdomIds ?? new List<string>()),
+				Participants=(e.Participants ?? new List<WorldBulletinParticipant>()).Where(p => p != null).Select(p => new WorldBulletinParticipant { HeroId=p.HeroId, Name=p.Name, Role=p.Role }).ToList() })
+			.ToList();
+		List<WorldBulletinEvent> candidates = window.Where(e => InScope(e, focus))
 			.OrderByDescending(e => FocusScore(e, focus))
 			.ThenBy(e => e.Hour)
 			.Where(e => seenSentences.Add(e.Sentence.Trim()))
@@ -358,7 +373,7 @@ internal static class WorldBulletinPolicy
 			return null;
 		}
 		string leadGroup = GroupOf(lead);
-		WorldBulletinSelection selection = new WorldBulletinSelection { Major = lead };
+		WorldBulletinSelection selection = new WorldBulletinSelection { Major = lead, WindowFacts = window, WindowEndHour = scope.WindowEndHour };
 		HashSet<WorldBulletinEvent> used = new HashSet<WorldBulletinEvent>();
 		void AddMajor(WorldBulletinEvent e)
 		{
@@ -396,12 +411,15 @@ internal static class WorldBulletinPolicy
 				minorsByGroup[group] = minor;
 				selection.Minors.Add(minor);
 			}
-			minor.Events.Add(e);
+			// Only facts actually handed to the short-news writer are reported; group overflow goes to recent records.
+			if (minor.Events.Count < MaxMinorGroupSentences) minor.Events.Add(e);
 		}
 		foreach (WorldBulletinMinor minor in selection.Minors)
 		{
 			minor.Sentence = BuildMinorSentence(minor.Events);
 		}
+		foreach (var fact in selection.MajorFacts.Concat(selection.Minors.SelectMany(m => m.Events)))
+			selection.ReportedKeys.Add(fact.Key);
 		return selection;
 	}
 
@@ -728,21 +746,6 @@ internal static class WorldBulletinPolicy
 		List<string> parts = new List<string> { TrimSentenceEnd(major) };
 		parts.AddRange((minors ?? Enumerable.Empty<string>()).Select(TrimSentenceEnd));
 		return Truncate(string.Join("；", parts.Where(x => x.Length > 0)) + "。", 140);
-	}
-
-	public static string BuildKingdomTemplate(string kingdomName, IEnumerable<WorldBulletinEvent> events)
-	{
-		string name = string.IsNullOrWhiteSpace(kingdomName) ? "该王国" : kingdomName.Trim();
-		List<string> facts = (events ?? Enumerable.Empty<WorldBulletinEvent>())
-			.Where(e => e != null && !string.IsNullOrWhiteSpace(e.Sentence))
-			.OrderByDescending(e => e.Score).ThenByDescending(e => e.Hour)
-			.Select(e => TrimSentenceEnd(e.Sentence)).Distinct(StringComparer.Ordinal)
-			.Take(MaxKingdomTemplateFacts).ToList();
-		if (facts.Count == 0)
-		{
-			return name + "近来局势平稳，未见重大变故。";
-		}
-		return name + "近况：" + string.Join("；", facts) + "。";
 	}
 
 	public static string TitleForKind(string kind)

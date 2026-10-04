@@ -7,6 +7,7 @@ out=new_run_root(ROOT,'f4-weekly-generation',None)
 paths=['src/modules/AF.Module.Weekly/Generation/WeeklyNoticeStateOwner.cs','src/modules/AF.Module.Weekly/Generation/WorldBulletinStateOwner.cs','src/modules/AF.Module.Weekly/Generation/WorldBulletinStateOwner.Presentation.cs','src/modules/AF.Module.Weekly/Bulletin/WorldBulletinPolicy.cs','src/modules/AF.Module.Weekly/Generation/WeeklyGenerationRules.cs','src/modules/AF.Module.Weekly/Generation/WeeklyGenerationModels.cs','src/modules/AF.Module.Weekly/Generation/WeeklyGenerationAttemptOwner.cs','src/modules/AF.Module.Weekly/Models/WeeklyLegacyDtos.cs','src/AF.Foundation.Runtime/Lifecycle/SaveRuntimeGuard.cs']
 import importlib.util
 paths.append('src/modules/AF.Module.Weekly/Panel/WeeklyReportArchivePolicy.cs')
+paths.append('src/modules/AF.Module.Weekly/Generation/WorldBulletinStateOwner.Regional.cs')
 spec=importlib.util.spec_from_file_location('ex',ROOT/'tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py');ex=importlib.util.module_from_spec(spec);spec.loader.exec_module(ex)
 source=(ROOT/'src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.cs').read_text(encoding='utf-8-sig')
 api=ex.declaration(source,'internal sealed class ApiCallResult')+'\n'+ex.declaration(source,'internal sealed class EventRecordEntry')

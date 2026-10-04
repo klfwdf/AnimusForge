@@ -456,6 +456,9 @@ public partial class MyBehavior : CampaignBehaviorBase
 	{
 		public string EventId;
 
+		internal string ArchiveKind;
+		internal string OpenTargetId;
+
 		public int WeekIndex;
 
 		public string Title;

@@ -7,27 +7,67 @@ internal static class Program {
  static string Block(string id,string body,string extra="")=>"[REPORT_BLOCK_BEGIN]\nreport_id="+id+"\n"+extra+body+"\n[REPORT_BLOCK_END]";
  static void TestRegionalNewsAttachment()
  {
-     int changed=0;
+     int notices=0,changed=0,plans=0; double hour=312; int day=13;
      var records=new List<EventRecordEntry>();
-     var issue=new EventRecordEntry{EventId="weekly_report:world:bulletin:1:13",EventKind="world",CreatedDay=13,Summary="【大事件】Original major\n【其他消息】Original minor"};
-     var port=new WorldBulletinPort{Records=()=>records,EligibleKingdoms=()=>new(){new("A","Nation A"),new("B","Nation B")},NotifyTimeline=()=>changed++,Log=(a,b)=>{},ResolveKingdom=id=>id,NoticeTitle=e=>e.Title,PopupSubtitle=e=>e.CreatedDate,PopupBody=e=>e.Summary};
-     port.CurrentDay=()=>0;
-     var owner=new WorldBulletinStateOwner();owner.Bind(port);
-     var state=owner.EnsureWorldBulletinState();state.World.Sequence=1;state.TrackingStartDay=0;
-     state.Events.Add(new(){Key="a",KingdomIds=new(){"A"},Day=12,Sentence="A confirmed event",Score=30});
-     owner.WriteWorldBulletinKingdomBriefs(state,14);
-     Check(state.LastKingdomWeek<2&&changed==0,"no issue does not consume regional week");
-     records.Add(issue);owner.WriteWorldBulletinKingdomBriefs(state,14);
-     Check(records.Count==1&&issue.Materials.Count==1&&state.LastKingdomWeek==2&&changed==1,"new regional messages attach to issue without creating archive rows");
-     Check(issue.BulletinKingdomIds.ToHashSet().SetEquals(new[]{"A"}),"only nations with facts join issue archive associations");
-     Check(!issue.Materials.Any(m=>m.KingdomId=="B"),"quiet nation receives no synthetic regional message");
-     Check(WeeklyReportArchivePolicy.BodyWithRegionalNews(issue).Contains("A confirmed event"),"new regional facts are available in full issue body");
+     var owner=new WorldBulletinStateOwner();
+     var port=new WorldBulletinPort {Records=()=>records,FindRecord=id=>records.FirstOrDefault(e=>e.EventId==id),
+         CurrentDay=()=>day,CurrentHour=()=>hour,CurrentDate=()=>"date "+day,ProductState=e=>e?.Summary??"",
+         NotifyTimeline=()=>changed++,NotifyProductChanged=(a,b)=>{},QueueNotice=id=>notices++,PrepareIssue=id=>plans++,
+         ResolveKingdom=id=>id,Log=(a,b)=>{},NoticeTitle=e=>e.Title,PopupSubtitle=e=>e.CreatedDate,PopupBody=e=>e.Summary};
+     owner.Bind(port); var state=owner.EnsureWorldBulletinState(); state.World.WindowEndHour=hour;
+     WorldBulletinEvent Fact(string key,int score,int d,params string[] nations)=>new(){Key=key,Kind="war_declared",Score=score,Day=d,Hour=d*24,GameDate="date "+d,Sentence="fact "+key,KingdomIds=nations.ToList(),Group=key};
+     state.Events.Add(Fact("lead",100,12,"A","B"));
+     for(int i=0;i<6;i++) state.Events.Add(Fact("short"+i,40,12,"A"));
+     state.Events.Add(Fact("cross",1,13,"A","B","a"));
+     state.Events.Last().Detail="5 confirmed captives";
+     state.Events.Add(Fact("other",1,13));
+     state.Events.Add(Fact("previous-week",1,6,"A"));
+     state.Events.Add(Fact("same-sentence-different-source",1,13,"Z"));state.Events.Last().Sentence=state.Events[0].Sentence;
+     var selection=WorldBulletinPolicy.Select(state.Events,state.World,new(),hour);
+     Check(selection.Minors.Count<=4&&selection.MajorFacts.Count>0,"one main story and at most four true shorts");
+     Check(selection.WindowFacts.Count==11&&selection.ReportedKeys.Count>0,"snapshot contains all eligible scores and selected stable keys");
+     string captured=selection.WindowFacts.Single(e=>e.Key=="cross").Sentence;
+     state.Events.Single(e=>e.Key=="cross").Sentence="modified after snapshot";
+     state.Events.Add(Fact("late-same-hour",100,13,"C"));
+     state.Events.Add(new(){Key="late-next-hour",Hour=313,Day=13,Score=100,Kind="war_declared",Sentence="late next",KingdomIds=new(){"C"}});
+     var template=WorldBulletinPolicy.BuildTemplate(selection);
+     owner.PublishWorldBulletin(state.World,selection,template,null,null);
+     var issue=records.Single(e=>WeeklyReportArchivePolicy.IsBulletin(e.EventId));
+     var recent=records.Where(e=>WeeklyReportArchivePolicy.IsRecent(e.EventId)).ToList();
+     var reported=selection.ReportedKeys;
+     Check(recent.All(e=>e.Materials.All(m=>!m.SourceStableKeys.Any(reported.Contains))),"selected main and short source keys excluded from every recent record");
+     var residual=selection.WindowFacts.Where(f=>!reported.Contains(f.Key)).ToList();
+     foreach(var fact in residual) foreach(var nation in fact.KingdomIds.Distinct(StringComparer.OrdinalIgnoreCase).DefaultIfEmpty(WeeklyReportArchivePolicy.OtherKingdomId))
+         Check(recent.Single(e=>e.EventId==WeeklyReportArchivePolicy.RecentId(nation,fact.Day/7)).Materials.Any(m=>m.SourceStableKeys.Contains(fact.Key)),"every rejected fact reaches its actual nations: "+fact.Key+" "+nation);
+     Check(recent.Single(e=>e.EventId==WeeklyReportArchivePolicy.RecentId("A",1)).Summary.Contains(captured)&&!recent.Any(e=>e.Summary.Contains("modified after snapshot")),"publication uses detached facts not mutated game pool");
+     Check(recent.Single(e=>e.EventId==WeeklyReportArchivePolicy.RecentId("A",1)).Summary.Contains("5 confirmed captives"),"rejected supplementary facts retained in near body");
+     Check(recent.Single(e=>e.ScopeKingdomId=="Z").Materials.Single().SourceStableKeys.Contains("same-sentence-different-source"),"independent source key is not discarded merely because its sentence matches headline");
+     Check(recent.Count(e=>e.ScopeKingdomId=="A")==2&&recent.All(e=>e.Materials.Count>0),"cross-week independent, same-week combined, no empty nations");
+     Check(!recent.Any(e=>e.ScopeKingdomId=="C")&&state.World.DeferredFactKeys.SequenceEqual(new[]{"late-same-hour"}),"facts arriving during generation are not archived and same-hour facts carried durably");
+     Check(notices==1&&plans==1&&changed==1,"only main issue notifies or prepares illustration");
+     int before=records.Count;owner.PublishWorldBulletin(state.World,selection,template,null,null);
+     Check(records.Count==before&&notices==1&&state.World.Sequence==1,"repeated completed publication is idempotent");
+     var exported=owner.ExportJson(); owner.ImportJson(exported);state=owner.EnsureWorldBulletinState();
+     Check(state.World.DeferredFactKeys.SequenceEqual(new[]{"late-same-hour"}),"pending snapshot boundary survives owner save/load");
+     hour=336; day=14;state.World.WindowEndHour=hour;
+     Check(WorldBulletinPolicy.FindPendingTriggerHour(state.Events,state.World,new(),hour)==312,"same-hour late headline can trigger next window");
+     var next=WorldBulletinPolicy.Select(state.Events,state.World,new(),hour);
+     Check(next.WindowFacts.Select(e=>e.Key).ToHashSet().SetEquals(new[]{"late-same-hour","late-next-hour"}),"next window contains late facts without replaying consumed sources");
+     // Detached replay of the original window must not duplicate any country's materials.
+     var duplicate=owner.BuildRegionalPublication(selection);
+     Check(duplicate.All(e=>e.Materials.Count==recent.Single(old=>old.EventId==e.EventId).Materials.Count),"source-key dedup remains stable after load");
+     var add=Fact("append",1,13,"A");next.WindowFacts.Add(add);
+     owner.PublishWorldBulletin(state.World,next,WorldBulletinPolicy.BuildTemplate(next),null,null);
+     Check(records.Single(e=>e.EventId==WeeklyReportArchivePolicy.RecentId("A",1)).Materials.Any(m=>m.SourceStableKeys.Contains("append")),"second issue immediately appends same-country same-week near facts");
+     Check(state.World.DeferredFactKeys.Count==0,"consumed deferred keys cleared");
+     Check(owner.BuildRegionalPublication(new(){Major=new(){Key="empty"}}).Count==0&&WorldBulletinPolicy.Select(Array.Empty<WorldBulletinEvent>(),new(){WindowEndHour=hour},new(),hour)==null,"no facts means no empty near records or fake main issue");
+     var grouped=new List<WorldBulletinEvent>{Fact("group-lead",100,13,"A")};
+     for(int i=0;i<7;i++) { var f=Fact("group-short"+i,40,13,"A");f.Group="one-minor";grouped.Add(f); }
+     var groupedSelection=WorldBulletinPolicy.Select(grouped,new(){WindowEndHour=hour},new(),hour);
+     Check(groupedSelection.Minors.Single().Events.Count==WorldBulletinPolicy.MaxMinorGroupSentences&&groupedSelection.ReportedKeys.Count==1+WorldBulletinPolicy.MaxMinorGroupSentences,"group short-news overflow is not falsely marked reported by a count-only summary");
+     Check(owner.BuildRegionalPublication(groupedSelection).Single().Materials.Count(m=>m.SourceStableKeys.Any(k=>k.StartsWith("group-short")))==7-WorldBulletinPolicy.MaxMinorGroupSentences,"all facts omitted from a grouped short reach the national near record");
      var panel=owner.BuildWorldBulletinPanelData(issue,issue.EventId);
-     Check(panel.BodyText=="Original major"&&panel.Minors.Count==2&&panel.Minors.Any(m=>m.Value.Contains("A confirmed event")),"original panel preserves major and contains all attached messages");
-     owner.WriteWorldBulletinKingdomBriefs(state,14);
-     Check(issue.Materials.Count==1&&changed==1,"same-week hourly calls do not duplicate regional messages");
-     records.Clear();owner.ResetTransient();owner.WriteWorldBulletinKingdomBriefs(state,21);
-     Check(state.LastKingdomWeek==2&&changed==1,"missing next issue does not discard next week regional news");
+     Check(!panel.Minors.Any(m=>m.Value.Contains(captured))&&!panel.BodyText.Contains(captured),"original scroll excludes country residual facts");
  }
  static void TestBulletinNoticeRecovery()
  {

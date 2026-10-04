@@ -7,7 +7,7 @@ using TaleWorlds.Library;
 
 namespace AnimusForge;
 
-public sealed class TerminalWeeklyReportBrowserPopupVM : ViewModel
+public sealed partial class TerminalWeeklyReportBrowserPopupVM : ViewModel
 {
 	private readonly Action _onClose;
 
@@ -231,8 +231,12 @@ public sealed class TerminalWeeklyReportBrowserPopupVM : ViewModel
 	}
 
 	public TerminalWeeklyReportBrowserPopupVM(List<MyBehavior.WeeklyReportBrowserCountryData> countries, string selectedCountryId, Action onClose)
+		: this(countries, selectedCountryId, onClose, null) { }
+
+	public TerminalWeeklyReportBrowserPopupVM(List<MyBehavior.WeeklyReportBrowserCountryData> countries, string selectedCountryId, Action onClose, Action<string> onOpenEncyclopediaLink)
 	{
 		_onClose = onClose;
+		_onOpenEncyclopediaLink = onOpenEncyclopediaLink;
 		_countries = (countries ?? new List<MyBehavior.WeeklyReportBrowserCountryData>()).Where((MyBehavior.WeeklyReportBrowserCountryData x) => x != null).ToList();
 		_selectedCountryId = (selectedCountryId ?? "").Trim();
 		TitleText = "历史档案馆";
@@ -271,12 +275,15 @@ public sealed class TerminalWeeklyReportBrowserPopupVM : ViewModel
 
 	public void ExecuteClose()
 	{
-		_onClose?.Invoke();
+		if (CanInteract) _onClose?.Invoke();
 	}
 
     private void RequestOpenReport(string eventId)
     {
         if (_isFinalized || !SaveRuntimeGuard.IsCurrentGeneration(_saveGeneration)) return;
+        var item = ReportItems.FirstOrDefault(x => x.OpenTargetId == eventId);
+        if (item == null) return;
+        if (item.EntryKind != "bulletin") { OpenReader(item); return; }
         try
         {
             if (MyBehavior.Instance?.OpenArchivedWeeklyReport(eventId) != true)
@@ -348,16 +355,20 @@ public sealed class TerminalWeeklyReportBrowserPopupVM : ViewModel
 		finally
 		{
 			if (item != null) item.ShowViewFullReport = true;
+			NotifyReader();
 		}
 	}
 
 	private void SelectCountry(string countryId)
 	{
 		string text = (countryId ?? "").Trim();
-		if (_isFinalized || string.IsNullOrWhiteSpace(text))
+		if (_isFinalized || !SaveRuntimeGuard.IsCurrentGeneration(_saveGeneration) || string.IsNullOrWhiteSpace(text))
 		{
 			return;
 		}
+		ExecuteReturnToList();
+		_page = 0;
+		ListScrollPosition = 0;
 		ApplyCountrySelection(text);
 	}
 
@@ -370,31 +381,27 @@ public sealed class TerminalWeeklyReportBrowserPopupVM : ViewModel
 		{
 			countryItem.IsSelected = weeklyReportBrowserCountryData != null && string.Equals((countryItem.CountryId ?? "").Trim(), (weeklyReportBrowserCountryData.CountryId ?? "").Trim(), StringComparison.OrdinalIgnoreCase);
 		}
-		MBBindingList<TerminalWeeklyReportEntryItemVM> mBBindingList = new MBBindingList<TerminalWeeklyReportEntryItemVM>();
 		if (weeklyReportBrowserCountryData == null)
 		{
 			SelectedCountryNameText = "未选择";
 			SelectedCountryMetaText = "";
 			EmptyStateText = "暂无快报或周报档案。";
-			ReportItems = mBBindingList;
+			ReportItems = new MBBindingList<TerminalWeeklyReportEntryItemVM>();
 			HasReportItems = false;
 			ShowEmptyState = true;
 			return;
 		}
 		SelectedCountryNameText = (weeklyReportBrowserCountryData.DisplayName ?? "").Trim();
-		var reports = (weeklyReportBrowserCountryData.Reports ?? new List<MyBehavior.WeeklyReportBrowserEntryData>()).Where(report => report != null).ToList();
-		SelectedCountryMetaText = reports.Count > 0 ? "共 " + reports.Count + " 期快报 / 周报 · 最新在前" : "这个条目当前没有快报或周报档案";
-		foreach (MyBehavior.WeeklyReportBrowserEntryData report in reports.OrderByDescending(x => x.CreatedDay).ThenByDescending(x => x.WeekIndex).ThenByDescending(x => WeeklyReportArchivePolicy.IssueNumber(x.EventId)).ThenByDescending(x => x.Title ?? "", StringComparer.OrdinalIgnoreCase))
-		{
-			mBBindingList.Add(new TerminalWeeklyReportEntryItemVM(report, RequestViewFullReport, RequestOpenReport));
-		}
-		ReportItems = mBBindingList;
-		HasReportItems = ReportItems.Count > 0;
-		ShowEmptyState = !HasReportItems;
-		EmptyStateText = (HasReportItems ? "" : "这个王国当前没有相关快报或周报档案。");
+		_sourceReports = (weeklyReportBrowserCountryData.Reports ?? new List<MyBehavior.WeeklyReportBrowserEntryData>())
+			.Where(report => report != null).OrderByDescending(x => x.CreatedDay).ThenByDescending(x => x.WeekIndex)
+			.ThenByDescending(x => WeeklyReportArchivePolicy.IssueNumber(x.EventId)).ThenByDescending(x => x.Title ?? "", StringComparer.OrdinalIgnoreCase).ToList();
+		ApplyTypeFilter();
 	}
 	private void ReloadFromGameState(string selectedCountryId)
 	{
+		string readingId = _readerItem?.EventId;
+		float readerScroll = ReaderScrollPosition;
+		foreach (var country in CountryItems) country.OnFinalize();
 		_countries.Clear();
 		_countries.AddRange((MyBehavior.Instance?.GetTerminalWeeklyReportBrowserCountries() ?? new List<MyBehavior.WeeklyReportBrowserCountryData>()).Where((MyBehavior.WeeklyReportBrowserCountryData x) => x != null));
 		CountryItems = new MBBindingList<TerminalWeeklyReportCountryItemVM>();
@@ -403,6 +410,12 @@ public sealed class TerminalWeeklyReportBrowserPopupVM : ViewModel
 			CountryItems.Add(new TerminalWeeklyReportCountryItemVM(country, SelectCountry));
 		}
 		ApplyCountrySelection(selectedCountryId);
+		if (readingId != null)
+		{
+			var replacement = ReportItems.FirstOrDefault(x => x.EventId == readingId);
+			if (replacement != null) { OpenReader(replacement); ReaderScrollPosition = readerScroll; }
+			else ExecuteReturnToList();
+		}
 	}
 
 	public override void OnFinalize()
@@ -412,6 +425,8 @@ public sealed class TerminalWeeklyReportBrowserPopupVM : ViewModel
 		_pendingFullReport = null;
 		_requestOwner = null;
 		_requestItem = null;
+		_readerItem = null;
+		_readerLinks = null;
 		foreach (var country in CountryItems) country.OnFinalize();
 		foreach (var report in ReportItems) report.OnFinalize();
 		base.OnFinalize();
@@ -420,7 +435,7 @@ public sealed class TerminalWeeklyReportBrowserPopupVM : ViewModel
 
 public sealed class TerminalWeeklyReportCountryItemVM : ViewModel
 {
-	private readonly Action<string> _onSelect;
+	private Action<string> _onSelect;
 
 	private string _countryId;
 
@@ -504,17 +519,22 @@ public sealed class TerminalWeeklyReportCountryItemVM : ViewModel
 		CountryId = (country?.CountryId ?? "").Trim();
 		DisplayName = (country?.DisplayName ?? "").Trim();
 		int num = country?.Reports?.Count(report => report != null) ?? 0;
-		ReportCountText = "共 " + num + " 期";
+		ReportCountText = num + " 篇";
 	}
 
 	public void ExecuteSelect()
 	{
 		_onSelect?.Invoke(CountryId ?? "");
 	}
+	public override void OnFinalize() { _onSelect = null; base.OnFinalize(); }
 }
 
 public sealed class TerminalWeeklyReportEntryItemVM : ViewModel
 {
+	[DataSourceProperty] public string EntryKind { get; private set; }
+	internal string OpenTargetId { get; private set; }
+	[DataSourceProperty] public string PreviewText { get; private set; }
+	internal string PlainBodyText { get; private set; }
 	private string _titleText;
 
 	private string _weekText;
@@ -758,16 +778,20 @@ public sealed class TerminalWeeklyReportEntryItemVM : ViewModel
 		TitleText = (entry?.Title ?? "").Trim();
 		WeekText = WeeklyReportArchivePolicy.PeriodLabel(entry?.EventId, entry?.WeekIndex ?? 0);
 		DateText = (entry?.CreatedDate ?? "").Trim();
-		BodyText = FormatDisplayBodyText(entry?.BodyText);
+		PlainBodyText = FormatDisplayBodyText(entry?.BodyText);
+		BodyText = PlainBodyText;
+		EntryKind = entry?.ArchiveKind ?? WeeklyReportArchivePolicy.EntryKind(entry?.EventId);
+		OpenTargetId = entry?.OpenTargetId ?? (entry?.EventId ?? "").Trim();
+		PreviewText = EncyclopediaEntityLinkFormatter.SanitizeUntrustedRichText(WorldBulletinPolicy.Truncate((entry?.BodyText ?? "").Replace('\r',' ').Replace('\n',' '), 120));
 		TagText = BuildDisplayTagText(entry?.TagText, out int tagKind);
 		HasTagText = !string.IsNullOrWhiteSpace(TagText);
 		ShowPositiveTag = HasTagText && tagKind > 0;
 		ShowNegativeTag = HasTagText && tagKind < 0;
 		ShowNeutralTag = HasTagText && tagKind == 0;
-		ShowViewFullReport = entry != null && !entry.HasFullReport && !string.IsNullOrWhiteSpace(entry.EventId);
+		ShowViewFullReport = entry != null && EntryKind == "weekly" && !entry.HasFullReport && !string.IsNullOrWhiteSpace(entry.EventId);
         EventId = (entry?.EventId ?? "").Trim();
-        ShowOpenReport = EventId.Length > 0 && (entry.HasFullReport || WeeklyReportArchivePolicy.IsBulletin(EventId));
-        OpenReportText = WeeklyReportArchivePolicy.IsBulletin(EventId) ? "打开快报" : "打开周报";
+        ShowOpenReport = EventId.Length > 0;
+        OpenReportText = EntryKind == "bulletin" ? "打开快报" : EntryKind == "recent" ? "阅读近况" : "阅读周报";
 		BodyFontSize = Math.Max(13, Math.Min(26, (DuelSettings.GetSettings()?.WeeklyReportPopupBodyFontSize ?? 18) - 2));
 	}
 
@@ -786,8 +810,9 @@ public sealed class TerminalWeeklyReportEntryItemVM : ViewModel
 
     public void ExecuteOpenReport()
     {
-        if (ShowOpenReport) _onOpenReport?.Invoke(EventId);
+        if (ShowOpenReport) _onOpenReport?.Invoke(OpenTargetId);
     }
+    public override void OnFinalize() { _onOpenReport = null; _onViewFullReport = null; base.OnFinalize(); }
 
 	private static string BuildDisplayTagText(string rawTagText, out int tagKind)
 	{

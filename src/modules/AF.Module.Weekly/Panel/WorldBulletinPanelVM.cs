@@ -261,14 +261,7 @@ public sealed class WorldBulletinPanelVM : ViewModel
 	private readonly Action<string> _onOpenEncyclopediaLink;
 	private readonly List<KeyValuePair<string, string>> _minors;
 	private readonly EncyclopediaEntityLinkFormatter.DisplaySession _links;
-	private int _minorPage;
 	private float _minorScrollPosition;
-
-	[DataSourceProperty] public string MinorPageText => (_minorPage + 1) + " / " + MinorPageCount;
-	private int MinorPageCount => Math.Max(1, (_minors.Count + WorldBulletinPolicy.MaxMinors - 1) / WorldBulletinPolicy.MaxMinors);
-	[DataSourceProperty] public bool ShowMinorPagination => MinorPageCount > 1;
-	[DataSourceProperty] public bool CanPreviousMinorPage => _minorPage > 0;
-	[DataSourceProperty] public bool CanNextMinorPage => _minorPage + 1 < MinorPageCount;
 	[DataSourceProperty] public float MinorScrollPosition
 	{
 		get => _minorScrollPosition;
@@ -357,30 +350,23 @@ public sealed class WorldBulletinPanelVM : ViewModel
 		}
 		_minors = new List<KeyValuePair<string, string>>(data.Minors ?? new List<KeyValuePair<string, string>>());
 		HasMinors = _minors.Count > 0;
-		RefreshMinorPage();
+		RefreshMinors();
 	}
 
-	private void RefreshMinorPage()
+	private void RefreshMinors()
 	{
 		LeftMinors.Clear();
 		RightMinors.Clear();
-		int start = _minorPage * WorldBulletinPolicy.MaxMinors;
-		int count = Math.Min(WorldBulletinPolicy.MaxMinors, _minors.Count - start);
+		int count = _minors.Count;
 		int leftCount = (count + 1) / 2;
 		for (int i = 0; i < count; i++)
 		{
-			var minor = _minors[start + i];
+			var minor = _minors[i];
 			WorldBulletinMinorItemVM item = new WorldBulletinMinorItemVM("¶ " + Sanitize(minor.Key), _links.Format((minor.Value ?? "").Trim()), HandleLink);
 			(i < leftCount ? LeftMinors : RightMinors).Add(item);
 		}
 		MinorScrollPosition = 0;
-		OnPropertyChangedWithValue(MinorPageText, nameof(MinorPageText));
-		OnPropertyChangedWithValue(CanPreviousMinorPage, nameof(CanPreviousMinorPage));
-		OnPropertyChangedWithValue(CanNextMinorPage, nameof(CanNextMinorPage));
 	}
-
-	public void ExecutePreviousMinorPage() { if (CanPreviousMinorPage) { _minorPage--; RefreshMinorPage(); } }
-	public void ExecuteNextMinorPage() { if (CanNextMinorPage) { _minorPage++; RefreshMinorPage(); } }
 
 	private static bool IsCjk(char c)
 	{
