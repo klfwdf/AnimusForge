@@ -6,10 +6,96 @@ using static AnimusForge.MyBehavior;
 
 namespace AnimusForge;
 
-// Read/display policy only. One archive snapshot per open/reload, no per-frame scan,
-// no duplicate records, additional LLM calls or inference from generated prose.
+// Archive work runs on open/reload, never per frame. Original legacy records stay intact.
 internal static class WeeklyReportArchivePolicy
 {
+    internal const string RegionalMaterialType = "bulletin_regional_news";
+
+    internal static bool IsRegionalSummary(EventRecordEntry entry)
+        => entry != null && string.Equals(entry.EventKind, "kingdom", StringComparison.OrdinalIgnoreCase)
+            && !IsBulletin(entry.EventId) && entry.WeekIndex > 0
+            && ((entry.EventId ?? "").EndsWith(":brief", StringComparison.OrdinalIgnoreCase)
+                || (string.IsNullOrWhiteSpace(entry.Summary) && !string.IsNullOrWhiteSpace(entry.ShortSummary)));
+
+    internal static EventMaterialReference RegionalMaterial(EventRecordEntry entry)
+        => new EventMaterialReference {
+            MaterialType = RegionalMaterialType, Label = entry.Title, KingdomId = entry.ScopeKingdomId,
+            SnapshotText = string.IsNullOrWhiteSpace(entry.Summary) ? entry.ShortSummary : entry.Summary,
+            ActionDay = entry.CreatedDay, SourceStableKeys = new List<string> { entry.EventId }
+        };
+
+    internal static void AttachRegionalNews(EventRecordEntry issue, EventMaterialReference news)
+    {
+        issue.Materials ??= new List<EventMaterialReference>();
+        string key = news.SourceStableKeys?.FirstOrDefault();
+        int existing = issue.Materials.FindIndex(m => m?.MaterialType == RegionalMaterialType
+            && m.SourceStableKeys?.Contains(key, StringComparer.OrdinalIgnoreCase) == true);
+        if (existing >= 0) issue.Materials[existing] = news;
+        else issue.Materials.Add(news);
+        issue.BulletinKingdomIds = NormalizeKingdomIds((issue.BulletinKingdomIds ?? new List<string>()).Concat(new[] { news.KingdomId }));
+    }
+
+    internal static string BodyWithRegionalNews(EventRecordEntry entry)
+    {
+        var news = entry.Materials?.Where(m => m?.MaterialType == RegionalMaterialType).ToList();
+        string body = (string.IsNullOrWhiteSpace(entry.Summary) ? entry.ShortSummary : entry.Summary) ?? "";
+        if (news == null || news.Count == 0) return body;
+        if (IsBulletin(entry.EventId) && body.IndexOf("【其他消息】", StringComparison.Ordinal) < 0)
+            body += "\n\n【其他消息】";
+        var text = new System.Text.StringBuilder(body);
+        foreach (var item in news)
+            text.Append("\n\n").Append(item.Label ?? "各地消息").Append('：')
+                .Append((item.SnapshotText ?? "").Replace("\r\n", " ").Replace('\r', ' ').Replace('\n', ' '));
+        return text.ToString().Trim();
+    }
+
+    internal static List<EventRecordEntry> BuildArchiveSnapshot(List<EventRecordEntry> records,
+        IReadOnlyDictionary<string, List<string>> legacyAssociations = null)
+    {
+        var result = (records ?? new List<EventRecordEntry>()).Where(e => e != null && !IsRegionalSummary(e))
+            .Select(CloneForArchive).ToList();
+        foreach (var entry in result)
+            entry.BulletinKingdomIds = NormalizeKingdomIds(RelatedKingdomIds(entry, legacyAssociations));
+        var bulletins = result.Where(e => IsBulletin(e.EventId) && string.Equals(e.EventKind, "world", StringComparison.OrdinalIgnoreCase))
+            .OrderBy(e => e.CreatedDay).ThenBy(e => IssueNumber(e.EventId)).ToList();
+        var worldWeeks = result.Where(e => !IsBulletin(e.EventId) && string.Equals(e.EventKind, "world", StringComparison.OrdinalIgnoreCase))
+            .GroupBy(e => e.WeekIndex).ToDictionary(g => g.Key, g => g.OrderByDescending(e => e.CreatedDay).First());
+        var orphanWeeks = new Dictionary<int, EventRecordEntry>();
+        foreach (var summary in (records ?? new List<EventRecordEntry>()).Where(IsRegionalSummary))
+        {
+            bool brief = (summary.EventId ?? "").EndsWith(":brief", StringComparison.OrdinalIgnoreCase);
+            int endDay = Math.Max(summary.CreatedDay, summary.WeekIndex * 7);
+            int startDay = brief ? (summary.WeekIndex - 1) * 7 : Math.Max(0, endDay - 7);
+            // Weekly short reports belong to their exact weekly edition; bulletin briefs to the latest issue in their covered week.
+            EventRecordEntry parent = !brief && worldWeeks.TryGetValue(summary.WeekIndex, out var weekly) ? weekly : null;
+            if (parent == null)
+            {
+                int low = 0, high = bulletins.Count;
+                while (low < high) { int mid = low + (high - low) / 2; if (bulletins[mid].CreatedDay <= endDay) low = mid + 1; else high = mid; }
+                if (low > 0 && bulletins[low - 1].CreatedDay >= startDay) parent = bulletins[low - 1];
+            }
+            if (parent == null && worldWeeks.TryGetValue(summary.WeekIndex, out weekly)) parent = weekly;
+            if (parent == null && !orphanWeeks.TryGetValue(summary.WeekIndex, out parent))
+            {
+                // An old save may have only local records. Keep their full text in one browseable edition per week.
+                parent = new EventRecordEntry { EventId = "weekly_report:world:bulletin:archive:" + summary.WeekIndex,
+                    EventKind = "world", ScopeKingdomId = "", WeekIndex = summary.WeekIndex,
+                    Title = "第" + summary.WeekIndex + "周各地消息", Summary = "【其他消息】",
+                    CreatedDay = endDay, CreatedDate = summary.CreatedDate };
+                orphanWeeks.Add(summary.WeekIndex, parent); result.Add(parent);
+            }
+            AttachRegionalNews(parent, RegionalMaterial(summary));
+        }
+        return result;
+    }
+
+    private static EventRecordEntry CloneForArchive(EventRecordEntry e)
+        => new EventRecordEntry { EventId = e.EventId, EventKind = e.EventKind, ScopeKingdomId = e.ScopeKingdomId,
+            WeekIndex = e.WeekIndex, Title = e.Title, Summary = e.Summary, ShortSummary = e.ShortSummary,
+            TagText = e.TagText, PromptText = e.PromptText, CreatedDay = e.CreatedDay, CreatedDate = e.CreatedDate,
+            BulletinKingdomIds = NormalizeKingdomIds(e.BulletinKingdomIds),
+            Materials = new List<EventMaterialReference>(e.Materials ?? new List<EventMaterialReference>()) };
+
     internal static bool IsBulletin(string eventId)
         => (eventId ?? "").IndexOf(":bulletin:", StringComparison.OrdinalIgnoreCase) >= 0;
 
@@ -32,8 +118,9 @@ internal static class WeeklyReportArchivePolicy
     internal static IReadOnlyList<string> RelatedKingdomIds(EventRecordEntry entry,
         IReadOnlyDictionary<string, List<string>> legacyAssociations)
     {
-        if (entry == null || !IsBulletin(entry.EventId)) return Array.Empty<string>();
+        if (entry == null) return Array.Empty<string>();
         if (entry.BulletinKingdomIds?.Count > 0) return entry.BulletinKingdomIds;
+        if (!IsBulletin(entry.EventId)) return Array.Empty<string>();
         if (legacyAssociations != null && legacyAssociations.TryGetValue((entry.EventId ?? "").Trim(), out var ids) && ids != null)
             return ids;
         return Array.Empty<string>(); // No trustworthy old metadata: do not guess from prose.
@@ -46,7 +133,7 @@ internal static class WeeklyReportArchivePolicy
         if (string.Equals((entry.EventKind ?? "").Trim(), eventKind, StringComparison.OrdinalIgnoreCase)
             && string.Equals((entry.ScopeKingdomId ?? "").Trim(), kingdomId, StringComparison.OrdinalIgnoreCase)) return true;
         return string.Equals(eventKind, "kingdom", StringComparison.OrdinalIgnoreCase)
-            && !string.IsNullOrWhiteSpace(kingdomId) && IsBulletin(entry.EventId)
+            && !string.IsNullOrWhiteSpace(kingdomId)
             && RelatedKingdomIds(entry, legacyAssociations).Any(id => string.Equals((id ?? "").Trim(), kingdomId, StringComparison.OrdinalIgnoreCase));
     }
 

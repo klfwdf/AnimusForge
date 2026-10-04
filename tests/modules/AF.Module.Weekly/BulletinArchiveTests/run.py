@@ -36,6 +36,9 @@ assert period.attrib.get("WidthSizePolicy")=="StretchToParent", "Issue/category 
 country_list=next(node for node in ui.iter() if node.attrib.get("DataSource")=="{CountryItems}")
 assert any(node.attrib.get("Command.Click")=="ExecuteSelect" for node in country_list.iter()), "Country select binding missing"
 assert any(node.attrib.get("Text")=="@BodyText" for node in ui.iter()), "Report body binding missing"
+open_button=next(node for node in ui.iter() if node.attrib.get("Command.Click")=="ExecuteOpenReport")
+assert open_button.attrib.get("IsVisible")=="@ShowOpenReport"
+assert any(node.attrib.get("Text")=="@OpenReportText" and node.attrib.get("DoNotAcceptEvents")=="true" for node in open_button.iter())
 print("PASS existing XML period width, country select and report body bindings (not rendering)")
 newtonsoft=ROOT/"local/dotnet/8.0.425/sdk/8.0.425/Newtonsoft.Json.dll"
 if not newtonsoft.is_file():raise RuntimeError("Missing local Newtonsoft.Json reference")

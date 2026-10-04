@@ -15,6 +15,8 @@ namespace AnimusForge {
   public System.Collections.Generic.List<WeeklyReportBrowserCountryData> Countries=new();
   public System.Collections.Generic.List<WeeklyReportBrowserCountryData> GetTerminalWeeklyReportBrowserCountries()=>Countries;
   public System.Threading.Tasks.Task<bool> GenerateWeeklyReportFullByEventIdAsync(string id)=>System.Threading.Tasks.Task.FromResult(false);
+  public string OpenedId; public int Opens;
+  internal bool OpenArchivedWeeklyReport(string id){OpenedId=id;Opens++;return true;}
  }
  internal sealed class WorldBulletinLayout { public string EventId;public System.Collections.Generic.List<string> KingdomIds=new(); }
  internal sealed class WorldBulletinPort {

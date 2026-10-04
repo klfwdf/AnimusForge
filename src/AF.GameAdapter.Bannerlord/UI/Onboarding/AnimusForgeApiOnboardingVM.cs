@@ -64,7 +64,7 @@ public sealed class AnimusForgeApiOnboardingVM : ViewModel
 		set => SetField(ref _titleText, value, nameof(TitleText));
 	}
 
-	private string _subtitleText = "选择最适合你的 AI 方案，点击卡片进入下一步配置";
+	private string _subtitleText = "";
 	[DataSourceProperty]
 	public string SubtitleText
 	{
@@ -545,10 +545,10 @@ public sealed class AnimusForgeApiOnboardingVM : ViewModel
 		{
 			case OnboardingView.Main:
 				TitleText = "AnimusForge - API 快捷配置向导";
-				SubtitleText = "选择最适合你的 AI 方案，点击卡片进入下一步配置";
+				SubtitleText = "";
 				break;
 			case OnboardingView.YjMenu:
-				TitleText = "YJ API 官方中转站 · 专属配置向导";
+				TitleText = "YJ API 中转站 · 配置向导";
 				SubtitleText = "免魔法国内直连，请选择单分组或多分组接入方式";
 				break;
 			case OnboardingView.MultiApi:
@@ -556,7 +556,7 @@ public sealed class AnimusForgeApiOnboardingVM : ViewModel
 				SubtitleText = _isCustomMode ? "在一个面板中集中设置 4 条 API 的 Base URL、Key 与绑定模型" : "Base URL 已预设为 YJ 专线，支持 4 条管线分别配置 Key 与模型";
 				break;
 			case OnboardingView.YjModels:
-				TitleText = "YJ 官方专线 · 4 处场景模型统一挑选";
+				TitleText = "YJ API 中转专线 · 模型选择";
 				SubtitleText = "已绑定单分组 Key，请为以下 4 处场景挑选模型";
 				break;
 			case OnboardingView.Testing:

@@ -14,7 +14,12 @@ namespace AnimusForge {
  internal static class Logger {internal static void Log(string a,string b){} }
  internal sealed class NpcActionEntry {}
  internal sealed class WorldBulletinPanelData { internal string EventId; }
- internal static class DevWeeklyReportPopup { internal static Action Reading; internal static bool Result=true; internal static bool ShowWorldBulletin(WorldBulletinPanelData data,double seconds,Action read){Reading=read;return Result;} }
+ internal static class DevWeeklyReportPopup {
+  internal static Action Reading; internal static bool Result=true;
+  internal static string OpenedId, Body; internal static double Seconds;
+  internal static bool ShowWorldBulletin(WorldBulletinPanelData data,double seconds=0,Action read=null){OpenedId=data.EventId;Seconds=seconds;Reading=read;return Result;}
+  internal static bool Show(string title,string subtitle,string body,Action onClose=null,string closeText=null,bool useChronicleColumns=false,bool useShortReportLayout=false,bool showCloseButton=true,double minimumDwellSeconds=0,Action onMinimumDwellMet=null){Body=body;Seconds=minimumDwellSeconds;Reading=onMinimumDwellMet;return Result;}
+ }
 }
 
 namespace AnimusForge { public partial class MyBehavior {

@@ -97,6 +97,7 @@ static class Program
 
         DuelSettings.Current=new();var settings=DuelSettings.Current;int completed=0,cancelled=0;
         var vm=new AnimusForgeApiOnboardingVM(false,()=>completed++,()=>cancelled++);
+        Check(vm.SubtitleText=="","onboarding main page has no explanatory small text");
         Check(vm.PrimaryModel=="persisted-main"&&vm.AuxiliaryModel=="persisted-aux","custom persisted models preserved by selector callback");
         Check(vm.PrimaryModelSelector.Options[vm.PrimaryModelSelector.SelectedIndex]=="persisted-main","selected item matches model sent to API");
         vm.ExecuteSaveAndFinish();Check(completed==0&&ModOnboardingBehavior.Saves==0,"cannot bypass unsuccessful test");
@@ -106,6 +107,7 @@ static class Program
         vm.ExecuteSelectDeepSeekFlash();vm.ExecuteEditPromptKey();
         Check(vm.IsKeyPromptVisible,"paste helper cannot replace outer key-confirm callback");
         vm.ExecuteCancelPromptKey();vm.ExecuteBackToMain();
+        Check(vm.SubtitleText=="","return to main clears secondary-page explanation");
         settings.EventAndRebellionApiKey="";
         vm.ExecuteUseExistingConfig();Pump(vm,()=>vm.IsSuccessViewVisible);
         Check(ModOnboardingBehavior.Calls.Count==3,"incomplete optional event API skipped");
@@ -200,6 +202,15 @@ static class Program
             Check(XDocument.Load(Path.Combine(root,path)).Descendants().Any(x=>(string)x.Attribute("SuppressOpeningInteractionKey")=="true"),"opening-key guard bound in "+path);
         var onboarding=XDocument.Load(Path.Combine(root,"content/modules/AF.Module.Onboarding/GUI/Prefabs/AnimusForgeApiOnboardingPopup.xml"));
         Check(onboarding.Descendants().Any(x=>(string)x.Attribute("Command.Click")=="ExecuteUseExistingConfig"),"existing API action visible");
+        var mainOptions=onboarding.Descendants().Single(x=>(string)x.Attribute("IsVisible")=="@IsMainViewVisible"&&x.Descendants("ButtonWidget").Any(b=>(string)b.Attribute("Command.Click")=="ExecuteSelectYj"));
+        var optionButtons=mainOptions.Descendants("ButtonWidget").ToArray();
+        Check(optionButtons.Length==5&&optionButtons.Select(x=>(string)x.Attribute("Command.Click")).SequenceEqual(new[]{"ExecuteSelectYj","ExecuteSelectDeepSeekFlash","ExecuteSelectDeepSeekPro","ExecuteSelectCustom","ExecuteUseExistingConfig"}),"five original onboarding commands are retained");
+        Check(optionButtons.All(x=>(int)x.Attribute("SuggestedHeight")==64&&(string)x.Attribute("Brush")=="AF.ApiOnboarding.Option.Button"),"onboarding buttons use stable dimensions and scoped brush");
+        Check(optionButtons.All(x=>x.Element("Children").Elements().Count()==1&&x.Descendants("TextWidget").Count()==1&&(string)x.Descendants("TextWidget").Single().Attribute("DoNotAcceptEvents")=="true"),"each onboarding row has only a single non-intercepting title, no description or badge");
+        Check(!mainOptions.ToString().Contains("官方"),"YJ entry no longer claims official relay");
+        var brushes=XDocument.Load(Path.Combine(root,"content/foundation/AF.Foundation.UI/GUI/Brushes/AFCourierLetterBrushes.xml"));
+        foreach(string name in new[]{"AF.ApiOnboarding.Option.Button","AF.ApiOnboarding.Option.Text"})
+            Check(brushes.Descendants("Brush").Count(x=>(string)x.Attribute("Name")==name)==1,"new onboarding brush has exactly one definition: "+name);
         var overlay=Read(root,"src/AF.GameAdapter.Bannerlord/UI/Conversation/AnimusForgeNativeConversationOverlay.cs");
         var modeHandler=overlay.Substring(overlay.IndexOf("private void HandleSwitchTalkRequested("));
         modeHandler=modeHandler.Substring(0,modeHandler.IndexOf("private void SetLayerForButtonsOnly("));

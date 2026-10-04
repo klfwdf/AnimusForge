@@ -29,129 +29,36 @@
                 <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginTop="86" MarginBottom="62">
                   <Children>
 
-                    <!-- ================= 1. 主选单面板 (4大卡片) ================= -->
+                    <!-- ================= 1. 主选单面板 ================= -->
                     <Widget IsVisible="@IsMainViewVisible" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent">
                       <Children>
-                        <ListPanel WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" VerticalAlignment="Center" LayoutImp.LayoutMethod="VerticalTopToBottom">
+                        <ListPanel WidthSizePolicy="Fixed" SuggestedWidth="660" HeightSizePolicy="CoverChildren" HorizontalAlignment="Center" VerticalAlignment="Center" LayoutImp.LayoutMethod="VerticalTopToBottom">
                           <Children>
-
-                            <!-- 卡片 1: YJ API 官方中转专线 -->
-                            <ButtonWidget DoNotPassEventsToChildren="true" Command.Click="ExecuteSelectYj" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="84" MarginBottom="8" Brush="Popup.Cancel.Button" UpdateChildrenStates="true">
+                            <ButtonWidget DoNotPassEventsToChildren="true" Command.Click="ExecuteSelectYj" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="64" MarginBottom="12" Brush="AF.ApiOnboarding.Option.Button" UpdateChildrenStates="true">
                               <Children>
-                                <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#181410FF" AlphaFactor="0.65" IsEnabled="false" />
-                                <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="frame_9" ExtendLeft="4" ExtendTop="4" ExtendRight="4" ExtendBottom="4" Color="#8D7041FF" AlphaFactor="0.55" IsEnabled="false" />
-                                <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="18" MarginRight="18" MarginTop="10" MarginBottom="10">
-                                  <Children>
-                                    <ListPanel WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" VerticalAlignment="Top" LayoutImp.LayoutMethod="HorizontalLeftToRight">
-                                      <Children>
-                                        <RichTextWidget Text="YJ API 官方中转专线" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" Brush="Popup.Tuple.Text" Brush.FontSize="18" Brush.FontColor="#F5E3C3FF" />
-                                        <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="10" SuggestedHeight="1" />
-                                        <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="140" SuggestedHeight="24" VerticalAlignment="Center">
-                                          <Children>
-                                            <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#000000FF" AlphaFactor="0.35" IsEnabled="false" />
-                                            <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="frame_9" Color="#8D7041FF" AlphaFactor="0.6" IsEnabled="false" />
-                                            <TextWidget Text="免魔法直连 · 一键搞定" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="Popup.Description.Text" Brush.FontSize="11" Brush.FontColor="#DBCBB2FF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" />
-                                          </Children>
-                                        </Widget>
-                                      </Children>
-                                    </ListPanel>
-                                    <RichTextWidget Text="官方合作专线，国内各大运营商直连无需网络代理。单分组填入 KEY 统一选择多模型，多分组自动预设 URL。" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MarginTop="32" Brush="Popup.Description.Text" Brush.FontSize="13" Brush.FontColor="#D4C8B8FF" />
-                                    <RichTextWidget Text="点击进入：包含单分组/多分组通道、获取 Key 充值通道、QQ 交流群" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MarginTop="66" Brush="Popup.Description.Text" Brush.FontSize="12" Brush.FontColor="#A89A84FF" />
-                                    <TextWidget Text="➔" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="24" SuggestedHeight="24" HorizontalAlignment="Right" VerticalAlignment="Center" Brush="Popup.Tuple.Text" Brush.FontSize="20" Brush.FontColor="#C5A878FF" />
-                                  </Children>
-                                </Widget>
+                                <TextWidget Text="YJ API 中转专线" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="24" MarginRight="24" Brush="AF.ApiOnboarding.Option.Text" DoNotAcceptEvents="true" />
                               </Children>
                             </ButtonWidget>
-
-                            <!-- 卡片 2: DeepSeek Flash 极速推荐 -->
-                            <ButtonWidget DoNotPassEventsToChildren="true" Command.Click="ExecuteSelectDeepSeekFlash" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="84" MarginBottom="8" Brush="Popup.Cancel.Button" UpdateChildrenStates="true">
+                            <ButtonWidget DoNotPassEventsToChildren="true" Command.Click="ExecuteSelectDeepSeekFlash" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="64" MarginBottom="12" Brush="AF.ApiOnboarding.Option.Button" UpdateChildrenStates="true">
                               <Children>
-                                <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#181410FF" AlphaFactor="0.65" IsEnabled="false" />
-                                <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="frame_9" ExtendLeft="4" ExtendTop="4" ExtendRight="4" ExtendBottom="4" Color="#8D7041FF" AlphaFactor="0.55" IsEnabled="false" />
-                                <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="18" MarginRight="18" MarginTop="10" MarginBottom="10">
-                                  <Children>
-                                    <ListPanel WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" VerticalAlignment="Top" LayoutImp.LayoutMethod="HorizontalLeftToRight">
-                                      <Children>
-                                        <RichTextWidget Text="DeepSeek Flash 极速推荐组合" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" Brush="Popup.Tuple.Text" Brush.FontSize="18" Brush.FontColor="#F5E3C3FF" />
-                                        <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="10" SuggestedHeight="1" />
-                                        <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="140" SuggestedHeight="24" VerticalAlignment="Center">
-                                          <Children>
-                                            <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#000000FF" AlphaFactor="0.35" IsEnabled="false" />
-                                            <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="frame_9" Color="#8D7041FF" AlphaFactor="0.6" IsEnabled="false" />
-                                            <TextWidget Text="超快响应 · 极致性价比" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="Popup.Description.Text" Brush.FontSize="11" Brush.FontColor="#DBCBB2FF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" />
-                                          </Children>
-                                        </Widget>
-                                      </Children>
-                                    </ListPanel>
-                                    <RichTextWidget Text="主模型使用 deepseek-chat，意图路由采用极速轻量通道，打字流毫秒级瞬发输出。" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MarginTop="32" Brush="Popup.Description.Text" Brush.FontSize="13" Brush.FontColor="#D4C8B8FF" />
-                                    <RichTextWidget Text="适合快节奏战场喊话、即时交谈，只需输入 1 次官方 Key 自动完成 4 路分配" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MarginTop="66" Brush="Popup.Description.Text" Brush.FontSize="12" Brush.FontColor="#A89A84FF" />
-                                    <TextWidget Text="➔" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="24" SuggestedHeight="24" HorizontalAlignment="Right" VerticalAlignment="Center" Brush="Popup.Tuple.Text" Brush.FontSize="20" Brush.FontColor="#C5A878FF" />
-                                  </Children>
-                                </Widget>
+                                <TextWidget Text="DeepSeek Flash" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="24" MarginRight="24" Brush="AF.ApiOnboarding.Option.Text" DoNotAcceptEvents="true" />
                               </Children>
                             </ButtonWidget>
-
-                            <!-- 卡片 3: DeepSeek Pro 深度智谋 -->
-                            <ButtonWidget DoNotPassEventsToChildren="true" Command.Click="ExecuteSelectDeepSeekPro" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="84" MarginBottom="8" Brush="Popup.Cancel.Button" UpdateChildrenStates="true">
+                            <ButtonWidget DoNotPassEventsToChildren="true" Command.Click="ExecuteSelectDeepSeekPro" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="64" MarginBottom="12" Brush="AF.ApiOnboarding.Option.Button" UpdateChildrenStates="true">
                               <Children>
-                                <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#181410FF" AlphaFactor="0.65" IsEnabled="false" />
-                                <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="frame_9" ExtendLeft="4" ExtendTop="4" ExtendRight="4" ExtendBottom="4" Color="#8D7041FF" AlphaFactor="0.55" IsEnabled="false" />
-                                <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="18" MarginRight="18" MarginTop="10" MarginBottom="10">
-                                  <Children>
-                                    <ListPanel WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" VerticalAlignment="Top" LayoutImp.LayoutMethod="HorizontalLeftToRight">
-                                      <Children>
-                                        <RichTextWidget Text="DeepSeek Pro 深度智谋组合" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" Brush="Popup.Tuple.Text" Brush.FontSize="18" Brush.FontColor="#F5E3C3FF" />
-                                        <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="10" SuggestedHeight="1" />
-                                        <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="140" SuggestedHeight="24" VerticalAlignment="Center">
-                                          <Children>
-                                            <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#000000FF" AlphaFactor="0.35" IsEnabled="false" />
-                                            <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="frame_9" Color="#8D7041FF" AlphaFactor="0.6" IsEnabled="false" />
-                                            <TextWidget Text="深度思维链 · 细腻情感" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="Popup.Description.Text" Brush.FontSize="11" Brush.FontColor="#DBCBB2FF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" />
-                                          </Children>
-                                        </Widget>
-                                      </Children>
-                                    </ListPanel>
-                                    <RichTextWidget Text="主模型使用 deepseek-reasoner，具备长思维链推理，深入理解领主野心、家族性格与天下大势。" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MarginTop="32" Brush="Popup.Description.Text" Brush.FontSize="13" Brush.FontColor="#D4C8B8FF" />
-                                    <RichTextWidget Text="适合深度领地治理、沉浸博弈与长篇周报，同样仅需输入 1 次 Key" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MarginTop="66" Brush="Popup.Description.Text" Brush.FontSize="12" Brush.FontColor="#A89A84FF" />
-                                    <TextWidget Text="➔" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="24" SuggestedHeight="24" HorizontalAlignment="Right" VerticalAlignment="Center" Brush="Popup.Tuple.Text" Brush.FontSize="20" Brush.FontColor="#C5A878FF" />
-                                  </Children>
-                                </Widget>
+                                <TextWidget Text="DeepSeek Pro" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="24" MarginRight="24" Brush="AF.ApiOnboarding.Option.Text" DoNotAcceptEvents="true" />
                               </Children>
                             </ButtonWidget>
-
-                            <!-- 卡片 4: 完全自定义 API 配置 -->
-                            <ButtonWidget DoNotPassEventsToChildren="true" Command.Click="ExecuteSelectCustom" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="84" MarginBottom="4" Brush="Popup.Cancel.Button" UpdateChildrenStates="true">
+                            <ButtonWidget DoNotPassEventsToChildren="true" Command.Click="ExecuteSelectCustom" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="64" MarginBottom="12" Brush="AF.ApiOnboarding.Option.Button" UpdateChildrenStates="true">
                               <Children>
-                                <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#181410FF" AlphaFactor="0.65" IsEnabled="false" />
-                                <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="frame_9" ExtendLeft="4" ExtendTop="4" ExtendRight="4" ExtendBottom="4" Color="#8D7041FF" AlphaFactor="0.55" IsEnabled="false" />
-                                <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="18" MarginRight="18" MarginTop="10" MarginBottom="10">
-                                  <Children>
-                                    <ListPanel WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" VerticalAlignment="Top" LayoutImp.LayoutMethod="HorizontalLeftToRight">
-                                      <Children>
-                                        <RichTextWidget Text="完全自定义 API 配置" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" Brush="Popup.Tuple.Text" Brush.FontSize="18" Brush.FontColor="#F5E3C3FF" />
-                                        <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="10" SuggestedHeight="1" />
-                                        <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="160" SuggestedHeight="24" VerticalAlignment="Center">
-                                          <Children>
-                                            <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#000000FF" AlphaFactor="0.35" IsEnabled="false" />
-                                            <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="frame_9" Color="#8D7041FF" AlphaFactor="0.6" IsEnabled="false" />
-                                            <TextWidget Text="自由极客 · 支持任意服务商" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="Popup.Description.Text" Brush.FontSize="11" Brush.FontColor="#DBCBB2FF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" />
-                                          </Children>
-                                        </Widget>
-                                      </Children>
-                                    </ListPanel>
-                                    <RichTextWidget Text="进入统一的多 API 配置面板，自由填写 4 条管线的 Base URL、API Key 并独立拉取绑定模型。" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MarginTop="32" Brush="Popup.Description.Text" Brush.FontSize="13" Brush.FontColor="#D4C8B8FF" />
-                                    <RichTextWidget Text="点击进入：在一个面板中集中设置主 API、前处理、后处理与周报四条管线" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MarginTop="66" Brush="Popup.Description.Text" Brush.FontSize="12" Brush.FontColor="#A89A84FF" />
-                                    <TextWidget Text="➔" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="24" SuggestedHeight="24" HorizontalAlignment="Right" VerticalAlignment="Center" Brush="Popup.Tuple.Text" Brush.FontSize="20" Brush.FontColor="#C5A878FF" />
-                                  </Children>
-                                </Widget>
+                                <TextWidget Text="自定义 API 配置" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="24" MarginRight="24" Brush="AF.ApiOnboarding.Option.Text" DoNotAcceptEvents="true" />
                               </Children>
                             </ButtonWidget>
-                            <ButtonWidget DoNotPassEventsToChildren="true" Command.Click="ExecuteUseExistingConfig" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="54" MarginTop="4" Brush="Popup.Done.Button" UpdateChildrenStates="true">
+                            <ButtonWidget DoNotPassEventsToChildren="true" Command.Click="ExecuteUseExistingConfig" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="64" MarginBottom="12" Brush="AF.ApiOnboarding.Option.Button" UpdateChildrenStates="true">
                               <Children>
-                                <TextWidget Text="使用现有 API 配置（测试当前 MCM 设置）" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="Popup.Button.Text" Brush.FontSize="16" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" DoNotAcceptEvents="true" />
+                                <TextWidget Text="使用现有 API 配置" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="24" MarginRight="24" Brush="AF.ApiOnboarding.Option.Text" DoNotAcceptEvents="true" />
                               </Children>
                             </ButtonWidget>
-
                           </Children>
                         </ListPanel>
                       </Children>

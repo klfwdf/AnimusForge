@@ -82,12 +82,13 @@ internal static class WeeklyEditorProjection
 			{
 				text3 = BuildWeeklyReportBrowserDefaultTitle(port, text, text2, x.WeekIndex);
 			}
+			string body = WeeklyReportArchivePolicy.BodyWithRegionalNews(x).Trim();
 			return new WeeklyReportBrowserEntryData
 			{
 				EventId = (x.EventId ?? "").Trim(),
 				WeekIndex = Math.Max(0, x.WeekIndex),
 				Title = text3,
-				BodyText = !string.IsNullOrWhiteSpace(x.Summary) ? x.Summary.Trim() : (!string.IsNullOrWhiteSpace(x.ShortSummary) ? x.ShortSummary.Trim() : "\u5f53\u524d\u8fd9\u671f\u5468\u62a5\u8fd8\u6ca1\u6709\u6b63\u6587\u3002"),
+				BodyText = body.Length == 0 ? "当前这期周报还没有正文。" : body,
 				CreatedDate = (!string.IsNullOrWhiteSpace(x.CreatedDate) ? x.CreatedDate.Trim() : ("\u7b2c " + Math.Max(0, x.CreatedDay) + " \u65e5")),
 				CreatedDay = Math.Max(0, x.CreatedDay),
 				TagText = (x.TagText ?? "").Trim(),

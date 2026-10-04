@@ -73,7 +73,7 @@ internal WorldBulletinLayout FindWorldBulletinLayout(string eventId)
 internal WorldBulletinPanelData BuildWorldBulletinPanelData(EventRecordEntry entry, string eventId)
 	{
 		WorldBulletinLayout layout = FindWorldBulletinLayout(eventId);
-		SplitWorldBulletinBody(entry.Summary, out string major, out List<string> minorLines);
+		SplitWorldBulletinBody(WeeklyReportArchivePolicy.BodyWithRegionalNews(entry), out string major, out List<string> minorLines);
 		if (major.Length == 0)
 		{
 			major = (entry.ShortSummary ?? "").Trim();

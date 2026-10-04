@@ -317,8 +317,10 @@ internal void WriteWorldBulletinKingdomBriefs(WorldBulletinSaveState state, int 
 		{
 			return;
 		}
-		state.LastKingdomWeek = week;
 		int startDay = week * 7 - 7;
+		EventRecordEntry issue = FindLatestWorldBulletinRecord();
+		if (issue == null || issue.CreatedDay < startDay || issue.CreatedDay > day) return;
+		state.LastKingdomWeek = week;
 		bool fullWindow = state.TrackingStartDay >= 0 && state.TrackingStartDay <= startDay;
 		int written = 0;
 		foreach (KeyValuePair<string,string> kingdom in _port.EligibleKingdoms())
@@ -332,10 +334,13 @@ internal void WriteWorldBulletinKingdomBriefs(WorldBulletinSaveState state, int 
 			string name = kingdom.Value;
 			string template = WorldBulletinPolicy.BuildKingdomTemplate(name, facts);
 			string eventId = "weekly_report:kingdom:" + week + ":" + kingdomId + ":brief";
-			UpsertWorldBulletinRecord(eventId, "kingdom", kingdomId, name + "第" + week + "周局势提要", template, template, day);
+			WeeklyReportArchivePolicy.AttachRegionalNews(issue, WeeklyReportArchivePolicy.RegionalMaterial(new EventRecordEntry {
+				EventId = eventId, ScopeKingdomId = kingdomId, Title = name + "第" + week + "周近况", Summary = template, CreatedDay = day
+			}));
 			written++;
 		}
-		_port.Log("WorldBulletin", "[KingdomBrief] week=" + week + " written=" + written);
+		if (written > 0) _port.NotifyTimeline();
+		_port.Log("WorldBulletin", "[KingdomBrief] week=" + week + " attached=" + written + " issue=" + issue.EventId);
 	}
 internal void OnWorldBulletinHourlyTick()
 	{

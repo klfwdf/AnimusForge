@@ -85,3 +85,17 @@ Check(archive.Single(x=>x.CountryId=="legacy-vanished").Reports.Count==1,"old la
 Check(archive.Single(x=>x.CountryId=="unrelated").Reports.Count==0,"unrelated live kingdom not contaminated");
 Check(archive[0].IsWorld&&archive[0].Reports.First().BodyText=="current issue body","world canonical archive stays first and current");
 Console.WriteLine($"PASS: {n-archiveStart} production controller bulletin association assertions, {n} total editor assertions.");
+
+failBuild=false;
+Check(ui.OpenArchivedReport("weekly_report:world:bulletin:8:30"),"archive reopens existing issue");
+Check(DevWeeklyReportPopup.OpenedId=="weekly_report:world:bulletin:8:30"&&DevWeeklyReportPopup.Seconds==0&&DevWeeklyReportPopup.Reading==null&&awarded==1,"archive uses exact original panel without wait or reading reward");
+Check(ui.OpenArchivedReport("world-new")&&DevWeeklyReportPopup.Body.Trim()=="full","ordinary full weekly reopens saved body");
+Check(!ui.OpenArchivedReport("missing"),"missing archive does not open unrelated report");
+failBuild=true;
+Check(ui.OpenArchivedReport("weekly_report:world:bulletin:8:30")&&DevWeeklyReportPopup.Body=="current issue body","panel build failure falls back to complete saved text");
+records.Add(new(){EventId="weekly_report:kingdom:4:orphan:brief",EventKind="kingdom",ScopeKingdomId="orphan",WeekIndex=4,CreatedDay=28,Title="orphan news",Summary="regional complete text"});
+var mergedArchive=ui.GetTerminalWeeklyReportBrowserCountries();
+Check(mergedArchive.All(c=>c.Reports.All(r=>!r.EventId.EndsWith(":brief"))),"controller no longer lists standalone regional briefs");
+var orphanIssue=mergedArchive.Single(c=>c.CountryId=="orphan").Reports.Single();
+Check(ui.OpenArchivedReport(orphanIssue.EventId)&&DevWeeklyReportPopup.Body.Contains("regional complete text"),"orphan weekly consolidation remains reopenable without discarding text");
+Console.WriteLine($"PASS: {n} total production editor assertions including archive reopen/fallback.");
