@@ -20,6 +20,7 @@ internal static class EncyclopediaEntityLinkNavigationCoordinator
 	private static Action _pendingSuspend;
 
 	private static Action _pendingResume;
+	private static Func<bool> _pendingIsCurrent;
 
 	private static Action _activeResume;
 
@@ -40,7 +41,7 @@ internal static class EncyclopediaEntityLinkNavigationCoordinator
 	// The layer-name fallback also covers encyclopedia pages opened from a mission screen, where MapScreen is unavailable.
 	private static readonly FieldInfo _screenLayersField = typeof(ScreenBase).GetField("_layers", BindingFlags.Instance | BindingFlags.NonPublic);
 
-	internal static void Request(string link, Action suspendBeforeOpen, Action resumeAfterClose)
+	internal static void Request(string link, Action suspendBeforeOpen, Action resumeAfterClose, Func<bool> isCurrent = null)
 	{
 		string normalizedLink = (link ?? string.Empty).Trim();
 		if (normalizedLink.StartsWith("event:", StringComparison.OrdinalIgnoreCase))
@@ -57,6 +58,7 @@ internal static class EncyclopediaEntityLinkNavigationCoordinator
 			_pendingLink = normalizedLink;
 			_pendingSuspend = suspendBeforeOpen;
 			_pendingResume = resumeAfterClose;
+			_pendingIsCurrent = isCurrent;
 		}
 	}
 
@@ -67,6 +69,7 @@ internal static class EncyclopediaEntityLinkNavigationCoordinator
 		string link = _pendingLink;
 		Action suspend = _pendingSuspend;
 		Action resume = _pendingResume;
+		Func<bool> isCurrent = _pendingIsCurrent;
 		if (string.IsNullOrWhiteSpace(link))
 		{
 			return;
@@ -74,6 +77,8 @@ internal static class EncyclopediaEntityLinkNavigationCoordinator
 		_pendingLink = null;
 		_pendingSuspend = null;
 		_pendingResume = null;
+		_pendingIsCurrent = null;
+		if (isCurrent != null && !isCurrent()) return;
 		PrepareActiveNavigation(resume);
 		try
 		{

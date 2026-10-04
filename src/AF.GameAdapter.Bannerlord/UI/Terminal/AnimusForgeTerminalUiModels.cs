@@ -58,6 +58,8 @@ public sealed class AnimusForgeTerminalPopup
 	private readonly Action _onClose;
 	private bool _isClosed;
 	private bool _consumeEscapeRelease;
+	private bool _encyclopediaSuspended;
+	private readonly long _saveGeneration = SaveRuntimeGuard.CaptureGeneration();
 
 	public static AnimusForgeTerminalPopup ActivePopup => _activePopup;
 
@@ -124,7 +126,9 @@ public sealed class AnimusForgeTerminalPopup
 	{
 		AnimusForgeTerminalPopup popup = _activePopup;
 		if (popup == null || popup._isClosed) return;
+		if (!SaveRuntimeGuard.IsCurrentGeneration(popup._saveGeneration)) { popup.Close(silent: true); return; }
 		popup._dataSource.WeeklyReportVm?.Tick();
+		if (popup._encyclopediaSuspended) return;
 		if (ScreenManager.TopScreen != popup._screen)
 		{
 			popup.HandleCloseRequested();
@@ -139,7 +143,30 @@ public sealed class AnimusForgeTerminalPopup
 			popup._consumeEscapeRelease = false;
 			return;
 		}
-		if (!wasListening && popup._layer.Input.IsHotKeyReleased("Exit")) popup.HandleCloseRequested();
+		if (!wasListening && popup._layer.Input.IsHotKeyReleased("Exit"))
+		{
+			if (popup._dataSource.WeeklyReportVm?.IsReading == true) popup._dataSource.WeeklyReportVm.ExecuteReturnToList();
+			else popup.HandleCloseRequested();
+		}
+	}
+
+	internal void OpenArchiveEncyclopediaLink(string link)
+	{
+		if (_isClosed || !SaveRuntimeGuard.IsCurrentGeneration(_saveGeneration)) return;
+		EncyclopediaEntityLinkNavigationCoordinator.Request(link, () =>
+		{
+			if (_isClosed || !SaveRuntimeGuard.IsCurrentGeneration(_saveGeneration)) return;
+			_layer.InputRestrictions.ResetInputRestrictions();
+			_layer.IsFocusLayer = false; ScreenManager.TryLoseFocus(_layer);
+			ScreenManager.SetSuspendLayer(_layer, isSuspended: true); _encyclopediaSuspended = true;
+		}, () =>
+		{
+			if (_isClosed) return;
+			if (!SaveRuntimeGuard.IsCurrentGeneration(_saveGeneration) || !ReferenceEquals(ScreenManager.TopScreen, _screen)) { Close(silent: true); return; }
+			ScreenManager.SetSuspendLayer(_layer, isSuspended: false); _encyclopediaSuspended = false;
+			_layer.InputRestrictions.SetInputRestrictions(true, InputUsageMask.All);
+			_layer.IsFocusLayer = true; ScreenManager.TrySetFocus(_layer);
+		}, () => !_isClosed && SaveRuntimeGuard.IsCurrentGeneration(_saveGeneration));
 	}
 
 	private void HandleCloseRequested()
@@ -664,7 +691,8 @@ public sealed class AnimusForgeTerminalPopupVM : ViewModel
 	{
 		_returnToView = ReturnToMenu;
 		WeeklyReportVm?.OnFinalize();
-		WeeklyReportVm = new TerminalWeeklyReportBrowserPopupVM(countries ?? new List<MyBehavior.WeeklyReportBrowserCountryData>(), null, ExecuteBack);
+		WeeklyReportVm = new TerminalWeeklyReportBrowserPopupVM(countries ?? new List<MyBehavior.WeeklyReportBrowserCountryData>(), null, ExecuteBack,
+			link => AnimusForgeTerminalPopup.ActivePopup?.OpenArchiveEncyclopediaLink(link));
 		BreadcrumbText = "终端 / " + _selectedTab + " / 快报与周报档案";
 		SetViewMode(TerminalViewMode.WeeklyReports);
 	}
@@ -882,6 +910,11 @@ public sealed class AnimusForgeTerminalPopupVM : ViewModel
 
 	public void ExecuteBack()
 	{
+		if (_currentViewMode == TerminalViewMode.WeeklyReports && WeeklyReportVm?.IsReading == true)
+		{
+			WeeklyReportVm.ExecuteReturnToList();
+			return;
+		}
 		if (_returnToView != null)
 		{
 			Action onReturn = _returnToView;

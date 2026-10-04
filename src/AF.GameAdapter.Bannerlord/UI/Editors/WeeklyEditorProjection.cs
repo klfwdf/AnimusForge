@@ -82,13 +82,14 @@ internal static class WeeklyEditorProjection
 			{
 				text3 = BuildWeeklyReportBrowserDefaultTitle(port, text, text2, x.WeekIndex);
 			}
-			bool country = string.Equals(text, "kingdom", StringComparison.OrdinalIgnoreCase);
-			var news = country ? WeeklyReportArchivePolicy.CountryNews(x, text2) : null;
-			if (news?.Count > 0) text3 = news[0].Label ?? text3;
-			string body = (country ? WeeklyReportArchivePolicy.CountryBody(x, text2) : WeeklyReportArchivePolicy.BodyWithRegionalNews(x)).Trim();
+			if (WeeklyReportArchivePolicy.IsRecent(x.EventId))
+				text3 = (x.ScopeKingdomId == WeeklyReportArchivePolicy.OtherKingdomId ? "其他近况" : port.ResolveKingdomDisplay(x.ScopeKingdomId) + "近况") + " · " + x.CreatedDate;
+			string body = WeeklyReportArchivePolicy.BodyWithRegionalNews(x).Trim();
 			return new WeeklyReportBrowserEntryData
 			{
 				EventId = (x.EventId ?? "").Trim(),
+				ArchiveKind = WeeklyReportArchivePolicy.EntryKind(x.EventId),
+				OpenTargetId = (x.EventId ?? "").Trim(),
 				WeekIndex = Math.Max(0, x.WeekIndex),
 				Title = text3,
 				BodyText = body.Length == 0 ? "当前这期周报还没有正文。" : body,

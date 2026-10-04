@@ -1,4 +1,4 @@
-<Prefab>
+﻿<Prefab>
   <!-- Layout mirrors pencil-new.pen frame sAH0C (1920×1080 新快报面板 v3｜列国邸报 · 铜版雕刻做旧): 1280x814 sheet on the 1730x1100 wide plate (ornaments kept at native ratio). -->
   <Window>
     <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent">
@@ -122,18 +122,7 @@
             <Widget IsVisible="@HasMinors" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="1078" SuggestedHeight="97" HorizontalAlignment="Center" MarginTop="596" DoNotAcceptEvents="false">
               <Children>
                 <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="219" SuggestedHeight="24" HorizontalAlignment="Center" Brush="AFCourierLetter.Title.Text" Brush.FontSize="16" Brush.FontColor="#2B1C10FF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" Text="其 余 消 息" DoNotAcceptEvents="true" />
-                <ListPanel IsVisible="@ShowMinorPagination" WidthSizePolicy="CoverChildren" HeightSizePolicy="Fixed" SuggestedHeight="24" HorizontalAlignment="Right" LayoutImp.LayoutMethod="HorizontalLeftToRight">
-                  <Children>
-                    <ButtonWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="28" SuggestedHeight="24" DoNotPassEventsToChildren="true" IsEnabled="@CanPreviousMinorPage" Command.Click="ExecutePreviousMinorPage" Brush="AFWorldBulletin.Archive.Button">
-                      <Children><TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Text="&lt;" Brush="AFCourierLetter.Button.Text" Brush.FontSize="16" DoNotAcceptEvents="true" /></Children>
-                    </ButtonWidget>
-                    <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="96" Text="@MinorPageText" Brush="AFCourierLetter.Meta.Text" Brush.FontSize="13" Brush.FontColor="#35261AFF" Brush.TextHorizontalAlignment="Center" DoNotAcceptEvents="true" />
-                    <ButtonWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="28" SuggestedHeight="24" DoNotPassEventsToChildren="true" IsEnabled="@CanNextMinorPage" Command.Click="ExecuteNextMinorPage" Brush="AFWorldBulletin.Archive.Button">
-                      <Children><TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Text="&gt;" Brush="AFCourierLetter.Button.Text" Brush.FontSize="16" DoNotAcceptEvents="true" /></Children>
-                    </ButtonWidget>
-                  </Children>
-                </ListPanel>
-                <ScrollablePanel Id="MinorScrollPanel" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="60" MarginTop="37" ClipRect="MinorClip" InnerPanel="MinorClip\MinorInner" VerticalScrollbar="..\MinorScrollbar" AutoHideScrollBars="true" DoNotAcceptEvents="false">
+                <ScrollablePanel Id="MinorScrollPanel" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="68" MarginTop="29" ClipRect="MinorClip" InnerPanel="MinorClip\MinorInner" VerticalScrollbar="..\MinorScrollbar" AutoHideScrollBars="true" DoNotAcceptEvents="false">
                   <Children>
                     <Widget Id="MinorClip" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" ClipContents="true">
                       <Children>
@@ -165,7 +154,7 @@
                     </Widget>
                   </Children>
                 </ScrollablePanel>
-                <ScrollbarWidget Id="MinorScrollbar" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="4" SuggestedHeight="60" HorizontalAlignment="Right" MarginTop="37" AlignmentAxis="Vertical" Handle="MinorHandle" MinValue="0" MaxValue="100" ValueFloat="@MinorScrollPosition" DoNotAcceptEvents="false">
+                <ScrollbarWidget Id="MinorScrollbar" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="4" SuggestedHeight="68" HorizontalAlignment="Right" MarginTop="29" AlignmentAxis="Vertical" Handle="MinorHandle" MinValue="0" MaxValue="100" ValueFloat="@MinorScrollPosition" DoNotAcceptEvents="false">
                   <Children><Widget Id="MinorHandle" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="18" Sprite="BlankWhiteSquare_9" Color="#87633CFF" DoNotAcceptEvents="false" /></Children>
                 </ScrollbarWidget>
               </Children>

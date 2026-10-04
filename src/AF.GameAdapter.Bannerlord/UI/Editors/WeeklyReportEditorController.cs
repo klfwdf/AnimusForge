@@ -259,7 +259,7 @@ internal sealed class WeeklyReportEditorController
 		List<EventRecordEntry> list = WeeklyReportArchivePolicy.BuildArchiveSnapshot(_port.SanitizeEventRecordEntries(_port.EventRecords()), bulletinAssociations);
 		List<WeeklyReportBrowserCountryData> list2 = new List<WeeklyReportBrowserCountryData>();
 		HashSet<string> hashSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-		WeeklyReportBrowserCountryData item = BuildWeeklyReportBrowserCountryData("world", "", "快报与周报档案", isWorld: true, list, bulletinAssociations);
+		WeeklyReportBrowserCountryData item = BuildWeeklyReportBrowserCountryData("world", "", "全部档案", isWorld: true, list, bulletinAssociations);
 		list2.Add(item);
 		hashSet.Add("world:");
 		foreach (Kingdom item2 in _port.GetDevEditableKingdoms().OrderBy((Kingdom x) => _port.ResolveKingdomDisplay(x?.StringId), StringComparer.OrdinalIgnoreCase))
@@ -278,7 +278,7 @@ internal sealed class WeeklyReportEditorController
 		{
 			if (hashSet.Add("kingdom:" + item3))
 			{
-				list2.Add(BuildWeeklyReportBrowserCountryData("kingdom", item3, _port.ResolveKingdomDisplay(item3), isWorld: false, list, bulletinAssociations));
+				list2.Add(BuildWeeklyReportBrowserCountryData("kingdom", item3, item3 == WeeklyReportArchivePolicy.OtherKingdomId ? "其他近况" : _port.ResolveKingdomDisplay(item3), isWorld: false, list, bulletinAssociations));
 			}
 		}
 		return list2;

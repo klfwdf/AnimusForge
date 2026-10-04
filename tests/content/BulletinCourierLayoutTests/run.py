@@ -111,7 +111,7 @@ class LayoutContracts(unittest.TestCase):
             self.assertEqual(text.get('Command.LinkAlternateClick'),'ExecuteOpenEncyclopediaLink')
             self.assertEqual(text.get('DoNotAcceptEvents'),'false')
 
-    def test_minors_are_bounded_scrollable_and_paginated(self):
+    def test_minors_are_bounded_scrollable_without_pagination(self):
         section=next(n for n in self.b.iter('Widget') if n.get('IsVisible')=='@HasMinors')
         panel=by_id(section,'MinorScrollPanel')
         clip=resolve(self.b,panel,panel.get('ClipRect'))
@@ -127,11 +127,25 @@ class LayoutContracts(unittest.TestCase):
         archive=by_id(self.b,'ArchiveBulletinButton')
         for scale in [.75,1,1.25,1.5]:
             self.assertLess(end*scale,(814-int(archive.get('MarginBottom'))-int(archive.get('SuggestedHeight')))*scale)
-        for command,enabled in [('ExecutePreviousMinorPage','@CanPreviousMinorPage'),('ExecuteNextMinorPage','@CanNextMinorPage')]:
-            button=next(n for n in section.iter('ButtonWidget') if n.get('Command.Click')==command)
-            self.assertEqual(button.get('IsEnabled'),enabled)
-            self.assertEqual(button.get('DoNotPassEventsToChildren'),'true')
-        self.assertTrue(any(n.get('Text')=='@MinorPageText' for n in section.iter()))
+        self.assertFalse(any('MinorPage' in str(n.attrib) or 'MinorPagination' in str(n.attrib) for n in section.iter()))
+
+    def test_terminal_archive_contract(self):
+        path='content/modules/AF.Module.UI/GUI/Prefabs/AnimusForgeTerminalPopup.xml'
+        actual=ET.parse(ROOT/path).getroot()
+        old=ET.fromstring(subprocess.check_output(['git','show','5a6710eb:'+path],cwd=ROOT))
+        section=next(n for n in actual.iter('Widget') if n.get('IsVisible')=='@IsWeeklyReportsVisible')
+        reviewed=next(n for n in old.iter('Widget') if n.get('IsVisible')=='@IsWeeklyReportsVisible')
+        for prop in ['ListScrollPosition','ReaderScrollPosition']:
+            scrollbar=next(n for n in section.iter('ScrollbarWidget') if n.get('ValueFloat')=='@'+prop)
+            panel=next(n for n in section.iter('ScrollablePanel') if n.get('VerticalScrollbar')=='..\\'+scrollbar.get('Id'))
+            self.assertEqual(resolve(actual,panel,panel.get('VerticalScrollbar')),scrollbar)
+            self.assertEqual(resolve(actual,panel,panel.get('InnerPanel')).get('HeightSizePolicy'),'CoverChildren')
+        cards=next(n for n in section.iter('ListPanel') if n.get('DataSource')=='{ReportItems}')
+        self.assertFalse(any(n.get('Text')=='@BodyText' or n.get('Brush')=='Popup.Cancel.Button' for n in cards.iter()))
+        self.assertTrue(any(n.get('Text')=='@PreviewText' and n.get('SuggestedHeight')=='44' for n in cards.iter()))
+        self.assertEqual(len([n for n in section.iter() if n.get('Text')=='@ReaderBodyText']),1)
+        owner=parent(actual,section); index=list(owner).index(section);owner.remove(section);owner.insert(index,deepcopy(reviewed))
+        self.assertEqual(canonical(actual),canonical(old))
 
     def test_compact_buttons_fit_and_keep_reply_gate(self):
         buttons=[n for n in self.c.iter('ButtonWidget') if n.get('Brush')=='AFCourierLetter.Band.Button']

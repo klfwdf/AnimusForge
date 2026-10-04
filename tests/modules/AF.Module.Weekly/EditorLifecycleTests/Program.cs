@@ -1,4 +1,4 @@
-﻿using AnimusForge;
+using AnimusForge;
 using static AnimusForge.MyBehavior;
 using AnimusForge.Refactor.Runtime;
 int n=0;void Check(bool ok,string label){if(!ok)throw new Exception(label);n++;}
@@ -21,7 +21,7 @@ var port=new WeeklyEditorPort {
  BuildBulletinPanel=(entry,id)=>failBuild?throw new Exception("bad panel"):new(){EventId=id},AwardReadingXp=id=>awarded++
 };
 var ui=new WeeklyReportEditorController(port);ui.SynchronizeGeneration(1);
-var countries=ui.GetTerminalWeeklyReportBrowserCountries();Check(countries[0].IsWorld&&countries[0].CountryId=="world","world comes first");Check(countries.Count==2&&countries[1].CountryId=="k","orphan record kingdom remains browseable");Check(countries[0].Reports[0].EventId=="world-new","descending week order");Check(countries[0].Reports[1].BodyText=="short"&&!countries[0].Reports[1].HasFullReport&&countries[0].Reports[1].CreatedDay==0,"short fallback and clamp");Check(countries[0].Reports[0].BodyText=="full"&&countries[0].Reports[0].HasFullReport,"full report projection");
+var countries=ui.GetTerminalWeeklyReportBrowserCountries();Check(countries[0].IsWorld&&countries[0].CountryId=="world","world comes first");Check(countries.Count==2&&countries[1].CountryId=="k","orphan record kingdom remains browseable");Check(countries[0].Reports[0].EventId=="world-new","descending week order");Check(countries[0].Reports.Single(e=>e.EventId=="world-old").BodyText=="short"&&!countries[0].Reports.Single(e=>e.EventId=="world-old").HasFullReport&&countries[0].Reports.Single(e=>e.EventId=="world-old").CreatedDay==0,"short fallback and clamp");Check(countries[0].Reports[0].BodyText=="full"&&countries[0].Reports[0].HasFullReport,"full report projection");
 ui.OpenDevWeeklyEventMaterialPreviewGroupDetail(group,100);Check(ui.MaterialPage==2&&ReferenceEquals(ui.MaterialSelection,group),"material page clamp and source identity");var late=TaleWorlds.Core.MBInformationManager.Last.Confirm;SaveRuntimeGuard.Generation++;late(new(){new(group.Materials[0],"",null)});Check(ui.MaterialDetail==null,"late material navigation rejected");
 ui.SynchronizeGeneration(2);Check(ui.MaterialSelection==null&&ui.MaterialPage==0,"load retires selections");
 ui.ConfirmGenerateDevWeeklyReports();var inquiry=TaleWorlds.Library.InformationManager.Inquiry;Check(generated==0,"preconfirm does not generate");inquiry.Cancel();inquiry.Confirm();Check(generated==0&&returned==1,"cancel retires affirmative callback");

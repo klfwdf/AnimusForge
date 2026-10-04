@@ -626,7 +626,6 @@ public partial class MyBehavior
 
 	// Local template only: an archive line per kingdom for the browser and the stability history.
 	// NPCs read live facts (MyBehavior.WorldBulletinNpc.cs), so no LLM polish is spent here.
-	private void WriteWorldBulletinKingdomBriefs(WorldBulletinSaveState state, int day) => WorldBulletinState.WriteWorldBulletinKingdomBriefs(state, day);
 
 	// ---------- persistence / lifecycle ----------
 

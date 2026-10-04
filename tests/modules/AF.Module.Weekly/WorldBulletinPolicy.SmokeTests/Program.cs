@@ -47,7 +47,7 @@ internal static class Program
 		Check(s != null && s.Major.Key == "killed:a", "lead is the player's earlier execution");
 		Check(s.MajorFacts.Select(e => e.Key).Contains("killed:b"), "second execution merged into major");
 		Check(s.MajorFacts.Select(e => e.Key).Contains("war:x"), "world headline merged into the one bulletin");
-		Check(s.Minors.Any(m => m.Events.Count == 3 && m.Sentence.Contains("另有1起同类事件")), "home raids collapse into one minor");
+		Check(s.Minors.Any(m => m.Events.Count == WorldBulletinPolicy.MaxMinorGroupSentences && !m.Sentence.Contains("另有")), "home raids collapse only explicitly reported facts into one minor");
 		Check(!s.Minors.SelectMany(m => m.Events).Any(e => e.Key == "fief"), "score-20 fief grant dropped");
 		Check(!s.Minors.SelectMany(m => m.Events).Any(e => e.Key == "raid:far"), "far-away raid below world bar dropped");
 		var enoughNews = WorldBulletinPolicy.Select(events.Concat(new[] { Ev("cap:home", "lord_captured", 109, 35, "本国领主被俘。", "clash:4:vlandia|aserai", false, "vlandia", "aserai") }).ToList(), new WorldBulletinScopeState { WindowEndHour = 130 }, focus, 130);
@@ -57,8 +57,8 @@ internal static class Program
 		Check(!WorldBulletinPolicy.HasEnoughMinorNews(new WorldBulletinSelection { Major = s.Major }), "zero minors wait without generating");
 		s.Major.Participants.Add(new WorldBulletinParticipant { HeroId = "a", Name = "甲", Role = "死者" });
 		s.Major.Participants.Add(new WorldBulletinParticipant { HeroId = "player", Name = "玩家", Role = "行刑方" });
-		events[1].Participants.Add(new WorldBulletinParticipant { HeroId = "b", Name = "乙", Role = "死者" });
-		events[6].Participants.Add(new WorldBulletinParticipant { HeroId = "unrelated", Name = "外部君主", Role = "另一战事君主" });
+		s.WindowFacts.Single(f => f.Key == events[1].Key).Participants.Add(new WorldBulletinParticipant { HeroId = "b", Name = "乙", Role = "死者" });
+		s.WindowFacts.Single(f => f.Key == events[6].Key).Participants.Add(new WorldBulletinParticipant { HeroId = "unrelated", Name = "外部君主", Role = "另一战事君主" });
 		var art = WorldBulletinPolicy.BuildIllustrationPlan(s, "selection:1", "1084年夏季8日");
 		Check(art.Participants.Select(p => p.HeroId).SequenceEqual(new[] { "a", "player", "b" }), "art preserves all core participants but excludes unrelated headline");
 		Check(art.Facts.Contains("甲被玩家处决") && art.Facts.Contains("乙被玩家处决") && !art.Facts.Contains("宣战") && !art.Facts.Contains("村一"), "art freezes only same-story facts");
