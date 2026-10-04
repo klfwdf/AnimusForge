@@ -693,7 +693,7 @@ public sealed class AnimusForgeTerminalPopupVM : ViewModel
 		WeeklyReportVm?.OnFinalize();
 		WeeklyReportVm = new TerminalWeeklyReportBrowserPopupVM(countries ?? new List<MyBehavior.WeeklyReportBrowserCountryData>(), null, ExecuteBack,
 			link => AnimusForgeTerminalPopup.ActivePopup?.OpenArchiveEncyclopediaLink(link));
-		BreadcrumbText = "终端 / " + _selectedTab + " / 快报与周报档案";
+		BreadcrumbText = "终端 / " + _selectedTab + " / 王国近况";
 		SetViewMode(TerminalViewMode.WeeklyReports);
 	}
 

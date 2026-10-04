@@ -471,11 +471,6 @@ namespace AnimusForge.Illustrator.UI.Overlays
             string baseArtDirection = GenerateDiversePoseDirective();
             var options = IllustratorRuntime.CaptureOptions();
             VisualDirectorEngine.RequirePlayerRedrawDirector(playerRedrawPrompt, options);
-            if (options?.EnableOffscreenRendering != true)
-            {
-                _dataSource.SetReady("请先开启离屏渲染；本次生图需要人物完整装备立绘，不使用模板或旧截图替代。");
-                return;
-            }
 
             _scope.RunGeneration(key, null, async token =>
             {
@@ -512,23 +507,19 @@ namespace AnimusForge.Illustrator.UI.Overlays
                 if (_generationCount > 1 || priorVersions > 0) artDirection += "\n" + VisualDirectorEngine.BuildRedrawVariationDirective(_generationCount + priorVersions);
                 if (usedMotifs.Count > 0) artDirection += $"\n【已用过的场景母题·须避开】：{string.Join("；", usedMotifs)}——结合本次人物行动选择场景与镜头，不仅更换背景。";
                 var promptPlan = new IllustrationPromptPlan("人物百科纪事", hardFacts, artDirection, directorFacts, playerRedrawPrompt);
-                CharacterPortraitReferences portraits = null;
-                if (options?.EnableOffscreenRendering == true)
-                {
-                    portraits = await ScreenCaptureHelper.ExtractHeroPortraitReferencesAsync(hero,
-                        maxDimension: 768, cancellationToken: token, cleanTempFiles: options.AutoCleanTempFiles,
-                        equipmentCodeOverride: equipmentCode, appearance: appearance).ConfigureAwait(false);
-                    if (string.IsNullOrWhiteSpace(portraits.FullBody))
-                        throw new InvalidOperationException("百科完整装备离屏立绘未取得，已停止生成；请查看本次 portrait_stage_result 的 failureCode。");
-                }
-                else GenerationDiagnostics.Current?.RecordStage("portrait_capture_disabled", new JObject { ["reason"] = "offscreen rendering explicitly disabled", ["portrait"] = "encyclopedia" });
+                // Character portraits are a required reference and are always rendered offscreen.
+                CharacterPortraitReferences portraits = await ScreenCaptureHelper.ExtractHeroPortraitReferencesAsync(hero,
+                    maxDimension: 768, cancellationToken: token, cleanTempFiles: options?.AutoCleanTempFiles == true,
+                    equipmentCodeOverride: equipmentCode, appearance: appearance).ConfigureAwait(false);
+                if (string.IsNullOrWhiteSpace(portraits.FullBody))
+                    throw new InvalidOperationException("百科完整装备离屏立绘未取得，已停止生成；请查看本次 portrait_stage_result 的 failureCode。");
 
                 var refs = new System.Collections.Generic.List<IllustrationReferenceImage>();
                 var genRefsList = new System.Collections.Generic.List<IllustrationReferenceImage>();
                 IllustrationReferenceRouting.AddCharacter(refs, genRefsList, portraits, heroName,
                     $"人物【{heroName}】的身份参考图：锁定容貌、发型肤色与实际装备；人物行动、手势、视线和机位由导演重新构思；依据新场景重建人物体积、衣褶、透视与受光，以统一艺术画风完整重绘。");
                 // 纹章由原生渲染导出，导出控件不向屏幕绘制；取消信号贯穿请求
-                if (options?.EnableOffscreenRendering == true && profile.HasHeraldicArmor && !string.IsNullOrWhiteSpace(bannerCode))
+                if (profile.HasHeraldicArmor && !string.IsNullOrWhiteSpace(bannerCode))
                 {
                     string emblemB64 = await BannerEmblemComposer.ComposeToBase64Async(bannerCode, cleanTempFiles: options?.AutoCleanTempFiles == true, cancellationToken: token).ConfigureAwait(false);
                     if (!string.IsNullOrWhiteSpace(emblemB64))
@@ -759,11 +750,6 @@ namespace AnimusForge.Illustrator.UI.Overlays
             var options = IllustratorRuntime.CaptureOptions()?.WithSceneImageSize();
             VisualDirectorEngine.RequirePlayerRedrawDirector(playerRedrawPrompt, options);
             baseArtDirection += "\n【场景插画画幅】使用横向16:9构图，目标分辨率为" + options?.ImageSize + "，保持人物与场景的自然比例，不拉伸方图或竖图。";
-            if (options?.EnableOffscreenRendering != true)
-            {
-                _dataSource.SetReady("请先开启离屏渲染；本次生图需要人物完整装备立绘，不使用模板或旧截图替代。");
-                return;
-            }
             Hero interlocutor = convContext.InterlocutorHero;
             bool interlocutorCivilian = convContext.InterlocutorCivilian;
             Hero player = convContext.MainHero;
@@ -838,7 +824,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
                 }
                 else
                 {
-                    sceneCapture = await ScreenCaptureHelper.CaptureConversationSceneReferencesAsync(sceneSource, token, preCapturedBase64).ConfigureAwait(false);
+                    sceneCapture = await ScreenCaptureHelper.CaptureConversationSceneReferencesAsync(sceneSource, token, preCapturedBase64, options?.EnableSceneOffscreenRendering != false).ConfigureAwait(false);
                     directorRefs.AddRange(sceneCapture.References);
                     sceneDirectorNote = sceneCapture.References == null || sceneCapture.References.Count == 0
                         ? (!sceneSource.RequiresMissionPanorama ? "\n【野外环境依据】" : "\n【环境参考不可用】") + sceneCapture.DirectorNote : string.Empty;

@@ -365,7 +365,7 @@ public class AnimusForgeTerminalBehavior : CampaignBehaviorBase
 				Node("local_policies", "地方政策", "外交与国家", "♜", "发布只影响玩家家族封地范围的地方政策。"),
 				Node("world_policies", "查看王国公告", "外交与国家", "✉", "统一查看自定义政策与各国公开外交宣言。")),
 			Node("vassalage_management", "臣属国管理", "外交与国家", "⚜", "只查看已有臣属国；解约、改约、吞并请通过 LLM 对话推进。"),
-			Node("weekly_reports", "查看快报与周报", "外交与国家", "✉", "查看即时快报与历史周报档案。"),
+			Node("weekly_reports", "王国近况", "外交与国家", "✉", "查看各国最近的外交宣言、政策、快报与近况。"),
 
 			Node("tag_catalog", "标签列表", "提示词与规则", "❖", "查看正文/后处理标签索引，可刷新或导出 TXT。"),
 			Node("reload_database", "重载数据库", "提示词与规则", "⚡", "替换非主角知识、世界/王国开局知识、王国性格/战略和声音。"),
@@ -398,7 +398,7 @@ public class AnimusForgeTerminalBehavior : CampaignBehaviorBase
 			return false;
 		case "weekly_reports":
 			if (popupVm == null) return false;
-			List<MyBehavior.WeeklyReportBrowserCountryData> countries = MyBehavior.Instance?.GetTerminalWeeklyReportBrowserCountries() ?? new List<MyBehavior.WeeklyReportBrowserCountryData>();
+			List<MyBehavior.WeeklyReportBrowserCountryData> countries = MyBehavior.Instance?.GetTerminalKingdomNewsCountries() ?? new List<MyBehavior.WeeklyReportBrowserCountryData>();
 			popupVm.ShowWeeklyReports(countries);
 			return true;
 

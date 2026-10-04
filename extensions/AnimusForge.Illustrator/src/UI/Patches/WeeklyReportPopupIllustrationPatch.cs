@@ -595,7 +595,7 @@ namespace AnimusForge.Illustrator.UI.Patches
                 {
                     token.ThrowIfCancellationRequested();
                     CharacterPortraitReferences portraits = null;
-                    if (options?.EnableOffscreenRendering == true && person.Hero != null && person.Profile?.Appearance != null)
+                    if (person.Hero != null && person.Profile?.Appearance != null)
                         portraits = await ScreenCaptureHelper.ExtractHeroPortraitReferencesAsync(person.Hero,
                             cancellationToken: token, cleanTempFiles: options.AutoCleanTempFiles,
                             appearance: person.Profile.Appearance).ConfigureAwait(false);

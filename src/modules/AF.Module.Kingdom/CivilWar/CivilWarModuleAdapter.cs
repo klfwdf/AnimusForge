@@ -11,7 +11,7 @@ namespace AnimusForge;
 
 internal sealed class CivilWarModuleAdapter : ICivilWarModulePort
 {
-	private static readonly Regex TagPattern = new Regex("^\\[A:CIVIL_FACTION:(JOIN:(CROWN|OPPOSITION)|RECRUIT|DETONATE|ANSWER:(ACCEPT|REFUSE))\\]$", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+	private static readonly Regex TagPattern = new Regex("^\\[A:CIVIL_FACTION:(JOIN:(CROWN|OPPOSITION)|RECRUIT|LEAVE:(SELF|PLAYER)|DETONATE|ANSWER:(ACCEPT|REFUSE))\\]$", RegexOptions.IgnoreCase | RegexOptions.Compiled);
 	private readonly KingdomCivilWarOwner _owner = new KingdomCivilWarOwner();
 	public bool CanTrackCoupWar(Kingdom kingdom) => KingdomCivilWarOwner.CanTrackCoupWar(kingdom);
 	public bool TryRegisterCoupWar(CoupCivilWarRegistration registration, out string message) => _owner.TryRegisterCoupWar(registration, out message);
@@ -83,14 +83,35 @@ internal sealed class CivilWarModuleAdapter : ICivilWarModulePort
 		if (!DuelSettings.IsCivilWarFactionsEnabled()) return new List<PostprocessRuleEntry>();
 		return new List<PostprocessRuleEntry>
 		{
-			new PostprocessRuleEntry { Tag = "[A:CIVIL_FACTION:JOIN:CROWN]", Description = "玩家正式封臣明确决定家族加入本国王室阵营，且当前NPC确认时输出。无需先存在反对派；换派须先退出并等待七天，不能用对话绕过。" },
+			new PostprocessRuleEntry { Tag = "[A:CIVIL_FACTION:JOIN:CROWN]", Description = "玩家正式封臣明确决定家族加入本国王室派（派系站队，不是加入王国），且当前NPC确认时输出。无需先存在反对派；换派须先退出并等待七天，不能用对话绕过。" },
 			new PostprocessRuleEntry { Tag = "[A:CIVIL_FACTION:JOIN:OPPOSITION]", Description = "玩家明确决定自己的家族加入当前王国已成形的反对派，且当前NPC明确确认时输出。询问、犹豫或派系未成形时禁止。" },
 			new PostprocessRuleEntry { Tag = "[A:CIVIL_FACTION:RECRUIT]", Description = "玩家已有明确派系，并明确说服当前NPC的整个家族加入该派系，双方都无条件同意时输出。拒绝、身份不明或只是本人入队时禁止。" },
+			new PostprocessRuleEntry { Tag = "[A:CIVIL_FACTION:LEAVE:SELF]", Description = "当前NPC（族长，非国王）在本轮明确决定让自己的家族退出其所在的王室派或反对派派系，并已在回复中亲口表态时输出。这只是退出派系，不是离开王国（离开王国不用此标签）。只是抱怨、犹豫或被劝说未果时禁止；退出后七天内不能再加入。" },
+			new PostprocessRuleEntry { Tag = "[A:CIVIL_FACTION:LEAVE:PLAYER]", Description = "玩家明确决定让自己的家族退出当前所在的王室派或反对派派系，且当前NPC明确知悉并回应时输出。这只是退出派系，玩家退出王国或雇佣兵契约不用此标签。询问后果或犹豫时禁止。" },
 			new PostprocessRuleEntry { Tag = "[A:CIVIL_FACTION:DETONATE]", Description = "玩家明确要求立即引爆当前王国的内战，且当前NPC明确同意执行时输出。讨论、威胁或劝阻时禁止。" },
 			new PostprocessRuleEntry { Tag = "[A:CIVIL_FACTION:ANSWER:ACCEPT]", Description = "玩家国王明确接受当前最后通牒时输出；仅在面板或对话明确显示待答复时使用。" },
 			new PostprocessRuleEntry { Tag = "[A:CIVIL_FACTION:ANSWER:REFUSE]", Description = "玩家国王明确拒绝当前最后通牒时输出；仅在面板或对话明确显示待答复时使用。" }
 		};
 	}
+
+	// Built once per prompt/postprocess build (one conversation turn). Reads state only, never scans per tick.
+	public List<PostprocessRuleEntry> BuildPostprocessRules(Hero target)
+	{
+		List<PostprocessRuleEntry> all = BuildPostprocessRules();
+		if (all.Count == 0) return all;
+		HashSet<string> applicable = _owner.ApplicableDialogueActions(target);
+		const string prefix = "[A:CIVIL_FACTION:";
+		return all.FindAll(rule =>
+		{
+			string tag = (rule?.Tag ?? "").Trim();
+			return tag.StartsWith(prefix, StringComparison.OrdinalIgnoreCase) && tag.EndsWith("]", StringComparison.Ordinal)
+				&& applicable.Contains(tag.Substring(prefix.Length, tag.Length - prefix.Length - 1));
+		});
+	}
+
+	public string BuildDialogueFact(Hero target) => _owner.BuildDialogueFact(target);
+
+	public bool IsClanProtected(Clan clan) => _owner.IsClanProtected(clan);
 
 	public bool TryApplyTag(Hero speaker, string tag, out string message)
 	{
@@ -103,6 +124,8 @@ internal sealed class CivilWarModuleAdapter : ICivilWarModulePort
 		if (action.StartsWith("JOIN:CROWN", StringComparison.OrdinalIgnoreCase)) return _owner.TryJoinPlayer(kingdom, speaker, KingdomCivilWarSide.Crown, out message);
 		if (action.StartsWith("JOIN:OPPOSITION", StringComparison.OrdinalIgnoreCase)) return _owner.TryJoinPlayer(kingdom, speaker, KingdomCivilWarSide.Opposition, out message);
 		if (action.Equals("RECRUIT", StringComparison.OrdinalIgnoreCase)) return _owner.TryRecruitClan(Hero.MainHero, speaker.Clan, kingdom, out message);
+		if (action.Equals("LEAVE:SELF", StringComparison.OrdinalIgnoreCase)) return speaker != Hero.MainHero && speaker.Clan?.Leader == speaker && _owner.TryLeaveClan(kingdom, speaker.Clan, out message);
+		if (action.Equals("LEAVE:PLAYER", StringComparison.OrdinalIgnoreCase)) return _owner.TryLeaveClan(Clan.PlayerClan?.Kingdom, Clan.PlayerClan, out message);
 		if (action.Equals("DETONATE", StringComparison.OrdinalIgnoreCase)) return _owner.TryDetonate(speaker, kingdom, out message);
 		// Ultimatums are always addressed to the player's own kingdom, whoever the player is talking to.
 		if (action.Equals("ANSWER:ACCEPT", StringComparison.OrdinalIgnoreCase) || action.Equals("ANSWER:REFUSE", StringComparison.OrdinalIgnoreCase))

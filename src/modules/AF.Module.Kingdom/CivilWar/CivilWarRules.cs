@@ -96,11 +96,13 @@ internal sealed class CivilWarTuning
 	internal float Floor = 0.05f;
 	internal int DiscontentThreshold = 35;
 	internal int PlayerDetonationStrengthPercent = 20;
-	internal int UltimatumDelayWeeks = 2;
+	internal int UltimatumDelayWeeks = 4;
 	internal int MinWarWeeks = 3;
 	internal int MaxWarWeeks = 12;
 	internal int CooldownWeeks = 8;
 	internal int MaxRefusals = 4;
+	// A faction must have been refused this many times before an automatic escalation may open a war (<= MaxRefusals).
+	internal int MinRefusalsBeforeWar = 2;
 	internal int PlayerAnswerWeeks = 2;
 	internal int SideLockWeeks = 2;
 	internal int WarRequestTimeoutWeeks = 3;
@@ -124,6 +126,34 @@ internal static class CivilWarFactionRules
 	internal static bool CanOpenWar(bool otherFactionAtWar, CivilWarTuning tuning)
 	{
 		return !otherFactionAtWar || (tuning?.AllowConcurrentWars ?? false);
+	}
+
+	// Automatic escalation into open war needs enough refusals first (Refusals counts the one just given).
+	internal static bool HasEnoughRefusals(int refusals, CivilWarTuning tuning)
+	{
+		int required = Math.Max(1, Math.Min(tuning?.MaxRefusals ?? 4, tuning?.MinRefusalsBeforeWar ?? 2));
+		return refusals >= required;
+	}
+
+	// Relation to the king at which the join chance stops falling and stays at the floor below.
+	internal const int JoinRelationCeiling = 60;
+	// Even a clan on excellent terms with the king can still side against him; good relations only make it unlikely.
+	internal const float JoinRelationMinFactor = 0.1f;
+
+	// Clans on good terms with the king rarely side against him: full chance at relation <= 0, linear down to the floor at the ceiling.
+	internal static float JoinRelationFactor(int relationToKing)
+	{
+		return CivilWarRules.Clamp(1f - Math.Max(0, relationToKing) / (float)JoinRelationCeiling, JoinRelationMinFactor, 1f);
+	}
+
+	// Second gate applied after a passed join roll; loyal clans pass rarely but never with zero chance.
+	// Randomness 0 is the deterministic mode: pass only when the factor is at least one half.
+	internal static bool PassesJoinRelationGate(float factor, CivilWarTuning tuning, Func<float> random)
+	{
+		if (factor >= 1f) return true;
+		if (factor <= 0f) return false;
+		if (CivilWarRules.Clamp(tuning?.Randomness ?? 1f, 0f, 1f) <= 0f) return factor >= 0.5f;
+		return CivilWarRules.Clamp(random?.Invoke() ?? 0.5f, 0f, 0.99999f) < factor;
 	}
 
 	// Two factions never share a demand; the second one would just duplicate the first.

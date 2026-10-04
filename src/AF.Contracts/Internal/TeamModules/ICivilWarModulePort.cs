@@ -194,6 +194,12 @@ internal interface ICivilWarModulePort
 	void ApplyPrestigeDelta(string kingdomId, int delta, string reason);
 	CivilWarPanelKingdom GetPlayerKingdomPanel();
 	List<PostprocessRuleEntry> BuildPostprocessRules();
+	// Only the faction tags that could actually execute right now for this conversation target (ANSWER needs a pending ultimatum, etc.).
+	List<PostprocessRuleEntry> BuildPostprocessRules(Hero target);
+	// Runtime fact for the target NPC's own stance/relation; empty when the NPC is not in the player's kingdom politics.
+	string BuildDialogueFact(Hero target);
+	// True while a clan of a settled civil war is shielded from vanilla discontinuation of landless independent clans.
+	bool IsClanProtected(Clan clan);
 	bool TryApplyTag(Hero speaker, string tag, out string message);
 	void NotifyRebelKingdomCreated(string factionId, Kingdom rebelKingdom, int week);
 	// Host asks before naming/executing a queued civil-war rebellion; false means the faction moved on.

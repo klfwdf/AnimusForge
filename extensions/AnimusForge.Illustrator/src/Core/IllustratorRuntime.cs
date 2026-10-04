@@ -15,7 +15,7 @@ namespace AnimusForge.Illustrator.Core
     {
         public bool EnableImageGeneration { get; }
         public bool EnableMultimodalVision { get; }
-        public bool EnableOffscreenRendering { get; }
+        public bool EnableSceneOffscreenRendering { get; }
         public bool EnableLlmPromptExpansion { get; }
         public int MaxCacheCount { get; }
         public string ApiBaseUrl { get; }
@@ -66,7 +66,7 @@ namespace AnimusForge.Illustrator.Core
         {
             EnableImageGeneration = settings.EnableImageGeneration;
             EnableMultimodalVision = settings.EnableMultimodalVision;
-            EnableOffscreenRendering = settings.EnableOffscreenRendering;
+            EnableSceneOffscreenRendering = settings.EnableSceneOffscreenRendering;
             EnableLlmPromptExpansion = settings.EnableLlmPromptExpansion;
             MaxCacheCount = Math.Max(20, Math.Min(1000, settings.MaxCacheCount));
             ApiBaseUrl = settings.ApiBaseUrl;

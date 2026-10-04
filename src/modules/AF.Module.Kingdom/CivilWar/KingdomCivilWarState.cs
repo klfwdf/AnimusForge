@@ -164,6 +164,8 @@ internal sealed class KingdomCivilWarStorage
 {
 	public int Version = 4;
 	public Dictionary<string, int> ClanExitUntilDay = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+	// Clans of a settled civil war that are shielded from vanilla's 28-day discontinuation of landless independent clans.
+	public Dictionary<string, int> ProtectedClanUntilDay = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
 	public Dictionary<string, CivilWarOperation> Operations = new Dictionary<string, CivilWarOperation>(StringComparer.Ordinal);
 	public Dictionary<string, KingdomCivilWarKingdomState> Kingdoms = new Dictionary<string, KingdomCivilWarKingdomState>(StringComparer.OrdinalIgnoreCase);
 }

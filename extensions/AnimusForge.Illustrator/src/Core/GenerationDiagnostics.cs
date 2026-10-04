@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
@@ -30,6 +31,10 @@ namespace AnimusForge.Illustrator.Core
         private static readonly Encoding DocumentEncoding = new UTF8Encoding(true);
         private static readonly AsyncLocal<GenerationDiagnostics> Ambient = new AsyncLocal<GenerationDiagnostics>();
         private static readonly object StorageLock = new object();
+        // New: conversation_1003-222530_3f9a. Legacy (still pruned): 20261003T142530_<32 hex>.
+        // Not RegexOptions.Compiled: it runs at most twice per generation, and compiling would cost more on first use.
+        private static readonly Regex RecordName = new Regex(
+            @"^((encyclopedia|conversation|weekly_report)_\d{4}-\d{6}_[a-f0-9]{4}|\d{8}T\d{6}_[a-f0-9]{32})$");
         private static readonly HashSet<string> Active = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         private readonly object _gate = new object();
         private readonly GenerationDiagnostics _previous;
@@ -49,22 +54,36 @@ namespace AnimusForge.Illustrator.Core
 
         private GenerationDiagnostics(string campaign, string category, string root)
         {
-            Id = DateTime.UtcNow.ToString("yyyyMMddTHHmmss") + "_" + Guid.NewGuid().ToString("N");
+            // The name must match RecordName, otherwise retention would never prune it.
+            if (category != "encyclopedia" && category != "conversation" && category != "weekly_report")
+                throw new ArgumentException("Unsupported diagnostic category.", nameof(category));
+            // Short readable name: category + local MMdd-HHmmss + 4-hex suffix, e.g. conversation_1003-222530_3f9a.
+            // Year is omitted on purpose; retention is 12 records and pruning orders by creation time, not by name.
+            string prefix = category + "_" + DateTime.Now.ToString("MMdd-HHmmss", CultureInfo.InvariantCulture) + "_";
+            string fullRoot = Path.GetFullPath(root);
+            string id, directory;
+            lock (StorageLock)
+            {
+                Directory.CreateDirectory(root);
+                Prune(root, MaxRecords - 1);
+                if (new DirectoryInfo(root).GetDirectories().Count(d => RecordName.IsMatch(d.Name)) >= MaxRecords)
+                    throw new IOException("Diagnostic retention is full.");
+                // 4 hex chars can collide within one second; pick a free name under the lock so two records never share a directory.
+                do
+                {
+                    id = prefix + Guid.NewGuid().ToString("N").Substring(0, 4);
+                    directory = Path.Combine(fullRoot, id);
+                } while (Directory.Exists(directory) || Active.Contains(directory));
+                Directory.CreateDirectory(directory);
+                Active.Add(directory);
+            }
+            Id = id;
+            _directory = directory;
             _previous = Ambient.Value;
             _document = new JObject { ["schema"] = 2, ["id"] = Id, ["campaign"] = CleanText(campaign), ["category"] = CleanText(category),
                 ["startedUtc"] = DateTime.UtcNow, ["outcome"] = "running", ["events"] = _events,
                 ["assemblyVersion"] = typeof(GenerationDiagnostics).Assembly.GetName().Version.ToString(),
                 ["moduleVersionId"] = typeof(GenerationDiagnostics).Assembly.ManifestModule.ModuleVersionId.ToString("D") };
-            _directory = Path.Combine(Path.GetFullPath(root), Id);
-            lock (StorageLock)
-            {
-                Directory.CreateDirectory(root);
-                Prune(root, MaxRecords - 1);
-                if (new DirectoryInfo(root).GetDirectories().Count(d => Regex.IsMatch(d.Name, @"^\d{8}T\d{6}_[a-f0-9]{32}$")) >= MaxRecords)
-                    throw new IOException("Diagnostic retention is full.");
-                Directory.CreateDirectory(_directory);
-                Active.Add(_directory);
-            }
             try { Flush(); }
             catch { lock (StorageLock) Active.Remove(_directory); throw; }
             Ambient.Value = this;
@@ -464,9 +483,9 @@ namespace AnimusForge.Illustrator.Core
         {
             string resolvedRoot = Path.GetFullPath(root).TrimEnd(Path.DirectorySeparatorChar) + Path.DirectorySeparatorChar;
             var dirs = new DirectoryInfo(root).GetDirectories().Where(d =>
-                Regex.IsMatch(d.Name, @"^\d{8}T\d{6}_[a-f0-9]{32}$") &&
+                RecordName.IsMatch(d.Name) &&
                 (d.Attributes & FileAttributes.ReparsePoint) == 0 &&
-                d.FullName.StartsWith(resolvedRoot, StringComparison.OrdinalIgnoreCase)).OrderByDescending(d => d.Name).ToList();
+                d.FullName.StartsWith(resolvedRoot, StringComparison.OrdinalIgnoreCase)).OrderByDescending(d => d.CreationTimeUtc).ThenByDescending(d => d.Name).ToList();
             for (int i = dirs.Count - 1; dirs.Count > keep && i >= 0; i--)
             {
                 if (Active.Contains(dirs[i].FullName)) continue;

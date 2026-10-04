@@ -458,6 +458,8 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 		internal string ArchiveKind;
 		internal string OpenTargetId;
+		// Optional card/reader subtitle for non-weekly kinds (diplomacy, policy); null keeps the legacy period label.
+		internal string KindLabelText;
 
 		public int WeekIndex;
 
@@ -10895,7 +10897,7 @@ public static int GetKingdomStabilityRoyalDomainLoyaltyAdjustmentForTown(Town to
 		if (kingdom2 != null && !kingdom2.IsEliminated)
 		{
 			MarkModCreatedRebelKingdom(kingdom2);
-			SetKingdomStabilityValue(kingdom2, RebelKingdomInitialStabilityValue);
+			SetKingdomStabilityValue(kingdom2, RebelKingdomInitialStabilityValue); PacifyInheritedRebelWars(kingdom2, kingdom);
 		}
 		List<string> list = new List<string>();
 		if (kingdom2 != null && followerClans != null && followerClans.Count > 0)
@@ -11047,7 +11049,7 @@ public static int GetKingdomStabilityRoyalDomainLoyaltyAdjustmentForTown(Town to
 				return false;
 			}
 			string kingdomId = GetKingdomId(kingdom);
-			int clanCount = kingdom.Clans?.Count ?? 0;
+			if (requireKnownModRebelKingdom) PacifyInheritedRebelWars(kingdom, null); int clanCount = kingdom.Clans?.Count ?? 0;
 			int settlementCount = kingdom.Settlements?.Count ?? 0;
 			foreach (Clan clan in (kingdom.Clans?.ToList() ?? new List<Clan>()))
 			{

@@ -239,12 +239,12 @@ public sealed partial class TerminalWeeklyReportBrowserPopupVM : ViewModel
 		_onOpenEncyclopediaLink = onOpenEncyclopediaLink;
 		_countries = (countries ?? new List<MyBehavior.WeeklyReportBrowserCountryData>()).Where((MyBehavior.WeeklyReportBrowserCountryData x) => x != null).ToList();
 		_selectedCountryId = (selectedCountryId ?? "").Trim();
-		TitleText = "历史档案馆";
+		TitleText = "王国近况";
 		SubtitleText = "";
-		CountryPanelTitleText = "档案 / 王国";
+		CountryPanelTitleText = "王国";
 		SelectedCountryNameText = "未选择";
 		SelectedCountryMetaText = "";
-		EmptyStateText = "暂无快报或周报档案。";
+		EmptyStateText = "暂无王国近况。";
 		CloseText = "关闭";
 		HasReportItems = false;
 		ShowEmptyState = true;
@@ -385,7 +385,7 @@ public sealed partial class TerminalWeeklyReportBrowserPopupVM : ViewModel
 		{
 			SelectedCountryNameText = "未选择";
 			SelectedCountryMetaText = "";
-			EmptyStateText = "暂无快报或周报档案。";
+			EmptyStateText = "暂无王国近况。";
 			ReportItems = new MBBindingList<TerminalWeeklyReportEntryItemVM>();
 			HasReportItems = false;
 			ShowEmptyState = true;
@@ -403,7 +403,7 @@ public sealed partial class TerminalWeeklyReportBrowserPopupVM : ViewModel
 		float readerScroll = ReaderScrollPosition;
 		foreach (var country in CountryItems) country.OnFinalize();
 		_countries.Clear();
-		_countries.AddRange((MyBehavior.Instance?.GetTerminalWeeklyReportBrowserCountries() ?? new List<MyBehavior.WeeklyReportBrowserCountryData>()).Where((MyBehavior.WeeklyReportBrowserCountryData x) => x != null));
+		_countries.AddRange((MyBehavior.Instance?.GetTerminalKingdomNewsCountries() ?? new List<MyBehavior.WeeklyReportBrowserCountryData>()).Where((MyBehavior.WeeklyReportBrowserCountryData x) => x != null));
 		CountryItems = new MBBindingList<TerminalWeeklyReportCountryItemVM>();
 		foreach (MyBehavior.WeeklyReportBrowserCountryData country in _countries)
 		{
@@ -519,7 +519,7 @@ public sealed class TerminalWeeklyReportCountryItemVM : ViewModel
 		CountryId = (country?.CountryId ?? "").Trim();
 		DisplayName = (country?.DisplayName ?? "").Trim();
 		int num = country?.Reports?.Count(report => report != null) ?? 0;
-		ReportCountText = num + " 篇";
+		ReportCountText = num + " 条";
 	}
 
 	public void ExecuteSelect()
@@ -532,6 +532,12 @@ public sealed class TerminalWeeklyReportCountryItemVM : ViewModel
 public sealed class TerminalWeeklyReportEntryItemVM : ViewModel
 {
 	[DataSourceProperty] public string EntryKind { get; private set; }
+	// Static after construction; each drives one accent strip on the card.
+	[DataSourceProperty] public bool IsBulletinKind => EntryKind == "bulletin";
+	[DataSourceProperty] public bool IsDiplomacyKind => EntryKind == "diplomacy";
+	[DataSourceProperty] public bool IsPolicyKind => EntryKind == "policy";
+	[DataSourceProperty] public bool IsRecentKind => EntryKind == "recent";
+	[DataSourceProperty] public bool IsWeeklyKind => EntryKind == "weekly";
 	internal string OpenTargetId { get; private set; }
 	[DataSourceProperty] public string PreviewText { get; private set; }
 	internal string PlainBodyText { get; private set; }
@@ -776,7 +782,7 @@ public sealed class TerminalWeeklyReportEntryItemVM : ViewModel
 	public TerminalWeeklyReportEntryItemVM(MyBehavior.WeeklyReportBrowserEntryData entry)
 	{
 		TitleText = (entry?.Title ?? "").Trim();
-		WeekText = WeeklyReportArchivePolicy.PeriodLabel(entry?.EventId, entry?.WeekIndex ?? 0);
+		WeekText = string.IsNullOrWhiteSpace(entry?.KindLabelText) ? WeeklyReportArchivePolicy.PeriodLabel(entry?.EventId, entry?.WeekIndex ?? 0) : entry.KindLabelText.Trim();
 		DateText = (entry?.CreatedDate ?? "").Trim();
 		PlainBodyText = FormatDisplayBodyText(entry?.BodyText);
 		BodyText = PlainBodyText;
@@ -791,7 +797,7 @@ public sealed class TerminalWeeklyReportEntryItemVM : ViewModel
 		ShowViewFullReport = entry != null && EntryKind == "weekly" && !entry.HasFullReport && !string.IsNullOrWhiteSpace(entry.EventId);
         EventId = (entry?.EventId ?? "").Trim();
         ShowOpenReport = EventId.Length > 0;
-        OpenReportText = EntryKind == "bulletin" ? "打开快报" : EntryKind == "recent" ? "阅读近况" : "阅读周报";
+        OpenReportText = EntryKind == "bulletin" ? "打开快报" : EntryKind == "recent" ? "阅读近况" : EntryKind == "diplomacy" ? "阅读宣言" : EntryKind == "policy" ? "阅读政策" : "阅读周报";
 		BodyFontSize = Math.Max(13, Math.Min(26, (DuelSettings.GetSettings()?.WeeklyReportPopupBodyFontSize ?? 18) - 2));
 	}
 

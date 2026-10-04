@@ -851,6 +851,7 @@ public sealed class OnnxCrossEncoderReranker
 			return false;
 		}
 		bool flag = false;
+		int cacheHits = 0;
 		List<int> list = new List<int>();
 		List<string> list2 = new List<string>();
 		List<List<long>> list3 = new List<List<long>>();
@@ -870,6 +871,7 @@ public sealed class OnnxCrossEncoderReranker
 				{
 					scores[j] = score;
 					flag = true;
+					cacheHits++;
 					continue;
 				}
 				int[] attentionMask;
@@ -884,10 +886,14 @@ public sealed class OnnxCrossEncoderReranker
 				list4.Add(attentionMask);
 			}
 			bool flag2 = list.Count > 0;
+			bool batchInferenceOk = false;
+			bool fallbackToSingle = false;
+			Stopwatch inferenceStopwatch = Stopwatch.StartNew();
 			if (flag2)
 			{
 				if (TryRunBatchEncoded(list3, list4, out var scores2) && scores2 != null && scores2.Count == list.Count)
 				{
+					batchInferenceOk = true;
 					for (int k = 0; k < list.Count; k++)
 					{
 						int num = list[k];
@@ -899,6 +905,7 @@ public sealed class OnnxCrossEncoderReranker
 				}
 				else
 				{
+					fallbackToSingle = true;
 					for (int l = 0; l < list.Count; l++)
 					{
 						if (TryScore(text, list2[l], out var score2))
@@ -909,7 +916,25 @@ public sealed class OnnxCrossEncoderReranker
 					}
 				}
 			}
+			inferenceStopwatch.Stop();
 			stopwatch.Stop();
+			if (flag2)
+			{
+				Logger.Obs("OnnxReranker", "benchmark", new Dictionary<string, object>
+				{
+					["ok"] = flag,
+					["backend"] = _encodedBackend != null ? "CUDA" : "CPU",
+					["mode"] = "batch",
+					["docCount"] = documents.Count,
+					["cacheHits"] = cacheHits,
+					["uncachedCount"] = list.Count,
+					["inferenceCount"] = batchInferenceOk ? list.Count : 0,
+					["totalMs"] = Math.Round(stopwatch.Elapsed.TotalMilliseconds, 2),
+					["inferenceMs"] = Math.Round(inferenceStopwatch.Elapsed.TotalMilliseconds, 2),
+					["batchInferenceOk"] = batchInferenceOk,
+					["fallbackToSingle"] = fallbackToSingle
+				});
+			}
 			Logger.Metric("onnx.rerank.batch", ok: flag, stopwatch.Elapsed.TotalMilliseconds);
 			return flag;
 		}
@@ -957,6 +982,14 @@ public sealed class OnnxCrossEncoderReranker
 		{
 			score = value;
 			stopwatch.Stop();
+			Logger.Obs("OnnxReranker", "benchmark_cache", new Dictionary<string, object>
+			{
+				["ok"] = true,
+				["backend"] = _encodedBackend != null ? "CUDA" : "CPU",
+				["mode"] = "single",
+				["cacheHit"] = true,
+				["totalMs"] = Math.Round(stopwatch.Elapsed.TotalMilliseconds, 2)
+			});
 			Logger.Metric("onnx.rerank", ok: true, stopwatch.Elapsed.TotalMilliseconds);
 			return true;
 		}
@@ -971,9 +1004,37 @@ public sealed class OnnxCrossEncoderReranker
 			}
             if (_encodedBackend != null)
             {
-                if (!TryRunBatchEncoded(new List<List<long>> { list }, new List<int[]> { attentionMask }, out var gpuScores)) return false;
+                Stopwatch inferenceStopwatch = Stopwatch.StartNew();
+                bool inferenceOk = TryRunBatchEncoded(new List<List<long>> { list }, new List<int[]> { attentionMask }, out var gpuScores);
+                inferenceStopwatch.Stop();
+                if (!inferenceOk || gpuScores == null || gpuScores.Count <= 0)
+                {
+					Logger.Obs("OnnxReranker", "benchmark", new Dictionary<string, object>
+					{
+						["ok"] = false,
+						["backend"] = "CUDA",
+						["mode"] = "single",
+						["tokenCount"] = list.Count,
+						["cacheHit"] = false,
+						["totalMs"] = Math.Round(stopwatch.Elapsed.TotalMilliseconds, 2),
+						["inferenceMs"] = Math.Round(inferenceStopwatch.Elapsed.TotalMilliseconds, 2),
+						["fallback"] = true
+					});
+					return false;
+				}
                 score = gpuScores[0];
                 CacheScore(key, score);
+                Logger.Obs("OnnxReranker", "benchmark", new Dictionary<string, object>
+                {
+                    ["ok"] = true,
+                    ["backend"] = "CUDA",
+                    ["mode"] = "single",
+                    ["tokenCount"] = list.Count,
+                    ["cacheHit"] = false,
+                    ["totalMs"] = Math.Round(stopwatch.Elapsed.TotalMilliseconds, 2),
+                    ["inferenceMs"] = Math.Round(inferenceStopwatch.Elapsed.TotalMilliseconds, 2),
+                    ["fallback"] = false
+                });
                 Logger.Metric("onnx.rerank", ok: true, stopwatch.Elapsed.TotalMilliseconds);
                 return true;
             }
@@ -1028,6 +1089,7 @@ public sealed class OnnxCrossEncoderReranker
 				}
 			}
 			float num2 = 0f;
+			Stopwatch cpuInferenceStopwatch = Stopwatch.StartNew();
 			using (IDisposableReadOnlyCollection<DisposableNamedOnnxValue> source = _session.Run(list2))
 			{
 				DisposableNamedOnnxValue disposableNamedOnnxValue = source.FirstOrDefault((DisposableNamedOnnxValue x) => string.Equals(x.Name ?? "", _outputName ?? "", StringComparison.OrdinalIgnoreCase)) ?? source.FirstOrDefault();
@@ -1058,7 +1120,19 @@ public sealed class OnnxCrossEncoderReranker
 					}
 				}
 			}
+			cpuInferenceStopwatch.Stop();
 			score = Sigmoid(num2);
+			Logger.Obs("OnnxReranker", "benchmark", new Dictionary<string, object>
+			{
+				["ok"] = true,
+				["backend"] = "CPU",
+				["mode"] = "single",
+				["tokenCount"] = list.Count,
+				["cacheHit"] = false,
+				["totalMs"] = Math.Round(stopwatch.Elapsed.TotalMilliseconds, 2),
+				["inferenceMs"] = Math.Round(cpuInferenceStopwatch.Elapsed.TotalMilliseconds, 2),
+				["fallback"] = false
+			});
 			try
 			{
 				int count2 = CacheScore(key, score);

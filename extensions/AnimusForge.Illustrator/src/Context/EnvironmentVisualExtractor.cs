@@ -172,6 +172,10 @@ namespace AnimusForge.Illustrator.Context
 
     public static class EnvironmentVisualExtractor
     {
+        // Field default. It must not assume a pre-battle parley: the same field can be a party-screen talk,
+        // a post-battle prisoner scene or a friendly meeting. The conversation entry fact says which.
+        internal const string NeutralWildDetails = "开阔的野外地带：起伏的草地丘陵与远处隐现的地平线，人物身后只保留现场确认的景物，不默认添加军旗、仪仗、军队或营地。";
+
         /// <param name="eventAnchored">为 true 时跳过对当前 Mission/菜单位置的实时探测（用于周报等回顾性场景——环境由事件主题决定，而非玩家当前所在位置）。</param>
         public static EnvironmentVisualProfile Extract(Settlement settlement = null, bool eventAnchored = false, string eventDateLabel = null)
         {
@@ -459,7 +463,7 @@ namespace AnimusForge.Illustrator.Context
             else if (settlement == null || outdoorMission)
             {
                 profile.SpecificLocation = "会话场景（具体子场景位置未确认，地形与人物空间关系以现场记录为准）";
-                profile.IndoorOutdoorDetails = "开阔苍茫的旷野临阵会面之地：起伏的草地丘陵与远处隐现的群山地平线，人物身后只保留现场确认的景物，不默认添加军旗与仪仗，空气中弥漫着战前谈判的紧绷肃杀气息。";
+                profile.IndoorOutdoorDetails = NeutralWildDetails;
             }
             else if (locId.Contains("center") || (!isIndoor && settlement.IsTown))
             {

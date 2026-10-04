@@ -1,4 +1,74 @@
-﻿# 最新部署：快报落选分流与档案卡片（2026-10-04，DEPLOY_VERIFIED）
+﻿# 给 Claude Code CLI 的交接：快报选材分流与档案重设计
+
+交接日期：2026-10-04。当前功能已实现、离线复审、提交推送并部署；剩余的是实机UI、真实玩家旧档及真实AI服务验收，不要把本交接理解为尚未实现，也不要把离线验证理解为实机通过。
+
+## Claude Code CLI 启动入口
+
+在 `F:/AnimusForge-main` 打开Claude Code CLI，先读取本文件顶部接手说明，再读取 `AGENTS.md`、`CLAUDE.md`、`.claude/skills/animusforge-maintainer/SKILL.md`，以及下文链接的主台账两个最新条目。本交接不依赖Codex桌面工具；文件、Git、测试与构建命令均可通过CLI终端访问。
+
+注意：当前 `CLAUDE.md` 开头仍把 `animusforge-1.3.x` 写成目标分支/目录，这是历史信息；本轮实际分支见下文。该旧描述已被最新 `AGENTS.md` 的“以实际Git状态为准”规则替代，不要因此checkout历史分支。本轮只补交接，未修改CLAUDE.md。
+
+可直接发给Claude Code CLI的接手消息：
+
+> 请读取 F:/AnimusForge-main/HANDOFF.md 顶部“给 Claude Code CLI 的交接”，按其中入口核对规则、Git状态和证据，再向我报告已完成内容及未验证项，等待我的下一步具体任务。不要重做已完成方案、回滚其他会话改动，或自动提交推送部署。后续按我新下达的任务继续。
+
+## 先确认工作区与状态
+
+- 本次实际工作区 `F:/AnimusForge-main`，分支 `codex/af-main-refactor-continuation-20260831`；接手时重新执行 `git rev-parse --show-toplevel`、`git branch --show-current`、`git status --short`，不要按历史标签切换目录或分支。
+- 产品/测试提交 `7312fbfe1f8636bef4f1bc4826e2ca95e19adf6b`；意图检查点 `9713c5b7`；文档/交付HEAD `cdc8135f12c1a615097a802615f0b03d389a2e62`，上轮独立核对远端main与该HEAD一致。本轮只补交接文档，未再次提交推送部署。
+- 另一会话的 `src/modules/AF.Module.Knowledge/Semantic/OnnxCrossEncoderReranker.cs` 仍有未提交修改；原SHA256 `FF865057264F1543C6BE63381878E0C9655B1DC43282AEA8A9FDEA5C1D5712BB`。本任务没改、没提交它，但实际构建包含该既有输入，不能称为纯净Git树构建。无关untracked也未清理；不要全量add、覆盖或回滚其他作者内容。
+- 遵循AGENTS.md和CLAUDE.md中未被最新规则替代的约束，并先读 `.claude/skills/animusforge-maintainer/SKILL.md`；兼容/部署工作另读 `docs/bannerlord_1_3_to_1_4_5_compatibility_diff.md` 和 `docs/bannerlord_dual_module_output.md`。历史交付授权不自动授权下一轮推送、部署或清理。
+
+## 我已经做了什么
+
+- 每篇快报固定1条主新闻＋最多4条真实短讯，不补空条，不再追加各国周近况；撤销短讯分页，原区域用于真实短讯，长正文仍可滚动。
+- 选材时深复制完整收集窗口，保存截止小时、素材来源Key与入选Key。短讯组内仅真正交给写作器的前2条事实算入选，超量事实不再因“另有几起”被误标已用。
+- 发布时只从该快照取落选事件，排除主新闻/短讯使用的所有Key，按实际参与国家和事件所在周合并独立近况；跨国分别入各国，无国入“其他近况”，无素材不建空篇。正文保留全部事实、补充事实、日期和来源Key，不按正文相同猜测去重。
+- 同国同周追加、同Key幂等、跨周独立；主篇和近况保存后才推进窗口。生成期间新增事件留下一窗口，同游戏小时晚到事件由可选 `DeferredFactKeys` 保留资格。
+- 复用既有事件/素材/存档结构，近况ID为 `weekly_report:kingdom:recent:{week}:{nation}`；原存档键与CLR类型身份不改，不修改外部公共API。内部档案DTO加类型和明确打开目标，旧字段及3参数构造保持。
+- 近况无新增AI调用、不弹地图通知、不自动生图；NPC读取的原始事实不变。移除旧小时近况写入入口及只取4事实的模板，遗留存档字段保留。
+- 旧独立摘要及快报附属国家材料在档案副本按国家/周归并，保留原始记录并标历史来源；不能确定与主篇重复的旧材料仍保留，不猜测删除。卷轴不再拼这些材料，国家相关快报仍使用原标题和原ID。
+- 仅重做终端档案区域：紧凑国家筛选、木纹/金色/深色卡片、全部/快报/近况/周报筛选、最新在前、每页12条、最多2行摘要，取消拉伸的原版取消按钮装饰。
+- 近况和周报进入终端独立阅读页、单一正文滚动区，近况标题使用国家＋游戏日期范围；快报按原篇ID打开卷轴。返回恢复国家/类型/页码/滚动位置，百科链接沿既有协调器恢复焦点；缺全文周报仍走原生成链路，主线程完成后更新阅读页。
+- 关闭、读档、退役卡片及排队百科导航的旧回调失效；翻页只绑定当前12个VM。分流仅在发布执行，使用一次记录索引与来源HashSet，不新增逐帧档案全量扫描。终端其他页面、卷轴主体外观、构建部署入口未改。
+
+## 从哪里看代码和证据
+
+- [唯一主台账：实现、源码行号/符号及覆盖边界](docs/animusforge-refactoring-and-repository-reorganization-plan.md#bulletin-residual-archive-20261004)。详细代码证据只在该台账维护，此处不复制整张表。
+- 选材入口：`src/modules/AF.Module.Weekly/Bulletin/WorldBulletinPolicy.cs`；发布及分流owner：`Generation/WorldBulletinStateOwner.cs`、`Generation/WorldBulletinStateOwner.Regional.cs`（同一Weekly模块下）。
+- 旧档投影及近况正文：`src/modules/AF.Module.Weekly/Panel/WeeklyReportArchivePolicy.cs`；终端分页/阅读/生命周期：`src/AF.GameAdapter.Bannerlord/UI/Weekly/TerminalWeeklyReportBrowserPopupVM.cs` 及 `.Archive.cs`；类型投影：`UI/Editors/WeeklyEditorProjection.cs`（同一GameAdapter下）。
+- UI：`content/modules/AF.Module.UI/GUI/Prefabs/AnimusForgeTerminalPopup.xml` 的档案区域，以及 `content/modules/AF.Module.Weekly/GUI/Prefabs/WorldBulletinPanel.xml` 的短讯区域。
+- 本机源码/测试/产物证据：`artifacts/bulletin-residual-archive-20261004/receipt.json`、`delivery.json` 及同目录各测试日志。25任务文件由receipt逐hash绑定；产品范围也可用 `git show --stat 7312fbfe` 查看。
+- 安装证据及当前回滚点：[部署主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#deploy-bulletin-residual-archive-20261004)；本机 `artifacts/deploy-bulletin-residual-archive-20261004/receipt.json`、`retention.json`。这些artifacts是本地证据，不保证在另一台机器随Git可用。
+- 注意：源码receipt保留部署前 `deploy=NOT_RUN`，最终部署状态以独立部署receipt及delivery为准，不要改写历史收据或误判未部署。
+
+## 已验证与未验证
+
+- 已验证共309项：F4发布76、档案/存档/导入/导航94、Weekly编辑器48、Event编辑器27、选材49、XML/布局15；覆盖入选排除、落选无遗漏、跨国/无国、同周/跨周、重试幂等、空池、晚到事件、补充事实、旧档无损、572篇档案仅绑定12卡片、返回状态及旧回调失效。
+- 原Debug流程1.3／1.4＋Bootstrap构建0错误（既有警告保留），引用版本分别 `v1.3.15.110062` / `v1.4.6.115628`。
+- 经原部署入口安装到 `F:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord/Modules/AnimusForge`，版本v1.5.0，更新11个受管文件；3379份Stage/安装hash一致，2315份非受管文件hash/长度/mtime保持，原版DLL及构建脚本保持。
+- 实际安装两实现的会面交接、对话模式锁、桥接/演讲离线CLR检查共6组通过；这不是原生游戏运行验收。
+- 未验证：LIVE_GAME、PLAYER_SAVE、REAL_PROVIDER；未打包ZIP。全仓旧内容数量门禁本轮未重跑，前轮既有失败不被本轮局部通过覆盖。
+
+## Claude Code CLI 的接手清单
+
+1. 重新核对Git/dirty与本地收据，明确用户现在要验收还是继续修改；不自动融合远端、不批量提交他人改动。
+2. 实机检查U键档案：国家和四类型筛选、12卡片分页、两行摘要、近况/周报独立正文、快报原卷轴入口、返回位置及百科切换焦点；同时看桌面实际字体/按钮/滚动条是否遮挡。
+3. 在真实玩家旧档检查旧摘要归并、历史来源、原材料保留、各国正确归属；发布新快报检查1＋最多4条、落选分流、同周追加、跨周独立及生成中新增事件留下一期。保存、重载、导入后再次检查，不以fixture回放替代玩家档。
+4. 关闭/读档后验证旧卡片和百科排队回调不再生效；确认近况没有额外通知、生图或AI请求。发现实际问题再定点修，不扩展成全项目重构。
+5. 若改了兼容敏感代码，继续使用原双实现＋Bootstrap流程，并将实机结果与安装hash分开记录到上述主台账。
+
+复跑入口：`python tests/modules/AF.Module.Weekly/F4GenerationOwnerTests/run.py`；`python tests/modules/AF.Module.Weekly/BulletinArchiveTests/run.py --out artifacts/bulletin-archive-next-agent`；安装离线检查为 `powershell -NoProfile -ExecutionPolicy Bypass -File artifacts/deploy-bulletin-residual-archive-20261004/verify-installed.ps1`。后者只适用于本机现有安装/收据，非实机UI测试。
+
+原构建命令：`powershell -NoProfile -ExecutionPolicy Bypass -File scripts/build/build_single_module.ps1 -ProjectRoot F:/AnimusForge-main -BannerlordRoot "F:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord" -Configuration Debug`。不要改一键入口或恢复双模块输出。
+
+源码回滚为定向 `git revert 7312fbfe`，不要hard reset。安装仅留最近一份已验证Recovery：`C:/Users/29310/AppData/Local/AnimusForge/Recovery/deploy/deploy-9fadc2610c6141809ff5545f4d1df20f`；按manifest/files定点恢复并核hash，不覆盖玩家数据。下方其他Recovery名称均为历史，已经失效，不再执行历史清理脚本。
+
+---
+
+# 历史交付记录（以顶部接手说明与链接的最新主台账为准）
+
+# 最新部署：快报落选分流与档案卡片（2026-10-04，DEPLOY_VERIFIED）
 
 - 产品 `7312fbfe` 已推送main并部署：1条主新闻＋最多4条短讯，落选事实按国家/周立即合并近况；四类型档案、每页12张卡片，近况/周报独立阅读，快报原ID打开卷轴。旧原始记录保留。
 - 专项回归/布局309项PASS，原双API＋Bootstrap构建0错误；3379份Stage/安装文件hash一致、2315份非受管文件保持，实际安装两实现离线CLR共6组通过。实机UI、玩家旧档及真实provider未验，未打包。
