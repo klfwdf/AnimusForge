@@ -1671,6 +1671,26 @@ internal static class Program
                     call.DeclaringType == DuelBehaviorType && call.Name == "MarkDetachedDuelDispatchUnknownAfterStart"),
             "Wilderness participant timeout/abort IL contract drifted.");
 
+        string wildernessLogic = DuelBehaviorType + "+WildernessDuelBattleMissionLogic";
+        var wildernessAfterStart = assembly.RequireMethod(wildernessLogic, "AfterStart");
+        Require(!assembly.GetDirectCalls(wildernessAfterStart).Any(call =>
+                call.Name == "SetMissionMode" || call.Name == "FinishDeployment"),
+            "Wilderness AfterStart must not leave deployment before MissionScreen input initialization.");
+        var completeDeployment = assembly.RequireMethod(wildernessLogic, "TryCompleteNativeDeployment");
+        var deploymentCalls = assembly.GetDirectCalls(completeDeployment);
+        Require(deploymentCalls.Any(call => call.Name == "get_InputManager")
+                && deploymentCalls.Any(call => call.Name == "get_TeamSetupOver")
+                && deploymentCalls.Any(call => call.DeclaringType == "TaleWorlds.MountAndBlade.DeploymentMissionController"
+                    && call.Name == "FinishDeployment")
+                && !deploymentCalls.Any(call => call.Name == "SetMissionMode" || call.Name == "get_MainAgent")
+                && deploymentCalls.Any(call => call.Name == "MarkDetachedDuelDispatchUnknownAfterStart")
+                && assembly.GetReferencedFields(completeDeployment).Any(field => field.Name == "AbortRequested"),
+            "Wilderness must await input/team setup, finish native deployment without waiting for MainAgent, and abort partial failures.");
+        AssertCallOrder(assembly, wildernessTick,
+            call => call.Name == "TryCompleteNativeDeployment",
+            call => call.Name == "get_MainAgent",
+            "Native deployment must precede MainAgent acquisition; 1.4.7 restores player control during FinishDeployment.");
+
         MetadataAssembly.MethodView arenaSettlement = assembly.RequireMethod(
             DuelBehaviorType + "+ArenaDuelMissionBehavior",
             "EndDuelLocal",
