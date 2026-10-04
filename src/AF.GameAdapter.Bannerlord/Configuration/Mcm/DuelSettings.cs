@@ -919,6 +919,7 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 				selectedOption = ManualDropdownModelName;
 			}
 			_mainApiModelDropdown = BuildDropdownFromOptions(_mainApiModelOptions, selectedOption, DefaultDropdownModelName, preserveBlankSelection: false, out _mainApiModelOptions, out var _);
+			PersistSelectionIfChanged();
 			return _mainApiModelDropdown;
 		}
 		set
@@ -930,7 +931,7 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 			{
 				selectedOption = ManualDropdownModelName;
 			}
-			_mainApiModelDropdown = BuildDropdownFromIncoming(value, _mainApiModelOptions, selectedOption, DefaultDropdownModelName, preserveBlankSelection: false, out _mainApiModelOptions, out var normalizedSelectedOption);
+			_mainApiModelDropdown = BuildDropdownFromIncoming(ResolveIncomingDropdownByName(value, _mainApiModelDropdown, selectedOption), _mainApiModelOptions, selectedOption, DefaultDropdownModelName, preserveBlankSelection: false, out _mainApiModelOptions, out var normalizedSelectedOption);
 			_mainApiModelOptions = FilterRemovedMainModelPresets(_mainApiModelOptions);
 			if (IsRemovedMainModelPreset(normalizedSelectedOption))
 			{
@@ -1709,13 +1710,14 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 			EnsureModelDropdownCacheHydrated();
 			string selectedOption = GetAuxiliarySelectedModelOption();
 			_auxiliaryApiModelDropdown = BuildDropdownFromOptions(_auxiliaryApiModelOptions, selectedOption, "", preserveBlankSelection: false, out _auxiliaryApiModelOptions, out var _);
+			PersistSelectionIfChanged();
 			return _auxiliaryApiModelDropdown;
 		}
 		set
 		{
 			EnsureModelDropdownCacheHydrated();
 			string selectedOption = GetAuxiliarySelectedModelOption();
-			_auxiliaryApiModelDropdown = BuildDropdownFromIncoming(value, _auxiliaryApiModelOptions, selectedOption, "", preserveBlankSelection: false, out _auxiliaryApiModelOptions, out var normalizedSelectedOption);
+			_auxiliaryApiModelDropdown = BuildDropdownFromIncoming(ResolveIncomingDropdownByName(value, _auxiliaryApiModelDropdown, selectedOption), _auxiliaryApiModelOptions, selectedOption, "", preserveBlankSelection: false, out _auxiliaryApiModelOptions, out var normalizedSelectedOption);
 			if (!string.IsNullOrWhiteSpace(normalizedSelectedOption) && !IsManualModelOption(normalizedSelectedOption))
 			{
 				AuxiliaryModelName = normalizedSelectedOption;
@@ -1784,13 +1786,14 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 			EnsureModelDropdownCacheHydrated();
 			string selectedOption = GetActionPostprocessSelectedModelOption();
 			_actionPostprocessApiModelDropdown = BuildDropdownFromOptions(_actionPostprocessApiModelOptions, selectedOption, "", preserveBlankSelection: false, out _actionPostprocessApiModelOptions, out var _);
+			PersistSelectionIfChanged();
 			return _actionPostprocessApiModelDropdown;
 		}
 		set
 		{
 			EnsureModelDropdownCacheHydrated();
 			string selectedOption = GetActionPostprocessSelectedModelOption();
-			_actionPostprocessApiModelDropdown = BuildDropdownFromIncoming(value, _actionPostprocessApiModelOptions, selectedOption, "", preserveBlankSelection: false, out _actionPostprocessApiModelOptions, out var normalizedSelectedOption);
+			_actionPostprocessApiModelDropdown = BuildDropdownFromIncoming(ResolveIncomingDropdownByName(value, _actionPostprocessApiModelDropdown, selectedOption), _actionPostprocessApiModelOptions, selectedOption, "", preserveBlankSelection: false, out _actionPostprocessApiModelOptions, out var normalizedSelectedOption);
 			if (!string.IsNullOrWhiteSpace(normalizedSelectedOption) && !IsManualModelOption(normalizedSelectedOption))
 			{
 				ActionPostprocessModelName = normalizedSelectedOption;
@@ -1863,13 +1866,14 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 			EnsureModelDropdownCacheHydrated();
 			string selectedOption = GetEventAndRebellionSelectedModelOption();
 			_eventAndRebellionApiModelDropdown = BuildDropdownFromOptions(_eventAndRebellionApiModelOptions, selectedOption, "", preserveBlankSelection: false, out _eventAndRebellionApiModelOptions, out var _);
+			PersistSelectionIfChanged();
 			return _eventAndRebellionApiModelDropdown;
 		}
 		set
 		{
 			EnsureModelDropdownCacheHydrated();
 			string selectedOption = GetEventAndRebellionSelectedModelOption();
-			_eventAndRebellionApiModelDropdown = BuildDropdownFromIncoming(value, _eventAndRebellionApiModelOptions, selectedOption, "", preserveBlankSelection: false, out _eventAndRebellionApiModelOptions, out var normalizedSelectedOption);
+			_eventAndRebellionApiModelDropdown = BuildDropdownFromIncoming(ResolveIncomingDropdownByName(value, _eventAndRebellionApiModelDropdown, selectedOption), _eventAndRebellionApiModelOptions, selectedOption, "", preserveBlankSelection: false, out _eventAndRebellionApiModelOptions, out var normalizedSelectedOption);
 			if (!string.IsNullOrWhiteSpace(normalizedSelectedOption) && !IsManualModelOption(normalizedSelectedOption))
 			{
 				EventAndRebellionModelName = normalizedSelectedOption;
@@ -6056,6 +6060,41 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 			return new Dropdown<string>(normalizedOptions, num);
 		}
 		return BuildDropdownFromOptions(cachedOptions, selectedOption, fallbackModel, preserveBlankSelection, out normalizedOptions, out normalizedSelectedOption);
+	}
+
+	// MCM saves a dropdown as an index only. On load it hands the setter a freshly built Dropdown whose index
+	// may no longer match the current list order (e.g. after the model list was re-fetched), which silently
+	// selected a different model. The live dropdown instance is reused by programmatic/user edits, so only a
+	// different instance is treated as a load and re-resolved by the remembered model name.
+	// Assumption: MCM's loader passes a new Dropdown instance (its core source is not in this repo).
+	private static Dropdown<string> ResolveIncomingDropdownByName(Dropdown<string> incoming, Dropdown<string> live, string rememberedOption)
+	{
+		if (incoming == null || incoming.Count <= 0 || ReferenceEquals(incoming, live))
+		{
+			return incoming;
+		}
+		string name = NormalizeModelOption(rememberedOption);
+		if (string.IsNullOrWhiteSpace(name))
+		{
+			return incoming;
+		}
+		// A name missing from the list is appended by BuildModelOptionList, so it is kept rather than replaced.
+		return BuildDropdownFromOptions(ReadDropdownValues(incoming), name, "", preserveBlankSelection: false, out _, out _);
+	}
+
+	private string _lastPersistedSelectionKey = "";
+
+	// Keeps the cached selected names in step with what MCM is about to serialize as an index.
+	// Runs from the dropdown getters (UI refresh / save), only touching disk when a selection changed.
+	private void PersistSelectionIfChanged()
+	{
+		string key = ReadSelectedModelOption(_mainApiModelDropdown) + "|" + ReadSelectedModelOption(_auxiliaryApiModelDropdown) + "|" + ReadSelectedModelOption(_actionPostprocessApiModelDropdown) + "|" + ReadSelectedModelOption(_eventAndRebellionApiModelDropdown);
+		if (string.Equals(key, _lastPersistedSelectionKey, StringComparison.Ordinal))
+		{
+			return;
+		}
+		_lastPersistedSelectionKey = key;
+		PersistModelDropdownCacheSnapshot();
 	}
 
 	private static string BuildModelListApiUrl(string rawApiUrl)
