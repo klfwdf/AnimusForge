@@ -453,6 +453,11 @@
                                                         <RichTextWidget IsVisible="@ShowPositiveTag" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MarginBottom="8" Brush="Popup.Description.Text" Brush.FontSize="16" Brush.FontColor="#75BB75FF" Text="@TagText" />
                                                         <RichTextWidget IsVisible="@ShowNegativeTag" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MarginBottom="8" Brush="Popup.Description.Text" Brush.FontSize="16" Brush.FontColor="#DD7777FF" Text="@TagText" />
                                                         <RichTextWidget IsVisible="@ShowNeutralTag" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MarginBottom="8" Brush="Popup.Description.Text" Brush.FontSize="16" Brush.FontColor="#B8B8B8FF" Text="@TagText" />
+                                                        <ButtonWidget IsVisible="@ShowOpenReport" DoNotPassEventsToChildren="true" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="200" SuggestedHeight="38" MarginTop="8" Brush="Popup.Done.Button" Command.Click="ExecuteOpenReport" UpdateChildrenStates="true">
+                                                          <Children>
+                                                            <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" VerticalAlignment="Center" Brush="Popup.Button.Text" Text="@OpenReportText" DoNotAcceptEvents="true" />
+                                                          </Children>
+                                                        </ButtonWidget>
                                                         <ButtonWidget IsVisible="@ShowViewFullReport" DoNotPassEventsToChildren="true" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="200" SuggestedHeight="38" MarginTop="8" Brush="Popup.Done.Button" Command.Click="ExecuteViewFullReport" UpdateChildrenStates="true">
                                                           <Children>
                                                             <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" VerticalAlignment="Center" Brush="Popup.Button.Text" Text="查看完整周报" />

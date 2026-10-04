@@ -145,6 +145,8 @@ public partial class MyBehavior
 	public List<WeeklyReportBrowserCountryData> GetTerminalWeeklyReportBrowserCountries()
 		=> WeeklyEditor.GetTerminalWeeklyReportBrowserCountries();
 
+    internal bool OpenArchivedWeeklyReport(string eventId) => WeeklyEditor.OpenArchivedReport(eventId);
+
 	private static WeeklyReportBrowserCountryData BuildWeeklyReportBrowserCountryData(string eventKind, string scopeKingdomId, string displayName, bool isWorld, List<EventRecordEntry> source)
 		=> WeeklyEditorProjection.BuildWeeklyReportBrowserCountryData(WeeklyEditorDisplay, eventKind, scopeKingdomId, displayName, isWorld, source);
 

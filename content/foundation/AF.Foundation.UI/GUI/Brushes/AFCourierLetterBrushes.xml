@@ -1,4 +1,25 @@
 <Brushes>
+  <Brush Name="AF.ApiOnboarding.Option.Button">
+    <Layers>
+      <BrushLayer Name="Border" Sprite="BlankWhiteSquare_9" Color="#796B55FF" />
+      <BrushLayer Name="Fill" Sprite="BlankWhiteSquare_9" Color="#242423FF" ExtendLeft="-1" ExtendRight="-1" ExtendTop="-1" ExtendBottom="-1" />
+    </Layers>
+    <Styles>
+      <Style Name="Default"><BrushLayer Name="Border" ColorFactor="1" /><BrushLayer Name="Fill" ColorFactor="1" /></Style>
+      <Style Name="Hovered"><BrushLayer Name="Border" Color="#D0B98FFF" /><BrushLayer Name="Fill" Color="#383A38FF" /></Style>
+      <Style Name="Pressed"><BrushLayer Name="Border" Color="#E7D6B4FF" /><BrushLayer Name="Fill" Color="#171918FF" /></Style>
+      <Style Name="Disabled"><BrushLayer Name="Border" AlphaFactor="0.45" /><BrushLayer Name="Fill" AlphaFactor="0.45" /></Style>
+    </Styles>
+    <SoundProperties><EventSounds><EventSound EventName="Click" Audio="panels/next" /></EventSounds></SoundProperties>
+  </Brush>
+  <Brush Name="AF.ApiOnboarding.Option.Text" BaseBrush="Info.Text" Font="simkai" TextHorizontalAlignment="Center" TextVerticalAlignment="Center">
+    <Styles>
+      <Style Name="Default" FontSize="22" FontColor="#F4ECDDFF" TextOutlineAmount="0" TextGlowRadius="0" TextBlur="0" />
+      <Style Name="Hovered" FontColor="#FFFFFFFF" />
+      <Style Name="Pressed" FontColor="#DDCCAAFF" />
+      <Style Name="Disabled" FontColor="#F4ECDD77" />
+    </Styles>
+  </Brush>
   <Brush Name="AFWorldBulletin.Archive.Button">
     <Layers>
       <BrushLayer Name="Border" Sprite="BlankWhiteSquare_9" Color="#87633CFF" />

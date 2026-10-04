@@ -95,3 +95,66 @@ Check(row.Countries.Select(x=>x.CountryId).ToHashSet(StringComparer.OrdinalIgnor
 Check(row.BodyText=="new bulletin body"&&row.CategoryLabel=="即时快报"&&row.Sequence==10,"timeline retains canonical body and issue sequence");
 Check(timeline.IndexOf(row)<timeline.FindIndex(x=>x.WeeklyReportEventId==old.EventId),"timeline keeps newest same-day issue first");
 Console.WriteLine($"PASS: {count} bulletin archive/save/terminal/timeline assertions; game and renderer stubbed, no live-game acceptance.");
+
+var archiveSources=new List<EventRecordEntry>{
+ new(){EventId="weekly_report:world:bulletin:1:8",EventKind="world",CreatedDay=8,Summary="issue 1 complete",BulletinKingdomIds=new(){"existing"}},
+ new(){EventId="weekly_report:world:bulletin:2:13",Title="issue 2",EventKind="world",CreatedDay=13,Summary="issue 2 complete"},
+ new(){EventId="weekly_report:world:bulletin:3:15",EventKind="world",CreatedDay=15,Summary="future issue"},
+ new(){EventId="weekly_report:kingdom:2:A:brief",EventKind="kingdom",ScopeKingdomId="A",WeekIndex=2,CreatedDay=14,Title="A news",Summary="A complete regional text\nsecond paragraph",TagText="INTERNAL_STAB"},
+ new(){EventId="weekly_report:kingdom:2:B:brief",EventKind="kingdom",ScopeKingdomId="B",WeekIndex=2,CreatedDay=14,Title="B news",Summary="B complete regional text"},
+ new(){EventId="weekly_report:world:1",EventKind="world",WeekIndex=1,CreatedDay=7,Summary="week 1 full"},
+ new(){EventId="weekly_report:kingdom:C:1",EventKind="kingdom",ScopeKingdomId="C",WeekIndex=1,CreatedDay=7,Title="C news",ShortSummary="C old short-only body"},
+ new(){EventId="weekly_report:kingdom:6:D:brief",EventKind="kingdom",ScopeKingdomId="D",WeekIndex=6,CreatedDay=42,Title="D orphan",Summary="D preserved body"},
+ new(){EventId="weekly_report:kingdom:6:E:brief",EventKind="kingdom",ScopeKingdomId="E",WeekIndex=6,CreatedDay=42,Title="E orphan",Summary="E preserved body"}
+};
+string originalJson=JsonConvert.SerializeObject(archiveSources);
+var associations=new Dictionary<string,List<string>>(StringComparer.OrdinalIgnoreCase){{"weekly_report:world:bulletin:2:13",new(){"legacy"}}};
+var consolidated=WeeklyReportArchivePolicy.BuildArchiveSnapshot(archiveSources,associations);
+Check(consolidated.Count==5&&consolidated.All(x=>!WeeklyReportArchivePolicy.IsRegionalSummary(x)),"legacy regional entries consolidate into issue rows, not standalone summaries");
+var parent=consolidated.Single(x=>x.CreatedDay==13);
+Check(parent.Materials.Count==2&&parent.BulletinKingdomIds.ToHashSet().SetEquals(new[]{"A","B","legacy"}),"two nations attach to latest covered issue and preserve layout associations");
+Check(consolidated.Single(x=>x.CreatedDay==15).Materials.Count==0&&consolidated.Single(x=>x.CreatedDay==8).Materials.Count==0,"regional news does not attach to future or earlier replaced issue");
+string combinedBody=WeeklyReportArchivePolicy.BodyWithRegionalNews(parent);
+Check(combinedBody.Contains("issue 2 complete")&&combinedBody.Contains("A complete regional text second paragraph")&&combinedBody.Contains("B complete regional text")&&!combinedBody.Contains("INTERNAL_STAB"),"combined issue includes all visible text, never internal tags");
+var weekOne=consolidated.Single(x=>x.EventId=="weekly_report:world:1");
+Check(WeeklyReportArchivePolicy.BodyWithRegionalNews(weekOne).Contains("C old short-only body")&&weekOne.BulletinKingdomIds.SequenceEqual(new[]{"C"}),"short-only weekly merges into exact matching world week");
+var orphan=consolidated.Single(x=>x.EventId=="weekly_report:world:bulletin:archive:6");
+Check(orphan.Materials.Count==2&&WeeklyReportArchivePolicy.BodyWithRegionalNews(orphan).Contains("D preserved body")&&WeeklyReportArchivePolicy.BodyWithRegionalNews(orphan).Contains("E preserved body"),"orphan summaries share one complete browseable edition per week");
+Check(JsonConvert.SerializeObject(archiveSources)==originalJson,"archive projection never modifies original legacy records");
+Check(JsonConvert.SerializeObject(WeeklyReportArchivePolicy.BuildArchiveSnapshot(archiveSources,associations))==JsonConvert.SerializeObject(consolidated),"repeated archive opens are deterministic without accumulating messages");
+WeeklyReportArchivePolicy.AttachRegionalNews(parent,WeeklyReportArchivePolicy.RegionalMaterial(archiveSources[3]));
+Check(parent.Materials.Count==2,"repeated regional source replaces instead of duplicates");
+var mergedCountries=new List<WeeklyReportBrowserCountryData>{
+ WeeklyEditorProjection.BuildWeeklyReportBrowserCountryData(display,"world","","all archives",true,consolidated,associations),
+ WeeklyEditorProjection.BuildWeeklyReportBrowserCountryData(display,"kingdom","A","Kingdom A",false,consolidated,associations)
+};
+MyBehavior.Instance=new(){Countries=mergedCountries};
+var openVm=new TerminalWeeklyReportBrowserPopupVM(mergedCountries,"A",()=>{});
+var openItem=openVm.ReportItems.Single();
+Check(openItem.ShowOpenReport&&openItem.OpenReportText=="打开快报"&&!openItem.ShowViewFullReport,"completed issue has reopen button instead of regenerate");
+openItem.ExecuteOpenReport();
+Check(MyBehavior.Instance.Opens==1&&MyBehavior.Instance.OpenedId==parent.EventId,"actual VM reopens selected canonical issue ID");
+openVm.OnFinalize();openItem.ExecuteOpenReport();
+Check(MyBehavior.Instance.Opens==1,"retired archive rejects cached row callback");
+var staleVm=new TerminalWeeklyReportBrowserPopupVM(mergedCountries,"A",()=>{});
+SaveRuntimeGuard.AdvanceGeneration("archive-load-test");staleVm.ReportItems.Single().ExecuteOpenReport();
+Check(MyBehavior.Instance.Opens==1,"save load rejects old archive open callbacks");staleVm.OnFinalize();
+var mergedTimeline=WorldMessageTimelineUi.Replay();
+Check(mergedTimeline.Count==5&&mergedTimeline.Single(x=>x.WeeklyReportEventId==parent.EventId).BodyText.Contains("A complete regional text"),"timeline consumes one merged issue per ID with regional body");
+store=new();saveJson="";
+CampaignWeeklyRecordPersistenceAdapter.SaveRecords(new MemoryStore(store),new(){parent},ref saveJson,Normalize);
+loaded=new();CampaignWeeklyRecordPersistenceAdapter.LoadRecords(new MemoryStore(store,true),ref loaded,ref saveJson,Normalize);
+Check(loaded.Single().Materials.Count==2&&WeeklyReportArchivePolicy.BodyWithRegionalNews(loaded.Single())==combinedBody,"actual chunked save/load retains attached regional text");
+merged=new();WeeklyEventDataImportOwner.ApplyRecords(new(){HasEventRecordsFile=true,EventRecords=loaded},true,ref merged,Sanitize);
+Check(WeeklyReportArchivePolicy.BodyWithRegionalNews(merged.Single())==combinedBody,"actual import sanitation retains attached messages");
+Console.WriteLine($"PASS: {count} total archive/save/UI assertions including consolidation and reopen.");
+var year=new List<EventRecordEntry>();
+for(int week=1;week<=52;week++)
+{
+    year.Add(new(){EventId=$"weekly_report:world:bulletin:{week}:{week*7-1}",EventKind="world",CreatedDay=week*7-1,WeekIndex=week-1,Summary="issue "+week});
+    for(int nation=0;nation<10;nation++)
+        year.Add(new(){EventId=$"weekly_report:kingdom:{week}:K{nation}:brief",EventKind="kingdom",ScopeKingdomId="K"+nation,WeekIndex=week,CreatedDay=week*7,Summary=$"week {week} nation {nation}"});
+}
+var yearArchive=WeeklyReportArchivePolicy.BuildArchiveSnapshot(year);
+Check(yearArchive.Count==52&&yearArchive.All(e=>e.Materials.Count==10)&&year.Count==572,"52 weeks and 520 regional summaries become 52 issues without deleting original data");
+Console.WriteLine($"PASS: {count} final archive/save/UI assertions, including year-long archive consolidation.");

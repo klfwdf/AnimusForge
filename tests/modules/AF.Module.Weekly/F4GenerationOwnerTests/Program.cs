@@ -1,11 +1,36 @@
 using System;using System.Collections.Generic;using System.Linq;using System.Threading.Tasks;using AnimusForge;using static AnimusForge.MyBehavior;
 namespace AnimusForge { public static class Logger { public static void Log(string area,string text){} } }
+namespace AnimusForge { internal static class WorldBulletinPanelIllustrationBridge { internal static Func<bool> ShouldPreloadSelection; } }
 internal static class Program {
  static int n;static void Check(bool ok,string label){if(!ok)throw new Exception(label);n++;}
  static string Body(string title="title")=>"[TITLE]"+title+"[SHORT]summary[REPORT]report[TAGS]STAB_FLAT";
  static string Block(string id,string body,string extra="")=>"[REPORT_BLOCK_BEGIN]\nreport_id="+id+"\n"+extra+body+"\n[REPORT_BLOCK_END]";
+ static void TestRegionalNewsAttachment()
+ {
+     int changed=0;
+     var records=new List<EventRecordEntry>();
+     var issue=new EventRecordEntry{EventId="weekly_report:world:bulletin:1:13",EventKind="world",CreatedDay=13,Summary="【大事件】Original major\n【其他消息】Original minor"};
+     var port=new WorldBulletinPort{Records=()=>records,EligibleKingdoms=()=>new(){new("A","Nation A"),new("B","Nation B")},NotifyTimeline=()=>changed++,Log=(a,b)=>{},ResolveKingdom=id=>id,NoticeTitle=e=>e.Title,PopupSubtitle=e=>e.CreatedDate,PopupBody=e=>e.Summary};
+     port.CurrentDay=()=>0;
+     var owner=new WorldBulletinStateOwner();owner.Bind(port);
+     var state=owner.EnsureWorldBulletinState();state.World.Sequence=1;state.TrackingStartDay=0;
+     state.Events.Add(new(){Key="a",KingdomIds=new(){"A"},Day=12,Sentence="A confirmed event",Score=30});
+     owner.WriteWorldBulletinKingdomBriefs(state,14);
+     Check(state.LastKingdomWeek<2&&changed==0,"no issue does not consume regional week");
+     records.Add(issue);owner.WriteWorldBulletinKingdomBriefs(state,14);
+     Check(records.Count==1&&issue.Materials.Count==2&&state.LastKingdomWeek==2&&changed==1,"new regional messages attach to issue without creating archive rows");
+     Check(issue.BulletinKingdomIds.ToHashSet().SetEquals(new[]{"A","B"}),"attached nations join issue archive associations");
+     Check(WeeklyReportArchivePolicy.BodyWithRegionalNews(issue).Contains("A confirmed event"),"new regional facts are available in full issue body");
+     var panel=owner.BuildWorldBulletinPanelData(issue,issue.EventId);
+     Check(panel.BodyText=="Original major"&&panel.Minors.Count==3&&panel.Minors.Any(m=>m.Value.Contains("A confirmed event")),"original panel preserves major and contains all attached messages");
+     owner.WriteWorldBulletinKingdomBriefs(state,14);
+     Check(issue.Materials.Count==2&&changed==1,"same-week hourly calls do not duplicate regional messages");
+     records.Clear();owner.ResetTransient();owner.WriteWorldBulletinKingdomBriefs(state,21);
+     Check(state.LastKingdomWeek==2&&changed==1,"missing next issue does not discard next week regional news");
+ }
  static void TestBulletinNoticeRecovery()
  {
+     TestRegionalNewsAttachment();
      var notices = new WeeklyNoticeStateOwner();
      var records = new Dictionary<string, EventRecordEntry>();
      var owner = new WorldBulletinStateOwner();

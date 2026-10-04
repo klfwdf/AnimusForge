@@ -255,8 +255,8 @@ internal sealed class WeeklyReportEditorController
 		catch
 		{
 		}
-		List<EventRecordEntry> list = _port.SanitizeEventRecordEntries(_port.EventRecords());
         var bulletinAssociations = _port.BulletinKingdomAssociations?.Invoke();
+		List<EventRecordEntry> list = WeeklyReportArchivePolicy.BuildArchiveSnapshot(_port.SanitizeEventRecordEntries(_port.EventRecords()), bulletinAssociations);
 		List<WeeklyReportBrowserCountryData> list2 = new List<WeeklyReportBrowserCountryData>();
 		HashSet<string> hashSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 		WeeklyReportBrowserCountryData item = BuildWeeklyReportBrowserCountryData("world", "", "快报与周报档案", isWorld: true, list, bulletinAssociations);
@@ -283,6 +283,23 @@ internal sealed class WeeklyReportEditorController
 		}
 		return list2;
 	}
+
+    internal bool OpenArchivedReport(string eventId)
+    {
+        var entry = WeeklyReportArchivePolicy.BuildArchiveSnapshot(_port.SanitizeEventRecordEntries(_port.EventRecords()), _port.BulletinKingdomAssociations?.Invoke())
+            .FirstOrDefault(e => string.Equals(e.EventId, eventId, StringComparison.OrdinalIgnoreCase));
+        if (entry == null) return false;
+        bool bulletin = WeeklyReportArchivePolicy.IsBulletin(entry.EventId);
+        if (bulletin)
+        {
+            WorldBulletinPanelData data = null;
+            try { data = _port.BuildBulletinPanel(entry, entry.EventId); }
+            catch (Exception ex) { Logger.Log("WorldBulletinPanel", "[WARN] archive panel data build failed, using legacy popup: " + ex.Message); }
+            if (data != null && DevWeeklyReportPopup.ShowWorldBulletin(data)) return true;
+        }
+        return DevWeeklyReportPopup.Show(entry.Title, entry.CreatedDate, WeeklyReportArchivePolicy.BodyWithRegionalNews(entry),
+            closeText: "关闭", useChronicleColumns: !bulletin && !string.IsNullOrWhiteSpace(entry.Summary));
+    }
 
 	internal void OpenDevWeeklyEventMaterialPreviewGroupDetail(WeeklyEventMaterialPreviewGroup group, int page)
 	{
