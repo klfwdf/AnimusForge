@@ -25,6 +25,11 @@ internal interface IWorldDiplomacyCanonicalHistoryMigrationSource
     void Log(string message);
 }
 
+internal interface IWorldDiplomacyRoundClosure
+{
+    void CloseRound(string reason, WorldDiplomacyRound round);
+}
+
 internal static class WorldDiplomacyCanonicalHistoryMigrationApplication
 {
     private sealed class WorkItem
@@ -192,7 +197,7 @@ internal static class WorldDiplomacyCanonicalHistoryMigrationApplication
         }
         source.SetObservedWeeklyRevision(source.WeeklyRevision());
         foreach (WorldDiplomacyRound round in (storage.CompletedRounds ?? new List<WorldDiplomacyRound>())
-            .Concat(storage.ActiveRound == null ? Enumerable.Empty<WorldDiplomacyRound>() : new[] { storage.ActiveRound }).Where(x => x != null))
+            .Concat(WorldDiplomacyLiveRoundRules.Live(storage)).Where(x => x != null))
         {
             round.LlmTranscript?.Clear();
             round.LlmProfiledKingdomIds?.Clear();
@@ -222,13 +227,18 @@ internal static class WorldDiplomacyCanonicalHistoryMigrationApplication
             {
                 if (WorldDiplomacyRoundLifecycleRules.ResolveExchange(storage?.ActiveExchange, storage?.SuspendedExchanges, invalidJob.ExchangeId) != null) orchestration.CompleteExchange(invalidJob.ExchangeId, "canonical_history_migration_retired_invalid_job");
             }
-            WorldDiplomacyRound activeRound = storage.ActiveRound;
-            if (activeRound != null)
+            foreach (WorldDiplomacyRound activeRound in WorldDiplomacyLiveRoundRules.Live(storage).ToList())
             {
                 activeRound.RelayWaiting = false;
                 bool hasRoundJob = storage.Jobs.Any(x => x != null && WorldDiplomacyRoundLifecycleRules.IsRecordInRound(x.RoundId, activeRound.RoundId));
                 bool hasPublishedRoot = source.ResolveDocument(activeRound.RootDocumentId)?.IsReadyForPublication == true;
-                if (!hasRoundJob && !hasPublishedRoot) orchestration.CloseActiveRound("canonical_history_migration_missing_root");
+                if (!hasRoundJob && !hasPublishedRoot)
+                {
+                    if (orchestration is IWorldDiplomacyRoundClosure closure)
+                        closure.CloseRound("canonical_history_migration_missing_root", activeRound);
+                    else if (activeRound == storage.ActiveRound)
+                        orchestration.CloseActiveRound("canonical_history_migration_missing_root");
+                }
             }
         }
         WorldDiplomacyRoundLifecycleRules.RecalculateCanonicalHistoryTokens(storage, source.HistoryCompressionTriggerTokens);

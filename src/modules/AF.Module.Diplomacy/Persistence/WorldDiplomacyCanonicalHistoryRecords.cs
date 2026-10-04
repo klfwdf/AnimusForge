@@ -161,4 +161,6 @@ public sealed class WorldDiplomacyCanonicalHistoryEntry
 
 	[JsonProperty("estimatedTokens")]
 	public long EstimatedTokens { get; set; }
+
+    [JsonProperty("answeredPlayerDocumentIds")] public List<string> AnsweredPlayerDocumentIds { get; set; } = new List<string>();
 }

@@ -40,6 +40,16 @@ internal static class WorldDiplomacyNoActionApplication
 			port.AuthorHasAuthority,
 			port.TargetHasAuthority,
 			WorldDiplomacyRoundLifecycleRules.IsActiveRoundState(round.State))) return false;
+        // A substantive public reply to an explicitly owed player source is a
+        // valid speaking turn, including after the original event has closed.
+        // This grants no action/acceptance authority and does not revive offers.
+        if (responseSource?.IsReadyForPublication == true && responseSource.IsPlayerAuthored
+            && string.Equals(responseSource.AuthorKingdomId, port.TargetId, StringComparison.OrdinalIgnoreCase)
+            && (round.PlayerResponses ?? new List<WorldDiplomacyPlayerResponse>()).Any(x => x != null
+                && x.Status == "pending" && string.IsNullOrWhiteSpace(x.AnswerDocumentId)
+                && string.Equals(x.KingdomId, port.AuthorId, StringComparison.OrdinalIgnoreCase)
+                && string.Equals(x.SourceDocumentId, responseSource.DocumentId, StringComparison.OrdinalIgnoreCase)
+                && WorldDiplomacyRoundLifecycleRules.IsRecordInRound(x.OriginalRoundId, responseSource.RoundId))) return true;
 		WorldDiplomacyDocument root = port.ResolveDocument(round.RootDocumentId);
 		bool rootReady = root?.IsReadyForPublication == true;
 		bool rootActionable = rootReady && WorldDiplomacyIntentVocabulary.IsActionableDiplomacyIntent(root.Intent);

@@ -38,7 +38,7 @@ internal static class WorldDiplomacyRoundPlanApplication
             WorldDiplomacyDocument root = resolveDocument?.Invoke(job?.DocumentId);
             string initiatorId = resolveKingdomId?.Invoke(root?.AuthorKingdomId ?? round?.InitiatorKingdomId);
             if (round == null || root == null || string.IsNullOrWhiteSpace(initiatorId) || round.RelayPlanned
-                || !ReferenceEquals(storage?.ActiveRound, round)
+                || !WorldDiplomacyLiveRoundRules.Contains(storage, round)
                 || !WorldDiplomacyRoundLifecycleRules.IsActiveRoundState(round.State)) return;
             JObject json = WorldDiplomacyEnvelopeJsonRules.ParseJsonObject(raw);
             round.RoundTopic = WorldDiplomacyTextRules.Limit(WorldDiplomacyTextRules.SanitizePublicDiplomacyText(WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(WorldDiplomacyEnvelopeJsonRules.ReadString(json, "topic"), root.PlannedRoundTopic, root.Title, "外交交涉")), 120);
@@ -94,7 +94,7 @@ internal static class WorldDiplomacyRoundPlanApplication
             }
             if (route.Count < 2)
             {
-                if (ReferenceEquals(storage?.ActiveRound, round)) closeActiveRound?.Invoke("round_plan_no_participants");
+                if (WorldDiplomacyLiveRoundRules.Contains(storage, round)) closeActiveRound?.Invoke("round_plan_no_participants");
                 return;
             }
             round.SchemaVersion = relaySchemaVersion;

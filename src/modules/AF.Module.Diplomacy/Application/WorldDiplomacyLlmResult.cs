@@ -5,6 +5,8 @@ internal sealed class LlmJobResult
     {
         public string JobId = "";
         public long RuntimeGeneration;
+        public int RequestAttempt;
+        public long RoundConversationRevision;
         public bool Success;
         public string Content = "";
         public string Error = "";

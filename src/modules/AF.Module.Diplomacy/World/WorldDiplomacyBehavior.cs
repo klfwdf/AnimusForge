@@ -114,7 +114,7 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 	private readonly Dictionary<string, string> _realmInstitutionalVoiceCache = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 	private readonly Dictionary<string, WorldDiplomacyRealmRelationProfile> _realmRelationProfileCache = new Dictionary<string, WorldDiplomacyRealmRelationProfile>(StringComparer.OrdinalIgnoreCase);
 	private readonly Dictionary<string, WorldDiplomacyBorderRelation> _kingdomBorderCache = new Dictionary<string, WorldDiplomacyBorderRelation>(StringComparer.OrdinalIgnoreCase);
-	private readonly WorldDiplomacyRequestLeaseCoordinator _llmRequestLease = new WorldDiplomacyRequestLeaseCoordinator();
+	private WorldDiplomacyRequestLeaseCoordinator _llmRequestLease => _orchestration.RequestLeases;
 	private int _kingdomBorderCacheDay = -1;
 	private float _kingdomBorderDistanceThreshold = WorldDiplomacyWorldProfileRules.MinimumBorderDistance;
 	private long _realmInstitutionalVoiceRuleVersion = -1L;
@@ -129,7 +129,7 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 	// Runtime-only revision lets the world-message timeline detect a published document without cloning the archive every tick.
 	private long _worldMessageTimelineRevision = 1L;
 
-	private readonly WorldDiplomacyLlmBudget _llmBudget = new WorldDiplomacyLlmBudget();
+
 	private long _cacheHitTokensThisSession;
 	private long _cacheMissTokensThisSession;
 	private long _relayCacheHitTokensThisSession;
@@ -138,6 +138,8 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 	private readonly WorldDiplomacyOrchestration _orchestration;
 
 	public static WorldDiplomacyBehavior Instance { get; private set; }
+	private readonly Campaign _owningCampaign = Campaign.Current;
+	internal bool IsLiveCampaign => ReferenceEquals(Instance, this) && CampaignRuntimeGuard.IsLiveCampaign(_owningCampaign);
 	internal WorldDiplomacyOrchestration Orchestration => _orchestration;
 
 	public WorldDiplomacyBehavior()
@@ -178,8 +180,18 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 
 	public void OnEngineTick()
 	{
+		if (!ReferenceEquals(Instance, this) || !CampaignRuntimeGuard.IsLiveCampaign(_owningCampaign)) return;
 		var source = new TickSource(this);
 		WorldDiplomacyTickApplication.Run(ref source, _orchestration);
+	}
+
+	internal void RetireCampaignRuntime(string reason)
+	{
+		_runtimeGeneration = 0;
+		_orchestration.RequestLeases.Reset();
+		while (_completedJobs.TryDequeue(out _)) { }
+		if (ReferenceEquals(Instance, this)) Instance = null;
+		WorldDiplomacyComposePopup.CloseForCampaignEnd();
 	}
 
 	public static void RegisterHarmonyPatches(Harmony harmony)
@@ -540,7 +552,7 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 		_kingdomBorderCacheDay = -1;
 		_realmInstitutionalVoiceRuleVersion = -1L;
 		DiplomacyModuleServices.Policy.Clear();
-		_llmBudget.Reset();
+
 		_cacheHitTokensThisSession = 0;
 		_cacheMissTokensThisSession = 0;
 		_relayCacheHitTokensThisSession = 0;
@@ -786,7 +798,7 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 
 	private bool TryConsumeDiplomacyLlmRequestBudget(bool consume = true)
 	{
-		return _llmBudget.TryConsume(CurrentDay(), MaxDiplomacyLlmRequestsPerDay, consume, Log);
+		return consume ? _storage.RequestBudget.TryAdmit(false) : _storage.RequestBudget.CanAdmit(false);
 	}
 
 	private Settlement ResolveCourtSettlement(Kingdom kingdom)
@@ -815,7 +827,7 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 
 	private WorldDiplomacyRound ResolveRound(string roundId)
 	{
-		return WorldDiplomacyRoundLifecycleRules.ResolveRound(_storage?.ActiveRound, _storage?.CompletedRounds, roundId);
+		return Orchestration.ResolveRound(roundId);
 	}
 
 	private WorldDiplomacyCessionReceipt TryApplyValidatedCession(WorldDiplomacyPeaceTerms terms, Kingdom first, Kingdom second)
@@ -968,20 +980,10 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 
 	private HashSet<string> GetKnownDocumentIdsForHero(Hero hero, string kingdomIdOverride)
 	{
-		string kingdomId = WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(hero?.Clan?.Kingdom?.StringId, kingdomIdOverride);
-		Settlement currentSettlement = hero?.CurrentSettlement ?? hero?.PartyBelongedTo?.CurrentSettlement;
-		bool isKingdomNoble = hero?.IsLord == true && !string.IsNullOrWhiteSpace(hero.Clan?.Kingdom?.StringId);
-		bool includeCourtKnowledge = (hero?.Clan != null && hero.Clan == hero.Clan.Kingdom?.RulingClan)
-			|| string.Equals(hero?.StringId, ResolveKingdom(kingdomId)?.RulingClan?.Leader?.StringId, StringComparison.OrdinalIgnoreCase);
-		return WorldDiplomacyRoundLifecycleRules.CollectKnownDocumentIds(
-			_storage?.SettlementKnowledge,
-			_storage?.NobleKnowledge,
-			_storage?.KingdomKnowledge,
-			currentSettlement?.StringId,
-			kingdomId,
-			isKingdomNoble,
-			includeCourtKnowledge);
-	}
+
+        return new HashSet<string>(_orchestration.PublicDocumentIds(), StringComparer.OrdinalIgnoreCase);
+    }
+
 
 
 

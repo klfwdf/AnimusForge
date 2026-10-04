@@ -696,7 +696,7 @@ public static class WorldDiplomacyGenerationValidationRules
                     }
                 }
             }
-            else if (!string.IsNullOrWhiteSpace(WorldDiplomacyEnvelopeJsonRules.ReadString(json, "responding_to_offer_document_id")))
+            else if (intent != "withdraw_offer" && !string.IsNullOrWhiteSpace(WorldDiplomacyEnvelopeJsonRules.ReadString(json, "responding_to_offer_document_id")))
             {
                 string claimedOfferDocumentId = WorldDiplomacyEnvelopeJsonRules.ReadString(json, "responding_to_offer_document_id");
                 if (WorldDiplomacyIntentVocabulary.IsProposalIntent(intent)
@@ -800,6 +800,7 @@ public static class WorldDiplomacyGenerationValidationRules
                     RespondingToOfferActionId = WorldDiplomacyEnvelopeJsonRules.ReadString(actionEnvelope, "responding_to_offer_action_id"),
                     RespondingToThreatDocumentId = WorldDiplomacyEnvelopeJsonRules.ReadString(actionEnvelope, "responding_to_threat_document_id"),
                     RespondingToThreatActionId = WorldDiplomacyEnvelopeJsonRules.ReadString(actionEnvelope, "responding_to_threat_action_id"),
+                    TreatyTerms = actionDocument.TreatyTerms,
                     PeaceTerms = actionDocument.PeaceTerms
                 };
                 applied.Add(action);

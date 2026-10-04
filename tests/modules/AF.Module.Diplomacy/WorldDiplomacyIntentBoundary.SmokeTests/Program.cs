@@ -746,7 +746,8 @@ internal static class Program
 		Test.True(courtArrival.Contains("_host.IsPlayerAffiliatedParty(receiverId)", StringComparison.Ordinal),
 			"formal court arrival must work for player rulers and player vassals");
         string propagation = ExtractMethod(source, "private void StartDocumentPropagation(");
-        Test.True(propagation.Contains("WorldDiplomacyPublicationRoutingApplication.Start(", StringComparison.Ordinal), "propagation enters Application admission");
+        Test.True(propagation.Contains("WorldDiplomacyPropagationApplication.BeginPublication(", StringComparison.Ordinal)
+            && propagation.Contains("PublishImmediatePublicKnowledge(document)", StringComparison.Ordinal), "public knowledge enters the Application publication owner immediately");
         propagation = File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyPublicationRoutingApplication.cs"));
 		string propagationOwner = File.ReadAllText(FindRepositoryFile(Path.Combine("src", "modules", "AF.Module.Diplomacy", "Application", "WorldDiplomacyPropagationApplication.cs")));
         Test.True(propagation.Contains("port.IsPlayerAffiliated(authorId)", StringComparison.Ordinal)

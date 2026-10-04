@@ -36,7 +36,17 @@ internal static class WorldDiplomacyOfferActionApplication
             }
         }
         else if (intent == "propose_alliance") receipt = port.ExecuteAlliance(proposerId, targetId);
-        else if (intent == "propose_trade") receipt = port.ExecuteTrade(proposerId, targetId);
+        else if (intent == "propose_trade")
+        {
+            var terms = source.Actions?.Find(x => string.Equals(x.ActionId, offer.SourceActionId, StringComparison.OrdinalIgnoreCase))?.TreatyTerms
+                ?? source.TreatyTerms;
+            response.TreatyTerms = terms;
+            receipt = port is IWorldDiplomacyTimedTradePort timed
+                ? timed.ExecuteTrade(proposerId, targetId, Math.Max(0, terms?.DurationDays ?? 0))
+                : port.ExecuteTrade(proposerId, targetId);
+        }
+        else if (WorldDiplomacyIntentVocabulary.IsFormalTreatyIntent(intent) && orchestration is WorldDiplomacyOrchestration owner)
+            return owner.ExecuteFormalTreatyOffer(intent, offer, source, response);
         else return WorldDiplomacyOfferOutcome.Failed;
         response.MechanicalResult = receipt.Message;
         if (receipt.Applied) response.ChangedDiplomaticState = true;
@@ -93,13 +103,7 @@ internal static class WorldDiplomacyOfferApplication
             WorldDiplomacyRoundLifecycleRules.RegisterRelayProposalOffer(round, document, intent);
             return WorldDiplomacyOfferOutcome.None;
         }
-        string proposalIntent = intent switch
-        {
-            "accept_peace" or "reject_peace" => "propose_peace",
-            "accept_alliance" or "reject_alliance" => "propose_alliance",
-            "accept_trade" or "reject_trade" => "propose_trade",
-            _ => ""
-        };
+        string proposalIntent = WorldDiplomacyIntentVocabulary.ResponseIntentToProposalIntent(intent);
         if (string.IsNullOrWhiteSpace(proposalIntent)) return WorldDiplomacyOfferOutcome.None;
         if (string.IsNullOrWhiteSpace(document.RespondingToOfferDocumentId))
         {

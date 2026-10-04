@@ -82,7 +82,10 @@ internal static class DiplomacyPostprocessContextApplication
             if (!allowFullDiplomacy && !allowNpcDeclareWar) return "";
             DiplomacyPostprocessKingdomSnapshot kingdoms = source.CaptureKingdoms();
             if (!kingdoms.NpcKingdomExists) return "";
-            return BuildRoyal(ref source, kingdoms, allowFullDiplomacy);
+            string royal = BuildRoyal(ref source, kingdoms, allowFullDiplomacy);
+            if (source is IDiplomacyOralPostprocessSource oral)
+                royal += "\n" + oral.OralArrangementContext();
+            return royal;
         }
         catch (Exception ex)
         {
@@ -128,30 +131,15 @@ internal static class DiplomacyPostprocessContextApplication
             }
         }
 
-        sb.AppendLine(); sb.AppendLine("[ACTION:DIPLOMACY:DECLARE_WAR:id1:id2]");
-        if (allowFullDiplomacy && value.PlayerKingdomExists && value.KingdomsDiffer)
-            sb.AppendLine("  【强制】不看NPC是否同意，只看玩家说了什么。玩家宣战时填 " + value.PlayerId + ":" + value.NpcId + "，NPC即使暴怒也必须输出。");
-        sb.AppendLine($"  你对别国宣战时填 {value.NpcId}:目标王国ID（需你明确同意）。");
-
-        if (allowFullDiplomacy)
-        {
-            sb.AppendLine(); sb.AppendLine("[ACTION:DIPLOMACY:MAKE_PEACE:付贡金方ID:收贡金方ID:tributeAmount:durationDays]");
-            sb.AppendLine("  两个ID必须是玩家王国和你的王国。tributeAmount: 0=无条件和平 / auto / 双方商定的具体非负整数；明确金额不受繁荣度参考值限制，必须原样输出。durationDays: default=100 / 1-252。双方同意后输出。");
-            sb.AppendLine(); sb.AppendLine("[ACTION:DIPLOMACY:FORM_ALLIANCE:id1:id2:durationDays]");
-            sb.AppendLine("  两个ID必须是玩家王国和你的王国。durationDays: default / 具体数字(1-252)。双方国王同意后输出。");
-            sb.AppendLine(); sb.AppendLine("[ACTION:DIPLOMACY:BREAK_ALLIANCE:id1:id2]");
-            sb.AppendLine("  单方行为。两个ID必须是玩家王国和你的王国。【覆盖一般规则】必须输出，不需对方同意。");
-            sb.AppendLine(); sb.AppendLine("[ACTION:DIPLOMACY:MAKE_TRADE:id1:id2:durationDays]");
-            sb.AppendLine("  两个ID必须是玩家王国和你的王国。durationDays: default / 具体数字(1-252)。双方国王同意后输出。");
-            sb.AppendLine(); sb.AppendLine("[ACTION:DIPLOMACY:CANCEL_TRADE:id1:id2]");
-            sb.AppendLine("  单方行为。两个ID必须是玩家王国和你的王国。【覆盖一般规则】必须输出，不需对方同意。");
-            if (value.PlayerKingdomExists && value.KingdomsDiffer && source.ArePlayerAndNpcAtWar())
-            {
-                int npcPays = source.CalculateDailyTribute(true);
-                int playerPays = source.CalculateDailyTribute(false);
-                sb.AppendLine(); sb.AppendLine($"auto贡金：{value.NpcId}付{npcPays}/天，{value.PlayerId}付{playerPays}/天");
-            }
-        }
+        sb.AppendLine("仅 NPC 明确最终答应时使用 [ACTION:DIPLOMACY:COMMIT:action=Peace;move=NewMatter;target=王国ID]；action 可为 Peace/Alliance/Trade/DeclareWar/BreakAlliance/CancelTrade/Annexation/Tributary/Garrison/Vassal。考虑、报价、假设不输出。move=AcceptProposal 或 RejectProposal 时附 source_document=原宣言ID;source_action=原动作ID（单动作公文无动作ID可留空）。原案歧义先让玩家选择。贡金必须明确金额与期限；未明确先澄清，无贡金的和平期限为0。和平可附 payer/receiver/tribute/days/cession_from/cession_to/settlement，必须复制明确同意的原始条款；不改接受原案条款。吞并或臣属必须附 receiving=接收国/宗主国ID;joining=并入国/臣属国ID。接受原案可以省略条款表示完全接受原案，不能省略来源。新条件必须 NewMatter，不能假装接受原案。玩家不是立约方也可劝说你回应第三国提案。不得代玩家发布宣言。NPC 口头答应宣战使用 COMMIT，由 NPC 正式发文再开战。");
+        sb.AppendLine("NPC 明确决定延期、取消或恢复自己的发文约定时，用 [ACTION:DIPLOMACY:COMMITMENT:arrangement=约定ID;state=deferred|cancelled|accepted;reason=明确原因]。ID从约定上下文复制；已发布且尚未被接受的自己提案只能 cancelled，系统另发正式撤回宣言。已生效的行动不能撤销；改变条款另用 COMMIT:NewMatter。");
+        if (value.PlayerIsRuler && value.PlayerKingdomExists && value.KingdomsDiffer)
+            sb.AppendLine("玩家以国王身份亲自明确向你的王国宣战，使用 [ACTION:DIPLOMACY:DECLARE_WAR:" + value.PlayerId + ":" + value.NpcId + "]，此项立即生效；不得把劝说、威胁或假设当宣战。");
         return sb.ToString().TrimEnd();
     }
+}
+
+internal interface IDiplomacyOralPostprocessSource
+{
+    string OralArrangementContext();
 }

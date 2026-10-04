@@ -12,6 +12,7 @@ namespace AnimusForge;
 internal sealed class WorldDiplomacyApiCallResult
 {
 	public bool Success;
+	public bool BudgetDeferred;
 	public string Content = "";
 	public string ErrorMessage = "";
 	public string FinishReason = "";
@@ -63,7 +64,7 @@ internal static class WorldDiplomacyLlmClient
 		string source,
 		long runtimeGeneration,
 		int maxAttempts = DefaultMaxAttempts,
-		CancellationToken cancellationToken = default(CancellationToken))
+		CancellationToken cancellationToken = default(CancellationToken), Func<bool> admitRequest = null)
 	{
 		WorldDiplomacyApiCallResult finalResult = new WorldDiplomacyApiCallResult();
 		JArray stableMessages = messages == null ? new JArray() : (JArray)messages.DeepClone();
@@ -90,10 +91,10 @@ internal static class WorldDiplomacyLlmClient
 				Math.Max(1000, hardTimeoutMilliseconds),
 				source,
 				runtimeGeneration,
-				cancellationToken);
+				cancellationToken, admitRequest);
 			result.AttemptsUsed = attempt;
 			finalResult = result;
-			if (result.Success || result.IsAuthFailure || result.IsQuotaLimit
+			if (result.Success || result.BudgetDeferred || result.IsAuthFailure || result.IsQuotaLimit
 				|| IsNonRetryableClientError(result) || attempt >= attempts)
 			{
 				return result;
@@ -111,7 +112,7 @@ internal static class WorldDiplomacyLlmClient
 		int hardTimeoutMilliseconds,
 		string source,
 		long runtimeGeneration,
-		CancellationToken cancellationToken)
+		CancellationToken cancellationToken, Func<bool> admitRequest)
 	{
 		WorldDiplomacyApiCallResult result = new WorldDiplomacyApiCallResult();
 		try
@@ -145,7 +146,7 @@ internal static class WorldDiplomacyLlmClient
 				runtimeGeneration,
 				source + "_response",
 				result,
-				cancellationToken);
+				cancellationToken, admitRequest);
 			if (exchange == null)
 			{
 				return result;
@@ -167,7 +168,7 @@ internal static class WorldDiplomacyLlmClient
 					runtimeGeneration,
 					source + "_plain_retry_response",
 					result,
-					cancellationToken);
+					cancellationToken, admitRequest);
 				if (exchange == null)
 				{
 					return result;
@@ -203,7 +204,7 @@ internal static class WorldDiplomacyLlmClient
 		long runtimeGeneration,
 		string staleSource,
 		WorldDiplomacyApiCallResult result,
-		CancellationToken cancellationToken)
+		CancellationToken cancellationToken, Func<bool> admitRequest)
 	{
 		using CancellationTokenSource timeout = LlmNonStreamingTransport.CreateTimeout(hardTimeoutMilliseconds, cancellationToken);
 		LlmNonStreamingResponse response;
@@ -214,10 +215,23 @@ internal static class WorldDiplomacyLlmClient
 				apiUrl,
 				apiKey,
 				requestBody ?? "",
-				(request, token) => DuelSettings.GlobalClient.SendAsync(request, token),
+				(request, token) =>
+				{
+					token.ThrowIfCancellationRequested();
+					if (!AcceptWorldDiplomacyStage(runtimeGeneration, staleSource + "_send", result))
+						throw new OperationCanceledException(token);
+					if (admitRequest != null && !admitRequest()) throw new RequestBudgetDeferredException();
+					return DuelSettings.GlobalClient.SendAsync(request, token);
+				},
 				timeout.Token,
 				_ => AcceptWorldDiplomacyStage(runtimeGeneration, staleSource, result),
 				() => AcceptWorldDiplomacyStage(runtimeGeneration, staleSource + "_body", result));
+		}
+		catch (RequestBudgetDeferredException)
+		{
+			result.BudgetDeferred = true;
+			result.ErrorMessage = "world_diplomacy_request_budget_deferred";
+			return null;
 		}
 		catch (OperationCanceledException)
 		{
@@ -237,6 +251,8 @@ internal static class WorldDiplomacyLlmClient
 		cancellationToken.ThrowIfCancellationRequested();
 		return new WorldDiplomacyHttpExchange(response, requestBody);
 	}
+
+	private sealed class RequestBudgetDeferredException : Exception { }
 
 	private static bool AcceptWorldDiplomacyStage(long runtimeGeneration, string staleSource, WorldDiplomacyApiCallResult result)
 	{

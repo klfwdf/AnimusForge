@@ -1,10 +1,13 @@
 using AnimusForge;
 internal static class PromptMemoryReplay
 {
-    private sealed class Prompt : IDiplomacyPromptSource
+    private sealed class Prompt : IDiplomacyPromptSource, IDiplomacyOralPromptSource
     {
         internal bool TopicAllowed = true, Independent, PlayerRuler = true;
         internal int Captures, Wars;
+        internal string Oral = "";
+        internal int OralReads;
+        public string OralArrangementContext() { OralReads++; return Oral; }
         internal List<string> Templates = new();
         public DiplomacyConversationEligibilitySnapshot CaptureEligibility() => new(true, false, false, true, false, TopicAllowed, true, false, true, PlayerRuler);
         public DiplomacyPromptSnapshot Capture() { Captures++; return new(true, true, !Independent, false, true, Independent, false, "主角", "家族", "城堡", "", 3); }
@@ -23,6 +26,18 @@ internal static class PromptMemoryReplay
         { Captures++; snapshot = new(Storage, kingdom, Known); return true; }
         public string FormatDate(int day) => "日期" + day;
     }
+    private struct Postprocess : IDiplomacyPostprocessContextSource, IDiplomacyOralPostprocessSource
+    {
+        public bool HasSpeaker => true;
+        public bool TryCaptureIndependentPeace(out DiplomacyIndependentPeaceContextSnapshot snapshot) { snapshot = default; return false; }
+        public DiplomacyConversationEligibilitySnapshot CaptureEligibility() => new(true, false, false, true, false, true, true, false, true, true);
+        public DiplomacyPostprocessKingdomSnapshot CaptureKingdoms() => new(true, "a", "甲", true, false, "p", "玩家国", true, true, Array.Empty<DiplomacyKingdomSummary>());
+        public string GetAnnexationHint() => "";
+        public bool ArePlayerAndNpcAtWar() => false;
+        public int CalculateDailyTribute(bool npcPays) => 0;
+        public void LogFailure(string message) => throw new Exception(message);
+        public string OralArrangementContext() => "arrangement=owned;source_document=original;version=2";
+    }
     internal static void Run()
     {
         var prompt = new Prompt();
@@ -30,6 +45,17 @@ internal static class PromptMemoryReplay
         string text = DiplomacyPromptApplication.Build(prompt, "【附加规则:diplomacy】");
         Test.True(text.Contains("都是国王") && text.Contains("你方明显占优") && text.Contains("兼并规则") && text.Contains("level_3"), "royal prompt, war position, annexation and trust share one application");
         Test.True(prompt.Captures == 1 && prompt.Wars == 1, "capture world values once per selected prompt");
+        prompt = new Prompt { Oral = "arrangement=owned;source_document=original;version=2" };
+        Test.True(DiplomacyPromptApplication.Build(prompt, "").Length == 0 && prompt.OralReads == 0,
+            "unselected topic never reads private oral arrangements");
+        Test.True(DiplomacyPromptApplication.Build(prompt, "【附加规则:diplomacy】").Contains(prompt.Oral) && prompt.OralReads == 1,
+            "selected diplomacy includes exact arrangement/source identity through the module read port");
+        var postprocess = new Postprocess();
+        string post = DiplomacyPostprocessContextApplication.Build(ref postprocess);
+        Test.True(post.Contains(postprocess.OralArrangementContext()) && post.Contains("DIPLOMACY:COMMIT:action=") && post.Contains("DIPLOMACY:COMMITMENT:arrangement="),
+            "postprocessing receives arrangement identity and the previously approved oral tags");
+        Test.True(!post.Contains("DIPLOMACY:MAKE_TRADE:") && post.Contains("DIPLOMACY:DECLARE_WAR:p:a"),
+            "NPC consent submits formal documents while the existing player's explicit-war exception remains available");
         prompt = new Prompt { Independent = true, PlayerRuler = false };
         text = DiplomacyPromptApplication.Build(prompt, "【附加规则:diplomacy】");
         Test.True(text.Contains("独立有城家族：家族") && prompt.Templates.SequenceEqual(new[] { "player_independent_settlement_clan", "level_3" }), "missing independent-clan template retains trust fallback");

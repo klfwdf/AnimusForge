@@ -60,6 +60,8 @@ internal static class DiplomacyPromptApplication
             string independent = IndependentInstruction(source);
             if (!topic && string.IsNullOrWhiteSpace(independent)) return "";
             StringBuilder result = new StringBuilder();
+            if (topic && source is IDiplomacyOralPromptSource oral)
+                Append(result, oral.OralArrangementContext());
             var eligibility = source.CaptureEligibility();
             if (topic && DiplomacyConversationEligibilityApplication.CanInject(eligibility))
             {
@@ -147,4 +149,10 @@ internal static class DiplomacyPromptApplication
         float diff = war.OwnProgress - war.EnemyProgress;
         sb.AppendLine(diff > 100 ? "- 【谈判立场】你方明显占优" : diff < -100 ? "- 【谈判立场】你方明显劣势" : "- 【谈判立场】双方大体持平");
     }
+}
+
+// Optional request-local read port; arrangement state remains with the world owner.
+internal interface IDiplomacyOralPromptSource
+{
+    string OralArrangementContext();
 }

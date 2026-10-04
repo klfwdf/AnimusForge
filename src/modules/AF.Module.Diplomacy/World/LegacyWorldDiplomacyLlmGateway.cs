@@ -16,6 +16,9 @@ namespace AnimusForge.Refactor.Adapters;
 /// </summary>
 public sealed class LegacyWorldDiplomacyLlmGateway : ILlmGateway
 {
+    private readonly Func<bool> _admitRequest;
+    public LegacyWorldDiplomacyLlmGateway() : this(null) { }
+    public LegacyWorldDiplomacyLlmGateway(Func<bool> admitRequest) { _admitRequest = admitRequest; }
     public async Task<LlmGenerateResult> GenerateAsync(
         LlmGenerateRequest request,
         CancellationToken cancellationToken)
@@ -34,7 +37,7 @@ public sealed class LegacyWorldDiplomacyLlmGateway : ILlmGateway
                 request.Provider.TimeoutMilliseconds > 0 ? request.Provider.TimeoutMilliseconds : 300000,
                 "refactor_world_diplomacy",
                 request.Trace.RuntimeGeneration,
-                cancellationToken: cancellationToken).ConfigureAwait(false);
+                cancellationToken: cancellationToken, admitRequest: _admitRequest).ConfigureAwait(false);
             cancellationToken.ThrowIfCancellationRequested();
             LlmGenerateMetadata metadata = ToMetadata(result);
             if (result != null && result.Success && !string.IsNullOrWhiteSpace(result.Content))
@@ -46,7 +49,7 @@ public sealed class LegacyWorldDiplomacyLlmGateway : ILlmGateway
                 string.Empty,
                 result?.PromptTokens ?? 0,
                 result?.CompletionTokens ?? 0,
-                "world_diplomacy_domain_failure",
+                result?.BudgetDeferred == true ? "world_diplomacy_request_budget_deferred" : "world_diplomacy_domain_failure",
                 metadata);
         }
         catch (OperationCanceledException)

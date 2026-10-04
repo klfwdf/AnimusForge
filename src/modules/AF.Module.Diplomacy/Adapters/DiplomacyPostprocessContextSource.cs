@@ -4,7 +4,7 @@ using TaleWorlds.CampaignSystem;
 namespace AnimusForge;
 
 // Captures current campaign values; prompt admission and layout live in Application.
-internal struct DiplomacyPostprocessContextSource : IDiplomacyPostprocessContextSource
+internal struct DiplomacyPostprocessContextSource : IDiplomacyPostprocessContextSource, IDiplomacyOralPostprocessSource
 {
     private readonly Hero _npc;
     private Kingdom _npcKingdom;
@@ -12,6 +12,7 @@ internal struct DiplomacyPostprocessContextSource : IDiplomacyPostprocessContext
 
     internal DiplomacyPostprocessContextSource(Hero npc) : this() => _npc = npc;
     public bool HasSpeaker => _npc != null;
+    public string OralArrangementContext() => WorldDiplomacyBehavior.BuildOralArrangementContext(_npc);
 
     public bool TryCaptureIndependentPeace(out DiplomacyIndependentPeaceContextSnapshot snapshot)
     {

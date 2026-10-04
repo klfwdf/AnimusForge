@@ -365,7 +365,8 @@ public sealed class InteractionMemoryCommit
         string locationId,
         int sceneSessionId,
         int targetAgentIndex,
-        string targetName)
+        string targetName,
+        string capturedGameDate = "")
     {
         CommitId = ContractGuard.Required(commitId, nameof(commitId));
         Channel = channel;
@@ -383,6 +384,7 @@ public sealed class InteractionMemoryCommit
         SceneSessionId = sceneSessionId;
         TargetAgentIndex = targetAgentIndex;
         TargetName = targetName ?? string.Empty;
+        CapturedGameDate = capturedGameDate ?? string.Empty;
     }
 
     public string CommitId { get; }
@@ -397,6 +399,7 @@ public sealed class InteractionMemoryCommit
     internal string TraceId { get; }
     internal int GameDay { get; }
     internal int GameHour { get; }
+    internal string CapturedGameDate { get; }
     internal string LocationId { get; }
     internal int SceneSessionId { get; }
     internal int TargetAgentIndex { get; }

@@ -137,6 +137,7 @@ internal static class WorldDiplomacyPromptComposer
 			+ "|提出国=" + requiredPeaceOffer.ProposerKingdomId + "。");
 		}
 	sb.AppendLine("若当前可选动作含statement，它表示一项结构化谈判动作而非机械外交行为，必须填写negotiation_move并在正文中实际完成该动作；公文仍会沿原路线送交下一国。不得用空泛立场冒充新进展。");
+	sb.AppendLine("吞并/朝贡/驻军/完全臣属使用 annexation/tributary/garrison/vassal 的 propose_/accept_/reject_ 动作。新提案附 treaty_terms={receiving_kingdom_id:接收国或宗主国ID,joining_kingdom_id:并入国或臣属国ID}，正文同样明确角色。接受原案必须绑定 responding_to_offer_document_id 和 responding_to_offer_action_id，采用全部原条款。withdraw_offer 仅能单独撤回本国尚未被接受的明确原案，不能撤销已发生效果。");
 		AppendRelayResponseSourceContext(
 			sb,
 			world,
@@ -393,6 +394,7 @@ internal static class WorldDiplomacyPromptComposer
 	{
 		StringBuilder sb = new StringBuilder();
 	sb.AppendLine("发文国：" + document.AuthorKingdomName + "（ID=" + document.AuthorKingdomId + "）");
+	sb.AppendLine("吞并/朝贡/驻军/完全臣属分别用 annexation/tributary/garrison/vassal 的 propose_/accept_/reject_ 动作，新提案必须附 treaty_terms={receiving_kingdom_id:接收国或宗主国ID,joining_kingdom_id:并入国或臣属国ID}。接受/拒绝/撤回须准确绑定 responding_to_offer_document_id 及 responding_to_offer_action_id；撤回用 withdraw_offer，仅撤回本国未接受原案。玩家正文已公开，任何歧义或动作不成立都不能拦截宣言。");
 		string documentAuthor = world.ResolveKingdom(document.AuthorKingdomId);
 		WorldDiplomacyRound analysisRound = world.ResolveRound(document.RoundId);
 		if (document.IsPlayerAuthored) orchestration.PruneInvalidOffers(analysisRound);

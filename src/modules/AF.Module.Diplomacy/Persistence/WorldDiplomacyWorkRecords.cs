@@ -226,4 +226,13 @@ public sealed class WorldDiplomacyJob
 
 	[JsonProperty("compressionOverallTargetTokens")]
 	public int CompressionOverallTargetTokens { get; set; }
+
+    [JsonProperty("requestLane")] public string RequestLane { get; set; } = "normal";
+    [JsonProperty("playerResponseSourceIds")] public List<string> PlayerResponseSourceIds { get; set; } = new List<string>();
+    [JsonProperty("roundConversationRevision")] public int RoundConversationRevision { get; set; }
+    [JsonProperty("requestAttempt")] public int RequestAttempt { get; set; }
+    [JsonProperty("transportRetryAttempts")] public int TransportRetryAttempts { get; set; }
+    [JsonProperty("retryAfterUtcTicks")] public long RetryAfterUtcTicks { get; set; }
+    [JsonProperty("personalMemoryRulerId")]
+	public string PersonalMemoryRulerId { get; set; } = "";
 }

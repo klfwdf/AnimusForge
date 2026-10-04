@@ -1,0 +1,57 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using AnimusForge.Refactor.Domain;
+using AnimusForge.Refactor.Persistence;
+
+namespace AnimusForge;
+
+internal sealed partial class WorldDiplomacyOrchestration
+{
+    // Load/replace only; no saved-archive scan on campaign frames.
+    private void NormalizeConcurrentWork()
+    {
+        WorldDiplomacyStorageShapeNormalizer.EnsureInitialized(Storage);
+        var ids = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        if (Storage.ActiveRound != null) ids.Add(Storage.ActiveRound.RoundId);
+        Storage.ConcurrentRounds = Storage.ConcurrentRounds.Where(x => x != null
+            && !string.IsNullOrWhiteSpace(x.RoundId) && ids.Add(x.RoundId)).ToList();
+        Storage.DialogueArrangements = Storage.DialogueArrangements.Where(x => x != null
+            && !string.IsNullOrWhiteSpace(x.ArrangementId)).GroupBy(x => x.ArrangementId, StringComparer.Ordinal)
+            .Select(x => x.OrderByDescending(y => y.Version).First()).ToList();
+        foreach (var round in GetLiveRounds())
+        {
+            round.PlayerResponses = (round.PlayerResponses ?? new List<WorldDiplomacyPlayerResponse>())
+                .Where(x => x != null && !string.IsNullOrWhiteSpace(x.SourceDocumentId) && !string.IsNullOrWhiteSpace(x.KingdomId))
+                .GroupBy(x => x.SourceDocumentId + "|" + x.KingdomId, StringComparer.OrdinalIgnoreCase)
+                .Select(x => x.OrderByDescending(y => !string.IsNullOrWhiteSpace(y.AnswerDocumentId)).First()).ToList();
+            foreach (var item in round.PlayerResponses)
+                if (string.IsNullOrWhiteSpace(item.OriginalRoundId)) item.OriginalRoundId = round.RoundId;
+        }
+        foreach (var doc in Storage.Documents.Where(x => x != null))
+        {
+            doc.AnsweredPlayerDocumentIds ??= new List<string>();
+            doc.PersonalMemoryReceipts ??= new List<string>();
+            doc.PendingPersonalMemoryRulers ??= new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+        }
+        InvalidateDialogueIndex();
+        _diplomacyWorkNeedsReconcile = true;
+    }
+
+    // One notice per event per game day; the original five-day deadline stays.
+    internal void NotifyPlayerWaitRemaining(WorldDiplomacyRound round)
+    {
+        int day = _host.CurrentDay();
+        if (round.PlayerWaitReminderDay == day) return;
+        var slot = round.ResultSettlementSlots?.FirstOrDefault(x => x != null
+            && x.SlotId == round.ResultSettlementCurrentSlotId && x.Status == "waiting_player");
+        int? since = slot == null ? null : round.ResultSettlementPlayerWaitingSinceDay;
+        if (!since.HasValue)
+            since = Storage.PlayerOpportunities.Where(x => x != null && x.RoundId == round.RoundId && x.Status == "open")
+                .Select(x => (int?)x.ArrivedDay).FirstOrDefault();
+        if (!since.HasValue) return;
+        int remaining = Math.Max(0, 5 - (day - since.Value));
+        round.PlayerWaitReminderDay = day;
+        _host.Notify("外交交涉「" + round.RoundTopic + "」正在等待你的回应，剩余 " + remaining + " 个游戏日。");
+    }
+}

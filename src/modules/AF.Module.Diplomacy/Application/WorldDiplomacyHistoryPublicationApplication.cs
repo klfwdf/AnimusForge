@@ -33,7 +33,8 @@ public static bool AppendCanonicalHistoryEntry(
         bool verified,
         string respondingToOfferDocumentId = null,
         string respondingToThreatDocumentId = null,
-        IEnumerable<string> actionFacts = null)
+        IEnumerable<string> actionFacts = null,
+        IEnumerable<string> answeredPlayerDocumentIds = null)
 {
     ensureInitialized();
     string normalizedKind = (kind ?? "").Trim().ToLowerInvariant();
@@ -53,6 +54,7 @@ public static bool AppendCanonicalHistoryEntry(
         SourceId = (sourceId ?? "").Trim(),
         RespondingToOfferDocumentId = (respondingToOfferDocumentId ?? "").Trim(),
         RespondingToThreatDocumentId = (respondingToThreatDocumentId ?? "").Trim(),
+        AnsweredPlayerDocumentIds = WorldDiplomacyRoundLifecycleRules.NormalizeIdListPreserveOrder(answeredPlayerDocumentIds),
         AuthorKingdomId = (authorKingdomId ?? "").Trim(),
         TargetKingdomIds = WorldDiplomacyRoundLifecycleRules.NormalizeIdListPreserveOrder(targetKingdomIds),
         Intent = WorldDiplomacyIntentVocabulary.NormalizeIntent(intent),
@@ -101,7 +103,7 @@ public static void AppendCanonicalDocumentEvents(
             document.Day, document.GameDate, document.AuthorKingdomId, targets, declarationIntent, declarationCommitment, document.Body,
             verified: true, respondingToOfferDocumentId: document.RespondingToOfferDocumentId,
             respondingToThreatDocumentId: document.RespondingToThreatDocumentId,
-            actionFacts: actionFacts);
+            actionFacts: actionFacts, answeredPlayerDocumentIds: document.AnsweredPlayerDocumentIds);
         if (appended || WorldDiplomacyRoundLifecycleRules.CanonicalDeltaContainsSourceKey(sourceKeys, declarationSourceKey))
         {
             document.HistoryDeclarationRecorded = true;

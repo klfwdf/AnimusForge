@@ -755,102 +755,86 @@
                                                 ]
                         },
                         {
-                            "Id":  "diplomacy",
-                            "IsEnabled":  true,
-                            "Group":  "politics",
-                            "Priority":  90,
-                            "TopicNumber":  18,
-                            "TopicLabel":  "Direct Oral Royal Diplomacy / Persuading a Sovereign to Declare War",
-                            "Code":  "DIPLOMACY",
-                            "PreprocessExcludedInstruction":  "你不可以代表王国参与宣战、议和、结盟、贸易、贡金或其他国家外交；若玩家提及，应让其寻找国王或国家统治者。（DIPLOMACY）",
-                            "NonHeroInstruction":  "你不是国王或贵族，无法参与国与国之间的外交谈判。如果玩家提及相关话题，请表示你没有这个资格。",
-                            "Instruction":  "【国王外交规则】你是王国统治者。玩家是国王时可谈宣战、议和、结盟、贸易等王国外交；玩家不是国王时，不能代表其所属王国签订正式外交协议，但可以劝说你自主决定是否让你的王国向第三国宣战。若你明确同意立即开战，应把它视为你的主权决定，而不是提交王国议程。其他情况下只谈政治承认、停战、互不侵犯、贡金、觐见或建国前条件，正式王国同盟/贸易/和约需建国后。游戏内84天=一年，21天=一季度。术语规范：贡金为0的议和必须称为“无条件和平”，禁止称为“白和平”。",
-                            "PostprocessRules":  [
-                                                     {
-                                                         "Tag":  "[ACTION:DIPLOMACY:DECLARE_WAR:id1:id2]",
-                                                         "Description":  "当\u003clatest_reply\u003e中玩家对NPC王国宣战，或NPC国王明确同意自己王国向一个或多个第三方王国宣战、开战、讨伐、出兵时输出。多目标宣战可重复输出。id1=宣战方王国ID，id2=被宣战方王国ID；必须从运行时事实复制原始ID，禁止用中文王国名。"
-                                                     },
-                                                     {
-                                                         "Tag":  "[ACTION:DIPLOMACY:MAKE_PEACE:付贡金方ID:收贡金方ID:tributeAmount:durationDays]",
-                                                         "Description":  "双方国王在\u003clatest_reply\u003e中就停战、休战、议和、和平达成同意时输出。NPC说即刻停火、下令撤军、推动休战议程、契约已成、既然你已应允、记得答应的事、以贡金/赎金/领地换和平，都输出。若history同一组条件包含和平，latest_reply接受整组条件时必须输出和平。tributeAmount用history或本轮金额；双方已商定明确非负整数时必须原样复制，不得按繁荣度参考值削减或改写为auto；未明说填0或auto；durationDays未明说填default。ID必须从运行时事实复制。"
-                                                     },
-                                                     {
-                                                         "Tag":  "[ACTION:DIPLOMACY:INDEPENDENT_CLAN_PEACE]",
-                                                         "Description":  "仅当运行时事实表明NPC是敌对王国当前国王，且\u003clatest_reply\u003e中的NPC和玩家都明确同意无条件立即停战、议和或结束敌对时输出。拒绝、犹豫、报价、反问、条件尚未满足或只说会考虑时不得输出。"
-                                                     },
-                                                     {
-                                                         "Tag":  "[ACTION:DIPLOMACY:FORM_ALLIANCE:id1:id2:durationDays]",
-                                                         "Description":  "玩家和NPC都无条件同意结盟、同盟、盟约、共同防御、长期友谊、军事协作时输出。latest_reply接受history整组协议，且history含结盟/长久友谊/共同防御/释放亲族换友谊时，必须输出。durationDays未明说填default；ID顺序按标签占位和运行时事实复制。"
-                                                     },
-                                                     {
-                                                         "Tag":  "[ACTION:DIPLOMACY:BREAK_ALLIANCE:id1:id2]",
-                                                         "Description":  "【强制覆盖】单方解盟不看NPC是否同意。两个ID必须是玩家+你的王国。若同一结果也存在议程候选，优先DIPLOMACY。"
-                                                     },
-                                                     {
-                                                         "Tag":  "[ACTION:DIPLOMACY:MAKE_TRADE:id1:id2:durationDays]",
-                                                         "Description":  "玩家和NPC都无条件同意贸易协议、免税贸易、商队通行、恢复商贸，或NPC接受history里的免税贸易/商路安排时输出。latest_reply说契约已成、既然你已应允、我会下令、交易成为友谊基石、接受整组协议时，若history条件含贸易，必须与和平/结盟同轮输出。durationDays未明说填default；ID顺序按标签占位和运行时事实复制。"
-                                                     },
-                                                     {
-                                                         "Tag":  "[ACTION:DIPLOMACY:CANCEL_TRADE:id1:id2]",
-                                                         "Description":  "【强制覆盖】单方取消贸易不看NPC是否同意。两个ID必须是玩家+你的王国。若同一结果也存在议程候选，优先DIPLOMACY。"
-                                                     },
-                                                     {
-                                                         "Tag":  "[ACTION:KINGDOM_ANNEX:target_kingdom_id={targetKingdomId}]",
-                                                         "Description":  "如果NPC国王在\u003clatest_reply\u003e里最终明确无条件同意让自己的整个王国并入玩家王国，明确放弃独立王权，并明确所有家族归入玩家王国，就输出这个。target_kingdom_id 必须使用运行时事实中的目标王国ID。若NPC只是同意求和、结盟、停战、赔款、朝贡、卫戍、臣属、附庸/傀儡、保护国、普通归顺、保留王号或保留独立外交，都不得输出。"
-                                                     }
-                                                 ],
-                            "TriggerKeywords":  [
-                                                    "我代表我国向贵国呈递国书。",
-                                                    "我以国王身份向你提出外交交涉。",
-                                                    "这是战书。",
-                                                    "我方向你方宣战。",
-                                                    "让你的军队准备应战吧。",
-                                                    "从今往后，你我两国进入战争状态。",
-                                                    "我希望你以国王身份决定向第三国宣战。",
-                                                    "请让你的王国向另一个王国开战，而不是提交王国议程。",
-                                                    "你愿意亲自下令对那个国家宣战吗？",
-                                                    "我要求你方立即停战。",
-                                                    "我们谈谈和平条款。",
-                                                    "这场战争该结束了。",
-                                                    "你方愿意付出什么代价来换取和平？",
-                                                    "我们可以停战，但条件是……",
-                                                    "谈谈和约的条款吧。",
-                                                    "你我两国同气连枝，理应结盟。",
-                                                    "如果继续打下去对谁都没好处，不如讲和。",
-                                                    "你们已经输了，接受条件停战吧。",
-                                                    "我带了停战协议，你看看吧。",
-                                                    "把你的整个国家并入我的王国。",
-                                                    "你的王国放弃独立，加入我的王国。",
-                                                    "让你的所有家族都归入我的王国。",
-                                                    "我要求吞并你的王国。",
-                                                    "你的国家从今天起不再独立，成为我国的一部分。",
-                                                    "放弃王权，把你的王国整体交给我。",
-                                                    "以国王身份接受我的吞并条件。",
-                                                    "你的家族和领主全部转入我的王国。",
-                                                    "你的王冠交给我，你的国家并入我的版图。",
-                                                    "不是臣属，不是朝贡，而是彻底并入我的王国。",
-                                                    "不保留独立王国，全部家族加入玩家王国。",
-                                                    "接受国家吞并，结束你的独立统治。"
-                                                ],
-                            "RuntimeInstructionTemplates":  {
-                                                                "no_kingdom":  "【外交状态提示】你当前不属于任何王国，无法进行外交谈判。",
-                                                                "mercenary":  "【外交状态提示】你当前是雇佣兵，无权进行国王外交。",
-                                                                "not_king":  "【外交状态提示】你不是国王，不能代表王国进行外交谈判。",
-                                                                "player_not_king":  "【外交状态提示】玩家不是国王，不能签正式王国外交；只可政治交涉、觐见、承认、停战或建国前条件。",
-                                                                "player_independent_settlement_clan":  "【外交状态提示】玩家尚未建国，但其独立家族占有城镇/城堡；可谈政治承认、停战、互不侵犯、贡金或建国前条件，正式王国同盟/贸易/和约需建国后。",
-                                                                "independent_clan_peace":  "【独立家族议和提示】玩家家族“{playerClanName}”是独立家族，拥有{playerSettlementCount}个定居点，正与你统治的王国“{targetKingdomName}”敌对。你可自行接受、拒绝或提出条件；只有明确同意立即结束敌对，议和才会生效。正文只作自然回应。",
-                                                                "level_1":  "【外交谈判提示】你对{playerName}的信任度只作为态度参考，不构成同盟/贸易协议硬门槛；不得仅因低信任强制拒绝。是否接受取决于国家利益、战争局势、报酬、风险和承诺。",
-                                                                "level_2":  "【外交谈判提示】你对{playerName}的信任度只作为态度参考，不构成同盟/贸易协议硬门槛；不得仅因低信任强制拒绝。是否接受取决于国家利益、战争局势、报酬、风险和承诺。",
-                                                                "level_3":  "【外交谈判提示】你对{playerName}的信任度只作为态度参考，不构成同盟/贸易协议硬门槛；不得仅因低信任强制拒绝。是否接受取决于国家利益、战争局势、报酬、风险和承诺。",
-                                                                "level_4":  "【外交谈判提示】你对{playerName}的信任度只作为态度参考，不构成同盟/贸易协议硬门槛；不得仅因低信任强制拒绝。是否接受取决于国家利益、战争局势、报酬、风险和承诺。",
-                                                                "level_5":  "【外交谈判提示】你对{playerName}的信任度只作为态度参考，不构成同盟/贸易协议硬门槛；不得仅因低信任强制拒绝。是否接受取决于国家利益、战争局势、报酬、风险和承诺。",
-                                                                "level_6":  "【外交谈判提示】你对{playerName}的信任度只作为态度参考，不构成同盟/贸易协议硬门槛；不得仅因低信任强制拒绝。是否接受取决于国家利益、战争局势、报酬、风险和承诺。",
-                                                                "level_7":  "【外交谈判提示】你对{playerName}的信任度只作为态度参考，不构成同盟/贸易协议硬门槛；不得仅因低信任强制拒绝。是否接受取决于国家利益、战争局势、报酬、风险和承诺。",
-                                                                "level_8":  "【外交谈判提示】你对{playerName}的信任度只作为态度参考，不构成同盟/贸易协议硬门槛；不得仅因低信任强制拒绝。是否接受取决于国家利益、战争局势、报酬、风险和承诺。",
-                                                                "level_9":  "【外交谈判提示】你对{playerName}的信任度只作为态度参考，不构成同盟/贸易协议硬门槛；不得仅因低信任强制拒绝。是否接受取决于国家利益、战争局势、报酬、风险和承诺。",
-                                                                "level_10":  "【外交谈判提示】你对{playerName}的信任度只作为态度参考，不构成同盟/贸易协议硬门槛；不得仅因低信任强制拒绝。是否接受取决于国家利益、战争局势、报酬、风险和承诺。"
-                                                            }
-                        },
+    "Id": "diplomacy",
+    "IsEnabled": true,
+    "Group": "politics",
+    "Priority": 90,
+    "TopicNumber": 18,
+    "TopicLabel": "Royal Oral Negotiation and Formal Diplomatic Declarations",
+    "Code": "DIPLOMACY",
+    "PreprocessExcludedInstruction": "你不可以代表王国参与宣战、议和、结盟、贸易、贡金或其他国家外交；若玩家提及，应让其寻找国王或国家统治者。（DIPLOMACY）",
+    "NonHeroInstruction": "你不是国王或贵族，无法参与国与国之间的外交谈判。如果玩家提及相关话题，请表示你没有这个资格。",
+    "Instruction": "你作为当前国王可以被任何能够与你交谈的人劝说，结合个人记忆、与玩家的交谈和真实局势决定是否答应。讨论、考虑、报价不等于承诺。明确答应后先发布你的正式宣言，双边提案须对方正式接受才执行；玩家宣言只能玩家亲自发布。玩家是国王时口头谈妥和平，也由你正式提出谈妥的原始条款等待玩家正式接受。玩家不是国王不能代表所属国家签约，但可以劝你回应第三国提案。新事项或改条款开独立新回合；接受或拒绝旧案准确绑定来源宣言和动作，不借新回合绕过歧义；多份同类提案须让玩家指明。原案接受不得改条款。旧国王未发布的私人承诺不由继任者继承。私人理由、秘密不自动公开，玩家自述不是已证实事实。例外：有权限的玩家国王亲自口头宣战，以及独立玩家家族无条件议和，可立即生效。吞并、朝贡、驻军和完全臣属都必须明确角色与条款，走正式宣言。正文自然发言，不写标签。",
+    "PostprocessRules": [
+        {
+            "Tag": "[ACTION:DIPLOMACY:COMMIT:action=Peace;move=NewMatter;target=王国ID]",
+            "Description": "仅 latest_reply 中 NPC 当前国王明确最终答应时输出；考虑、报价、犹豫不输出。action=Peace/Alliance/Trade/DeclareWar/BreakAlliance/CancelTrade/Annexation/Tributary/Garrison/Vassal。move=NewMatter/AcceptProposal/RejectProposal；接受或拒绝原案附 source_document=原宣言ID;source_action=原动作ID。原案歧义先问玩家，不能选最新或最早。贡金必须明确金额与期限，未明确先澄清；无贡金和平期限为0。和平附 payer/receiver/tribute/days/cession_from/cession_to/settlement，按明确同意的原始条款复制；接受原案省略条款代表完全接受原案，不能更改。吞并/臣属附 receiving=接收国或宗主国ID;joining=并入国或臣属国ID。ID从运行时复制。不能代玩家发文。 修改尚未发布的约定时，NewMatter必须附supersedes=旧约定ID;version=旧版本号;reason=本轮明确改约原因，并完整复制新条件；ID及版本从运行时清单复制，不能猜测。其他独立新事项不附supersedes。旧公文已公开时先用COMMITMENT取消开放提案，再另发新方案；已生效行动不能借改约回滚。"
+        },
+        {
+            "Tag": "[ACTION:DIPLOMACY:COMMITMENT:arrangement=约定ID;state=deferred;reason=明确原因]",
+            "Description": "仅NPC明确决定延期、取消或恢复自己的约定时输出。state=deferred/cancelled/accepted，arrangement从运行时约定清单复制。已经发布且尚未被正式接受的自己提案只能cancelled，转为正式撤回宣言；已生效行动不能撤销。改条款用带supersedes与version的COMMIT:NewMatter。原因须来自本次NPC明确发言，不泄露私人内容到公开宣言。"
+        },
+        {
+            "Tag": "[ACTION:DIPLOMACY:DECLARE_WAR:id1:id2]",
+            "Description": "仅有国家宣战权限的玩家国王亲自向 NPC 王国明确口头宣战时输出，id1=玩家王国ID,id2=NPC王国ID。劝说 NPC 对第三国开战使用 COMMIT:DeclareWar，不能跳过 NPC 正式宣言。"
+        },
+        {
+            "Tag": "[ACTION:DIPLOMACY:INDEPENDENT_CLAN_PEACE]",
+            "Description": "仅当运行时事实表明NPC是敌对王国当前国王，且<latest_reply>中的NPC和玩家都明确同意无条件立即停战、议和或结束敌对时输出。拒绝、犹豫、报价、反问、条件尚未满足或只说会考虑时不得输出。"
+        }
+    ],
+    "TriggerKeywords": [
+        "我代表我国向贵国呈递国书。",
+        "我以国王身份向你提出外交交涉。",
+        "这是战书。",
+        "我方向你方宣战。",
+        "让你的军队准备应战吧。",
+        "从今往后，你我两国进入战争状态。",
+        "我希望你以国王身份决定向第三国宣战。",
+        "请让你的王国向另一个王国开战，而不是提交王国议程。",
+        "你愿意亲自下令对那个国家宣战吗？",
+        "我要求你方立即停战。",
+        "我们谈谈和平条款。",
+        "这场战争该结束了。",
+        "你方愿意付出什么代价来换取和平？",
+        "我们可以停战，但条件是……",
+        "谈谈和约的条款吧。",
+        "你我两国同气连枝，理应结盟。",
+        "如果继续打下去对谁都没好处，不如讲和。",
+        "你们已经输了，接受条件停战吧。",
+        "我带了停战协议，你看看吧。",
+        "把你的整个国家并入我的王国。",
+        "你的王国放弃独立，加入我的王国。",
+        "让你的所有家族都归入我的王国。",
+        "我要求吞并你的王国。",
+        "你的国家从今天起不再独立，成为我国的一部分。",
+        "放弃王权，把你的王国整体交给我。",
+        "以国王身份接受我的吞并条件。",
+        "你的家族和领主全部转入我的王国。",
+        "你的王冠交给我，你的国家并入我的版图。",
+        "不是臣属，不是朝贡，而是彻底并入我的王国。",
+        "不保留独立王国，全部家族加入玩家王国。",
+        "接受国家吞并，结束你的独立统治。"
+    ],
+    "RuntimeInstructionTemplates": {
+        "no_kingdom": "【外交状态提示】你当前不属于任何王国，无法进行外交谈判。",
+        "mercenary": "【外交状态提示】你当前是雇佣兵，无权进行国王外交。",
+        "not_king": "【外交状态提示】你不是国王，不能代表王国进行外交谈判。",
+        "player_not_king": "【外交状态提示】玩家不是国王，不能签正式王国外交；只可政治交涉、觐见、承认、停战或建国前条件。",
+        "player_independent_settlement_clan": "【外交状态提示】玩家尚未建国，但其独立家族占有城镇/城堡；可谈政治承认、停战、互不侵犯、贡金或建国前条件，正式王国同盟/贸易/和约需建国后。",
+        "independent_clan_peace": "【独立家族议和提示】玩家家族“{playerClanName}”是独立家族，拥有{playerSettlementCount}个定居点，正与你统治的王国“{targetKingdomName}”敌对。你可自行接受、拒绝或提出条件；只有明确同意立即结束敌对，议和才会生效。正文只作自然回应。",
+        "level_1": "【外交谈判提示】你对{playerName}的信任度只作为态度参考，不构成同盟/贸易协议硬门槛；不得仅因低信任强制拒绝。是否接受取决于国家利益、战争局势、报酬、风险和承诺。",
+        "level_2": "【外交谈判提示】你对{playerName}的信任度只作为态度参考，不构成同盟/贸易协议硬门槛；不得仅因低信任强制拒绝。是否接受取决于国家利益、战争局势、报酬、风险和承诺。",
+        "level_3": "【外交谈判提示】你对{playerName}的信任度只作为态度参考，不构成同盟/贸易协议硬门槛；不得仅因低信任强制拒绝。是否接受取决于国家利益、战争局势、报酬、风险和承诺。",
+        "level_4": "【外交谈判提示】你对{playerName}的信任度只作为态度参考，不构成同盟/贸易协议硬门槛；不得仅因低信任强制拒绝。是否接受取决于国家利益、战争局势、报酬、风险和承诺。",
+        "level_5": "【外交谈判提示】你对{playerName}的信任度只作为态度参考，不构成同盟/贸易协议硬门槛；不得仅因低信任强制拒绝。是否接受取决于国家利益、战争局势、报酬、风险和承诺。",
+        "level_6": "【外交谈判提示】你对{playerName}的信任度只作为态度参考，不构成同盟/贸易协议硬门槛；不得仅因低信任强制拒绝。是否接受取决于国家利益、战争局势、报酬、风险和承诺。",
+        "level_7": "【外交谈判提示】你对{playerName}的信任度只作为态度参考，不构成同盟/贸易协议硬门槛；不得仅因低信任强制拒绝。是否接受取决于国家利益、战争局势、报酬、风险和承诺。",
+        "level_8": "【外交谈判提示】你对{playerName}的信任度只作为态度参考，不构成同盟/贸易协议硬门槛；不得仅因低信任强制拒绝。是否接受取决于国家利益、战争局势、报酬、风险和承诺。",
+        "level_9": "【外交谈判提示】你对{playerName}的信任度只作为态度参考，不构成同盟/贸易协议硬门槛；不得仅因低信任强制拒绝。是否接受取决于国家利益、战争局势、报酬、风险和承诺。",
+        "level_10": "【外交谈判提示】你对{playerName}的信任度只作为态度参考，不构成同盟/贸易协议硬门槛；不得仅因低信任强制拒绝。是否接受取决于国家利益、战争局势、报酬、风险和承诺。"
+    }
+},
                         {
                             "Id":  "kingdom_vassalage",
                             "IsEnabled":  true,
@@ -859,27 +843,19 @@
                             "TopicNumber":  19,
                             "TopicLabel":  "Kingdom vassalage and submission",
                             "Code":  "VASSALAGE",
-                            "PreprocessExcludedInstruction":  "当前玩家或者你都并非国家统治者，不可以答应臣属、朝贡、卫戍或附庸条约，你可以指出这一点，请让玩家去找王国统治者。（VASSALAGE）",
-                            "NonHeroInstruction":  "只有国家统治者之间才能谈附庸国臣服。若玩家对非国王、士兵、平民或普通领主提出国家臣服要求，对方不能代表王国答应，只能说明必须找国王谈。",
-                            "Instruction":  "【AF臣属国谈判规则】以运行时事实为准：玩家必须是自己王国的国王，对话对象必须是另一个NPC王国的国王。本规则只处理“对方王国向玩家王国臣服成为臣属国”，不是玩家加入对方王国，也不是普通家族归附。正文里只能自然谈判，不要写动作标签。第二版可谈三类：TRIBUTARY=朝贡国，交钱买保护但不出兵，保留军事自主权；GARRISON=卫戍国，军事臣属，出兵，不交钱，没有军事自主权，并使用0-100忠诚度；VASSAL=附庸国，也就是傀儡国，出钱、出兵，外交军事受宗主控制。注意：“附庸国”只对应VASSAL傀儡国，不叫完全附庸国。若本轮只泛称臣属、称臣、归顺或承认宗主地位但没有明确朝贡/卫戍/附庸，应追随语义：交钱求保护=TRIBUTARY；军事臣属/卫戍/出兵=GARRISON；傀儡、附庸国、外交军事由宗主控制=VASSAL。只有当你在\u003clatest_reply\u003e中已经最终明确接受臣属条约、愿意以你的王国名义向玩家王国递交臣属誓约时，才算同意；如果仍在谈条件、索要保证、犹豫、拖延、拒绝、反问或只是表达尊重，就不算同意。通知只是宫廷收到誓约的报告，不是玩家再次确认。吞并不是臣属国条约；若玩家明确要求彻底吞并整个国家、取消目标王国独立王权并让所有家族并入玩家王国，应按国家吞并规则处理，而不是输出臣属国标签。",
-                            "PostprocessRules":  [
-                                                     {
-                                                         "Tag":  "[ACTION:VASSALAGE:SUBMIT:TRIBUTARY:{kingdomId}]",
-                                                         "Description":  "如果NPC国王在\u003clatest_reply\u003e里最终明确无条件同意让自己的王国成为朝贡国/Tributary，或明确说交钱、纳贡、以贡赋换取玩家王国保护但不出兵，就输出这个。若同一句还提到和平、停战、贸易、商队或提出议程，应同时输出外交/议程标签。kingdomId 必须使用运行时事实中的目标王国ID。"
-                                                     },
-                                                     {
-                                                         "Tag":  "[ACTION:VASSALAGE:SUBMIT:GARRISON:{kingdomId}]",
-                                                         "Description":  "如果NPC国王明确同意让自己的王国成为卫戍国/Garrison或军事臣属，就输出这个。若同句还同意和平或贸易，也要同时输出。kingdomId必须来自运行时事实。"
-                                                     },
-                                                     {
-                                                         "Tag":  "[ACTION:VASSALAGE:SUBMIT:VASSAL:{kingdomId}]",
-                                                         "Description":  "如果NPC国王明确同意让自己的王国成为附庸国/Vassal，也就是傀儡国，输出这个。若同句还同意和平、贸易、贡金或议程，也要分别输出对应标签。kingdomId必须来自运行时事实。"
-                                                     },
-                                                     {
-                                                         "Tag":  "[ACTION:KINGDOM_ANNEX:target_kingdom_id={targetKingdomId}]",
-                                                         "Description":  "如果NPC国王在\u003clatest_reply\u003e里最终明确无条件同意让自己的整个王国并入玩家王国，明确放弃独立王权，并明确所有家族归入玩家王国，就输出这个。target_kingdom_id 必须使用运行时事实中的目标王国ID。若NPC只是同意求和、结盟、停战、赔款、朝贡、卫戍、臣属、附庸/傀儡、保护国、普通归顺、保留王号或保留独立外交，都不得输出。"
-                                                     }
-                                                 ],
+                            "PreprocessExcludedInstruction": "你不是当前国家统治者，不能代表国家答应臣属或并入；请玩家寻找有权国王。玩家身份只影响劝说，不妨碍第三方斡旋。（VASSALAGE）",
+                            "NonHeroInstruction": "你没有国家发文权，只能建议玩家寻找有权国王。",
+                            "Instruction": "【臣属与并入谈判】任何玩家可劝你进行合法的玩家—AI或AI—AI外交，包括玩家国家主动臣属；玩家不是国王不能替其国家签约。明确接收/宗主国与并入/臣属国，先发布你的正式宣言，再由对方正式接受。玩家宣言只能玩家自己发布。朝贡交钱换保护、保留军事自主、不出兵；驻军出兵、不交钱、没有军事自主；附庸出钱出兵、外交军事受宗主控制。吞并则放弃独立王权、全部家族和领地并入接收国。考虑、报价、犹豫不算明确承诺。新条件开新事件，回应旧案绑定源公文与动作，多个原案先澄清。结合自己的记忆与交涉判断，私人理由不公开。正文自然表达，不写动作标签。",
+                            "PostprocessRules": [
+    {
+        "Tag": "[ACTION:DIPLOMACY:COMMIT:action=Tributary;move=NewMatter;target=王国ID;receiving=宗主国ID;joining=臣属国ID]",
+        "Description": "仅当前NPC国王明确最终答应时输出。action=Tributary/Garrison/Vassal/Annexation；明确receiving和joining，允许合法的任一方向。接受或拒绝原案move=AcceptProposal/RejectProposal，复制source_document与source_action，条件不得改写；省略条款表示完整接受原案。不能代玩家发布或接受。 修改尚未发布的约定时，NewMatter必须附supersedes=旧约定ID;version=旧版本号;reason=本轮明确改约原因，并完整复制新条件；ID及版本从运行时清单复制，不能猜测。其他独立新事项不附supersedes。旧公文已公开时先用COMMITMENT取消开放提案，再另发新方案；已生效行动不能借改约回滚。"
+    },
+    {
+        "Tag": "[ACTION:DIPLOMACY:COMMITMENT:arrangement=约定ID;state=deferred;reason=明确原因]",
+        "Description": "NPC明确决定延期、取消或恢复自己约定时输出，state=deferred/cancelled/accepted。复制约定ID及本轮明确原因；已发布未接受的提案取消转为正式撤回宣言。已生效行动不能撤销。"
+    }
+],
                             "RuntimeInstructionTemplates":  {
 
                                                             },

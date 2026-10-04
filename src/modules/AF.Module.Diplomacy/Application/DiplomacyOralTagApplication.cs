@@ -56,13 +56,18 @@ internal static class DiplomacyOralTagApplication
             source.Log($"[Tag] action={action} payload={payload} npc={source.SpeakerHeroId}");
             switch (action.ToUpperInvariant())
             {
-                case "DECLARE_WAR": return source.DeclareWar(payload);
-                case "MAKE_PEACE": return source.MakePeace(payload);
+                case "COMMIT": return (source as IDiplomacyCommitmentTagSource)?.SubmitCommitment(payload) ?? "";
+                case "COMMITMENT": return (source as IDiplomacyCommitmentTagSource)?.ControlCommitment(payload) ?? "";
+                case "DECLARE_WAR":
+                    return source is IDiplomacyCommitmentTagSource commitment
+                        && (payload ?? "").Split(':')[0] == commitment.SpeakerKingdomId
+                        ? commitment.SubmitLegacyCommitment("DeclareWar", payload) : source.DeclareWar(payload);
+                case "MAKE_PEACE": return source is IDiplomacyCommitmentTagSource peace ? peace.SubmitLegacyCommitment("Peace", payload) : source.MakePeace(payload);
                 case "INDEPENDENT_CLAN_PEACE": return source.IndependentClanPeace(payload);
-                case "FORM_ALLIANCE": return source.FormAlliance(payload);
-                case "BREAK_ALLIANCE": return source.BreakAlliance(payload);
-                case "MAKE_TRADE": return source.MakeTrade(payload);
-                case "CANCEL_TRADE": return source.CancelTrade(payload);
+                case "FORM_ALLIANCE": return source is IDiplomacyCommitmentTagSource alliance ? alliance.SubmitLegacyCommitment("Alliance", payload) : source.FormAlliance(payload);
+                case "BREAK_ALLIANCE": return source is IDiplomacyCommitmentTagSource broken ? broken.SubmitLegacyCommitment("BreakAlliance", payload) : source.BreakAlliance(payload);
+                case "MAKE_TRADE": return source is IDiplomacyCommitmentTagSource trade ? trade.SubmitLegacyCommitment("Trade", payload) : source.MakeTrade(payload);
+                case "CANCEL_TRADE": return source is IDiplomacyCommitmentTagSource cancelled ? cancelled.SubmitLegacyCommitment("CancelTrade", payload) : source.CancelTrade(payload);
                 default:
                     source.Log($"[Tag] Unknown action: {action}");
                     return "";

@@ -6,10 +6,11 @@ using TaleWorlds.CampaignSystem.Settlements;
 namespace AnimusForge;
 
 // Main-thread request-local capture. No live object is put in prompt values or retained by a worker.
-internal sealed class DiplomacyPromptSource : IDiplomacyPromptSource
+internal sealed class DiplomacyPromptSource : IDiplomacyPromptSource, IDiplomacyOralPromptSource
 {
     private readonly Hero _npc;
     internal DiplomacyPromptSource(Hero npc) => _npc = npc;
+    public string OralArrangementContext() => WorldDiplomacyBehavior.BuildOralArrangementContext(_npc);
     public DiplomacyConversationEligibilitySnapshot CaptureEligibility() => DiplomacyBehavior.CaptureEligibilitySnapshot(_npc);
     public bool TryCaptureIndependentPeace(out DiplomacyIndependentPeaceContextSnapshot snapshot)
     {

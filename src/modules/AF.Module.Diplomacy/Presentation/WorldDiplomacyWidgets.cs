@@ -317,6 +317,8 @@ public sealed class WorldDiplomacyComposePopup
 		}
 	}
 
+	internal static void CloseForCampaignEnd() => _activePopup?.Close(silent: true);
+
 	public static void ProcessDeferredCloseIfNeeded()
 	{
 		WorldDiplomacyComposePopup popup = _activePopup;
