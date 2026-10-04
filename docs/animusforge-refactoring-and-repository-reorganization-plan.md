@@ -1,3 +1,30 @@
+<a id="onboarding-bulletin-archive-repair-20261004"></a>
+# 引导控件与快报档案修复（2026-10-04，OFFLINE_VERIFIED，未部署）
+
+- 用户要求简化引导首页、去掉YJ名称中的“官方”；U键查看快报可重开对应原篇，局部摘要并入对应快报，不再累积独立条目。基线`25ac235f`，意图检查点`54423659`，产品/测试提交`a1346a765622ba8b1fec5ffa70bf6ada657fb4f2`。
+- 原因：终端档案行只有生成完整周报命令，没有原篇重开入口；国家消息每周独立Upsert `:brief`，旧short-only记录也独立进入档案。现在按原EventId打开原快报/周报面板，不重新生成、不重复发放阅读奖励；完整周报生成入口保留。
+- 新国家消息存入对应世界快报的既有`EventRecordEntry.Materials`，全文进入正文/其他消息。旧摘要读取时按所属周合并到对应原篇；无对应篇时按周整合成可打开的各地消息，不丢内容、不删改旧记录、不增加存档schema。国家关联与NPC事实知识链路保留。
+- 本条明确替代历史[王国快报档案修复](#bulletin-kingdom-archive-fix)中“保留独立王国提要”及无法重开原篇的行为；其存档身份和国家关联保留，不改写历史验收记录。
+- 性能：合并只在档案打开/重开时生成脱离源记录的snapshot，不增加逐帧扫描；新国家消息沿既有每周gate和latest缓存写入，没有对应篇时不消费周进度，后续可补写。
+
+## 代码证据（产品修订`a1346a76`）
+
+| 源码 / 一基行号 / 符号 | 本轮责任 | 未覆盖 |
+| --- | --- | --- |
+| `content/modules/AF.Module.Onboarding/GUI/Prefabs/AnimusForgeApiOnboardingPopup.xml:37-60`；`src/AF.GameAdapter.Bannerlord/UI/Onboarding/AnimusForgeApiOnboardingVM.cs`；`content/foundation/AF.Foundation.UI/GUI/Brushes/AFCourierLetterBrushes.xml` | 五个固定高度单标题按钮、去首页描述/小字/箭头、独立hover/pressed/disabled样式；清首页副标题，YJ二级标题去“官方”，五命令保留 | 实机Gauntlet布局/分辨率/焦点 |
+| `src/modules/AF.Module.Weekly/Panel/WeeklyReportArchivePolicy.cs:27-91`，`AttachRegionalNews` / `BodyWithRegionalNews` / `BuildArchiveSnapshot` | 按来源去重的全文附属材料、旧摘要detached归并、孤儿按周成篇、国家关联和内部标签隐藏 | 真实旧玩家档批量载入 |
+| `src/modules/AF.Module.Weekly/Generation/WorldBulletinStateOwner.cs:313-344`；`WorldBulletinStateOwner.Presentation.cs:73-116` | 新国家消息只附属、不增独立brief；原快报major/minors呈现附属全文 | 真LLM产出的内容质量 |
+| `src/AF.GameAdapter.Bannerlord/UI/Editors/WeeklyReportEditorController.cs:249-303`，`OpenArchivedReport`；`WeeklyEditorProjection.cs:82-100`；`src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.WeeklyEditorUi.cs:148` | 世界/国家档案共享合并快照，原EventId查找、原面板重开及全文fallback，不重复奖励；时间线复用归档并按ID去重 | 引擎真实面板生命周期 |
+| `src/AF.GameAdapter.Bannerlord/UI/Weekly/TerminalWeeklyReportBrowserPopupVM.cs:277-290,545-548,765-790`；`content/modules/AF.Module.UI/GUI/Prefabs/AnimusForgeTerminalPopup.xml:456-460`；`src/AF.GameAdapter.Bannerlord/UI/Terminal/AnimusForgeTerminalBehavior.cs:368` | U键档案新增打开快报/周报命令，关闭或读档后拒绝旧回调，去局部摘要说明，文字不抢点击 | 实机重开/关闭后的焦点恢复 |
+
+## 验证与交付
+
+- 归档/存档/UI **65 PASS**、生产editor **48 PASS**、生成owner **56 PASS**、引导/对话生产链接与XML契约 **156 PASS**。52周+520旧摘要在档案中合为52期，572条原始记录不变；含合并幂等、全文保存/读取/导入、原ID重开、无重复奖励、关闭/读档旧回调拒绝及面板fallback。引擎/渲染部分是替身，不能当玩家档或实机验收。
+- 未修改原入口`build_single_module.ps1`，最终Debug双API+Bootstrap均0错误；两实现各341既有warning，Bootstrap无warning。实际引用`v1.3.15.110062` / `v1.4.6.115628`；三个marker SHA256与实际DLL逐项一致。终端说明修改后已完整重跑最终构建；`git diff --check`通过。
+- 本地`artifacts/onboarding-bulletin-archive-20261004/receipt.json`绑定20源码/测试hash、产品修订和3产物；`archive.log` / `editor.log` / `generation.log` / `onboarding.log` / `build-final.log`记录最终结果。其他会话未提交的`src/modules/AF.Module.Knowledge/Semantic/OnnxCrossEncoderReranker.cs`参与当前工作树构建，收据单列hash及`submittedByThisTask=false`；本任务未修改或提交该文件，不能把产物称为纯净commit构建。
+- **LIVE_GAME / PLAYER_SAVE / REAL_PROVIDER / RELEASE / STAGE / DEPLOY / PUSH / PACKAGE = NOT_RUN**。未启动游戏、改玩家档、覆盖安装或增加Recovery，不延续历史部署/推送授权；需实机复验引导布局、U键原篇重开、关闭后焦点和真实旧档。
+- 源码回滚点`git revert a1346a76`，用定点逆向提交保留其他作者成果，不hard reset。安装仍为上一部署，本轮无新增游戏回滚点。
+
 <a id="deploy-player-ui-runtime-20261004"></a>
 # 玩家UI与运行链路修复部署（2026-10-04，DEPLOY_VERIFIED）
 

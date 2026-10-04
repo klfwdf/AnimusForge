@@ -1,3 +1,10 @@
+# 当前修复：引导控件与U键快报档案（2026-10-04，OFFLINE_VERIFIED，未部署）
+
+- 产品/测试`a1346a76`，检查点`54423659`：引导首页五个单标题按钮，去描述/小字及YJ“官方”；U键档案按原ID重开原快报/周报，不重新生成或重复奖励。
+- 新国家消息附属对应篇，旧局部摘要读档案时合入原篇；无对应篇按周整合为可打开消息，全文及原始记录保留。52周+520摘要回归得到52期，归档65/editor48/生成56/引导156 PASS，原Debug双API+Bootstrap0错误、三marker hash通过。
+- 实机布局/重开焦点、真实玩家档及provider未验；未Stage/部署/push/打包。另一会话reranker dirty保留且未提交，其构建输入hash单列收据，不能称产物仅来自纯净产品commit。
+- [唯一主台账、源码坐标、验证限定与回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#onboarding-bulletin-archive-repair-20261004)，本地`artifacts/onboarding-bulletin-archive-20261004/receipt.json`及五项最终日志；源码回滚`git revert a1346a76`。本条替代历史独立提要政策，不延续下方部署授权。
+
 # 最新部署：被拦截不弹会面修正版已安装（2026-10-04，DEPLOY_VERIFIED）
 
 - 用户本轮授权部署，产品a4b2dbb5 / 候选5f5b32d4；三源码/产物/marker hash未变，复用原Debug双API/Bootstrap验证，经原部署入口更新9文件。3379 Stage/安装一致，2291非受管文件及原版DLL/一键脚本保持，版本v1.5.0/Bootstrap-only。
