@@ -1,3 +1,13 @@
+<a id="deploy-bulletin-ui-logs-20261004"></a>
+# 快报UI与日志修复部署（2026-10-04，DEPLOY_VERIFIED）
+
+- 用户本轮明确要求部署；候选 `ae7792f37ee3a357a041d4b08b45bff87676d737`、产品 `20cf9627` 已推main。沿用AF维护技能和双版本输出规则，18任务文件、reranker既有dirty输入及三产物/marker逐项hash与上轮验证收据一致，复用刚完成的Debug双API+Bootstrap产物，不改原一键入口、不重编译未变源码。
+- 游戏进程已确认关闭；安装及旧Stage逐项核验后，用原content projection更新资源，原 `scripts/build/deploy_module.ps1` 事务部署至 `F:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord/Modules/AnimusForge`。更新11文件，3379 Stage/安装hash一致，2325非受管文件hash/长度/mtime保持；三原版DLL及三原构建部署脚本hash未变，版本v1.5.0、XML仅Bootstrap。
+- 已安装分页/长文滚动、国家正文筛选、模型框加宽、日志回模组与image save编码/可读文件名。生产修复源码及前轮309/57/48/168/14回归和两DLL81/70审计绑定未变；安装后的实际两DLL分别通过交接13、模式锁16、桥接/演讲3组离线检查，不初始化游戏、不调用provider。前轮J15内容数量遗留失败仍保留说明，不宣称全量内容门禁通过。
+- 唯一Recovery `C:/Users/29310/AppData/Local/AnimusForge/Recovery/deploy/deploy-167c8c7c13da4944a1c3e71359361b9a`，complete、备份旧hash和安装新hash均已核验；依用户历史“只留最近/历史也删”要求，六组安装检查通过后删除同目标的上一完成备份，保留1份、不复制旧Stage、不删除玩家内容。回滚按该manifest定向恢复受管旧文件，不镜像覆盖非受管文件；源码回滚仍 `git revert 20cf9627`。
+- 本地 `artifacts/deploy-bulletin-ui-logs-20261004/before.json`、`deploy.log` / `run.log`、`receipt.json`、六份安装probe日志及 `retention.json` 保存完整证据；其他会话reranker dirty未由本任务修改或提交。仅HANDOFF及本台账记录新部署结果。
+- **LIVE_GAME / PLAYER_SAVE / REAL_PROVIDER / PACKAGE = NOT_RUN**。安装核验不等于实机滚动/焦点/超长模型名或日志写盘验收。本条替代下方未部署状态和旧Recovery有效性，产品实现证据继续见下方条目。
+
 <a id="bulletin-ui-log-repair-20261004"></a>
 # 快报分页、国家正文、模型宽度与日志修复（2026-10-04，OFFLINE_VERIFIED）
 
