@@ -21,7 +21,9 @@ public sealed partial class TerminalWeeklyReportBrowserPopupVM
 
     [DataSourceProperty] public bool IsReading => _readerItem != null;
     [DataSourceProperty] public bool ShowReportList => !IsReading;
-    [DataSourceProperty] public string FilterText => _typeFilter == "all" ? "全部" : _typeFilter == "bulletin" ? "快报" : _typeFilter == "recent" ? "近况" : "周报";
+    [DataSourceProperty] public string FilterText => _typeFilter == "all" ? "全部" : _typeFilter == "bulletin" ? "快报" : _typeFilter == "diplomacy" ? "外交" : _typeFilter == "policy" ? "政策" : _typeFilter == "recent" ? "近况" : "周报";
+    [DataSourceProperty] public bool IsDiplomacySelected => _typeFilter == "diplomacy";
+    [DataSourceProperty] public bool IsPolicySelected => _typeFilter == "policy";
     [DataSourceProperty] public bool IsAllSelected => _typeFilter == "all";
     [DataSourceProperty] public bool IsBulletinSelected => _typeFilter == "bulletin";
     [DataSourceProperty] public bool IsRecentSelected => _typeFilter == "recent";
@@ -39,6 +41,8 @@ public sealed partial class TerminalWeeklyReportBrowserPopupVM
 
     public void ExecuteFilterAll() => SelectType("all");
     public void ExecuteFilterBulletin() => SelectType("bulletin");
+    public void ExecuteFilterDiplomacy() => SelectType("diplomacy");
+    public void ExecuteFilterPolicy() => SelectType("policy");
     public void ExecuteFilterRecent() => SelectType("recent");
     public void ExecuteFilterWeekly() => SelectType("weekly");
     private void SelectType(string kind)
@@ -53,6 +57,8 @@ public sealed partial class TerminalWeeklyReportBrowserPopupVM
         RefreshPage();
         OnPropertyChangedWithValue(IsAllSelected,nameof(IsAllSelected));
         OnPropertyChangedWithValue(IsBulletinSelected,nameof(IsBulletinSelected));
+        OnPropertyChangedWithValue(IsDiplomacySelected,nameof(IsDiplomacySelected));
+        OnPropertyChangedWithValue(IsPolicySelected,nameof(IsPolicySelected));
         OnPropertyChangedWithValue(IsRecentSelected,nameof(IsRecentSelected));
         OnPropertyChangedWithValue(IsWeeklySelected,nameof(IsWeeklySelected));
         OnPropertyChangedWithValue(FilterText,nameof(FilterText));
@@ -64,8 +70,8 @@ public sealed partial class TerminalWeeklyReportBrowserPopupVM
         foreach (var entry in _filteredReports.Skip(_page*PageSize).Take(PageSize))
             rows.Add(new TerminalWeeklyReportEntryItemVM(entry,RequestViewFullReport,RequestOpenReport));
         ReportItems=rows; HasReportItems=rows.Count>0; ShowEmptyState=!HasReportItems;
-        EmptyStateText="当前筛选下暂无档案。";
-        SelectedCountryMetaText=_filteredReports.Count + " 篇档案 · 每页 " + PageSize + " 篇";
+        EmptyStateText="当前筛选下暂无内容。";
+        SelectedCountryMetaText="共 " + _filteredReports.Count + " 条 · 每页 " + PageSize + " 条";
         OnPropertyChangedWithValue(PageText,nameof(PageText));
         OnPropertyChangedWithValue(CanPreviousPage,nameof(CanPreviousPage));
         OnPropertyChangedWithValue(CanNextPage,nameof(CanNextPage));

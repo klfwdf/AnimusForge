@@ -255,7 +255,7 @@ internal sealed partial class KingdomCivilWarOwner
 				if (trigger && (f.LastEscalationDay < 0 || day >= f.LastEscalationDay + 7) && CanStartPoliticalWar(k, s, f))
 				{
 					f.LastEscalationDay = day; f.EscalationPending = false;
-					if (RandomFloat() < EscalationChance(k, s, f)) OpenWar(k, s, f, CivilWarWorld.FindClan(f.LeaderClanId), week, tuning, HostStability);
+					if (CivilWarFactionRules.HasEnoughRefusals(f.Refusals, tuning) && RandomFloat() < EscalationChance(k, s, f)) OpenWar(k, s, f, CivilWarWorld.FindClan(f.LeaderClanId), week, tuning, HostStability);
 				}
 				if (IsPreWar(f)) AdvanceUltimatum(k, s, f, week, Host.GetStability(k), tuning, HostStability);
 			}
@@ -287,7 +287,9 @@ internal sealed partial class KingdomCivilWarOwner
 		int index = CivilWarFactionRules.PickFactionForClan(open.Select(x => DemandAffinity(CivilWarCatalog.FindDemand(x.DemandId), record) + RelationAffinity(clan, x)).ToList(), tuning, RandomFloat);
 		if (index < 0) return;
 		var target = open[index];
-		if (CivilWarRules.Roll("event_join", CivilWarCatalog.JoinOpposition, BuildFeatures(k, s, target, clan, Host.GetStability(k)), 1, tuning, RandomFloat).Passed)
+		// The relation gate runs only after a passed roll, so it costs one relation read per successful join roll.
+		if (CivilWarRules.Roll("event_join", CivilWarCatalog.JoinOpposition, BuildFeatures(k, s, target, clan, Host.GetStability(k)), 1, tuning, RandomFloat).Passed
+			&& CivilWarFactionRules.PassesJoinRelationGate(CivilWarFactionRules.JoinRelationFactor(CivilWarWorld.Relation(clan.Leader, k.Leader)), tuning, RandomFloat))
 		{ record.Side = KingdomCivilWarSide.Opposition; record.FactionId = target.Id; record.SideSinceWeek = day / 7; record.SideSinceDay = CivilWarWorld.CurrentDay(); }
 	}
 

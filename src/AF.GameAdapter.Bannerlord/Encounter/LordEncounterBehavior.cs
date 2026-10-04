@@ -5897,6 +5897,25 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 		return target != null && target != Hero.MainHero && target.IsLord && target.MaxHitPoints > 0 && (float)target.HitPoints / target.MaxHitPoints < PlayerMeetingMinimumHealthRatio;
 	}
 
+	// A battle tag emitted from dialogue must not open a battle mission for a badly wounded player:
+	// the mission then has no controllable player agent and cannot be left. Same threshold as meetings.
+	private static bool BlockBattleTagForLowPlayerHealth(string reason)
+	{
+		if (!IsMainHeroHealthTooLowForMeeting())
+		{
+			return false;
+		}
+		Logger.Log("MeetingTaunt", "Battle tag ignored: player health is below the minimum ratio. Reason=" + (reason ?? "N/A"));
+		try
+		{
+			AnimusForgeQuickInfo.Show("你的伤势过重，无法投入战斗", Hero.MainHero?.CharacterObject);
+		}
+		catch
+		{
+		}
+		return true;
+	}
+
 	private static string GetLowHealthMeetingBlockedMessage(Hero target)
 	{
 		string text = target?.Name?.ToString();
@@ -6604,6 +6623,10 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 	{
 		try
 		{
+			if (BlockBattleTagForLowPlayerHealth(reason))
+			{
+				return false;
+			}
 			if (!IsNativeEncounterDialogConversationActive())
 			{
 				Logger.Log("MeetingTaunt", "Native attack tag ignored because it was not emitted from an active encounter dialog conversation.");
@@ -6676,6 +6699,10 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 	{
 		try
 		{
+			if (BlockBattleTagForLowPlayerHealth(reason))
+			{
+				return false;
+			}
 			Hero hero = target;
 			if (hero == null)
 			{
@@ -6745,7 +6772,8 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 		{
 			Hero hero = target ?? targetCharacter?.HeroObject;
 			PartyBase partyBase = ResolveNativeEncounterAttackDefenderParty(hero, defenderParty);
-			if (!IsMeetingTauntApplicable(hero, partyBase))
+			// Do not offer the battle tag to the model while the player is too wounded to fight.
+			if (IsMainHeroHealthTooLowForMeeting() || !IsMeetingTauntApplicable(hero, partyBase))
 			{
 				return "";
 			}

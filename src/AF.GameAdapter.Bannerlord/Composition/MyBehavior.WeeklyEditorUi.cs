@@ -147,6 +147,10 @@ public partial class MyBehavior
 
     internal bool OpenArchivedWeeklyReport(string eventId) => WeeklyEditor.OpenArchivedReport(eventId);
 
+	// Terminal "王国近况": archive countries plus recent diplomacy and policy records. Built on open/refresh only.
+	public List<WeeklyReportBrowserCountryData> GetTerminalKingdomNewsCountries()
+		=> KingdomNewsArchiveSource.Merge(WeeklyEditor.GetTerminalWeeklyReportBrowserCountries());
+
 	private static WeeklyReportBrowserCountryData BuildWeeklyReportBrowserCountryData(string eventKind, string scopeKingdomId, string displayName, bool isWorld, List<EventRecordEntry> source)
 		=> WeeklyEditorProjection.BuildWeeklyReportBrowserCountryData(WeeklyEditorDisplay, eventKind, scopeKingdomId, displayName, isWorld, source);
 

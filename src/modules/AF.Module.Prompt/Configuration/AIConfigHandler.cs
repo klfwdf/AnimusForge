@@ -6133,7 +6133,7 @@ public static class AIConfigHandler
 				list.Add(baseInstruction.Trim());
 			}
 			Hero hero = targetHero ?? ResolveConversationTargetHero();
-			string text = ResolveHeroJoinPartyRuntimeStateKey(hero);
+			string civilWarFact = TeamModuleServices.CivilWar.BuildDialogueFact(hero); if (!string.IsNullOrWhiteSpace(civilWarFact)) list.Add(civilWarFact.Trim()); string text = ResolveHeroJoinPartyRuntimeStateKey(hero);
 			if (!string.IsNullOrWhiteSpace(text))
 			{
 				string text2 = ResolveRuleRuntimeText("kingdom_service", text, forConstraint: false, BuildHeroJoinPartyRuntimeTokens(hero));
@@ -6691,7 +6691,8 @@ public static class AIConfigHandler
 				return list;
 			}
 			// Civil-war answers also belong to player rulers, before service/recruitment early returns.
-			list.AddRange(TeamModuleServices.CivilWar.BuildPostprocessRules());
+			// Only tags that can execute right now for this conversation target are offered (filtered once per build, not per tick).
+			list.AddRange(TeamModuleServices.CivilWar.BuildPostprocessRules(ResolveConversationTargetHero()));
 			if (IsPlayerKingdomRecruitmentModeActive(playerClan, kingdom))
 			{
 				Clan clan = ResolveConversationTargetClan();

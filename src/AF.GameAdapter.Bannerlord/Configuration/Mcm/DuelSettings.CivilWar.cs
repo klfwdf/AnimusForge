@@ -24,9 +24,9 @@ public partial class DuelSettings
 	[SettingPropertyGroup(CivilWarGroup, GroupOrder = 125)]
 	public int CivilWarDiscontentThreshold { get; set; } = 35;
 
-	[SettingPropertyInteger("最后通牒间隔（周）", 1, 8, "0", Order = 4, RequireRestart = false, HintText = "派系成立或诉求被拒后，隔多少周再次向国王递交最后通牒。默认 2。")]
+	[SettingPropertyInteger("最后通牒间隔（周）", 1, 8, "0", Order = 4, RequireRestart = false, HintText = "派系成立或诉求被拒后，隔多少周再次向国王递交最后通牒。默认 4。")]
 	[SettingPropertyGroup(CivilWarGroup, GroupOrder = 125)]
-	public int CivilWarUltimatumDelayWeeks { get; set; } = 2;
+	public int CivilWarUltimatumDelayWeeks { get; set; } = 4;
 
 	[SettingPropertyInteger("内战最长周数", 4, 30, "0", Order = 5, RequireRestart = false, HintText = "内战持续到该周数时强制结算结局。默认 12。")]
 	[SettingPropertyGroup(CivilWarGroup, GroupOrder = 125)]
@@ -47,6 +47,10 @@ public partial class DuelSettings
 	[SettingPropertyInteger("玩家手动起兵实力占比（%）", 0, 100, "0", Order = 9, RequireRestart = false, HintText = "玩家家族军力须达到所属王国正式政治家族总军力的此百分比，才能手动起兵或向派系领袖提议起兵。0 表示关闭实力门槛；默认 20%。玩家担任派系领袖时不会自动起兵，拒绝解散令也须满足此门槛。")]
 	[SettingPropertyGroup(CivilWarGroup, GroupOrder = 125)]
 	public int CivilWarPlayerDetonationStrengthPercent { get; set; } = 20;
+
+	[SettingPropertyInteger("起兵所需最少被拒次数", 1, 4, "0", Order = 10, RequireRestart = false, HintText = "派系的诉求至少被国王拒绝这么多次之后，才可能自动升级为内战（含事件触发的升级）。被拒次数达到 4 次仍未起兵的派系会解散，所以上限为 4。玩家手动起兵不受此限。默认 2。")]
+	[SettingPropertyGroup(CivilWarGroup, GroupOrder = 125)]
+	public int CivilWarMinRefusalsBeforeWar { get; set; } = 2;
 
 	public static bool IsCivilWarFactionsEnabled()
 	{
@@ -76,6 +80,7 @@ public partial class DuelSettings
 			tuning.UltimatumDelayWeeks = System.Math.Max(1, settings.CivilWarUltimatumDelayWeeks);
 			tuning.MaxWarWeeks = System.Math.Min(30, System.Math.Max(tuning.MinWarWeeks + 1, settings.CivilWarMaxWarWeeks));
 			tuning.CooldownWeeks = System.Math.Max(0, settings.CivilWarCooldownWeeks);
+			tuning.MinRefusalsBeforeWar = System.Math.Max(1, System.Math.Min(tuning.MaxRefusals, settings.CivilWarMinRefusalsBeforeWar));
 		}
 		catch
 		{

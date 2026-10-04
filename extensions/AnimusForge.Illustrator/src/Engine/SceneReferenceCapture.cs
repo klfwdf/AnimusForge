@@ -47,14 +47,28 @@ namespace AnimusForge.Illustrator.Engine
         }
 
         internal static async Task<ConversationSceneReferenceCapture> CaptureConversationSceneReferencesAsync(
-            ConversationSceneCaptureSource source, CancellationToken token, string preCapturedScene = null)
+            ConversationSceneCaptureSource source, CancellationToken token, string preCapturedScene = null, bool scenePanoramaEnabled = true)
         {
             if (source == null) throw new ArgumentNullException(nameof(source));
             await source.EnsureCurrentAsync(token).ConfigureAwait(false);
             GenerationDiagnostics.Current?.RecordStage("scene_capture_route", new JObject
-            { ["route"] = source.CaptureRoute, ["requiresPanorama"] = source.RequiresMissionPanorama });
+            { ["route"] = source.CaptureRoute, ["requiresPanorama"] = source.RequiresMissionPanorama, ["panoramaEnabled"] = scenePanoramaEnabled });
             if (!source.RequiresMissionPanorama)
                 return await CaptureMapConversationSceneReferencesAsync(source, token).ConfigureAwait(false);
+            if (!scenePanoramaEnabled)
+            {
+                // Player switched the scene panorama off: no private Scene copy, no six-face render.
+                // The screenshot taken when the illustration was opened is the only environment image.
+                var screenshot = CreateCapturedSceneReferences(preCapturedScene);
+                GenerationDiagnostics.Current?.RecordStage("scene_capture_end", new JObject
+                {
+                    ["route"] = source.CaptureRoute, ["coverage"] = "panorama-disabled-by-setting",
+                    ["environmentReferences"] = screenshot.Count, ["panorama"] = false, ["totalMs"] = 0
+                });
+                return new ConversationSceneReferenceCapture(screenshot,
+                    "玩家在设置中关闭了场景离屏渲染：没有环境全景" + (screenshot.Count > 0 ? "，仅有打开插画时的当前位置截图，只用于判断当前位置与环境定位。" : "，也未取得当前位置截图，环境只依据文字事实，不补造未知的建筑与陈设。"),
+                    screenshot.Count > 0 ? "场景全景已关闭：使用当前画面截图" : "场景全景已关闭：按文字事实构图");
+            }
             return await CaptureMissionSceneReferencesAsync(source, token, preCapturedScene).ConfigureAwait(false);
         }
 

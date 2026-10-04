@@ -65,9 +65,10 @@ namespace AnimusForge.Illustrator.Core
         {
             token.ThrowIfCancellationRequested();
             var current = SelectSceneAnchor(scenes);
-            bool sendCurrent = current != null && (current.Kind == IllustrationReferenceKind.MapConversationScene ||
-                direction?.UsedLocalFallback == true || direction?.VisionUnsupported == true || direction?.UsedTextOnlyDirector == true);
             var panorama = scenes?.FirstOrDefault(x => x != null && x.Kind == IllustrationReferenceKind.ScenePanorama && !string.IsNullOrWhiteSpace(x.Base64Image));
+            // Without a panorama (scene offscreen switched off) the screenshot is the only environment image, so the image side needs it too.
+            bool sendCurrent = current != null && (current.Kind == IllustrationReferenceKind.MapConversationScene || panorama == null ||
+                direction?.UsedLocalFallback == true || direction?.VisionUnsupported == true || direction?.UsedTextOnlyDirector == true);
             int sceneReferenceCount = 0;
             if (panorama != null)
             {

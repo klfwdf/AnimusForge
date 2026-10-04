@@ -16,8 +16,8 @@ CivilWarCatalog.Initialize(CivilWarEffects.Ids);
 // Real prompt method -> real normalizer -> real shared parser. Only the campaign context is fake.
 var f = new Fixture();
 f.Home.RulingClan = Clan.PlayerClan;
-List<PostprocessRuleEntry> rules = AIConfigHandler.BuildRuntimeKingdomServicePostprocessRules();
-Check(rules.Count == 6, "player king gets the six civil faction rules");
+List<PostprocessRuleEntry> filteredRules = AIConfigHandler.BuildRuntimeKingdomServicePostprocessRules(); List<PostprocessRuleEntry> rules = TeamModuleServices.CivilWar.BuildPostprocessRules();
+Check(rules.Count == 8, "the catalog defines the eight civil faction tags"); Check(filteredRules.Count == 1 && filteredRules[0].Tag == "[A:CIVIL_FACTION:RECRUIT]", "player king talking to a factionless vassal is only offered RECRUIT");
 var parser = new LegacyActionTagParser();
 var context = new PostprocessContext(Array.Empty<string>(), LegacyActionTagCatalog.DefaultAllowedTagFamilies, new CapabilitySet(new[] { "action.parse" }));
 foreach (var rule in rules)
@@ -29,6 +29,10 @@ foreach (var rule in rules)
 }
 Check(!ShoutBehavior.NormalizeKingdomServicePostprocessTagsForScene("[A:CIVIL_FACTION:ERASE]", rules).Contains("ERASE"), "unknown action is not offered");
 Check(parser.HasDisallowedProtocolTag("[A:UNRELATED:DO]", context), "allowlist stays finite");
+TeamModuleServices.CivilWar.Load(JsonConvert.SerializeObject(f.Owner.Storage)); var warTarget = Clan.All.First(c => c != Clan.PlayerClan).Leader;
+Check(TeamModuleServices.CivilWar.BuildPostprocessRules(warTarget).Count == 0, "open civil war offers no faction tags");
+Check(TeamModuleServices.CivilWar.BuildDialogueFact(warTarget).Contains("内战期间"), "open civil war fact forbids faction changes");
+TeamModuleServices.CivilWar = new CivilWarModuleAdapter();
 DuelSettings.Enabled = false;
 Check(AIConfigHandler.BuildRuntimeKingdomServicePostprocessRules().Count == 0, "MCM disabled rules empty");
 DuelSettings.Enabled = true;

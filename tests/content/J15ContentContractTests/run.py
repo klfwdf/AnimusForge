@@ -587,7 +587,7 @@ J15B_REVIEWED_EDITS = {
     "ModuleData/Languages/CNs/language_data.xml": "B8DBB6C8F0A6CF6EF66B70ADF79F6CC8F6B57E1887151111DFB6DFD4A0CE5C65",
     # cb045840 blob is 96BE1920...; the uncommitted CivilWar UI relocation (faction tab moved to the
     # kingdom screen via KingdomFactionTab.cs) removes the terminal Faction tab button and panel (-64 lines).
-    "GUI/Prefabs/AnimusForgeTerminalPopup.xml": "2ADD0334115222197AF191C03CED890A58384FFEF0384E807E8A61C02E39778B",
+    "GUI/Prefabs/AnimusForgeTerminalPopup.xml": "2BB7A1574140F2F3CE6F561320DDE433AEF679D5FC1A7E3A9BE042CE6F60BF5B",
     # Uncommitted: +AFWST_TerminalNavTooltip for the native map-bar terminal entry (AfWarStatsTexts.cs).
     "ModuleData/Languages/afwarstats_strings.xml": "9291A45C7419EA55A414E1C80FD494C70C67E85AB3FBF9EC3F6610A6A930B27A",
     "ModuleData/Languages/CNs/afwarstats_strings-zh-CN.xml": "A06CDB6A0D3B4D19EC4224A4C02BC437E82DD8B55DD75D08E8D0C7991D2DDE05",

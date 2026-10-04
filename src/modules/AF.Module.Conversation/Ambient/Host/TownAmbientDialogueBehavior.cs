@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using Newtonsoft.Json;
+using SandBox.Missions.MissionLogics;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Encounters;
 using TaleWorlds.CampaignSystem.Settlements;
@@ -62,6 +63,11 @@ public sealed class TownAmbientDialogueMissionBehavior : MissionBehavior
 	private bool _bubbleLogged;
 	private bool _timeDiagnosticsLogged;
 	private bool _populationAttachLogged;
+	// Combat/non-peace guard: evaluated at most once per CombatGuardIntervalSeconds of mission time
+	// (a handful of cached-field reads), so the per-tick cost stays negligible.
+	private const float CombatGuardIntervalSeconds = 1f;
+	private float _nextCombatGuardAt;
+	private bool _combatGuardBlocked;
 
 	public override void OnBehaviorInitialize()
 	{
@@ -88,6 +94,8 @@ public sealed class TownAmbientDialogueMissionBehavior : MissionBehavior
 		_bubbleLogged = false;
 		_timeDiagnosticsLogged = false;
 		_populationAttachLogged = false;
+		_nextCombatGuardAt = 0f;
+		_combatGuardBlocked = false;
 		try
 		{
 			Logger.LogImmediate("TownAmbient", "behavior_initialized enabled=" + (_config?.Enabled == true) + " lines=" + (_config?.Lines?.Count ?? 0) + " config=" + AnimusForgeModulePaths.GetModuleDataFilePath(ConfigFileName));
@@ -104,6 +112,10 @@ public sealed class TownAmbientDialogueMissionBehavior : MissionBehavior
 		{
 			Mission mission = Mission.Current;
 			if (mission == null || _config == null || !_config.Enabled || DuelSettings.GetTownAmbientDialogueDensity() <= 0)
+			{
+				return;
+			}
+			if (IsAmbientBlockedByCombatContext(mission))
 			{
 				return;
 			}
@@ -1274,6 +1286,106 @@ public sealed class TownAmbientDialogueMissionBehavior : MissionBehavior
 			fact += "可回应方向=" + string.Join("、", line.ReplyHints.Where(x => !string.IsNullOrWhiteSpace(x)).Take(4)) + "。";
 		}
 		MyBehavior.AppendExternalNonHeroSceneDialogueHistory(memoryId, npc.Name, null, (renderedText ?? line.Text ?? "").Trim(), fact, ShoutBehavior.GetCurrentSceneHistorySessionIdForExternal(), npc.AgentIndex, npc.Name);
+	}
+
+	/// <summary>
+	/// Ambient chatter is a peaceful-settlement feature. Returns true (and silences the behavior)
+	/// whenever the mission is a battle/siege/duel/active-fight or is not a real campaign location
+	/// mission. On the first blocked evaluation, queued replies and in-flight AI results are dropped
+	/// (epoch bump) so nothing is shown after combat starts.
+	/// </summary>
+	private bool IsAmbientBlockedByCombatContext(Mission mission)
+	{
+		float now = mission.CurrentTime;
+		if (now < _nextCombatGuardAt)
+		{
+			return _combatGuardBlocked;
+		}
+		_nextCombatGuardAt = now + CombatGuardIntervalSeconds;
+		string reason = GetAmbientBlockReason(mission);
+		bool blocked = reason != null;
+		if (blocked != _combatGuardBlocked)
+		{
+			_combatGuardBlocked = blocked;
+			if (blocked)
+			{
+				_pendingResponses.Clear();
+				while (_pendingAiBatches.TryDequeue(out _)) { }
+				Interlocked.Increment(ref _ambientPauseEpoch);
+				_contextualLinesCache = null;
+				_contextualLinesCacheKey = "";
+				_contextualLinesCacheUntil = 0f;
+				Logger.LogImmediate("TownAmbient", "combat_guard_blocked reason=" + reason + " scene=" + (mission.SceneName ?? "") + " location=" + GetCurrentLocationIdSafe() + " settlement=" + GetCurrentSettlementIdSafe());
+			}
+			else
+			{
+				Logger.LogImmediate("TownAmbient", "combat_guard_cleared scene=" + (mission.SceneName ?? "") + " location=" + GetCurrentLocationIdSafe());
+			}
+		}
+		return blocked;
+	}
+
+	// Returns null when the mission is a peaceful settlement location mission, otherwise a short reason.
+	// Fails closed: an unexpected exception blocks ambient chatter instead of risking it in combat.
+	private static string GetAmbientBlockReason(Mission mission)
+	{
+		try
+		{
+			if (mission == null)
+			{
+				return "no_mission";
+			}
+			if (CampaignMission.Current?.Location == null)
+			{
+				return "no_campaign_location";
+			}
+			// Only an unresolved battle blocks: after a settlement is taken the finished MapEvent can
+			// linger on the encounter while the player walks the now-peaceful streets.
+			if (PlayerEncounterCompat.HasEncounterBattleContext() && !PlayerEncounterCompat.HasResolvedEncounterBattleContext())
+			{
+				return "encounter_battle";
+			}
+			if (mission.GetMissionBehavior<CampaignSiegeStateHandler>() != null)
+			{
+				return "siege_handler";
+			}
+			// Public execution ceremony (RichExecutions/Vengeance): the crowd must stay silent for the whole scene.
+			// Keyed on the ceremony having a Request, same convention as ShoutBehavior.BuildCeremonyRoleFactForPrompt.
+			RichExecutions.Scene.TownExecutionMissionBehavior ceremony = mission.GetMissionBehavior<RichExecutions.Scene.TownExecutionMissionBehavior>();
+			if (ceremony?.Request != null && ceremony.State != RichExecutions.Core.ExecutionSessionState.Cancelled)
+			{
+				return "public_execution";
+			}
+			Mission.MissionTeamAITypeEnum teamAiType = mission.MissionTeamAIType;
+			if (teamAiType == Mission.MissionTeamAITypeEnum.Siege
+				|| teamAiType == Mission.MissionTeamAITypeEnum.SallyOut
+				|| teamAiType == Mission.MissionTeamAITypeEnum.FieldBattle)
+			{
+				return "battle_team_ai";
+			}
+			MissionMode mode = mission.Mode;
+			// MissionMode.Battle covers alley fights (AlleyFightMissionHandler sets it on render start)
+			// and MissionFightHandler brawls; peaceful location missions never sit in Battle mode.
+			if (mode == MissionMode.Battle || mode == MissionMode.Deployment || mode == MissionMode.Stealth || mode == MissionMode.Duel)
+			{
+				return "battle_mode";
+			}
+			MissionFightHandler fightHandler = mission.GetMissionBehavior<MissionFightHandler>();
+			if (fightHandler != null && fightHandler.IsThereActiveFight())
+			{
+				return "active_fight";
+			}
+			Settlement settlement = Settlement.CurrentSettlement;
+			if (settlement != null && settlement.IsUnderSiege)
+			{
+				return "settlement_under_siege";
+			}
+			return null;
+		}
+		catch (Exception ex)
+		{
+			return "guard_error:" + ex.GetType().Name;
+		}
 	}
 
 	private static bool TryGetSettlementContext(Mission mission, out Settlement settlement, out string sceneTag)

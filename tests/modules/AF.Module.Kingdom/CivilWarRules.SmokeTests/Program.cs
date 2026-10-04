@@ -110,6 +110,23 @@ Check(CivilWarFactionRules.IsDemandTaken(new[] { "make_peace", "redress" }, "red
 Check(!CivilWarFactionRules.IsDemandTaken(new[] { "make_peace" }, "redress"), "other demand is free");
 Check(!CivilWarFactionRules.IsDemandTaken(null, "redress"), "no factions -> free");
 
+// ---- escalation needs enough refusals; loyal clans rarely join the opposition
+Check(new CivilWarTuning().UltimatumDelayWeeks == 4, "default ultimatum interval is 4 weeks");
+Check(!CivilWarFactionRules.HasEnoughRefusals(1, new CivilWarTuning()), "default: one refusal is not enough for war");
+Check(CivilWarFactionRules.HasEnoughRefusals(2, new CivilWarTuning()), "default: two refusals allow war");
+Check(CivilWarFactionRules.HasEnoughRefusals(1, new CivilWarTuning { MinRefusalsBeforeWar = 1 }), "minimum 1 restores first-refusal war");
+Check(!CivilWarFactionRules.HasEnoughRefusals(3, new CivilWarTuning { MinRefusalsBeforeWar = 9 }), "minimum above MaxRefusals is clamped (3 < 4)");
+Check(CivilWarFactionRules.HasEnoughRefusals(4, new CivilWarTuning { MinRefusalsBeforeWar = 9 }), "clamped minimum is reachable at MaxRefusals");
+Check(CivilWarFactionRules.JoinRelationFactor(-30) == 1f && CivilWarFactionRules.JoinRelationFactor(0) == 1f, "hostile or neutral clans join at full chance");
+Check(Math.Abs(CivilWarFactionRules.JoinRelationFactor(30) - 0.5f) < 1e-5f, "relation 30 halves the join chance");
+Check(CivilWarFactionRules.JoinRelationFactor(60) == CivilWarFactionRules.JoinRelationMinFactor && CivilWarFactionRules.JoinRelationFactor(100) == CivilWarFactionRules.JoinRelationMinFactor, "clans at relation 60+ keep a small non-zero join chance");
+Check(CivilWarFactionRules.JoinRelationFactor(100) > 0f && CivilWarFactionRules.PassesJoinRelationGate(CivilWarFactionRules.JoinRelationFactor(100), tuning, Fixed(0.05f)), "best-relation clan can still join on a low roll");
+Check(!CivilWarFactionRules.PassesJoinRelationGate(CivilWarFactionRules.JoinRelationFactor(100), tuning, Fixed(0.5f)), "best-relation clan usually does not join");
+Check(CivilWarFactionRules.PassesJoinRelationGate(1f, tuning, Fixed(0.99f)), "factor 1 always passes");
+Check(!CivilWarFactionRules.PassesJoinRelationGate(0f, tuning, Fixed(0f)), "factor 0 never passes");
+Check(CivilWarFactionRules.PassesJoinRelationGate(0.5f, tuning, Fixed(0.4f)) && !CivilWarFactionRules.PassesJoinRelationGate(0.5f, tuning, Fixed(0.6f)), "gate compares the roll with the factor");
+Check(CivilWarFactionRules.PassesJoinRelationGate(0.5f, expectedValue, Fixed(0.99f)) && !CivilWarFactionRules.PassesJoinRelationGate(0.49f, expectedValue, Fixed(0f)), "randomness 0 passes only at factor >= 0.5");
+
 Check(CivilWarFactionRules.FactionGrievance(new float[0]) == 0f, "empty faction grievance is 0");
 Check(Math.Abs(CivilWarFactionRules.FactionGrievance(new[] { 80f, 40f }) - 60f) < 1e-4f, "faction grievance is the member mean");
 Check(CivilWarFactionRules.FactionGrievance(new[] { 250f }) == 100f, "faction grievance clamped to 100");

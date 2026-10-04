@@ -36,7 +36,7 @@ internal sealed partial class KingdomCivilWarOwner
 		_storage.Kingdoms.Clear();
 		_storage.Version = 4;
 		_storage.ClanExitUntilDay = loaded?.ClanExitUntilDay ?? new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
-		_storage.Operations = loaded?.Operations ?? new Dictionary<string, CivilWarOperation>(StringComparer.Ordinal);
+		_storage.Operations = loaded?.Operations ?? new Dictionary<string, CivilWarOperation>(StringComparer.Ordinal); _storage.ProtectedClanUntilDay = loaded?.ProtectedClanUntilDay ?? new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
 		Revision++;
 		_oppositionMarkFaction.Clear();
 		_openWarKingdoms.Clear();
@@ -392,8 +392,10 @@ internal sealed partial class KingdomCivilWarOwner
 				AddHistory(state, week, name + "屡遭拒绝，转而要求国王退位");
 			}
 		}
-		// Escalation is decided only by the roll (x0.3 for non-war demands via the catalog EscalationScale).
-		if (ruling.Escalate && !IsPlayerLed(faction))
+		// Escalation is decided by the roll (x0.3 for non-war demands via the catalog EscalationScale),
+		// but only once the faction has been refused often enough.
+		bool enoughRefusals = CivilWarFactionRules.HasEnoughRefusals(faction.Refusals, tuning);
+		if (ruling.Escalate && enoughRefusals && !IsPlayerLed(faction))
 		{
 			OpenWar(kingdom, state, faction, leader, week, tuning, adjustStability);
 			return false;
@@ -404,7 +406,9 @@ internal sealed partial class KingdomCivilWarOwner
 			return false;
 		}
 		RefuseAndReschedule(faction, week, tuning);
-		AddHistory(state, week, "国王拒绝" + name + "的诉求，但升级判定未通过");
+		AddHistory(state, week, "国王拒绝" + name + "的诉求，" + (ruling.Escalate && !enoughRefusals
+			? "但派系被拒次数未满（" + faction.Refusals + "/" + tuning.MinRefusalsBeforeWar + "），暂不起兵"
+			: "但升级判定未通过"));
 		return false;
 	}
 
@@ -721,7 +725,7 @@ internal sealed partial class KingdomCivilWarOwner
 	private void FinishFaction(Kingdom kingdom, KingdomCivilWarKingdomState state, KingdomCivilWarFactionState faction, int week, CivilWarTuning tuning, Action<Kingdom, int> adjustStability, int stabilityDelta, bool startCooldown = true)
 	{
 		if (stabilityDelta != 0 && kingdom != null) adjustStability?.Invoke(kingdom, stabilityDelta);
-		faction.LastParticipantIds = Members(state, faction).Select(x => x.ClanId).ToList();
+		faction.LastParticipantIds = Members(state, faction).Select(x => x.ClanId).ToList(); ProtectWarClans(faction);
 		state.Factions.Remove(faction);
 		if (startCooldown)
 		{
@@ -756,12 +760,18 @@ internal sealed partial class KingdomCivilWarOwner
 
 	// ------------------------------------------------------------ player actions (inquiry / dialogue tags)
 
-	// Joining the opposition means joining the speaker's faction, or the strongest pre-war faction if the speaker has none.
+	// Joining the opposition means joining the speaker's faction, or the only pre-war faction if the speaker has none and the choice is unambiguous.
 	internal bool TryJoinPlayer(Kingdom kingdom, Hero speaker, KingdomCivilWarSide side, out string message)
 	{
 		var state = Find(kingdom);
 		var faction = FactionOfClan(state, speaker?.Clan);
-		if (!IsPreWar(faction)) faction = state?.Factions.Where(IsPreWar).OrderByDescending(x => x.LastFactionPower).FirstOrDefault();
+		if (side == KingdomCivilWarSide.Opposition && !IsPreWar(faction))
+		{
+			// The speaker is not in a pre-war faction: only fall back when the choice is unambiguous, never guess the strongest one.
+			var open = state?.Factions.Where(IsPreWar).Take(2).ToList();
+			faction = open != null && open.Count == 1 ? open[0] : null;
+			if (faction == null) { message = "无法确定要加入哪个派系，请先明确说明是哪个派系。"; return false; }
+		}
 		var result = Execute(new CivilWarActionRequest { OperationId = Guid.NewGuid().ToString("N"), KingdomId = kingdom?.StringId ?? "",
 			FactionId = faction?.Id ?? "", Action = side == KingdomCivilWarSide.Crown ? CivilWarAction.JoinCrown : CivilWarAction.JoinOpposition }, Clan.PlayerClan);
 		message = result.Message;
@@ -772,16 +782,12 @@ internal sealed partial class KingdomCivilWarOwner
 	{
 		message = "";
 		KingdomCivilWarKingdomState state = kingdom == null ? null : GetOrCreate(kingdom, CivilWarWorld.CurrentWeek());
-		if (recruiter?.Clan == null || !PoliticalClan(target, kingdom) || kingdom == null || recruiter.Clan.Kingdom != kingdom || target == Clan.PlayerClan || target == kingdom.RulingClan || state == null)
-		{ message = "当前对象不满足派系招募条件。"; return false; }
-		if (state.Factions.Any(x => x.Stage == KingdomCivilWarStage.OpenWar)) { message = "内战期间不能招募或换派。"; return false; }
-		if (state.Factions.Any(x => x.LeaderClanId == target.StringId)) { message = "派系领袖不会被游说。"; return false; }
+		// One shared precondition check: the dialogue tag filter (ApplicableDialogueActions) uses the same method, so they cannot drift apart.
+		string block = RecruitBlockReason(recruiter, target, kingdom, state);
+		if (state == null || block.Length > 0) { message = block.Length > 0 ? block : "当前对象不满足派系招募条件。"; return false; }
 		int week = CivilWarWorld.CurrentWeek();
 		KingdomCivilWarClanState record = GetOrCreateClan(state, target, week);
-		if (record.Side != KingdomCivilWarSide.Middle) { message = "该家族已有阵营，须先退出。"; return false; }
 		bool crown = CivilWarWorld.IsPlayerRuled(kingdom) && recruiter.Clan == kingdom.RulingClan;
-		KingdomCivilWarClanState source;
-		if (!crown && (!state.Clans.TryGetValue(recruiter.Clan.StringId ?? "", out source) || source.Side == KingdomCivilWarSide.Middle)) { message = "招募者没有明确派系。"; return false; }
 		if (crown || state.Clans[recruiter.Clan.StringId].Side == KingdomCivilWarSide.Crown)
 		{
 			record.Side = KingdomCivilWarSide.Crown; record.FactionId = "";
@@ -802,6 +808,17 @@ internal sealed partial class KingdomCivilWarOwner
 		NotifyPoliticalChange(kingdom, "membership");
 		Revision++;
 		return true;
+	}
+
+	// Dialogue LEAVE tags: the speaker's own clan (SELF) or the player's clan (PLAYER) steps out of its current side.
+	// Goes through Execute/Quote, so the same relation loss, 7-day exit lock and war lock as the panel apply.
+	internal bool TryLeaveClan(Kingdom kingdom, Clan clan, out string message)
+	{
+		message = "";
+		if (kingdom == null || clan == null) { message = "当前对象无法退出阵营。"; return false; }
+		var result = Execute(new CivilWarActionRequest { OperationId = Guid.NewGuid().ToString("N"), KingdomId = kingdom.StringId, Action = CivilWarAction.Leave }, clan);
+		message = result.Message;
+		return result.Status == CivilWarActionStatus.Applied;
 	}
 
 	// Only the player's own faction can be detonated, through its leader.
@@ -1570,6 +1587,7 @@ internal sealed partial class KingdomCivilWarOwner
 		}
 		public int GetStability(Kingdom kingdom) { return MyBehavior.GetKingdomStabilityValueForExternal(kingdom); }
 		public bool DiscontinueLandlessKingdom(Kingdom kingdom, string reason) { return MyBehavior.TryDiscontinueLandlessKingdomForExternal(kingdom, reason); }
+		public void MakeClansPeaceful(IEnumerable<Clan> clans, string reason) { MyBehavior.MakeCivilWarClansPeacefulForExternal(clans, reason); }
 		public void QueueRebellion(Kingdom kingdom, Clan leader, List<Clan> followers, string factionId, bool startNow) { MyBehavior.QueueCivilWarRebellionForExternal(kingdom, leader, followers, factionId, startNow); }
 		public void ApplyPrestige(Kingdom kingdom, int delta, string reason) { TeamModuleServices.CivilWar.ApplyPrestigeDelta(kingdom == null ? "" : kingdom.StringId, delta, reason); }
 		public void RecordMaterial(Kingdom kingdom, int week, string text) { WriteMaterial(kingdom, week, text); }

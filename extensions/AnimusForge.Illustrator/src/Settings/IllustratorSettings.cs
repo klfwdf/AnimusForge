@@ -59,13 +59,14 @@ namespace AnimusForge.Illustrator
             }
         }
 
-        [SettingPropertyBool("启用多模态视觉提词 (方案 A)", HintText = "开启后自动抓取游戏内 3D 角色模型与会面实景画面，喂给视觉大模型 (如 GPT-4o / Qwen-VL) 提炼超精准提示词。若配置的模型不支持视觉参数，系统会自动平滑降级为高精度文本提词。", Order = 1, RequireRestart = false)]
-        [SettingPropertyGroup("1. 基础设置", GroupOrder = 1)]
-        public bool EnableMultimodalVision { get; set; } = true;
+        // Not exposed in MCM: always on. Models without vision support already degrade to text-only directing.
+        public bool EnableMultimodalVision => true;
 
-        [SettingPropertyBool("启用原生 3D 模型离屏渲染 (TableauView 异步导出)", HintText = "开启后，通过骑马与砍杀2引擎底层的 TableauView 异步渲染落盘管线，直接从 GPU 渲染通道提取 100% 纯净且无任何背景杂质的 3D 角色模型立绘作为 AI 垫图。必需人物立绘失败会停止生成并允许重试；原生渲染兼容性仍需实际游戏验证。", Order = 2, RequireRestart = false)]
+        // Character portraits are always rendered offscreen (required references); this switch only covers
+        // the scene panorama of Mission conversations. Field (map) conversations never use a panorama.
+        [SettingPropertyBool("启用场景离屏渲染 (环境全景)", HintText = "开启后，会话插画会在后台离屏渲染玩家附近 30 米的场景全景，作为环境参考还原建筑、陈设与材质；采集需要数秒并占用少量 GPU。关闭后不渲染全景，环境仅依据当前画面截图与文字事实。人物立绘始终离屏渲染，不受此开关影响。野外（大地图）会话本来就不使用全景。", Order = 1, RequireRestart = false)]
         [SettingPropertyGroup("1. 基础设置", GroupOrder = 1)]
-        public bool EnableOffscreenRendering { get; set; } = true;
+        public bool EnableSceneOffscreenRendering { get; set; } = true;
 
         [SettingPropertyBool("生成完成后自动清理临时文件", HintText = "开启后，各提取任务结束时仅清理自己产生的离屏导出文件，不清理其他请求或历史调试文件。关闭时保留纹章导出便于排查；已读取的立绘临时文件仍按原有流程释放。不影响画廊缓存与默认插图。", Order = 3, RequireRestart = false)]
         [SettingPropertyGroup("1. 基础设置", GroupOrder = 1)]

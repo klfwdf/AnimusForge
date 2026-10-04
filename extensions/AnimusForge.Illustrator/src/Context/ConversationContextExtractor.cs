@@ -277,14 +277,19 @@ namespace AnimusForge.Illustrator.Context
                     }
                     else if (hostIsWild && weSaidTown)
                     {
-                        context.EnvironmentProfile.SpecificLocation = "开阔旷野会面地（宿主确认：" + hostScene + "）";
-                        context.EnvironmentProfile.IndoorOutdoorDetails = "开阔苍茫的旷野临阵会面之地：起伏的草地丘陵与远处隐现的群山地平线，人物身后只保留现场确认的景物，不默认添加军旗与仪仗，空气中弥漫着战前谈判的紧绷肃杀气息。";
+                        context.EnvironmentProfile.SpecificLocation = "开阔野外会面地（宿主确认：" + hostScene + "）";
+                        context.EnvironmentProfile.IndoorOutdoorDetails = EnvironmentVisualExtractor.NeutralWildDetails;
                     }
                 }
             }
             catch
             {
             }
+
+            // 会话入口：战前阵前接触、途中会面、战后处置俘虏、部队界面发起的对话各不相同，野外默认不再一律当作战前谈判。
+            // 每次提取一次：少量属性读取，最多两次名册查找，不扫描。
+            ConversationEntry entry = ConversationEntryClassifier.Classify(partnerHero, partnerChar, isEnemyEncounter,
+                settlement != null, Mission.Current == null);
 
             // 俘虏处境修正：对话任一方为战俘时，物理现场以关押处为准（地牢/营地囚笼），并注入囚禁动态
             string captiveDirective = string.Empty;
@@ -408,6 +413,7 @@ namespace AnimusForge.Illustrator.Context
             string guardFacts = bodyguardCount > 0 ? $"现场对方随行队列中另有 {bodyguardCount} 名角色" : "未确认额外随行角色";
 
             context.SceneFacts =
+                (string.IsNullOrWhiteSpace(entry.Fact) ? string.Empty : entry.Fact + "。\n") +
                 (string.IsNullOrWhiteSpace(captiveDirective) ? string.Empty : captiveDirective + "。\n") +
                 $"参与会话者：【{mainName}】与【{partnerName}】。\n" +
                 $"现场状态：{mountPosture}；{guardFacts}。\n" +

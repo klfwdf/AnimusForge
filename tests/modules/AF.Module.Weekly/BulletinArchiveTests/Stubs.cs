@@ -26,6 +26,7 @@ namespace AnimusForge {
   public static bool IsWorldBulletinEnabled()=>BulletinEnabled;
   public System.Collections.Generic.List<WeeklyReportBrowserCountryData> Countries=new();
   public System.Collections.Generic.List<WeeklyReportBrowserCountryData> GetTerminalWeeklyReportBrowserCountries()=>Countries;
+  public System.Collections.Generic.List<WeeklyReportBrowserCountryData> GetTerminalKingdomNewsCountries()=>Countries;
   public System.Func<string,System.Threading.Tasks.Task<bool>> FullReport;
   public System.Threading.Tasks.Task<bool> GenerateWeeklyReportFullByEventIdAsync(string id)=>FullReport?.Invoke(id)??System.Threading.Tasks.Task.FromResult(false);
   public string OpenedId; public int Opens;

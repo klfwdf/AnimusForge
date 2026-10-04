@@ -15,6 +15,8 @@ internal interface ICivilWarHost
 	bool MovePlayerToRebels(Clan player, Kingdom home, Kingdom rebel);
 	int GetStability(Kingdom kingdom);
 	bool DiscontinueLandlessKingdom(Kingdom kingdom, string reason);
+	// Independent clans left over from a settled war make peace with everyone they are not permanently at war with.
+	void MakeClansPeaceful(IEnumerable<Clan> clans, string reason);
 	void QueueRebellion(Kingdom kingdom, Clan leader, List<Clan> followers, string factionId, bool startNow);
 	void ApplyPrestige(Kingdom kingdom, int delta, string reason);
 	void RecordMaterial(Kingdom kingdom, int week, string text);

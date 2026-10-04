@@ -97,7 +97,7 @@ internal sealed class CivilWarCampaignBehavior : CampaignBehaviorBase
 	{
 		List<string> catalogErrors = CivilWarCatalog.Initialize(CivilWarEffects.Ids);
 		foreach (string error in catalogErrors) Logger.Log("KingdomCivilWar", "[WARN] catalog " + error);
-		if (_loyaltyPatched) return;
+		CivilWarClanProtectionPatch.Install(); if (_loyaltyPatched) return;
 		MethodInfo method = AccessTools.Method(typeof(AnimusForgeSettlementLoyaltyModel), nameof(AnimusForgeSettlementLoyaltyModel.CalculateLoyaltyChange));
 		if (method == null) return;
 		new Harmony("AnimusForge.civilwar.loyalty").Patch(method, postfix: new HarmonyMethod(typeof(CivilWarCampaignBehavior), nameof(LoyaltyPostfix)));
@@ -138,7 +138,7 @@ internal sealed class CivilWarCampaignBehavior : CampaignBehaviorBase
 	{
 		TeamModuleServices.CivilWar.NotifyPoliticalChange(first as Kingdom, "peace");
 		TeamModuleServices.CivilWar.NotifyPoliticalChange(second as Kingdom, "peace");
-		if (detail != MakePeaceAction.MakePeaceDetail.ByKingdomDecision && first is Kingdom k1 && second is Kingdom k2 && !IsCivilWarPair(k1, k2))
+		if (detail != MakePeaceAction.MakePeaceDetail.ByKingdomDecision && !MyBehavior.QuietPeaceActive && first is Kingdom k1 && second is Kingdom k2 && !IsCivilWarPair(k1, k2))
 		{
 			Add(k1, "peace_imposed", Vassals(k1), 7f, "王国被迫议和");
 			Add(k2, "peace_imposed", Vassals(k2), 7f, "王国被迫议和");

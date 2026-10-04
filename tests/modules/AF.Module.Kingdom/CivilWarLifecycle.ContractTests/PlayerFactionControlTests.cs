@@ -96,7 +96,7 @@ internal static class PlayerFactionControlTests
         Check(f.State.Clans[f.Leader.StringId].Side == KingdomCivilWarSide.Middle, "member with mismatched new demand leaves");
         Check(f.State.Clans[f.Follower.StringId].Side == KingdomCivilWarSide.Opposition, "member aligned to new demand continues");
         Check(f.State.Clans[f.Leader.StringId].MembershipEvaluationDay == 700 && f.State.Clans[f.Follower.StringId].MembershipEvaluationDay == 700, "all other members reevaluate immediately, not after side lock");
-        Check(f.Faction.Refusals == 0 && f.Faction.Defers == 0 && f.Faction.UltimatumDay == 714 && f.Faction.Stage == KingdomCivilWarStage.FactionFormed, "new demand resets old escalation/progress only");
+        Check(f.Faction.Refusals == 0 && f.Faction.Defers == 0 && f.Faction.UltimatumDay == 700 + DuelSettings.BuildCivilWarTuning().UltimatumDelayWeeks * 7 && f.Faction.Stage == KingdomCivilWarStage.FactionFormed, "new demand resets old escalation/progress only");
         Check(ChangeRelationAction.Changes.Count == 0, "demand reconsideration is not forced player exit or new founding");
         Check(MyBehavior.FactKeys.Any(x => x.EndsWith(f.Leader.Leader.StringId)), "departing member receives authoritative demand-change fact");
         int factCount = MyBehavior.MemoryFacts.Count; f.Owner.Execute(change, Clan.PlayerClan);
@@ -127,7 +127,9 @@ internal static class PlayerFactionControlTests
         Check(ChangeRelationAction.Changes.Any(x => x.First == f.Leader.Leader && x.Second == f.Home.Leader && x.Delta == -10), "NPC faction founding also loses ruler relationship");
         f = Prewar(false); faction = f.Faction;
         applyRuling.Invoke(f.Owner, new object[] { f.Home, f.State, faction, CivilWarCatalog.FindDemand(faction.DemandId), f.Leader, 100, DuelSettings.BuildCivilWarTuning(), (Action<Kingdom, int>)((_, _) => { }), forcedEscalation });
-        Check(f.Faction.Stage == KingdomCivilWarStage.OpenWar, "NPC-led automatic escalation remains unchanged");
+        Check(f.Faction.Stage != KingdomCivilWarStage.OpenWar && faction.Refusals == 1, "a single refusal cannot ignite war while the minimum refusals is 2");
+        applyRuling.Invoke(f.Owner, new object[] { f.Home, f.State, faction, CivilWarCatalog.FindDemand(faction.DemandId), f.Leader, 100, DuelSettings.BuildCivilWarTuning(), (Action<Kingdom, int>)((_, _) => { }), forcedEscalation });
+        Check(f.Faction.Stage == KingdomCivilWarStage.OpenWar, "NPC-led automatic escalation ignites once refusals reach the minimum");
 
         f = Prewar(false); f.State.Clans[Clan.PlayerClan.StringId].Side = KingdomCivilWarSide.Crown; f.State.Clans[Clan.PlayerClan.StringId].FactionId = "";
         found = Request(f, CivilWarAction.Found, "redress");

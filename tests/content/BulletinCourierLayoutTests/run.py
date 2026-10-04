@@ -144,8 +144,11 @@ class LayoutContracts(unittest.TestCase):
         self.assertFalse(any(n.get('Text')=='@BodyText' or n.get('Brush')=='Popup.Cancel.Button' for n in cards.iter()))
         self.assertTrue(any(n.get('Text')=='@PreviewText' and n.get('SuggestedHeight')=='44' for n in cards.iter()))
         self.assertEqual(len([n for n in section.iter() if n.get('Text')=='@ReaderBodyText']),1)
-        owner=parent(actual,section); index=list(owner).index(section);owner.remove(section);owner.insert(index,deepcopy(reviewed))
-        self.assertEqual(canonical(actual),canonical(old))
+        # Archive buttons use native brushes (a bare Sprite on a ButtonWidget renders white on hover/press).
+        self.assertFalse([n.get('Command.Click') for n in section.iter('ButtonWidget') if n.get('Sprite')])
+        clicks={n.get('Command.Click') for n in section.iter('ButtonWidget')}
+        for command in ['ExecuteFilterAll','ExecuteFilterBulletin','ExecuteFilterDiplomacy','ExecuteFilterPolicy','ExecuteFilterRecent','ExecuteFilterWeekly','ExecutePreviousPage','ExecuteNextPage','ExecuteOpenReport','ExecuteReturnToList','ExecuteSelect']:
+            self.assertIn(command,clicks)
 
     def test_compact_buttons_fit_and_keep_reply_gate(self):
         buttons=[n for n in self.c.iter('ButtonWidget') if n.get('Brush')=='AFCourierLetter.Band.Button']
