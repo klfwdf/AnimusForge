@@ -1,4 +1,11 @@
-﻿# 当前交付：快报落选分流与档案卡片（2026-10-04，OFFLINE_VERIFIED）
+﻿# 最新部署：快报落选分流与档案卡片（2026-10-04，DEPLOY_VERIFIED）
+
+- 产品 `7312fbfe` 已推送main并部署：1条主新闻＋最多4条短讯，落选事实按国家/周立即合并近况；四类型档案、每页12张卡片，近况/周报独立阅读，快报原ID打开卷轴。旧原始记录保留。
+- 专项回归/布局309项PASS，原双API＋Bootstrap构建0错误；3379份Stage/安装文件hash一致、2315份非受管文件保持，实际安装两实现离线CLR共6组通过。实机UI、玩家旧档及真实provider未验，未打包。
+- 唯一Recovery `deploy-9fadc2610c6141809ff5545f4d1df20f` 已验旧新hash，历史完成备份按最近1份规则清理；源码回滚 `git revert 7312fbfe`。其他会话reranker既有dirty原样未提交。
+- [唯一主台账、安装验证与回滚位置](docs/animusforge-refactoring-and-repository-reorganization-plan.md#deploy-bulletin-residual-archive-20261004)，本地 `artifacts/deploy-bulletin-residual-archive-20261004/receipt.json` / `retention.json`。本条替代下方未部署状态和旧Recovery有效性，不替代实机NOT_RUN。
+
+# 当前交付：快报落选分流与档案卡片（2026-10-04，OFFLINE_VERIFIED）
 
 - 产品 `7312fbfe`、检查点 `9713c5b7`：1主新闻＋最多4短讯；窗口落选事实即刻按国家/周分流近况、跨国分别保存、无国归其他，不另调AI/弹通知/生图。组内未实际写进短讯的素材保留到近况；同小时生成期间新增事实留下一窗口。
 - 终端档案紧凑国栏＋12条卡片分页、四类型、2行摘要；近况/周报独立阅读、快报原ID打开卷轴，返回恢复列表位置。旧摘要/附属材料读取归并，原档不删，历史来源标注；取消快报短讯分页及附属近况正文。

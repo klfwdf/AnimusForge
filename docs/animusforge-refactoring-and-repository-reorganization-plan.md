@@ -1,4 +1,16 @@
-﻿<a id="bulletin-residual-archive-20261004"></a>
+﻿<a id="deploy-bulletin-residual-archive-20261004"></a>
+# 快报选材分流与档案卡片部署（2026-10-04，DEPLOY_VERIFIED）
+
+- 本轮方案授权提交推送部署；产品 `7312fbfe`、文档候选 `6cab3c2d` 已普通推送main并独立ls-remote核对，无强推。25任务文件及三DLL/marker与源码回放收据一致，原Debug 1.3/1.4＋Bootstrap构建产物经原 `scripts/build/deploy_module.ps1` 事务入口安装到 `F:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord/Modules/AnimusForge`，版本 `v1.5.0`、XML仅加载Bootstrap；原构建/覆盖脚本及3原版TaleWorlds DLL哈希保持。
+- 部署前旧Stage与安装逐文件一致；原入口更新11个受管文件，最终3379份Stage/安装SHA256逐份匹配；2315份非受管文件SHA256/长度/mtime保持。未新增全目录备份、镜像删除玩家文件、迁移原档或修改模型/API配置。
+- 两个实际安装实现DLL均通过离线CLR会面交接13、对话模式锁16、桥接/演讲范围3项，共6组；源码专项回归及布局309项成功详见下方产品记录。安装文件一致性与离线验证不等于游戏内UI或玩家档验收。
+- 新Recovery `C:/Users/29310/AppData/Local/AnimusForge/Recovery/deploy/deploy-9fadc2610c6141809ff5545f4d1df20f` 已核验complete、manifest每份oldSha256备份及newSha256安装文件；安装离线验证后删除1份同目标历史完整Recovery，严格只留最近1份，未创建其他旧Stage副本。源码回滚 `git revert 7312fbfe`；安装回滚按该manifest/files定点反向恢复并核对hash，不覆盖玩家文件或重置其他会话。
+- 本地证据 `artifacts/deploy-bulletin-residual-archive-20261004/`：before.json、deployment-verification.log、deploy.log、receipt.json、installed-1.3/1.4-handoff/mode/bridge.log、retention.json；源码/测试/产物绑定及main交付核对在 `artifacts/bulletin-residual-archive-20261004/receipt.json` / delivery.json。其他会话reranker dirty及原SHA保持未修改、未提交；其既有构建输入单列，不声称纯净源码树构建。
+- **LIVE_GAME / PLAYER_SAVE / REAL_PROVIDER / PACKAGE = NOT_RUN**。仍需实机验卡片排版、滚动/返回位置、百科焦点和玩家旧档显示；本轮未启动游戏、未生成发布ZIP。
+
+本条替代下方产品记录的未部署状态和前轮旧Recovery有效性，不替代其实机NOT_RUN；历史原记录仍保留。
+
+<a id="bulletin-residual-archive-20261004"></a>
 # 快报事件分流与档案卡片重设计（2026-10-04，OFFLINE_VERIFIED）
 
 - 用户确认完整实施、复审、提交推送部署；实际工作区 `F:/AnimusForge-main`、分支 `codex/af-main-refactor-continuation-20260831`，基线 `5a6710eb`、意图检查点 `9713c5b7`、产品/测试提交 `7312fbfe`（25文件）。其他会话 `OnnxCrossEncoderReranker.cs` dirty未修改、未提交；其既有构建输入SHA256 `FF865057264F1543C6BE63381878E0C9655B1DC43282AEA8A9FDEA5C1D5712BB` 单独绑定收据，不声称构建来自纯净Git树。
