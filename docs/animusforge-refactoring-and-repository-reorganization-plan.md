@@ -1,9 +1,17 @@
-<a id="bulletin-residual-archive-20261004"></a>
-# 快报事件分流与档案卡片重设计（2026-10-04，ACTIVE）
+﻿<a id="bulletin-residual-archive-20261004"></a>
+# 快报事件分流与档案卡片重设计（2026-10-04，OFFLINE_VERIFIED）
 
-- 用户确认实施完整方案并提交推送部署：主新闻＋最多4短讯；窗口落选素材即刻分流到国家/周近况，跨国分别归属、无国家归其他近况；无空篇、不增加AI请求。近况独立阅读、旧附属材料脱离卷轴呈现；档案国家筛选＋卡片、四类型、每页12条、单篇阅读及返回恢复。
-- 基线 `5a6710eb`，工作区/分支由实际Git确认。另一会话 `OnnxCrossEncoderReranker.cs` dirty保留，严禁回滚或混入本轮提交。修改范围为Weekly选材/发布/归档/浏览VM和终端档案XML，卷轴只调整短讯区域，不改其他终端功能、生图链路、NPC原事实或原一键构建部署入口。
-- 退出门：生产回归覆盖窗口快照、已选排除、落选归属/同周合并/幂等/跨周/旧档无损；卡片分页/阅读/返回/关闭及读档旧回调；原1.3/1.4＋Bootstrap编译、复审、提交推送、事务部署hash与最近Recovery。离线检查与实机验收分列；性能按发布/打开档案计算，无新增Tick扫描。
+- 用户确认完整实施、复审、提交推送部署；实际工作区 `F:/AnimusForge-main`、分支 `codex/af-main-refactor-continuation-20260831`，基线 `5a6710eb`、意图检查点 `9713c5b7`、产品/测试提交 `7312fbfe`（25文件）。其他会话 `OnnxCrossEncoderReranker.cs` dirty未修改、未提交；其既有构建输入SHA256 `FF865057264F1543C6BE63381878E0C9655B1DC43282AEA8A9FDEA5C1D5712BB` 单独绑定收据，不声称构建来自纯净Git树。
+- 主篇保持1条主新闻＋最多4条真实短讯，无空条、不追加国家周摘要。选材捕获全部窗口事实副本和入选来源Key；同组短讯仅前2条真实交给写作器的事实算入选，原来仅写“另有几起”的组内超量事实改分流，避免假入选导致事实丢失。发布从该快照排除已选Key，将全部余料按实际参与国与事件日所属周合并成独立近况；无国归“其他近况”、无素材不新增空篇，保留补充事实、日期与全部来源Key。主篇及近况保存完成后才推进截止小时；同小时晚到事实用可选 `DeferredFactKeys` 保持下次资格，不改事实时间，不让生成期间新增事件被本期误收。
+- 近况使用既有EventRecordEntry/EventMaterialReference及 `_eventRecordEntries_v1`，身份 `weekly_report:kingdom:recent:{week}:{nation}`，按来源Key幂等追加，跨周独立、跨国分别归属；原素材池/NPC事实读取不变，无新增AI请求/近况通知/近况生图。保留旧 `LastKingdomWeek` 字段但移除旧小时周摘要写入入口和4事实模板。选材只在到期窗口运行，分流只在发布运行；发布每次建一次记录索引、每篇来源HashSet，归并不逐条全扫原档案，近况只重建实际触及的国家/周。
+- 档案读取仅在副本上将旧独立摘要和快报附属 `bulletin_regional_news` 按国/周归并；已知旧brief来源Key优先决定周，未知Key材料以原记录/材料索引提供稳定历史身份，不丢同文但来源不同的材料；旧标题不再当作日期。历史正文标“历史近况（原档保留）”，原记录/原材料不删不改；无法确证与主篇重复的材料保留。卷轴停止拼附属国家摘要，国家关联快报保持原标题和原ID，无材料的国不制造近况。
+- 终端仅档案区域改紧凑国家栏、金色标题/深色卡片：全部/快报/近况/周报、每页12条、日期最新优先、列表最多2行摘要。内部Browser DTO加ArchiveKind/OpenTargetId，原外部公共API、CLR存档身份和键保持；近况/周报进入终端单一正文滚动阅读，快报按原ID重开卷轴。阅读返回保留国家/类型/页码/列表滚动位置（另存隐藏前位置）；缺失完整周报仍沿原请求链路补全文、主线程Tick完成刷新；百科沿既有协调器暂停终端和恢复焦点，新增可选有效性判断阻止关闭/读档后的已排队旧导航。翻页只绑定当前12个VM，退役行/国家回调失效，无新增逐帧档案扫描。
+- 源码证据（产品 `7312fbfe`）：`src/modules/AF.Module.Weekly/Bulletin/WorldBulletinPolicy.cs:347-424` Select快照/Key与短讯真实素材边界，`:78-82` 同小时延后Key；`Generation/WorldBulletinStateOwner.cs:237-277` PublishWorldBulletin写入/推进/通知顺序，`Generation/WorldBulletinStateOwner.Regional.cs:11-58` BuildRegionalPublication/CommitRegionalPublication分流及索引；`Panel/WeeklyReportArchivePolicy.cs:20-60` 素材/日期/完整正文，`:63-136` BuildArchiveSnapshot旧档无损投影；`src/AF.GameAdapter.Bannerlord/UI/Weekly/TerminalWeeklyReportBrowserPopupVM.Archive.cs:44-97` 筛选/12条分页/阅读返回；Browser主文件RequestOpenReport/Tick/OnFinalize处理目标、主线程完成与退役；`UI/Editors/WeeklyEditorProjection.cs:70-108` 类型/目标投影；`content/modules/AF.Module.UI/GUI/Prefabs/AnimusForgeTerminalPopup.xml:386-451` 唯一修改的终端档案视图，`content/modules/AF.Module.Weekly/GUI/Prefabs/WorldBulletinPanel.xml:119-169` 移除短讯分页、保留长文滚动和百科链接。未改终端其他视图或卷轴主体外观。
+- 验证：真实源码链接/方法提取回放F4发布76、档案/保存/导入/导航94、Weekly编辑器48、Event编辑器27、选材Policy49，XML/布局15，共309项PASS；覆盖已选排除、所有落选/补充事实、跨国/无国、同周追加、重复发布、跨周、空池、同小时/下一小时晚到、组内遗漏分流、旧原记录不变、同Key历史归并和无Key保留、实际chunk adapter roundtrip、导入归属、572篇大档案每页12条、类型目标/返回状态/主线程全文完成/退役与读档旧回调。游戏/renderer/native存储边界按测试说明为fixture，不冒充玩家档。
+- 原 `scripts/build/build_single_module.ps1 -Configuration Debug` 成功：1.3引用 `v1.3.15.110062`、1.4引用 `v1.4.6.115628`＋Bootstrap，三产物0错误，既有警告保留；原构建/覆盖入口无修改。`git diff --check`与staged检查通过、无未解冲突。收据 `artifacts/bulletin-residual-archive-20261004/receipt.json` 绑定25任务文件SHA、实际测试源manifest、三DLL/marker、其他会话dirty输入；对应build-final/layout/generation/archive/editor/event-editor/policy日志及archive-final-7保留。全仓旧内容门禁本轮未重跑，前条既有数量问题未扩大范围处理；当前修改XML及映射已验证。
+- **LIVE_GAME / PLAYER_SAVE / REAL_PROVIDER / PACKAGE = NOT_RUN**。源码离线验收完成，推送及安装状态以后续交付收据为准；实机卡片排版/滚动/百科焦点/真实旧档尚未验。源码回滚定向 `git revert 7312fbfe`，不reset其他作者；部署依当前授权使用原事务入口、核验旧新文件和非受管数据，再按最近1份规则清理Recovery。
+
+本条有意替代前轮“摘要并入快报/国家页改标题/短讯分页”的产品规则，保留历史原记录和验证历史，其他终端/日志/引导修复沿用，不重复修改。
 
 <a id="deploy-bulletin-ui-logs-20261004"></a>
 # 快报UI与日志修复部署（2026-10-04，DEPLOY_VERIFIED）
