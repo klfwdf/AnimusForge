@@ -1,3 +1,11 @@
+# 当前修复：快报分页、国家正文、模型宽度与日志（2026-10-04，OFFLINE_VERIFIED）
+
+- 产品/测试 `20cf9627`，检查点 `bab8aa87`：其他消息每页最多4条、长文滚动/超量翻页不丢内容；国家页按本国材料展示、无事实国家不再新挂同篇；四路模型选择框加宽、Key框缩短。
+- 日志回到模组logs、军演接统一入口；image save新图片可读标题命名、Key及旧图片不迁移；生图中文文本UTF8 BOM、参考文件名脱敏、预算保留。
+- 归档309/生成57/editor48/引导168/布局14 PASS；原双API+Bootstrap0错误，实际两DLL缓存各81/诊断各70 PASS。全量旧内容门禁仍有可复现的映射条目数量失败；实机/真玩家档/provider未验，不当完整门禁通过。
+- 用户授权提交推送，快进main核验见本地 `artifacts/bulletin-ui-log-repair-20261004/delivery.json`；此前已提交修复随历史交付，另一会话reranker dirty未提交。本轮未部署/打包、未动Recovery或玩家文件；安装状态仍以下一条为准。
+- [唯一台账、源码证据与回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#bulletin-ui-log-repair-20261004)，本地同目录receipt及验证日志；源码回滚 `git revert 20cf9627`。本条替代下方相关离线行为结论，不延续历史部署授权。
+
 # 最新部署：引导控件与U键快报档案已安装（2026-10-04，DEPLOY_VERIFIED）
 
 - 用户授权部署；候选`cacab601`/产品`a1346a76`，源码及三产物hash与前轮收据一致，复用原Debug双API/Bootstrap验证，经原部署脚本更新12文件。引导简化、U键重开原篇、国家摘要并入对应篇一并安装；版本v1.5.0，Bootstrap-only。
