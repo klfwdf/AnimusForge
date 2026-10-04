@@ -1,3 +1,10 @@
+# 最新部署：快报分页、国家正文、模型宽度与日志已安装（2026-10-04，DEPLOY_VERIFIED）
+
+- 用户明确授权部署；候选 `ae7792f3` / 产品 `20cf9627`，18任务文件、其他会话输入及三产物hash核对一致，复用刚通过的原Debug双API+Bootstrap构建，原部署入口更新11受管文件；版本v1.5.0，Bootstrap-only。
+- 3379 Stage/安装hash一致，2325非受管文件hash/长度/mtime保持，原版DLL及原构建部署脚本未改。安装两DLL交接各13、模式锁各16、桥接/演讲各3组离线通过；实机UI/玩家档/provider未验。
+- 唯一Recovery `deploy-167c8c7c13da4944a1c3e71359361b9a` 已验complete及旧新hash；依用户要求删除上次完成备份，只留最近一份，不额外复制旧Stage。未打包；产品已在main，reranker dirty仍保留未提交。
+- [唯一主台账、安装证据与回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#deploy-bulletin-ui-logs-20261004)，本地 `artifacts/deploy-bulletin-ui-logs-20261004/receipt.json` / `retention.json`。本条替代下方未部署状态及旧Recovery有效性。
+
 # 当前修复：快报分页、国家正文、模型宽度与日志（2026-10-04，OFFLINE_VERIFIED）
 
 - 产品/测试 `20cf9627`，检查点 `bab8aa87`：其他消息每页最多4条、长文滚动/超量翻页不丢内容；国家页按本国材料展示、无事实国家不再新挂同篇；四路模型选择框加宽、Key框缩短。
