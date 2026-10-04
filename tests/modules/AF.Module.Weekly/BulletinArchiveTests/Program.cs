@@ -158,3 +158,33 @@ for(int week=1;week<=52;week++)
 var yearArchive=WeeklyReportArchivePolicy.BuildArchiveSnapshot(year);
 Check(yearArchive.Count==52&&yearArchive.All(e=>e.Materials.Count==10)&&year.Count==572,"52 weeks and 520 regional summaries become 52 issues without deleting original data");
 Console.WriteLine($"PASS: {count} final archive/save/UI assertions, including year-long archive consolidation.");
+var countryA=WeeklyEditorProjection.BuildWeeklyReportBrowserEntries(display,consolidated,"kingdom","A",associations).Single();
+var countryB=WeeklyEditorProjection.BuildWeeklyReportBrowserEntries(display,consolidated,"kingdom","B",associations).Single();
+Check(countryA.BodyText.Contains("A complete regional text")&&!countryA.BodyText.Contains("B complete regional text")&&!countryA.BodyText.Contains("issue 2 complete"),"country A shows only its own attached news");
+Check(countryA.Title=="A news"&&countryB.Title=="B news"&&countryA.BodyText!=countryB.BodyText,"country titles and bodies differ without duplicating issue records");
+Check(WeeklyEditorProjection.BuildWeeklyReportBrowserEntries(display,consolidated,"world","",associations).First(x=>x.EventId==parent.EventId).BodyText==combinedBody,"world archive retains complete original issue and all national news");
+foreach(int size in new[]{0,1,4,5,12,401})
+{
+    var data=new WorldBulletinPanelData { BodyText="full body",Minors=Enumerable.Range(0,size).Select(i=>new KeyValuePair<string,string>("news",i+":"+new string('x',700))).ToList() };
+    int closes=0;string link=null;
+    var vm=new WorldBulletinPanelVM(data,16,()=>closes++,x=>link=x);
+    data.Minors.Clear(); // Opening freezes the page source.
+    var seen=new List<string>();
+    vm.ExecutePreviousMinorPage();
+    Check(!vm.CanPreviousMinorPage&&vm.HasMinors==(size>0)&&vm.ShowMinorPagination==(size>4),"page start and empty states size="+size);
+    do {
+        Check(vm.LeftMinors.Count<=2&&vm.RightMinors.Count<=2&&vm.LeftMinors.Count+vm.RightMinors.Count<=4,"bounded page size="+size);
+        seen.AddRange(vm.LeftMinors.Concat(vm.RightMinors).Select(x=>x.Text));
+        if(!vm.CanNextMinorPage)break;
+        vm.MinorScrollPosition=45;
+        vm.ExecuteNextMinorPage();
+        Check(vm.MinorScrollPosition==0,"page change resets scroll size="+size);
+    }while(true);
+    string last=vm.MinorPageText;vm.ExecuteNextMinorPage();
+    Check(vm.MinorPageText==last&&seen.Count==size&&seen.Distinct().Count()==size&&seen.All(x=>x.Length>700),"all messages once, no long-text truncation and last-page clamp size="+size);
+    for(int i=0;i<size+1;i++)vm.ExecutePreviousMinorPage();
+    Check(!vm.CanPreviousMinorPage&&vm.MinorPageText.StartsWith("1 /"),"backwards paging stops at first size="+size);
+    if(size>0) {vm.LeftMinors[0].ExecuteOpenEncyclopediaLink("hero:test");Check(link=="hero:test","page keeps encyclopedia command size="+size);}
+    vm.ExecuteClose();Check(closes==1,"close callback retained size="+size);
+}
+Console.WriteLine($"PASS: {count} final production archive/projection/panel assertions; game, formatter and renderer remain stubbed.");

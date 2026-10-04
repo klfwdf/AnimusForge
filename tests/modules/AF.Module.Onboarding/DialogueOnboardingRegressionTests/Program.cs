@@ -135,6 +135,15 @@ static class Program
         Check(!lateVm.IsSuccessViewVisible,"late success after cancellation cannot reopen success");lateVm.OnFinalize();
 
         string root=args.Length==0?Path.GetFullPath("../../../.."):Path.GetFullPath(args[0]);
+        var setupXml=XDocument.Load(Path.Combine(root,"content/modules/AF.Module.Onboarding/GUI/Prefabs/AnimusForgeApiOnboardingPopup.xml"));
+        foreach(string name in new[]{"Primary","Auxiliary","Postprocess","Event"})
+        {
+            var key=setupXml.Descendants("EditableTextWidget").Single(x=>(string)x.Attribute("Text")=="@"+name+"Key");
+            Check((string)key.Parent.Parent.Attribute("SuggestedWidth")=="200","shorter key field "+name);
+            var selector=setupXml.Descendants("Standard.DropdownWithHorizontalControl").First(x=>(string)x.Attribute("Parameter.SelectorDataSource")=="{"+name+"ModelSelector}");
+            Check((string)selector.Attribute("Parameter.CustomWidth")=="294"&&(string)selector.Parent.Parent.Attribute("SuggestedWidth")=="300","wide model field and dropdown "+name);
+            Check((string)key.Attribute("MaxLength")=="4096","key value capacity unchanged "+name);
+        }
         var fixtures=Path.Combine(root,"artifacts/dialogue-onboarding-fixes-20261002/model-fixtures-"+Guid.NewGuid().ToString("N"));
         Directory.CreateDirectory(fixtures);
         bool RejectModel(){try{AnimusForgeModelStore.ResolveEmbedding(fixtures);return false;}catch(InvalidOperationException){return true;}}

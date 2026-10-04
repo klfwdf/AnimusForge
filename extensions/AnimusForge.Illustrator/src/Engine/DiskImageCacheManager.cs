@@ -65,9 +65,7 @@ namespace AnimusForge.Illustrator.Engine
             try
             {
                 // Image generation is a host feature: cache and diagnostics live under the AF module.
-                string moduleRoot = AnimusForge.AnimusForgeModulePaths.GetCurrentModuleRoot();
-                if (string.IsNullOrWhiteSpace(moduleRoot)) throw new IOException("AnimusForge module root is unavailable.");
-                string path = Path.Combine(moduleRoot, "logs", "image save");
+                string path = Path.Combine(AnimusForge.AnimusForgeModulePaths.GetLogsDirectory(), "image save");
                 Directory.CreateDirectory(path);
                 CacheBaseDir = path;
             }
@@ -190,7 +188,8 @@ namespace AnimusForge.Illustrator.Engine
                 Directory.CreateDirectory(categoryDir);
                 bool isDefault = makeDefault || (allowImplicitDefault && !HasIndexedSubject(campaignKey, ValidCategory(category), subjectKey));
                 string imageId = $"{ComputeHash(subjectKey)}_{DateTime.UtcNow:yyyyMMddHHmmssfff}_{Guid.NewGuid().ToString("N").Substring(0, 6)}";
-                string filePath = Path.Combine(categoryDir, imageId + ".png");
+                string fileName = ReadableFileLabel(title) + "_" + imageId.Substring(imageId.IndexOf('_') + 1);
+                string filePath = Path.Combine(categoryDir, fileName + ".png");
                 File.WriteAllBytes(filePath, bytes);
 
                 var item = new CachedIllustrationItem
@@ -239,6 +238,14 @@ namespace AnimusForge.Illustrator.Engine
                 _cachedLookup = null;
                 _cachedDirectoryStamps = null;
             }
+        }
+
+        internal static string ReadableFileLabel(string title)
+        {
+            string label = SanitizeKey(string.IsNullOrWhiteSpace(title) ? "illustration" : title).TrimEnd(' ', '.');
+            if (label.Length > 48) label = label.Substring(0, 48);
+            if (label.Length > 0 && char.IsHighSurrogate(label[label.Length - 1])) label = label.Substring(0, label.Length - 1);
+            return string.IsNullOrWhiteSpace(label) ? "illustration" : label;
         }
 
         public static List<CachedIllustrationItem> GetAllCachedIllustrations(string campaignKey, bool forceRefresh = false)

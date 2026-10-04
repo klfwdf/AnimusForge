@@ -26,6 +26,8 @@ namespace AnimusForge.Illustrator.Core
         internal const int MaxMetadataBytes = 512 * 1024;
         internal const int MaxEvents = 96;
         private const int MaxSceneInventoryBytes = 2 * 1024 * 1024;
+        private const int Utf8BomBytes = 3;
+        private static readonly Encoding DocumentEncoding = new UTF8Encoding(true);
         private static readonly AsyncLocal<GenerationDiagnostics> Ambient = new AsyncLocal<GenerationDiagnostics>();
         private static readonly object StorageLock = new object();
         private static readonly HashSet<string> Active = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
@@ -117,7 +119,7 @@ namespace AnimusForge.Illustrator.Core
                 {
                     document["omittedForByteBudget"] = droppedForBytes;
                     bytes = Encoding.UTF8.GetBytes(document.ToString(Formatting.None));
-                    if (bytes.Length <= MaxSceneInventoryBytes) break;
+                    if (bytes.Length + Utf8BomBytes <= MaxSceneInventoryBytes) break;
                     if (entries.Count == 0) throw new IOException("Scene inventory exceeds metadata budget.");
                     int remove = Math.Max(1, entries.Count / 4);
                     for (int i = 0; i < remove; i++) entries.RemoveAt(entries.Count - 1);
@@ -127,14 +129,14 @@ namespace AnimusForge.Illustrator.Core
                 string temporary = path + ".tmp";
                 try
                 {
-                    File.WriteAllBytes(temporary, bytes);
+                    WriteUtf8Document(temporary, bytes);
                     if (File.Exists(path)) File.Replace(temporary, path, null);
                     else File.Move(temporary, path);
                 }
                 finally { if (File.Exists(temporary)) File.Delete(temporary); }
                 AddEvent("scene_inventory", new JObject
                 {
-                    ["file"] = "scene-inventory.json", ["bytes"] = bytes.Length, ["complete"] = complete,
+                    ["file"] = "scene-inventory.json", ["bytes"] = bytes.Length + Utf8BomBytes, ["complete"] = complete,
                     ["recordedEntries"] = entries.Count, ["omittedEntries"] = document["omittedEntries"],
                     ["omittedForByteBudget"] = droppedForBytes
                 });
@@ -164,7 +166,7 @@ namespace AnimusForge.Illustrator.Core
                 {
                     document["omittedForByteBudget"] = dropped;
                     bytes = Encoding.UTF8.GetBytes(document.ToString(Formatting.None));
-                    if (bytes.Length <= MaxSceneInventoryBytes) break;
+                    if (bytes.Length + Utf8BomBytes <= MaxSceneInventoryBytes) break;
                     if (records.Count == 0) throw new IOException("Resource inventory exceeds metadata budget.");
                     int remove = Math.Max(1, records.Count / 4);
                     for (int i = 0; i < remove; i++) records.RemoveAt(records.Count - 1);
@@ -174,13 +176,13 @@ namespace AnimusForge.Illustrator.Core
                 string temporary = path + ".tmp";
                 try
                 {
-                    File.WriteAllBytes(temporary, bytes);
+                    WriteUtf8Document(temporary, bytes);
                     if (File.Exists(path)) File.Replace(temporary, path, null); else File.Move(temporary, path);
                 }
                 finally { if (File.Exists(temporary)) File.Delete(temporary); }
                 AddEvent("scene_resource_supplement", new JObject
                 {
-                    ["file"] = "scene-resource-supplement.json", ["bytes"] = bytes.Length,
+                    ["file"] = "scene-resource-supplement.json", ["bytes"] = bytes.Length + Utf8BomBytes,
                     ["copied"] = document["copied"], ["complete"] = document["complete"],
                     ["missingResources"] = document["missingResources"], ["omittedForByteBudget"] = dropped
                 });
@@ -320,12 +322,23 @@ namespace AnimusForge.Illustrator.Core
                 if ((long)image.Width * image.Height > 16777216) { info["omitted"] = "dimensions"; return info; }
                 info["width"] = image.Width; info["height"] = image.Height;
             }
-            string filename = hash + (bytes.Length > 2 && bytes[0] == 255 && bytes[1] == 216 ? ".jpg" : ".png");
+            string filename = DiskImageCacheManager.ReadableFileLabel(CleanText(name)) + "_" + (_references.Count + 1)
+                + (bytes.Length > 2 && bytes[0] == 255 && bytes[1] == 216 ? ".jpg" : ".png");
             File.WriteAllBytes(Path.Combine(_directory, filename), bytes);
             _referenceBytes += bytes.Length;
             info["file"] = filename;
             _references[hash] = info;
             return (JObject)info.DeepClone();
+        }
+
+        private static void WriteUtf8Document(string path, byte[] bytes)
+        {
+            using (var stream = new FileStream(path, FileMode.Create, FileAccess.Write, FileShare.None))
+            {
+                byte[] bom = DocumentEncoding.GetPreamble();
+                stream.Write(bom, 0, bom.Length);
+                stream.Write(bytes, 0, bytes.Length);
+            }
         }
 
         private void AddEvent(string stage, JObject data)
@@ -368,10 +381,10 @@ namespace AnimusForge.Illustrator.Core
                 if (_stepLogBytes + bytes > MaxStepLogBytes)
                 {
                     File.Copy(path, Path.Combine(_directory, "steps.previous.log"), true);
-                    File.WriteAllText(path, entry, new UTF8Encoding(false));
-                    _stepLogBytes = bytes;
+                    File.WriteAllText(path, entry, DocumentEncoding);
+                    _stepLogBytes = bytes + Utf8BomBytes;
                 }
-                else { File.AppendAllText(path, entry, new UTF8Encoding(false)); _stepLogBytes += bytes; }
+                else { File.AppendAllText(path, entry, DocumentEncoding); _stepLogBytes += bytes + (_stepLogBytes == 0 ? Utf8BomBytes : 0); }
             }
             catch { /* trace errors never break generation */ }
             WriteDelivery(Id, stage, line);
@@ -408,10 +421,10 @@ namespace AnimusForge.Illustrator.Core
             BoundMetadataField("subject", 1024);
             BoundMetadataField("error", 4096);
             string json = _document.ToString(Formatting.None);
-            if (Encoding.UTF8.GetByteCount(json) > MaxMetadataBytes)
+            if (Encoding.UTF8.GetByteCount(json) + Utf8BomBytes > MaxMetadataBytes)
             {
                 _document["metadataTruncated"] = true;
-                for (int i = 0; i < _events.Count && Encoding.UTF8.GetByteCount(json) > MaxMetadataBytes; i++)
+                for (int i = 0; i < _events.Count && Encoding.UTF8.GetByteCount(json) + Utf8BomBytes > MaxMetadataBytes; i++)
                 {
                     var summary = new JObject { ["omitted"] = "metadata storage budget" };
                     foreach (string key in new[] { "stage", "elapsedMs", "requestElapsedMs", "endpoint", "protocol", "model", "status", "httpStatus", "success", "failureCode", "failedStage", "error", "outcome" })
@@ -425,11 +438,11 @@ namespace AnimusForge.Illustrator.Core
                     json = _document.ToString(Formatting.None);
                 }
             }
-            if (Encoding.UTF8.GetByteCount(json) > MaxMetadataBytes)
+            if (Encoding.UTF8.GetByteCount(json) + Utf8BomBytes > MaxMetadataBytes)
                 throw new IOException("Diagnostic metadata exceeded its bounded storage budget.");
             string path = Path.Combine(_directory, "trace.json");
             string temporary = path + ".tmp";
-            File.WriteAllText(temporary, json, new UTF8Encoding(false));
+            File.WriteAllText(temporary, json, DocumentEncoding);
             if (File.Exists(path)) File.Replace(temporary, path, null); else File.Move(temporary, path);
         }
 

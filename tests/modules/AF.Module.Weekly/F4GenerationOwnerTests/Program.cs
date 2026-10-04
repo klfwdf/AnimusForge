@@ -18,13 +18,14 @@ internal static class Program {
      owner.WriteWorldBulletinKingdomBriefs(state,14);
      Check(state.LastKingdomWeek<2&&changed==0,"no issue does not consume regional week");
      records.Add(issue);owner.WriteWorldBulletinKingdomBriefs(state,14);
-     Check(records.Count==1&&issue.Materials.Count==2&&state.LastKingdomWeek==2&&changed==1,"new regional messages attach to issue without creating archive rows");
-     Check(issue.BulletinKingdomIds.ToHashSet().SetEquals(new[]{"A","B"}),"attached nations join issue archive associations");
+     Check(records.Count==1&&issue.Materials.Count==1&&state.LastKingdomWeek==2&&changed==1,"new regional messages attach to issue without creating archive rows");
+     Check(issue.BulletinKingdomIds.ToHashSet().SetEquals(new[]{"A"}),"only nations with facts join issue archive associations");
+     Check(!issue.Materials.Any(m=>m.KingdomId=="B"),"quiet nation receives no synthetic regional message");
      Check(WeeklyReportArchivePolicy.BodyWithRegionalNews(issue).Contains("A confirmed event"),"new regional facts are available in full issue body");
      var panel=owner.BuildWorldBulletinPanelData(issue,issue.EventId);
-     Check(panel.BodyText=="Original major"&&panel.Minors.Count==3&&panel.Minors.Any(m=>m.Value.Contains("A confirmed event")),"original panel preserves major and contains all attached messages");
+     Check(panel.BodyText=="Original major"&&panel.Minors.Count==2&&panel.Minors.Any(m=>m.Value.Contains("A confirmed event")),"original panel preserves major and contains all attached messages");
      owner.WriteWorldBulletinKingdomBriefs(state,14);
-     Check(issue.Materials.Count==2&&changed==1,"same-week hourly calls do not duplicate regional messages");
+     Check(issue.Materials.Count==1&&changed==1,"same-week hourly calls do not duplicate regional messages");
      records.Clear();owner.ResetTransient();owner.WriteWorldBulletinKingdomBriefs(state,21);
      Check(state.LastKingdomWeek==2&&changed==1,"missing next issue does not discard next week regional news");
  }

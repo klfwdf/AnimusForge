@@ -259,6 +259,21 @@ public sealed class WorldBulletinPanelVM : ViewModel
 	private readonly Action _onClose;
 
 	private readonly Action<string> _onOpenEncyclopediaLink;
+	private readonly List<KeyValuePair<string, string>> _minors;
+	private readonly EncyclopediaEntityLinkFormatter.DisplaySession _links;
+	private int _minorPage;
+	private float _minorScrollPosition;
+
+	[DataSourceProperty] public string MinorPageText => (_minorPage + 1) + " / " + MinorPageCount;
+	private int MinorPageCount => Math.Max(1, (_minors.Count + WorldBulletinPolicy.MaxMinors - 1) / WorldBulletinPolicy.MaxMinors);
+	[DataSourceProperty] public bool ShowMinorPagination => MinorPageCount > 1;
+	[DataSourceProperty] public bool CanPreviousMinorPage => _minorPage > 0;
+	[DataSourceProperty] public bool CanNextMinorPage => _minorPage + 1 < MinorPageCount;
+	[DataSourceProperty] public float MinorScrollPosition
+	{
+		get => _minorScrollPosition;
+		set { _minorScrollPosition = value; OnPropertyChangedWithValue(value, nameof(MinorScrollPosition)); }
+	}
 
 	[DataSourceProperty]
 	public string MastheadText { get; }
@@ -319,13 +334,13 @@ public sealed class WorldBulletinPanelVM : ViewModel
 		HeadlineText = Sanitize(data.HeadlineText);
 		MetaText = Sanitize(data.MetaText);
 		BodyFontSize = Math.Max(14, Math.Min(18, bodyFontSize));
-		EncyclopediaEntityLinkFormatter.DisplaySession links = EncyclopediaEntityLinkFormatter.CreateDisplaySession();
+		_links = EncyclopediaEntityLinkFormatter.CreateDisplaySession();
 		string body = (data.BodyText ?? "").Replace("\r\n", "\n").Replace('\r', '\n').Trim();
 		if (body.Length == 0)
 		{
 			body = "本期快报正文为空。";
 		}
-		string formatted = links.Format(body);
+		string formatted = _links.Format(body);
 		// The drop cap takes the first CJK character only when link markup has not claimed it,
 		// so a leading hero/settlement name keeps its encyclopedia link intact.
 		char first = body[0];
@@ -340,15 +355,32 @@ public sealed class WorldBulletinPanelVM : ViewModel
 			DropCapText = "";
 			BodyText = formatted;
 		}
-		List<KeyValuePair<string, string>> minors = data.Minors ?? new List<KeyValuePair<string, string>>();
-		int leftCount = (minors.Count + 1) / 2;
-		for (int i = 0; i < minors.Count; i++)
+		_minors = new List<KeyValuePair<string, string>>(data.Minors ?? new List<KeyValuePair<string, string>>());
+		HasMinors = _minors.Count > 0;
+		RefreshMinorPage();
+	}
+
+	private void RefreshMinorPage()
+	{
+		LeftMinors.Clear();
+		RightMinors.Clear();
+		int start = _minorPage * WorldBulletinPolicy.MaxMinors;
+		int count = Math.Min(WorldBulletinPolicy.MaxMinors, _minors.Count - start);
+		int leftCount = (count + 1) / 2;
+		for (int i = 0; i < count; i++)
 		{
-			WorldBulletinMinorItemVM item = new WorldBulletinMinorItemVM("¶ " + Sanitize(minors[i].Key), links.Format((minors[i].Value ?? "").Trim()), HandleLink);
+			var minor = _minors[start + i];
+			WorldBulletinMinorItemVM item = new WorldBulletinMinorItemVM("¶ " + Sanitize(minor.Key), _links.Format((minor.Value ?? "").Trim()), HandleLink);
 			(i < leftCount ? LeftMinors : RightMinors).Add(item);
 		}
-		HasMinors = minors.Count > 0;
+		MinorScrollPosition = 0;
+		OnPropertyChangedWithValue(MinorPageText, nameof(MinorPageText));
+		OnPropertyChangedWithValue(CanPreviousMinorPage, nameof(CanPreviousMinorPage));
+		OnPropertyChangedWithValue(CanNextMinorPage, nameof(CanNextMinorPage));
 	}
+
+	public void ExecutePreviousMinorPage() { if (CanPreviousMinorPage) { _minorPage--; RefreshMinorPage(); } }
+	public void ExecuteNextMinorPage() { if (CanNextMinorPage) { _minorPage++; RefreshMinorPage(); } }
 
 	private static bool IsCjk(char c)
 	{

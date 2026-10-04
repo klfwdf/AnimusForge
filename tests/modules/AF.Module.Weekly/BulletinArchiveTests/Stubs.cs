@@ -1,11 +1,19 @@
 // Only external/game/render/settings boundaries are fakes; production algorithms are linked/extracted.
 namespace TaleWorlds.CampaignSystem { public interface IDataStore { bool SyncData<T>(string key, ref T data); } }
 namespace TaleWorlds.Library {
+ public class InformationMessage { public InformationMessage(string text){} }
+ public static class InformationManager { public static void DisplayMessage(InformationMessage message){} }
  [System.AttributeUsage(System.AttributeTargets.Property)] public sealed class DataSourcePropertyAttribute:System.Attribute {}
  public class ViewModel { protected void OnPropertyChangedWithValue<T>(T value,string name){} public virtual void OnFinalize(){} }
  public class MBBindingList<T>:System.Collections.Generic.List<T> {}
 }
+namespace TaleWorlds.InputSystem { public static class Input { public static void SetClipboardText(string text){} } }
 namespace AnimusForge {
+ internal static class EncyclopediaEntityLinkFormatter {
+  internal static string SanitizeUntrustedRichText(string text)=>text;
+  internal static DisplaySession CreateDisplaySession()=>new();
+  internal sealed class DisplaySession { internal string Format(string text)=>text; }
+ }
  internal static class Logger { public static bool IsModLogicEnabled=>false; public static void Log(string tag,string text){} }
  internal static class PolicySystemLog { public static void Failure(string a,string b,string c,string d){} }
  public class DuelSettings { public int WeeklyReportPopupBodyFontSize=18; public static DuelSettings GetSettings()=>new(); }

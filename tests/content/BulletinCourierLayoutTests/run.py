@@ -64,21 +64,13 @@ class LayoutContracts(unittest.TestCase):
 
     def test_bulletin_has_only_approved_layout_changes(self):
         actual = deepcopy(self.b)
+        reviewed = ET.fromstring(subprocess.check_output(['git', 'show', 'c70dd938:' + BULLETIN], cwd=ROOT))
         section = next(n for n in actual.iter('Widget') if n.get('IsVisible') == '@HasMinors')
-        section.attrib.update(SuggestedWidth='914', MarginLeft='98')
-        del section.attrib['HorizontalAlignment']
-        title = next(n for n in section.iter('TextWidget') if n.get('Text') == '其 余 消 息')
-        del title.attrib['HorizontalAlignment']; title.set('MarginLeft','425')
-        for column in section.iter('ListPanel'):
-            if column.get('DataSource') not in ['{LeftMinors}','{RightMinors}']: continue
-            del column.attrib['HorizontalAlignment']; column.set('SuggestedWidth','447')
-            if column.get('DataSource') == '{RightMinors}': column.set('MarginLeft','467')
-        archive = by_id(actual,'ArchiveBulletinButton')
-        for key in ['HorizontalAlignment','VerticalAlignment','MarginBottom']: del archive.attrib[key]
-        archive.attrib.update(MarginLeft='1022',MarginTop='700')
-        footer = next(n for n in self.old_b.iter('TextWidget') if n.get('Text') == '@FooterHintText')
-        owner = parent(actual,archive); owner.insert(list(owner).index(archive),deepcopy(footer))
-        self.assertEqual(canonical(actual),canonical(self.old_b))
+        # Preserve the previously reviewed redraw controls; this slice only changes the minor section.
+        historical = next(n for n in reviewed.iter('Widget') if n.get('IsVisible') == '@HasMinors')
+        owner = parent(actual,section); index = list(owner).index(section)
+        owner.remove(section); section = deepcopy(historical); owner.insert(index,section)
+        self.assertEqual(canonical(actual),canonical(reviewed))
 
     def test_courier_has_only_approved_layout_changes(self):
         actual = deepcopy(self.c)
@@ -118,6 +110,28 @@ class LayoutContracts(unittest.TestCase):
             self.assertEqual(text.get('Command.LinkClick'),'ExecuteOpenEncyclopediaLink')
             self.assertEqual(text.get('Command.LinkAlternateClick'),'ExecuteOpenEncyclopediaLink')
             self.assertEqual(text.get('DoNotAcceptEvents'),'false')
+
+    def test_minors_are_bounded_scrollable_and_paginated(self):
+        section=next(n for n in self.b.iter('Widget') if n.get('IsVisible')=='@HasMinors')
+        panel=by_id(section,'MinorScrollPanel')
+        clip=resolve(self.b,panel,panel.get('ClipRect'))
+        inner=resolve(self.b,panel,panel.get('InnerPanel'))
+        scrollbar=resolve(self.b,panel,panel.get('VerticalScrollbar'))
+        self.assertEqual(clip.get('ClipContents'),'true')
+        self.assertEqual(inner.get('HeightSizePolicy'),'CoverChildren')
+        self.assertEqual(scrollbar.get('ValueFloat'),'@MinorScrollPosition')
+        self.assertIsNone(scrollbar.get('Sprite')) # no opaque white track
+        self.assertEqual(resolve(self.b,scrollbar,scrollbar.get('Handle')).get('Color'),'#87633CFF')
+        self.assertEqual(panel.get('DoNotAcceptEvents'),'false')
+        end=int(section.get('MarginTop'))+int(panel.get('MarginTop'))+int(panel.get('SuggestedHeight'))
+        archive=by_id(self.b,'ArchiveBulletinButton')
+        for scale in [.75,1,1.25,1.5]:
+            self.assertLess(end*scale,(814-int(archive.get('MarginBottom'))-int(archive.get('SuggestedHeight')))*scale)
+        for command,enabled in [('ExecutePreviousMinorPage','@CanPreviousMinorPage'),('ExecuteNextMinorPage','@CanNextMinorPage')]:
+            button=next(n for n in section.iter('ButtonWidget') if n.get('Command.Click')==command)
+            self.assertEqual(button.get('IsEnabled'),enabled)
+            self.assertEqual(button.get('DoNotPassEventsToChildren'),'true')
+        self.assertTrue(any(n.get('Text')=='@MinorPageText' for n in section.iter()))
 
     def test_compact_buttons_fit_and_keep_reply_gate(self):
         buttons=[n for n in self.c.iter('ButtonWidget') if n.get('Brush')=='AFCourierLetter.Band.Button']
