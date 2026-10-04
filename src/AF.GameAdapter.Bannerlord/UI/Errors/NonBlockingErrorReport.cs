@@ -95,6 +95,7 @@ public static class NonBlockingErrorReport
 			|| data.NegativeAction != null
 			|| !string.IsNullOrWhiteSpace(data.NegativeText)
 			|| data.TimeoutAction != null
+			|| ((data.TitleText ?? "").IndexOf("失败", StringComparison.Ordinal) < 0 && ((data.TitleText ?? "").IndexOf("完成", StringComparison.Ordinal) >= 0 || (data.TitleText ?? "").IndexOf("成功", StringComparison.Ordinal) >= 0))
 			|| !HasFailureSignal(data.TitleText, data.Text))
 		{
 			return false;

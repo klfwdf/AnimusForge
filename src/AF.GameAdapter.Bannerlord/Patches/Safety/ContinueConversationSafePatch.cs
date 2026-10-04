@@ -39,6 +39,18 @@ public static class ContinueConversationSafePatch
 
 	public static bool Prefix(object __instance, MethodBase __originalMethod)
 	{
+		// While an AnimusForge native reply (including an NPC-initiated opening) is generating, a click or
+		// ContinueKey press must not advance the native conversation, or the in-flight reply is discarded.
+		try
+		{
+			if (ShoutBehavior.IsNativeConversationBackendBusy())
+			{
+				return false;
+			}
+		}
+		catch
+		{
+		}
 		return !ConversationExceptionGuard.TryPreemptStaleConversation(__instance, "ContinueConversation", __originalMethod);
 	}
 
