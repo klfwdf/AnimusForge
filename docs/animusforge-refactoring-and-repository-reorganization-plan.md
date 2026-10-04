@@ -1,3 +1,33 @@
+<a id="bulletin-ui-log-repair-20261004"></a>
+# 快报分页、国家正文、模型宽度与日志修复（2026-10-04，OFFLINE_VERIFIED）
+
+- 用户授权完成修改、复审、提交推送；产品/测试 `20cf9627`，意图检查点 `bab8aa87`。本轮不部署、不打包、不改一键流程、不动玩家文件或历史Recovery。
+- “其余消息”原来将所有附属材料一次排入固定卷轴区域，导致溢出。现在每页最多4条、左右各最多2条，固定区域内滚动；超量翻页，不截断正文、不删除消息，翻页复位滚动，百科链接和关闭命令保留。
+- 国家页原来复用世界整篇正文，生成端还为没有事实的国家追加“局势平稳”。现在无事实国家不再新挂入该篇；国家档案按本国附属材料展示标题/正文，世界页仍保留原篇和全部附属材料。真正参与事件但无本国附属材料的国家仍可查看关联原篇，旧关联和旧存档不猜测删除，打开快报仍按原EventId重开完整原篇。
+- 引导四路Key框320改200，模型选择180改300、下拉174改294，总行宽和Key长度限制不变；单Key四模型页不变。
+- 统一日志入口回到当前模块 `logs`，军演原来的文档目录日志接入同入口；Bootstrap/SceneActions已在模块日志目录，不修改用户主动导出到桌面的功能。极端不可写目录的原错误回退保留，用户数据/配置/Recovery路径不动，不搬移旧日志。
+- `logs/image save` 新图片文件名使用可读标题、时间与随机后缀，图片Key、默认索引和旧hash文件不迁移。生图trace/steps/场景JSON统一UTF8 BOM，存储预算包含BOM；参考图文件名脱敏并可读，保留完整SHA256去重及原图片字节。
+- 性能：面板打开只复制消息一次，翻页仅格式化至多4条，不增加Tick扫描；国家正文投影沿既有打开档案路径，国家素材生成沿既有每周gate。诊断仍按实际生成事件写入，保留原次数/空间上限，不增加轮询。
+
+## 代码证据（产品修订 `20cf9627`）
+
+| 源码 / 一基行号 / 符号 | 本轮责任 | 未覆盖 |
+| --- | --- | --- |
+| `src/modules/AF.Module.Weekly/Panel/WorldBulletinPanelVM.cs:262-383`，`RefreshMinorPage`；`content/modules/AF.Module.Weekly/GUI/Prefabs/WorldBulletinPanel.xml:122-171` | 4条分页、固定裁剪区、滚动双向绑定、无白底滑条、翻页资格及链接 | 实机Gauntlet滚动/分辨率/焦点 |
+| `src/modules/AF.Module.Weekly/Panel/WeeklyReportArchivePolicy.cs:52-65`，`CountryNews` / `CountryBody`；`src/AF.GameAdapter.Bannerlord/UI/Editors/WeeklyEditorProjection.cs:85-88`；`WorldBulletinStateOwner.cs:313-344` | 国家正文筛选、世界完整正文、无事实国家不新关联 | 真玩家历史内容、真LLM素材质量 |
+| `content/modules/AF.Module.Onboarding/GUI/Prefabs/AnimusForgeApiOnboardingPopup.xml:228-423` | 四路模型框加宽、Key框缩短，命令与输入限长保留 | 实机超长模型名称及菜单尺寸 |
+| `src/AF.Persistence/AnimusForgeModulePaths.cs:45-57`；`src/modules/AF.Module.Exercise/Host/MilitaryExerciseBehavior.cs:4081-4090` | 模块日志统一入口、军演日志接入 | 安装权限异常/实机写盘 |
+| `extensions/AnimusForge.Illustrator/src/Engine/DiskImageCacheManager.cs:65-76,190-249`，`ReadableFileLabel`；`src/Core/GenerationDiagnostics.cs:28-30,325-343,379-445` | 可读文件名、稳定Key、旧缓存兼容、UTF8 BOM、预算与脱敏 | 真实provider及玩家编辑器显示 |
+
+## 验证与交付
+
+- 生产归档/投影/面板回放 **309 PASS**，包含0/1/4/5/12/401条分页、长文不遗漏、国家A/B标题正文区分、52周归并和旧数据保留；生成owner **57 PASS**，编辑器生命周期 **48 PASS**，引导 **168 PASS**，布局XML契约 **14 PASS**。引擎、渲染、formatter与网络部分使用替身，不当实机验收。
+- 原Debug双API+Bootstrap最终构建0错误，两实现各341既有warning、Bootstrap无warning。引用版本 `v1.3.15.110062` / `v1.4.6.115628`；三marker与DLL SHA256一致。两份实际DLL分别通过缓存/画廊 **81 PASS**、生图诊断 **70 PASS**，覆盖旧hash命名读取、中文安全文件名、默认Key、模块根解析、脱敏、中文BOM、预算与隔离。
+- 全量 `J15ContentContractTests` 当前仍在 `content map entry count` 失败；用修改前HEAD测试代码和未变的content-map复现。它尚未到达后续全量内容hash门禁，不宣称该门禁通过，不放宽无关断言；本轮XML解析及相对 `c70dd938` 仅其他消息区变更的契约通过，原 `ab4b4b7f` 历史hash断言保留。
+- `git diff --check`及暂存检查通过；复审补修参考图文件名脱敏和BOM预算后重跑最终双构建。另一会话 `OnnxCrossEncoderReranker.cs` 的dirty构建输入hash与前轮相同，单列收据且未由本任务提交，不宣称纯净commit产物。
+- 本地 `artifacts/bulletin-ui-log-repair-20261004/receipt.json` 绑定18任务文件、实际回放输入、三产物/marker、其他会话输入及11验证日志。推送授权仅本轮有效，采用远端main快进，不force、不改写既有提交；实际远端核验保存在同目录 `push.log` / `delivery.json`，包含此前本地已提交修复。
+- **LIVE_GAME / PLAYER_SAVE / REAL_PROVIDER / STAGE / DEPLOY / PACKAGE = NOT_RUN**。源码定点回滚 `git revert 20cf9627`，不回退其他作者文件。本条替代上一条相关修复的离线行为结论，不替代下方现有安装状态；游戏仍为上一部署版本，待用户另行授权部署。
+
 <a id="deploy-onboarding-bulletin-20261004"></a>
 # 引导与快报档案部署（2026-10-04，DEPLOY_VERIFIED）
 
