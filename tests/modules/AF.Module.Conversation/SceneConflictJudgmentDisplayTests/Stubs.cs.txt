@@ -1,0 +1,109 @@
+using System;
+using System.Collections.Generic;
+using System.Collections.Concurrent;
+using System.Threading;
+namespace AnimusForge;
+internal static class Logger
+{
+    internal static readonly List<string> Entries = new List<string>();
+    public static void Log(string channel, string text) => Entries.Add(text);
+    public static void LogTrace(string channel, string text) { }
+}
+internal static class FreezeWatchdog { public static void Mark(string key, string text) { } public static IDisposable Scope(string name) => new Noop(); private sealed class Noop : IDisposable { public void Dispose() { } } }
+public sealed class MockVm
+{
+    public string DialogText { get; set; }
+    public string CurrentCharacterNameLbl { get; set; }
+    public void OnPropertyChangedWithValue(string value, string property) { }
+}
+internal interface IFaction { string StringId { get; } string Name { get; } Hero Leader { get; } }
+internal sealed class Faction : IFaction
+{
+    public string StringId { get; set; }
+    public string Name => StringId;
+    public Hero Leader { get; set; }
+}
+internal sealed class Hero { public string Name = "珍妮"; public Faction Faction; }
+internal sealed class Settlement
+{
+    internal static Settlement Current;
+    public IFaction MapFaction; public string StringId; public bool IsTown = true;
+}
+internal sealed class PartyBase
+{
+    public static PartyBase MainParty;
+    public IFaction MapFaction; public string Name => "丹格马尔托尔";
+}
+internal sealed class GameMenu { public string StringId; }
+internal sealed class MenuContext { public GameMenu GameMenu; }
+internal sealed class MenuCallbackArgs { public MenuContext MenuContext; }
+internal sealed class Campaign { public static Campaign Current = new Campaign(); public MenuContext CurrentMenuContext; }
+internal static class LordEncounterBehavior
+{
+    internal static int HostileCalls;
+    public static bool ApplyHostileEscalationDiplomaticConsequences(PartyBase party, Hero hero, string reason, string channel)
+    { HostileCalls++; return true; }
+}
+internal sealed partial class SceneTauntBehavior
+{
+    internal static SceneTauntBehavior Instance;
+    private bool _pendingDeferredLordSceneDiplomacy, _isCommittingDeferredLordSceneDiplomacy;
+    private string _pendingDeferredLordSceneTargetHeroId = "", _pendingDeferredLordSceneTargetFactionId = "",
+        _pendingDeferredLordSceneSettlementId = "", _pendingDeferredLordSceneReason = "";
+    internal static bool MapReady;
+    private static bool IsReadyToCommitDeferredCrime() => MapReady;
+    private static Settlement GetActiveSettlementSafe() => Settlement.Current;
+    private static Hero ResolveHeroById(string id) => new Hero { Faction = (Faction)Settlement.Current?.MapFaction };
+    private static Faction ResolveFactionById(string id) => new Faction { StringId = id };
+    private PartyBase ResolveDeferredLordSceneDefenderParty(Hero hero, IFaction faction) => new PartyBase { MapFaction = faction };
+    private void TryCommitPendingMainHeroBattleDeath() { }
+    private void TryCommitPendingForcedPlayerExecution() { }
+    private void TryCommitDeferredCrimeWhenBackOnWorldMap() { }
+    internal bool Pending => _pendingDeferredLordSceneDiplomacy;
+    internal string SavedIds => _pendingDeferredLordSceneTargetHeroId + _pendingDeferredLordSceneTargetFactionId
+        + _pendingDeferredLordSceneSettlementId + _pendingDeferredLordSceneReason;
+    internal void RestoreIncident(string faction = "amazonian", string settlement = "town_S5", string reason = "scene_taunt_lord_scene")
+    {
+        _pendingDeferredLordSceneDiplomacy = true;
+        _pendingDeferredLordSceneTargetHeroId = "amazonian_noble_6_5";
+        _pendingDeferredLordSceneTargetFactionId = faction;
+        _pendingDeferredLordSceneSettlementId = settlement;
+        _pendingDeferredLordSceneReason = reason;
+    }
+    internal bool Judgment(Settlement settlement) => TryHandOffDeferredLordSceneDiplomacyToCriminalJudgment(settlement);
+    internal void Load() => OnGameLoadFinished();
+    internal void Menu(string id) => OnGameMenuOpened(new MenuCallbackArgs { MenuContext = new MenuContext { GameMenu = new GameMenu { StringId = id } } });
+    internal void ReturnToMap() { MapReady = true; TryCommitDeferredLordSceneDiplomacyWhenBackOnWorldMap(); }
+}
+
+internal sealed class ShoutBehavior
+{
+    internal sealed class NativeConversationPresentationScope
+    {
+        internal bool Context = true, Current = true;
+        internal bool HasCurrentContext() => Context;
+        internal bool IsCurrent() => Context && Current;
+    }
+}
+public sealed partial class AnimusForgeNativeConversationOverlay
+{
+    private sealed class UiState { internal bool IsCustomAnswerVisible = true, Busy = true; internal void SetBusy(bool value) { Busy = value; } }
+    private readonly UiState _dataSource = new UiState();
+    private bool _isClosed, _isSubmitting = true, _npcOpeningAutoStarted;
+    private int _submitGeneration = 1;
+    private readonly int _mainThreadId = Thread.CurrentThread.ManagedThreadId;
+    private readonly ConcurrentQueue<Action> _mainThreadActions = new ConcurrentQueue<Action>();
+    private void StopWaitingDotsAnimation() { }
+    private void StopWaitingDotsAnimation(int generation) { }
+    private void ClearPendingPostprocessNotice() { }
+    private void ClearInterruptedPresentation() { } // Other author's unrelated pause UI cache.
+    private void FocusInputIfVisible() { }
+    internal AnimusForgeNativeConversationOverlay(ShoutBehavior.NativeConversationPresentationScope scope) { _submitPresentationScope = scope; }
+    internal bool Busy => _dataSource.Busy;
+    internal void Begin() => ConversationHelper.BeginStreaming(this);
+    internal void Queue(string text) => RunNativePresentationCallback(1, () => ConversationHelper.UpdateDialogText(text));
+    internal void Drain() => ProcessMainThreadActions();
+    internal bool Finish() => CompleteNativeSubmissionPresentation(1);
+    internal void Validate() => ValidatePendingSubmissionPresentation();
+    internal void Advance() => _submitGeneration++;
+}

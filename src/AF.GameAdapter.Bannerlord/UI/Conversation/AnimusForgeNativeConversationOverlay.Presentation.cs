@@ -38,6 +38,7 @@ public sealed partial class AnimusForgeNativeConversationOverlay
     {
         if (!IsSubmitGenerationCurrent(generation))
             return;
+        ConversationHelper.ClearForOwner(this);
         _submitGeneration++;
         _submitPresentationScope = null;
         _isSubmitting = false;
@@ -45,7 +46,7 @@ public sealed partial class AnimusForgeNativeConversationOverlay
         StopWaitingDotsAnimation();
         ClearPendingPostprocessNotice();
         _dataSource.SetBusy(false);
-        // Never restore the old NPC text, end another request's stream, or emit a stale ready popup.
+        // Only our own display was retired; never restore old text or clear a newer Overlay.
         if (_dataSource.IsCustomAnswerVisible)
             FocusInputIfVisible();
         Logger.Log("NativeConversationOverlay", "Retired stale presentation generation=" + generation);
@@ -63,7 +64,7 @@ public sealed partial class AnimusForgeNativeConversationOverlay
         _isSubmitting = false;
         StopWaitingDotsAnimation(generation);
         _dataSource.SetBusy(false);
-        ConversationHelper.EndStreaming();
+        ConversationHelper.EndStreaming(this);
         _submitPresentationScope = null;
         return true;
     }

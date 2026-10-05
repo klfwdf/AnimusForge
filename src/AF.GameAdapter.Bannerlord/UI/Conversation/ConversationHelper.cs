@@ -37,6 +37,9 @@ public static class ConversationHelper
 
 	private static object _currentVM;
 
+	// Main-thread presentation owner. A retired Overlay cannot clear a newer one.
+	private static object _displayOwner;
+
 	private static PropertyInfo _dialogTextProp;
 
 	private static FieldInfo _dialogTextField;
@@ -164,7 +167,16 @@ public static class ConversationHelper
 
 	public static void SetCurrentVM(object vm)
 	{
-		_currentVM = ResolveConversationVm(vm);
+		object resolvedVm = ResolveConversationVm(vm);
+		if (ReferenceEquals(_currentVM, resolvedVm))
+		{
+			return; // Same-window refresh reuses reflection and preserves the stream.
+		}
+		if (_currentVM != null)
+		{
+			Clear(); // Never replay another window's stream/typewriter on this VM.
+		}
+		_currentVM = resolvedVm;
 		_dialogTextProp = null;
 		_dialogTextField = null;
 		_nameLabelProp = null;
@@ -238,8 +250,11 @@ public static class ConversationHelper
 		ApplyNameLabelToVM();
 	}
 
-	public static void BeginStreaming()
+	public static void BeginStreaming() => BeginStreaming(null);
+
+	internal static void BeginStreaming(object owner)
 	{
+		_displayOwner = owner;
 		_isStreaming = true;
 		_lastStreamText = null;
 		_tickApplyCount = 0;
@@ -255,6 +270,22 @@ public static class ConversationHelper
 	{
 		_isStreaming = false;
 		Logger.LogTrace("ConversationHelper", $"✅ EndStreaming - 流式传输结束 (TickApply={_tickApplyCount}, RefreshReapply={_refreshReapplyCount})");
+	}
+
+	internal static void EndStreaming(object owner)
+	{
+		if (owner != null && ReferenceEquals(_displayOwner, owner))
+		{
+			EndStreaming();
+		}
+	}
+
+	internal static void ClearForOwner(object owner)
+	{
+		if (owner != null && ReferenceEquals(_displayOwner, owner))
+		{
+			Clear();
+		}
 	}
 
 	public static void UpdateDialogText(string text)
@@ -621,6 +652,7 @@ public static class ConversationHelper
 
 	public static void Clear()
 	{
+		_displayOwner = null;
 		_isStreaming = false;
 		_lastStreamText = null;
 		_currentVM = null;

@@ -126,6 +126,7 @@ public class SceneTauntBehavior : CampaignBehaviorBase
 		CampaignEvents.CanHeroDieEvent.AddNonSerializedListener(this, OnCanHeroDie);
 		CampaignEvents.OnBeforeMainCharacterDiedEvent.AddNonSerializedListener(this, OnBeforeMainCharacterDied);
 		CampaignEvents.GameMenuOpened.AddNonSerializedListener(this, OnGameMenuOpened);
+		CampaignEvents.OnGameLoadFinishedEvent.AddNonSerializedListener(this, OnGameLoadFinished);
 	}
 
 	public override void SyncData(IDataStore dataStore)
@@ -316,8 +317,24 @@ public class SceneTauntBehavior : CampaignBehaviorBase
 		}
 	}
 
+	private void OnGameLoadFinished()
+	{
+		// Legacy save already on the actual judgment screen: no new menu event is required.
+		// Do not guess that an unrelated crime decrease / world-map save meant payment.
+		if (_pendingDeferredLordSceneDiplomacy
+			&& Campaign.Current?.CurrentMenuContext?.GameMenu?.StringId == "town_inside_criminal")
+		{
+			TryHandOffDeferredLordSceneDiplomacyToCriminalJudgment(GetActiveSettlementSafe());
+		}
+	}
+
 	private void OnGameMenuOpened(MenuCallbackArgs args)
 	{
+		// Also handles a saved pending incident when its native judgment menu reopens.
+		if (args?.MenuContext?.GameMenu?.StringId == "town_inside_criminal")
+		{
+			TryHandOffDeferredLordSceneDiplomacyToCriminalJudgment(GetActiveSettlementSafe());
+		}
 		TryCommitPendingMainHeroBattleDeath();
 		TryCommitPendingForcedPlayerExecution();
 		TryCommitDeferredCrimeWhenBackOnWorldMap();
@@ -1487,6 +1504,32 @@ public class SceneTauntBehavior : CampaignBehaviorBase
 	internal static void QueueDeferredLordSceneDiplomacyForExternal(Hero targetHero, string reason)
 	{
 		Instance?.QueueDeferredLordSceneDiplomacy(targetHero, reason);
+	}
+
+	internal static void HandOffDeferredLordSceneDiplomacyToCriminalJudgmentForExternal(Settlement settlement)
+	{
+		Instance?.TryHandOffDeferredLordSceneDiplomacyToCriminalJudgment(settlement);
+	}
+
+	private bool TryHandOffDeferredLordSceneDiplomacyToCriminalJudgment(Settlement settlement)
+	{
+		if (!_pendingDeferredLordSceneDiplomacy || settlement == null)
+		{
+			return false;
+		}
+		IFaction judgmentFaction = settlement.MapFaction;
+		if (!SceneTauntJudgmentHandoffRules.ShouldHandOff(_pendingDeferredLordSceneDiplomacy,
+			_pendingDeferredLordSceneReason, _pendingDeferredLordSceneTargetFactionId,
+			_pendingDeferredLordSceneSettlementId, judgmentFaction?.StringId, settlement.StringId,
+			settlement.IsTown, judgmentFaction != null && PartyBase.MainParty?.MapFaction == judgmentFaction))
+		{
+			return false;
+		}
+		// Native judgment now owns this same-faction incident. Preserve crime/trust penalties,
+		// but do not repeat it later as mercenary dismissal + hostility on the world map.
+		Logger.Log("SceneTaunt", $"Handed deferred lord scene diplomacy to native criminal judgment. SettlementId={settlement.StringId}, FactionId={judgmentFaction.StringId}, TargetHeroId={_pendingDeferredLordSceneTargetHeroId}");
+		ClearPendingDeferredLordSceneDiplomacy("criminal_judgment_handoff");
+		return true;
 	}
 
 	private void ClearPendingDeferredLordSceneDiplomacy(string reason)
@@ -10130,6 +10173,7 @@ public class SceneTauntConsequenceMissionLogic : MissionLogic
 			bool flag2 = IsCaptorSameMapFactionAsPlayer(party);
 			if (flag2 && currentSettlement != null && currentSettlement.IsTown)
 			{
+				SceneTauntBehavior.HandOffDeferredLordSceneDiplomacyToCriminalJudgmentForExternal(currentSettlement);
 				SceneTauntBehavior.ClearArmedCarryoverForExternal("scene_taunt_defeat_criminal_flow");
 				try
 				{
