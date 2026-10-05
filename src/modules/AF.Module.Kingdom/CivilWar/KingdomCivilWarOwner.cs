@@ -205,7 +205,6 @@ internal sealed partial class KingdomCivilWarOwner
 	internal void RecordPeace(Kingdom kingdom, IFaction other, int week)
 	{
 		KingdomCivilWarKingdomState state = Find(kingdom);
-		if (state != null && other is Kingdom && !IsCivilWarPair(kingdom, other as Kingdom)) RelieveWeariness(state);
 		if (state == null || other == null || string.IsNullOrWhiteSpace(state.NoPeaceTargetId)) return;
 		if (CivilWarWorld.CurrentDay() > (state.NoPeaceUntilDay < 0 ? state.NoPeaceUntilWeek * 7 : state.NoPeaceUntilDay)) { ClearPledge(state); return; }
 		if (!string.Equals(state.NoPeaceTargetId, other.StringId, StringComparison.OrdinalIgnoreCase)) return;
@@ -214,41 +213,10 @@ internal sealed partial class KingdomCivilWarOwner
 		AddGrievance(kingdom, "broken_pledge", clans, 25f, week, "国王违背承诺，与" + (other.Name?.ToString() ?? "敌国") + "议和");
 	}
 
-	// ------------------------------------------------------------ war weariness (battle by battle)
+	// ------------------------------------------------------------ war weariness (from the war-stats terminal)
 
-	// Current weariness with lazy decay; no daily pass touches it.
-	private static float Weariness(KingdomCivilWarKingdomState state)
-	{
-		return state == null ? 0f : CivilWarWearinessRules.Decayed(state.Weariness, state.WearinessDay, CivilWarWorld.CurrentDay());
-	}
-
-	internal float GetWeariness(Kingdom kingdom) => Weariness(Find(kingdom));
-
-	// Called once per finished battle side (MapEventEnded). O(1): one dictionary lookup and arithmetic.
-	internal void RecordBattleWeariness(Kingdom kingdom, int casualties, int committed, bool lost)
-	{
-		if (kingdom == null || kingdom.IsEliminated || IsActiveRebelKingdom(kingdom)) return;
-		float points = CivilWarWearinessRules.BattlePoints(casualties, committed, lost);
-		if (points <= 0f) return;
-		int day = CivilWarWorld.CurrentDay();
-		KingdomCivilWarKingdomState state = GetOrCreate(kingdom, CivilWarWorld.CurrentWeek());
-		bool wasBelow = !CivilWarWearinessRules.MeetsFormation(Weariness(state));
-		state.Weariness = CivilWarRules.Clamp(Weariness(state) + points, 0f, CivilWarWearinessRules.Max);
-		state.WearinessDay = day;
-		// Crossing the formation line is a political event; otherwise wake the kingdom at most once a week.
-		if (wasBelow && CivilWarWearinessRules.MeetsFormation(state.Weariness) || day >= state.WearinessNotifyDay + 7)
-		{
-			state.WearinessNotifyDay = day;
-			NotifyPoliticalChange(kingdom, "war_weariness");
-		}
-	}
-
-	private static void RelieveWeariness(KingdomCivilWarKingdomState state)
-	{
-		if (state == null) return;
-		state.Weariness = CivilWarWearinessRules.AfterPeace(Weariness(state));
-		state.WearinessDay = CivilWarWorld.CurrentDay();
-	}
+	// Highest weariness among the kingdom's current wars, exactly as the terminal shows it (0..100).
+	private static float Weariness(Kingdom kingdom) => kingdom == null ? 0f : MyBehavior.GetMaxWarWearinessForExternal(kingdom);
 
 	private static void ClearPledge(KingdomCivilWarKingdomState state)
 	{
@@ -340,7 +308,7 @@ internal sealed partial class KingdomCivilWarOwner
 		if (!PoliticalClan(leader, kingdom) || leader == kingdom.RulingClan || leader == Clan.PlayerClan || FactionOfClan(state, leader) != null) return;
 		KingdomCivilWarClanState leaderState = GetOrCreateClan(state, leader, week);
 		float grievance = TotalGrievance(leaderState);
-		float weariness = Weariness(state);
+		float weariness = Weariness(kingdom);
 		if (!CivilWarFactionRules.MeetsFormationCondition(grievance, weariness, tuning)) return;
 		CivilWarRoll roll = CivilWarRules.Roll("form_faction", CivilWarCatalog.FormFaction, BuildFeatures(kingdom, state, null, leader, stability), 1f, tuning, RandomFloat);
 		string cause = grievance >= tuning.DiscontentThreshold ? "不满达到阈值" : "王国厌战（" + weariness.ToString("0") + "）";
@@ -1022,7 +990,7 @@ internal sealed partial class KingdomCivilWarOwner
 		panel.Conditions.Add(Condition("正式封臣资格", top != null ? "已满足" : "无合格家族", top != null));
 		panel.Conditions.Add(Condition("本国派系名额", factions.Count + " / " + panel.MaxFactions, factions.Count < panel.MaxFactions));
 		panel.Conditions.Add(Condition("不满门槛 " + panel.Threshold, panel.TopGrievance >= panel.Threshold ? "已达到" : "未达到", panel.TopGrievance >= panel.Threshold));
-		float weariness = Weariness(state);
+		float weariness = Weariness(kingdom);
 		panel.Conditions.Add(Condition("或 厌战度 " + CivilWarWearinessRules.FormationThreshold.ToString("0"), weariness.ToString("0") + (CivilWarWearinessRules.MeetsFormation(weariness) ? " 已达到" : " 未达到"), CivilWarWearinessRules.MeetsFormation(weariness)));
 		panel.Conditions.Add(Condition("战后冷却", day < cooldownDay ? "至第 " + cooldownDay + " 天" : "无", day >= cooldownDay));
 		if (CivilWarWorld.IsPlayerRuled(kingdom)) panel.Conditions.Add(Condition("玩家王国派系", DuelSettings.IsCivilWarPlayerKingdomFactionsAllowed() ? "已开启" : "设置已关闭", DuelSettings.IsCivilWarPlayerKingdomFactionsAllowed()));
@@ -1386,7 +1354,7 @@ internal sealed partial class KingdomCivilWarOwner
 			[CivilWarFeature.Instability] = CivilWarRules.Clamp((50f - stability) / 50f, 0f, 1f),
 			[CivilWarFeature.WarLoad] = CivilWarRules.Clamp(CivilWarWorld.KingdomWarCount(kingdom) / 5f, 0f, 1f),
 			[CivilWarFeature.KingdomGrievance] = CivilWarRules.Clamp(total / 100f, 0f, 1f),
-			[CivilWarFeature.Weariness] = Weariness(state) / CivilWarWearinessRules.Max,
+			[CivilWarFeature.Weariness] = Weariness(kingdom) / CivilWarWearinessRules.Max,
 			[CivilWarFeature.FactionPower] = faction == null ? 0f : IsPreWar(faction) ? FactionPower(kingdom, state, faction) : faction.LastFactionPower,
 			[CivilWarFeature.FactionGrievance] = faction == null ? 0f : CivilWarRules.Clamp(faction.Grievance / 100f, 0f, 1f),
 			[CivilWarFeature.Refusals] = faction == null ? 0f : CivilWarRules.Clamp(faction.Refusals / 4f, 0f, 1f),

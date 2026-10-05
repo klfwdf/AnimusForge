@@ -8,6 +8,7 @@ using TaleWorlds.CampaignSystem.Actions;
 using TaleWorlds.CampaignSystem.MapEvents;
 using TaleWorlds.CampaignSystem.Party;
 using TaleWorlds.CampaignSystem.Roster;
+using TaleWorlds.CampaignSystem.Settlements;
 using TaleWorlds.Core;
 
 namespace AFWarStatsTerminal.Behaviors;
@@ -186,6 +187,19 @@ public sealed partial class AfWarStatsBehavior : CampaignBehaviorBase
 
         public int AttackerSide;
 
+        // Villages of side A/B raided by the other side, and fortifications A/B lost to it by siege (never decremented).
+        public int RaidsA;
+
+        public int RaidsB;
+
+        public int LostTownsA;
+
+        public int LostTownsB;
+
+        public int LostCastlesA;
+
+        public int LostCastlesB;
+
         public List<HeroDeathRecord> HeroDeaths = new();
 
         public Dictionary<string, RecentHeroBattleRecord> RecentHeroBattles = new(StringComparer.Ordinal);
@@ -343,6 +357,11 @@ public sealed partial class AfWarStatsBehavior : CampaignBehaviorBase
 
     private List<string> _savedActiveRecentHeroBattlesV5 = new();
 
+    // "raidsA,raidsB,townsA,townsB,castlesA,castlesB" per active/historical record (v6 weariness incidents).
+    private List<string> _savedActiveWearinessV6 = new();
+
+    private List<string> _savedHistoryWearinessV6 = new();
+
     private static AfWarStatsBehavior _instance;
     public static AfWarStatsBehavior Instance
     {
@@ -363,6 +382,8 @@ public sealed partial class AfWarStatsBehavior : CampaignBehaviorBase
         CampaignEvents.WarDeclared.AddNonSerializedListener(this, OnWarDeclared);
         CampaignEvents.MakePeace.AddNonSerializedListener(this, OnMakePeace);
         CampaignEvents.BeforeHeroKilledEvent.AddNonSerializedListener(this, OnBeforeHeroKilled);
+        CampaignEvents.VillageLooted.AddNonSerializedListener(this, OnVillageLootedForWeariness);
+        CampaignEvents.OnSettlementOwnerChangedEvent.AddNonSerializedListener(this, OnSettlementOwnerChangedForWeariness);
     }
 
     public override void SyncData(IDataStore dataStore)
@@ -430,6 +451,8 @@ public sealed partial class AfWarStatsBehavior : CampaignBehaviorBase
         dataStore.SyncData("_af_war_stats_recent_battle_sequence_v5", ref recentBattleSequence);
         _recentBattleSequence = recentBattleSequence;
         dataStore.SyncData("_af_war_stats_active_recent_hero_battles_v5", ref _savedActiveRecentHeroBattlesV5);
+        dataStore.SyncData("_af_war_stats_active_weariness_v6", ref _savedActiveWearinessV6);
+        dataStore.SyncData("_af_war_stats_history_weariness_v6", ref _savedHistoryWearinessV6);
 
         if (dataStore.IsLoading)
         {
@@ -454,8 +477,8 @@ public sealed partial class AfWarStatsBehavior : CampaignBehaviorBase
             int durationDays = GetWarDurationDays(kingdomA, kingdomB);
             int pairTerritoryA = CountTerritory(kingdomA);
             int pairTerritoryB = CountTerritory(kingdomB);
-            int pairWearinessA = CalculateWeariness(durationDays, record.CasualtiesA, record.WinsA, record.LossesA, record.InitialTerritoryA, pairTerritoryA);
-            int pairWearinessB = CalculateWeariness(durationDays, record.CasualtiesB, record.WinsB, record.LossesB, record.InitialTerritoryB, pairTerritoryB);
+            int pairWearinessA = CalculateWeariness(durationDays, record.CasualtiesA, record.WinsA, record.LossesA, record.InitialTerritoryA, pairTerritoryA, record.RaidsA, record.LostTownsA, record.LostCastlesA);
+            int pairWearinessB = CalculateWeariness(durationDays, record.CasualtiesB, record.WinsB, record.LossesB, record.InitialTerritoryB, pairTerritoryB, record.RaidsB, record.LostTownsB, record.LostCastlesB);
             bool swapSides = record.AttackerSide == 1;
             Kingdom attacker = swapSides ? kingdomB : kingdomA;
             Kingdom defender = swapSides ? kingdomA : kingdomB;
@@ -513,8 +536,8 @@ public sealed partial class AfWarStatsBehavior : CampaignBehaviorBase
             bool swapSides = record.AttackerSide == 1;
             Kingdom attacker = swapSides ? kingdomB : kingdomA;
             Kingdom defender = swapSides ? kingdomA : kingdomB;
-            int pairWearinessA = CalculateWeariness(record.LastDurationDays, record.CasualtiesA, record.WinsA, record.LossesA, record.InitialTerritoryA, record.LastTerritoryA);
-            int pairWearinessB = CalculateWeariness(record.LastDurationDays, record.CasualtiesB, record.WinsB, record.LossesB, record.InitialTerritoryB, record.LastTerritoryB);
+            int pairWearinessA = CalculateWeariness(record.LastDurationDays, record.CasualtiesA, record.WinsA, record.LossesA, record.InitialTerritoryA, record.LastTerritoryA, record.RaidsA, record.LostTownsA, record.LostCastlesA);
+            int pairWearinessB = CalculateWeariness(record.LastDurationDays, record.CasualtiesB, record.WinsB, record.LossesB, record.InitialTerritoryB, record.LastTerritoryB, record.RaidsB, record.LostTownsB, record.LostCastlesB);
             int startDay = ResolveHistoryStartDay(record);
             int pairAdvantageSide = CalculateAdvantageSide(record);
             entries.Add(new HistoricalWarEntry
@@ -1572,16 +1595,113 @@ public sealed partial class AfWarStatsBehavior : CampaignBehaviorBase
         int wins,
         int losses,
         int initialTerritory,
-        int currentTerritory)
+        int currentTerritory,
+        int raids = 0,
+        int lostTowns = 0,
+        int lostCastles = 0)
     {
-        double durationScore = Math.Min(30d, Math.Max(0, durationDays) / 12d);
-        double casualtyScore = Math.Min(40d, Math.Max(0, casualties) / 125d);
-        double battleScore = Math.Max(-10d, Math.Min(20d, (Math.Max(0, losses) - Math.Max(0, wins)) * 4d));
+        // Only grows during a war (no time decay); the war's end archives it. Rates are deliberately slow.
+        double durationScore = Math.Min(30d, Math.Max(0, durationDays) / 20d);
+        double casualtyScore = Math.Min(40d, Math.Max(0, casualties) / 200d);
+        double battleScore = Math.Max(-10d, Math.Min(20d, (Math.Max(0, losses) - Math.Max(0, wins)) * 3d));
+        double raidScore = Math.Min(15d, Math.Max(0, raids) * 1d);
         int territoryBaseline = initialTerritory < 0 ? Math.Max(0, currentTerritory) : initialTerritory;
         int lostTerritory = Math.Max(0, territoryBaseline - Math.Max(0, currentTerritory));
-        double territoryScore = Math.Min(20d, lostTerritory * 5d);
-        int result = (int)Math.Round(durationScore + casualtyScore + battleScore + territoryScore, MidpointRounding.AwayFromZero);
+        // Sieges: town 3, castle 2. Older saves without siege counts fall back to the net fief loss.
+        double territoryScore = Math.Min(25d, Math.Max(Math.Max(0, lostTowns) * 3d + Math.Max(0, lostCastles) * 2d, lostTerritory * 2d));
+        int result = (int)Math.Round(durationScore + casualtyScore + battleScore + raidScore + territoryScore, MidpointRounding.AwayFromZero);
         return Math.Max(0, Math.Min(100, result));
+    }
+
+    // Weariness of `self` in its war with `enemy` (the terminal's bar). O(1): one dictionary lookup.
+    public int GetWarWeariness(Kingdom self, Kingdom enemy)
+    {
+        string pairKey = MakePairKey(self, enemy);
+        if (string.IsNullOrEmpty(pairKey) || !_activeWars.TryGetValue(pairKey, out WarStatsRecord record) || !self.IsAtWarWith(enemy))
+        {
+            return 0;
+        }
+
+        bool selfIsA = string.CompareOrdinal(self.StringId, enemy.StringId) <= 0;
+        return selfIsA
+            ? CalculateWeariness(GetWarDurationDays(self, enemy), record.CasualtiesA, record.WinsA, record.LossesA, record.InitialTerritoryA, CountTerritory(self), record.RaidsA, record.LostTownsA, record.LostCastlesA)
+            : CalculateWeariness(GetWarDurationDays(self, enemy), record.CasualtiesB, record.WinsB, record.LossesB, record.InitialTerritoryB, CountTerritory(self), record.RaidsB, record.LostTownsB, record.LostCastlesB);
+    }
+
+    // Highest weariness among the kingdom's current wars (a kingdom only has a handful of enemies).
+    public int GetMaxWarWeariness(Kingdom self)
+    {
+        if (self == null || self.IsEliminated)
+        {
+            return 0;
+        }
+
+        int max = 0;
+        foreach (IFaction faction in self.FactionsAtWarWith)
+        {
+            if (faction is Kingdom enemy && !enemy.IsEliminated)
+            {
+                max = Math.Max(max, GetWarWeariness(self, enemy));
+            }
+        }
+
+        return max;
+    }
+
+    private void OnVillageLootedForWeariness(Village village)
+    {
+        Kingdom victim = village?.Settlement?.OwnerClan?.Kingdom;
+        Kingdom raider = village?.Settlement?.LastAttackerParty?.MapFaction as Kingdom;
+        WarStatsRecord record = FindActivePair(victim, raider, out bool victimIsA);
+        if (record == null)
+        {
+            return;
+        }
+
+        if (victimIsA) record.RaidsA++;
+        else record.RaidsB++;
+    }
+
+    private void OnSettlementOwnerChangedForWeariness(Settlement settlement, bool openToClaim, Hero newOwner, Hero oldOwner, Hero capturerHero, ChangeOwnerOfSettlementAction.ChangeOwnerOfSettlementDetail detail)
+    {
+        if (detail != ChangeOwnerOfSettlementAction.ChangeOwnerOfSettlementDetail.BySiege || settlement == null || (!settlement.IsTown && !settlement.IsCastle))
+        {
+            return;
+        }
+
+        Kingdom loser = oldOwner?.Clan?.Kingdom;
+        Kingdom winner = newOwner?.Clan?.Kingdom ?? capturerHero?.MapFaction as Kingdom;
+        WarStatsRecord record = FindActivePair(loser, winner, out bool loserIsA);
+        if (record == null)
+        {
+            return;
+        }
+
+        if (settlement.IsTown)
+        {
+            if (loserIsA) record.LostTownsA++;
+            else record.LostTownsB++;
+        }
+        else if (loserIsA) record.LostCastlesA++;
+        else record.LostCastlesB++;
+    }
+
+    private WarStatsRecord FindActivePair(Kingdom side, Kingdom other, out bool sideIsA)
+    {
+        sideIsA = false;
+        if (side == null || other == null || side == other || !side.IsAtWarWith(other))
+        {
+            return null;
+        }
+
+        string pairKey = MakePairKey(side, other);
+        if (string.IsNullOrEmpty(pairKey))
+        {
+            return null;
+        }
+
+        sideIsA = string.CompareOrdinal(side.StringId, other.StringId) <= 0;
+        return _activeWars.TryGetValue(pairKey, out WarStatsRecord record) ? record : null;
     }
 
     private static int CalculateAdvantageSide(WarStatsRecord record)
@@ -1769,6 +1889,8 @@ public sealed partial class AfWarStatsBehavior : CampaignBehaviorBase
         _savedHistoryAttackerSideV4 ??= new List<int>();
         _savedHistoryHeroDeathsV4 ??= new List<string>();
         _savedActiveRecentHeroBattlesV5 ??= new List<string>();
+        _savedActiveWearinessV6 ??= new List<string>();
+        _savedHistoryWearinessV6 ??= new List<string>();
     }
 
     private void PrepareSaveData()
@@ -1828,6 +1950,8 @@ public sealed partial class AfWarStatsBehavior : CampaignBehaviorBase
         _savedHistoryAttackerSideV4.Clear();
         _savedHistoryHeroDeathsV4.Clear();
         _savedActiveRecentHeroBattlesV5.Clear();
+        _savedActiveWearinessV6.Clear();
+        _savedHistoryWearinessV6.Clear();
     }
 
     private static string SerializeHeroDeaths(List<HeroDeathRecord> records)

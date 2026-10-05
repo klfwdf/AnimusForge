@@ -148,11 +148,6 @@ internal sealed class KingdomCivilWarKingdomState
 	public string PlayerSide = "";
 	public string LastImposedPolicyId = "";
 	public float LastMaxGrievance;
-	// Battle-built war weariness (0..100) as of WearinessDay; read through KingdomCivilWarOwner.Weariness (lazy decay).
-	public float Weariness;
-	public int WearinessDay = -1;
-	// Last day a weariness change queued a political evaluation (at most once a week).
-	public int WearinessNotifyDay = -1;
 	// continue_war pledge: breaking it adds broken_pledge grievance to these clans
 	public string NoPeaceTargetId = "";
 	public int NoPeaceUntilWeek;

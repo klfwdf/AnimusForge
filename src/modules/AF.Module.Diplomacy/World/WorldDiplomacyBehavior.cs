@@ -1645,8 +1645,8 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
             authorPerspective ? snapshot.AuthorInflictedCasualties : snapshot.AuthorSufferedCasualties,
             authorPerspective ? snapshot.AuthorOtherWars : snapshot.TargetOtherWars,
             GetUnrecoveredLostSettlements(authorPerspective ? author : target, authorPerspective ? target : author).Count);
-        // War weariness from the civil-war owner: a worn-out kingdom is pushed toward peace.
-        return WorldDiplomacyWarPressureRules.WithWeariness(pressure, TeamModuleServices.CivilWar.GetWarWeariness(authorPerspective ? author : target));
+        // This war's weariness (the terminal's bar for this side): a worn-out side is pushed toward peace.
+        return WorldDiplomacyWarPressureRules.WithWeariness(pressure, MyBehavior.GetWarWearinessForExternal(authorPerspective ? author : target, authorPerspective ? target : author));
     }
 
 	private List<Settlement> GetUnrecoveredLostSettlements(Kingdom originalOwner, Kingdom currentOwner)
