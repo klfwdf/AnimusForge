@@ -25,7 +25,7 @@ namespace AnimusForge.Illustrator.UI.Gallery
         }
 
         [DataSourceProperty]
-        public string Title => (string.IsNullOrWhiteSpace(_item.Title) ? "卡拉迪亚纪事画卷" : _item.Title) + (_item.IsDefault ? "【默认】" : string.Empty);
+        public string Title => (string.IsNullOrWhiteSpace(_item.Title) ? "卡拉迪亚纪事画卷" : _item.Title) + (_item.IsDefault ? "【默认】" : string.Empty) + (_item.IsFavorite ? "【收藏】" : string.Empty);
 
         [DataSourceProperty]
         public string DateText => _item.CreatedTime.ToLocalTime().ToString("yyyy/MM/dd HH:mm");
@@ -51,6 +51,8 @@ namespace AnimusForge.Illustrator.UI.Gallery
         {
             _onSelect?.Invoke(this);
         }
+
+        internal void RefreshTitle() => OnPropertyChanged(nameof(Title));
     }
 
     public sealed class IllustratorGalleryPopupVM : ViewModel
@@ -62,7 +64,6 @@ namespace AnimusForge.Illustrator.UI.Gallery
         private bool _hasSelection;
         private string _selectedSpriteName = string.Empty;
         private string _selectedTitle = string.Empty;
-        private string _selectedPrompt = string.Empty;
         private string _selectedDate = string.Empty;
         private string _selectedTheme = string.Empty;
         private string _statusText = "欢迎查阅卡拉迪亚纪事画廊";
@@ -73,6 +74,9 @@ namespace AnimusForge.Illustrator.UI.Gallery
         private int _refreshVersion;
         private readonly Func<bool> _isCurrent;
         private bool _rpConversionOpen;
+        // Last directory snapshot; the favorites tab filters it in memory instead of re-reading disk.
+        private System.Collections.Generic.List<CachedIllustrationItem> _cached = new System.Collections.Generic.List<CachedIllustrationItem>();
+        private bool _showFavorites;
 
         public IllustratorGalleryPopupVM(Action onClose, string campaignKey)
             : this(onClose, campaignKey, () => string.Equals(campaignKey, IllustratorRuntime.CampaignKey, StringComparison.Ordinal))
@@ -152,18 +156,13 @@ namespace AnimusForge.Illustrator.UI.Gallery
         }
 
         [DataSourceProperty]
-        public string SelectedPrompt
-        {
-            get => _selectedPrompt;
-            set
-            {
-                if (value != _selectedPrompt)
-                {
-                    _selectedPrompt = value;
-                    OnPropertyChangedWithValue(value, nameof(SelectedPrompt));
-                }
-            }
-        }
+        public bool IsFavoritesTab => _showFavorites;
+
+        [DataSourceProperty]
+        public bool IsAllTab => !_showFavorites;
+
+        [DataSourceProperty]
+        public string FavoriteButtonText => _selectedItem?.Item?.IsFavorite == true ? "取消收藏" : "收藏";
 
         [DataSourceProperty]
         public string SelectedDate
@@ -247,24 +246,84 @@ namespace AnimusForge.Illustrator.UI.Gallery
             }
         }
 
-        private void ApplyCachedItems(System.Collections.Generic.List<CachedIllustrationItem> cached)
+        private void ApplyCachedItems(System.Collections.Generic.List<CachedIllustrationItem> cached, string keepKey = null)
         {
+            _cached = cached ?? new System.Collections.Generic.List<CachedIllustrationItem>();
+            RebuildVisibleItems(keepKey);
+        }
+
+        private void RebuildVisibleItems(string keepKey)
+        {
+            _previewLoader.Cancel();
+            ReleasePreviewSprite();
+            SelectedSpriteName = string.Empty;
+            _selectedItem = null;
             Items.Clear();
-            foreach (var item in cached)
+            foreach (var item in _cached)
             {
+                if (_showFavorites && !item.IsFavorite) continue;
                 Items.Add(new IllustrationItemVM(item, HandleItemSelect));
             }
 
             if (Items.Count > 0)
             {
-                StatusText = $"共收录 {Items.Count} 幅历史画卷";
-                HandleItemSelect(Items[0]);
+                StatusText = _showFavorites ? $"共收藏 {Items.Count} 幅画卷" : $"共收录 {Items.Count} 幅历史画卷";
+                IllustrationItemVM target = Items[0];
+                if (!string.IsNullOrEmpty(keepKey))
+                    foreach (var item in Items)
+                        if (string.Equals(item.Item?.Key, keepKey, StringComparison.Ordinal)) { target = item; break; }
+                HandleItemSelect(target);
             }
             else
             {
                 HasSelection = false;
-                StatusText = "暂无收录画卷，将在周报生成时自动为您绘制";
+                OnPropertyChanged(nameof(FavoriteButtonText));
+                StatusText = _showFavorites ? "暂无收藏画卷，可在“全部”中选中画卷后点击“收藏”" : "暂无收录画卷，将在周报生成时自动为您绘制";
             }
+        }
+
+        public void ExecuteShowAll() => SwitchTab(false);
+
+        public void ExecuteShowFavorites() => SwitchTab(true);
+
+        private void SwitchTab(bool favorites)
+        {
+            IllustratorRuntime.AssertMainThread();
+            if (_disposed || favorites == _showFavorites) return;
+            _showFavorites = favorites;
+            OnPropertyChanged(nameof(IsFavoritesTab));
+            OnPropertyChanged(nameof(IsAllTab));
+            try { RebuildVisibleItems(_selectedItem?.Item?.Key); }
+            catch (Exception ex) { HasSelection = false; StatusText = "画廊操作失败：" + ex.Message; }
+        }
+
+        public void ExecuteToggleFavorite()
+        {
+            IllustratorRuntime.AssertMainThread();
+            var item = _selectedItem?.Item;
+            if (_disposed || item == null) return;
+            bool favorite = !item.IsFavorite;
+            if (!DiskImageCacheManager.SetFavorite(item, _campaignKey, favorite))
+            {
+                StatusText = favorite ? "收藏失败" : "取消收藏失败";
+                return;
+            }
+            // Patch the in-memory snapshot rather than re-scanning the cache directory.
+            foreach (var cachedItem in _cached)
+                if (string.Equals(cachedItem.Key, item.Key, StringComparison.Ordinal)) cachedItem.IsFavorite = favorite;
+            item.IsFavorite = favorite;
+            string key = item.Key;
+            string title = _selectedItem.Title;
+            if (_showFavorites && !favorite)
+            {
+                RebuildVisibleItems(null);
+                StatusText = "已取消收藏：" + title;
+                return;
+            }
+            _selectedItem.RefreshTitle();
+            SelectedTitle = _selectedItem.Title;
+            OnPropertyChanged(nameof(FavoriteButtonText));
+            StatusText = (favorite ? "已收藏：" : "已取消收藏：") + title;
         }
 
         private void HandleItemSelect(IllustrationItemVM selected)
@@ -282,6 +341,7 @@ namespace AnimusForge.Illustrator.UI.Gallery
             }
 
             _selectedItem = selected;
+            OnPropertyChanged(nameof(FavoriteButtonText));
             _previewLoader.Cancel();
             ReleasePreviewSprite();
             SelectedSpriteName = string.Empty;
@@ -291,7 +351,6 @@ namespace AnimusForge.Illustrator.UI.Gallery
                 // 预览 sprite 名必须每次唯一：旧纹理已释放，同名复用会让控件继续持有失效对象而不触发属性通知
                 string spriteName = "Gallery_" + selected.Item.Key + "_" + (++_previewCounter);
                 SelectedTitle = selected.Title;
-                SelectedPrompt = selected.Item?.Prompt ?? string.Empty;
                 SelectedDate = selected.DateText;
                 SelectedTheme = selected.Item.DisplayStatusText;
                 StatusText = "正在载入画卷…";
@@ -371,20 +430,6 @@ namespace AnimusForge.Illustrator.UI.Gallery
                 _rpConversionOpen = false;
                 OnPropertyChanged(nameof(CanConvertToRpItem));
                 StatusText = "无法打开画卷介绍编辑框。";
-            }
-        }
-
-        public void ExecuteCopyPrompt()
-        {
-            if (_selectedItem?.Item == null || string.IsNullOrWhiteSpace(_selectedItem.Item.Prompt)) return;
-            try
-            {
-                Input.SetClipboardText(_selectedItem.Item.Prompt);
-                StatusText = "提示词已复制到剪贴板";
-            }
-            catch (Exception ex)
-            {
-                StatusText = "复制失败: " + ex.Message;
             }
         }
 

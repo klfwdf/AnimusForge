@@ -220,7 +220,7 @@ namespace AnimusForge.Illustrator
             return -1;
         }
 
-        [SettingPropertyDropdown("生图分辨率 (Size)", Order = 7, RequireRestart = false, HintText = "场景插画和快报按预设转为16:9：1024方形及1280/720档→1280×720；1344/1536档→1536×864；2048方形→2048×1152。百科使用所选尺寸。需生图服务支持对应尺寸。")]
+        [SettingPropertyDropdown("生图分辨率 (Size)", Order = 7, RequireRestart = false, HintText = "快报与“全屏覆盖”场景插画按预设转为16:9：1024方形及1280/720档→1280×720；1344/1536档→1536×864；2048方形→2048×1152。百科与“独立面板”场景插画使用所选尺寸。需生图服务支持对应尺寸。")]
         [SettingPropertyGroup("2. 生图 API 配置 (OpenAI 兼容)", GroupOrder = 2)]
         public Dropdown<string> SizePresetDropdown
         {
@@ -506,11 +506,11 @@ namespace AnimusForge.Illustrator
         private static readonly List<string> _conversationDisplayOptions = new List<string>
         {
             "独立面板（默认）",
-            "上半屏覆盖"
+            "全屏覆盖"
         };
         private Dropdown<string> _conversationDisplayDropdown;
 
-        [SettingPropertyDropdown("绘图显示效果", Order = 5, RequireRestart = false, HintText = "独立面板：使用右侧场景插画面板；上半屏覆盖：插画覆盖屏幕上方约四分之三，底部保留对话与输入区域。自动重绘沿用此选择。")]
+        [SettingPropertyDropdown("绘图显示效果", Order = 5, RequireRestart = false, HintText = "独立面板：使用右侧场景插画面板；全屏覆盖：插画铺满屏幕作为对话背景，按钮位于上方约四分之三区域，底部保留对话与输入区域；打开百科、菜单等界面时自动隐藏。自动重绘沿用此选择。")]
         [SettingPropertyGroup("4. 周报与展示场景", GroupOrder = 4)]
         public Dropdown<string> ConversationDisplayDropdown
         {

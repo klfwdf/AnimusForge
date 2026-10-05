@@ -203,6 +203,7 @@ namespace AnimusForge.Illustrator.Core
             _frame++;
             while (FrameWaiters.Count > 0 && FrameWaiters.Peek().Key <= _frame) FrameWaiters.Dequeue().Value.TrySetResult(true);
             TickScopes();
+            UI.Overlays.IllustrationCardPopup.TickSystemUiVisibility();
             for (int i = 0; i < 2; i++)
             {
                 Action action;
