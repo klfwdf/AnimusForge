@@ -359,6 +359,7 @@ namespace AnimusForge
         public string Submit(WorldDiplomacyPlayerDocumentCommand c) => c.Body;
         public bool MarkRead(string id) => true;
         public bool CanOpenReply(string id,string round,long generation) => false;
+        public string RetryAnalysis(string id, long generation) => "retry";
     }
 }
 namespace AnimusForge.Refactor.Domain

@@ -9,7 +9,7 @@ using Newtonsoft.Json.Linq;
 // Exercises the actual module owner, not a predecessor Behavior or copied algorithm.
 internal static class ConcurrentOralMigrationReplay
 {
-    private sealed class Host : FakeOrchestrationHost, IWorldDiplomacyDialogueHost
+    internal sealed class Host : FakeOrchestrationHost, IWorldDiplomacyDialogueHost
     {
         internal WorldDiplomacyOrchestration Owner;
         internal bool PublishEnabled;
@@ -44,6 +44,9 @@ internal static class ConcurrentOralMigrationReplay
         public override bool TradeKnown() => true;
         public override void Notify(string value) => Notices.Add(value);
         public override IWorldDiplomacyOfferActionPort OfferAction() => new OfferPort(this);
+        public override IWorldDiplomacyPublicationPort Publication() => new PublicationPort(this);
+        public override int MaxPropagationArrivalsPerDay() => 1200;
+        public override string ResolvePropagationReceiverId(string kingdomId, string settlementId) => kingdomId ?? settlementId;
         public override IWorldDiplomacyHistoryCapturePort HistoryCapture() => new HistoryPort(this);
         public override IWorldDiplomacyDocumentExecutionPort DocumentExecution() => PublishEnabled
             ? new DocumentExecutionReplay.Port { Owner = Owner } : null;
@@ -60,6 +63,29 @@ internal static class ConcurrentOralMigrationReplay
             string location, int hour = -1, string npcName = null, string gameDate = "")
         { Facts.Add(source); return new MemoryCommitResult(MemoryCommitStatus.Applied); }
         public string PersonalMemory(string ruler, string topic, string counterpart) => "PRIVATE_MEMORY";
+    }
+    private sealed class PublicationPort : IWorldDiplomacyPublicationPort
+    {
+        private readonly Host _h;
+        internal PublicationPort(Host host) => _h = host;
+        public WorldDiplomacyStorage Storage => _h.Owner.CurrentStorage;
+        public string ResolveKingdomId(string id) => _h.ResolvePartyId(id);
+        public bool CanAiAuthor(string id, out string reason) => _h.CanAiAuthorParty(id, out reason);
+        public bool HasAuthority(string id) => _h.HasIndependentAuthority(id);
+        public bool IsPlayerAffiliated(string id) => _h.IsPlayerAffiliatedParty(id);
+        public bool IsPlayerKingdom(string id) => _h.IsPlayerParty(id);
+        public bool RepresentsAddressedVassal(string id, WorldDiplomacyDocument document) => false;
+        public WorldDiplomacyRound ResolveRound(string id) => _h.Owner.ResolveRound(id);
+        public string ResolveOriginSettlementId(string author) => "capital_" + author;
+        public WorldDiplomacyPublicationSnapshot CaptureDestinations(string author, string origin) => new(
+            new[] { new WorldDiplomacyPropagationApplication.SettlementTarget { Id = "village", Distance = 10 } },
+            _h.AllKingdomIds().Where(x => x != author).Select(x => new WorldDiplomacyPropagationApplication.CourtTarget
+                { KingdomId = x, SettlementId = "capital_" + x, Distance = 10, IsPlayerAffiliated = x == "p" }).ToList(), 10, 10);
+        public int CurrentDay => _h.CurrentDayValue;
+        public int ParticipantLimit => 8;
+        public int CivilianSpreadDays => 8;
+        public int CourtDeliveryDays => 7;
+        public void Log(string message) { }
     }
     private sealed class SelectionPort : IWorldDiplomacyActionSelectionPort, IWorldDiplomacyThreatBindingPort
     {
@@ -113,7 +139,7 @@ internal static class ConcurrentOralMigrationReplay
     }
     private static object Invoke(WorldDiplomacyOrchestration owner, string method, params object[] args) =>
         typeof(WorldDiplomacyOrchestration).GetMethod(method, BindingFlags.Instance | BindingFlags.NonPublic).Invoke(owner, args);
-    private static (Host h, WorldDiplomacyOrchestration o) Fixture()
+    internal static (Host h, WorldDiplomacyOrchestration o) Fixture()
     {
         var h = new Host(); var o = new WorldDiplomacyOrchestration(h, new WorldDiplomacyRuntimeState()); h.Owner = o; return (h, o);
     }
@@ -139,12 +165,35 @@ internal static class ConcurrentOralMigrationReplay
         var root = Doc("trade_root", a, "a", "b"); root.Intent = "propose_trade"; o.CurrentStorage.Documents.Add(root); a.RootDocumentId = root.DocumentId;
         var player = Doc("p_ask", a, "p", "b", true); player.AddressedKingdomIds = new() { "b", "c" };
         o.CurrentStorage.Documents.Add(player);
+        a.RelayPlanned = true; a.RelayWaiting = true; a.RelayCursor = 0; a.RelaySequence = 7;
+        a.RelayRouteKingdomIds = new() { "a", "b", "c", "p" };
+        o.CurrentStorage.RelayArrivals.Add(new() { RoundId = a.RoundId, FromKingdomId = "a", ToKingdomId = "c", DueDay = 14, Sequence = 7 });
         var bJob = new WorldDiplomacyJob { JobId = "b_job", Kind = "generate", RoundId = a.RoundId, AuthorKingdomId = "b", Priority = 20 };
         var cJob = new WorldDiplomacyJob { JobId = "c_job", Kind = "generate", RoundId = a.RoundId, AuthorKingdomId = "c", Priority = 20 };
         o.CurrentStorage.Jobs.AddRange(new[] { bJob, cJob });
         Invoke(o, "RegisterPlayerResponseWork", player, true);
         Test.True(a.PlayerResponses.Count == 2 && a.PlayerResponses.All(x => x.SourceDocumentId == "p_ask"), "all explicitly addressed eligible NPCs owe a response");
+        Test.True(bJob.Priority == 20 && bJob.PlayerResponseSourceIds.Count == 0,
+            "unreceived player speech persists as an obligation without leaking into queued speech");
+        foreach (string receiver in new[] { "b", "c" })
+            WorldDiplomacyPropagationApplication.ReceiveCourt(o.CurrentStorage, player, receiver, 12,
+                () => false, () => o.ProcessCourtArrival(receiver, player));
         Test.True(o.CurrentStorage.Jobs.Count == 2 && bJob.Priority == 95 && bJob.PlayerResponseSourceIds.SequenceEqual(new[] { "p_ask" }), "player merges into existing country speech instead of side conversation");
+        Test.True(a.RelayCursor == 0 && a.RelayWaiting && o.CurrentStorage.RelayArrivals.Single().ToKingdomId == "c",
+            "priority merging preserves the original relay cursor, wait state and next speaker");
+        var reply = Doc("priority_reply", a, "b", "p"); reply.IsRelayTurn = true; reply.IsExternalResponseOnly = true;
+        int moved = 0;
+        WorldDiplomacyRoundProgressApplication.HandleRoundDocumentProcessed(reply, o.CurrentStorage,
+            o.ResolveRound, o.ResolveDocument, () => 12, (_, _, _, _) => moved++, (_, _) => moved++, (_, _) => moved++,
+            _ => moved++, (_, _) => moved++, _ => moved++, _ => moved++, _ => moved++, _ => { });
+        Test.True(moved == 0 && a.RelayCursor == 0 && a.RelayWaiting && reply.RoundProgressHandled,
+            "completed priority reply uses original external-response accounting without consuming the relay hop");
+        var rejectedPriority = new WorldDiplomacyJob { JobId = "rejected_priority", Kind = "generate", RoundId = a.RoundId,
+            AuthorKingdomId = "b", IsRelayTurn = true, IsExternalResponseOnly = true };
+        o.AbandonRejectedGeneration(rejectedPriority, "b", "p", "test_failure");
+        Test.True(a.RelayCursor == 0 && a.RelayWaiting && o.CurrentStorage.RelayArrivals.Count == 1
+            && a.ConsecutiveTechnicalGenerationFailures == 0 && a.PlayerResponses.All(x => x.Status == "pending"),
+            "failed priority reply retains obligations and does not advance or trip the ordinary relay");
         Invoke(o, "RegisterPlayerResponseWork", player, true);
         Test.True(a.PlayerResponses.Count == 2, "source by country obligations are idempotent");
         string tail = DiplomacyRoundWorkRules.BuildRequestTail(a, o.CurrentStorage.Documents, bJob.PlayerResponseSourceIds);
@@ -192,9 +241,25 @@ internal static class ConcurrentOralMigrationReplay
 
         var news = Doc("public_news", c, "c", "a"); news.PropagationCompleted = false; o.CurrentStorage.Documents.Add(news);
         o.StartDocumentPropagation(news, "c");
-        Test.True(news.PropagationCompleted && o.PublicDocumentIds().Contains(news.DocumentId)
-            && o.CurrentStorage.KingdomKnowledge.All(x => x.DocumentIds.Contains(news.DocumentId)), "public document immediately queryable by every nation");
-        Test.True(o.CurrentStorage.PropagationArrivals.Count == 0, "public knowledge no longer waits for geographic propagation");
+        Test.True(news.PropagationCompleted && o.CurrentStorage.KingdomKnowledge.Single(x => x.KingdomId == "c").DocumentIds.Contains(news.DocumentId)
+            && !(bool)Invoke(o, "DialogueDocumentKnown", "a", news.DocumentId), "publication knows only its author until delivery");
+        Test.True(o.CurrentStorage.PropagationArrivals.Count(x => x.DocumentId == news.DocumentId) == 4,
+            "publication queues three court deliveries and civilian spread instead of granting global knowledge");
+        var propagationSave = JsonConvert.DeserializeObject<WorldDiplomacyStorage>(JsonConvert.SerializeObject(o.CurrentStorage));
+        var (deliveryHost, deliveryOwner) = Fixture(); deliveryOwner.ReplaceStorage(propagationSave);
+        deliveryHost.CurrentDayValue = 18; deliveryOwner.ProcessPropagationArrivals();
+        Test.True(!(bool)Invoke(deliveryOwner, "DialogueDocumentKnown", "a", news.DocumentId), "save reload retains future arrival and no early knowledge");
+        deliveryHost.CurrentDayValue = 19; deliveryOwner.ProcessPropagationArrivals();
+        Test.True((bool)Invoke(deliveryOwner, "DialogueDocumentKnown", "a", news.DocumentId)
+            && deliveryOwner.ResolveDocument(news.DocumentId).HasReachedPlayerCourt, "due court delivery restores ruler knowledge and player notice eligibility");
+        int deliveredFacts = deliveryHost.Facts.Count;
+        deliveryOwner.ProcessPropagationArrivals();
+        Test.True(deliveryHost.Facts.Count == deliveredFacts, "repeated daily delivery cannot duplicate personal memory");
+        Test.True(deliveryOwner.CurrentStorage.PropagationArrivals.Count(x => x.DocumentId == news.DocumentId) == 1,
+            "civilian spread remains pending after court delivery");
+        deliveryHost.CurrentDayValue = 20; deliveryOwner.ProcessPropagationArrivals();
+        Test.True(deliveryOwner.CurrentStorage.SettlementKnowledge.Any(x => x.SettlementId == "village" && x.DocumentIds.Contains(news.DocumentId)),
+            "civilian location knowledge appears at its own configured date");
         o.CurrentStorage.PlayerOpportunities.Add(new() { RoundId = a.RoundId, ArrivedDay = 10 });
         o.NotifyPlayerWaitRemaining(a); o.NotifyPlayerWaitRemaining(a);
         Test.True(h.Notices.Count(x => x.Contains("剩余 3")) == 1, "remaining player wait shown once per event/day");
@@ -235,6 +300,7 @@ internal static class ConcurrentOralMigrationReplay
         var proposal = Doc("formal_offer", round, "a", "b"); proposal.Intent = "propose_vassal";
         proposal.TreatyTerms = new() { ReceivingKingdomId = "a", JoiningKingdomId = "b" };
         o.CurrentStorage.Documents.Add(proposal);
+        WorldDiplomacyDocumentFactRules.RecordKingdomKnowledge(o.CurrentStorage.KingdomKnowledge, "b", proposal.DocumentId, 12);
         var offer = new WorldDiplomacyRoundOffer { SourceDocumentId = proposal.DocumentId, ProposerKingdomId = "a", TargetKingdomId = "b", Intent = proposal.Intent };
         round.PendingOffers.Add(offer);
         var response = Doc("formal_accept", round, "b", "a"); response.Intent = "accept_vassal";
@@ -286,7 +352,8 @@ internal static class ConcurrentOralMigrationReplay
             && publicationHost.Effects == 0,
             "published oral proposal creates a source-bound offer without prematurely executing a bilateral treaty: " + publishedDocument.MechanicalResult);
         Test.True(!publishedDocument.Body.Contains("PRIVATE_") && publishedDocument.PropagationCompleted
-            && publicationOwner.CurrentStorage.KingdomKnowledge.Any(x => x.DocumentIds.Contains(publishedDocument.DocumentId)),
-            "oral publication exposes agreed terms as world knowledge while private provenance stays private");
+            && publicationOwner.CurrentStorage.PropagationArrivals.Any(x => x.DocumentId == publishedDocument.DocumentId)
+            && !(bool)Invoke(publicationOwner, "DialogueDocumentKnown", "b", publishedDocument.DocumentId),
+            "oral publication schedules delivery of agreed terms while private provenance stays private");
     }
 }

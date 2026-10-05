@@ -142,6 +142,10 @@ public sealed class WorldDiplomacyDocument
 	[JsonProperty("analysisStatus")]
 	public string AnalysisStatus { get; set; } = "";
 
+    // Persist before entering effects, including outcomes whose side effects are uncertain.
+    [JsonProperty("playerAnalysisCommitted")]
+    public bool PlayerAnalysisCommitted { get; set; }
+
 	[JsonProperty("hiddenIntent")]
 	public string HiddenIntent { get; set; } = "";
 

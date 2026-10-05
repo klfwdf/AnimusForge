@@ -21,6 +21,58 @@ internal static class WarAdmissionReplay
         public int ActiveWars { get { Scans++; return Wars; } }
         public int MaxConcurrentOffensiveWars => 2;
     }
+    private sealed class Host : FakeOrchestrationHost
+    {
+        internal Port Admission;
+        public override int CurrentDay() => Admission.CurrentDay;
+        public override bool PartiesAtWar(string firstId, string secondId) => Admission.AtWar;
+        public override bool PartiesAllied(string firstId, string secondId) => Admission.Allied;
+        public override IWorldDiplomacyWarAdmissionPort WarAdmission(string firstId, string secondId)
+        {
+            Test.True(firstId == "empire_w" && secondId == "empire_s", "real owner keeps admission party direction");
+            return Admission;
+        }
+    }
+    private static Port AdmissionFor(string blocker) => new()
+    {
+        ValidPair = blocker != "invalid", HasIndependentAuthority = blocker != "authority",
+        AtWar = blocker == "war", Allied = blocker == "alliance",
+        BlocksNewOffensiveWar = blocker == "civil-war", PendingThreatDecision = blocker == "pending",
+        PeaceDay = blocker == "peace" ? 41 : null, WarDay = blocker == "cooldown" ? 41 : null,
+        Wars = blocker == "capacity" ? 2 : 0
+    };
+    internal static void RunStateWiring()
+    {
+        // Run the actual orchestration callback between admission and domain validation.
+        // The former inverted verdict rejects "none" and accepts every genuine blocker.
+        foreach (string blocker in new[] { "none", "invalid", "authority", "war", "alliance", "peace", "civil-war", "pending", "cooldown", "capacity" })
+        {
+            Port p = AdmissionFor(blocker);
+            var owner = new WorldDiplomacyOrchestration(new Host { Admission = p }, new WorldDiplomacyRuntimeState());
+            bool rejected = owner.TryGetDiplomaticStateViolation("declare_war", "empire_w", "empire_s", out string reason);
+            Port expectedPort = AdmissionFor(blocker);
+            bool allowed = WorldDiplomacyWarAdmissionApplication.CanDeclareWar(ref expectedPort, out string admissionReason);
+            Test.True(rejected == !allowed, "real orchestration preserves declare-war verdict: " + blocker);
+            Test.True(reason == (allowed ? "" : "declare_war_not_legal:" + admissionReason), "real declare-war rejection retains reason: " + blocker);
+            Test.True(p.Scans == expectedPort.Scans, "real declare-war callback keeps short-circuit scan count: " + blocker);
+        }
+    }
+    internal static void RunThreatWiring()
+    {
+        foreach (string intent in new[] { "warning", "ultimatum" })
+        foreach (string blocker in new[] { "none", "invalid", "authority", "war", "alliance", "peace", "civil-war", "pending", "cooldown", "capacity" })
+        {
+            Port p = AdmissionFor(blocker);
+            var owner = new WorldDiplomacyOrchestration(new Host { Admission = p }, new WorldDiplomacyRuntimeState());
+            bool rejected = owner.TryGetDiplomaticThreatIntentViolation(intent, "empire_w", "empire_s", null, out string reason);
+            Port expectedPort = AdmissionFor(blocker);
+            bool allowed = WorldDiplomacyWarAdmissionApplication.CanIssueWarThreat(ref expectedPort, out string admissionReason);
+            Test.True(rejected == !allowed, "real orchestration preserves threat verdict: " + intent + "/" + blocker);
+            string expectedReason = p.AtWar ? "threat_intent_between_kingdoms_already_at_war" : allowed ? "" : "threat_cannot_be_enforced:" + admissionReason;
+            Test.True(reason == expectedReason, "real threat rejection retains reason: " + intent + "/" + blocker);
+            Test.True(p.Scans == 0, "real threat callback never scans active wars: " + intent + "/" + blocker);
+        }
+    }
     internal static void Run()
     {
         foreach (string blocker in new[] { "invalid", "authority", "war", "alliance", "peace", "civil-war", "pending", "cooldown", "capacity", "none" })
@@ -37,5 +89,7 @@ internal static class WarAdmissionReplay
         Test.True(WorldDiplomacyWarAdmissionApplication.CanDeclareWar(ref boundary, out _), "protection and cooldown expire exactly at their boundary");
         var threatOnly = new Port { PendingThreatDecision = true, Wars = 2 };
         Test.True(WorldDiplomacyWarAdmissionApplication.CanIssueWarThreat(ref threatOnly, out _) && threatOnly.Scans == 0, "threat query never reads pacing state or scans wars");
+        RunStateWiring();
+        RunThreatWiring();
     }
 }

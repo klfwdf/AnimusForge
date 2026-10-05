@@ -156,4 +156,4 @@
     <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Domain/WorldDiplomacyLiveRoundRules.cs" />
     <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Persistence/WorldDiplomacyDialogueRecords.cs" />
     <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Persistence/WorldDiplomacyPlayerResponse.cs" />
-</ItemGroup></Project>
+</ItemGroup><ItemGroup><Compile Include="../../../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyRequestHistoryApplication.cs" /></ItemGroup></Project>

@@ -30,7 +30,14 @@ internal static class WorldDiplomacyFailureApplication
         }
         else if (WorldDiplomacyRoundLifecycleRules.IsJobOfKind(job, "analyze"))
         {
-            commitAnalysis?.Invoke(job, buildFallbackAnalysisJson?.Invoke(job));
+            var document = storage?.Documents?.Find(x => x?.DocumentId == job.DocumentId);
+            if (document?.IsPlayerAuthored == true && document.PlayerAnalysisCommitted)
+            {
+                document.AnalysisStatus = "analysis_execution_failed";
+                document.MechanicalResult += "\n外交处理未完整结束；为避免重复执行，本篇不自动重试。请核对已发生的外交结果。";
+            }
+            commitAnalysis?.Invoke(job, document?.IsPlayerAuthored == true
+                ? "{\"status\":\"analysis_failed\"}" : buildFallbackAnalysisJson?.Invoke(job));
             logThreatFallbackPublished?.Invoke(job);
         }
         else if (WorldDiplomacyRoundLifecycleRules.IsJobOfKind(job, "compress"))

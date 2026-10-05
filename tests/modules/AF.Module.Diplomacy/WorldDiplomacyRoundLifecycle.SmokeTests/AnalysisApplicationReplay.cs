@@ -43,9 +43,9 @@ internal static class AnalysisApplicationReplay
         p.Storage.Documents.Add(document); p.Effects.StoredDocument = document;
         var job = new WorldDiplomacyJob { DocumentId = "d", Kind = "analyze" };
         WorldDiplomacyAnalysisApplication.Commit(p, orch, job, "{}");
-        Test.True(document.Intent == "statement" && document.Commitment == "non_binding" && document.AnalysisStatus == "fallback"
-            && document.IsReadyForPublication && p.Storage.Documents.Contains(document) && p.Effects.Events.Contains("history") && p.Effects.Events.Contains("round"),
-            "malformed analysis of published player speech flows through statement execution, history and round progress without deletion");
+        Test.True(document.AnalysisStatus == "analysis_failed" && !document.PlayerAnalysisCommitted
+            && document.IsReadyForPublication && p.Storage.Documents.Contains(document) && !p.Effects.Events.Contains("history") && !p.Effects.Events.Contains("round"),
+            "malformed player analysis retains public text with explicit retryable failure and no invented statement execution");
         p.Effects.Events.Clear(); document.Intent = "unsupported"; document.Commitment = "binding"; document.MechanicalResult = "";
         WorldDiplomacyAnalysisApplication.Suppress(p, orch, document, "late illegal action");
         Test.True(document.AnalysisStatus == "published_action_rejected" && document.Intent == "statement" && document.Commitment == "non_binding"

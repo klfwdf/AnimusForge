@@ -30,7 +30,8 @@ internal sealed partial class WorldDiplomacyOrchestration
             // exists. This value is a validation input, never registered/published.
             var validationInput = new WorldDiplomacyDocument { AuthorKingdomId = author,
                 IsReadyForPublication = true, PeaceTerms = WorldDiplomacyDialogueTerms.From(terms).ToPeaceTerms() };
-            if (!AreOfferedPeaceTermsCurrentlyExecutable(new WorldDiplomacyRoundOffer(), validationInput))
+            if (!AreOfferedPeaceTermsCurrentlyExecutable(new WorldDiplomacyRoundOffer {
+                ProposerKingdomId = author, TargetKingdomId = target }, validationInput))
             { reason = "peace_terms_not_currently_executable_without_changes"; return false; }
         }
         if (!IsFormalTreatyIntent(intent)) return true;
@@ -72,6 +73,8 @@ internal sealed partial class WorldDiplomacyOrchestration
         reason = "";
         if (!IsFormalTreatyIntent(intent)) return true;
         if (NormalizeIntent(intent).StartsWith("reject_")) return true;
+        if (terms != null && (terms.DailyTribute != 0 || terms.DurationDays != 0 || !string.IsNullOrEmpty(terms.CessionSettlementId)))
+        { reason = "unsupported_extra_treaty_clause"; return false; }
         if (NormalizeIntent(intent).StartsWith("accept_"))
         {
             var original = ResolveDialogueTerms(ResolveDocument(sourceId), sourceActionId);
@@ -80,6 +83,9 @@ internal sealed partial class WorldDiplomacyOrchestration
             return ValidateFormalTreatyTerms(intent, original, author, target, out reason);
         }
         if (!ValidateFormalTreatyTerms(intent, terms?.ToTerms(), author, target, out reason)) return false;
+        // Player wording is interpreted once by analysis. Runtime role/state validation
+        // above is authoritative; a second lexical classifier must not veto synonyms.
+        if (document.IsPlayerAuthored) return true;
         var receiving = ResolveDialogueParty(terms.ReceivingKingdomId); var joining = ResolveDialogueParty(terms.JoiningKingdomId);
         string pattern = NormalizeIntent(intent).EndsWith("annexation") ? "并入|归入|加入|吞并"
             : "臣服|臣属|附庸|宗主|朝贡|驻军|卫戍";

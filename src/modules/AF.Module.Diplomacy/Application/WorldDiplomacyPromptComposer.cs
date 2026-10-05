@@ -427,33 +427,40 @@ internal static class WorldDiplomacyPromptComposer
 				isExternalResponseOnly: false,
 				sourceDocumentId: document.SourceDocumentId,
 				requireAnyOpenPeaceOffer: true);
-			List<WorldDiplomacyRoundOffer> openOffers = (analysisRound?.PendingOffers ?? new List<WorldDiplomacyRoundOffer>())
-				.Where(x => WorldDiplomacyRoundLifecycleRules.IsOpenOfferToTarget(x, document.AuthorKingdomId))
+            var analysisOffers = orchestration is WorldDiplomacyOrchestration live
+                ? live.PlayerAnalysisOffers(document.AuthorKingdomId)
+                : (analysisRound?.PendingOffers ?? new List<WorldDiplomacyRoundOffer>())
+                    .Where(x => WorldDiplomacyRoundLifecycleRules.IsOpenOfferToTarget(x, document.AuthorKingdomId));
+			List<WorldDiplomacyRoundOffer> openOffers = analysisOffers
 				.OrderByDescending(x => requiredPlayerPeaceOffer != null
 					&& WorldDiplomacyRoundLifecycleRules.MatchesDocumentId(x.SourceDocumentId, requiredPlayerPeaceOffer.SourceDocumentId)
 					&& string.Equals(x.SourceActionId ?? "", requiredPlayerPeaceOffer.SourceActionId ?? "", StringComparison.OrdinalIgnoreCase))
 				.ThenByDescending(x => x.CreatedDay)
-				.Take(4)
+				.Take(13)
 				.ToList();
 			if (openOffers.Count > 0)
 			{
-			sb.AppendLine("当前待本国正式答复的提案：");
-				foreach (WorldDiplomacyRoundOffer offer in openOffers)
+			sb.AppendLine("本国已知的未决原案：本国提出的可撤回，外国提出的可接受或拒绝；修改条件是新提案。");
+				foreach (WorldDiplomacyRoundOffer offer in openOffers.Take(12))
 				{
 					WorldDiplomacyDocument source = world.ResolveDocument(offer.SourceDocumentId);
+                    var treaty = WorldDiplomacyDocumentFactRules.ResolveDocumentAction(source, offer.SourceActionId)?.TreatyTerms ?? source?.TreatyTerms;
 					bool isPeaceOffer = string.Equals(
 						WorldDiplomacyIntentVocabulary.NormalizeIntent(offer.Intent),
 						"propose_peace",
 						StringComparison.OrdinalIgnoreCase);
-			sb.AppendLine("- 来源=" + offer.SourceDocumentId + "|类型=" + offer.Intent
+			sb.AppendLine("- 来源=" + offer.SourceDocumentId + "|动作=" + offer.SourceActionId + "|类型=" + offer.Intent
 				+ "|提出国=" + offer.ProposerKingdomId + "=" + world.KingdomName(world.ResolveKingdom(offer.ProposerKingdomId))
+                + "|接收国=" + offer.TargetKingdomId
+                + "|条约角色=" + treaty?.ReceivingKingdomId + "/" + treaty?.JoiningKingdomId
 				+ "|标题=" + WorldDiplomacyTextRules.Limit(source?.Title, 80) + "|要点=" + WorldDiplomacyTextRules.Limit(source?.Body, 240)
 						+ (isPeaceOffer
 					? "|原案条款=" + WorldDiplomacyOfferContractRules.FormatPeaceTermsForPrompt(WorldDiplomacyDocumentFactRules.ResolveOfferedPeaceTerms(source, offer.SourceActionId))
 						+ "|答复=原样接受或明确拒绝"
 							: ""));
 				}
-			sb.AppendLine("接受或拒绝必须绑定对应来源；和平原案不得改写或另提方案，其他动作以当前合法状态为准。只有评论且没有实际动作时按其语义返回statement或condemn，公文仍然有效。");
+                if (openOffers.Count > 12) sb.AppendLine("还有未列出的原案；不能推定唯一或猜测来源ID。");
+			sb.AppendLine("接受、拒绝或撤回必须绑定来源公文及动作ID；接受继承原条款，修改条件提取为新提案。这里只提取玩家语义，不用回合轮次限制裁判玩家表达。只有评论且没有实际动作时返回statement或condemn。");
 			}
 		}
 		WorldDiplomacyDocument sourceDocument = world.ResolveDocument(document.SourceDocumentId);
@@ -467,7 +474,7 @@ internal static class WorldDiplomacyPromptComposer
 		sb.AppendLine(sourceDocument.AuthorKingdomName + "《" + sourceDocument.Title + "》：" + WorldDiplomacyTextRules.Limit(sourceDocument.Body, 1400));
 		}
 	sb.AppendLine("公文标题：" + document.Title);
-	sb.AppendLine("公文正文：" + WorldDiplomacyTextRules.Limit(document.Body, 3000));
+	sb.AppendLine("公文正文：" + document.Body);
 	sb.AppendLine("【MODE=ANALYZE】");
 		sb.AppendLine(WorldDiplomacyPromptContractRules.BuildAnalysisModeContract());
 		return sb.ToString().TrimEnd();

@@ -13,4 +13,5 @@ internal interface IWorldDiplomacyPresentationPort
     string Submit(WorldDiplomacyPlayerDocumentCommand command);
     bool MarkRead(string id);
     bool CanOpenReply(string documentId, string roundId, long generation);
+    string RetryAnalysis(string documentId, long generation);
 }

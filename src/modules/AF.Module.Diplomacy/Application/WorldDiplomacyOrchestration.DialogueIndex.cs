@@ -14,6 +14,11 @@ namespace AnimusForge;
 
 internal sealed partial class WorldDiplomacyOrchestration
 {
+    // Once per analysis request; only live offers, never the full document archive.
+    internal IEnumerable<WorldDiplomacyRoundOffer> PlayerAnalysisOffers(string actor)
+        => GetLiveRounds().Where(IsLiveRound).SelectMany(x => x.PendingOffers ?? Enumerable.Empty<WorldDiplomacyRoundOffer>())
+            .Where(x => x != null && x.Status == "open" && (x.TargetKingdomId == actor || x.ProposerKingdomId == actor)
+                && DialogueDocumentKnown(actor, x.SourceDocumentId));
     private bool _dialogueIndexDirty = true;
     private readonly Dictionary<string, WorldDiplomacyRound> _dialogueRoundsById = new(StringComparer.OrdinalIgnoreCase);
     private readonly Dictionary<string, List<KeyValuePair<WorldDiplomacyRound, WorldDiplomacyRoundOffer>>> _dialogueOffersByPair = new(StringComparer.OrdinalIgnoreCase);
