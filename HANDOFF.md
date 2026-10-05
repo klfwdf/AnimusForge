@@ -1,3 +1,10 @@
+# 当前任务交接：内战新存档分块防溢出（2026-10-05，OFFLINE_VERIFIED_NOT_DEPLOYED）
+
+- 最新授权“只修新的／做”：产品与测试 `4b4d6167`，意图检查点 `ca37d66`。MyBehavior.SyncData 的内战 JSON 接入原12KB分块助手，键与JSON结构/玩法不变，仅在存取时拆分/拼接；不修旧坏档、不改未知来源装备XML。
+- 11组往返回归、原持久化回归、两项接线负例及迁移fixture通过；真实1.4.8 SaveSystem 对合成未分块数据复现OverflowException，对分块9条字符串逐项读回通过。原入口Debug 1.3(v1.3.15)/1.4(v1.4.6)+Bootstrap均0错误、双最终DLL接缝门禁PASS；不等于完整游戏/72模组新保存实机验收。
+- [唯一主台账、源码坐标、命令、未验边界和回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#civilwar-chunked-save-20261005)。本地hash/日志证据 `.codex_tmp/civilwar-save-fix-20261005/receipt.json`；候选 `bin/Debug/single_module_artifacts`。
+- 本轮没有Stage/部署/推送，游戏安装仍是先前版本；旧存档hash未变。编译时包含其他作者现场Coup改动（receipt独立标记），未提交/回滚那些文件。后续覆盖需要新授权。回滚本补丁使用 focused `git revert 4b4d6167`。
+
 # 当前交接：远端融合与Illustrator本机部署（2026-10-05，DEPLOYED_HASH_VERIFIED_LIVE_PENDING）
 
 - 最新用户授权“有新提交则拉取融合、再编译部署”；fetch确认当前upstream无新增、main有25d2670e野外决斗修复。普通merge `c4438de1` 无冲突，检查点 `1c85613d`；本地Illustrator产品106e4760及其他作者提交均保留，八份Illustrator源码hash复核一致。
