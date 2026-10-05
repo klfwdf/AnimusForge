@@ -7273,3 +7273,10 @@ R2计划交付门槛：已给固定技术路线、真实来源与目标、写入
 - 真实证据：17047108将全屏Overlay输入从Right/MarginRight200改为Left/MarginLeft10；本机Native SPConversation中AnswerListContainer的Left是父ListPanel内局部锚点，不能据此推出屏幕左侧。现有NativeConversationAnswerAreaController.cs:248以preserveLayout:false隐藏整个选项容器，移除了NPC相邻区域布局占位。
 - 范围：仅原版Overlay输入恢复Right/MarginRight200、AI抑制时保留原选项容器占位并透明/禁交互；退出恢复原属性。更新错误方向断言，新增真实控制器链接回放。保留17047108失焦/回复修复、Illustrator20/6/40超时、其他作者与远端决斗修复，不整体revert。
 - 退出门：布局占位/透明/还原/动态选项回放、原失焦专项、双API+Bootstrap编译；无实机验收不得称GPU布局通过。当前启动器进程9080仍在，不能在占用时覆盖，也不擅自结束进程。
+<a id="coup-campaign-identity-resolution-20261005"></a>
+## 已称王但政变后登记未完成：战役身份解析纠正（2026-10-05，ACTIVE）
+
+- 用户已称王并释放旧王，截图提示政变后叛乱登记失败；本机Mod_Logic.txt:3197–3211（17:42:40–17:42:48）同一事件815dc8ada1dc47bf845d77c9509db4bc确认king_subdued后SelectLoyalists抛“政变前后统治者身份缺失”，CommitVictory随后Suspended。
+- 根因证据：CommitVictory用Hero.FindFirst正确解析旧王且已越过RulingClan/Town/Custody/Facts标记；Bridge却使用MBObjectManager.GetObject<Hero>。1.3/1.4本地Hero.Find均读CampaignObjectManager；同条Bridge还以MB注册表查Clan/Kingdom，拘押小时校验也有同类错误。旧Probe人为向MB注册表登记Hero/Clan，掩盖了真实注册域差异。
+- 用户授权的定点修复：更换Coup中的战役Hero/Clan/Kingdom解析域、补有界身份诊断、修正夹具使用真实战役对象列表；验证已提交步骤重试不重放。存档字段/键/对象类型不变，不迁移或强改玩家存档，不跳过叛乱资格/强行完成；原版UI修正762539c0保留，新UI不得变化。
+- 性能边界：原生Find是列表解析，不声称O(1)；旧王在单次候选验证解析一次并在家族循环复用，不引入每帧世界扫描；拘押只维持现有每小时已标记旧王集合。总入口/异步边界与原Save/Load机制保持。
