@@ -121,6 +121,7 @@ public sealed class AnimusForgeConversationHistoryLogItemVM : ViewModel
 		_onDeleteArmed = onArmed;
 		_onDeleteConfirmed = onConfirmed;
 		OnPropertyChanged(nameof(CanDelete));
+		OnPropertyChanged(nameof(IsDeleteVisible));
 	}
 
 	internal void DisarmDelete()
@@ -150,6 +151,168 @@ public sealed class AnimusForgeConversationHistoryLogItemVM : ViewModel
 		}
 		DisarmDelete();
 		_onDeleteConfirmed();
+	}
+
+	// Row actions are hidden until the host's panel toggles them on; edit and delete share one slot, so at most one shows.
+	private bool _showEditAction;
+
+	private bool _showDeleteAction;
+
+	[DataSourceProperty]
+	public bool IsDeleteVisible => CanDelete && _showDeleteAction;
+
+	// Optional inline edit, enabled only by a host that supplies an edit handler (DialogueUI panel).
+	// First click opens the editor ("保存"), second click or Enter saves; another row opening cancels this one.
+	private Action<AnimusForgeConversationHistoryLogItemVM> _onEditStarted;
+
+	private Func<string, bool> _onEditSaved;
+
+	private Action _onStartTyping;
+
+	private Action _onStopTyping;
+
+	private string _editSourceText = "";
+
+	private string _editText = "";
+
+	private bool _isEditing;
+
+	[DataSourceProperty]
+	public bool CanEdit => _onEditSaved != null;
+
+	[DataSourceProperty]
+	public bool IsEditVisible => CanEdit && _showEditAction;
+
+	[DataSourceProperty]
+	public bool IsEditing => _isEditing;
+
+	[DataSourceProperty]
+	public bool IsNotEditing => !_isEditing;
+
+	// Bumped on each open so the reused editor widget refocuses itself.
+	[DataSourceProperty]
+	public int EditFocusRequestId { get; private set; }
+
+	[DataSourceProperty]
+	public string EditButtonText => _isEditing ? "保存" : "编辑";
+
+	[DataSourceProperty]
+	public string EditText
+	{
+		get => _editText;
+		set
+		{
+			value = value ?? "";
+			if (value != _editText)
+			{
+				_editText = value;
+				OnPropertyChangedWithValue(value, nameof(EditText));
+			}
+		}
+	}
+
+	internal void EnableEdit(string sourceText, Action<AnimusForgeConversationHistoryLogItemVM> onStarted, Func<string, bool> onSaved, Action onStartTyping, Action onStopTyping)
+	{
+		_editSourceText = sourceText ?? "";
+		_onEditStarted = onStarted;
+		_onEditSaved = onSaved;
+		_onStartTyping = onStartTyping;
+		_onStopTyping = onStopTyping;
+		OnPropertyChanged(nameof(CanEdit));
+		OnPropertyChanged(nameof(IsEditVisible));
+	}
+
+	internal void SetActionVisibility(bool showEdit, bool showDelete)
+	{
+		if (!showEdit)
+		{
+			CancelEdit();
+		}
+		if (!showDelete)
+		{
+			DisarmDelete();
+		}
+		if (showEdit == _showEditAction && showDelete == _showDeleteAction)
+		{
+			return;
+		}
+		_showEditAction = showEdit;
+		_showDeleteAction = showDelete;
+		OnPropertyChanged(nameof(IsEditVisible));
+		OnPropertyChanged(nameof(IsDeleteVisible));
+	}
+
+	// Called by the owner after a successful save so the row shows the stored text without rebuilding the page.
+	internal void ApplyEdit(string speaker, string formattedText, string fontColor, string sourceText)
+	{
+		ChatSpeaker = string.IsNullOrWhiteSpace(speaker) ? "记录" : speaker.Trim();
+		ChatText = formattedText ?? "";
+		FontColor = string.IsNullOrWhiteSpace(fontColor) ? "#D6D6D6FF" : fontColor;
+		_editSourceText = sourceText ?? "";
+	}
+
+	internal void CancelEdit()
+	{
+		if (!_isEditing)
+		{
+			return;
+		}
+		SetEditing(false);
+		_onStopTyping?.Invoke();
+	}
+
+	public void ExecuteEdit()
+	{
+		if (!IsEditVisible)
+		{
+			return;
+		}
+		if (_isEditing)
+		{
+			ExecuteSaveEdit();
+			return;
+		}
+		EditText = _editSourceText;
+		SetEditing(true);
+		EditFocusRequestId++;
+		OnPropertyChanged(nameof(EditFocusRequestId));
+		_onEditStarted?.Invoke(this);
+	}
+
+	public void ExecuteSaveEdit()
+	{
+		if (!_isEditing || _onEditSaved == null)
+		{
+			return;
+		}
+		// An unchanged text simply closes the editor instead of touching the store.
+		if (string.Equals((_editText ?? "").Trim(), _editSourceText.Trim(), StringComparison.Ordinal) || _onEditSaved(_editText))
+		{
+			CancelEdit();
+		}
+	}
+
+	public void ExecuteCancelEdit()
+	{
+		CancelEdit();
+	}
+
+	public void StartTyping()
+	{
+		_onStartTyping?.Invoke();
+	}
+
+	public void StopTyping()
+	{
+		_onStopTyping?.Invoke();
+	}
+
+	private void SetEditing(bool value)
+	{
+		_isEditing = value;
+		OnPropertyChanged(nameof(IsEditing));
+		OnPropertyChanged(nameof(IsNotEditing));
+		OnPropertyChanged(nameof(EditButtonText));
 	}
 
 	// Shared by the page-level cache so row colors remain identical whether the record is first formatted or restored from cache.

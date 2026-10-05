@@ -179,15 +179,30 @@ public sealed class DialogueAuxiliaryVM : ViewModel
         RefreshState();
         return deleted;
     }
+    // Click/Enter-driven only. The host rewrites the line and updates the entry in place (same reference
+    // as in _entries), so filters and searches see the new text without re-reading the store.
+    private bool EditHistoryEntry(AnimusForgeDialogueHistoryEntry entry, string text)
+    {
+        if (!CanInteract || entry == null) return false;
+        if (!IsCurrentTarget()) { Close(); return false; }
+        bool edited = MyBehavior.EditDialogueHistoryLineForExternal(entry, AnimusForgeTextInputSanitizer.SanitizeSingleLine(text ?? "", AnimusForgeTextInputSanitizer.MaxNativeConversationChars), out string status);
+        _status = status ?? "";
+        if (edited) _owner.StopTyping();
+        RefreshState();
+        return edited;
+    }
     private static bool IsFact(AnimusForgeDialogueHistoryEntry e) => (e.Kind ?? "").IndexOf("fact", StringComparison.OrdinalIgnoreCase) >= 0 || (e.Kind ?? "").StartsWith("afef", StringComparison.OrdinalIgnoreCase) || (e.Text ?? "").Contains("[AFEF");
     private void RebuildHistory()
     {
         var entries = _entries.Where(e => (!_day.HasValue || e.GameDayIndex == _day.Value)
             && (_filter == "all" || (_filter == "action") == IsFact(e))
             && (string.IsNullOrEmpty(_search) || Contains(e.Text, _search) || Contains(e.Speaker, _search))).ToList();
+        // Filter, day and search rebuilds keep the player's edit/delete toggle instead of hiding the row controls again.
+        bool editMode = History?.IsEditMode == true, deleteMode = History?.IsDeleteMode == true;
         ReleaseHistory();
         History = new AnimusForgeConversationHistoryLogVM(_targetName, entries, _hero, _character, Close, OpenEncyclopedia,
-            DialogueUiOptions.ShowHistoryDelete ? DeleteHistoryEntry : null);
+            DialogueUiOptions.ShowHistoryDelete ? DeleteHistoryEntry : null, EditHistoryEntry, StartTyping, StopTyping);
+        if (editMode) History.ToggleEditMode(); else if (deleteMode) History.ToggleDeleteMode();
         LayoutVersion++;
         OnPropertyChanged(nameof(History));
     }

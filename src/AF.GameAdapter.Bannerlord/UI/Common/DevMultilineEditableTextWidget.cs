@@ -73,6 +73,10 @@ public class DevMultilineEditableTextWidget : BrushWidget
 
 	private bool _autoFocusApplied;
 
+	private bool _focusRequested;
+
+	private int _focusRequestId;
+
 	private float _lineHeightScaled = 28f;
 
 	private float _lineHeightUnscaled = 28f;
@@ -105,6 +109,21 @@ public class DevMultilineEditableTextWidget : BrushWidget
 
 	[Editor(false)]
 	public bool AutoFocus { get; set; }
+
+	// Each change asks for focus once the widget is visible, so a reused (hidden-then-shown) editor can refocus.
+	[Editor(false)]
+	public int FocusRequestId
+	{
+		get => _focusRequestId;
+		set
+		{
+			if (value != _focusRequestId)
+			{
+				_focusRequestId = value;
+				_focusRequested = true;
+			}
+		}
+	}
 
 	[Editor(false)]
 	public bool SubmitOnEnter { get; set; }
@@ -358,6 +377,13 @@ public class DevMultilineEditableTextWidget : BrushWidget
 			_hasCaretFocus = true;
 			_caretWidget.IsVisible = true;
 			_autoFocusApplied = true;
+		}
+		else if (_focusRequested && EventManager != null && IsRecursivelyVisible())
+		{
+			EventManager.FocusedWidget = this;
+			_hasCaretFocus = true;
+			_caretWidget.IsVisible = true;
+			_focusRequested = false;
 		}
         float width = Size.X;
         if (Math.Abs(width - _lastLayoutWidth) > 0.5f || Math.Abs(_scaleToUse - _lastLayoutScale) > 0.001f)

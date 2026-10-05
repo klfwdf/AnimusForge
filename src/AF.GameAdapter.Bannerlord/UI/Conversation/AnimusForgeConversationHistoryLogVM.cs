@@ -57,6 +57,72 @@ public sealed class AnimusForgeConversationHistoryLogVM : ViewModel
 
 	private AnimusForgeConversationHistoryLogItemVM _armedDeleteItem;
 
+	private readonly Func<AnimusForgeDialogueHistoryEntry, string, bool> _tryEditEntry;
+
+	private readonly Action _onStartTyping;
+
+	private readonly Action _onStopTyping;
+
+	private AnimusForgeConversationHistoryLogItemVM _editingItem;
+
+	// Edit/delete toggles are mutually exclusive and both off by default; they only reveal the row controls.
+	private bool _isEditMode;
+
+	private bool _isDeleteMode;
+
+	[DataSourceProperty]
+	public bool CanToggleEdit => _tryEditEntry != null;
+
+	[DataSourceProperty]
+	public bool CanToggleDelete => _tryDeleteEntry != null;
+
+	[DataSourceProperty]
+	public bool IsEditMode => _isEditMode;
+
+	[DataSourceProperty]
+	public bool IsDeleteMode => _isDeleteMode;
+
+	// Gauntlet command: toggles the per-row edit buttons; turning it on turns delete off.
+	public void ToggleEditMode()
+	{
+		if (_isFinalized || _tryEditEntry == null)
+		{
+			return;
+		}
+		SetActionModes(!_isEditMode, false);
+	}
+
+	// Gauntlet command: toggles the per-row delete buttons; turning it on turns edit off.
+	public void ToggleDeleteMode()
+	{
+		if (_isFinalized || _tryDeleteEntry == null)
+		{
+			return;
+		}
+		SetActionModes(false, !_isDeleteMode);
+	}
+
+	// Touches only the current page's item VMs (at most HistoryPageSize rows).
+	private void SetActionModes(bool editMode, bool deleteMode)
+	{
+		_isEditMode = editMode;
+		_isDeleteMode = deleteMode;
+		if (!editMode)
+		{
+			_editingItem = null;
+		}
+		if (!deleteMode)
+		{
+			_armedDeleteItem = null;
+		}
+		foreach (AnimusForgeConversationHistoryLogItemVM item in Items)
+		{
+			item.SetActionVisibility(editMode, deleteMode);
+		}
+		OnPropertyChanged(nameof(IsEditMode));
+		OnPropertyChanged(nameof(IsDeleteMode));
+	}
+
 	[DataSourceProperty]
 	public MBBindingList<AnimusForgeConversationHistoryLogItemVM> Items
 	{
@@ -177,8 +243,18 @@ public sealed class AnimusForgeConversationHistoryLogVM : ViewModel
 	// tryDeleteEntry: optional; returns true when the persisted line was deleted. Only entries that carry a
 	// MemoryId and LineOrdinal (persisted history, not the session-only fallback) get a delete control.
 	public AnimusForgeConversationHistoryLogVM(string targetName, IReadOnlyList<AnimusForgeDialogueHistoryEntry> entries, Hero conversationTargetHero, CharacterObject conversationTargetCharacter, Action onClose, Action<string> onOpenEncyclopediaLink, Func<AnimusForgeDialogueHistoryEntry, bool> tryDeleteEntry)
+		: this(targetName, entries, conversationTargetHero, conversationTargetCharacter, onClose, onOpenEncyclopediaLink, tryDeleteEntry, null, null, null)
+	{
+	}
+
+	// tryEditEntry: optional; receives the new display text and returns true when the persisted line was rewritten
+	// (the entry is updated in place by the host). onStartTyping/onStopTyping keep the host's hotkeys quiet while typing.
+	public AnimusForgeConversationHistoryLogVM(string targetName, IReadOnlyList<AnimusForgeDialogueHistoryEntry> entries, Hero conversationTargetHero, CharacterObject conversationTargetCharacter, Action onClose, Action<string> onOpenEncyclopediaLink, Func<AnimusForgeDialogueHistoryEntry, bool> tryDeleteEntry, Func<AnimusForgeDialogueHistoryEntry, string, bool> tryEditEntry, Action onStartTyping, Action onStopTyping)
 	{
 		_tryDeleteEntry = tryDeleteEntry;
+		_tryEditEntry = tryEditEntry;
+		_onStartTyping = onStartTyping;
+		_onStopTyping = onStopTyping;
 		_onClose = onClose;
 		_onOpenEncyclopediaLink = onOpenEncyclopediaLink;
 		_conversationTargetHero = conversationTargetHero;
@@ -260,6 +336,7 @@ public sealed class AnimusForgeConversationHistoryLogVM : ViewModel
 	private void RefreshCurrentPage(bool requestBottomScroll, bool requestTopScroll)
 	{
 		_armedDeleteItem = null;
+		_editingItem = null;
 		Items.Clear();
 		int pageCount = GetPageCount();
 		if (_historyEntries.Count == 0)
@@ -283,6 +360,11 @@ public sealed class AnimusForgeConversationHistoryLogVM : ViewModel
 			{
 				item.EnableDelete(ArmDelete, () => DeleteEntry(entry));
 			}
+			if (_tryEditEntry != null && !string.IsNullOrWhiteSpace(entry.MemoryId) && entry.LineOrdinal >= 0)
+			{
+				item.EnableEdit(entry.Text, StartEdit, text => SaveEdit(item, entry, text), _onStartTyping, _onStopTyping);
+			}
+			item.SetActionVisibility(_isEditMode, _isDeleteMode);
 			Items.Add(item);
 		}
 
@@ -329,6 +411,40 @@ public sealed class AnimusForgeConversationHistoryLogVM : ViewModel
 			AnimusForgeConversationHistoryLogItemVM.ResolveFontColor(entry.Kind));
 		_formattedEntriesByIndex.Add(entryIndex, cachedEntry);
 		return cachedEntry;
+	}
+
+	private void StartEdit(AnimusForgeConversationHistoryLogItemVM item)
+	{
+		if (!ReferenceEquals(_editingItem, item))
+		{
+			_editingItem?.CancelEdit();
+		}
+		_editingItem = item;
+	}
+
+	// Rewrites the row in place: the host already updated the entry, so only this one index is reformatted.
+	private bool SaveEdit(AnimusForgeConversationHistoryLogItemVM item, AnimusForgeDialogueHistoryEntry entry, string text)
+	{
+		if (_isFinalized || entry == null || _tryEditEntry == null || !_tryEditEntry(entry, text))
+		{
+			return false;
+		}
+		if (_isFinalized)
+		{
+			return true;
+		}
+		int entryIndex = _historyEntries.IndexOf(entry);
+		if (entryIndex >= 0)
+		{
+			_formattedEntriesByIndex.Remove(entryIndex);
+			CachedHistoryDisplayEntry displayEntry = GetOrCreateFormattedEntry(entryIndex);
+			item.ApplyEdit(displayEntry.Speaker, displayEntry.FormattedText, displayEntry.FontColor, entry.Text);
+		}
+		if (ReferenceEquals(_editingItem, item))
+		{
+			_editingItem = null;
+		}
+		return true;
 	}
 
 	private void ArmDelete(AnimusForgeConversationHistoryLogItemVM item)
