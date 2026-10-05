@@ -17,7 +17,10 @@ public static class DiplomacyRoundWorkRules
 
     public static void MergeQueuedSpeaker(WorldDiplomacyJob job, IEnumerable<string> sources)
     {
+        // A semantic repair's source batch must remain identical to its frozen
+        // messages. Later arrivals keep their pending obligations for the next job.
         if (job == null || job.IsRunning) return;
+        if (job.SemanticRepairAttempts > 0) return;
         job.PlayerResponseSourceIds = sources.Where(x => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
         if (job.PlayerResponseSourceIds.Count > 0) job.Priority = Math.Max(job.Priority, 95);
     }

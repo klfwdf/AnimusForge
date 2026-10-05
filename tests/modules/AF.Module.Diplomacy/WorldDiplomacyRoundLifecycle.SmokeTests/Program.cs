@@ -27,6 +27,12 @@ internal static class Program
     private static int Main(string[] args)
     {
         AppDomain.CurrentDomain.UnhandledException += (_, e) => { Console.Error.WriteLine(e.ExceptionObject); Environment.Exit(1); };
+        if (args.Length == 1 && args[0] == "--ordinary-admission-and-review-fixes")
+        {
+            OrdinaryAdmissionReplay.Run(); ReviewFixReplay.Run();
+            Console.WriteLine($"Ordinary admission and review fixes passed: {Test.Assertions} assertions.");
+            return 0;
+        }
         if (args.Length == 1 && args[0] == "--player-semantics")
         {
             PlayerSemanticReplay.Run();
@@ -107,6 +113,7 @@ internal static class Program
             Console.WriteLine($"R1 generation task replay passed: {Test.Assertions} assertions.");
             return 0;
         }
+        OrdinaryAdmissionReplay.Run(); ReviewFixReplay.Run();
         OfferActionReplay.Run();
         WarAdmissionReplay.Run();
         RoundBoundaryReplay.Run();
@@ -14676,8 +14683,9 @@ RunRepairCorrectionAndJobDecisionTests();
             "raw reminder-offset math must not remain in the host");
         Test.True(!behaviorSource.Contains("MandatorySinceDay + 5", StringComparison.Ordinal),
             "raw timeout-offset math must not remain in the host");
-        Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.EvaluateIntervalRefresh", StringComparison.Ordinal),
-            "the host must route interval refreshes through the lifecycle rules");
+        Test.True(behaviorSource.Contains("WorldDiplomacyLiveRoundRules.InitializeOrdinaryAdmission", StringComparison.Ordinal)
+            && !behaviorSource.Contains("_host.RoundIntervalDays()", StringComparison.Ordinal),
+            "legacy interval refresh initializes persistent ordinary admission without reading the retired MCM interval");
         Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.ComputeNextRoundDay", StringComparison.Ordinal),
             "the host must route next-round day computation through the lifecycle rules");
         Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.ComputeInitialCompressedYear", StringComparison.Ordinal),

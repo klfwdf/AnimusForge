@@ -8,6 +8,7 @@ using Newtonsoft.Json.Linq;
 // Calls log records which host capabilities the orchestration consumed.
 internal class FakeOrchestrationHost : IWorldDiplomacyOrchestrationHost
 {
+    public virtual string ResolveSettlementId(string id) => id;
     internal readonly List<string> Calls = new();
     public int CurrentDayValue = 12;
     public virtual int CurrentDay() { Calls.Add("CurrentDay"); return CurrentDayValue; }
@@ -104,10 +105,10 @@ internal class FakeOrchestrationHost : IWorldDiplomacyOrchestrationHost
         Calls.Add("RoundParticipantLimit");
         return default;
     }
-    public virtual int RoundIntervalDays()
+    public virtual int OrdinaryRoundLimit()
     {
-        Calls.Add("RoundIntervalDays");
-        return default;
+        Calls.Add("OrdinaryRoundLimit");
+        return 3;
     }
     public virtual int RoundTargetDurationDays()
     {

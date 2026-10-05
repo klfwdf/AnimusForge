@@ -64,7 +64,7 @@ internal interface IWorldDiplomacyOrchestrationHost
     int MaxPriorityPlayerResponsesPerDocument();
     int MaxRelayParticipants();
     int RoundParticipantLimit();
-    int RoundIntervalDays();
+    int OrdinaryRoundLimit();
     int RoundTargetDurationDays();
     int RoundHardDurationDays(int targetDurationDays);
     int CourtMaxDeliveryDays();
@@ -129,6 +129,7 @@ internal interface IWorldDiplomacyOrchestrationHost
     string ValidateOpenThreatWorldEligibility(WorldDiplomacyThreat threat);
     WorldDiplomacyPolicyRoundApplication.Parties ResolvePolicyParties(WorldDiplomacyPolicySignal signal);
     string ResolvePropagationReceiverId(string kingdomId, string settlementId);
+    string ResolveSettlementId(string settlementId);
     int OfferCooldownLastFailedRoundDay(WorldDiplomacyOfferCooldownKey key);
     bool ExternalProposalTakenEffect(string intent, string initiatorId, string targetId);
     string NewThreatId();
@@ -481,43 +482,16 @@ internal sealed partial class WorldDiplomacyOrchestration : IWorldDiplomacyOrche
 
     public void ScheduleNextNormalRoundAfter(int baseDay)
     {
-        int intervalDays = _host.RoundIntervalDays();
         WorldDiplomacyStorage storage = Storage;
         if (storage == null) return;
-        storage.NextNormalRoundDay = WorldDiplomacyRoundLifecycleRules.ComputeNextRoundDay(baseDay, intervalDays);
-        storage.LastAppliedRoundIntervalDays = intervalDays;
+        storage.NextNormalRoundDay = WorldDiplomacyRoundLifecycleRules.ComputeNextRoundDay(baseDay, 1);
+        storage.LastAppliedRoundIntervalDays = 1; // Legacy save field, no longer a configurable interval.
     }
 
+    // Retain the internal lifecycle hook; old MCM interval values no longer affect admission.
     public void RefreshRoundIntervalScheduleIfNeeded()
     {
-        WorldDiplomacyStorage storage = Storage;
-        if (storage == null) return;
-        int currentInterval = _host.RoundIntervalDays();
-        int previousInterval = storage.LastAppliedRoundIntervalDays;
-        WorldDiplomacyIntervalRefreshDecision refresh =
-            WorldDiplomacyRoundLifecycleRules.EvaluateIntervalRefresh(
-                new WorldDiplomacyIntervalRefreshInput
-                {
-                    PreviousInterval = previousInterval,
-                    CurrentInterval = currentInterval,
-                    HasActiveRound = GetLiveRounds().Any(IsLiveRound),
-                    NextNormalRoundDay = storage.NextNormalRoundDay,
-                    CurrentDay = _host.CurrentDay()
-                });
-        if (refresh.Action == WorldDiplomacyIntervalRefreshAction.Initialize)
-        {
-            storage.LastAppliedRoundIntervalDays = currentInterval;
-            return;
-        }
-        if (refresh.Action == WorldDiplomacyIntervalRefreshAction.Unchanged) return;
-        if (refresh.Action == WorldDiplomacyIntervalRefreshAction.Rebase)
-        {
-            storage.NextNormalRoundDay = refresh.RebasedNextDay;
-            _host.Log("round interval schedule updated old=" + previousInterval.ToString(CultureInfo.InvariantCulture)
-                + " new=" + currentInterval.ToString(CultureInfo.InvariantCulture)
-                + " nextDay=" + storage.NextNormalRoundDay.ToString(CultureInfo.InvariantCulture));
-        }
-        storage.LastAppliedRoundIntervalDays = currentInterval;
+        WorldDiplomacyLiveRoundRules.InitializeOrdinaryAdmission(Storage);
     }
 
     public void CommitLocalRoundSummary(WorldDiplomacyRound round, List<WorldDiplomacyDocument> documents)
@@ -1714,7 +1688,8 @@ internal sealed partial class WorldDiplomacyOrchestration : IWorldDiplomacyOrche
             _host.CurrentDay, id => EnsureActiveRound(id, null, isPlayerInsertion: false),
             CompletePolicySignal, ScheduleNextNormalRoundAfter,
             (id, round) => EnqueueGeneration(id, null, null, isResponse: false,
-                sourceDocument: null, priority: 70, roundId: round?.RoundId, allowUntargeted: true));
+                sourceDocument: null, priority: 70, roundId: round?.RoundId, allowUntargeted: true),
+            _host.OrdinaryRoundLimit());
     }
 
     private bool ConsumeDailyAiDocumentBudget()
@@ -1740,7 +1715,7 @@ internal sealed partial class WorldDiplomacyOrchestration : IWorldDiplomacyOrche
             id => EnsureActiveRound(id, null, isPlayerInsertion: false),
             (id, round) => EnqueueGeneration(id, null, null, isResponse: false,
                 sourceDocument: null, priority: 20, roundId: round?.RoundId, allowUntargeted: true),
-            ScheduleNextNormalRoundAfter, _host.Log);
+            ScheduleNextNormalRoundAfter, _host.Log, _host.OrdinaryRoundLimit());
     }
 
     public void NormalizeStorage(bool allowWorldValidation)
@@ -1803,12 +1778,8 @@ internal sealed partial class WorldDiplomacyOrchestration : IWorldDiplomacyOrche
         WorldDiplomacyStorage storage = Storage;
         if (storage == null) return;
         int day = _host.CurrentDay();
-        int intervalDays = _host.RoundIntervalDays();
-        if (storage.NextNormalRoundDay <= 0)
-        {
-            storage.NextNormalRoundDay = WorldDiplomacyRoundLifecycleRules.ComputeNextRoundDay(day, intervalDays);
-        }
-        if (storage.LastAppliedRoundIntervalDays <= 0) storage.LastAppliedRoundIntervalDays = intervalDays;
+        WorldDiplomacyLiveRoundRules.InitializeOrdinaryAdmission(storage);
+        if (storage.NextNormalRoundDay <= 0) storage.NextNormalRoundDay = day;
         if (storage.LastCompressedYear < 0)
             storage.LastCompressedYear = WorldDiplomacyRoundLifecycleRules.ComputeInitialCompressedYear(day, _host.DaysPerYear());
     }
@@ -1850,7 +1821,15 @@ internal sealed partial class WorldDiplomacyOrchestration : IWorldDiplomacyOrche
         }
         foreach (WorldDiplomacyJob job in storage.Jobs ?? new List<WorldDiplomacyJob>())
         {
-            if (job != null) job.IsRunning = false;
+            if (job == null) continue;
+            job.IsRunning = false;
+            // Older saves may contain a repair whose source coverage changed
+            // after its messages were frozen. Rebuild once before resending.
+            if (job.SemanticRepairAttempts > 0)
+            {
+                job.LlmMessages?.Clear();
+                job.SemanticRepairAttempts = 0;
+            }
         }
     }
 
@@ -2049,7 +2028,7 @@ internal sealed partial class WorldDiplomacyOrchestration : IWorldDiplomacyOrche
                 WorldDiplomacyPropagationApplication.ReceiveCourt(Storage, document, receiverId, day,
                     () => _host.IsPlayerAffiliatedParty(receiverId), () => ProcessCourtArrival(receiverId, document));
             },
-            _host.ResolvePartyId);
+            _host.ResolveSettlementId);
     }
 
     public void RecalculatePendingPropagationIfNeeded()
