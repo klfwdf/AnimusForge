@@ -7220,9 +7220,28 @@ R2计划交付门槛：已给固定技术路线、真实来源与目标、写入
 - 回滚产品：定向`git revert 117a402b`，不hard reset、不覆盖其他作者；本轮安装未变，无新增安装Recovery。测试/文档后续提交单独回滚，任何覆盖/发布均需新授权。
 
 <a id="illustrator-native-export-diagnostics-20261005"></a>
-## Illustrator 原生导出诊断与有限超时调整（2026-10-05，ACTIVE）
+## Illustrator 原生导出诊断与有限超时调整（2026-10-05，BUILD_VERIFIED_LIVE_PENDING）
 
 - 用户授权：将立绘/全景原生保存请求后的执行证据写入日志，并适度延长超时；不授权游戏覆盖、发布或整体重写渲染。
 - 当前工作区 F:/AnimusForge-main，分支 codex/af-main-refactor-continuation-20260831。任务涉及 Illustrator 的人物回调观测、原生保存文件状态与全景逐面观测；保留其他作者已存在的改动。
 - 退出门：只按请求记录有界摘要；回调仅计数、不逐帧反射或写日志；不把 Paint 回调认作 GPU 完成；延长立绘至20秒、全景单面文件至6秒、总预算至40秒；双 API 编译通过。真实失败玩家/GPU及部署仍待验收，不运行既有禁止的离线审计脚本。
-- 开工检查点：本条意图提交；收尾补源码坐标、验证命令、候选及回滚修订。
+- 检查点 `9b8f74ce`；产品/设置/模块说明 `106e4760`。用户随后提出开放MCM，已接入既有 `IllustratorSettings` 持久化owner与原分组，保留Id/旧属性；新增属性缺省使用20/6/40秒，setter限幅10–60/3–15/30–120秒。人物调用显式timeout仍优先；省略时请求入口冻结MCM值，全景一次冻结单面/总预算。
+
+### 该产品修订的源码坐标与覆盖边界
+
+| 文件（均相对 F:/AnimusForge-main/extensions/AnimusForge.Illustrator/src） | 一基行号/符号 | 责任与证据边界 |
+| --- | --- | --- |
+| `Settings/IllustratorSettings.cs` | 521–550，三个TimeoutSeconds属性 | MCM属性/默认/范围限幅；候选反编译确认属性，原生MCM实机显示与旧配置加载未验 |
+| `Engine/CharacterPortraitReferences.cs` | 29–64，ExtractHero/CharacterPortraitReferencesAsync | 请求入口选择预算；显式timeout参数仍有效；未新增渲染或网络请求 |
+| `Engine/NativeCharacterExportWidget.cs` | 35–130，ObserveRenderTarget/ObservePaint/OnClearTextureProvider；134–155快照 | 绑定/解绑每个自有RT的Paint观察，回调仅Interlocked计数，错误停用观测；保留原版清理和无屏幕Draw |
+| `Engine/IsolatedPanoramaRenderer.cs` | 204–245，Paint；250–288，RequestExport/DescribeExportState | 只增加累计量和请求后差值，沿既有gate快照；累计量不因Close清零，不证明GPU完成 |
+| `Engine/ScreenCaptureHelper.cs` | 882–900，FindOffscreenFile；1230–1254，portrait_capture_state | 保留原50ms探测节奏，有限保存异常；工作线程记录请求前后观测、代次变化、路径及文件状态 |
+| `Engine/SceneReferenceCapture.cs` | 84–91预算；185–199逐面快照；292–351，ReadPanoramaFaceAsync | 使用冻结MCM单面/总预算，保留80ms探测；读取/取消/失败后记录一次，仍拒绝缺面/重复图 |
+| `Engine/NativeExportDiagnostics.cs` | 13–77，DescribeFile/DescribeEnvironment | 只做有限托管环境/精确文件状态快照，不扫描目录/不写探针，不操作native |
+| `Core/GenerationDiagnostics.cs` | 91环境事件；392摘要键集合 | 复用既有trace/steps与容量/数量限额；本地路径可能有用户名，分享前检查隐私 |
+
+- 验证：原 `scripts/build/build_single_module.ps1` Debug build-only，1.3参考v1.3.15.110062、1.4参考v1.4.6.115628，双实现各0错误/341警告，Bootstrap0错误/0警告；内置最终候选接缝门禁双PASS。未改入口或运行Illustrator离线审计。编译后1.4候选用ilspycmd确认三个MCM默认/属性/限幅；源码复核与`git diff --check`通过。
+- 初次误用独立扩展工程因same-DLL内部host类型/旧SandBox引用报错，改回现有统一产品入口而非修改项目或可见性；新增诊断helper曾有Path歧义，补alias后最终双编译通过。不得把初次失败或编译后的设置检查解释为实机失败复现。
+- 证据 `artifacts/illustrator-native-export-20261005/receipt.json`、`unified-build.log`、`compiled-settings.cs.txt`；候选仍为统一模块 `bin/Debug/single_module_artifacts/versions/1.3|1.4/AnimusForge.dll` 与 `bootstrap/AnimusForge.Bootstrap.dll`，hash绑定在收据。
+- NOT_RUN：失败玩家/GPU/真实PNG、MCM实机及旧配置、切屏/切场景/取消实机；未Stage/覆盖游戏/推送/打包。此产品提供定位证据和有限更长等待，不宣称修复原生导出未执行根因。
+- 回滚：定向 `git revert 106e4760`；检查点 `9b8f74ce`。不hard reset或回滚并行作者，无本轮安装回滚需求。
