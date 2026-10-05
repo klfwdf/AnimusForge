@@ -11,6 +11,7 @@ param(
 )
 
 $ErrorActionPreference = "Stop"
+. (Join-Path $PSScriptRoot "coup_seam_gate.ps1")
 $contentLayoutHelper = Join-Path $PSScriptRoot "content_layout.ps1"
 if (-not (Test-Path -LiteralPath $contentLayoutHelper -PathType Leaf)) {
     throw "Content layout helper not found: $contentLayoutHelper"
@@ -240,6 +241,7 @@ function Assert-BuildMarker {
         -not [DateTimeOffset]::TryParse($createdUtc, [ref]$createdTimestamp)) {
         throw "Build marker does not match its DLL: $markerPath"
     }
+    if ($ExpectedRole -eq "Implementation") { Assert-CoupSeamReceipt -Marker $marker -CandidateHash $actualHash -ExpectedApi $ExpectedApi }
     if (-not [string]::IsNullOrWhiteSpace($ExpectedApi) -and [string]$marker.BannerlordApi -ne $ExpectedApi) {
         throw "Build marker API mismatch: $markerPath"
     }

@@ -362,7 +362,10 @@ internal static class Program
         var focus = new WorldBulletinFocus { PlayerKingdomId = "vlandia" };
         Assert(WorldBulletinPolicy.IsTrigger(fact, focus), "coup opens normal bulletin collection window");
         var selection = WorldBulletinPolicy.Select(new List<WorldBulletinEvent> { fact }, new WorldBulletinScopeState { WindowEndHour = 144 }, focus, 144);
-        Assert(selection?.Major == fact, "dedicated coup fact is selectable as headline");
+        Assert(selection?.Major?.Key == fact.Key && selection.Major.Sentence == victory,
+            "dedicated coup fact is selectable as headline with its full identity and narrative");
+        Assert(!ReferenceEquals(selection.Major, fact) && !ReferenceEquals(selection.Major.KingdomIds, fact.KingdomIds),
+            "coup headline uses the host's detached publication snapshot");
         Assert(WorldBulletinPolicy.BuildTemplate(selection).Major.Contains(victory), "offline fallback preserves place, process and outcome");
         Assert(WorldBulletinPolicy.BuildUserPrompt("天下", "某日", selection, null).Contains(victory), "LLM receives full untruncated coup narrative");
         Assert(WorldBulletinPolicy.BuildNpcDetailBlock(WorldBulletinPolicy.NpcKingdomHeader, "瓦兰迪亚", "vlandia", new[] { fact }, 5).Contains(victory), "NPC bulletin knowledge receives the same full facts");

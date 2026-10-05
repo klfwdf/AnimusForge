@@ -13,6 +13,7 @@ param(
 )
 
 $ErrorActionPreference = "Stop"
+. (Join-Path $PSScriptRoot "coup_seam_gate.ps1")
 if ($Stage -and $Deploy) {
     throw "-Stage and -Deploy are mutually exclusive. Use -Stage for project-local output or -Deploy for Modules\\AnimusForge."
 }
@@ -522,7 +523,14 @@ Assert-BuildPdb -DllPath $bootstrapDll
 Write-BuildMarker -DllPath $bootstrapDll -Role "Bootstrap" -BannerlordApi "1.3-compatible baseline" -ReferenceGameVersion $version13.Text
 
 Write-Host ""
-Write-Host "Build Result : success"
+Write-Host "Validating coup seams on both final implementation DLLs..."
+$probeProject = Join-Path $projectRootFull "tools\Coup.RuntimeProbe\Coup.RuntimeProbe.csproj"
+& dotnet build $probeProject -c $Configuration "/p:GameRoot=$bannerlordRootFull" "/p:HarmonyCorePath=$harmonyCorePathFull"
+if ($LASTEXITCODE -ne 0) { throw "Coup seam probe build failed; refusing unverified output." }
+$probePath = Join-Path $projectRootFull "tools\Coup.RuntimeProbe\bin\$Configuration\net472\Coup.RuntimeProbe.exe"
+Invoke-CoupSeamGate -ProjectRoot $projectRootFull -GameRoot $bannerlordRootFull -DllPath $dll13 -ReferenceDir $bannerlord13ReferenceDirFull -ExpectedApi "1.3" -ProbePath $probePath
+Invoke-CoupSeamGate -ProjectRoot $projectRootFull -GameRoot $bannerlordRootFull -DllPath $dll14 -ReferenceDir $bannerlord14ReferenceDirFull -ExpectedApi "1.4" -ProbePath $probePath
+Write-Host "Build Result : success (dual coup seam gates passed)"
 Write-Host "Bootstrap    : $bootstrapDll"
 Write-Host "Version 1.3 : $dll13"
 Write-Host "Version 1.4 : $dll14"

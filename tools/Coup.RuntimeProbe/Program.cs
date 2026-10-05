@@ -19,16 +19,28 @@ internal static class Program
     private static string _afPath;
     private static string _coupPath;
     private static bool _sceneFixture;
+    private static bool _seamOnly;
+    private static readonly List<string> ReferenceDirectories = new List<string>();
+    private static string _expectedVersion;
 
     private static int Main(string[] args)
     {
-        if (args.Length != 4 && !(args.Length == 5 && args[4] == "--scene-fixture"))
+        if (args.Length < 4)
         {
-            Console.Error.WriteLine("Usage: Coup.RuntimeProbe.exe <game-root> <installed-af.dll> <coup.dll> <workspace-log-directory> [--scene-fixture]");
+            Console.Error.WriteLine("Usage: Coup.RuntimeProbe.exe <game-root> <af.dll> <coup.dll> <workspace-log-directory> [--scene-fixture] [--seam-only] [--reference-dirs <dir1|dir2>] [--expected-version <v1.x.x.x>]");
             return 2;
         }
         _gameRoot = Path.GetFullPath(args[0]);
-        _sceneFixture = args.Length == 5;
+        for (int i = 4; i < args.Length; i++)
+        {
+            if (args[i] == "--scene-fixture") _sceneFixture = true;
+            else if (args[i] == "--seam-only") _seamOnly = true;
+            else if (args[i] == "--reference-dirs" && ++i < args.Length)
+                ReferenceDirectories.AddRange(args[i].Split('|').Select(Path.GetFullPath));
+            else if (args[i] == "--expected-version" && ++i < args.Length) _expectedVersion = args[i];
+            else { Console.Error.WriteLine("Invalid probe option."); return 2; }
+        }
+        if (_sceneFixture && _seamOnly) return 2;
         _afPath = Path.GetFullPath(args[1]);
         _coupPath = Path.GetFullPath(args[2]);
         string root = Path.GetFullPath(args[3]);
@@ -42,6 +54,7 @@ internal static class Program
             _output.AutoFlush = true;
             SearchDirectories.Add(Path.GetDirectoryName(_afPath));
             SearchDirectories.Add(Path.GetDirectoryName(_coupPath));
+            SearchDirectories.AddRange(ReferenceDirectories);
             SearchDirectories.Add(Path.Combine(_gameRoot, "bin", "Win64_Shipping_Client"));
             foreach (string module in new[] { "Native", "SandBox", "SandBoxCore", "StoryMode", "CustomBattle", "Bannerlord.Harmony", "Bannerlord.MBOptionScreen", "Bannerlord.UIExtenderEx", "Bannerlord.ButterLib" })
                 SearchDirectories.Add(Path.Combine(_gameRoot, "Modules", module, "bin", "Win64_Shipping_Client"));
@@ -62,6 +75,8 @@ internal static class Program
                 if (string.Equals(existing.GetName().Name, simple, StringComparison.OrdinalIgnoreCase)) return existing;
             foreach (string directory in SearchDirectories)
             {
+                if (ReferenceDirectories.Count > 0 && IsGameAssembly(simple)
+                    && !ReferenceDirectories.Contains(directory, StringComparer.OrdinalIgnoreCase)) continue;
                 string candidate = Path.Combine(directory, simple + ".dll");
                 if (File.Exists(candidate)) return Assembly.LoadFrom(candidate);
             }
@@ -98,8 +113,18 @@ internal static class Program
         Invoke(rebellion, "Initialize");
         Invoke(guards, "Register", harmony);
 
-        SelectionRegression.Run(coup, Write);
-        EntryGateRegression.Run(af, coup, Write);
+        MemoryPortRegression.Run(af, coup, Write);
+        if (_seamOnly)
+        {
+            // Normal managed constructor only; availability otherwise also requires
+            // a campaign behavior instance. No Game/Campaign is created by this gate.
+            Activator.CreateInstance(coup.GetType("AnimusForge.CoupSystem.CoupCaptivityBehavior", true), true);
+        }
+        else
+        {
+            SelectionRegression.Run(coup, Write);
+            EntryGateRegression.Run(af, coup, Write);
+        }
         if (_sceneFixture)
         {
             SceneLifecycleRegression.Run(af, coup, Write);
@@ -107,6 +132,18 @@ internal static class Program
             CoupSettingsRegression.Run(af, coup, Write);
             CoupAdmissionRegression.Run(af, coup, Write);
             CoupLoyalistAftermathRegression.Run(af, coup, Write);
+        }
+
+        if (ReferenceDirectories.Count > 0)
+        {
+            Assembly library = AppDomain.CurrentDomain.GetAssemblies().Single(a => a.GetName().Name == "TaleWorlds.Library");
+            string version = (string)library.GetType("BuildInfo", true)
+                .GetField("GameVersion", BindingFlags.Static | BindingFlags.Public).GetValue(null);
+            Write("REFERENCE_GAME_VERSION " + version);
+            if (version != _expectedVersion) throw new InvalidOperationException("Game reference version mismatch: " + version);
+            foreach (Assembly loaded in AppDomain.CurrentDomain.GetAssemblies().Where(a => IsGameAssembly(a.GetName().Name)))
+                if (!ReferenceDirectories.Contains(Path.GetDirectoryName(loaded.Location), StringComparer.OrdinalIgnoreCase))
+                    throw new InvalidOperationException("Cross-version dependency fallback rejected: " + loaded.Location);
         }
 
         bool ready = ReadFlag(sets, "IsAvailable") & ReadFlag(rebellion, "IsAvailable")
@@ -129,14 +166,19 @@ internal static class Program
         bool unchanged = beforeAf == Hash(_afPath) && beforeCoup == Hash(_coupPath);
         Write("SOURCE_DLLS_UNCHANGED " + unchanged);
         foreach (Assembly loaded in AppDomain.CurrentDomain.GetAssemblies().Where(a =>
-            a.GetName().Name == "TaleWorlds.CampaignSystem" || a.GetName().Name == "TaleWorlds.MountAndBlade"
-            || a.GetName().Name == "SandBox" || a.GetName().Name == "0Harmony"))
-            Write("RUNTIME_DEPENDENCY " + loaded.GetName().Name + " MVID=" + loaded.ManifestModule.ModuleVersionId + " path=" + loaded.Location);
-        Write("Game/Campaign/mission not started; no LLM provider invoked; registration, entry-state and selection datafactory fixtures only.");
+            IsGameAssembly(a.GetName().Name) || a.GetName().Name == "0Harmony").OrderBy(a => a.GetName().Name))
+            Write("RUNTIME_DEPENDENCY " + loaded.GetName().Name + " MVID=" + loaded.ManifestModule.ModuleVersionId
+                + " SHA256=" + Hash(loaded.Location) + " path=" + loaded.Location);
+        Write(_seamOnly ? "SCOPE managed registration and memory port admission only; no Game/Campaign/save/native action/LLM started."
+            : "SCOPE managed registration plus explicit synthetic regression fixtures; not live-game/save/native action acceptance.");
         Write(ready && unchanged && targetCount > 0 ? "PASS registration smoke" : "FAIL registration smoke");
         // Keep log redirection until process exit: AF may flush its background log queue.
         return ready && unchanged && targetCount > 0 ? 0 : 1;
     }
+
+    private static bool IsGameAssembly(string name) => name.StartsWith("TaleWorlds.", StringComparison.Ordinal)
+        || name == "SandBox" || name.StartsWith("SandBox.", StringComparison.Ordinal)
+        || name == "StoryMode" || name.StartsWith("StoryMode.", StringComparison.Ordinal);
 
     private static bool LogDirectoryPrefix(ref string __result)
     {

@@ -9,13 +9,11 @@ using HarmonyLib;
 internal static class CoupLoyalistAftermathRegression
 {
     private const BindingFlags All = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance;
-    private static object _oldKing, _newKing, _clans, _town, _playerClan, _ownerClan, _party, _encounter, _game, _manager, _map, _soldier;
+    private static object _oldKing, _newKing, _clans, _playerClan;
     private static readonly Dictionary<object, object> Leaders = new Dictionary<object, object>();
     private static readonly Dictionary<object, int[]> Relations = new Dictionary<object, int[]>();
     private static readonly HashSet<object> Eligible = new HashSet<object>();
-    private static bool _enabled, _protected, _menuSucceeds;
-    private static int _menuCalls, _survivors;
-    private static bool _transfer;
+    private static bool _enabled, _protected;
     private static object _restorationHome;
     private static bool _oldKingCaptured;
 
@@ -119,71 +117,31 @@ internal static class CoupLoyalistAftermathRegression
             check(!(bool)Field(restored, "RegistrationBlocked") && Field(restored, "State").ToString() == "WarCreated"
                 && (bool)Field(bridge, "_hasWork"), "manual registration retry resumes only created-war stage");
 
-            // Real Coup owner -> cached adapter -> SETS gate. Only native menu opening
-            // is replaced, so the ownership-transfer argument is checked at the boundary.
-            Type townType = AccessTools.TypeByName("TaleWorlds.CampaignSystem.Settlements.Settlement");
-            Type partyType = AccessTools.TypeByName("TaleWorlds.CampaignSystem.Party.MobileParty");
-            Type encounterType = AccessTools.TypeByName("TaleWorlds.CampaignSystem.Encounters.LocationEncounter");
-            Type playerEncounter = AccessTools.TypeByName("TaleWorlds.CampaignSystem.Encounters.PlayerEncounter");
-            Type gameType = AccessTools.TypeByName("TaleWorlds.Core.Game");
-            Type stateManager = AccessTools.TypeByName("TaleWorlds.Core.GameStateManager");
-            Type characterType = AccessTools.TypeByName("TaleWorlds.CampaignSystem.CharacterObject");
-            _town = Bare(townType); townType.GetProperty("StringId").SetValue(_town, "probe_aftermath_town");
-            _playerClan = _ownerClan = Bare(clanType); _party = Bare(partyType); _encounter = Bare(encounterType);
-            _game = Bare(gameType); _manager = Bare(stateManager); _map = Bare(AccessTools.TypeByName("TaleWorlds.CampaignSystem.GameState.MapState"));
-            _soldier = Bare(characterType); characterType.GetProperty("StringId").SetValue(_soldier, "probe_survivor");
-            Patch(fixture, townType.GetMethod("Find", All, null, new[] { typeof(string) }, null), nameof(Town));
-            Patch(fixture, AccessTools.PropertyGetter(townType, "IsTown"), nameof(Yes));
-            Patch(fixture, AccessTools.PropertyGetter(townType, "OwnerClan"), nameof(OwnerClan));
-            Patch(fixture, AccessTools.PropertyGetter(partyType, "MainParty"), nameof(Party));
-            Patch(fixture, AccessTools.PropertyGetter(partyType, "CurrentSettlement"), nameof(Town));
-            Patch(fixture, AccessTools.PropertyGetter(playerEncounter, "LocationEncounter"), nameof(Encounter));
-            Patch(fixture, AccessTools.PropertyGetter(encounterType, "Settlement"), nameof(Town));
-            Patch(fixture, AccessTools.PropertyGetter(gameType, "Current"), nameof(Game));
-            Patch(fixture, AccessTools.PropertyGetter(gameType, "GameStateManager"), nameof(Manager));
-            Patch(fixture, AccessTools.PropertyGetter(stateManager, "ActiveState"), nameof(Map));
-            Patch(fixture, characterType.GetMethod("Find", All, null, new[] { typeof(string) }, null), nameof(Soldier));
-            Patch(fixture, af.GetType("AnimusForge.PlayerEncounterCompat", true).GetMethod("HasEncounterBattleContext", All), nameof(No));
-            Type info = AccessTools.TypeByName("TaleWorlds.Library.InformationManager");
-            Patch(fixture, info.GetMethod("IsAnyInquiryActive", All), nameof(No));
-            foreach (MethodInfo display in info.GetMethods(All).Where(m => m.Name == "DisplayMessage")) Patch(fixture, display, nameof(Skip));
-            Patch(fixture, af.GetType("AnimusForge.SiegeAiInterventionBehavior", true).GetMethod("TryOpenSettlementEntryVictoryMenu", All), nameof(OpenMenu));
+            // The old siege-aftermath flow was intentionally retired. Validate the
+            // current saved feedback contract; native callbacks are exercised by
+            // Coup.VictoryFlowTests, not by resurrecting a deleted menu here.
             Type sessionType = coup.GetType("AnimusForge.CoupSystem.CoupSession", true);
             Type ownerType = coup.GetType("AnimusForge.CoupSystem.CoupCampaignBehavior", true);
-            object owner = Activator.CreateInstance(ownerType, true);
+            check(ownerType.GetMethod("TryOpenAftermath", All) == null
+                && ownerType.GetMethod("PresentVictoryFeedback", All) != null,
+                "current coup uses victory feedback instead of the retired siege aftermath menu");
             object session = Activator.CreateInstance(sessionType);
-            foreach (string field in new[] { "KingdomId", "KingId", "OriginalRulingClanId", "OriginalOwnerClanId" }) Set(session, field, field);
-            Set(session, "SettlementId", "probe_aftermath_town");
             Set(session, "Phase", Enum.Parse(sessionType.GetField("Phase").FieldType, "Completed"));
             Set(session, "Disposition", Enum.Parse(sessionType.GetField("Disposition").FieldType, "Release"));
-            foreach (string field in new[] { "Started", "KingSubdued", "CasualtiesCommitted", "RulingClanCommitted", "TownCommitted", "CustodyCommitted", "FactsCommitted", "RebellionQueued", "AftermathPending" }) Set(session, field, true);
-            IList troops = (IList)Field(session, "Troops");
-            Type recordType = troops.GetType().GetGenericArguments()[0];
-            foreach (bool removed in new[] { false, true })
-            {
-                object record = Activator.CreateInstance(recordType);
-                Set(record, "Id", removed.ToString()); Set(record, "CharacterId", "probe_survivor"); Set(record, "SourcePartyId", "player_party");
-                Set(record, "Removed", removed); Set(record, "Wounded", removed); troops.Add(record);
-            }
-            Set(owner, "_session", session);
-            MethodInfo open = ownerType.GetMethod("TryOpenAftermath", All);
-            _menuCalls = 0; _menuSucceeds = false;
-            open.Invoke(owner, null);
-            check(_menuCalls == 1 && (bool)Field(session, "AftermathPending") && !(bool)Field(session, "AftermathOpened"), "unavailable native menu leaves a retryable completed coup");
-            check(Field(session, "Phase").ToString() == "Completed" && (bool)Field(session, "TownCommitted"), "failed menu does not roll back or restart political commit");
-            _menuSucceeds = true;
-            open.Invoke(owner, null);
-            check(_menuCalls == 2 && !_transfer && _survivors == 1, "real bridge opens menu without ownership transfer and excludes casualties");
-            check((bool)Field(session, "AftermathOpened") && !(bool)Field(session, "AftermathPending"), "successful open persists receipt and consumes pending work");
-            open.Invoke(owner, null);
-            check(_menuCalls == 2, "duplicate callback cannot reopen disposition");
-            Set(owner, "_session", Roundtrip(session)); open.Invoke(owner, null);
-            check(_menuCalls == 2, "opened receipt survives reload without replay");
-            Set(session, "AftermathOpened", false); Set(session, "AftermathPending", true); Set(owner, "_session", session);
-            _ownerClan = Bare(clanType); open.Invoke(owner, null);
-            check(_menuCalls == 2 && !(bool)Field(session, "AftermathPending"), "changed town ownership cancels stale aftermath without recapture");
-            write("PASS coup loyalist and aftermath fixture assertions=" + checks);
-            write("LOYALIST_AFTERMATH_SCOPE real selector/old-new relation policy and completed owner-adapter-host menu path; real ObjectManager/JSON, synthetic world/relations and physical eligibility; native menu opening intercepted. No LLM, actual rebellion, native menu rendering or disposition rewards executed.");
+            foreach (string field in new[] { "Started", "KingSubdued", "CasualtiesCommitted", "RulingClanCommitted", "TownCommitted", "CustodyCommitted", "FactsCommitted", "RebellionQueued" }) Set(session, field, true);
+            Set(session, "VictoryReportAcknowledged", false); Set(session, "CoronationRequested", false);
+            check((bool)sessionType.GetProperty("HasConfirmedVictory").GetValue(session), "feedback requires confirmed political and fact commits");
+            check((bool)sessionType.GetProperty("NeedsVictoryFeedback").GetValue(session), "new completed victory requires feedback");
+            object restoredSession = Roundtrip(session);
+            check((bool)sessionType.GetProperty("NeedsVictoryFeedback").GetValue(restoredSession), "pending feedback survives JSON reload");
+            Set(restoredSession, "VictoryReportAcknowledged", true);
+            check(!(bool)sessionType.GetProperty("NeedsVictoryFeedback").GetValue(restoredSession), "acknowledged victory cannot replay feedback");
+            Set(session, "VictoryReportAcknowledged", null);
+            check(!(bool)sessionType.GetProperty("NeedsVictoryFeedback").GetValue(session), "historical completed save does not invent new feedback");
+            Set(session, "FactsCommitted", false);
+            check(!(bool)sessionType.GetProperty("HasConfirmedVictory").GetValue(session), "uncommitted facts cannot confirm victory");
+            write("PASS coup loyalist and victory-feedback fixture assertions=" + checks);
+            write("LOYALIST_AFTERMATH_SCOPE real loyalist selector/recovery checkpoint and current victory-feedback JSON contract; synthetic relations and physical eligibility. Native victory callbacks are covered separately by Coup.VictoryFlowTests; no LLM/native politics/save/UI acceptance.");
         }
         finally
         {
@@ -222,24 +180,9 @@ internal static class CoupLoyalistAftermathRegression
     private static bool Relation(object __instance, object[] __args, ref int __result) { __result = Relations[__instance][ReferenceEquals(__args[0], _oldKing) ? 0 : 1]; return false; }
     private static bool Enabled(ref bool __result) { __result = _enabled; return false; }
     private static bool Protected(ref bool __result) { __result = _protected; return false; }
-    private static bool Town(ref object __result) { __result = _town; return false; }
-    private static bool OwnerClan(ref object __result) { __result = _ownerClan; return false; }
     private static bool PlayerClan(ref object __result) { __result = _playerClan; return false; }
     private static bool RestorationHome(ref object __result) { __result = _restorationHome; return false; }
-    private static bool Prisoner(object __instance, ref bool __result) { __result = _oldKingCaptured && ReferenceEquals(__instance, _oldKing); return false; }
-    private static bool Party(ref object __result) { __result = _party; return false; }
-    private static bool Encounter(ref object __result) { __result = _encounter; return false; }
-    private static bool Game(ref object __result) { __result = _game; return false; }
-    private static bool Manager(ref object __result) { __result = _manager; return false; }
-    private static bool Map(ref object __result) { __result = _map; return false; }
-    private static bool Soldier(ref object __result) { __result = _soldier; return false; }
     private static bool Yes(ref bool __result) { __result = true; return false; }
     private static bool No(ref bool __result) { __result = false; return false; }
-    private static bool Skip() => false;
-    private static bool OpenMenu(object[] __args, ref bool __result)
-    {
-        _menuCalls++; _transfer = (bool)__args[3];
-        _survivors = (int)__args[1].GetType().GetProperty("TotalManCount").GetValue(__args[1]);
-        __result = _menuSucceeds; return false;
-    }
+    private static bool Prisoner(object __instance, ref bool __result) { __result = _oldKingCaptured && ReferenceEquals(__instance, _oldKing); return false; }
 }
