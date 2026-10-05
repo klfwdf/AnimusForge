@@ -7265,3 +7265,11 @@ R2计划交付门槛：已给固定技术路线、真实来源与目标、写入
 - 证据 `artifacts/remote-main-fusion-illustrator-deploy-20261005/receipt.json`、`build.log`、`duel-replay.log`、`deploy.log`、`stage-refresh.log`、`installed-before.json`、`installed-verification.json`、`illustrator-source-preservation.json`；首次Stage拦截也记录在收据，不解释为成功部署。
 - NOT_RUN：真实失败玩家/GPU/立绘/全景/MCM旧配置、实机野外决斗、真实LLM/TTS；没有启动游戏/打包/push，Illustrator离线审计仍未运行。需重启游戏复测，不能称原生导出根因已修复。
 - 源码回滚用定向 `git revert -m 1 c4438de1`（只反向融合）、`git revert 106e4760`（只反向Illustrator）；安装回滚另按上述私有manifest与已验旧文件恢复，不用源码revert冒充游戏已回滚，也不覆盖其他作者/玩家文件。
+
+<a id="native-input-side-layout-correction-20261005"></a>
+## 原版AI输入左右反置与占位纠正（2026-10-05，ACTIVE）
+
+- 用户实机截图指出“修反了”：已安装版本AI输入在左、NPC正文挤到右。立即停止尚未执行的push；本地已跟踪文件干净，基线da9a8b04，保留全部此前功能/远端融合与本地私有文件。
+- 真实证据：17047108将全屏Overlay输入从Right/MarginRight200改为Left/MarginLeft10；本机Native SPConversation中AnswerListContainer的Left是父ListPanel内局部锚点，不能据此推出屏幕左侧。现有NativeConversationAnswerAreaController.cs:248以preserveLayout:false隐藏整个选项容器，移除了NPC相邻区域布局占位。
+- 范围：仅原版Overlay输入恢复Right/MarginRight200、AI抑制时保留原选项容器占位并透明/禁交互；退出恢复原属性。更新错误方向断言，新增真实控制器链接回放。保留17047108失焦/回复修复、Illustrator20/6/40超时、其他作者与远端决斗修复，不整体revert。
+- 退出门：布局占位/透明/还原/动态选项回放、原失焦专项、双API+Bootstrap编译；无实机验收不得称GPU布局通过。当前启动器进程9080仍在，不能在占用时覆盖，也不擅自结束进程。
