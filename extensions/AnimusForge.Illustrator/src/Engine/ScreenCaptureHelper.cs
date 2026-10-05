@@ -862,6 +862,8 @@ namespace AnimusForge.Illustrator.Engine
             public string FailureCode;
             public string ViewFailureCode;
             public int LastProbeTick;
+            public int FileProbeCount;
+            public string FileProbeError;
             public bool SaveRequested;
             public Newtonsoft.Json.Linq.JObject ExportState;
             public Newtonsoft.Json.Linq.JObject RetireState;
@@ -877,21 +879,22 @@ namespace AnimusForge.Illustrator.Engine
             public TaskCompletionSource<string> Done;
         }
 
-        private static string FindOffscreenFile(string dir, string prefix)
+        private static string FindOffscreenFile(string dir, string prefix, out string fileError)
         {
+            fileError = null;
             if (string.IsNullOrEmpty(dir) || string.IsNullOrEmpty(prefix)) return null;
             try
             {
                 var matches = Directory.GetFiles(dir, prefix + "*");
                 if (matches.Length > 0 && new FileInfo(matches[0]).Length > 0) return matches[0];
             }
-            catch { }
+            catch (Exception ex) { fileError = NativeExportDiagnostics.DescribeError(ex); }
             try
             {
                 var matches = Directory.GetFiles(Path.GetTempPath(), prefix + "*");
                 if (matches.Length > 0 && new FileInfo(matches[0]).Length > 0) return matches[0];
             }
-            catch { }
+            catch (Exception ex) { if (fileError == null) fileError = NativeExportDiagnostics.DescribeError(ex); }
             return null;
         }
 
@@ -932,7 +935,9 @@ namespace AnimusForge.Illustrator.Engine
                 if (pump.SaveRequested && (pump.LastProbeTick == 0 || unchecked((uint)(Environment.TickCount - pump.LastProbeTick)) >= 50))
                 {
                     pump.LastProbeTick = Environment.TickCount;
-                    string path = FindOffscreenFile(pump.Dir, pump.Prefix);
+                    pump.FileProbeCount++;
+                    string path = FindOffscreenFile(pump.Dir, pump.Prefix, out string fileError);
+                    if (fileError != null) pump.FileProbeError = fileError;
                     if (path != null)
                     {
                         long length = new FileInfo(path).Length;
@@ -1225,6 +1230,19 @@ namespace AnimusForge.Illustrator.Engine
                             ["saveRequested"] = pump.SaveRequested, ["delivered"] = delivered,
                             ["applicationTicks"] = pump.Ticks, ["warmupUpdates"] = pump.WarmupTicks,
                             ["nativeFilePrefix"] = pump.Prefix,
+                            ["exportDirectory"] = pump.Dir,
+                            ["exportPath"] = string.IsNullOrEmpty(pump.Dir) || string.IsNullOrEmpty(pump.Prefix) ? null : Path.Combine(pump.Dir, pump.Prefix + ".png"),
+                            ["fileProbeCount"] = pump.FileProbeCount, ["fileSeen"] = pump.SeenLength > 0,
+                            ["fileError"] = pump.FileProbeError,
+                            ["paintObservationAvailable"] = (bool?)pump.RetireState?["paintObservationAvailable"] ?? false,
+                            ["paintCallbacks"] = (int?)pump.RetireState?["paintCallbacks"],
+                            ["paintCallbacksAfterSave"] = (bool?)pump.ExportState?["paintObservationAvailable"] != true ||
+                                (bool?)pump.RetireState?["paintObservationAvailable"] != true ? (int?)null :
+                                (int?)pump.RetireState["paintCallbacks"] - (int?)pump.ExportState["paintCallbacks"],
+                            ["renderTargetChangedAfterSave"] = pump.ExportState != null && pump.RetireState != null &&
+                                (int?)pump.ExportState["renderTargetGeneration"] != (int?)pump.RetireState["renderTargetGeneration"],
+                            ["expectedFile"] = NativeExportDiagnostics.DescribeFile(string.IsNullOrEmpty(pump.Dir) || string.IsNullOrEmpty(pump.Prefix) ? null : Path.Combine(pump.Dir, pump.Prefix + ".png")),
+                            ["duplicateExtensionFile"] = NativeExportDiagnostics.DescribeFile(string.IsNullOrEmpty(pump.Dir) || string.IsNullOrEmpty(pump.Prefix) ? null : Path.Combine(pump.Dir, pump.Prefix + ".png.png")),
                             ["atSaveRequest"] = pump.ExportState, ["atRetirement"] = pump.RetireState
                         });
                     if (!delivered && cleanTempFiles && pump != null)

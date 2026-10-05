@@ -518,6 +518,37 @@ namespace AnimusForge.Illustrator
             get => (_conversationDisplayDropdown?.SelectedIndex ?? 0) == 1;
         }
 
+        private int _portraitExportTimeoutSeconds = 20;
+        private int _panoramaFaceExportTimeoutSeconds = 6;
+        private int _panoramaCaptureTimeoutSeconds = 40;
+
+        [SettingPropertyInteger("人物立绘导出超时", 10, 60, "0 秒", Order = 2, RequireRestart = false,
+            HintText = "每个人物离屏立绘的等待上限，默认20秒。下一次提取生效；增大只帮助导出较慢的环境，不能修复原生保存未执行。不是AI接口超时。")]
+        [SettingPropertyGroup("5. 存储与性能", GroupOrder = 5)]
+        public int PortraitExportTimeoutSeconds
+        {
+            get => _portraitExportTimeoutSeconds;
+            set => _portraitExportTimeoutSeconds = Math.Max(10, Math.Min(60, value));
+        }
+
+        [SettingPropertyInteger("全景单方向图片导出超时", 3, 15, "0 秒", Order = 3, RequireRestart = false,
+            HintText = "每个全景方向等待原生PNG的上限，默认6秒。六个方向顺序采集，同时受全景总超时限制。下一次采集生效；不能修复原生保存未执行。")]
+        [SettingPropertyGroup("5. 存储与性能", GroupOrder = 5)]
+        public int PanoramaFaceExportTimeoutSeconds
+        {
+            get => _panoramaFaceExportTimeoutSeconds;
+            set => _panoramaFaceExportTimeoutSeconds = Math.Max(3, Math.Min(15, value));
+        }
+
+        [SettingPropertyInteger("环境全景采集总超时", 30, 120, "0 秒", Order = 4, RequireRestart = false,
+            HintText = "包含等待提取舞台、环境副本构建和六方向采集的总预算，默认40秒。下一次采集生效；总预算先到仍会停止，失败不发送缺面或重复图片。")]
+        [SettingPropertyGroup("5. 存储与性能", GroupOrder = 5)]
+        public int PanoramaCaptureTimeoutSeconds
+        {
+            get => _panoramaCaptureTimeoutSeconds;
+            set => _panoramaCaptureTimeoutSeconds = Math.Max(30, Math.Min(120, value));
+        }
+
         [SettingPropertyInteger("本地缓存最大保留张数", 20, 1000, "0 张", HintText = "生成的图片在本地持久化缓存的最大数量，避免重复调用消耗额度。", Order = 1, RequireRestart = false)]
         [SettingPropertyGroup("5. 存储与性能", GroupOrder = 5)]
         public int MaxCacheCount { get; set; } = 200;

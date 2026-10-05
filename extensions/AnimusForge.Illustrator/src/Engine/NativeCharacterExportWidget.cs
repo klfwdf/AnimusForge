@@ -1,5 +1,7 @@
 using System;
 using System.Reflection;
+using System.Threading;
+using TaleWorlds.Engine;
 using AnimusForge.Illustrator.Core;
 using Newtonsoft.Json.Linq;
 using TaleWorlds.GauntletUI;
@@ -20,6 +22,7 @@ namespace AnimusForge.Illustrator.Engine
         {
             // Identity references use the native display idle, never the scene action.
             // Set the public property explicitly so provider creation receives it.
+            _paintHandler = ObservePaint;
             IdleAction = "act_inventory_idle_start";
             IsEquipmentAnimActive = false;
             CustomAnimation = string.Empty;
@@ -29,6 +32,18 @@ namespace AnimusForge.Illustrator.Engine
             RightHandWieldedEquipmentIndex = -1;
         }
 
+        private static readonly EventInfo PaintEvent = typeof(RenderTargetComponent)
+            .GetEvent("PaintNeeded", BindingFlags.Instance | BindingFlags.NonPublic);
+        private static readonly MethodInfo AddPaintHandler = PaintEvent?.GetAddMethod(true);
+        private static readonly MethodInfo RemovePaintHandler = PaintEvent?.GetRemoveMethod(true);
+        private readonly RenderTargetComponent.TextureUpdateEventHandler _paintHandler;
+        private CharacterTableau _observedTableau;
+        private RenderTargetComponent _observedComponent;
+        private bool _paintObservationAvailable;
+        private bool _paintObservationDisabled;
+        private string _paintObservationError;
+        private int _paintCallbacks;
+        private int _renderTargetGeneration;
         private object _lastProvider;
         private Vec2 _lastSize;
         private long _lastUpdateFrame = -1;
@@ -38,19 +53,81 @@ namespace AnimusForge.Illustrator.Engine
         {
             bool providerWillTick = _isRenderRequestedPreviousFrame && IsRecursivelyVisible();
             base.OnUpdate(dt);
-            if (!ReferenceEquals(_lastProvider, TextureProvider) || _lastSize.X != Size.X || _lastSize.Y != Size.Y)
+            if (!ReferenceEquals(_lastProvider, TextureProvider))
             {
+                DetachPaintObserver();
                 _lastProvider = TextureProvider;
+                _observedTableau = null;
+                _paintObservationError = null;
+                _paintObservationDisabled = false;
+                try
+                {
+                    // Once per provider replacement, not per frame.
+                    var field = TextureProvider?.GetType().GetField("_characterTableau", BindingFlags.Instance | BindingFlags.NonPublic);
+                    _observedTableau = field?.GetValue(TextureProvider) as CharacterTableau;
+                    if (TextureProvider != null && _observedTableau == null) _paintObservationError = "character_tableau_unavailable";
+                }
+                catch (Exception ex) { _paintObservationError = NativeExportDiagnostics.DescribeError(ex); }
+                ExportUpdateCount = 0;
+                _lastUpdateFrame = -1;
+            }
+            if (_lastSize.X != Size.X || _lastSize.Y != Size.Y)
+            {
                 _lastSize = Size;
                 ExportUpdateCount = 0;
                 _lastUpdateFrame = -1;
             }
+            ObserveRenderTarget();
             long frame = IllustratorRuntime.ApplicationFrame;
             if (providerWillTick && TextureProvider != null && Size.X > 0 && Size.Y > 0 && frame != _lastUpdateFrame)
             {
                 _lastUpdateFrame = frame;
                 ExportUpdateCount++;
             }
+        }
+
+        private void ObserveRenderTarget()
+        {
+            if (_observedTableau == null || _paintObservationDisabled) return;
+            try
+            {
+                var component = _observedTableau.Texture?.RenderTargetComponent;
+                if (component == null || ReferenceEquals(component, _observedComponent)) return;
+                DetachPaintObserver();
+                _observedComponent = component;
+                _renderTargetGeneration++;
+                if (AddPaintHandler == null || RemovePaintHandler == null)
+                { _paintObservationError = "paint_event_unavailable"; _paintObservationDisabled = true; return; }
+                AddPaintHandler.Invoke(component, new object[] { _paintHandler });
+                _paintObservationAvailable = true;
+                _paintObservationError = null;
+            }
+            catch (Exception ex)
+            {
+                _paintObservationError = NativeExportDiagnostics.DescribeError(ex);
+                _paintObservationDisabled = true; // Diagnostics failures never retry/allocate each frame.
+            }
+        }
+
+        // Observation only: no native calls, allocations, locks or logging in this callback.
+        private void ObservePaint(TaleWorlds.Engine.Texture sender, EventArgs args) => Interlocked.Increment(ref _paintCallbacks);
+
+        private void DetachPaintObserver()
+        {
+            if (_paintObservationAvailable && _observedComponent != null)
+                try { RemovePaintHandler.Invoke(_observedComponent, new object[] { _paintHandler }); }
+                catch (Exception ex) { _paintObservationError = NativeExportDiagnostics.DescribeError(ex); }
+            _paintObservationAvailable = false;
+            _observedComponent = null;
+        }
+
+        public override void OnClearTextureProvider()
+        {
+            DetachPaintObserver();
+            _observedTableau = null;
+            _lastProvider = null;
+            // Preserve the vanilla provider's deferred scene retirement.
+            base.OnClearTextureProvider();
         }
 
         // At most twice per requested portrait, never a frame scan or camera mutation.
@@ -66,7 +143,11 @@ namespace AnimusForge.Illustrator.Engine
                 ["configuredCustomAnimation"] = CustomAnimation,
                 ["playingCustomAnimation"] = IsPlayingCustomAnimations,
                 ["equipmentAnimationEnabled"] = IsEquipmentAnimActive,
-                ["gpuCompletionVerified"] = false
+                ["gpuCompletionVerified"] = false,
+                ["paintObservationAvailable"] = _paintObservationAvailable,
+                ["paintObservationError"] = _paintObservationError,
+                ["paintCallbacks"] = Volatile.Read(ref _paintCallbacks),
+                ["renderTargetGeneration"] = _renderTargetGeneration
             };
             try
             {

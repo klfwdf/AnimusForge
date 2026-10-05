@@ -88,6 +88,7 @@ namespace AnimusForge.Illustrator.Core
             catch { lock (StorageLock) Active.Remove(_directory); throw; }
             Ambient.Value = this;
             RecordStage("pipeline_begin", new JObject { ["category"] = category, ["diagnosticDirectory"] = _directory });
+            RecordStage("native_export_environment", Engine.NativeExportDiagnostics.DescribeEnvironment());
         }
 
         internal static GenerationDiagnostics Begin(string campaign, string category)
@@ -388,7 +389,7 @@ namespace AnimusForge.Illustrator.Core
         {
             if (stage.StartsWith("panorama_face", StringComparison.Ordinal) || stage == "panorama_native_evidence") return;
             var summary = new JObject();
-            foreach (string key in new[] { "category", "status", "outcome", "failedStage", "failureCode", "reason", "error", "endpoint", "protocol", "model", "httpStatus", "referenceCount", "requestedRefs", "actualRefs", "success", "elapsedMs", "timeoutMs", "applicationTicks", "saveRequested", "delivered", "bytes", "view", "mode", "portrait", "directorRuleSource", "customStyleActive", "customNegativeActive" })
+            foreach (string key in new[] { "category", "status", "outcome", "failedStage", "failureCode", "reason", "error", "endpoint", "protocol", "model", "httpStatus", "referenceCount", "requestedRefs", "actualRefs", "success", "elapsedMs", "timeoutMs", "applicationTicks", "saveRequested", "delivered", "bytes", "view", "mode", "portrait", "directorRuleSource", "customStyleActive", "customNegativeActive", "paintObservationAvailable", "paintCallbacks", "paintCallbacksAfterSave", "renderTargetChangedAfterSave", "exportDirectory", "exportPath", "fileProbeCount", "fileSeen", "fileError", "buildApi", "tempDirectory", "nonAsciiPath", "face", "totalTimeoutMs" })
                 if (data[key] != null) summary[key] = data[key].DeepClone();
             string line = "id=" + Id + " step=" + CleanText(stage) + " elapsedMs=" + _clock.ElapsedMilliseconds + " " + CleanText(summary.ToString(Formatting.None));
             if (line.Length > 2048) line = line.Substring(0, 2048) + " [truncated]";
