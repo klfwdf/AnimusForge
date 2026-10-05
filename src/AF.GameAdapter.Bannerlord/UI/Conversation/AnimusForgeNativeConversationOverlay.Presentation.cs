@@ -41,6 +41,7 @@ public sealed partial class AnimusForgeNativeConversationOverlay
         ConversationHelper.ClearForOwner(this);
         _submitGeneration++;
         _submitPresentationScope = null;
+        ClearInterruptedPresentation();
         _isSubmitting = false;
         _npcOpeningAutoStarted = false;
         StopWaitingDotsAnimation();
