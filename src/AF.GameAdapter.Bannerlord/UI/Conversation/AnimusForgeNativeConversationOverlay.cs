@@ -313,7 +313,7 @@ public sealed partial class AnimusForgeNativeConversationOverlay
                 _submitPresentationScope = null;
                 _npcOpeningAutoStarted = false;
                 _dataSource.SetBusy(false);
-                ConversationHelper.EndStreaming();
+                ConversationHelper.EndStreaming(this);
 				ClearPendingPostprocessNotice();
 				_submitGeneration++;
 			}
@@ -967,7 +967,7 @@ public sealed partial class AnimusForgeNativeConversationOverlay
 		_dataSource.SetBusy(true);
 		_dataSource.InputText = "";
 		SetLayerForButtonsOnly();
-		ConversationHelper.BeginStreaming();
+		ConversationHelper.BeginStreaming(this);
 		StartWaitingDotsAnimation(generation);
 		bool suppressVisibleStreamingForTts = ShoutBehavior.ShouldSuppressNativeConversationVisibleStreamingForTtsExternal();
 		try
@@ -1180,7 +1180,7 @@ public sealed partial class AnimusForgeNativeConversationOverlay
 		_dataSource.SetBusy(true);
 		_dataSource.InputText = "";
 		SetLayerForButtonsOnly();
-		ConversationHelper.BeginStreaming();
+		ConversationHelper.BeginStreaming(this);
 		StartWaitingDotsAnimation(generation);
 		bool suppressVisibleStreamingForTts = ShoutBehavior.ShouldSuppressNativeConversationVisibleStreamingForTtsExternal();
 		try
@@ -1657,6 +1657,7 @@ public sealed partial class AnimusForgeNativeConversationOverlay
 			return;
 		}
 		_isClosed = true;
+		ConversationHelper.ClearForOwner(this);
         _modeText.Reset();
         _modeTextScope = null;
 		_submitPresentationScope = null;

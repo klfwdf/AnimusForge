@@ -3903,6 +3903,8 @@ public partial class MyBehavior : CampaignBehaviorBase
 	private void OnMemoryConversationEnded(IEnumerable<CharacterObject> characters)
 	{
 		ShoutBehavior.InvalidateNativeConversationAdmissionOnConversationEnd();
+		// Authoritative end event: also retires text when a mechanism force-closes the UI.
+		ConversationHelper.Clear();
 		string memorySessionKey = _activeNativeConversationMemorySessionId >= 0
 			? BuildCurrentMemorySessionKey(-1, _activeNativeConversationMemorySessionId)
 			: string.Empty;

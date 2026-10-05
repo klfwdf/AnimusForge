@@ -4,6 +4,8 @@
         internal static int Writes, Ends;
         internal static void UpdateDialogText(string value) { Text = value; Writes++; }
         internal static void EndStreaming() { Ends++; }
+        internal static void EndStreaming(object owner) { Ends++; }
+        internal static void ClearForOwner(object owner) { }
         internal static void Reset(string text = "current native text") { Text = text; Writes = Ends = 0; }
     }
     static class EncyclopediaEntityLinkFormatter
