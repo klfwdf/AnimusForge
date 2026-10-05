@@ -57,6 +57,52 @@ internal static class WorldDiplomacyLlmClient
 		return ResolveConfiguredOutputTokenLimit(settings, route);
 	}
 
+	// Prepared on the game thread. Credentials stay in the client-owned closure;
+	// the worker receives no settings, dropdowns or game objects.
+	internal static bool TryPrepareSingleCall(JArray messages, int maxTokens, int timeoutMilliseconds,
+		string source, long generation, out Func<CancellationToken, Task<WorldDiplomacyApiCallResult>> call,
+		out string error)
+	{
+		call = null;
+		DuelSettings settings = DuelSettings.GetSettings();
+		if (!TryResolveApiConfig(settings, out string url, out string key, out string model,
+			out string route, out error)) return false;
+		int configuredLimit = ResolveConfiguredOutputTokenLimit(settings, route);
+		int effectiveTokens = Math.Min(Math.Max(1, maxTokens), configuredLimit);
+		JArray frozenMessages = messages == null ? new JArray() : (JArray)messages.DeepClone();
+		if (frozenMessages.Count == 0) { error = "messages are empty"; return false; }
+		JObject body = BuildRequestBody(model, frozenMessages, effectiveTokens, ResolveTemperature(settings, route));
+		DuelSettings.ApplyThinkingControls(body, url, model, thinkingEnabled: false,
+			DuelSettings.ReasoningEffortHigh, out string thinking);
+		string requestBody = LlmApiCompat.PrepareChatRequestJson(url, body);
+		call = token => CallPreparedOnceAsync(url, key, model, route, frozenMessages, body,
+			requestBody, thinking, Math.Max(1000, timeoutMilliseconds), source, generation, token);
+		error = "";
+		return true;
+	}
+
+	private static async Task<WorldDiplomacyApiCallResult> CallPreparedOnceAsync(string url, string key,
+		string model, string route, JArray messages, JObject body, string requestBody, string thinking,
+		int timeout, string source, long generation, CancellationToken token)
+	{
+		WorldDiplomacyApiCallResult result = new WorldDiplomacyApiCallResult { ResolvedRoute = route, AttemptsUsed = 1 };
+		try
+		{
+			token.ThrowIfCancellationRequested();
+			if (!AcceptWorldDiplomacyStage(generation, source + "_prepared", result)) return result;
+			return await SendPreparedAsync(url, key, model, route, messages, body, requestBody, thinking,
+				timeout, source, generation, result, token, null).ConfigureAwait(false);
+		}
+		catch (OperationCanceledException) { throw; }
+		catch (Exception ex)
+		{
+			// Do not log the frozen request, provider response or credentials.
+			Log(source, "prepared request failed type=" + ex.GetType().Name);
+			result.ErrorMessage = "prepared request failed";
+			return result;
+		}
+	}
+
 	public static async Task<WorldDiplomacyApiCallResult> CallMessagesWithRetriesAsync(
 		JArray messages,
 		int maxTokens,
@@ -138,45 +184,8 @@ internal static class WorldDiplomacyLlmClient
 				+ " configuredOutputTokenLimit=" + configuredOutputTokenLimit.ToString(CultureInfo.InvariantCulture)
 				+ " thinking=" + thinkingMode);
 
-			WorldDiplomacyHttpExchange exchange = await SendAndReadAsync(
-				apiUrl,
-				apiKey,
-				requestBody,
-				hardTimeoutMilliseconds,
-				runtimeGeneration,
-				source + "_response",
-				result,
-				cancellationToken, admitRequest);
-			if (exchange == null)
-			{
-				return result;
-			}
-
-			if (ShouldRetryWithoutThinkingControls(exchange.Response, exchange.ResponseBody, thinkingMode))
-			{
-				exchange = null;
-				JObject plainBody = (JObject)body.DeepClone();
-				DuelSettings.RemoveThinkingControls(plainBody);
-				result.ThinkingRetryPlain = true;
-				thinkingMode += "_retry_plain";
-				string plainRequestBody = LlmApiCompat.PrepareChatRequestJson(apiUrl, plainBody);
-				exchange = await SendAndReadAsync(
-					apiUrl,
-					apiKey,
-					plainRequestBody,
-					hardTimeoutMilliseconds,
-					runtimeGeneration,
-					source + "_plain_retry_response",
-					result,
-					cancellationToken, admitRequest);
-				if (exchange == null)
-				{
-					return result;
-				}
-			}
-
-			cancellationToken.ThrowIfCancellationRequested();
-			return CompleteResult(exchange, result, messages, route, modelName, thinkingMode, source);
+			return await SendPreparedAsync(apiUrl, apiKey, modelName, route, messages, body, requestBody,
+				thinkingMode, hardTimeoutMilliseconds, source, runtimeGeneration, result, cancellationToken, admitRequest);
 		}
 		catch (OperationCanceledException)
 		{
@@ -194,6 +203,28 @@ internal static class WorldDiplomacyLlmClient
 			Log(source, "api exception: " + ex);
 			return result;
 		}
+	}
+
+	private static async Task<WorldDiplomacyApiCallResult> SendPreparedAsync(string url, string key,
+		string model, string route, JArray messages, JObject body, string requestBody, string thinking,
+		int timeout, string source, long generation, WorldDiplomacyApiCallResult result,
+		CancellationToken token, Func<bool> admitRequest)
+	{
+		WorldDiplomacyHttpExchange exchange = await SendAndReadAsync(url, key, requestBody,
+			timeout, generation, source + "_response", result, token, admitRequest).ConfigureAwait(false);
+		if (exchange == null) return result;
+		if (ShouldRetryWithoutThinkingControls(exchange.Response, exchange.ResponseBody, thinking))
+		{
+			JObject plainBody = (JObject)body.DeepClone();
+			DuelSettings.RemoveThinkingControls(plainBody);
+			result.ThinkingRetryPlain = true;
+			thinking += "_retry_plain";
+			exchange = await SendAndReadAsync(url, key, LlmApiCompat.PrepareChatRequestJson(url, plainBody),
+				timeout, generation, source + "_plain_retry_response", result, token, admitRequest).ConfigureAwait(false);
+			if (exchange == null) return result;
+		}
+		token.ThrowIfCancellationRequested();
+		return CompleteResult(exchange, result, messages, route, model, thinking, source);
 	}
 
 	private static async Task<WorldDiplomacyHttpExchange> SendAndReadAsync(

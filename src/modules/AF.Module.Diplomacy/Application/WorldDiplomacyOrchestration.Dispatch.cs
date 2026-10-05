@@ -15,6 +15,8 @@ internal sealed partial class WorldDiplomacyOrchestration
             || !Storage.RequestBudget.CanAdmit(IsPlayerSchedulingJob(job))) return false;
         if (job.Kind == "generate")
         {
+            if (job.IsExternalResponseOnly && !string.IsNullOrWhiteSpace(job.SourceDocumentId)
+                && !DialogueDocumentKnown(job.AuthorKingdomId, job.SourceDocumentId)) return false;
             string id = WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(job.RoundId, job.ExchangeId);
             if (RequestLeases.ContainsSpeech(id)) return false;
             if (!string.IsNullOrWhiteSpace(id) && !IsLiveRound(ResolveRound(id))) return false;
@@ -57,24 +59,6 @@ internal sealed partial class WorldDiplomacyOrchestration
             Storage.ServiceRetryAfterUtcTicks = DateTime.UtcNow.AddSeconds(60).Ticks;
         return true;
     }
-    private void PublishImmediatePublicKnowledge(WorldDiplomacyDocument document)
-    {
-        _publicDiplomacyDocumentIds = null;
-        var round = ResolveRound(document.RoundId);
-        if (round != null) round.ConversationRevision++;
-        int day = _host.CurrentDay();
-        foreach (string id in _host.AllKingdomIds())
-        {
-            if (_host.IsEliminatedParty(id)) continue;
-            WorldDiplomacyDocumentFactRules.RecordKingdomKnowledge(Storage.KingdomKnowledge, id, document.DocumentId, day);
-            WorldDiplomacyDocumentFactRules.RecordNobleKnowledge(Storage.NobleKnowledge, id, document.DocumentId, day);
-            if (_host.IsPlayerAffiliatedParty(id)) document.HasReachedPlayerCourt = true;
-        }
-        document.PropagationCompleted = true;
-        RecordDiplomaticDocumentPersonalMemories(document);
-        InvalidateDialogueIndex();
-    }
-    internal System.Collections.Generic.IEnumerable<string> PublicDocumentIds() => GetPublicDiplomacyDocumentIds();
     internal void MaintainDialogueAndMemory()
     {
         RetryPendingDiplomaticPersonalMemories(); RetryPendingDialoguePersonalMemories();

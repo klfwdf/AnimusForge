@@ -16,6 +16,11 @@ internal interface IWorldDiplomacyPlayerWorld
 
 internal static class WorldDiplomacyPlayerApplication
 {
+    internal static bool CanRetryAnalysis(WorldDiplomacyDocument document, WorldDiplomacyPlayerContext player)
+        => document?.IsPlayerAuthored == true && document.IsReadyForPublication
+            && document.AnalysisStatus == "analysis_failed" && !document.PlayerAnalysisCommitted
+            && !document.ChangedDiplomaticState && !document.HistoryResultRecorded
+            && player?.IsRuler == true && player.Independent && player.KingdomId == document.AuthorKingdomId;
     internal static string Execute(IWorldDiplomacyPlayerWorld world, WorldDiplomacyPlayerDocumentCommand command,
         IWorldDiplomacyOrchestration orchestration)
     {

@@ -31,6 +31,12 @@ internal static class WorldDiplomacyGenerationTaskApplication
             + " author=" + (authorKingdomId ?? "") + " target=" + (targetKingdomId ?? "")
             + " reason=" + (reason ?? ""));
         WorldDiplomacyRound round = resolveRound?.Invoke(FirstNonEmpty(job.RoundId, job.ExchangeId));
+        if (job.IsExternalResponseOnly && round != null && !round.ResultSettlementPending)
+        {
+            // A priority reply does not own the ordinary relay hop. Its durable
+            // player obligation will be retried without skipping the next speaker.
+            return;
+        }
         if (job.IsRelayTurn && round != null && IsActiveRoundState(round.State))
         {
             round.RelayWaiting = false;

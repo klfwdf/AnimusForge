@@ -37,9 +37,9 @@ internal sealed class WorldDiplomacyPlayerDocumentCommand
 internal sealed class WorldDiplomacyDocumentDetail
 {
     internal WorldDiplomacyDocumentDetail(string documentId, string roundId, long generation,
-        string title, string subtitle, string body, string impact, bool canReply)
+        string title, string subtitle, string body, string impact, bool canReply, bool canRetryAnalysis = false)
     { DocumentId = documentId; RoundId = roundId; Generation = generation; Title = title;
-      Subtitle = subtitle; Body = body; Impact = impact; CanReply = canReply; }
+      Subtitle = subtitle; Body = body; Impact = impact; CanReply = canReply; CanRetryAnalysis = canRetryAnalysis; }
     public string DocumentId { get; }
     public string RoundId { get; }
     public long Generation { get; }
@@ -48,6 +48,7 @@ internal sealed class WorldDiplomacyDocumentDetail
     public string Body { get; }
     public string Impact { get; }
     public bool CanReply { get; }
+    public bool CanRetryAnalysis { get; }
 }
 
 internal sealed class WorldDiplomacyArchiveRecord
@@ -69,7 +70,8 @@ internal sealed class WorldDiplomacyArchiveRecord
         string UnreadMarkerText = "",
         bool IsUnread = false,
         bool HasPolicyName = false,
-        bool HasImpact = false)
+        bool HasImpact = false,
+        bool CanRetryAnalysis = false)
     {
         this.KingdomId = KingdomId;
         this.KingdomName = KingdomName;
@@ -90,6 +92,7 @@ internal sealed class WorldDiplomacyArchiveRecord
         this.IsUnread = IsUnread;
         this.HasPolicyName = HasPolicyName;
         this.HasImpact = HasImpact;
+        this.CanRetryAnalysis = CanRetryAnalysis;
     }
     public string KingdomId { get; }
     public string KingdomName { get; }
@@ -110,4 +113,5 @@ internal sealed class WorldDiplomacyArchiveRecord
     public bool IsUnread { get; }
     public bool HasPolicyName { get; }
     public bool HasImpact { get; }
+    public bool CanRetryAnalysis { get; }
 }

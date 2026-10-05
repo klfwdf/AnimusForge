@@ -31,9 +31,9 @@ internal static class PeaceAdmissionReplay
         foreach (string raw in new[] { "{}", "{\"peace_terms\":null}", "{\"peace_terms\":[]}" })
             Test.True(WorldDiplomacyPeaceAdmissionApplication.ParseAndValidatePeaceTerms(p, JObject.Parse(raw), "a", "b") == null && p.Reads == 0,
                 "malformed peace shape rejects before live party or candidate reads");
-        var json = JObject.Parse("{\"peace_terms\":{\"tribute_payer_kingdom_id\":\"a\",\"tribute_receiver_kingdom_id\":\"b\",\"daily_tribute\":150,\"duration_days\":0}}");
+        var json = JObject.Parse("{\"peace_terms\":{\"tribute_payer_kingdom_id\":\"a\",\"tribute_receiver_kingdom_id\":\"b\",\"daily_tribute\":150}}");
         var terms = WorldDiplomacyPeaceAdmissionApplication.ParseAndValidatePeaceTerms(p, json, "a", "b");
-        Test.True(terms.DailyTribute == 100 && terms.DurationDays == 100 && terms.TributePayerKingdomId == "a", "parsing retains clamping and default duration");
+        Test.True(terms.DailyTribute == 150 && terms.DurationDays == 100 && terms.TributePayerKingdomId == "a", "parsing preserves explicit amount and defaults only omitted duration");
         p.War = false; p.Reads = 0;
         Test.True(WorldDiplomacyPeaceAdmissionApplication.ParseAndValidatePeaceTerms(p, json, "a", "b") == null && p.Reads == 0,
             "peaceful pair cannot produce war settlement terms");
@@ -54,10 +54,18 @@ internal static class PeaceAdmissionReplay
             Actions = new() { new() { ActionId = "peace", PeaceTerms = terms } } };
         Test.True(WorldDiplomacyPeaceAdmissionApplication.AreOfferedPeaceTermsCurrentlyExecutable(p, offer, source, "a", "b"), "exact published action retains executable terms");
         p.Cap = 50;
-        Test.True(!WorldDiplomacyPeaceAdmissionApplication.AreOfferedPeaceTermsCurrentlyExecutable(p, offer, source, "a", "b"), "changed tribute capacity rejects instead of silently rewriting promised amount");
+        Test.True(WorldDiplomacyPeaceAdmissionApplication.AreOfferedPeaceTermsCurrentlyExecutable(p, offer, source, "a", "b"), "AI suggested tribute cap does not rewrite or invalidate explicit negotiated amount");
         p.Cap = 100; offer.SourceActionId = "missing";
         Test.True(!WorldDiplomacyPeaceAdmissionApplication.AreOfferedPeaceTermsCurrentlyExecutable(p, offer, source, "a", "b"), "unknown action cannot borrow another action's peace terms");
         offer.SourceActionId = "peace"; terms.CessionFromKingdomId = "a"; terms.CessionToKingdomId = "b"; terms.CessionSettlementId = "castle";
+        var invalidJson = JObject.Parse("{\"peace_terms\":{\"tribute_payer_kingdom_id\":\"outside\",\"tribute_receiver_kingdom_id\":\"b\",\"daily_tribute\":150,\"duration_days\":0,\"cession_from_kingdom_id\":\"a\",\"cession_to_kingdom_id\":\"b\",\"cession_settlement_id\":\"missing\"}}");
+        var invalidTerms = WorldDiplomacyPeaceAdmissionApplication.ParseAndValidatePeaceTerms(p, invalidJson, "a", "b");
+        Test.True(invalidTerms.DailyTribute == 150 && invalidTerms.DurationDays == 0
+            && invalidTerms.TributePayerKingdomId == "outside" && invalidTerms.CessionSettlementId == "missing",
+            "invalid explicit clauses remain visible rather than disappearing or becoming defaults");
+        var invalidSource = new WorldDiplomacyDocument { AuthorKingdomId = "a", IsReadyForPublication = true, PeaceTerms = invalidTerms };
+        Test.True(!WorldDiplomacyPeaceAdmissionApplication.AreOfferedPeaceTermsCurrentlyExecutable(p, new(), invalidSource, "a", "b"),
+            "invalid clauses cannot execute as a reduced peace agreement");
         p.Owner = "b";
         Test.True(!WorldDiplomacyPeaceAdmissionApplication.AreOfferedPeaceTermsCurrentlyExecutable(p, offer, source, "a", "b"), "changed land ownership invalidates the offered cession");
         p.Owner = "a"; p.Ruler = false;

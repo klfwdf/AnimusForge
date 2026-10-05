@@ -21,6 +21,8 @@ internal static class WorldDiplomacyPresentationHost
     internal static WorldDiplomacyDocumentDetail Detail(string id) => DiplomacyModuleServices.World.Presentation?.Detail(id);
     internal static string Submit(WorldDiplomacyPlayerDocumentCommand command) => DiplomacyModuleServices.World.Presentation?.Submit(command) ?? "";
     internal static bool MarkRead(string id) => DiplomacyModuleServices.World.Presentation?.MarkRead(id) == true;
+    internal static string RetryAnalysis(string id, long generation) =>
+        DiplomacyModuleServices.World.Presentation?.RetryAnalysis(id, generation) ?? "外交功能尚未初始化。";
     internal static bool CanOpenReply(string documentId, string roundId, long generation) =>
         DiplomacyModuleServices.World.Presentation?.CanOpenReply(documentId, roundId, generation) == true;
 }
