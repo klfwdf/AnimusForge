@@ -65,6 +65,8 @@ ThrowingDataStore throwing = new ThrowingDataStore();
 string safeValue = "safe";
 AssertTrue(!CampaignSaveChunkHelper.SafeSyncData(throwing, "throw", ref safeValue), "SafeSyncData did not isolate datastore exception");
 
+CivilWarChunkRegression.Run(args);
+
 Console.WriteLine("PASS persistenceChunkReplay smallInline=1 utf8Boundary=1 missingChunk=1 oversizeCount=1 legacyFallback=1 dictionaryRoundTrip=1 corruptDictionary=1 safeSyncIsolation=1");
 
 internal sealed class MemoryDataStore : IDataStore
