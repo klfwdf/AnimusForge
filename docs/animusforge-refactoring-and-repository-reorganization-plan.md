@@ -1,4 +1,11 @@
-﻿<a id="deploy-bulletin-residual-archive-20261004"></a>
+<a id="coup-memory-seam-gate-20261005"></a>
+# 政变记忆强类型接缝与发布门禁（2026-10-05，ACTIVE）
+
+- 用户先要求定位篡位禁用，随后明确要求实施防复发。实际工作区 F:/AnimusForge-main，分支 codex/af-main-refactor-continuation-20260831，开始 HEAD 7c38342b；tracked clean，既有 untracked 不纳入、不清理。
+- 根因：c8e68748 将 InteractionMemoryCommit 内部构造函数从16参数扩为17参数，CoupRebellionBridge仍反射绑定16参数；安装1.3/1.4 DLL与2026-10-05 04:29/14:49日志已确认。目标是保留记忆恢复身份/失败关闭/原政治规则，改为同DLL强类型记忆端口，并将真实候选DLL接缝检查设为双版本构建发布门禁。
+- 范围：AF内部记忆端口、政变消费者/独立旧构建兼容适配、现有Coup.RuntimeProbe及构建校验、主台账/HANDOFF/构建说明。只增加原入口的验收门禁，不改变单模块布局、Bootstrap、存档键、政治规则或游戏数据。未授权push/游戏覆盖/外仓写入。
+- 退出门：强类型生产调用接通、记忆工厂及失败反例回归、正确依赖版本下真实DLL接缝探针、原入口1.3/1.4+Bootstrap构建及失败阻断/哈希绑定、git diff --check；实机/玩家旧档明确NOT_RUN。性能：一次初始化缓存delegate，记忆工厂仅结算/重试调用，无新增Tick扫描/反射/锁。
+<a id="deploy-bulletin-residual-archive-20261004"></a>
 # 快报选材分流与档案卡片部署（2026-10-04，DEPLOY_VERIFIED）
 
 - 本轮方案授权提交推送部署；产品 `7312fbfe`、文档候选 `6cab3c2d` 已普通推送main并独立ls-remote核对，无强推。25任务文件及三DLL/marker与源码回放收据一致，原Debug 1.3/1.4＋Bootstrap构建产物经原 `scripts/build/deploy_module.ps1` 事务入口安装到 `F:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord/Modules/AnimusForge`，版本 `v1.5.0`、XML仅加载Bootstrap；原构建/覆盖脚本及3原版TaleWorlds DLL哈希保持。
