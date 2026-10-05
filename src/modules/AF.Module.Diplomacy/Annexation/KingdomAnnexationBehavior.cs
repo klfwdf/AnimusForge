@@ -15,6 +15,9 @@ public sealed class KingdomAnnexationBehavior : CampaignBehaviorBase
 
 	public static KingdomAnnexationBehavior Instance { get; private set; }
 
+	// Lets the bulletin skip per-clan defection facts while one merger is being applied.
+	internal static bool IsAnnexationInProgress => Instance != null && Instance._annexationsInProgress.Count > 0;
+
 	public KingdomAnnexationBehavior()
 	{
 		Instance = this;
@@ -75,6 +78,7 @@ public sealed class KingdomAnnexationBehavior : CampaignBehaviorBase
 		{
 			List<Clan> targetClans = SnapshotTargetClans(targetKingdom);
 			List<Settlement> targetSettlements = SnapshotKingdomSettlements(targetKingdom);
+			Hero formerRuler = targetKingdom.Leader;
 			Dictionary<string, object> applySnapshot = KingdomAnnexationDiagnosticLog.BuildApplySnapshot(playerKingdom, targetKingdom, conversationHero, targetClans, targetSettlements);
 			KingdomAnnexationDiagnosticLog.Event("apply.start.before", applySnapshot);
 			LogEvent("apply.start", applySnapshot);
@@ -155,6 +159,7 @@ public sealed class KingdomAnnexationBehavior : CampaignBehaviorBase
 				statusText = "吞并中止：" + GetKingdomDisplayName(targetKingdom, "目标王国") + "所有家族已向" + GetKingdomDisplayName(playerKingdom, "玩家王国") + "效忠，但旧王国暂未能完成解散。";
 				return false;
 			}
+			MyBehavior.Instance?.CaptureWorldBulletinAnnexation(playerKingdom, targetKingdom, formerRuler, movedCount);
 			statusText = "吞并完成：" + GetKingdomDisplayName(targetKingdom, "目标王国") + "已并入" + GetKingdomDisplayName(playerKingdom, "玩家王国") + "。"
 				+ GetKingdomDisplayName(targetKingdom, "目标王国") + "所有家族已向" + GetKingdomDisplayName(playerKingdom, "玩家王国") + "宣誓效忠，"
 				+ GetKingdomDisplayName(targetKingdom, "目标王国") + "就此灭亡。";

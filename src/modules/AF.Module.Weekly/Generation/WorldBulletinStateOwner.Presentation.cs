@@ -165,10 +165,15 @@ internal static string WorldBulletinCategoryForKind(string kind)
 		{
 		case "war_declared":
 		case "peace_made":
+		case "alliance_formed":
+		case "alliance_ended":
+		case "vassalage_established":
+		case "vassalage_ended":
 			return "外 交";
 		case "settlement_siege":
 		case "battle":
 		case "siege_battle":
+		case "army_gathered":
 			return "战 事";
 		case "raid":
 			return "劫 掠";
@@ -187,6 +192,14 @@ internal static string WorldBulletinCategoryForKind(string kind)
 		case "civil_war":
 		case "civil_war_resolution":
 		case "civil_war_politics":
+		case "ruler_changed":
+		case "royal_marriage":
+		case "noble_marriage":
+		case "clan_defection":
+		case "clan_destroyed":
+		case "town_unrest":
+		case "town_rebellion":
+		case "kingdom_annexed":
 			return "国 事";
 		default:
 			return "时 事";

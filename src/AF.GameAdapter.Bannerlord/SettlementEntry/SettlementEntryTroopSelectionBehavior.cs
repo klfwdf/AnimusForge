@@ -34,7 +34,8 @@ namespace AnimusForge;
 public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 {
 	private const int OwnSettlementEntryLimit = SetsOwnedSettlementMassacreProfile.MaxAlliedAttackers;
-	private const int OtherSettlementEntryLimit = SetsSettlementEntryProfile.OtherSettlementSelectedFollowerLimit;
+	// MCM-adjustable; read only on menu, configuration and mission-entry paths, never per frame.
+	private static int OtherSettlementEntryLimit => DuelSettings.GetSetsOtherSettlementFollowerLimit();
 	private const int DefenderReserveWaveSize = 30;
 	private const int DefenderReservePhaseCount = 3;
 	private const int MaxActiveDefenderReserveWaves = 4;
@@ -559,6 +560,26 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 			}
 			_settlementCivilianGatherRuntimeAvailable = false;
 			_pendingSettlementCivilianGatherRequest = null;
+		}
+	}
+
+	// Ambient chatter uses this to replace its peaceful-scene block with coup-only preset lines.
+	internal static bool TryGetArmedCoupSceneForExternal(Mission mission, out bool hall)
+	{
+		hall = false;
+		try
+		{
+			SettlementEntryTroopSelectionMissionLogic logic = mission?.GetMissionBehavior<SettlementEntryTroopSelectionMissionLogic>();
+			if (logic == null || !logic.IsArmedCoup)
+			{
+				return false;
+			}
+			hall = logic.IsArmedCoupHall;
+			return true;
+		}
+		catch
+		{
+			return false;
 		}
 	}
 
@@ -2370,7 +2391,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 		catch
 		{
 			return profileKind == EntryProfileKind.OtherSettlement
-				? "配置进入他方城镇/城堡/村庄时带入的两名健康普通士兵；现场主队英雄会在冲突开始后加入玩家编队。"
+				? "配置进入他方城镇/城堡/村庄时带入的健康普通士兵（人数上限可在 MCM 调整）；现场主队英雄会在冲突开始后加入玩家编队。"
 				: "配置进入自有城镇/城堡/村庄时自动带入的普通士兵。";
 		}
 	}
@@ -2786,6 +2807,8 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 		private float _nextDefenderReserveWaveTime;
 		private float _lastDefenderReserveProgressTime;
 		private float _nextOwnedSettlementPanicTickTime;
+		private float _nextArmedCoupCivilianPanicTime;
+		private readonly Dictionary<int, float> _armedCoupCivilianRetreatTimes = new Dictionary<int, float>();
 		private float _victoryReachedTime = -1f;
 		private int _lastDefenderReserveLiveEnemyCount = -1;
 		private bool _defenderReserveStuckNudged;
@@ -2795,6 +2818,8 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 		private float _nextArmedCoupSpawnDeferLogTime;
 		// Static scene anchors, collected once per mission; only the cheap distance/sight filter runs per wave.
 		private List<Vec3> _armedCoupSpawnAnchors;
+		private List<MatrixFrame> _nativeCoupGuardRelocationFrames;
+		private int _nativeCoupGuardRelocationIndex;
 		private List<Vec3> _armedCoupWallPositions;
 		private readonly HashSet<int> _armedCoupUsedWallSlots = new HashSet<int>();
 		private readonly Dictionary<int, float> _armedCoupWallSentryHealth = new Dictionary<int, float>();
@@ -2911,6 +2936,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 		}
 
 		internal bool IsArmedCoup => _armedCoup;
+		internal bool IsArmedCoupHall => IsCoupHall;
 		private bool IsCoupHall => _armedCoup && string.Equals(_entryLocationId, LordHallLocationId, StringComparison.OrdinalIgnoreCase);
 
 		internal void StopCoupStreetReinforcements()
@@ -3343,6 +3369,11 @@ if (_spawnedAllies
 			{
 				StartConflict("armed_coup_start", null);
 			}
+			if (_armedCoup && _conflictActive && !_victoryReached && base.Mission != null && base.Mission.CurrentTime >= _nextArmedCoupCivilianPanicTime)
+			{
+				_nextArmedCoupCivilianPanicTime = base.Mission.CurrentTime + 1f;
+				MaintainArmedCoupCivilianPanic();
+			}
 			// The coup owner ends its own mission; a host force-end would read as retreat.
 			if (_defenderConflictEnabled && _victoryReached && !_armedCoup)
 			{
@@ -3488,6 +3519,7 @@ if (_spawnedAllies
 			_enemyAgentsByIndex.Remove(affectedAgent.Index);
 			_enemyInitialTargetReleaseTimes.Remove(affectedAgent.Index);
 			_ownedSettlementFleeingCivilianAgentIndexes.Remove(affectedAgent.Index);
+			_armedCoupCivilianRetreatTimes.Remove(affectedAgent.Index);
 			_gatheredSettlementCivilianAgentIndexes.Remove(affectedAgent.Index);
 			_ownedSettlementMassacreTargetAgentIndexes.Remove(affectedAgent.Index);
 			if (_ownedSettlementMassacreRequestAgentIndex == affectedAgent.Index)
@@ -3840,7 +3872,8 @@ if (_spawnedAlliedCount > 0)
 				{
 					MarkEnemyAgent(initialEnemy);
 				}
-				foreach (Agent agent in base.Mission.Agents)
+				// Snapshot: an armed-coup guard removal mutates Mission.Agents.
+				foreach (Agent agent in base.Mission.Agents.ToList())
 				{
 					if (agent == null || !agent.IsHuman || !agent.IsActive())
 					{
@@ -3852,6 +3885,10 @@ if (_spawnedAlliedCount > 0)
 					}
 					if (IsVictoryObjectiveSceneAgent(agent))
 					{
+						if (!TryMoveNativeCoupGuardOutOfPlayerFace(agent))
+						{
+							continue;
+						}
 						MarkEnemyAgent(agent);
 					}
 					else
@@ -3863,6 +3900,59 @@ if (_spawnedAlliedCount > 0)
 			catch (Exception ex)
 			{
 				SettlementEntryTroopSelectionLog.Log("MarkCurrentSceneGuardsEnemy failed. error=" + ex.Message);
+			}
+		}
+
+		// Armed-coup street only, once at conflict start: native scene guards standing near the
+		// player's entry point would otherwise turn hostile in place. Apply the reserve waves'
+		// 25m/unseen rule: move them to a hidden anchor, or remove them when none exists.
+		// Returns false when the agent was removed and must not be tracked.
+		private bool TryMoveNativeCoupGuardOutOfPlayerFace(Agent agent)
+		{
+			Mission mission = base.Mission;
+			Agent main = Agent.Main ?? mission?.MainAgent;
+			if (!_armedCoup || IsCoupHall || mission?.Scene == null || main == null || !main.IsActive()
+				|| _armedCoupAgentRecordIds.ContainsKey(agent.Index))
+			{
+				return true;
+			}
+			Vec3 eye = main.GetEyeGlobalPosition();
+			if (IsArmedCoupSpawnPositionSafe(mission.Scene, eye, main.Position, agent.Position, ArmedCoupSpawnMinDistance))
+			{
+				return true;
+			}
+			try
+			{
+				if (_nativeCoupGuardRelocationFrames == null && !TryGetArmedCoupHiddenSpawnFrames(out _nativeCoupGuardRelocationFrames))
+				{
+					_nativeCoupGuardRelocationFrames = new List<MatrixFrame>();
+				}
+				for (int attempt = 0; attempt < 3 && _nativeCoupGuardRelocationFrames.Count > 0; attempt++)
+				{
+					int slot = _nativeCoupGuardRelocationIndex++;
+					MatrixFrame frame = _nativeCoupGuardRelocationFrames[(slot / DefenderReserveWorkshopSpawnGroupSize) % _nativeCoupGuardRelocationFrames.Count];
+					Vec3 position = ResolveEnemyReserveSpawnPosition(frame, slot, ArmedCoupHiddenSpawnSource);
+					if (!IsArmedCoupSpawnPositionSafe(mission.Scene, eye, main.Position, position, ArmedCoupSpawnMinDistance))
+					{
+						continue;
+					}
+					if (agent.CurrentlyUsedGameObject != null)
+					{
+						agent.StopUsingGameObject(false, Agent.StopUsingGameObjectFlags.DoNotWieldWeaponAfterStoppingUsingGameObject);
+					}
+					agent.ClearTargetFrame();
+					agent.TeleportToPosition(position);
+					SettlementEntryTroopSelectionLog.Log("Moved native guard away from armed coup player. settlement=" + _settlementId + ", agent=" + agent.Index + ", position=" + position);
+					return true;
+				}
+				SettlementEntryTroopSelectionLog.Log("Removed native guard near armed coup player; no hidden anchor. settlement=" + _settlementId + ", agent=" + agent.Index);
+				agent.FadeOut(hideInstantly: true, hideMount: true);
+				return false;
+			}
+			catch (Exception ex)
+			{
+				SettlementEntryTroopSelectionLog.Log("Relocate native armed coup guard failed. settlement=" + _settlementId + ", agent=" + agent.Index + ", error=" + ex.Message);
+				return true;
 			}
 		}
 
@@ -4749,6 +4839,61 @@ if (_spawnedAlliedCount > 0)
 			}
 		}
 
+		// Armed coup only, 1Hz: the coup suppresses native fight/alarm callbacks, so residents would
+		// otherwise idle in the middle of the battle. Reuses the owned-incident retreat (away from the
+		// player, native flee fallback); each civilian is re-routed at most every 4s to bound navmesh sampling.
+		private void MaintainArmedCoupCivilianPanic()
+		{
+			try
+			{
+				Mission mission = base.Mission;
+				Agent main = Agent.Main ?? mission?.MainAgent;
+				if (mission == null || main == null || !main.IsActive()
+					|| mission.Mode == MissionMode.Conversation || mission.Mode == MissionMode.Barter)
+				{
+					return;
+				}
+				float now = mission.CurrentTime;
+				int routed = 0;
+				foreach (Agent agent in mission.Agents)
+				{
+					if (agent == null || !agent.IsHuman || !agent.IsActive() || agent == main
+						|| IsPlayerSideAgent(agent)
+						|| _enemyAgentIndexes.Contains(agent.Index)
+						|| (_playerTeam != null && agent.Team == _playerTeam)
+						|| (_enemyTeam != null && agent.Team == _enemyTeam))
+					{
+						continue;
+					}
+					CharacterObject character = agent.Character as CharacterObject;
+					if (IsGuardOrSoldier(character) || IsLordCombatant(character))
+					{
+						continue;
+					}
+					bool first = !_armedCoupCivilianRetreatTimes.TryGetValue(agent.Index, out float nextRetreat);
+					if (!first && now < nextRetreat)
+					{
+						continue;
+					}
+					_armedCoupCivilianRetreatTimes[agent.Index] = now + 4f;
+					if (first && agent.CurrentlyUsedGameObject != null)
+					{
+						agent.StopUsingGameObject(false, Agent.StopUsingGameObjectFlags.DoNotWieldWeaponAfterStoppingUsingGameObject);
+					}
+					ForceOwnedSettlementCivilianFlee(agent, mission, main, force: true);
+					routed++;
+				}
+				if (routed > 0)
+				{
+					SettlementEntryTroopSelectionLog.LogVerbose("Routed armed coup civilians away from the fight. settlement=" + _settlementId + ", routed=" + routed + ", tracked=" + _armedCoupCivilianRetreatTimes.Count);
+				}
+			}
+			catch (Exception ex)
+			{
+				SettlementEntryTroopSelectionLog.Log("MaintainArmedCoupCivilianPanic failed. settlement=" + _settlementId + ", error=" + ex.Message);
+			}
+		}
+
 		private void NeutralizeOwnedSettlementNonPlayerAgent(Agent agent, Team neutralTeam)
 		{
 			try
@@ -5083,7 +5228,10 @@ if (_spawnedAlliedCount > 0)
 
 		private bool TryMaintainEnemyNativeNavigationRescue(Agent agent)
 		{
-			if (_sceneKind == SetsSettlementSceneKind.Town || _sceneKind == SetsSettlementSceneKind.Castle)
+			// The shared wall rescue teleports a stalled agent to within a few metres of its target, which
+			// in an armed coup drops far hidden defenders onto the player. Coups use the stepwise
+			// navmesh rescue below instead, so defenders must still walk in.
+			if (!_armedCoup && (_sceneKind == SetsSettlementSceneKind.Town || _sceneKind == SetsSettlementSceneKind.Castle))
 			{
 				return TryMaintainSharedEnemyWallRescue(agent);
 			}

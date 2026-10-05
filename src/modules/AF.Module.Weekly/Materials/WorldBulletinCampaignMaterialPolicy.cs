@@ -6,7 +6,12 @@ internal static class WorldBulletinCampaignMaterialPolicy
 {
     internal static int EventPriority(string kind) => kind switch {
         "war_declared"=>70, "peace_made"=>60, "fief_grant"=>20, "settlement_transfer"=>30,
-        "kingdom_destroyed"=>100, "kingdom_rebellion"=>70, "kingdom_created"=>75, "raid"=>25, "civil_war"=>80, _=>0 };
+        "kingdom_destroyed"=>100, "kingdom_rebellion"=>70, "kingdom_created"=>75, "raid"=>25, "civil_war"=>80,
+        "alliance_formed"=>70, "alliance_ended"=>55, "ruler_changed"=>85, "clan_defection"=>45, "clan_destroyed"=>50,
+        "army_gathered"=>35, "town_unrest"=>30, "town_rebellion"=>60, "kingdom_annexed"=>90, "vassalage_established"=>80, "vassalage_ended"=>60, _=>0 };
+    // A temporary ruler appointed while the council elects a successor is news, but not a coronation.
+    internal static int RulerChangedPriority(bool interim)=>interim?50:EventPriority("ruler_changed");
+    internal static int MarriagePriority(bool royal)=>royal?65:40;
     internal static bool SameKingdom(string newId,string oldId)=>!string.IsNullOrEmpty(newId)&&string.Equals(newId,oldId,StringComparison.OrdinalIgnoreCase);
     internal static string KingdomContextLine(string kingdom,string ruler,int towns,int castles,bool stabilityEnabled,int stability,System.Collections.Generic.IReadOnlyCollection<string> enemies)
         => kingdom+"：君主"+ruler+"，城镇"+towns+"座、城堡"+castles+"座"+(stabilityEnabled?"，稳定度"+stability:"")+"，"+(enemies.Count>0?"正与"+string.Join("、",enemies)+"交战":"眼下没有战事");
@@ -25,11 +30,12 @@ internal static class WorldBulletinCampaignMaterialPolicy
     internal static string SiegeSentence(string actor,string settlement,string oldOwner,string newOwner) => actor+"攻陷"+settlement+"，该地由"+oldOwner+"转归"+newOwner+"。";
     internal static string GrantSentence(string settlement,string owner,string label) => settlement+"被授予"+owner+"（方式："+label+"）。";
     internal static string TransferSentence(string settlement,string oldOwner,string newOwner,string label) => settlement+"以“"+label+"”的方式由"+oldOwner+"转归"+newOwner+"，并非攻城夺取。";
-    internal static int SiegePriority(bool town)=>town?65:50;
+    internal static int SiegePriority(bool town)=>town?65:45;
     internal static int SiegeStability(bool town,bool winner)=>winner?(town?4:2):(town?-6:-3);
     internal static bool ShouldIncludeBattle(bool player,bool winnerLord,bool loserLord,bool raid,bool siege,int troops,int threshold)
         => (player||winnerLord||loserLord)&&(player||(!raid&&(siege||(winnerLord&&loserLord)||troops>threshold)));
-    internal static int BattlePriority(int troops,int threshold,bool lordVsLord,bool siege) => (troops>=1000?55:(troops>threshold?40:(lordVsLord?30:20)))+(siege?10:0);
+    // Battles are frequent; only large or player/home fights should reach the headline bar once focus bonuses apply.
+    internal static int BattlePriority(int troops,int threshold,bool lordVsLord,bool siege) => (troops>=1000?45:(troops>threshold?35:(lordVsLord?30:20)))+(siege?5:0);
     internal static int BattleStability(int troops,int threshold)=>troops>threshold?2:1;
     internal static string BattleSentence(string location,bool sallyOut,bool siege,string winner,string winnerFaction,string loser,string loserFaction,int troops)
         => location+(sallyOut?"出城战：":siege?"攻城战：":"一战：")+winner+"（"+winnerFaction+"）击败"+loser+"（"+loserFaction+"）"+(sallyOut?"的本次参战部队":"")+(troops>0?"，双方约"+troops+"人参战。":"。");
@@ -38,7 +44,8 @@ internal static class WorldBulletinCampaignMaterialPolicy
     internal static string CapturedWho(bool ruler,string kingdom,string name,string affiliation)=>ruler?kingdom+"的君主"+name:name+"（"+affiliation+"）";
     internal static string CapturedSentence(string who,bool hasCaptor,string captor)=>who+(hasCaptor?"被"+captor+"俘虏。":"被敌方俘虏。");
     internal static string CapturedDetail(string title,bool hasCaptor,string captor,string captorTitle)=>"被俘者身份："+title+(hasCaptor?"；俘获者："+captor+"（"+captorTitle+"）":"");
-    internal static int CapturedPriority(bool ruler)=>ruler?65:35;
+    // Below the 30-point headline floor: an ordinary captive is a supporting line, never the lead.
+    internal static int CapturedPriority(bool ruler)=>ruler?65:28;
     internal static int CapturedStability(bool ruler)=>ruler?-4:-1;
     internal static string DestroyedSentence(string kingdom)=>kingdom+"已经覆灭，这个王国不复存在。";
     internal static string DestroyedDetail(string ruler)=>"末代君主："+ruler;
@@ -46,10 +53,34 @@ internal static class WorldBulletinCampaignMaterialPolicy
     internal static string RebellionDetail(string clanLeader,string king)=>"叛乱家族族长："+clanLeader+"；原王国君主："+king;
     internal static string CreatedSentence(string clan,string kingdom)=>clan+"家族建立了新王国"+kingdom+"。";
     internal static string CreatedDetail(string founder,bool hadOld,string old)=>"开国者："+founder+(hadOld?"；此前效忠："+old:"");
+    internal const int ArmyGatheredTroopThreshold = 1000;
     internal static string RaidSentence(string settlement,string raider,string faction)=>settlement+"村遭"+raider+"（"+faction+"）劫掠得手。";
     internal static string RaidDetail(string owner)=>owner.Length>0?"该村隶属："+owner:"";
     internal static string CivilWarSentence(string kingdom)=>kingdom+"爆发内战，国内各家族兵戎相见。";
     internal static string CivilWarDetail(string ruler)=>"在位君主："+ruler;
+    internal static string AllianceFormedSentence(string first,string second)=>first+"与"+second+"缔结同盟，两国结为盟友。";
+    internal static string AllianceEndedSentence(string first,string second)=>first+"与"+second+"的同盟宣告解除，两国不再是盟友。";
+    internal static string AllianceDetail(string first,string firstLeader,string second,string secondLeader)=>first+"君主："+firstLeader+"；"+second+"君主："+secondLeader;
+    internal static string RulerChangedSentence(string kingdom,string ruler,string clan,bool interim)
+        => interim?kingdom+"王位暂由"+clan+"家族的"+ruler+"代掌，新君将由王国议会推选。":ruler+"（"+clan+"家族）成为"+kingdom+"的新君主。";
+    internal static string RulerChangedDetail(bool hasPrevious,string previous,string previousClan,bool previousDying)
+        => hasPrevious?"前任君主："+previous+"（"+previousClan+"家族）"+(previousDying?"，已在本次变故中身故":""):"前任君主未载明";
+    internal static string MarriageSentence(string first,string firstTitle,string second,string secondTitle)=>firstTitle+first+"与"+secondTitle+second+"成婚。";
+    internal static string DefectionSentence(string clan,int fiefs,bool hadOld,string oldKingdom,string newKingdom)
+        => clan+"家族携"+fiefs+"处封地"+(hadOld?"脱离"+oldKingdom+"，改投":"投效")+newKingdom+"。";
+    internal static string DefectionDetail(string leader,string fiefs)=>"家族族长："+leader+"；所携封地："+fiefs;
+    internal static string ClanDestroyedSentence(string clan,bool hadKingdom,string kingdom)=>(hadKingdom?kingdom+"的":"")+clan+"家族就此覆亡，不复存在。";
+    internal static string ClanDestroyedDetail(string leader)=>leader.Length>0?"末任族长："+leader:"末任族长未载明";
+    internal static string ArmyGatheredSentence(string kingdom,string leaderTitle,string leader,int troops,string place)
+        => kingdom+leaderTitle+leader+"召集大军，约"+troops+"人应召"+(place.Length>0?"，集结于"+place:"")+"。";
+    internal static string ArmyGatheredDetail(int parties)=>"应召部队："+parties+"支；这是集结而非交战，尚无战果";
+    internal static string TownUnrestSentence(string town,string owner)=>town+"民心离散，城中酝酿叛乱"+(owner.Length>0?"，领主为"+owner:"")+"。";
+    internal static string TownRebellionSentence(string town,string oldOwner,string rebels)=>town+"爆发民变，起义者驱逐了"+oldOwner+"，城池落入"+rebels+"之手。";
+    internal static string AnnexedSentence(string receiving,string annexed)=>annexed+"并入"+receiving+"，"+annexed+"所有家族向"+receiving+"宣誓效忠，旧王国就此终结。";
+    internal static string AnnexedDetail(string receivingRuler,string formerRuler,int clans)=>"吞并方君主："+receivingRuler+"；被吞并国末代君主："+formerRuler+"；转入家族："+clans+"个";
+    internal static string VassalageEstablishedSentence(string suzerain,string vassal,string type)=>vassal+"承认"+suzerain+"的宗主权，成为其"+type+"。";
+    internal static string VassalageEndedSentence(string suzerain,string vassal,string type)=>vassal+"与宗主"+suzerain+"的"+type+"条约终止，不再受其节制。";
+    internal static string VassalageDetail(string suzerainRuler,string vassalRuler)=>"宗主国君主："+suzerainRuler+"；臣属国君主："+vassalRuler;
     internal static bool IsNaturalDeath(string detail)=>detail=="DiedOfOldAge"||detail=="DiedInLabor";
     internal static string KilledWho(bool ruler,string kingdom,string clan,string name)=>ruler?kingdom+"的君主"+name:kingdom+clan+"家族的"+name;
     internal static int DeathPriority(bool ruler,bool natural)=>ruler?(natural?70:90):(natural?25:50);

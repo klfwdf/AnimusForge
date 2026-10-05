@@ -658,7 +658,10 @@ internal sealed class CoupCampaignBehavior : CampaignBehaviorBase
         _session.PoliticalCommitStarted = true;
         if (!_session.RulingClanCommitted)
         {
-            if (kingdom.RulingClan != Clan.PlayerClan) ChangeRulingClanAction.Apply(kingdom, Clan.PlayerClan);
+            // The coup outcome fact is the bulletin story for this throne change.
+            MyBehavior.SuppressWorldBulletinRulerChange = true;
+            try { if (kingdom.RulingClan != Clan.PlayerClan) ChangeRulingClanAction.Apply(kingdom, Clan.PlayerClan); }
+            finally { MyBehavior.SuppressWorldBulletinRulerChange = false; }
             if (kingdom.RulingClan != Clan.PlayerClan) throw new InvalidOperationException("王权转移未生效。");
             _session.RulingClanCommitted = true;
         }

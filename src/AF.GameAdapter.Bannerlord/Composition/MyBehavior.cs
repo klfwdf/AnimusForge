@@ -5867,18 +5867,17 @@ public partial class MyBehavior : CampaignBehaviorBase
 			return;
 		}
 		string kingdomDisplayName = GetKingdomDisplayName(destroyedKingdom, "某个王国");
-		string text = BuildKingdomDestroyedSnapshotText(destroyedKingdom);
+		string text = BuildKingdomDestroyedSnapshotText(destroyedKingdom, GetLastKingdomRulingClan(destroyedKingdom));
 		string stableKey = "kingdom_destroyed:" + kingdomId;
 		RecordEventSourceMaterial("kingdom_destroyed", "王国覆灭 - " + kingdomDisplayName, text, stableKey, kingdomId, "", includeInWorld: true, includeInKingdom: true);
 		Logger.Log("EventMaterial", "[KINGDOM_DESTROYED] source=" + (source ?? "") + " kingdom=" + kingdomId + " name=" + kingdomDisplayName);
 	}
 
-	private static string BuildKingdomDestroyedSnapshotText(Kingdom destroyedKingdom)
+	private static string BuildKingdomDestroyedSnapshotText(Kingdom destroyedKingdom, Clan rulingClan)
 	{
 		string kingdomDisplayName = GetKingdomDisplayName(destroyedKingdom, "某个王国");
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.Append(kingdomDisplayName).Append("已经覆灭。这是世界格局级事件，周报必须记录为该王国政治实体的终结。");
-		Clan rulingClan = destroyedKingdom?.RulingClan;
 		if (rulingClan != null)
 		{
 			stringBuilder.Append(" 覆灭时的执政家族是").Append(GetClanDisplayName(rulingClan)).Append("。");

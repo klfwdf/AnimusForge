@@ -791,6 +791,32 @@ internal static class WorldBulletinPolicy
 			return "政变失败";
 		case "raid":
 			return "村庄遭劫";
+		case "alliance_formed":
+			return "盟约缔结";
+		case "alliance_ended":
+			return "盟约解除";
+		case "ruler_changed":
+			return "新君即位";
+		case "royal_marriage":
+			return "王室联姻";
+		case "noble_marriage":
+			return "贵胄联姻";
+		case "clan_defection":
+			return "家族改投";
+		case "clan_destroyed":
+			return "家族覆亡";
+		case "army_gathered":
+			return "大军集结";
+		case "town_unrest":
+			return "民心浮动";
+		case "town_rebellion":
+			return "城中民变";
+		case "kingdom_annexed":
+			return "王国并吞";
+		case "vassalage_established":
+			return "称臣纳贡";
+		case "vassalage_ended":
+			return "宗藩决裂";
 		default:
 			return "时事快报";
 		}

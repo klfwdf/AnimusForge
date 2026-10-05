@@ -29,7 +29,8 @@ public static class CriticalUiLipSyncTeardownPatch
 				typeof(int)
 			});
 			MethodInfo methodInfo3 = AccessTools.Method(typeof(BarterManager), "BeginPlayerBarter");
-			if (methodInfo == null || methodInfo2 == null || methodInfo3 == null)
+			MethodInfo methodInfo4 = AccessTools.Method(typeof(BarterManager), "Close");
+			if (methodInfo == null || methodInfo2 == null || methodInfo3 == null || methodInfo4 == null)
 			{
 				Logger.LogTrace("System", "CriticalUiLipSyncTeardownPatch: missing target method.");
 				return;
@@ -41,6 +42,7 @@ public static class CriticalUiLipSyncTeardownPatch
 			harmony.Patch(methodInfo, prefix);
 			harmony.Patch(methodInfo2, prefix2);
 			harmony.Patch(methodInfo3, prefix3);
+			harmony.Patch(methodInfo4, new HarmonyMethod(typeof(CriticalUiLipSyncTeardownPatch).GetMethod("BeforeBarterClose", BindingFlags.Static | BindingFlags.Public)));
 			_patched = true;
 			Logger.LogTrace("System", "CriticalUiLipSyncTeardownPatch enabled.");
 		}
@@ -74,6 +76,8 @@ public static class CriticalUiLipSyncTeardownPatch
 
 	public static void BeforeBeginPlayerBarter()
 	{
+		// Map barter shares the conversation screen, so the overlay relies on this event-driven flag.
+		AnimusForgeNativeConversationOverlay.SetNativeBarterActive(true);
 		try
 		{
 			ShoutBehavior.NotifyCriticalUiTransition("BEGIN_BARTER");
@@ -81,5 +85,10 @@ public static class CriticalUiLipSyncTeardownPatch
 		catch
 		{
 		}
+	}
+
+	public static void BeforeBarterClose()
+	{
+		AnimusForgeNativeConversationOverlay.SetNativeBarterActive(false);
 	}
 }

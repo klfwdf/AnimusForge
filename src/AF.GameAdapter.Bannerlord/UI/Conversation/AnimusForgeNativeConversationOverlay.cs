@@ -91,6 +91,14 @@ public sealed partial class AnimusForgeNativeConversationOverlay
 
 	public static bool IsOpen => _activeOverlay != null && !_activeOverlay._isClosed;
 
+	private static bool _nativeBarterActive;
+
+	// Set by the BarterManager.BeginPlayerBarter / Close prefixes; the barter screen is handled like a temporary system UI.
+	internal static void SetNativeBarterActive(bool isActive)
+	{
+		_nativeBarterActive = isActive;
+	}
+
 	private AnimusForgeNativeConversationOverlay(ScreenBase screen)
 	{
 		_screen = screen;
@@ -118,6 +126,11 @@ public sealed partial class AnimusForgeNativeConversationOverlay
 			}
 			if (!canSubmit || shoutPopupOpen)
 			{
+				if (_nativeBarterActive && Campaign.Current?.ConversationManager?.IsConversationInProgress != true)
+				{
+					// The conversation ended without BarterManager.Close; never keep later overlays hidden.
+					_nativeBarterActive = false;
+				}
 				using (FreezeWatchdog.Scope("NativeConversationOverlay.CloseUnavailable"))
 				{
 					CloseActive();
@@ -402,6 +415,10 @@ public sealed partial class AnimusForgeNativeConversationOverlay
 		if (screen == null)
 		{
 			return false;
+		}
+		if (_nativeBarterActive)
+		{
+			return true;
 		}
 		try
 		{

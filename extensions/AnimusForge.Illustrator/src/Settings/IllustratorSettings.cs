@@ -357,6 +357,16 @@ namespace AnimusForge.Illustrator
         [SettingPropertyGroup("2. 生图 API 配置 (OpenAI 兼容)", GroupOrder = 2)]
         public int Randomness { get; set; } = 50;
 
+        private int _imageGenerationTimeoutSeconds = 240;
+
+        [SettingPropertyInteger("生图请求总超时", 60, 600, "0 秒", Order = 13, RequireRestart = false, HintText = "单次生图的总等待上限，默认240秒；包含 Edits 尝试、对话通道回退和结果图下载。高画质多参考图重绘或中转较慢时可调大。下一次生图生效；不影响视觉导演请求与离屏采集超时。")]
+        [SettingPropertyGroup("2. 生图 API 配置 (OpenAI 兼容)", GroupOrder = 2)]
+        public int ImageGenerationTimeoutSeconds
+        {
+            get => _imageGenerationTimeoutSeconds;
+            set => _imageGenerationTimeoutSeconds = Math.Max(60, Math.Min(600, value));
+        }
+
         // Retained for old config/code compatibility; protocol selection is automatic and this
         // preference is intentionally no longer exposed in MCM.
         public bool PreferChatImageProtocol { get; set; } = false;

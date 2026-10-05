@@ -8,8 +8,22 @@ namespace AnimusForge.SiegeAftermathIntervention;
 /// </summary>
 public static class SetsSettlementEntryProfile
 {
-    /// <summary>Foreign settlements allow exactly two explicitly selected followers.</summary>
-    public const int OtherSettlementSelectedFollowerLimit = 2;
+    /// <summary>Foreign-settlement selected follower cap; the host exposes it as an MCM slider.</summary>
+    public const int OtherSettlementSelectedFollowerDefaultLimit = 10;
+
+    public const int OtherSettlementSelectedFollowerMinLimit = 1;
+
+    public const int OtherSettlementSelectedFollowerMaxLimit = 100;
+
+    public static int ClampOtherSettlementSelectedFollowerLimit(int value)
+    {
+        if (value < OtherSettlementSelectedFollowerMinLimit)
+        {
+            return OtherSettlementSelectedFollowerMinLimit;
+        }
+
+        return value > OtherSettlementSelectedFollowerMaxLimit ? OtherSettlementSelectedFollowerMaxLimit : value;
+    }
 
     public const string TownSceneKind = "town";
 
@@ -203,7 +217,7 @@ public static class SetsSettlementEntryProfile
 
     public static string BuildConflictStartedMessage(SetsSettlementSceneKind kind)
     {
-        return "【SETS内部暴乱】" + GetDefenderSummary(kind) + "已进入敌对状态（第 0 波）。选中的两名随行士兵与现场同伴、家族成员已加入玩家编队，等待你的指挥。";
+        return "【SETS内部暴乱】" + GetDefenderSummary(kind) + "已进入敌对状态（第 0 波）。选中的随行士兵与现场同伴、家族成员已加入玩家编队，等待你的指挥。";
     }
 
     public static string BuildReserveWaveMessage(SetsSettlementSceneKind kind, string phaseKind, int waveNumber, int maxActiveWaves)
