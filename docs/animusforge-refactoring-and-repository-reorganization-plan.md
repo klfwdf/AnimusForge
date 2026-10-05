@@ -1,11 +1,16 @@
 <a id="native-input-focus-pause-20261005"></a>
-# 原版AI输入定位与失焦暂停显示回写（2026-10-05，ACTIVE）
+# 原版AI输入定位与失焦暂停显示回写（2026-10-05，OFFLINE_VERIFIED）
 
-- 用户连续报告：关闭新皮肤/回原版后AI输入框跑到右侧；NPC正文生成时切桌面，开启失焦暂停会留等待点、关闭该设置则正常。本轮合并修复，不改暂停设置、LLM三段语义、动作/记忆提交或其他渠道规则。
-- 开始HEAD 03cb3f5f，真实工作区F:/AnimusForge-main，分支codex/af-main-refactor-continuation-20260831。其他会话dirty：content/modules/AF.Module.Weekly/GUI/Prefabs/WorldBulletinPanel.xml及tests/content/BulletinCourierLayoutTests/run.py，保留不修改/暂存；既有untracked保留。
-- 证据：旧prefab AI输入为Right+MarginRight200，而原版玩家选项侧为Left+MarginLeft10；日志2026-10-05 15:36:43 main_reply_display_ready、15:36:45 completion_returned，已有正文并非模型没生成。Overlay.OnApplicationTick在临时系统界面分支return，跳过显示回调队列，旧FocusInputIfVisible也未防暂停时抢焦点。
-- 预计范围：原版overlay prefab、overlay临时UI/显示回写与可见交互延后、窄源码回放测试和主台账/HANDOFF。性能：复用128上限主线程队列；仅恢复转场重绘/重验NPC，常驻仅缓存一份显示文本和少量可见交互，不添加背景游戏对象访问/全量扫描/额外网络请求。
-- 退出门：原版布局绑定/不同分辨率、暂停中完成及恢复、继续流式/重复焦点、关闭/换NPC/切普通/失效代次不串写、暂停不抢焦点/弹窗、生产源回放及负控、既有对话回归、原双API+Bootstrap及接缝门禁。实机Alt-Tab/原生渲染/真实provider/玩家旧档独立NOT_RUN；不push/部署。
+- 用户连续报告原版AI输入框右移，以及开启失焦暂停后切桌面留等待点。本轮合并修复。工作区 `F:/AnimusForge-main`，分支 `codex/af-main-refactor-continuation-20260831`；开始HEAD `03cb3f5f`，意图检查点 `488e9e31`，本轮产品/测试 `17047108`。并行作者独立完成快报字体/场景裁定/显示owner清理（含`117a402b`），其改动未回滚、未挪为本任务提交；共享Overlay处逐项合并并保留Begin/EndStreaming(this)、ClearForOwner(this)。原有untracked未清理。
+- 根因与证据：旧overlay prefab固定Right+MarginRight200，落到右侧NPC正文，而原版玩家选项位于Left+MarginLeft10；2026-10-05 15:36:43日志main_reply_display_ready、15:36:45 completion_returned确认正文/后处理已完成。临时菜单/选项界面分支return跳过Overlay主线程显示队列，且旧焦点方法无暂停保护，显示完成被停在隐藏UI后。
+- 修改：原版AI输入固定720宽/Bottom47保持，改为左侧10锚点，不改新皮肤XML或输入绑定。暂停分支继续用原128预算队列处理当前代次显示回调、清busy/等待点；重试/错误/输入就绪交互在原生临时UI结束后才执行。缓存一份当前请求UI正文，按NPC/token/Mission/save/模式/请求代次重验，恢复及晚一帧VM重绑时重绘；复用原8帧恢复窗，文字相同不触发NPC查询。焦点不得盖过暂停或Inquiry；活动TTS打字机不被缓存覆盖；关闭/切普通/失效代次清缓存和延后动作。没有重放动作/记忆，没有新增请求，没有关闭StopGameOnFocusLost。
+- **源码坐标（修订17047108，一基行号）**：`content/modules/AF.Module.Conversation/GUI/Prefabs/AnimusForgeNativeConversationOverlay.xml:35-37` AFNativeConversationInputPanel及原编辑器绑定；`src/AF.GameAdapter.Bannerlord/UI/Conversation/AnimusForgeNativeConversationOverlay.cs:149-155`真实暂停分支、`:538-551`恢复/8帧窗、`:743-760`FocusInputIfVisible、两提交方法`:938-1378`共16处SetSubmissionDisplayText及2完成/4错误可见交互入口、`:1677`关闭清理、`:316`切普通清理；`AnimusForgeNativeConversationOverlay.Interruption.cs:14-17` ProcessInterruptedPresentation、`:20-27`正文捕获、`:30-44`可见交互延后、`:46-60`恢复执行、`:65-74`有界重绘、`:76-81`清理；`Presentation.cs:44`RetireStale清理。消费者仍为现有ApplicationTickComposition→Overlay.OnApplicationTick，不新增另一Tick/网络/动作owner。
+- 验证：新生产源码回放30项PASS（实际Overlay.ApplicationTick/队列/隐藏恢复/焦点/关闭/Presentation及完整ConversationHelper，screen/pause/NPC状态为明确替身）；XML锚点/原绑定/5宽高比参数投影PASS。四个编译成功负控skip-paused-drain、skip-resume-repaint、steal-focus、allow-stale-text均命中对应运行断言。既有DialogueUI生产链接生命周期95、双API命中/继续按钮各49、场景/真实ShowNpcSpeechOutput及独立音频消费46+54通过。最终原入口Debug 1.3引用v1.3.15.110062/1.4引用v1.4.6.115628+Bootstrap均0错误、既有警告保留；两真实候选DLL的Coup接缝门禁均通过。git diff --check通过。
+- 性能/线程：复用原128回调上限；暂停空队列仅轻量队列/状态检查，常驻一份字符串和少量当前请求交互delegate；8帧恢复窗仅做已绑定VM文字比较，实际覆盖时才做上下文复核和一份UI重绘。全部游戏对象/控件处理仍在主线程，不为失焦另建背景模拟或轮询线程。三渠道LLM/历史/动作资格未改，信使/喊话只跑相关显示生命周期回归，不宣称网络渠道全验。
+- **NOT_RUN**：实机开启失焦暂停的Alt-Tab、原生渲染/真实键鼠/尺度、真实LLM/TTS/provider、玩家旧档、Stage/部署/打包/推送。引用快照的原有1.3补充覆盖限制保持；fixture/双编译与托管绑定不能冒充实机。当前游戏仍旧DLL/旧XML；须另获覆盖授权并重启验收。
+- 本地 `artifacts/native-input-focus-pause-20261005/receipt.json` 绑定7任务文件、并行作者当前helper、三最终DLL/marker、源码/负控manifest；日志pause-replay-final、negative-*、lifecycle、continue-hit-1.3/1.4、scene-lifecycle、build-dual-final。测试详解 `tests/AF.GameAdapter.Bannerlord/NativeConversationInterruptionTests/README.md`。新DLL位于`bin/Debug/single_module_artifacts/versions/1.3|1.4/AnimusForge.dll`，未覆盖安装或旧Stage。
+- 回滚本轮使用focused `git revert 17047108`，不逆回另一作者的`117a402b`或快报字体改动；本条独立于前轮篡位接缝门禁，后者仍保留且已随最终DLL重新验过。
+
 <a id="bulletin-minor-font-20261005"></a>
 # 快报其余消息字号对齐已确认 Pen 稿（2026-10-05，RESOURCE_OFFLINE_VERIFIED）
 
