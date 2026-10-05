@@ -7296,3 +7296,13 @@ R2计划交付门槛：已给固定技术路线、真实来源与目标、写入
 - 根因证据：CommitVictory用Hero.FindFirst正确解析旧王且已越过RulingClan/Town/Custody/Facts标记；Bridge却使用MBObjectManager.GetObject<Hero>。1.3/1.4本地Hero.Find均读CampaignObjectManager；同条Bridge还以MB注册表查Clan/Kingdom，拘押小时校验也有同类错误。旧Probe人为向MB注册表登记Hero/Clan，掩盖了真实注册域差异。
 - 用户授权的定点修复：更换Coup中的战役Hero/Clan/Kingdom解析域、补有界身份诊断、修正夹具使用真实战役对象列表；验证已提交步骤重试不重放。存档字段/键/对象类型不变，不迁移或强改玩家存档，不跳过叛乱资格/强行完成；原版UI修正762539c0保留，新UI不得变化。
 - 性能边界：原生Find是列表解析，不声称O(1)；旧王在单次候选验证解析一次并在家族循环复用，不引入每帧世界扫描；拘押只维持现有每小时已标记旧王集合。总入口/异步边界与原Save/Load机制保持。
+
+<a id="coup-campaign-identity-resolution-final-20261005"></a>
+## 政变已称王但登记未完成：战役对象解析修复（2026-10-05，SOURCE_FIXED_BUILD_VERIFIED_LIVE_PENDING）
+
+- 实机日志已确认：17:42:40 `king_subdued`，17:42:48 `SelectLoyalists` 抛“政变前后统治者身份缺失”，不是王权转移失败。旧安装1.4 DLL在真实战役对象注册夹具中同样复现：旧王不存在XML/MBObjectManager注册表，但Hero.Find能在CampaignObjectManager找到旧王。
+- 修复源码坐标：`extensions/AnimusForge.Coup/src/Integration/CoupRebellionBridge.cs`：`TryQueueCoupRebellion`/`SelectLoyalists`/`StillSupportsFormerKing`/`Validate`/`CanJoinRestoration`/`RegisterCreatedWar`统一用Campaign域的Hero.Find和CampaignObjectManager.Find<Clan/Kingdom>；SelectLoyalists记录一次有界身份摘要，并在候选循环复用旧王。`extensions/AnimusForge.Coup/src/CoupSystem/CoupCaptivityBehavior.cs`：小时级已标记旧王校验改用Hero.Find。
+- 处理中保留已完成的王权/城镇/拘押/事实标记，叛乱登记失败仍可在原城镇菜单重试；session JSON字段/键不变，不再次执行政治动作，不伪造Completed。22项CommitVictory/session-JSON重试夹具通过，验证Release和Capture两种处置以及幂等。
+- 验证：统一入口双版本+Bootstrap 0错误/接缝门禁PASS；1.3/1.4 loyalist fixtures均通过真实CampaignObjectManager解析和旧Ruler guard；Coup contracts145 PASS；Victory flow61 PASS。证据 `artifacts/coup-campaign-identity-fix-20261005/receipt.json`。
+- 本轮同时纠正原版输入反转：762539c0；AI输入Right/MarginRight200。新AFDialogue UI文件未改；原版答案占位与新UI分支回归50 PASS，失焦回归30 PASS。其部署状态仍是先前已部署的错误布局，当前新的源修复未部署。
+- NOT_RUN：当前修订的失败存档实机重试、实机新UI布局、立绘/全景；未覆盖游戏、未push。现有安装仍是旧部署版本。源码回滚使用对应 focused commit 的 `git revert`，不hard reset。

@@ -19,6 +19,7 @@ internal static class Program
     private static string _afPath;
     private static string _coupPath;
     private static bool _sceneFixture;
+    private static bool _loyalistFixture;
     private static bool _seamOnly;
     private static readonly List<string> ReferenceDirectories = new List<string>();
     private static string _expectedVersion;
@@ -27,13 +28,14 @@ internal static class Program
     {
         if (args.Length < 4)
         {
-            Console.Error.WriteLine("Usage: Coup.RuntimeProbe.exe <game-root> <af.dll> <coup.dll> <workspace-log-directory> [--scene-fixture] [--seam-only] [--reference-dirs <dir1|dir2>] [--expected-version <v1.x.x.x>]");
+            Console.Error.WriteLine("Usage: Coup.RuntimeProbe.exe <game-root> <af.dll> <coup.dll> <workspace-log-directory> [--scene-fixture] [--loyalist-fixture] [--seam-only] [--reference-dirs <dir1|dir2>] [--expected-version <v1.x.x.x>]");
             return 2;
         }
         _gameRoot = Path.GetFullPath(args[0]);
         for (int i = 4; i < args.Length; i++)
         {
             if (args[i] == "--scene-fixture") _sceneFixture = true;
+            else if (args[i] == "--loyalist-fixture") _loyalistFixture = true;
             else if (args[i] == "--seam-only") _seamOnly = true;
             else if (args[i] == "--reference-dirs" && ++i < args.Length)
                 ReferenceDirectories.AddRange(args[i].Split('|').Select(Path.GetFullPath));
@@ -133,6 +135,8 @@ internal static class Program
             CoupAdmissionRegression.Run(af, coup, Write);
             CoupLoyalistAftermathRegression.Run(af, coup, Write);
         }
+
+        if (_loyalistFixture && !_sceneFixture) CoupLoyalistAftermathRegression.Run(af, coup, Write);
 
         if (ReferenceDirectories.Count > 0)
         {

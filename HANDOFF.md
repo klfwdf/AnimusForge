@@ -1,3 +1,11 @@
+# 当前交接：政变战役身份解析修复与原版输入布局纠正（2026-10-05，SOURCE_FIXED_BUILD_VERIFIED_LIVE_PENDING）
+
+- 用户反馈“已成为国王并释放旧王，但仍显示政变未完成”；本机日志已复现并确认是叛乱登记阶段身份解析错误，非王权转移失败。当前源修复未部署，游戏仍是先前部署版本；push也暂停。
+- 修复：Coup桥接改用CampaignObjectManager域的Hero/Clan/Kingdom查询，旧王/新王/家族/王国身份校验保留；失败时保存部分完成状态，重试只补登记。原版AI输入恢复右侧；新AFDialogue UI不改，共享控制器按原版/新UI树隔离。
+- 验证：双API+Bootstrap 0错误/接缝PASS；1.3/1.4身份夹具PASS；Coup145、Victory61、结算重试22；原版布局50、失焦30；新UI状态与修复前基线一致。真实失败存档、真实UI/新修订部署仍NOT_RUN。
+- [主台账、源码范围、证据与边界](docs/animusforge-refactoring-and-repository-reorganization-plan.md#coup-campaign-identity-resolution-final-20261005)；收据 `artifacts/coup-campaign-identity-fix-20261005/receipt.json`。
+- 当前分支改动尚未push/覆盖；需先部署并让该存档从已保存的Suspended/未完成状态进入“重试政变内战登记”，确认不重复王权转移后，才能判断实机修复。
+
 # 当前任务交接：内战新存档分块防溢出（2026-10-05，OFFLINE_VERIFIED_NOT_DEPLOYED）
 
 - 最新授权“只修新的／做”：产品与测试 `4b4d6167`，意图检查点 `ca37d66`。MyBehavior.SyncData 的内战 JSON 接入原12KB分块助手，键与JSON结构/玩法不变，仅在存取时拆分/拼接；不修旧坏档、不改未知来源装备XML。
