@@ -7201,9 +7201,16 @@ R2计划交付门槛：已给固定技术路线、真实来源与目标、写入
 本条替代[修复候选](#intercepted-meeting-guards-fix-20261004)的“未部署”状态，不替代其实机NOT_RUN；也替代[前诊断部署](#deploy-meeting-diagnostics-20261004)的当前安装/Recovery状态。旧记录保留其当时证据，不发出后续部署或推送权限。
 
 <a id="scene-conflict-judgment-display-fix-20261005"></a>
-## 场景冲突审判交接与对话旧文本修复（2026-10-05，ACTIVE）
+## 场景冲突审判交接与对话旧文本修复（2026-10-05，OFFLINE_VERIFIED）
 
-- 当前请求：修复反馈日志中的冲突后旧台词跨对话残留，以及同国战败进入犯罪审判后离城仍被强制结束佣兵服务/敌对。基线 `7d4a490add5548285227b2c698aec00f742ee05d`，实际分支 `codex/af-main-refactor-continuation-20260831`；开工tracked clean，既有untracked不纳入。
-- 范围：ConversationHelper显示生命周期、Overlay拥有者清理、真实ConversationEnded接线；SceneTaunt匹配事件移交原版审判；专项回归与原双API+Bootstrap构建。非目标：Prompt/记忆语义、通用敌对升级、原版DLL、其他渠道玩法、构建入口、部署/push/打包或自动恢复已退国玩家。
-- 保持：旧请求不能清新展示；正常流式/TTS/模式切换；未移交审判的冲突后果；既有存档键与犯罪/信任处罚。性能：窗口切换/会话结束/审判事件上O(1)判断，不新增世界扫描或轮询。
-- 完成门：真实Helper回归（含旧窗口晚清理和正常刷新）、现有展示/准入回归、审判匹配及重复/不匹配负控、接线/旧键保持、双版本与Bootstrap构建。实机与玩家旧档NOT_RUN独立记录，不以离线通过替代。
+- 当前请求“修复”；产品 `117a402b33b192b8f467d4d6d67796aa292a6a43`，检查点 `b7257ee6`。基线 `7d4a490a`、实际分支 `codex/af-main-refactor-continuation-20260831`。日志直接证实同国冲突在15:15排入外交后果/战败审判，15:23仍执行结束佣兵服务和敌对；真实Helper旧文本跨VM重放已复现。
+- 有意变化：同来源、同阵营、同定居点的场景冲突转交原版犯罪审判时清除其待执行外交后果；菜单重开/读档停在实际审判屏也能幂等移交。不是付款无条件赦免，不把犯罪度自然降低/模糊城外旧档认定为缴费。犯罪/信任处罚、未移交审判的逃离外交、其他来源/目标、既有存档键及通用LordEncounter敌对升级保持。已退国玩家不自动重入。
+- 显示变化：Helper按Overlay拥有者清理；真实ConversationEnded撤销全会话显示；更换VM清除旧流式/待显示/打字机状态；同VM普通刷新保留流并复用反射缓存。旧窗口/请求收尾不能清新窗口状态。只在会话/窗口/审判事件O(1)处理，不新增Tick轮询/世界扫描。
+- 代码证据绑定产品修订：`src/AF.GameAdapter.Bannerlord/UI/Conversation/ConversationHelper.cs:168-239,255-289,653-671`（SetCurrentVM/拥有者Begin-End-Clear）；同目录`AnimusForgeNativeConversationOverlay.cs:1653-1722` Close及两处BeginStreaming、`AnimusForgeNativeConversationOverlay.Presentation.cs:37-70` Retire/Complete；`src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.cs:3903-3915`真实OnMemoryConversationEnded消费者。`src/modules/AF.Module.Taunt/Host/SceneTauntBehavior.cs:320-342,1514-1547,10174-10195` load/menu/匹配移交/原存档字段清除/战败交接消费者，`SceneTauntJudgmentHandoffRules.cs:8-18`规则；完整定位在本地code-map.json，未覆盖真实游戏时序/玩家旧档。
+- 验证：当前源码48/48；不改共享checkout、用`--source-revision 117a402b`执行已提交产品也48/48；真实worker→主线程队列、旧finally/同窗口新generation/TTS待播/旧文本覆盖负控覆盖。现有NativeTurn112、场景上下文22+犯罪账本16+冲突生命周期14通过；3个故意移除保护的负控均编译成功后运行断言失败。原Debug双API+Bootstrap最终构建及现有coup接缝门禁均PASS/0错误，两实现各341警告未掩盖；记录产物hash/元数据。
+- 两项历史准入/展示投影入口未进入测试：历史packet对`MyBehavior.MemoryRecovery.cs`的绑定与本轮开工基线已不符，记BLOCKED_PREEXISTING_SOURCE_BINDING，没有更新digest/删除断言/改生产源码绕过。改为直接编译当前实际Helper/Presentation和生产handoff/dispatch方法；不宣称旧投影套件通过。
+- 并行他人输入框/切屏恢复改动在共享Overlay/Preset XML中原样保留，分hunk仅提交本任务；工作区双构建含其输入，最终相关生产/构建输入hash前后稳定。任务产品的独立源码测试绑定117a402b；不把共享构建当作他人功能完整验收。
+- NOT_RUN：真实Bannerlord/原生Gauntlet、实际缴费/关系/敌对变化、玩家旧档、真实provider/TTS；未Stage/部署/push/打包，未改原版DLL或构建入口。不能以离线通过替代实机，也不自动修复已执行的退国。
+- 证据：`artifacts/scene-conflict-judgment-display-fix-20261005/receipt.json`、`code-map.json`、`committed-product/run.log`、`lifecycle-presentation/run.log`、`negative-*/run.log`、`native-turn/run.log`、`taunt-context/run.log`、`build-final.log`、输入稳定性收据；保留初次fixture缺少IFaction/using导致的编译失败和历史绑定失败记录。候选仍在`bin/Debug/single_module_artifacts/versions/1.3|1.4/AnimusForge.dll`及`bootstrap/AnimusForge.Bootstrap.dll`。
+- 回滚产品：定向`git revert 117a402b`，不hard reset、不覆盖其他作者；本轮安装未变，无新增安装Recovery。测试/文档后续提交单独回滚，任何覆盖/发布均需新授权。
+
