@@ -1,10 +1,18 @@
 <a id="coup-memory-seam-gate-20261005"></a>
-# 政变记忆强类型接缝与发布门禁（2026-10-05，ACTIVE）
+# 政变记忆强类型接缝与发布门禁（2026-10-05，OFFLINE_VERIFIED）
 
-- 用户先要求定位篡位禁用，随后明确要求实施防复发。实际工作区 F:/AnimusForge-main，分支 codex/af-main-refactor-continuation-20260831，开始 HEAD 7c38342b；tracked clean，既有 untracked 不纳入、不清理。
-- 根因：c8e68748 将 InteractionMemoryCommit 内部构造函数从16参数扩为17参数，CoupRebellionBridge仍反射绑定16参数；安装1.3/1.4 DLL与2026-10-05 04:29/14:49日志已确认。目标是保留记忆恢复身份/失败关闭/原政治规则，改为同DLL强类型记忆端口，并将真实候选DLL接缝检查设为双版本构建发布门禁。
-- 范围：AF内部记忆端口、政变消费者/独立旧构建兼容适配、现有Coup.RuntimeProbe及构建校验、主台账/HANDOFF/构建说明。只增加原入口的验收门禁，不改变单模块布局、Bootstrap、存档键、政治规则或游戏数据。未授权push/游戏覆盖/外仓写入。
-- 退出门：强类型生产调用接通、记忆工厂及失败反例回归、正确依赖版本下真实DLL接缝探针、原入口1.3/1.4+Bootstrap构建及失败阻断/哈希绑定、git diff --check；实机/玩家旧档明确NOT_RUN。性能：一次初始化缓存delegate，记忆工厂仅结算/重试调用，无新增Tick扫描/反射/锁。
+- 用户先要求定位篡位禁用，随后明确要求实施防复发。工作区 `F:/AnimusForge-main`，分支 `codex/af-main-refactor-continuation-20260831`；开始HEAD `7c38342b`、意图检查点 `1da94f9d`、产品/测试 `b8bb98e7`。开始tracked clean，既有untracked未清理/纳入；收尾时另一会话新增 `content/modules/AF.Module.Weekly/GUI/Prefabs/WorldBulletinPanel.xml` 未提交改动，本任务未修改/暂存/回滚，DLL构建证据不包含这份后来的资源改动。无push/游戏部署/外仓写入。
+- 根因：`c8e68748` 将 InteractionMemoryCommit 内部构造从16参数扩为17参数，政变仍精确反射查找16参数；2026-10-05 04:29及14:49安装日志、两安装DLL真实反射和旧DLL负控确认。本条实施并替代此前仅定位结论，不延续任何历史覆盖授权。
+- 修复：真实记忆owner新增同DLL `CoupOutcomeMemoryPort`，政变 `CoupMemoryAccess` 一次缓存强类型工厂/Prepare/Commit/Status delegate；移除构造签名查找及3个记忆MethodInfo/object[]调用。独立旧源构建仅在 `ANIMUSFORGE_COUP_STANDALONE` 分支绑定稳定内部端口，不新增public子MOD API。commit/session/trace key、Domain/channel、coup_outcome唯一事实、日期解析默认、代次默认、恢复ID/hash核对与失败关闭保持；不改政治动作、存档键、MCM或战斗规则。
+- 门禁：原build entry在两实现+Bootstrap后、成功/Stage/Deploy前分别运行真实候选DLL `--seam-only`。严格引用目录与BuildInfo检查、四项可用标志、20项真实记忆工厂/恢复拒绝回归，绑定候选/API/引用版本、probe/report SHA与16项实际加载依赖MVID/SHA；失败/重跑失败无可用收据。deploy预检、package目录及最终ZIP均强制核对`CoupSeamGate`，旧候选必须原入口重建。保留全部BAT入口及单模块/Bootstrap/程序集布局；这是新增验收门禁，不是重写编译/覆盖方式。
+- **代码证据（源码修订b8bb98e7，一基行号）**：`src/modules/AF.Module.Memory/Host/CoupOutcomeMemoryPort.cs:8-29` CreateCommit/Prepare/Commit/GetStatus为真实memory owner适配；`extensions/AnimusForge.Coup/src/Integration/CoupMemoryAccess.cs:11-43` integrated typed/standalone cached绑定；`CoupRebellionBridge.cs:116` AfAccess.Memory、`:630-646`实际结果记忆提交/恢复身份消费者、`:680`查询；`scripts/build/coup_seam_gate.ps1:17-32` Assert-CoupSeamReceipt、`:34-99` Invoke-CoupSeamGate失效/来源/哈希证据；`build_single_module.ps1:525-533`双候选门禁，`deploy_module.ps1:244`覆盖预检、`package_mod.ps1:246,587`目录/ZIP；`tools/Coup.RuntimeProbe/Program.cs:116-173`真实接线/依赖核对，MemoryPortRegression.cs:11-57与Test-ReleaseGate.ps1:1-74为正负回归。剩余政治/SETS反射保留，但真实初始化已纳入门禁；不宣称整模块强类型化。
+- 验证：原入口Debug双API（1.3 `v1.3.15.110062`、1.4 `v1.4.6.115628`）+Bootstrap最终0错误、既有警告保留；每API扩展探针248项（memory20/selection36/entry36/passage17/scene26/bulletin12/settings50/admission29/loyalist-feedback22）通过；Coup契约145、生产胜利回调61、真实部署/目录/ZIP校验函数门禁39通过；独立源1.3/1.4均0错误。旧安装故障DLL被门禁拒绝；错误版本退出1；模拟旧Pass重跑失败后标记被移除。5个PowerShell解析和git diff --check通过。额外加载当前本机游戏`v1.4.8.119303`的真实托管依赖执行seam smoke通过，不启动游戏。
+- 发现并修复旧测试失配，而非产品玩法：Coup契约原用对象引用比较快报headline，改核对Key/完整正文及真实深拷贝；快报夹具初始化现有真实state owner；退役TryOpenAftermath夹具改测当前胜利反馈/JSON/历史档不补播，原生回调证据交给已有61项VictoryFlowTests，未恢复已删菜单。
+- 性能：工厂仅政变最终结算/有界恢复重试调用；缓存一次delegate，移除冷路径构造/Invoke数组；不新增Tick扫描、轮询、锁或LLM请求。门禁成本只发生在构建/发布校验，不进入游戏热路径。
+- **验收边界**：LIVE_GAME/PLAYER_SAVE/真实政治提交/原生Gauntlet/DEPLOY/PACKAGE_NOT_RUN。1.3既有完整补充快照中的SandBox core与1.4快照共享，原固定1.3覆盖仍不完整；真实加载依赖哈希明确保存，本次通过是引用快照下的托管绑定/合同验收，不声称纯1.3全原版栈或实机通过。未更改该历史引用策略。
+- 本地证据 `artifacts/coup-memory-seam-20261005/receipt.json`、build-dual-final.log、full-probe-1.3/1.4.log、gate-regression-final.log、coup-contract.log、victory-flow.log、standalone-1.3/1.4.log、current-game-1.4.8.log、old-dll-negative.log、stale-pass-negative.log、wrong-version-negative.log；两候选绑定收据在`artifacts/coup-seam-gate/<api>/<sha>/`。本地DLL位于`bin/Debug/single_module_artifacts/versions/1.3|1.4/AnimusForge.dll`，未覆盖安装或旧Stage。
+- 回滚产品/门禁使用focused `git revert b8bb98e7`，不reset其他作者；检查点`1da94f9d`只记录实施意图。当前游戏仍加载旧DLL，须另获覆盖授权并重启后才可实测按钮恢复。
+
 <a id="deploy-bulletin-residual-archive-20261004"></a>
 # 快报选材分流与档案卡片部署（2026-10-04，DEPLOY_VERIFIED）
 
