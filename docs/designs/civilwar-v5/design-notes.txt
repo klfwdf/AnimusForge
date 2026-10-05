@@ -1,0 +1,36 @@
+派系面板 v5 — 单卷宗布局（Pen 可编辑设计稿）
+日期：2026-10-02
+Pen 文档：C:/Users/29310/.pencil/documents/88c60482-c2e6-49c1-b12d-63e6866ac83d/pencil-new.pen
+起因：用户认为 v4 三栏（旗帜侧栏 / 账册 / 风险栏）杂乱。
+
+画板
+- uSZIC  国王视角 · 已成派（宣权派选中）
+- RReCB  国王视角 · 尚未成派（贵族不满账册）
+预览：previews/<id>.png
+
+结构（自上而下，单列，内容区左右各留 160）
+1. 原生王国导航（沿用 v4）
+2. 王国态势带：原版王国旗帜占位 + 国名/身份 | 稳定度 | 王国军力分布条（王室/各派/未表态按实力占比分段，颜色取 CivilWarCatalog 诉求色）
+3. 页签：每个派系一个页签；王室阵营、未表态并入右侧页签。未成派时为“贵族不满账册”
+4. 羊皮纸卷宗：诉求头（标题 + 右侧通牒倒计时）→ 进程时间线 + 关键数字 → 成员表 → 脚注纪事
+   未成派时：态势头（右侧“距门槛”）→ 成派条件 + 近期不满来源 → 家族表（红色刻度为门槛 35）→ 分页
+5. 身份操作栏：左身份与一句冷却提示，右操作按钮（费用写在按钮内）。无可用对象时按钮置灰
+
+取代 v4 的侧栏：稳定度和派系计数移到态势带；风险数字并入卷宗；纪事缩为脚注一行。
+Gauntlet 映射：分段条和刻度用 BlankWhiteSquare_9 固定宽度（运行时按占比算宽），页签用 ButtonWidget，时间线为横向 ListPanel。
+各身份画板（以 uSZIC 为母版，同一行向右排列）
+- jXQsV  未表态封臣：操作 加入王室 / 加入所选派系 / 建立派系（名额 2/3）
+- jxOP8  王室附庸：王室阵营页签标“含你”，军力分布王室 39%；操作 退出王室阵营，加入/建立派系置灰
+- zxPSj  派系成员：页签标“你的派系”，成员表末行为本家族（左红边高亮）；操作 提议起兵 / 退出派系，加入王室置灰
+- a6PLm  派系领袖：派系改名戴·伊萨宣权派，期限块改为“王室来函”，进程第三步为王室谈判；操作 接受补偿 / 拒绝补偿 / 立即起兵 / 退出派系
+身份差异集中在三处：态势带身份行、页签标记与成员表本家族行、底部操作栏（身份行写本家族不满与关系，提示行写退出代价或冷却）。
+各视角的军力分布、家族数、平均不满按演示数据互相对齐。操作与代价按 KingdomCivilWarOwner.Actions.cs Quote() 与 CivilWarPoliticalRules 填写。
+
+未做：内战进行中（成员锁定）状态；非国王身份在“尚未成派”时的版本（可用 RReCB 换操作栏）。家族名与数值为演示数据。
+
+代码落地（2026-10-02，未编译、未进游戏验证）
+- 契约 src/AF.Contracts/Internal/TeamModules/ICivilWarModulePort.cs：CivilWarPanelRole、Step、Condition；Clan/Faction/Kingdom 增加身份、军力占比、期限块、四步进程、成派门槛与条件、纪事、操作提示；成员与两侧名单不再截断。
+- 构建 KingdomCivilWarOwner.cs BuildPlayerKingdomPanel / ToPanelFaction / DescribeDeadline / DescribeSteps / DescribeNote；只读，不新建存档记录。
+- 界面 KingdomFactionTab.cs（prefab + VM）、KingdomFactionTab.Actions.cs（按身份生成按钮，Quote→Confirm→Execute）。
+- 与设计稿的差异：旗帜用原版 ImageIdentifierWidget；进程节点用方块；按钮底用原版 Standard.Button 加色调；成员表分页（派系/账册 5 行，王室/未表态 7 行）。
+回滚：v4 画板（q9zXso、bmtSj、iwONn、QArMB、MAIru、DbfUo）未改动；删除 uSZIC、RReCB、jXQsV、jxOP8、zxPSj、a6PLm 即回到 v4。

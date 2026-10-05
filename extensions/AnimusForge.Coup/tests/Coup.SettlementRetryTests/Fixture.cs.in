@@ -1,0 +1,56 @@
+using System;using System.Collections.Generic;using Newtonsoft.Json;
+namespace AnimusForge.CoupSystem {
+ class Hero {public static Hero MainHero;public string StringId;public bool IsAlive=true,IsPrisoner;public int HitPoints=60;public object PartyBelongedToAsPrisoner;}
+ class Clan {public static Clan PlayerClan;public string StringId;public Hero Leader;public Kingdom Kingdom;}
+ class Kingdom {public string StringId;public bool IsEliminated;public Clan RulingClan;public Hero Leader=>RulingClan?.Leader;}
+ class Settlement {public static Settlement Current;public string StringId;public Clan OwnerClan;public Kingdom MapFaction;public static Settlement Find(string id)=>Current?.StringId==id?Current:null;}
+ class MobileParty {public static MobileParty MainParty=new MobileParty();public object Party=new object();}
+ static class ChangeRulingClanAction {public static int Calls;public static void Apply(Kingdom k,Clan c){Calls++;k.RulingClan=c;}}
+ static class ChangeOwnerOfSettlementAction {public static int Calls;public static void ApplyByRebellion(Hero h,Settlement s){Calls++;s.OwnerClan=Clan.PlayerClan;}}
+ static class TakePrisonerAction {public static int Calls;public static void Apply(object party,Hero h){Calls++;h.IsPrisoner=true;h.PartyBelongedToAsPrisoner=party;}}
+ static class CoupGuards {public static bool CaptivityProtectionAvailable=true;}
+ static class CoupCaptivityBehavior {public static int Marks;public static void RegisterDetention(string id,Hero hero){Marks++;}}
+ class CoupRebellionBridge {
+  public static CoupRebellionBridge Instance;public bool RegistryAvailable;public int Facts,QueueAttempts;public List<string> QueueIds=new List<string>();
+  public bool TryRecordCoupOutcome(CoupSession s,Hero h,Settlement t,bool success,bool captured,out string note){note="";Facts++;return true;}
+  public bool TryQueueCoupRebellion(CoupSession s,Kingdom k,out string note){QueueAttempts++;QueueIds.Add(s.Id);note=RegistryAvailable?"queued":"政变后叛乱登记失败：政变前后统治者身份缺失，不能判定支持关系。";return RegistryAvailable;}
+ }
+ class CoupCampaignBehavior {
+  public CoupSession _session;public Hero King;public int Casualties;
+  public CoupCampaignBehavior(CoupSession s,Hero king){_session=s;King=king;}
+  private Hero FindKing()=>King.StringId==_session.KingId?King:null;
+  private void CommitCasualties(){if(_session.CasualtiesCommitted)return;Casualties++;_session.CasualtiesCommitted=true;}
+  private void Log(string s){}private static void Show(string s){}
+  public void Commit()=>CommitVictory();
+__COMMIT_VICTORY__
+ }
+ static class Program {
+  static int checks;static void Check(bool ok,string msg){if(!ok)throw new Exception("FAIL "+msg);checks++;}
+  static void Case(CoupKingDisposition disposition){
+   ChangeRulingClanAction.Calls=ChangeOwnerOfSettlementAction.Calls=TakePrisonerAction.Calls=CoupCaptivityBehavior.Marks=0;
+   Hero.MainHero=new Hero{StringId="main_hero"};var oldKing=new Hero{StringId="old_king"};
+   var former=new Clan{StringId="former",Leader=oldKing};var realm=new Kingdom{StringId="realm",RulingClan=former};
+   Clan.PlayerClan=new Clan{StringId="player",Leader=Hero.MainHero,Kingdom=realm};former.Kingdom=realm;
+   Settlement.Current=new Settlement{StringId="town",OwnerClan=former,MapFaction=realm};
+   var session=new CoupSession{SettlementId="town",KingdomId="realm",KingId="old_king",OriginalRulingClanId="former",OriginalOwnerClanId="former",Phase=CoupPhase.AwaitingResolution,ResumePhase=CoupPhase.AwaitingResolution,Started=true,KingSubdued=true,Disposition=disposition,PlayerHealth=80,KingHealth=1};
+   var bridge=CoupRebellionBridge.Instance=new CoupRebellionBridge();var owner=new CoupCampaignBehavior(session,oldKing);
+   bool failed=false;try{owner.Commit();}catch(InvalidOperationException e){failed=e.Message.Contains("统治者身份缺失");}
+   Check(failed,"same registration failure stops completion");
+   Check(realm.Leader==Hero.MainHero && Settlement.Current.OwnerClan==Clan.PlayerClan,"already king and town owner despite pending registration");
+   Check(session.RulingClanCommitted && session.TownCommitted && session.CustodyCommitted && session.FactsCommitted && !session.RebellionQueued,"completed step flags retained");
+   Check(session.Phase!=CoupPhase.Completed && !session.HasConfirmedVictory,"do not fake full completion");
+   session.Phase=CoupPhase.Suspended;session.ResumePhase=CoupPhase.AwaitingResolution;
+   Check(session.IsResumable,"partial political session is resumable");
+   string eventId=session.Id;session=JsonConvert.DeserializeObject<CoupSession>(JsonConvert.SerializeObject(session));
+   Check(session.IsValid() && session.IsResumable && session.KingId=="old_king" && session.Id==eventId,"actual session JSON retains identity and progress");
+   session.Phase=session.ResumePhase;owner=new CoupCampaignBehavior(session,oldKing);bridge.RegistryAvailable=true;owner.Commit();
+   Check(session.HasConfirmedVictory && session.Phase==CoupPhase.Completed && session.RebellionQueued,"retry finishes only remaining registration");
+   Check(ChangeRulingClanAction.Calls==1 && ChangeOwnerOfSettlementAction.Calls==1 && bridge.Facts==1 && owner.Casualties==0,"no duplicate political/casualty/fact effects after reload");
+   Check(bridge.QueueAttempts==2 && bridge.QueueIds.TrueForAll(id=>id==eventId),"retry keeps the exact same coup identity");
+   if(disposition==CoupKingDisposition.Release)Check(!oldKing.IsPrisoner && TakePrisonerAction.Calls==0,"release remains release");
+   else Check(oldKing.IsPrisoner && TakePrisonerAction.Calls==1 && CoupCaptivityBehavior.Marks==1,"capture is not replayed");
+   owner.Commit();Check(ChangeRulingClanAction.Calls==1 && ChangeOwnerOfSettlementAction.Calls==1 && bridge.Facts==1 && bridge.QueueAttempts==2,"already completed entry is idempotent");
+  }
+  static int Main(){try{Case(CoupKingDisposition.Release);Case(CoupKingDisposition.Capture);Console.WriteLine("PASS actual CommitVictory/session-JSON retry assertions="+checks+"; political effects/bridge are explicit doubles, not live game");return 0;}catch(Exception e){Console.Error.WriteLine(e);return 1;}}
+ }
+}
