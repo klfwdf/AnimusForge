@@ -326,6 +326,11 @@ public sealed class WorldDiplomacyComposePopup
 		{
 			return;
 		}
+		if (!popup._dataSource.IsCurrentDraftWindow)
+		{
+			popup.Close(silent: true);
+			return;
+		}
 		try
 		{
 			if (popup._layer?.Input != null && (popup._layer.Input.IsHotKeyReleased("Exit") || popup._layer.Input.IsKeyReleased(InputKey.Escape)))
@@ -337,6 +342,7 @@ public sealed class WorldDiplomacyComposePopup
 		{
 		}
 		popup.ProcessPendingAction();
+		if (!popup._closed) popup._dataSource.ProcessAutoDraftCompletion();
 	}
 	private void Open()
 	{
@@ -415,119 +421,4 @@ public sealed class WorldDiplomacyComposePopup
 			_activePopup = null;
 		}
 	}
-}
-
-public sealed class WorldDiplomacyComposePopupVM : ViewModel
-{
-	private readonly Action<string> _onSubmit;
-	private readonly Action _onCancel;
-	private string _titleText;
-	private string _subtitleText;
-	private string _hintText;
-	private string _bodyText;
-	private bool _canPublish;
-
-	public WorldDiplomacyComposePopupVM(string title, string subtitle, string hint, Action<string> onSubmit, Action onCancel)
-	{
-		_onSubmit = onSubmit;
-		_onCancel = onCancel;
-		TitleText = string.IsNullOrWhiteSpace(title) ? "撰写外交宣言" : title;
-		SubtitleText = subtitle ?? "";
-		HintText = hint ?? "";
-		BodyText = "";
-	}
-
-	[DataSourceProperty]
-	public string TitleText
-	{
-		get => _titleText;
-		set
-		{
-			if (value != _titleText)
-			{
-				_titleText = value;
-				OnPropertyChangedWithValue(value, nameof(TitleText));
-			}
-		}
-	}
-
-	[DataSourceProperty]
-	public string SubtitleText
-	{
-		get => _subtitleText;
-		set
-		{
-			if (value != _subtitleText)
-			{
-				_subtitleText = value;
-				OnPropertyChangedWithValue(value, nameof(SubtitleText));
-			}
-		}
-	}
-
-	[DataSourceProperty]
-	public string HintText
-	{
-		get => _hintText;
-		set
-		{
-			if (value != _hintText)
-			{
-				_hintText = value;
-				OnPropertyChangedWithValue(value, nameof(HintText));
-			}
-		}
-	}
-
-	[DataSourceProperty]
-	public string BodyText
-	{
-		get => _bodyText;
-		set
-		{
-			string clean = AnimusForgeTextInputSanitizer.SanitizeMultiline(value, 6000);
-			if (clean != _bodyText)
-			{
-				_bodyText = clean;
-				OnPropertyChangedWithValue(clean, nameof(BodyText));
-				CanPublish = !string.IsNullOrWhiteSpace(clean);
-			}
-		}
-	}
-
-	[DataSourceProperty]
-	public bool CanPublish
-	{
-		get => _canPublish;
-		private set
-		{
-			if (value != _canPublish)
-			{
-				_canPublish = value;
-				OnPropertyChangedWithValue(value, nameof(CanPublish));
-			}
-		}
-	}
-
-	public void ExecutePublish()
-	{
-		if (CanPublish)
-		{
-			_onSubmit?.Invoke(BodyText);
-		}
-	}
-
-	public void ExecuteCancel()
-	{
-		_onCancel?.Invoke();
-	}
-
-	public void StartTyping()
-	{
-	}
-
-	public void StopTyping()
-	{
-	}
-
 }

@@ -1,6 +1,7 @@
 using System;
 using AnimusForge.DiplomacyDialogue;
 using AnimusForge.Refactor.Contracts;
+using System.Linq;
 
 namespace AnimusForge;
 
@@ -26,5 +27,19 @@ internal sealed partial class WorldDiplomacyOrchestration
         && !string.IsNullOrWhiteSpace(rulerId) && string.Equals(_host.PartyRulerId(partyId), rulerId, StringComparison.OrdinalIgnoreCase)
         && DialogueHost?.RulerAlive(rulerId) == true;
     private bool HasCurrentDiplomaticRulerMemorySnapshot(string partyId, string capturedRulerId) => DialogueRulerIsCurrent(partyId, capturedRulerId);
-    private bool DialogueDocumentKnown(string partyId, string documentId) => ResolveDocument(documentId)?.IsReadyForPublication == true;
+    private bool HasCourtDocumentKnowledge(string partyId, string documentId) =>
+        !string.IsNullOrWhiteSpace(partyId) && !string.IsNullOrWhiteSpace(documentId)
+        && (Storage.KingdomKnowledge.Any(x => x != null
+                && string.Equals(x.KingdomId, partyId, StringComparison.OrdinalIgnoreCase)
+                && x.DocumentIds?.Contains(documentId, StringComparer.OrdinalIgnoreCase) == true)
+            || Storage.NobleKnowledge.Any(x => x != null
+                && string.Equals(x.KingdomId, partyId, StringComparison.OrdinalIgnoreCase)
+                && x.DocumentIds?.Contains(documentId, StringComparer.OrdinalIgnoreCase) == true));
+    private bool DialogueDocumentKnown(string partyId, string documentId)
+    {
+        var document = ResolveDocument(documentId);
+        return document?.IsReadyForPublication == true && !string.IsNullOrWhiteSpace(partyId)
+            && (string.Equals(document.AuthorKingdomId, partyId, StringComparison.OrdinalIgnoreCase)
+                || HasCourtDocumentKnowledge(partyId, documentId));
+    }
 }

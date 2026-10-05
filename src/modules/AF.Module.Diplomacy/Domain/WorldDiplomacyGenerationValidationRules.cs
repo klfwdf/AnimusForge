@@ -301,7 +301,8 @@ public static class WorldDiplomacyGenerationValidationRules
         bool hasExactOpenOffer = round?.PendingOffers?.Any(x => x != null
             && WorldDiplomacyRoundLifecycleRules.IsOpenDirectedOffer(x, targetKingdomId, authorKingdomId)
             && string.Equals(WorldDiplomacyIntentVocabulary.NormalizeIntent(x.Intent), proposalIntent, StringComparison.OrdinalIgnoreCase)
-            && WorldDiplomacyRoundLifecycleRules.MatchesDocumentId(x.SourceDocumentId, document.RespondingToOfferDocumentId)) == true;
+            && WorldDiplomacyRoundLifecycleRules.MatchesDocumentId(x.SourceDocumentId, document.RespondingToOfferDocumentId)
+            && string.Equals(x.SourceActionId ?? "", document.RespondingToOfferActionId ?? "", StringComparison.Ordinal)) == true;
         if (!hasExactOpenOffer)
         {
             reason = "player_offer_response_without_exact_open_offer";

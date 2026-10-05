@@ -452,8 +452,8 @@ internal static class Program
             File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyPropagationApplication.cs")),
             "internal static void BeginPublication(",
             "internal static ScheduleResult SchedulePublication(");
-        Test.True(source.Contains("WorldDiplomacyPropagationApplication.BeginPublication(", StringComparison.Ordinal)
-                  && source.Contains("PublishImmediatePublicKnowledge(document)", StringComparison.Ordinal)
+        Test.True(source.Contains("WorldDiplomacyPublicationRoutingApplication.Start(", StringComparison.Ordinal)
+                  && !source.Contains("PublishImmediatePublicKnowledge(document)", StringComparison.Ordinal)
                   && File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyPublicationRoutingApplication.cs"))
                       .Contains("WorldDiplomacyPropagationApplication.BeginPublication(", StringComparison.Ordinal)
                   && propagation.Contains("WorldDiplomacyRound round = resolveRound(document.RoundId)", StringComparison.Ordinal)
@@ -1383,11 +1383,11 @@ internal static class Program
 		string analysisContract = ExtractMethod(
 			File.ReadAllText(FindRepositoryFile(Path.Combine("src", "modules", "AF.Module.Diplomacy", "Domain", "WorldDiplomacyPromptContractRules.cs"))),
 			"public static string BuildAnalysisModeContract(");
-		Test.True(analysisContract.Contains("和平原案只能原样接受或明确拒绝", StringComparison.Ordinal)
-			&& analysisContract.Contains("不得改写条款或另提和平方案", StringComparison.Ordinal)
+		Test.True(analysisContract.Contains("接受和平原案时继承原条款", StringComparison.Ordinal)
+			&& analysisContract.Contains("修改条件须识别为新的propose_peace", StringComparison.Ordinal)
 			&& analysisContract.Contains("accept_peace由系统继承原案", StringComparison.Ordinal)
-			&& !analysisContract.Contains("提出不同条件属于新反提案", StringComparison.Ordinal),
-			"player analysis must classify an incoming peace offer as accept/reject only");
+			&& analysisContract.Contains("是否执行由游戏机制校验", StringComparison.Ordinal),
+			"player analysis preserves exact acceptance terms and classifies changed terms as an independent proposal, subject to execution guards");
 
 		string relayPrompt = ExtractMethod(source, "private string BuildRelayConversationTurnPrompt(");
 		string targetedPrompt = ExtractMethod(source, "private string BuildGenerationPrompt(");
@@ -1597,7 +1597,7 @@ internal static class Program
 		})
 		{
 			int requiredOffer = method.IndexOf(
-                "WorldDiplomacyRoundOffer requiredPeaceOffer = port.FindRequiredPeaceOfferResponse(",
+                "WorldDiplomacyRoundOffer requiredPeaceOffer = command.IsPlayerAuthored ? null : port.FindRequiredPeaceOfferResponse(",
 				StringComparison.Ordinal);
 			int playerFallback = method.IndexOf(
 				"requireAnyOpenPeaceOffer: command.IsRelayTurn || command.IsPlayerAuthored",
@@ -1608,7 +1608,7 @@ internal static class Program
 				playerFallback,
 				StringComparison.Ordinal);
 			Test.True(requiredOffer >= 0 && playerFallback > requiredOffer && finalCoverage > playerFallback,
-				name + " final publication must require ordinary relay and player documents to answer any pending peace offer");
+				name + " final publication preserves mandatory AI peace coverage while independent player speech remains subject to its own action guards");
 		}
 
 		string relaySources = ExtractMethod(
@@ -1658,15 +1658,17 @@ internal static class Program
 			"x.SourceActionId ?? \"\", requiredPlayerPeaceOffer.SourceActionId ?? \"\"",
 			playerRequiredDocument,
 			StringComparison.Ordinal);
-		int playerTakeFour = playerAnalysis.IndexOf(".Take(4)", playerRequiredAction, StringComparison.Ordinal);
+		int playerTakeThirteen = playerAnalysis.IndexOf(".Take(13)", playerRequiredAction, StringComparison.Ordinal);
 		Test.True(prunePlayerOffers >= 0
 			&& playerAnalysis.IndexOf("AppendDiplomaticThreatAnalysisContext", prunePlayerOffers, StringComparison.Ordinal) > prunePlayerOffers
 			&& playerRequiredOffer > prunePlayerOffers && playerRequireAny > playerRequiredOffer
 			&& playerRequiredFirst > playerRequireAny
 			&& playerRequiredDocument > playerRequiredFirst
 			&& playerRequiredAction > playerRequiredDocument
-			&& playerTakeFour > playerRequiredAction,
-			"player analysis must require any incoming peace offer, rank its exact source/action first, and still cap the list at four");
+			&& playerTakeThirteen > playerRequiredAction
+            && playerAnalysis.Contains("foreach (WorldDiplomacyRoundOffer offer in openOffers.Take(12))", StringComparison.Ordinal)
+            && playerAnalysis.Contains("还有未列出的原案；不能推定唯一或猜测来源ID", StringComparison.Ordinal),
+			"player analysis ranks the exact peace source/action first, bounds twelve displayed offers and retains an overflow warning");
 	}
 
 	private static void PeaceOfferTermsExecutabilityContract(string source)
@@ -1686,7 +1688,7 @@ internal static class Program
 			promisedTribute,
 			StringComparison.Ordinal);
 		int exactTribute = executable.IndexOf(
-			"port.ClampTribute(payer, promisedTribute) != promisedTribute",
+			"if (promisedTribute > 0 || hasTributeRoles)",
 			promisedDuration,
 			StringComparison.Ordinal);
 		int exactDuration = executable.IndexOf(
@@ -1705,10 +1707,11 @@ internal static class Program
 			&& executable.Contains("payer != proposer && payer != target", StringComparison.Ordinal)
 			&& executable.Contains("receiver != proposer && receiver != target", StringComparison.Ordinal)
 			&& exactTribute > promisedDuration
-			&& executable.IndexOf("hasTribute: true", exactTribute, StringComparison.Ordinal) > exactTribute
+			&& !executable.Contains("port.ClampTribute(", StringComparison.Ordinal)
+			&& executable.IndexOf("hasTribute: promisedTribute > 0", exactTribute, StringComparison.Ordinal) > exactTribute
 			&& exactDuration > exactTribute
 			&& noTributeDuration > exactDuration,
-			"a peace offer remains executable only when tribute and duration survive runtime normalization exactly without shrinking");
+			"explicit peace tribute is not reduced to an AI suggestion; exact duration and participant roles remain execution requirements");
 
 		int anyCession = executable.IndexOf("bool hasAnyCession", noTributeDuration, StringComparison.Ordinal);
 		int resolveCession = executable.IndexOf(
@@ -1716,7 +1719,7 @@ internal static class Program
 			anyCession,
 			StringComparison.Ordinal);
 		int ownerStillFrom = executable.IndexOf(
-			"port.SettlementOwner(settlement) == from",
+			"IsCessionCurrentlyAllowed(port, from, to, settlement, proposer, target)",
 			resolveCession,
 			StringComparison.Ordinal);
 		int receiverHasRuler = executable.IndexOf(
@@ -1728,11 +1731,16 @@ internal static class Program
 			&& executable.Contains("terms.CessionToKingdomId", StringComparison.Ordinal)
 			&& executable.Contains("terms.CessionSettlementId", StringComparison.Ordinal)
 			&& resolveCession > anyCession
-			&& executable.IndexOf("from == proposer || from == target", resolveCession, StringComparison.Ordinal) > resolveCession
-			&& executable.IndexOf("to == proposer || to == target", resolveCession, StringComparison.Ordinal) > resolveCession
 			&& ownerStillFrom > resolveCession
 			&& receiverHasRuler > ownerStillFrom,
 			"a cession offer must still be owned by the promised source kingdom and have a valid receiving ruler before acceptance");
+        string cessionGuard = File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyPeaceAdmissionApplication.cs"));
+        cessionGuard = ExtractMethod(cessionGuard, "internal static bool IsCessionCurrentlyAllowed(");
+        Test.True(cessionGuard.Contains("port.SettlementOwner(settlement) != from", StringComparison.Ordinal)
+            && cessionGuard.Contains("from != first && from != second", StringComparison.Ordinal)
+            && cessionGuard.Contains("to != first && to != second", StringComparison.Ordinal)
+            && cessionGuard.Contains("BuildCessionCandidates(port, from, to, score).Contains(settlement)", StringComparison.Ordinal),
+            "the shared cession guard retains exact ownership, parties and allowed candidate validation");
 
 		string pruneRules = File.ReadAllText(
 			FindRepositoryFile(Path.Combine("src", "modules", "AF.Module.Diplomacy", "Domain", "WorldDiplomacyRoundLifecycleRules.cs")),

@@ -10,7 +10,7 @@ namespace AnimusForge.Refactor.Domain;
 public static class WorldDiplomacyPromptContractRules
 {
 	internal const int MaxGeneratedDraftRepairAttempts = 1;
-	internal const string CanonicalHistoryCacheAffinityKey = "diplomacy-history:v28";
+	internal const string CanonicalHistoryCacheAffinityKey = "diplomacy-history:v29";
 	internal const string CanonicalHistoryContractMarker = "【AI外交长期记忆共同模式】";
 	internal const string DiplomaticDeclarationWritingContractMarker = "【国家外交公文文体契约】";
 	internal const string DiplomacyModeDispatchContractMarker = "【AI外交固定任务MODE分派】";
@@ -234,7 +234,7 @@ public static class WorldDiplomacyPromptContractRules
 		sb.AppendLine("仅当MODE=COMPACT时执行本合同；MODE=DECLARE时完整忽略本节。");
 		sb.AppendLine(BuildCanonicalHistoryCompressionModeContract());
 		sb.AppendLine(CanonicalHistoryContractMarker);
-		sb.AppendLine("下一条系统消息是全局长期外交历史。只把它当作历史事实档案；最后一条用户消息的 MODE 决定本次唯一任务和输出结构。当前动态状态与历史冲突时，以当前动态状态为准。");
+		sb.AppendLine("下一条系统消息是历史事实材料：MODE=DECLARE时只提供本次事件及近期相关历史窗口，不是完整档案；MODE=COMPACT时提供需要压缩的连续全局历史前缀。最后一条用户消息的 MODE 决定本次唯一任务和输出结构。当前动态状态与历史冲突时，以当前动态状态为准。");
 		return sb.ToString().TrimEnd();
 	}
 
@@ -293,14 +293,14 @@ public static class WorldDiplomacyPromptContractRules
 		sb.AppendLine("这份玩家宣言已经正式公开发布。只负责理解和提取语义，不得决定是否允许发布，也不得因没有游戏机制动作而退回公文；玩家文风偏好不参与语义裁判。");
 		sb.AppendLine("warning表示谴责，不是劝告、关心或善意提醒；只有明确要求停止具体敌对或军事行为，并说明否则升级最后通牒或战争时才可使用。ultimatum表示战争最后通牒；已经开战用declare_war。");
 		sb.AppendLine("优先提取会登记或执行机制状态的实际外交动作，不得替作者臆造动作。正文没有这类动作时仍返回status=success：普通立场用statement，一般谴责用condemn，明确正式道歉用apology，明确正式让步用concession；这些公开语义不等于宣战、提案、接受或拒绝。");
-		sb.AppendLine("若材料列出当前待本国答复的正式提案，明确接受或拒绝时必须使用对应accept_*或reject_*并绑定原提出国和来源。和平原案只能原样接受或明确拒绝，不得改写条款或另提和平方案；其他提案只能使用材料列出的当前合法动作。");
+		sb.AppendLine("若材料列出当前待本国答复的正式提案，明确接受或拒绝时必须使用对应accept_*或reject_*并绑定原提出国和来源。接受和平原案时继承原条款；修改条件须识别为新的propose_peace。玩家可以提出独立外交动作，材料中的回合轮次或合法动作清单不能改变语义提取，是否执行由游戏机制校验。");
 		sb.AppendLine("只有正文明确、肯定且无条件地服从材料列出的未决谴责或最后通牒时，intent才可使用comply_ultimatum，commitment用binding，primary_target_kingdom_id填发出国，并把当前阶段来源公文ID填入responding_to_threat_document_id。对象国本篇就是一次性决定；含糊、沉默、附带条件、反条件、仅愿继续谈判或任何其他intent一律是不退让，该字段留空。");
 		sb.AppendLine("同时生成title_summary：以发文国统治者的立场简洁概括公告核心，不使用书信标题，不超过20个汉字。");
 		sb.AppendLine("addressed_kingdom_ids列出被直接点名、要求答复或承受正式主张的国家；mentioned_kingdom_ids只列被谈及但未被直接要求回应的国家。只允许使用用户消息给出的王国ID。");
-		sb.AppendLine("propose_peace的peace_terms只提取正文明确条款；accept_peace由系统继承原案。领地必须来自允许清单，清单为空就留空。");
+		sb.AppendLine("propose_peace的peace_terms只提取正文明确条款；accept_peace由系统继承原案。金额、期限、割地和方向原样提取，不能因为超出建议金额或允许清单而删改；未约定期限时，有贡金默认100天，无贡金为0天。");
 		sb.AppendLine("在完成语义提取后，对这篇已经公开的宣言做事后国际声誉评估；该评估绝不能改变或否定宣言。每篇宣言都必须产生非零评价，只能填写-10到-1或1到10，不得为0。履约、可执行妥协、有效调停、承担责任和可靠协作通常提高；违约、反复改条件、欺骗、拖延、滥用威胁和违反停战通常降低。单纯拒绝要求时，根据是否及时、明确、前后一致以及是否提供可继续谈判的说明判定最低幅度±1；重复没有新条件、新解释、新行动或谈判进展的空洞表态判-1。reason只写简短事实理由。");
 		sb.AppendLine("只输出一个JSON对象，不要解释或代码围栏：");
-		sb.AppendLine("{\"status\":\"success\",\"title_summary\":\"公告要点标题\",\"responding_to_offer_document_id\":\"提议来源公文ID或空字符串\",\"responding_to_threat_document_id\":\"退让对象的谴责或最后通牒来源公文ID或空字符串\",\"primary_target_kingdom_id\":\"王国ID或空字符串\",\"addressed_kingdom_ids\":[\"王国ID\"],\"mentioned_kingdom_ids\":[\"王国ID\"],\"intent\":\"statement|condemn|apology|concession|warning|ultimatum|comply_ultimatum|propose_peace|accept_peace|reject_peace|propose_alliance|accept_alliance|reject_alliance|break_alliance|propose_trade|accept_trade|reject_trade|cancel_trade|declare_war\",\"commitment\":\"non_binding|proposal|acceptance|rejection|binding\",\"requires_response\":true,\"tone\":\"conciliatory|neutral|firm|hostile\",\"confidence\":0.0,\"international_reputation_delta\":1,\"international_reputation_reason\":\"事后评估理由\",\"peace_terms\":{\"tribute_payer_kingdom_id\":\"ID或空\",\"tribute_receiver_kingdom_id\":\"ID或空\",\"daily_tribute\":0,\"duration_days\":0,\"cession_from_kingdom_id\":\"ID或空\",\"cession_to_kingdom_id\":\"ID或空\",\"cession_settlement_id\":\"ID或空\"}}");
+		sb.AppendLine("{\"status\":\"success\",\"title_summary\":\"公告要点标题\",\"responding_to_offer_document_id\":\"提议来源公文ID或空字符串\",\"responding_to_offer_action_id\":\"来源动作ID或空字符串\",\"responding_to_threat_document_id\":\"退让对象的谴责或最后通牒来源公文ID或空字符串\",\"primary_target_kingdom_id\":\"王国ID或空字符串\",\"addressed_kingdom_ids\":[\"王国ID\"],\"mentioned_kingdom_ids\":[\"王国ID\"],\"intent\":\"statement|condemn|apology|concession|warning|ultimatum|comply_ultimatum|propose_peace|accept_peace|reject_peace|propose_alliance|accept_alliance|reject_alliance|break_alliance|propose_trade|accept_trade|reject_trade|cancel_trade|withdraw_offer|propose_annexation|accept_annexation|reject_annexation|propose_tributary|accept_tributary|reject_tributary|propose_garrison|accept_garrison|reject_garrison|propose_vassal|accept_vassal|reject_vassal|declare_war\",\"commitment\":\"non_binding|proposal|acceptance|rejection|binding\",\"requires_response\":true,\"tone\":\"conciliatory|neutral|firm|hostile\",\"confidence\":0.0,\"international_reputation_delta\":1,\"international_reputation_reason\":\"事后评估理由\",\"treaty_terms\":{\"receiving_kingdom_id\":\"接收国或宗主国ID\",\"joining_kingdom_id\":\"并入国或臣属国ID\"},\"peace_terms\":{\"tribute_payer_kingdom_id\":\"ID或空\",\"tribute_receiver_kingdom_id\":\"ID或空\",\"daily_tribute\":0,\"duration_days\":0,\"cession_from_kingdom_id\":\"ID或空\",\"cession_to_kingdom_id\":\"ID或空\",\"cession_settlement_id\":\"ID或空\"}}");
 		return sb.ToString().TrimEnd();
 	}
 

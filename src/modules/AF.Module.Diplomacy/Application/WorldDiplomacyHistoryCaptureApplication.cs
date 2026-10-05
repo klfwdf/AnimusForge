@@ -56,7 +56,8 @@ internal static class WorldDiplomacyHistoryCaptureApplication
     }
 
     internal static void Capture(WorldDiplomacyStorage storage, WorldDiplomacyJob job, bool syncSources,
-        long throughSequence, IWorldDiplomacyHistoryCapturePort port, IWorldDiplomacyOrchestration orchestration)
+        long throughSequence, IWorldDiplomacyHistoryCapturePort port, IWorldDiplomacyOrchestration orchestration,
+        Func<string, int> estimateTokens = null)
     {
         if (job == null) return;
         if (syncSources)
@@ -67,8 +68,15 @@ internal static class WorldDiplomacyHistoryCaptureApplication
         orchestration.EnsureCanonicalHistoryInitialized();
         WorldDiplomacyCanonicalHistoryState history = storage.CanonicalHistory;
         job.HistoryThroughSequence = WorldDiplomacyCanonicalHistoryRules.ClampCanonicalHistoryThroughSequence(history, throughSequence);
+        bool declaration = WorldDiplomacyRoundLifecycleRules.IsJobOfKind(job, "generate");
+        string block = declaration
+            ? WorldDiplomacyRequestHistoryApplication.Build(storage, job, port.CurrentHour() / 24,
+                WorldDiplomacyRequestHistoryApplication.WindowBudget(job, estimateTokens), estimateTokens)
+            : orchestration.BuildCanonicalHistoryBlock(job.HistoryThroughSequence);
+        job.DeclarationHistoryBlock = declaration ? block : null;
+        job.AwaitingHistoryCompression = false;
         WorldDiplomacyCanonicalHistoryRules.StampCanonicalHistoryOnJob(job, history,
-            orchestration.BuildCanonicalHistoryBlock(job.HistoryThroughSequence));
+            block);
     }
 
     internal static void RetryDeferredCanonicalHistoryEntries(

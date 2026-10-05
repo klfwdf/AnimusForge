@@ -164,10 +164,10 @@ internal static class Program
                   && playerReplySubmission.IndexOf("PublishPlayerAuthoredDocumentImmediately(response)", StringComparison.Ordinal)
                      < playerReplySubmission.IndexOf("EnqueueAnalysisJob(response", StringComparison.Ordinal),
             "a player response must become public before its semantic-analysis job is queued");
-        Test.True(analysisCommit.Contains("intent = \"statement\"", StringComparison.Ordinal)
-                  && fallbackAnalysis.Contains("[\"intent\"] = \"statement\"", StringComparison.Ordinal)
-                  && fallbackAnalysis.Contains("[\"status\"] = \"fallback\"", StringComparison.Ordinal),
-            "no-action, malformed, and failed player analysis must preserve the public declaration as a statement");
+        Test.True(analysisCommit.Contains("MarkPlayerAnalysisFailed(document, log)", StringComparison.Ordinal)
+                  && analysisCommit.Contains("IsSupportedDiplomacyIntent(intent)", StringComparison.Ordinal)
+                  && !analysisCommit.Contains("intent = \"statement\"", StringComparison.Ordinal),
+            "malformed player analysis must retain its declaration for retry without inventing a statement intent");
         Test.True(invalidSuppression.Contains("SuppressInvalidDocumentBeforePropagation(", StringComparison.Ordinal)
                   && invalidSuppression.Contains("PreservePublishedPlayerDocumentAfterRejectedMechanic", StringComparison.Ordinal)
                   && ExtractMethod(
@@ -185,8 +185,8 @@ internal static class Program
                   && analyzedPublication.Contains("FinalizePublishedDocumentAfterAnalysis", StringComparison.Ordinal)
                   && analyzedPublication.Contains("ApplyDiplomaticPressureEffect", StringComparison.Ordinal),
             "player statements, condemnations, apologies, and concessions must remain published and retain their semantic effects");
-        Test.True(analysisCommit.Contains("player declaration analysis downgraded to public statement", StringComparison.Ordinal),
-            "MODE=ANALYZE no-action or malformed status must downgrade player mechanics without suppressing publication");
+        Test.True(analysisCommit.Contains("player declaration analysis status normalized without changing intent=", StringComparison.Ordinal),
+            "MODE=ANALYZE with supported extracted semantics must normalize status without replacing the author's intent");
 
         Test.True(!source.Contains("TryGetPlayerVisibleIntentViolation", StringComparison.Ordinal)
                   && !source.Contains("HasExplicitUltimatumCompliance", StringComparison.Ordinal)
@@ -366,6 +366,10 @@ internal static class Program
         }
         HashSet<string> expectedAnalysisIntents = new(expectedActionableIntents, StringComparer.Ordinal);
         expectedAnalysisIntents.UnionWith(publicNonMechanicalIntents);
+        expectedAnalysisIntents.Add("withdraw_offer");
+        foreach (string treaty in new[] { "annexation", "tributary", "garrison", "vassal" })
+            foreach (string move in new[] { "propose", "accept", "reject" })
+                expectedAnalysisIntents.Add(move + "_" + treaty);
         Test.True(analysisIntentEnum.SetEquals(expectedAnalysisIntents),
             "MODE=ANALYZE must expose actual mechanics plus public non-mechanical meanings; actual="
             + string.Join(",", analysisIntentEnum.OrderBy(x => x, StringComparer.Ordinal)));
@@ -516,8 +520,10 @@ internal static class Program
                 FindRepositoryFile(Path.Combine("src", "modules", "AF.Module.Diplomacy", "Application", "WorldDiplomacyFailureApplication.cs")),
                 Encoding.UTF8),
             "internal static void Commit(");
-        Test.True(failedJob.Contains("commitAnalysis?.Invoke(job, buildFallbackAnalysisJson?.Invoke(job))", StringComparison.Ordinal),
-            "a published analysis fallback must enter the ordinary analysis/publication pipeline");
+        Test.True(failedJob.Contains("commitAnalysis?.Invoke(job, document?.IsPlayerAuthored == true", StringComparison.Ordinal)
+            && failedJob.Contains("analysis_failed", StringComparison.Ordinal)
+            && failedJob.Contains(": buildFallbackAnalysisJson?.Invoke(job)", StringComparison.Ordinal),
+            "failed player analysis retains a retryable failure, while non-player fallback uses the existing analysis pipeline");
 
 		RunRoundResponseNoActionContractTests(source);
 		RunWarResponseNoActionContractTests(source);
@@ -746,8 +752,8 @@ internal static class Program
 		Test.True(courtArrival.Contains("_host.IsPlayerAffiliatedParty(receiverId)", StringComparison.Ordinal),
 			"formal court arrival must work for player rulers and player vassals");
         string propagation = ExtractMethod(source, "private void StartDocumentPropagation(");
-        Test.True(propagation.Contains("WorldDiplomacyPropagationApplication.BeginPublication(", StringComparison.Ordinal)
-            && propagation.Contains("PublishImmediatePublicKnowledge(document)", StringComparison.Ordinal), "public knowledge enters the Application publication owner immediately");
+        Test.True(propagation.Contains("WorldDiplomacyPublicationRoutingApplication.Start(", StringComparison.Ordinal)
+            && !propagation.Contains("PublishImmediatePublicKnowledge(document)", StringComparison.Ordinal), "public knowledge uses the existing distance-delivery owner");
         propagation = File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyPublicationRoutingApplication.cs"));
 		string propagationOwner = File.ReadAllText(FindRepositoryFile(Path.Combine("src", "modules", "AF.Module.Diplomacy", "Application", "WorldDiplomacyPropagationApplication.cs")));
         Test.True(propagation.Contains("port.IsPlayerAffiliated(authorId)", StringComparison.Ordinal)
@@ -834,13 +840,13 @@ internal static class Program
             Encoding.UTF8);
 
 		Test.True(source.Contains(
-				"private const int DiplomacyPromptContractVersion = 28;",
+				"private const int DiplomacyPromptContractVersion = 29;",
 				StringComparison.Ordinal),
-			"the exact own-reputation contract must advance the dynamic prompt contract to v28");
+			"the exact own-reputation contract must advance the dynamic prompt contract to v29");
 		Test.True(promptRules.Contains(
-				"internal const string CanonicalHistoryCacheAffinityKey = \"diplomacy-history:v28\";",
+				"internal const string CanonicalHistoryCacheAffinityKey = \"diplomacy-history:v29\";",
 				StringComparison.Ordinal),
-			"the exact own-reputation prompt must advance canonical-history cache affinity to v28");
+			"the exact own-reputation prompt must advance canonical-history cache affinity to v29");
 
 		string ownStandingContext = ExtractMethod(
 			source,
@@ -1858,13 +1864,13 @@ internal static class Program
             Encoding.UTF8);
 
 		Test.True(source.Contains(
-				"private const int DiplomacyPromptContractVersion = 28;",
+				"private const int DiplomacyPromptContractVersion = 29;",
 				StringComparison.Ordinal),
-			"the all-kingdom response context must use prompt contract version 28");
+			"the all-kingdom response context must use prompt contract version 29");
 		Test.True(promptRules.Contains(
-				"internal const string CanonicalHistoryCacheAffinityKey = \"diplomacy-history:v28\";",
+				"internal const string CanonicalHistoryCacheAffinityKey = \"diplomacy-history:v29\";",
 				StringComparison.Ordinal),
-			"the exact own-reputation prompt must advance canonical-history cache affinity to v28");
+			"the exact own-reputation prompt must advance canonical-history cache affinity to v29");
 		string settings = File.ReadAllText(FindRepositoryFile("src/AF.GameAdapter.Bannerlord/Configuration/Mcm/DuelSettings.cs"), Encoding.UTF8);
 		Test.True(settings.Contains("【AnimusForge 王国外交共同契约 v25】", StringComparison.Ordinal),
 			"the negotiated-round contract must use common diplomacy contract v25");

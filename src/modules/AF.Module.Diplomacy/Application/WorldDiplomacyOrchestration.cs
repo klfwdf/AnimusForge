@@ -559,7 +559,7 @@ internal sealed partial class WorldDiplomacyOrchestration : IWorldDiplomacyOrche
     public void CaptureCanonicalHistoryForJob(WorldDiplomacyJob job, bool syncSources, long throughSequence = long.MaxValue)
     {
         WorldDiplomacyHistoryCaptureApplication.Capture(Storage, job, syncSources, throughSequence,
-            _host.HistoryCapture(), this);
+            _host.HistoryCapture(), this, _host.EstimateTokens);
     }
 
     private void CaptureCanonicalHistoryForQueuedJob(WorldDiplomacyJob job)
@@ -1012,10 +1012,14 @@ internal sealed partial class WorldDiplomacyOrchestration : IWorldDiplomacyOrche
         WorldDiplomacyPropagationApplication.ReceivePlayerRelay(
             receiverId, document, () => _host.IsPlayerAffiliatedParty(receiverId),
             () => ProcessCourtArrival(receiverId, document), _host.CurrentDay, _host.Log);
+        RecordDiplomaticDocumentPersonalMemory(_host.PartyRulerId(receiverId), document, false);
+        _diplomacyWorkNeedsReconcile = true;
     }
 
     public void ProcessCourtArrival(string receiverId, WorldDiplomacyDocument document)
     {
+        RecordDiplomaticDocumentPersonalMemory(_host.PartyRulerId(receiverId), document, false);
+        _diplomacyWorkNeedsReconcile = true;
         WorldDiplomacyCourtResponseApplication.Receive(
             Storage, receiverId, document,
             () => _host.IsRepresentativeForAddressedVassal(receiverId, document),
@@ -1168,6 +1172,7 @@ internal sealed partial class WorldDiplomacyOrchestration : IWorldDiplomacyOrche
             r => AdvanceRelay(r, scheduleImmediately: true),
             CompleteExchange,
             _host.Log);
+        if (job?.IsExternalResponseOnly == true) _diplomacyWorkNeedsReconcile = true;
     }
 
     public void RejectGeneratedDraftBeforePublication(
@@ -1195,14 +1200,23 @@ internal sealed partial class WorldDiplomacyOrchestration : IWorldDiplomacyOrche
         bool requiresResponse, string tone, float confidence)
     {
         if (document?.IsPlayerAuthored == true) BindPlayerDeclarationToSharedEvent(document);
+        if (document?.IsPlayerAuthored == true && intent == "propose_peace"
+            && !WorldDiplomacyPeaceAdmissionApplication.TryValidateOfferedPeaceTerms(_host.PeaceAdmission(), new WorldDiplomacyRoundOffer {
+                ProposerKingdomId = document.AuthorKingdomId, TargetKingdomId = document.TargetKingdomId },
+                document, document.AuthorKingdomId, document.TargetKingdomId, out string peaceReason))
+        {
+            document.MechanicalResult = "和平提案未执行：" + peaceReason;
+            SuppressInvalidDocumentBeforePropagation(document, "peace_terms_not_executable_without_changes");
+            return;
+        }
         if (WorldDiplomacyIntentVocabulary.IsFormalTreatyIntent(intent)
             && !ValidateFormalTreatyDeclaration(document, intent, document.TreatyTerms,
                 document.AuthorKingdomId, document.TargetKingdomId, document.RespondingToOfferDocumentId,
                 document.RespondingToOfferActionId, out string treatyReason))
         {
             document.MechanicalResult = "条约未执行：" + treatyReason;
-            if (!document.IsPlayerAuthored) { SuppressInvalidDocumentBeforePropagation(document, treatyReason); return; }
-            intent = "statement"; commitment = "non_binding"; requiresResponse = false;
+            SuppressInvalidDocumentBeforePropagation(document, treatyReason);
+            return;
         }
 
         if (!IsCurrentDialogueDocumentWork(document)) return;
@@ -1232,6 +1246,8 @@ internal sealed partial class WorldDiplomacyOrchestration : IWorldDiplomacyOrche
             CommitRoundCompression,
             RemoveJob,
             _host.Log);
+        if (job?.Kind == "analyze" && ResolveDocument(job.DocumentId)?.AnalysisStatus == "analysis_execution_failed")
+            _host.Notify("外交宣言已发布，但外交处理未完整结束，请查看公文结果并核对当前局势。");
     }
 
     public void CommitGeneratedDocument(WorldDiplomacyJob job, string raw)
@@ -1803,7 +1819,7 @@ internal sealed partial class WorldDiplomacyOrchestration : IWorldDiplomacyOrche
         InvalidateDialogueIndex();
         RestoreDialogueMemoryRetryQueue();
         _personalMemoryRetryDocuments.Clear(); _personalMemoryRetryDocumentSet.Clear();
-        _nextDiplomacyDispatchUtcTicks = 0; _diplomacyWorkNeedsReconcile = true; _publicDiplomacyDocumentIds = null;
+        _nextDiplomacyDispatchUtcTicks = 0; _diplomacyWorkNeedsReconcile = true;
         foreach (var doc in Storage.Documents) if (doc?.PendingPersonalMemoryRulers?.Count > 0) EnqueuePersonalMemoryRetry(doc.DocumentId);
         _runtime.DisabledStateApplied = false;
         _runtime.NativeQueueSanitized = false;
@@ -1983,14 +1999,23 @@ internal sealed partial class WorldDiplomacyOrchestration : IWorldDiplomacyOrche
 
     public void StartDocumentPropagation(WorldDiplomacyDocument document, string authorId)
     {
-        if (document == null || document.PropagationCompleted || authorId == null) return;
-        if (!document.IsPlayerAuthored && !_host.CanAiAuthorParty(authorId, out string reason))
-        { SuppressInvalidDocumentBeforePropagation(document, reason); return; }
-        WorldDiplomacyPropagationApplication.BeginPublication(Storage, document, authorId, ResolveRound,
-            () => EnsureActiveRound(authorId, document.TargetKingdomId, document.IsPlayerAuthored),
-            () => _host.ResolveOriginSettlementId(authorId), () => _host.IsPlayerAffiliatedParty(authorId),
-            () => _host.IsPlayerParty(authorId), _host.CurrentDay, _host.RoundParticipantLimit, RecordDiplomacyWeeklyMaterial);
-        PublishImmediatePublicKnowledge(document);
+        bool wasPublished = document?.PropagationStarted == true;
+        try
+        {
+            WorldDiplomacyPublicationRoutingApplication.Start(_host.Publication(), this, document, authorId);
+        }
+        finally
+        {
+            // Publication can succeed before geography capture fails. Retain
+            // its real memory receipt while the existing retry repairs delivery.
+            if (document?.PropagationStarted == true)
+            {
+                if (!wasPublished && ResolveRound(document.RoundId) is WorldDiplomacyRound round)
+                    round.ConversationRevision++;
+                RecordDiplomaticDocumentPersonalMemories(document);
+                InvalidateDialogueIndex();
+            }
+        }
     }
 
     public void ReconcileReachedCourts(WorldDiplomacyDocument document)
@@ -2315,9 +2340,9 @@ internal sealed partial class WorldDiplomacyOrchestration : IWorldDiplomacyOrche
             _host.AllianceKnown(), _host.TradeKnown(),
             enforcing =>
             {
-                bool violation = WorldDiplomacyWarAdmissionApplication.CanDeclareWar(
+                bool canDeclareWar = WorldDiplomacyWarAdmissionApplication.CanDeclareWar(
                     ref warAdmission, out string warReason, enforcing);
-                return (!violation, warReason);
+                return (canDeclareWar, warReason);
             },
             key => _host.OfferCooldownLastFailedRoundDay(key),
             _host.TradeAllianceFailedProposalCooldownDays(), _host.CurrentDay(), out reason);
@@ -2336,9 +2361,9 @@ internal sealed partial class WorldDiplomacyOrchestration : IWorldDiplomacyOrche
             _host.PartiesAtWar(authorId, targetId),
             () =>
             {
-                bool violation = WorldDiplomacyWarAdmissionApplication.CanIssueWarThreat(
+                bool canIssueWarThreat = WorldDiplomacyWarAdmissionApplication.CanIssueWarThreat(
                     ref warAdmission, out string warReason);
-                return (!violation, warReason);
+                return (canIssueWarThreat, warReason);
             },
             out reason);
     }
@@ -2413,7 +2438,6 @@ internal sealed partial class WorldDiplomacyOrchestration : IWorldDiplomacyOrche
     public void AddDocument(WorldDiplomacyDocument document)
     {
         InvalidateDialogueIndex();
-        _publicDiplomacyDocumentIds = null;
         WorldDiplomacyDocumentApplication.Add(Storage, document, _host.MaxStoredDocuments(),
             _host.AdvanceWorldMessageTimelineRevision);
     }

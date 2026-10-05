@@ -5548,6 +5548,8 @@ List<string> ids = new List<string>();
         {
             candidates = candidates.Where(x => MatchesDocumentId(x.SourceDocumentId, claimedOfferDocumentId));
         }
+        if (!string.IsNullOrWhiteSpace(document.RespondingToOfferActionId))
+            candidates = candidates.Where(x => string.Equals(x.SourceActionId, document.RespondingToOfferActionId, StringComparison.Ordinal));
         string requestedTargetId = FirstNonEmpty(targetId, document.TargetKingdomId);
         if (!string.IsNullOrWhiteSpace(requestedTargetId))
         {

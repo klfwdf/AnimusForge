@@ -153,7 +153,8 @@ public static void EnqueueCompressionJob(
     (int minimumCharacters, int maximumCharacters) = declarationCharacterRange();
     string systemPrompt = WorldDiplomacyPromptContractRules.BuildCanonicalHistorySystemPrompt(commonSystemPrefix(), minimumCharacters, maximumCharacters);
     // Reserve room for the request contract, mode parameters, archive headings and message framing.
-    long inputBudget = compressionTriggerTokens - WorldDiplomacyRoundLifecycleRules.EstimateHistoryTokens(systemPrompt, estimateTokens) - 2048L;
+    long inputBudget = Math.Min(compressionTriggerTokens, WorldDiplomacyRequestHistoryApplication.CompressionInputLimit)
+        - WorldDiplomacyRoundLifecycleRules.EstimateHistoryTokens(systemPrompt, estimateTokens) - 2048L;
     throughSequence = WorldDiplomacyPolicyHistoryRules.SelectCompressionPrefix(
         history.Snapshot.CoveredThroughSequence, history.Snapshot.EstimatedTokens,
         WorldDiplomacyRoundLifecycleRules.SelectDeltaEntriesThrough(history.DeltaEntries, throughSequence),
