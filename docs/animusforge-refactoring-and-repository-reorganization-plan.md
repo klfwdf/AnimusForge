@@ -7316,3 +7316,18 @@ R2计划交付门槛：已给固定技术路线、真实来源与目标、写入
 - 验证：统一入口双版本+Bootstrap 0错误/接缝门禁PASS；1.3/1.4 loyalist fixtures均通过真实CampaignObjectManager解析和旧Ruler guard；Coup contracts145 PASS；Victory flow61 PASS。证据 `artifacts/coup-campaign-identity-fix-20261005/receipt.json`。
 - 本轮同时纠正原版输入反转：762539c0；AI输入Right/MarginRight200。新AFDialogue UI文件未改；原版答案占位与新UI分支回归50 PASS，失焦回归30 PASS。其部署状态仍是先前已部署的错误布局，当前新的源修复未部署。
 - NOT_RUN：当前修订的失败存档实机重试、实机新UI布局、立绘/全景；未覆盖游戏、未push。现有安装仍是旧部署版本。源码回滚使用对应 focused commit 的 `git revert`，不hard reset。
+
+<a id="deploy-identity-native-input-save-fixes-20261005"></a>
+## 用户授权部署：政变身份、原版输入与新存档修复（2026-10-05，DEPLOYED_HASH_VERIFIED_LIVE_PENDING）
+
+最新用户明确要求“部署”。工作区 `F:/AnimusForge-main`，分支 `codex/af-main-refactor-continuation-20260831`；构建源码HEAD `708e8909d36de94a7f7ccff606af863616951b65`，构建后到安装验收前已跟踪文件无变动。仅按原统一构建/事务覆盖入口部署本机 `F:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord/Modules/AnimusForge`；未改一键流程、未push/打包/启动游戏、未写外仓或清理玩家文件。
+
+- 本次候选包含 `106e4760` Illustrator原生导出诊断与有界MCM超时、`762539c0` 原版输入Right/MarginRight200与选项占位纠正、`098b47d5` 政变后登记使用Campaign域身份解析，以及其他会话已提交的 `4b4d6167` 内战和 `621d4176` Coup未来存档分块修复。本轮不新增产品源码修改、不回滚他人变化；新AFDialogue UI源码未改。源码图与原回归边界沿用[Illustrator修复](#illustrator-native-export-diagnostics-20261005)、[原版输入范围](#native-input-side-layout-correction-20261005)、[政变身份修复](#coup-campaign-identity-resolution-final-20261005)；部署不升级为实机验收。
+- 原 `scripts/build/build_single_module.ps1` Debug顺序构建1.3(v1.3.15.110062)/1.4(v1.4.6.115628)+Bootstrap均0错误，双最终候选Coup接缝门禁PASS。实际安装SHA256：1.3 `8A98657FB8BBE87865A88A8A19439EF7BD337090D2FBAFA0FAF6D570F87E1819`；1.4 `02ADBAE2C3ABDCCBEC63DCA1026330A31CF12E89A6E83B76692987813BA86DBC`；Bootstrap `DBDA8FC4A54301C5FE92636518A59BD6D9B5BE6B78E018A6C0CCC5CE798460A6`。三个DLL均与构建源/安装marker一致，两实现marker接缝状态Passed且候选hash一致。
+- 两次拦截与处理留痕：首次旧Stage Overlay与锁定源码不同，尚未改游戏；仅用原 `Invoke-AnimusForgeContentProjection` 刷新已登记资源并通过原校验，未绕过门禁。随后C盘空间不足，私有事务 `deploy-bf5230f39cb84d52bddff999001e9000` 在备份阶段停止（无activating，rolled-back存在），10个待更新安装文件全部与旧hash一致。再查C盘可用3356.45MiB、所需备份42.94MiB、游戏进程0；在未删除旧Recovery/用户文件、未改备份路径/环境变量的前提下重试原部署成功。
+- 安装验收：原 `deploy_module.ps1` 更新10个受管理文件，未知安装文件未列入覆盖计划；Stage全部3379文件hash与安装逐项一致。安装 `SubModule.xml` Id/Name均AnimusForge，DLLName与Assemblies均仅AnimusForge.Bootstrap.dll；原版Overlay实际节点 `AFNativeConversationInputPanel` 的HorizontalAlignment=Right、MarginRight=200。验收不声称真实Gauntlet排版已通过。
+- 本次唯一安装回滚点：`C:/Users/29310/AppData/Local/AnimusForge/Recovery/deploy/deploy-2c7c2c34c9454a01944a9c243fe13a38`；manifest绑定目标和10个旧/新hash，activating/complete存在、rolled-back不存在，10份私有旧文件及对应安装新文件hash全部通过。回滚须按该manifest定向恢复并核验，不用源码revert冒充游戏已回滚，也不覆盖未知文件；不要使用上次磁盘失败的部分备份作为本次回滚源。
+- 本地证据：`artifacts/deploy-20261005-identity-bulletin-input/receipt.json`、`installed-verification.json`（完整3379项及备份校验）、`build.log`、`stage-refresh.log`、`disk-retry-preflight.json`、`deploy-space-retry.log`、`verification.log`、`verify-installation.ps1`。原Stage/空间失败仍保留历史证据，不解释为部署成功；私有记录不提交/上传。
+- NOT_RUN：失败玩家真实立绘/全景导出、原版/新UI实机输入与布局、失败政变存档进入原重试入口后不重放王权动作、真实新存档保存/加载。已有损坏旧档不由新存档分块修复保证恢复；存档降级须使用更新前正常备份。
+- 快报参考图边界：本轮没有新增灭国事件Participants补录/修复，没有改已生成快报，不能声称部署会自动补回旧快报人物或解决该参考图缺失。后续需检查事件捕获的人物ID/名字输入；不把周报场景替换成当前Mission全景。
+- 本条仅就安装状态明确替代[原版输入ACTIVE记录](#native-input-side-layout-correction-20261005)、[政变身份修复未部署记录](#coup-campaign-identity-resolution-final-20261005)以及HANDOFF中内战/Coup分块“未部署”的历史陈述；这些功能的实机/旧档/开放审计风险继续保留。源码回滚使用相应修复提交的focused inverse commit，不能hard reset或回滚其他作者。
