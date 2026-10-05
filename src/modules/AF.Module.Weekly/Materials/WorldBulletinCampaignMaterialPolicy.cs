@@ -31,12 +31,14 @@ internal static class WorldBulletinCampaignMaterialPolicy
     internal static string GrantSentence(string settlement,string owner,string label) => settlement+"被授予"+owner+"（方式："+label+"）。";
     internal static string TransferSentence(string settlement,string oldOwner,string newOwner,string label) => settlement+"以“"+label+"”的方式由"+oldOwner+"转归"+newOwner+"，并非攻城夺取。";
     internal static int SiegePriority(bool town)=>town?65:45;
-    internal static int SiegeStability(bool town,bool winner)=>winner?(town?4:2):(town?-6:-3);
+    // Softer than before: per-battle cost now also builds war weariness, which drains stability weekly.
+    internal static int SiegeStability(bool town,bool winner)=>winner?(town?3:1):(town?-4:-2);
     internal static bool ShouldIncludeBattle(bool player,bool winnerLord,bool loserLord,bool raid,bool siege,int troops,int threshold)
         => (player||winnerLord||loserLord)&&(player||(!raid&&(siege||(winnerLord&&loserLord)||troops>threshold)));
     // Battles are frequent; only large or player/home fights should reach the headline bar once focus bonuses apply.
     internal static int BattlePriority(int troops,int threshold,bool lordVsLord,bool siege) => (troops>=1000?45:(troops>threshold?35:(lordVsLord?30:20)))+(siege?5:0);
-    internal static int BattleStability(int troops,int threshold)=>troops>threshold?2:1;
+    // Only large field battles swing stability, by one point; the rest is carried by war weariness.
+    internal static int BattleStability(int troops,int threshold)=>troops>threshold?1:0;
     internal static string BattleSentence(string location,bool sallyOut,bool siege,string winner,string winnerFaction,string loser,string loserFaction,int troops)
         => location+(sallyOut?"出城战：":siege?"攻城战：":"一战：")+winner+"（"+winnerFaction+"）击败"+loser+"（"+loserFaction+"）"+(sallyOut?"的本次参战部队":"")+(troops>0?"，双方约"+troops+"人参战。":"。");
     internal static string BattleDetail(int winnerTroops,string winnerLoss,int loserTroops,string loserLoss,bool sallyOut,bool winnerLord,string winnerTitle,bool loserLord,string loserTitle)

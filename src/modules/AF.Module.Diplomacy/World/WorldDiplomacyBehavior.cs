@@ -1636,7 +1636,7 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 	}
 	private float CalculatePeacePressure(WarSituationSnapshot snapshot, Kingdom author, Kingdom target, bool authorPerspective)
     {
-        return WorldDiplomacyWarPressureRules.CalculatePeacePressure(snapshot.WarDays,
+        float pressure = WorldDiplomacyWarPressureRules.CalculatePeacePressure(snapshot.WarDays,
             authorPerspective ? snapshot.AuthorProgress : snapshot.TargetProgress,
             authorPerspective ? snapshot.TargetProgress : snapshot.AuthorProgress,
             authorPerspective ? snapshot.AuthorStrength : snapshot.TargetStrength,
@@ -1645,6 +1645,8 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
             authorPerspective ? snapshot.AuthorInflictedCasualties : snapshot.AuthorSufferedCasualties,
             authorPerspective ? snapshot.AuthorOtherWars : snapshot.TargetOtherWars,
             GetUnrecoveredLostSettlements(authorPerspective ? author : target, authorPerspective ? target : author).Count);
+        // War weariness from the civil-war owner: a worn-out kingdom is pushed toward peace.
+        return WorldDiplomacyWarPressureRules.WithWeariness(pressure, TeamModuleServices.CivilWar.GetWarWeariness(authorPerspective ? author : target));
     }
 
 	private List<Settlement> GetUnrecoveredLostSettlements(Kingdom originalOwner, Kingdom currentOwner)

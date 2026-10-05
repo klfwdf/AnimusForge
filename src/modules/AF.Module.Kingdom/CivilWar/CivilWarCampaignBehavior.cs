@@ -9,6 +9,7 @@ using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Actions;
 using TaleWorlds.CampaignSystem.ComponentInterfaces;
 using TaleWorlds.CampaignSystem.Election;
+using TaleWorlds.CampaignSystem.MapEvents;
 using TaleWorlds.CampaignSystem.Settlements;
 using TaleWorlds.Core;
 using TaleWorlds.Library;
@@ -35,6 +36,7 @@ internal sealed class CivilWarCampaignBehavior : CampaignBehaviorBase
 		CampaignEvents.OnClanLeaderChangedEvent.AddNonSerializedListener(this, OnPoliticalLeaderChanged);
 		CampaignEvents.KingdomDestroyedEvent.AddNonSerializedListener(this, OnPoliticalKingdomDestroyed);
 		CampaignEvents.KingdomDecisionConcluded.AddNonSerializedListener(this, OnKingdomDecisionConcluded);
+		CampaignEvents.MapEventEnded.AddNonSerializedListener(this, OnMapEventEnded);
 		CampaignEvents.HourlyTickEvent.AddNonSerializedListener(this, OnHourlyTick);
 		CampaignEvents.DailyTickEvent.AddNonSerializedListener(this, OnDailyTick);
 		CampaignEvents.TickEvent.AddNonSerializedListener(this, OnPoliticalTick);
@@ -145,6 +147,35 @@ internal sealed class CivilWarCampaignBehavior : CampaignBehaviorBase
 		}
 		if (first is Kingdom a) TeamModuleServices.CivilWar.RecordPeace(a, second, Week());
 		if (second is Kingdom b) TeamModuleServices.CivilWar.RecordPeace(b, first, Week());
+	}
+
+	// Per-battle war weariness: only kingdom-vs-kingdom fights with a winner. O(parties of this battle).
+	private void OnMapEventEnded(MapEvent mapEvent)
+	{
+		try
+		{
+			if (mapEvent == null || !mapEvent.HasWinner || !DuelSettings.IsCivilWarFactionsEnabled()) return;
+			Kingdom attacker = mapEvent.AttackerSide?.MapFaction as Kingdom;
+			Kingdom defender = mapEvent.DefenderSide?.MapFaction as Kingdom;
+			if (attacker == null || defender == null || attacker == defender) return;
+			bool attackerWon = mapEvent.WinningSide == BattleSideEnum.Attacker;
+			RecordSide(attacker, mapEvent.AttackerSide, !attackerWon);
+			RecordSide(defender, mapEvent.DefenderSide, attackerWon);
+		}
+		catch (Exception ex) { Logger.Log("KingdomCivilWar", "[WARN] battle weariness failed: " + ex.Message); }
+	}
+
+	private static void RecordSide(Kingdom kingdom, MapEventSide side, bool lost)
+	{
+		if (side?.Parties == null) return;
+		int casualties = 0, committed = 0;
+		foreach (MapEventParty party in side.Parties)
+		{
+			if (party == null) continue;
+			casualties += (party.DiedInBattle?.TotalManCount ?? 0) + (party.WoundedInBattle?.TotalManCount ?? 0);
+			committed += party.HealthyManCountAtStart;
+		}
+		TeamModuleServices.CivilWar.RecordBattleWeariness(kingdom, casualties, committed, lost);
 	}
 
 	private void OnVillageLooted(Village village)

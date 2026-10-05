@@ -80,11 +80,13 @@ internal static class PoliticalActionsTests
         var offer = Request(f, CivilWarAction.Negotiate); offer.OfferInfluence = true; offer.OfferTier = 2;
         Check(f.Owner.Execute(offer, crown).Status == CivilWarActionStatus.AwaitingPlayer, "AI offer waits for player leader");
         Check(crown.Influence == 500 && f.Faction.PendingResponse.DeadlineDay == 703, "pending offer no charge and three day deadline");
+        int offered = f.Faction.PendingResponse.Influence;
+        Check(offered > 0 && offered % 5 == 0, "floating influence offer is positive and rounded");
         f.Reload(); var answer = Request(f, CivilWarAction.Respond); answer.Accept = true;
         Check(f.Owner.Execute(answer, Clan.PlayerClan).Status == CivilWarActionStatus.Applied, "saved offer accepts");
-        Check(crown.Influence == 400 && Clan.PlayerClan.Influence == 600 && f.State.Factions.Count == 0, "compensation is actual transfer without original redress");
+        Check(crown.Influence == 500 - offered && Clan.PlayerClan.Influence == 500 + offered && f.State.Factions.Count == 0, "compensation is actual transfer without original redress");
         Check(GiveGoldAction.Calls == 0, "negotiation does not execute original demand");
-        f.Owner.Execute(answer, Clan.PlayerClan); Check(crown.Influence == 400, "saved response receipt prevents duplicate transfer");
+        f.Owner.Execute(answer, Clan.PlayerClan); Check(crown.Influence == 500 - offered, "saved response receipt prevents duplicate transfer");
 
         f = Prewar(); crown = f.Home.RulingClan; f.Faction.LeaderClanId = Clan.PlayerClan.StringId;
         offer = Request(f, CivilWarAction.ForceDissolve);

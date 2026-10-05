@@ -37,6 +37,8 @@ internal static class CivilWarFeature
 	internal const string RelationGap = "relation_gap";
 	internal const string RelationToKing = "relation_to_king";
 	internal const string BloodShy = "blood_shy";
+	// Kingdom war weariness accumulated from individual battles, 0..1.
+	internal const string Weariness = "weariness";
 	// Open war, -1..1 / 0..1.
 	internal const string WarScore = "war_score";
 	internal const string WarScoreAbs = "war_score_abs";
@@ -48,7 +50,7 @@ internal static class CivilWarFeature
 	{
 		KingMercy, KingAuthoritarian, KingEgalitarian, KingValor, KingGenerosity, KingHonor,
 		LeaderValor, LeaderCalculating, LeaderHonor, LeaderMercy,
-		Instability, WarLoad, KingdomGrievance,
+		Instability, WarLoad, KingdomGrievance, Weariness,
 		FactionPower, FactionGrievance, Refusals,
 		ClanGrievance, RelationGap, RelationToKing, BloodShy,
 		WarScore, WarScoreAbs, WarProgress, One
@@ -135,6 +137,24 @@ internal static class CivilWarFactionRules
 		return refusals >= required;
 	}
 
+	// A kingdom just shaken by a civil war (or one faction already in arms) is quicker to give in to the others.
+	internal const float CooldownAcceptScale = 1.5f;
+
+	internal static float AcceptScale(bool inKingdomCooldown) => inKingdomCooldown ? CooldownAcceptScale : 1f;
+
+	// The concession window outlasts the kingdom cooldown by the truce length, so factions held back until the
+	// cooldown ends still meet a king inclined to give in.
+	internal static bool InConcessionWindow(int day, int cooldownUntilDay, CivilWarTuning tuning)
+	{
+		return cooldownUntilDay > 0 && day < cooldownUntilDay + CivilWarAftermathRules.TruceWeeks(tuning) * 7;
+	}
+
+	// A faction may form from grievance or from war weariness; either condition is enough.
+	internal static bool MeetsFormationCondition(float grievance, float weariness, CivilWarTuning tuning)
+	{
+		return grievance >= (tuning?.DiscontentThreshold ?? 35) || CivilWarWearinessRules.MeetsFormation(weariness);
+	}
+
 	// Relation to the king at which the join chance stops falling and stays at the floor below.
 	internal const int JoinRelationCeiling = 60;
 	// Even a clan on excellent terms with the king can still side against him; good relations only make it unlikely.
@@ -191,6 +211,44 @@ internal static class CivilWarFactionRules
 	}
 
 	private static float Clamp01x100(float value) => CivilWarRules.Clamp(value, 0f, 100f);
+}
+
+// Kingdom war weariness (0..100), built battle by battle and fading with time and peace.
+// Stored per kingdom; decay is applied lazily from the last update day, so nothing ticks.
+internal static class CivilWarWearinessRules
+{
+	internal const float Max = 100f;
+	// Either this weariness or the grievance threshold lets a faction form.
+	internal const float FormationThreshold = 40f;
+	internal const float WeeklyDecay = 0.12f;
+	// Share of the current weariness removed by each peace treaty.
+	internal const float PeaceRelief = 0.35f;
+	private static readonly double DailyRetention = Math.Pow(1d - WeeklyDecay, 1d / 7d);
+
+	internal static bool MeetsFormation(float weariness) => weariness >= FormationThreshold;
+
+	// One battle: casualties relative to the side's committed troops, plus a flat cost for losing.
+	// The winner still tires, at half the casualty cost.
+	internal static float BattlePoints(int casualties, int committed, bool lost)
+	{
+		float losses = Math.Max(0, casualties);
+		float share = losses / Math.Max(50f, committed);
+		float points = Math.Min(4f, losses / 150f) + Math.Min(3f, share * 6f);
+		if (!lost) return points * 0.5f;
+		return points + 2f;
+	}
+
+	internal static float Decayed(float value, int fromDay, int toDay)
+	{
+		if (value <= 0f) return 0f;
+		if (fromDay < 0 || toDay <= fromDay) return CivilWarRules.Clamp(value, 0f, Max);
+		return CivilWarRules.Clamp((float)(value * Math.Pow(DailyRetention, toDay - fromDay)), 0f, Max);
+	}
+
+	internal static float AfterPeace(float value) => CivilWarRules.Clamp(value * (1f - PeaceRelief), 0f, Max);
+
+	// Weekly stability drain of a war-weary kingdom (battle swings themselves are kept small).
+	internal static int WeeklyStability(float weariness) => weariness >= 70f ? -2 : weariness >= FormationThreshold ? -1 : 0;
 }
 
 // How the other factions of a kingdom react when one civil war ends.

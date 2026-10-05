@@ -11222,7 +11222,8 @@ public static int GetKingdomStabilityRoyalDomainLoyaltyAdjustmentForTown(Town to
 					using (PerfProbe.Scope("MyBehavior.WeeklyKingdomRebellions.ResolveKingdom"))
 					{
 						int kingdomStabilityValue = GetKingdomStabilityValue(devEditableKingdom);
-						int kingdomStabilityWeeklyBalancingDelta = GetKingdomStabilityWeeklyBalancingDelta(kingdomStabilityValue);
+						int kingdomStabilityWeeklyBalancingDelta = GetKingdomStabilityWeeklyBalancingDelta(kingdomStabilityValue)
+							+ CivilWarWearinessRules.WeeklyStability(TeamModuleServices.CivilWar.GetWarWeariness(devEditableKingdom));
 						if (kingdomStabilityWeeklyBalancingDelta != 0)
 						{
 							SetKingdomStabilityValue(devEditableKingdom, kingdomStabilityValue + kingdomStabilityWeeklyBalancingDelta);
@@ -11472,6 +11473,8 @@ TeamModuleServices.CivilWar.AdvanceWeek(devEditableKingdom, weekIndex, GetKingdo
 			{
 				TeamModuleServices.CivilWar.NotifyRebelKingdomCreated(pendingAutomaticKingdomRebellionContext.CivilWarFactionId, clan?.Kingdom, pendingAutomaticKingdomRebellionContext.WeekIndex);
 			}
+			// Stability/coup split: the kingdom now waits out the same cooldown before any new faction or rebellion.
+			else if (success) TeamModuleServices.CivilWar.NoteKingdomRebellion(kingdom);
 		}
 		if (!success) NotifyCivilWarRebellionFailed(pendingAutomaticKingdomRebellionContext, executionMessage);
 		ShowAutomaticKingdomRebellionCompletionPopup(pendingAutomaticKingdomRebellionContext, kingdom, clan, list, success, executionMessage);

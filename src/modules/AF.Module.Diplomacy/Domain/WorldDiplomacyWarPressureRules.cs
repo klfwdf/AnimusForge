@@ -18,6 +18,10 @@ public static class WorldDiplomacyWarPressureRules
         return Math.Max(0f, Math.Min(300f, duration + setback + strength + casualtyBurden + casualtyImbalance + multiWar + territory));
     }
 
+    // Battle-built war weariness (0..100) adds up to 60 pressure on top of the snapshot terms.
+    public static float WithWeariness(float pressure, float weariness)
+        => Math.Max(0f, Math.Min(300f, pressure + Math.Max(0f, Math.Min(100f, weariness)) * 0.6f));
+
 	public static int CalculateDocumentPressureDelta(string intent, string tone, string lastIntent, int consecutiveSimilarCount)
     {
 		int delta = intent switch

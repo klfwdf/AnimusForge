@@ -94,8 +94,8 @@ internal sealed partial class KingdomCivilWarOwner
 			if (r.Action == CivilWarAction.Negotiate)
 			{
 				if (r.OfferTier < 1 || r.OfferTier > 3) q.Reason = "补偿档位无效。";
-				else if (r.OfferInfluence) q.Influence = CivilWarPoliticalRules.InfluenceOffer(r.OfferTier);
-				else q.Gold = CivilWarPoliticalRules.GoldOffer(r.OfferTier);
+				else if (r.OfferInfluence) q.Influence = CompensationOffer(k, s, f, r.OfferTier, true);
+				else q.Gold = CompensationOffer(k, s, f, r.OfferTier, false);
 				q.Consequence = "接受后转移补偿、撤回诉求并解散；拒绝不收费但消耗7天冷却。战中先议和归国。";
 			}
 			if (r.Action == CivilWarAction.Concede) q.Consequence = "完整兑现当前诉求；宣权将退位，独立战争将承认独立。";
@@ -166,6 +166,15 @@ internal sealed partial class KingdomCivilWarOwner
 
 	private bool CanStartPoliticalWar(Kingdom k, KingdomCivilWarKingdomState s, KingdomCivilWarFactionState f)
 		=> !PlayerKingdomRebellionImmunity.ShouldProtectKingdom(k) && CivilWarFactionRules.CanOpenWar(s != null && OtherFactionAtWar(s, f), DuelSettings.BuildCivilWarTuning());
+	// Quoted on demand (panel open / AI governance), never per tick.
+	private static int CompensationOffer(Kingdom k, KingdomCivilWarKingdomState s, KingdomCivilWarFactionState f, int tier, bool influence)
+	{
+		int leaderTier = CivilWarWorld.FindClan(f.LeaderClanId)?.Tier ?? 0;
+		float power = IsPreWar(f) ? FactionPower(k, s, f) : f.LastFactionPower;
+		float grievance = CivilWarRules.Clamp(f.Grievance / 100f, 0f, 1f);
+		string key = f.Id + ":" + CivilWarWorld.CurrentWeek() + ":" + (influence ? "i" : "g");
+		return influence ? CivilWarPoliticalRules.InfluenceOffer(tier, leaderTier, power, grievance, key) : CivilWarPoliticalRules.GoldOffer(tier, leaderTier, power, grievance, key);
+	}
 	private static string Fingerprint(CivilWarActionRequest r, Clan actor) => string.Join("|", actor?.StringId, r.KingdomId, r.FactionId, r.Action, r.DemandId, r.TargetId, r.OfferTier, r.OfferInfluence, r.Accept);
 	internal CivilWarActionResult Execute(CivilWarActionRequest r, Clan actor, bool leaderAgreed = false)
 	{
