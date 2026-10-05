@@ -583,6 +583,24 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 		}
 	}
 
+	// Ambient chatter in an armed coup: only uninvolved residents may speak. Resolved once per candidate scan.
+	internal static Func<Agent, bool> GetArmedCoupResidentSpeakerFilterForExternal(Mission mission)
+	{
+		try
+		{
+			SettlementEntryTroopSelectionMissionLogic logic = mission?.GetMissionBehavior<SettlementEntryTroopSelectionMissionLogic>();
+			if (logic == null || !logic.IsArmedCoup)
+			{
+				return null;
+			}
+			return logic.IsArmedCoupResident;
+		}
+		catch
+		{
+			return null;
+		}
+	}
+
 	internal static bool IsSetsDefenderConflictActiveForExternal(Mission mission)
 	{
 		try
@@ -4837,6 +4855,21 @@ if (_spawnedAlliedCount > 0)
 			{
 				SettlementEntryTroopSelectionLog.Log("MaintainOwnedSettlementIncidentPanic failed. settlement=" + _settlementId + ", error=" + ex.Message);
 			}
+		}
+
+		// Same population the civilian panic routes: no player side, coup combatants, guards, soldiers or heroes.
+		internal bool IsArmedCoupResident(Agent agent)
+		{
+			if (agent == null || !agent.IsHuman || !agent.IsActive() || agent == Agent.Main
+				|| IsPlayerSideAgent(agent)
+				|| _enemyAgentIndexes.Contains(agent.Index)
+				|| (_playerTeam != null && agent.Team == _playerTeam)
+				|| (_enemyTeam != null && agent.Team == _enemyTeam))
+			{
+				return false;
+			}
+			CharacterObject character = agent.Character as CharacterObject;
+			return character != null && !character.IsHero && !character.IsSoldier && !IsGuardOrSoldier(character);
 		}
 
 		// Armed coup only, 1Hz: the coup suppresses native fight/alarm callbacks, so residents would

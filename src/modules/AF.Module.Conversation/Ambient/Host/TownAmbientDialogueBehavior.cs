@@ -73,6 +73,8 @@ public sealed class TownAmbientDialogueMissionBehavior : MissionBehavior
 	private const string CoupStreetSceneTag = "coup_street";
 	private const string CoupHallSceneTag = "coup_hall";
 	private string _coupSceneTag;
+	// Armed coup only: residents may speak; soldiers, guards, heroes and coup combatants never do.
+	private Func<Agent, bool> _coupSpeakerFilter;
 
 	public override void OnBehaviorInitialize()
 	{
@@ -102,6 +104,7 @@ public sealed class TownAmbientDialogueMissionBehavior : MissionBehavior
 		_nextCombatGuardAt = 0f;
 		_combatGuardBlocked = false;
 		_coupSceneTag = null;
+		_coupSpeakerFilter = null;
 		try
 		{
 			Logger.LogImmediate("TownAmbient", "behavior_initialized enabled=" + (_config?.Enabled == true) + " lines=" + (_config?.Lines?.Count ?? 0) + " config=" + AnimusForgeModulePaths.GetModuleDataFilePath(ConfigFileName));
@@ -425,6 +428,10 @@ public sealed class TownAmbientDialogueMissionBehavior : MissionBehavior
 			{
 				continue;
 			}
+			if (_coupSceneTag != null && (_coupSpeakerFilter == null || !_coupSpeakerFilter(agent)))
+			{
+				continue;
+			}
 			float distanceSquared = agent.Position.DistanceSquared(playerPosition);
 			if (float.IsNaN(distanceSquared) || distanceSquared < minDistanceSquared || distanceSquared > maxDistanceSquared)
 			{
@@ -520,7 +527,7 @@ public sealed class TownAmbientDialogueMissionBehavior : MissionBehavior
 				break;
 			}
 			Agent agent = FindAgentByIndex(mission, pending.AgentIndex);
-			if (agent == null || !agent.IsActive() || agent.Health <= 0f)
+			if (agent == null || !agent.IsActive() || agent.Health <= 0f || (_coupSceneTag != null && (_coupSpeakerFilter == null || !_coupSpeakerFilter(agent))))
 			{
 				continue;
 			}
@@ -1316,6 +1323,7 @@ public sealed class TownAmbientDialogueMissionBehavior : MissionBehavior
 		if (!string.Equals(coupSceneTag, _coupSceneTag, StringComparison.Ordinal))
 		{
 			_coupSceneTag = coupSceneTag;
+			_coupSpeakerFilter = coupSceneTag != null ? SettlementEntryTroopSelectionBehavior.GetArmedCoupResidentSpeakerFilterForExternal(mission) : null;
 			_contextualLinesCache = null;
 			_contextualLinesCacheKey = "";
 			_contextualLinesCacheUntil = 0f;
