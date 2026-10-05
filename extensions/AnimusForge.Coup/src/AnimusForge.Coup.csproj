@@ -3,6 +3,7 @@
     <TargetFramework>net472</TargetFramework>
     <LangVersion>10.0</LangVersion>
     <PlatformTarget>x64</PlatformTarget>
+    <DefineConstants>$(DefineConstants);ANIMUSFORGE_COUP_STANDALONE</DefineConstants>
     <AssemblyName>AnimusForge.Coup</AssemblyName>
     <RootNamespace>AnimusForge.CoupSystem</RootNamespace>
     <Version>0.1.0</Version>

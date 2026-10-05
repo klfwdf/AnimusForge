@@ -30,6 +30,12 @@ The unified build script uses isolated output/intermediate directories, validate
 
 The build resolves `0Harmony.dll` independently from the installed/Workshop `Bannerlord.Harmony` module. AnimusForge's private ONNX/System runtime DLLs are resolved as one validated set from either `AnimusForge\bin\Win64_Shipping_Client` in the source tree or the existing unified game module. The resolved runtime directory is passed through to staging/deployment; `0Harmony.dll` is not duplicated in the AnimusForge module because `SubModule.xml` depends on `Bannerlord.Harmony`.
 
+## Coup Seam Release Gate
+
+The existing unified build entry now runs the real `Coup.RuntimeProbe` on both final implementation DLLs before reporting success, staging, or deployment. Candidate/API/reference version, probe/report hashes and loaded dependency identities are recorded in each implementation build marker's `CoupSeamGate` receipt. Deployment, package-directory validation and final ZIP validation reject missing, failed or mismatched receipts; older staged candidates must be rebuilt through the same entry.
+
+This is a managed binding/memory-admission gate, not a live campaign/save acceptance test. It uses the selected reference overlays and rejects cross-line runtime fallback. A complete overlay including managed SandBox dependencies is needed when that game's runtime is not installed; the existing incomplete 1.3 overlay coverage remains documented in `docs/bannerlord_1_3_to_1_4_5_compatibility_diff.md`. No game files are written during build-only checks. See `tools/Coup.RuntimeProbe/README.md` for scope and the standalone release-gate regression command.
+
 ## Runtime Layout
 
 ```text

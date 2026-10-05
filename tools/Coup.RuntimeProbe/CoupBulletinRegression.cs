@@ -26,7 +26,11 @@ internal static class CoupBulletinRegression
         {
             object owner = FormatterServices.GetUninitializedObject(ownerType);
             MethodInfo capture = ownerType.GetMethod("TryRecordCoupOutcomeForBulletin", All);
-            FieldInfo stateField = ownerType.GetField("_worldBulletinState", All);
+            // The production host now delegates state to its real owner. Bypassing
+            // MyBehavior's constructor must still initialize that managed owner.
+            FieldInfo bulletinOwner = ownerType.GetField("_worldBulletinOwner", All);
+            bulletinOwner.SetValue(owner, Activator.CreateInstance(bulletinOwner.FieldType, true));
+            PropertyInfo stateField = ownerType.GetProperty("_worldBulletinState", All);
             Func<string, bool, bool> record = (id, success) => (bool)capture.Invoke(owner, new object[] {
                 id, success, "领主在加伦发动政变，经过街战和大厅作战，最终结果已确认。", "发生时间：某日", "vlandia", "player_realm" });
             _enabled = false;

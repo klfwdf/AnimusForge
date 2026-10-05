@@ -17,6 +17,7 @@ param(
 )
 
 $ErrorActionPreference = "Stop"
+. (Join-Path $PSScriptRoot "coup_seam_gate.ps1")
 if ($IncludeOnnx -or $IncludeReranker) {
     throw "Unified client packages never include the ONNX model folder. Remove -IncludeOnnx/-IncludeReranker."
 }
@@ -242,6 +243,7 @@ function Test-BuildMarker {
             -not [DateTimeOffset]::TryParse($createdUtc, [ref]$createdTimestamp)) {
             return $false
         }
+        if ($ExpectedRole -eq "Implementation") { Assert-CoupSeamReceipt -Marker $marker -CandidateHash ([string]$marker.Sha256) -ExpectedApi $ExpectedApi }
         if (-not [string]::IsNullOrWhiteSpace($ExpectedApi) -and [string]$marker.BannerlordApi -ne $ExpectedApi) {
             return $false
         }
@@ -582,6 +584,7 @@ function Assert-ZipBuildMarker {
         -not [DateTimeOffset]::TryParse($createdUtc, [ref]$createdTimestamp)) {
         throw "ZIP build marker does not match its DLL: $MarkerEntryName"
     }
+    if ($ExpectedRole -eq "Implementation") { Assert-CoupSeamReceipt -Marker $marker -CandidateHash $actualHash -ExpectedApi $ExpectedApi }
     if (-not [string]::IsNullOrWhiteSpace($ExpectedApi) -and [string]$marker.BannerlordApi -ne $ExpectedApi) {
         throw "ZIP build marker API mismatch: $MarkerEntryName"
     }

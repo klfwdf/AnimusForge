@@ -102,9 +102,6 @@ internal sealed class CoupRebellionBridge : CampaignBehaviorBase
         internal readonly MethodInfo NamingSucceeded = Method("IsRebelKingdomNamingSuccess", 1);
         internal readonly MethodInfo Weekly = Method("RecordEventSourceMaterial", 12);
         internal readonly MethodInfo Bulletin = Method("TryRecordCoupOutcomeWithParticipantsForBulletin", 8);
-        internal readonly MethodInfo PrepareMemory = Method("TryPrepareExternalDialogueHistoryRecoveryIdentity", 6);
-        internal readonly MethodInfo CommitMemory = Method("CommitExternalDialogueHistoryRecoverable", 3);
-        internal readonly MethodInfo MemoryStatus = Method("GetExternalDialogueHistoryRecoveryStatus", 3);
         internal readonly Type NamingType = typeof(MyBehavior).GetNestedType("RebelKingdomNamingResult", BindingFlags.NonPublic)
             ?? throw new MissingMemberException("AF RebelKingdomNamingResult");
         internal readonly FieldInfo SelectedClan = ResultField("SelectedClan");
@@ -116,11 +113,7 @@ internal sealed class CoupRebellionBridge : CampaignBehaviorBase
             ?? throw new MissingFieldException("AF", "RebelKingdomNamingMaxAttempts")).GetRawConstantValue();
         internal readonly Func<MyBehavior, bool> Busy = (Func<MyBehavior, bool>)Delegate.CreateDelegate(
             typeof(Func<MyBehavior, bool>), Method("HasBlockingRebellionFlowForCoup", 0));
-        internal readonly ConstructorInfo MemoryConstructor = typeof(InteractionMemoryCommit).GetConstructor(All, null,
-            new[] { typeof(string), typeof(InteractionChannel), typeof(string), typeof(string), typeof(string), typeof(string),
-                typeof(IEnumerable<FactRecord>), typeof(long), typeof(long), typeof(string), typeof(int), typeof(int),
-                typeof(string), typeof(int), typeof(int), typeof(string) }, null)
-            ?? throw new MissingMethodException("AF recoverable domain memory constructor");
+        internal readonly CoupMemoryAccess Memory = new CoupMemoryAccess();
 
         internal AfAccess()
         {
@@ -148,11 +141,7 @@ internal sealed class CoupRebellionBridge : CampaignBehaviorBase
             Require(NamingSucceeded, typeof(bool), true, NamingType);
             Require(Weekly, typeof(void), false, typeof(string), typeof(string), typeof(string), typeof(string), typeof(string), typeof(string), typeof(bool), typeof(bool), typeof(string), typeof(string), typeof(int), typeof(string));
             Require(Bulletin, typeof(bool), false, typeof(string), typeof(bool), typeof(string), typeof(string), typeof(string), typeof(string), typeof(string), typeof(string));
-            Require(PrepareMemory, typeof(bool), true, typeof(InteractionMemoryCommit), typeof(bool), typeof(string), byRefString, byRefString, byRefString);
-            Require(CommitMemory, typeof(MemoryCommitResult), true, typeof(InteractionMemoryCommit), typeof(bool), typeof(string));
-            Require(MemoryStatus, MemoryStatus.ReturnType, true, typeof(string), typeof(string), typeof(string));
-            if (!MemoryStatus.ReturnType.IsEnum || MemoryStatus.ReturnType.FullName != "AnimusForge.Refactor.Runtime.InteractionMemoryRecoveryLookupStatus"
-                || SelectedClan.FieldType != typeof(Clan) || SelectedFollowers.FieldType != typeof(List<Clan>) || ResolutionMessage.FieldType != typeof(string)
+            if (SelectedClan.FieldType != typeof(Clan) || SelectedFollowers.FieldType != typeof(List<Clan>) || ResolutionMessage.FieldType != typeof(string)
                 || NamingFailure.FieldType != typeof(string))
                 throw new MissingMemberException("AF rebellion/memory result or busy-field shape changed");
         }
@@ -638,14 +627,16 @@ internal sealed class CoupRebellionBridge : CampaignBehaviorBase
                 }
                 if (!receipt.HistoryQueued)
                 {
-                    var commit = (InteractionMemoryCommit)_af.MemoryConstructor.Invoke(new object[] { key, InteractionChannel.Domain, key, receipt.HeroId, "", "",
-                        new[] { new FactRecord("coup_outcome", receipt.HeroId, receipt.NpcText) }, 0L, 0L, key, receipt.Day, 0, receipt.SettlementId, -1, -1, "" });
-                    object[] identity = { commit, false, formerKing.Name.ToString(), null, null, null };
-                    if (!(bool)_af.PrepareMemory.Invoke(null, identity)) { message = "政变记忆未接受：" + identity[5]; return false; }
-                    if (!string.IsNullOrEmpty(receipt.RecoveryId) && (receipt.RecoveryId != (string)identity[3] || receipt.RecoveryHash != (string)identity[4]))
+                    InteractionMemoryCommit commit = _af.Memory.CreateCommit(key, receipt.HeroId,
+                        receipt.NpcText, receipt.Day, receipt.SettlementId);
+                    string npcName = formerKing.Name.ToString();
+                    if (!_af.Memory.Prepare(commit, npcName, out string recoveryId,
+                        out string payloadHash, out string errorCode))
+                    { message = "政变记忆未接受：" + errorCode; return false; }
+                    if (!string.IsNullOrEmpty(receipt.RecoveryId) && (receipt.RecoveryId != recoveryId || receipt.RecoveryHash != payloadHash))
                     { message = "政变记忆恢复身份发生变化，拒绝重复写入。"; return false; }
-                    receipt.RecoveryId = (string)identity[3]; receipt.RecoveryHash = (string)identity[4];
-                    var result = (MemoryCommitResult)_af.CommitMemory.Invoke(null, new object[] { commit, false, formerKing.Name.ToString() });
+                    receipt.RecoveryId = recoveryId; receipt.RecoveryHash = payloadHash;
+                    MemoryCommitResult result = _af.Memory.Commit(commit, npcName);
                     string state = MemoryStatus(receipt);
                     receipt.HistoryQueued = result.HistoryWritten || state == "Pending";
                     if (!receipt.HistoryQueued)
@@ -686,7 +677,7 @@ internal sealed class CoupRebellionBridge : CampaignBehaviorBase
         catch (Exception ex) { message = "政变事实登记未完成：" + Error(ex); Logger.Log("Coup", message); return false; }
     }
 
-    private static string MemoryStatus(Outcome receipt) => _af.MemoryStatus.Invoke(null, new object[] { receipt.RecoveryId, receipt.HeroId, receipt.RecoveryHash })?.ToString() ?? "Unavailable";
+    private static string MemoryStatus(Outcome receipt) => _af.Memory.GetStatus(receipt.RecoveryId, receipt.HeroId, receipt.RecoveryHash) ?? "Unavailable";
     private static string Error(Exception ex) => (ex is TargetInvocationException && ex.InnerException != null ? ex.InnerException : ex).Message;
     private static void Show(string message) { if (!string.IsNullOrEmpty(message)) InformationManager.DisplayMessage(new InformationMessage("【宣权篡位】" + message)); }
 }

@@ -7,12 +7,13 @@
     <AssemblyName>Coup.RuntimeProbe</AssemblyName>
     <NuGetAudit>false</NuGetAudit>
     <GameRoot Condition="'$(GameRoot)' == ''">F:\SteamLibrary\steamapps\common\Mount &amp; Blade II Bannerlord</GameRoot>
+    <HarmonyCorePath Condition="'$(HarmonyCorePath)' == ''">$(GameRoot)\Modules\Bannerlord.Harmony\bin\Win64_Shipping_Client\0Harmony.dll</HarmonyCorePath>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies.net472" Version="1.0.3" PrivateAssets="all" />
     <Reference Include="0Harmony">
-      <HintPath>$(GameRoot)\Modules\Bannerlord.Harmony\bin\Win64_Shipping_Client\0Harmony.dll</HintPath>
-      <Private>false</Private>
+      <HintPath>$(HarmonyCorePath)</HintPath>
+      <Private>true</Private>
     </Reference>
   </ItemGroup>
 </Project>
