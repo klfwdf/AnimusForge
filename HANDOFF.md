@@ -1,3 +1,10 @@
+## 场景冲突审判交接与旧台词残留已修复（2026-10-05，OFFLINE_VERIFIED）
+
+- 产品`117a402b`：真实对话结束/VM更换/Overlay拥有者收尾清理旧显示；同国同定居点冲突交给原版审判后不再离城补执行退国/敌对。犯罪/信任和未审判逃离后果保留，旧存档键不变；模糊城外旧档/已退国玩家不自动恢复。
+- 直接当前源码及该产品源码48项各PASS，NativeTurn112、场景保护/账本/生命周期52项PASS；3运行负控有效；原双API+Bootstrap0错误。两项旧投影回归受开工前已存在的MemoryRecovery绑定不匹配阻塞，未改哈希绕过；玩家实机/旧档/真实付款与TTS未验。
+- 另一会话共享Overlay输入/切屏恢复及XML改动保留且未纳入本任务提交；工作区构建绑定其输入，产品源码测试单独绑定117a402b。未推送/覆盖游戏/Stage/打包。
+- [唯一主台账、代码范围、验证与回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#scene-conflict-judgment-display-fix-20261005)，本地`artifacts/scene-conflict-judgment-display-fix-20261005/receipt.json`；源码回滚`git revert 117a402b`。如需安装新候选须另行授权原流程覆盖并重启实测；不要把下方历史部署当本轮授权。
+
 ## 快报其余消息字号已按 Pen 稿修改（2026-10-05）
 
 已同步到共享快报XML：正文/朱标18号、标题20号、间距6；16项布局契约PASS。只改资源与测试，未重编译、覆盖游戏、打包或推送；原生Gauntlet/实机NOT_RUN。详细源码范围、验证与回滚见[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#bulletin-minor-font-20261005)，本地收据 `artifacts/bulletin-minor-font-20261005/receipt.json`。不要把 Pen/离线布局通过理解为已部署。

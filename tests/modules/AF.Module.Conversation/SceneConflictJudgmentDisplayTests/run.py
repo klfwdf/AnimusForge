@@ -8,11 +8,15 @@ spec = importlib.util.spec_from_file_location('extract', ROOT / 'tests/modules/A
 ex = importlib.util.module_from_spec(spec); spec.loader.exec_module(ex)
 p = argparse.ArgumentParser()
 p.add_argument('--run-root', type=Path)
+p.add_argument('--source-revision', help='Execute an exact local Git source revision without changing the shared checkout')
 p.add_argument('--mutate', choices=['cross-vm-replay', 'unowned-cleanup', 'retain-judgment'])
 args = p.parse_args()
-helper_path = ROOT / 'src/AF.GameAdapter.Bannerlord/UI/Conversation/ConversationHelper.cs'
-helper = helper_path.read_text(encoding='utf-8-sig')
-taunt = (ROOT / 'src/modules/AF.Module.Taunt/Host/SceneTauntBehavior.cs').read_text(encoding='utf-8-sig')
+def read_source(relative):
+    if args.source_revision:
+        return subprocess.check_output(['git', 'show', args.source_revision + ':' + relative], cwd=ROOT).decode('utf-8-sig')
+    return (ROOT / relative).read_text(encoding='utf-8-sig')
+helper = read_source('src/AF.GameAdapter.Bannerlord/UI/Conversation/ConversationHelper.cs')
+taunt = read_source('src/modules/AF.Module.Taunt/Host/SceneTauntBehavior.cs')
 methods = ['internal static void HandOffDeferredLordSceneDiplomacyToCriminalJudgmentForExternal(',
     'private bool TryHandOffDeferredLordSceneDiplomacyToCriminalJudgment(',
     'private void ClearPendingDeferredLordSceneDiplomacy(', 'private void OnGameMenuOpened(',
@@ -29,13 +33,13 @@ if args.mutate == 'retain-judgment':
     assert fixture.count('ClearPendingDeferredLordSceneDiplomacy("criminal_judgment_handoff");') == 1
     fixture = fixture.replace('ClearPendingDeferredLordSceneDiplomacy("criminal_judgment_handoff");', '; // mutation: retain diplomacy')
 # Routing assertions complement the runtime tests; never change storage keys or shared hostility.
-my = (ROOT / 'src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.cs').read_text(encoding='utf-8-sig')
+my = read_source('src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.cs')
 ended = ex.declaration(my, 'private void OnMemoryConversationEnded(')
 assert ended.index('InvalidateNativeConversationAdmissionOnConversationEnd();') < ended.index('ConversationHelper.Clear();')
-overlay = (ROOT / 'src/AF.GameAdapter.Bannerlord/UI/Conversation/AnimusForgeNativeConversationOverlay.cs').read_text(encoding='utf-8-sig')
+overlay = read_source('src/AF.GameAdapter.Bannerlord/UI/Conversation/AnimusForgeNativeConversationOverlay.cs')
 assert overlay.count('ConversationHelper.BeginStreaming(this);') == 2
 assert 'ConversationHelper.ClearForOwner(this);' in ex.declaration(overlay, 'private void Close(bool silent)')
-presentation = (ROOT / 'src/AF.GameAdapter.Bannerlord/UI/Conversation/AnimusForgeNativeConversationOverlay.Presentation.cs').read_text(encoding='utf-8-sig')
+presentation = read_source('src/AF.GameAdapter.Bannerlord/UI/Conversation/AnimusForgeNativeConversationOverlay.Presentation.cs')
 assert 'ConversationHelper.ClearForOwner(this);' in ex.declaration(presentation, 'private void RetireStaleSubmissionPresentation(')
 assert 'ConversationHelper.EndStreaming(this);' in ex.declaration(presentation, 'private bool CompleteNativeSubmissionPresentation(')
 start = taunt.index('if (flag2 && currentSettlement != null && currentSettlement.IsTown)')
@@ -49,7 +53,7 @@ out = new_run_root(ROOT, 'SceneConflictJudgmentDisplayTests', args.run_root)
 for name, text in [('Helper.cs', helper), ('Stubs.cs', (HERE / 'Stubs.cs.txt').read_text(encoding='utf-8')),
     ('Program.cs', (HERE / 'Program.cs').read_text(encoding='utf-8')),
     ('Host.cs', 'using System;\nnamespace AnimusForge;\ninternal sealed partial class SceneTauntBehavior {\n' + fixture + '\n}'),
-    ('Rules.cs', (ROOT / 'src/modules/AF.Module.Taunt/SceneTauntJudgmentHandoffRules.cs').read_text(encoding='utf-8'))]:
+    ('Rules.cs', read_source('src/modules/AF.Module.Taunt/SceneTauntJudgmentHandoffRules.cs'))]:
     (out / name).write_text(text, encoding='utf-8')
 (out / 'Proof.csproj').write_text('<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><LangVersion>latest</LangVersion><NoWarn>CS0649</NoWarn></PropertyGroup></Project>', encoding='utf-8')
 (out / 'NuGet.Config').write_text('<configuration><packageSources><clear/></packageSources></configuration>', encoding='utf-8')
@@ -62,6 +66,6 @@ ui_methods = '\n'.join(ex.declaration(overlay, selector) for selector in [
 dotnet = resolve_dotnet(ROOT)
 r = subprocess.run([str(dotnet), 'run', '--project', str(out / 'Proof.csproj'), '-c', 'Release'],
     cwd=ROOT, env=minimal_test_environment(dotnet, out), capture_output=True, text=True, encoding='utf-8', errors='replace', timeout=150)
-log = 'helperSha256=' + hashlib.sha256(helper.encode()).hexdigest() + ' hostSha256=' + hashlib.sha256(fixture.encode()).hexdigest() + ' mutation=' + str(args.mutate) + '\n' + r.stdout + r.stderr
+log = 'helperSha256=' + hashlib.sha256(helper.encode()).hexdigest() + ' hostSha256=' + hashlib.sha256(fixture.encode()).hexdigest() + ' mutation=' + str(args.mutate) + ' sourceRevision=' + str(args.source_revision) + '\n' + r.stdout + r.stderr
 (out / 'run.log').write_text(log, encoding='utf-8'); print(log)
 raise SystemExit(r.returncode)
