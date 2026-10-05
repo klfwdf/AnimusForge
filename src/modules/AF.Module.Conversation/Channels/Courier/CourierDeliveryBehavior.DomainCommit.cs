@@ -170,6 +170,9 @@ public sealed partial class CourierDeliveryBehavior
 			actionsAccepted = false;
 			Log("apply marriage tags failed session=" + session.Id + " error=" + ex.Message);
 		}
+		// Courier letters have no face to animate: MOOD is presentation-only here and must not
+		// count as an unexecuted action, otherwise every postprocessed reply is discarded.
+		text = Regex.Replace(text ?? "", "\\[ACTION:MOOD:[^\\]\\r\\n]*\\]", "", RegexOptions.IgnoreCase).Trim();
 		LegacyChannelActionCommitResult remaining = new LegacyChannelActionCommitter().Prepare(text);
 		actionsAccepted &= !remaining.HasActions && remaining.Execution.Status == InteractionStatus.Succeeded;
 		session.ReplyPostprocessedText = text;
