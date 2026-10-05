@@ -51,10 +51,19 @@ internal sealed partial class WorldDiplomacyOrchestration
         // Shared subject/parties do not turn a new player action or counterproposal
         // into an existing AI turn with response/capacity restrictions.
         string playerIntent = NormalizeIntent(document.Intent);
+        bool explicitDiscussion = playerIntent == "statement"
+            && !string.IsNullOrWhiteSpace(document.DiscussionSourceDocumentId)
+            && (document.Actions == null || document.Actions.All(x => x == null || NormalizeIntent(x.Intent) == "statement"));
+        if (explicitDiscussion)
+        {
+            var discussionSource = ResolveDocument(document.DiscussionSourceDocumentId);
+            if (discussionSource?.IsReadyForPublication != true
+                || !DialogueDocumentKnown(document.AuthorKingdomId, discussionSource.DocumentId)) return;
+        }
         if (string.IsNullOrEmpty(ResponseIntentToProposalIntent(playerIntent))
-            && playerIntent != "comply_ultimatum" && playerIntent != "withdraw_offer") return;
+            && playerIntent != "comply_ultimatum" && playerIntent != "withdraw_offer" && !explicitDiscussion) return;
         var explicitSources = new[] { document.RespondingToOfferDocumentId, document.RespondingToThreatDocumentId, document.SourceDocumentId, document.DiscussionSourceDocumentId }
-            .Concat((document.Actions ?? new List<WorldDiplomacyDocumentAction>()).SelectMany(x =>
+            .Concat((document.Actions ?? new List<WorldDiplomacyDocumentAction>()).Where(x => x != null).SelectMany(x =>
                 new[] { x.RespondingToOfferDocumentId, x.RespondingToThreatDocumentId }))
             .Where(x => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
         var sources = explicitSources.Select(ResolveDocument).Where(x => x != null)

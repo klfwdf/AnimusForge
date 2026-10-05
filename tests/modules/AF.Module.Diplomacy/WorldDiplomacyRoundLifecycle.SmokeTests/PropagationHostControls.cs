@@ -57,7 +57,7 @@ internal static partial class PropagationApplicationReplay
                 WorldDiplomacyPropagationApplication.ReceiveCourt(Storage, document, receiverId, day,
                     () => _host.IsPlayerAffiliatedParty(receiverId), () => ProcessCourtArrival(receiverId, document));
             },
-            _host.ResolvePartyId);
+            _host.ResolveSettlementId);
     }
 
         private WorldDiplomacyStorage Storage => _storage;
@@ -80,7 +80,7 @@ internal static partial class PropagationApplicationReplay
                 => _h.ResolveKingdom(kingdomId)?.StringId ?? _h.ResolveSettlementById(settlementId)?.OwnerClan?.Kingdom?.StringId;
             internal bool IsPlayerAffiliatedParty(string kingdomId)
                 => _h.IsPlayerAffiliatedKingdom(new Kingdom { StringId = kingdomId });
-            internal string ResolvePartyId(string settlementId) => _h.ResolveSettlementById(settlementId)?.StringId;
+            internal string ResolveSettlementId(string settlementId) => _h.ResolveSettlementById(settlementId)?.StringId;
         }
     }
 }

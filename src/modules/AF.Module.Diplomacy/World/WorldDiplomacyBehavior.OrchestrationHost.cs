@@ -40,7 +40,7 @@ public sealed partial class WorldDiplomacyBehavior
         public int MaxPriorityPlayerResponsesPerDocument() => WorldDiplomacyBehavior.MaxPriorityPlayerResponsesPerDocument;
         public int MaxRelayParticipants() => WorldDiplomacyBehavior.MaxRelayParticipants;
         public int RoundParticipantLimit() => WorldDiplomacyBehavior.GetRoundParticipantLimit();
-        public int RoundIntervalDays() => WorldDiplomacyBehavior.GetRoundIntervalDays();
+        public int OrdinaryRoundLimit() => WorldDiplomacyBehavior.GetOrdinaryRoundLimit();
         public int RoundTargetDurationDays() => WorldDiplomacyBehavior.GetRoundLengthDays();
         public int RoundHardDurationDays(int targetDurationDays) => WorldDiplomacyBehavior.GetRoundHardDurationDays(targetDurationDays);
         public int CourtMaxDeliveryDays() => WorldDiplomacyBehavior.GetCourtMaxDeliveryDays();
@@ -82,6 +82,7 @@ public sealed partial class WorldDiplomacyBehavior
 
         // Identity/fact leaf queries resolved from live campaign state.
         public string ResolvePartyId(string id) => WorldDiplomacyBehavior.ResolveKingdom(id)?.StringId;
+        public string ResolveSettlementId(string id) => WorldDiplomacyBehavior.ResolveSettlementById(id)?.StringId;
         public bool PartyResolved(string id) => WorldDiplomacyBehavior.ResolveKingdom(id) != null;
         public bool IsEliminatedParty(string id) => WorldDiplomacyBehavior.ResolveKingdomIncludingEliminated(id)?.IsEliminated == true;
         public bool HasIndependentAuthority(string id) => WorldDiplomacyBehavior.HasIndependentWorldDiplomacyAuthority(WorldDiplomacyBehavior.ResolveKingdom(id));

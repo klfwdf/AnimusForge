@@ -167,14 +167,15 @@ internal static class WorldDiplomacyRoundApplication
         Func<string, WorldDiplomacyRound> openRound,
         Action<string, WorldDiplomacyRound> enqueue,
         Action<int> scheduleNext,
-        Action<string> log)
+        Action<string> log, int maxOrdinaryRounds = 3)
     {
         if (storage.Jobs.Count >= 24)
         {
             return;
         }
         int day = currentDay();
-        if (!WorldDiplomacyRoundLifecycleRules.IsNormalRoundDue(day, storage.NextNormalRoundDay))
+        if (!WorldDiplomacyLiveRoundRules.CanStartOrdinary(storage, day, maxOrdinaryRounds)
+            || !WorldDiplomacyRoundLifecycleRules.IsNormalRoundDue(day, storage.NextNormalRoundDay))
         {
             return;
         }
@@ -208,6 +209,9 @@ internal static class WorldDiplomacyRoundApplication
             return;
         }
         WorldDiplomacyRound round = openRound(initiator);
+        if (round == null) return;
+        storage.LastOrdinaryRoundStartedDay = day;
+        storage.NextNormalRoundDay = WorldDiplomacyRoundLifecycleRules.ComputeNextRoundDay(day, 1);
         log("autonomous diplomacy opportunity opened round=" + round.RoundId + " initiator=" + initiator);
         enqueue(initiator, round);
         scheduleNext(day);
