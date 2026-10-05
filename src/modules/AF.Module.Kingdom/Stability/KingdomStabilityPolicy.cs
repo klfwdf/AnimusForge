@@ -171,7 +171,9 @@ internal static class KingdomStabilityPolicy
 		case KingdomStabilityTier.ExtremelyPoor:
 			return 5;
 		default:
-			return 0;
+			// Middle band (25..74): slow regression toward 50, one point a week, never overshooting.
+			int value = ClampKingdomStabilityValue(stabilityValue);
+			return value < KingdomStabilityDefaultValue ? 1 : value > KingdomStabilityDefaultValue ? -1 : 0;
 		}
 	}
 

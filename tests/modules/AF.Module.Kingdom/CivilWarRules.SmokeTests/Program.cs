@@ -109,6 +109,30 @@ Check(CivilWarFactionRules.CanOpenWar(true, multiWar), "mode B: concurrent wars 
 Check(CivilWarFactionRules.IsDemandTaken(new[] { "make_peace", "redress" }, "redress"), "held demand is taken");
 Check(!CivilWarFactionRules.IsDemandTaken(new[] { "make_peace" }, "redress"), "other demand is free");
 Check(!CivilWarFactionRules.IsDemandTaken(null, "redress"), "no factions -> free");
+Check(new CivilWarTuning().MaxFactions == 3, "default faction cap is 3");
+
+// ---- formation: grievance OR weariness; cooldown raises the king's accept roll
+var formTuning = new CivilWarTuning();
+Check(CivilWarFactionRules.MeetsFormationCondition(35f, 0f, formTuning), "grievance threshold alone forms");
+Check(CivilWarFactionRules.MeetsFormationCondition(0f, 40f, formTuning), "weariness 40 alone forms");
+Check(!CivilWarFactionRules.MeetsFormationCondition(34f, 39f, formTuning), "neither condition -> no faction");
+Check(CivilWarFactionRules.AcceptScale(true) > 1f && CivilWarFactionRules.AcceptScale(false) == 1f, "cooldown boosts acceptance only in cooldown");
+CivilWarUltimatumResult cooled = CivilWarDecisions.RuleOnUltimatum(peace, weakFaction, 0, tuning, Fixed(0.40f), 1f, CivilWarFactionRules.AcceptScale(true));
+CivilWarUltimatumResult normal = CivilWarDecisions.RuleOnUltimatum(peace, weakFaction, 0, tuning, Fixed(0.40f));
+Check(cooled.AcceptRoll.Chance > normal.AcceptRoll.Chance, "cooldown accept chance is higher than normal");
+// Default cooldown 8 weeks -> truce 4 weeks: window runs to cooldown end + 28 days.
+Check(CivilWarFactionRules.InConcessionWindow(100, 100, formTuning), "faction released on cooldown end day still gets the boost");
+Check(CivilWarFactionRules.InConcessionWindow(127, 100, formTuning) && !CivilWarFactionRules.InConcessionWindow(128, 100, formTuning), "window ends one truce after cooldown");
+Check(!CivilWarFactionRules.InConcessionWindow(5, 0, formTuning) && !CivilWarFactionRules.InConcessionWindow(5, -1, formTuning), "never-cooled kingdom has no window");
+
+// ---- weariness math
+Check(CivilWarWearinessRules.BattlePoints(300, 500, true) > CivilWarWearinessRules.BattlePoints(300, 500, false), "losing tires more than winning");
+Check(CivilWarWearinessRules.BattlePoints(0, 500, false) == 0f, "bloodless win costs nothing");
+Check(CivilWarWearinessRules.BattlePoints(100000, 1, true) <= 9f, "one battle is capped");
+Check(Math.Abs(CivilWarWearinessRules.Decayed(50f, 0, 7) - 50f * (1f - CivilWarWearinessRules.WeeklyDecay)) < 0.01f, "weekly decay matches the rate");
+Check(CivilWarWearinessRules.Decayed(50f, -1, 10) == 50f && CivilWarWearinessRules.Decayed(50f, 10, 10) == 50f, "no baseline / same day keeps value");
+Check(CivilWarWearinessRules.AfterPeace(100f) < 100f, "peace relieves weariness");
+Check(CivilWarWearinessRules.WeeklyStability(10f) == 0 && CivilWarWearinessRules.WeeklyStability(40f) == -1 && CivilWarWearinessRules.WeeklyStability(80f) == -2, "weariness drains stability weekly");
 
 // ---- escalation needs enough refusals; loyal clans rarely join the opposition
 Check(new CivilWarTuning().UltimatumDelayWeeks == 4, "default ultimatum interval is 4 weeks");

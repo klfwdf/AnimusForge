@@ -257,7 +257,8 @@ internal sealed class PayRedressEffect : ICivilWarEffect
 	{
 		Hero king = ctx.Kingdom.Leader;
 		Hero leader = ctx.LeaderClan.Leader;
-		int amount = Math.Min(Math.Max(0, king.Gold / 5), 3000 + 1500 * Math.Max(0, ctx.LeaderClan.Tier));
+		int members = ctx.FactionClans().Count();
+		int amount = CivilWarPoliticalRules.RedressGold(ctx.LeaderClan.Tier, CivilWarRules.Clamp((ctx.Faction?.Grievance ?? 0f) / 100f, 0f, 1f), members, king.Gold, (ctx.Faction?.Id ?? "") + ":" + ctx.Week + ":redress");
 		if (amount > 0) GiveGoldAction.ApplyBetweenCharacters(king, leader, amount, disableNotification: true);
 		foreach (Clan clan in ctx.FactionClans()) CivilWarWorld.ChangeRelation(clan.Leader, king, clan == ctx.LeaderClan ? 10 : 5);
 		ctx.Notes.Add("国王向" + CivilWarWorld.ClanName(ctx.LeaderClan) + "赔偿 " + amount + " 第纳尔");
@@ -279,7 +280,10 @@ internal sealed class GrantPrivilegesEffect : ICivilWarEffect
 		foreach (Clan clan in ctx.FactionClans())
 		{
 			CivilWarWorld.ChangeRelation(clan.Leader, ctx.Kingdom.Leader, 8);
-			try { ChangeClanInfluenceAction.Apply(clan, clan == ctx.LeaderClan ? 80f : 30f); }
+			// Privileges float with the clan's standing (tier) and a stable per-faction jitter instead of a flat grant.
+			float grant = (clan == ctx.LeaderClan ? 40f + 12f * Math.Max(0, clan.Tier) : 15f + 5f * Math.Max(0, clan.Tier))
+				* CivilWarPoliticalRules.Jitter((ctx.Faction?.Id ?? "") + ":" + ctx.Week + ":" + clan.StringId);
+			try { ChangeClanInfluenceAction.Apply(clan, (float)Math.Round(grant)); }
 			catch (Exception ex) { Logger.Log("KingdomCivilWar", "[WARN] influence grant failed: " + ex.Message); throw; }
 		}
 		ctx.Notes.Add("国王承认" + CivilWarWorld.ClanName(ctx.LeaderClan) + "等家族的封地特权");

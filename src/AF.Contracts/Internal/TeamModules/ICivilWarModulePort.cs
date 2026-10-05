@@ -189,6 +189,12 @@ internal interface ICivilWarModulePort
 	void RecordGrievance(Kingdom kingdom, string sourceId, IEnumerable<Clan> clans, float points, int week, string text);
 	void RecordPolicyImposed(Kingdom kingdom, string policyId, int week, string text);
 	bool HasTrackedKingdom(Kingdom kingdom);
+	// A non-faction (stability/coup) rebellion split this kingdom; starts the shared kingdom cooldown.
+	void NoteKingdomRebellion(Kingdom kingdom);
+	// One side of a finished kingdom-vs-kingdom battle; feeds the kingdom's war weariness (0..100).
+	void RecordBattleWeariness(Kingdom kingdom, int casualties, int committedTroops, bool lost);
+	// Current war weariness 0..100 (lazy decay); 0 when the feature is off.
+	float GetWarWeariness(Kingdom kingdom);
 	int GetSettlementLoyaltyDelta(Settlement settlement);
 	bool BlocksNewOffensiveWar(Kingdom kingdom);
 	void ApplyPrestigeDelta(string kingdomId, int delta, string reason);

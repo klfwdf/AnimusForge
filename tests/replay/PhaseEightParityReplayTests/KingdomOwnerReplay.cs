@@ -23,7 +23,8 @@ internal static class KingdomOwnerReplay
         {
             int value = bounds[index], tier = tiers[index];
             Check(Convert.ToInt32(Call(policy, null, "GetKingdomStabilityTier", value)) == tier, "tier boundary " + value);
-            Check((int)Call(policy, null, "GetKingdomStabilityWeeklyBalancingDelta", value) == balance[tier], "weekly balancing");
+            int expectedBalance = tier >= 2 && tier <= 4 ? Math.Sign(50 - Math.Max(0, Math.Min(100, value))) : balance[tier];
+            Check((int)Call(policy, null, "GetKingdomStabilityWeeklyBalancingDelta", value) == expectedBalance, "weekly balancing");
             Check((float)Call(policy, null, "GetKingdomRebellionWeeklyChance", value) == chances[tier], "rebellion chance");
             for (int clans = -1; clans <= 6; clans++)
                 Check((int)Call(policy, null, "GetLowClanCountRoyalDomainLoyaltyAdjustment", value, clans) == loyalty[tier][Math.Max(0, Math.Min(5, clans))], "royal loyalty boundaries");

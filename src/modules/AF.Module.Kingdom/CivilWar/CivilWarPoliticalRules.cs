@@ -19,8 +19,30 @@ internal static class CivilWarPoliticalRules
 	internal const int ExitLeaderRelationLoss = 20, ExitMemberRelationLoss = 10;
 	internal const int FoundRulerRelationLoss = 10;
 	internal const float SuppressLeaveMultiplier = 2.5f;
-	internal static int GoldOffer(int tier) => tier == 1 ? 5000 : tier == 2 ? 10000 : 20000;
-	internal static int InfluenceOffer(int tier) => tier == 1 ? 50 : tier == 2 ? 100 : 200;
+	// Compensation floats with the faction's weight instead of fixed tiers: leader clan tier, faction power and
+	// grievance scale it, tier 1/2/3 multiply it x1/x2/x4, and a stable per-faction-week jitter (±15%) varies it
+	// without changing between the quote and the execution of the same offer.
+	internal static int GoldOffer(int tier, int leaderTier, float factionPower, float grievance01, string jitterKey)
+		=> RoundTo(TierMultiplier(tier) * (1500f + 600f * Math.Max(0, leaderTier)) * Weight(factionPower, grievance01) * Jitter(jitterKey), 100, 500);
+	internal static int InfluenceOffer(int tier, int leaderTier, float factionPower, float grievance01, string jitterKey)
+		=> RoundTo(TierMultiplier(tier) * (25f + 8f * Math.Max(0, leaderTier)) * Weight(factionPower, grievance01) * Jitter(jitterKey), 5, 20);
+	// Redress for an accepted demand: scales with the leader's tier, grievance and member count; never more than a quarter of the royal purse.
+	internal static int RedressGold(int leaderTier, float grievance01, int members, int kingGold, string jitterKey)
+	{
+		float raw = (2000f + 1200f * Math.Max(0, leaderTier)) * (0.7f + 0.6f * CivilWarRules.Clamp(grievance01, 0f, 1f) + 0.1f * Math.Min(5, Math.Max(0, members - 1))) * Jitter(jitterKey);
+		return Math.Min(Math.Max(0, kingGold / 4), RoundTo(raw, 100, 500));
+	}
+	private static float TierMultiplier(int tier) => tier <= 1 ? 1f : tier == 2 ? 2f : 4f;
+	private static float Weight(float factionPower, float grievance01)
+		=> 0.6f + 1.2f * CivilWarRules.Clamp(factionPower, 0f, 1f) + 0.4f * CivilWarRules.Clamp(grievance01, 0f, 1f);
+	private static int RoundTo(float value, int step, int min) => Math.Max(min, (int)Math.Round(value / step) * step);
+	// FNV-1a: string.GetHashCode is not stable across runtimes.
+	internal static float Jitter(string key)
+	{
+		uint hash = 2166136261;
+		foreach (char c in key ?? "") { hash ^= c; hash *= 16777619; }
+		return 0.85f + 0.30f * (hash % 1000u) / 999f;
+	}
 	// Retention uses the existing leave model, scaled by how the new demand fits this clan's own grievances.
 	internal static float DemandRetentionChance(float oldAffinity, float newAffinity, float leaveRaw, CivilWarTuning tuning)
 		=> CivilWarRules.Shape((1f - CivilWarRules.Clamp(leaveRaw, 0f, 1f))

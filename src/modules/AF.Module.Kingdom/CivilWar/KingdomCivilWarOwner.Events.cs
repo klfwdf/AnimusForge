@@ -340,7 +340,10 @@ internal sealed partial class KingdomCivilWarOwner
 			var request = action == CivilWarAction.Negotiate ? best : new CivilWarActionRequest { KingdomId = k.StringId, FactionId = f.Id, Action = action };
 			if (request == null || !Quote(request, k.RulingClan).Allowed) continue;
 			actions.Add(request);
-			weights.Add(CivilWarPoliticalRules.GovernanceWeight(action == CivilWarAction.Negotiate ? "negotiate" : action == CivilWarAction.Suppress ? "suppress" : action == CivilWarAction.ForceDissolve ? "dissolve" : "concede", features, CivilWarCatalog.FindDemand(f.DemandId)));
+			float weight = CivilWarPoliticalRules.GovernanceWeight(action == CivilWarAction.Negotiate ? "negotiate" : action == CivilWarAction.Suppress ? "suppress" : action == CivilWarAction.ForceDissolve ? "dissolve" : "concede", features, CivilWarCatalog.FindDemand(f.DemandId));
+			// Concession window (cooldown plus truce): the king leans towards concession with pre-war factions.
+			if (action == CivilWarAction.Concede) weight *= CivilWarFactionRules.AcceptScale(InConcessionWindow(s, f, tuning));
+			weights.Add(weight);
 		}
 		if (actions.Count == 0 || weights.Sum() <= 0) return false;
 		var selected = actions[CivilWarRules.PickWeighted(weights, tuning, RandomFloat)];

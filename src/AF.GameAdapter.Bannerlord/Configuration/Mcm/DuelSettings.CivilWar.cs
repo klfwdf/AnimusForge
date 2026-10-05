@@ -36,7 +36,7 @@ public partial class DuelSettings
 	[SettingPropertyGroup(CivilWarGroup, GroupOrder = 125)]
 	public int CivilWarCooldownWeeks { get; set; } = 8;
 
-	[SettingPropertyInteger("同时存在的派系上限", 1, 4, "0", Order = 7, RequireRestart = false, HintText = "一个王国内可同时存在的派系数量。每个派系有各自的诉求、不满、最后通牒与内战。默认 3。")]
+	[SettingPropertyInteger("同时存在的派系上限", 1, 4, "0", Order = 7, RequireRestart = false, HintText = "一个王国内可同时存在的派系数量。每个派系有各自的诉求、不满、最后通牒与内战。一个派系起兵后，其余派系进入冷却，暂停递交最后通牒。默认 3。")]
 	[SettingPropertyGroup(CivilWarGroup, GroupOrder = 125)]
 	public int CivilWarMaxFactions { get; set; } = 3;
 

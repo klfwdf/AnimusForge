@@ -66,6 +66,18 @@ internal sealed class CivilWarModuleAdapter : ICivilWarModulePort
 
 	public bool HasTrackedKingdom(Kingdom kingdom) => DuelSettings.IsCivilWarFactionsEnabled() && _owner.HasTrackedKingdom(kingdom);
 
+	public void NoteKingdomRebellion(Kingdom kingdom)
+	{
+		if (DuelSettings.IsCivilWarFactionsEnabled()) _owner.NoteKingdomRebellion(kingdom);
+	}
+
+	public void RecordBattleWeariness(Kingdom kingdom, int casualties, int committedTroops, bool lost)
+	{
+		if (DuelSettings.IsCivilWarFactionsEnabled()) _owner.RecordBattleWeariness(kingdom, casualties, committedTroops, lost);
+	}
+
+	public float GetWarWeariness(Kingdom kingdom) => DuelSettings.IsCivilWarFactionsEnabled() ? _owner.GetWeariness(kingdom) : 0f;
+
 	public int GetSettlementLoyaltyDelta(Settlement settlement) => DuelSettings.IsCivilWarFactionsEnabled() ? _owner.GetOppositionLoyaltyDelta(settlement) : 0;
 
 	public bool BlocksNewOffensiveWar(Kingdom kingdom) => DuelSettings.IsCivilWarFactionsEnabled() && _owner.IsInOpenCivilWar(kingdom?.StringId);

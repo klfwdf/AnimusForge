@@ -105,8 +105,9 @@ internal static class CivilWarCatalog
 
 	// ---------------------------------------------------------------- global rolls
 	// Discontent -> faction formed. Rolled once per week for the most aggrieved clan.
-	internal static readonly CivilWarChance FormFaction = new CivilWarChance(0.10f,
+	internal static readonly CivilWarChance FormFaction = new CivilWarChance(0.05f,
 		W(CivilWarFeature.ClanGrievance, 0.45f),
+		W(CivilWarFeature.Weariness, 0.30f),
 		W(CivilWarFeature.Instability, 0.20f),
 		W(CivilWarFeature.LeaderValor, 0.08f),
 		W(CivilWarFeature.LeaderHonor, -0.08f),
@@ -403,10 +404,11 @@ internal struct CivilWarUltimatumResult
 internal static class CivilWarDecisions
 {
 	// escalationBoost scales the escalation roll on top of the demand's EscalationScale (e.g. >1 after rebels won a civil war).
-	internal static CivilWarUltimatumResult RuleOnUltimatum(CivilWarDemandDef demand, IReadOnlyDictionary<string, float> features, int refusals, CivilWarTuning tuning, Func<float> random, float escalationBoost = 1f)
+	// acceptScale scales the king's accept roll (e.g. >1 while the kingdom is in its post-upheaval cooldown).
+	internal static CivilWarUltimatumResult RuleOnUltimatum(CivilWarDemandDef demand, IReadOnlyDictionary<string, float> features, int refusals, CivilWarTuning tuning, Func<float> random, float escalationBoost = 1f, float acceptScale = 1f)
 	{
 		CivilWarUltimatumResult result = new CivilWarUltimatumResult();
-		result.AcceptRoll = CivilWarRules.Roll("accept:" + demand?.Id, demand?.Accept, features, 1f, tuning, random);
+		result.AcceptRoll = CivilWarRules.Roll("accept:" + demand?.Id, demand?.Accept, features, Math.Max(0f, acceptScale), tuning, random);
 		if (result.AcceptRoll.Passed)
 		{
 			result.Ruling = CivilWarRuling.Accept;
