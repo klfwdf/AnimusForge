@@ -1,3 +1,19 @@
+<a id="civilwar-chunked-save-20261005"></a>
+# 内战新存档分块防溢出（2026-10-05，OFFLINE_VERIFIED_NOT_DEPLOYED）
+
+- 当前授权：只修复后续保存/读取；不修复 save1806.sav，不处理未定位的装备 XML，不部署/推送。工作区 F:/AnimusForge-main，分支 codex/af-main-refactor-continuation-20260831；开始 HEAD d142a9af，意图检查点 ca37d66。
+- 已确认风险：内战键 `_af_kingdom_civil_war_v2` 的 JSON 33,365 UTF-8 字节，加 4 字节头后外层 Int16 变为 -32,167。修复仅接入既有 CampaignSaveChunkHelper（每块 12,000 字节），保持键名、JSON Version=4 和业务模块状态不变；只在保存/加载时线性拆分/拼接，不增加 Tick 工作。
+- 修改范围：MyBehavior.SyncData 的内战读写两处；既有 PersistenceChunkReplayTests 的入口、新内战回归测试和真实游戏字符串归档格式探针。其他作者的 CoupCaptivityBehavior/CoupRebellionBridge/Coup.RuntimeProbe 修改不纳入本任务提交、不回滚。
+- 必需退出门：未修复入口回归失败；修复后超长/多字节/重复保存/正常旧格式回放通过；实际 1.4.8 SaveSystem 对合成分块数据解析通过（未分块对照抛 OverflowException）；原入口双 API+Bootstrap 构建与接缝门禁通过。游戏内新保存/重启加载尚 NOT_RUN，不冒充实机验收。
+- 本地证据：`.codex_tmp/civilwar-save-fix-20261005/`，不含玩家对话/完整存档数据。
+- 已完成产品/测试提交 `4b4d6167`：`src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.cs:14753-14754,14786-14787`（SyncData 保存/加载两处）；`src/AF.Persistence/CampaignSaveChunkHelper.cs:45-69` 为复用的原助手，未修改。仍由 CivilWarModuleAdapter/KingdomCivilWarOwner 拥有 JSON 与业务状态，没有新增 Tick、全量王国扫描或线程任务。旧键仅保留 <=240 字节的小值，超长全文不会重复内联；正常旧格式可读取后重存，不修复不可读取的坏档。
+- 红/绿证据：未改宿主时新回归在 host wiring 明确失败；改后 `PersistenceChunkReplayTests` 编译生产助手并用 MemoryDataStore 回放，原8项通过；内战11组数据大小/UTF-8往返、33,365字节三块、正常旧键读取重存、大转小/空、缺块闭合通过，两项源码接线反例通过。接线检查是源码层、IDataStore 是 fake，不等于完整战役加载；旧迁移fixture另10例通过（模型层）。
+- 真实格式证据：`VerifyCivilWarArchive.ps1` 只读取安装于 `F:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord` 的 1.4.8 SaveSystem/Library，对合成助手存储构造游戏同格式字符串归档。不分块的33,365字节对照抛 `System.OverflowException`；分块归档9个字符串条目被真实解析器成功读取且逐项一致，不启动Game/Campaign。
+- 原构建入口 `scripts/build/build_single_module.ps1 -ProjectRoot F:/AnimusForge-main -BannerlordRoot "F:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord" -Configuration Debug`（未传Stage/Deploy）返回0。实际引用1.3=`_deps_auto` v1.3.15.110062；1.4=`.tmp/build_check/1.4` v1.4.6.115628；两实现+Bootstrap均0错误，双最终DLL接缝门禁PASS。编译候选包括现场其他作者未提交的Coup改动；其源码hash在receipt单独标识，不纳入本任务提交，不能把编译引用1.4.6写成完整1.4.8实机通过。
+- NOT_RUN：游戏内新保存/退出重启读取、72模组组合、截图旧civilian属性的具体XML来源；未部署/打包/推送。本机旧安装不会自动获得本补丁。`save1806.sav` SHA256仍为 `f854a37299c0cc304b6aec8c570d3366bf84bb7e746ed41c180184229b39ff84`。
+- 产物/证据：`.codex_tmp/civilwar-save-fix-20261005/receipt.json` 与红/绿、actual-game-archive、migration-contract、build-dual日志；编译DLL在 `bin/Debug/single_module_artifacts/{versions/1.3,versions/1.4,bootstrap}`。源码/测试/候选hash绑定见receipt；回滚仅 focused `git revert 4b4d6167`，不要reset或回滚其他作者文件。
+
+
 <a id="native-input-focus-pause-20261005"></a>
 # 原版AI输入定位与失焦暂停显示回写（2026-10-05，OFFLINE_VERIFIED）
 
