@@ -111,6 +111,31 @@ class LayoutContracts(unittest.TestCase):
             self.assertEqual(text.get('Command.LinkAlternateClick'),'ExecuteOpenEncyclopediaLink')
             self.assertEqual(text.get('DoNotAcceptEvents'),'false')
 
+    def test_minor_typography_matches_approved_pen_design(self):
+        section=next(n for n in self.b.iter('Widget') if n.get('IsVisible')=='@HasMinors')
+        title=next(n for n in section.iter('TextWidget') if n.get('Text')=='其 余 消 息')
+        self.assertEqual(title.get('Brush.FontSize'),'20')
+        self.assertEqual(title.get('SuggestedHeight'),'30')
+        panel=by_id(section,'MinorScrollPanel')
+        scrollbar=by_id(section,'MinorScrollbar')
+        self.assertGreaterEqual(int(panel.get('MarginTop')),int(title.get('SuggestedHeight'))+2)
+        for attr in ['MarginTop','SuggestedHeight']:
+            self.assertEqual(panel.get(attr),scrollbar.get(attr))
+        self.assertEqual(section.get('SuggestedHeight'),str(int(panel.get('MarginTop'))+int(panel.get('SuggestedHeight'))))
+        labels=[n for n in section.iter('TextWidget') if n.get('Text')=='@TagText']
+        bodies=[n for n in section.iter('RichTextWidget') if n.get('Text')=='@Text']
+        self.assertEqual(len(labels),2); self.assertEqual(len(bodies),2)
+        for label,body in zip(labels,bodies):
+            self.assertEqual(label.get('Brush.FontSize'),'18')
+            self.assertEqual(label.get('SuggestedWidth'),'72')
+            self.assertEqual(label.get('SuggestedHeight'),'26')
+            self.assertEqual(body.get('Brush.FontSize'),'18')
+            self.assertEqual(body.get('MinHeight'),'26')
+            self.assertEqual(body.get('HeightSizePolicy'),'CoverChildren')
+            self.assertEqual(body.get('CanBreakWords'),'true')
+            self.assertEqual(parent(self.b,parent(self.b,label)).get('MarginBottom'),'6')
+            self.assertGreater(int(body.get('Brush.FontSize')),13)
+
     def test_minors_are_bounded_scrollable_without_pagination(self):
         section=next(n for n in self.b.iter('Widget') if n.get('IsVisible')=='@HasMinors')
         panel=by_id(section,'MinorScrollPanel')

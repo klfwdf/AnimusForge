@@ -1,3 +1,13 @@
+<a id="bulletin-minor-font-20261005"></a>
+# 快报其余消息字号对齐已确认 Pen 稿（2026-10-05，RESOURCE_OFFLINE_VERIFIED）
+
+- 用户确认 Pen 方案后要求“就这样改”；工作区 `F:/AnimusForge-main`，实际分支 `codex/af-main-refactor-continuation-20260831`，开始 HEAD `03cb3f5f`。本次只改共享快报 prefab、对应现有测试与当前记录；未修改/纳入既有 untracked 文件。开始 XML 的 Git 实质差异为空（仅工作副本行尾状态）。
+- 真实消费者 `src/AF.GameAdapter.Bannerlord/UI/Weekly/DevWeeklyReportPopup.cs:48-55` 以 `WorldBulletinPanel` 加载共享布局；content-map 唯一映射到 `GUI/Prefabs/WorldBulletinPanel.xml`。`content/modules/AF.Module.Weekly/GUI/Prefabs/WorldBulletinPanel.xml:122-158` 的 `@HasMinors` 区域：左右栏正文与朱标13→18号，标题16→20号，项间距4→6；标签53×19→72×26、正文最小高26、标题高30。区域上移3像素并增高3像素，滚动面板/滚动条顶部同步29→32，保持滚动内容绝对位置、68高视口、百科双击命令与封存按钮边界不变。其他区域保持。
+- 性能与边界：只修改静态资源参数；既有打开/布局时测量与换行继续使用原生控件，未增加Tick、扫描、反射、轮询、锁、LLM或存档/API修改。保留长消息自动增高和有界滚动，不截断内容换取可读性。
+- `python tests/content/BulletinCourierLayoutTests/run.py` 全16项PASS，新增 `test_minor_typography_matches_approved_pen_design`（同文件114-137行）锁定字号、标题/视口间距、标签宽高、自动换行及间距；原有双API源码滚动契约、内容映射、全XML解析、左右链接和缩放边界继续PASS。`git diff --check` PASS。本地日志 `artifacts/bulletin-minor-font-20261005/layout.log`；收据同目录 `receipt.json` 绑定提交与文件hash。
+- Pen两稿视觉检查已通过；产品原生Gauntlet/实机、DLL双版本重编译、Stage、部署、打包和推送 NOT_RUN。本次纯共享XML，不变更API或C#，不借旧DLL证据宣称新布局已安装；仍须用户另行授权部署才能游戏内验收。
+- 回滚：仅对本次独立提交做 focused `git revert`，不reset其他作者；实际提交ID见本地收据与Git日志。本条只补充字号，不替代此前快报实现/部署证据，不授予新的覆盖或发布权限。
+
 <a id="coup-memory-seam-gate-20261005"></a>
 # 政变记忆强类型接缝与发布门禁（2026-10-05，OFFLINE_VERIFIED）
 
