@@ -130,6 +130,12 @@ public partial class DuelBehavior : CampaignBehaviorBase
 
 		private float _participantDeadline = -1f;
 
+		private DeploymentMissionController _deploymentController;
+
+		private bool _deploymentCompleted;
+
+		private float _nextDeploymentCheckTime;
+
 		public WildernessDuelBattleMissionLogic(WildernessDuelBattleRuntime runtime)
 		{
 			_runtime = runtime;
@@ -212,10 +218,9 @@ public partial class DuelBehavior : CampaignBehaviorBase
 			{
 				EnsureMainHeroHealthForWildernessDuel("mission.AfterStart");
 				EnsureMainAgentHealthForWildernessDuel("mission.AfterStart");
-				if (base.Mission != null && base.Mission.Mode == MissionMode.Deployment)
-				{
-					base.Mission.SetMissionMode(MissionMode.Battle, atStart: true);
-				}
+				// MissionState initializes the screen/input only after all AfterStart callbacks.
+				// Native deployment also spawns the participants on a later mission tick.
+				_deploymentController = base.Mission?.GetMissionBehavior<DeploymentMissionController>();
 			}
 			catch (Exception ex)
 			{
@@ -313,11 +318,25 @@ public partial class DuelBehavior : CampaignBehaviorBase
 			{
 				_participantDeadline = base.Mission.CurrentTime + 30f;
 			}
-			if ((base.Mission.MainAgent ?? Agent.Main) == null
+			if (!_deploymentCompleted && base.Mission.CurrentTime >= _nextDeploymentCheckTime)
+			{
+				// Bounded startup polling only: no scans/reflection and no checks after completion.
+				_nextDeploymentCheckTime = base.Mission.CurrentTime + 0.1f;
+				_deploymentCompleted = TryCompleteNativeDeployment();
+				if (_abortRequested)
+				{
+					return;
+				}
+			}
+			if (!_deploymentCompleted
+				|| (base.Mission.MainAgent ?? Agent.Main) == null
 				|| FindTargetAgent() == null)
 			{
 				if (base.Mission.CurrentTime >= _participantDeadline)
 				{
+					Logger.Log("DuelBehavior", "[WildernessDuel][ERROR] Startup timeout: deploymentCompleted=" + _deploymentCompleted
+						+ ", mode=" + base.Mission.Mode + ", inputReady=" + (base.Mission.InputManager != null)
+						+ ", teamSetupOver=" + (_deploymentController?.TeamSetupOver ?? false));
 					if (_runtime.DuelDispatchContext != null)
 					{
 						MarkDetachedDuelDispatchUnknownAfterStart(
@@ -371,6 +390,58 @@ public partial class DuelBehavior : CampaignBehaviorBase
 					Logger.Log("DuelBehavior", "[WildernessDuel][ERROR] EndMission: " + ex);
 				}
 				_leaveTime = -1f;
+			}
+		}
+
+		private bool TryCompleteNativeDeployment()
+		{
+			if (base.Mission.InputManager == null)
+			{
+				return false;
+			}
+			// Small battles can complete deployment automatically in the native controller.
+			if (base.Mission.Mode == MissionMode.Battle)
+			{
+				_deploymentController = null;
+				return true;
+			}
+			if (base.Mission.Mode != MissionMode.Deployment || _deploymentController?.TeamSetupOver != true)
+			{
+				return false;
+			}
+			try
+			{
+				// Do not wait for MainAgent here: 1.4.7 assigns player control to InitialPlayerAgent
+				// in FinishDeployment. TeamSetupOver already guarantees native spawning completed.
+				// This also restores visibility/AI and removes the handler that restores Battle mode.
+				_deploymentController.FinishDeployment();
+				_deploymentController = null;
+				EnsureMainAgentHealthForWildernessDuel("mission.deployment_completed");
+				LogWildernessDuelDiagnostic("vanilla_behavior.deployment_completed", _runtime.DiagnosticId, _runtime.TargetHero);
+				return true;
+			}
+			catch (Exception ex)
+			{
+				// Do not retry partially applied native callbacks or settle a failed startup.
+				if (_runtime.DuelDispatchContext != null)
+				{
+					MarkDetachedDuelDispatchUnknownAfterStart(_runtime.DuelDispatchContext, "wilderness_deployment_exception");
+				}
+				else
+				{
+					MarkDuelOutcomeUnknown(_runtime.DuelOutcomeStart, "wilderness_deployment_exception", "wilderness_mission_tick");
+				}
+				_runtime.DuelOutcomeStart = null;
+				_runtime.AbortRequested = true;
+				_abortRequested = true;
+				_arenaMissionLeaveRequested = true;
+				_arenaMissionLeaveReadyTime = 0f;
+				if (Instance != null)
+				{
+					Instance._isDuelActive = false;
+				}
+				Logger.Log("DuelBehavior", "[WildernessDuel][ERROR] Native deployment completion failed: " + ex);
+				return false;
 			}
 		}
 
