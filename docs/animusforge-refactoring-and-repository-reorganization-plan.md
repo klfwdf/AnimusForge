@@ -7245,3 +7245,10 @@ R2计划交付门槛：已给固定技术路线、真实来源与目标、写入
 - 证据 `artifacts/illustrator-native-export-20261005/receipt.json`、`unified-build.log`、`compiled-settings.cs.txt`；候选仍为统一模块 `bin/Debug/single_module_artifacts/versions/1.3|1.4/AnimusForge.dll` 与 `bootstrap/AnimusForge.Bootstrap.dll`，hash绑定在收据。
 - NOT_RUN：失败玩家/GPU/真实PNG、MCM实机及旧配置、切屏/切场景/取消实机；未Stage/覆盖游戏/推送/打包。此产品提供定位证据和有限更长等待，不宣称修复原生导出未执行根因。
 - 回滚：定向 `git revert 106e4760`；检查点 `9b8f74ce`。不hard reset或回滚并行作者，无本轮安装回滚需求。
+<a id="remote-main-fusion-illustrator-deploy-20261005"></a>
+## 远端main融合、重新编译与单模块部署（2026-10-05，ACTIVE）
+
+- 最新用户授权：先查远端，有新增则拉取融合，再编译部署；未授权push/打包/启动游戏。之前只完成预检，未开始覆盖。
+- 实际工作区 F:/AnimusForge-main，当前分支 codex/af-main-refactor-continuation-20260831，融合前HEAD 0b2ef507；git fetch origin后当前upstream无新增，origin/main新增25d2670e（野外决斗原生部署完成时机，3个文件）。保留本地Illustrator诊断/MCM及其他作者提交，以普通merge融合，不rebase/reset。
+- 退出门：确认合并结果与双方提交可达；原统一入口双API+Bootstrap编译、最终候选接缝门禁及决斗生产验证；原Stage管理覆盖单模块并复核安装hash/XML/Recovery；实机立绘/全景/决斗仍单列NOT_RUN。
+- 已确认游戏进程0，目标 F:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord/Modules/AnimusForge；继续部署前再核对运行进程。原事务Recovery机制保留，不覆盖未列入Stage的用户文件、不触碰游戏原版DLL。
