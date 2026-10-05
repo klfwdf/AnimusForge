@@ -149,6 +149,8 @@ public sealed partial class AnimusForgeNativeConversationOverlay
 			}
 			if (temporaryUiHandled)
 			{
+                // Native focus-loss pause must not park completed reply callbacks.
+                _activeOverlay.ProcessInterruptedPresentation();
 				return;
 			}
 			if (!ReferenceEquals(_activeOverlay._screen, topScreen))
@@ -311,6 +313,7 @@ public sealed partial class AnimusForgeNativeConversationOverlay
                 _isSubmitting = false;
                 StopWaitingDotsAnimation();
                 _submitPresentationScope = null;
+                ClearInterruptedPresentation();
                 _npcOpeningAutoStarted = false;
                 _dataSource.SetBusy(false);
                 ConversationHelper.EndStreaming(this);
@@ -532,6 +535,7 @@ public sealed partial class AnimusForgeNativeConversationOverlay
 		{
 			RestoreNativeConversationInputAfterOrdinaryMode(forceAnswerRestore: true);
 		}
+        RestoreInterruptedPresentation();
 		Logger.LogTrace("NativeConversationOverlay", "Temporary system UI interruption ended; restored overlay state.");
 	}
 
@@ -542,6 +546,8 @@ public sealed partial class AnimusForgeNativeConversationOverlay
 			return;
 		}
 		_postRestoreForceRestoreTicks--;
+        if (_dataSource.IsCustomAnswerVisible)
+            ReapplyInterruptedDisplayText();
 		if (!_dataSource.IsCustomAnswerVisible)
 		{
 			RestoreNativeConversationInputAfterOrdinaryMode(forceAnswerRestore: true);
@@ -736,12 +742,13 @@ public sealed partial class AnimusForgeNativeConversationOverlay
 
 	private void FocusInputIfVisible()
 	{
-		if (_isClosed || !_dataSource.IsCustomAnswerVisible)
+		if (_isClosed || _temporarySystemUiActive || !_dataSource.IsCustomAnswerVisible)
 		{
 			return;
 		}
 		try
 		{
+            if (InformationManager.IsAnyInquiryActive()) return;
 			_layer.InputRestrictions.SetInputRestrictions(true, InputUsageMask.All);
 			_layer.IsFocusLayer = true;
 			ScreenManager.TrySetFocus(_layer);
@@ -990,7 +997,7 @@ public sealed partial class AnimusForgeNativeConversationOverlay
 						{
 							streamingLinkDisplaySession = EncyclopediaEntityLinkFormatter.CreateStreamingDisplaySession();
 						}
-						ConversationHelper.UpdateDialogText(streamingLinkDisplaySession.FormatStreamingText(partial, streamLinkTargetHero, streamLinkTargetCharacter));
+						SetSubmissionDisplayText(generation, streamingLinkDisplaySession.FormatStreamingText(partial, streamLinkTargetHero, streamLinkTargetCharacter));
 					}
 				});
 			}, originalDialogText, delegate(string npcName)
@@ -1024,7 +1031,7 @@ public sealed partial class AnimusForgeNativeConversationOverlay
 					completedDisplayReply = streamingLinkDisplaySession != null
 						? streamingLinkDisplaySession.FormatStreamingText(mainReplyBeforePostprocess, mainReplyTargetHero, mainReplyTargetCharacter)
 						: ShoutBehavior.FormatNativeConversationDisplayTextForExternal(mainReplyBeforePostprocess, mainReplyTargetHero, mainReplyTargetCharacter);
-					ConversationHelper.UpdateDialogText(completedDisplayReply);
+					SetSubmissionDisplayText(generation, completedDisplayReply);
 				});
 			}, npcInitiatedOpening: true);
 			string completedReply = reply;
@@ -1042,7 +1049,7 @@ public sealed partial class AnimusForgeNativeConversationOverlay
 					suppressReadyNotice = true;
 					receivedVisibleText = false;
 					StopWaitingDotsAnimation(generation);
-					ConversationHelper.UpdateDialogText(originalDialogText ?? "");
+					SetSubmissionDisplayText(generation, originalDialogText ?? "");
 					return;
 				}
 				bool finalReplyMatchesMainReply = !suppressVisibleStreamingForTts
@@ -1056,7 +1063,7 @@ public sealed partial class AnimusForgeNativeConversationOverlay
 					completedDisplayReply = ShoutBehavior.FormatNativeConversationDisplayTextForExternal(completedReply);
 					if (!suppressVisibleStreamingForTts || !ConversationHelper.IsTypewriterActive)
 					{
-						ConversationHelper.UpdateDialogText(completedDisplayReply);
+						SetSubmissionDisplayText(generation, completedDisplayReply);
 					}
 					else
 					{
@@ -1066,7 +1073,7 @@ public sealed partial class AnimusForgeNativeConversationOverlay
 				}
 				else if (IsSubmitGenerationActive(generation) && !receivedVisibleText && !finalReplyMatchesMainReply)
 				{
-					ConversationHelper.UpdateDialogText(originalDialogText ?? "");
+					SetSubmissionDisplayText(generation, originalDialogText ?? "");
 				}
 			});
 			if (suppressVisibleStreamingForTts && IsSubmitGenerationCurrent(generation))
@@ -1079,7 +1086,7 @@ public sealed partial class AnimusForgeNativeConversationOverlay
 						return;
 					}
 					// This one post-TTS update is intentionally not a rescan; it uses the completed UI-only RichText copy.
-					ConversationHelper.UpdateDialogText(completedDisplayReply);
+					SetSubmissionDisplayText(generation, completedDisplayReply);
 				});
 			}
 		}
@@ -1089,7 +1096,7 @@ public sealed partial class AnimusForgeNativeConversationOverlay
 			RunNativePresentationCallback(generation, () =>
 			{
 				if (!IsSubmitGenerationCurrent(generation)) return;
-				ConversationHelper.UpdateDialogText(originalDialogText ?? "");
+				SetSubmissionDisplayText(generation, originalDialogText ?? "");
 				_npcOpeningAutoStarted = false;
 				Logger.Log("NativeConversationOverlay", "Native admission rejected: " + ex.ReasonCode);
 			});
@@ -1101,7 +1108,7 @@ public sealed partial class AnimusForgeNativeConversationOverlay
 			RunNativePresentationCallback(generation, () =>
 			{
 				Logger.Log("NativeConversationOverlay", "Action dispatch incomplete: " + ex.ErrorCode);
-				LlmRetryPrompt.ShowFailurePopup(ex.ErrorCode == "native.memory.commit_unconfirmed" ? "AnimusForge 记忆记录未确认" : "AnimusForge 动作处理未完成", ex.Message);
+				RunVisibleUiAction(generation, () => LlmRetryPrompt.ShowFailurePopup(ex.ErrorCode == "native.memory.commit_unconfirmed" ? "AnimusForge 记忆记录未确认" : "AnimusForge 动作处理未完成", ex.Message));
 			});
 		}
 		catch (Exception ex)
@@ -1111,12 +1118,12 @@ public sealed partial class AnimusForgeNativeConversationOverlay
 				StopWaitingDotsAnimation(generation);
 				if (IsSubmitGenerationActive(generation) && !receivedVisibleText)
 				{
-					ConversationHelper.UpdateDialogText(originalDialogText ?? "");
+					SetSubmissionDisplayText(generation, originalDialogText ?? "");
 				}
 				Logger.Log("NativeConversationOverlay", "[ERROR] NPC initiated opening failed: " + ex);
 				try
 				{
-					LlmRetryPrompt.ShowFailurePopup("AnimusForge NPC主动开口失败", ex.Message);
+					RunVisibleUiAction(generation, () => LlmRetryPrompt.ShowFailurePopup("AnimusForge NPC主动开口失败", ex.Message));
 				}
 				catch
 				{
@@ -1130,6 +1137,8 @@ public sealed partial class AnimusForgeNativeConversationOverlay
 				StopWaitingDotsAnimation(generation);
 				if (CompleteNativeSubmissionPresentation(generation))
 				{
+                    RunVisibleUiAction(generation, delegate
+                    {
 					if (_dataSource.IsCustomAnswerVisible)
 					{
 						if (!suppressReadyNotice)
@@ -1148,7 +1157,8 @@ public sealed partial class AnimusForgeNativeConversationOverlay
 					{
 						ShowNativeConversationNpcOpeningPreprocessRetryInquiry(generation);
 					}
-				}
+                    });
+                }
 			});
 		}
 	}
@@ -1203,7 +1213,7 @@ public sealed partial class AnimusForgeNativeConversationOverlay
 						{
 							streamingLinkDisplaySession = EncyclopediaEntityLinkFormatter.CreateStreamingDisplaySession();
 						}
-						ConversationHelper.UpdateDialogText(streamingLinkDisplaySession.FormatStreamingText(partial, streamLinkTargetHero, streamLinkTargetCharacter));
+						SetSubmissionDisplayText(generation, streamingLinkDisplaySession.FormatStreamingText(partial, streamLinkTargetHero, streamLinkTargetCharacter));
 					}
 				});
 			}, originalDialogText, delegate(string npcName)
@@ -1237,7 +1247,7 @@ public sealed partial class AnimusForgeNativeConversationOverlay
 					completedDisplayReply = streamingLinkDisplaySession != null
 						? streamingLinkDisplaySession.FormatStreamingText(mainReplyBeforePostprocess, mainReplyTargetHero, mainReplyTargetCharacter)
 						: ShoutBehavior.FormatNativeConversationDisplayTextForExternal(mainReplyBeforePostprocess, mainReplyTargetHero, mainReplyTargetCharacter);
-					ConversationHelper.UpdateDialogText(completedDisplayReply);
+					SetSubmissionDisplayText(generation, completedDisplayReply);
 				});
 			}, npcInitiatedOpening: false);
 			string completedReply = reply;
@@ -1255,7 +1265,7 @@ public sealed partial class AnimusForgeNativeConversationOverlay
 					suppressReadyNotice = true;
 					receivedVisibleText = false;
 					StopWaitingDotsAnimation(generation);
-					ConversationHelper.UpdateDialogText(originalDialogText ?? "");
+					SetSubmissionDisplayText(generation, originalDialogText ?? "");
 					_dataSource.InputText = text;
 					return;
 				}
@@ -1270,7 +1280,7 @@ public sealed partial class AnimusForgeNativeConversationOverlay
 					completedDisplayReply = ShoutBehavior.FormatNativeConversationDisplayTextForExternal(completedReply);
 					if (!suppressVisibleStreamingForTts || !ConversationHelper.IsTypewriterActive)
 					{
-						ConversationHelper.UpdateDialogText(completedDisplayReply);
+						SetSubmissionDisplayText(generation, completedDisplayReply);
 					}
 					else
 					{
@@ -1280,7 +1290,7 @@ public sealed partial class AnimusForgeNativeConversationOverlay
 				}
 				else if (IsSubmitGenerationActive(generation) && !receivedVisibleText && !finalReplyMatchesMainReply)
 				{
-					ConversationHelper.UpdateDialogText(originalDialogText ?? "");
+					SetSubmissionDisplayText(generation, originalDialogText ?? "");
 				}
 			});
 			if (suppressVisibleStreamingForTts && IsSubmitGenerationCurrent(generation))
@@ -1293,7 +1303,7 @@ public sealed partial class AnimusForgeNativeConversationOverlay
 						return;
 					}
 					// This one post-TTS update is intentionally not a rescan; it uses the completed UI-only RichText copy.
-					ConversationHelper.UpdateDialogText(completedDisplayReply);
+					SetSubmissionDisplayText(generation, completedDisplayReply);
 				});
 			}
 		}
@@ -1303,7 +1313,7 @@ public sealed partial class AnimusForgeNativeConversationOverlay
 			RunNativePresentationCallback(generation, () =>
 			{
 				if (!IsSubmitGenerationCurrent(generation)) return;
-				ConversationHelper.UpdateDialogText(originalDialogText ?? "");
+				SetSubmissionDisplayText(generation, originalDialogText ?? "");
 				_dataSource.InputText = text;
 				Logger.Log("NativeConversationOverlay", "Native admission rejected: " + ex.ReasonCode);
 			});
@@ -1315,7 +1325,7 @@ public sealed partial class AnimusForgeNativeConversationOverlay
 			RunNativePresentationCallback(generation, () =>
 			{
 				Logger.Log("NativeConversationOverlay", "Action dispatch incomplete: " + ex.ErrorCode);
-				LlmRetryPrompt.ShowFailurePopup(ex.ErrorCode == "native.memory.commit_unconfirmed" ? "AnimusForge 记忆记录未确认" : "AnimusForge 动作处理未完成", ex.Message);
+				RunVisibleUiAction(generation, () => LlmRetryPrompt.ShowFailurePopup(ex.ErrorCode == "native.memory.commit_unconfirmed" ? "AnimusForge 记忆记录未确认" : "AnimusForge 动作处理未完成", ex.Message));
 			});
 		}
 		catch (Exception ex)
@@ -1325,12 +1335,12 @@ public sealed partial class AnimusForgeNativeConversationOverlay
 				StopWaitingDotsAnimation(generation);
 				if (IsSubmitGenerationActive(generation) && !receivedVisibleText)
 				{
-					ConversationHelper.UpdateDialogText(originalDialogText ?? "");
+					SetSubmissionDisplayText(generation, originalDialogText ?? "");
 				}
 				Logger.Log("NativeConversationOverlay", "[ERROR] Submit failed: " + ex);
 				try
 				{
-					LlmRetryPrompt.ShowFailurePopup("AnimusForge 自由对话提交失败", ex.Message);
+					RunVisibleUiAction(generation, () => LlmRetryPrompt.ShowFailurePopup("AnimusForge 自由对话提交失败", ex.Message));
 				}
 				catch
 				{
@@ -1344,6 +1354,8 @@ public sealed partial class AnimusForgeNativeConversationOverlay
 				StopWaitingDotsAnimation(generation);
 				if (CompleteNativeSubmissionPresentation(generation))
 				{
+                    RunVisibleUiAction(generation, delegate
+                    {
 					if (_dataSource.IsCustomAnswerVisible)
 					{
 						if (!suppressReadyNotice)
@@ -1362,7 +1374,8 @@ public sealed partial class AnimusForgeNativeConversationOverlay
 					{
 						ShowNativeConversationPreprocessRetryInquiry(text, generation);
 					}
-				}
+                    });
+                }
 			});
 		}
 	}
@@ -1661,6 +1674,7 @@ public sealed partial class AnimusForgeNativeConversationOverlay
         _modeText.Reset();
         _modeTextScope = null;
 		_submitPresentationScope = null;
+        ClearInterruptedPresentation();
 		StopWaitingDotsAnimation();
 		ClearPendingPostprocessNotice();
 		_submitGeneration++;
