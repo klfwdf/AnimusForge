@@ -242,6 +242,14 @@ internal static class StartupPatchComposition
 			}
 			try
 			{
+				PlayerCaptivityGhostSafePatch.EnsurePatched(harmony);
+			}
+			catch (Exception exCaptivityGhost)
+			{
+				Logger.LogTrace("SubModule", ">>> PlayerCaptivityGhostSafePatch init failed: " + exCaptivityGhost.Message);
+			}
+			try
+			{
 				AnimusForgeMobilePartyAiSafetyPatch.EnsurePatched(harmony);
 			}
 			catch (Exception ex8af)
