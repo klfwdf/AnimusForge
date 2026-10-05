@@ -1,3 +1,10 @@
+# 当前交接：原版AI输入定位与失焦暂停回复显示（2026-10-05，OFFLINE_VERIFIED）
+
+- 最新两个用户问题已合并实施；本地产品/测试`17047108`，检查点`488e9e31`。原版AI输入改回左侧玩家选项区域；暂停临时UI时继续主线程显示完成、清等待点，恢复按请求/NPC范围重绘并延后焦点/弹窗，失焦暂停设置保留，不重放网络/动作/记忆。
+- 专项生产回放30、四个编译后运行负控、XML绑定/5宽高比投影、旧UI生命周期95、双API命中各49、场景/音频100通过。原入口Debug 1.3/1.4+Bootstrap及两候选接缝门禁通过；实机Alt-Tab/原生渲染/真实LLM/TTS/玩家旧档仍NOT_RUN。
+- [唯一主台账、源码坐标与回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#native-input-focus-pause-20261005)；本地证据`artifacts/native-input-focus-pause-20261005/receipt.json`。回滚`git revert 17047108`，不回滚并行作者显示owner清理`117a402b`及其他改动。
+- 未Stage/覆盖游戏/推送/打包；新候选在`bin/Debug/single_module_artifacts/versions/1.3|1.4/AnimusForge.dll`，当前安装仍旧版本。实机验收须另获原流程覆盖授权并重启；下方历史部署不延续授权。
+
 ## 场景冲突审判交接与旧台词残留已修复（2026-10-05，OFFLINE_VERIFIED）
 
 - 产品`117a402b`：真实对话结束/VM更换/Overlay拥有者收尾清理旧显示；同国同定居点冲突交给原版审判后不再离城补执行退国/敌对。犯罪/信任和未审判逃离后果保留，旧存档键不变；模糊城外旧档/已退国玩家不自动恢复。
