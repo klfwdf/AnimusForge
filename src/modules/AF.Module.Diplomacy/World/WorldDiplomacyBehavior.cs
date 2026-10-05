@@ -1757,15 +1757,17 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 			return true;
 		}
 	}
-	private static int GetRoundIntervalDays()
+	private static int GetOrdinaryRoundLimit()
 	{
 		try
 		{
-			return Math.Max(1, Math.Min(14, DuelSettings.GetSettings()?.WorldDiplomacyRoundIntervalDays ?? 3));
+			return Math.Max(1, Math.Min(DuelSettings.WorldDiplomacyMaxConcurrentOrdinaryRoundsMax,
+                DuelSettings.GetSettings()?.WorldDiplomacyMaxConcurrentOrdinaryRounds
+                ?? DuelSettings.DefaultWorldDiplomacyMaxConcurrentOrdinaryRounds));
 		}
 		catch
 		{
-			return 3;
+			return DuelSettings.DefaultWorldDiplomacyMaxConcurrentOrdinaryRounds;
 		}
 	}
 	private static int GetActivityLevel()
