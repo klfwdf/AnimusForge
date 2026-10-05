@@ -104,9 +104,7 @@ public partial class MyBehavior
 			_memorySummaryQueue?.RemoveAll(x => x != null && x.GameDayIndex == gameDayIndex
 				&& string.Equals(NormalizeMemoryHeroId(x.HeroId), memoryId, StringComparison.OrdinalIgnoreCase));
 		}
-		// Same lookup as the host's other memory-id resolution: indexed Find first, full scan only on a case mismatch.
-		Hero hero = IsNonHeroMemoryId(memoryId) ? null
-			: Hero.Find(memoryId) ?? Hero.FindFirst(x => x != null && string.Equals(GetMemoryHeroId(x), memoryId, StringComparison.OrdinalIgnoreCase));
+		Hero hero = ResolveDialogueHistoryEditHero(memoryId);
 		if (hero != null)
 		{
 			ShoutBehavior.SyncNativeConversationSessionHistoryForDailyMemoryEditExternal(hero, hero.CharacterObject, hero.Name?.ToString(), gameDayIndex,
