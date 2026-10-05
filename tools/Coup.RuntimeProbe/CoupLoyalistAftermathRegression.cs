@@ -10,6 +10,7 @@ internal static class CoupLoyalistAftermathRegression
 {
     private const BindingFlags All = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance;
     private static object _oldKing, _newKing, _clans, _playerClan;
+    private static object _campaign, _campaignObjects, _kingdomManager;
     private static readonly Dictionary<object, object> Leaders = new Dictionary<object, object>();
     private static readonly Dictionary<object, int[]> Relations = new Dictionary<object, int[]>();
     private static readonly HashSet<object> Eligible = new HashSet<object>();
@@ -38,8 +39,25 @@ internal static class CoupLoyalistAftermathRegression
             managerType.GetMethod("RegisterType").MakeGenericMethod(heroType).Invoke(objects, new object[] { "Hero", "Heroes", (uint)1, false, false });
             _oldKing = Bare(heroType); _newKing = Bare(heroType);
             heroType.GetProperty("StringId").SetValue(_oldKing, "probe_old_king");
-            managerType.GetMethod("RegisterObject").MakeGenericMethod(heroType).Invoke(objects, new[] { _oldKing });
+            heroType.GetProperty("StringId").SetValue(_newKing, "probe_new_king");
+            Type campaignType = AccessTools.TypeByName("TaleWorlds.CampaignSystem.Campaign");
+            Type campaignManagerType = AccessTools.TypeByName("TaleWorlds.CampaignSystem.CampaignObjectManager");
+            _campaign = Bare(campaignType);
+            _campaignObjects = Activator.CreateInstance(campaignManagerType);
+            campaignManagerType.GetMethod("InitializeManagerObjectLists", All).Invoke(_campaignObjects, null);
+            Patch(fixture, AccessTools.PropertyGetter(campaignType, "Current"), nameof(CurrentCampaign));
+            Patch(fixture, AccessTools.PropertyGetter(campaignType, "CampaignObjectManager"), nameof(CampaignObjects));
+            campaignManagerType.GetMethod("AddHero", All).Invoke(_campaignObjects, new[] { _oldKing });
+            campaignManagerType.GetMethod("AddHero", All).Invoke(_campaignObjects, new[] { _newKing });
+            MethodInfo xmlLookup = managerType.GetMethods(All).Single(m => m.Name == "GetObject" && m.IsGenericMethodDefinition
+                && m.GetParameters().Length == 1 && m.GetParameters()[0].ParameterType == typeof(string));
+            check(xmlLookup.MakeGenericMethod(heroType).Invoke(objects, new object[] { "probe_old_king" }) == null,
+                "former king intentionally absent from XML registry (real-world failure boundary)");
+            check(ReferenceEquals(heroType.GetMethod("Find", new[] { typeof(string) }).Invoke(null, new object[] { "probe_old_king" }), _oldKing),
+                "real Hero.Find resolves former king through actual campaign registry without patching Find");
             object kingdom = Bare(kingdomType);
+            kingdomType.GetProperty("StringId").SetValue(kingdom, "probe_home");
+            campaignManagerType.GetMethod("AddKingdom", All).Invoke(_campaignObjects, new[] { kingdom });
             _clans = Activator.CreateInstance(kingdomType.GetProperty("Clans").PropertyType);
             object royal = NewClan(clanType, "royal", 100, 90);
             object supporter = NewClan(clanType, "supporter", 80, 40);
@@ -79,9 +97,9 @@ internal static class CoupLoyalistAftermathRegression
             object request = Activator.CreateInstance(requestType, true);
             Set(request, "LoyalistSelection", true); Set(request, "FormerKingId", "probe_old_king"); Set(request, "FormerRulingClanId", "royal");
             MethodInfo supports = bridgeType.GetMethod("StillSupportsFormerKing", All);
-            check((bool)supports.Invoke(null, new[] { request, supporter, kingdom }), "pending supporter revalidation accepts positive relation to new king");
+            check((bool)supports.Invoke(null, new[] { request, supporter, kingdom, _oldKing }), "pending supporter revalidation accepts positive relation to new king");
             Relations[Leaders[supporter]] = new[] { 30, 80 };
-            check(!(bool)supports.Invoke(null, new[] { request, supporter, kingdom }), "pending supporter revalidation rejects changed allegiance");
+            check(!(bool)supports.Invoke(null, new[] { request, supporter, kingdom, _oldKing }), "pending supporter revalidation rejects changed allegiance");
             object restored = Roundtrip(request);
             check((bool)Field(restored, "LoyalistSelection") && (string)Field(restored, "FormerKingId") == "probe_old_king", "loyalist policy and former king survive real JSON roundtrip");
             check(!(bool)Field(Activator.CreateInstance(requestType, true), "LoyalistSelection"), "old requests retain their original selection policy");
@@ -89,10 +107,18 @@ internal static class CoupLoyalistAftermathRegression
             managerType.GetMethod("RegisterType").MakeGenericMethod(clanType).Invoke(objects, new object[] { "Clan", "Clans", (uint)2, false, false });
             object royalLeader = Leaders[royal];
             Leaders.Remove(royal); // Native registration changes MBObjectBase's identity hash.
-            managerType.GetMethod("RegisterObject").MakeGenericMethod(clanType).Invoke(objects, new[] { royal });
+            // Royal was registered in NewClan before dictionary keys were captured.
+            check(xmlLookup.MakeGenericMethod(clanType).Invoke(objects, new object[] { "royal" }) == null,
+                "dynasty intentionally absent from XML registry");
             Leaders[royal] = royalLeader;
             _restorationHome = kingdom; _oldKingCaptured = false;
             _playerClan = Bare(clanType);
+            clanType.GetProperty("StringId").SetValue(_playerClan, "probe_player");
+            Leaders[_playerClan] = _newKing;
+            Patch(fixture, AccessTools.PropertyGetter(kingdomType, "RulingClan"), nameof(PlayerClan));
+            FieldInfo kingdomManagerField = campaignType.GetField("KingdomManager", All);
+            _kingdomManager = Bare(kingdomManagerField.FieldType);
+            kingdomManagerField.SetValue(_campaign, _kingdomManager);
             Patch(fixture, AccessTools.PropertyGetter(clanType, "PlayerClan"), nameof(PlayerClan));
             Patch(fixture, AccessTools.PropertyGetter(clanType, "Kingdom"), nameof(RestorationHome));
             Patch(fixture, AccessTools.PropertyGetter(heroType, "IsAlive"), nameof(Yes));
@@ -104,6 +130,18 @@ internal static class CoupLoyalistAftermathRegression
             _oldKingCaptured = true;
             check(!(bool)canJoin.Invoke(null, new object[] { request, kingdom, null }), "prisoner old king cannot join restoration through family transfer");
             _oldKingCaptured = false;
+            Set(request, "KingdomId", "probe_home"); Set(request, "RulingClanId", "probe_player");
+            Set(request, "RulerId", "probe_new_king"); Set(request, "ClanId", "supporter");
+            Set(request, "ClanLeaderId", "supporter_leader");
+            Relations[Leaders[supporter]] = new[] { 80, 40 };
+            object[] validateArgs = { request, host, null, null, null, null };
+            check((bool)bridgeType.GetMethod("Validate", All).Invoke(bridge, validateArgs)
+                && ReferenceEquals(validateArgs[2], kingdom) && ReferenceEquals(validateArgs[3], supporter),
+                "real pending validation resolves kingdom/clan/hero exclusively from campaign registry");
+            Set(request, "RulerId", "stale_ruler");
+            check(!(bool)bridgeType.GetMethod("Validate", All).Invoke(bridge, new object[] { request, host, null, null, null, null }),
+                "campaign lookup does not bypass current-ruler identity guard");
+            Set(request, "RulerId", "probe_new_king");
             Set(request, "Id", "restoration_probe"); Set(request, "TrackCivilWar", true); Set(request, "RestoreDynasty", true);
             Set(request, "OriginalName", "Original realm"); Set(request, "OriginalShortName", "Original");
             Set(request, "RebelKingdomId", "created_rebels"); Set(request, "RegistrationBlocked", true);
@@ -146,6 +184,7 @@ internal static class CoupLoyalistAftermathRegression
         finally
         {
             fixture.UnpatchAll(fixture.Id); managerInstance.SetValue(null, previousManager);
+            _campaign = _campaignObjects = _kingdomManager = null;
             Leaders.Clear(); Relations.Clear(); Eligible.Clear();
         }
     }
@@ -153,6 +192,9 @@ internal static class CoupLoyalistAftermathRegression
     {
         object clan = Bare(clanType), hero = Bare(_oldKing.GetType());
         clanType.GetProperty("StringId").SetValue(clan, id);
+        hero.GetType().GetProperty("StringId").SetValue(hero, id + "_leader");
+        _campaignObjects.GetType().GetMethod("AddHero", All).Invoke(_campaignObjects, new[] { hero });
+        _campaignObjects.GetType().GetMethod("AddClan", All).Invoke(_campaignObjects, new[] { clan });
         Leaders[clan] = hero; Relations[hero] = new[] { oldRelation, newRelation }; Eligible.Add(clan);
         _clans.GetType().GetMethod("Add").Invoke(_clans, new[] { clan }); return clan;
     }
@@ -173,6 +215,8 @@ internal static class CoupLoyalistAftermathRegression
         __result = Eligible.Contains(__args[0]); __args[3] = __result ? "" : "fixture physical restriction (prisoner or no land)";
         __args[4] = Relations[Leaders[__args[0]]][1]; __args[5] = 1; __args[6] = 0; return false;
     }
+    private static bool CurrentCampaign(ref object __result) { __result = _campaign; return false; }
+    private static bool CampaignObjects(ref object __result) { __result = _campaignObjects; return false; }
     private static bool Clans(ref object __result) { __result = _clans; return false; }
     private static bool NewKing(ref object __result) { __result = _newKing; return false; }
     private static bool Leader(object __instance, ref object __result) { Leaders.TryGetValue(__instance, out __result); return false; }

@@ -321,7 +321,12 @@ internal sealed class CoupRebellionBridge : CampaignBehaviorBase
         { message = "AF 王国稳定度与叛乱已关闭，跳过政变后反叛。"; return candidates; }
         if (PlayerKingdomRebellionImmunity.ShouldProtectKingdom(kingdom))
         { message = "玩家王国叛乱免疫已开启，跳过政变后反叛。"; return candidates; }
-        Hero formerKing = MBObjectManager.Instance.GetObject<Hero>(formerKingId);
+        Hero formerKing = Hero.Find(formerKingId);
+        // Heroes belong to CampaignObjectManager, not the XML object registry.
+        // Log IDs once per settlement attempt, never per engine tick or candidate.
+        Logger.Log("Coup", "loyalist_identity_resolution registry=CampaignObjectManager kingdom=" + kingdom?.StringId
+            + " formerKing=" + formerKingId + " formerFound=" + (formerKing != null)
+            + " formerClan=" + formerClanId + " currentKing=" + kingdom?.Leader?.StringId);
         if (formerKing == null || kingdom?.Leader == null)
             throw new InvalidOperationException("政变前后统治者身份缺失，不能判定支持关系。");
         foreach (Clan candidate in kingdom.Clans)
@@ -345,11 +350,10 @@ internal sealed class CoupRebellionBridge : CampaignBehaviorBase
         return CoupLoyalistPolicy.Rank(candidates);
     }
 
-    private static bool StillSupportsFormerKing(Request request, Clan clan, Kingdom kingdom)
+    private static bool StillSupportsFormerKing(Request request, Clan clan, Kingdom kingdom, Hero formerKing)
     {
         if (clan?.Leader == null || kingdom?.Leader == null) return false;
         if (clan.StringId == request.FormerRulingClanId) return true;
-        Hero formerKing = MBObjectManager.Instance.GetObject<Hero>(request.FormerKingId);
         return formerKing != null && CoupLoyalistPolicy.Opposes(false,
             clan.Leader.GetRelation(formerKing), clan.Leader.GetRelation(kingdom.Leader));
     }
@@ -365,8 +369,8 @@ internal sealed class CoupRebellionBridge : CampaignBehaviorBase
 
     private bool Validate(Request request, MyBehavior owner, out Kingdom kingdom, out Clan clan, out List<Clan> followers, out string message)
     {
-        kingdom = MBObjectManager.Instance.GetObject<Kingdom>(request.KingdomId);
-        clan = MBObjectManager.Instance.GetObject<Clan>(request.ClanId);
+        kingdom = Campaign.Current.CampaignObjectManager.Find<Kingdom>(request.KingdomId);
+        clan = Campaign.Current.CampaignObjectManager.Find<Clan>(request.ClanId);
         followers = new List<Clan>();
         message = "";
         if (!DuelSettings.IsKingdomStabilityAndRebellionEnabled()) { message = "AF 王国稳定度与叛乱已关闭，本次结束。"; return false; }
@@ -377,7 +381,9 @@ internal sealed class CoupRebellionBridge : CampaignBehaviorBase
         { message = "王国、统治者或原候选族长已变化，本次结束，不重选家族。"; return false; }
         object[] args = { clan, kingdom, request.LoyalistSelection, null, 0, 0, 0, null };
         if (!(bool)_af.ValidateClan.Invoke(owner, args)) { message = "原候选家族不再符合 AF 规则：" + args[3] + " 本次结束。"; return false; }
-        if (request.LoyalistSelection && !StillSupportsFormerKing(request, clan, kingdom))
+        // Resolve once for this validation; followers reuse the same main-thread snapshot.
+        Hero formerKing = request.LoyalistSelection ? Hero.Find(request.FormerKingId) : null;
+        if (request.LoyalistSelection && !StillSupportsFormerKing(request, clan, kingdom, formerKing))
         { message = "原候选家族已改变对新旧国王的支持，本次不再起兵。"; return false; }
         request.Relation = (int)args[4]; request.Towns = (int)args[5]; request.Castles = (int)args[6];
         if (request.TrackCivilWar && !(bool)_af.CanTrackCoupWar.Invoke(owner, new object[] { kingdom }))
@@ -386,11 +392,11 @@ internal sealed class CoupRebellionBridge : CampaignBehaviorBase
         { message = "旧王家族已无法参与复位内战，本次不再起兵。"; return false; }
         foreach (string id in request.Followers)
         {
-            Clan follower = MBObjectManager.Instance.GetObject<Clan>(id);
+            Clan follower = Campaign.Current.CampaignObjectManager.Find<Clan>(id);
             if (request.TrackCivilWar && !request.RestoreDynasty && id == request.FormerRulingClanId) continue;
             object[] followerArgs = { follower, kingdom, clan, false, null, 0, 0, 0, 0, null };
             if ((bool)_af.ValidateFollower.Invoke(owner, followerArgs)
-                && (request.LoyalistSelection ? StillSupportsFormerKing(request, follower, kingdom)
+                && (request.LoyalistSelection ? StillSupportsFormerKing(request, follower, kingdom, formerKing)
                     : (bool)_af.FollowerEligible.Invoke(null, new object[] { followerArgs[5], followerArgs[6], 0f }))) followers.Add(follower);
         }
         // The released royal family can join a supporter-led restoration even after
@@ -402,8 +408,8 @@ internal sealed class CoupRebellionBridge : CampaignBehaviorBase
 
     private static bool CanJoinRestoration(Request request, Kingdom kingdom, out Clan dynasty)
     {
-        dynasty = MBObjectManager.Instance.GetObject<Clan>(request.FormerRulingClanId);
-        Hero formerKing = MBObjectManager.Instance.GetObject<Hero>(request.FormerKingId);
+        dynasty = Campaign.Current.CampaignObjectManager.Find<Clan>(request.FormerRulingClanId);
+        Hero formerKing = Hero.Find(request.FormerKingId);
         return formerKing != null && (!formerKing.IsAlive || !formerKing.IsPrisoner)
             && dynasty != null && !dynasty.IsEliminated && dynasty != Clan.PlayerClan && dynasty.Kingdom == kingdom
             && dynasty.Leader?.IsAlive == true && !dynasty.Leader.IsChild && !dynasty.Leader.IsPrisoner;
@@ -414,15 +420,15 @@ internal sealed class CoupRebellionBridge : CampaignBehaviorBase
     {
         try
         {
-            Kingdom home = MBObjectManager.Instance.GetObject<Kingdom>(request.KingdomId);
-            Kingdom rebel = MBObjectManager.Instance.GetObject<Kingdom>(request.RebelKingdomId);
-            Clan leader = MBObjectManager.Instance.GetObject<Clan>(request.ClanId);
-            Hero formerKing = MBObjectManager.Instance.GetObject<Hero>(request.FormerKingId);
+            Kingdom home = Campaign.Current.CampaignObjectManager.Find<Kingdom>(request.KingdomId);
+            Kingdom rebel = Campaign.Current.CampaignObjectManager.Find<Kingdom>(request.RebelKingdomId);
+            Clan leader = Campaign.Current.CampaignObjectManager.Find<Clan>(request.ClanId);
+            Hero formerKing = Hero.Find(request.FormerKingId);
             if (home == null || rebel == null || leader?.Kingdom != rebel || formerKing == null)
                 throw new InvalidOperationException("已经建国，但内战参与方记录暂不可用。");
             if (request.RestoreDynasty)
             {
-                Clan dynasty = MBObjectManager.Instance.GetObject<Clan>(request.FormerRulingClanId);
+                Clan dynasty = Campaign.Current.CampaignObjectManager.Find<Clan>(request.FormerRulingClanId);
                 if (dynasty?.Kingdom == home && CanJoinRestoration(request, home, out _))
                     ChangeKingdomAction.ApplyByJoinToKingdomByDefection(dynasty, home, rebel, default(CampaignTime), true);
                 if (dynasty?.Kingdom != rebel) throw new InvalidOperationException("旧王家族尚未加入复位叛军。");

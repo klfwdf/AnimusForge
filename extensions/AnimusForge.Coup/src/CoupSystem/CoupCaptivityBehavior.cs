@@ -122,7 +122,7 @@ internal sealed class CoupCaptivityBehavior : CampaignBehaviorBase
         List<string> stale = null;
         foreach (string id in _detentions.Keys)
         {
-            Hero hero = MBObjectManager.Instance.GetObject<Hero>(id);
+            Hero hero = Hero.Find(id);
             if (IsInPlayerCustody(hero)) continue;
             if (stale == null) stale = new List<string>();
             stale.Add(id);
