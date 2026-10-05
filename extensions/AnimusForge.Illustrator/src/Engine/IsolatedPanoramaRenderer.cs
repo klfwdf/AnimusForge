@@ -80,6 +80,9 @@ namespace AnimusForge.Illustrator.Engine
         private bool _renderActive;
         private Exception _paintFailure;
         private string _exportPath;
+        private int _paintCallbacksAtExport = -1;
+        private int _paintCallbacksTotal;
+        private bool _saveRequested;
 
         // This acknowledges submission of native retirement, not a GPU completion fence.
         internal Task Retired => _retired.Task;
@@ -192,6 +195,9 @@ namespace AnimusForge.Illustrator.Engine
             {
                 if (_paintFailure != null || !_sequence.Select(index)) return false;
                 _renderActive = true;
+                _saveRequested = false;
+                _exportPath = null;
+                _paintCallbacksAtExport = -1;
                 TaleWorlds.Library.Debug.Print($"[IllustratorPanorama] Starting face={index}.");
                 _view.SetSaveFinalResultToDisk(false);
                 _view.SetCamera(_cameras[index]);
@@ -230,6 +236,7 @@ namespace AnimusForge.Illustrator.Engine
                     view.SetDeleteAfterRendering(false);
                     view.SetContinuousRendering(true);
                     _sequence.Painted(generation);
+                    _paintCallbacksTotal++;
                 }
                 catch (Exception ex)
                 {
@@ -254,8 +261,29 @@ namespace AnimusForge.Illustrator.Engine
                 _view.SetFileNameToSaveResult(Path.GetFileName(_exportPath));
                 _view.SetFileTypeToSave(View.TextureSaveFormat.TextureTypePng);
                 _view.SetSaveFinalResultToDisk(true);
+                _paintCallbacksAtExport = _paintCallbacksTotal;
+                _saveRequested = true;
                 return _exportPath;
             }
+        }
+
+        // Managed state only under the existing gate; safe to snapshot on the worker,
+        // including after deadline cancellation. Paint callbacks are not GPU fences.
+        internal JObject DescribeExportState()
+        {
+            lock (_gate)
+                return new JObject
+                {
+                    ["face"] = _sequence.Face, ["generation"] = _sequence.Generation,
+                    ["exportGeneration"] = _sequence.ExportGeneration, ["closed"] = _sequence.Closed,
+                    ["renderActive"] = _renderActive, ["saveRequested"] = _saveRequested,
+                    ["paintCallbacks"] = _paintCallbacksTotal, ["facePaintCallbacks"] = _sequence.PaintCount,
+                    ["paintCallbacksAtSave"] = _paintCallbacksAtExport,
+                    ["paintCallbacksAfterSave"] = _paintCallbacksAtExport < 0 ? (int?)null : _paintCallbacksTotal - _paintCallbacksAtExport,
+                    ["paintFailure"] = NativeExportDiagnostics.DescribeError(_paintFailure),
+                    ["exportDirectory"] = _directory, ["exportPath"] = _exportPath,
+                    ["gpuCompletionVerified"] = false
+                };
         }
 
         internal void StopExport()

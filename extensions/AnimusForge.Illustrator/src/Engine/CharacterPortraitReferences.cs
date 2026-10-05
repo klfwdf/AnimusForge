@@ -26,13 +26,14 @@ namespace AnimusForge.Illustrator.Engine
         // CharacterViewModel.StanceTypes values verified in the 1.3 and 1.4 sources.
         // EmphasizeFace uses the native tableau camera, not a crop of the full-body PNG.
         // Keep this dependency on the widget's public int API rather than adding a VM DLL dependency.
-        internal const int PortraitCaptureTimeoutMs = 12000;
+        internal const int PortraitCaptureTimeoutMs = 20000;
         internal const int FullBodyPortraitStance = 0;
         internal const int HeadDetailPortraitStance = 1;
         internal const int HeadDetailRenderDimension = 768;
 
-        public static async Task<CharacterPortraitReferences> ExtractHeroPortraitReferencesAsync(Hero hero, bool useCivilian = false, int maxDimension = 768, int timeoutMs = PortraitCaptureTimeoutMs, CancellationToken cancellationToken = default, bool cleanTempFiles = false, string equipmentCodeOverride = null, CharacterAppearanceSnapshot appearance = null)
+        public static async Task<CharacterPortraitReferences> ExtractHeroPortraitReferencesAsync(Hero hero, bool useCivilian = false, int maxDimension = 768, int timeoutMs = 0, CancellationToken cancellationToken = default, bool cleanTempFiles = false, string equipmentCodeOverride = null, CharacterAppearanceSnapshot appearance = null)
         {
+            if (timeoutMs <= 0) timeoutMs = (IllustratorSettings.Instance?.PortraitExportTimeoutSeconds ?? PortraitCaptureTimeoutMs / 1000) * 1000;
             if (hero == null) return new CharacterPortraitReferences(null, null);
             try
             {
@@ -52,8 +53,9 @@ namespace AnimusForge.Illustrator.Engine
             }
         }
 
-        public static async Task<CharacterPortraitReferences> ExtractCharacterPortraitReferencesAsync(CharacterObject character, int maxDimension = 768, int timeoutMs = PortraitCaptureTimeoutMs, CancellationToken cancellationToken = default, string bodyProperties = null, bool cleanTempFiles = false, string equipmentCodeOverride = null, CharacterAppearanceSnapshot appearance = null)
+        public static async Task<CharacterPortraitReferences> ExtractCharacterPortraitReferencesAsync(CharacterObject character, int maxDimension = 768, int timeoutMs = 0, CancellationToken cancellationToken = default, string bodyProperties = null, bool cleanTempFiles = false, string equipmentCodeOverride = null, CharacterAppearanceSnapshot appearance = null)
         {
+            if (timeoutMs <= 0) timeoutMs = (IllustratorSettings.Instance?.PortraitExportTimeoutSeconds ?? PortraitCaptureTimeoutMs / 1000) * 1000;
             if (character == null) return new CharacterPortraitReferences(null, null);
             try
             {

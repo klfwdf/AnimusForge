@@ -16,6 +16,8 @@ namespace AnimusForge.Illustrator.Engine
 {
     public static partial class ScreenCaptureHelper
     {
+        internal const int PanoramaCaptureTimeoutMs = 40000;
+        internal const int PanoramaFaceFileTimeoutMs = 6000;
         private static IsolatedPanoramaRenderer _activeIsolatedPanorama;
         private static PanoramaFrameStats _activePanoramaFrameStats;
         private static readonly string[] PanoramaDirections = { "front", "right", "back", "left", "up", "down" };
@@ -80,7 +82,13 @@ namespace AnimusForge.Illustrator.Engine
             await SceneCaptureLock.WaitAsync(token).ConfigureAwait(false);
             var watch = Stopwatch.StartNew();
             using var deadline = CancellationTokenSource.CreateLinkedTokenSource(token);
-            deadline.CancelAfter(TimeSpan.FromSeconds(25));
+            // Freeze settings for this capture; changing MCM cannot alter an in-flight deadline.
+            var settings = IllustratorSettings.Instance;
+            int captureTimeoutMs = (settings?.PanoramaCaptureTimeoutSeconds ?? PanoramaCaptureTimeoutMs / 1000) * 1000;
+            int faceTimeoutMs = (settings?.PanoramaFaceExportTimeoutSeconds ?? PanoramaFaceFileTimeoutMs / 1000) * 1000;
+            deadline.CancelAfter(captureTimeoutMs);
+            GenerationDiagnostics.Current?.RecordStage("panorama_capture_budget", new JObject
+            { ["totalTimeoutMs"] = captureTimeoutMs, ["timeoutMs"] = faceTimeoutMs });
             var captureToken = deadline.Token;
             bool stageHeld = false;
             PanoramaSceneSnapshot snapshot = null;
@@ -174,8 +182,21 @@ namespace AnimusForge.Illustrator.Engine
                     string path = await RunOnGameThreadAsync(() => renderer.RequestExport(face), captureToken).ConfigureAwait(false);
                     if (path == null) throw new InvalidOperationException("全景导出未就绪。");
                     exportedPaths.Add(path);
-                    byte[] bytes = await ReadPanoramaFaceAsync(path, captureToken).ConfigureAwait(false);
-                    if (bytes == null) throw new InvalidOperationException("全景导出未取得完整图片，没有用重复视角代替。");
+                    byte[] bytes = null;
+                    try
+                    {
+                        bytes = await ReadPanoramaFaceAsync(path, faceTimeoutMs, captureToken).ConfigureAwait(false);
+                        if (bytes == null) throw new InvalidOperationException("全景导出未取得完整图片，没有用重复视角代替。");
+                    }
+                    finally
+                    {
+                        var state = renderer.DescribeExportState();
+                        state["success"] = bytes != null;
+                        state["elapsedMs"] = faceWatch.ElapsedMilliseconds;
+                        state["timeoutMs"] = faceTimeoutMs;
+                        // Managed snapshot before StopExport/Restore and temporary cleanup.
+                        GenerationDiagnostics.Current?.RecordStage("panorama_export_state", state);
+                    }
                     await RunOnGameThreadAsync(() => { renderer.StopExport(); return true; }, captureToken).ConfigureAwait(false);
                     rawFaces.Add(bytes);
                     GenerationDiagnostics.Current?.RecordPanoramaFace(face, bytes);
@@ -268,28 +289,62 @@ namespace AnimusForge.Illustrator.Engine
             }
         }
 
-        private static async Task<byte[]> ReadPanoramaFaceAsync(string path, CancellationToken token)
+        private static async Task<byte[]> ReadPanoramaFaceAsync(string path, int timeoutMs, CancellationToken token)
         {
             long previousLength = -1;
-            for (int attempt = 0; attempt < 35; attempt++)
+            int probes = 0;
+            bool fileSeen = false;
+            bool delivered = false;
+            string fileError = null;
+            string failureCode = null;
+            var wait = Stopwatch.StartNew();
+            try
             {
-                token.ThrowIfCancellationRequested();
-                try
+                while (wait.ElapsedMilliseconds < timeoutMs)
                 {
-                    var file = new FileInfo(path);
-                    if (!file.Exists) file = new FileInfo(path + ".png");
-                    if (file.Exists && file.Length > 0)
+                    token.ThrowIfCancellationRequested();
+                    probes++;
+                    try
                     {
-                        if (file.Length > ImagePayload.MaxBytes) return null;
-                        if (file.Length == previousLength) return ImagePayload.ReadFile(file.FullName);
-                        previousLength = file.Length;
+                        var file = new FileInfo(path);
+                        if (!file.Exists) file = new FileInfo(path + ".png");
+                        if (file.Exists)
+                        {
+                            fileSeen = true;
+                            if (file.Length > ImagePayload.MaxBytes) { failureCode = "panorama.export_file_oversized"; return null; }
+                            if (file.Length > 0 && file.Length == previousLength)
+                            {
+                                byte[] bytes = ImagePayload.ReadFile(file.FullName);
+                                delivered = bytes != null;
+                                return bytes;
+                            }
+                            previousLength = file.Length;
+                        }
                     }
+                    catch (IOException ex) { fileError = NativeExportDiagnostics.DescribeError(ex); }
+                    catch (ArgumentException ex) { fileError = NativeExportDiagnostics.DescribeError(ex); }
+                    int remaining = timeoutMs - (int)wait.ElapsedMilliseconds;
+                    if (remaining > 0) await Task.Delay(Math.Min(80, remaining), token).ConfigureAwait(false);
                 }
-                catch (IOException) { }
-                catch (ArgumentException) { }
-                await Task.Delay(80, token).ConfigureAwait(false);
+                return null;
             }
-            return null;
+            catch (OperationCanceledException) { failureCode = "panorama.export_cancelled"; throw; }
+            catch (Exception ex) { failureCode = "panorama.export_read_exception"; fileError = NativeExportDiagnostics.DescribeError(ex); throw; }
+            finally
+            {
+                var expectedFile = NativeExportDiagnostics.DescribeFile(path);
+                var duplicateFile = NativeExportDiagnostics.DescribeFile(path + ".png");
+                if (fileError == null) fileError = (string)expectedFile["fileError"] ?? (string)duplicateFile["fileError"];
+                GenerationDiagnostics.Current?.RecordStage("panorama_file_wait_result", new JObject
+                {
+                    ["exportPath"] = path, ["timeoutMs"] = timeoutMs, ["elapsedMs"] = wait.ElapsedMilliseconds,
+                    ["success"] = delivered, ["fileProbeCount"] = probes, ["fileSeen"] = fileSeen,
+                    ["bytes"] = previousLength, ["fileError"] = fileError,
+                    ["failureCode"] = delivered ? null : failureCode ?? (fileError != null ? "panorama.export_file_io_error" : fileSeen ? "panorama.export_file_unreadable" : "panorama.export_file_missing"),
+                    ["expectedFile"] = expectedFile,
+                    ["duplicateExtensionFile"] = duplicateFile
+                });
+            }
         }
 
         internal static void CancelIsolatedPanorama()
