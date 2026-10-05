@@ -5,7 +5,7 @@ using AnimusForge.Refactor.Domain;
 
 namespace AnimusForge;
 
-// One policy signal per existing daily scheduling pass; active unrelated rounds wait.
+// Policy topics share ordinary event capacity and the persisted daily opening limit.
 internal static class WorldDiplomacyPolicyRoundApplication
 {
     internal static void RefreshSignals(WorldDiplomacyStorage storage, Func<int> currentDay,
@@ -58,53 +58,61 @@ internal static class WorldDiplomacyPolicyRoundApplication
         Func<string, WorldDiplomacyRound> openRound,
         Action<WorldDiplomacyPolicySignal, string> complete,
         Action<int> scheduleNext,
-        Action<string, WorldDiplomacyRound> enqueue)
+        Action<string, WorldDiplomacyRound> enqueue, int maxOrdinaryRounds = 3)
     {
-        WorldDiplomacyPolicySignal signal = (storage.PendingPolicySignals ?? new List<WorldDiplomacyPolicySignal>())
-            .FirstOrDefault(item => item != null && !string.IsNullOrWhiteSpace(item.SignalKey));
-        if (signal == null)
+        if (storage?.PendingPolicySignals == null || storage.PendingPolicySignals.Count == 0) return;
+        int day = currentDay();
+        bool canOpen = storage.Jobs.Count < 24
+            && WorldDiplomacyLiveRoundRules.CanStartOrdinary(storage, day, maxOrdinaryRounds);
+        // The retained signal queue is bounded. Skip a busy author so it cannot
+        // prevent later signals from attaching or using an available opening.
+        foreach (WorldDiplomacyPolicySignal signal in storage.PendingPolicySignals)
         {
-            return;
-        }
-
-        Parties parties = resolveParties(signal);
-        if (!parties.ValidParties)
-        {
-            complete(signal, "invalid_parties");
-            return;
-        }
-        if (parties.IssuerId == null || parties.AffectedId == null || parties.IssuerId == parties.AffectedId)
-        {
-            complete(signal, "same_or_invalid_diplomatic_representative");
-            return;
-        }
-        string author = parties.AffectedIsPlayer ? parties.IssuerId : parties.AffectedId;
-        WorldDiplomacyRound activeRound = WorldDiplomacyLiveRoundRules.Live(storage).FirstOrDefault(r => WorldDiplomacyLiveRoundRules.Contains(storage, r) && WorldDiplomacyLiveRoundRules.IsOrdinary(r) && r.InitiatorKingdomId == author);
-        if (activeRound != null)
-        {
-            if (WorldDiplomacyStructureRules.RoundContainsKingdom(activeRound, parties.IssuerId) || WorldDiplomacyStructureRules.RoundContainsKingdom(activeRound, parties.AffectedId))
+            if (signal == null || string.IsNullOrWhiteSpace(signal.SignalKey)) continue;
+            Parties parties = resolveParties(signal);
+            if (!parties.ValidParties)
             {
-                AttachSignalToRound(activeRound, signal, parties);
-                complete(signal, "attached_to_active_round");
+                complete(signal, "invalid_parties");
+                return;
             }
+            if (parties.IssuerId == null || parties.AffectedId == null || parties.IssuerId == parties.AffectedId)
+            {
+                complete(signal, "same_or_invalid_diplomatic_representative");
+                return;
+            }
+            string author = parties.AffectedIsPlayer ? parties.IssuerId : parties.AffectedId;
+            WorldDiplomacyRound activeRound = WorldDiplomacyLiveRoundRules.Live(storage).FirstOrDefault(r =>
+                WorldDiplomacyRoundLifecycleRules.IsActiveRoundState(r.State)
+                && WorldDiplomacyLiveRoundRules.IsOrdinary(r)
+                && string.Equals(r.InitiatorKingdomId, author, StringComparison.OrdinalIgnoreCase));
+            if (activeRound != null)
+            {
+                if (WorldDiplomacyStructureRules.RoundContainsKingdom(activeRound, parties.IssuerId)
+                    || WorldDiplomacyStructureRules.RoundContainsKingdom(activeRound, parties.AffectedId))
+                {
+                    AttachSignalToRound(activeRound, signal, parties);
+                    complete(signal, "attached_to_active_round");
+                    return;
+                }
+                continue;
+            }
+            if (!canOpen) continue; // Retain pending policy; merging remains available at capacity.
+            if (!hasActionableTarget(author))
+            {
+                complete(signal, "no_actionable_diplomatic_target");
+                return; // No opening was used; normal selection may still run today.
+            }
+            if (!consumeBudget()) return;
+            WorldDiplomacyRound round = openRound(author);
+            if (round == null) return;
+            storage.LastOrdinaryRoundStartedDay = day;
+            storage.NextNormalRoundDay = WorldDiplomacyRoundLifecycleRules.ComputeNextRoundDay(day, 1);
+            AttachSignalToRound(round, signal, parties);
+            scheduleNext(day);
+            enqueue(author, round);
+            complete(signal, "opened_round");
             return;
         }
-        if (!hasActionableTarget(author))
-        {
-            complete(signal, "no_actionable_diplomatic_target");
-            scheduleNext(currentDay());
-            return;
-        }
-        if (storage.Jobs.Count >= 24 || !consumeBudget())
-        {
-            return;
-        }
-
-        WorldDiplomacyRound round = openRound(author);
-        AttachSignalToRound(round, signal, parties);
-        scheduleNext(currentDay());
-        enqueue(author, round);
-        complete(signal, "opened_round");
     }
 
     private static void AttachSignalToRound(WorldDiplomacyRound round, WorldDiplomacyPolicySignal signal, Parties parties)

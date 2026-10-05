@@ -153,6 +153,10 @@ public sealed class WorldDiplomacyStorage
 	[JsonProperty("nextNormalRoundDay")]
 	public int NextNormalRoundDay { get; set; }
 
+	// Null identifies an old save; initialize once from ordinary event start dates.
+	[JsonProperty("lastOrdinaryRoundStartedDay")]
+	public int? LastOrdinaryRoundStartedDay { get; set; }
+
 	[JsonProperty("lastAppliedRoundIntervalDays")]
 	public int LastAppliedRoundIntervalDays { get; set; }
 

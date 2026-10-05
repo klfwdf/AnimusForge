@@ -586,6 +586,10 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 
 	public const int DefaultNobleGatheringInvitedClanRelationReward = 5;
 
+	public const int DefaultWorldDiplomacyMaxConcurrentOrdinaryRounds = 3;
+
+	public const int WorldDiplomacyMaxConcurrentOrdinaryRoundsMax = 12;
+
 	public const int WorldDiplomacyHistoryCompressionTriggerThousandsMin = 64;
 
 	public const int WorldDiplomacyHistoryCompressionTriggerThousandsMax = 900;
@@ -602,9 +606,9 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 
 	public const int WorldDiplomacyDeclarationCharactersMax = 1000;
 
-	public const int DefaultWorldDiplomacyDeclarationMinCharacters = 40;
+	public const int DefaultWorldDiplomacyDeclarationMinCharacters = 100;
 
-	public const int DefaultWorldDiplomacyDeclarationMaxCharacters = 200;
+	public const int DefaultWorldDiplomacyDeclarationMaxCharacters = 500;
 
 	public const int WorldDiplomacyThreatComplianceIssuerRelationRewardMin = 0;
 
@@ -2226,24 +2230,27 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 	[Obsolete("Use NpcRulerPolicyIntervalDays / GetNpcRulerPolicyIntervalDaysForExternal instead.")]
 	public int NpcRulerPolicyIntervalHours { get; set; } = DefaultNpcRulerPolicyIntervalHours;
 
-	[SettingPropertyBool("启用AI外交", Order = 0, RequireRestart = false, HintText = "开启后，各国会自行发布外交宣言、展开交涉并采取外交行动。关闭后恢复原版王国外交决议。")]
-	[SettingPropertyGroup("17. AI外交（测试中）", GroupOrder = 170)]
+	[SettingPropertyBool("启用AI外交", Order = 0, RequireRestart = false, HintText = "开启后，各国会自行发布外交宣言、展开交涉并采取外交行动。外交与书记官代笔复用事件与王国叛乱API，配置不完整时回退主API。关闭后恢复原版王国外交决议。")]
+	[SettingPropertyGroup("17. AI外交（测试中）/1. 基础", GroupOrder = 170)]
 	public bool EnableWorldDiplomacy { get; set; } = true;
 
-	[SettingPropertyBool("新游戏开局全大陆和平", Order = 1, RequireRestart = false, HintText = "仅对新创建的存档生效。开局时结束王国之间已有的战争，让之后的战争与和平主要由AI外交推动。")]
-	[SettingPropertyGroup("17. AI外交（测试中）", GroupOrder = 170)]
+	[SettingPropertyBool("新游戏开局全大陆和平", Order = 1, RequireRestart = false, HintText = "仅对新创建的存档生效，结束开局已有的王国战争。默认关闭；切换此项不会重置当前存档的战争。")]
+	[SettingPropertyGroup("17. AI外交（测试中）/1. 基础", GroupOrder = 170)]
 	public bool WorldDiplomacyStartNewGameAtPeace { get; set; } = false;
 
-	[SettingPropertyBool("启用右侧弹窗通知", Order = 2, RequireRestart = false, HintText = "开启后，新发布的外交宣言会显示在屏幕右侧。关闭后仍可在王国公告中查看。")]
-	[SettingPropertyGroup("17. AI外交（测试中）", GroupOrder = 170)]
+	[SettingPropertyBool("启用右侧外交通知", Order = 2, RequireRestart = false, HintText = "显示已送达且符合通知条件的外交宣言。关闭只隐藏右侧通知，不影响交涉、传播或王国公告。默认开启。")]
+	[SettingPropertyGroup("17. AI外交（测试中）/1. 基础", GroupOrder = 170)]
 	public bool EnableWorldDiplomacyMapNotifications { get; set; } = true;
 
-	[SettingPropertyInteger("两场外交事件的间隔（天）", 1, 14, "0", Order = 3, RequireRestart = false, HintText = "上一场外交事件结束后，通常等待多少天开始下一场。默认 3 天。")]
-	[SettingPropertyGroup("17. AI外交（测试中）", GroupOrder = 170)]
+	[Obsolete("Legacy configuration compatibility only; ordinary event capacity and one opening per day replace the interval.")]
 	public int WorldDiplomacyRoundIntervalDays { get; set; } = 3;
 
-	[SettingPropertyDropdown("参与国家规模", Order = 4, RequireRestart = false, HintText = "决定一场外交事件最多有多少国家参加，发起国也计算在内。关系不足时不会强行凑满。")]
-	[SettingPropertyGroup("17. AI外交（测试中）", GroupOrder = 170)]
+	[SettingPropertyInteger("同时进行的普通外交事件上限", 1, WorldDiplomacyMaxConcurrentOrdinaryRoundsMax, "0", Order = 3, RequireRestart = false, HintText = "普通自动外交与政策触发共用此上限，默认3场。满额时保留政策待办，已有交涉照常回复和收尾；降低上限不会取消已有事件。每天最多补开1场；玩家主动外交和口头承诺事件不占此名额。")]
+	[SettingPropertyGroup("17. AI外交（测试中）/2. 事件节奏", GroupOrder = 170)]
+	public int WorldDiplomacyMaxConcurrentOrdinaryRounds { get; set; } = DefaultWorldDiplomacyMaxConcurrentOrdinaryRounds;
+
+	[SettingPropertyDropdown("单场外交参与国规模", Order = 4, RequireRestart = false, HintText = "少量最多2国、适中最多3国、较多最多5国，均包含发起国。只选择有实际外交事项的国家，不强行凑满。默认适中；这是单场人数，不是同时进行的事件数量。")]
+	[SettingPropertyGroup("17. AI外交（测试中）/2. 事件节奏", GroupOrder = 170)]
 	public Dropdown<string> WorldDiplomacyActivityDropdown { get; set; } = new Dropdown<string>(
 		new List<string> { "少量", "适中", "较多" },
 		1);
@@ -2251,24 +2258,24 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 	[Obsolete("Legacy configuration compatibility only; court and civilian delivery settings control propagation.")]
 	public int WorldDiplomacyPropagationSpeedPercent { get; set; } = 100;
 
-	[SettingPropertyInteger("宣言送达最远王庭（天）", 3, 14, "0", Order = 6, RequireRestart = false, HintText = "决定外交宣言最迟多久传到大陆另一端的王庭。默认 7 天。")]
-	[SettingPropertyGroup("17. AI外交（测试中）", GroupOrder = 170)]
+	[SettingPropertyInteger("宣言送达最远王庭（天）", 3, 14, "0", Order = 6, RequireRestart = false, HintText = "按距离分配王庭送达时间，本值控制最远王庭的传递时长，也用于新事件一轮接力的传递节奏。不是每个国家都固定等待这么多天。默认7天；数值较低时回复更密集。")]
+	[SettingPropertyGroup("17. AI外交（测试中）/3. 传播", GroupOrder = 170)]
 	public int WorldDiplomacyCourtMaxDeliveryDays { get; set; } = 7;
 
-	[SettingPropertyInteger("宣言传遍大陆（天）", 7, 42, "0", Order = 7, RequireRestart = false, HintText = "决定地方贵族和平民多久能够得知一篇外交宣言。默认 21 天。")]
-	[SettingPropertyGroup("17. AI外交（测试中）", GroupOrder = 170)]
+	[SettingPropertyInteger("宣言传遍大陆（天）", 7, 42, "0", Order = 7, RequireRestart = false, HintText = "按距离安排地方贵族和平民获知外交宣言的时间。默认21天；不控制自动开场频率，也不代替王庭送达时间。")]
+	[SettingPropertyGroup("17. AI外交（测试中）/3. 传播", GroupOrder = 170)]
 	public int WorldDiplomacyContinentSpreadDays { get; set; } = 21;
 
-	[SettingPropertyDropdown("外交回合节奏", Order = 5, RequireRestart = false, HintText = "决定一场外交事件通常持续多久。只影响新开始的事件。")]
-	[SettingPropertyGroup("17. AI外交（测试中）", GroupOrder = 170)]
+	[SettingPropertyDropdown("单场外交目标时长", Order = 5, RequireRestart = false, HintText = "决定新事件通常何时收尾：紧凑约15天、标准约21天、从容约28天。可因达成结果提前结束，也可短暂延长完成收尾。默认标准，只影响新事件。")]
+	[SettingPropertyGroup("17. AI外交（测试中）/2. 事件节奏", GroupOrder = 170)]
 	public Dropdown<string> WorldDiplomacyRoundLengthDropdown { get; set; } = new Dropdown<string>(new List<string> { "紧凑（约15天）", "标准（约21天）", "从容（约28天）" }, 1);
 
-	[SettingPropertyInteger("外交宣言最小字数", WorldDiplomacyDeclarationCharactersMin, WorldDiplomacyDeclarationCharactersMax, "0", Order = 8, RequireRestart = false, HintText = "AI 生成的外交宣言正文最少使用多少个中文字符，标点计入。默认 40；可在 1—1000 之间调整。")]
-	[SettingPropertyGroup("17. AI外交（测试中）", GroupOrder = 170)]
+	[SettingPropertyInteger("AI外交宣言最小字数", WorldDiplomacyDeclarationCharactersMin, WorldDiplomacyDeclarationCharactersMax, "0", Order = 8, RequireRestart = false, HintText = "AI生成的外交宣言、外交回应与书记官代笔共用此篇幅范围，标点计入。默认最少100字，可在1—1000之间调整；不限制玩家手写编辑。")]
+	[SettingPropertyGroup("17. AI外交（测试中）/4. 宣言与代笔", GroupOrder = 170)]
 	public int WorldDiplomacyDeclarationMinCharacters { get; set; } = DefaultWorldDiplomacyDeclarationMinCharacters;
 
-	[SettingPropertyInteger("外交宣言最大字数", WorldDiplomacyDeclarationCharactersMin, WorldDiplomacyDeclarationCharactersMax, "0", Order = 9, RequireRestart = false, HintText = "AI 生成的外交宣言正文最多使用多少个中文字符，标点计入。默认 200；可在 1—1000 之间调整；若小于最小字数，运行时按最小字数处理。")]
-	[SettingPropertyGroup("17. AI外交（测试中）", GroupOrder = 170)]
+	[SettingPropertyInteger("AI外交宣言最大字数", WorldDiplomacyDeclarationCharactersMin, WorldDiplomacyDeclarationCharactersMax, "0", Order = 9, RequireRestart = false, HintText = "AI生成的外交宣言、外交回应与书记官代笔共用此篇幅范围，标点计入。默认最多500字，可在1—1000之间调整；小于最小字数时按最小字数执行，不限制玩家手写编辑。")]
+	[SettingPropertyGroup("17. AI外交（测试中）/4. 宣言与代笔", GroupOrder = 170)]
 	public int WorldDiplomacyDeclarationMaxCharacters { get; set; } = DefaultWorldDiplomacyDeclarationMaxCharacters;
 
 	// 仅保留用于兼容旧配置反序列化；自由外交流程不再读取或展示这些设置。
@@ -2287,28 +2294,28 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 	[Obsolete("Legacy configuration compatibility only; published declarations use their fixed semantic weight.")]
 	public int WorldDiplomacyDocumentInfluencePercent { get; set; } = 100;
 
-	[SettingPropertyInteger("再次主动开战间隔（天）", 7, 120, "0", Order = 11, RequireRestart = false, HintText = "一个国家主动发动战争后，至少等待多少天才能再次主动发动新战争。默认 42 天。")]
-	[SettingPropertyGroup("17. AI外交（测试中）", GroupOrder = 170)]
+	[SettingPropertyInteger("再次主动开战间隔（天）", 7, 120, "0", Order = 11, RequireRestart = false, HintText = "一个国家主动发动战争后，至少等待多少天才能再次主动发动新战争。默认42天；不限制其他外交宣言的发布频率。")]
+	[SettingPropertyGroup("17. AI外交（测试中）/5. 战争与提案保护", GroupOrder = 170)]
 	public int WorldDiplomacyOffensiveWarCooldownDays { get; set; } = 42;
 
-	[SettingPropertyInteger("和平保护期（天）", 0, 60, "0", Order = 12, RequireRestart = false, HintText = "两国议和后，在这段时间内不会因为普通外交争端再次开战。默认 21 天。")]
-	[SettingPropertyGroup("17. AI外交（测试中）", GroupOrder = 170)]
+	[SettingPropertyInteger("和平保护期（天）", 0, 60, "0", Order = 12, RequireRestart = false, HintText = "两国议和后，普通外交争端在此期间不能再次引发战争。默认21天；设为0关闭此保护，不影响其他宣战资格限制。")]
+	[SettingPropertyGroup("17. AI外交（测试中）/5. 战争与提案保护", GroupOrder = 170)]
 	public int WorldDiplomacyPeaceProtectionDays { get; set; } = 21;
 
-	[SettingPropertyInteger("贸易/结盟失败冷却（天）", 0, 672, "0", Order = 13, RequireRestart = false, HintText = "贸易或结盟提议未达成后，同一提出国→同一对象国在这段时间内不能再次发起相同类型提议；反向提议和另一类型互不影响。默认 168 天；设为 0 关闭。")]
-	[SettingPropertyGroup("17. AI外交（测试中）", GroupOrder = 170)]
+	[SettingPropertyInteger("贸易/结盟失败冷却（天）", 0, 672, "0", Order = 13, RequireRestart = false, HintText = "贸易或结盟提议未达成后，同一提出国向同一对象国暂时不能再提出相同类型提议。反向提议与另一类型分别计算。默认168天；设为0关闭。")]
+	[SettingPropertyGroup("17. AI外交（测试中）/5. 战争与提案保护", GroupOrder = 170)]
 	public int WorldDiplomacyTradeAllianceFailedProposalCooldownDays { get; set; } = 168;
 
-	[SettingPropertyInteger("威慑退让国内关系奖励", WorldDiplomacyThreatComplianceIssuerRelationRewardMin, WorldDiplomacyThreatComplianceIssuerRelationRewardMax, "0", Order = 14, RequireRestart = false, HintText = "对象国明确服从谴责或最后通牒后，发出国每个正式、非雇佣兵封臣家族的族长与当前国王关系增加此数值。每次威慑只结算一次；设为 0 关闭。")]
-	[SettingPropertyGroup("17. AI外交（测试中）", GroupOrder = 170)]
+	[SettingPropertyInteger("威慑退让国内关系奖励", WorldDiplomacyThreatComplianceIssuerRelationRewardMin, WorldDiplomacyThreatComplianceIssuerRelationRewardMax, "0", Order = 14, RequireRestart = false, HintText = "对象国明确服从谴责或最后通牒后，发出国正式、非雇佣兵封臣家族的族长与当前国王增加此关系。每次威慑只结算一次。默认10；设为0关闭奖励。")]
+	[SettingPropertyGroup("17. AI外交（测试中）/5. 战争与提案保护", GroupOrder = 170)]
 	public int WorldDiplomacyThreatComplianceIssuerRelationReward { get; set; } = DefaultWorldDiplomacyThreatComplianceIssuerRelationReward;
 
-	[SettingPropertyInteger("外交长期记忆压缩触发值（千估算 Tokens）", WorldDiplomacyHistoryCompressionTriggerThousandsMin, WorldDiplomacyHistoryCompressionTriggerThousandsMax, "0", Order = 15, RequireRestart = false, HintText = "长期外交档案达到该估算长度时开始分批压缩。默认 800，即约 800k Tokens，影响档案积压与压缩频率。宣言只读取近期相关材料，全部输入另有 32k 估算 Tokens 上限；压缩每批另有 128k 输入上限。")]
-	[SettingPropertyGroup("17. AI外交（测试中）", GroupOrder = 170)]
+	[SettingPropertyInteger("外交档案压缩触发值（千估算Tokens）", WorldDiplomacyHistoryCompressionTriggerThousandsMin, WorldDiplomacyHistoryCompressionTriggerThousandsMax, "0", Order = 15, RequireRestart = false, HintText = "长期外交档案达到该估算长度时开始分批压缩。默认800，即约800k Tokens，控制档案积压与压缩频率；不代表每次宣言携带这么多历史。宣言全部输入另有32k估算Tokens上限，压缩每批另有128k输入上限。")]
+	[SettingPropertyGroup("17. AI外交（测试中）/6. 长期档案（高级）", GroupOrder = 170)]
 	public int WorldDiplomacyHistoryCompressionTriggerThousands { get; set; } = DefaultWorldDiplomacyHistoryCompressionTriggerThousands;
 
-	[SettingPropertyInteger("外交长期记忆压缩后目标（千估算 Tokens）", WorldDiplomacyHistoryCompressionTargetThousandsMin, WorldDiplomacyHistoryCompressionTargetThousandsMax, "0", Order = 16, RequireRestart = false, HintText = "每批压缩后，长期外交快照与受保护事实的合计目标长度。默认 48，即约 48k Tokens；上限 60k。宣言只读取其中相关材料，不会整份注入该快照。实际摘要仍受所选 API 的“最大输出Tokens”限制。")]
-	[SettingPropertyGroup("17. AI外交（测试中）", GroupOrder = 170)]
+	[SettingPropertyInteger("外交档案压缩后目标（千估算Tokens）", WorldDiplomacyHistoryCompressionTargetThousandsMin, WorldDiplomacyHistoryCompressionTargetThousandsMax, "0", Order = 16, RequireRestart = false, HintText = "每批压缩后，长期快照和受保护事实的合计目标。默认48，即约48k Tokens，上限60k；宣言只取相关材料，不整份携带快照。实际摘要还受所选API最大输出Tokens限制。")]
+	[SettingPropertyGroup("17. AI外交（测试中）/6. 长期档案（高级）", GroupOrder = 170)]
 	public int WorldDiplomacyHistoryCompressionTargetThousands { get; set; } = DefaultWorldDiplomacyHistoryCompressionTargetThousands;
 
 	// 仅保留用于兼容旧 MCM 配置反序列化；新的长期记忆不再按累计 API Tokens 触发。
@@ -2322,12 +2329,12 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 		set => _worldDiplomacyPrompt = NormalizeWorldDiplomacyPromptText(value);
 	}
 
-	[SettingPropertyButton("AI外交自定义偏好", -1, true, "", Content = "打开编辑器", Order = 17, RequireRestart = false, HintText = "编辑利益判断、行动取向与文风偏好。留空表示不添加偏好；固定共同契约、事实边界和 MODE 输出规则不会被覆盖。")]
-	[SettingPropertyGroup("17. AI外交（测试中）", GroupOrder = 170)]
+	[SettingPropertyButton("AI外交与书记官代笔偏好", -1, true, "", Content = "打开编辑器", Order = 17, RequireRestart = false, HintText = "编辑外交判断与文风偏好；书记官代笔采用文风要求，忠实扩写玩家已有内容，不自行增加实质条款。留空不添加偏好，固定事实边界和输出规则仍然有效。")]
+	[SettingPropertyGroup("17. AI外交（测试中）/4. 宣言与代笔", GroupOrder = 170)]
 	public Action EditWorldDiplomacyPrompt { get; set; }
 
-	[SettingPropertyButton("恢复默认AI外交偏好", -1, true, "", Content = "恢复默认", Order = 18, RequireRestart = false, HintText = "弹出确认后，将自定义偏好恢复为模组默认内容。")]
-	[SettingPropertyGroup("17. AI外交（测试中）", GroupOrder = 170)]
+	[SettingPropertyButton("恢复默认外交与代笔偏好", -1, true, "", Content = "恢复默认", Order = 18, RequireRestart = false, HintText = "确认后恢复模组默认偏好文本。只恢复文案偏好，不重置本页的事件上限、传播、篇幅和保护期设置。")]
+	[SettingPropertyGroup("17. AI外交（测试中）/4. 宣言与代笔", GroupOrder = 170)]
 	public Action RestoreDefaultWorldDiplomacyPrompt { get; set; }
 
 	[SettingPropertyBool("启用宴会功能", Order = 0, RequireRestart = false, HintText = "宴会系统总开关。关闭后停止创建新宴会，正在进行的宴会会在下一个安全的战役小时结算为取消，并安排主人和宾客返程；无需重启游戏。")]
