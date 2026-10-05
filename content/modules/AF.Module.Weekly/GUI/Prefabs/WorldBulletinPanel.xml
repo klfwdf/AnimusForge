@@ -119,10 +119,10 @@
             </ListPanel>
 
             <!-- Other news: title sits on the small ribbon baked into the parchment -->
-            <Widget IsVisible="@HasMinors" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="1078" SuggestedHeight="97" HorizontalAlignment="Center" MarginTop="596" DoNotAcceptEvents="false">
+            <Widget IsVisible="@HasMinors" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="1078" SuggestedHeight="100" HorizontalAlignment="Center" MarginTop="593" DoNotAcceptEvents="false">
               <Children>
-                <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="219" SuggestedHeight="24" HorizontalAlignment="Center" Brush="AFCourierLetter.Title.Text" Brush.FontSize="16" Brush.FontColor="#2B1C10FF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" Text="其 余 消 息" DoNotAcceptEvents="true" />
-                <ScrollablePanel Id="MinorScrollPanel" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="68" MarginTop="29" ClipRect="MinorClip" InnerPanel="MinorClip\MinorInner" VerticalScrollbar="..\MinorScrollbar" AutoHideScrollBars="true" DoNotAcceptEvents="false">
+                <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="219" SuggestedHeight="30" HorizontalAlignment="Center" Brush="AFCourierLetter.Title.Text" Brush.FontSize="20" Brush.FontColor="#2B1C10FF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" Text="其 余 消 息" DoNotAcceptEvents="true" />
+                <ScrollablePanel Id="MinorScrollPanel" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="68" MarginTop="32" ClipRect="MinorClip" InnerPanel="MinorClip\MinorInner" VerticalScrollbar="..\MinorScrollbar" AutoHideScrollBars="true" DoNotAcceptEvents="false">
                   <Children>
                     <Widget Id="MinorClip" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" ClipContents="true">
                       <Children>
@@ -130,20 +130,20 @@
                           <Children>
                 <ListPanel DataSource="{LeftMinors}" WidthSizePolicy="Fixed" HeightSizePolicy="CoverChildren" SuggestedWidth="529" HorizontalAlignment="Left" LayoutImp.LayoutMethod="VerticalTopToBottom">
                   <ItemTemplate>
-                    <ListPanel WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MarginBottom="4" LayoutImp.LayoutMethod="HorizontalLeftToRight">
+                    <ListPanel WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MarginBottom="6" LayoutImp.LayoutMethod="HorizontalLeftToRight">
                       <Children>
-                        <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="53" SuggestedHeight="19" Brush="AFCourierLetter.Meta.Text" Brush.FontSize="13" Brush.FontColor="#9B2A1EFF" Brush.TextVerticalAlignment="Center" Text="@TagText" DoNotAcceptEvents="true" />
-                        <RichTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MinHeight="19" Brush="AnimusForge.EntityLink.WeeklyReport.ParchmentBody.Text" Brush.FontSize="13" Brush.FontColor="#35261AFF" Brush.TextVerticalAlignment="Center" Text="@Text" CanBreakWords="true" DoNotAcceptEvents="false" Command.LinkClick="ExecuteOpenEncyclopediaLink" Command.LinkAlternateClick="ExecuteOpenEncyclopediaLink" />
+                        <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="72" SuggestedHeight="26" Brush="AFCourierLetter.Meta.Text" Brush.FontSize="18" Brush.FontColor="#9B2A1EFF" Brush.TextVerticalAlignment="Center" Text="@TagText" DoNotAcceptEvents="true" />
+                        <RichTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MinHeight="26" Brush="AnimusForge.EntityLink.WeeklyReport.ParchmentBody.Text" Brush.FontSize="18" Brush.FontColor="#35261AFF" Brush.TextVerticalAlignment="Center" Text="@Text" CanBreakWords="true" DoNotAcceptEvents="false" Command.LinkClick="ExecuteOpenEncyclopediaLink" Command.LinkAlternateClick="ExecuteOpenEncyclopediaLink" />
                       </Children>
                     </ListPanel>
                   </ItemTemplate>
                 </ListPanel>
                 <ListPanel DataSource="{RightMinors}" WidthSizePolicy="Fixed" HeightSizePolicy="CoverChildren" SuggestedWidth="529" HorizontalAlignment="Right" LayoutImp.LayoutMethod="VerticalTopToBottom">
                   <ItemTemplate>
-                    <ListPanel WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MarginBottom="4" LayoutImp.LayoutMethod="HorizontalLeftToRight">
+                    <ListPanel WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MarginBottom="6" LayoutImp.LayoutMethod="HorizontalLeftToRight">
                       <Children>
-                        <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="53" SuggestedHeight="19" Brush="AFCourierLetter.Meta.Text" Brush.FontSize="13" Brush.FontColor="#9B2A1EFF" Brush.TextVerticalAlignment="Center" Text="@TagText" DoNotAcceptEvents="true" />
-                        <RichTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MinHeight="19" Brush="AnimusForge.EntityLink.WeeklyReport.ParchmentBody.Text" Brush.FontSize="13" Brush.FontColor="#35261AFF" Brush.TextVerticalAlignment="Center" Text="@Text" CanBreakWords="true" DoNotAcceptEvents="false" Command.LinkClick="ExecuteOpenEncyclopediaLink" Command.LinkAlternateClick="ExecuteOpenEncyclopediaLink" />
+                        <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="72" SuggestedHeight="26" Brush="AFCourierLetter.Meta.Text" Brush.FontSize="18" Brush.FontColor="#9B2A1EFF" Brush.TextVerticalAlignment="Center" Text="@TagText" DoNotAcceptEvents="true" />
+                        <RichTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MinHeight="26" Brush="AnimusForge.EntityLink.WeeklyReport.ParchmentBody.Text" Brush.FontSize="18" Brush.FontColor="#35261AFF" Brush.TextVerticalAlignment="Center" Text="@Text" CanBreakWords="true" DoNotAcceptEvents="false" Command.LinkClick="ExecuteOpenEncyclopediaLink" Command.LinkAlternateClick="ExecuteOpenEncyclopediaLink" />
                       </Children>
                     </ListPanel>
                   </ItemTemplate>
@@ -154,7 +154,7 @@
                     </Widget>
                   </Children>
                 </ScrollablePanel>
-                <ScrollbarWidget Id="MinorScrollbar" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="4" SuggestedHeight="68" HorizontalAlignment="Right" MarginTop="29" AlignmentAxis="Vertical" Handle="MinorHandle" MinValue="0" MaxValue="100" ValueFloat="@MinorScrollPosition" DoNotAcceptEvents="false">
+                <ScrollbarWidget Id="MinorScrollbar" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="4" SuggestedHeight="68" HorizontalAlignment="Right" MarginTop="32" AlignmentAxis="Vertical" Handle="MinorHandle" MinValue="0" MaxValue="100" ValueFloat="@MinorScrollPosition" DoNotAcceptEvents="false">
                   <Children><Widget Id="MinorHandle" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="18" Sprite="BlankWhiteSquare_9" Color="#87633CFF" DoNotAcceptEvents="false" /></Children>
                 </ScrollbarWidget>
               </Children>

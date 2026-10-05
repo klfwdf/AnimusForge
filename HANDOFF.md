@@ -1,3 +1,7 @@
+## 快报其余消息字号已按 Pen 稿修改（2026-10-05）
+
+已同步到共享快报XML：正文/朱标18号、标题20号、间距6；16项布局契约PASS。只改资源与测试，未重编译、覆盖游戏、打包或推送；原生Gauntlet/实机NOT_RUN。详细源码范围、验证与回滚见[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#bulletin-minor-font-20261005)，本地收据 `artifacts/bulletin-minor-font-20261005/receipt.json`。不要把 Pen/离线布局通过理解为已部署。
+
 # 当前交接：政变记忆接缝与更新防复发（2026-10-05，OFFLINE_VERIFIED）
 
 - 最新用户要求“实施”。本地产品/测试 `b8bb98e7`、检查点 `1da94f9d`：修复16/17参数构造签名失配，正式同DLL记忆提交走强类型端口；原双版本构建增加实际候选DLL接缝门禁，并由覆盖/打包目录/ZIP复核哈希绑定收据。既有政治/存档/日期恢复语义不变，未删保护。
