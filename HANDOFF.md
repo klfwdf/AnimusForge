@@ -1,3 +1,10 @@
+# 当前交接：Coup新存档分块与JSON规范（2026-10-05，OFFLINE_VERIFIED_NOT_DEPLOYED_WITH_OPEN_AUDIT_GAPS）
+
+- 最新“Coup也顺手修掉”：产品/规范/测试621d4176，检查点a1e016c；四个Coup完整JSON改成12KBUTF-8分块，原键/玩法/正常旧格式读取保留，只在存取执行。既有098b47d5战役身份修复未回滚。
+- 分块往返、当前规范19字符串/47字典键与负控、10迁移fixture、真实1.4.8解析器45条合成字符串读回均PASS；原入口1.3(v1.3.15)/1.4(v1.4.6)+Bootstrap0错误，双接缝PASS。AGENTS与持久化规范JSON已写入规则，新增直存Json变量会被专项拒绝。
+- 全量历史规范仍被MemoryRecovery未审查依赖阻断；NPC外交信件直存JSON与通用助手异常/null块验证风险仍OPEN，没宣称全仓安全。未旧档修复/部署/推送/游戏内端到端存取，安装还是旧候选。
+- [唯一主台账、源码坐标和验收边界](docs/animusforge-refactoring-and-repository-reorganization-plan.md#coup-chunked-json-spec-20261005)；细节/源码与候选hash `.codex_tmp/save-chain-audit-20261005/report.md`、receipt.json。回滚本片focused `git revert 621d4176`；玩家降级应使用更新前正常备份，不承诺新分块存档向旧DLL兼容。
+
 # 当前交接：政变战役身份解析修复与原版输入布局纠正（2026-10-05，SOURCE_FIXED_BUILD_VERIFIED_LIVE_PENDING）
 
 - 用户反馈“已成为国王并释放旧王，但仍显示政变未完成”；本机日志已复现并确认是叛乱登记阶段身份解析错误，非王权转移失败。当前源修复未部署，游戏仍是先前部署版本；push也暂停。
