@@ -1,4 +1,12 @@
-﻿# 给 Claude Code CLI 的交接：快报选材分流与档案重设计
+# 当前交接：政变记忆接缝与更新防复发（2026-10-05，OFFLINE_VERIFIED）
+
+- 最新用户要求“实施”。本地产品/测试 `b8bb98e7`、检查点 `1da94f9d`：修复16/17参数构造签名失配，正式同DLL记忆提交走强类型端口；原双版本构建增加实际候选DLL接缝门禁，并由覆盖/打包目录/ZIP复核哈希绑定收据。既有政治/存档/日期恢复语义不变，未删保护。
+- 原入口1.3/1.4+Bootstrap均0错误；双API各248项扩展回归、145契约、61胜利回调、39发布门禁通过。旧故障DLL、错误依赖版本及失效旧Pass负控成功阻断；本机当前游戏v1.4.8真实托管依赖smoke通过。1.3共享补充依赖的原有覆盖限制和实机/玩家旧档边界仍保留。
+- [唯一主台账、源码坐标与回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#coup-memory-seam-gate-20261005)；本地证据 `artifacts/coup-memory-seam-20261005/receipt.json`。回滚 `git revert b8bb98e7`；不hard reset或回滚其他作者。
+- 收尾发现另一会话的 `content/modules/AF.Module.Weekly/GUI/Prefabs/WorldBulletinPanel.xml` 新dirty，未修改或纳入本任务；既有untracked保留。
+- **未push/覆盖游戏/打包/启动游戏**。当前安装仍旧DLL，新候选位于 `bin/Debug/single_module_artifacts/versions/1.3|1.4/AnimusForge.dll`。下一步须用户另行授权原流程覆盖并重启实测；历史交接不授予部署权限。以下旧交接是历史记录，不能用它覆盖本条状态。
+
+# 给 Claude Code CLI 的交接：快报选材分流与档案重设计
 
 交接日期：2026-10-04。当前功能已实现、离线复审、提交推送并部署；剩余的是实机UI、真实玩家旧档及真实AI服务验收，不要把本交接理解为尚未实现，也不要把离线验证理解为实机通过。
 
