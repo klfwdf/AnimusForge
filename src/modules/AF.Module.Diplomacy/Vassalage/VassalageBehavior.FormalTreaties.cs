@@ -42,6 +42,7 @@ internal sealed partial class VassalageBehavior
             Logger.Log("Vassalage", "formal treaty synchronization deferred: " + ex.Message);
         }
         Logger.Log("Vassalage", "formal treaty executed suzerain=" + suzerain.StringId + " subject=" + subject.StringId + " type=" + type);
+        MyBehavior.Instance?.CaptureWorldBulletinVassalage(suzerain, subject, GetVassalageTypeDisplayName(type), true);
         return true;
     }
 

@@ -234,6 +234,7 @@ internal sealed class NpcTributeVassalageBehavior : CampaignBehaviorBase
 				: "");
 		vassalageBehavior.QueueNpcTributaryVassalageNoticeForBridge(agreement);
 		Logger.Log(LogCategory, "Agreement created suzerain=" + agreement.SuzerainKingdomId + " vassal=" + agreement.VassalKingdomId + " type=" + agreement.Type);
+		MyBehavior.Instance?.CaptureWorldBulletinVassalage(suzerainKingdom, vassalKingdom, "朝贡国", true);
 		NpcTributeVassalageDiagnosticLog.Event("agreement.create.success", new Dictionary<string, object>
 		{
 			["agreementId"] = agreement.AgreementId,

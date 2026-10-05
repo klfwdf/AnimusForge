@@ -25,6 +25,15 @@ internal static class AnimusForgeMobilePartyAiSafetyPatch
 	private static readonly HashSet<string> LoggedKeys = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 	private static bool _patched;
 
+	// Settlement/hideout validation is party-independent and read by every party's hourly AI.
+	// Main thread only: compute each settlement once per campaign hour and share the result.
+	private static readonly Dictionary<Settlement, string> SettlementValidationFailureSuffixes = new Dictionary<Settlement, string>();
+	private static Campaign _settlementValidationCacheCampaign;
+	private static long _settlementValidationCacheHour = long.MinValue;
+	private static bool _hideoutValidationCached;
+	private static bool _hideoutValidationOk;
+	private static string _hideoutValidationReason = "";
+
 	public static void EnsurePatched(Harmony harmony)
 	{
 		if (_patched || harmony == null)
@@ -1849,6 +1858,18 @@ internal static class AnimusForgeMobilePartyAiSafetyPatch
 
 	private static bool ValidateBanditHideoutInputsForNativeVisit(MobileParty party, out string reason)
 	{
+		RefreshSettlementValidationCacheHour();
+		if (!_hideoutValidationCached)
+		{
+			_hideoutValidationOk = ComputeBanditHideoutInputsForNativeVisit(out _hideoutValidationReason);
+			_hideoutValidationCached = true;
+		}
+		reason = _hideoutValidationReason ?? "";
+		return _hideoutValidationOk;
+	}
+
+	private static bool ComputeBanditHideoutInputsForNativeVisit(out string reason)
+	{
 		reason = "";
 		try
 		{
@@ -2005,6 +2026,48 @@ internal static class AnimusForgeMobilePartyAiSafetyPatch
 		{
 			return true;
 		}
+		RefreshSettlementValidationCacheHour();
+		if (!SettlementValidationFailureSuffixes.TryGetValue(settlement, out string failureSuffix))
+		{
+			// Every failure reason is label + suffix; cache only the suffix so each caller keeps its own label.
+			failureSuffix = ComputeNativeVisitSettlementCandidate(settlement, "", out string computedReason) ? null : (computedReason ?? "");
+			SettlementValidationFailureSuffixes[settlement] = failureSuffix;
+		}
+		if (failureSuffix == null)
+		{
+			return true;
+		}
+		reason = label + failureSuffix;
+		return false;
+	}
+
+	private static void RefreshSettlementValidationCacheHour()
+	{
+		Campaign campaign = Campaign.Current;
+		long hour;
+		try
+		{
+			hour = (long)Math.Floor(CampaignTime.Now.ToHours);
+		}
+		catch
+		{
+			hour = long.MinValue;
+		}
+		if (hour == _settlementValidationCacheHour && ReferenceEquals(campaign, _settlementValidationCacheCampaign))
+		{
+			return;
+		}
+		SettlementValidationFailureSuffixes.Clear();
+		_hideoutValidationCached = false;
+		_hideoutValidationOk = false;
+		_hideoutValidationReason = "";
+		_settlementValidationCacheHour = hour;
+		_settlementValidationCacheCampaign = campaign;
+	}
+
+	private static bool ComputeNativeVisitSettlementCandidate(Settlement settlement, string label, out string reason)
+	{
+		reason = "";
 		try
 		{
 			if (!ValidateBasicSettlementReference(settlement, label, out reason))

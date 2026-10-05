@@ -23,12 +23,13 @@ public partial class MyBehavior
 		AppendExternalDialogueHistory(hero, "", "", "[AFEF内战事实] " + text);
 	}
 	// Thin main-thread adapter to the existing report, bulletin and character-fact owners.
-	internal static void RecordCivilWarPoliticalResult(Kingdom kingdom, string key, string text, bool bulletin)
+	internal static void RecordCivilWarPoliticalResult(Kingdom kingdom, string key, string text, bool bulletin, Hero actor = null, Hero factionLeader = null)
 	{
 		if (kingdom == null || string.IsNullOrWhiteSpace(text)) return;
 		RecordEventSourceMaterialForExternal("civil_war", "内战政治 - " + kingdom.Name, text, key, kingdom.StringId, true, true);
 		string kind = CivilWarPoliticalRules.PoliticalResultKind(key);
 		if (bulletin) Instance?.CaptureWorldBulletinEvent(kind, key, CivilWarPoliticalRules.PoliticalResultPriority, kingdom.Name + "：" + text,
-			Clan.PlayerClan?.Kingdom == kingdom, "realm:" + kingdom.StringId, text, kingdom.StringId);
+			Clan.PlayerClan?.Kingdom == kingdom, "realm:" + kingdom.StringId, text,
+			BulletinParticipants((actor, "本次政治行动方族长"), (factionLeader, "反对派领袖"), (kingdom.Leader, "王国君主，是否亲临现场依事实")), kingdom.StringId);
 	}
 }

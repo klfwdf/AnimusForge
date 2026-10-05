@@ -140,7 +140,7 @@ internal static class CoupGuards
         ready &= PatchAfPrefix(harmony, "NoblePrisonerEscortBehavior", "OnMissionStarted", nameof(AftermathMissionPrefix));
         ready &= PatchAfPrefix(harmony, "NoblePrisonerEscortMissionBehavior", "OnMissionTick", nameof(NativeOutcomeCallbackPrefix));
         ready &= PatchAfPrefix(harmony, "NoblePrisonerEscortBehavior", "ShouldInjectOrderViewsForExternal", nameof(MissionBooleanFalsePrefix));
-        ready &= PatchAfPrefix(harmony, "TownAmbientDialogueMissionBehavior", "OnMissionTick", nameof(NativeOutcomeCallbackPrefix));
+        // Ambient chatter stays live in coups: AF switches it to coup-only scene tags itself.
         ready &= PatchAfPrefix(harmony, "InterventionNativeTownCivilianPopulationMissionBehavior", "TryEnsureNativeTownCivilianMaximum", nameof(NativeOutcomeCallbackPrefix));
         return ready;
     }

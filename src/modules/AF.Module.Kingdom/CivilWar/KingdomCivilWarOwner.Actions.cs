@@ -396,7 +396,8 @@ internal sealed partial class KingdomCivilWarOwner
 	private void PublishPoliticalResult(Kingdom k, KingdomCivilWarKingdomState s, KingdomCivilWarFactionState f, Clan actor, string operationId, string text, IEnumerable<Hero> affectedParticipants = null)
 	{
 		AddHistory(s, CivilWarWorld.CurrentWeek(), text);
-		MyBehavior.RecordCivilWarPoliticalResult(k, "civil_war:result:" + operationId, text, f != null || operationId.Contains(":war:"));
+		MyBehavior.RecordCivilWarPoliticalResult(k, "civil_war:result:" + operationId, text, f != null || operationId.Contains(":war:"),
+			actor?.Leader, CivilWarWorld.FindClan(f?.LeaderClanId)?.Leader);
 		var heroes = new HashSet<Hero>();
 		if (affectedParticipants != null)
 			foreach (Hero hero in affectedParticipants) if (hero != null) heroes.Add(hero);

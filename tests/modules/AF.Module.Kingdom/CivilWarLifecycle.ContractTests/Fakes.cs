@@ -192,7 +192,7 @@ namespace AnimusForge
         internal static void RecordNpcActionForExternal(params object[] args) { FactKeys.Add((string)args[2]); } internal static bool QuietPeaceActive; internal static void MakeCivilWarClansPeacefulForExternal(IEnumerable<Clan> clans, string reason) { }
 		internal static void RecordPlayerActionForExternal(params object[] args) { FactKeys.Add((string)args[1]); }
 		internal static void RecordCivilWarMemoryFact(Hero hero, string text) { if (hero != null) MemoryFacts.Add(text); }
-		internal static void RecordCivilWarPoliticalResult(Kingdom k, string key, string text, bool bulletin) { PoliticalResults[key] = text; CivilWarCampaignBehavior.MaterialWrites++; }
+		internal static void RecordCivilWarPoliticalResult(Kingdom k, string key, string text, bool bulletin, Hero actor = null, Hero factionLeader = null) { PoliticalResults[key] = text; CivilWarCampaignBehavior.MaterialWrites++; }
         internal void CaptureWorldBulletinCivilWar(string id, string key) { }
     }
     internal static partial class AIConfigHandler

@@ -125,7 +125,8 @@ public partial class MyBehavior
                 true, true, killer.StringId, killerKingdomId);
             CaptureWorldBulletinEvent("execution_last_words", "execution-last-words:" + record.SessionId,
                 50, sentence, killer == Hero.MainHero,
-                "execution:" + killer.StringId + ":" + record.Day, publicQuote, kingdomId, killerKingdomId);
+                "execution:" + killer.StringId + ":" + record.Day, publicQuote,
+                BulletinParticipants((victim, "受刑者"), (killer, "下令处决方，是否亲自行刑依事实")), kingdomId, killerKingdomId);
         }
         ResetExecutionMemoryRuntime();
     }

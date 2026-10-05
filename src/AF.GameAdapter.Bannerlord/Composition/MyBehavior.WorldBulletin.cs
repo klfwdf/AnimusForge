@@ -8,6 +8,8 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Actions;
+using TaleWorlds.CampaignSystem.Election;
+using TaleWorlds.CampaignSystem.Map;
 using TaleWorlds.CampaignSystem.MapEvents;
 using TaleWorlds.CampaignSystem.Party;
 using TaleWorlds.CampaignSystem.Settlements;
@@ -94,7 +96,17 @@ public partial class MyBehavior
 		CampaignEvents.MapEventEnded.AddNonSerializedListener(this, OnWorldBulletinMapEventEnded);
 		CampaignEvents.KingdomDestroyedEvent.AddNonSerializedListener(this, OnWorldBulletinKingdomDestroyed);
 		CampaignEvents.OnClanChangedKingdomEvent.AddNonSerializedListener(this, OnWorldBulletinClanChangedKingdom);
+		CampaignEvents.OnClanChangedKingdomEvent.AddNonSerializedListener(this, RememberDiscontinuedKingdomRuler);
 		CampaignEvents.RaidCompletedEvent.AddNonSerializedListener(this, OnWorldBulletinRaidCompleted);
+		CampaignEvents.OnAllianceStartedEvent.AddNonSerializedListener(this, OnWorldBulletinAllianceStarted);
+		CampaignEvents.OnAllianceEndedEvent.AddNonSerializedListener(this, OnWorldBulletinAllianceEnded);
+		CampaignEvents.RulingClanChanged.AddNonSerializedListener(this, OnWorldBulletinRulingClanChanged);
+		CampaignEvents.BeforeHeroesMarried.AddNonSerializedListener(this, OnWorldBulletinHeroesMarried);
+		CampaignEvents.OnClanDefectedEvent.AddNonSerializedListener(this, OnWorldBulletinClanDefected);
+		CampaignEvents.OnClanDestroyedEvent.AddNonSerializedListener(this, OnWorldBulletinClanDestroyed);
+		CampaignEvents.ArmyGathered.AddNonSerializedListener(this, OnWorldBulletinArmyGathered);
+		CampaignEvents.TownRebelliosStateChanged.AddNonSerializedListener(this, OnWorldBulletinTownRebelliousStateChanged);
+		CampaignEvents.RebellionFinished.AddNonSerializedListener(this, OnWorldBulletinTownRebellion);
 	}
 
 	// ---------- event capture ----------
@@ -174,6 +186,11 @@ public partial class MyBehavior
 			{
 				return;
 			}
+			// Inherited at founding; the founding fact already carries the story.
+			if (detail == DeclareWarAction.DeclareWarDetail.CausedByKingdomCreation)
+			{
+				return;
+			}
 			string sentence = WorldBulletinCampaignMaterialPolicy.WarSentence(GetKingdomDisplayName(k1), GetKingdomDisplayName(k2));
 			string detailText = WorldBulletinCampaignMaterialPolicy.WarDetail(GetHeroDisplayName(k1.Leader), GetHeroDisplayName(k2.Leader), GetWorldBulletinWarReason(detail));
 			CaptureWorldBulletinEvent("war_declared", "war:" + GetKingdomId(k1) + ":" + GetKingdomId(k2) + ":" + GetCurrentGameDayIndexSafe(), WorldBulletinCampaignMaterialPolicy.EventPriority("war_declared"), sentence, false,
@@ -190,6 +207,11 @@ public partial class MyBehavior
 		try
 		{
 			if (!(side1 is Kingdom k1) || !(side2 is Kingdom k2))
+			{
+				return;
+			}
+			// AF ends a new rebel kingdom's inherited wars right at founding; that is bookkeeping, not a peace treaty.
+			if (QuietPeaceActive)
 			{
 				return;
 			}
@@ -306,6 +328,7 @@ public partial class MyBehavior
 			}
 			_worldBulletinDeathSnapshots[GetHeroId(victim)] = new WorldBulletinDeathSnapshot
 			{
+				Hero = victim,
 				Ruler = IsWorldBulletinRuler(victim),
 				KingdomId = GetKingdomId(victim.Clan?.Kingdom),
 				Title = WorldBulletinHeroTitle(victim)
@@ -319,6 +342,8 @@ public partial class MyBehavior
 
 	private sealed class WorldBulletinDeathSnapshot
 	{
+		public Hero Hero;
+
 		public bool Ruler;
 
 		public string KingdomId = "";
@@ -459,6 +484,27 @@ public partial class MyBehavior
 		}
 	}
 
+	// Vanilla and AF discontinuation clear RulingClan before KingdomDestroyedEvent, so the last ruling clan is
+	// captured from the per-clan LeaveByKingdomDestruction callbacks that still see it. Only fires on dissolution.
+	private readonly Dictionary<Kingdom, Clan> _discontinuedKingdomRulingClans = new Dictionary<Kingdom, Clan>();
+
+	private void RememberDiscontinuedKingdomRuler(Clan clan, Kingdom oldKingdom, Kingdom newKingdom, ChangeKingdomAction.ChangeKingdomActionDetail detail, bool showNotification)
+	{
+		if (detail == ChangeKingdomAction.ChangeKingdomActionDetail.LeaveByKingdomDestruction && oldKingdom?.RulingClan != null)
+		{
+			_discontinuedKingdomRulingClans[oldKingdom] = oldKingdom.RulingClan;
+		}
+	}
+
+	private Clan GetLastKingdomRulingClan(Kingdom kingdom)
+	{
+		if (kingdom == null)
+		{
+			return null;
+		}
+		return kingdom.RulingClan ?? (_discontinuedKingdomRulingClans.TryGetValue(kingdom, out Clan clan) ? clan : null);
+	}
+
 	private void OnWorldBulletinKingdomDestroyed(Kingdom kingdom)
 	{
 		try
@@ -467,12 +513,18 @@ public partial class MyBehavior
 			{
 				return;
 			}
+			Hero ruler = GetLastKingdomRulingClan(kingdom)?.Leader;
 			CaptureWorldBulletinEvent("kingdom_destroyed", "kingdom_destroyed:" + GetKingdomId(kingdom), WorldBulletinCampaignMaterialPolicy.EventPriority("kingdom_destroyed"), WorldBulletinCampaignMaterialPolicy.DestroyedSentence(GetKingdomDisplayName(kingdom)), false,
-				"realm:" + GetKingdomId(kingdom), WorldBulletinCampaignMaterialPolicy.DestroyedDetail(GetHeroDisplayName(kingdom.Leader)), BulletinParticipants((kingdom.Leader, "事件相关君主，是否亲临现场依事实")), GetKingdomId(kingdom));
+				"realm:" + GetKingdomId(kingdom), WorldBulletinCampaignMaterialPolicy.DestroyedDetail(GetHeroDisplayName(ruler)), BulletinParticipants((ruler, "事件相关君主，是否亲临现场依事实")), GetKingdomId(kingdom));
 		}
 		catch (Exception ex)
 		{
 			Logger.Log("WorldBulletin", "[ERROR] kingdom destroyed: " + ex.Message);
+		}
+		finally
+		{
+			// The weekly material listener registers earlier and has already read the cached clan.
+			if (kingdom != null) _discontinuedKingdomRulingClans.Remove(kingdom);
 		}
 	}
 
@@ -552,6 +604,299 @@ public partial class MyBehavior
 		catch (Exception ex)
 		{
 			Logger.Log("WorldBulletin", "[ERROR] civil war: " + ex.Message);
+		}
+	}
+
+	// ---------- diplomacy, succession and realm events ----------
+	// All handlers below run on rare campaign callbacks; each does O(1) work plus at most one army/clan fief walk.
+
+	// Ruler, or a child of the ruler inside the ruling clan.
+	private static bool IsWorldBulletinRoyal(Hero hero)
+	{
+		if (hero == null)
+		{
+			return false;
+		}
+		if (IsWorldBulletinRuler(hero))
+		{
+			return true;
+		}
+		Kingdom kingdom = hero.Clan?.Kingdom;
+		Hero ruler = kingdom?.Leader;
+		return ruler != null && hero.Clan == kingdom.RulingClan && (hero.Father == ruler || hero.Mother == ruler);
+	}
+
+	// A ruler inside KillCharacterAction is still alive when vanilla hands the crown on.
+	private Hero FindDyingWorldBulletinRuler(string kingdomId)
+	{
+		foreach (WorldBulletinDeathSnapshot snapshot in _worldBulletinDeathSnapshots.Values)
+		{
+			if (snapshot != null && snapshot.Ruler && snapshot.Hero?.IsAlive == true && string.Equals(snapshot.KingdomId, kingdomId, StringComparison.OrdinalIgnoreCase))
+			{
+				return snapshot.Hero;
+			}
+		}
+		return null;
+	}
+
+	private void OnWorldBulletinAllianceStarted(Kingdom k1, Kingdom k2) => CaptureWorldBulletinAlliance(k1, k2, true);
+
+	private void OnWorldBulletinAllianceEnded(Kingdom k1, Kingdom k2) => CaptureWorldBulletinAlliance(k1, k2, false);
+
+	private void CaptureWorldBulletinAlliance(Kingdom k1, Kingdom k2, bool formed)
+	{
+		try
+		{
+			// An alliance that ends because a kingdom fell belongs to the kingdom's destruction story.
+			if (k1 == null || k2 == null || k1.IsEliminated || k2.IsEliminated)
+			{
+				return;
+			}
+			string kind = formed ? "alliance_formed" : "alliance_ended";
+			string first = GetKingdomDisplayName(k1);
+			string second = GetKingdomDisplayName(k2);
+			string sentence = formed ? WorldBulletinCampaignMaterialPolicy.AllianceFormedSentence(first, second) : WorldBulletinCampaignMaterialPolicy.AllianceEndedSentence(first, second);
+			CaptureWorldBulletinEvent(kind, kind + ":" + WorldBulletinPairKey(k1, k2) + ":" + GetCurrentGameDayIndexSafe(), WorldBulletinCampaignMaterialPolicy.EventPriority(kind), sentence, false,
+				"diplomacy:" + WorldBulletinPairKey(k1, k2), WorldBulletinCampaignMaterialPolicy.AllianceDetail(first, GetHeroDisplayName(k1.Leader), second, GetHeroDisplayName(k2.Leader)),
+				BulletinParticipants((k1.Leader, "盟约一方君主，未证实亲临现场"), (k2.Leader, "盟约另一方君主，未证实亲临现场")), GetKingdomId(k1), GetKingdomId(k2));
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("WorldBulletin", "[ERROR] alliance: " + ex.Message);
+		}
+	}
+
+	// Set by flows that publish their own throne-change story (Coup), so the generic succession fact is skipped.
+	internal static bool SuppressWorldBulletinRulerChange;
+
+	private void OnWorldBulletinRulingClanChanged(Kingdom kingdom, Clan eventRulingClan)
+	{
+		try
+		{
+			Clan newClan = kingdom?.RulingClan;
+			Hero ruler = newClan?.Leader;
+			// At founding the clan rules before it has joined; kingdom_created already reports that.
+			if (SuppressWorldBulletinRulerChange || kingdom == null || kingdom.IsEliminated || ruler == null || newClan.Kingdom != kingdom)
+			{
+				return;
+			}
+			string kingdomId = GetKingdomId(kingdom);
+			// 1.3 passes the new clan and 1.4.5 the old one; a dying ruler is the reliable predecessor in both.
+			Hero dying = FindDyingWorldBulletinRuler(kingdomId);
+			Hero previous = dying ?? (eventRulingClan != null && eventRulingClan != newClan ? eventRulingClan.Leader : null);
+			if (previous == ruler)
+			{
+				previous = null;
+			}
+			// Vanilla queues a king election and seats a random clan meanwhile; the election result is the real coronation.
+			bool interim = dying != null && kingdom.UnresolvedDecisions.Any(d => d is KingSelectionKingdomDecision);
+			string sentence = WorldBulletinCampaignMaterialPolicy.RulerChangedSentence(GetKingdomDisplayName(kingdom), GetHeroDisplayName(ruler), GetClanDisplayName(newClan), interim);
+			string detail = WorldBulletinCampaignMaterialPolicy.RulerChangedDetail(previous != null, GetHeroDisplayName(previous), GetClanDisplayName(previous?.Clan), dying != null);
+			CaptureWorldBulletinEvent("ruler_changed", "ruler_changed:" + kingdomId + ":" + GetHeroId(ruler) + ":" + GetCurrentGameDayIndexSafe() + (interim ? ":interim" : ""), WorldBulletinCampaignMaterialPolicy.RulerChangedPriority(interim), sentence,
+				IsWorldBulletinPlayerHero(ruler) || IsWorldBulletinPlayerHero(previous), "realm:" + kingdomId, detail,
+				BulletinParticipants((ruler, interim ? "暂掌王位者" : "新君主"), (previous, dying != null ? "前任君主，已在本次变故中身故" : "前任君主")), kingdomId);
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("WorldBulletin", "[ERROR] ruling clan changed: " + ex.Message);
+		}
+	}
+
+	private void OnWorldBulletinHeroesMarried(Hero first, Hero second, bool showNotification)
+	{
+		try
+		{
+			if (first == null || second == null)
+			{
+				return;
+			}
+			bool royal = IsWorldBulletinRoyal(first) || IsWorldBulletinRoyal(second);
+			bool clanLeader = (first.IsLord && first.Clan?.Leader == first) || (second.IsLord && second.Clan?.Leader == second);
+			if (!royal && !clanLeader)
+			{
+				return;
+			}
+			string pair = string.CompareOrdinal(GetHeroId(first), GetHeroId(second)) <= 0 ? GetHeroId(first) + "|" + GetHeroId(second) : GetHeroId(second) + "|" + GetHeroId(first);
+			string sentence = WorldBulletinCampaignMaterialPolicy.MarriageSentence(GetHeroDisplayName(first), WorldBulletinHeroTitle(first), GetHeroDisplayName(second), WorldBulletinHeroTitle(second));
+			CaptureWorldBulletinEvent(royal ? "royal_marriage" : "noble_marriage", "marriage:" + pair, WorldBulletinCampaignMaterialPolicy.MarriagePriority(royal), sentence,
+				IsWorldBulletinPlayerHero(first) || IsWorldBulletinPlayerHero(second), "marriage:" + pair, "",
+				BulletinParticipants((first, "成婚一方"), (second, "成婚另一方")), GetKingdomId(first.Clan?.Kingdom), GetKingdomId(second.Clan?.Kingdom));
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("WorldBulletin", "[ERROR] heroes married: " + ex.Message);
+		}
+	}
+
+	private void OnWorldBulletinClanDefected(Clan clan, Kingdom oldKingdom, Kingdom newKingdom)
+	{
+		try
+		{
+			// Annexation reports the whole merger once; each transferred clan is not separate news.
+			if (clan == null || newKingdom == null || KingdomAnnexationBehavior.IsAnnexationInProgress)
+			{
+				return;
+			}
+			List<string> fiefs = clan.Fiefs.Where(x => x?.Settlement != null).Select(x => GetSettlementDisplayName(x.Settlement)).ToList();
+			if (fiefs.Count == 0)
+			{
+				return;
+			}
+			string sentence = WorldBulletinCampaignMaterialPolicy.DefectionSentence(GetClanDisplayName(clan), fiefs.Count, oldKingdom != null, GetKingdomDisplayName(oldKingdom), GetKingdomDisplayName(newKingdom));
+			// Shares the realm group, so a civil war or rebellion and its defections read as one story.
+			CaptureWorldBulletinEvent("clan_defection", "defection:" + GetClanId(clan) + ":" + GetKingdomId(newKingdom) + ":" + GetCurrentGameDayIndexSafe(), WorldBulletinCampaignMaterialPolicy.EventPriority("clan_defection"), sentence,
+				clan == Clan.PlayerClan, "realm:" + GetKingdomId(oldKingdom ?? newKingdom), WorldBulletinCampaignMaterialPolicy.DefectionDetail(GetHeroDisplayName(clan.Leader), string.Join("、", fiefs.Take(4)) + (fiefs.Count > 4 ? "等" : "")),
+				BulletinParticipants((clan.Leader, "改投家族族长"), (newKingdom.Leader, "接纳方君主，未证实在场")), GetKingdomId(newKingdom), GetKingdomId(oldKingdom));
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("WorldBulletin", "[ERROR] clan defected: " + ex.Message);
+		}
+	}
+
+	private void OnWorldBulletinClanDestroyed(Clan clan)
+	{
+		try
+		{
+			// Fires before deactivation, so the kingdom and last leader are still readable.
+			if (clan == null || clan == Clan.PlayerClan || !clan.IsNoble || clan.IsBanditFaction || clan.IsRebelClan)
+			{
+				return;
+			}
+			Kingdom kingdom = clan.Kingdom;
+			string kingdomId = GetKingdomId(kingdom);
+			string clanId = GetClanId(clan);
+			CaptureWorldBulletinEvent("clan_destroyed", "clan_destroyed:" + clanId, WorldBulletinCampaignMaterialPolicy.EventPriority("clan_destroyed"),
+				WorldBulletinCampaignMaterialPolicy.ClanDestroyedSentence(GetClanDisplayName(clan), kingdom != null, GetKingdomDisplayName(kingdom)), false,
+				kingdom != null ? "realm:" + kingdomId : "clan_destroyed:" + clanId, WorldBulletinCampaignMaterialPolicy.ClanDestroyedDetail(clan.Leader != null ? GetHeroDisplayName(clan.Leader) : ""),
+				BulletinParticipants((clan.Leader, "末任族长")), kingdomId);
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("WorldBulletin", "[ERROR] clan destroyed: " + ex.Message);
+		}
+	}
+
+	private void OnWorldBulletinArmyGathered(Army army, IMapPoint gatheringPoint)
+	{
+		try
+		{
+			Hero leader = army?.ArmyOwner ?? army?.LeaderParty?.LeaderHero;
+			Kingdom kingdom = army?.Kingdom;
+			if (kingdom == null || !IsWorldBulletinRoyal(leader))
+			{
+				return;
+			}
+			// Parties already called to the army count, not only the ones that have arrived.
+			int troops = 0;
+			foreach (MobileParty party in army.Parties)
+			{
+				troops += party?.MemberRoster?.TotalManCount ?? 0;
+			}
+			if (troops < WorldBulletinCampaignMaterialPolicy.ArmyGatheredTroopThreshold)
+			{
+				return;
+			}
+			string place = ResolveGatheringPointLabel(gatheringPoint, army.LeaderParty);
+			string kingdomId = GetKingdomId(kingdom);
+			// The player's own muster is not news to the player; it stays a supporting line.
+			string sentence = WorldBulletinCampaignMaterialPolicy.ArmyGatheredSentence(GetKingdomDisplayName(kingdom), IsWorldBulletinRuler(leader) ? "君主" : "王储", GetHeroDisplayName(leader), troops, place == "集结地" ? "" : place);
+			CaptureWorldBulletinEvent("army_gathered", "army:" + GetHeroId(leader) + ":" + GetCurrentGameDayIndexSafe(), WorldBulletinCampaignMaterialPolicy.EventPriority("army_gathered"), sentence,
+				false, "army:" + kingdomId + ":" + GetCurrentGameDayIndexSafe(), WorldBulletinCampaignMaterialPolicy.ArmyGatheredDetail(army.Parties.Count),
+				BulletinParticipants((leader, "统兵者")), kingdomId);
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("WorldBulletin", "[ERROR] army gathered: " + ex.Message);
+		}
+	}
+
+	private void OnWorldBulletinTownRebelliousStateChanged(Town town, bool rebellious)
+	{
+		try
+		{
+			Settlement settlement = town?.Settlement;
+			if (!rebellious || settlement == null)
+			{
+				return;
+			}
+			Hero owner = settlement.OwnerClan?.Leader;
+			string settlementId = GetSettlementId(settlement);
+			// Loyalty hovering at the threshold can flip daily; one unrest line per town per week.
+			CaptureWorldBulletinEvent("town_unrest", "town_unrest:" + settlementId + ":" + (GetCurrentGameDayIndexSafe() / 7), WorldBulletinCampaignMaterialPolicy.EventPriority("town_unrest"),
+				WorldBulletinCampaignMaterialPolicy.TownUnrestSentence(GetSettlementDisplayName(settlement), owner != null ? GetHeroDisplayName(owner) : ""), IsWorldBulletinPlayerHero(owner),
+				"siege:" + settlementId, "", BulletinParticipants((owner, "城镇领主，未证实在场")), GetKingdomId(settlement.MapFaction));
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("WorldBulletin", "[ERROR] town unrest: " + ex.Message);
+		}
+	}
+
+	private void OnWorldBulletinTownRebellion(Settlement settlement, Clan oldOwnerClan)
+	{
+		try
+		{
+			if (settlement == null)
+			{
+				return;
+			}
+			// Vanilla has already handed the town to the rebel clan; the owner-change fact shares this siege group.
+			Clan rebels = settlement.OwnerClan != oldOwnerClan ? settlement.OwnerClan : null;
+			Hero oldOwner = oldOwnerClan?.Leader;
+			string settlementId = GetSettlementId(settlement);
+			string sentence = WorldBulletinCampaignMaterialPolicy.TownRebellionSentence(GetSettlementDisplayName(settlement), GetClanDisplayName(oldOwnerClan) + "家族", rebels != null ? GetClanDisplayName(rebels) : "起义者");
+			CaptureWorldBulletinEvent("town_rebellion", "town_rebellion:" + settlementId + ":" + GetCurrentGameDayIndexSafe(), WorldBulletinCampaignMaterialPolicy.EventPriority("town_rebellion"), sentence,
+				IsWorldBulletinPlayerHero(oldOwner), "siege:" + settlementId, "", BulletinParticipants((rebels?.Leader, "起义首领"), (oldOwner, "原领主，未证实在场")), GetKingdomId(oldOwnerClan?.Kingdom));
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("WorldBulletin", "[ERROR] town rebellion: " + ex.Message);
+		}
+	}
+
+	// Called by KingdomAnnexationBehavior after the annexed kingdom is dissolved.
+	internal void CaptureWorldBulletinAnnexation(Kingdom receiving, Kingdom annexed, Hero formerRuler, int transferredClans)
+	{
+		try
+		{
+			if (receiving == null || annexed == null)
+			{
+				return;
+			}
+			string annexedId = GetKingdomId(annexed);
+			// Same realm group as the kingdom_destroyed fact the dissolution just produced.
+			CaptureWorldBulletinEvent("kingdom_annexed", "kingdom_annexed:" + annexedId, WorldBulletinCampaignMaterialPolicy.EventPriority("kingdom_annexed"),
+				WorldBulletinCampaignMaterialPolicy.AnnexedSentence(GetKingdomDisplayName(receiving), GetKingdomDisplayName(annexed)), IsWorldBulletinPlayerHero(receiving.Leader),
+				"realm:" + annexedId, WorldBulletinCampaignMaterialPolicy.AnnexedDetail(GetHeroDisplayName(receiving.Leader), GetHeroDisplayName(formerRuler), transferredClans),
+				BulletinParticipants((receiving.Leader, "吞并方君主"), (formerRuler, "被吞并国末代君主")), GetKingdomId(receiving), annexedId);
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("WorldBulletin", "[ERROR] annexation: " + ex.Message);
+		}
+	}
+
+	// Called by the vassalage owners when a treaty is signed or broken.
+	internal void CaptureWorldBulletinVassalage(Kingdom suzerain, Kingdom vassal, string typeName, bool established)
+	{
+		try
+		{
+			if (suzerain == null || vassal == null)
+			{
+				return;
+			}
+			string kind = established ? "vassalage_established" : "vassalage_ended";
+			string suzerainName = GetKingdomDisplayName(suzerain);
+			string vassalName = GetKingdomDisplayName(vassal);
+			string sentence = established ? WorldBulletinCampaignMaterialPolicy.VassalageEstablishedSentence(suzerainName, vassalName, typeName) : WorldBulletinCampaignMaterialPolicy.VassalageEndedSentence(suzerainName, vassalName, typeName);
+			CaptureWorldBulletinEvent(kind, kind + ":" + GetKingdomId(suzerain) + ">" + GetKingdomId(vassal) + ":" + GetCurrentGameDayIndexSafe(), WorldBulletinCampaignMaterialPolicy.EventPriority(kind), sentence, false,
+				"diplomacy:" + WorldBulletinPairKey(suzerain, vassal), WorldBulletinCampaignMaterialPolicy.VassalageDetail(GetHeroDisplayName(suzerain.Leader), GetHeroDisplayName(vassal.Leader)),
+				BulletinParticipants((suzerain.Leader, "宗主国君主，未证实亲临现场"), (vassal.Leader, "臣属国君主，未证实亲临现场")), GetKingdomId(suzerain), GetKingdomId(vassal));
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("WorldBulletin", "[ERROR] vassalage: " + ex.Message);
 		}
 	}
 

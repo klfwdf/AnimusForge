@@ -32,14 +32,16 @@ namespace AnimusForge.Illustrator.Core
         private static readonly HttpClient HttpClient;
         // One budget covers the whole stage: an Edits attempt, the chat fallback and the
         // result download. High-quality multi-reference redraws routinely exceed 120 s.
-        private static readonly TimeSpan GenerationBudget = TimeSpan.FromSeconds(240);
+        // The per-request budget comes from MCM; the shared client only enforces the MCM maximum.
+        private const int DefaultGenerationBudgetSeconds = 240;
+        private static readonly TimeSpan MaxGenerationBudget = TimeSpan.FromSeconds(600);
 
         static UniversalOpenAiImageClient()
         {
             ServicePointManager.SecurityProtocol |= SecurityProtocolType.Tls12;
             HttpClient = new HttpClient
             {
-                Timeout = GenerationBudget
+                Timeout = MaxGenerationBudget
             };
         }
 
@@ -66,7 +68,8 @@ namespace AnimusForge.Illustrator.Core
             CancellationToken callerToken = cancellationToken;
             using (var deadline = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken))
             {
-                deadline.CancelAfter(GenerationBudget);
+                int budgetSeconds = options?.ImageGenerationTimeoutSeconds > 0 ? options.ImageGenerationTimeoutSeconds : DefaultGenerationBudgetSeconds;
+                deadline.CancelAfter(TimeSpan.FromSeconds(budgetSeconds));
                 cancellationToken = deadline.Token;
             var result = new ImageGenerationResult
             {
@@ -227,7 +230,7 @@ namespace AnimusForge.Illustrator.Core
             }
             catch (OperationCanceledException)
             {
-                result.ErrorMessage = callerToken.IsCancellationRequested ? "生图请求已取消" : "生图请求超过240秒总预算";
+                result.ErrorMessage = callerToken.IsCancellationRequested ? "生图请求已取消" : "生图请求超过" + budgetSeconds + "秒总预算";
                 GenerationDiagnostics.Current?.RecordStage("image_transport_cancelled", new JObject { ["failureCode"] = callerToken.IsCancellationRequested ? "image.cancelled" : "image.timeout", ["error"] = result.ErrorMessage });
             }
             catch (InvalidDataException ex)

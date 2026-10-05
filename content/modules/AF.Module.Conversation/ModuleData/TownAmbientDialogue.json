@@ -141,7 +141,7 @@
                       "Weight":  4.2,
                       "CooldownSeconds":  28,
                       "RecordInMemory":  true,
-                      "Text":  "{time_greeting}，{player_title}，请接受小民的问候，愿城中家家安宁。",
+                      "Text":  "{time_greeting}，{player_title}，小民给您问安了，愿城里家家太平。",
                       "Memory":  "居民认出玩家是国家统治者，以陛下相称并恭敬问候。",
                       "ReplyHints":  [
                                          "向居民回礼",
@@ -178,7 +178,7 @@
                       "Weight":  4.2,
                       "CooldownSeconds":  28,
                       "RecordInMemory":  true,
-                      "Text":  "{time_greeting}，{player_title}，城墙上的旗帜因您而显得格外精神。",
+                      "Text":  "{time_greeting}，{player_title}，您一来，连城墙上的旗帜都显得格外精神。",
                       "Memory":  "居民认出玩家是国家统治者，以陛下相称并恭敬问候。",
                       "ReplyHints":  [
                                          "向居民回礼",
@@ -215,7 +215,7 @@
                       "Weight":  4.2,
                       "CooldownSeconds":  28,
                       "RecordInMemory":  true,
-                      "Text":  "{time_greeting}，{player_title}，愿您听见百姓的声音，也愿百姓不负您的治理。",
+                      "Text":  "{time_greeting}，{player_title}，百姓有话肯说给您听，是{town}的福气。",
                       "Memory":  "居民认出玩家是国家统治者，以陛下相称并恭敬问候。",
                       "ReplyHints":  [
                                          "向居民回礼",
@@ -363,7 +363,7 @@
                       "Weight":  4.2,
                       "CooldownSeconds":  28,
                       "RecordInMemory":  true,
-                      "Text":  "请接受小民的问候，愿城中家家安宁。",
+                      "Text":  "小民给您问安了，愿城里家家太平。",
                       "Memory":  "居民认出玩家是国家统治者，以陛下相称并恭敬问候。",
                       "ReplyHints":  [
                                          "向居民回礼",
@@ -400,7 +400,7 @@
                       "Weight":  4.2,
                       "CooldownSeconds":  28,
                       "RecordInMemory":  true,
-                      "Text":  "城墙上的旗帜因您而显得格外精神。",
+                      "Text":  "您一来，连城墙上的旗帜都显得格外精神。",
                       "Memory":  "居民认出玩家是国家统治者，以陛下相称并恭敬问候。",
                       "ReplyHints":  [
                                          "向居民回礼",
@@ -437,7 +437,7 @@
                       "Weight":  4.2,
                       "CooldownSeconds":  28,
                       "RecordInMemory":  true,
-                      "Text":  "愿您听见百姓的声音，也愿百姓不负您的治理。",
+                      "Text":  "百姓有话肯说给您听，是{town}的福气。",
                       "Memory":  "居民认出玩家是国家统治者，以陛下相称并恭敬问候。",
                       "ReplyHints":  [
                                          "向居民回礼",
@@ -474,7 +474,7 @@
                       "Weight":  4.2,
                       "CooldownSeconds":  28,
                       "RecordInMemory":  true,
-                      "Text":  "{player_title}来了，愿您今日诸事顺遂。",
+                      "Text":  "是{player_title}！愿您今日诸事顺遂。",
                       "Memory":  "居民认出玩家是国家统治者，以陛下相称并恭敬问候。",
                       "ReplyHints":  [
                                          "向居民回礼",
@@ -511,7 +511,7 @@
                       "Weight":  4.2,
                       "CooldownSeconds":  28,
                       "RecordInMemory":  true,
-                      "Text":  "{player_title}来了，我们祝{player_kingdom}长治久安。",
+                      "Text":  "是{player_title}！我们祝{player_kingdom}长治久安。",
                       "Memory":  "居民认出玩家是国家统治者，以陛下相称并恭敬问候。",
                       "ReplyHints":  [
                                          "向居民回礼",
@@ -548,7 +548,7 @@
                       "Weight":  4.2,
                       "CooldownSeconds":  28,
                       "RecordInMemory":  true,
-                      "Text":  "{player_title}来了，您又亲自巡视{town}吗？百姓都看在眼里。",
+                      "Text":  "是{player_title}！您又亲自巡视{town}吗？百姓都看在眼里。",
                       "Memory":  "居民认出玩家是国家统治者，以陛下相称并恭敬问候。",
                       "ReplyHints":  [
                                          "向居民回礼",
@@ -585,7 +585,7 @@
                       "Weight":  4.2,
                       "CooldownSeconds":  28,
                       "RecordInMemory":  true,
-                      "Text":  "{player_title}来了，请接受小民的问候，愿城中家家安宁。",
+                      "Text":  "是{player_title}！小民给您问安了，愿城里家家太平。",
                       "Memory":  "居民认出玩家是国家统治者，以陛下相称并恭敬问候。",
                       "ReplyHints":  [
                                          "向居民回礼",
@@ -622,7 +622,7 @@
                       "Weight":  4.2,
                       "CooldownSeconds":  28,
                       "RecordInMemory":  true,
-                      "Text":  "{player_title}来了，城墙上的旗帜因您而显得格外精神。",
+                      "Text":  "是{player_title}！您一来，连城墙上的旗帜都显得格外精神。",
                       "Memory":  "居民认出玩家是国家统治者，以陛下相称并恭敬问候。",
                       "ReplyHints":  [
                                          "向居民回礼",
@@ -659,7 +659,7 @@
                       "Weight":  4.2,
                       "CooldownSeconds":  28,
                       "RecordInMemory":  true,
-                      "Text":  "{player_title}来了，愿您听见百姓的声音，也愿百姓不负您的治理。",
+                      "Text":  "是{player_title}！百姓有话肯说给您听，是{town}的福气。",
                       "Memory":  "居民认出玩家是国家统治者，以陛下相称并恭敬问候。",
                       "ReplyHints":  [
                                          "向居民回礼",
@@ -767,7 +767,7 @@
                       "Weight":  4.4,
                       "CooldownSeconds":  28,
                       "RecordInMemory":  true,
-                      "Text":  "{time_greeting}，{player_title}！您亲自来巡视，是我们的荣幸。",
+                      "Text":  "{time_greeting}，{player_title}！您亲自来巡视，弟兄们脸上都有光。",
                       "Memory":  "守卫认出玩家是国家统治者，行礼并报告巡逻与城防情况。",
                       "ReplyHints":  [
                                          "检阅守卫",
@@ -875,7 +875,7 @@
                       "Weight":  4.4,
                       "CooldownSeconds":  28,
                       "RecordInMemory":  true,
-                      "Text":  "{time_greeting}，{player_title}！若有异常，我们会第一时间向您禀报。",
+                      "Text":  "{time_greeting}，{player_title}！若有异动，我们立刻向您禀报。",
                       "Memory":  "守卫认出玩家是国家统治者，行礼并报告巡逻与城防情况。",
                       "ReplyHints":  [
                                          "检阅守卫",
@@ -983,7 +983,7 @@
                       "Weight":  4.4,
                       "CooldownSeconds":  28,
                       "RecordInMemory":  true,
-                      "Text":  "您亲自来巡视，是我们的荣幸。",
+                      "Text":  "您亲自来巡视，弟兄们脸上都有光。",
                       "Memory":  "守卫认出玩家是国家统治者，行礼并报告巡逻与城防情况。",
                       "ReplyHints":  [
                                          "检阅守卫",
@@ -1091,7 +1091,7 @@
                       "Weight":  4.4,
                       "CooldownSeconds":  28,
                       "RecordInMemory":  true,
-                      "Text":  "若有异常，我们会第一时间向您禀报。",
+                      "Text":  "若有异动，我们立刻向您禀报。",
                       "Memory":  "守卫认出玩家是国家统治者，行礼并报告巡逻与城防情况。",
                       "ReplyHints":  [
                                          "检阅守卫",
@@ -1199,7 +1199,7 @@
                       "Weight":  4.4,
                       "CooldownSeconds":  28,
                       "RecordInMemory":  true,
-                      "Text":  "{player_title}，您亲自来巡视，是我们的荣幸。",
+                      "Text":  "{player_title}，您亲自来巡视，弟兄们脸上都有光。",
                       "Memory":  "守卫认出玩家是国家统治者，行礼并报告巡逻与城防情况。",
                       "ReplyHints":  [
                                          "检阅守卫",
@@ -1307,7 +1307,7 @@
                       "Weight":  4.4,
                       "CooldownSeconds":  28,
                       "RecordInMemory":  true,
-                      "Text":  "{player_title}，若有异常，我们会第一时间向您禀报。",
+                      "Text":  "{player_title}，若有异动，我们立刻向您禀报。",
                       "Memory":  "守卫认出玩家是国家统治者，行礼并报告巡逻与城防情况。",
                       "ReplyHints":  [
                                          "检阅守卫",
@@ -1343,7 +1343,7 @@
                       "Weight":  4,
                       "CooldownSeconds":  30,
                       "RecordInMemory":  true,
-                      "Text":  "{player_title}驾临，愿您看看今日最好的货物。",
+                      "Text":  "{player_title}驾临，请您过目今日最好的货。",
                       "Memory":  "市场居民认出玩家是统治者，在问候之余谈到货物、商路、物价或关税。",
                       "ReplyHints":  [
                                          "询问市场行情",
@@ -1415,7 +1415,7 @@
                       "Weight":  4,
                       "CooldownSeconds":  30,
                       "RecordInMemory":  true,
-                      "Text":  "{player_title}驾临，您的到来让整条街都精神起来了。",
+                      "Text":  "{player_title}驾临，您这一来，整条街都热闹起来了。",
                       "Memory":  "市场居民认出玩家是统治者，在问候之余谈到货物、商路、物价或关税。",
                       "ReplyHints":  [
                                          "询问市场行情",
@@ -1451,7 +1451,7 @@
                       "Weight":  4,
                       "CooldownSeconds":  30,
                       "RecordInMemory":  true,
-                      "Text":  "{player_title}驾临，若能减轻关税，商人们必定感激不尽。",
+                      "Text":  "{player_title}驾临，若关税能松一松，商人们必定感恩戴德。",
                       "Memory":  "市场居民认出玩家是统治者，在问候之余谈到货物、商路、物价或关税。",
                       "ReplyHints":  [
                                          "询问市场行情",
@@ -1487,7 +1487,7 @@
                       "Weight":  4,
                       "CooldownSeconds":  30,
                       "RecordInMemory":  true,
-                      "Text":  "{player_title}驾临，今日的第一桩生意愿为您让利。",
+                      "Text":  "{player_title}驾临，今天头一桩买卖，小店愿给您让个价。",
                       "Memory":  "市场居民认出玩家是统治者，在问候之余谈到货物、商路、物价或关税。",
                       "ReplyHints":  [
                                          "询问市场行情",
@@ -1559,7 +1559,7 @@
                       "Weight":  4,
                       "CooldownSeconds":  30,
                       "RecordInMemory":  true,
-                      "Text":  "{time_greeting}，{player_title}，愿您看看今日最好的货物。",
+                      "Text":  "{time_greeting}，{player_title}，请您过目今日最好的货。",
                       "Memory":  "市场居民认出玩家是统治者，在问候之余谈到货物、商路、物价或关税。",
                       "ReplyHints":  [
                                          "询问市场行情",
@@ -1631,7 +1631,7 @@
                       "Weight":  4,
                       "CooldownSeconds":  30,
                       "RecordInMemory":  true,
-                      "Text":  "{time_greeting}，{player_title}，您的到来让整条街都精神起来了。",
+                      "Text":  "{time_greeting}，{player_title}，您这一来，整条街都热闹起来了。",
                       "Memory":  "市场居民认出玩家是统治者，在问候之余谈到货物、商路、物价或关税。",
                       "ReplyHints":  [
                                          "询问市场行情",
@@ -1667,7 +1667,7 @@
                       "Weight":  4,
                       "CooldownSeconds":  30,
                       "RecordInMemory":  true,
-                      "Text":  "{time_greeting}，{player_title}，若能减轻关税，商人们必定感激不尽。",
+                      "Text":  "{time_greeting}，{player_title}，若关税能松一松，商人们必定感恩戴德。",
                       "Memory":  "市场居民认出玩家是统治者，在问候之余谈到货物、商路、物价或关税。",
                       "ReplyHints":  [
                                          "询问市场行情",
@@ -1703,7 +1703,7 @@
                       "Weight":  4,
                       "CooldownSeconds":  30,
                       "RecordInMemory":  true,
-                      "Text":  "{time_greeting}，{player_title}，今日的第一桩生意愿为您让利。",
+                      "Text":  "{time_greeting}，{player_title}，今天头一桩买卖，小店愿给您让个价。",
                       "Memory":  "市场居民认出玩家是统治者，在问候之余谈到货物、商路、物价或关税。",
                       "ReplyHints":  [
                                          "询问市场行情",
@@ -1775,7 +1775,7 @@
                       "Weight":  4,
                       "CooldownSeconds":  30,
                       "RecordInMemory":  true,
-                      "Text":  "{player_title}，愿您看看今日最好的货物。",
+                      "Text":  "{player_title}，请您过目今日最好的货。",
                       "Memory":  "市场居民认出玩家是统治者，在问候之余谈到货物、商路、物价或关税。",
                       "ReplyHints":  [
                                          "询问市场行情",
@@ -1847,7 +1847,7 @@
                       "Weight":  4,
                       "CooldownSeconds":  30,
                       "RecordInMemory":  true,
-                      "Text":  "{player_title}，您的到来让整条街都精神起来了。",
+                      "Text":  "{player_title}，您这一来，整条街都热闹起来了。",
                       "Memory":  "市场居民认出玩家是统治者，在问候之余谈到货物、商路、物价或关税。",
                       "ReplyHints":  [
                                          "询问市场行情",
@@ -1883,7 +1883,7 @@
                       "Weight":  4,
                       "CooldownSeconds":  30,
                       "RecordInMemory":  true,
-                      "Text":  "{player_title}，若能减轻关税，商人们必定感激不尽。",
+                      "Text":  "{player_title}，若关税能松一松，商人们必定感恩戴德。",
                       "Memory":  "市场居民认出玩家是统治者，在问候之余谈到货物、商路、物价或关税。",
                       "ReplyHints":  [
                                          "询问市场行情",
@@ -1919,7 +1919,7 @@
                       "Weight":  4,
                       "CooldownSeconds":  30,
                       "RecordInMemory":  true,
-                      "Text":  "{player_title}，今日的第一桩生意愿为您让利。",
+                      "Text":  "{player_title}，今天头一桩买卖，小店愿给您让个价。",
                       "Memory":  "市场居民认出玩家是统治者，在问候之余谈到货物、商路、物价或关税。",
                       "ReplyHints":  [
                                          "询问市场行情",
@@ -2060,7 +2060,7 @@
                       "Weight":  4.1,
                       "CooldownSeconds":  30,
                       "RecordInMemory":  true,
-                      "Text":  "{player_title}，我们没想到您会亲自来听百姓闲谈。",
+                      "Text":  "{player_title}，真没想到您会亲自来听我们这些粗人闲聊。",
                       "Memory":  "酒馆众人认出玩家是统治者，以陛下相称并举杯、奉酒或请求献歌。",
                       "ReplyHints":  [
                                          "与众人干杯",
@@ -2130,7 +2130,7 @@
                       "Weight":  4.1,
                       "CooldownSeconds":  30,
                       "RecordInMemory":  true,
-                      "Text":  "{player_title}，您一来，连最吵的醉汉都懂规矩了。",
+                      "Text":  "{player_title}，您一进门，连最吵的醉汉都老实了。",
                       "Memory":  "酒馆众人认出玩家是统治者，以陛下相称并举杯、奉酒或请求献歌。",
                       "ReplyHints":  [
                                          "与众人干杯",
@@ -2165,7 +2165,7 @@
                       "Weight":  4.1,
                       "CooldownSeconds":  30,
                       "RecordInMemory":  true,
-                      "Text":  "{player_title}，愿您今晚暂时放下国事，好好歇息片刻。",
+                      "Text":  "{player_title}，今晚就先把国事放一放，好好歇歇吧。",
                       "Memory":  "酒馆众人认出玩家是统治者，以陛下相称并举杯、奉酒或请求献歌。",
                       "ReplyHints":  [
                                          "与众人干杯",
@@ -2270,7 +2270,7 @@
                       "Weight":  4.1,
                       "CooldownSeconds":  30,
                       "RecordInMemory":  true,
-                      "Text":  "{time_greeting}，{player_title}，我们没想到您会亲自来听百姓闲谈。",
+                      "Text":  "{time_greeting}，{player_title}，真没想到您会亲自来听我们这些粗人闲聊。",
                       "Memory":  "酒馆众人认出玩家是统治者，以陛下相称并举杯、奉酒或请求献歌。",
                       "ReplyHints":  [
                                          "与众人干杯",
@@ -2340,7 +2340,7 @@
                       "Weight":  4.1,
                       "CooldownSeconds":  30,
                       "RecordInMemory":  true,
-                      "Text":  "{time_greeting}，{player_title}，您一来，连最吵的醉汉都懂规矩了。",
+                      "Text":  "{time_greeting}，{player_title}，您一进门，连最吵的醉汉都老实了。",
                       "Memory":  "酒馆众人认出玩家是统治者，以陛下相称并举杯、奉酒或请求献歌。",
                       "ReplyHints":  [
                                          "与众人干杯",
@@ -2375,7 +2375,7 @@
                       "Weight":  4.1,
                       "CooldownSeconds":  30,
                       "RecordInMemory":  true,
-                      "Text":  "{time_greeting}，{player_title}，愿您今晚暂时放下国事，好好歇息片刻。",
+                      "Text":  "{time_greeting}，{player_title}，今晚就先把国事放一放，好好歇歇吧。",
                       "Memory":  "酒馆众人认出玩家是统治者，以陛下相称并举杯、奉酒或请求献歌。",
                       "ReplyHints":  [
                                          "与众人干杯",
@@ -2480,7 +2480,7 @@
                       "Weight":  4.1,
                       "CooldownSeconds":  30,
                       "RecordInMemory":  true,
-                      "Text":  "我们没想到您会亲自来听百姓闲谈。",
+                      "Text":  "真没想到您会亲自来听我们这些粗人闲聊。",
                       "Memory":  "酒馆众人认出玩家是统治者，以陛下相称并举杯、奉酒或请求献歌。",
                       "ReplyHints":  [
                                          "与众人干杯",
@@ -2550,7 +2550,7 @@
                       "Weight":  4.1,
                       "CooldownSeconds":  30,
                       "RecordInMemory":  true,
-                      "Text":  "您一来，连最吵的醉汉都懂规矩了。",
+                      "Text":  "您一进门，连最吵的醉汉都老实了。",
                       "Memory":  "酒馆众人认出玩家是统治者，以陛下相称并举杯、奉酒或请求献歌。",
                       "ReplyHints":  [
                                          "与众人干杯",
@@ -2585,7 +2585,7 @@
                       "Weight":  4.1,
                       "CooldownSeconds":  30,
                       "RecordInMemory":  true,
-                      "Text":  "愿您今晚暂时放下国事，好好歇息片刻。",
+                      "Text":  "今晚就先把国事放一放，好好歇歇吧。",
                       "Memory":  "酒馆众人认出玩家是统治者，以陛下相称并举杯、奉酒或请求献歌。",
                       "ReplyHints":  [
                                          "与众人干杯",
@@ -2626,7 +2626,7 @@
                       "Weight":  3.8,
                       "CooldownSeconds":  42,
                       "RecordInMemory":  true,
-                      "Text":  "{player_title}，我们记得边境上的烽火，不会因您的笑容就忘掉。",
+                      "Text":  "{player_title}，边境上的烽火我们还记得，不会因您笑一笑就忘了。",
                       "Memory":  "敌对国家的居民认出玩家是敌国统治者，表面遵守礼数，言语中带着戒备、仇恨或对其军力的复杂情绪。",
                       "ReplyHints":  [
                                          "询问边境局势",
@@ -2708,7 +2708,7 @@
                       "Weight":  3.8,
                       "CooldownSeconds":  42,
                       "RecordInMemory":  true,
-                      "Text":  "{player_title}，有人羡慕您统一诸侯的手腕，也有人恨您让我们的亲人上了战场。",
+                      "Text":  "{player_title}，有人佩服您治国的手腕，也有人恨您把我们的亲人送上战场。",
                       "Memory":  "敌对国家的居民认出玩家是敌国统治者，表面遵守礼数，言语中带着戒备、仇恨或对其军力的复杂情绪。",
                       "ReplyHints":  [
                                          "询问边境局势",
@@ -2749,7 +2749,7 @@
                       "Weight":  3.8,
                       "CooldownSeconds":  42,
                       "RecordInMemory":  true,
-                      "Text":  "{player_title}，请您遵守城中规矩，别把宫廷的威风带进百姓的街道。",
+                      "Text":  "{player_title}，请守城里的规矩，宫廷那套威风别带到百姓的街上来。",
                       "Memory":  "敌对国家的居民认出玩家是敌国统治者，表面遵守礼数，言语中带着戒备、仇恨或对其军力的复杂情绪。",
                       "ReplyHints":  [
                                          "询问边境局势",
@@ -2790,7 +2790,7 @@
                       "Weight":  3.8,
                       "CooldownSeconds":  42,
                       "RecordInMemory":  true,
-                      "Text":  "{player_title}，敌国的陛下亲自来此，真不知道这是访问还是试探。",
+                      "Text":  "{player_title}，敌国之君亲自进城，也不知是来访问还是来探路。",
                       "Memory":  "敌对国家的居民认出玩家是敌国统治者，表面遵守礼数，言语中带着戒备、仇恨或对其军力的复杂情绪。",
                       "ReplyHints":  [
                                          "询问边境局势",
@@ -2831,7 +2831,7 @@
                       "Weight":  3.8,
                       "CooldownSeconds":  42,
                       "RecordInMemory":  true,
-                      "Text":  "{player_title}，我们会记住您的脸，也会把今天的消息传给领主。",
+                      "Text":  "{player_title}，您这张脸我们记下了，今天的事也会报给领主。",
                       "Memory":  "敌对国家的居民认出玩家是敌国统治者，表面遵守礼数，言语中带着戒备、仇恨或对其军力的复杂情绪。",
                       "ReplyHints":  [
                                          "询问边境局势",
@@ -2872,7 +2872,7 @@
                       "Weight":  3.8,
                       "CooldownSeconds":  42,
                       "RecordInMemory":  true,
-                      "Text":  "我们记得边境上的烽火，不会因您的笑容就忘掉。",
+                      "Text":  "边境上的烽火我们还记得，不会因您笑一笑就忘了。",
                       "Memory":  "敌对国家的居民认出玩家是敌国统治者，表面遵守礼数，言语中带着戒备、仇恨或对其军力的复杂情绪。",
                       "ReplyHints":  [
                                          "询问边境局势",
@@ -2954,7 +2954,7 @@
                       "Weight":  3.8,
                       "CooldownSeconds":  42,
                       "RecordInMemory":  true,
-                      "Text":  "有人羡慕您统一诸侯的手腕，也有人恨您让我们的亲人上了战场。",
+                      "Text":  "有人佩服您治国的手腕，也有人恨您把我们的亲人送上战场。",
                       "Memory":  "敌对国家的居民认出玩家是敌国统治者，表面遵守礼数，言语中带着戒备、仇恨或对其军力的复杂情绪。",
                       "ReplyHints":  [
                                          "询问边境局势",
@@ -2995,7 +2995,7 @@
                       "Weight":  3.8,
                       "CooldownSeconds":  42,
                       "RecordInMemory":  true,
-                      "Text":  "请您遵守城中规矩，别把宫廷的威风带进百姓的街道。",
+                      "Text":  "请守城里的规矩，宫廷那套威风别带到百姓的街上来。",
                       "Memory":  "敌对国家的居民认出玩家是敌国统治者，表面遵守礼数，言语中带着戒备、仇恨或对其军力的复杂情绪。",
                       "ReplyHints":  [
                                          "询问边境局势",
@@ -3036,7 +3036,7 @@
                       "Weight":  3.8,
                       "CooldownSeconds":  42,
                       "RecordInMemory":  true,
-                      "Text":  "敌国的陛下亲自来此，真不知道这是访问还是试探。",
+                      "Text":  "敌国之君亲自进城，也不知是来访问还是来探路。",
                       "Memory":  "敌对国家的居民认出玩家是敌国统治者，表面遵守礼数，言语中带着戒备、仇恨或对其军力的复杂情绪。",
                       "ReplyHints":  [
                                          "询问边境局势",
@@ -3077,7 +3077,7 @@
                       "Weight":  3.8,
                       "CooldownSeconds":  42,
                       "RecordInMemory":  true,
-                      "Text":  "我们会记住您的脸，也会把今天的消息传给领主。",
+                      "Text":  "您这张脸我们记下了，今天的事也会报给领主。",
                       "Memory":  "敌对国家的居民认出玩家是敌国统治者，表面遵守礼数，言语中带着戒备、仇恨或对其军力的复杂情绪。",
                       "ReplyHints":  [
                                          "询问边境局势",
@@ -3118,7 +3118,7 @@
                       "Weight":  3.8,
                       "CooldownSeconds":  42,
                       "RecordInMemory":  true,
-                      "Text":  "我们记得边境上的烽火，不会因您的笑容就忘掉。",
+                      "Text":  "边境上的烽火我们还记得，不会因您笑一笑就忘了。",
                       "Memory":  "敌对国家的居民认出玩家是敌国统治者，表面遵守礼数，言语中带着戒备、仇恨或对其军力的复杂情绪。",
                       "ReplyHints":  [
                                          "询问边境局势",
@@ -3200,7 +3200,7 @@
                       "Weight":  3.8,
                       "CooldownSeconds":  42,
                       "RecordInMemory":  true,
-                      "Text":  "有人羡慕您统一诸侯的手腕，也有人恨您让我们的亲人上了战场。",
+                      "Text":  "有人佩服您治国的手腕，也有人恨您把我们的亲人送上战场。",
                       "Memory":  "敌对国家的居民认出玩家是敌国统治者，表面遵守礼数，言语中带着戒备、仇恨或对其军力的复杂情绪。",
                       "ReplyHints":  [
                                          "询问边境局势",
@@ -3241,7 +3241,7 @@
                       "Weight":  3.8,
                       "CooldownSeconds":  42,
                       "RecordInMemory":  true,
-                      "Text":  "请您遵守城中规矩，别把宫廷的威风带进百姓的街道。",
+                      "Text":  "请守城里的规矩，宫廷那套威风别带到百姓的街上来。",
                       "Memory":  "敌对国家的居民认出玩家是敌国统治者，表面遵守礼数，言语中带着戒备、仇恨或对其军力的复杂情绪。",
                       "ReplyHints":  [
                                          "询问边境局势",
@@ -3282,7 +3282,7 @@
                       "Weight":  3.8,
                       "CooldownSeconds":  42,
                       "RecordInMemory":  true,
-                      "Text":  "敌国的陛下亲自来此，真不知道这是访问还是试探。",
+                      "Text":  "敌国之君亲自进城，也不知是来访问还是来探路。",
                       "Memory":  "敌对国家的居民认出玩家是敌国统治者，表面遵守礼数，言语中带着戒备、仇恨或对其军力的复杂情绪。",
                       "ReplyHints":  [
                                          "询问边境局势",
@@ -3323,7 +3323,7 @@
                       "Weight":  3.8,
                       "CooldownSeconds":  42,
                       "RecordInMemory":  true,
-                      "Text":  "我们会记住您的脸，也会把今天的消息传给领主。",
+                      "Text":  "您这张脸我们记下了，今天的事也会报给领主。",
                       "Memory":  "敌对国家的居民认出玩家是敌国统治者，表面遵守礼数，言语中带着戒备、仇恨或对其军力的复杂情绪。",
                       "ReplyHints":  [
                                          "询问边境局势",
@@ -3364,7 +3364,7 @@
                       "Weight":  3.4,
                       "CooldownSeconds":  42,
                       "RecordInMemory":  true,
-                      "Text":  "{player_title}，您治理的国土离这里不远，商队常谈起那里的繁荣。",
+                      "Text":  "{player_title}，您的国土离这儿不远，商队常说起那边有多兴旺。",
                       "Memory":  "非敌对国家的居民认出玩家是外国统治者，表达好奇、羡慕、谨慎和对和平贸易的期待。",
                       "ReplyHints":  [
                                          "谈论两国关系",
@@ -3405,7 +3405,7 @@
                       "Weight":  3.4,
                       "CooldownSeconds":  42,
                       "RecordInMemory":  true,
-                      "Text":  "{player_title}，有人羡慕您的财富和军队，也有人担心邻国太强。",
+                      "Text":  "{player_title}，有人眼红您的财富和兵马，也有人怕邻国太强。",
                       "Memory":  "非敌对国家的居民认出玩家是外国统治者，表达好奇、羡慕、谨慎和对和平贸易的期待。",
                       "ReplyHints":  [
                                          "谈论两国关系",
@@ -3446,7 +3446,7 @@
                       "Weight":  3.4,
                       "CooldownSeconds":  42,
                       "RecordInMemory":  true,
-                      "Text":  "{player_title}，既然您愿意走进城里，愿今天的交易比战场更有意义。",
+                      "Text":  "{player_title}，既然您肯进城来，但愿今天谈的是买卖，不是刀兵。",
                       "Memory":  "非敌对国家的居民认出玩家是外国统治者，表达好奇、羡慕、谨慎和对和平贸易的期待。",
                       "ReplyHints":  [
                                          "谈论两国关系",
@@ -3487,7 +3487,7 @@
                       "Weight":  3.4,
                       "CooldownSeconds":  42,
                       "RecordInMemory":  true,
-                      "Text":  "{player_title}，我们尊重您的身份，但百姓仍会先看您的行为。",
+                      "Text":  "{player_title}，您的身份我们敬着，可百姓更看您怎么做事。",
                       "Memory":  "非敌对国家的居民认出玩家是外国统治者，表达好奇、羡慕、谨慎和对和平贸易的期待。",
                       "ReplyHints":  [
                                          "谈论两国关系",
@@ -3528,7 +3528,7 @@
                       "Weight":  3.4,
                       "CooldownSeconds":  42,
                       "RecordInMemory":  true,
-                      "Text":  "{player_title}，您的到来让酒馆有了新话题，今晚人人都想听听宫廷消息。",
+                      "Text":  "{player_title}，您一来，今晚酒馆又有新话题了，人人都想打听宫里的事。",
                       "Memory":  "非敌对国家的居民认出玩家是外国统治者，表达好奇、羡慕、谨慎和对和平贸易的期待。",
                       "ReplyHints":  [
                                          "谈论两国关系",
@@ -3610,7 +3610,7 @@
                       "Weight":  3.4,
                       "CooldownSeconds":  42,
                       "RecordInMemory":  true,
-                      "Text":  "您治理的国土离这里不远，商队常谈起那里的繁荣。",
+                      "Text":  "您的国土离这儿不远，商队常说起那边有多兴旺。",
                       "Memory":  "非敌对国家的居民认出玩家是外国统治者，表达好奇、羡慕、谨慎和对和平贸易的期待。",
                       "ReplyHints":  [
                                          "谈论两国关系",
@@ -3651,7 +3651,7 @@
                       "Weight":  3.4,
                       "CooldownSeconds":  42,
                       "RecordInMemory":  true,
-                      "Text":  "有人羡慕您的财富和军队，也有人担心邻国太强。",
+                      "Text":  "有人眼红您的财富和兵马，也有人怕邻国太强。",
                       "Memory":  "非敌对国家的居民认出玩家是外国统治者，表达好奇、羡慕、谨慎和对和平贸易的期待。",
                       "ReplyHints":  [
                                          "谈论两国关系",
@@ -3692,7 +3692,7 @@
                       "Weight":  3.4,
                       "CooldownSeconds":  42,
                       "RecordInMemory":  true,
-                      "Text":  "既然您愿意走进城里，愿今天的交易比战场更有意义。",
+                      "Text":  "既然您肯进城来，但愿今天谈的是买卖，不是刀兵。",
                       "Memory":  "非敌对国家的居民认出玩家是外国统治者，表达好奇、羡慕、谨慎和对和平贸易的期待。",
                       "ReplyHints":  [
                                          "谈论两国关系",
@@ -3733,7 +3733,7 @@
                       "Weight":  3.4,
                       "CooldownSeconds":  42,
                       "RecordInMemory":  true,
-                      "Text":  "我们尊重您的身份，但百姓仍会先看您的行为。",
+                      "Text":  "您的身份我们敬着，可百姓更看您怎么做事。",
                       "Memory":  "非敌对国家的居民认出玩家是外国统治者，表达好奇、羡慕、谨慎和对和平贸易的期待。",
                       "ReplyHints":  [
                                          "谈论两国关系",
@@ -3774,7 +3774,7 @@
                       "Weight":  3.4,
                       "CooldownSeconds":  42,
                       "RecordInMemory":  true,
-                      "Text":  "您的到来让酒馆有了新话题，今晚人人都想听听宫廷消息。",
+                      "Text":  "您一来，今晚酒馆又有新话题了，人人都想打听宫里的事。",
                       "Memory":  "非敌对国家的居民认出玩家是外国统治者，表达好奇、羡慕、谨慎和对和平贸易的期待。",
                       "ReplyHints":  [
                                          "谈论两国关系",
@@ -3856,7 +3856,7 @@
                       "Weight":  3.4,
                       "CooldownSeconds":  42,
                       "RecordInMemory":  true,
-                      "Text":  "那位{player_title}来自别国，您治理的国土离这里不远，商队常谈起那里的繁荣。",
+                      "Text":  "外邦的{player_title}，您的国土离这儿不远，商队常说起那边有多兴旺。",
                       "Memory":  "非敌对国家的居民认出玩家是外国统治者，表达好奇、羡慕、谨慎和对和平贸易的期待。",
                       "ReplyHints":  [
                                          "谈论两国关系",
@@ -3897,7 +3897,7 @@
                       "Weight":  3.4,
                       "CooldownSeconds":  42,
                       "RecordInMemory":  true,
-                      "Text":  "那位{player_title}来自别国，有人羡慕您的财富和军队，也有人担心邻国太强。",
+                      "Text":  "外邦的{player_title}，有人眼红您的财富和兵马，也有人怕邻国太强。",
                       "Memory":  "非敌对国家的居民认出玩家是外国统治者，表达好奇、羡慕、谨慎和对和平贸易的期待。",
                       "ReplyHints":  [
                                          "谈论两国关系",
@@ -3938,7 +3938,7 @@
                       "Weight":  3.4,
                       "CooldownSeconds":  42,
                       "RecordInMemory":  true,
-                      "Text":  "那位{player_title}来自别国，既然您愿意走进城里，愿今天的交易比战场更有意义。",
+                      "Text":  "外邦的{player_title}，既然您肯进城来，但愿今天谈的是买卖，不是刀兵。",
                       "Memory":  "非敌对国家的居民认出玩家是外国统治者，表达好奇、羡慕、谨慎和对和平贸易的期待。",
                       "ReplyHints":  [
                                          "谈论两国关系",
@@ -3979,7 +3979,7 @@
                       "Weight":  3.4,
                       "CooldownSeconds":  42,
                       "RecordInMemory":  true,
-                      "Text":  "那位{player_title}来自别国，我们尊重您的身份，但百姓仍会先看您的行为。",
+                      "Text":  "外邦的{player_title}，您的身份我们敬着，可百姓更看您怎么做事。",
                       "Memory":  "非敌对国家的居民认出玩家是外国统治者，表达好奇、羡慕、谨慎和对和平贸易的期待。",
                       "ReplyHints":  [
                                          "谈论两国关系",
@@ -4020,7 +4020,7 @@
                       "Weight":  3.4,
                       "CooldownSeconds":  42,
                       "RecordInMemory":  true,
-                      "Text":  "那位{player_title}来自别国，您的到来让酒馆有了新话题，今晚人人都想听听宫廷消息。",
+                      "Text":  "外邦的{player_title}，您一来，今晚酒馆又有新话题了，人人都想打听宫里的事。",
                       "Memory":  "非敌对国家的居民认出玩家是外国统治者，表达好奇、羡慕、谨慎和对和平贸易的期待。",
                       "ReplyHints":  [
                                          "谈论两国关系",
@@ -4061,7 +4061,7 @@
                       "Weight":  3.4,
                       "CooldownSeconds":  42,
                       "RecordInMemory":  true,
-                      "Text":  "那位{player_title}来自别国，愿两国边境长久安宁，别让商路又被军旗堵住。",
+                      "Text":  "外邦的{player_title}，愿两国边境长久安宁，别让商路又被军旗堵住。",
                       "Memory":  "非敌对国家的居民认出玩家是外国统治者，表达好奇、羡慕、谨慎和对和平贸易的期待。",
                       "ReplyHints":  [
                                          "谈论两国关系",
@@ -4100,7 +4100,7 @@
                       "Weight":  2.3,
                       "CooldownSeconds":  45,
                       "RecordInMemory":  true,
-                      "Text":  "这位大人的家族在远方很有名，别把普通旅客的礼数用错了。",
+                      "Text":  "这位大人的家族在远方颇有名望，可别拿待旅客的礼数待他。",
                       "Memory":  "别国的高等级、高声望领主进入城镇时，居民认出其家族纹章，谈论名声、兵力、财富和来意。",
                       "ReplyHints":  [
                                          "表明来意",
@@ -4184,7 +4184,7 @@
                       "Weight":  2.3,
                       "CooldownSeconds":  45,
                       "RecordInMemory":  true,
-                      "Text":  "您的家徽看起来价值不菲，城里的工匠都想见识一番。",
+                      "Text":  "您这家徽做得真讲究，城里的工匠都想凑近瞧瞧。",
                       "Memory":  "别国的高等级、高声望领主进入城镇时，居民认出其家族纹章，谈论名声、兵力、财富和来意。",
                       "ReplyHints":  [
                                          "表明来意",
@@ -4226,7 +4226,7 @@
                       "Weight":  2.3,
                       "CooldownSeconds":  45,
                       "RecordInMemory":  true,
-                      "Text":  "家族等级和声望都不低，难怪随从比商队还讲究。",
+                      "Text":  "看这排场就知道家世不凡，随从都比商队讲究。",
                       "Memory":  "别国的高等级、高声望领主进入城镇时，居民认出其家族纹章，谈论名声、兵力、财富和来意。",
                       "ReplyHints":  [
                                          "表明来意",
@@ -4268,7 +4268,7 @@
                       "Weight":  2.3,
                       "CooldownSeconds":  45,
                       "RecordInMemory":  true,
-                      "Text":  "我们听过您的名字，但仍想知道您对这里有什么打算。",
+                      "Text":  "您的名字我们听过，只是不知您来这儿有何打算。",
                       "Memory":  "别国的高等级、高声望领主进入城镇时，居民认出其家族纹章，谈论名声、兵力、财富和来意。",
                       "ReplyHints":  [
                                          "表明来意",
@@ -4310,7 +4310,7 @@
                       "Weight":  2.3,
                       "CooldownSeconds":  45,
                       "RecordInMemory":  true,
-                      "Text":  "外来的贵族若尊重本地规矩，城门自然欢迎您。",
+                      "Text":  "外来的贵人只要守本地的规矩，城门自然为您敞开。",
                       "Memory":  "别国的高等级、高声望领主进入城镇时，居民认出其家族纹章，谈论名声、兵力、财富和来意。",
                       "ReplyHints":  [
                                          "表明来意",
@@ -4352,7 +4352,7 @@
                       "Weight":  2.3,
                       "CooldownSeconds":  45,
                       "RecordInMemory":  true,
-                      "Text":  "这位大人的家族在远方很有名，别把普通旅客的礼数用错了。",
+                      "Text":  "这位大人的家族在远方颇有名望，可别拿待旅客的礼数待他。",
                       "Memory":  "别国的高等级、高声望领主进入城镇时，居民认出其家族纹章，谈论名声、兵力、财富和来意。",
                       "ReplyHints":  [
                                          "表明来意",
@@ -4436,7 +4436,7 @@
                       "Weight":  2.3,
                       "CooldownSeconds":  45,
                       "RecordInMemory":  true,
-                      "Text":  "您的家徽看起来价值不菲，城里的工匠都想见识一番。",
+                      "Text":  "您这家徽做得真讲究，城里的工匠都想凑近瞧瞧。",
                       "Memory":  "别国的高等级、高声望领主进入城镇时，居民认出其家族纹章，谈论名声、兵力、财富和来意。",
                       "ReplyHints":  [
                                          "表明来意",
@@ -4478,7 +4478,7 @@
                       "Weight":  2.3,
                       "CooldownSeconds":  45,
                       "RecordInMemory":  true,
-                      "Text":  "家族等级和声望都不低，难怪随从比商队还讲究。",
+                      "Text":  "看这排场就知道家世不凡，随从都比商队讲究。",
                       "Memory":  "别国的高等级、高声望领主进入城镇时，居民认出其家族纹章，谈论名声、兵力、财富和来意。",
                       "ReplyHints":  [
                                          "表明来意",
@@ -4520,7 +4520,7 @@
                       "Weight":  2.3,
                       "CooldownSeconds":  45,
                       "RecordInMemory":  true,
-                      "Text":  "我们听过您的名字，但仍想知道您对这里有什么打算。",
+                      "Text":  "您的名字我们听过，只是不知您来这儿有何打算。",
                       "Memory":  "别国的高等级、高声望领主进入城镇时，居民认出其家族纹章，谈论名声、兵力、财富和来意。",
                       "ReplyHints":  [
                                          "表明来意",
@@ -4562,7 +4562,7 @@
                       "Weight":  2.3,
                       "CooldownSeconds":  45,
                       "RecordInMemory":  true,
-                      "Text":  "外来的贵族若尊重本地规矩，城门自然欢迎您。",
+                      "Text":  "外来的贵人只要守本地的规矩，城门自然为您敞开。",
                       "Memory":  "别国的高等级、高声望领主进入城镇时，居民认出其家族纹章，谈论名声、兵力、财富和来意。",
                       "ReplyHints":  [
                                          "表明来意",
@@ -4604,7 +4604,7 @@
                       "Weight":  2.3,
                       "CooldownSeconds":  45,
                       "RecordInMemory":  true,
-                      "Text":  "这位大人的家族在远方很有名，别把普通旅客的礼数用错了。",
+                      "Text":  "这位大人的家族在远方颇有名望，可别拿待旅客的礼数待他。",
                       "Memory":  "别国的高等级、高声望领主进入城镇时，居民认出其家族纹章，谈论名声、兵力、财富和来意。",
                       "ReplyHints":  [
                                          "表明来意",
@@ -4688,7 +4688,7 @@
                       "Weight":  2.3,
                       "CooldownSeconds":  45,
                       "RecordInMemory":  true,
-                      "Text":  "您的家徽看起来价值不菲，城里的工匠都想见识一番。",
+                      "Text":  "您这家徽做得真讲究，城里的工匠都想凑近瞧瞧。",
                       "Memory":  "别国的高等级、高声望领主进入城镇时，居民认出其家族纹章，谈论名声、兵力、财富和来意。",
                       "ReplyHints":  [
                                          "表明来意",
@@ -4730,7 +4730,7 @@
                       "Weight":  2.3,
                       "CooldownSeconds":  45,
                       "RecordInMemory":  true,
-                      "Text":  "家族等级和声望都不低，难怪随从比商队还讲究。",
+                      "Text":  "看这排场就知道家世不凡，随从都比商队讲究。",
                       "Memory":  "别国的高等级、高声望领主进入城镇时，居民认出其家族纹章，谈论名声、兵力、财富和来意。",
                       "ReplyHints":  [
                                          "表明来意",
@@ -4772,7 +4772,7 @@
                       "Weight":  2.3,
                       "CooldownSeconds":  45,
                       "RecordInMemory":  true,
-                      "Text":  "我们听过您的名字，但仍想知道您对这里有什么打算。",
+                      "Text":  "您的名字我们听过，只是不知您来这儿有何打算。",
                       "Memory":  "别国的高等级、高声望领主进入城镇时，居民认出其家族纹章，谈论名声、兵力、财富和来意。",
                       "ReplyHints":  [
                                          "表明来意",
@@ -4814,7 +4814,7 @@
                       "Weight":  2.3,
                       "CooldownSeconds":  45,
                       "RecordInMemory":  true,
-                      "Text":  "外来的贵族若尊重本地规矩，城门自然欢迎您。",
+                      "Text":  "外来的贵人只要守本地的规矩，城门自然为您敞开。",
                       "Memory":  "别国的高等级、高声望领主进入城镇时，居民认出其家族纹章，谈论名声、兵力、财富和来意。",
                       "ReplyHints":  [
                                          "表明来意",
@@ -4957,7 +4957,7 @@
                       "Weight":  3.8,
                       "CooldownSeconds":  27,
                       "RecordInMemory":  true,
-                      "Text":  "{time_greeting}，{player_title}，我们有些家常话，正盼着能让您听见。",
+                      "Text":  "{time_greeting}，{player_title}，我们有些家长里短，正盼着能说给您听。",
                       "Memory":  "本地居民认出玩家是自己的领主，行礼并谈到治理、治安与民情。",
                       "ReplyHints":  [
                                          "向领民回礼",
@@ -5027,7 +5027,7 @@
                       "Weight":  3.8,
                       "CooldownSeconds":  27,
                       "RecordInMemory":  true,
-                      "Text":  "{time_greeting}，{player_title}，您肯亲自走在街上，百姓心里就踏实。",
+                      "Text":  "{time_greeting}，{player_title}，您肯亲自走到街上来，百姓心里就踏实。",
                       "Memory":  "本地居民认出玩家是自己的领主，行礼并谈到治理、治安与民情。",
                       "ReplyHints":  [
                                          "向领民回礼",
@@ -5167,7 +5167,7 @@
                       "Weight":  3.8,
                       "CooldownSeconds":  27,
                       "RecordInMemory":  true,
-                      "Text":  "{player_title}，我们有些家常话，正盼着能让您听见。",
+                      "Text":  "{player_title}，我们有些家长里短，正盼着能说给您听。",
                       "Memory":  "本地居民认出玩家是自己的领主，行礼并谈到治理、治安与民情。",
                       "ReplyHints":  [
                                          "向领民回礼",
@@ -5237,7 +5237,7 @@
                       "Weight":  3.8,
                       "CooldownSeconds":  27,
                       "RecordInMemory":  true,
-                      "Text":  "{player_title}，您肯亲自走在街上，百姓心里就踏实。",
+                      "Text":  "{player_title}，您肯亲自走到街上来，百姓心里就踏实。",
                       "Memory":  "本地居民认出玩家是自己的领主，行礼并谈到治理、治安与民情。",
                       "ReplyHints":  [
                                          "向领民回礼",
@@ -5377,7 +5377,7 @@
                       "Weight":  3.8,
                       "CooldownSeconds":  27,
                       "RecordInMemory":  true,
-                      "Text":  "我们有些家常话，正盼着能让您听见。",
+                      "Text":  "我们有些家长里短，正盼着能说给您听。",
                       "Memory":  "本地居民认出玩家是自己的领主，行礼并谈到治理、治安与民情。",
                       "ReplyHints":  [
                                          "向领民回礼",
@@ -5447,7 +5447,7 @@
                       "Weight":  3.8,
                       "CooldownSeconds":  27,
                       "RecordInMemory":  true,
-                      "Text":  "您肯亲自走在街上，百姓心里就踏实。",
+                      "Text":  "您肯亲自走到街上来，百姓心里就踏实。",
                       "Memory":  "本地居民认出玩家是自己的领主，行礼并谈到治理、治安与民情。",
                       "ReplyHints":  [
                                          "向领民回礼",
@@ -5639,7 +5639,7 @@
                       "Weight":  4,
                       "CooldownSeconds":  28,
                       "RecordInMemory":  true,
-                      "Text":  "{time_greeting}，{player_title}，有您在城里，百姓看我们的眼神都安心些。",
+                      "Text":  "{time_greeting}，{player_title}，有您坐镇城中，百姓看我们的眼神都安心些。",
                       "Memory":  "本城守卫在白天向领主行礼并汇报城门、市场、仓库或驻军情况。",
                       "ReplyHints":  [
                                          "询问巡逻",
@@ -5873,7 +5873,7 @@
                       "Weight":  4,
                       "CooldownSeconds":  28,
                       "RecordInMemory":  true,
-                      "Text":  "{player_title}，有您在城里，百姓看我们的眼神都安心些。",
+                      "Text":  "{player_title}，有您坐镇城中，百姓看我们的眼神都安心些。",
                       "Memory":  "本城守卫在白天向领主行礼并汇报城门、市场、仓库或驻军情况。",
                       "ReplyHints":  [
                                          "询问巡逻",
@@ -6107,7 +6107,7 @@
                       "Weight":  4,
                       "CooldownSeconds":  28,
                       "RecordInMemory":  true,
-                      "Text":  "有您在城里，百姓看我们的眼神都安心些。",
+                      "Text":  "有您坐镇城中，百姓看我们的眼神都安心些。",
                       "Memory":  "本城守卫在白天向领主行礼并汇报城门、市场、仓库或驻军情况。",
                       "ReplyHints":  [
                                          "询问巡逻",
@@ -6184,7 +6184,7 @@
                       "Weight":  4.5,
                       "CooldownSeconds":  30,
                       "RecordInMemory":  true,
-                      "Text":  "晚上好，{player_title}，您真是勤政，我们不敢再打瞌睡了。",
+                      "Text":  "晚上好，{player_title}，您这样勤勉，弟兄们哪还敢打瞌睡。",
                       "Memory":  "夜班守卫向本城领主行礼，同时坦率提到夜巡辛苦、军饷、天气或巡逻结果。",
                       "ReplyHints":  [
                                          "慰问夜哨",
@@ -6336,7 +6336,7 @@
                       "Weight":  4.5,
                       "CooldownSeconds":  30,
                       "RecordInMemory":  true,
-                      "Text":  "晚上好，{player_title}，北墙刚巡过一遍，只听见猫，没有别的动静。",
+                      "Text":  "晚上好，{player_title}，北墙刚巡过一遍，除了几声猫叫，没别的动静。",
                       "Memory":  "夜班守卫向本城领主行礼，同时坦率提到夜巡辛苦、军饷、天气或巡逻结果。",
                       "ReplyHints":  [
                                          "慰问夜哨",
@@ -6374,7 +6374,7 @@
                       "Weight":  4.5,
                       "CooldownSeconds":  30,
                       "RecordInMemory":  true,
-                      "Text":  "晚上好，{player_title}，若军饷能准时发下来，夜风也会暖和些。",
+                      "Text":  "晚上好，{player_title}，军饷要是能按时发，这夜风吹着都暖和些。",
                       "Memory":  "夜班守卫向本城领主行礼，同时坦率提到夜巡辛苦、军饷、天气或巡逻结果。",
                       "ReplyHints":  [
                                          "慰问夜哨",
@@ -6412,7 +6412,7 @@
                       "Weight":  4.5,
                       "CooldownSeconds":  30,
                       "RecordInMemory":  true,
-                      "Text":  "{player_title}，您真是勤政，我们不敢再打瞌睡了。",
+                      "Text":  "{player_title}，您这样勤勉，弟兄们哪还敢打瞌睡。",
                       "Memory":  "夜班守卫向本城领主行礼，同时坦率提到夜巡辛苦、军饷、天气或巡逻结果。",
                       "ReplyHints":  [
                                          "慰问夜哨",
@@ -6564,7 +6564,7 @@
                       "Weight":  4.5,
                       "CooldownSeconds":  30,
                       "RecordInMemory":  true,
-                      "Text":  "{player_title}，北墙刚巡过一遍，只听见猫，没有别的动静。",
+                      "Text":  "{player_title}，北墙刚巡过一遍，除了几声猫叫，没别的动静。",
                       "Memory":  "夜班守卫向本城领主行礼，同时坦率提到夜巡辛苦、军饷、天气或巡逻结果。",
                       "ReplyHints":  [
                                          "慰问夜哨",
@@ -6602,7 +6602,7 @@
                       "Weight":  4.5,
                       "CooldownSeconds":  30,
                       "RecordInMemory":  true,
-                      "Text":  "{player_title}，若军饷能准时发下来，夜风也会暖和些。",
+                      "Text":  "{player_title}，军饷要是能按时发，这夜风吹着都暖和些。",
                       "Memory":  "夜班守卫向本城领主行礼，同时坦率提到夜巡辛苦、军饷、天气或巡逻结果。",
                       "ReplyHints":  [
                                          "慰问夜哨",
@@ -6640,7 +6640,7 @@
                       "Weight":  4.5,
                       "CooldownSeconds":  30,
                       "RecordInMemory":  true,
-                      "Text":  "{player_title}，您这么晚还来，您真是勤政，我们不敢再打瞌睡了。",
+                      "Text":  "这么晚了，{player_title}还在巡城，您这样勤勉，弟兄们哪还敢打瞌睡。",
                       "Memory":  "夜班守卫向本城领主行礼，同时坦率提到夜巡辛苦、军饷、天气或巡逻结果。",
                       "ReplyHints":  [
                                          "慰问夜哨",
@@ -6678,7 +6678,7 @@
                       "Weight":  4.5,
                       "CooldownSeconds":  30,
                       "RecordInMemory":  true,
-                      "Text":  "{player_title}，您这么晚还来，夜班确实难熬，不过城门绝不会失守。",
+                      "Text":  "这么晚了，{player_title}还在巡城，夜班确实难熬，不过城门绝不会失守。",
                       "Memory":  "夜班守卫向本城领主行礼，同时坦率提到夜巡辛苦、军饷、天气或巡逻结果。",
                       "ReplyHints":  [
                                          "慰问夜哨",
@@ -6716,7 +6716,7 @@
                       "Weight":  4.5,
                       "CooldownSeconds":  30,
                       "RecordInMemory":  true,
-                      "Text":  "{player_title}，您这么晚还来，今晚风大，您最好披件厚斗篷。",
+                      "Text":  "这么晚了，{player_title}还在巡城，今晚风大，您最好披件厚斗篷。",
                       "Memory":  "夜班守卫向本城领主行礼，同时坦率提到夜巡辛苦、军饷、天气或巡逻结果。",
                       "ReplyHints":  [
                                          "慰问夜哨",
@@ -6754,7 +6754,7 @@
                       "Weight":  4.5,
                       "CooldownSeconds":  30,
                       "RecordInMemory":  true,
-                      "Text":  "{player_title}，您这么晚还来，弟兄们嘴上抱怨换岗慢，手里的长枪可没松。",
+                      "Text":  "这么晚了，{player_title}还在巡城，弟兄们嘴上抱怨换岗慢，手里的长枪可没松。",
                       "Memory":  "夜班守卫向本城领主行礼，同时坦率提到夜巡辛苦、军饷、天气或巡逻结果。",
                       "ReplyHints":  [
                                          "慰问夜哨",
@@ -6792,7 +6792,7 @@
                       "Weight":  4.5,
                       "CooldownSeconds":  30,
                       "RecordInMemory":  true,
-                      "Text":  "{player_title}，您这么晚还来，北墙刚巡过一遍，只听见猫，没有别的动静。",
+                      "Text":  "这么晚了，{player_title}还在巡城，北墙刚巡过一遍，除了几声猫叫，没别的动静。",
                       "Memory":  "夜班守卫向本城领主行礼，同时坦率提到夜巡辛苦、军饷、天气或巡逻结果。",
                       "ReplyHints":  [
                                          "慰问夜哨",
@@ -6830,7 +6830,7 @@
                       "Weight":  4.5,
                       "CooldownSeconds":  30,
                       "RecordInMemory":  true,
-                      "Text":  "{player_title}，您这么晚还来，若军饷能准时发下来，夜风也会暖和些。",
+                      "Text":  "这么晚了，{player_title}还在巡城，军饷要是能按时发，这夜风吹着都暖和些。",
                       "Memory":  "夜班守卫向本城领主行礼，同时坦率提到夜巡辛苦、军饷、天气或巡逻结果。",
                       "ReplyHints":  [
                                          "慰问夜哨",
@@ -6998,7 +6998,7 @@
                       "Weight":  4,
                       "CooldownSeconds":  28,
                       "RecordInMemory":  true,
-                      "Text":  "{time_greeting}，{player_title}，孩子们都想看看真正的领主是什么样子。",
+                      "Text":  "{time_greeting}，{player_title}，孩子们都想瞧瞧真正的领主长什么样。",
                       "Memory":  "村民向本地领主行礼，并谈到田地、盗匪、水渠、税收与家中孩子。",
                       "ReplyHints":  [
                                          "询问收成",
@@ -7196,7 +7196,7 @@
                       "Weight":  4,
                       "CooldownSeconds":  28,
                       "RecordInMemory":  true,
-                      "Text":  "孩子们都想看看真正的领主是什么样子。",
+                      "Text":  "孩子们都想瞧瞧真正的领主长什么样。",
                       "Memory":  "村民向本地领主行礼，并谈到田地、盗匪、水渠、税收与家中孩子。",
                       "ReplyHints":  [
                                          "询问收成",
@@ -7394,7 +7394,7 @@
                       "Weight":  4,
                       "CooldownSeconds":  28,
                       "RecordInMemory":  true,
-                      "Text":  "{player_title}，孩子们都想看看真正的领主是什么样子。",
+                      "Text":  "{player_title}，孩子们都想瞧瞧真正的领主长什么样。",
                       "Memory":  "村民向本地领主行礼，并谈到田地、盗匪、水渠、税收与家中孩子。",
                       "ReplyHints":  [
                                          "询问收成",
@@ -7620,7 +7620,7 @@
                       "Weight":  2.8,
                       "CooldownSeconds":  27,
                       "RecordInMemory":  true,
-                      "Text":  "{time_greeting}，{player_title}，您的家族名声已经传到这里了。",
+                      "Text":  "{time_greeting}，{player_title}，您家族的名声早就传到这儿了。",
                       "Memory":  "居民认出玩家是外来领主，以贵族礼节问候，并提供落脚、领主大厅或城内局势信息。",
                       "ReplyHints":  [
                                          "询问领主大厅",
@@ -7854,7 +7854,7 @@
                       "Weight":  2.8,
                       "CooldownSeconds":  27,
                       "RecordInMemory":  true,
-                      "Text":  "您的家族名声已经传到这里了。",
+                      "Text":  "您家族的名声早就传到这儿了。",
                       "Memory":  "居民认出玩家是外来领主，以贵族礼节问候，并提供落脚、领主大厅或城内局势信息。",
                       "ReplyHints":  [
                                          "询问领主大厅",
@@ -8088,7 +8088,7 @@
                       "Weight":  2.8,
                       "CooldownSeconds":  27,
                       "RecordInMemory":  true,
-                      "Text":  "您的家族名声已经传到这里了。",
+                      "Text":  "您家族的名声早就传到这儿了。",
                       "Memory":  "居民认出玩家是外来领主，以贵族礼节问候，并提供落脚、领主大厅或城内局势信息。",
                       "ReplyHints":  [
                                          "询问领主大厅",
@@ -8167,7 +8167,7 @@
                       "Weight":  2.9,
                       "CooldownSeconds":  38,
                       "RecordInMemory":  true,
-                      "Text":  "听说你们替出得起钱的人打仗，是真的吗？",
+                      "Text":  "听说你们谁给钱就替谁打仗，真有这回事？",
                       "Memory":  "居民认出玩家是雇佣兵，谈到护送、战斗名声、招募新人或担心麻烦。",
                       "ReplyHints":  [
                                          "询问护送工作",
@@ -8237,7 +8237,7 @@
                       "Weight":  2.9,
                       "CooldownSeconds":  38,
                       "RecordInMemory":  true,
-                      "Text":  "看你的样子，应该从不少险地活着回来过。",
+                      "Text":  "看你这模样，没少从鬼门关里爬回来吧。",
                       "Memory":  "居民认出玩家是雇佣兵，谈到护送、战斗名声、招募新人或担心麻烦。",
                       "ReplyHints":  [
                                          "询问护送工作",
@@ -8307,7 +8307,7 @@
                       "Weight":  2.9,
                       "CooldownSeconds":  38,
                       "RecordInMemory":  true,
-                      "Text":  "打仗归打仗，可别把城里的麻烦也带进来。",
+                      "Text":  "打仗归打仗，可别把麻烦带进城里来。",
                       "Memory":  "居民认出玩家是雇佣兵，谈到护送、战斗名声、招募新人或担心麻烦。",
                       "ReplyHints":  [
                                          "询问护送工作",
@@ -8377,7 +8377,7 @@
                       "Weight":  2.9,
                       "CooldownSeconds":  38,
                       "RecordInMemory":  true,
-                      "Text":  "朋友，听说你们替出得起钱的人打仗，是真的吗？",
+                      "Text":  "朋友，听说你们谁给钱就替谁打仗，真有这回事？",
                       "Memory":  "居民认出玩家是雇佣兵，谈到护送、战斗名声、招募新人或担心麻烦。",
                       "ReplyHints":  [
                                          "询问护送工作",
@@ -8447,7 +8447,7 @@
                       "Weight":  2.9,
                       "CooldownSeconds":  38,
                       "RecordInMemory":  true,
-                      "Text":  "朋友，看你的样子，应该从不少险地活着回来过。",
+                      "Text":  "朋友，看你这模样，没少从鬼门关里爬回来吧。",
                       "Memory":  "居民认出玩家是雇佣兵，谈到护送、战斗名声、招募新人或担心麻烦。",
                       "ReplyHints":  [
                                          "询问护送工作",
@@ -8517,7 +8517,7 @@
                       "Weight":  2.9,
                       "CooldownSeconds":  38,
                       "RecordInMemory":  true,
-                      "Text":  "朋友，打仗归打仗，可别把城里的麻烦也带进来。",
+                      "Text":  "朋友，打仗归打仗，可别把麻烦带进城里来。",
                       "Memory":  "居民认出玩家是雇佣兵，谈到护送、战斗名声、招募新人或担心麻烦。",
                       "ReplyHints":  [
                                          "询问护送工作",
@@ -8587,7 +8587,7 @@
                       "Weight":  2.9,
                       "CooldownSeconds":  38,
                       "RecordInMemory":  true,
-                      "Text":  "听说你们替出得起钱的人打仗，是真的吗？",
+                      "Text":  "听说你们谁给钱就替谁打仗，真有这回事？",
                       "Memory":  "居民认出玩家是雇佣兵，谈到护送、战斗名声、招募新人或担心麻烦。",
                       "ReplyHints":  [
                                          "询问护送工作",
@@ -8657,7 +8657,7 @@
                       "Weight":  2.9,
                       "CooldownSeconds":  38,
                       "RecordInMemory":  true,
-                      "Text":  "看你的样子，应该从不少险地活着回来过。",
+                      "Text":  "看你这模样，没少从鬼门关里爬回来吧。",
                       "Memory":  "居民认出玩家是雇佣兵，谈到护送、战斗名声、招募新人或担心麻烦。",
                       "ReplyHints":  [
                                          "询问护送工作",
@@ -8727,7 +8727,7 @@
                       "Weight":  2.9,
                       "CooldownSeconds":  38,
                       "RecordInMemory":  true,
-                      "Text":  "打仗归打仗，可别把城里的麻烦也带进来。",
+                      "Text":  "打仗归打仗，可别把麻烦带进城里来。",
                       "Memory":  "居民认出玩家是雇佣兵，谈到护送、战斗名声、招募新人或担心麻烦。",
                       "ReplyHints":  [
                                          "询问护送工作",
@@ -8872,7 +8872,7 @@
                       "Weight":  3.2,
                       "CooldownSeconds":  36,
                       "RecordInMemory":  true,
-                      "Text":  "没想到传闻里的人真的会走在我们这条街上。",
+                      "Text":  "没想到传说里的人物，真会走到我们这条街上。",
                       "Memory":  "居民因玩家的高声望认出玩家，表达惊讶、崇拜并追问战斗传闻。",
                       "ReplyHints":  [
                                          "讲述战斗经历",
@@ -8983,7 +8983,7 @@
                       "Weight":  3.2,
                       "CooldownSeconds":  36,
                       "RecordInMemory":  true,
-                      "Text":  "若能得到您的签名，酒馆里能吹嘘一个月。",
+                      "Text":  "能跟您说上几句话，够我在酒馆里吹上一个月。",
                       "Memory":  "居民因玩家的高声望认出玩家，表达惊讶、崇拜并追问战斗传闻。",
                       "ReplyHints":  [
                                          "讲述战斗经历",
@@ -9094,7 +9094,7 @@
                       "Weight":  3.2,
                       "CooldownSeconds":  36,
                       "RecordInMemory":  true,
-                      "Text":  "那不是{player_name}吗？没想到传闻里的人真的会走在我们这条街上。",
+                      "Text":  "那不是{player_name}吗？没想到传说里的人物，真会走到我们这条街上。",
                       "Memory":  "居民因玩家的高声望认出玩家，表达惊讶、崇拜并追问战斗传闻。",
                       "ReplyHints":  [
                                          "讲述战斗经历",
@@ -9205,7 +9205,7 @@
                       "Weight":  3.2,
                       "CooldownSeconds":  36,
                       "RecordInMemory":  true,
-                      "Text":  "那不是{player_name}吗？若能得到您的签名，酒馆里能吹嘘一个月。",
+                      "Text":  "那不是{player_name}吗？能跟您说上几句话，够我在酒馆里吹上一个月。",
                       "Memory":  "居民因玩家的高声望认出玩家，表达惊讶、崇拜并追问战斗传闻。",
                       "ReplyHints":  [
                                          "讲述战斗经历",
@@ -9316,7 +9316,7 @@
                       "Weight":  3.2,
                       "CooldownSeconds":  36,
                       "RecordInMemory":  true,
-                      "Text":  "没想到传闻里的人真的会走在我们这条街上。",
+                      "Text":  "没想到传说里的人物，真会走到我们这条街上。",
                       "Memory":  "居民因玩家的高声望认出玩家，表达惊讶、崇拜并追问战斗传闻。",
                       "ReplyHints":  [
                                          "讲述战斗经历",
@@ -9427,7 +9427,7 @@
                       "Weight":  3.2,
                       "CooldownSeconds":  36,
                       "RecordInMemory":  true,
-                      "Text":  "若能得到您的签名，酒馆里能吹嘘一个月。",
+                      "Text":  "能跟您说上几句话，够我在酒馆里吹上一个月。",
                       "Memory":  "居民因玩家的高声望认出玩家，表达惊讶、崇拜并追问战斗传闻。",
                       "ReplyHints":  [
                                          "讲述战斗经历",
@@ -9462,7 +9462,7 @@
                       "Weight":  2.9,
                       "CooldownSeconds":  28,
                       "RecordInMemory":  true,
-                      "Text":  "能带着这样的财富旅行，胆量也一定不小。",
+                      "Text":  "揣着这么多钱出门，胆子可真不小。",
                       "Memory":  "居民注意到玩家十分富有，谈到昂贵行装、投资机会、高档货物、护卫或盗贼风险。",
                       "ReplyHints":  [
                                          "询问高档货物",
@@ -9567,7 +9567,7 @@
                       "Weight":  2.9,
                       "CooldownSeconds":  28,
                       "RecordInMemory":  true,
-                      "Text":  "若您愿意投资，这里的工坊正缺一位大主顾。",
+                      "Text":  "您若肯出钱入股，这儿的工坊正缺个大主顾。",
                       "Memory":  "居民注意到玩家十分富有，谈到昂贵行装、投资机会、高档货物、护卫或盗贼风险。",
                       "ReplyHints":  [
                                          "询问高档货物",
@@ -9602,7 +9602,7 @@
                       "Weight":  2.9,
                       "CooldownSeconds":  28,
                       "RecordInMemory":  true,
-                      "Text":  "钱袋再沉也要小心，最近扒手可不长眼。",
+                      "Text":  "钱袋再沉也得捂好，最近的扒手可不长眼。",
                       "Memory":  "居民注意到玩家十分富有，谈到昂贵行装、投资机会、高档货物、护卫或盗贼风险。",
                       "ReplyHints":  [
                                          "询问高档货物",
@@ -9672,7 +9672,7 @@
                       "Weight":  2.9,
                       "CooldownSeconds":  28,
                       "RecordInMemory":  true,
-                      "Text":  "能带着这样的财富旅行，胆量也一定不小。",
+                      "Text":  "揣着这么多钱出门，胆子可真不小。",
                       "Memory":  "居民注意到玩家十分富有，谈到昂贵行装、投资机会、高档货物、护卫或盗贼风险。",
                       "ReplyHints":  [
                                          "询问高档货物",
@@ -9777,7 +9777,7 @@
                       "Weight":  2.9,
                       "CooldownSeconds":  28,
                       "RecordInMemory":  true,
-                      "Text":  "若您愿意投资，这里的工坊正缺一位大主顾。",
+                      "Text":  "您若肯出钱入股，这儿的工坊正缺个大主顾。",
                       "Memory":  "居民注意到玩家十分富有，谈到昂贵行装、投资机会、高档货物、护卫或盗贼风险。",
                       "ReplyHints":  [
                                          "询问高档货物",
@@ -9812,7 +9812,7 @@
                       "Weight":  2.9,
                       "CooldownSeconds":  28,
                       "RecordInMemory":  true,
-                      "Text":  "钱袋再沉也要小心，最近扒手可不长眼。",
+                      "Text":  "钱袋再沉也得捂好，最近的扒手可不长眼。",
                       "Memory":  "居民注意到玩家十分富有，谈到昂贵行装、投资机会、高档货物、护卫或盗贼风险。",
                       "ReplyHints":  [
                                          "询问高档货物",
@@ -9882,7 +9882,7 @@
                       "Weight":  2.9,
                       "CooldownSeconds":  28,
                       "RecordInMemory":  true,
-                      "Text":  "贵客，能带着这样的财富旅行，胆量也一定不小。",
+                      "Text":  "贵客，揣着这么多钱出门，胆子可真不小。",
                       "Memory":  "居民注意到玩家十分富有，谈到昂贵行装、投资机会、高档货物、护卫或盗贼风险。",
                       "ReplyHints":  [
                                          "询问高档货物",
@@ -9917,7 +9917,7 @@
                       "Weight":  2.9,
                       "CooldownSeconds":  28,
                       "RecordInMemory":  true,
-                      "Text":  "贵客，瞧那身行头，恐怕比这条街一年的税都值钱。",
+                      "Text":  "贵客这身行头，恐怕比这条街一年的税都值钱。",
                       "Memory":  "居民注意到玩家十分富有，谈到昂贵行装、投资机会、高档货物、护卫或盗贼风险。",
                       "ReplyHints":  [
                                          "询问高档货物",
@@ -9987,7 +9987,7 @@
                       "Weight":  2.9,
                       "CooldownSeconds":  28,
                       "RecordInMemory":  true,
-                      "Text":  "贵客，若您愿意投资，这里的工坊正缺一位大主顾。",
+                      "Text":  "贵客，您若肯出钱入股，这儿的工坊正缺个大主顾。",
                       "Memory":  "居民注意到玩家十分富有，谈到昂贵行装、投资机会、高档货物、护卫或盗贼风险。",
                       "ReplyHints":  [
                                          "询问高档货物",
@@ -10022,7 +10022,7 @@
                       "Weight":  2.9,
                       "CooldownSeconds":  28,
                       "RecordInMemory":  true,
-                      "Text":  "贵客，钱袋再沉也要小心，最近扒手可不长眼。",
+                      "Text":  "贵客，钱袋再沉也得捂好，最近的扒手可不长眼。",
                       "Memory":  "居民注意到玩家十分富有，谈到昂贵行装、投资机会、高档货物、护卫或盗贼风险。",
                       "ReplyHints":  [
                                          "询问高档货物",
@@ -10322,7 +10322,7 @@
                       "Weight":  3.4,
                       "CooldownSeconds":  34,
                       "RecordInMemory":  true,
-                      "Text":  "{player_title}，若待遇公平，我愿把这条命交给一位有名望的首领。",
+                      "Text":  "{player_title}，只要待人公道，我愿把这条命交给一位有名望的首领。",
                       "Memory":  "这名居民被玩家的名望、财富或佣兵身份吸引，主动询问能否加入队伍。",
                       "ReplyHints":  [
                                          "询问他的本领",
@@ -10598,7 +10598,7 @@
                       "Weight":  3.4,
                       "CooldownSeconds":  34,
                       "RecordInMemory":  true,
-                      "Text":  "若待遇公平，我愿把这条命交给一位有名望的首领。",
+                      "Text":  "只要待人公道，我愿把这条命交给一位有名望的首领。",
                       "Memory":  "这名居民被玩家的名望、财富或佣兵身份吸引，主动询问能否加入队伍。",
                       "ReplyHints":  [
                                          "询问他的本领",
@@ -10874,7 +10874,7 @@
                       "Weight":  3.4,
                       "CooldownSeconds":  34,
                       "RecordInMemory":  true,
-                      "Text":  "若待遇公平，我愿把这条命交给一位有名望的首领。",
+                      "Text":  "只要待人公道，我愿把这条命交给一位有名望的首领。",
                       "Memory":  "这名居民被玩家的名望、财富或佣兵身份吸引，主动询问能否加入队伍。",
                       "ReplyHints":  [
                                          "询问他的本领",
@@ -10922,7 +10922,7 @@
                       "Weight":  2.8,
                       "CooldownSeconds":  36,
                       "RecordInMemory":  true,
-                      "Text":  "这身盔甲的做工真漂亮，关节处一点也不拖沓。",
+                      "Text":  "这身盔甲做工真漂亮，关节处严丝合缝。",
                       "Memory":  "NPC赞叹玩家昂贵或出名的武器盔甲，对其做工、价格和战场价值感兴趣。",
                       "ReplyHints":  [
                                          "介绍装备来源",
@@ -10992,7 +10992,7 @@
                       "Weight":  2.8,
                       "CooldownSeconds":  36,
                       "RecordInMemory":  true,
-                      "Text":  "您的披风和甲片配得真气派，远远就认得出来。",
+                      "Text":  "这披风配上甲片真气派，老远就认得出来。",
                       "Memory":  "NPC赞叹玩家昂贵或出名的武器盔甲，对其做工、价格和战场价值感兴趣。",
                       "ReplyHints":  [
                                          "介绍装备来源",
@@ -11097,7 +11097,7 @@
                       "Weight":  2.8,
                       "CooldownSeconds":  36,
                       "RecordInMemory":  true,
-                      "Text":  "看得出来您不只富有，也真的懂得怎样挑选兵器。",
+                      "Text":  "看得出您不光有钱，还真懂得挑兵器。",
                       "Memory":  "NPC赞叹玩家昂贵或出名的武器盔甲，对其做工、价格和战场价值感兴趣。",
                       "ReplyHints":  [
                                          "介绍装备来源",
@@ -11132,7 +11132,7 @@
                       "Weight":  2.8,
                       "CooldownSeconds":  36,
                       "RecordInMemory":  true,
-                      "Text":  "这身盔甲的做工真漂亮，关节处一点也不拖沓。",
+                      "Text":  "这身盔甲做工真漂亮，关节处严丝合缝。",
                       "Memory":  "NPC赞叹玩家昂贵或出名的武器盔甲，对其做工、价格和战场价值感兴趣。",
                       "ReplyHints":  [
                                          "介绍装备来源",
@@ -11202,7 +11202,7 @@
                       "Weight":  2.8,
                       "CooldownSeconds":  36,
                       "RecordInMemory":  true,
-                      "Text":  "您的披风和甲片配得真气派，远远就认得出来。",
+                      "Text":  "这披风配上甲片真气派，老远就认得出来。",
                       "Memory":  "NPC赞叹玩家昂贵或出名的武器盔甲，对其做工、价格和战场价值感兴趣。",
                       "ReplyHints":  [
                                          "介绍装备来源",
@@ -11307,7 +11307,7 @@
                       "Weight":  2.8,
                       "CooldownSeconds":  36,
                       "RecordInMemory":  true,
-                      "Text":  "看得出来您不只富有，也真的懂得怎样挑选兵器。",
+                      "Text":  "看得出您不光有钱，还真懂得挑兵器。",
                       "Memory":  "NPC赞叹玩家昂贵或出名的武器盔甲，对其做工、价格和战场价值感兴趣。",
                       "ReplyHints":  [
                                          "介绍装备来源",
@@ -11342,7 +11342,7 @@
                       "Weight":  2.8,
                       "CooldownSeconds":  36,
                       "RecordInMemory":  true,
-                      "Text":  "这身盔甲的做工真漂亮，关节处一点也不拖沓。",
+                      "Text":  "这身盔甲做工真漂亮，关节处严丝合缝。",
                       "Memory":  "NPC赞叹玩家昂贵或出名的武器盔甲，对其做工、价格和战场价值感兴趣。",
                       "ReplyHints":  [
                                          "介绍装备来源",
@@ -11412,7 +11412,7 @@
                       "Weight":  2.8,
                       "CooldownSeconds":  36,
                       "RecordInMemory":  true,
-                      "Text":  "您的披风和甲片配得真气派，远远就认得出来。",
+                      "Text":  "这披风配上甲片真气派，老远就认得出来。",
                       "Memory":  "NPC赞叹玩家昂贵或出名的武器盔甲，对其做工、价格和战场价值感兴趣。",
                       "ReplyHints":  [
                                          "介绍装备来源",
@@ -11517,7 +11517,7 @@
                       "Weight":  2.8,
                       "CooldownSeconds":  36,
                       "RecordInMemory":  true,
-                      "Text":  "看得出来您不只富有，也真的懂得怎样挑选兵器。",
+                      "Text":  "看得出您不光有钱，还真懂得挑兵器。",
                       "Memory":  "NPC赞叹玩家昂贵或出名的武器盔甲，对其做工、价格和战场价值感兴趣。",
                       "ReplyHints":  [
                                          "介绍装备来源",
@@ -11694,7 +11694,7 @@
                       "Weight":  1,
                       "CooldownSeconds":  22,
                       "RecordInMemory":  true,
-                      "Text":  "只要没有战争，普通日子也算得上好日子。",
+                      "Text":  "只要不打仗，平平常常的日子就是好日子。",
                       "Memory":  "普通居民正在谈论街道人流、水井、道路、城门和日常生活。",
                       "ReplyHints":  [
                                          "询问城门",
@@ -11868,7 +11868,7 @@
                       "Weight":  1,
                       "CooldownSeconds":  22,
                       "RecordInMemory":  true,
-                      "Text":  "只要没有战争，普通日子也算得上好日子。",
+                      "Text":  "只要不打仗，平平常常的日子就是好日子。",
                       "Memory":  "普通居民正在谈论街道人流、水井、道路、城门和日常生活。",
                       "ReplyHints":  [
                                          "询问城门",
@@ -12042,7 +12042,7 @@
                       "Weight":  1,
                       "CooldownSeconds":  22,
                       "RecordInMemory":  true,
-                      "Text":  "只要没有战争，普通日子也算得上好日子。",
+                      "Text":  "只要不打仗，平平常常的日子就是好日子。",
                       "Memory":  "普通居民正在谈论街道人流、水井、道路、城门和日常生活。",
                       "ReplyHints":  [
                                          "询问城门",
@@ -12166,7 +12166,7 @@
                       "Weight":  1.1,
                       "CooldownSeconds":  22,
                       "RecordInMemory":  true,
-                      "Text":  "这样的冷夜最难熬，守门的士兵可有苦头吃。",
+                      "Text":  "这么冷的夜最难熬，守门的兵可有苦头吃了。",
                       "Memory":  "居民根据风、阳光、云层和温度谈论天气对出行、农事及夜哨的影响。",
                       "ReplyHints":  [
                                          "谈论天气",
@@ -12352,7 +12352,7 @@
                       "Weight":  1.1,
                       "CooldownSeconds":  22,
                       "RecordInMemory":  true,
-                      "Text":  "这样的冷夜最难熬，守门的士兵可有苦头吃。",
+                      "Text":  "这么冷的夜最难熬，守门的兵可有苦头吃了。",
                       "Memory":  "居民根据风、阳光、云层和温度谈论天气对出行、农事及夜哨的影响。",
                       "ReplyHints":  [
                                          "谈论天气",
@@ -12538,7 +12538,7 @@
                       "Weight":  1.1,
                       "CooldownSeconds":  22,
                       "RecordInMemory":  true,
-                      "Text":  "这样的冷夜最难熬，守门的士兵可有苦头吃。",
+                      "Text":  "这么冷的夜最难熬，守门的兵可有苦头吃了。",
                       "Memory":  "居民根据风、阳光、云层和温度谈论天气对出行、农事及夜哨的影响。",
                       "ReplyHints":  [
                                          "谈论天气",
@@ -12774,7 +12774,7 @@
                       "Weight":  1,
                       "CooldownSeconds":  23,
                       "RecordInMemory":  true,
-                      "Text":  "只盼今年粮价别涨，家里几个孩子正是能吃的时候。",
+                      "Text":  "只盼今年粮价别涨，家里几个孩子正是能吃的年纪。",
                       "Memory":  "居民在聊孩子、婚事、老人、亲人远行和粮价等家常。",
                       "ReplyHints":  [
                                          "询问家人近况",
@@ -12948,7 +12948,7 @@
                       "Weight":  1,
                       "CooldownSeconds":  23,
                       "RecordInMemory":  true,
-                      "Text":  "只盼今年粮价别涨，家里几个孩子正是能吃的时候。",
+                      "Text":  "只盼今年粮价别涨，家里几个孩子正是能吃的年纪。",
                       "Memory":  "居民在聊孩子、婚事、老人、亲人远行和粮价等家常。",
                       "ReplyHints":  [
                                          "询问家人近况",
@@ -13122,7 +13122,7 @@
                       "Weight":  1,
                       "CooldownSeconds":  23,
                       "RecordInMemory":  true,
-                      "Text":  "只盼今年粮价别涨，家里几个孩子正是能吃的时候。",
+                      "Text":  "只盼今年粮价别涨，家里几个孩子正是能吃的年纪。",
                       "Memory":  "居民在聊孩子、婚事、老人、亲人远行和粮价等家常。",
                       "ReplyHints":  [
                                          "询问家人近况",
@@ -13213,7 +13213,7 @@
                       "Weight":  1.5,
                       "CooldownSeconds":  24,
                       "RecordInMemory":  true,
-                      "Text":  "盐、油和香料都有，买得多还能便宜一些。",
+                      "Text":  "盐、油、香料样样都有，买得多还能便宜些。",
                       "Memory":  "商贩正在吆喝食品、布料、香料或陶器，并愿意讨价还价。",
                       "ReplyHints":  [
                                          "询问价格",
@@ -13399,7 +13399,7 @@
                       "Weight":  1.5,
                       "CooldownSeconds":  24,
                       "RecordInMemory":  true,
-                      "Text":  "客人，盐、油和香料都有，买得多还能便宜一些。",
+                      "Text":  "客人，盐、油、香料样样都有，买得多还能便宜些。",
                       "Memory":  "商贩正在吆喝食品、布料、香料或陶器，并愿意讨价还价。",
                       "ReplyHints":  [
                                          "询问价格",
@@ -13585,7 +13585,7 @@
                       "Weight":  1.5,
                       "CooldownSeconds":  24,
                       "RecordInMemory":  true,
-                      "Text":  "盐、油和香料都有，买得多还能便宜一些。",
+                      "Text":  "盐、油、香料样样都有，买得多还能便宜些。",
                       "Memory":  "商贩正在吆喝食品、布料、香料或陶器，并愿意讨价还价。",
                       "ReplyHints":  [
                                          "询问价格",
@@ -14300,7 +14300,7 @@
                       "Weight":  2,
                       "CooldownSeconds":  30,
                       "RecordInMemory":  true,
-                      "Text":  "领主只看账本，却看不见百姓空下去的粮缸。",
+                      "Text":  "领主只盯着账本，哪看得见百姓见底的粮缸。",
                       "Memory":  "低忠诚度下，居民强烈抱怨税吏、税单、贫困和人口流失。",
                       "ReplyHints":  [
                                          "询问税额",
@@ -14428,7 +14428,7 @@
                       "Weight":  2,
                       "CooldownSeconds":  30,
                       "RecordInMemory":  true,
-                      "Text":  "再不给百姓喘气，迟早连市场都没人来摆摊。",
+                      "Text":  "再不让百姓喘口气，迟早连摆摊的人都没了。",
                       "Memory":  "低忠诚度下，居民强烈抱怨税吏、税单、贫困和人口流失。",
                       "ReplyHints":  [
                                          "询问税额",
@@ -14492,7 +14492,7 @@
                       "Weight":  2,
                       "CooldownSeconds":  30,
                       "RecordInMemory":  true,
-                      "Text":  "领主只看账本，却看不见百姓空下去的粮缸。",
+                      "Text":  "领主只盯着账本，哪看得见百姓见底的粮缸。",
                       "Memory":  "低忠诚度下，居民强烈抱怨税吏、税单、贫困和人口流失。",
                       "ReplyHints":  [
                                          "询问税额",
@@ -14620,7 +14620,7 @@
                       "Weight":  2,
                       "CooldownSeconds":  30,
                       "RecordInMemory":  true,
-                      "Text":  "再不给百姓喘气，迟早连市场都没人来摆摊。",
+                      "Text":  "再不让百姓喘口气，迟早连摆摊的人都没了。",
                       "Memory":  "低忠诚度下，居民强烈抱怨税吏、税单、贫困和人口流失。",
                       "ReplyHints":  [
                                          "询问税额",
@@ -14684,7 +14684,7 @@
                       "Weight":  2,
                       "CooldownSeconds":  30,
                       "RecordInMemory":  true,
-                      "Text":  "领主只看账本，却看不见百姓空下去的粮缸。",
+                      "Text":  "领主只盯着账本，哪看得见百姓见底的粮缸。",
                       "Memory":  "低忠诚度下，居民强烈抱怨税吏、税单、贫困和人口流失。",
                       "ReplyHints":  [
                                          "询问税额",
@@ -14812,7 +14812,7 @@
                       "Weight":  2,
                       "CooldownSeconds":  30,
                       "RecordInMemory":  true,
-                      "Text":  "再不给百姓喘气，迟早连市场都没人来摆摊。",
+                      "Text":  "再不让百姓喘口气，迟早连摆摊的人都没了。",
                       "Memory":  "低忠诚度下，居民强烈抱怨税吏、税单、贫困和人口流失。",
                       "ReplyHints":  [
                                          "询问税额",
@@ -14909,7 +14909,7 @@
                       "Weight":  1.4,
                       "CooldownSeconds":  29,
                       "RecordInMemory":  true,
-                      "Text":  "领主肯听人说话，日子自然越过越稳。",
+                      "Text":  "领主肯听百姓说话，日子自然越过越稳当。",
                       "Memory":  "高忠诚度下，居民认可治安、城防、粮仓和领主治理。",
                       "ReplyHints":  [
                                          "询问治安改善",
@@ -15101,7 +15101,7 @@
                       "Weight":  1.4,
                       "CooldownSeconds":  29,
                       "RecordInMemory":  true,
-                      "Text":  "领主肯听人说话，日子自然越过越稳。",
+                      "Text":  "领主肯听百姓说话，日子自然越过越稳当。",
                       "Memory":  "高忠诚度下，居民认可治安、城防、粮仓和领主治理。",
                       "ReplyHints":  [
                                          "询问治安改善",
@@ -15293,7 +15293,7 @@
                       "Weight":  1.4,
                       "CooldownSeconds":  29,
                       "RecordInMemory":  true,
-                      "Text":  "领主肯听人说话，日子自然越过越稳。",
+                      "Text":  "领主肯听百姓说话，日子自然越过越稳当。",
                       "Memory":  "高忠诚度下，居民认可治安、城防、粮仓和领主治理。",
                       "ReplyHints":  [
                                          "询问治安改善",
@@ -15534,7 +15534,7 @@
                       "Weight":  1.5,
                       "CooldownSeconds":  28,
                       "RecordInMemory":  true,
-                      "Text":  "这里的钱流得比河水还快，难怪人人都来找机会。",
+                      "Text":  "这儿的钱流得比河水还快，难怪人人都来碰运气。",
                       "Memory":  "高繁荣度让市场、工坊、旅店和商队异常忙碌，居民对商机乐观。",
                       "ReplyHints":  [
                                          "询问商机",
@@ -15708,7 +15708,7 @@
                       "Weight":  1.5,
                       "CooldownSeconds":  28,
                       "RecordInMemory":  true,
-                      "Text":  "这里的钱流得比河水还快，难怪人人都来找机会。",
+                      "Text":  "这儿的钱流得比河水还快，难怪人人都来碰运气。",
                       "Memory":  "高繁荣度让市场、工坊、旅店和商队异常忙碌，居民对商机乐观。",
                       "ReplyHints":  [
                                          "询问商机",
@@ -15882,7 +15882,7 @@
                       "Weight":  1.5,
                       "CooldownSeconds":  28,
                       "RecordInMemory":  true,
-                      "Text":  "这里的钱流得比河水还快，难怪人人都来找机会。",
+                      "Text":  "这儿的钱流得比河水还快，难怪人人都来碰运气。",
                       "Memory":  "高繁荣度让市场、工坊、旅店和商队异常忙碌，居民对商机乐观。",
                       "ReplyHints":  [
                                          "询问商机",
@@ -16061,7 +16061,7 @@
                       "Weight":  1.7,
                       "CooldownSeconds":  28,
                       "RecordInMemory":  true,
-                      "Text":  "钱袋瘪下去容易，再想鼓起来可就难了。",
+                      "Text":  "钱袋瘪下去容易，想再鼓起来可就难了。",
                       "Memory":  "低繁荣度下，商贩和工人担忧客流减少、商队绕路、工坊裁人和生意衰败。",
                       "ReplyHints":  [
                                          "询问生意",
@@ -16241,7 +16241,7 @@
                       "Weight":  1.7,
                       "CooldownSeconds":  28,
                       "RecordInMemory":  true,
-                      "Text":  "钱袋瘪下去容易，再想鼓起来可就难了。",
+                      "Text":  "钱袋瘪下去容易，想再鼓起来可就难了。",
                       "Memory":  "低繁荣度下，商贩和工人担忧客流减少、商队绕路、工坊裁人和生意衰败。",
                       "ReplyHints":  [
                                          "询问生意",
@@ -16421,7 +16421,7 @@
                       "Weight":  1.7,
                       "CooldownSeconds":  28,
                       "RecordInMemory":  true,
-                      "Text":  "钱袋瘪下去容易，再想鼓起来可就难了。",
+                      "Text":  "钱袋瘪下去容易，想再鼓起来可就难了。",
                       "Memory":  "低繁荣度下，商贩和工人担忧客流减少、商队绕路、工坊裁人和生意衰败。",
                       "ReplyHints":  [
                                          "询问生意",
@@ -16578,7 +16578,7 @@
                       "Weight":  1.5,
                       "CooldownSeconds":  25,
                       "RecordInMemory":  true,
-                      "Text":  "发现可疑包裹就来报，别自己逞英雄。",
+                      "Text":  "看见可疑的包袱就来报，别自己逞英雄。",
                       "Memory":  "白天守卫正在维持交通、提醒扒手风险、检查城门并谈论巡逻。",
                       "ReplyHints":  [
                                          "询问扒手",
@@ -16610,7 +16610,7 @@
                       "Weight":  1.5,
                       "CooldownSeconds":  25,
                       "RecordInMemory":  true,
-                      "Text":  "酒馆闹事的昨晚刚关进去几个，今天都老实点。",
+                      "Text":  "昨晚在酒馆闹事的刚关进去几个，今天都给我老实点。",
                       "Memory":  "白天守卫正在维持交通、提醒扒手风险、检查城门并谈论巡逻。",
                       "ReplyHints":  [
                                          "询问扒手",
@@ -16770,7 +16770,7 @@
                       "Weight":  1.5,
                       "CooldownSeconds":  25,
                       "RecordInMemory":  true,
-                      "Text":  "发现可疑包裹就来报，别自己逞英雄。",
+                      "Text":  "看见可疑的包袱就来报，别自己逞英雄。",
                       "Memory":  "白天守卫正在维持交通、提醒扒手风险、检查城门并谈论巡逻。",
                       "ReplyHints":  [
                                          "询问扒手",
@@ -16802,7 +16802,7 @@
                       "Weight":  1.5,
                       "CooldownSeconds":  25,
                       "RecordInMemory":  true,
-                      "Text":  "酒馆闹事的昨晚刚关进去几个，今天都老实点。",
+                      "Text":  "昨晚在酒馆闹事的刚关进去几个，今天都给我老实点。",
                       "Memory":  "白天守卫正在维持交通、提醒扒手风险、检查城门并谈论巡逻。",
                       "ReplyHints":  [
                                          "询问扒手",
@@ -16962,7 +16962,7 @@
                       "Weight":  1.5,
                       "CooldownSeconds":  25,
                       "RecordInMemory":  true,
-                      "Text":  "发现可疑包裹就来报，别自己逞英雄。",
+                      "Text":  "看见可疑的包袱就来报，别自己逞英雄。",
                       "Memory":  "白天守卫正在维持交通、提醒扒手风险、检查城门并谈论巡逻。",
                       "ReplyHints":  [
                                          "询问扒手",
@@ -16994,7 +16994,7 @@
                       "Weight":  1.5,
                       "CooldownSeconds":  25,
                       "RecordInMemory":  true,
-                      "Text":  "酒馆闹事的昨晚刚关进去几个，今天都老实点。",
+                      "Text":  "昨晚在酒馆闹事的刚关进去几个，今天都给我老实点。",
                       "Memory":  "白天守卫正在维持交通、提醒扒手风险、检查城门并谈论巡逻。",
                       "ReplyHints":  [
                                          "询问扒手",
@@ -17206,7 +17206,7 @@
                       "Weight":  1.8,
                       "CooldownSeconds":  27,
                       "RecordInMemory":  true,
-                      "Text":  "嘴上抱怨归抱怨，真有人摸墙我们可不会客气。",
+                      "Text":  "嘴上抱怨归抱怨，真有人敢摸上墙来，我们可不客气。",
                       "Memory":  "普通夜哨抱怨寒风、换岗、军饷和夜班漫长，但仍保持警惕。",
                       "ReplyHints":  [
                                          "慰问守卫",
@@ -17386,7 +17386,7 @@
                       "Weight":  1.8,
                       "CooldownSeconds":  27,
                       "RecordInMemory":  true,
-                      "Text":  "嘴上抱怨归抱怨，真有人摸墙我们可不会客气。",
+                      "Text":  "嘴上抱怨归抱怨，真有人敢摸上墙来，我们可不客气。",
                       "Memory":  "普通夜哨抱怨寒风、换岗、军饷和夜班漫长，但仍保持警惕。",
                       "ReplyHints":  [
                                          "慰问守卫",
@@ -17566,7 +17566,7 @@
                       "Weight":  1.8,
                       "CooldownSeconds":  27,
                       "RecordInMemory":  true,
-                      "Text":  "嘴上抱怨归抱怨，真有人摸墙我们可不会客气。",
+                      "Text":  "嘴上抱怨归抱怨，真有人敢摸上墙来，我们可不客气。",
                       "Memory":  "普通夜哨抱怨寒风、换岗、军饷和夜班漫长，但仍保持警惕。",
                       "ReplyHints":  [
                                          "慰问守卫",
@@ -17746,7 +17746,7 @@
                       "Weight":  1.5,
                       "CooldownSeconds":  23,
                       "RecordInMemory":  true,
-                      "Text":  "战争归战争，喝完这一杯再谈谁对谁错。",
+                      "Text":  "仗打不打是老爷们的事，先喝完这杯再说。",
                       "Memory":  "酒馆里有人饮酒、谈规矩、商队消息、赌局和战争带来的疲惫。",
                       "ReplyHints":  [
                                          "一起干杯",
@@ -17926,7 +17926,7 @@
                       "Weight":  1.5,
                       "CooldownSeconds":  23,
                       "RecordInMemory":  true,
-                      "Text":  "战争归战争，喝完这一杯再谈谁对谁错。",
+                      "Text":  "仗打不打是老爷们的事，先喝完这杯再说。",
                       "Memory":  "酒馆里有人饮酒、谈规矩、商队消息、赌局和战争带来的疲惫。",
                       "ReplyHints":  [
                                          "一起干杯",
@@ -18106,7 +18106,7 @@
                       "Weight":  1.5,
                       "CooldownSeconds":  23,
                       "RecordInMemory":  true,
-                      "Text":  "战争归战争，喝完这一杯再谈谁对谁错。",
+                      "Text":  "仗打不打是老爷们的事，先喝完这杯再说。",
                       "Memory":  "酒馆里有人饮酒、谈规矩、商队消息、赌局和战争带来的疲惫。",
                       "ReplyHints":  [
                                          "一起干杯",
@@ -18230,7 +18230,7 @@
                       "Weight":  1.3,
                       "CooldownSeconds":  26,
                       "RecordInMemory":  true,
-                      "Text":  "好故事不一定是真的，但好歌一定值得喝彩。",
+                      "Text":  "好故事未必是真的，可好歌一定值得喝声彩。",
                       "Memory":  "乐师正在招揽听众，可以演唱战争、爱情、海洋或最新传闻。",
                       "ReplyHints":  [
                                          "点一支歌",
@@ -18416,7 +18416,7 @@
                       "Weight":  1.3,
                       "CooldownSeconds":  26,
                       "RecordInMemory":  true,
-                      "Text":  "好故事不一定是真的，但好歌一定值得喝彩。",
+                      "Text":  "好故事未必是真的，可好歌一定值得喝声彩。",
                       "Memory":  "乐师正在招揽听众，可以演唱战争、爱情、海洋或最新传闻。",
                       "ReplyHints":  [
                                          "点一支歌",
@@ -18602,7 +18602,7 @@
                       "Weight":  1.3,
                       "CooldownSeconds":  26,
                       "RecordInMemory":  true,
-                      "Text":  "好故事不一定是真的，但好歌一定值得喝彩。",
+                      "Text":  "好故事未必是真的，可好歌一定值得喝声彩。",
                       "Memory":  "乐师正在招揽听众，可以演唱战争、爱情、海洋或最新传闻。",
                       "ReplyHints":  [
                                          "点一支歌",
@@ -18751,7 +18751,7 @@
                       "Weight":  1.2,
                       "CooldownSeconds":  25,
                       "RecordInMemory":  true,
-                      "Text":  "税吏连穷人的碗都不放过，您说这算什么世道？",
+                      "Text":  "税吏连叫花子的破碗都不放过，这算什么世道？",
                       "Memory":  "乞丐因饥饿、雨灾、税收、旧伤或孩子求助，也愿意寻找工作。",
                       "ReplyHints":  [
                                          "施舍食物",
@@ -18925,7 +18925,7 @@
                       "Weight":  1.2,
                       "CooldownSeconds":  25,
                       "RecordInMemory":  true,
-                      "Text":  "税吏连穷人的碗都不放过，您说这算什么世道？",
+                      "Text":  "税吏连叫花子的破碗都不放过，这算什么世道？",
                       "Memory":  "乞丐因饥饿、雨灾、税收、旧伤或孩子求助，也愿意寻找工作。",
                       "ReplyHints":  [
                                          "施舍食物",
@@ -19099,7 +19099,7 @@
                       "Weight":  1.2,
                       "CooldownSeconds":  25,
                       "RecordInMemory":  true,
-                      "Text":  "税吏连穷人的碗都不放过，您说这算什么世道？",
+                      "Text":  "税吏连叫花子的破碗都不放过，这算什么世道？",
                       "Memory":  "乞丐因饥饿、雨灾、税收、旧伤或孩子求助，也愿意寻找工作。",
                       "ReplyHints":  [
                                          "施舍食物",
@@ -19372,7 +19372,7 @@
                       "Weight":  1.4,
                       "CooldownSeconds":  25,
                       "RecordInMemory":  true,
-                      "Text":  "别用手碰，刚出炉的铁看着黑，里面还烫得很。",
+                      "Text":  "别伸手碰，刚出炉的铁看着发黑，里头还烫得很。",
                       "Memory":  "铁匠和学徒谈论锻造、木炭价格、修理武器盔甲与军队订单。",
                       "ReplyHints":  [
                                          "修理武器",
@@ -19558,7 +19558,7 @@
                       "Weight":  1.4,
                       "CooldownSeconds":  25,
                       "RecordInMemory":  true,
-                      "Text":  "别用手碰，刚出炉的铁看着黑，里面还烫得很。",
+                      "Text":  "别伸手碰，刚出炉的铁看着发黑，里头还烫得很。",
                       "Memory":  "铁匠和学徒谈论锻造、木炭价格、修理武器盔甲与军队订单。",
                       "ReplyHints":  [
                                          "修理武器",
@@ -19744,7 +19744,7 @@
                       "Weight":  1.4,
                       "CooldownSeconds":  25,
                       "RecordInMemory":  true,
-                      "Text":  "别用手碰，刚出炉的铁看着黑，里面还烫得很。",
+                      "Text":  "别伸手碰，刚出炉的铁看着发黑，里头还烫得很。",
                       "Memory":  "铁匠和学徒谈论锻造、木炭价格、修理武器盔甲与军队订单。",
                       "ReplyHints":  [
                                          "修理武器",
@@ -20460,7 +20460,7 @@
                       "Weight":  1.6,
                       "CooldownSeconds":  23,
                       "RecordInMemory":  true,
-                      "Text":  "城里人嫌泥巴脏，可庄稼离了泥巴一口都长不出来。",
+                      "Text":  "城里人嫌泥巴脏，可庄稼离了泥巴，一粒粮也长不出来。",
                       "Memory":  "村民谈论收成、水渠、牲畜、税期、远处火光和农活。",
                       "ReplyHints":  [
                                          "询问收成",
@@ -20616,7 +20616,7 @@
                       "Weight":  1.6,
                       "CooldownSeconds":  23,
                       "RecordInMemory":  true,
-                      "Text":  "城里人嫌泥巴脏，可庄稼离了泥巴一口都长不出来。",
+                      "Text":  "城里人嫌泥巴脏，可庄稼离了泥巴，一粒粮也长不出来。",
                       "Memory":  "村民谈论收成、水渠、牲畜、税期、远处火光和农活。",
                       "ReplyHints":  [
                                          "询问收成",
@@ -20772,7 +20772,7 @@
                       "Weight":  1.6,
                       "CooldownSeconds":  23,
                       "RecordInMemory":  true,
-                      "Text":  "城里人嫌泥巴脏，可庄稼离了泥巴一口都长不出来。",
+                      "Text":  "城里人嫌泥巴脏，可庄稼离了泥巴，一粒粮也长不出来。",
                       "Memory":  "村民谈论收成、水渠、牲畜、税期、远处火光和农活。",
                       "ReplyHints":  [
                                          "询问收成",
@@ -21267,7 +21267,7 @@
                       "Weight":  1.5,
                       "CooldownSeconds":  24,
                       "RecordInMemory":  true,
-                      "Text":  "潮水退得快，今晚出港最好多留个心眼！",
+                      "Text":  "潮水退得快，今晚出港可得多留个心眼！",
                       "Memory":  "港口居民谈论潮水、装卸次序、海风、迟到船只、绳结和怕潮货物。",
                       "ReplyHints":  [
                                          "询问出港时间",
@@ -21441,7 +21441,7 @@
                       "Weight":  1.5,
                       "CooldownSeconds":  24,
                       "RecordInMemory":  true,
-                      "Text":  "潮水退得快，今晚出港最好多留个心眼！",
+                      "Text":  "潮水退得快，今晚出港可得多留个心眼！",
                       "Memory":  "港口居民谈论潮水、装卸次序、海风、迟到船只、绳结和怕潮货物。",
                       "ReplyHints":  [
                                          "询问出港时间",
@@ -21615,7 +21615,7 @@
                       "Weight":  1.5,
                       "CooldownSeconds":  24,
                       "RecordInMemory":  true,
-                      "Text":  "潮水退得快，今晚出港最好多留个心眼！",
+                      "Text":  "潮水退得快，今晚出港可得多留个心眼！",
                       "Memory":  "港口居民谈论潮水、装卸次序、海风、迟到船只、绳结和怕潮货物。",
                       "ReplyHints":  [
                                          "询问出港时间",
@@ -21918,7 +21918,7 @@
                       "Weight":  1.9,
                       "CooldownSeconds":  20,
                       "RecordInMemory":  true,
-                      "Text":  "谁把铁钉放在潮地上了？都生锈了。",
+                      "Text":  "谁把铁钉扔在潮地上了？全锈了！",
                       "Memory":  "船坊工人谈论龙骨、麻绳、风向、船底、木料、铁钉和载货量。",
                       "ReplyHints":  [
                                          "询问船只",
@@ -21944,7 +21944,7 @@
                       "Weight":  1.9,
                       "CooldownSeconds":  20,
                       "RecordInMemory":  true,
-                      "Text":  "这艘小船载不了太多货，别让掌柜贪心。",
+                      "Text":  "这条小船载不了多少货，别由着掌柜贪心。",
                       "Memory":  "船坊工人谈论龙骨、麻绳、风向、船底、木料、铁钉和载货量。",
                       "ReplyHints":  [
                                          "询问船只",
@@ -22126,7 +22126,7 @@
                       "Weight":  1.9,
                       "CooldownSeconds":  20,
                       "RecordInMemory":  true,
-                      "Text":  "谁把铁钉放在潮地上了？都生锈了。",
+                      "Text":  "谁把铁钉扔在潮地上了？全锈了！",
                       "Memory":  "船坊工人谈论龙骨、麻绳、风向、船底、木料、铁钉和载货量。",
                       "ReplyHints":  [
                                          "询问船只",
@@ -22152,7 +22152,7 @@
                       "Weight":  1.9,
                       "CooldownSeconds":  20,
                       "RecordInMemory":  true,
-                      "Text":  "这艘小船载不了太多货，别让掌柜贪心。",
+                      "Text":  "这条小船载不了多少货，别由着掌柜贪心。",
                       "Memory":  "船坊工人谈论龙骨、麻绳、风向、船底、木料、铁钉和载货量。",
                       "ReplyHints":  [
                                          "询问船只",
@@ -22334,7 +22334,7 @@
                       "Weight":  1.9,
                       "CooldownSeconds":  20,
                       "RecordInMemory":  true,
-                      "Text":  "谁把铁钉放在潮地上了？都生锈了。",
+                      "Text":  "谁把铁钉扔在潮地上了？全锈了！",
                       "Memory":  "船坊工人谈论龙骨、麻绳、风向、船底、木料、铁钉和载货量。",
                       "ReplyHints":  [
                                          "询问船只",
@@ -22360,7 +22360,7 @@
                       "Weight":  1.9,
                       "CooldownSeconds":  20,
                       "RecordInMemory":  true,
-                      "Text":  "这艘小船载不了太多货，别让掌柜贪心。",
+                      "Text":  "这条小船载不了多少货，别由着掌柜贪心。",
                       "Memory":  "船坊工人谈论龙骨、麻绳、风向、船底、木料、铁钉和载货量。",
                       "ReplyHints":  [
                                          "询问船只",
@@ -22586,7 +22586,7 @@
                       "Weight":  1.6,
                       "CooldownSeconds":  22,
                       "RecordInMemory":  true,
-                      "Text":  "别站在缆绳回弹的方向，谁都承受不起。",
+                      "Text":  "别站在缆绳回弹的地方，抽一下骨头都得断。",
                       "Memory":  "男性码头工人谈论搬运、潮水、清点、染料、封舱、工钱和安全。",
                       "ReplyHints":  [
                                          "询问货单",
@@ -22615,7 +22615,7 @@
                       "Weight":  1.6,
                       "CooldownSeconds":  22,
                       "RecordInMemory":  true,
-                      "Text":  "港口最怕乱，货物、船票和人手都得对得上。",
+                      "Text":  "码头最怕乱，货、船和人手都得对得上号。",
                       "Memory":  "男性码头工人谈论搬运、潮水、清点、染料、封舱、工钱和安全。",
                       "ReplyHints":  [
                                          "询问货单",
@@ -22818,7 +22818,7 @@
                       "Weight":  1.6,
                       "CooldownSeconds":  22,
                       "RecordInMemory":  true,
-                      "Text":  "别站在缆绳回弹的方向，谁都承受不起。",
+                      "Text":  "别站在缆绳回弹的地方，抽一下骨头都得断。",
                       "Memory":  "男性码头工人谈论搬运、潮水、清点、染料、封舱、工钱和安全。",
                       "ReplyHints":  [
                                          "询问货单",
@@ -22847,7 +22847,7 @@
                       "Weight":  1.6,
                       "CooldownSeconds":  22,
                       "RecordInMemory":  true,
-                      "Text":  "港口最怕乱，货物、船票和人手都得对得上。",
+                      "Text":  "码头最怕乱，货、船和人手都得对得上号。",
                       "Memory":  "男性码头工人谈论搬运、潮水、清点、染料、封舱、工钱和安全。",
                       "ReplyHints":  [
                                          "询问货单",
@@ -23050,7 +23050,7 @@
                       "Weight":  1.6,
                       "CooldownSeconds":  22,
                       "RecordInMemory":  true,
-                      "Text":  "别站在缆绳回弹的方向，谁都承受不起。",
+                      "Text":  "别站在缆绳回弹的地方，抽一下骨头都得断。",
                       "Memory":  "男性码头工人谈论搬运、潮水、清点、染料、封舱、工钱和安全。",
                       "ReplyHints":  [
                                          "询问货单",
@@ -23079,7 +23079,7 @@
                       "Weight":  1.6,
                       "CooldownSeconds":  22,
                       "RecordInMemory":  true,
-                      "Text":  "港口最怕乱，货物、船票和人手都得对得上。",
+                      "Text":  "码头最怕乱，货、船和人手都得对得上号。",
                       "Memory":  "男性码头工人谈论搬运、潮水、清点、染料、封舱、工钱和安全。",
                       "ReplyHints":  [
                                          "询问货单",
@@ -23190,7 +23190,7 @@
                       "Weight":  2,
                       "CooldownSeconds":  20,
                       "RecordInMemory":  true,
-                      "Text":  "客人要的是耐用，不是看起来闪亮。",
+                      "Text":  "客人要的是经用，不是亮闪闪好看。",
                       "Memory":  "铁匠谈论火候、铁矿、锤法、耐用、炉渣、农具和锻造质量。",
                       "ReplyHints":  [
                                          "询问锻造",
@@ -23271,7 +23271,7 @@
                       "Weight":  2,
                       "CooldownSeconds":  20,
                       "RecordInMemory":  true,
-                      "Text":  "铁水颜色发白了，再烧就会毁掉韧性。",
+                      "Text":  "铁烧得发白了，再烧下去就要发脆。",
                       "Memory":  "铁匠谈论火候、铁矿、锤法、耐用、炉渣、农具和锻造质量。",
                       "ReplyHints":  [
                                          "询问锻造",
@@ -23406,7 +23406,7 @@
                       "Weight":  2,
                       "CooldownSeconds":  20,
                       "RecordInMemory":  true,
-                      "Text":  "客人要的是耐用，不是看起来闪亮。",
+                      "Text":  "客人要的是经用，不是亮闪闪好看。",
                       "Memory":  "铁匠谈论火候、铁矿、锤法、耐用、炉渣、农具和锻造质量。",
                       "ReplyHints":  [
                                          "询问锻造",
@@ -23487,7 +23487,7 @@
                       "Weight":  2,
                       "CooldownSeconds":  20,
                       "RecordInMemory":  true,
-                      "Text":  "铁水颜色发白了，再烧就会毁掉韧性。",
+                      "Text":  "铁烧得发白了，再烧下去就要发脆。",
                       "Memory":  "铁匠谈论火候、铁矿、锤法、耐用、炉渣、农具和锻造质量。",
                       "ReplyHints":  [
                                          "询问锻造",
@@ -23622,7 +23622,7 @@
                       "Weight":  2,
                       "CooldownSeconds":  20,
                       "RecordInMemory":  true,
-                      "Text":  "客人要的是耐用，不是看起来闪亮。",
+                      "Text":  "客人要的是经用，不是亮闪闪好看。",
                       "Memory":  "铁匠谈论火候、铁矿、锤法、耐用、炉渣、农具和锻造质量。",
                       "ReplyHints":  [
                                          "询问锻造",
@@ -23703,7 +23703,7 @@
                       "Weight":  2,
                       "CooldownSeconds":  20,
                       "RecordInMemory":  true,
-                      "Text":  "铁水颜色发白了，再烧就会毁掉韧性。",
+                      "Text":  "铁烧得发白了，再烧下去就要发脆。",
                       "Memory":  "铁匠谈论火候、铁矿、锤法、耐用、炉渣、农具和锻造质量。",
                       "ReplyHints":  [
                                          "询问锻造",
@@ -23912,7 +23912,7 @@
                       "Weight":  1.9,
                       "CooldownSeconds":  20,
                       "RecordInMemory":  true,
-                      "Text":  "订单上写的是军用规格，不能按市民货来做。",
+                      "Text":  "订单写明了是军用的，不能照寻常货色做。",
                       "Memory":  "武器匠谈论剑脊、枪头、短刀、刃口、旧武器、护手和军用规格。",
                       "ReplyHints":  [
                                          "查看武器",
@@ -23938,7 +23938,7 @@
                       "Weight":  1.9,
                       "CooldownSeconds":  20,
                       "RecordInMemory":  true,
-                      "Text":  "好的武器会听手，第一次握住就能感觉出来。",
+                      "Text":  "好兵器顺手，头一回握住就能觉出来。",
                       "Memory":  "武器匠谈论剑脊、枪头、短刀、刃口、旧武器、护手和军用规格。",
                       "ReplyHints":  [
                                          "查看武器",
@@ -24120,7 +24120,7 @@
                       "Weight":  1.9,
                       "CooldownSeconds":  20,
                       "RecordInMemory":  true,
-                      "Text":  "订单上写的是军用规格，不能按市民货来做。",
+                      "Text":  "订单写明了是军用的，不能照寻常货色做。",
                       "Memory":  "武器匠谈论剑脊、枪头、短刀、刃口、旧武器、护手和军用规格。",
                       "ReplyHints":  [
                                          "查看武器",
@@ -24146,7 +24146,7 @@
                       "Weight":  1.9,
                       "CooldownSeconds":  20,
                       "RecordInMemory":  true,
-                      "Text":  "好的武器会听手，第一次握住就能感觉出来。",
+                      "Text":  "好兵器顺手，头一回握住就能觉出来。",
                       "Memory":  "武器匠谈论剑脊、枪头、短刀、刃口、旧武器、护手和军用规格。",
                       "ReplyHints":  [
                                          "查看武器",
@@ -24328,7 +24328,7 @@
                       "Weight":  1.9,
                       "CooldownSeconds":  20,
                       "RecordInMemory":  true,
-                      "Text":  "订单上写的是军用规格，不能按市民货来做。",
+                      "Text":  "订单写明了是军用的，不能照寻常货色做。",
                       "Memory":  "武器匠谈论剑脊、枪头、短刀、刃口、旧武器、护手和军用规格。",
                       "ReplyHints":  [
                                          "查看武器",
@@ -24354,7 +24354,7 @@
                       "Weight":  1.9,
                       "CooldownSeconds":  20,
                       "RecordInMemory":  true,
-                      "Text":  "好的武器会听手，第一次握住就能感觉出来。",
+                      "Text":  "好兵器顺手，头一回握住就能觉出来。",
                       "Memory":  "武器匠谈论剑脊、枪头、短刀、刃口、旧武器、护手和军用规格。",
                       "ReplyHints":  [
                                          "查看武器",
@@ -24432,7 +24432,7 @@
                       "Weight":  1.9,
                       "CooldownSeconds":  20,
                       "RecordInMemory":  true,
-                      "Text":  "铆钉松了就别上战场，修好它只需一会儿。",
+                      "Text":  "铆钉松了就别上战场，修一修费不了多少工夫。",
                       "Memory":  "盔甲匠谈论肩甲、甲片、铆钉、护胸、皮带、盔面和量身制作。",
                       "ReplyHints":  [
                                          "查看盔甲",
@@ -24562,7 +24562,7 @@
                       "Weight":  1.9,
                       "CooldownSeconds":  20,
                       "RecordInMemory":  true,
-                      "Text":  "每个人的身形不同，盔甲不能只照着一副模子做。",
+                      "Text":  "人人身形不同，盔甲不能照一个模子打。",
                       "Memory":  "盔甲匠谈论肩甲、甲片、铆钉、护胸、皮带、盔面和量身制作。",
                       "ReplyHints":  [
                                          "查看盔甲",
@@ -24640,7 +24640,7 @@
                       "Weight":  1.9,
                       "CooldownSeconds":  20,
                       "RecordInMemory":  true,
-                      "Text":  "铆钉松了就别上战场，修好它只需一会儿。",
+                      "Text":  "铆钉松了就别上战场，修一修费不了多少工夫。",
                       "Memory":  "盔甲匠谈论肩甲、甲片、铆钉、护胸、皮带、盔面和量身制作。",
                       "ReplyHints":  [
                                          "查看盔甲",
@@ -24770,7 +24770,7 @@
                       "Weight":  1.9,
                       "CooldownSeconds":  20,
                       "RecordInMemory":  true,
-                      "Text":  "每个人的身形不同，盔甲不能只照着一副模子做。",
+                      "Text":  "人人身形不同，盔甲不能照一个模子打。",
                       "Memory":  "盔甲匠谈论肩甲、甲片、铆钉、护胸、皮带、盔面和量身制作。",
                       "ReplyHints":  [
                                          "查看盔甲",
@@ -24848,7 +24848,7 @@
                       "Weight":  1.9,
                       "CooldownSeconds":  20,
                       "RecordInMemory":  true,
-                      "Text":  "铆钉松了就别上战场，修好它只需一会儿。",
+                      "Text":  "铆钉松了就别上战场，修一修费不了多少工夫。",
                       "Memory":  "盔甲匠谈论肩甲、甲片、铆钉、护胸、皮带、盔面和量身制作。",
                       "ReplyHints":  [
                                          "查看盔甲",
@@ -24978,7 +24978,7 @@
                       "Weight":  1.9,
                       "CooldownSeconds":  20,
                       "RecordInMemory":  true,
-                      "Text":  "每个人的身形不同，盔甲不能只照着一副模子做。",
+                      "Text":  "人人身形不同，盔甲不能照一个模子打。",
                       "Memory":  "盔甲匠谈论肩甲、甲片、铆钉、护胸、皮带、盔面和量身制作。",
                       "ReplyHints":  [
                                          "查看盔甲",
@@ -25877,7 +25877,7 @@
                       "Weight":  1.8,
                       "CooldownSeconds":  20,
                       "RecordInMemory":  true,
-                      "Text":  "商队要走夜路，保镖的钱不能省。",
+                      "Text":  "商队要走夜路，雇护卫的钱可省不得。",
                       "Memory":  "商贩谈论盐价、布料、信用、香料、摊位租金、货源、护卫和账本。",
                       "ReplyHints":  [
                                          "询问物价",
@@ -25906,7 +25906,7 @@
                       "Weight":  1.8,
                       "CooldownSeconds":  20,
                       "RecordInMemory":  true,
-                      "Text":  "账本最怕漏记，少一枚硬币日后都对不上。",
+                      "Text":  "账最怕漏记，少记一枚钱，往后就对不上了。",
                       "Memory":  "商贩谈论盐价、布料、信用、香料、摊位租金、货源、护卫和账本。",
                       "ReplyHints":  [
                                          "询问物价",
@@ -26109,7 +26109,7 @@
                       "Weight":  1.8,
                       "CooldownSeconds":  20,
                       "RecordInMemory":  true,
-                      "Text":  "商队要走夜路，保镖的钱不能省。",
+                      "Text":  "商队要走夜路，雇护卫的钱可省不得。",
                       "Memory":  "商贩谈论盐价、布料、信用、香料、摊位租金、货源、护卫和账本。",
                       "ReplyHints":  [
                                          "询问物价",
@@ -26138,7 +26138,7 @@
                       "Weight":  1.8,
                       "CooldownSeconds":  20,
                       "RecordInMemory":  true,
-                      "Text":  "账本最怕漏记，少一枚硬币日后都对不上。",
+                      "Text":  "账最怕漏记，少记一枚钱，往后就对不上了。",
                       "Memory":  "商贩谈论盐价、布料、信用、香料、摊位租金、货源、护卫和账本。",
                       "ReplyHints":  [
                                          "询问物价",
@@ -26341,7 +26341,7 @@
                       "Weight":  1.8,
                       "CooldownSeconds":  20,
                       "RecordInMemory":  true,
-                      "Text":  "商队要走夜路，保镖的钱不能省。",
+                      "Text":  "商队要走夜路，雇护卫的钱可省不得。",
                       "Memory":  "商贩谈论盐价、布料、信用、香料、摊位租金、货源、护卫和账本。",
                       "ReplyHints":  [
                                          "询问物价",
@@ -26370,7 +26370,7 @@
                       "Weight":  1.8,
                       "CooldownSeconds":  20,
                       "RecordInMemory":  true,
-                      "Text":  "账本最怕漏记，少一枚硬币日后都对不上。",
+                      "Text":  "账最怕漏记，少记一枚钱，往后就对不上了。",
                       "Memory":  "商贩谈论盐价、布料、信用、香料、摊位租金、货源、护卫和账本。",
                       "ReplyHints":  [
                                          "询问物价",
@@ -26552,7 +26552,7 @@
                       "Weight":  1.8,
                       "CooldownSeconds":  20,
                       "RecordInMemory":  true,
-                      "Text":  "别把账记在客人名字上，记在桌号旁才不容易错。",
+                      "Text":  "账别记在客人名下，记在桌号旁才不会乱。",
                       "Memory":  "酒馆人员谈论桌边秩序、麦酒、赌徒、热汤、陌生人、传闻、账目和避险。",
                       "ReplyHints":  [
                                          "询问酒馆消息",
@@ -26760,7 +26760,7 @@
                       "Weight":  1.8,
                       "CooldownSeconds":  20,
                       "RecordInMemory":  true,
-                      "Text":  "别把账记在客人名字上，记在桌号旁才不容易错。",
+                      "Text":  "账别记在客人名下，记在桌号旁才不会乱。",
                       "Memory":  "酒馆人员谈论桌边秩序、麦酒、赌徒、热汤、陌生人、传闻、账目和避险。",
                       "ReplyHints":  [
                                          "询问酒馆消息",
@@ -26968,7 +26968,7 @@
                       "Weight":  1.8,
                       "CooldownSeconds":  20,
                       "RecordInMemory":  true,
-                      "Text":  "别把账记在客人名字上，记在桌号旁才不容易错。",
+                      "Text":  "账别记在客人名下，记在桌号旁才不会乱。",
                       "Memory":  "酒馆人员谈论桌边秩序、麦酒、赌徒、热汤、陌生人、传闻、账目和避险。",
                       "ReplyHints":  [
                                          "询问酒馆消息",
@@ -27826,7 +27826,7 @@
                       "Weight":  1.4,
                       "CooldownSeconds":  20,
                       "RecordInMemory":  true,
-                      "Text":  "远行前把靴底缝好，路上可没有谁会替你收拾残局。",
+                      "Text":  "出远门前先把靴底缝牢，路上可没人替你补鞋。",
                       "Memory":  "女性酒馆客人谈论食物、消息、远行、商机、家人、港口、传闻和欠账。",
                       "ReplyHints":  [
                                          "询问消息",
@@ -28074,7 +28074,7 @@
                       "Weight":  1.4,
                       "CooldownSeconds":  20,
                       "RecordInMemory":  true,
-                      "Text":  "远行前把靴底缝好，路上可没有谁会替你收拾残局。",
+                      "Text":  "出远门前先把靴底缝牢，路上可没人替你补鞋。",
                       "Memory":  "女性酒馆客人谈论食物、消息、远行、商机、家人、港口、传闻和欠账。",
                       "ReplyHints":  [
                                          "询问消息",
@@ -28322,7 +28322,7 @@
                       "Weight":  1.4,
                       "CooldownSeconds":  20,
                       "RecordInMemory":  true,
-                      "Text":  "远行前把靴底缝好，路上可没有谁会替你收拾残局。",
+                      "Text":  "出远门前先把靴底缝牢，路上可没人替你补鞋。",
                       "Memory":  "女性酒馆客人谈论食物、消息、远行、商机、家人、港口、传闻和欠账。",
                       "ReplyHints":  [
                                          "询问消息",
@@ -28599,7 +28599,7 @@
                       "Weight":  1.3,
                       "CooldownSeconds":  20,
                       "RecordInMemory":  true,
-                      "Text":  "我宁可走远些买新鲜鱼，也不想买隔夜的。",
+                      "Text":  "我宁可多走几步买新鲜鱼，也不买隔夜的。",
                       "Memory":  "男性市场顾客谈论菜刀、秤、面粉、鱼、靴子、商队、通行和货源。",
                       "ReplyHints":  [
                                          "询问价格",
@@ -28839,7 +28839,7 @@
                       "Weight":  1.3,
                       "CooldownSeconds":  20,
                       "RecordInMemory":  true,
-                      "Text":  "我宁可走远些买新鲜鱼，也不想买隔夜的。",
+                      "Text":  "我宁可多走几步买新鲜鱼，也不买隔夜的。",
                       "Memory":  "男性市场顾客谈论菜刀、秤、面粉、鱼、靴子、商队、通行和货源。",
                       "ReplyHints":  [
                                          "询问价格",
@@ -29079,7 +29079,7 @@
                       "Weight":  1.3,
                       "CooldownSeconds":  20,
                       "RecordInMemory":  true,
-                      "Text":  "我宁可走远些买新鲜鱼，也不想买隔夜的。",
+                      "Text":  "我宁可多走几步买新鲜鱼，也不买隔夜的。",
                       "Memory":  "男性市场顾客谈论菜刀、秤、面粉、鱼、靴子、商队、通行和货源。",
                       "ReplyHints":  [
                                          "询问价格",
@@ -31392,7 +31392,7 @@
                       "Weight":  1.2,
                       "CooldownSeconds":  18,
                       "RecordInMemory":  true,
-                      "Text":  "赶早的人多，鞋底上的泥也比平时新鲜。",
+                      "Text":  "赶早的人多，街上的泥都被踩得稀烂。",
                       "Memory":  "清晨居民谈论热水、开市、晾布、泥路、巡逻、面包、真话和旅店客房。",
                       "ReplyHints":  [
                                          "询问早市",
@@ -31488,7 +31488,7 @@
                       "Weight":  1.2,
                       "CooldownSeconds":  18,
                       "RecordInMemory":  true,
-                      "Text":  "清晨最容易听到真话，因为大家还没来得及装腔。",
+                      "Text":  "清晨最容易听到真话，大伙儿还没来得及装腔作势。",
                       "Memory":  "清晨居民谈论热水、开市、晾布、泥路、巡逻、面包、真话和旅店客房。",
                       "ReplyHints":  [
                                          "询问早市",
@@ -31648,7 +31648,7 @@
                       "Weight":  1.2,
                       "CooldownSeconds":  18,
                       "RecordInMemory":  true,
-                      "Text":  "赶早的人多，鞋底上的泥也比平时新鲜。",
+                      "Text":  "赶早的人多，街上的泥都被踩得稀烂。",
                       "Memory":  "清晨居民谈论热水、开市、晾布、泥路、巡逻、面包、真话和旅店客房。",
                       "ReplyHints":  [
                                          "询问早市",
@@ -31744,7 +31744,7 @@
                       "Weight":  1.2,
                       "CooldownSeconds":  18,
                       "RecordInMemory":  true,
-                      "Text":  "清晨最容易听到真话，因为大家还没来得及装腔。",
+                      "Text":  "清晨最容易听到真话，大伙儿还没来得及装腔作势。",
                       "Memory":  "清晨居民谈论热水、开市、晾布、泥路、巡逻、面包、真话和旅店客房。",
                       "ReplyHints":  [
                                          "询问早市",
@@ -31904,7 +31904,7 @@
                       "Weight":  1.2,
                       "CooldownSeconds":  18,
                       "RecordInMemory":  true,
-                      "Text":  "赶早的人多，鞋底上的泥也比平时新鲜。",
+                      "Text":  "赶早的人多，街上的泥都被踩得稀烂。",
                       "Memory":  "清晨居民谈论热水、开市、晾布、泥路、巡逻、面包、真话和旅店客房。",
                       "ReplyHints":  [
                                          "询问早市",
@@ -32000,7 +32000,7 @@
                       "Weight":  1.2,
                       "CooldownSeconds":  18,
                       "RecordInMemory":  true,
-                      "Text":  "清晨最容易听到真话，因为大家还没来得及装腔。",
+                      "Text":  "清晨最容易听到真话，大伙儿还没来得及装腔作势。",
                       "Memory":  "清晨居民谈论热水、开市、晾布、泥路、巡逻、面包、真话和旅店客房。",
                       "ReplyHints":  [
                                          "询问早市",
@@ -32834,7 +32834,7 @@
                       "Weight":  1.2,
                       "CooldownSeconds":  18,
                       "RecordInMemory":  true,
-                      "Text":  "今天的最后一批客人总是最难应付。",
+                      "Text":  "一天里最后那拨客人，总是最难伺候。",
                       "Memory":  "傍晚居民谈论收摊、露水、城门、工坊、清扫、晚饭、孩子回家和治安。",
                       "ReplyHints":  [
                                          "询问城门",
@@ -32936,7 +32936,7 @@
                       "Weight":  1.2,
                       "CooldownSeconds":  18,
                       "RecordInMemory":  true,
-                      "Text":  "工坊的炉火逐渐熄了，耳朵却还在嗡嗡作响。",
+                      "Text":  "工坊的炉火熄了，耳朵里却还嗡嗡直响。",
                       "Memory":  "傍晚居民谈论收摊、露水、城门、工坊、清扫、晚饭、孩子回家和治安。",
                       "ReplyHints":  [
                                          "询问城门",
@@ -33106,7 +33106,7 @@
                       "Weight":  1.2,
                       "CooldownSeconds":  18,
                       "RecordInMemory":  true,
-                      "Text":  "今天的最后一批客人总是最难应付。",
+                      "Text":  "一天里最后那拨客人，总是最难伺候。",
                       "Memory":  "傍晚居民谈论收摊、露水、城门、工坊、清扫、晚饭、孩子回家和治安。",
                       "ReplyHints":  [
                                          "询问城门",
@@ -33208,7 +33208,7 @@
                       "Weight":  1.2,
                       "CooldownSeconds":  18,
                       "RecordInMemory":  true,
-                      "Text":  "工坊的炉火逐渐熄了，耳朵却还在嗡嗡作响。",
+                      "Text":  "工坊的炉火熄了，耳朵里却还嗡嗡直响。",
                       "Memory":  "傍晚居民谈论收摊、露水、城门、工坊、清扫、晚饭、孩子回家和治安。",
                       "ReplyHints":  [
                                          "询问城门",
@@ -33378,7 +33378,7 @@
                       "Weight":  1.2,
                       "CooldownSeconds":  18,
                       "RecordInMemory":  true,
-                      "Text":  "今天的最后一批客人总是最难应付。",
+                      "Text":  "一天里最后那拨客人，总是最难伺候。",
                       "Memory":  "傍晚居民谈论收摊、露水、城门、工坊、清扫、晚饭、孩子回家和治安。",
                       "ReplyHints":  [
                                          "询问城门",
@@ -33480,7 +33480,7 @@
                       "Weight":  1.2,
                       "CooldownSeconds":  18,
                       "RecordInMemory":  true,
-                      "Text":  "工坊的炉火逐渐熄了，耳朵却还在嗡嗡作响。",
+                      "Text":  "工坊的炉火熄了，耳朵里却还嗡嗡直响。",
                       "Memory":  "傍晚居民谈论收摊、露水、城门、工坊、清扫、晚饭、孩子回家和治安。",
                       "ReplyHints":  [
                                          "询问城门",
@@ -34507,7 +34507,7 @@
                       "Weight":  1.1,
                       "CooldownSeconds":  20,
                       "RecordInMemory":  true,
-                      "Text":  "我见过很多领主，真正肯听工人说话的并不多。",
+                      "Text":  "领主我见过不少，肯听干活的人说话的可没几个。",
                       "Memory":  "男性居民谈论修墙、车轮、短工、领主、搬运、道路、天气和谋生技能。",
                       "ReplyHints":  [
                                          "询问短工",
@@ -34755,7 +34755,7 @@
                       "Weight":  1.1,
                       "CooldownSeconds":  20,
                       "RecordInMemory":  true,
-                      "Text":  "我见过很多领主，真正肯听工人说话的并不多。",
+                      "Text":  "领主我见过不少，肯听干活的人说话的可没几个。",
                       "Memory":  "男性居民谈论修墙、车轮、短工、领主、搬运、道路、天气和谋生技能。",
                       "ReplyHints":  [
                                          "询问短工",
@@ -35003,7 +35003,7 @@
                       "Weight":  1.1,
                       "CooldownSeconds":  20,
                       "RecordInMemory":  true,
-                      "Text":  "我见过很多领主，真正肯听工人说话的并不多。",
+                      "Text":  "领主我见过不少，肯听干活的人说话的可没几个。",
                       "Memory":  "男性居民谈论修墙、车轮、短工、领主、搬运、道路、天气和谋生技能。",
                       "ReplyHints":  [
                                          "询问短工",
@@ -35220,7 +35220,7 @@
                       "Weight":  1.1,
                       "CooldownSeconds":  20,
                       "RecordInMemory":  true,
-                      "Text":  "家里要是有人识字，办什么手续都方便些。",
+                      "Text":  "家里要是有人识字，跟税吏打交道就不怕吃亏。",
                       "Memory":  "女性居民谈论布坊、药铺、识字、物价、柴火、邻里、孩子安全和鞋子。",
                       "ReplyHints":  [
                                          "询问药铺",
@@ -35251,7 +35251,7 @@
                       "Weight":  1.1,
                       "CooldownSeconds":  20,
                       "RecordInMemory":  true,
-                      "Text":  "这座城不缺漂亮的橱窗，缺的是便宜又结实的东西。",
+                      "Text":  "这城里不缺花哨的货摊，缺的是便宜又结实的东西。",
                       "Memory":  "女性居民谈论布坊、药铺、识字、物价、柴火、邻里、孩子安全和鞋子。",
                       "ReplyHints":  [
                                          "询问药铺",
@@ -35344,7 +35344,7 @@
                       "Weight":  1.1,
                       "CooldownSeconds":  20,
                       "RecordInMemory":  true,
-                      "Text":  "孩子放学前别走远，最近外地人比往常多。",
+                      "Text":  "孩子们别跑远了，最近城里的生面孔比往常多。",
                       "Memory":  "女性居民谈论布坊、药铺、识字、物价、柴火、邻里、孩子安全和鞋子。",
                       "ReplyHints":  [
                                          "询问药铺",
@@ -35375,7 +35375,7 @@
                       "Weight":  1.1,
                       "CooldownSeconds":  20,
                       "RecordInMemory":  true,
-                      "Text":  "一双好鞋能省很多麻烦，别等脚疼了才想起来换。",
+                      "Text":  "一双好鞋省得了许多麻烦，别等脚磨破了才想起换。",
                       "Memory":  "女性居民谈论布坊、药铺、识字、物价、柴火、邻里、孩子安全和鞋子。",
                       "ReplyHints":  [
                                          "询问药铺",
@@ -35468,7 +35468,7 @@
                       "Weight":  1.1,
                       "CooldownSeconds":  20,
                       "RecordInMemory":  true,
-                      "Text":  "家里要是有人识字，办什么手续都方便些。",
+                      "Text":  "家里要是有人识字，跟税吏打交道就不怕吃亏。",
                       "Memory":  "女性居民谈论布坊、药铺、识字、物价、柴火、邻里、孩子安全和鞋子。",
                       "ReplyHints":  [
                                          "询问药铺",
@@ -35499,7 +35499,7 @@
                       "Weight":  1.1,
                       "CooldownSeconds":  20,
                       "RecordInMemory":  true,
-                      "Text":  "这座城不缺漂亮的橱窗，缺的是便宜又结实的东西。",
+                      "Text":  "这城里不缺花哨的货摊，缺的是便宜又结实的东西。",
                       "Memory":  "女性居民谈论布坊、药铺、识字、物价、柴火、邻里、孩子安全和鞋子。",
                       "ReplyHints":  [
                                          "询问药铺",
@@ -35592,7 +35592,7 @@
                       "Weight":  1.1,
                       "CooldownSeconds":  20,
                       "RecordInMemory":  true,
-                      "Text":  "孩子放学前别走远，最近外地人比往常多。",
+                      "Text":  "孩子们别跑远了，最近城里的生面孔比往常多。",
                       "Memory":  "女性居民谈论布坊、药铺、识字、物价、柴火、邻里、孩子安全和鞋子。",
                       "ReplyHints":  [
                                          "询问药铺",
@@ -35623,7 +35623,7 @@
                       "Weight":  1.1,
                       "CooldownSeconds":  20,
                       "RecordInMemory":  true,
-                      "Text":  "一双好鞋能省很多麻烦，别等脚疼了才想起来换。",
+                      "Text":  "一双好鞋省得了许多麻烦，别等脚磨破了才想起换。",
                       "Memory":  "女性居民谈论布坊、药铺、识字、物价、柴火、邻里、孩子安全和鞋子。",
                       "ReplyHints":  [
                                          "询问药铺",
@@ -35716,7 +35716,7 @@
                       "Weight":  1.1,
                       "CooldownSeconds":  20,
                       "RecordInMemory":  true,
-                      "Text":  "家里要是有人识字，办什么手续都方便些。",
+                      "Text":  "家里要是有人识字，跟税吏打交道就不怕吃亏。",
                       "Memory":  "女性居民谈论布坊、药铺、识字、物价、柴火、邻里、孩子安全和鞋子。",
                       "ReplyHints":  [
                                          "询问药铺",
@@ -35747,7 +35747,7 @@
                       "Weight":  1.1,
                       "CooldownSeconds":  20,
                       "RecordInMemory":  true,
-                      "Text":  "这座城不缺漂亮的橱窗，缺的是便宜又结实的东西。",
+                      "Text":  "这城里不缺花哨的货摊，缺的是便宜又结实的东西。",
                       "Memory":  "女性居民谈论布坊、药铺、识字、物价、柴火、邻里、孩子安全和鞋子。",
                       "ReplyHints":  [
                                          "询问药铺",
@@ -35840,7 +35840,7 @@
                       "Weight":  1.1,
                       "CooldownSeconds":  20,
                       "RecordInMemory":  true,
-                      "Text":  "孩子放学前别走远，最近外地人比往常多。",
+                      "Text":  "孩子们别跑远了，最近城里的生面孔比往常多。",
                       "Memory":  "女性居民谈论布坊、药铺、识字、物价、柴火、邻里、孩子安全和鞋子。",
                       "ReplyHints":  [
                                          "询问药铺",
@@ -35871,7 +35871,7 @@
                       "Weight":  1.1,
                       "CooldownSeconds":  20,
                       "RecordInMemory":  true,
-                      "Text":  "一双好鞋能省很多麻烦，别等脚疼了才想起来换。",
+                      "Text":  "一双好鞋省得了许多麻烦，别等脚磨破了才想起换。",
                       "Memory":  "女性居民谈论布坊、药铺、识字、物价、柴火、邻里、孩子安全和鞋子。",
                       "ReplyHints":  [
                                          "询问药铺",
@@ -37445,7 +37445,7 @@
                       "Weight":  1.3,
                       "CooldownSeconds":  22,
                       "RecordInMemory":  true,
-                      "Text":  "琴弦断一根不算什么，最怕客人把琴撞翻。",
+                      "Text":  "断一根弦不算什么，就怕客人把琴撞翻了。",
                       "Memory":  "男性乐师谈论曲调、战争故事、回家、琴弦、点歌、天气、南方音乐和赏钱。",
                       "ReplyHints":  [
                                          "点歌",
@@ -37717,7 +37717,7 @@
                       "Weight":  1.3,
                       "CooldownSeconds":  22,
                       "RecordInMemory":  true,
-                      "Text":  "琴弦断一根不算什么，最怕客人把琴撞翻。",
+                      "Text":  "断一根弦不算什么，就怕客人把琴撞翻了。",
                       "Memory":  "男性乐师谈论曲调、战争故事、回家、琴弦、点歌、天气、南方音乐和赏钱。",
                       "ReplyHints":  [
                                          "点歌",
@@ -37989,7 +37989,7 @@
                       "Weight":  1.3,
                       "CooldownSeconds":  22,
                       "RecordInMemory":  true,
-                      "Text":  "琴弦断一根不算什么，最怕客人把琴撞翻。",
+                      "Text":  "断一根弦不算什么，就怕客人把琴撞翻了。",
                       "Memory":  "男性乐师谈论曲调、战争故事、回家、琴弦、点歌、天气、南方音乐和赏钱。",
                       "ReplyHints":  [
                                          "点歌",
@@ -38329,7 +38329,7 @@
                       "Weight":  1.3,
                       "CooldownSeconds":  22,
                       "RecordInMemory":  true,
-                      "Text":  "歌唱得好不好不只看嗓子，也看是否记得听众的心情。",
+                      "Text":  "唱得好不好不全在嗓子，还得懂听的人想听什么。",
                       "Memory":  "女性乐师谈论曲调、情歌、母亲遗琴、夜风、听众心情、新琴弦和旅人故事。",
                       "ReplyHints":  [
                                          "点歌",
@@ -38601,7 +38601,7 @@
                       "Weight":  1.3,
                       "CooldownSeconds":  22,
                       "RecordInMemory":  true,
-                      "Text":  "歌唱得好不好不只看嗓子，也看是否记得听众的心情。",
+                      "Text":  "唱得好不好不全在嗓子，还得懂听的人想听什么。",
                       "Memory":  "女性乐师谈论曲调、情歌、母亲遗琴、夜风、听众心情、新琴弦和旅人故事。",
                       "ReplyHints":  [
                                          "点歌",
@@ -38873,7 +38873,7 @@
                       "Weight":  1.3,
                       "CooldownSeconds":  22,
                       "RecordInMemory":  true,
-                      "Text":  "歌唱得好不好不只看嗓子，也看是否记得听众的心情。",
+                      "Text":  "唱得好不好不全在嗓子，还得懂听的人想听什么。",
                       "Memory":  "女性乐师谈论曲调、情歌、母亲遗琴、夜风、听众心情、新琴弦和旅人故事。",
                       "ReplyHints":  [
                                          "点歌",
@@ -39046,7 +39046,7 @@
                       "Weight":  1.5,
                       "CooldownSeconds":  21,
                       "RecordInMemory":  true,
-                      "Text":  "鱼价看着不错，可燃料和盐也都在涨。",
+                      "Text":  "鱼价看着不错，可渔网和盐也都在涨价。",
                       "Memory":  "港口渔民谈论鱼群、网眼、暗礁、鱼价、收帆、海鸟、鱼篓和生计。",
                       "ReplyHints":  [
                                          "询问渔获",
@@ -39246,7 +39246,7 @@
                       "Weight":  1.5,
                       "CooldownSeconds":  21,
                       "RecordInMemory":  true,
-                      "Text":  "鱼价看着不错，可燃料和盐也都在涨。",
+                      "Text":  "鱼价看着不错，可渔网和盐也都在涨价。",
                       "Memory":  "港口渔民谈论鱼群、网眼、暗礁、鱼价、收帆、海鸟、鱼篓和生计。",
                       "ReplyHints":  [
                                          "询问渔获",
@@ -39446,7 +39446,7 @@
                       "Weight":  1.5,
                       "CooldownSeconds":  21,
                       "RecordInMemory":  true,
-                      "Text":  "鱼价看着不错，可燃料和盐也都在涨。",
+                      "Text":  "鱼价看着不错，可渔网和盐也都在涨价。",
                       "Memory":  "港口渔民谈论鱼群、网眼、暗礁、鱼价、收帆、海鸟、鱼篓和生计。",
                       "ReplyHints":  [
                                          "询问渔获",
@@ -39786,7 +39786,7 @@
                       "Weight":  1.4,
                       "CooldownSeconds":  21,
                       "RecordInMemory":  true,
-                      "Text":  "百姓愿意报信，守卫才不会只靠自己的耳朵。",
+                      "Text":  "百姓肯来报信，守卫才不至于只靠自己两只耳朵。",
                       "Memory":  "守卫谈论登记、安静、脚印、夜巡、市场失窃、哨声、军粮和民间报信。",
                       "ReplyHints":  [
                                          "询问城防",
@@ -40026,7 +40026,7 @@
                       "Weight":  1.4,
                       "CooldownSeconds":  21,
                       "RecordInMemory":  true,
-                      "Text":  "百姓愿意报信，守卫才不会只靠自己的耳朵。",
+                      "Text":  "百姓肯来报信，守卫才不至于只靠自己两只耳朵。",
                       "Memory":  "守卫谈论登记、安静、脚印、夜巡、市场失窃、哨声、军粮和民间报信。",
                       "ReplyHints":  [
                                          "询问城防",
@@ -40266,7 +40266,7 @@
                       "Weight":  1.4,
                       "CooldownSeconds":  21,
                       "RecordInMemory":  true,
-                      "Text":  "百姓愿意报信，守卫才不会只靠自己的耳朵。",
+                      "Text":  "百姓肯来报信，守卫才不至于只靠自己两只耳朵。",
                       "Memory":  "守卫谈论登记、安静、脚印、夜巡、市场失窃、哨声、军粮和民间报信。",
                       "ReplyHints":  [
                                          "询问城防",
@@ -41735,7 +41735,7 @@
                       "Weight":  1.5,
                       "CooldownSeconds":  21,
                       "RecordInMemory":  true,
-                      "Text":  "帐本写清楚，合伙人之间才不会因为小钱翻脸。",
+                      "Text":  "账写清楚了，合伙人才不会为几个小钱翻脸。",
                       "Memory":  "女性商贩谈论香草、还价、布料、账本、熟客、市场消息、赊账和经营判断。",
                       "ReplyHints":  [
                                          "询问货物",
@@ -41831,7 +41831,7 @@
                       "Weight":  1.5,
                       "CooldownSeconds":  21,
                       "RecordInMemory":  true,
-                      "Text":  "若有人要赊账，至少留下一个能找到他的地址。",
+                      "Text":  "要赊账的，起码得知道他住哪条街、找谁作保。",
                       "Memory":  "女性商贩谈论香草、还价、布料、账本、熟客、市场消息、赊账和经营判断。",
                       "ReplyHints":  [
                                          "询问货物",
@@ -41991,7 +41991,7 @@
                       "Weight":  1.5,
                       "CooldownSeconds":  21,
                       "RecordInMemory":  true,
-                      "Text":  "帐本写清楚，合伙人之间才不会因为小钱翻脸。",
+                      "Text":  "账写清楚了，合伙人才不会为几个小钱翻脸。",
                       "Memory":  "女性商贩谈论香草、还价、布料、账本、熟客、市场消息、赊账和经营判断。",
                       "ReplyHints":  [
                                          "询问货物",
@@ -42087,7 +42087,7 @@
                       "Weight":  1.5,
                       "CooldownSeconds":  21,
                       "RecordInMemory":  true,
-                      "Text":  "若有人要赊账，至少留下一个能找到他的地址。",
+                      "Text":  "要赊账的，起码得知道他住哪条街、找谁作保。",
                       "Memory":  "女性商贩谈论香草、还价、布料、账本、熟客、市场消息、赊账和经营判断。",
                       "ReplyHints":  [
                                          "询问货物",
@@ -42247,7 +42247,7 @@
                       "Weight":  1.5,
                       "CooldownSeconds":  21,
                       "RecordInMemory":  true,
-                      "Text":  "帐本写清楚，合伙人之间才不会因为小钱翻脸。",
+                      "Text":  "账写清楚了，合伙人才不会为几个小钱翻脸。",
                       "Memory":  "女性商贩谈论香草、还价、布料、账本、熟客、市场消息、赊账和经营判断。",
                       "ReplyHints":  [
                                          "询问货物",
@@ -42343,7 +42343,7 @@
                       "Weight":  1.5,
                       "CooldownSeconds":  21,
                       "RecordInMemory":  true,
-                      "Text":  "若有人要赊账，至少留下一个能找到他的地址。",
+                      "Text":  "要赊账的，起码得知道他住哪条街、找谁作保。",
                       "Memory":  "女性商贩谈论香草、还价、布料、账本、熟客、市场消息、赊账和经营判断。",
                       "ReplyHints":  [
                                          "询问货物",
@@ -42503,7 +42503,7 @@
                       "Weight":  1.5,
                       "CooldownSeconds":  21,
                       "RecordInMemory":  true,
-                      "Text":  "客人只看颜色，我却更在意它是否肯听缰绳。",
+                      "Text":  "客人只看毛色，我更在意它肯不肯听缰绳。",
                       "Memory":  "女性马商和马夫谈论马匹性情、驯服、湿草、缰绳、小马驹、蹄子和饲养。",
                       "ReplyHints":  [
                                          "查看马匹",
@@ -42631,7 +42631,7 @@
                       "Weight":  1.5,
                       "CooldownSeconds":  21,
                       "RecordInMemory":  true,
-                      "Text":  "买马之后记得回来看看，饲养比买下它更重要。",
+                      "Text":  "买了马记得常回来问问，养马可比买马要紧。",
                       "Memory":  "女性马商和马夫谈论马匹性情、驯服、湿草、缰绳、小马驹、蹄子和饲养。",
                       "ReplyHints":  [
                                          "查看马匹",
@@ -42759,7 +42759,7 @@
                       "Weight":  1.5,
                       "CooldownSeconds":  21,
                       "RecordInMemory":  true,
-                      "Text":  "客人只看颜色，我却更在意它是否肯听缰绳。",
+                      "Text":  "客人只看毛色，我更在意它肯不肯听缰绳。",
                       "Memory":  "女性马商和马夫谈论马匹性情、驯服、湿草、缰绳、小马驹、蹄子和饲养。",
                       "ReplyHints":  [
                                          "查看马匹",
@@ -42887,7 +42887,7 @@
                       "Weight":  1.5,
                       "CooldownSeconds":  21,
                       "RecordInMemory":  true,
-                      "Text":  "买马之后记得回来看看，饲养比买下它更重要。",
+                      "Text":  "买了马记得常回来问问，养马可比买马要紧。",
                       "Memory":  "女性马商和马夫谈论马匹性情、驯服、湿草、缰绳、小马驹、蹄子和饲养。",
                       "ReplyHints":  [
                                          "查看马匹",
@@ -43015,7 +43015,7 @@
                       "Weight":  1.5,
                       "CooldownSeconds":  21,
                       "RecordInMemory":  true,
-                      "Text":  "客人只看颜色，我却更在意它是否肯听缰绳。",
+                      "Text":  "客人只看毛色，我更在意它肯不肯听缰绳。",
                       "Memory":  "女性马商和马夫谈论马匹性情、驯服、湿草、缰绳、小马驹、蹄子和饲养。",
                       "ReplyHints":  [
                                          "查看马匹",
@@ -43143,7 +43143,7 @@
                       "Weight":  1.5,
                       "CooldownSeconds":  21,
                       "RecordInMemory":  true,
-                      "Text":  "买马之后记得回来看看，饲养比买下它更重要。",
+                      "Text":  "买了马记得常回来问问，养马可比买马要紧。",
                       "Memory":  "女性马商和马夫谈论马匹性情、驯服、湿草、缰绳、小马驹、蹄子和饲养。",
                       "ReplyHints":  [
                                          "查看马匹",
@@ -43174,7 +43174,7 @@
                       "Weight":  1.4,
                       "CooldownSeconds":  21,
                       "RecordInMemory":  true,
-                      "Text":  "铁料不分好坏，锤子再重也只能打出废品。",
+                      "Text":  "铁料若不分好坏，锤子再重也只能打出废品。",
                       "Memory":  "女性铁匠和工匠谈论铁料、休息、农具、炉火、工坊技巧、护甲和打造用途。",
                       "ReplyHints":  [
                                          "询问工坊",
@@ -43298,7 +43298,7 @@
                       "Weight":  1.4,
                       "CooldownSeconds":  21,
                       "RecordInMemory":  true,
-                      "Text":  "有人以为工坊只靠力气，其实眼睛和耳朵同样重要。",
+                      "Text":  "都以为打铁只靠力气，其实眼力和耳力一样要紧。",
                       "Memory":  "女性铁匠和工匠谈论铁料、休息、农具、炉火、工坊技巧、护甲和打造用途。",
                       "ReplyHints":  [
                                          "询问工坊",
@@ -43391,7 +43391,7 @@
                       "Weight":  1.4,
                       "CooldownSeconds":  21,
                       "RecordInMemory":  true,
-                      "Text":  "若客人愿意说明用途，打造出来的东西会更合适。",
+                      "Text":  "客人肯说清拿去做什么，打出来的东西才更合用。",
                       "Memory":  "女性铁匠和工匠谈论铁料、休息、农具、炉火、工坊技巧、护甲和打造用途。",
                       "ReplyHints":  [
                                          "询问工坊",
@@ -43422,7 +43422,7 @@
                       "Weight":  1.4,
                       "CooldownSeconds":  21,
                       "RecordInMemory":  true,
-                      "Text":  "铁料不分好坏，锤子再重也只能打出废品。",
+                      "Text":  "铁料若不分好坏，锤子再重也只能打出废品。",
                       "Memory":  "女性铁匠和工匠谈论铁料、休息、农具、炉火、工坊技巧、护甲和打造用途。",
                       "ReplyHints":  [
                                          "询问工坊",
@@ -43546,7 +43546,7 @@
                       "Weight":  1.4,
                       "CooldownSeconds":  21,
                       "RecordInMemory":  true,
-                      "Text":  "有人以为工坊只靠力气，其实眼睛和耳朵同样重要。",
+                      "Text":  "都以为打铁只靠力气，其实眼力和耳力一样要紧。",
                       "Memory":  "女性铁匠和工匠谈论铁料、休息、农具、炉火、工坊技巧、护甲和打造用途。",
                       "ReplyHints":  [
                                          "询问工坊",
@@ -43639,7 +43639,7 @@
                       "Weight":  1.4,
                       "CooldownSeconds":  21,
                       "RecordInMemory":  true,
-                      "Text":  "若客人愿意说明用途，打造出来的东西会更合适。",
+                      "Text":  "客人肯说清拿去做什么，打出来的东西才更合用。",
                       "Memory":  "女性铁匠和工匠谈论铁料、休息、农具、炉火、工坊技巧、护甲和打造用途。",
                       "ReplyHints":  [
                                          "询问工坊",
@@ -43670,7 +43670,7 @@
                       "Weight":  1.4,
                       "CooldownSeconds":  21,
                       "RecordInMemory":  true,
-                      "Text":  "铁料不分好坏，锤子再重也只能打出废品。",
+                      "Text":  "铁料若不分好坏，锤子再重也只能打出废品。",
                       "Memory":  "女性铁匠和工匠谈论铁料、休息、农具、炉火、工坊技巧、护甲和打造用途。",
                       "ReplyHints":  [
                                          "询问工坊",
@@ -43794,7 +43794,7 @@
                       "Weight":  1.4,
                       "CooldownSeconds":  21,
                       "RecordInMemory":  true,
-                      "Text":  "有人以为工坊只靠力气，其实眼睛和耳朵同样重要。",
+                      "Text":  "都以为打铁只靠力气，其实眼力和耳力一样要紧。",
                       "Memory":  "女性铁匠和工匠谈论铁料、休息、农具、炉火、工坊技巧、护甲和打造用途。",
                       "ReplyHints":  [
                                          "询问工坊",
@@ -43887,7 +43887,7 @@
                       "Weight":  1.4,
                       "CooldownSeconds":  21,
                       "RecordInMemory":  true,
-                      "Text":  "若客人愿意说明用途，打造出来的东西会更合适。",
+                      "Text":  "客人肯说清拿去做什么，打出来的东西才更合用。",
                       "Memory":  "女性铁匠和工匠谈论铁料、休息、农具、炉火、工坊技巧、护甲和打造用途。",
                       "ReplyHints":  [
                                          "询问工坊",
@@ -44641,7 +44641,7 @@
                       "Weight":  1.0,
                       "CooldownSeconds":  18,
                       "RecordInMemory":  true,
-                      "Text":  "昨晚有人讲了个从远方来的故事。"
+                      "Text":  "昨晚有人讲了个远方的故事，听得人半宿睡不着。"
                   },
                   {
                       "Id":  "extra_commoner_013",
@@ -44711,7 +44711,7 @@
                       "Weight":  1.0,
                       "CooldownSeconds":  18,
                       "RecordInMemory":  true,
-                      "Text":  "我听见远处的钟响了，应该又有客人进来。"
+                      "Text":  "钟楼又响了，怕是有贵客进城。"
                   },
                   {
                       "Id":  "extra_commoner_020",
@@ -44741,7 +44741,7 @@
                       "Weight":  1.0,
                       "CooldownSeconds":  18,
                       "RecordInMemory":  true,
-                      "Text":  "最近铜钱流得快，手里总留不住几个。"
+                      "Text":  "最近钱花得快，手里总攒不住几个子儿。"
                   },
                   {
                       "Id":  "extra_commoner_023",
@@ -45381,7 +45381,7 @@
                       "Weight":  0.9,
                       "CooldownSeconds":  22,
                       "RecordInMemory":  true,
-                      "Text":  "换岗之后先喝口水，长枪比人还沉。"
+                      "Text":  "换了岗先喝口水，这长枪扛久了比人还沉。"
                   },
                   {
                       "Id":  "extra_soldier_003",
@@ -45681,7 +45681,7 @@
                       "Weight":  0.8,
                       "CooldownSeconds":  22,
                       "RecordInMemory":  true,
-                      "Text":  "一枚小钱就够我买药了，求您了。"
+                      "Text":  "一个小钱就够我抓副药了，求求您。"
                   },
                   {
                       "Id":  "extra_shipwright_001",
@@ -45767,7 +45767,7 @@
                           "看这晚霞的颜色，明天应该不会下雨。",
                           "晨雾散得慢，出城的人都在门口等。",
                           "天一热，井边排队的人就多起来了。",
-                          "这季节昼夜温差大，孩子最容易着凉。",
+                          "这时节早晚冷、中午热，孩子最容易着凉。",
                           "雨停得正是时候，再下路就走不了了。",
                           "风里全是尘土，晾在外面的衣服都发硬。",
                           "太阳落山得越来越早，得赶紧把活做完。",
@@ -46617,7 +46617,7 @@
                       "Id": "feast_musician_02", "Enabled": true, "Roles": ["musician", "singer", "bard"], "SceneTags": ["lordhall"], "Weight": 1.0, "CooldownSeconds": 70, "FeastOnly": true, "RecordInMemory": true, "Text": "这段旋律慢一些，正好让谈话不被打断。"
                   },
                   {
-                      "Id": "feast_musician_03", "Enabled": true, "Roles": ["musician", "singer", "bard"], "SceneTags": ["lordhall"], "Weight": 0.9, "CooldownSeconds": 70, "FeastOnly": true, "RecordInMemory": true, "Text": "贵族们谈的是疆场与疆土，我只负责让酒杯别冷场。"
+                      "Id": "feast_musician_03", "Enabled": true, "Roles": ["musician", "singer", "bard"], "SceneTags": ["lordhall"], "Weight": 0.9, "CooldownSeconds": 70, "FeastOnly": true, "RecordInMemory": true, "Text": "贵人们谈的是疆场与封地，我只管别让酒席冷了场。"
                   },
                   {
                       "Id": "feast_musician_04", "Enabled": true, "Roles": ["musician", "singer", "bard"], "SceneTags": ["lordhall"], "Weight": 1.0, "CooldownSeconds": 70, "FeastOnly": true, "RecordInMemory": true, "Text": "若诸位喜欢，我可以换一支更庄重的曲子。"
@@ -46699,7 +46699,7 @@
                       "Id": "feast_server_11", "Enabled": true, "Roles": ["tavernkeeper", "bartender", "wench"], "Genders": ["female"], "SceneTags": ["lordhall"], "Weight": 1.0, "CooldownSeconds": 70, "FeastOnly": true, "RecordInMemory": true, "Text": "请小声些，主桌正在说话。"
                   },
                   {
-                      "Id": "feast_server_12", "Enabled": true, "Roles": ["tavernkeeper", "bartender", "wench"], "Genders": ["female"], "SceneTags": ["lordhall"], "Weight": 0.8, "CooldownSeconds": 70, "FeastOnly": true, "RecordInMemory": true, "Text": "今晚的客人真多，我连自己的名字都快忘了。"
+                      "Id": "feast_server_12", "Enabled": true, "Roles": ["tavernkeeper", "bartender", "wench"], "Genders": ["female"], "SceneTags": ["lordhall"], "Weight": 0.8, "CooldownSeconds": 70, "FeastOnly": true, "RecordInMemory": true, "Text": "今晚客人真多，我忙得连自己叫什么都快忘了。"
                   },
                   {
                       "Id": "feast_server_13", "Enabled": true, "Roles": ["tavernkeeper", "bartender", "wench"], "Genders": ["female"], "SceneTags": ["lordhall"], "Weight": 0.9, "CooldownSeconds": 70, "FeastOnly": true, "RecordInMemory": true, "Text": "那位大人只要抬手，我就知道该添酒了。"
@@ -46730,7 +46730,7 @@
                       "Id": "feast_guard_03", "Enabled": true, "Roles": ["guard", "soldier", "patrol"], "SceneTags": ["lordhall"], "Weight": 1.0, "CooldownSeconds": 70, "FeastOnly": true, "RecordInMemory": true, "Text": "换岗还早，先让贵客把话说完。"
                   },
                   {
-                      "Id": "feast_guard_04", "Enabled": true, "Roles": ["guard", "soldier", "patrol"], "SceneTags": ["lordhall"], "Weight": 0.9, "CooldownSeconds": 70, "FeastOnly": true, "RecordInMemory": true, "Text": "今晚的盔甲穿得比平日更亮，站岗也得更稳。"
+                      "Id": "feast_guard_04", "Enabled": true, "Roles": ["guard", "soldier", "patrol"], "SceneTags": ["lordhall"], "Weight": 0.9, "CooldownSeconds": 70, "FeastOnly": true, "RecordInMemory": true, "Text": "今晚的盔甲擦得比平日亮，站岗也得站得更稳。"
                   },
                   {
                       "Id": "feast_guard_05", "Enabled": true, "Roles": ["guard", "soldier", "patrol"], "SceneTags": ["lordhall"], "Weight": 1.0, "CooldownSeconds": 70, "FeastOnly": true, "RecordInMemory": true, "Text": "如果有人需要离席，请先告诉门边的守卫。"
@@ -46773,6 +46773,96 @@
                   },
                   {
                       "Id": "feast_guard_18", "Enabled": true, "Roles": ["guard", "soldier", "patrol"], "SceneTags": ["lordhall"], "Weight": 0.8, "CooldownSeconds": 70, "FeastOnly": true, "RecordInMemory": true, "Text": "能让这么多贵客安坐一堂，主人家的威望果然不凡。"
+                  },
+                  {
+                      "Id": "coup_street_civilian_01", "Enabled": true, "Roles": ["commoner", "citizen", "villager", "customer"], "SceneTags": ["coup_street"], "Weight": 1.2, "CooldownSeconds": 16, "RecordInMemory": true, "Text": "快跑！街上动刀子了，别站在这儿！", "Memory": "政变中的城镇街道上，惊慌的居民一边逃命一边议论有人夺权、守军厮杀。", "ReplyHints": ["喝令百姓躲开", "安抚居民", "询问守军去向", "宣布新王即将登位"]
+                  },
+                  {
+                      "Id": "coup_street_civilian_02", "Enabled": true, "Roles": ["commoner", "citizen", "villager", "customer"], "SceneTags": ["coup_street"], "Weight": 1.2, "CooldownSeconds": 16, "RecordInMemory": true, "Text": "是政变……有人要夺王位，快把门关上！", "Memory": "政变中的城镇街道上，惊慌的居民一边逃命一边议论有人夺权、守军厮杀。", "ReplyHints": ["喝令百姓躲开", "安抚居民", "询问守军去向", "宣布新王即将登位"]
+                  },
+                  {
+                      "Id": "coup_street_civilian_03", "Enabled": true, "Roles": ["commoner", "citizen", "villager", "customer"], "SceneTags": ["coup_street"], "Weight": 1.2, "CooldownSeconds": 16, "RecordInMemory": true, "Text": "孩子呢？谁看见我家孩子往哪边跑了？", "Memory": "政变中的城镇街道上，惊慌的居民一边逃命一边议论有人夺权、守军厮杀。", "ReplyHints": ["喝令百姓躲开", "安抚居民", "询问守军去向", "宣布新王即将登位"]
+                  },
+                  {
+                      "Id": "coup_street_civilian_04", "Enabled": true, "Roles": ["commoner", "citizen", "villager", "customer"], "SceneTags": ["coup_street"], "Weight": 1.2, "CooldownSeconds": 16, "RecordInMemory": true, "Text": "别伤我们，我们只是本地的百姓！", "Memory": "政变中的城镇街道上，惊慌的居民一边逃命一边议论有人夺权、守军厮杀。", "ReplyHints": ["喝令百姓躲开", "安抚居民", "询问守军去向", "宣布新王即将登位"]
+                  },
+                  {
+                      "Id": "coup_street_civilian_05", "Enabled": true, "Roles": ["commoner", "citizen", "villager", "customer"], "SceneTags": ["coup_street"], "Weight": 1.2, "CooldownSeconds": 16, "RecordInMemory": true, "Text": "守军都杀过来了，快往小巷里躲！", "Memory": "政变中的城镇街道上，惊慌的居民一边逃命一边议论有人夺权、守军厮杀。", "ReplyHints": ["喝令百姓躲开", "安抚居民", "询问守军去向", "宣布新王即将登位"]
+                  },
+                  {
+                      "Id": "coup_street_civilian_06", "Enabled": true, "Roles": ["commoner", "citizen", "villager", "customer"], "SceneTags": ["coup_street"], "Weight": 1.2, "CooldownSeconds": 16, "RecordInMemory": true, "Text": "{player_title}的人马打进城了，这天要变了！", "Memory": "政变中的城镇街道上，惊慌的居民一边逃命一边议论有人夺权、守军厮杀。", "ReplyHints": ["喝令百姓躲开", "安抚居民", "询问守军去向", "宣布新王即将登位"]
+                  },
+                  {
+                      "Id": "coup_street_civilian_07", "Enabled": true, "Roles": ["commoner", "citizen", "villager", "customer"], "SceneTags": ["coup_street"], "Weight": 1.2, "CooldownSeconds": 16, "RecordInMemory": true, "Text": "货摊不要了，保命要紧！", "Memory": "政变中的城镇街道上，惊慌的居民一边逃命一边议论有人夺权、守军厮杀。", "ReplyHints": ["喝令百姓躲开", "安抚居民", "询问守军去向", "宣布新王即将登位"]
+                  },
+                  {
+                      "Id": "coup_street_civilian_08", "Enabled": true, "Roles": ["commoner", "citizen", "villager", "customer"], "SceneTags": ["coup_street"], "Weight": 1.2, "CooldownSeconds": 16, "RecordInMemory": true, "Text": "老天保佑，千万别让火烧到房子。", "Memory": "政变中的城镇街道上，惊慌的居民一边逃命一边议论有人夺权、守军厮杀。", "ReplyHints": ["喝令百姓躲开", "安抚居民", "询问守军去向", "宣布新王即将登位"]
+                  },
+                  {
+                      "Id": "coup_street_merchant_01", "Enabled": true, "Roles": ["merchant", "vendor", "trader", "blacksmith", "weaponsmith", "armorer", "horse_trader", "tavernkeeper"], "SceneTags": ["coup_street"], "Weight": 1.2, "CooldownSeconds": 16, "RecordInMemory": true, "Text": "我的铺子！谁来管管，这是要明抢吗？", "Memory": "政变中的商贩担心铺子和货物，急着收摊闭门。", "ReplyHints": ["保证不扰商户", "询问城中动向", "让商贩避开战场"]
+                  },
+                  {
+                      "Id": "coup_street_merchant_02", "Enabled": true, "Roles": ["merchant", "vendor", "trader", "blacksmith", "weaponsmith", "armorer", "horse_trader", "tavernkeeper"], "SceneTags": ["coup_street"], "Weight": 1.2, "CooldownSeconds": 16, "RecordInMemory": true, "Text": "收摊收摊，今天这买卖做不成了。", "Memory": "政变中的商贩担心铺子和货物，急着收摊闭门。", "ReplyHints": ["保证不扰商户", "询问城中动向", "让商贩避开战场"]
+                  },
+                  {
+                      "Id": "coup_street_merchant_03", "Enabled": true, "Roles": ["merchant", "vendor", "trader", "blacksmith", "weaponsmith", "armorer", "horse_trader", "tavernkeeper"], "SceneTags": ["coup_street"], "Weight": 1.2, "CooldownSeconds": 16, "RecordInMemory": true, "Text": "谁当国王我不管，别砸我的货就行！", "Memory": "政变中的商贩担心铺子和货物，急着收摊闭门。", "ReplyHints": ["保证不扰商户", "询问城中动向", "让商贩避开战场"]
+                  },
+                  {
+                      "Id": "coup_street_merchant_04", "Enabled": true, "Roles": ["merchant", "vendor", "trader", "blacksmith", "weaponsmith", "armorer", "horse_trader", "tavernkeeper"], "SceneTags": ["coup_street"], "Weight": 1.2, "CooldownSeconds": 16, "RecordInMemory": true, "Text": "门闩上了，打完之前谁也别想进来！", "Memory": "政变中的商贩担心铺子和货物，急着收摊闭门。", "ReplyHints": ["保证不扰商户", "询问城中动向", "让商贩避开战场"]
+                  },
+                  {
+                      "Id": "coup_street_beggar_01", "Enabled": true, "Roles": ["beggar", "musician"], "SceneTags": ["coup_street"], "Weight": 1.2, "CooldownSeconds": 16, "RecordInMemory": true, "Text": "大人们打仗，倒霉的总是我们这些人。", "Memory": "政变街道上的流浪者和艺人四处躲藏，只求不被卷进厮杀。", "ReplyHints": ["让其离开", "询问看到了什么"]
+                  },
+                  {
+                      "Id": "coup_street_beggar_02", "Enabled": true, "Roles": ["beggar", "musician"], "SceneTags": ["coup_street"], "Weight": 1.2, "CooldownSeconds": 16, "RecordInMemory": true, "Text": "别往那边跑，那边也全是兵！", "Memory": "政变街道上的流浪者和艺人四处躲藏，只求不被卷进厮杀。", "ReplyHints": ["让其离开", "询问看到了什么"]
+                  },
+                  {
+                      "Id": "coup_street_beggar_03", "Enabled": true, "Roles": ["beggar", "musician"], "SceneTags": ["coup_street"], "Weight": 1.2, "CooldownSeconds": 16, "RecordInMemory": true, "Text": "我什么都没看见，什么都没听见。", "Memory": "政变街道上的流浪者和艺人四处躲藏，只求不被卷进厮杀。", "ReplyHints": ["让其离开", "询问看到了什么"]
+                  },
+                  {
+                      "Id": "coup_hall_servant_01", "Enabled": true, "Roles": ["commoner", "citizen", "villager", "customer", "tavernkeeper", "musician"], "SceneTags": ["coup_hall"], "Weight": 1.2, "CooldownSeconds": 16, "RecordInMemory": true, "Text": "他们冲进大厅了！快去保护陛下……不，快逃！", "Memory": "政变攻入领主大厅时，仆从惊恐躲避，不知该向谁效忠。", "ReplyHints": ["命令仆从退下", "安抚仆从", "宣布新的主人"]
+                  },
+                  {
+                      "Id": "coup_hall_servant_02", "Enabled": true, "Roles": ["commoner", "citizen", "villager", "customer", "tavernkeeper", "musician"], "SceneTags": ["coup_hall"], "Weight": 1.2, "CooldownSeconds": 16, "RecordInMemory": true, "Text": "别杀我，我只是端酒的仆人！", "Memory": "政变攻入领主大厅时，仆从惊恐躲避，不知该向谁效忠。", "ReplyHints": ["命令仆从退下", "安抚仆从", "宣布新的主人"]
+                  },
+                  {
+                      "Id": "coup_hall_servant_03", "Enabled": true, "Roles": ["commoner", "citizen", "villager", "customer", "tavernkeeper", "musician"], "SceneTags": ["coup_hall"], "Weight": 1.2, "CooldownSeconds": 16, "RecordInMemory": true, "Text": "王座前全是血……这还是领主大厅吗？", "Memory": "政变攻入领主大厅时，仆从惊恐躲避，不知该向谁效忠。", "ReplyHints": ["命令仆从退下", "安抚仆从", "宣布新的主人"]
+                  },
+                  {
+                      "Id": "coup_hall_servant_04", "Enabled": true, "Roles": ["commoner", "citizen", "villager", "customer", "tavernkeeper", "musician"], "SceneTags": ["coup_hall"], "Weight": 1.2, "CooldownSeconds": 16, "RecordInMemory": true, "Text": "侍卫全倒下了……往后我们该听谁的？", "Memory": "政变攻入领主大厅时，仆从惊恐躲避，不知该向谁效忠。", "ReplyHints": ["命令仆从退下", "安抚仆从", "宣布新的主人"]
+                  },
+                  {
+                      "Id": "coup_hall_servant_05", "Enabled": true, "Roles": ["commoner", "citizen", "villager", "customer", "tavernkeeper", "musician"], "SceneTags": ["coup_hall"], "Weight": 1.2, "CooldownSeconds": 16, "RecordInMemory": true, "Text": "躲到桌子底下，别出声！", "Memory": "政变攻入领主大厅时，仆从惊恐躲避，不知该向谁效忠。", "ReplyHints": ["命令仆从退下", "安抚仆从", "宣布新的主人"]
+                  },
+                  {
+                      "Id": "coup_street_panic_anchor_01", "Enabled": true, "Roles": ["commoner", "citizen", "villager", "customer"], "SceneTags": ["coup_street"], "Weight": 1, "CooldownSeconds": 18, "EventKey": "coup_street_panic", "EventChancePercent": 60, "MaxEventResponses": 2, "EventResponseSpacingSeconds": 1, "RecordInMemory": true, "Text": "有人在街口喊，说要换国王了！", "Memory": "政变街道上，居民们互相传话，商量往哪里躲避战火。", "ReplyHints": ["只写居民当场说出口的逃命、躲避或传话", "不写动作、神态和旁白"]
+                  },
+                  {
+                      "Id": "coup_street_panic_anchor_02", "Enabled": true, "Roles": ["commoner", "citizen", "villager", "customer"], "SceneTags": ["coup_street"], "Weight": 1, "CooldownSeconds": 18, "EventKey": "coup_street_panic", "EventChancePercent": 60, "MaxEventResponses": 2, "EventResponseSpacingSeconds": 1, "RecordInMemory": true, "Text": "守军和外来的兵打起来了，往哪边逃？", "Memory": "政变街道上，居民们互相传话，商量往哪里躲避战火。", "ReplyHints": ["只写居民当场说出口的逃命、躲避或传话", "不写动作、神态和旁白"]
+                  },
+                  {
+                      "Id": "coup_street_panic_reply_01", "Enabled": true, "Roles": ["commoner", "citizen", "villager", "customer"], "SceneTags": ["coup_street"], "Weight": 1, "CooldownSeconds": 18, "EventKey": "coup_street_panic", "EventResponse": true, "RecordInMemory": false, "Text": "别问了，先进屋再说！"
+                  },
+                  {
+                      "Id": "coup_street_panic_reply_02", "Enabled": true, "Roles": ["commoner", "citizen", "villager", "customer"], "SceneTags": ["coup_street"], "Weight": 1, "CooldownSeconds": 18, "EventKey": "coup_street_panic", "EventResponse": true, "RecordInMemory": false, "Text": "往城门那边去，那边还没打起来。"
+                  },
+                  {
+                      "Id": "coup_street_panic_reply_03", "Enabled": true, "Roles": ["commoner", "citizen", "villager", "customer"], "SceneTags": ["coup_street"], "Weight": 1, "CooldownSeconds": 18, "EventKey": "coup_street_panic", "EventResponse": true, "RecordInMemory": false, "Text": "领主大厅那边全是兵，千万别过去！"
+                  },
+                  {
+                      "Id": "coup_street_panic_reply_04", "Enabled": true, "Roles": ["commoner", "citizen", "villager", "customer"], "SceneTags": ["coup_street"], "Weight": 1, "CooldownSeconds": 18, "EventKey": "coup_street_panic", "EventResponse": true, "RecordInMemory": false, "Text": "谁当国王都一样，活下来才要紧。"
+                  },
+                  {
+                      "Id": "coup_hall_panic_anchor_01", "Enabled": true, "Roles": ["commoner", "citizen", "villager", "customer", "tavernkeeper", "musician"], "SceneTags": ["coup_hall"], "Weight": 1, "CooldownSeconds": 18, "EventKey": "coup_hall_panic", "EventChancePercent": 60, "MaxEventResponses": 2, "EventResponseSpacingSeconds": 1, "RecordInMemory": true, "Text": "大厅的门被撞开了，陛下的卫兵挡不住了！", "Memory": "政变攻入领主大厅时，仆从们低声商量如何躲避。", "ReplyHints": ["只写仆从当场说出口的躲避或惊慌之语", "不写动作、神态和旁白"]
+                  },
+                  {
+                      "Id": "coup_hall_panic_reply_01", "Enabled": true, "Roles": ["commoner", "citizen", "villager", "customer", "tavernkeeper", "musician"], "SceneTags": ["coup_hall"], "Weight": 1, "CooldownSeconds": 18, "EventKey": "coup_hall_panic", "EventResponse": true, "RecordInMemory": false, "Text": "从后厨的门出去，快！"
+                  },
+                  {
+                      "Id": "coup_hall_panic_reply_02", "Enabled": true, "Roles": ["commoner", "citizen", "villager", "customer", "tavernkeeper", "musician"], "SceneTags": ["coup_hall"], "Weight": 1, "CooldownSeconds": 18, "EventKey": "coup_hall_panic", "EventResponse": true, "RecordInMemory": false, "Text": "别出声，等他们打完再说。"
+                  },
+                  {
+                      "Id": "coup_hall_panic_reply_03", "Enabled": true, "Roles": ["commoner", "citizen", "villager", "customer", "tavernkeeper", "musician"], "SceneTags": ["coup_hall"], "Weight": 1, "CooldownSeconds": 18, "EventKey": "coup_hall_panic", "EventResponse": true, "RecordInMemory": false, "Text": "这下王座真要换人坐了。"
                   }
               ]
 }

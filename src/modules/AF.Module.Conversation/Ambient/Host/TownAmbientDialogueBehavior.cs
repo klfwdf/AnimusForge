@@ -68,6 +68,11 @@ public sealed class TownAmbientDialogueMissionBehavior : MissionBehavior
 	private const float CombatGuardIntervalSeconds = 1f;
 	private float _nextCombatGuardAt;
 	private bool _combatGuardBlocked;
+	// Armed-coup scenes are a declared battle that would otherwise be blocked: they run with their
+	// own scene tags so only coup lines (and their AI echoes) can match. Refreshed with the guard.
+	private const string CoupStreetSceneTag = "coup_street";
+	private const string CoupHallSceneTag = "coup_hall";
+	private string _coupSceneTag;
 
 	public override void OnBehaviorInitialize()
 	{
@@ -96,6 +101,7 @@ public sealed class TownAmbientDialogueMissionBehavior : MissionBehavior
 		_populationAttachLogged = false;
 		_nextCombatGuardAt = 0f;
 		_combatGuardBlocked = false;
+		_coupSceneTag = null;
 		try
 		{
 			Logger.LogImmediate("TownAmbient", "behavior_initialized enabled=" + (_config?.Enabled == true) + " lines=" + (_config?.Lines?.Count ?? 0) + " config=" + AnimusForgeModulePaths.GetModuleDataFilePath(ConfigFileName));
@@ -145,9 +151,13 @@ public sealed class TownAmbientDialogueMissionBehavior : MissionBehavior
 			if (!_contextLogged)
 			{
 				_contextLogged = true;
-				Logger.LogImmediate("TownAmbient", "context_ok scene=" + (mission.SceneName ?? "") + " sceneTag=" + sceneTag + " settlement=" + (settlement?.StringId ?? "null") + " location=" + GetCurrentLocationIdSafe());
+				Logger.LogImmediate("TownAmbient", "context_ok scene=" + (mission.SceneName ?? "") + " sceneTag=" + (_coupSceneTag ?? sceneTag) + " settlement=" + (settlement?.StringId ?? "null") + " location=" + GetCurrentLocationIdSafe());
 			}
-			if (!_ambientFeastModeActive)
+			if (_coupSceneTag != null)
+			{
+				sceneTag = _coupSceneTag;
+			}
+			else if (!_ambientFeastModeActive)
 			{
 				TryAttachTownPopulationBehavior(mission, settlement, sceneTag);
 			}
@@ -746,7 +756,7 @@ public sealed class TownAmbientDialogueMissionBehavior : MissionBehavior
 			CacheKey = cacheKey,
 			PauseEpoch = requestEpoch
 		};
-		if (!TownAmbientAiClient.TryStartReplyGeneration(cacheKey, Render(PickTextVariant(anchorLine), ShoutUtils.ExtractNpcData(anchorAgent), settlement, sceneTag, playerContext), townName, sceneTag, timePeriod, playerContext?.Status, string.Join("；", anchorLine.ReplyHints ?? new List<string>()), speakers, result =>
+		if (!TownAmbientAiClient.TryStartReplyGeneration(cacheKey, Render(PickTextVariant(anchorLine), ShoutUtils.ExtractNpcData(anchorAgent), settlement, sceneTag, playerContext), townName, DescribeAiScene(sceneTag), timePeriod, playerContext?.Status, string.Join("；", anchorLine.ReplyHints ?? new List<string>()), speakers, result =>
 		{
 			batch.Result = result ?? new TownAmbientAiResult { Error = "empty_result" };
 			if (!_ambientFeastModeActive && requestEpoch == Volatile.Read(ref _ambientPauseEpoch))
@@ -1302,7 +1312,16 @@ public sealed class TownAmbientDialogueMissionBehavior : MissionBehavior
 			return _combatGuardBlocked;
 		}
 		_nextCombatGuardAt = now + CombatGuardIntervalSeconds;
-		string reason = GetAmbientBlockReason(mission);
+		string coupSceneTag = ResolveCoupSceneTag(mission);
+		if (!string.Equals(coupSceneTag, _coupSceneTag, StringComparison.Ordinal))
+		{
+			_coupSceneTag = coupSceneTag;
+			_contextualLinesCache = null;
+			_contextualLinesCacheKey = "";
+			_contextualLinesCacheUntil = 0f;
+			Logger.LogImmediate("TownAmbient", "coup_scene_mode tag=" + (coupSceneTag ?? "none") + " location=" + GetCurrentLocationIdSafe());
+		}
+		string reason = coupSceneTag != null ? null : GetAmbientBlockReason(mission);
 		bool blocked = reason != null;
 		if (blocked != _combatGuardBlocked)
 		{
@@ -1323,6 +1342,30 @@ public sealed class TownAmbientDialogueMissionBehavior : MissionBehavior
 			}
 		}
 		return blocked;
+	}
+
+	private static string ResolveCoupSceneTag(Mission mission)
+	{
+		try
+		{
+			if (CampaignMission.Current?.Location == null
+				|| !SettlementEntryTroopSelectionBehavior.TryGetArmedCoupSceneForExternal(mission, out bool hall))
+			{
+				return null;
+			}
+			return hall ? CoupHallSceneTag : CoupStreetSceneTag;
+		}
+		catch
+		{
+			return null;
+		}
+	}
+
+	private static string DescribeAiScene(string sceneTag)
+	{
+		if (string.Equals(sceneTag, CoupStreetSceneTag, StringComparison.Ordinal)) return "政变中厮杀的城镇街道";
+		if (string.Equals(sceneTag, CoupHallSceneTag, StringComparison.Ordinal)) return "政变中被攻入的领主大厅";
+		return sceneTag;
 	}
 
 	// Returns null when the mission is a peaceful settlement location mission, otherwise a short reason.

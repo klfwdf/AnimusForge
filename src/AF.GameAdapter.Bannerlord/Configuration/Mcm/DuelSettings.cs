@@ -1274,6 +1274,18 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 		}
 	}
 
+	internal static int GetSetsOtherSettlementFollowerLimit()
+	{
+		try
+		{
+			return SetsSettlementEntryProfile.ClampOtherSettlementSelectedFollowerLimit(GlobalSettings<DuelSettings>.Instance?.SetsOtherSettlementFollowerLimit ?? SetsSettlementEntryProfile.OtherSettlementSelectedFollowerDefaultLimit);
+		}
+		catch
+		{
+			return SetsSettlementEntryProfile.OtherSettlementSelectedFollowerDefaultLimit;
+		}
+	}
+
 	internal static int GetSetsDiagnosticLogMaxSizeMegabytes()
 	{
 		try
@@ -2459,6 +2471,10 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 	[SettingPropertyButton("清空贵族俘虏随行日志", -1, true, "", Content = "立即清空", Order = 13, RequireRestart = false, HintText = "只清空当前 NoblePrisonerEscort.log，不删除上一份轮转日志。")]
 	[SettingPropertyGroup(SiegeNpcResponseLimitProfile.McmGroupName)]
 	public Action ClearNoblePrisonerEscortLog { get; set; }
+
+	[SettingPropertyInteger("SETS 他方定居点随行上限", SetsSettlementEntryProfile.OtherSettlementSelectedFollowerMinLimit, SetsSettlementEntryProfile.OtherSettlementSelectedFollowerMaxLimit, "0", Order = 14, RequireRestart = false, HintText = "进入非自有城镇/城堡/村庄时，可配置并带入的普通士兵人数上限。默认 10。调低后，已保存配置中超出的部分会被截掉。")]
+	[SettingPropertyGroup(SiegeNpcResponseLimitProfile.McmGroupName)]
+	public int SetsOtherSettlementFollowerLimit { get; set; } = SetsSettlementEntryProfile.OtherSettlementSelectedFollowerDefaultLimit;
 
 	[SettingPropertyInteger("怀孕几率（%）", 0, 100, "0", Order = 0, RequireRestart = false, HintText = "当亲密行为标签确认本轮已发生性行为和内射后，女方怀孕的概率。0 表示不会怀孕，100 表示必定怀孕。默认 50%。")]
 	[SettingPropertyGroup("15. 亲密行为与怀孕")]

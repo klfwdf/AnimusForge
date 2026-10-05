@@ -4036,6 +4036,7 @@ internal sealed partial class VassalageBehavior : CampaignBehaviorBase
 			+ warSyncStatusText
 			+ (otherQueuedDiplomacySyncCount > 0 ? ("另有 " + otherQueuedDiplomacySyncCount.ToString(CultureInfo.InvariantCulture) + " 项外交安排将在局势安全时生效。") : "");
 		Logger.Log("Vassalage", "Agreement created suzerain=" + agreement.SuzerainKingdomId + " vassal=" + agreement.VassalKingdomId + " type=" + agreement.Type);
+		MyBehavior.Instance?.CaptureWorldBulletinVassalage(playerKingdom, targetKingdom, GetVassalageTypeDisplayName(type), true);
 		VassalageDiagnosticLog.Event("agreement.create.success", new Dictionary<string, object>
 		{
 			["agreementId"] = agreement.AgreementId,
@@ -5643,6 +5644,11 @@ internal sealed partial class VassalageBehavior : CampaignBehaviorBase
 		string vassalId = (agreement.VassalKingdomId ?? "").Trim();
 		if (!string.IsNullOrWhiteSpace(vassalId))
 		{
+			// Annexation publishes the merger itself; the treaty it voids is not a separate story.
+			if (reason != "kingdom_annexation")
+			{
+				MyBehavior.Instance?.CaptureWorldBulletinVassalage(agreement.ResolveSuzerain(), agreement.ResolveVassal(), GetVassalageTypeDisplayName(agreement.Type), false);
+			}
 			_agreementsByVassalId.Remove(vassalId);
 			_garrisonObedienceValues.Remove(vassalId);
 			_garrisonObedienceStorage.Remove(vassalId);

@@ -113,6 +113,21 @@ internal sealed partial class SceneConversationSessionRuntime
         bool hasLore, string lore, List<string> excludedRules,
         long generation, int sessionId, int conversationEpoch)
     {
+        // Empty input (e.g. topic-less battle speech) has no routing work; keep the legacy
+        // empty context instead of treating BeginSharedPromptBuild's null as a stale source.
+        if (string.IsNullOrWhiteSpace(playerText) && string.IsNullOrWhiteSpace(extraFact))
+        {
+            return await _dispatcher.RunAsync(
+                "module_scene_prompt_capture", "scene", agentIndex, () =>
+                {
+                    if (!SaveRuntimeGuard.IsCurrentGeneration(generation)
+                        || sessionId != _ports.SceneSessionId()
+                        || !IsSceneConversationEpochCurrent(conversationEpoch)
+                        || !IsNativeConversationResponseTargetAvailableForActionDispatch(agentIndex, hero, character, out _))
+                        return null;
+                    return MyBehavior.CreateEmptyShoutPromptContext();
+                }, (MyBehavior.ShoutPromptContext)null);
+        }
         SharedPromptRoutingWork routingWork = await _dispatcher.RunAsync(
             "module_scene_prompt_capture", "scene", agentIndex, () =>
             {

@@ -37,6 +37,7 @@ namespace AnimusForge.Illustrator.Core
         public string DirectorApiKey { get; }
         public string DirectorModelName { get; }
         public int DirectorApproximateTokens { get; }
+        public int ImageGenerationTimeoutSeconds { get; }
 
         // Per-request sizing must never overwrite the player's shared MCM setting.
         internal IllustrationOptions WithImageSize(string imageSize)
@@ -95,6 +96,7 @@ namespace AnimusForge.Illustrator.Core
             DirectorApiKey = directorKey;
             DirectorModelName = directorModel;
             DirectorApproximateTokens = Math.Max(600, Math.Min(4000, settings.DirectorMaxTokens));
+            ImageGenerationTimeoutSeconds = Math.Max(60, Math.Min(600, settings.ImageGenerationTimeoutSeconds));
         }
     }
 
