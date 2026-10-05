@@ -7191,3 +7191,11 @@ R2计划交付门槛：已给固定技术路线、真实来源与目标、写入
 - 本地`artifacts/deploy-intercepted-meeting-fix-20261004/receipt.json`、before.json、source-hashes.json、build-bindings.json、deployment-verification.log、installed-offline-verification.log及retention.json。源码回滚git revert a4b2dbb5；安装回滚仅按上述唯一Recovery manifest/files及目标旧新hash定点恢复。
 
 本条替代[修复候选](#intercepted-meeting-guards-fix-20261004)的“未部署”状态，不替代其实机NOT_RUN；也替代[前诊断部署](#deploy-meeting-diagnostics-20261004)的当前安装/Recovery状态。旧记录保留其当时证据，不发出后续部署或推送权限。
+
+<a id="scene-conflict-judgment-display-fix-20261005"></a>
+## 场景冲突审判交接与对话旧文本修复（2026-10-05，ACTIVE）
+
+- 当前请求：修复反馈日志中的冲突后旧台词跨对话残留，以及同国战败进入犯罪审判后离城仍被强制结束佣兵服务/敌对。基线 `7d4a490add5548285227b2c698aec00f742ee05d`，实际分支 `codex/af-main-refactor-continuation-20260831`；开工tracked clean，既有untracked不纳入。
+- 范围：ConversationHelper显示生命周期、Overlay拥有者清理、真实ConversationEnded接线；SceneTaunt匹配事件移交原版审判；专项回归与原双API+Bootstrap构建。非目标：Prompt/记忆语义、通用敌对升级、原版DLL、其他渠道玩法、构建入口、部署/push/打包或自动恢复已退国玩家。
+- 保持：旧请求不能清新展示；正常流式/TTS/模式切换；未移交审判的冲突后果；既有存档键与犯罪/信任处罚。性能：窗口切换/会话结束/审判事件上O(1)判断，不新增世界扫描或轮询。
+- 完成门：真实Helper回归（含旧窗口晚清理和正常刷新）、现有展示/准入回归、审判匹配及重复/不匹配负控、接线/旧键保持、双版本与Bootstrap构建。实机与玩家旧档NOT_RUN独立记录，不以离线通过替代。
