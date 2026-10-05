@@ -1,3 +1,11 @@
+# 当前交接：Illustrator原生导出诊断与MCM超时（2026-10-05，BUILD_VERIFIED_LIVE_PENDING）
+
+- 用户要求记录原生保存请求后的执行证据并延长超时，随后提出开放MCM；本地产品 `106e4760`，意图检查点 `9b8f74ce`。既有MCM“5. 存储与性能”新增立绘20秒（10–60）、全景单方向6秒（3–15）、总40秒（30–120），请求冻结预算，不重启生效。
+- 立绘/全景记录实际路径、有限文件检查/异常及保存前后Paint回调；回调不是GPU/落盘回执，观测不可用显式标记。无屏幕Draw、无手动场景Tick、无逐帧日志；原取消和清理边界保留。不能称已修复失败玩家的原生导出根因。
+- 原统一入口Debug 1.3(v1.3.15)/1.4(v1.4.6)+Bootstrap均0错误，双最终候选内置接缝门禁PASS；编译后MCM属性/默认/范围检查通过。Illustrator离线审计未运行，真实失败玩家/GPU/MCM/旧配置仍NOT_RUN。
+- [唯一主台账、源码坐标和回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#illustrator-native-export-diagnostics-20261005)；本地证据 `artifacts/illustrator-native-export-20261005/receipt.json`。源码回滚 `git revert 106e4760`。
+- 未Stage/覆盖游戏/推送/打包；候选在 `bin/Debug/single_module_artifacts/versions/1.3|1.4/AnimusForge.dll`。此目录当前候选为本产品，不再是下方历史交接中的原输入UI候选hash；安装未变，需新授权原流程覆盖后让失败玩家复测。
+
 # 当前交接：原版AI输入定位与失焦暂停回复显示（2026-10-05，OFFLINE_VERIFIED）
 
 - 最新两个用户问题已合并实施；本地产品/测试`17047108`，检查点`488e9e31`。原版AI输入改回左侧玩家选项区域；暂停临时UI时继续主线程显示完成、清等待点，恢复按请求/NPC范围重绘并延后焦点/弹窗，失焦暂停设置保留，不重放网络/动作/记忆。
