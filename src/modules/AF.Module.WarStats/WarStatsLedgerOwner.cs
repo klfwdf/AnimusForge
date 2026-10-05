@@ -58,6 +58,12 @@ public sealed partial class AfWarStatsBehavior
             record.WinsB = 0;
             record.LossesA = 0;
             record.LossesB = 0;
+            record.RaidsA = 0;
+            record.RaidsB = 0;
+            record.LostTownsA = 0;
+            record.LostTownsB = 0;
+            record.LostCastlesA = 0;
+            record.LostCastlesB = 0;
             record.HeroDeaths?.Clear();
             record.RecentHeroBattles?.Clear();
         }
@@ -293,6 +299,7 @@ public sealed partial class AfWarStatsBehavior
                 host._savedActiveAttackerSideV4.Add(item.Value.AttackerSide == 1 ? 1 : 0);
                 host._savedActiveHeroDeathsV4.Add(SerializeHeroDeaths(item.Value.HeroDeaths));
                 host._savedActiveRecentHeroBattlesV5.Add(SerializeRecentHeroBattles(item.Value.RecentHeroBattles));
+                host._savedActiveWearinessV6.Add(SerializeWearinessIncidents(item.Value));
             }
 
             foreach (HistoricalWarRecord record in HistoricalWars)
@@ -318,6 +325,7 @@ public sealed partial class AfWarStatsBehavior
                 host._savedHistoryStartDayV4.Add(Math.Max(0, ResolveHistoryStartDay(record)));
                 host._savedHistoryAttackerSideV4.Add(record.AttackerSide == 1 ? 1 : 0);
                 host._savedHistoryHeroDeathsV4.Add(SerializeHeroDeaths(record.HeroDeaths));
+                host._savedHistoryWearinessV6.Add(SerializeWearinessIncidents(record));
             }
         }
 
@@ -364,6 +372,7 @@ public sealed partial class AfWarStatsBehavior
                         HeroDeaths = DeserializeHeroDeaths(ReadString(host._savedActiveHeroDeathsV4, i)),
                         RecentHeroBattles = DeserializeRecentHeroBattles(ReadString(host._savedActiveRecentHeroBattlesV5, i))
                     };
+                    ApplyWearinessIncidents(ActiveWars[pairKey], ReadString(host._savedActiveWearinessV6, i));
                 }
 
                 for (int i = 0; i < host._savedHistoryKeysV2.Count; i++)
@@ -401,6 +410,7 @@ public sealed partial class AfWarStatsBehavior
                         AttackerSide = ReadSide(host._savedHistoryAttackerSideV4, i),
                         HeroDeaths = DeserializeHeroDeaths(ReadString(host._savedHistoryHeroDeathsV4, i))
                     });
+                    ApplyWearinessIncidents(HistoricalWars[HistoricalWars.Count - 1], ReadString(host._savedHistoryWearinessV6, i));
                 }
 
                 RecentBattleSequence = Math.Max(RecentBattleSequence, host.GetMaxRecentBattleSequence());
@@ -475,8 +485,45 @@ public sealed partial class AfWarStatsBehavior
                 EndDay = endDay,
                 StartDay = record.StartDay >= 0 ? record.StartDay : Math.Max(0, endDay - record.LastDurationDays),
                 AttackerSide = record.AttackerSide == 1 ? 1 : 0,
+                RaidsA = record.RaidsA,
+                RaidsB = record.RaidsB,
+                LostTownsA = record.LostTownsA,
+                LostTownsB = record.LostTownsB,
+                LostCastlesA = record.LostCastlesA,
+                LostCastlesB = record.LostCastlesB,
                 HeroDeaths = CloneHeroDeaths(record.HeroDeaths)
             };
+        }
+
+        private static string SerializeWearinessIncidents(WarStatsRecord record)
+        {
+            return string.Join(",", record.RaidsA, record.RaidsB, record.LostTownsA, record.LostTownsB, record.LostCastlesA, record.LostCastlesB);
+        }
+
+        // Missing/garbled entries (pre-v6 saves) leave the counters at 0; weariness then uses the net fief loss.
+        private static void ApplyWearinessIncidents(WarStatsRecord record, string value)
+        {
+            string[] parts = (value ?? string.Empty).Split(',');
+            if (record == null || parts.Length != 6)
+            {
+                return;
+            }
+
+            int[] numbers = new int[6];
+            for (int i = 0; i < 6; i++)
+            {
+                if (!int.TryParse(parts[i], out numbers[i]))
+                {
+                    return;
+                }
+            }
+
+            record.RaidsA = Math.Max(0, numbers[0]);
+            record.RaidsB = Math.Max(0, numbers[1]);
+            record.LostTownsA = Math.Max(0, numbers[2]);
+            record.LostTownsB = Math.Max(0, numbers[3]);
+            record.LostCastlesA = Math.Max(0, numbers[4]);
+            record.LostCastlesB = Math.Max(0, numbers[5]);
         }
     }
 }

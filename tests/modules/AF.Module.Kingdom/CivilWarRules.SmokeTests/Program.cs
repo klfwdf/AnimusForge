@@ -125,13 +125,8 @@ Check(CivilWarFactionRules.InConcessionWindow(100, 100, formTuning), "faction re
 Check(CivilWarFactionRules.InConcessionWindow(127, 100, formTuning) && !CivilWarFactionRules.InConcessionWindow(128, 100, formTuning), "window ends one truce after cooldown");
 Check(!CivilWarFactionRules.InConcessionWindow(5, 0, formTuning) && !CivilWarFactionRules.InConcessionWindow(5, -1, formTuning), "never-cooled kingdom has no window");
 
-// ---- weariness math
-Check(CivilWarWearinessRules.BattlePoints(300, 500, true) > CivilWarWearinessRules.BattlePoints(300, 500, false), "losing tires more than winning");
-Check(CivilWarWearinessRules.BattlePoints(0, 500, false) == 0f, "bloodless win costs nothing");
-Check(CivilWarWearinessRules.BattlePoints(100000, 1, true) <= 9f, "one battle is capped");
-Check(Math.Abs(CivilWarWearinessRules.Decayed(50f, 0, 7) - 50f * (1f - CivilWarWearinessRules.WeeklyDecay)) < 0.01f, "weekly decay matches the rate");
-Check(CivilWarWearinessRules.Decayed(50f, -1, 10) == 50f && CivilWarWearinessRules.Decayed(50f, 10, 10) == 50f, "no baseline / same day keeps value");
-Check(CivilWarWearinessRules.AfterPeace(100f) < 100f, "peace relieves weariness");
+// ---- weariness thresholds (value comes from the war-stats terminal)
+Check(CivilWarWearinessRules.MeetsFormation(40f) && !CivilWarWearinessRules.MeetsFormation(39.9f), "formation line is 40");
 Check(CivilWarWearinessRules.WeeklyStability(10f) == 0 && CivilWarWearinessRules.WeeklyStability(40f) == -1 && CivilWarWearinessRules.WeeklyStability(80f) == -2, "weariness drains stability weekly");
 
 // ---- escalation needs enough refusals; loyal clans rarely join the opposition

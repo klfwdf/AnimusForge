@@ -11223,7 +11223,7 @@ public static int GetKingdomStabilityRoyalDomainLoyaltyAdjustmentForTown(Town to
 					{
 						int kingdomStabilityValue = GetKingdomStabilityValue(devEditableKingdom);
 						int kingdomStabilityWeeklyBalancingDelta = GetKingdomStabilityWeeklyBalancingDelta(kingdomStabilityValue)
-							+ CivilWarWearinessRules.WeeklyStability(TeamModuleServices.CivilWar.GetWarWeariness(devEditableKingdom));
+							+ CivilWarWearinessRules.WeeklyStability(GetMaxWarWearinessForExternal(devEditableKingdom));
 						if (kingdomStabilityWeeklyBalancingDelta != 0)
 						{
 							SetKingdomStabilityValue(devEditableKingdom, kingdomStabilityValue + kingdomStabilityWeeklyBalancingDelta);
