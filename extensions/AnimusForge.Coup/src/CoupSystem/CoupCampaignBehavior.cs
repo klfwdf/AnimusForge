@@ -63,12 +63,17 @@ internal sealed class CoupCampaignBehavior : CampaignBehaviorBase
 
     public override void SyncData(IDataStore store)
     {
-        if (store.IsSaving && _saveValid) _saveJson = _session != null ? JsonConvert.SerializeObject(_session) : null;
-        store.SyncData("_afCoupSession_v1", ref _saveJson);
+        if (store.IsSaving)
+        {
+            if (_saveValid) _saveJson = _session != null ? JsonConvert.SerializeObject(_session) : null;
+            CampaignSaveChunkHelper.SaveChunkedString(store, "_afCoupSession_v1", _saveJson, "Coup");
+            return;
+        }
         if (!store.IsLoading) return;
         ResetRuntime();
         _session = null;
         _saveValid = true;
+        _saveJson = CampaignSaveChunkHelper.LoadChunkedString(store, "_afCoupSession_v1", "Coup");
         if (string.IsNullOrEmpty(_saveJson)) return;
         try
         {

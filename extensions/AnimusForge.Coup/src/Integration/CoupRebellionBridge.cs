@@ -253,8 +253,16 @@ internal sealed class CoupRebellionBridge : CampaignBehaviorBase
             _outcomesJson = JsonConvert.SerializeObject(_outcomes);
         }
         if (store.IsLoading) { ResetRuntime(); _requestsJson = _outcomesJson = null; _hasWork = false; }
-        store.SyncData("_afCoupRebellionBridge_v1", ref _requestsJson);
-        store.SyncData("_afCoupOutcomeBridge_v1", ref _outcomesJson);
+        if (store.IsLoading)
+        {
+            _requestsJson = CampaignSaveChunkHelper.LoadChunkedString(store, "_afCoupRebellionBridge_v1", "Coup");
+            _outcomesJson = CampaignSaveChunkHelper.LoadChunkedString(store, "_afCoupOutcomeBridge_v1", "Coup");
+        }
+        else if (store.IsSaving)
+        {
+            CampaignSaveChunkHelper.SaveChunkedString(store, "_afCoupRebellionBridge_v1", _requestsJson, "Coup");
+            CampaignSaveChunkHelper.SaveChunkedString(store, "_afCoupOutcomeBridge_v1", _outcomesJson, "Coup");
+        }
         if (!store.IsLoading) return;
         try
         {

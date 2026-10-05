@@ -20,6 +20,7 @@ internal static class CivilWarChunkRegression
             "host wiring guard did not reject an unchunked save mutation");
         Check(!IsChunkedHost(source.Replace("CampaignSaveChunkHelper.LoadChunkedString", "dataStore.SyncData")),
             "host wiring guard did not reject an unchunked load mutation");
+        Dictionary<string, object> coupSnapshot = RunCoupHostGuards(repoRoot);
 
         int cases = 0;
         foreach (int bytes in new[] { 240, 241, 11999, 12000, 12001, 32763, 32764, 33365, 100003 })
@@ -71,10 +72,60 @@ internal static class CivilWarChunkRegression
         {
             string snapshot = Path.GetFullPath(args[1]);
             Directory.CreateDirectory(Path.GetDirectoryName(snapshot));
+            foreach (var entry in coupSnapshot) incidentSave.Values[entry.Key] = entry.Value;
             File.WriteAllText(snapshot, JsonSerializer.Serialize(incidentSave.Values), Encoding.UTF8);
         }
-        Console.WriteLine($"PASS civilWarChunkRegression roundTripCases={cases} hostWiring=1 negativeWiring=2 " +
-            "incidentBytes=33365 incidentChunks=3 utf8Limit=12000 legacyReadAndResave=1 staleTail=2 missingChunk=1");
+        Console.WriteLine($"PASS civilWarChunkRegression roundTripCases={cases} hostWiring=1 coupKeys=4 " +
+            "negativeWiring=2 incidentBytes=33365 incidentChunks=3 utf8Limit=12000 legacyReadAndResave=1 staleTail=2 missingChunk=1");
+    }
+
+    private static Dictionary<string, object> RunCoupHostGuards(string repoRoot)
+    {
+        var cases = new[]
+        {
+            ("extensions/AnimusForge.Coup/src/CoupSystem/CoupCampaignBehavior.cs", "_afCoupSession_v1"),
+            ("extensions/AnimusForge.Coup/src/CoupSystem/CoupCaptivityBehavior.cs", "af_coup_detentions_v1"),
+            ("extensions/AnimusForge.Coup/src/Integration/CoupRebellionBridge.cs", "_afCoupRebellionBridge_v1"),
+            ("extensions/AnimusForge.Coup/src/Integration/CoupRebellionBridge.cs", "_afCoupOutcomeBridge_v1"),
+        };
+        string incident = MakeJson(33365, unicode: true);
+        Dictionary<string, object> snapshot = new Dictionary<string, object>(StringComparer.Ordinal);
+        foreach (var item in cases)
+        {
+            string source = File.ReadAllText(Path.Combine(repoRoot, item.Item1));
+            string quotedKey = "\"" + Regex.Escape(item.Item2) + "\"";
+            string savePattern = @"CampaignSaveChunkHelper\.SaveChunkedString\(\s*\w+\s*,\s*" + quotedKey;
+            string loadPattern = @"CampaignSaveChunkHelper\.LoadChunkedString\(\s*\w+\s*,\s*" + quotedKey;
+            Check(Regex.Matches(source, savePattern).Count == 1, $"Coup save missing or duplicated: {item.Item2}");
+            Check(Regex.Matches(source, loadPattern).Count == 1, $"Coup load missing or duplicated: {item.Item2}");
+            Check(!Regex.IsMatch(source.Replace("SaveChunkedString", "UnsafeRawSave"), savePattern),
+                $"Coup negative save guard failed: {item.Item2}");
+            Check(!Regex.IsMatch(source.Replace("LoadChunkedString", "UnsafeRawLoad"), loadPattern),
+                $"Coup negative load guard failed: {item.Item2}");
+            string rawBindingPattern = "SyncData\\(\\s*\"" + Regex.Escape(item.Item2) + "\"\\s*,\\s*ref";
+            Check(!Regex.IsMatch(source, rawBindingPattern),
+                $"Coup key still has a raw SyncData string binding: {item.Item2}");
+            MemoryDataStore saved = SaveForKey(item.Item2, incident);
+            Check((string)saved.Values[item.Item2] == "", $"Coup unsafe inline value retained: {item.Item2}");
+            Check(CampaignSaveChunkHelper.LoadChunkedString(saved.ForLoading(), item.Item2) == incident,
+                $"Coup chunk round-trip failed: {item.Item2}");
+            foreach (var value in saved.Values.Values.OfType<string>())
+                Check(StrictUtf8.GetByteCount(value) <= 12000, $"Coup unsafe string bytes: {item.Item2}");
+            foreach (var entry in saved.Values) snapshot.Add(entry.Key, entry.Value);
+            MemoryDataStore legacy = new MemoryDataStore(saving: false);
+            legacy.Values[item.Item2] = "{}";
+            Check(CampaignSaveChunkHelper.LoadChunkedString(legacy, item.Item2) == "{}", $"Coup legacy read failed: {item.Item2}");
+            CampaignSaveChunkHelper.SaveChunkedString(saved, item.Item2, "", "Coup");
+            Check(CampaignSaveChunkHelper.LoadChunkedString(saved.ForLoading(), item.Item2) == "", $"Coup empty state revived stale chunks: {item.Item2}");
+        }
+        return snapshot;
+    }
+
+    private static MemoryDataStore SaveForKey(string key, string json)
+    {
+        MemoryDataStore store = new MemoryDataStore(saving: true);
+        CampaignSaveChunkHelper.SaveChunkedString(store, key, json, "Coup");
+        return store;
     }
 
     private static bool IsChunkedHost(string source)

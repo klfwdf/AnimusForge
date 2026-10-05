@@ -209,7 +209,11 @@
     "af_coup_detentions_v1"
   ],
   "chunkedStringStorageKeys": [
+    "_afCoupOutcomeBridge_v1",
+    "_afCoupRebellionBridge_v1",
+    "_afCoupSession_v1",
     "_af_companion_proactive_chat_v1",
+    "_af_kingdom_civil_war_v2",
     "_af_kingdom_strategic_profiles_v1",
     "_af_memoryOverviewQueue_v1",
     "_af_memorySummaryQueue_v1",
@@ -222,11 +226,13 @@
     "_eventSourceMaterials_v1",
     "_eventWorldOpeningSummary_v1",
     "_unnamed_persona_v1",
-    "_voiceMapping_v1"
+    "_voiceMapping_v1",
+    "af_coup_detentions_v1"
   ],
   "flattenedDictionaryStorageKeys": [
     "_afCustomPolicyActiveEffects_v1",
     "_afCustomPolicyRecordHistory_v1",
+    "_afDeletedPolicyHistory_v1",
     "_afDynamicPolicyRegistry_v1",
     "_afLocalPolicyRecords_v1",
     "_afNobleGatheringNpcKingdomHostDays_v1",
@@ -281,7 +287,16 @@
     "dictionaryChunkCountPrefix": "__af_chunkcount__:",
     "dictionaryChunkValuePrefix": "__af_chunk__:",
     "stringValueType": "string",
-    "flattenedDictionaryType": "Dictionary<string,string>"
+    "flattenedDictionaryType": "Dictionary<string,string>",
+    "saveSystemStringLengthType": "signed-int16",
+    "saveSystemStringPayloadLimitBytes": 32763,
+    "jsonInlineByteLimit": 240,
+    "jsonPolicy": "any JSON string that may exceed jsonInlineByteLimit must use chunkedStringStorageKeys and CampaignSaveChunkHelper",
+    "loadPolicy": "never publish a partial JSON; distinguish absent legacy data from corrupt chunks and let the owner retain evidence or disable replay",
+    "legacyReadPolicy": "prefer a complete valid chunk set; fall back to the original key for normally readable legacy data",
+    "savePolicy": "write UTF-8-safe chunks at or below storageChunkMaxBytes and write an empty legacy value for oversized JSON",
+    "runtimePolicy": "chunking is allowed only at campaign save/load boundaries, never in Tick or per-frame paths",
+    "scope": "campaign sav string entries only; not HTTP JSON, disk configuration JSON or resource files"
   },
   "symbolicKeyFamilies": [
     {
@@ -379,6 +394,66 @@
     "every literal SyncData key in the selected production owner files is cataloged",
     "no credential value or private absolute path in fixtures",
     "legacy key/type identity remains read-compatible",
-    "unknown module data is preserved in SafeMode"
-  ]
+    "unknown module data is preserved in SafeMode",
+    "every chunked JSON save key is wired through SaveChunkedString and LoadChunkedString",
+    "no production JSON save path writes a potentially oversized payload directly with SyncData",
+    "chunked JSON is split by UTF-8 byte count without splitting surrogate pairs",
+    "missing or corrupt chunks fail closed and never publish a partial JSON payload",
+    "legacy small inline JSON remains readable and is migrated to chunks on the next save"
+  ],
+  "chunkedJsonBindings": [
+    {
+      "source": "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.cs",
+      "key": "_af_kingdom_civil_war_v2",
+      "variable": "_civilWarJsonStorage",
+      "store": "dataStore"
+    },
+    {
+      "source": "extensions/AnimusForge.Coup/src/CoupSystem/CoupCampaignBehavior.cs",
+      "key": "_afCoupSession_v1",
+      "variable": "_saveJson",
+      "store": "store"
+    },
+    {
+      "source": "extensions/AnimusForge.Coup/src/CoupSystem/CoupCaptivityBehavior.cs",
+      "key": "af_coup_detentions_v1",
+      "variable": "_detentionsJson",
+      "store": "dataStore"
+    },
+    {
+      "source": "extensions/AnimusForge.Coup/src/Integration/CoupRebellionBridge.cs",
+      "key": "_afCoupRebellionBridge_v1",
+      "variable": "_requestsJson",
+      "store": "store"
+    },
+    {
+      "source": "extensions/AnimusForge.Coup/src/Integration/CoupRebellionBridge.cs",
+      "key": "_afCoupOutcomeBridge_v1",
+      "variable": "_outcomesJson",
+      "store": "store"
+    }
+  ],
+  "knownChunkingAuditGaps": [
+    {
+      "status": "OPEN_NOT_FIXED",
+      "source": "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.cs",
+      "key": "_af_courier_npc_diplomacy_letters_v1",
+      "risk": "full NPC diplomacy letter storage JSON still written as one string; growth can exceed signed Int16 payload limit"
+    },
+    {
+      "status": "OPEN_NOT_FIXED",
+      "source": "src/AF.Persistence/CampaignSaveChunkHelper.cs",
+      "risk": "SafeSyncData failures are logged but SaveChunkedString ignores success; null chunks append empty text; no digest or total byte validation; corrupt chunks can look like absent legacy state"
+    }
+  ],
+  "knownDirectJsonBindings": [
+    {
+      "source": "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.cs",
+      "variable": "npcLetterStorageJson",
+      "key": "_af_courier_npc_diplomacy_letters_v1",
+      "status": "OPEN_NOT_FIXED",
+      "reason": "existing full JSON straight SyncData; report separately, not allowed for new code"
+    }
+  ],
+  "chunkGuardCoverage": "registered bindings + conventional Json-named SyncData arguments in selected production roots; source heuristic, not complete C# dataflow or game acceptance"
 }

@@ -120,20 +120,93 @@ def resolve_storage_call_keys(name: str, argument_index: int) -> set[str]:
     return resolved
 
 
+
+def validate_json_bindings(catalog: dict) -> None:
+    # Current production source checks, not the historical terminal inverse projection.
+    # This validates registered bindings; it is not a complete C# dataflow analyzer.
+    bindings = catalog["chunkedJsonBindings"]
+    expected_keys = {"_af_kingdom_civil_war_v2", "_afCoupSession_v1", "af_coup_detentions_v1",
+                     "_afCoupRebellionBridge_v1", "_afCoupOutcomeBridge_v1"}
+    assert_true({row["key"] for row in bindings} == expected_keys and len(bindings) == 5,
+                "protected JSON binding inventory drifted")
+    for row in bindings:
+        source = (ROOT / row["source"]).read_text(encoding="utf-8-sig")
+        key = '"' + row["key"] + '"'
+        saves = [split_call_arguments(body) for body in extract_call_arguments(source, "SaveChunkedString")]
+        loads = [split_call_arguments(body) for body in extract_call_arguments(source, "LoadChunkedString")]
+        assert_true(sum(args[:3] == [row["store"], key, row["variable"]] for args in saves) == 1,
+                    f"JSON save binding is missing/duplicated: {row['key']}")
+        assert_true(sum(args[:2] == [row["store"], key] for args in loads) == 1,
+                    f"JSON load binding is missing/duplicated: {row['key']}")
+        pattern = r"SyncData\s*(?:<[^>]+>)?\s*\(\s*" + re.escape(key)
+        assert_true(not re.search(pattern, source), f"JSON key still uses raw SyncData: {row['key']}")
+    assert_true(any(gap.get("status") == "OPEN_NOT_FIXED" for gap in catalog["knownChunkingAuditGaps"]),
+                "open audit gaps must not be disguised as universal coverage")
+
+
+
+def current_json_source_texts():
+    roots = ["src", "extensions", "PolicySystem", "WarStats", "Vengeance", "WorldEvents"]
+    excluded = {"bin", "obj", "tests", "tools", "outputs"}
+    for folder in roots:
+        root = ROOT / folder
+        if not root.is_dir():
+            continue
+        for path in root.rglob("*.cs"):
+            if any(part in excluded for part in path.relative_to(ROOT).parts):
+                continue
+            yield path.relative_to(ROOT).as_posix(), path.read_text(encoding="utf-8-sig")
+
+
+def validate_direct_json_hazards(catalog: dict) -> int:
+    # Naming-based heuristic: aliases and arbitrary nested string values need owner review.
+    known = {(row["source"], row["variable"]) for row in catalog["knownDirectJsonBindings"]}
+    pattern = re.compile(r"\bSyncData\s*(?:<\s*string\s*>)?\s*\(\s*([^,\r\n]+),\s*ref\s+([A-Za-z_]\w*)")
+    found = set()
+    for path, text in current_json_source_texts():
+        for match in pattern.finditer(text):
+            variable = match.group(2)
+            if "json" not in variable.lower():
+                continue
+            binding = (path, variable)
+            assert_true(binding in known, f"new unchunked JSON save binding: {path}::{variable}")
+            found.add(binding)
+    assert_true(found == known, "known direct-JSON audit inventory drifted; review fixed/removed risks")
+    return len(found)
+
+
 def validate_chunk_contract(catalog: dict) -> dict:
     expected_chunked = set(catalog["chunkedStringStorageKeys"])
     expected_flattened = set(catalog["flattenedDictionaryStorageKeys"])
     # +1 _af_worldBulletin_v1 (MyBehavior.WorldBulletin.cs SyncWorldBulletinData via SaveChunkedString/LoadChunkedString).
-    assert_true(len(expected_chunked) == 14, "chunked string key catalog must contain 14 keys")
+    assert_true(len(expected_chunked) == 19, "chunked string key catalog must contain 19 keys")
     # 982a5861: +Execution transcript storage and existing GCCZ town-memory key now flattened.
-    assert_true(len(expected_flattened) == 46, "flattened dictionary key catalog must contain 46 keys")
-    actual_chunked = resolve_storage_call_keys("SaveChunkedString", 1) | resolve_storage_call_keys("LoadChunkedString", 1)
+    assert_true(len(expected_flattened) == 47, "flattened dictionary key catalog must contain 47 keys")
+    actual_saves = resolve_storage_call_keys("SaveChunkedString", 1)
+    actual_loads = resolve_storage_call_keys("LoadChunkedString", 1)
+    actual_chunked = actual_saves | actual_loads
+    assert_true(actual_saves == expected_chunked, "chunked save key catalog drifted")
+    assert_true(actual_loads == expected_chunked, "chunked load key catalog drifted")
+    validate_json_bindings(catalog)
+    known_direct_json = validate_direct_json_hazards(catalog)
     actual_flattened = resolve_storage_call_keys("FlattenStringDictionary", 1)
     # The helper's own overloads have no persisted key and are intentionally absent.
     assert_true(actual_chunked == expected_chunked, f"chunked key mismatch: missing={sorted(expected_chunked - actual_chunked)} extra={sorted(actual_chunked - expected_chunked)}")
     assert_true(actual_flattened == expected_flattened, f"flattened dictionary key mismatch: missing={sorted(expected_flattened - actual_flattened)} extra={sorted(actual_flattened - expected_flattened)}")
     helper = (ROOT / "src/AF.Persistence/CampaignSaveChunkHelper.cs").read_text(encoding="utf-8")
     contract = catalog["chunkContract"]
+    required_chunk_policy = {
+        "saveSystemStringLengthType": "signed-int16",
+        "saveSystemStringPayloadLimitBytes": 32763,
+        "jsonInlineByteLimit": 240,
+        "jsonPolicy": "any JSON string that may exceed jsonInlineByteLimit must use chunkedStringStorageKeys and CampaignSaveChunkHelper",
+        "loadPolicy": "never publish a partial JSON; distinguish absent legacy data from corrupt chunks and let the owner retain evidence or disable replay",
+        "legacyReadPolicy": "prefer a complete valid chunk set; fall back to the original key for normally readable legacy data",
+        "savePolicy": "write UTF-8-safe chunks at or below storageChunkMaxBytes and write an empty legacy value for oversized JSON",
+        "runtimePolicy": "chunking is allowed only at campaign save/load boundaries, never in Tick or per-frame paths",
+    }
+    for policy_key, expected_value in required_chunk_policy.items():
+        assert_true(contract.get(policy_key) == expected_value, f"chunk policy missing or drifted: {policy_key}")
     int_fields = {
         "StorageChunkMaxBytes": "storageChunkMaxBytes",
         "LegacyInlineStorageMaxBytes": "legacyInlineStorageMaxBytes",
@@ -153,7 +226,7 @@ def validate_chunk_contract(catalog: dict) -> dict:
         assert_true(match is not None and match.group(1) == contract[fixture_name], f"chunk string contract drifted: {source_name}")
     assert_true(contract["stringValueType"] == "string", "chunk string value type changed")
     assert_true(contract["flattenedDictionaryType"] == "Dictionary<string,string>", "flattened dictionary type changed")
-    return {"chunkedStringKeys": len(expected_chunked), "flattenedDictionaryKeys": len(expected_flattened), "chunkMaxBytes": contract["storageChunkMaxBytes"]}
+    return {"chunkedStringKeys": len(expected_chunked), "flattenedDictionaryKeys": len(expected_flattened), "chunkMaxBytes": contract["storageChunkMaxBytes"], "knownOpenDirectJsonRisks": known_direct_json}
 
 
 BINDING_PATTERN = re.compile(
@@ -333,9 +406,14 @@ def validate_legacy_first_cases(cases: dict) -> dict:
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--json", action="store_true", dest="as_json")
+    parser.add_argument("--chunk-contract-only", action="store_true", help="Validate current chunking only; do not certify historical contracts.")
     args = parser.parse_args()
     try:
         persistence_catalog = load_json(FIXTURE_DIR / "persistence-catalog.json")
+        if args.chunk_contract_only:
+            result = validate_chunk_contract(persistence_catalog)
+            print(json.dumps({"status": "PASS", "scope": "current-chunk-contract-only", **result}, sort_keys=True))
+            return 0
         persistence = validate_persistence(persistence_catalog)
         typed = validate_typed_bindings(load_json(FIXTURE_DIR / "syncdata-binding-catalog.json"), persistence_catalog)
         persistence.update(typed)
