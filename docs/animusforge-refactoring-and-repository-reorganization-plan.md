@@ -7246,9 +7246,22 @@ R2计划交付门槛：已给固定技术路线、真实来源与目标、写入
 - NOT_RUN：失败玩家/GPU/真实PNG、MCM实机及旧配置、切屏/切场景/取消实机；未Stage/覆盖游戏/推送/打包。此产品提供定位证据和有限更长等待，不宣称修复原生导出未执行根因。
 - 回滚：定向 `git revert 106e4760`；检查点 `9b8f74ce`。不hard reset或回滚并行作者，无本轮安装回滚需求。
 <a id="remote-main-fusion-illustrator-deploy-20261005"></a>
-## 远端main融合、重新编译与单模块部署（2026-10-05，ACTIVE）
+## 远端main融合、重新编译与单模块部署（2026-10-05，DEPLOYED_HASH_VERIFIED_LIVE_PENDING）
 
 - 最新用户授权：先查远端，有新增则拉取融合，再编译部署；未授权push/打包/启动游戏。之前只完成预检，未开始覆盖。
 - 实际工作区 F:/AnimusForge-main，当前分支 codex/af-main-refactor-continuation-20260831，融合前HEAD 0b2ef507；git fetch origin后当前upstream无新增，origin/main新增25d2670e（野外决斗原生部署完成时机，3个文件）。保留本地Illustrator诊断/MCM及其他作者提交，以普通merge融合，不rebase/reset。
 - 退出门：确认合并结果与双方提交可达；原统一入口双API+Bootstrap编译、最终候选接缝门禁及决斗生产验证；原Stage管理覆盖单模块并复核安装hash/XML/Recovery；实机立绘/全景/决斗仍单列NOT_RUN。
 - 已确认游戏进程0，目标 F:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord/Modules/AnimusForge；继续部署前再核对运行进程。原事务Recovery机制保留，不覆盖未列入Stage的用户文件、不触碰游戏原版DLL。
+
+### 融合与安装验收结果
+
+- 意图检查点 `1c85613d`，普通merge `c4438de1`（第一父本地检查点、第二父远端25d2670e），无冲突。双方提交可达；远端决斗源码/测试/交接三文件与origin/main一致，本地Illustrator八个源码hash与106e4760收据一致。没有rebase/reset/push；远端修复保留30秒启动边界、0.1秒有限部署检查与unknown结果，不扩大伤害机制。
+- 新远端源码坐标：`src/modules/AF.Module.Duel/Host/DuelBehavior.cs` 133–137启动状态、321–349有限调度/启动超时、396–445 `TryCompleteNativeDeployment`，在InputManager及TeamSetupOver就绪后调用原生FinishDeployment；完整代码/测试属于远端25d2670e。Illustrator代码图仍链接上一条106e4760；融合未重复修改它。
+- 原统一入口Debug重编译：1.3参考v1.3.15.110062、1.4参考v1.4.6.115628与Bootstrap均0错误；双最终候选内置接缝门禁PASS。决斗生产程序集metadata/IL检查35 PASS/0 FAIL/2 variants（不是实机战斗）。
+- 首次部署被旧Stage对话Overlay XML与当前源hash不同拦截，尚未修改游戏，四项旧安装文件hash复核未变；用原资源投影函数只刷新已登记Stage内容，原CleanStage校验通过，再执行未改动的原部署入口。没有删未知Stage文件、修改hash断言或改构建/覆盖流程。
+- 部署目标 `F:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord/Modules/AnimusForge`；原事务覆盖11个管理文件。事后Stage全部3379文件与安装SHA256一致，模块Id/Name=AnimusForge，XML只加载AnimusForge.Bootstrap.dll；未另建双模块或修改原版DLL。
+- 私有Recovery `C:/Users/29310/AppData/Local/AnimusForge/Recovery/deploy/deploy-de17a06d9769408e926246e6e1328b98`，complete已存在；manifest中11项新hash与安装一致、11份旧备份hash复核通过。未列入Stage的安装文件不参与覆盖。
+- 新1.3 SHA256 `1A7D9452E4491464C7F3BA51750E8B64698338AA53546C35B65079A22DDA6B56`，1.4 SHA256 `EB1BF14F1799FDEBCD5EFA5B1E21016744A85E4083A889959744ED707F404D78`；其余包括Bootstrap、资源hash见收据/installed-verification.json。这组候选/安装取代上一条Illustrator build-only候选，旧收据仍保持其当时状态。
+- 证据 `artifacts/remote-main-fusion-illustrator-deploy-20261005/receipt.json`、`build.log`、`duel-replay.log`、`deploy.log`、`stage-refresh.log`、`installed-before.json`、`installed-verification.json`、`illustrator-source-preservation.json`；首次Stage拦截也记录在收据，不解释为成功部署。
+- NOT_RUN：真实失败玩家/GPU/立绘/全景/MCM旧配置、实机野外决斗、真实LLM/TTS；没有启动游戏/打包/push，Illustrator离线审计仍未运行。需重启游戏复测，不能称原生导出根因已修复。
+- 源码回滚用定向 `git revert -m 1 c4438de1`（只反向融合）、`git revert 106e4760`（只反向Illustrator）；安装回滚另按上述私有manifest与已验旧文件恢复，不用源码revert冒充游戏已回滚，也不覆盖其他作者/玩家文件。

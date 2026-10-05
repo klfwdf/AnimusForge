@@ -1,3 +1,11 @@
+# 当前交接：远端融合与Illustrator本机部署（2026-10-05，DEPLOYED_HASH_VERIFIED_LIVE_PENDING）
+
+- 最新用户授权“有新提交则拉取融合、再编译部署”；fetch确认当前upstream无新增、main有25d2670e野外决斗修复。普通merge `c4438de1` 无冲突，检查点 `1c85613d`；本地Illustrator产品106e4760及其他作者提交均保留，八份Illustrator源码hash复核一致。
+- 原统一入口Debug 1.3(v1.3.15)/1.4(v1.4.6)+Bootstrap均0错误，双最终候选内置接缝门禁PASS；决斗生产程序集检查35 PASS/0 FAIL/2 variants。Illustrator离线审计未运行，原生GPU/真实游戏验收仍NOT_RUN。
+- 已按原事务流程部署到 `F:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord/Modules/AnimusForge`，更新11个受管理文件；安装全部3379个Stage文件hash一致，单模块XML只加载Bootstrap。旧Stage Overlay不一致曾阻断，刷新已登记本地Stage资源后原校验通过，没有修改/绕过覆盖入口。
+- [唯一主台账、源码图、安装证据及回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#remote-main-fusion-illustrator-deploy-20261005)；本地证据 `artifacts/remote-main-fusion-illustrator-deploy-20261005/receipt.json`。私有Recovery `C:/Users/29310/AppData/Local/AnimusForge/Recovery/deploy/deploy-de17a06d9769408e926246e6e1328b98`，11份旧文件已验且事务complete。
+- 未启动游戏/推送/打包。下方build-only与旧“未部署”陈述是历史状态，由本条明确取代；不能以本机安装通过宣称失败玩家立绘/全景或野外决斗已实机修复。重启后看MCM新20/6/40秒默认，并让失败玩家复测发新增日志。
+
 # 当前交接：Illustrator原生导出诊断与MCM超时（2026-10-05，BUILD_VERIFIED_LIVE_PENDING）
 
 - 用户要求记录原生保存请求后的执行证据并延长超时，随后提出开放MCM；本地产品 `106e4760`，意图检查点 `9b8f74ce`。既有MCM“5. 存储与性能”新增立绘20秒（10–60）、全景单方向6秒（3–15）、总40秒（30–120），请求冻结预算，不重启生效。
