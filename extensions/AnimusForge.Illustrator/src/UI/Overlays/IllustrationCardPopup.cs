@@ -17,6 +17,7 @@ using AnimusForge.Illustrator.Core;
 using AnimusForge.Illustrator.Engine;
 using AnimusForge.Illustrator.UI.Patches;
 using Newtonsoft.Json.Linq;
+using SandBox.View.Map;
 
 namespace AnimusForge.Illustrator.UI.Overlays
 {
@@ -34,6 +35,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
         private readonly Action<string> _onRegenerate;
         private string _playerRedrawDraft = string.Empty;
         private bool _editingRedrawPrompt;
+        private bool _hiddenForSystemUi;
         private readonly string _instanceId = Guid.NewGuid().ToString("N").Substring(0, 8);
         private readonly bool _autoFullscreen;
         private string _activeSpriteName;
@@ -187,7 +189,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
                     (_category != "conversation" || ownerKey == ConversationSessionOwnerKey()),
                 prompt => { _playerRedrawDraft = prompt; Regenerate(prompt); },
                 status => _dataSource.StatusText = status,
-                editing => { if (!_closed) { _editingRedrawPrompt = editing; _layer.UIContext.Root.IsVisible = !editing; } });
+                editing => { if (!_closed) { _editingRedrawPrompt = editing; ApplyControlsVisibility(); } });
         }
 
         private void OnGenerationUpdated(IllustrationGenerationUpdate update)
@@ -746,10 +748,12 @@ namespace AnimusForge.Illustrator.UI.Overlays
                 : (convContext.InterlocutorCharacter != null && convContext.InterlocutorCharacter.Name != null
                     ? convContext.InterlocutorCharacter.Name.ToString()
                     : "对方");
-            // Preserve the selected resolution tier while requesting a 16:9 scene image.
-            var options = IllustratorRuntime.CaptureOptions()?.WithSceneImageSize();
+            // Only the top-screen overlay is a 16:9 frame; the side panel keeps the MCM size.
+            var options = IllustratorRuntime.CaptureOptions();
+            if (_autoFullscreen) options = options?.WithSceneImageSize();
             VisualDirectorEngine.RequirePlayerRedrawDirector(playerRedrawPrompt, options);
-            baseArtDirection += "\n【场景插画画幅】使用横向16:9构图，目标分辨率为" + options?.ImageSize + "，保持人物与场景的自然比例，不拉伸方图或竖图。";
+            if (_autoFullscreen)
+                baseArtDirection += "\n【场景插画画幅】使用横向16:9构图，目标分辨率为" + options?.ImageSize + "，保持人物与场景的自然比例，不拉伸方图或竖图。";
             Hero interlocutor = convContext.InterlocutorHero;
             bool interlocutorCivilian = convContext.InterlocutorCivilian;
             Hero player = convContext.MainHero;
@@ -1037,6 +1041,42 @@ namespace AnimusForge.Illustrator.UI.Overlays
                 SavedItem = savedItem;
                 Prompt = prompt;
             }
+        }
+
+        private static readonly string[] SystemUiLayerNames = { "EncyclopediaBar", "MapEscapeMenu", "MapCampaignOptions", "MissionEscapeMenu", "MissionOptions" };
+
+        // Called once per application tick; only an active fullscreen conversation overlay does
+        // work (a scan of the host screen's few layers), and widgets change only on transitions.
+        internal static void TickSystemUiVisibility()
+        {
+            var instance = _activeInstance;
+            if (instance == null || instance._closed || !instance._autoFullscreen) return;
+            bool hide = instance.IsSystemUiCovering();
+            if (hide == instance._hiddenForSystemUi) return;
+            instance._hiddenForSystemUi = hide;
+            instance.ApplyControlsVisibility();
+        }
+
+        private bool IsSystemUiCovering()
+        {
+            if (_screen == null || !ReferenceEquals(ScreenManager.TopScreen, _screen)) return true;
+            try
+            {
+                if (_screen is MapScreen map && (map.EncyclopediaScreenManager?.IsEncyclopediaOpen == true || map.IsEscapeMenuOpened || map.IsInCampaignOptions))
+                    return true;
+            }
+            catch { }
+            var layers = _screen.Layers;
+            if (layers == null) return false;
+            foreach (var layer in layers)
+                if (layer != null && !layer.IsFinalized && Array.IndexOf(SystemUiLayerNames, layer.Name) >= 0) return true;
+            return false;
+        }
+
+        private void ApplyControlsVisibility()
+        {
+            var root = _layer?.UIContext?.Root;
+            if (root != null) root.IsVisible = !_editingRedrawPrompt && !_hiddenForSystemUi;
         }
 
         public void Close()

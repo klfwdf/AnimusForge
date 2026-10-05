@@ -426,10 +426,10 @@ public static class ModuleReviewAudit
             Check(shown.Contains("主题验收") && shown.Contains("导演输出截断"), "selected artwork keeps theme and director fallback status visible");
             cachedType.GetProperty("DirectorStatus").SetValue(artwork, "complete", null);
             Check(!((string)cachedType.GetProperty("DisplayStatusText").GetValue(artwork, null)).Contains("截断"), "complete director does not show stale degradation text");
-            XmlElement promptPanel = (XmlElement)theme.ParentNode.SelectSingleNode("ScrollablePanel");
-            Check(float.Parse(promptPanel.GetAttribute("MarginTop")) >=
-                float.Parse(theme.GetAttribute("MarginTop")) + float.Parse(theme.GetAttribute("SuggestedHeight")),
-                "gallery reserves vertical space before prompt text");
+            Check(galleryXml.SelectSingleNode("//*[@Text='@SelectedPrompt' or @Command.Click='ExecuteCopyPrompt']") == null &&
+                galleryXml.SelectSingleNode("//*[@Command.Click='ExecuteToggleFavorite']") != null &&
+                galleryXml.SelectSingleNode("//*[@Command.Click='ExecuteShowFavorites']") != null,
+                "gallery hides prompt text/copy button and exposes favorites tab and toggle");
             foreach (float[] dimensions in new[] { new[] { 1280f, 720f }, new[] { 1024f, 1536f }, new[] { 1024f, 1024f } })
             {
                 object fit = Activator.CreateInstance(fitType);

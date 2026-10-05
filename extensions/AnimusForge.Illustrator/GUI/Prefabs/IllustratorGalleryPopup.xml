@@ -23,8 +23,26 @@
               <Children>
                 <ListPanel WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" LayoutImp.LayoutMethod="HorizontalLeftToRight">
                   <Children>
-                    <!-- 左侧列表栏 (宽度 420) -->
-                    <Widget WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="420" MarginRight="16">
+                    <!-- 最左侧页签栏：全部 / 收藏 -->
+                    <ListPanel WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="110" MarginRight="12" LayoutImp.LayoutMethod="VerticalTopToBottom">
+                      <Children>
+                        <ButtonWidget DoNotPassEventsToChildren="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="56" MarginBottom="8" Brush="Popup.Cancel.Button" Command.Click="ExecuteShowAll" IsSelected="@IsAllTab" UpdateChildrenStates="true">
+                          <Children>
+                            <Widget IsVisible="@IsAllTab" WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="4" HorizontalAlignment="Left" MarginTop="6" MarginBottom="6" Sprite="BlankWhiteSquare_9" Color="#DDBB73FF" DoNotAcceptEvents="true" />
+                            <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="22" VerticalAlignment="Center" Brush="Popup.Button.Text" Brush.FontSize="18" Text="全部" DoNotAcceptEvents="true" />
+                          </Children>
+                        </ButtonWidget>
+                        <ButtonWidget DoNotPassEventsToChildren="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="56" Brush="Popup.Cancel.Button" Command.Click="ExecuteShowFavorites" IsSelected="@IsFavoritesTab" UpdateChildrenStates="true">
+                          <Children>
+                            <Widget IsVisible="@IsFavoritesTab" WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="4" HorizontalAlignment="Left" MarginTop="6" MarginBottom="6" Sprite="BlankWhiteSquare_9" Color="#DDBB73FF" DoNotAcceptEvents="true" />
+                            <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="22" VerticalAlignment="Center" Brush="Popup.Button.Text" Brush.FontSize="18" Text="收藏" DoNotAcceptEvents="true" />
+                          </Children>
+                        </ButtonWidget>
+                      </Children>
+                    </ListPanel>
+
+                    <!-- 左侧列表栏 (宽度 330) -->
+                    <Widget WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="330" MarginRight="16">
                       <Children>
                         <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhite" Color="#000000FF" AlphaFactor="0.2" IsEnabled="false" />
                         <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="frame_9" ExtendLeft="4" ExtendTop="4" ExtendRight="4" ExtendBottom="4" AlphaFactor="0.4" IsEnabled="false" />
@@ -75,24 +93,11 @@
                               </Children>
                             </Widget>
 
-                            <!-- 右侧提示词与说明信息 -->
+                            <!-- 右侧说明信息（不显示提示词） -->
                             <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="546" MarginTop="40">
                               <Children>
                                 <RichTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="24" VerticalAlignment="Top" Brush="Popup.Description.Text" Brush.FontSize="16" Text="@SelectedDate" DoNotAcceptEvents="true" />
-                                <RichTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="80" VerticalAlignment="Top" MarginTop="32" Brush="Popup.Description.Text" Brush.FontSize="15" Text="@SelectedTheme" CanBreakWords="true" DoNotAcceptEvents="true" />
-                                <ScrollablePanel WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginTop="124" ClipRect="PromptClip" InnerPanel="PromptClip\PromptInner" AutoHideScrollBars="true">
-                                  <Children>
-                                    <Widget Id="PromptClip" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" ClipContents="true">
-                                      <Children>
-                                        <Widget Id="PromptInner" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren">
-                                          <Children>
-                                            <RichTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" Brush="Popup.Description.Text" Brush.FontSize="15" Brush.TextHorizontalAlignment="Left" Text="@SelectedPrompt" CanBreakWords="true" DoNotAcceptEvents="true" />
-                                          </Children>
-                                        </Widget>
-                                      </Children>
-                                    </Widget>
-                                  </Children>
-                                </ScrollablePanel>
+                                <RichTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" VerticalAlignment="Top" MarginTop="32" Brush="Popup.Description.Text" Brush.FontSize="15" Text="@SelectedTheme" CanBreakWords="true" DoNotAcceptEvents="true" />
                               </Children>
                             </Widget>
                           </Children>
@@ -112,9 +117,9 @@
                     <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="22" VerticalAlignment="Center" Brush="Popup.Button.Text" Brush.FontSize="18" Text="转为 RP 物品" DoNotAcceptEvents="true" />
                   </Children>
                 </ButtonWidget>
-                <ButtonWidget IsVisible="@HasSelection" DoNotPassEventsToChildren="true" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="140" SuggestedHeight="46" MarginRight="12" Brush="Popup.Done.Button" Command.Click="ExecuteCopyPrompt" UpdateChildrenStates="true">
+                <ButtonWidget IsVisible="@HasSelection" DoNotPassEventsToChildren="true" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="140" SuggestedHeight="46" MarginRight="12" Brush="Popup.Done.Button" Command.Click="ExecuteToggleFavorite" UpdateChildrenStates="true">
                   <Children>
-                    <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="22" VerticalAlignment="Center" Brush="Popup.Button.Text" Brush.FontSize="18" Text="复制提示词" DoNotAcceptEvents="true" />
+                    <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="22" VerticalAlignment="Center" Brush="Popup.Button.Text" Brush.FontSize="18" Text="@FavoriteButtonText" DoNotAcceptEvents="true" />
                   </Children>
                 </ButtonWidget>
                 <ButtonWidget IsVisible="@HasSelection" DoNotPassEventsToChildren="true" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="150" SuggestedHeight="46" MarginRight="12" Brush="Popup.Done.Button" Command.Click="ExecuteSetDefault" UpdateChildrenStates="true">

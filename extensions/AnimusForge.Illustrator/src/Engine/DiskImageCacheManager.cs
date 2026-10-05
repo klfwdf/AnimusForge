@@ -35,6 +35,8 @@ namespace AnimusForge.Illustrator.Engine
             (!string.IsNullOrWhiteSpace(DirectorStatus) && !string.Equals(DirectorStatus, "complete", StringComparison.Ordinal) &&
              !string.IsNullOrWhiteSpace(DirectorStatusText) ? "\n" + DirectorStatusText : string.Empty);
         public bool IsDefault { get; set; }
+        // Player-pinned in the gallery; favorites are never evicted by the cache limit.
+        public bool IsFavorite { get; set; }
         public bool Deleted { get; set; }
         public DateTime CreatedTime { get; set; }
         [JsonIgnore]
@@ -415,6 +417,31 @@ namespace AnimusForge.Illustrator.Engine
             }
         }
 
+        public static bool SetFavorite(CachedIllustrationItem target, string campaignKey, bool favorite)
+        {
+            lock (CacheLock)
+            {
+                try
+                {
+                    if (target == null || !IsSafePath(target.FilePath, CampaignDirectory(campaignKey)) || !File.Exists(target.FilePath)) return false;
+                    string metaPath = Path.ChangeExtension(target.FilePath, ".json");
+                    if (!IsSafePath(metaPath, CampaignDirectory(campaignKey))) return false;
+                    // Legacy images without metadata get a sidecar so the flag survives a refresh.
+                    var actual = File.Exists(metaPath) ? ReadMetadata(metaPath) : target.CopyMetadata();
+                    if (actual == null || actual.Key != target.Key || !Categories.Contains(actual.Category)) return false;
+                    actual.IsFavorite = favorite;
+                    AtomicWrite(metaPath, JsonConvert.SerializeObject(actual, Formatting.Indented));
+                    InvalidateCache();
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    Debug.Print($"[Illustrator] Failed to update favorite flag: {ex.Message}");
+                    return false;
+                }
+            }
+        }
+
         public static bool DeleteItem(CachedIllustrationItem item, string campaignKey)
         {
             lock (CacheLock)
@@ -453,7 +480,7 @@ namespace AnimusForge.Illustrator.Engine
             int remaining = items.Count;
             // Keep the newest generated histories; otherwise an unpromoted new image is
             // immediately evicted when all older subjects already have a default.
-            foreach (var item in items.OrderBy(i => i.CreatedTime))
+            foreach (var item in items.Where(i => !i.IsFavorite).OrderBy(i => i.CreatedTime))
             {
                 if (remaining <= limit) break;
                 if (DeleteItem(item, campaignKey)) remaining--;
