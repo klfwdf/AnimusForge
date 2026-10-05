@@ -7218,3 +7218,11 @@ R2计划交付门槛：已给固定技术路线、真实来源与目标、写入
 - NOT_RUN：真实Bannerlord/原生Gauntlet、实际缴费/关系/敌对变化、玩家旧档、真实provider/TTS；未Stage/部署/push/打包，未改原版DLL或构建入口。不能以离线通过替代实机，也不自动修复已执行的退国。
 - 证据：`artifacts/scene-conflict-judgment-display-fix-20261005/receipt.json`、`code-map.json`、`committed-product/run.log`、`lifecycle-presentation/run.log`、`negative-*/run.log`、`native-turn/run.log`、`taunt-context/run.log`、`build-final.log`、输入稳定性收据；保留初次fixture缺少IFaction/using导致的编译失败和历史绑定失败记录。候选仍在`bin/Debug/single_module_artifacts/versions/1.3|1.4/AnimusForge.dll`及`bootstrap/AnimusForge.Bootstrap.dll`。
 - 回滚产品：定向`git revert 117a402b`，不hard reset、不覆盖其他作者；本轮安装未变，无新增安装Recovery。测试/文档后续提交单独回滚，任何覆盖/发布均需新授权。
+
+<a id="illustrator-native-export-diagnostics-20261005"></a>
+## Illustrator 原生导出诊断与有限超时调整（2026-10-05，ACTIVE）
+
+- 用户授权：将立绘/全景原生保存请求后的执行证据写入日志，并适度延长超时；不授权游戏覆盖、发布或整体重写渲染。
+- 当前工作区 F:/AnimusForge-main，分支 codex/af-main-refactor-continuation-20260831。任务涉及 Illustrator 的人物回调观测、原生保存文件状态与全景逐面观测；保留其他作者已存在的改动。
+- 退出门：只按请求记录有界摘要；回调仅计数、不逐帧反射或写日志；不把 Paint 回调认作 GPU 完成；延长立绘至20秒、全景单面文件至6秒、总预算至40秒；双 API 编译通过。真实失败玩家/GPU及部署仍待验收，不运行既有禁止的离线审计脚本。
+- 开工检查点：本条意图提交；收尾补源码坐标、验证命令、候选及回滚修订。
