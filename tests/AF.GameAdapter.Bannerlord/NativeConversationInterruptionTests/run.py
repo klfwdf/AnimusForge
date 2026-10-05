@@ -30,12 +30,12 @@ if args.mutation=="allow-stale-text":cache=cache.replace("_displayTextGeneration
 xml=ROOT/"content/modules/AF.Module.Conversation/GUI/Prefabs/AnimusForgeNativeConversationOverlay.xml"
 import xml.etree.ElementTree as ET
 node=ET.parse(xml).getroot().find('.//Widget[@Id="AFNativeConversationInputPanel"]');assert node is not None
-assert node.attrib["HorizontalAlignment"]=="Left" and node.attrib["MarginLeft"]=="10" and "MarginRight" not in node.attrib
+assert node.attrib["HorizontalAlignment"]=="Right" and node.attrib["MarginRight"]=="200" and "MarginLeft" not in node.attrib
 assert node.attrib["IsVisible"]=="@IsCustomAnswerVisible" and node.attrib["SuggestedWidth"]=="720"
 edit=node.find("./Children/AnimusForgeNativeConversationEditableTextWidget");assert edit.attrib["RealText"]=="@InputText" and edit.attrib["Command.TextEntered"]=="ExecuteSubmit" and edit.attrib["FocusRequestId"]=="@InputFocusVersion"
 for width,height in [(1280,720),(1920,1080),(2048,414),(2560,1440),(3440,1440)]:
-    scale=min(width/1920,height/1080);left=float(node.attrib["MarginLeft"])*scale;panel=float(node.attrib["SuggestedWidth"])*scale
-    assert left+panel<width/2, (width,height,"native AI input overlaps NPC/right half")
+    scale=min(width/1920,height/1080);right=float(node.attrib["MarginRight"])*scale;panel=float(node.attrib["SuggestedWidth"])*scale
+    assert width-right-panel>width/2, (width,height,"native AI input overlaps NPC/left half")
 # These boundaries are explicitly preserved: no replacement request, background game access,
 # cancellation on focus-loss, or removal of the native pause setting.
 assert s.count("SetSubmissionDisplayText(generation,")==16

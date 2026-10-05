@@ -1,0 +1,7 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><ImplicitUsings>enable</ImplicitUsings><Nullable>disable</Nullable>
+    <ControllerSource Condition="'$(ControllerSource)' == ''">$(MSBuildThisFileDirectory)..\..\..\src\AF.GameAdapter.Bannerlord\UI\Conversation\NativeConversationAnswerAreaController.cs</ControllerSource>
+  </PropertyGroup>
+  <ItemGroup><Compile Include="$(ControllerSource)" Link="ProductionController.cs" /></ItemGroup>
+</Project>

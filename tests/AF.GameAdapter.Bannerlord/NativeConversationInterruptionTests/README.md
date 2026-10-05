@@ -9,3 +9,5 @@
 四个编译成功的负控：`--mutation skip-paused-drain`、`skip-resume-repaint`、`steal-focus`、`allow-stale-text`；每个须在对应运行断言失败，不把编译/路径错误当作红例。运行输出与源SHA manifest保存在每次独立 `artifacts/tests/native-focus-pause*/run-*/`；不删除其他测试产物，不写游戏目录。
 
 设计边界：失焦暂停设置保持；网络请求仍走原前/主/后链路，所有UI与游戏对象处理仍归主线程。只重放当前NPC/token/save/模式/请求代次内的UI文字，不重放动作或记忆。重绘复用原8帧恢复窗口，正文相同不触发NPC查询；交互只在恢复时一次执行。实机Alt-Tab、原生渲染、真实LLM/TTS/玩家旧档仍须另验。
+
+2026-10-05 实机纠正：原版AI输入回到屏幕右侧，原版选项容器的局部Left不是全屏Left。新UI使用独立预制体，不改变；真实原版选项占位/透明与新UI旧行为对照见同级NativeConversationAnswerLayoutTests。

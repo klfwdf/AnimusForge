@@ -189,9 +189,14 @@ public static class NativeConversationAnswerAreaController
 
 		private bool _hasStoredState;
 
+        private readonly bool _preserveNativeAnswerSlot;
+
 		public RootState(Widget root)
 		{
 			Root = root;
+            // Router keeps the logical movie name unchanged. Identify the real tree once,
+            // not the SPConversation/MapConversation name or the mutable MCM switch.
+            _preserveNativeAnswerSlot = root?.FindChild("AFDialogueConsoleFrame", includeAllChildren: true) == null;
 		}
 
 		public Widget Root { get; }
@@ -243,9 +248,10 @@ public static class NativeConversationAnswerAreaController
 			_lastAnswerChildCount = -1;
 			_answerRefreshCountdown = 0;
             AddState(_answerList, preserveLayout: true);
-            // The replacement answer viewport also owns a sibling scrollbar.
-            // Hiding only its rows leaves that scrollbar visible behind AI input.
-            AddState(Root.FindChild("AnswerListContainer", includeAllChildren: true), preserveLayout: false);
+            // Only vanilla needs the player's slot kept in its stretch layout.
+            // The new UI retains its existing hide-container/scrollbar behavior unchanged.
+            AddState(Root.FindChild("AnswerListContainer", includeAllChildren: true),
+                preserveLayout: _preserveNativeAnswerSlot, hideVisualsWhilePreserved: _preserveNativeAnswerSlot);
 			AddState(Root.FindChild("ContinueButton", includeAllChildren: true), preserveLayout: false);
 			_hasStoredState = true;
 		}
@@ -290,13 +296,13 @@ public static class NativeConversationAnswerAreaController
 			}
 		}
 
-		private void AddState(Widget widget, bool preserveLayout)
+		private void AddState(Widget widget, bool preserveLayout, bool hideVisualsWhilePreserved = false)
 		{
 			if (widget != null && _trackedWidgets.Add(widget))
 			{
 				try
 				{
-					_states.Add(new WidgetState(widget, preserveLayout));
+					_states.Add(new WidgetState(widget, preserveLayout, hideVisualsWhilePreserved));
 				}
 				catch
 				{
@@ -462,7 +468,7 @@ public static class NativeConversationAnswerAreaController
 
 		private readonly float _suggestedHeight;
 
-		public WidgetState(Widget widget, bool preserveLayout)
+		public WidgetState(Widget widget, bool preserveLayout, bool hideVisualsWhilePreserved)
 		{
 			Widget = widget;
 			_isVisible = widget.IsVisible;
@@ -472,12 +478,15 @@ public static class NativeConversationAnswerAreaController
 			_heightSizePolicy = widget.HeightSizePolicy;
 			_suggestedHeight = widget.SuggestedHeight;
 			PreserveLayout = preserveLayout;
+            HideVisualsWhilePreserved = hideVisualsWhilePreserved;
 			LayoutHeight = ResolveLayoutHeight(widget);
 		}
 
 		public Widget Widget { get; }
 
 		public bool PreserveLayout { get; }
+
+        private bool HideVisualsWhilePreserved { get; }
 
 		public float LayoutHeight { get; }
 
@@ -495,6 +504,7 @@ public static class NativeConversationAnswerAreaController
 					widget.IsVisible = _isVisible;
 					widget.HeightSizePolicy = SizePolicy.Fixed;
 					widget.SuggestedHeight = LayoutHeight;
+                    if (HideVisualsWhilePreserved) widget.AlphaFactor = 0f;
 				}
 				else
 				{
