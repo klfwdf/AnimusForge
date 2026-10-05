@@ -92,7 +92,7 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 	private const int UltimatumComplianceRoyalRelationPenalty = -20;
 	private const int DecisionArchitectureVersion = 1;
 	private const int HistoryMemorySchemaVersion = 4;
-	private const int DiplomacyPromptContractVersion = 28;
+	private const int DiplomacyPromptContractVersion = 29;
 	private const int RelaySchemaVersion = 23;
 	private const int RelayPassDurationDays = 7;
 	private const int RelayTargetDurationDays = 21;
@@ -614,7 +614,8 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 		int userPrefix1024Chars = Math.Min(1024, user.Length);
 		int userPrefixChars = Math.Min(2048, user.Length);
 		int totalChars = messages.Sum(x => x?.Content?.Length ?? 0);
-		int expectedCachedMessageCount = WorldDiplomacyRoundLifecycleRules.UsesCanonicalHistory(job) && messages.Count >= 2 ? 2 : 0;
+		int expectedCachedMessageCount = WorldDiplomacyRoundLifecycleRules.UsesCanonicalHistory(job) && messages.Count >= 2
+			? WorldDiplomacyRoundLifecycleRules.IsJobOfKind(job, "generate") ? 1 : 2 : 0;
 		int expectedCachedPrefixChars = messages.Take(expectedCachedMessageCount).Sum(x => x?.Content?.Length ?? 0);
 		Log("cache-shape kind=" + (job?.Kind ?? "")
 			+ " affinity=" + WorldDiplomacyPromptContractRules.ResolveCacheAffinityKey(job)
@@ -626,6 +627,9 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 			+ " historyRevision=" + (job?.HistoryRevision ?? 0L).ToString(CultureInfo.InvariantCulture)
 			+ " historyThroughSequence=" + (job?.HistoryThroughSequence ?? 0L).ToString(CultureInfo.InvariantCulture)
 			+ " historyEstimatedTokens=" + (job?.HistoryEstimatedTokens ?? 0L).ToString(CultureInfo.InvariantCulture)
+			+ " requestHistoryChars=" + (messages.Count > 2 ? messages[1].Content?.Length ?? 0 : 0).ToString(CultureInfo.InvariantCulture)
+			+ " historyMode=" + (WorldDiplomacyRoundLifecycleRules.IsJobOfKind(job, "generate") ? "recent_window" : "archive_prefix")
+			+ " inputLimit=" + WorldDiplomacyRequestHistoryApplication.InputLimit(job, GetHistoryCompressionTriggerTokens()).ToString(CultureInfo.InvariantCulture)
 			+ " snapshotThroughSequence=" + (job?.HistorySnapshotThroughSequence ?? 0L).ToString(CultureInfo.InvariantCulture)
 			+ " snapshotHash=" + (job?.HistorySnapshotHash ?? "")
 			+ " stablePrefixHash=" + (job?.HistoryPrefixHash ?? "")
@@ -980,9 +984,15 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 
 	private HashSet<string> GetKnownDocumentIdsForHero(Hero hero, string kingdomIdOverride)
 	{
-
-        return new HashSet<string>(_orchestration.PublicDocumentIds(), StringComparer.OrdinalIgnoreCase);
-    }
+		string kingdomId = WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(hero?.Clan?.Kingdom?.StringId, kingdomIdOverride);
+		Settlement currentSettlement = hero?.CurrentSettlement ?? hero?.PartyBelongedTo?.CurrentSettlement;
+		bool isKingdomNoble = hero?.IsLord == true && !string.IsNullOrWhiteSpace(hero.Clan?.Kingdom?.StringId);
+		bool includeCourtKnowledge = (hero?.Clan != null && hero.Clan == hero.Clan.Kingdom?.RulingClan)
+			|| string.Equals(hero?.StringId, ResolveKingdom(kingdomId)?.RulingClan?.Leader?.StringId, StringComparison.OrdinalIgnoreCase);
+		return WorldDiplomacyRoundLifecycleRules.CollectKnownDocumentIds(
+			_storage?.SettlementKnowledge, _storage?.NobleKnowledge, _storage?.KingdomKnowledge,
+			currentSettlement?.StringId, kingdomId, isKingdomNoble, includeCourtKnowledge);
+	}
 
 
 
@@ -1697,7 +1707,7 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 			return 0;
 		}
 	}
-	private static void GetDiplomaticDeclarationCharacterRange(out int minimumCharacters, out int maximumCharacters)
+	internal static void GetDiplomaticDeclarationCharacterRange(out int minimumCharacters, out int maximumCharacters)
 	{
 		minimumCharacters = DuelSettings.DefaultWorldDiplomacyDeclarationMinCharacters;
 		int configuredMaximumCharacters = DuelSettings.DefaultWorldDiplomacyDeclarationMaxCharacters;

@@ -50,7 +50,7 @@ public sealed partial class WorldDiplomacyBehavior
             }
         }
         public System.Collections.Generic.IReadOnlyList<WorldDiplomacyArchiveRecord> Archive() =>
-            WorldDiplomacyPresentationQueries.Archive(_owner._storage, FormatCampaignDate, _owner.ResolveRound, _owner.ResolveDocument);
+            WorldDiplomacyPresentationQueries.Archive(_owner._storage, FormatCampaignDate, _owner.ResolveRound, _owner.ResolveDocument, Player);
         public string ArchiveSubtitle() => WorldDiplomacyPresentationQueries.ArchiveSubtitle(
             _owner._storage, _owner.ResolveDocument, id =>
             {
@@ -64,6 +64,16 @@ public sealed partial class WorldDiplomacyBehavior
         public string Standing(string kingdomId) => WorldDiplomacyPresentationQueries.Standing(_owner._storage, kingdomId);
         public string Submit(WorldDiplomacyPlayerDocumentCommand command) => WorldDiplomacyPlayerApplication.Execute(this, command, _owner._orchestration);
         public bool MarkRead(string id) => _owner._orchestration.MarkDocumentRead(id);
+        public string RetryAnalysis(string id, long generation)
+        {
+            if (generation != _owner._runtimeGeneration) return "该公文页面已失效，请重新打开。";
+            var document = _owner.ResolveDocument(id);
+            if (!WorldDiplomacyPlayerApplication.CanRetryAnalysis(document, Player)) return "该公文当前不能重新解析。";
+            document.AnalysisStatus = "pending_analysis";
+            document.MechanicalResult = "宣言已公开；正在重新解析原文，尚未执行外交动作。";
+            _owner._orchestration.EnqueueAnalysisJob(document, 100);
+            return "已重新提交原文解析；不会再次发布宣言。";
+        }
         public bool CanOpenReply(string documentId, string roundId, long generation)
         {
             return generation == _owner._runtimeGeneration && _owner.ResolveDocument(documentId) != null

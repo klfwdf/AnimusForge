@@ -69,9 +69,11 @@ internal static class WorldDiplomacyPresentation
         if (!WorldDiplomacyPresentationHost.MarkRead(documentId)) return false;
         WorldDiplomacyDocumentDetail detail = WorldDiplomacyPresentationHost.Detail(documentId);
         if (detail == null) return false;
-        Action reply = detail.CanReply ? (Action)(() => OpenPlayerReplyCompose(detail)) : null;
+        Action reply = detail.CanRetryAnalysis
+            ? (Action)(() => DisplayResult(WorldDiplomacyPresentationHost.RetryAnalysis(detail.DocumentId, detail.Generation)))
+            : detail.CanReply ? (Action)(() => OpenPlayerReplyCompose(detail)) : null;
         return CourierLetterReplyPopup.ShowWithReply(detail.Title, detail.Subtitle, detail.Body,
-            reply, "回应", null, "关闭", detail.Impact);
+            reply, detail.CanRetryAnalysis ? "重新解析" : "回应", null, "关闭", detail.Impact);
     }
 
     private static void OpenPlayerReplyCompose(WorldDiplomacyDocumentDetail detail)
@@ -91,9 +93,16 @@ internal static class WorldDiplomacyPresentation
         try
         {
             Action returnToArchive = () => ShowRoyalAnnouncementArchive(onClose);
+            long generation = WorldDiplomacyPresentationHost.Player()?.Generation ?? -1;
             return AnimusForgeWorldEventInboxPopup.Show(
                 BuildRoyalAnnouncementArchiveData(),
-                recordId => CustomPolicyBehavior.OpenKingdomPolicyReReviewFromWorldArchive(recordId, returnToArchive),
+                recordId => {
+                    const string retryPrefix = "diplomacy_analysis:";
+                    if (recordId.StartsWith(retryPrefix, StringComparison.Ordinal)) {
+                        DisplayResult(WorldDiplomacyPresentationHost.RetryAnalysis(recordId.Substring(retryPrefix.Length), generation));
+                        returnToArchive();
+                    } else CustomPolicyBehavior.OpenKingdomPolicyReReviewFromWorldArchive(recordId, returnToArchive);
+                },
                 onClose,
                 key => CustomPolicyBehavior.RequestDeletePolicyHistoryRecord(key, returnToArchive));
         }
@@ -195,7 +204,11 @@ internal static class WorldDiplomacyPresentation
                 UnreadMarkerText = record.UnreadMarkerText,
                 IsUnread = record.IsUnread,
                 HasPolicyName = record.HasPolicyName,
-                HasImpact = record.HasImpact
+                HasImpact = record.HasImpact,
+                PolicyRecordId = "diplomacy_analysis:" + record.EventId,
+                ReReviewText = "重新解析",
+                ShowReReview = record.CanRetryAnalysis,
+                CanReReview = record.CanRetryAnalysis
             });
         }
         WorldEventInboxPopupData data = new WorldEventInboxPopupData

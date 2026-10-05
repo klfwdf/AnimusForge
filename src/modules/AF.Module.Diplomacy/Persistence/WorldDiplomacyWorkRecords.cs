@@ -66,6 +66,8 @@ public sealed class WorldDiplomacyExchange
 
 public sealed class WorldDiplomacyJob
 {
+	// Request-only reading window. Rebuilt on load/send; never persisted as another archive.
+	[JsonIgnore] internal string DeclarationHistoryBlock;
 	// Runtime-only invalidation for the bounded queue view. The persisted property
 	// names and values below remain unchanged.
 	[JsonIgnore] internal Action SelectionChanged;

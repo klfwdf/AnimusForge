@@ -2287,11 +2287,11 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 	[SettingPropertyGroup("17. AI外交（测试中）", GroupOrder = 170)]
 	public int WorldDiplomacyThreatComplianceIssuerRelationReward { get; set; } = DefaultWorldDiplomacyThreatComplianceIssuerRelationReward;
 
-	[SettingPropertyInteger("外交长期记忆压缩触发值（千估算 Tokens）", WorldDiplomacyHistoryCompressionTriggerThousandsMin, WorldDiplomacyHistoryCompressionTriggerThousandsMax, "0", Order = 15, RequireRestart = false, HintText = "长期外交历史达到该估算长度时开始压缩。默认 800，即约 800k Tokens；阈值越高，每次外交请求的延迟与费用通常越高。所选 API 模型必须有足够输入上下文，900k 仅适合上下文明显大于 1M 的模型。")]
+	[SettingPropertyInteger("外交长期记忆压缩触发值（千估算 Tokens）", WorldDiplomacyHistoryCompressionTriggerThousandsMin, WorldDiplomacyHistoryCompressionTriggerThousandsMax, "0", Order = 15, RequireRestart = false, HintText = "长期外交档案达到该估算长度时开始分批压缩。默认 800，即约 800k Tokens，影响档案积压与压缩频率。宣言只读取近期相关材料，全部输入另有 32k 估算 Tokens 上限；压缩每批另有 128k 输入上限。")]
 	[SettingPropertyGroup("17. AI外交（测试中）", GroupOrder = 170)]
 	public int WorldDiplomacyHistoryCompressionTriggerThousands { get; set; } = DefaultWorldDiplomacyHistoryCompressionTriggerThousands;
 
-	[SettingPropertyInteger("外交长期记忆压缩后目标（千估算 Tokens）", WorldDiplomacyHistoryCompressionTargetThousandsMin, WorldDiplomacyHistoryCompressionTargetThousandsMax, "0", Order = 16, RequireRestart = false, HintText = "压缩完成后，长期外交快照与程序保留的近期硬事实合计目标长度。默认 48，即约 48k Tokens；上限 60k。实际摘要仍受所选 API 的“最大输出Tokens”限制，该上限较低时会生成更短快照。")]
+	[SettingPropertyInteger("外交长期记忆压缩后目标（千估算 Tokens）", WorldDiplomacyHistoryCompressionTargetThousandsMin, WorldDiplomacyHistoryCompressionTargetThousandsMax, "0", Order = 16, RequireRestart = false, HintText = "每批压缩后，长期外交快照与受保护事实的合计目标长度。默认 48，即约 48k Tokens；上限 60k。宣言只读取其中相关材料，不会整份注入该快照。实际摘要仍受所选 API 的“最大输出Tokens”限制。")]
 	[SettingPropertyGroup("17. AI外交（测试中）", GroupOrder = 170)]
 	public int WorldDiplomacyHistoryCompressionTargetThousands { get; set; } = DefaultWorldDiplomacyHistoryCompressionTargetThousands;
 

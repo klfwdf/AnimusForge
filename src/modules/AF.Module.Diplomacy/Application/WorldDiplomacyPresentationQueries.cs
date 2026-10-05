@@ -87,11 +87,12 @@ internal static class WorldDiplomacyPresentationQueries
             ? round?.Participants?.FirstOrDefault(x => x != null && string.Equals(x.KingdomId, player.KingdomId, StringComparison.OrdinalIgnoreCase))
             : null;
         bool canReply = round != null && participant?.MandatoryReplyPending == true && player.Independent;
-        return Detail(document, player.Generation, canReply, formatDate);
+        return Detail(document, player.Generation, canReply, formatDate,
+            WorldDiplomacyPlayerApplication.CanRetryAnalysis(document, player));
     }
 
     internal static WorldDiplomacyDocumentDetail Detail(WorldDiplomacyDocument document, long generation,
-        bool canReply, Func<int, string> formatDate)
+        bool canReply, Func<int, string> formatDate, bool canRetryAnalysis = false)
     {
         string subtitle = document.AuthorKingdomName + " · " + document.AuthorRulerName + " · "
             + WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(document.GameDate, formatDate(document.Day)) + " · "
@@ -99,12 +100,12 @@ internal static class WorldDiplomacyPresentationQueries
         return new WorldDiplomacyDocumentDetail(document.DocumentId, document.RoundId, generation,
             WorldDiplomacyTextRules.BuildDisplayedDocumentTitle(document), subtitle,
             string.IsNullOrWhiteSpace(document.Body) ? "（该旧公文正文已压缩至年度摘要。）" : WorldDiplomacyTextRules.FormatDiplomaticBodyForDisplay(document.Body),
-            BuildImpactText(document), canReply);
+            BuildImpactText(document), canReply, canRetryAnalysis);
     }
 
     internal static IReadOnlyList<WorldDiplomacyArchiveRecord> Archive(WorldDiplomacyStorage storage,
         Func<int, string> formatDate, Func<string, WorldDiplomacyRound> resolveRound,
-        Func<string, WorldDiplomacyDocument> resolveDocument)
+        Func<string, WorldDiplomacyDocument> resolveDocument, WorldDiplomacyPlayerContext player = null)
     {
         var records = new List<WorldDiplomacyArchiveRecord>();
         foreach (WorldDiplomacyDocument document in WorldDiplomacyRoundLifecycleRules.OrderDocumentsByRecency(storage.Documents
@@ -139,7 +140,8 @@ internal static class WorldDiplomacyPresentationQueries
                 UnreadMarkerText: document.IsRead ? "" : "新",
                 IsUnread: !document.IsRead,
                 HasPolicyName: false,
-                HasImpact: true));
+                HasImpact: true,
+                CanRetryAnalysis: WorldDiplomacyPlayerApplication.CanRetryAnalysis(document, player)));
         }
         foreach (WorldDiplomacyAnnualSummary summary in storage.AnnualSummaries.OrderByDescending(x => x.Year))
         {

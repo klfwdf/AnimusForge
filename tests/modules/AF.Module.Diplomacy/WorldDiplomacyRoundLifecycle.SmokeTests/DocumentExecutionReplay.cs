@@ -12,6 +12,9 @@ internal static class DocumentExecutionReplay
         internal WorldDiplomacyDocument StoredDocument;
         internal bool AuthorAllowed = true, NoAction, ThrowEffect, ThrowHistory, AfterFirstEffect;
         internal bool UnknownImmediate, UnknownOffer;
+        internal bool RestrictRound;
+        internal WorldDiplomacyRoundOffer RequiredPeace;
+        internal int RequiredPeaceReads;
         internal Action BeforeFirstResolve;
         internal string InvalidTarget;
         internal int Effects, Id;
@@ -30,7 +33,8 @@ internal static class DocumentExecutionReplay
         public WorldDiplomacyAuthoritySnapshot CaptureAuthority(string id) => new(id, id != null, false, id == "vassal", "suzerain", !AuthorAllowed, true);
         public WorldDiplomacyRound ResolveRound(string id) { return Owner?.ResolveRound(id) ?? Round; }
         public WorldDiplomacyDocument ResolveDocument(string id) { return Owner?.ResolveDocument(id) ?? (StoredDocument?.DocumentId == id ? StoredDocument : null); }
-        public WorldDiplomacyRoundOffer FindRequiredPeaceOfferResponse(WorldDiplomacyRound round, string author, string slot, bool external, string sourceId, bool requireAnyOpenPeaceOffer) { return null; }
+        public WorldDiplomacyRoundOffer FindRequiredPeaceOfferResponse(WorldDiplomacyRound round, string author, string slot, bool external, string sourceId, bool requireAnyOpenPeaceOffer)
+        { RequiredPeaceReads++; return RequiredPeace; }
         public bool IsAtWar(string author, string target) { return true; }
         public bool IsPlayerKingdom(string id) { return false; }
         public string NewId(string prefix) { return prefix + (++Id); }
@@ -48,7 +52,8 @@ internal static class DocumentExecutionReplay
         internal Orch(Port p) { _p = p; }
         public override void PruneInvalidOffers(WorldDiplomacyRound round) { _p.Events.Add("PruneInvalidOffers"); }
         public override bool IsNonRootAiRelayNoActionAllowed(WorldDiplomacyRound round, string slot, string author, string target, bool relay, bool external, WorldDiplomacyDocument source) { return _p.NoAction; }
-        public override List<string> BuildLegalDiplomaticActionIntents(WorldDiplomacyRound round, string author, string target) { return _p.Legal; }
+        public override List<string> BuildLegalDiplomaticActionIntents(WorldDiplomacyRound round, string author, string target)
+            => _p.RestrictRound && round != null ? new() { "accept_peace", "reject_peace" } : _p.Legal;
         public override List<string> BuildLegalDiplomaticDeclarationIntents(WorldDiplomacyRound round, string author, string target, bool relay, string slot, bool external, WorldDiplomacyDocument source) { return _p.Legal; }
         public override bool TryGetDiplomaticStateViolation(string intent, string author, string target, out string reason) { _p.Events.Add("validate:" + target); reason = "changed"; return target == _p.InvalidTarget || (_p.AfterFirstEffect && _p.Effects > 0); }
         public override bool TryGetPlayerWorldStateIntentViolation(WorldDiplomacyDocument doc, string intent, string commitment, string author, string target, out string reason) { reason = ""; return false; }

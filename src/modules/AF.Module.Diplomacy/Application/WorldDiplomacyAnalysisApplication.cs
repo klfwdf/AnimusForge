@@ -24,6 +24,9 @@ internal static class WorldDiplomacyAnalysisApplication
             (doc, reason) => Suppress(port, orchestration, doc, reason),
             orchestration.ProcessAnalyzedDocument,
             execution.Log);
+        var document = execution.ResolveDocument(job.DocumentId);
+        if (document?.IsPlayerAuthored == true && document.AnalysisStatus == "analysis_failed")
+            execution.Notify("外交宣言已发布，但分析失败，外交动作未执行。可打开该公文选择“重新解析”。");
     }
     internal static void Suppress(IWorldDiplomacyAnalysisPort port, IWorldDiplomacyOrchestration orchestration,
         WorldDiplomacyDocument document, string reason)
@@ -59,6 +62,8 @@ internal static class WorldDiplomacyAnalysisApplication
             {
                 return;
             }
+            if (document.IsPlayerAuthored && (document.PlayerAnalysisCommitted || document.ChangedDiplomaticState
+                || document.AnalysisStatus is "success" or "published_action_rejected")) return;
             JObject json = WorldDiplomacyEnvelopeJsonRules.ParseJsonObject(raw);
             if (document.IsPlayerAuthored)
             {
@@ -77,6 +82,13 @@ internal static class WorldDiplomacyAnalysisApplication
             bool requiresResponse = WorldDiplomacyEnvelopeJsonRules.ReadBool(json, "requires_response");
             string respondingToOfferDocumentId = WorldDiplomacyEnvelopeJsonRules.ReadString(json, "responding_to_offer_document_id");
             string respondingToThreatDocumentId = WorldDiplomacyEnvelopeJsonRules.ReadString(json, "responding_to_threat_document_id");
+            if (document.IsPlayerAuthored && !WorldDiplomacyIntentVocabulary.IsSupportedDiplomacyIntent(intent))
+            {
+                MarkPlayerAnalysisFailed(document, log);
+                return;
+            }
+            document.RespondingToOfferActionId = WorldDiplomacyEnvelopeJsonRules.ReadString(json, "responding_to_offer_action_id");
+            document.RespondingToThreatActionId = WorldDiplomacyEnvelopeJsonRules.ReadString(json, "responding_to_threat_action_id");
             if (!string.Equals(status, "success", StringComparison.OrdinalIgnoreCase)
                 && !string.Equals(status, "fallback", StringComparison.OrdinalIgnoreCase))
             {
@@ -86,30 +98,22 @@ internal static class WorldDiplomacyAnalysisApplication
                     suppressInvalid(document, "analysis_status_has_no_publishable_action");
                     return;
                 }
-                // Player speech is already public and authoritative. A no-action or malformed
-                // classifier result means "public statement", never "permission denied".
+                // Supported extracted semantics remain authoritative despite classifier status.
                 status = "fallback";
-                intent = "statement";
-                commitment = "non_binding";
-                log("player declaration analysis downgraded to public statement document=" + document.DocumentId
+                log("player declaration analysis status normalized without changing intent=" + intent + " document=" + document.DocumentId
                     + " reason=analysis_status_" + WorldDiplomacyIntentVocabulary.NormalizeToken(WorldDiplomacyEnvelopeJsonRules.ReadString(json, "status")));
             }
             if (string.IsNullOrWhiteSpace(intent))
             {
-                if (!document.IsPlayerAuthored)
-                {
-                    document.AnalysisStatus = "no_action";
-                    suppressInvalid(document, "analysis_has_no_structured_intent");
-                    return;
-                }
-                status = "fallback";
-                intent = "statement";
-                commitment = "non_binding";
-                log("player declaration analysis supplied no intent; retained as public statement document=" + document.DocumentId);
+                document.AnalysisStatus = "no_action";
+                suppressInvalid(document, "analysis_has_no_structured_intent");
+                return;
             }
             if (document.IsPlayerAuthored)
             {
-                ReconcilePlayerDeclarationWithOpenOffer(document, intent, resolveRound?.Invoke(document.RoundId), ref targetId, ref respondingToOfferDocumentId, log);
+                var sourceRound = string.IsNullOrWhiteSpace(respondingToOfferDocumentId) ? null
+                    : resolveRound?.Invoke(resolveDocument?.Invoke(respondingToOfferDocumentId)?.RoundId);
+                ReconcilePlayerDeclarationWithOpenOffer(document, intent, sourceRound ?? resolveRound?.Invoke(document.RoundId), ref targetId, ref respondingToOfferDocumentId, log);
             }
             bool playerPublicIntent = document.IsPlayerAuthored && WorldDiplomacyIntentVocabulary.IsSupportedDiplomacyIntent(intent);
             if ((!WorldDiplomacyIntentVocabulary.IsActionableDiplomacyIntent(intent) && !playerPublicIntent)
@@ -121,7 +125,6 @@ internal static class WorldDiplomacyAnalysisApplication
                     suppressInvalid(document, "analysis_has_no_actionable_intent");
                     return;
                 }
-                if (!WorldDiplomacyIntentVocabulary.IsSupportedDiplomacyIntent(intent)) intent = "statement";
                 commitment = WorldDiplomacyIntentVocabulary.DefaultCommitmentForIntent(intent);
                 status = "fallback";
                 log("player declaration analysis normalized without suppressing publication document=" + document.DocumentId
@@ -137,6 +140,13 @@ internal static class WorldDiplomacyAnalysisApplication
                 document.TargetKingdomId = canonicalTargetId;
                 document.TargetKingdomName = resolveKingdomName?.Invoke(targetId) ?? string.Empty;
             }
+            if (document.IsPlayerAuthored && intent == "propose_peace"
+                && json?["peace_terms"] != null && json["peace_terms"].Type != JTokenType.Null
+                && json["peace_terms"] is not JObject)
+            {
+                MarkPlayerAnalysisFailed(document, log);
+                return;
+            }
             WorldDiplomacyPeaceTerms analyzedPeaceTerms = parseAndValidatePeaceTerms?.Invoke(
                 json,
                 document.AuthorKingdomId,
@@ -146,9 +156,16 @@ internal static class WorldDiplomacyAnalysisApplication
                 && !string.IsNullOrWhiteSpace(respondingToOfferDocumentId))
             {
                 WorldDiplomacyDocument source = resolveDocument?.Invoke(respondingToOfferDocumentId);
-                document.PeaceTerms = WorldDiplomacyOfferContractRules.ClonePeaceTerms(WorldDiplomacyDocumentFactRules.ResolveOfferedPeaceTerms(
+                var offeredTerms = WorldDiplomacyDocumentFactRules.ResolveOfferedPeaceTerms(
                     source,
-                    document.RespondingToOfferActionId));
+                    document.RespondingToOfferActionId);
+                if (analyzedPeaceTerms != null && !WorldDiplomacyOfferContractRules.ArePeaceTermsEquivalent(analyzedPeaceTerms, offeredTerms))
+                {
+                    MarkPlayerAnalysisFailed(document, log);
+                    document.MechanicalResult = "宣言已公开；解析同时给出接受原案和修改条款，外交动作未执行。可重新解析原文；修改条件应作为新提案。";
+                    return;
+                }
+                document.PeaceTerms = WorldDiplomacyOfferContractRules.ClonePeaceTerms(offeredTerms);
             }
             else
             {
@@ -180,26 +197,52 @@ internal static class WorldDiplomacyAnalysisApplication
                 document.SourceDocumentId = document.RespondingToThreatDocumentId;
                 document.IsResponse = true;
             }
-            if (json?["treaty_terms"] is JObject treaty)
+            if (json?["treaty_terms"] is JObject treaty
+                && (!string.IsNullOrWhiteSpace(WorldDiplomacyEnvelopeJsonRules.ReadString(treaty, "receiving_kingdom_id"))
+                    || !string.IsNullOrWhiteSpace(WorldDiplomacyEnvelopeJsonRules.ReadString(treaty, "joining_kingdom_id"))
+                    || WorldDiplomacyEnvelopeJsonRules.ReadInteger(treaty, "daily_tribute") != 0
+                    || WorldDiplomacyEnvelopeJsonRules.ReadInteger(treaty, "duration_days") != 0
+                    || !string.IsNullOrWhiteSpace(WorldDiplomacyEnvelopeJsonRules.ReadString(treaty, "cession_settlement_id"))))
                 document.TreatyTerms = new WorldDiplomacyDialogueTerms {
                     ReceivingKingdomId = WorldDiplomacyEnvelopeJsonRules.ReadString(treaty, "receiving_kingdom_id"),
                     JoiningKingdomId = WorldDiplomacyEnvelopeJsonRules.ReadString(treaty, "joining_kingdom_id"),
                     DailyTribute = WorldDiplomacyEnvelopeJsonRules.ReadInteger(treaty, "daily_tribute"),
                     DurationDays = WorldDiplomacyEnvelopeJsonRules.ReadInteger(treaty, "duration_days"),
                     CessionSettlementId = WorldDiplomacyEnvelopeJsonRules.ReadString(treaty, "cession_settlement_id") };
+            if (document.IsPlayerAuthored && WorldDiplomacyIntentVocabulary.IsFormalTreatyIntent(intent)
+                && intent.StartsWith("propose_", StringComparison.Ordinal)
+                && (string.IsNullOrWhiteSpace(document.TreatyTerms?.ReceivingKingdomId)
+                    || string.IsNullOrWhiteSpace(document.TreatyTerms?.JoiningKingdomId)))
+            {
+                MarkPlayerAnalysisFailed(document, log);
+                document.MechanicalResult = "宣言已公开；解析未能辨明条约双方角色，提案未执行。可重新解析原文。";
+                return;
+            }
             if (WorldDiplomacyIntentVocabulary.IsFormalTreatyIntent(intent) && document.TreatyTerms != null
                 && json?["peace_terms"] is JObject incompatiblePeace)
             {
-                if (WorldDiplomacyEnvelopeJsonRules.TryReadInteger(incompatiblePeace, "daily_tribute", out int formalTribute)) document.TreatyTerms.DailyTribute = formalTribute;
-                if (WorldDiplomacyEnvelopeJsonRules.TryReadInteger(incompatiblePeace, "duration_days", out int formalDays)) document.TreatyTerms.DurationDays = formalDays;
-                if (incompatiblePeace["cession_settlement_id"] != null) document.TreatyTerms.CessionSettlementId = WorldDiplomacyEnvelopeJsonRules.ReadString(incompatiblePeace, "cession_settlement_id");
+                if (WorldDiplomacyEnvelopeJsonRules.TryReadInteger(incompatiblePeace, "daily_tribute", out int formalTribute)
+                    && formalTribute != 0 && document.TreatyTerms.DailyTribute == 0) document.TreatyTerms.DailyTribute = formalTribute;
+                if (WorldDiplomacyEnvelopeJsonRules.TryReadInteger(incompatiblePeace, "duration_days", out int formalDays)
+                    && formalDays != 0 && document.TreatyTerms.DurationDays == 0) document.TreatyTerms.DurationDays = formalDays;
+                if (string.IsNullOrWhiteSpace(document.TreatyTerms.CessionSettlementId))
+                    document.TreatyTerms.CessionSettlementId = WorldDiplomacyEnvelopeJsonRules.ReadString(incompatiblePeace, "cession_settlement_id");
             }
             document.Tone = tone;
             document.Confidence = confidence;
             document.RequiresResponse = WorldDiplomacyIntentVocabulary.ResolveValidatedResponseObligation(document, intent, requiresResponse, maxAutomaticReplyDepth);
             WorldDiplomacyReputationRules.ApplyInternationalReputationEvaluation(document, json);
+            if (document.IsPlayerAuthored) document.PlayerAnalysisCommitted = true;
             processAnalyzedDocument(document, intent, commitment, document.RequiresResponse, tone, confidence);
         }
+
+    internal static void MarkPlayerAnalysisFailed(WorldDiplomacyDocument document, Action<string> log)
+    {
+        if (document == null || document.PlayerAnalysisCommitted || document.ChangedDiplomaticState) return;
+        document.AnalysisStatus = "analysis_failed";
+        document.MechanicalResult = "宣言已公开；分析失败，外交动作未执行。可选择“重新解析”再次处理原文。";
+        log?.Invoke("player declaration analysis failed without executing or rewriting speech document=" + document.DocumentId);
+    }
 
     public static void SuppressInvalidDocumentBeforePropagation(
         WorldDiplomacyDocument document,

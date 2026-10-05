@@ -27,6 +27,19 @@ internal static class Program
     private static int Main(string[] args)
     {
         AppDomain.CurrentDomain.UnhandledException += (_, e) => { Console.Error.WriteLine(e.ExceptionObject); Environment.Exit(1); };
+        if (args.Length == 1 && args[0] == "--player-semantics")
+        {
+            PlayerSemanticReplay.Run();
+            Console.WriteLine($"Player semantics replay passed: {Test.Assertions} assertions.");
+            return 0;
+        }
+        if (args.Length == 1 && (args[0] == "--war-admission-wiring" || args[0] == "--threat-admission-wiring"))
+        {
+            if (args[0] == "--war-admission-wiring") WarAdmissionReplay.RunStateWiring();
+            else WarAdmissionReplay.RunThreatWiring();
+            Console.WriteLine($"Real orchestration admission wiring passed: {Test.Assertions} assertions.");
+            return 0;
+        }
         if (args.Length == 1 && args[0] == "--concurrent-oral-migration")
         {
             ConcurrentOralMigrationReplay.Run();
@@ -241,11 +254,13 @@ RunRepairCorrectionAndJobDecisionTests();
         CampaignApplicationReplay.Run();
         InitialPeaceReplay.Run();
         HistoryCaptureReplay.Run();
+        RequestHistoryBudgetReplay.Run();
         AdmissionBindingReplay.Run();
         PolicySignalRefreshReplay.Run();
         ActionSelectionReplay.Run();
         JobPreparationReplay.Run();
         AnalysisApplicationReplay.Run();
+        PlayerSemanticReplay.Run();
         PeaceAdmissionReplay.Run();
         PersistenceSyncReplay.Run();
         VerifySourceBoundary();
@@ -5516,7 +5531,7 @@ RunRepairCorrectionAndJobDecisionTests();
         WorldDiplomacyJob canonicalJob = new WorldDiplomacyJob
         {
             Kind = "generate",
-            CacheAffinityKey = "diplomacy-history:v28",
+            CacheAffinityKey = WorldDiplomacyPromptContractRules.CanonicalHistoryCacheAffinityKey,
             SystemPrompt = canonicalSystem,
             UserPrompt = "dynamic 【MODE=DECLARE】"
         };
@@ -5525,7 +5540,7 @@ RunRepairCorrectionAndJobDecisionTests();
         canonicalJob.CacheAffinityKey = "stale";
         Test.True(!WorldDiplomacyPromptContractRules.HasCurrentCanonicalPromptContract(canonicalJob),
             "a stale cache affinity key invalidates the prompt contract");
-        canonicalJob.CacheAffinityKey = "diplomacy-history:v28";
+        canonicalJob.CacheAffinityKey = WorldDiplomacyPromptContractRules.CanonicalHistoryCacheAffinityKey;
         canonicalJob.UserPrompt = "dynamic without the mode line";
         Test.True(!WorldDiplomacyPromptContractRules.HasCurrentCanonicalPromptContract(canonicalJob),
             "a generation prompt missing MODE=DECLARE is rejected");
@@ -6313,12 +6328,17 @@ RunRepairCorrectionAndJobDecisionTests();
 
         WorldDiplomacyJob gen = new WorldDiplomacyJob
         {
-            Kind = "generate", SystemPrompt = "SYS", UserPrompt = "USR", HistoryThroughSequence = 42
+            Kind = "generate", SystemPrompt = "SYS", UserPrompt = "USR", HistoryThroughSequence = 42,
+            DeclarationHistoryBlock = "RECENT"
         };
         msgs = WorldDiplomacyLlmMessageApplication.BuildLlmMessagesForJob(gen, block);
-        Test.True(msgs.Count == 3 && msgs[1].Role == "system" && msgs[1].Content == "HIST"
-            && blockCalls == 1 && blockArg == 42,
-            "canonical jobs insert the history block through the port");
+        Test.True(msgs.Count == 3 && msgs[1].Role == "system" && msgs[1].Content == "RECENT"
+            && blockCalls == 0,
+            "declarations insert the selected window without reading the global archive");
+        var compact = new WorldDiplomacyJob { Kind = "compress", HistoryThroughSequence = 42 };
+        var compactMessages = WorldDiplomacyLlmMessageApplication.BuildLlmMessagesForJob(compact, block);
+        Test.True(compactMessages[1].Content == "HIST" && blockCalls == 1 && blockArg == 42,
+            "compression still reads its continuous archive prefix");
 
         msgs = WorldDiplomacyLlmMessageApplication.BuildLlmMessagesForJob(null!, block);
         Test.True(msgs.Count == 2 && msgs[0].Content == "" && msgs[1].Content == "",
@@ -6345,7 +6365,7 @@ RunRepairCorrectionAndJobDecisionTests();
         JArray arr = WorldDiplomacyLlmMessageApplication.BuildLlmMessageArray(gen, block);
         Test.True(arr.Count == 3
             && arr[0]?["role"]?.ToString() == "system"
-            && arr[1]?["content"]?.ToString() == "HIST"
+            && arr[1]?["content"]?.ToString() == "RECENT"
             && arr[2]?["role"]?.ToString() == "user",
             "the message array flattens role and content for the wire");
     }
@@ -11028,6 +11048,7 @@ RunRepairCorrectionAndJobDecisionTests();
             && r10 == "player_offer_response_missing_source_offer",
             "offer responses must name their source offer document");
         acceptDoc.RespondingToOfferDocumentId = "odoc";
+        acceptDoc.RespondingToOfferActionId = "oact";
         var offerRound = new WorldDiplomacyRound { RoundId = "R1" };
         offerRound.PendingOffers.Add(new WorldDiplomacyRoundOffer
         {
@@ -11938,20 +11959,19 @@ RunRepairCorrectionAndJobDecisionTests();
         Test.True(!WorldDiplomacyLlmDispatchApplication.EnsureRequestFitsInputBudget(
                 repairJob, big, 1000, 200, t => t?.Length ?? 0, _ => "", _ => { rebuildCalls++; return true; },
                 (j, e) => failedCalls++, () => { }, _ => { })
-            && rebuildCalls == 1 && repairJob.LlmMessages.Count == 0
-            && repairJob.SemanticRepairAttempts == 0,
-            "oversized valid repair chains must clear the frozen prompt and rebuild");
+            && rebuildCalls == 0 && repairJob.LlmMessages.Count == 5
+            && repairJob.SemanticRepairAttempts == 1,
+            "oversized current repairs fail locally without resetting their retry allowance");
 
         var genJob = new WorldDiplomacyJob { Kind = "generate", JobId = "jg", HistoryThroughSequence = 3 };
         int scheduleCalls = 0, genLogs = 0;
         Test.True(!WorldDiplomacyLlmDispatchApplication.EnsureRequestFitsInputBudget(
                 genJob, big, 5000, 200, t => t?.Length ?? 0, _ => new string('h', 2000),
                 _ => true, (j, e) => failedCalls++, () => scheduleCalls++, _ => genLogs++)
-            && genJob.AwaitingHistoryCompression
-            && genJob.InputBudgetHistoryTargetTokens ==
-                (int)Math.Min(200, (5000 - (5008 - 2000) - 1024) / 2)
-            && scheduleCalls == 1 && genLogs == 1,
-            "over-budget generation must defer behind a halved bounded history target");
+            && !genJob.AwaitingHistoryCompression
+            && genJob.InputBudgetHistoryTargetTokens == 0
+            && scheduleCalls == 0 && genLogs == 0,
+            "over-budget selected windows fail locally without compacting unrelated archive");
 
         // DPL-060CX: the canonical-contract gate passes current/absent contracts,
         // rebuilds stale generation contracts, and retires stale non-generation jobs.
@@ -12487,9 +12507,9 @@ RunRepairCorrectionAndJobDecisionTests();
         doc = new WorldDiplomacyDocument { DocumentId = "d2", AuthorKingdomId = "a", IsPlayerAuthored = true };
         suppressions.Clear(); processed.Clear();
         commit("{\"status\":\"error\",\"intent\":\"\",\"commitment\":\"\"}");
-        Test.True(suppressions.Count == 0 && doc.Intent == "statement"
-            && doc.Commitment == "non_binding" && doc.AnalysisStatus == "fallback",
-            "a player declaration with an unusable analysis must degrade to a public statement");
+        Test.True(suppressions.Count == 0 && processed.Count == 0 && !doc.PlayerAnalysisCommitted
+            && doc.AnalysisStatus == "analysis_failed",
+            "unusable player analysis must remain retryable without inventing or executing a statement");
 
         doc = new WorldDiplomacyDocument { DocumentId = "d3", AuthorKingdomId = "a" };
         suppressions.Clear(); processed.Clear();
@@ -16527,7 +16547,7 @@ RunRepairCorrectionAndJobDecisionTests();
             && applicationSource.Contains("Action<WorldDiplomacyRound> refreshActionSlots", StringComparison.Ordinal)
             && !rulesSource.Contains("public static void BeginOrExtendRoundResultSettlement(", StringComparison.Ordinal),
             "offer reconciliation must stay a domain rule; settlement-open bookkeeping must live in the round Application behind ports");
-        Test.True(analysisSource.Contains("ReconcilePlayerDeclarationWithOpenOffer(document, intent, resolveRound?.Invoke(document.RoundId), ref targetId, ref respondingToOfferDocumentId, log);", StringComparison.Ordinal)
+        Test.True(analysisSource.Contains("ReconcilePlayerDeclarationWithOpenOffer(document, intent, sourceRound ?? resolveRound?.Invoke(document.RoundId), ref targetId, ref respondingToOfferDocumentId, log);", StringComparison.Ordinal)
             && behaviorSource.Contains("WorldDiplomacyRoundApplication.BeginOrExtendRoundResultSettlement(", StringComparison.Ordinal)
             && File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOfferApplication.cs"))
                 .Contains("port.ResolveRound(document?.RoundId)", StringComparison.Ordinal)

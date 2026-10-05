@@ -22,7 +22,9 @@ public static List<WorldDiplomacyLlmMessage> BuildLlmMessagesForJob(WorldDiploma
 			source.Add(new WorldDiplomacyLlmMessage
 			{
 				Role = "system",
-				Content = buildCanonicalHistoryBlock(job?.HistoryThroughSequence ?? long.MaxValue)
+				Content = WorldDiplomacyRoundLifecycleRules.IsJobOfKind(job, "generate")
+					? job.DeclarationHistoryBlock ?? WorldDiplomacyRequestHistoryApplication.ContextMarker
+					: buildCanonicalHistoryBlock(job?.HistoryThroughSequence ?? long.MaxValue)
 			});
 		}
 		source.Add(new WorldDiplomacyLlmMessage { Role = "user", Content = job?.UserPrompt ?? "" });

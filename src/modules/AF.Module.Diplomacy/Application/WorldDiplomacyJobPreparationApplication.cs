@@ -203,6 +203,7 @@ public static void PrepareAnalysisJob(
 	{
 		return;
 	}
+    if (storage?.Jobs?.Any(x => x != null && IsJobOfKind(x, "analyze") && x.DocumentId == document.DocumentId) == true) return;
 	WorldDiplomacyRound owningRound = resolveRound?.Invoke(FirstNonEmpty(document.RoundId, document.ExchangeId));
 	string frozenCommonContract = getCommonContract?.Invoke(owningRound);
 	WorldDiplomacyJob job = new WorldDiplomacyJob

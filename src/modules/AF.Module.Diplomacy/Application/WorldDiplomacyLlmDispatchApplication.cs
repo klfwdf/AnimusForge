@@ -49,6 +49,12 @@ internal sealed class WorldDiplomacyJobSelectionView
         {
             if (job == null) continue;
             job.SelectionChanged = Invalidate;
+            if (WorldDiplomacyRoundLifecycleRules.IsJobOfKind(job, "generate") && job.AwaitingHistoryCompression)
+            {
+                // Retire the old dependency on compacting the global archive.
+                job.AwaitingHistoryCompression = false;
+                job.InputBudgetHistoryTargetTokens = 0;
+            }
             if (WorldDiplomacyRoundLifecycleRules.IsJobOfKind(job, "compress")) _hasCompression = true;
             if (!job.AwaitingHistoryCompression) continue;
             _hasAwaiting = true;
@@ -276,7 +282,10 @@ internal static class WorldDiplomacyLlmDispatchApplication
         {
             return null;
         }
-        if (job.LlmMessages?.Count > 0 && !WorldDiplomacyPromptContractRules.IsValidSemanticRepairMessageChain(job))
+        bool legacyHistoryChain = WorldDiplomacyRoundLifecycleRules.IsJobOfKind(job, "generate")
+            && job.LlmMessages?.Count > 1
+            && !(job.LlmMessages[1]?.Content ?? "").StartsWith(WorldDiplomacyRequestHistoryApplication.ContextMarker, StringComparison.Ordinal);
+        if (job.LlmMessages?.Count > 0 && (legacyHistoryChain || !WorldDiplomacyPromptContractRules.IsValidSemanticRepairMessageChain(job)))
         {
             log?.Invoke("retired invalid persisted LLM message chain job=" + (job.JobId ?? "") + " kind=" + (job.Kind ?? ""));
             job.LlmMessages.Clear();
@@ -364,39 +373,24 @@ internal static class WorldDiplomacyLlmDispatchApplication
         long inputTokens = 0L;
         foreach (JToken message in messages)
             inputTokens += WorldDiplomacyRoundLifecycleRules.EstimateHistoryTokens((string)message["content"], estimateTokens) + WorldDiplomacyRoundLifecycleRules.EstimateHistoryTokens((string)message["role"], estimateTokens) + 4L;
-        long limit = inputTokenLimit;
+        long limit = WorldDiplomacyRequestHistoryApplication.InputLimit(job, inputTokenLimit);
         if (inputTokens <= limit)
         {
             job.AwaitingHistoryCompression = false;
             return true;
         }
-        if (!WorldDiplomacyRoundLifecycleRules.IsJobOfKind(job, "generate"))
+        if (WorldDiplomacyRoundLifecycleRules.IsJobOfKind(job, "generate"))
         {
-            commitFailedJob?.Invoke(job, "input budget exceeded before send: " + inputTokens + "/" + limit
-                + "; single archive entry/snapshot or non-history prompt requires reduction");
+            // Compressing the saved global archive cannot shrink an already selected
+            // reading window or custom rules. Fail locally, including frozen repairs,
+            // rather than resetting the repair allowance and paying for another draft.
+            job.AwaitingHistoryCompression = false;
+            commitFailedJob?.Invoke(job, "declaration input budget exceeded before send: " + inputTokens + "/" + limit
+                + "; reduce custom prompt/current document; full archive retained");
             return false;
         }
-        if (WorldDiplomacyPromptContractRules.IsValidSemanticRepairMessageChain(job))
-        {
-            // A repair owns a frozen rejected prompt. Rebuild the declaration from current
-            // authoritative state before compressing, rather than silently editing that chain.
-            job.LlmMessages.Clear();
-            job.SemanticRepairAttempts = 0;
-            if (rebuildPendingJob?.Invoke(job) != true) commitFailedJob?.Invoke(job, "oversized repair could not be rebuilt");
-            return false;
-        }
-        long historyTokens = WorldDiplomacyRoundLifecycleRules.EstimateHistoryTokens(buildHistoryBlock?.Invoke(job.HistoryThroughSequence) ?? "", estimateTokens);
-        long availableHistoryTokens = limit - (inputTokens - historyTokens) - 1024L;
-        if (availableHistoryTokens < 512L)
-        {
-            commitFailedJob?.Invoke(job, "non-history prompt alone exceeds input budget; history was retained");
-            return false;
-        }
-        job.AwaitingHistoryCompression = true;
-        job.InputBudgetHistoryTargetTokens = (int)Math.Min(historyCompressionTargetTokens, availableHistoryTokens / 2L);
-        scheduleTokenCompression?.Invoke();
-        log?.Invoke("generation deferred for history compression job=" + job.JobId + " input_tokens=" + inputTokens
-            + " input_limit=" + limit + " history_target=" + job.InputBudgetHistoryTargetTokens);
+        commitFailedJob?.Invoke(job, "input budget exceeded before send: " + inputTokens + "/" + limit
+            + "; single archive entry/snapshot or non-history prompt requires reduction");
         return false;
     }
 

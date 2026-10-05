@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>disable</Nullable>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Newtonsoft.Json"><HintPath>../../../../_deps_auto/Newtonsoft.Json.dll</HintPath></Reference>
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Domain/WorldDiplomacyPlayerDraftRules.cs" Link="WorldDiplomacyPlayerDraftRules.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyPlayerDraftApplication.cs" Link="WorldDiplomacyPlayerDraftApplication.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Presentation/WorldDiplomacyComposePopupVM.cs" Link="WorldDiplomacyComposePopupVM.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Presentation/WorldDiplomacyComposePopupVM.AutoDraft.cs" Link="WorldDiplomacyComposePopupVM.AutoDraft.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/World/WorldDiplomacyLlmClient.cs" Link="WorldDiplomacyLlmClient.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Llm/Transport/LlmNonStreamingTransport.cs" Link="LlmNonStreamingTransport.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Llm/Protocol/LlmApiCompat.cs" Link="LlmApiCompat.cs" />
+    <Compile Include="../../../../src/AF.Foundation.Runtime/Lifecycle/SaveRuntimeGuard.cs" Link="SaveRuntimeGuard.cs" />
+    <Compile Include="../../../../src/AF.GameAdapter.Bannerlord/UI/Common/AnimusForgeTextInputSanitizer.cs" Link="AnimusForgeTextInputSanitizer.cs" />
+  </ItemGroup>
+</Project>

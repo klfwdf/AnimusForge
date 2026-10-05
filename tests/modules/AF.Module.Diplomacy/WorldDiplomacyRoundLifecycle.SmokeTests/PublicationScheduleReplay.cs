@@ -122,12 +122,13 @@ internal static class PublicationScheduleReplay
         int end = host.IndexOf("public void RetryDeferredDocumentPropagation(", start, StringComparison.Ordinal);
         string adapter = host.Substring(start, end - start);
         string routing = File.ReadAllText(Path.Combine(root.FullName, "src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyPublicationRoutingApplication.cs"));
-        Test.True(adapter.Contains("WorldDiplomacyPropagationApplication.BeginPublication(", StringComparison.Ordinal)
-                && adapter.Contains("PublishImmediatePublicKnowledge(document)", StringComparison.Ordinal)
+        Test.True(adapter.Contains("WorldDiplomacyPublicationRoutingApplication.Start(", StringComparison.Ordinal)
+                && routing.Contains("WorldDiplomacyPropagationApplication.SchedulePublication(", StringComparison.Ordinal)
+                && !adapter.Contains("PublishImmediatePublicKnowledge", StringComparison.Ordinal)
                 && !adapter.Contains("SchedulePublication(", StringComparison.Ordinal)
                 && !adapter.Contains("OrderPropagationArrivalsByDueDate", StringComparison.Ordinal)
                 && !adapter.Contains("new WorldDiplomacyPropagationArrival", StringComparison.Ordinal),
-            "real Application publication caller makes public knowledge immediate without a geography queue");
+            "real Application publication caller restores the existing geography queue owner");
         int recalculateStart = host.IndexOf("public void RecalculatePendingPropagationIfNeeded()", StringComparison.Ordinal);
         int recalculateEnd = host.IndexOf("public bool CanExternalDiplomacyFactJoinRound(", recalculateStart, StringComparison.Ordinal);
         string recalculateAdapter = host.Substring(recalculateStart, recalculateEnd - recalculateStart);

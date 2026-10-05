@@ -247,7 +247,8 @@ internal static class WorldDiplomacyDocumentExecutionApplication
                 return;
             }
 			List<string> finalLiveIntents = command.IsPlayerAuthored
-				? orchestration.BuildLegalDiplomaticActionIntents(round, author, target)
+                ? orchestration.BuildLegalDiplomaticActionIntents(null, author, target)
+                    .Concat(orchestration.BuildLegalDiplomaticActionIntents(round, author, target)).Distinct(StringComparer.OrdinalIgnoreCase).ToList()
 				: orchestration.BuildLegalDiplomaticDeclarationIntents(
 					round,
 					author,
@@ -323,7 +324,7 @@ internal static class WorldDiplomacyDocumentExecutionApplication
             && !WorldDiplomacyIntentVocabulary.IsActionableDiplomacyIntent(command.ActionAt(0).Intent);
         if (!legacyPublic)
         {
-		WorldDiplomacyRoundOffer requiredPeaceOffer = port.FindRequiredPeaceOfferResponse(
+		WorldDiplomacyRoundOffer requiredPeaceOffer = command.IsPlayerAuthored ? null : port.FindRequiredPeaceOfferResponse(
 			round,
 			author,
 			command.ResultSettlementSlotId,
