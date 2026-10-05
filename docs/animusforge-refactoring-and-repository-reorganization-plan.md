@@ -1,3 +1,11 @@
+<a id="native-input-focus-pause-20261005"></a>
+# 原版AI输入定位与失焦暂停显示回写（2026-10-05，ACTIVE）
+
+- 用户连续报告：关闭新皮肤/回原版后AI输入框跑到右侧；NPC正文生成时切桌面，开启失焦暂停会留等待点、关闭该设置则正常。本轮合并修复，不改暂停设置、LLM三段语义、动作/记忆提交或其他渠道规则。
+- 开始HEAD 03cb3f5f，真实工作区F:/AnimusForge-main，分支codex/af-main-refactor-continuation-20260831。其他会话dirty：content/modules/AF.Module.Weekly/GUI/Prefabs/WorldBulletinPanel.xml及tests/content/BulletinCourierLayoutTests/run.py，保留不修改/暂存；既有untracked保留。
+- 证据：旧prefab AI输入为Right+MarginRight200，而原版玩家选项侧为Left+MarginLeft10；日志2026-10-05 15:36:43 main_reply_display_ready、15:36:45 completion_returned，已有正文并非模型没生成。Overlay.OnApplicationTick在临时系统界面分支return，跳过显示回调队列，旧FocusInputIfVisible也未防暂停时抢焦点。
+- 预计范围：原版overlay prefab、overlay临时UI/显示回写与可见交互延后、窄源码回放测试和主台账/HANDOFF。性能：复用128上限主线程队列；仅恢复转场重绘/重验NPC，常驻仅缓存一份显示文本和少量可见交互，不添加背景游戏对象访问/全量扫描/额外网络请求。
+- 退出门：原版布局绑定/不同分辨率、暂停中完成及恢复、继续流式/重复焦点、关闭/换NPC/切普通/失效代次不串写、暂停不抢焦点/弹窗、生产源回放及负控、既有对话回归、原双API+Bootstrap及接缝门禁。实机Alt-Tab/原生渲染/真实provider/玩家旧档独立NOT_RUN；不push/部署。
 <a id="bulletin-minor-font-20261005"></a>
 # 快报其余消息字号对齐已确认 Pen 稿（2026-10-05，RESOURCE_OFFLINE_VERIFIED）
 
