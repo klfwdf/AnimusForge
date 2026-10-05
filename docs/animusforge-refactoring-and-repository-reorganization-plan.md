@@ -1,3 +1,13 @@
+<a id="coup-chunked-json-spec-20261005"></a>
+# Coup分块存档与项目JSON规范（2026-10-05，OFFLINE_VERIFIED_NOT_DEPLOYED_WITH_OPEN_AUDIT_GAPS）
+
+- 最新授权：坏档链路调查、写入项目JSON分块规范、Coup也修；不修旧坏档、不部署/推送。当前根F:/AnimusForge-main、分支codex/af-main-refactor-continuation-20260831；检查点a1e016c、产品/规范/测试621d4176。保留其他作者已提交098b47d5身份解析/结算改动。
+- 当前源码证据（621d4176，一基行号）：`extensions/AnimusForge.Coup/src/CoupSystem/CoupCampaignBehavior.cs:64-83` SyncData会话键；`CoupCaptivityBehavior.cs:40-67`拘押键；`extensions/AnimusForge.Coup/src/Integration/CoupRebellionBridge.cs:248-281`请求/结局两键。四键改用原12KBUTF-8分块；序列化owner、原键/JSON/身份、无效_saveValid保留和正常旧键读取不变；只在save/load运行，无Tick新工作。通用助手未改。
+- 规范：AGENTS.md:179-191新增sav JSON规则；persistence-catalog.json登记19字符串/47字典分块键（包括补登记内战和既有政策历史键）、5保护接线及OPEN_NOT_FIXED风险。validator新增`--chunk-contract-only`（只认证当前分块），配对save/load键、拒绝新增Json命名直存变量；不是完整C#数据流。
+- 验证：真实助手+memory IDataStore往返（原回归/内战11组/Coup4键）PASS，接线移除负控PASS；5当前规范单测PASS；当前规范19/47且knownOpenDirectJsonRisks=1 PASS；10迁移fixture PASS；真实1.4.8归档解析器读取含四Coup+内战45条合成字符串原样一致，未分块对照OverflowException。原入口Debug1.3(v1.3.15.110062)/1.4(v1.4.6.115628)+Bootstrap0错误、双接缝PASS。
+- 全量历史规范FAIL未掩盖：Unreviewed terminal dependency `src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.MemoryRecovery.cs`；不是Coup编译错误。审查仍留NPC外交信件单键JSON、助手忽略写失败/null块/总长摘要验证和长字典key风险；没改这些生产链路，不能称全仓坏档风险清零。游戏内保存/退出重读、72模组、截图实际XML、旧坏档均NOT_RUN。
+- 全部源码职责/covered-uncovered、命令输出和边界见本地 `.codex_tmp/save-chain-audit-20261005/report.md`，候选/源码hash和日志receipt.json同目录。原save1806 SHA256保持f854a37299c0cc304b6aec8c570d3366bf84bb7e746ed41c180184229b39ff84；游戏安装未覆盖。focused `git revert 621d4176`回滚本片，不回滚098b47d5；旧DLL不保证读取新分块状态，升级前正常备份应保留。
+
 <a id="civilwar-chunked-save-20261005"></a>
 # 内战新存档分块防溢出（2026-10-05，OFFLINE_VERIFIED_NOT_DEPLOYED）
 
