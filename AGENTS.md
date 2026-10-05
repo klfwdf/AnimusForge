@@ -175,3 +175,16 @@ Core rules:
 - Mirror reusable GCCZ source/rule changes back to `G:\AFMOD\GCCZ` when they are not already represented there.
 - Do not edit `G:\AFMOD\YM0.8.7` directly; it is the requested AF 0.8.7 source staging path but was empty when this workspace was created.
 - Before covering the unified Bannerlord module, build both `BannerlordApi=1.3` and `BannerlordApi=1.4` plus Bootstrap, or use the repository one-click single-module scripts.
+
+## 存档 JSON / 长字符串分块规范
+
+涉及 CampaignBehavior.SyncData、JSON 持久化、字典长值或存档读取异常时，先读 `docs/save_string_overflow_bad_save_case.md` 和 `docs/fixtures/phase4-persistence-profile-config/persistence-catalog.json`。
+
+- 本规则只针对写入 `.sav` 的字符串，不要求 HTTP、磁盘配置或资源 JSON 也分块。
+- 原版单条字符串正文最大为 32763 UTF-8 字节（另有4字节头）；不得按字符数、压缩后文件总大小判断安全。
+- 会增长的 JSON 一律优先复用 `CampaignSaveChunkHelper.SaveChunkedString/LoadChunkedString`，每块最多12000 UTF-8字节；超过240字节不保留整份原文到旧键。
+- `Dictionary<string,string>` 的长值使用 `FlattenStringDictionary/RestoreStringDictionary`；键本身也要确认长度有界。禁止截断业务数据来制造安全。
+- 保持旧键、JSON字段与类型身份，完整分块优先读取并兼容正常旧原始键；不把分块缺失/损坏当成成功的空状态，不发布半截JSON，记录并由owner决定停用重放/保留证据。
+- 分块只在保存/加载边界运行，不新增Tick序列化、全量扫描、反射或后台游戏对象读取。
+- 新增/修改分块键同步规范目录和当前接线测试；运行 `PersistenceChunkReplayTests`、`validate_persistence_profile_config.py --chunk-contract-only`，生产改动验证1.3/1.4两实现。专项通过不代表全仓、实机或旧坏档修复通过。
+- 存档修复、部署、打包、推送分别授权；发现其他链路风险时如实登记，不能只写规范就声称全部落实。

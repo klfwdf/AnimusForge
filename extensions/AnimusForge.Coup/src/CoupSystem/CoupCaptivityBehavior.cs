@@ -39,11 +39,16 @@ internal sealed class CoupCaptivityBehavior : CampaignBehaviorBase
 
     public override void SyncData(IDataStore dataStore)
     {
-        if (dataStore.IsSaving && _saveValid) _detentionsJson = JsonConvert.SerializeObject(_detentions);
-        dataStore.SyncData("af_coup_detentions_v1", ref _detentionsJson);
+        if (dataStore.IsSaving)
+        {
+            if (_saveValid) _detentionsJson = JsonConvert.SerializeObject(_detentions);
+            CampaignSaveChunkHelper.SaveChunkedString(dataStore, "af_coup_detentions_v1", _detentionsJson, "Coup");
+            return;
+        }
         if (!dataStore.IsLoading) return;
         _detentions.Clear();
         _saveValid = true;
+        _detentionsJson = CampaignSaveChunkHelper.LoadChunkedString(dataStore, "af_coup_detentions_v1", "Coup");
         if (string.IsNullOrEmpty(_detentionsJson)) return;
         try
         {
