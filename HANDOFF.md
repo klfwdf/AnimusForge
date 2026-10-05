@@ -1,3 +1,12 @@
+# 当前交接：本机统一模块覆盖完成（2026-10-05，DEPLOYED_HASH_VERIFIED_LIVE_PENDING）
+
+- 最新授权“部署”；构建源码 `708e8909d36de94a7f7ccff606af863616951b65`，分支 `codex/af-main-refactor-continuation-20260831`。原统一Debug入口1.3(v1.3.15)/1.4(v1.4.6)+Bootstrap0错误、双候选接缝PASS；原事务覆盖成功，安装全部3379个Stage文件hash一致，更新10个受管理文件，单模块XML仅加载Bootstrap。
+- 当前安装已包含 `762539c0` 原版输入右侧/占位修复、`098b47d5` 政变后身份登记修复、`106e4760` 导出诊断/MCM超时，以及并行已提交 `4b4d6167`/`621d4176` 的内战/Coup新存档分块。安装XML已验Right/MarginRight200；新UI源码未改，不宣称真实游戏排版、坏档恢复或整个存档审计通过。
+- Stage旧资源门禁与C盘备份空间不足曾阻断；旧安装10文件hash核实未变。C盘空间回升后重试原脚本成功，未删除用户数据/旧Recovery，未改一键入口、备份路径或全局配置。
+- [唯一主台账、构建/安装hash、历史替代与未验边界](docs/animusforge-refactoring-and-repository-reorganization-plan.md#deploy-identity-native-input-save-fixes-20261005)；本地证据 `artifacts/deploy-20261005-identity-bulletin-input/receipt.json`、`installed-verification.json`。本次私有回滚点 `C:/Users/29310/AppData/Local/AnimusForge/Recovery/deploy/deploy-2c7c2c34c9454a01944a9c243fe13a38`，10份旧文件已验、事务complete。
+- 未实机：失败玩家导出、原版/新UI输入、失败政变存档重试、新保存加载；未push/打包/启动游戏。本轮没有修复/补录灭国快报Participants，旧快报不会因覆盖自动获得人物参考图。下一步按现有游戏入口复测并读取新增日志，不自动部署新补丁。
+- **以下为历史交接**：其中“未部署/安装仍是旧候选”的状态由本条及主台账最新条目明确取代；各条未实机、旧档及OPEN审计风险仍有效，不转化为新施工或push授权。
+
 # 当前交接：Coup新存档分块与JSON规范（2026-10-05，OFFLINE_VERIFIED_NOT_DEPLOYED_WITH_OPEN_AUDIT_GAPS）
 
 - 最新“Coup也顺手修掉”：产品/规范/测试621d4176，检查点a1e016c；四个Coup完整JSON改成12KBUTF-8分块，原键/玩法/正常旧格式读取保留，只在存取执行。既有098b47d5战役身份修复未回滚。
