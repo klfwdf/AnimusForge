@@ -415,6 +415,7 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 	private void OnSessionLaunched(CampaignGameStarter starter)
 	{
         ClearNativeDialogueHandoff();
+		PlayerCaptivityGhostSafePatch.RepairMainHeroRosters("session_launched");
 		ClearCustomEncounterMenuHardSuppression("session_launched");
 		ClearNativeSettlementRequestMeetingContext("session_launched");
 		AddGameMenus(starter);
@@ -4029,6 +4030,15 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 		try
 		{
 			PartyBase partyBase = ResolvePendingDefeatCaptivityParty();
+			// The native advance above may already have captured the player; capturing again leaves a ghost
+			// main hero in the captor's prison roster that keeps re-adding itself to the party after release.
+			try
+			{
+				flag = flag || (Hero.MainHero != null && Hero.MainHero.IsPrisoner);
+			}
+			catch
+			{
+			}
 			if (!flag && partyBase != null)
 			{
 				try
