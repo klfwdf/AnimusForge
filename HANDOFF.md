@@ -1,3 +1,8 @@
+# 当前交接：口头议和缺项澄清修复（2026-10-07，OFFLINE_VERIFIED_NOT_DEPLOYED）
+
+- 产品6c5197e34，检查点94b7090。三渠道共用主/后提示澄清贡金期限，提交失败中文说明；不自动填期限，不将口头承诺当执行。
+- 路由89项、外交3668断言及双API/Bootstrap/双接缝通过。真实模型与实机未验，未部署/打包/推送。
+- [主台账、源码坐标及回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#oral-peace-clarification-20261007--offline_verified_not_deployed)，证据artifacts/oral-peace-clarification-20261007。
 # 当前交接：场景接力结束误报修复（2026-10-07，OFFLINE_VERIFIED_NOT_DEPLOYED）
 
 - 产品d9147f1eb；检查点d11567d。保留自身编号结束信号，不再误报无人愿意；缺失编号如实提示。未强制接话。
