@@ -7788,3 +7788,8 @@ R2计划交付门槛：已给固定技术路线、真实来源与目标、写入
 - 原入口构建：scripts/build/build_single_module.ps1 -ProjectRoot . -BannerlordRoot 'F:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord' -Bannerlord14ReferenceDir 'F:/AnimusForge-main/.tmp/build_check/1.4' -Configuration Debug。1.3(v1.3.15.110062)、1.4(v1.4.6.115628)、Bootstrap均编译成功，日志build.log。首轮1.3接缝探针记录PASS后进程异常退出(-532462766)，原构建返回失败；随后对相同产物调用原Invoke-CoupSeamGate重验两API均退出0，CoupSeamGate回执通过，未修改或绕过门禁。首轮退出异常根因未定位。
 - 产物/门禁回执：bin/Debug/single_module_artifacts/versions/{1.3,1.4}/AnimusForge.build.json；完整接缝证据 artifacts/coup-seam-gate 下对应SHA256目录。共享工作区出现其他会话生图改动，未纳入本任务提交；构建产物不是本修复的独占发布包。
 - NOT-RUN：游戏内国家解散/家族及领地转移、玩家原存档实机验收；未部署、打包、推送。通过范围是承诺校验及离线回归，不能声称实机吞并已验收。回滚仅 git revert 3db5d5af0，不回滚其他作者工作。
+
+## diplomacy-treaty-acceptance-deploy-20261007 — DEPLOYED_LIVE_PENDING
+
+- 用户明确请求部署；沿用产品3db5d5af0及已通过双API/Bootstrap、双接缝的产物，调用scripts/build/deploy_module.ps1原入口。实际更新9文件，退出0；Stage全部3379文件与安装目录SHA256一致。证据artifacts/diplomacy-treaty-acceptance-20261007/deploy.log、deploy-verification.json。
+- 安装位置：F:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord/Modules/AnimusForge。恢复目录：C:/Users/29310/AppData/Local/AnimusForge/Recovery/deploy/deploy-5e1644f80d09472f83a539a89e6370a9，含manifest.json、旧文件files与complete标记。未打包/推送；玩家存档实机吞并仍未验。本条取代上条仅“未部署”状态，不改变测试范围。
