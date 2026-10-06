@@ -7477,10 +7477,16 @@ R2计划交付门槛：已给固定技术路线、真实来源与目标、写入
 - 用户追加战争转移问题：源码检查AF `CivilWarEffects.ReturnRebels` 先确认议和再迁移家族；`ProtectWarClans`/`MakeCivilWarClansPeacefulForExternal`对结算后独立家族清理战争。原版1.3/1.4 `FactionHelper.AdjustFactionStancesForClanJoiningKingdom`解除新王国未参与的家族旧战争，不向新王国宣战。内战可自动结算，默认最长12周；异常会保留状态重试/待核查。此为源码结论，不代替其他MOD介入后的实机日志。
 - NOT_RUN：真实1.3/1.4游戏MCM、已有用户配置、读档战役运行及多MOD战争交互。本次未Stage、覆盖游戏、打包或推送。
 - 源码回滚只用 `git revert 6a3b5926`，保留其他作者及本地文件；不hard reset。
-# 处决欢呼后民众散场（2026-10-06）
+# 处决欢呼后民众散场（2026-10-06，OFFLINE_VERIFIED_LIVE_PENDING）
 
 <a id="execution-crowd-dispersal-20261006"></a>
 
 - ACTIVE；基线 `e800799b` / main。用户要求行刑欢呼后民众散开；修改共享处决收尾与观众控制，保留受刑者/行刑者/护卫与既有处决结算、存档和AF隔离恢复边界。
 - 开工时存在插画、内战、场景会面等并行修改，保留且不纳入提交。目标为收尾完成后每0.35秒最多释放一名已登记观众，交给原版城镇行走AI，有限重试，避免每帧全量扫描及抢回新冲突控制。
 - 退出门：生产调度/释放专项回归、AF 1.3/1.4 + Bootstrap、独立 RichExecutions 目标版本编译；实机寻路/自定义场景仍需验收。不覆盖游戏/打包/推送，不写外部源码副本。
+- 完成：产品/测试984b4d5a，检查点ddffb37f。以上ACTIVE开工状态由本完成记录替代。欢呼及真实收尾完成后每0.35秒最多释放1名登记观众，每人失败最多3次；移除、换队伍、被其他AI或交互接管者跳过。清除仪式动作、站位和警戒，接入原版城镇WalkingBehavior，无瞬移或强制恐慌逃跑。
+- 源码坐标（984b4d5a，一基行号）：Vengeance/Source/Scene/ExecutionCrowdDispersalSchedule.cs:5-32 调度；同目录TownExecutionMissionBehavior.Crowd.cs:15-88 收尾门槛与释放；TownExecutionMissionBehavior.cs:1159-1163 为Aftermath消费者；TownExecutionMissionBehavior.Scene.cs:1926-1934 为冻结阶段说明。tests/Vengeance/ExecutionCrowdDispersalTests链接生产两文件，原生Agent/Mission和owner字段为fake。
+- 性能：调度O(1)，最多14人、每人3次，不新增每帧反射或全场扫描。每人释放时复用原版行为初始化（原版内部一次性Activator创建），之后使用原版NPC行走Tick。缺少npc_common及limited点时限次警告并保留人物，此类自定义地图散场不保证。
+- 验证：散场生产代码fixture 30 PASS；既有场景隔离契约76 PASS；本任务diff检查PASS。原build_single_module.ps1 Debug无Stage/Deploy，通过AF参考1.3.15.110062/1.4.6.115628、Bootstrap和双接缝门禁。独立RichExecutions目标BannerlordApi=1.4.8编译PASS（16既有警告），输出/中间目录/NuGet缓存重定向本仓库artifacts。首次GetWatchState名称错误已修，最终使用已核实SetWatchState，失败日志保留。
+- 证据：artifacts/execution-crowd-dispersal-20261006/receipt.json及crowd-tests.log、isolation-regression.log、build-verified.log、standalone-verified.log；AF候选bin/Debug/single_module_artifacts，独立候选上述artifacts的standalone/bin/RichExecutions.dll。共享构建包含当时并行改动，不背书随后改动。
+- 未验证：实机寻路/避障/拥挤、各城镇与自定义刑场、所有刑法、多轮行刑及旧档。未Stage/覆盖游戏/打包/推送；源码回滚仅git revert 984b4d5a，保留其他作者。

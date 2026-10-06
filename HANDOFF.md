@@ -1,3 +1,9 @@
+# 当前交接：处决欢呼后民众散场（2026-10-06，OFFLINE_VERIFIED_LIVE_PENDING）
+
+- 产品984b4d5a，检查点ddffb37f：欢呼及真实收尾后，每0.35秒释放一名观众到原版城镇行走AI；有限重试，不抢新冲突控制。原处决和场景隔离恢复边界保留。
+- 30项散场fixture、76项隔离契约、AF双API+Bootstrap/接缝门禁和独立RichExecutions目标1.4.8编译通过；真实导航、拥挤、自定义刑场/旧档未验。未Stage/覆盖游戏/打包/推送。
+- [主台账与回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#execution-crowd-dispersal-20261006)；证据artifacts/execution-crowd-dispersal-20261006/receipt.json。源码回滚仅git revert 984b4d5a，保留其他作者。
+
 # 当前交接：原生给予/展示目标校验（2026-10-06，源码修正，玩家复现待验）
 
 - 产品e07d5cbb，检查点14755f7。截图的拒绝提示定位到交易提交校验；原生对话改用捕获的会话/目标/Agent，结束会话或换场景后失效，场景喊话资格保持。新增失败诊断，不无条件放行。
