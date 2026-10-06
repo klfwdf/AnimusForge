@@ -56,6 +56,8 @@ public sealed class NativeOverlayVM : ViewModel
     [DataSourceProperty] public float ToolbarOffsetX => 0f;
     [DataSourceProperty] public float ToolbarOffsetY => 0f;
     [DataSourceProperty] public bool IsInputEnabled => Original.IsInputEnabled;
+    // The host's busy flag covers request preparation, streaming and presentation completion.
+    [DataSourceProperty] public bool IsReplyPending => !_disposed && Original.IsCustomAnswerVisible && !Original.IsInputEnabled;
     [DataSourceProperty] public bool IsInteractionEnabled => !_disposed && !Auxiliary.IsOpen;
     [DataSourceProperty] public bool CanSwitchTalk => IsInteractionEnabled && Original.CanSwitchTalk;
     [DataSourceProperty] public bool CanLeave => !_disposed;
@@ -102,6 +104,7 @@ public sealed class NativeOverlayVM : ViewModel
         if (_disposed) return;
         // Root.Show alone does not refresh the replacement prefab's derived bindings.
         OnPropertyChanged(nameof(IsInputEnabled));
+        OnPropertyChanged(nameof(IsReplyPending));
         OnPropertyChanged(nameof(CanSwitchTalk));
         OnPropertyChanged(nameof(CanLeave));
         OnPropertyChanged(nameof(IsIllustrationAvailable));
@@ -130,6 +133,8 @@ public sealed class NativeOverlayVM : ViewModel
             return;
         }
         OnPropertyChanged(name);
+        if (name == nameof(IsInputEnabled) || name == nameof(IsCustomAnswerVisible))
+            OnPropertyChanged(nameof(IsReplyPending));
         if (name == nameof(IsInputEnabled)) Auxiliary.RefreshInteraction();
         if (name == nameof(IsCustomAnswerVisible)) ModeChanged();
         if (name == nameof(IsPersonaEditVisible) || name == nameof(IsTagTestVisible))
