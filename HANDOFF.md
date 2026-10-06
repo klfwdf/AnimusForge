@@ -1,4 +1,11 @@
-# 当前交接：1.5.5 累计公告与 main 发布（2026-10-06，PUSHED_REMOTE_VERIFIED）
+# 当前交接：生图模组内存储、默认清理与 API 测试（2026-10-06，BUILD_VERIFIED_DELIVERY_PENDING）
+
+- 用户明确要求生图不写C盘、放模组目录，并授权提交推送/编译部署/打包；追加自动清理默认开启、生图API测试按钮。检查点164a3db，产品cf3377691。
+- 临时导出Cache/Illustrator/Temp；MCM设置/预设/模型缓存Configs/Illustrator；成图/诊断保持logs/image save。移除系统Temp/AppData回退。用户随后要求不迁移，已移除旧目录读取/复制代码，并将本轮刚复制且哈希未变的3文件移出模组至本地取消迁移备份。模组无配置时使用默认，须重新填写API。自动清理默认true，已有模块内显式配置保留。
+- MCM新增显式付费提示的测试/取消按钮，复用生图客户端、当前UI配置快照、只提交一次出图请求；成功保存ApiTest/last-result.png，不进画廊。双API/Bootstrap/双接缝编译通过；未调用真实付费API或实机MCM/GPU验收。
+- [主台账、路径与交付证据](docs/animusforge-refactoring-and-repository-reorganization-plan.md#illustrator-module-storage-20261006)，本地artifacts/illustrator-module-storage-20261006。后续发布状态由该条最终收据确认。
+
+# 历史交接：1.5.5 累计公告与 main 发布（2026-10-06，PUSHED_REMOTE_VERIFIED）
 
 - 用户明确授权提交推送及对比远端、以上次更新为基线写玩家累计公告。上次实际发布采用v1.5.4/b1884036（2026-10-06 11:17:54 +08:00），不将上一期1.5.3已讲内容重复作为本次新增。
 - 拉取远端至df6fc788c，新增8193个参考资料/导出脚本文件已由73d82a201无冲突合入；全部处于现有编译排除范围，产品与已验证打包源码3dad3baf相同。禁止发布的本地交接文件未进入待推送历史。
