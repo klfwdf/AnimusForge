@@ -43,6 +43,17 @@ public sealed class TownColonizationStateMachine
         || _state == TownColonizationState.ReadyToCommit
         || _state == TownColonizationState.Committed;
 
+    public bool CanRequest(string settlementId, string targetCultureId)
+    {
+        string settlement = Normalize(settlementId);
+        string culture = Normalize(targetCultureId);
+        if (settlement.Length == 0 || culture.Length == 0) return false;
+        return _state == TownColonizationState.None
+            || (_state == TownColonizationState.Pending
+                && string.Equals(_settlementId, settlement, StringComparison.OrdinalIgnoreCase)
+                && string.Equals(_targetCultureId, culture, StringComparison.OrdinalIgnoreCase));
+    }
+
     public bool Request(
         string settlementId,
         string targetCultureId,
@@ -50,8 +61,7 @@ public sealed class TownColonizationStateMachine
     {
         string normalizedSettlementId = Normalize(settlementId);
         string normalizedCultureId = Normalize(targetCultureId);
-        if (string.IsNullOrWhiteSpace(normalizedSettlementId)
-            || string.IsNullOrWhiteSpace(normalizedCultureId)
+        if (!CanRequest(normalizedSettlementId, normalizedCultureId)
             || ledger == null
             || ledger.Kind != TownOperationKind.Colonization
             || !ledger.VictimSnapshotSealed)
@@ -61,9 +71,7 @@ public sealed class TownColonizationStateMachine
 
         if (_state != TownColonizationState.None)
         {
-            return _state == TownColonizationState.Pending
-                && string.Equals(_settlementId, normalizedSettlementId, StringComparison.OrdinalIgnoreCase)
-                && string.Equals(_targetCultureId, normalizedCultureId, StringComparison.OrdinalIgnoreCase);
+            return true;
         }
 
         _state = TownColonizationState.Pending;
