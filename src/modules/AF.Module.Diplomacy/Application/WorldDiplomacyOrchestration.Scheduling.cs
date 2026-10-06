@@ -62,14 +62,27 @@ internal sealed partial class WorldDiplomacyOrchestration
         }
         if (string.IsNullOrEmpty(ResponseIntentToProposalIntent(playerIntent))
             && playerIntent != "comply_ultimatum" && playerIntent != "withdraw_offer" && !explicitDiscussion) return;
-        var explicitSources = new[] { document.RespondingToOfferDocumentId, document.RespondingToThreatDocumentId, document.SourceDocumentId, document.DiscussionSourceDocumentId }
+        // Mechanical response sources outrank advisory discussion metadata.
+        bool offerResponse = !string.IsNullOrEmpty(ResponseIntentToProposalIntent(playerIntent));
+        var mechanicalSources = (offerResponse
+                ? new[] { document.RespondingToOfferDocumentId }.Concat(
+                    (document.Actions ?? new List<WorldDiplomacyDocumentAction>()).Where(x => x != null)
+                        .Select(x => x.RespondingToOfferDocumentId))
+                : playerIntent == "comply_ultimatum"
+                    ? new[] { document.RespondingToThreatDocumentId }.Concat(
+                        (document.Actions ?? new List<WorldDiplomacyDocumentAction>()).Where(x => x != null)
+                            .Select(x => x.RespondingToThreatDocumentId))
+                    : Enumerable.Empty<string>())
+            .Where(x => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
+        bool hasMechanicalSource = mechanicalSources.Count > 0;
+        var explicitSources = hasMechanicalSource ? mechanicalSources : new[] { document.RespondingToOfferDocumentId, document.RespondingToThreatDocumentId, document.SourceDocumentId, document.DiscussionSourceDocumentId }
             .Concat((document.Actions ?? new List<WorldDiplomacyDocumentAction>()).Where(x => x != null).SelectMany(x =>
                 new[] { x.RespondingToOfferDocumentId, x.RespondingToThreatDocumentId }))
             .Where(x => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
         var sources = explicitSources.Select(ResolveDocument).Where(x => x != null)
             .Select(x => ResolveRound(x.RoundId)).Where(x => IsLiveRound(x) && !ReferenceEquals(x, provisional))
             .Distinct().Take(2).ToList();
-        if (!string.IsNullOrWhiteSpace(document.DiscussionRoundId))
+        if (!hasMechanicalSource && !string.IsNullOrWhiteSpace(document.DiscussionRoundId))
             sources = sources.Where(x => x.RoundId == document.DiscussionRoundId).ToList();
         if (sources.Count == 0 && explicitSources.Count == 0)
         {

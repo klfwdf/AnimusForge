@@ -59,6 +59,7 @@ internal static class PlayerSemanticReplay
             "retry executes once and completed documents cannot be reinterpreted");
         VerifySourceBinding();
         VerifyCrossRoundOralAcceptance();
+        VerifyAcceptanceRoutingAndExecution();
         VerifyPrompt();
         VerifyTreatiesAndWithdrawal();
         var port = new DocumentExecutionReplay.Port { RestrictRound = true,
@@ -145,6 +146,94 @@ internal static class PlayerSemanticReplay
                 .Contains("正式提案")
             && WorldDiplomacyAnalysisApplication.DescribeRejectedPlayerMechanic("treaty_roles_must_match_participants").Contains("接收国"),
             "rejected player mechanics expose a specific readable reason instead of one generic message");
+    }
+
+    // Real analysis, owner binding, legal-list, execution and offer-settlement code;
+    // the game effect is a counted fake, never a live campaign or LLM acceptance claim.
+    private sealed class AcceptanceExecution : FakeOrchestration
+    {
+        internal readonly WorldDiplomacyOrchestration Owner;
+        internal readonly Dictionary<string, int> Reputation = new() { ["p"] = 50 };
+        internal int Effects;
+        internal string Rejection;
+        internal AcceptanceExecution(WorldDiplomacyOrchestration owner) => Owner = owner;
+        public override List<string> BuildLegalDiplomaticActionIntents(WorldDiplomacyRound round, string author, string target)
+            => WorldDiplomacyRoundLifecycleRules.BuildLegalDiplomaticActionIntents(round, author, target,
+                () => new() { "propose_peace" }, Owner.ResolveDocument);
+        public override WorldDiplomacyOfferOutcome TrySettleRelayOffer(WorldDiplomacyDocument document)
+            => WorldDiplomacyOfferApplication.Settle(Owner.ResolveRound(document.RoundId), document, _ => { },
+                (_, _) => (false, ""), Owner.ResolveDocument, _ => true,
+                (_, _, _, response) => { Effects++; response.ChangedDiplomaticState = true; return WorldDiplomacyOfferOutcome.Applied; },
+                (_, _) => false, _ => { });
+        public override void SettleInternationalReputationForDocument(WorldDiplomacyDocument document)
+            => WorldDiplomacyReputationRules.SettleInternationalReputationForDocument(Reputation, document, x => x, _ => { });
+        public override void SuppressInvalidDocumentBeforePropagation(WorldDiplomacyDocument document, string reason)
+        {
+            Rejection = reason;
+            WorldDiplomacyAnalysisApplication.PreservePublishedPlayerDocumentAfterRejectedMechanic(
+                new DocumentExecutionReplay.Port { Owner = Owner }, this, document, reason);
+        }
+    }
+
+    private static void VerifyAcceptanceRoutingAndExecution()
+    {
+        foreach (string scenario in new[] { "normal", "wrong-discussion", "wrong-discussion-round", "closed", "unknown-source", "ambiguous" })
+        {
+            var (_, owner) = ConcurrentOralMigrationReplay.Fixture();
+            var original = owner.EnsureActiveRound("a", "p", false);
+            var source = new WorldDiplomacyDocument { DocumentId = "peace-source", RoundId = original.RoundId,
+                AuthorKingdomId = "a", TargetKingdomId = "p", IsReadyForPublication = true, Intent = "propose_peace" };
+            original.PendingOffers.Add(new() { SourceDocumentId = source.DocumentId, Intent = "propose_peace",
+                ProposerKingdomId = "a", TargetKingdomId = "p", Status = scenario == "closed" ? "withdrawn" : "open" });
+            var unrelated = owner.EnsureActiveRound("b", "p", false);
+            var discussion = new WorldDiplomacyDocument { DocumentId = "unrelated", RoundId = unrelated.RoundId,
+                AuthorKingdomId = "b", TargetKingdomId = "p", IsReadyForPublication = true, Intent = "propose_trade" };
+            owner.CurrentStorage.Documents.Add(source); owner.CurrentStorage.Documents.Add(discussion);
+            WorldDiplomacyDocumentFactRules.RecordKingdomKnowledge(owner.CurrentStorage.KingdomKnowledge, "p", source.DocumentId, 12);
+            var provisional = owner.EnsureActiveRound("p", null, true);
+            var document = new WorldDiplomacyDocument { DocumentId = "acceptance", RoundId = provisional.RoundId,
+                AuthorKingdomId = "p", IsPlayerAuthored = true, IsReadyForPublication = true, Body = "接受原案", AnalysisStatus = "pending_analysis" };
+            owner.CurrentStorage.Documents.Add(document);
+            if (scenario == "ambiguous")
+            {
+                owner.CurrentStorage.Documents.Add(new() { DocumentId = "peace-second", RoundId = unrelated.RoundId,
+                    AuthorKingdomId = "a", TargetKingdomId = "p", IsReadyForPublication = true, Intent = "propose_peace" });
+                unrelated.PendingOffers.Add(new() { SourceDocumentId = "peace-second", Intent = "propose_peace",
+                    ProposerKingdomId = "a", TargetKingdomId = "p", Status = "open" });
+                WorldDiplomacyDocumentFactRules.RecordKingdomKnowledge(owner.CurrentStorage.KingdomKnowledge, "p", "peace-second", 12);
+            }
+            var raw = new JObject { ["status"] = "success", ["intent"] = "accept_peace", ["commitment"] = "acceptance",
+                ["primary_target_kingdom_id"] = "Realm-A", ["international_reputation_delta"] = 2,
+                ["international_reputation_reason"] = "履行和平承诺",
+                ["responding_to_offer_document_id"] = scenario == "ambiguous" ? "" : scenario == "unknown-source" ? "missing" : source.DocumentId };
+            if (scenario == "wrong-discussion") raw["related_public_document_id"] = discussion.DocumentId;
+            if (scenario.StartsWith("wrong-discussion")) raw["related_round_id"] = unrelated.RoundId;
+            var execution = new AcceptanceExecution(owner);
+            var port = new DocumentExecutionReplay.Port { Owner = owner };
+            void Process(WorldDiplomacyDocument d, string intent, string commitment, bool response, string tone, float confidence)
+            {
+                typeof(WorldDiplomacyOrchestration).GetMethod("BindPlayerDeclarationToSharedEvent",
+                    System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic).Invoke(owner, new object[] { d });
+                WorldDiplomacyDocumentExecutionApplication.ProcessAnalyzedDocument(port, execution, d, intent, commitment, response, tone, confidence);
+            }
+            void Commit() => WorldDiplomacyAnalysisApplication.CommitAnalysis(new() { DocumentId = document.DocumentId }, raw.ToString(), 3,
+                owner.CurrentStorage.DiplomaticThreats, owner.ResolveDocument, owner.ResolveRound,
+                x => x == "Realm-A" ? "a" : x, x => x, (_, _, _) => null,
+                (ids, excluded) => ids.Where(x => !string.IsNullOrWhiteSpace(x) && x != excluded).ToList(),
+                execution.SuppressInvalidDocumentBeforePropagation, Process, _ => { }, owner.PlayerAnalysisOffers);
+            Commit();
+            bool valid = scenario == "normal" || scenario.StartsWith("wrong-discussion");
+            Test.True(document.TargetKingdomId == "a", "target alias canonicalized before source binding: " + scenario);
+            Test.True(valid ? document.RoundId == original.RoundId && original.PendingOffers[0].Status == "accepted"
+                && execution.Effects == 1 && document.ChangedDiplomaticState && execution.Reputation["p"] == 52
+                : execution.Rejection == "final_live_legal_action_guard" && execution.Effects == 0
+                && !document.ChangedDiplomaticState && execution.Reputation["p"] == 50
+                && document.InternationalReputationEvaluationDelta == 0,
+                "analysis through settlement respects exact source and actual effects: " + scenario);
+            Commit(); execution.SettleInternationalReputationForDocument(document);
+            Test.True(execution.Effects == (valid ? 1 : 0) && execution.Reputation["p"] == (valid ? 52 : 50),
+                "repeated analysis and reputation settlement cannot replay effects: " + scenario);
+        }
     }
 
     private static void VerifyPrompt()
