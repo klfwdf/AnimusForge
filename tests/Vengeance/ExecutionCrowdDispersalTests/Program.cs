@@ -170,6 +170,9 @@ Check(oldFailure, "unregistered temporary actor reproduces native door contract 
 identities.Register(temporary, location, complex, true);
 Check(CanUseDoor(temporary), "registered temporary actor supplies non-null native door identity");
 var identity = location.GetLocationCharacter(temporary.Origin);
+identity.AddBehaviors(temporary);
+Check(SandBox.SandBoxManager.Instance.AgentBehaviorManager.Initializations == 1,
+    "native respawn receives a valid town behavior initializer");
 Check(ReferenceEquals(identity.Data.Origin, temporary.Origin), "registration preserves exact origin identity");
 identities.Register(temporary, location, complex, true);
 Check(location.Characters.Count == 1, "repeated registration does not duplicate actor");

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using RichExecutions.Diagnostics;
+using SandBox;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Settlements.Locations;
 using TaleWorlds.Core;
@@ -23,7 +24,8 @@ internal sealed class ExecutionSceneLocationCharacters
 
         var entry = new LocationCharacter(
             new AgentData(agent.Origin).Monster(agent.Monster),
-            null, null, fixedLocation: true, LocationCharacter.CharacterRelations.Neutral,
+            SandBoxManager.Instance.AgentBehaviorManager.AddWandererBehaviors,
+            null, fixedLocation: true, LocationCharacter.CharacterRelations.Neutral,
             null, civilianEquipment, overrideBodyProperties: false);
         // Record ownership before AddCharacter so failed initialization can clean up.
         _owned.Add((location, complex, entry));
