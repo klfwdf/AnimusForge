@@ -157,6 +157,11 @@ internal static class PlayerSemanticReplay
         internal int Effects;
         internal string Rejection;
         internal AcceptanceExecution(WorldDiplomacyOrchestration owner) => Owner = owner;
+        public override bool TryGetPlayerWorldStateIntentViolation(WorldDiplomacyDocument document,
+            string intent, string commitment, string author, string target, out string reason)
+            => WorldDiplomacyGenerationValidationRules.TryGetPlayerWorldStateIntentViolation(
+                document, intent, commitment, author, target, true, _ => (false, ""), (_, _) => (false, ""),
+                Owner.ResolveRound, Owner.ResolveDocument, out reason);
         public override List<string> BuildLegalDiplomaticActionIntents(WorldDiplomacyRound round, string author, string target)
             => WorldDiplomacyRoundLifecycleRules.BuildLegalDiplomaticActionIntents(round, author, target,
                 () => new() { "propose_peace" }, Owner.ResolveDocument);
@@ -223,13 +228,17 @@ internal static class PlayerSemanticReplay
                 execution.SuppressInvalidDocumentBeforePropagation, Process, _ => { }, owner.PlayerAnalysisOffers);
             Commit();
             bool valid = scenario == "normal" || scenario.StartsWith("wrong-discussion");
+            string expectedRejection = scenario == "ambiguous"
+                ? "player_action_not_executable:player_offer_response_missing_source_offer"
+                : "final_live_legal_action_guard";
             Test.True(document.TargetKingdomId == "a", "target alias canonicalized before source binding: " + scenario);
             Test.True(valid ? document.RoundId == original.RoundId && original.PendingOffers[0].Status == "accepted"
                 && execution.Effects == 1 && document.ChangedDiplomaticState && execution.Reputation["p"] == 52
-                : execution.Rejection == "final_live_legal_action_guard" && execution.Effects == 0
+                : execution.Rejection == expectedRejection && execution.Effects == 0
                 && !document.ChangedDiplomaticState && execution.Reputation["p"] == 50
                 && document.InternationalReputationEvaluationDelta == 0,
-                "analysis through settlement respects exact source and actual effects: " + scenario);
+                "analysis through settlement respects exact source and actual effects: " + scenario
+                + $" rejection={execution.Rejection} effects={execution.Effects} changed={document.ChangedDiplomaticState} reputation={execution.Reputation["p"]} delta={document.InternationalReputationEvaluationDelta} source={document.RespondingToOfferDocumentId} round={document.RoundId}");
             Commit(); execution.SettleInternationalReputationForDocument(document);
             Test.True(execution.Effects == (valid ? 1 : 0) && execution.Reputation["p"] == (valid ? 52 : 50),
                 "repeated analysis and reputation settlement cannot replay effects: " + scenario);

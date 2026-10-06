@@ -1,3 +1,16 @@
+<a id="illustrator-final-character-budget-20261006"></a>
+# 生图导演30000软要求与最终32000硬预算（2026-10-06，DEPLOYED_PACKAGED_PUSHED_LIVE_PENDING）
+
+- 最终用户要求：导演完整回复最多30000字符，明确不是目标或最低字数；保留MCM约Token篇幅，最终生图文本30000至32000（含）原样发送，超过32000才缩短或拒收。先前拟将硬限额降至30000已撤回、未交付。生图产品bdd7e55f6+f6ca1d5d2，外交产品726833256（等价df5424511），测试修正a49e56605；共享main等价提示词提交51a7fedf4。远端基线4d9f2c978，沿本会话提交推送/编译部署/打包授权。
+- 代码证据（extensions/AnimusForge.Illustrator/src/）：Core/ImagePromptBudget.cs:12-117，MaximumCharacters=32000、FitMain短文本逐字保留；超长按导演四段均衡配额于完整句/行边界缩短，保留标题、摘要、核心事实、画风/负面/重绘规则和参考说明。保留部分过大、无法识别或安全断句时本地拒收，不额外调用模型。该裁剪可能省略导演细节，未承诺语义无损。
+- Core/UniversalOpenAiImageClient.cs:361-390、598-600、793-810、834-837，Images/Edits/Chat三个最终发送入口完整拼接后计额，DALL-E原有1000/4000较小限额保留，ResolvedPrompt与发送一致，image_prompt_budget记录数字诊断。每次网络attempt前执行，短文本O(1)、长文本线性分段加有界配额搜索，无Tick/游戏对象读取/额外LLM请求。
+- Core/VisualDirectorEngine.cs:713-811，BuildDirectorPayload共用system末尾增加30000字符上限、不得凑满和完整性要求，覆盖百科/会话/周报/重绘/纯文本降级；MCM值仍经IllustratorRuntime.cs:114冻结为600–4000（默认2000），:720注入约Token篇幅。API未传max_tokens，没有独立最小输出token限制，软提示不能保证模型服从。Settings/IllustratorSettings.cs:462-464同步解释，配置键/范围/默认值不改。
+- 验证：源码审查和diff检查通过；未运行Illustrator离线审计/算法测试、未调用付费API、未实机验证44957长提示/MCM显示/成图质量。原build_single_module.ps1 Debug双API1.3（v1.3.15.110062）/1.4（v1.4.6.115628）+Bootstrap及双接缝门禁PASS。本轮完整源码在独立本地分支codex/illustrator-budget-release-20261006，按用户追加授权纳入外交df5424511；未纳入每日维护1dd0e2824。
+- 外交集成：正式提案/威胁来源优先于讨论归属，国家别名在匹配提案前规范，执行前拒绝且无实际效果的接受宣言不结算声誉。沿用最终合法性及幂等保护，不重放旧失败公文。源码WorldDiplomacyAnalysisApplication.cs:115-122、WorldDiplomacyOrchestration.Scheduling.cs:65-96、WorldDiplomacyDocumentExecutionApplication.cs:261-269、WorldDiplomacyReputationRules.cs:307-351。另一会话的6场景回归初次在ambiguous失败，原因是AcceptanceExecution继承的fake跳过真实玩家提案校验且预期拒绝阶段错误；PlayerSemanticReplay.cs新增真实WorldDiplomacyGenerationValidationRules委托并分别断言最终合法性/缺少明确来源拒绝，66项断言通过。只修测试，不改生产规则；源码提交a49e56605。全量外交测试、玩家截图实机复现未验。
+- 交付：原deploy_module.ps1成功更新9文件；Stage/安装/ZIP共3379项核对通过，单模块Bootstrap-only，不含ONNX/私人配置/缓存/TaleWorlds DLL。ZIP为v1.5.5、安装XML仍v1.5.4。包F:\AnimusForge-main\一键编译覆盖推送\packages\AnimusForge_v1.5.5_20261006_234833_835.zip，84838566字节，SHA256=bbd7b608555397fef60e8338a9b8b24b65649c75731706a1e7ffa3db2746c2c4。该包替代234054的生图单独包、232614的仅32000中间包及230000的前轮包；前者因共享工件变化首次打包失败，曾用捕获工件隔离快照成功打包，未作为本轮最终包。
+- 证据：artifacts/illustrator-budget-final-20261006/receipt.json、build.log、deploy.log、package-final.log、verification.log；首次部署遗漏显式DLL参数在写入前被拒绝，补齐参数后成功。恢复目录C:\Users\29310\AppData\Local\AnimusForge\Recovery\deploy\deploy-1b7aa3cde5dd45c88458ed5be9acf550。外交源码用反向提交726833256（共享main等价df5424511），测试a49e56605；生图源码按反向提交f6ca1d5d2和bdd7e55f6逐片回滚（共享main提示词等价51a7fedf4）；二进制恢复前核对后续部署是否已更新文件。保持生图模组内存储、不迁移、默认清理及API测试。
+- 产品a49e56605已从隔离发布分支普通快进推送origin/main并ls-remote独立核对（remote-product.txt）；未含禁止历史文件。补记交付文档后再次核对，最终回执保存remote-main-final.txt。发布用户授权的外交修复；未发布每日维护1dd0e2824。共享main保留其他任务历史，不强推、不reset或rebase。
+
 <a id="diplomacy-acceptance-source-20261006"></a>
 # 接受外交提案来源优先与拒绝后声誉纠正（2026-10-06，SOURCE_VERIFIED_BUILD_AND_LIVE_PENDING）
 
