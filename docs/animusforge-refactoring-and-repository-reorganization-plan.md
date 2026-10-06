@@ -7747,3 +7747,12 @@ R2计划交付门槛：已给固定技术路线、真实来源与目标、写入
 - 包一键编译覆盖推送/packages/AnimusForge_v1.5.5_20261007_041545_360.zip；原脚本布局/哈希验证PASS，一个模块、Bootstrap+双实现、不含ONNX。安装XML仍v1.5.4，ZIP版本v1.5.5，沿用原打包规则。
 - 证据artifacts/illustrator-model-selection-20261007/build-stage.log、deploy.log、package.log、install-verification.json。部署恢复C:/Users/29310/AppData/Local/AnimusForge/Recovery/deploy/deploy-29486f55dea1406d8e1f5bd057bc2e50。源码回滚git revert 919d4ed27。
 - NOT-RUN：MCM实机选择/保存重启/预设撤销、真实请求model一致性；未调用付费API。后续状态以本条取代上条未部署记录。
+
+## grok-player2-image-protocol-20261007 — BUILD_VERIFIED_NOT_DEPLOYED
+
+- 用户要求接入Grok JSON并追加Player2兼容。检查点a4e856f，修改前tracked clean。Grok三张512参考在站点multipart失败/官方JSON成功的对照见artifacts/grok-image-test-20261007/reference-count-512/three_refs_512_json.json。
+- UniversalOpenAiImageClient的UsesGrokJsonEdits/AttemptImagesEditsAsync按grok-imagine-image模型族选择JSON images对象数组、<IMAGE_n>标签；超过官方5张明确停止，不丢图。复用原响应、预算及取消链，其他模型保持multipart，不新增自动付费重试。
+- Player2显式MCM模式默认false，GameClientID独立可选字段；IllustrationOptions冻结。依本机127.0.0.1:4315/v1/openapi.json确认/image/generate与/image/edit、images字符串数组及顶层image Base64响应；选模在Player2应用而非请求model。支持profile路径及width/height约束，生成最长边1024、编辑4096，按比例缩放并保留画幅提示。单图编辑模型可能只采用首图，在MCM提示须选支持多图模型。MCM测试在Player2模式带一张本地画布，不要求模型名。
+- GenerationDiagnostics识别Player2返回image并省略大Base64，data URI参考沿用哈希去重，GameClientID注册脱敏。仅请求时构造有界数组/JSON，无新增Tick或后台游戏对象访问。
+- 验证：diff检查、真实本机OpenAPI与xAI文档核对、接线审查；原统一脚本1.3/1.4/Bootstrap与双接缝PASS，日志artifacts/grok-json-edits-20261007/build-player2.log。初次sandbox无法读NuGet配置，批准后编译通过。遵循模块规则未运行Illustrator离线审计。
+- NOT-RUN：实际游戏四图Grok、Player2计费API、MCM实机、模型多图采纳及输出尺寸遵从；未部署/打包/推送。

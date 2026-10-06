@@ -92,6 +92,16 @@ namespace AnimusForge.Illustrator
         [SettingPropertyGroup("2. 生图 API 配置 (OpenAI 兼容)", GroupOrder = 2)]
         public Action FetchModelList { get; set; }
 
+        [SettingPropertyBool("Player2 生图接口模式", Order = 0, RequireRestart = false,
+            HintText = "使用Player2原生JSON接口。地址填写http://127.0.0.1:4315/v1（端口以Player2为准，也支持配置档路径）；应用须运行并登录。生图/编辑模型在Player2里选择，本页模型名不参与请求。有多张参考图时请选择支持多图的编辑模型，如Nano Banana；单图模型可能只使用首图。")]
+        [SettingPropertyGroup("2. 生图 API 配置 (OpenAI 兼容)", GroupOrder = 2)]
+        public bool UsePlayer2ImageApi { get; set; } = false;
+
+        [SettingPropertyText("Player2 Game Client ID（可选）", Order = 15, RequireRestart = false,
+            HintText = "Player2开发者平台的Game Client ID，通过player2-game-key请求头发送；不是MCP密钥。仅Player2模式使用。")]
+        [SettingPropertyGroup("2. 生图 API 配置 (OpenAI 兼容)", GroupOrder = 2)]
+        public string Player2GameClientId { get; set; } = "";
+
         private string _modelName = "black-forest-labs/FLUX.1-schnell";
 
         [SettingPropertyText("生图模型名称 (Model)", HintText = "生图模型名称。支持常规生图模型（如 FLUX.1-schnell、dall-e-3、gpt-image-1.5 等）以及对话原生多模态出图模型（如 gemini-3.1-flash-image 等，系统会自动识别并走对话图生图通道）。", Order = 5, RequireRestart = false)]

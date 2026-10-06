@@ -38,7 +38,7 @@ namespace AnimusForge.Illustrator
             if (!Uri.TryCreate((settings.ApiBaseUrl ?? "").Trim(), UriKind.Absolute, out var endpoint)
                 || (endpoint.Scheme != Uri.UriSchemeHttp && endpoint.Scheme != Uri.UriSchemeHttps))
             { Show("请先填写有效的 HTTP/HTTPS 生图 API 地址。"); return; }
-            if (string.IsNullOrWhiteSpace(settings.ModelName)) { Show("请先填写生图模型名称。"); return; }
+            if (!settings.UsePlayer2ImageApi && string.IsNullOrWhiteSpace(settings.ModelName)) { Show("请先填写生图模型名称。"); return; }
 
             // Capture this MCM editor object, including unsaved fields, on the UI
             // thread. Workers never read the live settings or campaign objects.
@@ -72,7 +72,7 @@ namespace AnimusForge.Illustrator
             IllustrationReferenceImage[] references = null;
             // Edits requires an image. Generate a local neutral reference instead
             // of reading player files or capturing a live game scene.
-            if (endpoint.AbsolutePath.TrimEnd('/').EndsWith("/images/edits", StringComparison.OrdinalIgnoreCase))
+            if (options.UsePlayer2ImageApi || endpoint.AbsolutePath.TrimEnd('/').EndsWith("/images/edits", StringComparison.OrdinalIgnoreCase))
             {
                 using (var bitmap = new Bitmap(256, 256))
                 using (var graphics = Graphics.FromImage(bitmap))
