@@ -65,6 +65,7 @@ internal static class DiplomacyPromptApplication
             var eligibility = source.CaptureEligibility();
             if (topic && DiplomacyConversationEligibilityApplication.CanInject(eligibility))
             {
+                Append(result, AnimusForge.DiplomacyDialogue.DialoguePeaceClarificationRules.MainReplyInstruction);
                 var snapshot = source.Capture();
                 Append(result, BuildInstruction(source, eligibility, snapshot));
                 Append(result, RuntimeInstruction(source, eligibility, snapshot));
