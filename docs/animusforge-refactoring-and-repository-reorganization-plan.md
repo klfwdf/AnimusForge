@@ -7770,3 +7770,11 @@ R2计划交付门槛：已给固定技术路线、真实来源与目标、写入
 - 用户要求修复标点后提前换行；产品82f8665bf，检查点118ca08。DevMultilineEditableTextWidget.cs FindPreferredBreak(605–625)只回看可容纳长度15%且最多3个UTF16位置，不改变真实正文或Enter行为，避免早期标点使半行空白。运行于原布局dirty重排，扫描从全行缩至最多4次，不新增Tick。
 - 提取实际生产方法用Add-Type执行7项边界（靠前逗号、近尾标点、段落可容纳、无分隔、短行、非零起点、近尾空格）全部PASS；diff通过；原入口双API/Bootstrap/双接缝PASS。日志artifacts/input-wrap-20261007/build.log。实机字体/输入法未验，未部署/推送/打包。回滚git revert 82f8665bf。
 - 期间用户反馈Grok502：conversation_1007-065217_8338已走ImagesEditsJson，4图9871字符16:9，约1.4秒502 Upstream request failed，不能认定此前三图成功已解决游戏请求。最新conversation_1007-065340_94b8为Player2Edit，4图9705字符，HTTP413 Failed to buffer the request body: length limit exceeded；是独立明确体积错误。未追加付费测试或擅自改协议。
+
+## player2-upload-budget-20261007 — BUILD_VERIFIED_GROK_TEST_BLOCKED
+
+- 产品880753f72，检查点a4ae988。用户授权Player2体积修复及Grok最多三次对照；Grok执行被自动审批blocked by policy，未发送，不绕过。用户再次确认授权不改变执行拒绝事实。
+- 无效JSON（不会进入生成）探测本机/image/edit：2097152字节返回400 JSON解析错误，2097153返回413 length limit exceeded，确认2MiB边界。
+- UniversalOpenAiImageClient.FitPlayer2Request在最终JSON UTF8字节边界限1900KiB。超限才按4096/1536/1024/768/640/512最大边有界处理，始终从原图编码、仅接受更小结果，保留图数/标签/顺序。ImagePayload.EncodePlayer2Reference对完全不透明场景编码JPEG90；人物/透明图保留RGBA PNG。显式像素矩形、无通道交换；只改上传副本，不改原始缓存/UI。小于预算不解码，按行查alpha可取消，不新增Tick或付费重试。
+- 原统一构建1.3/1.4/Bootstrap及双接缝PASS，diff审查通过，日志artifacts/player2-upload-grok-20261007/build.log。遵循模块规则未跑Illustrator离线审计。构建期间出现其他作者外交源文件与测试修改，保留且不纳入本提交；整仓产物包含当时工作树，未部署。
+- NOT-RUN：生产压缩对真实四图的运行回放、Player2真实出图及视觉保真、Grok对照测试。未部署/打包/推送。回滚git revert 880753f72。

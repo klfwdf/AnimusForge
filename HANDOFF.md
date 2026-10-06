@@ -1,3 +1,9 @@
+# 当前交接：Player2请求体预算（2026-10-07，BUILD_VERIFIED_GROK_TEST_BLOCKED）
+
+- 产品880753f72；无效JSON确认本机2MiB请求上限，最终UTF8预算1900KiB；不透明场景JPEG90、透明/人物PNG、有界缩放，不丢参考图、不改缓存。
+- 双API/Bootstrap/双接缝通过，实际压缩及出图未验。Grok对照获用户授权但执行审批拒绝，未发送。未部署/推送/打包；其他作者外交改动保留。
+- [主台账及回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#player2-upload-budget-20261007--build_verified_grok_test_blocked)。日志artifacts/player2-upload-grok-20261007/build.log。
+
 # 当前交接：输入框标点折行修复（2026-10-07，BUILD_VERIFIED_NOT_DEPLOYED）
 
 - 产品82f8665bf，检查点118ca08；限制标点回看为15%且最多3位置，不再回退半行。7项真实方法边界与双API/Bootstrap/双接缝通过，实机未验，未部署。
