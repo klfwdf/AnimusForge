@@ -7633,3 +7633,21 @@ R2计划交付门槛：已给固定技术路线、真实来源与目标、写入
 - 验证：散场生产代码fixture 30 PASS；既有场景隔离契约76 PASS；本任务diff检查PASS。原build_single_module.ps1 Debug无Stage/Deploy，通过AF参考1.3.15.110062/1.4.6.115628、Bootstrap和双接缝门禁。独立RichExecutions目标BannerlordApi=1.4.8编译PASS（16既有警告），输出/中间目录/NuGet缓存重定向本仓库artifacts。首次GetWatchState名称错误已修，最终使用已核实SetWatchState，失败日志保留。
 - 证据：artifacts/execution-crowd-dispersal-20261006/receipt.json及crowd-tests.log、isolation-regression.log、build-verified.log、standalone-verified.log；AF候选bin/Debug/single_module_artifacts，独立候选上述artifacts的standalone/bin/RichExecutions.dll。共享构建包含当时并行改动，不背书随后改动。
 - 未验证：实机寻路/避障/拥挤、各城镇与自定义刑场、所有刑法、多轮行刑及旧档。未Stage/覆盖游戏/打包/推送；源码回滚仅git revert 984b4d5a，保留其他作者。
+
+
+<a id="week-zero-daily-fix-20261006"></a>
+## 玩家存档每日卡顿：开局概要反复规范化（2026-10-06，OFFLINE_VERIFIED_NOT_DEPLOYED）
+
+- 任务：修复原文/规范化概要交替写入导致的每日全档案清洗及外交历史增长，并去除每日素材键查询的正文复制/排序；保持真实编辑、已生成短摘要和历史数据。
+- 基线 main/da6cc80ab1742be9412a852264343dbda553662f；检查点 c156a8e。产品源码开工无未提交差异；其他未跟踪文件保留。
+- 范围：MyBehavior 开局维护入口、CampaignMaterialRecordOwner 查询与针对性回放；不清空外交/周报、不改存档键、不改构建流程，不部署/打包/推送。
+- 退出门：原故障反例、重复维护/真实编辑/旧短摘要兼容与旧档回放、查询结果保持、原入口双 API+Bootstrap、详细收据与可逆提交。玩家数据仅在忽略的 artifacts 中。
+
+- 产品1dd0e28243e7b2647a237c81aa1bdb15a8f902a7：统一概要正文/标题/素材标签规范，比较、写入和短摘要hash一致；保留旧raw hash成功LLM摘要，真实编辑仍触发新摘要，旧异步回复按source hash拒绝。同步/分片概要维护取消全档案清洗；无变化不发布，其他历史对象/字段保留。未删除现有340条重复概要，不改存档key/类型。
+- 每日素材键查询改由Memory的BuildStableKeySet线性读取，保持空正文/空键/null回退/大小写语义，不复制正文和DTO、不排序。仍是每日O(N)键扫描，无新缓存或后台游戏对象读取，不宣称全局硬帧预算。
+- 验证：检查点c156a8e在同一回归测试失败，修复后71项PASS，覆盖原文/规范化旧档、旧LLM保留、30天稳定、真实编辑、晚回复拒绝、历史对象/素材保持、键集合一致。真实样本1118篇/36982素材/26243来源、原概要字符串ID29097。既有WeeklyEventImportOwnerTests导入/恢复/编辑/规范化回归PASS。
+- 离线Release/.NET8：原全档清洗103–137ms/约58MiB；修复后首次概要维护0.3244ms/35432bytes，后续30次合计1.565ms，全档清洗0次。每日键查询5.9628ms/1454064bytes，20959个键与旧路径完全相同。这不是整DailyTick或实机帧耗时。
+- 原build_single_module.ps1 Debug无Stage/Deploy：1.3引用1.3.15.110062、1.4引用1.4.6.115628均0错误/346警告；Bootstrap0错误、双Coup接缝与登记/记忆端口门禁PASS。共享构建包含同期Illustrator变更，本产品提交未包含其他作者差异。
+- 源码证据绑定1dd0e2824：src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.cs:5170–5190 EnsureWeekZeroOpeningSummaryEvents（同步入口）；5192–5234 ProcessWeekZeroOpeningSummaryEventsSlice/Finalize（每日维护）；5672–5767 UpsertWeekZeroOpeningSummaryEvent（规范/兼容/局部发布）；10963–10966 BuildEventSourceMaterialStableKeySet → src/modules/AF.Module.Memory/Records/CampaignMaterialRecordOwner.cs:69–80 BuildStableKeySet。6锚点recorded/working-tree均PASS。
+- 默认历史全仓代码图working-tree检查报未涉及的ModuleFrameworkRuntime.cs内容过期，未刷新旧图掩盖。本包证据：artifacts/week-zero-daily-fix-20261006/receipt.json、code-map.json、build.log、baseline/run.log、exact-save/run.log、import-regression/run.log。
+- 未验证：玩家实机跨日、实际DLL/MCM组合及真实API请求。未修复磁盘sav或删除旧历史，未Stage/部署/打包/推送。原sav哈希仍为0cb1b4073c8af4b57bb1d3df547e3c04d3e3b0967b8139aa626f41d9f4bbc605。产品回滚git revert 1dd0e2824，保留其他作者提交。
