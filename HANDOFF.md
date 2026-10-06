@@ -1,4 +1,10 @@
-# 当前交接：远端融合、双版构建、部署与打包（2026-10-06，DEPLOYED_PACKAGED_LIVE_PENDING）
+# 当前交接：处决后攻击空引用与内政按钮底色（2026-10-06，DEPLOYED_PACKAGED_LIVE_PENDING）
+
+- 实机日志确认攻击后原版FleeBehavior找门时LocationCharacter为空。产品3e8365f1、3dad3baf补临时非英雄的同Origin登记、原版重生成行为回调及跨门后的清理；保留处决结束后冲突、刑场避让、真实Hero与受刑者死亡身份。
+- 内政按钮581e6d7f移除覆盖在ButtonBrush1上的两处矩形Box叠色，保留文字、命令和尺寸。63项散场/身份回归、76项隔离回归，AF双API+Bootstrap/双接缝、独立RichExecutions目标编译通过；修复后实机尚未验证。
+- 原脚本最终覆盖成功（9文件），交付包一键编译覆盖推送/packages/AnimusForge_v1.5.5_20261006_220556_034.zip；3379项核对通过，除ZIP版本v1.5.5外与安装一致（安装XML仍v1.5.4）。先前213842及215934包被此包替代。证据artifacts/execution-aftermath-location-20261006/receipt.json；[主台账及源码范围、回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#execution-aftermath-location-character-20261006)。
+
+# 历史交接：远端融合、双版构建、部署与打包（2026-10-06，DEPLOYED_PACKAGED_LIVE_PENDING）
 
 - 已按用户授权拉取 origin/main=e3bd28e0，合并至6ad9bac7；双方源码改动保留，HANDOFF和主台账冲突保留双方记录。以下历史“未部署/未打包”仅代表对应轮次，本次交付状态以此条及主台账为准。
 - 410项离线回归、33项源码接线、1.3/1.4与Bootstrap构建及双接缝门禁通过。原部署脚本更新17文件；3379项Stage/安装/ZIP文件SHA256一致，12处正文控件已部署。

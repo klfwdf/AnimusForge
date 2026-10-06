@@ -1,9 +1,16 @@
 <a id="execution-aftermath-location-character-20261006"></a>
-# 处决结束后攻击触发逃跑空引用（2026-10-06，ACTIVE）
+# 处决结束后攻击触发逃跑空引用与内政按钮底色（2026-10-06，DEPLOYED_PACKAGED_LIVE_PENDING）
 
 - 用户实机报告处决结束后主动攻击引发卡死；基线33131b66/main。21:41:03 SceneTaunt记录攻击后备兵258并升级冲突，21:41:04原生Mission_TickAgentsAndTeams边界捕获NullReference：LocationComplex.CanIfMaleOrHero → CanIfGrownUpMaleOrHero → PassageUsePoint.IsDisabledForAgent → FleeBehavior.GetAvailablePassageScores/LookForPlace。日志位于游戏Modules/AnimusForge/Logs/Mod_Logic.txt，不以旧AppData日志替代本次证据。
 - 源码根因：SpawnCharacter直接使用SimpleAgentOrigin生成临时人物，没有LocationCharacter登记；新增围观者散场接入原版FleeBehavior后，门口检查将GetLocationCharacter(agent.Origin)的null传给CanAIEnter。两版原版代码相同契约。
 - 计划范围：共享处决源码中的临时非英雄人物登记、清理与回归测试，保留受刑者死亡origin和真实Hero身份，不调整冲突资格/散场方向。登记仅生成人物时一次，清理只在结束/取消；无Tick新增扫描。验证双AF与独立RichExecutions目标，实机结果仍待验。
+- 实施修订3e8365f1、3dad3baf，检查点6149725c。ExecutionSceneLocationCharacters.Register（Vengeance/Source/Scene/ExecutionSceneLocationCharacters.cs:18-33）按准确Origin查询，跳过已有登记/真实Hero，为临时非英雄建立LocationCharacter并保留SandBox原版AddWandererBehaviors回调；Clear（:35-56）只移除自有项，覆盖已跨门人物，失败留待重试。TownExecutionMissionBehavior.cs:345持有owner；Placement.cs:1321-1328先记临时Agent再登记，originOverride专用受刑者/尸体不进入登记；Lifecycle.cs:109-124在Agent清理成功后清登记，沿用取消/离场/卸载已有重试。
+- 性能：每次生成人物一次原生location列表查找和一项登记，无新增逐帧扫描；结束时对自有临时人物清理所在location，失败项保留。固定location不主动加入原版跨场漫游；受惊后用门仍遵循原版许可。没有存档字段/全局Harmony补丁/新配置。
+- 回归63项（原散场49+身份/清理14）通过，原来未登记可重现门许可null解引用，登记后有真实Origin对应节点；覆盖重复模板/登记、Hero、已有原版条目、跨门清理/失败重试、重新生成回调。引擎对象/门逻辑为fake契约，非游戏实测。76项隔离/上下文/台账/生命周期回归通过。原build_single_module.ps1最终build-final.log双API+Bootstrap/双接缝PASS，参考v1.3.15.110062/v1.4.6.115628；独立RichExecutions.csproj目标1.4.8（实际本机参考版本），standalone-final.log 16警告0错误。独立输出/obj/NuGet路径均留本工作区。
+- 追加用户截图：内政“立即裁决”原版ButtonBrush1上叠加#6B3329CC的BlankWhiteSquare_9，导致矩形覆盖透明边缘；底部ActionButton也有@TintColor同类Box。581e6d7f仅移除src/AF.GameAdapter.Bannerlord/UI/Kingdom/KingdomInteriorPanel.cs原267/464两行；现AgendaHeader:266-268、ActionButton:460-470。点击绑定/尺寸/文字与暗淡状态保留，无运行频率变化；双版编译及diff检查通过，没有专为两行样式删除新增测试，实机外观待验。
+- 最终交付完成：deploy-final.log原脚本更新9文件，Recovery=C:/Users/29310/AppData/Local/AnimusForge/Recovery/deploy/deploy-16c16f95fa8941ee98984beccc8dded2；首次处决修复前备份deploy-8a3f10a0b239430bb51ff000eb78643d保留在同级，可恢复到两项修复前。原package_mod.ps1 -Version v1.5.5生成一键编译覆盖推送/packages/AnimusForge_v1.5.5_20261006_220556_034.zip，84826595字节，SHA256=a8099cd8156a25aa1294d6fe1d6edbdee9277902b5bc67d54827b2b7fd6adf19；替代旧213842和中间215934包作为修复交付，旧包保留。
+- receipt.json绑定最终源码3dad3baf、双API哈希、Recovery旧/新哈希、3379项Stage/安装/ZIP清单；除SubModule.xml包内版本v1.5.5外，其他全部文件哈希一致，XML其余语义一致。安装XML仍v1.5.4，产品DLL含两项修复；无ONNX模型、TaleWorlds DLL、Logs/Git文件，单AnimusForge根及Bootstrap-only声明通过。verification.log与verify_delivery.py保留本地；阶段中间部署/构建/包日志不删除，最终以*-final.log和receipt为准。
+- 未验证：修复后处决结束攻击/围观者逃跑与动态导航、内政按钮视觉、旧档；本轮未push。回滚源码按依赖逆序revert 3dad3baf、581e6d7f、3e8365f1，或只revert相应UI修订；恢复安装以首次备份manifest和当前文件校验为准，不覆盖后续无关修改。
 
 <a id="merge-deploy-package-20261006"></a>
 # 远端融合、双版构建、部署与打包（2026-10-06，DEPLOYED_PACKAGED_LIVE_PENDING）
