@@ -2527,7 +2527,18 @@ public static class WorldEntityRetrievalService
 		}
 	}
 
-	private static string FormatHeroRelatives(Hero hero)
+	// Capture on the game thread for each request; do not cache life states in persona text.
+	internal static string BuildCurrentFamilyPrompt(Hero hero)
+	{
+		if (hero == null) return string.Empty;
+		List<string> parts = new List<string> { FormatHeroRelatives(hero, int.MaxValue) };
+		AddHeroCollection(parts, "本家族成员", hero.Clan?.Heroes.Where(x => x != hero), int.MaxValue);
+		return "【NPC当前亲属与家族状态】\n人物：" + SafeName(hero.Name, hero.StringId)
+			+ "\n" + string.Join("；", parts)
+			+ "\n以上为本轮游戏状态；若旧个性、背景或历史对话与此处生死状态冲突，以此处为准。已故者只能作为往事提及，不能描述为仍在活动或安排与其见面；未列出不代表已故，不得编造死因、时间或凶手。";
+	}
+
+	internal static string FormatHeroRelatives(Hero hero, int cap = 8)
 	{
 		if (hero == null)
 		{
@@ -2537,7 +2548,8 @@ public static class WorldEntityRetrievalService
 		AddRelative(parts, "父亲", hero.Father);
 		AddRelative(parts, "母亲", hero.Mother);
 		AddRelative(parts, "配偶", hero.Spouse);
-		AddHeroCollection(parts, "子女", hero.Children, 8);
+		AddHeroCollection(parts, "已故前配偶", hero.ExSpouses.Where(x => x != null && !x.IsAlive && x != hero.Spouse), cap);
+		AddHeroCollection(parts, "子女", hero.Children, cap);
 		List<Hero> siblings = new List<Hero>();
 		try
 		{
@@ -2554,7 +2566,7 @@ public static class WorldEntityRetrievalService
 		catch
 		{
 		}
-		AddHeroCollection(parts, "兄弟姐妹", siblings, 8);
+		AddHeroCollection(parts, "兄弟姐妹", siblings, cap);
 		return parts.Count == 0 ? "未记录" : string.Join("；", parts);
 	}
 
@@ -2562,17 +2574,22 @@ public static class WorldEntityRetrievalService
 	{
 		if (hero != null)
 		{
-			parts.Add(label + "：" + SafeName(hero.Name, hero.StringId));
+			parts.Add(label + "：" + FormatHeroNameWithLifeState(hero));
 		}
 	}
 
 	private static void AddHeroCollection(List<string> parts, string label, IEnumerable<Hero> heroes, int cap)
 	{
-		List<string> names = (heroes ?? Enumerable.Empty<Hero>()).Where((Hero x) => x != null).Select((Hero x) => SafeName(x.Name, x.StringId)).Where((string x) => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).Take(cap).ToList();
+		List<string> names = (heroes ?? Enumerable.Empty<Hero>()).Where((Hero x) => x != null).Distinct().Take(cap).Select(FormatHeroNameWithLifeState).ToList();
 		if (names.Count > 0)
 		{
 			parts.Add(label + "：" + string.Join("、", names));
 		}
+	}
+
+	private static string FormatHeroNameWithLifeState(Hero hero)
+	{
+		return SafeName(hero.Name, hero.StringId) + (hero.IsAlive ? "（在世）" : "（已故）");
 	}
 
 	private static string FormatHeroLocation(Hero hero)
@@ -3280,7 +3297,7 @@ public static class WorldEntityRetrievalService
 	{
 		try
 		{
-			List<string> names = (heroes ?? Enumerable.Empty<Hero>()).Where((Hero x) => x != null).Select((Hero x) => SafeName(x.Name, x.StringId)).Where((string x) => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).Take(cap).ToList();
+			List<string> names = (heroes ?? Enumerable.Empty<Hero>()).Where((Hero x) => x != null).Distinct().Take(cap).Select(FormatHeroNameWithLifeState).ToList();
 			return names.Count == 0 ? "无" : string.Join("、", names);
 		}
 		catch

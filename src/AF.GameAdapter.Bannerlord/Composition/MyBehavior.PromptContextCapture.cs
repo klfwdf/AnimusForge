@@ -64,6 +64,7 @@ public partial class MyBehavior
             CreatePromptContextCapturePorts(request, routing, retrieval, targetHero, targetCharacter, promptContextTotalSw, promptContextStageSw),
             request, routing, retrieval, directPreprocessMentionedEntities, targetHero, targetCharacter, weeklyPromptSnapshot,
             out contextFlags, out extrasSections, out entityCapture, out mentionedEntities);
+        extrasSections.CurrentFamilyStatus = WorldEntityRetrievalService.BuildCurrentFamilyPrompt(targetHero ?? targetCharacter?.HeroObject);
     }
 
     private PromptContextCaptureBannerlordPorts CreatePromptContextCapturePorts(PromptBuildRequest request,

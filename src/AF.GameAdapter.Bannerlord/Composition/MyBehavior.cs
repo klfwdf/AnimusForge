@@ -15615,37 +15615,7 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 		}
 		try
 		{
-			List<string> list2 = new List<string>();
-			if (hero.Father != null)
-			{
-				list2.Add("父亲:" + hero.Father.Name);
-			}
-			if (hero.Mother != null)
-			{
-				list2.Add("母亲:" + hero.Mother.Name);
-			}
-			if (hero.Spouse != null)
-			{
-				list2.Add("配偶:" + hero.Spouse.Name);
-			}
-			try
-			{
-				List<string> list3 = (from c in hero.Children?.Take(6)
-					select c?.Name?.ToString() into n
-					where !string.IsNullOrWhiteSpace(n)
-					select n).ToList();
-				if (list3 != null && list3.Count > 0)
-				{
-					list2.Add("子女:" + string.Join("、", list3));
-				}
-			}
-			catch
-			{
-			}
-			if (list2.Count > 0)
-			{
-				stringBuilder.AppendLine("家族成员: " + string.Join(" | ", list2));
-			}
+			stringBuilder.AppendLine("家族成员: " + WorldEntityRetrievalService.FormatHeroRelatives(hero, int.MaxValue));
 		}
 		catch
 		{
