@@ -1,3 +1,15 @@
+<a id="npc-family-life-state-20261006"></a>
+# NPC不知亲属死亡：当前状态注入（2026-10-06，SOURCE_VERIFIED_BUILD_AND_LIVE_PENDING）
+
+- 当前任务为修复 NPC 对话不知道自己家族成员已死亡。工作区 F:/AnimusForge-main / main，初始 HEAD b1884036，检查点 d55878d，产品提交 71d976fa；其他会话的终端、挑衅、处决等改动保留。仅本地源码修复，未授权部署或推送；依据用户转述的编译限制，本会话未运行构建。
+- 根因：实体亲属列表和人设生成只列名字；日常对话缺少常驻当前亲属生死信息，旧背景可能继续误导。原版1.3/1.4 KillCharacterAction 清空 Spouse，Hero setter 将旧配偶保存在 ExSpouses，因此必须补列已故前配偶。
+- 产品源码证据（71d976fa，一基行号）：WorldEntityRetrievalService 位于 `src/modules/AF.Module.Knowledge/Entities/WorldEntityRetrievalService.cs:2530-2593`，BuildCurrentFamilyPrompt/FormatHeroRelatives/FormatHeroNameWithLifeState 为亲属及当前家族成员标注在世/已故，并声明当前状态优先于旧背景、不臆测死因；`:3296-3307` FormatHeroList 同步家族实体成员列表。`src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.PromptContextCapture.cs:60-68` 主线程采集 CurrentFamilyStatus；`src/modules/AF.Module.Prompt/Composition/PromptExtrasComposer.cs:27` 字段和 `:98` 共享主链路输出；`src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.cs:15615-15622` 人设生成复用亲属格式。
+- 三渠道实际消费者：`src/modules/AF.Module.Conversation/Channels/Native/ShoutBehavior.NativeTurn.cs:204`、`Channels/Scene/ShoutBehavior.SceneSessionComposition.cs:122`、`Channels/Courier/CourierDeliveryBehavior.PromptSchedule.cs:120`（后两路径同属 AF.Module.Conversation）均调用 CompleteSharedPromptBuild。每轮主线程捕获完成字符串，不向后台传入新增游戏对象，不新增存档字段/事件或重写已有个性背景。
+- 性能：每个 NPC 请求一次，只访问该人物亲属集合及 Clan.Heroes，O(亲属数+本家族人数)，按 Hero 去重后格式化；无全世界扫描、反射、Tick或生死缓存。常驻状态不沿用实体检索8人上限，避免多人家族漏掉已故者；极大自定义家族会增加提示词长度，尚未实测。实体检索原有 cap 保留。
+- 验证：14项源码断言通过，含空NPC、双方状态、已故前配偶、三渠道接线、人设复用和两版API/原版死亡链；git diff --check通过。证据 `artifacts/family-life-state-20261006/source-checks.json`。这是静态源码检查，不是C#行为测试或编译验收。
+- NOT-RUN：本任务双API编译、C#运行测试、真实LLM、游戏/旧档。旧档下次请求将走新状态采集，但效果须部署后实测“你父亲呢”、配偶死亡/再婚、兄弟姐妹和非直系家族死亡。没有改写既存人设或修复历史记录；第三方模组删除亲属/家族关系的数据无法凭空恢复。没有Stage/部署/打包/推送。
+- 回滚仅本片使用 git revert 71d976fa，勿回退共享分支或其他作者改动。本条不取代其他任务验收，也不延续历史发布授权。
+
 <a id="terminal-kingdom-news-center-20261006"></a>
 # 终端王国近况居中与查看公告入口移除（2026-10-06，OFFLINE_VERIFIED_LIVE_PENDING）
 
