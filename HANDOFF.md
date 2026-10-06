@@ -1,3 +1,9 @@
+# 当前交接：导演30000软要求、最终生图32000硬预算（2026-10-06，DEPLOYED_PACKAGED_PUSHED_LIVE_PENDING）
+
+- 生图产品bdd7e55f6+f6ca1d5d2，外交产品726833256（等价df5424511），测试修正a49e56605。导演最多30000字符、不凑满；MCM约Token设置仍生效为软参考。最终拼接后不超过32000原样发，超限才按四段完整句缩短，保护内容无法容纳则本地停止；不额外调用模型，裁剪不保证语义无损。
+- 双API/Bootstrap/双接缝通过，部署并核对3379项，包F:\AnimusForge-main\一键编译覆盖推送\packages\AnimusForge_v1.5.5_20261006_234833_835.zip。真实API/模型遵从/MCM/画面未验，未运行Illustrator离线审计。
+- [主台账、源码范围、回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#illustrator-final-character-budget-20261006)；本地artifacts/illustrator-budget-final-20261006/receipt.json。用户已追加授权纳入外交修复；每日维护仍未纳入，外交专项回归66项通过，实机未验；产品a49e56605已推送并独立核对，文档最终push回执remote-main-final.txt。
+
 # 当前交接：外交接受提案绑定与拒绝声誉（2026-10-06，源码完成，编译/实机待验）
 
 - 产品df5424511，检查点58e562e：正式提案/最后通牒来源优先于讨论归属；国家ID在提案匹配前规范。执行前被拒绝且无实际效果的玩家接受宣言声誉为0，不再按履约加分；最终合法性和原幂等保护保留，补拒绝诊断。
