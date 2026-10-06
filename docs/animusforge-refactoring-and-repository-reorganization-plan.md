@@ -1,3 +1,14 @@
+<a id="illustrator-two-session-rounds-20261006"></a>
+# 生图导演读取当前会话最近两轮（2026-10-06，SOURCE_REVIEWED_BUILD_AND_LIVE_PENDING）
+
+- 用户要求将生图导演最近一轮历史改为当前会话两轮。main，检查点7956533，产品fbe4ab96；此前NPC亲属状态71d976fa保留，其他作者内战等改动不纳入。没有编译、部署、打包或推送。
+- 源码图（fbe4ab96，一基行号）：`extensions/AnimusForge.Illustrator/src/Context/ConversationContextExtractor.cs:555-620` ReadNativeConversationHistory/BuildRecentDialogueHistory读取新当前会话接口、按玩家发言边界选最后两轮，保留分段回复及未完成轮，过滤非对话，缺历史回退当前台词；`:258` 手动提取入口。`extensions/AnimusForge.Illustrator/src/UI/Overlays/IllustrationCardPopup.cs:1158-1174` 自动重绘合并已冻结前史与刚返回的一轮；`:1179-1224` CaptureAutoReplyObserver在提交prefix冻结前史，已有epoch/目标校验保留，避免后处理尚未提交时丢上一轮或重复本轮。
+- 宿主 `src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.cs:7401` 注册启动事件，`:7536-7555` 订阅ConversationBegin并在开始/结束记录事件序号边界，CloseNativeConversationInput(true)重置；`:10073-10080` GetCurrentNativeConversationHistoryEntriesForExternal仅返回当前目标、边界之后的托管历史。旧历史接口和存档不改。旧宿主缺新方法时不回落跨会话历史。
+- VisualDirectorEngine、VisualFidelityRules、SceneReferenceCapture、IllustrationCardPopup及IllustratorSettings说明同步“两轮”；旧mode别名仍识别。台词仍仅供导演，不直接发送生图端。
+- 性能：每次手动提取或自动提交读取最多260行既有托管历史；自动生成保留一个前史快照并拼当前轮，无Tick、全世界扫描或额外模型请求。两轮超过宿主260行保留上限的极端情况只能使用仍保留部分，不假装恢复缺失内容。
+- 验证：人工对照手动/自动消费者、prefix先于本轮提交、开始/结束/加载重置；本地1.3与1.4源码均有ConversationBegin和OnSessionLaunchedEvent；git diff --check通过。更新既有DialogueHistoryAudit断言为两轮、分段回复、未完成轮、短会话与新旧mode，但按本轮/Illustrator AGENTS限制未运行离线测试/审计，未编译。未验证真实LLM、实机新会话隔离、自动重绘/读档及双API DLL。
+- 回滚本片用 git revert fbe4ab96；不回滚NPC亲属修复或其他作者改动。产品状态仅源码完成，部署后才会生效。
+
 <a id="npc-family-life-state-20261006"></a>
 # NPC不知亲属死亡：当前状态注入（2026-10-06，SOURCE_VERIFIED_BUILD_AND_LIVE_PENDING）
 
