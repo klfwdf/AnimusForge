@@ -7720,3 +7720,13 @@ R2计划交付门槛：已给固定技术路线、真实来源与目标、写入
 产品46f8ba843；检查点6cb5695。新增导演API max_tokens默认16384(512–64000)，强制缩减默认关闭、字符上限4000(1000–32000)。旧软篇幅设置保留。快照接入导演、Images/Edits/Chat及回退，复用现有裁剪，不丢固定规则和参考图，无法满足则停止发送。无新增Tick/扫描/反射或模型调用。
 原build_single_module.ps1双API/Bootstrap及双接缝PASS，exit0；日志artifacts/illustrator-token-budget-20261007/build.log。diff检查与源码接线审查通过；初次构建参数缺失和路径转义失败已修正。遵循模块规则未跑Illustrator离线审计。NOT-RUN：MCM实机及保存重载、真实API预算兼容、空回根因与画面保真。未调用付费API、未部署/打包/推送。回滚git revert 46f8ba843。
 代码坐标（46f8ba843）：extensions/AnimusForge.Illustrator/src/Settings/IllustratorSettings.cs:462–482设置owner；Core/IllustratorRuntime.cs:39–41,143–146快照；Core/VisualDirectorEngine.cs:721–727,818导演要求与max_tokens；Core/UniversalOpenAiImageClient.cs:174–212入口接线、361–366限制取小、606–608/802–820/843–846三协议发送前检查。未改既有ImagePromptBudget算法。
+
+## illustrator-token-budget-delivery-20261007 — DEPLOYED_PACKAGED_PUSHED_LIVE_PENDING
+
+- 用户追加：默认25000、最大64000，授权编译/提交/推送/部署/打包，后续要求删除旧Stage。默认修订9b8290509（Settings:462–464、VisualDirectorEngine:818），功能46f8ba843；保留已保存的用户设置。
+- 原统一入口双API、Bootstrap及双接缝通过。推送origin/main到9b8290509并ls-remote核对，包含当前main已有对话UI和每日维护修复；未上传未跟踪素材或私人产物。
+- 旧Stage与新增UI源码不同导致预检查失败，移至artifacts/illustrator-token-budget-20261007/previous-stage后原脚本重新生成。用户要求删除备份但自动审批拒绝递归删除（blocked by policy），该目录仍保留；未绕过限制。
+- 首次部署被启动器文件占用阻断，原脚本完整回滚并核对旧哈希无差异；用户关闭启动器后重试成功，更新26文件。Stage和安装目录3379文件SHA256全部相同，见install-verification.json。
+- 最终包一键编译覆盖推送/packages/AnimusForge_v1.5.5_20261007_031937_752.zip，原脚本ZIP布局/哈希校验通过。替代本轮误用NoBump生成的v1.5.4_20261007_031414_865.zip。原脚本只修改ZIP版本，安装/Stage仍v1.5.4。
+- 证据artifacts/illustrator-token-budget-20261007：build-default25000.log、build-stage.log、deploy-retry.log、package-final.log、install-verification.json。部署恢复目录C:/Users/29310/AppData/Local/AnimusForge/Recovery/deploy/deploy-919fa93b37524aae9450642bfe445443。
+- NOT-RUN：实机MCM、生图服务接收max_tokens、空回改善及成图保真。源码回滚git revert 9b8290509（默认值）、git revert 46f8ba843（功能）；部署恢复使用对应Recovery记录，不做hard reset。
