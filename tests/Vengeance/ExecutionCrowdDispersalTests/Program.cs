@@ -3,6 +3,8 @@ using RichExecutions.Diagnostics;
 using RichExecutions.Scene;
 using TaleWorlds.Core;
 using TaleWorlds.MountAndBlade;
+using TaleWorlds.Library;
+using SandBox.Missions.AgentBehaviors;
 
 int checks = 0;
 void Check(bool condition, string label)
@@ -40,7 +42,8 @@ Check(agents[1].Controller == AgentControllerType.None, "release interval enforc
 for (int i = 1; i < agents.Length; i++) crowd.Tick(.36f);
 Check(agents.All(a => a.Controller == AgentControllerType.AI), "all 14 spectators eventually released");
 Check(agents.All(a => a.ClearCount == 2 && a.MovementReleaseCount == 1
-    && a.Component.AgentNavigator.Wanderer && a.Component.AgentNavigator.SpecialTargetTag == "npc_common"
+    && a.Component.AgentNavigator.AddBehaviorGroup<DailyBehaviorGroup>().GetBehavior<ExecutionCrowdWalkAwayBehavior>() != null
+    && a.Component.AgentNavigator.TargetUsableMachine != null
     && a.Component.AgentNavigator.TargetCleared), "clear cheering and install native walking once");
 crowd.Tick(90);
 Check(agents.All(a => a.ClearCount == 2), "finished schedule never takes control back");
@@ -92,4 +95,65 @@ var timing = new ExecutionCrowdDispersalSchedule();
 Check(!timing.TryTakeNext(float.NaN, 2, out _) && !timing.TryTakeNext(float.PositiveInfinity, 2, out _)
     && !timing.TryTakeNext(-1, 2, out _) && timing.TryTakeNext(0, 2, out int index) && index == 0,
     "invalid delta cannot poison timer");
-Console.WriteLine($"{checks}/{checks} production crowd schedule/release tests passed with fake engine objects; native pathfinding NOT_RUN");
+var busy = new TownExecutionMissionBehavior(); busy.Ready(); busy.Mission.Handler.Limited=true;
+busy.Mission.Handler.CommonPoints[0].Available=false;
+var busyAgent=busy.AddSpectator();busy.Tick(1);
+Check(busyAgent.Component.AgentNavigator.TargetUsableMachine==busy.Mission.Handler.LimitedPoints[0],
+    "occupied common points use an actually available limited point");
+var disabled = new TownExecutionMissionBehavior();disabled.Ready();disabled.Mission.Handler.Limited=true;
+disabled.Mission.Handler.CommonPoints[0].IsDisabled=true;
+var disabledAgent=disabled.AddSpectator();disabled.Tick(1);
+Check(disabledAgent.Component.AgentNavigator.TargetUsableMachine==disabled.Mission.Handler.LimitedPoints[0],
+    "disabled common target does not hide valid limited target");
+var inward=new TownExecutionMissionBehavior();inward.Ready();inward.Mission.Handler.CommonPoints[0].Point.Position=new(1,0);
+var inwardAgent=inward.AddSpectator();inward.Tick(1);
+Check(inwardAgent.Controller==AgentControllerType.None && inwardAgent.ClearCount==0,"stage destination rejected before clearing control");
+var through=new TownExecutionMissionBehavior();through.Ready();through.Mission.Scene.Detour=new[]{new Vec2(0,0)};
+var throughAgent=through.AddSpectator();through.Tick(1);
+Check(throughAgent.Controller==AgentControllerType.None,"outward destination with path through stage rejected");
+var away=new TownExecutionMissionBehavior();away.Ready();away.Mission.Scene.Detour=new[]{new Vec2(15,5),new Vec2(20,5)};
+var awayAgent=away.AddSpectator();away.Tick(1);
+Check(awayAgent.Controller==AgentControllerType.AI,"outward navigation detour avoiding stage accepted");
+var subsequent=new TownExecutionMissionBehavior();subsequent.Ready();
+var secondDestination=new UsableMachine{Point=new StandingPoint{Position=new(40,0)}};
+subsequent.Mission.Handler.CommonPoints.Add(new UsableMachine{Point=new StandingPoint{Position=new(1,0)}});
+subsequent.Mission.Handler.CommonPoints.Add(secondDestination);
+var subsequentAgent=subsequent.AddSpectator();subsequent.Tick(1);
+var subsequentWalk=subsequentAgent.Component.AgentNavigator.AddBehaviorGroup<DailyBehaviorGroup>().GetBehavior<ExecutionCrowdWalkAwayBehavior>();
+subsequentAgent.Position=new(25,0);subsequentAgent.CurrentlyUsedGameObject=new object();subsequent.Mission.CurrentTime=2;subsequentWalk.Tick(1,false);
+subsequentAgent.CurrentlyUsedGameObject=null;subsequent.Mission.CurrentTime=4;subsequentWalk.Tick(1,false);
+Check(subsequentAgent.Component.AgentNavigator.TargetUsableMachine==secondDestination,"after arrival next destination also excludes return to stage");
+subsequentWalk.IsActive=false;secondDestination.IsDisabled=true;subsequent.Mission.CurrentTime=6;subsequentWalk.Tick(1,false);
+Check(subsequentAgent.Component.AgentNavigator.TargetUsableMachine==secondDestination,"inactive walk behavior cannot override combat group control");
+var failedPath=new TownExecutionMissionBehavior();failedPath.Ready();failedPath.Mission.Scene.PathSucceeds=false;
+var noPath=failedPath.AddSpectator();for(int i=0;i<4;i++)failedPath.Tick(1);
+Check(noPath.ClearCount==0,"unreachable point never reported as released");
+var freshAlarm=new TownExecutionMissionBehavior();freshAlarm.Ready();var alarmAgent=freshAlarm.AddSpectator();
+alarmAgent.Watch=Agent.WatchState.Alarmed;
+freshAlarm.OnAgentAlarmedStateChanged(alarmAgent,Agent.AIStateFlag.Alarmed);freshAlarm.Tick(1);
+Check(alarmAgent.ClearCount==0 && alarmAgent.Watch==Agent.WatchState.Alarmed,"new alarm with unchanged team/controller is preserved");
+var freshHit=new TownExecutionMissionBehavior();freshHit.Ready();var hitAgent=freshHit.AddSpectator();
+freshHit.OnAgentHit(hitAgent,null,new MissionWeapon(),new Blow(),new AttackCollisionData());freshHit.Tick(1);
+Check(hitAgent.ClearCount==0,"new hit stops pending ceremony releases");
+var fight=new TownExecutionMissionBehavior();fight.Ready();var fightAgent=fight.AddSpectator();fight.Mission.Fight.Active=true;fight.Tick(1);
+Check(fightAgent.ClearCount==0,"native active fight stops pending releases");
+var freed=new TownExecutionMissionBehavior();freed.Ready();freed.Mission.Handler.CommonPoints[0].Available=false;
+var freedAgent=freed.AddSpectator();freed.Tick(1);freed.Mission.Handler.CommonPoints[0].Available=true;freed.Tick(1);
+Check(freedAgent.Controller==AgentControllerType.AI,"bounded retry refreshes a newly freed standing point");
+var nonPending=new TownExecutionMissionBehavior();nonPending.Ready();var releasedOne=nonPending.AddSpectator();var pendingOne=nonPending.AddSpectator();
+nonPending.Tick(1);nonPending.OnAgentAlarmedStateChanged(releasedOne,Agent.AIStateFlag.Cautious);nonPending.Tick(1);
+Check(pendingOne.Controller==AgentControllerType.AI,"released civilian ambient caution does not cancel all pending spectators");
+var budgetAgent=new Agent{Mission=new Mission()};budgetAgent.Mission.Scene.PathSucceeds=false;
+budgetAgent.Mission.Handler.CommonPoints=Enumerable.Range(0,100).Select(_=>new UsableMachine()).ToList();
+var budgetRoute=new ExecutionCrowdRoute(budgetAgent,budgetAgent.Mission.Handler,new(0,0),4);budgetRoute.FindNext();
+Check(budgetAgent.Mission.Scene.Requests==4,"native path requests bounded per attempt");
+Check(!ExecutionCrowdRoutePolicy.IsOutwardTarget(new(10,0),new(-20,0),new(0,0),4),"opposite-side destination rejected");
+Check(!ExecutionCrowdRoutePolicy.IsSafeSegment(new(10,0),new(-10,0),new(0,0),4),"segment crossing stage rejected");
+Check(ExecutionCrowdRoutePolicy.IsSafeSegment(new(2,0),new(8,0),new(0,0),4),"spectator inside envelope can leave outward");
+Check(!ExecutionCrowdRoutePolicy.IsSafeSegment(new(2,0),new(-8,0),new(0,0),4),"inside spectator cannot walk through stage center");
+var replanner=awayAgent.Component.AgentNavigator.AddBehaviorGroup<DailyBehaviorGroup>().GetBehavior<ExecutionCrowdWalkAwayBehavior>();
+var oldTarget=awayAgent.Component.AgentNavigator.TargetUsableMachine;
+oldTarget.IsDisabled=true;away.Mission.CurrentTime=2;replanner.Tick(1,false);
+Check(awayAgent.Component.AgentNavigator.TargetUsableMachine!=oldTarget || !oldTarget.IsDisabled,
+    "disabled assigned target no longer stays bound");
+Console.WriteLine($"{checks}/{checks} production crowd schedule/route/release tests passed with fake engine objects; native pathfinding NOT_RUN");

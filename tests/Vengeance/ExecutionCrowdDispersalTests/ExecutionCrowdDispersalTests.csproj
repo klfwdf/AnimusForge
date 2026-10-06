@@ -6,6 +6,9 @@
     <Nullable>disable</Nullable>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="../../../Vengeance/Source/Scene/ExecutionCrowdRoute.cs" Link="ExecutionCrowdRoute.cs" />
+    <Compile Include="../../../Vengeance/Source/Scene/ExecutionCrowdRoutePolicy.cs" Link="ExecutionCrowdRoutePolicy.cs" />
+    <Compile Include="../../../Vengeance/Source/Scene/ExecutionCrowdWalkAwayBehavior.cs" Link="ExecutionCrowdWalkAwayBehavior.cs" />
     <Compile Include="../../../Vengeance/Source/Scene/ExecutionCrowdDispersalSchedule.cs" Link="ExecutionCrowdDispersalSchedule.cs" />
     <Compile Include="../../../Vengeance/Source/Scene/TownExecutionMissionBehavior.Crowd.cs" Link="TownExecutionMissionBehavior.Crowd.cs" />
     <Compile Include="../../../Vengeance/Source/Core/ExecutionEnums.cs" Link="ExecutionEnums.cs" />
