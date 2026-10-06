@@ -1,3 +1,9 @@
+# 当前交接：导演30000软要求、最终生图32000硬预算（2026-10-06，DEPLOYED_PACKAGED_PUSHED_LIVE_PENDING）
+
+- 生图产品bdd7e55f6+f6ca1d5d2，外交产品726833256（等价df5424511），测试修正a49e56605。导演最多30000字符、不凑满；MCM约Token设置仍生效为软参考。最终拼接后不超过32000原样发，超限才按四段完整句缩短，保护内容无法容纳则本地停止；不额外调用模型，裁剪不保证语义无损。
+- 双API/Bootstrap/双接缝通过，部署并核对3379项，包F:\AnimusForge-main\一键编译覆盖推送\packages\AnimusForge_v1.5.5_20261006_234833_835.zip。真实API/模型遵从/MCM/画面未验，未运行Illustrator离线审计。
+- [主台账、源码范围、回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#illustrator-final-character-budget-20261006)；本地artifacts/illustrator-budget-final-20261006/receipt.json。用户已追加授权纳入外交修复；每日维护仍未纳入，外交专项回归66项通过，实机未验；产品a49e56605已推送并独立核对，文档最终push回执remote-main-final.txt。
+
 # 当前交接：生图模组内存储、默认清理与 API 测试（2026-10-06，DEPLOYED_PACKAGED_PUSHED_LIVE_PENDING）
 
 - 用户明确要求生图不写C盘、放模组目录，并授权提交推送/编译部署/打包；追加自动清理默认开启、生图API测试按钮。检查点164a3db，产品cf3377691。
