@@ -1,3 +1,14 @@
+<a id="native-give-show-target-20261006"></a>
+# 原生给予/展示目标校验（2026-10-06，SOURCE_REVIEWED_PLAYER_REPRO_PENDING）
+
+- 玩家截图显示“交易目标已经离场或失效，本次给予/展示没有执行”。本轮获准排查修复，工作区main；检查点14755f7，产品e07d5cbb。截图不是日志，没有确认玩家实际失败分支或游戏版本；仓库旧日志同文案不是该玩家复现证据。
+- 已确认代码问题：CommitShoutTradeActionOnly在有Mission/Agent时使用CanAgentParticipateInSceneSpeech等场景喊话资格，原生对话身份与场景喊话资格混用；无Agent时又跳过身份重验。修正原生入口按捕获的ConversationManager、Mission、实际OneToOneConversationCharacter和Agent引用检查，不以场景喊话IsHuman/Health标准拒绝合法对话代理。不根据EncounteredParty军团长覆盖当前选中人物。
+- 代码范围（e07d5cbb，一基行号，均在 `src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.cs`）：1705-1707新增短生命周期原生交易快照；OnNativeConversationEnded 7552-7561使旧菜单失效；OpenNativeConversationGiveShowMenu 9925-9938捕获身份；IsNativeTradeTargetValidForCommit 14013-14043检查当前会话、目标Hero存活/非Hero角色引用、有Agent同一活跃实例，无Agent仅允许原世界地图上下文；IsShoutTradePrimaryTargetValidForCommit 14045起仅原生action-only分流，其余场景喊话规则不变；EnsureShoutTradePrimaryTargetValidForCommit 14130起新增失败身份诊断；CommitShoutTradeActionOnly 14555起在任何资产/展示/AFEF前统一重验；FinishShoutTradeActionOnlyIfNeeded释放快照。
+- 性能：仅菜单打开捕获与提交时常数次引用/属性检查，未新增扫描、反射、Tick或后台游戏对象访问。旧交易数量/资产执行/历史事实机制保持原样，信使不经过本UI分支。
+- 验证：人工检查分支顺序、会话结束失效、目标切换/死者/场景切换拒绝、真正无Agent地图分支；两版ConversationManager源码存在所用OneToOneConversationAgent/Character与IsConversationInProgress；git diff --check通过。没有运行行为测试/双API编译，没有该玩家实机或日志，不将静态审查称为复现通过。
+- 待验：玩家原场景给予物品/金币/展示，普通NPC与Hero、军团成员、地图与Mission对话；打开菜单后退出或切换对象应拒绝且不扣资产。若继续出现提示，读取新增native/sameManager/sameMission/inConversation/sameAgent/expected/current诊断确定分支。不扩大为放开所有失效目标。
+- 未编译、部署、打包、推送；Vengeance并行改动保留。回滚本片 git revert e07d5cbb；前两片亲属与导演历史修复保持。
+
 <a id="naval-conversation-farewell-20261006"></a>
 # 主动水上友军会话退出遭遇修复（2026-10-06，OFFLINE_VERIFIED_LIVE_PENDING）
 
