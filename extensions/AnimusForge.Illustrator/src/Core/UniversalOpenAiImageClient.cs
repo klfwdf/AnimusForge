@@ -141,7 +141,7 @@ namespace AnimusForge.Illustrator.Core
                     || (settings.PreferChatImageProtocol && !settings.UseExactEndpointUrl));
                 string endpointUrl = ResolveEndpointUrl(baseUrl, isChatProtocol, settings.UseExactEndpointUrl);
                 var composed = ComposeImagePrompt(prompt, size, quality, style, customStyleHint, negativePrompt, isChatProtocol, settings.Randomness,
-                    ResolvePromptProfile(model, isChatProtocol), playerRedraw);
+                    ResolvePromptProfile(model, isChatProtocol), playerRedraw, settings.OutputFrameRequirement);
                 string effectivePrompt = composed.Text;
                 string route = isChatProtocol ? "Chat" : configuredEditsEndpoint || (requestedRefImages > 0 && !settings.UseExactEndpointUrl) ? "ImagesEdits" : "Images";
                 GenerationDiagnostics.Current?.RecordStage("image_route", new JObject { ["protocol"] = route, ["endpoint"] = SensitiveLogText.SafeUrl(route == "ImagesEdits" ? ResolveEditsEndpointUrl(baseUrl) : endpointUrl), ["requestedRefs"] = requestedRefImages, ["reason"] = settings.UseExactEndpointUrl ? "explicit exact endpoint" : isChatProtocol ? "model or chat preference" : requestedRefImages > 0 ? "references present: edits first; no text-only reference fallback" : configuredEditsEndpoint ? "edit endpoint requires image" : "no references: text-to-image", ["referenceGenerationEnabled"] = settings.EnableReferenceImageForGeneration });
@@ -207,7 +207,7 @@ namespace AnimusForge.Illustrator.Core
                     if (!success && attempt.ShouldFallbackToChat && !isChatProtocol && !settings.UseExactEndpointUrl && !settings.IsApiTest)
                     {
                         Log($"[Illustrator] 检测到生图端点不支持该模型({model})，自动尝试回退至 /chat/completions 多模态生图通道...");
-                        string chatEffectivePrompt = ComposeImagePrompt(prompt, size, quality, style, customStyleHint, negativePrompt, true, settings.Randomness, ImagePromptProfile.Full, playerRedraw).Text;
+                        string chatEffectivePrompt = ComposeImagePrompt(prompt, size, quality, style, customStyleHint, negativePrompt, true, settings.Randomness, ImagePromptProfile.Full, playerRedraw, settings.OutputFrameRequirement).Text;
                         string chatEndpointUrl = ResolveEndpointUrl(baseUrl, true, false);
                         var chatRetry = await AttemptGenerateOnceAsync(chatEndpointUrl, model, chatEffectivePrompt, size, quality, style, referenceImages, apiKey, true, cancellationToken, customStyleHint, playerRedraw: playerRedraw).ConfigureAwait(false);
                         result.ResolvedPrompt = chatRetry.ResolvedPrompt;
@@ -478,8 +478,12 @@ namespace AnimusForge.Illustrator.Core
             return ComposeImagePrompt(prompt, size, quality, style, customStyleHint, negativePrompt, chatProtocol, randomness, ImagePromptProfile.Full).Text;
         }
 
-        internal static ComposedImagePrompt ComposeImagePrompt(string prompt, string size, string quality, string style, string customStyleHint, string negativePrompt, bool chatProtocol, int randomness, ImagePromptProfile profile, bool playerRedraw = false)
+        internal static ComposedImagePrompt ComposeImagePrompt(string prompt, string size, string quality, string style, string customStyleHint, string negativePrompt, bool chatProtocol, int randomness, ImagePromptProfile profile, bool playerRedraw = false, string outputFrameRequirement = null)
         {
+            // Request-owned layout survives omitted director wording and player redraws.
+            // A separate heading keeps it outside flexible director sections in the final budget.
+            string frameTail = string.IsNullOrWhiteSpace(outputFrameRequirement) ? string.Empty
+                : "\n【本次输出画幅（固定）】" + outputFrameRequirement;
             // 通用负面词只覆盖成图缺陷；遮面/装备按人物事实与参考图处理。
             string mergedNegative = string.IsNullOrWhiteSpace(negativePrompt)
                 ? BuiltinNegativePrompt
@@ -495,6 +499,7 @@ namespace AnimusForge.Illustrator.Core
                     : "画风：" + TrimToBudget(styleText, limit > 0 ? Math.Min(600, limit / 3) : 600) + "\n";
                 bool separateNegative = profile == ImagePromptProfile.Diffusion;
                 string tail = separateNegative ? string.Empty : "\n[画面中严禁出现的元素/Negative]: " + mergedNegative;
+                tail += frameTail;
                 string body = (prompt ?? string.Empty).Trim();
                 if (limit > 0) body = TrimToBudget(body, limit - head.Length - tail.Length);
                 return new ComposedImagePrompt
@@ -524,6 +529,7 @@ namespace AnimusForge.Illustrator.Core
                 effectivePrompt += "\n[艺术表现随机指导]: 人物五官、肤色、发型、体型、装备、家族纹章及所有已确认游戏事实始终保持一致。人物身份立绘只用于身份与装备，纹章标准图只用于徽记；不得把身份图的姿势、背景、构图或光影用作画面模板。场景按导演正文组织：已确认的现场空间关系严格保留，明确标记的非具名艺术布景可以围绕导演主题和空间设计丰富发挥，补充与时代文化一致的材质、装饰与光影细节。保留导演选择的环境内容，不以人物为主为由清空背景；真实现场不补造未知陈设，人物数量与事件结果不改写。取景与绘画表现可大胆变化，同时保持本次行动及空间关系成立。" + clause + "。";
             }
             if (playerRedraw) effectivePrompt += Environment.NewLine + VisualFidelityRules.PlayerRedrawImagePriority;
+            effectivePrompt += frameTail;
             return new ComposedImagePrompt { Text = effectivePrompt.Trim() };
         }
 
