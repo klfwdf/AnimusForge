@@ -1295,7 +1295,6 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 	private int _weekZeroOpeningSummaryMaintenanceCursor;
 
-	private bool _weekZeroOpeningSummaryMaintenanceChanged;
 
 	private List<Kingdom> _missedStrategicWorldEventMaintenanceKingdoms;
 
@@ -5166,11 +5165,12 @@ public partial class MyBehavior : CampaignBehaviorBase
 		}
 	}
 
-	// Normal callers keep the existing sanitation behavior; database reload passes false to preserve unrelated dynamic history exactly.
+	// Keep the reload/editor signature; opening updates normalize only their own record.
+	// Existing dynamic history must not be cloned when an opening changes.
 	private void EnsureWeekZeroOpeningSummaryEvents(bool sanitizeAfter = true)
 	{
 		FreezeWatchdog.Mark("WeeklyPrompt.EnsureWeek0.start", "entries=" + (_eventRecordEntries?.Count ?? 0) + " thread=" + Thread.CurrentThread.ManagedThreadId);
-		bool flag = UpsertWeekZeroOpeningSummaryEvent("world", "", "第0天世界开局概要", _eventWorldOpeningSummary, "世界开局概要", "world_opening_summary", sanitizeAfter: false);
+		UpsertWeekZeroOpeningSummaryEvent("world", "", "第0天世界开局概要", _eventWorldOpeningSummary, "世界开局概要", "world_opening_summary", sanitizeAfter: false);
 		FreezeWatchdog.Mark("WeeklyPrompt.EnsureWeek0.world_done", "entries=" + (_eventRecordEntries?.Count ?? 0));
 		int kingdomIndex = 0;
 		foreach (Kingdom devEditableKingdom in GetDevEditableKingdoms())
@@ -5182,13 +5182,9 @@ public partial class MyBehavior : CampaignBehaviorBase
 			if (!string.IsNullOrWhiteSpace(kingdomOpeningSummary))
 			{
 				string text = devEditableKingdom.Name?.ToString() ?? (devEditableKingdom.StringId ?? "王国");
-				flag |= UpsertWeekZeroOpeningSummaryEvent("kingdom", devEditableKingdom.StringId ?? "", text + "第0天开局概要", kingdomOpeningSummary, text + " 开局概要", "kingdom_opening_summary", sanitizeAfter: false);
+				UpsertWeekZeroOpeningSummaryEvent("kingdom", devEditableKingdom.StringId ?? "", text + "第0天开局概要", kingdomOpeningSummary, text + " 开局概要", "kingdom_opening_summary", sanitizeAfter: false);
 			}
 			FreezeWatchdog.Mark("WeeklyPrompt.EnsureWeek0.kingdom_done", "index=" + kingdomIndex + " kingdom=" + diagnosticKingdomId + " entries=" + (_eventRecordEntries?.Count ?? 0));
-		}
-		if (flag && sanitizeAfter)
-		{
-			_eventRecordEntries = SanitizeEventRecordEntries(_eventRecordEntries);
 		}
 		FreezeWatchdog.Mark("WeeklyPrompt.EnsureWeek0.done", "kingdoms=" + kingdomIndex + " entries=" + (_eventRecordEntries?.Count ?? 0) + " thread=" + Thread.CurrentThread.ManagedThreadId);
 	}
@@ -5199,7 +5195,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		{
 			if (!_weekZeroOpeningSummaryMaintenanceWorldProcessed)
 			{
-				_weekZeroOpeningSummaryMaintenanceChanged |= UpsertWeekZeroOpeningSummaryEvent("world", "", "第0天世界开局概要", _eventWorldOpeningSummary, "世界开局概要", "world_opening_summary", sanitizeAfter: false);
+				UpsertWeekZeroOpeningSummaryEvent("world", "", "第0天世界开局概要", _eventWorldOpeningSummary, "世界开局概要", "world_opening_summary", sanitizeAfter: false);
 				_weekZeroOpeningSummaryMaintenanceWorldProcessed = true;
 				return false;
 			}
@@ -5215,7 +5211,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 				if (!string.IsNullOrWhiteSpace(summary))
 				{
 					string kingdomName = kingdom?.Name?.ToString() ?? (kingdom?.StringId ?? "王国");
-					_weekZeroOpeningSummaryMaintenanceChanged |= UpsertWeekZeroOpeningSummaryEvent("kingdom", kingdom?.StringId ?? "", kingdomName + "第0天开局概要", summary, kingdomName + " 开局概要", "kingdom_opening_summary", sanitizeAfter: false);
+					UpsertWeekZeroOpeningSummaryEvent("kingdom", kingdom?.StringId ?? "", kingdomName + "第0天开局概要", summary, kingdomName + " 开局概要", "kingdom_opening_summary", sanitizeAfter: false);
 				}
 				return false;
 			}
@@ -5232,14 +5228,9 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 	private void FinalizeWeekZeroOpeningSummaryMaintenance()
 	{
-		if (_weekZeroOpeningSummaryMaintenanceChanged)
-		{
-			_eventRecordEntries = SanitizeEventRecordEntries(_eventRecordEntries);
-		}
 		_weekZeroOpeningSummaryMaintenanceWorldProcessed = false;
 		_weekZeroOpeningSummaryMaintenanceKingdoms = null;
 		_weekZeroOpeningSummaryMaintenanceCursor = 0;
-		_weekZeroOpeningSummaryMaintenanceChanged = false;
 	}
 
 	private bool ProcessMissedStrategicWorldEventsSlice()
@@ -5681,7 +5672,10 @@ public partial class MyBehavior : CampaignBehaviorBase
 	private bool UpsertWeekZeroOpeningSummaryEvent(string eventKind, string kingdomId, string title, string summary, string materialLabel, string materialType, bool sanitizeAfter = true)
 	{
 		FreezeWatchdog.Mark("WeeklyPrompt.UpsertWeek0.start", "kind=" + (eventKind ?? "") + " kingdom=" + (kingdomId ?? "") + " entries=" + (_eventRecordEntries?.Count ?? 0));
-		string text = (summary ?? "").Trim();
+		// Compare, store and publish the same representation as archive normalization.
+		// Otherwise daily maintenance restores the raw scenario name on every pass.
+		string rawSummary = (summary ?? "").Trim();
+		string text = NeutralizeWeeklyReportScenarioName(rawSummary);
 		if (string.IsNullOrWhiteSpace(text))
 		{
 			return false;
@@ -5692,7 +5686,9 @@ public partial class MyBehavior : CampaignBehaviorBase
 		}
 		string text2 = (eventKind ?? "").Trim();
 		string text3 = (kingdomId ?? "").Trim();
-		string text4 = (title ?? "").Trim();
+		string text4 = NeutralizeWeeklyReportScenarioName(title);
+		materialLabel = NeutralizeWeeklyReportScenarioName(materialLabel);
+		materialType = (materialType ?? "").Trim();
 		string text5 = "weekly_report:" + text2.ToLowerInvariant() + ":0:" + text3;
 		EventRecordEntry eventRecordEntry = _eventRecordEntries.FirstOrDefault((EventRecordEntry x) => x != null && string.Equals((x.EventId ?? "").Trim(), text5, StringComparison.OrdinalIgnoreCase));
 		bool flag = eventRecordEntry == null;
@@ -5705,9 +5701,15 @@ public partial class MyBehavior : CampaignBehaviorBase
 			_eventRecordEntries.Add(eventRecordEntry);
 		}
 		string text6 = ComputeWeekZeroShortSummarySourceHash(text);
-		bool flag2 = HasWeekZeroLlmShortSummary(eventRecordEntry, text6) && string.Equals((eventRecordEntry.Summary ?? "").Trim(), text, StringComparison.Ordinal);
-		string text7 = flag2 ? (eventRecordEntry.ShortSummary ?? "") : BuildFallbackWeeklyReportShortSummary(text);
-		string text8 = flag2 ? (eventRecordEntry.PromptText ?? "") : BuildWeekZeroPromptText(text6, llmGenerated: false);
+		// Old saves can have a normalized body but an LLM marker hashed from the raw input.
+		// Retain that successful short summary and upgrade its marker without another request.
+		bool sameSummary = string.Equals(NeutralizeWeeklyReportScenarioName(eventRecordEntry.Summary), text, StringComparison.Ordinal);
+		bool flag2 = sameSummary && (HasWeekZeroLlmShortSummary(eventRecordEntry, text6)
+			|| HasWeekZeroLlmShortSummary(eventRecordEntry, ComputeWeekZeroShortSummarySourceHash(rawSummary))
+			|| HasWeekZeroLlmShortSummary(eventRecordEntry, ComputeWeekZeroShortSummarySourceHash(eventRecordEntry.Summary)));
+		string text7 = flag2 ? BuildFallbackWeeklyReportShortSummary(eventRecordEntry.ShortSummary) : BuildFallbackWeeklyReportShortSummary(text);
+		if (string.IsNullOrWhiteSpace(text7)) text7 = BuildFallbackWeeklyReportShortSummary(text);
+		string text8 = BuildWeekZeroPromptText(text6, llmGenerated: flag2);
 		EventMaterialReference eventMaterialReference = ((eventRecordEntry.Materials?.Count == 1) ? eventRecordEntry.Materials[0] : null);
 		bool flag3 = eventMaterialReference != null
 			&& string.Equals((eventMaterialReference.MaterialType ?? "").Trim(), (materialType ?? "").Trim(), StringComparison.Ordinal)
@@ -5755,14 +5757,8 @@ public partial class MyBehavior : CampaignBehaviorBase
 				KingdomId = (kingdomId ?? "").Trim()
 			}
 		};
-		EventRecordEntry publishedProductEntry = eventRecordEntry;
-		if (sanitizeAfter)
-		{
-			_eventRecordEntries = SanitizeEventRecordEntries(_eventRecordEntries);
-			publishedProductEntry = FindWeeklyReportRecordById(text5) ?? eventRecordEntry;
-			FreezeWatchdog.Mark("WeeklyPrompt.UpsertWeek0.sanitize_done", "kind=" + (eventKind ?? "") + " kingdom=" + (kingdomId ?? "") + " entries=" + (_eventRecordEntries?.Count ?? 0));
-		}
-		NotifyPublishedWorldWeeklyProductChanged(previousPublishedProductState, publishedProductEntry);
+		// Every field above is already normalized. Never sanitize unrelated report history here.
+		NotifyPublishedWorldWeeklyProductChanged(previousPublishedProductState, eventRecordEntry);
 		// Week-zero entries are visible in the same timeline as normal weekly reports.
 		NotifyWorldMessageWeeklyTimelineChanged();
 		TryQueueWeekZeroShortSummaryGeneration(eventRecordEntry, text6);
@@ -10966,7 +10962,7 @@ public static int GetKingdomStabilityRoyalDomainLoyaltyAdjustmentForTown(Town to
 
 	private static HashSet<string> BuildEventSourceMaterialStableKeySet(List<EventSourceMaterialEntry> source)
 	{
-		return new HashSet<string>(SanitizeEventSourceMaterials(source).Select((EventSourceMaterialEntry x) => (x?.StableKey ?? "").Trim()).Where((string x) => !string.IsNullOrWhiteSpace(x)), StringComparer.OrdinalIgnoreCase);
+		return CampaignMaterialRecordOwner.BuildStableKeySet(source);
 	}
 
 	private HashSet<string> BuildEventSourceMaterialStableKeySet()
