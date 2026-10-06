@@ -19,6 +19,8 @@ public sealed partial class AnimusForgeNativeConversationOverlay
 {
 	private const int WaitingDotsIntervalMilliseconds = 350;
 
+    private static readonly string[] OverlayLayerCategories = { "AnimusForgeNativeConversationOverlay" };
+
 	private static readonly TimeSpan LongNpcReplyUnlockDelay = TimeSpan.FromMinutes(1.0);
 
 	private const string EncyclopediaLayerName = "EncyclopediaBar";
@@ -521,6 +523,12 @@ public sealed partial class AnimusForgeNativeConversationOverlay
 		{
 			return;
 		}
+        // Native conversation reactivation disables layers outside its own categories.
+        // Restore the full layer lifecycle before showing widgets or claiming input.
+        if (!_layer.IsActive)
+        {
+            _screen.SetLayerCategoriesState(OverlayLayerCategories, true);
+        }
 		_temporarySystemUiActive = false;
 		_postRestoreForceRestoreTicks = 8;
 		if (_isHiddenForTemporarySystemUi)
