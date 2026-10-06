@@ -176,7 +176,9 @@ public static class DirectorStatusAudit
                         mode + " redraw request reaches director exactly once; textOnly=" + textOnly);
                     Check(payload.Contains("GLOBAL_RULE_SENTINEL") && payload.Contains("DIRECTOR_FACT_SENTINEL") && payload.Contains("现有布衣"),
                         mode + " redraw preserves global rules and original facts");
-                    Check(payload.Contains("不是已发生事实") && payload.Contains("不复述原始提示词"), mode + " redraw preserves factual and visual-output boundary");
+                    Check(payload.Contains("本次玩家定向重绘·最高优先级") && payload.Contains("只覆盖玩家明确要求改变的方面") &&
+                        payload.Contains("不修改游戏状态") && payload.Contains("不复述原始要求"),
+                        mode + " explicit redraw overrides visual defaults without rewriting game state or echoing raw input");
                 }
                 var handler = new MemoryHandler();
                 handler.Add(HttpStatusCode.OK, Reply("stop", NamedBody, null));
@@ -184,6 +186,18 @@ public static class DirectorStatusAudit
                 Check(handler.Bodies.Count == 1 && handler.Bodies[0].Contains(Sentinel) && !Property<string>(result, "Prompt").Contains(Sentinel),
                     mode + " actual director request uses player prompt, final image prompt does not append raw input");
                 Check(Property<string>(original, "PlayerRedrawPrompt") == string.Empty, "ordinary plan cannot inherit the previous redraw request");
+            }
+            foreach (string request in new[] { "手持一把剑", "手持盾牌", "一手举旗", "背负圆盾", "纯黑背景" })
+            {
+                string requestedBody = NamedBody.Replace("审视手中文书", request).Replace("低头审视手中现有文书", request);
+                plan = Activator.CreateInstance(original.GetType(), new object[] { "人物百科纪事", "原始装备没有剑或盾牌。", "", "", request });
+                var requestedHandler = new MemoryHandler();
+                requestedHandler.Add(HttpStatusCode.OK, Reply("stop", requestedBody, null));
+                object requestedResult = Generate(requestedHandler, Options(), References());
+                string finalPrompt = Property<string>(requestedResult, "Prompt");
+                Check(!Property<bool>(requestedResult, "UsedLocalFallback") && finalPrompt.Contains(request) &&
+                    !finalPrompt.Contains("原始装备没有剑或盾牌") && !finalPrompt.Contains("不可改写的核心事实"),
+                    "explicit portrait redraw survives default prop/background rejection: " + request);
             }
             Type popup = director.Assembly.GetType("AnimusForge.Illustrator.UI.Overlays.IllustrationCardPopup", true);
             Type snapshot = popup.GetNestedType("ConversationIllustrationSessionSnapshot", BindingFlags.NonPublic);

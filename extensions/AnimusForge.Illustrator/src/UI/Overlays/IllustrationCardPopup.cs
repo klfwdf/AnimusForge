@@ -472,7 +472,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
             string directorFacts = $"【纪元时间】卡拉迪亚历 {TaleWorlds.CampaignSystem.CampaignTime.Now.GetYear} 年\n" + profile.BuildDirectorOnlyFacts();
             _generationCount++;
             string baseArtDirection = GenerateDiversePoseDirective();
-            var options = IllustratorRuntime.CaptureOptions();
+            var options = IllustratorRuntime.CaptureOptions()?.WithPlayerRedrawRequest(playerRedrawPrompt);
             VisualDirectorEngine.RequirePlayerRedrawDirector(playerRedrawPrompt, options);
 
             _scope.RunGeneration(key, null, async token =>
@@ -751,7 +751,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
                     ? convContext.InterlocutorCharacter.Name.ToString()
                     : "对方");
             // Only the top-screen overlay is a 16:9 frame; the side panel keeps the MCM size.
-            var options = IllustratorRuntime.CaptureOptions();
+            var options = IllustratorRuntime.CaptureOptions()?.WithPlayerRedrawRequest(playerRedrawPrompt);
             if (_autoFullscreen) options = options?.WithSceneImageSize();
             VisualDirectorEngine.RequirePlayerRedrawDirector(playerRedrawPrompt, options);
             if (_autoFullscreen)

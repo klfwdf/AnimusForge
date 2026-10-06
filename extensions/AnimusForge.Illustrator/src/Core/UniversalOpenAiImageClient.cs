@@ -70,6 +70,7 @@ namespace AnimusForge.Illustrator.Core
             {
                 int budgetSeconds = options?.ImageGenerationTimeoutSeconds > 0 ? options.ImageGenerationTimeoutSeconds : DefaultGenerationBudgetSeconds;
                 deadline.CancelAfter(TimeSpan.FromSeconds(budgetSeconds));
+                GenerationDiagnostics.Current?.RecordStage("image_budget", new JObject { ["timeoutMs"] = budgetSeconds * 1000 });
                 cancellationToken = deadline.Token;
             var result = new ImageGenerationResult
             {
@@ -105,6 +106,15 @@ namespace AnimusForge.Illustrator.Core
             string customStyleHint = stylePreset.ImagePrompt;
             string presetNegative = stylePreset.NegativePrompt;
             bool isCustomPreset = stylePreset.IsCustom;
+            bool playerRedraw = settings.HasPlayerRedrawRequest;
+            if (playerRedraw)
+            {
+                // The director reconciles this request with saved preferences;
+                // old style/API fields must not override its requested changes.
+                style = string.Empty;
+                customStyleHint = string.Empty;
+                presetNegative = string.Empty;
+            }
             var stopwatch = Stopwatch.StartNew();
 
             try
@@ -117,13 +127,13 @@ namespace AnimusForge.Illustrator.Core
                 // Before preparation: prepared copies do not carry the idle-stance marker.
                 referenceImages = IllustrationReferenceRouting.SendIdleStanceFullBodyLast(referenceImages);
                 // 用户自定义负面词仅在选“提示词(自定义画风)”预设时生效，追加在预设负面词之后
-                string userNegative = isCustomPreset ? (settings.NegativePrompt ?? string.Empty).Trim() : string.Empty;
+                string userNegative = isCustomPreset && !playerRedraw ? (settings.NegativePrompt ?? string.Empty).Trim() : string.Empty;
                 string negativePrompt;
                 if (string.IsNullOrWhiteSpace(presetNegative)) negativePrompt = userNegative;
                 else if (string.IsNullOrWhiteSpace(userNegative)) negativePrompt = presetNegative;
                 else negativePrompt = presetNegative + ", " + userNegative;
                 int requestedRefImages = referenceImages?.Count ?? 0;
-                GenerationDiagnostics.Current?.RecordStage("image_prompt_sources", new JObject { ["customStyleActive"] = isCustomPreset, ["customNegativeActive"] = isCustomPreset && !string.IsNullOrWhiteSpace(settings.NegativePrompt), ["directorRuleSource"] = "isolated visual rules; no direct RuleBehaviorPrompts", ["promptChars"] = prompt?.Length ?? 0 });
+                GenerationDiagnostics.Current?.RecordStage("image_prompt_sources", new JObject { ["customStyleActive"] = isCustomPreset && !playerRedraw, ["customNegativeActive"] = isCustomPreset && !playerRedraw && !string.IsNullOrWhiteSpace(settings.NegativePrompt), ["directorRuleSource"] = playerRedraw ? "player redraw reconciled by director; saved style/negatives only as defaults" : "isolated visual rules; no direct RuleBehaviorPrompts", ["promptChars"] = prompt?.Length ?? 0 });
 
                 bool configuredEditsEndpoint = IsImagesEditsEndpointUrl(baseUrl);
                 bool exactEditsEndpoint = settings.UseExactEndpointUrl && configuredEditsEndpoint;
@@ -131,7 +141,7 @@ namespace AnimusForge.Illustrator.Core
                     || (settings.PreferChatImageProtocol && !settings.UseExactEndpointUrl));
                 string endpointUrl = ResolveEndpointUrl(baseUrl, isChatProtocol, settings.UseExactEndpointUrl);
                 var composed = ComposeImagePrompt(prompt, size, quality, style, customStyleHint, negativePrompt, isChatProtocol, settings.Randomness,
-                    ResolvePromptProfile(model, isChatProtocol));
+                    ResolvePromptProfile(model, isChatProtocol), playerRedraw);
                 string effectivePrompt = composed.Text;
                 string route = isChatProtocol ? "Chat" : configuredEditsEndpoint || (requestedRefImages > 0 && !settings.UseExactEndpointUrl) ? "ImagesEdits" : "Images";
                 GenerationDiagnostics.Current?.RecordStage("image_route", new JObject { ["protocol"] = route, ["endpoint"] = SensitiveLogText.SafeUrl(route == "ImagesEdits" ? ResolveEditsEndpointUrl(baseUrl) : endpointUrl), ["requestedRefs"] = requestedRefImages, ["reason"] = settings.UseExactEndpointUrl ? "explicit exact endpoint" : isChatProtocol ? "model or chat preference" : requestedRefImages > 0 ? "references present: edits first; no text-only reference fallback" : configuredEditsEndpoint ? "edit endpoint requires image" : "no references: text-to-image", ["referenceGenerationEnabled"] = settings.EnableReferenceImageForGeneration });
@@ -161,7 +171,7 @@ namespace AnimusForge.Illustrator.Core
                 //    generations 端点没有参考图字段，之前日志打 refImages=N 但实际从未发送。
                 if (!isChatProtocol && requestedRefImages > 0 && (!settings.UseExactEndpointUrl || exactEditsEndpoint))
                 {
-                    var edit = await AttemptImagesEditsAsync(baseUrl, model, effectivePrompt, size, quality, style, referenceImages, apiKey, cancellationToken, customStyleHint, composed.NegativeField).ConfigureAwait(false);
+                    var edit = await AttemptImagesEditsAsync(baseUrl, model, effectivePrompt, size, quality, style, referenceImages, apiKey, cancellationToken, customStyleHint, composed.NegativeField, playerRedraw).ConfigureAwait(false);
                     result.ResolvedPrompt = edit.ResolvedPrompt;
                     if (edit.Success)
                     {
@@ -186,7 +196,7 @@ namespace AnimusForge.Illustrator.Core
 
                 if (!success && !stopAfterEditFailure)
                 {
-                    var attempt = await AttemptGenerateOnceAsync(endpointUrl, model, effectivePrompt, size, quality, style, referenceImages, apiKey, isChatProtocol, cancellationToken, customStyleHint, composed.NegativeField).ConfigureAwait(false);
+                    var attempt = await AttemptGenerateOnceAsync(endpointUrl, model, effectivePrompt, size, quality, style, referenceImages, apiKey, isChatProtocol, cancellationToken, customStyleHint, composed.NegativeField, playerRedraw).ConfigureAwait(false);
                     success = attempt.Success;
                     imageBytes = attempt.ImageBytes;
                     imageUrl = attempt.ImageUrl;
@@ -197,9 +207,9 @@ namespace AnimusForge.Illustrator.Core
                     if (!success && attempt.ShouldFallbackToChat && !isChatProtocol && !settings.UseExactEndpointUrl)
                     {
                         Log($"[Illustrator] 检测到生图端点不支持该模型({model})，自动尝试回退至 /chat/completions 多模态生图通道...");
-                        string chatEffectivePrompt = BuildEffectivePrompt(prompt, size, quality, style, customStyleHint, negativePrompt, true, settings.Randomness);
+                        string chatEffectivePrompt = ComposeImagePrompt(prompt, size, quality, style, customStyleHint, negativePrompt, true, settings.Randomness, ImagePromptProfile.Full, playerRedraw).Text;
                         string chatEndpointUrl = ResolveEndpointUrl(baseUrl, true, false);
-                        var chatRetry = await AttemptGenerateOnceAsync(chatEndpointUrl, model, chatEffectivePrompt, size, quality, style, referenceImages, apiKey, true, cancellationToken, customStyleHint).ConfigureAwait(false);
+                        var chatRetry = await AttemptGenerateOnceAsync(chatEndpointUrl, model, chatEffectivePrompt, size, quality, style, referenceImages, apiKey, true, cancellationToken, customStyleHint, playerRedraw: playerRedraw).ConfigureAwait(false);
                         result.ResolvedPrompt = chatRetry.ResolvedPrompt;
                         if (chatRetry.Success)
                         {
@@ -441,7 +451,7 @@ namespace AnimusForge.Illustrator.Core
             return ComposeImagePrompt(prompt, size, quality, style, customStyleHint, negativePrompt, chatProtocol, randomness, ImagePromptProfile.Full).Text;
         }
 
-        internal static ComposedImagePrompt ComposeImagePrompt(string prompt, string size, string quality, string style, string customStyleHint, string negativePrompt, bool chatProtocol, int randomness, ImagePromptProfile profile)
+        internal static ComposedImagePrompt ComposeImagePrompt(string prompt, string size, string quality, string style, string customStyleHint, string negativePrompt, bool chatProtocol, int randomness, ImagePromptProfile profile, bool playerRedraw = false)
         {
             // 通用负面词只覆盖成图缺陷；遮面/装备按人物事实与参考图处理。
             string mergedNegative = string.IsNullOrWhiteSpace(negativePrompt)
@@ -478,7 +488,7 @@ namespace AnimusForge.Illustrator.Core
             }
             effectivePrompt += "\n[画面中严禁出现的元素/Negative]: " + mergedNegative;
             // 0 完全沿用旧版，不追加本段；正数只增加艺术表现变化，不放松硬事实。
-            if (randomness > 0)
+            if (randomness > 0 && !playerRedraw)
             {
                 int strength = Math.Min(100, randomness);
                 string clause = strength >= 100
@@ -486,6 +496,7 @@ namespace AnimusForge.Illustrator.Core
                     : $"艺术表现随机强度为 {strength}/100；数值越高，越主动探索不同取景、留白、景深与光影表现。低值仅作轻微变化";
                 effectivePrompt += "\n[艺术表现随机指导]: 人物五官、肤色、发型、体型、装备、家族纹章及所有已确认游戏事实始终保持一致。人物身份立绘只用于身份与装备，纹章标准图只用于徽记；不得把身份图的姿势、背景、构图或光影用作画面模板。场景按导演正文组织：已确认的现场空间关系严格保留，明确标记的非具名艺术布景可以围绕导演主题和空间设计丰富发挥，补充与时代文化一致的材质、装饰与光影细节。保留导演选择的环境内容，不以人物为主为由清空背景；真实现场不补造未知陈设，人物数量与事件结果不改写。取景与绘画表现可大胆变化，同时保持本次行动及空间关系成立。" + clause + "。";
             }
+            if (playerRedraw) effectivePrompt += Environment.NewLine + VisualFidelityRules.PlayerRedrawImagePriority;
             return new ComposedImagePrompt { Text = effectivePrompt.Trim() };
         }
 
@@ -520,7 +531,8 @@ namespace AnimusForge.Illustrator.Core
             string apiKey,
             CancellationToken cancellationToken,
             string customStyleHint = null,
-            string negativePromptField = null)
+            string negativePromptField = null,
+            bool playerRedraw = false)
         {
             string editsUrl = ResolveEditsEndpointUrl(baseUrl);
             bool hadReferences = referenceImages != null && referenceImages.Count > 0;
@@ -536,6 +548,7 @@ namespace AnimusForge.Illustrator.Core
                     var labels = new StringBuilder();
                     labels.AppendLine(effectivePrompt ?? string.Empty);
                     labels.AppendLine().AppendLine(VisualFidelityRules.ReferenceRepaint);
+                    if (playerRedraw) labels.AppendLine(VisualFidelityRules.PlayerRedrawReferenceException);
                     if (!string.IsNullOrWhiteSpace(quality)) form.Add(new StringContent(quality, Encoding.UTF8), "quality");
                     if (!string.IsNullOrWhiteSpace(size)) form.Add(new StringContent(size, Encoding.UTF8), "size");
                     form.Add(new StringContent("1"), "n");
@@ -554,6 +567,7 @@ namespace AnimusForge.Illustrator.Core
                     if (sent == 0) return (false, null, null, "no usable reference images", false, sentPrompt);
                     // Identity-reference redraw is not a masked local repair. Do not synthesize a mask:
                     // an all-transparent mask does not provide identity-only conditioning.
+                    if (playerRedraw) labels.AppendLine().AppendLine(VisualFidelityRules.PlayerRedrawImagePriority);
                     sentPrompt = labels.ToString();
                     int limit = PromptCharLimit(ResolvePromptProfile(model, false));
                     if (limit > 0) sentPrompt = TrimToBudget(sentPrompt, limit);
@@ -615,7 +629,8 @@ namespace AnimusForge.Illustrator.Core
             bool isChatProtocol,
             CancellationToken cancellationToken,
             string customStyleHint = null,
-            string negativePromptField = null)
+            string negativePromptField = null,
+            bool playerRedraw = false)
         {
             JObject payload;
             int actualRefImages = 0;
@@ -741,6 +756,7 @@ namespace AnimusForge.Illustrator.Core
                                    "5. 落实导演选定的场所、空间关系与构图；非具名艺术布景可补充与主题一致的材质、装饰和光影细节，真实现场仅保留有依据的内容。背景须保留导演设计的空间与环境细节。"
                     });
 
+                    if (playerRedraw) content.Add(new JObject { ["type"] = "text", ["text"] = VisualFidelityRules.PlayerRedrawReferenceException + VisualFidelityRules.PlayerRedrawImagePriority });
                     messageContent = content;
                 }
                 else
