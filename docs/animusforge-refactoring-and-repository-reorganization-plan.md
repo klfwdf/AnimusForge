@@ -1,3 +1,16 @@
+<a id="diplomacy-acceptance-source-20261006"></a>
+# 接受外交提案来源优先与拒绝后声誉纠正（2026-10-06，SOURCE_VERIFIED_BUILD_AND_LIVE_PENDING）
+
+- 用户在链路推演后授权“修复”；工作区F:/AnimusForge-main/main，基线51bbf1e27，检查点58e562e，产品df5424511。仅本地源码修复；沿用本会话不编译/部署边界，没有推送。其他会话提交和生图改动保留。
+- 修复：正式接受/拒绝的RespondingToOffer来源、履行最后通牒的RespondingToThreat来源优先于DiscussionSourceDocumentId/DiscussionRoundId；明确来源存在时不再用讨论字段过滤或引入第二轮次。现有源查找、开放状态、唯一性、双方身份、条款和最终合法性保护保留。国家别名先规范为ID再匹配提案，防止最终认识国家但提前匹配失败。
+- 声誉变化：仅玩家接受提案、published_action_rejected且document及各action均没有确认外交状态变化时，本次声誉结算为0并记录未履约原因；不继续使用LLM正负评价或accept_*兜底+2，不因技术拒绝惩罚。正常成功、提案、拒绝、其他言论及已产生实际变化的记录保留原结算。这个明确的失败例外优先于通用每篇非零兜底。没有重算已结算旧公文、自动重放旧停战或放开重试幂等保护。
+- 代码图（df5424511，一基行号）：`src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOrchestration.Scheduling.cs:65-86` 来源优先，消费者为ProcessAnalyzedDocument执行前绑定及RegisterPlayerResponseWork；`Application/WorldDiplomacyAnalysisApplication.cs:115-126` 先规范ID后调用来源匹配；`Application/WorldDiplomacyDocumentExecutionApplication.cs:260-268` 拒绝日志增加document/round/双方/intent/offer/action/legal；`Domain/WorldDiplomacyReputationRules.cs:299-352` 拒绝接受结算例外和IsOfferAcceptance。以上缩写均相对src/modules/AF.Module.Diplomacy。
+- 回归：`tests/modules/AF.Module.Diplomacy/WorldDiplomacyRoundLifecycle.SmokeTests/PlayerSemanticReplay.cs:147-235` 在已有测试入口补6组：正常、错误讨论来源、错误讨论轮次、关闭提案、不存在来源、跨轮多个来源；分析使用国家别名，绑定调用真实owner，合法列表/文档执行/提案结算/声誉均用生产逻辑，实际游戏效果为计数替身；重复分析及重复声誉结算应不重复执行。测试替身不覆盖真实Campaign的失效清理/战争/条款条件，既有相应用例保持。
+- 性能：按每篇外交分析/结算调用，来源仅小规模动作ID列表，新增一次国家身份解析；声誉仅检查本篇动作列表，无Tick、全世界新增扫描、网络请求或新持久化字段。
+- 已验：12项静态源码断言、git diff --check和人工链路复核。证据 `artifacts/diplomacy-acceptance-source-20261006/source-review.json` 含5文件SHA256；这是静态检查，不是C#测试运行。
+- NOT-RUN：新增/既有C#回归、双API编译、真实LLM/游戏和平执行、截图玩家档案。尚不能确认截图玩家当次命中了讨论来源冲突；新增日志用于区分该路径与正常状态变化。未Stage/部署/打包/推送。
+- 已拒绝旧公文不会因本补丁自动执行；原提案仍有效时应在实际部署后从提案重新提交回复，再检查和平状态及贡金/割地。源码回滚仅git revert df5424511；不重置共享分支或玩家存档。
+
 <a id="illustrator-module-storage-20261006"></a>
 # 生图模组内存储、默认清理与 API 测试（2026-10-06，DEPLOYED_PACKAGED_PUSHED_LIVE_PENDING）
 
