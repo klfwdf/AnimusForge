@@ -459,7 +459,7 @@ namespace AnimusForge.Illustrator
             }
         }
 
-        [SettingPropertyInteger("导演提词参考篇幅（约 Token）", 600, 4000, "0 Token", HintText = "视觉导演完整输出的软性篇幅参考，不会作为 API 硬上限；模型可为保证四段完整而上下浮动。数值越大，等待时间和费用可能越高。", Order = 6, RequireRestart = false)]
+        [SettingPropertyInteger("导演提词参考篇幅（约 Token）", 600, 4000, "0 Token", HintText = "视觉导演完整输出的软性篇幅参考，不会作为 API 硬上限；模型可为保证四段完整而上下浮动。另要求完整回复最多30000字符，这是上限而非目标，不要求凑满；字符与Token不是同一计量。数值越大，等待时间和费用可能越高。", Order = 6, RequireRestart = false)]
         [SettingPropertyGroup("3. 视觉导演 API 配置 (OpenAI 兼容 · 留空使用正文API)", GroupOrder = 3)]
         public int DirectorMaxTokens { get; set; } = 2000;
 
