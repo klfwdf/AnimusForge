@@ -1,3 +1,8 @@
+# 当前交接：输入框标点折行修复（2026-10-07，BUILD_VERIFIED_NOT_DEPLOYED）
+
+- 产品82f8665bf，检查点118ca08；限制标点回看为15%且最多3位置，不再回退半行。7项真实方法边界与双API/Bootstrap/双接缝通过，实机未验，未部署。
+- [主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#input-wrap-20261007--build_verified_not_deployed)。另查Grok JSON四图仍502，最新Player2四图413超请求体限制，不能混为同一原因。
+
 # 当前交接：Player2自动识别与Grok JSON部署（2026-10-07，DEPLOYED_LIVE_PENDING）
 
 - 产品80a47681d+56bd34498。Player2取消手动开关，后台OpenAPI确认并缓存，模型列表提示应用选模，测试按参考图开关分通道。Grok编辑使用JSON images。

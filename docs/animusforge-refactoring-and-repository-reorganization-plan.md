@@ -7764,3 +7764,9 @@ R2计划交付门槛：已给固定技术路线、真实来源与目标、写入
 - IllustratorSettings.cs取消开关；模型拉取识别后显示使用Player2应用模型，避免whisper-1写入生图选择；实际请求不携带model。IllustratorApiTest.cs先解析服务，再按参考图开关选择编辑/生成，结果报告通道。GameClientID可选字段保留。
 - 验证：diff及源码接线审查，原build_single_module.ps1 -Deploy双API/Bootstrap/双接缝PASS，部署9文件；Stage/安装3379文件哈希一致。日志artifacts/grok-json-edits-20261007/build-deploy-auto.log、install-verification.json。
 - 部署包含前序Grok JSON多图适配。未调用Player2计费接口，MCM实机、远端Player2（本片仅本地识别）、真实游戏Grok四图仍未验；未打包/推送。回滚git revert 80a47681d，前序协议git revert 56bd34498。部署恢复C:/Users/29310/AppData/Local/AnimusForge/Recovery/deploy/deploy-72de4238e3814ee999fefaa62edeeced。
+
+## input-wrap-20261007 — BUILD_VERIFIED_NOT_DEPLOYED
+
+- 用户要求修复标点后提前换行；产品82f8665bf，检查点118ca08。DevMultilineEditableTextWidget.cs FindPreferredBreak(605–625)只回看可容纳长度15%且最多3个UTF16位置，不改变真实正文或Enter行为，避免早期标点使半行空白。运行于原布局dirty重排，扫描从全行缩至最多4次，不新增Tick。
+- 提取实际生产方法用Add-Type执行7项边界（靠前逗号、近尾标点、段落可容纳、无分隔、短行、非零起点、近尾空格）全部PASS；diff通过；原入口双API/Bootstrap/双接缝PASS。日志artifacts/input-wrap-20261007/build.log。实机字体/输入法未验，未部署/推送/打包。回滚git revert 82f8665bf。
+- 期间用户反馈Grok502：conversation_1007-065217_8338已走ImagesEditsJson，4图9871字符16:9，约1.4秒502 Upstream request failed，不能认定此前三图成功已解决游戏请求。最新conversation_1007-065340_94b8为Player2Edit，4图9705字符，HTTP413 Failed to buffer the request body: length limit exceeded；是独立明确体积错误。未追加付费测试或擅自改协议。
