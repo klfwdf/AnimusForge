@@ -1,4 +1,11 @@
-# 当前交接：处决后攻击空引用与内政按钮底色（2026-10-06，DEPLOYED_PACKAGED_LIVE_PENDING）
+# 当前交接：1.5.5 累计公告与 main 发布（2026-10-06，PUSH_READY）
+
+- 用户明确授权提交推送及对比远端、以上次更新为基线写玩家累计公告。上次实际发布采用v1.5.4/b1884036（2026-10-06 11:17:54 +08:00），不将上一期1.5.3已讲内容重复作为本次新增。
+- 拉取远端至df6fc788c，新增8193个参考资料/导出脚本文件已由73d82a201无冲突合入；全部处于现有编译排除范围，产品与已验证打包源码3dad3baf相同。禁止发布的本地交接文件未进入待推送历史。
+- 公告：docs/releases/AnimusForge_1.5.5_累计更新公告_20261006.md及同名txt，涵盖处决/对话设置/亲属/画卷/内战/GCCZ/海上退出；明确默认、范围与实机限制。未把信使好感和救援记忆的只读调查写成修复。
+- [主台账、基线和推送证据](docs/animusforge-refactoring-and-repository-reorganization-plan.md#publish-v155-20261006)。本地收据artifacts/publish-v1.5.5-20261006，回滚点codex/pre-push-v1.5.5-20261006；普通推送main，不强推，不上传ZIP/存档/本地证据。
+
+# 历史交接：处决后攻击空引用与内政按钮底色（2026-10-06，DEPLOYED_PACKAGED_LIVE_PENDING）
 
 - 实机日志确认攻击后原版FleeBehavior找门时LocationCharacter为空。产品3e8365f1、3dad3baf补临时非英雄的同Origin登记、原版重生成行为回调及跨门后的清理；保留处决结束后冲突、刑场避让、真实Hero与受刑者死亡身份。
 - 内政按钮581e6d7f移除覆盖在ButtonBrush1上的两处矩形Box叠色，保留文字、命令和尺寸。63项散场/身份回归、76项隔离回归，AF双API+Bootstrap/双接缝、独立RichExecutions目标编译通过；修复后实机尚未验证。
