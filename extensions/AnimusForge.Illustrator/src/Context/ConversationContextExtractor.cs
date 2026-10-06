@@ -30,7 +30,7 @@ namespace AnimusForge.Illustrator.Context
         public string InterlocutorBodyProperties { get; set; } = string.Empty;
         internal ConversationNpcAgeSnapshot InterlocutorAgeSnapshot { get; set; }
 
-        /// <summary>台词与最近2条对话——只进导演，不进生图模型（避免被渲染成画面文字）。</summary>
+        /// <summary>台词与当前会话最近两轮对话——只进导演，不进生图模型（避免被渲染成画面文字）。</summary>
         public string BuildDialogueBlock()
         {
             var sb = new StringBuilder();
@@ -255,7 +255,7 @@ namespace AnimusForge.Illustrator.Context
             {
             }
             context.DialogueSentence = CleanText(sentence);
-            context.RecentDialogueHistory = BuildRecentDialogueHistory(ReadNativeConversationHistory(24), RecentDialogueLimit);
+            context.RecentDialogueHistory = BuildRecentDialogueHistory(ReadNativeConversationHistory(260), RecentDialogueLimit);
             context.EnvironmentProfile = EnvironmentVisualExtractor.Extract(settlement);
             context.EnvironmentProfile.UseConversationTimeEvidence();
             try
@@ -422,7 +422,7 @@ namespace AnimusForge.Illustrator.Context
                 (string.IsNullOrWhiteSpace(siegeForces) ? string.Empty : siegeForces + "\n") +
                 $"地点为【{locName}】。";
             context.SceneDirective =
-                "优先采用最近2条对话中已发生或正在进行的动作，导演据此设计镜头；对话未涉及的骑乘状态与环境空间关系保留已知记录。" +
+                "优先采用当前会话最近两轮对话中已发生或正在进行的动作，导演据此设计镜头；对话未涉及的骑乘状态与环境空间关系保留已知记录。" +
                 "有【双方实测高差】时按实测米数画出落差：用城墙墙面、垛口与人物身高作比例参照，下方人物按距离明显缩小，选择能同时容纳上下双方与其间墙面的机位，不用会挤掉墙面的过肩中景。" +
                 (string.IsNullOrWhiteSpace(siegeForces) ? string.Empty :
                     "有【围城兵力】时，城墙上的守军队列与城外的军阵、营帐、营火按兵力实数组织为有纵深的远景群体，采用能看到对话双方、城防与远处军势的中远景或高位广角。") +
@@ -550,15 +550,15 @@ namespace AnimusForge.Illustrator.Context
         /// <summary>
         /// 通过 *ForExternal 公共契约反射读取主模组会话历史。主模组由他人独立重构，
         /// 一律走反射：宿主版本偏旧、缺 API 或字段改名时只降级为无历史，绝不抛 MissingMethod。
-        /// 调用频率：每次生成插画一次，最多 24 行，非热路径。
+        /// 调用频率：每次生成插画一次，最多 260 行托管快照，非热路径。
         /// </summary>
-        private static List<NativeDialogueLine> ReadNativeConversationHistory(int maxLines)
+        internal static List<NativeDialogueLine> ReadNativeConversationHistory(int maxLines)
         {
             var lines = new List<NativeDialogueLine>();
             try
             {
                 var type = HarmonyLib.AccessTools.TypeByName("AnimusForge.ShoutBehavior");
-                var method = HarmonyLib.AccessTools.Method(type, "GetNativeConversationSessionHistoryEntriesForExternal", new[] { typeof(int) });
+                var method = HarmonyLib.AccessTools.Method(type, "GetCurrentNativeConversationHistoryEntriesForExternal", new[] { typeof(int) });
                 var raw = method?.Invoke(null, new object[] { maxLines }) as System.Collections.IEnumerable;
                 if (raw == null) return lines;
                 foreach (var entry in raw)
@@ -582,17 +582,28 @@ namespace AnimusForge.Illustrator.Context
 
         internal const int RecentDialogueLimit = 2;
 
-        internal static string BuildRecentDialogueHistory(IEnumerable<NativeDialogueLine> entries, int maxLines)
+        internal static string BuildRecentDialogueHistory(IEnumerable<NativeDialogueLine> entries, int maxRounds)
         {
             var lines = (entries ?? Enumerable.Empty<NativeDialogueLine>())
                 .Where(entry => entry != null && !string.IsNullOrWhiteSpace(entry.Text) &&
                     (string.Equals(entry.Kind, "player", StringComparison.OrdinalIgnoreCase) || string.Equals(entry.Kind, "npc", StringComparison.OrdinalIgnoreCase)))
                 .ToList();
-            if (lines.Count == 0 || maxLines <= 0) return string.Empty;
-            int start = Math.Max(0, lines.Count - maxLines);
+            if (lines.Count == 0 || maxRounds <= 0) return string.Empty;
+            // A round starts with the player and includes all subsequent NPC reply segments.
+            // Keep an unfinished last round; short sessions may contain only the NPC opening.
+            int start = 0;
+            int rounds = 0;
+            for (int i = lines.Count - 1; i >= 0; i--)
+            {
+                if (string.Equals(lines[i].Kind, "player", StringComparison.OrdinalIgnoreCase) && ++rounds == maxRounds)
+                {
+                    start = i;
+                    break;
+                }
+            }
 
             var sb = new StringBuilder();
-            sb.AppendLine($"【最近{lines.Count - start}条对话记录（按时间先后）】");
+            sb.AppendLine($"【当前会话最近至多{maxRounds}轮对话（共{lines.Count - start}条发言，按时间先后；不足时仅使用已有记录）】");
             for (int i = start; i < lines.Count; i++)
             {
                 var entry = lines[i];
