@@ -802,7 +802,10 @@ namespace AnimusForge.Illustrator.Core
                 {
                     new JObject { ["role"] = "system", ["content"] =
                         (plan?.IsWeeklyReport == true ? WeeklyReportSystemPrompt : plan?.IsConversation == true ? ConversationSystemPrompt : SystemPrompt) +
-                        (string.IsNullOrWhiteSpace(plan?.PlayerRedrawPrompt) ? string.Empty : "\n" + VisualFidelityRules.PlayerRedrawDirectorPriority) },
+                        (string.IsNullOrWhiteSpace(plan?.PlayerRedrawPrompt) ? string.Empty : "\n" + VisualFidelityRules.PlayerRedrawDirectorPriority) +
+                        "\n【输出字符上限】你的完整回复（标题、主题、行动摘要、取景元数据、四段正文、标点及空白合计）最多30000字符。" +
+                        "这是上限，不是目标篇幅或最低字数，禁止为凑满上限而扩写。仍以本次请求的约Token篇幅为参考，简洁完整地表达即可；" +
+                        "篇幅可浮动不代表可以超过此字符上限。优先删去重复修辞和装备罗列，保留关键事实、行动、空间关系及完整四段；不输出计数或检查过程。" },
                     userMessage
                 },
                 ["temperature"] = 0.85
