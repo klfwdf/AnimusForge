@@ -815,7 +815,7 @@ namespace AnimusForge.Illustrator.Core
                         "篇幅可浮动不代表可以超过此字符上限。优先删去重复修辞和装备罗列，保留关键事实、行动、空间关系及完整四段；不输出计数或检查过程。" },
                     userMessage
                 },
-                ["max_tokens"] = options.DirectorApiMaxTokens > 0 ? options.DirectorApiMaxTokens : 16384,
+                ["max_tokens"] = options.DirectorApiMaxTokens > 0 ? options.DirectorApiMaxTokens : 25000,
                 ["temperature"] = 0.85
             };
 

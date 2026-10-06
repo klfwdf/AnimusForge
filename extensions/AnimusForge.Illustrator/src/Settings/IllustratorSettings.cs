@@ -459,9 +459,9 @@ namespace AnimusForge.Illustrator
             }
         }
 
-        [SettingPropertyInteger("导演最大输出 Tokens", 512, 64000, "0 Token", HintText = "实际发送给导演API的 max_tokens，默认16384；这是允许的输出预算，不是目标篇幅，也不是字符数。思考消耗是否计入由接口决定；请按接口支持范围设置。", Order = 6, RequireRestart = false)]
+        [SettingPropertyInteger("导演最大输出 Tokens", 512, 64000, "0 Token", HintText = "实际发送给导演API的 max_tokens，默认25000；这是允许的输出预算，不是目标篇幅，也不是字符数。思考消耗是否计入由接口决定；请按接口支持范围设置。", Order = 6, RequireRestart = false)]
         [SettingPropertyGroup("3. 视觉导演 API 配置 (OpenAI 兼容 · 留空使用正文API)", GroupOrder = 3)]
-        public int DirectorApiMaxTokens { get; set; } = 16384;
+        public int DirectorApiMaxTokens { get; set; } = 25000;
 
         [SettingPropertyBool("强制缩减生图提示词", HintText = "默认关闭。开启后要求导演简洁输出，并按下方字符上限缩减导演四段描述。保留核心事实、画风、固定画幅和参考图说明；不能安全缩减则停止发送。不增加模型调用。关闭后保持原有模型限制及32000字符安全上限。", Order = 7, RequireRestart = false)]
         [SettingPropertyGroup("3. 视觉导演 API 配置 (OpenAI 兼容 · 留空使用正文API)", GroupOrder = 3)]
