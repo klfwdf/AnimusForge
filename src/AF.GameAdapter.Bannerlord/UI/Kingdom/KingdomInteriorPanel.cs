@@ -264,7 +264,6 @@ internal sealed class KingdomInteriorPanelPatch : PrefabExtensionInsertPatch
 			+ T("@TitleText", "*", "52", 38, Ink, "Center", true, "MarginTop='10'")
 			+ T("@NoteText", "*", "26", 17, Brown, "Center", extra: "MarginTop='6'")
 			+ "<ButtonWidget IsVisible='@CanCallVoteMeeting' HorizontalAlignment='Center' WidthSizePolicy='Fixed' SuggestedWidth='220' HeightSizePolicy='Fixed' SuggestedHeight='46' MarginTop='12' Brush='ButtonBrush1' Command.Click='ExecuteCallVoteMeeting' DoNotPassEventsToChildren='true'><Children>"
-			+ Box("*", "*", "#6B3329CC", "MarginLeft='3' MarginRight='3' MarginTop='3' MarginBottom='3'")
 			+ T("@MeetingButtonText", "*", "*", 19, "#FFE7A8FF", "Center", true)
 			+ "</Children></ButtonWidget>")
 		+ Block(""));
@@ -461,7 +460,6 @@ internal sealed class KingdomInteriorPanelPatch : PrefabExtensionInsertPatch
 	private static string ActionButton() => @"
 		<ButtonWidget WidthSizePolicy='Fixed' SuggestedWidth='196' HeightSizePolicy='Fixed' SuggestedHeight='62' VerticalAlignment='Center' MarginLeft='12' Brush='ButtonBrush1' Command.Click='ExecuteClick' DoNotPassEventsToChildren='true'>
 		  <Children>
-		    " + Box("*", "*", "@TintColor", "MarginLeft='3' MarginRight='3' MarginTop='3' MarginBottom='3'") + @"
 		    " + Col("*", "~",
 				T("@Label", "*", "30", 21, "#F1DFC1FF", "Center", true, "IsHidden='@IsDim'")
 				+ T("@Label", "*", "30", 21, "#9A8B70FF", "Center", true, "IsVisible='@IsDim'")
