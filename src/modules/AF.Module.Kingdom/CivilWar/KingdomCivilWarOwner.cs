@@ -72,6 +72,8 @@ internal sealed partial class KingdomCivilWarOwner
 	// host's stability rebellion must not fire right after a faction settles (or a rebellion just happened).
 	internal bool HasTrackedKingdom(Kingdom kingdom)
 	{
+		// A rebel kingdom still fighting its civil war never hosts a stability rebellion of its own.
+		if (IsActiveRebelKingdom(kingdom)) return true;
 		KingdomCivilWarKingdomState state = Find(kingdom);
 		return state != null && (state.Factions.Count > 0 || CivilWarWorld.CurrentDay() < state.CooldownUntilDay);
 	}
@@ -539,7 +541,10 @@ internal sealed partial class KingdomCivilWarOwner
 		float crownPower = CivilWarWorld.Strength(kingdom);
 		float rebelPower = CivilWarWorld.Strength(rebel);
 		faction.LastFactionPower = CivilWarRules.Clamp(rebelPower / Math.Max(1f, crownPower + rebelPower), 0f, 1f);
-		faction.LastWarScore = CivilWarRules.Clamp((rebelPower - crownPower) / Math.Max(1f, rebelPower + crownPower), -1f, 1f);
+		// War score from this war's weariness and casualty exchange (war-stats terminal), not raw troop totals.
+		if (CivilWarWorld.IsAlive(rebel))
+			faction.LastWarScore = CivilWarWearinessRules.WarScore(MyBehavior.GetWarWearinessForExternal(kingdom, rebel), MyBehavior.GetWarWearinessForExternal(rebel, kingdom),
+				MyBehavior.GetWarCasualtiesForExternal(kingdom, rebel), MyBehavior.GetWarCasualtiesForExternal(rebel, kingdom));
 		if (!CivilWarWorld.IsAlive(rebel)) faction.RebelKingdomDestroyed = true;
 		else if (!kingdom.IsAtWarWith(rebel)) faction.EndedByPeace = true;
 		int elapsed = Math.Max(0, CivilWarWorld.CurrentDay() - faction.WarStartDay) / 7;
@@ -725,6 +730,8 @@ internal sealed partial class KingdomCivilWarOwner
 			return;
 		}
 		FinishFaction(kingdom, state, faction, week, tuning, adjustStability, outcome.RebelsWon ? -4 : 6);
+		// A newly independent kingdom starts with the same cooldown before its own factions can form.
+		if (outcome.Id == CivilWarCatalog.SecedeOutcomeId && CivilWarWorld.IsAlive(ctx.RebelKingdom)) NoteKingdomRebellion(ctx.RebelKingdom);
 		CivilWarAftermath mood = outcome.Id == CivilWarCatalog.NegotiatedOutcomeId ? CivilWarAftermath.Settled
 			: outcome.RebelsWon ? CivilWarAftermath.Emboldened : CivilWarAftermath.Suppressed;
 		ApplyAftermath(kingdom, state, week, tuning, mood);

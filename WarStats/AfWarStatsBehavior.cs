@@ -1628,6 +1628,18 @@ public sealed partial class AfWarStatsBehavior : CampaignBehaviorBase
             : CalculateWeariness(GetWarDurationDays(self, enemy), record.CasualtiesB, record.WinsB, record.LossesB, record.InitialTerritoryB, CountTerritory(self), record.RaidsB, record.LostTownsB, record.LostCastlesB);
     }
 
+    // Casualties (killed + wounded) `self` has suffered in its current war with `enemy`. O(1).
+    public int GetWarCasualties(Kingdom self, Kingdom enemy)
+    {
+        string pairKey = MakePairKey(self, enemy);
+        if (string.IsNullOrEmpty(pairKey) || !_activeWars.TryGetValue(pairKey, out WarStatsRecord record))
+        {
+            return 0;
+        }
+
+        return string.CompareOrdinal(self.StringId, enemy.StringId) <= 0 ? record.CasualtiesA : record.CasualtiesB;
+    }
+
     // Highest weariness among the kingdom's current wars (a kingdom only has a handful of enemies).
     public int GetMaxWarWeariness(Kingdom self)
     {

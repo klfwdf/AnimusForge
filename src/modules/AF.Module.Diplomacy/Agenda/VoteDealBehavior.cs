@@ -1383,6 +1383,13 @@ namespace AnimusForge
 			return IsDecisionPendingInKingdom(decision, playerKingdom);
 		}
 
+		// The player rules a one-clan kingdom: nobody else votes, the king decides whenever he likes.
+		internal static bool IsSingleClanRulerAgenda(KingdomDecision decision)
+		{
+			try { return RequiresInteractiveSingleClanAgendaVote(decision); }
+			catch { return false; }
+		}
+
 		private static bool Patch_BilateralDiplomacy_ShouldBeCancelled_Prefix(KingdomDecision __instance, ref bool __result)
 		{
 			try
@@ -2682,6 +2689,23 @@ namespace AnimusForge
 			return DoesVoteDealMatchDecisionKeys(deal, BuildVoteDealDecisionKey(decision, includeProposer: true), BuildVoteDealDecisionKey(decision, includeProposer: false));
 		}
 
+		// Unconsumed vote deals aimed at this decision (内政 dossier footer; built on selection, not per frame).
+		internal static int CountActiveVoteDeals(KingdomDecision decision)
+		{
+			VoteDealBehavior inst = Instance;
+			if (decision == null || inst?._activeDeals == null || inst._activeDeals.Count == 0) return 0;
+			try
+			{
+				string key = BuildVoteDealDecisionKey(decision, includeProposer: true);
+				string basicKey = BuildVoteDealDecisionKey(decision, includeProposer: false);
+				return inst._activeDeals.Count(d => !d.IsConsumed && DoesVoteDealMatchDecisionKeys(d, key, basicKey));
+			}
+			catch
+			{
+				return 0;
+			}
+		}
+
 		private static bool DoesVoteDealMatchOutcome(VoteDealRecord deal, DecisionOutcome outcome)
 		{
 			if (deal == null || outcome == null) return false;
@@ -3588,208 +3612,7 @@ namespace AnimusForge
 			}
 		}
 
-	[PrefabExtension("KingdomManagement", "descendant::DiplomacyPanel[@Id='DiplomacyPanel']")]
-	internal sealed class KingdomAgendaPanelPatch : PrefabExtensionInsertPatch
-	{
-		private readonly XmlDocument _document;
-
-		public override InsertType Type => (InsertType)4;
-
-		public KingdomAgendaPanelPatch()
-		{
-			_document = new XmlDocument();
-									_document.LoadXml(@"
-				<Widget Id='AgendaPanelRoot' IsVisible='@IsAgendaSelected' WidthSizePolicy='StretchToParent' HeightSizePolicy='StretchToParent' MarginTop='188' MarginBottom='75'>
-				  <Children>
-				    <Widget Id='AgendaPanel' DataSource='{Agenda}' WidthSizePolicy='StretchToParent' HeightSizePolicy='StretchToParent'>
-				      <Children>
-				        <ListPanel WidthSizePolicy='StretchToParent' HeightSizePolicy='StretchToParent'>
-				          <Children>
-				            <BrushListPanel WidthSizePolicy='Fixed' SuggestedWidth='585' HeightSizePolicy='StretchToParent' VerticalAlignment='Bottom' MarginLeft='5' MarginTop='6' MarginBottom='9' Brush='Frame1Brush' StackLayout.LayoutMethod='VerticalBottomToTop'>
-				              <Children>
-				                <ListPanel WidthSizePolicy='CoverChildren' HeightSizePolicy='CoverChildren' RenderLate='true'>
-				                  <Children>
-				                    <Widget WidthSizePolicy='Fixed' HeightSizePolicy='Fixed' SuggestedWidth='585' SuggestedHeight='60' Sprite='SPKingdom\header_policies' ExtendTop='21' ExtendRight='13' ExtendBottom='20' RenderLate='true'>
-				                      <Children>
-				                        <TextWidget WidthSizePolicy='StretchToParent' HeightSizePolicy='StretchToParent' Brush='Kingdom.PoliciesCollapserTitle.Text' MarginBottom='8' IsDisabled='true' Text='活跃议程' />
-				                      </Children>
-				                    </Widget>
-				                    <Widget WidthSizePolicy='Fixed' HeightSizePolicy='Fixed' SuggestedWidth='23' SuggestedHeight='60' Sprite='StdAssets\scroll_header' ExtendRight='3' ExtendTop='6' ExtendLeft='3' ExtendBottom='4' HorizontalAlignment='Right' />
-				                  </Children>
-				                </ListPanel>
-
-						<!-- Kingdom selector bar -->
-						<BrushWidget WidthSizePolicy='StretchToParent' HeightSizePolicy='Fixed' SuggestedHeight='72' MarginLeft='3' MarginRight='0' MarginTop='2' MarginBottom='4' Brush='Clan.Item.Tuple'>
-						  <Children>
-						    <ListPanel WidthSizePolicy='StretchToParent' HeightSizePolicy='StretchToParent' MarginLeft='8' MarginRight='8'>
-						      <Children>
-						        <ButtonWidget IsVisible='@HasPrevKingdom' DoNotPassEventsToChildren='true' WidthSizePolicy='Fixed' HeightSizePolicy='Fixed' SuggestedWidth='32' SuggestedHeight='32' VerticalAlignment='Center' Command.Click='ExecutePrevKingdom' UpdateChildrenStates='true'>
-						          <Children>
-						            <BrushWidget WidthSizePolicy='Fixed' HeightSizePolicy='Fixed' SuggestedWidth='28' SuggestedHeight='28' Brush='ButtonRightBigArrowBrush1' HorizontalAlignment='Center' VerticalAlignment='Center' />
-						          </Children>
-						        </ButtonWidget>
-						        <TextWidget WidthSizePolicy='StretchToParent' HeightSizePolicy='StretchToParent' HorizontalAlignment='Center' VerticalAlignment='Center' Brush='Kingdom.PoliciesItem.Text' Text='@KingdomSelectorName' />
-						        <ButtonWidget IsVisible='@HasNextKingdom' DoNotPassEventsToChildren='true' WidthSizePolicy='Fixed' HeightSizePolicy='Fixed' SuggestedWidth='32' SuggestedHeight='32' VerticalAlignment='Center' Command.Click='ExecuteNextKingdom' UpdateChildrenStates='true'>
-						          <Children>
-						            <BrushWidget WidthSizePolicy='Fixed' HeightSizePolicy='Fixed' SuggestedWidth='28' SuggestedHeight='28' Brush='ButtonLeftBigArrowBrush1' HorizontalAlignment='Center' VerticalAlignment='Center' />
-						          </Children>
-						        </ButtonWidget>
-						      </Children>
-						    </ListPanel>
-						  </Children>
-						</BrushWidget>
-
-				                <Widget WidthSizePolicy='CoverChildren' HeightSizePolicy='StretchToParent'>
-				                  <Children>
-				                    <RichTextWidget WidthSizePolicy='StretchToParent' HeightSizePolicy='CoverChildren' VerticalAlignment='Center' HorizontalAlignment='Center' MarginLeft='24' MarginRight='24' Brush='Popup.Description.Text' Brush.TextHorizontalAlignment='Center' Text='暂无进行中的决议' IsVisible='@!HasItems' DoNotAcceptEvents='true' />
-
-				                    <ScrollablePanel WidthSizePolicy='CoverChildren' HeightSizePolicy='StretchToParent' MarginLeft='0' MarginBottom='10' AutoHideScrollBars='true' ClipRect='AgendaClipRect' InnerPanel='AgendaClipRect\AgendaInnerPanel' VerticalScrollbar='..\AgendaScrollbar\Scrollbar' IsVisible='@HasItems'>
-				                      <Children>
-				                        <Widget Id='AgendaClipRect' WidthSizePolicy='CoverChildren' HeightSizePolicy='StretchToParent' ClipContents='true'>
-				                          <Children>
-				                            <NavigatableListPanel Id='AgendaInnerPanel' DataSource='{AgendaItems}' WidthSizePolicy='Fixed' SuggestedWidth='585' HeightSizePolicy='CoverChildren' StackLayout.LayoutMethod='VerticalBottomToTop' MinIndex='0' StepSize='1000'>
-				                              <ItemTemplate>
-				                                <ButtonWidget DoNotPassEventsToChildren='true' WidthSizePolicy='StretchToParent' HeightSizePolicy='Fixed' SuggestedHeight='85' Brush='Kingdom.Policy.Active.Tuple' Command.Click='ExecuteSelect' UpdateChildrenStates='true' IsSelected='@IsSelected'>
-				                                  <Children>
-				                                    <ListPanel WidthSizePolicy='StretchToParent' HeightSizePolicy='StretchToParent' StackLayout.LayoutMethod='VerticalBottomToTop' MarginLeft='12' MarginRight='12'>
-				                                      <Children>
-				                                        <TextWidget WidthSizePolicy='StretchToParent' HeightSizePolicy='Fixed' SuggestedHeight='35' VerticalAlignment='Center' Brush='Kingdom.PoliciesItem.Text' Text='@TitleText' ClipContents='false' />
-				                                        <TextWidget WidthSizePolicy='StretchToParent' HeightSizePolicy='Fixed' SuggestedHeight='20' HorizontalAlignment='Center' VerticalAlignment='Center' Brush='Popup.Description.Text' Brush.FontSize='14' Brush.TextHorizontalAlignment='Center' Text='@DaysRemainingText' />
-				                                        <ListPanel WidthSizePolicy='CoverChildren' HeightSizePolicy='Fixed' SuggestedHeight='20' StackLayout.LayoutMethod='HorizontalLeftToRight' MarginTop='2'>
-				                                          <Children>
-				                                            <Widget WidthSizePolicy='Fixed' HeightSizePolicy='Fixed' SuggestedWidth='44' SuggestedHeight='20' HorizontalAlignment='Left' VerticalAlignment='Center' Sprite='BlankWhiteSquare_9' Color='#8A6E3EFF' AlphaFactor='0.18'>
-				                                              <Children>
-				                                                <TextWidget WidthSizePolicy='StretchToParent' HeightSizePolicy='StretchToParent' Brush='Popup.Description.Text' Brush.FontSize='12' Brush.TextHorizontalAlignment='Center' Text='@DecisionTypeText' />
-				                                              </Children>
-				                                            </Widget>
-				                                          </Children>
-				                                        </ListPanel>
-				                                      </Children>
-				                                    </ListPanel>
-				                                  </Children>
-				                                </ButtonWidget>
-				                              </ItemTemplate>
-				                            </NavigatableListPanel>
-				                          </Children>
-				                        </Widget>
-				                      </Children>
-				                    </ScrollablePanel>
-				                    <Standard.VerticalScrollbar Id='AgendaScrollbar' WidthSizePolicy='CoverChildren' HeightSizePolicy='StretchToParent' HorizontalAlignment='Left' MarginRight='2' MarginLeft='2' MarginBottom='10' />
-				                  </Children>
-				                </Widget>
-				              </Children>
-				            </BrushListPanel>
-
-				<Widget WidthSizePolicy='StretchToParent' HeightSizePolicy='StretchToParent' MarginLeft='8' MarginRight='8' MarginTop='8' Sprite='BlankWhiteSquare_9' Color='#C8A070FF' AlphaFactor='0.15'>
-				  <Children>
-				    <RichTextWidget IsVisible='@!HasItems' WidthSizePolicy='StretchToParent' HeightSizePolicy='CoverChildren' VerticalAlignment='Center' HorizontalAlignment='Center' MarginTop='80' Brush='Kingdom.PoliciesCollapserTitle.Text' Brush.TextHorizontalAlignment='Center' Brush.FontSize='24' Text='暂无进行中的议程' DoNotAcceptEvents='true' />
-				    <Widget IsVisible='@HasItems' WidthSizePolicy='StretchToParent' HeightSizePolicy='CoverChildren'>
-				      <Children>
-				        <RichTextWidget IsVisible='@!HasSelectedItem' WidthSizePolicy='StretchToParent' HeightSizePolicy='CoverChildren' VerticalAlignment='Center' HorizontalAlignment='Center' MarginTop='80' Brush='Kingdom.PoliciesCollapserTitle.Text' Brush.TextHorizontalAlignment='Center' Brush.FontSize='22' Text='选择一个议程条目查看详情' DoNotAcceptEvents='true' />
-				      </Children>
-				    </Widget>
-				    <Widget IsVisible='@HasSelectedItem' WidthSizePolicy='StretchToParent' HeightSizePolicy='StretchToParent'>
-				      <Children>
-				        <ScrollablePanel WidthSizePolicy='StretchToParent' HeightSizePolicy='StretchToParent' AutoHideScrollBars='true' ClipRect='DetailClipRect2' InnerPanel='DetailClipRect2\DetailInnerPanel2'>
-				          <Children>
-				            <Widget Id='DetailClipRect2' WidthSizePolicy='StretchToParent' HeightSizePolicy='StretchToParent' ClipContents='true'>
-				              <Children>
-				                <ListPanel Id='DetailInnerPanel2' DataSource='{SelectedItem}' WidthSizePolicy='StretchToParent' HeightSizePolicy='CoverChildren' StackLayout.LayoutMethod='VerticalBottomToTop' MarginRight='5'>
-				                  <Children>
-				                    <TextWidget WidthSizePolicy='StretchToParent' HeightSizePolicy='Fixed' SuggestedHeight='54' MarginTop='4' Brush='Kingdom.DecisionTitleBig.Text' Text='@TitleText' Brush.FontSize='46' />
-				                    <RichTextWidget WidthSizePolicy='StretchToParent' HeightSizePolicy='CoverChildren' MarginTop='4' Brush='Popup.Description.Text' Brush.FontSize='18' Text='@DaysRemainingText' />
-				                    <ButtonWidget IsVisible='@CanCallVoteMeeting' DoNotPassEventsToChildren='true' WidthSizePolicy='Fixed' HeightSizePolicy='Fixed' SuggestedWidth='260' SuggestedHeight='36' HorizontalAlignment='Center' MarginTop='10' Brush='ButtonBrush2' Command.Click='ExecuteCallVoteMeeting' UpdateChildrenStates='true'>
-				                      <Children>
-				                        <TextWidget WidthSizePolicy='StretchToParent' HeightSizePolicy='StretchToParent' Brush='Kingdom.GeneralButtons.Text' Text='召开投票会议' DoNotAcceptEvents='true' />
-				                      </Children>
-				                    </ButtonWidget>
-				                    <Widget WidthSizePolicy='StretchToParent' HeightSizePolicy='Fixed' SuggestedHeight='2' Sprite='SPKingdom\Diplomacy\divider_left' MarginTop='10' MarginBottom='10' AlphaFactor='0.5' />
-				                    <Widget IsVisible='@HasDetail' WidthSizePolicy='StretchToParent' HeightSizePolicy='StretchToParent'>
-				                      <Children>
-				                        <ListPanel DataSource='{Options}' WidthSizePolicy='StretchToParent' HeightSizePolicy='StretchToParent' StackLayout.LayoutMethod='HorizontalLeftToRight'>
-				                          <ItemTemplate>
-				                            <Widget WidthSizePolicy='StretchToParent' HeightSizePolicy='StretchToParent' MarginRight='6'>
-				                              <Children>
-				                                <Widget WidthSizePolicy='StretchToParent' HeightSizePolicy='StretchToParent' Sprite='BlankWhiteSquare_9' Color='#F0D9A0FF' AlphaFactor='0.25' />
-				                                <ListPanel WidthSizePolicy='StretchToParent' HeightSizePolicy='StretchToParent' StackLayout.LayoutMethod='VerticalBottomToTop' MarginLeft='14' MarginRight='14' MarginTop='14' MarginBottom='14'>
-				                                  <Children>
-				                                    <ListPanel WidthSizePolicy='StretchToParent' HeightSizePolicy='Fixed' SuggestedHeight='48' StackLayout.LayoutMethod='HorizontalLeftToRight'>
-					                                      <Children>
-					                                        <Widget DataSource='{SponsorVisual}' WidthSizePolicy='Fixed' HeightSizePolicy='Fixed' SuggestedWidth='42' SuggestedHeight='42' VerticalAlignment='Center'>
-					                                          <Children>
-					                                            <ImageIdentifierWidget WidthSizePolicy='StretchToParent' HeightSizePolicy='StretchToParent' ImageId='@Id' AdditionalArgs='@AdditionalArgs' TextureProviderName='@TextureProviderName' />
-					                                          </Children>
-					                                        </Widget>
-					                                        <Widget IsVisible='@HasSponsorBanner' WidthSizePolicy='Fixed' HeightSizePolicy='Fixed' SuggestedWidth='28' SuggestedHeight='28' VerticalAlignment='Center' MarginLeft='8'>
-					                                          <Children>
-					                                            <ImageIdentifierWidget DataSource='{SponsorBanner}' WidthSizePolicy='StretchToParent' HeightSizePolicy='StretchToParent' ImageId='@Id' AdditionalArgs='@AdditionalArgs' TextureProviderName='@TextureProviderName' />
-					                                          </Children>
-					                                        </Widget>
-					                                        <TextWidget WidthSizePolicy='StretchToParent' HeightSizePolicy='StretchToParent' VerticalAlignment='Center' MarginLeft='8' Brush='Popup.Description.Text' Brush.FontSize='17' Text='@SponsorName' />
-					                                      </Children>
-					                                    </ListPanel>
-					                                    <ListPanel DataSource='{Supporters}' WidthSizePolicy='StretchToParent' HeightSizePolicy='CoverChildren' StackLayout.LayoutMethod='VerticalBottomToTop' MarginTop='8'>
-				                                      <ItemTemplate>
-				                                        <ListPanel WidthSizePolicy='StretchToParent' HeightSizePolicy='Fixed' SuggestedHeight='36' StackLayout.LayoutMethod='HorizontalLeftToRight'>
-					                                          <Children>
-					                                            <Widget DataSource='{Visual}' WidthSizePolicy='Fixed' HeightSizePolicy='Fixed' SuggestedWidth='24' SuggestedHeight='24' VerticalAlignment='Center'>
-					                                              <Children>
-					                                                <ImageIdentifierWidget WidthSizePolicy='StretchToParent' HeightSizePolicy='StretchToParent' ImageId='@Id' AdditionalArgs='@AdditionalArgs' TextureProviderName='@TextureProviderName' />
-					                                              </Children>
-					                                            </Widget>
-					                                            <Widget WidthSizePolicy='Fixed' HeightSizePolicy='Fixed' SuggestedWidth='20' SuggestedHeight='20' Sprite='@SupportWeightImagePath' VerticalAlignment='Center' DoNotAcceptEvents='true' MarginLeft='4' />
-				                                            <TextWidget WidthSizePolicy='StretchToParent' HeightSizePolicy='StretchToParent' VerticalAlignment='Center' MarginLeft='6' Brush='Popup.Description.Text' Brush.FontSize='14' Text='@Name' />
-				                                            <RichTextWidget WidthSizePolicy='CoverChildren' HeightSizePolicy='StretchToParent' VerticalAlignment='Center' MarginLeft='6' Brush='Popup.Description.Text' Brush.FontSize='13' Text='@WeightText' />
-				                                          </Children>
-				                                        </ListPanel>
-				                                      </ItemTemplate>
-				                                    </ListPanel>
-				                                    <TextWidget WidthSizePolicy='StretchToParent' HeightSizePolicy='Fixed' SuggestedHeight='32' MarginTop='12' Brush='Kingdom.PoliciesItem.Text' Brush.FontSize='22' Text='@Name' />
-				                                    <Widget WidthSizePolicy='StretchToParent' HeightSizePolicy='Fixed' SuggestedHeight='36' MarginTop='10' Sprite='BlankWhiteSquare_9' Color='#000000FF' AlphaFactor='0.12'>
-				                                      <Children>
-				                                        <TextWidget WidthSizePolicy='StretchToParent' HeightSizePolicy='StretchToParent' Brush='Kingdom.PoliciesCollapserTitle.Text' Brush.FontSize='18' Brush.TextHorizontalAlignment='Center' VerticalAlignment='Center' IntText='@SupportPercentage' />
-				                                      </Children>
-				                                    </Widget>
-				                                    <RichTextWidget WidthSizePolicy='StretchToParent' HeightSizePolicy='CoverChildren' MarginTop='10' Brush='Popup.Description.Text' Brush.FontSize='16' Text='@Description' />
-				                                  </Children>
-				                                </ListPanel>
-				                              </Children>
-				                            </Widget>
-				                          </ItemTemplate>
-				                        </ListPanel>
-				                      </Children>
-				                    </Widget>
-				                    <RichTextWidget IsVisible='@!HasDetail' WidthSizePolicy='StretchToParent' HeightSizePolicy='CoverChildren' VerticalAlignment='Center' HorizontalAlignment='Center' MarginTop='40' Brush='Popup.Description.Text' Brush.TextHorizontalAlignment='Center' Brush.FontSize='18' Text='此议程暂无投票详情' DoNotAcceptEvents='true' />
-				                  </Children>
-				                </ListPanel>
-				              </Children>
-				            </Widget>
-				          </Children>
-				        </ScrollablePanel>
-				      </Children>
-				    </Widget>
-				  </Children>
-				</Widget>
-				          </Children>
-				        </ListPanel>
-				      </Children>
-				    </Widget>
-				  </Children>
-				</Widget>");
-#if BANNERLORD_1_4_OR_GREATER
-			foreach (XmlElement element in _document.SelectNodes("//*[@StackLayout.LayoutMethod='VerticalBottomToTop']"))
-			{
-				element.SetAttribute("StackLayout.LayoutMethod", "VerticalTopToBottom");
-			}
-#endif
-		}
-
-		[PrefabExtensionXmlDocument(false)]
-		public XmlDocument GetPrefabExtension()
-		{
-			return _document;
-		}
-	}
+	// The panel itself (agendas + factions) lives in UI/Kingdom/KingdomInteriorPanel.cs.
 
 	[PrefabExtension("KingdomManagement", "descendant::Constant[@Name='Header.Tab.Center.Width.Scaled']")]
 	internal sealed class KingdomAgendaScalingPatch : PrefabExtensionSetAttributePatch
@@ -3821,6 +3644,10 @@ namespace AnimusForge
 			private List<Kingdom> _activeKingdoms;
 			private int _currentKingdomIndex;
 			internal Action<KingdomDecision> CallVoteMeetingRequested;
+			// Raised after the viewed kingdom changes; true when it is the player's kingdom.
+			internal Action<bool> KingdomChanged;
+			private ImageIdentifierVM _sealBanner;
+			private string _sealBannerKey = "";
 
 			[DataSourceProperty]
 			public MBBindingList<KingdomAgendaItemVM> AgendaItems
@@ -3840,7 +3667,7 @@ namespace AnimusForge
 			public KingdomAgendaItemVM SelectedItem
 			{
 				get => _selectedItem;
-				set { if (_selectedItem != value) { _selectedItem = value; OnPropertyChanged("SelectedItem"); OnPropertyChanged("HasSelectedItem"); } }
+				set { if (_selectedItem != value) { _selectedItem = value; OnPropertyChanged("SelectedItem"); OnPropertyChanged("HasSelectedItem"); RefreshIdentity(); } }
 			}
 
 			[DataSourceProperty]
@@ -3887,6 +3714,53 @@ namespace AnimusForge
 				set { if (_hasNextKingdom != value) { _hasNextKingdom = value; OnPropertyChanged("HasNextKingdom"); } }
 			}
 
+			[DataSourceProperty]
+			public string ItemCountText => HasItems ? AgendaItems.Count + " 项活跃" : "无";
+
+			[DataSourceProperty]
+			public ImageIdentifierVM SealBanner => _sealBanner;
+
+			[DataSourceProperty]
+			public string ActionTitle { get; private set; } = "";
+
+			[DataSourceProperty]
+			public string ActionHint { get; private set; } = "";
+
+			// Identity line of the action bar for the selected agenda: ruler, council member or onlooker.
+			private void RefreshIdentity()
+			{
+				KingdomAgendaItemVM item = SelectedItem;
+				Kingdom kingdom = item?.Decision?.Kingdom ?? TargetKingdom;
+				Clan player = Clan.PlayerClan;
+				string title = item == null ? "" : "议程《" + KingdomAgendaItemVM.Clip(item.TitleText, 20) + "》";
+				if (item == null) { ActionTitle = ""; ActionHint = ""; }
+				else if (kingdom != null && kingdom == player?.Kingdom && kingdom.RulingClan == player)
+				{
+					ActionTitle = "国王裁决  ·  " + title;
+					ActionHint = "逆多数意见强推宣战、议和或政策会加深全体封臣不满；封地表决的落选申领家族不满也会上升。";
+				}
+				else if (kingdom != null && kingdom == player?.Kingdom)
+				{
+					ActionTitle = "议会成员  ·  " + title;
+					ActionHint = "投票会议开始后表态支持；也可在对话中与其他家族商议拉票。";
+				}
+				else
+				{
+					ActionTitle = "旁观  ·  " + (kingdom?.Name?.ToString() ?? "他国") + " " + title;
+					ActionHint = "他国议程仅供查看，无法参与投票。";
+				}
+				string key = kingdom?.StringId ?? "";
+				if (_sealBanner == null || _sealBannerKey != key)
+				{
+					_sealBannerKey = key;
+					Banner banner = kingdom?.Banner ?? kingdom?.RulingClan?.Banner;
+					_sealBanner = banner == null ? null : new BannerImageIdentifierVM(banner, false);
+					OnPropertyChanged("SealBanner");
+				}
+				OnPropertyChanged("ActionTitle");
+				OnPropertyChanged("ActionHint");
+			}
+
 			public Kingdom TargetKingdom => _targetKingdom ?? Clan.PlayerClan?.Kingdom;
 
 			public KingdomAgendaVM()
@@ -3903,6 +3777,7 @@ namespace AnimusForge
 				UpdateKingdomSelector();
 				ClearSelection();
 				RefreshAgendaItems();
+				KingdomChanged?.Invoke(IsPlayerKingdom);
 			}
 
 			public void RefreshKingdomList()
@@ -3915,9 +3790,10 @@ namespace AnimusForge
 
 			public void SetDefaultKingdom()
 			{
+				// The 内政 tab only shows the player's own kingdom; no kingdom means no agendas.
 				Kingdom pk = Clan.PlayerClan?.Kingdom;
 				if (pk != null) { int idx = _activeKingdoms.FindIndex(k => k == pk); if (idx >= 0) _currentKingdomIndex = idx; }
-				SetTargetKingdom(_activeKingdoms.Count > 0 && _currentKingdomIndex < _activeKingdoms.Count ? _activeKingdoms[_currentKingdomIndex] : null);
+				SetTargetKingdom(pk);
 			}
 
 			private void UpdateKingdomSelector()
@@ -3955,6 +3831,8 @@ namespace AnimusForge
 
 			public void RefreshAgendaItems()
 			{
+				// The selected agenda survives a rebuild while its decision is still listed.
+				KingdomDecision selected = SelectedItem?.Decision;
 				try
 				{
 					AgendaItems.Clear();
@@ -4013,6 +3891,13 @@ namespace AnimusForge
 					Logger.Log("VoteDeal", $"[AgendaVM] RefreshAgendaItems error: {ex.Message}");
 					HasItems = false;
 				}
+				finally
+				{
+					OnPropertyChanged("ItemCountText");
+					KingdomAgendaItemVM again = selected == null ? null : AgendaItems.FirstOrDefault(x => x?.Decision == selected);
+					if (again != null) SelectItem(again);
+					else if (SelectedItem != null) { SelectedItem.IsSelected = false; SelectedItem = null; }
+				}
 			}
 
 			private static void CleanupSnapshots()
@@ -4033,9 +3918,12 @@ namespace AnimusForge
 				}
 			}
 
+		// Agenda picks and faction picks share one catalog; the hand-off is owned by KingdomAgendaVMMixin.
+		internal Action ItemSelected;
+
 		public void SelectItem(KingdomAgendaItemVM item)
 		{
-			if (SelectedItem != null)
+			if (SelectedItem != null && SelectedItem != item)
 				SelectedItem.IsSelected = false;
 
 			if (item != null)
@@ -4045,6 +3933,7 @@ namespace AnimusForge
 			}
 
 			SelectedItem = item;
+			if (item != null) ItemSelected?.Invoke();
 		}
 
 		internal bool TrySelectDecision(KingdomDecision decision)
@@ -4179,7 +4068,46 @@ namespace AnimusForge
 			_decision = decision;
 			TitleText = VoteDealBehavior.GetDecisionDisplayTitleForAgenda(decision);
 			DecisionTypeText = VoteDealBehavior.GetBilateralDiplomacyAgendaTypeText(decision) ?? GetDecisionTypeLabel(decision);
+			// The ruler decides rather than votes, so he gets the chooser's wording.
+			bool chooser = false;
+			try { chooser = decision?.DetermineChooser()?.Leader?.IsHumanPlayerCharacter == true; } catch { }
+			NoteText = Clip(SafeText(() => (chooser ? decision?.GetChooseDescription() : decision?.GetSupportDescription())?.ToString()), 48);
 			RefreshTimingState();
+		}
+
+		[DataSourceProperty] public string CatalogTitleText => Clip(TitleText, 12);
+		[DataSourceProperty] public string MeetingButtonText { get; private set; } = "召开投票会议";
+
+		// ---- 内政 tab display (catalog row, dossier header, deadline block, footer)
+
+		[DataSourceProperty] public string InfoText { get; private set; } = "";
+		[DataSourceProperty] public string MetaText { get; private set; } = "";
+		[DataSourceProperty] public string NoteText { get; private set; } = "";
+		[DataSourceProperty] public string BadgeText { get; private set; } = "";
+		[DataSourceProperty] public bool IsVoteOpen { get; private set; }
+		[DataSourceProperty] public bool IsBadgeUrgent => IsUrgent && !IsVoteOpen;
+		[DataSourceProperty] public bool IsBadgePlain => !IsUrgent && !IsVoteOpen;
+		[DataSourceProperty] public Color BadgeColor => Color.ConvertStringToColor(IsBadgeUrgent ? "#5A2418FF" : "#2B241CFF");
+		[DataSourceProperty] public bool BlockUrgent => IsUrgent;
+		[DataSourceProperty] public string BlockLabel { get; private set; } = "";
+		[DataSourceProperty] public string BlockValue { get; private set; } = "";
+		[DataSourceProperty] public string BlockUnit { get; private set; } = "";
+		[DataSourceProperty] public string BlockNote { get; private set; } = "";
+		[DataSourceProperty] public string FooterText { get; private set; } = "";
+		[DataSourceProperty] public string DealText { get; private set; } = "";
+
+		private static readonly string[] TimingBound =
+		{
+			"InfoText", "MetaText", "BadgeText", "IsVoteOpen", "IsBadgeUrgent", "IsBadgePlain", "BadgeColor", "BlockUrgent",
+			"BlockLabel", "BlockValue", "BlockUnit", "BlockNote", "FooterText", "DealText", "MeetingButtonText", "CatalogTitleText"
+		};
+
+		internal static string Clip(string text, int max) => string.IsNullOrEmpty(text) || text.Length <= max ? text ?? "" : text.Substring(0, max) + "…";
+
+		private static string SafeText(Func<string> read)
+		{
+			try { return (read() ?? "").Replace("\r", " ").Replace("\n", " ").Trim(); }
+			catch { return ""; }
 		}
 
 		internal void RefreshTimingState()
@@ -4201,6 +4129,35 @@ namespace AnimusForge
 				_decision.IsPlayerParticipant &&
 				!_decision.IsEnforced &&
 				!_decision.ShouldBeCancelled();
+
+			bool open = remainingDays <= 0f;
+			// One-clan kingdom ruled by the player: the countdown means nothing, he can decide now.
+			bool solo = VoteDealBehavior.IsSingleClanRulerAgenda(_decision);
+			if (solo) IsUrgent = false;
+			IsVoteOpen = open || solo;
+			InfoText = Clip(DecisionTypeText + " · 提案人 " + proposerText, 14);
+			BadgeText = solo ? "可裁决" : open ? "可以投票" : $"剩余 {remainingDays:F1} 天";
+			MetaText = "提案人  " + proposerText + "   ·   " + (solo ? "仅你的家族有表决权" : open ? "可以投票" : $"剩余 {remainingDays:F1} 天") + (_options != null && _options.Count > 0 ? "   ·   " + _options.Count + " 个选项" : "");
+			MeetingButtonText = solo ? "立即裁决" : "召开投票会议";
+			if (solo)
+			{
+				BlockLabel = "单家族王国";
+				BlockValue = "随时";
+				BlockUnit = "";
+				BlockNote = "无需等待，可立即裁决";
+				FooterText = "本国仅你的家族有表决权，点击「立即裁决」决定是否通过";
+			}
+			else
+			{
+				BlockLabel = open ? "投票" : "距离开始投票";
+				BlockValue = open ? "已开始" : remainingDays.ToString("F1");
+				BlockUnit = open ? "" : "天";
+				BlockNote = open ? "可召开投票会议" : IsUrgent ? "不足 1 天 · 紧急" : "到期后进入表决";
+				FooterText = open ? "提案「" + Clip(TitleText, 16) + "」已可投票" : $"提案「{Clip(TitleText, 16)}」将在 {remainingDays:F1} 天后开始投票";
+			}
+			int deals = VoteDealBehavior.CountActiveVoteDeals(_decision);
+			DealText = deals > 0 ? "已谈妥拉票 " + deals + " 家" : "";
+			foreach (string name in TimingBound) OnPropertyChanged(name);
 		}
 
 		[DataSourceMethod]
@@ -4246,12 +4203,14 @@ namespace AnimusForge
 				var narrowed = _decision.NarrowDownCandidates(candidateList, 3);
 				if (narrowed == null || narrowed.Count == 0) return;
 
-				_options = new MBBindingList<AgendaOptionVM>();
+				var options = new MBBindingList<AgendaOptionVM>();
 
 				_decision.DetermineSponsors(narrowed);
 
-				var supporters = _decision.DetermineSupporters()?.ToList();
-				if (supporters == null || supporters.Count == 0) return;
+				var supporters = _decision.DetermineSupporters()?.ToList() ?? new List<Supporter>();
+				// Only AI clans vote here (the player states his stance in the vote meeting), as in vanilla KingdomElection.
+				int voters = supporters.Count(s => s != null && !s.IsPlayer);
+				bool solo = VoteDealBehavior.IsSingleClanRulerAgenda(_decision);
 
 				var likelihoodProp = typeof(DecisionOutcome).GetProperty("Likelihood");
 				var initialSupportProp = typeof(DecisionOutcome).GetProperty("InitialSupport");
@@ -4284,30 +4243,42 @@ namespace AnimusForge
 				}
 
 				int totalWeight = 0;
+				// Vanilla order (KingdomElection.StartElection): support without relation effects fills each
+				// outcome's SupporterList, sponsors are assigned from it (AssignDefaultSponsor needs it), then
+				// support is recomputed with relation effects. The lists are restored afterwards.
+				var savedLists = new Dictionary<DecisionOutcome, List<Supporter>>();
+				foreach (var outcome in narrowed)
+				{
+					if (outcome == null) continue;
+					savedLists[outcome] = new List<Supporter>(outcome.SupporterList);
+					outcome.SupporterList.Clear();
+				}
 				foreach (var supporter in supporters)
 				{
-					if (supporter.IsPlayer) continue;
+					if (supporter == null || supporter.IsPlayer) continue;
 					try
 					{
 						Supporter.SupportWeights weight;
 						var chosen = _decision.DetermineSupportOption(supporter, narrowed, out weight, false);
-						if (chosen != null && weight > Supporter.SupportWeights.StayNeutral && outcomeWeights.ContainsKey(chosen))
+						if (chosen != null && outcomeWeights.ContainsKey(chosen))
 						{
-							outcomeSupporters[chosen].Add((supporter, weight));
+							supporter.SupportWeight = weight;
+							chosen.AddSupport(supporter);
 						}
 					}
 					catch { }
 				}
 
-				foreach (var outcome in narrowed)
-				{
-					if (outcome == null) continue;
-					outcomeWeights[outcome] = 0;
-					outcomeSupporters[outcome].Clear();
-				}
 				totalWeight = 0;
 
 				_decision.DetermineSponsors(narrowed);
+
+				foreach (var outcome in narrowed)
+				{
+					if (outcome == null) continue;
+					outcome.SupporterList.Clear();
+					if (savedLists.TryGetValue(outcome, out var saved)) outcome.SupporterList.AddRange(saved);
+				}
 
 				foreach (var supporter in supporters)
 				{
@@ -4333,8 +4304,13 @@ namespace AnimusForge
 					var opt = new AgendaOptionVM();
 					opt.Name = VoteDealBehavior.GetDecisionOutcomeDisplayTitleForAgenda(_decision, outcome);
 					opt.Description = VoteDealBehavior.GetDecisionOutcomeDisplayDescriptionForAgenda(_decision, outcome);
-					opt.SponsorName = outcome.SponsorClan?.Name?.ToString() ?? "未知";
+					Clan sponsor = outcome.SponsorClan;
+					opt.HasSponsor = sponsor != null;
+					opt.SponsorName = sponsor == null ? "无人牵头" : sponsor == Clan.PlayerClan ? (sponsor.Name?.ToString() ?? "") + "（你）" : sponsor.Name?.ToString() ?? "";
 					opt.SupportPercentage = totalWeight > 0 ? (int)Math.Round(outcomeWeights[outcome] * 100.0 / totalWeight) : 0;
+					// Shares only mean something when other clans actually lean one way.
+					opt.ShowSupport = voters > 0 && totalWeight > 0;
+					opt.SupportCaption = solo ? "仅你的家族有表决权 · 由你裁决" : voters == 0 ? "无其他家族参与表决" : "议会尚无倾向（不含你）";
 
 					// Sponsor portrait
 					try
@@ -4354,13 +4330,14 @@ namespace AnimusForge
 					}
 					catch { }
 
-					foreach (var (supporter, weight) in outcomeSupporters[outcome])
+					foreach (var (supporter, weight) in outcomeSupporters[outcome].OrderByDescending(x => x.weight).Take(KingdomInteriorPanelPatch.MaxSupporters))
 					{
 						var supporterVM = new AgendaSupporterVM
 						{
 							Name = supporter.Name?.ToString() ?? "未知",
 							WeightText = GetWeightText(weight),
-							SupportWeightImagePath = VoteDealBehavior.GetSupportWeightImagePath(weight)
+							SupportWeightImagePath = VoteDealBehavior.GetSupportWeightImagePath(weight),
+							IsStrong = weight == Supporter.SupportWeights.FullyPush
 						};
 						try
 						{
@@ -4371,12 +4348,19 @@ namespace AnimusForge
 						catch { }
 						opt.Supporters.Add(supporterVM);
 					}
+					opt.SupporterCount = outcomeSupporters[outcome].Count;
 
-					_options.Add(opt);
+					options.Add(opt);
 				}
+				_options = options;
+				// Lead and card tint need every share; ties have no leader.
+				int top = _options.Count > 0 ? _options.Max(x => x.SupportPercentage) : 0;
+				bool tie = _options.Count(x => x.SupportPercentage == top) > 1;
+				for (int i = 0; i < _options.Count; i++) _options[i].SetRank(top > 0 && !tie && _options[i].SupportPercentage == top, i == 0);
 				HasDetail = _options.Count > 0;
 				OnPropertyChanged("Options");
 				OnPropertyChanged("HasDetail");
+				RefreshTimingState();
 			}
 			catch (Exception ex)
 			{
@@ -4447,6 +4431,10 @@ namespace AnimusForge
 					}
 				}
 			}
+
+			// "全力推动" is drawn in red on the 内政 option card.
+			[DataSourceProperty]
+			public bool IsStrong { get; set; }
 		}
 	public class AgendaOptionVM : ViewModel
 	{
@@ -4549,6 +4537,39 @@ namespace AnimusForge
 		{
 			Supporters = new MBBindingList<AgendaSupporterVM>();
 		}
+
+		// ---- 内政 tab option card
+
+		private bool _isLeading;
+		private bool _isFirst;
+
+		// All supporters of this option; the card lists only the strongest few.
+		internal int SupporterCount { get; set; }
+
+		// False for the vote "no" side nobody sponsors: the card shows "无人牵头" without portrait or banner.
+		[DataSourceProperty] public bool HasSponsor { get; set; }
+		// False when no other clan leans either way (one-clan kingdom, or all neutral): no 0% bar, a caption instead.
+		[DataSourceProperty] public bool ShowSupport { get; set; }
+		[DataSourceProperty] public string SupportCaption { get; set; } = "";
+		[DataSourceProperty] public bool HasSupporters => Supporters.Count > 0;
+
+		[DataSourceProperty] public string SupportText => SupportPercentage + "%";
+		[DataSourceProperty] public int BarWidth => Math.Max(2, KingdomInteriorPanelPatch.SupportTrack * Math.Max(0, Math.Min(100, SupportPercentage)) / 100);
+		[DataSourceProperty] public Color BarColor => Color.ConvertStringToColor(_isLeading ? "#5E6A3EFF" : "#8C7456FF");
+		[DataSourceProperty] public Color CardColor => Color.ConvertStringToColor(_isFirst ? "#E6D9BCFF" : "#D3C3A1FF");
+		[DataSourceProperty] public bool IsLeading => _isLeading;
+		[DataSourceProperty] public string SupporterCountText => SupporterCount + " 家";
+		[DataSourceProperty] public bool HasMoreSupporters => SupporterCount > Supporters.Count;
+		[DataSourceProperty] public string MoreSupportersText => "另有 " + Math.Max(0, SupporterCount - Supporters.Count) + " 家支持";
+
+		internal void SetRank(bool leading, bool first)
+		{
+			_isLeading = leading;
+			_isFirst = first;
+			OnPropertyChanged("SupportText"); OnPropertyChanged("BarWidth"); OnPropertyChanged("BarColor"); OnPropertyChanged("CardColor");
+			OnPropertyChanged("IsLeading"); OnPropertyChanged("SupporterCountText"); OnPropertyChanged("HasMoreSupporters"); OnPropertyChanged("MoreSupportersText");
+			OnPropertyChanged("HasSponsor"); OnPropertyChanged("ShowSupport"); OnPropertyChanged("SupportCaption"); OnPropertyChanged("HasSupporters");
+		}
 	}
 
 	internal static class KingdomAgendaTabState
@@ -4563,12 +4584,13 @@ namespace AnimusForge
 		{
 			public Action Clear;
 			public Action Select;
+			public Action ClearItem;
 			public bool ReturnToAgendaAfterRefresh;
 		}
 
-		public static void Register(KingdomManagementVM vm, Action clear, Action select)
+		public static void Register(KingdomManagementVM vm, Action clear, Action select, Action clearItem)
 		{
-			State state = new State { Clear = clear, Select = select };
+			State state = new State { Clear = clear, Select = select, ClearItem = clearItem };
 			_states.Add(vm, state);
 			_mostRecentlyRegisteredState = new WeakReference(state);
 			KingdomCustomTabIsolation.ResetForNewKingdomScreen();
@@ -4589,6 +4611,15 @@ namespace AnimusForge
 			if (_mostRecentlyRegisteredState?.Target is State state)
 			{
 				state.Clear?.Invoke();
+			}
+		}
+
+		// A faction row was picked in the shared 内政 catalog: drop the agenda selection.
+		internal static void ClearItemSelection()
+		{
+			if (_mostRecentlyRegisteredState?.Target is State state)
+			{
+				state.ClearItem?.Invoke();
 			}
 		}
 
@@ -4622,6 +4653,8 @@ namespace AnimusForge
 		}
 	}
 
+		// Owns the kingdom screen "内政" tab (agendas + factions, layout in KingdomInteriorPanel.cs).
+		// The faction half is driven through KingdomFactionTabState; the catalog keeps one selection.
 		[ViewModelMixin("RefreshValues", true)]
 		internal sealed class KingdomAgendaVMMixin : BaseViewModelMixin<KingdomManagementVM>
 		{
@@ -4637,16 +4670,35 @@ namespace AnimusForge
 
 			public KingdomAgendaVMMixin(KingdomManagementVM vm) : base(vm)
 			{
-				AgendaTabText = "议程";
+				AgendaTabText = "内政";
 				Agenda = new KingdomAgendaVM();
 				Agenda.CallVoteMeetingRequested = StartVoteMeeting;
 				IsAgendaSelected = false;
 
-				KingdomAgendaTabState.Register(vm, ClearAgendaSelection, SelectAgenda);
+				KingdomAgendaTabState.Register(vm, ClearAgendaSelection, SelectAgenda, () => Agenda?.ClearSelection());
 
 				Agenda.RefreshKingdomList();
 				Agenda.SetDefaultKingdom();
+				// Wired after the first kingdom pick: the faction mixin of this screen may not exist yet.
+				Agenda.ItemSelected = KingdomFactionTabState.Deselect;
+				Agenda.KingdomChanged = OnAgendaKingdomChanged;
 
+			}
+
+			// Factions belong to the player's kingdom; viewing another kingdom hides that group.
+			private void OnAgendaKingdomChanged(bool playerKingdom)
+			{
+				KingdomFactionTabState.SetCatalogShown(playerKingdom);
+				if (IsAgendaSelected) SelectDefaultEntry();
+			}
+
+			// First agenda, otherwise the default faction entry; keeps an existing selection.
+			private void SelectDefaultEntry()
+			{
+				if (Agenda == null || Agenda.SelectedItem != null || KingdomFactionTabState.HasSelection) return;
+				KingdomAgendaItemVM first = Agenda.AgendaItems.FirstOrDefault();
+				if (first != null) Agenda.SelectItem(first);
+				else KingdomFactionTabState.SelectDefault();
 			}
 
 			private void OpenPendingRequiredAgendaVote()
@@ -4684,6 +4736,8 @@ namespace AnimusForge
 			public override void OnRefresh()
 			{
 				Agenda?.RefreshAgendaItems();
+				// A resolved agenda drops out of the catalog; fall back to the default entry.
+				if (IsAgendaSelected) SelectDefaultEntry();
 				OpenPendingAgendaMapNotice();
 				OpenPendingRequiredAgendaVote();
 			}
@@ -4701,13 +4755,14 @@ namespace AnimusForge
 				ViewModel.Policy.Show = false;
 				ViewModel.Army.Show = false;
 				ViewModel.Diplomacy.Show = false;
-				KingdomFactionTabState.Clear();
 
 				Agenda.RefreshKingdomList();
 				Agenda.SetDefaultKingdom();
+				KingdomFactionTabState.Show();
 				IsAgendaSelected = true;
 				Agenda?.RefreshAgendaItems();
 				Agenda?.RefreshValues();
+				SelectDefaultEntry();
 
 				ViewModel.OnPropertyChanged("IsAgendaSelected");
 				ViewModel.OnPropertyChangedWithValue(true, "IsAgendaSelected");
@@ -4753,6 +4808,7 @@ namespace AnimusForge
 
 			private void ClearAgendaSelection()
 			{
+				KingdomFactionTabState.Clear();
 				IsAgendaSelected = false;
 				ViewModel.OnPropertyChanged("IsAgendaSelected");
 				ViewModel.OnPropertyChangedWithValue(false, "IsAgendaSelected");
@@ -4797,7 +4853,6 @@ namespace AnimusForge
 			private static void ClearPostfix(KingdomManagementVM __instance)
 			{
 				KingdomAgendaTabState.Clear(__instance);
-				KingdomFactionTabState.Clear();
 			}
 
 			private static void OnRefreshPostfix(KingdomManagementVM __instance)

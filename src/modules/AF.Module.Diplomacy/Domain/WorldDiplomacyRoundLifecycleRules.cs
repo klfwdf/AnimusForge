@@ -5537,11 +5537,25 @@ List<string> ids = new List<string>();
         ref string respondingToOfferDocumentId,
         Action<string> log)
     {
-        if (document == null || round == null) return;
+        if (round == null) return;
+        ReconcilePlayerDeclarationWithOpenOffer(document, intent, round.PendingOffers, ref targetId, ref respondingToOfferDocumentId, log);
+    }
+
+    // Offers may come from any live round: an oral commitment publishes its proposal in its own
+    // independent round, while the player's acceptance is filed under a fresh provisional round.
+    public static void ReconcilePlayerDeclarationWithOpenOffer(
+        WorldDiplomacyDocument document,
+        string intent,
+        IEnumerable<WorldDiplomacyRoundOffer> offers,
+        ref string targetId,
+        ref string respondingToOfferDocumentId,
+        Action<string> log)
+    {
+        if (document == null || offers == null) return;
         string proposalIntent = WorldDiplomacyIntentVocabulary.ResponseIntentToProposalIntent(intent);
         if (string.IsNullOrWhiteSpace(proposalIntent)) return;
         string claimedOfferDocumentId = respondingToOfferDocumentId ?? "";
-        IEnumerable<WorldDiplomacyRoundOffer> candidates = (round.PendingOffers ?? new List<WorldDiplomacyRoundOffer>())
+        IEnumerable<WorldDiplomacyRoundOffer> candidates = offers
             .Where(x => IsOpenOfferToTarget(x, document.AuthorKingdomId)
                 && string.Equals(WorldDiplomacyIntentVocabulary.NormalizeIntent(x.Intent), proposalIntent, StringComparison.OrdinalIgnoreCase));
         if (!string.IsNullOrWhiteSpace(claimedOfferDocumentId))

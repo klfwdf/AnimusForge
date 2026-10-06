@@ -353,7 +353,19 @@ internal static class ConcurrentOralMigrationReplay
             "published oral proposal creates a source-bound offer without prematurely executing a bilateral treaty: " + publishedDocument.MechanicalResult);
         Test.True(!publishedDocument.Body.Contains("PRIVATE_") && publishedDocument.PropagationCompleted
             && publicationOwner.CurrentStorage.PropagationArrivals.Any(x => x.DocumentId == publishedDocument.DocumentId)
-            && !(bool)Invoke(publicationOwner, "DialogueDocumentKnown", "b", publishedDocument.DocumentId),
-            "oral publication schedules delivery of agreed terms while private provenance stays private");
+            && (bool)Invoke(publicationOwner, "DialogueDocumentKnown", "b", publishedDocument.DocumentId)
+            && !(bool)Invoke(publicationOwner, "DialogueDocumentKnown", "c", publishedDocument.DocumentId)
+            && !publicationOwner.CurrentStorage.PropagationArrivals.Any(x => x.DocumentId == publishedDocument.DocumentId && x.KingdomId == "b"),
+            "oral counterparty knows the agreed declaration at once while other courts keep distance delivery and private provenance stays private");
+        var playerHost = new Host { PublishEnabled = true };
+        var playerOwner = new WorldDiplomacyOrchestration(playerHost, new WorldDiplomacyRuntimeState());
+        playerHost.Owner = playerOwner;
+        playerOwner.SubmitOralDiplomaticCommitment("ruler_a", "a", "action=Annexation;move=NewMatter;target=p;receiving=a;joining=p",
+            new DialogueInteractionOrigin("courier", "annex", "annex_session", "PRIVATE_PLAYER", "PRIVATE_NPC"));
+        var annexArrangement = playerOwner.CurrentStorage.DialogueArrangements.Single();
+        var annexDocument = playerOwner.ResolveDocument(annexArrangement.DocumentId);
+        Test.True(annexArrangement.Status == "published" && annexDocument.HasReachedPlayerCourt
+            && playerOwner.PlayerAnalysisOffers("p").Any(x => x.SourceDocumentId == annexDocument.DocumentId),
+            "player king can formally accept an oral annexation proposal immediately: " + annexArrangement.Reason);
     }
 }

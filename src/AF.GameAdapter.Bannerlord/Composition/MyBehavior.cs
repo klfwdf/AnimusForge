@@ -11399,8 +11399,14 @@ TeamModuleServices.CivilWar.AdvanceWeek(devEditableKingdom, weekIndex, GetKingdo
 			return;
 		}
 		string[] rebellionExistingNames = CaptureRebellionExistingNames();
-		BuildRebelKingdomNamingRequest(clan, kingdom, pendingAutomaticKingdomRebellionContext.WeekIndex, list, out var systemPrompt, out var userPrompt, rebellionExistingNames);
 		long namingRequestVersion = AutomaticKingdomRebellions.BeginNaming();
+		// The player's own faction rising: the player names the new kingdom; no LLM call.
+		if (clan == Clan.PlayerClan && !string.IsNullOrWhiteSpace(pendingAutomaticKingdomRebellionContext.CivilWarFactionId))
+		{
+			ShowPlayerRebelKingdomNamingInquiry(pendingAutomaticKingdomRebellionContext, namingRequestVersion, clan, kingdom, rebellionExistingNames);
+			return;
+		}
+		BuildRebelKingdomNamingRequest(clan, kingdom, pendingAutomaticKingdomRebellionContext.WeekIndex, list, out var systemPrompt, out var userPrompt, rebellionExistingNames);
 		InformationManager.ShowInquiry(new InquiryData("正在生成叛乱建国命名", "系统正在为本周自动叛乱生成新王国的名称与百科简介。\n\n这一步完成前不会继续本轮自动叛乱与周报流程。\n请稍候，结果完成后会自动弹出。", isAffirmativeOptionShown: false, isNegativeOptionShown: false, "", "", null, null), pauseGameActiveState: true);
 		long runtimeGeneration = SaveRuntimeGuard.CaptureGeneration();
 		string logTarget = "自动叛乱建国命名 - " + GetClanId(clan);
@@ -11468,7 +11474,17 @@ TeamModuleServices.CivilWar.AdvanceWeek(devEditableKingdom, weekIndex, GetKingdo
 				ShowAutomaticKingdomRebellionNamingFailurePopup(pendingAutomaticKingdomRebellionContext, kingdom, clan, list, afterApiRepair: false);
 				return;
 			}
-			success = TryExecuteKingdomRebellionWithNaming(clan, kingdom, pendingAutomaticKingdomRebellionContext.WeekIndex, forceTrigger: false, pendingAutomaticKingdomRebellionContext.RelationToKing, pendingAutomaticKingdomRebellionContext.TownCount, pendingAutomaticKingdomRebellionContext.CastleCount, pendingAutomaticKingdomRebellionContext.NamingResult, list, out executionMessage);
+			// A civil-war faction rising is reported once, by the civil-war outbreak item (which names the new kingdom);
+			// the generic rebellion/kingdom-created items and their -8 stability are suppressed for it.
+			_civilWarRebellionExecuting = !string.IsNullOrWhiteSpace(pendingAutomaticKingdomRebellionContext.CivilWarFactionId);
+			try
+			{
+				success = TryExecuteKingdomRebellionWithNaming(clan, kingdom, pendingAutomaticKingdomRebellionContext.WeekIndex, forceTrigger: false, pendingAutomaticKingdomRebellionContext.RelationToKing, pendingAutomaticKingdomRebellionContext.TownCount, pendingAutomaticKingdomRebellionContext.CastleCount, pendingAutomaticKingdomRebellionContext.NamingResult, list, out executionMessage);
+			}
+			finally
+			{
+				_civilWarRebellionExecuting = false;
+			}
 			if (success && !string.IsNullOrWhiteSpace(pendingAutomaticKingdomRebellionContext.CivilWarFactionId))
 			{
 				TeamModuleServices.CivilWar.NotifyRebelKingdomCreated(pendingAutomaticKingdomRebellionContext.CivilWarFactionId, clan?.Kingdom, pendingAutomaticKingdomRebellionContext.WeekIndex);
@@ -11481,6 +11497,43 @@ TeamModuleServices.CivilWar.AdvanceWeek(devEditableKingdom, weekIndex, GetKingdo
 	}
 
 	// Civil-war requests: the owner may have dissolved the faction while this entry waited in the queue.
+	// Player-led civil war: the player types the kingdom name. The result goes through the same ready slot as the
+	// LLM naming, so execution, the bulletin (kingdom_rebellion / kingdom_created) and the civil-war callback are unchanged.
+	private void ShowPlayerRebelKingdomNamingInquiry(PendingAutomaticKingdomRebellionContext context, long namingRequestVersion, Clan clan, Kingdom oldKingdom, string[] existingNames)
+	{
+		long runtimeGeneration = SaveRuntimeGuard.CaptureGeneration();
+		HashSet<string> taken = new HashSet<string>(existingNames ?? Array.Empty<string>(), StringComparer.OrdinalIgnoreCase);
+		string clanName = GetClanDisplayName(clan);
+		string oldName = GetKingdomDisplayName(oldKingdom, "原王国");
+		string fallback = NormalizeRebelKingdomNameToken(clanName + "同盟", 24);
+		string text = "你的派系即将脱离" + oldName + "，以" + clanName + "家族为首建立新王国。\n\n请输入新王国的名称（2~24 个字，不能与现有王国重名）。取消则使用“" + fallback + "”。";
+		Func<string, Tuple<bool, string>> condition = input =>
+		{
+			string name = NormalizeRebelKingdomNameToken(input ?? "", 24);
+			if (name.Length < 2) return new Tuple<bool, string>(false, "名称至少 2 个字。");
+			if (taken.Contains(name)) return new Tuple<bool, string>(false, "已有同名王国。");
+			return new Tuple<bool, string>(true, "");
+		};
+		void Complete(string input)
+		{
+			if (!SaveRuntimeGuard.IsCurrentGeneration(runtimeGeneration)) return;
+			string formal = NormalizeRebelKingdomNameToken(input ?? "", 24);
+			if (formal.Length < 2 || taken.Contains(formal)) formal = taken.Contains(fallback) ? NormalizeRebelKingdomNameToken(clanName + "自立同盟", 24) : fallback;
+			string shortName = NormalizeRebelKingdomNameToken(formal, 14);
+			context.NamingResult = new RebelKingdomNamingResult
+			{
+				FormalName = formal,
+				ShortName = shortName,
+				EncyclopediaText = formal + "由" + clanName + "家族在反抗" + oldName + "的内战中建立。",
+				Success = true,
+				AttemptsUsed = 0
+			};
+			Logger.Log("KingdomRebellion", "[PLAYER_NAMING] faction=" + (context.CivilWarFactionId ?? "") + " formal=" + formal);
+			AutomaticKingdomRebellions.CompleteNaming(namingRequestVersion, context);
+		}
+		InformationManager.ShowTextInquiry(new TextInquiryData("为新王国命名", text, isAffirmativeOptionShown: true, isNegativeOptionShown: true, "建国", "使用默认名", Complete, () => Complete(""), shouldInputBeObfuscated: false, condition, "", fallback), pauseGameActiveState: true);
+	}
+
 	private static bool IsStaleCivilWarRebellion(PendingAutomaticKingdomRebellionContext context)
 	{
 		string factionId = context?.CivilWarFactionId;

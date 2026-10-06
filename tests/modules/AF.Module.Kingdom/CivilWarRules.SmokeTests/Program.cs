@@ -128,6 +128,9 @@ Check(!CivilWarFactionRules.InConcessionWindow(5, 0, formTuning) && !CivilWarFac
 // ---- weariness thresholds (value comes from the war-stats terminal)
 Check(CivilWarWearinessRules.MeetsFormation(40f) && !CivilWarWearinessRules.MeetsFormation(39.9f), "formation line is 40");
 Check(CivilWarWearinessRules.WeeklyStability(10f) == 0 && CivilWarWearinessRules.WeeklyStability(40f) == -1 && CivilWarWearinessRules.WeeklyStability(80f) == -2, "weariness drains stability weekly");
+Check(CivilWarWearinessRules.WarScore(80f, 20f, 3000, 1000) > 0.5f, "worn-out crown with heavier losses -> rebels winning");
+Check(CivilWarWearinessRules.WarScore(10f, 60f, 500, 2500) < -0.5f, "worn-out rebels with heavier losses -> crown winning");
+Check(CivilWarWearinessRules.WarScore(0f, 0f, 0, 0) == 0f, "no fighting yet -> even");
 
 // ---- escalation needs enough refusals; loyal clans rarely join the opposition
 Check(new CivilWarTuning().UltimatumDelayWeeks == 4, "default ultimatum interval is 4 weeks");
