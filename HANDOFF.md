@@ -1,3 +1,8 @@
+# 当前交接：场景接力结束误报修复（2026-10-07，OFFLINE_VERIFIED_NOT_DEPLOYED）
+
+- 产品d9147f1eb；检查点d11567d。保留自身编号结束信号，不再误报无人愿意；缺失编号如实提示。未强制接话。
+- 旧代码回放失败、新代码15组双重规范化通过；双API/Bootstrap/双接缝通过。未实机、部署、打包或推送。
+- [主台账、代码图及回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#scene-relay-stop-20261007--offline_verified_not_deployed)，证据artifacts/scene-relay-stop-20261007。
 # 当前交接：Grok双场景参考合并（2026-10-07，BUILD_VERIFIED_NOT_DEPLOYED）
 
 - 产品8dbe9f523，检查点98f7209。按用户修正对所有Grok图片编辑生效，无站点限制；四图恰含双ScenePerspective时合为A/B资料板，其他参考独立保留。
