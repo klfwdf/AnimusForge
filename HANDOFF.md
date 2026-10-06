@@ -2,7 +2,7 @@
 
 - 已按用户授权拉取 origin/main=e3bd28e0，合并至6ad9bac7；双方源码改动保留，HANDOFF和主台账冲突保留双方记录。以下历史“未部署/未打包”仅代表对应轮次，本次交付状态以此条及主台账为准。
 - 410项离线回归、33项源码接线、1.3/1.4与Bootstrap构建及双接缝门禁通过。原部署脚本更新17文件；3379项Stage/安装/ZIP文件SHA256一致，12处正文控件已部署。
-- 包：一键编译覆盖推送/packages/AnimusForge_v1.5.4_20261006_213333_054.zip，保持v1.5.4。游戏未启动，UI/处决/旧档实机未验；未push。
+- 包追加：用户指定v1.5.5，已生成一键编译覆盖推送/packages/AnimusForge_v1.5.5_20261006_213842_797.zip，3379项验证通过，仅ZIP内SubModule版本变化，原v1.5.4包保留。已安装仍v1.5.4；未push。用户随后实机报告行刑后主动攻击卡死，见主台账新增调查条目。
 - [唯一主台账、回滚及交付证据](docs/animusforge-refactoring-and-repository-reorganization-plan.md#merge-deploy-package-20261006)；本地artifacts/merge-deploy-package-20261006/receipt.json记录完整哈希和Recovery位置。
 
 # 历史交接：对话正文字号与界面选项（2026-10-06，OFFLINE_VERIFIED_LIVE_PENDING）
