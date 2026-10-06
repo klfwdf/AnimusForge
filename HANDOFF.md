@@ -1,3 +1,9 @@
+# 当前交接：生成期间正文点击屏蔽（2026-10-07，OFFLINE_VERIFIED_NOT_DEPLOYED）
+
+- 产品13ee8f393，检查点5ea5902。新对话UI增加生成中透明mouse拦截层，保留上层输入/工具按钮；busy状态与host同步，完成/切普通模式恢复。原后端继续保护不变，玩家实际正文中断尚未复现。
+- 两API原版点击顺序各162项PASS、生命周期100项PASS；原入口双版/Bootstrap0错误、双接缝PASS。未实机/部署/打包/推送。
+- [主台账、代码坐标与回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#dialogue-generation-shield-20261007)；artifacts/dialogue-generation-shield-20261007/receipt.json。仅git revert 13ee8f393回滚本片。
+
 # 当前交接：生图最终画幅与MCM尺寸约束（2026-10-07，DEPLOYED_PACKAGED_PUSHED_LIVE_PENDING）
 
 - 产品a32af3bec+f4a7b3ed8（共享main等价505ae23be+3201ffc6d）。全屏/快报快照携带固定16:9要求，普通生成和重绘最终Images/Edits/Chat提示词均保留，并计入32000预算；不依赖导演转述。百科/独立面板按MCM尺寸固定要求对应比例，不强行拉伸图片或新增付费重试。

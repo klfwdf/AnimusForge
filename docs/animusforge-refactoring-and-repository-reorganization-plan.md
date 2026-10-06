@@ -7688,3 +7688,18 @@ R2计划交付门槛：已给固定技术路线、真实来源与目标、写入
 - 源码证据绑定1dd0e2824：src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.cs:5170–5190 EnsureWeekZeroOpeningSummaryEvents（同步入口）；5192–5234 ProcessWeekZeroOpeningSummaryEventsSlice/Finalize（每日维护）；5672–5767 UpsertWeekZeroOpeningSummaryEvent（规范/兼容/局部发布）；10963–10966 BuildEventSourceMaterialStableKeySet → src/modules/AF.Module.Memory/Records/CampaignMaterialRecordOwner.cs:69–80 BuildStableKeySet。6锚点recorded/working-tree均PASS。
 - 默认历史全仓代码图working-tree检查报未涉及的ModuleFrameworkRuntime.cs内容过期，未刷新旧图掩盖。本包证据：artifacts/week-zero-daily-fix-20261006/receipt.json、code-map.json、build.log、baseline/run.log、exact-save/run.log、import-regression/run.log。
 - 未验证：玩家实机跨日、实际DLL/MCM组合及真实API请求。未修复磁盘sav或删除旧历史，未Stage/部署/打包/推送。原sav哈希仍为0cb1b4073c8af4b57bb1d3df547e3c04d3e3b0967b8139aa626f41d9f4bbc605。产品回滚git revert 1dd0e2824，保留其他作者提交。
+
+
+<a id="dialogue-generation-shield-20261007"></a>
+## 正文生成时点击继续漏到原版UI（2026-10-07，OFFLINE_VERIFIED_NOT_DEPLOYED）
+
+- 用户反馈生成中正文空白可无限点击，右侧输入正常；本地未复现打断，不能把UI点击漏接声称为已证实请求取消。基线51970daa，检查点5ea5902。
+- 范围：DialogueUI Overlay透明busy拦截层、busy绑定及mouse hit限制；原后端ContinueConversationSafePatch保持。完成门：旧反例、双API点击模型、状态通知/关闭恢复、双版+Bootstrap构建。不部署/推送、不更改LLM/存档/三渠道规则。
+
+- 产品13ee8f393：Overlay底部新增无命令/无音效透明Widget，位于输入和工具控件下面。busy只读原host的IsCustomAnswerVisible && !IsInputEnabled，随属性变化和临时UI恢复刷新；NativeUiAdapter.HitTest在该状态承认全屏mouse占用，避免host释放下层MouseButtons限制。普通模式、完成、隐藏/关闭恢复既有输入行为。
+- 根因边界：新UI正文ScrollPanel有意穿透到原版ContinueButton；旧HitTest只承认右侧输入列/按钮，生成中列外仍可触达原版继续。后端ContinueConversationSafePatch.cs:40–54已有busy拒绝，解释可点但未必推进；未确认玩家打断正文是同一根因。本片不改键盘/LLM/TTS/后处理/存档/离开命令。
+- 性能：复用原属性通知和鼠标命中查询，仅常数次bool判断；一个无图透明控件，不新增tick扫描/反射/网络/后台任务。
+- 源码坐标绑定13ee8f393：extensions/AnimusForge.DialogueUI/GUI/Prefabs/AFDialogueNativeOverlay.xml:5–6拦截层；src/Native/NativeOverlayVM.cs:59–60状态、107及136–137通知；src/Native/NativeUiAdapter.cs:469–495 HitTest（以上src相对该扩展）。真实消费者为Overlay现有SetBusy/SetLayerForButtonsOnly与Gauntlet XML绑定；后端推进保护原样保留。
+- 验证：同一新增命中测试对检查点5ea5902出现55PASS/107FAIL；修复按1.3/1.4原版EventManager片段分别162PASS/0FAIL（含连续100次点击）；生产VM绑定/恢复/切模式及已有生命周期100PASS。hit测试含几何/引擎替身，生命周期patch dispatch与drawer为替身，不冒充实机。
+- 生命周期首次直接重定向obj导致现存obj被默认glob重复编译；已用artifacts/lifecycle-isolated/Proof.csproj显式源集合复跑通过，不删除其他产物或改构建入口。原build_single_module.ps1 Debug无Stage/Deploy，参考1.3.15.110062/1.4.6.115628，两实现各346警告/0错误，Bootstrap0错误，双Coup接缝门禁PASS。
+- 本地完整证据artifacts/dialogue-generation-shield-20261007/receipt.json、baseline/run.log、hit13/run.log、hit14/run.log、lifecycle.log、build.log。未实机验证/部署/打包/推送；玩家实际中断仍待带日志复现。产品回滚git revert 13ee8f393。
