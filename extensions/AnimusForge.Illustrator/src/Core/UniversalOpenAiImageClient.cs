@@ -358,6 +358,33 @@ namespace AnimusForge.Illustrator.Core
             return profile == ImagePromptProfile.DallE3 ? 4000 : profile == ImagePromptProfile.DallE2 ? 1000 : 0;
         }
 
+        private static int FinalPromptLimit(string model, bool chatProtocol)
+        {
+            int modelLimit = PromptCharLimit(ResolvePromptProfile(model, chatProtocol));
+            return modelLimit > 0 ? Math.Min(modelLimit, ImagePromptBudget.MaximumCharacters) : ImagePromptBudget.MaximumCharacters;
+        }
+
+        private static string FitFinalMain(string main, int reserved, int limit, string protocol)
+        {
+            int original = (main ?? string.Empty).Length;
+            try
+            {
+                string fitted = ImagePromptBudget.FitMain(main, reserved, limit);
+                GenerationDiagnostics.Current?.RecordStage("image_prompt_budget", new JObject {
+                    ["protocol"] = protocol, ["limit"] = limit, ["originalCharacters"] = (long)original + reserved,
+                    ["sentCharacters"] = (long)fitted.Length + reserved, ["reservedCharacters"] = reserved,
+                    ["shortened"] = fitted.Length != original });
+                return fitted;
+            }
+            catch (InvalidDataException)
+            {
+                GenerationDiagnostics.Current?.RecordStage("image_prompt_budget_rejected", new JObject {
+                    ["protocol"] = protocol, ["limit"] = limit, ["originalCharacters"] = (long)original + reserved,
+                    ["reservedCharacters"] = reserved, ["requestSent"] = false });
+                throw;
+            }
+        }
+
         /// <summary>Cuts at a sentence boundary when one lies in the last 40% of the budget.</summary>
         internal static string TrimToBudget(string text, int maxChars)
         {
@@ -546,8 +573,7 @@ namespace AnimusForge.Illustrator.Core
                 {
                     form.Add(new StringContent(model ?? string.Empty, Encoding.UTF8), "model");
                     var labels = new StringBuilder();
-                    labels.AppendLine(effectivePrompt ?? string.Empty);
-                    labels.AppendLine().AppendLine(VisualFidelityRules.ReferenceRepaint);
+                    labels.AppendLine().AppendLine().AppendLine(VisualFidelityRules.ReferenceRepaint);
                     if (playerRedraw) labels.AppendLine(VisualFidelityRules.PlayerRedrawReferenceException);
                     if (!string.IsNullOrWhiteSpace(quality)) form.Add(new StringContent(quality, Encoding.UTF8), "quality");
                     if (!string.IsNullOrWhiteSpace(size)) form.Add(new StringContent(size, Encoding.UTF8), "size");
@@ -568,9 +594,10 @@ namespace AnimusForge.Illustrator.Core
                     // Identity-reference redraw is not a masked local repair. Do not synthesize a mask:
                     // an all-transparent mask does not provide identity-only conditioning.
                     if (playerRedraw) labels.AppendLine().AppendLine(VisualFidelityRules.PlayerRedrawImagePriority);
-                    sentPrompt = labels.ToString();
-                    int limit = PromptCharLimit(ResolvePromptProfile(model, false));
-                    if (limit > 0) sentPrompt = TrimToBudget(sentPrompt, limit);
+                    string suffix = labels.ToString();
+                    int limit = FinalPromptLimit(model, false);
+                    sentPrompt = FitFinalMain(effectivePrompt, suffix.Length, limit, "ImagesEdits") + suffix;
+                    ImagePromptBudget.EnsureFits(sentPrompt.Length, limit);
                     form.Add(new StringContent(sentPrompt, Encoding.UTF8), "prompt");
                     if (!string.IsNullOrWhiteSpace(negativePromptField))
                         form.Add(new StringContent(negativePromptField, Encoding.UTF8), "negative_prompt");
@@ -763,7 +790,24 @@ namespace AnimusForge.Illustrator.Core
                 {
                     messageContent = effectivePrompt;
                 }
+                int limit = FinalPromptLimit(model, true);
+                string fullText = ExtractChatPromptText(messageContent);
+                if (messageContent is JArray parts)
+                {
+                    // Only the first item contains the director composition.
+                    // Keep images, per-image labels and all later mandates intact.
+                    var firstText = parts.Count > 0 ? parts[0] as JObject : null;
+                    if (firstText?["type"]?.Value<string>() == "text"
+                        && firstText["text"]?.Value<string>() == effectivePrompt)
+                    {
+                        int reserved = fullText.Length - (effectivePrompt ?? string.Empty).Length;
+                        firstText["text"] = FitFinalMain(effectivePrompt, reserved, limit, "Chat");
+                    }
+                    else ImagePromptBudget.EnsureFits(fullText.Length, limit);
+                }
+                else messageContent = FitFinalMain(fullText, 0, limit, "Chat");
                 sentPrompt = ExtractChatPromptText(messageContent);
+                ImagePromptBudget.EnsureFits(sentPrompt.Length, limit);
 
                 payload = new JObject
                 {
@@ -787,6 +831,10 @@ namespace AnimusForge.Illustrator.Core
             }
             else
             {
+                int limit = FinalPromptLimit(model, false);
+                effectivePrompt = FitFinalMain(effectivePrompt, 0, limit, "Images");
+                sentPrompt = effectivePrompt;
+                ImagePromptBudget.EnsureFits(sentPrompt.Length, limit);
                 payload = new JObject
                 {
                     ["model"] = model,
