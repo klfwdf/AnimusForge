@@ -6,7 +6,7 @@ spec=importlib.util.spec_from_file_location("extractor",ROOT/"tests/modules/AF.M
 ex=importlib.util.module_from_spec(spec);spec.loader.exec_module(ex)
 sys.path.insert(0,str(ROOT/"tests"))
 from output_isolation import new_run_root,resolve_dotnet,minimal_test_environment
-p=argparse.ArgumentParser();p.add_argument("--mutation",choices=["skip-paused-drain","skip-resume-repaint","steal-focus","allow-stale-text"]);args=p.parse_args()
+p=argparse.ArgumentParser();p.add_argument("--mutation",choices=["skip-paused-drain","skip-resume-repaint","steal-focus","allow-stale-text","skip-layer-reactivation"]);args=p.parse_args()
 out=new_run_root(ROOT,"native-focus-pause"+("-"+args.mutation if args.mutation else ""),None)
 main=ROOT/"src/AF.GameAdapter.Bannerlord/UI/Conversation/AnimusForgeNativeConversationOverlay.cs"
 part=ROOT/"src/AF.GameAdapter.Bannerlord/UI/Conversation/AnimusForgeNativeConversationOverlay.Interruption.cs"
@@ -21,6 +21,7 @@ if args.mutation=="skip-paused-drain":body=body.replace("_activeOverlay.ProcessI
 if args.mutation=="skip-resume-repaint":body=body.replace("RestoreInterruptedPresentation();","/* compiled mutation: lost resumed text */").replace("ReapplyInterruptedDisplayText();","/* compiled mutation: lost deferred repaint */")
 if args.mutation=="steal-focus":body=body.replace("_isClosed || _temporarySystemUiActive || !_dataSource", "_isClosed || !_dataSource")
 if args.mutation=="allow-stale-text":cache=cache.replace("_displayTextGeneration != _submitGeneration", "_displayTextGeneration < 0")
+if args.mutation=="skip-layer-reactivation":body=body.replace("_screen.SetLayerCategoriesState(OverlayLayerCategories, true);", "/* mutation: widgets visible but layer remains inactive */")
 (out/"Methods.cs").write_text("using System;using System.Threading;namespace AnimusForge { public sealed partial class AnimusForgeNativeConversationOverlay {"+body+"}}",encoding="utf-8")
 (out/"Interruption.cs").write_text(cache,encoding="utf-8")
 (out/"Presentation.cs").write_text(pres.read_text(encoding="utf-8-sig"),encoding="utf-8")
