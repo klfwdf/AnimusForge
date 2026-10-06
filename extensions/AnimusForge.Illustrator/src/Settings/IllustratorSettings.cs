@@ -459,11 +459,23 @@ namespace AnimusForge.Illustrator
             }
         }
 
-        [SettingPropertyInteger("导演提词参考篇幅（约 Token）", 600, 4000, "0 Token", HintText = "视觉导演完整输出的软性篇幅参考，不会作为 API 硬上限；模型可为保证四段完整而上下浮动。另要求完整回复最多30000字符，这是上限而非目标，不要求凑满；字符与Token不是同一计量。数值越大，等待时间和费用可能越高。", Order = 6, RequireRestart = false)]
+        [SettingPropertyInteger("导演最大输出 Tokens", 512, 64000, "0 Token", HintText = "实际发送给导演API的 max_tokens，默认16384；这是允许的输出预算，不是目标篇幅，也不是字符数。思考消耗是否计入由接口决定；请按接口支持范围设置。", Order = 6, RequireRestart = false)]
+        [SettingPropertyGroup("3. 视觉导演 API 配置 (OpenAI 兼容 · 留空使用正文API)", GroupOrder = 3)]
+        public int DirectorApiMaxTokens { get; set; } = 16384;
+
+        [SettingPropertyBool("强制缩减生图提示词", HintText = "默认关闭。开启后要求导演简洁输出，并按下方字符上限缩减导演四段描述。保留核心事实、画风、固定画幅和参考图说明；不能安全缩减则停止发送。不增加模型调用。关闭后保持原有模型限制及32000字符安全上限。", Order = 7, RequireRestart = false)]
+        [SettingPropertyGroup("3. 视觉导演 API 配置 (OpenAI 兼容 · 留空使用正文API)", GroupOrder = 3)]
+        public bool ForceImagePromptLimit { get; set; } = false;
+
+        [SettingPropertyInteger("强制生图提示词上限（字符）", 1000, 32000, "0 字符", HintText = "仅开启强制缩减时生效，默认4000。按生图服务商限制设置，支持长提示词时可调高或关闭。最终附加规则与参考图文字也计入；已识别模型的更低上限仍优先。", Order = 8, RequireRestart = false)]
+        [SettingPropertyGroup("3. 视觉导演 API 配置 (OpenAI 兼容 · 留空使用正文API)", GroupOrder = 3)]
+        public int ForcedImagePromptCharacters { get; set; } = 4000;
+
+        [SettingPropertyInteger("导演提词参考篇幅（约 Token）", 600, 4000, "0 Token", HintText = "软性篇幅参考，不是API输出上限。强制缩减开启时优先遵守字符预算；否则完整回复最多30000字符。保留完整四段，不为凑数扩写。", Order = 9, RequireRestart = false)]
         [SettingPropertyGroup("3. 视觉导演 API 配置 (OpenAI 兼容 · 留空使用正文API)", GroupOrder = 3)]
         public int DirectorMaxTokens { get; set; } = 2000;
 
-        [SettingPropertyButton("自定义导演提示词", Content = "打开编辑器", Order = 7, RequireRestart = false,
+        [SettingPropertyButton("自定义导演提示词", Content = "打开编辑器", Order = 10, RequireRestart = false,
             HintText = "填写构图、动作、景别与叙事偏好，适用于百科、会晤和周报/快报。留空保持默认规则；只发给视觉导演，不直接追加到生图端。不能覆盖已知人物、装备、场景与事件事实或改变输出格式。导演关闭/未配置时不生效；修改后从下一次生成开始生效，正在生成的任务不变。")]
         [SettingPropertyGroup("3. 视觉导演 API 配置 (OpenAI 兼容 · 留空使用正文API)", GroupOrder = 3)]
         public Action EditCustomDirectorPrompt { get; set; }

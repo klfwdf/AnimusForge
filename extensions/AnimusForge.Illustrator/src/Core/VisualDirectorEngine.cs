@@ -718,6 +718,13 @@ namespace AnimusForge.Illustrator.Core
             string requestText = "请依据游戏事实构思一个清晰、有变化且可直接绘制的瞬间。开放构图建议可以取舍，不要把建议改写成不存在的事实。" +
                 (string.IsNullOrWhiteSpace(stylePreference) ? string.Empty : "\n【画风偏好】" + stylePreference) + "\n\n" + plan.BuildDirectorContext() +
                 "\n【篇幅参考】完整输出以约 " + approximateTokens + " tokens 为参考，可为保证四段完整而上下浮动；这不是硬性限制。优先删除重复修辞和逐件罗列，不要为贴近数值而扩写或省略关键关系。";
+            if (options?.ForcedImagePromptCharacters > 0)
+            {
+                int bodyTarget = Math.Max(400, options.ForcedImagePromptCharacters / 2);
+                requestText += "\n【强制精简篇幅·优先于上文软参考】下游生图请求总上限为" + options.ForcedImagePromptCharacters +
+                    "字符，系统还会追加事实、画风与参考图说明。四段画面正文以不超过" + bodyTarget +
+                    "字符为目标，为附加规则预留空间；标题与元数据保持简短且格式完整。合并重复描述，省去修辞，保留人物身份、当前行动、环境结构、光线、关键空间关系及玩家本次明确要求，不得改变事实或将计划写成完成。不要为了用满API输出预算扩写。";
+            }
             if (!string.IsNullOrWhiteSpace(options?.CustomDirectorPrompt))
             {
                 requestText += "\n【玩家自定义导演规则·偏好层】\n" + options.CustomDirectorPrompt +
@@ -808,6 +815,7 @@ namespace AnimusForge.Illustrator.Core
                         "篇幅可浮动不代表可以超过此字符上限。优先删去重复修辞和装备罗列，保留关键事实、行动、空间关系及完整四段；不输出计数或检查过程。" },
                     userMessage
                 },
+                ["max_tokens"] = options.DirectorApiMaxTokens > 0 ? options.DirectorApiMaxTokens : 16384,
                 ["temperature"] = 0.85
             };
 
