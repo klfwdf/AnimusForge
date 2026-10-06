@@ -1,3 +1,13 @@
+<a id="terminal-kingdom-news-center-20261006"></a>
+# 终端王国近况居中与查看公告入口移除（2026-10-06，OFFLINE_VERIFIED_LIVE_PENDING）
+
+- 本次授权：王国近况标题、条目内容居中，删除显示信息的王国公告入口；保留进入政策管理的王国公告。工作区 `F:/AnimusForge-main` / `main`，基线 `b1884036`，意图检查点 `b0b5bb7`，产品提交 `4c27120c94afa8658632e95d9758b988be3b31f2`。不覆盖游戏、不打包、不推送。
+- 源码证据（产品提交，一基行号）：`content/modules/AF.Module.UI/GUI/Prefabs/AnimusForgeTerminalPopup.xml:386-450` 的 WeeklyReportVm 子树统一文字居中，条目期次/日期在同一居中水平容器中，正文保留换行、百科链接和滚动；`src/AF.GameAdapter.Bannerlord/UI/Terminal/AnimusForgeTerminalBehavior.cs:357-390` 的 BuildTerminalRootNodes 删除 world_policies 子节点、保留 custom_policy_management/policy_compose/local_policies，ExecuteTerminalLeaf 同时移除孤立分派。真实消费者 `AnimusForgeTerminalUiModels.cs:109` LoadMovie 与 `:690-698` ShowWeeklyReports；`content/content-map.json:77-79` 映射到 GUI/Prefabs/AnimusForgeTerminalPopup.xml。VM、领域公告数据与政策编写流程不变。
+- 频率/性能：只修改静态 prefab 布局与终端打开时的菜单构造，无新增 Tick、扫描、反射、缓存或后台工作。
+- 验证：XML解析、近况24个文字控件居中、原数据绑定/命令保持、其他面板原样、政策节点保留、资源映射检查 PASS；`git diff --check` PASS。原脚本 `powershell -NoProfile -ExecutionPolicy Bypass -File scripts/build/build_single_module.ps1 -ProjectRoot F:\AnimusForge-main -BannerlordRoot 'F:\SteamLibrary\steamapps\common\Mount & Blade II Bannerlord' -Configuration Debug` 重试退出0；1.3引用v1.3.15.110062、1.4引用v1.4.6.115628，两实现各341个已有警告/0错误，Bootstrap 0错误，双接缝PASS。
+- 首次构建因同时写入的处决模块 ExecutionSceneConflictBridge 缺失报CS0103；新文件出现后重试通过。本轮未修改/提交其他作者的处决、挑衅、进城或Prompt并行差异，构建包含当时工作树的这些改动。保留失败及成功日志：`artifacts/terminal-kingdom-news-20261006/build.log`、`build-retry.log`、`source-validation.txt`。
+- NOT-RUN：游戏内各分辨率/长文本视觉验收、点击与滚动实测、Stage/安装/ZIP。候选在 `bin/Debug/single_module_artifacts`，不宣称游戏安装已更新或全仓实机通过。回滚本片使用 `git revert 4c27120c`，保留其他作者改动；下方历史交接不构成本轮发布/部署授权。
+
 <a id="coup-chunked-json-spec-20261005"></a>
 # Coup分块存档与项目JSON规范（2026-10-05，OFFLINE_VERIFIED_NOT_DEPLOYED_WITH_OPEN_AUDIT_GAPS）
 
