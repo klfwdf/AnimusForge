@@ -133,7 +133,8 @@ public sealed class SiegeNpcResponseEventBudget
             MaxPendingRequests,
             SiegeNpcResponseLimitProfile.ResolveAllowedResponseCount(unlimited, safeConfiguredLimit, safeAvailableCount));
         EventState state = GetOrCreateEvent(normalizedEventId, allowedCount);
-        state.AllowedCount = Math.Max(state.AllowedCount, allowedCount);
+        int currentSettingCeiling = unlimited ? MaxPendingRequests : safeConfiguredLimit;
+        state.AllowedCount = Math.Min(currentSettingCeiling, Math.Max(state.AllowedCount, allowedCount));
         if (state.SpeakerIds.Contains(normalizedSpeakerId))
         {
             return new SiegeNpcResponseDecision(false, SiegeNpcResponseDecisionReason.DuplicateSpeaker, safeConfiguredLimit, state.AllowedCount, state.ClaimedCount);

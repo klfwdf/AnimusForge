@@ -66,6 +66,17 @@
 
 # 历史交接：AnimusForge 1.5.4 提交/推送与单ZIP打包（2026-10-06）
 
+# 当前交接：已审查的 GCCZ 修复回接 main（2026-10-06）
+
+- 用户明确授权“推送 main 并同步游戏”。唯一施工目录 `G:/AFMOD/AF-GCCZ-SYNC-20261006`，本地 `codex/gccz-reviewed-sync-20261006`；远端 `https://github.com/klfwdf/AnimusForge.git` 的 `main`。从干净 `b1884036` 新建隔离副本，检查点 `918f3832`，产品/测试 `ee796fec1f8ab9519996c64c5983ffeb26cd95c5`。不推旧 CULTURE 分支或其他任务的人设 TEST 历史。
+- 回接城堡实际收编/容量/士气、原生寻路与 7 秒受保护卡住恢复、城镇操作防重启和 NPC 回复预算收紧；保留 main 新版城镇确认事件记忆与 Coup/SETS 改动。已删除旧的长距穿墙/传送围圈路径；公开兼容常量及旧提示助手保留，不启用旧效果。
+- GCCZ 专项 91、已有城镇规则记忆 60 PASS；2 个独立变异先编译成功，再命中预期具名失败。原入口 Release 1.3/1.4 + Bootstrap 均 0 错误，双最终 DLL 接缝/注册门禁和各 20 项记忆端口回归 PASS。NU1900 表示本机未取到 NuGet 漏洞审计，不是新编译错误。
+- [主台账、源码坐标、验收和回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#gccz-reviewed-repair-sync-20261006)。部署必须在远端推送确认之后，使用同一候选与原事务覆盖；本地 `artifacts/gccz-reviewed-sync/` 保留日志/hash/私有 Recovery 对应证据，完成状态以实际收据为准。
+- **已完成推送后同步游戏（DEPLOYED_HASH_VERIFIED_LIVE_PENDING）**：部署源码 `62c887d7070b990034041615cbe7ea9b555245b6`，原事务覆盖 9 个文件，9 份旧备份 hash 一致；安装全部 3379 个 Stage 文件匹配，保留 979 个未知文件（其中 5 个 ONNX 文件），3 份原版 DLL 样本未变。本地实验记忆 10 份文件 hash 未变且不纳入候选。详细本地证据 `artifacts/gccz-reviewed-sync/verification.json` 和 `recovery-verification.json`；未启动游戏/操作存档，实机与旧档仍 NOT_RUN。
+- 本地试验记忆、人设 TEST、GCCZ 未提交 UI/政策草稿不纳入；没有更改 SyncData 键、保存类型、公开 V1 API、默认入口或原版游戏 DLL。LIVE/SAVE/原生碰撞/帧耗时/真实 provider 尚 **NOT_RUN**。下方历史工作区/未部署文字不选择本次目录，也不授权覆盖其他任务。
+
+# 当前交接：AnimusForge 1.5.4 提交/推送与单ZIP打包（2026-10-06）
+
 - 最新用户授权全部产品改动提交、推送到现有 `origin/main` 并打包1.5.4；未授权覆盖游戏/启动实机或重写历史。实际工作区 `F:\AnimusForge-main` / `main`，基线 `c39cd564`，检查点 `1aad1d35`；本次版本、工具排除配置和交付文档另行发布提交。
 - 单ZIP已经生成并离线验证：`一键编译覆盖推送/packages/AnimusForge_v1.5.4_20261006_111223_067.zip`（84,801,038 bytes）；原入口Debug双实现+Bootstrap、接缝与Stage/ZIP门禁PASS，外交3636、内战349、议程通知5项及两分支内政XML探针PASS。保留已有编译warning，不宣称实机/旧档通过。
 - [唯一主台账：发布边界、源码位置、测试、hash与回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#release-1-5-4-20261006)。最终发布提交与 `origin/main` 的实际远端SHA对照以本地 `artifacts/release-1.5.4-20261006/delivery-receipt.json` 为准；ZIP/构建证据同目录。未跟踪临时素材均保留不上传，包中只保留白名单内置世界书，不含个人安装导出。
