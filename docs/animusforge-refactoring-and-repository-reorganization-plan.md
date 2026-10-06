@@ -7756,3 +7756,11 @@ R2计划交付门槛：已给固定技术路线、真实来源与目标、写入
 - GenerationDiagnostics识别Player2返回image并省略大Base64，data URI参考沿用哈希去重，GameClientID注册脱敏。仅请求时构造有界数组/JSON，无新增Tick或后台游戏对象访问。
 - 验证：diff检查、真实本机OpenAPI与xAI文档核对、接线审查；原统一脚本1.3/1.4/Bootstrap与双接缝PASS，日志artifacts/grok-json-edits-20261007/build-player2.log。初次sandbox无法读NuGet配置，批准后编译通过。遵循模块规则未运行Illustrator离线审计。
 - NOT-RUN：实际游戏四图Grok、Player2计费API、MCM实机、模型多图采纳及输出尺寸遵从；未部署/打包/推送。
+
+## player2-auto-discovery-20261007 — DEPLOYED_LIVE_PENDING
+
+- 用户要求取消Player2手动开关，核对/v1/models仅返回whisper-1后批准通过OpenAPI确认并编译部署。产品80a47681d，前序Grok/Player2适配56bd34498，检查点a684eda。
+- IllustratorRuntime.cs ResolvePlayer2Async每请求复制快照并解析一次；UniversalOpenAiImageClient.cs DetectPlayer2Async只探测HTTP(S) loopback的/v1/openapi.json，验证title含Player2及/image/edit、/image/generate POST。5秒超时、2MiB限制，单条来源缓存，成功300秒/失败15秒，Semaphore防并发重复探测；4315未确认停止，不盲发计费请求，其他未确认本地服务沿用原协议。localhost归一IPv4，profile路径保留，无新增Tick。
+- IllustratorSettings.cs取消开关；模型拉取识别后显示使用Player2应用模型，避免whisper-1写入生图选择；实际请求不携带model。IllustratorApiTest.cs先解析服务，再按参考图开关选择编辑/生成，结果报告通道。GameClientID可选字段保留。
+- 验证：diff及源码接线审查，原build_single_module.ps1 -Deploy双API/Bootstrap/双接缝PASS，部署9文件；Stage/安装3379文件哈希一致。日志artifacts/grok-json-edits-20261007/build-deploy-auto.log、install-verification.json。
+- 部署包含前序Grok JSON多图适配。未调用Player2计费接口，MCM实机、远端Player2（本片仅本地识别）、真实游戏Grok四图仍未验；未打包/推送。回滚git revert 80a47681d，前序协议git revert 56bd34498。部署恢复C:/Users/29310/AppData/Local/AnimusForge/Recovery/deploy/deploy-72de4238e3814ee999fefaa62edeeced。
