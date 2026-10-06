@@ -1,9 +1,10 @@
-# 当前交接：1.5.5 累计公告与 main 发布（2026-10-06，PUSH_READY）
+# 当前交接：1.5.5 累计公告与 main 发布（2026-10-06，PUSHED_REMOTE_VERIFIED）
 
 - 用户明确授权提交推送及对比远端、以上次更新为基线写玩家累计公告。上次实际发布采用v1.5.4/b1884036（2026-10-06 11:17:54 +08:00），不将上一期1.5.3已讲内容重复作为本次新增。
 - 拉取远端至df6fc788c，新增8193个参考资料/导出脚本文件已由73d82a201无冲突合入；全部处于现有编译排除范围，产品与已验证打包源码3dad3baf相同。禁止发布的本地交接文件未进入待推送历史。
 - 公告：docs/releases/AnimusForge_1.5.5_累计更新公告_20261006.md及同名txt，涵盖处决/对话设置/亲属/画卷/内战/GCCZ/海上退出；明确默认、范围与实机限制。未把信使好感和救援记忆的只读调查写成修复。
 - [主台账、基线和推送证据](docs/animusforge-refactoring-and-repository-reorganization-plan.md#publish-v155-20261006)。本地收据artifacts/publish-v1.5.5-20261006，回滚点codex/pre-push-v1.5.5-20261006；普通推送main，不强推，不上传ZIP/存档/本地证据。
+- 公告提交a1755fa7ab7fea5cc320f92c50e2429522796a3b已普通推送origin/main，git ls-remote独立核对一致、领先/落后0/0。此后仅补记本条发布结果，产品和公告正文不变。
 
 # 历史交接：处决后攻击空引用与内政按钮底色（2026-10-06，DEPLOYED_PACKAGED_LIVE_PENDING）
 
