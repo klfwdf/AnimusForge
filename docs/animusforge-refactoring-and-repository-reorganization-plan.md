@@ -7378,3 +7378,11 @@ R2计划交付门槛：已给固定技术路线、真实来源与目标、写入
 
 - NOT-RUN：1.3/1.4实机、原生Gauntlet交互、实际LLM和外交投票、代表性旧存档/迁移、第三方扩展单独重打包。1.3 overlay之外的既有共享补充依赖覆盖限制未在本轮消除。
 - 没有游戏目录覆盖，故不存在本轮游戏安装回滚；源码用定向 inverse commit / `git revert`，不得hard reset/force push或回滚其他作者。初始 `c39cd564`、检查点 `1aad1d35` 是定位参照，恢复原改动应先读本地initial-status及对应commit diff；发布元数据可单独revert其发布提交。
+# 处决期间场景冲突隔离（2026-10-06）
+
+<a id="execution-scene-conflict-isolation-20261006"></a>
+
+- 状态：ACTIVE；基线 `b1884036`，工作区 `F:/AnimusForge-main` / `main`，开工时 tracked clean。
+- 目标：AF 处决准备、行刑、观众反应与未完成收尾期间阻止 SceneTaunt/SETS 场景冲突；交还玩家控制、恢复对话且完成会话收尾后，在同一 Mission 恢复普通 NPC 冲突。受刑者继续精确排除。
+- 范围：AF Vengeance 薄桥、SceneTaunt、SETS，专项测试与本台账/HANDOFF；不修改共享 Vengeance 行刑实现、存档、构建入口，不部署/打包/推送。
+- 风险及退出门：攻击预判早于命中回调、SETS 独立命中入口、Aftermath 提前恢复、取消/退出及跨 Mission 残留；专项生命周期/接线回归及原入口双 API + Bootstrap 构建通过，实机另记 NOT_RUN。
