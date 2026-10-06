@@ -50,6 +50,7 @@ internal sealed partial class KingdomCivilWarOwner
             RestorationKingdomShortName = request.RestoreDynasty ? request.OriginalShortName : ""
         };
         state.Factions.Add(faction);
+		_openWarFactions.Add(faction);
         foreach (string clanId in faction.WarClanIds)
         {
             var record = GetOrCreateClan(state, CivilWarWorld.FindClan(clanId), week);

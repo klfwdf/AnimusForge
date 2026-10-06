@@ -67,7 +67,7 @@ internal static class PoliticalActionsTests
         float influence = crown.Influence;
         Check(f.Owner.Execute(suppress, crown).Status == CivilWarActionStatus.Applied, "king suppression works");
         Check(crown.Influence == influence - 100 && f.Leader.Influence == 480, "suppression pays and reduces member influence");
-        Check(f.State.Clans[f.Leader.StringId].Grievance["royal_suppression"] == 15 && f.State.Clans[f.Follower.StringId].Grievance["royal_suppression"] == 8, "suppression grievances differentiated");
+        Check(f.State.Clans[f.Leader.StringId].Grievance["royal_suppression"] == 7.5f && f.State.Clans[f.Follower.StringId].Grievance["royal_suppression"] == 4, "suppression grievances differentiated");
         Check(f.Faction.UltimatumDay == 907, "first suppression extends deadline");
         f.Owner.Execute(suppress, crown); Check(crown.Influence == influence - 100, "duplicate suppression no second charge");
         Check(!f.Owner.Quote(Request(f, CivilWarAction.Negotiate), crown).Allowed, "shared governance cooldown");
@@ -142,9 +142,9 @@ internal static class PoliticalActionsTests
         f.State.Clans[f.Leader.StringId].Grievance["lands_raided"] = 60;
         f.Reload(); float beforeMean = f.Faction.Grievance;
         f.Owner.AddGrievance(f.Home, "lands_raided", new[] { f.Leader }, 30, 100, "raid");
-        Check(Math.Abs(f.Faction.Grievance - beforeMean - 10) < .001, "event updates faction mean immediately without scanning all members");
+        Check(Math.Abs(f.Faction.Grievance - beforeMean - 5) < .001, "event updates faction mean immediately without scanning all members");
         f.Owner.Execute(Request(f, CivilWarAction.Leave), Clan.PlayerClan);
-        Check(Math.Abs(f.Faction.Grievance - 45) < .001, "membership rebuild keeps mean consistent");
+        Check(Math.Abs(f.Faction.Grievance - 37.5f) < .001, "membership rebuild keeps mean consistent");
 
         f = Prewar(); f.Faction.PlayerFounded = true; f.Faction.UltimatumDay = 2000;
         f.State.CooldownUntilDay = 2000;
@@ -194,7 +194,7 @@ internal static class PoliticalActionsTests
 
         f = Prewar(); crown = f.Home.RulingClan;
         Check(f.Owner.Execute(Request(f, CivilWarAction.ForceDissolve), crown).Status == CivilWarActionStatus.Applied, "NPC may comply with dissolution");
-        Check(f.State.Factions.Count == 0 && crown.Influence == 300 && f.State.Clans[f.Leader.StringId].Grievance["royal_suppression"] == 15, "dissolution retains grievances and charges once");
+        Check(f.State.Factions.Count == 0 && crown.Influence == 300 && f.State.Clans[f.Leader.StringId].Grievance["royal_suppression"] == 7.5f, "dissolution retains grievances and charges once");
         Check(Math.Abs(CivilWarPoliticalRules.NegotiationChance(new Dictionary<string, float>(), 2, new CivilWarTuning()) - .66f) < .0001f, "negotiation uses specified raw formula and shared shaping");
 
         f = Prewar(); f.Faction.DemandId = "usurp";

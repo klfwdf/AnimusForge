@@ -105,7 +105,8 @@ internal sealed class CivilWarTuning
 	internal int MaxRefusals = 4;
 	// A faction must have been refused this many times before an automatic escalation may open a war (<= MaxRefusals).
 	internal int MinRefusalsBeforeWar = 2;
-	internal int PlayerAnswerWeeks = 2;
+	internal int PlayerAnswerWeeks = 4;
+	internal int WorldMaxWars = 3;
 	internal int SideLockWeeks = 2;
 	internal int WarRequestTimeoutWeeks = 3;
 	// Concurrent factions per kingdom (MCM 1..4).
@@ -117,6 +118,10 @@ internal sealed class CivilWarTuning
 // Pure multi-faction rules (no TaleWorlds types) so the smoke tests can cover them.
 internal static class CivilWarFactionRules
 {
+	// Player-authorized uprisings count towards occupancy, but are not blocked by the world cap.
+	internal static bool HasWorldWarSlot(int activeWars, CivilWarTuning tuning, bool playerAuthorized = false)
+		=> playerAuthorized || activeWars < Math.Max(1, Math.Min(20, tuning?.WorldMaxWars ?? 3));
+
 	// A new faction may form while below the cap and outside the cooldown.
 	internal static bool CanFormFaction(int activeFactions, int week, int cooldownUntilWeek, CivilWarTuning tuning)
 	{

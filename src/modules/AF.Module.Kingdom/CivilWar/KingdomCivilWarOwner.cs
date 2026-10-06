@@ -22,6 +22,9 @@ internal sealed partial class KingdomCivilWarOwner
 	// Settlement -> faction id that marked it; owners change during the war, so clearing cannot use the current owner.
 	private readonly Dictionary<string, string> _oppositionMarkFaction = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 	private readonly HashSet<string> _openWarKingdoms = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+	// Main-thread lifecycle index: includes pending creation and registered coup wars. Never serialized.
+	private readonly HashSet<KingdomCivilWarFactionState> _openWarFactions = new HashSet<KingdomCivilWarFactionState>();
+	internal int WorldOpenWarCount => _openWarFactions.Count;
 	private readonly HashSet<string> _activeNamingRequests = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 	// Reused on the campaign thread: no per-clan key-array allocation or per-point exponentiation.
 	private readonly List<string> _decaySourceKeys = new List<string>(16);
@@ -40,6 +43,7 @@ internal sealed partial class KingdomCivilWarOwner
 		Revision++;
 		_oppositionMarkFaction.Clear();
 		_openWarKingdoms.Clear();
+		_openWarFactions.Clear();
 		_activeNamingRequests.Clear();
 		HasUnpromptedPlayerUltimatum = false;
 		HasPendingFollowPrompt = false;
@@ -61,6 +65,7 @@ internal sealed partial class KingdomCivilWarOwner
 				if (faction.PlayerFollowPending && faction.Stage == KingdomCivilWarStage.OpenWar && !string.IsNullOrWhiteSpace(faction.RebelKingdomId)) { faction.PlayerFollowAsked = false; HasPendingFollowPrompt = true; }
 				if (faction.Stage != KingdomCivilWarStage.OpenWar) continue;
 				_openWarKingdoms.Add(state.KingdomId);
+				_openWarFactions.Add(faction);
 				IndexOppositionSettlements(state, faction);
 			}
 		}
@@ -294,7 +299,7 @@ internal sealed partial class KingdomCivilWarOwner
 	{
 		KingdomCivilWarKingdomState state;
 		if (string.IsNullOrWhiteSpace(kingdomId) || !_storage.Kingdoms.TryGetValue(kingdomId, out state)) return;
-		foreach (KingdomCivilWarFactionState faction in state.Factions) ClearWarMarks(faction.Id);
+		foreach (KingdomCivilWarFactionState faction in state.Factions) { ClearWarMarks(faction.Id); _openWarFactions.Remove(faction); }
 		_storage.Kingdoms.Remove(kingdomId);
 		_openWarKingdoms.Remove(kingdomId);
 	}
@@ -349,7 +354,8 @@ internal sealed partial class KingdomCivilWarOwner
 		// Single-war mode: an escalated faction waits for the other war to end, then rebels without a new roll.
 		if (faction.WaitingForOtherWar)
 		{
-			if (!CivilWarFactionRules.CanOpenWar(OtherFactionAtWar(state, faction), tuning)) return;
+			if (!CivilWarFactionRules.CanOpenWar(OtherFactionAtWar(state, faction), tuning)
+				|| !CivilWarFactionRules.HasWorldWarSlot(WorldOpenWarCount, tuning)) return;
 			faction.WaitingForOtherWar = false;
 			OpenWar(kingdom, state, faction, leader, week, tuning, adjustStability);
 			return;
@@ -491,7 +497,16 @@ internal sealed partial class KingdomCivilWarOwner
 			AddHistory(state, week, name + "决意起兵，但国内已有内战，暂时按兵不动");
 			return;
 		}
+		if (!CivilWarFactionRules.HasWorldWarSlot(WorldOpenWarCount, tuning, playerAuthorized))
+		{
+			if (!faction.WaitingForOtherWar) AddHistory(state, week, name + "决意起兵，但世界叛乱已达上限（" + WorldOpenWarCount + "/" + tuning.WorldMaxWars + "），暂时按兵不动");
+			faction.WaitingForOtherWar = true;
+			faction.Stage = KingdomCivilWarStage.FactionFormed;
+			return;
+		}
+		faction.WaitingForOtherWar = false;
 		faction.Stage = KingdomCivilWarStage.OpenWar;
+		_openWarFactions.Add(faction);
 		faction.StageWeek = week;
 		_openWarKingdoms.Add(kingdom.StringId);
 		CoolDownOtherFactions(state, faction, week, tuning, name);
@@ -681,6 +696,7 @@ internal sealed partial class KingdomCivilWarOwner
 		if (leader?.Kingdom == kingdom)
 		{
 			faction.Stage = KingdomCivilWarStage.FactionFormed; faction.WarRequestDay = -1; faction.WarClanIds.Clear();
+			_openWarFactions.Remove(faction);
 			faction.PlayerFollowPending = false; faction.PlayerFollowAsked = false;
 			faction.UltimatumDay = CivilWarWorld.CurrentDay() + 7; faction.WaitingForOtherWar = false;
 			ClearWarMarks(faction.Id); if (!state.Factions.Any(x => x.Stage == KingdomCivilWarStage.OpenWar)) _openWarKingdoms.Remove(state.KingdomId);
@@ -778,6 +794,7 @@ internal sealed partial class KingdomCivilWarOwner
 		if (stabilityDelta != 0 && kingdom != null) adjustStability?.Invoke(kingdom, stabilityDelta);
 		faction.LastParticipantIds = Members(state, faction).Select(x => x.ClanId).ToList(); ProtectWarClans(faction);
 		state.Factions.Remove(faction);
+		_openWarFactions.Remove(faction);
 		if (startCooldown)
 		{
 			state.CooldownUntilWeek = Math.Max(state.CooldownUntilWeek, week + tuning.CooldownWeeks);
@@ -1191,7 +1208,7 @@ internal sealed partial class KingdomCivilWarOwner
 		else if (f.WaitingForOtherWar || paused)
 		{
 			p.DeadlineLabel = f.WaitingForOtherWar ? "决意起兵" : "暂停"; p.DeadlineValue = "待命"; p.DeadlineUnit = "";
-			p.DeadlineNote = f.WaitingForOtherWar ? "等待国内战事结束后起兵" : "国内战事期间按兵不动";
+			p.DeadlineNote = f.WaitingForOtherWar ? "等待起兵名额释放" : "国内战事期间按兵不动";
 		}
 		else
 		{
@@ -1261,7 +1278,7 @@ internal sealed partial class KingdomCivilWarOwner
 			case KingdomCivilWarStage.Ultimatum:
 				return faction.PlayerAnswerPending ? "最后通牒 · 待国王答复（剩 " + Math.Max(0, faction.AnswerDeadlineDay - CivilWarWorld.CurrentDay()) + " 天）" : "最后通牒 · 等待裁决";
 			default:
-				if (faction.WaitingForOtherWar) return "决意起兵 · 等待国内战事结束";
+				if (faction.WaitingForOtherWar) return "决意起兵 · 等待起兵名额";
 				if (paused) return "暂停 · 国内战事期间按兵不动";
 				int left = faction.UltimatumDay - CivilWarWorld.CurrentDay();
 				if (left > 0 && aftermath == CivilWarAftermath.Suppressed) return "受平叛震慑 · " + left + " 天后提出通牒";
@@ -1446,6 +1463,8 @@ internal sealed partial class KingdomCivilWarOwner
 	private static void AddPoints(KingdomCivilWarClanState record, string sourceId, float points)
 	{
 		if (record?.Grievance == null || string.IsNullOrWhiteSpace(sourceId) || points <= 0f) return;
+		// All event/action additions pass here exactly once; stored grievance and decay are unchanged.
+		points *= 0.5f;
 		float current;
 		if (!record.Grievance.TryGetValue(sourceId, out current)) current = 0f;
 		record.Grievance[sourceId] = CivilWarRules.Clamp(current + points, 0f, MaxClanGrievance);

@@ -85,11 +85,11 @@ internal sealed partial class KingdomCivilWarOwner
 			else if (f.Stage == KingdomCivilWarStage.OpenWar && (r.Action == CivilWarAction.Suppress || r.Action == CivilWarAction.ForceDissolve)) q.Reason = "建国请求开始后不能压制或行政解散。";
 			else if (f.Stage == KingdomCivilWarStage.OpenWar && string.IsNullOrWhiteSpace(f.RebelKingdomId)) q.Reason = "叛军正在建国，请等待建国完成。";
 			else if (r.Action != CivilWarAction.Concede && CivilWarWorld.CurrentDay() < f.GovernanceUntilDay) { q.CooldownUntilDay = f.GovernanceUntilDay; q.Reason = "政治行动冷却至第 " + f.GovernanceUntilDay + " 天。"; }
-			if (r.Action == CivilWarAction.Suppress) { q.Influence = CivilWarPoliticalRules.SuppressCost; q.Consequence = "成员失去最多20影响力；领袖不满+15，其余+8；与国王关系−5。首次压制延后期限7天。"; }
+			if (r.Action == CivilWarAction.Suppress) { q.Influence = CivilWarPoliticalRules.SuppressCost; q.Consequence = "成员失去最多20影响力；领袖不满+7.5，其余+4；与国王关系−5。首次压制延后期限7天。"; }
 			if (r.Action == CivilWarAction.ForceDissolve)
 			{
-				q.Influence = CivilWarPoliticalRules.DissolveCost; q.Consequence = "成员不满+15、与国王关系−10；服从则解散，抗命则起兵。";
-				if (q.Reason.Length == 0 && !CanStartPoliticalWar(k, s, f)) q.Reason = "战争限制或玩家王国免疫阻止抗命起兵，不能下达解散令。";
+				q.Influence = CivilWarPoliticalRules.DissolveCost; q.Consequence = "成员不满+7.5、与国王关系−10；服从则解散，抗命则起兵。";
+				if (q.Reason.Length == 0 && !CanStartPoliticalWar(k, s, f, IsPlayerLed(f))) q.Reason = "国内/世界战争上限或玩家王国免疫阻止抗命起兵，不能下达解散令。";
 			}
 			if (r.Action == CivilWarAction.Negotiate)
 			{
@@ -142,7 +142,7 @@ internal sealed partial class KingdomCivilWarOwner
 			else if (r.Action == CivilWarAction.Detonate)
 			{
 				if (f == null || own != f || !IsPreWar(f)) q.Reason = "只能要求自己的战前派系起兵。";
-				else if (!CanStartPoliticalWar(k, s, f)) q.Reason = "战争限制或叛乱免疫阻止起兵。";
+				else if (!CanStartPoliticalWar(k, s, f, actor == Clan.PlayerClan)) q.Reason = "国内/世界战争上限或叛乱免疫阻止起兵。";
 				else if (actor == Clan.PlayerClan && !PlayerDetonationAllowed(k, actor, out string strengthReason)) q.Reason = strengthReason;
 				else if (f.LeaderClanId != actor.StringId && CivilWarWorld.CurrentDay() < f.ProposalUntilDay) q.Reason = "起兵建议被拒后须等待7天。";
 				q.Consequence = f?.LeaderClanId == actor.StringId ? "立即进入起兵建国流程。" : "向领袖提议；拒绝后7天内不能再次建议。";
@@ -164,8 +164,13 @@ internal sealed partial class KingdomCivilWarOwner
 		return q;
 	}
 
-	private bool CanStartPoliticalWar(Kingdom k, KingdomCivilWarKingdomState s, KingdomCivilWarFactionState f)
-		=> !PlayerKingdomRebellionImmunity.ShouldProtectKingdom(k) && CivilWarFactionRules.CanOpenWar(s != null && OtherFactionAtWar(s, f), DuelSettings.BuildCivilWarTuning());
+	private bool CanStartPoliticalWar(Kingdom k, KingdomCivilWarKingdomState s, KingdomCivilWarFactionState f, bool playerAuthorized = false)
+	{
+		CivilWarTuning tuning = DuelSettings.BuildCivilWarTuning();
+		return !PlayerKingdomRebellionImmunity.ShouldProtectKingdom(k)
+			&& CivilWarFactionRules.CanOpenWar(s != null && OtherFactionAtWar(s, f), tuning)
+			&& CivilWarFactionRules.HasWorldWarSlot(WorldOpenWarCount, tuning, playerAuthorized);
+	}
 	// Quoted on demand (panel open / AI governance), never per tick.
 	private static int CompensationOffer(Kingdom k, KingdomCivilWarKingdomState s, KingdomCivilWarFactionState f, int tier, bool influence)
 	{
@@ -368,7 +373,7 @@ internal sealed partial class KingdomCivilWarOwner
 		if (!accept)
 		{
 			f.PendingResponse = null;
-			if (p.Dissolve && !CanStartPoliticalWar(k, s, f)) { result.Status = CivilWarActionStatus.Rejected; result.Message = "战争资格已变化，原解散命令失效，派系保留。"; }
+			if (p.Dissolve && !CanStartPoliticalWar(k, s, f, playerAuthorized)) { result.Status = CivilWarActionStatus.Rejected; result.Message = "战争资格已变化，原解散命令失效，派系保留。"; }
 			else if (p.Dissolve && IsPlayerLed(f) && !playerAuthorized) { RefuseAndReschedule(f, CivilWarWorld.CurrentWeek(), DuelSettings.BuildCivilWarTuning()); result.Status = CivilWarActionStatus.Rejected; result.Message = "解散令超时，派系保留；玩家领袖须手动决定起兵。"; }
 			else if (p.Dissolve) { OpenWar(k, s, f, leader, CivilWarWorld.CurrentWeek(), DuelSettings.BuildCivilWarTuning(), HostStability, playerAuthorized); result.Status = CivilWarActionStatus.AwaitingKingdom; result.Message = "派系抗命，进入起兵流程。"; }
 			else { result.Status = CivilWarActionStatus.Rejected; result.Message = "派系拒绝补偿，未扣除资源。"; }
