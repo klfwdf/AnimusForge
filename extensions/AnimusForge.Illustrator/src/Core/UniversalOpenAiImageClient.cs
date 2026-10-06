@@ -612,6 +612,43 @@ namespace AnimusForge.Illustrator.Core
             return root + (edit ? "/image/edit" : "/image/generate");
         }
 
+        private static string FitPlayer2Request(JObject payload, IReadOnlyList<IllustrationReferenceImage> references, CancellationToken token)
+        {
+            // Local Player2 verified: 2,097,152 bytes reaches JSON parsing; +1 returns 413.
+            const int budget = 1900 * 1024;
+            string json = payload.ToString(Formatting.None);
+            int originalBytes = Encoding.UTF8.GetByteCount(json);
+            int bytes = originalBytes;
+            int[] edges = { 4096, 1536, 1024, 768, 640, 512 };
+            var originals = new List<byte[]>();
+            if (bytes > budget && references != null)
+                foreach (var reference in references) originals.Add(Convert.FromBase64String(reference.Base64Image));
+            for (int pass = 0; bytes > budget && pass < edges.Length && originals.Count > 0; pass++)
+            {
+                var images = (JArray)payload["images"];
+                for (int index = 0; index < originals.Count; index++)
+                {
+                    token.ThrowIfCancellationRequested();
+                    var kind = references[index].Kind;
+                    bool scene = kind == IllustrationReferenceKind.Scene || kind == IllustrationReferenceKind.ScenePerspective
+                        || kind == IllustrationReferenceKind.ScenePanorama || kind == IllustrationReferenceKind.SceneViews
+                        || kind == IllustrationReferenceKind.MapConversationScene;
+                    byte[] encoded = ImagePayload.EncodePlayer2Reference(originals[index], scene, edges[pass], token);
+                    string mime = encoded[0] == 255 && encoded[1] == 216 ? "image/jpeg" : "image/png";
+                    string candidate = "data:" + mime + ";base64," + Convert.ToBase64String(encoded);
+                    if (candidate.Length < images[index].Value<string>().Length) images[index] = candidate;
+                }
+                json = payload.ToString(Formatting.None);
+                bytes = Encoding.UTF8.GetByteCount(json);
+            }
+            GenerationDiagnostics.Current?.RecordStage("player2_upload_budget", new JObject {
+                ["originalBytes"] = originalBytes, ["sentBytes"] = bytes, ["limitBytes"] = budget,
+                ["referenceCount"] = references?.Count ?? 0, ["requestSent"] = false,
+                ["fits"] = bytes <= budget });
+            if (bytes > budget) throw new InvalidDataException("Player2请求体仍超过上传预算；已保留全部参考图且不再降低细节，请求未发送。请缩短提示词或自定义规则。");
+            return json;
+        }
+
         private static void AddPlayer2Dimensions(JObject payload, string size, bool edit)
         {
             string[] parts = (size ?? "").Split('x');
@@ -733,7 +770,7 @@ namespace AnimusForge.Illustrator.Core
                             AddPlayer2Dimensions(payload, size, true);
                         }
                         if (!player2 && (quality == "low" || quality == "medium" || quality == "auto")) payload["quality"] = quality;
-                        requestContent = new StringContent(payload.ToString(Formatting.None), Encoding.UTF8, "application/json");
+                        requestContent = new StringContent(player2 ? FitPlayer2Request(payload, referenceImages, cancellationToken) : payload.ToString(Formatting.None), Encoding.UTF8, "application/json");
                     }
                     using (var request = new HttpRequestMessage(HttpMethod.Post, editsUrl) { Content = requestContent })
                     {
@@ -1004,7 +1041,7 @@ namespace AnimusForge.Illustrator.Core
             }
             using (var request = new HttpRequestMessage(HttpMethod.Post, endpointUrl))
             {
-                request.Content = new StringContent(payload.ToString(Formatting.None), Encoding.UTF8, "application/json");
+                request.Content = new StringContent(player2 ? FitPlayer2Request(payload, null, cancellationToken) : payload.ToString(Formatting.None), Encoding.UTF8, "application/json");
                 if (player2 && !string.IsNullOrWhiteSpace(player2GameClientId))
                     request.Headers.TryAddWithoutValidation("player2-game-key", player2GameClientId);
 
