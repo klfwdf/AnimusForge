@@ -40,16 +40,20 @@ public static class DialogueHistoryAudit
         extractor = assembly.GetType("AnimusForge.Illustrator.Context.ConversationContextExtractor", true);
         lineType = extractor.GetNestedType("NativeDialogueLine", BindingFlags.NonPublic);
         int limit = (int)extractor.GetField("RecentDialogueLimit", Static).GetRawConstantValue();
-        Check(limit == 2, "manual and automatic generation share the two-entry limit");
+        Check(limit == 2, "manual and automatic generation share the two-round limit");
 
-        string refusal = History(limit, Line("player", "旧命令", ""), Line("npc", "旧回答", "艾拉"),
+        string refusal = History(limit, Line("player", "应丢弃", ""), Line("npc", "应丢弃回复", "艾拉"),
+            Line("player", "旧命令", ""), Line("npc", "旧回答", "艾拉"),
             Line("player", "跪下", ""), Line("npc", "我不跪。", "艾拉"));
-        Check(refusal.Contains("最近2条对话记录") && !refusal.Contains("旧命令") && !refusal.Contains("旧回答"), "only the latest two utterances survive");
+        Check(refusal.Contains("最近至多2轮") && refusal.Contains("旧命令") && refusal.Contains("旧回答") && !refusal.Contains("应丢弃"), "latest two player-led rounds survive");
         Check(refusal.IndexOf("玩家：跪下", StringComparison.Ordinal) < refusal.IndexOf("艾拉：我不跪。", StringComparison.Ordinal) && refusal.Contains("艾拉：我不跪。"), "command and refusal retain speaker and chronological order");
 
         string replies = History(limit, Line("player", "旧玩家发言", ""), Line("npc", "第一段回答", "艾拉"),
             Line("npc", "第二段回答", "艾拉"), Line("npc", "最后一段回答", "艾拉"));
-        Check(!replies.Contains("旧玩家发言") && !replies.Contains("第一段回答") && replies.Contains("第二段回答") && replies.Contains("最后一段回答"), "consecutive NPC messages are counted as entries, not one unlimited round");
+        Check(replies.Contains("旧玩家发言") && replies.Contains("第一段回答") && replies.Contains("第二段回答") && replies.Contains("最后一段回答"), "segmented NPC replies stay with their player round");
+        string pending = History(limit, Line("player", "丢弃轮", ""), Line("npc", "答复一", ""),
+            Line("player", "保留轮", ""), Line("npc", "答复二", ""), Line("player", "尚待回答", ""));
+        Check(!pending.Contains("丢弃轮") && pending.Contains("保留轮") && pending.Contains("尚待回答"), "unfinished current round is preserved");
 
         string filtered = History(limit, Line("player", "玩家记录", ""), Line("system", "系统记录", ""),
             Line("npc", "对方记录", ""), null, Line("npc", "  ", ""), Line("action", "动作标签", ""));
@@ -57,7 +61,7 @@ public static class DialogueHistoryAudit
 
         string longReply = new string('甲', 300) + "我拒绝，仍然站着。";
         Check(History(limit, Line("player", "跪下", ""), Line("npc", longReply, "艾拉")).Contains(longReply), "late refusal is not cut off at the former 240-character boundary");
-        Check(History(limit, Line("NPC", "单条开场白", "艾拉")).Contains("最近1条对话记录"), "a short session does not invent a second entry");
+        Check(History(limit, Line("NPC", "单条开场白", "艾拉")).Contains("共1条发言"), "a short session does not invent a second entry");
         Check(History(limit) == "" && History(0, Line("player", "内容", "")) == "", "empty input and disabled limit return no history");
 
         Type contextType = assembly.GetType("AnimusForge.Illustrator.Context.ConversationVisualContext", true);
@@ -71,7 +75,7 @@ public static class DialogueHistoryAudit
         Check(((string)contextType.GetMethod("BuildDialogueBlock").Invoke(context, null)).Contains("STALE_CURRENT_SENTENCE"), "missing host history retains current-sentence fallback");
 
         Type plan = assembly.GetType("AnimusForge.Illustrator.Core.IllustrationPromptPlan", true);
-        foreach (string mode in new[] { "最近2条对话联动的场景插画", "最近一轮对话联动的场景插画", "最近三轮对话联动的场景插画" })
+        foreach (string mode in new[] { "当前会话最近两轮对话联动的场景插画", "最近2条对话联动的场景插画", "最近一轮对话联动的场景插画", "最近三轮对话联动的场景插画" })
         {
             object value = Activator.CreateInstance(plan, new object[] { mode, "", "", "" });
             Check((bool)plan.GetProperty("IsConversation", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(value, null), "conversation-specific routing recognizes mode: " + mode);

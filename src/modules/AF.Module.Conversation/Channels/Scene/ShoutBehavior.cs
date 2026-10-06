@@ -1764,6 +1764,7 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 	private static int _sceneHistorySessionId = 0;
 
 	private static long _currentConversationEventSequence = 0L;
+	private static long _nativeIllustrationHistoryBoundary = 0L;
 
 
 
@@ -7397,6 +7398,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		CampaignEvents.OnMissionStartedEvent.AddNonSerializedListener(this, OnMissionStarted);
 		CampaignEvents.OnMissionEndedEvent.AddNonSerializedListener(this, OnMissionEnded);
 		CampaignEvents.ConversationEnded.AddNonSerializedListener(this, OnNativeConversationEnded);
+		CampaignEvents.OnSessionLaunchedEvent.AddNonSerializedListener(this, OnNativeIllustrationSessionLaunched);
 		CampaignEvents.TickEvent.AddNonSerializedListener(this, OnCampaignTick);
 	}
 
@@ -7528,10 +7530,25 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		_nativeConversationInputOpen = false;
 		_nativeConversationInputTargetKey = "";
 		_nativeSessionOwner.CloseInput(clearSessionHistory);
+		if (clearSessionHistory) Interlocked.Exchange(ref _nativeIllustrationHistoryBoundary, 0L);
+	}
+
+	private void OnNativeIllustrationSessionLaunched(CampaignGameStarter starter)
+	{
+		var manager = Campaign.Current?.ConversationManager;
+		if (manager == null) return;
+		manager.ConversationBegin -= CaptureNativeIllustrationHistoryBoundary;
+		manager.ConversationBegin += CaptureNativeIllustrationHistoryBoundary;
+	}
+
+	private static void CaptureNativeIllustrationHistoryBoundary()
+	{
+		Interlocked.Exchange(ref _nativeIllustrationHistoryBoundary, Interlocked.Read(ref _currentConversationEventSequence));
 	}
 
 	private void OnNativeConversationEnded(IEnumerable<CharacterObject> characters)
 	{
+		Interlocked.Exchange(ref _nativeIllustrationHistoryBoundary, Interlocked.Read(ref _currentConversationEventSequence));
 		CloseNativeConversationInput(clearSessionHistory: false);
 		ExecutePendingNativeSceneMechanismActionsAfterConversationExit("native_conversation_ended");
 		TryDrainNativeConversationQueuedActions("native_conversation_ended");
@@ -10051,6 +10068,14 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			memoryId = "";
 			return false;
 		}
+	}
+
+	// Illustrator reads only the current encounter; the existing history-log API retains its history.
+	public static List<AnimusForgeDialogueHistoryEntry> GetCurrentNativeConversationHistoryEntriesForExternal(int maxLines = 260)
+	{
+		long boundary = Interlocked.Read(ref _nativeIllustrationHistoryBoundary);
+		return GetNativeConversationSessionHistoryEntriesForExternal(maxLines)
+			.Where(entry => entry != null && entry.EventSequence > boundary).ToList();
 	}
 
 	public static List<AnimusForgeDialogueHistoryEntry> GetNativeConversationSessionHistoryEntriesForExternal(int maxLines = 260)

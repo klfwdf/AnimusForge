@@ -499,7 +499,7 @@ namespace AnimusForge.Illustrator
             }
         }
 
-        [SettingPropertyBool("NPC回复后自动重绘场景插画", HintText = "开启后，玩家先手动生成本次对话的第一张插画；之后每次 NPC 回复自动重绘一张。后续请求复用首次采集的全景、人物参考和稳定硬事实，只更新最近2条对话与动作。", Order = 4, RequireRestart = false)]
+        [SettingPropertyBool("NPC回复后自动重绘场景插画", HintText = "开启后，玩家先手动生成本次对话的第一张插画；之后每次 NPC 回复自动重绘一张。后续请求复用首次采集的全景、人物参考和稳定硬事实，只更新当前会话最近两轮对话与动作。", Order = 4, RequireRestart = false)]
         [SettingPropertyGroup("4. 周报与展示场景", GroupOrder = 4)]
         public bool AutoGenerateConversationIllustrationFullscreen { get; set; } = false;
 

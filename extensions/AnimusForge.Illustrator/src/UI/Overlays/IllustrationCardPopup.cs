@@ -49,6 +49,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
         private bool _autoReplyRequested;
         private string _latestAutoPlayerText;
         private string _latestAutoReplyText;
+        private List<ConversationContextExtractor.NativeDialogueLine> _latestAutoPriorHistory;
         private string _openingSceneBase64;
         private string _openingSceneSessionKey;
         // One location screenshot per conversation, taken when the player opens the scene
@@ -600,7 +601,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
         private static string GenerateConversationSceneVariation(ConversationVisualContext context)
         {
             // 构图全权交给导演：只给自由创作授权 + 双人交互事实约束，不再提供预写取景句式。
-            return "【构图自由创作】：先采用最近2条对话中已发生或正在进行的动作，再设计镜头景别、机位角度与前景运用；" +
+            return "【构图自由创作】：先采用当前会话最近两轮对话中已发生或正在进行的动作，再设计镜头景别、机位角度与前景运用；" +
                 "双方可随对话动作改变朝向与互动，不预设面对面站立，不拘泥固定构图模板。";
         }
 
@@ -639,6 +640,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
                 _autoRedrawPending = false;
                 _latestAutoPlayerText = null;
                 _latestAutoReplyText = null;
+                _latestAutoPriorHistory = null;
             }
             try { ExecuteConversationGenerationCore(convContext, preCapturedBase64, emblemSpecs, automatic, playerRedrawPrompt); }
             catch (Exception ex) { _dataSource.SetReady("生成准备失败：" + ex.Message); }
@@ -734,7 +736,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
                 session = _conversationSession != null && string.Equals(_conversationSession.SessionKey, conversationSessionKey, StringComparison.Ordinal)
                     ? _conversationSession : null;
             }
-            // 台词与最近2条对话只进导演（DirectorOnlyFacts）——导演转成画面描述后，生图模型只见视觉文本，不再把台词画进图里
+            // 台词与当前会话最近两轮对话只进导演（DirectorOnlyFacts）——导演转成画面描述后，生图模型只见视觉文本，不再把台词画进图里
             _generationCount++;
             string variation = GenerateConversationSceneVariation(convContext);
             if (_generationCount > 1) variation += "\n" + VisualDirectorEngine.BuildRedrawVariationDirective(_generationCount);
@@ -797,7 +799,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
                 catch (Exception ex) { Debug.Print("[Illustrator] Conversation action history read failed: " + ex.Message); }
                 string workerArtDirection = baseArtDirection;
                 if (!string.IsNullOrWhiteSpace(actionHistory)) workerArtDirection += "\n" + actionHistory;
-                var promptPlan = new IllustrationPromptPlan("最近2条对话联动的场景插画", hardFacts, workerArtDirection, directorFacts, playerRedrawPrompt);
+                var promptPlan = new IllustrationPromptPlan("当前会话最近两轮对话联动的场景插画", hardFacts, workerArtDirection, directorFacts, playerRedrawPrompt);
                 // 真实场景采全景；大地图和部队界面临时谈话只用地形事实。
                 var ageEvidence = convContext.InterlocutorAgeSnapshot;
                 if (ageEvidence != null)
@@ -1088,6 +1090,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
             _autoRedrawPending = false;
             _latestAutoPlayerText = null;
             _latestAutoReplyText = null;
+            _latestAutoPriorHistory = null;
             try
             {
                 IllustratorRuntime.GenerationUpdated -= OnGenerationUpdated;
@@ -1158,7 +1161,8 @@ namespace AnimusForge.Illustrator.UI.Overlays
             if (!string.IsNullOrWhiteSpace(instance._latestAutoReplyText))
             {
                 context.DialogueSentence = instance._latestAutoReplyText;
-                var turn = new List<ConversationContextExtractor.NativeDialogueLine>();
+                var turn = new List<ConversationContextExtractor.NativeDialogueLine>(instance._latestAutoPriorHistory
+                    ?? new List<ConversationContextExtractor.NativeDialogueLine>());
                 if (!string.IsNullOrWhiteSpace(instance._latestAutoPlayerText))
                     turn.Add(new ConversationContextExtractor.NativeDialogueLine { Kind = "player", Text = instance._latestAutoPlayerText });
                 turn.Add(new ConversationContextExtractor.NativeDialogueLine
@@ -1188,6 +1192,8 @@ namespace AnimusForge.Illustrator.UI.Overlays
                 !instance._scope.IsCurrent || manager?.IsConversationInProgress != true) return null;
             long epoch = _conversationSessionEpoch;
             var character = manager.OneToOneConversationCharacter;
+            // Prefix capture precedes this turn's history commit: never duplicate the delivered reply.
+            var priorHistory = ConversationContextExtractor.ReadNativeConversationHistory(260);
             ConversationIllustrationPatch.LogAutoRedraw("request_observed popup=" + instance._instanceId);
             int delivered = 0;
             return (content, targetHero, targetCharacter) =>
@@ -1214,6 +1220,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
                     }
                     instance._latestAutoPlayerText = playerText;
                     instance._latestAutoReplyText = content;
+                    instance._latestAutoPriorHistory = priorHistory;
                     ConversationIllustrationPatch.LogAutoRedraw("reply_received popup=" + instance._instanceId + " chars=" + content.Length);
                     AutoRedrawActiveConversation();
                 });
