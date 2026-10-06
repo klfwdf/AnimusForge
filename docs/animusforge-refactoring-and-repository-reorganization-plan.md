@@ -1,3 +1,14 @@
+<a id="illustrator-final-widescreen-20261007"></a>
+# 生图最终画幅与MCM尺寸约束（2026-10-07，DEPLOYED_PACKAGED_PUSHED_LIVE_PENDING）
+
+- 用户明确按快报方式修复全屏链路：画幅要求必须直达最终生图提示词，普通生成/重绘均保留。现场证据conversation_1007-000032_f162和000421_24ca均发size=1280x720，但最终prompt没有16:9；快报224339则明确保留。该差异已确认，不能证明模型一定遵从新文字。
+- 检查点a76f715，main产品505ae23be+3201ffc6d，发布等价a32af3bec+f4a7b3ed8。extensions/AnimusForge.Illustrator/src/Core/IllustratorRuntime.cs:43、60-125，构造快照和WithImageSize按实际尺寸生成OutputFrameRequirement，宽高用最大公约数得到准确比例。WithSceneImageSize先做原16:9预设映射再生成说明；原映射不变。实际消费者UI/Overlays/IllustrationCardPopup.cs:755（_autoFullscreen）和UI/Patches/WeeklyReportPopupIllustrationPatch.cs:567（bulletin）；百科/独立面板按MCM所选尺寸写明最终画幅，1024x1024为正方形1:1，1344x768为7:4；API测试也沿实际选定尺寸生成说明。用户追加截图对应encyclopedia_1007-002350_17c8：发size=1024x1024而最终提示无1:1/1024x1024，属于相同缺口。
+- Core/UniversalOpenAiImageClient.cs:143-144、210、481-534，ComposeImagePrompt含固定画幅尾段，覆盖Full/compact、Images/Edits/Chat及已存在的Chat回退；不依赖导演复述，不被playerRedraw清除，不恢复旧画风/事实。固定标题不属于预算可缩短四段，先预留compact较小限额，最终32000全量计额保留，ResolvedPrompt仍为实际发送。无新增LLM/重试、图片裁剪/拉伸或返回图片拒收策略。
+- 每请求快照做一次尺寸解析、最多整数位数级欧几里得求最大公约数及短字符串拼接，场景转换时在克隆中更新，重试仅复用快照，不新增Tick、扫描、反射或游戏对象访问；MCM配置、存档和原生渲染不改。模块AGENTS同步本次固定展示格式边界。
+- 验证：源码调用点/最终发送/预算保护审查及diff检查；原build_single_module.ps1双API1.3/1.4+Bootstrap及双接缝PASS。未运行Illustrator离线审计或独立算法测试，未调用付费API，实机全屏/百科/独立面板普通生成及重绘/模型比例遵从仍未验。不把原快报近16:9结果当新版本验收。
+- 沿本会话已授权交付，复用干净发布工作树，仅纳入本次修复，保留外交726833256和预算修复，未纳入共享main独立每日维护。原deploy_module.ps1更新9受管文件；Stage/安装/ZIP 3379项验证通过，Bootstrap-only/单模块/不含ONNX或私人配置。ZIP v1.5.5、安装XML v1.5.4。包F:\AnimusForge-main\一键编译覆盖推送\packages\AnimusForge_v1.5.5_20261007_003140_134.zip，84839916字节，SHA256=7659390b0d7ed27cc444be7ba740806b85d57bdf761603f004edf75ea9943e2c。替代234833上一包，旧包保留。
+- 回滚：依次git revert f4a7b3ed8、a32af3bec（共享main等价3201ffc6d、505ae23be）；二进制恢复前核对后续部署状态，Recovery=C:\Users\29310\AppData\Local\AnimusForge\Recovery\deploy\deploy-8ec4e760031a4bb9bca3986a3f79e2b4。证据artifacts/illustrator-widescreen-20261007/receipt.json、captured-artifacts-final及build/deploy/package-final/verification日志。产品f4a7b3ed8已普通快进推送origin/main并ls-remote独立核对（remote-product.txt），本轮仅发布本片及交付记录；最终文档远端回执remote-main-final.txt；共享main另做保留全部历史的本地合并，不强推。
+
 <a id="illustrator-final-character-budget-20261006"></a>
 # 生图导演30000软要求与最终32000硬预算（2026-10-06，DEPLOYED_PACKAGED_PUSHED_LIVE_PENDING）
 

@@ -1,3 +1,9 @@
+# 当前交接：生图最终画幅与MCM尺寸约束（2026-10-07，DEPLOYED_PACKAGED_PUSHED_LIVE_PENDING）
+
+- 产品a32af3bec+f4a7b3ed8（共享main等价505ae23be+3201ffc6d）。全屏/快报快照携带固定16:9要求，普通生成和重绘最终Images/Edits/Chat提示词均保留，并计入32000预算；不依赖导演转述。百科/独立面板按MCM尺寸固定要求对应比例，不强行拉伸图片或新增付费重试。
+- 双版本/Bootstrap/双接缝通过，已部署并核验3379文件。包F:\AnimusForge-main\一键编译覆盖推送\packages\AnimusForge_v1.5.5_20261007_003140_134.zip。保留上轮外交和预算修复；实机成图比例仍未验，未调用付费API或运行Illustrator离线审计。
+- [主台账、源码范围与回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#illustrator-final-widescreen-20261007)；证据artifacts/illustrator-widescreen-20261007/receipt.json，最终远端回执remote-main-final.txt。
+
 # 当前交接：导演30000软要求、最终生图32000硬预算（2026-10-06，DEPLOYED_PACKAGED_PUSHED_LIVE_PENDING）
 
 - 生图产品bdd7e55f6+f6ca1d5d2，外交产品726833256（等价df5424511），测试修正a49e56605。导演最多30000字符、不凑满；MCM约Token设置仍生效为软参考。最终拼接后不超过32000原样发，超限才按四段完整句缩短，保护内容无法容纳则本地停止；不额外调用模型，裁剪不保证语义无损。
