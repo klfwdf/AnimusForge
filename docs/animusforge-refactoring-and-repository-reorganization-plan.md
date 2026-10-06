@@ -1,3 +1,49 @@
+<a id="gccz-reviewed-repair-sync-20261006"></a>
+# GCCZ 修复审查、回接 main 与游戏同步（2026-10-06）
+
+## 范围和来源
+
+- 最新授权：先推 `klfwdf/AnimusForge main`，随后同步本机游戏。任务隔离副本 `G:/AFMOD/AF-GCCZ-SYNC-20261006`，分支 `codex/gccz-reviewed-sync-20261006`；开始远端 `b188403634847bbac3e6e6633da7f99e6e6ba91e`、本地检查点 `918f3832`、产品/测试 `ee796fec1f8ab9519996c64c5983ffeb26cd95c5`。
+- `AF-CULTURE-FIX` 的 `a815a25f`、`6a0256c1`、`2df565b3` 在查询时不属于远端历史；它们是审查/适配来源，不把旧分支整条历史推到 main。复用 GCCZ 已提交 `ede6529` 中的核心/测试，不读取其 dirty Program.cs 或 UI 草稿作为生产输入。
+- 旧 `608adf2c` 城镇记忆路径不覆盖 main。远端已含 `eb39f14b` 及后续新版确认事件/文化事实、7 日节流、最多 2 worker、generation/epoch 与保存清理。保留并跑当前真实核心/薄桥的 60 项回归。
+- 不纳入实验 `CustomPolicyBehavior.Memory.cs`、`MyBehavior.KingdomMemory.cs`、`KingdomMemoryStore.cs`；不上传 `AF-LATEST-20261005` 另一任务的人设 TEST 提交、私有文档或已生成 ZIP。未改其工作树，也未改其他作者 dirty 文件。
+
+## 责任和实际接线（产品提交的一基行号）
+
+| 责任 | 源码/入口 | 本轮结果 |
+| --- | --- | --- |
+| 城堡容量前置裁剪 | `AnimusForge.SiegeAftermathIntervention/SiegeCastlePrisonerDispositionProfile.cs:41` `ResolveStageableRecruitCount`；`src/AF.GameAdapter.Bannerlord/Composition/SiegeAftermath/SiegeAiInterventionBehavior.cs:4688`；`src/bridges/Siege/Host/CastleAftermathPrisonerAllocationRuntimeBridge.cs:156` `TrimTo` | 预留扣除之前承诺的组，未入组俘虏保持未分配，保留受伤/XP 比例 |
+| 实际入队、信任及士气 | `src/bridges/Siege/Host/CastleAftermathActionRuntimeBridge.cs:113,127,454` `WithResolvedRoster`；host `:4794` `FinalizePendingCastleRegularDisposition`、`:5352` `ApplyCastleSoldierAppeasementMoralePenaltyIfNeeded`；核心 `SiegeCastleSoldierReactionProfile.cs:57,76` | 只对实际成功 roster 调整信任；收编士气按实际/暂存人数折算，零入队不收收编罚；非收编不满和更强不满规则保留 |
+| 原生移动 owner | `AnimusForge.SiegeAftermathIntervention/SiegeNativeMovementOrders.cs:19`；host partial `SiegeAiInterventionBehavior.NativeMovementAdapter.cs:17,48,58` | 去重/刷新由 core；资格与 AgentNavigator.SetTargetFrame 留主线程薄桥；所属 Mission、玩家/会话/决斗/暂停保护 |
+| 连续卡住恢复 | `AnimusForge.SiegeAftermathIntervention/SiegeStuckRecovery.cs:13`；host partial `SiegeAiInterventionBehavior.StuckRecoveryAdapter.cs:17,85`；host `:2021,2143` tick/reset、`:146,161` hit/removal | 0.5 秒采样、3.5 秒原生重试需成功回执、7 秒连续证据、10 秒冷却；0.8–2.5 米同层落点验证，保持碰撞，不复活旧长距穿墙 |
+| SETS 邻接路径 | `src/AF.GameAdapter.Bannerlord/SettlementEntry/SettlementEntryTroopSelectionBehavior.cs:5260` `TryMaintainEnemyNativeNavigationRescue` | 删除旧 sharedWallRescue 路径；所有防守者沿已有短步原生导航；Coup 初始化守卫布局、隐蔽出生、战斗与伤害保护保留 |
+| 城镇操作及预算 | `TownColonizationStateMachine.cs:46,64` `CanRequest`/`Request`；host `:3605,8632` preflight；`SiegeNpcResponseEventBudget.cs` | 相同 Pending 幂等；拒绝改目标或重启已封存/完成操作；无限→有限预算实时收紧；已活跃 GCCZ 不再通过外部 direct helper 重复处理 |
+| 城镇规则记忆邻接回归 | `src/bridges/Siege/RuleMemory/GcczTownRuleMemoryGenerationBridge.cs:14,47,80`；`tests/modules/AnimusForge.SiegeAftermathIntervention/TownRuleMemory.Tests` | 当前 main 的新版逻辑保持；没有回退成较旧短文本/存储路径 |
+
+薄桥调用可复用 core；没有把额外政策/宴会业务搬进主体。没有新增/改名 SyncData key、保存类型、程序集身份或公开 V1 DTO/API。新字段均 Mission 暂态并参与清理。保留 `SiegeAgentWallRescueProfile`/`SiegeSoldierCordonProfile` 的旧公开常量和 `BuildStagedRecruitCapacityWarning` 供兼容消费者；旧私有效果和无人调用的内部 SETS tracking 入口已删除，不保留第二套执行链。
+
+## 验证与复现
+
+1. `dotnet run --project tests/modules/AnimusForge.SiegeAftermathIntervention/GcczRepairSyncTests/GcczRepairSyncTests.csproj -c Release`：91 PASS；对真实可复用核心验证容量、实际/零入队、非收编不满、安抚、防重启、预算、导航去重、连续恢复/暂停/慢移/冷却/几何输入。
+2. 已有 `TownRuleMemory.Tests`：60 PASS（真实核心和真实 bridge，可控辅助 transport）；确认文化事件、过期 completion、v3 存储键、中文多任期分块、村庄/城堡排除。
+3. 本地隔离变异：恢复全额收编罚→`partial recruitment uses actual joined count` 失败；7 秒→0.9 秒→`recovery never triggers before seven continuous seconds` 失败。均 net8 编译 0 错误后命中具名断言；生产源码未变异。证据 `artifacts/gccz-reviewed-sync/negative-receipt.json`。
+4. 沿用 `scripts/build/build_single_module.ps1` Release + Stage；SDK 8.0.422，引用 1.3 `v1.3.15.110062`、1.4 `v1.4.6.115628`，真实安装游戏 `v1.4.7.117484`。两个实现各 0 错误/345 warnings，Bootstrap 0 错误/2 warnings；其中 NuGet 审计源无法访问 NU1900，各增加 2 warnings，不改构建流程掩盖。原构建内置双候选接缝/托管注册 PASS，记忆 admission 各 20 PASS。
+5. `git diff --check`、旧私有 sharedWallRescue/穿墙/围圈 caller 和冲突标记定向搜索通过；主机原 CRLF/无 BOM 保留。主工程排除 tests/artifacts，不把 net8 核心测试或变异带入客户端。
+
+候选 SHA256：1.3 `75A1FD9BEA7AF58941C6812F51FF9E0123F90D74318B92FD859EDF0BBDC09EB4`；1.4 `946A068D8D86EB79B7C9305838E4E9582AEDC77F57CA536DE73B3FA6EA21737D`。同一版本号 1.5.4 的修复候选，不另行打包或改发布流程。
+
+性能边界：普通 order 查询 O(1) 去重，不增加反射/后台游戏读写。存在待移动命令时每 0.5 秒扫描 Mission agents；短距几何探测只在 7 秒条件和 10 秒冷却满足后执行，最多 12 落点。真实 Agent 数/本机帧成本尚未测，不能把纯核心 microbenchmark 当实机耗时，也不声称彻底消除所有卡住情况。
+
+## 玩家视角、部署和回滚
+
+源码推演：城堡请求人数超过余量→提示裁剪、余下可另处置；离场前队伍容量变化→只按实际入队扣收编相关士气；GCCZ 集结/逃跑/跟随仍沿原生导航，只有连续卡住并通过碰撞/落点检查才短距恢复；SETS/Coup 敌人仍需行走；完成城镇殖民不允许重启重写账本。此项为静态入口检查，**不是游戏操作通过**。
+
+目标仅 `E:/Steam/steamapps/common/Mount & Blade II Bannerlord/Modules/AnimusForge`。推送确认后沿用原 `deploy_module.ps1` 事务覆盖 Stage-listed 文件；私有 Recovery 位于 `%LOCALAPPDATA%/AnimusForge/Recovery/deploy/`，不删除 ONNX、未知安装文件、玩家资料或原版 DLL。本地 before/verification/recovery 收据记录 source SHA、目标、hash 和实际部署结果；未取得收据前不得把已编译称为已安装。
+
+NOT_RUN：真实游戏 Campaign/Mission、玩家旧档、实际招募/士气/原生 navmesh/碰撞/守卫战斗、帧性能与真实付费 provider。已有正常存档/现有功能继续保持，不操作或修复玩家存档。
+
+源码回滚用 focused `git revert ee796fec1f8ab9519996c64c5983ffeb26cd95c5`，不 reset/重写远端或覆盖其他作者。游戏回滚用本次 private Recovery 的已验旧文件并按原事务恢复；不要用旧源码即刻覆盖存档或未经验证的旧 DLL。后续先让玩家实测上述少量入口再提出新修复，不扩大成所有 standalone 差分同步或全项目重构。
+
 <a id="coup-chunked-json-spec-20261005"></a>
 # Coup分块存档与项目JSON规范（2026-10-05，OFFLINE_VERIFIED_NOT_DEPLOYED_WITH_OPEN_AUDIT_GAPS）
 
