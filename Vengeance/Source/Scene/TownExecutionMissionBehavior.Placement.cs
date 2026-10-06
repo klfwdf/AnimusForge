@@ -1319,6 +1319,12 @@ public sealed partial class TownExecutionMissionBehavior
         }
 
         _spawnedAgents.Add(agent);
+        // Victims keep their dedicated battlefield origin; real heroes keep
+        // their existing campaign identity. Ordinary temporary actors must be
+        // visible to native door/flee checks before returning control to AI.
+        if (originOverride == null)
+            _sceneLocationCharacters.Register(agent, CampaignMission.Current?.Location,
+                Request.Venue.LocationComplex, civilianEquipment);
         _occupiedSpawnPositions.Add(position);
         return agent;
     }
