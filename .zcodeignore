@@ -1,0 +1,74 @@
+bin/
+obj/
+.vs/
+.dotnet_cli/.dotnet/
+__pycache__/
+*.pyc
+
+*.user
+*.suo
+*.cache
+*.pdb
+*.tmp
+*.bak
+*.orig
+*.rej
+
+*.nupkg
+packages/
+
+*.log
+Logs/
+AnimusForge/ONNX/reranker/
+
+tools/ActionPostprocessPromptLab/runs/
+tools/ActionPostprocessPromptLab/local.settings.json
+tools/ActionPostprocessPromptLab/dist/
+tools/PreprocessTopicPromptLab/runs/
+tools/PreprocessTopicPromptLab/local.settings.json
+tools/PreprocessTopicPromptLab/dist/
+
+# Local Codex/release-prep scratch and large handoff backups.
+_codex_tmp/
+.codex_tmp/
+artifacts/
+AnimusForge/PlayerExports/
+FUYONG/
+
+# Local debug preview files
+api_wizard_interactive_preview.html
+integrated_tabs_settings_preview.html
+
+# Explicitly local-only team brief; publishing must also exclude its unpushed history.
+/docs/handoffs/2026-09-11-native-history-snapshot-team-handoff.md
+
+# ===== ↑ 以上同步自 .gitignore（「从 .gitignore 同步」只重写以上部分）=====
+.git/
+.hg/
+.svn/
+node_modules/
+bower_components/
+jspm_packages/
+site-packages/
+venv/
+coverage/
+htmlcov/
+lcov-report/
+cmakefiles/
+cmake-build-*/
+bazel-*/
+pods/
+deriveddata/
+storybook-static/
+playwright-report/
+test-results/
+allure-results/
+allure-report/
+cdk.out/
+*.egg-info/
+*.dist-info/
+eggs/
+pip-wheel-metadata/
+wheels/
+# ----- ↑ 以上为 ZCode 默认排除规则（自定义规则请写在本行下方，不会被同步/恢复改动）-----
+# 自定义规则写在下方（本行提示可删除）

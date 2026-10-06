@@ -1,3 +1,9 @@
+# 当前交接：AnimusForge 1.5.4 提交/推送与单ZIP打包（2026-10-06）
+
+- 最新用户授权全部产品改动提交、推送到现有 `origin/main` 并打包1.5.4；未授权覆盖游戏/启动实机或重写历史。实际工作区 `F:\AnimusForge-main` / `main`，基线 `c39cd564`，检查点 `1aad1d35`；本次版本、工具排除配置和交付文档另行发布提交。
+- 单ZIP已经生成并离线验证：`一键编译覆盖推送/packages/AnimusForge_v1.5.4_20261006_111223_067.zip`（84,801,038 bytes）；原入口Debug双实现+Bootstrap、接缝与Stage/ZIP门禁PASS，外交3636、内战349、议程通知5项及两分支内政XML探针PASS。保留已有编译warning，不宣称实机/旧档通过。
+- [唯一主台账：发布边界、源码位置、测试、hash与回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#release-1-5-4-20261006)。最终发布提交与 `origin/main` 的实际远端SHA对照以本地 `artifacts/release-1.5.4-20261006/delivery-receipt.json` 为准；ZIP/构建证据同目录。未跟踪临时素材均保留不上传，包中只保留白名单内置世界书，不含个人安装导出。
+- NOT-RUN：实机UI/战役、真实LLM、代表性旧档及第三方扩展重新打包。以下交接均为历史证据，不能替代本次Git/收据，也不构成下一次推送或部署授权。
 # 当前交接：本机统一模块覆盖完成（2026-10-05，DEPLOYED_HASH_VERIFIED_LIVE_PENDING）
 
 - 最新授权“部署”；构建源码 `708e8909d36de94a7f7ccff606af863616951b65`，分支 `codex/af-main-refactor-continuation-20260831`。原统一Debug入口1.3(v1.3.15)/1.4(v1.4.6)+Bootstrap0错误、双候选接缝PASS；原事务覆盖成功，安装全部3379个Stage文件hash一致，更新10个受管理文件，单模块XML仅加载Bootstrap。

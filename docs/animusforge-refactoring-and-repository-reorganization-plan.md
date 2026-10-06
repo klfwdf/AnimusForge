@@ -7331,3 +7331,50 @@ R2计划交付门槛：已给固定技术路线、真实来源与目标、写入
 - NOT_RUN：失败玩家真实立绘/全景导出、原版/新UI实机输入与布局、失败政变存档进入原重试入口后不重放王权动作、真实新存档保存/加载。已有损坏旧档不由新存档分块修复保证恢复；存档降级须使用更新前正常备份。
 - 快报参考图边界：本轮没有新增灭国事件Participants补录/修复，没有改已生成快报，不能声称部署会自动补回旧快报人物或解决该参考图缺失。后续需检查事件捕获的人物ID/名字输入；不把周报场景替换成当前Mission全景。
 - 本条仅就安装状态明确替代[原版输入ACTIVE记录](#native-input-side-layout-correction-20261005)、[政变身份修复未部署记录](#coup-campaign-identity-resolution-final-20261005)以及HANDOFF中内战/Coup分块“未部署”的历史陈述；这些功能的实机/旧档/开放审计风险继续保留。源码回滚使用相应修复提交的focused inverse commit，不能hard reset或回滚其他作者。
+
+<a id="release-1-5-4-20261006"></a>
+
+## Release 1.5.4（2026-10-06，PACKAGED / OFFLINE_VERIFIED）
+
+### 授权与修订边界
+
+- 用户明确授权：当前全部产品改动提交、推送至既有 `origin/main`，打包一个 `1.5.4` 版本；未授权覆盖游戏、启动实机、重写历史或另行发布第三方扩展包。
+- 工作区/分支：`F:\AnimusForge-main` / `main`；初始 HEAD `c39cd564`，远端基线 `0e342c05`；检查点 `1aad1d35` 保存原有17个 tracked 改动、新增内政面板与设计文档/2张预览。推送范围保留此前立绘画廊提交 `d79e9d4b` 和原有 merge，不重写历史。
+- 发布改动：`AnimusForge/SubModule.xml:4` 从 `v1.5.0` 更新为 `v1.5.4`；提交已有 `.zcodeignore` 工具排除配置，主台账与 HANDOFF 记录验证。模块/程序集/存档身份、唯一 Bootstrap 声明保持，一键脚本不变，未新增 Tick 或后台游戏对象工作。
+- 临时、回滚、NuGet、生成式测试副本、本地诊断与图片试稿保持原地、不纳入提交或发布。发布包的 `PlayerExports` 3139项均逐项映射到 `content/modules/AF.Module.Onboarding/PlayerExports` 中的四套仓库内置世界书，并核对源文件 hash；未采集安装目录的个人导出。
+
+### 本次候选源码位置与职责
+
+| 路径与一基行号 | 符号 / 本次纳入的职责 | 验证范围与未覆盖 |
+| --- | --- | --- |
+| `AnimusForge/SubModule.xml:4,20-22` | v1.5.4 模块版本、Bootstrap 唯一加载入口 | 源/Stage/ZIP一致；未进行启动器实测 |
+| `src/AF.GameAdapter.Bannerlord/UI/Kingdom/KingdomInteriorPanel.cs:21-66` | `KingdomInteriorPanelPatch`，内政派系/议程合并；prefab加载时构建XML，1.4方向转换 | 两分支实际源码XML离线探针；未证明Gauntlet布局/按钮实机效果 |
+| `src/modules/AF.Module.Diplomacy/Agenda/VoteDealBehavior.cs:2693-2710,4158` | `CountActiveVoteDeals`；选择时计算议程交易数，不新增逐帧扫描 | 双实现编译；本次未另做完整原生投票端到端验收 |
+| `src/modules/AF.Module.Diplomacy/Domain/WorldDiplomacyRoundLifecycleRules.cs:5532-5570` | `ReconcilePlayerDeclarationWithOpenOffer`；跨live round匹配口头提案 | 外交3636断言；未调用真实LLM/信使 |
+| `WarStats/AfWarStatsBehavior.cs:1632-1643`、`src/modules/AF.Module.Kingdom/CivilWar/CivilWarRules.cs:218-240` | `GetWarCasualties`字典O(1)读取、`WarScore`厌战/伤亡交换评分 | 内战规则及真实owner+fake game契约；非实战结果 |
+
+上述产品差异绑定检查点 `1aad1d35`；本轮后续发布提交只含版本、工具配置和文档，最终提交 SHA 及远端对照保存在本地交付收据，不以历史 HANDOFF 代替实际核对。
+
+### 命令与离线验证
+
+- `dotnet run --project tests/modules/AF.Module.Diplomacy/WorldDiplomacyRoundLifecycle.SmokeTests/...csproj -c Release`：PASS，3636断言。
+- `CivilWarRules.SmokeTests`：PASS；`CivilWarLifecycle.ContractTests`：PASS，349生命周期检查（另含36/57/33子组报告，均使用fake game context）。首次调用的默认 `python` 解析失败9009；用本机bundled Python的绝对路径作为 `PythonExecutable` 属性后复验PASS，不修改脚本/全局安装。
+- `AgendaMapNotification.SmokeTests`：PASS，5项。
+- 项目本地 `interior-xml-probe` 直接编译现有面板源码，attribute/base为stub：1.3/1.4均PASS，493元素/7按钮；1.4方向转换验证通过，非真实UI渲染。
+- 原入口 `scripts/build/build_single_module.ps1 -ProjectRoot F:\AnimusForge-main -BannerlordRoot <本机游戏根> -Configuration Debug -Stage`：PASS；两个实现各341警告、0错误，Bootstrap 0警告/0错误。参考版本为 `v1.3.15.110062` / `v1.4.6.115628`；两个真实候选DLL的政变注册/记忆接缝哈希绑定门禁PASS。此探针未启动 Game/Campaign/save/native action/LLM。
+- 原入口 `scripts/build/package_mod.ps1 -ModuleDir <项目本地Stage> -Version v1.5.4 -ExcludeOnnx`：PASS。Stage与ZIP白名单、构建marker与当前artifact哈希门禁通过；双实现不同hash，XML只加载Bootstrap；保留既有Debug包的三份PDB。
+- 本地 `audit_release.py`：PASS，ZIP CRC、唯一安全路径、3379项文件集合及Stage逐文件hash、双实现/Bootstrap marker与接缝收据、3139项内置世界书映射/源hash、无ONNX模型/游戏原版DLL/日志/存档；新增源码和包内文本执行有限常见凭据特征检查，未发现匹配。首次附加审计误把已有Debug产物PDB当禁用项，确认原契约后仅允许指定三份当前构建PDB并复验，未删改发布内容。
+- 本次未修改 `SyncData` / 存档键 / 分块协议；未把局部验证描述为全仓、实机或旧坏档修复通过。既有net6测试项目EOL及编译warning仍保留。
+
+### 单ZIP交付与哈希
+
+- 包：`一键编译覆盖推送/packages/AnimusForge_v1.5.4_20261006_111223_067.zip`；84,801,038 bytes，3379 entries，单一 `AnimusForge/` 根。
+- SHA-256：`3E010644470DC88D553B14DCBF7099F1F408492FC1D9251BD3E93E507425167E`。
+- 实现1.3：`11AF3F2BD699882FD6C17FE0408B3D2AB391D4E646DD9107D0404394DA8A95F1`；实现1.4：`843823282268D09538E77B2AC67B34385BFF7A75D6CE64704077DE1AED3D0536`；Bootstrap：`85339B15D07D490367DCA7B0C1423D3C86C3649AF5ECE6DBCD85F3DA48C62884`。
+- 最终源码提交后按本次授权推送 `origin/main`，使用 `git ls-remote` 核对实际远端与本地HEAD；实际成功结果、最终SHA及提交/远端关联写入 `artifacts/release-1.5.4-20261006/delivery-receipt.json`。本轮不上传ZIP至GitHub Release、不创建tag/PR，不覆盖游戏。
+- 证据目录：`artifacts/release-1.5.4-20261006/`，含initial状态/HEAD、build/package与各测试日志、package-audit.log、package-receipt.json及最终交付收据，均本地保留。
+
+### 未验证与回滚
+
+- NOT-RUN：1.3/1.4实机、原生Gauntlet交互、实际LLM和外交投票、代表性旧存档/迁移、第三方扩展单独重打包。1.3 overlay之外的既有共享补充依赖覆盖限制未在本轮消除。
+- 没有游戏目录覆盖，故不存在本轮游戏安装回滚；源码用定向 inverse commit / `git revert`，不得hard reset/force push或回滚其他作者。初始 `c39cd564`、检查点 `1aad1d35` 是定位参照，恢复原改动应先读本地initial-status及对应commit diff；发布元数据可单独revert其发布提交。
