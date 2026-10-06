@@ -7802,3 +7802,12 @@ R2计划交付门槛：已给固定技术路线、真实来源与目标、写入
 - IllustrationReferenceImage.cs:16在枚举末尾增加PairedScenePerspective；VisualFidelityRules.cs:89–90明确主/辅视角为独立透视，不沿接缝推断空间、不输出拼图/字母/边框、保持最终画幅。标签保留两图原说明，避免辅助说明串到人物。诊断grok_scene_reference_pair记录4到3并保存实际发送合成图。
 - 验证：diff/源码接线审查；最终无域名限制后重跑统一构建1.3/1.4/Bootstrap及双接缝PASS，artifacts/grok-scene-pair-20261007/build-final.log。按Illustrator规则未运行离线审计。
 - NOT-RUN：生产拼图逐像素回放、真实Grok拼图三参考出图与视觉效果、实机；本轮未新增付费请求、未部署/推送/打包。不能把四图失败推断成官方三图上限，也不能以编译通过声称502已修复。回滚git revert 8dbe9f523。
+
+## scene-relay-stop-20261007 — OFFLINE_VERIFIED_NOT_DEPLOYED
+
+- 用户反馈场景喊话无人愿意发言。当前安装Logs/Mod_Logic.txt于2026-10-07的07:15:35、07:17:02、07:17:26，模型分别输出当前发言者RELAY:1、4、6，DeferredPostprocess却变成relay=-1；07:18:24/07:18:40酒馆成功接力9、11。07:16:21另有postprocess Failed，不能声称解释所有停止。
+- 原因：提示词允许选择自身编号结束，但候选列表排除自身，解析器只认可候选ID。修复保留自身结束信号，进入既有self-stop分支；其他非候选仍拒绝。缺失编号提示改为“本轮未选出有效的接话者”，日志记录当前编号与候选数。不强制接话，不改耐心/距离/轮次/已发言过滤、Prompt和三渠道动作语义。该代码早于本轮外交修复；迁移blame不等于原始引入责任。
+- 产品d9147f1eb，检查点d11567d。代码图：src/modules/AF.Module.Conversation/Internal/Postprocess/ConversationActionPostprocessOwner.cs:2229-2258，NormalizeAutoGroupRelayPostprocessTagsForScene；同文件1760-1799为提示契约；src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.SceneConversationChains.cs:1012-1024为缺失和self-stop分支。消费者ShoutBehavior.ScenePostprocess.cs:320-323再次规范化并提取。
+- 回放：python tests/modules/AF.Module.Conversation/SceneRelayStopSignalTests/run.py --run-root artifacts/scene-relay-stop-20261007/before --source-ref d11567d，旧代码失败；去掉source-ref且run-root改after，新代码15组均过，各两次规范化。覆盖自身结束、正常候选、非法/负数/溢出/空/多个标签。生产方法原样抽取，NPC为ID夹具，不代表完整Mission。
+- 原入口build_single_module.ps1，ProjectRoot=本仓库，BannerlordRoot=F:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord，Bannerlord14ReferenceDir=F:/AnimusForge-main/.tmp/build_check/1.4，Configuration=Debug。1.3(v1.3.15.110062)/1.4(v1.4.6.115628)/Bootstrap及双接缝通过，退出0。证据artifacts/scene-relay-stop-20261007/build.log和before/after/run.log。diff检查通过。
+- 性能：每次后处理标签匹配多一次整数比较，无新增Tick扫描/反射/轮询。未实机验收、部署、打包或推送。回滚git revert d9147f1eb。
