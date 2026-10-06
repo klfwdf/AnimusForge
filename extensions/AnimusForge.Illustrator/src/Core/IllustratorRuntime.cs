@@ -61,7 +61,27 @@ namespace AnimusForge.Illustrator.Core
         {
             var copy = (IllustrationOptions)MemberwiseClone();
             copy.ImageSize = imageSize;
+            copy.OutputFrameRequirement = BuildOutputFrameRequirement(imageSize);
             return copy;
+        }
+
+        private static string BuildOutputFrameRequirement(string imageSize)
+        {
+            var dimensions = (imageSize ?? string.Empty).Split('x');
+            if (dimensions.Length != 2 || !int.TryParse(dimensions[0], out int width)
+                || !int.TryParse(dimensions[1], out int height) || width <= 0 || height <= 0)
+                return string.Empty;
+            int divisor = width, remainder = height;
+            while (remainder != 0)
+            {
+                int next = divisor % remainder;
+                divisor = remainder;
+                remainder = next;
+            }
+            string orientation = width == height ? "正方形" : width > height ? "横向" : "竖向";
+            return "最终成图必须为" + orientation + (width / divisor) + ":" + (height / divisor)
+                + "，目标尺寸" + imageSize
+                + "。按此画幅重新组织完整画面，保持人物与场景的自然比例；参考图只提供其标注用途，不决定输出画幅。不得改用其他比例，不要拉伸或加边框伪造目标画幅。此画幅要求适用于普通生成和重绘。";
         }
 
         // Map the existing presets to exact 16:9 sizes with both edges divisible by 16.
@@ -82,10 +102,7 @@ namespace AnimusForge.Illustrator.Core
                     imageSize = "1280x720";
                     break;
             }
-            var copy = WithImageSize(imageSize);
-            copy.OutputFrameRequirement = "最终成图必须为横向16:9，目标尺寸" + imageSize
-                + "。按此画幅重新组织完整画面，保持人物与场景的自然比例；参考图只提供其标注用途，不决定输出画幅。不要生成方图或竖图，不要拉伸或加边框伪造横图。此画幅要求适用于普通生成和重绘。";
-            return copy;
+            return WithImageSize(imageSize);
         }
 
         internal IllustrationOptions(IllustratorSettings settings, string directorUrl, string directorKey, string directorModel)
@@ -99,6 +116,7 @@ namespace AnimusForge.Illustrator.Core
             ApiKey = settings.ApiKey;
             ModelName = settings.ModelName;
             ImageSize = settings.ImageSize;
+            OutputFrameRequirement = BuildOutputFrameRequirement(ImageSize);
             SelectedQuality = settings.SelectedQuality;
             SelectedStyle = settings.SelectedStyle;
             CustomStylePrompt = settings.CustomStylePrompt;
