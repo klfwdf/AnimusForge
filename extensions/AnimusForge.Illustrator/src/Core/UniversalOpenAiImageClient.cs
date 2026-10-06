@@ -171,7 +171,7 @@ namespace AnimusForge.Illustrator.Core
                 //    generations 端点没有参考图字段，之前日志打 refImages=N 但实际从未发送。
                 if (!isChatProtocol && requestedRefImages > 0 && (!settings.UseExactEndpointUrl || exactEditsEndpoint))
                 {
-                    var edit = await AttemptImagesEditsAsync(baseUrl, model, effectivePrompt, size, quality, style, referenceImages, apiKey, cancellationToken, customStyleHint, composed.NegativeField, playerRedraw).ConfigureAwait(false);
+                    var edit = await AttemptImagesEditsAsync(baseUrl, model, effectivePrompt, size, quality, style, referenceImages, apiKey, cancellationToken, customStyleHint, composed.NegativeField, playerRedraw, settings.ForcedImagePromptCharacters).ConfigureAwait(false);
                     result.ResolvedPrompt = edit.ResolvedPrompt;
                     if (edit.Success)
                     {
@@ -196,7 +196,7 @@ namespace AnimusForge.Illustrator.Core
 
                 if (!success && !stopAfterEditFailure)
                 {
-                    var attempt = await AttemptGenerateOnceAsync(endpointUrl, model, effectivePrompt, size, quality, style, referenceImages, apiKey, isChatProtocol, cancellationToken, customStyleHint, composed.NegativeField, playerRedraw).ConfigureAwait(false);
+                    var attempt = await AttemptGenerateOnceAsync(endpointUrl, model, effectivePrompt, size, quality, style, referenceImages, apiKey, isChatProtocol, cancellationToken, customStyleHint, composed.NegativeField, playerRedraw, settings.ForcedImagePromptCharacters).ConfigureAwait(false);
                     success = attempt.Success;
                     imageBytes = attempt.ImageBytes;
                     imageUrl = attempt.ImageUrl;
@@ -209,7 +209,7 @@ namespace AnimusForge.Illustrator.Core
                         Log($"[Illustrator] 检测到生图端点不支持该模型({model})，自动尝试回退至 /chat/completions 多模态生图通道...");
                         string chatEffectivePrompt = ComposeImagePrompt(prompt, size, quality, style, customStyleHint, negativePrompt, true, settings.Randomness, ImagePromptProfile.Full, playerRedraw, settings.OutputFrameRequirement).Text;
                         string chatEndpointUrl = ResolveEndpointUrl(baseUrl, true, false);
-                        var chatRetry = await AttemptGenerateOnceAsync(chatEndpointUrl, model, chatEffectivePrompt, size, quality, style, referenceImages, apiKey, true, cancellationToken, customStyleHint, playerRedraw: playerRedraw).ConfigureAwait(false);
+                        var chatRetry = await AttemptGenerateOnceAsync(chatEndpointUrl, model, chatEffectivePrompt, size, quality, style, referenceImages, apiKey, true, cancellationToken, customStyleHint, playerRedraw: playerRedraw, forcedPromptCharacters: settings.ForcedImagePromptCharacters).ConfigureAwait(false);
                         result.ResolvedPrompt = chatRetry.ResolvedPrompt;
                         if (chatRetry.Success)
                         {
@@ -358,10 +358,11 @@ namespace AnimusForge.Illustrator.Core
             return profile == ImagePromptProfile.DallE3 ? 4000 : profile == ImagePromptProfile.DallE2 ? 1000 : 0;
         }
 
-        private static int FinalPromptLimit(string model, bool chatProtocol)
+        private static int FinalPromptLimit(string model, bool chatProtocol, int forcedCharacters = 0)
         {
             int modelLimit = PromptCharLimit(ResolvePromptProfile(model, chatProtocol));
-            return modelLimit > 0 ? Math.Min(modelLimit, ImagePromptBudget.MaximumCharacters) : ImagePromptBudget.MaximumCharacters;
+            int limit = modelLimit > 0 ? Math.Min(modelLimit, ImagePromptBudget.MaximumCharacters) : ImagePromptBudget.MaximumCharacters;
+            return forcedCharacters > 0 ? Math.Min(limit, forcedCharacters) : limit;
         }
 
         private static string FitFinalMain(string main, int reserved, int limit, string protocol)
@@ -565,7 +566,8 @@ namespace AnimusForge.Illustrator.Core
             CancellationToken cancellationToken,
             string customStyleHint = null,
             string negativePromptField = null,
-            bool playerRedraw = false)
+            bool playerRedraw = false,
+            int forcedPromptCharacters = 0)
         {
             string editsUrl = ResolveEditsEndpointUrl(baseUrl);
             bool hadReferences = referenceImages != null && referenceImages.Count > 0;
@@ -601,7 +603,7 @@ namespace AnimusForge.Illustrator.Core
                     // an all-transparent mask does not provide identity-only conditioning.
                     if (playerRedraw) labels.AppendLine().AppendLine(VisualFidelityRules.PlayerRedrawImagePriority);
                     string suffix = labels.ToString();
-                    int limit = FinalPromptLimit(model, false);
+                    int limit = FinalPromptLimit(model, false, forcedPromptCharacters);
                     sentPrompt = FitFinalMain(effectivePrompt, suffix.Length, limit, "ImagesEdits") + suffix;
                     ImagePromptBudget.EnsureFits(sentPrompt.Length, limit);
                     form.Add(new StringContent(sentPrompt, Encoding.UTF8), "prompt");
@@ -663,7 +665,8 @@ namespace AnimusForge.Illustrator.Core
             CancellationToken cancellationToken,
             string customStyleHint = null,
             string negativePromptField = null,
-            bool playerRedraw = false)
+            bool playerRedraw = false,
+            int forcedPromptCharacters = 0)
         {
             JObject payload;
             int actualRefImages = 0;
@@ -796,7 +799,7 @@ namespace AnimusForge.Illustrator.Core
                 {
                     messageContent = effectivePrompt;
                 }
-                int limit = FinalPromptLimit(model, true);
+                int limit = FinalPromptLimit(model, true, forcedPromptCharacters);
                 string fullText = ExtractChatPromptText(messageContent);
                 if (messageContent is JArray parts)
                 {
@@ -837,7 +840,7 @@ namespace AnimusForge.Illustrator.Core
             }
             else
             {
-                int limit = FinalPromptLimit(model, false);
+                int limit = FinalPromptLimit(model, false, forcedPromptCharacters);
                 effectivePrompt = FitFinalMain(effectivePrompt, 0, limit, "Images");
                 sentPrompt = effectivePrompt;
                 ImagePromptBudget.EnsureFits(sentPrompt.Length, limit);

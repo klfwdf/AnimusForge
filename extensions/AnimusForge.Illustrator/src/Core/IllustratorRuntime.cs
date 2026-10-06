@@ -37,6 +37,8 @@ namespace AnimusForge.Illustrator.Core
         public string DirectorApiKey { get; }
         public string DirectorModelName { get; }
         public int DirectorApproximateTokens { get; }
+        public int DirectorApiMaxTokens { get; }
+        internal int ForcedImagePromptCharacters { get; }
         public int ImageGenerationTimeoutSeconds { get; }
         internal bool HasPlayerRedrawRequest { get; private set; }
         internal bool IsApiTest { get; private set; }
@@ -139,6 +141,9 @@ namespace AnimusForge.Illustrator.Core
             DirectorApiKey = directorKey;
             DirectorModelName = directorModel;
             DirectorApproximateTokens = Math.Max(600, Math.Min(4000, settings.DirectorMaxTokens));
+            DirectorApiMaxTokens = Math.Max(512, Math.Min(64000, settings.DirectorApiMaxTokens));
+            ForcedImagePromptCharacters = settings.ForceImagePromptLimit
+                ? Math.Max(1000, Math.Min(ImagePromptBudget.MaximumCharacters, settings.ForcedImagePromptCharacters)) : 0;
             ImageGenerationTimeoutSeconds = Math.Max(60, Math.Min(600, settings.ImageGenerationTimeoutSeconds));
         }
     }
