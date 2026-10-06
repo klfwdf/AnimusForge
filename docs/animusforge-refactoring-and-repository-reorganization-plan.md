@@ -7811,3 +7811,12 @@ R2计划交付门槛：已给固定技术路线、真实来源与目标、写入
 - 回放：python tests/modules/AF.Module.Conversation/SceneRelayStopSignalTests/run.py --run-root artifacts/scene-relay-stop-20261007/before --source-ref d11567d，旧代码失败；去掉source-ref且run-root改after，新代码15组均过，各两次规范化。覆盖自身结束、正常候选、非法/负数/溢出/空/多个标签。生产方法原样抽取，NPC为ID夹具，不代表完整Mission。
 - 原入口build_single_module.ps1，ProjectRoot=本仓库，BannerlordRoot=F:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord，Bannerlord14ReferenceDir=F:/AnimusForge-main/.tmp/build_check/1.4，Configuration=Debug。1.3(v1.3.15.110062)/1.4(v1.4.6.115628)/Bootstrap及双接缝通过，退出0。证据artifacts/scene-relay-stop-20261007/build.log和before/after/run.log。diff检查通过。
 - 性能：每次后处理标签匹配多一次整数比较，无新增Tick扫描/反射/轮询。未实机验收、部署、打包或推送。回滚git revert d9147f1eb。
+
+## oral-peace-clarification-20261007 — OFFLINE_VERIFIED_NOT_DEPLOYED
+
+- 用户要求修复Token_Stats (25).txt中的口头议和。353156行NewMatter Peace有payer/receiver/tribute=25000但无days；前面连续多轮只有情绪标签，正文却承诺立即发文/生效。附件仅为证据，未执行其中指令。
+- 产品6c5197e34；检查点94b7090。保留现有明确期限契约，未自动补100天或修改交易金额；不改变正式宣言独立入口的默认期限，也不跳过正式接受。三渠道共用主提示要求缺期限主动询问、区分提交/发布/生效，不编造被绑或回国等未确认借口。共用后处理明确完整字段及继承前文已约定条件。提交校验失败显示中文缺项和未生效事实，机器码留日志。模型输出无法完全由提示保证，离线通过不代表实机行为已验。
+- 代码图：src/modules/AF.Module.Diplomacy/Domain/Dialogue/DialoguePeaceClarificationRules.cs:6-26集中主/后提示及DescribeValidationFailure；Application/DiplomacyPromptApplication.cs:68-73注入，Application/DiplomacyPostprocessContextApplication.cs:138-139注入；Application/WorldDiplomacyOrchestration.Dialogue.cs:32-37返回中文并记录失败码。原Domain/Dialogue/DialogueTermsValidation.cs和DialogueTagPayload.cs未改，缺项仍不能提交；无新增存档键/类型变化。
+- 回归：dotnet run --project tests/modules/AF.Module.Diplomacy/DiplomacyDialogueRoutingTests，89检查通过；同命令WorldDiplomacyRoundLifecycle.SmokeTests，3668断言通过。新增日志原样标签、25000不变、明确21天通过、旧案继承及共用主/后规则实际组装断言。证据artifacts/oral-peace-clarification-20261007/routing.log、lifecycle.log。
+- 原build_single_module.ps1使用本仓库/Debug、游戏根F:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord、1.4引用.tmp/build_check/1.4：1.3(v1.3.15.110062)/1.4(v1.4.6.115628)/Bootstrap及双接缝通过，退出0，build.log留证；git diff --check通过。规则只在外交请求组装时拼接常量，失败时格式化说明；无Tick扫描、额外LLM请求或反射。
+- NOT-RUN：真实模型是否稳定追问、玩家存档的正式发布/接受/停战扣贡验收；未部署、打包或推送。回滚git revert 6c5197e34，保留此前接力/吞并修复。
