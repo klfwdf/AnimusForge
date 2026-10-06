@@ -21,16 +21,36 @@ namespace AnimusForge.DialogueUI
         public override string FolderName => "AnimusForge";
         public override string FormatType => "json";
 
-        [SettingPropertyBool("启用 AnimusForge 对话界面", Order = 0, RequireRestart = false,
-            HintText = "总开关。开启时使用本模块的羊皮纸对话、地图对话、场景喊话与历史/给予面板；关闭后全部回到 AnimusForge 原界面与原版对话界面。下次打开界面时生效，无需重启。")]
+        [SettingPropertyDropdown("对话界面", Order = 0, RequireRestart = false,
+            HintText = "原版：使用原版对话与 AnimusForge 原有输入界面。新 UI：使用羊皮纸对话、地图对话与历史/给予面板。默认新 UI，下次打开界面生效，无需重启。")]
         [SettingPropertyGroup("1. 界面", GroupOrder = 1)]
-        public bool EnableSkin { get; set; } = true;
+        public Dropdown<string> InterfaceStyleDropdown { get; set; } =
+            new Dropdown<string>(new[] { "原版", "新 UI" }, 1);
+
+        // Compatibility accessor for existing integrations. MCM persists only
+        // attributed properties, so the new selector has its own saved key;
+        // configs without that key use the requested new-UI default.
+        public bool EnableSkin
+        {
+            get => InterfaceStyleDropdown?.SelectedIndex != 0;
+            set
+            {
+                if (InterfaceStyleDropdown == null)
+                    InterfaceStyleDropdown = new Dropdown<string>(new[] { "原版", "新 UI" }, value ? 1 : 0);
+                else InterfaceStyleDropdown.SelectedIndex = value ? 1 : 0;
+            }
+        }
+
+        [SettingPropertyInteger("正文字号", 14, 36, "0", Order = 5, RequireRestart = false,
+            HintText = "新 UI 的对话正文、对话选项、历史和输入文字大小。默认 24，下次打开界面生效；不改变按钮、人物名或原版界面的字号。")]
+        [SettingPropertyGroup("1. 界面", GroupOrder = 1)]
+        public int BodyFontSize { get; set; } = 24;
 
         [SettingPropertyDropdown("场景喊话面板风格", Order = 1, RequireRestart = false,
             HintText = "原样：保持现有的 T/Y 喊话流程与输入框。卷轴式：底部卷轴输入 + 右侧受众挂札。右侧手札：右侧竖版对谈手札。卷轴式与右侧手札会把 T/Y 合并为「按住框选、松开展开轮盘」，并进入持续的场景多人会话。")]
         [SettingPropertyGroup("1. 界面", GroupOrder = 1)]
         public Dropdown<string> ShoutPanelStyleDropdown { get; set; } =
-            new Dropdown<string>(new[] { "原样", "卷轴式", "右侧手札" }, 0);
+            new Dropdown<string>(new[] { "原样", "卷轴式", "右侧手札" }, 1);
 
         [SettingPropertyBool("自动进入 AI 模式", Order = 3, RequireRestart = false,
             HintText = "开启时，打开场景或地图对话自动进入 AI 输入模式；可配合「仅 Hero 自动进入 AI 模式」限制对象。关闭时先显示普通对话选项，仍可手动切换 AI。下次打开对话生效。")]
@@ -60,13 +80,14 @@ namespace AnimusForge.DialogueUI
         internal static bool AutoEnterAiModeHeroOnly => Read(ReadAutoEnterAiModeHeroOnly, true);
         internal static bool SkinEnabled => Read(ReadSkin, true);
         internal static bool ShowHistoryDelete => Read(ReadHistoryDelete, true);
+        internal static int BodyFontSize => Math.Max(14, Math.Min(36, Read(ReadBodyFontSize, 24)));
 
         internal static ShoutPanelStyle PanelStyle
         {
             get
             {
-                int index = Read(ReadStyleIndex, 0);
-                return index >= 0 && index <= (int)ShoutPanelStyle.SideFolio ? (ShoutPanelStyle)index : ShoutPanelStyle.Original;
+                int index = Read(ReadStyleIndex, 1);
+                return index >= 0 && index <= (int)ShoutPanelStyle.SideFolio ? (ShoutPanelStyle)index : ShoutPanelStyle.Scroll;
             }
         }
 
@@ -98,6 +119,9 @@ namespace AnimusForge.DialogueUI
         private static bool ReadHistoryDelete() => DialogueUiSettings.Instance?.ShowHistoryDelete ?? true;
 
         [MethodImpl(MethodImplOptions.NoInlining)]
-        private static int ReadStyleIndex() => DialogueUiSettings.Instance?.ShoutPanelStyleDropdown?.SelectedIndex ?? 0;
+        private static int ReadStyleIndex() => DialogueUiSettings.Instance?.ShoutPanelStyleDropdown?.SelectedIndex ?? 1;
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private static int ReadBodyFontSize() => DialogueUiSettings.Instance?.BodyFontSize ?? 24;
     }
 }

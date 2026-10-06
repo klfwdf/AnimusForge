@@ -11,7 +11,7 @@
                   <Children>
                     <Widget Id="HistoryContent" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren">
                       <Children>
-                        <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" Brush="Popup.Description.Text" Brush.FontSize="20" Brush.FontColor="#392615FF" Brush.TextHorizontalAlignment="Left" Text="@HistoryText" DoNotAcceptEvents="true" />
+                        <AFDialogueBodyTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" Brush="Popup.Description.Text" Brush.FontSize="20" Brush.FontColor="#392615FF" Brush.TextHorizontalAlignment="Left" Text="@HistoryText" DoNotAcceptEvents="true" />
                       </Children>
                     </Widget>
                   </Children>
@@ -72,7 +72,7 @@
                           <Children>
                             <Widget Id="EditorContent" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MinHeight="128">
                               <Children>
-                                <DevMultilineEditableTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MinHeight="128" HorizontalAlignment="Left" VerticalAlignment="Top" Brush="Review.NameInput.Text" Brush.FontSize="12" Brush.FontColor="#F7ECD5FF" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Top" EditorFontSize="22" MaxLength="6000" RealText="@InputText" IsObfuscationEnabled="false" AutoFocus="true" SubmitOnEnter="true" Command.TextEntered="ExecuteSubmit" Command.FocusGained="StartTyping" Command.FocusLost="StopTyping" />
+                                <AFDialogueBodyEditorWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MinHeight="128" HorizontalAlignment="Left" VerticalAlignment="Top" Brush="Review.NameInput.Text" Brush.FontSize="12" Brush.FontColor="#F7ECD5FF" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Top" EditorFontSize="22" MaxLength="6000" RealText="@InputText" IsObfuscationEnabled="false" AutoFocus="true" SubmitOnEnter="true" Command.TextEntered="ExecuteSubmit" Command.FocusGained="StartTyping" Command.FocusLost="StopTyping" />
                               </Children>
                             </Widget>
                           </Children>

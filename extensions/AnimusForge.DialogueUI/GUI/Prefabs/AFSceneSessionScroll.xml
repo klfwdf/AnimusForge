@@ -20,7 +20,7 @@
                     <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="698" SuggestedHeight="98" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="263" MarginTop="100" DoNotAcceptEvents="true">
                       <Children>
                         <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="12" MarginRight="12" MarginTop="10" Text="输入你想对周围人说的话…… (Enter 发送 · Shift+Enter 换行)" Brush="ConversationItem.Text" DoNotAcceptEvents="true" IsVisible="@IsInputEmpty" Brush.FontSize="15" Brush.FontColor="#E2C38AAA" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Top" />
-                        <DevMultilineEditableTextWidget Id="AFSessionInput" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="12" MarginRight="12" MarginTop="10" MarginBottom="10" VerticalAlignment="Top" Command.TextEntered="ExecuteSubmit" Brush="ConversationItem.Text" Brush.FontSize="16" Brush.FontColor="#F0DFBEFF" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Top" EditorFontSize="16" RealText="@InputText" AutoFocus="false" SubmitOnEnter="true" UseBlackCaret="false" MaxLength="6000" />
+                        <AFDialogueBodyEditorWidget Id="AFSessionInput" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="12" MarginRight="12" MarginTop="10" MarginBottom="10" VerticalAlignment="Top" Command.TextEntered="ExecuteSubmit" Brush="ConversationItem.Text" Brush.FontSize="16" Brush.FontColor="#F0DFBEFF" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Top" EditorFontSize="16" RealText="@InputText" AutoFocus="false" SubmitOnEnter="true" UseBlackCaret="false" MaxLength="6000" />
                       </Children>
                     </Widget>
                     <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="566" SuggestedHeight="24" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="275" MarginTop="200" Text="@StagedTradeText" Brush="Popup.Button.Text" DoNotAcceptEvents="true" Brush.FontSize="13" Brush.FontColor="#8A4A12FF" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Center" IsVisible="@HasStagedTrade" />
@@ -163,7 +163,7 @@
                                             <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Text="@Speaker" IsVisible="@IsFact" Brush="Popup.Button.Text" DoNotAcceptEvents="true" Brush.FontSize="13" Brush.FontColor="#2F5E78FF" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Center" />
                                           </Children>
                                         </Widget>
-                                        <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" Text="@Text" Brush="Popup.Button.Text" DoNotAcceptEvents="true" Brush.FontSize="16" Brush.FontColor="#29180CFF" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Top" />
+                                        <AFDialogueBodyTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" Text="@Text" Brush="Popup.Button.Text" DoNotAcceptEvents="true" Brush.FontSize="16" Brush.FontColor="#29180CFF" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Top" />
                                       </Children>
                                     </ListPanel>
                                   </ItemTemplate>

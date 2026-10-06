@@ -78,7 +78,7 @@
                                   <Children>
                                     <Widget Id="AFDialogueTextContent" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" DoNotAcceptEvents="true">
                                       <Children>
-                                        <RichTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" VerticalAlignment="Top"
+                                        <AFDialogueBodyRichTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" VerticalAlignment="Top"
                                             Brush="Conversation.ConversedPartyLine.Text" Brush.FontSize="24" Brush.FontColor="#3B281BFF"
                                             Command.LinkAlternateClick="ExecuteLink" Command.LinkClick="ExecuteLink"
                                             Text="@DialogText" />
