@@ -7715,3 +7715,8 @@ R2计划交付门槛：已给固定技术路线、真实来源与目标、写入
 - 原 build_single_module.ps1 仅构建入口通过：参考1.3.15.110062、1.4.6.115628，两实现和Bootstrap成功，双接缝门禁通过。未Stage/部署/打包/推送。
 - 实机CharacterReload完成返回与玩家AI变量是否真实重置尚未验证。证据 artifacts/characterreload-layer-fix-20261007/{replay.log,mutation.log,receipt.json}、artifacts/characterreload-layer-build-20261007.log。
 - 回滚仅 git revert cf995bfe4，保留其他修改。
+
+## illustrator-token-budget-20261007 — BUILD_VERIFIED_NOT_DEPLOYED
+产品46f8ba843；检查点6cb5695。新增导演API max_tokens默认16384(512–64000)，强制缩减默认关闭、字符上限4000(1000–32000)。旧软篇幅设置保留。快照接入导演、Images/Edits/Chat及回退，复用现有裁剪，不丢固定规则和参考图，无法满足则停止发送。无新增Tick/扫描/反射或模型调用。
+原build_single_module.ps1双API/Bootstrap及双接缝PASS，exit0；日志artifacts/illustrator-token-budget-20261007/build.log。diff检查与源码接线审查通过；初次构建参数缺失和路径转义失败已修正。遵循模块规则未跑Illustrator离线审计。NOT-RUN：MCM实机及保存重载、真实API预算兼容、空回根因与画面保真。未调用付费API、未部署/打包/推送。回滚git revert 46f8ba843。
+代码坐标（46f8ba843）：extensions/AnimusForge.Illustrator/src/Settings/IllustratorSettings.cs:462–482设置owner；Core/IllustratorRuntime.cs:39–41,143–146快照；Core/VisualDirectorEngine.cs:721–727,818导演要求与max_tokens；Core/UniversalOpenAiImageClient.cs:174–212入口接线、361–366限制取小、606–608/802–820/843–846三协议发送前检查。未改既有ImagePromptBudget算法。
