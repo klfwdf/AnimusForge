@@ -143,6 +143,8 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		public override void OnScoreHit(Agent affectedAgent, Agent affectorAgent, WeaponComponentData attackerWeapon, bool isBlocked, bool isSiegeEngineHit, in Blow blow, in AttackCollisionData collisionData, float damagedHp, float hitDistance, float shotDifficulty)
 		{
 			base.OnScoreHit(affectedAgent, affectorAgent, attackerWeapon, isBlocked, isSiegeEngineHit, in blow, in collisionData, damagedHp, hitDistance, shotDifficulty);
+			if (affectedAgent != null) StuckRecovery.Suspend(affectedAgent.Index);
+			if (affectorAgent != null) StuckRecovery.Suspend(affectorAgent.Index);
 			if (damagedHp > 0f && affectorAgent == Agent.Main)
 			{
 				if (!SiegeAiInterventionBehavior.TryHandlePlayerAttackForIntervention(affectedAgent, SiegeLocalAttackProfile.PlayerScoreHitBridgeSource, damagedHp))
@@ -154,6 +156,11 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 
 		public override void OnAgentRemoved(Agent affectedAgent, Agent affectorAgent, AgentState agentState, KillingBlow blow)
 		{
+			if (affectedAgent != null)
+			{
+				NativeMovementOrders.Forget(affectedAgent.Index);
+				StuckRecovery.Forget(affectedAgent.Index);
+			}
 			SiegeAiInterventionBehavior.OnInterventionAgentRemoved(affectedAgent, affectorAgent, agentState);
 		}
 
@@ -221,13 +228,6 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 	private const float CivilianAssemblyColumnSpacing = SiegeCivilianAssemblyProfile.ColumnSpacing;
 	private const float CivilianAssemblyRowSpacing = SiegeCivilianAssemblyProfile.RowSpacing;
 	private const int CivilianAssemblyColumns = SiegeCivilianAssemblyProfile.Columns;
-	private const float SoldierCordonMinRadius = SiegeSoldierCordonProfile.MinRadius;
-	private const float SoldierCordonPadding = SiegeSoldierCordonProfile.Padding;
-	private const float SoldierCordonTeleportDistance = SiegeSoldierCordonProfile.TeleportDistance;
-	private const float SoldierCordonMoveTolerance = SiegeSoldierCordonProfile.MoveTolerance;
-	private const float SoldierCordonSettleTolerance = SiegeSoldierCordonProfile.SettleTolerance;
-	private const float SoldierCordonOrderRefreshSeconds = SiegeSoldierCordonProfile.OrderRefreshSeconds;
-	private const float SoldierCordonLookRefreshSeconds = SiegeSoldierCordonProfile.LookRefreshSeconds;
 	private const float AmbientReactionWindowSeconds = SiegeAmbientReactionProfile.WindowSeconds;
 	private const float AmbientReactionRequestSpacingSeconds = SiegeAmbientReactionProfile.RequestSpacingSeconds;
 
@@ -261,6 +261,10 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 	private static bool _castleSoldierAppeasementApplied;
 	private static bool _castleSoldierAppeasementMoralePenaltyApplied;
 	private static int _castleSoldierPendingMoralePenalty;
+	// Recruitment unrest is kept apart from other unrest so exit can scale it by actual recruits.
+	private static int _castleSoldierPendingRecruitmentPenalty;
+	private static int _castleSoldierPendingOtherPenalty;
+	private static int _castleStagedRecruitPrisonersAtExit;
 	private static int _castleSoldierAppliedMoralePenalty;
 	private static SiegeCastleActionKind _castleSoldierConcernAction = SiegeCastleActionKind.Unknown;
 	private static bool _castleSlaughterConsequencesQueued;
@@ -335,7 +339,6 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 	private static readonly HashSet<string> LastPlayerCastleBattleDefeatedLordIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 	private static bool _setsSettlementEntryVictoryContext;
 	private static string _setsSettlementEntryVictorySource = "";
-	private static bool _setsSettlementEntryWallRescueSuppressionLogged;
 	private static bool _setsOwnedSettlementIncidentContext;
 	private static bool _setsOwnedSettlementIncidentKilledNotable;
 	private static Clan _setsOwnedSettlementIncidentOwnerClan;
@@ -380,8 +383,6 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 	private static readonly HashSet<int> MassacreReadySoldierAgentIndexes = new HashSet<int>();
 	private static readonly HashSet<int> MassacreCombatPreparedAgentIndexes = new HashSet<int>();
 	private static readonly Dictionary<int, int> CivilianSpeechRallySlots = new Dictionary<int, int>();
-	private static readonly Dictionary<int, float> LastCordonMoveOrderTimesBySoldier = new Dictionary<int, float>();
-	private static readonly Dictionary<int, float> LastCordonLookOrderTimesBySoldier = new Dictionary<int, float>();
 	private static readonly Dictionary<int, Vec3> CivilianHideTargets = new Dictionary<int, Vec3>();
 	private static readonly Dictionary<int, float> LastCivilianHideOrderTimes = new Dictionary<int, float>();
 	private static readonly HashSet<int> CivilianHideSettledAgentIndexes = new HashSet<int>();
@@ -411,11 +412,6 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 	private static readonly Dictionary<int, float> LastMassacreSoldierProbeTimes = new Dictionary<int, float>();
 	private static readonly Dictionary<int, float> LastCivilianGatherFollowOrderTimes = new Dictionary<int, float>();
 	private static readonly Dictionary<int, Vec3> LastCivilianGatherFollowTargets = new Dictionary<int, Vec3>();
-	private static readonly Dictionary<int, Vec3> LastAgentWallRescueProbePositions = new Dictionary<int, Vec3>();
-	private static readonly Dictionary<int, float> LastAgentWallRescueProbeTimes = new Dictionary<int, float>();
-	private static readonly Dictionary<int, float> AgentWallRescueUntilTimes = new Dictionary<int, float>();
-	private static readonly Dictionary<int, float> LastAgentWallRescueLogTimes = new Dictionary<int, float>();
-	private static readonly Dictionary<int, float> LastAgentWallRescueTeleportTimes = new Dictionary<int, float>();
 	private static readonly FieldInfo OrderTroopPlacerOrderControllerField = AccessTools.Field(typeof(OrderTroopPlacer), "_orderController");
 	private static readonly FieldInfo SingleVisualOrderOrderTypeField = AccessTools.Field(typeof(SingleVisualOrder), "_orderType");
 	private static readonly FieldInfo FollowAgentBehaviorIdleDistanceField = typeof(FollowAgentBehavior).GetField("_idleDistance", BindingFlags.Instance | BindingFlags.NonPublic);
@@ -1109,7 +1105,6 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 	{
 		_setsSettlementEntryVictoryContext = true;
 		_setsSettlementEntryVictorySource = string.IsNullOrWhiteSpace(source) ? "SETS_town_victory" : source;
-		_setsSettlementEntryWallRescueSuppressionLogged = false;
 		_activeSettlement = settlement;
 		_besiegerParty = MobileParty.MainParty;
 		_previousSettlementOwnerClan = settlement?.OwnerClan;
@@ -1142,7 +1137,6 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		_setsCapturedTownRiotOwnerPenaltyApplied = false;
 		_setsSettlementEntryVictoryContext = false;
 		_setsSettlementEntryVictorySource = "";
-		_setsSettlementEntryWallRescueSuppressionLogged = false;
 		_previousSettlementOwnerClan = null;
 		_besiegerParty = null;
 		_activeSettlement = null;
@@ -2024,6 +2018,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			return;
 		}
 		TryKeepMissionExitImmediatelyAvailable(mission);
+		TickInterventionStuckRecovery(mission);
 		if (CastleAftermathRuntimeBridge.IsCastleAftermathMission(mission))
 		{
 			bool castleCombatControlActive = CastleAftermathRuntimeBridge.IsCastleCombatControlActive(mission);
@@ -2145,6 +2140,9 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 
 	private static void ClearInterventionSceneTransientState()
 	{
+		NativeMovementOrders.Reset();
+		StuckRecovery.Reset();
+		_nextStuckRecoverySampleTime = 0f;
 		lock (CastleSoldierReactionLock)
 		{
 			PendingCastleSoldierReactionActions.Clear();
@@ -2179,8 +2177,6 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		MassacreCombatPreparedAgentIndexes.Clear();
 		MassacreCaughtFleeingVictimAgentIndexes.Clear();
 		CivilianSpeechRallySlots.Clear();
-		LastCordonMoveOrderTimesBySoldier.Clear();
-		LastCordonLookOrderTimesBySoldier.Clear();
 		CivilianHideTargets.Clear();
 		LastCivilianHideOrderTimes.Clear();
 		CivilianHideSettledAgentIndexes.Clear();
@@ -2195,11 +2191,6 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		LastMassacreSoldierProbeTimes.Clear();
 		LastCivilianGatherFollowOrderTimes.Clear();
 		LastCivilianGatherFollowTargets.Clear();
-		LastAgentWallRescueProbePositions.Clear();
-		LastAgentWallRescueProbeTimes.Clear();
-		AgentWallRescueUntilTimes.Clear();
-		LastAgentWallRescueLogTimes.Clear();
-		LastAgentWallRescueTeleportTimes.Clear();
 		SceneControl.ResetCivilianAssemblyPoint();
 		_civilianAssemblyAnchor = Vec3.Zero;
 		_civilianAssemblyForward = Vec3.Forward;
@@ -3610,7 +3601,8 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				townAlliedSoldier,
 				replyIsDirectPlayerResponse,
 				massacreActive: _massacreStarted && !_massacreVictoryReached,
-				colonizationAvailable: ActiveTownColonization.State == TownColonizationState.None,
+				colonizationAvailable: ActiveTownColonization.State == TownColonizationState.None
+					&& ActiveTownColonization.CanRequest(ResolveCurrentSettlement()?.StringId, ResolveCulturalRepopulationTargetCulture(out _)?.StringId),
 				constructiveCultureChangeAvailable: constructiveCultureChangeAvailable,
 				isAmbientReaction: isAmbientReaction,
 				ambientReactionToAction: ambientReactionToAction);
@@ -3931,7 +3923,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 	internal static bool TryProcessDirectSceneCommandForExternal(int targetAgentIndex, string playerText, bool playerCommandContext, out bool actionHandled)
 	{
 		actionHandled = false;
-		if (!playerCommandContext)
+		if (!playerCommandContext || IsActiveInCurrentMission())
 		{
 			return false;
 		}
@@ -4690,6 +4682,28 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			return false;
 		}
 
+		if (SiegeCastleActionKindProfile.IsRecruitment(action))
+		{
+			int freeSlots = Math.Max(0, (PartyBase.MainParty?.PartySizeLimit ?? 0) - (PartyBase.MainParty?.NumberOfAllMembers ?? 0));
+			int stageable = SiegeCastlePrisonerDispositionProfile.ResolveStageableRecruitCount(
+				allocation.Count,
+				freeSlots,
+				CountStagedRecruitPrisoners());
+			if (stageable < allocation.Count)
+			{
+				InformationManager.DisplayMessage(new InformationMessage(
+					SiegeCastlePrisonerDispositionProfile.BuildRecruitCapacityTrimMessage(allocation.Count, stageable, freeSlots),
+					Color.FromUint(SiegeCastleActionOutcomeTextProfile.WarningColor)));
+				GcczDiagnosticLog.Log("CastleOutcome", "recruit capacity trim action=" + action
+					+ " requested=" + allocation.Count + " stageable=" + stageable + " freeSlots=" + freeSlots);
+				if (stageable <= 0)
+				{
+					return false;
+				}
+				allocation = allocation.TrimTo(stageable);
+			}
+		}
+
 		_castleRegularDispositionFinalized = false;
 		if (!SiegeCastleRegularDispositionStagingProfile.IsDeferredRosterAction(action))
 		{
@@ -4761,25 +4775,6 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			"【城堡处置】已暂定“" + SiegeCastleRegularDispositionStagingProfile.Describe(action)
 				+ "” " + stagedCount + " 人；未分配 " + unassigned + " 人。离场时才执行。",
 			Color.FromUint(SiegeCastleActionOutcomeTextProfile.SuccessColor)));
-		if (SiegeCastleActionKindProfile.IsRecruitment(action))
-		{
-			int freeSlots = Math.Max(0, (PartyBase.MainParty?.PartySizeLimit ?? 0) - (PartyBase.MainParty?.NumberOfAllMembers ?? 0));
-			int totalStagedRecruitCount = CastleAftermathDispositionSessionBridge
-				.GetDeferredAllocations()
-				.Where(item => SiegeCastleActionKindProfile.IsRecruitment(item.Action))
-				.Sum(item => item.Roster?.TotalManCount ?? 0);
-			int previouslyStagedRecruitCount = Math.Max(0, totalStagedRecruitCount - stagedCount);
-			string capacityWarning = SiegeCastlePrisonerDispositionProfile.BuildStagedRecruitCapacityWarning(
-				freeSlots,
-				previouslyStagedRecruitCount,
-				stagedCount);
-			if (!string.IsNullOrEmpty(capacityWarning))
-			{
-				InformationManager.DisplayMessage(new InformationMessage(
-					capacityWarning,
-					Color.FromUint(SiegeCastleActionOutcomeTextProfile.WarningColor)));
-			}
-		}
 		RegisterCastleSoldierConcern(
 			action,
 			stagedCount,
@@ -4806,6 +4801,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		_castleRegularDispositionFinalized = true;
 		IReadOnlyList<CastleAftermathRegularDispositionAllocation> allocations =
 			CastleAftermathDispositionSessionBridge.GetDeferredAllocations();
+		_castleStagedRecruitPrisonersAtExit = CountStagedRecruitPrisoners(allocations);
 		if (_castleSlaughteredRegularPrisoners > 0)
 		{
 			CastleAftermathDispositionSessionBridge.RecordFinalizedRegularOutcome(
@@ -4855,7 +4851,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 
 			int trustDelta = ResolveCastleRegularTerminalTrustDelta(action);
 			CastleAftermathPrisonerTrustRuntimeBridge.AdjustRegularTrustForRoster(
-				allocation.Roster,
+				result.ResolvedRoster ?? allocation.Roster,
 				trustDelta,
 				"terminal_exit_" + action);
 			CastleAftermathSettlementRuntimeBridge.QueueAction(
@@ -5117,6 +5113,14 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		};
 	}
 
+	private static int CountStagedRecruitPrisoners()
+		=> CountStagedRecruitPrisoners(CastleAftermathDispositionSessionBridge.GetDeferredAllocations());
+
+	private static int CountStagedRecruitPrisoners(IReadOnlyList<CastleAftermathRegularDispositionAllocation> allocations)
+		=> allocations?
+			.Where(item => SiegeCastleActionKindProfile.IsRecruitment(item.Action))
+			.Sum(item => item.Roster?.TotalManCount ?? 0) ?? 0;
+
 	private static bool RegisterCastleSoldierConcern(
 		SiegeCastleActionKind action,
 		int affectedRegularPrisoners,
@@ -5132,6 +5136,24 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		}
 
 		bool stronger = penalty > _castleSoldierPendingMoralePenalty;
+		bool reopen = SiegeCastleSoldierReactionProfile.ShouldReopenAppeasement(
+			_castleSoldierAppeasementApplied,
+			_castleSoldierPendingMoralePenalty,
+			penalty);
+		if (!reopen)
+		{
+			Logger.Log("CastleAftermath", "Castle soldier concern absorbed by prior appeasement. Action=" + action
+				+ ", Penalty=" + penalty + ", Pending=" + _castleSoldierPendingMoralePenalty + ", Agent=" + targetAgentIndex);
+			return true;
+		}
+		if (SiegeCastleActionKindProfile.IsRecruitment(action))
+		{
+			_castleSoldierPendingRecruitmentPenalty = Math.Max(_castleSoldierPendingRecruitmentPenalty, penalty);
+		}
+		else
+		{
+			_castleSoldierPendingOtherPenalty = Math.Max(_castleSoldierPendingOtherPenalty, penalty);
+		}
 		_castleSoldierPendingMoralePenalty = Math.Max(_castleSoldierPendingMoralePenalty, penalty);
 		_castleSoldierAppeasementRequired = true;
 		_castleSoldierAppeasementApplied = false;
@@ -5338,7 +5360,17 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			}
 
 			_castleSoldierAppeasementMoralePenaltyApplied = true;
-			_castleSoldierAppliedMoralePenalty = Math.Max(0, _castleSoldierPendingMoralePenalty);
+			_castleSoldierAppliedMoralePenalty = SiegeCastleSoldierReactionProfile.ResolveExitMoralePenalty(
+				_castleSoldierPendingOtherPenalty,
+				_castleSoldierPendingRecruitmentPenalty,
+				_castleStagedRecruitPrisonersAtExit,
+				_castleRecruitedRegularPrisoners);
+			if (_castleSoldierAppliedMoralePenalty <= 0)
+			{
+				Logger.Log("CastleAftermath", "Skipped castle morale penalty: no staged recruit actually joined and no other unrest. Staged="
+					+ _castleStagedRecruitPrisonersAtExit + ", Recruited=" + _castleRecruitedRegularPrisoners);
+				return;
+			}
 			MobileParty.MainParty.RecentEventsMorale -= _castleSoldierAppliedMoralePenalty;
 			RecordInterventionMemory(
 				SiegeCastleSoldierReactionProfile.PenaltyMemoryTitle,
@@ -7357,377 +7389,6 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private static bool TrySetInterventionNativeNavmeshTargetFrame(
-		Agent agent,
-		Mission mission,
-		Vec3 target,
-		string source,
-		Agent.AIScriptedFrameFlags flags,
-		bool forceNearbySample,
-		out Vec3 resolvedTarget)
-	{
-		resolvedTarget = target;
-		try
-		{
-			if (agent == null || mission?.Scene == null || !agent.IsHuman || !agent.IsActive())
-			{
-				return false;
-			}
-			CampaignAgentComponent component = agent.GetComponent<CampaignAgentComponent>();
-			AgentNavigator navigator = component?.AgentNavigator ?? component?.CreateAgentNavigator();
-			if (navigator == null)
-			{
-				return false;
-			}
-			if (!TryResolveInterventionNativeNavmeshWorldPosition(mission, agent.Position, target, forceNearbySample, out WorldPosition worldPosition, out resolvedTarget))
-			{
-				return false;
-			}
-			Vec2 direction = worldPosition.AsVec2 - agent.Position.AsVec2;
-			float rotation = direction.LengthSquared > 0.04f ? direction.RotationInRadians : agent.LookDirection.AsVec2.RotationInRadians;
-			navigator.SetTargetFrame(
-				worldPosition,
-				rotation,
-				SiegeAgentWallRescueProfile.NativeTargetFrameArrivalRadius,
-				SiegeAgentWallRescueProfile.NativeTargetFrameStopDistance,
-				flags,
-				false);
-			return true;
-		}
-		catch (Exception ex)
-		{
-			Logger.Log("SiegeAiIntervention", "Native navmesh target frame failed (" + (source ?? SiegeAgentWallRescueProfile.NativeTargetFrameSource) + "): " + ex.Message);
-			return false;
-		}
-	}
-
-	private static bool TryResolveInterventionNativeNavmeshWorldPosition(
-		Mission mission,
-		Vec3 agentPosition,
-		Vec3 target,
-		bool forceNearbySample,
-		out WorldPosition worldPosition,
-		out Vec3 resolvedTarget)
-	{
-		worldPosition = WorldPosition.Invalid;
-		resolvedTarget = target;
-		try
-		{
-			if (mission?.Scene == null)
-			{
-				return false;
-			}
-			Vec3 groundedTarget = ProjectCivilianRoutPointToGround(mission, target);
-			if (!forceNearbySample)
-			{
-				WorldPosition direct = new WorldPosition(mission.Scene, groundedTarget);
-				if (direct.GetNearestNavMesh() != UIntPtr.Zero)
-				{
-					worldPosition = direct;
-					resolvedTarget = groundedTarget;
-					return true;
-				}
-			}
-			WorldPosition bestWorldPosition = WorldPosition.Invalid;
-			Vec3 bestPoint = groundedTarget;
-			float bestScore = float.MinValue;
-			Vec2 desiredDirection = groundedTarget.AsVec2 - agentPosition.AsVec2;
-			if (desiredDirection.LengthSquared > 0.04f)
-			{
-				desiredDirection.Normalize();
-			}
-			for (int i = 0; i < SiegeAgentWallRescueProfile.NativeTargetFrameSampleCount; i++)
-			{
-				bool preferReachable = i % 2 == 0;
-				Vec3 candidate = mission.GetRandomPositionAroundPoint(
-					groundedTarget,
-					SiegeAgentWallRescueProfile.NativeTargetFrameSampleMinRadius,
-					SiegeAgentWallRescueProfile.NativeTargetFrameSampleMaxRadius,
-					preferReachable);
-				WorldPosition candidateWorldPosition = new WorldPosition(mission.Scene, candidate);
-				if (candidateWorldPosition.GetNearestNavMesh() == UIntPtr.Zero)
-				{
-					continue;
-				}
-				Vec2 candidateDirection = candidateWorldPosition.AsVec2 - agentPosition.AsVec2;
-				float directionScore = 0f;
-				if (desiredDirection.LengthSquared > 0.04f && candidateDirection.LengthSquared > 0.04f)
-				{
-					candidateDirection.Normalize();
-					directionScore = Vec2.DotProduct(candidateDirection, desiredDirection);
-				}
-				float score = -candidateWorldPosition.AsVec2.DistanceSquared(groundedTarget.AsVec2) + directionScore;
-				if (score > bestScore)
-				{
-					bestScore = score;
-					bestWorldPosition = candidateWorldPosition;
-					bestPoint = candidate;
-				}
-			}
-			if (bestScore <= float.MinValue / 2f)
-			{
-				return false;
-			}
-			worldPosition = bestWorldPosition;
-			resolvedTarget = bestPoint;
-			return true;
-		}
-		catch
-		{
-			return false;
-		}
-	}
-
-	private static bool TrySetInterventionAgentTargetPosition(Agent agent, Vec3 target, string source, Agent.AIScriptedFrameFlags rescueFlags = Agent.AIScriptedFrameFlags.NeverSlowDown)
-	{
-		try
-		{
-			Mission mission = Mission.Current ?? agent?.Mission;
-			if (agent == null || mission == null || mission.Scene == null || !agent.IsHuman || !agent.IsActive())
-			{
-				return false;
-			}
-			Vec3 resolvedTarget = target;
-			try
-			{
-				resolvedTarget.z = mission.Scene.GetGroundHeightAtPosition(resolvedTarget);
-			}
-			catch
-			{
-			}
-			if (TryApplyInterventionTemporaryWallRescue(agent, mission, resolvedTarget, source, rescueFlags))
-			{
-				return true;
-			}
-			if (TrySetInterventionNativeNavmeshTargetFrame(agent, mission, resolvedTarget, source, rescueFlags, forceNearbySample: false, out Vec3 nativeTarget))
-			{
-				SetAgentLookTowardPoint(agent, nativeTarget);
-				return true;
-			}
-			agent.SetTargetPosition(resolvedTarget.AsVec2);
-			return true;
-		}
-		catch (Exception ex)
-		{
-			Logger.Log("SiegeAiIntervention", "TrySetInterventionAgentTargetPosition failed (" + (source ?? "N/A") + "): " + ex.Message);
-			return false;
-		}
-	}
-
-	internal static bool TryApplySetsSettlementEnemyWallRescue(Agent agent, Mission mission, Vec3 target, string source)
-	{
-		try
-		{
-			if (agent == null || mission?.Scene == null || !agent.IsHuman || !agent.IsActive())
-			{
-				return false;
-			}
-			Vec3 resolvedTarget = target;
-			try
-			{
-				resolvedTarget.z = mission.Scene.GetGroundHeightAtPosition(resolvedTarget);
-			}
-			catch
-			{
-			}
-			return TryApplyInterventionTemporaryWallRescue(
-				agent,
-				mission,
-				resolvedTarget,
-				source,
-				Agent.AIScriptedFrameFlags.NeverSlowDown);
-		}
-		catch (Exception ex)
-		{
-			Logger.Log("SiegeAiIntervention", "SETS settlement enemy wall rescue failed (" + (source ?? "N/A") + "): " + ex.Message);
-			return false;
-		}
-	}
-
-	internal static void ClearSetsSettlementEnemyWallRescueTracking(int agentIndex)
-	{
-		if (agentIndex < 0)
-		{
-			return;
-		}
-		LastAgentWallRescueProbePositions.Remove(agentIndex);
-		LastAgentWallRescueProbeTimes.Remove(agentIndex);
-		AgentWallRescueUntilTimes.Remove(agentIndex);
-		LastAgentWallRescueLogTimes.Remove(agentIndex);
-		LastAgentWallRescueTeleportTimes.Remove(agentIndex);
-	}
-
-	private static bool TryApplyInterventionTemporaryWallRescue(
-		Agent agent,
-		Mission mission,
-		Vec3 resolvedTarget,
-		string source,
-		Agent.AIScriptedFrameFlags rescueFlags)
-	{
-		if (!ShouldUseTemporaryWallRescue(agent, mission, resolvedTarget, source))
-		{
-			return false;
-		}
-		if (TrySetInterventionNativeNavmeshTargetFrame(agent, mission, resolvedTarget, source, rescueFlags, forceNearbySample: true, out Vec3 nativeRescueTarget))
-		{
-			SetAgentLookTowardPoint(agent, nativeRescueTarget);
-			TryTeleportAgentForWallRescue(agent, mission, nativeRescueTarget, source);
-			return true;
-		}
-		if (TryTeleportAgentForWallRescue(agent, mission, resolvedTarget, source))
-		{
-			return true;
-		}
-		try
-		{
-			WorldPosition scriptedPosition = new WorldPosition(mission.Scene, UIntPtr.Zero, resolvedTarget, false);
-			agent.SetScriptedPosition(ref scriptedPosition, false, rescueFlags);
-			return true;
-		}
-		catch (Exception ex)
-		{
-			Logger.Log("SiegeAiIntervention", "Wall rescue scripted movement failed (" + (source ?? SiegeAgentWallRescueProfile.Source) + "): " + ex.Message);
-			return false;
-		}
-	}
-
-	private static bool TryTeleportAgentForWallRescue(Agent agent, Mission mission, Vec3 target, string source)
-	{
-		try
-		{
-			if (agent == null || agent == Agent.Main || mission?.Scene == null || !agent.IsHuman || !agent.IsActive())
-			{
-				return false;
-			}
-			float distanceSq = agent.Position.DistanceSquared(target);
-			float minDistanceSq = SiegeAgentWallRescueProfile.WallPassTeleportMinDistance * SiegeAgentWallRescueProfile.WallPassTeleportMinDistance;
-			if (distanceSq <= minDistanceSq)
-			{
-				return false;
-			}
-			float now = mission.CurrentTime;
-			if (LastAgentWallRescueTeleportTimes.TryGetValue(agent.Index, out float lastTeleportTime)
-				&& now - lastTeleportTime < SiegeAgentWallRescueProfile.WallPassTeleportCooldownSeconds)
-			{
-				return false;
-			}
-			Vec3 teleportTarget = ProjectCivilianRoutPointToGround(mission, target);
-			WorldPosition worldPosition = new WorldPosition(mission.Scene, teleportTarget);
-			if (worldPosition.GetNearestNavMesh() == UIntPtr.Zero
-				&& !TryResolveInterventionNativeNavmeshWorldPosition(mission, agent.Position, teleportTarget, forceNearbySample: true, out worldPosition, out teleportTarget))
-			{
-				return false;
-			}
-			teleportTarget = ProjectCivilianRoutPointToGround(mission, teleportTarget);
-			try
-			{
-				agent.DisableScriptedMovement();
-				agent.ClearTargetFrame();
-				agent.InvalidateTargetAgent();
-				agent.SetMaximumSpeedLimit(-1f, false);
-			}
-			catch
-			{
-			}
-			try
-			{
-				Agent mountAgent = agent.MountAgent;
-				if (mountAgent != null && mountAgent.IsActive())
-				{
-					mountAgent.TeleportToPosition(teleportTarget);
-					mountAgent.ClearTargetFrame();
-					mountAgent.SetTargetPosition(teleportTarget.AsVec2);
-				}
-			}
-			catch
-			{
-			}
-			agent.TeleportToPosition(teleportTarget);
-			agent.SetTargetPosition(teleportTarget.AsVec2);
-			LastAgentWallRescueTeleportTimes[agent.Index] = now;
-			LastAgentWallRescueProbePositions[agent.Index] = teleportTarget;
-			LastAgentWallRescueProbeTimes[agent.Index] = now;
-			AgentWallRescueUntilTimes.Remove(agent.Index);
-			Logger.Log("SiegeAiIntervention", "Applied wall-pass teleport rescue. Source=" + (source ?? SiegeAgentWallRescueProfile.WallPassTeleportSource) + ", Agent=" + agent.Index + ", Distance=" + MathF.Sqrt(distanceSq).ToString("0.0"));
-			return true;
-		}
-		catch (Exception ex)
-		{
-			Logger.Log("SiegeAiIntervention", "Wall-pass teleport rescue failed (" + (source ?? SiegeAgentWallRescueProfile.WallPassTeleportSource) + "): " + ex.Message);
-			return false;
-		}
-	}
-
-	private static bool IsSetsSettlementEntryVictoryIntervention()
-	{
-		return _setsSettlementEntryVictoryContext;
-	}
-
-	private static bool ShouldUseTemporaryWallRescue(Agent agent, Mission mission, Vec3 target, string source)
-	{
-		try
-		{
-			if (agent == null || mission == null || !agent.IsActive())
-			{
-				return false;
-			}
-			if (IsSetsSettlementEntryVictoryIntervention())
-			{
-				if (!_setsSettlementEntryWallRescueSuppressionLogged)
-				{
-					_setsSettlementEntryWallRescueSuppressionLogged = true;
-					Logger.Log("SiegeAiIntervention", "Suppressed wall-pass teleport rescue during SETS-started GCCZ mission. Source=" + (source ?? "N/A"));
-				}
-				return false;
-			}
-			float distanceSq = agent.Position.DistanceSquared(target);
-			float targetMinDistanceSq = SiegeAgentWallRescueProfile.TargetMinDistance * SiegeAgentWallRescueProfile.TargetMinDistance;
-			if (distanceSq <= targetMinDistanceSq)
-			{
-				AgentWallRescueUntilTimes.Remove(agent.Index);
-				LastAgentWallRescueProbePositions[agent.Index] = agent.Position;
-				LastAgentWallRescueProbeTimes[agent.Index] = mission.CurrentTime;
-				return false;
-			}
-			float now = mission.CurrentTime;
-			if (AgentWallRescueUntilTimes.TryGetValue(agent.Index, out float activeUntil) && now < activeUntil)
-			{
-				return true;
-			}
-			if (!LastAgentWallRescueProbeTimes.TryGetValue(agent.Index, out float lastProbeTime))
-			{
-				LastAgentWallRescueProbePositions[agent.Index] = agent.Position;
-				LastAgentWallRescueProbeTimes[agent.Index] = now;
-				return false;
-			}
-			if (now - lastProbeTime < SiegeAgentWallRescueProfile.ProbeSeconds)
-			{
-				return false;
-			}
-			Vec3 lastProbePosition = LastAgentWallRescueProbePositions.TryGetValue(agent.Index, out Vec3 value) ? value : agent.Position;
-			LastAgentWallRescueProbePositions[agent.Index] = agent.Position;
-			LastAgentWallRescueProbeTimes[agent.Index] = now;
-			float movedSq = agent.Position.DistanceSquared(lastProbePosition);
-			float minMovedSq = SiegeAgentWallRescueProfile.MinMovedDistance * SiegeAgentWallRescueProfile.MinMovedDistance;
-			if (movedSq > minMovedSq)
-			{
-				AgentWallRescueUntilTimes.Remove(agent.Index);
-				return false;
-			}
-			AgentWallRescueUntilTimes[agent.Index] = now + SiegeAgentWallRescueProfile.RescueDurationSeconds;
-			if (!LastAgentWallRescueLogTimes.TryGetValue(agent.Index, out float lastLog) || now - lastLog >= SiegeAgentWallRescueProfile.RescueDurationSeconds)
-			{
-				LastAgentWallRescueLogTimes[agent.Index] = now;
-				Logger.Log("SiegeAiIntervention", "Enabled temporary wall rescue movement. Source=" + (source ?? SiegeAgentWallRescueProfile.Source) + ", Agent=" + agent.Index + ", Distance=" + MathF.Sqrt(distanceSq).ToString("0.0"));
-			}
-			return true;
-		}
-		catch
-		{
-			return false;
-		}
-	}
-
 	private static void MoveAlliedSoldierNearMainFallback(Agent soldier, Agent main)
 	{
 		try
@@ -8966,14 +8627,19 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				InformationManager.DisplayMessage(new InformationMessage(GetTownActionPresentationText().CulturalRepopulationTargetValidation, Color.FromUint(SiegeCulturalRepopulationProfile.ValidationMessageColor)));
 				return false;
 			}
-			bool handled = true;
-			SiegeCulturalRepopulationProfile repopulationProfile = new SiegeCulturalRepopulationProfile();
-			if (!_massacreStarted)
-			{
-				handled |= StartMassacre(repopulationProfile.MassacreTriggerSource, repopulationProfile.MassacreTriggerDetail);
-			}
 			Settlement settlement = ResolveCurrentSettlement();
 			CultureObject targetCulture = ResolveCulturalRepopulationTargetCulture(out string targetCultureSource);
+			if (!ActiveTownColonization.CanRequest(settlement?.StringId, targetCulture?.StringId))
+			{
+				Logger.Log("SiegeAiIntervention", "Rejected colonization before military effects. Settlement="
+					+ (settlement?.StringId ?? "none") + ", State=" + ActiveTownColonization.State);
+				return false;
+			}
+			SiegeCulturalRepopulationProfile repopulationProfile = new SiegeCulturalRepopulationProfile();
+			if (!_massacreStarted && !StartMassacre(repopulationProfile.MassacreTriggerSource, repopulationProfile.MassacreTriggerDetail))
+			{
+				return false;
+			}
 			string targetCultureText = DescribeCultureForMessage(targetCulture, targetCultureSource);
 			if (!EnsureMassacreOperationLedger(Mission.Current, TownOperationKind.Colonization))
 			{
@@ -8994,13 +8660,13 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			bool targetsAlreadyEliminated = ActiveTownColonization.ObserveCapturedTargets(operationLedger);
 			if (_massacreVictoryReached || targetsAlreadyEliminated)
 			{
-				handled |= ApplyCulturalRepopulationNow(SiegeCulturalRepopulationProfile.VictoryAlreadyReachedApplySource);
+				ApplyCulturalRepopulationNow(SiegeCulturalRepopulationProfile.VictoryAlreadyReachedApplySource);
 			}
 			else
 			{
 				ShowOutcomeMessageOnce(repopulationProfile.MessageKey, repopulationProfile.PendingMessageColor, targetCultureText);
 			}
-			return handled;
+			return true;
 		}
 		catch (Exception ex)
 		{
@@ -10517,8 +10183,6 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 					soldier.UpdateFormationOrders();
 					soldier.SetWatchState(Agent.WatchState.Patrolling);
 					CordonReadyAgentIndexes.Remove(soldier.Index);
-					LastCordonMoveOrderTimesBySoldier.Remove(soldier.Index);
-					LastCordonLookOrderTimesBySoldier.Remove(soldier.Index);
 					returned++;
 				}
 				catch
@@ -11810,154 +11474,6 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		{
 		}
 		return center;
-	}
-
-	private static float GetCivilianAssemblyCordonRadius(Mission mission)
-	{
-		int totalSlots = Math.Max(1, GetDesiredCivilianAssemblyCount(mission));
-		int columns = Math.Max(1, CivilianAssemblyColumns);
-		int rows = Math.Max(1, (int)Math.Ceiling(totalSlots / (double)columns));
-		float halfWidth = Math.Max(0f, (columns - 1) * CivilianAssemblyColumnSpacing * 0.5f);
-		float halfDepth = Math.Max(0f, (rows - 1) * CivilianAssemblyRowSpacing * 0.5f);
-		return Math.Max(SoldierCordonMinRadius, Math.Max(halfWidth, halfDepth) + SoldierCordonPadding);
-	}
-
-	private static Vec3 GetAlliedCordonSlotPosition(Mission mission, int slot, int count)
-	{
-		Vec3 center = GetCivilianAssemblyCenter(mission);
-		Vec3 forward = _civilianAssemblyForward;
-		if (forward.LengthSquared < 0.01f)
-		{
-			forward = Vec3.Forward;
-		}
-		forward.Normalize();
-		Vec3 right = Vec3.CrossProduct(forward, Vec3.Up);
-		if (right.LengthSquared < 0.01f)
-		{
-			right = Vec3.Side;
-		}
-		right.Normalize();
-		int safeCount = Math.Max(1, count);
-		float angle = (MathF.PI * 2f * Math.Max(0, slot)) / safeCount;
-		float radius = GetCivilianAssemblyCordonRadius(mission);
-		Vec3 position = center + right * (MathF.Cos(angle) * radius) + forward * (MathF.Sin(angle) * radius);
-		try
-		{
-			if (mission?.Scene != null)
-			{
-				position.z = mission.Scene.GetGroundHeightAtPosition(position);
-			}
-		}
-		catch
-		{
-		}
-		return position;
-	}
-
-	private static void TryApplyNativeCircleFormationOrders(List<Agent> soldiers, Mission mission, string source)
-	{
-		try
-		{
-			if (soldiers == null || soldiers.Count == 0 || mission == null || !SceneControl.IsCivilianAssemblyPointReady)
-			{
-				return;
-			}
-			Vec3 center = GetCivilianAssemblyCenter(mission);
-			float diameter = GetCivilianAssemblyCordonRadius(mission) * 2f;
-			foreach (Formation formation in soldiers.Select(a => a?.Formation).Where(f => f != null).Distinct().ToList())
-			{
-				try
-				{
-					formation.SetArrangementOrder(ArrangementOrder.ArrangementOrderCircle);
-					formation.SetFormOrder(FormOrder.FormOrderCustom(diameter), true);
-					formation.SetMovementOrder(MovementOrder.MovementOrderStop);
-					Vec2 facing = (center.AsVec2 - formation.CurrentPosition);
-					if (facing.LengthSquared < 0.01f)
-					{
-						facing = _civilianAssemblyForward.AsVec2;
-					}
-					if (facing.LengthSquared < 0.01f)
-					{
-						facing = Vec2.Forward;
-					}
-					facing = facing.Normalized();
-					formation.SetFacingOrder(FacingOrder.FacingOrderLookAtDirection(facing));
-				}
-				catch (Exception ex)
-				{
-					Logger.Log("SiegeAiIntervention", "TryApplyNativeCircleFormationOrders formation failed (" + (source ?? "N/A") + "): " + ex.Message);
-				}
-			}
-		}
-		catch (Exception ex)
-		{
-			Logger.Log("SiegeAiIntervention", "TryApplyNativeCircleFormationOrders failed (" + (source ?? "N/A") + "): " + ex.Message);
-		}
-	}
-
-	private static bool MoveAlliedSoldierToCordonSlot(Agent soldier, Mission mission, int slot, int count, bool force)
-	{
-		try
-		{
-			if (soldier == null || mission == null || !soldier.IsActive() || !SceneControl.IsCivilianAssemblyPointReady)
-			{
-				return false;
-			}
-			Vec3 target = GetAlliedCordonSlotPosition(mission, slot, count);
-			Vec3 center = GetCivilianAssemblyCenter(mission);
-			Vec3 lookDirection = center - target;
-			lookDirection.z = 0f;
-			if (lookDirection.LengthSquared < 0.01f)
-			{
-				lookDirection = -_civilianAssemblyForward;
-			}
-			if (lookDirection.LengthSquared < 0.01f)
-			{
-				lookDirection = -Vec3.Forward;
-			}
-			lookDirection.Normalize();
-			float distSq = soldier.Position.DistanceSquared(target);
-			if (force || distSq > SoldierCordonTeleportDistance * SoldierCordonTeleportDistance)
-			{
-				soldier.TeleportToPosition(target);
-				soldier.InvalidateTargetAgent();
-				distSq = 0f;
-			}
-			Vec2 target2 = target.AsVec2;
-			float now = mission.CurrentTime;
-			bool hasRecentMove = LastCordonMoveOrderTimesBySoldier.TryGetValue(soldier.Index, out float lastMoveOrderTime) && now - lastMoveOrderTime < SoldierCordonOrderRefreshSeconds;
-			bool shouldIssueMove = force || distSq > SoldierCordonMoveTolerance * SoldierCordonMoveTolerance || (!hasRecentMove && distSq > SoldierCordonSettleTolerance * SoldierCordonSettleTolerance);
-			if (shouldIssueMove && !force)
-			{
-				ClearAgentLookTarget(soldier);
-				TrySetInterventionAgentTargetPosition(soldier, target, SiegeAgentWallRescueProfile.Source + ":cordon");
-				LastCordonMoveOrderTimesBySoldier[soldier.Index] = now;
-			}
-			else if (distSq <= SoldierCordonSettleTolerance * SoldierCordonSettleTolerance)
-			{
-				try
-				{
-					soldier.ClearTargetFrame();
-					LastCordonMoveOrderTimesBySoldier[soldier.Index] = now;
-				}
-				catch
-				{
-				}
-			}
-			bool hasRecentLook = LastCordonLookOrderTimesBySoldier.TryGetValue(soldier.Index, out float lastLookOrderTime) && now - lastLookOrderTime < SoldierCordonLookRefreshSeconds;
-			if (force || (distSq <= SoldierCordonSettleTolerance * SoldierCordonSettleTolerance && !hasRecentLook))
-			{
-				soldier.SetLookToPointOfInterest(center);
-				soldier.LookDirection = lookDirection;
-				LastCordonLookOrderTimesBySoldier[soldier.Index] = now;
-			}
-			return true;
-		}
-		catch (Exception ex)
-		{
-			Logger.Log("SiegeAiIntervention", "MoveAlliedSoldierToCordonSlot failed: " + ex.Message);
-			return false;
-		}
 	}
 
 	private static void ApplyCivilianSurrenderPose(Agent agent, Agent lookTarget, bool forceAction)
@@ -13919,15 +13435,11 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			right = Vec3.Side;
 		}
 		right.Normalize();
-		bool spawnInCordon = false;
-		Vec3 cordonCenter = spawnInCordon ? GetCivilianAssemblyCenter(mission) : anchor;
 		for (int i = 0; i < troops.Count; i++)
 		{
 			CharacterObject troop = troops[i];
-			Vec3 position = spawnInCordon
-				? GetAlliedCordonSlotPosition(mission, i, troops.Count)
-				: (anchor - forward * (2.5f + i / 3f) + right * (((i % 2 == 0) ? 1f : -1f) * (1.5f + (i % 8) * 0.8f)));
-			Vec3 spawnDirection = spawnInCordon ? (cordonCenter - position) : forward;
+			Vec3 position = anchor - forward * (2.5f + i / 3f) + right * (((i % 2 == 0) ? 1f : -1f) * (1.5f + (i % 8) * 0.8f));
+			Vec3 spawnDirection = forward;
 			spawnDirection.z = 0f;
 			if (spawnDirection.LengthSquared < 0.01f)
 			{
@@ -13974,15 +13486,6 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 					{
 						DisableCompanionStyleFollow(spawnedAgent);
 						ForceAgentForMassacreFight(spawnedAgent);
-					}
-					else if (spawnInCordon)
-					{
-						DisableCompanionStyleFollow(spawnedAgent);
-						spawnedAgent.SetWatchState(Agent.WatchState.Patrolling);
-						if (!SceneControl.IsSoldierDefaultFollowOrderIssued)
-						{
-							SceneControl.RecordSoldierDefaultFollowOrderResult(TrySetPlayerFormationFollowOrder(FormationClass.Infantry, SiegeSoldierCordonProfile.SpawnDefaultFollowSource));
-						}
 					}
 					else
 					{
@@ -15654,7 +15157,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			string targetCultureText = "";
 			if (culturalRepopulationApplied)
 			{
-				CultureObject targetCulture = ResolveCulturalRepopulationTargetCulture(out string targetCultureSource);
+				CultureObject targetCulture = ResolveCapturedCulturalRepopulationTargetCulture(out string targetCultureSource);
 				targetCultureText = DescribeCultureForMessage(targetCulture, targetCultureSource);
 			}
 			EncounterCompletion.SetSummaryText(SiegeCompletedInterventionSummaryBuilder.Build(new SiegeCompletedInterventionSummaryFacts(
@@ -16050,6 +15553,9 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		_castleSoldierAppeasementApplied = false;
 		_castleSoldierAppeasementMoralePenaltyApplied = false;
 		_castleSoldierPendingMoralePenalty = 0;
+		_castleSoldierPendingRecruitmentPenalty = 0;
+		_castleSoldierPendingOtherPenalty = 0;
+		_castleStagedRecruitPrisonersAtExit = 0;
 		_castleSoldierAppliedMoralePenalty = 0;
 		_castleSoldierConcernAction = SiegeCastleActionKind.Unknown;
 		_castleSlaughterConsequencesQueued = false;
@@ -16120,7 +15626,6 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			_besiegerParty = null;
 			_setsSettlementEntryVictoryContext = false;
 			_setsSettlementEntryVictorySource = "";
-			_setsSettlementEntryWallRescueSuppressionLogged = false;
 			_setsOwnedSettlementIncidentContext = false;
 			_setsOwnedSettlementIncidentKilledNotable = false;
 			_setsOwnedSettlementIncidentOwnerClan = null;
@@ -16161,7 +15666,6 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		_besiegerParty = null;
 		_setsSettlementEntryVictoryContext = false;
 		_setsSettlementEntryVictorySource = "";
-		_setsSettlementEntryWallRescueSuppressionLogged = false;
 		_setsOwnedSettlementIncidentContext = false;
 		_setsOwnedSettlementIncidentKilledNotable = false;
 		_setsOwnedSettlementIncidentOwnerClan = null;
