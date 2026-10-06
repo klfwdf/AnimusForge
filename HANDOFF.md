@@ -1,3 +1,9 @@
+# 当前交接：处决期间隔离场景冲突、收尾后原场景恢复（2026-10-06，OFFLINE_VERIFIED_LIVE_PENDING）
+
+- 产品/测试 `9d4a47f9`，检查点 `7c177781`：SceneTaunt/SETS 在处决准备、行刑、观众反应及未完成收尾期间隔离；玩家控制、对话、会话释放完成后普通NPC恢复冲突，受刑者对象继续精确排除。AF专用桥接，不修改共享行刑、存档或一键构建流程。
+- 76项编译运行契约、33项源码接线检查通过；原入口Debug双API（参考1.3.15/1.4.6）+Bootstrap及双接缝门禁通过。亲手/NPC行刑、取消、异常退出与同场景恢复的实机/旧档仍NOT_RUN；未Stage/覆盖游戏/打包/推送。
+- [唯一主台账、源码范围、证据及回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#execution-scene-conflict-isolation-20261006)；本地收据 `artifacts/execution-scene-conflict-isolation-20261006/receipt.json`。回滚仅 `git revert 9d4a47f9`，不回滚并行作者修改。下方其他任务记录不构成部署授权。
+
 # 当前交接：NPC当前亲属生死状态（2026-10-06，源码检查通过，编译/实机待验）
 
 - 本地产品 `71d976fa`，检查点 `d55878d`：三渠道共享主线程上下文每轮注入亲属与本家族成员当前生死，补已故前配偶；实体列表及人设生成同步状态。无需先重生成人设，既存背景不重写。
