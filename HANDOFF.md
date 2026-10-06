@@ -1,3 +1,9 @@
+# 当前交接：原生给予/展示目标校验（2026-10-06，源码修正，玩家复现待验）
+
+- 产品e07d5cbb，检查点14755f7。截图的拒绝提示定位到交易提交校验；原生对话改用捕获的会话/目标/Agent，结束会话或换场景后失效，场景喊话资格保持。新增失败诊断，不无条件放行。
+- 仅源码审查、双API接口对照和diff检查；缺玩家日志，未编译/实机/部署/推送，不能宣称截图问题实测解决。
+- [主台账：证据范围、代码图、复测项与回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#native-give-show-target-20261006)。回滚仅git revert e07d5cbb，保留先前亲属/导演历史修复及其他会话改动。
+
 # 当前交接：主动水上会话正常告别（2026-10-06，OFFLINE_VERIFIED_LIVE_PENDING）
 
 - 用户明确主动找水上友军交谈后错误弹攻击菜单，对方拦截正常。产品/测试c6f0bd5b，检查点7174d10a：共享退出方法支持当前主动海上ConversationMission，补LeaveEncounter；保留拦截/战斗/投降等原流程。
