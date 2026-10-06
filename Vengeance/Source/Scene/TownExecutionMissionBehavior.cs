@@ -342,6 +342,7 @@ public sealed partial class TownExecutionMissionBehavior : MissionLogic, IExecut
     private readonly List<GameEntity> _pendingEntityRemovals = new();
     private readonly List<GameEntity> _gallowsRampEntities = new();
     private readonly List<Agent> _spawnedAgents = new();
+    private readonly ExecutionSceneLocationCharacters _sceneLocationCharacters = new();
     private readonly List<Agent> _frontGuardAgents = new();
     private readonly List<Agent> _crowdAgents = new();
     private int _crowdOverheadSurfaceRejections;

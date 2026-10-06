@@ -25,11 +25,18 @@ namespace TaleWorlds.Library
 }
 namespace TaleWorlds.Core
 {
+    public class AgentData
+    {
+        public object Origin;
+        public AgentData(object origin) { Origin = origin; }
+        public AgentData Monster(object monster) => this;
+    }
     public enum AgentControllerType { None, AI, Player }
     public readonly record struct ActionIndexCache(int Id) { public static ActionIndexCache act_none; }
 }
 namespace TaleWorlds.CampaignSystem
 {
+    public class CharacterObject { public bool IsHero; }
     public class CampaignMission { public static CampaignMission Current = new(); public object Location = new(); }
 }
 namespace TaleWorlds.MountAndBlade
@@ -74,6 +81,8 @@ namespace TaleWorlds.MountAndBlade
     }
     public sealed class Agent
     {
+        public object Origin = new(), Monster = new();
+        public object Character = new TaleWorlds.CampaignSystem.CharacterObject();
         public int Index; public Mission Mission;
         public bool Active=true, ClearSucceeds=true, ThrowOnComponent;
         public TaleWorlds.Core.AgentControllerType Controller;

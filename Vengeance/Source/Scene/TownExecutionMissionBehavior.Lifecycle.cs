@@ -107,6 +107,7 @@ public sealed partial class TownExecutionMissionBehavior
         RestoreDetachedHeadSourceIfExecutionWasNotCommitted();
         if (removeAgents)
         {
+            var agentsRemoved = true;
             foreach (var agent in _spawnedAgents.Where(agent => agent is not null && agent.IsActive()))
             {
                 try
@@ -116,9 +117,11 @@ public sealed partial class TownExecutionMissionBehavior
                 catch (Exception exception)
                 {
                     completed = false;
+                    agentsRemoved = false;
                     RexLog.Error($"Could not remove temporary agent {agent.Index}.", exception);
                 }
             }
+            if (agentsRemoved) completed &= _sceneLocationCharacters.Clear();
         }
 
         if (removeEntities)

@@ -5,6 +5,8 @@ using TaleWorlds.Core;
 using TaleWorlds.MountAndBlade;
 using TaleWorlds.Library;
 using SandBox.Missions.AgentBehaviors;
+using TaleWorlds.CampaignSystem;
+using TaleWorlds.CampaignSystem.Settlements.Locations;
 
 int checks = 0;
 void Check(bool condition, string label)
@@ -156,4 +158,42 @@ var oldTarget=awayAgent.Component.AgentNavigator.TargetUsableMachine;
 oldTarget.IsDisabled=true;away.Mission.CurrentTime=2;replanner.Tick(1,false);
 Check(awayAgent.Component.AgentNavigator.TargetUsableMachine!=oldTarget || !oldTarget.IsDisabled,
     "disabled assigned target no longer stays bound");
-Console.WriteLine($"{checks}/{checks} production crowd schedule/route/release tests passed with fake engine objects; native pathfinding NOT_RUN");
+var location = new Location(); var interior = new Location();
+var complex = new LocationComplex(); complex.Locations.Add(location); complex.Locations.Add(interior);
+var identities = new ExecutionSceneLocationCharacters(); var temporary = new Agent();
+// Match the native passage contract: its permission delegate dereferences the
+// LocationCharacter resolved by exact origin, rather than accepting null.
+bool CanUseDoor(Agent a) => location.GetLocationCharacter(a.Origin).Data != null;
+bool oldFailure = false;
+try { CanUseDoor(temporary); } catch (NullReferenceException) { oldFailure = true; }
+Check(oldFailure, "unregistered temporary actor reproduces native door contract null dereference");
+identities.Register(temporary, location, complex, true);
+Check(CanUseDoor(temporary), "registered temporary actor supplies non-null native door identity");
+var identity = location.GetLocationCharacter(temporary.Origin);
+Check(ReferenceEquals(identity.Data.Origin, temporary.Origin), "registration preserves exact origin identity");
+identities.Register(temporary, location, complex, true);
+Check(location.Characters.Count == 1, "repeated registration does not duplicate actor");
+var second = new Agent { Character = temporary.Character };
+identities.Register(second, location, complex, true);
+Check(location.Characters.Count == 2 && !ReferenceEquals(location.GetLocationCharacter(second.Origin), identity),
+    "same troop template gets distinct origin-based identities");
+var existing = new Agent(); var existingEntry = new LocationCharacter(new AgentData(existing.Origin), null, null, true,
+    LocationCharacter.CharacterRelations.Neutral, null, true, false); location.AddCharacter(existingEntry);
+identities.Register(existing, location, complex, true);
+Check(ReferenceEquals(location.GetLocationCharacter(existing.Origin), existingEntry), "existing native identity reused");
+var hero = new Agent { Character = new CharacterObject { IsHero = true } };
+identities.Register(hero, location, complex, false);
+Check(location.GetLocationCharacter(hero.Origin) == null, "real hero identity is never created or replaced");
+bool missingLocationRejected = false;
+try { identities.Register(new Agent(), null, complex, true); } catch (InvalidOperationException) { missingLocationRejected = true; }
+Check(missingLocationRejected, "missing location rejects actor initialization before native AI handoff");
+location.RemoveLocationCharacter(identity); interior.AddCharacter(identity);
+Check(interior.Characters.Count == 1, "fleeing actor can move to another location");
+complex.FailRemoval = true;
+Check(!identities.Clear() && interior.Characters.Count == 1, "cleanup failure retains ownership for retry");
+complex.FailRemoval = false;
+Check(identities.Clear() && interior.Characters.Count == 0 && location.Characters.Count == 1,
+    "cleanup removes temporary actors including actors that used doors");
+Check(ReferenceEquals(location.Characters[0], existingEntry), "cleanup preserves pre-existing native character");
+Check(identities.Clear() && location.Characters.Count == 1, "repeated cleanup is idempotent");
+Console.WriteLine($"{checks}/{checks} production crowd and location identity tests passed with fake engine objects; native pathfinding NOT_RUN");
