@@ -7404,7 +7404,14 @@ R2计划交付门槛：已给固定技术路线、真实来源与目标、写入
 
 <a id="execution-scene-conflict-isolation-20261006"></a>
 
-- 状态：ACTIVE；基线 `b1884036`，工作区 `F:/AnimusForge-main` / `main`，开工时 tracked clean。
+- 状态：OFFLINE_VERIFIED_LIVE_PENDING；基线 `b1884036`，检查点 `7c177781`，产品/测试 `9d4a47f9`。工作区 `F:/AnimusForge-main` / `main`，开工时 tracked clean；并行作者终端/亲属提示词及后续内战改动保留，不纳入本任务提交。
 - 目标：AF 处决准备、行刑、观众反应与未完成收尾期间阻止 SceneTaunt/SETS 场景冲突；交还玩家控制、恢复对话且完成会话收尾后，在同一 Mission 恢复普通 NPC 冲突。受刑者继续精确排除。
 - 范围：AF Vengeance 薄桥、SceneTaunt、SETS，专项测试与本台账/HANDOFF；不修改共享 Vengeance 行刑实现、存档、构建入口，不部署/打包/推送。
 - 风险及退出门：攻击预判早于命中回调、SETS 独立命中入口、Aftermath 提前恢复、取消/退出及跨 Mission 残留；专项生命周期/接线回归及原入口双 API + Bootstrap 构建通过，实机另记 NOT_RUN。
+- 实现：AF 专用 partial 只读取处决 owner 的真实清理标志；`Aftermath` 本身不解除隔离，须玩家状态、对话和会话释放均完成。取消清理中保留隔离，最终清理完成或切换 Mission 不再阻挡。处决组件可留在原 Mission；受刑者按对象引用继续排除，防止死亡定格对象成为新冲突参战者、逃跑者、围观者或二次掉金/犯罪目标。释放帧消费残余挥刀状态，下一帧正常处理新输入。
+- 接线与性能：注入结束（含部分失败）登记 `ConditionalWeakTable<Mission, TownExecutionMissionBehavior>`；Tick/命中/准入为 O(1) 查询，不扫描 Agent/behavior、不反射、不分配查询对象，不新增显式锁或轮询。弱 Mission 键不保留已结束场景；开始/解除各记录一次 SceneTaunt 日志。SETS 保留入场护卫生成，暂停冲突维护，收尾后恢复指挥入口。
+- 源码证据（`9d4a47f9`，一基行范围）：`src/bridges/Vengeance/Host/ExecutionSceneConflictBridge.cs:8-25` 为 Mission 缓存与两个查询；`TownExecutionMissionBehavior.AfSceneControl.cs:8-19`（同目录）为控制权/受刑者投影；`VengeanceRuntimeBridge.cs:136-165`（同目录）注入 finally 登记。真实消费者 `src/modules/AF.Module.Taunt/Host/SceneTauntBehavior.cs:2647-2667` Tick、`:3117-3120` 场景准入、`:4062-4190` 命中/移除、`:5436-5465` 冲突准入、`:8775-8783` 外部击倒后果、`:9830-9838` 初始参战名单。`src/AF.GameAdapter.Bannerlord/SettlementEntry/SettlementEntryTroopSelectionBehavior.cs:3348-3378` Tick/护卫恢复、`:3440-3556` 命中及移除、`:3744-3755` 物理攻击准入、`:7931-7977` 居民/守军目标过滤。其他新增 guard 的精确内容以提交及本地 source SHA256 为准；共享 Vengeance 行刑/存档/结算未改，未声明重写整文件。
+- 验证：`dotnet run --project tests/modules/AF.Module.Taunt/SceneTauntContextContractTests/SceneTauntContextContractTests.csproj --configuration Release`，24项新增隔离/部分收尾组合/同场景恢复/受刑者/索引复用/跨 Mission/取消及52项原场景准入、账本、生命周期，共76 PASS。真实桥/投影源码链接编译，Mission/Agent和owner backing fields为fixture，不等于真实游戏回调。`python -B tests/modules/AF.Module.Taunt/SceneTauntContextContractTests/verify_execution_isolation_wiring.py` 33项源码接线PASS（不是运行时回调测试）。本任务diff检查PASS。
+- 最终原入口命令：`powershell -NoProfile -ExecutionPolicy Bypass -File scripts/build/build_single_module.ps1 -ProjectRoot F:\AnimusForge-main -BannerlordRoot "F:\SteamLibrary\steamapps\common\Mount & Blade II Bannerlord" -Configuration Debug`；1.3参考 `v1.3.15.110062`、1.4参考 `v1.4.6.115628`，两实现+Bootstrap 0错误，既有警告保留，双API政变接缝门禁PASS。构建输入来自共享工作区并包含其他作者当时改动，不声称后续并行改动已验证。
+- 证据：`artifacts/execution-scene-conflict-isolation-20261006/receipt.json`、`context-tests.log`、`wiring.log`、`build-final.log`；候选仍在 `bin/Debug/single_module_artifacts`，收据绑定本任务源码及候选SHA256。未Stage/覆盖游戏/打包/推送。
+- 未验证：真实1.3/1.4游戏回调顺序、亲手/NPC各刑法、取消/异常退出、收尾后普通NPC冲突及旧档；保留实机验收，不以fixture代替。源码回滚仅 `git revert 9d4a47f9`，保留其他作者提交；不hard reset。

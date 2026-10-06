@@ -117,6 +117,14 @@ private bool IsFeaturePeaceLocationScene()
 
 ## 本次事故复盘
 
+### 处决复用和平场景时的隔离
+
+AF 处决使用城镇 `center`，仅有和平 location allowlist 仍会放行。攻击输入预判早于 `OnAgentHit`，SETS 也有独立命中入口，因此不能只在受刑者命中回调处豁免。
+
+AF 专用 `ExecutionSceneConflictBridge` 在当前 Mission 的处决控制期间阻止 SceneTaunt/SETS 冲突、敌对和惩罚入口；恢复必须读取处决 owner 已恢复玩家状态、普通对话并完成会话收尾的真实标志，不能只看受刑者死亡、`Aftermath` 枚举或组件存在。取消清理与退出按 owner 生命周期解除；恢复后仍按对象身份排除死亡定格的受刑者，普通 NPC 在同一场景恢复冲突。保持原版伤害及处决自身结算，不把伤害归零。
+
+实现、验证层级和未实机覆盖项见[主台账](animusforge-refactoring-and-repository-reorganization-plan.md#execution-scene-conflict-isolation-20261006)。
+
 自有定居点被动攻击链路原本只判断：
 
 ```csharp
