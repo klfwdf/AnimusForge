@@ -1702,6 +1702,9 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 
 	// The live Agent captured when the short-lived trade UI opens is the stable identity for non-Hero native conversation targets.
 	private Agent _shoutTradeTargetAgentSnapshot = null;
+	private ConversationManager _shoutTradeNativeManager;
+	private Mission _shoutTradeNativeMission;
+	private Agent _shoutTradeNativeAgent;
 
 	private bool _shoutTradeActionOnly = false;
 
@@ -7548,6 +7551,9 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 
 	private void OnNativeConversationEnded(IEnumerable<CharacterObject> characters)
 	{
+		_shoutTradeNativeManager = null;
+		_shoutTradeNativeMission = null;
+		_shoutTradeNativeAgent = null;
 		Interlocked.Exchange(ref _nativeIllustrationHistoryBoundary, Interlocked.Read(ref _currentConversationEventSequence));
 		CloseNativeConversationInput(clearSessionHistory: false);
 		ExecutePendingNativeSceneMechanismActionsAfterConversationExit("native_conversation_ended");
@@ -9918,6 +9924,9 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 
 	private void OpenNativeConversationGiveShowMenu(NpcDataPacket targetNpc, Hero targetHero, CharacterObject targetCharacter, Action onFinished)
 	{
+		_shoutTradeNativeManager = Campaign.Current?.ConversationManager;
+		_shoutTradeNativeMission = Mission.Current;
+		_shoutTradeNativeAgent = _shoutTradeNativeManager?.OneToOneConversationAgent as Agent;
 		_shoutTradeActionOnly = true;
 		_shoutTradeTargetHeroOverride = targetHero;
 		_shoutTradeTargetCharacterOverride = targetCharacter ?? targetHero?.CharacterObject;
@@ -14001,8 +14010,42 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		}
 	}
 
+	private bool IsNativeTradeTargetValidForCommit()
+	{
+		try
+		{
+			ConversationManager manager = Campaign.Current?.ConversationManager;
+			if (_shoutTradeNativeManager == null || !ReferenceEquals(manager, _shoutTradeNativeManager)
+				|| !manager.IsConversationInProgress || !ReferenceEquals(Mission.Current, _shoutTradeNativeMission))
+				return false;
+			// Use the actual conversation participant, never the encountered army leader as fallback.
+			CharacterObject character = manager.OneToOneConversationCharacter;
+			Hero hero = character?.HeroObject;
+			if (_shoutTradeTargetHeroOverride != null)
+			{
+				if (!ReferenceEquals(hero, _shoutTradeTargetHeroOverride) || !hero.IsAlive) return false;
+			}
+			else if (character == null || !ReferenceEquals(character, _shoutTradeTargetCharacterOverride))
+				return false;
+
+			Agent agent = manager.OneToOneConversationAgent as Agent;
+			if (_shoutTradeNativeAgent != null)
+			{
+				// Native conversation proxies need not satisfy scene-shout speech/health rules.
+				return ReferenceEquals(agent, _shoutTradeNativeAgent) && agent.IsActive() && !agent.IsMainAgent
+					&& (_shoutTradeTargetHeroOverride == null
+						|| (agent.Character as CharacterObject)?.HeroObject == _shoutTradeTargetHeroOverride);
+			}
+			// A genuinely agentless map conversation is valid; a missing scene participant is not.
+			return agent == null && _shoutTradeNativeMission == null && IsNativeConversationWorldMapContext();
+		}
+		catch { return false; }
+	}
+
 	private bool IsShoutTradePrimaryTargetValidForCommit(bool requireCurrentShoutFrame = false)
 	{
+		if (_shoutTradeActionOnly && !requireCurrentShoutFrame)
+			return IsNativeTradeTargetValidForCommit();
 		NpcDataPacket expectedTarget = _shoutTradeTargetNpc;
 		if (expectedTarget == null || expectedTarget.AgentIndex < 0)
 		{
@@ -14091,7 +14134,14 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		try
 		{
 			Logger.Log("ShoutBehavior", "[ShoutTrade] commit cancelled because primary target is no longer valid agent="
-				+ (_shoutTradeTargetNpc?.AgentIndex ?? (-1)));
+				+ (_shoutTradeTargetNpc?.AgentIndex ?? (-1))
+				+ " native=" + _shoutTradeActionOnly
+				+ " sameManager=" + ReferenceEquals(_shoutTradeNativeManager, Campaign.Current?.ConversationManager)
+				+ " sameMission=" + ReferenceEquals(_shoutTradeNativeMission, Mission.Current)
+				+ " inConversation=" + (Campaign.Current?.ConversationManager?.IsConversationInProgress == true)
+				+ " sameAgent=" + ReferenceEquals(_shoutTradeNativeAgent, Campaign.Current?.ConversationManager?.OneToOneConversationAgent)
+				+ " expected=" + (_shoutTradeTargetHeroOverride?.StringId ?? _shoutTradeTargetCharacterOverride?.StringId ?? "")
+				+ " current=" + (Campaign.Current?.ConversationManager?.OneToOneConversationCharacter?.StringId ?? ""));
 			InformationManager.DisplayMessage(new InformationMessage(
 				"交易目标已经离场或失效，本次给予/展示没有执行。",
 				new Color(1f, 0.45f, 0.25f)));
@@ -14509,9 +14559,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		bool isGive = IsShoutTradeGiveMode(_shoutTradeMode);
 		try
 		{
-			if (Mission.Current != null
-				&& GetShoutTradeTargetAgentIndex() >= 0
-				&& !EnsureShoutTradePrimaryTargetValidForCommit())
+			if (!EnsureShoutTradePrimaryTargetValidForCommit())
 			{
 				return;
 			}
@@ -14629,6 +14677,9 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		Action callback = _shoutTradeActionOnlyFinished;
 		bool shouldCallback = _shoutTradeActionOnly || callback != null;
 		_shoutTradeActionOnly = false;
+		_shoutTradeNativeManager = null;
+		_shoutTradeNativeMission = null;
+		_shoutTradeNativeAgent = null;
 		_shoutTradeTargetHeroOverride = null;
 		_shoutTradeTargetCharacterOverride = null;
 		_shoutTradeActionOnlyFinished = null;
