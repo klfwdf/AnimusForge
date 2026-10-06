@@ -38,6 +38,14 @@ namespace AnimusForge.Illustrator.Core
         public string DirectorModelName { get; }
         public int DirectorApproximateTokens { get; }
         public int ImageGenerationTimeoutSeconds { get; }
+        internal bool HasPlayerRedrawRequest { get; private set; }
+
+        internal IllustrationOptions WithPlayerRedrawRequest(string prompt)
+        {
+            var copy = (IllustrationOptions)MemberwiseClone();
+            copy.HasPlayerRedrawRequest = !string.IsNullOrWhiteSpace(prompt);
+            return copy;
+        }
 
         // Per-request sizing must never overwrite the player's shared MCM setting.
         internal IllustrationOptions WithImageSize(string imageSize)

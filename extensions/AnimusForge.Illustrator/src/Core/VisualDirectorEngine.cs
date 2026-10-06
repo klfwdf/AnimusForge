@@ -68,7 +68,7 @@ namespace AnimusForge.Illustrator.Core
             {
                 sb.AppendLine("【玩家本次重绘要求·仅供导演】");
                 sb.AppendLine(PlayerRedrawPrompt);
-                sb.AppendLine("将本次要求落实为确定的动作、构图与视觉描述，不复述原始提示词或把它画成文字。要求不是已发生事实，不覆盖人物身份、装备、真实场景及事件结果；遵守本模式创作边界和原定输出格式。");
+                sb.AppendLine(VisualFidelityRules.PlayerRedrawDirectorPriority);
             }
             return sb.ToString().TrimEnd();
         }
@@ -290,13 +290,18 @@ namespace AnimusForge.Illustrator.Core
                     (string.IsNullOrWhiteSpace(direction.FallbackReason) ? string.Empty : "；" + direction.FallbackReason);
         }
 
-        internal static string ComposeFinalPrompt(string directorPrompt, string hardFacts = null, bool isSinglePortrait = false, bool isConversation = false, bool isWeeklyReport = false)
+        internal static string ComposeFinalPrompt(string directorPrompt, string hardFacts = null, bool isSinglePortrait = false, bool isConversation = false, bool isWeeklyReport = false, bool playerRedraw = false)
         {
             var sb = new StringBuilder();
             if (!string.IsNullOrWhiteSpace(directorPrompt))
             {
                 sb.AppendLine(directorPrompt.Trim());
             }
+            // Original facts still reach the director and identity references.
+            // For explicit redraws its reconciled scene is authoritative: appending
+            // unedited facts/contracts would reintroduce the superseded details,
+            // especially on compact diffusion/DALL-E text encoders.
+            if (playerRedraw) return sb.ToString().Trim();
             if (!string.IsNullOrWhiteSpace(hardFacts))
             {
                 sb.AppendLine().AppendLine("【不可改写的核心事实】");
@@ -347,7 +352,10 @@ namespace AnimusForge.Illustrator.Core
         {
             fallbackReason = string.Empty;
             output = output ?? string.Empty;
-            if (ViolatesShieldVisibility(output, plan) || ViolatesPortraitComposition(output, plan))
+            // These keyword checks cannot distinguish an explicitly requested prop
+            // from an invented one. Directed redraws use the scoped director policy.
+            if (string.IsNullOrWhiteSpace(plan?.PlayerRedrawPrompt) &&
+                (ViolatesShieldVisibility(output, plan) || ViolatesPortraitComposition(output, plan)))
             {
                 fallbackReason = "导演输出含无依据盾牌、旗帜或不合要求的肖像动作";
                 TaleWorlds.Library.Debug.Print("[VisualDirector] Unsupported shield/portrait props rejected; using local portrait fallback without retry.");
@@ -360,7 +368,7 @@ namespace AnimusForge.Illustrator.Core
                 return SynthesizeRuleBasedPrompt(plan, options);
             }
             bool isSingle = plan?.Mode?.Contains("百科") == true || plan?.Mode?.Contains("肖像") == true;
-            if (!HasRequiredSceneDescription(output))
+            if (!HasCompleteSceneDescription(output, allowBackgroundOverride: !string.IsNullOrWhiteSpace(plan?.PlayerRedrawPrompt)))
             {
                 fallbackReason = string.IsNullOrWhiteSpace(output) ? "导演返回空正文" : "导演正文缺少完整场景、光线与空间描述，或构图不合要求";
                 TaleWorlds.Library.Debug.Print("[VisualDirector] Missing scene/light/spatial direction; using local scene fallback without retry.");
@@ -378,7 +386,8 @@ namespace AnimusForge.Illustrator.Core
             // fact. Keep the authoritative game facts beside the derived direction so the
             // image endpoint does not have to infer age, equipment, emblems or spatial state
             // from a reference image alone.
-            return ComposeFinalPrompt(output, hardFacts: plan?.HardFacts, isSinglePortrait: isSingle, isConversation: plan?.IsConversation == true, isWeeklyReport: plan?.IsWeeklyReport == true);
+            return ComposeFinalPrompt(output, hardFacts: plan?.HardFacts, isSinglePortrait: isSingle, isConversation: plan?.IsConversation == true, isWeeklyReport: plan?.IsWeeklyReport == true,
+                playerRedraw: !string.IsNullOrWhiteSpace(plan?.PlayerRedrawPrompt));
         }
 
         private static readonly string[] RequiredSectionPatterns = new[]
@@ -391,8 +400,13 @@ namespace AnimusForge.Illustrator.Core
 
         internal static bool HasRequiredSceneDescription(string output)
         {
+            return HasCompleteSceneDescription(output, allowBackgroundOverride: false);
+        }
+
+        private static bool HasCompleteSceneDescription(string output, bool allowBackgroundOverride)
+        {
             if (string.IsNullOrWhiteSpace(output)) return false;
-            if (System.Text.RegularExpressions.Regex.IsMatch(output,
+            if (!allowBackgroundOverride && System.Text.RegularExpressions.Regex.IsMatch(output,
                 @"背景[^。！？\r\n]{0,8}(?:纯黑|漆黑|全黑)|纯黑背景|黑幕|(?:pure|solid|pitch)[ -]?black background",
                 System.Text.RegularExpressions.RegexOptions.IgnoreCase)) return false;
             int[] minimum = { 8, 12, 10, 10 };
@@ -711,6 +725,13 @@ namespace AnimusForge.Illustrator.Core
                     "若与事实、身份约束或本模式创作边界冲突，以原有约束为准。保持原定标题/主题/行动、环境取景元数据与四段正文格式；" +
                     "将可适用偏好落实为可绘制的视觉描述，不在输出中复述规则、标记或检查过程。";
             }
+            if (!string.IsNullOrWhiteSpace(plan?.PlayerRedrawPrompt))
+            {
+                var redrawStyle = IllustrationStylePresets.Resolve(options?.SelectedStyle, options?.CustomStylePrompt);
+                requestText += "\n【原有负面偏好·只保留不与本次要求冲突的部分】\n" + redrawStyle.NegativePrompt +
+                    (redrawStyle.IsCustom ? "\n" + options?.NegativePrompt : string.Empty) +
+                    "\n" + VisualFidelityRules.PlayerRedrawDirectorPriority;
+            }
             if (textFallback)
                 requestText += "\n【参考可用性】本次仅提供文字，图片输入不可用。未被文字确认的人物外观与真实现场细节保持未知，不声称已经看过参考图；艺术布景和事件艺术再现仍按本模式创作边界设计。";
             if (referenceImages != null)
@@ -779,7 +800,9 @@ namespace AnimusForge.Illustrator.Core
                 ["model"] = options.DirectorModelName,
                 ["messages"] = new JArray
                 {
-                    new JObject { ["role"] = "system", ["content"] = plan?.IsWeeklyReport == true ? WeeklyReportSystemPrompt : plan?.IsConversation == true ? ConversationSystemPrompt : SystemPrompt },
+                    new JObject { ["role"] = "system", ["content"] =
+                        (plan?.IsWeeklyReport == true ? WeeklyReportSystemPrompt : plan?.IsConversation == true ? ConversationSystemPrompt : SystemPrompt) +
+                        (string.IsNullOrWhiteSpace(plan?.PlayerRedrawPrompt) ? string.Empty : "\n" + VisualFidelityRules.PlayerRedrawDirectorPriority) },
                     userMessage
                 },
                 ["temperature"] = 0.85

@@ -560,7 +560,7 @@ namespace AnimusForge.Illustrator.UI.Patches
             if (redrawCount > 1) artDirection += "\n" + BuildWeeklyRedrawDirective(redrawCount);
             string hardFacts = context.BuildHardFacts();
             string directorFacts = context.BuildDirectorOnlyFacts();
-            var options = IllustratorRuntime.CaptureOptions();
+            var options = IllustratorRuntime.CaptureOptions()?.WithPlayerRedrawRequest(playerRedrawPrompt);
             VisualDirectorEngine.RequirePlayerRedrawDirector(playerRedrawPrompt, options);
             if (bulletin)
             {
