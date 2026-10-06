@@ -5,6 +5,20 @@ using SandBox.Missions.MissionLogics;
 using TaleWorlds.Library;
 using TaleWorlds.MountAndBlade;
 
+namespace SandBox
+{
+    public sealed class SandBoxManager
+    {
+        public static SandBoxManager Instance = new();
+        public FakeAgentBehaviorManager AgentBehaviorManager = new();
+    }
+    public sealed class FakeAgentBehaviorManager
+    {
+        public int Initializations;
+        public void AddWandererBehaviors(object agent) => Initializations++;
+    }
+}
+
 namespace TaleWorlds.Library
 {
     public readonly record struct Vec2(float x, float y)

@@ -6,9 +6,10 @@ public sealed class LocationCharacter
 {
     public enum CharacterRelations { Neutral }
     public AgentData Data;
-    public LocationCharacter(AgentData data, object behavior, object tag, bool fixedLocation,
+    public Action<object> AddBehaviors;
+    public LocationCharacter(AgentData data, Action<object> behavior, object tag, bool fixedLocation,
         CharacterRelations relation, object action, bool civilian, bool overrideBodyProperties)
-    { Data = data; }
+    { Data = data; AddBehaviors = behavior; }
 }
 public sealed class Location
 {
