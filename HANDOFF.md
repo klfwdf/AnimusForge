@@ -1,3 +1,9 @@
+# 当前交接：开局概要循环与每日卡顿修复（2026-10-06，OFFLINE_VERIFIED_NOT_DEPLOYED）
+
+- 产品1dd0e2824，检查点c156a8e。统一概要规范和短摘要hash，保留旧LLM摘要；概要维护不再全量清洗周报，每日来源键检查不再复制排序正文。阻断重复增长，保留已有历史和原sav。
+- 旧代码反例失败、修复71项及导入回归通过；原入口双API+Bootstrap0错误、双接缝PASS。真实档案首次概要维护离线0.3244ms，全档清洗0次，30天稳定；不代表游戏整帧耗时。
+- [主台账、源码坐标和回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#week-zero-daily-fix-20261006)；artifacts/week-zero-daily-fix-20261006/receipt.json。实机未验，未部署/打包/推送，旧重复外交历史未删除。产品回滚仅git revert 1dd0e2824。
+
 # 当前交接：生图模组内存储、默认清理与 API 测试（2026-10-06，DEPLOYED_PACKAGED_PUSHED_LIVE_PENDING）
 
 - 用户明确要求生图不写C盘、放模组目录，并授权提交推送/编译部署/打包；追加自动清理默认开启、生图API测试按钮。检查点164a3db，产品cf3377691。
