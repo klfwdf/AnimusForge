@@ -24,6 +24,7 @@ internal sealed class PromptExtrasSections
 	internal string HeroArmyRuntimeFact;
 	internal string PlayerArmyRuntimeFact;
 	internal string ResidentRecentActions;
+	internal string CurrentFamilyStatus;
 	internal string NearbySettlementsDetail;
 	internal string WeeklyShortReports;
 	internal string ActivePolicyContext;
@@ -94,6 +95,7 @@ internal static class PromptExtrasComposer
 		Append(sb, sections.HeroArmyRuntimeFact);
 		Append(sb, sections.PlayerArmyRuntimeFact);
 		Append(sb, sections.ResidentRecentActions);
+		Append(sb, sections.CurrentFamilyStatus);
 		Append(sb, sections.NearbySettlementsDetail);
 		Append(sb, sections.WeeklyShortReports);
 		Append(sb, sections.ActivePolicyContext);
