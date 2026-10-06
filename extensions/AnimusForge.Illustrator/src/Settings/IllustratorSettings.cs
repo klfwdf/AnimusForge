@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -26,13 +27,13 @@ namespace AnimusForge.Illustrator
         public override string FolderName => IllustratorSettingsStorage.DirectoryKey;
         public override string FormatType => "json";
 
-        private static List<string> _modelOptions = new List<string> { "*手动输入*" };
-        private static Dropdown<string> _modelDropdown;
+        private List<string> _modelOptions = new List<string> { "*手动输入*" };
+        private Dropdown<string> _modelDropdown;
         private static readonly object _modelLock = new object();
         private static string _cachedModelsFilePath;
 
-        private static List<string> _directorModelOptions = new List<string> { "*手动输入*", "*默认(复用正文API)*" };
-        private static Dropdown<string> _directorModelDropdown;
+        private List<string> _directorModelOptions = new List<string> { "*手动输入*", "*默认(复用正文API)*" };
+        private Dropdown<string> _directorModelDropdown;
         private static readonly object _directorModelLock = new object();
         private static string _cachedDirectorModelsFilePath;
 
@@ -111,30 +112,47 @@ namespace AnimusForge.Illustrator
         [SettingPropertyGroup("2. 生图 API 配置 (OpenAI 兼容)", GroupOrder = 2)]
         public Dropdown<string> ModelDropdown
         {
-            get
-            {
-                EnsureModelDropdown();
-                return _modelDropdown;
-            }
+            get { EnsureModelDropdown(); return _modelDropdown; }
             set
             {
                 lock (_modelLock)
                 {
-                    _modelDropdown = value;
-                    if (value != null && _modelOptions != null && value.SelectedIndex >= 0 && value.SelectedIndex < _modelOptions.Count)
-                    {
-                        string selected = _modelOptions[value.SelectedIndex];
-                        if (!string.IsNullOrWhiteSpace(selected) && selected != "*手动输入*")
-                        {
-                            _modelName = selected;
-                            if (Instance != null && !ReferenceEquals(Instance, this))
-                            {
-                                Instance.ModelName = selected;
-                            }
-                        }
-                    }
+                    // Isolate active settings and preset selections.
+                    ReplaceModelDropdown(value == null ? null : new Dropdown<string>(value, value.SelectedIndex));
+                    ModelSelectionChanged(_modelDropdown, new PropertyChangedEventArgs(nameof(Dropdown<string>.SelectedIndex)));
                 }
             }
+        }
+
+        private void ReplaceModelDropdown(Dropdown<string> value)
+        {
+            if (_modelDropdown != null) _modelDropdown.PropertyChanged -= ModelSelectionChanged;
+            _modelDropdown = value;
+            if (_modelDropdown != null) _modelDropdown.PropertyChanged += ModelSelectionChanged;
+        }
+
+        private void ModelSelectionChanged(object sender, PropertyChangedEventArgs args)
+        {
+            if (!ReferenceEquals(sender, _modelDropdown) || args.PropertyName != nameof(Dropdown<string>.SelectedIndex)) return;
+            var dropdown = _modelDropdown;
+            if (dropdown == null || dropdown.SelectedIndex < 0 || dropdown.SelectedIndex >= dropdown.Count) return;
+            string selected = dropdown[dropdown.SelectedIndex];
+            if (string.IsNullOrWhiteSpace(selected) || selected == "*手动输入*" || _modelName == selected) return;
+            _modelName = selected;
+            OnPropertyChanged(nameof(ModelName));
+        }
+
+        private void DirectorSelectionChanged(object sender, PropertyChangedEventArgs args)
+        {
+            if (!ReferenceEquals(sender, _directorModelDropdown) || args.PropertyName != nameof(Dropdown<string>.SelectedIndex)) return;
+            var dropdown = _directorModelDropdown;
+            if (dropdown == null || dropdown.SelectedIndex < 0 || dropdown.SelectedIndex >= dropdown.Count) return;
+            string selected = dropdown[dropdown.SelectedIndex];
+            if (string.IsNullOrWhiteSpace(selected) || selected == "*手动输入*") return;
+            if (selected == "*默认(复用正文API)*") selected = "";
+            if (_directorModelName == selected) return;
+            _directorModelName = selected;
+            OnPropertyChanged(nameof(DirectorModelName));
         }
 
         private void SyncModelDropdownWithModelName(string modelName)
@@ -143,7 +161,7 @@ namespace AnimusForge.Illustrator
             {
                 EnsureModelDropdown();
                 if (_modelOptions == null || _modelOptions.Count == 0 || _modelDropdown == null) return;
-                int idx = _modelOptions.IndexOf(modelName);
+                int idx = _modelDropdown.IndexOf(modelName);
                 _modelDropdown.SelectedIndex = idx >= 0 ? idx : 0;
             }
         }
@@ -406,38 +424,23 @@ namespace AnimusForge.Illustrator
         [SettingPropertyGroup("3. 视觉导演 API 配置 (OpenAI 兼容 · 留空使用正文API)", GroupOrder = 3)]
         public Dropdown<string> DirectorModelDropdown
         {
-            get
-            {
-                EnsureDirectorModelDropdown();
-                return _directorModelDropdown;
-            }
+            get { EnsureDirectorModelDropdown(); return _directorModelDropdown; }
             set
             {
                 lock (_directorModelLock)
                 {
-                    _directorModelDropdown = value;
-                    if (value != null && _directorModelOptions != null && value.SelectedIndex >= 0 && value.SelectedIndex < _directorModelOptions.Count)
-                    {
-                        string selected = _directorModelOptions[value.SelectedIndex];
-                        if (selected == "*默认(复用正文API)*")
-                        {
-                            _directorModelName = "";
-                            if (Instance != null && !ReferenceEquals(Instance, this))
-                            {
-                                Instance.DirectorModelName = "";
-                            }
-                        }
-                        else if (!string.IsNullOrWhiteSpace(selected) && selected != "*手动输入*")
-                        {
-                            _directorModelName = selected;
-                            if (Instance != null && !ReferenceEquals(Instance, this))
-                            {
-                                Instance.DirectorModelName = selected;
-                            }
-                        }
-                    }
+                    // Isolate active settings and preset selections.
+                    ReplaceDirectorModelDropdown(value == null ? null : new Dropdown<string>(value, value.SelectedIndex));
+                    DirectorSelectionChanged(_directorModelDropdown, new PropertyChangedEventArgs(nameof(Dropdown<string>.SelectedIndex)));
                 }
             }
+        }
+
+        private void ReplaceDirectorModelDropdown(Dropdown<string> value)
+        {
+            if (_directorModelDropdown != null) _directorModelDropdown.PropertyChanged -= DirectorSelectionChanged;
+            _directorModelDropdown = value;
+            if (_directorModelDropdown != null) _directorModelDropdown.PropertyChanged += DirectorSelectionChanged;
         }
 
         private void SyncDirectorModelDropdownWithModelName(string modelName)
@@ -448,12 +451,12 @@ namespace AnimusForge.Illustrator
                 if (_directorModelOptions == null || _directorModelOptions.Count == 0 || _directorModelDropdown == null) return;
                 if (string.IsNullOrWhiteSpace(modelName))
                 {
-                    int defaultIdx = _directorModelOptions.IndexOf("*默认(复用正文API)*");
+                    int defaultIdx = _directorModelDropdown.IndexOf("*默认(复用正文API)*");
                     _directorModelDropdown.SelectedIndex = defaultIdx >= 0 ? defaultIdx : 0;
                 }
                 else
                 {
-                    int idx = _directorModelOptions.IndexOf(modelName);
+                    int idx = _directorModelDropdown.IndexOf(modelName);
                     _directorModelDropdown.SelectedIndex = idx >= 0 ? idx : 0;
                 }
             }
@@ -663,7 +666,7 @@ namespace AnimusForge.Illustrator
         [SettingPropertyGroup("2. 生图 API 配置 (OpenAI 兼容)", GroupOrder = 2)]
         public Action TestImageApi { get; set; }
 
-        private static void TryLoadCachedModels()
+        private void TryLoadCachedModels()
         {
             try
             {
@@ -738,7 +741,7 @@ namespace AnimusForge.Illustrator
                         _modelOptions.Add(ModelName);
                     }
                     int idx = _modelOptions.IndexOf(ModelName);
-                    _modelDropdown = new Dropdown<string>(_modelOptions, idx >= 0 ? idx : 0);
+                    ReplaceModelDropdown(new Dropdown<string>(_modelOptions, idx >= 0 ? idx : 0));
                 }
             }
         }
@@ -883,24 +886,15 @@ namespace AnimusForge.Illustrator
                 _modelOptions = new List<string> { "*手动输入*" };
                 _modelOptions.AddRange(result.Models);
 
+                if (!string.IsNullOrWhiteSpace(ModelName) && !_modelOptions.Contains(ModelName))
+                    _modelOptions.Add(ModelName);
                 int selectedIdx = _modelOptions.IndexOf(ModelName);
-                if (selectedIdx < 0) selectedIdx = _modelOptions.Count > 1 ? 1 : 0;
-
-                _modelDropdown = new Dropdown<string>(_modelOptions, selectedIdx);
-                if (selectedIdx > 0)
-                {
-                    string selectedModel = _modelOptions[selectedIdx];
-                    ModelName = selectedModel;
-                    if (Instance != null && !ReferenceEquals(Instance, this))
-                    {
-                        Instance.ModelName = selectedModel;
-                    }
-                }
+                ReplaceModelDropdown(new Dropdown<string>(_modelOptions, selectedIdx >= 0 ? selectedIdx : 0));
             }
 
             SaveCurrentSettings();
             RequestMcmRefresh();
-            InformationManager.DisplayMessage(new InformationMessage($"[AI生图] 成功获取 {result.Models.Count} 个可用模型！已优先选中: {ModelName}，下拉选单已即时刷新。", Color.FromUint(4278255360u)));
+            InformationManager.DisplayMessage(new InformationMessage($"[AI生图] 成功获取 {result.Models.Count} 个可用模型！保留当前模型: {ModelName}，下拉选单已即时刷新。", Color.FromUint(4278255360u)));
         }
 
         public static void SaveCurrentSettings()
@@ -941,7 +935,7 @@ namespace AnimusForge.Illustrator
                     int idx = string.IsNullOrWhiteSpace(DirectorModelName)
                         ? _directorModelOptions.IndexOf("*默认(复用正文API)*")
                         : _directorModelOptions.IndexOf(DirectorModelName);
-                    _directorModelDropdown = new Dropdown<string>(_directorModelOptions, idx >= 0 ? idx : 0);
+                    ReplaceDirectorModelDropdown(new Dropdown<string>(_directorModelOptions, idx >= 0 ? idx : 0));
                 }
             }
         }
@@ -1100,12 +1094,14 @@ namespace AnimusForge.Illustrator
                 _directorModelOptions = new List<string> { "*手动输入*", "*默认(复用正文API)*" };
                 _directorModelOptions.AddRange(result.Models);
 
+                if (!string.IsNullOrWhiteSpace(DirectorModelName) && !_directorModelOptions.Contains(DirectorModelName))
+                    _directorModelOptions.Add(DirectorModelName);
                 int selectedIdx = string.IsNullOrWhiteSpace(DirectorModelName)
                     ? 1
                     : _directorModelOptions.IndexOf(DirectorModelName);
                 if (selectedIdx < 0) selectedIdx = 0;
 
-                _directorModelDropdown = new Dropdown<string>(_directorModelOptions, selectedIdx);
+                ReplaceDirectorModelDropdown(new Dropdown<string>(_directorModelOptions, selectedIdx));
             }
 
             SaveCurrentSettings();
@@ -1121,7 +1117,7 @@ namespace AnimusForge.Illustrator
             return _cachedDirectorModelsFilePath;
         }
 
-        private static void TryLoadCachedDirectorModels()
+        private void TryLoadCachedDirectorModels()
         {
             try
             {
