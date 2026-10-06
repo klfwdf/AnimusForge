@@ -96,7 +96,6 @@ namespace AnimusForge.Illustrator.Core
 
             string apiKey = (settings.ApiKey ?? string.Empty).Trim();
             GenerationDiagnostics.Current?.RegisterSecret(apiKey);
-            GenerationDiagnostics.Current?.RegisterSecret(settings.Player2GameClientId);
             string model = (settings.ModelName ?? "black-forest-labs/FLUX.1-schnell").Trim();
             string size = (settings.ImageSize ?? "1024x1024").Trim();
             string quality = settings.SelectedQuality ?? "";
@@ -174,7 +173,7 @@ namespace AnimusForge.Illustrator.Core
                 //    generations 端点没有参考图字段，之前日志打 refImages=N 但实际从未发送。
                 if (!isChatProtocol && requestedRefImages > 0 && (player2 || !settings.UseExactEndpointUrl || exactEditsEndpoint))
                 {
-                    var edit = await AttemptImagesEditsAsync(baseUrl, model, effectivePrompt, size, quality, style, referenceImages, apiKey, cancellationToken, customStyleHint, composed.NegativeField, playerRedraw, settings.ForcedImagePromptCharacters, player2, settings.Player2GameClientId).ConfigureAwait(false);
+                    var edit = await AttemptImagesEditsAsync(baseUrl, model, effectivePrompt, size, quality, style, referenceImages, apiKey, cancellationToken, customStyleHint, composed.NegativeField, playerRedraw, 0, player2).ConfigureAwait(false);
                     result.ResolvedPrompt = edit.ResolvedPrompt;
                     if (edit.Success)
                     {
@@ -199,7 +198,7 @@ namespace AnimusForge.Illustrator.Core
 
                 if (!success && !stopAfterEditFailure)
                 {
-                    var attempt = await AttemptGenerateOnceAsync(endpointUrl, model, effectivePrompt, size, quality, style, referenceImages, apiKey, isChatProtocol, cancellationToken, customStyleHint, composed.NegativeField, playerRedraw, settings.ForcedImagePromptCharacters, player2, settings.Player2GameClientId).ConfigureAwait(false);
+                    var attempt = await AttemptGenerateOnceAsync(endpointUrl, model, effectivePrompt, size, quality, style, referenceImages, apiKey, isChatProtocol, cancellationToken, customStyleHint, composed.NegativeField, playerRedraw, 0, player2).ConfigureAwait(false);
                     success = attempt.Success;
                     imageBytes = attempt.ImageBytes;
                     imageUrl = attempt.ImageUrl;
@@ -212,7 +211,7 @@ namespace AnimusForge.Illustrator.Core
                         Log($"[Illustrator] 检测到生图端点不支持该模型({model})，自动尝试回退至 /chat/completions 多模态生图通道...");
                         string chatEffectivePrompt = ComposeImagePrompt(prompt, size, quality, style, customStyleHint, negativePrompt, true, settings.Randomness, ImagePromptProfile.Full, playerRedraw, settings.OutputFrameRequirement).Text;
                         string chatEndpointUrl = ResolveEndpointUrl(baseUrl, true, false);
-                        var chatRetry = await AttemptGenerateOnceAsync(chatEndpointUrl, model, chatEffectivePrompt, size, quality, style, referenceImages, apiKey, true, cancellationToken, customStyleHint, playerRedraw: playerRedraw, forcedPromptCharacters: settings.ForcedImagePromptCharacters).ConfigureAwait(false);
+                        var chatRetry = await AttemptGenerateOnceAsync(chatEndpointUrl, model, chatEffectivePrompt, size, quality, style, referenceImages, apiKey, true, cancellationToken, customStyleHint, playerRedraw: playerRedraw).ConfigureAwait(false);
                         result.ResolvedPrompt = chatRetry.ResolvedPrompt;
                         if (chatRetry.Success)
                         {
@@ -720,7 +719,7 @@ namespace AnimusForge.Illustrator.Core
             string customStyleHint = null,
             string negativePromptField = null,
             bool playerRedraw = false,
-            int forcedPromptCharacters = 0, bool player2 = false, string player2GameClientId = null)
+            int forcedPromptCharacters = 0, bool player2 = false)
         {
             string editsUrl = player2 ? ResolvePlayer2Endpoint(baseUrl, true) : ResolveEditsEndpointUrl(baseUrl);
             bool grokJson = !player2 && UsesGrokJsonEdits(model);
@@ -808,8 +807,6 @@ namespace AnimusForge.Illustrator.Core
                         {
                             request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", apiKey);
                         }
-                        if (player2 && !string.IsNullOrWhiteSpace(player2GameClientId))
-                            request.Headers.TryAddWithoutValidation("player2-game-key", player2GameClientId);
                         Log($"[Illustrator] Requesting image edit from {SensitiveLogText.SafeUrl(editsUrl)} (model={model}, protocol={protocol}, ActualRefImages={sent})...", apiKey);
                         if (GenerationDiagnostics.Current != null) await GenerationDiagnostics.Current.RecordImageRequestAsync(request, protocol).ConfigureAwait(false);
                         GenerationDiagnostics.Current?.RecordStage("image_http_begin", new JObject { ["endpoint"] = SensitiveLogText.SafeUrl(editsUrl), ["actualRefs"] = sent });
@@ -860,7 +857,7 @@ namespace AnimusForge.Illustrator.Core
             string customStyleHint = null,
             string negativePromptField = null,
             bool playerRedraw = false,
-            int forcedPromptCharacters = 0, bool player2 = false, string player2GameClientId = null)
+            int forcedPromptCharacters = 0, bool player2 = false)
         {
             JObject payload;
             int actualRefImages = 0;
@@ -1072,8 +1069,6 @@ namespace AnimusForge.Illustrator.Core
             using (var request = new HttpRequestMessage(HttpMethod.Post, endpointUrl))
             {
                 request.Content = new StringContent(player2 ? FitPlayer2Request(payload, null, cancellationToken) : payload.ToString(Formatting.None), Encoding.UTF8, "application/json");
-                if (player2 && !string.IsNullOrWhiteSpace(player2GameClientId))
-                    request.Headers.TryAddWithoutValidation("player2-game-key", player2GameClientId);
 
                 if (!string.IsNullOrWhiteSpace(apiKey))
                 {

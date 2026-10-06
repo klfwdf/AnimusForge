@@ -92,11 +92,6 @@ namespace AnimusForge.Illustrator
         [SettingPropertyGroup("2. 生图 API 配置 (OpenAI 兼容)", GroupOrder = 2)]
         public Action FetchModelList { get; set; }
 
-        [SettingPropertyText("Player2 Game Client ID（可选）", Order = 15, RequireRestart = false,
-            HintText = "Player2开发者平台的Game Client ID，通过player2-game-key请求头发送；不是MCP密钥。仅自动识别为Player2的地址使用。")]
-        [SettingPropertyGroup("2. 生图 API 配置 (OpenAI 兼容)", GroupOrder = 2)]
-        public string Player2GameClientId { get; set; } = "";
-
         private string _modelName = "black-forest-labs/FLUX.1-schnell";
 
         [SettingPropertyText("生图模型名称 (Model)", HintText = "生图模型名称。支持常规生图模型（如 FLUX.1-schnell、dall-e-3、gpt-image-1.5 等）以及对话原生多模态出图模型（如 gemini-3.1-flash-image 等，系统会自动识别并走对话图生图通道）。", Order = 5, RequireRestart = false)]
@@ -470,14 +465,6 @@ namespace AnimusForge.Illustrator
         [SettingPropertyInteger("导演最大输出 Tokens", 512, 64000, "0 Token", HintText = "实际发送给导演API的 max_tokens，默认25000；这是允许的输出预算，不是目标篇幅，也不是字符数。思考消耗是否计入由接口决定；请按接口支持范围设置。", Order = 6, RequireRestart = false)]
         [SettingPropertyGroup("3. 视觉导演 API 配置 (OpenAI 兼容 · 留空使用正文API)", GroupOrder = 3)]
         public int DirectorApiMaxTokens { get; set; } = 25000;
-
-        [SettingPropertyBool("强制缩减生图提示词", HintText = "默认关闭。开启后要求导演简洁输出，并按下方字符上限缩减导演四段描述。保留核心事实、画风、固定画幅和参考图说明；不能安全缩减则停止发送。不增加模型调用。关闭后保持原有模型限制及32000字符安全上限。", Order = 7, RequireRestart = false)]
-        [SettingPropertyGroup("3. 视觉导演 API 配置 (OpenAI 兼容 · 留空使用正文API)", GroupOrder = 3)]
-        public bool ForceImagePromptLimit { get; set; } = false;
-
-        [SettingPropertyInteger("强制生图提示词上限（字符）", 1000, 32000, "0 字符", HintText = "仅开启强制缩减时生效，默认4000。按生图服务商限制设置，支持长提示词时可调高或关闭。最终附加规则与参考图文字也计入；已识别模型的更低上限仍优先。", Order = 8, RequireRestart = false)]
-        [SettingPropertyGroup("3. 视觉导演 API 配置 (OpenAI 兼容 · 留空使用正文API)", GroupOrder = 3)]
-        public int ForcedImagePromptCharacters { get; set; } = 4000;
 
         [SettingPropertyInteger("导演提词参考篇幅（约 Token）", 600, 4000, "0 Token", HintText = "软性篇幅参考，不是API输出上限。强制缩减开启时优先遵守字符预算；否则完整回复最多30000字符。保留完整四段，不为凑数扩写。", Order = 9, RequireRestart = false)]
         [SettingPropertyGroup("3. 视觉导演 API 配置 (OpenAI 兼容 · 留空使用正文API)", GroupOrder = 3)]
