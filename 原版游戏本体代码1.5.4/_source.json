@@ -1,0 +1,40 @@
+{
+  "GameVersion": "v1.5.4.123627",
+  "SteamBranch": "beta",
+  "AcquiredUtcDate": "2026-10-06",
+  "Apps": [
+    {
+      "Depots": [
+        {
+          "DepotId": 261552,
+          "ManifestId": "996864024120521064"
+        },
+        {
+          "DepotId": 261551,
+          "ManifestId": "1352394628821398668"
+        }
+      ],
+      "AppId": 261550
+    },
+    {
+      "Depots": [
+        {
+          "DepotId": 2927200,
+          "ManifestId": "4796878190060703586"
+        }
+      ],
+      "AppId": 2927200
+    }
+  ],
+  "DepotDownloaderVersion": "3.4.0",
+  "DepotDownloaderOfficialRelease": "https://github.com/SteamRE/DepotDownloader/releases/tag/DepotDownloader_3.4.0",
+  "DepotDownloaderZIP_SHA256": "41C9E9F0DF54B3AD02E67A11726756E5C73283BD7C2E1B04ACFA5AE4C2ED3767",
+  "IlSpyVersion": "9.1.0.7988",
+  "ExistingSteamInstallationChanged": false,
+  "PersistentLoginReuseVerified": true,
+  "CredentialLocation": "ignored artifacts (excluded from this receipt)",
+  "DownloadLogs": [
+    "download-persistent.log",
+    "download-navaldlc.log"
+  ]
+}
