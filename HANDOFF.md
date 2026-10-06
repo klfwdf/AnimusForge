@@ -1,4 +1,11 @@
-# 当前交接：对话正文字号与界面选项（2026-10-06，OFFLINE_VERIFIED_LIVE_PENDING）
+# 当前交接：远端融合、双版构建、部署与打包（2026-10-06，DEPLOYED_PACKAGED_LIVE_PENDING）
+
+- 已按用户授权拉取 origin/main=e3bd28e0，合并至6ad9bac7；双方源码改动保留，HANDOFF和主台账冲突保留双方记录。以下历史“未部署/未打包”仅代表对应轮次，本次交付状态以此条及主台账为准。
+- 410项离线回归、33项源码接线、1.3/1.4与Bootstrap构建及双接缝门禁通过。原部署脚本更新17文件；3379项Stage/安装/ZIP文件SHA256一致，12处正文控件已部署。
+- 包：一键编译覆盖推送/packages/AnimusForge_v1.5.4_20261006_213333_054.zip，保持v1.5.4。游戏未启动，UI/处决/旧档实机未验；未push。
+- [唯一主台账、回滚及交付证据](docs/animusforge-refactoring-and-repository-reorganization-plan.md#merge-deploy-package-20261006)；本地artifacts/merge-deploy-package-20261006/receipt.json记录完整哈希和Recovery位置。
+
+# 历史交接：对话正文字号与界面选项（2026-10-06，OFFLINE_VERIFIED_LIVE_PENDING）
 
 - 产品33a93552，检查点2f4839e：MCM增加新UI正文字号14–36（默认24），总开关改原版/新 UI（默认新UI）；场景喊话未保存设置时默认卷轴，已有明确风格保留。字号在重新打开时生效，覆盖正文/选项/历史/输入，不改按钮和人物名。
 - 39项设置/正文控件/XML、95项生命周期回归、原双API+Bootstrap/双接缝门禁通过。真实MCM/Gauntlet布局尚未验证，未Stage/部署/打包/推送。旧EnableSkin不自动迁移成新选项：没有新键时默认新UI。

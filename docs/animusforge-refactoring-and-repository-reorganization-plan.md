@@ -1,3 +1,17 @@
+<a id="merge-deploy-package-20261006"></a>
+# 远端融合、双版构建、部署与打包（2026-10-06，DEPLOYED_PACKAGED_LIVE_PENDING）
+
+- 当前任务：用户明确授权检查远端、拉取融合、构建编译部署和打包；工作区F:/AnimusForge-main，main。未授权push，本轮未推送。此次仅融合已有产品改动及更新交付记录，没有改构建/覆盖/打包流程。
+- 远端origin=https://github.com/klfwdf/AnimusForge.git，fetch main从b1884036更新至e3bd28e09674065d96caad8dfd2ce234e59fdcd8（4个新提交）。合并前7bfdeb8f878702fbd056e9e7a4193557b17f4c47，检查点712e3860，合并6ad9bac7c7ff7defd04d77e9b93a906cf0b53c95；origin/main已是HEAD祖先。源码自动融合，仅HANDOFF及本台账头部冲突，保留双方记录。处决隔离guard及本地UI设置保留；历史成果代码范围沿用下方对应条目，不重复改写证据。
+- 回归：GCCZ修复91、TownRuleMemory60、处决散场49、隔离/上下文/台账/生命周期76、UI设置/正文控件/XML39、UI生命周期95，共410项离线检查通过；源码接线33项通过。fake引擎及源码检查不替代真实引擎验收。
+- 原入口scripts/build/build_single_module.ps1，Debug，双API参考v1.3.15.110062/v1.4.6.115628、Bootstrap及双接缝门禁通过。最初Stage因旧AFDialogueConversation.xml与现源码哈希不同而拒绝重建，保留失败build-stage.log；核实路径及无重解析点后，将旧Stage可逆移动至artifacts/merge-deploy-package-20261006/previous-stage。未改断言或脚本，使用原deploy_module.ps1和已编译产物重新组装成功。
+- 已部署F:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord/Modules/AnimusForge，原脚本仅更新17个受管文件，未知安装文件保留。Recovery=C:/Users/29310/AppData/Local/AnimusForge/Recovery/deploy/deploy-4e3658775927440fa427dadb407c200a，complete标记存在，所有旧文件备份哈希与manifest一致。
+- 原package_mod.ps1 -ExcludeOnnx -NoBump成功，版本v1.5.4。ZIP=F:/AnimusForge-main/一键编译覆盖推送/packages/AnimusForge_v1.5.4_20261006_213333_054.zip，84825313字节，SHA256=280c451376b6ec5e80d48da804b8546a7160e3aa448c9d213a83dfda4129c297。一个AnimusForge根、SubModule仅加载Bootstrap、内含1.3与1.4实现，无ONNX模型、TaleWorlds DLL、Logs或Git文件。PlayerExports仅含正式content-map列入的默认知识资产。
+- 独立逐文件验证3379项Stage/安装/ZIP的SHA256和完整文件集合一致；源码/Stage/安装的Id、Name和版本一致。Bootstrap与双实现对应本次构建产物/门禁收据；6份UI XML中的12个正文控件绑定与源码一致。完整文件哈希、双版参考版本、日志哈希、备份和包信息见artifacts/merge-deploy-package-20261006/receipt.json；verify_delivery.py可重放本轮交付检查。检查脚本首次读取日志编码失败，识别BOM/UTF-8后重跑成功，不影响产品文件。
+- 未验证：没有启动游戏，没有实机MCM/Gauntlet布局、处决散场/首击隔离、GCCZ场景和旧档验收；不声称离线门禁覆盖实机行为。无新增Tick、扫描或运行时性能变化。
+- 回滚：源码保留codex/pre-merge-20261006-e3bd28e0分支（7bfdeb8f），必要时以git revert -m 1 6ad9bac7定向撤销合并，不重写历史；安装回滚依据上述Recovery/manifest.json逐文件恢复旧哈希，先核验当前目标未被后续任务更改。本轮文档记录不撤销其他作者历史。
+- 本条更新下方各产品条目的交付状态；它们各自的未实机验证及其他范围限制继续有效。
+
 <a id="dialogue-ui-settings-20261006"></a>
 # 对话UI模式、正文字号及卷轴默认（2026-10-06，OFFLINE_VERIFIED_LIVE_PENDING）
 
