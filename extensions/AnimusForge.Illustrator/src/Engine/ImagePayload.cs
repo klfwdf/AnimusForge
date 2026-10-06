@@ -53,6 +53,58 @@ namespace AnimusForge.Illustrator.Engine
             }
         }
 
+        // Upload-only encoding; never alters cached originals or UI decoding.
+        internal static byte[] EncodePlayer2Reference(byte[] original, bool scene, int maximumEdge, CancellationToken token)
+        {
+            using (var stream = new MemoryStream(original, false))
+            using (var image = Image.FromStream(stream, false, true))
+            {
+                double scale = Math.Min(1.0, (double)maximumEdge / Math.Max(image.Width, image.Height));
+                int width = Math.Max(1, (int)Math.Round(image.Width * scale));
+                int height = Math.Max(1, (int)Math.Round(image.Height * scale));
+                using (var bitmap = new Bitmap(width, height, PixelFormat.Format32bppArgb))
+                {
+                    using (var graphics = Graphics.FromImage(bitmap))
+                    {
+                        graphics.CompositingMode = System.Drawing.Drawing2D.CompositingMode.SourceCopy;
+                        graphics.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
+                        graphics.DrawImage(image, new Rectangle(0, 0, width, height), 0, 0, image.Width, image.Height, GraphicsUnit.Pixel);
+                    }
+                    bool opaque = scene;
+                    if (scene)
+                    {
+                        var data = bitmap.LockBits(new Rectangle(0, 0, width, height), ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);
+                        try
+                        {
+                            var row = new byte[width * 4];
+                            for (int y = 0; y < height && opaque; y++)
+                            {
+                                token.ThrowIfCancellationRequested();
+                                System.Runtime.InteropServices.Marshal.Copy(IntPtr.Add(data.Scan0, y * data.Stride), row, 0, row.Length);
+                                for (int x = 3; x < row.Length; x += 4) if (row[x] != 255) { opaque = false; break; }
+                            }
+                        }
+                        finally { bitmap.UnlockBits(data); }
+                    }
+                    using (var output = new MemoryStream())
+                    {
+                        if (opaque)
+                        {
+                            ImageCodecInfo jpeg = Array.Find(ImageCodecInfo.GetImageEncoders(), c => c.FormatID == ImageFormat.Jpeg.Guid);
+                            using (var parameters = new EncoderParameters(1))
+                            {
+                                parameters.Param[0] = new EncoderParameter(System.Drawing.Imaging.Encoder.Quality, 90L);
+                                bitmap.Save(output, jpeg, parameters);
+                            }
+                        }
+                        else bitmap.Save(output, ImageFormat.Png);
+                        byte[] encoded = output.ToArray();
+                        return scale == 1.0 && encoded.Length >= original.Length ? original : encoded;
+                    }
+                }
+            }
+        }
+
         private static void ValidateJpegHeader(byte[] bytes)
         {
             int p = 2;
