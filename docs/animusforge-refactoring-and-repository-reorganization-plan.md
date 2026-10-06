@@ -1,3 +1,10 @@
+<a id="execution-aftermath-location-character-20261006"></a>
+# 处决结束后攻击触发逃跑空引用（2026-10-06，ACTIVE）
+
+- 用户实机报告处决结束后主动攻击引发卡死；基线33131b66/main。21:41:03 SceneTaunt记录攻击后备兵258并升级冲突，21:41:04原生Mission_TickAgentsAndTeams边界捕获NullReference：LocationComplex.CanIfMaleOrHero → CanIfGrownUpMaleOrHero → PassageUsePoint.IsDisabledForAgent → FleeBehavior.GetAvailablePassageScores/LookForPlace。日志位于游戏Modules/AnimusForge/Logs/Mod_Logic.txt，不以旧AppData日志替代本次证据。
+- 源码根因：SpawnCharacter直接使用SimpleAgentOrigin生成临时人物，没有LocationCharacter登记；新增围观者散场接入原版FleeBehavior后，门口检查将GetLocationCharacter(agent.Origin)的null传给CanAIEnter。两版原版代码相同契约。
+- 计划范围：共享处决源码中的临时非英雄人物登记、清理与回归测试，保留受刑者死亡origin和真实Hero身份，不调整冲突资格/散场方向。登记仅生成人物时一次，清理只在结束/取消；无Tick新增扫描。验证双AF与独立RichExecutions目标，实机结果仍待验。
+
 <a id="merge-deploy-package-20261006"></a>
 # 远端融合、双版构建、部署与打包（2026-10-06，DEPLOYED_PACKAGED_LIVE_PENDING）
 
@@ -11,6 +18,7 @@
 - 未验证：没有启动游戏，没有实机MCM/Gauntlet布局、处决散场/首击隔离、GCCZ场景和旧档验收；不声称离线门禁覆盖实机行为。无新增Tick、扫描或运行时性能变化。
 - 回滚：源码保留codex/pre-merge-20261006-e3bd28e0分支（7bfdeb8f），必要时以git revert -m 1 6ad9bac7定向撤销合并，不重写历史；安装回滚依据上述Recovery/manifest.json逐文件恢复旧哈希，先核验当前目标未被后续任务更改。本轮文档记录不撤销其他作者历史。
 - 本条更新下方各产品条目的交付状态；它们各自的未实机验证及其他范围限制继续有效。
+- 后续用户要求打包v1.5.5：原脚本-Version v1.5.5通过，产物一键编译覆盖推送/packages/AnimusForge_v1.5.5_20261006_213842_797.zip，84825313字节，SHA256=b8db26eba3a7f0427c21cff1fdabcb9bef41893a9c165a1e7abe33e08f185559。独立验证3379个文件，仅SubModule版本改为v1.5.5，其余与本条原始交付收据一致。没有重新编译/部署；安装和源码仍v1.5.4，原包保留。证据receipt-v1.5.5.json、package-v1.5.5.log、verification-v1.5.5.log位于同一artifacts目录；此包不含后续卡死修复。
 
 <a id="dialogue-ui-settings-20261006"></a>
 # 对话UI模式、正文字号及卷轴默认（2026-10-06，OFFLINE_VERIFIED_LIVE_PENDING）
