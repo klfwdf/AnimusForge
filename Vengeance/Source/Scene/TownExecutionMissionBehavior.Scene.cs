@@ -1927,9 +1927,9 @@ public sealed partial class TownExecutionMissionBehavior
             // agent has its channel 0 re-driven by the mission AI every tick.
             // Left as AI, the varied idle below survives a couple of frames and
             // then every spectator collapses onto the same default civilian pose
-            // - the "row of shop mannequins" look. Spectators never path anywhere
-            // (even stoning throwers are frozen at throw time), so take them off
-            // AI control here exactly like the executioner, prisoner and helpers.
+            // - the "row of shop mannequins" look. Keep spectators off AI during
+            // the ceremony (including stoning); aftermath releases them in small
+            // batches to native town walking after the crowd reaction completes.
             crowdAgent.DisableScriptedMovement();
             crowdAgent.Controller = AgentControllerType.None;
 

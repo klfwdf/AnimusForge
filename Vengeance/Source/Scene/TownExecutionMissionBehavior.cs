@@ -1159,6 +1159,7 @@ public sealed partial class TownExecutionMissionBehavior : MissionLogic, IExecut
             case ExecutionSessionState.Aftermath:
                 _strategy.TickAfterDeath(dt);
                 FinishAftermath();
+                TickCrowdDispersal(dt);
                 break;
         }
 
