@@ -21,6 +21,18 @@ host = new(s => { submissions++; submitted = s; }, () => { switches++; host.SetI
 Check(NativeUiAdapter.TryWrap(host, out var wrapper), "first native wrapping succeeds");
 var vm = (NativeOverlayVM)wrapper;
 Check(switches == 1 && vm.IsCustomAnswerVisible, "captured default applied once");
+int shieldChanges = 0;
+vm.PropertyChanged += (_, e) => { if (e.PropertyName == nameof(NativeOverlayVM.IsReplyPending)) shieldChanges++; };
+Check(!vm.IsReplyPending, "idle AI mode has no click shield");
+host.SetBusy(true);
+Check(vm.IsReplyPending && shieldChanges > 0, "busy change publishes shield binding");
+int busyChanges = shieldChanges;
+host.SetBusy(false);
+Check(!vm.IsReplyPending && shieldChanges > busyChanges, "completion publishes shield release");
+host.SetBusy(true); host.SetInputVisible(false);
+Check(!vm.IsReplyPending, "ordinary mode ignores busy shield");
+host.SetInputVisible(true); Check(vm.IsReplyPending, "AI mode restores pending shield");
+host.SetBusy(false);
 vm.InputText = "draft\nsecond line";
 vm.ShowLogView();
 var movie = new FakeMovie();

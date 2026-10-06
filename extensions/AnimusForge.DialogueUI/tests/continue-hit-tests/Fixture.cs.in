@@ -89,6 +89,37 @@ static class Program
             TaleWorlds.InputSystem.Input.MousePositionPixel = (1120 + i * 50, 125);
             Check(overlay.HitTest(), "tool button remains claimed: " + i);
         }
+        overlay.Original.IsCustomAnswerVisible = true;
+        overlay.Original.IsInputEnabled = false;
+        foreach (var point in new[] { (700, 300), (1040, 300), (40, 20), (1200, 300) })
+        {
+            TaleWorlds.InputSystem.Input.MousePositionPixel = point;
+            Check(overlay.HitTest(), "busy mouse restrictions claim body/background/input: " + point);
+        }
+        overlay.Original.IsInputEnabled = true;
+        TaleWorlds.InputSystem.Input.MousePositionPixel = (700, 300);
+        Check(!overlay.HitTest(), "completed reply releases body hit restriction");
+        overlay.Original.IsInputEnabled = false;
+        overlay.Original.IsCustomAnswerVisible = false;
+        Check(!overlay.HitTest(), "ordinary mode is not blocked by a stale busy flag");
+
+        var overlayXml = XDocument.Load(args[1]).Root.Element("Window").Elements().Single();
+        var shieldXml = overlayXml.Element("Children").Elements().FirstOrDefault();
+        Check((string)shieldXml?.Attribute("Id") == "AFDialogueReplyClickShield", "shield is behind overlay controls");
+        Check((string)shieldXml?.Attribute("IsVisible") == "@IsReplyPending", "shield follows reply lifecycle");
+        Check(!shieldXml.Attributes().Any(a => a.Name.LocalName.StartsWith("Command.")), "shield has no continue command");
+        var shield = Build(shieldXml, new Rect(0, 0, 1440, 400));
+        root.Add(shield);
+        shield.IsVisible = true;
+        button.IsEnabled = button.IsVisible = true; // native root may re-enable it on its next update
+        foreach (var e in new[] { GauntletEvent.MousePressed, GauntletEvent.MouseReleased })
+            Check(Hit(1040, 300, e) == shield, "busy transparent shield consumes " + e);
+        for (int i = 0; i < 100; i++) Check(Hit(700, 300) == shield, "repeated busy click cannot reach continue");
+        var toolbar = new ButtonWidget(new UIContext()) { Id = "Toolbar", Position = new(1120, 110), Size = new(100, 30) };
+        root.Add(toolbar);
+        Check(Hit(1140, 120) == toolbar, "toolbar above shield still receives its click");
+        shield.IsVisible = false;
+        Check(Hit(1040, 300) == button, "completion removes shield and restores native continue");
         overlay._wrapper.Auxiliary.IsVisible = true;
         TaleWorlds.InputSystem.Input.MousePositionPixel = (40, 20);
         Check(overlay.HitTest(), "auxiliary panel prevents continue");
@@ -141,7 +172,7 @@ class OverlayProbe
     Widget _column = new(new UIContext()) { Position = new(1114, 100), Size = new(305, 260) };
     List<Widget> _buttons = Enumerable.Range(0, 5).Select(i => new Widget(new UIContext()) { Position = new(1114 + i * 50, 110), Size = new(40, 30) }).ToList();
     __OVERLAY_HIT__
-    internal class Mode { internal bool IsCustomAnswerVisible; }
+    internal class Mode { internal bool IsCustomAnswerVisible; internal bool IsInputEnabled = true; }
     internal class Wrapper { internal Drawer Auxiliary = new(); }
     internal class Drawer { internal bool IsVisible; }
 }
