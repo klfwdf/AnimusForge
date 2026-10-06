@@ -259,6 +259,10 @@ internal static class WorldDiplomacyDocumentExecutionApplication
 					port.ResolveDocument(command.SourceDocumentId));
 			if (!finalLiveIntents.Contains(intent, StringComparer.OrdinalIgnoreCase))
 			{
+				port.Log("final diplomacy action rejected document=" + command.DocumentId
+					+ " round=" + command.RoundId + " author=" + author + " target=" + target
+					+ " intent=" + intent + " offer=" + input.RespondingToOfferDocumentId
+					+ " offerAction=" + input.RespondingToOfferActionId + " legal=" + string.Join(",", finalLiveIntents));
 				orchestration.SuppressInvalidDocumentBeforePropagation(document, "final_live_legal_action_guard");
 				return;
 			}
