@@ -1,3 +1,15 @@
+<a id="illustrator-player-redraw-priority-20261006"></a>
+# 玩家定向重绘与MCM超时核对（2026-10-06，BUILD_VERIFIED_LIVE_PENDING）
+
+- 请求：核对重绘优先级/超时，随后明确授权“玩家重绘要求优先”，例子为加剑。F:/AnimusForge-main / main，检查点b07524e，产品/规范/审计期望e0d0f3d87ffe74716ca3a7109be31cbb164d49f3；仅提交Illustrator相关八文件，保留其他会话改动。
+- 语义：仅非空本次重绘输入可覆盖原事实、参考图、模式默认禁物、长期MCM偏好及去重建议；没指定的部分仍保真。加剑允许覆盖百科禁武器和原装备无剑。只改变艺术画面，不改游戏装备/记忆/存档。原始输入仍只给导演，原资料与参考完整送导演，最终生图采用协调后正文，不重复追加被覆盖的原事实和固定禁物。普通生成原样。
+- 代码证据（产品提交；以下相对extensions/AnimusForge.Illustrator/）：src/Core/VisualFidelityRules.cs:5-19定义统一优先/参考例外；VisualDirectorEngine.cs:49-72 BuildDirectorContext、:293-315 ComposeFinalPrompt、:351-429 ResolveDirectorBody/HasCompleteSceneDescription、:709-813 BuildDirectorPayload接通系统/用户提示、保留四段结构/截断/取消检查，定向重绘允许盾牌/旗帜/黑底等明确要求。既有不可用导演拒绝及无自动付费重试不变。
+- 真实入口：src/Core/IllustratorRuntime.cs:41-48 WithPlayerRedrawRequest克隆请求快照；src/UI/Overlays/IllustrationCardPopup.cs:475,754与src/UI/Patches/WeeklyReportPopupIllustrationPatch.cs:563分别覆盖百科/会话/周报（含快报）。src/Core/UniversalOpenAiImageClient.cs:70-74记录image_budget，:109-119清除图像端反向覆盖的旧style字段，:130-217传递各协议/回退标志；ComposeImagePrompt/AttemptImagesEditsAsync/AttemptGenerateOnceAsync服从协调后的画面方案。长期画风/负面偏好先交导演协调，最终不重复施加；通用成图缺陷负面词、尺寸质量、原图像采集保留。
+- 性能：一次请求一次选项克隆与有界字符串拼接/诊断事件，不新增Tick、反射、场景扫描或额外网络请求。
+- 超时：当前保存MCM ImageGenerationTimeoutSeconds=240，范围60–600；安装1.4程序集MVID de55fe1b-a69c-42c6-9497-833b88449c99的IL确认MCM→IllustrationOptions→CancelAfter，最新本机诊断MVID一致。新一轮生成开始时冻结，新值不延长在途请求。导演独立240秒，立绘/全景预算独立；结果URL下载另有60秒响应头等待，其取消可能被现有错误文案统称总预算。因此截图不能单独证明实际等待满240秒，本机未定位截图对应诊断。此次不改超时值，新增image_budget/timeoutMs供核对，未实机改值计时。
+- 验证：源码复核、git diff --check通过；原入口build_single_module.ps1，ProjectRoot=F:/AnimusForge-main，BannerlordRoot=F:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord，Configuration=Debug，无Stage/Deploy。最终重试退出0，API1.3(v1.3.15.110062)/1.4(v1.4.6.115628)各344warning/0error，Bootstrap0error、双接缝PASS。中间一次NETSDK1004缺少1.4 project.assets.json，未改源码重试通过；保留build-final.log及build-retry.log。候选包含当时其他作者并行工作，不声称只由本提交组成。
+- tests/audits/DirectorStatusAudit.cs更新优先级断言，新增加剑/盾/旗/背盾/黑底定向方案保留检查；按模块AGENTS未运行离线审计，不声称新增断言PASS。真实模型遵从、三个模式及两UI实机、MCM改值计时仍NOT_RUN。未Stage/覆盖游戏/打包/推送，没有调用付费生图。证据artifacts/illustrator-redraw-priority-20261006/build*.log；回滚仅git revert e0d0f3d8。
+
 <a id="execution-crowd-safe-dispersal-20261006"></a>
 # 处决散场审查修复与刑场避让（2026-10-06，OFFLINE_VERIFIED_LIVE_PENDING）
 
