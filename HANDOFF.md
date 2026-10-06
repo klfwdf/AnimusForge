@@ -1,3 +1,9 @@
+# 当前交接：导演预算与可选缩减（2026-10-07，BUILD_VERIFIED_NOT_DEPLOYED）
+
+- 产品46f8ba843，检查点6cb5695。导演max_tokens默认16384；强制缩减默认关闭、字符上限默认4000可调。旧软篇幅保留，三协议及回退共享限制，固定规则放不下则停止发送。
+- 原入口双API/Bootstrap与双接缝通过；MCM实机、真实API预算及空回根因未验。未部署/打包/推送。
+- [主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#illustrator-token-budget-20261007--build_verified_not_deployed)，日志artifacts/illustrator-token-budget-20261007/build.log。回滚git revert 46f8ba843。
+
 # 当前交接：角色重建返回的对话层恢复（2026-10-07，OFFLINE_VERIFIED_NOT_DEPLOYED）
 
 - 产品 cf995bfe4，检查点 a36a8e3。临时编辑器返回时完整激活AF对话层，保留模式、正文与生成状态。
