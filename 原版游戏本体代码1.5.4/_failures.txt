@@ -1,0 +1,130 @@
+SKIP native/non-managed: E:\Mount-Blade-Bannerlord-AnimusForge-mod-main\artifacts\bannerlord15-reference\snapshot\bin\Win64_Shipping_Client\amd_ags_x64.dll
+SKIP native/non-managed: E:\Mount-Blade-Bannerlord-AnimusForge-mod-main\artifacts\bannerlord15-reference\snapshot\bin\Win64_Shipping_Client\d3dcompiler_47.dll
+SKIP native/non-managed: E:\Mount-Blade-Bannerlord-AnimusForge-mod-main\artifacts\bannerlord15-reference\snapshot\bin\Win64_Shipping_Client\dbgcore.dll
+SKIP native/non-managed: E:\Mount-Blade-Bannerlord-AnimusForge-mod-main\artifacts\bannerlord15-reference\snapshot\bin\Win64_Shipping_Client\dbghelp.dll
+SKIP native/non-managed: E:\Mount-Blade-Bannerlord-AnimusForge-mod-main\artifacts\bannerlord15-reference\snapshot\bin\Win64_Shipping_Client\EOSSDK-Win64-Shipping.dll
+SKIP native/non-managed: E:\Mount-Blade-Bannerlord-AnimusForge-mod-main\artifacts\bannerlord15-reference\snapshot\bin\Win64_Shipping_Client\fmod_output_controller.dll
+SKIP native/non-managed: E:\Mount-Blade-Bannerlord-AnimusForge-mod-main\artifacts\bannerlord15-reference\snapshot\bin\Win64_Shipping_Client\Galaxy64.dll
+SKIP native/non-managed: E:\Mount-Blade-Bannerlord-AnimusForge-mod-main\artifacts\bannerlord15-reference\snapshot\bin\Win64_Shipping_Client\GalaxyCSharpGlue.dll
+SKIP native/non-managed: E:\Mount-Blade-Bannerlord-AnimusForge-mod-main\artifacts\bannerlord15-reference\snapshot\bin\Win64_Shipping_Client\GfeSDK.dll
+SKIP native/non-managed: E:\Mount-Blade-Bannerlord-AnimusForge-mod-main\artifacts\bannerlord15-reference\snapshot\bin\Win64_Shipping_Client\GFSDK_Aftermath_Lib.x64.dll
+SKIP native/non-managed: E:\Mount-Blade-Bannerlord-AnimusForge-mod-main\artifacts\bannerlord15-reference\snapshot\bin\Win64_Shipping_Client\grCore.dll
+SKIP native/non-managed: E:\Mount-Blade-Bannerlord-AnimusForge-mod-main\artifacts\bannerlord15-reference\snapshot\bin\Win64_Shipping_Client\grGranite.dll
+SKIP native/non-managed: E:\Mount-Blade-Bannerlord-AnimusForge-mod-main\artifacts\bannerlord15-reference\snapshot\bin\Win64_Shipping_Client\grGraniteDX11.dll
+SKIP native/non-managed: E:\Mount-Blade-Bannerlord-AnimusForge-mod-main\artifacts\bannerlord15-reference\snapshot\bin\Win64_Shipping_Client\grGraniteDX12.dll
+SKIP native/non-managed: E:\Mount-Blade-Bannerlord-AnimusForge-mod-main\artifacts\bannerlord15-reference\snapshot\bin\Win64_Shipping_Client\grGraniteQuartzFast.dll
+SKIP native/non-managed: E:\Mount-Blade-Bannerlord-AnimusForge-mod-main\artifacts\bannerlord15-reference\snapshot\bin\Win64_Shipping_Client\mono-2.0-sgen.dll
+SKIP native/non-managed: E:\Mount-Blade-Bannerlord-AnimusForge-mod-main\artifacts\bannerlord15-reference\snapshot\bin\Win64_Shipping_Client\MonoPosixHelper.dll
+SKIP native/non-managed: E:\Mount-Blade-Bannerlord-AnimusForge-mod-main\artifacts\bannerlord15-reference\snapshot\bin\Win64_Shipping_Client\msdia140.dll
+SKIP native/non-managed: E:\Mount-Blade-Bannerlord-AnimusForge-mod-main\artifacts\bannerlord15-reference\snapshot\bin\Win64_Shipping_Client\nvngx_dlss.dll
+SKIP native/non-managed: E:\Mount-Blade-Bannerlord-AnimusForge-mod-main\artifacts\bannerlord15-reference\snapshot\bin\Win64_Shipping_Client\PhysX_64.dll
+SKIP native/non-managed: E:\Mount-Blade-Bannerlord-AnimusForge-mod-main\artifacts\bannerlord15-reference\snapshot\bin\Win64_Shipping_Client\PhysXCommon_64.dll
+SKIP native/non-managed: E:\Mount-Blade-Bannerlord-AnimusForge-mod-main\artifacts\bannerlord15-reference\snapshot\bin\Win64_Shipping_Client\PhysXCooking_64.dll
+SKIP native/non-managed: E:\Mount-Blade-Bannerlord-AnimusForge-mod-main\artifacts\bannerlord15-reference\snapshot\bin\Win64_Shipping_Client\PhysXDevice64.dll
+SKIP native/non-managed: E:\Mount-Blade-Bannerlord-AnimusForge-mod-main\artifacts\bannerlord15-reference\snapshot\bin\Win64_Shipping_Client\PhysXFoundation_64.dll
+SKIP native/non-managed: E:\Mount-Blade-Bannerlord-AnimusForge-mod-main\artifacts\bannerlord15-reference\snapshot\bin\Win64_Shipping_Client\PhysXGpu_64.dll
+SKIP native/non-managed: E:\Mount-Blade-Bannerlord-AnimusForge-mod-main\artifacts\bannerlord15-reference\snapshot\bin\Win64_Shipping_Client\steam_api64.dll
+SKIP native/non-managed: E:\Mount-Blade-Bannerlord-AnimusForge-mod-main\artifacts\bannerlord15-reference\snapshot\bin\Win64_Shipping_Client\symsrv.dll
+SKIP native/non-managed: E:\Mount-Blade-Bannerlord-AnimusForge-mod-main\artifacts\bannerlord15-reference\snapshot\bin\Win64_Shipping_Client\TaleWorlds.Native.dll
+KNOWN missing Epic SDK/provider: TaleWorlds.PlatformService.Epic, diagnosticComments=101
+TaleWorlds.PlatformService.Epic\TaleWorlds\PlatformService\Epic\EpicPlatformServices.cs:207: //IL_00aa: Unknown result type (might be due to invalid IL or missing references)
+TaleWorlds.PlatformService.Epic\TaleWorlds\PlatformService\Epic\EpicPlatformServices.cs:208: //IL_00b4: Expected O, but got Unknown
+TaleWorlds.PlatformService.Epic\TaleWorlds\PlatformService\Epic\EpicPlatformServices.cs:209: //IL_00b6: Unknown result type (might be due to invalid IL or missing references)
+TaleWorlds.PlatformService.Epic\TaleWorlds\PlatformService\Epic\EpicPlatformServices.cs:210: //IL_00d1: Unknown result type (might be due to invalid IL or missing references)
+TaleWorlds.PlatformService.Epic\TaleWorlds\PlatformService\Epic\EpicPlatformServices.cs:211: //IL_00db: Expected O, but got Unknown
+TaleWorlds.PlatformService.Epic\TaleWorlds\PlatformService\Epic\EpicPlatformServices.cs:287: //IL_0016: Unknown result type (might be due to invalid IL or missing references)
+TaleWorlds.PlatformService.Epic\TaleWorlds\PlatformService\Epic\EpicPlatformServices.cs:288: //IL_0031: Unknown result type (might be due to invalid IL or missing references)
+TaleWorlds.PlatformService.Epic\TaleWorlds\PlatformService\Epic\EpicPlatformServices.cs:289: //IL_0056: Unknown result type (might be due to invalid IL or missing references)
+TaleWorlds.PlatformService.Epic\TaleWorlds\PlatformService\Epic\EpicPlatformServices.cs:290: //IL_005b: Unknown result type (might be due to invalid IL or missing references)
+TaleWorlds.PlatformService.Epic\TaleWorlds\PlatformService\Epic\EpicPlatformServices.cs:291: //IL_0086: Unknown result type (might be due to invalid IL or missing references)
+TaleWorlds.PlatformService.Epic\TaleWorlds\PlatformService\Epic\EpicPlatformServices.cs:292: //IL_0090: Unknown result type (might be due to invalid IL or missing references)
+TaleWorlds.PlatformService.Epic\TaleWorlds\PlatformService\Epic\EpicPlatformServices.cs:293: //IL_00b0: Unknown result type (might be due to invalid IL or missing references)
+TaleWorlds.PlatformService.Epic\TaleWorlds\PlatformService\Epic\EpicPlatformServices.cs:294: //IL_00bc: Unknown result type (might be due to invalid IL or missing references)
+TaleWorlds.PlatformService.Epic\TaleWorlds\PlatformService\Epic\EpicPlatformServices.cs:295: //IL_00be: Unknown result type (might be due to invalid IL or missing references)
+TaleWorlds.PlatformService.Epic\TaleWorlds\PlatformService\Epic\EpicPlatformServices.cs:296: //IL_00d4: Unknown result type (might be due to invalid IL or missing references)
+TaleWorlds.PlatformService.Epic\TaleWorlds\PlatformService\Epic\EpicPlatformServices.cs:297: //IL_00de: Expected O, but got Unknown
+TaleWorlds.PlatformService.Epic\TaleWorlds\PlatformService\Epic\EpicPlatformServices.cs:298: //IL_011e: Unknown result type (might be due to invalid IL or missing references)
+TaleWorlds.PlatformService.Epic\TaleWorlds\PlatformService\Epic\EpicPlatformServices.cs:299: //IL_013f: Unknown result type (might be due to invalid IL or missing references)
+TaleWorlds.PlatformService.Epic\TaleWorlds\PlatformService\Epic\EpicPlatformServices.cs:300: //IL_0149: Expected O, but got Unknown
+TaleWorlds.PlatformService.Epic\TaleWorlds\PlatformService\Epic\EpicPlatformServices.cs:322: //IL_0001: Unknown result type (might be due to invalid IL or missing references)
+TaleWorlds.PlatformService.Epic\TaleWorlds\PlatformService\Epic\EpicPlatformServices.cs:324: //IL_0059: Unknown result type (might be due to invalid IL or missing references)
+TaleWorlds.PlatformService.Epic\TaleWorlds\PlatformService\Epic\EpicPlatformServices.cs:325: //IL_000b: Unknown result type (might be due to invalid IL or missing references)
+TaleWorlds.PlatformService.Epic\TaleWorlds\PlatformService\Epic\EpicPlatformServices.cs:326: //IL_001e: Unknown result type (might be due to invalid IL or missing references)
+TaleWorlds.PlatformService.Epic\TaleWorlds\PlatformService\Epic\EpicPlatformServices.cs:327: //IL_001f: Unknown result type (might be due to invalid IL or missing references)
+TaleWorlds.PlatformService.Epic\TaleWorlds\PlatformService\Epic\EpicPlatformServices.cs:328: //IL_0045: Unknown result type (might be due to invalid IL or missing references)
+TaleWorlds.PlatformService.Epic\TaleWorlds\PlatformService\Epic\EpicPlatformServices.cs:329: //IL_004a: Unknown result type (might be due to invalid IL or missing references)
+TaleWorlds.PlatformService.Epic\TaleWorlds\PlatformService\Epic\EpicPlatformServices.cs:330: //IL_004c: Expected O, but got Unknown
+TaleWorlds.PlatformService.Epic\TaleWorlds\PlatformService\Epic\EpicPlatformServices.cs:331: //IL_0051: Expected O, but got Unknown
+TaleWorlds.PlatformService.Epic\TaleWorlds\PlatformService\Epic\EpicPlatformServices.cs:343: //IL_0001: Unknown result type (might be due to invalid IL or missing references)
+TaleWorlds.PlatformService.Epic\TaleWorlds\PlatformService\Epic\EpicPlatformServices.cs:386: //IL_0020: Unknown result type (might be due to invalid IL or missing references)
+TaleWorlds.PlatformService.Epic\TaleWorlds\PlatformService\Epic\EpicPlatformServices.cs:430: //IL_001e: Unknown result type (might be due to invalid IL or missing references)
+TaleWorlds.PlatformService.Epic\TaleWorlds\PlatformService\Epic\EpicPlatformServices.cs:431: //IL_0028: Expected O, but got Unknown
+TaleWorlds.PlatformService.Epic\TaleWorlds\PlatformService\Epic\EpicPlatformServices.cs:530: //IL_0013: Unknown result type (might be due to invalid IL or missing references)
+TaleWorlds.PlatformService.Epic\TaleWorlds\PlatformService\Epic\EpicPlatformServices.cs:531: //IL_0033: Unknown result type (might be due to invalid IL or missing references)
+TaleWorlds.PlatformService.Epic\TaleWorlds\PlatformService\Epic\EpicPlatformServices.cs:532: //IL_0034: Unknown result type (might be due to invalid IL or missing references)
+TaleWorlds.PlatformService.Epic\TaleWorlds\PlatformService\Epic\EpicPlatformServices.cs:533: //IL_004a: Unknown result type (might be due to invalid IL or missing references)
+TaleWorlds.PlatformService.Epic\TaleWorlds\PlatformService\Epic\EpicPlatformServices.cs:534: //IL_0054: Expected O, but got Unknown
+TaleWorlds.PlatformService.Epic\TaleWorlds\PlatformService\Epic\EpicPlatformServices.cs:542: //IL_0001: Unknown result type (might be due to invalid IL or missing references)
+TaleWorlds.PlatformService.Epic\TaleWorlds\PlatformService\Epic\EpicPlatformServices.cs:556: //IL_0026: Unknown result type (might be due to invalid IL or missing references)
+TaleWorlds.PlatformService.Epic\TaleWorlds\PlatformService\Epic\EpicPlatformServices.cs:557: //IL_0039: Unknown result type (might be due to invalid IL or missing references)
+TaleWorlds.PlatformService.Epic\TaleWorlds\PlatformService\Epic\EpicPlatformServices.cs:558: //IL_003a: Unknown result type (might be due to invalid IL or missing references)
+TaleWorlds.PlatformService.Epic\TaleWorlds\PlatformService\Epic\EpicPlatformServices.cs:559: //IL_0050: Unknown result type (might be due to invalid IL or missing references)
+TaleWorlds.PlatformService.Epic\TaleWorlds\PlatformService\Epic\EpicPlatformServices.cs:560: //IL_005a: Expected O, but got Unknown
+TaleWorlds.PlatformService.Epic\TaleWorlds\PlatformService\Epic\EpicPlatformServices.cs:568: //IL_0001: Unknown result type (might be due to invalid IL or missing references)
+TaleWorlds.PlatformService.Epic\TaleWorlds\PlatformService\Epic\EpicPlatformServices.cs:569: //IL_000d: Unknown result type (might be due to invalid IL or missing references)
+TaleWorlds.PlatformService.Epic\TaleWorlds\PlatformService\Epic\EpicPlatformServices.cs:570: //IL_0025: Unknown result type (might be due to invalid IL or missing references)
+TaleWorlds.PlatformService.Epic\TaleWorlds\PlatformService\Epic\EpicPlatformServices.cs:571: //IL_0026: Unknown result type (might be due to invalid IL or missing references)
+TaleWorlds.PlatformService.Epic\TaleWorlds\PlatformService\Epic\EpicPlatformServices.cs:572: //IL_0045: Unknown result type (might be due to invalid IL or missing references)
+TaleWorlds.PlatformService.Epic\TaleWorlds\PlatformService\Epic\EpicPlatformServices.cs:573: //IL_0065: Unknown result type (might be due to invalid IL or missing references)
+TaleWorlds.PlatformService.Epic\TaleWorlds\PlatformService\Epic\EpicPlatformServices.cs:574: //IL_0067: Unknown result type (might be due to invalid IL or missing references)
+TaleWorlds.PlatformService.Epic\TaleWorlds\PlatformService\Epic\EpicPlatformServices.cs:607: //IL_000d: Unknown result type (might be due to invalid IL or missing references)
+TaleWorlds.PlatformService.Epic\TaleWorlds\PlatformService\Epic\EpicPlatformServices.cs:608: //IL_0020: Unknown result type (might be due to invalid IL or missing references)
+TaleWorlds.PlatformService.Epic\TaleWorlds\PlatformService\Epic\EpicPlatformServices.cs:609: //IL_0021: Unknown result type (might be due to invalid IL or missing references)
+TaleWorlds.PlatformService.Epic\TaleWorlds\PlatformService\Epic\EpicPlatformServices.cs:610: //IL_0039: Unknown result type (might be due to invalid IL or missing references)
+TaleWorlds.PlatformService.Epic\TaleWorlds\PlatformService\Epic\EpicPlatformServices.cs:611: //IL_003e: Unknown result type (might be due to invalid IL or missing references)
+TaleWorlds.PlatformService.Epic\TaleWorlds\PlatformService\Epic\EpicPlatformServices.cs:612: //IL_0044: Expected O, but got Unknown
+TaleWorlds.PlatformService.Epic\TaleWorlds\PlatformService\Epic\EpicPlatformServices.cs:641: //IL_000d: Unknown result type (might be due to invalid IL or missing references)
+TaleWorlds.PlatformService.Epic\TaleWorlds\PlatformService\Epic\EpicPlatformServices.cs:642: //IL_002d: Unknown result type (might be due to invalid IL or missing references)
+TaleWorlds.PlatformService.Epic\TaleWorlds\PlatformService\Epic\EpicPlatformServices.cs:643: //IL_002e: Unknown result type (might be due to invalid IL or missing references)
+TaleWorlds.PlatformService.Epic\TaleWorlds\PlatformService\Epic\EpicPlatformServices.cs:644: //IL_0033: Unknown result type (might be due to invalid IL or missing references)
+TaleWorlds.PlatformService.Epic\TaleWorlds\PlatformService\Epic\EpicPlatformServices.cs:645: //IL_003c: Unknown result type (might be due to invalid IL or missing references)
+TaleWorlds.PlatformService.Epic\TaleWorlds\PlatformService\Epic\EpicPlatformServices.cs:646: //IL_0041: Unknown result type (might be due to invalid IL or missing references)
+TaleWorlds.PlatformService.Epic\TaleWorlds\PlatformService\Epic\EpicPlatformServices.cs:673: //IL_00d2: Unknown result type (might be due to invalid IL or missing references)
+TaleWorlds.PlatformService.Epic\TaleWorlds\PlatformService\Epic\EpicPlatformServices.cs:674: //IL_0104: Unknown result type (might be due to invalid IL or missing references)
+TaleWorlds.PlatformService.Epic\TaleWorlds\PlatformService\Epic\EpicPlatformServices.cs:675: //IL_0106: Unknown result type (might be due to invalid IL or missing references)
+TaleWorlds.PlatformService.Epic\TaleWorlds\PlatformService\Epic\EpicPlatformServices.cs:676: //IL_0113: Unknown result type (might be due to invalid IL or missing references)
+TaleWorlds.PlatformService.Epic\TaleWorlds\PlatformService\Epic\EpicPlatformServices.cs:677: //IL_011d: Expected O, but got Unknown
+TaleWorlds.PlatformService.Epic\TaleWorlds\PlatformService\Epic\EpicPlatformServices.cs:678: //IL_0094: Unknown result type (might be due to invalid IL or missing references)
+TaleWorlds.PlatformService.Epic\TaleWorlds\PlatformService\Epic\EpicPlatformServices.cs:679: //IL_00bb: Unknown result type (might be due to invalid IL or missing references)
+TaleWorlds.PlatformService.Epic\TaleWorlds\PlatformService\Epic\EpicPlatformServices.cs:706: //IL_0001: Unknown result type (might be due to invalid IL or missing references)
+TaleWorlds.PlatformService.Epic\TaleWorlds\PlatformService\Epic\EpicPlatformServices.cs:707: //IL_0018: Unknown result type (might be due to invalid IL or missing references)
+TaleWorlds.PlatformService.Epic\TaleWorlds\PlatformService\Epic\EpicPlatformServices.cs:708: //IL_001d: Unknown result type (might be due to invalid IL or missing references)
+TaleWorlds.PlatformService.Epic\TaleWorlds\PlatformService\Epic\EpicPlatformServices.cs:739: //IL_0021: Unknown result type (might be due to invalid IL or missing references)
+TaleWorlds.PlatformService.Epic\TaleWorlds\PlatformService\Epic\EpicPlatformServices.cs:740: //IL_0041: Unknown result type (might be due to invalid IL or missing references)
+TaleWorlds.PlatformService.Epic\TaleWorlds\PlatformService\Epic\EpicPlatformServices.cs:741: //IL_0042: Unknown result type (might be due to invalid IL or missing references)
+TaleWorlds.PlatformService.Epic\TaleWorlds\PlatformService\Epic\EpicPlatformServices.cs:742: //IL_0058: Unknown result type (might be due to invalid IL or missing references)
+TaleWorlds.PlatformService.Epic\TaleWorlds\PlatformService\Epic\EpicPlatformServices.cs:743: //IL_0062: Expected O, but got Unknown
+TaleWorlds.PlatformService.Epic\TaleWorlds\PlatformService\Epic\EpicPlatformServices.cs:751: //IL_0001: Unknown result type (might be due to invalid IL or missing references)
+TaleWorlds.PlatformService.Epic\TaleWorlds\PlatformService\Epic\EpicPlatformServices.cs:752: //IL_000a: Unknown result type (might be due to invalid IL or missing references)
+TaleWorlds.PlatformService.Epic\TaleWorlds\PlatformService\Epic\EpicPlatformServices.cs:753: //IL_002f: Unknown result type (might be due to invalid IL or missing references)
+TaleWorlds.PlatformService.Epic\TaleWorlds\PlatformService\Epic\EpicPlatformServices.cs:754: //IL_0030: Unknown result type (might be due to invalid IL or missing references)
+TaleWorlds.PlatformService.Epic\TaleWorlds\PlatformService\Epic\EpicPlatformServices.cs:755: //IL_0045: Unknown result type (might be due to invalid IL or missing references)
+TaleWorlds.PlatformService.Epic\TaleWorlds\PlatformService\Epic\EpicPlatformServices.cs:776: //IL_0021: Unknown result type (might be due to invalid IL or missing references)
+TaleWorlds.PlatformService.Epic\TaleWorlds\PlatformService\Epic\EpicPlatformServices.cs:777: //IL_0041: Unknown result type (might be due to invalid IL or missing references)
+TaleWorlds.PlatformService.Epic\TaleWorlds\PlatformService\Epic\EpicPlatformServices.cs:778: //IL_0042: Unknown result type (might be due to invalid IL or missing references)
+TaleWorlds.PlatformService.Epic\TaleWorlds\PlatformService\Epic\EpicPlatformServices.cs:779: //IL_0058: Unknown result type (might be due to invalid IL or missing references)
+TaleWorlds.PlatformService.Epic\TaleWorlds\PlatformService\Epic\EpicPlatformServices.cs:780: //IL_0062: Expected O, but got Unknown
+TaleWorlds.PlatformService.Epic\TaleWorlds\PlatformService\Epic\EpicPlatformServices.cs:788: //IL_0001: Unknown result type (might be due to invalid IL or missing references)
+TaleWorlds.PlatformService.Epic\TaleWorlds\PlatformService\Epic\EpicPlatformServices.cs:789: //IL_000d: Unknown result type (might be due to invalid IL or missing references)
+TaleWorlds.PlatformService.Epic\TaleWorlds\PlatformService\Epic\EpicPlatformServices.cs:790: //IL_0032: Unknown result type (might be due to invalid IL or missing references)
+TaleWorlds.PlatformService.Epic\TaleWorlds\PlatformService\Epic\EpicPlatformServices.cs:791: //IL_0033: Unknown result type (might be due to invalid IL or missing references)
+TaleWorlds.PlatformService.Epic\TaleWorlds\PlatformService\Epic\EpicPlatformServices.cs:792: //IL_004f: Unknown result type (might be due to invalid IL or missing references)
+TaleWorlds.PlatformService.Epic\TaleWorlds\PlatformService\Epic\EpicPlatformServices.cs:793: //IL_0074: Unknown result type (might be due to invalid IL or missing references)
+TaleWorlds.PlatformService.Epic\TaleWorlds\PlatformService\Epic\EpicPlatformServices.cs:794: //IL_0076: Unknown result type (might be due to invalid IL or missing references)
+TaleWorlds.PlatformService.Epic\TaleWorlds\PlatformService\Epic\EpicPlatformServices.cs:795: //IL_008b: Unknown result type (might be due to invalid IL or missing references)
+TaleWorlds.PlatformService.Epic\TaleWorlds\PlatformService\Epic\EpicPlatformServices.cs:827: //IL_0002: Unknown result type (might be due to invalid IL or missing references)
+TaleWorlds.PlatformService.Epic\TaleWorlds\PlatformService\Epic\EpicPlatformServices.cs:828: //IL_0022: Unknown result type (might be due to invalid IL or missing references)
+TaleWorlds.PlatformService.Epic\TaleWorlds\PlatformService\Epic\EpicPlatformServices.cs:829: //IL_0023: Unknown result type (might be due to invalid IL or missing references)
+TaleWorlds.PlatformService.Epic\TaleWorlds\PlatformService\Epic\EpicPlatformServices.cs:830: //IL_0046: Unknown result type (might be due to invalid IL or missing references)
+TaleWorlds.PlatformService.Epic\TaleWorlds\PlatformService\Epic\EpicPlatformServices.cs:831: //IL_004b: Unknown result type (might be due to invalid IL or missing references)
+TaleWorlds.PlatformService.Epic\TaleWorlds\PlatformService\Epic\EpicPlatformServices.cs:832: //IL_0051: Expected O, but got Unknown
