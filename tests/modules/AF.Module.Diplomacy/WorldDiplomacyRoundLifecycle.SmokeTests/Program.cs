@@ -10969,6 +10969,38 @@ RunRepairCorrectionAndJobDecisionTests();
 
     static void RunPlayerWorldStateIntentDecisionTests()
     {
+        foreach (string treaty in new[] { "annexation", "tributary", "garrison", "vassal" })
+        {
+            string intent = "accept_" + treaty;
+            Test.True(WorldDiplomacyOfferContractRules.CommitmentMatchesIntent(intent, "acceptance")
+                && !WorldDiplomacyOfferContractRules.CommitmentMatchesIntent(intent, "binding"),
+                treaty + " acceptance remains an offer response even when execution is immediate");
+            var response = new WorldDiplomacyDocument
+            {
+                RoundId = "treaty-round", RespondingToOfferDocumentId = "treaty-offer",
+                RespondingToOfferActionId = ""
+            };
+            var treatyRound = new WorldDiplomacyRound { RoundId = response.RoundId };
+            var offer = new WorldDiplomacyRoundOffer
+            {
+                Intent = "propose_" + treaty, ProposerKingdomId = "vlandia",
+                TargetKingdomId = "new_kingdom", Status = "open",
+                SourceDocumentId = response.RespondingToOfferDocumentId, SourceActionId = ""
+            };
+            treatyRound.PendingOffers.Add(offer);
+            Test.True(!WorldDiplomacyGenerationValidationRules.TryGetPlayerWorldStateIntentViolation(
+                response, intent, "acceptance", "new_kingdom", "vlandia", true,
+                _ => (false, ""), (_, _) => (false, ""),
+                _ => treatyRound, _ => null, out string acceptedReason) && acceptedReason == "",
+                treaty + " player acceptance must pass for its exact open source offer");
+            offer.Status = "rejected";
+            Test.True(WorldDiplomacyGenerationValidationRules.TryGetPlayerWorldStateIntentViolation(
+                response, intent, "acceptance", "new_kingdom", "vlandia", true,
+                _ => (false, ""), (_, _) => (false, ""),
+                _ => treatyRound, _ => null, out string closedReason)
+                && closedReason == "player_offer_response_without_exact_open_offer",
+                treaty + " acceptance must still reject a closed source offer");
+        }
         // DPL-060CP: the player world-state violation chain gates mechanical
         // intents through party eligibility, commitment shape, source binding,
         // state/threat probes, and exact open-offer resolution.

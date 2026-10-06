@@ -60,10 +60,11 @@ public static class WorldDiplomacyOfferContractRules
 	{
 		string normalizedIntent = WorldDiplomacyIntentVocabulary.NormalizeIntent(intent);
 		string normalizedCommitment = WorldDiplomacyIntentVocabulary.NormalizeCommitment(commitment);
-		if (WorldDiplomacyIntentVocabulary.IsImmediateIntent(normalizedIntent)) return normalizedCommitment == "binding";
 		if (WorldDiplomacyIntentVocabulary.IsProposalIntent(normalizedIntent)) return normalizedCommitment == "proposal";
+		// Treaty acceptance executes immediately, but its commitment is still an offer response.
 		if (normalizedIntent.StartsWith("accept_", StringComparison.Ordinal)) return normalizedCommitment == "acceptance";
 		if (normalizedIntent.StartsWith("reject_", StringComparison.Ordinal)) return normalizedCommitment == "rejection";
+		if (WorldDiplomacyIntentVocabulary.IsImmediateIntent(normalizedIntent)) return normalizedCommitment == "binding";
 		if (normalizedIntent is "ultimatum" or "comply_ultimatum" or "apology" or "concession") return normalizedCommitment == "binding";
 		if (normalizedIntent is "statement" or "condemn" or "warning") return normalizedCommitment == "non_binding";
 		return false;
