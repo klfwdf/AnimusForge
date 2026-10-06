@@ -607,9 +607,13 @@ public class DevMultilineEditableTextWidget : BrushWidget
 		{
 			return end;
 		}
-		for (int i = end; i > start; i--)
-		{
-			char c = text[i - 1];
+        // Prefer punctuation only near the measured edge, not anywhere in the line.
+        // At most 15% (and three UTF-16 positions) may be left unused.
+        int lookback = Math.Min(3, (end - start) * 15 / 100);
+        int minimumBreak = end - lookback;
+        for (int i = end; i >= minimumBreak && i > start; i--)
+        {
+            char c = text[i - 1];
 			if (char.IsWhiteSpace(c) || c == '，' || c == '。' || c == '；' || c == '：' || c == '、' || c == ',' || c == '.' || c == ';' || c == ':')
 			{
 				return i;
