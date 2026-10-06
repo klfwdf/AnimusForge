@@ -1,3 +1,9 @@
+# 当前交接：散场空闲目标、冲突接管与刑场避让修复（2026-10-06，OFFLINE_VERIFIED_LIVE_PENDING）
+
+- 产品616a5bd5，检查点1800966：实际可用站位及common/limited回退，验证外向目标和整条导航路径；后续重新选点同样避让。新命中/警戒或战斗停止剩余散场接管，不清新警戒。替代下方984b4d5a的对应目标/接管结论。
+- 49项散场/路径fixture、76项隔离回归、AF双API+Bootstrap/双接缝门禁及独立处决目标1.4.8编译通过。实机动态避障、拥挤、自定义刑场/旧档未验；没有安全路线不强行走。未Stage/覆盖游戏/打包/推送。
+- [唯一主台账与回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#execution-crowd-safe-dispersal-20261006)，本地artifacts/execution-crowd-safe-dispersal-20261006/receipt.json。源码回滚仅git revert 616a5bd5，保留并行作者。
+
 # 当前交接：处决欢呼后民众散场（2026-10-06，OFFLINE_VERIFIED_LIVE_PENDING）
 
 - 产品984b4d5a，检查点ddffb37f：欢呼及真实收尾后，每0.35秒释放一名观众到原版城镇行走AI；有限重试，不抢新冲突控制。原处决和场景隔离恢复边界保留。
