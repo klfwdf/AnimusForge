@@ -7793,3 +7793,12 @@ R2计划交付门槛：已给固定技术路线、真实来源与目标、写入
 
 - 用户明确请求部署；沿用产品3db5d5af0及已通过双API/Bootstrap、双接缝的产物，调用scripts/build/deploy_module.ps1原入口。实际更新9文件，退出0；Stage全部3379文件与安装目录SHA256一致。证据artifacts/diplomacy-treaty-acceptance-20261007/deploy.log、deploy-verification.json。
 - 安装位置：F:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord/Modules/AnimusForge。恢复目录：C:/Users/29310/AppData/Local/AnimusForge/Recovery/deploy/deploy-5e1644f80d09472f83a539a89e6370a9，含manifest.json、旧文件files与complete标记。未打包/推送；玩家存档实机吞并仍未验。本条取代上条仅“未部署”状态，不改变测试范围。
+
+## grok-scene-pair-20261007 — BUILD_VERIFIED_NOT_DEPLOYED
+
+- 用户批准合并两场景图，并明确不要域名限制、直接对Grok请求生效。产品8dbe9f523，检查点98f7209。最终不含codex789域名判断。
+- UniversalOpenAiImageClient.cs:663–691 PairGrokSceneReferences只在grok-imagine-image系列JSON edits且4图中恰好2张ScenePerspective时合并；发送入口732。替换第一个场景位置、移除第二个独立槽，其余参考对象/顺序保持。所有站点生效，Player2/其他模型/其他图数组合不改。
+- ImagePayload.cs:57–85 PairSceneReferences按原尺寸左右复制场景PNG，增加32px标识区、8px间隔，A PRIMARY/B AUXILIARY；无裁剪、缩放、通道交换。边界采用既有像素/24MiB约束，可取消；只在一次上传准备执行，不新增Tick扫描或请求重试。
+- IllustrationReferenceImage.cs:16在枚举末尾增加PairedScenePerspective；VisualFidelityRules.cs:89–90明确主/辅视角为独立透视，不沿接缝推断空间、不输出拼图/字母/边框、保持最终画幅。标签保留两图原说明，避免辅助说明串到人物。诊断grok_scene_reference_pair记录4到3并保存实际发送合成图。
+- 验证：diff/源码接线审查；最终无域名限制后重跑统一构建1.3/1.4/Bootstrap及双接缝PASS，artifacts/grok-scene-pair-20261007/build-final.log。按Illustrator规则未运行离线审计。
+- NOT-RUN：生产拼图逐像素回放、真实Grok拼图三参考出图与视觉效果、实机；本轮未新增付费请求、未部署/推送/打包。不能把四图失败推断成官方三图上限，也不能以编译通过声称502已修复。回滚git revert 8dbe9f523。
