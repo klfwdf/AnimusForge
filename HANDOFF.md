@@ -1,3 +1,10 @@
+# 当前交接：导演25000默认与可选缩减交付（2026-10-07，DEPLOYED_PACKAGED_PUSHED_LIVE_PENDING）
+
+- 默认25000、最大64000；产品9b8290509+46f8ba843。双版/Bootstrap/双接缝通过；部署26文件，3379文件哈希一致。
+- 最终包AnimusForge_v1.5.5_20261007_031937_752.zip；安装XML仍v1.5.4。源码已推送，实机与真实API未验。
+- 用户要求旧Stage删除，但自动审批拒绝；artifacts/illustrator-token-budget-20261007/previous-stage仍保留。启动器关闭后部署重试成功。
+- [主台账、证据与回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#illustrator-token-budget-delivery-20261007--deployed_packaged_pushed_live_pending)。后文旧状态由本条交付结果取代。
+
 # 当前交接：导演预算与可选缩减（2026-10-07，BUILD_VERIFIED_NOT_DEPLOYED）
 
 - 产品46f8ba843，检查点6cb5695。导演max_tokens默认16384；强制缩减默认关闭、字符上限默认4000可调。旧软篇幅保留，三协议及回退共享限制，固定规则放不下则停止发送。
