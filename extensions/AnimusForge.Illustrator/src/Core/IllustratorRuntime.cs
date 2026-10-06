@@ -40,6 +40,7 @@ namespace AnimusForge.Illustrator.Core
         public int ImageGenerationTimeoutSeconds { get; }
         internal bool HasPlayerRedrawRequest { get; private set; }
         internal bool IsApiTest { get; private set; }
+        internal string OutputFrameRequirement { get; private set; } = string.Empty;
 
         internal IllustrationOptions ForApiTest()
         {
@@ -67,16 +68,24 @@ namespace AnimusForge.Illustrator.Core
         // The smallest tier is 1280x720: 1024x576 falls below GPT Image 2's pixel minimum.
         internal IllustrationOptions WithSceneImageSize()
         {
+            string imageSize;
             switch (ImageSize)
             {
                 case "2048x2048":
-                    return WithImageSize("2048x1152");
+                    imageSize = "2048x1152";
+                    break;
                 case "1344x768":
                 case "1024x1536":
-                    return WithImageSize("1536x864");
+                    imageSize = "1536x864";
+                    break;
                 default:
-                    return WithImageSize("1280x720");
+                    imageSize = "1280x720";
+                    break;
             }
+            var copy = WithImageSize(imageSize);
+            copy.OutputFrameRequirement = "最终成图必须为横向16:9，目标尺寸" + imageSize
+                + "。按此画幅重新组织完整画面，保持人物与场景的自然比例；参考图只提供其标注用途，不决定输出画幅。不要生成方图或竖图，不要拉伸或加边框伪造横图。此画幅要求适用于普通生成和重绘。";
+            return copy;
         }
 
         internal IllustrationOptions(IllustratorSettings settings, string directorUrl, string directorKey, string directorModel)
