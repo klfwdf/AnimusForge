@@ -305,7 +305,7 @@ namespace AnimusForge.Illustrator.Core
                 foreach (var property in obj.Properties())
                 {
                     string name = property.Name.ToLowerInvariant();
-                    if (name == "authorization" || name == "api_key" || name == "apikey" || name == "access_token" || name == "secret" || name == "player2-game-key") copy[property.Name] = "[redacted]";
+                    if (name == "authorization" || name == "api_key" || name == "apikey" || name == "access_token" || name == "secret") copy[property.Name] = "[redacted]";
                     else if (name == "b64_json" || name == "image" && property.Value.Type == JTokenType.String || name == "b64" || (name == "data" && property.Value.Type == JTokenType.String && property.Value.ToString().Length > 1024))
                         copy[property.Name] = "[image data omitted, " + property.Value.ToString().Length + " chars]";
                     else copy[property.Name] = Sanitize(property.Value, saveReferences);

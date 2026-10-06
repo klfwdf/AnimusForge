@@ -20,7 +20,6 @@ namespace AnimusForge.Illustrator.Core
         public int MaxCacheCount { get; }
         public string ApiBaseUrl { get; }
         public bool UsePlayer2ImageApi { get; private set; }
-        public string Player2GameClientId { get; }
         public string ApiKey { get; }
         public string ModelName { get; }
         public string ImageSize { get; private set; }
@@ -40,7 +39,6 @@ namespace AnimusForge.Illustrator.Core
         public string DirectorModelName { get; }
         public int DirectorApproximateTokens { get; }
         public int DirectorApiMaxTokens { get; }
-        internal int ForcedImagePromptCharacters { get; }
         public int ImageGenerationTimeoutSeconds { get; }
         internal bool HasPlayerRedrawRequest { get; private set; }
         internal bool IsApiTest { get; private set; }
@@ -128,7 +126,6 @@ namespace AnimusForge.Illustrator.Core
             MaxCacheCount = Math.Max(20, Math.Min(1000, settings.MaxCacheCount));
             ApiBaseUrl = settings.ApiBaseUrl;
 
-            Player2GameClientId = (settings.Player2GameClientId ?? "").Trim();
             ApiKey = settings.ApiKey;
             ModelName = settings.ModelName;
             ImageSize = settings.ImageSize;
@@ -156,8 +153,6 @@ namespace AnimusForge.Illustrator.Core
             DirectorModelName = directorModel;
             DirectorApproximateTokens = Math.Max(600, Math.Min(4000, settings.DirectorMaxTokens));
             DirectorApiMaxTokens = Math.Max(512, Math.Min(64000, settings.DirectorApiMaxTokens));
-            ForcedImagePromptCharacters = settings.ForceImagePromptLimit
-                ? Math.Max(1000, Math.Min(ImagePromptBudget.MaximumCharacters, settings.ForcedImagePromptCharacters)) : 0;
             ImageGenerationTimeoutSeconds = Math.Max(60, Math.Min(600, settings.ImageGenerationTimeoutSeconds));
         }
     }
