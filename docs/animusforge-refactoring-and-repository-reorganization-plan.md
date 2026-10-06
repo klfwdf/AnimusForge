@@ -1,5 +1,5 @@
 <a id="publish-v155-20261006"></a>
-# 1.5.5 累计玩家公告与 main 发布（2026-10-06，PUSH_READY）
+# 1.5.5 累计玩家公告与 main 发布（2026-10-06，PUSHED_REMOTE_VERIFIED）
 
 - 授权：用户要求提交推送、比较远端变化、以上次更新为基线提供面向玩家的累计公告。工作区F:/AnimusForge-main，main；开始6f44c18e，跟踪文件干净。回滚分支codex/pre-push-v1.5.5-20261006保留6f44c18e，意图检查点8e8da81。未修改游戏源码/设置/版本/部署脚本。
 - 基线依据：远端实际发布提交b188403634847bbac3e6e6633da7f99e6e6ba91e，v1.5.4，2026-10-06 11:17:54 +08:00；仓库最近公告为1.5.3，不将其日期误作最近产品发布。公告范围b1884036至本次v1.5.5源码，包括随后已在远端的ee796fec1 GCCZ修复和本地累计功能修复。
@@ -7,7 +7,7 @@
 - 发布核验：最终运行源码与已验证包的3dad3baf相同；差异仅远端参考资料/导出工具及发布文档。package SHA256仍a8099cd8156a25aa1294d6fe1d6edbdee9277902b5bc67d54827b2b7fd6adf19，沿用上条双实现/Bootstrap、63+76离线及3379文件证据，不重复编译无变化源码。公告新增Markdown和纯文本两份；按实际代码核对字号14–36/24、世界内战上限1–20/3、4周新通牒、新增怨恨减半、收编/路径及旧配置边界。
 - 历史范围核验：git rev-list --objects origin/main..HEAD -- docs/handoffs/2026-09-11-native-history-snapshot-team-handoff.md为空；待发布快照无artifacts/bin/.tmp/ZIP/sav。此为明确排除路径与候选范围核对，不冒充所有历史的通用保密审计。只推main，不推备份分支、不重写历史。
 - 公告文件docs/releases/AnimusForge_1.5.5_累计更新公告_20261006.md及.txt；本地verify_publication.py、prepush-receipt.json、merge.log保存范围与包校验。纯文本去Markdown标题/加粗，内容一致。未实现的信使好感/解救事实不列入，AI成图及实际游戏行为不作保证。
-- 状态：提交候选后执行git push origin HEAD:main，完成需独立ls-remote验证；未创建GitHub Release或代发玩家群，用户可直接使用已提交公告。实机/旧档仍未验，当前任务不改变下方验收边界。回滚采用定向inverse提交，不强推或reset既有历史。
+- 状态：公告提交a1755fa7ab7fea5cc320f92c50e2429522796a3b经git push origin HEAD:main成功（df6fc788c→a1755fa7a），独立git ls-remote确认同一SHA，领先/落后0/0。push.log、remote-main-first.txt保留原回执；首次远端比较脚本分隔符转义错误，改按制表符分割后通过，非推送失败。随后仅提交本条交接结果并同样普通推送/核对，最终远端回执见本地remote-main-final.txt。未创建GitHub Release或代发玩家群，用户可直接使用已提交公告。实机/旧档仍未验，当前任务不改变下方验收边界。回滚采用定向inverse提交，不强推或reset既有历史。
 
 <a id="execution-aftermath-location-character-20261006"></a>
 # 处决结束后攻击触发逃跑空引用与内政按钮底色（2026-10-06，DEPLOYED_PACKAGED_LIVE_PENDING）
