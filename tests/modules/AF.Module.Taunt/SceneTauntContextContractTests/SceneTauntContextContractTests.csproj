@@ -6,6 +6,9 @@
     <Nullable>disable</Nullable>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="..\..\..\..\src\bridges\Vengeance\Host\ExecutionSceneConflictBridge.cs" Link="ExecutionSceneConflictBridge.cs" />
+    <Compile Include="..\..\..\..\src\bridges\Vengeance\Host\TownExecutionMissionBehavior.AfSceneControl.cs" Link="TownExecutionMissionBehavior.AfSceneControl.cs" />
+    <Compile Include="..\..\..\..\Vengeance\Source\Core\ExecutionEnums.cs" Link="ExecutionEnums.cs" />
     <Compile Include="..\..\..\..\src\modules\AF.Module.Taunt\ScenePeaceConflictContextOwner.cs" Link="ScenePeaceConflictContextOwner.cs" />
     <Compile Include="..\..\..\..\src\modules\AF.Module.Taunt\SceneTauntPenaltyLedgerOwner.cs" Link="SceneTauntPenaltyLedgerOwner.cs" />
     <Compile Include="..\..\..\..\src\modules\AF.Module.Taunt\SceneTauntConflictLifecycleOwner.cs" Link="SceneTauntConflictLifecycleOwner.cs" />

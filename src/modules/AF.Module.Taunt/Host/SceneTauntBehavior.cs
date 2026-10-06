@@ -2407,6 +2407,8 @@ public class SceneTauntMissionBehavior : MissionBehavior
 
 	private bool _sceneAttackReleaseSuppressed;
 
+	private bool _executionSceneWasControlled;
+
 	private bool _playerAttackReleasePrimed;
 
 	private Agent.ActionStage? _lastMainAgentAttackStage;
@@ -2645,6 +2647,22 @@ public class SceneTauntMissionBehavior : MissionBehavior
 	public override void OnMissionTick(float dt)
 	{
 		using PerfProbe.ScopeToken perfScope = PerfProbe.Scope("Mission.SceneTauntMissionBehavior.OnMissionTick.total");
+		bool executionSceneControlled = ExecutionSceneConflictBridge.IsSceneControlled(base.Mission);
+		if (executionSceneControlled || _executionSceneWasControlled)
+		{
+			if (executionSceneControlled != _executionSceneWasControlled)
+			{
+				Logger.Log("SceneTaunt", executionSceneControlled
+					? "Execution scene isolation started."
+					: "Execution scene isolation ended; ordinary scene conflicts resume.");
+			}
+			_executionSceneWasControlled = executionSceneControlled;
+			_sceneAttackReleaseSuppressed = false;
+			_playerAttackReleasePrimed = false;
+			// Consume the final ceremony attack stage on the release frame too.
+			UpdateMainAgentAttackReleaseTracking();
+			return;
+		}
 		long tickStart = StartPerfTimer();
 		long sectionStart = StartPerfTimer();
 		TryActivateSettlementArmedCarryover();
@@ -3098,6 +3116,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 
 	private static bool CanInitializePeaceSceneConflict(Settlement settlement, bool physicalAttack = false)
 	{
+		if (ExecutionSceneConflictBridge.IsSceneControlled(Mission.Current)) return false;
 		try
 		{
 			bool physicalEnabled = !physicalAttack || SceneTauntBehavior.IsPeaceSceneConflictEnabled();
@@ -4042,6 +4061,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 
 	public override void OnAgentHit(Agent affectedAgent, Agent affectorAgent, in MissionWeapon attackerWeapon, in Blow blow, in AttackCollisionData attackCollisionData)
 	{
+		if (ExecutionSceneConflictBridge.BlocksConflict(base.Mission, affectedAgent)) return;
 		// 复仇处决的受刑犯人由处决流程结算，玩家亲手攻击也不算场景冲突。
 		if (affectorAgent == Agent.Main && (IsPlayerProtectedSceneAttackAgent(affectedAgent) || RichExecutions.Core.VengeanceIntegration.IsProtectedVictim(affectedAgent)))
 		{
@@ -4090,6 +4110,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 	public override void OnScoreHit(Agent affectedAgent, Agent affectorAgent, WeaponComponentData attackerWeapon, bool isBlocked, bool isSiegeEngineHit, in Blow blow, in AttackCollisionData collisionData, float damagedHp, float hitDistance, float shotDifficulty)
 	{
 		base.OnScoreHit(affectedAgent, affectorAgent, attackerWeapon, isBlocked, isSiegeEngineHit, in blow, in collisionData, damagedHp, hitDistance, shotDifficulty);
+		if (ExecutionSceneConflictBridge.BlocksConflict(base.Mission, affectedAgent)) return;
 		if (affectorAgent == Agent.Main && (IsPlayerProtectedSceneAttackAgent(affectedAgent) || RichExecutions.Core.VengeanceIntegration.IsProtectedVictim(affectedAgent)))
 		{
 			return;
@@ -4149,7 +4170,8 @@ public class SceneTauntMissionBehavior : MissionBehavior
 				ShoutBehavior.CancelAgentSpeechForRemovalExternal(affectedAgent.Index, "scene_taunt_agent_removed_" + agentState);
 			}
 			// 受刑犯人的死亡由复仇处决在离场时结算；不掉金币、不记犯罪、不计入冲突击倒。
-			if (RichExecutions.Core.VengeanceIntegration.IsProtectedVictim(affectedAgent))
+			if (ExecutionSceneConflictBridge.BlocksConflict(base.Mission, affectedAgent)
+				|| RichExecutions.Core.VengeanceIntegration.IsProtectedVictim(affectedAgent))
 			{
 				return;
 			}
@@ -5431,7 +5453,8 @@ public class SceneTauntMissionBehavior : MissionBehavior
 			return false;
 		}
 		Agent agent = ResolveTargetAgent(targetHero, targetCharacter, targetAgentIndex);
-		return agent != null && agent.IsHuman && agent.IsActive() && !IsPlayerAlignedConflictAgent(agent);
+		return agent != null && !ExecutionSceneConflictBridge.BlocksConflict(base.Mission, agent)
+			&& agent.IsHuman && agent.IsActive() && !IsPlayerAlignedConflictAgent(agent);
 	}
 
 	private bool ShouldPrioritizeUnarmedVillageBrawlOverSets(Agent attacker, Agent target, bool attackerUsedRealWeapon)
@@ -6492,6 +6515,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 
 	internal bool ShouldUseFullCombatDamage(Agent victimAgent, Agent attackerAgent)
 	{
+		if (ExecutionSceneConflictBridge.BlocksConflict(base.Mission, victimAgent)) return false;
 		if (!_conflictActive || victimAgent == null || attackerAgent == null)
 		{
 			return false;
@@ -6521,6 +6545,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 
 	private static bool IsPlayerProtectedSceneAttackAgent(Agent agent)
 	{
+		if (ExecutionSceneConflictBridge.BlocksConflict(Mission.Current, agent)) return true;
 		try
 		{
 			if (agent == null)
@@ -6691,6 +6716,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 
 	internal static void ApplyArmedConflictStartCrimeForExternal(IFaction faction, string reason)
 	{
+		if (ExecutionSceneConflictBridge.IsSceneControlled(Mission.Current)) return;
 		try
 		{
 			SceneTauntMissionBehavior behavior = Mission.Current?.GetMissionBehavior<SceneTauntMissionBehavior>();
@@ -8473,6 +8499,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 
 	private static void TryForceAgentMortal(Agent agent)
 	{
+		if (ExecutionSceneConflictBridge.BlocksConflict(Mission.Current, agent)) return;
 		try
 		{
 			if (agent == null || !agent.IsActive())
@@ -8493,6 +8520,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 
 	private void AddAgentToFightSide(Agent agent, bool isPlayerSide)
 	{
+		if (ExecutionSceneConflictBridge.BlocksConflict(base.Mission, agent)) return;
 		try
 		{
 			if (agent == null || !agent.IsActive() || _fightHandler == null)
@@ -8750,6 +8778,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 		AgentState agentState,
 		string reason)
 	{
+		if (ExecutionSceneConflictBridge.BlocksConflict(base.Mission, affectedAgent)) return;
 		try
 		{
 			if (affectedAgent == null || !affectedAgent.IsHuman)
@@ -8992,6 +9021,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 
 	private static bool ShouldJoinArmedBystanderToConflict(Agent agent)
 	{
+		if (ExecutionSceneConflictBridge.BlocksConflict(Mission.Current, agent)) return false;
 		try
 		{
 			if (agent == null || !agent.IsHuman || !agent.IsActive() || agent.IsMainAgent || !agent.IsAIControlled)
@@ -9020,6 +9050,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 
 	private static void TryForceUnarmedBystanderToFlee(Agent agent)
 	{
+		if (ExecutionSceneConflictBridge.BlocksConflict(Mission.Current, agent)) return;
 		try
 		{
 			if (!ShouldForceUnarmedBystanderToFlee(agent))
@@ -9299,6 +9330,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 
 	private void TryForceArmedBystanderToWatchPlayer(Agent agent)
 	{
+		if (ExecutionSceneConflictBridge.BlocksConflict(base.Mission, agent)) return;
 		try
 		{
 			if (!ShouldForceArmedBystanderToWatchPlayer(agent))
@@ -9395,6 +9427,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 
 	private static void TryAlarmAgent(Agent agent)
 	{
+		if (ExecutionSceneConflictBridge.BlocksConflict(Mission.Current, agent)) return;
 		if (agent == null)
 		{
 			return;
@@ -9796,6 +9829,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 
 	private static void AddUniqueAgent(List<Agent> agents, Agent agent)
 	{
+		if (ExecutionSceneConflictBridge.BlocksConflict(Mission.Current, agent)) return;
 		if (agent != null && !agents.Contains(agent))
 		{
 			agents.Add(agent);
@@ -9917,6 +9951,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 
 	private bool ShouldSuppressSceneNotableDeath(Hero hero)
 	{
+		if (ExecutionSceneConflictBridge.IsSceneControlled(base.Mission)) return false;
 		try
 		{
 			return hero != null && (_conflictActive || IsOwnedSettlementPassiveAttackScene()) && _sceneNotableRecentHitNonLethal.TryGetValue(hero, out bool flag) && flag;
@@ -9929,6 +9964,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 
 	private bool ShouldDeferSceneNotableBattleDeath(Hero hero)
 	{
+		if (ExecutionSceneConflictBridge.IsSceneControlled(base.Mission)) return false;
 		try
 		{
 			return hero != null && (_conflictActive || IsOwnedSettlementPassiveAttackScene()) && _sceneNotableDeferredBattleDeathCandidates.Contains(hero);
