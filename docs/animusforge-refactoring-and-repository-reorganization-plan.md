@@ -1,3 +1,15 @@
+<a id="illustrator-module-storage-20261006"></a>
+# 生图模组内存储、默认清理与 API 测试（2026-10-06，BUILD_VERIFIED_DELIVERY_PENDING）
+
+- 用户授权：生图不要写C盘、放模组目录；改完提交推送编译部署打包；自动清理默认开启；生图API配置新增测试；随后明确“不迁移”。F:/AnimusForge-main/main，基线bfbd591f1，检查点164a3db，初版产品cf3377691，后续无迁移修订以本条最终交付为准。保留现有作品，未清除C盘旧临时文件；不改Windows环境变量、游戏和其他MCM全局存储。
+- 路径owner为extensions/AnimusForge.Illustrator/src/Engine/IllustratorStoragePaths.cs，当前模块根一次解析；固定成图logs/image save、临时Cache/Illustrator/Temp、配置Configs/Illustrator、测试Cache/Illustrator/ApiTest。ScreenCaptureHelper所有Tableau/texture导出与查找/清理、IsolatedPanoramaRenderer六面路径、NativeExportDiagnostics实际临时路径、DiskImageCacheManager失败行为、两个模型列表缓存均接通。模块目录不可用时显式失败，不回退C盘。无新增Tick、全盘扫描或渲染方式/颜色变化。
+- IllustratorSettingsStorage由设置构造先初始化，仅命中专用FolderName/生图preset ID，Harmony定向MCM FileSystemProvider目录函数及BaseJsonSettingsFormat.Load/Save；保留MCM原字段/下拉序列化，防小方法内联漏掉主配置重定向。两个实际MCM引用支持所用公开GameDirectory；本机反编译证据GlobalRegistration/SettingsContainer/FileSystem/JsonFormat/Preset保存在artifacts。绝对模块目录由原版PlatformFileHelperPC的Path.Combine识别。最终不读取/复制旧Documents配置、模型列表或预设，不保留隐式迁移/系统目录回退。
+- 默认AutoCleanTempFiles=true；已有显式值仍由MCM正常加载。原生全景已有逐请求清理，纹章/其他清理沿既有开关与任务owner，不扩大至作品或全局目录。
+- IllustratorApiTest：MCM生图API组Order14“测试生图 API（可能计费）”，当前编辑对象捕获IllustrationOptions，不读后台实时设置；复用有界4worker和主线程回写。显式点击测试、重复点击取消、换档/卸载Reset取消；有限超时复用设置。没有导演/现场采集，显式edits地址用内存生成空白参考图。IsApiTest只阻止本测试的Images→Chat自动重试，普通生图规则不变；验证实际返回图片可解码，原子覆盖模组ApiTest/last-result.png，不保存画廊/记忆。错误做密钥和URL敏感参数脱敏，结果显示限420字符。
+- 验证：路径/消费者/实际MCM源码与原生文件helper审查、diff检查通过；初版build.log及含测试按钮的build-final.log原入口Debug双API+Bootstrap/双接缝PASS，引用v1.3.15.110062/v1.4.6.115628。遵循Illustrator AGENTS未运行离线审计脚本，没有调用付费API/实机MCM按钮、保存预设/重启加载/GPU导出或系统文件监控验收，不声称整个进程不会写C盘。受控范围是生图自己创建的上述文件；系统/游戏日志和其他模块保持原样。
+- 用户纠正前中间部署已复制3份配置，225158包属于已废弃的含迁移实现。纠正后源码彻底删除CopyLegacySettings/CopyIfMissing；删除副本命令遭自动审批拒绝（未提供详细原因），改为可逆归档。本机核验源/目标哈希未变后将本轮新增3份文件移至artifacts/illustrator-module-storage-20261006/cancelled-migration，不再留在有效模组配置中；原C盘文件未修改。此目录包含私人配置，仅留本地、不入Git或ZIP。migration-reverted.txt记录撤销，不能将旧config-migration.json误称最终已启用迁移。
+- 交付：使用原deploy_module.ps1和package_mod.ps1，保持v1.5.5包版本；不改统一脚本。最终文件清单、无迁移检查、部署Recovery、ZIP哈希及推送结果待本条完成记录。本地证据artifacts/illustrator-module-storage-20261006，不提交个人JSON/API密钥/运行产物。源码按无迁移修订/初版逆序定向revert，旧C盘文件保留，不reset其他成果。
+
 <a id="publish-v155-20261006"></a>
 # 1.5.5 累计玩家公告与 main 发布（2026-10-06，PUSHED_REMOTE_VERIFIED）
 
