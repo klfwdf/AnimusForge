@@ -1,0 +1,35 @@
+namespace TaleWorlds.CampaignSystem.Settlements.Buildings;
+
+public enum BuildingEffectEnum
+{
+	GarrisonCapacity,
+	Loyalty,
+	Prosperity,
+	Influence,
+	ConstructionPerDay,
+	Militia,
+	WallRepairSpeed,
+	SiegeEngineSpeed,
+	MilitiaReduction,
+	FoodProduction,
+	FoodStock,
+	ExperiencePerDay,
+	TaxPerDay,
+	GarrisonWageReduction,
+	GarrisonAutoRecruitment,
+	PrisonCapacity,
+	MilitiaVeterancyChance,
+	SecurityPerDay,
+	BallistaOnSiegeStart,
+	CatapultOnSiegeStart,
+	TariffIncome,
+	CaravanAccessibility,
+	WorkshopProduction,
+	FoodConsumption,
+	VillageProduction,
+	VillageHeartsPerDay,
+	DenarByBoundVillageHeartPerDay,
+	PatrolPartyStrength,
+	ShipProduction,
+	MaximumShipCount
+}
