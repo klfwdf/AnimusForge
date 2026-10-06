@@ -7730,3 +7730,12 @@ R2计划交付门槛：已给固定技术路线、真实来源与目标、写入
 - 最终包一键编译覆盖推送/packages/AnimusForge_v1.5.5_20261007_031937_752.zip，原脚本ZIP布局/哈希校验通过。替代本轮误用NoBump生成的v1.5.4_20261007_031414_865.zip。原脚本只修改ZIP版本，安装/Stage仍v1.5.4。
 - 证据artifacts/illustrator-token-budget-20261007：build-default25000.log、build-stage.log、deploy-retry.log、package-final.log、install-verification.json。部署恢复目录C:/Users/29310/AppData/Local/AnimusForge/Recovery/deploy/deploy-919fa93b37524aae9450642bfe445443。
 - NOT-RUN：实机MCM、生图服务接收max_tokens、空回改善及成图保真。源码回滚git revert 9b8290509（默认值）、git revert 46f8ba843（功能）；部署恢复使用对应Recovery记录，不做hard reset。
+
+## illustrator-model-selection-20261007 — BUILD_VERIFIED_NOT_DEPLOYED
+
+- 用户要求修复生图/导演模型下拉回跳。检查点1d51154，产品919d4ed27，main，修改前tracked clean。主模组四API有效模型读取直接读当前选项，本片不改其实现。
+- IllustratorSettings的两个Dropdown及候选列表改实例持有；setter复制传入对象，选项从实际Dropdown读取，不用另一个列表的序号。统一Replace方法在替换时解绑旧事件并绑定新事件；监听SelectedIndex即时更新同实例模型名并通知MCM。移除预设向全局Instance的跨实例写入。
+- 拉取列表保留当前模型，即使服务列表未包含也追加到本实例；不默认切第一项。手动输入保持原文本，导演复用选项清空名称。保存沿用MCM流程，不增加逐次磁盘写入、Tick、反射或模型调用。每选择O(1)，换对象/列表时才复制，初始化缓存读取移为每实例惰性执行。
+- 代码坐标：extensions/AnimusForge.Illustrator/src/Settings/IllustratorSettings.cs:28–38实例字段，114–155 setter/事件，158–167文本同步，427–460导演对象替换及同步，727–746/919–942初始化，886–900/1094–1110列表刷新。真实消费者IllustratorRuntime的IllustrationOptions构造读取ModelName、VisualDirectorEngine.TryResolveChatConfig读取DirectorModelName。
+- 验证：diff检查、所有对象构造/替换入口和事件解绑审查；scripts/build/build_single_module.ps1双API+Bootstrap+双接缝PASS，exit0。日志artifacts/illustrator-model-selection-20261007/build.log。按模块规则未运行Illustrator离线审计。
+- NOT-RUN：MCM实机点选/撤销/预设加载、保存重启与请求model一致性；未付费API调用、未部署/打包/推送。回滚git revert 919d4ed27。

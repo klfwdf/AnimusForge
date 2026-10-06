@@ -1,3 +1,9 @@
+# 当前交接：生图与导演模型选择同步（2026-10-07，BUILD_VERIFIED_NOT_DEPLOYED）
+
+- 产品919d4ed27，检查点1d51154。监听SelectedIndex同步模型名，Dropdown/列表实例隔离，复制预设对象并解绑旧事件；拉取模型不切换第一项。
+- 双API/Bootstrap/双接缝与diff审查通过；MCM实机、保存重启、预设/撤销与请求model一致性未验。未部署/打包/推送。
+- [主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#illustrator-model-selection-20261007--build_verified_not_deployed)，artifacts/illustrator-model-selection-20261007/build.log。回滚git revert 919d4ed27。
+
 # 当前交接：导演25000默认与可选缩减交付（2026-10-07，DEPLOYED_PACKAGED_PUSHED_LIVE_PENDING）
 
 - 默认25000、最大64000；产品9b8290509+46f8ba843。双版/Bootstrap/双接缝通过；部署26文件，3379文件哈希一致。
