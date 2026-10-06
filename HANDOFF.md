@@ -4,6 +4,7 @@
 - 回接城堡实际收编/容量/士气、原生寻路与 7 秒受保护卡住恢复、城镇操作防重启和 NPC 回复预算收紧；保留 main 新版城镇确认事件记忆与 Coup/SETS 改动。已删除旧的长距穿墙/传送围圈路径；公开兼容常量及旧提示助手保留，不启用旧效果。
 - GCCZ 专项 91、已有城镇规则记忆 60 PASS；2 个独立变异先编译成功，再命中预期具名失败。原入口 Release 1.3/1.4 + Bootstrap 均 0 错误，双最终 DLL 接缝/注册门禁和各 20 项记忆端口回归 PASS。NU1900 表示本机未取到 NuGet 漏洞审计，不是新编译错误。
 - [主台账、源码坐标、验收和回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#gccz-reviewed-repair-sync-20261006)。部署必须在远端推送确认之后，使用同一候选与原事务覆盖；本地 `artifacts/gccz-reviewed-sync/` 保留日志/hash/私有 Recovery 对应证据，完成状态以实际收据为准。
+- **已完成推送后同步游戏（DEPLOYED_HASH_VERIFIED_LIVE_PENDING）**：部署源码 `62c887d7070b990034041615cbe7ea9b555245b6`，原事务覆盖 9 个文件，9 份旧备份 hash 一致；安装全部 3379 个 Stage 文件匹配，保留 979 个未知文件（其中 5 个 ONNX 文件），3 份原版 DLL 样本未变。本地实验记忆 10 份文件 hash 未变且不纳入候选。详细本地证据 `artifacts/gccz-reviewed-sync/verification.json` 和 `recovery-verification.json`；未启动游戏/操作存档，实机与旧档仍 NOT_RUN。
 - 本地试验记忆、人设 TEST、GCCZ 未提交 UI/政策草稿不纳入；没有更改 SyncData 键、保存类型、公开 V1 API、默认入口或原版游戏 DLL。LIVE/SAVE/原生碰撞/帧耗时/真实 provider 尚 **NOT_RUN**。下方历史工作区/未部署文字不选择本次目录，也不授权覆盖其他任务。
 
 # 当前交接：AnimusForge 1.5.4 提交/推送与单ZIP打包（2026-10-06）
