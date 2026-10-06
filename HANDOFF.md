@@ -1,3 +1,9 @@
+# 当前交接：Player2自动识别与Grok JSON部署（2026-10-07，DEPLOYED_LIVE_PENDING）
+
+- 产品80a47681d+56bd34498。Player2取消手动开关，后台OpenAPI确认并缓存，模型列表提示应用选模，测试按参考图开关分通道。Grok编辑使用JSON images。
+- 双API/Bootstrap/双接缝通过，部署9文件，3379项哈希一致；实机与Player2计费API未验。未打包/推送。
+- [主台账与回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#player2-auto-discovery-20261007--deployed_live_pending)。证据artifacts/grok-json-edits-20261007。后文未部署/手动开关状态由本条取代。
+
 # 当前交接：Grok JSON与Player2生图兼容（2026-10-07，BUILD_VERIFIED_NOT_DEPLOYED）
 
 - Grok edits按模型族使用官方JSON images，保留最多5张完整参考；Player2新增显式模式，原生/image/generate与/image/edit、应用选模、JSON图片响应与测试入口适配。
