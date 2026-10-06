@@ -96,6 +96,7 @@ namespace AnimusForge.Illustrator.Core
 
             string apiKey = (settings.ApiKey ?? string.Empty).Trim();
             GenerationDiagnostics.Current?.RegisterSecret(apiKey);
+            GenerationDiagnostics.Current?.RegisterSecret(settings.Player2GameClientId);
             string model = (settings.ModelName ?? "black-forest-labs/FLUX.1-schnell").Trim();
             string size = (settings.ImageSize ?? "1024x1024").Trim();
             string quality = settings.SelectedQuality ?? "";
@@ -135,23 +136,24 @@ namespace AnimusForge.Illustrator.Core
                 int requestedRefImages = referenceImages?.Count ?? 0;
                 GenerationDiagnostics.Current?.RecordStage("image_prompt_sources", new JObject { ["customStyleActive"] = isCustomPreset && !playerRedraw, ["customNegativeActive"] = isCustomPreset && !playerRedraw && !string.IsNullOrWhiteSpace(settings.NegativePrompt), ["directorRuleSource"] = playerRedraw ? "player redraw reconciled by director; saved style/negatives only as defaults" : "isolated visual rules; no direct RuleBehaviorPrompts", ["promptChars"] = prompt?.Length ?? 0 });
 
-                bool configuredEditsEndpoint = IsImagesEditsEndpointUrl(baseUrl);
+                bool player2 = settings.UsePlayer2ImageApi;
+                bool configuredEditsEndpoint = player2 ? requestedRefImages > 0 : IsImagesEditsEndpointUrl(baseUrl);
                 bool exactEditsEndpoint = settings.UseExactEndpointUrl && configuredEditsEndpoint;
-                bool isChatProtocol = !configuredEditsEndpoint && (IsChatCompletionProtocol(model, baseUrl, settings.UseExactEndpointUrl)
+                bool isChatProtocol = !player2 && !configuredEditsEndpoint && (IsChatCompletionProtocol(model, baseUrl, settings.UseExactEndpointUrl)
                     || (settings.PreferChatImageProtocol && !settings.UseExactEndpointUrl));
-                string endpointUrl = ResolveEndpointUrl(baseUrl, isChatProtocol, settings.UseExactEndpointUrl);
+                string endpointUrl = player2 ? ResolvePlayer2Endpoint(baseUrl, false) : ResolveEndpointUrl(baseUrl, isChatProtocol, settings.UseExactEndpointUrl);
                 var composed = ComposeImagePrompt(prompt, size, quality, style, customStyleHint, negativePrompt, isChatProtocol, settings.Randomness,
-                    ResolvePromptProfile(model, isChatProtocol), playerRedraw, settings.OutputFrameRequirement);
+                    player2 ? ImagePromptProfile.Full : ResolvePromptProfile(model, isChatProtocol), playerRedraw, settings.OutputFrameRequirement);
                 string effectivePrompt = composed.Text;
                 string route = isChatProtocol ? "Chat" : configuredEditsEndpoint || (requestedRefImages > 0 && !settings.UseExactEndpointUrl) ? "ImagesEdits" : "Images";
-                GenerationDiagnostics.Current?.RecordStage("image_route", new JObject { ["protocol"] = route, ["endpoint"] = SensitiveLogText.SafeUrl(route == "ImagesEdits" ? ResolveEditsEndpointUrl(baseUrl) : endpointUrl), ["requestedRefs"] = requestedRefImages, ["reason"] = settings.UseExactEndpointUrl ? "explicit exact endpoint" : isChatProtocol ? "model or chat preference" : requestedRefImages > 0 ? "references present: edits first; no text-only reference fallback" : configuredEditsEndpoint ? "edit endpoint requires image" : "no references: text-to-image", ["referenceGenerationEnabled"] = settings.EnableReferenceImageForGeneration });
+                GenerationDiagnostics.Current?.RecordStage("image_route", new JObject { ["protocol"] = route, ["endpoint"] = SensitiveLogText.SafeUrl(route == "ImagesEdits" ? (player2 ? ResolvePlayer2Endpoint(baseUrl, true) : ResolveEditsEndpointUrl(baseUrl)) : endpointUrl), ["requestedRefs"] = requestedRefImages, ["reason"] = settings.UseExactEndpointUrl ? "explicit exact endpoint" : isChatProtocol ? "model or chat preference" : requestedRefImages > 0 ? "references present: edits first; no text-only reference fallback" : configuredEditsEndpoint ? "edit endpoint requires image" : "no references: text-to-image", ["referenceGenerationEnabled"] = settings.EnableReferenceImageForGeneration });
                 if (configuredEditsEndpoint && requestedRefImages == 0)
                 {
                     result.ErrorMessage = "images/edits 端点需要可用的参考图；请开启参考图并取得人物或场景参考后再生成。未发送请求。";
                     GenerationDiagnostics.Current?.RecordStage("image_route_rejected", new JObject { ["failureCode"] = "image.edit_reference_missing", ["error"] = result.ErrorMessage });
                     return result;
                 }
-                if (settings.UseExactEndpointUrl && !exactEditsEndpoint && !isChatProtocol && requestedRefImages > 0)
+                if (!player2 && settings.UseExactEndpointUrl && !exactEditsEndpoint && !isChatProtocol && requestedRefImages > 0)
                 {
                     // /images/generations has no image field. Do not report a successful
                     // text-only generation as if the caller's identity/scene references were
@@ -169,9 +171,9 @@ namespace AnimusForge.Illustrator.Core
 
                 // 2. Images 协议 + 有参考图 → 先试 /images/edits（multipart 真正携带参考图）。
                 //    generations 端点没有参考图字段，之前日志打 refImages=N 但实际从未发送。
-                if (!isChatProtocol && requestedRefImages > 0 && (!settings.UseExactEndpointUrl || exactEditsEndpoint))
+                if (!isChatProtocol && requestedRefImages > 0 && (player2 || !settings.UseExactEndpointUrl || exactEditsEndpoint))
                 {
-                    var edit = await AttemptImagesEditsAsync(baseUrl, model, effectivePrompt, size, quality, style, referenceImages, apiKey, cancellationToken, customStyleHint, composed.NegativeField, playerRedraw, settings.ForcedImagePromptCharacters).ConfigureAwait(false);
+                    var edit = await AttemptImagesEditsAsync(baseUrl, model, effectivePrompt, size, quality, style, referenceImages, apiKey, cancellationToken, customStyleHint, composed.NegativeField, playerRedraw, settings.ForcedImagePromptCharacters, player2, settings.Player2GameClientId).ConfigureAwait(false);
                     result.ResolvedPrompt = edit.ResolvedPrompt;
                     if (edit.Success)
                     {
@@ -196,7 +198,7 @@ namespace AnimusForge.Illustrator.Core
 
                 if (!success && !stopAfterEditFailure)
                 {
-                    var attempt = await AttemptGenerateOnceAsync(endpointUrl, model, effectivePrompt, size, quality, style, referenceImages, apiKey, isChatProtocol, cancellationToken, customStyleHint, composed.NegativeField, playerRedraw, settings.ForcedImagePromptCharacters).ConfigureAwait(false);
+                    var attempt = await AttemptGenerateOnceAsync(endpointUrl, model, effectivePrompt, size, quality, style, referenceImages, apiKey, isChatProtocol, cancellationToken, customStyleHint, composed.NegativeField, playerRedraw, settings.ForcedImagePromptCharacters, player2, settings.Player2GameClientId).ConfigureAwait(false);
                     success = attempt.Success;
                     imageBytes = attempt.ImageBytes;
                     imageUrl = attempt.ImageUrl;
@@ -204,7 +206,7 @@ namespace AnimusForge.Illustrator.Core
                     result.ResolvedPrompt = attempt.ResolvedPrompt;
 
                     // 3. 自动弹性降级：若发往 /images/generations 被网关拒绝(提示不支持生图或需要 messages)，自动重试 /chat/completions
-                    if (!success && attempt.ShouldFallbackToChat && !isChatProtocol && !settings.UseExactEndpointUrl && !settings.IsApiTest)
+                    if (!player2 && !success && attempt.ShouldFallbackToChat && !isChatProtocol && !settings.UseExactEndpointUrl && !settings.IsApiTest)
                     {
                         Log($"[Illustrator] 检测到生图端点不支持该模型({model})，自动尝试回退至 /chat/completions 多模态生图通道...");
                         string chatEffectivePrompt = ComposeImagePrompt(prompt, size, quality, style, customStyleHint, negativePrompt, true, settings.Randomness, ImagePromptProfile.Full, playerRedraw, settings.OutputFrameRequirement).Text;
@@ -544,6 +546,34 @@ namespace AnimusForge.Illustrator.Core
             return ResolveImageEndpoint(url, "/images/edits");
         }
 
+        internal static string ResolvePlayer2Endpoint(string baseUrl, bool edit)
+        {
+            string root = (baseUrl ?? "").Trim().TrimEnd('/');
+            foreach (string suffix in new[] { "/image/generate", "/image/edit", "/images/generations", "/images/edits", "/chat/completions" })
+                if (root.EndsWith(suffix, StringComparison.OrdinalIgnoreCase)) { root = root.Substring(0, root.Length - suffix.Length); break; }
+            if (!root.EndsWith("/v1", StringComparison.OrdinalIgnoreCase)) root += "/v1";
+            return root + (edit ? "/image/edit" : "/image/generate");
+        }
+
+        private static void AddPlayer2Dimensions(JObject payload, string size, bool edit)
+        {
+            string[] parts = (size ?? "").Split('x');
+            if (parts.Length != 2 || !int.TryParse(parts[0], out int width) || !int.TryParse(parts[1], out int height)
+                || width <= 0 || height <= 0) return;
+            int maximum = edit ? 4096 : 1024;
+            double scale = Math.Min(1.0, (double)maximum / Math.Max(width, height));
+            payload["width"] = Math.Max(128, (int)Math.Round(width * scale));
+            payload["height"] = Math.Max(128, (int)Math.Round(height * scale));
+        }
+
+        internal static bool UsesGrokJsonEdits(string model)
+        {
+            string name = (model ?? string.Empty).Trim();
+            int slash = name.LastIndexOf('/');
+            if (slash >= 0) name = name.Substring(slash + 1);
+            return name.StartsWith("grok-imagine-image", StringComparison.OrdinalIgnoreCase);
+        }
+
         private static bool IsImagesEditsEndpointUrl(string url)
         {
             return Uri.TryCreate(url, UriKind.Absolute, out var uri) &&
@@ -567,9 +597,13 @@ namespace AnimusForge.Illustrator.Core
             string customStyleHint = null,
             string negativePromptField = null,
             bool playerRedraw = false,
-            int forcedPromptCharacters = 0)
+            int forcedPromptCharacters = 0, bool player2 = false, string player2GameClientId = null)
         {
-            string editsUrl = ResolveEditsEndpointUrl(baseUrl);
+            string editsUrl = player2 ? ResolvePlayer2Endpoint(baseUrl, true) : ResolveEditsEndpointUrl(baseUrl);
+            bool grokJson = !player2 && UsesGrokJsonEdits(model);
+            string protocol = player2 ? "Player2Edit" : grokJson ? "ImagesEditsJson" : "ImagesEdits";
+            if (grokJson && (referenceImages?.Count ?? 0) > 5)
+                return (false, null, null, "Grok 图片编辑最多支持5张参考图；未丢弃参考图，请求未发送。", false, effectivePrompt ?? string.Empty);
             bool hadReferences = referenceImages != null && referenceImages.Count > 0;
             referenceImages = PrepareReferenceImages(referenceImages, cancellationToken);
             if (hadReferences && (referenceImages == null || referenceImages.Count == 0))
@@ -587,15 +621,24 @@ namespace AnimusForge.Illustrator.Core
                     if (!string.IsNullOrWhiteSpace(size)) form.Add(new StringContent(size, Encoding.UTF8), "size");
                     form.Add(new StringContent("1"), "n");
 
+                    var jsonImages = grokJson || player2 ? new JArray() : null;
                     int sent = 0;
                     foreach (var reference in referenceImages)
                     {
                         // PrepareReferenceImages already normalized and validated every image.
-                        byte[] bytes = Convert.FromBase64String(reference.Base64Image);
-                        labels.Append("\n参考图 ").Append(sent + 1).Append("（reference_").Append(sent).Append(".png）：").Append(VisualFidelityRules.ReferenceRoleInstruction(reference.Kind)).Append(" ").Append(reference.Label);
-                        var imageContent = new ByteArrayContent(bytes);
-                        imageContent.Headers.ContentType = new MediaTypeHeaderValue("image/png");
-                        form.Add(imageContent, "image[]", $"reference_{sent}.png");
+                        labels.Append("\n参考图 ").Append(sent + 1);
+                        if (grokJson) labels.Append("（<IMAGE_").Append(sent).Append(">）：");
+                        else labels.Append("（reference_").Append(sent).Append(".png）：");
+                        labels.Append(VisualFidelityRules.ReferenceRoleInstruction(reference.Kind)).Append(" ").Append(reference.Label);
+                        if (player2) jsonImages.Add("data:image/png;base64," + reference.Base64Image);
+                        else if (grokJson)
+                            jsonImages.Add(new JObject { ["url"] = "data:image/png;base64," + reference.Base64Image });
+                        else
+                        {
+                            var imageContent = new ByteArrayContent(Convert.FromBase64String(reference.Base64Image));
+                            imageContent.Headers.ContentType = new MediaTypeHeaderValue("image/png");
+                            form.Add(imageContent, "image[]", $"reference_{sent}.png");
+                        }
                         sent++;
                     }
                     if (sent == 0) return (false, null, null, "no usable reference images", false, sentPrompt);
@@ -603,21 +646,48 @@ namespace AnimusForge.Illustrator.Core
                     // an all-transparent mask does not provide identity-only conditioning.
                     if (playerRedraw) labels.AppendLine().AppendLine(VisualFidelityRules.PlayerRedrawImagePriority);
                     string suffix = labels.ToString();
-                    int limit = FinalPromptLimit(model, false, forcedPromptCharacters);
-                    sentPrompt = FitFinalMain(effectivePrompt, suffix.Length, limit, "ImagesEdits") + suffix;
+                    int limit = FinalPromptLimit(player2 ? "" : model, false, forcedPromptCharacters);
+                    sentPrompt = FitFinalMain(effectivePrompt, suffix.Length, limit, protocol) + suffix;
                     ImagePromptBudget.EnsureFits(sentPrompt.Length, limit);
                     form.Add(new StringContent(sentPrompt, Encoding.UTF8), "prompt");
                     if (!string.IsNullOrWhiteSpace(negativePromptField))
                         form.Add(new StringContent(negativePromptField, Encoding.UTF8), "negative_prompt");
 
-                    using (var request = new HttpRequestMessage(HttpMethod.Post, editsUrl) { Content = form })
+                    HttpContent requestContent = form;
+                    if (grokJson || player2)
+                    {
+                        var payload = new JObject { ["model"] = model, ["prompt"] = sentPrompt,
+                            ["n"] = 1, ["images"] = jsonImages };
+                        // xAI edits accepts JSON rather than OpenAI multipart size/style fields.
+                        // Keep the request-owned frame text; only send exactly supported ratios.
+                        string[] dimensions = (size ?? string.Empty).Split('x');
+                        if (sent > 1 && dimensions.Length == 2 && int.TryParse(dimensions[0], out int width)
+                            && int.TryParse(dimensions[1], out int height) && width > 0 && height > 0)
+                        {
+                            int a = width, b = height;
+                            while (b != 0) { int remainder = a % b; a = b; b = remainder; }
+                            string ratio = (width / a) + ":" + (height / a);
+                            if (Array.IndexOf(new[] { "1:1", "16:9", "9:16", "4:3", "3:4", "3:2", "2:3", "2:1", "1:2", "20:9", "9:20", "21:9", "5:2" }, ratio) >= 0)
+                                payload["aspect_ratio"] = ratio;
+                        }
+                        if (player2)
+                        {
+                            payload = new JObject { ["prompt"] = sentPrompt, ["images"] = jsonImages };
+                            AddPlayer2Dimensions(payload, size, true);
+                        }
+                        if (!player2 && (quality == "low" || quality == "medium" || quality == "auto")) payload["quality"] = quality;
+                        requestContent = new StringContent(payload.ToString(Formatting.None), Encoding.UTF8, "application/json");
+                    }
+                    using (var request = new HttpRequestMessage(HttpMethod.Post, editsUrl) { Content = requestContent })
                     {
                         if (!string.IsNullOrWhiteSpace(apiKey))
                         {
                             request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", apiKey);
                         }
-                        Log($"[Illustrator] Requesting image edit from {SensitiveLogText.SafeUrl(editsUrl)} (model={model}, protocol=ImagesEdits, ActualRefImages={sent})...", apiKey);
-                        if (GenerationDiagnostics.Current != null) await GenerationDiagnostics.Current.RecordImageRequestAsync(request, "ImagesEdits").ConfigureAwait(false);
+                        if (player2 && !string.IsNullOrWhiteSpace(player2GameClientId))
+                            request.Headers.TryAddWithoutValidation("player2-game-key", player2GameClientId);
+                        Log($"[Illustrator] Requesting image edit from {SensitiveLogText.SafeUrl(editsUrl)} (model={model}, protocol={protocol}, ActualRefImages={sent})...", apiKey);
+                        if (GenerationDiagnostics.Current != null) await GenerationDiagnostics.Current.RecordImageRequestAsync(request, protocol).ConfigureAwait(false);
                         GenerationDiagnostics.Current?.RecordStage("image_http_begin", new JObject { ["endpoint"] = SensitiveLogText.SafeUrl(editsUrl), ["actualRefs"] = sent });
                         using (var response = await HttpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false))
                         {
@@ -666,7 +736,7 @@ namespace AnimusForge.Illustrator.Core
             string customStyleHint = null,
             string negativePromptField = null,
             bool playerRedraw = false,
-            int forcedPromptCharacters = 0)
+            int forcedPromptCharacters = 0, bool player2 = false, string player2GameClientId = null)
         {
             JObject payload;
             int actualRefImages = 0;
@@ -840,7 +910,7 @@ namespace AnimusForge.Illustrator.Core
             }
             else
             {
-                int limit = FinalPromptLimit(model, false, forcedPromptCharacters);
+                int limit = FinalPromptLimit(player2 ? "" : model, false, forcedPromptCharacters);
                 effectivePrompt = FitFinalMain(effectivePrompt, 0, limit, "Images");
                 sentPrompt = effectivePrompt;
                 ImagePromptBudget.EnsureFits(sentPrompt.Length, limit);
@@ -870,9 +940,16 @@ namespace AnimusForge.Illustrator.Core
                 }
             }
 
+            if (player2)
+            {
+                payload = new JObject { ["prompt"] = sentPrompt };
+                AddPlayer2Dimensions(payload, size, false);
+            }
             using (var request = new HttpRequestMessage(HttpMethod.Post, endpointUrl))
             {
                 request.Content = new StringContent(payload.ToString(Formatting.None), Encoding.UTF8, "application/json");
+                if (player2 && !string.IsNullOrWhiteSpace(player2GameClientId))
+                    request.Headers.TryAddWithoutValidation("player2-game-key", player2GameClientId);
 
                 if (!string.IsNullOrWhiteSpace(apiKey))
                 {
@@ -880,7 +957,7 @@ namespace AnimusForge.Illustrator.Core
                 }
 
                 Log($"[Illustrator] Requesting image generation from {SensitiveLogText.SafeUrl(endpointUrl)} (model={model}, protocol={(isChatProtocol ? "Chat" : "Images")}, refImages={referenceImages?.Count ?? 0}, ActualRefImages={actualRefImages})...", apiKey);
-                if (GenerationDiagnostics.Current != null) await GenerationDiagnostics.Current.RecordImageRequestAsync(request, isChatProtocol ? "Chat" : "Images").ConfigureAwait(false);
+                if (GenerationDiagnostics.Current != null) await GenerationDiagnostics.Current.RecordImageRequestAsync(request, player2 ? "Player2Generate" : isChatProtocol ? "Chat" : "Images").ConfigureAwait(false);
 
                 GenerationDiagnostics.Current?.RecordStage("image_http_begin", new JObject { ["endpoint"] = SensitiveLogText.SafeUrl(endpointUrl), ["actualRefs"] = actualRefImages });
                 using (var response = await HttpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false))
@@ -989,6 +1066,8 @@ namespace AnimusForge.Illustrator.Core
         {
             if (string.IsNullOrWhiteSpace(responseText)) return null;
             JObject parsed = JObject.Parse(responseText);
+            if (parsed["image"]?.Type == JTokenType.String)
+                return new ExtractedImage { Bytes = ImagePayload.Normalize(Convert.FromBase64String(parsed["image"].Value<string>())) };
             if (parsed["data"] is JArray dataArray)
                 foreach (var item in dataArray)
                 {

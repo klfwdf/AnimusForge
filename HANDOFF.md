@@ -1,3 +1,9 @@
+# 当前交接：Grok JSON与Player2生图兼容（2026-10-07，BUILD_VERIFIED_NOT_DEPLOYED）
+
+- Grok edits按模型族使用官方JSON images，保留最多5张完整参考；Player2新增显式模式，原生/image/generate与/image/edit、应用选模、JSON图片响应与测试入口适配。
+- 原入口双API/Bootstrap/双接缝通过。游戏Grok四图及Player2计费API/MCM实机未验，未部署/打包/推送。
+- [主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#grok-player2-image-protocol-20261007--build_verified_not_deployed)；日志artifacts/grok-json-edits-20261007/build-player2.log。检查点a4e856f。
+
 # 当前交接：模型下拉同步修复交付（2026-10-07，DEPLOYED_PACKAGED_PUSHED_LIVE_PENDING）
 
 - 产品919d4ed27；双API/Bootstrap/双接缝与Stage通过，已部署9文件并核对3379文件哈希一致，源码已推送。
