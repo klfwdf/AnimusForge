@@ -64,6 +64,21 @@ internal sealed class CampaignMaterialRecordOwner
 		Binding.Bind(source, rebuilt);
 	}
 
+    // Daily recovery only needs keys. Keep the sanitizer's blank-body and fallback-key
+    // semantics, without copying every record/body or sorting historical materials.
+    internal static HashSet<string> BuildStableKeySet(List<EventSourceMaterialEntry> source)
+    {
+        var keys = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        if (source == null) return keys;
+        foreach (var item in source)
+        {
+            if (item == null || string.IsNullOrWhiteSpace(item.SnapshotText)) continue;
+            string key = NpcActionLedger.NormalizeStableKey(item.StableKey, item.SnapshotText);
+            if (!string.IsNullOrWhiteSpace(key)) keys.Add(key);
+        }
+        return keys;
+    }
+
 	internal static List<EventSourceMaterialEntry> SanitizeEventSourceMaterials(List<EventSourceMaterialEntry> source)
 	{
 		List<EventSourceMaterialEntry> list = new List<EventSourceMaterialEntry>();

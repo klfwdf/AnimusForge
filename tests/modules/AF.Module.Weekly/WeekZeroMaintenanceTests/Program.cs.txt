@@ -1,0 +1,60 @@
+using System;using System.IO;using System.Linq;using System.Collections.Generic;using System.Collections.Concurrent;using System.Threading.Tasks;using System.Text.Json;using System.Diagnostics;
+namespace AnimusForge;
+internal static class FreezeWatchdog { internal static void Mark(string a,string b,bool immediate=false){} }
+internal static class Logger { internal static void Log(string a,string b){} }
+internal sealed class Kingdom { public string StringId;public string Name;public string Opening; }
+internal static class WeeklyReportArchivePolicy {internal static List<string> NormalizeKingdomIds(IEnumerable<string> ids)=>(ids??Enumerable.Empty<string>()).Where(x=>!string.IsNullOrWhiteSpace(x)).Select(x=>x.Trim()).Distinct(StringComparer.OrdinalIgnoreCase).ToList();}
+public partial class MyBehavior {
+ private List<EventRecordEntry> _eventRecordEntries=new();private string _eventWorldOpeningSummary;
+ private bool _weekZeroOpeningSummaryMaintenanceChanged,_weekZeroOpeningSummaryMaintenanceWorldProcessed;
+ private List<Kingdom> _weekZeroOpeningSummaryMaintenanceKingdoms;private int _weekZeroOpeningSummaryMaintenanceCursor;
+ private long _publishedWorldWeeklyHistoryRevision,_worldMessageWeeklyTimelineRevision;
+ private readonly ConcurrentQueue<Action> _weekZeroShortSummaryMainThreadActions=new();
+ private readonly List<Kingdom> kingdoms=new();private int globalSanitizes,queued;private readonly HashSet<string> requests=new();
+ private List<Kingdom> GetDevEditableKingdoms()=>kingdoms;
+ private string GetKingdomOpeningSummary(Kingdom k)=>k.Opening;
+ private static string NeutralizeWeeklyReportScenarioName(string s)=>WeeklyGenerationRules.NeutralizeWeeklyReportScenarioName(s);
+ private static string BuildFallbackWeeklyReportShortSummary(string s)=>WeeklyGenerationRules.BuildFallbackWeeklyReportShortSummary(s);
+ private EventRecordEntry FindWeeklyReportRecordById(string id)=>_eventRecordEntries.FirstOrDefault(x=>x.EventId==id);
+ private List<EventRecordEntry> SanitizeEventRecordEntries(List<EventRecordEntry> records){globalSanitizes++;return WeeklyEventDataImportOwner.SanitizeEventRecordEntries(records,NeutralizeWeeklyReportScenarioName,BuildFallbackWeeklyReportShortSummary,WeeklyGenerationRules.NormalizeWeeklyReportTagText);}
+ private static List<EventSourceMaterialEntry> SanitizeEventSourceMaterials(List<EventSourceMaterialEntry> s)=>CampaignMaterialRecordOwner.SanitizeEventSourceMaterials(s);
+ // HTTP/queue admission is outside this replay; observe whether a source would need new work.
+ private void TryQueueWeekZeroShortSummaryGeneration(EventRecordEntry entry,string hash){if(!HasWeekZeroLlmShortSummary(entry,hash)&&requests.Add(entry.EventId+"|"+hash))queued++;}
+ private void Daily(){int n=0;while(!ProcessWeekZeroOpeningSummaryEventsSlice()){if(++n>100)throw new Exception("daily slice stalled");}}
+ private static int checks;private static void Check(bool pass,string label){checks++;if(!pass)throw new Exception(label);}
+ private static readonly JsonSerializerOptions Json=new(){IncludeFields=true};
+ private static EventRecordEntry Seed(string raw,bool normalized,bool llm)=>new(){EventId="weekly_report:world:0:",EventKind="world",ScopeKingdomId="",Title="第0天世界开局概要",Summary=normalized?NeutralizeWeeklyReportScenarioName(raw):raw,ShortSummary="已有模型生成的开局摘要，应该保留其内容而不是重新请求。",PromptText=BuildWeekZeroPromptText(ComputeWeekZeroShortSummarySourceHash(raw),llm),CreatedDate="第 0 日",TagText="",Materials=new(){new(){MaterialType="world_opening_summary",Label="世界开局概要",SnapshotText=normalized?NeutralizeWeeklyReportScenarioName(raw):raw,KingdomId=""}}};
+ public static void Main(string[] args){
+ const string raw="卡拉迪亚大陆的诸国维持和平。Calradia 的村民正在准备丰收，卡拉迪亚的贵族商议贸易。";
+ foreach(bool normalized in new[]{false,true})foreach(bool llm in new[]{false,true}){
+  var h=new MyBehavior{_eventWorldOpeningSummary=raw};var old=Seed(raw,normalized,llm);var other=new EventRecordEntry{EventId="weekly_report:world:44:",Title="卡拉迪亚 未修改",Summary="卡拉迪亚 原始正文",PromptText=new string('x',100000),Materials=new(){new(){SnapshotText="应完整保留的历史"}}};
+  h._eventRecordEntries.AddRange(new[]{old,other});var list=h._eventRecordEntries;string otherJson=JsonSerializer.Serialize(other,Json);
+  h.Daily();Check(h.globalSanitizes==0,"opening maintenance must not sanitize full history");
+  Check(h.FindWeeklyReportRecordById(old.EventId).Summary==NeutralizeWeeklyReportScenarioName(raw),"stored opening is canonical");
+  if(llm){Check(old.ShortSummary.Contains("已有模型"),"legacy LLM summary preserved");Check(HasWeekZeroLlmShortSummary(old,ComputeWeekZeroShortSummarySourceHash(old.Summary)),"legacy marker upgraded");Check(h.queued==0,"no paid regeneration for equivalent old input");}
+  long revision=h._publishedWorldWeeklyHistoryRevision,timeline=h._worldMessageWeeklyTimelineRevision;int queued=h.queued;
+  for(int day=0;day<30;day++){h.Daily();h.EnsureWeekZeroOpeningSummaryEvents();}
+  Check(h._publishedWorldWeeklyHistoryRevision==revision,"daily maintenance does not republish");Check(h._worldMessageWeeklyTimelineRevision==timeline,"unchanged opening does not refresh UI");Check(h.queued==queued,"no repeated request source");
+  Check(ReferenceEquals(list,h._eventRecordEntries)&&ReferenceEquals(other,h._eventRecordEntries[1]),"unrelated archive object identity preserved");Check(JsonSerializer.Serialize(other,Json)==otherJson,"unrelated archive fields preserved");
+  h._eventWorldOpeningSummary=raw+"新的战争已经爆发。";h.EnsureWeekZeroOpeningSummaryEvents(false);Check(h._publishedWorldWeeklyHistoryRevision==revision+1,"real edit publishes once");Check(h.FindWeeklyReportRecordById(old.EventId).Summary.Contains("新的战争"),"real edit visible");Check(h.queued==queued+1,"real edit requests new short summary");
+  long afterEdit=h._publishedWorldWeeklyHistoryRevision;h.Daily();Check(h._publishedWorldWeeklyHistoryRevision==afterEdit,"real edit stabilizes");
+  var stale=h.ApplyWeekZeroShortSummaryOnMainThreadAsync(old.EventId,ComputeWeekZeroShortSummarySourceHash(NeutralizeWeeklyReportScenarioName(raw)),"过期回复");while(h._weekZeroShortSummaryMainThreadActions.TryDequeue(out var action))action();Check(!stale.Result,"late summary for changed source rejected");
+  var current=h.FindWeeklyReportRecordById(old.EventId);var accepted=h.ApplyWeekZeroShortSummaryOnMainThreadAsync(old.EventId,ComputeWeekZeroShortSummarySourceHash(current.Summary),"当前正文对应的模型摘要，应当正常写回");while(h._weekZeroShortSummaryMainThreadActions.TryDequeue(out var action))action();Check(accepted.Result,"matching source accepted");h.Daily();Check(current.ShortSummary.Contains("当前正文"),"applied model summary survives maintenance");
+ }
+ var labels=new MyBehavior{_eventWorldOpeningSummary=raw};labels.kingdoms.Add(new(){StringId="test",Name="卡拉迪亚",Opening=raw});labels.Daily();string before=JsonSerializer.Serialize(labels._eventRecordEntries,Json);labels.Daily();Check(JsonSerializer.Serialize(labels._eventRecordEntries,Json)==before,"kingdom title and material labels stabilize");
+ var empty=new MyBehavior();Check(!empty.UpsertWeekZeroOpeningSummaryEvent("world","","title"," ","label","type"),"empty input is ignored");Check(empty._eventRecordEntries.Count==0,"no empty record created");
+ var sources=new List<EventSourceMaterialEntry>{null,new(){SnapshotText=" \r\n ",StableKey="ignored"},new(){SnapshotText=" Body\r\n A ",StableKey=null},new(){SnapshotText="Body",StableKey=" KEY\r\nX "},new(){SnapshotText="Body",StableKey="key  x"},new(){SnapshotText="Body",StableKey=""},new(){SnapshotText="Body",StableKey=" İΩ中文 "}};
+ var oracle=new HashSet<string>(SanitizeEventSourceMaterials(sources).Select(x=>x.StableKey.Trim()).Where(x=>!string.IsNullOrWhiteSpace(x)),StringComparer.OrdinalIgnoreCase);
+ Check(BuildEventSourceMaterialStableKeySet(sources).SetEquals(oracle),"key-only path preserves legacy semantics");Check(BuildEventSourceMaterialStableKeySet(null).Count==0,"null source supported");
+ if(args.Length>0){
+  var records=JsonSerializer.Deserialize<List<EventRecordEntry>>(File.ReadAllText(args[0]),Json);var saved=records.First(x=>x.EventId=="weekly_report:world:0:");
+  var h=new MyBehavior{_eventRecordEntries=records,_eventWorldOpeningSummary=args.Length>2?File.ReadAllText(args[2]):saved.Summary.Replace("大陆","卡拉迪亚")};
+  var others=records.Where(x=>x!=saved).ToArray();var materials=others.Select(x=>x.Materials).ToArray();long beforeBytes=GC.GetAllocatedBytesForCurrentThread();var watch=Stopwatch.StartNew();h.Daily();watch.Stop();double firstMs=watch.Elapsed.TotalMilliseconds;long firstBytes=GC.GetAllocatedBytesForCurrentThread()-beforeBytes;
+  long rev=h._publishedWorldWeeklyHistoryRevision,ui=h._worldMessageWeeklyTimelineRevision;beforeBytes=GC.GetAllocatedBytesForCurrentThread();watch.Restart();for(int i=0;i<30;i++)h.Daily();watch.Stop();
+  Check(h.globalSanitizes==0&&ReferenceEquals(records,h._eventRecordEntries),"player archive never cloned");Check(h._publishedWorldWeeklyHistoryRevision==rev&&h._worldMessageWeeklyTimelineRevision==ui,"player opening stable over 30 days");Check(others.Select((x,i)=>ReferenceEquals(x.Materials,materials[i])).All(x=>x),"player materials preserved");
+  Console.WriteLine(JsonSerializer.Serialize(new{sampleRecords=records.Count,sampleMaterials=records.Sum(x=>x.Materials.Count),firstMs,firstBytes,repeated30DaysMs=watch.Elapsed.TotalMilliseconds,repeated30DaysBytes=GC.GetAllocatedBytesForCurrentThread()-beforeBytes,globalSanitizes=h.globalSanitizes}));
+ }
+ if(args.Length>1){var items=JsonSerializer.Deserialize<List<EventSourceMaterialEntry>>(File.ReadAllText(args[1]),Json);var expected=new HashSet<string>(SanitizeEventSourceMaterials(items).Select(x=>x.StableKey.Trim()).Where(x=>!string.IsNullOrWhiteSpace(x)),StringComparer.OrdinalIgnoreCase);long bytes=GC.GetAllocatedBytesForCurrentThread();var timer=Stopwatch.StartNew();var actual=BuildEventSourceMaterialStableKeySet(items);timer.Stop();Check(actual.SetEquals(expected),"player material keys exactly match old sanitizer");Console.WriteLine(JsonSerializer.Serialize(new{sourceCount=items.Count,keys=actual.Count,keyScanMs=timer.Elapsed.TotalMilliseconds,keyScanBytes=GC.GetAllocatedBytesForCurrentThread()-bytes}));}
+ Console.WriteLine("PASS "+checks+" checks: extracted production opening/daily/async-commit methods; network and world enumeration stubbed.");
+ }
+}
