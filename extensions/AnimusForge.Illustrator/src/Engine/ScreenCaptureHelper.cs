@@ -322,10 +322,11 @@ namespace AnimusForge.Illustrator.Engine
                 !Guid.TryParseExact(filePrefix.Substring("af_offscreen_".Length), "N", out _)) return;
             try
             {
-                string tempRoot = Path.GetTempPath();
+                string tempRoot = IllustratorStoragePaths.TempDirectory;
                 int deleted = 0;
 
-                foreach (string dir in new[] { tempDir, tempRoot })
+                foreach (string dir in string.Equals(tempDir, tempRoot, StringComparison.OrdinalIgnoreCase)
+                    ? new[] { tempDir } : new[] { tempDir, tempRoot })
                 {
                     if (!Directory.Exists(dir)) continue;
                     foreach (string file in Directory.EnumerateFiles(dir, filePrefix + "*"))
@@ -353,7 +354,7 @@ namespace AnimusForge.Illustrator.Engine
 
             try
             {
-                tempDir = Path.Combine(Path.GetTempPath(), "AnimusForgeIllustrator");
+                tempDir = IllustratorStoragePaths.EnsureDirectory(IllustratorStoragePaths.TempDirectory);
                 if (!Directory.Exists(tempDir))
                 {
                     Directory.CreateDirectory(tempDir);
@@ -415,14 +416,6 @@ namespace AnimusForge.Illustrator.Engine
                             }
                         }
 
-                        // 兜底检查 Temp 根目录 (以防引擎将路径作为相对路径处理)
-                        string tempRoot = Path.GetTempPath();
-                        var rootMatches = Directory.GetFiles(tempRoot, $"{filePrefix}*");
-                        if (rootMatches.Length > 0 && new FileInfo(rootMatches[0]).Length > 0)
-                        {
-                            foundFile = rootMatches[0];
-                            break;
-                        }
                     }
                     catch
                     {
@@ -635,7 +628,7 @@ namespace AnimusForge.Illustrator.Engine
 
             // 策略 1: 优先使用引擎原生 C++ 提供的 SaveToFile 导出
             // 原生引擎会在显卡内部自动分配 Staging 贴图并处理 Row Pitch 跨度与格式转换，完全杜绝内存越界崩溃
-            string tempPngPath = Path.Combine(Path.GetTempPath(), $"af_offscreen_{Guid.NewGuid():N}.png");
+            string tempPngPath = Path.Combine(IllustratorStoragePaths.EnsureDirectory(IllustratorStoragePaths.TempDirectory), $"af_offscreen_{Guid.NewGuid():N}.png");
             try
             {
                 engineTexture.SaveToFile(tempPngPath, false);
@@ -889,12 +882,6 @@ namespace AnimusForge.Illustrator.Engine
                 if (matches.Length > 0 && new FileInfo(matches[0]).Length > 0) return matches[0];
             }
             catch (Exception ex) { fileError = NativeExportDiagnostics.DescribeError(ex); }
-            try
-            {
-                var matches = Directory.GetFiles(Path.GetTempPath(), prefix + "*");
-                if (matches.Length > 0 && new FileInfo(matches[0]).Length > 0) return matches[0];
-            }
-            catch (Exception ex) { if (fileError == null) fileError = NativeExportDiagnostics.DescribeError(ex); }
             return null;
         }
 

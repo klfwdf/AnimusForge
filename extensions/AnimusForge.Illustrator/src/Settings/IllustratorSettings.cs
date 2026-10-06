@@ -14,6 +14,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using TaleWorlds.Library;
 using AnimusForge.Illustrator.Core;
+using AnimusForge.Illustrator.Engine;
 using AnimusForge.Illustrator.UI.Patches;
 
 namespace AnimusForge.Illustrator
@@ -22,7 +23,7 @@ namespace AnimusForge.Illustrator
     {
         public override string Id => "AnimusForge_Illustrator_v1";
         public override string DisplayName => "AnimusForge - AI 画卷生图系统 (Illustrator)";
-        public override string FolderName => "AnimusForge";
+        public override string FolderName => IllustratorSettingsStorage.DirectoryKey;
         public override string FormatType => "json";
 
         private static List<string> _modelOptions = new List<string> { "*手动输入*" };
@@ -37,7 +38,9 @@ namespace AnimusForge.Illustrator
 
         public IllustratorSettings()
         {
+            IllustratorSettingsStorage.EnsureReady();
             FetchModelList = RequestModelListFetch;
+            TestImageApi = () => IllustratorApiTest.StartOrCancel(this);
             FetchDirectorModelList = RequestDirectorModelListFetch;
             EditCustomStylePrompt = OpenCustomStylePromptEditor;
             EditNegativePrompt = OpenNegativePromptEditor;
@@ -70,7 +73,7 @@ namespace AnimusForge.Illustrator
 
         [SettingPropertyBool("生成完成后自动清理临时文件", HintText = "开启后，各提取任务结束时仅清理自己产生的离屏导出文件，不清理其他请求或历史调试文件。关闭时保留纹章导出便于排查；已读取的立绘临时文件仍按原有流程释放。不影响画廊缓存与默认插图。", Order = 3, RequireRestart = false)]
         [SettingPropertyGroup("1. 基础设置", GroupOrder = 1)]
-        public bool AutoCleanTempFiles { get; set; } = false;
+        public bool AutoCleanTempFiles { get; set; } = true;
 
         [SettingPropertyText("生图 API 端点地址 (Base URL)", HintText = "填写服务根地址或 /v1。默认有参考图时优先 /images/edits（真实上传参考图），无参考图才用 /images/generations；完整 edits 地址也可识别。模型必须支持所选通道；不支持 edits 不会静默丢图转文生图。", Order = 1, RequireRestart = false)]
         [SettingPropertyGroup("2. 生图 API 配置 (OpenAI 兼容)", GroupOrder = 2)]
@@ -638,24 +641,15 @@ namespace AnimusForge.Illustrator
         private static string GetCacheFilePath()
         {
             if (string.IsNullOrEmpty(_cachedModelsFilePath))
-            {
-                try
-                {
-                    string docsDir = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-                    string configDir = Path.Combine(docsDir, "Mount and Blade II Bannerlord", "Configs", "AnimusForge");
-                    if (!Directory.Exists(configDir))
-                    {
-                        Directory.CreateDirectory(configDir);
-                    }
-                    _cachedModelsFilePath = Path.Combine(configDir, "illustrator_models_cache.json");
-                }
-                catch
-                {
-                    _cachedModelsFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "illustrator_models_cache.json");
-                }
-            }
+                _cachedModelsFilePath = Path.Combine(IllustratorStoragePaths.EnsureDirectory(
+                    IllustratorStoragePaths.ConfigDirectory), "illustrator_models_cache.json");
             return _cachedModelsFilePath;
         }
+
+        [SettingPropertyButton("测试生图 API（可能计费）", Content = "测试 / 取消", Order = 14, RequireRestart = false,
+            HintText = "使用当前填写的配置生成一张测试图，可能产生服务费用。只提交一次出图请求，不自动切换通道重试；会显示成功、失败及耗时。运行中再次点击取消。无需进入存档，不调用视觉导演或采集游戏画面；测试图保存在模组 Cache/Illustrator/ApiTest/last-result.png。")]
+        [SettingPropertyGroup("2. 生图 API 配置 (OpenAI 兼容)", GroupOrder = 2)]
+        public Action TestImageApi { get; set; }
 
         private static void TryLoadCachedModels()
         {
@@ -1110,22 +1104,8 @@ namespace AnimusForge.Illustrator
         private static string GetDirectorCacheFilePath()
         {
             if (string.IsNullOrEmpty(_cachedDirectorModelsFilePath))
-            {
-                try
-                {
-                    string docsDir = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-                    string configDir = Path.Combine(docsDir, "Mount and Blade II Bannerlord", "Configs", "AnimusForge");
-                    if (!Directory.Exists(configDir))
-                    {
-                        Directory.CreateDirectory(configDir);
-                    }
-                    _cachedDirectorModelsFilePath = Path.Combine(configDir, "illustrator_director_models_cache.json");
-                }
-                catch
-                {
-                    _cachedDirectorModelsFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "illustrator_director_models_cache.json");
-                }
-            }
+                _cachedDirectorModelsFilePath = Path.Combine(IllustratorStoragePaths.EnsureDirectory(
+                    IllustratorStoragePaths.ConfigDirectory), "illustrator_director_models_cache.json");
             return _cachedDirectorModelsFilePath;
         }
 

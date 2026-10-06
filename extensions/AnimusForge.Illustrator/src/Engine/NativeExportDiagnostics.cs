@@ -51,7 +51,7 @@ namespace AnimusForge.Illustrator.Engine
             };
             try
             {
-                string temp = Path.GetTempPath();
+                string temp = IllustratorStoragePaths.TempDirectory;
                 result["tempDirectory"] = temp;
                 result["tempPathLength"] = temp.Length;
                 result["nonAsciiPath"] = HasNonAscii(temp);

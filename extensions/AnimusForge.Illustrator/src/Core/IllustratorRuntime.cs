@@ -39,6 +39,14 @@ namespace AnimusForge.Illustrator.Core
         public int DirectorApproximateTokens { get; }
         public int ImageGenerationTimeoutSeconds { get; }
         internal bool HasPlayerRedrawRequest { get; private set; }
+        internal bool IsApiTest { get; private set; }
+
+        internal IllustrationOptions ForApiTest()
+        {
+            var copy = (IllustrationOptions)MemberwiseClone();
+            copy.IsApiTest = true;
+            return copy;
+        }
 
         internal IllustrationOptions WithPlayerRedrawRequest(string prompt)
         {
@@ -183,6 +191,7 @@ namespace AnimusForge.Illustrator.Core
         public static void Reset()
         {
             AssertMainThread();
+            IllustratorApiTest.Cancel();
             BulletinIllustrationPreloader.Reset();
             foreach (var scope in Scopes.ToArray()) scope.Close();
             TickScopes();
