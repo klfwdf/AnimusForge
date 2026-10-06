@@ -106,7 +106,7 @@ namespace AnimusForge.Illustrator.Engine
             _snapshot = snapshot;
             _sequence = new FaceSequence(faceCount);
             _cameras = new Camera[faceCount];
-            _directory = Path.Combine(Path.GetTempPath(), "AnimusForgeIllustrator", "panorama_" + Guid.NewGuid().ToString("N"));
+            _directory = Path.Combine(IllustratorStoragePaths.TempDirectory, "panorama_" + Guid.NewGuid().ToString("N"));
         }
 
         internal static IsolatedPanoramaRenderer Create(PanoramaSceneSnapshot snapshot, MatrixFrame[] frames, int size, float horizontalFov = (float)Math.PI / 2f)

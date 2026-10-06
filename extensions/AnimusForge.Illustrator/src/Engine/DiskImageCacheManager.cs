@@ -67,16 +67,13 @@ namespace AnimusForge.Illustrator.Engine
             try
             {
                 // Image generation is a host feature: cache and diagnostics live under the AF module.
-                string path = Path.Combine(AnimusForge.AnimusForgeModulePaths.GetLogsDirectory(), "image save");
-                Directory.CreateDirectory(path);
+                string path = IllustratorStoragePaths.EnsureDirectory(IllustratorStoragePaths.ImageDirectory);
                 CacheBaseDir = path;
             }
             catch (Exception ex)
             {
                 Debug.Print($"[Illustrator] Failed to init cache dir: {ex.Message}");
-                string localAppData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-                CacheBaseDir = string.IsNullOrWhiteSpace(localAppData)
-                    ? string.Empty : Path.Combine(localAppData, "AnimusForge", "Cache", "Illustrator");
+                CacheBaseDir = string.Empty;
             }
         }
 
