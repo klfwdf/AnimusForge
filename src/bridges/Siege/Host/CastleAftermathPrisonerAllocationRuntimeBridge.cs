@@ -148,4 +148,36 @@ internal sealed class CastleAftermathPrisonerAllocationResult
 	internal string SelectionMode { get; }
 
 	internal int Count => Roster.TotalManCount;
+
+	/// <summary>
+	/// Returns a copy keeping at most <paramref name="maxCount"/> regular prisoners in the
+	/// existing selection order, preserving wounded/xp proportions.
+	/// </summary>
+	internal CastleAftermathPrisonerAllocationResult TrimTo(int maxCount)
+	{
+		int limit = Math.Max(0, maxCount);
+		if (Count <= limit)
+		{
+			return this;
+		}
+		TroopRoster trimmed = TroopRoster.CreateDummyTroopRoster();
+		int remaining = limit;
+		foreach (TroopRosterElement element in Roster.GetTroopRoster())
+		{
+			if (remaining <= 0)
+			{
+				break;
+			}
+			if (element.Character == null || element.Character.IsHero || element.Number <= 0)
+			{
+				continue;
+			}
+			int count = Math.Min(remaining, element.Number);
+			int wounded = SiegeCastlePrisonerDispositionProfile.ResolveTransferredWounded(element.Number, element.WoundedNumber, count);
+			int xp = SiegeCastlePrisonerDispositionProfile.ResolveTransferredXp(element.Number, element.Xp, count);
+			trimmed.AddToCounts(element.Character, count, false, wounded, xp, true, -1);
+			remaining -= count;
+		}
+		return new CastleAftermathPrisonerAllocationResult(trimmed, Quantity, SelectionMode + "+capacity_trim");
+	}
 }

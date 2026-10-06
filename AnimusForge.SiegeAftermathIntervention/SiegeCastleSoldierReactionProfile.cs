@@ -1,3 +1,5 @@
+using System;
+
 namespace AnimusForge.SiegeAftermathIntervention;
 
 /// <summary>
@@ -47,6 +49,33 @@ public static class SiegeCastleSoldierReactionProfile
             : 0;
     }
 
+    /// <summary>
+    /// Final morale penalty at castle exit. Recruitment unrest is scaled by the prisoners that
+    /// actually joined the party (capacity limits can leave most of a staged group as prisoners),
+    /// so a group where nobody joined costs nothing. Unrest from other actions is not scaled.
+    /// </summary>
+    public static int ResolveExitMoralePenalty(
+        int otherConcernPenalty,
+        int recruitmentConcernPenalty,
+        int stagedRecruitCount,
+        int actualRecruitCount)
+    {
+        int other = Clamp(otherConcernPenalty);
+        int recruitment = Clamp(recruitmentConcernPenalty);
+        int staged = Clamp(stagedRecruitCount);
+        int actual = Math.Min(Clamp(actualRecruitCount), staged);
+        int scaledRecruitment = staged == 0 || actual == 0
+            ? 0
+            : (int)Math.Ceiling((double)recruitment * actual / staged);
+        return Math.Max(other, scaledRecruitment);
+    }
+
+    /// <summary>
+    /// A new concern only cancels an appeasement the player already gave when it raises the penalty.
+    /// </summary>
+    public static bool ShouldReopenAppeasement(bool appeasementApplied, int currentPendingPenalty, int newPenalty)
+        => !appeasementApplied || newPenalty > currentPendingPenalty;
+
     public static string BuildWitnessFact(
         string playerName,
         SiegeCastleActionKind action,
@@ -71,7 +100,9 @@ public static class SiegeCastleSoldierReactionProfile
     {
         return "【城堡处置】随军士兵对“" + DescribeConcernAction(action) + "”"
             + Clamp(affectedRegularPrisoners) + " 名战俘表达了不满；离场前可直接安抚，否则部队士气 -"
-            + Clamp(pendingPenalty) + "。";
+            + Clamp(pendingPenalty)
+            + (SiegeCastleActionKindProfile.IsRecruitment(action) ? "（收编部分按离场时实际入队人数折算）" : string.Empty)
+            + "。";
     }
 
     public static string BuildNeedMemoryText(

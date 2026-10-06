@@ -34,11 +34,34 @@ public static class SiegeCastlePrisonerDispositionProfile
         return Math.Min(Math.Max(0, availablePrisoners), Math.Max(0, freePartySlots));
     }
 
+    /// <summary>
+    /// Caps a new recruitment group to the party slots not already promised to earlier recruit groups,
+    /// so the staged plan (and the soldiers' unrest) never exceeds what can actually join at exit.
+    /// </summary>
+    public static int ResolveStageableRecruitCount(int requestedCount, int currentFreePartySlots, int previouslyStagedRecruitCount)
+    {
+        return Math.Min(
+            Math.Max(0, requestedCount),
+            ResolveRemainingStagedRecruitCapacity(currentFreePartySlots, previouslyStagedRecruitCount));
+    }
+
+    public static string BuildRecruitCapacityTrimMessage(int requestedCount, int stagedCount, int currentFreePartySlots)
+    {
+        int requested = Math.Max(0, requestedCount);
+        int staged = Math.Max(0, stagedCount);
+        return staged <= 0
+            ? "【城堡处置】主队当前没有可用于收编的空余编制（空余 " + Math.Max(0, currentFreePartySlots)
+                + "，已被此前收编组占用），本次收编未暂存；可先释放编制或改用其他处置。"
+            : "【城堡处置】主队空余编制不足，本次收编由 " + requested + " 人调整为 " + staged
+                + " 人；其余战俘保持未分配，可另行处置。";
+    }
+
     public static int ResolveRemainingStagedRecruitCapacity(int currentFreePartySlots, int previouslyStagedRecruitCount)
     {
         return Math.Max(0, Math.Max(0, currentFreePartySlots) - Math.Max(0, previouslyStagedRecruitCount));
     }
 
+    // Public legacy helper retained for existing external source/ABI consumers.
     public static string BuildStagedRecruitCapacityWarning(
         int currentFreePartySlots,
         int previouslyStagedRecruitCount,

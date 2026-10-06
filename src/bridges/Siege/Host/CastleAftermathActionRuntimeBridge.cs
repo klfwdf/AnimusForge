@@ -109,7 +109,8 @@ internal static class CastleAftermathActionRuntimeBridge
 				CastleAftermathRuntimeBridge.SelectedRegularPrisonerCount,
 				affected > 0
 					? SiegeCastlePrisonerDispositionProfile.RecruitedReason
-					: SiegeCastlePrisonerDispositionProfile.NoMatchingRegularPrisonersReason);
+					: SiegeCastlePrisonerDispositionProfile.NoMatchingRegularPrisonersReason)
+				.WithResolvedRoster(resolved);
 		}
 		catch (Exception ex)
 		{
@@ -122,7 +123,8 @@ internal static class CastleAftermathActionRuntimeBridge
 				succeeded: affected > 0,
 				affected,
 				CastleAftermathRuntimeBridge.SelectedRegularPrisonerCount,
-				SiegeCastlePrisonerDispositionProfile.ExceptionReasonPrefix + ex.GetType().Name);
+				SiegeCastlePrisonerDispositionProfile.ExceptionReasonPrefix + ex.GetType().Name)
+				.WithResolvedRoster(resolved);
 		}
 	}
 
@@ -445,6 +447,15 @@ internal sealed class CastleAftermathActionApplyResult
 	internal string ReasonCode { get; }
 
 	internal int Gold { get; }
+
+	/// <summary>Prisoners actually resolved by the action; null when the action does not report it.</summary>
+	internal TroopRoster ResolvedRoster { get; private set; }
+
+	internal CastleAftermathActionApplyResult WithResolvedRoster(TroopRoster resolvedRoster)
+	{
+		ResolvedRoster = resolvedRoster;
+		return this;
+	}
 
 	internal static CastleAftermathActionApplyResult Completed(int affectedCount, int remainingRegularPrisoners, string reasonCode, int gold = 0)
 	{
