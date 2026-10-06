@@ -2246,7 +2246,9 @@ internal static string NormalizeAutoGroupRelayPostprocessTagsForScene(string raw
 		}
 		foreach (Match item in Regex.Matches(raw ?? "", "\\[RELAY\\s*:\\s*(\\d+)\\]", RegexOptions.IgnoreCase))
 		{
-			if (int.TryParse(item.Groups[1].Value, out int relayTargetAgentIndex) && validIds.Contains(relayTargetAgentIndex))
+			// The current speaker is the prompt's stop signal, not a next-turn candidate.
+			if (int.TryParse(item.Groups[1].Value, out int relayTargetAgentIndex)
+				&& (relayTargetAgentIndex == currentSpeakerAgentIndex || validIds.Contains(relayTargetAgentIndex)))
 			{
 				return "[RELAY:" + relayTargetAgentIndex + "]";
 			}

@@ -1011,7 +1011,8 @@ internal sealed partial class SceneConversationSessionRuntime
 							}
 							else if (relayTargetAgentIndex < 0)
 							{
-								_ports.QueueSceneInfoMessage("没有人愿意作为下一个发言者", new Color(0.75f, 0.75f, 0.75f), conversationEpoch, AutoGroupRelayNegativeSoundEvent);
+								Logger.Log("ShoutBehavior", "[SceneRelay] no valid relay selection agent=" + currentSpeaker.AgentIndex + " candidates=" + relayCandidatesForNextTurn.Count);
+								_ports.QueueSceneInfoMessage("本轮未选出有效的接话者", new Color(0.75f, 0.75f, 0.75f), conversationEpoch, AutoGroupRelayNegativeSoundEvent);
 								relayRequested = false;
 							}
 							else if (relayTargetAgentIndex == currentSpeaker.AgentIndex)
