@@ -1,5 +1,5 @@
 <a id="illustrator-module-storage-20261006"></a>
-# 生图模组内存储、默认清理与 API 测试（2026-10-06，DEPLOYED_PACKAGED_PUSH_READY）
+# 生图模组内存储、默认清理与 API 测试（2026-10-06，DEPLOYED_PACKAGED_PUSHED_LIVE_PENDING）
 
 - 用户授权：生图不要写C盘、放模组目录；改完提交推送编译部署打包；自动清理默认开启；生图API配置新增测试；随后明确“不迁移”。F:/AnimusForge-main/main，基线bfbd591f1，检查点164a3db，初版产品cf3377691，后续无迁移修订以本条最终交付为准。保留现有作品，未清除C盘旧临时文件；不改Windows环境变量、游戏和其他MCM全局存储。
 - 路径owner为extensions/AnimusForge.Illustrator/src/Engine/IllustratorStoragePaths.cs，当前模块根一次解析；固定成图logs/image save、临时Cache/Illustrator/Temp、配置Configs/Illustrator、测试Cache/Illustrator/ApiTest。ScreenCaptureHelper所有Tableau/texture导出与查找/清理、IsolatedPanoramaRenderer六面路径、NativeExportDiagnostics实际临时路径、DiskImageCacheManager失败行为、两个模型列表缓存均接通。模块目录不可用时显式失败，不回退C盘。无新增Tick、全盘扫描或渲染方式/颜色变化。
@@ -12,6 +12,7 @@
 - 交付：使用原deploy_module.ps1和package_mod.ps1，保持v1.5.5包版本；不改统一脚本。最终文件清单、无迁移检查、部署Recovery、ZIP哈希及推送结果待本条完成记录。本地证据artifacts/illustrator-module-storage-20261006，不提交个人JSON/API密钥/运行产物。源码按无迁移修订/初版逆序定向revert，旧C盘文件保留，不reset其他成果。
 - 最终交付PASS：deploy-no-migration.log更新9文件；package-no-migration.log产物一键编译覆盖推送/packages/AnimusForge_v1.5.5_20261006_230000_627.zip，84832869字节，SHA256=ff708c0a2f3623a1610882bb0aad8de195e8a1a630cccbda408b359cb812574f。receipt.json验证3379个文件Stage/安装哈希一致，ZIP除版本XML为v1.5.5外相同；单根、Bootstrap-only、无ONNX/TaleWorlds/私人Configs/Cache通过。安装XML仍v1.5.4。最终Recovery为C:/Users/29310/AppData/Local/AnimusForge/Recovery/deploy/deploy-3dc98c50b85b4db9be45249789ed130a；本次所有生图改动前恢复点为同级deploy-cbc8bc4252094dbd8789bcd5b9ec6e7b，原部署备份机制未改，生图路径要求不扩成修改全局部署恢复目录。原C盘3文件哈希未变，模块中不存在取消的3配置，归档副本哈希正确。
 - 最新fetch origin/main=bfbd591f1，本地领先3/落后0；明确禁止的local-only交接文件不在新增历史；待推只含产品/规范/公告及台账，无运行产物/个人配置。下一步普通push main并ls-remote独立确认，证据留push.log与remote-main.txt。实际付费请求/MCM保存及重启/原生导出未验，不自动运行收费测试。
+- 推送完成：origin/main由bfbd591f1普通更新至0ab683773245c04db1f56900cd79d0caea8f6980，ls-remote独立核对一致；本行随最后文档提交同样普通推送，最终回执remote-main-final.txt。未创建GitHub Release，未上传ZIP或私人迁移归档。实机验收范围仍未完成。
 
 <a id="publish-v155-20261006"></a>
 # 1.5.5 累计玩家公告与 main 发布（2026-10-06，PUSHED_REMOTE_VERIFIED）
