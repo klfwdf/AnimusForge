@@ -12,7 +12,7 @@ public partial class DuelSettings
 	[SettingPropertyGroup(CivilWarGroup, GroupOrder = 125)]
 	public bool EnableCivilWarFactions { get; set; } = true;
 
-	[SettingPropertyBool("玩家为国王时也形成派系", Order = 1, RequireRestart = false, HintText = "开启后，玩家统治的王国同样会形成反对派并向玩家递交最后通牒。默认关闭。若“玩家为国王时免疫稳定度叛乱”开启，派系不会升级为内战。")]
+	[SettingPropertyBool("玩家为国王时也形成派系", Order = 1, RequireRestart = false, HintText = "开启后，玩家统治的王国同样会形成反对派并向玩家递交最后通牒。新通牒答复期限为4周。默认关闭。若“玩家为国王时免疫稳定度叛乱”开启，派系不会升级为内战。")]
 	[SettingPropertyGroup(CivilWarGroup, GroupOrder = 125)]
 	public bool CivilWarAllowPlayerKingdomFactions { get; set; } = false;
 
@@ -52,6 +52,10 @@ public partial class DuelSettings
 	[SettingPropertyGroup(CivilWarGroup, GroupOrder = 125)]
 	public int CivilWarMinRefusalsBeforeWar { get; set; } = 2;
 
+	[SettingPropertyInteger("世界叛乱上限", 1, 20, "0", Order = 11, RequireRestart = false, HintText = "全球正在进行或等待建国的内战派系达到上限后，NPC派系暂停起兵，名额释放后恢复。玩家手动起兵、提议获准或抗命起兵不受此上限限制，但会计入数量；已登记政变战争也计入，政变发起本身不受此限制。降低上限不会结束已有战争。不统计原版城镇叛乱。默认3场。")]
+	[SettingPropertyGroup(CivilWarGroup, GroupOrder = 125)]
+	public int CivilWarWorldMaxWars { get; set; } = 3;
+
 	public static bool IsCivilWarFactionsEnabled()
 	{
 		try { return IsKingdomStabilityAndRebellionEnabled() && (GetSettings()?.EnableCivilWarFactions ?? true); }
@@ -74,6 +78,7 @@ public partial class DuelSettings
 			if (settings == null) return tuning;
 			tuning.MaxFactions = System.Math.Max(1, System.Math.Min(4, settings.CivilWarMaxFactions));
 			tuning.AllowConcurrentWars = settings.CivilWarAllowConcurrentWars;
+			tuning.WorldMaxWars = System.Math.Max(1, System.Math.Min(20, settings.CivilWarWorldMaxWars));
 			tuning.Randomness = CivilWarRules.Clamp(settings.CivilWarRandomness, 0f, 1f);
 			tuning.DiscontentThreshold = System.Math.Max(10, settings.CivilWarDiscontentThreshold);
 			tuning.PlayerDetonationStrengthPercent = System.Math.Max(0, System.Math.Min(100, settings.CivilWarPlayerDetonationStrengthPercent));

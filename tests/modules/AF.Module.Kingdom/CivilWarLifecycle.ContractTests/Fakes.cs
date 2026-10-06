@@ -156,12 +156,13 @@ namespace AnimusForge
     internal static class DuelSettings
     {
         internal static bool Enabled = true;
+        internal static int WorldMaxWars = 3;
         internal static int DiscontentThreshold = 35;
         internal static int PlayerDetonationStrengthPercent = 20;
         internal static bool IsCivilWarFactionsEnabled() => Enabled;
         internal static bool PlayerFactionsAllowed = true;
         internal static bool IsCivilWarPlayerKingdomFactionsAllowed() => PlayerFactionsAllowed;
-        internal static CivilWarTuning BuildCivilWarTuning() => new() { DiscontentThreshold = DiscontentThreshold, PlayerDetonationStrengthPercent = PlayerDetonationStrengthPercent };
+        internal static CivilWarTuning BuildCivilWarTuning() => new() { WorldMaxWars = WorldMaxWars, DiscontentThreshold = DiscontentThreshold, PlayerDetonationStrengthPercent = PlayerDetonationStrengthPercent };
     }
     internal static class PlayerKingdomRebellionImmunity { internal static bool Protected; internal static bool ShouldProtectKingdom(Kingdom k) => Protected; }
     internal static class DiplomacyConversationBridge { internal static void ApplyExternalPrestigeDelta(string id,int delta,string reason) { } }

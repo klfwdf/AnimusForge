@@ -55,7 +55,7 @@ Check(JsonConvert.DeserializeObject<KingdomCivilWarStorage>(TeamModuleServices.C
 ChangeKingdomAction.Move(f.Follower, f.Home);
 behavior.OnKingdomDecisionConcluded(decision, approved, false);
 var policyState = JsonConvert.DeserializeObject<KingdomCivilWarStorage>(TeamModuleServices.CivilWar.Save()).Kingdoms[f.Home.StringId];
-Check(policyState.LastImposedPolicyId == policy.StringId && policyState.Clans[f.Follower.StringId].Grievance["policy_imposed"] == 8, "enacted policy still records grievance");
+Check(policyState.LastImposedPolicyId == policy.StringId && policyState.Clans[f.Follower.StringId].Grievance["policy_imposed"] == 4, "enacted policy still records grievance");
 
 // Loyalty starts only for actual combatants, with a repair for marks made by an older build.
 f = new Fixture();
@@ -211,9 +211,9 @@ f.State.Clans[f.Follower.StringId].Grievance["lands_raided"] = 20f;
 ChangeKingdomAction.Move(f.Follower, f.Home);
 CampaignTime.Day = 707;
 f.Owner.AddGrievance(f.Home, "lands_raided", new[] { f.Follower }, 20f, 101, "raid");
-Check(Math.Abs(f.State.Clans[f.Follower.StringId].Grievance["lands_raided"] - 36f) < 0.001, "missed days settled before adding fresh points");
+Check(Math.Abs(f.State.Clans[f.Follower.StringId].Grievance["lands_raided"] - 26f) < 0.001, "missed days settled before adding fresh points");
 f.AdvanceDay(707);
-Check(Math.Abs(f.State.Clans[f.Follower.StringId].Grievance["lands_raided"] - 36f) < 0.001, "fresh points not retroactively decayed");
+Check(Math.Abs(f.State.Clans[f.Follower.StringId].Grievance["lands_raided"] - 26f) < 0.001, "fresh points not retroactively decayed");
 
 // Real campaign daily handler -> adapter -> owner.
 TeamModuleServices.CivilWar = new CivilWarModuleAdapter();
@@ -222,7 +222,7 @@ CampaignTime.Day = 708;
 new CivilWarCampaignBehavior().OnDailyTick();
 for (int batch = 0; batch < 100; batch++) TeamModuleServices.CivilWar.ProcessPending();
 var dailyStorage = JsonConvert.DeserializeObject<KingdomCivilWarStorage>(TeamModuleServices.CivilWar.Save());
-Check(dailyStorage.Kingdoms[f.Home.StringId].LastGrievanceDecayDay == 708 && dailyStorage.Kingdoms[f.Home.StringId].Clans[f.Follower.StringId].Grievance["lands_raided"] < 36, "production daily event reaches stored grievances");
+Check(dailyStorage.Kingdoms[f.Home.StringId].LastGrievanceDecayDay == 708 && dailyStorage.Kingdoms[f.Home.StringId].Clans[f.Follower.StringId].Grievance["lands_raided"] < 26, "production daily event reaches stored grievances");
 
 // Crown supporters withdraw on the event crossing the grievance threshold, without a weekly tick.
 f = new Fixture();
@@ -234,7 +234,7 @@ f.Owner.AddGrievance(f.Home, "royal_execution", new[] { f.Follower }, 25, 100, "
 Check(supporter.Side == KingdomCivilWarSide.Crown, "one grievance below threshold does not force withdrawal");
 f.Owner.AddGrievance(f.Home, "policy_imposed", new[] { f.Follower }, 8, 100, "policy");
 Check(supporter.Side == KingdomCivilWarSide.Crown, "mixed grievances remain loyal below threshold");
-f.Owner.AddGrievance(f.Home, "peace_imposed", new[] { f.Follower }, 7, 100, "peace");
+f.Owner.AddGrievance(f.Home, "peace_imposed", new[] { f.Follower }, 37, 100, "peace");
 Check(supporter.Side == KingdomCivilWarSide.Middle && supporter.FactionId == "" && supporter.SideSinceWeek == 100, "event immediately withdraws support to neutral");
 Check(f.State.Factions.Count == 0 && f.State.LastAdvancedWeek == 0, "withdrawal neither needs a weekly tick nor invents a faction");
 Check(f.State.History.Any(h => h.Text.Contains("撤回对王室的支持")) && CivilWarCampaignBehavior.MaterialWrites == 1, "withdrawal is recorded as an actual political event");
@@ -247,7 +247,7 @@ foreach (var source in CivilWarCatalog.Sources)
 {
     f = new Fixture(); ChangeKingdomAction.Move(f.Follower, f.Home);
     f.State.Clans[f.Follower.StringId].Side = KingdomCivilWarSide.Crown;
-    f.Owner.AddGrievance(f.Home, source.Id, new[] { f.Follower }, 35, 100, source.Name);
+    f.Owner.AddGrievance(f.Home, source.Id, new[] { f.Follower }, 70, 100, source.Name);
     Check(f.State.Clans[f.Follower.StringId].Side == KingdomCivilWarSide.Middle, "exact threshold works for source " + source.Id);
 }
 
@@ -256,7 +256,7 @@ supporter = f.State.Clans[f.Follower.StringId]; supporter.Side = KingdomCivilWar
 DuelSettings.DiscontentThreshold = 45;
 f.Owner.AddGrievance(f.Home, "royal_execution", new[] { f.Follower }, 40, 100, "execution");
 Check(supporter.Side == KingdomCivilWarSide.Crown, "withdrawal respects configured threshold");
-f.Owner.AddGrievance(f.Home, "policy_imposed", new[] { f.Follower }, 5, 100, "policy");
+f.Owner.AddGrievance(f.Home, "policy_imposed", new[] { f.Follower }, 50, 100, "policy");
 Check(supporter.Side == KingdomCivilWarSide.Middle, "configured threshold reached");
 
 f = new Fixture(); ChangeKingdomAction.Move(f.Follower, f.Home);
@@ -291,7 +291,7 @@ Check(f.State.Clans[f.Follower.StringId].Side == KingdomCivilWarSide.Opposition,
 // Production policy event, through its adapter, reaches the new behavior.
 f = new Fixture(); ChangeKingdomAction.Move(f.Follower, f.Home);
 f.State.Clans[f.Follower.StringId].Side = KingdomCivilWarSide.Crown;
-f.State.Clans[f.Follower.StringId].Grievance["war_imposed"] = 30;
+f.State.Clans[f.Follower.StringId].Grievance["war_imposed"] = 31;
 f.Home.ActivePolicies.Add(policy);
 TeamModuleServices.CivilWar = new CivilWarModuleAdapter();
 TeamModuleServices.CivilWar.Load(JsonConvert.SerializeObject(f.Owner.Storage));
@@ -319,6 +319,7 @@ checks += EligibilityAndDecisionTests.Run();
 checks += PlayerFactionControlTests.Run();
 checks += PlayerFactionReviewFixTests.Run();
 checks += WorkToggleTests.Run();
+checks += WorldWarCapTests.Run();
 Console.WriteLine($"CivilWar lifecycle contracts passed: {checks} checks (fake game actions, real owner/effects and extracted entry bodies).");
 
 sealed class Fixture
@@ -334,7 +335,7 @@ sealed class Fixture
         CampaignTime.Day = 700; TaleWorlds.Core.MBRandom.Value = 0.99f; ChangeRelationAction.Changes.Clear();
 		PlayerKingdomRebellionImmunity.Protected = false;
 		MyBehavior.FactKeys.Clear(); MyBehavior.PoliticalResults.Clear(); MyBehavior.MemoryFacts.Clear();
-        DuelSettings.DiscontentThreshold = 35; DuelSettings.PlayerDetonationStrengthPercent = 20; CivilWarCampaignBehavior.MaterialWrites = 0;
+        DuelSettings.WorldMaxWars = 3; DuelSettings.DiscontentThreshold = 35; DuelSettings.PlayerDetonationStrengthPercent = 20; CivilWarCampaignBehavior.MaterialWrites = 0;
         Clan.All.Clear(); Kingdom.All.Clear(); Hero.All.Clear(); MakePeaceAction.Fail = false; ChangeKingdomAction.FailClan = null; ChangeKingdomAction.Moves = 0;
         GiveGoldAction.Calls = 0; GiveGoldAction.ThrowAfterApply = false; ChangeRelationAction.Calls = 0;
         MyBehavior.StabilityChanges = 0; MyBehavior.CleanupAllowed = true; DuelSettings.Enabled = true; DuelSettings.PlayerFactionsAllowed = true;

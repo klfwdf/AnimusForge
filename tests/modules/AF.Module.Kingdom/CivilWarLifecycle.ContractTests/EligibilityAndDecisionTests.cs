@@ -31,7 +31,7 @@ internal static class EligibilityAndDecisionTests
         var join=new CivilWarActionRequest{OperationId="minor-vassal-join",KingdomId=f.Home.StringId,Action=CivilWarAction.JoinCrown};
         Check(f.Owner.Quote(join,player).Allowed,"actual action quote permits minor-tagged sworn player");
         f.Owner.AddGrievance(f.Home,"fief_lost",new[]{player},20,100,"player fief lost");
-        Check(f.Owner.Storage.Kingdoms[f.Home.StringId].Clans[player.StringId].Grievance["fief_lost"]==20,"player event consumer shares corrected eligibility");
+        Check(f.Owner.Storage.Kingdoms[f.Home.StringId].Clans[player.StringId].Grievance["fief_lost"]==10,"player event consumer shares corrected eligibility");
         player.IsClanTypeMercenary=true;
         Check(CivilWarWorld.IsPoliticalClan(player),"player origin mercenary type does not replace current contract status");
         player.IsUnderMercenaryService=true;
@@ -59,14 +59,14 @@ internal static class EligibilityAndDecisionTests
             f=Realm();var policy=new PolicyObject{StringId="policy",Name="policy"};f.Home.ActivePolicies.Add(policy);
             var decision=new KingdomPolicyDecision{Kingdom=f.Home,Policy=policy,SupportStatusOfFinalDecision=status};
             behavior.OnKingdomDecisionConcluded(decision,new KingdomPolicyDecision.PolicyDecisionOutcome{ShouldDecisionBeEnforced=true},false);
-            Check(Points(f,"policy_imposed")== (status==KingdomDecision.SupportStatus.Minority?8:0),"policy imposed only for minority final decision: "+status);
+            Check(Points(f,"policy_imposed")== (status==KingdomDecision.SupportStatus.Minority?4:0),"policy imposed only for minority final decision: "+status);
 
             f=Realm();var war=new DeclareWarDecision{Kingdom=f.Home,SupportStatusOfFinalDecision=status};
             var warResult=new DeclareWarDecision.DeclareWarDecisionOutcome{Kingdom=f.Home,ShouldWarBeDeclared=true,FactionToDeclareWarOn=f.Rebel};
             behavior.OnWarDeclared(f.Home,f.Rebel,DeclareWarAction.DeclareWarDetail.CausedByKingdomDecision);
             Check(Points(f,"war_imposed")==0,"raw war callback cannot guess unresolved vote: "+status);
             behavior.OnKingdomDecisionConcluded(war,warResult,false);
-            Check(Points(f,"war_imposed")== (status==KingdomDecision.SupportStatus.Minority?8:0),"minority war recorded once at conclusion: "+status);
+            Check(Points(f,"war_imposed")== (status==KingdomDecision.SupportStatus.Minority?4:0),"minority war recorded once at conclusion: "+status);
 
             f=Realm();MakePeaceAction.Apply(f.Home,f.Rebel);
             var peace=new MakePeaceKingdomDecision{Kingdom=f.Home,SupportStatusOfFinalDecision=status};
@@ -74,7 +74,7 @@ internal static class EligibilityAndDecisionTests
             behavior.OnMakePeace(f.Home,f.Rebel,MakePeaceAction.MakePeaceDetail.ByKingdomDecision);
             Check(Points(f,"peace_imposed")==0,"raw peace callback defers vote grievance: "+status);
             behavior.OnKingdomDecisionConcluded(peace,peaceResult,false);
-            Check(Points(f,"peace_imposed")== (status==KingdomDecision.SupportStatus.Minority?7:0),"minority peace recorded once at conclusion: "+status);
+            Check(Points(f,"peace_imposed")== (status==KingdomDecision.SupportStatus.Minority?3.5f:0),"minority peace recorded once at conclusion: "+status);
         }
         f=Realm();
         var warDecision=new DeclareWarDecision{Kingdom=f.Home,SupportStatusOfFinalDecision=KingdomDecision.SupportStatus.Minority};
@@ -92,9 +92,9 @@ internal static class EligibilityAndDecisionTests
         behavior.OnKingdomDecisionConcluded(peaceDecision,peaceOutcome,false);
         Check(Points(f,"peace_imposed")==0,"rejected peace vote is not an imposed peace");
         f=Realm();behavior.OnWarDeclared(f.Home,f.Rebel,DeclareWarAction.DeclareWarDetail.Default);
-        Check(Points(f,"war_imposed")==8,"non-vote direct crown war retains old rule");
+        Check(Points(f,"war_imposed")==4,"non-vote direct crown war retains old rule");
         f=Realm();MakePeaceAction.Apply(f.Home,f.Rebel);behavior.OnMakePeace(f.Home,f.Rebel,MakePeaceAction.MakePeaceDetail.Default);
-        Check(Points(f,"peace_imposed")==7,"non-vote direct peace retains old rule");
+        Check(Points(f,"peace_imposed")==3.5f,"non-vote direct peace retains old rule");
         Console.WriteLine("PASS player eligibility + forced-vote grievance: "+count+" assertions; production owners and exact source-span event methods with fake game context");
         return count;
     }
