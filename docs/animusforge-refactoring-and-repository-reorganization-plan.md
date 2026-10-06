@@ -7426,3 +7426,32 @@ R2计划交付门槛：已给固定技术路线、真实来源与目标、写入
 - 最终原入口命令：`powershell -NoProfile -ExecutionPolicy Bypass -File scripts/build/build_single_module.ps1 -ProjectRoot F:\AnimusForge-main -BannerlordRoot "F:\SteamLibrary\steamapps\common\Mount & Blade II Bannerlord" -Configuration Debug`；1.3参考 `v1.3.15.110062`、1.4参考 `v1.4.6.115628`，两实现+Bootstrap 0错误，既有警告保留，双API政变接缝门禁PASS。构建输入来自共享工作区并包含其他作者当时改动，不声称后续并行改动已验证。
 - 证据：`artifacts/execution-scene-conflict-isolation-20261006/receipt.json`、`context-tests.log`、`wiring.log`、`build-final.log`；候选仍在 `bin/Debug/single_module_artifacts`，收据绑定本任务源码及候选SHA256。未Stage/覆盖游戏/打包/推送。
 - 未验证：真实1.3/1.4游戏回调顺序、亲手/NPC各刑法、取消/异常退出、收尾后普通NPC冲突及旧档；保留实机验收，不以fixture代替。源码回滚仅 `git revert 9d4a47f9`，保留其他作者提交；不hard reset。
+
+
+<a id="civilwar-world-cap-20261006"></a>
+## 内战派系世界上限与节奏调整（2026-10-06，OFFLINE_VERIFIED_NOT_DEPLOYED）
+
+- 用户确认后追加“玩家起兵不受影响”：世界上限仅阻止NPC自主起兵，玩家主动起兵/提议获准/拒绝解散令豁免；玩家战争与已登记政变仍占名额，政变发起不受本补丁限制。原版城镇叛乱不统计。MCM默认3、范围1–20、无需重启；降低设置不结束已有战争。
+- 产品/测试提交 `6a3b5926`，本地意图检查点 `63b0b97`；修改前HEAD `70f7e295`，main共享工作区其他作者持续修改/提交，本次只提交内战范围文件，未回滚或纳入其修改。
+- 运行边界：主线程HashSet按战争生命周期增删，查询O(1)，申请建国即占位；失败且确认未建国、完成结算、DropKingdom释放；读档从既有OpenWar状态重建，政变登记幂等。保留待核查战争占位，不因结算失败释放名额。没有新增Tick全量扫描/反射/后台对象读取，不改存档类型、字段、公开API。
+- 不满统一在AddPoints乘0.5；同步压制/解散提示，旧值、衰减和战后倍率保持。新玩家通牒答复28天，已有待答复截止日不迁移，递交通牒MCM间隔不变。
+
+### 源码范围（提交6a3b5926，一基行号）
+
+| 文件 | 行号/符号与责任 |
+| --- | --- |
+| `src/AF.GameAdapter.Bannerlord/Configuration/Mcm/DuelSettings.CivilWar.cs` | 15 玩家期限说明；55–57 世界上限属性；81 BuildCivilWarTuning映射与夹取 |
+| `src/modules/AF.Module.Kingdom/CivilWar/CivilWarRules.cs` | 108–109 默认值；121–123 HasWorldWarSlot含玩家授权豁免 |
+| `src/modules/AF.Module.Kingdom/CivilWar/KingdomCivilWarOwner.cs` | 25–27 索引；46、68 重建；302 删除王国；357–360 等待重试；373–374 新通牒；500–509 全局门禁与预占；699、797 释放；1463–1467 AddPoints减半 |
+| `src/modules/AF.Module.Kingdom/CivilWar/KingdomCivilWarOwner.Actions.cs` | 88–92 提示/解散令资格；145 玩家提议豁免；167–173 统一资格；376 抗命授权复核 |
+| `src/modules/AF.Module.Kingdom/CivilWar/KingdomCivilWarOwner.Coup.cs` | 52–53 接受既成政变战争并计数，不拦截登记 |
+| `tests/modules/AF.Module.Kingdom/CivilWarLifecycle.ContractTests/WorldWarCapTests.cs` | 1–138 真生产owner+假游戏环境：容量、同轮竞争、通牒/事件升级、玩家三入口、失败/结算/读档、政变、期限、小数不满 |
+
+### 验证与限制
+
+- `dotnet run --project tests/modules/AF.Module.Kingdom/CivilWarLifecycle.ContractTests --no-restore -p:PythonExecutable=E:/PYTHON/python.exe`：396项PASS。首次构建的python命令解析9009，改为真实解释器后通过；旧数值断言按新增不满减半更新，未删除原行为断言。生产owner/effects链接编译，游戏动作及Campaign环境为fixture。
+- `dotnet run --project tests/modules/AF.Module.Kingdom/CivilWarRules.SmokeTests --no-restore` PASS；本任务diff检查PASS。net6生命周期支持提示及既有未赋值警告不等于实机错误。
+- 原统一入口：`powershell -NoProfile -ExecutionPolicy Bypass -File scripts/build/build_single_module.ps1 -ProjectRoot F:/AnimusForge-main -BannerlordRoot "F:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord" -Configuration Debug`。参考1.3.15.110062 / 1.4.6.115628，两实现及Bootstrap 0错误，双最终DLL政变接缝门禁PASS。包含构建当时的并行作者输入，不证明其后续修改。日志/收据及源码、候选SHA256：`artifacts/civilwar-world-cap-20261006/receipt.json`、`lifecycle.log`、`build.log`；共享候选路径会被后续构建覆盖，以收据hash为准。
+- 用户追加战争转移问题：源码检查AF `CivilWarEffects.ReturnRebels` 先确认议和再迁移家族；`ProtectWarClans`/`MakeCivilWarClansPeacefulForExternal`对结算后独立家族清理战争。原版1.3/1.4 `FactionHelper.AdjustFactionStancesForClanJoiningKingdom`解除新王国未参与的家族旧战争，不向新王国宣战。内战可自动结算，默认最长12周；异常会保留状态重试/待核查。此为源码结论，不代替其他MOD介入后的实机日志。
+- NOT_RUN：真实1.3/1.4游戏MCM、已有用户配置、读档战役运行及多MOD战争交互。本次未Stage、覆盖游戏、打包或推送。
+- 源码回滚只用 `git revert 6a3b5926`，保留其他作者及本地文件；不hard reset。
