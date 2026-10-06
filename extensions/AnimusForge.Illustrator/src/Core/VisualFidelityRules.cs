@@ -86,6 +86,8 @@ namespace AnimusForge.Illustrator.Core
                     return "现场参考：仅用于判断当前位置与环境定位，保留已确认的地形及环境空间关系，以指定画风重新绘制。" + ConversationActionPriority;
                 case IllustrationReferenceKind.ScenePanorama:
                     return "环境全景参考：这张图只约束同一个空间的建筑、家具、预制体、材质和陈设，不约束人物外观、年龄、服装、姿态或人数；这是360度水平、180度垂直展开，中央是前方，左右边缘在后方相接，顶部与底部是上方与下方。不是多个房间，不照搬边缘或两极的展开拉伸作为最终构图。副本补光不代表现场采光，副本未覆盖的地形与动态物体保持未知。" + EnvironmentGeometryPriority;
+                case IllustrationReferenceKind.PairedScenePerspective:
+                    return "双视角环境资料板：A为左侧主视角，B为右侧辅助视角。它们是同一场景的两个独立透视画面，不是连续全景，不从拼接位置推断建筑相邻。最终画面以A的空间与构图为准，B只帮助辨认共同结构和材质，不把B独有设施搬入A。只输出一幅自然透视作品，不画分栏、标签、字母、边框或拼图；不以参考图画幅替代本次输出画幅。场景图不决定人物身份、姿态或人数。" + EnvironmentGeometryPriority;
                 case IllustrationReferenceKind.ScenePerspective:
                     return "普通透视的环境结构参考：这张图只约束场景建筑与陈设，不约束人物外观或姿态；保留图中实际建筑与陈设关系，直线结构保持自然透视。副本观察补光只帮助辨认材质，现场光照依已知时段与文字事实；不把补光亮斑或几何空缺推断为天窗、屋顶开口或日光束。" + EnvironmentGeometryPriority;
                 case IllustrationReferenceKind.SceneViews:

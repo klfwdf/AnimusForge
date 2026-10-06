@@ -660,6 +660,35 @@ namespace AnimusForge.Illustrator.Core
             payload["height"] = Math.Max(128, (int)Math.Round(height * scale));
         }
 
+        private static IReadOnlyList<IllustrationReferenceImage> PairGrokSceneReferences(
+            IReadOnlyList<IllustrationReferenceImage> references, CancellationToken token)
+        {
+            if (references == null || references.Count != 4) return references;
+            int first = -1, second = -1;
+            for (int i = 0; i < references.Count; i++)
+            {
+                if (references[i].Kind != IllustrationReferenceKind.ScenePerspective) continue;
+                if (first < 0) first = i;
+                else if (second < 0) second = i;
+                else return references;
+            }
+            if (second < 0) return references;
+            byte[] bytes = ImagePayload.PairSceneReferences(Convert.FromBase64String(references[first].Base64Image),
+                Convert.FromBase64String(references[second].Base64Image), token);
+            string label = "A（左）主视角原说明：" + references[first].Label
+                + "\nB（右）辅助视角原说明：" + references[second].Label
+                + "\n上述两份说明分别对应资料板A/B；辅助说明中的前一张主图指本资料板A，不指人物参考图。";
+            var combined = new IllustrationReferenceImage(Convert.ToBase64String(bytes), label, IllustrationReferenceKind.PairedScenePerspective);
+            var result = new List<IllustrationReferenceImage>(3);
+            for (int i = 0; i < references.Count; i++)
+                if (i == first) result.Add(combined);
+                else if (i != second) result.Add(references[i]);
+            GenerationDiagnostics.Current?.RecordStage("grok_scene_reference_pair", new JObject {
+                ["originalRefs"] = 4, ["actualRefs"] = 3, ["primaryIndex"] = first, ["auxiliaryIndex"] = second,
+                ["combinedBytes"] = bytes.Length, ["reason"] = "Grok paired scene references; all scene pixels and non-scene references retained" });
+            return result;
+        }
+
         internal static bool UsesGrokJsonEdits(string model)
         {
             string name = (model ?? string.Empty).Trim();
@@ -700,6 +729,7 @@ namespace AnimusForge.Illustrator.Core
                 return (false, null, null, "Grok 图片编辑最多支持5张参考图；未丢弃参考图，请求未发送。", false, effectivePrompt ?? string.Empty);
             bool hadReferences = referenceImages != null && referenceImages.Count > 0;
             referenceImages = PrepareReferenceImages(referenceImages, cancellationToken);
+            if (grokJson) referenceImages = PairGrokSceneReferences(referenceImages, cancellationToken);
             if (hadReferences && (referenceImages == null || referenceImages.Count == 0))
                 return (false, null, null, "没有可用的参考图；请求未发送。", false, effectivePrompt ?? string.Empty);
             string sentPrompt = effectivePrompt ?? string.Empty;

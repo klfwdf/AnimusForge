@@ -53,6 +53,37 @@ namespace AnimusForge.Illustrator.Engine
             }
         }
 
+        // Two independent views, copied pixel-for-pixel; no scale, crop, or channel swap.
+        internal static byte[] PairSceneReferences(byte[] first, byte[] second, CancellationToken token)
+        {
+            token.ThrowIfCancellationRequested();
+            using (var aStream = new MemoryStream(first, false))
+            using (var bStream = new MemoryStream(second, false))
+            using (var a = Image.FromStream(aStream, false, true))
+            using (var b = Image.FromStream(bStream, false, true))
+            {
+                const int header = 32, gap = 8;
+                int width = checked(a.Width + b.Width + gap), height = checked(Math.Max(a.Height, b.Height) + header);
+                ValidateDimensions(width, height);
+                using (var canvas = new Bitmap(width, height, PixelFormat.Format32bppArgb))
+                using (var graphics = Graphics.FromImage(canvas))
+                using (var output = new MemoryStream())
+                using (var font = new Font(FontFamily.GenericSansSerif, 18, FontStyle.Bold, GraphicsUnit.Pixel))
+                {
+                    graphics.Clear(Color.FromArgb(255, 32, 32, 32));
+                    graphics.DrawString("A - PRIMARY", font, Brushes.White, 6, 4);
+                    graphics.DrawString("B - AUXILIARY", font, Brushes.White, a.Width + gap + 6, 4);
+                    graphics.CompositingMode = System.Drawing.Drawing2D.CompositingMode.SourceCopy;
+                    graphics.DrawImage(a, new Rectangle(0, header, a.Width, a.Height), 0, 0, a.Width, a.Height, GraphicsUnit.Pixel);
+                    graphics.DrawImage(b, new Rectangle(a.Width + gap, header, b.Width, b.Height), 0, 0, b.Width, b.Height, GraphicsUnit.Pixel);
+                    token.ThrowIfCancellationRequested();
+                    canvas.Save(output, ImageFormat.Png);
+                    if (output.Length > MaxBytes) throw new InvalidDataException("双视角参考图超过上传图片大小限制；未丢弃参考图。");
+                    return output.ToArray();
+                }
+            }
+        }
+
         // Upload-only encoding; never alters cached originals or UI decoding.
         internal static byte[] EncodePlayer2Reference(byte[] original, bool scene, int maximumEdge, CancellationToken token)
         {
