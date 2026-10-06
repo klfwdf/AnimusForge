@@ -7703,3 +7703,15 @@ R2计划交付门槛：已给固定技术路线、真实来源与目标、写入
 - 验证：同一新增命中测试对检查点5ea5902出现55PASS/107FAIL；修复按1.3/1.4原版EventManager片段分别162PASS/0FAIL（含连续100次点击）；生产VM绑定/恢复/切模式及已有生命周期100PASS。hit测试含几何/引擎替身，生命周期patch dispatch与drawer为替身，不冒充实机。
 - 生命周期首次直接重定向obj导致现存obj被默认glob重复编译；已用artifacts/lifecycle-isolated/Proof.csproj显式源集合复跑通过，不删除其他产物或改构建入口。原build_single_module.ps1 Debug无Stage/Deploy，参考1.3.15.110062/1.4.6.115628，两实现各346警告/0错误，Bootstrap0错误，双Coup接缝门禁PASS。
 - 本地完整证据artifacts/dialogue-generation-shield-20261007/receipt.json、baseline/run.log、hit13/run.log、hit14/run.log、lifecycle.log、build.log。未实机验证/部署/打包/推送；玩家实际中断仍待带日志复现。产品回滚git revert 13ee8f393。
+
+<a id="characterreload-layer-resume-20261007"></a>
+## CharacterReload 编辑面板返回：完整激活 AF 对话层（2026-10-07，OFFLINE_VERIFIED_NOT_DEPLOYED）
+
+- 用户追加授权修复；检查点 a36a8e3，产品 cf995bfe4。修复已确认的图层生命周期缺口，不重做撤回的百科状态判断，不改 CharacterReload 或会话结束条件。
+- 原版返回会话只保留 MissionConversation/SceneLayer。AF 现在在 RestoreOverlayAfterTemporarySystemUi 中检测 IsActive，调用公开 SetLayerCategoriesState 完整激活自身层，再恢复控件和焦点；模式、请求 owner/generation 与生成中输入限制保持。
+- 性能：只在返回恢复入口执行；已激活则跳过，静态类别数组复用。无新增每帧扫描/反射/分配；原生接口仅必要恢复时遍历所属屏幕图层。
+- 坐标绑定 cf995bfe4：src/AF.GameAdapter.Bannerlord/UI/Conversation/AnimusForgeNativeConversationOverlay.cs:22 缓存数组、520–565 恢复方法、526–531 激活；tests/AF.GameAdapter.Bannerlord/NativeConversationInterruptionTests/Fixture.cs:71–90 模式/忙碌/编辑器/百科/重复返回场景；run.py:9,24 缺失激活变异。
+- 验证：69项真实源码方法回放通过，既有prefab绑定/5比例检查通过；移除激活的变异在整层恢复断言预期失败。测试图层为模拟，不是实机渲染；补齐既有桩缺失的Campaign/交易状态。
+- 原 build_single_module.ps1 仅构建入口通过：参考1.3.15.110062、1.4.6.115628，两实现和Bootstrap成功，双接缝门禁通过。未Stage/部署/打包/推送。
+- 实机CharacterReload完成返回与玩家AI变量是否真实重置尚未验证。证据 artifacts/characterreload-layer-fix-20261007/{replay.log,mutation.log,receipt.json}、artifacts/characterreload-layer-build-20261007.log。
+- 回滚仅 git revert cf995bfe4，保留其他修改。

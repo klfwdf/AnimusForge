@@ -1,3 +1,9 @@
+# 当前交接：角色重建返回的对话层恢复（2026-10-07，OFFLINE_VERIFIED_NOT_DEPLOYED）
+
+- 产品 cf995bfe4，检查点 a36a8e3。临时编辑器返回时完整激活AF对话层，保留模式、正文与生成状态。
+- 69项回放通过，缺失激活反例预期失败；1.3/1.4/Bootstrap及双接缝通过。实机未验，未部署/打包/推送。
+- [主台账、代码坐标与回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#characterreload-layer-resume-20261007)。回滚 git revert cf995bfe4。
+
 # 当前交接：生成期间正文点击屏蔽（2026-10-07，OFFLINE_VERIFIED_NOT_DEPLOYED）
 
 - 产品13ee8f393，检查点5ea5902。新对话UI增加生成中透明mouse拦截层，保留上层输入/工具按钮；busy状态与host同步，完成/切普通模式恢复。原后端继续保护不变，玩家实际正文中断尚未复现。
