@@ -19,7 +19,7 @@ namespace AnimusForge.Illustrator.Core
         public bool EnableLlmPromptExpansion { get; }
         public int MaxCacheCount { get; }
         public string ApiBaseUrl { get; }
-        public bool UsePlayer2ImageApi { get; }
+        public bool UsePlayer2ImageApi { get; private set; }
         public string Player2GameClientId { get; }
         public string ApiKey { get; }
         public string ModelName { get; }
@@ -45,6 +45,16 @@ namespace AnimusForge.Illustrator.Core
         internal bool HasPlayerRedrawRequest { get; private set; }
         internal bool IsApiTest { get; private set; }
         internal string OutputFrameRequirement { get; private set; } = string.Empty;
+
+        private bool _player2Resolved;
+        internal async Task<IllustrationOptions> ResolvePlayer2Async(CancellationToken token)
+        {
+            if (_player2Resolved) return this;
+            var copy = (IllustrationOptions)MemberwiseClone();
+            copy.UsePlayer2ImageApi = await UniversalOpenAiImageClient.DetectPlayer2Async(ApiBaseUrl, token).ConfigureAwait(false);
+            copy._player2Resolved = true;
+            return copy;
+        }
 
         internal IllustrationOptions ForApiTest()
         {
@@ -117,7 +127,7 @@ namespace AnimusForge.Illustrator.Core
             EnableLlmPromptExpansion = settings.EnableLlmPromptExpansion;
             MaxCacheCount = Math.Max(20, Math.Min(1000, settings.MaxCacheCount));
             ApiBaseUrl = settings.ApiBaseUrl;
-            UsePlayer2ImageApi = settings.UsePlayer2ImageApi;
+
             Player2GameClientId = (settings.Player2GameClientId ?? "").Trim();
             ApiKey = settings.ApiKey;
             ModelName = settings.ModelName;

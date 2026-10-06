@@ -38,11 +38,12 @@ namespace AnimusForge.Illustrator
             if (!Uri.TryCreate((settings.ApiBaseUrl ?? "").Trim(), UriKind.Absolute, out var endpoint)
                 || (endpoint.Scheme != Uri.UriSchemeHttp && endpoint.Scheme != Uri.UriSchemeHttps))
             { Show("请先填写有效的 HTTP/HTTPS 生图 API 地址。"); return; }
-            if (!settings.UsePlayer2ImageApi && string.IsNullOrWhiteSpace(settings.ModelName)) { Show("请先填写生图模型名称。"); return; }
+
 
             // Capture this MCM editor object, including unsaved fields, on the UI
             // thread. Workers never read the live settings or campaign objects.
             var options = new IllustrationOptions(settings, "", "", "").ForApiTest();
+
             var cancellation = new CancellationTokenSource();
             _active = cancellation;
             bool started = IllustratorRuntime.Start(() => RunAsync(options, endpoint, cancellation.Token), (message, error) =>
@@ -68,11 +69,15 @@ namespace AnimusForge.Illustrator
         private static async Task<string> RunAsync(IllustrationOptions options, Uri endpoint, CancellationToken token)
         {
             var watch = Stopwatch.StartNew();
+            options = await options.ResolvePlayer2Async(token).ConfigureAwait(false);
+            if (!options.UsePlayer2ImageApi && string.IsNullOrWhiteSpace(options.ModelName)) return "请先填写生图模型名称。";
+            string channel = options.UsePlayer2ImageApi
+                ? (options.EnableReferenceImageForGeneration ? "Player2 /image/edit" : "Player2 /image/generate") : "生图接口";
             var directory = IllustratorStoragePaths.EnsureDirectory(IllustratorStoragePaths.ApiTestDirectory);
             IllustrationReferenceImage[] references = null;
             // Edits requires an image. Generate a local neutral reference instead
             // of reading player files or capturing a live game scene.
-            if (options.UsePlayer2ImageApi || endpoint.AbsolutePath.TrimEnd('/').EndsWith("/images/edits", StringComparison.OrdinalIgnoreCase))
+            if ((options.UsePlayer2ImageApi && options.EnableReferenceImageForGeneration) || (!options.UsePlayer2ImageApi && endpoint.AbsolutePath.TrimEnd('/').EndsWith("/images/edits", StringComparison.OrdinalIgnoreCase)))
             {
                 using (var bitmap = new Bitmap(256, 256))
                 using (var graphics = Graphics.FromImage(bitmap))
@@ -90,7 +95,7 @@ namespace AnimusForge.Illustrator
             token.ThrowIfCancellationRequested();
             string elapsed = (watch.ElapsedMilliseconds / 1000.0).ToString("0.0");
             if (!result.Success || result.ImageBytes == null || result.ImageBytes.Length == 0)
-                return "测试失败（" + elapsed + "秒）：" + SensitiveLogText.Redact(result.ErrorMessage, options.ApiKey);
+                return channel + " 测试失败（" + elapsed + "秒）：" + SensitiveLogText.Redact(result.ErrorMessage, options.ApiKey);
             var bytes = ImagePayload.Normalize(result.ImageBytes);
             var destination = Path.Combine(directory, "last-result.png");
             var pending = destination + "." + Guid.NewGuid().ToString("N") + ".tmp";
@@ -102,7 +107,7 @@ namespace AnimusForge.Illustrator
                 else File.Move(pending, destination);
             }
             finally { if (File.Exists(pending)) File.Delete(pending); }
-            return "测试成功（" + elapsed + "秒），图片已保存至模组 Cache/Illustrator/ApiTest/last-result.png。";
+            return channel + " 测试成功（" + elapsed + "秒），图片已保存至模组 Cache/Illustrator/ApiTest/last-result.png。";
         }
 
         private static void Show(string text)

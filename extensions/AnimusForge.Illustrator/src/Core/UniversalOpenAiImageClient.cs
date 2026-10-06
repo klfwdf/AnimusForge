@@ -120,6 +120,7 @@ namespace AnimusForge.Illustrator.Core
 
             try
             {
+                settings = await settings.ResolvePlayer2Async(cancellationToken).ConfigureAwait(false);
                 // 1. 智能协议探测：判断是标准生图端点(/images/generations)还是对话多模态生图(/chat/completions，如 gemini-3.1-flash-image)
                 if (settings.EnableReferenceImageForGeneration == false)
                 {
@@ -546,9 +547,65 @@ namespace AnimusForge.Illustrator.Core
             return ResolveImageEndpoint(url, "/images/edits");
         }
 
+        private static readonly SemaphoreSlim Player2ProbeGate = new SemaphoreSlim(1, 1);
+        private static string _player2ProbeOrigin;
+        private static bool _player2ProbeResult;
+        private static DateTime _player2ProbeExpires;
+
+        internal static async Task<bool> DetectPlayer2Async(string baseUrl, CancellationToken token)
+        {
+            if (!Uri.TryCreate((baseUrl ?? "").Trim(), UriKind.Absolute, out var uri)
+                || !uri.IsLoopback || (uri.Scheme != "http" && uri.Scheme != "https")) return false;
+            string origin = new UriBuilder(uri.Scheme, "127.0.0.1", uri.Port).Uri.GetLeftPart(UriPartial.Authority);
+            await Player2ProbeGate.WaitAsync(token).ConfigureAwait(false);
+            try
+            {
+                if (_player2ProbeOrigin == origin && DateTime.UtcNow < _player2ProbeExpires)
+                {
+                    if (!_player2ProbeResult && uri.Port == 4315) throw new InvalidOperationException("Player2接口未确认，请稍后检查应用状态；未发送生图请求。");
+                    return _player2ProbeResult;
+                }
+                bool confirmed = false;
+                using (var timeout = CancellationTokenSource.CreateLinkedTokenSource(token))
+                {
+                    timeout.CancelAfter(TimeSpan.FromSeconds(5));
+                    try
+                    {
+                        using (var request = new HttpRequestMessage(HttpMethod.Get, origin + "/v1/openapi.json"))
+                        using (var response = await HttpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, timeout.Token).ConfigureAwait(false))
+                        {
+                            if (response.IsSuccessStatusCode)
+                            {
+                                var json = JObject.Parse(Encoding.UTF8.GetString(await ImagePayload.ReadBoundedAsync(response.Content, 2097152, timeout.Token).ConfigureAwait(false)));
+                                confirmed = (json["info"]?["title"]?.Value<string>() ?? "").IndexOf("Player2", StringComparison.OrdinalIgnoreCase) >= 0
+                                    && json["paths"]?["/image/edit"]?["post"] != null && json["paths"]?["/image/generate"]?["post"] != null;
+                            }
+                        }
+                    }
+                    catch (OperationCanceledException) { token.ThrowIfCancellationRequested(); }
+                    catch (HttpRequestException) { }
+                    catch (JsonException) { }
+                    catch (InvalidDataException) { }
+                }
+                _player2ProbeOrigin = origin;
+                _player2ProbeResult = confirmed;
+                _player2ProbeExpires = DateTime.UtcNow.AddSeconds(confirmed ? 300 : 15);
+                if (!confirmed && uri.Port == 4315)
+                    throw new InvalidOperationException("无法确认Player2图片接口，请检查应用已运行并登录，以及端口是否正确；未发送生图请求。");
+                return confirmed;
+            }
+            finally { Player2ProbeGate.Release(); }
+        }
+
         internal static string ResolvePlayer2Endpoint(string baseUrl, bool edit)
         {
             string root = (baseUrl ?? "").Trim().TrimEnd('/');
+            // Player2 documents IPv6 localhost conflicts; use IPv4 for localhost URLs.
+            if (Uri.TryCreate(root, UriKind.Absolute, out var uri) && uri.IsLoopback)
+            {
+                var builder = new UriBuilder(uri) { Host = "127.0.0.1" };
+                root = builder.Uri.GetLeftPart(UriPartial.Path).TrimEnd('/');
+            }
             foreach (string suffix in new[] { "/image/generate", "/image/edit", "/images/generations", "/images/edits", "/chat/completions" })
                 if (root.EndsWith(suffix, StringComparison.OrdinalIgnoreCase)) { root = root.Substring(0, root.Length - suffix.Length); break; }
             if (!root.EndsWith("/v1", StringComparison.OrdinalIgnoreCase)) root += "/v1";
