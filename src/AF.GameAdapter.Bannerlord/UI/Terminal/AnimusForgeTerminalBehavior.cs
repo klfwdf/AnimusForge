@@ -358,12 +358,11 @@ public class AnimusForgeTerminalBehavior : CampaignBehaviorBase
 	{
 		return new List<AnimusForgeTerminalNode>
 		{
-			Node("custom_policy_management", "王国公告", "外交与国家", "♚", "二级面板：撰写公告、地方政策、查看公告。",
+			Node("custom_policy_management", "王国公告", "外交与国家", "♚", "二级面板：撰写公告、地方政策。",
 				Node("policy_compose", "撰写王国公告", "外交与国家", "✍", "继续进入二级：自定义政策或外交宣言。",
 					Node("custom_policy", "撰写自定义政策", "外交与国家", "⚖", "打开自定义政策撰写面板。"),
 					Node("diplomatic_document", "撰写外交宣言", "外交与国家", "⚐", "发布王国外交宣言。")),
-				Node("local_policies", "地方政策", "外交与国家", "♜", "发布只影响玩家家族封地范围的地方政策。"),
-				Node("world_policies", "查看王国公告", "外交与国家", "✉", "统一查看自定义政策与各国公开外交宣言。")),
+				Node("local_policies", "地方政策", "外交与国家", "♜", "发布只影响玩家家族封地范围的地方政策。")),
 			Node("vassalage_management", "臣属国管理", "外交与国家", "⚜", "只查看已有臣属国；解约、改约、吞并请通过 LLM 对话推进。"),
 			Node("weekly_reports", "王国近况", "外交与国家", "✉", "查看各国最近的外交宣言、政策、快报与近况。"),
 
@@ -443,14 +442,6 @@ public class AnimusForgeTerminalBehavior : CampaignBehaviorBase
 		case "local_policies":
 			CloseTerminal();
 			CustomPolicyBehavior.OpenLocalPolicyManagementFromTerminal(OpenCustomPolicyManagementView);
-			return true;
-
-		case "world_policies":
-			CloseTerminal();
-			if (!DiplomacyPresentationBridge.ShowRoyalAnnouncementArchive(OpenCustomPolicyManagementView))
-			{
-				InformationManager.DisplayMessage(new InformationMessage("打开王国公告界面失败。"));
-			}
 			return true;
 
 		case "settlement_entry_troops":
