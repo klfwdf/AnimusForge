@@ -76,7 +76,7 @@ namespace AnimusForge.Illustrator
         [SettingPropertyGroup("1. 基础设置", GroupOrder = 1)]
         public bool AutoCleanTempFiles { get; set; } = true;
 
-        [SettingPropertyText("生图 API 端点地址 (Base URL)", HintText = "填写服务根地址或 /v1。默认有参考图时优先 /images/edits（真实上传参考图），无参考图才用 /images/generations；完整 edits 地址也可识别。模型必须支持所选通道；不支持 edits 不会静默丢图转文生图。", Order = 1, RequireRestart = false)]
+        [SettingPropertyText("生图 API 端点地址 (Base URL)", HintText = "填写服务根地址或 /v1。Player2填写http://127.0.0.1:4315即可自动识别，模型在Player2应用选择，无需开关。默认有参考图时优先 /images/edits（真实上传参考图），无参考图才用 /images/generations；完整 edits 地址也可识别。模型必须支持所选通道；不支持 edits 不会静默丢图转文生图。", Order = 1, RequireRestart = false)]
         [SettingPropertyGroup("2. 生图 API 配置 (OpenAI 兼容)", GroupOrder = 2)]
         public string ApiBaseUrl { get; set; } = "https://api.siliconflow.cn/v1";
 
@@ -92,13 +92,8 @@ namespace AnimusForge.Illustrator
         [SettingPropertyGroup("2. 生图 API 配置 (OpenAI 兼容)", GroupOrder = 2)]
         public Action FetchModelList { get; set; }
 
-        [SettingPropertyBool("Player2 生图接口模式", Order = 0, RequireRestart = false,
-            HintText = "使用Player2原生JSON接口。地址填写http://127.0.0.1:4315/v1（端口以Player2为准，也支持配置档路径）；应用须运行并登录。生图/编辑模型在Player2里选择，本页模型名不参与请求。有多张参考图时请选择支持多图的编辑模型，如Nano Banana；单图模型可能只使用首图。")]
-        [SettingPropertyGroup("2. 生图 API 配置 (OpenAI 兼容)", GroupOrder = 2)]
-        public bool UsePlayer2ImageApi { get; set; } = false;
-
         [SettingPropertyText("Player2 Game Client ID（可选）", Order = 15, RequireRestart = false,
-            HintText = "Player2开发者平台的Game Client ID，通过player2-game-key请求头发送；不是MCP密钥。仅Player2模式使用。")]
+            HintText = "Player2开发者平台的Game Client ID，通过player2-game-key请求头发送；不是MCP密钥。仅自动识别为Player2的地址使用。")]
         [SettingPropertyGroup("2. 生图 API 配置 (OpenAI 兼容)", GroupOrder = 2)]
         public string Player2GameClientId { get; set; } = "";
 
@@ -147,7 +142,7 @@ namespace AnimusForge.Illustrator
             var dropdown = _modelDropdown;
             if (dropdown == null || dropdown.SelectedIndex < 0 || dropdown.SelectedIndex >= dropdown.Count) return;
             string selected = dropdown[dropdown.SelectedIndex];
-            if (string.IsNullOrWhiteSpace(selected) || selected == "*手动输入*" || _modelName == selected) return;
+            if (string.IsNullOrWhiteSpace(selected) || selected == "*手动输入*" || selected == "使用 Player2 应用中选择的模型" || _modelName == selected) return;
             _modelName = selected;
             OnPropertyChanged(nameof(ModelName));
         }
@@ -803,6 +798,7 @@ namespace AnimusForge.Illustrator
 
         private sealed class ModelListFetchResult
         {
+            public bool Player2;
             public List<string> Models;
             public string Error;
         }
@@ -811,6 +807,8 @@ namespace AnimusForge.Illustrator
         {
             try
             {
+                if (await UniversalOpenAiImageClient.DetectPlayer2Async(baseUrl, System.Threading.CancellationToken.None).ConfigureAwait(false))
+                    return new ModelListFetchResult { Player2 = true };
                 string modelsUrl = baseUrl;
                 if (modelsUrl.EndsWith("/chat/completions", StringComparison.OrdinalIgnoreCase))
                     modelsUrl = modelsUrl.Substring(0, modelsUrl.Length - "/chat/completions".Length).TrimEnd('/');
@@ -891,6 +889,13 @@ namespace AnimusForge.Illustrator
                 return;
             }
 
+            if (result.Player2)
+            {
+                ReplaceModelDropdown(new Dropdown<string>(new[] { "使用 Player2 应用中选择的模型" }, 0));
+                RequestMcmRefresh();
+                InformationManager.DisplayMessage(new InformationMessage("[AI生图] 已确认Player2：生成/编辑模型请在Player2应用中选择，本页模型名不参与请求。"));
+                return;
+            }
             lock (_modelLock)
             {
                 _modelOptions = new List<string> { "*手动输入*" };
