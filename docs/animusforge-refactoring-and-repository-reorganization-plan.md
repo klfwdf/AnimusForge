@@ -1,3 +1,15 @@
+<a id="dialogue-ui-settings-20261006"></a>
+# 对话UI模式、正文字号及卷轴默认（2026-10-06，OFFLINE_VERIFIED_LIVE_PENDING）
+
+- 用户授权新增对话界面MCM正文字号、将总开关改为原版/新UI选项并默认新UI，场景喊话默认卷轴。基线00806f82/main，检查点2f4839e，产品/测试33a93552。本轮不处理前一轮仅定位的信使关系/解救记忆问题。
+- 修改：同一MCM页面及Id保持；新增InterfaceStyleDropdown（原版/新 UI，默认1）及BodyFontSize（14–36，默认24）。ShoutPanelStyleDropdown缺省、缺MCM和非法索引回退均为Scroll=1；保留已有显式原样/手札选择。原版选项让现有SkinEnabled路由回退，场景会话也由原有总门槛停用。
+- 旧配置边界：已反编译核实本机MCMv5 BaseSettingsJsonConverter只读写带MCM属性定义的属性，Dropdown保存索引。旧EnableSkin保留代码访问兼容alias但不再显示/持久化；没有新InterfaceStyleDropdown键的旧配置按用户要求默认新UI（旧false不会自动迁移），其他设置键不变。未直接改玩家全局设置文件。
+- 字号：新UI中12个正文/选项/历史/输入绑定使用AFDialogueBodyTextWidget、AFDialogueBodyRichTextWidget、AFDialogueBodyEditorWidget；首次OnUpdate在XML初始化后捕获字号，随后只走布尔门，无逐帧MCM访问或树扫描。Brush访问按原版BrushWidget复制实例，避免修改全局brush；编辑器同时设置EditorFontSize用于测量与光标。按钮、人物名、原版UI和头顶字幕字号不改。设置在对应控件重新创建时生效。
+- 源码证据（33a93552，一基行号）：extensions/AnimusForge.DialogueUI/src/DialogueUiSettings.cs:24-54 定义与默认，:83-125 安全读取/范围；同目录DialogueBodyTextWidgets.cs:9-45 三种正文控件。GUI/Prefabs下AFDialogueConversation、AFDialogueConversationItem、AFDialogueNativeOverlay、AFDialogueShout、AFSceneSessionFolio、AFSceneSessionScroll六份XML共12处接线，MapConversation复用AFDialogueConversation。真实消费者仍为PresentationRouter/NativeUiAdapter/场景会话现有路由，不改变输入提交和记忆。
+- 验证：dotnet run --project extensions/AnimusForge.DialogueUI/tests/settings-tests/SettingsTests.csproj -c Release -- F:/AnimusForge-main，39项真实设置/控件源码+假MCM/Gauntlet和XML检查PASS；既有lifecycle-tests同样参数95项PASS；diff检查PASS。原scripts/build/build_single_module.ps1 Debug无Stage/Deploy，双API 1.3/1.4、Bootstrap及双接缝门禁PASS。构建后生产仅改澄清旧设置读取的注释；逻辑未变。
+- 证据：artifacts/dialogue-ui-settings-20261006/receipt.json、settings-tests.log、lifecycle.log、build.log；候选bin/Debug/single_module_artifacts。未Stage/覆盖游戏/打包/推送。
+- 未验证：真实MCM下拉保存/加载与Gauntlet渲染、不同分辨率字号14/36的视觉布局、运行中切换界面。源码回滚git revert 33a93552；保留其他任务成果。
+
 <a id="illustrator-player-redraw-priority-20261006"></a>
 # 玩家定向重绘与MCM超时核对（2026-10-06，BUILD_VERIFIED_LIVE_PENDING）
 

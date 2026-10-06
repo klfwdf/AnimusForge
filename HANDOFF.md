@@ -1,3 +1,9 @@
+# 当前交接：对话正文字号与界面选项（2026-10-06，OFFLINE_VERIFIED_LIVE_PENDING）
+
+- 产品33a93552，检查点2f4839e：MCM增加新UI正文字号14–36（默认24），总开关改原版/新 UI（默认新UI）；场景喊话未保存设置时默认卷轴，已有明确风格保留。字号在重新打开时生效，覆盖正文/选项/历史/输入，不改按钮和人物名。
+- 39项设置/正文控件/XML、95项生命周期回归、原双API+Bootstrap/双接缝门禁通过。真实MCM/Gauntlet布局尚未验证，未Stage/部署/打包/推送。旧EnableSkin不自动迁移成新选项：没有新键时默认新UI。
+- [唯一主台账、证据和回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#dialogue-ui-settings-20261006)；本地artifacts/dialogue-ui-settings-20261006/receipt.json。回滚git revert 33a93552。
+
 # 当前交接：玩家重绘要求优先（2026-10-06，BUILD_VERIFIED_LIVE_PENDING）
 
 - 产品e0d0f3d8，检查点b07524e。百科/会话/周报的本次明确重绘要求优先于默认禁物、原参考及长期偏好；要求加剑可以落实，未提及部分继续保真。普通生成保持原样，不写回游戏事实。
