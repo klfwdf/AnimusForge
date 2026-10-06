@@ -1,3 +1,9 @@
+# 当前交接：玩家重绘要求优先（2026-10-06，BUILD_VERIFIED_LIVE_PENDING）
+
+- 产品e0d0f3d8，检查点b07524e。百科/会话/周报的本次明确重绘要求优先于默认禁物、原参考及长期偏好；要求加剑可以落实，未提及部分继续保真。普通生成保持原样，不写回游戏事实。
+- 原入口1.3/1.4+Bootstrap 0错误、双接缝PASS；一次中间资产缺失后原入口重试通过。按模块规则未运行Illustrator离线审计；实际模型输出/MCM改值计时未验，未部署/打包/推送。
+- MCM保存值240秒，安装DLL读取接线已核实；下一次请求捕获，导演独立240秒。新增实际预算日志。[主台账、代码位置与回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#illustrator-player-redraw-priority-20261006)。回滚仅git revert e0d0f3d8。下方其他工作保留。
+
 # 当前交接：散场空闲目标、冲突接管与刑场避让修复（2026-10-06，OFFLINE_VERIFIED_LIVE_PENDING）
 
 - 产品616a5bd5，检查点1800966：实际可用站位及common/limited回退，验证外向目标和整条导航路径；后续重新选点同样避让。新命中/警戒或战斗停止剩余散场接管，不清新警戒。替代下方984b4d5a的对应目标/接管结论。
