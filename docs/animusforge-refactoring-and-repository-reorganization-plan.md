@@ -7739,3 +7739,11 @@ R2计划交付门槛：已给固定技术路线、真实来源与目标、写入
 - 代码坐标：extensions/AnimusForge.Illustrator/src/Settings/IllustratorSettings.cs:28–38实例字段，114–155 setter/事件，158–167文本同步，427–460导演对象替换及同步，727–746/919–942初始化，886–900/1094–1110列表刷新。真实消费者IllustratorRuntime的IllustrationOptions构造读取ModelName、VisualDirectorEngine.TryResolveChatConfig读取DirectorModelName。
 - 验证：diff检查、所有对象构造/替换入口和事件解绑审查；scripts/build/build_single_module.ps1双API+Bootstrap+双接缝PASS，exit0。日志artifacts/illustrator-model-selection-20261007/build.log。按模块规则未运行Illustrator离线审计。
 - NOT-RUN：MCM实机点选/撤销/预设加载、保存重启与请求model一致性；未付费API调用、未部署/打包/推送。回滚git revert 919d4ed27。
+
+## illustrator-model-selection-delivery-20261007 — DEPLOYED_PACKAGED_PUSHED_LIVE_PENDING
+
+- 用户明确授权本片编译/部署/提交/推送/打包。产品919d4ed27，源码ea2b0c472，origin/main无新增提交，待推送仅本片及记录。
+- 原build_single_module.ps1 -Stage双API/Bootstrap/双接缝与Stage全部通过；deploy_module.ps1部署成功更新9文件，Stage与安装3379文件哈希完全一致。源码已普通推送origin/main。
+- 包一键编译覆盖推送/packages/AnimusForge_v1.5.5_20261007_041545_360.zip；原脚本布局/哈希验证PASS，一个模块、Bootstrap+双实现、不含ONNX。安装XML仍v1.5.4，ZIP版本v1.5.5，沿用原打包规则。
+- 证据artifacts/illustrator-model-selection-20261007/build-stage.log、deploy.log、package.log、install-verification.json。部署恢复C:/Users/29310/AppData/Local/AnimusForge/Recovery/deploy/deploy-29486f55dea1406d8e1f5bd057bc2e50。源码回滚git revert 919d4ed27。
+- NOT-RUN：MCM实机选择/保存重启/预设撤销、真实请求model一致性；未调用付费API。后续状态以本条取代上条未部署记录。
