@@ -1,0 +1,167 @@
+using System;
+using System.Collections.Generic;
+using TaleWorlds.CampaignSystem.LogEntries;
+using TaleWorlds.Core;
+using TaleWorlds.Library;
+using TaleWorlds.Localization;
+using TaleWorlds.SaveSystem;
+
+namespace TaleWorlds.CampaignSystem;
+
+public class CampaignInformationManager
+{
+	public enum NoticeType
+	{
+		None,
+		WarAnnouncement,
+		PeaceAnnouncement,
+		ChangeSettlementOwner,
+		FortificationIsCaptured,
+		HeroChangedFaction,
+		BarterAnnouncement
+	}
+
+	[SaveableField(10)]
+	private List<InformationData> _mapNotices;
+
+	[CachedData]
+	private bool _isSessionLaunched;
+
+	public static event Func<TextObject, int, BasicCharacterObject, Equipment, MBInformationManager.NotificationPriority, string, MBInformationManager.DialogNotificationHandle> OnDisplayDialog;
+
+	public static event Func<MBInformationManager.DialogNotificationHandle, MBInformationManager.NotificationStatus> OnGetStatusOfDialogNotification;
+
+	public static event Action<MBInformationManager.DialogNotificationHandle, bool> OnClearDialogNotification;
+
+	public static event Func<bool> IsAnyDialogNotificationActiveOrQueued;
+
+	public static event Action<bool> OnClearAllDialogNotifications;
+
+	public CampaignInformationManager()
+	{
+		_mapNotices = new List<InformationData>();
+	}
+
+	private void MapNoticeRemoved(InformationData obj)
+	{
+		int num = -1;
+		for (int i = 0; i < _mapNotices.Count; i++)
+		{
+			if (obj == _mapNotices[i])
+			{
+				num = i;
+			}
+		}
+		if (num >= 0)
+		{
+			_mapNotices.RemoveAt(num);
+		}
+	}
+
+	internal void NewLogEntryAdded(LogEntry log)
+	{
+		if (_isSessionLaunched && log is IChatNotification { IsVisibleNotification: not false } chatNotification)
+		{
+			InformationManager.DisplayMessage(new InformationMessage
+			{
+				Information = chatNotification.GetNotificationText().ToString(),
+				Color = Color.FromUint(Campaign.Current.Models.DiplomacyModel.GetNotificationColor(chatNotification.NotificationType))
+			});
+		}
+	}
+
+	private void AddInformationData(InformationData informationData)
+	{
+		_mapNotices?.Add(informationData);
+		MBInformationManager.AddNotice(informationData);
+	}
+
+	internal void RegisterEvents()
+	{
+		_isSessionLaunched = true;
+		MBInformationManager.OnRemoveMapNotice += MapNoticeRemoved;
+	}
+
+	internal void DeRegisterEvents()
+	{
+		_isSessionLaunched = false;
+		MBInformationManager.OnRemoveMapNotice -= MapNoticeRemoved;
+	}
+
+	public void OnGameLoaded()
+	{
+		_mapNotices.RemoveAll((InformationData t) => t == null || !t.IsValid());
+		foreach (InformationData mapNotice in _mapNotices)
+		{
+			MBInformationManager.AddNotice(mapNotice);
+		}
+	}
+
+	public void NewMapNoticeAdded(InformationData informationData)
+	{
+		AddInformationData(informationData);
+	}
+
+	public bool InformationDataExists<T>(Func<T, bool> predicate) where T : InformationData
+	{
+		foreach (InformationData mapNotice in _mapNotices)
+		{
+			if (mapNotice is T arg && (predicate == null || predicate(arg)))
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public static MBInformationManager.DialogNotificationHandle AddDialogLine(TextObject text, CharacterObject speakerCharacter, Equipment equipment = null, int extraTimeInMs = 0, MBInformationManager.NotificationPriority priority = MBInformationManager.NotificationPriority.Medium)
+	{
+		Debug.Print(text.ToString(), 0, Debug.DebugColor.White, 4503599627370496uL);
+		return CampaignInformationManager.OnDisplayDialog?.Invoke(text, extraTimeInMs, speakerCharacter, equipment, priority, GetSoundPath(text, speakerCharacter)) ?? null;
+	}
+
+	public static MBInformationManager.NotificationStatus GetStatusOfDialogNotification(MBInformationManager.DialogNotificationHandle handle)
+	{
+		return CampaignInformationManager.OnGetStatusOfDialogNotification?.Invoke(handle) ?? MBInformationManager.NotificationStatus.Inactive;
+	}
+
+	public static void ClearDialogNotification(MBInformationManager.DialogNotificationHandle handle, bool fadeOut = true)
+	{
+		CampaignInformationManager.OnClearDialogNotification?.Invoke(handle, fadeOut);
+	}
+
+	public static bool GetIsAnyDialogNotificationActiveOrQueued()
+	{
+		return CampaignInformationManager.IsAnyDialogNotificationActiveOrQueued?.Invoke() ?? false;
+	}
+
+	public static void ClearAllDialogNotifications(bool fadeOut)
+	{
+		CampaignInformationManager.OnClearAllDialogNotifications?.Invoke(fadeOut);
+	}
+
+	private static string GetSoundPath(TextObject line, CharacterObject characterObject)
+	{
+		if (characterObject != null && MBTextManager.TryGetVoiceObject(line, out var vo, out var _))
+		{
+			return Campaign.Current.Models.VoiceOverModel.GetSoundPathForCharacter(characterObject, vo);
+		}
+		Debug.FailedAssert("Sound path for voice line not found! Character: " + characterObject?.ToString() + ", Line: " + line.ToString(), "C:\\BuildAgent\\work\\mb3\\Source\\Bannerlord\\TaleWorlds.CampaignSystem\\CampaignInformationManager.cs", "GetSoundPath", 180);
+		return null;
+	}
+
+	internal static void AutoGeneratedStaticCollectObjectsCampaignInformationManager(object o, List<object> collectedObjects)
+	{
+		((CampaignInformationManager)o).AutoGeneratedInstanceCollectObjects(collectedObjects);
+	}
+
+	protected virtual void AutoGeneratedInstanceCollectObjects(List<object> collectedObjects)
+	{
+		collectedObjects.Add(_mapNotices);
+	}
+
+	internal static object AutoGeneratedGetMemberValue_mapNotices(object o)
+	{
+		return ((CampaignInformationManager)o)._mapNotices;
+	}
+}

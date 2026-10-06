@@ -1,0 +1,3 @@
+namespace TaleWorlds.CampaignSystem.CharacterCreationContent;
+
+public delegate void GetNarrativeMenuOptionArgsDelegate(NarrativeMenuOptionArgs args);
