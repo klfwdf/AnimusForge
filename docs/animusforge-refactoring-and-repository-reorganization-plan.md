@@ -7455,3 +7455,10 @@ R2计划交付门槛：已给固定技术路线、真实来源与目标、写入
 - 用户追加战争转移问题：源码检查AF `CivilWarEffects.ReturnRebels` 先确认议和再迁移家族；`ProtectWarClans`/`MakeCivilWarClansPeacefulForExternal`对结算后独立家族清理战争。原版1.3/1.4 `FactionHelper.AdjustFactionStancesForClanJoiningKingdom`解除新王国未参与的家族旧战争，不向新王国宣战。内战可自动结算，默认最长12周；异常会保留状态重试/待核查。此为源码结论，不代替其他MOD介入后的实机日志。
 - NOT_RUN：真实1.3/1.4游戏MCM、已有用户配置、读档战役运行及多MOD战争交互。本次未Stage、覆盖游戏、打包或推送。
 - 源码回滚只用 `git revert 6a3b5926`，保留其他作者及本地文件；不hard reset。
+# 处决欢呼后民众散场（2026-10-06）
+
+<a id="execution-crowd-dispersal-20261006"></a>
+
+- ACTIVE；基线 `e800799b` / main。用户要求行刑欢呼后民众散开；修改共享处决收尾与观众控制，保留受刑者/行刑者/护卫与既有处决结算、存档和AF隔离恢复边界。
+- 开工时存在插画、内战、场景会面等并行修改，保留且不纳入提交。目标为收尾完成后每0.35秒最多释放一名已登记观众，交给原版城镇行走AI，有限重试，避免每帧全量扫描及抢回新冲突控制。
+- 退出门：生产调度/释放专项回归、AF 1.3/1.4 + Bootstrap、独立 RichExecutions 目标版本编译；实机寻路/自定义场景仍需验收。不覆盖游戏/打包/推送，不写外部源码副本。
