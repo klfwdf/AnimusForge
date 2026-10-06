@@ -113,6 +113,10 @@ internal static class WorldDiplomacyAnalysisApplication
             }
             if (document.IsPlayerAuthored)
             {
+                // Match offers with the canonical IDs used by final execution.
+                string normalizedTarget = resolveKingdomCanonicalId?.Invoke(
+                    FirstNonEmpty(targetId, document.TargetKingdomId));
+                if (!string.IsNullOrWhiteSpace(normalizedTarget)) targetId = normalizedTarget;
                 var sourceRound = string.IsNullOrWhiteSpace(respondingToOfferDocumentId) ? null
                     : resolveRound?.Invoke(resolveDocument?.Invoke(respondingToOfferDocumentId)?.RoundId);
                 ReconcilePlayerDeclarationWithOpenOffer(document, intent, sourceRound ?? resolveRound?.Invoke(document.RoundId), ref targetId, ref respondingToOfferDocumentId, log);

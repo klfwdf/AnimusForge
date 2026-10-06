@@ -304,9 +304,21 @@ public static class WorldDiplomacyReputationRules
 	{
 		if (document == null || reputationByKingdom == null || document.InternationalReputationSettled
 			|| string.IsNullOrWhiteSpace(document.AuthorKingdomId)) return;
-		int delta = Math.Max(-MaximumInternationalReputationChangePerDocument,
+		// A pre-execution rejection confirms no fulfilled acceptance. Preserve the public
+		// declaration, but do not reward (or penalize) its unexecuted acceptance as fulfillment.
+		bool rejectedAcceptance = document.IsPlayerAuthored
+			&& string.Equals(document.AnalysisStatus, "published_action_rejected", StringComparison.Ordinal)
+			&& !document.ChangedDiplomaticState
+			&& (document.Actions == null || document.Actions.All(x => x == null || !x.ChangedDiplomaticState))
+			&& (IsOfferAcceptance(document.Intent) || document.Actions?.Any(x => x != null && IsOfferAcceptance(x.Intent)) == true);
+		int delta = rejectedAcceptance ? 0 : Math.Max(-MaximumInternationalReputationChangePerDocument,
 			Math.Min(MaximumInternationalReputationChangePerDocument, document.InternationalReputationEvaluationDelta));
-		if (delta == 0)
+		if (rejectedAcceptance)
+		{
+			document.InternationalReputationEvaluationReason = "接受提案的外交动作在执行前被拒绝，未确认履约，本次不结算该接受宣言的声誉增减。";
+			document.InternationalReputationEvaluationSource = "rejected_acceptance_no_effect";
+		}
+		else if (delta == 0)
 		{
 			delta = CalculateStructuredInternationalReputationFallback(document, out string fallbackReason);
 			document.InternationalReputationEvaluationReason = WorldDiplomacyTextRules.Limit(fallbackReason, 240);
@@ -330,6 +342,13 @@ public static class WorldDiplomacyReputationRules
 			+ " before=" + before.ToString(CultureInfo.InvariantCulture)
 			+ " after=" + after.ToString(CultureInfo.InvariantCulture)
 			+ " source=" + document.InternationalReputationEvaluationSource);
+	}
+
+	private static bool IsOfferAcceptance(string intent)
+	{
+		string normalized = WorldDiplomacyIntentVocabulary.NormalizeIntent(intent);
+		return normalized.StartsWith("accept_", StringComparison.Ordinal)
+			&& !string.IsNullOrWhiteSpace(WorldDiplomacyIntentVocabulary.ResponseIntentToProposalIntent(normalized));
 	}
 
 	public static void AnchorInternationalReputationNaturalChangeDays(
