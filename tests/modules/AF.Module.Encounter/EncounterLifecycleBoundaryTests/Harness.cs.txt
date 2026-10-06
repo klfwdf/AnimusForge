@@ -166,8 +166,26 @@ internal static class PlayerLeaveAudit
     sealed class State { internal PlayerEncounterState EncounterState; internal bool IsPlayerWaiting = true; }
     sealed class CampaignState { internal ConversationContext CurrentConversationContext; }
     static class Campaign { internal static CampaignState Current = new CampaignState(); }
-    static class Mission { internal static object Current; }
-    static class PlayerEncounter { internal static State Current; internal static bool LeaveEncounter, PlayerSurrender; }
+    enum MissionMode { Battle, Conversation }
+    sealed class Mission {
+        internal static Mission Current;
+        internal MissionMode Mode;
+        internal ConversationMissionLogic Conversation;
+        internal T GetMissionBehavior<T>() where T : class => Conversation as T;
+    }
+    sealed class PartyBase { internal static PartyBase MainParty = new PartyBase(); }
+    sealed class CharacterObject { internal Hero HeroObject; }
+    sealed class ConversationCharacterData { internal PartyBase Party; internal CharacterObject Character; }
+    sealed class ConversationMissionLogic {
+        internal bool IsMultiAgentConversation;
+        internal ConversationCharacterData PlayerConversationData = new ConversationCharacterData();
+        internal ConversationCharacterData OtherSideConversationData = new ConversationCharacterData();
+    }
+    static PartyBase EncounterParty;
+    static Hero ArmyMember;
+    static PartyBase GetCurrentEncounterPartySafe() => EncounterParty;
+    static bool IsEncounterArmyMemberTarget(Hero hero, PartyBase party) => hero != null && hero == ArmyMember && party == EncounterParty;
+    static class PlayerEncounter { internal static State Current; internal static bool LeaveEncounter, PlayerSurrender, PlayerIsAttacker; }
     static class PlayerEncounterCompat {
         internal static bool Battle, Result, PostResult;
         internal static bool HasEncounterBattleContext() => Battle;
@@ -188,20 +206,39 @@ internal static class PlayerLeaveAudit
     @@PLAYER_LEAVE_METHOD@@
     static void Setup() {
         PlayerEncounter.Current = new State(); PlayerEncounter.LeaveEncounter = PlayerEncounter.PlayerSurrender = false;
+        PlayerEncounter.PlayerIsAttacker = true; EncounterParty = new PartyBase(); ArmyMember = null;
         Campaign.Current.CurrentConversationContext = ConversationContext.PartyEncounter; Mission.Current = null;
         Attack = MeetingResult = Captivity = BattleMenu = Native = HostileInterception = false;
         PlayerEncounterCompat.Battle = PlayerEncounterCompat.Result = PlayerEncounterCompat.PostResult = false;
         MeetingBattleRuntime.IsCombatEscalated = MapSeaContextGuard.Sea = false;
+    }
+    static void SetupNavalConversation() {
+        Setup(); MapSeaContextGuard.Sea = true;
+        Mission.Current = new Mission { Mode = MissionMode.Conversation, Conversation = new ConversationMissionLogic() };
+        Mission.Current.Conversation.PlayerConversationData.Party = PartyBase.MainParty;
+        Mission.Current.Conversation.OtherSideConversationData.Party = EncounterParty;
     }
     internal static void Run() {
         Setup(); PreparePlayerRequestedNativeConversationLeave();
         Program.Check(PlayerEncounter.LeaveEncounter && !PlayerEncounter.Current.IsPlayerWaiting, "toolbar farewell leaves an ordinary map encounter, including a caravan without a lord");
         Setup(); PlayerEncounter.Current.EncounterState = PlayerEncounterState.Wait; PreparePlayerRequestedNativeConversationLeave();
         Program.Check(PlayerEncounter.LeaveEncounter, "waiting map conversation has the same farewell consequence");
-        foreach (var danger in new[] { "mission", "context", "state", "attack", "meeting_result", "captivity", "battle_menu", "battle", "result", "post_result", "escalation", "surrender", "activity", "sea", "intercepted" }) {
-            Setup();
+        SetupNavalConversation(); PreparePlayerRequestedNativeConversationLeave();
+        Program.Check(PlayerEncounter.LeaveEncounter && !PlayerEncounter.Current.IsPlayerWaiting, "player-initiated friendly naval conversation leaves through native farewell instead of attack menu");
+        SetupNavalConversation(); PlayerEncounter.Current.EncounterState = PlayerEncounterState.Wait; PreparePlayerRequestedNativeConversationLeave();
+        Program.Check(PlayerEncounter.LeaveEncounter, "naval conversation in Wait state can leave");
+        SetupNavalConversation(); Mission.Current = null; PreparePlayerRequestedNativeConversationLeave();
+        Program.Check(PlayerEncounter.LeaveEncounter, "player-initiated naval map conversation also leaves");
+        SetupNavalConversation(); ArmyMember = new Hero();
+        Mission.Current.Conversation.OtherSideConversationData.Party = new PartyBase();
+        Mission.Current.Conversation.OtherSideConversationData.Character = new CharacterObject { HeroObject = ArmyMember };
+        PreparePlayerRequestedNativeConversationLeave();
+        Program.Check(PlayerEncounter.LeaveEncounter, "naval army member selection retains its actual conversation target");
+        foreach (bool naval in new[] { false, true })
+        foreach (var danger in new[] { "mission", "context", "state", "attack", "meeting_result", "captivity", "battle_menu", "battle", "result", "post_result", "escalation", "surrender", "activity", "intercepted" }) {
+            if (naval) SetupNavalConversation(); else Setup();
             switch (danger) {
-                case "mission": Mission.Current = new object(); break;
+                case "mission": Mission.Current = new Mission { Mode = MissionMode.Conversation }; break;
                 case "context": Campaign.Current.CurrentConversationContext = ConversationContext.Default; break;
                 case "state": PlayerEncounter.Current.EncounterState = PlayerEncounterState.Battle; break;
                 case "attack": Attack = true; break;
@@ -214,11 +251,26 @@ internal static class PlayerLeaveAudit
                 case "escalation": MeetingBattleRuntime.IsCombatEscalated = true; break;
                 case "surrender": PlayerEncounter.PlayerSurrender = true; break;
                 case "activity": Native = true; break;
-                case "sea": MapSeaContextGuard.Sea = true; break;
                 case "intercepted": HostileInterception = true; break;
             }
             PreparePlayerRequestedNativeConversationLeave();
-            Program.Check(!PlayerEncounter.LeaveEncounter && PlayerEncounter.Current.IsPlayerWaiting, "toolbar leave does not bypass native encounter rules: " + danger);
+            Program.Check(!PlayerEncounter.LeaveEncounter && PlayerEncounter.Current.IsPlayerWaiting, "toolbar leave does not bypass native encounter rules: naval=" + naval + ", " + danger);
+        }
+        foreach (var danger in new[] { "opponent_friendly", "opponent_hostile", "opponent_map", "land_mission", "mission_mode", "multi_agent", "player_party", "partner_party", "no_encounter_party" }) {
+            SetupNavalConversation();
+            switch (danger) {
+                case "opponent_friendly": PlayerEncounter.PlayerIsAttacker = false; break;
+                case "opponent_hostile": PlayerEncounter.PlayerIsAttacker = false; HostileInterception = true; break;
+                case "opponent_map": PlayerEncounter.PlayerIsAttacker = false; Mission.Current = null; break;
+                case "land_mission": MapSeaContextGuard.Sea = false; break;
+                case "mission_mode": Mission.Current.Mode = MissionMode.Battle; break;
+                case "multi_agent": Mission.Current.Conversation.IsMultiAgentConversation = true; break;
+                case "player_party": Mission.Current.Conversation.PlayerConversationData.Party = new PartyBase(); break;
+                case "partner_party": Mission.Current.Conversation.OtherSideConversationData.Party = new PartyBase(); break;
+                case "no_encounter_party": EncounterParty = null; Mission.Current.Conversation.OtherSideConversationData.Party = null; break;
+            }
+            PreparePlayerRequestedNativeConversationLeave();
+            Program.Check(!PlayerEncounter.LeaveEncounter && PlayerEncounter.Current.IsPlayerWaiting, "naval exit requires the same player-initiated conversation mission: " + danger);
         }
         Setup(); PlayerEncounter.Current = null; PreparePlayerRequestedNativeConversationLeave();
         Program.Check(!PlayerEncounter.LeaveEncounter, "scene conversation without an encounter does not create a farewell flag");
