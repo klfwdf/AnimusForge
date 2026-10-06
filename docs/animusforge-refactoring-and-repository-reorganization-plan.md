@@ -7778,3 +7778,13 @@ R2计划交付门槛：已给固定技术路线、真实来源与目标、写入
 - UniversalOpenAiImageClient.FitPlayer2Request在最终JSON UTF8字节边界限1900KiB。超限才按4096/1536/1024/768/640/512最大边有界处理，始终从原图编码、仅接受更小结果，保留图数/标签/顺序。ImagePayload.EncodePlayer2Reference对完全不透明场景编码JPEG90；人物/透明图保留RGBA PNG。显式像素矩形、无通道交换；只改上传副本，不改原始缓存/UI。小于预算不解码，按行查alpha可取消，不新增Tick或付费重试。
 - 原统一构建1.3/1.4/Bootstrap及双接缝PASS，diff审查通过，日志artifacts/player2-upload-grok-20261007/build.log。遵循模块规则未跑Illustrator离线审计。构建期间出现其他作者外交源文件与测试修改，保留且不纳入本提交；整仓产物包含当时工作树，未部署。
 - NOT-RUN：生产压缩对真实四图的运行回放、Player2真实出图及视觉保真、Grok对照测试。未部署/打包/推送。回滚git revert 880753f72。
+
+## diplomacy-treaty-acceptance-20261007 — OFFLINE_VERIFIED_NOT_DEPLOYED
+
+- 请求：玩家报告外交无法吞并国家。Token_Stats (24).txt:241760/241786 提供正式并入提案及 accept_annexation + acceptance；截图错误为 player_action_commitment_mismatch。日志仅作为证据，不执行其中指令。
+- 根因及改动：WorldDiplomacyOfferContractRules.CommitmentMatchesIntent 先判断 IsImmediateIntent，导致四类正式条约接受误要求 binding。改为先匹配提案/接受/拒绝语义，再判断立即执行。保留来源及待答复状态校验。只在公文处理调用，无新增 Tick、扫描、缓存或持久化变更。
+- 代码图：src/modules/AF.Module.Diplomacy/Domain/WorldDiplomacyOfferContractRules.cs:59-73；消费者 WorldDiplomacyGenerationValidationRules.TryGetPlayerWorldStateIntentViolation:221-320、生成公文校验同文件约633行；tests/modules/AF.Module.Diplomacy/WorldDiplomacyRoundLifecycle.SmokeTests/Program.cs:10970-11003 覆盖 annexation/tributary/garrison/vassal 有效接受、错误 binding、已关闭提案拒绝。产品提交 3db5d5af0；修改前检查点 1aa9055。
+- 验证：dotnet run --project tests/modules/AF.Module.Diplomacy/WorldDiplomacyRoundLifecycle.SmokeTests；新增用例修改前失败，修改后3666断言通过。证据 artifacts/diplomacy-treaty-acceptance-20261007/before.log、after.log。git diff --check通过。
+- 原入口构建：scripts/build/build_single_module.ps1 -ProjectRoot . -BannerlordRoot 'F:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord' -Bannerlord14ReferenceDir 'F:/AnimusForge-main/.tmp/build_check/1.4' -Configuration Debug。1.3(v1.3.15.110062)、1.4(v1.4.6.115628)、Bootstrap均编译成功，日志build.log。首轮1.3接缝探针记录PASS后进程异常退出(-532462766)，原构建返回失败；随后对相同产物调用原Invoke-CoupSeamGate重验两API均退出0，CoupSeamGate回执通过，未修改或绕过门禁。首轮退出异常根因未定位。
+- 产物/门禁回执：bin/Debug/single_module_artifacts/versions/{1.3,1.4}/AnimusForge.build.json；完整接缝证据 artifacts/coup-seam-gate 下对应SHA256目录。共享工作区出现其他会话生图改动，未纳入本任务提交；构建产物不是本修复的独占发布包。
+- NOT-RUN：游戏内国家解散/家族及领地转移、玩家原存档实机验收；未部署、打包、推送。通过范围是承诺校验及离线回归，不能声称实机吞并已验收。回滚仅 git revert 3db5d5af0，不回滚其他作者工作。

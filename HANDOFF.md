@@ -1,3 +1,8 @@
+# 当前交接：外交接受吞并承诺校验修复（2026-10-07，OFFLINE_VERIFIED_NOT_DEPLOYED）
+
+- 产品3db5d5af0，检查点1aa9055。正式条约接受优先按acceptance校验，解决吞并/朝贡/驻军/臣属接受误报commitment_mismatch；来源与有效提案校验保留。
+- 回归旧代码失败、新代码3666断言通过；双API及Bootstrap编译通过，首轮探针退出异常后同产物双接缝重验通过。实机吞并未验，未部署/打包/推送。
+- [主台账与代码图](docs/animusforge-refactoring-and-repository-reorganization-plan.md#diplomacy-treaty-acceptance-20261007--offline_verified_not_deployed)；证据artifacts/diplomacy-treaty-acceptance-20261007。回滚git revert 3db5d5af0。
 # 当前交接：Player2请求体预算（2026-10-07，BUILD_VERIFIED_GROK_TEST_BLOCKED）
 
 - 产品880753f72；无效JSON确认本机2MiB请求上限，最终UTF8预算1900KiB；不透明场景JPEG90、透明/人物PNG、有界缩放，不丢参考图、不改缓存。
