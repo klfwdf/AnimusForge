@@ -1,3 +1,9 @@
+# 当前交接：模型下拉同步修复交付（2026-10-07，DEPLOYED_PACKAGED_PUSHED_LIVE_PENDING）
+
+- 产品919d4ed27；双API/Bootstrap/双接缝与Stage通过，已部署9文件并核对3379文件哈希一致，源码已推送。
+- 包AnimusForge_v1.5.5_20261007_041545_360.zip，安装XML仍v1.5.4。MCM实机和真实请求model未验。
+- [主台账及恢复位置](docs/animusforge-refactoring-and-repository-reorganization-plan.md#illustrator-model-selection-delivery-20261007--deployed_packaged_pushed_live_pending)；证据artifacts/illustrator-model-selection-20261007。后文该片未部署状态由本条取代。
+
 # 当前交接：生图与导演模型选择同步（2026-10-07，BUILD_VERIFIED_NOT_DEPLOYED）
 
 - 产品919d4ed27，检查点1d51154。监听SelectedIndex同步模型名，Dropdown/列表实例隔离，复制预设对象并解绑旧事件；拉取模型不切换第一项。
