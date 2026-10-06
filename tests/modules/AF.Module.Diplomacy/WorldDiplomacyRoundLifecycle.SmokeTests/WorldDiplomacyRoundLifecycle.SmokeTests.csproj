@@ -151,6 +151,7 @@
     <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Domain/Dialogue/DialogueRoutingRules.cs" />
     <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Domain/Dialogue/DialogueTagPayload.cs" />
     <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Domain/Dialogue/DialogueTermsValidation.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Domain/Dialogue/DialoguePeaceClarificationRules.cs" />
     <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Domain/Rounds/DiplomacyRequestBudget.cs" />
     <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Domain/Rounds/DiplomacyRoundWorkRules.cs" />
     <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Domain/WorldDiplomacyLiveRoundRules.cs" />

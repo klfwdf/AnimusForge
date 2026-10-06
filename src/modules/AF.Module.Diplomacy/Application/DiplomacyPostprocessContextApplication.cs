@@ -135,6 +135,7 @@ internal static class DiplomacyPostprocessContextApplication
         sb.AppendLine("NPC 明确决定延期、取消或恢复自己的发文约定时，用 [ACTION:DIPLOMACY:COMMITMENT:arrangement=约定ID;state=deferred|cancelled|accepted;reason=明确原因]。ID从约定上下文复制；已发布且尚未被接受的自己提案只能 cancelled，系统另发正式撤回宣言。已生效的行动不能撤销；改变条款另用 COMMIT:NewMatter。");
         if (value.PlayerIsRuler && value.PlayerKingdomExists && value.KingdomsDiffer)
             sb.AppendLine("玩家以国王身份亲自明确向你的王国宣战，使用 [ACTION:DIPLOMACY:DECLARE_WAR:" + value.PlayerId + ":" + value.NpcId + "]，此项立即生效；不得把劝说、威胁或假设当宣战。");
+        sb.AppendLine(AnimusForge.DiplomacyDialogue.DialoguePeaceClarificationRules.PostprocessInstruction);
         return sb.ToString().TrimEnd();
     }
 }

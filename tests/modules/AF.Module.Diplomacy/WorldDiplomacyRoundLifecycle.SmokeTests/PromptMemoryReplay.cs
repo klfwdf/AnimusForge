@@ -43,6 +43,12 @@ internal static class PromptMemoryReplay
         var prompt = new Prompt();
         Test.True(DiplomacyPromptApplication.Build(prompt, "").Length == 0 && prompt.Captures == 0 && prompt.Wars == 0, "unselected diplomacy does not capture political or war context");
         string text = DiplomacyPromptApplication.Build(prompt, "【附加规则:diplomacy】");
+        Test.True(text.Contains(AnimusForge.DiplomacyDialogue.DialoguePeaceClarificationRules.MainReplyInstruction),
+            "shared main reply asks for missing tribute duration before promising publication");
+        var peacePostprocess = new Postprocess();
+        Test.True(DiplomacyPostprocessContextApplication.Build(ref peacePostprocess).Contains(
+            AnimusForge.DiplomacyDialogue.DialoguePeaceClarificationRules.PostprocessInstruction),
+            "shared postprocess checks complete peace terms without inventing duration");
         Test.True(text.Contains("都是国王") && text.Contains("你方明显占优") && text.Contains("兼并规则") && text.Contains("level_3"), "royal prompt, war position, annexation and trust share one application");
         Test.True(prompt.Captures == 1 && prompt.Wars == 1, "capture world values once per selected prompt");
         prompt = new Prompt { Oral = "arrangement=owned;source_document=original;version=2" };

@@ -2,6 +2,23 @@ using AnimusForge.DiplomacyDialogue;
 
 int checks = 0;
 void Check(bool passed, string name) { if (!passed) throw new Exception(name); checks++; }
+const string reportedPayload = "action=Peace;move=NewMatter;target=new_kingdom;payer=khuzait;receiver=new_kingdom;tribute=25000";
+Check(DialogueTagPayload.TryParse(reportedPayload, out var reported), "reported tag parses without fabricating fields");
+Check(!DialogueTermsValidation.Validate(reported.Action, reported.Terms, "khuzait", "new_kingdom", out var reportedReason),
+    "reported missing duration cannot publish or execute peace");
+string reportedFeedback = DialoguePeaceClarificationRules.DescribeValidationFailure(reportedReason, reported.Terms);
+Check(reported.Terms.DurationDays == 0 && reported.Terms.DailyTribute == 25000, "feedback does not alter negotiated terms");
+Check(reportedFeedback.Contains("25000") && reportedFeedback.Contains("缺少支付期限")
+    && reportedFeedback.Contains("尚未提交和平提案") && !reportedFeedback.Contains(reportedReason),
+    "reported failure explains missing days in Chinese instead of a raw code");
+Check(DialogueTagPayload.TryParse(reportedPayload + ";days=21", out var clarified)
+    && DialogueTermsValidation.Validate(clarified.Action, clarified.Terms, "khuzait", "new_kingdom", out _)
+    && clarified.Terms.DurationDays == 21 && clarified.Terms.DailyTribute == 25000,
+    "explicitly clarified period passes without repricing or defaulting to 100");
+Check(DialogueTagPayload.TryParse("action=Peace;move=AcceptProposal;target=new_kingdom;source_document=original", out var inherited)
+    && inherited.Terms.Equals(new DialogueDiplomaticTerms()), "source acceptance retains omitted terms for exact inheritance");
+Check(DialoguePeaceClarificationRules.DescribeValidationFailure(reportedReason, new DialogueDiplomaticTerms(durationDays: 21))
+    .Contains("无贡金和平"), "tribute-free duration conflict is not misreported as a missing period");
 var authority = new DialogueAuthoritySnapshot("B", "king-B", true, false, true);
 var terms = new DialogueDiplomaticTerms(tributePayerKingdomId: "B", tributeReceiverKingdomId: "A", dailyTribute: 50, durationDays: 20);
 DialogueCommitmentRequest Request(DialogueDiplomaticMove move = DialogueDiplomaticMove.AcceptProposal,

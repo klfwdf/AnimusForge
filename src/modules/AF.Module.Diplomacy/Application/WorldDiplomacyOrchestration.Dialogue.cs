@@ -30,7 +30,11 @@ internal sealed partial class WorldDiplomacyOrchestration
         if (parsed.Move == DialogueDiplomaticMove.Discussion) return "";
         var terms = parsed.Terms;
         if (!DialogueTermsValidation.Validate(parsed.Action, terms, actor, parsed.TargetKingdomId, out string termsError)
-            && parsed.Move == DialogueDiplomaticMove.NewMatter) return "外交约定未提交：" + termsError + "。";
+            && parsed.Move == DialogueDiplomaticMove.NewMatter)
+        {
+            _host.Log("oral commitment validation failed action=" + parsed.Action + " reason=" + termsError);
+            return "外交约定未提交：" + DialoguePeaceClarificationRules.DescribeValidationFailure(termsError, terms) + "。";
+        }
         DialogueProposalReference source = string.IsNullOrEmpty(parsed.SourceDocumentId) ? null
             : new DialogueProposalReference("", parsed.SourceDocumentId, parsed.SourceActionId);
         // A response adopts the exact source terms only when the tag omits all
