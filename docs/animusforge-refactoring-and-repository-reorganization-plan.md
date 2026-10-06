@@ -1,3 +1,16 @@
+<a id="execution-crowd-safe-dispersal-20261006"></a>
+# 处决散场审查修复与刑场避让（2026-10-06，OFFLINE_VERIFIED_LIVE_PENDING）
+
+- 用户要求修复两项审查问题，并确保散场不朝刑场走。基线b07524e7/main，检查点1800966，产品/测试616a5bd5。本条替代execution-crowd-dispersal-20261006原先关于目标可用性、随机行走与不抢冲突控制的结论；原分批和真实收尾边界保留。并行插画模块修改保留，不纳入本任务。
+- 修改：按Agent获取实际空闲的common/limited站位（含paired对象），两池交错检查；最多3次候选捕获/重试，可识别随后空出的站位。接受目标前核验站位可用、外向距离/方向和实际NavigationPath各段，拒绝朝中心靠近、对侧、穿越刑场、无navmesh或不可达路线。刑场包络按placement、受刑者及已捕获的仪式人物站位加余量计算，避免访问收尾已移除的实体。
+- 后续移动：ExecutionCrowdWalkAwayBehavior替换随机WalkingBehavior，以真实UsableMachine为目标，由原版导航执行；使用目标期间不打断，结束后再次通过相同过滤选点，目标失效清除旧绑定。原版警戒/逃跑/战斗组保留并可接管；收尾后的新命中、尚未释放观众的警戒变化、活动原版战斗会停止剩余散场接管，不清新警戒。不添加存档字段/配置/AF私有依赖至共享处决。
+- 性能：初始每0.35秒最多1人；每次最多24候选及4次原生路径查询，path数组复用，最多3次候选捕获；后续行为最多1Hz检查，连续失败最多3次。原版列表捕获会扫描该标签池并分配列表，仅在上述有限重试内发生。未新增逐帧全场Agent扫描或反射；原版行为组初始化的Activator仍为一次性。
+- 源码证据（616a5bd5，一基行号）：Vengeance/Source/Scene/TownExecutionMissionBehavior.Crowd.cs:22-35 新警戒/命中订阅，:37-143 收尾门槛与释放；同目录ExecutionCrowdRoute.cs:17-89 目标池、预算与原生路径校验，ExecutionCrowdRoutePolicy.cs:8-30 方向及线段几何，ExecutionCrowdWalkAwayBehavior.cs:16-52 配置/后续选点/交还。真实消费者仍为TownExecutionMissionBehavior.cs:1159-1163的Aftermath分支。tests/Vengeance/ExecutionCrowdDispersalTests链接以上生产源码，原生场景/导航API使用fake。
+- 验证：dotnet run --project tests/Vengeance/ExecutionCrowdDispersalTests/ExecutionCrowdDispersalTests.csproj -c Release 49 PASS，包含占满/禁用fallback、占用解除、刑场内目标、外侧目标但路线穿场、安全绕行、不可达、新警戒未换队、新命中、活动战斗、每次4路径预算和后续不回场；原SceneTauntContextContractTests 76 PASS，diff检查PASS。
+- 原build_single_module.ps1 Debug（无Stage/Deploy）通过：AF参考v1.3.15.110062/v1.4.6.115628、Bootstrap及双接缝门禁。独立RichExecutions.csproj目标BannerlordApi=1.4.8通过，16既有警告；输出/中间目录/NuGet缓存留在本仓库。共享构建包含并行作者当时输入，不背书随后改动。
+- 证据：artifacts/execution-crowd-safe-dispersal-20261006/receipt.json、tests.log、isolation.log、build-final.log、standalone.log，绑定源码/候选SHA256。AF候选bin/Debug/single_module_artifacts，独立候选上述artifacts的standalone/bin。未Stage/覆盖游戏/打包/推送。
+- 未验证：实机导航动态重规划、拥挤避障、全部刑法/城市/自定义刑场及旧档。静态路径通过不保证之后动态障碍不会改变原生路径；无安全目标时保留而不强制穿场。新战斗接管后的逃跑/战斗路线不属于和平散场避让。源码回滚仅git revert 616a5bd5，不回滚其他作者。
+
 <a id="native-give-show-target-20261006"></a>
 # 原生给予/展示目标校验（2026-10-06，SOURCE_REVIEWED_PLAYER_REPRO_PENDING）
 
