@@ -155,6 +155,13 @@ internal static class VengeanceRuntimeBridge
                 new TextObject(
                     "{=REX_Error_Mission_Inject}The execution scene could not be initialized safely. Nothing was spent and the prisoner lives."));
         }
+        finally
+        {
+            // Also cover a partially injected controller until its cancellation
+            // cleanup ends the scene. Never cache an absent controller.
+            ExecutionSceneConflictBridge.Register(mission,
+                mission?.GetMissionBehavior<TownExecutionMissionBehavior>());
+        }
     }
 
     internal static void RegisterCampaign(IGameStarter starterObject)

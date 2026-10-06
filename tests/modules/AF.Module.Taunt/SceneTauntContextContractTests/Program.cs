@@ -1,5 +1,7 @@
 using AnimusForge.Refactor.Modules;
 
+ExecutionIsolationTests.Run();
+
 static void Check(bool expected, ScenePeaceConflictContext facts, string label)
 {
     bool actual = ScenePeaceConflictContextOwner.CanInitialize(in facts);

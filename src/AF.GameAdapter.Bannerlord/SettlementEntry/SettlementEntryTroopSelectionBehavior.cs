@@ -3360,16 +3360,18 @@ if (_spawnedAllies
 						&& !_settlementCivilianGatherAssignmentActive
 						&& !_settlementCivilianGatherOrderFinalizePending)
 					{
-						if (Mission.Current?.GetMissionBehavior<RichExecutions.Scene.TownExecutionMissionBehavior>() != null)
+						if (ExecutionSceneConflictBridge.IsSceneControlled(base.Mission))
 						{
 							if (!_publicExecutionEscortsHeld) _publicExecutionEscortsHeld = TryHoldAlliesForPublicExecution();
 						}
 						else
 						{
+							_publicExecutionEscortsHeld = false;
 							EnsureSetsCommandUiReadyForExternal(base.Mission, _conflictActive ? "tick_conflict" : "tick", force: false, preserveSelection: true);
 						}
 					}
 			ReleaseEnemyNavigationRescuesForCombatActions();
+			if (ExecutionSceneConflictBridge.IsSceneControlled(base.Mission)) return;
 			if (_conflictFeaturesEnabled && _ownedSettlementIncidentTriggered && base.Mission != null && base.Mission.CurrentTime >= _nextOwnedSettlementPanicTickTime)
 			{
 				_nextOwnedSettlementPanicTickTime = base.Mission.CurrentTime + 1f;
@@ -3438,6 +3440,7 @@ if (_spawnedAllies
 		public override void OnAgentHit(Agent affectedAgent, Agent affectorAgent, in MissionWeapon attackerWeapon, in Blow blow, in AttackCollisionData attackCollisionData)
 		{
 			base.OnAgentHit(affectedAgent, affectorAgent, in attackerWeapon, in blow, in attackCollisionData);
+			if (ExecutionSceneConflictBridge.BlocksConflict(base.Mission, affectedAgent)) return;
 			WakeProtectedFollowerForSelfDefense(affectedAgent, affectorAgent, "agent_hit");
 			bool nativeAlleyFight = IsNativeAlleyCombatant(affectedAgent) || IsNativeAlleyFightActive();
 			if (IsProtectedFollowerFriendlyFire(affectedAgent, affectorAgent))
@@ -3496,6 +3499,7 @@ if (_spawnedAllies
 		public override void OnScoreHit(Agent affectedAgent, Agent affectorAgent, WeaponComponentData attackerWeapon, bool isBlocked, bool isSiegeEngineHit, in Blow blow, in AttackCollisionData collisionData, float damagedHp, float hitDistance, float shotDifficulty)
 		{
 			base.OnScoreHit(affectedAgent, affectorAgent, attackerWeapon, isBlocked, isSiegeEngineHit, in blow, in collisionData, damagedHp, hitDistance, shotDifficulty);
+			if (ExecutionSceneConflictBridge.BlocksConflict(base.Mission, affectedAgent)) return;
 			WakeProtectedFollowerForSelfDefense(affectedAgent, affectorAgent, "score_hit");
 			bool nativeAlleyFight = IsNativeAlleyCombatant(affectedAgent) || IsNativeAlleyFightActive();
 			if (IsProtectedFollowerFriendlyFire(affectedAgent, affectorAgent))
@@ -3545,6 +3549,7 @@ if (_spawnedAllies
 				ClearOwnedSettlementMassacreRequest("requesting_agent_removed");
 			}
 			ClearEnemyNavigationTracking(affectedAgent.Index);
+			if (ExecutionSceneConflictBridge.BlocksConflict(base.Mission, affectedAgent)) return;
 			if (_conflictFeaturesEnabled && (_ownedSettlementIncidentTriggered || _conflictActive) && agentState == AgentState.Killed && IsPlayerSideAgent(affectorAgent) && !IsPlayerSideAgent(affectedAgent) && IsOwnedSettlementIncidentNotable(affectedAgent))
 			{
 				_townRiotKilledNotable = true;
@@ -3738,6 +3743,7 @@ if (_spawnedAlliedCount > 0)
 
 		internal bool ShouldHandlePhysicalAttack(Agent target)
 		{
+			if (ExecutionSceneConflictBridge.BlocksConflict(base.Mission, target)) return false;
 			if (!_conflictFeaturesEnabled || target == null || !target.IsHuman || !target.IsActive() || target.IsMainAgent || IsPlayerSideAgent(target))
 			{
 				return false;
@@ -3775,6 +3781,7 @@ if (_spawnedAlliedCount > 0)
 
 		private void StartConflict(string source, Agent initialEnemy)
 		{
+			if (ExecutionSceneConflictBridge.BlocksConflict(base.Mission, initialEnemy)) return;
 			try
 			{
 				Mission mission = base.Mission;
@@ -3981,6 +3988,7 @@ if (_spawnedAlliedCount > 0)
 
 		private void MarkEnemyAgent(Agent agent, bool victoryObjective)
 		{
+			if (ExecutionSceneConflictBridge.BlocksConflict(base.Mission, agent)) return;
 			if (agent == null || _enemyTeam == null || IsPlayerSideAgent(agent))
 			{
 				return;
@@ -4187,6 +4195,7 @@ if (_spawnedAlliedCount > 0)
 
 		internal bool ShouldAllowDefenderConflictDamage(Agent attacker, Agent victim)
 		{
+			if (ExecutionSceneConflictBridge.BlocksConflict(base.Mission, victim)) return false;
 			if (!_defenderConflictEnabled || !_conflictActive || _victoryReached || attacker == null || victim == null)
 			{
 				return false;
@@ -4437,6 +4446,7 @@ if (_spawnedAlliedCount > 0)
 
 		internal bool TryStartOwnedSettlementMassacre(int commandingAgentIndex, string source)
 		{
+			if (ExecutionSceneConflictBridge.IsSceneControlled(base.Mission)) return false;
 			try
 			{
 				Mission mission = base.Mission;
@@ -4766,6 +4776,7 @@ if (_spawnedAlliedCount > 0)
 
 		private void StartOwnedSettlementIncident(string source, Agent initialTarget)
 		{
+			if (ExecutionSceneConflictBridge.BlocksConflict(base.Mission, initialTarget)) return;
 			try
 			{
 				Mission mission = base.Mission;
@@ -4951,6 +4962,7 @@ if (_spawnedAlliedCount > 0)
 
 		private void ForceOwnedSettlementCivilianFlee(Agent agent, Mission mission, Agent main, bool force)
 		{
+			if (ExecutionSceneConflictBridge.BlocksConflict(mission, agent)) return;
 			try
 			{
 				if (!force && !_ownedSettlementFleeingCivilianAgentIndexes.Contains(agent.Index))
@@ -7918,6 +7930,7 @@ agent.Controller = AgentControllerType.None;
 
 		private bool IsOwnedSettlementIncidentTarget(Agent agent)
 		{
+			if (ExecutionSceneConflictBridge.BlocksConflict(base.Mission, agent)) return false;
 			return agent != null
 				&& agent.IsHuman
 				&& agent.IsActive()
@@ -7927,6 +7940,7 @@ agent.Controller = AgentControllerType.None;
 
 		private bool IsSceneConflictTriggerAgent(Agent agent)
 		{
+			if (ExecutionSceneConflictBridge.BlocksConflict(base.Mission, agent)) return false;
 			CharacterObject character = agent?.Character as CharacterObject;
 			bool validResident = agent != null
 				&& agent.IsHuman
@@ -7957,6 +7971,7 @@ agent.Controller = AgentControllerType.None;
 
 		private static bool IsVictoryObjectiveSceneAgent(Agent agent)
 		{
+			if (ExecutionSceneConflictBridge.BlocksConflict(Mission.Current, agent)) return false;
 			return agent != null && agent.IsHuman && agent.IsActive() && (IsGuardOrSoldier(agent.Character as CharacterObject) || IsLordCombatant(agent.Character as CharacterObject));
 		}
 
