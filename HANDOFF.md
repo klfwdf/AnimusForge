@@ -1,3 +1,7 @@
+# 当前交接：外交吞并修复已部署（2026-10-07，DEPLOYED_LIVE_PENDING）
+
+- 产品3db5d5af0已由原入口覆盖统一游戏模块，更新9文件，3379文件Stage/安装哈希一致。实机吞并未验，未打包/推送。
+- [部署证据与恢复位置](docs/animusforge-refactoring-and-repository-reorganization-plan.md#diplomacy-treaty-acceptance-deploy-20261007--deployed_live_pending)。后文该修复未部署状态由本条取代。
 # 当前交接：外交接受吞并承诺校验修复（2026-10-07，OFFLINE_VERIFIED_NOT_DEPLOYED）
 
 - 产品3db5d5af0，检查点1aa9055。正式条约接受优先按acceptance校验，解决吞并/朝贡/驻军/臣属接受误报commitment_mismatch；来源与有效提案校验保留。
