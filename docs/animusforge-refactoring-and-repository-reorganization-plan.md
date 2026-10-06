@@ -1,3 +1,14 @@
+<a id="naval-conversation-farewell-20261006"></a>
+# 主动水上友军会话退出遭遇修复（2026-10-06，OFFLINE_VERIFIED_LIVE_PENDING）
+
+- 当前请求：主动找水上友军交谈后结束会话，不应弹攻击菜单；用户明确对方拦截正常。工作区 F:/AnimusForge-main / main，检查点7174d10a，产品与测试c6f0bd5b778200d5ce8b8cfa4b0e46a2e49ef108。未覆盖游戏、打包或推送。
+- 根因：原 PreparePlayerRequestedNativeConversationLeave 对任何Mission和水域直接返回；原版海上DoMeetingInternal使用CampaignMission.OpenConversationMission，陆地使用CampaignMapConversation。海上结束按钮未写LeaveEncounter，原版回图继续显示encounter。截图来自用户反馈，本机日志未定位同一复现；源码路径和旧方法回归失败共同证明遗漏。
+- 源码证据（产品提交，一基行号）：src/AF.GameAdapter.Bannerlord/Encounter/LordEncounterBehavior.cs:8692-8734 的 PreparePlayerRequestedNativeConversationLeave 放行当前玩家主动、水域、PartyEncounter/Begin或Wait、原版单人ConversationMission，校验主角队伍与当前遭遇或军团成员目标；保留战斗/战果/投降/俘虏/挑衅升级/原生活动保护。只写LeaveEncounter/IsPlayerWaiting，原版卸载会话并结束Mission，再更新遭遇；不直接Finish、清战斗或改外交。tests/modules/AF.Module.Encounter/EncounterLifecycleBoundaryTests/Harness.cs.txt:162-278 的 PlayerLeaveAudit 覆盖新增及回归边界。
+- 真实消费者未改：extensions/AnimusForge.DialogueUI/src/Native/NativeOverlayVM.cs:78-85 工具栏结束，以及 src/AF.GameAdapter.Bannerlord/UI/Conversation/AnimusForgeNativeConversationOverlay.cs:1535-1553 超时ESC，均在EndConversation前调用。1.3/1.4原版ConversationMissionLogic均有本次类型/属性；仅退出时一次Mission behavior查找，复用水域helper，无新增Tick、全场扫描或反射。
+- 回归命令：python -B tests/modules/AF.Module.Encounter/EncounterLifecycleBoundaryTests/run.py --run-root artifacts/naval-conversation-leave-20261006/after，164项提取生产分支断言PASS；修改前同样新增测试在“主动友军水上告别”断言失败，见before/run.log。包括水上Wait/地图会话/军团成员、对方友好或敌对拦截、错误Mission/队伍及真实战斗等；合成桩不证明引擎结束事件顺序。
+- 构建：powershell -NoProfile -ExecutionPolicy Bypass -File scripts/build/build_single_module.ps1 -ProjectRoot F:/AnimusForge-main -BannerlordRoot "F:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord" -Configuration Debug，退出0。1.3引用v1.3.15.110062、1.4引用v1.4.6.115628，各341个已有warning/0错误，Bootstrap0错误、双接缝PASS；diff检查PASS。构建包含当时工作树其他会话差异，本产品只提交两个文件，未改并行作者工作。
+- 证据在artifacts/naval-conversation-leave-20261006/：旧源码、before/after日志、build.log、receipt.json源码/候选hash与并行差异。NOT-RUN：实际海上友军交谈、被拦截、军团成员、真实战斗、两UI退出与两版本实机；未Stage/部署/打包/推送。候选bin/Debug/single_module_artifacts；回滚仅git revert c6f0bd5b。旧海上全面跳过告别限制仅在上述主动无战斗范围被取代，海上自定义菜单禁用和被拦截返回策略原样保留。
+
 <a id="illustrator-two-session-rounds-20261006"></a>
 # 生图导演读取当前会话最近两轮（2026-10-06，SOURCE_REVIEWED_BUILD_AND_LIVE_PENDING）
 

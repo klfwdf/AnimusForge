@@ -1,3 +1,9 @@
+# 当前交接：主动水上会话正常告别（2026-10-06，OFFLINE_VERIFIED_LIVE_PENDING）
+
+- 用户明确主动找水上友军交谈后错误弹攻击菜单，对方拦截正常。产品/测试c6f0bd5b，检查点7174d10a：共享退出方法支持当前主动海上ConversationMission，补LeaveEncounter；保留拦截/战斗/投降等原流程。
+- 旧源码在新增海上告别测试失败，修复后164项生产方法提取回归PASS；原入口双API+Bootstrap0错误、双接缝PASS。其他会话工作保留，构建含当时并行差异。
+- [主台账：源码证据、命令、限制和回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#naval-conversation-farewell-20261006)。证据artifacts/naval-conversation-leave-20261006/；实机尚未验，未Stage/覆盖游戏/打包/推送。回滚git revert c6f0bd5b。下方其他任务交接保留，不提供本次新授权。
+
 # 当前交接：内战世界上限、不满减半与通牒期限（2026-10-06，OFFLINE_VERIFIED_NOT_DEPLOYED）
 
 - 产品/测试 `6a3b5926`，检查点 `63b0b97`。MCM世界叛乱上限默认3（1–20），仅限制NPC自主起兵；玩家主动起兵三入口豁免但计数，已登记政变计数且不拦截登记。新增不满统一减半，新通牒答复28天，旧期限不迁移。
