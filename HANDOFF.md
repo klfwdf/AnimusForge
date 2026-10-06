@@ -1,4 +1,10 @@
-# 当前交接：AnimusForge 1.5.4 提交/推送与单ZIP打包（2026-10-06）
+# 当前交接：终端王国近况居中、移除查看公告（2026-10-06，OFFLINE_VERIFIED_LIVE_PENDING）
+
+- 产品 `4c27120c`，检查点 `b0b5bb7`：王国近况标题、列表文字与阅读正文居中；删除显示信息的“查看王国公告”及其终端分派，保留进入政策管理的“王国公告”。
+- XML绑定/资源映射/局部差异检查PASS；原入口1.3/1.4+Bootstrap 0错误、双接缝PASS。首次构建被其他作者正在写入的处决符号阻断，新文件出现后重试通过，未修改或提交并行工作。
+- [主台账：源码坐标、验证与回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#terminal-kingdom-news-center-20261006)。游戏视觉/点击/滚动尚未验，未Stage/覆盖游戏/打包/推送；回滚产品使用 `git revert 4c27120c`。下方为历史交付，不提供本轮新授权。
+
+# 历史交接：AnimusForge 1.5.4 提交/推送与单ZIP打包（2026-10-06）
 
 - 最新用户授权全部产品改动提交、推送到现有 `origin/main` 并打包1.5.4；未授权覆盖游戏/启动实机或重写历史。实际工作区 `F:\AnimusForge-main` / `main`，基线 `c39cd564`，检查点 `1aad1d35`；本次版本、工具排除配置和交付文档另行发布提交。
 - 单ZIP已经生成并离线验证：`一键编译覆盖推送/packages/AnimusForge_v1.5.4_20261006_111223_067.zip`（84,801,038 bytes）；原入口Debug双实现+Bootstrap、接缝与Stage/ZIP门禁PASS，外交3636、内战349、议程通知5项及两分支内政XML探针PASS。保留已有编译warning，不宣称实机/旧档通过。
