@@ -1,5 +1,5 @@
 <a id="illustrator-module-storage-20261006"></a>
-# 生图模组内存储、默认清理与 API 测试（2026-10-06，BUILD_VERIFIED_DELIVERY_PENDING）
+# 生图模组内存储、默认清理与 API 测试（2026-10-06，DEPLOYED_PACKAGED_PUSH_READY）
 
 - 用户授权：生图不要写C盘、放模组目录；改完提交推送编译部署打包；自动清理默认开启；生图API配置新增测试；随后明确“不迁移”。F:/AnimusForge-main/main，基线bfbd591f1，检查点164a3db，初版产品cf3377691，后续无迁移修订以本条最终交付为准。保留现有作品，未清除C盘旧临时文件；不改Windows环境变量、游戏和其他MCM全局存储。
 - 路径owner为extensions/AnimusForge.Illustrator/src/Engine/IllustratorStoragePaths.cs，当前模块根一次解析；固定成图logs/image save、临时Cache/Illustrator/Temp、配置Configs/Illustrator、测试Cache/Illustrator/ApiTest。ScreenCaptureHelper所有Tableau/texture导出与查找/清理、IsolatedPanoramaRenderer六面路径、NativeExportDiagnostics实际临时路径、DiskImageCacheManager失败行为、两个模型列表缓存均接通。模块目录不可用时显式失败，不回退C盘。无新增Tick、全盘扫描或渲染方式/颜色变化。
@@ -8,7 +8,10 @@
 - IllustratorApiTest：MCM生图API组Order14“测试生图 API（可能计费）”，当前编辑对象捕获IllustrationOptions，不读后台实时设置；复用有界4worker和主线程回写。显式点击测试、重复点击取消、换档/卸载Reset取消；有限超时复用设置。没有导演/现场采集，显式edits地址用内存生成空白参考图。IsApiTest只阻止本测试的Images→Chat自动重试，普通生图规则不变；验证实际返回图片可解码，原子覆盖模组ApiTest/last-result.png，不保存画廊/记忆。错误做密钥和URL敏感参数脱敏，结果显示限420字符。
 - 验证：路径/消费者/实际MCM源码与原生文件helper审查、diff检查通过；初版build.log及含测试按钮的build-final.log原入口Debug双API+Bootstrap/双接缝PASS，引用v1.3.15.110062/v1.4.6.115628。遵循Illustrator AGENTS未运行离线审计脚本，没有调用付费API/实机MCM按钮、保存预设/重启加载/GPU导出或系统文件监控验收，不声称整个进程不会写C盘。受控范围是生图自己创建的上述文件；系统/游戏日志和其他模块保持原样。
 - 用户纠正前中间部署已复制3份配置，225158包属于已废弃的含迁移实现。纠正后源码彻底删除CopyLegacySettings/CopyIfMissing；删除副本命令遭自动审批拒绝（未提供详细原因），改为可逆归档。本机核验源/目标哈希未变后将本轮新增3份文件移至artifacts/illustrator-module-storage-20261006/cancelled-migration，不再留在有效模组配置中；原C盘文件未修改。此目录包含私人配置，仅留本地、不入Git或ZIP。migration-reverted.txt记录撤销，不能将旧config-migration.json误称最终已启用迁移。
+- 无迁移产品修订84a593271；build-no-migration.log再次双API/Bootstrap/双门禁通过。代码范围（该修订，一基行号，均在extensions/AnimusForge.Illustrator/src）：Engine/IllustratorStoragePaths.cs:6-29路径owner；Settings/IllustratorSettingsStorage.cs:19-44一次安装、:48-71精确路由；Settings/IllustratorSettings.cs:41-43真实构造入口、:76默认清理、:648-652测试按钮、:641-647与:1104-1110模型缓存；Settings/IllustratorApiTest.cs:18-65主线程启动取消、:68-105单请求/落盘；Core/IllustratorRuntime.cs:42-49测试快照标识，UniversalOpenAiImageClient.cs:207测试禁止回退。全src查询GetTempPath/GetFolderPath/SpecialFolder/BaseDirectory/CopyLegacy无命中；这是源码范围证据，不是系统进程文件监控。
 - 交付：使用原deploy_module.ps1和package_mod.ps1，保持v1.5.5包版本；不改统一脚本。最终文件清单、无迁移检查、部署Recovery、ZIP哈希及推送结果待本条完成记录。本地证据artifacts/illustrator-module-storage-20261006，不提交个人JSON/API密钥/运行产物。源码按无迁移修订/初版逆序定向revert，旧C盘文件保留，不reset其他成果。
+- 最终交付PASS：deploy-no-migration.log更新9文件；package-no-migration.log产物一键编译覆盖推送/packages/AnimusForge_v1.5.5_20261006_230000_627.zip，84832869字节，SHA256=ff708c0a2f3623a1610882bb0aad8de195e8a1a630cccbda408b359cb812574f。receipt.json验证3379个文件Stage/安装哈希一致，ZIP除版本XML为v1.5.5外相同；单根、Bootstrap-only、无ONNX/TaleWorlds/私人Configs/Cache通过。安装XML仍v1.5.4。最终Recovery为C:/Users/29310/AppData/Local/AnimusForge/Recovery/deploy/deploy-3dc98c50b85b4db9be45249789ed130a；本次所有生图改动前恢复点为同级deploy-cbc8bc4252094dbd8789bcd5b9ec6e7b，原部署备份机制未改，生图路径要求不扩成修改全局部署恢复目录。原C盘3文件哈希未变，模块中不存在取消的3配置，归档副本哈希正确。
+- 最新fetch origin/main=bfbd591f1，本地领先3/落后0；明确禁止的local-only交接文件不在新增历史；待推只含产品/规范/公告及台账，无运行产物/个人配置。下一步普通push main并ls-remote独立确认，证据留push.log与remote-main.txt。实际付费请求/MCM保存及重启/原生导出未验，不自动运行收费测试。
 
 <a id="publish-v155-20261006"></a>
 # 1.5.5 累计玩家公告与 main 发布（2026-10-06，PUSHED_REMOTE_VERIFIED）
