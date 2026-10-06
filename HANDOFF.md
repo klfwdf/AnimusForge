@@ -1,3 +1,9 @@
+# 当前交接：Grok双场景参考合并（2026-10-07，BUILD_VERIFIED_NOT_DEPLOYED）
+
+- 产品8dbe9f523，检查点98f7209。按用户修正对所有Grok图片编辑生效，无站点限制；四图恰含双ScenePerspective时合为A/B资料板，其他参考独立保留。
+- 最终双API/Bootstrap/双接缝通过；实际拼图出图、像素回放和实机未验，未部署/打包/推送。
+- [主台账及源码坐标](docs/animusforge-refactoring-and-repository-reorganization-plan.md#grok-scene-pair-20261007--build_verified_not_deployed)；日志artifacts/grok-scene-pair-20261007/build-final.log。回滚git revert 8dbe9f523。
+
 # 当前交接：外交吞并修复已部署（2026-10-07，DEPLOYED_LIVE_PENDING）
 
 - 产品3db5d5af0已由原入口覆盖统一游戏模块，更新9文件，3379文件Stage/安装哈希一致。实机吞并未验，未打包/推送。
