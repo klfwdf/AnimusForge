@@ -322,6 +322,7 @@ internal sealed partial class WorldDiplomacyOrchestration
             item.Status = document.IsReadyForPublication ? (document.ChangedDiplomaticState ? "executed" : "published") : "cancelled";
             item.Reason = document.MechanicalResult ?? document.AnalysisStatus;
             if (item.Status == "cancelled") RecordDialogueArrangementFact(item, "publication_failed", "此前外交发文未能完成，原因：" + item.Reason);
+            else DeliverDialogueDeclarationToCounterparty(document, target);
         }
         catch (Exception ex)
         {
@@ -331,6 +332,23 @@ internal sealed partial class WorldDiplomacyOrchestration
             item.Reason = Limit(ex.Message, 180); _host.Log("dialogue publication " + item.Status + " id=" + item.ArrangementId);
             if (item.Status == "deferred") RecordDialogueArrangementFact(item, "technical_delay", "此前外交发文暂因技术故障延期，尚未发布。原因：" + item.Reason);
         }
+    }
+
+    // The counterparty negotiated this face to face, so its court knows the declaration at once instead of
+    // waiting for distance propagation; otherwise the player's immediate formal acceptance finds no known offer.
+    // Runs once per published oral declaration; other courts keep the normal propagation schedule.
+    private void DeliverDialogueDeclarationToCounterparty(WorldDiplomacyDocument document, string target)
+    {
+        if (document?.IsReadyForPublication != true || target == null
+            || string.Equals(target, document.AuthorKingdomId, StringComparison.OrdinalIgnoreCase)) return;
+        int day = _host.CurrentDay();
+        Storage.PropagationArrivals?.RemoveAll(x => x != null && IsCourtArrival(x)
+            && MatchesDocumentId(x.DocumentId, document.DocumentId)
+            && string.Equals(_host.ResolvePropagationReceiverId(x.KingdomId, x.SettlementId), target, StringComparison.OrdinalIgnoreCase));
+        WorldDiplomacyPropagationApplication.ReceiveCourt(Storage, document, target, day,
+            () => _host.IsPlayerAffiliatedParty(target), () => ProcessCourtArrival(target, document));
+        InvalidateDialogueIndex();
+        _host.Log("dialogue declaration delivered to counterparty document=" + document.DocumentId + " receiver=" + target);
     }
 
     private string BuildDialogueDeclarationBody(WorldDiplomacyDialogueArrangement item, string intent)

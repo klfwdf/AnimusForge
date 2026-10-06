@@ -23,7 +23,8 @@ internal static class WorldDiplomacyAnalysisApplication
             orchestration.ParseAndValidatePeaceTerms, orchestration.NormalizeKingdomIdList,
             (doc, reason) => Suppress(port, orchestration, doc, reason),
             orchestration.ProcessAnalyzedDocument,
-            execution.Log);
+            execution.Log,
+            orchestration is WorldDiplomacyOrchestration live ? live.PlayerAnalysisOffers : null);
         var document = execution.ResolveDocument(job.DocumentId);
         if (document?.IsPlayerAuthored == true && document.AnalysisStatus == "analysis_failed")
             execution.Notify("外交宣言已发布，但分析失败，外交动作未执行。可打开该公文选择“重新解析”。");
@@ -55,7 +56,8 @@ internal static class WorldDiplomacyAnalysisApplication
             Func<IEnumerable<string>, string, List<string>> normalizeKingdomIdList,
             Action<WorldDiplomacyDocument, string> suppressInvalid,
             Action<WorldDiplomacyDocument, string, string, bool, string, float> processAnalyzedDocument,
-            Action<string> log)
+            Action<string> log,
+            Func<string, IEnumerable<WorldDiplomacyRoundOffer>> liveOpenOffers = null)
         {
             WorldDiplomacyDocument document = resolveDocument?.Invoke(job.DocumentId);
             if (document == null)
@@ -114,6 +116,10 @@ internal static class WorldDiplomacyAnalysisApplication
                 var sourceRound = string.IsNullOrWhiteSpace(respondingToOfferDocumentId) ? null
                     : resolveRound?.Invoke(resolveDocument?.Invoke(respondingToOfferDocumentId)?.RoundId);
                 ReconcilePlayerDeclarationWithOpenOffer(document, intent, sourceRound ?? resolveRound?.Invoke(document.RoundId), ref targetId, ref respondingToOfferDocumentId, log);
+                // The provisional player round is normally empty; an oral or relay proposal lives in its own round.
+                // Rebinding an already bound offer is a no-op, and ambiguity still never picks one.
+                if (liveOpenOffers != null)
+                    ReconcilePlayerDeclarationWithOpenOffer(document, intent, liveOpenOffers(document.AuthorKingdomId), ref targetId, ref respondingToOfferDocumentId, log);
             }
             bool playerPublicIntent = document.IsPlayerAuthored && WorldDiplomacyIntentVocabulary.IsSupportedDiplomacyIntent(intent);
             if ((!WorldDiplomacyIntentVocabulary.IsActionableDiplomacyIntent(intent) && !playerPublicIntent)
@@ -339,19 +345,45 @@ internal static class WorldDiplomacyAnalysisApplication
 			document.Commitment = WorldDiplomacyIntentVocabulary.DefaultCommitmentForIntent(normalizedIntent);
 		}
 		document.AnalysisStatus = "published_action_rejected";
+		string readableReason = DescribeRejectedPlayerMechanic(reason);
 		if (string.IsNullOrWhiteSpace(document.MechanicalResult))
 		{
-			document.MechanicalResult = "外交动作未执行：当前局势不支持解析出的动作。";
+			document.MechanicalResult = "外交动作未执行：" + readableReason;
 		}
 		port.Log("published player declaration retained after mechanic rejection document=" + document.DocumentId
 			+ " intent=" + normalizedIntent + " reason=" + (reason ?? ""));
 		port.Notify(
-			"外交宣言已经发布，但其中解析出的外交动作因当前局势不成立而未执行。");
+			"外交宣言已经发布，但其中解析出的外交动作未执行：" + readableReason);
 		WorldDiplomacyDocumentExecutionApplication.FinalizePublishedDocumentAfterAnalysis(port, orchestration,
 			document,
 			port.ResolveKingdomId(document.AuthorKingdomId),
 			port.ResolveKingdomId(document.TargetKingdomId),
 			normalizedIntent,
 			recordNoActionDecision: true);
+	}
+
+	// Player-facing wording for a rejected published action; the raw code stays in the log.
+	internal static string DescribeRejectedPlayerMechanic(string reason)
+	{
+		string code = reason ?? "";
+		string detail =
+			code.Contains("missing_source_offer") || code.Contains("without_exact_open_offer") || code.Contains("required_peace_offer_response_missing")
+				? "未能对应到对方仍有效的正式提案。请确认对方的提案宣言已送达且仍开放，或在该宣言上直接回复接受。"
+			: code.Contains("treaty_roles_must_match_participants") || code.Contains("treaty_requires_explicit_receiving_and_joining_roles")
+				? "条约的接收国与并入国（或宗主国与臣属国）必须正好是本次交涉的双方。"
+			: code.Contains("treaty_acceptance_cannot_change_source_roles") || code.Contains("accept_peace_changes_offer_terms")
+				? "接受原案时不能修改原提案的条款；修改条件请另发新提案。"
+			: code.Contains("treaty_would_create_cycle") ? "该条约会造成臣属关系循环。"
+			: code.Contains("subject_already_has_treaty") ? "臣属方已存在臣属条约。"
+			: code.Contains("treaty_participants_not_available") ? "条约一方的王国或统治者当前不可用。"
+			: code.Contains("unsupported_extra_treaty_clause") ? "该条约不支持附加贡金、期限或割地条款。"
+			: code.Contains("peace_intent_between_kingdoms_not_at_war") || code.Contains("peace_legality_guard") ? "双方当前并不处于战争状态。"
+			: code.Contains("peace_terms") ? "和平条款当前无法原样执行。"
+			: code.Contains("declare_war_not_legal") ? "当前不满足宣战条件。"
+			: code.Contains("alliance_intent_conflicts") || code.Contains("trade_intent_conflicts") ? "与双方当前的同盟或贸易状态冲突。"
+			: code.Contains("final_live_legal_action_guard") || code.Contains("intent_not_in_current_legal_action_list") ? "该动作不在双方当前可执行的外交动作之内。"
+			: code.Contains("no_live_target") || code.Contains("no_eligible_parties") ? "对象王国不存在、已灭亡或没有独立外交权。"
+			: "当前局势不支持解析出的动作。";
+		return string.IsNullOrWhiteSpace(code) ? detail : detail + "（" + code + "）";
 	}
 }

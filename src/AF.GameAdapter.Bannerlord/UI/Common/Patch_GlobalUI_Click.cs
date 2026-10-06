@@ -40,16 +40,14 @@ public static class Patch_GlobalUI_Click
 }
 
 /// <summary>
-/// Keeps AnimusForge's kingdom agenda mutually exclusive with tabs injected by
-/// other mods. External tabs do not call the vanilla KingdomManagementVM tab
-/// commands, so Harmony patches on those commands alone cannot clear agenda UI.
+/// Keeps AnimusForge's kingdom "内政" tab (agendas + factions) mutually exclusive with tabs
+/// injected by other mods. External tabs do not call the vanilla KingdomManagementVM tab
+/// commands, so Harmony patches on those commands alone cannot clear the 内政 UI.
 /// </summary>
 internal static class KingdomCustomTabIsolation
 {
 	private const string AgendaTabButtonId = "AgendaTabButton";
 	private const string AgendaPanelRootId = "AgendaPanelRoot";
-	private const string FactionTabButtonId = "CivilWarFactionTabButton";
-	private const string FactionPanelRootId = "CivilWarFactionPanelRoot";
 	private const string KingdomTabControlListPanelTypeName = "KingdomTabControlListPanel";
 	private const int MaxAncestorDepth = 16;
 
@@ -81,21 +79,13 @@ internal static class KingdomCustomTabIsolation
 		_lastKnownTabStrip = new WeakReference(tabStrip);
 		if (string.Equals(button.Id, AgendaTabButtonId, StringComparison.Ordinal))
 		{
-			KingdomFactionTabState.Clear();
 			HideForeignContentPanels(tabStrip, AgendaPanelRootId);
 			return;
 		}
 
-		if (string.Equals(button.Id, FactionTabButtonId, StringComparison.Ordinal))
-		{
-			HideForeignContentPanels(tabStrip, FactionPanelRootId);
-			return;
-		}
-
 		// A button inside the real kingdom tab strip is either vanilla or another
-		// mod's tab. In both cases AnimusForge tabs must stop owning the content area.
+		// mod's tab. In both cases the 内政 tab must stop owning the content area.
 		KingdomAgendaTabState.ClearForCustomTabClick();
-		KingdomFactionTabState.Clear();
 	}
 
 	/// <summary>

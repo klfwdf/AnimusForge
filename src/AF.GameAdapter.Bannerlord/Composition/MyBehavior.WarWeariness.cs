@@ -20,4 +20,11 @@ public partial class MyBehavior
 		try { return AfWarStatsBehavior.Instance?.GetMaxWarWeariness(self) ?? 0; }
 		catch { return 0; }
 	}
+
+	// Casualties `self` has suffered in its current war with `enemy`.
+	internal static int GetWarCasualtiesForExternal(Kingdom self, Kingdom enemy)
+	{
+		try { return AfWarStatsBehavior.Instance?.GetWarCasualties(self, enemy) ?? 0; }
+		catch { return 0; }
+	}
 }

@@ -185,6 +185,8 @@ namespace AnimusForge
         internal static int GetKingdomStabilityValueForExternal(Kingdom k) => 50;
         internal static int Weariness;
         internal static int GetMaxWarWearinessForExternal(Kingdom k) => Weariness;
+        internal static int GetWarWearinessForExternal(Kingdom k, Kingdom enemy) => 0;
+        internal static int GetWarCasualtiesForExternal(Kingdom k, Kingdom enemy) => 0;
         internal static bool TryDiscontinueLandlessKingdomForExternal(Kingdom k, string reason)
         {
             if (!CleanupAllowed || k.Settlements.Count > 0 || k.Clans.Count > 0) return false;

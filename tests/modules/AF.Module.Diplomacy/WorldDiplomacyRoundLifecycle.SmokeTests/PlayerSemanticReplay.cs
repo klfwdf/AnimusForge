@@ -58,6 +58,7 @@ internal static class PlayerSemanticReplay
         Test.True(failedEffects == 1 && !WorldDiplomacyPlayerApplication.CanRetryAnalysis(failed, player),
             "retry executes once and completed documents cannot be reinterpreted");
         VerifySourceBinding();
+        VerifyCrossRoundOralAcceptance();
         VerifyPrompt();
         VerifyTreatiesAndWithdrawal();
         var port = new DocumentExecutionReplay.Port { RestrictRound = true,
@@ -101,6 +102,49 @@ internal static class PlayerSemanticReplay
             (_, _) => { }, (_, _, _, _, _, _) => processed++, _ => { });
         Test.True(changedAcceptance.AnalysisStatus == "analysis_failed" && !changedAcceptance.PlayerAnalysisCommitted && processed == 0,
             "acceptance with changed explicit clauses is not silently converted to the original offer");
+    }
+
+    // Oral commitment publishes its proposal in an independent round; the player's acceptance is filed under a
+    // fresh provisional round. Binding must find the offer across live rounds once the player court knows it.
+    private static void VerifyCrossRoundOralAcceptance()
+    {
+        foreach (string kind in new[] { "annexation", "peace" })
+        {
+            var (_, owner) = ConcurrentOralMigrationReplay.Fixture();
+            var oral = owner.EnsureActiveRound("a", "p", false);
+            var source = new WorldDiplomacyDocument { DocumentId = "oral-" + kind, RoundId = oral.RoundId, AuthorKingdomId = "a",
+                TargetKingdomId = "p", IsReadyForPublication = true, Intent = "propose_" + kind,
+                TreatyTerms = kind == "annexation" ? new() { ReceivingKingdomId = "a", JoiningKingdomId = "p" } : null };
+            owner.CurrentStorage.Documents.Add(source);
+            oral.PendingOffers.Add(new() { SourceDocumentId = source.DocumentId, SourceActionId = "", ProposerKingdomId = "a",
+                TargetKingdomId = "p", Intent = "propose_" + kind, Status = "open" });
+            var provisional = owner.EnsureActiveRound("p", null, true);
+            Test.True(provisional != oral, "player acceptance starts in its own provisional round: " + kind);
+            WorldDiplomacyDocument Accept(string id)
+            {
+                var d = new WorldDiplomacyDocument { DocumentId = id, RoundId = provisional.RoundId, AuthorKingdomId = "p",
+                    IsPlayerAuthored = true, IsReadyForPublication = true, AnalysisStatus = "pending_analysis", Body = "我方接受。" };
+                owner.CurrentStorage.Documents.Add(d);
+                var raw = new JObject { ["status"] = "success", ["intent"] = "accept_" + kind, ["commitment"] = "acceptance",
+                    ["primary_target_kingdom_id"] = "a" };
+                WorldDiplomacyAnalysisApplication.CommitAnalysis(new() { DocumentId = d.DocumentId }, raw.ToString(), 3,
+                    owner.CurrentStorage.DiplomaticThreats, owner.ResolveDocument, owner.ResolveRound, x => x, x => x,
+                    (_, _, _) => null, (ids, excluded) => ids.Where(x => !string.IsNullOrWhiteSpace(x) && x != excluded).ToList(),
+                    (_, _) => { }, (_, _, _, _, _, _) => { }, _ => { }, owner.PlayerAnalysisOffers);
+                return d;
+            }
+            var early = Accept("early-" + kind);
+            Test.True(string.IsNullOrEmpty(early.RespondingToOfferDocumentId),
+                "an offer the player court has not received is never bound: " + kind);
+            WorldDiplomacyDocumentFactRules.RecordKingdomKnowledge(owner.CurrentStorage.KingdomKnowledge, "p", source.DocumentId, 12);
+            var bound = Accept("bound-" + kind);
+            Test.True(bound.RespondingToOfferDocumentId == source.DocumentId && bound.TargetKingdomId == "a" && bound.IsResponse,
+                "known oral offer in another live round binds the player's acceptance: " + kind);
+        }
+        Test.True(WorldDiplomacyAnalysisApplication.DescribeRejectedPlayerMechanic("player_action_player_offer_response_missing_source_offer")
+                .Contains("正式提案")
+            && WorldDiplomacyAnalysisApplication.DescribeRejectedPlayerMechanic("treaty_roles_must_match_participants").Contains("接收国"),
+            "rejected player mechanics expose a specific readable reason instead of one generic message");
     }
 
     private static void VerifyPrompt()

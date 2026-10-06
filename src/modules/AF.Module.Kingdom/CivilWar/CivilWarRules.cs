@@ -225,6 +225,16 @@ internal static class CivilWarWearinessRules
 
 	// Weekly stability drain of a war-weary kingdom (battle swings themselves are kept small).
 	internal static int WeeklyStability(float weariness) => weariness >= 70f ? -2 : weariness >= FormationThreshold ? -1 : 0;
+
+	// Civil war score from the rebels' point of view (-1 crown winning .. +1 rebels winning):
+	// 60% the weariness gap (terminal value of each side in this war), 40% the casualty exchange.
+	internal static float WarScore(float crownWeariness, float rebelWeariness, int crownCasualties, int rebelCasualties)
+	{
+		float wearinessGap = CivilWarRules.Clamp((crownWeariness - rebelWeariness) / Max, -1f, 1f);
+		int total = Math.Max(0, crownCasualties) + Math.Max(0, rebelCasualties);
+		float exchange = total <= 0 ? 0f : (Math.Max(0, crownCasualties) - Math.Max(0, rebelCasualties)) / (float)total;
+		return CivilWarRules.Clamp(0.6f * wearinessGap + 0.4f * exchange, -1f, 1f);
+	}
 }
 
 // How the other factions of a kingdom react when one civil war ends.

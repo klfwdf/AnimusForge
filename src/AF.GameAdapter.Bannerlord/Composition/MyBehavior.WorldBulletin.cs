@@ -528,11 +528,14 @@ public partial class MyBehavior
 		}
 	}
 
+	// True only while a civil-war faction's rebel kingdom is being created (main thread, synchronous native callbacks).
+	private static bool _civilWarRebellionExecuting;
+
 	private void OnWorldBulletinClanChangedKingdom(Clan clan, Kingdom oldKingdom, Kingdom newKingdom, ChangeKingdomAction.ChangeKingdomActionDetail detail, bool showNotification)
 	{
 		try
 		{
-			if (clan == null)
+			if (clan == null || _civilWarRebellionExecuting)
 			{
 				return;
 			}

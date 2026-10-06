@@ -1,0 +1,69 @@
+内政面板 v1 — 派系 + 议程合并（Pen 设计稿草案）
+日期：2026-10-06
+Pen 文档：C:/Users/29310/.pencil/documents/88c60482-c2e6-49c1-b12d-63e6866ac83d/pencil-new.pen
+
+画板
+- bJ1Yq  内政 v1 · 议程选中 · 国王视角（复制自 uSZIC，位于其正下方）
+预览：previews/bJ1Yq.png
+
+结构
+1. 原生王国导航：去掉“议程”“派系”两个页签，合并为“内政”（选中态沿用派系页签红底金边）
+2. 王国态势带：沿用 v5（旗帜/身份 | 稳定度 | 军力分布）
+3. 内政主区 = 左侧目录 380 + 右侧羊皮纸卷宗
+   - 目录头：标题“内政事务” + 王国切换（对应 VoteDealBehavior 的 KingdomSelector 上/下一王国）
+   - 分组“王国议程”：每条议程一行（图标/标题/类型·发起人/剩余天数或“你的提案”角标）
+   - 分组“派系与阵营”：各派系（色点）、王室阵营、未表态（原 v5 顶部页签改为目录行）
+   - 脚注：议程与派系不满的联动说明
+4. 卷宗（议程选中时）：类型标签+发起信息 → 议程标题/说明 → 右侧“距离表决 N 日”
+   → 左：选项与票势（支持率条、领先/你的倾向标记）+ 派系影响提示条
+   → 右：家族表态表（家族/支持/权重/派系）→ 脚注（最新纪事、拉票计数）
+   选中派系目录行时，卷宗换回 v5 派系卷宗内容（诉求头/进程/成员表）
+5. 身份操作栏：随选中对象切换；议程选中时为 支持选项 / 召开投票会议 / 提前裁决 / 推翻表决
+
+未做：派系选中态画板、非国王视角、无议程空态。数据均为演示数据。未改任何代码。
+回滚：删除 bJ1Yq 即可；v5 画板未改动。
+
+修订（2026-10-06，对照现有议程面板截图）
+- 卷宗改为沿用现有议程 VM 的结构：选项并排列（对应 AgendaOptionVM：提案家族肖像/旗帜、选项名、SupportPercentage 条、Description、Supporters 列表+力度文字），去掉了自造的“家族表态表”。
+- “召开投票会议”按钮放在议程头内（对应 CanCallVoteMeeting / ExecuteCallVoteMeeting）。
+- 右上“距离开始投票 N 天”（DaysRemainingText，IsUrgent 时红色）；脚注沿用“提案「…」将在 N 天后开始投票”。
+- 王国切换移到“王国议程”分组下（KingdomSelectorName / 上一/下一王国），切到他国时派系组不显示。
+- 条目角标改为“剩余 X 天 / 可以投票”。
+- 派系影响提示条为新增，需新数据源。
+
+派系选中态（2026-10-06）
+- LEL0F  内政 v1 · 派系选中 · 国王视角（复制自 bJ1Yq，位于其正上方）  预览：previews/LEL0F.png
+- 目录：选中态从议程条目移到“戴·贡里克宣权派”（红左边线+羊皮纸底），议程条目改为普通暗色行。
+- 卷宗沿用 v5 派系卷宗结构，字段对应 KingdomFactionTabPanelVM：
+  诉求标签 TagText/TagColor · 领袖信息 HeaderMeta · 诉求标题 HeaderTitle · 派系说明 HeaderNote
+  右上期限块 BlockLabel/BlockValue/BlockUnit/BlockNote（BlockUrgent 时红色）
+  诉求进程 Steps（Name/Note，IsDone/IsCurrent/IsNext 三态节点+连线）
+  数据格 FigureGrievance / FigurePower+FigurePowerUnit / FigureRefusals+FigureRefusalUnit / 近期纪事 SourceLine1-2
+- 成员表（Rows）：表头 TableTitle“支持家族”+分页 ‹ 1 / 1 ›；列 家族(Name★) / 立场 Stance / 主要不满来源 Reason / 家族不满·门槛 35（GrievanceTitle；GrievanceText + 不满条 BarWidth + 红色门槛刻度 TickOffset）/ 军力 PowerText / 与国王 RelationText；4 行演示数据，斑马纹。
+- 卷宗脚注：最新纪事 FooterText + “红色刻度为成派门槛”。为放下成员表与脚注，卷宗 gap 16→12、内边距 26→22、数据格内边距收紧。
+- 身份操作栏换为国王对派系操作（KingdomFactionTab.Actions）：标题“国王治理 · 对 戴·贡里克宣权派”+ ActionHint；按钮 压制（80 影响力 · 不满 −15）/ 谈判（选择补偿档位）/ 妥协（兑现宣权诉求）/ 强制解散（200 影响力 · 可能触发起兵，危险色 #5E2A22）。费用数字为演示值。
+- 预览已重新导出 previews/LEL0F.png。门槛刻度比不满轨高出上下 3px，Pen 报“partially clipped”，但属于有意外溢，截图中显示正常。
+
+落地到游戏（2026-10-06）
+- 新增 src/AF.GameAdapter.Bannerlord/UI/Kingdom/KingdomInteriorPanel.cs：唯一的“内政”面板 prefab（复用 AgendaPanelRoot / AgendaTabButton，页签文字改为“内政”）。
+  王国态势带 → 左目录（王国议程 + 王国切换；派系与阵营）→ 右羊皮纸卷宗（议程卷宗 / 派系卷宗二选一）→ 底部身份操作栏。
+- 删除旧“派系”页签按钮与面板（KingdomFactionTabButtonPatch / KingdomFactionPanelPatch）和旧议程面板（KingdomAgendaPanelPatch）。
+- 选中联动：目录始终只有一个选中项；点议程清掉派系选中，点派系清掉议程选中；打开内政默认选第一条议程，没有议程时选默认派系条目；切到他国时隐藏派系组。
+- 议程卷宗：类型标签/提案人/剩余天数/选项数 → 标题 → GetSupportDescription 说明 → 召开投票会议；右侧距离开始投票块；选项卡片（提案家族肖像旗帜、领先标记、支持率条、说明、最多 3 个支持者 + “另有 N 家”）；脚注为投票提示与“已谈妥拉票 N 家”。
+- 议程身份栏只显示身份与提示（国王裁决 / 议会成员 / 旁观），不新增设计稿里的“支持选项/提前裁决/推翻表决”按钮（无现成机制）；派系影响提示条同样未实现（需新数据源）。
+- 派系卷宗：诉求头+期限块、四步进程、四个数据格（不满/军力/拒绝/近期纪事）、成员表（门槛刻度在派系与账册都显示）、脚注；操作栏沿用原有国王/成员/领袖等身份按钮与报价逻辑。
+
+第一轮实机反馈修正（2026-10-06）
+- 目录选中行被压成一条黑线、卷宗“政策”标签铺满整行：根因是 CoverChildren 容器里放了 StretchToParent 背景块（Gauntlet 会把容器撑到全部可用宽度）。所有标签/角标改为 Chip（自身带底色、宽度贴合文字）。
+- 目录右侧深色竖条：Standard.VerticalScrollbar 的底槽与端帽不受 AutoHideScrollBars 控制。改为原版 PoliciesPanel 的裸 ScrollbarWidget，内容放得下时完全不显示。
+- 左侧拆成两块：上“王国议程”、下“派系与阵营”，各自有标题栏和独立滚动区。
+- 只显示本国：去掉王国切换条和“切换到他国…”脚注；SetDefaultKingdom 只取玩家王国。
+- 卷宗中间文字居中：眉题、标题、说明、按钮、选项卡片内容全部居中；标题列左侧加与期限块同宽的占位，使居中相对整个卷宗。
+- 字号整体调大（正文 13–14→15–17，标题 32→38，选项名 20→24，大数字 44→48）。
+- 政策投票：
+  - LoadDetail 按原版 KingdomElection 顺序先 AddSupport 再 DetermineSponsors，否决项能找到默认牵头家族（之前恒为“未知”）；用完恢复 SupporterList。
+  - 无人牵头时不再显示“未知”和空头像，改为“无人牵头”；玩家家族牵头标“（你）”。
+  - 除玩家外无其他家族表态时不显示 0% 进度条，改为说明文字；单家族王国显示“仅你的家族有表决权 · 由你裁决”。
+  - 单家族王国且玩家为国王：期限块显示“单家族王国 / 随时”，按钮文字改为“立即裁决”（仍走原召开投票会议流程），目录角标为“可裁决”。
+  - 国王视角的议程说明改用 GetChooseDescription（原来是给封臣看的“你可就这一决策选择自己的立场”）。
+- 按钮 Brush 由不存在的 Standard.Button 改为 ButtonBrush1。

@@ -29,7 +29,7 @@ public sealed partial class KingdomFactionPanelVM
 		Actions.Clear();
 		CivilWarPanelFaction own = Own;
 		ActionTitle = TitleFor(own);
-		if (!_panel.Available) return;
+		if (!HasEntry) return;
 		switch (_panel.Role)
 		{
 			case CivilWarPanelRole.King:
@@ -122,7 +122,7 @@ public sealed partial class KingdomFactionPanelVM
 		bool governance = act == Act.Suppress || act == Act.Negotiate || act == Act.Concede || act == Act.Dissolve;
 		if (governance && _faction == null)
 		{
-			Actions.Add(new KingdomFactionActionVM(label, _panel.Factions.Count > 0 ? "请先选择派系页签" : "尚无反对派", true, tint, () => RunAction(act)));
+			Actions.Add(new KingdomFactionActionVM(label, _panel.Factions.Count > 0 ? "请先在目录中选择派系" : "尚无反对派", true, tint, () => RunAction(act)));
 			return;
 		}
 		CivilWarActionQuote quote;
@@ -192,7 +192,7 @@ public sealed partial class KingdomFactionPanelVM
 		try
 		{
 			bool governance = act == Act.Suppress || act == Act.Negotiate || act == Act.Concede || act == Act.Dissolve;
-			if (governance && _faction == null) { InformationManager.DisplayMessage(new InformationMessage(_panel.Factions.Count > 0 ? "请先在页签中选择要治理的派系。" : "王国内尚无反对派。")); return; }
+			if (governance && _faction == null) { InformationManager.DisplayMessage(new InformationMessage(_panel.Factions.Count > 0 ? "请先在目录中选择要治理的派系。" : "王国内尚无反对派。")); return; }
 			if (act == Act.Found || act == Act.ChangeDemand) { RunDemandSelection(act); return; }
 			if (act == Act.Negotiate) { RunNegotiate(); return; }
 			if (act == Act.Accept || act == Act.Refuse)
