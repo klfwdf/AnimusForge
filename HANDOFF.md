@@ -1612,3 +1612,7 @@ LIVE/真实旧档/网络/TTS/帧性能NOT_RUN；证书全局影响归因UNKNOWN�
 
 # 对话历史超链接修复（2026-10-07）
 - 补齐反射导航第四参数，旧调用异常复现、新调用回放和双版本统一构建通过。未实机/部署/推送。详见[台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#history-link-reflection-20261007)。
+
+
+# 新成年人物自动生成旧设置强制关闭（2026-10-07）
+- 一次性MCM迁移旧true到false，之后可手动开启。迁移回放及统一双API/Bootstrap/接缝/Stage通过，未部署/实机/推送。详见[台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#adult-persona-off-migration-20261007)。

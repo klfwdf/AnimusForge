@@ -7876,3 +7876,10 @@ R2计划交付门槛：已给固定技术路线、真实来源与目标、写入
 - 产品3d7a2e35d；检查点2e4096b。TownExecutionMissionBehavior.Crowd.TryReleaseCrowdAgent先设AI再SetTarget；持有本场散场行为引用。Player.OnEndMissionRequest允许退出前ReleaseCrowdForMissionExit，Lifecycle退出/移除兜底。ExecutionCrowdWalkAwayBehavior.ReleaseOwnedTarget仅清该目标中同Agent的移动/防守预约与使用状态，保留别人的占用及新导航目标；停用route防晚Tick重绑。
 - 已有63项及新增退出/幂等/顺序/外部接管共74项通过（链接真实生产方法，fake引擎）；原双1.3/1.4+Bootstrap+接缝通过，独立RichExecutions 1.4.8构建0错误（16警告）。日志regression.log、build.log、standalone-build.log位于证据目录。实机三种退出时机及结算一次性未验，未部署/推送/打包。
 - 工作区其他作者DuelSettings.cs改动保留不入本提交；回滚git revert 3d7a2e35d。清理每场退出/目标释放有界执行，不扫描全场Agent，不新增Tick扫描。
+
+
+<a id="adult-persona-off-migration-20261007"></a>
+# 新成年人物人设自动生成旧配置关闭迁移（2026-10-07）
+- 用户要求旧配置也关闭。DuelSettings.cs:2516/2527双MCM读取入口接入EnsureAdultHeroPersonaDefaultMigration:2564；首次加载强制false并SaveSettings，成功后写.adult_hero_persona_off_20261007标记。后续手动开启保留；保存失败不写标记，下次启动重试。内存门闩在保存前设置防重入，每次启动最多一次迁移I/O，无Tick扫描。
+- work/verify_adult_persona_migration.py提取真实方法验证旧true关闭、保存重入、标记幂等、手动开启保留、失败与重启重试通过。证据artifacts/adult-persona-migration-test/result.log。双API/Bootstrap编译通过；首轮接缝进程异常退出，统一流程重跑全部通过含Stage：artifacts/adult-persona-off-migration-build-retry.log。
+- 未实机、未部署、打包或推送；玩家旧配置需安装新版后运行才迁移。保留其他作者Vengeance改动；构建包含工作树同期内容。回滚对应fix(settings)迁移提交；已迁移用户可手动开启。

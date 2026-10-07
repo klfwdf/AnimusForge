@@ -37,6 +37,7 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 	private static bool _duelRenownDefaultMigrationChecked;
 
 	private static bool _worldDiplomacyCompressionDefaultsMigrationChecked;
+	private static bool _adultHeroPersonaDefaultMigrationChecked;
 
 	private static int _playerPolicyEffectModuleDetailCountClampNoticeConsumed;
 
@@ -2512,6 +2513,7 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 		if (GlobalSettings<DuelSettings>.Instance != null)
 		{
 			DuelSettings settings = GlobalSettings<DuelSettings>.Instance;
+			EnsureAdultHeroPersonaDefaultMigration(settings);
 			EnsureCustomPromptTextSettingsLoaded(settings);
 			EnsureLogCleanupDefaultMigration(settings);
 			EnsureDuelRenownDefaultMigration(settings);
@@ -2522,6 +2524,7 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 		{
 			if (BaseSettingsProvider.Instance?.GetSettings("AnimusForge_global_settings") is DuelSettings result)
 			{
+				EnsureAdultHeroPersonaDefaultMigration(result);
 				EnsureCustomPromptTextSettingsLoaded(result);
 				EnsureLogCleanupDefaultMigration(result);
 				EnsureDuelRenownDefaultMigration(result);
@@ -2556,6 +2559,32 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 			}
 		}
 		return _fallbackSettings;
+	}
+
+	private static void EnsureAdultHeroPersonaDefaultMigration(DuelSettings settings)
+	{
+		if (settings == null || _adultHeroPersonaDefaultMigrationChecked) return;
+		// Guard before saving: provider callbacks can re-enter GetSettings. A failed
+		// migration is retried on the next launch, never on every settings read.
+		_adultHeroPersonaDefaultMigrationChecked = true;
+		try
+		{
+			string markerPath = AnimusForgeModulePaths.GetLogFilePath(".adult_hero_persona_off_20261007");
+			if (File.Exists(markerPath)) return;
+			settings.EnableAdultHeroPersonaAutoGeneration = false;
+			var provider = BaseSettingsProvider.Instance;
+			if (provider == null) return;
+			provider.SaveSettings(settings);
+			string directory = Path.GetDirectoryName(markerPath);
+			if (!string.IsNullOrWhiteSpace(directory)) Directory.CreateDirectory(directory);
+			File.WriteAllText(markerPath, "adult-hero-persona-off-20261007", Encoding.UTF8);
+			Logger.Log("DuelSettings", "版本迁移：已关闭新成年人物自动生成个性与背景，旧配置同步保存。可在MCM中手动重新开启。");
+		}
+		catch (Exception ex)
+		{
+			settings.EnableAdultHeroPersonaAutoGeneration = false;
+			Logger.Log("DuelSettings", "[WARN] 新成年人物自动生成关闭迁移未完成；本次已关闭，下次启动重试：" + ex.Message);
+		}
 	}
 
 	private static void EnsureLogCleanupDefaultMigration(DuelSettings settings)
