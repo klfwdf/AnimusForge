@@ -1,4 +1,10 @@
-﻿# 当前交接：AI 模式全程拦截原版点击继续（2026-10-08，OFFLINE_VERIFIED_NOT_DEPLOYED）
+﻿# 当前交接：外交贸易条款与来源知情修复（2026-10-08，OFFLINE_VERIFIED_NOT_DEPLOYED）
+
+- 产品 `ffa6301b1`，检查点 `2f6289f`。贸易接受改期/非法期限不再被原条款覆盖后执行，提示另发新案；省略条款或相同期限继续接受。完整与缺前缀ID统一经过已知开放原案绑定，owner执行时再查知情，未送达原案不能接受。
+- 最终外交3949专项与固定产品隔离原双API1.3/1.4、Bootstrap、双DLL接缝构建PASS；5源码/9产物SHA已绑定。无新增Tick/模型请求/存档键；真实模型/战役/玩家旧档未验，未Stage/部署/打包/推送，不追溯修改已生效条约。
+- [唯一主台账、源码坐标与验证边界](docs/animusforge-refactoring-and-repository-reorganization-plan.md#diplomacy-review-fixes-20261008)、[代码导航](docs/architecture/af-framework-code-scope.md)。证据 `artifacts/diplomacy-review-fixes-20261008/receipt.json`；回滚仅 `git revert ffa6301b1`，保留其他作者工作。
+
+# 当前交接：AI 模式全程拦截原版点击继续（2026-10-08，OFFLINE_VERIFIED_NOT_DEPLOYED）
 
 - 产品 `e9b16679`、检查点 `fa3bfc98`。AI模式空闲/生成/完成均拦截正文点击；地图VM、场景VM与ConversationManager三入口保护，继续键同样受控；普通模式及明确离开保持。
 - 双版真实DLL/Harmony各44、点击回放各162、UI生命周期103 PASS；旧反例2 FAIL符合预期。原双API/Bootstrap/双DLL接线通过，实机未验，未Stage/部署/打包/推送。

@@ -1,4 +1,16 @@
-﻿<a id="ai-mode-continue-20261008"></a>
+﻿<a id="diplomacy-review-fixes-20261008"></a>
+# 外交审查修复：贸易原条款与完整ID知情边界（2026-10-08，OFFLINE_VERIFIED_NOT_DEPLOYED）
+
+- 用户授权修复只读审查确认的两项：贸易原案84日、回应7日仍按84日执行；完整ID引用未送达提案仍能接受。检查点 `2f6289f`，产品 `ffa6301b1`（5文件）；保留并行生图/继续战斗任务和既有NuGet目录。
+- 贸易：声明准入和真实贸易效果入口共用 TryResolveTradeAcceptanceTerms，对照指定原案动作的条款；显式不同、0、非法期限拒绝，未列条款或相同期限继续接受。拒绝改约给出中文说明、原案保持开放，成功时复制原案条款，避免响应与原案共享可变对象。不得因错误动作ID回落主动作条款。
+- 知情：生产解析仅在owner提供的已知开放提案集合中绑定；完整/缺前缀ID一致，未匹配来源在回合重绑定前拒绝。真实owner执行准入再检查 DialogueDocumentKnown，防直接调用绕过解析。保留detached旧测试调用的无provider参数兼容，生产Commit始终传真实owner提供者。
+- 性能/兼容：每次接受或拒绝解析捕获一次活跃已知提案并复用；非提案回应不采集。执行只增加一次权威知情查询，贸易只比较本次指定动作/固定条款，无新增Tick、全档轮询、模型请求、采样、公共API、存档键或持久类型。不重放历史拒绝、不修改玩家文件。
+- 专项最终3949 PASS；新增完整ID未知来源不执行/不移动回合及owner直调拒绝；真实解析→回合绑定→条款准入→贸易效果接缝，覆盖原84/回应7、0、非法、省略和相同，拒绝时保留原案、重复完成不重复执行。调用生产算法，游戏/通知/效果宿主为替身。旧net6专项以已安装SDK8.0.421的仓内net8项目显式链接191原文件，无生产body变换；最终manifest SHA核对相同。
+- 审查反例证据仍在 `artifacts/diplomacy-review-20261008/`。本包 `artifacts/diplomacy-review-fixes-20261008/` 保留初次旧错误码断言失败、非法数字触发ToTerms异常及修复后记录；已将合法性检查前置、其余外交解析数值语义保持。最终外交日志 diplomacy-final-1，固定产品隔离原双API/Bootstrap/双DLL接缝构建exit0，Debug，1.3引用v1.3.15.110062、1.4引用v1.4.6.115628；receipt.json绑定5任务文件blob/9产物SHA与metadata，源码坐标提交/工作树校验PASS；不Stage/Deploy。
+- 源码坐标按产品修订，一基行号：WorldDiplomacyAnalysisApplication.cs:122–140（已知来源绑定）、:226–243（贸易显式期限保留）、WorldDiplomacyOfferApplication.cs:11–30（条款核对）及:58–71（效果前防线）；WorldDiplomacyOrchestration.Treaties.cs:77–86（声明准入）；WorldDiplomacyOrchestration.cs:2359–2378（执行知情）。以上均在 `src/modules/AF.Module.Diplomacy/Application/`；回归 `tests/modules/AF.Module.Diplomacy/WorldDiplomacyRoundLifecycle.SmokeTests/PlayerSemanticReplay.cs` 的 VerifyShortOfferSourceIds / VerifyTradeAcceptanceTerms，code-map.json核对符号与提交。职责导航见 [代码范围图](architecture/af-framework-code-scope.md)。
+- NOT-RUN：真实模型/游戏双版战役/玩家旧档及历史错误条约修复；未部署、打包或推送。回滚仅 `git revert ffa6301b1`，不撤销其他作者。
+
+<a id="ai-mode-continue-20261008"></a>
 # AI 模式全程拦截原版点击继续（2026-10-08，OFFLINE_VERIFIED_NOT_DEPLOYED）
 
 - 产品 `e9b16679`，检查点 `fa3bfc98`，工作区 `F:/AnimusForge-main` / main。旧保护只有backend busy和pending shield，AI完成后放行。用户要求全程AI拦截，已覆盖空闲/生成/完成/辅助面板；普通模式/明确离开保持。本条替代历史busy-only修复的当前行为。
