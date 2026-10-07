@@ -60,11 +60,18 @@ internal sealed partial class WorldDiplomacyOrchestration
         JObject value = json["treaty_terms"] as JObject;
         if (value == null) return null;
         var peace = json["peace_terms"] as JObject;
-        int.TryParse(peace?["daily_tribute"]?.ToString(), out int tribute);
-        int.TryParse(peace?["duration_days"]?.ToString(), out int days);
-        var terms = new DialogueDiplomaticTerms(ReadString(value, "receiving_kingdom_id"), ReadString(value, "joining_kingdom_id"),
-            dailyTribute: Math.Max(0, tribute), durationDays: Math.Max(0, days), cessionSettlementId: peace?["cession_settlement_id"]?.ToString());
-        return ValidateFormalTreatyTerms(intent, terms, author, target, out _) ? WorldDiplomacyDialogueTerms.From(terms) : null;
+        // Retain explicit clauses (including invalid values) for the authoritative
+        // declaration guard. Returning null here could make an acceptance silently
+        // adopt the original terms after its own extra clauses were discarded.
+        int tribute = ReadInteger(value, "daily_tribute");
+        int days = ReadInteger(value, "duration_days");
+        if (tribute == 0) tribute = ReadInteger(peace, "daily_tribute");
+        if (days == 0) days = ReadInteger(peace, "duration_days");
+        return new WorldDiplomacyDialogueTerms {
+            ReceivingKingdomId = ReadString(value, "receiving_kingdom_id"),
+            JoiningKingdomId = ReadString(value, "joining_kingdom_id"),
+            DailyTribute = tribute, DurationDays = days,
+            CessionSettlementId = FirstNonEmpty(ReadString(value, "cession_settlement_id"), ReadString(peace, "cession_settlement_id")) };
     }
 
     internal bool ValidateFormalTreatyDeclaration(WorldDiplomacyDocument document, string intent, WorldDiplomacyDialogueTerms terms,

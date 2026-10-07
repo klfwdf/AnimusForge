@@ -27,6 +27,12 @@ internal static class Program
     private static int Main(string[] args)
     {
         AppDomain.CurrentDomain.UnhandledException += (_, e) => { Console.Error.WriteLine(e.ExceptionObject); Environment.Exit(1); };
+        if (args.Length == 1 && args[0] == "--lifecycle-repair")
+        {
+            LifecycleRepairReplay.Run();
+            Console.WriteLine($"Diplomacy lifecycle repair passed: {Test.Assertions} assertions.");
+            return 0;
+        }
         if (args.Length == 1 && args[0] == "--ordinary-admission-and-review-fixes")
         {
             OrdinaryAdmissionReplay.Run(); ReviewFixReplay.Run();
@@ -113,7 +119,7 @@ internal static class Program
             Console.WriteLine($"R1 generation task replay passed: {Test.Assertions} assertions.");
             return 0;
         }
-        OrdinaryAdmissionReplay.Run(); ReviewFixReplay.Run();
+        OrdinaryAdmissionReplay.Run(); ReviewFixReplay.Run(); LifecycleRepairReplay.Run();
         OfferActionReplay.Run();
         WarAdmissionReplay.Run();
         RoundBoundaryReplay.Run();
@@ -12384,7 +12390,7 @@ RunRepairCorrectionAndJobDecisionTests();
             RoundId = "r2", State = "active", HardEndDay = 10
         };
         storage.ActiveRound = hardWait;
-        storage.Jobs.Add(new WorldDiplomacyJob { JobId = "j1", RoundId = "r2" });
+        storage.Jobs.Add(new WorldDiplomacyJob { JobId = "j1", RoundId = "r2", IsRunning = true });
         closeReason = null;
         tick();
         Test.True(closeReason == null && settleSched + hopSched + planEnqueue == 0,

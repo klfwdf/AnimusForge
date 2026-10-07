@@ -12,6 +12,61 @@
 - 证据：artifacts/execution-escort-combat-20261008/{regression-verified.log,build-verified.log,standalone-verified.log,source-verified.json,receipt.json}，构建前后 8 个任务文件原始 SHA256 一致，三 AF DLL marker/SHA 复核通过；候选 build-verified/ 与 standalone-bin/，diff --check PASS。日志/产物留本地，不上传。
 - 未验证：真实 1.3/1.4 游戏内带同伴/选兵进入自定义刑场、布置和等待、玩家/刽子手执行、散场继续跟随/移动、取消/退出，以及独立版实机，均 NOT-RUN；未部署、打包、推送。回滚仅 git revert 192091ddb，保留其他作者提交和工作树；文档检查点不包含既有产品改动。
 
+<a id="diplomacy-lifecycle-publication-20261008"></a>
+# 外交生命周期修复隔离交付（2026-10-08，OFFLINE_VERIFIED）
+
+- 用户授权推送已推荐的外交源码、测试和公开说明。以最新核对的 `origin/main@187286489` 为基线，移植 10 个源码/4 个测试文件形成产品 `6e430682e`，stable patch-id `c5aeb4ee842aaef100f3cb5c21b591b005893925`。不合并本地分叉历史、不上传空检查点、已撤销试改、设计草稿或本地部署证据。
+- 实际行为、13处职责及真实消费者坐标集中于[公开说明](diplomacy-round-design/UPDATE_20261008.md#代码与验证)，绑定产品修订，不重复复制代码表。玩家提交、分析完成、关闭和读档恢复共享归属保护；真实 HTTP 租约与待办清理分开；过期提案不复活、附加条款由权威入口拒绝。保存键/Schema/构建流程/模块身份与默认入口保持；不增加逐帧档案扫描。
+- 在干净远端基线候选重新执行 Release 外交生命周期回放3720断言PASS；原统一入口Debug两实现（1.3.15.110062、1.4.7.117484）与Bootstrap零错误、既有警告保留，双Coup接缝及注册门禁PASS；补丁身份、白名单、diff检查通过。没有Stage、覆盖、打包或启动游戏；实机、玩家旧档、真实provider仍NOT_RUN。
+- 推送前再次fetch确认快进关系；使用普通推送，不强推或引入本地旧历史。实际发布SHA与日志留本地回执，不能把本地候选当成远端成功。回滚为定向撤销产品提交，保留上游变化。
+
+<a id="castle-aftermath-load-main-integration-20261007"></a>
+# 城堡读档修复只接入最新 main（2026-10-07，MAIN_INTEGRATION_OFFLINE_VERIFIED）
+
+- 用户明确授权“只接入本次修复并推送main”，随后再次确认“拉取最新源码、融合、推送”。远端基线 `52177454b911250acf5b32ec8fac9aaf3040e608`；在同一施工目录新建 `codex/gccz-castle-load-integration-20261007`，保留旧修复分支，未merge/rebase/强推旧分叉历史。只移植 `68c2bf10` 为产品 `f94179d5`，文档顶部冲突保留最新main全部记录再加本片说明；仓内桥接说明不再依赖另一个本地目录才能阅读。
+- 六项受影响产品/测试路径与原已验证修复完全一致；远端其他134个提交保留，不夹带本地旧城镇提交、Council/UI草稿或游戏文件。源码只改城堡加载恢复与有界诊断，不调整正常原版结算。
+- 在最新main基线上重跑融合134、城镇规则记忆邻接60项PASS；原入口Debug双API（1.3引用v1.3.15、1.4引用v1.4.6）+Bootstrap及双接缝/注册门禁通过、0错误。独立2507结果因核心/测试未变复用。历史code-map仍缺原记录提交7c5c7cd1，未冒充通过；差异/冲突检查PASS。
+- 原Debug生成目录在工作区内完整保留为 `*-before-castle-main-20261007`，没有覆盖游戏或旧候选。最终发布前再次fetch，必须保持普通快进；推送结果由远端main实际SHA与本地 `artifacts/castle-load-main-20261007/push-receipt.json` 对照确认。
+- 故障报告版本/存档、实际Harmony、宽恕返回castle_outside仍未实测；报告崩溃根因尚未确认。授权不含Stage/部署/操作存档；本片不声明修复任何损坏存档。回滚仅focused revert本片产品提交，不重写main。
+
+<a id="castle-aftermath-load-recovery-20261007"></a>
+# 城堡战后菜单读档最小恢复（2026-10-07，SOURCE_AND_OFFLINE_VERIFIED / REPORT_CRASH_UNCONFIRMED）
+
+- 用户确认施工于本工作树及独立 GCCZ；只恢复同一加载后城堡战后遭遇缺失的 LocationEncounter，保留现有实例与 reset。无战斗/俘虏/其他菜单恢复；不重放宽恕、不强制 Finish、不改存档/玩法。新增最多24条即时生命周期日志，原异常不吞掉。
+- 核心 `AnimusForge.SiegeAftermathIntervention/SiegeCastleAftermathLoadRecoveryPolicy.cs:6`；真实适配 `src/bridges/Siege/Host/CastleAftermathLoadRecoveryBridge.cs:27,83,114`；加载接线 `SiegeAiInterventionBehavior.cs:617`；两个仅观察的 patch 由原 `Patch_SiegeAftermath_AFIntervention.cs` bootstrap 注册。独立镜像保留于GCCZ；仓内[桥接说明](bridge/castle/2026-10-07-castle-aftermath-load-recovery.md)提供完整验收边界。
+- 新增23策略断言；独立2507 / 融合134 PASS；原Debug 1.3(v1.3.15)/1.4(v1.4.6)+Bootstrap及构建内门禁通过，0错误、既有warnings保留。focused cleanup/diff检查通过，两个策略/测试镜像一致。历史code-map因缺少其记录的7c5c7cd1提交而无法验证，未刷新历史hash伪造通过。
+- 工程师自审确认唯一暂态赋值、主线程/已有实例保护与无结算调用；玩家视角仅源码推演。报告故障档、真实Harmony/版本1.3.14、宽恕后castle_outside实测和转储仍NOT_RUN；不把补上可证缺口写成原报告崩溃根因已修。未Stage/部署/push/操作存档。
+- 回滚前检查点：融合b5f36b8d、独立0915c55；只提交本片，保留Council/UI草稿。本地 `artifacts/castle-load-recovery-20261007/` 保存基线、日志、最终收据及候选hash。
+
+<a id="gccz-town-dialogue-main-integration-20261007"></a>
+# GCCZ 城镇台词与目击事实合入 main（2026-10-07）
+
+## 授权与范围
+
+用户授权将本轮城镇台词/感知改动融合最新代码，检查无阻断问题后推送。以 fetch 核对的 `origin/main` (`da90deba`) 为基线，在隔离分支 `codex/gccz-town-dialogue-integration-20261007` 集成已审查的产品与测试差异。保留 main 新的场景接话提示等改动；不带入旧本地交接历史、未提交的城堡读档恢复、UI/Council 或其他工作树内容。发布仅源码推送，不含 Stage、部署或打包。
+
+- 普通平民可以怒斥、咒骂、威胁、求饶或口头服软；不新增攻击、敌对、跪地、臣服、忠诚或入队结算。保留旧动作资格与军令边界。
+- 近处人员出现/失去视野/移除及确认死亡按观察者隔离；未知凶手不归因于玩家；昏迷只作内部去重和活人名单维护，不生成“确认昏迷”台词、不计为死亡。新实例不会继承旧实例的目击，结束清空。
+- SETS 自有/附属事件与攻城/SETS夺城分别提供现场来源，不再无条件把自有领民写成敌城战败者。
+
+## 代码证据（本次产品候选）
+
+| 责任 | 路径、行号与符号 | 边界 |
+| --- | --- | --- |
+| 观察者状态/去重/输出 | `AnimusForge.SiegeAftermathIntervention/TownScenePerceptionSession.cs:22,52,77,98`，`TownScenePerceptionSession` / `Observe` / `RecordRemoval` / `BuildPrompt` | 纯核心，最近6条事件；无存档/游戏副作用 |
+| 主线程采集与身份 | `src/bridges/Siege/Scene/TownScenePerceptionRuntimeBridge.cs:27,65,96,132`，`Begin` / `CaptureForSpeaker` / `RecordRemoval` / `BuildContext` | 绑定确切 GCCZ town center Mission；24米与LOS；无新Tick/LLM请求 |
+| 主动对话捕获 | `src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.PersonaPreparation.cs:123` | 现有主线程 scope 校验之后，仅普通人物 |
+| 即时发言捕获 | `src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.SceneConversationChains.cs:1428` | 共用准备入口覆盖完整与简短回应，保留上游接话选择修复 |
+| 本地化与约束 | `content/modules/AnimusForge.SiegeAftermathIntervention/ModuleData/GcczTownPrompt.zh-CN.json`、`TownPromptTextCatalog`、`SiegeRuntimePromptProfile`、`SiegeLocalCivilianReactionProfile` | 清理强制恐惧/服从的平民台词与无条件敌城背景；保持未知事实边界与英文回退 |
+
+## 验证与剩余边界
+
+- 融合核心入口 `GcczRepairSyncTests`：111 checks PASS（含20条本功能感知断言）。当前 `TownRuleMemory.Tests`：60 checks PASS，真实核心/桥接＋假的辅助传输，不是实机。
+- 原 `scripts/build/build_single_module.ps1 -Configuration Release`：1.3引用 v1.3.15、1.4引用 v1.4.6＋Bootstrap 均0错误，两最终DLL注册接缝与各20项记忆端口回归PASS。既有warning保留；未改构建脚本和项目引用规则。
+- 工程师自审：12个产品/测试文件，合并无冲突，核心与独立 GCCZ 对应源同义；无战斗/伤害/动画副作用、新Tick或后台Agent读取；`git diff --check`、资源解析及旧昏迷提示/冲突文案清理检查通过。
+- 玩家视角仅源码推演：普通NPC对话→近处新人/消失→目击死亡/未知凶手→新来者隔离→离场重进；SETS内部背景单独检查。原生LOS、事件顺序、真实玩家档及真实LLM台词仍 NOT_RUN，不承诺零bug。
+- 验证日志与候选/远端hash收据保存在本地 `artifacts/town-dialogue-integration-20261007/`，不上传生成物或玩家数据。回滚使用本次集成提交的 focused revert，不改写历史。
+
 <a id="illustrator-final-widescreen-20261007"></a>
 # 生图最终画幅与MCM尺寸约束（2026-10-07，DEPLOYED_PACKAGED_PUSHED_LIVE_PENDING）
 

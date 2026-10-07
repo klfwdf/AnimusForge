@@ -18,6 +18,22 @@
 - 74项回归、双API/Bootstrap/接缝、独立1.4.8编译通过。实机退出与结算未验，未部署/推送/打包。
 - [主台账及证据](docs/animusforge-refactoring-and-repository-reorganization-plan.md#execution-crowd-exit-hang-20261007--offline_verified_not_deployed)。保留其他作者DuelSettings.cs未提交改动。
 
+# 当前交付：外交回应与回合生命周期修复（2026-10-08，OFFLINE_VERIFIED）
+
+从 `origin/main@187286489` 隔离交付产品 `6e430682e`：玩家回复结束事件建立独立回合，分析/关闭/读档保留文书归属，清理失效任务并保留真实请求租约，正式条约附加字段不再静默丢弃。外交3720断言、Debug双API 1.3.15/1.4.7 + Bootstrap及双接缝门禁通过；未部署、实机或玩家旧档验收。详见[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#diplomacy-lifecycle-publication-20261008)及[公开变更说明](docs/diplomacy-round-design/UPDATE_20261008.md)。原本地检查点、设计草稿和部署记录不进入这次交付历史。
+
+# 当前交付：城堡读档修复融合最新 main（2026-10-07）
+
+以远端 `52177454` 为基线，仅接入本次城堡修复为 `f94179d5`，保留远端其他更新及本地旧分支。融合134、邻接60检查与Debug双API+Bootstrap重验通过；目标 `origin/main` 普通快进推送，实际远端收据单独记录。未部署，报告故障档与崩溃根因仍未实机确认。详见[main融合台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#castle-aftermath-load-main-integration-20261007)。
+
+# 当前局部修复：城堡战后菜单读档恢复（2026-10-07）
+
+只补齐经严格匹配的加载后城堡战后场景上下文；原宽恕/结算/reset保持，新增有界即时菜单诊断。独立2507、融合134检查及原Debug双API+Bootstrap通过；报告崩溃根因与故障存档实机仍未验证。本次已授权只融合修复并推送main、不部署；融合后的验证另记，详见[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#castle-aftermath-load-recovery-20261007)。
+
+# 当前交接：GCCZ 城镇台词与现场感知集成（2026-10-07）
+
+本次获准融合并推送源码；从已核对的 `origin/main` (`da90deba`) 隔离集成。只允许言语怒斥/求饶，补充观察者自己的人员进出与确认死亡事实；不新增真实攻击、跪地、臣服或数值结算，不播报昏迷。保留上游最新修改，不带入其他工作树未提交的城堡恢复/UI改动。核心111、城镇记忆60、原Release双API+Bootstrap及双DLL注册/记忆端口门禁PASS；没有Stage/部署/打包，实机与真实LLM未验。详见[主台账与代码证据](docs/animusforge-refactoring-and-repository-reorganization-plan.md#gccz-town-dialogue-main-integration-20261007)。下方历史部署不代表本轮已安装。
+
 # 当前交接：衣物叙事变化已部署（2026-10-07，DEPLOYED_PACKAGED_LIVE_PENDING）
 - 产品a042639a7已提交推送；双版本/Bootstrap/接缝通过，部署更新9文件，3379文件哈希一致。
 - 包：一键编译覆盖推送/packages/AnimusForge_v1.5.5_20261007_175934_302.zip。实机出图未验。
