@@ -177,9 +177,12 @@ namespace AnimusForge.Illustrator.Core
         internal static async Task<IllustrationDirection> CreateDirectionWithClientAsync(IllustrationPromptPlan plan, System.Collections.Generic.IReadOnlyList<IllustrationReferenceImage> referenceImages, IllustrationOptions options, HttpClient client, CancellationToken cancellationToken)
         {
             plan = plan ?? new IllustrationPromptPlan("通用插画", string.Empty, string.Empty);
+            if (options?.PreserveEquipmentFidelity == false)
+                plan = new IllustrationPromptPlan(plan.Mode, VisualFidelityRules.WithoutEquipmentFacts(plan.HardFacts),
+                    VisualFidelityRules.WithoutEquipmentRules(plan.ArtDirection), plan.DirectorOnlyFacts, plan.PlayerRedrawPrompt);
             GenerationDiagnostics.Current?.RecordStage("prompt_sources", new JObject { ["mode"] = plan.Mode, ["hardFactChars"] = plan.HardFacts.Length, ["artDirectionChars"] = plan.ArtDirection.Length, ["directorOnlyFactChars"] = plan.DirectorOnlyFacts.Length, ["directorRuleSource"] = "visual director system prompt + illustration facts/style; no direct RuleBehaviorPrompts", ["dialogueRulesIndirect"] = plan.IsConversation, ["style"] = options?.SelectedStyle, ["customDirectorRuleChars"] = options?.CustomDirectorPrompt?.Length ?? 0,
                 ["customDirectorRulesActive"] = options?.EnableLlmPromptExpansion == true && !string.IsNullOrWhiteSpace(options.DirectorApiBaseUrl) && !string.IsNullOrWhiteSpace(options.CustomDirectorPrompt),
-                ["playerRedrawPromptChars"] = plan.PlayerRedrawPrompt.Length });
+                ["preserveEquipmentFidelity"] = options?.PreserveEquipmentFidelity != false, ["playerRedrawPromptChars"] = plan.PlayerRedrawPrompt.Length });
             RequirePlayerRedrawDirector(plan.PlayerRedrawPrompt, options);
             if (options != null && !options.EnableMultimodalVision)
             {
@@ -290,7 +293,7 @@ namespace AnimusForge.Illustrator.Core
                     (string.IsNullOrWhiteSpace(direction.FallbackReason) ? string.Empty : "；" + direction.FallbackReason);
         }
 
-        internal static string ComposeFinalPrompt(string directorPrompt, string hardFacts = null, bool isSinglePortrait = false, bool isConversation = false, bool isWeeklyReport = false, bool playerRedraw = false)
+        internal static string ComposeFinalPrompt(string directorPrompt, string hardFacts = null, bool isSinglePortrait = false, bool isConversation = false, bool isWeeklyReport = false, bool playerRedraw = false, bool preserveEquipment = true)
         {
             var sb = new StringBuilder();
             if (!string.IsNullOrWhiteSpace(directorPrompt))
@@ -307,7 +310,8 @@ namespace AnimusForge.Illustrator.Core
                 sb.AppendLine().AppendLine("【不可改写的核心事实】");
                 sb.Append(hardFacts.Trim());
             }
-            sb.AppendLine().Append(VisualFidelityRules.GetEssentialContract(isSinglePortrait, isConversation, isWeeklyReport));
+            string contract = VisualFidelityRules.GetEssentialContract(isSinglePortrait, isConversation, isWeeklyReport);
+            sb.AppendLine().Append(preserveEquipment ? contract : VisualFidelityRules.WithoutEquipmentRules(contract));
             return sb.ToString().Trim();
         }
 
@@ -354,7 +358,7 @@ namespace AnimusForge.Illustrator.Core
             output = output ?? string.Empty;
             // These keyword checks cannot distinguish an explicitly requested prop
             // from an invented one. Directed redraws use the scoped director policy.
-            if (string.IsNullOrWhiteSpace(plan?.PlayerRedrawPrompt) &&
+            if (options?.PreserveEquipmentFidelity != false && string.IsNullOrWhiteSpace(plan?.PlayerRedrawPrompt) &&
                 (ViolatesShieldVisibility(output, plan) || ViolatesPortraitComposition(output, plan)))
             {
                 fallbackReason = "导演输出含无依据盾牌、旗帜或不合要求的肖像动作";
@@ -379,7 +383,7 @@ namespace AnimusForge.Illustrator.Core
                 if (output.Length <= 120 && System.Text.RegularExpressions.Regex.IsMatch(output, "远景|近景|中景|过肩|俯拍|仰拍") &&
                     !System.Text.RegularExpressions.Regex.IsMatch(output, "纯黑|漆黑|全黑|黑色背景|黑幕|black background", System.Text.RegularExpressions.RegexOptions.IgnoreCase))
                     return ComposeFinalPrompt(BuildLocalSceneDirection(plan) + "\n可保留的动作与镜头：" + output,
-                        hardFacts: plan.HardFacts, isSinglePortrait: isSingle, isConversation: plan?.IsConversation == true, isWeeklyReport: plan?.IsWeeklyReport == true);
+                        hardFacts: plan.HardFacts, isSinglePortrait: isSingle, isConversation: plan?.IsConversation == true, isWeeklyReport: plan?.IsWeeklyReport == true, preserveEquipment: options?.PreserveEquipmentFidelity != false);
                 return SynthesizeRuleBasedPrompt(plan, options);
             }
             // The director is responsible for composition, but its prose can omit a visual
@@ -387,7 +391,7 @@ namespace AnimusForge.Illustrator.Core
             // image endpoint does not have to infer age, equipment, emblems or spatial state
             // from a reference image alone.
             return ComposeFinalPrompt(output, hardFacts: plan?.HardFacts, isSinglePortrait: isSingle, isConversation: plan?.IsConversation == true, isWeeklyReport: plan?.IsWeeklyReport == true,
-                playerRedraw: !string.IsNullOrWhiteSpace(plan?.PlayerRedrawPrompt));
+                playerRedraw: !string.IsNullOrWhiteSpace(plan?.PlayerRedrawPrompt), preserveEquipment: options?.PreserveEquipmentFidelity != false);
         }
 
         private static readonly string[] RequiredSectionPatterns = new[]
@@ -721,7 +725,7 @@ namespace AnimusForge.Illustrator.Core
             if (!string.IsNullOrWhiteSpace(options?.CustomDirectorPrompt))
             {
                 requestText += "\n【玩家自定义导演规则·偏好层】\n" + options.CustomDirectorPrompt +
-                    "\n【自定义规则边界】以上内容只用于构图、动作、景别和叙事偏好，不是已发生事实；不得覆盖人物身份、装备、场景及事件硬事实。" +
+                    (options?.PreserveEquipmentFidelity == false ? "\n【自定义规则边界】允许自定义服装装备；人物身份、场景及事件事实保持。服装变化不代表游戏事件。" : "\n【自定义规则边界】以上内容只用于构图、动作、景别和叙事偏好，不是已发生事实；不得覆盖人物身份、装备、场景及事件硬事实。") +
                     "若与事实、身份约束或本模式创作边界冲突，以原有约束为准。保持原定标题/主题/行动、环境取景元数据与四段正文格式；" +
                     "将可适用偏好落实为可绘制的视觉描述，不在输出中复述规则、标记或检查过程。";
             }
@@ -732,6 +736,7 @@ namespace AnimusForge.Illustrator.Core
                     (redrawStyle.IsCustom ? "\n" + options?.NegativePrompt : string.Empty) +
                     "\n" + VisualFidelityRules.PlayerRedrawDirectorPriority;
             }
+            if (options?.PreserveEquipmentFidelity == false) requestText += "\n" + VisualFidelityRules.FreeEquipmentRule;
             if (textFallback)
                 requestText += "\n【参考可用性】本次仅提供文字，图片输入不可用。未被文字确认的人物外观与真实现场细节保持未知，不声称已经看过参考图；艺术布景和事件艺术再现仍按本模式创作边界设计。";
             if (referenceImages != null)
@@ -768,7 +773,7 @@ namespace AnimusForge.Illustrator.Core
                         content.Add(new JObject
                         {
                             ["type"] = "text",
-                            ["text"] = "【参考图】" + (string.IsNullOrWhiteSpace(plan.PlayerRedrawPrompt) ? reference.Label : VisualFidelityRules.DirectedReferenceLabel(reference))
+                            ["text"] = "【参考图】" + (string.IsNullOrWhiteSpace(plan.PlayerRedrawPrompt) && options?.PreserveEquipmentFidelity != false ? reference.Label : VisualFidelityRules.DirectedReferenceLabel(reference))
                         });
                     }
                     content.Add(new JObject
@@ -801,7 +806,7 @@ namespace AnimusForge.Illustrator.Core
                 ["messages"] = new JArray
                 {
                     new JObject { ["role"] = "system", ["content"] =
-                        (plan?.IsWeeklyReport == true ? WeeklyReportSystemPrompt : plan?.IsConversation == true ? ConversationSystemPrompt : SystemPrompt) +
+                        (options?.PreserveEquipmentFidelity == false ? VisualFidelityRules.WithoutEquipmentRules((plan?.IsWeeklyReport == true ? WeeklyReportSystemPrompt : plan?.IsConversation == true ? ConversationSystemPrompt : SystemPrompt)) : (plan?.IsWeeklyReport == true ? WeeklyReportSystemPrompt : plan?.IsConversation == true ? ConversationSystemPrompt : SystemPrompt)) +
                         (string.IsNullOrWhiteSpace(plan?.PlayerRedrawPrompt) ? string.Empty : "\n" + VisualFidelityRules.PlayerRedrawDirectorPriority) +
                         "\n【输出字符上限】你的完整回复（标题、主题、行动摘要、取景元数据、四段正文、标点及空白合计）最多30000字符。" +
                         "这是上限，不是目标篇幅或最低字数，禁止为凑满上限而扩写。仍以本次请求的约Token篇幅为参考，简洁完整地表达即可；" +
@@ -934,7 +939,7 @@ namespace AnimusForge.Illustrator.Core
             // "the director chooses the camera"); an image model would draw those words.
             // The image client supplies the full selected style once for every route.
             bool isSingle = plan?.Mode?.Contains("百科") == true || plan?.Mode?.Contains("肖像") == true;
-            return ComposeFinalPrompt(BuildLocalSceneDirection(plan), plan?.HardFacts, isSinglePortrait: isSingle, isConversation: plan?.IsConversation == true, isWeeklyReport: plan?.IsWeeklyReport == true);
+            return ComposeFinalPrompt(options?.PreserveEquipmentFidelity == false ? VisualFidelityRules.WithoutEquipmentRules(BuildLocalSceneDirection(plan)) : BuildLocalSceneDirection(plan), plan?.HardFacts, isSinglePortrait: isSingle, isConversation: plan?.IsConversation == true, isWeeklyReport: plan?.IsWeeklyReport == true, preserveEquipment: options?.PreserveEquipmentFidelity != false);
         }
     }
 }

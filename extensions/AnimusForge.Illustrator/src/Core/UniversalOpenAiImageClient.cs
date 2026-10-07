@@ -143,7 +143,7 @@ namespace AnimusForge.Illustrator.Core
                     || (settings.PreferChatImageProtocol && !settings.UseExactEndpointUrl));
                 string endpointUrl = player2 ? ResolvePlayer2Endpoint(baseUrl, false) : ResolveEndpointUrl(baseUrl, isChatProtocol, settings.UseExactEndpointUrl);
                 var composed = ComposeImagePrompt(prompt, size, quality, style, customStyleHint, negativePrompt, isChatProtocol, settings.Randomness,
-                    player2 ? ImagePromptProfile.Full : ResolvePromptProfile(model, isChatProtocol), playerRedraw, settings.OutputFrameRequirement);
+                    player2 ? ImagePromptProfile.Full : ResolvePromptProfile(model, isChatProtocol), playerRedraw, settings.OutputFrameRequirement, settings.PreserveEquipmentFidelity);
                 string effectivePrompt = composed.Text;
                 string route = isChatProtocol ? "Chat" : configuredEditsEndpoint || (requestedRefImages > 0 && !settings.UseExactEndpointUrl) ? "ImagesEdits" : "Images";
                 GenerationDiagnostics.Current?.RecordStage("image_route", new JObject { ["protocol"] = route, ["endpoint"] = SensitiveLogText.SafeUrl(route == "ImagesEdits" ? (player2 ? ResolvePlayer2Endpoint(baseUrl, true) : ResolveEditsEndpointUrl(baseUrl)) : endpointUrl), ["requestedRefs"] = requestedRefImages, ["reason"] = settings.UseExactEndpointUrl ? "explicit exact endpoint" : isChatProtocol ? "model or chat preference" : requestedRefImages > 0 ? "references present: edits first; no text-only reference fallback" : configuredEditsEndpoint ? "edit endpoint requires image" : "no references: text-to-image", ["referenceGenerationEnabled"] = settings.EnableReferenceImageForGeneration });
@@ -173,7 +173,7 @@ namespace AnimusForge.Illustrator.Core
                 //    generations 端点没有参考图字段，之前日志打 refImages=N 但实际从未发送。
                 if (!isChatProtocol && requestedRefImages > 0 && (player2 || !settings.UseExactEndpointUrl || exactEditsEndpoint))
                 {
-                    var edit = await AttemptImagesEditsAsync(baseUrl, model, effectivePrompt, size, quality, style, referenceImages, apiKey, cancellationToken, customStyleHint, composed.NegativeField, playerRedraw, 0, player2).ConfigureAwait(false);
+                    var edit = await AttemptImagesEditsAsync(baseUrl, model, effectivePrompt, size, quality, style, referenceImages, apiKey, cancellationToken, customStyleHint, composed.NegativeField, playerRedraw, 0, player2, settings.PreserveEquipmentFidelity).ConfigureAwait(false);
                     result.ResolvedPrompt = edit.ResolvedPrompt;
                     if (edit.Success)
                     {
@@ -198,7 +198,7 @@ namespace AnimusForge.Illustrator.Core
 
                 if (!success && !stopAfterEditFailure)
                 {
-                    var attempt = await AttemptGenerateOnceAsync(endpointUrl, model, effectivePrompt, size, quality, style, referenceImages, apiKey, isChatProtocol, cancellationToken, customStyleHint, composed.NegativeField, playerRedraw, 0, player2).ConfigureAwait(false);
+                    var attempt = await AttemptGenerateOnceAsync(endpointUrl, model, effectivePrompt, size, quality, style, referenceImages, apiKey, isChatProtocol, cancellationToken, customStyleHint, composed.NegativeField, playerRedraw, 0, player2, settings.PreserveEquipmentFidelity).ConfigureAwait(false);
                     success = attempt.Success;
                     imageBytes = attempt.ImageBytes;
                     imageUrl = attempt.ImageUrl;
@@ -209,9 +209,9 @@ namespace AnimusForge.Illustrator.Core
                     if (!player2 && !success && attempt.ShouldFallbackToChat && !isChatProtocol && !settings.UseExactEndpointUrl && !settings.IsApiTest)
                     {
                         Log($"[Illustrator] 检测到生图端点不支持该模型({model})，自动尝试回退至 /chat/completions 多模态生图通道...");
-                        string chatEffectivePrompt = ComposeImagePrompt(prompt, size, quality, style, customStyleHint, negativePrompt, true, settings.Randomness, ImagePromptProfile.Full, playerRedraw, settings.OutputFrameRequirement).Text;
+                        string chatEffectivePrompt = ComposeImagePrompt(prompt, size, quality, style, customStyleHint, negativePrompt, true, settings.Randomness, ImagePromptProfile.Full, playerRedraw, settings.OutputFrameRequirement, settings.PreserveEquipmentFidelity).Text;
                         string chatEndpointUrl = ResolveEndpointUrl(baseUrl, true, false);
-                        var chatRetry = await AttemptGenerateOnceAsync(chatEndpointUrl, model, chatEffectivePrompt, size, quality, style, referenceImages, apiKey, true, cancellationToken, customStyleHint, playerRedraw: playerRedraw).ConfigureAwait(false);
+                        var chatRetry = await AttemptGenerateOnceAsync(chatEndpointUrl, model, chatEffectivePrompt, size, quality, style, referenceImages, apiKey, true, cancellationToken, customStyleHint, playerRedraw: playerRedraw, preserveEquipment: settings.PreserveEquipmentFidelity).ConfigureAwait(false);
                         result.ResolvedPrompt = chatRetry.ResolvedPrompt;
                         if (chatRetry.Success)
                         {
@@ -481,10 +481,11 @@ namespace AnimusForge.Illustrator.Core
             return ComposeImagePrompt(prompt, size, quality, style, customStyleHint, negativePrompt, chatProtocol, randomness, ImagePromptProfile.Full).Text;
         }
 
-        internal static ComposedImagePrompt ComposeImagePrompt(string prompt, string size, string quality, string style, string customStyleHint, string negativePrompt, bool chatProtocol, int randomness, ImagePromptProfile profile, bool playerRedraw = false, string outputFrameRequirement = null)
+        internal static ComposedImagePrompt ComposeImagePrompt(string prompt, string size, string quality, string style, string customStyleHint, string negativePrompt, bool chatProtocol, int randomness, ImagePromptProfile profile, bool playerRedraw = false, string outputFrameRequirement = null, bool preserveEquipment = true)
         {
             // Request-owned layout survives omitted director wording and player redraws.
             // A separate heading keeps it outside flexible director sections in the final budget.
+            if (!preserveEquipment) prompt += "\n" + VisualFidelityRules.FreeEquipmentRule;
             string frameTail = string.IsNullOrWhiteSpace(outputFrameRequirement) ? string.Empty
                 : "\n【本次输出画幅（固定）】" + outputFrameRequirement;
             // 通用负面词只覆盖成图缺陷；遮面/装备按人物事实与参考图处理。
@@ -517,13 +518,14 @@ namespace AnimusForge.Illustrator.Core
                 : (prompt ?? string.Empty);
             // One full style anchor shared by Chat, Edits and Generations.
             string styleAnchor = BuildImageStyleAnchor(customStyleHint, style);
+            if (!preserveEquipment) styleAnchor = styleAnchor.Replace("人物身份、装备、纹章载体和已确认场景事实", "人物身份、纹章图案和已确认场景事实");
             if (!string.IsNullOrWhiteSpace(styleAnchor))
             {
                 effectivePrompt = styleAnchor + "\n" + effectivePrompt;
             }
             effectivePrompt += "\n[画面中严禁出现的元素/Negative]: " + mergedNegative;
             // 0 完全沿用旧版，不追加本段；正数只增加艺术表现变化，不放松硬事实。
-            if (randomness > 0 && !playerRedraw)
+            if (randomness > 0 && !playerRedraw && preserveEquipment)
             {
                 int strength = Math.Min(100, randomness);
                 string clause = strength >= 100
@@ -719,7 +721,7 @@ namespace AnimusForge.Illustrator.Core
             string customStyleHint = null,
             string negativePromptField = null,
             bool playerRedraw = false,
-            int forcedPromptCharacters = 0, bool player2 = false)
+            int forcedPromptCharacters = 0, bool player2 = false, bool preserveEquipment = true)
         {
             string editsUrl = player2 ? ResolvePlayer2Endpoint(baseUrl, true) : ResolveEditsEndpointUrl(baseUrl);
             bool grokJson = !player2 && UsesGrokJsonEdits(model);
@@ -738,7 +740,7 @@ namespace AnimusForge.Illustrator.Core
                 {
                     form.Add(new StringContent(model ?? string.Empty, Encoding.UTF8), "model");
                     var labels = new StringBuilder();
-                    labels.AppendLine().AppendLine().AppendLine(playerRedraw ? VisualFidelityRules.DirectedRedrawRepaint : VisualFidelityRules.ReferenceRepaint);
+                    labels.AppendLine().AppendLine().AppendLine((playerRedraw || !preserveEquipment) ? VisualFidelityRules.DirectedRedrawRepaint : VisualFidelityRules.ReferenceRepaint);
                     if (playerRedraw) labels.AppendLine(VisualFidelityRules.PlayerRedrawReferenceException);
                     if (!string.IsNullOrWhiteSpace(quality)) form.Add(new StringContent(quality, Encoding.UTF8), "quality");
                     if (!string.IsNullOrWhiteSpace(size)) form.Add(new StringContent(size, Encoding.UTF8), "size");
@@ -752,7 +754,7 @@ namespace AnimusForge.Illustrator.Core
                         labels.Append("\n参考图 ").Append(sent + 1);
                         if (grokJson) labels.Append("（<IMAGE_").Append(sent).Append(">）：");
                         else labels.Append("（reference_").Append(sent).Append(".png）：");
-                        labels.Append(playerRedraw ? VisualFidelityRules.DirectedReferenceLabel(reference) : VisualFidelityRules.ReferenceRoleInstruction(reference.Kind) + " " + reference.Label);
+                        labels.Append((playerRedraw || !preserveEquipment) ? VisualFidelityRules.DirectedReferenceLabel(reference) : VisualFidelityRules.ReferenceRoleInstruction(reference.Kind) + " " + reference.Label);
                         if (player2) jsonImages.Add("data:image/png;base64," + reference.Base64Image);
                         else if (grokJson)
                             jsonImages.Add(new JObject { ["url"] = "data:image/png;base64," + reference.Base64Image });
@@ -857,7 +859,7 @@ namespace AnimusForge.Illustrator.Core
             string customStyleHint = null,
             string negativePromptField = null,
             bool playerRedraw = false,
-            int forcedPromptCharacters = 0, bool player2 = false)
+            int forcedPromptCharacters = 0, bool player2 = false, bool preserveEquipment = true)
         {
             JObject payload;
             int actualRefImages = 0;
@@ -875,7 +877,7 @@ namespace AnimusForge.Illustrator.Core
                     var content = new JArray
                     {
                         new JObject { ["type"] = "text", ["text"] = effectivePrompt },
-                        new JObject { ["type"] = "text", ["text"] = playerRedraw ? VisualFidelityRules.DirectedRedrawRepaint : VisualFidelityRules.ReferenceRepaint }
+                        new JObject { ["type"] = "text", ["text"] = (playerRedraw || !preserveEquipment) ? VisualFidelityRules.DirectedRedrawRepaint : VisualFidelityRules.ReferenceRepaint }
                     };
 
                     if (string.IsNullOrWhiteSpace((string)content[0]["text"])) content.RemoveAt(0);
@@ -894,7 +896,7 @@ namespace AnimusForge.Illustrator.Core
                     foreach (var reference in referenceImages)
                     {
                         if (reference == null || string.IsNullOrWhiteSpace(reference.Base64Image)) continue;
-                        string label = playerRedraw ? VisualFidelityRules.DirectedReferenceLabel(reference) : reference.Label ?? string.Empty;
+                        string label = (playerRedraw || !preserveEquipment) ? VisualFidelityRules.DirectedReferenceLabel(reference) : reference.Label ?? string.Empty;
                         bool isEmblem = reference.Kind == IllustrationReferenceKind.Emblem;
                         bool isScene = reference.Kind == IllustrationReferenceKind.Scene || reference.Kind == IllustrationReferenceKind.ScenePanorama ||
                             reference.Kind == IllustrationReferenceKind.SceneViews || reference.Kind == IllustrationReferenceKind.MapConversationScene ||
@@ -924,7 +926,7 @@ namespace AnimusForge.Illustrator.Core
                             });
                         }
 
-                        if (playerRedraw) { /* Scoped reference label above is the complete contract. */ }
+                        if (playerRedraw || !preserveEquipment) { /* Scoped reference label above is the complete contract. */ }
                         else if (reference.Kind == IllustrationReferenceKind.EventCharacter || reference.Kind == IllustrationReferenceKind.EventEmblem)
                         {
                             content.Add(new JObject
@@ -976,7 +978,7 @@ namespace AnimusForge.Illustrator.Core
                     content.Add(new JObject
                     {
                         ["type"] = "text",
-                        ["text"] = playerRedraw ? VisualFidelityRules.DirectedRedrawRepaint : "【最终呈现规范/Artistic Redraw & Fidelity Mandate】：\n" +
+                        ["text"] = (playerRedraw || !preserveEquipment) ? VisualFidelityRules.DirectedRedrawRepaint : "【最终呈现规范/Artistic Redraw & Fidelity Mandate】：\n" +
                                    styleClause +
                                    "2. 人物容貌与实际衣着装备以对应身份参考图为准；动作及互动按导演从已发生叙事提取的描述呈现。有环境参考时，建筑布局与陈设关系以环境图为准，正文不能覆盖图中结构。\n" +
                                    "3. 单幅完整艺术画卷（Single Unified Canvas）：整幅画面为单一完整画面，画面无画中画（No picture-in-picture）、无贴片小图或缩略图框（No inset reference boxes or thumbnails）、无角色设定立绘板（No character concept sheets or turnarounds）。\n" +

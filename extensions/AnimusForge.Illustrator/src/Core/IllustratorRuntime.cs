@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading;
@@ -30,6 +30,7 @@ namespace AnimusForge.Illustrator.Core
         public string StyleFingerprint { get; }
         public bool UseExactEndpointUrl { get; }
         public bool EnableReferenceImageForGeneration { get; }
+        public bool PreserveEquipmentFidelity { get; }
         public bool AutoCleanTempFiles { get; }
         public string NegativePrompt { get; }
         public int Randomness { get; }
@@ -144,6 +145,7 @@ namespace AnimusForge.Illustrator.Core
                 (resolvedStyle.ApiStyle ?? string.Empty) + (string.IsNullOrEmpty(CustomDirectorPrompt) ? string.Empty : "\n" + CustomDirectorPrompt));
             UseExactEndpointUrl = settings.UseExactEndpointUrl;
             EnableReferenceImageForGeneration = settings.EnableReferenceImageForGeneration;
+            PreserveEquipmentFidelity = settings.PreserveEquipmentFidelity;
             AutoCleanTempFiles = settings.AutoCleanTempFiles;
             NegativePrompt = settings.NegativePrompt;
             Randomness = Math.Max(0, Math.Min(100, settings.Randomness));

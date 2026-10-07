@@ -42,6 +42,31 @@
                 "不增加人物、不借用他人身份；事件参考不代表该人物必须在场。";
         }
 
+        internal const string FreeEquipmentRule =
+            "【服装装备自主设计】本次关闭AF装备保真。衣服、盔甲、武器、头饰与配饰按玩家自定义导演规则设计，未指定时由导演结合场景构思，人物立绘中的旧衣装不约束新方案。只放开服装装备；面容、发型、肤色、体型、身份及事件事实保留。本次定向重绘要求仍优先，不修改游戏装备。";
+
+        internal static string WithoutEquipmentFacts(string facts)
+        {
+            string cleaned = System.Text.RegularExpressions.Regex.Replace(facts ?? "",
+                @"(?m)^【(?:装备快照来源|当前头戴装备|真实穿戴装备与材质|当前装备中的武器与盾牌[^】]*|服饰与阵营布料配色|当前装备中的旗帜[^】]*)】[^\r\n]*(?:\r?\n)?", "");
+            cleaned = cleaned.Replace("仅表现参考图中实际露出的五官与须发，不为展示面貌移除或打开头盔护具。", "")
+                .Replace("当前装备隐藏全部头发，不补画被隐藏的头发。", "");
+            return cleaned;
+        }
+
+        // Only fixed rules are filtered; never apply this to model prose or user rules.
+        internal static string WithoutEquipmentRules(string rules)
+        {
+            var result = new System.Text.StringBuilder();
+            foreach (System.Text.RegularExpressions.Match part in
+                System.Text.RegularExpressions.Regex.Matches(rules ?? "", @"[^。！？\r\n]+[。！？\r\n]*"))
+            {
+                if (System.Text.RegularExpressions.Regex.IsMatch(part.Value, "装备|衣着|衣甲|服饰|头盔|披肩|盔甲|武器|盾牌|头饰")) continue;
+                result.Append(part.Value);
+            }
+            return result.ToString() + "\n" + FreeEquipmentRule;
+        }
+
         internal const string EnvironmentGeometryPriority =
             "【现场结构优先级】：有环境参考图时，建筑布局、拱券与门窗数量、封闭墙面、楼层、阶梯、家具位置及地面拼花以环境图为准，高于导演文字中的概括与补充。" +
             "普通透视主视角决定最终画面的方向与构图；若有辅助视角，它与主图来自同一空间，只补充重叠地标、相邻结构和材质，不是第二个场景。" +
