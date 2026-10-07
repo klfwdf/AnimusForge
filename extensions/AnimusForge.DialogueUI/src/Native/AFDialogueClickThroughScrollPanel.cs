@@ -5,7 +5,11 @@ namespace AnimusForge.DialogueUI.Native;
 
 public class AFDialogueClickThroughScrollPanel : ScrollablePanel
 {
-    public AFDialogueClickThroughScrollPanel(UIContext context) : base(context) { }
+    public AFDialogueClickThroughScrollPanel(UIContext context) : base(context)
+    {
+        // Vanilla 0.2 adds enough wheel inertia to skip short dialogue viewports.
+        MouseScrollSpeed = 0.04f;
+    }
 
     // Keep native wheel/controller scrolling; blank presses belong to ContinueButton.
     protected override bool OnPreviewMousePressed() => false;

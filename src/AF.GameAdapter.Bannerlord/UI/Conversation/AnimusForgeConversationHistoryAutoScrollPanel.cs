@@ -27,6 +27,7 @@ public class AnimusForgeConversationHistoryAutoScrollPanel : ScrollablePanel
 	public AnimusForgeConversationHistoryAutoScrollPanel(UIContext context)
 		: base(context)
 	{
+		MouseScrollSpeed = 0.04f;
 	}
 
 	/// <summary>

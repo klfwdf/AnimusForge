@@ -296,6 +296,23 @@ public sealed class AnimusForgeConversationHistoryLogVM : ViewModel
 		RefreshCurrentPage(requestBottomScroll: false, requestTopScroll: true);
 	}
 
+	// Jump directly to the final slice; do not construct every intermediate page.
+	public void JumpToLatestPage()
+	{
+		if (_isFinalized || _historyEntries.Count == 0) return;
+		int latestPage = GetPageCount() - 1;
+		if (_currentPageIndex != latestPage)
+		{
+			_currentPageIndex = latestPage;
+			RefreshCurrentPage(requestBottomScroll: true, requestTopScroll: false);
+		}
+		else
+		{
+			// The latest page can still be scrolled up; every click explicitly reveals its final row.
+			AutoScrollRequestVersion++;
+		}
+	}
+
 	// The popup calls this at most once per UI tick; unseen pages are formatted gradually but never create Gauntlet widgets.
 	internal void WarmDisplayCache()
 	{
