@@ -1,4 +1,11 @@
-﻿# 当前交接：处决场景随行 NPC 攻击犯人修复（2026-10-08，OFFLINE_VERIFIED_NOT_DEPLOYED）
+﻿# 当前交接：快报轶闻分流与远端合并已部署（2026-10-08，DEPLOYED_LIVE_PENDING）
+
+- 快报产品 `4f1539f8`：正文可写生动轶事，NPC按带来源的报刊轶闻转述；事件事实、外交历史与模型叙事分开，旧自定义提示词/清空保持。实际合并 `9356631e`，部署源码 `97e87d7c4`，保留双方更新及并行任务记录。
+- 合并后快报59/124/20、外交3722、GCCZ134/60及分块门禁通过；原双API/Bootstrap/双DLL接缝与Stage通过。已覆盖统一模块16文件，3380项SHA一致，Recovery15份旧文件备份通过；真实模型/实机/玩家存档仍未验，没有打包。
+- 本轮用户已授权普通推送 `origin/main`，实际远端SHA收据留在 `artifacts/remote-merge-deploy-20261008/push-receipt.json`；本条覆盖此前未部署状态，保留历史验收缺口。
+- [唯一主台账、源码坐标及恢复位置](docs/animusforge-refactoring-and-repository-reorganization-plan.md#bulletin-anecdotes-20261008)、[当前职责导航](docs/architecture/af-framework-code-scope.md#bulletin-anecdotes-20261008)。产品回滚仅 `git revert 4f1539f8`，不撤销其他作者合并。
+
+# 当前交接：处决场景随行 NPC 攻击犯人修复（2026-10-08，OFFLINE_VERIFIED_NOT_DEPLOYED）
 - 产品192091ddb，检查点cc12eb9bd。行刑前暂停随行同伴/士兵 AI，补齐晚生成和后分队伍事件；保留处决原生敌对死亡链路，安全散场/取消/退出恢复自有控制。
 - 105项回归、AF双API/Bootstrap/双接缝及独立RichExecutions目标1.4.8编译通过。实机随行/散场/退出未验，未部署/打包/推送；回滚仅git revert 192091ddb。
 - [主台账及证据](docs/animusforge-refactoring-and-repository-reorganization-plan.md#execution-escort-combat-20261008)、[既有代码范围图](docs/architecture/af-framework-code-scope.md)；保留其他作者提交及未提交工作。
