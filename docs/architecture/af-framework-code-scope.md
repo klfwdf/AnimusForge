@@ -1,3 +1,8 @@
+<a id="chat-aspect-schema-20261008"></a>
+### Chat 生图请求字段修复导航（2026-10-08）
+
+产品68385c50仅调整Illustrator通用Chat的JSON，保留原固定画幅提示及参考图、Grok/Player2专用字段。实际请求构造与完整URL消费者、双API/Bootstrap/两DLL各61项证据见[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#chat-aspect-schema-20261008)。未验玩家网关、真实模型比例或实机，不签收完整Illustrator职责。
+
 <a id="mission-screenshots-20261008"></a>
 ### 场景喊话与战斗双截图导航（2026-10-08）
 
