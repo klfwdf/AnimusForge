@@ -7836,3 +7836,10 @@ R2计划交付门槛：已给固定技术路线、真实来源与目标、写入
 - 最终双API/Bootstrap/双接缝/Stage通过：artifacts/history-link-unified-build.log。真实点击及Request源码回放通过：work/verify_history_link.py、artifacts/history-link-focused/result.log。同步契约检查和导航回归用例。
 - 独立UI旧构建入口缺宿主PreparePlayerRequestedNativeConversationLeave，完整BulletinArchiveTests被已有WeekText布局断言阻断；未宣称全套通过。UI实际编入主程序集且统一构建通过。
 - 未实机、部署、打包或推送。保留已有HeroVisualExtractor改动，Stage包含当前工作树其他改动；不作为仅本修复发布包。回滚本条对应fix(dialogue-ui)提交。
+
+
+## Directed outfit redraw 20261007 — BUILD_VERIFIED_NOT_DEPLOYED
+- 产品c734274c3，检查点8bb3912。HeroVisualExtractor.ExtractBannerDescription删除逐层纹章展开与未使用辅助方法，保留127字符约束；样本23824字符按替换估算9279，非新模型调用。
+- VisualFidelityRules.DirectedReferenceLabel/DirectedRedrawRepaint保留人物身份标题、定向换装按融合正文；非人物参考保留场景/纹章标签。VisualDirectorEngine.BuildRedrawVariationDirective移除绝对锁装措辞，导演图片标签使用定向分支；UniversalOpenAiImageClient的Chat/Edits引用与末尾规范改用定向分支。普通生成保持原规则。
+- 每请求每图有限文本处理，无新增模型调用/游戏对象扫描/Tick。未新增装备保真MCM开关；系统prompt与原事实仍提供给导演作为基线，用户定向指令覆盖冲突部分，实际模型遵从未验。
+- 原入口双API/Bootstrap/接缝通过，artifacts/redraw-clothing-20261007-build-final.log；diff检查通过。未实机、付费API、部署、打包或推送。回滚git revert c734274c3。

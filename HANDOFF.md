@@ -1,4 +1,8 @@
-﻿# 当前交接：可读提示词与禁止游戏截图（2026-10-07，BUILD_VERIFIED_NOT_DEPLOYED）
+﻿# 当前交接：定向换装与纹章精简（2026-10-07，BUILD_VERIFIED_NOT_DEPLOYED）
+- 产品c734274c3；检查点8bb3912。定向重绘采用换装参考说明，普通生成保真；删除逐层纹章文字。尚未新增装备保真MCM开关。
+- 双API/Bootstrap/接缝通过，未实机/部署/推送。[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#directed-outfit-redraw-20261007--build_verified_not_deployed)。
+
+# 当前交接：可读提示词与禁止游戏截图（2026-10-07，BUILD_VERIFIED_NOT_DEPLOYED）
 - 产品d72afbfb1；检查点6e38101。新增两份可读提示词诊断，禁用窗口截图及旧截图引用，保留原生全景/人物离屏。
 - 双API/Bootstrap/接缝通过；未实机、部署、打包或推送。证据 artifacts/readable-prompt-no-screenshot-build-20261007.log。
 - [主台账及源码位置](docs/animusforge-refactoring-and-repository-reorganization-plan.md#readable-prompts-and-no-screenshots-20261007--build_verified_not_deployed)，回滚git revert d72afbfb1。
