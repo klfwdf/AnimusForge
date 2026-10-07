@@ -1,4 +1,9 @@
-﻿# 当前交接：衣物叙事变化已部署（2026-10-07，DEPLOYED_PACKAGED_LIVE_PENDING）
+﻿# 当前交接：处决退出卡死修复（2026-10-07，OFFLINE_VERIFIED_NOT_DEPLOYED）
+- 产品3d7a2e35d，检查点2e4096b。现场线程/堆定位散场Agent296残留交互点预约；先恢复AI再绑定、退出前仅释放本场持有预约。
+- 74项回归、双API/Bootstrap/接缝、独立1.4.8编译通过。实机退出与结算未验，未部署/推送/打包。
+- [主台账及证据](docs/animusforge-refactoring-and-repository-reorganization-plan.md#execution-crowd-exit-hang-20261007--offline_verified_not_deployed)。保留其他作者DuelSettings.cs未提交改动。
+
+# 当前交接：衣物叙事变化已部署（2026-10-07，DEPLOYED_PACKAGED_LIVE_PENDING）
 - 产品a042639a7已提交推送；双版本/Bootstrap/接缝通过，部署更新9文件，3379文件哈希一致。
 - 包：一键编译覆盖推送/packages/AnimusForge_v1.5.5_20261007_175934_302.zip。实机出图未验。
 - [部署与回滚证据](docs/animusforge-refactoring-and-repository-reorganization-plan.md#clothing-narrative-deployment-20261007--deployed_packaged_live_pending)，覆盖此前部署等待状态。
