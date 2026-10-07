@@ -1,4 +1,61 @@
-﻿<a id="execution-escort-combat-20261008"></a>
+﻿<a id="bulletin-anecdotes-20261008"></a>
+<a id="remote-merge-deploy-20261008"></a>
+# 快报事实与轶闻分流、远端合并及部署（2026-10-08，DEPLOYED_LIVE_PENDING）
+
+## 范围与当前提交
+
+- 用户要求接续会话 `01a116d0-11dc-7eb0-9729-96f461e6728b` 的快报方案，随后明确授权“检查远端，拉取合并，编译部署提交推送”。工作区 `F:/AnimusForge-main`、`main`；产品 `4f1539f8b489d7bd8fc7f21b0f4a02c83dadd585`，功能检查点 `507935d8e`，合并前检查点 `dddd72dd`。不打包、不改一键流程、不操作玩家存档或外部 GCCZ 工作树。
+- 最新抓取 `origin/main@c50091383e2e83753917906a3413993daf3a8607`；原本地18/远端6独有提交。保留远端 GCCZ 城镇对话/观察者事实、城堡加载恢复与外交生命周期修复。两份文档的顶部新增记录冲突完整保留双方内容；生产代码自动合并，未用 ours/theirs 覆盖。
+- 同一工作区并行测试任务提前提交了实际双父合并 `9356631e3cb041805b0383d52a55f13fc0327582`（父 `dddd72dd`、`c5009138`，提交标题为其记忆测试检查点）。其中额外测试 README 为其他任务的范围说明，本轮不宣称其测试完成。随后 `97e87d7c461709e0d13431c897c25daf12cee90f` 仅修正 content-map 两个已提交提示词文件的过期SHA；不改正文、路径或构建脚本。
+- 构建/回放候选树 `fc7d0d284a77ef55bf8d0828d9b658515ef37f43` 与部署修订 `97e87d7c4` 的生产输入相同；差异仅为上述非编译 README 和资源清单元数据。31个远端独有路径按Git clean-filter blob一致；本地独有路径保留，快报14个源码/测试文件原始SHA与产品提交证据相同。
+- 本条覆盖本包此前未部署的状态，并记录本轮推送授权；旧条目保留当时上下文，不因此提升其实机验收。推送目标仅 `origin/main`，普通快进，实际远端SHA由提交后独立 `ls-remote` 回执记录于本地 `artifacts/remote-merge-deploy-20261008/push-receipt.json`。
+
+## 原行为、实现及覆盖边界
+
+旧实现把模型 `[SHORT]` 作为事实摘要，并将快报正文送入外交历史。新方案允许生动报刊轶事，但将模型叙事与冻结事件事实分开：正文完整归档；`BulletinAnecdote` 保存正文轶闻摘要；`ShortSummary` 由已报道素材本地构建。NPC世界消息可按“听说/报上说”转述带来源的轶闻，王国事实与外交历史只用事件事实，不把叙事中的牙齿、伤病、关系或外交主张当作游戏结算。
+
+| 责任（源码4f1539f8，一基行号） | 真实入口/消费者 | 覆盖与保留 |
+| --- | --- | --- |
+| `src/modules/AF.Module.Weekly/Bulletin/WorldBulletinPolicy.cs:675–715`，默认/系统提示词、`NormalizeBulletinAnecdote` | 写作请求与发布/加载规范化 | 允许一到两个动作、短对白、人物反应与轶事；重大死亡/俘虏/领土/外交结果边界保持。100 UTF-16单元上限不拆代理对；原篇幅/标签/选材权重/发布节奏/战斗事实模板不变。 |
+| `src/modules/AF.Module.Weekly/Generation/WorldBulletinStateOwner.cs:255–297`，`PublishWorldBulletin` | 主线程实际发布、通知与Illustrator | 先保存轶闻及冻结 `bulletin_reported_fact`，再从素材生成事实摘要、通知消费者；模型失败/无SHORT保留事实与正文，不捏造轶闻。原生图冻结素材保持。 |
+| `src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.WorldBulletinNpc.cs:20–43`、`WorldBulletinPolicy.cs:509–526` | `CaptureWorldBulletinNpcSnapshot` → `BuildNpcWorldBlock` | 真实NPC快照分别传递事实/轶闻，标明来源和非确认事实；世界块复用既有标题拆分与去重边界，不等于真实模型已遵从。 |
+| `src/modules/AF.Module.Weekly/Panel/WeeklyReportArchivePolicy.cs:40–53`、`src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.cs:26772` | `BulletinFactSummary/Title` → `GetPublishedWorldWeeklyReportHistoryInternal` → 外交历史 | 快报使用冻结素材的本地摘要/事件标题；无冻结事实的旧快报不冒充外交事实，普通旧周报仍保留原全文路径。 |
+| `src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.cs:356`、`src/modules/AF.Module.Weekly/ImportExport/WeeklyEventDataImportOwner.cs:128,186,306,318`、`WeeklyReportArchivePolicy.cs:155` | 内部JSON DTO、导入/规范化、归档复制及原保存边界 | 新字段保留并兼容缺失/null；继续原UTF-8分块键与类型身份，没有新增存档命名空间，不承诺修复旧坏档。 |
+| `src/AF.GameAdapter.Bannerlord/Configuration/Mcm/DuelSettings.BulletinPrompt.cs:34–36`、`DuelSettings.cs:4850–4851,5065` | 单文件/旧聚合原始加载 → `MigrateLegacyWorldBulletinWritingRequirements` | 仅旧默认逐字相等时迁移；自定义、显式清空与仅空白归一化后相同的文本保持。资源默认 `content/modules/AF.Module.Weekly/CustomPrompts/WorldBulletinWritingRequirements.json` 同步。 |
+
+新增处理仅在原发布、加载/导入及既有NPC/历史快照边界运行；复用已有缓存失效，不增加Tick全量扫描、反射、模型请求、轮询或锁。冻结事实首行用IndexOf，不拆分整份素材文本。三渠道仍使用原快照消费链，未重做其对话/后处理机制。旧的完整owner职责、普通周报和Illustrator生命周期不属于本轮整体验收。
+
+## 合并后验证
+
+- 快报策略59、实际发布/NPC快照/外交投影/归档/多块重载/提示词加载124、宿主20项PASS；外交生命周期3722断言PASS（包含远端修复与本地快报素材新增断言）；GCCZ融合134、城镇记忆60项PASS。场景/HTTP/渲染等替身范围见既有测试说明，不是实机。
+- `PersistenceChunkReplayTests` PASS；`validate_persistence_profile_config.py --chunk-contract-only` PASS，仍有1个登记的既有直接JSON风险，不称全仓存档无风险。最初调用脚本路径错误已纠正，日志保留真实最终结果。
+- 仓库原 `scripts/build/build_single_module.ps1 -Configuration Debug -Stage` 完成1.3（v1.3.15.110062）、1.4（v1.4.6.115628）、Bootstrap及两实际DLL Coup/注册/记忆端口门禁，0编译错误、既有警告保持。
+- 第一轮Stage在重置旧Stage时因旧资源与新源码不一致被拒绝，尚未覆盖游戏；将旧Stage完整移至 `artifacts/remote-merge-deploy-20261008/stage-before-merge`，再用原 `deploy_module.ps1 -StageOnlyOutputDir` 与同一9份编译产物重组，最终Stage PASS。没有绕过校验或修改入口。
+- content-map全部静态SHA对当前源码通过；`git diff --check`、冲突清除与双方保留核对通过。838锚点代码地图仅使用recorded-revision历史定位验证；不将历史hash刷新为当前全树或玩法验收。
+- 外交原net6工程在本机缺少引用包，使用仓内artifact隔离net8测试宿主及既有SDK Newtonsoft运行；原测试项目、生产依赖和系统安装均未改。
+
+## 部署与恢复
+
+- 原 `scripts/build/deploy_module.ps1` 部署统一 `F:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord/Modules/AnimusForge`，16个受管理文件更新；全部3380个Stage/安装文件SHA256一致。`SubModule.xml` 的Id/Name为AnimusForge，仅加载Bootstrap；仍是一个模块、两个同名实现，原版DLL未覆盖。
+- 部署前现有待修改文件独占ReadWrite打开检查通过，未写字节；未发现游戏进程，启动器/辅助服务未终止。2255个先前未知安装文件路径仍存在；不宣称核对了这些运行/用户文件的内容哈希。原脚本仅写Stage管理路径。
+- Recovery：`C:/Users/29310/AppData/Local/AnimusForge/Recovery/deploy/deploy-ebcb918124074194a6f0f33719efa9e7`，complete标记/manifest/16个新旧hash匹配，15份旧文件备份SHA通过；另1个新增文件按manifest辨认。恢复须按清单定向处理并先重验当前hash，不能清空模块目录。
+- `artifacts/remote-merge-deploy-20261008/` 保存build-stage.log（含首次Stage拒绝）、stage-verified.log、deploy.log、deploy-verified.log、deployment-plan.json、deploy-receipt.json、merge-preservation.json、evidence.json及compiled/九份稳定产物；原功能细证 `artifacts/bulletin-anecdotes-20261008/` 保留。生成物/日志/私有数据不提交上传。
+- 待推送历史中具名排除的本地专用交接路径为空，外发说明没有对其必需链接；仅保留历史排除描述，不删改其他作者历史。实际push/远端校验结果以本地回执及最终用户报告为准，不能把dry-run当发布。
+
+## 未验证与回滚
+
+真实模型生动程度/重复桥段、NPC实际转述、1.3/1.4 Campaign与`.sav`往返、真实Gauntlet/游戏帧性能，以及合入的城堡故障档/外交实机行为仍NOT_RUN；没有打包或修复坏档。快报产品回滚仅 `git revert 4f1539f8`，不要整包撤销包含其他作者的合并，也不hard reset/改写历史；游戏覆盖回滚定位上述Recovery清单。当前包离线/构建/部署已完成，实机层保持待验。
+
+<a id="illustrator-redraw-cast-20261008"></a>
+# 带提示词重绘仍画入被排除人物（2026-10-08，ACTIVE）
+
+- 工作区 F:/AnimusForge-main，main，起点 97e87d7c461709e0d13431c897c25daf12cee90f；开始时无已跟踪文件未提交差异，保留现有未跟踪文件。
+- 玩家报告“玩家不在场”仍画出玩家。源码确认会话导演默认要求双方互动，最终生图仍上传双方立绘；现有定向改编规则没有可执行的参考排除协议。尚无该玩家实际请求及返回图，不能把源码缺口当作已复现其模型行为。
+- 范围：Illustrator 导演重绘优先规则、独立参考选择元数据及生图参考路由；会话/百科/周报/快报共用。原游戏事实与参考完整供导演理解，本次选择只影响本幅图，不写回游戏事实或共享会话参考缓存，不调整普通生成或基于本图编辑。
+- 完成条件：导演将不在场/不入镜要求落实到正文与参考选择；最终图端不再上传被排除人物/纹章；元数据缺失或非法停止生图，文字导演也能选择；所有实际调用点接线核对、原统一双API/Bootstrap构建及接缝门禁通过。按 Illustrator AGENTS 不运行离线审计，不调用付费API、不Stage/部署/打包/推送；真实模型出图仍待实测。
+- 性能：每请求处理一次有界参考清单和短元数据，不解析原玩家文本来猜对象，不新增扫描、反射、后台游戏对象读取或Tick工作。
+
+<a id="execution-escort-combat-20261008"></a>
 # 处决场景随行 NPC 自动攻击犯人（2026-10-08，OFFLINE_VERIFIED_NOT_DEPLOYED）
 
 - 工作区 F:/AnimusForge-main，main，起点 fc4f556beb43b2fe94ec6cc9b0ad51fb845297be；保留外交、周报、MCM 等既有未提交工作。
