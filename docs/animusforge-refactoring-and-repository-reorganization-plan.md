@@ -1,4 +1,16 @@
-﻿<a id="bulletin-narrative-refinement-20261008"></a>
+﻿<a id="prosperity-food-toggle-20261008"></a>
+# 繁荣度耗粮独立开关（2026-10-08，OFFLINE_VERIFIED_NOT_DEPLOYED）
+
+- 用户要求将取消繁荣耗粮做成独立开关；MCM“16. 政策系统”新增“取消繁荣度耗粮”，默认关闭，旧配置缺少此键也保留原版。保存后下一次粮食模型计算读取当前值，开启取消、关闭恢复；玩家/NPC 城市和城堡同规则。
+- 工作区 `F:/AnimusForge-main`、`main`，起点 `2b2020879`，意图检查点 `dc0eb32`，产品 `9e3586b44`（六文件）。本条替代 10 月 3 日公告/代码“繁荣度耗粮始终取消”的当前行为；不改写历史公告，不改变粮仓容量/总量上限、驻军/围城/政策计算、存档键、构建流程。保留其他作者并行生图/周报/外交改动及既有未跟踪 NuGet 目录。
+- 源码证据（产品 `9e3586b44`，一基行号）：`src/AF.GameAdapter.Bannerlord/Configuration/Mcm/DuelSettings.SettlementBalance.cs:7–26`，MCM Bool 属性 `DisableProsperityFoodConsumption` 与 `ShouldDisableProsperityFoodConsumption`；MCM provider 缺失/抛错默认 false。`PolicySystem/Balance/SettlementBalanceRuntime.cs:86–110`，既有补丁安装及启用时诊断；`:140–155`，`RemoveProsperityFood` 仍只替换原版一个 prosperity getter，新 `ProsperityForFood` 按开关返回 0 或真实值。直接消费者为原版 `DefaultSettlementFoodModel.CalculateTownFoodChangeInternal(Town,bool,bool)`；加载/新战役入口仍为 `PolicySystem/Core/CustomPolicyBehavior.Lifecycle.cs:475–479,905–909`，原文件未改。MCM 上限按钮提示 `DuelSettings.cs:2123` 与编辑器 `PolicySystem/UI/SettlementBalanceEditorVM.cs:23` 同步说明独立默认关闭。
+- 性能：既有补丁安装一次，模型期读取已加载 MCM 布尔值及原繁荣 getter，O(1)，不调用带迁移/提示词文件初始化的通用 GetSettings，不新增扫描/序列化/轮询或反复 patch。新键仅为现有 MCM 磁盘配置的 Bool，不进入 CampaignBehavior.SyncData/.sav，不增加保存字符串、分块键或持久类型。
+- 专项 `tests/bridges/Policy/SettlementBalance.RuntimeTests/Program.cs:262–350`，生产设置 partial + 真实 Harmony transpiler + 双版 native IL，每 API **97 PASS**。新增 19 项覆盖默认/旧 JSON 缺键、开启/关闭 JSON 往返、固定已装补丁内实时 false→true→false、全部上限开/关独立、真实繁荣不变、MCM 缺失/异常回原版。动态耗粮采用小算式 fixture + native divisor，MCM provider/属性为替身；不是完整原版 Campaign 食物执行或真实 MCM 文件回路。
+- 构建：共享工作树首次原入口在其他作者未完成生图接口处出现 5 个错误，保留 `artifacts/prosperity-food-toggle-20261008/build.log`，未回滚/修改对方源码。仓内隔离 worktree `artifacts/prosperity-food-toggle-20261008/validation-worktree` 基于 `dc0eb32`，只复制上述六个文件并逐项核对 SHA。原 `scripts/build/build_single_module.ps1` build-only（不传 Stage/Deploy）**双 API、Bootstrap 与双实际 DLL 接线 PASS**，1.3 引用 `v1.3.15.110062`、1.4 引用 `v1.4.6.115628`，每实现 346 既有警告、0 错误。不能据此声称共享工作树其他任务的组合已通过。
+- 证据 `artifacts/prosperity-food-toggle-20261008/`：`runtime-1.3.log`、`runtime-1.4.log` 与各自 build log；`build-isolated.log`、`source-inputs.json`、`validation-worktree/bin/Debug/single_module_artifacts/` 的 DLL/标记/接缝报告。双 DLL SHA 为 `4060462594E6F7F749CEE9E24300428A71D94274076EC632D9DE1C22D1434BD7`、`26C07E8F1907146740818942432DA36305144154C0FDDDCED7CB52F4032014FA`；源码六项在最终提交前与验证输入 SHA 相同，`git diff --check`通过。
+- NOT-RUN：实际 MCM 显示/保存/取消/重启回读、真实战役 Town 食物明细刷新、旧玩家存档、第三方粮食模型及实际性能；本轮未 Stage、部署、覆盖游戏、打包或推送。实际模型变化在下一次食物计算生效，不承诺已缓存面板即时刷新。产品回滚仅 `git revert 9e3586b44`，检查点 `dc0eb32` 只作定位，不 hard reset 或撤销其他作者提交。
+
+<a id="bulletin-narrative-refinement-20261008"></a>
 # 快报人物轶事、口吻与自由开篇（2026-10-08，OFFLINE_VERIFIED_NOT_DEPLOYED）
 
 - 工作区 `F:/AnimusForge-main`、`main`，起点 `2adcf3ea`，本地检查点 `4d9b28f6`，产品 `e06f885c6`。用户已确认 Q1 同场参与者可合理补写直接交锋、Q2 适度讥讽/粗粝感及多样反应、Q3 保持篇幅/标记但放开叙述顺序与可选影响评价。本条补充并细化前一快报轶闻方案的写法，不改变旧包的事实分流验收。并行生图草稿已由其作者提交为 `9f6f43df`，完整保留且未纳入本包功能验收。

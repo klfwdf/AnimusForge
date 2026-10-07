@@ -1,3 +1,8 @@
+<a id="prosperity-food-toggle-20261008"></a>
+### 繁荣度耗粮独立开关导航（2026-10-08）
+
+产品 `9e3586b44` 将 `SettlementBalanceRuntime` 的原版粮食输入适配接到独立 MCM Bool，默认保留原版，按次读取当前值；粮仓/其他上限、政策模型与存档身份不变。生产者/消费者、一基源码范围、双 API 97 项与隔离构建证据集中于[唯一主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#prosperity-food-toggle-20261008)。未签收完整 Policy 模块、真实 MCM/Campaign 或共享工作树其他并行改动，不更新既有冻结职责证据。
+
 <a id="illustrator-narrative-anime-20261008"></a>
 ### 日系半写实叙事插画预设导航（2026-10-08）
 

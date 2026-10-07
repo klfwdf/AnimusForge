@@ -1,4 +1,10 @@
-﻿# 当前交接：快报口吻与自由开篇细化（2026-10-08，OFFLINE_VERIFIED_NOT_DEPLOYED）
+﻿# 当前交接：繁荣度耗粮独立开关（2026-10-08，OFFLINE_VERIFIED_NOT_DEPLOYED）
+
+- 产品 `9e3586b44`，检查点 `dc0eb32`。MCM“16. 政策系统”新增“取消繁荣度耗粮”，默认关闭；保存后下一次计算开启取消、关闭恢复，与粮仓/上限独立。旧配置缺键保持原版，玩家/NPC 城市和城堡同规则。
+- 双 API 专项各 97 PASS；仓内隔离副本原双 API/Bootstrap/实际 DLL 接线 PASS。共享工作树首轮仍因并行生图未完成接口失败，未修改对方代码；MCM/真实战役未验，未 Stage/部署/打包/推送。
+- [唯一主台账、源码坐标与证据](docs/animusforge-refactoring-and-repository-reorganization-plan.md#prosperity-food-toggle-20261008)、[代码导航](docs/architecture/af-framework-code-scope.md#prosperity-food-toggle-20261008)。证据 `artifacts/prosperity-food-toggle-20261008/`；产品回滚仅 `git revert 9e3586b44`，保留其他作者工作。
+
+# 当前交接：快报口吻与自由开篇细化（2026-10-08，OFFLINE_VERIFIED_NOT_DEPLOYED）
 
 - 产品 `e06f885c6`、检查点 `4d9b28f6`。按用户确认：有同场参战依据的具名人物可以补写合理交锋；允许适度讥讽/粗粝感及多样反应；自由开篇/叙述顺序，不强行评价局势。篇幅/标记、选材、事实与轶闻分流保持；两版旧默认精确升级，自定义和清空保留。
 - 策略63、实际发布/NPC/外交投影/归档/重载/提示词128项与原双API1.3/1.4、Bootstrap/双接缝构建通过。真实模型/实机未验，本轮未部署/打包/推送。保留并行生图提交 `9f6f43df`。
