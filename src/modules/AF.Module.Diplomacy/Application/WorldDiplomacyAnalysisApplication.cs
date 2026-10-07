@@ -84,6 +84,7 @@ internal static class WorldDiplomacyAnalysisApplication
             bool requiresResponse = WorldDiplomacyEnvelopeJsonRules.ReadBool(json, "requires_response");
             string respondingToOfferDocumentId = WorldDiplomacyEnvelopeJsonRules.ReadString(json, "responding_to_offer_document_id");
             string respondingToThreatDocumentId = WorldDiplomacyEnvelopeJsonRules.ReadString(json, "responding_to_threat_document_id");
+            bool unavailablePlayerOfferSource = false;
             if (document.IsPlayerAuthored && !WorldDiplomacyIntentVocabulary.IsSupportedDiplomacyIntent(intent))
             {
                 MarkPlayerAnalysisFailed(document, log);
@@ -119,16 +120,24 @@ internal static class WorldDiplomacyAnalysisApplication
                 if (!string.IsNullOrWhiteSpace(normalizedTarget)) targetId = normalizedTarget;
                 // Reuse the owner's knowledge-filtered live offers for normalization and binding.
                 // Never broaden global document identity matching or inspect the saved archive.
-                IEnumerable<WorldDiplomacyRoundOffer> knownOffers = liveOpenOffers?.Invoke(document.AuthorKingdomId);
+                bool offerResponse = !string.IsNullOrEmpty(WorldDiplomacyIntentVocabulary.ResponseIntentToProposalIntent(intent));
+                IEnumerable<WorldDiplomacyRoundOffer> knownOffers = offerResponse
+                    ? liveOpenOffers?.Invoke(document.AuthorKingdomId)?.ToList() : null;
                 NormalizePlayerOfferSourcePrefix(document, intent, targetId, ref knownOffers,
                     resolveDocument, ref respondingToOfferDocumentId, log);
-                var sourceRound = string.IsNullOrWhiteSpace(respondingToOfferDocumentId) ? null
-                    : resolveRound?.Invoke(resolveDocument?.Invoke(respondingToOfferDocumentId)?.RoundId);
-                ReconcilePlayerDeclarationWithOpenOffer(document, intent, sourceRound ?? resolveRound?.Invoke(document.RoundId), ref targetId, ref respondingToOfferDocumentId, log);
-                // The provisional player round is normally empty; an oral or relay proposal lives in its own round.
-                // Rebinding an already bound offer is a no-op, and ambiguity still never picks one.
                 if (knownOffers != null)
+                {
                     ReconcilePlayerDeclarationWithOpenOffer(document, intent, knownOffers, ref targetId, ref respondingToOfferDocumentId, log);
+                    unavailablePlayerOfferSource = !string.IsNullOrWhiteSpace(respondingToOfferDocumentId)
+                        && !knownOffers.Any(x => MatchesDocumentId(x.SourceDocumentId, respondingToOfferDocumentId));
+                }
+                else if (liveOpenOffers == null)
+                {
+                    // Detached legacy callers have no knowledge provider. Production always supplies the owner.
+                    var sourceRound = string.IsNullOrWhiteSpace(respondingToOfferDocumentId) ? null
+                        : resolveRound?.Invoke(resolveDocument?.Invoke(respondingToOfferDocumentId)?.RoundId);
+                    ReconcilePlayerDeclarationWithOpenOffer(document, intent, sourceRound ?? resolveRound?.Invoke(document.RoundId), ref targetId, ref respondingToOfferDocumentId, log);
+                }
             }
             bool playerPublicIntent = document.IsPlayerAuthored && WorldDiplomacyIntentVocabulary.IsSupportedDiplomacyIntent(intent);
             if ((!WorldDiplomacyIntentVocabulary.IsActionableDiplomacyIntent(intent) && !playerPublicIntent)
@@ -217,12 +226,15 @@ internal static class WorldDiplomacyAnalysisApplication
                     || !string.IsNullOrWhiteSpace(WorldDiplomacyEnvelopeJsonRules.ReadString(treaty, "joining_kingdom_id"))
                     || WorldDiplomacyEnvelopeJsonRules.ReadInteger(treaty, "daily_tribute") != 0
                     || WorldDiplomacyEnvelopeJsonRules.ReadInteger(treaty, "duration_days") != 0
+                    || (intent == "accept_trade" && treaty["duration_days"] != null)
                     || !string.IsNullOrWhiteSpace(WorldDiplomacyEnvelopeJsonRules.ReadString(treaty, "cession_settlement_id"))))
                 document.TreatyTerms = new WorldDiplomacyDialogueTerms {
                     ReceivingKingdomId = WorldDiplomacyEnvelopeJsonRules.ReadString(treaty, "receiving_kingdom_id"),
                     JoiningKingdomId = WorldDiplomacyEnvelopeJsonRules.ReadString(treaty, "joining_kingdom_id"),
                     DailyTribute = WorldDiplomacyEnvelopeJsonRules.ReadInteger(treaty, "daily_tribute"),
-                    DurationDays = WorldDiplomacyEnvelopeJsonRules.ReadInteger(treaty, "duration_days"),
+                    DurationDays = intent != "accept_trade" ? WorldDiplomacyEnvelopeJsonRules.ReadInteger(treaty, "duration_days")
+                        : treaty["duration_days"] == null ? 0
+                        : WorldDiplomacyEnvelopeJsonRules.TryReadInteger(treaty, "duration_days", out int treatyDays) ? treatyDays : -1,
                     CessionSettlementId = WorldDiplomacyEnvelopeJsonRules.ReadString(treaty, "cession_settlement_id") };
             if (document.IsPlayerAuthored && WorldDiplomacyIntentVocabulary.IsFormalTreatyIntent(intent)
                 && intent.StartsWith("propose_", StringComparison.Ordinal)
@@ -248,6 +260,11 @@ internal static class WorldDiplomacyAnalysisApplication
             document.RequiresResponse = WorldDiplomacyIntentVocabulary.ResolveValidatedResponseObligation(document, intent, requiresResponse, maxAutomaticReplyDepth);
             WorldDiplomacyReputationRules.ApplyInternationalReputationEvaluation(document, json);
             if (document.IsPlayerAuthored) document.PlayerAnalysisCommitted = true;
+            if (unavailablePlayerOfferSource)
+            {
+                suppressInvalid(document, "player_offer_response_source_not_available");
+                return;
+            }
             processAnalyzedDocument(document, intent, commitment, document.RequiresResponse, tone, confidence);
         }
 
@@ -260,7 +277,7 @@ internal static class WorldDiplomacyAnalysisApplication
         if (knownOffers == null || string.IsNullOrEmpty(proposalIntent) || string.IsNullOrWhiteSpace(targetId)
             || string.IsNullOrWhiteSpace(sourceId) || sourceId.IndexOf(':') >= 0) return;
         // Only malformed-source replies need a reusable snapshot; normal replies keep the lazy path.
-        knownOffers = knownOffers.ToList();
+        knownOffers = knownOffers as IList<WorldDiplomacyRoundOffer> ?? knownOffers.ToList();
         string candidateId = prefix + sourceId;
         WorldDiplomacyRoundOffer match = null;
         foreach (var offer in knownOffers)
@@ -409,7 +426,11 @@ internal static class WorldDiplomacyAnalysisApplication
 	{
 		string code = reason ?? "";
 		string detail =
-			code.Contains("missing_source_offer") || code.Contains("without_exact_open_offer") || code.Contains("required_peace_offer_response_missing")
+            code.Contains("source_not_available") || code.Contains("source_not_known")
+                ? "原提案尚未送达本国、已失效或不存在，不能执行这次回应。"
+            : code.Contains("trade_acceptance_changes_terms")
+                ? "接受贸易原案时不能修改期限或附加条款；修改条件请另发新提案。"
+            : code.Contains("missing_source_offer") || code.Contains("without_exact_open_offer") || code.Contains("required_peace_offer_response_missing")
 				? "未能对应到对方仍有效的正式提案。请确认对方的提案宣言已送达且仍开放，或在该宣言上直接回复接受。"
 			: code.Contains("treaty_roles_must_match_participants") || code.Contains("treaty_requires_explicit_receiving_and_joining_roles")
 				? "条约的接收国与并入国（或宗主国与臣属国）必须正好是本次交涉的双方。"

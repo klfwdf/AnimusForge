@@ -8,6 +8,24 @@ internal enum WorldDiplomacyOfferOutcome { Invalidated, Failed, Partial, Applied
 
 internal static class WorldDiplomacyOfferActionApplication
 {
+    internal static bool TryResolveTradeAcceptanceTerms(WorldDiplomacyDocument source, string sourceActionId,
+        WorldDiplomacyDialogueTerms acceptedTerms, out WorldDiplomacyDialogueTerms original, out string reason)
+    {
+        original = null;
+        reason = "trade_acceptance_missing_source_offer";
+        if (source == null) return false;
+        var action = source.Actions?.Find(x => x != null && string.Equals(x.ActionId, sourceActionId, StringComparison.Ordinal));
+        if (source.Actions?.Count > 0 && action == null) return false;
+        original = action != null ? action.TreatyTerms : source.TreatyTerms;
+        reason = "trade_acceptance_changes_terms";
+        if (original?.DurationDays < 0 || original?.DailyTribute < 0
+            || acceptedTerms?.DurationDays < 0 || acceptedTerms?.DailyTribute < 0) return false;
+        var expected = (original ?? new WorldDiplomacyDialogueTerms()).ToTerms();
+        if (acceptedTerms != null && !acceptedTerms.ToTerms().Equals(expected)) return false;
+        reason = "";
+        return true;
+    }
+
     internal static WorldDiplomacyOfferOutcome Execute(string intent, WorldDiplomacyRoundOffer offer, WorldDiplomacyDocument source,
         WorldDiplomacyDocument response, IWorldDiplomacyOfferActionPort port, IWorldDiplomacyOrchestration orchestration)
     {
@@ -38,9 +56,12 @@ internal static class WorldDiplomacyOfferActionApplication
         else if (intent == "propose_alliance") receipt = port.ExecuteAlliance(proposerId, targetId);
         else if (intent == "propose_trade")
         {
-            var terms = source.Actions?.Find(x => string.Equals(x.ActionId, offer.SourceActionId, StringComparison.OrdinalIgnoreCase))?.TreatyTerms
-                ?? source.TreatyTerms;
-            response.TreatyTerms = terms;
+            if (!TryResolveTradeAcceptanceTerms(source, offer.SourceActionId, response.TreatyTerms, out var terms, out string reason))
+            {
+                response.MechanicalResult = "贸易接受未执行：" + WorldDiplomacyAnalysisApplication.DescribeRejectedPlayerMechanic(reason);
+                return WorldDiplomacyOfferOutcome.Failed;
+            }
+            response.TreatyTerms = terms == null ? null : WorldDiplomacyDialogueTerms.From(terms.ToTerms());
             receipt = port is IWorldDiplomacyTimedTradePort timed
                 ? timed.ExecuteTrade(proposerId, targetId, Math.Max(0, terms?.DurationDays ?? 0))
                 : port.ExecuteTrade(proposerId, targetId);
