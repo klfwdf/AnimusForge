@@ -62,6 +62,7 @@ internal static class Program
         Check(_screen.CustomCamera == null, caseName + ": original custom camera");
         Check(_screen.CombatCamera.Position.y == -4, caseName + ": original combat frame");
         Check(!MBDebug.DisableAllUI, caseName + ": UI restored");
+        Check(_screen.LayerWatchers == 0, caseName + ": layer subscription removed");
         Check(MissionState.Current.Paused == paused, caseName + ": original pause retained");
         if (checkTime) Check(_mission.Scene.TimeSpeed == (paused ? 0 : 0.75f), caseName + ": original time speed");
         Check(_mission.RequestCount == 0, caseName + ": own pause removed");
@@ -70,17 +71,35 @@ internal static class Program
     }
     private static void CaptureCases()
     {
+        Setup();
+        var ui = new TaleWorlds.Engine.GauntletUI.GauntletLayer(); _screen.AddLayer(ui);
+        int earlyShots = 0;
+        Utilities.Export = path => { earlyShots++; File.WriteAllBytes(path, BitmapBytes(Color.Red)); };
+        var warming = new MissionScreenshotCapture(_mission, Pivot, new Vec3(0, 1, 0), 1.6f, true);
+        Check(ui.TwoDimensionView.Clears == 1 && ui.TwoDimensionPlatform.Clears == 1 && ui.IsActive, "clear cached UI without changing layer activation");
+        IllustratorRuntime.ApplicationFrame = 1; warming.Tick();
+        Check(earlyShots == 0, "first application frame cannot export old UI frame");
+        Thread.Sleep(270); warming.Tick();
+        Check(earlyShots == 0, "elapsed time alone does not skip frame warmup");
+        IllustratorRuntime.ApplicationFrame = 4; warming.Tick();
+        Check(earlyShots == 1, "export only after both frame and time warmup");
+        warming.Cancel("fixture end"); Restored(false, "warmup");
+        Setup();
+        var changedUi = new MissionScreenshotCapture(_mission, Pivot, new Vec3(0, 1, 0), 1.6f, true);
+        _screen.AddLayer(new TaleWorlds.Engine.GauntletUI.GauntletLayer()); changedUi.Tick();
+        Check(changedUi.Completion.IsFaulted, "new UI during capture rejects request"); Restored(false, "new UI");
+
         foreach (bool paused in new[] { false, true })
         {
             Setup(paused);
             int shots = 0;
             Utilities.Export = path => {
                 Check(MBDebug.DisableAllUI && MissionState.Current.Paused && _mission.Scene.TimeSpeed == 0, "freeze before each export");
-                Check(_screen.CombatCamera.Position.y == (++shots == 1 ? -4 : 4), "current then reverse, no interpolation");
+                Check(++shots == 1 ? _screen.CombatCamera.Position.y > 4 : _screen.CombatCamera.Position.y < -4, "independent front then rear level camera");
                 File.WriteAllBytes(path, BitmapBytes(shots == 1 ? Color.Red : Color.Blue));
             };
-            var capture = new MissionScreenshotCapture(_mission, Pivot, true);
-            Reject(() => new MissionScreenshotCapture(_mission, Pivot, true), "native stage prevents duplicate capture");
+            var capture = new MissionScreenshotCapture(_mission, Pivot, new Vec3(0, 1, 0), 1.6f, true);
+            Reject(() => new MissionScreenshotCapture(_mission, Pivot, new Vec3(0, 1, 0), 1.6f, true), "native stage prevents duplicate capture");
             Pump(capture);
             var pair = capture.Completion.GetAwaiter().GetResult();
             Check(!MissionScreenshotImageCodec.SameImage(pair.Current, pair.Reverse), "two distinct raw references");
@@ -90,17 +109,17 @@ internal static class Program
             capture.Cancel("late cancel"); Restored(paused, "idempotent completion");
         }
         Setup();
-        var cancel = new MissionScreenshotCapture(_mission, Pivot, true);
+        var cancel = new MissionScreenshotCapture(_mission, Pivot, new Vec3(0, 1, 0), 1.6f, true);
         cancel.Cancel("explicit cancellation");
         Reject(() => cancel.Completion.GetAwaiter().GetResult(), "cancel surfaces failure"); Restored(false, "cancel");
         Setup();
-        var leaving = new MissionScreenshotCapture(_mission, Pivot, true);
+        var leaving = new MissionScreenshotCapture(_mission, Pivot, new Vec3(0, 1, 0), 1.6f, true);
         Mission.Current = new Mission(); leaving.Tick();
         Reject(() => leaving.Completion.GetAwaiter().GetResult(), "leave before completion cancels");
         Check(Mission.Current.Scene.TimeSpeed == 1, "leave never mutates replacement scene");
         Mission.Current = _mission; Restored(false, "leave", checkTime: false);
         Setup();
-        var takeover = new MissionScreenshotCapture(_mission, Pivot, true);
+        var takeover = new MissionScreenshotCapture(_mission, Pivot, new Vec3(0, 1, 0), 1.6f, true);
         var other = _screen.CustomCamera = new Camera { Frame = new MatrixFrame { origin = new Vec3(20, 30, 40) } };
         _screen.CombatCamera.FillParametersFrom(other); takeover.Tick();
         Reject(() => takeover.Completion.GetAwaiter().GetResult(), "other camera takeover stops capture");
@@ -108,15 +127,14 @@ internal static class Program
         Check(!MBDebug.DisableAllUI && _mission.RequestCount == 0, "takeover still releases UI/time");
         Setup();
         Utilities.Export = path => { throw new IOException("native export failed"); };
-        var exportFailure = new MissionScreenshotCapture(_mission, Pivot, true); Pump(exportFailure);
+        var exportFailure = new MissionScreenshotCapture(_mission, Pivot, new Vec3(0, 1, 0), 1.6f, true); Pump(exportFailure);
         Reject(() => exportFailure.Completion.GetAwaiter().GetResult(), "export failure explicit"); Restored(false, "export failure");
         Setup(); _mission.Scene.HitDistance = 0.2f;
-        var blocked = new MissionScreenshotCapture(_mission, Pivot, true); Pump(blocked);
-        Reject(() => blocked.Completion.GetAwaiter().GetResult(), "blocked reverse view stops"); Restored(false, "blocked view");
+        Reject(() => new MissionScreenshotCapture(_mission, Pivot, new Vec3(0, 1, 0), 1.6f, true), "both camera paths checked before capture"); Restored(false, "blocked view");
         Setup(); _screen.Rendered = false;
-        Reject(() => new MissionScreenshotCapture(_mission, Pivot, true), "not rendered, reject before mutation"); Restored(false, "not rendered");
+        Reject(() => new MissionScreenshotCapture(_mission, Pivot, new Vec3(0, 1, 0), 1.6f, true), "not rendered, reject before mutation"); Restored(false, "not rendered");
         Setup();
-        var unknown = new MissionScreenshotCapture(_mission, Pivot, true);
+        var unknown = new MissionScreenshotCapture(_mission, Pivot, new Vec3(0, 1, 0), 1.6f, true);
         IllustratorRuntime.ApplicationFrame++; unknown.Tick();
         _screen.IsFinalized = true; unknown.Tick();
         Reject(() => unknown.Completion.GetAwaiter().GetResult(), "finalized screen retires capture");
@@ -124,12 +142,12 @@ internal static class Program
         Setup(true);
         var priorCamera = _screen.CustomCamera = new Camera { Frame = _screen.CombatCamera.Frame };
         MBDebug.DisableAllUI = true;
-        var alreadyHidden = new MissionScreenshotCapture(_mission, Pivot, true); Pump(alreadyHidden);
+        var alreadyHidden = new MissionScreenshotCapture(_mission, Pivot, new Vec3(0, 1, 0), 1.6f, true); Pump(alreadyHidden);
         Check(!alreadyHidden.Completion.IsFaulted && _screen.CustomCamera == priorCamera && !priorCamera.Released, "prior custom camera preserved");
         Check(MBDebug.DisableAllUI && MissionState.Current.Paused && Game.Current.GameStateManager.Count == 1, "prior hidden UI and pause kept");
         Setup();
         Utilities.Export = path => { /* Simulate native export never producing a file. */ };
-        var timeout = new MissionScreenshotCapture(_mission, Pivot, true);
+        var timeout = new MissionScreenshotCapture(_mission, Pivot, new Vec3(0, 1, 0), 1.6f, true);
         IllustratorRuntime.ApplicationFrame++; timeout.Tick(); Thread.Sleep(8100); timeout.Tick();
         Check(timeout.Completion.IsFaulted && timeout.Completion.Exception.InnerException.Message.Contains("超时"), "8-second total capture deadline, no export retry");
         Restored(false, "deadline");
