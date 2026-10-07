@@ -7,7 +7,7 @@ internal static class WorldBulletinCampaignMaterialPolicy
     internal static int EventPriority(string kind) => kind switch {
         "war_declared"=>70, "peace_made"=>60, "fief_grant"=>20, "settlement_transfer"=>30,
         "kingdom_destroyed"=>100, "kingdom_rebellion"=>70, "kingdom_created"=>75, "raid"=>25, "civil_war"=>80,
-        "alliance_formed"=>70, "alliance_ended"=>55, "ruler_changed"=>85, "clan_defection"=>45, "clan_destroyed"=>50,
+        "alliance_formed"=>45, "alliance_ended"=>40, "ruler_changed"=>85, "clan_defection"=>45, "clan_destroyed"=>50,
         "army_gathered"=>35, "town_unrest"=>30, "town_rebellion"=>60, "kingdom_annexed"=>90, "vassalage_established"=>80, "vassalage_ended"=>60, _=>0 };
     // A temporary ruler appointed while the council elects a successor is news, but not a coronation.
     internal static int RulerChangedPriority(bool interim)=>interim?50:EventPriority("ruler_changed");
