@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -44,13 +44,14 @@ namespace AnimusForge.Illustrator.Engine
 
         internal static IReadOnlyList<IllustrationReferenceImage> CreateCapturedSceneReferences(string image)
         {
-            if (string.IsNullOrWhiteSpace(image)) return Array.Empty<IllustrationReferenceImage>();
-            return new[] { new IllustrationReferenceImage(image, SceneReferenceLabel(), IllustrationReferenceKind.Scene) };
+            // Reject previously captured/cached screenshots as well as new captures.
+            return Array.Empty<IllustrationReferenceImage>();
         }
 
         internal static async Task<ConversationSceneReferenceCapture> CaptureConversationSceneReferencesAsync(
             ConversationSceneCaptureSource source, CancellationToken token, string preCapturedScene = null, bool scenePanoramaEnabled = true)
         {
+            preCapturedScene = null; // Never reuse a game-window screenshot.
             if (source == null) throw new ArgumentNullException(nameof(source));
             await source.EnsureCurrentAsync(token).ConfigureAwait(false);
             GenerationDiagnostics.Current?.RecordStage("scene_capture_route", new JObject
@@ -59,8 +60,7 @@ namespace AnimusForge.Illustrator.Engine
                 return await CaptureMapConversationSceneReferencesAsync(source, token).ConfigureAwait(false);
             if (!scenePanoramaEnabled)
             {
-                // Player switched the scene panorama off: no private Scene copy, no six-face render.
-                // The screenshot taken when the illustration was opened is the only environment image.
+                // Player switched the scene panorama off: use text facts only.
                 var screenshot = CreateCapturedSceneReferences(preCapturedScene);
                 GenerationDiagnostics.Current?.RecordStage("scene_capture_end", new JObject
                 {
