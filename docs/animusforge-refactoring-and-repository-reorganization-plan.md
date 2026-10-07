@@ -1,4 +1,15 @@
-﻿<a id="dialogue-scroll-20261008"></a>
+<a id="scene-level-views-20261008"></a>
+# 前后平视参考图、战役T键框选和全屏默认值（2026-10-08，OFFLINE_VERIFIED_NOT_DEPLOYED）
+
+- 用户明确：前后两图沿玩家身体朝向取水平视线，不使用玩家鼠标镜头；战役内长按T框选，松键有目标保留轮盘、无目标才进入输入/生图面板；MCM绘图显示效果默认全屏覆盖。检查点 `12af24a6`，产品 `702d7a63f`。保留另一会话已提交面板/UI修改，不部署/打包/推送。
+- 相机：`extensions/AnimusForge.Illustrator/src/Engine/MissionScreenshotCapture.cs:54–93` 初始化独立前后机位、固定60度垂直视场；`:150–179` BuildLevelPositions/ResolveCameraCollision以人物区域和身体水平轴构造相反观察位置，两侧均避障，原相机只留作恢复（屏幕宽高比与远裁面沿用）。避障可缩短距离，狭窄处可能人物出框，需实机验收。`Core/MissionScreenshotIllustration.cs:99–113,151–152`冻结身体朝向/区域并更正两图标签；`Core/MissionScreenshotRules.cs:10–16`同步平视说明。
+- 输入：`src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.cs:632–674`恢复按住预览/松开确认；`:1410–1460`仅空框选且生图可用走直达面板，有目标战斗走轮盘。`ShoutBehavior.SceneIllustration.cs:65–90`无目标面板标题按场景区分。此次针对战役战斗；自定义战斗独立入口保持。持续会话已有合并框选逻辑保持。
+- 默认：`extensions/AnimusForge.Illustrator/src/Settings/IllustratorSettings.cs:523–546`保留选项顺序与配置键，默认索引和未初始化读取均为1，显示默认标记移至全屏；已保存索引不覆盖。不另改截图卡片的展示路由。
+- 性能：相机几何和两次碰撞射线只在每次手动请求主线程执行，无新增场景全量扫描。T键复用既有预览节奏/目标快照，松键空候选Count检查O(1)，未增加额外Agent扫描或网络/存档处理。
+- 验证：ShoutTargetReleaseTests抽取真实三个输入方法，22 PASS（输入与目标/窗口端点为替身）；MissionLevelCameraTests读取最终两实现DLL，各12 PASS（水平、相反方向、身体转向、无俯仰/缩放输入、窄屏与大区域、无效输入）。原脚本最终隔离源码双API/Bootstrap/双接缝exit0，1.3 v1.3.15.110062、1.4 v1.4.6.115628，Debug。暂存产品逐文件对照构建快照一致（忽略行尾）。未运行既有Illustrator离线审计/付费API。
+- 证据 `artifacts/scene-level-views-20261008/receipt.json`、`build-final-default.log`、`hotkey-tests.log`、`geometry-1.3-delivery.log`/`geometry-1.4-delivery.log`。初次实际DLL检查遗漏Harmony搜索路径且共享构建产物被另一构建重置；改独立快照+完整依赖后通过，失败日志保留。NOT-RUN：原生GPU、屏幕UI隐藏/恢复、窄空间构图、实机长按/轮盘/MCM持久化。回滚仅 `git revert 702d7a63f`，不回滚其他作者。
+
+<a id="dialogue-scroll-20261008"></a>
 # 对话滚轮减速与历史最新定位（2026-10-08，OFFLINE_VERIFIED_NOT_DEPLOYED）
 
 - 用户反馈对话滚轮轻动到底，并追加历史“最新”未到真正末条。检查点 `034bb89`，产品 `27205125ed98c7c0f990c2e9ac26c761c4fa4065`；保留其他作者生图/遭遇/喊话皮肤提交和既有NuGet目录。

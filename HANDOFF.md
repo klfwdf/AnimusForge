@@ -1,4 +1,9 @@
-﻿# 当前交接：场景插画面板及正文滚动/Esc已修并审查（2026-10-08，OFFLINE_VERIFIED_NOT_DEPLOYED）
+# 当前交接：前后平视、战役长按框选、全屏默认（2026-10-08，OFFLINE_VERIFIED_NOT_DEPLOYED）
+
+- 产品 `702d7a63f`：前后独立平视机位；战役长按T保留框选，有目标轮盘/无目标生图面板；生图MCM默认全屏覆盖，旧选择保留。双API/Bootstrap/接缝、输入22项、两DLL几何各12项PASS；实机未验，未部署。
+- [主台账、源码坐标与验收边界](docs/animusforge-refactoring-and-repository-reorganization-plan.md#scene-level-views-20261008)，证据 `artifacts/scene-level-views-20261008/receipt.json`。回滚只 `git revert 702d7a63f`。保留既有UI/面板修复与部署历史。
+
+# 当前交接：场景插画面板及正文滚动/Esc已修并审查（2026-10-08，OFFLINE_VERIFIED_NOT_DEPLOYED）
 
 - 本地产品`8ad1a214d`修场景喊话生图等待卡片、操作字色、原版对话插画入口；双API/Bootstrap/接缝、每版123协议检查、103生命周期PASS。未部署，游戏仍是前次部署版本。
 - 产品`95b784c2a`移除遮挡正文的全屏鼠标层，生成时保持键盘焦点，继续命令守卫与长等Esc退出保留。两API事件回归各169 PASS，旧版5个反例失败；固定提交快照的双API/Bootstrap/接缝及每版123协议检查全部PASS；审查未发现新增明确缺陷，实机未验。
