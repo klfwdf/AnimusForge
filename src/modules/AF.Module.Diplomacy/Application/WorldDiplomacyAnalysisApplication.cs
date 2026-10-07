@@ -117,13 +117,18 @@ internal static class WorldDiplomacyAnalysisApplication
                 string normalizedTarget = resolveKingdomCanonicalId?.Invoke(
                     FirstNonEmpty(targetId, document.TargetKingdomId));
                 if (!string.IsNullOrWhiteSpace(normalizedTarget)) targetId = normalizedTarget;
+                // Reuse the owner's knowledge-filtered live offers for normalization and binding.
+                // Never broaden global document identity matching or inspect the saved archive.
+                IEnumerable<WorldDiplomacyRoundOffer> knownOffers = liveOpenOffers?.Invoke(document.AuthorKingdomId);
+                NormalizePlayerOfferSourcePrefix(document, intent, targetId, ref knownOffers,
+                    resolveDocument, ref respondingToOfferDocumentId, log);
                 var sourceRound = string.IsNullOrWhiteSpace(respondingToOfferDocumentId) ? null
                     : resolveRound?.Invoke(resolveDocument?.Invoke(respondingToOfferDocumentId)?.RoundId);
                 ReconcilePlayerDeclarationWithOpenOffer(document, intent, sourceRound ?? resolveRound?.Invoke(document.RoundId), ref targetId, ref respondingToOfferDocumentId, log);
                 // The provisional player round is normally empty; an oral or relay proposal lives in its own round.
                 // Rebinding an already bound offer is a no-op, and ambiguity still never picks one.
-                if (liveOpenOffers != null)
-                    ReconcilePlayerDeclarationWithOpenOffer(document, intent, liveOpenOffers(document.AuthorKingdomId), ref targetId, ref respondingToOfferDocumentId, log);
+                if (knownOffers != null)
+                    ReconcilePlayerDeclarationWithOpenOffer(document, intent, knownOffers, ref targetId, ref respondingToOfferDocumentId, log);
             }
             bool playerPublicIntent = document.IsPlayerAuthored && WorldDiplomacyIntentVocabulary.IsSupportedDiplomacyIntent(intent);
             if ((!WorldDiplomacyIntentVocabulary.IsActionableDiplomacyIntent(intent) && !playerPublicIntent)
@@ -245,6 +250,39 @@ internal static class WorldDiplomacyAnalysisApplication
             if (document.IsPlayerAuthored) document.PlayerAnalysisCommitted = true;
             processAnalyzedDocument(document, intent, commitment, document.RequiresResponse, tone, confidence);
         }
+
+    private static void NormalizePlayerOfferSourcePrefix(WorldDiplomacyDocument document, string intent,
+        string targetId, ref IEnumerable<WorldDiplomacyRoundOffer> knownOffers,
+        Func<string, WorldDiplomacyDocument> resolveDocument, ref string sourceId, Action<string> log)
+    {
+        const string prefix = "diplomacy_document:";
+        string proposalIntent = WorldDiplomacyIntentVocabulary.ResponseIntentToProposalIntent(intent);
+        if (knownOffers == null || string.IsNullOrEmpty(proposalIntent) || string.IsNullOrWhiteSpace(targetId)
+            || string.IsNullOrWhiteSpace(sourceId) || sourceId.IndexOf(':') >= 0) return;
+        // Only malformed-source replies need a reusable snapshot; normal replies keep the lazy path.
+        knownOffers = knownOffers.ToList();
+        string candidateId = prefix + sourceId;
+        WorldDiplomacyRoundOffer match = null;
+        foreach (var offer in knownOffers)
+        {
+            if (offer == null || !IsOpenDirectedOffer(offer, targetId, document.AuthorKingdomId)
+                || !string.Equals(WorldDiplomacyIntentVocabulary.NormalizeIntent(offer.Intent), proposalIntent, StringComparison.OrdinalIgnoreCase)
+                || !MatchesDocumentId(offer.SourceDocumentId, candidateId)
+                || (!string.IsNullOrWhiteSpace(document.RespondingToOfferActionId)
+                    && !string.Equals(offer.SourceActionId, document.RespondingToOfferActionId, StringComparison.Ordinal))) continue;
+            if (match != null) return; // Multiple actions/records must not be guessed.
+            match = offer;
+        }
+        if (match == null) return;
+        var source = resolveDocument?.Invoke(match.SourceDocumentId);
+        if (source?.IsReadyForPublication != true
+            || !MatchesDocumentId(source.DocumentId, match.SourceDocumentId)
+            || !string.Equals(source.AuthorKingdomId, match.ProposerKingdomId, StringComparison.OrdinalIgnoreCase)) return;
+        log?.Invoke("player declaration offer source prefix normalized document=" + document.DocumentId
+            + " source=" + sourceId + " canonical=" + match.SourceDocumentId + " action=" + match.SourceActionId);
+        sourceId = match.SourceDocumentId;
+        document.RespondingToOfferActionId = match.SourceActionId ?? "";
+    }
 
     internal static void MarkPlayerAnalysisFailed(WorldDiplomacyDocument document, Action<string> log)
     {
