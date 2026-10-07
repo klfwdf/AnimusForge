@@ -1,4 +1,10 @@
-﻿# 当前交接：外交原案 ID 漏前缀修复（2026-10-08，OFFLINE_VERIFIED_NOT_DEPLOYED）
+﻿# 当前交接：Chat 生图比例字段 HTTP400 修复（2026-10-08，OFFLINE_VERIFIED_NOT_DEPLOYED）
+
+- 产品68385c50，检查点e111ee1。通用Chat不再发送顶层aspect_ratio，尺寸/固定画幅提示、参考图与其他协议保持；完整URL只决定地址，旧版仍会发字段。
+- 原双API/Bootstrap/双接线及两实际DLL各61项请求检查通过，未调用外部/付费API或运行既有审计。玩家网关、真实比例/像素、MCM实机未验，未部署/打包/推送。
+- [唯一主台账及源码坐标](docs/animusforge-refactoring-and-repository-reorganization-plan.md#chat-aspect-schema-20261008)、[职责导航](docs/architecture/af-framework-code-scope.md#chat-aspect-schema-20261008)。证据artifacts/chat-aspect-schema-20261008；回滚仅git revert 68385c50，保留并行任务。
+
+# 当前交接：外交原案 ID 漏前缀修复（2026-10-08，OFFLINE_VERIFIED_NOT_DEPLOYED）
 
 - 产品 `5c0c1a31c`，检查点 `1aad4df`。玩家公告解析收到缺 `diplomacy_document:` 的来源时，仅从玩家已知的活跃开放提案中核实唯一双边/类型/动作及真实公开源公文后补齐；保留原执行资格检查。正常 ID 不变，无新增 Tick/模型请求/公共 API/存档键。
 - 日志形状短ID旧代码失败，新版外交专项3918 PASS（新增18场景108断言）；固定产品隔离worktree原双API1.3/1.4、Bootstrap与双实际DLL接缝exit0。真实模型/战役/玩家旧档未验，未Stage/部署/打包/推送；旧失败公告不自动重放，更新后重新回应仍有效提案。

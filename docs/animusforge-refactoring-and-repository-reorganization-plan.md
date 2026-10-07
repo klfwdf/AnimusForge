@@ -1,4 +1,16 @@
-﻿<a id="diplomacy-offer-prefix-20261008"></a>
+﻿<a id="chat-aspect-schema-20261008"></a>
+# Chat 生图顶层 aspect_ratio 拒收修复（2026-10-08，OFFLINE_VERIFIED_NOT_DEPLOYED）
+
+- 用户提供 HTTP400 截图：Invalid JSON payload / Unknown name aspect_ratio。源码在所有 Chat 生图请求中无条件注入该顶层字段；“完整URL”只控制请求地址，不改变请求结构，不能保证消除该字段拒收。截图未含玩家模型/地址，本包不猜测其服务商或安装修订。
+- 工作区 F:/AnimusForge-main、main，调查起点49ed039f，检查点e111ee1，产品68385c50。只移除 UniversalOpenAiImageClient 的通用Chat字段，保留现有画风、参考图、质量、MCM尺寸、提示词中的固定画幅和既有失败停止逻辑；Grok Edits 已明确支持的比例字段及Player2尺寸保持。不添加vendor扩展、网络探测或自动重试。
+- 真实坐标（68385c50，一基行号）：extensions/AnimusForge.Illustrator/src/Core/UniversalOpenAiImageClient.cs:281–312 的 IsChatCompletionProtocol/ResolveEndpointUrl 确认完整Chat地址语义；:491–544 的 ComposeImagePrompt 保留frameTail；:1034–1049 的 AttemptGenerateOnceAsync 构造model/messages而不含顶层aspect_ratio；:794–805 的Grok比例分支保持。同一路径覆盖普通、带图、当前成图编辑和既有Chat回退。无新增Tick、扫描、反射或模型调用，反而少一次字段写入。
+- 验证：既有 MissionScreenshotRequestTests 增加 ChatSchemaContracts（tests/MissionScreenshotRequestTests/Program.cs:133–159），对完整URL、Gemini/通用Chat、1:1/16:9/2:3、有/无身份图及400单次停止检查实际生产DLL请求。两份最终DLL各61断言通过（原43+新增18）；HttpClient由内存handler拦截，零外部API。仅复用依赖解析器，未运行既有Illustrator审计脚本。
+- 原scripts/build/build_single_module.ps1 Debug双API（1.3 v1.3.15.110062，1.4 v1.4.6.115628）/Bootstrap/双实现接线exit0，0错误；差异检查及构建前后源码SHA一致。保留同期外交等其他作者提交，构建通过不签收其业务。
+- 影响：尺寸为目标像素数，画幅为宽高比例；Chat尺寸/比例要求继续放在提示词。删除通用扩展可能减少原来接受该字段的网关的结构化比例控制，真实成图不保证严格比例或像素尺寸。NOT-RUN：玩家真实网关/模型/原请求匹配、付费生成、MCM/游戏及最终比例；未Stage、部署、打包或推送。
+- 证据artifacts/chat-aspect-schema-20261008/build.log、replay-1.3.log、replay-1.4.log、input-hashes.json、final-hashes.json及compiled/。回滚仅git revert 68385c50；不撤销其他作者或早前预设/截图产品。
+- [职责导航](architecture/af-framework-code-scope.md#chat-aspect-schema-20261008)。
+
+<a id="diplomacy-offer-prefix-20261008"></a>
 # 外交原案 ID 漏前缀修复（2026-10-08，OFFLINE_VERIFIED_NOT_DEPLOYED）
 
 - 用户授权修复日志中巴丹尼亚接受贸易三次失败；模型漏掉 `diplomacy_document:`，完整来源无法匹配，触发 final_live_legal_action_guard。产品 `5c0c1a31c42e0aa519640c44b5837eb0c6688fe5`，检查点 `1aad4df`，主树 main；保留其他作者提交/草稿和未跟踪 NuGet 目录。
