@@ -82,10 +82,11 @@ internal static class Program
         Check(MemoryDeveloperEditOwner.ParseLineList(" A\r\na\nB ", 2, true).SequenceEqual(new[] { "A", "B" }), "line edit dedup/cap");
         Check(MemoryDeveloperEditOwner.ParseLineList(" A\na ", 2, false).SequenceEqual(new[] { "A", "a" }), "line edit case semantics");
         Check(MemoryDeveloperEditOwner.Clear("hero", state) && !MemoryImportExportOwner.HasData("hero", state), "manual clear five domains");
-        Console.WriteLine($"PASS {checks}");
+        ImportSchemaChecks.Run();
+        Console.WriteLine($"PASS {checks} memory owner assertions");
     }
 }
 
 // Signature-only dependency for the unrelated new history import method; not replayed by these 29 checks.
 internal sealed class MemoryBusinessStateOwner { internal Dictionary<string, List<MyBehavior.DialogueDay>> History; }
-internal sealed class MyBehavior { internal sealed class DialogueDay { } }
+internal sealed partial class MyBehavior { internal sealed class DialogueDay { } }
