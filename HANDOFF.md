@@ -1,4 +1,11 @@
-﻿# 当前交接：双截图及卷轴暂停界面已部署（2026-10-08，DEPLOYED_LIVE_PENDING）
+﻿# 当前交接：场景插画面板及正文滚动/Esc已修并审查（2026-10-08，OFFLINE_VERIFIED_NOT_DEPLOYED）
+
+- 本地产品`8ad1a214d`修场景喊话生图等待卡片、操作字色、原版对话插画入口；双API/Bootstrap/接缝、每版123协议检查、103生命周期PASS。未部署，游戏仍是前次部署版本。
+- 产品`95b784c2a`移除遮挡正文的全屏鼠标层，生成时保持键盘焦点，继续命令守卫与长等Esc退出保留。两API事件回归各169 PASS，旧版5个反例失败；固定提交快照的双API/Bootstrap/接缝及每版123协议检查全部PASS；审查未发现新增明确缺陷，实机未验。
+- [UI面板完整证据及回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#scene-image-panel-legibility-20261008)、[正文/输入证据](docs/animusforge-refactoring-and-repository-reorganization-plan.md#dialogue-body-escape-20261008)、[代码导航](docs/architecture/af-framework-code-scope.md)。另一会话机位/喊话改动及NuGet目录均保留、未混入提交。
+- NVIDIA玩家包已生成：`artifacts/reranker-gpu-player-20261008/release/ONNX_GPU（可选）.zip`，合并到Modules使组件位于`AnimusForge/OptionalRuntimes/RerankerCuda`，不放ONNX。真实CUDA及hash校验通过，[唯一包证据](docs/animusforge-refactoring-and-repository-reorganization-plan.md#reranker-gpu-player-pack-20261008)。
+
+# 当前交接：双截图及卷轴暂停界面已部署（2026-10-08，DEPLOYED_LIVE_PENDING）
 
 - 用户授权编译部署；源码`e88949dc`及其全部已提交改动（含其他会话的会面、外交、生图接口、滚轮/历史）按原双API/Bootstrap/接缝构建通过，生图实际DLL各114项PASS。部署更新16文件，3380安装文件SHA一致，16份Recovery备份验证通过。
 - [唯一部署台账、证据与回滚位置](docs/animusforge-refactoring-and-repository-reorganization-plan.md#scene-image-deploy-20261008)；收据`artifacts/scene-image-deploy-20261008/deployment-receipt.json`。游戏模块已覆盖，未打包/推送/启动；真实GPU/UI/模型/玩家存档仍待实机验收。

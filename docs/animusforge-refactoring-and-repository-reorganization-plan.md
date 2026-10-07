@@ -8341,7 +8341,27 @@ R2计划交付门槛：已给固定技术路线、真实来源与目标、写入
 - 顺带回答两个新闻开关：默认值都true，但周报有效条件AutoGenerateWeeklyReports && !UseWorldBulletin，快报条件UseWorldBulletin && AutoGenerateWorldBulletins，主模式互斥。用户仅询问，未改默认/个人配置。
 
 <a id="scene-image-panel-legibility-20261008"></a>
-# 场景喊话生图等待面板与字色（2026-10-08，ACTIVE）
+# 场景喊话生图等待面板与字色（2026-10-08，OFFLINE_VERIFIED_NOT_DEPLOYED）
 
 - 用户实机截图指出场景控制按钮小字深色难读；同时点击生图只有忙碌字样，不弹面板。现有MissionScreenshotIllustration只在成图后打开画廊，没有等待/错误面板，确认呈现缺口。
 - 本包修按钮文字与三种布局一致性，并复用现有IllustrationCardPopup显示截图结束后的导演/生图进度、错误与成图；不得影响隐藏UI截屏、用户关闭后后台保存、离场无弹出及单请求防重复。主线程渲染与后台生成owner保持分离；读真实日志不把另一快报的403错归场景请求。按实际生产接线/生命周期与原双API构建验证。
+
+- 产品提交 `8ad1a214d`，只含本任务14个文件；同文件中的另一会话独立机位改动按hunk排除，未回滚。按钮17号浅色字/深描边，四套生成消费者同步；原版对话新增右上角插画入口，不依赖皮肤开关。截图恢复后才打开既有等待卡，订阅原任务显示阶段/错误/成图，保存结果携带本次图像字节，避免主线程读取磁盘；关闭卡片不取消生成，离场关闭卡片，不在完成后重新弹出。general诊断加入既有12条保留范围。
+- 核实坐标绑定产品`8ad1a214d`：`extensions/AnimusForge.Illustrator/src/Core/MissionScreenshotIllustration.cs:42–52,123–130,165–173,197–227`的Tick/Request/Finish/Reset负责卡片启动、字节传递和owner清理；`extensions/AnimusForge.Illustrator/src/UI/Overlays/IllustrationCardPopup.cs:127–160,183–212,1113–1128`负责只订阅已有任务和离场关闭；同目录`IllustrationCardVM.cs:18,188`禁用无回调重绘；`src/AF.GameAdapter.Bannerlord/UI/Conversation/AnimusForgeNativeConversationOverlay.cs:103–116`及VM开头负责原版插画入口；生成器`extensions/AnimusForge.DialogueUI/tools/build_scene_layouts.py`同步按钮样式。
+- 原统一Debug构建双API（1.3.15.110062 / 1.4.6.115628）、Bootstrap和双DLL接缝PASS：`artifacts/scene-ui-feedback-20261008/build-verified.log`。对应最终DLL请求回归各123项PASS，`requests-final-13.log/14.log`，内存HTTP无付费API；既有UI生命周期103项PASS；XML绑定、生成器字节一致、接线检查PASS，见同目录`ui-checks.log/wiring-checks.log/source-receipt.json`。后续正文输入补丁的固定快照构建会再次验证包含本提交的组合。
+- 频率：卡片仅用户点击后单次创建；现有Tick只检查capture完成/mission身份，按钮无新增场景枚举。NOT-RUN：真实Gauntlet字色/字号/点击、GPU截图结束后开卡、关闭/离场后台保存及最终图显示；未部署、打包或推送新UI修复。源码回滚仅`git revert 8ad1a214d`；之前部署记录仍有效，但不含本补丁。
+- 快报“终末之座”只读调查：对应`weekly_report_1008-062342_2906/trace.json`记录导演referenceCount=0、生图requestedRefs/actualRefs=0，Images generations成功。所选覆灭事件只有“末代君主：某位领主”，无可解析人物，人物参考和随Hero采集的家族旗帜均未发送；不得借用其他新闻中的人物。`MyBehavior.WorldBulletin.cs:520–559`记录末代执政Clan/Leader，`WeeklyReportContextExtractor.cs:169–216`解析当前事件人物。未修改此链路或声称身份缺口已修复。
+- 外交文案只给建议，未改产品：公开信息显示发布方、目标方、行为及状态，提议必须标尚待回应；玩家所属国收到才称“外交来函”，仅传闻权限显示“外交传闻”。周报/快报保存开关虽都true，实际按主模式互斥；未改默认或个人配置。用户随后确认截图鉴权错误为主动构造，不排查或修改API凭据。
+
+<a id="dialogue-body-escape-20261008"></a>
+# 正文滚动与生成期间Esc焦点（2026-10-08，OFFLINE_VERIFIED_NOT_DEPLOYED）
+
+- 用户报告AI正文滚动条无法下拉、正文生成时Esc打开游戏暂停菜单；鉴权错误为用户故意构造，与本包无关。产品`95b784c2a`，前置回滚点`8ad1a214d`。仅改原版对话overlay输入焦点、DialogueUI遮罩及既有事件回归；保留原版继续命令资格、60秒后Esc结束对话、辅助面板和系统UI优先级，不修改LLM请求/重试/凭据。
+- 根因：`AFDialogueReplyClickShield`全屏接受鼠标且覆盖正文下层，挡住滚动条拖拽；提交调用SetLayerForButtonsOnly后只申请MouseButtons并放弃焦点，使键盘返回原游戏。移除全屏遮罩，保留ContinueConversationSafePatch对map/mission/manager三入口命令拦截；busy且AI可见且owner未关闭/未系统UI遮挡时申请All并保持焦点。顺带补齐前包右上角新增插画/下移按钮的鼠标区域下边界。
+- 核实坐标：`extensions/AnimusForge.DialogueUI/GUI/Prefabs/AFDialogueNativeOverlay.xml:3–7`；`src/AF.GameAdapter.Bannerlord/UI/Conversation/AnimusForgeNativeConversationOverlay.cs:620–642,648–665`的UpdateButtonsOnlyInputRestrictions/IsMouseOverTopRightButtons；既有`src/AF.GameAdapter.Bannerlord/Patches/Safety/ContinueConversationSafePatch.cs:16–21,57–78`三入口/命令守卫不变。焦点只在既有打开/提交/恢复调用时设置，O(1)，未新增Tick轮询/反射/场景扫描。
+- 两API原版事件排序+生产方法提取回归各169 PASS，见`artifacts/dialogue-body-escape-20261008/hit13/run.log`、`hit14-fixed/run.log`。含AI忙碌/完成时正文滚轮与滚动条/handle命中、busy焦点、system UI/普通模式/关闭排除、100次继续命令拒绝及普通继续放行。旧修订同测164 PASS/5 FAIL，正好命中遮罩和焦点缺口，`baseline14/run.log`；新测试替换旧“全屏遮罩必须吞鼠标”断言，继续防误点改验实际命令守卫，不放弃保护。
+- 引擎/几何/焦点管理为替身，不代表真实游戏拖拽距离、Esc事件时序或视觉已验。由于其他会话正在改截图机位，最终构建使用仓内git archive固定`95b784c2a`快照隔离，不把并行未提交修改当本包验收结果。NOT-RUN：实机滚动/拖拽/缩放、生成时Esc及60秒退出、游戏部署/推送。
+
+- 固定产品`95b784c2a`候选已沿原build_single_module.ps1完整构建：1.3.15.110062、1.4.6.115628、Bootstrap和两个实际DLL接缝PASS，`build-isolated.log`；该候选包含`8ad1a214d`等待卡片修复，不含另一会话未提交机位/喊话变更。候选两个DLL协议检查各123 PASS，`requests-isolated-13.log/14.log`；UI生命周期103 PASS，`lifecycle.log`。源码与3个DLL哈希绑定`verification-receipt.json`；候选位于本证据目录`candidate/bin/Debug/single_module_artifacts`，未覆盖游戏。
+- 用户追加“审查”：复核两个产品提交的真实鼠标层命中/原版ScreenManager焦点路径、三入口继续命令守卫、系统UI恢复、截图完成后开卡、scope结束/GenerationUpdated顺序、图像字节传递与关闭后后台保存；未发现新增明确缺陷。测试不覆盖原生拖拽距离、真实键盘帧序、GPU/网络和渲染，不能替代实机。回滚正文/焦点仅`git revert 95b784c2a`；前包单独`git revert 8ad1a214d`，不改其他作者历史。
+- GPU包交付前复核：文件现名为`artifacts/reranker-gpu-player-20261008/release/ONNX_GPU（可选）.zip`，SHA256与最初包收据一致，`delivery-location.json`记录当前可用路径；不改旧收据原始文件名记录。
