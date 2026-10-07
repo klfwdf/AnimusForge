@@ -414,6 +414,7 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 
 	private void OnSessionLaunched(CampaignGameStarter starter)
 	{
+        NativeDialogueBattleContinuation.Cancel("session_launched");
         ClearNativeDialogueHandoff();
 		PlayerCaptivityGhostSafePatch.RepairMainHeroRosters("session_launched");
 		ClearCustomEncounterMenuHardSuppression("session_launched");
@@ -1318,6 +1319,11 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 	internal static bool TryGetCustomEncounterMenuDisableReason(out string reason)
 	{
 		reason = null;
+        if (NativeDialogueBattleContinuation.IsResumingNativeBattleMenu)
+        {
+            reason = "native_dialogue_combat_resume";
+            return true;
+        }
 		if (IsNativeDialogueHandoffSuppressedForCurrentEncounter())
 		{
 			reason = "native_dialogue_handoff";
@@ -3616,6 +3622,7 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 
 	internal static void OnEngineTick()
 	{
+        NativeDialogueBattleContinuation.Tick();
         if (_pendingReturnToEncounterMenuAfterUnauthorizedMeetingExit)
         {
             try { TryForcePendingReturnToEncounterMenuAfterUnauthorizedMeetingExitIfReady(); }
@@ -8786,6 +8793,7 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 			SetTarget(target);
             RegisterNativeDialogueHandoff(target);
 			Campaign.Current.CurrentConversationContext = ConversationContext.PartyEncounter;
+            NativeDialogueBattleContinuation.Begin(target);
 			try
 			{
 				if (PlayerEncounter.Current != null)
@@ -8836,6 +8844,7 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 		catch (Exception ex)
 		{
             ClearNativeDialogueHandoff();
+			NativeDialogueBattleContinuation.Cancel("open_failed");
 			Logger.Log("LordEncounter", "OpenNativeEncounterConversation failed: " + ex);
 		}
 	}

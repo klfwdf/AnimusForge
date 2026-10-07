@@ -1,0 +1,9 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><ImplicitUsings>enable</ImplicitUsings><Nullable>disable</Nullable></PropertyGroup>
+  <ItemGroup>
+    <Compile Remove="native-hooks/**/*.cs" />
+    <Compile Include="../../../src/AF.GameAdapter.Bannerlord/Encounter/NativeDialogueBattleContinuation.cs" Link="Production/NativeDialogueBattleContinuation.cs" />
+    <Compile Include="../../../src/modules/AF.Module.Encounter/EncounterPendingReturnOwner.cs" Link="Production/EncounterPendingReturnOwner.cs" />
+    <Compile Include="../../../src/AF.Foundation.Runtime/Lifecycle/SaveRuntimeGuard.cs" Link="Production/SaveRuntimeGuard.cs" />
+  </ItemGroup>
+</Project>
