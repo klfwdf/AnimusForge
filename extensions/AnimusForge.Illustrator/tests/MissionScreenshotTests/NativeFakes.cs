@@ -36,6 +36,9 @@ namespace TaleWorlds.Engine
         public Vec3 Position => Frame.origin;
         public bool Released;
         public static int Created, ReleasedCount;
+        public float Far => 1000;
+        public float GetAspectRatio() => 16f / 9f;
+        public void SetFovVertical(float fov, float aspect, float near, float far) { }
         public static Camera CreateCamera() { Created++; return new Camera(); }
         public void FillParametersFrom(Camera other) { Frame = other.Frame; }
         public void LookAt(Vec3 position, Vec3 target, Vec3 up) { Frame = new MatrixFrame { origin = position }; }
@@ -76,7 +79,14 @@ namespace TaleWorlds.MountAndBlade
 }
 namespace TaleWorlds.ScreenSystem
 {
-    public class ScreenBase { public bool IsFinalized; }
+    public class ScreenLayer { public bool IsFinalized, IsActive = true; }
+    public class ScreenBase {
+        public bool IsFinalized;
+        public readonly List<ScreenLayer> Layers = new List<ScreenLayer>();
+        public event Action<ScreenLayer> OnAddLayer;
+        public int LayerWatchers => OnAddLayer?.GetInvocationList().Length ?? 0;
+        public void AddLayer(ScreenLayer layer) { Layers.Add(layer); OnAddLayer?.Invoke(layer); }
+    }
     public static class ScreenManager { public static ScreenBase TopScreen; }
 }
 namespace TaleWorlds.MountAndBlade.View.Screens
@@ -94,6 +104,10 @@ namespace TaleWorlds.MountAndBlade.View.Screens
 }
 namespace AnimusForge.Illustrator.Core
 {
+    public sealed class GenerationDiagnostics {
+        public static GenerationDiagnostics Current => null;
+        public void RecordStage(string name, Newtonsoft.Json.Linq.JObject data) { }
+    }
     public static class IllustratorRuntime
     {
         public static long ApplicationFrame;
@@ -104,6 +118,13 @@ namespace AnimusForge.Illustrator.Core
     {
         public static string TempDirectory;
         public static string EnsureDirectory(string path) { System.IO.Directory.CreateDirectory(path); return path; }
+    }
+}
+namespace Newtonsoft.Json.Linq { public class JObject : Dictionary<string, object> { } }
+namespace TaleWorlds.Engine.GauntletUI {
+    public sealed class FakeUiView { public int Clears; public void Clear() { Clears++; } }
+    public sealed class GauntletLayer : TaleWorlds.ScreenSystem.ScreenLayer {
+        public FakeUiView TwoDimensionView = new FakeUiView(), TwoDimensionPlatform = new FakeUiView();
     }
 }
 namespace AnimusForge.Illustrator.Engine

@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Drawing;
 
 // Exercises the actual compiled geometry only; no game initialization, screenshots or HTTP.
 internal static class Program
@@ -25,6 +26,22 @@ internal static class Program
                 _build = dll.GetType("AnimusForge.Illustrator.Engine.MissionScreenshotCapture", true)
                     .GetMethod("BuildLevelPositions", BindingFlags.Static | BindingFlags.NonPublic);
                 _vec = _build.GetParameters()[0].ParameterType;
+                var visibility = dll.GetType("AnimusForge.Illustrator.Engine.MissionScreenshotImageCodec", true)
+                    .GetMethod("ValidateVisibleContent", BindingFlags.Static | BindingFlags.NonPublic);
+                bool Rejects(Image img) {
+                    try { visibility.Invoke(null, new object[] { img }); return false; }
+                    catch (TargetInvocationException ex) when (ex.InnerException is InvalidDataException) { return true; }
+                }
+                using (var black = new Bitmap(320, 180)) {
+                    Check(Rejects(black), "black reference rejected before request");
+                    using (var g = Graphics.FromImage(black)) g.Clear(Color.FromArgb(4, 3, 2));
+                    Check(Rejects(black), "near-black export rejected");
+                    using (var g = Graphics.FromImage(black)) g.FillRectangle(Brushes.DimGray, 0, 0, 80, 180);
+                    Check(!Rejects(black), "readable dark scene passes brightness guard");
+                }
+                foreach (string sample in args.Skip(1).Where(p => p.EndsWith(".png", StringComparison.OrdinalIgnoreCase)))
+                    using (var img = Image.FromFile(sample))
+                        Check(Rejects(img) == Path.GetFileName(sample).Contains("black"), "recorded reference brightness: " + Path.GetFileName(sample));
                 var pair = Build(0, 1, 0);
                 Check(pair.Length == 2, "exactly two viewpoints");
                 var front = pair.GetValue(0); var rear = pair.GetValue(1);

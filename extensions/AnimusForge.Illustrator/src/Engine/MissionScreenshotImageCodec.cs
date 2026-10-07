@@ -74,6 +74,7 @@ namespace AnimusForge.Illustrator.Engine
             using (var input = new MemoryStream(bytes, false))
             using (var original = Image.FromStream(input, false, true))
             {
+                ValidateVisibleContent(original);
                 double scale = Math.Min(1.0, 2048.0 / Math.Max(original.Width, original.Height));
                 using (var bitmap = new Bitmap(Math.Max(1, (int)Math.Round(original.Width * scale)), Math.Max(1, (int)Math.Round(original.Height * scale)), PixelFormat.Format32bppArgb))
                 using (var graphics = Graphics.FromImage(bitmap))
@@ -93,6 +94,28 @@ namespace AnimusForge.Illustrator.Engine
         {
             using (var hash = SHA256.Create())
                 return Convert.ToBase64String(hash.ComputeHash(first)) == Convert.ToBase64String(hash.ComputeHash(second));
+        }
+
+        // Fixed 96x54 sample, worker only. Reject near-black exports without brightening them.
+        internal static void ValidateVisibleContent(Image image)
+        {
+            using (var sample = new Bitmap(96, 54, PixelFormat.Format24bppRgb))
+            using (var graphics = Graphics.FromImage(sample))
+            {
+                graphics.DrawImage(image, new Rectangle(0, 0, sample.Width, sample.Height));
+                int visible = 0;
+                for (int y = 0; y < sample.Height; y++)
+                    for (int x = 0; x < sample.Width; x++)
+                    {
+                        Color color = sample.GetPixel(x, y);
+                        if (Math.Max(color.R, Math.Max(color.G, color.B)) > 8) visible++;
+                    }
+                Core.GenerationDiagnostics.Current?.RecordStage("mission_screenshot_visibility", new Newtonsoft.Json.Linq.JObject {
+                    ["samplePixels"] = sample.Width * sample.Height, ["visiblePixels"] = visible,
+                    ["minimumVisiblePercent"] = 1, ["gpu_frame_identity_verified"] = false });
+                if (visible * 100 < sample.Width * sample.Height)
+                    throw new InvalidDataException("现场截图几乎全黑，无法识别人物与环境；已停止生成，未发送导演或生图请求。");
+            }
         }
     }
 }

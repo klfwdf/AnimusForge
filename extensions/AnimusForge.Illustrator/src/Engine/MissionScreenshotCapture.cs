@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using TaleWorlds.Core;
 using TaleWorlds.Engine;
+using TaleWorlds.Engine.GauntletUI;
 using TaleWorlds.Library;
 using TaleWorlds.MountAndBlade;
 using TaleWorlds.MountAndBlade.View.Screens;
@@ -30,6 +31,8 @@ namespace AnimusForge.Illustrator.Engine
     {
         private const int PauseRequestId = 2147482007;
         private const int CaptureBudgetMs = 8000;
+        private const int WarmupFrames = 4;
+        private const int WarmupMilliseconds = 250;
         private readonly Mission _mission;
         private readonly MissionScreen _screen;
         private readonly MissionState _missionState;
@@ -48,6 +51,8 @@ namespace AnimusForge.Illustrator.Engine
         private byte[] _first;
         private int _index;
         private long _notBeforeFrame;
+        private long _notBeforeMs;
+        private bool _watchingLayers, _layersChanged;
         private bool _closed, _ownsStage, _ownsPause, _ownsStateDisable, _changedUi, _changedCamera, _changedPaused;
         internal Task<MissionScreenshotPair> Completion => _done.Task;
 
@@ -78,6 +83,8 @@ namespace AnimusForge.Illustrator.Engine
                 _backup = Camera.CreateCamera();
                 _backup.FillParametersFrom(_screen.CombatCamera);
                 _captureCamera = Camera.CreateCamera();
+                // Preserve native camera setup, then replace pose/projection below.
+                _captureCamera.FillParametersFrom(_backup);
                 float aspect = _backup.GetAspectRatio();
                 Vec3[] positions = BuildLevelPositions(pivot, bodyForward, subjectRadius, aspect);
                 _frontPosition = ResolveCameraCollision(positions[0]);
@@ -93,10 +100,20 @@ namespace AnimusForge.Illustrator.Engine
                 mission.Scene.TimeSpeed = 0f;
                 MBDebug.DisableAllUI = true;
                 _changedUi = true;
+                foreach (var layer in _screen.Layers)
+                    if (layer is GauntletLayer gauntlet && layer.IsActive && !layer.IsFinalized)
+                    {
+                        // Clear already-submitted UI commands as vanilla deactivation does.
+                        // Keep layer activation/visibility ownership with the original UI.
+                        gauntlet.TwoDimensionPlatform.Clear();
+                        gauntlet.TwoDimensionView.Clear();
+                    }
+                _screen.OnAddLayer += OnLayerAdded;
+                _watchingLayers = true;
                 _changedCamera = true;
                 _screen.CustomCamera = _captureCamera;
                 ApplyCamera();
-                _notBeforeFrame = IllustratorRuntime.ApplicationFrame + 1;
+                BeginWarmup();
                 _cancel.CancelAfter(CaptureBudgetMs);
             }
             catch { Restore(); _cancel.Dispose(); throw; }
@@ -115,11 +132,14 @@ namespace AnimusForge.Illustrator.Engine
                     throw new TimeoutException("双截图采集超时，已恢复原画面；未开始导演或生图。");
                 if (!ReferenceEquals(_screen.CustomCamera, _captureCamera))
                     throw new InvalidOperationException("采集期间相机被其他功能接管，已终止采集。");
+                if (!MBDebug.DisableAllUI || _layersChanged)
+                    throw new InvalidOperationException("截图期间界面发生变化，已停止采集，未发送生图请求。");
+                // Keep the fixed pose/FOV despite native zoom handling, without scanning scene agents.
+                ApplyCamera();
                 if (_read == null)
                 {
-                    if (IllustratorRuntime.ApplicationFrame < _notBeforeFrame) return;
-                    // Scheduling separation only; no frame counter is treated as native completion.
-                    ApplyCamera();
+                    if (IllustratorRuntime.ApplicationFrame < _notBeforeFrame || _clock.ElapsedMilliseconds < _notBeforeMs) return;
+                    // More than the vanilla photo-mode UI warmup; still not a GPU completion fence.
                     Utilities.TakeScreenshot(_paths[_index]);
                     string path = _paths[_index];
                     CancellationToken token = _cancel.Token;
@@ -135,7 +155,7 @@ namespace AnimusForge.Illustrator.Engine
                     _index = 1;
                     _captureCamera.LookAt(_rearPosition, _pivot, Vec3.Up);
                     ApplyCamera();
-                    _notBeforeFrame = IllustratorRuntime.ApplicationFrame + 1;
+                    BeginWarmup();
                     return;
                 }
                 var pair = new MissionScreenshotPair(_first, raw);
@@ -176,8 +196,17 @@ namespace AnimusForge.Illustrator.Engine
             return position;
         }
 
+        private void OnLayerAdded(ScreenLayer layer) { if (layer is GauntletLayer) _layersChanged = true; }
+
+        private void BeginWarmup()
+        {
+            _notBeforeFrame = IllustratorRuntime.ApplicationFrame + WarmupFrames;
+            _notBeforeMs = _clock.ElapsedMilliseconds + WarmupMilliseconds;
+        }
+
         private void ApplyCamera()
         {
+            _captureCamera.SetFovVertical((float)Math.PI / 3f, _backup.GetAspectRatio(), 0.05f, Math.Max(1000f, _backup.Far));
             _screen.CombatCamera.FillParametersFrom(_captureCamera);
             _screen.SceneView.SetCamera(_screen.CombatCamera);
         }
@@ -196,6 +225,7 @@ namespace AnimusForge.Illustrator.Engine
             _closed = true;
             _cancel.Cancel();
             _first = null;
+            if (_watchingLayers) { _screen.OnAddLayer -= OnLayerAdded; _watchingLayers = false; }
             // Restore each owned resource independently, including failure/mission exit.
             if (_changedCamera && !_screen.IsFinalized && ReferenceEquals(_screen.CustomCamera, _captureCamera))
             {

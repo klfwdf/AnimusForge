@@ -5,6 +5,7 @@
     <LangVersion>10.0</LangVersion>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="System.Drawing" />
     <Compile Include="../audits/OfflineAssemblyResolver.cs" Link="DependencyResolver.cs" />
   </ItemGroup>
 </Project>
