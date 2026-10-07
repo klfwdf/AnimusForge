@@ -22,7 +22,7 @@ namespace AnimusForge.DialogueUI
         public override string FormatType => "json";
 
         [SettingPropertyDropdown("对话界面", Order = 0, RequireRestart = false,
-            HintText = "原版：使用原版对话与 AnimusForge 原有输入界面。新 UI：使用羊皮纸对话、地图对话与历史/给予面板。默认新 UI，下次打开界面生效，无需重启。")]
+            HintText = "原版：使用原版对话，场景喊话保留卷轴式（暂停）输入。新 UI：使用羊皮纸对话、地图对话与历史/给予面板。默认新 UI，下次打开界面生效，无需重启。")]
         [SettingPropertyGroup("1. 界面", GroupOrder = 1)]
         public Dropdown<string> InterfaceStyleDropdown { get; set; } =
             new Dropdown<string>(new[] { "原版", "新 UI" }, 1);
@@ -47,10 +47,10 @@ namespace AnimusForge.DialogueUI
         public int BodyFontSize { get; set; } = 24;
 
         [SettingPropertyDropdown("场景喊话面板风格", Order = 1, RequireRestart = false,
-            HintText = "原样：保持现有的 T/Y 喊话流程与输入框。卷轴式：底部卷轴输入 + 右侧受众挂札。右侧手札：右侧竖版对谈手札。卷轴式与右侧手札会把 T/Y 合并为「按住框选、松开展开轮盘」，并进入持续的场景多人会话。")]
+            HintText = "卷轴式（暂停）：复用底部卷轴输入，打开时暂停，不显示受众名录，也用于兜底。卷轴式：底部卷轴输入 + 右侧受众挂札。右侧手札：右侧竖版对谈手札。后两种在和平场景使用持续多人会话；战斗中按喊话键直接打开暂停输入。三种面板均提供手动生图按钮（需启用生图）。")]
         [SettingPropertyGroup("1. 界面", GroupOrder = 1)]
         public Dropdown<string> ShoutPanelStyleDropdown { get; set; } =
-            new Dropdown<string>(new[] { "原样", "卷轴式", "右侧手札" }, 1);
+            new Dropdown<string>(new[] { "卷轴式（暂停）", "卷轴式", "右侧手札" }, 1);
 
         [SettingPropertyBool("自动进入 AI 模式", Order = 3, RequireRestart = false,
             HintText = "开启时，打开场景或地图对话自动进入 AI 输入模式；可配合「仅 Hero 自动进入 AI 模式」限制对象。关闭时先显示普通对话选项，仍可手动切换 AI。下次打开对话生效。")]

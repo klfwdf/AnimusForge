@@ -92,6 +92,15 @@ namespace AnimusForge.DialogueUI
             button.UpdateChildrenStates = true;
         }
 
+        internal static void StyleShoutScroll(Widget root)
+        {
+            if (root == null || !DialogueUiSprites.EnsureShoutScrollLoaded()) return;
+            foreach (string id in new[] { "AFDialogueShoutHistory", "AFShoutCancel", "AFShoutCodex", "SceneIllustrationButton" })
+                StylePlate(root.FindChild(id, true) as ButtonWidget);
+            StyleSprite(root.FindChild("AFShoutSubmit", true) as ButtonWidget, "afdui_plaque_nameplate");
+            StyleSprite(root.FindChild("AFDialogueShoutSubmit", true) as ButtonWidget, "afdui_plaque_nameplate");
+        }
+
         // Scene prefab buttons are styled by Id prefix after the movie (or a list item) appears.
         internal static void StyleSceneButton(ButtonWidget button)
         {
