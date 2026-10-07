@@ -8089,3 +8089,12 @@ R2计划交付门槛：已给固定技术路线、真实来源与目标、写入
 - 核实源码坐标及责任：`src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.ImportExportUi.cs:461–581`，单NPC入口；`src/modules/AF.Module.Memory/ImportExport/MemoryImportExportOwner.cs:76–132`，Apply；`src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.cs:1202–1242`权威projections、`29796–29806`实际apply、`23560–23582`总览、`23600–23655`历史；同目录 `MyBehavior.HistoryPromptSnapshot.cs:35–77`，当前目标snapshot；`MyBehavior.UncompressedMemoryPrompt.cs:18–82`，daily capture；`src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.cs:10637–10678`，Native capture，`13474–13556`，API caller；`src/modules/AF.Module.Conversation/Channels/Native/ShoutBehavior.NativeTurnPrompt.cs:74–80,113–136,192–210`，capture/join/split/prefix；`src/modules/AF.Module.Prompt/Composition/HistorySectionProjectionOwner.cs:360–429`，split/header；`src/modules/AF.Module.Llm/ShoutNetwork.cs:379–411`，payload，`766–779,1001–1005`真实调用点；`src/modules/AF.Module.Llm/Protocol/LlmApiCompat.cs:130–138`，JSON。提取验证见 `artifacts/imported-memory-source-spans-20261008.log`，精确内容以evidence源hash为准。
 - 结论：当前源码正确目标+覆盖这份有效记忆文件时，未复现记忆注入丢失；不能证明玩家实际导入结果或模型遵从。现场判因需要目标StringId、导入后重导出的同NPC记忆、同回合 `DialogueHistory compressed_context` / `[MemoryPerf] history_context_done` / `[NativeConversation] request persistedChars` 日志；实际日志目录为安装模块 `logs`。
 - NOT-RUN：玩家安装DLL/配置、真实Campaign/.sav往返、完整Native调度/场景bridge、显示名别名、实际HTTP发送/重试/响应、真实模型和三渠道实机效果。生产源码未变，本轮不重跑或冒称重跑双API/Bootstrap；此前构建仅保持原覆盖范围。本任务未Stage/部署/打包/推送；其他任务的部署记录不代替本任务实机验收。回滚仅本任务测试/文档提交；产品格式修复回滚仍单独 `git revert 834146d55`。
+# 场景喊话与战斗双截图生图（2026-10-08，ACTIVE）
+
+- 用户确认实施；基线 `main@652f0fda63ac00c6e3818f1e6a6de9d0589020db`。保留其他任务与未跟踪 NuGet 目录，本任务不部署、不打包、不推送，不调用付费 API。
+- 手动面板按钮；战斗喊话跳过轮盘直开 UI，允许无 NPC 目标生图；既有交流目标资格和和平常驻会话边界保持。所有战斗含无 Campaign 的自定义战斗。
+- 每次请求只采两张真实画面：当前机位与绕人物/交互区域反侧回望。临时隐藏 UI 并冻结现场，成功/失败/离场均恢复自有相机、UI 与原暂停状态。无全景、额外立绘、持续采集或自动触发。
+- 点击冻结当前场景最近两轮已发送/收到的完整对白，保留多人回应；喊话明确发生的动作优先于待机姿势，战斗锁定截图动作；站位、距离、朝向保持，机位与最终构图由导演决定。
+- 两图必须交导演及带图生成；继承现有模型、画风、尺寸和画廊，不丢图、不使用本地导演替代、不自动重试。采集未完离场终止，采完后关闭/离场继续后台保存，晚结果不弹到新场景，未完成期间禁止重复点击。
+- 修改范围：Scene 喊话入口/历史快照、输入框与 DialogueUI 面板/预制体、Illustrator 专用双截图采集/请求 owner、导演/HTTP 参考语义与画廊保存接缝。主线程只做有界按需现场读取和原生调用；后台只用冻结标量、字节与配置，复用现有四 worker 限额。
+- 退出门：入口与实际消费者接通；双截图失败/恢复/离场/重复提交边界有代码和针对性验证；1.3/1.4/Bootstrap 原构建通过。真实 GPU 截图帧/HUD/相机恢复及真实模型效果明确记 NOT-RUN，源码接口或离线测试不冒称实机验收。完成证据与回滚提交在本条更新。
