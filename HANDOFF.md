@@ -1,3 +1,8 @@
+# 当前交接：双截图采集/黑图拦截与快报配图抽选（2026-10-08，OFFLINE_VERIFIED_NOT_DEPLOYED）
+
+- `1cfa75456`补相机初始化、UI缓存清理、每机位4帧且250ms等待和黑图拒绝；`f3574ab59`从本期大事件按故事组抽选配图，同期冻结、不改外交分数。原双API/Bootstrap/接缝、采集221、每版真实DLL17、快报72、归档183 PASS；用户真黑图已在测试中拒绝。真实GPU无UI双视图仍待验，不将等待计数当GPU完成凭证。
+- [唯一台账、代码坐标与回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#screenshot-capture-fix-20261008)，证据 `artifacts/screenshot-capture-fix-20261008/receipt.json`。本轮未部署/推送；此前统一部署仍为af1cd803记录的4cfcbc8e产品。
+
 # 当前交接：全部已提交会话改动统一部署/推送（2026-10-08，DEPLOYED_PUSHED_LIVE_PENDING）
 
 - 用户授权全部会话改动部署提交推送。产品`4cfcbc8e`已部署且远端main独立确认一致；含对话UI/生图面板、前后平视、战役长按T框选和全屏默认。原双API/Bootstrap/接缝通过，30286构建输入一致；部署16文件、3380目标SHA与16备份通过。下方旧“未部署/未推送”条目由本条取代，实机仍待验。
