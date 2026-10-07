@@ -1,4 +1,15 @@
-﻿<a id="meeting-lifecycle-fixes-20261008"></a>
+﻿<a id="dialogue-scroll-20261008"></a>
+# 对话滚轮减速与历史最新定位（2026-10-08，OFFLINE_VERIFIED_NOT_DEPLOYED）
+
+- 用户反馈对话滚轮轻动到底，并追加历史“最新”未到真正末条。检查点 `034bb89`，产品 `27205125ed98c7c0f990c2e9ac26c761c4fa4065`；保留其他作者生图/遭遇/喊话皮肤提交和既有NuGet目录。
+- 原因/变化：正文与选项、共享历史面板使用原版0.2滚轮速度，新建时改为0.04（五分之一）；原惯性、手柄、拖动、自动定位逻辑保持。共享历史控件的其他消费者（含世界消息）手动滚轮同样减速。LatestHistory原循环LoadNewerPage会到页首，最后一页又完全不发滚动请求；改为直接JumpToLatestPage，只重建末页一次，已经末页仍增加底部请求版本。保持当前日期/搜索/类别筛选，不隐式清除筛选；“下一页”仍页首衔接。
+- 代码坐标（产品修订，一基行号）：`extensions/AnimusForge.DialogueUI/src/Native/AFDialogueClickThroughScrollPanel.cs:8–12` 构造滚轮速度，`src/AF.GameAdapter.Bannerlord/UI/Conversation/AnimusForgeConversationHistoryAutoScrollPanel.cs:27–31` 共享历史速度；`src/AF.GameAdapter.Bannerlord/UI/Conversation/AnimusForgeConversationHistoryLogVM.cs:300–315` 的JumpToLatestPage；`extensions/AnimusForge.DialogueUI/src/Native/DialogueAuxiliaryVM.cs:213` 的LatestHistory接线。既有AutoScrollRequestVersion及XML绑定复用，无新增外部插件API或存档键。code-map按提交/工作树核对，职责导航见[代码范围图](architecture/af-framework-code-scope.md)。
+- 性能：速度只在控件构造时赋值；最新点击O(1)算末页，只创建至多50条末页VM，不再循环格式化中间页。已经末页只通知滚动版本，无新增Tick扫描/反射/网络或持久化。
+- 验证：`tests/AF.GameAdapter.Bannerlord/HistoryScrollTests/run.py` 12 PASS，提取真实Jump/前后页方法并编译真实历史滚动控件；覆盖1001条多页、已在末页重击、空/关闭、顶部请求被底部取代、延迟高度增大及手动滚动取消。行构建/布局为替身。既有continue-hit专项双API各163 PASS，真实prefab/命中顺序与控制器，引擎/滚动位移替身，新增速度属性与原点击透传保持断言。
+- 初次点击回放SDK默认命中缺少8.0.30引用包，原错误日志保留；证据目录global.json选已安装SDK8.0.421后通过，未改全局SDK/原构建入口。最终固定产品隔离原双API/Bootstrap/双DLL接缝构建exit0，Debug，引用1.3 v1.3.15.110062及1.4 v1.4.6.115628；receipt.json绑定7文件blob及9产物SHA/metadata。
+- 证据 `artifacts/dialogue-scroll-20261008/`：history-final、click-13-final、click-14-final、build.log/exit、code-map.json。NOT-RUN：真实鼠标滚轮/触控板手感、多分辨率Gauntlet延迟布局/实际最新定位、实机两游戏版本。未Stage/部署/打包/推送；回滚仅 `git revert 27205125`。
+
+<a id="meeting-lifecycle-fixes-20261008"></a>
 # 会面放行/投降生命周期修复（2026-10-08，OFFLINE_VERIFIED_NOT_DEPLOYED）
 
 - 用户授权修复会面审查确认的三项。检查点 `d5ab7760`，产品 `110bbeed`（5文件）。范围仅原会面宿主和专项测试；保留并行对话UI工作。本条取代本地 meeting-full-review-20261008/findings.md 三项待修状态，不将这些问题认定为之前玩家开战失败的根因。
