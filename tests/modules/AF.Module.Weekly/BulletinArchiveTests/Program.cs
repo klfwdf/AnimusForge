@@ -297,4 +297,88 @@ File.Copy("packaged-default.json",Path.Combine("prompt-packaged","WorldBulletinW
 Check(DuelSettings.ReplayReadLayered("prompt-fixtures","prompt-packaged",out var recoveredPrompt)&&recoveredPrompt==packagedPrompt,"invalid override falls back through existing packaged layer");
 WritePrompt("");
 Check(DuelSettings.ReplayReadLayered("prompt-fixtures","prompt-packaged",out var layeredBlank)&&layeredBlank=="","explicit empty override wins over packaged default");
-Console.WriteLine($"PASS: {count} final archive/save/UI/navigation/publication/diplomacy/prompt assertions (game, regional aggregation, rendering and artwork lifecycle stubbed).");
+// Actual NPC assembly + actual diplomacy adapter and permission selector. Only engine identities,
+// current owner/storage, country ordering and unchanged artwork/render boundaries are fixtures.
+var knowledgeOwner = new WorldDiplomacyBehavior(); WorldDiplomacyBehavior.Instance = knowledgeOwner;
+var realmA = new TaleWorlds.CampaignSystem.Kingdom { StringId="A" };
+var courtClan = new TaleWorlds.CampaignSystem.Clan { Kingdom=realmA };
+var ordinaryClan = new TaleWorlds.CampaignSystem.Clan { Kingdom=realmA };
+var town = new TaleWorlds.CampaignSystem.Settlement { StringId="town" };
+var courtHero = new TaleWorlds.CampaignSystem.Hero { StringId="court", Clan=courtClan, IsLord=true, CurrentSettlement=town };
+var nobleHero = new TaleWorlds.CampaignSystem.Hero { StringId="noble", Clan=ordinaryClan, IsLord=true, CurrentSettlement=town };
+var civilian = new TaleWorlds.CampaignSystem.Hero { StringId="civilian", Clan=ordinaryClan, CurrentSettlement=town };
+realmA.RulingClan=courtClan; courtClan.Leader=courtHero;
+WorldDiplomacyBehavior.Kingdoms["A"]=realmA;
+foreach(var hero in new[]{courtHero,nobleHero,civilian}) DiplomacyIdentityResolver.Heroes[hero.StringId]=hero;
+var declaration = new WorldBulletinEvent { Key="declaration:sealed-1", Kind="diplomatic_declaration", Sentence="密封宣言甲正式发布。", Detail="密封宣言甲的公开主张。", Day=5, Hour=100, KingdomIds=new(){"A","B"} };
+var declaration2 = new WorldBulletinEvent { Key="declaration:sealed-2", Kind="diplomatic_declaration", Sentence="密封宣言乙正式发布。", Detail="密封宣言乙的公开主张。", Day=5, Hour=101, KingdomIds=new(){"A","B"} };
+var mixedIssue = WeeklyReportArchivePolicy.CloneForArchive(issue);
+mixedIssue.Title="密封头条"; mixedIssue.BulletinAnecdote="密封轶闻";
+mixedIssue.Materials.Add(new() { MaterialType=WeeklyReportArchivePolicy.ReportedMaterialType, ActionKind=declaration.Kind, SnapshotText=declaration.Sentence, SourceStableKeys=new(){declaration.Key} });
+var knowledgeHost = new MyBehavior { _worldBulletinState=new(){Events=new(){fact,declaration}}, _eventRecordEntries=new(){mixedIssue} };
+string AllLayers(WeeklyPromptSnapshot s)=>string.Join("\n",new[]{s.ShortReportsIncludingNpc,s.ShortReportsExcludingNpc,s.NpcFullReport,s.WorldFullReport,s.SurroundingsFullReport});
+WeeklyPromptSnapshot Capture(TaleWorlds.CampaignSystem.Hero hero) {
+ int beforeCapture=WorldDiplomacyBehavior.Captures;
+ var snap=knowledgeHost.ReplayNpcSnapshot(hero,kingdom:"A");
+ Check(WorldDiplomacyBehavior.Captures==beforeCapture+1,"one diplomacy knowledge capture per NPC snapshot");
+ return snap;
+}
+void Hidden(TaleWorlds.CampaignSystem.Hero hero,string label) {
+ var snap=Capture(hero);
+ Check(!AllLayers(snap).Contains("密封"),label+": no declaration, title or anecdote in any NPC layer");
+ Check(snap.WorldFullReport.Contains("击败"),label+": ordinary battle facts survive mixed issue filtering");
+}
+void Visible(TaleWorlds.CampaignSystem.Hero hero,string label) {
+ var snap=Capture(hero);
+ Check(snap.WorldFullReport.Contains("密封宣言甲")&&snap.WorldFullReport.Contains("密封轶闻"),label+": authorised archive facts and anecdote visible");
+ if(knowledgeHost._worldBulletinState.Events.Contains(declaration))
+  Check(snap.NpcFullReport.Contains("密封宣言甲")&&snap.SurroundingsFullReport.Contains("密封宣言甲")&&snap.ShortReportsIncludingNpc.Contains("密封宣言甲")&&snap.ShortReportsExcludingNpc.Contains("密封宣言甲"),label+": authorised live event reaches every regional layer");
+}
+string originalKnowledgeEvents=JsonConvert.SerializeObject(knowledgeHost._worldBulletinState.Events);
+string originalMixedIssue=JsonConvert.SerializeObject(mixedIssue);
+Hidden(courtHero,"publication before any delivery");
+knowledgeOwner._storage.KingdomKnowledge.Add(new(){KingdomId="A",DocumentIds=new(){"sealed-1"}});
+Visible(courtHero,"court arrival"); Hidden(nobleHero,"court arrival does not grant ordinary noble knowledge"); Hidden(civilian,"court arrival does not grant civilian knowledge");
+knowledgeOwner._storage.NobleKnowledge.Add(new(){KingdomId="A",DocumentIds=new(){"sealed-1"}});
+Visible(nobleHero,"noble network arrival"); Hidden(civilian,"noble network does not grant civilian knowledge");
+knowledgeOwner._storage.SettlementKnowledge.Add(new(){SettlementId="town",DocumentIds=new(){"sealed-1"}});
+Visible(civilian,"settlement arrival");
+civilian.CurrentSettlement=new(){StringId="remote"}; Hidden(civilian,"movement recaptures destination knowledge");
+civilian.CurrentSettlement=null; civilian.PartyBelongedTo=new(){CurrentSettlement=town}; Visible(civilian,"party settlement fallback");
+var characterSnapshot=knowledgeHost.ReplayNpcSnapshot(character:new(){HeroObject=civilian},kingdom:"A");
+Check(AllLayers(characterSnapshot).Contains("密封轶闻"),"CharacterObject HeroObject uses same permissions");
+knowledgeHost._worldBulletinState.Events.Clear();
+Visible(civilian,"archive still checks knowledge after retained events pruned");
+civilian.PartyBelongedTo=null; Hidden(civilian,"archive alone cannot leak to undelivered NPC");
+mixedIssue.Materials.Add(new(){MaterialType=WeeklyReportArchivePolicy.ReportedMaterialType,ActionKind=declaration2.Kind,SnapshotText=declaration2.Sentence,SourceStableKeys=new(){declaration2.Key}});
+var partlyKnown=Capture(courtHero);
+Check(partlyKnown.WorldFullReport.Contains("密封宣言甲")&&!partlyKnown.WorldFullReport.Contains("密封宣言乙")&&!partlyKnown.WorldFullReport.Contains("密封头条")&&!partlyKnown.WorldFullReport.Contains("密封轶闻"),"partly delivered issue keeps known facts but hides untraceable shared title and anecdote");
+knowledgeOwner._storage.KingdomKnowledge.Single().DocumentIds.Add("sealed-2");
+Check(Capture(courtHero).WorldFullReport.Contains("密封轶闻"),"all declarations known restores narrative");
+mixedIssue.Materials.RemoveAt(mixedIssue.Materials.Count-1);
+mixedIssue.Materials.Last().SourceStableKeys.Clear(); Hidden(courtHero,"missing declaration provenance fails closed");
+mixedIssue.Materials.Last().SourceStableKeys.Add("declaration:sealed-1");
+WorldDiplomacyBehavior.Instance=null; Hidden(courtHero,"unavailable diplomacy owner fails closed");
+WorldDiplomacyBehavior.Instance=knowledgeOwner; WorldDiplomacyBehavior.ThrowOnCapture=true; Hidden(courtHero,"capture exception fails closed"); WorldDiplomacyBehavior.ThrowOnCapture=false;
+Check(JsonConvert.SerializeObject(mixedIssue)==originalMixedIssue,"visibility projection leaves canonical issue unchanged");
+knowledgeHost._worldBulletinState.Events=new(){fact,declaration};
+Check(JsonConvert.SerializeObject(knowledgeHost._worldBulletinState.Events)==originalKnowledgeEvents,"visibility projection leaves captured events unchanged");
+var legacyNarrative = new EventRecordEntry {EventId="weekly_report:world:bulletin:old:5",CreatedDay=5,Title="密封头条",Summary="密封旧故事",BulletinAnecdote="密封轶闻"};
+knowledgeHost._worldBulletinState.Events.Clear(); knowledgeHost._eventRecordEntries=new(){legacyNarrative};
+Check(!AllLayers(knowledgeHost.ReplayNpcSnapshot(courtHero,kingdom:"A")).Contains("密封"),"untraceable legacy narrative is not a permission source");
+int noDiplomacyBefore=WorldDiplomacyBehavior.Captures;
+knowledgeHost._eventRecordEntries=new(){issue}; knowledgeHost._worldBulletinState.Events=new(){fact}; knowledgeHost.ReplayNpcSnapshot(courtHero,kingdom:"A");
+Check(WorldDiplomacyBehavior.Captures==noDiplomacyBefore,"battle-only snapshot does not query diplomacy owner");
+var recordingOnly = new WorldBulletinStateOwner { State=new(), _port=new() {Enabled=()=>true,PublishingEnabled=()=>false,Render=s=>s,Focus=()=>new(),CurrentDay=()=>5,CurrentHour=()=>100,CurrentDate=()=>"5",Log=(a,b)=>{},CallApi=(s,u)=>{requests++;throw new Exception("should not request");}} };
+int previousRequests=requests;
+recordingOnly.CaptureCivilNewsMaterial(declaration.Kind,declaration.Key,declaration.Sentence,declaration.Detail,false,"A","B");
+recordingOnly.CaptureCivilNewsMaterial(declaration.Kind,declaration.Key,declaration.Sentence,declaration.Detail,false,"A","B");
+Check(recordingOnly.State.Events.Count==1&&requests==previousRequests,"automatic publishing off still records exactly one declaration with no API request");
+knowledgeOwner._storage=new(); knowledgeHost._worldBulletinState=recordingOnly.State; knowledgeHost._eventRecordEntries=new();
+Check(!AllLayers(Capture(nobleHero)).Contains("密封"),"record-only declaration still respects propagation before delivery");
+TaleWorlds.Library.InformationManager.Messages.Clear(); TaleWorlds.Core.MBInformationManager.Notices.Clear();
+knowledgeOwner.ReplayShowNotice(new AnimusForge.Refactor.Contracts.WorldDiplomacyNotice("own","本国标题","完整描述",true));
+Check(TaleWorlds.Core.MBInformationManager.Notices.Single().DocumentId=="own"&&TaleWorlds.Library.InformationManager.Messages.Count==0,"actual notification adapter sends domestic notice only to right-side native notice manager");
+knowledgeOwner.ReplayShowNotice(new AnimusForge.Refactor.Contracts.WorldDiplomacyNotice("foreign","外国标题","描述",false));
+Check(TaleWorlds.Core.MBInformationManager.Notices.Count==1&&TaleWorlds.Library.InformationManager.Messages.Single().Contains("【外交宣言送达】外国标题"),"actual notification adapter sends foreign notice only to lower-left information manager");
+Console.WriteLine($"PASS: {count} final archive/save/UI/navigation/publication/diplomacy/prompt/knowledge assertions (game, regional aggregation, rendering and artwork lifecycle stubbed).");

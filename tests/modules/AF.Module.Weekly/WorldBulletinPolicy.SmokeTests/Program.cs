@@ -144,6 +144,12 @@ internal static class Program
         Check(sys.Contains("适度讥讽和粗粝感") && sys.Contains("勇气、机智和体面") && sys.Contains("避免现代段子") && sys.Contains("不要每篇都靠打架取乐"), "medieval anecdote tone has varied reactions without compulsory violence or modern jokes");
         Check(sys.Contains("自由选择切入点") && sys.Contains("不固定叙述顺序") && sys.Contains("不强行补一段宏大评价") && !sys.Contains("先交代来龙去脉") && !sys.Contains("最后写对相关王国"), "opening and paragraph order are free and macro commentary is optional");
         Check(empty.Contains("同场交战") && empty.Contains("粗粝感") && empty.Contains("自由选择切入点") && custom.Contains("不强行补一段宏大评价"), "core encounter and structure rules apply with custom or explicitly empty editable style");
+        var knownDeclarations = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { "doc-a" };
+        Check(!WorldBulletinPolicy.IsNpcFactVisible("diplomatic_declaration", "declaration:doc-a", null), "declaration knowledge fails closed without an available owner");
+        Check(WorldBulletinPolicy.IsNpcFactVisible("diplomatic_declaration", "declaration:DOC-A", knownDeclarations) && !WorldBulletinPolicy.IsNpcFactVisible("diplomatic_declaration", "declaration:doc-b", knownDeclarations), "only known declaration IDs are visible");
+        Check(!WorldBulletinPolicy.IsNpcFactVisible("diplomatic_declaration", "declaration:", knownDeclarations) && !WorldBulletinPolicy.IsNpcFactVisible("diplomatic_declaration", "broken", knownDeclarations), "missing or malformed declaration provenance fails closed");
+        Check(!WorldBulletinPolicy.IsNpcFactVisible("", "declaration:doc-b", knownDeclarations), "declaration identity still protects legacy facts with missing kind");
+        Check(WorldBulletinPolicy.IsNpcFactVisible("battle", "battle:1", null) && WorldBulletinPolicy.IsNpcFactVisible("ruler_policy", "material:1", null), "ordinary events retain existing visibility without diplomacy knowledge");
         string anecdotal = WorldBulletinPolicy.BuildNpcWorldBlock(events, 5, "报刊标题", "甲军获胜", 4, null, "甲打掉了乙的牙，乙怒骂退场");
         Check(anecdotal.Contains("【快报轶闻】来源：快报《报刊标题》") && anecdotal.Contains("听说") && anecdotal.Contains("不作为已确认事实") && anecdotal.Contains("打掉了乙的牙"), "NPC receives source-labelled anecdote with explicit fact boundary");
         Check(!WorldBulletinPolicy.BuildNpcWorldBlock(null, 13, "旧轶闻", "", 5, null, "掉牙").Contains("掉牙"), "anecdote obeys existing seven-day freshness boundary");

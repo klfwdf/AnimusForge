@@ -2,16 +2,29 @@
 namespace TaleWorlds.CampaignSystem {
  public interface IDataStore { bool SyncData<T>(string key, ref T data); }
  public class Campaign { public static Campaign Current=new(); public EncyclopediaManager EncyclopediaManager=new(); }
- public class Hero {} public class CharacterObject {}
+ public class Hero { public string StringId; public bool IsLord; public Clan Clan; public Settlement CurrentSettlement; public Party PartyBelongedTo; }
+ public class CharacterObject { public Hero HeroObject; }
+ public class Clan { public static Clan PlayerClan; public Kingdom Kingdom; public Hero Leader; }
+ public class Kingdom { public Clan RulingClan; public string StringId; }
+ public class Settlement { public string StringId; }
+ public class Party { public Settlement CurrentSettlement; }
  public class EncyclopediaManager { public int Opens; public string Link; public void GoToLink(string link){Opens++;Link=link;} }
 }
 namespace TaleWorlds.Library {
- public class InformationMessage { public InformationMessage(string text){} }
- public static class InformationManager { public static void DisplayMessage(InformationMessage message){} }
+ public class InformationMessage { public readonly string Text; public InformationMessage(string text,object color=null){Text=text;} }
+ public static class InformationManager { public static readonly System.Collections.Generic.List<string> Messages=new(); public static void DisplayMessage(InformationMessage message){Messages.Add(message.Text);} }
+ public static class Colors { public static readonly object Yellow=new(); }
  [System.AttributeUsage(System.AttributeTargets.Property)] public sealed class DataSourcePropertyAttribute:System.Attribute {}
  public class ViewModel { protected void OnPropertyChangedWithValue<T>(T value,string name){} public virtual void OnFinalize(){} }
  public class MBBindingList<T>:System.Collections.Generic.List<T> {}
 }
+namespace TaleWorlds.Core {
+ public class Game { public static Game Current=new(); public GameStateManager GameStateManager=new(); }
+ public class GameStateManager { public object ActiveState; }
+ public static class MBInformationManager { internal static readonly System.Collections.Generic.List<AnimusForge.WorldDiplomacyMapNotification> Notices=new(); internal static void AddNotice(AnimusForge.WorldDiplomacyMapNotification notice){Notices.Add(notice);} }
+}
+namespace TaleWorlds.CampaignSystem.GameState { public class MapState {} }
+namespace TaleWorlds.MountAndBlade { public class Mission { public static Mission Current; } }
 namespace TaleWorlds.InputSystem { public static class Input { public static void SetClipboardText(string text){} } }
 namespace AnimusForge {
  internal static class EncyclopediaEntityLinkFormatter {
@@ -46,8 +59,39 @@ namespace AnimusForge {
   private static System.Collections.Generic.List<string> GetKingdomIdsByPlayerProximity(System.Collections.Generic.List<string> ids)=>ids;
   private static System.Collections.Generic.List<string> SelectWeeklyShortReportKingdomIdsFromSnapshot(string id,bool excludeNpcKingdom,bool eligible,System.Collections.Generic.IEnumerable<string> nearest,System.Collections.Generic.IEnumerable<string> fallback)=>new(excludeNpcKingdom?nearest.Where(x=>x!=id):nearest);
   private EventRecordEntry FindLatestWorldBulletinRecord()=>_eventRecordEntries?.FirstOrDefault();
-  internal WeeklyPromptSnapshot ReplayNpcSnapshot()=>CaptureWorldBulletinNpcSnapshot(null,null,null);
+  internal WeeklyPromptSnapshot ReplayNpcSnapshot(TaleWorlds.CampaignSystem.Hero hero=null,TaleWorlds.CampaignSystem.CharacterObject character=null,string kingdom=null)=>CaptureWorldBulletinNpcSnapshot(hero,character,kingdom);
   internal System.Collections.Generic.IReadOnlyList<WorldWeeklyReportHistoryEntry> ReplayDiplomacyHistory(int minWeek=-1)=>GetPublishedWorldWeeklyReportHistoryInternal(minWeek);
+ }
+ // Only identity lookups, live host availability and current storage are fixtures. Knowledge selection,
+ // adapter delegation and MyBehavior's prompt assembly are the actual production method spans.
+ internal static class DiplomacyModuleServices { internal static WorldDiplomacyModuleAdapter World=new(); }
+ internal sealed partial class WorldDiplomacyModuleAdapter {}
+ internal static class DiplomacyIdentityResolver {
+  internal static readonly System.Collections.Generic.Dictionary<string,TaleWorlds.CampaignSystem.Hero> Heroes=new();
+  internal static TaleWorlds.CampaignSystem.Hero Hero(string id)=>id!=null&&Heroes.TryGetValue(id,out var hero)?hero:null;
+ }
+ internal sealed class WorldDiplomacyStorage {
+  internal System.Collections.Generic.List<WorldDiplomacySettlementKnowledge> SettlementKnowledge=new();
+  internal System.Collections.Generic.List<WorldDiplomacyKingdomKnowledge> NobleKnowledge=new(),KingdomKnowledge=new();
+ }
+ public sealed partial class WorldDiplomacyBehavior {
+  internal static WorldDiplomacyBehavior Instance; internal WorldDiplomacyStorage _storage=new();
+  internal static readonly System.Collections.Generic.Dictionary<string,TaleWorlds.CampaignSystem.Kingdom> Kingdoms=new();
+  internal static int Captures; internal static bool ThrowOnCapture;
+  private static WorldDiplomacyBehavior ResolveInstance(){Captures++;if(ThrowOnCapture)throw new System.InvalidOperationException("fixture unavailable");return Instance;}
+  private static TaleWorlds.CampaignSystem.Kingdom ResolveKingdom(string id)=>id!=null&&Kingdoms.TryGetValue(id,out var kingdom)?kingdom:null;
+  internal static string FormatDateForProactive(int day)=>day.ToString();
+  private static bool AreMapNotificationsEnabled()=>true;
+  private bool TryEnsureMapNotificationRegistered()=>true;
+  private static string KingdomName(TaleWorlds.CampaignSystem.Kingdom kingdom)=>kingdom?.StringId??"";
+  private static string FormatCampaignDate(int day)=>day.ToString();
+  private static int CurrentDay()=>5;
+  private static void Log(string text){}
+  internal void ReplayShowNotice(AnimusForge.Refactor.Contracts.WorldDiplomacyNotice notice)=>new NotificationWorld(this).ShowNotice(notice);
+ }
+ internal sealed class WorldDiplomacyMapNotification {
+  internal readonly string DocumentId,Title,Description;
+  public WorldDiplomacyMapNotification(string documentId,string title,string description){DocumentId=documentId;Title=title;Description=description;}
  }
  internal sealed class WorldBulletinLayout { public string EventId;public WorldBulletinIllustrationPlan IllustrationPlan;public System.Collections.Generic.List<string> KingdomIds=new(); }
  internal sealed partial class WorldBulletinStateOwner {

@@ -25,6 +25,8 @@ internal sealed class WorldDiplomacyModuleAdapter : IWorldDiplomacyModulePort
         public string FormatDate(int day) => WorldDiplomacyBehavior.FormatDateForProactive(day);
     }
     private static readonly IWorldDiplomacyMemorySource Memory = new MemorySource();
+    public System.Collections.Generic.ISet<string> CaptureKnownDocumentIds(string heroId, string kingdomOverride)
+        => Memory.TryCapture(heroId, kingdomOverride, out var snapshot) ? snapshot.KnownIds : null;
     public string BuildMemory(string heroId, string kingdomOverride, string input, System.Collections.Generic.IReadOnlyList<string> ruleIds, bool proactive)
         => WorldDiplomacyMemoryApplication.Build(Memory, heroId, kingdomOverride, input, ruleIds, proactive);
     private sealed class RevisionSource : IWorldDiplomacyTimelineRevisionSource

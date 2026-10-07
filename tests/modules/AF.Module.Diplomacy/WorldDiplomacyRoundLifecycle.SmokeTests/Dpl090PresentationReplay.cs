@@ -108,21 +108,24 @@ internal static class Dpl090PresentationReplay
         public bool Registered = true;
         public bool ThrowNotice;
         public int Probes;
+        public int Registrations;
         public readonly List<string> Notices = new();
+        public readonly List<WorldDiplomacyNotice> RoutedNotices = new();
         public readonly List<string> Rumors = new();
         public Action? BeforeNotice;
         public bool CanPublishMapNotification() { Probes++; return Ready; }
-        public bool EnsureMapNotificationRegistered() => Registered;
+        public bool EnsureMapNotificationRegistered() { Registrations++; return Registered; }
         public string KingdomName(string id) => id;
         public string FormatCampaignDate(int day) => day.ToString();
         public int CurrentDay => 10;
-        public string PlayerKingdomId => "player";
+        public string PlayerKingdomId { get; set; } = "player";
         public void ShowRumor(string text) => Rumors.Add(text);
         public void ShowNotice(WorldDiplomacyNotice notice)
         {
             BeforeNotice?.Invoke();
             if (ThrowNotice) throw new InvalidOperationException("fixture");
             Notices.Add(notice.DocumentId);
+            RoutedNotices.Add(notice);
         }
         public void Log(string text) { }
     }
@@ -173,6 +176,7 @@ internal static class Dpl090PresentationReplay
         Test.True(!sink.Notices.Contains("suppressed"), "reenabling does not replay suppressed notices");
 
         var deferred = Document("deferred", 8);
+        deferred.AuthorKingdomId = "player";
         storage.Documents.Add(deferred);
         sink.Ready = false;
         owner.Poll(storage, now.AddSeconds(4), sink);
@@ -218,6 +222,47 @@ internal static class Dpl090PresentationReplay
             && (saved.Contains("\"formalNoticeShown\":true", StringComparison.Ordinal)
                 || saved.Contains("\"FormalNoticeShown\":true", StringComparison.Ordinal)),
             "runtime notification invalidation does not change persisted document names");
+
+        var routed = new WorldDiplomacyStorage();
+        var domestic = Document("domestic", 1); domestic.AuthorKingdomId = "PLAYER";
+        var foreign = Document("foreign", 2); foreign.TargetKingdomId = "player";
+        var playerWritten = Document("self", 3); playerWritten.AuthorKingdomId = "player"; playerWritten.IsPlayerAuthored = true;
+        var notArrived = Document("not-arrived", 4); notArrived.HasReachedPlayerCourt = false;
+        routed.Documents.AddRange(new[] { domestic, foreign, playerWritten, notArrived });
+        var routeOwner = new WorldDiplomacyNotificationApplication();
+        var routeSink = new Sink { Registered = false };
+        routeOwner.Poll(routed, now, routeSink);
+        Equal("foreign", string.Join(",", routeSink.Notices), "unavailable domestic widget does not block foreign notice even when player is its target");
+        Test.True(!routeSink.RoutedNotices.Single().ShowOnMap && !domestic.FormalNoticeShown,
+            "foreign goes to text and domestic widget failure keeps record retryable");
+        Equal(1, routeSink.Registrations, "only domestic notice probes widget registration");
+        int routeBuilds = routeOwner.RebuildCount;
+        routeOwner.Poll(routed, now.AddSeconds(1), routeSink);
+        Equal(routeBuilds, routeOwner.RebuildCount, "deferred widget retries do not rescan document storage");
+        routeSink.Registered = true;
+        routeOwner.Poll(routed, now.AddSeconds(2), routeSink);
+        Test.True(domestic.FormalNoticeShown && routeSink.RoutedNotices.Last().ShowOnMap,
+            "same-country declaration restores right icon on registration recovery, ignoring ID case");
+        Test.True(!playerWritten.FormalNoticeShown && !notArrived.FormalNoticeShown,
+            "existing self-authored exclusion and court-delivery gates remain");
+        routeOwner.ResetView(); routeOwner.Poll(routed, now.AddSeconds(3), routeSink);
+        Equal(2, routeSink.Notices.Count, "replacing view does not duplicate either notification route");
+
+        var noRealmStorage = new WorldDiplomacyStorage();
+        var noRealm = Document("no-realm", 1); noRealm.AuthorKingdomId = "";
+        noRealmStorage.Documents.Add(noRealm);
+        var noRealmSink = new Sink { PlayerKingdomId = "", Registered = false };
+        new WorldDiplomacyNotificationApplication().Poll(noRealmStorage, now, noRealmSink);
+        Test.True(noRealm.FormalNoticeShown && !noRealmSink.RoutedNotices.Single().ShowOnMap && noRealmSink.Registrations == 0,
+            "empty player and author realms never count as domestic or require widget");
+        var disabledStorage = new WorldDiplomacyStorage();
+        var disabledOwn = Document("disabled-own", 1); disabledOwn.AuthorKingdomId = "player";
+        var disabledForeign = Document("disabled-foreign", 2);
+        disabledStorage.Documents.AddRange(new[] { disabledOwn, disabledForeign });
+        var disabledSink = new Sink { MapNotificationsEnabled = false };
+        new WorldDiplomacyNotificationApplication().Poll(disabledStorage, now, disabledSink);
+        Test.True(disabledOwn.FormalNoticeShown && disabledForeign.FormalNoticeShown && disabledSink.Notices.Count == 0 && disabledSink.Registrations == 0,
+            "notification switch suppresses both routes without widget access or changing delivery");
     }
 
     private sealed class PlayerWorld : IWorldDiplomacyPlayerWorld

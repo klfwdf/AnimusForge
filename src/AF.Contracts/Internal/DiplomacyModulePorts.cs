@@ -28,6 +28,8 @@ internal interface IWorldDiplomacyModulePort
     string Standing(string kingdomId);
     void ApplyExternalPrestigeDelta(string kingdomId, int delta, string reason);
     string BuildMemory(string heroId, string kingdomOverride, string input, IReadOnlyList<string> ruleIds, bool proactive);
+    // Request-owned knowledge IDs captured on the game thread; unavailable owner returns null.
+    ISet<string> CaptureKnownDocumentIds(string heroId, string kingdomOverride);
     bool CanDiscuss(string heroId);
     bool TryBuildProactiveDiscussion(string heroId, out string key, out string fact, out float urgency);
     WorldDiplomacyTimelineRevisionResult QueryTimelineRevision();

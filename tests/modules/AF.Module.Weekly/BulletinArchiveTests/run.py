@@ -23,12 +23,24 @@ assert "day, WeeklyReportArchivePolicy.CaptureKingdomIds(selection), notify: fal
 presentation=read("src/modules/AF.Module.Weekly/Generation/WorldBulletinStateOwner.Presentation.cs")
 timeline=read("src/AF.GameAdapter.Bannerlord/UI/WorldTimeline/WorldMessageTimelineUi.cs")
 # Exact declarations and exact contiguous production methods, no body substitutions.
-generated="using System;using System.IO;using System.Linq;using System.Collections.Generic;using System.Globalization;using System.Text;using System.Threading.Tasks;using Newtonsoft.Json;using TaleWorlds.CampaignSystem;using static AnimusForge.MyBehavior;namespace AnimusForge {public partial class MyBehavior {"
+generated="using System;using System.IO;using System.Linq;using System.Collections.Generic;using System.Globalization;using System.Text;using System.Threading.Tasks;using Newtonsoft.Json;using TaleWorlds.CampaignSystem;using TaleWorlds.Core;using TaleWorlds.Library;using AnimusForge.Refactor.Contracts;using static AnimusForge.MyBehavior;namespace AnimusForge {public partial class MyBehavior {"
 generated+=spans(host,["internal sealed class EventRecordEntry","internal sealed class ApiCallResult","public sealed class WeeklyPromptSnapshot","public sealed class WorldWeeklyReportHistoryEntry","public sealed class WeeklyReportBrowserEntryData","public sealed class WeeklyReportBrowserCountryData","private IReadOnlyList<WorldWeeklyReportHistoryEntry> GetPublishedWorldWeeklyReportHistoryInternal"])+extract.declaration(records,"internal sealed class EventImportPayload")
 npc_source=read("src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.WorldBulletinNpc.cs")
 generated+=spans(npc_source,["private WeeklyPromptSnapshot CaptureWorldBulletinNpcSnapshot","private static List<KeyValuePair<string, string>> ToKingdomDisplayPairs"])+"}"
+# Real diplomacy adapter/knowledge capture and shared permission rules; engine identity/storage resolution is stubbed.
+dip_host=read("src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.cs")
+dip_adapter=read("src/modules/AF.Module.Diplomacy/Adapters/WorldDiplomacyModuleAdapter.cs")
+dip_memory=read("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyMemoryApplication.cs")
+dip_rules=read("src/modules/AF.Module.Diplomacy/Domain/WorldDiplomacyRoundLifecycleRules.cs")
+dip_notifications=read("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyNotificationApplication.cs")
+dip_presentation=read("src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.Presentation.cs")
+generated+=extract.declaration(dip_notifications,"internal interface IWorldDiplomacyNotificationSink")
+generated+="public sealed partial class WorldDiplomacyBehavior {"+spans(dip_host,["internal static bool TryCaptureMemory","private HashSet<string> GetKnownDocumentIdsForHero"])+extract.declaration(dip_presentation,"private sealed class NotificationWorld")+"}"
+generated+=spans(dip_memory,["internal readonly struct WorldDiplomacyMemorySnapshot","internal interface IWorldDiplomacyMemorySource"])
+generated+="internal sealed partial class WorldDiplomacyModuleAdapter {"+spans(dip_adapter,["private sealed class MemorySource","public System.Collections.Generic.ISet<string> CaptureKnownDocumentIds"])+"private static readonly IWorldDiplomacyMemorySource Memory = new MemorySource();}"
+generated+="internal static class WorldDiplomacyRoundLifecycleRules {"+spans(dip_rules,["public static HashSet<string> CollectKnownDocumentIds","public static string FirstNonEmpty"])+"}"
 generated+=extract.declaration(editor,"internal class WeeklyEditorDisplayPort")+"internal static class WeeklyEditorProjection {"+spans(editor,["internal static WeeklyReportBrowserCountryData BuildWeeklyReportBrowserCountryData","internal static List<WeeklyReportBrowserEntryData> BuildWeeklyReportBrowserEntries","internal static string BuildWeeklyReportBrowserDefaultTitle"])+"}"
-generated+="internal sealed partial class WorldBulletinStateOwner { internal WorldBulletinSaveState State; internal WorldBulletinPort _port;"+spans(owner,["internal void UpsertWorldBulletinRecord","internal WorldBulletinSaveState EnsureWorldBulletinState","internal void PublishWorldBulletin","internal async Task RunWorldBulletinRequestAsync","internal void CompleteWorldBulletin","internal void ProcessWorldBulletinMainThreadActions","internal void QueueNoticeAfterIllustration","private void ReleasePendingWorldBulletinNotice"])+spans(presentation,["internal IReadOnlyDictionary<string, List<string>> SnapshotLegacyBulletinKingdomAssociations"])+"}"
+generated+="internal sealed partial class WorldBulletinStateOwner { internal WorldBulletinSaveState State; internal WorldBulletinPort _port;"+spans(owner,["internal bool CaptureWorldBulletinEvent(string kind, string key, int score, string sentence, bool involvesPlayer, string group, string detail, params", "internal bool CaptureWorldBulletinEvent(string kind, string key, int score, string sentence, bool involvesPlayer, string group, string detail, WorldBulletinParticipant[]", "internal void CaptureCivilNewsMaterial", "internal void UpsertWorldBulletinRecord","internal WorldBulletinSaveState EnsureWorldBulletinState","internal void PublishWorldBulletin","internal async Task RunWorldBulletinRequestAsync","internal void CompleteWorldBulletin","internal void ProcessWorldBulletinMainThreadActions","internal void QueueNoticeAfterIllustration","private void ReleasePendingWorldBulletinNotice"])+spans(presentation,["internal IReadOnlyDictionary<string, List<string>> SnapshotLegacyBulletinKingdomAssociations"])+"}"
 generated+=extract.declaration(owner,"internal sealed class WorldBulletinPort")+extract.declaration(owner,"internal sealed class WorldBulletinPromptFacts")
 settings=read("src/AF.GameAdapter.Bannerlord/Configuration/Mcm/DuelSettings.cs")
 bulletin_settings=read("src/AF.GameAdapter.Bannerlord/Configuration/Mcm/DuelSettings.BulletinPrompt.cs")
@@ -37,7 +49,7 @@ for name in ["WorldBulletinWritingRequirementsJsonFileName","DefaultWorldBulleti
  generated+=re.search(r"private const string "+name+r" = [^;]+;",bulletin_settings).group()
 generated+=spans(bulletin_settings,["private static string MigrateLegacyWorldBulletinWritingRequirements","private static string NormalizeWorldBulletinWritingRequirementsText"])
 generated+=spans(settings,["private sealed class CustomPromptTextJson","private static bool TryReadCustomPromptTextJsonFile","private static bool TryReadLayeredCustomPromptTextJsonFile","private static bool IsCustomPromptTextFileTooLarge"])+"}"
-assert "latest?.BulletinAnecdote" in npc_source, "NPC snapshot must forward the optional narrative digest"
+assert "latestVisible.Anecdote" in npc_source and "ProjectBulletinForNpc" in npc_source, "NPC must project the optional digest through source visibility"
 packaged=read("content/modules/AF.Module.Weekly/CustomPrompts/WorldBulletinWritingRequirements.json")
 (out/"packaged-default.json").write_text(packaged,encoding="utf-8")
 generated+=spans(timeline,["public sealed class WorldMessageTimelineEntryData","public sealed class WorldMessageTimelineCountryReference"])
@@ -50,6 +62,8 @@ generated+='namespace AnimusForge { internal static class EncyclopediaEntityLink
 paths=["src/modules/AF.Module.Weekly/Panel/WeeklyReportArchivePolicy.cs","src/modules/AF.Module.Weekly/Bulletin/WorldBulletinPolicy.cs","src/modules/AF.Module.Weekly/Models/WeeklyLegacyDtos.cs","src/modules/AF.Module.Weekly/ImportExport/WeeklyEventDataImportOwner.cs","src/AF.GameAdapter.Bannerlord/Persistence/CampaignWeeklyRecordPersistenceAdapter.cs","src/AF.Persistence/CampaignSaveChunkHelper.cs","src/AF.Foundation.Runtime/Lifecycle/SaveRuntimeGuard.cs","src/AF.GameAdapter.Bannerlord/UI/Weekly/TerminalWeeklyReportBrowserPopupVM.cs"]
 paths.append("src/modules/AF.Module.Weekly/Panel/WorldBulletinPanelVM.cs")
 paths.append("src/AF.GameAdapter.Bannerlord/UI/Weekly/TerminalWeeklyReportBrowserPopupVM.Archive.cs")
+paths.append("src/modules/AF.Module.Diplomacy/Persistence/WorldDiplomacyPropagationRecords.cs")
+paths.append("src/AF.Contracts/Internal/WorldDiplomacyPresentationContracts.cs")
 for path in paths:read(path)
 ui=ET.fromstring(read("content/modules/AF.Module.UI/GUI/Prefabs/AnimusForgeTerminalPopup.xml"))
 period=next(node for node in ui.iter() if node.attrib.get("Text")=="@WeekText")

@@ -26,10 +26,9 @@ internal sealed class WorldDiplomacyNotificationApplication
 {
     private readonly HashSet<string> _notifiedDocumentIdsThisSession = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
     private List<WorldDiplomacyDocument> _pendingRumors = new List<WorldDiplomacyDocument>();
-    private List<WorldDiplomacyDocument> _pendingFormal = new List<WorldDiplomacyDocument>();
+    private Queue<WorldDiplomacyDocument> _pendingFormal = new Queue<WorldDiplomacyDocument>();
     private List<WorldDiplomacyDocument> _pendingFormalIncludingRead = new List<WorldDiplomacyDocument>();
     private int _nextRumorIndex;
-    private int _nextFormalIndex;
     private List<WorldDiplomacyDocument> _knownDocuments;
     private int _knownDocumentCount = -1;
     private bool _viewDirty = true;
@@ -56,7 +55,6 @@ internal sealed class WorldDiplomacyNotificationApplication
         _pendingFormal.Clear();
         _pendingFormalIncludingRead.Clear();
         _nextRumorIndex = 0;
-        _nextFormalIndex = 0;
         if (documents == null) return;
         foreach (WorldDiplomacyDocument document in documents)
         {
@@ -67,11 +65,11 @@ internal sealed class WorldDiplomacyNotificationApplication
             if (!document.HasReachedPlayerCourt || document.FormalNoticeShown) continue;
             _pendingFormalIncludingRead.Add(document);
             if (!document.IsRead && !_notifiedDocumentIdsThisSession.Contains(document.DocumentId ?? ""))
-                _pendingFormal.Add(document);
+                _pendingFormal.Enqueue(document);
         }
         // LINQ ordering is stable for equal dates, matching the original polling queries.
         _pendingRumors = WorldDiplomacyRoundLifecycleRules.OrderDocumentsChronologically(_pendingRumors).ToList();
-        _pendingFormal = WorldDiplomacyRoundLifecycleRules.OrderDocumentsChronologically(_pendingFormal).ToList();
+        _pendingFormal = new Queue<WorldDiplomacyDocument>(WorldDiplomacyRoundLifecycleRules.OrderDocumentsChronologically(_pendingFormal));
     }
     internal void Reset()
     {
@@ -111,7 +109,6 @@ internal sealed class WorldDiplomacyNotificationApplication
             _updatingOwnFlags = false;
             _pendingFormalIncludingRead.Clear();
             _pendingFormal.Clear();
-            _nextFormalIndex = 0;
             if (_lastMapNotificationsEnabled != false)
             {
                 _notifiedDocumentIdsThisSession.Clear();
@@ -120,25 +117,40 @@ internal sealed class WorldDiplomacyNotificationApplication
             return;
         }
         _lastMapNotificationsEnabled = true;
-        if (!sink.CanPublishMapNotification() || !sink.EnsureMapNotificationRegistered())
+        if (!sink.CanPublishMapNotification())
         {
             return;
         }
-        for (int i = 0; i < 3 && _nextFormalIndex < _pendingFormal.Count; i++)
+        string playerKingdomId = sink.PlayerKingdomId;
+        // Failed domestic widgets stay retryable without blocking foreign text notices.
+        // A fixed initial budget prevents reprocessing a deferred document in the same poll.
+        int budget = Math.Min(3, _pendingFormal.Count);
+        bool? mapRegistered = null;
+        for (int i = 0; i < budget; i++)
         {
-            WorldDiplomacyDocument document = _pendingFormal[_nextFormalIndex];
+            WorldDiplomacyDocument document = _pendingFormal.Dequeue();
+            bool showOnMap = !string.IsNullOrWhiteSpace(playerKingdomId)
+                && string.Equals(document.AuthorKingdomId, playerKingdomId, StringComparison.OrdinalIgnoreCase);
             try
             {
+                if (showOnMap)
+                {
+                    if (!mapRegistered.HasValue) mapRegistered = sink.EnsureMapNotificationRegistered();
+                    if (!mapRegistered.Value)
+                    {
+                        _pendingFormal.Enqueue(document);
+                        continue;
+                    }
+                }
                 _notifiedDocumentIdsThisSession.Add(document.DocumentId);
                 sink.ShowNotice(new WorldDiplomacyNotice(
                     document.DocumentId,
                     WorldDiplomacyTextRules.BuildDisplayedDocumentTitle(document),
-                    WorldDiplomacyTextRules.BuildNotificationDescription(document, sink.FormatCampaignDate)));
+                    WorldDiplomacyTextRules.BuildNotificationDescription(document, sink.FormatCampaignDate), showOnMap));
                 document.IsNotified = true;
                 _updatingOwnFlags = true;
                 document.FormalNoticeShown = true;
                 _updatingOwnFlags = false;
-                _nextFormalIndex++;
                 sink.Log("formal-court-notice.shown document=" + document.DocumentId + " realm=" + sink.PlayerKingdomId
                     + " day=" + sink.CurrentDay.ToString(CultureInfo.InvariantCulture));
             }
@@ -146,6 +158,7 @@ internal sealed class WorldDiplomacyNotificationApplication
             {
                 _updatingOwnFlags = false;
                 _notifiedDocumentIdsThisSession.Remove(document.DocumentId ?? "");
+                _pendingFormal.Enqueue(document);
                 sink.Log("notification publish failed: " + ex.Message);
                 break;
             }
