@@ -8,6 +8,21 @@ namespace AnimusForge;
 
 internal sealed partial class WorldDiplomacyOrchestration
 {
+    private void RecoverPlayerDocumentRoutingAndRetireClosedJobs()
+    {
+        // Old saves may contain pending player analysis in a completed/missing
+        // round. Move the same public artifact before retiring obsolete work.
+        foreach (var document in Storage.Documents.Where(x => x?.IsPlayerAuthored == true && x.IsReadyForPublication
+            && x.AnalysisStatus == "pending_analysis" && !x.PlayerAnalysisCommitted).ToList())
+        {
+            EnsurePlayerDocumentRound(document);
+            EnqueueAnalysisJob(document, 100);
+        }
+        Storage.Jobs.RemoveAll(job => job != null && job.Kind != "compress"
+            && !string.IsNullOrWhiteSpace(WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(job.RoundId, job.ExchangeId))
+            && !IsLiveRound(ResolveRound(WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(job.RoundId, job.ExchangeId))));
+    }
+
     // Load/replace only; no saved-archive scan on campaign frames.
     private void NormalizeConcurrentWork()
     {

@@ -18,6 +18,7 @@ internal static class WorldDiplomacyRequestHistoryApplication
     private const int RecentDays = 21;
     private static readonly ConditionalWeakTable<WorldDiplomacyStorage, DocumentIndex> Indexes =
         new ConditionalWeakTable<WorldDiplomacyStorage, DocumentIndex>();
+    internal static void InvalidateDocumentRouting(WorldDiplomacyStorage storage) => Indexes.Remove(storage);
 
     internal static long InputLimit(WorldDiplomacyJob job, long configuredLimit) =>
         Math.Min(configuredLimit, WorldDiplomacyRoundLifecycleRules.IsJobOfKind(job, "compress")

@@ -1116,6 +1116,7 @@ internal sealed partial class WorldDiplomacyOrchestration : IWorldDiplomacyOrche
 
     public void EnqueueAnalysisJob(WorldDiplomacyDocument document, int priority)
     {
+        if (document?.IsPlayerAuthored == true) EnsurePlayerDocumentRound(document);
         WorldDiplomacyJobPreparationApplication.PrepareAnalysisJob(
             document, priority, Storage, _host.CurrentDay(), _host.AnalysisMaxTokens(),
             _host.NewId, ResolveRound, _host.CommonDiplomacyContract, BuildAnalysisPrompt, EnqueueJob);
@@ -1173,7 +1174,11 @@ internal sealed partial class WorldDiplomacyOrchestration : IWorldDiplomacyOrche
         WorldDiplomacyDocument document, string intent, string commitment,
         bool requiresResponse, string tone, float confidence)
     {
-        if (document?.IsPlayerAuthored == true) BindPlayerDeclarationToSharedEvent(document);
+        if (document?.IsPlayerAuthored == true)
+        {
+            EnsurePlayerDocumentRound(document);
+            BindPlayerDeclarationToSharedEvent(document);
+        }
         if (document?.IsPlayerAuthored == true && intent == "propose_peace"
             && !WorldDiplomacyPeaceAdmissionApplication.TryValidateOfferedPeaceTerms(_host.PeaceAdmission(), new WorldDiplomacyRoundOffer {
                 ProposerKingdomId = document.AuthorKingdomId, TargetKingdomId = document.TargetKingdomId },
@@ -1515,6 +1520,7 @@ internal sealed partial class WorldDiplomacyOrchestration : IWorldDiplomacyOrche
     public void CloseRound(string reason, WorldDiplomacyRound round)
     {
         if (!IsLiveRound(round)) return;
+        PreservePendingPlayerAnalysisForClosingRound(round, reason);
         WorldDiplomacyRoundApplication.Close(Storage, reason, _host.CurrentDay,
             SettleTradeAllianceOfferCooldownsForClosedRound, ScheduleNextNormalRoundAfter,
             CommitLocalRoundSummary, TryScheduleTokenCompression, _host.Log, round);
@@ -1637,6 +1643,7 @@ internal sealed partial class WorldDiplomacyOrchestration : IWorldDiplomacyOrche
 
     public void ReconcileActiveDiplomacyAfterLoad()
     {
+        RecoverPlayerDocumentRoutingAndRetireClosedJobs();
         RecoverRoundSchedulingAfterLoad();
         foreach (var round in GetLiveRounds().ToList())
         {

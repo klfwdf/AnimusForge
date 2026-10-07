@@ -4024,6 +4024,10 @@ public static class WorldDiplomacyRoundLifecycleRules
 		storage.PendingParticipationEvaluations.RemoveAll(x => x != null && WorldDiplomacyRoundLifecycleRules.IsRecordInRound(x.RoundId, round.RoundId));
 		storage.PendingSpeeches.RemoveAll(x => x != null && WorldDiplomacyRoundLifecycleRules.IsRecordInRound(x.RoundId, round.RoundId));
 		storage.RelayArrivals.RemoveAll(x => x != null && WorldDiplomacyRoundLifecycleRules.IsRecordInRound(x.RoundId, round.RoundId));
+		// Transport leases outlive removed records until their real requests finish.
+		storage.Jobs.RemoveAll(x => x != null && IsRecordInRound(FirstNonEmpty(x.RoundId, x.ExchangeId), round.RoundId));
+		foreach (WorldDiplomacyRoundParticipant participant in round.Participants ?? new List<WorldDiplomacyRoundParticipant>())
+			if (participant != null) participant.MandatoryReplyPending = false;
 		foreach (WorldDiplomacyPlayerOpportunity opportunity in storage.PlayerOpportunities.Where(x => x != null && WorldDiplomacyRoundLifecycleRules.IsRecordInRound(x.RoundId, round.RoundId)))
 		{
 			if (WorldDiplomacyRoundLifecycleRules.IsOpenLifecycleStatus(opportunity.Status)) opportunity.Status = "expired";

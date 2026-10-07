@@ -358,7 +358,7 @@ internal static class WorldDiplomacyRoundApplication
         if (round == null || !WorldDiplomacyRoundLifecycleRules.IsActiveRoundState(round.State)) return;
         if (round.AutomaticCircuitBreakerTripped)
         {
-            bool hasRunningRoundJob = storage.Jobs.Any(x => x != null && WorldDiplomacyRoundLifecycleRules.IsRecordInRound(x.RoundId, round.RoundId));
+            bool hasRunningRoundJob = storage.Jobs.Any(x => x?.IsRunning == true && WorldDiplomacyRoundLifecycleRules.IsRecordInRound(x.RoundId, round.RoundId));
             switch (WorldDiplomacyRoundLifecycleRules.EvaluateRoundTerminalClose(
                 hasRunningRoundJob, round.ResultSettlementPending))
             {
@@ -379,7 +379,7 @@ internal static class WorldDiplomacyRoundApplication
         if (WorldDiplomacyRoundLifecycleRules.IsHardEndReached(day, round.HardEndDay))
         {
             switch (WorldDiplomacyRoundLifecycleRules.EvaluateRoundTerminalClose(
-                pendingRoundJob, round.ResultSettlementPending))
+                storage.Jobs.Any(x => x?.IsRunning == true && WorldDiplomacyRoundLifecycleRules.IsRecordInRound(x.RoundId, round.RoundId)), round.ResultSettlementPending))
             {
                 case WorldDiplomacyRoundTerminalAction.WaitForRunningJob:
                     // Game time may continue while the background request is running. Let the
@@ -399,6 +399,7 @@ internal static class WorldDiplomacyRoundApplication
         if (!round.RelayPlanned)
         {
             WorldDiplomacyDocument root = resolveDocument(round.RootDocumentId);
+            if (root?.IsPlayerAuthored == true && root.AnalysisStatus == "pending_analysis") return;
             if (root != null && root.IsReadyForPublication) enqueueRoundPlanJob(round, root);
             return;
         }
