@@ -12,6 +12,19 @@
 - NOT-RUN：真实模型能否遵守具名同场边界、轶事多样性/生动程度、重复桥段与NPC实际转述；两版游戏实机、玩家存档加载与游戏中的编辑器验收。本轮没有重新跑全外交生命周期/独立分块门禁，相关生产路径未变，实际接线与保存重载由上述专项覆盖，不称全仓验收。
 - 回滚仅 `git revert e06f885c6`；保留 `9f6f43df` 和其他作者更新，不 hard reset、回滚旧快报分流产品或清理玩家数据。
 
+<a id="illustrator-narrative-anime-20261008"></a>
+# 日系半写实叙事插画 MCM 预设（2026-10-08，BUILD_VERIFIED_NOT_DEPLOYED）
+
+- 用户提供插画参考并明确用于 MCM 画风预设。工作区 `F:/AnimusForge-main`、`main`；起点 `a6c3d57d`，本地检查点 `2adcf3e`，产品 `9f6f43dfc`。保留同期快报与记忆任务及其未提交内容。
+- 预设名“日系半写实叙事插画”，token `narrative-anime`，追加到下拉末尾索引7；原索引0–6及默认古典油画保持。只描述克制的动漫五官、细线描/绘画式明暗、写实环境和清透色彩，不绑定参考图的海岸、红裙、站姿、人数或晴日；昼夜、天气和衣着由本次内容决定。
+- 源码证据（产品9f6f43dfc，一基行号）：`extensions/AnimusForge.Illustrator/src/Core/IllustrationStylePresets.cs:59–69` 的 `NarrativeAnime` 定义及 `:77–94` 的 `Resolve`；`src/Settings/IllustratorSettings.cs:315–359` 的 `_styleOptions/SelectedStyle`。实际消费者为 `Core/VisualDirectorEngine.cs:916` 的导演偏好、`Core/UniversalOpenAiImageClient.cs:104–138` 的最终生图风格/专属负面词及 `Core/IllustratorRuntime.cs:142–157` 请求快照；普通生成共用现有通道，明确重绘要求仍按既有一次性覆盖语义处理。README画风列表同步为8项。
+- 性能：复用静态不可变预设，每次生成请求按既有路径进行常数次解析；不增加Tick扫描、反射、轮询、额外模型请求、存档字段或新配置来源。
+- 验证：源码接线/差异审查及 `git diff --check` 通过；原 `scripts/build/build_single_module.ps1 -ProjectRoot F:/AnimusForge-main -BannerlordRoot "F:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord" -Configuration Debug` 完成1.3（v1.3.15.110062）、1.4（v1.4.6.115628）、Bootstrap及双实现接线检查，exit0/0错误。构建包含同期其他作者源码，不签收其功能；未运行Illustrator离线审计/测试。
+- NOT-RUN：MCM实际显示/保存重载、真实模型画风相似度及昼夜表现、游戏实际生成；未调用付费API、Stage、部署、打包或推送。参考图仅人工分析，没有发给模型。
+- 邻接只读结论：百科并未硬编码“看地图沉思”；性格输入含沉静/深谋远虑等具体神态，旧画指导只覆盖同存档同人物最近3张行动及最多3个场景母题，属于提示词建议，未设置语义重复硬校验。这是可能诱因；未匹配该百科图的真实导演请求，不声称已确认单张图的根因。本包未修改构图逻辑。
+- 本地证据：`artifacts/illustrator-narrative-anime-20261008/build.log`、`hashes.json` 与 `compiled/` 三份DLL及构建标记；源码/产物哈希绑定本轮。产品回滚仅 `git revert 9f6f43dfc`，不撤销检查点、其他作者提交或历史重绘调查。
+- [当前职责导航](architecture/af-framework-code-scope.md#illustrator-narrative-anime-20261008)。
+
 <a id="bulletin-anecdotes-20261008"></a>
 <a id="remote-merge-deploy-20261008"></a>
 # 快报事实与轶闻分流、远端合并及部署（2026-10-08，DEPLOYED_LIVE_PENDING）
