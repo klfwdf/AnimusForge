@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Drawing2D;
@@ -57,74 +57,8 @@ namespace AnimusForge.Illustrator.Engine
 
         public static string CaptureActiveWindowBase64(Rectangle? cropRect = null, int maxDimension = 768)
         {
-            try
-            {
-                IntPtr hWnd = GetForegroundWindow();
-                if (hWnd == IntPtr.Zero)
-                {
-                    return null;
-                }
-
-                GetWindowThreadProcessId(hWnd, out uint windowPid);
-                if (windowPid != (uint)Process.GetCurrentProcess().Id)
-                {
-                    return null;
-                }
-
-                if (!GetClientRect(hWnd, out RECT clientRect))
-                {
-                    if (!GetWindowRect(hWnd, out clientRect))
-                    {
-                        return null;
-                    }
-                }
-
-                var origin = new POINT { X = clientRect.Left, Y = clientRect.Top };
-                ClientToScreen(hWnd, ref origin);
-
-                int clientWidth = clientRect.Right - clientRect.Left;
-                int clientHeight = clientRect.Bottom - clientRect.Top;
-                if (clientWidth <= 0 || clientHeight <= 0)
-                {
-                    return null;
-                }
-
-                using (var fullBmp = new Bitmap(clientWidth, clientHeight, PixelFormat.Format32bppArgb))
-                {
-                    using (var g = Graphics.FromImage(fullBmp))
-                    {
-                        g.CopyFromScreen(origin.X, origin.Y, 0, 0, new Size(clientWidth, clientHeight), CopyPixelOperation.SourceCopy);
-                    }
-
-                    Bitmap targetBmp = fullBmp;
-                    bool disposeTarget = false;
-
-                    if (cropRect.HasValue)
-                    {
-                        Rectangle crop = cropRect.Value;
-                        crop.Intersect(new Rectangle(0, 0, clientWidth, clientHeight));
-                        if (crop.Width >= 60 && crop.Height >= 60)
-                        {
-                            targetBmp = fullBmp.Clone(crop, fullBmp.PixelFormat);
-                            disposeTarget = true;
-                        }
-                    }
-
-                    try
-                    {
-                        return ConvertBitmapToBase64(targetBmp, maxDimension, 85);
-                    }
-                    finally
-                    {
-                        if (disposeTarget) targetBmp.Dispose();
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                TaleWorlds.Library.Debug.Print($"[ScreenCaptureHelper] Screen capture failed: {ex.Message}");
-                return null;
-            }
+            // Window screenshots are not permitted as illustration references.
+            return null;
         }
 
         public static string CaptureWidgetBase64(Widget widget, int maxDimension = 768)

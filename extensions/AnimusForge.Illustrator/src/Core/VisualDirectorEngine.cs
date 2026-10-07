@@ -862,6 +862,7 @@ namespace AnimusForge.Illustrator.Core
                                     throw;
                                 }
                                 GenerationDiagnostics.Current?.RecordDirectorResponse(responseBody, parsed.FinishReason, (int)response.StatusCode);
+                                GenerationDiagnostics.Current?.RecordDirectorText(parsed.Content);
                                 parsed.VisionUnsupported = reply.VisionUnsupported;
                                 return parsed;
                             }

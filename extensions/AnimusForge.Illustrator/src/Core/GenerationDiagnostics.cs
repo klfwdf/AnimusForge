@@ -212,6 +212,31 @@ namespace AnimusForge.Illustrator.Core
         internal void RecordDirectorResponse(string rawResponse, string finishReason, int? httpStatus = null)
         { RecordResponse("director_response", rawResponse, httpStatus, finishReason); }
 
+        internal void RecordDirectorText(string content)
+        { WriteReadablePrompt("导演正文.txt", content); }
+
+        private void WriteReadablePrompt(string fileName, string content)
+        {
+            Safe(() =>
+            {
+                // Diagnostic copy only: retain words and real line breaks, never unescape
+                // literal backslash sequences or change the model request. CleanText bounds
+                // each file to 65536 UTF-16 units and redacts registered credentials.
+                string text = CleanText(content).Replace("\r\n", "\n").Replace("\r", "\n");
+                text = Regex.Replace(text, @"(?<!\n)(【[^】\r\n]{1,100}】)", "\n\n$1");
+                text = text.Replace("\n", Environment.NewLine);
+                string path = Path.Combine(_directory, fileName);
+                string temporary = path + ".tmp";
+                try
+                {
+                    File.WriteAllText(temporary, text, DocumentEncoding);
+                    if (File.Exists(path)) File.Replace(temporary, path, null);
+                    else File.Move(temporary, path);
+                }
+                finally { if (File.Exists(temporary)) File.Delete(temporary); }
+            });
+        }
+
         internal void RecordDirection(IllustrationDirection direction)
         {
             Safe(() => AddEvent("direction", new JObject { ["status"] = CleanText(direction.DirectionStatus), ["message"] = CleanText(direction.StatusText),
@@ -252,6 +277,25 @@ namespace AnimusForge.Illustrator.Core
                 }
                 data["endpoint"] = CleanText(SafeUrl(request.RequestUri.ToString()));
                 data["protocol"] = CleanText(protocol);
+                // Read the serialized request, including multipart edits and Chat image
+                // protocols. A protocol fallback replaces this with its latest request.
+                var payload = data["payload"] as JObject ?? data;
+                string prompt = payload["prompt"]?.Value<string>();
+                if (prompt == null && payload["messages"] is JArray messages)
+                {
+                    var parts = new List<string>();
+                    foreach (var message in messages)
+                    {
+                        if ((string)message["role"] != "user") continue;
+                        var content = message["content"];
+                        if (content?.Type == JTokenType.String) parts.Add(content.Value<string>());
+                        else if (content is JArray blocks)
+                            foreach (var block in blocks)
+                                if ((string)block["type"] == "text") parts.Add((string)block["text"] ?? "");
+                    }
+                    prompt = string.Join("\n\n", parts);
+                }
+                if (prompt != null) WriteReadablePrompt("最终生图提示词.txt", prompt);
                 Safe(() => AddEvent("image_request", data));
             }
             catch (Exception ex) { RecordStage("diagnostic_request_omitted", new JObject { ["reason"] = ex.GetType().Name }); }
