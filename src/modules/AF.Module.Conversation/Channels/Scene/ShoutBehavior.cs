@@ -631,14 +631,8 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 
 	private void UpdateShoutHotkeyCharge(InputKey shoutKey, InputKey specialMenuKey)
 	{
-		if (IsSceneIllustrationBattleForExternal)
-		{
-			if (_shoutHotkeyChargeActive) CancelShoutHotkeyCharge("battle_direct_input");
-			if (!ShoutTextInputPopup.IsOpen && (Input.IsKeyPressed(shoutKey) || Input.IsKeyPressed(specialMenuKey)))
-				TryStartShoutFromHotkey(false, BuildCurrentShoutTargetingContext());
-			return;
-		}
-		if (UpdatePresentationHotkey(shoutKey, specialMenuKey))
+		// Battles still use hold/release targeting; only a targetless release bypasses the wheel.
+		if (!IsSceneIllustrationBattleForExternal && UpdatePresentationHotkey(shoutKey, specialMenuKey))
 		{
 			return;
 		}
@@ -1435,13 +1429,14 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 			return;
 		}
 		// Presentation session styles merge T and Y: both open the action wheel.
-		openModeMenu = openModeMenu || IsScenePresentationSessionEnabled();
+		openModeMenu = openModeMenu || IsSceneIllustrationBattleForExternal || IsScenePresentationSessionEnabled();
 		_activeShoutTargetingContext = targetingContext;
 		LogShoutTargetingContextSnapshot(openModeMenu, targetingContext);
 		BeginShoutProcessing(openModeMenu ? "hotkey_special_menu" : "hotkey_shout_input");
         try
         {
-            if (IsSceneIllustrationBattleForExternal)
+            if (IsSceneIllustrationAvailableForExternal
+                && targetingContext != null && targetingContext.CandidateAgentIndices.Count == 0)
             {
                 OpenBattleShoutInput();
                 return;

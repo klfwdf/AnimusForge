@@ -38,7 +38,7 @@ namespace AnimusForge.Illustrator.Engine
         private Camera _backup, _captureCamera;
         private readonly bool _oldHideUi, _oldPaused;
         private readonly float _oldTimeSpeed;
-        private readonly Vec3 _pivot;
+        private readonly Vec3 _pivot, _frontPosition, _rearPosition;
         private readonly bool _clean;
         private readonly string[] _paths;
         private readonly CancellationTokenSource _cancel = new CancellationTokenSource();
@@ -51,7 +51,7 @@ namespace AnimusForge.Illustrator.Engine
         private bool _closed, _ownsStage, _ownsPause, _ownsStateDisable, _changedUi, _changedCamera, _changedPaused;
         internal Task<MissionScreenshotPair> Completion => _done.Task;
 
-        internal MissionScreenshotCapture(Mission mission, Vec3 pivot, bool clean)
+        internal MissionScreenshotCapture(Mission mission, Vec3 pivot, Vec3 bodyForward, float subjectRadius, bool clean)
         {
             IllustratorRuntime.AssertMainThread();
             _mission = mission;
@@ -78,7 +78,13 @@ namespace AnimusForge.Illustrator.Engine
                 _backup = Camera.CreateCamera();
                 _backup.FillParametersFrom(_screen.CombatCamera);
                 _captureCamera = Camera.CreateCamera();
-                _captureCamera.FillParametersFrom(_backup);
+                float aspect = _backup.GetAspectRatio();
+                Vec3[] positions = BuildLevelPositions(pivot, bodyForward, subjectRadius, aspect);
+                _frontPosition = ResolveCameraCollision(positions[0]);
+                _rearPosition = ResolveCameraCollision(positions[1]);
+                // Fixed perspective: the original camera is only a restore snapshot.
+                _captureCamera.SetFovVertical((float)Math.PI / 3f, aspect, 0.05f, Math.Max(1000f, _backup.Far));
+                _captureCamera.LookAt(_frontPosition, _pivot, Vec3.Up);
                 mission.AddTimeSpeedRequest(new Mission.TimeSpeedRequest(0f, PauseRequestId));
                 _ownsPause = true;
                 _states?.RegisterActiveStateDisableRequest(this);
@@ -127,18 +133,7 @@ namespace AnimusForge.Illustrator.Engine
                 {
                     _first = raw;
                     _index = 1;
-                    Vec3 original = _backup.Position;
-                    Vec3 reverse = new Vec3(2f * _pivot.x - original.x, 2f * _pivot.y - original.y, original.z);
-                    Vec3 ray = reverse - _pivot;
-                    float distance = ray.Length;
-                    if (distance < 0.5f) throw new InvalidOperationException("当前机位离人物过近，无法安全取得反向截图。");
-                    if (_mission.Scene.RayCastForClosestEntityOrTerrain(_pivot, reverse, out float hitDistance, 0.2f,
-                        BodyFlags.CameraCollisionRayCastExludeFlags | BodyFlags.DontCollideWithCamera))
-                    {
-                        if (hitDistance < 0.8f) throw new InvalidOperationException("反向机位被场景结构遮挡，未取得第二张截图。");
-                        reverse = _pivot + ray * (Math.Min(distance, hitDistance - 0.3f) / distance);
-                    }
-                    _captureCamera.LookAt(reverse, _pivot, Vec3.Up);
+                    _captureCamera.LookAt(_rearPosition, _pivot, Vec3.Up);
                     ApplyCamera();
                     _notBeforeFrame = IllustratorRuntime.ApplicationFrame + 1;
                     return;
@@ -149,6 +144,36 @@ namespace AnimusForge.Illustrator.Engine
                 _done.TrySetResult(pair);
             }
             catch (Exception ex) { Cancel(ex.Message); }
+        }
+
+        // Pure geometry, evaluated once per click. No mouse camera position, pitch or zoom input.
+        internal static Vec3[] BuildLevelPositions(Vec3 pivot, Vec3 bodyForward, float subjectRadius, float aspect)
+        {
+            Vec3 forward = new Vec3(bodyForward.x, bodyForward.y, 0f);
+            float length = forward.Length;
+            if (float.IsNaN(length) || float.IsInfinity(length) || length < 0.001f
+                || float.IsNaN(aspect) || float.IsInfinity(aspect) || aspect <= 0f
+                || float.IsNaN(subjectRadius) || float.IsInfinity(subjectRadius) || subjectRadius < 0f)
+                throw new InvalidOperationException("人物朝向或截图视野无效，无法建立前后平视机位。");
+            forward *= 1f / length;
+            // Fit the subject region using the narrower screen dimension, with near-side depth margin.
+            float radius = Math.Max(1.6f, subjectRadius);
+            float halfFovTangent = (float)Math.Tan(Math.PI / 6) * Math.Min(1f, aspect);
+            float distance = radius + radius / halfFovTangent;
+            return new[] { pivot + forward * distance, pivot - forward * distance };
+        }
+
+        private Vec3 ResolveCameraCollision(Vec3 position)
+        {
+            Vec3 ray = position - _pivot;
+            float distance = ray.Length;
+            if (_mission.Scene.RayCastForClosestEntityOrTerrain(_pivot, position, out float hitDistance, 0.2f,
+                BodyFlags.CameraCollisionRayCastExludeFlags | BodyFlags.DontCollideWithCamera))
+            {
+                if (hitDistance < 0.8f) throw new InvalidOperationException("前后平视机位被场景结构遮挡，已停止截图。");
+                position = _pivot + ray * (Math.Min(distance, hitDistance - 0.3f) / distance);
+            }
+            return position;
         }
 
         private void ApplyCamera()

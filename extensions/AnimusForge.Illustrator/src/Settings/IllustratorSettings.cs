@@ -522,8 +522,8 @@ namespace AnimusForge.Illustrator
 
         private static readonly List<string> _conversationDisplayOptions = new List<string>
         {
-            "独立面板（默认）",
-            "全屏覆盖"
+            "独立面板",
+            "全屏覆盖（默认）"
         };
         private Dropdown<string> _conversationDisplayDropdown;
 
@@ -534,7 +534,7 @@ namespace AnimusForge.Illustrator
             get
             {
                 if (_conversationDisplayDropdown == null)
-                    _conversationDisplayDropdown = new Dropdown<string>(_conversationDisplayOptions, 0);
+                    _conversationDisplayDropdown = new Dropdown<string>(_conversationDisplayOptions, 1);
                 return _conversationDisplayDropdown;
             }
             set => _conversationDisplayDropdown = value;
@@ -542,7 +542,7 @@ namespace AnimusForge.Illustrator
 
         public bool ConversationIllustrationUsesFullscreen
         {
-            get => (_conversationDisplayDropdown?.SelectedIndex ?? 0) == 1;
+            get => (_conversationDisplayDropdown?.SelectedIndex ?? 1) == 1;
         }
 
         private int _portraitExportTimeoutSeconds = 20;

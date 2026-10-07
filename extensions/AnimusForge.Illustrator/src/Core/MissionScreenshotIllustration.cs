@@ -99,14 +99,18 @@ namespace AnimusForge.Illustrator.Core
                 Agent player = mission.MainAgent;
                 Agent target = ShoutBehavior.GetScenePresentationWheelTargetForExternal();
                 Vec3 pivot = player.Position + Vec3.Up * 1.3f;
+                float subjectRadius = 1.6f;
                 if (target != null && target.IsActive() && target.Mission == mission && (target.Position - player.Position).Length < 30f)
+                {
                     pivot = (player.Position + target.Position) * 0.5f + Vec3.Up * 1.3f;
+                    subjectRadius += (target.Position - player.Position).Length * 0.5f;
+                }
                 facts = CaptureFacts(player, target, battle);
                 dialogue = battle ? "" : ShoutBehavior.CaptureSceneIllustrationDialogueForExternal();
                 subject = "mission_" + Guid.NewGuid().ToString("N");
                 // Admit the lifetime before acquiring native resources; cleanup is transactional.
                 scope = new IllustrationScope(ScreenManager.TopScreen, "general", () => ScopeClosed(scope, capture, mission), campaignOwned: true, missionOwned: true);
-                capture = new MissionScreenshotCapture(mission, pivot, options.AutoCleanTempFiles);
+                capture = new MissionScreenshotCapture(mission, pivot, player.Frame.rotation.f, subjectRadius, options.AutoCleanTempFiles);
             }
             catch (Exception ex)
             {
@@ -144,8 +148,8 @@ namespace AnimusForge.Illustrator.Core
                         byte[] reverse = MissionScreenshotImageCodec.ToPng(pair.Reverse, token);
                         string contract = MissionScreenshotRules.Contract(battle);
                         var references = new[] {
-                            new IllustrationReferenceImage(Convert.ToBase64String(current), "截图A：玩家点击时的原始游戏机位。" + contract, IllustrationReferenceKind.MissionScreenshot),
-                            new IllustrationReferenceImage(Convert.ToBase64String(reverse), "截图B：同一冻结瞬间，绕人物/交互区域反侧回望。与A是同一组人物、同一场景。" + contract, IllustrationReferenceKind.MissionScreenshot)
+                            new IllustrationReferenceImage(Convert.ToBase64String(current), "截图A：以玩家身体朝向为前方，从人物区域前方水平回望的独立机位，不是玩家当前镜头。" + contract, IllustrationReferenceKind.MissionScreenshot),
+                            new IllustrationReferenceImage(Convert.ToBase64String(reverse), "截图B：同一冻结瞬间，从人物区域后方水平回望，与A朝向相差180度。与A是同一组人物、同一场景。" + contract, IllustrationReferenceKind.MissionScreenshot)
                         };
                         pair = null; current = null; reverse = null;
                         var plan = new IllustrationPromptPlan(battle ? MissionScreenshotRules.BattleMode : MissionScreenshotRules.ShoutMode, facts, contract, dialogue);
