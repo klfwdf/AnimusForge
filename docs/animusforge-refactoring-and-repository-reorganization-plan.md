@@ -10,6 +10,35 @@
 - 证据 `artifacts/prosperity-food-toggle-20261008/`：`runtime-1.3.log`、`runtime-1.4.log` 与各自 build log；`build-isolated.log`、`source-inputs.json`、`validation-worktree/bin/Debug/single_module_artifacts/` 的 DLL/标记/接缝报告。双 DLL SHA 为 `4060462594E6F7F749CEE9E24300428A71D94274076EC632D9DE1C22D1434BD7`、`26C07E8F1907146740818942432DA36305144154C0FDDDCED7CB52F4032014FA`；源码六项在最终提交前与验证输入 SHA 相同，`git diff --check`通过。
 - NOT-RUN：实际 MCM 显示/保存/取消/重启回读、真实战役 Town 食物明细刷新、旧玩家存档、第三方粮食模型及实际性能；本轮未 Stage、部署、覆盖游戏、打包或推送。实际模型变化在下一次食物计算生效，不承诺已缓存面板即时刷新。产品回滚仅 `git revert 9e3586b44`，检查点 `dc0eb32` 只作定位，不 hard reset 或撤销其他作者提交。
 
+<a id="bulletin-diplomacy-guard-20261008"></a>
+# 快报外交知情、本国通知与关闭 AI 外交时原版执行（2026-10-08，OFFLINE_VERIFIED_NOT_DEPLOYED）
+
+- 用户授权修复快报提前透露外交宣言，并追加“右侧图标只保留本国通知，外国仍左下角”。本国按发布国与玩家所属国一致判定；玩家无国家不视为本国。现有玩家亲自发布的宣言不重复通知、正式通知需王庭送达、关闭提示只抑制显示等语义保留。
+- 工作区 `F:/AnimusForge-main`、`main`，检查点 `e9953f04` / `74d5acbe`；快报/通知产品 `cc9d0b2b95d4340a29f4fadff5950fc120e21801`，原版执行产品 `c89fb24c58ca4bc9d0df8975956a4b1bda66d103`。保留并行政策、生图、场景 UI 和既有未跟踪目录；仅本地修改、专项、原双版本构建和定向提交。
+- 范围：外交知情集合、五个 NPC 快报层与归档投影、展示/通知队列、共享外交标签/上下文与外交资源规则。无新增公共 API、存档字段/键、模型请求、采样设置或历史回放；快报写作提示词、选材/战斗模板/发布节奏保持。
+- 知情边界：复用真实外交 MemorySource 捕获已知文档 ID，宣言 kind 或 `declaration:` 来源键均受限；缺 owner/来源/ID 时拒绝宣言，不影响普通事实。混合期含不可知宣言时隐藏整期文学标题/轶闻，保留可知事实；无可追溯素材的旧文学正文不作为权限来源，不修改原归档。关闭自动发布仍登记素材。
+- 截图追加原版执行：开启 AI 外交继续正式公文；关闭复用宣战、议和、结盟、解除同盟、贸易、取消贸易原口头执行器及其当前王权/对象/战争状态检查。迟到简单 COMMIT/NewMatter 转为原格式，贡金保留方向、金额、期限；旧案回应/改约、割地、政治角色、不可表达附加条件及坏格式拒绝简化。开启时正式提交失败不会自动转原版执行；玩家国王亲自宣战原例外保留。主链路无动作标签，后处理按模式注入；Native/Courier/Scene 继续共享 `DiplomacyConversationBridge.ProcessDiplomacyTagsDispatch`，不另建渠道流程。
+- 性能：只在现有 NPC 快照构建时捕获一次权威知情集合，过滤保留的至多300条事件，无外交素材时跳过捕获。通知仍每秒一次、每批最多3条、右侧注册每批最多一次；本国组件失败 O(1) 入队重试，不挡外国文字、不新增全档扫描。标签仅在既有执行边界读取模式并解析当前回复；提示词在原上下文构建边界选固定模板，无新增 Tick、反射、锁或后台游戏对象读取。
+
+源码坐标核实于最终产品 `c89fb24c58ca4bc9d0df8975956a4b1bda66d103`，快报/通知部分来自 `cc9d0b2b9` 且内容相同。一基行号及14个符号/规范化文件 SHA 收录本地 `code-map.json`，记录提交和当前工作树两种模式校验通过；既有职责导航见 [代码范围图](architecture/af-framework-code-scope.md)。
+
+| 能力 / 符号 | 源码坐标 | 消费者及已覆盖 / 未覆盖 |
+| --- | --- | --- |
+| `CaptureKnownDocumentIds` | `src/AF.Contracts/Internal/DiplomacyModulePorts.cs:32`；`src/modules/AF.Module.Diplomacy/Adapters/WorldDiplomacyModuleAdapter.cs:28–29` | 外交权威记忆源；王庭、贵族网、本地送达及 owner 失效回放，未实机。 |
+| `CaptureWorldBulletinNpcSnapshot` | `src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.WorldBulletinNpc.cs:20–58` | 一次捕获用于五个快报层；换人/移动/关闭发布回放，游戏身份替身。 |
+| `IsNpcFactVisible` / `ProjectBulletinForNpc` | `src/modules/AF.Module.Weekly/Bulletin/WorldBulletinPolicy.cs:441–448`；`src/modules/AF.Module.Weekly/Panel/WeeklyReportArchivePolicy.cs:64–87` | 按来源过滤事件/归档；混合期和旧记录回放，不生成旧故事。 |
+| `Poll` / `ShowNotice` | `src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyNotificationApplication.cs:85–167`；`src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.Presentation.cs:26–34` | 本国 AddNotice、外国 DisplayMessage；真实适配器/关闭提示/失败恢复回放，UI manager 替身。 |
+| `UseFormalDiplomacyForConversation` / `ProcessSingle` | `src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.DialogueAdapter.cs:8`；`src/modules/AF.Module.Diplomacy/Application/DiplomacyOralTagApplication.cs:51–78` | 共享标签按 MCM 路由；两模式、王权拒绝、正式失败不降级回放，未战役执行。 |
+| `DiplomacyNativeCommitmentApplication.Execute` | `src/modules/AF.Module.Diplomacy/Application/DiplomacyNativeCommitmentApplication.cs:11–55` | 简单迟到约定接原执行器、复杂/坏格式拒绝，贡金方向/期限回放。 |
+| `UseFormalCommitments` / 模板 | `src/modules/AF.Module.Diplomacy/Adapters/DiplomacyPromptSource.cs:13–15`；`src/modules/AF.Module.Diplomacy/Adapters/DiplomacyPostprocessContextSource.cs:15–16`；`content/modules/AF.Module.Prompt/ModuleData/RuleBehaviorPrompts.json:856–857` | 主链路/后处理复用配置 resolver，真实资源断言及模式注入回放，模型未验。 |
+
+- 最终专项：策略 **68**、实际发布/NPC/传播权限/外交投影/归档/分块/提示词/通知适配器 **183**、宿主 **20**、外交生命周期/两模式路由/真实资源 **3810 PASS**；六口头执行专项 DeclareWar **57**、MakePeace **35**、FormAlliance **30**、MakeTrade **33**、BreakAlliance **28**、CancelTrade **32 PASS**。`PersistenceChunkReplayTests` 与 `validate_persistence_profile_config.py --chunk-contract-only` PASS；仍有 **1 个既有直接 JSON 风险**，不代表全仓存档安全。
+- 证据层级：策略为源码/提示词契约；归档回放真实发布/NPC/权威知情算法/展示适配器，但游戏身份、存储宿主、区域聚合、渲染和插画生命周期有替身；宿主为真实方法提取与假存储/游戏边界。外交用 fake ports，宣战包含真实原版适配器与假引擎回执；托管 DLL 接缝不启动 Game/Campaign/存档/原版动作/LLM，不能替代实机。
+- 构建：共享树首轮因并行生图两处编译错误失败，保留 `build.log`，未动对方代码。隔离 Git worktree `artifacts/bulletin-diplomacy-guard-20261008/run-69b7640462/source-cc9d0b2b`（目录名保留早期产品名，实际干净 detached HEAD 为 **c89fb24c5**）最终重跑原 `scripts/build/build_single_module.ps1 -ProjectRoot <该worktree> -BannerlordRoot "F:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord" -Bannerlord13ReferenceDir F:/AnimusForge-main/_deps_auto -Bannerlord14ReferenceDir F:/AnimusForge-main/.tmp/build_check/1.4 -Configuration Debug`，不传 Stage/Deploy；双 API（**v1.3.15.110062 / v1.4.6.115628**）、Bootstrap、双实际 DLL 接缝 **exit 0**。只证明已提交源码，不包含其他作者未提交草稿的组合验证。
+- 环境与失败留痕：已安装 SDK **8.0.421**；旧 net6 外交工程用仓内隔离 net8 工程显式链接原文件，无产品方法体变换。初次通知 fixture 可访问性失败与修复后证据为 `archive-2` / `archive-3`；早期181项与快报单独构建仅作历史，不替代最终183项/最终构建。
+- 统一证据 `artifacts/bulletin-diplomacy-guard-20261008/run-69b7640462/`：11组专项日志/源码 manifests、`build-final.log`、`build-final-exit.txt`、`receipt.json`、`code-map.json`、`compiled-final/`。最终28个任务文件 clean-filter Git blob 与最终产品/隔离源码相同；9个 DLL/PDB/build.json 副本与原输出 SHA 相同、metadata 候选 SHA 一致。1.3 / 1.4 DLL SHA：`0C68DB08AF51DB0E3AF067831F678A6D2D427D03DCCA759C3B4788EC2CAA0E8D` / `941347EB771A4FA792C69A4784A2C426797DCA03340C274B3F228FF57E547D8F`；Bootstrap `398A56AA641B2CE7144A4F85023E3337908958E57599BD0A4861FF456FFCF404`。
+- NOT-RUN：真实双版战役/UI、私聊原版外交实际执行、真实模型、玩家旧档及坏档修复。本轮未 Stage、部署、覆盖游戏、打包或推送；旧部署历史不授予本轮安装权限。回滚产品依次 `git revert c89fb24c5`、`git revert cc9d0b2b9`，保留其他作者提交；检查点仅定位，不 hard reset 或重写历史。
+
 <a id="bulletin-narrative-refinement-20261008"></a>
 # 快报人物轶事、口吻与自由开篇（2026-10-08，OFFLINE_VERIFIED_NOT_DEPLOYED）
 
