@@ -19,6 +19,19 @@ public sealed class SceneSessionVM : ViewModel
     private bool _isCollapsed, _isHidden, _isBusy, _isHistoryOpen;
     private int _historySignature;
     private Action _pending;
+    private bool _released;
+    private int _illustrationVersion = -1;
+    [DataSourceProperty] public bool IsIllustrationVisible => ShoutBehavior.IsSceneIllustrationAvailableForExternal;
+    [DataSourceProperty] public bool CanIllustrate => IsIllustrationVisible && !ShoutBehavior.IsSceneIllustrationBusyForExternal;
+    [DataSourceProperty] public string IllustrationButtonText => ShoutBehavior.IsSceneIllustrationBusyForExternal ? "生图中…" : "生图";
+    public void ExecuteIllustrate() => Queue(() => { if (CanIllustrate) ShoutBehavior.RequestSceneIllustrationForExternal(() => !_released && ShoutBehavior.IsScenePresentationActiveForExternal); });
+    internal void RefreshIllustration()
+    {
+        int version = ShoutBehavior.SceneIllustrationVersionForExternal;
+        if (version == _illustrationVersion) return;
+        _illustrationVersion = version;
+        OnPropertyChanged(nameof(IsIllustrationVisible)); OnPropertyChanged(nameof(CanIllustrate)); OnPropertyChanged(nameof(IllustrationButtonText));
+    }
 
     internal int LayoutVersion { get; private set; }
 
@@ -250,6 +263,7 @@ public sealed class SceneSessionVM : ViewModel
 
     public override void OnFinalize()
     {
+        _released = true;
         Trade.OnFinalize();
         foreach (var row in _rows.Values) row.OnFinalize();
         _rows.Clear();

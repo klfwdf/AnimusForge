@@ -20,6 +20,7 @@ namespace AnimusForge.Illustrator.Core
         public string Mode { get; }
         internal bool IsConversation => Mode == "当前会话最近两轮对话联动的场景插画" || Mode == "最近2条对话联动的场景插画" || Mode == "最近一轮对话联动的场景插画" || Mode == "最近三轮对话联动的场景插画";
         internal bool IsWeeklyReport => Mode == "周报历史纪事插画";
+        internal bool IsMissionScreenshot => MissionScreenshotRules.IsMode(Mode);
         public string HardFacts { get; }
         public string ArtDirection { get; }
         /// <summary>只给导演看的事实（如台词原文/对话历史）——不进最终生图提示词，避免被画成画面文字。</summary>
@@ -177,14 +178,19 @@ namespace AnimusForge.Illustrator.Core
         internal static async Task<IllustrationDirection> CreateDirectionWithClientAsync(IllustrationPromptPlan plan, System.Collections.Generic.IReadOnlyList<IllustrationReferenceImage> referenceImages, IllustrationOptions options, HttpClient client, CancellationToken cancellationToken)
         {
             plan = plan ?? new IllustrationPromptPlan("通用插画", string.Empty, string.Empty);
-            if (options?.PreserveEquipmentFidelity == false)
+            if (!plan.IsMissionScreenshot && options?.PreserveEquipmentFidelity == false)
                 plan = new IllustrationPromptPlan(plan.Mode, VisualFidelityRules.WithoutEquipmentFacts(plan.HardFacts),
                     VisualFidelityRules.WithoutEquipmentRules(plan.ArtDirection), plan.DirectorOnlyFacts, plan.PlayerRedrawPrompt);
             GenerationDiagnostics.Current?.RecordStage("prompt_sources", new JObject { ["mode"] = plan.Mode, ["hardFactChars"] = plan.HardFacts.Length, ["artDirectionChars"] = plan.ArtDirection.Length, ["directorOnlyFactChars"] = plan.DirectorOnlyFacts.Length, ["directorRuleSource"] = "visual director system prompt + illustration facts/style; no direct RuleBehaviorPrompts", ["dialogueRulesIndirect"] = plan.IsConversation, ["style"] = options?.SelectedStyle, ["customDirectorRuleChars"] = options?.CustomDirectorPrompt?.Length ?? 0,
                 ["customDirectorRulesActive"] = options?.EnableLlmPromptExpansion == true && !string.IsNullOrWhiteSpace(options.DirectorApiBaseUrl) && !string.IsNullOrWhiteSpace(options.CustomDirectorPrompt),
                 ["preserveEquipmentFidelity"] = options?.PreserveEquipmentFidelity != false, ["playerRedrawPromptChars"] = plan.PlayerRedrawPrompt.Length });
             RequirePlayerRedrawDirector(plan.PlayerRedrawPrompt, options);
-            if (options != null && !options.EnableMultimodalVision)
+            if (plan.IsMissionScreenshot)
+            {
+                RequireMissionScreenshotDirector(options);
+                MissionScreenshotRules.RequireReferences(referenceImages);
+            }
+            if (!plan.IsMissionScreenshot && options != null && !options.EnableMultimodalVision)
             {
                 referenceImages = null;
             }
@@ -212,7 +218,9 @@ namespace AnimusForge.Illustrator.Core
                         direction = ResolveDirection(reply.Content, plan, options);
                         ApplyResponseMetadata(direction, reply);
                         direction.UsedTextOnlyDirector = referenceImages == null || reply.VisionUnsupported;
-                        if (!string.IsNullOrWhiteSpace(plan.PlayerRedrawPrompt) && direction.UsedLocalFallback)
+                        if (plan.IsMissionScreenshot && (direction.UsedLocalFallback || direction.VisionUnsupported || direction.UsedTextOnlyDirector))
+                            fallbackReason = "双截图模式必须由识图导演完成画面推演：" + direction.FallbackReason;
+                        else if (!string.IsNullOrWhiteSpace(plan.PlayerRedrawPrompt) && direction.UsedLocalFallback)
                             fallbackReason = "带提示词重绘不能使用本地构图：" + direction.FallbackReason;
                         else
                             return RecordDirection(direction);
@@ -238,7 +246,7 @@ namespace AnimusForge.Illustrator.Core
                 fallbackReason = "导演请求失败（" + ex.GetType().Name + "）";
             }
 
-            if (requestedDirector)
+            if (requestedDirector || plan.IsMissionScreenshot)
             {
                 direction = new IllustrationDirection { FallbackReason = fallbackReason };
                 ApplyResponseMetadata(direction, reply);
@@ -276,6 +284,13 @@ namespace AnimusForge.Illustrator.Core
                 (options?.EnableLlmPromptExpansion == true && !string.IsNullOrWhiteSpace(options.DirectorApiBaseUrl))) return;
             GenerationDiagnostics.Current?.RecordStage("director_failed", new JObject { ["failureCode"] = "director.player_redraw_unavailable" });
             throw new InvalidOperationException("导演未启用或接口未配置，未开始带提示词重绘。");
+        }
+
+        internal static void RequireMissionScreenshotDirector(IllustrationOptions options)
+        {
+            if (options?.EnableLlmPromptExpansion != true || string.IsNullOrWhiteSpace(options.DirectorApiBaseUrl)
+                || string.IsNullOrWhiteSpace(options.DirectorModelName))
+                throw new InvalidOperationException("双截图生图需要启用并配置识图导演，未开始采集。");
         }
 
         private static void ApplyResponseMetadata(IllustrationDirection direction, DirectorResponse reply)
@@ -357,6 +372,16 @@ namespace AnimusForge.Illustrator.Core
         {
             fallbackReason = string.Empty;
             output = output ?? string.Empty;
+            if (plan?.IsMissionScreenshot == true)
+            {
+                if (!HasCompleteSceneDescription(output, allowBackgroundOverride: false))
+                {
+                    fallbackReason = string.IsNullOrWhiteSpace(output) ? "导演返回空正文" : "导演未返回完整画面方案";
+                    return string.Empty;
+                }
+                return output.Trim() + "\n【冻结现场事实】\n" + plan.HardFacts + "\n" +
+                    MissionScreenshotRules.Contract(plan.Mode == MissionScreenshotRules.BattleMode);
+            }
             // These keyword checks cannot distinguish an explicitly requested prop
             // from an invented one. Directed redraws use the scoped director policy.
             if (options?.PreserveEquipmentFidelity != false && string.IsNullOrWhiteSpace(plan?.PlayerRedrawPrompt) &&
@@ -726,7 +751,7 @@ namespace AnimusForge.Illustrator.Core
             if (!string.IsNullOrWhiteSpace(options?.CustomDirectorPrompt))
             {
                 requestText += "\n【玩家自定义导演规则·偏好层】\n" + options.CustomDirectorPrompt +
-                    (options?.PreserveEquipmentFidelity == false ? "\n【自定义规则边界】允许自定义服装装备；人物身份、场景及事件事实保持。服装变化不代表游戏事件。" : "\n【自定义规则边界】以上内容只用于构图、动作、景别和叙事偏好，不是已发生事实；不得覆盖人物身份、装备、场景及事件硬事实。") +
+                    (!plan.IsMissionScreenshot && options?.PreserveEquipmentFidelity == false ? "\n【自定义规则边界】允许自定义服装装备；人物身份、场景及事件事实保持。服装变化不代表游戏事件。" : "\n【自定义规则边界】以上内容只用于构图、动作、景别和叙事偏好，不是已发生事实；不得覆盖人物身份、装备、场景及事件硬事实。") +
                     "若与事实、身份约束或本模式创作边界冲突，以原有约束为准。保持原定标题/主题/行动、环境取景元数据与四段正文格式；" +
                     "将可适用偏好落实为可绘制的视觉描述，不在输出中复述规则、标记或检查过程。";
             }
@@ -737,7 +762,7 @@ namespace AnimusForge.Illustrator.Core
                     (redrawStyle.IsCustom ? "\n" + options?.NegativePrompt : string.Empty) +
                     "\n" + VisualFidelityRules.PlayerRedrawDirectorPriority;
             }
-            if (options?.PreserveEquipmentFidelity == false) requestText += "\n" + VisualFidelityRules.FreeEquipmentRule;
+            if (!plan.IsMissionScreenshot && options?.PreserveEquipmentFidelity == false) requestText += "\n" + VisualFidelityRules.FreeEquipmentRule;
             if (textFallback)
                 requestText += "\n【参考可用性】本次仅提供文字，图片输入不可用。未被文字确认的人物外观与真实现场细节保持未知，不声称已经看过参考图；艺术布景和事件艺术再现仍按本模式创作边界设计。";
             if (referenceImages != null)
@@ -774,7 +799,7 @@ namespace AnimusForge.Illustrator.Core
                         content.Add(new JObject
                         {
                             ["type"] = "text",
-                            ["text"] = "【参考图】" + (string.IsNullOrWhiteSpace(plan.PlayerRedrawPrompt) && options?.PreserveEquipmentFidelity != false ? reference.Label : VisualFidelityRules.DirectedReferenceLabel(reference))
+                            ["text"] = "【参考图】" + (plan.IsMissionScreenshot || (string.IsNullOrWhiteSpace(plan.PlayerRedrawPrompt) && options?.PreserveEquipmentFidelity != false) ? reference.Label : VisualFidelityRules.DirectedReferenceLabel(reference))
                         });
                     }
                     content.Add(new JObject
@@ -807,7 +832,8 @@ namespace AnimusForge.Illustrator.Core
                 ["messages"] = new JArray
                 {
                     new JObject { ["role"] = "system", ["content"] =
-                        (options?.PreserveEquipmentFidelity == false ? VisualFidelityRules.WithoutEquipmentRules((plan?.IsWeeklyReport == true ? WeeklyReportSystemPrompt : plan?.IsConversation == true ? ConversationSystemPrompt : SystemPrompt)) : (plan?.IsWeeklyReport == true ? WeeklyReportSystemPrompt : plan?.IsConversation == true ? ConversationSystemPrompt : SystemPrompt)) +
+                        (plan?.IsMissionScreenshot == true ? MissionScreenshotRules.DirectorSystem + "\n" + MissionScreenshotRules.Contract(plan.Mode == MissionScreenshotRules.BattleMode)
+                        : options?.PreserveEquipmentFidelity == false ? VisualFidelityRules.WithoutEquipmentRules((plan?.IsWeeklyReport == true ? WeeklyReportSystemPrompt : plan?.IsConversation == true ? ConversationSystemPrompt : SystemPrompt)) : (plan?.IsWeeklyReport == true ? WeeklyReportSystemPrompt : plan?.IsConversation == true ? ConversationSystemPrompt : SystemPrompt)) +
                         (string.IsNullOrWhiteSpace(plan?.PlayerRedrawPrompt) ? string.Empty : "\n" + VisualFidelityRules.PlayerRedrawDirectorPriority) +
                         "\n" + VisualFidelityRules.ClothingStatePriority +
                         "\n【输出字符上限】你的完整回复（标题、主题、行动摘要、取景元数据、四段正文、标点及空白合计）最多30000字符。" +
@@ -833,7 +859,7 @@ namespace AnimusForge.Illustrator.Core
                 {
                     // Only an explicit unsupported-image response permits a second request.
                     // Both attempts share one deadline; truncation, empty output and transport errors do not retry.
-                    for (int attempt = 0; attempt < 2; attempt++)
+                    for (int attempt = 0; attempt < (plan.IsMissionScreenshot ? 1 : 2); attempt++)
                     {
                         bool hasImages = referenceImages != null && referenceImages.Count > 0;
                         JObject payload = BuildDirectorPayload(plan, options, referenceImages, reply.VisionUnsupported || !hasImages);
@@ -852,7 +878,7 @@ namespace AnimusForge.Illustrator.Core
                                 if (!response.IsSuccessStatusCode)
                                 {
                                     GenerationDiagnostics.Current?.RecordDirectorResponse(responseBody, string.Empty, (int)response.StatusCode);
-                                    if (hasImages && attempt == 0 && ShouldRetryDirectorWithoutImages((int)response.StatusCode, responseBody))
+                                    if (!plan.IsMissionScreenshot && hasImages && attempt == 0 && ShouldRetryDirectorWithoutImages((int)response.StatusCode, responseBody))
                                     {
                                         reply.VisionUnsupported = true;
                                         referenceImages = null;

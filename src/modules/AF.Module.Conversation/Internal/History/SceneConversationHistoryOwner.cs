@@ -10,6 +10,28 @@ internal sealed class SceneConversationHistoryOwner {
  internal SceneConversationHistoryOwner(object gate){_gate=gate??throw new ArgumentNullException(nameof(gate));}
  internal void Reset(){lock(_gate){_npcHistory.Clear();_publicHistory.Clear();}}
  internal void AppendPublic(ConversationMessage message){lock(_gate){_publicHistory.Add(message);}}
+ internal string CaptureIllustrationDialogue()
+ {
+  lock (_gate)
+  {
+   int start = 0, rounds = 0;
+   // Only requested on click. Keep complete replies/fact lines, including every speaker.
+   for (int i = _publicHistory.Count - 1; i >= 0; i--)
+    if (string.Equals(_publicHistory[i]?.Role, "user", StringComparison.OrdinalIgnoreCase))
+    { start = i; if (++rounds == 2) break; }
+   var output = new StringBuilder();
+   for (int i = start; i < _publicHistory.Count; i++)
+   {
+    ConversationMessage line = _publicHistory[i];
+    if (line == null || string.IsNullOrWhiteSpace(line.Content)) continue;
+    string speaker = string.Equals(line.Role, "user", StringComparison.OrdinalIgnoreCase) ? "玩家" : line.SpeakerName ?? line.Role;
+    output.Append(speaker);
+    if (!string.IsNullOrWhiteSpace(line.TargetName)) output.Append(" → ").Append(line.TargetName);
+    output.Append("：").AppendLine(line.Content);
+   }
+   return output.ToString();
+  }
+ }
  internal void AppendNpc(int index,ConversationMessage message){lock(_gate){if(!_npcHistory.ContainsKey(index))_npcHistory[index]=new List<ConversationMessage>();_npcHistory[index].Add(message);}}
  internal void AppendPair(int index,ConversationMessage pub,ConversationMessage priv){lock(_gate){_publicHistory.Add(pub);if(!_npcHistory.TryGetValue(index,out var list)||list==null)_npcHistory[index]=list=new();list.Add(priv);}}
  internal void PruneNpcFacts(int index){lock(_gate){SceneHistoryProjectionOwner.RemoveExpiredSingleUseSceneNpcFacts(_npcHistory[index]);}}

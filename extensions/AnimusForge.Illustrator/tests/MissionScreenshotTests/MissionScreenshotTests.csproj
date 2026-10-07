@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net472</TargetFramework>
+    <LangVersion>10.0</LangVersion>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Net.Http" />
+    <Compile Include="Program.cs" />
+    <Compile Include="NativeFakes.cs" />
+    <Compile Include="../../src/Engine/MissionScreenshotCapture.cs" Link="MissionScreenshotCapture.cs" />
+    <Compile Include="../../src/Engine/MissionScreenshotImageCodec.cs" Link="MissionScreenshotImageCodec.cs" />
+    <Compile Include="../../src/Engine/ImagePayload.cs" Link="ImagePayload.cs" />
+    <Compile Include="../../src/Core/MissionScreenshotRules.cs" Link="MissionScreenshotRules.cs" />
+    <Compile Include="../../src/Core/IllustrationReferenceImage.cs" Link="IllustrationReferenceImage.cs" />
+  </ItemGroup>
+</Project>

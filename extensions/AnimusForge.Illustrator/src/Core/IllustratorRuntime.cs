@@ -44,6 +44,13 @@ namespace AnimusForge.Illustrator.Core
         internal bool HasPlayerRedrawRequest { get; private set; }
         internal bool IsApiTest { get; private set; }
         internal bool IsCurrentImageEdit { get; private set; }
+        internal bool IsMissionScreenshot { get; private set; }
+        internal IllustrationOptions ForMissionScreenshot()
+        {
+            var copy = (IllustrationOptions)MemberwiseClone();
+            copy.IsMissionScreenshot = true;
+            return copy;
+        }
         internal IllustrationOptions ForCurrentImageEdit()
         {
             var copy = (IllustrationOptions)MemberwiseClone();
@@ -196,6 +203,7 @@ namespace AnimusForge.Illustrator.Core
         private static int _pendingCount;
         private static int _workers;
         private static bool _running;
+        internal static long LifetimeGeneration { get; private set; }
         public static string CampaignKey { get; private set; }
         internal static bool IsHostRunning => _running && _mainThread != 0;
         public static bool IsMainThread => _mainThread != 0 && Environment.CurrentManagedThreadId == _mainThread;
@@ -205,6 +213,7 @@ namespace AnimusForge.Illustrator.Core
             // 注意：OnSubModuleLoad 在 1.4.x 上可能运行于子模块加载线程而非游戏主线程，
             // 不能在此捕获线程 ID；真正的主线程 ID 由首个 OnApplicationTick -> Tick() 捕获。
             _running = true;
+            MissionScreenshotIllustration.Install();
         }
 
         public static void AssertMainThread()
@@ -241,6 +250,8 @@ namespace AnimusForge.Illustrator.Core
         public static void Reset()
         {
             AssertMainThread();
+            LifetimeGeneration++;
+            MissionScreenshotIllustration.Reset();
             IllustratorApiTest.Cancel();
             BulletinIllustrationPreloader.Reset();
             foreach (var scope in Scopes.ToArray()) scope.Close();
@@ -271,6 +282,7 @@ namespace AnimusForge.Illustrator.Core
             while (FrameWaiters.Count > 0 && FrameWaiters.Peek().Key <= _frame) FrameWaiters.Dequeue().Value.TrySetResult(true);
             TickScopes();
             UI.Overlays.IllustrationCardPopup.TickSystemUiVisibility();
+            MissionScreenshotIllustration.Tick();
             for (int i = 0; i < 2; i++)
             {
                 Action action;
@@ -380,6 +392,8 @@ namespace AnimusForge.Illustrator.Core
         private readonly string _category;
         private readonly Action _onClose;
         private readonly bool _campaignOwned;
+        private readonly bool _missionOwned;
+        private readonly long _lifetimeGeneration;
         private CancellationTokenSource _request;
         private bool _closed;
         private long _revision;
@@ -389,19 +403,25 @@ namespace AnimusForge.Illustrator.Core
         private bool _backgroundGeneration;
         public string CampaignKey { get; }
 
-        public IllustrationScope(ScreenBase screen, string category, Action onClose, bool campaignOwned = false)
+        public IllustrationScope(ScreenBase screen, string category, Action onClose, bool campaignOwned = false, bool missionOwned = false)
         {
             IllustratorRuntime.AssertMainThread();
             _screen = screen;
             _campaignOwned = campaignOwned;
+            _missionOwned = missionOwned;
+            _lifetimeGeneration = IllustratorRuntime.LifetimeGeneration;
             _campaign = Campaign.Current;
             _category = category;
             _onClose = onClose;
-            CampaignKey = IllustratorRuntime.CampaignKey;
+            CampaignKey = missionOwned ? IllustratorRuntime.CampaignKey ?? _campaign?.UniqueGameId ?? "custom_battles" : IllustratorRuntime.CampaignKey;
             IllustratorRuntime.Register(this);
         }
 
-        public bool IsCurrent => !_closed && _campaign != null && ReferenceEquals(_campaign, Campaign.Current) &&
+        public bool IsCurrent => _missionOwned
+            ? !_closed && _lifetimeGeneration == IllustratorRuntime.LifetimeGeneration &&
+                (_campaignOwned || (_backgroundGeneration && _request != null) ||
+                (ReferenceEquals(_screen, ScreenManager.TopScreen) && _screen != null && !_screen.IsFinalized)) && IllustratorRuntime.IsEnabled(_category)
+            : !_closed && _campaign != null && ReferenceEquals(_campaign, Campaign.Current) &&
             !string.IsNullOrEmpty(CampaignKey) && CampaignKey == IllustratorRuntime.CampaignKey &&
             (_campaignOwned || (_backgroundGeneration && _request != null) || (ReferenceEquals(_screen, ScreenManager.TopScreen) && _screen != null && !_screen.IsFinalized)) && IllustratorRuntime.IsEnabled(_category);
 

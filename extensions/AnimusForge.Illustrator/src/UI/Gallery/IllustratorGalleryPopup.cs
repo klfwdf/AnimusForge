@@ -21,7 +21,7 @@ namespace AnimusForge.Illustrator.UI.Gallery
         private IllustratorGalleryPopup(ScreenBase screen)
         {
             _screen = screen;
-            _scope = new IllustrationScope(screen, null, Close);
+            _scope = new IllustrationScope(screen, null, Close, missionOwned: TaleWorlds.CampaignSystem.Campaign.Current == null);
             try
             {
             _dataSource = new IllustratorGalleryPopupVM(Close, _scope.CampaignKey, () => _scope.IsCurrent);
