@@ -1,0 +1,8 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><LangVersion>10</LangVersion></PropertyGroup>
+  <ItemGroup>
+    <Compile Include="../../../../src/AF.GameAdapter.Bannerlord/Configuration/Mcm/DuelSettings.News.cs" Link="DuelSettings.News.cs" />
+    <Reference Include="MCMv5"><HintPath>../../../../.tmp/build_check/1.4/MCMv5.dll</HintPath></Reference>
+    <Reference Include="Newtonsoft.Json"><HintPath>$(MSBuildSDKsPath)/../Newtonsoft.Json.dll</HintPath></Reference>
+  </ItemGroup>
+</Project>

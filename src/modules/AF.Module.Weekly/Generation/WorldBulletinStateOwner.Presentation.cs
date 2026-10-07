@@ -164,6 +164,7 @@ internal static string WorldBulletinCategoryForKind(string kind)
 		switch ((kind ?? "").Trim())
 		{
 		case "war_declared":
+		case "diplomatic_declaration":
 		case "peace_made":
 		case "alliance_formed":
 		case "alliance_ended":
@@ -193,6 +194,9 @@ internal static string WorldBulletinCategoryForKind(string kind)
 		case "civil_war_resolution":
 		case "civil_war_politics":
 		case "ruler_changed":
+		case "ruler_policy":
+		case "noble_gathering":
+		case "tournament_finished":
 		case "royal_marriage":
 		case "noble_marriage":
 		case "clan_defection":

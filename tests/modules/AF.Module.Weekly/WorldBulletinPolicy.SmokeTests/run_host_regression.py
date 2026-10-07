@@ -33,10 +33,12 @@ sys.path.insert(0,str(ROOT/'tests/modules/AF.Module.Memory/MemorySummaryMainThre
 from business_owner_fixture_support import enable_expression_declarations
 enable_expression_declarations(ex)
 inventory=[]
-def method(text,name):
-    match=re.search(r'(?m)^\s*(?:private|internal) [^\n]*?\b'+name+r'\(',text)
-    if not match:raise RuntimeError('Missing production method: '+name)
-    value=ex.declaration(text,match.group().strip());inventory.append({'symbol':name,'sha256':hashlib.sha256(value.encode()).hexdigest()});return value
+def method(text,name,overload=0):
+    matches=list(re.finditer(r'(?m)^\s*(?:private|internal) [^\n]*?\b'+name+r'\(',text))
+    if len(matches)<=overload:raise RuntimeError('Missing production method: '+name)
+    match=matches[overload]
+    signature=text[match.start():text.index('{', match.end())].strip() if name == 'CaptureWorldBulletinEvent' else match.group().strip()
+    value=ex.declaration(text,signature);inventory.append({'symbol':name,'sha256':hashlib.sha256(value.encode()).hexdigest()});return value
 
 
 host = current_source_path(ROOT, "MyBehavior.WorldBulletin.cs").read_text(encoding="utf-8-sig")
@@ -59,9 +61,10 @@ presentation=(ROOT/'src/modules/AF.Module.Weekly/Generation/WorldBulletinStateOw
 owner_fields=owner[owner.index('internal sealed partial class WorldBulletinStateOwner {'):owner.index('internal WorldBulletinSaveState EnsureWorldBulletinState()')]
 cache_fields=presentation[presentation.index('internal List<EventRecordEntry> CachedRecords;'):presentation.index('private const int WorldBulletinMaxLayouts')]
 actual_methods=[method(owner,n) for n in ['EnsureWorldBulletinState','IsWorldBulletinEventId','ReleasePendingWorldBulletinNotice','ResetTransient','ResetRuntime','ExportJson','ImportJson']]+[method(presentation,n) for n in ['FindLatestWorldBulletinRecord','GetWorldBulletinRecordSequence']]
+actual_methods += [method(owner, 'CaptureWorldBulletinEvent', 0), method(owner, 'CaptureWorldBulletinEvent', 1), method(owner, 'CaptureCivilNewsMaterial')]
 owned='using System;using System.Linq;using System.Globalization;using System.Collections.Generic;using System.Collections.Concurrent;using static AnimusForge.MyBehavior;namespace AnimusForge;'+owner_fields+cache_fields+'\n'.join(actual_methods)+'}'
 # Only calendar, storage/game records and logging are fixture facts; all state/cache/save algorithms above are actual spans.
-owned+='internal sealed class WorldBulletinPort {internal Func<int> CurrentDay;internal Func<List<EventRecordEntry>> Records;internal Action<string,string> Log;internal Func<string,MyBehavior.EventRecordEntry> FindRecord;internal Action<string> QueueNotice;}'
+owned+='internal sealed class WorldBulletinPort {internal Func<int> CurrentDay;internal Func<bool> Enabled;internal Func<double> CurrentHour;internal Func<string> CurrentDate;internal Func<string,string> Render;internal Func<WorldBulletinFocus> Focus;internal Func<List<EventRecordEntry>> Records;internal Action<string,string> Log;internal Func<string,MyBehavior.EventRecordEntry> FindRecord;internal Action<string> QueueNotice;}'
 generated=generated.replace('public partial class MyBehavior\n{','public partial class MyBehavior\n{ private readonly WorldBulletinStateOwner _worldBulletinOwner=new();private WorldBulletinStateOwner WorldBulletinState {get { _worldBulletinOwner.Bind(new(){CurrentDay=GetCurrentGameDayIndexSafe,Records=()=>_eventRecordEntries,Log=Logger.Log});return _worldBulletinOwner;}}',1)
 run = new_run_root(ROOT, "world-bulletin-review", args.run_root)
 (run / "Host.cs").write_text(generated, encoding="utf-8")

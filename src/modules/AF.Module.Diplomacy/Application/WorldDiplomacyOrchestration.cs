@@ -159,6 +159,7 @@ internal interface IWorldDiplomacyOrchestrationHost
     long PublishedWorldWeeklyHistoryRevision();
     void RecordWorldDiplomacyWeeklyMaterialExternal(string stableKey, string title, string text,
         string authorKingdomId, string authorRulerId, string relatedKingdomId, bool isWorldLevel, int day, string gameDate);
+    void RecordDiplomacyBulletinMaterial(WorldDiplomacyDocument document);
     bool TryBuildKingdomStrategicProfilePrompt(string kingdomId, string marker, out string prompt);
     void LogKingdomStrategicProfileInjection(WorldDiplomacyJob job, string profilePrompt);
 
@@ -731,6 +732,8 @@ internal sealed partial class WorldDiplomacyOrchestration : IWorldDiplomacyOrche
 
     public void RecordDiplomacyWeeklyMaterial(WorldDiplomacyDocument document)
     {
+        if (document == null || !document.IsReadyForPublication) return;
+        _host.RecordDiplomacyBulletinMaterial(document);
         WorldDiplomacyHistoryCaptureApplication.RecordDiplomacyWeeklyMaterial(
             document, Storage?.Documents, _host.RecordWorldDiplomacyWeeklyMaterialExternal);
     }

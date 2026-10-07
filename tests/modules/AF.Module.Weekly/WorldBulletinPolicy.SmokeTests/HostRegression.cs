@@ -96,6 +96,26 @@ public partial class MyBehavior
         Check(reloaded.EnsureWorldBulletinState().World.Sequence == 3 && reloaded._worldBulletinState.PreservedUnreadableState == null, "old valid saves need no migration and retain no prior bad payload");
         reloaded.ResetWorldBulletinForRuntime("new_game_created");
         Check(reloaded.EnsureWorldBulletinState().PreservedUnreadableState == null, "new campaign carries no recovery payload");
+        bool enabled = true;
+        var news = new WorldBulletinStateOwner();
+        news.Bind(new WorldBulletinPort {
+            Enabled = () => enabled, CurrentDay = () => 100, CurrentHour = () => 2400,
+            Render = s => s, Focus = () => new WorldBulletinFocus(), Log = (a, b) => {} });
+        foreach (string kind in new[] { "ruler_policy", "noble_gathering", "tournament_finished", "diplomatic_declaration" })
+            news.CaptureCivilNewsMaterial(kind, kind, "已记录的" + kind, "事实细节", false, "a", "b");
+        var newsState = news.EnsureWorldBulletinState();
+        Check(newsState.Events.Count == 4 && newsState.Events.All(e => e.KingdomIds.Count == 2),
+            "policy, gathering, tournament and declaration enter bulletin candidates");
+        for (int i = 0; i < 70; i++) news.CaptureCivilNewsMaterial("ruler_policy", "filler:" + i, "后续事件", "细节", false, "a");
+        news.CaptureCivilNewsMaterial("diplomatic_declaration", "diplomatic_declaration", "更新的公开主张", "仅发布", false, "a", "b");
+        Check(newsState.Events.Count == 74 && newsState.Events[3].Sentence == "更新的公开主张",
+            "declaration projections update one fact even beyond recent-tail deduplication");
+        newsState.World.CutoffHour = 2400;
+        news.CaptureCivilNewsMaterial("diplomatic_declaration", "diplomatic_declaration", "迟到投影", "新细节", false, "a");
+        Check(newsState.Events[3].Sentence == "更新的公开主张", "published declaration is not changed by late projection");
+        enabled = false;
+        news.CaptureCivilNewsMaterial("ruler_policy", "disabled", "模式关闭", "细节", false, "a");
+        Check(newsState.Events.Count == 74, "weekly mode does not add bulletin facts");
         Console.WriteLine("ALL PASS " + _checks + " host checks (fake storage/game boundary)");
         return 0;
     }

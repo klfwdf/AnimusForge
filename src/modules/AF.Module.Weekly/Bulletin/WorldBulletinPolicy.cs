@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -667,7 +667,9 @@ internal static class WorldBulletinPolicy
 		return result;
 	}
 
-	public static string BuildSystemPrompt(int majorFactCount, int minorCount)
+    internal const string DefaultWritingRequirements = "战斗报道不要写成几人对几人、多少人打多少人的兵力对账，也不要连续罗列双方参战、阵亡和负伤人数。用交战方、地点、行动、胜负及已经确认的后果组织叙述；人数只用于核对事实，不机械照抄。不得仅凭人数自行宣称全歼、惨胜或改变国运。";
+
+	public static string BuildSystemPrompt(int majorFactCount, int minorCount, string writingRequirements = null)
 	{
 		StringBuilder sb = new StringBuilder();
 		sb.AppendLine("你为一个中世纪世界撰写即时快报。只能使用给出的事实与背景，不得添加其中没有的人物、地点、结果或伤亡数字；推测影响时只能用“或将”“恐怕”这类审慎措辞。");
@@ -685,7 +687,9 @@ internal static class WorldBulletinPolicy
 			sb.AppendLine("[M" + i + "] 第" + i + "条小消息改写成一句通顺的话，不超过60字；一条里有多件同类事实时合并成一句");
 		}
 		sb.Append("[SHORT] 不超过100字的局势摘要，供旁人转述");
-		return sb.ToString();
+        string writing = writingRequirements ?? DefaultWritingRequirements;
+        if (!string.IsNullOrWhiteSpace(writing)) sb.Append("\n\n【快报写作要求】\n").Append(writing.Trim());
+        return sb.ToString();
 	}
 
 	// facts' Detail and kingdomContext are writer-only background; nothing here is shown verbatim.
@@ -754,6 +758,10 @@ internal static class WorldBulletinPolicy
 		{
 		case "war_declared":
 			return "烽烟再起";
+        case "diplomatic_declaration": return "外交宣言";
+        case "ruler_policy": return "施政新令";
+        case "noble_gathering": return "贵族宴集";
+        case "tournament_finished": return "竞技捷报";
 		case "peace_made":
 			return "干戈暂息";
 		case "settlement_siege":

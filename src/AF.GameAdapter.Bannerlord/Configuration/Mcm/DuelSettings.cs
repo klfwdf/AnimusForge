@@ -681,6 +681,8 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 
 		public string WeeklyReportWritingRequirements { get; set; }
 
+		public string WorldBulletinWritingRequirements { get; set; }
+
 		public string NpcPersonaGenerationRequirements { get; set; }
 
 		public string DailyMemoryCompressionWritingRequirements { get; set; }
@@ -2039,7 +2041,7 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 	}
 
 	[SettingPropertyButton("周报写作要求文案", -1, true, "", Content = "打开编辑器", Order = 2, RequireRestart = false, HintText = "点击这里使用大文本编辑器修改周报生成的写作要求。默认文本就是内置写作要求；留空保存后表示不注入写作要求。")]
-	[SettingPropertyGroup("9. 提示词扩展")]
+	[SettingPropertyGroup(NewsSettingsGroup + "/周报", GroupOrder = 0)]
 	public Action EditWeeklyReportWritingRequirements { get; set; }
 
 	private string _npcPersonaGenerationRequirements = LoadNpcPersonaGenerationRequirementsFromDiskOrDefault();
@@ -2239,7 +2241,7 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 	[SettingPropertyGroup("17. AI外交（测试中）/1. 基础", GroupOrder = 170)]
 	public bool WorldDiplomacyStartNewGameAtPeace { get; set; } = false;
 
-	[SettingPropertyBool("启用右侧外交通知", Order = 2, RequireRestart = false, HintText = "显示已送达且符合通知条件的外交宣言。关闭只隐藏右侧通知，不影响交涉、传播或王国公告。默认开启。")]
+	[SettingPropertyBool("外交宣言送达提示", Order = 2, RequireRestart = false, HintText = "已送达的外交宣言在左下角显示文字提示，不再弹出右侧通知。关闭只隐藏送达提示，不影响交涉、传播、快报素材或王国公告。默认开启。")]
 	[SettingPropertyGroup("17. AI外交（测试中）/1. 基础", GroupOrder = 170)]
 	public bool EnableWorldDiplomacyMapNotifications { get; set; } = true;
 
@@ -2375,48 +2377,44 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 	public int NobleGatheringInvitedClanRelationReward { get; set; } = DefaultNobleGatheringInvitedClanRelationReward;
 
 	[SettingPropertyInteger("周报篇幅档位", 1, 4, "0", Order = 0, RequireRestart = false, HintText = "1=200-400字；2=200-800字；3=200-1200字；4=200-1500字。世界周报和王国周报共用这一档位；默认 2。")]
-	[SettingPropertyGroup("12. 事件系统（开发）")]
+	[SettingPropertyGroup(NewsSettingsGroup + "/周报", GroupOrder = 0)]
 	public int WeeklyReportLengthPreset { get; set; } = 2;
 
 	[SettingPropertyInteger("每分钟最多生成周报数", 1, 20, "0", Order = 1, RequireRestart = false, HintText = "限制开发态周报生成的请求速率。默认 5；最高 20。用于应对部分 API 渠道的 RPM 或并发限制。")]
-	[SettingPropertyGroup("12. 事件系统（开发）")]
+	[SettingPropertyGroup(NewsSettingsGroup + "/周报", GroupOrder = 0)]
 	public int WeeklyReportRequestsPerMinute { get; set; } = 5;
 
 	[SettingPropertyBool("每周自动生成周报", Order = 2, RequireRestart = false, HintText = "开启后，系统会在每个新周开始时自动结算上一周，并生成世界周报与各王国周报。第0天会自动写入开局概要作为 week 0 事件。")]
-	[SettingPropertyGroup("12. 事件系统（开发）")]
+	[SettingPropertyGroup(NewsSettingsGroup + "/周报", GroupOrder = 0)]
 	public bool AutoGenerateWeeklyReports { get; set; } = true;
 
-	[SettingPropertyInteger("周报弹窗正文字号", 12, 36, "0", Order = 3, RequireRestart = false, HintText = "仅影响最近王国周报的大弹窗正文，不影响别的界面。默认 18。")]
-	[SettingPropertyGroup("12. 事件系统（开发）")]
+	[SettingPropertyInteger("报刊弹窗正文字号", 12, 36, "0", Order = 3, RequireRestart = false, HintText = "仅影响最近王国周报的大弹窗正文，不影响别的界面。默认 18。")]
+	[SettingPropertyGroup(NewsSettingsGroup, GroupOrder = 120)]
 	public int WeeklyReportPopupBodyFontSize { get; set; } = 18;
 
-	[SettingPropertyBool("周报右下角消息提示", Order = 4, RequireRestart = false, HintText = "开启后，周报生成完成时会在大地图右下角显示可点击消息；关闭后不显示，且关闭期间新生成的周报不会排队提示。默认开启。")]
-	[SettingPropertyGroup("12. 事件系统（开发）")]
+	[SettingPropertyBool("周报／快报消息提示", Order = 4, RequireRestart = false, HintText = "开启后，周报生成完成时会在大地图右下角显示可点击消息；关闭后不显示，且关闭期间新生成的周报不会排队提示。默认开启。")]
+	[SettingPropertyGroup(NewsSettingsGroup, GroupOrder = 120)]
 	public bool EnableWeeklyReportMapNotifications { get; set; } = true;
 
-	[SettingPropertyBool("启用周报阅读经验奖励", Order = 5, RequireRestart = false, HintText = "开启后，从地图通知打开周报并停留满 10 秒，会按三栏字数累计经验；每研读 20 篇后一次性给玩家魅力、统御和管理经验。")]
-	[SettingPropertyGroup("12. 事件系统（开发）")]
+	[SettingPropertyBool("启用报刊阅读经验奖励", Order = 5, RequireRestart = false, HintText = "开启后，从地图通知打开周报并停留满 10 秒，会按三栏字数累计经验；每研读 20 篇后一次性给玩家魅力、统御和管理经验。")]
+	[SettingPropertyGroup(NewsSettingsGroup, GroupOrder = 120)]
 	public bool EnableWeeklyReportReadingXpReward { get; set; } = true;
 
-	[SettingPropertyInteger("周报每百字经验", 0, 100, "0", Order = 6, RequireRestart = false, HintText = "周报阅读奖励的字数倍率。默认 20，表示每栏每 100 个有效字/词给 20 点对应技能经验。")]
-	[SettingPropertyGroup("12. 事件系统（开发）")]
+	[SettingPropertyInteger("报刊每百字经验", 0, 100, "0", Order = 6, RequireRestart = false, HintText = "周报阅读奖励的字数倍率。默认 20，表示每栏每 100 个有效字/词给 20 点对应技能经验。")]
+	[SettingPropertyGroup(NewsSettingsGroup, GroupOrder = 120)]
 	public int WeeklyReportReadingXpPerHundredChars { get; set; } = 20;
 
-	[SettingPropertyInteger("周报单技能经验上限", 0, 500, "0", Order = 7, RequireRestart = false, HintText = "单份周报每个技能最多获得多少经验。默认 100；设置为 0 表示不发放周报阅读经验。")]
-	[SettingPropertyGroup("12. 事件系统（开发）")]
+	[SettingPropertyInteger("报刊单技能经验上限", 0, 500, "0", Order = 7, RequireRestart = false, HintText = "单份周报每个技能最多获得多少经验。默认 100；设置为 0 表示不发放周报阅读经验。")]
+	[SettingPropertyGroup(NewsSettingsGroup, GroupOrder = 120)]
 	public int WeeklyReportReadingXpSkillCap { get; set; } = 100;
 
 	[SettingPropertyBool("启用王国稳定度与叛乱", Order = 8, RequireRestart = false, HintText = "关闭后，不再触发本模组的王国叛乱；王国稳定度不会再影响国王直辖领地忠诚度，也不会继续施加稳定度关系修正。")]
-	[SettingPropertyGroup("12. 事件系统（开发）")]
+	[SettingPropertyGroup(NewsSettingsGroup, GroupOrder = 120)]
 	public bool EnableKingdomStabilityAndRebellion { get; set; } = true;
 
 	[SettingPropertyBool("玩家为国王时免疫稳定度叛乱", Order = 9, RequireRestart = false, HintText = "开启后，当玩家家族是某个王国的执政家族或玩家本人是该王国领袖时，本模组的王国稳定度不会继续给该王国施加关系修正、国王直辖地忠诚修正或王国叛乱判定。原版城镇低忠诚叛乱仍按原版规则运行。")]
-	[SettingPropertyGroup("12. 事件系统（开发）")]
+	[SettingPropertyGroup(NewsSettingsGroup, GroupOrder = 120)]
 	public bool EnablePlayerKingdomRebellionImmunity { get; set; } = false;
-
-	[SettingPropertyBool("周报模式：即时快报（关闭则用旧周报）", Order = 10, RequireRestart = false, HintText = "开启：用即时快报取代每周长周报。大事件发生后收集 1 天，把期间几件大事合写成一篇、附几条小消息，每期只调用 1 次 LLM，发出后冷却 3 天；只弹这一份，内容偏向玩家本人、本国与邻国；开启插画扩展时自动配图。NPC 从本地事件记录得知本国与附近王国的近况，被问到战功或天下大事时再调取详情，不额外消耗 token。王国稳定度改由事件本地计算（每国每周上限 ±15）。关闭：回到旧周报流程（每周生成世界与王国周报）。默认开启。")]
-	[SettingPropertyGroup("12. 事件系统（开发）")]
-	public bool UseWorldBulletin { get; set; } = true;
 
 	// Legacy weekly batches only run when the bulletin mode is off.
 	internal bool IsLegacyWeeklyAutoGenerationActive()
@@ -3895,6 +3893,10 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 		{
 			settings.WeeklyReportWritingRequirements = store.WeeklyReportWritingRequirements ?? "";
 		}
+		if (!string.Equals(settings.WorldBulletinWritingRequirements ?? "", store.WorldBulletinWritingRequirements ?? "", StringComparison.Ordinal))
+		{
+			settings.WorldBulletinWritingRequirements = store.WorldBulletinWritingRequirements ?? "";
+		}
 		if (!string.Equals(settings.NpcPersonaGenerationRequirements ?? "", store.NpcPersonaGenerationRequirements ?? "", StringComparison.Ordinal))
 		{
 			settings.NpcPersonaGenerationRequirements = store.NpcPersonaGenerationRequirements ?? "";
@@ -4412,6 +4414,7 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 			PlayerCustomPromptRule = DefaultPlayerCustomPromptRule,
 			KingdomRebellionSystemPrompt = DefaultKingdomRebellionSystemPrompt,
 			WeeklyReportWritingRequirements = DefaultWeeklyReportWritingRequirements,
+			WorldBulletinWritingRequirements = DefaultWorldBulletinWritingRequirements,
 			NpcPersonaGenerationRequirements = DefaultNpcPersonaGenerationRequirements,
 			DailyMemoryCompressionWritingRequirements = DefaultDailyMemoryCompressionWritingRequirements,
 			MemoryOverviewCompressionWritingRequirements = DefaultMemoryOverviewCompressionWritingRequirements,
@@ -4520,6 +4523,10 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 				{
 					store.WeeklyReportWritingRequirements = weeklyRequirements;
 				}
+				if (TryReadLayeredCustomPromptTextJsonFile(directory, packagedDirectory, WorldBulletinWritingRequirementsJsonFileName, NormalizeWorldBulletinWritingRequirementsText, store.WorldBulletinWritingRequirements, out string bulletinRequirements))
+				{
+					store.WorldBulletinWritingRequirements = bulletinRequirements;
+				}
 				if (TryReadLayeredCustomPromptTextJsonFile(directory, packagedDirectory, NpcPersonaGenerationRequirementsJsonFileName, NormalizeNpcPersonaGenerationRequirementsText, store.NpcPersonaGenerationRequirements, out string npcRequirements))
 				{
 					store.NpcPersonaGenerationRequirements = npcRequirements;
@@ -4623,7 +4630,8 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 			throw new InvalidOperationException("已有自定义提示词文件损坏；请先备份或修复原件，未覆盖原件。");
 		}
 		if (string.IsNullOrWhiteSpace(text)
-			&& !string.Equals(Path.GetFileName(path), NpcPersonaGenerationRequirementsJsonFileName, StringComparison.OrdinalIgnoreCase))
+			&& !string.Equals(Path.GetFileName(path), NpcPersonaGenerationRequirementsJsonFileName, StringComparison.OrdinalIgnoreCase)
+            && !string.Equals(Path.GetFileName(path), WorldBulletinWritingRequirementsJsonFileName, StringComparison.OrdinalIgnoreCase))
 		{
 			if (File.Exists(path)) File.Delete(path);
 		}
@@ -4648,6 +4656,7 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 		WriteCustomPromptTextJsonFileIfMissingUnlocked(GetCustomPromptTextFilePath(directory, PlayerCustomPromptRuleJsonFileName), normalized.PlayerCustomPromptRule);
 		WriteCustomPromptTextJsonFileIfMissingUnlocked(GetCustomPromptTextFilePath(directory, KingdomRebellionSystemPromptJsonFileName), normalized.KingdomRebellionSystemPrompt);
 		WriteCustomPromptTextJsonFileIfMissingUnlocked(GetCustomPromptTextFilePath(directory, WeeklyReportWritingRequirementsJsonFileName), normalized.WeeklyReportWritingRequirements);
+		WriteCustomPromptTextJsonFileIfMissingUnlocked(GetCustomPromptTextFilePath(directory, WorldBulletinWritingRequirementsJsonFileName), normalized.WorldBulletinWritingRequirements);
 		WriteCustomPromptTextJsonFileIfMissingUnlocked(GetCustomPromptTextFilePath(directory, NpcPersonaGenerationRequirementsJsonFileName), normalized.NpcPersonaGenerationRequirements);
 		WriteCustomPromptTextJsonFileIfMissingUnlocked(GetCustomPromptTextFilePath(directory, DailyMemoryCompressionWritingRequirementsJsonFileName), normalized.DailyMemoryCompressionWritingRequirements);
 		WriteCustomPromptTextJsonFileIfMissingUnlocked(GetCustomPromptTextFilePath(directory, MemoryOverviewCompressionWritingRequirementsJsonFileName), normalized.MemoryOverviewCompressionWritingRequirements);
@@ -4744,6 +4753,7 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 			PlayerCustomPromptRule = store.PlayerCustomPromptRule == null ? DefaultPlayerCustomPromptRule : NormalizePlayerCustomPromptRuleText(store.PlayerCustomPromptRule),
 			KingdomRebellionSystemPrompt = store.KingdomRebellionSystemPrompt == null ? DefaultKingdomRebellionSystemPrompt : NormalizeKingdomRebellionSystemPromptText(store.KingdomRebellionSystemPrompt),
 			WeeklyReportWritingRequirements = store.WeeklyReportWritingRequirements == null ? DefaultWeeklyReportWritingRequirements : NormalizeWeeklyReportWritingRequirementsText(store.WeeklyReportWritingRequirements),
+			WorldBulletinWritingRequirements = store.WorldBulletinWritingRequirements == null ? DefaultWorldBulletinWritingRequirements : NormalizeWorldBulletinWritingRequirementsText(store.WorldBulletinWritingRequirements),
 			NpcPersonaGenerationRequirements = store.NpcPersonaGenerationRequirements == null ? DefaultNpcPersonaGenerationRequirements : NormalizeNpcPersonaGenerationRequirementsText(store.NpcPersonaGenerationRequirements),
 			DailyMemoryCompressionWritingRequirements = store.DailyMemoryCompressionWritingRequirements == null ? DefaultDailyMemoryCompressionWritingRequirements : NormalizeDailyMemoryCompressionWritingRequirementsText(store.DailyMemoryCompressionWritingRequirements),
 			MemoryOverviewCompressionWritingRequirements = store.MemoryOverviewCompressionWritingRequirements == null ? DefaultMemoryOverviewCompressionWritingRequirements : NormalizeMemoryOverviewCompressionWritingRequirementsText(store.MemoryOverviewCompressionWritingRequirements),
@@ -4766,6 +4776,7 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 			PlayerCustomPromptRule = store.PlayerCustomPromptRule,
 			KingdomRebellionSystemPrompt = store.KingdomRebellionSystemPrompt,
 			WeeklyReportWritingRequirements = store.WeeklyReportWritingRequirements,
+			WorldBulletinWritingRequirements = store.WorldBulletinWritingRequirements,
 			NpcPersonaGenerationRequirements = store.NpcPersonaGenerationRequirements,
 			DailyMemoryCompressionWritingRequirements = store.DailyMemoryCompressionWritingRequirements,
 			MemoryOverviewCompressionWritingRequirements = store.MemoryOverviewCompressionWritingRequirements,
@@ -5100,6 +5111,7 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 					PlayerCustomPromptRuleJsonFileName,
 					KingdomRebellionSystemPromptJsonFileName,
 					WeeklyReportWritingRequirementsJsonFileName,
+					WorldBulletinWritingRequirementsJsonFileName,
 					NpcPersonaGenerationRequirementsJsonFileName,
 					DailyMemoryCompressionWritingRequirementsJsonFileName,
 					MemoryOverviewCompressionWritingRequirementsJsonFileName,
@@ -6620,6 +6632,7 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 		{
 			OpenKingdomRebellionSystemPromptEditor();
 		};
+		EditWorldBulletinWritingRequirements = OpenWorldBulletinWritingRequirementsEditor;
 		EditWeeklyReportWritingRequirements = delegate
 		{
 			OpenWeeklyReportWritingRequirementsEditor();
