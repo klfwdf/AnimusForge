@@ -64,7 +64,7 @@ internal static class Program
             new[] { typeof(string), typeof(IReadOnlyList<>).MakeGenericType(_reference), _options, typeof(CancellationToken) }, null);
         return Await(method.Invoke(null, new object[] { "【人物与镜头】冻结战斗动作\n【场景空间】现场空间\n【光影与色彩】现场采光\n【空间关系】保持相对距离与朝向", refs, options, CancellationToken.None }));
     }
-    private sealed class Record { internal string Url, Text; internal int Images; }
+    private sealed class Record { internal string Url, Text, GoogleKey; internal bool HasBearer; internal int Images; }
     private sealed class Handler : HttpMessageHandler
     {
         internal readonly List<Record> Records = new List<Record>();
@@ -75,8 +75,9 @@ internal static class Program
         {
             // Force a real yield to exercise the production continuations without any socket.
             await Task.Yield(); token.ThrowIfCancellationRequested();
-            if (request.Method != HttpMethod.Post || request.RequestUri.Host != "fixture.invalid") throw new Exception("Unexpected HTTP: all network prohibited");
-            var record = new Record { Url = request.RequestUri.AbsolutePath };
+            if (request.Method != HttpMethod.Post || (request.RequestUri.Host != "fixture.invalid" && request.RequestUri.Host != "generativelanguage.googleapis.com")) throw new Exception("Unexpected HTTP: all network prohibited");
+            var record = new Record { Url = request.RequestUri.AbsolutePath, HasBearer = request.Headers.Authorization != null,
+                GoogleKey = request.Headers.TryGetValues("x-goog-api-key", out var keys) ? keys.Single() : null };
             if (request.Content is MultipartFormDataContent multipart)
             {
                 foreach (var part in multipart)
@@ -98,6 +99,7 @@ internal static class Program
                     var payload = (Dictionary<string, object>)Json.DeserializeObject(record.Text);
                     record.Images = ((object[])payload["images"]).Length;
                 }
+                else if (record.Url.EndsWith(":generateContent")) record.Images = record.Text.Split(new[] { "\"inlineData\"" }, StringSplitOptions.None).Length - 1;
                 else record.Images = record.Text.Split(new[] { "\"type\":\"image_url\"" }, StringSplitOptions.None).Length - 1;
             }
             Records.Add(record);
@@ -155,6 +157,82 @@ internal static class Program
             result = Generate(options, i == 1 ? References("Character") : null);
             Check(!Get<bool>(result, "Success") && handler.Records.Count == 1 && Get<string>(result, "ErrorMessage").Contains("HTTP 400"), "schema rejection stops without a paid retry");
         }
+    }
+    private static void NativeGeminiContracts(Handler handler)
+    {
+        string success = Json.Serialize(new { candidates = new[] { new { finishReason = "STOP", content = new { parts = new object[] {
+            new { thought = true, inlineData = new { mimeType = "image/png", data = _pngB } },
+            new { inlineData = new { mimeType = "image/png", data = _pngA } } } } } } });
+        string endpoint = "/v1beta/models/gemini-3.1-flash-image:generateContent";
+        string[] sizes = { "1024x1024", "1280x720", "1344x768", "1024x1536" };
+        string[] ratios = { "1:1", "16:9", null, "2:3" };
+        for (int i = 0; i < sizes.Length; i++)
+        {
+            object options = Options(); Set(options, "IsMissionScreenshot", false); Set(options, "PreferChatImageProtocol", false);
+            Set(options, "UseExactEndpointUrl", i != 1); Set(options, "ModelName", "gemini-3.1-flash-image");
+            Set(options, "ApiBaseUrl", i == 1 ? "https://generativelanguage.googleapis.com/v1beta" : "http://fixture.invalid" + endpoint);
+            Set(options, "ApiKey", "native-fixture-key"); Set(options, "ImageSize", sizes[i]);
+            Set(options, "OutputFrameRequirement", "本次尺寸" + sizes[i]); Set(options, "EnableReferenceImageForGeneration", true);
+            Array refs = i == 0 ? null : References("Character");
+            handler.Reset(success); var result = Generate(options, refs);
+            Check(Get<bool>(result, "Success") && handler.Records.Count == 1, "native request succeeds in one attempt");
+            Record sent = handler.Records.Single();
+            Check(sent.Url == endpoint && sent.GoogleKey == "native-fixture-key" && !sent.HasBearer, "native path and API-key header only");
+            var payload = (Dictionary<string, object>)Json.DeserializeObject(sent.Text);
+            Check(payload.Count == 2 && payload.ContainsKey("contents") && payload.ContainsKey("generationConfig")
+                && !payload.ContainsKey("messages") && !payload.ContainsKey("aspect_ratio") && !sent.Text.Contains("native-fixture-key"), "native body excludes Chat schema and credentials");
+            var config = (Dictionary<string, object>)payload["generationConfig"];
+            Check(((object[])config["responseModalities"]).Contains("IMAGE"), "native image modality requested");
+            Check(ratios[i] == null ? !config.ContainsKey("imageConfig")
+                : (string)((Dictionary<string, object>)config["imageConfig"])["aspectRatio"] == ratios[i], "only exact supported ratio is structured");
+            Check(sent.Images == (refs == null ? 0 : 2), "all native references retained");
+            Check(sent.Text.Contains("本次尺寸" + sizes[i]) && Get<string>(result, "ResolvedPrompt").Contains(sizes[i]), "native fixed output requirement retained");
+            Check(Convert.ToBase64String(Get<byte[]>(result, "ImageBytes")) == _pngA, "thought image skipped; final image decoded");
+            handler.Reset("{\"error\":{\"message\":\"invalid API key\"}}", HttpStatusCode.Unauthorized);
+            result = Generate(options, refs);
+            Check(!Get<bool>(result, "Success") && handler.Records.Count == 1 && Get<string>(result, "ErrorMessage").Contains("HTTP 401"), "native auth failure never retries");
+            handler.Reset("{\"promptFeedback\":{\"blockReason\":\"SAFETY\"}}"); result = Generate(options, refs);
+            Check(!Get<bool>(result, "Success") && handler.Records.Count == 1 && Get<string>(result, "ErrorMessage").Contains("过滤"), "native blocked response clear and no retry");
+        }
+        object invalid = Options(); Set(invalid, "IsMissionScreenshot", false); Set(invalid, "UseExactEndpointUrl", true);
+        Set(invalid, "ApiBaseUrl", "https://generativelanguage.googleapis.com/v1beta"); handler.Reset(success);
+        Check(!Get<bool>(Generate(invalid, null), "Success") && handler.Records.Count == 0, "exact root rejected before network");
+        Set(invalid, "ApiBaseUrl", "http://fixture.invalid/v1beta/models/gemini:streamGenerateContent");
+        Check(!Get<bool>(Generate(invalid, null), "Success") && handler.Records.Count == 0, "streaming native image URL rejected before send");
+        Set(invalid, "ApiBaseUrl", "http://fixture.invalid" + endpoint); Set(invalid, "IsCurrentImageEdit", true);
+        var editReference = Array.CreateInstance(_reference, 1);
+        editReference.SetValue(Activator.CreateInstance(_reference, new object[] { _pngA, "当前成图", Enum.Parse(_kind, "GeneratedImage") }), 0);
+        handler.Reset(success); var editResult = Generate(invalid, editReference);
+        Check(Get<bool>(editResult, "Success") && handler.Records.Count == 1 && handler.Records[0].Images == 1, "native current-image edit retains exactly one base image");
+    }
+    private static void NativeProtocolContracts()
+    {
+        Type protocol = _dll.GetType("AnimusForge.Illustrator.Core.GeminiNativeImageProtocol", true);
+        Type jsonObject = Type.GetType("Newtonsoft.Json.Linq.JObject, Newtonsoft.Json", true);
+        Func<string, object> parse = text => jsonObject.GetMethod("Parse", new[] { typeof(string) }).Invoke(null, new object[] { text });
+        MethodInfo isNative = protocol.GetMethod("IsNativeUrl", AllStatic);
+        Check(!(bool)isNative.Invoke(null, new object[] { "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions" }), "Google compatible Chat keeps Bearer schema");
+        Check(!(bool)isNative.Invoke(null, new object[] { "http://fixture.invalid/v1/images/edits" }), "edits never treated as native Gemini");
+        foreach (string input in new[] { "https://generativelanguage.googleapis.com/v1beta", "https://generativelanguage.googleapis.com/v1beta/models/gemini:generateContent" })
+            using (var request = (HttpRequestMessage)protocol.GetMethod("CreateModelListRequest", AllStatic).Invoke(null, new object[] { input, "native-fixture-key" }))
+            {
+                Check(request.Method == HttpMethod.Get && request.RequestUri.AbsolutePath == "/v1beta/models", "native catalog root/model endpoint resolves correctly");
+                Check(request.Headers.Authorization == null && request.Headers.GetValues("x-goog-api-key").Single() == "native-fixture-key", "native catalog key header only");
+            }
+        var models = (List<string>)protocol.GetMethod("ReadModelIds", AllStatic).Invoke(null, new[] { parse("{\"models\":[{\"name\":\"models/gemini-image\"},{\"name\":\"gemini-pro\"},{}]}") });
+        Check(models.SequenceEqual(new[] { "gemini-image", "gemini-pro" }), "native catalog IDs read without models prefix");
+        Type diagnostic = _dll.GetType("AnimusForge.Illustrator.Core.GenerationDiagnostics", true);
+        object scope = FormatterServices.GetUninitializedObject(diagnostic);
+        Set(scope, "_gate", new object()); Set(scope, "_secrets", new List<string>());
+        Set(scope, "_disposed", true); Set(scope, "_references", Activator.CreateInstance(typeof(Dictionary<,>).MakeGenericType(typeof(string), jsonObject)));
+        object inputData = parse(Json.Serialize(new { inlineData = new { mimeType = "image/png", data = _pngA }, @secret = "fake-secret" }));
+        MethodInfo sanitize = diagnostic.GetMethod("Sanitize", AllInstance);
+        string cleanedResponse = sanitize.Invoke(scope, new object[] { inputData, false }).ToString();
+        string cleanedRequest = sanitize.Invoke(scope, new object[] { inputData, true }).ToString();
+        Check(!cleanedResponse.Contains(_pngA) && !cleanedResponse.Contains("fake-secret"), "native inline response and key sanitized");
+        Check(!cleanedRequest.Contains(_pngA) && cleanedRequest.Contains("reference"), "native reference recorded as metadata rather than raw base64");
+        string header = sanitize.Invoke(scope, new[] { parse("{\"x-goog-api-key\":\"fake-key\"}"), (object)false }).ToString();
+        Check(!header.Contains("fake-key") && header.Contains("redacted"), "native key name redacted in diagnostics");
     }
     private static object Direction(object options, Array refs, HttpClient client)
     {
@@ -225,7 +303,7 @@ internal static class Program
                 using (var http = new HttpClient(handler))
                 {
                     field.SetValue(null, http);
-                    try { ImageContracts(handler); ChatSchemaContracts(handler); DirectorContracts(handler, http); DialogueContracts(); }
+                    try { ImageContracts(handler); ChatSchemaContracts(handler); NativeGeminiContracts(handler); NativeProtocolContracts(); DirectorContracts(handler, http); DialogueContracts(); }
                     finally { field.SetValue(null, previous); }
                 }
             }
