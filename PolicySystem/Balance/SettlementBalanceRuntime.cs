@@ -87,7 +87,7 @@ internal static class SettlementBalanceRuntime
 		{
 			try
 			{
-				// Only this private vanilla calculation reads zero prosperity. Real game state is never changed.
+				// Keep the patch installed; its input adapter reads the live toggle without changing game state.
 				MethodInfo food = AccessTools.Method(typeof(DefaultSettlementFoodModel), "CalculateTownFoodChangeInternal", new[] { typeof(Town), typeof(bool), typeof(bool) });
 				if (food == null) throw new MissingMethodException("CalculateTownFoodChangeInternal");
 				RemoveProsperityFood(PatchProcessor.GetOriginalInstructions(food)); // Validate before installing.
@@ -97,10 +97,11 @@ internal static class SettlementBalanceRuntime
 			catch (Exception ex)
 			{
 				PolicySystemLog.Failure("Balance", "prosperity-food-removal-failed", ex.Message, ex.ToString());
-				ReportFoodFailure("无法取消繁荣耗粮：原版补丁结构不匹配；未应用估算补偿。");
+				if (DuelSettings.ShouldDisableProsperityFoodConsumption())
+					ReportFoodFailure("无法取消繁荣耗粮：原版补丁结构不匹配；未应用估算补偿。");
 			}
 		}
-		if (_foodInstalled && !_reportedFoodFailure && !(models.SettlementFoodModel is DefaultSettlementFoodModel))
+		if (_foodInstalled && !_reportedFoodFailure && DuelSettings.ShouldDisableProsperityFoodConsumption() && !(models.SettlementFoodModel is DefaultSettlementFoodModel))
 		{
 			PolicySystemLog.Failure("Balance", "custom-food-model", "当前第三方粮食模型不继承原版模型。", "Prosperity food removal is only verified for the vanilla calculation; no guessed compensation applied.");
 			ReportFoodFailure("第三方粮食模型未使用原版计算，无法确认繁荣耗粮已取消。");
@@ -147,10 +148,11 @@ internal static class SettlementBalanceRuntime
 		if (!codes.Skip(position + 1).Take(5).Any(code => code.Calls(divisor)) || !codes.Skip(position + 1).Take(5).Any(code => code.opcode == OpCodes.Div))
 			throw new InvalidOperationException("Prosperity food divisor layout changed.");
 		matches[0].code.opcode = OpCodes.Call;
-		matches[0].code.operand = AccessTools.Method(typeof(SettlementBalanceRuntime), nameof(ZeroProsperityForFood));
+		matches[0].code.operand = AccessTools.Method(typeof(SettlementBalanceRuntime), nameof(ProsperityForFood));
 		return codes;
 	}
-	private static float ZeroProsperityForFood(Town town) => 0f;
+	private static float ProsperityForFood(Town town)
+		=> DuelSettings.ShouldDisableProsperityFoodConsumption() ? 0f : town.Prosperity;
 
 	internal static IEnumerable<CodeInstruction> PreserveExistingDailyFood(IEnumerable<CodeInstruction> instructions)
 	{

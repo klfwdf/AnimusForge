@@ -53,7 +53,7 @@ internal static class Program
         EditorTests(settings);
         NativeAdapterTests(settings, store);
         ModelOrderingTests();
-        FoodTranspilerTests();
+        FoodTranspilerTests(store);
         PopupBindingTests(root);
         Console.WriteLine("PASS: " + _checks + " production-linked runtime/editor checks; native assembly " + typeof(Town).Assembly.GetName().Version + ". No live Campaign or Gauntlet screen.");
     }
@@ -65,7 +65,7 @@ internal static class Program
         Check(vm.TitleText == "政策相关数值上限调整", "editor title matches requested policy settings label");
         Check(vm.DescriptionText.Contains("原版＋政策的净变化") && vm.DescriptionText.Contains("负数照常扣除") && vm.DescriptionText.Contains("超额旧存量不削减"), "editor explains net settlement and existing stocks");
         Check(vm.FoodRuleText.Contains("玩家和 NPC") && vm.FoodRuleText.Contains("默认仅开启") && vm.FoodRuleText.Contains("1000") && vm.FoodRuleText.Contains("其余六项默认关闭") && vm.FoodRuleText.Contains("不叠加城堡、建筑加成"), "editor explains scope, defaults and final capacity");
-        Check(vm.FoodRuleText.Contains("繁荣度耗粮始终取消") && vm.FoodRuleText.Contains("不受这些开关影响"), "editor separates prosperity food rule from optional caps");
+        Check(vm.FoodRuleText.Contains("取消繁荣度耗粮") && vm.FoodRuleText.Contains("独立开关") && vm.FoodRuleText.Contains("默认关闭并保留原版") && vm.FoodRuleText.Contains("与本窗口各项开关无关"), "editor explains independent default-off prosperity food toggle");
         Check(vm.StatusText.Contains("未开启的预填数值不生效") && vm.StatusText.Contains("恢复默认后需保存"), "editor explains disabled values and draft defaults");
         var row = vm.Rows.Single(r => r.Metric == SettlementBalanceMetric.CityProsperity);
         row.ValueInt = 12345;
@@ -259,7 +259,7 @@ internal static class Program
             Check(AccessTools.Field(typeof(SettlementBalanceRuntime), "_day").GetValue(null) is SettlementBalanceRuntime.DailyContext context && context.Settlement == null, component.GetType().Name + " actual Harmony finalizer clears context");
         }
     }
-    private static void FoodTranspilerTests()
+    private static void FoodTranspilerTests(SettlementBalanceSettingsStore store)
     {
         var target = AccessTools.Method(typeof(DefaultSettlementFoodModel), "CalculateTownFoodChangeInternal", new[] { typeof(Town), typeof(bool), typeof(bool) });
         var original = PatchProcessor.GetOriginalInstructions(target).ToList();
@@ -269,7 +269,7 @@ internal static class Program
         int changed = 0;
         for (int i = 0; i < transformed.Count; i++)
             if (transformed[i].opcode != untouched[i].opcode || !Equals(transformed[i].operand, untouched[i].operand)) changed++;
-        Check(changed == 1 && transformed.Count(code => code.operand is MethodInfo method && method.Name == "ZeroProsperityForFood") == 1, "only native prosperity input replaced");
+        Check(changed == 1 && transformed.Count(code => code.operand is MethodInfo method && method.Name == "ProsperityForFood") == 1, "only native prosperity input replaced");
         Check(untouched.Where(code => code.operand is MethodInfo method && method.Name != "get_Prosperity").All(code => transformed.Any(candidate => candidate.opcode == code.opcode && Equals(candidate.operand, code.operand))), "garrison supply siege/perk calls unchanged");
         bool rejected = false;
         try { SettlementBalanceRuntime.RemoveProsperityFood(new[] { new CodeInstruction(OpCodes.Ret) }); }
@@ -279,6 +279,7 @@ internal static class Program
         harmony.Patch(target, transpiler: new HarmonyMethod(typeof(SettlementBalanceRuntime), "RemoveProsperityFood"));
         Check(Harmony.GetPatchInfo(target).Transpilers.Any(p => p.owner == harmony.Id), "real native food transpiler installs");
         harmony.Unpatch(target, HarmonyPatchType.All, harmony.Id);
+        FoodToggleTests(store);
         var daily = PatchProcessor.GetOriginalInstructions(AccessTools.Method(typeof(Town), "DailyTick")).ToList();
         var dayPatched = SettlementBalanceRuntime.PreserveExistingDailyFood(daily).ToList();
         Check(dayPatched.Count(code => code.operand is MethodInfo method && method.Name == "FoodCapacityForDailyClip") == 2, "only daily clipping uses grandfather capacity");
@@ -286,6 +287,65 @@ internal static class Program
         try { SettlementBalanceRuntime.PreserveExistingDailyFood(new[] { new CodeInstruction(OpCodes.Ret) }); }
         catch (InvalidOperationException) { rejected = true; }
         Check(rejected, "mismatched daily clipping structure rejected");
+    }
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    private static float ProsperityFoodFixture(DefaultSettlementFoodModel model, Town town)
+        => town.Prosperity / model.NumberOfProsperityToEatOneFood;
+
+    private static void FoodToggleTests(SettlementBalanceSettingsStore store)
+    {
+        var settings = new DuelSettings();
+        var property = typeof(DuelSettings).GetProperty(nameof(DuelSettings.DisableProsperityFoodConsumption));
+        var toggle = property.GetCustomAttribute<MCM.Abstractions.Attributes.v2.SettingPropertyBoolAttribute>();
+        var group = property.GetCustomAttribute<MCM.Abstractions.Attributes.SettingPropertyGroupAttribute>();
+        Check(toggle.Name == "取消繁荣度耗粮" && !toggle.RequireRestart && group.Name == "16. 政策系统", "production MCM toggle is independent and requires no restart");
+        Check(!settings.DisableProsperityFoodConsumption, "new settings default to vanilla food consumption");
+        Check(!Newtonsoft.Json.JsonConvert.DeserializeObject<DuelSettings>("{}").DisableProsperityFoodConsumption, "old settings without the new key retain vanilla consumption");
+        settings.DisableProsperityFoodConsumption = true;
+        Check(Newtonsoft.Json.JsonConvert.DeserializeObject<DuelSettings>(Newtonsoft.Json.JsonConvert.SerializeObject(settings)).DisableProsperityFoodConsumption, "enabled toggle survives JSON round trip");
+        settings.DisableProsperityFoodConsumption = false;
+        Check(!Newtonsoft.Json.JsonConvert.DeserializeObject<DuelSettings>(Newtonsoft.Json.JsonConvert.SerializeObject(settings)).DisableProsperityFoodConsumption, "disabled toggle survives JSON round trip");
+
+        var town = Attach<Town>();
+        town.Prosperity = 10000f;
+        var model = Empty<DefaultSettlementFoodModel>();
+        var fixture = AccessTools.Method(typeof(Program), nameof(ProsperityFoodFixture));
+        var harmony = new Harmony("test.settlementbalance.food-toggle");
+        var previous = store.Current;
+        float ReadFood() => (float)fixture.Invoke(null, new object[] { model, town });
+        float vanilla = ReadFood();
+        Check(vanilla == 250f, "fixture uses native prosperity food divisor");
+        harmony.Patch(fixture, transpiler: new HarmonyMethod(typeof(SettlementBalanceRuntime), "RemoveProsperityFood"));
+        try
+        {
+            MCM.Abstractions.Base.Global.GlobalSettings<DuelSettings>.Instance = settings;
+            foreach (bool capsEnabled in new[] { false, true })
+            {
+                var caps = SettlementBalanceSnapshot.Default;
+                foreach (var definition in SettlementBalanceRules.Definitions)
+                    caps = caps.With(definition.Metric, capsEnabled, definition.DefaultValue);
+                Check(store.TrySave(caps, out _), "workspace-only cap snapshot for toggle independence");
+                Check(ReadFood() == vanilla, "disabled toggle retains native consumption with caps " + capsEnabled);
+                settings.DisableProsperityFoodConsumption = true;
+                Check(ReadFood() == 0f, "enabled toggle removes consumption with caps " + capsEnabled);
+                settings.DisableProsperityFoodConsumption = false;
+                Check(ReadFood() == vanilla, "live disable restores consumption without repatching with caps " + capsEnabled);
+                Check(town.Prosperity == 10000f, "toggle never changes actual town prosperity");
+            }
+            MCM.Abstractions.Base.Global.GlobalSettings<DuelSettings>.Instance = null;
+            Check(ReadFood() == vanilla, "missing MCM settings retain native consumption");
+            MCM.Abstractions.Base.Global.GlobalSettings<DuelSettings>.ThrowOnRead = true;
+            Check(ReadFood() == vanilla, "MCM read failure retains native consumption");
+        }
+        finally
+        {
+            MCM.Abstractions.Base.Global.GlobalSettings<DuelSettings>.ThrowOnRead = false;
+            MCM.Abstractions.Base.Global.GlobalSettings<DuelSettings>.Instance = null;
+            harmony.Unpatch(fixture, HarmonyPatchType.All, harmony.Id);
+            store.TrySave(previous, out _);
+        }
+        Check(ReadFood() == vanilla, "fixture unpatch restores original food input");
     }
     // Fixture for the original capacity calculation only; the production postfix/helper are real.
     private static bool CapacityStub(out int __result) { __result = 750; return false; }
@@ -338,12 +398,50 @@ internal static class Program
 
 namespace AnimusForge
 {
-    internal static class DuelSettings
+    public partial class DuelSettings
     {
         internal static string GetCustomPromptTextStoreDirectoryForPolicyPrompts() => throw new Exception("Tests must never access player settings.");
     }
     internal static class PolicySystemLog
     {
         internal static void Failure(string area, string code, string message, string detail) { Console.WriteLine("Diagnostic: " + area + "/" + code); }
+    }
+}
+
+namespace MCM.Abstractions.Attributes
+{
+    [AttributeUsage(AttributeTargets.Property)]
+    public sealed class SettingPropertyGroupAttribute : Attribute
+    {
+        public SettingPropertyGroupAttribute(string name) { Name = name; }
+        public string Name { get; }
+        public int GroupOrder { get; set; }
+    }
+}
+
+namespace MCM.Abstractions.Attributes.v2
+{
+    [AttributeUsage(AttributeTargets.Property)]
+    public sealed class SettingPropertyBoolAttribute : Attribute
+    {
+        public SettingPropertyBoolAttribute(string name) { Name = name; }
+        public string Name { get; }
+        public int Order { get; set; }
+        public bool RequireRestart { get; set; }
+        public string HintText { get; set; }
+    }
+}
+
+namespace MCM.Abstractions.Base.Global
+{
+    public static class GlobalSettings<T> where T : class
+    {
+        private static T _instance;
+        internal static bool ThrowOnRead;
+        public static T Instance
+        {
+            get { if (ThrowOnRead) throw new Exception("Fixture MCM provider failure."); return _instance; }
+            set { _instance = value; }
+        }
     }
 }
