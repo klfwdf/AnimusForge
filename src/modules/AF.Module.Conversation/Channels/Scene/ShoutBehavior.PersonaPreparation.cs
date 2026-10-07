@@ -120,6 +120,7 @@ public partial class ShoutBehavior
                 if (!IsScenePersonaScopeCurrent(scope)) return null;
                 if (!npc.IsHero)
                 {
+                    AfGcczShoutBridge.CaptureOrdinarySpeakerPerception(npc);
                     string key = (npc.UnnamedKey ?? "").Trim().ToLower();
                     if (!string.IsNullOrEmpty(key) && ShoutUtils.TryGetUnnamedPersonaByKey(key, out string up, out string ub))
                     {

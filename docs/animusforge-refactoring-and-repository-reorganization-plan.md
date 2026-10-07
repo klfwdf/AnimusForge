@@ -1,4 +1,33 @@
-﻿<a id="illustrator-final-widescreen-20261007"></a>
+<a id="gccz-town-dialogue-main-integration-20261007"></a>
+# GCCZ 城镇台词与目击事实合入 main（2026-10-07）
+
+## 授权与范围
+
+用户授权将本轮城镇台词/感知改动融合最新代码，检查无阻断问题后推送。以 fetch 核对的 `origin/main` (`da90deba`) 为基线，在隔离分支 `codex/gccz-town-dialogue-integration-20261007` 集成已审查的产品与测试差异。保留 main 新的场景接话提示等改动；不带入旧本地交接历史、未提交的城堡读档恢复、UI/Council 或其他工作树内容。发布仅源码推送，不含 Stage、部署或打包。
+
+- 普通平民可以怒斥、咒骂、威胁、求饶或口头服软；不新增攻击、敌对、跪地、臣服、忠诚或入队结算。保留旧动作资格与军令边界。
+- 近处人员出现/失去视野/移除及确认死亡按观察者隔离；未知凶手不归因于玩家；昏迷只作内部去重和活人名单维护，不生成“确认昏迷”台词、不计为死亡。新实例不会继承旧实例的目击，结束清空。
+- SETS 自有/附属事件与攻城/SETS夺城分别提供现场来源，不再无条件把自有领民写成敌城战败者。
+
+## 代码证据（本次产品候选）
+
+| 责任 | 路径、行号与符号 | 边界 |
+| --- | --- | --- |
+| 观察者状态/去重/输出 | `AnimusForge.SiegeAftermathIntervention/TownScenePerceptionSession.cs:22,52,77,98`，`TownScenePerceptionSession` / `Observe` / `RecordRemoval` / `BuildPrompt` | 纯核心，最近6条事件；无存档/游戏副作用 |
+| 主线程采集与身份 | `src/bridges/Siege/Scene/TownScenePerceptionRuntimeBridge.cs:27,65,96,132`，`Begin` / `CaptureForSpeaker` / `RecordRemoval` / `BuildContext` | 绑定确切 GCCZ town center Mission；24米与LOS；无新Tick/LLM请求 |
+| 主动对话捕获 | `src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.PersonaPreparation.cs:123` | 现有主线程 scope 校验之后，仅普通人物 |
+| 即时发言捕获 | `src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.SceneConversationChains.cs:1428` | 共用准备入口覆盖完整与简短回应，保留上游接话选择修复 |
+| 本地化与约束 | `content/modules/AnimusForge.SiegeAftermathIntervention/ModuleData/GcczTownPrompt.zh-CN.json`、`TownPromptTextCatalog`、`SiegeRuntimePromptProfile`、`SiegeLocalCivilianReactionProfile` | 清理强制恐惧/服从的平民台词与无条件敌城背景；保持未知事实边界与英文回退 |
+
+## 验证与剩余边界
+
+- 融合核心入口 `GcczRepairSyncTests`：111 checks PASS（含20条本功能感知断言）。当前 `TownRuleMemory.Tests`：60 checks PASS，真实核心/桥接＋假的辅助传输，不是实机。
+- 原 `scripts/build/build_single_module.ps1 -Configuration Release`：1.3引用 v1.3.15、1.4引用 v1.4.6＋Bootstrap 均0错误，两最终DLL注册接缝与各20项记忆端口回归PASS。既有warning保留；未改构建脚本和项目引用规则。
+- 工程师自审：12个产品/测试文件，合并无冲突，核心与独立 GCCZ 对应源同义；无战斗/伤害/动画副作用、新Tick或后台Agent读取；`git diff --check`、资源解析及旧昏迷提示/冲突文案清理检查通过。
+- 玩家视角仅源码推演：普通NPC对话→近处新人/消失→目击死亡/未知凶手→新来者隔离→离场重进；SETS内部背景单独检查。原生LOS、事件顺序、真实玩家档及真实LLM台词仍 NOT_RUN，不承诺零bug。
+- 验证日志与候选/远端hash收据保存在本地 `artifacts/town-dialogue-integration-20261007/`，不上传生成物或玩家数据。回滚使用本次集成提交的 focused revert，不改写历史。
+
+<a id="illustrator-final-widescreen-20261007"></a>
 # 生图最终画幅与MCM尺寸约束（2026-10-07，DEPLOYED_PACKAGED_PUSHED_LIVE_PENDING）
 
 - 用户明确按快报方式修复全屏链路：画幅要求必须直达最终生图提示词，普通生成/重绘均保留。现场证据conversation_1007-000032_f162和000421_24ca均发size=1280x720，但最终prompt没有16:9；快报224339则明确保留。该差异已确认，不能证明模型一定遵从新文字。

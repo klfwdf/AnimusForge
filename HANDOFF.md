@@ -1,4 +1,8 @@
-﻿# 当前交接：衣物叙事变化已部署（2026-10-07，DEPLOYED_PACKAGED_LIVE_PENDING）
+# 当前交接：GCCZ 城镇台词与现场感知集成（2026-10-07）
+
+本次获准融合并推送源码；从已核对的 `origin/main` (`da90deba`) 隔离集成。只允许言语怒斥/求饶，补充观察者自己的人员进出与确认死亡事实；不新增真实攻击、跪地、臣服或数值结算，不播报昏迷。保留上游最新修改，不带入其他工作树未提交的城堡恢复/UI改动。核心111、城镇记忆60、原Release双API+Bootstrap及双DLL注册/记忆端口门禁PASS；没有Stage/部署/打包，实机与真实LLM未验。详见[主台账与代码证据](docs/animusforge-refactoring-and-repository-reorganization-plan.md#gccz-town-dialogue-main-integration-20261007)。下方历史部署不代表本轮已安装。
+
+# 当前交接：衣物叙事变化已部署（2026-10-07，DEPLOYED_PACKAGED_LIVE_PENDING）
 - 产品a042639a7已提交推送；双版本/Bootstrap/接缝通过，部署更新9文件，3379文件哈希一致。
 - 包：一键编译覆盖推送/packages/AnimusForge_v1.5.5_20261007_175934_302.zip。实机出图未验。
 - [部署与回滚证据](docs/animusforge-refactoring-and-repository-reorganization-plan.md#clothing-narrative-deployment-20261007--deployed_packaged_live_pending)，覆盖此前部署等待状态。
