@@ -1,3 +1,8 @@
+# 当前交接：外交快报评分降低（2026-10-08，OFFLINE_VERIFIED_NOT_DEPLOYED）
+
+- 产品 `932562c8d`：结盟45、解盟40、外交宣言30；其他分数/加分保持，旧档待选素材按新分竞争，已刊发快报不改。快报84、归档183、原双API/Bootstrap/接缝PASS。实机频率未验，本轮未部署推送。
+- [主台账、源码坐标与回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#diplomacy-news-priority-20261008)，证据 `artifacts/diplomacy-news-priority-20261008/receipt.json`。此前截图/随机配图本地提交继续保留。
+
 # 当前交接：双截图采集/黑图拦截与快报配图抽选（2026-10-08，OFFLINE_VERIFIED_NOT_DEPLOYED）
 
 - `1cfa75456`补相机初始化、UI缓存清理、每机位4帧且250ms等待和黑图拒绝；`f3574ab59`从本期大事件按故事组抽选配图，同期冻结、不改外交分数。原双API/Bootstrap/接缝、采集221、每版真实DLL17、快报72、归档183 PASS；用户真黑图已在测试中拒绝。真实GPU无UI双视图仍待验，不将等待计数当GPU完成凭证。

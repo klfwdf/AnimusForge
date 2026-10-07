@@ -1,3 +1,12 @@
+<a id="diplomacy-news-priority-20261008"></a>
+# 降低结盟、解盟与外交宣言快报评分（2026-10-08，OFFLINE_VERIFIED_NOT_DEPLOYED）
+
+- 用户明确要求降低三项。检查点 `cb4e7ae`；产品 `932562c8d`。结盟70→45，解盟55→40，宣言50→30；其他事件基础分、本人+30/本国+20或邻国+10和60分触发线保持。普通本国宣言50不再单独触发；本国结盟65、解盟60仍可触发，玩家亲自宣言仍保留本人加分。未改正文、配图抽选、已发布快报或历史事实。
+- 生产坐标：`src/modules/AF.Module.Weekly/Materials/WorldBulletinCampaignMaterialPolicy.cs:10`登记结盟/解盟新基础分；`Bulletin/WorldBulletinPolicy.cs:273–282` AdjustBaseScore/EffectiveBaseScore对三类读取分数限高，`:290,309,314,333,386`覆盖选材/触发/范围/冻结副本，使旧档未刊发高分素材也按新分竞争。`Generation/WorldBulletinStateOwner.cs:57`新登记归一化，宣言仍走原通用CivilNews入口，其他政策/宴会/竞技50保持。
+- 性能：现有事件登记/选材调用内O(1)字符串switch，不新增Tick扫描、迁移遍历、网络调用或存档字段；读取不覆盖保存的旧事实分数，已冻结/已刊发计划保持，后续选材生效。
+- 验证：快报专项84 PASS，覆盖旧分数邻国结盟不触发、普通本国宣言不触发、本国解盟/本人宣言保留关注、其他种类不改分；归档/存档回归183 PASS。原隔离双API/Bootstrap/两DLL接缝最终exit0，Debug，引用1.3 v1.3.15.110062和1.4 v1.4.6.115628。提交源码与最终构建快照一致。
+- 初次构建中断、未产生退出码，重跑报告隔离副本空字节；逐文件对比主源码后修复4个快照文件并验证7313输入一致，主工作区文件未被修复/覆盖，失败原日志保留，最终使用build-repaired.log及exit0。证据 `artifacts/diplomacy-news-priority-20261008/receipt.json`、snapshot-repair.json、policy.log、archive.log。NOT-RUN：实机快报题材占比与长期频率；未部署/打包/推送。回滚仅 `git revert 932562c8d`。
+
 <a id="screenshot-capture-fix-20261008"></a>
 # 双截图黑图/UI残留修复与快报配图抽选（2026-10-08，OFFLINE_VERIFIED_NOT_DEPLOYED）
 
