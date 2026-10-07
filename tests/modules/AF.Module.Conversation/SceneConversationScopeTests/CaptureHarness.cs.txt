@@ -1,0 +1,69 @@
+using AnimusForge;
+using TaleWorlds.Core;
+using TaleWorlds.Library;
+using TaleWorlds.MountAndBlade;
+
+int assertions = 0;
+void Require(bool condition, string name)
+{
+    if (!condition) throw new Exception("FAIL: " + name);
+    assertions++;
+}
+Mission mission = new(); Mission.Current = mission;
+Agent NewAgent(int index, float x)
+{
+    Agent agent = new() { Index = index, Mission = mission, Position = new Vec3(x, 0, 0),
+        Character = new BasicCharacterObject { StringId = "npc" + index } };
+    mission.Agents.Add(agent);
+    return agent;
+}
+Agent player = NewAgent(0, 0); Agent.Main = player;
+Agent primary = NewAgent(1, 2);
+Agent secondary = NewAgent(2, 4);
+Agent passerby = NewAgent(3, 5);
+List<Agent> selected = new() { primary, secondary };
+Require(ShoutBehavior.TryBuildSceneShoutConversationScope(selected, primary, 1, out var scope, out var audience), "default capture succeeds");
+Require(audience.Select(a => a.Index).SequenceEqual(new[] { 1, 2, 3 }), "off includes nearby bystander");
+Require(scope.FramedCount == 2 && scope.PrimaryAnchorCount == 3 && scope.PlayerAnchorCount == 3, "off preserves merged origins");
+ShoutUtils.LosChecks.Clear();
+Require(ShoutBehavior.TryBuildSceneShoutConversationScope(selected, primary, 2, out scope, out audience, excludeUnframedAgents: true), "restricted capture succeeds");
+Require(audience.Select(a => a.Index).SequenceEqual(new[] { 1, 2 }), "on excludes unframed bystander before pipeline");
+Require(!ShoutUtils.LosChecks.Any(pair => pair.Target == 3), "on never checks ambient bystanders");
+Require(scope.Primary.IsFromPrimaryAnchor && scope.Primary.IsFromPlayerAnchor && scope.FramedCount == 2, "selected anchor metadata retained");
+Agent arrival = NewAgent(4, 3);
+ShoutBehavior.TryBuildSceneShoutConversationScope(selected, primary, 3, out scope, out audience, excludeUnframedAgents: true);
+Require(!audience.Contains(arrival), "late arrival cannot join enabled conversation");
+HashSet<int> excluded = new() { 1, 2 };
+ShoutBehavior.TryBuildSceneShoutConversationScope(selected, primary, 4, out scope, out audience, excluded, true);
+Require(audience.SequenceEqual(new[] { primary }) && !excluded.Contains(1), "primary exempt and manual exclusion honored");
+secondary.Position = new Vec3(100, 0, 0);
+ShoutBehavior.TryBuildSceneShoutConversationScope(selected, primary, 5, out scope, out audience, excludeUnframedAgents: true);
+Require(audience.Contains(secondary), "explicit far member retained for locked session audience");
+secondary.Position = new Vec3(4, 0, 0); ShoutUtils.Invisible.Add(secondary.Index);
+ShoutBehavior.TryBuildSceneShoutConversationScope(selected, primary, 6, out scope, out audience, excludeUnframedAgents: true);
+Require(scope.TryGetEntry(2, out var secondaryEntry) && secondaryEntry.IsFramed && !secondaryEntry.IsFromPrimaryAnchor && !secondaryEntry.IsFromPlayerAnchor, "selected LOS behavior unchanged");
+ShoutUtils.Invisible.Clear();
+ShoutBehavior.TryBuildSceneShoutConversationScope(selected, primary, 7, out scope, out audience);
+Require(audience.Contains(arrival) && audience.Contains(passerby), "off restores ambient inclusion");
+primary.Active = false;
+Require(!ShoutBehavior.TryBuildSceneShoutConversationScope(selected, primary, 8, out scope, out audience, excludeUnframedAgents: true), "stale primary rejected");
+Console.WriteLine($"PASS: {assertions} extracted production audience capture assertions (game/LOS fixtures).");
+
+namespace AnimusForge
+{
+    internal static class Logger { internal static void Log(string category, string text) { } }
+    internal static class ShoutUtils
+    {
+        internal static HashSet<int> Invisible = new();
+        internal static List<(int Source, int Target)> LosChecks = new();
+        internal static bool HasShoutLineOfSightBetweenAgents(Agent source, Agent target, bool failClosed)
+        {
+            LosChecks.Add((source.Index, target.Index));
+            return !Invisible.Contains(target.Index);
+        }
+    }
+}
+namespace RichExecutions.Core
+{
+    internal static class VengeanceIntegration { internal static bool IsExecutedVictim(Agent agent) => false; }
+}

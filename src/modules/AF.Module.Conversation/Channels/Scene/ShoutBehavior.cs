@@ -1336,7 +1336,7 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 	}
 
 	// excludedAgentIndices: persistent-session 屏蔽 list; never contains the primary. Null outside a session.
-	internal static bool TryBuildSceneShoutConversationScope(List<Agent> framedAgents, Agent primaryAgent, int conversationEpoch, out SceneShoutConversationScope scope, out List<Agent> audienceAgents, HashSet<int> excludedAgentIndices = null)
+	internal static bool TryBuildSceneShoutConversationScope(List<Agent> framedAgents, Agent primaryAgent, int conversationEpoch, out SceneShoutConversationScope scope, out List<Agent> audienceAgents, HashSet<int> excludedAgentIndices = null, bool excludeUnframedAgents = false)
 	{
 		if (excludedAgentIndices != null && primaryAgent != null)
 		{
@@ -1356,7 +1356,11 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 		Vec3 playerAnchorPosition = playerAgent.Position;
 		List<Agent> primaryAnchorAgents = new List<Agent>();
 		List<Agent> playerAnchorAgents = new List<Agent>();
-		foreach (Agent agent in missionAgents)
+		// In restricted mode, retain anchor/LOS metadata for invited agents without scanning bystanders.
+		IEnumerable<Agent> anchorCandidates = excludeUnframedAgents
+			? ((IEnumerable<Agent>)framedAgents ?? Enumerable.Empty<Agent>())
+			: missionAgents;
+		foreach (Agent agent in anchorCandidates)
 		{
 			if (agent == null || agent == playerAgent || !agent.IsActive() || !agent.IsHuman
 				|| RichExecutions.Core.VengeanceIntegration.IsExecutedVictim(agent)

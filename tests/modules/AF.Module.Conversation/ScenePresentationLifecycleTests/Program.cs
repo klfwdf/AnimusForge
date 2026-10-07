@@ -100,3 +100,5 @@ audio.StopAllLipSyncPlaybackAndCleanup();Require(audio._agentSoundEvents.Count==
 Console.WriteLine($"PASS: {assertions} production presentation/audio lifecycle assertions (stubbed game/native, no files).");
 
 SceneSpeechOutputContract.Run();
+
+SceneAudienceToggleCases.Run();

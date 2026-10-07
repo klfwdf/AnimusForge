@@ -37,7 +37,8 @@ public partial class ShoutBehavior
   CanAgentParticipateInSceneSpeech, () => Interlocked.Read(ref _currentConversationEventSequence),
   GetPresentationCombatEndReason, () => { GetConfiguredShoutRange(out var _, out var range); return range; },
   ComputePresentationHistoryFingerprint, index => ActivateMultiSceneMovementSuppression(new[] { index }),
-  DeactivateMultiSceneMovementSuppression, ReleasePresentationTrade);
+  DeactivateMultiSceneMovementSuppression, ReleasePresentationTrade,
+  DuelSettings.ShouldAutoExcludeUnframedShoutParticipants);
  private bool _shoutHotkeyChargeMergesIntoSession { get => Presentation.MergesHotkeyCharge; set => Presentation.MergesHotkeyCharge=value; }
  private const float PresentationTapSeconds = 0.25f;
  private const int PresentationContextLines = 4;

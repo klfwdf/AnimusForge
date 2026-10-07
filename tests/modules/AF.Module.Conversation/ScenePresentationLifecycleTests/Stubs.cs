@@ -34,7 +34,7 @@ namespace AnimusForge {
  public static class BannerlordExceptionSentinel { public static void ReportObservedException(string category,Exception error,string context) { } }
  public static class SaveRuntimeGuard { public static long Generation; public static long CaptureGeneration() => Generation; public static bool IsCurrentGeneration(long generation) => generation==Generation; }
  public static class ConversationHelper { public static void AdjustTypewriterDuration(float duration) { } public static void StartTypewriterPlaybackIfWaiting(float duration=0) { } }
- public sealed class DuelSettings { public bool TtsSceneUseWinmmAudible = true; public float TtsLipSyncSoundEventVolume; public static DuelSettings GetSettings() => new(); }
+ public sealed partial class DuelSettings { public bool TtsSceneUseWinmmAudible = true; public float TtsLipSyncSoundEventVolume; public static DuelSettings GetSettings() => new(); }
  public sealed class TtsEngine {
   public static TtsEngine Instance = new();
   public sealed class PlaybackRequest { public long RequestId; public int AgentIndex; public bool IsCancellationRequested; }
