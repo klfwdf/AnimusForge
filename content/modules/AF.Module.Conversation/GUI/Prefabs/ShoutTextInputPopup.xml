@@ -1,77 +1,83 @@
 <Prefab>
   <Window>
-    <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" DoNotPassEventsToChildren="false">
+    <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" DoNotAcceptEvents="true" DoNotPassEventsToChildren="false">
       <Children>
-        <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="980" SuggestedHeight="460" HorizontalAlignment="Center" VerticalAlignment="Bottom" MarginBottom="24" DoNotPassEventsToChildren="false">
+        <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" DoNotAcceptEvents="false" />
+        <Widget IsVisible="@HasSubtitleText" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" MaxWidth="1580" MarginLeft="60" MarginRight="60" SuggestedHeight="108" HorizontalAlignment="Center" VerticalAlignment="Bottom" MarginBottom="310" Sprite="BlankWhiteSquare_9" DoNotAcceptEvents="false" DoNotPassEventsToChildren="false" Color="#251A12F2">
           <Children>
-            <ButtonWidget IsVisible="@IsTitleLinkEnabled" DoNotPassEventsToChildren="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="42" VerticalAlignment="Top" MarginTop="158" MarginLeft="20" MarginRight="20" Command.Click="ExecuteOpenTitleLink" UpdateChildrenStates="true" HoveredCursorState="RightClickLink">
+            <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="38" MarginRight="38" MarginTop="18" MarginBottom="18" DoNotAcceptEvents="true" DoNotPassEventsToChildren="false">
               <Children>
-                <ShoutTitleLinkTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" VerticalAlignment="Center" Brush="Popup.Title.Text" Brush.TextHorizontalAlignment="Center" Text="@TitleLinkText" DoNotAcceptEvents="true" />
-              </Children>
-            </ButtonWidget>
-            <ButtonWidget Id="SceneIllustrationButton" IsVisible="@IsIllustrationVisible" IsEnabled="@CanIllustrate" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="132" SuggestedHeight="32" HorizontalAlignment="Right" VerticalAlignment="Top" MarginRight="26" MarginTop="10" Brush="Popup.Done.Button" Command.Click="ExecuteIllustrate" DoNotPassEventsToChildren="true" UpdateChildrenStates="true">
-              <Children><TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Text="@IllustrationButtonText" Brush="Popup.Button.Text" Brush.FontSize="17" Brush.TextHorizontalAlignment="Center" DoNotAcceptEvents="true" /></Children>
-            </ButtonWidget>
-            <TextWidget IsVisible="@IsIllustrationVisible" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="28" MarginLeft="26" MarginRight="170" MarginTop="12" Brush="Popup.Description.Text" Brush.FontSize="16" Text="@IllustrationStatusText" DoNotAcceptEvents="true" />
-            <AutoHideRichTextWidget IsVisible="@IsTitlePlainTextVisible" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="42" VerticalAlignment="Top" MarginTop="158" MarginLeft="20" MarginRight="20" Brush="Popup.Title.Text" Brush.TextHorizontalAlignment="Center" Text="@TitlePlainText" />
-            <ScrollablePanel WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="104" VerticalAlignment="Top" MarginTop="48" MarginLeft="26" MarginRight="26" ClipRect="SubtitleClipRect" InnerPanel="SubtitleClipRect\SubtitleInnerPanel" AutoHideScrollBars="true" VerticalScrollbar="..\SubtitleScrollbar\SubtitleScrollbarWidget">
-              <Children>
-                <Widget Id="SubtitleClipRect" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" ClipContents="true">
+                <ScrollablePanel WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" ClipRect="SummaryClip" InnerPanel="SummaryClip\SummaryContent" AutoHideScrollBars="true" VerticalScrollbar="..\SummaryScrollbar">
                   <Children>
-                    <Widget Id="SubtitleInnerPanel" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren">
+                    <Widget Id="SummaryClip" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" ClipContents="true">
                       <Children>
-                        <RichTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" VerticalAlignment="Top" Brush="Popup.Description.Text" Brush.FontSize="18" Brush.TextHorizontalAlignment="Left" Text="@SubtitleText" />
-                      </Children>
-                    </Widget>
-                  </Children>
-                </Widget>
-              </Children>
-            </ScrollablePanel>
-            <Widget Id="SubtitleScrollbar" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="1" SuggestedHeight="104" HorizontalAlignment="Right" VerticalAlignment="Top" MarginTop="48" MarginRight="24" DoNotAcceptEvents="true" IsVisible="false">
-              <Children>
-                <ScrollbarWidget Id="SubtitleScrollbarWidget" WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="1" AlignmentAxis="Vertical" Handle="SubtitleScrollbarHandle" MaxValue="100" MinValue="0" DoNotAcceptEvents="true" IsVisible="false">
-                  <Children>
-                    <Widget Id="SubtitleScrollbarHandle" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="1" SuggestedHeight="1" DoNotAcceptEvents="true" IsVisible="false" />
-                  </Children>
-                </ScrollbarWidget>
-              </Children>
-            </Widget>
-            <RichTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="24" VerticalAlignment="Top" MarginTop="206" MarginLeft="26" MarginRight="26" Brush="Popup.Description.Text" Brush.FontSize="16" Brush.TextHorizontalAlignment="Left" Text="@InputHintText" />
-            <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="222" VerticalAlignment="Top" MarginTop="234" MarginLeft="20" MarginRight="20" DoNotPassEventsToChildren="false">
-              <Children>
-                <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="7" MarginRight="7" MarginTop="7" MarginBottom="7" Sprite="BlankWhiteSquare_9" Color="@InputBackgroundColor" AlphaFactor="0.18" DoNotAcceptEvents="true" />
-                <ScrollablePanel WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" ClipRect="EditorClipRect" InnerPanel="EditorClipRect\EditorInnerPanel" MarginLeft="14" MarginRight="14" MarginTop="12" MarginBottom="12" AutoHideScrollBars="true" VerticalScrollbar="..\EditorScrollbar\Scrollbar">
-                  <Children>
-                    <Widget Id="EditorClipRect" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" ClipContents="true">
-                      <Children>
-                        <Widget Id="EditorInnerPanel" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MinHeight="198">
+                        <Widget Id="SummaryContent" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren">
                           <Children>
-                            <DevMultilineEditableTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MinHeight="198" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="8" MarginRight="8" MarginTop="8" MarginBottom="8" Brush="Review.NameInput.Text" Brush.FontSize="12" Brush.FontColor="#FFFFFFFF" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Top" EditorFontSize="18" MaxLength="6000" RealText="@InputText" IsObfuscationEnabled="false" AutoFocus="true" SubmitOnEnter="true" Command.TextEntered="ExecuteSubmit" Command.FocusGained="StartTyping" Command.FocusLost="StopTyping" />
+                            <RichTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" Brush="Popup.Description.Text" Brush.FontSize="20" Brush.FontColor="#E2C38AFF" Brush.TextHorizontalAlignment="Left" Text="@SubtitleText" />
                           </Children>
                         </Widget>
                       </Children>
                     </Widget>
                   </Children>
                 </ScrollablePanel>
-                <Widget Id="EditorScrollbar" WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="1" HorizontalAlignment="Right" VerticalAlignment="Bottom" MarginTop="12" MarginBottom="12" MarginRight="0" DoNotAcceptEvents="true" IsVisible="false">
+                <ScrollbarWidget Id="SummaryScrollbar" WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="6" HorizontalAlignment="Right" AlignmentAxis="Vertical" Handle="SummaryHandle" MinValue="0" MaxValue="100">
                   <Children>
-                    <ScrollbarWidget Id="Scrollbar" WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="1" AlignmentAxis="Vertical" Handle="Handle" MaxValue="100" MinValue="0" DoNotAcceptEvents="true" IsVisible="false">
-                      <Children>
-                        <Widget Id="Handle" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="1" SuggestedHeight="1" DoNotAcceptEvents="true" IsVisible="false" />
-                      </Children>
-                    </ScrollbarWidget>
+                    <Widget Id="SummaryHandle" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="6" SuggestedHeight="24" Sprite="BlankWhiteSquare_9" Color="#251A12F2" />
                   </Children>
-                </Widget>
-                <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="2" VerticalAlignment="Top" MarginLeft="3" MarginRight="3" Sprite="BlankWhiteSquare_9" Color="#FFD700FF" AlphaFactor="1" DoNotAcceptEvents="true" />
-                <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="2" VerticalAlignment="Bottom" MarginLeft="3" MarginRight="3" Sprite="BlankWhiteSquare_9" Color="#FFD700FF" AlphaFactor="1" DoNotAcceptEvents="true" />
-                <Widget WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="2" HorizontalAlignment="Left" MarginTop="3" MarginBottom="3" Sprite="BlankWhiteSquare_9" Color="#FFD700FF" AlphaFactor="1" DoNotAcceptEvents="true" />
-                <Widget WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="2" HorizontalAlignment="Right" MarginTop="3" MarginBottom="3" Sprite="BlankWhiteSquare_9" Color="#FFD700FF" AlphaFactor="1" DoNotAcceptEvents="true" />
-                <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="6" SuggestedHeight="6" HorizontalAlignment="Left" VerticalAlignment="Top" Sprite="BlankWhiteCircle" Color="#FFD700FF" AlphaFactor="1" DoNotAcceptEvents="true" />
-                <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="6" SuggestedHeight="6" HorizontalAlignment="Right" VerticalAlignment="Top" Sprite="BlankWhiteCircle" Color="#FFD700FF" AlphaFactor="1" DoNotAcceptEvents="true" />
-                <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="6" SuggestedHeight="6" HorizontalAlignment="Left" VerticalAlignment="Bottom" Sprite="BlankWhiteCircle" Color="#FFD700FF" AlphaFactor="1" DoNotAcceptEvents="true" />
-                <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="6" SuggestedHeight="6" HorizontalAlignment="Right" VerticalAlignment="Bottom" Sprite="BlankWhiteCircle" Color="#FFD700FF" AlphaFactor="1" DoNotAcceptEvents="true" />
+                </ScrollbarWidget>
               </Children>
             </Widget>
+          </Children>
+        </Widget>
+        <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="1380" SuggestedHeight="285" HorizontalAlignment="Center" VerticalAlignment="Bottom" DoNotAcceptEvents="true" MarginBottom="10">
+          <Children>
+            <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="1050" SuggestedHeight="150" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="250" MarginTop="68" Sprite="BlankWhiteSquare_9" Color="#251A12F2" IsVisible="@UsePlainScrollBackground" DoNotAcceptEvents="true" />
+            <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="1380" SuggestedHeight="285" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="0" MarginTop="0" Sprite="afdui_scroll_chassis_clean" IsVisible="@HasScrollArtwork" DoNotAcceptEvents="true" />
+            <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="650" SuggestedHeight="20" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="275" MarginTop="80" Text="@TitleText" Brush="Popup.Button.Text" DoNotAcceptEvents="true" Brush.FontSize="14" Brush.FontColor="#E2C38AFF" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Center" />
+            <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="698" SuggestedHeight="98" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="263" MarginTop="100" DoNotAcceptEvents="true">
+              <Children>
+                <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="12" MarginRight="12" MarginTop="10" Text="@InputHintText" Brush="ConversationItem.Text" DoNotAcceptEvents="true" IsVisible="@IsInputEmpty" Brush.FontSize="15" Brush.FontColor="#E2C38AAA" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Top" />
+                <ScrollablePanel WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" ClipRect="AFShoutInputClip" InnerPanel="AFShoutInputClip\AFShoutInputInner" VerticalScrollbar="..\AFShoutInputBar" AutoHideScrollBars="true">
+                  <Children>
+                    <Widget Id="AFShoutInputClip" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" ClipContents="true">
+                      <Children>
+                        <Widget Id="AFShoutInputInner" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MinHeight="98">
+                          <Children>
+                            <DevMultilineEditableTextWidget Id="AFSessionInput" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MarginLeft="12" MarginRight="12" MarginTop="10" MarginBottom="10" VerticalAlignment="Top" Command.TextEntered="ExecuteSubmit" Brush="ConversationItem.Text" Brush.FontSize="16" Brush.FontColor="#F0DFBEFF" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Top" EditorFontSize="16" RealText="@InputText" AutoFocus="true" SubmitOnEnter="true" UseBlackCaret="false" MaxLength="6000" Command.FocusGained="StartTyping" Command.FocusLost="StopTyping" MinHeight="78" AutoScrollToCaret="true" />
+                          </Children>
+                        </Widget>
+                      </Children>
+                    </Widget>
+                  </Children>
+                </ScrollablePanel>
+                <ScrollbarWidget Id="AFShoutInputBar" WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="4" HorizontalAlignment="Right" AlignmentAxis="Vertical" Handle="AFShoutInputHandle" MinValue="0" MaxValue="100">
+                  <Children>
+                    <Widget Id="AFShoutInputHandle" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="24" Sprite="BlankWhiteSquare_9" Color="#E2C38AAA" />
+                  </Children>
+                </ScrollbarWidget>
+              </Children>
+            </Widget>
+            <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="1000" SuggestedHeight="20" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="275" MarginTop="201" Text="@IllustrationStatusText" Brush="Popup.Button.Text" DoNotAcceptEvents="true" Brush.FontSize="13" Brush.FontColor="#FFB08AFF" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Center" />
+            <ButtonWidget Id="SceneIllustrationButton" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="70" SuggestedHeight="32" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="1219" MarginTop="82" Brush="Popup.Cancel.Button" DoNotAcceptEvents="false" DoNotPassEventsToChildren="true" UpdateChildrenStates="true" Command.Click="ExecuteIllustrate" IsVisible="@IsIllustrationVisible" IsEnabled="@CanIllustrate">
+              <Children>
+                <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Text="@IllustrationButtonText" Brush="Popup.Button.Text" DoNotAcceptEvents="true" Brush.FontSize="13" Brush.FontColor="#361F0EFF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" />
+              </Children>
+            </ButtonWidget>
+            <ButtonWidget Id="AFShoutCodex" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="70" SuggestedHeight="32" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="1143" MarginTop="82" Brush="Popup.Cancel.Button" DoNotAcceptEvents="false" DoNotPassEventsToChildren="true" UpdateChildrenStates="true" Command.Click="ExecuteOpenTitleLink" IsVisible="@IsTitleLinkEnabled">
+              <Children>
+                <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Text="图鉴" Brush="Popup.Button.Text" DoNotAcceptEvents="true" Brush.FontSize="13" Brush.FontColor="#361F0EFF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" />
+              </Children>
+            </ButtonWidget>
+            <ButtonWidget Id="AFShoutSubmit" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="188" SuggestedHeight="41" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="991" MarginTop="125" Brush="Popup.Cancel.Button" DoNotAcceptEvents="false" DoNotPassEventsToChildren="true" UpdateChildrenStates="true" Command.Click="ExecuteSubmit">
+              <Children>
+                <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Text="发送" Brush="Popup.Button.Text" DoNotAcceptEvents="true" Brush.FontSize="15" Brush.FontColor="#FFDF95FF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" />
+              </Children>
+            </ButtonWidget>
+            <ButtonWidget Id="AFShoutCancel" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="102" SuggestedHeight="41" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="1189" MarginTop="125" Brush="Popup.Cancel.Button" DoNotAcceptEvents="false" DoNotPassEventsToChildren="true" UpdateChildrenStates="true" Command.Click="ExecuteCancel">
+              <Children>
+                <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Text="关闭" Brush="Popup.Button.Text" DoNotAcceptEvents="true" Brush.FontSize="14" Brush.FontColor="#361F0EFF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" />
+              </Children>
+            </ButtonWidget>
           </Children>
         </Widget>
       </Children>

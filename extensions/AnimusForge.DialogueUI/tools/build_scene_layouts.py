@@ -276,8 +276,7 @@ def build_scroll():
     expanded = children(el(r, 'Widget', WidthSizePolicy='StretchToParent', HeightSizePolicy='StretchToParent', DoNotAcceptEvents='true', IsVisible='@IsExpanded'))
     chrome = children(el(expanded, 'Widget', WidthSizePolicy='StretchToParent', HeightSizePolicy='StretchToParent', DoNotAcceptEvents='true', IsVisible='@IsChromeVisible'))
     # Pen WmTFL after the 75% shrink: bottom scroll 1380x285 at (270, 785); children in scroll coordinates.
-    s = children(anchored(chrome, 1380, 285, 'Center', 'Bottom', MarginBottom=10))
-    box(s, 0, 0, 1380, 285, Sprite='afdui_scroll_chassis_clean')
+    s = scroll_chassis(chrome)
     button(s, 'AFRowCollapse', '收起界面', 'ExecuteCollapse', 572, 28, 120, 30, 13, '#3B1802FF')
     text(s, '@AddresseeText', 275, 80, 400, 20, 14, '#E2C38AFF')
     text(s, '@StatusText', 680, 80, 270, 20, 13, '#FFB08AFF', 'Right')
@@ -358,6 +357,83 @@ def build_folio():
     save(tree)
 
 
+def scroll_chassis(parent, fallback=False):
+    s = children(anchored(parent, 1380, 285, 'Center', 'Bottom', MarginBottom=10))
+    if fallback:
+        # Still usable if the artwork is absent: same geometry and host bindings.
+        rect(s, 250, 68, 1050, 150, '#251A12F2', IsVisible='@UsePlainScrollBackground')
+    box(s, 0, 0, 1380, 285, Sprite='afdui_scroll_chassis_clean',
+        **({'IsVisible': '@HasScrollArtwork'} if fallback else {}))
+    return s
+
+
+def build_shout_fallback():
+    # Both one-shot presentations use the same bottom scroll as the persistent panel,
+    # with host-owned input/callbacks. No participant list, invite buttons or session VM.
+    tree = root('ShoutTextInputPopup')
+    r = tree[1]
+    catch_all(r)
+    s = scroll_chassis(r, fallback=True)
+    text(s, '@TitleText', 275, 80, 650, 20, 14, '#E2C38AFF')
+    # Reuse the scroll editor, retaining the original one-shot autofocus and focus callbacks.
+    editor(s, 263, 100, 698, 98, '#F0DFBEFF', '@InputHintText', '#E2C38AAA')
+    input_widget = next(x for x in s.iter('DevMultilineEditableTextWidget'))
+    input_widget.set('AutoFocus', 'true')
+    input_widget.set('Command.FocusGained', 'StartTyping')
+    input_widget.set('Command.FocusLost', 'StopTyping')
+    input_widget.set('HeightSizePolicy', 'CoverChildren')
+    input_widget.set('MinHeight', '78')
+    input_widget.set('AutoScrollToCaret', 'true')
+    editor_children = next(x for x in s.iter('Children') if input_widget in list(x))
+    editor_children.remove(input_widget)
+    scroll_host = el(editor_children, 'ScrollablePanel', WidthSizePolicy='StretchToParent', HeightSizePolicy='StretchToParent',
+                     ClipRect='AFShoutInputClip', InnerPanel='AFShoutInputClip\\AFShoutInputInner',
+                     VerticalScrollbar='..\\AFShoutInputBar', AutoHideScrollBars='true')
+    clip = el(children(scroll_host), 'Widget', Id='AFShoutInputClip', WidthSizePolicy='StretchToParent', HeightSizePolicy='StretchToParent', ClipContents='true')
+    inner = el(children(clip), 'Widget', Id='AFShoutInputInner', WidthSizePolicy='StretchToParent', HeightSizePolicy='CoverChildren', MinHeight=98)
+    children(inner).append(input_widget)
+    bar = el(editor_children, 'ScrollbarWidget', Id='AFShoutInputBar', WidthSizePolicy='Fixed', HeightSizePolicy='StretchToParent', SuggestedWidth=4,
+             HorizontalAlignment='Right', AlignmentAxis='Vertical', Handle='AFShoutInputHandle', MinValue=0, MaxValue=100)
+    el(children(bar), 'Widget', Id='AFShoutInputHandle', WidthSizePolicy='StretchToParent', HeightSizePolicy='Fixed', SuggestedHeight=24, Sprite=SOLID, Color='#E2C38AAA')
+    text(s, '@IllustrationStatusText', 275, 201, 1000, 20, 13, '#FFB08AFF')
+    button(s, 'SceneIllustrationButton', '@IllustrationButtonText', 'ExecuteIllustrate', 1219, 82, 70, 32, 13, '#361F0EFF', IsVisible='@IsIllustrationVisible', IsEnabled='@CanIllustrate')
+    button(s, 'AFShoutCodex', '图鉴', 'ExecuteOpenTitleLink', 1143, 82, 70, 32, 13, '#361F0EFF', IsVisible='@IsTitleLinkEnabled')
+    button(s, 'AFShoutSubmit', '发送', 'ExecuteSubmit', 991, 125, 188, 41, 15, '#FFDF95FF')
+    button(s, 'AFShoutCancel', '关闭', 'ExecuteCancel', 1189, 125, 102, 41, 14, '#361F0EFF')
+    # Preserve the existing subtitle and wrapped history panes, only replace their bottom input.
+    wrapped = E.parse(PREFABS / 'AFDialogueShout.xml').getroot()
+    panes = wrapped.find('./Window/Widget/Children')
+    preserved = [x for x in panes if x.get('IsVisible') in ('@IsHistoryVisible', '@HasSubtitle')]
+    subtitle = next(x for x in preserved if x.get('IsVisible') == '@HasSubtitle')
+    import copy
+    plain_subtitle = copy.deepcopy(subtitle)
+    plain_subtitle.set('IsVisible', '@HasSubtitleText')
+    for x in plain_subtitle.iter():
+        x.attrib.pop('DataSource', None)
+        if x.get('Sprite'): x.set('Sprite', SOLID); x.set('Color', '#251A12F2')
+        if x.get('Brush.FontColor'): x.set('Brush.FontColor', '#E2C38AFF')
+    r.insert(1, plain_subtitle)
+    E.indent(tree[0], space='  ')
+    E.ElementTree(tree[0]).write(ROOT.parents[1] / 'content/modules/AF.Module.Conversation/GUI/Prefabs/ShoutTextInputPopup.xml', encoding='utf-8')
+    wrapped_tree = root('AFDialogueShout')
+    wr = wrapped_tree[1]
+    catch_all(wr)
+    for x in preserved: wr.append(x)
+    host = el(wr, 'Widget', WidthSizePolicy='StretchToParent', HeightSizePolicy='StretchToParent', DoNotAcceptEvents='true', DataSource='{Host}')
+    host_children = children(host)
+    host_children.append(copy.deepcopy(r[-1]))
+    next(host_children.iter('DevMultilineEditableTextWidget')).tag = 'AFDialogueBodyEditorWidget'
+    # History and submission guard stay owned by the wrapper; all draft/illustration bindings use Host.
+    ws = children(anchored(wr, 1380, 285, 'Center', 'Bottom', MarginBottom=10))
+    button(ws, 'AFDialogueShoutHistory', '@HistoryButtonText', 'ExecuteToggleHistory', 991, 82, 140, 32, 13, '#361F0EFF')
+    for parent in host_children.iter():
+        for x in list(parent):
+            if x.get('Id') == 'AFShoutSubmit': parent.remove(x)
+    button(ws, 'AFDialogueShoutSubmit', '发送', 'ExecuteSubmit', 991, 125, 188, 41, 15, '#FFDF95FF', IsEnabled='@CanSubmit')
+    save(wrapped_tree)
+
+
 build_wheel()
 build_scroll()
 build_folio()
+build_shout_fallback()

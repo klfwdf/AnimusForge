@@ -167,14 +167,8 @@ namespace AnimusForge.DialogueUI
             string movieName = identifier.MovieName;
             if (movieName == "ShoutTextInputPopup" && OwnedMovies.ContainsKey(identifier.Movie))
             {
-                foreach (string id in new[] { "AFDialogueShoutHistory", "AFDialogueShoutSubmit", "AFDialogueShoutCancel", "AFDialogueShoutIllustrate" })
-                {
-                    try
-                    {
-                        DialogueUiButtons.StylePlate(identifier.Movie.RootWidget.FindChild(id, true) as TaleWorlds.GauntletUI.BaseTypes.ButtonWidget);
-                    }
-                    catch (Exception ex) { DialogueUiRuntime.Log("Shout button styling failed for " + id + ": " + ex); }
-                }
+                try { DialogueUiButtons.StyleShoutScroll(identifier.Movie.RootWidget); }
+                catch (Exception ex) { DialogueUiRuntime.Log("Shout scroll styling failed: " + ex); }
                 return;
             }
             bool isNativeConversation = movieName == "SPConversation" || movieName == "AFDialogueConversation" || movieName == "MapConversation";

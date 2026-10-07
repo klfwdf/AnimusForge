@@ -565,6 +565,8 @@ public sealed class ShoutTextInputPopup
 	{
 		PauseCurrentMission();
 		_movieIdentifier = _layer.LoadMovie("ShoutTextInputPopup", _dataSource);
+        try { DialogueUI.DialogueUiButtons.StyleShoutScroll(_movieIdentifier?.Movie?.RootWidget); }
+        catch (Exception ex) { Logger.Log("ShoutTextInputPopup", "[WARN] Scroll buttons kept default brushes: " + ex.Message); }
 		_layer.InputRestrictions.SetInputRestrictions(true, InputUsageMask.All);
 		try
 		{

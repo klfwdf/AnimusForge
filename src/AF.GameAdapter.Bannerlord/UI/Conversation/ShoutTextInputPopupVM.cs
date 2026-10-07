@@ -13,6 +13,10 @@ public sealed class ShoutTextInputPopupVM : ViewModel
     private readonly bool _allowIllustration;
     private readonly Action _onIllustration;
     private int _illustrationVersion = -1;
+    [DataSourceProperty] public bool HasScrollArtwork { get; }
+    [DataSourceProperty] public bool UsePlainScrollBackground => !HasScrollArtwork;
+    [DataSourceProperty] public bool IsInputEmpty => string.IsNullOrWhiteSpace(InputText);
+    [DataSourceProperty] public bool HasSubtitleText => !string.IsNullOrWhiteSpace(SubtitleText);
     [DataSourceProperty] public bool IsIllustrationVisible => _allowIllustration && ShoutBehavior.IsSceneIllustrationAvailableForExternal;
     [DataSourceProperty] public bool CanIllustrate => IsIllustrationVisible && !ShoutBehavior.IsSceneIllustrationBusyForExternal;
     [DataSourceProperty] public string IllustrationButtonText => ShoutBehavior.IsSceneIllustrationBusyForExternal ? "生图中…" : "生图";
@@ -96,6 +100,7 @@ public sealed class ShoutTextInputPopupVM : ViewModel
 			{
 				_subtitleText = value;
 				OnPropertyChangedWithValue(value, "SubtitleText");
+                OnPropertyChanged(nameof(HasSubtitleText));
 			}
 		}
 	}
@@ -125,6 +130,7 @@ public sealed class ShoutTextInputPopupVM : ViewModel
 			{
 				_inputText = text;
 				OnPropertyChangedWithValue(text, "InputText");
+                OnPropertyChanged(nameof(IsInputEmpty));
 			}
 		}
 	}
@@ -169,6 +175,7 @@ public sealed class ShoutTextInputPopupVM : ViewModel
         _onTitleLink = onTitleLink;
         _allowIllustration = allowIllustration;
         _onIllustration = onIllustration;
+        HasScrollArtwork = DialogueUI.DialogueUiSprites.EnsureShoutScrollLoaded();
 		TitleText = titleText ?? "";
 		SubtitleText = subtitleText ?? "";
 		InputHintText = inputHintText ?? "";
