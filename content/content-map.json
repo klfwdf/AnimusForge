@@ -705,7 +705,7 @@
       "owner": "AF.Module.Weekly",
       "source": "content/modules/AF.Module.Weekly/CustomPrompts/WorldBulletinWritingRequirements.json",
       "target": "CustomPrompts/WorldBulletinWritingRequirements.json",
-      "sha256": "EF15353EFC63EA930E532DF196C2B089A11095C901700BD7CB346BB787917B6B"
+      "sha256": "A6C6698F890234178A0982630D4E7AB07AF26B56C10E50277B6AEF4F3DBC2934"
     },
     {
       "owner": "AF.Module.Weekly",
