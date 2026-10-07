@@ -1,3 +1,7 @@
+# 当前局部修复：城堡战后菜单读档恢复（2026-10-07）
+
+只补齐经严格匹配的加载后城堡战后场景上下文；原宽恕/结算/reset保持，新增有界即时菜单诊断。独立2507、融合134检查及原Debug双API+Bootstrap通过；报告崩溃根因与故障存档实机仍未验证。本次已授权只融合修复并推送main、不部署；融合后的验证另记，详见[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#castle-aftermath-load-recovery-20261007)。
+
 # 当前交接：GCCZ 城镇台词与现场感知集成（2026-10-07）
 
 本次获准融合并推送源码；从已核对的 `origin/main` (`da90deba`) 隔离集成。只允许言语怒斥/求饶，补充观察者自己的人员进出与确认死亡事实；不新增真实攻击、跪地、臣服或数值结算，不播报昏迷。保留上游最新修改，不带入其他工作树未提交的城堡恢复/UI改动。核心111、城镇记忆60、原Release双API+Bootstrap及双DLL注册/记忆端口门禁PASS；没有Stage/部署/打包，实机与真实LLM未验。详见[主台账与代码证据](docs/animusforge-refactoring-and-repository-reorganization-plan.md#gccz-town-dialogue-main-integration-20261007)。下方历史部署不代表本轮已安装。

@@ -14,6 +14,7 @@ internal static class Program
         // Reuse committed standalone tests against the core actually compiled by AF.
         SiegeNativeMovementOrdersTests.Run(Check);
         SiegeStuckRecoveryTests.Run(Check);
+        SiegeCastleAftermathLoadRecoveryTests.Run(Check);
         TownScenePerceptionTests.Run(Check);
 
         Check(SiegeCastlePrisonerDispositionProfile.ResolveStageableRecruitCount(30, 12, 0) == 12, "capacity trims the first group");

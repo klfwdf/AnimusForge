@@ -1,3 +1,12 @@
+<a id="castle-aftermath-load-recovery-20261007"></a>
+# 城堡战后菜单读档最小恢复（2026-10-07，SOURCE_AND_OFFLINE_VERIFIED / REPORT_CRASH_UNCONFIRMED）
+
+- 用户确认施工于本工作树及独立 GCCZ；只恢复同一加载后城堡战后遭遇缺失的 LocationEncounter，保留现有实例与 reset。无战斗/俘虏/其他菜单恢复；不重放宽恕、不强制 Finish、不改存档/玩法。新增最多24条即时生命周期日志，原异常不吞掉。
+- 核心 `AnimusForge.SiegeAftermathIntervention/SiegeCastleAftermathLoadRecoveryPolicy.cs:6`；真实适配 `src/bridges/Siege/Host/CastleAftermathLoadRecoveryBridge.cs:27,83,114`；加载接线 `SiegeAiInterventionBehavior.cs:617`；两个仅观察的 patch 由原 `Patch_SiegeAftermath_AFIntervention.cs` bootstrap 注册。独立镜像保留于GCCZ；仓内[桥接说明](bridge/castle/2026-10-07-castle-aftermath-load-recovery.md)提供完整验收边界。
+- 新增23策略断言；独立2507 / 融合134 PASS；原Debug 1.3(v1.3.15)/1.4(v1.4.6)+Bootstrap及构建内门禁通过，0错误、既有warnings保留。focused cleanup/diff检查通过，两个策略/测试镜像一致。历史code-map因缺少其记录的7c5c7cd1提交而无法验证，未刷新历史hash伪造通过。
+- 工程师自审确认唯一暂态赋值、主线程/已有实例保护与无结算调用；玩家视角仅源码推演。报告故障档、真实Harmony/版本1.3.14、宽恕后castle_outside实测和转储仍NOT_RUN；不把补上可证缺口写成原报告崩溃根因已修。未Stage/部署/push/操作存档。
+- 回滚前检查点：融合b5f36b8d、独立0915c55；只提交本片，保留Council/UI草稿。本地 `artifacts/castle-load-recovery-20261007/` 保存基线、日志、最终收据及候选hash。
+
 <a id="gccz-town-dialogue-main-integration-20261007"></a>
 # GCCZ 城镇台词与目击事实合入 main（2026-10-07）
 
