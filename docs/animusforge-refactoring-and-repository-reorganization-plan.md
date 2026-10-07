@@ -1,4 +1,16 @@
-﻿<a id="diplomacy-review-fixes-20261008"></a>
+﻿<a id="native-dialogue-combat-continuation-20261008"></a>
+# 原版开战对话结束后的战斗接续（2026-10-08，OFFLINE_VERIFIED_NOT_DEPLOYED）
+
+- 检查点 `179c6b74`，产品 `a8727db4a`。玩家确认选择原版开战选项；日志最后三次主动进入原版对话后仍为自定义菜单、Begin、leave=0、mapBattle=null，后来 menu_attack_option 才出现战斗。单次结束回调早于完整卸载，不能单独证明失败；重复时间线与源码缺口相符。原日志与摘录仅保留本地 evidence.json，不上传。
+- 原版开战终结台词关闭窗口后依赖 encounter_meeting / encounter 初始化创建 Battle；自定义菜单旧主动发起 handoff 只清锁，遗漏该接续。本机可见完整记录多为 leave=1 或带战果投降，尚不能定位用户所说成功测试。原版入口或已有 Battle 可以绕过缺口，只是可能条件，不能据此断言本机原因。
+- 新 owner 捕获本自定义陆地遭遇的三个明确原版战斗终结台词，绑定 encounter / party / manager / save generation；等待完整卸载后恢复原版 encounter。同步 IsResumingNativeBattleMenu 防再次重定向，try/finally释放。离开、投降、战果、海战、特殊活动、meeting、身份失效拒绝；不重放宣战、不强开mission、不凭敌对就攻击。
+- 源码坐标（产品修订，一基）：`src/AF.GameAdapter.Bannerlord/Encounter/NativeDialogueBattleContinuation.cs:27–57` Begin / scope / 终结白名单，`:59–121` SentenceProcessed / ConversationEnded / Tick，`:123–154` Cancel / 日志 / 安装；`src/AF.GameAdapter.Bannerlord/Encounter/LordEncounterBehavior.cs:417` 重置，`:1322–1326` 重定向豁免，`:3625` Tick，`:8796` Begin，`:8847` 打开失败取消。不签收其他模组新增台词、海战/攻城或独立meeting任务。
+- 性能：无pending时Tick仅布尔短路，无扫描、重复反射、后台游戏读取或存档变更。补丁成功后缓存。Mod_Logic.txt中 EncounterDiag / NativeDialogueCombat 记录 combat_sentence_confirmed → combat_menu_queued → combat_menu_resumed 及取消原因。
+- 验证：新增生命周期55 PASS、既有会面边界164 PASS；双版真实DLL/Harmony的ProcessSentence与EndConversation postfix安装通过，原方法跳过/无scope入口安全。生命周期游戏/menu为替身，hook探针不启动真实Campaign。
+- 原统一 `scripts/build/build_single_module.ps1` 在本地隔离 `artifacts/meeting-native-war-investigation-20261008/verify-tree`（179c6b74 + 两产品源，source-inputs.json核对SHA）Release构建：1.3(v1.3.15.110062)、1.4(v1.4.6.115628)、Bootstrap与双实际DLL接线通过。证据同目录 lifecycle.log、existing-lifecycle/run.log、hooks-1.3/1.4.log、build.log；产物在隔离树 bin/Release/single_module_artifacts。1.3 SHA `226076F8980B9D5EEE6F48D402A8F94B31F4E95D670E318655C4E1D705B2D999`，1.4 SHA `D5015E9B86E4518F5CF72AAACF506C60792829D05A63A8803FCC4D5B6C8B8555`。
+- NOT-RUN：玩家存档/双版真实游戏复现、进入战场验收。未Stage、部署、打包、推送。回滚仅 `git revert a8727db4a`。复现需对齐自定义菜单入口、未建Battle和具体终结选项。
+
+<a id="diplomacy-review-fixes-20261008"></a>
 # 外交审查修复：贸易原条款与完整ID知情边界（2026-10-08，OFFLINE_VERIFIED_NOT_DEPLOYED）
 
 - 用户授权修复只读审查确认的两项：贸易原案84日、回应7日仍按84日执行；完整ID引用未送达提案仍能接受。检查点 `2f6289f`，产品 `ffa6301b1`（5文件）；保留并行生图/继续战斗任务和既有NuGet目录。

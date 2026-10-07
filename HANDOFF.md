@@ -1,4 +1,10 @@
-﻿# 当前交接：外交贸易条款与来源知情修复（2026-10-08，OFFLINE_VERIFIED_NOT_DEPLOYED）
+﻿# 当前交接：原版开战对话战斗接续（2026-10-08，OFFLINE_VERIFIED_NOT_DEPLOYED）
+
+- 产品 `a8727db4a`，检查点 `179c6b74`。自定义菜单打开原版对话后，捕获明确战斗终结并等待卸载，恢复原版战前菜单；身份/离开/投降/特殊场景守卫与同步重定向豁免。
+- 生命周期55、既有会面164、双版真实Harmony入口与隔离原双API/Bootstrap/双DLL构建通过；玩家实机未验，未部署/打包/推送。本机成功测试尚未定位，不能断言未复现的具体原因。
+- [唯一主台账与源码坐标](docs/animusforge-refactoring-and-repository-reorganization-plan.md#native-dialogue-combat-continuation-20261008)、[代码导航](docs/architecture/af-framework-code-scope.md#native-dialogue-combat-continuation-20261008)。证据 `artifacts/meeting-native-war-investigation-20261008/`；回滚仅 `git revert a8727db4a`。
+
+# 当前交接：外交贸易条款与来源知情修复（2026-10-08，OFFLINE_VERIFIED_NOT_DEPLOYED）
 
 - 产品 `ffa6301b1`，检查点 `2f6289f`。贸易接受改期/非法期限不再被原条款覆盖后执行，提示另发新案；省略条款或相同期限继续接受。完整与缺前缀ID统一经过已知开放原案绑定，owner执行时再查知情，未送达原案不能接受。
 - 最终外交3949专项与固定产品隔离原双API1.3/1.4、Bootstrap、双DLL接缝构建PASS；5源码/9产物SHA已绑定。无新增Tick/模型请求/存档键；真实模型/战役/玩家旧档未验，未Stage/部署/打包/推送，不追溯修改已生效条约。

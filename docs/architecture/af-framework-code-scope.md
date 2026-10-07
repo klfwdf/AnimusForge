@@ -1,3 +1,8 @@
+<a id="native-dialogue-combat-continuation-20261008"></a>
+### 原版开战对话接续导航（2026-10-08）
+
+产品 `a8727db4a`：NativeDialogueBattleContinuation 持有原版终结台词、会话身份及延迟恢复状态，LordEncounterBehavior 提供入口、既有Tick和同步菜单重定向豁免。源码坐标、玩家证据局限、55/164回归及双版真实入口/构建边界见[唯一主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#native-dialogue-combat-continuation-20261008)。未部署、未实机验收。
+
 <a id="ai-mode-continue-20261008"></a>
 ### AI 模式原版继续拦截导航（2026-10-08）
 
