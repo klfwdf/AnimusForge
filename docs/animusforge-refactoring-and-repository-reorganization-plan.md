@@ -1,3 +1,15 @@
+<a id="screenshot-capture-fix-20261008"></a>
+# 双截图黑图/UI残留修复与快报配图抽选（2026-10-08，OFFLINE_VERIFIED_NOT_DEPLOYED）
+
+- 用户实机提供的两图确认为 `general_1008-070724_3ad6` 导演与生图实际参考：A为原机位带完整UI，B近全黑（RGB均值约0.6/0.34/0.02，最大通道>8的像素仅0.0014%）；旧“有效BMP+两图不同”检查未防无效参考继续付费请求。已部署版本哈希核对一致；几何测试通过不等于原生帧验收。本条修复取代旧采集时序，不能宣称已定位/实机消除全部黑图成因。
+- 检查点 `0217a02`；截图产品 `1cfa75456`；快报配图产品 `f3574ab59`。本轮未部署/打包/推送，保留用户NuGet空标记。回滚按需仅 `git revert f3574ab59`、`git revert 1cfa75456`。
+- 采集源码：`extensions/AnimusForge.Illustrator/src/Engine/MissionScreenshotCapture.cs:34–35,87–116,127–158,199–211,228`：复制完整原生相机参数后覆盖独立平视pose/FOV；开始隐藏UI时清理已有Gauntlet渲染命令，不篡改原layer激活/显隐owner；每机位至少4应用帧且250ms再导出。新Gauntlet层/UI标志被夺取时终止；恢复时解除新增监听。8秒总上限、主线程相机/UI恢复与无自动重试保持。原版拍照在隐藏后计数至2才拍，本实现等待仍是调度裕量，不是GPU fence。
+- 黑图源码：`Engine/MissionScreenshotImageCodec.cs:77,100–120`：后台解码后96×54采样；最大RGB>8的像素不足1%则明确失败，且在任何导演/生图HTTP之前。记录抽样可见数量，不调亮、不换色、不补造事实。每次两图固定采样，无Tick像素扫描。此检查只判近全黑，不能识别所有UI残留或证明正确机位；UI状态/换帧修正须实机确认。
+- 快报源码：`src/modules/AF.Module.Weekly/Bulletin/WorldBulletinPolicy.cs:151–186`：从本期MajorFacts按Group（无Group按Key）去重故事后，以本期Identity的SHA256伪随机索引选一组，人物/事实只取同组；同一期重开/重试不换，既有冻结plan保存结构不变。`:BuildIllustrationPlan`不改正文选材/分数/输出模板；`Generation/WorldBulletinStateOwner.cs:160–161`记录抽选事实摘要。最多5条素材分组，发布时执行，无新Tick扫描/网络/存档字段。旧档已保存计划保持。
+- 回答评分：外交宣言50；宣战/结盟70，议和/解除附庸60，解盟55，建立附庸80。所有题材均可叠加本人+30、本国+20或邻国+10；触发需基础>=30、FocusScore>=60且在范围。政策/宴会/竞技同为50；此次未降低外交评分。日志证实短期内多条宣言，旧配图固定头条加剧外交视觉重复；抽选不能保证每期必然不同或外交占比固定。
+- 验证：真实采集状态机/codec/rules+原生替身221 PASS；最终两实现DLL的几何/亮度各17 PASS，用户真实黑图被拒，用户含UI现场图仅通过亮度检查（不冒充合法UI参考）。快报72 PASS，覆盖不同主事件、重开稳定、排除小新闻/重复事实；归档/保存/发布183 PASS（真实抽取源码，游戏/渲染替身）。原双API/Bootstrap/两DLL接缝exit0，Debug，引用1.3 v1.3.15.110062、1.4 v1.4.6.115628，提交源码与隔离快照一致。既有Illustrator审计与付费API未运行。
+- 证据 `artifacts/screenshot-capture-fix-20261008/receipt.json`、build.log/exit、capture-tests.log、image-check-1.3.log/image-check-1.4.log、bulletin-tests.log、archive-final.log；两张用户参考仅留本地证据。NOT-RUN：真实GPU首/反侧图、场景UI恢复、遮挡/曝光、原生退出/取消、实机配图分布和模型效果。
+
 <a id="all-session-deploy-push-20261008"></a>
 # 全会话改动统一部署与推送（2026-10-08，DEPLOYED_PUSHED_LIVE_PENDING）
 
