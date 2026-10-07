@@ -4,6 +4,12 @@
 - 策略63、实际发布/NPC/外交投影/归档/重载/提示词128项与原双API1.3/1.4、Bootstrap/双接缝构建通过。真实模型/实机未验，本轮未部署/打包/推送。保留并行生图提交 `9f6f43df`。
 - [主台账、源码坐标、验证证据与回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#bulletin-narrative-refinement-20261008)；证据 `artifacts/bulletin-narrative-refinement-20261008/run-1eed8266ec`，产品回滚仅 `git revert e06f885c6`。既有职责导航见 [代码范围图](docs/architecture/af-framework-code-scope.md)。
 
+# 当前交接：日系半写实叙事插画预设（2026-10-08，BUILD_VERIFIED_NOT_DEPLOYED）
+
+- 产品 `9f6f43dfc`，检查点 `2adcf3e`。MCM末尾新增“日系半写实叙事插画”，统一导演/生图文本及专属负面词；保留原选项序号、默认值和一次性重绘覆盖。
+- 原双API/Bootstrap/双实现接线及差异检查通过；MCM实机、真实出图与画风相似度未验，未调用付费API/Stage/部署/打包/推送。百科地图沉思仅做原因调查，本包未改构图。
+- [唯一主台账及源码坐标](docs/animusforge-refactoring-and-repository-reorganization-plan.md#illustrator-narrative-anime-20261008)、[职责导航](docs/architecture/af-framework-code-scope.md#illustrator-narrative-anime-20261008)。证据在artifacts/illustrator-narrative-anime-20261008；回滚仅git revert 9f6f43dfc，保留并行任务工作。
+
 # 当前调查：单次提示词与自动生图区别（2026-10-08，NO_PRODUCT_CHANGE）
 
 - 用户截图补充：带提示词生成有效，开启随对话生成后又出现玩家。源码确认手动传本次提示词，自动调用不继承；符合现有一次性要求，建议先保留行为。

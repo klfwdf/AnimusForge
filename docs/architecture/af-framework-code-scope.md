@@ -1,3 +1,8 @@
+<a id="illustrator-narrative-anime-20261008"></a>
+### 日系半写实叙事插画预设导航（2026-10-08）
+
+产品 `9f6f43dfc` 只扩展 Illustrator 的共享画风定义和 MCM 末尾选项；真实导演/最终生图/请求快照消费者、一基源码坐标及双API构建证据集中于[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#illustrator-narrative-anime-20261008)。不变更框架/存档/通道合同或百科构图，未验真实MCM与模型出图，也不因此验收完整Illustrator职责。
+
 <a id="bulletin-anecdotes-20261008"></a>
 ### 快报事实/轶闻与合并交付当前导航（2026-10-08）
 
