@@ -2360,6 +2360,12 @@ internal sealed partial class WorldDiplomacyOrchestration : IWorldDiplomacyOrche
         WorldDiplomacyDocument document, string intent, string commitment,
         string authorId, string targetId, out string reason)
     {
+        if (document != null && !string.IsNullOrEmpty(WorldDiplomacyIntentVocabulary.ResponseIntentToProposalIntent(intent))
+            && !DialogueDocumentKnown(authorId, document.RespondingToOfferDocumentId))
+        {
+            reason = "player_offer_response_source_not_known";
+            return true;
+        }
         bool partiesEligible = document != null && authorId != null && targetId != null
             && !_host.PartiesShareIdentity(authorId, targetId)
             && !_host.IsEliminatedParty(authorId) && !_host.IsEliminatedParty(targetId)

@@ -61,6 +61,7 @@ internal static class PlayerSemanticReplay
         VerifyCrossRoundOralAcceptance();
         VerifyAcceptanceRoutingAndExecution();
         VerifyShortOfferSourceIds();
+        VerifyTradeAcceptanceTerms();
         VerifyPrompt();
         VerifyTreatiesAndWithdrawal();
         var port = new DocumentExecutionReplay.Port { RestrictRound = true,
@@ -159,6 +160,7 @@ internal static class PlayerSemanticReplay
         internal string Rejection;
         internal string BaseIntent = "propose_peace";
         internal bool AtWar = true;
+        internal IWorldDiplomacyOfferActionPort GamePort;
         internal AcceptanceExecution(WorldDiplomacyOrchestration owner) => Owner = owner;
         public override bool TryGetPlayerWorldStateIntentViolation(WorldDiplomacyDocument document,
             string intent, string commitment, string author, string target, out string reason)
@@ -174,7 +176,9 @@ internal static class PlayerSemanticReplay
         public override WorldDiplomacyOfferOutcome TrySettleRelayOffer(WorldDiplomacyDocument document)
             => WorldDiplomacyOfferApplication.Settle(Owner.ResolveRound(document.RoundId), document, _ => { },
                 (_, _) => (false, ""), Owner.ResolveDocument, _ => true,
-                (_, _, _, response) => { Effects++; response.ChangedDiplomaticState = true; return WorldDiplomacyOfferOutcome.Applied; },
+                (kind, offer, source, response) => { Effects++;
+                    if (GamePort != null) return WorldDiplomacyOfferActionApplication.Execute(kind, offer, source, response, GamePort, Owner);
+                    response.ChangedDiplomaticState = true; return WorldDiplomacyOfferOutcome.Applied; },
                 (_, _) => false, _ => { });
         public override void SettleInternationalReputationForDocument(WorldDiplomacyDocument document)
             => WorldDiplomacyReputationRules.SettleInternationalReputationForDocument(Reputation, document, x => x, _ => { });
@@ -236,7 +240,7 @@ internal static class PlayerSemanticReplay
             bool valid = scenario == "normal" || scenario.StartsWith("wrong-discussion");
             string expectedRejection = scenario == "ambiguous"
                 ? "player_action_not_executable:player_offer_response_missing_source_offer"
-                : "final_live_legal_action_guard";
+                : "player_offer_response_source_not_available";
             Test.True(document.TargetKingdomId == "a", "target alias canonicalized before source binding: " + scenario);
             Test.True(valid ? document.RoundId == original.RoundId && original.PendingOffers[0].Status == "accepted"
                 && execution.Effects == 1 && document.ChangedDiplomaticState && execution.Reputation["p"] == 52
@@ -256,7 +260,7 @@ internal static class PlayerSemanticReplay
         // Log-shaped source ID: the suffix is not necessarily a 32-character GUID.
         const string suffix = "84039eafad504c21a031ada9c7da4853";
         const string fullId = "diplomacy_document:" + suffix;
-        foreach (string scenario in new[] { "short", "full", "uppercase", "no-action", "reject", "unknown",
+        foreach (string scenario in new[] { "short", "full", "uppercase", "no-action", "reject", "unknown", "full-unknown",
             "closed", "wrong-target", "wrong-action", "wrong-intent", "missing-source", "unpublished",
             "wrong-author", "ambiguous", "different-prefix", "partial-id", "at-war", "no-provider" })
         {
@@ -270,7 +274,7 @@ internal static class PlayerSemanticReplay
                 Status = scenario == "closed" ? "invalidated" : "open" };
             original.PendingOffers.Add(offer);
             if (scenario != "missing-source") owner.CurrentStorage.Documents.Add(source);
-            if (scenario != "unknown") WorldDiplomacyDocumentFactRules.RecordKingdomKnowledge(
+            if (scenario is not "unknown" and not "full-unknown") WorldDiplomacyDocumentFactRules.RecordKingdomKnowledge(
                 owner.CurrentStorage.KingdomKnowledge, "p", fullId, 12);
             if (scenario == "ambiguous") original.PendingOffers.Add(new() { SourceDocumentId = fullId,
                 SourceActionId = "action_2", Intent = "propose_trade", ProposerKingdomId = "a", TargetKingdomId = "p", Status = "open" });
@@ -279,7 +283,7 @@ internal static class PlayerSemanticReplay
                 AuthorKingdomId = "p", IsPlayerAuthored = true, IsReadyForPublication = true,
                 Body = "同意与邻国通商", AnalysisStatus = "pending_analysis" };
             owner.CurrentStorage.Documents.Add(document);
-            string claimed = scenario == "full" ? fullId : scenario == "uppercase" ? suffix.ToUpperInvariant()
+            string claimed = scenario is "full" or "full-unknown" ? fullId : scenario == "uppercase" ? suffix.ToUpperInvariant()
                 : scenario == "different-prefix" ? "other_document:" + suffix : scenario == "partial-id" ? suffix.Substring(4) : suffix;
             string action = scenario is "no-action" or "ambiguous" ? "" : scenario == "wrong-action" ? "action_9" : "action_1";
             string intent = scenario == "reject" ? "reject_trade" : scenario == "wrong-intent" ? "accept_alliance" : "accept_trade";
@@ -318,6 +322,67 @@ internal static class PlayerSemanticReplay
                 && restored.PlayerAnalysisCommitted && restored.Body == document.Body, "normalized source survives JSON without rewriting speech: " + scenario);
             Commit();
             Test.True(execution.Effects == (accepted ? 1 : 0), "repeated completion never replays a repaired acceptance: " + scenario);
+            if (scenario == "full-unknown")
+            {
+                Test.True(document.RoundId == provisional.RoundId && execution.Rejection == "player_offer_response_source_not_available",
+                    "full unknown source cannot move into a hidden offer round");
+                var bypass = new WorldDiplomacyDocument { RoundId = original.RoundId, AuthorKingdomId = "p", TargetKingdomId = "a",
+                    RespondingToOfferDocumentId = fullId, RespondingToOfferActionId = "action_1", IsPlayerAuthored = true };
+                Test.True(owner.TryGetPlayerWorldStateIntentViolation(bypass, "accept_trade", "acceptance", "p", "a", out string reason)
+                    && reason == "player_offer_response_source_not_known", "owner execution guard also rejects a direct unknown source");
+            }
+        }
+    }
+
+    private static void VerifyTradeAcceptanceTerms()
+    {
+        foreach (string scenario in new[] { "omitted", "same", "changed", "zero", "invalid" })
+        {
+            var (host, owner) = ConcurrentOralMigrationReplay.Fixture();
+            var original = owner.EnsureActiveRound("a", "p", false);
+            var source = new WorldDiplomacyDocument { DocumentId = "trade-original", RoundId = original.RoundId,
+                AuthorKingdomId = "a", TargetKingdomId = "p", IsReadyForPublication = true, Intent = "propose_trade",
+                TreatyTerms = new() { DurationDays = 84 } };
+            var offer = new WorldDiplomacyRoundOffer { SourceDocumentId = source.DocumentId, SourceActionId = "action_1",
+                ProposerKingdomId = "a", TargetKingdomId = "p", Intent = "propose_trade", Status = "open" };
+            original.PendingOffers.Add(offer); owner.CurrentStorage.Documents.Add(source);
+            WorldDiplomacyDocumentFactRules.RecordKingdomKnowledge(owner.CurrentStorage.KingdomKnowledge, "p", source.DocumentId, 12);
+            var provisional = owner.EnsureActiveRound("p", null, true);
+            var response = new WorldDiplomacyDocument { DocumentId = "trade-response", RoundId = provisional.RoundId,
+                AuthorKingdomId = "p", IsPlayerAuthored = true, IsReadyForPublication = true, Body = "贸易回应", AnalysisStatus = "pending_analysis" };
+            owner.CurrentStorage.Documents.Add(response);
+            var execution = new AcceptanceExecution(owner) { BaseIntent = "propose_trade", AtWar = false, GamePort = host.OfferAction() };
+            var raw = new JObject { ["status"] = "success", ["intent"] = "accept_trade", ["commitment"] = "acceptance",
+                ["primary_target_kingdom_id"] = "a", ["responding_to_offer_document_id"] = source.DocumentId,
+                ["responding_to_offer_action_id"] = "action_1" };
+            if (scenario != "omitted") raw["treaty_terms"] = new JObject { ["duration_days"] = scenario == "invalid"
+                ? new JValue("bad") : new JValue(scenario == "same" ? 84 : scenario == "zero" ? 0 : 7) };
+            void Process(WorldDiplomacyDocument d, string kind, string commitment, bool reply, string tone, float confidence)
+            {
+                typeof(WorldDiplomacyOrchestration).GetMethod("BindPlayerDeclarationToSharedEvent",
+                    System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic).Invoke(owner, new object[] { d });
+                if (!owner.ValidateFormalTreatyDeclaration(d, kind, d.TreatyTerms, "p", "a", d.RespondingToOfferDocumentId,
+                    d.RespondingToOfferActionId, out string reason)) { execution.SuppressInvalidDocumentBeforePropagation(d, reason); return; }
+                WorldDiplomacyDocumentExecutionApplication.ProcessAnalyzedDocument(new DocumentExecutionReplay.Port { Owner = owner },
+                    execution, d, kind, commitment, reply, tone, confidence);
+            }
+            void Commit() => WorldDiplomacyAnalysisApplication.CommitAnalysis(new() { DocumentId = response.DocumentId }, raw.ToString(), 3,
+                owner.CurrentStorage.DiplomaticThreats, owner.ResolveDocument, owner.ResolveRound, x => x, x => x, (_, _, _) => null,
+                (ids, excluded) => ids.Where(x => !string.IsNullOrWhiteSpace(x) && x != excluded).ToList(),
+                execution.SuppressInvalidDocumentBeforePropagation, Process, _ => { }, owner.PlayerAnalysisOffers);
+            Commit(); bool valid = scenario is "omitted" or "same";
+            Test.True(host.TradeDuration == (valid ? 84 : 0) && response.ChangedDiplomaticState == valid,
+                "actual analysis and trade executor preserve agreed duration: " + scenario);
+            Test.True(offer.Status == (valid ? "accepted" : "open") && (valid || execution.Rejection == "trade_acceptance_changes_terms"),
+                "changed terms reject acceptance while original offer remains open: " + scenario);
+            Test.True(source.TreatyTerms.DurationDays == 84 && response.Body == "贸易回应", "source and public speech retained: " + scenario);
+            Commit(); Test.True(execution.Effects == (valid ? 1 : 0), "trade acceptance duplicate completion is inert: " + scenario);
+            if (!valid)
+            {
+                var outcome = WorldDiplomacyOfferActionApplication.Execute("propose_trade", offer, source, response, host.OfferAction(), owner);
+                Test.True(outcome == WorldDiplomacyOfferOutcome.Failed && host.TradeDuration == 0,
+                    "final trade effect guard rejects changed terms even without declaration admission: " + scenario);
+            }
         }
     }
 

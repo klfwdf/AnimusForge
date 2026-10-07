@@ -78,6 +78,9 @@ internal sealed partial class WorldDiplomacyOrchestration
         string author, string target, string sourceId, string sourceActionId, out string reason)
     {
         reason = "";
+        if (NormalizeIntent(intent) == "accept_trade")
+            return WorldDiplomacyOfferActionApplication.TryResolveTradeAcceptanceTerms(
+                ResolveDocument(sourceId), sourceActionId, terms, out _, out reason);
         if (!IsFormalTreatyIntent(intent)) return true;
         if (NormalizeIntent(intent).StartsWith("reject_")) return true;
         if (terms != null && (terms.DailyTribute != 0 || terms.DurationDays != 0 || !string.IsNullOrEmpty(terms.CessionSettlementId)))
