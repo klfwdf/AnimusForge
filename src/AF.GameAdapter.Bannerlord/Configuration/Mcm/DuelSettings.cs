@@ -1323,7 +1323,7 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 
 	[SettingPropertyBool("新成年人物自动生成个性与背景", Order = 2, RequireRestart = false, HintText = "开启后，当英雄子女成年时，自动使用前处理API为其生成个性与历史背景。已有个性或背景不会被覆盖。")]
 	[SettingPropertyGroup("4. 开发者选项")]
-	public bool EnableAdultHeroPersonaAutoGeneration { get; set; } = true;
+	public bool EnableAdultHeroPersonaAutoGeneration { get; set; } = false;
 
 	[SettingPropertyBool("【日志】写入 Mod_Logic.txt", Order = 4, RequireRestart = false, HintText = "总逻辑日志开关。关闭后不再写入 Mod_Logic.txt。")]
 	[SettingPropertyGroup("4. 开发者选项")]
